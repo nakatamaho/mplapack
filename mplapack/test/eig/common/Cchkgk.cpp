@@ -88,6 +88,14 @@ void Cchkgk(INTEGER const nin, INTEGER const nout) {
     const INTEGER ldf = 50;
     COMPLEX f[ldf * ldf];
     REAL vmax = 0.0;
+    static const char *format_9999 = "(1x,'.. test output of Cggbak .. ')";
+    static const char *format_9998 = "(' value of largest test error                  =',d12.3)";
+    static const char *format_9997 = "(' example number where Cggbal info is not 0    =',i4)";
+    static const char *format_9996 = "(' example number where Cggbak(L) info is not 0 =',i4)";
+    static const char *format_9995 = "(' example number where Cggbak(R) info is not 0 =',i4)";
+    static const char *format_9994 = "(' example number having largest error          =',i4)";
+    static const char *format_9992 = "(' number of examples where info is not 0       =',i4)";
+    static const char *format_9991 = "(' total number of examples tested              =',i4)";
     //
     lmax[1 - 1] = 0;
     lmax[2 - 1] = 0;
@@ -217,15 +225,15 @@ statement_10:
 //
 statement_100:
     //
-    write(nout, "(1x,'.. test output of Cggbak .. ')");
+    write(nout, format_9999);
     //
-    write(nout, "(' value of largest test error                  =',d12.3)"), rmax;
-    write(nout, "(' example number where Cggbal info is not 0    =',i4)"), lmax[1 - 1];
-    write(nout, "(' example number where Cggbak(L) info is not 0 =',i4)"), lmax[2 - 1];
-    write(nout, "(' example number where Cggbak(R) info is not 0 =',i4)"), lmax[3 - 1];
-    write(nout, "(' example number having largest error          =',i4)"), lmax[4 - 1];
-    write(nout, "(' number of examples where info is not 0       =',i4)"), ninfo;
-    write(nout, "(' total number of examples tested              =',i4)"), knt;
+    write(nout, format_9998), rmax;
+    write(nout, format_9997), lmax[1 - 1];
+    write(nout, format_9996), lmax[2 - 1];
+    write(nout, format_9995), lmax[3 - 1];
+    write(nout, format_9994), lmax[4 - 1];
+    write(nout, format_9992), ninfo;
+    write(nout, format_9991), knt;
     //
     // End of Cchkgk
     //

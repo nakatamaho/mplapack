@@ -82,6 +82,9 @@ void Rchkql(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     REAL result[ntests];
     INTEGER nt = 0;
     //
+    static const char *format_9999 = "(' M=',i5,', N=',i5,', K=',i5,', NB=',i4,', NX=',i5,', type ',i2,"
+                                     "', test(',i2,')=',g12.5)";
+    //
     // Initialize constants and the random number seed.
     //
     path(1, 1) = "Double precision";
@@ -226,9 +229,7 @@ void Rchkql(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                 if (nfail == 0 && nerrs == 0) {
                                     Alahd(nout, path);
                                 }
-                                write(nout, "(' M=',i5,', N=',i5,', K=',i5,', NB=',i4,', NX=',i5,"
-                                            "', type ',i2,', test(',i2,')=',g12.5)"),
-                                    m, n, k, nb, nx, imat, i, result[i - 1];
+                                write(nout, format_9999), m, n, k, nb, nx, imat, i, result[i - 1];
                                 nfail++;
                             }
                         }

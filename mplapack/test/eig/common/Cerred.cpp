@@ -46,8 +46,9 @@ using fem::common;
 void Cerred(fem::str_cref path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
-    static const char *format_9998 = "(' *** ',a,' failed the tests of the error exits ***')";
+    //
     static const char *format_9999 = "(1x,a,' passed the tests of the error exits (',i3,' tests done)')";
+    static const char *format_9998 = "(' *** ',a,' failed the tests of the error exits ***')";
     //
     nout = nunit;
     write(nout, star);

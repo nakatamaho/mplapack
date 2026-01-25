@@ -78,6 +78,9 @@ void Rchkq3(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     REAL result[ntests];
     INTEGER k = 0;
     //
+    static const char *format_9999 = "(1x,a,' M =',i5,', N =',i5,', NB =',i4,', type ',i2,', test ',i2,"
+                                     "', ratio =',g12.5)";
+    //
     // Initialize constants and the random number seed.
     //
     path(1, 1) = "Double precision";
@@ -202,9 +205,7 @@ void Rchkq3(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
-                            write(nout, "(1x,a,' M =',i5,', N =',i5,', NB =',i4,', type ',i2,"
-                                        "', test ',i2,', ratio =',g12.5)"),
-                                "DGEQP3", m, n, nb, imode, k, result[k - 1];
+                            write(nout, format_9999), "Rgeqp3", m, n, nb, imode, k, result[k - 1];
                             nfail++;
                         }
                     }

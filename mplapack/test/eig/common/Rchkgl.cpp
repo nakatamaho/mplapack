@@ -76,6 +76,13 @@ void Rchkgl(INTEGER const nin, INTEGER const nout) {
     REAL rscale[lda];
     INTEGER info = 0;
     REAL vmax = 0.0;
+    static const char *format_9999 = "(1x,'.. test output of Rggbal .. ')";
+    static const char *format_9998 = "(1x,'value of largest test error            = ',d12.3)";
+    static const char *format_9997 = "(1x,'example number where info is not zero  = ',i4)";
+    static const char *format_9996 = "(1x,'example number where ILO or IHI wrong  = ',i4)";
+    static const char *format_9995 = "(1x,'example number having largest error    = ',i4)";
+    static const char *format_9994 = "(1x,'number of examples where info is not 0 = ',i4)";
+    static const char *format_9993 = "(1x,'total number of examples tested        = ',i4)";
     //
     lmax[1 - 1] = 0;
     lmax[2 - 1] = 0;
@@ -182,14 +189,14 @@ statement_10:
 //
 statement_90:
     //
-    write(nout, "(1x,'.. test output of Rggbal .. ')");
+    write(nout, format_9999);
     //
-    write(nout, "(1x,'value of largest test error            = ',d12.3)"), rmax;
-    write(nout, "(1x,'example number where info is not zero  = ',i4)"), lmax[1 - 1];
-    write(nout, "(1x,'example number where ILO or IHI wrong  = ',i4)"), lmax[2 - 1];
-    write(nout, "(1x,'example number having largest error    = ',i4)"), lmax[3 - 1];
-    write(nout, "(1x,'number of examples where info is not 0 = ',i4)"), ninfo;
-    write(nout, "(1x,'total number of examples tested        = ',i4)"), knt;
+    write(nout, format_9998), rmax;
+    write(nout, format_9997), lmax[1 - 1];
+    write(nout, format_9996), lmax[2 - 1];
+    write(nout, format_9995), lmax[3 - 1];
+    write(nout, format_9994), ninfo;
+    write(nout, format_9993), knt;
     //
     // End of Rchkgl
     //

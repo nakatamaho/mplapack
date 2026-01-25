@@ -94,6 +94,9 @@ void Cdrvsy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nr
     REAL result[ntests];
     INTEGER nt = 0;
     //
+    static const char *format_9999 = "(1x,a,', UPLO=''',a1,''', N =',i5,', type ',i2,', test ',i2,', ratio =',"
+                                     "g12.5)";
+    //
     // Initialize constants and the random number seed.
     //
     // Test path
@@ -366,9 +369,7 @@ void Cdrvsy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nr
                                 if (nfail == 0 && nerrs == 0) {
                                     Aladhd(nout, path);
                                 }
-                                write(nout, "(1x,a,', UPLO=''',a1,''', N =',i5,', type ',i2,', test ',"
-                                            "i2,', ratio =',g12.5)"),
-                                    "ZSYSV_ROOK", uplo, n, imat, k, result[k - 1];
+                                write(nout, format_9999), "Csysv_rook", uplo, n, imat, k, result[k - 1];
                                 nfail++;
                             }
                         }

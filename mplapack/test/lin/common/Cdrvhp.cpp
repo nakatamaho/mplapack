@@ -95,6 +95,11 @@ void Cdrvhp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     REAL rcond = 0.0;
     INTEGER k1 = 0;
     //
+    static const char *format_9999 = "(1x,a,', UPLO=''',a1,''', N =',i5,', type ',i2,', test ',i2,', ratio =',"
+                                     "g12.5)";
+    static const char *format_9998 = "(1x,a,', FACT=''',a1,''', UPLO=''',a1,''', N =',i5,', type ',i2,"
+                                     "', test ',i2,', ratio =',g12.5)";
+    //
     // Initialize constants and the random number seed.
     //
     path(1, 1) = "Z";
@@ -355,9 +360,7 @@ void Cdrvhp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 if (nfail == 0 && nerrs == 0) {
                                     Aladhd(nout, path);
                                 }
-                                write(nout, "(1x,a,', UPLO=''',a1,''', N =',i5,', type ',i2,', test ',"
-                                            "i2,', ratio =',g12.5)"),
-                                    "ZHPSV ", uplo, n, imat, k, result[k - 1];
+                                write(nout, format_9999), "Chpsv", uplo, n, imat, k, result[k - 1];
                                 nfail++;
                             }
                         }
@@ -443,9 +446,7 @@ void Cdrvhp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             if (nfail == 0 && nerrs == 0) {
                                 Aladhd(nout, path);
                             }
-                            write(nout, "(1x,a,', FACT=''',a1,''', UPLO=''',a1,''', N =',i5,', type ',"
-                                        "i2,', test ',i2,', ratio =',g12.5)"),
-                                "ZHPSVX", fact, uplo, n, imat, k, result[k - 1];
+                            write(nout, format_9998), "Chpsvx", fact, uplo, n, imat, k, result[k - 1];
                             nfail++;
                         }
                     }

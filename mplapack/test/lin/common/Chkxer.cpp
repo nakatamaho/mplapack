@@ -46,10 +46,11 @@ using fem::common;
 void Chkxer(fem::str_cref srnamt, INTEGER const infot, INTEGER const nout, bool &lerr, bool &ok) {
     common cmn;
     common_write write(cmn);
+    //
+    static const char *format_9999 = "(' *** Illegal value of parameter number ',i2,' not detected by ',a6,"
+                                     "' ***')";
     if (!lerr) {
-        write(nout, "(' *** Illegal value of parameter number ',i2,' not detected by ',a6,"
-                    "' ***')"),
-            infot, srnamt(1, fem::len_trim(srnamt));
+        write(nout, format_9999), infot, srnamt(1, fem::len_trim(srnamt));
         ok = false;
     }
     lerr = false;

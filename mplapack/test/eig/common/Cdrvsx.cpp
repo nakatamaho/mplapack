@@ -92,6 +92,38 @@ void Cdrvsx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     INTEGER nfail = 0;
     INTEGER isrt = 0;
     INTEGER i = 0;
+    //
+    static const char *format_9999 = "(/,1x,a3,' -- Complex Schur Form Decomposition Expert ','Driver',/,"
+                                     "' Matrix types (see Cdrvsx for details): ')";
+    //
+    static const char *format_9998 = "(/,' Special Matrices:',/,'  1=Zero matrix.             ','           ',"
+                                     "'  5=Diagonal: geometr. spaced entries.',/,"
+                                     "'  2=Identity matrix.                    ','  6=Diagona',"
+                                     "'l: clustered entries.',/,'  3=Transposed Jordan block.  ','          ',"
+                                     "'  7=Diagonal: large, evenly spaced.',/,'  ',"
+                                     "'4=Diagonal: evenly spaced entries.    ','  8=Diagonal: s',"
+                                     "'mall, evenly spaced.')";
+    static const char *format_9997 = "(' Dense, Non-Symmetric Matrices:',/,'  9=Well-cond., ev',"
+                                     "'enly spaced eigenvals.',' 14=Ill-cond., geomet. spaced e','igenals.',/,"
+                                     "' 10=Well-cond., geom. spaced eigenvals. ',"
+                                     "' 15=Ill-conditioned, clustered e.vals.',/,' 11=Well-cond',"
+                                     "'itioned, clustered e.vals. ',' 16=Ill-cond., random comp','lex ',/,"
+                                     "' 12=Well-cond., random complex ','         ',"
+                                     "' 17=Ill-cond., large rand. complx ',/,' 13=Ill-condi',"
+                                     "'tioned, evenly spaced.     ',' 18=Ill-cond., small rand.',' complx ')";
+    static const char *format_9996 = "(' 19=Matrix with random O(1) entries.    ',' 21=Matrix ',"
+                                     "'with small random entries.',/,' 20=Matrix with large ran',"
+                                     "'dom entries.   ',/)";
+    static const char *format_9995 = "(' Tests performed with test threshold =',f8.2,/,"
+                                     "' ( A denotes A on input and T denotes A on output)',/,/,"
+                                     "' 1 = 0 if T in Schur form (no sort), ','  1/ulp otherwise',/,"
+                                     "' 2 = | A - VS T transpose(VS) | / ( n |A| ulp ) (no sort)',/,"
+                                     "' 3 = | I - VS transpose(VS) | / ( n ulp ) (no sort) ',/,"
+                                     "' 4 = 0 if W are eigenvalues of T (no sort),','  1/ulp otherwise',/,"
+                                     "' 5 = 0 if T same no matter if VS computed (no sort),',"
+                                     "'  1/ulp otherwise',/,"
+                                     "' 6 = 0 if W same no matter if VS computed (no sort)',"
+                                     "',  1/ulp otherwise')";
     static const char *format_9994 = "(' 7 = 0 if T in Schur form (sort), ','  1/ulp otherwise',/,"
                                      "' 8 = | A - VS T transpose(VS) | / ( n |A| ulp ) (sort)',/,"
                                      "' 9 = | I - VS transpose(VS) | / ( n ulp ) (sort) ',/,"
@@ -106,36 +138,11 @@ void Cdrvsx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                                      "' 1/ulp otherwise',/,"
                                      "' 16 = | RCONDE - RCONDE(precomputed) | / cond(RCONDE),',/,"
                                      "' 17 = | RCONDV - RCONDV(precomputed) | / cond(RCONDV),')";
-    static const char *format_9995 = "(' Tests performed with test threshold =',f8.2,/,"
-                                     "' ( A denotes A on input and T denotes A on output)',/,/,"
-                                     "' 1 = 0 if T in Schur form (no sort), ','  1/ulp otherwise',/,"
-                                     "' 2 = | A - VS T transpose(VS) | / ( n |A| ulp ) (no sort)',/,"
-                                     "' 3 = | I - VS transpose(VS) | / ( n ulp ) (no sort) ',/,"
-                                     "' 4 = 0 if W are eigenvalues of T (no sort),','  1/ulp otherwise',/,"
-                                     "' 5 = 0 if T same no matter if VS computed (no sort),',"
-                                     "'  1/ulp otherwise',/,"
-                                     "' 6 = 0 if W same no matter if VS computed (no sort)',"
-                                     "',  1/ulp otherwise')";
-    static const char *format_9996 = "(' 19=Matrix with random O(1) entries.    ',' 21=Matrix ',"
-                                     "'with small random entries.',/,' 20=Matrix with large ran',"
-                                     "'dom entries.   ',/)";
-    static const char *format_9997 = "(' Dense, Non-Symmetric Matrices:',/,'  9=Well-cond., ev',"
-                                     "'enly spaced eigenvals.',' 14=Ill-cond., geomet. spaced e','igenals.',/,"
-                                     "' 10=Well-cond., geom. spaced eigenvals. ',"
-                                     "' 15=Ill-conditioned, clustered e.vals.',/,' 11=Well-cond',"
-                                     "'itioned, clustered e.vals. ',' 16=Ill-cond., random comp','lex ',/,"
-                                     "' 12=Well-cond., random complex ','         ',"
-                                     "' 17=Ill-cond., large rand. complx ',/,' 13=Ill-condi',"
-                                     "'tioned, evenly spaced.     ',' 18=Ill-cond., small rand.',' complx ')";
-    static const char *format_9998 = "(/,' Special Matrices:',/,'  1=Zero matrix.             ','           ',"
-                                     "'  5=Diagonal: geometr. spaced entries.',/,"
-                                     "'  2=Identity matrix.                    ','  6=Diagona',"
-                                     "'l: clustered entries.',/,'  3=Transposed Jordan block.  ','          ',"
-                                     "'  7=Diagonal: large, evenly spaced.',/,'  ',"
-                                     "'4=Diagonal: evenly spaced entries.    ','  8=Diagonal: s',"
-                                     "'mall, evenly spaced.')";
-    static const char *format_9999 = "(/,1x,a3,' -- Complex Schur Form Decomposition Expert ','Driver',/,"
-                                     "' Matrix types (see Cdrvsx for details): ')";
+    static const char *format_9993 = "(' N=',i5,', IWK=',i2,', seed=',4(i4,','),' type ',i2,', test(',i2,')=',"
+                                     "g10.3)";
+    static const char *format_9992 = "(' N=',i5,', input example =',i3,',  test(',i2,')=',g10.3)";
+    static const char *format_9991 = "(' Cdrvsx: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
+                                     "', ISEED=(',3(i5,','),i5,')')";
     //
     path(1, 1) = "Zomplex precision";
     path(2, 3) = "SX";
@@ -370,9 +377,7 @@ void Cdrvsx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             }
             //
             if (iinfo != 0) {
-                write(nounit, "(' Cdrvsx: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
-                              "', ISEED=(',3(i5,','),i5,')')"),
-                    "Generator", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9991), "Generator", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 return;
             }
@@ -419,9 +424,7 @@ void Cdrvsx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 for (j = 1; j <= 15; j = j + 1) {
                     if (result[j - 1] >= thresh) {
-                        write(nounit, "(' N=',i5,', IWK=',i2,', seed=',4(i4,','),' type ',i2,"
-                                      "', test(',i2,')=',g10.3)"),
-                            n, iwk, ioldsd, jtype, j, result[j - 1];
+                        write(nounit, format_9993), n, iwk, ioldsd, jtype, j, result[j - 1];
                     }
                 }
                 //
@@ -495,7 +498,7 @@ statement_160:
     }
     for (j = 1; j <= 17; j = j + 1) {
         if (result[j - 1] >= thresh) {
-            write(nounit, "(' N=',i5,', input example =',i3,',  test(',i2,')=',g10.3)"), n, jtype, j, result[j - 1];
+            write(nounit, format_9992), n, jtype, j, result[j - 1];
         }
     }
     //

@@ -76,8 +76,27 @@ void Rdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER c
     REAL ratio1 = 0.0;
     REAL ratio2 = 0.0;
     INTEGER j = 0;
-    static const char *format_9986 = "(' Rdrgvx: ',a,' Eigenvectors from ',a,' incorrectly ','normalized.',/,"
-                                     "' Bits of error=',0p,g10.3,',',9x,'N=',i6,', Input Example #',i2,')')";
+    //
+    static const char *format_9999 = "(' Rdrgvx: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,')')";
+    //
+    static const char *format_9998 = "(' Rdrgvx: ',a,' Eigenvectors from ',a,' incorrectly ','normalized.',/,"
+                                     "' Bits of error=',0p,g10.3,',',9x,'N=',i6,', JTYPE=',i6,', IWA=',i5,"
+                                     "', IWB=',i5,', IWX=',i5,', IWY=',i5)";
+    //
+    static const char *format_9997 = "(/,1x,a3,' -- Real Expert Eigenvalue/vector',' problem driver')";
+    //
+    static const char *format_9996 = "(' Input Example')";
+    //
+    static const char *format_9995 = "(' Matrix types: ',/)";
+    //
+    static const char *format_9994 = "(' TYPE 1: Da is diagonal, Db is identity, ',/,"
+                                     "'     A = Y^(-H) Da X^(-1), B = Y^(-H) Db X^(-1) ',/,"
+                                     "'     YH and X are left and right eigenvectors. ',/)";
+    //
+    static const char *format_9993 = "(' TYPE 2: Da is quasi-diagonal, Db is identity, ',/,"
+                                     "'     A = Y^(-H) Da X^(-1), B = Y^(-H) Db X^(-1) ',/,"
+                                     "'     YH and X are left and right eigenvectors. ',/)";
+    //
     static const char *format_9992 = "(/,' Tests performed:  ',/,4x,"
                                      "' a is alpha, b is beta, l is a left eigenvector, ',/,4x,"
                                      "' r is a right eigenvector and ',a,' means ',a,'.',/,"
@@ -86,10 +105,20 @@ void Rdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER c
                                      "' 3 = max( Sest/Stru, Stru/Sest ) ',' over all eigenvalues',/,"
                                      "' 4 = max( DIFest/DIFtru, DIFtru/DIFest ) ',"
                                      "' over the 1st and 5th eigenvectors',/)";
-    static const char *format_9997 = "(/,1x,a3,' -- Real Expert Eigenvalue/vector',' problem driver')";
-    static const char *format_9998 = "(' Rdrgvx: ',a,' Eigenvectors from ',a,' incorrectly ','normalized.',/,"
-                                     "' Bits of error=',0p,g10.3,',',9x,'N=',i6,', JTYPE=',i6,', IWA=',i5,"
-                                     "', IWB=',i5,', IWX=',i5,', IWY=',i5)";
+    //
+    static const char *format_9991 = "(' Type=',i2,',',' IWA=',i2,', IWB=',i2,', IWX=',i2,', IWY=',i2,"
+                                     "', result ',i2,' is',0p,f8.2)";
+    static const char *format_9990 = "(' Type=',i2,',',' IWA=',i2,', IWB=',i2,', IWX=',i2,', IWY=',i2,"
+                                     "', result ',i2,' is',1p,d10.3)";
+    static const char *format_9989 = "(' Input example #',i2,', matrix order=',i4,',',' result ',i2,' is',0p,"
+                                     "f8.2)";
+    static const char *format_9988 = "(' Input example #',i2,', matrix order=',i4,',',' result ',i2,' is',1p,"
+                                     "d10.3)";
+    static const char *format_9987 = "(' Rdrgvx: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', Input example #',"
+                                     "i2,')')";
+    //
+    static const char *format_9986 = "(' Rdrgvx: ',a,' Eigenvectors from ',a,' incorrectly ','normalized.',/,"
+                                     "' Bits of error=',0p,g10.3,',',9x,'N=',i6,', Input Example #',i2,')')";
     //
     // Check for errors
     //
@@ -175,9 +204,7 @@ void Rdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER c
                         Rggevx("N", "V", "V", "B", n, ai, lda, bi, lda, alphar, alphai, beta, vl, lda, vr, lda, ilo, ihi, lscale, rscale, anorm, bnorm, s, dif, work, lwork, iwork, bwork, linfo);
                         if (linfo != 0) {
                             result[1 - 1] = ulpinv;
-                            write(nout, "(' Rdrgvx: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,"
-                                        "', JTYPE=',i6,')')"),
-                                "DGGEVX", linfo, n, iptype;
+                            write(nout, format_9999), "Rggevx", linfo, n, iptype;
                             goto statement_30;
                         }
                         //
@@ -261,13 +288,9 @@ void Rdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER c
                                     //
                                     // Matrix types
                                     //
-                                    write(nout, "(' Matrix types: ',/)");
-                                    write(nout, "(' TYPE 1: Da is diagonal, Db is identity, ',/,"
-                                                "'     A = Y^(-H) Da X^(-1), B = Y^(-H) Db X^(-1) ',/,"
-                                                "'     YH and X are left and right eigenvectors. ',/)");
-                                    write(nout, "(' TYPE 2: Da is quasi-diagonal, Db is identity, ',/,"
-                                                "'     A = Y^(-H) Da X^(-1), B = Y^(-H) Db X^(-1) ',/,"
-                                                "'     YH and X are left and right eigenvectors. ',/)");
+                                    write(nout, format_9995);
+                                    write(nout, format_9994);
+                                    write(nout, format_9993);
                                     //
                                     // Tests performed
                                     //
@@ -276,13 +299,9 @@ void Rdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER c
                                 }
                                 nerrs++;
                                 if (result[j - 1] < 10000.0) {
-                                    write(nout, "(' Type=',i2,',',' IWA=',i2,', IWB=',i2,', IWX=',i2,"
-                                                "', IWY=',i2,', result ',i2,' is',0p,f8.2)"),
-                                        iptype, iwa, iwb, iwx, iwy, j, result[j - 1];
+                                    write(nout, format_9991), iptype, iwa, iwb, iwx, iwy, j, result[j - 1];
                                 } else {
-                                    write(nout, "(' Type=',i2,',',' IWA=',i2,', IWB=',i2,', IWX=',i2,"
-                                                "', IWY=',i2,', result ',i2,' is',1p,d10.3)"),
-                                        iptype, iwa, iwb, iwx, iwy, j, result[j - 1];
+                                    write(nout, format_9990), iptype, iwa, iwb, iwx, iwy, j, result[j - 1];
                                 }
                             }
                         }
@@ -352,9 +371,7 @@ statement_90:
     //
     if (linfo != 0) {
         result[1 - 1] = ulpinv;
-        write(nout, "(' Rdrgvx: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,"
-                    "', Input example #',i2,')')"),
-            "DGGEVX", linfo, n, nptknt;
+        write(nout, format_9987), "Rggevx", linfo, n, nptknt;
         goto statement_140;
     }
     //
@@ -438,7 +455,7 @@ statement_90:
                 //
                 // Matrix types
                 //
-                write(nout, "(' Input Example')");
+                write(nout, format_9996);
                 //
                 // Tests performed
                 //
@@ -447,13 +464,9 @@ statement_90:
             }
             nerrs++;
             if (result[j - 1] < 10000.0) {
-                write(nout, "(' Input example #',i2,', matrix order=',i4,',',' result ',i2,"
-                            "' is',0p,f8.2)"),
-                    nptknt, n, j, result[j - 1];
+                write(nout, format_9989), nptknt, n, j, result[j - 1];
             } else {
-                write(nout, "(' Input example #',i2,', matrix order=',i4,',',' result ',i2,"
-                            "' is',1p,d10.3)"),
-                    nptknt, n, j, result[j - 1];
+                write(nout, format_9988), nptknt, n, j, result[j - 1];
             }
         }
     }

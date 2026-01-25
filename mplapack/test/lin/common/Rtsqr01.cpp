@@ -65,8 +65,8 @@ void Rtsqr01(fem::str_cref tssw, INTEGER const m, INTEGER const n, INTEGER const
     // Put random numbers into A and copy to AF
     //
     INTEGER j = 0;
-    std::unique_ptr<REAL[]> __a_storage(new REAL[m * n]);
-    REAL *a = __a_storage.get();
+    std::unique_ptr<REAL[]> a_storage(new REAL[m * n]);
+    REAL *a = a_storage.get();
     for (j = 1; j <= n; j = j + 1) {
         Rlarnv(2, iseed, m, &a[(j - 1) * m]);
     }
@@ -77,40 +77,40 @@ void Rtsqr01(fem::str_cref tssw, INTEGER const m, INTEGER const n, INTEGER const
             }
         }
     }
-    std::unique_ptr<REAL[]> __af_storage(new REAL[m * n]);
-    REAL *af = __af_storage.get();
+    std::unique_ptr<REAL[]> af_storage(new REAL[m * n]);
+    REAL *af = af_storage.get();
     Rlacpy("Full", m, n, a, m, af, m);
     //
     REAL tquery[5];
     REAL workquery[1];
     INTEGER info = 0;
     INTEGER tsize = 0;
-    std::unique_ptr<REAL[]> __cf_storage(new REAL[m * n]);
-    REAL *cf = __cf_storage.get();
-    std::unique_ptr<REAL[]> __df_storage(new REAL[n * m]);
-    REAL *df = __df_storage.get();
-    std::unique_ptr<REAL[]> __t_storage(new REAL[tsize]);
-    REAL *t = __t_storage.get();
-    std::unique_ptr<REAL[]> __work_storage(new REAL[lwork]);
-    REAL *work = __work_storage.get();
+    std::unique_ptr<REAL[]> cf_storage(new REAL[m * n]);
+    REAL *cf = cf_storage.get();
+    std::unique_ptr<REAL[]> df_storage(new REAL[n * m]);
+    REAL *df = df_storage.get();
+    std::unique_ptr<REAL[]> t_storage(new REAL[tsize]);
+    REAL *t = t_storage.get();
+    std::unique_ptr<REAL[]> work_storage(new REAL[lwork]);
+    REAL *work = work_storage.get();
     const REAL zero = 0.0;
     const REAL one = 1.0;
-    std::unique_ptr<REAL[]> __q_storage(new REAL[l * l]);
-    REAL *q = __q_storage.get();
-    std::unique_ptr<REAL[]> __r_storage(new REAL[m * l]);
-    REAL *r = __r_storage.get();
-    std::unique_ptr<REAL[]> __rwork_storage(new REAL[l]);
-    REAL *rwork = __rwork_storage.get();
+    std::unique_ptr<REAL[]> q_storage(new REAL[l * l]);
+    REAL *q = q_storage.get();
+    std::unique_ptr<REAL[]> r_storage(new REAL[m * l]);
+    REAL *r = r_storage.get();
+    std::unique_ptr<REAL[]> rwork_storage(new REAL[l]);
+    REAL *rwork = rwork_storage.get();
     REAL anorm = 0.0;
     REAL resid = 0.0;
-    std::unique_ptr<REAL[]> __c_storage(new REAL[m * n]);
-    REAL *c = __c_storage.get();
+    std::unique_ptr<REAL[]> c_storage(new REAL[m * n]);
+    REAL *c = c_storage.get();
     REAL cnorm = 0.0;
-    std::unique_ptr<REAL[]> __d_storage(new REAL[n * m]);
-    REAL *d = __d_storage.get();
+    std::unique_ptr<REAL[]> d_storage(new REAL[n * m]);
+    REAL *d = d_storage.get();
     REAL dnorm = 0.0;
-    std::unique_ptr<REAL[]> __lq_storage(new REAL[l * n]);
-    REAL *lq = __lq_storage.get();
+    std::unique_ptr<REAL[]> lq_storage(new REAL[l * n]);
+    REAL *lq = lq_storage.get();
     if (ts) {
         //
         // Factor the matrix A in the array AF.

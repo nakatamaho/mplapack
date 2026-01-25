@@ -47,6 +47,8 @@ void Cchkqrt(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *mv
     common cmn;
     common_write write(cmn);
     //
+    static const char *format_9999 = "(' M=',i5,', N=',i5,', NB=',i4,' test(',i2,')=',g12.5)";
+    //
     // Initialize constants
     //
     fem::str<3> path = "Z";
@@ -101,7 +103,7 @@ void Cchkqrt(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *mv
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
-                            write(nout, "(' M=',i5,', N=',i5,', NB=',i4,' test(',i2,')=',g12.5)"), m, n, nb, t, result[t - 1];
+                            write(nout, format_9999), m, n, nb, t, result[t - 1];
                             nfail++;
                         }
                     }

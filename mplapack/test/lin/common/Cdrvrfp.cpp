@@ -86,6 +86,8 @@ void Cdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
     INTEGER nt = 0;
     INTEGER k = 0;
     //
+    static const char *format_9999 = "(1x,a6,', UPLO=''',a1,''', N =',i5,', type ',i1,', test(',i1,')=',g12.5)";
+    //
     // Initialize constants and the random number seed.
     //
     nrun = 0;
@@ -317,9 +319,7 @@ void Cdrvrfp(INTEGER const nout, INTEGER const nn, INTEGER *nval, INTEGER const 
                                 if (nfail == 0 && nerrs == 0) {
                                     Aladhd(nout, "ZPF");
                                 }
-                                write(nout, "(1x,a6,', UPLO=''',a1,''', N =',i5,', type ',i1,', test(',"
-                                            "i1,')=',g12.5)"),
-                                    "ZPFSV ", uplo, n, iit, k, result[k - 1];
+                                write(nout, format_9999), "ZPFSV", uplo, n, iit, k, result[k - 1];
                                 nfail++;
                             }
                         }

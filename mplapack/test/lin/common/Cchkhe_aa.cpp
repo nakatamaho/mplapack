@@ -89,6 +89,14 @@ void Cchkhe_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
     INTEGER irhs = 0;
     INTEGER nrhs = 0;
     //
+    static const char *format_9999 = "(' UPLO = ''',a1,''', N =',i5,', NB =',i4,', type ',i2,', test ',i2,"
+                                     "', ratio =',g12.5)";
+    static const char *format_9998 = "(' UPLO = ''',a1,''', N =',i5,', NRHS=',i3,', type ',i2,', test(',i2,"
+                                     "') =',g12.5)";
+    // 9997 FORMAT( ' UPLO = ''', A1, ''', N =', I5, ',', 10X, ' type ', I2,
+    // $      ', test(', I2, ') =', G12.5 )
+    static const char *format_9995 = "(' Invalid input value: ',a4,'=',i6,'; must be <=',i6)";
+    //
     // Initialize constants and the random number seed.
     //
     // Test path
@@ -125,7 +133,7 @@ void Cchkhe_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
         n = nval[in - 1];
         if (n > nmax) {
             nfail++;
-            write(nout, "(' Invalid input value: ',a4,'=',i6,'; must be <=',i6)"), "M ", n, nmax;
+            write(nout, format_9995), "M ", n, nmax;
             goto statement_180;
         }
         lda = max(n, (INTEGER)1);
@@ -316,9 +324,7 @@ void Cchkhe_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
-                            write(nout, "(' UPLO = ''',a1,''', N =',i5,', NB =',i4,', type ',i2,"
-                                        "', test ',i2,', ratio =',g12.5)"),
-                                uplo, n, nb, imat, k, result[k - 1];
+                            write(nout, format_9999), uplo, n, nb, imat, k, result[k - 1];
                             nfail++;
                         }
                     }
@@ -371,9 +377,7 @@ void Cchkhe_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                                     if (nfail == 0 && nerrs == 0) {
                                         Alahd(nout, path);
                                     }
-                                    write(nout, "(' UPLO = ''',a1,''', N =',i5,', NRHS=',i3,', type ',i2,"
-                                                "', test(',i2,') =',g12.5)"),
-                                        uplo, n, nrhs, imat, k, result[k - 1];
+                                    write(nout, format_9998), uplo, n, nrhs, imat, k, result[k - 1];
                                     nfail++;
                                 }
                             }
@@ -395,9 +399,6 @@ void Cchkhe_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
     // Print a summary of the results.
     //
     Alasum(path, nout, nfail, nrun, nerrs);
-    //
-    // 9997 FORMAT( ' UPLO = ''', A1, ''', N =', I5, ',', 10X, ' type ', I2,
-    // $      ', test(', I2, ') =', G12.5 )
     //
     // End of Cchkhe_aa
     //

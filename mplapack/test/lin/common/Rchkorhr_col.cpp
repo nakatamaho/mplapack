@@ -47,6 +47,11 @@ void Rchkorhr_col(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGE
     common cmn;
     common_write write(cmn);
     //
+    static const char *format_9999 = "('Rorgtsqr and Rorhr_col: M=',i5,', N=',i5,', MB1=',i5,', NB1=',i5,"
+                                     "', NB2=',i5,' test(',i2,')=',g12.5)";
+    static const char *format_9998 = "('Rorgtsqr_row and Rorhr_col: M=',i5,', N=',i5,', MB1=',i5,', NB1=',i5,"
+                                     "', NB2=',i5,' test(',i2,')=',g12.5)";
+    //
     // Initialize constants
     //
     fem::str<3> path = "D";
@@ -122,9 +127,7 @@ void Rchkorhr_col(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGE
                                             if (nfail == 0 && nerrs == 0) {
                                                 Alahd(nout, path);
                                             }
-                                            write(nout, "('Rorgtsqr and Rorhr_col: M=',i5,', N=',i5,', MB1=',"
-                                                        "i5,', NB1=',i5,', NB2=',i5,' test(',i2,')=',g12.5)"),
-                                                m, n, mb1, nb1, nb2, t, result[t - 1];
+                                            write(nout, format_9999), m, n, mb1, nb1, nb2, t, result[t - 1];
                                             nfail++;
                                         }
                                     }
@@ -185,10 +188,7 @@ void Rchkorhr_col(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGE
                                             if (nfail == 0 && nerrs == 0) {
                                                 Alahd(nout, path);
                                             }
-                                            write(nout, "('Rorgtsqr_row and Rorhr_col: M=',i5,', N=',i5,"
-                                                        "', MB1=',i5,', NB1=',i5,', NB2=',i5,' test(',i2,')=',"
-                                                        "g12.5)"),
-                                                m, n, mb1, nb1, nb2, t, result[t - 1];
+                                            write(nout, format_9998), m, n, mb1, nb1, nb2, t, result[t - 1];
                                             nfail++;
                                         }
                                     }

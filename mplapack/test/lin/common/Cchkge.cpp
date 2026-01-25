@@ -99,6 +99,12 @@ void Cchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     REAL rcond = 0.0;
     REAL dummy = 0.0;
     //
+    static const char *format_9999 = "(' M = ',i5,', N =',i5,', NB =',i4,', type ',i2,', test(',i2,') =',g12.5)";
+    static const char *format_9998 = "(' TRANS=''',a1,''', N =',i5,', NRHS=',i3,', type ',i2,', test(',i2,"
+                                     "') =',g12.5)";
+    static const char *format_9997 = "(' NORM =''',a1,''', N =',i5,',',10x,' type ',i2,', test(',i2,') =',"
+                                     "g12.5)";
+    //
     // Initialize constants and the random number seed.
     //
     path(1, 1) = "Zomplex precision";
@@ -273,9 +279,7 @@ void Cchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
-                            write(nout, "(' M = ',i5,', N =',i5,', NB =',i4,', type ',i2,', test(',i2,"
-                                        "') =',g12.5)"),
-                                m, n, nb, imat, k, result[k - 1];
+                            write(nout, format_9999), m, n, nb, imat, k, result[k - 1];
                             nfail++;
                         }
                     }
@@ -353,9 +357,7 @@ void Cchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                     if (nfail == 0 && nerrs == 0) {
                                         Alahd(nout, path);
                                     }
-                                    write(nout, "(' TRANS=''',a1,''', N =',i5,', NRHS=',i3,', type ',i2,"
-                                                "', test(',i2,') =',g12.5)"),
-                                        trans, n, nrhs, imat, k, result[k - 1];
+                                    write(nout, format_9998), trans, n, nrhs, imat, k, result[k - 1];
                                     nfail++;
                                 }
                             }
@@ -399,9 +401,7 @@ void Cchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
-                            write(nout, "(' NORM =''',a1,''', N =',i5,',',10x,' type ',i2,', test(',"
-                                        "i2,') =',g12.5)"),
-                                norm, n, imat, 8, result[8 - 1];
+                            write(nout, format_9997), norm, n, imat, 8, result[8 - 1];
                             nfail++;
                         }
                         nrun++;

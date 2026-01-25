@@ -80,7 +80,10 @@ void Rckgqr(INTEGER const nm, INTEGER *mval, INTEGER const np, INTEGER *pval, IN
     const INTEGER ntests = 7;
     REAL result[ntests];
     INTEGER i = 0;
+    //
     static const char *format_9999 = "(' Rlatms in Rckgqr:    INFO = ',i5)";
+    static const char *format_9998 = "(' M=',i4,' P=',i4,', N=',i4,', type ',i2,', test ',i2,', ratio=',g13.6)";
+    static const char *format_9997 = "(' N=',i4,' M=',i4,', P=',i4,', type ',i2,', test ',i2,', ratio=',g13.6)";
     //
     // Initialize constants.
     //
@@ -155,9 +158,7 @@ void Rckgqr(INTEGER const nm, INTEGER *mval, INTEGER const np, INTEGER *pval, IN
                                 firstt = false;
                                 Alahdg(nout, "GRQ");
                             }
-                            write(nout, "(' M=',i4,' P=',i4,', N=',i4,', type ',i2,', test ',i2,"
-                                        "', ratio=',g13.6)"),
-                                m, p, n, imat, i, result[i - 1];
+                            write(nout, format_9998), m, p, n, imat, i, result[i - 1];
                             nfail++;
                         }
                     }
@@ -201,9 +202,7 @@ void Rckgqr(INTEGER const nm, INTEGER *mval, INTEGER const np, INTEGER *pval, IN
                                 firstt = false;
                                 Alahdg(nout, path);
                             }
-                            write(nout, "(' N=',i4,' M=',i4,', P=',i4,', type ',i2,', test ',i2,"
-                                        "', ratio=',g13.6)"),
-                                n, m, p, imat, i, result[i - 1];
+                            write(nout, format_9997), n, m, p, imat, i, result[i - 1];
                             nfail++;
                         }
                     }

@@ -46,34 +46,108 @@ using fem::common;
 void Aladhd(INTEGER const iounit, fem::str_cref path) {
     common cmn;
     common_write write(cmn);
-    static const char *format_9972 = "(3x,i2,': abs( WORK(1) - RPVGRW ) /',' ( max( WORK(1), RPVGRW ) * EPS )')";
-    static const char *format_9974 = "(3x,i2,': norm( U*D*U'' - A ) / ( N * norm(A) * EPS )',', or',/,7x,"
-                                     "'norm( L*D*L'' - A ) / ( N * norm(A) * EPS )')";
-    static const char *format_9975 = "(3x,i2,': norm( U'' * U - A ) / ( N * norm(A) * EPS )',', or',/,7x,"
-                                     "'norm( L * L'' - A ) / ( N * norm(A) * EPS )')";
-    static const char *format_9976 = "(3x,i2,': RCOND * CNDNUM - 1.0')";
-    static const char *format_9977 = "(3x,i2,': (backward error)   / EPS')";
-    static const char *format_9978 = "(3x,i2,': norm( X - XACT )   / ','( norm(XACT) * (error bound) )')";
-    static const char *format_9979 = "(3x,i2,': norm( X - XACT )   / ','( norm(XACT) * CNDNUM * EPS )')";
-    static const char *format_9980 = "(3x,i2,': norm( B - A * X )  / ','( norm(A) * norm(X) * EPS )')";
-    static const char *format_9981 = "(3x,i2,': norm( L * U - A )  / ( N * norm(A) * EPS )')";
+    //
+    // First line of header
+    //
+    static const char *format_9999 = "(/,1x,a3,' drivers:  General dense matrices')";
+    static const char *format_9998 = "(/,1x,a3,' drivers:  General band matrices')";
+    static const char *format_9997 = "(/,1x,a3,' drivers:  General tridiagonal')";
+    static const char *format_9996 = "(/,1x,a3,' drivers:  ',a9,' positive definite matrices')";
+    static const char *format_9995 = "(/,1x,a3,' drivers:  ',a9,' positive definite packed matrices')";
+    static const char *format_9994 = "(/,1x,a3,' drivers:  ',a9,' positive definite band matrices')";
+    static const char *format_9993 = "(/,1x,a3,' drivers:  ',a9,' positive definite tridiagonal')";
+    static const char *format_9971 = "(/,1x,a3,' drivers:  ',a9,' indefinite matrices',', \"Aasen\" Algorithm')";
+    static const char *format_9992 = "(/,1x,a3,' drivers:  ',a9,' indefinite matrices',"
+                                     "', \"rook\" (bounded Bunch-Kaufman) pivoting')";
+    static const char *format_9991 = "(/,1x,a3,' drivers:  ',a9,' indefinite packed matrices',"
+                                     "', partial (Bunch-Kaufman) pivoting')";
+    static const char *format_9990 = "(/,1x,a3,':  No header available')";
+    //
+    // GE matrix types
+    //
+    static const char *format_9989 = "(4x,'1. Diagonal',24x,'7. Last n/2 columns zero',/,4x,"
+                                     "'2. Upper triangular',16x,'8. Random, CNDNUM = sqrt(0.1/EPS)',/,4x,"
+                                     "'3. Lower triangular',16x,'9. Random, CNDNUM = 0.1/EPS',/,4x,"
+                                     "'4. Random, CNDNUM = 2',13x,'10. Scaled near underflow',/,4x,"
+                                     "'5. First column zero',14x,'11. Scaled near overflow',/,4x,"
+                                     "'6. Last column zero')";
+    //
+    // GB matrix types
+    //
+    static const char *format_9988 = "(4x,'1. Random, CNDNUM = 2',14x,'5. Random, CNDNUM = sqrt(0.1/EPS)',/,4x,"
+                                     "'2. First column zero',15x,'6. Random, CNDNUM = 0.1/EPS',/,4x,"
+                                     "'3. Last column zero',16x,'7. Scaled near underflow',/,4x,"
+                                     "'4. Last n/2 columns zero',11x,'8. Scaled near overflow')";
+    //
+    // GT matrix types
+    //
+    static const char *format_9987 = "(' Matrix types (1-6 have specified condition numbers):',/,4x,"
+                                     "'1. Diagonal',24x,'7. Random, unspecified CNDNUM',/,4x,"
+                                     "'2. Random, CNDNUM = 2',14x,'8. First column zero',/,4x,"
+                                     "'3. Random, CNDNUM = sqrt(0.1/EPS)',2x,'9. Last column zero',/,4x,"
+                                     "'4. Random, CNDNUM = 0.1/EPS',7x,'10. Last n/2 columns zero',/,4x,"
+                                     "'5. Scaled near underflow',10x,'11. Scaled near underflow',/,4x,"
+                                     "'6. Scaled near overflow',11x,'12. Scaled near overflow')";
+    //
+    // PT matrix types
+    //
+    static const char *format_9986 = "(' Matrix types (1-6 have specified condition numbers):',/,4x,"
+                                     "'1. Diagonal',24x,'7. Random, unspecified CNDNUM',/,4x,"
+                                     "'2. Random, CNDNUM = 2',14x,'8. First row and column zero',/,4x,"
+                                     "'3. Random, CNDNUM = sqrt(0.1/EPS)',2x,'9. Last row and column zero',/,"
+                                     "4x,'4. Random, CNDNUM = 0.1/EPS',7x,'10. Middle row and column zero',/,"
+                                     "4x,'5. Scaled near underflow',10x,'11. Scaled near underflow',/,4x,"
+                                     "'6. Scaled near overflow',11x,'12. Scaled near overflow')";
+    //
+    // PO, PP matrix types
+    //
+    static const char *format_9985 = "(4x,'1. Diagonal',24x,'6. Random, CNDNUM = sqrt(0.1/EPS)',/,4x,"
+                                     "'2. Random, CNDNUM = 2',14x,'7. Random, CNDNUM = 0.1/EPS',/,3x,"
+                                     "'*3. First row and column zero',7x,'8. Scaled near underflow',/,3x,"
+                                     "'*4. Last row and column zero',8x,'9. Scaled near overflow',/,3x,"
+                                     "'*5. Middle row and column zero',/,3x,'(* - tests error exits from ',a3,"
+                                     "'TRF, no test ratios are computed)')";
+    //
+    // PB matrix types
+    //
+    static const char *format_9984 = "(4x,'1. Random, CNDNUM = 2',14x,'5. Random, CNDNUM = sqrt(0.1/EPS)',/,3x,"
+                                     "'*2. First row and column zero',7x,'6. Random, CNDNUM = 0.1/EPS',/,3x,"
+                                     "'*3. Last row and column zero',8x,'7. Scaled near underflow',/,3x,"
+                                     "'*4. Middle row and column zero',6x,'8. Scaled near overflow',/,3x,"
+                                     "'(* - tests error exits from ',a3,'TRF, no test ratios are computed)')";
+    //
+    // SSY, SSP, CHE, CHP matrix types
+    //
+    static const char *format_9983 = "(4x,'1. Diagonal',24x,'6. Last n/2 rows and columns zero',/,4x,"
+                                     "'2. Random, CNDNUM = 2',14x,'7. Random, CNDNUM = sqrt(0.1/EPS)',/,4x,"
+                                     "'3. First row and column zero',7x,'8. Random, CNDNUM = 0.1/EPS',/,4x,"
+                                     "'4. Last row and column zero',8x,'9. Scaled near underflow',/,4x,"
+                                     "'5. Middle row and column zero',5x,'10. Scaled near overflow')";
+    //
+    // CSY, CSP matrix types
+    //
     static const char *format_9982 = "(4x,'1. Diagonal',24x,'7. Random, CNDNUM = sqrt(0.1/EPS)',/,4x,"
                                      "'2. Random, CNDNUM = 2',14x,'8. Random, CNDNUM = 0.1/EPS',/,4x,"
                                      "'3. First row and column zero',7x,'9. Scaled near underflow',/,4x,"
                                      "'4. Last row and column zero',7x,'10. Scaled near overflow',/,4x,"
                                      "'5. Middle row and column zero',5x,'11. Block diagonal matrix',/,4x,"
                                      "'6. Last n/2 rows and columns zero')";
-    static const char *format_9983 = "(4x,'1. Diagonal',24x,'6. Last n/2 rows and columns zero',/,4x,"
-                                     "'2. Random, CNDNUM = 2',14x,'7. Random, CNDNUM = sqrt(0.1/EPS)',/,4x,"
-                                     "'3. First row and column zero',7x,'8. Random, CNDNUM = 0.1/EPS',/,4x,"
-                                     "'4. Last row and column zero',8x,'9. Scaled near underflow',/,4x,"
-                                     "'5. Middle row and column zero',5x,'10. Scaled near overflow')";
-    static const char *format_9991 = "(/,1x,a3,' drivers:  ',a9,' indefinite packed matrices',"
-                                     "', partial (Bunch-Kaufman) pivoting')";
-    static const char *format_9992 = "(/,1x,a3,' drivers:  ',a9,' indefinite matrices',"
-                                     "', \"rook\" (bounded Bunch-Kaufman) pivoting')";
-    static const char *format_9993 = "(/,1x,a3,' drivers:  ',a9,' positive definite tridiagonal')";
-    static const char *format_9994 = "(/,1x,a3,' drivers:  ',a9,' positive definite band matrices')";
+    //
+    // Test ratios
+    //
+    static const char *format_9981 = "(3x,i2,': norm( L * U - A )  / ( N * norm(A) * EPS )')";
+    static const char *format_9980 = "(3x,i2,': norm( B - A * X )  / ','( norm(A) * norm(X) * EPS )')";
+    static const char *format_9979 = "(3x,i2,': norm( X - XACT )   / ','( norm(XACT) * CNDNUM * EPS )')";
+    static const char *format_9978 = "(3x,i2,': norm( X - XACT )   / ','( norm(XACT) * (error bound) )')";
+    static const char *format_9977 = "(3x,i2,': (backward error)   / EPS')";
+    static const char *format_9976 = "(3x,i2,': RCOND * CNDNUM - 1.0')";
+    static const char *format_9975 = "(3x,i2,': norm( U'' * U - A ) / ( N * norm(A) * EPS )',', or',/,7x,"
+                                     "'norm( L * L'' - A ) / ( N * norm(A) * EPS )')";
+    static const char *format_9974 = "(3x,i2,': norm( U*D*U'' - A ) / ( N * norm(A) * EPS )',', or',/,7x,"
+                                     "'norm( L*D*L'' - A ) / ( N * norm(A) * EPS )')";
+    static const char *format_9973 = "(3x,i2,': norm( U''*D*U - A ) / ( N * norm(A) * EPS )',', or',/,7x,"
+                                     "'norm( L*D*L'' - A ) / ( N * norm(A) * EPS )')";
+    static const char *format_9972 = "(3x,i2,': abs( WORK(1) - RPVGRW ) /',' ( max( WORK(1), RPVGRW ) * EPS )')";
     //
     if (iounit <= 0) {
         return;
@@ -92,14 +166,9 @@ void Aladhd(INTEGER const iounit, fem::str_cref path) {
         //
         // GE: General dense
         //
-        write(iounit, "(/,1x,a3,' drivers:  General dense matrices')"), path;
+        write(iounit, format_9999), path;
         write(iounit, "(' Matrix types:')");
-        write(iounit, "(4x,'1. Diagonal',24x,'7. Last n/2 columns zero',/,4x,"
-                      "'2. Upper triangular',16x,'8. Random, CNDNUM = sqrt(0.1/EPS)',/,4x,"
-                      "'3. Lower triangular',16x,'9. Random, CNDNUM = 0.1/EPS',/,4x,"
-                      "'4. Random, CNDNUM = 2',13x,'10. Scaled near underflow',/,4x,"
-                      "'5. First column zero',14x,'11. Scaled near overflow',/,4x,"
-                      "'6. Last column zero')");
+        write(iounit, format_9989);
         write(iounit, "(' Test ratios:')");
         write(iounit, format_9981), 1;
         write(iounit, format_9980), 2;
@@ -114,12 +183,9 @@ void Aladhd(INTEGER const iounit, fem::str_cref path) {
         //
         // GB: General band
         //
-        write(iounit, "(/,1x,a3,' drivers:  General band matrices')"), path;
+        write(iounit, format_9998), path;
         write(iounit, "(' Matrix types:')");
-        write(iounit, "(4x,'1. Random, CNDNUM = 2',14x,'5. Random, CNDNUM = sqrt(0.1/EPS)',/,"
-                      "4x,'2. First column zero',15x,'6. Random, CNDNUM = 0.1/EPS',/,4x,"
-                      "'3. Last column zero',16x,'7. Scaled near underflow',/,4x,"
-                      "'4. Last n/2 columns zero',11x,'8. Scaled near overflow')");
+        write(iounit, format_9988);
         write(iounit, "(' Test ratios:')");
         write(iounit, format_9981), 1;
         write(iounit, format_9980), 2;
@@ -134,14 +200,8 @@ void Aladhd(INTEGER const iounit, fem::str_cref path) {
         //
         // GT: General tridiagonal
         //
-        write(iounit, "(/,1x,a3,' drivers:  General tridiagonal')"), path;
-        write(iounit, "(' Matrix types (1-6 have specified condition numbers):',/,4x,"
-                      "'1. Diagonal',24x,'7. Random, unspecified CNDNUM',/,4x,"
-                      "'2. Random, CNDNUM = 2',14x,'8. First column zero',/,4x,"
-                      "'3. Random, CNDNUM = sqrt(0.1/EPS)',2x,'9. Last column zero',/,4x,"
-                      "'4. Random, CNDNUM = 0.1/EPS',7x,'10. Last n/2 columns zero',/,4x,"
-                      "'5. Scaled near underflow',10x,'11. Scaled near underflow',/,4x,"
-                      "'6. Scaled near overflow',11x,'12. Scaled near overflow')");
+        write(iounit, format_9997), path;
+        write(iounit, format_9987);
         write(iounit, "(' Test ratios:')");
         write(iounit, format_9981), 1;
         write(iounit, format_9980), 2;
@@ -163,18 +223,12 @@ void Aladhd(INTEGER const iounit, fem::str_cref path) {
             sym = "Hermitian";
         }
         if (Mlsame(c3.elems, "O")) {
-            write(iounit, "(/,1x,a3,' drivers:  ',a9,' positive definite matrices')"), path, sym;
+            write(iounit, format_9996), path, sym;
         } else {
-            write(iounit, "(/,1x,a3,' drivers:  ',a9,' positive definite packed matrices')"), path, sym;
+            write(iounit, format_9995), path, sym;
         }
         write(iounit, "(' Matrix types:')");
-        write(iounit, "(4x,'1. Diagonal',24x,'6. Random, CNDNUM = sqrt(0.1/EPS)',/,4x,"
-                      "'2. Random, CNDNUM = 2',14x,'7. Random, CNDNUM = 0.1/EPS',/,3x,"
-                      "'*3. First row and column zero',7x,'8. Scaled near underflow',/,3x,"
-                      "'*4. Last row and column zero',8x,'9. Scaled near overflow',/,3x,"
-                      "'*5. Middle row and column zero',/,3x,'(* - tests error exits from ',"
-                      "a3,'TRF, no test ratios are computed)')"),
-            path;
+        write(iounit, format_9985), path;
         write(iounit, "(' Test ratios:')");
         write(iounit, format_9975), 1;
         write(iounit, format_9980), 2;
@@ -194,12 +248,7 @@ void Aladhd(INTEGER const iounit, fem::str_cref path) {
             write(iounit, format_9994), path, "Hermitian";
         }
         write(iounit, "(' Matrix types:')");
-        write(iounit, "(4x,'1. Random, CNDNUM = 2',14x,'5. Random, CNDNUM = sqrt(0.1/EPS)',/,"
-                      "3x,'*2. First row and column zero',7x,'6. Random, CNDNUM = 0.1/EPS',/,"
-                      "3x,'*3. Last row and column zero',8x,'7. Scaled near underflow',/,3x,"
-                      "'*4. Middle row and column zero',6x,'8. Scaled near overflow',/,3x,"
-                      "'(* - tests error exits from ',a3,'TRF, no test ratios are computed)')"),
-            path;
+        write(iounit, format_9984), path;
         write(iounit, "(' Test ratios:')");
         write(iounit, format_9975), 1;
         write(iounit, format_9980), 2;
@@ -218,17 +267,9 @@ void Aladhd(INTEGER const iounit, fem::str_cref path) {
         } else {
             write(iounit, format_9993), path, "Hermitian";
         }
-        write(iounit, "(' Matrix types (1-6 have specified condition numbers):',/,4x,"
-                      "'1. Diagonal',24x,'7. Random, unspecified CNDNUM',/,4x,"
-                      "'2. Random, CNDNUM = 2',14x,'8. First row and column zero',/,4x,"
-                      "'3. Random, CNDNUM = sqrt(0.1/EPS)',2x,'9. Last row and column zero',/,"
-                      "4x,'4. Random, CNDNUM = 0.1/EPS',7x,'10. Middle row and column zero',/,"
-                      "4x,'5. Scaled near underflow',10x,'11. Scaled near underflow',/,4x,"
-                      "'6. Scaled near overflow',11x,'12. Scaled near overflow')");
+        write(iounit, format_9986);
         write(iounit, "(' Test ratios:')");
-        write(iounit, "(3x,i2,': norm( U''*D*U - A ) / ( N * norm(A) * EPS )',', or',/,7x,"
-                      "'norm( L*D*L'' - A ) / ( N * norm(A) * EPS )')"),
-            1;
+        write(iounit, format_9973), 1;
         write(iounit, format_9980), 2;
         write(iounit, format_9979), 3;
         write(iounit, format_9978), 4;
@@ -293,9 +334,7 @@ void Aladhd(INTEGER const iounit, fem::str_cref path) {
         //
         // HA: Hermitian
         // Aasen algorithm
-        write(iounit, "(/,1x,a3,' drivers:  ',a9,' indefinite matrices',"
-                      "', \"Aasen\" Algorithm')"),
-            path, "Hermitian";
+        write(iounit, format_9971), path, "Hermitian";
         //
         write(iounit, "(' Matrix types:')");
         write(iounit, format_9983);
@@ -360,28 +399,8 @@ void Aladhd(INTEGER const iounit, fem::str_cref path) {
         //
         // Print error message if no header is available.
         //
-        write(iounit, "(/,1x,a3,':  No header available')"), path;
+        write(iounit, format_9990), path;
     }
-    //
-    // First line of header
-    //
-    // GE matrix types
-    //
-    // GB matrix types
-    //
-    // GT matrix types
-    //
-    // PT matrix types
-    //
-    // PO, PP matrix types
-    //
-    // PB matrix types
-    //
-    // SSY, SSP, CHE, CHP matrix types
-    //
-    // CSY, CSP matrix types
-    //
-    // Test ratios
     //
     // End of Aladhd
     //

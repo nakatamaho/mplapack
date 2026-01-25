@@ -47,11 +47,18 @@ void Cchkrfp(void) {
     common cmn;
     common_read read(cmn);
     common_write write(cmn);
-    static const char *format_9991 = "(' Relative machine ',a,' is taken to be',d16.6)";
-    static const char *format_9993 = "(4x,a4,':  ',10i6,/,11x,10i6)";
-    static const char *format_9995 = "(' !! Invalid input value: ',a4,'=',i6,'; must be <=',i6)";
-    static const char *format_9996 = "(' !! Invalid input value: ',a4,'=',i6,'; must be >=',i6)";
     //
+    static const char *format_9999 = "(/,' Execution not attempted due to input errors')";
+    static const char *format_9998 = "(/,' End of tests')";
+    static const char *format_9997 = "(' Total time used = ',f12.2,' seconds',/)";
+    static const char *format_9996 = "(' !! Invalid input value: ',a4,'=',i6,'; must be >=',i6)";
+    static const char *format_9995 = "(' !! Invalid input value: ',a4,'=',i6,'; must be <=',i6)";
+    static const char *format_9994 = "(/,' Tests of the COMPLEX*16 LAPACK RFP routines ',/,' LAPACK VERSION ',"
+                                     "i1,'.',i1,'.',i1,/,/,' The following parameter values will be used:')";
+    static const char *format_9993 = "(4x,a4,':  ',10i6,/,11x,10i6)";
+    static const char *format_9992 = "(/,' Routines pass computational tests if test ratio is ','less than',"
+                                     "f8.2,/)";
+    static const char *format_9991 = "(' Relative machine ',a,' is taken to be',d16.6)";
     //
     //
     REAL s1 = dsecnd();
@@ -60,21 +67,16 @@ void Cchkrfp(void) {
     // Read a dummy line.
     //
     const INTEGER nin = 5;
-    const INTEGER nout = 6;
     read(nin, star);
     //
     // Report LAPACK version tag (e.g. LAPACK-3.2.0)
     //
-    INTEGER mplapack_vers_major = 0;
-    INTEGER mplapack_vers_minor = 0;
-    INTEGER mplapack_vers_patch = 0;
-    INTEGER lapack_vers_major = 0;
-    INTEGER lapack_vers_minor = 0;
-    INTEGER lapack_vers_patch = 0;
-    iMlaver(mplapack_vers_major, mplapack_vers_minor, mplapack_vers_patch, lapack_vers_major, lapack_vers_minor, lapack_vers_patch);
-    write(nout, "(' Tests of the Multiple precision version of LAPACK MPLAPACK VERSION ',i1,'.',i1,'.',i1,/, "
-	  "' Based on original LAPACK VERSION ',i1,'.',i1,'.',i1,/,/, 'The following parameter values will be used:')"),
-        mplapack_vers_major, mplapack_vers_minor, mplapack_vers_patch, lapack_vers_major, lapack_vers_minor, lapack_vers_patch;
+    INTEGER vers_major = 0;
+    INTEGER vers_minor = 0;
+    INTEGER vers_patch = 0;
+    ilaver(vers_major, vers_minor, vers_patch);
+    const INTEGER nout = 6;
+    write(nout, format_9994), vers_major, vers_minor, vers_patch;
     //
     // Read the values of N
     //
@@ -202,9 +204,7 @@ void Cchkrfp(void) {
     //
     REAL thresh = 0.0;
     read(nin, star), thresh;
-    write(nout, "(/,' Routines pass computational tests if test ratio is ','less than',"
-                "f8.2,/)"),
-        thresh;
+    write(nout, format_9992), thresh;
     //
     // Read the flag that indicates whether to test the error exits.
     //
@@ -212,7 +212,7 @@ void Cchkrfp(void) {
     read(nin, star), tsterr;
     //
     if (fatal) {
-        write(nout, "(/,' Execution not attempted due to input errors')");
+        write(nout, format_9999);
         FEM_STOP(0);
     }
     //
@@ -275,8 +275,8 @@ void Cchkrfp(void) {
     //
     cmn.io.close(nin);
     REAL s2 = dsecnd();
-    write(nout, "(/,' End of tests')");
-    write(nout, "(' Total time used = ',f12.2,' seconds',/)"), s2 - s1;
+    write(nout, format_9998);
+    write(nout, format_9997), s2 - s1;
     //
     // End of Cchkrfp
     //

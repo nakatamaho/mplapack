@@ -93,8 +93,11 @@ void Cchkbb(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nw
     const REAL zero = 0.0;
     INTEGER i = 0;
     INTEGER jr = 0;
+    //
     static const char *format_9999 = "(' Cchkbb: ',a,' returned INFO=',i5,'.',/,9x,'M=',i5,' N=',i5,' K=',i5,"
                                      "', JTYPE=',i5,', ISEED=(',3(i5,','),i5,')')";
+    static const char *format_9998 = "(' M =',i4,' N=',i4,', K=',i3,', seed=',4(i4,','),' type ',i2,', test(',"
+                                     "i2,')=',g10.3)";
     //
     // Check for errors
     //
@@ -370,9 +373,7 @@ void Cchkbb(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nw
                             Rlahd2(nounit, "ZBB");
                         }
                         nerrs++;
-                        write(nounit, "(' M =',i4,' N=',i4,', K=',i3,', seed=',4(i4,','),' type ',i2,"
-                                      "', test(',i2,')=',g10.3)"),
-                            m, n, k, ioldsd, jtype, jr, result[jr - 1];
+                        write(nounit, format_9998), m, n, k, ioldsd, jtype, jr, result[jr - 1];
                     }
                 }
             //

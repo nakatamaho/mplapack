@@ -47,6 +47,9 @@ void Rerrac(INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
     //
+    static const char *format_9999 = "(1x,a6,' drivers passed the tests of the error exits')";
+    static const char *format_9998 = "(' *** ',a6,' drivers failed the tests of the error ','exits ***')";
+    //
     nout = nunit;
     write(nout, star);
     //
@@ -106,9 +109,9 @@ void Rerrac(INTEGER const nunit) {
     // Print a summary line.
     //
     if (ok) {
-        write(nout, "(1x,a6,' drivers passed the tests of the error exits')"), "DSPOSV";
+        write(nout, format_9999), "Rsposv";
     } else {
-        write(nout, "(' *** ',a6,' drivers failed the tests of the error ','exits ***')"), "DSPOSV";
+        write(nout, format_9998), "Rsposv";
     }
     //
     // End of Rerrac

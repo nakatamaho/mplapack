@@ -100,6 +100,12 @@ void Rdrvpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     REAL rcond = 0.0;
     INTEGER k1 = 0;
     //
+    static const char *format_9999 = "(1x,a,', UPLO=''',a1,''', N =',i5,', type ',i1,', test(',i1,')=',g12.5)";
+    static const char *format_9998 = "(1x,a,', FACT=''',a1,''', UPLO=''',a1,''', N=',i5,', type ',i1,', test(',"
+                                     "i1,')=',g12.5)";
+    static const char *format_9997 = "(1x,a,', FACT=''',a1,''', UPLO=''',a1,''', N=',i5,', EQUED=''',a1,"
+                                     "''', type ',i1,', test(',i1,') =',g12.5)";
+    //
     // Initialize constants and the random number seed.
     //
     path(1, 1) = "Double precision";
@@ -345,9 +351,7 @@ void Rdrvpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                     if (nfail == 0 && nerrs == 0) {
                                         Aladhd(nout, path);
                                     }
-                                    write(nout, "(1x,a,', UPLO=''',a1,''', N =',i5,', type ',i1,', test(',"
-                                                "i1,')=',g12.5)"),
-                                        "DPOSV ", uplo, n, imat, k, result[k - 1];
+                                    write(nout, format_9999), "Rposv", uplo, n, imat, k, result[k - 1];
                                     nfail++;
                                 }
                             }
@@ -429,13 +433,9 @@ void Rdrvpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                     Aladhd(nout, path);
                                 }
                                 if (prefac) {
-                                    write(nout, "(1x,a,', FACT=''',a1,''', UPLO=''',a1,''', N=',i5,"
-                                                "', EQUED=''',a1,''', type ',i1,', test(',i1,') =',g12.5)"),
-                                        "DPOSVX", fact, uplo, n, equed, imat, k, result[k - 1];
+                                    write(nout, format_9997), "Rposvx", fact, uplo, n, equed, imat, k, result[k - 1];
                                 } else {
-                                    write(nout, "(1x,a,', FACT=''',a1,''', UPLO=''',a1,''', N=',i5,"
-                                                "', type ',i1,', test(',i1,')=',g12.5)"),
-                                        "DPOSVX", fact, uplo, n, imat, k, result[k - 1];
+                                    write(nout, format_9998), "Rposvx", fact, uplo, n, imat, k, result[k - 1];
                                 }
                                 nfail++;
                             }

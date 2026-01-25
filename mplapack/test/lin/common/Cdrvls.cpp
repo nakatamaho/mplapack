@@ -99,24 +99,31 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     INTEGER nrows = 0;
     INTEGER ncols = 0;
     INTEGER ldwork = 0;
-    std::unique_ptr<COMPLEX[]> __work_storage(new COMPLEX[lwork]);
-    COMPLEX *work = __work_storage.get();
+    std::unique_ptr<COMPLEX[]> work_storage(new COMPLEX[lwork]);
+    COMPLEX *work = work_storage.get();
     const REAL one = 1.0;
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     const COMPLEX czero = COMPLEX(0.0, 0.0);
-    std::unique_ptr<REAL[]> __rwork_storage(new REAL[lrwork]);
-    REAL *rwork = __rwork_storage.get();
+    std::unique_ptr<REAL[]> rwork_storage(new REAL[lrwork]);
+    REAL *rwork = rwork_storage.get();
     const INTEGER ntests = 16;
     REAL result[ntests];
     INTEGER k = 0;
     INTEGER imb = 0;
-    std::unique_ptr<REAL[]> __work2_storage(new REAL[2 * lwork]);
-    REAL *work2 = __work2_storage.get();
+    std::unique_ptr<REAL[]> work2_storage(new REAL[2 * lwork]);
+    REAL *work2 = work2_storage.get();
     INTEGER rank = 0;
     REAL normb = 0.0;
     INTEGER j = 0;
-    std::unique_ptr<INTEGER[]> __iwork_storage(new INTEGER[liwork]);
-    INTEGER *iwork = __iwork_storage.get();
+    std::unique_ptr<INTEGER[]> iwork_storage(new INTEGER[liwork]);
+    INTEGER *iwork = iwork_storage.get();
+    //
+    static const char *format_9999 = "(' TRANS=''',a1,''', M=',i5,', N=',i5,', NRHS=',i4,', NB=',i4,', type',"
+                                     "i2,', test(',i2,')=',g12.5)";
+    static const char *format_9998 = "(' M=',i5,', N=',i5,', NRHS=',i4,', NB=',i4,', type',i2,', test(',i2,"
+                                     "')=',g12.5)";
+    static const char *format_9997 = "(' TRANS=''',a1,' M=',i5,', N=',i5,', NRHS=',i4,', MB=',i4,', NB=',i4,"
+                                     "', type',i2,', test(',i2,')=',g12.5)";
     //
     // Initialize constants and the random number seed.
     //
@@ -333,9 +340,7 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                             if (nfail == 0 && nerrs == 0) {
                                                 Alahd(nout, path);
                                             }
-                                            write(nout, "(' TRANS=''',a1,''', M=',i5,', N=',i5,', NRHS=',i4,"
-                                                        "', NB=',i4,', type',i2,', test(',i2,')=',g12.5)"),
-                                                trans, m, n, nrhs, nb, itype, k, result[k - 1];
+                                            write(nout, format_9999), trans, m, n, nrhs, nb, itype, k, result[k - 1];
                                             nfail++;
                                         }
                                     }
@@ -416,10 +421,7 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                                 if (nfail == 0 && nerrs == 0) {
                                                     Alahd(nout, path);
                                                 }
-                                                write(nout, "(' TRANS=''',a1,' M=',i5,', N=',i5,', NRHS=',i4,"
-                                                            "', MB=',i4,', NB=',i4,', type',i2,', test(',i2,"
-                                                            "')=',g12.5)"),
-                                                    trans, m, n, nrhs, mb, nb, itype, k, result[k - 1];
+                                                write(nout, format_9997), trans, m, n, nrhs, mb, nb, itype, k, result[k - 1];
                                                 nfail++;
                                             }
                                         }
@@ -596,9 +598,7 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                     if (nfail == 0 && nerrs == 0) {
                                         Alahd(nout, path);
                                     }
-                                    write(nout, "(' M=',i5,', N=',i5,', NRHS=',i4,', NB=',i4,', type',i2,"
-                                                "', test(',i2,')=',g12.5)"),
-                                        m, n, nrhs, nb, itype, k, result[k - 1];
+                                    write(nout, format_9998), m, n, nrhs, nb, itype, k, result[k - 1];
                                     nfail++;
                                 }
                             }

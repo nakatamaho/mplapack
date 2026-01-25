@@ -50,6 +50,14 @@ void Rdrvrf2(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL *a, INTEG
     static fem::str<1> uplos[2] = {"U", "L"};
     static fem::str<1> forms[2] = {"N", "T"};
     //
+    static const char *format_9999 = "(1x,' *** Error(s) while testing the RFP conversion',' routines ***')";
+    static const char *format_9998 = "(1x,'     Error in RFP,conversion routines N=',i5,' UPLO=''',a1,"
+                                     "''', FORM =''',a1,'''')";
+    static const char *format_9997 = "(1x,'All tests for the RFP conversion routines passed ( ',i5,"
+                                     "' tests run)')";
+    static const char *format_9996 = "(1x,'RFP conversion routines: ',i5,' out of ',i5,"
+                                     "' error message recorded')";
+    //
     // Initialize constants and the random number seed.
     //
     INTEGER nrun = 0;
@@ -160,12 +168,9 @@ void Rdrvrf2(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL *a, INTEG
                 if ((!ok1) || (!ok2)) {
                     if (nerrs == 0) {
                         write(nout, star);
-                        write(nout, "(1x,' *** Error(s) while testing the RFP conversion',"
-                                    "' routines ***')");
+                        write(nout, format_9999);
                     }
-                    write(nout, "(1x,'     Error in RFP,conversion routines N=',i5,' UPLO=''',a1,"
-                                "''', FORM =''',a1,'''')"),
-                        n, uplo, cform;
+                    write(nout, format_9998), n, uplo, cform;
                     nerrs++;
                 }
                 //
@@ -176,13 +181,9 @@ void Rdrvrf2(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL *a, INTEG
     // Print a summary of the results.
     //
     if (nerrs == 0) {
-        write(nout, "(1x,'All tests for the RFP conversion routines passed ( ',i5,"
-                    "' tests run)')"),
-            nrun;
+        write(nout, format_9997), nrun;
     } else {
-        write(nout, "(1x,'RFP conversion routines: ',i5,' out of ',i5,"
-                    "' error message recorded')"),
-            nerrs, nrun;
+        write(nout, format_9996), nerrs, nrun;
     }
     //
     // End of Rdrvrf2

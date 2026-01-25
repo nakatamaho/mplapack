@@ -82,6 +82,33 @@ void Cdrvac(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, IN
     const INTEGER ntests = 1;
     REAL result[ntests];
     //
+    static const char *format_9998 = "(' UPLO=''',a1,''', N =',i5,', NRHS=',i3,', type ',i2,', test(',i2,') =',"
+                                     "g12.5)";
+    static const char *format_9996 = "(1x,a6,': ',i6,' out of ',i6,' tests failed to pass the threshold')";
+    static const char *format_9995 = "(/,1x,'All tests for ',a6,' routines passed the threshold ( ',i6,"
+                                     "' tests run)')";
+    static const char *format_9994 = "(6x,i6,' error messages recorded')";
+    //
+    // SUBNAM, INFO, INFOE, N, IMAT
+    //
+    static const char *format_9988 = "(' *** ',a6,' returned with INFO =',i5,' instead of ',i5,/,' ==> N =',i5,"
+                                     "', type ',i2)";
+    //
+    // SUBNAM, INFO, N, IMAT
+    //
+    static const char *format_9975 = "(' *** Error code from ',a6,'=',i5,' for M=',i5,', type ',i2)";
+    static const char *format_8999 = "(/,1x,a3,':  positive definite dense matrices')";
+    static const char *format_8979 = "(4x,'1. Diagonal',24x,'7. Last n/2 columns zero',/,4x,"
+                                     "'2. Upper triangular',16x,'8. Random, CNDNUM = sqrt(0.1/EPS)',/,4x,"
+                                     "'3. Lower triangular',16x,'9. Random, CNDNUM = 0.1/EPS',/,4x,"
+                                     "'4. Random, CNDNUM = 2',13x,'10. Scaled near underflow',/,4x,"
+                                     "'5. First column zero',14x,'11. Scaled near overflow',/,4x,"
+                                     "'6. Last column zero')";
+    static const char *format_8960 = "(3x,i2,': norm_1( B - A * X )  / ',"
+                                     "'( norm_1(A) * norm_1(X) * EPS * SQRT(N) ) > 1 if ITERREF',/,4x,"
+                                     "'or norm_1( B - A * X )  / ',"
+                                     "'( norm_1(A) * norm_1(X) * EPS ) > THRES if Cpotrf')";
+    //
     // Initialize constants and the random number seed.
     //
     kase = 0;
@@ -217,13 +244,9 @@ void Cdrvac(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, IN
                         nerrs++;
                         //
                         if (info != izero && izero != 0) {
-                            write(nout, "(' *** ',a6,' returned with INFO =',i5,' instead of ',i5,/,"
-                                        "' ==> N =',i5,', type ',i2)"),
-                                "ZCPOSV", info, izero, n, imat;
+                            write(nout, format_9988), "Ccposv", info, izero, n, imat;
                         } else {
-                            write(nout, "(' *** Error code from ',a6,'=',i5,' for M=',i5,', type ',"
-                                        "i2)"),
-                                "ZCPOSV", info, n, imat;
+                            write(nout, format_9975), "Ccposv", info, n, imat;
                         }
                     }
                     //
@@ -254,27 +277,15 @@ void Cdrvac(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, IN
                     if ((thresh <= 0.0) || ((iter >= 0) && (n > 0) && (result[1 - 1] >= sqrt(castREAL(n)))) || ((iter < 0) && (result[1 - 1] >= thresh))) {
                         //
                         if (nfail == 0 && nerrs == 0) {
-                            write(nout, "(/,1x,a3,':  positive definite dense matrices')"), "ZPO";
+                            write(nout, format_8999), "ZPO";
                             write(nout, "(' Matrix types:')");
-                            write(nout, "(4x,'1. Diagonal',24x,'7. Last n/2 columns zero',/,4x,"
-                                        "'2. Upper triangular',16x,"
-                                        "'8. Random, CNDNUM = sqrt(0.1/EPS)',/,4x,"
-                                        "'3. Lower triangular',16x,'9. Random, CNDNUM = 0.1/EPS',/,4x,"
-                                        "'4. Random, CNDNUM = 2',13x,'10. Scaled near underflow',/,4x,"
-                                        "'5. First column zero',14x,'11. Scaled near overflow',/,4x,"
-                                        "'6. Last column zero')");
+                            write(nout, format_8979);
                             write(nout, "(' Test ratios:')");
-                            write(nout, "(3x,i2,': norm_1( B - A * X )  / ',"
-                                        "'( norm_1(A) * norm_1(X) * EPS * SQRT(N) ) > 1 if ITERREF',/,"
-                                        "4x,'or norm_1( B - A * X )  / ',"
-                                        "'( norm_1(A) * norm_1(X) * EPS ) > THRES if ZPOTRF')"),
-                                1;
+                            write(nout, format_8960), 1;
                             write(nout, "(' Messages:')");
                         }
                         //
-                        write(nout, "(' UPLO=''',a1,''', N =',i5,', NRHS=',i3,', type ',i2,"
-                                    "', test(',i2,') =',g12.5)"),
-                            uplo, n, nrhs, imat, 1, result[1 - 1];
+                        write(nout, format_9998), uplo, n, nrhs, imat, 1, result[1 - 1];
                         //
                         nfail++;
                         //
@@ -292,19 +303,13 @@ void Cdrvac(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, IN
     // Print a summary of the results.
     //
     if (nfail > 0) {
-        write(nout, "(1x,a6,': ',i6,' out of ',i6,' tests failed to pass the threshold')"), "ZCPOSV", nfail, nrun;
+        write(nout, format_9996), "Ccposv", nfail, nrun;
     } else {
-        write(nout, "(/,1x,'All tests for ',a6,' routines passed the threshold ( ',i6,"
-                    "' tests run)')"),
-            "ZCPOSV", nrun;
+        write(nout, format_9995), "Ccposv", nrun;
     }
     if (nerrs > 0) {
-        write(nout, "(6x,i6,' error messages recorded')"), nerrs;
+        write(nout, format_9994), nerrs;
     }
-    //
-    // SUBNAM, INFO, INFOE, N, IMAT
-    //
-    // SUBNAM, INFO, N, IMAT
     //
     // End of Cdrvac
     //

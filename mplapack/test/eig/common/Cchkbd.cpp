@@ -96,6 +96,11 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
     REAL temp2 = 0.0;
     const REAL half = 0.5;
     REAL dumma[1];
+    //
+    // End of Cchkbd
+    //
+    static const char *format_9999 = "(' M=',i5,', N=',i5,', type ',i2,', seed=',4(i4,','),' test(',i2,')=',"
+                                     "g11.4)";
     static const char *format_9998 = "(' Cchkbd: ',a,' returned INFO=',i6,'.',/,9x,'M=',i6,', N=',i6,"
                                      "', JTYPE=',i6,', ISEED=(',3(i5,','),i5,')')";
     //
@@ -545,9 +550,7 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                     if (nfail == 0) {
                         Rlahd2(nout, path);
                     }
-                    write(nout, "(' M=',i5,', N=',i5,', type ',i2,', seed=',4(i4,','),' test(',i2,"
-                                "')=',g11.4)"),
-                        m, n, jtype, ioldsd, j, result[j - 1];
+                    write(nout, format_9999), m, n, jtype, ioldsd, j, result[j - 1];
                     nfail++;
                 }
             }
@@ -564,7 +567,5 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
     // Summary
     //
     Alasum(path, nout, nfail, ntest, 0);
-    //
-    // End of Cchkbd
     //
 }

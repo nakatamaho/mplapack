@@ -123,16 +123,23 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     REAL roldc = 0.0;
     INTEGER n_err_bnds = 0;
     REAL rpvgrw_svxx = 0.0;
-    std::unique_ptr<REAL[]> __berr_storage(new REAL[nrhs]);
-    REAL *berr = __berr_storage.get();
-    std::unique_ptr<REAL[]> __errbnds_n_storage(new REAL[nrhs * 3]);
-    REAL *errbnds_n = __errbnds_n_storage.get();
-    std::unique_ptr<REAL[]> __errbnds_c_storage(new REAL[nrhs * 3]);
-    REAL *errbnds_c = __errbnds_c_storage.get();
-    static const char *format_9995 = "(1x,a,'( ''',a1,''',''',a1,''',',i5,',',i5,',',i5,',...), EQUED=''',a1,"
-                                     "''', type ',i1,', test(',i1,')=',g12.5)";
+    std::unique_ptr<REAL[]> berr_storage(new REAL[nrhs]);
+    REAL *berr = berr_storage.get();
+    std::unique_ptr<REAL[]> errbnds_n_storage(new REAL[nrhs * 3]);
+    REAL *errbnds_n = errbnds_n_storage.get();
+    std::unique_ptr<REAL[]> errbnds_c_storage(new REAL[nrhs * 3]);
+    REAL *errbnds_c = errbnds_c_storage.get();
+    //
+    static const char *format_9999 = "(' *** In Cdrvgb, LA=',i5,' is too small for N=',i5,', KU=',i5,', KL=',"
+                                     "i5,/,' ==> Increase LA to at least ',i5)";
+    static const char *format_9998 = "(' *** In Cdrvgb, LAFB=',i5,' is too small for N=',i5,', KU=',i5,', KL=',"
+                                     "i5,/,' ==> Increase LAFB to at least ',i5)";
+    static const char *format_9997 = "(1x,a,', N=',i5,', KL=',i5,', KU=',i5,', type ',i1,', test(',i1,')=',"
+                                     "g12.5)";
     static const char *format_9996 = "(1x,a,'( ''',a1,''',''',a1,''',',i5,',',i5,',',i5,',...), type ',i1,"
                                      "', test(',i1,')=',g12.5)";
+    static const char *format_9995 = "(1x,a,'( ''',a1,''',''',a1,''',',i5,',',i5,',',i5,',...), EQUED=''',a1,"
+                                     "''', type ',i1,', test(',i1,')=',g12.5)";
     //
     // Initialize constants and the random number seed.
     //
@@ -218,15 +225,11 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         Aladhd(nout, path);
                     }
                     if (lda * n > la) {
-                        write(nout, "(' *** In Cdrvgb, LA=',i5,' is too small for N=',i5,', KU=',i5,"
-                                    "', KL=',i5,/,' ==> Increase LA to at least ',i5)"),
-                            la, n, kl, ku, n *(kl + ku + 1);
+                        write(nout, format_9999), la, n, kl, ku, n *(kl + ku + 1);
                         nerrs++;
                     }
                     if (ldafb * n > lafb) {
-                        write(nout, "(' *** In Cdrvgb, LAFB=',i5,' is too small for N=',i5,', KU=',"
-                                    "i5,', KL=',i5,/,' ==> Increase LAFB to at least ',i5)"),
-                            lafb, n, kl, ku, n * (2 * kl + ku + 1);
+                        write(nout, format_9998), lafb, n, kl, ku, n * (2 * kl + ku + 1);
                         nerrs++;
                     }
                     goto statement_130;
@@ -462,9 +465,7 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                             if (nfail == 0 && nerrs == 0) {
                                                 Aladhd(nout, path);
                                             }
-                                            write(nout, "(1x,a,', N=',i5,', KL=',i5,', KU=',i5,', type ',i1,"
-                                                        "', test(',i1,')=',g12.5)"),
-                                                "ZGBSV ", n, kl, ku, imat, k, result[k - 1];
+                                            write(nout, format_9997), "Cgbsv", n, kl, ku, imat, k, result[k - 1];
                                             nfail++;
                                         }
                                     }

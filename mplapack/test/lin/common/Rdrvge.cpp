@@ -110,10 +110,12 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     INTEGER k1 = 0;
     bool trfcon = false;
     REAL roldc = 0.0;
-    static const char *format_9997 = "(1x,a,', FACT=''',a1,''', TRANS=''',a1,''', N=',i5,', EQUED=''',a1,"
-                                     "''', type ',i2,', test(',i1,')=',g12.5)";
+    //
+    static const char *format_9999 = "(1x,a,', N =',i5,', type ',i2,', test(',i2,') =',g12.5)";
     static const char *format_9998 = "(1x,a,', FACT=''',a1,''', TRANS=''',a1,''', N=',i5,', type ',i2,"
                                      "', test(',i1,')=',g12.5)";
+    static const char *format_9997 = "(1x,a,', FACT=''',a1,''', TRANS=''',a1,''', N=',i5,', EQUED=''',a1,"
+                                     "''', type ',i2,', test(',i1,')=',g12.5)";
     //
     // Initialize constants and the random number seed.
     //
@@ -373,7 +375,7 @@ void Rdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                     if (nfail == 0 && nerrs == 0) {
                                         Aladhd(nout, path);
                                     }
-                                    write(nout, "(1x,a,', N =',i5,', type ',i2,', test(',i2,') =',g12.5)"), "DGESV ", n, imat, k, result[k - 1];
+                                    write(nout, format_9999), "Rgesv", n, imat, k, result[k - 1];
                                     nfail++;
                                 }
                             }

@@ -71,6 +71,8 @@ void Rchktz(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     REAL result[ntests];
     INTEGER k = 0;
     //
+    static const char *format_9999 = "(' M =',i5,', N =',i5,', type ',i2,', test ',i2,', ratio =',g12.5)";
+    //
     // Initialize constants and the random number seed.
     //
     path(1, 1) = "Double precision";
@@ -165,9 +167,7 @@ void Rchktz(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
-                            write(nout, "(' M =',i5,', N =',i5,', type ',i2,', test ',i2,', ratio =',"
-                                        "g12.5)"),
-                                m, n, imode, k, result[k - 1];
+                            write(nout, format_9999), m, n, imode, k, result[k - 1];
                             nfail++;
                         }
                     }

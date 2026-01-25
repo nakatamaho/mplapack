@@ -52,35 +52,35 @@ void Clqt04(INTEGER const m, INTEGER const n, INTEGER const nb, REAL *result) {
     INTEGER lwork = max((INTEGER)2, ll) * max((INTEGER)2, ll) * nb;
     INTEGER ldt = nb;
     INTEGER j = 0;
-    std::unique_ptr<COMPLEX[]> __a_storage(new COMPLEX[m * n]);
-    COMPLEX *a = __a_storage.get();
+    std::unique_ptr<COMPLEX[]> a_storage(new COMPLEX[m * n]);
+    COMPLEX *a = a_storage.get();
     for (j = 1; j <= n; j = j + 1) {
         Clarnv(2, iseed, m, &a[(j - 1) * m]);
     }
-    std::unique_ptr<COMPLEX[]> __af_storage(new COMPLEX[m * n]);
-    COMPLEX *af = __af_storage.get();
+    std::unique_ptr<COMPLEX[]> af_storage(new COMPLEX[m * n]);
+    COMPLEX *af = af_storage.get();
     Clacpy("Full", m, n, a, m, af, m);
-    std::unique_ptr<COMPLEX[]> __t_storage(new COMPLEX[nb * n]);
-    COMPLEX *t = __t_storage.get();
-    std::unique_ptr<COMPLEX[]> __work_storage(new COMPLEX[lwork]);
-    COMPLEX *work = __work_storage.get();
+    std::unique_ptr<COMPLEX[]> t_storage(new COMPLEX[nb * n]);
+    COMPLEX *t = t_storage.get();
+    std::unique_ptr<COMPLEX[]> work_storage(new COMPLEX[lwork]);
+    COMPLEX *work = work_storage.get();
     INTEGER info = 0;
     Cgelqt(m, n, nb, af, m, t, ldt, work, info);
     const COMPLEX czero = COMPLEX(0.0, 0.0);
     const COMPLEX one = COMPLEX(1.0, 0.0);
-    std::unique_ptr<COMPLEX[]> __q_storage(new COMPLEX[n * n]);
-    COMPLEX *q = __q_storage.get();
+    std::unique_ptr<COMPLEX[]> q_storage(new COMPLEX[n * n]);
+    COMPLEX *q = q_storage.get();
     Claset("Full", n, n, czero, one, q, n);
     Cgemlqt("R", "N", n, n, k, nb, af, m, t, ldt, q, n, work, info);
-    std::unique_ptr<COMPLEX[]> __l_storage(new COMPLEX[ll * n]);
-    COMPLEX *l = __l_storage.get();
+    std::unique_ptr<COMPLEX[]> l_storage(new COMPLEX[ll * n]);
+    COMPLEX *l = l_storage.get();
     Claset("Full", ll, n, czero, czero, l, ll);
     Clacpy("Lower", m, n, af, m, l, ll);
     // Compute |L - A*Q'| / |A| and store in RESULT(1)
     //
     Cgemm("N", "C", m, n, n, -one, a, m, q, n, one, l, ll);
-    std::unique_ptr<REAL[]> __rwork_storage(new REAL[ll]);
-    REAL *rwork = __rwork_storage.get();
+    std::unique_ptr<COMPLEX[]> rwork_storage(new COMPLEX[ll]);
+    COMPLEX *rwork = rwork_storage.get();
     REAL anorm = Clange("1", m, n, a, m, rwork);
     REAL resid = Clange("1", m, n, l, ll, rwork);
     const REAL zero = 0.0;
@@ -99,14 +99,14 @@ void Clqt04(INTEGER const m, INTEGER const n, INTEGER const nb, REAL *result) {
     //
     // Generate random m-by-n matrix C and a copy CF
     //
-    std::unique_ptr<COMPLEX[]> __d_storage(new COMPLEX[n * m]);
-    COMPLEX *d = __d_storage.get();
+    std::unique_ptr<COMPLEX[]> d_storage(new COMPLEX[n * m]);
+    COMPLEX *d = d_storage.get();
     for (j = 1; j <= m; j = j + 1) {
         Clarnv(2, iseed, n, &d[(j - 1) * n]);
     }
     REAL dnorm = Clange("1", n, m, d, n, rwork);
-    std::unique_ptr<COMPLEX[]> __df_storage(new COMPLEX[n * m]);
-    COMPLEX *df = __df_storage.get();
+    std::unique_ptr<COMPLEX[]> df_storage(new COMPLEX[n * m]);
+    COMPLEX *df = df_storage.get();
     Clacpy("Full", n, m, d, n, df, n);
     //
     // Apply Q to C as Q*C
@@ -143,14 +143,14 @@ void Clqt04(INTEGER const m, INTEGER const n, INTEGER const nb, REAL *result) {
     //
     // Generate random n-by-m matrix D and a copy DF
     //
-    std::unique_ptr<COMPLEX[]> __c_storage(new COMPLEX[m * n]);
-    COMPLEX *c = __c_storage.get();
+    std::unique_ptr<COMPLEX[]> c_storage(new COMPLEX[m * n]);
+    COMPLEX *c = c_storage.get();
     for (j = 1; j <= n; j = j + 1) {
         Clarnv(2, iseed, m, &c[(j - 1) * m]);
     }
     REAL cnorm = Clange("1", m, n, c, m, rwork);
-    std::unique_ptr<COMPLEX[]> __cf_storage(new COMPLEX[m * n]);
-    COMPLEX *cf = __cf_storage.get();
+    std::unique_ptr<COMPLEX[]> cf_storage(new COMPLEX[m * n]);
+    COMPLEX *cf = cf_storage.get();
     Clacpy("Full", m, n, c, m, cf, m);
     //
     // Apply Q to C as C*Q

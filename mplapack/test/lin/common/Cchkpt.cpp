@@ -87,7 +87,10 @@ void Cchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     fem::str<1> uplo;
     INTEGER k = 0;
     REAL rcond = 0.0;
+    //
     static const char *format_9999 = "(' N =',i5,', type ',i2,', test ',i2,', ratio = ',g12.5)";
+    static const char *format_9998 = "(' UPLO = ''',a1,''', N =',i5,', NRHS =',i3,', type ',i2,', test ',i2,"
+                                     "', ratio = ',g12.5)";
     //
     path(1, 1) = "Zomplex precision";
     path(2, 3) = "PT";
@@ -360,9 +363,7 @@ void Cchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
-                            write(nout, "(' UPLO = ''',a1,''', N =',i5,', NRHS =',i3,', type ',i2,"
-                                        "', test ',i2,', ratio = ',g12.5)"),
-                                uplo, n, nrhs, imat, k, result[k - 1];
+                            write(nout, format_9998), uplo, n, nrhs, imat, k, result[k - 1];
                             nfail++;
                         }
                     }

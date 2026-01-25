@@ -45,7 +45,6 @@ using fem::common;
 
 void Rlacsg(INTEGER const m, INTEGER const p, INTEGER const q, REAL *theta, INTEGER *iseed, REAL *x, INTEGER const ldx, REAL *work) {
     //
-    //
     INTEGER r = min(p, m - p, q, m - q);
     //
     const REAL zero = 0.0;
@@ -121,6 +120,9 @@ void Rckcsd(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *qval, INTEG
     const INTEGER ntests = 15;
     REAL result[ntests];
     //
+    static const char *format_9999 = "(' Rlaror in Rckcsd: M = ',i5,', INFO = ',i15)";
+    static const char *format_9998 = "(' M=',i4,' P=',i4,', Q=',i4,', type ',i2,', test ',i2,', ratio=',g13.6)";
+    //
     // Initialize constants and the random number seed.
     //
     path(1, 3) = "CSD";
@@ -156,7 +158,7 @@ void Rckcsd(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *qval, INTEG
             if (imat == 1) {
                 Rlaror("L", "I", m, m, x, ldx, iseed, work, iinfo);
                 if (m != 0 && iinfo != 0) {
-                    write(nout, "(' Rlaror in Rckcsd: M = ',i5,', INFO = ',i15)"), m, iinfo;
+                    write(nout, format_9999), m, iinfo;
                     info = abs(iinfo);
                     goto statement_20;
                 }
@@ -206,9 +208,7 @@ void Rckcsd(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *qval, INTEG
                         firstt = false;
                         Alahdg(nout, path);
                     }
-                    write(nout, "(' M=',i4,' P=',i4,', Q=',i4,', type ',i2,', test ',i2,"
-                                "', ratio=',g13.6)"),
-                        m, p, q, imat, i, result[i - 1];
+                    write(nout, format_9998), m, p, q, imat, i, result[i - 1];
                     nfail++;
                 }
             }

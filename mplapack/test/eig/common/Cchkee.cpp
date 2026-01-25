@@ -147,16 +147,61 @@ void Cchkee(void) {
     REAL s2 = 0.0;
     INTEGER lda = nmax * nmax;
     INTEGER ldb = nmax * nmax;
-    static const char *format_9973 = "(/,1x,71('-'))";
-    static const char *format_9980 = "(' *** Error code from ',a,' = ',i4)";
-    static const char *format_9981 = "(' Relative machine ',a,' is taken to be',d16.6)";
-    static const char *format_9983 = "(4x,a,10i6,/,10x,10i6)";
-    static const char *format_9988 = "(' Invalid input value: ',a,'=',i6,'; must be <=',i6)";
-    static const char *format_9989 = "(' Invalid input value: ',a,'=',i6,'; must be >=',i6)";
-    static const char *format_9990 = "(/,/,1x,a3,' routines were not tested')";
-    static const char *format_9992 = "(1x,a3,':  Unrecognized path name')";
-    static const char *format_9997 = "(/,/,1x,a3,':  NB =',i4,', NBMIN =',i4,', NX =',i4)";
     //
+    static const char *format_9999 = "(/,' Execution not attempted due to input errors')";
+    static const char *format_9997 = "(/,/,1x,a3,':  NB =',i4,', NBMIN =',i4,', NX =',i4)";
+    static const char *format_9996 = "(/,/,1x,a3,':  NB =',i4,', NBMIN =',i4,', NS =',i4,', MAXB =',i4,"
+                                     "', IACC22 =',i4,', NBCOL =',i4)";
+    static const char *format_9995 = "(/,/,1x,a3,':  NB =',i4,', NBMIN =',i4,', NX =',i4,', NRHS =',i4)";
+    static const char *format_9994 = "(/,/,' End of tests')";
+    static const char *format_9993 = "(' Total time used = ',f12.2,' seconds',/)";
+    static const char *format_9992 = "(1x,a3,':  Unrecognized path name')";
+    static const char *format_9991 = "(/,/,' *** Invalid integer value in column ',i2,' of input',' line:',/,"
+                                     "a79)";
+    static const char *format_9990 = "(/,/,1x,a3,' routines were not tested')";
+    static const char *format_9989 = "(' Invalid input value: ',a,'=',i6,'; must be >=',i6)";
+    static const char *format_9988 = "(' Invalid input value: ',a,'=',i6,'; must be <=',i6)";
+    static const char *format_9987 = "(' Tests of the Nonsymmetric Eigenvalue Problem routines')";
+    static const char *format_9986 = "(' Tests of the Hermitian Eigenvalue Problem routines')";
+    static const char *format_9985 = "(' Tests of the Singular Value Decomposition routines')";
+    static const char *format_9984 = "(/,' The following parameter values will be used:')";
+    static const char *format_9983 = "(4x,a,10i6,/,10x,10i6)";
+    static const char *format_9982 = "(/,' Routines pass computational tests if test ratio is ','less than',"
+                                     "f8.2,/)";
+    static const char *format_9981 = "(' Relative machine ',a,' is taken to be',d16.6)";
+    static const char *format_9980 = "(' *** Error code from ',a,' = ',i4)";
+    static const char *format_9979 = "(/,' Tests of the Nonsymmetric Eigenvalue Problem Driver',/,"
+                                     "'    Cgeev (eigenvalues and eigevectors)')";
+    static const char *format_9978 = "(/,' Tests of the Nonsymmetric Eigenvalue Problem Driver',/,"
+                                     "'    Cgees (Schur form)')";
+    static const char *format_9977 = "(/,' Tests of the Nonsymmetric Eigenvalue Problem Expert',' Driver',/,"
+                                     "'    Cgeevx (eigenvalues, eigenvectors and',' condition numbers)')";
+    static const char *format_9976 = "(/,' Tests of the Nonsymmetric Eigenvalue Problem Expert',' Driver',/,"
+                                     "'    Cgeesx (Schur form and condition',' numbers)')";
+    static const char *format_9975 = "(/,' Tests of the Generalized Nonsymmetric Eigenvalue ',"
+                                     "'Problem routines')";
+    static const char *format_9974 = "(' Tests of Chbtrd',/,' (reduction of a Hermitian band ',"
+                                     "'matrix to real tridiagonal form)')";
+    static const char *format_9973 = "(/,1x,71('-'))";
+    static const char *format_9972 = "(/,' LAPACK VERSION ',i1,'.',i1,'.',i1)";
+    static const char *format_9971 = "(/,' Tests of the Generalized Linear Regression Model ','routines')";
+    static const char *format_9970 = "(/,' Tests of the Generalized QR and RQ routines')";
+    static const char *format_9969 = "(/,' Tests of the Generalized Singular Value',' Decomposition routines')";
+    static const char *format_9968 = "(/,' Tests of the Linear Least Squares routines')";
+    static const char *format_9967 = "(' Tests of Cgbbrd',/,' (reduction of a general band ',"
+                                     "'matrix to real bidiagonal form)')";
+    static const char *format_9966 = "(/,/,1x,a3,':  NRHS =',i4)";
+    static const char *format_9965 = "(/,' Tests of the Generalized Nonsymmetric Eigenvalue ',"
+                                     "'Problem Expert Driver Cggesx')";
+    static const char *format_9964 = "(/,' Tests of the Generalized Nonsymmetric Eigenvalue ',"
+                                     "'Problem Driver Cgges')";
+    static const char *format_9963 = "(/,' Tests of the Generalized Nonsymmetric Eigenvalue ',"
+                                     "'Problem Driver Cggev')";
+    static const char *format_9962 = "(/,' Tests of the Generalized Nonsymmetric Eigenvalue ',"
+                                     "'Problem Expert Driver Cggevx')";
+    static const char *format_9961 = "(/,/,1x,a3,':  NB =',i4,', NBMIN =',i4,', NX =',i4,', INMIN=',i4,"
+                                     "', INWIN =',i4,', INIBL =',i4,', ISHFTS =',i4,', IACC22 =',i4)";
+    static const char *format_9960 = "(/,' Tests of the CS Decomposition routines')";
     //
     //
     constexpr std::size_t NA = (std::size_t)nmax * nmax * need;
@@ -216,55 +261,43 @@ statement_10:
     if (path == "   ") {
         goto statement_10;
     } else if (nep) {
-        write(nout, "(' Tests of the Nonsymmetric Eigenvalue Problem routines')");
+        write(nout, format_9987);
     } else if (sep) {
-        write(nout, "(' Tests of the Hermitian Eigenvalue Problem routines')");
+        write(nout, format_9986);
     } else if (svd) {
-        write(nout, "(' Tests of the Singular Value Decomposition routines')");
+        write(nout, format_9985);
     } else if (zev) {
-        write(nout, "(/,' Tests of the Nonsymmetric Eigenvalue Problem Driver',/,"
-                    "'    ZGEEV (eigenvalues and eigevectors)')");
+        write(nout, format_9979);
     } else if (zes) {
-        write(nout, "(/,' Tests of the Nonsymmetric Eigenvalue Problem Driver',/,"
-                    "'    ZGEES (Schur form)')");
+        write(nout, format_9978);
     } else if (zvx) {
-        write(nout, "(/,' Tests of the Nonsymmetric Eigenvalue Problem Expert',' Driver',/,"
-                    "'    ZGEEVX (eigenvalues, eigenvectors and',' condition numbers)')");
+        write(nout, format_9977);
     } else if (zsx) {
-        write(nout, "(/,' Tests of the Nonsymmetric Eigenvalue Problem Expert',' Driver',/,"
-                    "'    ZGEESX (Schur form and condition',' numbers)')");
+        write(nout, format_9976);
     } else if (zgg) {
-        write(nout, "(/,' Tests of the Generalized Nonsymmetric Eigenvalue ',"
-                    "'Problem routines')");
+        write(nout, format_9975);
     } else if (zgs) {
-        write(nout, "(/,' Tests of the Generalized Nonsymmetric Eigenvalue ',"
-                    "'Problem Driver ZGGES')");
+        write(nout, format_9964);
     } else if (zgx) {
-        write(nout, "(/,' Tests of the Generalized Nonsymmetric Eigenvalue ',"
-                    "'Problem Expert Driver ZGGESX')");
+        write(nout, format_9965);
     } else if (zgv) {
-        write(nout, "(/,' Tests of the Generalized Nonsymmetric Eigenvalue ',"
-                    "'Problem Driver ZGGEV')");
+        write(nout, format_9963);
     } else if (zxv) {
-        write(nout, "(/,' Tests of the Generalized Nonsymmetric Eigenvalue ',"
-                    "'Problem Expert Driver ZGGEVX')");
+        write(nout, format_9962);
     } else if (zhb) {
-        write(nout, "(' Tests of Chbtrd',/,' (reduction of a Hermitian band ',"
-                    "'matrix to real tridiagonal form)')");
+        write(nout, format_9974);
     } else if (zbb) {
-        write(nout, "(' Tests of Cgbbrd',/,' (reduction of a general band ',"
-                    "'matrix to real bidiagonal form)')");
+        write(nout, format_9967);
     } else if (glm) {
-        write(nout, "(/,' Tests of the Generalized Linear Regression Model ','routines')");
+        write(nout, format_9971);
     } else if (gqr) {
-        write(nout, "(/,' Tests of the Generalized QR and RQ routines')");
+        write(nout, format_9970);
     } else if (gsv) {
-        write(nout, "(/,' Tests of the Generalized Singular Value',"
-                    "' Decomposition routines')");
+        write(nout, format_9969);
     } else if (csd) {
-        write(nout, "(/,' Tests of the CS Decomposition routines')");
+        write(nout, format_9960);
     } else if (lse) {
-        write(nout, "(/,' Tests of the Linear Least Squares routines')");
+        write(nout, format_9968);
     } else if (zbl) {
         //
         // Cgebal:  Balancing
@@ -303,11 +336,9 @@ statement_10:
         write(nout, format_9992), path;
         goto statement_380;
     }
-    iMlaver(mplapack_vers_major, mplapack_vers_minor, mplapack_vers_patch, lapack_vers_major, lapack_vers_minor, lapack_vers_patch);
-    write(nout, "(' Tests of the Multiple precision version of LAPACK ',i1,'.',i1,'.',i1,/, "
-                "' Based on the original LAPACK VERSION ',i1,'.',i1,'.',i1,/,/, 'The following parameter values will be used:')"),
-        mplapack_vers_major, mplapack_vers_minor, mplapack_vers_patch, lapack_vers_major, lapack_vers_minor, lapack_vers_patch;
-    write(nout, "(/,' The following parameter values will be used:')");
+    ilaver(vers_major, vers_minor, vers_patch);
+    write(nout, format_9972), vers_major, vers_minor, vers_patch;
+    write(nout, format_9984);
     //
     // Read the number of values of M, P, and N.
     //
@@ -877,9 +908,7 @@ statement_10:
     // Read the threshold value for the test ratios.
     //
     read(nin, star), thresh;
-    write(nout, "(/,' Routines pass computational tests if test ratio is ','less than',"
-                "f8.2,/)"),
-        thresh;
+    write(nout, format_9982), thresh;
     if (sep || svd || zgg) {
         //
         // Read the flag that indicates whether to test LAPACK routines.
@@ -915,7 +944,7 @@ statement_10:
     }
     //
     if (fatal) {
-        write(nout, "(/,' Execution not attempted due to input errors')");
+        write(nout, format_9999);
         FEM_STOP(0);
     }
 //
@@ -961,9 +990,7 @@ statement_190:
                     goto statement_230;
                 }
             }
-            write(nout, "(/,/,' *** Invalid integer value in column ',i2,' of input',' line:',"
-                        "/,a79)"),
-                i, line;
+            write(nout, format_9991), i, line;
             goto statement_200;
         statement_230:
             itmp = 10 * itmp + ic;
@@ -1034,9 +1061,7 @@ statement_190:
                     iseed[k - 1] = ioldsd[k - 1];
                 }
             }
-            write(nout, "(/,/,1x,a3,':  NB =',i4,', NBMIN =',i4,', NX =',i4,', INMIN=',i4,"
-                        "', INWIN =',i4,', INIBL =',i4,', ISHFTS =',i4,', IACC22 =',i4)"),
-                c3, nbval[i - 1], nbmin[i - 1], nxval[i - 1], max((INTEGER)11, inmin[i - 1]), inwin[i - 1], inibl[i - 1], ishfts[i - 1], iacc22[i - 1];
+            write(nout, format_9961), c3, nbval[i - 1], nbmin[i - 1], nxval[i - 1], fem::max(11, inmin[i - 1]), inwin[i - 1], inibl[i - 1], ishfts[i - 1], iacc22[i - 1];
             Cchkhs(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], &a[(3 - 1) * lda], &a[(4 - 1) * lda], &a[(5 - 1) * lda], nmax, &a[(6 - 1) * lda], &a[(7 - 1) * lda], &dc[0], &dc[(2 - 1) * nmax], &a[(8 - 1) * lda], &a[(9 - 1) * lda], &a[(10 - 1) * lda], &a[(11 - 1) * lda], &a[(12 - 1) * lda], &dc[(3 - 1) * nmax], work, lwork, rwork, iwork, logwrk, result, info);
             if (info != 0) {
                 write(nout, format_9980), "Cchkhs", info;
@@ -1169,7 +1194,7 @@ statement_190:
                     iseed[k - 1] = ioldsd[k - 1];
                 }
             }
-            write(nout, "(/,/,1x,a3,':  NB =',i4,', NBMIN =',i4,', NX =',i4,', NRHS =',i4)"), c3, nbval[i - 1], nbmin[i - 1], nxval[i - 1], nrhs;
+            write(nout, format_9995), c3, nbval[i - 1], nbmin[i - 1], nxval[i - 1], nrhs;
             if (tstchk) {
                 Cchkbd(nn, mval, nval, maxtyp, dotype, nrhs, iseed, thresh, &a[0], nmax, &dr[0], &dr[(2 - 1) * nmax], &dr[(3 - 1) * nmax], &dr[(4 - 1) * nmax], &a[(2 - 1) * lda], nmax, &a[(3 - 1) * lda], &a[(4 - 1) * lda], &a[(5 - 1) * lda], nmax, &a[(6 - 1) * lda], nmax, &a[(7 - 1) * lda], &a[(8 - 1) * lda], work, lwork, rwork, nout, info);
                 if (info != 0) {
@@ -1310,9 +1335,7 @@ statement_190:
                     iseed[k - 1] = ioldsd[k - 1];
                 }
             }
-            write(nout, "(/,/,1x,a3,':  NB =',i4,', NBMIN =',i4,', NS =',i4,', MAXB =',i4,"
-                        "', IACC22 =',i4,', NBCOL =',i4)"),
-                c3, nbval[i - 1], nbmin[i - 1], nsval[i - 1], mxbval[i - 1], iacc22[i - 1], nbcol[i - 1];
+            write(nout, format_9996), c3, nbval[i - 1], nbmin[i - 1], nsval[i - 1], mxbval[i - 1], iacc22[i - 1], nbcol[i - 1];
             tstdif = false;
             thrshn = 10.0;
             if (tstchk) {
@@ -1476,7 +1499,7 @@ statement_190:
                     iseed[k - 1] = ioldsd[k - 1];
                 }
             }
-            write(nout, "(/,/,1x,a3,':  NRHS =',i4)"), c3, nrhs;
+            write(nout, format_9966), c3, nrhs;
             Cchkbb(nn, mval, nval, nk, kval, maxtyp, dotype, nrhs, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], 2 * nmax, &dr[0], &dr[(2 - 1) * nmax], &a[(4 - 1) * lda], nmax, &a[(5 - 1) * lda], nmax, &a[(6 - 1) * lda], nmax, &a[(7 - 1) * lda], work, lwork, rwork, result, info);
             if (info != 0) {
                 write(nout, format_9980), "Cchkbb", info;
@@ -1566,9 +1589,9 @@ statement_190:
         goto statement_190;
     }
 statement_380:
-    write(nout, "(/,/,' End of tests')");
+    write(nout, format_9994);
     s2 = dsecnd();
-    write(nout, "(' Total time used = ',f12.2,' seconds',/)"), s2 - s1;
+    write(nout, format_9993), s2 - s1;
     //
     // End of Cchkee
     //

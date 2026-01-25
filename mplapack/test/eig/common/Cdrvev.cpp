@@ -93,6 +93,37 @@ void Cdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     COMPLEX dum[1];
     INTEGER ntest = 0;
     INTEGER nfail = 0;
+    //
+    static const char *format_9999 = "(/,1x,a3,' -- Complex Eigenvalue-Eigenvector ','Decomposition Driver',/,"
+                                     "' Matrix types (see Cdrvev for details): ')";
+    //
+    static const char *format_9998 = "(/,' Special Matrices:',/,'  1=Zero matrix.             ','           ',"
+                                     "'  5=Diagonal: geometr. spaced entries.',/,"
+                                     "'  2=Identity matrix.                    ','  6=Diagona',"
+                                     "'l: clustered entries.',/,'  3=Transposed Jordan block.  ','          ',"
+                                     "'  7=Diagonal: large, evenly spaced.',/,'  ',"
+                                     "'4=Diagonal: evenly spaced entries.    ','  8=Diagonal: s',"
+                                     "'mall, evenly spaced.')";
+    static const char *format_9997 = "(' Dense, Non-Symmetric Matrices:',/,'  9=Well-cond., ev',"
+                                     "'enly spaced eigenvals.',' 14=Ill-cond., geomet. spaced e','igenals.',/,"
+                                     "' 10=Well-cond., geom. spaced eigenvals. ',"
+                                     "' 15=Ill-conditioned, clustered e.vals.',/,' 11=Well-cond',"
+                                     "'itioned, clustered e.vals. ',' 16=Ill-cond., random comp','lex ',a6,/,"
+                                     "' 12=Well-cond., random complex ',a6,'   ',"
+                                     "' 17=Ill-cond., large rand. complx ',a4,/,' 13=Ill-condi',"
+                                     "'tioned, evenly spaced.     ',' 18=Ill-cond., small rand.',' complx ',a4)";
+    static const char *format_9996 = "(' 19=Matrix with random O(1) entries.    ',' 21=Matrix ',"
+                                     "'with small random entries.',/,' 20=Matrix with large ran',"
+                                     "'dom entries.   ',/)";
+    static const char *format_9995 = "(' Tests performed with test threshold =',f8.2,/,/,"
+                                     "' 1 = | A VR - VR W | / ( n |A| ulp ) ',/,"
+                                     "' 2 = | conj-trans(A) VL - VL conj-trans(W) | /',' ( n |A| ulp ) ',/,"
+                                     "' 3 = | |VR(i)| - 1 | / ulp ',/,' 4 = | |VL(i)| - 1 | / ulp ',/,"
+                                     "' 5 = 0 if W same no matter if VR or VL computed,',' 1/ulp otherwise',/,"
+                                     "' 6 = 0 if VR same no matter if VL computed,','  1/ulp otherwise',/,"
+                                     "' 7 = 0 if VL same no matter if VR computed,','  1/ulp otherwise',/)";
+    static const char *format_9994 = "(' N=',i5,', IWK=',i2,', seed=',4(i4,','),' type ',i2,', test(',i2,')=',"
+                                     "g10.3)";
     static const char *format_9993 = "(' Cdrvev: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
                                      "', ISEED=(',3(i5,','),i5,')')";
     //
@@ -508,49 +539,17 @@ void Cdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     ntestf++;
                 }
                 if (ntestf == 1) {
-                    write(nounit, "(/,1x,a3,' -- Complex Eigenvalue-Eigenvector ',"
-                                  "'Decomposition Driver',/,"
-                                  "' Matrix types (see ZDRVEV for details): ')"),
-                        path;
-                    write(nounit, "(/,' Special Matrices:',/,'  1=Zero matrix.             ',"
-                                  "'           ','  5=Diagonal: geometr. spaced entries.',/,"
-                                  "'  2=Identity matrix.                    ','  6=Diagona',"
-                                  "'l: clustered entries.',/,'  3=Transposed Jordan block.  ',"
-                                  "'          ','  7=Diagonal: large, evenly spaced.',/,'  ',"
-                                  "'4=Diagonal: evenly spaced entries.    ','  8=Diagonal: s',"
-                                  "'mall, evenly spaced.')");
-                    write(nounit, "(' Dense, Non-Symmetric Matrices:',/,'  9=Well-cond., ev',"
-                                  "'enly spaced eigenvals.',' 14=Ill-cond., geomet. spaced e',"
-                                  "'igenals.',/,' 10=Well-cond., geom. spaced eigenvals. ',"
-                                  "' 15=Ill-conditioned, clustered e.vals.',/,' 11=Well-cond',"
-                                  "'itioned, clustered e.vals. ',' 16=Ill-cond., random comp',"
-                                  "'lex ',a6,/,' 12=Well-cond., random complex ',a6,'   ',"
-                                  "' 17=Ill-cond., large rand. complx ',a4,/,' 13=Ill-condi',"
-                                  "'tioned, evenly spaced.     ',' 18=Ill-cond., small rand.',"
-                                  "' complx ',a4)");
-                    write(nounit, "(' 19=Matrix with random O(1) entries.    ',' 21=Matrix ',"
-                                  "'with small random entries.',/,' 20=Matrix with large ran',"
-                                  "'dom entries.   ',/)");
-                    write(nounit, "(' Tests performed with test threshold =',f8.2,/,/,"
-                                  "' 1 = | A VR - VR W | / ( n |A| ulp ) ',/,"
-                                  "' 2 = | conj-trans(A) VL - VL conj-trans(W) | /',"
-                                  "' ( n |A| ulp ) ',/,' 3 = | |VR(i)| - 1 | / ulp ',/,"
-                                  "' 4 = | |VL(i)| - 1 | / ulp ',/,"
-                                  "' 5 = 0 if W same no matter if VR or VL computed,',"
-                                  "' 1/ulp otherwise',/,"
-                                  "' 6 = 0 if VR same no matter if VL computed,',"
-                                  "'  1/ulp otherwise',/,"
-                                  "' 7 = 0 if VL same no matter if VR computed,',"
-                                  "'  1/ulp otherwise',/)"),
-                        thresh;
+                    write(nounit, format_9999), path;
+                    write(nounit, format_9998);
+                    write(nounit, format_9997);
+                    write(nounit, format_9996);
+                    write(nounit, format_9995), thresh;
                     ntestf = 2;
                 }
                 //
                 for (j = 1; j <= 7; j = j + 1) {
                     if (result[j - 1] >= thresh) {
-                        write(nounit, "(' N=',i5,', IWK=',i2,', seed=',4(i4,','),' type ',i2,"
-                                      "', test(',i2,')=',g10.3)"),
-                            n, iwk, ioldsd, jtype, j, result[j - 1];
+                        write(nounit, format_9994), n, iwk, ioldsd, jtype, j, result[j - 1];
                     }
                 }
                 //

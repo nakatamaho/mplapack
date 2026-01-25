@@ -97,6 +97,13 @@ void Rchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     INTEGER k = 0;
     REAL rcond = 0.0;
     //
+    static const char *format_9999 = "(' UPLO=''',a1,''', N=',i5,', KD=',i5,', NB=',i4,', type ',i2,', test ',"
+                                     "i2,', ratio= ',g12.5)";
+    static const char *format_9998 = "(' UPLO=''',a1,''', N=',i5,', KD=',i5,', NRHS=',i3,', type ',i2,"
+                                     "', test(',i2,') = ',g12.5)";
+    static const char *format_9997 = "(' UPLO=''',a1,''', N=',i5,', KD=',i5,',',10x,' type ',i2,', test(',i2,"
+                                     "') = ',g12.5)";
+    //
     // Initialize constants and the random number seed.
     //
     path(1, 1) = "Double precision";
@@ -285,9 +292,7 @@ void Rchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
-                            write(nout, "(' UPLO=''',a1,''', N=',i5,', KD=',i5,', NB=',i4,', type ',"
-                                        "i2,', test ',i2,', ratio= ',g12.5)"),
-                                uplo, n, kd, nb, imat, 1, result[1 - 1];
+                            write(nout, format_9999), uplo, n, kd, nb, imat, 1, result[1 - 1];
                             nfail++;
                         }
                         nrun++;
@@ -365,9 +370,7 @@ void Rchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                                     if (nfail == 0 && nerrs == 0) {
                                         Alahd(nout, path);
                                     }
-                                    write(nout, "(' UPLO=''',a1,''', N=',i5,', KD=',i5,', NRHS=',i3,"
-                                                "', type ',i2,', test(',i2,') = ',g12.5)"),
-                                        uplo, n, kd, nrhs, imat, k, result[k - 1];
+                                    write(nout, format_9998), uplo, n, kd, nrhs, imat, k, result[k - 1];
                                     nfail++;
                                 }
                             }
@@ -394,9 +397,7 @@ void Rchkpb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
-                            write(nout, "(' UPLO=''',a1,''', N=',i5,', KD=',i5,',',10x,' type ',i2,"
-                                        "', test(',i2,') = ',g12.5)"),
-                                uplo, n, kd, imat, 7, result[7 - 1];
+                            write(nout, format_9997), uplo, n, kd, imat, 7, result[7 - 1];
                             nfail++;
                         }
                         nrun++;

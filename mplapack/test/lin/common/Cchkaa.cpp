@@ -43,8 +43,6 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-#include <memory>
-
 void Cchkaa(void) {
     common cmn;
     common_read read(cmn);
@@ -98,15 +96,10 @@ void Cchkaa(void) {
     INTEGER ntypes = 0;
     bool dotype[matmax];
     const INTEGER kdmax = nmax + (nmax + 1) / 4;
-    auto sz = [](INTEGER x) -> std::size_t { return static_cast<std::size_t>(x); };
-    auto a_storage = std::unique_ptr<COMPLEX[]>(new COMPLEX[(sz(kdmax) + 1) * sz(nmax) * 7]);
-    COMPLEX *a = a_storage.get();
-    auto b_storage = std::unique_ptr<COMPLEX[]>(new COMPLEX[sz(nmax) * sz(maxrhs) * 4]);
-    COMPLEX *b = b_storage.get();
-    auto work_storage = std::unique_ptr<COMPLEX[]>(new COMPLEX[sz(nmax) * sz(nmax) + sz(maxrhs) + 10]);
-    COMPLEX *work = work_storage.get();
-    auto rwork_storage = std::unique_ptr<REAL[]>(new REAL[150 + 2 * sz(maxrhs)]);
-    REAL *rwork = rwork_storage.get();
+    COMPLEX a[(kdmax + 1) * nmax * 7];
+    COMPLEX b[nmax * maxrhs * 4];
+    COMPLEX work[nmax * nmax + maxrhs + 10];
+    REAL rwork[150 + 2 * maxrhs];
     INTEGER iwork[25 * nmax];
     REAL s[2 * nmax];
     INTEGER la = 0;
@@ -116,14 +109,21 @@ void Cchkaa(void) {
     REAL s2 = 0.0;
     INTEGER ldaw = (kdmax + 1) * nmax;
     INTEGER ldb = nmax * maxrhs;
-    static const char *format_9988 = "(/,1x,a3,' driver routines were not tested')";
-    static const char *format_9989 = "(/,1x,a3,' routines were not tested')";
-    static const char *format_9990 = "(/,1x,a3,':  Unrecognized path name')";
-    static const char *format_9991 = "(' Relative machine ',a,' is taken to be',d16.6)";
-    static const char *format_9993 = "(4x,a4,':  ',10i6,/,11x,10i6)";
-    static const char *format_9995 = "(' Invalid input value: ',a4,'=',i6,'; must be <=',i6)";
-    static const char *format_9996 = "(' Invalid input value: ',a4,'=',i6,'; must be >=',i6)";
     //
+    static const char *format_9999 = "(/,' Execution not attempted due to input errors')";
+    static const char *format_9998 = "(/,' End of tests')";
+    static const char *format_9997 = "(' Total time used = ',f12.2,' seconds',/)";
+    static const char *format_9996 = "(' Invalid input value: ',a4,'=',i6,'; must be >=',i6)";
+    static const char *format_9995 = "(' Invalid input value: ',a4,'=',i6,'; must be <=',i6)";
+    static const char *format_9994 = "(' Tests of the COMPLEX*16 LAPACK routines ',/,' LAPACK VERSION ',i1,'.',"
+                                     "i1,'.',i1,/,/,' The following parameter values will be used:')";
+    static const char *format_9993 = "(4x,a4,':  ',10i6,/,11x,10i6)";
+    static const char *format_9992 = "(/,' Routines pass computational tests if test ratio is ','less than',"
+                                     "f8.2,/)";
+    static const char *format_9991 = "(' Relative machine ',a,' is taken to be',d16.6)";
+    static const char *format_9990 = "(/,1x,a3,':  Unrecognized path name')";
+    static const char *format_9989 = "(/,1x,a3,' routines were not tested')";
+    static const char *format_9988 = "(/,1x,a3,' driver routines were not tested')";
     //
     //
     s1 = dsecnd();
@@ -136,10 +136,8 @@ void Cchkaa(void) {
     //
     // Report values of parameters.
     //
-    iMlaver(mplapack_vers_major, mplapack_vers_minor, mplapack_vers_patch, lapack_vers_major, lapack_vers_minor, lapack_vers_patch);
-    write(nout, "(' Tests of the Multiple precision version of LAPACK MPLAPACK VERSION ',i1,'.',i1,'.',i1,/, "
-                "' Based on the original LAPACK VERSION ',i1,'.',i1,'.',i1,/,/, 'The following parameter values will be used:')"),
-        mplapack_vers_major, mplapack_vers_minor, mplapack_vers_patch, lapack_vers_major, lapack_vers_minor, lapack_vers_patch;
+    ilaver(vers_major, vers_minor, vers_patch);
+    write(nout, format_9994), vers_major, vers_minor, vers_patch;
     //
     // Read the values of M
     //
@@ -365,9 +363,7 @@ void Cchkaa(void) {
     // Read the threshold value for the test ratios.
     //
     read(nin, star), thresh;
-    write(nout, "(/,' Routines pass computational tests if test ratio is ','less than',"
-                "f8.2,/)"),
-        thresh;
+    write(nout, format_9992), thresh;
     //
     // Read the flag that indicates whether to test the LAPACK routines.
     //
@@ -382,7 +378,7 @@ void Cchkaa(void) {
     read(nin, star), tsterr;
     //
     if (fatal) {
-        write(nout, "(/,' Execution not attempted due to input errors')");
+        write(nout, format_9999);
         FEM_STOP(0);
     }
     //
@@ -1082,8 +1078,8 @@ statement_130:
 statement_140:
     cmn.io.close(nin);
     s2 = dsecnd();
-    write(nout, "(/,' End of tests')");
-    write(nout, "(' Total time used = ',f12.2,' seconds',/)"), s2 - s1;
+    write(nout, format_9998);
+    write(nout, format_9997), s2 - s1;
     //
     // End of Cchkaa
     //

@@ -76,7 +76,12 @@ void Cckglm(INTEGER const nn, INTEGER *nval, INTEGER *mval, INTEGER *pval, INTEG
     INTEGER iinfo = 0;
     INTEGER i = 0;
     REAL resid = 0.0;
+    //
     static const char *format_9999 = "(' Clatms in Cckglm INFO = ',i5)";
+    static const char *format_9998 = "(' N=',i4,' M=',i4,', P=',i4,', type ',i2,', test ',i2,', ratio=',g13.6)";
+    static const char *format_9997 = "(' *** Invalid input  for GLM:  M = ',i6,', P = ',i6,', N = ',i6,';',/,"
+                                     "'     must satisfy M <= N <= M+P  ',"
+                                     "'(this set of values will be skipped)')";
     //
     // Initialize constants.
     //
@@ -101,10 +106,7 @@ void Cckglm(INTEGER const nn, INTEGER *nval, INTEGER *mval, INTEGER *pval, INTEG
                 write(nout, star);
                 firstt = false;
             }
-            write(nout, "(' *** Invalid input  for GLM:  M = ',i6,', P = ',i6,', N = ',i6,';',"
-                        "/,'     must satisfy M <= N <= M+P  ',"
-                        "'(this set of values will be skipped)')"),
-                m, p, n;
+            write(nout, format_9997), m, p, n;
         }
     }
     firstt = true;
@@ -162,9 +164,7 @@ void Cckglm(INTEGER const nn, INTEGER *nval, INTEGER *mval, INTEGER *pval, INTEG
                     firstt = false;
                     Alahdg(nout, path);
                 }
-                write(nout, "(' N=',i4,' M=',i4,', P=',i4,', type ',i2,', test ',i2,', ratio=',"
-                            "g13.6)"),
-                    n, m, p, imat, 1, resid;
+                write(nout, format_9998), n, m, p, imat, 1, resid;
                 nfail++;
             }
             nrun++;

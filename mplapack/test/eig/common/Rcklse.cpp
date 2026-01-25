@@ -78,7 +78,12 @@ void Rcklse(INTEGER const nn, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEG
     const INTEGER ntests = 7;
     REAL result[ntests];
     INTEGER i = 0;
+    //
     static const char *format_9999 = "(' Rlatms in Rcklse   INFO = ',i5)";
+    static const char *format_9998 = "(' M=',i4,' P=',i4,', N=',i4,', type ',i2,', test ',i2,', ratio=',g13.6)";
+    static const char *format_9997 = "(' *** Invalid input  for LSE:  M = ',i6,', P = ',i6,', N = ',i6,';',/,"
+                                     "'     must satisfy P <= N <= P+M  ',"
+                                     "'(this set of values will be skipped)')";
     //
     // Initialize constants and the random number seed.
     //
@@ -103,10 +108,7 @@ void Rcklse(INTEGER const nn, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEG
                 write(nout, star);
                 firstt = false;
             }
-            write(nout, "(' *** Invalid input  for LSE:  M = ',i6,', P = ',i6,', N = ',i6,';',"
-                        "/,'     must satisfy P <= N <= P+M  ',"
-                        "'(this set of values will be skipped)')"),
-                m, p, n;
+            write(nout, format_9997), m, p, n;
         }
     }
     firstt = true;
@@ -167,9 +169,7 @@ void Rcklse(INTEGER const nn, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEG
                         firstt = false;
                         Alahdg(nout, path);
                     }
-                    write(nout, "(' M=',i4,' P=',i4,', N=',i4,', type ',i2,', test ',i2,"
-                                "', ratio=',g13.6)"),
-                        m, p, n, imat, i, result[i - 1];
+                    write(nout, format_9998), m, p, n, imat, i, result[i - 1];
                     nfail++;
                 }
             }

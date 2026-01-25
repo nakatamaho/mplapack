@@ -49,6 +49,9 @@ void Cerrrfp(INTEGER const nunit) {
     INTEGER lda = 1;
     INTEGER ldb = 1;
     //
+    static const char *format_9999 = "(1x,'COMPLEX*16 RFP routines passed the tests of the ','error exits')";
+    static const char *format_9998 = "(' *** RFP routines failed the tests of the error ','exits ***')";
+    //
     nout = nunit;
     ok = true;
     COMPLEX a[1 * 1];
@@ -234,9 +237,9 @@ void Cerrrfp(INTEGER const nunit) {
     // Print a summary line.
     //
     if (ok) {
-        write(nout, "(1x,'COMPLEX*16 RFP routines passed the tests of the ','error exits')");
+        write(nout, format_9999);
     } else {
-        write(nout, "(' *** RFP routines failed the tests of the error ','exits ***')");
+        write(nout, format_9998);
     }
     //
     // End of Cerrrfp

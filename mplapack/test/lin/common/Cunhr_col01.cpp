@@ -59,8 +59,8 @@ void Cunhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     // Put random numbers into A and copy to AF
     //
     INTEGER j = 0;
-    std::unique_ptr<COMPLEX[]> __a_storage(new COMPLEX[m * n]);
-    COMPLEX *a = __a_storage.get();
+    std::unique_ptr<COMPLEX[]> a_storage(new COMPLEX[m * n]);
+    COMPLEX *a = a_storage.get();
     for (j = 1; j <= n; j = j + 1) {
         Clarnv(2, iseed, m, &a[(j - 1) * m]);
     }
@@ -71,8 +71,8 @@ void Cunhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
             }
         }
     }
-    std::unique_ptr<COMPLEX[]> __af_storage(new COMPLEX[m * n]);
-    COMPLEX *af = __af_storage.get();
+    std::unique_ptr<COMPLEX[]> af_storage(new COMPLEX[m * n]);
+    COMPLEX *af = af_storage.get();
     Clacpy("Full", m, n, a, m, af, m);
     //
     // Number of row blocks in Clatsqr
@@ -89,8 +89,8 @@ void Cunhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     INTEGER nb2_ub = min(nb2, n);
     //
-    std::unique_ptr<COMPLEX[]> __t1_storage(new COMPLEX[nb1 * n * nrb]);
-    COMPLEX *t1 = __t1_storage.get();
+    std::unique_ptr<COMPLEX[]> t1_storage(new COMPLEX[nb1 * n * nrb]);
+    COMPLEX *t1 = t1_storage.get();
     COMPLEX workquery[1];
     INTEGER info = 0;
     Clatsqr(m, n, mb1, nb1_ub, af, m, t1, nb1, workquery, -1, info);
@@ -111,15 +111,15 @@ void Cunhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     // Factor the matrix A in the array AF.
     //
     srnamt = "Clatsqr";
-    std::unique_ptr<COMPLEX[]> __work_storage(new COMPLEX[lwork]);
-    COMPLEX *work = __work_storage.get();
+    std::unique_ptr<COMPLEX[]> work_storage(new COMPLEX[lwork]);
+    COMPLEX *work = work_storage.get();
     Clatsqr(m, n, mb1, nb1_ub, af, m, t1, nb1, work, lwork, info);
     //
     // Copy the factor R into the array R.
     //
     srnamt = "Clacpy";
-    std::unique_ptr<COMPLEX[]> __r_storage(new COMPLEX[m * l]);
-    COMPLEX *r = __r_storage.get();
+    std::unique_ptr<COMPLEX[]> r_storage(new COMPLEX[m * l]);
+    COMPLEX *r = r_storage.get();
     Clacpy("U", n, n, af, m, r, m);
     //
     // Reconstruct the orthogonal matrix Q.
@@ -131,10 +131,10 @@ void Cunhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     // the arrays AF and T2.
     //
     srnamt = "Cunhr_col";
-    std::unique_ptr<COMPLEX[]> __t2_storage(new COMPLEX[nb2 * n]);
-    COMPLEX *t2 = __t2_storage.get();
-    std::unique_ptr<COMPLEX[]> __diag_storage(new COMPLEX[n]);
-    COMPLEX *diag = __diag_storage.get();
+    std::unique_ptr<COMPLEX[]> t2_storage(new COMPLEX[nb2 * n]);
+    COMPLEX *t2 = t2_storage.get();
+    std::unique_ptr<COMPLEX[]> diag_storage(new COMPLEX[n]);
+    COMPLEX *diag = diag_storage.get();
     Cunhr_col(m, n, nb2, af, m, t2, nb2, diag, info);
     //
     // Compute the factor R_hr corresponding to the Householder
@@ -160,8 +160,8 @@ void Cunhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     // Generate the m-by-m matrix Q
     //
     const COMPLEX czero = COMPLEX(0.0, 0.0);
-    std::unique_ptr<COMPLEX[]> __q_storage(new COMPLEX[l * l]);
-    COMPLEX *q = __q_storage.get();
+    std::unique_ptr<COMPLEX[]> q_storage(new COMPLEX[l * l]);
+    COMPLEX *q = q_storage.get();
     Claset("Full", m, m, czero, cone, q, m);
     //
     srnamt = "Cgemqrt";
@@ -178,8 +178,8 @@ void Cunhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     Cgemm("C", "N", m, n, m, -cone, q, m, a, m, cone, r, m);
     //
-    std::unique_ptr<REAL[]> __rwork_storage(new REAL[l]);
-    REAL *rwork = __rwork_storage.get();
+    std::unique_ptr<REAL[]> rwork_storage(new REAL[l]);
+    REAL *rwork = rwork_storage.get();
     REAL anorm = Clange("1", m, n, a, m, rwork);
     REAL resid = Clange("1", m, n, r, m, rwork);
     const REAL zero = 0.0;
@@ -199,14 +199,14 @@ void Cunhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     // Generate random m-by-n matrix C
     //
-    std::unique_ptr<COMPLEX[]> __c_storage(new COMPLEX[m * n]);
-    COMPLEX *c = __c_storage.get();
+    std::unique_ptr<COMPLEX[]> c_storage(new COMPLEX[m * n]);
+    COMPLEX *c = c_storage.get();
     for (j = 1; j <= n; j = j + 1) {
         Clarnv(2, iseed, m, &c[(j - 1) * m]);
     }
     REAL cnorm = Clange("1", m, n, c, m, rwork);
-    std::unique_ptr<COMPLEX[]> __cf_storage(new COMPLEX[m * n]);
-    COMPLEX *cf = __cf_storage.get();
+    std::unique_ptr<COMPLEX[]> cf_storage(new COMPLEX[m * n]);
+    COMPLEX *cf = cf_storage.get();
     Clacpy("Full", m, n, c, m, cf, m);
     //
     // Apply Q to C as Q*C = CF
@@ -247,14 +247,14 @@ void Cunhr_col01(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     // Generate random n-by-m matrix D and a copy DF
     //
-    std::unique_ptr<COMPLEX[]> __d_storage(new COMPLEX[n * m]);
-    COMPLEX *d = __d_storage.get();
+    std::unique_ptr<COMPLEX[]> d_storage(new COMPLEX[n * m]);
+    COMPLEX *d = d_storage.get();
     for (j = 1; j <= m; j = j + 1) {
         Clarnv(2, iseed, n, &d[(j - 1) * n]);
     }
     REAL dnorm = Clange("1", n, m, d, n, rwork);
-    std::unique_ptr<COMPLEX[]> __df_storage(new COMPLEX[n * m]);
-    COMPLEX *df = __df_storage.get();
+    std::unique_ptr<COMPLEX[]> df_storage(new COMPLEX[n * m]);
+    COMPLEX *df = df_storage.get();
     Clacpy("Full", n, m, d, n, df, n);
     //
     // Apply Q to D as D*Q = DF

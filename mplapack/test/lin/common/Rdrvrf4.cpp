@@ -51,6 +51,14 @@ void Rdrvrf4(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
     static fem::str<1> forms[2] = {"N", "T"};
     static fem::str<1> transs[2] = {"N", "T"};
     //
+    static const char *format_9999 = "(1x,' *** Error(s) or Failure(s) while testing Rsfrk         ***')";
+    static const char *format_9997 = "(1x,'     Failure in ',a5,', CFORM=''',a1,''',',' UPLO=''',a1,''',',"
+                                     "' TRANS=''',a1,''',',' N=',i3,', K =',i3,', test=',g12.5)";
+    static const char *format_9996 = "(1x,'All tests for ',a5,' auxiliary routine passed the ','threshold ( ',"
+                                     "i5,' tests run)')";
+    static const char *format_9995 = "(1x,a6,' auxiliary routine: ',i5,' out of ',i5,"
+                                     "' tests failed to pass the threshold')";
+    //
     // Initialize constants and the random number seed.
     //
     INTEGER nrun = 0;
@@ -206,13 +214,9 @@ void Rdrvrf4(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                             if (result[1 - 1] >= thresh) {
                                 if (nfail == 0) {
                                     write(nout, star);
-                                    write(nout, "(1x,' *** Error(s) or Failure(s) while testing Rsfrk     "
-                                                "    ***')");
+                                    write(nout, format_9999);
                                 }
-                                write(nout, "(1x,'     Failure in ',a5,', CFORM=''',a1,''',',' UPLO=''',"
-                                            "a1,''',',' TRANS=''',a1,''',',' N=',i3,', K =',i3,"
-                                            "', test=',g12.5)"),
-                                    "DSFRK", cform, uplo, trans, n, k, result[1 - 1];
+                                write(nout, format_9997), "Rsfrk", cform, uplo, trans, n, k, result[1 - 1];
                                 nfail++;
                             }
                             //
@@ -226,13 +230,9 @@ void Rdrvrf4(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
     // Print a summary of the results.
     //
     if (nfail == 0) {
-        write(nout, "(1x,'All tests for ',a5,' auxiliary routine passed the ',"
-                    "'threshold ( ',i5,' tests run)')"),
-            "DSFRK", nrun;
+        write(nout, format_9996), "Rsfrk", nrun;
     } else {
-        write(nout, "(1x,a6,' auxiliary routine: ',i5,' out of ',i5,"
-                    "' tests failed to pass the threshold')"),
-            "DSFRK", nfail, nrun;
+        write(nout, format_9995), "Rsfrk", nfail, nrun;
     }
     //
     // End of Rdrvrf4

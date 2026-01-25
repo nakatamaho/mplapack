@@ -74,7 +74,16 @@ void Cdrvrf1(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
     REAL norma = 0.0;
     const INTEGER ntests = 1;
     REAL result[ntests];
+    //
     static const char *format_9999 = "(1x,' *** Error(s) or Failure(s) while testing Clanhf         ***')";
+    static const char *format_9998 = "(1x,'     Error in ',a6,' with UPLO=''',a1,''', FORM=''',a1,''', N=',i5)";
+    static const char *format_9997 = "(1x,'     Failure in ',a6,' N=',i5,' TYPE=',i5,' UPLO=''',a1,"
+                                     "''', FORM =''',a1,''', NORM=''',a1,''', test=',g12.5)";
+    static const char *format_9996 = "(1x,'All tests for ',a6,' auxiliary routine passed the ','threshold ( ',"
+                                     "i5,' tests run)')";
+    static const char *format_9995 = "(1x,a6,' auxiliary routine:',i5,' out of ',i5,"
+                                     "' tests failed to pass the threshold')";
+    static const char *format_9994 = "(26x,i5,' error message recorded (',a6,')')";
     //
     // Initialize constants and the random number seed.
     //
@@ -150,9 +159,7 @@ void Cdrvrf1(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                             write(nout, star);
                             write(nout, format_9999);
                         }
-                        write(nout, "(1x,'     Error in ',a6,' with UPLO=''',a1,''', FORM=''',a1,"
-                                    "''', N=',i5)"),
-                            srnamt, uplo, cform, n;
+                        write(nout, format_9998), srnamt, uplo, cform, n;
                         nerrs++;
                         goto statement_100;
                     }
@@ -173,9 +180,7 @@ void Cdrvrf1(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                                 write(nout, star);
                                 write(nout, format_9999);
                             }
-                            write(nout, "(1x,'     Failure in ',a6,' N=',i5,' TYPE=',i5,' UPLO=''',a1,"
-                                        "''', FORM =''',a1,''', NORM=''',a1,''', test=',g12.5)"),
-                                "ZLANHF", n, iit, uplo, cform, norm, result[1 - 1];
+                            write(nout, format_9997), "Clanhf", n, iit, uplo, cform, norm, result[1 - 1];
                             nfail++;
                         }
                     }
@@ -188,16 +193,12 @@ void Cdrvrf1(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
     // Print a summary of the results.
     //
     if (nfail == 0) {
-        write(nout, "(1x,'All tests for ',a6,' auxiliary routine passed the ',"
-                    "'threshold ( ',i5,' tests run)')"),
-            "ZLANHF", nrun;
+        write(nout, format_9996), "Clanhf", nrun;
     } else {
-        write(nout, "(1x,a6,' auxiliary routine:',i5,' out of ',i5,"
-                    "' tests failed to pass the threshold')"),
-            "ZLANHF", nfail, nrun;
+        write(nout, format_9995), "Clanhf", nfail, nrun;
     }
     if (nerrs != 0) {
-        write(nout, "(26x,i5,' error message recorded (',a6,')')"), nerrs, "ZLANHF";
+        write(nout, format_9994), nerrs, "Clanhf";
     }
     //
     // End of Cdrvrf1

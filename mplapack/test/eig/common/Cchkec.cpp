@@ -47,18 +47,30 @@ void Cchkec(REAL const thresh, bool const tsterr, INTEGER const nin, INTEGER con
     common cmn;
     common_write write(cmn);
     //
+    static const char *format_9999 = "(' Error in Ctrsyl: RMAX =',d12.3,/,' LMAX = ',i8,' NINFO=',i8,' KNT=',"
+                                     "i8)";
+    static const char *format_9998 = "(' Error in Ctrexc: RMAX =',d12.3,/,' LMAX = ',i8,' NINFO=',i8,' KNT=',"
+                                     "i8)";
+    static const char *format_9997 = "(' Error in Ctrsna: RMAX =',3d12.3,/,' LMAX = ',3i8,' NINFO=',3i8,"
+                                     "' KNT=',i8)";
+    static const char *format_9996 = "(' Error in Ctrsen: RMAX =',3d12.3,/,' LMAX = ',3i8,' NINFO=',3i8,"
+                                     "' KNT=',i8)";
+    static const char *format_9995 = "(/,1x,'All tests for ',a3,' routines passed the threshold ( ',i6,"
+                                     "' tests run)')";
+    static const char *format_9994 = "(' Tests of the Nonsymmetric eigenproblem condition',"
+                                     "' estimation routines',/,' Ctrsyl, Ctrexc, Ctrsna, Ctrsen',/)";
+    static const char *format_9993 = "(' Relative machine precision (EPS) = ',d16.6,/,"
+                                     "' Safe minimum (SFMIN)             = ',d16.6,/)";
+    static const char *format_9992 = "(' Routines pass computational tests if test ratio is ','less than',f8.2,"
+                                     "/,/)";
+    //
     fem::str<3> path = "Zomplex precision";
     path(2, 3) = "EC";
     REAL eps = Rlamch("P");
     REAL sfmin = Rlamch("S");
-    write(nout, "(' Tests of the Nonsymmetric eigenproblem condition',"
-                "' estimation routines',/,' ZTRSYL, ZTREXC, ZTRSNA, ZTRSEN',/)");
-    write(nout, "(' Relative machine precision (EPS) = ',d16.6,/,"
-                "' Safe minimum (SFMIN)             = ',d16.6,/)"),
-        eps, sfmin;
-    write(nout, "(' Routines pass computational tests if test ratio is ','less than',f8.2,"
-                "/,/)"),
-        thresh;
+    write(nout, format_9994);
+    write(nout, format_9993), eps, sfmin;
+    write(nout, format_9992), thresh;
     //
     // Test error exits if TSTERR is .TRUE.
     //
@@ -74,9 +86,7 @@ void Cchkec(REAL const thresh, bool const tsterr, INTEGER const nin, INTEGER con
     Cget35(rtrsyl, ltrsyl, ntrsyl, ktrsyl, nin);
     if (rtrsyl > thresh) {
         ok = false;
-        write(nout, "(' Error in Ctrsyl: RMAX =',d12.3,/,' LMAX = ',i8,' NINFO=',i8,' KNT=',"
-                    "i8)"),
-            rtrsyl, ltrsyl, ntrsyl, ktrsyl;
+        write(nout, format_9999), rtrsyl, ltrsyl, ntrsyl, ktrsyl;
     }
     //
     REAL rtrexc = 0.0;
@@ -86,9 +96,7 @@ void Cchkec(REAL const thresh, bool const tsterr, INTEGER const nin, INTEGER con
     Cget36(rtrexc, ltrexc, ntrexc, ktrexc, nin);
     if (rtrexc > thresh || ntrexc > 0) {
         ok = false;
-        write(nout, "(' Error in Ctrexc: RMAX =',d12.3,/,' LMAX = ',i8,' NINFO=',i8,' KNT=',"
-                    "i8)"),
-            rtrexc, ltrexc, ntrexc, ktrexc;
+        write(nout, format_9998), rtrexc, ltrexc, ntrexc, ktrexc;
     }
     //
     REAL rtrsna[3];
@@ -98,9 +106,7 @@ void Cchkec(REAL const thresh, bool const tsterr, INTEGER const nin, INTEGER con
     Cget37(rtrsna, ltrsna, ntrsna, ktrsna, nin);
     if (rtrsna[1 - 1] > thresh || rtrsna[2 - 1] > thresh || ntrsna[1 - 1] != 0 || ntrsna[2 - 1] != 0 || ntrsna[3 - 1] != 0) {
         ok = false;
-        write(nout, "(' Error in Ctrsna: RMAX =',3d12.3,/,' LMAX = ',3i8,' NINFO=',3i8,"
-                    "' KNT=',i8)"),
-            rtrsna, ltrsna, ntrsna, ktrsna;
+        write(nout, format_9997), rtrsna, ltrsna, ntrsna, ktrsna;
     }
     //
     REAL rtrsen[3];
@@ -110,16 +116,12 @@ void Cchkec(REAL const thresh, bool const tsterr, INTEGER const nin, INTEGER con
     Cget38(rtrsen, ltrsen, ntrsen, ktrsen, nin);
     if (rtrsen[1 - 1] > thresh || rtrsen[2 - 1] > thresh || ntrsen[1 - 1] != 0 || ntrsen[2 - 1] != 0 || ntrsen[3 - 1] != 0) {
         ok = false;
-        write(nout, "(' Error in Ctrsen: RMAX =',3d12.3,/,' LMAX = ',3i8,' NINFO=',3i8,"
-                    "' KNT=',i8)"),
-            rtrsen, ltrsen, ntrsen, ktrsen;
+        write(nout, format_9996), rtrsen, ltrsen, ntrsen, ktrsen;
     }
     //
     INTEGER ntests = ktrsyl + ktrexc + ktrsna + ktrsen;
     if (ok) {
-        write(nout, "(/,1x,'All tests for ',a3,' routines passed the threshold ( ',i6,"
-                    "' tests run)')"),
-            path, ntests;
+        write(nout, format_9995), path, ntests;
     }
     //
     // End of Cchkec

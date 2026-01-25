@@ -86,6 +86,13 @@ void Cchktp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     REAL rcond = 0.0;
     const INTEGER ntypes = 18;
     REAL scale = 0.0;
+    //
+    static const char *format_9999 = "(' UPLO=''',a1,''', DIAG=''',a1,''', N=',i5,', type ',i2,', test(',i2,"
+                                     "')= ',g12.5)";
+    static const char *format_9998 = "(' UPLO=''',a1,''', TRANS=''',a1,''', DIAG=''',a1,''', N=',i5,"
+                                     "''', NRHS=',i5,', type ',i2,', test(',i2,')= ',g12.5)";
+    static const char *format_9997 = "(1x,a,'( ''',a1,''', ''',a1,''', ''',a1,''',',i5,', ... ), type ',i2,"
+                                     "', test(',i2,')=',g12.5)";
     static const char *format_9996 = "(1x,a,'( ''',a1,''', ''',a1,''', ''',a1,''', ''',a1,''',',i5,"
                                      "', ... ), type ',i2,', test(',i2,')=',g12.5)";
     //
@@ -179,9 +186,7 @@ void Cchktp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     if (nfail == 0 && nerrs == 0) {
                         Alahd(nout, path);
                     }
-                    write(nout, "(' UPLO=''',a1,''', DIAG=''',a1,''', N=',i5,', type ',i2,"
-                                "', test(',i2,')= ',g12.5)"),
-                        uplo, diag, n, imat, 1, result[1 - 1];
+                    write(nout, format_9999), uplo, diag, n, imat, 1, result[1 - 1];
                     nfail++;
                 }
                 nrun++;
@@ -251,9 +256,7 @@ void Cchktp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                                 if (nfail == 0 && nerrs == 0) {
                                     Alahd(nout, path);
                                 }
-                                write(nout, "(' UPLO=''',a1,''', TRANS=''',a1,''', DIAG=''',a1,''', N=',"
-                                            "i5,''', NRHS=',i5,', type ',i2,', test(',i2,')= ',g12.5)"),
-                                    uplo, trans, diag, n, nrhs, imat, k, result[k - 1];
+                                write(nout, format_9998), uplo, trans, diag, n, nrhs, imat, k, result[k - 1];
                                 nfail++;
                             }
                         }
@@ -289,9 +292,7 @@ void Cchktp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                         if (nfail == 0 && nerrs == 0) {
                             Alahd(nout, path);
                         }
-                        write(nout, "(1x,a,'( ''',a1,''', ''',a1,''', ''',a1,''',',i5,"
-                                    "', ... ), type ',i2,', test(',i2,')=',g12.5)"),
-                            "ZTPCON", norm, uplo, diag, n, imat, 7, result[7 - 1];
+                        write(nout, format_9997), "Ctpcon", norm, uplo, diag, n, imat, 7, result[7 - 1];
                         nfail++;
                     }
                     nrun++;

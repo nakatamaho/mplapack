@@ -46,7 +46,44 @@ using fem::common;
 void Rebchvxx(REAL const thresh, fem::str_cref path) {
     common cmn;
     common_write write(cmn);
+    INTEGER ldabw = (nmax - 1) + (nmax - 1) + 1;
     INTEGER ldabcopy = (nmax - 1) + (nmax - 1) + 1;
+    static const char *format_9999 = "(' D',a2,'SVXX: N =',i2,', RHS = ',i2,', NWISE GUAR. = ',a,"
+                                     "', CWISE GUAR. = ',a,' test(',i1,') =',g12.5)";
+    static const char *format_9998 = "(' D',a2,'SVXX: ',i6,' out of ',i6,' tests failed to pass the threshold')";
+    static const char *format_9997 = "(' D',a2,'SVXX passed the tests of error bounds')";
+    // Test ratios.
+    static const char *format_9996 = "(3x,i2,': Normwise guaranteed forward error',/,5x,"
+                                     "'Guaranteed case: if norm ( abs( Xc - Xt )',"
+                                     "' / norm ( Xt ) .LE. ERRBND( *, nwise_i, bnd_i ), then',/,5x,"
+                                     "'ERRBND( *, nwise_i, bnd_i ) .LE. MAX(SQRT(N), 10) * EPS')";
+    static const char *format_9995 = "(3x,i2,': Componentwise guaranteed forward error')";
+    static const char *format_9994 = "(3x,i2,': Backwards error')";
+    static const char *format_9993 = "(3x,i2,': Reciprocal condition number')";
+    static const char *format_9992 = "(3x,i2,': Reciprocal normwise condition number')";
+    static const char *format_9991 = "(3x,i2,': Raw normwise error estimate')";
+    static const char *format_9990 = "(3x,i2,': Reciprocal componentwise condition number')";
+    static const char *format_9989 = "(3x,i2,': Raw componentwise error estimate')";
+    //
+    static const char *format_8000 = "(' D',a2,'SVXX: N =',i2,', INFO = ',i3,', ORCOND = ',g12.5,"
+                                     "', real RCOND = ',g12.5)";
+    //
+    // .. Scalar Arguments ..
+    //
+    // .. Local Scalars ..
+    //
+    // .. Local Arrays ..
+    //
+    // .. External Functions ..
+    //
+    // .. External Subroutines ..
+    //
+    // .. Intrinsic Functions ..
+    //
+    // .. Parameters ..
+    //
+    // Create the loop to test out the Hilbert matrices
+    //
     fem::str<1> fact = "E";
     fem::str<1> uplo = "U";
     fem::str<1> trans = "N";
@@ -59,7 +96,11 @@ void Rebchvxx(REAL const thresh, fem::str_cref path) {
     INTEGER ldab = (nmax - 1) + (nmax - 1) + 1;
     INTEGER ldafb = 2 * (nmax - 1) + (nmax - 1) + 1;
     fem::str<2> c2 = path(2, 3);
+    //
+    // Main loop to test the different Hilbert Matrices.
+    //
     bool printed_guide = false;
+    //
     INTEGER n = 0;
     const INTEGER nparams = 2;
     REAL params[nparams];
@@ -120,28 +161,40 @@ void Rebchvxx(REAL const thresh, fem::str_cref path) {
     for (n = 1; n <= nmax; n = n + 1) {
         params[1 - 1] = -1.0;
         params[2 - 1] = -1.0;
+        //
         kl = n - 1;
         ku = n - 1;
         nrhs = n;
         m = max(sqrt(castREAL(n)), 10.0);
+        //
+        // Generate the Hilbert matrix, its inverse, and the
+        // right hand side, all scaled by the LCM(1,..,2N-1).
         Rlahilb(n, n, a, lda, invhilb, lda, b, lda, work, info);
+        //
+        // Copy A into ACOPY.
         Rlacpy("ALL", n, n, a, nmax, acopy, nmax);
+        //
+        // Store A in band format for GB tests
         for (j = 1; j <= n; j = j + 1) {
             for (i = 1; i <= kl + ku + 1; i = i + 1) {
-                ab[(i - 1) + (j - 1) * ldab] = 0.0;
+                ab[(i - 1) + (j - 1) * ldabw] = 0.0;
             }
         }
         for (j = 1; j <= n; j = j + 1) {
             for (i = max((INTEGER)1, j - ku); i <= min(n, j + kl); i = i + 1) {
-                ab[((ku + 1 + i - j) - 1) + (j - 1) * ldab] = a[(i - 1) + (j - 1) * nmax];
+                ab[((ku + 1 + i - j) - 1) + (j - 1) * ldabw] = a[(i - 1) + (j - 1) * nmax];
             }
         }
+        //
+        // Copy AB into ABCOPY.
         for (j = 1; j <= n; j = j + 1) {
             for (i = 1; i <= kl + ku + 1; i = i + 1) {
                 abcopy[(i - 1) + (j - 1) * ldabcopy] = 0.0;
             }
         }
         Rlacpy("ALL", kl + ku + 1, n, ab, ldab, abcopy, ldab);
+        //
+        // Call D**SVXX with default PARAMS and N_ERR_BND = 3.
         if (Mlsamen(2, c2.elems, "SY")) {
             Rsysvxx(fact, uplo, n, nrhs, acopy, lda, af, lda, ipiv, equed, s, b, lda, x, lda, orcond, rpvgrw, berr, nerrbnd, errbnd_n, errbnd_c, nparams, params, work, iwork, info);
         } else if (Mlsamen(2, c2.elems, "PO")) {
@@ -151,21 +204,32 @@ void Rebchvxx(REAL const thresh, fem::str_cref path) {
         } else {
             Rgesvxx(fact, trans, n, nrhs, acopy, lda, af, lda, ipiv, equed, r, c, b, lda, x, lda, orcond, rpvgrw, berr, nerrbnd, errbnd_n, errbnd_c, nparams, params, work, iwork, info);
         }
+        //
         n_aux_tests++;
         if (orcond < eps) {
+            // Either factorization failed or the matrix is flagged, and 1 <=
+            // INFO <= N+1. We don't decide based on rcond anymore.
+            // IF (INFO .EQ. 0 .OR. INFO .GT. N+1) THEN
+            // NFAIL = NFAIL + 1
+            // WRITE (*, FMT=8000) N, INFO, ORCOND, RCOND
+            // END IF
         } else {
+            // Either everything succeeded (INFO == 0) or some solution failed
+            // to converge (INFO > N+1).
             if (info > 0 && info <= n + 1) {
                 nfail++;
-                write(6, "(' D',a2,'SVXX: N =',i2,', INFO = ',i3,', ORCOND = ',g12.5,"
-                         "', real RCOND = ',g12.5)"),
-                    c2, n, info, orcond, rcond;
+                write(6, format_8000), c2, n, info, orcond, rcond;
             }
         }
+        //
+        // Calculating the difference between D**SVXX's X and the true X.
         for (i = 1; i <= n; i = i + 1) {
             for (j = 1; j <= nrhs; j = j + 1) {
                 diff[(i - 1) + (j - 1) * nmax] = x[(i - 1) + (j - 1) * nmax] - invhilb[(i - 1) + (j - 1) * nmax];
             }
         }
+        //
+        // Calculating the RCOND
         rnorm = 0.0;
         rinorm = 0.0;
         if (Mlsamen(2, c2.elems, "PO") || Mlsamen(2, c2.elems, "SY")) {
@@ -175,6 +239,7 @@ void Rebchvxx(REAL const thresh, fem::str_cref path) {
                 for (j = 1; j <= n; j = j + 1) {
                     sumr += s[i - 1] * abs(a[(i - 1) + (j - 1) * nmax]) * s[j - 1];
                     sumri += abs(invhilb[(i - 1) + (j - 1) * nmax]) / (s[j - 1] * s[i - 1]);
+                    //
                 }
                 rnorm = max(rnorm, sumr);
                 rinorm = max(rinorm, sumri);
@@ -191,8 +256,11 @@ void Rebchvxx(REAL const thresh, fem::str_cref path) {
                 rinorm = max(rinorm, sumri);
             }
         }
+        //
         rnorm = rnorm / abs(a[0]);
         rcond = 1.0 / (rnorm * rinorm);
+        //
+        // Calculating the R for normwise rcond.
         for (i = 1; i <= n; i = i + 1) {
             rinv[i - 1] = 0.0;
         }
@@ -201,6 +269,8 @@ void Rebchvxx(REAL const thresh, fem::str_cref path) {
                 rinv[i - 1] += abs(a[(i - 1) + (j - 1) * nmax]);
             }
         }
+        //
+        // Calculating the Normwise rcond.
         rinorm = 0.0;
         for (i = 1; i <= n; i = i + 1) {
             sumri = 0.0;
@@ -209,9 +279,14 @@ void Rebchvxx(REAL const thresh, fem::str_cref path) {
             }
             rinorm = max(rinorm, sumri);
         }
+        //
+        // invhilb is the inverse *unscaled* Hilbert matrix, so scale its norm
+        // by 1/A(1,1) to make the scaling match A (the scaled Hilbert matrix)
         ncond = abs(a[0]) / rinorm;
+        //
         condthresh = m * eps;
         errthresh = m * eps;
+        //
         for (k = 1; k <= nrhs; k = k + 1) {
             normt = 0.0;
             normdif = 0.0;
@@ -232,6 +307,7 @@ void Rebchvxx(REAL const thresh, fem::str_cref path) {
             } else {
                 nwise_err = 0.0;
             }
+            //
             for (i = 1; i <= n; i = i + 1) {
                 rinv[i - 1] = 0.0;
             }
@@ -248,11 +324,18 @@ void Rebchvxx(REAL const thresh, fem::str_cref path) {
                 }
                 rinorm = max(rinorm, sumri);
             }
+            // invhilb is the inverse *unscaled* Hilbert matrix, so scale its norm
+            // by 1/A(1,1) to make the scaling match A (the scaled Hilbert matrix)
             ccond = abs(a[0]) / rinorm;
+            //
+            // Forward error bound tests
             nwise_bnd = errbnd_n[(k + (bnd_i - 1) * nrhs) - 1];
             cwise_bnd = errbnd_c[(k + (bnd_i - 1) * nrhs) - 1];
             nwise_rcond = errbnd_n[(k + (cond_i - 1) * nrhs) - 1];
             cwise_rcond = errbnd_c[(k + (cond_i - 1) * nrhs) - 1];
+            // write (*,*) 'nwise : ', n, k, ncond, nwise_rcond,
+            // $           condthresh, ncond.ge.condthresh
+            // write (*,*) 'nwise2: ', k, nwise_bnd, nwise_err, errthresh
             if (ncond >= condthresh) {
                 nguar = "YES";
                 if (nwise_bnd > errthresh) {
@@ -277,6 +360,9 @@ void Rebchvxx(REAL const thresh, fem::str_cref path) {
                     tstrat[1 - 1] = 1.0;
                 }
             }
+            // write (*,*) 'cwise : ', n, k, ccond, cwise_rcond,
+            // $           condthresh, ccond.ge.condthresh
+            // write (*,*) 'cwise2: ', k, cwise_bnd, cwise_err, errthresh
             if (ccond >= condthresh) {
                 cguar = "YES";
                 if (cwise_bnd > errthresh) {
@@ -301,54 +387,68 @@ void Rebchvxx(REAL const thresh, fem::str_cref path) {
                     tstrat[2 - 1] = 1.0;
                 }
             }
+            //
+            // Backwards error test
             tstrat[3 - 1] = berr[k - 1] / eps;
+            //
+            // Condition number tests
             tstrat[4 - 1] = rcond / orcond;
             if (rcond >= condthresh && tstrat[4 - 1] < 1.0) {
                 tstrat[4 - 1] = 1.0 / tstrat[4 - 1];
             }
+            //
             tstrat[5 - 1] = ncond / nwise_rcond;
             if (ncond >= condthresh && tstrat[5 - 1] < 1.0) {
                 tstrat[5 - 1] = 1.0 / tstrat[5 - 1];
             }
+            //
             tstrat[6 - 1] = ccond / nwise_rcond;
             if (ccond >= condthresh && tstrat[6 - 1] < 1.0) {
                 tstrat[6 - 1] = 1.0 / tstrat[6 - 1];
             }
+            //
             for (i = 1; i <= ntests; i = i + 1) {
                 if (tstrat[i - 1] > thresh) {
                     if (!printed_guide) {
                         write(6, star);
-                        write(6, "(3x,i2,': Normwise guaranteed forward error',/,5x,"
-                                 "'Guaranteed case: if norm ( abs( Xc - Xt )',"
-                                 "' / norm ( Xt ) .LE. ERRBND( *, nwise_i, bnd_i ), then',/,5x,"
-                                 "'ERRBND( *, nwise_i, bnd_i ) .LE. MAX(SQRT(N), 10) * EPS')"),
-                            1;
-                        write(6, "(3x,i2,': Componentwise guaranteed forward error')"), 2;
-                        write(6, "(3x,i2,': Backwards error')"), 3;
-                        write(6, "(3x,i2,': Reciprocal condition number')"), 4;
-                        write(6, "(3x,i2,': Reciprocal normwise condition number')"), 5;
-                        write(6, "(3x,i2,': Raw normwise error estimate')"), 6;
-                        write(6, "(3x,i2,': Reciprocal componentwise condition number')"), 7;
-                        write(6, "(3x,i2,': Raw componentwise error estimate')"), 8;
+                        write(6, format_9996), 1;
+                        write(6, format_9995), 2;
+                        write(6, format_9994), 3;
+                        write(6, format_9993), 4;
+                        write(6, format_9992), 5;
+                        write(6, format_9991), 6;
+                        write(6, format_9990), 7;
+                        write(6, format_9989), 8;
                         write(6, star);
                         printed_guide = true;
                     }
-                    write(6, "(' D',a2,'SVXX: N =',i2,', RHS = ',i2,', NWISE GUAR. = ',a,"
-                             "', CWISE GUAR. = ',a,' test(',i1,') =',g12.5)"),
-                        c2, n, k, nguar, cguar, i, tstrat[i - 1];
+                    write(6, format_9999), c2, n, k, nguar, cguar, i, tstrat[i - 1];
                     nfail++;
                 }
             }
         }
+        //
+        // $$$         WRITE(*,*)
+        // $$$         WRITE(*,*) 'Normwise Error Bounds'
+        // $$$         WRITE(*,*) 'Guaranteed error bound: ',ERRBND(NRHS,nwise_i,bnd_i)
+        // $$$         WRITE(*,*) 'Reciprocal condition number: ',ERRBND(NRHS,nwise_i,cond_i)
+        // $$$         WRITE(*,*) 'Raw error estimate: ',ERRBND(NRHS,nwise_i,rawbnd_i)
+        // $$$         WRITE(*,*)
+        // $$$         WRITE(*,*) 'Componentwise Error Bounds'
+        // $$$         WRITE(*,*) 'Guaranteed error bound: ',ERRBND(NRHS,cwise_i,bnd_i)
+        // $$$         WRITE(*,*) 'Reciprocal condition number: ',ERRBND(NRHS,cwise_i,cond_i)
+        // $$$         WRITE(*,*) 'Raw error estimate: ',ERRBND(NRHS,cwise_i,rawbnd_i)
+        // $$$         print *, 'Info: ', info
+        // $$$         WRITE(*,*)
+        // WRITE(*,*) 'TSTRAT: ',TSTRAT
+        //
     }
+    //
     write(6, star);
     if (nfail > 0) {
-        write(6, "(' D',a2,'SVXX: ',i6,' out of ',i6,"
-                 "' tests failed to pass the threshold')"),
-            c2, nfail, ntests *n + n_aux_tests;
+        write(6, format_9998), c2, nfail, ntests *n + n_aux_tests;
     } else {
-        write(6, "(' D',a2,'SVXX passed the tests of error bounds')"), c2;
+        write(6, format_9997), c2;
     }
-    // Test ratios.
     //
 }

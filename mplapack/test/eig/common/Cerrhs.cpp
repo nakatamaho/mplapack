@@ -47,6 +47,10 @@ void Cerrhs(fem::str_cref path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
     //
+    static const char *format_9999 = "(1x,a3,' routines passed the tests of the error exits',' (',i3,"
+                                     "' tests done)')";
+    static const char *format_9998 = "(' *** ',a3,' routines failed the tests of the error ','exits ***')";
+    //
     nout = nunit;
     write(nout, star);
     fem::str<2> c2 = path(2, 3);
@@ -328,11 +332,9 @@ void Cerrhs(fem::str_cref path, INTEGER const nunit) {
     // Print a summary line.
     //
     if (ok) {
-        write(nout, "(1x,a3,' routines passed the tests of the error exits',' (',i3,"
-                    "' tests done)')"),
-            path, nt;
+        write(nout, format_9999), path, nt;
     } else {
-        write(nout, "(' *** ',a3,' routines failed the tests of the error ','exits ***')"), path;
+        write(nout, format_9998), path;
     }
     //
     // End of Cerrhs

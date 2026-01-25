@@ -82,7 +82,9 @@ void Rckgsv(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEG
     const INTEGER ntests = 12;
     REAL result[ntests];
     INTEGER i = 0;
+    //
     static const char *format_9999 = "(' Rlatms in Rckgsv   INFO = ',i5)";
+    static const char *format_9998 = "(' M=',i4,' P=',i4,', N=',i4,', type ',i2,', test ',i2,', ratio=',g13.6)";
     //
     // Initialize constants and the random number seed.
     //
@@ -149,9 +151,7 @@ void Rckgsv(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEG
                         firstt = false;
                         Alahdg(nout, path);
                     }
-                    write(nout, "(' M=',i4,' P=',i4,', N=',i4,', type ',i2,', test ',i2,"
-                                "', ratio=',g13.6)"),
-                        m, p, n, imat, i, result[i - 1];
+                    write(nout, format_9998), m, p, n, imat, i, result[i - 1];
                     nfail++;
                 }
             }

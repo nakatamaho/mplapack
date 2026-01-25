@@ -47,10 +47,13 @@ void Alaesm(fem::str_cref path, bool const ok, INTEGER const nout) {
     common cmn;
     common_write write(cmn);
     //
+    static const char *format_9999 = "(1x,a3,' routines passed the tests of the error exits')";
+    static const char *format_9998 = "(' *** ',a3,' routines failed the tests of the error ','exits ***')";
+    //
     if (ok) {
-        write(nout, "(1x,a3,' routines passed the tests of the error exits')"), path;
+        write(nout, format_9999), path;
     } else {
-        write(nout, "(' *** ',a3,' routines failed the tests of the error ','exits ***')"), path;
+        write(nout, format_9998), path;
     }
     //
     // End of Alaesm

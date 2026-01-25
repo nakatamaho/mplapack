@@ -96,6 +96,9 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     REAL vu = 0.0;
     INTEGER m = 0;
     INTEGER ij = 0;
+    //
+    // End of Rdrvsg
+    //
     static const char *format_9999 = "(' Rdrvsg: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
                                      "', ISEED=(',3(i5,','),i5,')')";
     //
@@ -920,7 +923,5 @@ void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     // Summary
     //
     Rlasum("DSG", nounit, nerrs, ntestt);
-    //
-    // End of Rdrvsg
     //
 }

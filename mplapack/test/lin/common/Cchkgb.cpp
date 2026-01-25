@@ -109,6 +109,17 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     INTEGER k = 0;
     REAL rcond = 0.0;
     //
+    static const char *format_9999 = "(' *** In Cchkgb, LA=',i5,' is too small for M=',i5,', N=',i5,', KL=',i4,"
+                                     "', KU=',i4,/,' ==> Increase LA to at least ',i5)";
+    static const char *format_9998 = "(' *** In Cchkgb, LAFAC=',i5,' is too small for M=',i5,', N=',i5,', KL=',"
+                                     "i4,', KU=',i4,/,' ==> Increase LAFAC to at least ',i5)";
+    static const char *format_9997 = "(' M =',i5,', N =',i5,', KL=',i5,', KU=',i5,', NB =',i4,', type ',i1,"
+                                     "', test(',i1,')=',g12.5)";
+    static const char *format_9996 = "(' TRANS=''',a1,''', N=',i5,', KL=',i5,', KU=',i5,', NRHS=',i3,', type ',"
+                                     "i1,', test(',i1,')=',g12.5)";
+    static const char *format_9995 = "(' NORM =''',a1,''', N=',i5,', KL=',i5,', KU=',i5,',',10x,' type ',i1,"
+                                     "', test(',i1,')=',g12.5)";
+    //
     // Initialize constants and the random number seed.
     //
     path(1, 1) = "Zomplex precision";
@@ -201,17 +212,11 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             Alahd(nout, path);
                         }
                         if (n * (kl + ku + 1) > la) {
-                            write(nout, "(' *** In Cchkgb, LA=',i5,' is too small for M=',i5,', N=',"
-                                        "i5,', KL=',i4,', KU=',i4,/,' ==> Increase LA to at least ',"
-                                        "i5)"),
-                                la, m, n, kl, ku, n *(kl + ku + 1);
+                            write(nout, format_9999), la, m, n, kl, ku, n *(kl + ku + 1);
                             nerrs++;
                         }
                         if (n * (2 * kl + ku + 1) > lafac) {
-                            write(nout, "(' *** In Cchkgb, LAFAC=',i5,' is too small for M=',i5,"
-                                        "', N=',i5,', KL=',i4,', KU=',i4,/,"
-                                        "' ==> Increase LAFAC to at least ',i5)"),
-                                lafac, m, n, kl, ku, n * (2 * kl + ku + 1);
+                            write(nout, format_9998), lafac, m, n, kl, ku, n * (2 * kl + ku + 1);
                             nerrs++;
                         }
                         goto statement_130;
@@ -336,9 +341,7 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                 if (nfail == 0 && nerrs == 0) {
                                     Alahd(nout, path);
                                 }
-                                write(nout, "(' M =',i5,', N =',i5,', KL=',i5,', KU=',i5,', NB =',i4,"
-                                            "', type ',i1,', test(',i1,')=',g12.5)"),
-                                    m, n, kl, ku, nb, imat, 1, result[1 - 1];
+                                write(nout, format_9997), m, n, kl, ku, nb, imat, 1, result[1 - 1];
                                 nfail++;
                             }
                             nrun++;
@@ -460,9 +463,7 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                             if (nfail == 0 && nerrs == 0) {
                                                 Alahd(nout, path);
                                             }
-                                            write(nout, "(' TRANS=''',a1,''', N=',i5,', KL=',i5,', KU=',i5,"
-                                                        "', NRHS=',i3,', type ',i1,', test(',i1,')=',g12.5)"),
-                                                trans, n, kl, ku, nrhs, imat, k, result[k - 1];
+                                            write(nout, format_9996), trans, n, kl, ku, nrhs, imat, k, result[k - 1];
                                             nfail++;
                                         }
                                     }
@@ -502,9 +503,7 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                     if (nfail == 0 && nerrs == 0) {
                                         Alahd(nout, path);
                                     }
-                                    write(nout, "(' NORM =''',a1,''', N=',i5,', KL=',i5,', KU=',i5,',',"
-                                                "10x,' type ',i1,', test(',i1,')=',g12.5)"),
-                                        norm, n, kl, ku, imat, 7, result[7 - 1];
+                                    write(nout, format_9995), norm, n, kl, ku, imat, 7, result[7 - 1];
                                     nfail++;
                                 }
                                 nrun++;

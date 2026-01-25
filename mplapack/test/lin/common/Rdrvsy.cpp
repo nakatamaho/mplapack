@@ -95,6 +95,11 @@ void Rdrvsy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     REAL rcond = 0.0;
     INTEGER k1 = 0;
     //
+    static const char *format_9999 = "(1x,a,', UPLO=''',a1,''', N =',i5,', type ',i2,', test ',i2,', ratio =',"
+                                     "g12.5)";
+    static const char *format_9998 = "(1x,a,', FACT=''',a1,''', UPLO=''',a1,''', N =',i5,', type ',i2,"
+                                     "', test ',i2,', ratio =',g12.5)";
+    //
     // Initialize constants and the random number seed.
     //
     path(1, 1) = "Double precision";
@@ -342,9 +347,7 @@ void Rdrvsy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 if (nfail == 0 && nerrs == 0) {
                                     Aladhd(nout, path);
                                 }
-                                write(nout, "(1x,a,', UPLO=''',a1,''', N =',i5,', type ',i2,', test ',"
-                                            "i2,', ratio =',g12.5)"),
-                                    "DSYSV ", uplo, n, imat, k, result[k - 1];
+                                write(nout, format_9999), "Rsysv", uplo, n, imat, k, result[k - 1];
                                 nfail++;
                             }
                         }
@@ -430,9 +433,7 @@ void Rdrvsy(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             if (nfail == 0 && nerrs == 0) {
                                 Aladhd(nout, path);
                             }
-                            write(nout, "(1x,a,', FACT=''',a1,''', UPLO=''',a1,''', N =',i5,', type ',"
-                                        "i2,', test ',i2,', ratio =',g12.5)"),
-                                "DSYSVX", fact, uplo, n, imat, k, result[k - 1];
+                            write(nout, format_9998), "Rsysvx", fact, uplo, n, imat, k, result[k - 1];
                             nfail++;
                         }
                     }

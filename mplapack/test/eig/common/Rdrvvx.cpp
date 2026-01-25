@@ -89,6 +89,28 @@ void Rdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     INTEGER ntest = 0;
     INTEGER nfail = 0;
     INTEGER i = 0;
+    //
+    static const char *format_9999 = "(/,1x,a3,' -- Real Eigenvalue-Eigenvector Decomposition',"
+                                     "' Expert Driver',/,' Matrix types (see Rdrvvx for details): ')";
+    //
+    static const char *format_9998 = "(/,' Special Matrices:',/,'  1=Zero matrix.             ','           ',"
+                                     "'  5=Diagonal: geometr. spaced entries.',/,"
+                                     "'  2=Identity matrix.                    ','  6=Diagona',"
+                                     "'l: clustered entries.',/,'  3=Transposed Jordan block.  ','          ',"
+                                     "'  7=Diagonal: large, evenly spaced.',/,'  ',"
+                                     "'4=Diagonal: evenly spaced entries.    ','  8=Diagonal: s',"
+                                     "'mall, evenly spaced.')";
+    static const char *format_9997 = "(' Dense, Non-Symmetric Matrices:',/,'  9=Well-cond., ev',"
+                                     "'enly spaced eigenvals.',' 14=Ill-cond., geomet. spaced e','igenals.',/,"
+                                     "' 10=Well-cond., geom. spaced eigenvals. ',"
+                                     "' 15=Ill-conditioned, clustered e.vals.',/,' 11=Well-cond',"
+                                     "'itioned, clustered e.vals. ',' 16=Ill-cond., random comp','lex ',/,"
+                                     "' 12=Well-cond., random complex ','         ',"
+                                     "' 17=Ill-cond., large rand. complx ',/,' 13=Ill-condi',"
+                                     "'tioned, evenly spaced.     ',' 18=Ill-cond., small rand.',' complx ')";
+    static const char *format_9996 = "(' 19=Matrix with random O(1) entries.    ',' 21=Matrix ',"
+                                     "'with small random entries.',/,' 20=Matrix with large ran',"
+                                     "'dom entries.   ',' 22=Matrix read from input file',/)";
     static const char *format_9995 = "(' Tests performed with test threshold =',f8.2,/,/,"
                                      "' 1 = | A VR - VR W | / ( n |A| ulp ) ',/,"
                                      "' 2 = | transpose(A) VL - VL W | / ( n |A| ulp ) ',/,"
@@ -102,26 +124,11 @@ void Rdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                                      "' computed,  1/ulp otherwise',/,"
                                      "' 10 = | RCONDV - RCONDV(precomputed) | / cond(RCONDV),',/,"
                                      "' 11 = | RCONDE - RCONDE(precomputed) | / cond(RCONDE),')";
-    static const char *format_9996 = "(' 19=Matrix with random O(1) entries.    ',' 21=Matrix ',"
-                                     "'with small random entries.',/,' 20=Matrix with large ran',"
-                                     "'dom entries.   ',' 22=Matrix read from input file',/)";
-    static const char *format_9997 = "(' Dense, Non-Symmetric Matrices:',/,'  9=Well-cond., ev',"
-                                     "'enly spaced eigenvals.',' 14=Ill-cond., geomet. spaced e','igenals.',/,"
-                                     "' 10=Well-cond., geom. spaced eigenvals. ',"
-                                     "' 15=Ill-conditioned, clustered e.vals.',/,' 11=Well-cond',"
-                                     "'itioned, clustered e.vals. ',' 16=Ill-cond., random comp','lex ',/,"
-                                     "' 12=Well-cond., random complex ','         ',"
-                                     "' 17=Ill-cond., large rand. complx ',/,' 13=Ill-condi',"
-                                     "'tioned, evenly spaced.     ',' 18=Ill-cond., small rand.',' complx ')";
-    static const char *format_9998 = "(/,' Special Matrices:',/,'  1=Zero matrix.             ','           ',"
-                                     "'  5=Diagonal: geometr. spaced entries.',/,"
-                                     "'  2=Identity matrix.                    ','  6=Diagona',"
-                                     "'l: clustered entries.',/,'  3=Transposed Jordan block.  ','          ',"
-                                     "'  7=Diagonal: large, evenly spaced.',/,'  ',"
-                                     "'4=Diagonal: evenly spaced entries.    ','  8=Diagonal: s',"
-                                     "'mall, evenly spaced.')";
-    static const char *format_9999 = "(/,1x,a3,' -- Real Eigenvalue-Eigenvector Decomposition',"
-                                     "' Expert Driver',/,' Matrix types (see Rdrvvx for details): ')";
+    static const char *format_9994 = "(' BALANC=''',a1,''',N=',i4,',IWK=',i1,', seed=',4(i4,','),' type ',i2,"
+                                     "', test(',i2,')=',g10.3)";
+    static const char *format_9993 = "(' N=',i5,', input example =',i3,',  test(',i2,')=',g10.3)";
+    static const char *format_9992 = "(' Rdrvvx: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
+                                     "', ISEED=(',3(i5,','),i5,')')";
     //
     path(1, 1) = "Double precision";
     path(2, 3) = "VX";
@@ -356,9 +363,7 @@ void Rdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             }
             //
             if (iinfo != 0) {
-                write(nounit, "(' Rdrvvx: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
-                              "', ISEED=(',3(i5,','),i5,')')"),
-                    "Generator", iinfo, n, jtype, ioldsd;
+                write(nounit, format_9992), "Generator", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 return;
             }
@@ -413,9 +418,7 @@ void Rdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     //
                     for (j = 1; j <= 9; j = j + 1) {
                         if (result[j - 1] >= thresh) {
-                            write(nounit, "(' BALANC=''',a1,''',N=',i4,',IWK=',i1,', seed=',4(i4,','),"
-                                          "' type ',i2,', test(',i2,')=',g10.3)"),
-                                balanc, n, iwk, ioldsd, jtype, j, result[j - 1];
+                            write(nounit, format_9994), balanc, n, iwk, ioldsd, jtype, j, result[j - 1];
                         }
                     }
                     //
@@ -489,7 +492,7 @@ statement_170:
     //
     for (j = 1; j <= 11; j = j + 1) {
         if (result[j - 1] >= thresh) {
-            write(nounit, "(' N=',i5,', input example =',i3,',  test(',i2,')=',g10.3)"), n, jtype, j, result[j - 1];
+            write(nounit, format_9993), n, jtype, j, result[j - 1];
         }
     }
     //

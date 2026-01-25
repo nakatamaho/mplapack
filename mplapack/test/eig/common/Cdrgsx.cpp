@@ -86,6 +86,29 @@ void Cdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
     INTEGER i = 0;
     INTEGER nptknt = 0;
     REAL pltru = 0.0;
+    //
+    static const char *format_9999 = "(' Cdrgsx: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,')')";
+    //
+    static const char *format_9998 = "(' Cdrgsx: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', Input Example #',"
+                                     "i2,')')";
+    //
+    static const char *format_9997 = "(' Cdrgsx: S not in Schur form at eigenvalue ',i6,'.',/,9x,'N=',i6,"
+                                     "', JTYPE=',i6,')')";
+    //
+    static const char *format_9996 = "(/,1x,a3,' -- Complex Expert Generalized Schur form',' problem driver')";
+    //
+    static const char *format_9995 = "('Input Example')";
+    //
+    static const char *format_9994 = "(' Matrix types: ',/,"
+                                     "'  1:  A is a block diagonal matrix of Jordan blocks ',"
+                                     "'and B is the identity ',/,'      matrix, ',/,"
+                                     "'  2:  A and B are upper triangular matrices, ',/,"
+                                     "'  3:  A and B are as type 2, but each second diagonal ',"
+                                     "'block in A_11 and ',/,"
+                                     "'      each third diaongal block in A_22 are 2x2 blocks,',/,"
+                                     "'  4:  A and B are block diagonal matrices, ',/,"
+                                     "'  5:  (A,B) has potentially close or common ','eigenvalues.',/)";
+    //
     static const char *format_9993 = "(/,' Tests performed:  (S is Schur, T is triangular, ','Q and Z are ',a,"
                                      "',',/,19x,' a is alpha, b is beta, and ',a,' means ',a,'.)',/,"
                                      "'  1 = | A - Q S Z',a,' | / ( |A| n ulp )      2 = | B - Q T Z',a,"
@@ -99,9 +122,14 @@ void Cdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
                                      "'  9 = 1/ULP  if DIFEST <> 0 or DIFTRU > ULP*norm(A,B) ',"
                                      "'when reordering fails',/,' 10 = 1/ULP  if PLEST/PLTRU > THRESH or ',"
                                      "'PLTRU/PLEST > THRESH',/,'    ( Test 10 is only for input examples )',/)";
-    static const char *format_9996 = "(/,1x,a3,' -- Complex Expert Generalized Schur form',' problem driver')";
-    static const char *format_9997 = "(' Cdrgsx: S not in Schur form at eigenvalue ',i6,'.',/,9x,'N=',i6,"
-                                     "', JTYPE=',i6,')')";
+    static const char *format_9992 = "(' Matrix order=',i2,', type=',i2,', a=',d10.3,', order(A_11)=',i2,"
+                                     "', result ',i2,' is ',0p,f8.2)";
+    static const char *format_9991 = "(' Matrix order=',i2,', type=',i2,', a=',d10.3,', order(A_11)=',i2,"
+                                     "', result ',i2,' is ',0p,d10.3)";
+    static const char *format_9990 = "(' Input example #',i2,', matrix order=',i4,',',' result ',i2,' is',0p,"
+                                     "f8.2)";
+    static const char *format_9989 = "(' Input example #',i2,', matrix order=',i4,',',' result ',i2,' is',1p,"
+                                     "d10.3)";
     //
     // Check for errors
     //
@@ -225,9 +253,7 @@ void Cdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
                     //
                     if (linfo != 0 && linfo != mplusn + 2) {
                         result[1 - 1] = ulpinv;
-                        write(nout, "(' Cdrgsx: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,"
-                                    "', JTYPE=',i6,')')"),
-                            "ZGGESX", linfo, mplusn, prtype;
+                        write(nout, format_9999), "Cggesx", linfo, mplusn, prtype;
                         info = linfo;
                         goto statement_30;
                     }
@@ -347,16 +373,7 @@ void Cdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
                                 //
                                 // Matrix types
                                 //
-                                write(nout, "(' Matrix types: ',/,"
-                                            "'  1:  A is a block diagonal matrix of Jordan blocks ',"
-                                            "'and B is the identity ',/,'      matrix, ',/,"
-                                            "'  2:  A and B are upper triangular matrices, ',/,"
-                                            "'  3:  A and B are as type 2, but each second diagonal ',"
-                                            "'block in A_11 and ',/,"
-                                            "'      each third diaongal block in A_22 are 2x2 blocks,',"
-                                            "/,'  4:  A and B are block diagonal matrices, ',/,"
-                                            "'  5:  (A,B) has potentially close or common ',"
-                                            "'eigenvalues.',/)");
+                                write(nout, format_9994);
                                 //
                                 // Tests performed
                                 //
@@ -371,13 +388,9 @@ void Cdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
                             }
                             nerrs++;
                             if (result[j - 1] < 10000.0) {
-                                write(nout, "(' Matrix order=',i2,', type=',i2,', a=',d10.3,"
-                                            "', order(A_11)=',i2,', result ',i2,' is ',0p,f8.2)"),
-                                    mplusn, prtype, weight, m, j, result[j - 1];
+                                write(nout, format_9992), mplusn, prtype, weight, m, j, result[j - 1];
                             } else {
-                                write(nout, "(' Matrix order=',i2,', type=',i2,', a=',d10.3,"
-                                            "', order(A_11)=',i2,', result ',i2,' is ',0p,d10.3)"),
-                                    mplusn, prtype, weight, m, j, result[j - 1];
+                                write(nout, format_9991), mplusn, prtype, weight, m, j, result[j - 1];
                             }
                         }
                     }
@@ -444,9 +457,7 @@ statement_80:
     //
     if (linfo != 0 && linfo != mplusn + 2) {
         result[1 - 1] = ulpinv;
-        write(nout, "(' Cdrgsx: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,"
-                    "', Input Example #',i2,')')"),
-            "ZGGESX", linfo, mplusn, nptknt;
+        write(nout, format_9998), "Cggesx", linfo, mplusn, nptknt;
         goto statement_130;
     }
     //
@@ -565,7 +576,7 @@ statement_80:
                 //
                 // Matrix types
                 //
-                write(nout, "('Input Example')");
+                write(nout, format_9995);
                 //
                 // Tests performed
                 //
@@ -580,13 +591,9 @@ statement_80:
             }
             nerrs++;
             if (result[j - 1] < 10000.0) {
-                write(nout, "(' Input example #',i2,', matrix order=',i4,',',' result ',i2,"
-                            "' is',0p,f8.2)"),
-                    nptknt, mplusn, j, result[j - 1];
+                write(nout, format_9990), nptknt, mplusn, j, result[j - 1];
             } else {
-                write(nout, "(' Input example #',i2,', matrix order=',i4,',',' result ',i2,"
-                            "' is',1p,d10.3)"),
-                    nptknt, mplusn, j, result[j - 1];
+                write(nout, format_9989), nptknt, mplusn, j, result[j - 1];
             }
         }
         //

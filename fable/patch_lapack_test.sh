@@ -43,10 +43,11 @@ patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rlattr.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rorhr_col01.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rorhr_col02.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rtsqr01.cpp
-patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rchkaa.cpp
-patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cchkaa.cpp
-patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rchkrfp.cpp
-patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cchkrfp.cpp
+
+#patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rchkaa.cpp
+#patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cchkaa.cpp
+#patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rchkrfp.cpp
+#patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cchkrfp.cpp
 
 cd /home/docker/mplapack/mplapack/test/eig/common
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cget52.cpp
@@ -69,7 +70,7 @@ patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rchkbd.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cchkgg.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rdrgsx.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cdrgsx.cpp
-patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rchkee.cpp
-patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cchkee.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rdrvsg.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cdrvsg.cpp
+#patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rchkee.cpp
+#patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cchkee.cpp

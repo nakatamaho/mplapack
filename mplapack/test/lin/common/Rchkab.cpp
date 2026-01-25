@@ -90,12 +90,21 @@ void program_dchkab(int argc, char const *argv[]) {
     REAL s2 = 0.0;
     INTEGER ldaw = ldamax * nmax;
     INTEGER ldb = nmax * maxrhs;
-    static const char *format_9989 = "(/,1x,a6,' driver routines were not tested')";
-    static const char *format_9991 = "(' Relative machine ',a,' is taken to be',d16.6)";
-    static const char *format_9993 = "(4x,a4,':  ',10i6,/,11x,10i6)";
-    static const char *format_9995 = "(' Invalid input value: ',a4,'=',i6,'; must be <=',i6)";
-    static const char *format_9996 = "(' Invalid input value: ',a4,'=',i6,'; must be >=',i6)";
     //
+    static const char *format_9999 = "(/,' Execution not attempted due to input errors')";
+    static const char *format_9998 = "(/,' End of tests')";
+    static const char *format_9997 = "(' Total time used = ',f12.2,' seconds',/)";
+    static const char *format_9996 = "(' Invalid input value: ',a4,'=',i6,'; must be >=',i6)";
+    static const char *format_9995 = "(' Invalid input value: ',a4,'=',i6,'; must be <=',i6)";
+    static const char *format_9994 = "(' Tests of the DOUBLE PRECISION LAPACK Rsgesv/Rsposv',' routines ',/,"
+                                     "' LAPACK VERSION ',i1,'.',i1,'.',i1,/,/,"
+                                     "' The following parameter values will be used:')";
+    static const char *format_9993 = "(4x,a4,':  ',10i6,/,11x,10i6)";
+    static const char *format_9992 = "(/,' Routines pass computational tests if test ratio is ','less than',"
+                                     "f8.2,/)";
+    static const char *format_9991 = "(' Relative machine ',a,' is taken to be',d16.6)";
+    static const char *format_9990 = "(/,1x,a6,' routines were not tested')";
+    static const char *format_9989 = "(/,1x,a6,' driver routines were not tested')";
     //
     //
     s1 = dsecnd();
@@ -109,10 +118,7 @@ void program_dchkab(int argc, char const *argv[]) {
     // Report values of parameters.
     //
     ilaver(vers_major, vers_minor, vers_patch);
-    write(nout, "(' Tests of the DOUBLE PRECISION LAPACK Rsgesv/Rsposv',' routines ',/,"
-                "' LAPACK VERSION ',i1,'.',i1,'.',i1,/,/,"
-                "' The following parameter values will be used:')"),
-        vers_major, vers_minor, vers_patch;
+    write(nout, format_9994), vers_major, vers_minor, vers_patch;
     //
     // Read the values of M
     //
@@ -191,9 +197,7 @@ void program_dchkab(int argc, char const *argv[]) {
     // Read the threshold value for the test ratios.
     //
     read(nin, star), thresh;
-    write(nout, "(/,' Routines pass computational tests if test ratio is ','less than',"
-                "f8.2,/)"),
-        thresh;
+    write(nout, format_9992), thresh;
     //
     // Read the flag that indicates whether to test the driver routine.
     //
@@ -204,7 +208,7 @@ void program_dchkab(int argc, char const *argv[]) {
     read(nin, star), tsterr;
     //
     if (fatal) {
-        write(nout, "(/,' Execution not attempted due to input errors')");
+        write(nout, format_9999);
         FEM_STOP(0);
     }
     //
@@ -272,7 +276,7 @@ statement_130:
     // Check first character for correct precision.
     //
     if (!Mlsame(c1.elems, "Double precision")) {
-        write(nout, "(/,1x,a6,' routines were not tested')"), path;
+        write(nout, format_9990), path;
         //
     } else if (nmats <= 0) {
         //
@@ -329,8 +333,8 @@ statement_130:
 statement_140:
     cmn.io.close(nin);
     s2 = dsecnd();
-    write(nout, "(/,' End of tests')");
-    write(nout, "(' Total time used = ',f12.2,' seconds',/)"), s2 - s1;
+    write(nout, format_9998);
+    write(nout, format_9997), s2 - s1;
     //
     // End of Rchkab
     //

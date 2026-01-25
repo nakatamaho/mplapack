@@ -47,15 +47,18 @@ void Alasum(fem::str_cref type, INTEGER const nout, INTEGER const nfail, INTEGER
     common cmn;
     common_write write(cmn);
     //
+    static const char *format_9999 = "(1x,a3,': ',i6,' out of ',i6,' tests failed to pass the threshold')";
+    static const char *format_9998 = "(/,1x,'All tests for ',a3,' routines passed the threshold ( ',i6,"
+                                     "' tests run)')";
+    static const char *format_9997 = "(6x,i6,' error messages recorded')";
+    //
     if (nfail > 0) {
-        write(nout, "(1x,a3,': ',i6,' out of ',i6,' tests failed to pass the threshold')"), type, nfail, nrun;
+        write(nout, format_9999), type, nfail, nrun;
     } else {
-        write(nout, "(/,1x,'All tests for ',a3,' routines passed the threshold ( ',i6,"
-                    "' tests run)')"),
-            type, nrun;
+        write(nout, format_9998), type, nrun;
     }
     if (nerrs > 0) {
-        write(nout, "(6x,i6,' error messages recorded')"), nerrs;
+        write(nout, format_9997), nerrs;
     }
     //
     // End of Alasum

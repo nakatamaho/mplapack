@@ -87,11 +87,44 @@ void Rdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
     INTEGER jc = 0;
     INTEGER jr = 0;
     INTEGER i = 0;
+    //
+    static const char *format_9999 = "(' Rdrgev3: ',a,' returned INFO=',i6,'.',/,3x,'N=',i6,', JTYPE=',i6,"
+                                     "', ISEED=(',4(i4,','),i5,')')";
+    //
     static const char *format_9998 = "(' Rdrgev3: ',a,' Eigenvectors from ',a,' incorrectly normalized.',/,"
                                      "' Bits of error=',0p,g10.3,',',3x,'N=',i4,', JTYPE=',i3,', ISEED=(',4(i4,"
                                      "','),i5,')')";
-    static const char *format_9999 = "(' Rdrgev3: ',a,' returned INFO=',i6,'.',/,3x,'N=',i6,', JTYPE=',i6,"
-                                     "', ISEED=(',4(i4,','),i5,')')";
+    //
+    static const char *format_9997 = "(/,1x,a3,' -- Real Generalized eigenvalue problem driver')";
+    //
+    static const char *format_9996 = "(' Matrix types (see Rdrgev3 for details): ')";
+    //
+    static const char *format_9995 = "(' Special Matrices:',23x,'(J''=transposed Jordan block)',/,"
+                                     "'   1=(0,0)  2=(I,0)  3=(0,I)  4=(I,I)  5=(J'',J'')  ',"
+                                     "'6=(diag(J'',I), diag(I,J''))',/,' Diagonal Matrices:  ( ',"
+                                     "'D=diag(0,1,2,...) )',/,'   7=(D,I)   9=(large*D, small*I',"
+                                     "')  11=(large*I, small*D)  13=(large*D, large*I)',/,"
+                                     "'   8=(I,D)  10=(small*D, large*I)  12=(small*I, large*D) ',"
+                                     "' 14=(small*D, small*I)',/,'  15=(D, reversed D)')";
+    static const char *format_9994 = "(' Matrices Rotated by Random ',a,' Matrices U, V:',/,"
+                                     "'  16=Transposed Jordan Blocks             19=geometric ',"
+                                     "'alpha, beta=0,1',/,'  17=arithm. alpha&beta             ',"
+                                     "'      20=arithmetic alpha, beta=0,1',/,'  18=clustered ',"
+                                     "'alpha, beta=0,1            21=random alpha, beta=0,1',/,"
+                                     "' Large & Small Matrices:',/,'  22=(large, small)   ',"
+                                     "'23=(small,large)    24=(small,small)    25=(large,large)',/,"
+                                     "'  26=random O(1) matrices.')";
+    //
+    static const char *format_9993 = "(/,' Tests performed:    ',/,' 1 = max | ( b A - a B )''*l | / const.,',"
+                                     "/,' 2 = | |VR(i)| - 1 | / ulp,',/,"
+                                     "' 3 = max | ( b A - a B )*r | / const.',/,' 4 = | |VL(i)| - 1 | / ulp,',"
+                                     "/,' 5 = 0 if W same no matter if r or l computed,',/,"
+                                     "' 6 = 0 if l same no matter if l computed,',/,"
+                                     "' 7 = 0 if r same no matter if r computed,',/,1x)";
+    static const char *format_9992 = "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),' result ',i2,"
+                                     "' is',0p,f8.2)";
+    static const char *format_9991 = "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),' result ',i2,"
+                                     "' is',1p,d10.3)";
     //
     // Check for errors
     //
@@ -445,49 +478,24 @@ void Rdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                     // print a header to the data file.
                     //
                     if (nerrs == 0) {
-                        write(nounit, "(/,1x,a3,' -- Real Generalized eigenvalue problem driver')"), "DGV";
+                        write(nounit, format_9997), "DGV";
                         //
                         // Matrix types
                         //
-                        write(nounit, "(' Matrix types (see Rdrgev3 for details): ')");
-                        write(nounit, "(' Special Matrices:',23x,'(J''=transposed Jordan block)',/,"
-                                      "'   1=(0,0)  2=(I,0)  3=(0,I)  4=(I,I)  5=(J'',J'')  ',"
-                                      "'6=(diag(J'',I), diag(I,J''))',/,' Diagonal Matrices:  ( ',"
-                                      "'D=diag(0,1,2,...) )',/,'   7=(D,I)   9=(large*D, small*I',"
-                                      "')  11=(large*I, small*D)  13=(large*D, large*I)',/,"
-                                      "'   8=(I,D)  10=(small*D, large*I)  12=(small*I, large*D) ',"
-                                      "' 14=(small*D, small*I)',/,'  15=(D, reversed D)')");
-                        write(nounit, "(' Matrices Rotated by Random ',a,' Matrices U, V:',/,"
-                                      "'  16=Transposed Jordan Blocks             19=geometric ',"
-                                      "'alpha, beta=0,1',/,'  17=arithm. alpha&beta             ',"
-                                      "'      20=arithmetic alpha, beta=0,1',/,'  18=clustered ',"
-                                      "'alpha, beta=0,1            21=random alpha, beta=0,1',/,"
-                                      "' Large & Small Matrices:',/,'  22=(large, small)   ',"
-                                      "'23=(small,large)    24=(small,small)    25=(large,large)',/,"
-                                      "'  26=random O(1) matrices.')"),
-                            "Orthogonal";
+                        write(nounit, format_9996);
+                        write(nounit, format_9995);
+                        write(nounit, format_9994), "Orthogonal";
                         //
                         // Tests performed
                         //
-                        write(nounit, "(/,' Tests performed:    ',/,"
-                                      "' 1 = max | ( b A - a B )''*l | / const.,',/,"
-                                      "' 2 = | |VR(i)| - 1 | / ulp,',/,"
-                                      "' 3 = max | ( b A - a B )*r | / const.',/,"
-                                      "' 4 = | |VL(i)| - 1 | / ulp,',/,"
-                                      "' 5 = 0 if W same no matter if r or l computed,',/,"
-                                      "' 6 = 0 if l same no matter if l computed,',/,"
-                                      "' 7 = 0 if r same no matter if r computed,',/,1x)");
+                        write(nounit, format_9993);
                         //
                     }
                     nerrs++;
                     if (result[jr - 1] < 10000.0) {
-                        write(nounit, "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),"
-                                      "' result ',i2,' is',0p,f8.2)"),
-                            n, jtype, ioldsd, jr, result[jr - 1];
+                        write(nounit, format_9992), n, jtype, ioldsd, jr, result[jr - 1];
                     } else {
-                        write(nounit, "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),"
-                                      "' result ',i2,' is',1p,d10.3)"),
-                            n, jtype, ioldsd, jr, result[jr - 1];
+                        write(nounit, format_9991), n, jtype, ioldsd, jr, result[jr - 1];
                     }
                 }
             }

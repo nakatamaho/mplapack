@@ -81,6 +81,9 @@ void Cchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     REAL result = 0.0;
     INTEGER rankdiff = 0;
     //
+    static const char *format_9999 = "(' UPLO = ''',a1,''', N =',i5,', RANK =',i3,', Diff =',i5,', NB =',i4,"
+                                     "', type ',i2,', Ratio =',g12.5)";
+    //
     // Initialize constants and the random number seed.
     //
     path(1, 1) = "Zomplex Precision";
@@ -198,9 +201,7 @@ void Cchkps(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
-                            write(nout, "(' UPLO = ''',a1,''', N =',i5,', RANK =',i3,', Diff =',i5,"
-                                        "', NB =',i4,', type ',i2,', Ratio =',g12.5)"),
-                                uplo, n, rank, rankdiff, nb, imat, result;
+                            write(nout, format_9999), uplo, n, rank, rankdiff, nb, imat, result;
                             nfail++;
                         }
                         nrun++;

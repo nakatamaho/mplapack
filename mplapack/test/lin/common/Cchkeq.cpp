@@ -46,6 +46,17 @@ using fem::common;
 void Cchkeq(REAL const thresh, INTEGER const nout) {
     common cmn;
     common_write write(cmn);
+    static const char *format_9999 = "(1x,'All tests for ',a3,' routines passed the threshold')";
+    static const char *format_9998 = "(' Cgeequ failed test with value ',d10.3,' exceeding',' threshold ',"
+                                     "d10.3)";
+    static const char *format_9997 = "(' Cgbequ failed test with value ',d10.3,' exceeding',' threshold ',"
+                                     "d10.3)";
+    static const char *format_9996 = "(' Cpoequ failed test with value ',d10.3,' exceeding',' threshold ',"
+                                     "d10.3)";
+    static const char *format_9995 = "(' Cppequ failed test with value ',d10.3,' exceeding',' threshold ',"
+                                     "d10.3)";
+    static const char *format_9994 = "(' Cpbequ failed test with value ',d10.3,' exceeding',' threshold ',"
+                                     "d10.3)";
     //
     fem::str<3> path = "Zomplex precision";
     path(2, 3) = "EQ";
@@ -395,32 +406,22 @@ void Cchkeq(REAL const thresh, INTEGER const nout) {
     bool ok = (reslts[1 - 1] <= thresh) && (reslts[2 - 1] <= thresh) && (reslts[3 - 1] <= thresh) && (reslts[4 - 1] <= thresh) && (reslts[5 - 1] <= thresh);
     write(nout, star);
     if (ok) {
-        write(nout, "(1x,'All tests for ',a3,' routines passed the threshold')"), path;
+        write(nout, format_9999), path;
     } else {
         if (reslts[1 - 1] > thresh) {
-            write(nout, "(' Cgeequ failed test with value ',d10.3,' exceeding',' threshold ',"
-                        "d10.3)"),
-                reslts[1 - 1], thresh;
+            write(nout, format_9998), reslts[1 - 1], thresh;
         }
         if (reslts[2 - 1] > thresh) {
-            write(nout, "(' Cgbequ failed test with value ',d10.3,' exceeding',' threshold ',"
-                        "d10.3)"),
-                reslts[2 - 1], thresh;
+            write(nout, format_9997), reslts[2 - 1], thresh;
         }
         if (reslts[3 - 1] > thresh) {
-            write(nout, "(' Cpoequ failed test with value ',d10.3,' exceeding',' threshold ',"
-                        "d10.3)"),
-                reslts[3 - 1], thresh;
+            write(nout, format_9996), reslts[3 - 1], thresh;
         }
         if (reslts[4 - 1] > thresh) {
-            write(nout, "(' Cppequ failed test with value ',d10.3,' exceeding',' threshold ',"
-                        "d10.3)"),
-                reslts[4 - 1], thresh;
+            write(nout, format_9995), reslts[4 - 1], thresh;
         }
         if (reslts[5 - 1] > thresh) {
-            write(nout, "(' Cpbequ failed test with value ',d10.3,' exceeding',' threshold ',"
-                        "d10.3)"),
-                reslts[5 - 1], thresh;
+            write(nout, format_9994), reslts[5 - 1], thresh;
         }
     }
     //

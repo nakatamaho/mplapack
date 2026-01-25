@@ -99,8 +99,54 @@ void Rdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
     INTEGER i1 = 0;
     INTEGER ierr = 0;
     INTEGER knteig = 0;
+    //
     static const char *format_9999 = "(' Rdrges3: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
                                      "', ISEED=(',4(i4,','),i5,')')";
+    //
+    static const char *format_9998 = "(' Rdrges3: Rget53 returned INFO=',i1,' for eigenvalue ',i6,'.',/,9x,"
+                                     "'N=',i6,', JTYPE=',i6,', ISEED=(',4(i4,','),i5,')')";
+    //
+    static const char *format_9997 = "(' Rdrges3: S not in Schur form at eigenvalue ',i6,'.',/,9x,'N=',i6,"
+                                     "', JTYPE=',i6,', ISEED=(',3(i5,','),i5,')')";
+    //
+    static const char *format_9996 = "(/,1x,a3,' -- Real Generalized Schur form driver')";
+    //
+    static const char *format_9995 = "(' Matrix types (see Rdrges3 for details): ')";
+    //
+    static const char *format_9994 = "(' Special Matrices:',23x,'(J''=transposed Jordan block)',/,"
+                                     "'   1=(0,0)  2=(I,0)  3=(0,I)  4=(I,I)  5=(J'',J'')  ',"
+                                     "'6=(diag(J'',I), diag(I,J''))',/,' Diagonal Matrices:  ( ',"
+                                     "'D=diag(0,1,2,...) )',/,'   7=(D,I)   9=(large*D, small*I',"
+                                     "')  11=(large*I, small*D)  13=(large*D, large*I)',/,"
+                                     "'   8=(I,D)  10=(small*D, large*I)  12=(small*I, large*D) ',"
+                                     "' 14=(small*D, small*I)',/,'  15=(D, reversed D)')";
+    static const char *format_9993 = "(' Matrices Rotated by Random ',a,' Matrices U, V:',/,"
+                                     "'  16=Transposed Jordan Blocks             19=geometric ',"
+                                     "'alpha, beta=0,1',/,'  17=arithm. alpha&beta             ',"
+                                     "'      20=arithmetic alpha, beta=0,1',/,'  18=clustered ',"
+                                     "'alpha, beta=0,1            21=random alpha, beta=0,1',/,"
+                                     "' Large & Small Matrices:',/,'  22=(large, small)   ',"
+                                     "'23=(small,large)    24=(small,small)    25=(large,large)',/,"
+                                     "'  26=random O(1) matrices.')";
+    //
+    static const char *format_9992 = "(/,' Tests performed:  (S is Schur, T is triangular, ','Q and Z are ',a,"
+                                     "',',/,19x,'l and r are the appropriate left and right',/,19x,"
+                                     "'eigenvectors, resp., a is alpha, b is beta, and',/,19x,a,' means ',a,"
+                                     "'.)',/,' Without ordering: ',/,'  1 = | A - Q S Z',a,"
+                                     "' | / ( |A| n ulp )      2 = | B - Q T Z',a,' | / ( |B| n ulp )',/,"
+                                     "'  3 = | I - QQ',a,' | / ( n ulp )             4 = | I - ZZ',a,"
+                                     "' | / ( n ulp )',/,'  5 = A is in Schur form S',/,"
+                                     "'  6 = difference between (alpha,beta)',' and diagonals of (S,T)',/,"
+                                     "' With ordering: ',/,'  7 = | (A,B) - Q (S,T) Z',a,"
+                                     "' | / ( |(A,B)| n ulp )  ',/,'  8 = | I - QQ',a,"
+                                     "' | / ( n ulp )            9 = | I - ZZ',a,' | / ( n ulp )',/,"
+                                     "' 10 = A is in Schur form S',/,"
+                                     "' 11 = difference between (alpha,beta) and diagonals',' of (S,T)',/,"
+                                     "' 12 = SDIM is the correct number of ','selected eigenvalues',/)";
+    static const char *format_9991 = "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),' result ',i2,"
+                                     "' is',0p,f8.2)";
+    static const char *format_9990 = "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),' result ',i2,"
+                                     "' is',1p,d10.3)";
     //
     // Check for errors
     //
@@ -433,10 +479,7 @@ void Rdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                         if (!ilabad) {
                             Rget53(&s[(i1 - 1) + (i1 - 1) * lda], lda, &t[(i1 - 1) + (i1 - 1) * lda], lda, beta[j - 1], alphar[j - 1], alphai[j - 1], temp2, ierr);
                             if (ierr >= 3) {
-                                write(nounit, "(' Rdrges3: Rget53 returned INFO=',i1,' for eigenvalue ',"
-                                              "i6,'.',/,9x,'N=',i6,', JTYPE=',i6,', ISEED=(',4(i4,','),i5,"
-                                              "')')"),
-                                    ierr, j, n, jtype, ioldsd;
+                                write(nounit, format_9998), ierr, j, n, jtype, ioldsd;
                                 info = abs(ierr);
                             }
                         } else {
@@ -446,9 +489,7 @@ void Rdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                     }
                     temp1 = max(temp1, temp2);
                     if (ilabad) {
-                        write(nounit, "(' Rdrges3: S not in Schur form at eigenvalue ',i6,'.',/,9x,"
-                                      "'N=',i6,', JTYPE=',i6,', ISEED=(',3(i5,','),i5,')')"),
-                            j, n, jtype, ioldsd;
+                        write(nounit, format_9997), j, n, jtype, ioldsd;
                     }
                 }
                 result[(6 + rsub) - 1] = temp1;
@@ -492,50 +533,18 @@ void Rdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                     // print a header to the data file.
                     //
                     if (nerrs == 0) {
-                        write(nounit, "(/,1x,a3,' -- Real Generalized Schur form driver')"), "DGS";
+                        write(nounit, format_9996), "DGS";
                         //
                         // Matrix types
                         //
-                        write(nounit, "(' Matrix types (see Rdrges3 for details): ')");
-                        write(nounit, "(' Special Matrices:',23x,'(J''=transposed Jordan block)',/,"
-                                      "'   1=(0,0)  2=(I,0)  3=(0,I)  4=(I,I)  5=(J'',J'')  ',"
-                                      "'6=(diag(J'',I), diag(I,J''))',/,' Diagonal Matrices:  ( ',"
-                                      "'D=diag(0,1,2,...) )',/,'   7=(D,I)   9=(large*D, small*I',"
-                                      "')  11=(large*I, small*D)  13=(large*D, large*I)',/,"
-                                      "'   8=(I,D)  10=(small*D, large*I)  12=(small*I, large*D) ',"
-                                      "' 14=(small*D, small*I)',/,'  15=(D, reversed D)')");
-                        write(nounit, "(' Matrices Rotated by Random ',a,' Matrices U, V:',/,"
-                                      "'  16=Transposed Jordan Blocks             19=geometric ',"
-                                      "'alpha, beta=0,1',/,'  17=arithm. alpha&beta             ',"
-                                      "'      20=arithmetic alpha, beta=0,1',/,'  18=clustered ',"
-                                      "'alpha, beta=0,1            21=random alpha, beta=0,1',/,"
-                                      "' Large & Small Matrices:',/,'  22=(large, small)   ',"
-                                      "'23=(small,large)    24=(small,small)    25=(large,large)',/,"
-                                      "'  26=random O(1) matrices.')"),
-                            "Orthogonal";
+                        write(nounit, format_9995);
+                        write(nounit, format_9994);
+                        write(nounit, format_9993), "Orthogonal";
                         //
                         // Tests performed
                         //
                         {
-                            write_loop wloop(cmn, nounit,
-                                             "(/,' Tests performed:  (S is Schur, T is triangular, ',"
-                                             "'Q and Z are ',a,',',/,19x,"
-                                             "'l and r are the appropriate left and right',/,19x,"
-                                             "'eigenvectors, resp., a is alpha, b is beta, and',/,19x,a,"
-                                             "' means ',a,'.)',/,' Without ordering: ',/,"
-                                             "'  1 = | A - Q S Z',a,"
-                                             "' | / ( |A| n ulp )      2 = | B - Q T Z',a,"
-                                             "' | / ( |B| n ulp )',/,'  3 = | I - QQ',a,"
-                                             "' | / ( n ulp )             4 = | I - ZZ',a,' | / ( n ulp )',"
-                                             "/,'  5 = A is in Schur form S',/,"
-                                             "'  6 = difference between (alpha,beta)',"
-                                             "' and diagonals of (S,T)',/,' With ordering: ',/,"
-                                             "'  7 = | (A,B) - Q (S,T) Z',a,' | / ( |(A,B)| n ulp )  ',/,"
-                                             "'  8 = | I - QQ',a,' | / ( n ulp )            9 = | I - ZZ',"
-                                             "a,' | / ( n ulp )',/,' 10 = A is in Schur form S',/,"
-                                             "' 11 = difference between (alpha,beta) and diagonals',"
-                                             "' of (S,T)',/,' 12 = SDIM is the correct number of ',"
-                                             "'selected eigenvalues',/)");
+                            write_loop wloop(cmn, nounit, format_9992);
                             wloop, "orthogonal", "'", "transpose";
                             for (j = 1; j <= 8; j = j + 1) {
                                 wloop, "'";
@@ -545,13 +554,9 @@ void Rdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                     }
                     nerrs++;
                     if (result[jr - 1] < 10000.0) {
-                        write(nounit, "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),"
-                                      "' result ',i2,' is',0p,f8.2)"),
-                            n, jtype, ioldsd, jr, result[jr - 1];
+                        write(nounit, format_9991), n, jtype, ioldsd, jr, result[jr - 1];
                     } else {
-                        write(nounit, "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),"
-                                      "' result ',i2,' is',1p,d10.3)"),
-                            n, jtype, ioldsd, jr, result[jr - 1];
+                        write(nounit, format_9990), n, jtype, ioldsd, jr, result[jr - 1];
                     }
                 }
             }

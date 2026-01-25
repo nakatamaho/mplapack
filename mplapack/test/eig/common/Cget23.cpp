@@ -84,10 +84,11 @@ void Cget23(bool const comp, INTEGER const isrt, fem::str_cref balanc, INTEGER c
     REAL tol = 0.0;
     REAL tolin = 0.0;
     REAL vmax = 0.0;
-    static const char *format_9998 = "(' Cget23: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
-                                     "', BALANC = ',a,', ISEED=(',3(i5,','),i5,')')";
+    //
     static const char *format_9999 = "(' Cget23: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,"
                                      "', INPUT EXAMPLE NUMBER = ',i4)";
+    static const char *format_9998 = "(' Cget23: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
+                                     "', BALANC = ',a,', ISEED=(',3(i5,','),i5,')')";
     //
     // Check for errors
     //

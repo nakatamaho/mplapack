@@ -53,6 +53,15 @@ void Cdrvrf3(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
     static fem::str<1> transs[2] = {"N", "C"};
     static fem::str<1> diags[2] = {"N", "U"};
     //
+    static const char *format_9999 = "(1x,' *** Error(s) or Failure(s) while testing Ctfsm         ***')";
+    static const char *format_9997 = "(1x,'     Failure in ',a5,', CFORM=''',a1,''',',' SIDE=''',a1,''',',"
+                                     "' UPLO=''',a1,''',',' TRANS=''',a1,''',',' DIAG=''',a1,''',',' M=',i3,"
+                                     "', N =',i3,', test=',g12.5)";
+    static const char *format_9996 = "(1x,'All tests for ',a5,' auxiliary routine passed the ','threshold ( ',"
+                                     "i5,' tests run)')";
+    static const char *format_9995 = "(1x,a6,' auxiliary routine:',i5,' out of ',i5,"
+                                     "' tests failed to pass the threshold')";
+    //
     // Initialize constants and the random number seed.
     //
     INTEGER nrun = 0;
@@ -229,14 +238,9 @@ void Cdrvrf3(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                                     if (result[1 - 1] >= thresh) {
                                         if (nfail == 0) {
                                             write(nout, star);
-                                            write(nout, "(1x,' *** Error(s) or Failure(s) while testing Ctfsm "
-                                                        "        ***')");
+                                            write(nout, format_9999);
                                         }
-                                        write(nout, "(1x,'     Failure in ',a5,', CFORM=''',a1,''',',"
-                                                    "' SIDE=''',a1,''',',' UPLO=''',a1,''',',' TRANS=''',a1,"
-                                                    "''',',' DIAG=''',a1,''',',' M=',i3,', N =',i3,"
-                                                    "', test=',g12.5)"),
-                                            "ZTFSM", cform, side, uplo, trans, diag, m, n, result[1 - 1];
+                                        write(nout, format_9997), "Ctfsm", cform, side, uplo, trans, diag, m, n, result[1 - 1];
                                         nfail++;
                                     }
                                     //
@@ -252,13 +256,9 @@ void Cdrvrf3(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
     // Print a summary of the results.
     //
     if (nfail == 0) {
-        write(nout, "(1x,'All tests for ',a5,' auxiliary routine passed the ',"
-                    "'threshold ( ',i5,' tests run)')"),
-            "ZTFSM", nrun;
+        write(nout, format_9996), "Ctfsm", nrun;
     } else {
-        write(nout, "(1x,a6,' auxiliary routine:',i5,' out of ',i5,"
-                    "' tests failed to pass the threshold')"),
-            "ZTFSM", nfail, nrun;
+        write(nout, format_9995), "Ctfsm", nfail, nrun;
     }
     //
     // End of Cdrvrf3

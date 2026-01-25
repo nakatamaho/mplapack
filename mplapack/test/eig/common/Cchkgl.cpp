@@ -76,6 +76,13 @@ void Cchkgl(INTEGER const nin, INTEGER const nout) {
     REAL rscale[lda];
     INTEGER info = 0;
     REAL vmax = 0.0;
+    static const char *format_9999 = "(' .. test output of Cggbal .. ')";
+    static const char *format_9998 = "(' ratio of largest test error              = ',d12.3)";
+    static const char *format_9997 = "(' example number where info is not zero    = ',i4)";
+    static const char *format_9996 = "(' example number where ILO or IHI is wrong = ',i4)";
+    static const char *format_9995 = "(' example number having largest error      = ',i4)";
+    static const char *format_9994 = "(' number of examples where info is not 0   = ',i4)";
+    static const char *format_9993 = "(' total number of examples tested          = ',i4)";
     //
     lmax[1 - 1] = 0;
     lmax[2 - 1] = 0;
@@ -182,14 +189,14 @@ statement_10:
 //
 statement_90:
     //
-    write(nout, "(' .. test output of Cggbal .. ')");
+    write(nout, format_9999);
     //
-    write(nout, "(' ratio of largest test error              = ',d12.3)"), rmax;
-    write(nout, "(' example number where info is not zero    = ',i4)"), lmax[1 - 1];
-    write(nout, "(' example number where ILO or IHI is wrong = ',i4)"), lmax[2 - 1];
-    write(nout, "(' example number having largest error      = ',i4)"), lmax[3 - 1];
-    write(nout, "(' number of examples where info is not 0   = ',i4)"), ninfo;
-    write(nout, "(' total number of examples tested          = ',i4)"), knt;
+    write(nout, format_9998), rmax;
+    write(nout, format_9997), lmax[1 - 1];
+    write(nout, format_9996), lmax[2 - 1];
+    write(nout, format_9995), lmax[3 - 1];
+    write(nout, format_9994), ninfo;
+    write(nout, format_9993), knt;
     //
     // End of Cchkgl
     //

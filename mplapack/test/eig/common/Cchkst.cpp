@@ -115,8 +115,42 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     INTEGER indrwk = 0;
     const bool crel = false;
     const bool crange = false;
+    //
     static const char *format_9999 = "(' Cchkst: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
                                      "', ISEED=(',3(i5,','),i5,')')";
+    //
+    static const char *format_9998 = "(/,1x,a3,' -- Complex Hermitian eigenvalue problem')";
+    static const char *format_9997 = "(' Matrix types (see Cchkst for details): ')";
+    //
+    static const char *format_9996 = "(/,' Special Matrices:',/,'  1=Zero matrix.                        ',"
+                                     "'  5=Diagonal: clustered entries.',/,"
+                                     "'  2=Identity matrix.                    ',"
+                                     "'  6=Diagonal: large, evenly spaced.',/,"
+                                     "'  3=Diagonal: evenly spaced entries.    ',"
+                                     "'  7=Diagonal: small, evenly spaced.',/,"
+                                     "'  4=Diagonal: geometr. spaced entries.')";
+    static const char *format_9995 = "(' Dense ',a,' Matrices:',/,'  8=Evenly spaced eigenvals.            ',"
+                                     "' 12=Small, evenly spaced eigenvals.',/,"
+                                     "'  9=Geometrically spaced eigenvals.     ',"
+                                     "' 13=Matrix with random O(1) entries.',/,"
+                                     "' 10=Clustered eigenvalues.              ',"
+                                     "' 14=Matrix with large random entries.',/,"
+                                     "' 11=Large, evenly spaced eigenvals.     ',"
+                                     "' 15=Matrix with small random entries.')";
+    static const char *format_9994 = "(' 16=Positive definite, evenly spaced eigenvalues',/,"
+                                     "' 17=Positive definite, geometrically spaced eigenvlaues',/,"
+                                     "' 18=Positive definite, clustered eigenvalues',/,"
+                                     "' 19=Positive definite, small evenly spaced eigenvalues',/,"
+                                     "' 20=Positive definite, large evenly spaced eigenvalues',/,"
+                                     "' 21=Diagonally dominant tridiagonal, geometrically',"
+                                     "' spaced eigenvalues')";
+    //
+    static const char *format_9989 = "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),' result ',i3,"
+                                     "' is',0p,f8.2)";
+    static const char *format_9988 = "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),' result ',i3,"
+                                     "' is',1p,d10.3)";
+    //
+    static const char *format_9987 = "(/,'Test performed:  see Cchkst for details.',/)";
     //
     // Keep ftnchek happy
     idumma[1 - 1] = 1;
@@ -1266,47 +1300,21 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     // print a header to the data file.
                     //
                     if (nerrs == 0) {
-                        write(nounit, "(/,1x,a3,' -- Complex Hermitian eigenvalue problem')"), "ZST";
-                        write(nounit, "(' Matrix types (see Cchkst for details): ')");
-                        write(nounit, "(/,' Special Matrices:',/,"
-                                      "'  1=Zero matrix.                        ',"
-                                      "'  5=Diagonal: clustered entries.',/,"
-                                      "'  2=Identity matrix.                    ',"
-                                      "'  6=Diagonal: large, evenly spaced.',/,"
-                                      "'  3=Diagonal: evenly spaced entries.    ',"
-                                      "'  7=Diagonal: small, evenly spaced.',/,"
-                                      "'  4=Diagonal: geometr. spaced entries.')");
-                        write(nounit, "(' Dense ',a,' Matrices:',/,"
-                                      "'  8=Evenly spaced eigenvals.            ',"
-                                      "' 12=Small, evenly spaced eigenvals.',/,"
-                                      "'  9=Geometrically spaced eigenvals.     ',"
-                                      "' 13=Matrix with random O(1) entries.',/,"
-                                      "' 10=Clustered eigenvalues.              ',"
-                                      "' 14=Matrix with large random entries.',/,"
-                                      "' 11=Large, evenly spaced eigenvals.     ',"
-                                      "' 15=Matrix with small random entries.')"),
-                            "Hermitian";
-                        write(nounit, "(' 16=Positive definite, evenly spaced eigenvalues',/,"
-                                      "' 17=Positive definite, geometrically spaced eigenvlaues',/,"
-                                      "' 18=Positive definite, clustered eigenvalues',/,"
-                                      "' 19=Positive definite, small evenly spaced eigenvalues',/,"
-                                      "' 20=Positive definite, large evenly spaced eigenvalues',/,"
-                                      "' 21=Diagonally dominant tridiagonal, geometrically',"
-                                      "' spaced eigenvalues')");
+                        write(nounit, format_9998), "ZST";
+                        write(nounit, format_9997);
+                        write(nounit, format_9996);
+                        write(nounit, format_9995), "Hermitian";
+                        write(nounit, format_9994);
                         //
                         // Tests performed
                         //
-                        write(nounit, "(/,'Test performed:  see Cchkst for details.',/)");
+                        write(nounit, format_9987);
                     }
                     nerrs++;
                     if (result[jr - 1] < 10000.0) {
-                        write(nounit, "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),"
-                                      "' result ',i3,' is',0p,f8.2)"),
-                            n, jtype, ioldsd, jr, result[jr - 1];
+                        write(nounit, format_9989), n, jtype, ioldsd, jr, result[jr - 1];
                     } else {
-                        write(nounit, "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),"
-                                      "' result ',i3,' is',1p,d10.3)"),
-                            n, jtype, ioldsd, jr, result[jr - 1];
+                        write(nounit, format_9988), n, jtype, ioldsd, jr, result[jr - 1];
                     }
                 }
             }
@@ -1317,7 +1325,6 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     // Summary
     //
     Rlasum("ZST", nounit, nerrs, ntestt);
-    //
     // End of Cchkst
     //
 }

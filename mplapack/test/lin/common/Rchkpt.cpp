@@ -84,7 +84,9 @@ void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     INTEGER nrhs = 0;
     INTEGER k = 0;
     REAL rcond = 0.0;
+    //
     static const char *format_9999 = "(' N =',i5,', type ',i2,', test ',i2,', ratio = ',g12.5)";
+    static const char *format_9998 = "(' N =',i5,', NRHS=',i3,', type ',i2,', test(',i2,') = ',g12.5)";
     //
     path(1, 1) = "Double precision";
     path(2, 3) = "PT";
@@ -351,9 +353,7 @@ void Rchkpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                         if (nfail == 0 && nerrs == 0) {
                             Alahd(nout, path);
                         }
-                        write(nout, "(' N =',i5,', NRHS=',i3,', type ',i2,', test(',i2,') = ',"
-                                    "g12.5)"),
-                            n, nrhs, imat, k, result[k - 1];
+                        write(nout, format_9998), n, nrhs, imat, k, result[k - 1];
                         nfail++;
                     }
                 }

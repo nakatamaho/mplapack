@@ -92,6 +92,12 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     INTEGER ix = 0;
     INTEGER k = 0;
     //
+    static const char *format_9999 = "(12x,'N =',i5,',',10x,' type ',i2,', test(',i2,') = ',g12.5)";
+    static const char *format_9998 = "(' TRANS=''',a1,''', N =',i5,', NRHS=',i3,', type ',i2,', test(',i2,"
+                                     "') = ',g12.5)";
+    static const char *format_9997 = "(' NORM =''',a1,''', N =',i5,',',10x,' type ',i2,', test(',i2,') = ',"
+                                     "g12.5)";
+    //
     path(1, 1) = "Zomplex precision";
     path(2, 3) = "GT";
     nrun = 0;
@@ -241,7 +247,7 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 if (nfail == 0 && nerrs == 0) {
                     Alahd(nout, path);
                 }
-                write(nout, "(12x,'N =',i5,',',10x,' type ',i2,', test(',i2,') = ',g12.5)"), n, imat, 1, result[1 - 1];
+                write(nout, format_9999), n, imat, 1, result[1 - 1];
                 nfail++;
             }
             nrun++;
@@ -307,9 +313,7 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     if (nfail == 0 && nerrs == 0) {
                         Alahd(nout, path);
                     }
-                    write(nout, "(' NORM =''',a1,''', N =',i5,',',10x,' type ',i2,', test(',i2,"
-                                "') = ',g12.5)"),
-                        norm, n, imat, 7, result[7 - 1];
+                    write(nout, format_9997), norm, n, imat, 7, result[7 - 1];
                     nfail++;
                 }
                 nrun++;
@@ -388,9 +392,7 @@ void Cchkgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
-                            write(nout, "(' TRANS=''',a1,''', N =',i5,', NRHS=',i3,', type ',i2,"
-                                        "', test(',i2,') = ',g12.5)"),
-                                trans, n, nrhs, imat, k, result[k - 1];
+                            write(nout, format_9998), trans, n, nrhs, imat, k, result[k - 1];
                             nfail++;
                         }
                     }

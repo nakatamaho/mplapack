@@ -58,11 +58,11 @@ void Cqrt05(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb,
     INTEGER lwork = m2 * m2 * nb;
     INTEGER ldt = nb;
     const COMPLEX czero = COMPLEX(0.0, 0.0);
-    std::unique_ptr<COMPLEX[]> __a_storage(new COMPLEX[m2 * n]);
-    COMPLEX *a = __a_storage.get();
+    std::unique_ptr<COMPLEX[]> a_storage(new COMPLEX[m2 * n]);
+    COMPLEX *a = a_storage.get();
     Claset("Full", m2, n, czero, czero, a, m2);
-    std::unique_ptr<COMPLEX[]> __t_storage(new COMPLEX[nb * n]);
-    COMPLEX *t = __t_storage.get();
+    std::unique_ptr<COMPLEX[]> t_storage(new COMPLEX[nb * n]);
+    COMPLEX *t = t_storage.get();
     Claset("Full", nb, n, czero, czero, t, nb);
     INTEGER j = 0;
     for (j = 1; j <= n; j = j + 1) {
@@ -78,27 +78,27 @@ void Cqrt05(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb,
             Clarnv(2, iseed, min(j, l), &a[(min(n + m, n + m - l + 1) - 1) + (j - 1) * m2]);
         }
     }
-    std::unique_ptr<COMPLEX[]> __af_storage(new COMPLEX[m2 * n]);
-    COMPLEX *af = __af_storage.get();
+    std::unique_ptr<COMPLEX[]> af_storage(new COMPLEX[m2 * n]);
+    COMPLEX *af = af_storage.get();
     Clacpy("Full", m2, n, a, m2, af, m2);
-    std::unique_ptr<COMPLEX[]> __work_storage(new COMPLEX[lwork]);
-    COMPLEX *work = __work_storage.get();
+    std::unique_ptr<COMPLEX[]> work_storage(new COMPLEX[lwork]);
+    COMPLEX *work = work_storage.get();
     INTEGER info = 0;
     Ctpqrt(m, n, l, nb, af, m2, &af[(np1 - 1)], m2, t, ldt, work, info);
     const COMPLEX one = COMPLEX(1.0, 0.0);
-    std::unique_ptr<COMPLEX[]> __q_storage(new COMPLEX[m2 * m2]);
-    COMPLEX *q = __q_storage.get();
+    std::unique_ptr<COMPLEX[]> q_storage(new COMPLEX[m2 * m2]);
+    COMPLEX *q = q_storage.get();
     Claset("Full", m2, m2, czero, one, q, m2);
     Cgemqrt("R", "N", m2, m2, k, nb, af, m2, t, ldt, q, m2, work, info);
-    std::unique_ptr<COMPLEX[]> __r_storage(new COMPLEX[m2 * m2]);
-    COMPLEX *r = __r_storage.get();
+    std::unique_ptr<COMPLEX[]> r_storage(new COMPLEX[m2 * m2]);
+    COMPLEX *r = r_storage.get();
     Claset("Full", m2, n, czero, czero, r, m2);
     Clacpy("Upper", m2, n, af, m2, r, m2);
     // Compute |R - Q'*A| / |A| and store in RESULT(1)
     //
     Cgemm("C", "N", m2, n, m2, -one, q, m2, a, m2, one, r, m2);
-    std::unique_ptr<REAL[]> __rwork_storage(new REAL[m2]);
-    REAL *rwork = __rwork_storage.get();
+    std::unique_ptr<REAL[]> rwork_storage(new REAL[m2]);
+    REAL *rwork = rwork_storage.get();
     REAL anorm = Clange("1", m2, n, a, m2, rwork);
     REAL resid = Clange("1", m2, n, r, m2, rwork);
     const REAL zero = 0.0;
@@ -117,14 +117,14 @@ void Cqrt05(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb,
     //
     // Generate random m-by-n matrix C and a copy CF
     //
-    std::unique_ptr<COMPLEX[]> __c_storage(new COMPLEX[m2 * n]);
-    COMPLEX *c = __c_storage.get();
+    std::unique_ptr<COMPLEX[]> c_storage(new COMPLEX[m2 * n]);
+    COMPLEX *c = c_storage.get();
     for (j = 1; j <= n; j = j + 1) {
         Clarnv(2, iseed, m2, &c[(j - 1) * m2]);
     }
     REAL cnorm = Clange("1", m2, n, c, m2, rwork);
-    std::unique_ptr<COMPLEX[]> __cf_storage(new COMPLEX[m2 * n]);
-    COMPLEX *cf = __cf_storage.get();
+    std::unique_ptr<COMPLEX[]> cf_storage(new COMPLEX[m2 * n]);
+    COMPLEX *cf = cf_storage.get();
     Clacpy("Full", m2, n, c, m2, cf, m2);
     //
     // Apply Q to C as Q*C
@@ -161,14 +161,14 @@ void Cqrt05(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb,
     //
     // Generate random n-by-m matrix D and a copy DF
     //
-    std::unique_ptr<COMPLEX[]> __d_storage(new COMPLEX[n * m2]);
-    COMPLEX *d = __d_storage.get();
+    std::unique_ptr<COMPLEX[]> d_storage(new COMPLEX[n * m2]);
+    COMPLEX *d = d_storage.get();
     for (j = 1; j <= m2; j = j + 1) {
         Clarnv(2, iseed, n, &d[(j - 1) * n]);
     }
     REAL dnorm = Clange("1", n, m2, d, n, rwork);
-    std::unique_ptr<COMPLEX[]> __df_storage(new COMPLEX[n * m2]);
-    COMPLEX *df = __df_storage.get();
+    std::unique_ptr<COMPLEX[]> df_storage(new COMPLEX[n * m2]);
+    COMPLEX *df = df_storage.get();
     Clacpy("Full", n, m2, d, n, df, n);
     //
     // Apply Q to D as D*Q

@@ -94,8 +94,39 @@ void Rchksb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
     REAL temp2 = 0.0;
     REAL temp3 = 0.0;
     REAL temp4 = 0.0;
+    //
     static const char *format_9999 = "(' Rchksbstg: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
                                      "', ISEED=(',3(i5,','),i5,')')";
+    //
+    static const char *format_9998 = "(/,1x,a3,' -- Real Symmetric Banded Tridiagonal Reduction Routines')";
+    static const char *format_9997 = "(' Matrix types (see Rchksbstg for details): ')";
+    //
+    static const char *format_9996 = "(/,' Special Matrices:',/,'  1=Zero matrix.                        ',"
+                                     "'  5=Diagonal: clustered entries.',/,"
+                                     "'  2=Identity matrix.                    ',"
+                                     "'  6=Diagonal: large, evenly spaced.',/,"
+                                     "'  3=Diagonal: evenly spaced entries.    ',"
+                                     "'  7=Diagonal: small, evenly spaced.',/,"
+                                     "'  4=Diagonal: geometr. spaced entries.')";
+    static const char *format_9995 = "(' Dense ',a,' Banded Matrices:',/,"
+                                     "'  8=Evenly spaced eigenvals.            ',"
+                                     "' 12=Small, evenly spaced eigenvals.',/,"
+                                     "'  9=Geometrically spaced eigenvals.     ',"
+                                     "' 13=Matrix with random O(1) entries.',/,"
+                                     "' 10=Clustered eigenvalues.              ',"
+                                     "' 14=Matrix with large random entries.',/,"
+                                     "' 11=Large, evenly spaced eigenvals.     ',"
+                                     "' 15=Matrix with small random entries.')";
+    //
+    static const char *format_9994 = "(/,' Tests performed:   (S is Tridiag,  U is ',a,',',/,20x,a,' means ',a,"
+                                     "'.',/,' UPLO=''U'':',/,'  1= | A - U S U',a1,' | / ( |A| n ulp )     ',"
+                                     "'  2= | I - U U',a1,' | / ( n ulp )',/,' UPLO=''L'':',/,"
+                                     "'  3= | A - U S U',a1,' | / ( |A| n ulp )     ','  4= | I - U U',a1,"
+                                     "' | / ( n ulp )',/,' Eig check:',/,'  5= | D1 - D2','',"
+                                     "' | / ( |D1| ulp )         ','  6= | D1 - D3','',"
+                                     "' | / ( |D1| ulp )          ')";
+    static const char *format_9993 = "(' N=',i5,', K=',i4,', seed=',4(i4,','),' type ',i2,', test(',i2,')=',"
+                                     "g10.3)";
     //
     // Check for errors
     //
@@ -511,38 +542,12 @@ void Rchksb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
                         // print a header to the data file.
                         //
                         if (nerrs == 0) {
-                            write(nounit, "(/,1x,a3,"
-                                          "' -- Real Symmetric Banded Tridiagonal Reduction Routines')"),
-                                "DSB";
-                            write(nounit, "(' Matrix types (see Rchksbstg for details): ')");
-                            write(nounit, "(/,' Special Matrices:',/,"
-                                          "'  1=Zero matrix.                        ',"
-                                          "'  5=Diagonal: clustered entries.',/,"
-                                          "'  2=Identity matrix.                    ',"
-                                          "'  6=Diagonal: large, evenly spaced.',/,"
-                                          "'  3=Diagonal: evenly spaced entries.    ',"
-                                          "'  7=Diagonal: small, evenly spaced.',/,"
-                                          "'  4=Diagonal: geometr. spaced entries.')");
-                            write(nounit, "(' Dense ',a,' Banded Matrices:',/,"
-                                          "'  8=Evenly spaced eigenvals.            ',"
-                                          "' 12=Small, evenly spaced eigenvals.',/,"
-                                          "'  9=Geometrically spaced eigenvals.     ',"
-                                          "' 13=Matrix with random O(1) entries.',/,"
-                                          "' 10=Clustered eigenvalues.              ',"
-                                          "' 14=Matrix with large random entries.',/,"
-                                          "' 11=Large, evenly spaced eigenvals.     ',"
-                                          "' 15=Matrix with small random entries.')"),
-                                "Symmetric";
+                            write(nounit, format_9998), "DSB";
+                            write(nounit, format_9997);
+                            write(nounit, format_9996);
+                            write(nounit, format_9995), "Symmetric";
                             {
-                                write_loop wloop(cmn, nounit,
-                                                 "(/,' Tests performed:   (S is Tridiag,  U is ',a,',',/,20x,"
-                                                 "a,' means ',a,'.',/,' UPLO=''U'':',/,'  1= | A - U S U',a1,"
-                                                 "' | / ( |A| n ulp )     ','  2= | I - U U',a1,"
-                                                 "' | / ( n ulp )',/,' UPLO=''L'':',/,'  3= | A - U S U',a1,"
-                                                 "' | / ( |A| n ulp )     ','  4= | I - U U',a1,"
-                                                 "' | / ( n ulp )',/,' Eig check:',/,'  5= | D1 - D2','',"
-                                                 "' | / ( |D1| ulp )         ','  6= | D1 - D3','',"
-                                                 "' | / ( |D1| ulp )          ')");
+                                write_loop wloop(cmn, nounit, format_9994);
                                 wloop, "orthogonal", "'", "transpose";
                                 for (j = 1; j <= 6; j = j + 1) {
                                     wloop, "'";
@@ -550,9 +555,7 @@ void Rchksb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
                             }
                         }
                         nerrs++;
-                        write(nounit, "(' N=',i5,', K=',i4,', seed=',4(i4,','),' type ',i2,', test(',"
-                                      "i2,')=',g10.3)"),
-                            n, k, ioldsd, jtype, jr, result[jr - 1];
+                        write(nounit, format_9993), n, k, ioldsd, jtype, jr, result[jr - 1];
                     }
                 }
             //

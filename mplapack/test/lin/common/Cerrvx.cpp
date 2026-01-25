@@ -47,6 +47,9 @@ void Cerrvx(fem::str_cref path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
     //
+    static const char *format_9999 = "(1x,a3,' drivers passed the tests of the error exits')";
+    static const char *format_9998 = "(' *** ',a3,' drivers failed the tests of the error ','exits ***')";
+    //
     nout = nunit;
     write(nout, star);
     fem::str<2> c2 = path(2, 3);
@@ -836,9 +839,9 @@ void Cerrvx(fem::str_cref path, INTEGER const nunit) {
     // Print a summary line.
     //
     if (ok) {
-        write(nout, "(1x,a3,' drivers passed the tests of the error exits')"), path;
+        write(nout, format_9999), path;
     } else {
-        write(nout, "(' *** ',a3,' drivers failed the tests of the error ','exits ***')"), path;
+        write(nout, format_9998), path;
     }
     //
     // End of Cerrvx

@@ -65,8 +65,8 @@ void Ctsqr01(fem::str_cref tssw, INTEGER const m, INTEGER const n, INTEGER const
     // Put random numbers into A and copy to AF
     //
     INTEGER j = 0;
-    std::unique_ptr<COMPLEX[]> __a_storage(new COMPLEX[m * n]);
-    COMPLEX *a = __a_storage.get();
+    std::unique_ptr<COMPLEX[]> a_storage(new COMPLEX[m * n]);
+    COMPLEX *a = a_storage.get();
     for (j = 1; j <= n; j = j + 1) {
         Clarnv(2, iseed, m, &a[(j - 1) * m]);
     }
@@ -77,41 +77,41 @@ void Ctsqr01(fem::str_cref tssw, INTEGER const m, INTEGER const n, INTEGER const
             }
         }
     }
-    std::unique_ptr<COMPLEX[]> __af_storage(new COMPLEX[m * n]);
-    COMPLEX *af = __af_storage.get();
+    std::unique_ptr<COMPLEX[]> af_storage(new COMPLEX[m * n]);
+    COMPLEX *af = af_storage.get();
     Clacpy("Full", m, n, a, m, af, m);
     //
     COMPLEX tquery[5];
     COMPLEX workquery[1];
     INTEGER info = 0;
     INTEGER tsize = 0;
-    std::unique_ptr<COMPLEX[]> __cf_storage(new COMPLEX[m * n]);
-    COMPLEX *cf = __cf_storage.get();
-    std::unique_ptr<COMPLEX[]> __df_storage(new COMPLEX[n * m]);
-    COMPLEX *df = __df_storage.get();
-    std::unique_ptr<COMPLEX[]> __t_storage(new COMPLEX[tsize]);
-    COMPLEX *t = __t_storage.get();
-    std::unique_ptr<COMPLEX[]> __work_storage(new COMPLEX[lwork]);
-    COMPLEX *work = __work_storage.get();
+    std::unique_ptr<COMPLEX[]> cf_storage(new COMPLEX[m * n]);
+    COMPLEX *cf = cf_storage.get();
+    std::unique_ptr<COMPLEX[]> df_storage(new COMPLEX[n * m]);
+    COMPLEX *df = df_storage.get();
+    std::unique_ptr<COMPLEX[]> t_storage(new COMPLEX[tsize]);
+    COMPLEX *t = t_storage.get();
+    std::unique_ptr<COMPLEX[]> work_storage(new COMPLEX[lwork]);
+    COMPLEX *work = work_storage.get();
     const COMPLEX czero = COMPLEX(0.0, 0.0);
     const COMPLEX one = COMPLEX(1.0, 0.0);
-    std::unique_ptr<COMPLEX[]> __q_storage(new COMPLEX[l * l]);
-    COMPLEX *q = __q_storage.get();
-    std::unique_ptr<COMPLEX[]> __r_storage(new COMPLEX[m * l]);
-    COMPLEX *r = __r_storage.get();
-    std::unique_ptr<REAL[]> __rwork_storage(new REAL[l]);
-    REAL *rwork = __rwork_storage.get();
+    std::unique_ptr<COMPLEX[]> q_storage(new COMPLEX[l * l]);
+    COMPLEX *q = q_storage.get();
+    std::unique_ptr<COMPLEX[]> r_storage(new COMPLEX[m * l]);
+    COMPLEX *r = r_storage.get();
+    std::unique_ptr<COMPLEX[]> rwork_storage(new COMPLEX[l]);
+    COMPLEX *rwork = rwork_storage.get();
     REAL anorm = 0.0;
     REAL resid = 0.0;
     const REAL zero = 0.0;
-    std::unique_ptr<COMPLEX[]> __c_storage(new COMPLEX[m * n]);
-    COMPLEX *c = __c_storage.get();
+    std::unique_ptr<COMPLEX[]> c_storage(new COMPLEX[m * n]);
+    COMPLEX *c = c_storage.get();
     REAL cnorm = 0.0;
-    std::unique_ptr<COMPLEX[]> __d_storage(new COMPLEX[n * m]);
-    COMPLEX *d = __d_storage.get();
+    std::unique_ptr<COMPLEX[]> d_storage(new COMPLEX[n * m]);
+    COMPLEX *d = d_storage.get();
     REAL dnorm = 0.0;
-    std::unique_ptr<COMPLEX[]> __lq_storage(new COMPLEX[l * n]);
-    COMPLEX *lq = __lq_storage.get();
+    std::unique_ptr<COMPLEX[]> lq_storage(new COMPLEX[l * n]);
+    COMPLEX *lq = lq_storage.get();
     if (ts) {
         //
         // Factor the matrix A in the array AF.

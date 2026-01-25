@@ -87,6 +87,10 @@ void Rdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     REAL rcond = 0.0;
     INTEGER k1 = 0;
     //
+    static const char *format_9999 = "(1x,a,', N =',i5,', type ',i2,', test ',i2,', ratio = ',g12.5)";
+    static const char *format_9998 = "(1x,a,', FACT=''',a1,''', N =',i5,', type ',i2,', test ',i2,', ratio = ',"
+                                     "g12.5)";
+    //
     path(1, 1) = "Double precision";
     path(2, 3) = "PT";
     nrun = 0;
@@ -352,9 +356,7 @@ void Rdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             if (nfail == 0 && nerrs == 0) {
                                 Aladhd(nout, path);
                             }
-                            write(nout, "(1x,a,', N =',i5,', type ',i2,', test ',i2,', ratio = ',"
-                                        "g12.5)"),
-                                "DPTSV ", n, imat, k, result[k - 1];
+                            write(nout, format_9999), "Rptsv", n, imat, k, result[k - 1];
                             nfail++;
                         }
                     }
@@ -429,9 +431,7 @@ void Rdrvpt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         if (nfail == 0 && nerrs == 0) {
                             Aladhd(nout, path);
                         }
-                        write(nout, "(1x,a,', FACT=''',a1,''', N =',i5,', type ',i2,', test ',i2,"
-                                    "', ratio = ',g12.5)"),
-                            "DPTSVX", fact, n, imat, k, result[k - 1];
+                        write(nout, format_9998), "Rptsvx", fact, n, imat, k, result[k - 1];
                         nfail++;
                     }
                 }
