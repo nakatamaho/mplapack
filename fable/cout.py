@@ -4201,8 +4201,8 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
         #   DOUBLE PRECISION WNRM(MAX(M,N))
         # ->
         #   std::unique_ptr<REAL[]> fable_wnrm_storage(new REAL[max(m, n)]);
-        #   REAL *wnrm = __wnrm_storage.get();
-        storage_name = f"__{vname}_storage"
+        #   REAL *wnrm = wnrm_storage.get();
+        storage_name = f"{vname}_storage"
         rapp("%sstd::unique_ptr<%s[]> %s(new %s[%s]);" % (
             const_qualifier(), mplapack_elem_ctype, storage_name,
             mplapack_elem_ctype, size_expr))

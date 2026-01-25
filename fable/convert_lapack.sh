@@ -168,7 +168,7 @@ tmp_cpp="$(mktemp)"
 # mplapack_name_map.txt and mplapack_testing_name_map.txt from the same directory as this script.
 (
     cd "$script_dir"
-    "${fable_cout_env[@]}" python -m fable.command_line.cout "$src_abs" #> /dev/null
+    "${fable_cout_env[@]}" python -m fable.command_line.cout "$src_abs" > /dev/null
 )
 
 # Ensure the expected generated C++ file exists.
