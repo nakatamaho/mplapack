@@ -8,6 +8,7 @@ import tempfile
 import typing
 from decimal import Decimal, InvalidOperation
 
+
 def _env_int(name: str, default: int) -> int:
     v = os.environ.get(name)
     if v is None:
@@ -17,11 +18,13 @@ def _env_int(name: str, default: int) -> int:
     except Exception:
         return default
 
+
 def _env_str(name: str, default: str) -> str:
     v = os.environ.get(name)
     if v is None:
         return default
     return str(v).strip()
+
 
 def _env_flag(name: str, default: bool = False) -> bool:
     """Parse a boolean environment variable.
@@ -40,6 +43,7 @@ def _env_flag(name: str, default: bool = False) -> bool:
         return False
     return bool(v)
 
+
 # Enable the legacy small CHARACTER*n -> char[] optimization only when requested.
 # Default is OFF to prefer fem::str<N> (lower maintenance, fewer edge cases).
 FABLE_SMALL_CHAR_ENABLED = _env_flag("FABLE_SMALL_CHAR", default=False)
@@ -51,7 +55,8 @@ FABLE_SMALL_CHAR_ENABLED = _env_flag("FABLE_SMALL_CHAR", default=False)
 # This avoids mixing plain 'char' with fem::str_ref in generated test code
 # (e.g., c1 = aline(i,i)), and still allows MPLAPACK calls to receive raw
 # buffers via ' .elems' when needed.
-FABLE_SMALL_CHAR_VIEW = (str(os.environ.get("FABLE_SMALL_CHAR", "")).strip() == "0")
+FABLE_SMALL_CHAR_VIEW = (
+    str(os.environ.get("FABLE_SMALL_CHAR", "")).strip() == "0")
 
 # If set, do not emit COMMON/SAVE boilerplate structs into generated C++.
 FABLE_SUPPRESS_COMMON = _env_flag("FABLE_SUPPRESS_COMMON", default=False)
@@ -60,6 +65,7 @@ FABLE_SUPPRESS_COMMON = _env_flag("FABLE_SUPPRESS_COMMON", default=False)
 # and do not emit local reference aliases/wrappers for them. Useful when COMMON is
 # rewritten into project-wide globals (e.g., MPLAPACK).
 FABLE_COMMON_AS_GLOBALS = _env_flag("FABLE_COMMON_AS_GLOBALS", default=False)
+
 
 def _parse_ident_list_env(name: str) -> typing.Set[str]:
     """Parse an environment variable as a list of identifiers.
@@ -75,12 +81,16 @@ def _parse_ident_list_env(name: str) -> typing.Set[str]:
     parts = re.split(r"[,\s]+", s)
     return {p.lower() for p in parts if p}
 
+
 # COMMON scalars that should be treated as externally provided globals
 # instead of being accessed as members of `cmn`.
-FABLE_EXTERN_COMMON_SCALARS = _parse_ident_list_env("FABLE_EXTERN_COMMON_SCALARS")
+FABLE_EXTERN_COMMON_SCALARS = _parse_ident_list_env(
+    "FABLE_EXTERN_COMMON_SCALARS")
 if FABLE_SUPPRESS_COMMON:
     # LAPACK test harness commonly externalizes these.
-    FABLE_EXTERN_COMMON_SCALARS.update({"infot", "srnamt", "ok", "lerr", "nout"})
+    FABLE_EXTERN_COMMON_SCALARS.update(
+        {"infot", "srnamt", "ok", "lerr", "nout"})
+
 
 def _load_mplapack_signatures():
     """Load mplapack_signatures.py in a robust way.
@@ -314,17 +324,20 @@ def _adjust_actuals_using_signature(arg_string: str, signature, conv_info=None, 
             if m_arr and _is_fem_str_len1_array(conv_info, m_arr.group(1)):
                 leading = part[:len(part) - len(s)]
                 name = m_arr.group(1)
-                part = leading + f"{name}[0]" + _elems_suffix_for_identifier(name)
+                part = leading + f"{name}[0]" + \
+                    _elems_suffix_for_identifier(name)
                 new_parts.append(part)
                 continue
 
             # '&name[idx]' where name is a CHARACTER*1 array -> name[idx].elems
-            m_arr_el = re.fullmatch(r"&\s*([A-Za-z_][A-Za-z0-9_]*)\s*\[\s*([^\]]+)\s*\]\s*$", s)
+            m_arr_el = re.fullmatch(
+                r"&\s*([A-Za-z_][A-Za-z0-9_]*)\s*\[\s*([^\]]+)\s*\]\s*$", s)
             if m_arr_el and _is_fem_str_len1_array(conv_info, m_arr_el.group(1)):
                 leading = part[:len(part) - len(s)]
                 name = m_arr_el.group(1)
                 idx = m_arr_el.group(2).strip()
-                part = leading + f"{name}[{idx}]" + _elems_suffix_for_identifier(name)
+                part = leading + f"{name}[{idx}]" + \
+                    _elems_suffix_for_identifier(name)
                 new_parts.append(part)
                 continue
 
@@ -365,7 +378,8 @@ def _adjust_actuals_using_signature(arg_string: str, signature, conv_info=None, 
                 s,
             )
             if m and conv_info is not None and (
-                (_is_fem_str_scalar(conv_info, m.group(1)) or _is_scalar_character_fem_str(conv_info, m.group(1)))
+                (_is_fem_str_scalar(conv_info, m.group(1))
+                 or _is_scalar_character_fem_str(conv_info, m.group(1)))
                 or (_is_dummy_character_arg(conv_info, m.group(1)) and not _is_plain_character_pointer_dummy(conv_info, m.group(1)))
             ):
                 base = m.group(1)
@@ -414,12 +428,14 @@ def _adjust_actuals_using_signature(arg_string: str, signature, conv_info=None, 
                     continue
 
             # fem::str<1> CHARACTER arrays: name[idx] -> name[idx].elems
-            m_fem_arr_el = re.fullmatch(r"([A-Za-z_][A-Za-z0-9_]*)\s*\[\s*([^\]]+)\s*\]\s*$", s)
+            m_fem_arr_el = re.fullmatch(
+                r"([A-Za-z_][A-Za-z0-9_]*)\s*\[\s*([^\]]+)\s*\]\s*$", s)
             if m_fem_arr_el and _is_fem_str_len1_array(conv_info, m_fem_arr_el.group(1)):
                 leading = part[:len(part) - len(s)]
                 base = m_fem_arr_el.group(1)
                 idx = m_fem_arr_el.group(2).strip()
-                part = leading + f"{base}[{idx}]" + _elems_suffix_for_identifier(base)
+                part = leading + f"{base}[{idx}]" + \
+                    _elems_suffix_for_identifier(base)
                 new_parts.append(part)
                 continue
 
@@ -553,7 +569,8 @@ _MPLAPACK_CPP_TO_FORTRAN = {
 
 # C++-side routine names that belong to the CORE map (lowercase).
 # Used to force '.elems' for fem::str/str_view actuals when FABLE_SMALL_CHAR=0.
-_MPLAPACK_CORE_CPP_NAMES = {str(cpp).lower() for cpp in _MPLAPACK_NAME_MAP_CORE.values()}
+_MPLAPACK_CORE_CPP_NAMES = {str(cpp).lower()
+                            for cpp in _MPLAPACK_NAME_MAP_CORE.values()}
 
 
 # Track COMPLEX-typed C++ identifiers in the current procedure.
@@ -563,6 +580,7 @@ complex_pointer_identifiers = set()
 # small fixed-length CHARACTER scalars mapped to char[]
 small_char_identifiers = set()
 small_char_identifier_lengths = {}  # name -> int length for small char[]
+
 
 def _fable_small_char_max_len() -> int:
     """Return max CHARACTER*n length to map to a plain C char[].
@@ -587,6 +605,7 @@ def _fable_small_char_max_len() -> int:
         return int(s)
     except ValueError:
         return 10
+
 
 _FABLE_SMALL_CHAR_MAX_LEN = _fable_small_char_max_len()
 
@@ -849,7 +868,7 @@ def break_lines(cpp_text, prev_line=None):
     def callback(line):
         if (prev_line[0] is None
             or line != prev_line[0]
-                or not line.lstrip().startswith("//C")):
+                or line.strip() != "//"):
             result.append(line)
             prev_line[0] = line
     for line in "\n".join(cpp_text).splitlines():
@@ -1003,7 +1022,8 @@ def _format_decimal_float_literal(tv: str, *, is_double_precision: bool) -> str:
             if '.' in fixed:
                 fixed = fixed.rstrip('0').rstrip('.')
 
-            sci = format(d.normalize(), 'E').replace('E', 'e').replace('e+', 'e')
+            sci = format(d.normalize(), 'E').replace(
+                'E', 'e').replace('e+', 'e')
 
             if style == 'fixed':
                 out = fixed
@@ -1025,6 +1045,7 @@ def _format_decimal_float_literal(tv: str, *, is_double_precision: bool) -> str:
             and 'inf' not in out.lower()):
         out += '.0'
     return out
+
 
 def convert_token(vmap, leading, tok, had_str_concat=None, prev_operand_is_string=False):
     tv = tok.value
@@ -1115,6 +1136,7 @@ def convert_token(vmap, leading, tok, had_str_concat=None, prev_operand_is_strin
         return convert_complex_literal(vmap=vmap, tok=tok)
     tok.raise_not_supported()
 
+
 def _tokens_have_str_concat(tokens):
     """Return True if the token tree contains the Fortran string concat operator '//'."""
     if not tokens:
@@ -1129,6 +1151,7 @@ def _tokens_have_str_concat(tokens):
         if isinstance(v, list) and _tokens_have_str_concat(v):
             return True
     return False
+
 
 class major_types_cache(object):
 
@@ -1199,7 +1222,8 @@ def produce_comment_given_sl(callback, sl):
     else:
         t = None
     if (t is not None):
-        callback("//C%s" % t.expandtabs().rstrip())
+        callback("//" + (" " + t.expandtabs().rstrip()
+                 if t.expandtabs().rstrip() else ""))
 
 
 def produce_comments(callback, ssl_list):
@@ -1222,12 +1246,13 @@ def produce_comments(callback, ssl_list):
                 t = None
 
             if t is not None:
-                callback("//C%s" % t.expandtabs().rstrip())
+                callback("//" + (" " + t.expandtabs().rstrip()
+                         if t.expandtabs().rstrip() else ""))
 
 
 def flush_comments_if_non_trivial(callback, buffer):
     for line in buffer:
-        if (line != "//C"):
+        if (line != "//"):
             for line in buffer:
                 callback(line)
             return
@@ -1294,6 +1319,139 @@ class comment_manager(object):
     def flush_remaining(O, callback):
         while (O.index != len(O.sl_list)):
             O.produce(callback=callback)
+
+    def remove_line_indices(O, indices_to_remove):
+        """Remove source lines with global_line_index in indices_to_remove set."""
+        if not indices_to_remove:
+            return
+        O.sl_list = [
+            sl for sl in O.sl_list if sl.global_line_index not in indices_to_remove]
+
+
+def _is_comment_ssl(ssl):
+    """Check if ssl is a comment (stmt_offs=None on first source line)."""
+    if ssl is None or not ssl.source_line_cluster:
+        return False
+    return ssl.source_line_cluster[0].stmt_offs is None
+
+
+def _get_ssl_first_line_index(ssl):
+    """Get the global_line_index of the first line in ssl."""
+    if ssl is None or not ssl.source_line_cluster:
+        return float('inf')
+    return ssl.source_line_cluster[0].global_line_index
+
+
+def _detect_format_label_from_ssl(ssl, fproc_format_dict):
+    """Detect if ssl is a FORMAT statement and return label if so."""
+    import re
+    if ssl is None or not ssl.source_line_cluster:
+        return None
+    sl = ssl.source_line_cluster[0]
+    if sl.stmt_offs is None:
+        return None
+    text = getattr(sl, 'text', None)
+    if text:
+        patterns = [
+            re.compile(r'^(.{0,5}?)(\d+)\s+FORMAT\b', re.IGNORECASE),
+            re.compile(r'^\s*(\d+)\s+FORMAT\b', re.IGNORECASE),
+        ]
+        for pat in patterns:
+            m = pat.match(text)
+            if m:
+                label = m.group(2) if m.lastindex >= 2 else m.group(1)
+                if label in fproc_format_dict:
+                    return label
+    return None
+
+
+def _collect_format_comments_from_body_lines(fproc):
+    """Collect FORMAT statements and their preceding comment blocks (ssl level).
+
+    Returns:
+        dict: {label: (line_idx, [comment_sl, ...])} - comments stored per label
+        set: hoisted_indices - global_line_index values to remove from comment_manager
+    """
+    import sys
+    DEBUG = os.environ.get("DEBUG_FORMAT_HOIST",
+                           "").lower() in ("1", "true", "yes")
+
+    # Build list of (first_line_index, ssl, is_comment)
+    ssl_list = []
+    for ssl in fproc.body_lines:
+        if ssl is None:
+            continue
+        first_idx = _get_ssl_first_line_index(ssl)
+        is_comment = _is_comment_ssl(ssl)
+        ssl_list.append((first_idx, ssl, is_comment))
+    ssl_list.sort(key=lambda x: x[0])
+
+    if DEBUG:
+        print(
+            f"[DEBUG] _collect_format_comments: {len(ssl_list)} ssl entries from body_lines", file=sys.stderr)
+        print(
+            f"[DEBUG] fproc.format keys: {list(fproc.format.keys())[:15]}...", file=sys.stderr)
+
+    # Find FORMAT ssls and their positions
+    format_positions = []
+    for i, (first_idx, ssl, is_comment) in enumerate(ssl_list):
+        if is_comment:
+            continue
+        label = _detect_format_label_from_ssl(ssl, fproc.format)
+        if label is not None:
+            format_positions.append((i, label, first_idx))
+            if DEBUG:
+                text = getattr(ssl.source_line_cluster[0], 'text', '')[
+                    :60] if ssl.source_line_cluster else ''
+                print(
+                    f"[DEBUG] Found FORMAT {label} at ssl pos {i}, line {first_idx}: {repr(text)}", file=sys.stderr)
+
+    if DEBUG:
+        print(
+            f"[DEBUG] Total FORMAT positions found: {len(format_positions)}", file=sys.stderr)
+
+    # Use dict to store results (label -> (line_idx, comment_sls))
+    # This ensures data is not lost due to variable scope issues
+    format_comments_dict = {}
+    hoisted_indices = set()
+
+    for pos, label, first_idx in format_positions:
+        # Collect preceding comments
+        collected_comments = []
+        p = pos - 1
+        while p >= 0:
+            prev_first_idx, prev_ssl, prev_is_comment = ssl_list[p]
+            if prev_is_comment:
+                # Collect ALL source lines from this comment ssl (in correct order)
+                for sl in prev_ssl.source_line_cluster:
+                    collected_comments.insert(0, sl)
+                    hoisted_indices.add(sl.global_line_index)
+                p -= 1
+            else:
+                break
+
+        if DEBUG:
+            print(
+                f"[DEBUG] FORMAT {label} has {len(collected_comments)} preceding comment lines", file=sys.stderr)
+
+        # Store in dict with a copy of the list
+        format_comments_dict[label] = (first_idx, list(collected_comments))
+
+    # Convert to list sorted by source line index
+    format_info_list = [
+        (label, line_idx, comment_sls)
+        for label, (line_idx, comment_sls) in format_comments_dict.items()
+    ]
+    format_info_list.sort(key=lambda x: x[1])
+
+    if DEBUG:
+        print(
+            f"[DEBUG] format_info_list has {len(format_info_list)} entries", file=sys.stderr)
+        for label, line_idx, comment_sls in format_info_list[:5]:
+            print(
+                f"[DEBUG]   {label}: line={line_idx}, comments={len(comment_sls)}", file=sys.stderr)
+
+    return format_info_list, hoisted_indices
 
 
 class conv_hook_info(object):
@@ -1433,11 +1591,13 @@ class conversion_info(global_conversion_info):
             if FABLE_COMMON_AS_GLOBALS:
                 # COMMON variables are rewritten as globals in the target project.
                 # Emit plain identifiers (no `cmn.` access).
-                O.vmap[identifier] = prepend_identifier_if_necessary(identifier)
+                O.vmap[identifier] = prepend_identifier_if_necessary(
+                    identifier)
             elif (getattr(fdecl, "dim_tokens", None) is None
                     and identifier.lower() in FABLE_EXTERN_COMMON_SCALARS):
                 # COMMON scalar is provided externally (declared as an extern global).
-                O.vmap[identifier] = prepend_identifier_if_necessary(identifier)
+                O.vmap[identifier] = prepend_identifier_if_necessary(
+                    identifier)
             else:
                 O.vmap[identifier] = "cmn." + \
                     prepend_identifier_if_necessary(identifier)
@@ -2186,6 +2346,7 @@ def _is_dummy_character_arg(conv_info, name: str) -> bool:
     key = (id(conv_info.fproc), name.lower())
     return key in _dummy_character_args
 
+
 def _is_fem_str_scalar(conv_info, name: str) -> bool:
     """Return True if 'name' is a scalar CHARACTER mapped to fem::str<N>."""
     if conv_info is None or getattr(conv_info, "fproc", None) is None:
@@ -2195,7 +2356,8 @@ def _is_fem_str_scalar(conv_info, name: str) -> bool:
     if name in small_char_identifiers:
         return False
     try:
-        fdecl = conv_info.fproc.fdecl_by_identifier.get(name.lower()) or conv_info.fproc.fdecl_by_identifier.get(name)
+        fdecl = conv_info.fproc.fdecl_by_identifier.get(
+            name.lower()) or conv_info.fproc.fdecl_by_identifier.get(name)
     except Exception:
         return False
     if fdecl is None:
@@ -2215,6 +2377,7 @@ def _is_fem_str_scalar(conv_info, name: str) -> bool:
     except Exception:
         pass
     return True
+
 
 def _is_fem_str_len1_array(conv_info, name: str) -> bool:
     """Return True if 'name' is an array of CHARACTER*1 emitted as fem::str<1> name[...].
@@ -2257,12 +2420,14 @@ def _is_fem_str_len1_array(conv_info, name: str) -> bool:
     except Exception:
         pass
     try:
-        size_expr = convert_tokens(conv_info=conv_info, tokens=st, commas=False).strip()
+        size_expr = convert_tokens(
+            conv_info=conv_info, tokens=st, commas=False).strip()
         if size_expr == "1":
             return True
     except Exception:
         pass
     return False
+
 
 def _is_plain_character_pointer_dummy(conv_info, name: str) -> bool:
     """Return True if 'name' is a CHARACTER dummy argument emitted as (const) char*.
@@ -2303,6 +2468,7 @@ def _is_plain_character_pointer_dummy(conv_info, name: str) -> bool:
         pass
     return False
 
+
 def _is_scalar_character_fem_str(conv_info, name: str) -> bool:
     """True if 'name' is scalar CHARACTER emitted as fem::str<...> (not char/char[]/dummy)."""
     if conv_info is None or getattr(conv_info, "fproc", None) is None:
@@ -2313,7 +2479,7 @@ def _is_scalar_character_fem_str(conv_info, name: str) -> bool:
         return False
     try:
         fdecl = conv_info.fproc.fdecl_by_identifier.get(name.lower()) or \
-                conv_info.fproc.fdecl_by_identifier.get(name)
+            conv_info.fproc.fdecl_by_identifier.get(name)
     except Exception:
         return False
     if fdecl is None:
@@ -2334,12 +2500,14 @@ def _is_scalar_character_fem_str(conv_info, name: str) -> bool:
     except Exception:
         pass
     try:
-        size_expr = convert_tokens(conv_info=conv_info, tokens=st, commas=False).strip()
+        size_expr = convert_tokens(
+            conv_info=conv_info, tokens=st, commas=False).strip()
         if size_expr == "1":
             return bool(FABLE_SMALL_CHAR_VIEW)
     except Exception:
         pass
     return True
+
 
 def _plain_char_ptr_dummy_cpp_names(conv_info):
     """Return a cached set of C++ names for CHARACTER dummy arguments modeled as plain (const) char*."""
@@ -2357,6 +2525,7 @@ def _plain_char_ptr_dummy_cpp_names(conv_info):
         except Exception:
             continue
     return names
+
 
 def _rewrite_plain_char_ptr_unit_substrings(text: str, conv_info) -> str:
     """Rewrite Fortran-style unit-length substrings on plain char* dummies.
@@ -2378,7 +2547,8 @@ def _rewrite_plain_char_ptr_unit_substrings(text: str, conv_info) -> str:
     out = text
     for name in names:
         # Match: name(arg1, arg2) where arg1/arg2 have no nested parentheses.
-        pat = re.compile(rf"\b{re.escape(name)}\s*\(\s*([^,()]+?)\s*,\s*([^,()]+?)\s*\)")
+        pat = re.compile(
+            rf"\b{re.escape(name)}\s*\(\s*([^,()]+?)\s*,\s*([^,()]+?)\s*\)")
 
         def _repl(m):
             a = m.group(1).strip()
@@ -2402,6 +2572,7 @@ def _rewrite_plain_char_ptr_unit_substrings(text: str, conv_info) -> str:
 
         out = pat.sub(_repl, out)
     return out
+
 
 def _rewrite_unary_intrinsic(text: str, func_name: str, repl_func):
     """Rewrite occurrences of func_name(arg) using repl_func(arg).
@@ -2693,7 +2864,8 @@ def _maybe_use_ld_variable(conv_info, ldexpr: str, default_ldname: str) -> str:
 
     def _lookup_fdecl(name: str):
         fproc = getattr(conv_info, "fproc", None)
-        fdecl_map = getattr(fproc, "fdecl_by_identifier", None) if fproc is not None else None
+        fdecl_map = getattr(fproc, "fdecl_by_identifier",
+                            None) if fproc is not None else None
         if not fdecl_map:
             return None
         return fdecl_map.get(name.lower()) or fdecl_map.get(name)
@@ -2711,7 +2883,8 @@ def _maybe_use_ld_variable(conv_info, ldexpr: str, default_ldname: str) -> str:
         used = set()
         # Any Fortran identifier in this procedure counts as "used" (case-insensitive).
         fproc = getattr(conv_info, "fproc", None)
-        fdecl_map = getattr(fproc, "fdecl_by_identifier", None) if fproc is not None else None
+        fdecl_map = getattr(fproc, "fdecl_by_identifier",
+                            None) if fproc is not None else None
         if fdecl_map:
             for k in fdecl_map.keys():
                 try:
@@ -2726,7 +2899,8 @@ def _maybe_use_ld_variable(conv_info, ldexpr: str, default_ldname: str) -> str:
 
         # Already decided stride names.
         if isinstance(stride_map, dict):
-            used.update({str(v).lower() for v in stride_map.values() if isinstance(v, str)})
+            used.update({str(v).lower()
+                        for v in stride_map.values() if isinstance(v, str)})
 
         return used
 
@@ -3032,8 +3206,6 @@ def rewrite_unary_bracket_parens(text: str) -> str:
     return "".join(out)
 
 
-
-
 def _convert_parentheses_postfix(conv_info, prev_tok, tok, had_str_concat):
     """Return the postfix string for a parentheses token.
 
@@ -3078,8 +3250,10 @@ def _convert_parentheses_postfix(conv_info, prev_tok, tok, had_str_concat):
             and getattr(conv_info, 'fproc', None) is not None):
         try:
             if getattr(conv_info, 'array_data_initializers', None) is None:
-                conv_info.array_data_initializers = build_array_data_initializers(conv_info)
-            rec = (conv_info.array_data_initializers or {}).get(prev_tok.value.lower())
+                conv_info.array_data_initializers = build_array_data_initializers(
+                    conv_info)
+            rec = (conv_info.array_data_initializers or {}).get(
+                prev_tok.value.lower())
             if rec is not None:
                 _elem_ctype, dims_ints, _init_list, rank = rec
                 data_rank = rank
@@ -3146,9 +3320,11 @@ def _convert_parentheses_postfix(conv_info, prev_tok, tok, had_str_concat):
             col_expr = parts[2].strip()
             default_ldname = 'ld' + prev_tok.value.lower()
             if fdecl is not None:
-                ldexpr0 = get_leading_dimension_expr(conv_info, fdecl, default=default_ldname)
+                ldexpr0 = get_leading_dimension_expr(
+                    conv_info, fdecl, default=default_ldname)
             else:
-                ldexpr0 = str(int(data_dims_ints[0])) if (data_dims_ints and len(data_dims_ints) >= 1) else "1"
+                ldexpr0 = str(int(data_dims_ints[0])) if (
+                    data_dims_ints and len(data_dims_ints) >= 1) else "1"
             ldexpr = _maybe_use_ld_variable(conv_info, ldexpr0, default_ldname)
             return f'[__SLICE2D__({start_expr}, {end_expr}, {col_expr}, {ldexpr})]'
 
@@ -3159,7 +3335,8 @@ def _convert_parentheses_postfix(conv_info, prev_tok, tok, had_str_concat):
 
             int_re = re.compile(r'^[0-9]+$')
             name_re = re.compile(r'^[A-Za-z_][A-Za-z0-9_]*$')
-            array_elem_re = re.compile(r'^[A-Za-z_][A-Za-z0-9_]*\s*\[[^\[\]]+\]\s*$')
+            array_elem_re = re.compile(
+                r'^[A-Za-z_][A-Za-z0-9_]*\s*\[[^\[\]]+\]\s*$')
 
             def canonical_simple_index(s):
                 """Return canonical simple index (identifier/int/array/func) or None."""
@@ -3229,7 +3406,8 @@ def _convert_parentheses_postfix(conv_info, prev_tok, tok, had_str_concat):
             if lb_expr == '0':
                 index_expr = canon_i if canon_i is not None else f'({i_expr})'
             else:
-                lb_simple = bool(name_re.fullmatch(lb_expr) or int_re.fullmatch(lb_expr))
+                lb_simple = bool(name_re.fullmatch(lb_expr)
+                                 or int_re.fullmatch(lb_expr))
                 idx_simple = canon_i is not None
                 if idx_simple and lb_simple:
                     index_expr = f'{canon_i} - {lb_expr}'
@@ -3249,7 +3427,8 @@ def _convert_parentheses_postfix(conv_info, prev_tok, tok, had_str_concat):
             j_expr = j_expr.strip()
 
             default_ldname = 'ld' + prev_tok.value.lower()
-            ldexpr = get_leading_dimension_expr(conv_info, fdecl, default=default_ldname)
+            ldexpr = get_leading_dimension_expr(
+                conv_info, fdecl, default=default_ldname)
             ldexpr = _maybe_use_ld_variable(conv_info, ldexpr, default_ldname)
 
             lb1 = get_lower_bound(conv_info, fdecl, 0).strip()
@@ -3348,7 +3527,8 @@ def _convert_parentheses_postfix(conv_info, prev_tok, tok, had_str_concat):
                 if lb_expr == '0':
                     return core if core is not None else f'({idx_expr})'
 
-                lb_simple = bool(simple_name.fullmatch(lb_expr) or simple_int.fullmatch(lb_expr))
+                lb_simple = bool(simple_name.fullmatch(
+                    lb_expr) or simple_int.fullmatch(lb_expr))
 
                 if core is not None:
                     return f'{core} - {lb_expr}' if lb_simple else f'{core} - ({lb_expr})'
@@ -3357,7 +3537,8 @@ def _convert_parentheses_postfix(conv_info, prev_tok, tok, had_str_concat):
 
             row_off = make_offset(i_expr, lb1)
             col_off = make_offset(j_expr, lb2)
-            array_elem_re = re.compile(r'^[A-Za-z_][A-Za-z0-9_]*\s*\[[^\[\]]+\]\s*$')
+            array_elem_re = re.compile(
+                r'^[A-Za-z_][A-Za-z0-9_]*\s*\[[^\[\]]+\]\s*$')
 
             def is_zero_literal(expr: str) -> bool:
                 return (_strip_outer_parens_balanced(expr.strip()) == '0')
@@ -3403,9 +3584,11 @@ def _convert_parentheses_postfix(conv_info, prev_tok, tok, had_str_concat):
                 # Stride of the 2nd dimension is the extent of the 1st dimension.
                 default_ld1 = 'ld' + prev_tok.value.lower()
                 if fdecl is not None:
-                    ld1_expr = get_leading_dimension_expr(conv_info, fdecl, default=default_ld1)
+                    ld1_expr = get_leading_dimension_expr(
+                        conv_info, fdecl, default=default_ld1)
                 else:
-                    ld1_expr = str(int(data_dims_ints[0])) if (data_dims_ints and len(data_dims_ints) >= 1) else "1"
+                    ld1_expr = str(int(data_dims_ints[0])) if (
+                        data_dims_ints and len(data_dims_ints) >= 1) else "1"
                 ld1 = _maybe_use_ld_variable(conv_info, ld1_expr, default_ld1)
 
                 # Extent of the 2nd dimension (used as the multiplier for dim-3 stride).
@@ -3415,17 +3598,20 @@ def _convert_parentheses_postfix(conv_info, prev_tok, tok, had_str_concat):
                         dt = getattr(fdecl, 'dim_tokens', None) or []
                         if len(dt) >= 2:
                             dim1_tokens = dt[1].value
-                            simple = _try_extract_first_dim_extent_identifier(conv_info, dim1_tokens)
+                            simple = _try_extract_first_dim_extent_identifier(
+                                conv_info, dim1_tokens)
                             if simple:
                                 ld2_expr = simple
                             else:
-                                ld2_expr = convert_dim_to_static_size(conv_info, tokens=dim1_tokens).strip()
+                                ld2_expr = convert_dim_to_static_size(
+                                    conv_info, tokens=dim1_tokens).strip()
                     except Exception:
                         ld2_expr = None
                     if ld2_expr is None or not str(ld2_expr).strip():
                         ld2_expr = "1"
                 else:
-                    ld2_expr = str(int(data_dims_ints[1])) if (data_dims_ints and len(data_dims_ints) >= 2) else "1"
+                    ld2_expr = str(int(data_dims_ints[1])) if (
+                        data_dims_ints and len(data_dims_ints) >= 2) else "1"
 
                 default_ld2 = 'ld2' + prev_tok.value.lower()
                 ld2 = _maybe_use_ld_variable(conv_info, ld2_expr, default_ld2)
@@ -3436,7 +3622,8 @@ def _convert_parentheses_postfix(conv_info, prev_tok, tok, had_str_concat):
 
                 simple_name = re.compile(r'^[A-Za-z_][A-Za-z0-9_]*$')
                 simple_int = re.compile(r'^[0-9]+$')
-                array_elem_re = re.compile(r'^[A-Za-z_][A-Za-z0-9_]*\s*\[[^\[\]]+\]\s*$')
+                array_elem_re = re.compile(
+                    r'^[A-Za-z_][A-Za-z0-9_]*\s*\[[^\[\]]+\]\s*$')
 
                 def is_simple_index(expr: str) -> bool:
                     expr = expr.strip()
@@ -3451,7 +3638,8 @@ def _convert_parentheses_postfix(conv_info, prev_tok, tok, had_str_concat):
                     if lb_expr == '0':
                         return idx_expr if is_simple_index(idx_expr) else f'({idx_expr})'
 
-                    lb_simple = bool(simple_name.fullmatch(lb_expr) or simple_int.fullmatch(lb_expr))
+                    lb_simple = bool(simple_name.fullmatch(
+                        lb_expr) or simple_int.fullmatch(lb_expr))
                     idx_simple = is_simple_index(idx_expr)
 
                     if idx_simple and lb_simple:
@@ -3517,8 +3705,10 @@ def _convert_parentheses_postfix(conv_info, prev_tok, tok, had_str_concat):
             if FABLE_SMALL_CHAR_VIEW:
                 base_name = str(prev_tok.value).split("::")[-1].strip()
                 mapped_name = convert_function_name_to_mplapack(base_name)
-                force_elems = (str(mapped_name).lower() in _MPLAPACK_CORE_CPP_NAMES)
-            inner = _adjust_actuals_using_signature(inner, sig, conv_info, force_elems_call=force_elems)
+                force_elems = (str(mapped_name).lower()
+                               in _MPLAPACK_CORE_CPP_NAMES)
+            inner = _adjust_actuals_using_signature(
+                inner, sig, conv_info, force_elems_call=force_elems)
 
     # Decide whether we need to inject "cmn" as the first argument.
     if (cmn_needs_to_be_inserted(conv_info=conv_info, prev_tok=prev_tok)):
@@ -3530,6 +3720,7 @@ def _convert_parentheses_postfix(conv_info, prev_tok, tok, had_str_concat):
         op = '('
 
     return op + inner + ')'
+
 
 def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
     result = []
@@ -3954,6 +4145,7 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
             return False
     except Exception:
         pass
+
     def const_qualifier():
         if (const):
             return "const "
@@ -4826,7 +5018,8 @@ def build_array_data_initializers(conv_info):
         if rank <= 0:
             continue
 
-        vals = fproc.eval_dimensions_simple(dim_tokens=fdecl.dim_tokens, allow_power=False)
+        vals = fproc.eval_dimensions_simple(
+            dim_tokens=fdecl.dim_tokens, allow_power=False)
         if vals is None or vals.count(None) != 0:
             continue
         try:
@@ -4849,7 +5042,8 @@ def build_array_data_initializers(conv_info):
             cc = convert_tokens(conv_info=conv_info, tokens=ctoks)
             rep = 1
             if repetition_tok is not None:
-                rep_s = convert_tokens(conv_info=conv_info, tokens=[repetition_tok]).strip()
+                rep_s = convert_tokens(conv_info=conv_info, tokens=[
+                                       repetition_tok]).strip()
                 try:
                     rep = int(rep_s)
                 except Exception:
@@ -4869,11 +5063,13 @@ def build_array_data_initializers(conv_info):
             continue
 
         try:
-            elem_ctype = convert_data_type(conv_info=conv_info, fdecl=fdecl, crhs=None)[0]
+            elem_ctype = convert_data_type(
+                conv_info=conv_info, fdecl=fdecl, crhs=None)[0]
         except Exception:
             elem_ctype = None
 
-        init[str(id_tok.value).lower()] = (elem_ctype, dims_ints, expanded, rank)
+        init[str(id_tok.value).lower()] = (
+            elem_ctype, dims_ints, expanded, rank)
 
     return init
 
@@ -5128,7 +5324,8 @@ def declare_identifier(conv_info, top_scope, curr_scope, id_tok, crhs=None):
     # If the target project rewrites COMMON into globals, do not generate
     # `cmn.` accesses or local alias wrappers (they become self-referential).
     if (fdecl is not None and fdecl.is_common() and FABLE_COMMON_AS_GLOBALS):
-        conv_info.vmap[identifier] = prepend_identifier_if_necessary(identifier)
+        conv_info.vmap[identifier] = prepend_identifier_if_necessary(
+            identifier)
         return crhs is not None
 
     def get_common_name_if_cast_is_needed():
@@ -5156,7 +5353,8 @@ def declare_identifier(conv_info, top_scope, curr_scope, id_tok, crhs=None):
     if (fdecl.is_common()
             and getattr(fdecl, "dim_tokens", None) is None
             and identifier.lower() in FABLE_EXTERN_COMMON_SCALARS):
-        conv_info.vmap[identifier] = prepend_identifier_if_necessary(identifier)
+        conv_info.vmap[identifier] = prepend_identifier_if_necessary(
+            identifier)
         return crhs is not None
 
     # For COMMON or SAVE variables, we sometimes create local references
@@ -5266,7 +5464,8 @@ def convert_executable(
     # grouped at the top of the function.
     try:
         if conv_info.array_data_initializers is None:
-            conv_info.array_data_initializers = build_array_data_initializers(conv_info)
+            conv_info.array_data_initializers = build_array_data_initializers(
+                conv_info)
         if conv_info.array_data_initializers:
             for nlist, _clist in conv_info.fproc.data:
                 if not nlist or len(nlist) != 1:
@@ -5315,7 +5514,8 @@ def convert_executable(
     # even when runtime DATA init blocks are suppressed.
     try:
         if conv_info.data_initializers is None:
-            conv_info.data_initializers = build_scalar_data_initializers(conv_info)
+            conv_info.data_initializers = build_scalar_data_initializers(
+                conv_info)
         if conv_info.data_initializers:
             for fdecl in conv_info.fproc.fdecl_by_identifier.values():
                 if fdecl is None:
@@ -5341,7 +5541,8 @@ def convert_executable(
                 conv_info.set_vmap_force_local(fdecl=fdecl)
                 vname = conv_info.vmapped(fdecl=fdecl)
 
-                ctype = convert_data_type(conv_info=conv_info, fdecl=fdecl, crhs=None)[0]
+                ctype = convert_data_type(
+                    conv_info=conv_info, fdecl=fdecl, crhs=None)[0]
                 mplapack_ctype = convert_to_mplapack_type(ctype)
                 # If the target is a plain char (CHARACTER*1), convert "X" -> 'X'.
                 if mplapack_ctype == "char":
@@ -5353,7 +5554,8 @@ def convert_executable(
                             inner = "\\'"
                         init_expr = "'" + inner + "'"
 
-                top_scope.append(f"static {mplapack_ctype} {vname} = {init_expr};")
+                top_scope.append(
+                    f"static {mplapack_ctype} {vname} = {init_expr};")
     except Exception:
         pass
 
@@ -5429,11 +5631,55 @@ def convert_executable(
             tokens=fmt_tokens, comma=fmt_comma_placeholder)) + ')"'
     fmt_counts_by_statement_label = \
         conv_info.fproc.fmt_counts_by_statement_label()
-    for stmt_label in sorted(fmt_counts_by_statement_label.keys()):
-        if (fmt_counts_by_statement_label[stmt_label] > 1):
-            cfmt = get_cfmt_from_format(stmt_label=stmt_label)
+
+    # === FORMAT comment hoist: collect and output ===
+    import sys
+    DEBUG_FMT = os.environ.get(
+        "DEBUG_FORMAT_HOIST", "").lower() in ("1", "true", "yes")
+
+    format_info_list, hoisted_indices = _collect_format_comments_from_body_lines(
+        conv_info.fproc)
+
+    # Remove hoisted comments from comment_manager to prevent double output
+    if hoisted_indices:
+        conv_info.comment_manager.remove_line_indices(hoisted_indices)
+        if DEBUG_FMT:
+            print(
+                f"[DEBUG] Removed {len(hoisted_indices)} hoisted indices from comment_manager", file=sys.stderr)
+
+    found_labels = {label for label, _, _ in format_info_list}
+
+    if DEBUG_FMT:
+        print(
+            f"[DEBUG] Outputting {len(format_info_list)} FORMAT definitions with comments", file=sys.stderr)
+
+    # Output FORMAT definitions in source order with preceding comments
+    for label, line_idx, comment_sls in format_info_list:
+        if fmt_counts_by_statement_label.get(label, 0) >= 1:
+            # Output preceding comments first
+            if DEBUG_FMT:
+                print(
+                    f"[DEBUG] FORMAT {label}: outputting {len(comment_sls)} comment lines", file=sys.stderr)
+            for sl in comment_sls:
+                if DEBUG_FMT:
+                    print(
+                        f"[DEBUG]   sl.stmt_offs={sl.stmt_offs}, sl.text={repr(sl.text[:40] if sl.text else None)}", file=sys.stderr)
+                produce_comment_given_sl(callback=top_scope.append, sl=sl)
+            # Output FORMAT definition
+            cfmt = get_cfmt_from_format(stmt_label=label)
             top_scope.append(
-                "static const char* format_%s = %s;" % (stmt_label, cfmt))
+                "static const char* format_%s = %s;" % (label, cfmt))
+
+    # Fallback: output any FORMAT labels not found in source scan
+    for stmt_label in sorted(fmt_counts_by_statement_label.keys()):
+        if stmt_label not in found_labels:
+            if fmt_counts_by_statement_label[stmt_label] >= 1:
+                if DEBUG_FMT:
+                    print(
+                        f"[DEBUG] Fallback FORMAT {stmt_label}", file=sys.stderr)
+                cfmt = get_cfmt_from_format(stmt_label=stmt_label)
+                top_scope.append(
+                    "static const char* format_%s = %s;" % (stmt_label, cfmt))
 
     def curr_scope_append_return_function():
         curr_scope.append(
@@ -5828,7 +6074,7 @@ def convert_executable(
                             return "star"
                         if (tok.is_integer()):
                             stmt_label = tok.value
-                            if (fmt_counts_by_statement_label[stmt_label] > 1):
+                            if (fmt_counts_by_statement_label[stmt_label] >= 1):
                                 return "format_%s" % stmt_label
                             return get_cfmt_from_format(stmt_label=stmt_label)
                     return convert_tokens(conv_info=conv_info, tokens=tl)
@@ -6097,8 +6343,10 @@ def convert_executable(
                     callee_key = called.split("::")[-1]
                     sig = _lookup_routine_signature(callee_key)
                     if sig is not None:
-                        force_elems = bool(FABLE_SMALL_CHAR_VIEW and callee_key.lower() in _MPLAPACK_CORE_CPP_NAMES)
-                        a = _adjust_actuals_using_signature(a, sig, conv_info, force_elems_call=force_elems)
+                        force_elems = bool(
+                            FABLE_SMALL_CHAR_VIEW and callee_key.lower() in _MPLAPACK_CORE_CPP_NAMES)
+                        a = _adjust_actuals_using_signature(
+                            a, sig, conv_info, force_elems_call=force_elems)
 
                     def cmn_a():
                         if (len(cmn) == 0):
@@ -6116,11 +6364,11 @@ def convert_executable(
             elif (ei.key == "continue"):
                 pass
             elif (ei.key == "deallocate"):
-                 # Policy: ignore DEALLOCATE statements in executable code.
-                 # Local allocatable arrays are typically rewritten into explicit-shape
-                 # locals or RAII-managed storage during preprocessing / declaration
-                 # conversion, so an explicit DEALLOCATE would be redundant.
-                 pass
+                # Policy: ignore DEALLOCATE statements in executable code.
+                # Local allocatable arrays are typically rewritten into explicit-shape
+                # locals or RAII-managed storage during preprocessing / declaration
+                # conversion, so an explicit DEALLOCATE would be redundant.
+                pass
             elif (ei.key == "goto"):
                 curr_scope.append("goto statement_%s;" % ei.label.value)
             elif (ei.key == "goto_computed"):
@@ -6692,6 +6940,7 @@ def _infer_user_defined_callable_signatures(conv_info):
         final[name] = (st["ret"], args)
         _INFERRED_CALLABLE_SIGNATURES[key] = final
 
+
 _CMN_WORD_RE = re.compile(r"\bcmn\b")
 
 
@@ -6709,6 +6958,7 @@ def _needs_cmn_object_from_lines(lines: typing.Iterable[str]) -> bool:
         if _CMN_WORD_RE.search(code):
             return True
     return False
+
 
 def convert_to_cpp_function(
         cpp_callback,
@@ -8065,6 +8315,7 @@ def _postprocess_strip_wp_kind_suffix(lines):
         out.append(code + comment)
     return out
 
+
 def _postprocess_add_memory_include(lines):
     """Ensure '#include <memory>' exists when std::unique_ptr is used.
 
@@ -8098,13 +8349,15 @@ def _postprocess_add_memory_include(lines):
         new_lines = ["#include <memory>"] + lines
         return new_lines
 
-    new_lines = lines[:last_inc + 1] + ["#include <memory>"] + lines[last_inc + 1:]
+    new_lines = lines[:last_inc + 1] + \
+        ["#include <memory>"] + lines[last_inc + 1:]
 
     # Ensure a blank line after the include block.
     j = last_inc + 2
     if j < len(new_lines) and new_lines[j].strip() != "":
         new_lines.insert(j, "")
     return new_lines
+
 
 def _postprocess_index_zero_simplify(text):
     """
@@ -8801,6 +9054,7 @@ def _postprocess_complex_zero_initializers(lines):
         out.append(line)
     return out
 
+
 def _postprocess_fix_scalar_str_length_from_slices(lines):
     """Fix wrong fem::str<N> length for scalar locals when slices exceed N.
 
@@ -8868,6 +9122,7 @@ def _postprocess_fix_scalar_str_length_from_slices(lines):
             continue
         out.append(line.replace(f"fem::str<{old_n}>", f"fem::str<{new_n}>", 1))
     return out
+
 
 def _fix_fortran_externals(src):
     """Downgrade simple Fortran 90 EXTERNAL declarations to F77 style.
@@ -9973,7 +10228,8 @@ def _fix_fortran_f90_decl_syntax(src: str) -> str:
                                         break
                                     k4 += 1
                                 if k4 < len(lines):
-                                    stmt4, _, _, j4 = gather_fixed_statement(lines, k4)
+                                    stmt4, _, _, j4 = gather_fixed_statement(
+                                        lines, k4)
                                     if _is_endif_stmt(stmt4):
                                         skip_to = j4
 
@@ -11105,7 +11361,7 @@ def process(
     # where the upstream parser may drop LEN=3 and we would otherwise emit
     # fem::str<1> path but still generate path(2, 3) = ...
     result = _postprocess_fix_scalar_str_length_from_slices(result)
-    
+
     # Clean up temporary Fortran files created for preprocessing.
     for tmp in temp_files:
         try:

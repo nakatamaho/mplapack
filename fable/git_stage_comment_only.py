@@ -87,7 +87,8 @@ def read_worktree(abs_path: str) -> bytes:
 def read_head_blob(repo_rel_path: str) -> bytes:
     rc, out, _ = run_git(["show", f"HEAD:{repo_rel_path}"], check=False)
     if rc != 0:
-        raise SystemExit(f"ERROR: Cannot read HEAD:{repo_rel_path} (is the file tracked?)")
+        raise SystemExit(
+            f"ERROR: Cannot read HEAD:{repo_rel_path} (is the file tracked?)")
     return out
 
 
@@ -240,19 +241,23 @@ def stage_patch(patch: bytes) -> None:
     )
     if rc != 0:
         sys.stderr.write(err.decode("utf-8", errors="replace"))
-        raise SystemExit("ERROR: git apply --cached failed (patch did not apply).")
+        raise SystemExit(
+            "ERROR: git apply --cached failed (patch did not apply).")
 
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("paths", nargs="+", help="Files to stage comment-only changes for (working tree -> index).")
-    ap.add_argument("--dry-run", action="store_true", help="Do not stage; just report.")
+    ap.add_argument("paths", nargs="+",
+                    help="Files to stage comment-only changes for (working tree -> index).")
+    ap.add_argument("--dry-run", action="store_true",
+                    help="Do not stage; just report.")
     args = ap.parse_args()
 
     # Refuse if there are already staged changes (avoid accidental mixing).
     rc, _, _ = run_git(["diff", "--cached", "--quiet"], check=False)
     if rc != 0:
-        sys.stderr.write("ERROR: You already have staged changes. Commit or unstage them first.\n")
+        sys.stderr.write(
+            "ERROR: You already have staged changes. Commit or unstage them first.\n")
         return 2
 
     repo_root = git_text(["rev-parse", "--show-toplevel"])
@@ -266,7 +271,8 @@ def main() -> int:
             continue
 
         if not is_c_like(repo_path):
-            sys.stderr.write(f"WARN: not a C-like file, skipping: {repo_path}\n")
+            sys.stderr.write(
+                f"WARN: not a C-like file, skipping: {repo_path}\n")
             continue
 
         base_txt = decode_utf8(read_head_blob(repo_path), repo_path)
@@ -278,7 +284,8 @@ def main() -> int:
         base_flags = classify_comment_only_cpp(base_lines)
         work_flags = classify_comment_only_cpp(work_lines)
 
-        comment_only_lines = build_comment_only_version(base_lines, work_lines, base_flags, work_flags)
+        comment_only_lines = build_comment_only_version(
+            base_lines, work_lines, base_flags, work_flags)
         patch = make_patch(repo_path, base_lines, comment_only_lines)
 
         if not patch:

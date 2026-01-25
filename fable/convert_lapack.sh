@@ -25,10 +25,10 @@ name_map_files_env="${core_name_map}:${testing_name_map}"
 fable_cout_env=()
 case "$mode" in
   lin|eig)
-    fable_cout_env=(env FABLE_SMALL_CHAR="0" FABLE_SUPPRESS_COMMON=True FABLE_SUPPRESS_SAVE=1 FABLE_NAME_MAP_FILES="$name_map_files_env" FABLE_COMMON_AS_GLOBALS=1)
+    fable_cout_env=(env DEBUG_FORMAT_HOIST=1 FABLE_SMALL_CHAR="0" FABLE_SUPPRESS_COMMON=True FABLE_SUPPRESS_SAVE=1 FABLE_NAME_MAP_FILES="$name_map_files_env" FABLE_COMMON_AS_GLOBALS=1)
     ;;
   matgen)
-    fable_cout_env=(env FABLE_SMALL_CHAR="0" FABLE_SUPPRESS_COMMON=True FABLE_SUPPRESS_SAVE=1 FABLE_NAME_MAP_FILES="$name_map_files_env" FABLE_COMMON_AS_GLOBALS=1)
+    fable_cout_env=(env DEBUG_FORMAT_HOIST=1 FABLE_SMALL_CHAR="0" FABLE_SUPPRESS_COMMON=True FABLE_SUPPRESS_SAVE=1 FABLE_NAME_MAP_FILES="$name_map_files_env" FABLE_COMMON_AS_GLOBALS=1)
     ;;
   *)
     fable_cout_env=(env FABLE_SMALL_CHAR="$FABLE_SMALL_CHAR" FABLE_NAME_MAP_FILES="$name_map_files_env" FABLE_COMMON_AS_GLOBALS=1)
@@ -168,7 +168,7 @@ tmp_cpp="$(mktemp)"
 # mplapack_name_map.txt and mplapack_testing_name_map.txt from the same directory as this script.
 (
     cd "$script_dir"
-    "${fable_cout_env[@]}" python -m fable.command_line.cout "$src_abs" > /dev/null
+    "${fable_cout_env[@]}" python -m fable.command_line.cout "$src_abs" #> /dev/null
 )
 
 # Ensure the expected generated C++ file exists.

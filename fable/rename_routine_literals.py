@@ -102,6 +102,7 @@ WRITE_STMT_RE = re.compile(
     flags=re.DOTALL,
 )
 
+
 def rewrite_literal_content(content: str, mapping: Dict[str, str]) -> Tuple[str, int]:
     """
     Replace routine tokens found inside a single C++ string literal content,
@@ -121,7 +122,7 @@ def rewrite_literal_content(content: str, mapping: Dict[str, str]) -> Tuple[str,
             return mapped, 1
         # Even if already renamed / not found in mapping, still drop padding.
         return tok, 0
- 
+
     hits = 0
 
     def repl(m: re.Match) -> str:
@@ -249,14 +250,16 @@ def main() -> int:
         required=True,
         help="Path to map txt (repeatable). Later maps override earlier ones.",
     )
-    ap.add_argument("--in-place", action="store_true", help="Rewrite files in place")
+    ap.add_argument("--in-place", action="store_true",
+                    help="Rewrite files in place")
     ap.add_argument(
         "--suffix",
         action="append",
         default=[".cpp", ".hpp", ".h"],
         help="File suffix to process (repeatable)",
     )
-    ap.add_argument("paths", nargs="*", default=["."], help="Files/directories to scan")
+    ap.add_argument("paths", nargs="*",
+                    default=["."], help="Files/directories to scan")
     args = ap.parse_args()
 
     mapping = load_name_maps(args.map)

@@ -3181,6 +3181,7 @@ class fproc(fproc_p_methods):
 
         return vals
 
+
 class equivalence_info(object):
 
     __slots__ = [
