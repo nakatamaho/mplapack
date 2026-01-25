@@ -172,6 +172,8 @@ void Cgsvj1(const char *jobv, INTEGER const m, INTEGER const n, INTEGER const n1
     // | *   *   * [x] [x] [x]|    Row-cycling in the nblr-by-nblc [x] blocks.
     // | *   *   * [x] [x] [x]|    Row-cyclic pivoting inside each [x] block.
     // |[x] [x] [x] *   *   * |
+    // |[x] [x] [x] *   *   * |
+    // |[x] [x] [x] *   *   * |
     //
     for (i = 1; i <= nsweep; i = i + 1) {
         //
