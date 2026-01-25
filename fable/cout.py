@@ -1222,8 +1222,38 @@ def produce_comment_given_sl(callback, sl):
     else:
         t = None
     if (t is not None):
-        callback("//" + (" " + t.expandtabs().rstrip()
-                 if t.expandtabs().rstrip() else ""))
+        _emit_cpp_comment(callback, t, tag=None)
+
+
+def _emit_cpp_comment(callback, t, tag=None):
+    """Emit a single C++ line comment.
+
+    If tag is provided (e.g., "FMT_HDR"), the line is prefixed with:
+        //FMT_HDR <text>
+    or for an empty spacer:
+        //FMT_HDR
+    """
+    if t is None:
+        return
+    t2 = t.expandtabs().rstrip()
+    if tag:
+        if t2:
+            callback(f"//{tag} " + t2)
+        else:
+            callback(f"//{tag}")
+    else:
+        callback("//" + (" " + t2 if t2 else ""))
+
+
+def produce_fmt_hdr_comment_given_sl(callback, sl):
+    """Emit a Fortran comment line as a tagged C++ comment for FORMAT headings."""
+    if (sl.stmt_offs is None):
+        t = sl.text[1:]
+    elif (sl.index_of_exclamation_mark is not None):
+        t = sl.stmt[sl.index_of_exclamation_mark+1:]
+    else:
+        t = None
+    _emit_cpp_comment(callback, t, tag="FMT_HDR")
 
 
 def produce_comments(callback, ssl_list):
@@ -1246,8 +1276,7 @@ def produce_comments(callback, ssl_list):
                 t = None
 
             if t is not None:
-                callback("//" + (" " + t.expandtabs().rstrip()
-                         if t.expandtabs().rstrip() else ""))
+                _emit_cpp_comment(callback, t, tag=None)
 
 
 def flush_comments_if_non_trivial(callback, buffer):
@@ -4201,8 +4230,8 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
         #   DOUBLE PRECISION WNRM(MAX(M,N))
         # ->
         #   std::unique_ptr<REAL[]> fable_wnrm_storage(new REAL[max(m, n)]);
-        #   REAL *wnrm = wnrm_storage.get();
-        storage_name = f"{vname}_storage"
+        #   REAL *wnrm = __wnrm_storage.get();
+        storage_name = f"__{vname}_storage"
         rapp("%sstd::unique_ptr<%s[]> %s(new %s[%s]);" % (
             const_qualifier(), mplapack_elem_ctype, storage_name,
             mplapack_elem_ctype, size_expr))
@@ -5664,7 +5693,8 @@ def convert_executable(
                 if DEBUG_FMT:
                     print(
                         f"[DEBUG]   sl.stmt_offs={sl.stmt_offs}, sl.text={repr(sl.text[:40] if sl.text else None)}", file=sys.stderr)
-                produce_comment_given_sl(callback=top_scope.append, sl=sl)
+                produce_fmt_hdr_comment_given_sl(
+                    callback=top_scope.append, sl=sl)
             # Output FORMAT definition
             cfmt = get_cfmt_from_format(stmt_label=label)
             top_scope.append(
