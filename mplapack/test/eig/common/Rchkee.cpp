@@ -217,8 +217,14 @@ void Rchkee(void) {
     REAL *b = b_storage.get();
     REAL *c = c_storage.get();
     REAL *d = d_storage.get();
+    const REAL zero = REAL(0.0);
+    std::fill_n(a, nmax * nmax * need, zero);
+    std::fill_n(b, nmax * nmax * 5, zero);
+    std::fill_n(c, ncmax * ncmax * ncmax * ncmax, zero);
+    std::fill_n(d, nmax * 12, zero);
     s1 = dsecnd();
     fatal = false;
+    nunit = nout;
 //
 // Return to here to read multiple sets of data
 //

@@ -225,8 +225,14 @@ void Cchkee(void) {
     COMPLEX *b = b_storage.get();
     COMPLEX *c = c_storage.get();
     COMPLEX *dc = dc_storage.get();
+    const COMPLEX zero = COMPLEX(0.0);
+    std::fill_n(a, nmax * nmax * need, zero);
+    std::fill_n(b, nmax * nmax * 5, zero);
+    std::fill_n(c, ncmax * ncmax * ncmax * ncmax, zero);
+    std::fill_n(dc, nmax * 6, zero);
     s1 = dsecnd();
     fatal = false;
+    nunit = nout;
 //
 // Return to here to read multiple sets of data
 //
