@@ -104,16 +104,17 @@ void Cchkaa(void) {
     auto rwork_storage = std::make_unique<REAL[]>(150 + 2 * maxrhs);
     auto iwork_storage = std::make_unique<INTEGER[]>(25 * nmax);
     auto s_storage = std::make_unique<REAL[]>(2 * nmax);
+    auto e_storage = std::make_unique<COMPLEX[]>(nmax);
     COMPLEX *a = a_storage.get();
     COMPLEX *b = b_storage.get();
     COMPLEX *work = work_storage.get();
     REAL *rwork = rwork_storage.get();
     INTEGER *iwork = iwork_storage.get();
     REAL *s = s_storage.get();
+    COMPLEX *e = e_storage.get();
     INTEGER la = 0;
     INTEGER lafac = 0;
     INTEGER piv[nmax];
-    COMPLEX e[nmax];
     REAL s2 = 0.0;
     INTEGER ldaw = (kdmax + 1) * nmax;
     INTEGER ldb = nmax * maxrhs;
