@@ -43,6 +43,8 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
+#include <memory>
+
 void Cchkaa(void) {
     common cmn;
     common_read read(cmn);
@@ -96,10 +98,15 @@ void Cchkaa(void) {
     INTEGER ntypes = 0;
     bool dotype[matmax];
     const INTEGER kdmax = nmax + (nmax + 1) / 4;
-    COMPLEX a[(kdmax + 1) * nmax * 7];
-    COMPLEX b[nmax * maxrhs * 4];
-    COMPLEX work[nmax * nmax + maxrhs + 10];
-    REAL rwork[150 + 2 * maxrhs];
+    auto sz = [](INTEGER x) -> std::size_t { return static_cast<std::size_t>(x); };
+    auto a_storage = std::unique_ptr<COMPLEX[]>(new COMPLEX[(sz(kdmax) + 1) * sz(nmax) * 7]);
+    COMPLEX *a = a_storage.get();
+    auto b_storage = std::unique_ptr<COMPLEX[]>(new COMPLEX[sz(nmax) * sz(maxrhs) * 4]);
+    COMPLEX *b = b_storage.get();
+    auto work_storage = std::unique_ptr<COMPLEX[]>(new COMPLEX[sz(nmax) * sz(nmax) + sz(maxrhs) + 10]);
+    COMPLEX *work = work_storage.get();
+    auto rwork_storage = std::unique_ptr<REAL[]>(new REAL[150 + 2 * sz(maxrhs)]);
+    REAL *rwork = rwork_storage.get();
     INTEGER iwork[25 * nmax];
     REAL s[2 * nmax];
     INTEGER la = 0;
