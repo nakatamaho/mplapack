@@ -7922,15 +7922,39 @@ def _postprocess_mplapack_labels_and_comments(lines):
         for a, b in sorted(alias_to_base.items()):
             print(f"  {a} -> {b}", file=sys.stderr)
 
-    # First rewrite uses (whole-word) and then drop alias decl lines.
+    # Apply rewrites and drop redundant alias declarations safely.
+    # IMPORTANT: Drop alias decl lines BEFORE rewriting, otherwise the decl line
+    # itself gets renamed (ldabw -> ldab) and becomes indistinguishable from a
+    # real base declaration, producing duplicate ldab declarations.
     if alias_to_base:
-        # Rewrite lines
-        rewritten = []
-        # Precompile regex for speed
+        # Identify alias declaration lines (by original text) that are true
+        # duplicates of an existing base declaration with the same initializer.
+        alias_decl_idxs = set()
+        for i, line in enumerate(lines):
+            m = decl_re.match(line)
+            if not m:
+                continue
+            name = (m.group("name") or "").lower()
+            if name not in alias_to_base:
+                continue
+            base = alias_to_base[name]
+            init = m.group("init")
+            if base in decls and _norm_init(init) == decls[base]:
+                alias_decl_idxs.add(i)
+
+        if DEBUG_LD and alias_decl_idxs:
+            print(f"[DEBUG_LD_DEDUP] alias decl line(s) to drop: {sorted(alias_decl_idxs)}", file=sys.stderr)
+
+        # Drop alias decl lines first (pre-rewrite).
+        if alias_decl_idxs:
+            lines = [ln for j, ln in enumerate(lines) if j not in alias_decl_idxs]
+
+        # Rewrite uses (whole-word) in the remaining lines.
         alias_patterns = [
             (re.compile(rf"\b{re.escape(alias)}\b"), base)
             for alias, base in sorted(alias_to_base.items(), key=lambda x: (-len(x[0]), x[0]))
         ]
+        rewritten = []
         for line in lines:
             new_line = line
             for pat, base in alias_patterns:
@@ -7938,24 +7962,31 @@ def _postprocess_mplapack_labels_and_comments(lines):
             rewritten.append(new_line)
         lines = rewritten
 
-        # Drop redundant alias declarations that match the base initializer.
-        dropped = 0
+        # Drop duplicate base declarations (same name, same initializer, same brace depth).
+        # This catches cases where the alias decl was renamed earlier by other passes.
+        depth = 0
+        seen = set()
         kept = []
+        dropped_dups = 0
         for line in lines:
+            cur_depth = depth
             m = decl_re.match(line)
             if m:
                 name = (m.group("name") or "").lower()
                 init = m.group("init")
-                if name in alias_to_base:
-                    base = alias_to_base[name]
-                    if base in decls and _norm_init(init) == decls[base]:
-                        dropped += 1
+                key = (cur_depth, name, _norm_init(init))
+                if name.startswith("ld") and not name.endswith("w"):
+                    if key in seen:
+                        dropped_dups += 1
+                        depth += line.count("{") - line.count("}")
                         continue
+                    seen.add(key)
             kept.append(line)
-        if DEBUG_LD:
-            print(f"[DEBUG_LD_DEDUP] dropped {dropped} redundant ld alias decl(s).", file=sys.stderr)
-        lines = kept
+            depth += line.count("{") - line.count("}")
 
+        if DEBUG_LD:
+            print(f"[DEBUG_LD_DEDUP] dropped {len(alias_decl_idxs)} redundant ld alias decl(s) and {dropped_dups} duplicate base decl(s).", file=sys.stderr)
+        lines = kept
     # ------------------------------------------------------------
     # Pass 1: existing label/comment/index micro-fixes (line-by-line)
     # ------------------------------------------------------------
