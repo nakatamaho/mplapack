@@ -44,6 +44,7 @@ using fem::common;
 #include <mplapack_eig.h>
 #include <mplapack_debug.h>
 
+#include <memory>
 void Rchkee(void) {
     common cmn;
     common_read read(cmn);
@@ -128,18 +129,23 @@ void Rchkee(void) {
     INTEGER maxtyp = 0;
     bool dotype[maxt];
     const INTEGER lwork = nmax * (5 * nmax + 5) + 1;
-    REAL work[lwork];
     const INTEGER liwork = nmax * (5 * nmax + 20);
     INTEGER iwork[liwork];
     bool logwrk[nmax];
-    REAL result[500];
     INTEGER info = 0;
     INTEGER nrhs = 0;
     bool tstdif = false;
     REAL thrshn = 0.0;
-    REAL x[5 * nmax];
-    REAL taua[nmax];
-    REAL taub[nmax];
+    auto result_storage = std::make_unique<REAL[]>(500);
+    auto work_storage = std::make_unique<REAL[]>(lwork);
+    auto x_storage = std::make_unique<REAL[]>(5 * nmax);
+    auto taua_storage = std::make_unique<REAL[]>(nmax);
+    auto taub_storage = std::make_unique<REAL[]>(nmax);
+    REAL *result = result_storage.get();
+    REAL *work = work_storage.get();
+    REAL *x = x_storage.get();
+    REAL *taua = taua_storage.get();
+    REAL *taub = taub_storage.get();
     REAL s2 = 0.0;
     INTEGER lda = nmax * nmax;
     INTEGER ldc = ncmax * ncmax;
@@ -180,7 +186,9 @@ void Rchkee(void) {
     static const char *format_9974 = "(' Tests of Rsbtrd',/,' (reduction of a symmetric band ',"
                                      "'matrix to tridiagonal form)')";
     static const char *format_9973 = "(/,1x,71('-'))";
-    static const char *format_9972 = "(/,' LAPACK VERSION ',i1,'.',i1,'.',i1)";
+    static const char *format_9972 = "(' Tests of the Multiple precision version of LAPACK ',i1,'.',i1,'.',i1,/, "
+                                     "' Based on the original LAPACK VERSION ',i1,'.',i1,'.',i1,/,/, "
+                                     "'The following parameter values will be used:')";
     static const char *format_9971 = "(/,' Tests of the Generalized Linear Regression Model ','routines')";
     static const char *format_9970 = "(/,' Tests of the Generalized QR and RQ routines')";
     static const char *format_9969 = "(/,' Tests of the Generalized Singular Value',' Decomposition routines')";
@@ -201,19 +209,14 @@ void Rchkee(void) {
     static const char *format_9960 = "(/,' Tests of the CS Decomposition routines')";
     //
     //
-    constexpr std::size_t NA = (std::size_t)nmax * nmax * need;
-    constexpr std::size_t NB = (std::size_t)nmax * nmax * 5;
-    constexpr std::size_t NC = (std::size_t)ncmax * ncmax * ncmax * ncmax;
-    constexpr std::size_t ND = (std::size_t)nmax * 12;
-    REAL a[nmax * nmax * need];
-    REAL b[nmax * nmax * 5];
-    REAL c[ncmax * ncmax * ncmax * ncmax];
-    REAL d[nmax * 12];
-    const REAL zero = 0.0;
-    std::fill_n(a, NA, zero);
-    std::fill_n(b, NB, zero);
-    std::fill_n(c, NC, zero);
-    std::fill_n(d, ND, zero);
+    auto a_storage = std::make_unique<REAL[]>(nmax * nmax * need);
+    auto b_storage = std::make_unique<REAL[]>(nmax * nmax * 5);
+    auto c_storage = std::make_unique<REAL[]>(ncmax * ncmax * ncmax * ncmax);
+    auto d_storage = std::make_unique<REAL[]>(nmax * 12);
+    REAL *a = a_storage.get();
+    REAL *b = b_storage.get();
+    REAL *c = c_storage.get();
+    REAL *d = d_storage.get();
     s1 = dsecnd();
     fatal = false;
 //
@@ -337,8 +340,8 @@ statement_10:
         write(nout, format_9992), path;
         goto statement_10;
     }
-    ilaver(vers_major, vers_minor, vers_patch);
-    write(nout, format_9972), vers_major, vers_minor, vers_patch;
+    iMlaver(mplapack_vers_major, mplapack_vers_minor, mplapack_vers_patch, lapack_vers_major, lapack_vers_minor, lapack_vers_patch);
+    write(nout, format_9994), mplapack_vers_major, mplapack_vers_minor, mplapack_vers_patch, lapack_vers_major, lapack_vers_minor, lapack_vers_patch;
     write(nout, format_9984);
     //
     // Read the number of values of M, P, and N.
