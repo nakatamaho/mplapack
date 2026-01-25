@@ -7836,9 +7836,129 @@ default_arr_nd_size_max = 256
 
 
 def _postprocess_mplapack_labels_and_comments(lines):
-    """MPLAPACK-specific postprocessing for labels, comments, and trivial zero offsets."""
-    import re
+    """MPLAPACK-specific postprocessing for labels, comments, and trivial zero offsets.
 
+    This function also performs a conservative stride (leading-dimension) dedup:
+      - If we accidentally generated an auto stride like `ldabw` because `ldab`
+        already exists, and BOTH have the SAME initializer expression, then:
+          * rewrite all uses of `ldabw` -> `ldab`
+          * drop the redundant `ldabw = ...;` declaration
+
+    Debug (stderr):
+      - Set env var DEBUG_LD_DEDUP=1 to print alias decisions.
+    """
+    import re
+    import os
+    import sys
+
+    # ------------------------------------------------------------
+    # Pass 0: detect and remove redundant ld*{w...} aliases
+    # ------------------------------------------------------------
+    DEBUG_LD = os.environ.get("DEBUG_LD_DEDUP", "").strip().lower() in ("1", "true", "yes", "on")
+
+    # Match INTEGER declarations with an initializer, allowing common qualifiers:
+    #   INTEGER ldab = ...;
+    #   const INTEGER ldab = ...;
+    #   INTEGER const ldab = ...;
+    #   static const INTEGER ldab = ...;
+    decl_re = re.compile(
+        r'^\s*(?:(?:static|constexpr)\s+)?'
+        r'(?:(?:const)\s+)?INTEGER\s+(?:(?:const)\s+)?'
+        r'(?P<name>[A-Za-z_][A-Za-z0-9_]*)\s*=\s*(?P<init>[^;]+);\s*$'
+    )
+
+    def _norm_init(expr: str) -> str:
+        # Normalize initializer to compare across whitespace / extra parentheses.
+        # Keep it purely syntactic (no algebraic simplification).
+        s = (expr or "").strip()
+        try:
+            s = _strip_outer_parens_balanced(s)
+        except Exception:
+            pass
+        # remove all whitespace
+        return re.sub(r"\s+", "", s)
+
+    # Collect declarations: name_lower -> (norm_init, first_line_index)
+    decls = {}
+    decl_line_idx = {}
+    for i, line in enumerate(lines):
+        m = decl_re.match(line)
+        if not m:
+            continue
+        name = m.group("name")
+        init = m.group("init")
+        if not name:
+            continue
+        nl = name.lower()
+        # Only consider ld* (stride-like) names.
+        if not nl.startswith("ld"):
+            continue
+        ni = _norm_init(init)
+        # Keep the first one deterministically.
+        if nl not in decls:
+            decls[nl] = ni
+            decl_line_idx[nl] = i
+
+    # Determine alias -> base mapping.
+    # Example: ldabw -> ldab when both initializers match.
+    alias_to_base = {}
+    for name, ninit in decls.items():
+        if not name.endswith("w"):
+            continue
+        # Strip trailing w's progressively to find an existing base.
+        probe = name
+        while probe.endswith("w"):
+            base = probe[:-1]
+            if base in decls and decls[base] == ninit:
+                alias_to_base[name] = base
+                break
+            probe = base
+
+    if DEBUG_LD and alias_to_base:
+        print("[DEBUG_LD_DEDUP] decls:", file=sys.stderr)
+        for k in sorted(decls.keys()):
+            print(f"  {k} = {decls[k]}", file=sys.stderr)
+        print("[DEBUG_LD_DEDUP] alias_to_base:", file=sys.stderr)
+        for a, b in sorted(alias_to_base.items()):
+            print(f"  {a} -> {b}", file=sys.stderr)
+
+    # First rewrite uses (whole-word) and then drop alias decl lines.
+    if alias_to_base:
+        # Rewrite lines
+        rewritten = []
+        # Precompile regex for speed
+        alias_patterns = [
+            (re.compile(rf"\b{re.escape(alias)}\b"), base)
+            for alias, base in sorted(alias_to_base.items(), key=lambda x: (-len(x[0]), x[0]))
+        ]
+        for line in lines:
+            new_line = line
+            for pat, base in alias_patterns:
+                new_line = pat.sub(base, new_line)
+            rewritten.append(new_line)
+        lines = rewritten
+
+        # Drop redundant alias declarations that match the base initializer.
+        dropped = 0
+        kept = []
+        for line in lines:
+            m = decl_re.match(line)
+            if m:
+                name = (m.group("name") or "").lower()
+                init = m.group("init")
+                if name in alias_to_base:
+                    base = alias_to_base[name]
+                    if base in decls and _norm_init(init) == decls[base]:
+                        dropped += 1
+                        continue
+            kept.append(line)
+        if DEBUG_LD:
+            print(f"[DEBUG_LD_DEDUP] dropped {dropped} redundant ld alias decl(s).", file=sys.stderr)
+        lines = kept
+
+    # ------------------------------------------------------------
+    # Pass 1: existing label/comment/index micro-fixes (line-by-line)
+    # ------------------------------------------------------------
     new_lines = []
     for line in lines:
         # 1) Fix Mxerbla("XXXX ", info) labels using the MPLAPACK name map
@@ -7888,8 +8008,6 @@ def _postprocess_mplapack_labels_and_comments(lines):
 
         new_lines.append(line)
     return new_lines
-
-
 def _normalize_fortran_comment_prefix(lines):
     """Normalize Fortran-derived comments: //C... -> // ..."""
     normalized = []
