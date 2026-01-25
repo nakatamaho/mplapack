@@ -82,7 +82,7 @@ void Rchkrfp(void) {
     INTEGER lapack_vers_minor = 0;
     INTEGER lapack_vers_patch = 0;
     iMlaver(mplapack_vers_major, mplapack_vers_minor, mplapack_vers_patch, lapack_vers_major, lapack_vers_minor, lapack_vers_patch);
-    write(nout, format_9994), vers_major, vers_minor, vers_patch;
+    write(nout, format_9994), mplapack_vers_major, mplapack_vers_minor, mplapack_vers_patch, lapack_vers_major, lapack_vers_minor, lapack_vers_patch;
     //
     // Read the values of N
     //

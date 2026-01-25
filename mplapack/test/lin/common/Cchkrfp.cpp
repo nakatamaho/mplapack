@@ -81,7 +81,7 @@ void Cchkrfp(void) {
     INTEGER lapack_vers_major = 0;
     INTEGER lapack_vers_minor = 0;
     INTEGER lapack_vers_patch = 0;
-    iMlaver(mplapack_vers_major, mplapack_vers_minor, mplapack_vers_patch, lapack_vers_major, lapack_vers_ minor, lapack_vers_patch);
+    iMlaver(mplapack_vers_major, mplapack_vers_minor, mplapack_vers_patch, lapack_vers_major, lapack_vers_minor, lapack_vers_patch);
     write(nout, format_9994), mplapack_vers_major, mplapack_vers_minor, mplapack_vers_patch, lapack_vers_major, lapack_vers_minor, lapack_vers_patch;
     //
     // Read the values of N
@@ -241,6 +241,7 @@ void Cchkrfp(void) {
     // Test the routines: zpftrf, zpftri, zpftrs (as in Cdrvpo).
     // This also tests the routines: ztfsm, ztftri, ztfttr, ztrttf.
     //
+    auto worka_storage = std::make_unique<COMPLEX[]>(nmax * nmax);
     auto workasav_storage = std::make_unique<COMPLEX[]>(nmax * nmax);
     auto workafac_storage = std::make_unique<COMPLEX[]>(nmax * nmax);
     auto workainv_storage = std::make_unique<COMPLEX[]>(nmax * nmax);
