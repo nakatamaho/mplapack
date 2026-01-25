@@ -446,7 +446,7 @@ statement_130:
     //
     // Check first character for correct precision.
     //
-    if (!Mlsame(c1.elems, "Zomplex precision")) {
+    if (!Mlsame(c1.elems, "Zomplex precision") && !Mlsame(c1.elems, "C")) {
         write(nout, format_9990), path;
         //
     } else if (nmats <= 0) {
