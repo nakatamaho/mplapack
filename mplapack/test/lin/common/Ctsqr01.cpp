@@ -99,8 +99,8 @@ void Ctsqr01(fem::str_cref tssw, INTEGER const m, INTEGER const n, INTEGER const
     COMPLEX *q = q_storage.get();
     std::unique_ptr<COMPLEX[]> r_storage(new COMPLEX[m * l]);
     COMPLEX *r = r_storage.get();
-    std::unique_ptr<COMPLEX[]> rwork_storage(new COMPLEX[l]);
-    COMPLEX *rwork = rwork_storage.get();
+    std::unique_ptr<REAL[]> rwork_storage(new REAL[l]);
+    REAL *rwork = rwork_storage.get();
     REAL anorm = 0.0;
     REAL resid = 0.0;
     const REAL zero = 0.0;

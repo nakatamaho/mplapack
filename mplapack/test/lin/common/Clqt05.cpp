@@ -97,8 +97,8 @@ void Clqt05(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const nb,
     // Compute |L - A*Q*C| / |A| and store in RESULT(1)
     //
     Cgemm("N", "C", m, n2, n2, -one, a, m, q, n2, one, r, n2);
-    std::unique_ptr<COMPLEX[]> rwork_storage(new COMPLEX[n2]);
-    COMPLEX *rwork = rwork_storage.get();
+    std::unique_ptr<REAL[]> rwork_storage(new REAL[n2]);
+    REAL *rwork = rwork_storage.get();
     REAL anorm = Clange("1", m, n2, a, m, rwork);
     REAL resid = Clange("1", m, n2, r, n2, rwork);
     const REAL zero = 0.0;
