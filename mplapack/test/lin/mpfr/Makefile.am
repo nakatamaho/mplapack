@@ -43,65 +43,67 @@ xlintstrfC_mpfr_CXXFLAGS = $(cxxflags)
 # MPFR emulation profiles
 # -----------------------------------------------------------------------------
 
-MPFR_PROFILES = current binary64 binary128
+MPFR_PROFILES = default binary64 binary128
 
-MPFR_ENV_current  =
+MPFR_ENV_default   =
 MPFR_ENV_binary64  = MPLAPACK_MPFR_EMAX=1024  MPLAPACK_MPFR_EMIN=-1021  MPLAPACK_MPFR_PRECISION=53
 MPFR_ENV_binary128 = MPLAPACK_MPFR_EMAX=16384 MPLAPACK_MPFR_EMIN=-16381 MPLAPACK_MPFR_PRECISION=113
 
-MPFR_PROFILE_LABEL_current  = current
+MPFR_PROFILE_LABEL_default   = default
 MPFR_PROFILE_LABEL_binary64  = binary64 (prec=53 emin=-1021 emax=1024)
 MPFR_PROFILE_LABEL_binary128 = binary128 (prec=113 emin=-16381 emax=16384)
 
 # -----------------------------------------------------------------------------
-# Test sets (base names; outputs are <test>.<profile>.out)
+# Outputs to build during "make check"
 # -----------------------------------------------------------------------------
 
-MPFR_LIN_REAL_TESTS = Rtest Rtest_rfp
-MPFR_LIN_COMPLEX_TESTS = Ctest Ctest_rfp
-MPFR_LIN_ALL_TESTS = $(MPFR_LIN_REAL_TESTS) $(MPFR_LIN_COMPLEX_TESTS)
-
-# -----------------------------------------------------------------------------
-# Hook into Automake's "make check"
-# -----------------------------------------------------------------------------
+MPFR_LIN_OUTS = \
+  $(addprefix Rtest.,$(addsuffix .out,$(MPFR_PROFILES))) \
+  $(addprefix Ctest.,$(addsuffix .out,$(MPFR_PROFILES))) \
+  $(addprefix Rtest_rfp.,$(addsuffix .out,$(MPFR_PROFILES))) \
+  $(addprefix Ctest_rfp.,$(addsuffix .out,$(MPFR_PROFILES)))
 
 .PHONY: mpfr-check mpfr-check-%
 
-# DO NOT define "check:" here. Use check-local to avoid target redefinition merges.
 check-local: mpfr-check
 
-mpfr-check: $(MPFR_PROFILES:%=mpfr-check-%)
+mpfr-check: $(MPFR_LIN_OUTS)
 	@echo "MPFR lin tests done for profiles: $(MPFR_PROFILES)"
 
-# Pattern target: builds all <test>.<profile>.out for the given profile.
-mpfr-check-%: $(addsuffix .%.out,$(MPFR_LIN_ALL_TESTS))
+mpfr-check-%: Rtest.%.out Ctest.%.out Rtest_rfp.%.out Ctest_rfp.%.out
 	@echo "MPFR profile '$*' done."
+
+# -----------------------------------------------------------------------------
+# Test rules (double-style, profile is the stem)
+# -----------------------------------------------------------------------------
+
+Rtest.%.out: ../Rtest.in xlintstR_mpfr
+	@echo "Testing Real MPLAPACK linear equation routines: $(MPFR_ENV_$*) ./xlintstR_mpfr < ../Rtest.in > $@ 2>&1"
+	@set -e; { \
+		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
+		$(MPFR_ENV_$*) ./xlintstR_mpfr < ../Rtest.in; \
+	} > $@ 2>&1
+
+Ctest.%.out: ../Ctest.in xlintstC_mpfr
+	@echo "Testing Complex MPLAPACK linear equation routines: $(MPFR_ENV_$*) ./xlintstC_mpfr < ../Ctest.in > $@ 2>&1"
+	@set -e; { \
+		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
+		$(MPFR_ENV_$*) ./xlintstC_mpfr < ../Ctest.in; \
+	} > $@ 2>&1
+
+Rtest_rfp.%.out: ../Rtest_rfp.in xlintstrfR_mpfr
+	@echo "Testing Real MPLAPACK RFP prototype linear equation routines: $(MPFR_ENV_$*) ./xlintstrfR_mpfr < ../Rtest_rfp.in > $@ 2>&1"
+	@set -e; { \
+		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
+		$(MPFR_ENV_$*) ./xlintstrfR_mpfr < ../Rtest_rfp.in; \
+	} > $@ 2>&1
+
+Ctest_rfp.%.out: ../Ctest_rfp.in xlintstrfC_mpfr
+	@echo "Testing Complex MPLAPACK RFP prototype linear equation routines: $(MPFR_ENV_$*) ./xlintstrfC_mpfr < ../Ctest_rfp.in > $@ 2>&1"
+	@set -e; { \
+		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
+		$(MPFR_ENV_$*) ./xlintstrfC_mpfr < ../Ctest_rfp.in; \
+	} > $@ 2>&1
 
 clean-local:
 	rm -f *.out *~ \#*
-
-# -----------------------------------------------------------------------------
-# Rule generator (GNU make extensions)
-# -----------------------------------------------------------------------------
-
-define MPFR_LIN_RULE
-$1.$2.out: $3 $4
-	@echo "$5 [$(MPFR_PROFILE_LABEL_$2)]"
-	@set -e; { \
-		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$2) ==="; \
-		$$(MPFR_ENV_$2) ./$4 < $3; \
-	} > $$@ 2>&1
-endef
-
-define GEN_MPFR_LIN_TEST
-$$(foreach p,$$(MPFR_PROFILES),$$(eval $$(call MPFR_LIN_RULE,$1,$$(p),$2,$3,$4)))
-endef
-
-# -----------------------------------------------------------------------------
-# Linear-equation tests (lin/)
-# -----------------------------------------------------------------------------
-
-$(eval $(call GEN_MPFR_LIN_TEST,Rtest,../Rtest.in,xlintstR_mpfr,Testing Real MPLAPACK linear equation routines))
-$(eval $(call GEN_MPFR_LIN_TEST,Ctest,../Ctest.in,xlintstC_mpfr,Testing Complex MPLAPACK linear equation routines))
-$(eval $(call GEN_MPFR_LIN_TEST,Rtest_rfp,../Rtest_rfp.in,xlintstrfR_mpfr,Testing Real MPLAPACK RFP prototype linear equation routines))
-$(eval $(call GEN_MPFR_LIN_TEST,Ctest_rfp,../Ctest_rfp.in,xlintstrfC_mpfr,Testing Complex MPLAPACK RFP prototype linear equation routines))
