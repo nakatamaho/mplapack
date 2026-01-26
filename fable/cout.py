@@ -1,13 +1,11 @@
 import os
 import re
-from itertools import product
 from io import StringIO
 import os.path
 import math
 import tempfile
 import typing
 from decimal import Decimal, InvalidOperation
-
 
 def _env_int(name: str, default: int) -> int:
     v = os.environ.get(name)
@@ -18,13 +16,11 @@ def _env_int(name: str, default: int) -> int:
     except Exception:
         return default
 
-
 def _env_str(name: str, default: str) -> str:
     v = os.environ.get(name)
     if v is None:
         return default
     return str(v).strip()
-
 
 def _env_flag(name: str, default: bool = False) -> bool:
     """Parse a boolean environment variable.
@@ -42,7 +38,6 @@ def _env_flag(name: str, default: bool = False) -> bool:
     if v in ("0", "false", "no", "off", ""):
         return False
     return bool(v)
-
 
 # Enable the legacy small CHARACTER*n -> char[] optimization only when requested.
 # Default is OFF to prefer fem::str<N> (lower maintenance, fewer edge cases).
