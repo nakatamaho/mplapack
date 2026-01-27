@@ -65,140 +65,90 @@ MPFR_EXTRA_ENV ?=
 # -----------------------------------------------------------------------------
 # Hook into Automake's "make check"
 # -----------------------------------------------------------------------------
-MPFR_LIN_OUTS = \
-	Rtest.default.out     Rtest.binary64.out     Rtest.binary128.out \
-	Ctest.default.out     Ctest.binary64.out     Ctest.binary128.out \
-	Rtest_rfp.default.out Rtest_rfp.binary64.out Rtest_rfp.binary128.out \
-	Ctest_rfp.default.out Ctest_rfp.binary64.out Ctest_rfp.binary128.out
 
-.PHONY: mpfr-check mpfr-check-all mpfr-check-default mpfr-check-binary64 mpfr-check-binary128
+# Default: run all profiles in "make check"
+MPFR_CHECK_TARGETS ?= mpfr-check-all
 
-MPFR_CHECK_TARGETS ?= mpfr-check-default
+# GNU make: allow deferred expansion of prerequisites (Automake may reorder vars/rules)
+.SECONDEXPANSION:
+
+# Always re-run tests on "make check"
+.PHONY: mpfr-check mpfr-check-all FORCE
+FORCE:
+
+# Also remove test logs on "make clean"
+clean-local:
+	rm -f *.out
+
+# Clean test logs on "make clean"
+MPFR_OUTFILES = \
+	$(MPFR_PROFILES:%=Rtest.%.out) \
+	$(MPFR_PROFILES:%=Ctest.%.out) \
+	$(MPFR_PROFILES:%=Rtest_rfp.%.out) \
+	$(MPFR_PROFILES:%=Ctest_rfp.%.out)
+CLEANFILES = $(MPFR_OUTFILES)
 
 check-local: mpfr-check
 
 mpfr-check: $(MPFR_CHECK_TARGETS)
 	@echo "MPFR lin tests done: $(MPFR_CHECK_TARGETS)"
 
-mpfr-check-all: $(MPFR_LIN_OUTS)
+# Run all profiles listed in MPFR_PROFILES
+mpfr-check-all: $$(addprefix mpfr-check-,$$(MPFR_PROFILES))
 	@echo "MPFR lin tests done for profiles: $(MPFR_PROFILES)"
 
-mpfr-check-default:  Rtest.default.out  Ctest.default.out  Rtest_rfp.default.out  Ctest_rfp.default.out
-mpfr-check-binary64: Rtest.binary64.out Ctest.binary64.out Rtest_rfp.binary64.out Ctest_rfp.binary64.out
-mpfr-check-binary128: Rtest.binary128.out Ctest.binary128.out Rtest_rfp.binary128.out Ctest_rfp.binary128.out
-
+# One rule for any profile name (default/binary64/binary128/...)
+mpfr-check-%: Rtest.%.out Ctest.%.out Rtest_rfp.%.out Ctest_rfp.%.out
+	@echo "MPFR profile '$*' done."
 
 # -----------------------------------------------------------------------------
-# Test rules (double-style)
+# Test rules (profile-abstracted)
 # -----------------------------------------------------------------------------
 
-Rtest.default.out: ../Rtest.in xlintstR_mpfr
-	@wrapper=""; if test -n "$(VALGRIND)"; then wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; fi; \
-	echo "Testing Real MPLAPACK linear equation routines [$(MPFR_PROFILE_LABEL_default)]"; \
-	echo "CMD: $(MPFR_ENV_default) $(MPFR_EXTRA_ENV) $$wrapper ./xlintstR_mpfr < ../Rtest.in > $@ 2>&1"; \
+Rtest.%.out: ../Rtest.in xlintstR_mpfr
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "Testing Real MPLAPACK linear equation routines [$(MPFR_PROFILE_LABEL_$*)]"; \
+	echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xlintstR_mpfr < ../Rtest.in > $@ 2>&1"; \
 	set -e; { \
-		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_default) ==="; \
-		$(MPFR_ENV_default) $(MPFR_EXTRA_ENV) $$wrapper ./xlintstR_mpfr < ../Rtest.in; \
+		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xlintstR_mpfr < ../Rtest.in; \
 	} > $@ 2>&1
 
-Rtest.binary64.out: ../Rtest.in xlintstR_mpfr
-	@wrapper=""; if test -n "$(VALGRIND)"; then wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; fi; \
-	echo "Testing Real MPLAPACK linear equation routines [$(MPFR_PROFILE_LABEL_binary64)]"; \
-	echo "CMD: $(MPFR_ENV_binary64) $(MPFR_EXTRA_ENV) $$wrapper ./xlintstR_mpfr < ../Rtest.in > $@ 2>&1"; \
+Ctest.%.out: ../Ctest.in xlintstC_mpfr
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "Testing Complex MPLAPACK linear equation routines [$(MPFR_PROFILE_LABEL_$*)]"; \
+	echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xlintstC_mpfr < ../Ctest.in > $@ 2>&1"; \
 	set -e; { \
-		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_binary64) ==="; \
-		$(MPFR_ENV_binary64) $(MPFR_EXTRA_ENV) $$wrapper ./xlintstR_mpfr < ../Rtest.in; \
+		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xlintstC_mpfr < ../Ctest.in; \
 	} > $@ 2>&1
 
-Rtest.binary128.out: ../Rtest.in xlintstR_mpfr
-	@wrapper=""; if test -n "$(VALGRIND)"; then wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; fi; \
-	echo "Testing Real MPLAPACK linear equation routines [$(MPFR_PROFILE_LABEL_binary128)]"; \
-	echo "CMD: $(MPFR_ENV_binary128) $(MPFR_EXTRA_ENV) $$wrapper ./xlintstR_mpfr < ../Rtest.in > $@ 2>&1"; \
+Rtest_rfp.%.out: ../Rtest_rfp.in xlintstrfR_mpfr
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "Testing Real MPLAPACK RFP prototype linear equation routines [$(MPFR_PROFILE_LABEL_$*)]"; \
+	echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xlintstrfR_mpfr < ../Rtest_rfp.in > $@ 2>&1"; \
 	set -e; { \
-		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_binary128) ==="; \
-		$(MPFR_ENV_binary128) $(MPFR_EXTRA_ENV) $$wrapper ./xlintstR_mpfr < ../Rtest.in; \
+		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xlintstrfR_mpfr < ../Rtest_rfp.in; \
 	} > $@ 2>&1
 
-Ctest.default.out: ../Ctest.in xlintstC_mpfr
-	@wrapper=""; if test -n "$(VALGRIND)"; then wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; fi; \
-	echo "Testing Complex MPLAPACK linear equation routines [$(MPFR_PROFILE_LABEL_default)]"; \
-	echo "CMD: $(MPFR_ENV_default) $(MPFR_EXTRA_ENV) $$wrapper ./xlintstC_mpfr < ../Ctest.in > $@ 2>&1"; \
+Ctest_rfp.%.out: ../Ctest_rfp.in xlintstrfC_mpfr
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "Testing Complex MPLAPACK RFP prototype linear equation routines [$(MPFR_PROFILE_LABEL_$*)]"; \
+	echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xlintstrfC_mpfr < ../Ctest_rfp.in > $@ 2>&1"; \
 	set -e; { \
-		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_default) ==="; \
-		$(MPFR_ENV_default) $(MPFR_EXTRA_ENV) $$wrapper ./xlintstC_mpfr < ../Ctest.in; \
+		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xlintstrfC_mpfr < ../Ctest_rfp.in; \
 	} > $@ 2>&1
-
-Ctest.binary64.out: ../Ctest.in xlintstC_mpfr
-	@wrapper=""; if test -n "$(VALGRIND)"; then wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; fi; \
-	echo "Testing Complex MPLAPACK linear equation routines [$(MPFR_PROFILE_LABEL_binary64)]"; \
-	echo "CMD: $(MPFR_ENV_binary64) $(MPFR_EXTRA_ENV) $$wrapper ./xlintstC_mpfr < ../Ctest.in > $@ 2>&1"; \
-	set -e; { \
-		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_binary64) ==="; \
-		$(MPFR_ENV_binary64) $(MPFR_EXTRA_ENV) $$wrapper ./xlintstC_mpfr < ../Ctest.in; \
-	} > $@ 2>&1
-
-Ctest.binary128.out: ../Ctest.in xlintstC_mpfr
-	@wrapper=""; if test -n "$(VALGRIND)"; then wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; fi; \
-	echo "Testing Complex MPLAPACK linear equation routines [$(MPFR_PROFILE_LABEL_binary128)]"; \
-	echo "CMD: $(MPFR_ENV_binary128) $(MPFR_EXTRA_ENV) $$wrapper ./xlintstC_mpfr < ../Ctest.in > $@ 2>&1"; \
-	set -e; { \
-		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_binary128) ==="; \
-		$(MPFR_ENV_binary128) $(MPFR_EXTRA_ENV) $$wrapper ./xlintstC_mpfr < ../Ctest.in; \
-	} > $@ 2>&1
-
-Rtest_rfp.default.out: ../Rtest_rfp.in xlintstrfR_mpfr
-	@wrapper=""; if test -n "$(VALGRIND)"; then wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; fi; \
-	echo "Testing Real MPLAPACK RFP prototype linear equation routines [$(MPFR_PROFILE_LABEL_default)]"; \
-	echo "CMD: $(MPFR_ENV_default) $(MPFR_EXTRA_ENV) $$wrapper ./xlintstrfR_mpfr < ../Rtest_rfp.in > $@ 2>&1"; \
-	set -e; { \
-		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_default) ==="; \
-		$(MPFR_ENV_default) $(MPFR_EXTRA_ENV) $$wrapper ./xlintstrfR_mpfr < ../Rtest_rfp.in; \
-	} > $@ 2>&1
-
-Rtest_rfp.binary64.out: ../Rtest_rfp.in xlintstrfR_mpfr
-	@wrapper=""; if test -n "$(VALGRIND)"; then wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; fi; \
-	echo "Testing Real MPLAPACK RFP prototype linear equation routines [$(MPFR_PROFILE_LABEL_binary64)]"; \
-	echo "CMD: $(MPFR_ENV_binary64) $(MPFR_EXTRA_ENV) $$wrapper ./xlintstrfR_mpfr < ../Rtest_rfp.in > $@ 2>&1"; \
-	set -e; { \
-		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_binary64) ==="; \
-		$(MPFR_ENV_binary64) $(MPFR_EXTRA_ENV) $$wrapper ./xlintstrfR_mpfr < ../Rtest_rfp.in; \
-	} > $@ 2>&1
-
-Rtest_rfp.binary128.out: ../Rtest_rfp.in xlintstrfR_mpfr
-	@wrapper=""; if test -n "$(VALGRIND)"; then wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; fi; \
-	echo "Testing Real MPLAPACK RFP prototype linear equation routines [$(MPFR_PROFILE_LABEL_binary128)]"; \
-	echo "CMD: $(MPFR_ENV_binary128) $(MPFR_EXTRA_ENV) $$wrapper ./xlintstrfR_mpfr < ../Rtest_rfp.in > $@ 2>&1"; \
-	set -e; { \
-		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_binary128) ==="; \
-		$(MPFR_ENV_binary128) $(MPFR_EXTRA_ENV) $$wrapper ./xlintstrfR_mpfr < ../Rtest_rfp.in; \
-	} > $@ 2>&1
-
-Ctest_rfp.default.out: ../Ctest_rfp.in xlintstrfC_mpfr
-	@wrapper=""; if test -n "$(VALGRIND)"; then wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; fi; \
-	echo "Testing Complex MPLAPACK RFP prototype linear equation routines [$(MPFR_PROFILE_LABEL_default)]"; \
-	echo "CMD: $(MPFR_ENV_default) $(MPFR_EXTRA_ENV) $$wrapper ./xlintstrfC_mpfr < ../Ctest_rfp.in > $@ 2>&1"; \
-	set -e; { \
-		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_default) ==="; \
-		$(MPFR_ENV_default) $(MPFR_EXTRA_ENV) $$wrapper ./xlintstrfC_mpfr < ../Ctest_rfp.in; \
-	} > $@ 2>&1
-
-Ctest_rfp.binary64.out: ../Ctest_rfp.in xlintstrfC_mpfr
-	@wrapper=""; if test -n "$(VALGRIND)"; then wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; fi; \
-	echo "Testing Complex MPLAPACK RFP prototype linear equation routines [$(MPFR_PROFILE_LABEL_binary64)]"; \
-	echo "CMD: $(MPFR_ENV_binary64) $(MPFR_EXTRA_ENV) $$wrapper ./xlintstrfC_mpfr < ../Ctest_rfp.in > $@ 2>&1"; \
-	set -e; { \
-		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_binary64) ==="; \
-		$(MPFR_ENV_binary64) $(MPFR_EXTRA_ENV) $$wrapper ./xlintstrfC_mpfr < ../Ctest_rfp.in; \
-	} > $@ 2>&1
-
-Ctest_rfp.binary128.out: ../Ctest_rfp.in xlintstrfC_mpfr
-	@wrapper=""; if test -n "$(VALGRIND)"; then wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; fi; \
-	echo "Testing Complex MPLAPACK RFP prototype linear equation routines [$(MPFR_PROFILE_LABEL_binary128)]"; \
-	echo "CMD: $(MPFR_ENV_binary128) $(MPFR_EXTRA_ENV) $$wrapper ./xlintstrfC_mpfr < ../Ctest_rfp.in > $@ 2>&1"; \
-	set -e; { \
-		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_binary128) ==="; \
-		$(MPFR_ENV_binary128) $(MPFR_EXTRA_ENV) $$wrapper ./xlintstrfC_mpfr < ../Ctest_rfp.in; \
-	} > $@ 2>&1
-
-clean-local:
-	rm -f *.out *~ \#*
