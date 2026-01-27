@@ -37,6 +37,7 @@ patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cunhr_col01.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cunhr_col02.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rchkeq.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rdrvrf3.cpp
+patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rdrvls.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rlatb4.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rlatb5.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rlattr.cpp
