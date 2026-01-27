@@ -21,6 +21,17 @@
      const COMPLEX czero = COMPLEX(0.0, 0.0);
      const COMPLEX one = COMPLEX(1.0, 0.0);
      std::unique_ptr<COMPLEX[]> q_storage(new COMPLEX[l * l]);
+@@ -99,8 +99,8 @@
+     COMPLEX *q = q_storage.get();
+     std::unique_ptr<COMPLEX[]> r_storage(new COMPLEX[m * l]);
+     COMPLEX *r = r_storage.get();
+-    std::unique_ptr<COMPLEX[]> rwork_storage(new COMPLEX[l]);
+-    COMPLEX *rwork = rwork_storage.get();
++    std::unique_ptr<REAL[]> rwork_storage(new REAL[l]);
++    REAL *rwork = rwork_storage.get();
+     REAL anorm = 0.0;
+     REAL resid = 0.0;
+     const REAL zero = 0.0;
 @@ -129,6 +129,10 @@
          lwork = max(lwork, castINTEGER(workquery[1 - 1].real()));
          Cgemqr("R", "C", n, m, k, af, m, tquery, tsize, df, n, workquery, -1, info);
