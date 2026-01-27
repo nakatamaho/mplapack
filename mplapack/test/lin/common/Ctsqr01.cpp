@@ -90,9 +90,9 @@ void Ctsqr01(fem::str_cref tssw, INTEGER const m, INTEGER const n, INTEGER const
     std::unique_ptr<COMPLEX[]> df_storage(new COMPLEX[n * m]);
     COMPLEX *df = df_storage.get();
     std::unique_ptr<COMPLEX[]> t_storage(new COMPLEX[tsize]);
-    COMPLEX *t = t_storage.get();
+    COMPLEX *t = nullptr;
     std::unique_ptr<COMPLEX[]> work_storage(new COMPLEX[lwork]);
-    COMPLEX *work = work_storage.get();
+    COMPLEX *work = nullptr;
     const COMPLEX czero = COMPLEX(0.0, 0.0);
     const COMPLEX one = COMPLEX(1.0, 0.0);
     std::unique_ptr<COMPLEX[]> q_storage(new COMPLEX[l * l]);
@@ -129,6 +129,10 @@ void Ctsqr01(fem::str_cref tssw, INTEGER const m, INTEGER const n, INTEGER const
         lwork = max(lwork, castINTEGER(workquery[1 - 1].real()));
         Cgemqr("R", "C", n, m, k, af, m, tquery, tsize, df, n, workquery, -1, info);
         lwork = max(lwork, castINTEGER(workquery[1 - 1].real()));
+        t_storage.reset(new COMPLEX[max((INTEGER)1, tsize)]);
+        t = t_storage.get();
+        work_storage.reset(new COMPLEX[max((INTEGER)1, lwork)]);
+        work = work_storage.get();
         srnamt = "Cgeqr";
         Cgeqr(m, n, af, m, t, tsize, work, lwork, info);
         //
@@ -260,6 +264,10 @@ void Ctsqr01(fem::str_cref tssw, INTEGER const m, INTEGER const n, INTEGER const
         lwork = max(lwork, castINTEGER(workquery[1 - 1].real()));
         Cgemlq("R", "C", m, n, k, af, m, tquery, tsize, cf, m, workquery, -1, info);
         lwork = max(lwork, castINTEGER(workquery[1 - 1].real()));
+        t_storage.reset(new COMPLEX[max((INTEGER)1, tsize)]);
+        t = t_storage.get();
+        work_storage.reset(new COMPLEX[max((INTEGER)1, lwork)]);
+        work = work_storage.get();
         srnamt = "Cgelq";
         Cgelq(m, n, af, m, t, tsize, work, lwork, info);
         //
