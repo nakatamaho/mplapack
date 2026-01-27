@@ -94,6 +94,8 @@ CLEANFILES = $(MPFR_EIG_OUTS)
 
 check-local: mpfr-check
 
+.PRECIOUS: $(MPFR_EIG_OUTS)
+
 mpfr-check: $(MPFR_CHECK_TARGETS)
 	@echo "MPFR eig tests done: $(MPFR_CHECK_TARGETS)"
 

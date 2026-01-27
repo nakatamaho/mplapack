@@ -88,6 +88,8 @@ MPFR_OUTFILES = \
 	$(MPFR_PROFILES:%=Ctest_rfp.%.out)
 CLEANFILES = $(MPFR_OUTFILES)
 
+.PRECIOUS: $(MPFR_OUTFILES)
+
 check-local: mpfr-check
 
 mpfr-check: $(MPFR_CHECK_TARGETS)
