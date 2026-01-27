@@ -14,6 +14,7 @@ patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rlatmt.cpp
 
 cd /home/docker/mplapack/mplapack/test/lin/common
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cchkeq.cpp
+patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cdrvls.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cerrlqt.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cerrlqtp.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cerrqrt.cpp
