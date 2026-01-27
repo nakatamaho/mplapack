@@ -28,6 +28,7 @@ endif
 	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_builddir)/patches/$(LAPACK_VERSION)/patch-ddrvst2stg.f
 	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_builddir)/patches/$(LAPACK_VERSION)/patch-ddrvst.f
 	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_builddir)/patches/$(LAPACK_VERSION)/patch-dlatm4.f
+	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_builddir)/patches/$(LAPACK_VERSION)/patch-zlqt04.f
 
 	cp $(abs_builddir)/patches/print.c $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/BLAS/SRC
 	touch $(abs_builddir)/work/$(PATCH_STAMP)
