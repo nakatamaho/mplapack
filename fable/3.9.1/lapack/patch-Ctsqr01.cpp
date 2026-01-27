@@ -1,6 +1,6 @@
---- Ctsqr01.cpp_	2026-01-21 20:55:15.883517869 +0900
-+++ Ctsqr01.cpp	2026-01-21 20:55:15.889517953 +0900
-@@ -56,7 +57,7 @@
+--- Ctsqr01.cpp_	2026-01-27 17:55:09.544577286 +0900
++++ Ctsqr01.cpp	2026-01-27 17:55:13.747659058 +0900
+@@ -56,7 +56,7 @@
      //
      REAL eps = Rlamch("Epsilon");
      INTEGER k = min(m, n);
@@ -9,18 +9,30 @@
      INTEGER mnb = max(mb, nb);
      INTEGER lwork = max((INTEGER)3, l) * mnb;
      //
-@@ -99,8 +100,8 @@
-     COMPLEX *q = q_storage.get();
-     std::unique_ptr<COMPLEX[]> r_storage(new COMPLEX[m * l]);
-     COMPLEX *r = r_storage.get();
--    std::unique_ptr<COMPLEX[]> rwork_storage(new COMPLEX[l]);
--    COMPLEX *rwork = rwork_storage.get();
-+    std::unique_ptr<REAL[]> rwork_storage(new REAL[l]);
-+    REAL *rwork = rwork_storage.get();
-     REAL anorm = 0.0;
-     REAL resid = 0.0;
-     const REAL zero = 0.0;
-@@ -157,7 +158,7 @@
+@@ -90,9 +90,9 @@
+     std::unique_ptr<COMPLEX[]> df_storage(new COMPLEX[n * m]);
+     COMPLEX *df = df_storage.get();
+     std::unique_ptr<COMPLEX[]> t_storage(new COMPLEX[tsize]);
+-    COMPLEX *t = t_storage.get();
++    COMPLEX *t = nullptr;
+     std::unique_ptr<COMPLEX[]> work_storage(new COMPLEX[lwork]);
+-    COMPLEX *work = work_storage.get();
++    COMPLEX *work = nullptr;
+     const COMPLEX czero = COMPLEX(0.0, 0.0);
+     const COMPLEX one = COMPLEX(1.0, 0.0);
+     std::unique_ptr<COMPLEX[]> q_storage(new COMPLEX[l * l]);
+@@ -129,6 +129,10 @@
+         lwork = max(lwork, castINTEGER(workquery[1 - 1].real()));
+         Cgemqr("R", "C", n, m, k, af, m, tquery, tsize, df, n, workquery, -1, info);
+         lwork = max(lwork, castINTEGER(workquery[1 - 1].real()));
++        t_storage.reset(new COMPLEX[max((INTEGER)1, tsize)]);
++        t = t_storage.get();
++        work_storage.reset(new COMPLEX[max((INTEGER)1, lwork)]);
++        work = work_storage.get();
+         srnamt = "Cgeqr";
+         Cgeqr(m, n, af, m, t, tsize, work, lwork, info);
+         //
+@@ -157,7 +161,7 @@
          // Compute |I - Q'*Q| and store in RESULT(2)
          //
          Claset("Full", m, m, czero, one, r, m);
@@ -29,7 +41,18 @@
          resid = Clansy("1", "Upper", m, r, m, rwork);
          result[2 - 1] = resid / (eps * max((INTEGER)1, m));
          //
-@@ -288,7 +289,7 @@
+@@ -260,6 +264,10 @@
+         lwork = max(lwork, castINTEGER(workquery[1 - 1].real()));
+         Cgemlq("R", "C", m, n, k, af, m, tquery, tsize, cf, m, workquery, -1, info);
+         lwork = max(lwork, castINTEGER(workquery[1 - 1].real()));
++        t_storage.reset(new COMPLEX[max((INTEGER)1, tsize)]);
++        t = t_storage.get();
++        work_storage.reset(new COMPLEX[max((INTEGER)1, lwork)]);
++        work = work_storage.get();
+         srnamt = "Cgelq";
+         Cgelq(m, n, af, m, t, tsize, work, lwork, info);
+         //
+@@ -288,7 +296,7 @@
          // Compute |I - Q'*Q| and store in RESULT(2)
          //
          Claset("Full", n, n, czero, one, lq, l);
