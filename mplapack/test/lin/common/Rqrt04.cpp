@@ -50,37 +50,67 @@ void Rqrt04(INTEGER const m, INTEGER const n, INTEGER const nb, REAL *result) {
     INTEGER k = min(m, n);
     INTEGER l = max(m, n);
     INTEGER lwork = max((INTEGER)2, l) * max((INTEGER)2, l) * nb;
+    std::unique_ptr<REAL[]> a_storage;
+    REAL *a = nullptr;
+    a_storage = std::make_unique<REAL[]>(max((INTEGER)1, m * n));
+    a = a_storage.get();
+    std::unique_ptr<REAL[]> af_storage;
+    REAL *af = nullptr;
+    af_storage = std::make_unique<REAL[]>(max((INTEGER)1, m * n));
+    af = af_storage.get();
+    std::unique_ptr<REAL[]> q_storage;
+    REAL *q = nullptr;
+    q_storage = std::make_unique<REAL[]>(max((INTEGER)1, m * m));
+    q = q_storage.get();
+    std::unique_ptr<REAL[]> r_storage;
+    REAL *r = nullptr;
+    r_storage = std::make_unique<REAL[]>(max((INTEGER)1, m * l));
+    r = r_storage.get();
+    std::unique_ptr<REAL[]> rwork_storage;
+    REAL *rwork = nullptr;
+    rwork_storage = std::make_unique<REAL[]>(max((INTEGER)1, l));
+    rwork = rwork_storage.get();
+    std::unique_ptr<REAL[]> work_storage;
+    REAL *work = nullptr;
+    work_storage = std::make_unique<REAL[]>(max((INTEGER)1, lwork));
+    work = work_storage.get();
+    std::unique_ptr<REAL[]> t_storage;
+    REAL *t = nullptr;
+    t_storage = std::make_unique<REAL[]>(max((INTEGER)1, nb * n));
+    t = t_storage.get();
+    std::unique_ptr<REAL[]> c_storage;
+    REAL *c = nullptr;
+    c_storage = std::make_unique<REAL[]>(max((INTEGER)1, m * n));
+    c = c_storage.get();
+    std::unique_ptr<REAL[]> cf_storage;
+    REAL *cf = nullptr;
+    cf_storage = std::make_unique<REAL[]>(max((INTEGER)1, m * n));
+    cf = cf_storage.get();
+    std::unique_ptr<REAL[]> d_storage;
+    REAL *d = nullptr;
+    d_storage = std::make_unique<REAL[]>(max((INTEGER)1, n * m));
+    d = d_storage.get();
+    std::unique_ptr<REAL[]> df_storage;
+    REAL *df = nullptr;
+    df_storage = std::make_unique<REAL[]>(max((INTEGER)1, n * m));
+    df = df_storage.get();
     INTEGER ldt = nb;
     INTEGER j = 0;
-    std::unique_ptr<REAL[]> a_storage(new REAL[m * n]);
-    REAL *a = a_storage.get();
     for (j = 1; j <= n; j = j + 1) {
         Rlarnv(2, iseed, m, &a[(j - 1) * m]);
     }
-    std::unique_ptr<REAL[]> af_storage(new REAL[m * n]);
-    REAL *af = af_storage.get();
     Rlacpy("Full", m, n, a, m, af, m);
-    std::unique_ptr<REAL[]> t_storage(new REAL[nb * n]);
-    REAL *t = t_storage.get();
-    std::unique_ptr<REAL[]> work_storage(new REAL[lwork]);
-    REAL *work = work_storage.get();
     INTEGER info = 0;
     Rgeqrt(m, n, nb, af, m, t, ldt, work, info);
     const REAL zero = 0.0;
     const REAL one = 1.0;
-    std::unique_ptr<REAL[]> q_storage(new REAL[m * m]);
-    REAL *q = q_storage.get();
     Rlaset("Full", m, m, zero, one, q, m);
     Rgemqrt("R", "N", m, m, k, nb, af, m, t, ldt, q, m, work, info);
-    std::unique_ptr<REAL[]> r_storage(new REAL[m * l]);
-    REAL *r = r_storage.get();
     Rlaset("Full", m, n, zero, zero, r, m);
     Rlacpy("Upper", m, n, af, m, r, m);
     // Compute |R - Q'*A| / |A| and store in RESULT(1)
     //
     Rgemm("T", "N", m, n, m, -one, q, m, a, m, one, r, m);
-    std::unique_ptr<REAL[]> rwork_storage(new REAL[l]);
-    REAL *rwork = rwork_storage.get();
     REAL anorm = Rlange("1", m, n, a, m, rwork);
     REAL resid = Rlange("1", m, n, r, m, rwork);
     if (anorm > zero) {
@@ -98,14 +128,10 @@ void Rqrt04(INTEGER const m, INTEGER const n, INTEGER const nb, REAL *result) {
     //
     // Generate random m-by-n matrix C and a copy CF
     //
-    std::unique_ptr<REAL[]> c_storage(new REAL[m * n]);
-    REAL *c = c_storage.get();
     for (j = 1; j <= n; j = j + 1) {
         Rlarnv(2, iseed, m, &c[(j - 1) * m]);
     }
     REAL cnorm = Rlange("1", m, n, c, m, rwork);
-    std::unique_ptr<REAL[]> cf_storage(new REAL[m * n]);
-    REAL *cf = cf_storage.get();
     Rlacpy("Full", m, n, c, m, cf, m);
     //
     // Apply Q to C as Q*C
@@ -142,14 +168,10 @@ void Rqrt04(INTEGER const m, INTEGER const n, INTEGER const nb, REAL *result) {
     //
     // Generate random n-by-m matrix D and a copy DF
     //
-    std::unique_ptr<REAL[]> d_storage(new REAL[n * m]);
-    REAL *d = d_storage.get();
     for (j = 1; j <= m; j = j + 1) {
         Rlarnv(2, iseed, n, &d[(j - 1) * n]);
     }
     REAL dnorm = Rlange("1", n, m, d, n, rwork);
-    std::unique_ptr<REAL[]> df_storage(new REAL[n * m]);
-    REAL *df = df_storage.get();
     Rlacpy("Full", n, m, d, n, df, n);
     //
     // Apply Q to D as D*Q

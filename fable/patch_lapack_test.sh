@@ -14,7 +14,6 @@ patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rlatmt.cpp
 
 cd /home/docker/mplapack/mplapack/test/lin/common
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cchkeq.cpp
-patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cdrvls.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cerrlqt.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cerrlqtp.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cerrqrt.cpp
@@ -38,7 +37,6 @@ patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cunhr_col01.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cunhr_col02.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rchkeq.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rdrvrf3.cpp
-patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rdrvls.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rlatb4.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rlatb5.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rlattr.cpp

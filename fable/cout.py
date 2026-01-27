@@ -576,6 +576,27 @@ complex_pointer_identifiers = set()
 small_char_identifiers = set()
 small_char_identifier_lengths = {}  # name -> int length for small char[]
 
+# -----------------------------------------------------------------------------
+# Allocatable array support (Fortran ALLOCATABLE + ALLOCATE)
+#
+# We translate Fortran's runtime allocation semantics into C++ RAII:
+#   - Preprocess:
+#       ALLOCATE(work(n), stat=info)
+#     becomes:
+#       info = 0
+#       CALL FABLE_ALLOCATE(work, n)
+#
+#   - C++ emission:
+#       std::unique_ptr<T[]> work_storage;
+#       T *work = nullptr;
+#       work_storage.reset(new T[max((INTEGER)1, n)]);
+#       work = work_storage.get();
+#
+# This avoids allocating with an uninitialized size at function entry.
+# -----------------------------------------------------------------------------
+_FABLE_ALLOCATABLE_DECLARED = set()  # (id(fproc), fortran_identifier_lower)
+_FABLE_ALLOCATABLE_DIMS = {}        # (id(fproc), fortran_identifier_lower) -> [dim0, dim1, ...]
+
 
 def _fable_small_char_max_len() -> int:
     """Return max CHARACTER*n length to map to a plain C char[].
@@ -2813,6 +2834,20 @@ def get_leading_dimension_expr(conv_info, fdecl, default=None):
     dt = getattr(fdecl, "dim_tokens", None)
     if dt is None or len(dt) == 0:
         return default
+
+    # If this array was allocated via a FABLE_ALLOCATE pseudo-call, prefer the
+    # recorded first-dimension extent for correct 2D flattening.
+    try:
+        fproc = getattr(conv_info, "fproc", None)
+        name_lower = str(getattr(getattr(fdecl, "id_tok", None), "value", "")).lower()
+        key = (id(fproc), name_lower)
+        dims = _FABLE_ALLOCATABLE_DIMS.get(key)
+        if isinstance(dims, (list, tuple)) and len(dims) >= 1:
+            d0 = str(dims[0]).strip()
+            if d0:
+                return d0
+    except Exception:
+        pass
 
     try:
         dim0 = dt[0].value
@@ -6322,6 +6357,76 @@ def convert_executable(
                 curr_scope.append("default: goto %s;" % lbl(2))
                 curr_scope = curr_scope.close_nested_scope()
             elif (ei.key == "call"):
+                # ------------------------------------------------------------
+                # Pseudo-call emitted by the Fortran preprocessor:
+                #   CALL FABLE_ALLOCATE(var, d1 [, d2 [, d3]])
+                # This corresponds to Fortran ALLOCATE(var(d1,...)).
+                # ------------------------------------------------------------
+                if (ei.subroutine_name is not None
+                        and str(ei.subroutine_name.value).lower() == "fable_allocate"):
+                    if ei.arg_token is None or getattr(ei.arg_token, "value", None) is None:
+                        curr_scope.append("// UNHANDLED: FABLE_ALLOCATE without arguments")
+                        continue
+
+                    actuals = _split_call_actuals_tokens(ei.arg_token.value)
+                    if len(actuals) < 2:
+                        curr_scope.append("// UNHANDLED: FABLE_ALLOCATE expects at least (var, n)")
+                        continue
+
+                    tgt_tokens = actuals[0]
+                    if not (len(tgt_tokens) == 1 and tgt_tokens[0].is_identifier()):
+                        curr_scope.append("// UNHANDLED: FABLE_ALLOCATE target must be an identifier")
+                        continue
+
+                    tgt_id_tok = tgt_tokens[0]
+                    tgt_name_lower = str(tgt_id_tok.value).lower()
+
+                    # Declare identifiers used in size expressions, but do NOT let the
+                    # default path emit a fixed-size array declaration for the target.
+                    id_tokens = extract_identifiers(tokens=ei.arg_token.value)
+                    for id_tok in id_tokens:
+                        if str(id_tok.value).lower() == tgt_name_lower:
+                            continue
+                        if id_tok.value not in conv_info.vmap:
+                            declare_identifier(
+                                conv_info=conv_info,
+                                top_scope=top_scope,
+                                curr_scope=curr_scope,
+                                id_tok=id_tok)
+
+                    try:
+                        tgt_fdecl = conv_info.fproc.get_fdecl(id_tok=tgt_id_tok)
+                    except Exception:
+                        curr_scope.append(f"// UNHANDLED: unknown allocatable target {tgt_id_tok.value}")
+                        continue
+
+                    conv_info.set_vmap_from_fdecl(fdecl=tgt_fdecl)
+                    vname = conv_info.vmapped(fdecl=tgt_fdecl)
+
+                    elem_ctype = convert_data_type(
+                        conv_info=conv_info, fdecl=tgt_fdecl, crhs=None)[0]
+                    mpl_elem = convert_to_mplapack_type(elem_ctype)
+                    storage_name = f"{vname}_storage"
+
+                    key = (id(conv_info.fproc), tgt_name_lower)
+                    if key not in _FABLE_ALLOCATABLE_DECLARED:
+                        have_goto = (len(conv_info.fproc.target_statement_labels()) != 0)
+                        rapp_decl = top_scope.top_append if have_goto else top_scope.append
+                        rapp_decl(f"std::unique_ptr<{mpl_elem}[]> {storage_name};")
+                        rapp_decl(f"{mpl_elem} *{vname} = nullptr;")
+                        _FABLE_ALLOCATABLE_DECLARED.add(key)
+
+                    dim_exprs = []
+                    for dim_toks in actuals[1:]:
+                        dim_exprs.append(convert_tokens(conv_info=conv_info, tokens=dim_toks).strip() or "1")
+                    _FABLE_ALLOCATABLE_DIMS[key] = list(dim_exprs)
+
+                    n_elems = " * ".join([parenthesize_if_necessary(d) for d in dim_exprs]) or "1"
+                    alloc_n = f"max((INTEGER)1, {n_elems})"
+                    curr_scope.append(f"{storage_name} = std::make_unique<{mpl_elem}[]>({alloc_n});")
+                    curr_scope.append(f"{vname} = {storage_name}.get();")
+                    continue
+
                 fdecl = conv_info.fproc.get_fdecl(id_tok=ei.subroutine_name)
                 if (fdecl.is_intrinsic()):
                     from fable import intrinsics
@@ -10323,9 +10428,10 @@ def _fix_fortran_f90_decl_syntax(src: str) -> str:
                     allocate_shapes.setdefault(name.lower(), shape)
         i = j
 
-    # Pass 2: rewrite continued declarations and optionally remove continued ALLOCATE.
+    # Pass 2: rewrite continued declarations and rewrite ALLOCATE(...) into
+    # a legacy-parser-friendly pseudo call:
+    #   ALLOCATE(a(n), stat=info)  ->  info = 0; CALL FABLE_ALLOCATE(a, n)
     out_lines = []
-    raii_alloc_names = set()  # all ALLOCATABLE vars we rewrite into explicit-shape decls
     indent = "      "
 
     def _is_if_alloc_stat_stop(stmt: str, stat_var: str) -> bool:
@@ -10363,60 +10469,25 @@ def _fix_fortran_f90_decl_syntax(src: str) -> str:
 
         stmt, first_cmt, eol0, j = gather_fixed_statement(lines, i)
 
-        # Remove ALLOCATE(...) if it only targets RAII variables.
+        # Rewrite ALLOCATE(...) into CALL FABLE_ALLOCATE(...)
+        # so the downstream fixed-form reader sees only F77-style CALL.
+        #
+        # We intentionally do not try to preserve STAT= error reporting.
+        # In C++ the allocation uses new[], which throws on failure.
         parsed_alloc = parse_allocate_statement(stmt)
         if parsed_alloc:
             objs, stat_var = parsed_alloc
-            if objs and all((name.lower() in raii_alloc_names) for name, _ in objs):
-                # The allocation itself will be represented in C++ via RAII, so the classic
-                # "STAT=...; IF (stat/=0) STOP ..." pattern is redundant. Drop it when it
-                # immediately follows the removed ALLOCATE.
-                comment_buf = []
-                k = j
-                while k < len(lines):
-                    rawk, eolk = split_eol(lines[k])
-                    if not is_full_line_comment(rawk):
-                        break
-                    comment_buf.append(rawk + eolk)
-                    k += 1
-
-                skip_to = None
-                if stat_var and k < len(lines):
-                    stmt2, _, _, j2 = gather_fixed_statement(lines, k)
-                    if _is_if_alloc_stat_stop(stmt2, stat_var):
-                        skip_to = j2
-                    elif _is_if_alloc_stat_then(stmt2, stat_var):
-                        k3 = j2
-                        while k3 < len(lines):
-                            rawk3, _ = split_eol(lines[k3])
-                            if not is_full_line_comment(rawk3):
-                                break
-                            k3 += 1
-                        if k3 < len(lines):
-                            stmt3, _, _, j3 = gather_fixed_statement(lines, k3)
-                            if stmt3.lower().lstrip().startswith("stop"):
-                                k4 = j3
-                                while k4 < len(lines):
-                                    rawk4, _ = split_eol(lines[k4])
-                                    if not is_full_line_comment(rawk4):
-                                        break
-                                    k4 += 1
-                                if k4 < len(lines):
-                                    stmt4, _, _, j4 = gather_fixed_statement(
-                                        lines, k4)
-                                    if _is_endif_stmt(stmt4):
-                                        skip_to = j4
-
-                # If we did not drop the associated IF/STOP, keep STAT initialized to a
-                # known value to avoid translating uninitialized uses.
-                if stat_var and skip_to is None:
-                    out_lines.append(f"{indent}{stat_var} = 0{eol0}")
-
-                out_lines.extend(comment_buf)
-                i = skip_to if skip_to is not None else k
-                continue
-            # Keep original lines unchanged.
-            out_lines.extend(lines[i:j])
+            if stat_var:
+                out_lines.append(f"{indent}{stat_var} = 0{eol0}")
+            for k_obj, (name, shape) in enumerate(objs or []):
+                if not name:
+                    continue
+                args = [name]
+                if shape:
+                    dims = _split_top_level_commas(shape)
+                    args.extend([d.strip() for d in dims if d.strip()])
+                cmt = first_cmt if k_obj == 0 else ""
+                out_lines.append(f"{indent}CALL FABLE_ALLOCATE({', '.join(args)}){cmt}{eol0}")
             i = j
             continue
 
@@ -10526,15 +10597,18 @@ def _fix_fortran_f90_decl_syntax(src: str) -> str:
                 dim = dim_attr_norm
 
             if is_allocatable:
-                # Prefer explicit shape from ALLOCATE mapping (RAII-friendly).
-                shape = allocate_shapes.get(name.lower())
-                if shape:
-                    dim = shape.strip()
-                # Mark as RAII-converted regardless.
-                raii_alloc_names.add(name.lower())
-                # If still unknown, force minimal placeholder.
+                # Do NOT substitute the allocation shape into the declaration.
+                # The ALLOCATE(...) size expressions can depend on runtime values
+                # (e.g. LWORK) and must be handled at the ALLOCATE statement site.
+                # Keep a parsable explicit-shape placeholder of the correct rank.
                 if dim is None:
-                    dim = "1"
+                    shape = allocate_shapes.get(name.lower())
+                    if shape:
+                        dims = [d.strip() for d in _split_top_level_commas(shape) if d.strip()]
+                        nd = max(1, len(dims))
+                        dim = ", ".join(["1"] * nd)
+                    else:
+                        dim = "1"
 
             if dim:
                 declarators.append(f"{name}({dim})")

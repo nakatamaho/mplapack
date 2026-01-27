@@ -56,11 +56,46 @@ void Rorhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     // Dynamically allocate local arrays
     //
+    std::unique_ptr<REAL[]> a_storage;
+    REAL *a = nullptr;
+    a_storage = std::make_unique<REAL[]>(max((INTEGER)1, m * n));
+    a = a_storage.get();
+    std::unique_ptr<REAL[]> af_storage;
+    REAL *af = nullptr;
+    af_storage = std::make_unique<REAL[]>(max((INTEGER)1, m * n));
+    af = af_storage.get();
+    std::unique_ptr<REAL[]> q_storage;
+    REAL *q = nullptr;
+    q_storage = std::make_unique<REAL[]>(max((INTEGER)1, l * l));
+    q = q_storage.get();
+    std::unique_ptr<REAL[]> r_storage;
+    REAL *r = nullptr;
+    r_storage = std::make_unique<REAL[]>(max((INTEGER)1, m * l));
+    r = r_storage.get();
+    std::unique_ptr<REAL[]> rwork_storage;
+    REAL *rwork = nullptr;
+    rwork_storage = std::make_unique<REAL[]>(max((INTEGER)1, l));
+    rwork = rwork_storage.get();
+    std::unique_ptr<REAL[]> c_storage;
+    REAL *c = nullptr;
+    c_storage = std::make_unique<REAL[]>(max((INTEGER)1, m * n));
+    c = c_storage.get();
+    std::unique_ptr<REAL[]> cf_storage;
+    REAL *cf = nullptr;
+    cf_storage = std::make_unique<REAL[]>(max((INTEGER)1, m * n));
+    cf = cf_storage.get();
+    std::unique_ptr<REAL[]> d_storage;
+    REAL *d = nullptr;
+    d_storage = std::make_unique<REAL[]>(max((INTEGER)1, n * m));
+    d = d_storage.get();
+    std::unique_ptr<REAL[]> df_storage;
+    REAL *df = nullptr;
+    df_storage = std::make_unique<REAL[]>(max((INTEGER)1, n * m));
+    df = df_storage.get();
+    //
     // Put random numbers into A and copy to AF
     //
     INTEGER j = 0;
-    std::unique_ptr<REAL[]> a_storage(new REAL[m * n]);
-    REAL *a = a_storage.get();
     for (j = 1; j <= n; j = j + 1) {
         Rlarnv(2, iseed, m, &a[(j - 1) * m]);
     }
@@ -71,13 +106,24 @@ void Rorhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
             }
         }
     }
-    std::unique_ptr<REAL[]> af_storage(new REAL[m * n]);
-    REAL *af = af_storage.get();
     Rlacpy("Full", m, n, a, m, af, m);
     //
     // Number of row blocks in Rlatsqr
     //
     INTEGER nrb = max((INTEGER)1, iceil(castREAL(m - n) / castREAL(mb1 - n)));
+    //
+    std::unique_ptr<REAL[]> t1_storage;
+    REAL *t1 = nullptr;
+    t1_storage = std::make_unique<REAL[]>(max((INTEGER)1, nb1 * (n * nrb)));
+    t1 = t1_storage.get();
+    std::unique_ptr<REAL[]> t2_storage;
+    REAL *t2 = nullptr;
+    t2_storage = std::make_unique<REAL[]>(max((INTEGER)1, nb2 * n));
+    t2 = t2_storage.get();
+    std::unique_ptr<REAL[]> diag_storage;
+    REAL *diag = nullptr;
+    diag_storage = std::make_unique<REAL[]>(max((INTEGER)1, n));
+    diag = diag_storage.get();
     //
     // Begin determine LWORK for the array WORK and allocate memory.
     //
@@ -85,8 +131,6 @@ void Rorhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     INTEGER nb2_ub = min(nb2, n);
     //
-    std::unique_ptr<REAL[]> t2_storage(new REAL[nb2 * n]);
-    REAL *t2 = t2_storage.get();
     REAL workquery[1];
     INTEGER info = 0;
     Rgetsqrhrt(m, n, mb1, nb1, nb2, af, m, t2, nb2, workquery, -1, info);
@@ -98,6 +142,11 @@ void Rorhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     lwork = max(lwork, nb2_ub * n, nb2_ub * m);
     //
+    std::unique_ptr<REAL[]> work_storage;
+    REAL *work = nullptr;
+    work_storage = std::make_unique<REAL[]>(max((INTEGER)1, lwork));
+    work = work_storage.get();
+    //
     // End allocate memory for WORK.
     //
     // Begin Householder reconstruction routines
@@ -105,8 +154,6 @@ void Rorhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     // Factor the matrix A in the array AF.
     //
     srnamt = "Rgetsqrhrt";
-    std::unique_ptr<REAL[]> work_storage(new REAL[lwork]);
-    REAL *work = work_storage.get();
     Rgetsqrhrt(m, n, mb1, nb1, nb2, af, m, t2, nb2, work, lwork, info);
     //
     // End Householder reconstruction routines.
@@ -115,8 +162,6 @@ void Rorhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     const REAL zero = 0.0;
     const REAL one = 1.0;
-    std::unique_ptr<REAL[]> q_storage(new REAL[l * l]);
-    REAL *q = q_storage.get();
     Rlaset("Full", m, m, zero, one, q, m);
     //
     srnamt = "Rgemqrt";
@@ -124,8 +169,6 @@ void Rorhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     // Copy R
     //
-    std::unique_ptr<REAL[]> r_storage(new REAL[m * l]);
-    REAL *r = r_storage.get();
     Rlaset("Full", m, n, zero, zero, r, m);
     //
     Rlacpy("Upper", m, n, af, m, r, m);
@@ -135,8 +178,6 @@ void Rorhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     Rgemm("T", "N", m, n, m, -one, q, m, a, m, one, r, m);
     //
-    std::unique_ptr<REAL[]> rwork_storage(new REAL[l]);
-    REAL *rwork = rwork_storage.get();
     REAL anorm = Rlange("1", m, n, a, m, rwork);
     REAL resid = Rlange("1", m, n, r, m, rwork);
     if (anorm > zero) {
@@ -155,14 +196,10 @@ void Rorhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     // Generate random m-by-n matrix C
     //
-    std::unique_ptr<REAL[]> c_storage(new REAL[m * n]);
-    REAL *c = c_storage.get();
     for (j = 1; j <= n; j = j + 1) {
         Rlarnv(2, iseed, m, &c[(j - 1) * m]);
     }
     REAL cnorm = Rlange("1", m, n, c, m, rwork);
-    std::unique_ptr<REAL[]> cf_storage(new REAL[m * n]);
-    REAL *cf = cf_storage.get();
     Rlacpy("Full", m, n, c, m, cf, m);
     //
     // Apply Q to C as Q*C = CF
@@ -203,14 +240,10 @@ void Rorhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
     //
     // Generate random n-by-m matrix D and a copy DF
     //
-    std::unique_ptr<REAL[]> d_storage(new REAL[n * m]);
-    REAL *d = d_storage.get();
     for (j = 1; j <= m; j = j + 1) {
         Rlarnv(2, iseed, n, &d[(j - 1) * n]);
     }
     REAL dnorm = Rlange("1", n, m, d, n, rwork);
-    std::unique_ptr<REAL[]> df_storage(new REAL[n * m]);
-    REAL *df = df_storage.get();
     Rlacpy("Full", n, m, d, n, df, n);
     //
     // Apply Q to D as D*Q = DF

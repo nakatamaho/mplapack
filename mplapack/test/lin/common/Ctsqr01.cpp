@@ -62,11 +62,50 @@ void Ctsqr01(fem::str_cref tssw, INTEGER const m, INTEGER const n, INTEGER const
     //
     // Dynamically allocate local arrays
     //
+    std::unique_ptr<COMPLEX[]> a_storage;
+    COMPLEX *a = nullptr;
+    a_storage = std::make_unique<COMPLEX[]>(max((INTEGER)1, m * n));
+    a = a_storage.get();
+    std::unique_ptr<COMPLEX[]> af_storage;
+    COMPLEX *af = nullptr;
+    af_storage = std::make_unique<COMPLEX[]>(max((INTEGER)1, m * n));
+    af = af_storage.get();
+    std::unique_ptr<COMPLEX[]> q_storage;
+    COMPLEX *q = nullptr;
+    q_storage = std::make_unique<COMPLEX[]>(max((INTEGER)1, l * l));
+    q = q_storage.get();
+    std::unique_ptr<COMPLEX[]> r_storage;
+    COMPLEX *r = nullptr;
+    r_storage = std::make_unique<COMPLEX[]>(max((INTEGER)1, m * l));
+    r = r_storage.get();
+    std::unique_ptr<REAL[]> rwork_storage;
+    REAL *rwork = nullptr;
+    rwork_storage = std::make_unique<REAL[]>(max((INTEGER)1, l));
+    rwork = rwork_storage.get();
+    std::unique_ptr<COMPLEX[]> c_storage;
+    COMPLEX *c = nullptr;
+    c_storage = std::make_unique<COMPLEX[]>(max((INTEGER)1, m * n));
+    c = c_storage.get();
+    std::unique_ptr<COMPLEX[]> cf_storage;
+    COMPLEX *cf = nullptr;
+    cf_storage = std::make_unique<COMPLEX[]>(max((INTEGER)1, m * n));
+    cf = cf_storage.get();
+    std::unique_ptr<COMPLEX[]> d_storage;
+    COMPLEX *d = nullptr;
+    d_storage = std::make_unique<COMPLEX[]>(max((INTEGER)1, n * m));
+    d = d_storage.get();
+    std::unique_ptr<COMPLEX[]> df_storage;
+    COMPLEX *df = nullptr;
+    df_storage = std::make_unique<COMPLEX[]>(max((INTEGER)1, n * m));
+    df = df_storage.get();
+    std::unique_ptr<COMPLEX[]> lq_storage;
+    COMPLEX *lq = nullptr;
+    lq_storage = std::make_unique<COMPLEX[]>(max((INTEGER)1, l * n));
+    lq = lq_storage.get();
+    //
     // Put random numbers into A and copy to AF
     //
     INTEGER j = 0;
-    std::unique_ptr<COMPLEX[]> a_storage(new COMPLEX[m * n]);
-    COMPLEX *a = a_storage.get();
     for (j = 1; j <= n; j = j + 1) {
         Clarnv(2, iseed, m, &a[(j - 1) * m]);
     }
@@ -77,41 +116,23 @@ void Ctsqr01(fem::str_cref tssw, INTEGER const m, INTEGER const n, INTEGER const
             }
         }
     }
-    std::unique_ptr<COMPLEX[]> af_storage(new COMPLEX[m * n]);
-    COMPLEX *af = af_storage.get();
     Clacpy("Full", m, n, a, m, af, m);
     //
     COMPLEX tquery[5];
     COMPLEX workquery[1];
     INTEGER info = 0;
     INTEGER tsize = 0;
-    std::unique_ptr<COMPLEX[]> cf_storage(new COMPLEX[m * n]);
-    COMPLEX *cf = cf_storage.get();
-    std::unique_ptr<COMPLEX[]> df_storage(new COMPLEX[n * m]);
-    COMPLEX *df = df_storage.get();
-    std::unique_ptr<COMPLEX[]> t_storage(new COMPLEX[tsize]);
+    std::unique_ptr<COMPLEX[]> t_storage;
     COMPLEX *t = nullptr;
-    std::unique_ptr<COMPLEX[]> work_storage(new COMPLEX[lwork]);
+    std::unique_ptr<COMPLEX[]> work_storage;
     COMPLEX *work = nullptr;
     const COMPLEX czero = COMPLEX(0.0, 0.0);
     const COMPLEX one = COMPLEX(1.0, 0.0);
-    std::unique_ptr<COMPLEX[]> q_storage(new COMPLEX[l * l]);
-    COMPLEX *q = q_storage.get();
-    std::unique_ptr<COMPLEX[]> r_storage(new COMPLEX[m * l]);
-    COMPLEX *r = r_storage.get();
-    std::unique_ptr<REAL[]> rwork_storage(new REAL[l]);
-    REAL *rwork = rwork_storage.get();
     REAL anorm = 0.0;
     REAL resid = 0.0;
     const REAL zero = 0.0;
-    std::unique_ptr<COMPLEX[]> c_storage(new COMPLEX[m * n]);
-    COMPLEX *c = c_storage.get();
     REAL cnorm = 0.0;
-    std::unique_ptr<COMPLEX[]> d_storage(new COMPLEX[n * m]);
-    COMPLEX *d = d_storage.get();
     REAL dnorm = 0.0;
-    std::unique_ptr<COMPLEX[]> lq_storage(new COMPLEX[l * n]);
-    COMPLEX *lq = lq_storage.get();
     if (ts) {
         //
         // Factor the matrix A in the array AF.
@@ -129,9 +150,9 @@ void Ctsqr01(fem::str_cref tssw, INTEGER const m, INTEGER const n, INTEGER const
         lwork = max(lwork, castINTEGER(workquery[1 - 1].real()));
         Cgemqr("R", "C", n, m, k, af, m, tquery, tsize, df, n, workquery, -1, info);
         lwork = max(lwork, castINTEGER(workquery[1 - 1].real()));
-        t_storage.reset(new COMPLEX[max((INTEGER)1, tsize)]);
+        t_storage = std::make_unique<COMPLEX[]>(max((INTEGER)1, tsize));
         t = t_storage.get();
-        work_storage.reset(new COMPLEX[max((INTEGER)1, lwork)]);
+        work_storage = std::make_unique<COMPLEX[]>(max((INTEGER)1, lwork));
         work = work_storage.get();
         srnamt = "Cgeqr";
         Cgeqr(m, n, af, m, t, tsize, work, lwork, info);
@@ -264,9 +285,9 @@ void Ctsqr01(fem::str_cref tssw, INTEGER const m, INTEGER const n, INTEGER const
         lwork = max(lwork, castINTEGER(workquery[1 - 1].real()));
         Cgemlq("R", "C", m, n, k, af, m, tquery, tsize, cf, m, workquery, -1, info);
         lwork = max(lwork, castINTEGER(workquery[1 - 1].real()));
-        t_storage.reset(new COMPLEX[max((INTEGER)1, tsize)]);
+        t_storage = std::make_unique<COMPLEX[]>(max((INTEGER)1, tsize));
         t = t_storage.get();
-        work_storage.reset(new COMPLEX[max((INTEGER)1, lwork)]);
+        work_storage = std::make_unique<COMPLEX[]>(max((INTEGER)1, lwork));
         work = work_storage.get();
         srnamt = "Cgelq";
         Cgelq(m, n, af, m, t, tsize, work, lwork, info);

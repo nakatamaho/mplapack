@@ -62,11 +62,50 @@ void Rtsqr01(fem::str_cref tssw, INTEGER const m, INTEGER const n, INTEGER const
     //
     // Dynamically allocate local arrays
     //
+    std::unique_ptr<REAL[]> a_storage;
+    REAL *a = nullptr;
+    a_storage = std::make_unique<REAL[]>(max((INTEGER)1, m * n));
+    a = a_storage.get();
+    std::unique_ptr<REAL[]> af_storage;
+    REAL *af = nullptr;
+    af_storage = std::make_unique<REAL[]>(max((INTEGER)1, m * n));
+    af = af_storage.get();
+    std::unique_ptr<REAL[]> q_storage;
+    REAL *q = nullptr;
+    q_storage = std::make_unique<REAL[]>(max((INTEGER)1, l * l));
+    q = q_storage.get();
+    std::unique_ptr<REAL[]> r_storage;
+    REAL *r = nullptr;
+    r_storage = std::make_unique<REAL[]>(max((INTEGER)1, m * l));
+    r = r_storage.get();
+    std::unique_ptr<REAL[]> rwork_storage;
+    REAL *rwork = nullptr;
+    rwork_storage = std::make_unique<REAL[]>(max((INTEGER)1, l));
+    rwork = rwork_storage.get();
+    std::unique_ptr<REAL[]> c_storage;
+    REAL *c = nullptr;
+    c_storage = std::make_unique<REAL[]>(max((INTEGER)1, m * n));
+    c = c_storage.get();
+    std::unique_ptr<REAL[]> cf_storage;
+    REAL *cf = nullptr;
+    cf_storage = std::make_unique<REAL[]>(max((INTEGER)1, m * n));
+    cf = cf_storage.get();
+    std::unique_ptr<REAL[]> d_storage;
+    REAL *d = nullptr;
+    d_storage = std::make_unique<REAL[]>(max((INTEGER)1, n * m));
+    d = d_storage.get();
+    std::unique_ptr<REAL[]> df_storage;
+    REAL *df = nullptr;
+    df_storage = std::make_unique<REAL[]>(max((INTEGER)1, n * m));
+    df = df_storage.get();
+    std::unique_ptr<REAL[]> lq_storage;
+    REAL *lq = nullptr;
+    lq_storage = std::make_unique<REAL[]>(max((INTEGER)1, l * n));
+    lq = lq_storage.get();
+    //
     // Put random numbers into A and copy to AF
     //
     INTEGER j = 0;
-    std::unique_ptr<REAL[]> a_storage(new REAL[m * n]);
-    REAL *a = a_storage.get();
     for (j = 1; j <= n; j = j + 1) {
         Rlarnv(2, iseed, m, &a[(j - 1) * m]);
     }
@@ -77,40 +116,22 @@ void Rtsqr01(fem::str_cref tssw, INTEGER const m, INTEGER const n, INTEGER const
             }
         }
     }
-    std::unique_ptr<REAL[]> af_storage(new REAL[m * n]);
-    REAL *af = af_storage.get();
     Rlacpy("Full", m, n, a, m, af, m);
     //
     REAL tquery[5];
     REAL workquery[1];
     INTEGER info = 0;
     INTEGER tsize = 0;
-    std::unique_ptr<REAL[]> cf_storage(new REAL[m * n]);
-    REAL *cf = cf_storage.get();
-    std::unique_ptr<REAL[]> df_storage(new REAL[n * m]);
-    REAL *df = df_storage.get();
-    std::unique_ptr<REAL[]> t_storage(new REAL[tsize]);
+    std::unique_ptr<REAL[]> t_storage;
     REAL *t = nullptr;
-    std::unique_ptr<REAL[]> work_storage(new REAL[lwork]);
+    std::unique_ptr<REAL[]> work_storage;
     REAL *work = nullptr;
     const REAL zero = 0.0;
     const REAL one = 1.0;
-    std::unique_ptr<REAL[]> q_storage(new REAL[l * l]);
-    REAL *q = q_storage.get();
-    std::unique_ptr<REAL[]> r_storage(new REAL[m * l]);
-    REAL *r = r_storage.get();
-    std::unique_ptr<REAL[]> rwork_storage(new REAL[l]);
-    REAL *rwork = rwork_storage.get();
     REAL anorm = 0.0;
     REAL resid = 0.0;
-    std::unique_ptr<REAL[]> c_storage(new REAL[m * n]);
-    REAL *c = c_storage.get();
     REAL cnorm = 0.0;
-    std::unique_ptr<REAL[]> d_storage(new REAL[n * m]);
-    REAL *d = d_storage.get();
     REAL dnorm = 0.0;
-    std::unique_ptr<REAL[]> lq_storage(new REAL[l * n]);
-    REAL *lq = lq_storage.get();
     if (ts) {
         //
         // Factor the matrix A in the array AF.
@@ -128,9 +149,9 @@ void Rtsqr01(fem::str_cref tssw, INTEGER const m, INTEGER const n, INTEGER const
         lwork = max(lwork, castINTEGER(workquery[1 - 1]));
         Rgemqr("R", "T", n, m, k, af, m, tquery, tsize, df, n, workquery, -1, info);
         lwork = max(lwork, castINTEGER(workquery[1 - 1]));
-        t_storage.reset(new REAL[max((INTEGER)1, tsize)]);
+        t_storage = std::make_unique<REAL[]>(max((INTEGER)1, tsize));
         t = t_storage.get();
-        work_storage.reset(new REAL[max((INTEGER)1, lwork)]);
+        work_storage = std::make_unique<REAL[]>(max((INTEGER)1, lwork));
         work = work_storage.get();
         srnamt = "Rgeqr";
         Rgeqr(m, n, af, m, t, tsize, work, lwork, info);
@@ -263,9 +284,9 @@ void Rtsqr01(fem::str_cref tssw, INTEGER const m, INTEGER const n, INTEGER const
         lwork = max(lwork, castINTEGER(workquery[1 - 1]));
         Rgemlq("R", "T", m, n, k, af, m, tquery, tsize, cf, m, workquery, -1, info);
         lwork = max(lwork, castINTEGER(workquery[1 - 1]));
-        t_storage.reset(new REAL[max((INTEGER)1, tsize)]);
+        t_storage = std::make_unique<REAL[]>(max((INTEGER)1, tsize));
         t = t_storage.get();
-        work_storage.reset(new REAL[max((INTEGER)1, lwork)]);
+        work_storage = std::make_unique<REAL[]>(max((INTEGER)1, lwork));
         work = work_storage.get();
         srnamt = "Rgelq";
         Rgelq(m, n, af, m, t, tsize, work, lwork, info);
