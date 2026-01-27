@@ -357,5 +357,6 @@ python3 ~/mplapack/fable/rename_routine_literals.py --in-place --map ~/mplapack/
 python3 ~/mplapack/fable/rename_routine_literals.py --in-place --map ~/mplapack/fable/mplapack_name_map.txt --map ~/mplapack/fable/mplapack_testing_name_map.txt ~/mplapack/mplapack/test/matgen
 
 bash "${FABLE}/patch_lapack_test.sh"
+bash "${FABLE}/sync_test_inputs.sh"
 
 echo "ALL DONE"
