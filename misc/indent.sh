@@ -12,8 +12,9 @@ clang-format-19 -i -style '{
   AlwaysBreakTemplateDeclarations: No,
   BreakBeforeConceptDeclarations: Never,
   ReflowComments: true,
+  MaxEmptyLinesToKeep: 0,
   SpacesInLineCommentPrefix: { Minimum: 1, Maximum: 1 },
 }' "$f"
 
-#  MaxEmptyLinesToKeep: 0
+
 done
