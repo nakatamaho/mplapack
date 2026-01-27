@@ -1,9 +1,10 @@
---- eig/common/Rchkee.cpp_	2026-01-25 14:24:06.133059152 +0900
-+++ eig/common/Rchkee.cpp	2026-01-25 14:24:06.138059256 +0900
-@@ -42,20 +42,18 @@
+--- Rchkee.cpp_	2026-01-28 08:37:02.388837855 +0900
++++ Rchkee.cpp	2026-01-28 08:37:12.431961247 +0900
+@@ -42,15 +42,15 @@
  
  #include <mplapack_matgen.h>
  #include <mplapack_eig.h>
+-#include <memory>
 +#include <mplapack_debug.h>
  
 -void program_dchkee(int argc, char const *argv[]) {
@@ -15,18 +16,23 @@
      common_write write(cmn);
      static INTEGER ioldsd[4] = {0, 0, 0, 1};
      static fem::str<10> intstr = "0123456789";
+-    INTEGER allocatestatus = 0;
      const INTEGER nmax = 132;
--    const INTEGER need = 14;
--    REAL a[nmax * nmax * need];
--    REAL b[nmax * nmax * 5];
-     const INTEGER ncmax = 20;
--    REAL c[ncmax * ncmax * ncmax * ncmax];
+     const INTEGER need = 14;
+     std::unique_ptr<REAL[]> a_storage;
+@@ -63,7 +63,10 @@
+     const INTEGER lwork = nmax * (5 * nmax + 5) + 1;
+     std::unique_ptr<REAL[]> work_storage;
+     REAL *work = nullptr;
 -    REAL d[nmax * 12];
-+    const INTEGER need = 14;
++    std::unique_ptr<REAL[]> d_storage;
++    REAL *d = nullptr;
++    d_storage.reset(new REAL[std::max<INTEGER>(1, nmax * 12)]);
++    d = d_storage.get();
      REAL s1 = 0.0;
      bool fatal = false;
      const INTEGER nout = 6;
-@@ -87,9 +85,12 @@
+@@ -95,9 +98,12 @@
      bool dgk = false;
      REAL thresh = 0.0;
      bool tsterr = false;
@@ -42,15 +48,15 @@
      INTEGER nn = 0;
      const INTEGER maxin = 20;
      INTEGER mval[maxin];
-@@ -128,18 +129,23 @@
-     INTEGER maxtyp = 0;
-     bool dotype[maxt];
-     const INTEGER lwork = nmax * (5 * nmax + 5) + 1;
--    REAL work[lwork];
+@@ -138,14 +144,26 @@
      const INTEGER liwork = nmax * (5 * nmax + 20);
      INTEGER iwork[liwork];
      bool logwrk[nmax];
 -    REAL result[500];
++    std::unique_ptr<REAL[]> result_storage;
++    REAL *result = nullptr;
++    result_storage.reset(new REAL[500]);
++    result = result_storage.get();
      INTEGER info = 0;
      INTEGER nrhs = 0;
      bool tstdif = false;
@@ -58,20 +64,22 @@
 -    REAL x[5 * nmax];
 -    REAL taua[nmax];
 -    REAL taub[nmax];
-+    auto result_storage = std::make_unique<REAL[]>(500);
-+    auto work_storage = std::make_unique<REAL[]>(lwork);
-+    auto x_storage = std::make_unique<REAL[]>(5 * nmax);
-+    auto taua_storage = std::make_unique<REAL[]>(nmax);
-+    auto taub_storage = std::make_unique<REAL[]>(nmax);
-+    REAL *result = result_storage.get();
-+    REAL *work = work_storage.get();
-+    REAL *x = x_storage.get();
-+    REAL *taua = taua_storage.get();
-+    REAL *taub = taub_storage.get();
++    std::unique_ptr<REAL[]> x_storage;
++    std::unique_ptr<REAL[]> taua_storage;
++    std::unique_ptr<REAL[]> taub_storage;
++    REAL *x = nullptr;
++    REAL *taua = nullptr;
++    REAL *taub = nullptr;
++    x_storage.reset(new REAL[std::max<INTEGER>(1, 5 * nmax)]);
++    taua_storage.reset(new REAL[std::max<INTEGER>(1, nmax)]);
++    taub_storage.reset(new REAL[std::max<INTEGER>(1, nmax)]);
++    x = x_storage.get();
++    taua = taua_storage.get();
++    taub = taub_storage.get();
      REAL s2 = 0.0;
      INTEGER lda = nmax * nmax;
      INTEGER ldc = ncmax * ncmax;
-@@ -180,7 +186,9 @@
+@@ -186,7 +204,9 @@
      static const char *format_9974 = "(' Tests of Rsbtrd',/,' (reduction of a symmetric band ',"
                                       "'matrix to tridiagonal form)')";
      static const char *format_9973 = "(/,1x,71('-'))";
@@ -82,22 +90,39 @@
      static const char *format_9971 = "(/,' Tests of the Generalized Linear Regression Model ','routines')";
      static const char *format_9970 = "(/,' Tests of the Generalized QR and RQ routines')";
      static const char *format_9969 = "(/,' Tests of the Generalized Singular Value',' Decomposition routines')";
-@@ -201,10 +209,19 @@
+@@ -206,35 +226,20 @@
+                                      "', INWIN =',i4,', INIBL =',i4,', ISHFTS =',i4,', IACC22 =',i4)";
      static const char *format_9960 = "(/,' Tests of the CS Decomposition routines')";
      //
+-    allocatestatus = 0;
+     a_storage = std::make_unique<REAL[]>(max((INTEGER)1, (nmax * nmax) * need));
+     a = a_storage.get();
+-    if (allocatestatus != 0) {
+-        FEM_STOP("*** Not enough memory ***");
+-    }
+-    allocatestatus = 0;
+     b_storage = std::make_unique<REAL[]>(max((INTEGER)1, (nmax * nmax) * 5));
+     b = b_storage.get();
+-    if (allocatestatus != 0) {
+-        FEM_STOP("*** Not enough memory ***");
+-    }
+-    allocatestatus = 0;
+     c_storage = std::make_unique<REAL[]>(max((INTEGER)1, (ncmax * ncmax) * (ncmax * ncmax)));
+     c = c_storage.get();
+-    if (allocatestatus != 0) {
+-        FEM_STOP("*** Not enough memory ***");
+-    }
+-    allocatestatus = 0;
+     work_storage = std::make_unique<REAL[]>(max((INTEGER)1, lwork));
+     work = work_storage.get();
+-    if (allocatestatus != 0) {
+-        FEM_STOP("*** Not enough memory ***");
+-    }
      //
 -    a = 0.0;
 -    b = 0.0;
 -    c = 0.0;
 -    d = 0.0;
-+    auto a_storage = std::make_unique<REAL[]>(nmax * nmax * need);
-+    auto b_storage = std::make_unique<REAL[]>(nmax * nmax * 5);
-+    auto c_storage = std::make_unique<REAL[]>(ncmax * ncmax * ncmax * ncmax);
-+    auto d_storage = std::make_unique<REAL[]>(nmax * 12);
-+    REAL *a = a_storage.get();
-+    REAL *b = b_storage.get();
-+    REAL *c = c_storage.get();
-+    REAL *d = d_storage.get();
 +    const REAL zero = REAL(0.0);
 +    std::fill_n(a, nmax * nmax * need, zero);
 +    std::fill_n(b, nmax * nmax * 5, zero);
@@ -106,7 +131,7 @@
      s1 = dsecnd();
      fatal = false;
      nunit = nout;
-@@ -329,8 +346,8 @@
+@@ -359,8 +364,8 @@
          write(nout, format_9992), path;
          goto statement_10;
      }
@@ -117,7 +142,7 @@
      write(nout, format_9984);
      //
      // Read the number of values of M, P, and N.
-@@ -1055,7 +1072,7 @@
+@@ -1085,7 +1090,7 @@
                      iseed[k - 1] = ioldsd[k - 1];
                  }
              }
@@ -126,7 +151,7 @@
              Rchkhs(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], &a[(3 - 1) * lda], &a[(4 - 1) * lda], &a[(5 - 1) * lda], nmax, &a[(6 - 1) * lda], &a[(7 - 1) * lda], &d[0], &d[(2 - 1) * nmax], &d[(3 - 1) * nmax], &d[(4 - 1) * nmax], &d[(5 - 1) * nmax], &d[(6 - 1) * nmax], &a[(8 - 1) * lda], &a[(9 - 1) * lda], &a[(10 - 1) * lda], &a[(11 - 1) * lda], &a[(12 - 1) * lda], &d[(7 - 1) * nmax], work, lwork, iwork, logwrk, result, info);
              if (info != 0) {
                  write(nout, format_9980), "Rchkhs", info;
-@@ -1588,4 +1605,4 @@
+@@ -1618,4 +1623,4 @@
      //
  }
  

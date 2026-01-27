@@ -1,30 +1,37 @@
---- eig/common/Cchkee.cpp_	2026-01-25 14:24:06.116058794 +0900
-+++ eig/common/Cchkee.cpp	2026-01-25 14:24:06.122058920 +0900
-@@ -43,19 +43,17 @@
+--- Cchkee.cpp_	2026-01-28 08:37:05.898880838 +0900
++++ Cchkee.cpp	2026-01-28 08:37:10.026931584 +0900
+@@ -42,15 +42,15 @@
+ 
  #include <mplapack_matgen.h>
  #include <mplapack_eig.h>
++
+ #include <memory>
  
 -void program_zchkee(int argc, char const *argv[]) {
 -    common cmn(argc, argv);
-+#include <memory>
-+
 +void Cchkee(void) {
 +    common cmn;
      common_read read(cmn);
      common_write write(cmn);
      static INTEGER ioldsd[4] = {0, 0, 0, 1};
      static fem::str<10> intstr = "0123456789";
+-    INTEGER allocatestatus = 0;
      const INTEGER nmax = 132;
-     const INTEGER need = 14;
--    COMPLEX a[nmax * nmax * need];
--    COMPLEX b[nmax * nmax * 5];
-     const INTEGER ncmax = 20;
--    COMPLEX c[ncmax * ncmax * ncmax * ncmax];
+     std::unique_ptr<REAL[]> s_storage;
+     REAL *s = nullptr;
+@@ -67,7 +67,10 @@
+     REAL *rwork = nullptr;
+     std::unique_ptr<COMPLEX[]> work_storage;
+     COMPLEX *work = nullptr;
 -    COMPLEX dc[nmax * 6];
++    std::unique_ptr<COMPLEX[]> dc_storage;
++    COMPLEX *dc = nullptr;
++    dc_storage.reset(new COMPLEX[std::max<INTEGER>(1, nmax * 6)]);
++    dc = dc_storage.get();
      REAL s1 = 0.0;
      bool fatal = false;
      const INTEGER nout = 6;
-@@ -87,9 +85,12 @@
+@@ -99,9 +102,12 @@
      bool zgk = false;
      REAL thresh = 0.0;
      bool tsterr = false;
@@ -40,49 +47,53 @@
      INTEGER nn = 0;
      const INTEGER maxin = 20;
      INTEGER mval[maxin];
-@@ -128,23 +129,32 @@
-     INTEGER maxtyp = 0;
-     bool dotype[maxt];
-     const INTEGER lwork = nmax * (5 * nmax + 20);
--    COMPLEX work[lwork];
--    REAL rwork[lwork];
+@@ -142,17 +148,38 @@
      const INTEGER liwork = nmax * (nmax + 20);
      INTEGER iwork[liwork];
      bool logwrk[nmax];
 -    REAL result[500];
++    std::unique_ptr<REAL[]> result_storage;
++    REAL *result = nullptr;
++    result_storage.reset(new REAL[500]);
++    result = result_storage.get();
      INTEGER info = 0;
-     REAL dr[nmax * 12];
+-    REAL dr[nmax * 12];
++    std::unique_ptr<REAL[]> dr_storage;
++    REAL *dr = nullptr;
++    dr_storage.reset(new REAL[std::max<INTEGER>(1, nmax * 12)]);
++    dr = dr_storage.get();
      INTEGER nrhs = 0;
      bool tstdif = false;
      REAL thrshn = 0.0;
--    REAL s[nmax * nmax];
 -    COMPLEX x[5 * nmax];
 -    COMPLEX taua[nmax];
 -    COMPLEX taub[nmax];
 -    REAL alpha[nmax];
 -    REAL beta[nmax];
-+    auto work_storage = std::make_unique<COMPLEX[]>(lwork);
-+    auto rwork_storage = std::make_unique<REAL[]>(lwork);
-+    auto result_storage = std::make_unique<REAL[]>(500);
-+    auto s_storage = std::make_unique<REAL[]>(nmax * nmax);
-+    auto x_storage = std::make_unique<COMPLEX[]>(5 * nmax);
-+    auto taua_storage = std::make_unique<COMPLEX[]>(nmax);
-+    auto taub_storage = std::make_unique<COMPLEX[]>(nmax);
-+    auto alpha_storage = std::make_unique<REAL[]>(nmax);
-+    auto beta_storage = std::make_unique<REAL[]>(nmax);
-+    COMPLEX *work = work_storage.get();
-+    REAL *rwork = rwork_storage.get();
-+    REAL *result = result_storage.get();
-+    REAL *s = s_storage.get();
-+    COMPLEX *x = x_storage.get();
-+    COMPLEX *taua = taua_storage.get();
-+    COMPLEX *taub = taub_storage.get();
-+    REAL *alpha = alpha_storage.get();
-+    REAL *beta = beta_storage.get();
++    std::unique_ptr<COMPLEX[]> x_storage;
++    std::unique_ptr<COMPLEX[]> taua_storage;
++    std::unique_ptr<COMPLEX[]> taub_storage;
++    std::unique_ptr<REAL[]> alpha_storage;
++    std::unique_ptr<REAL[]> beta_storage;
++    COMPLEX *x = nullptr;
++    COMPLEX *taua = nullptr;
++    COMPLEX *taub = nullptr;
++    REAL *alpha = nullptr;
++    REAL *beta = nullptr;
++    x_storage.reset(new COMPLEX[std::max<INTEGER>(1, 5 * nmax)]);
++    taua_storage.reset(new COMPLEX[std::max<INTEGER>(1, nmax)]);
++    taub_storage.reset(new COMPLEX[std::max<INTEGER>(1, nmax)]);
++    alpha_storage.reset(new REAL[std::max<INTEGER>(1, nmax)]);
++    beta_storage.reset(new REAL[std::max<INTEGER>(1, nmax)]);
++    x = x_storage.get();
++    taua = taua_storage.get();
++    taub = taub_storage.get();
++    alpha = alpha_storage.get();
++    beta = beta_storage.get();
      REAL s2 = 0.0;
      INTEGER lda = nmax * nmax;
      INTEGER ldb = nmax * nmax;
-@@ -184,7 +194,9 @@
+@@ -192,7 +219,9 @@
      static const char *format_9974 = "(' Tests of Chbtrd',/,' (reduction of a Hermitian band ',"
                                       "'matrix to real tridiagonal form)')";
      static const char *format_9973 = "(/,1x,71('-'))";
@@ -93,22 +104,51 @@
      static const char *format_9971 = "(/,' Tests of the Generalized Linear Regression Model ','routines')";
      static const char *format_9970 = "(/,' Tests of the Generalized QR and RQ routines')";
      static const char *format_9969 = "(/,' Tests of the Generalized Singular Value',' Decomposition routines')";
-@@ -205,10 +217,19 @@
+@@ -212,47 +241,24 @@
+                                      "', INWIN =',i4,', INIBL =',i4,', ISHFTS =',i4,', IACC22 =',i4)";
      static const char *format_9960 = "(/,' Tests of the CS Decomposition routines')";
      //
+-    allocatestatus = 0;
+     s_storage = std::make_unique<REAL[]>(max((INTEGER)1, (nmax * nmax)));
+     s = s_storage.get();
+-    if (allocatestatus != 0) {
+-        FEM_STOP("*** Not enough memory ***");
+-    }
+-    allocatestatus = 0;
+     a_storage = std::make_unique<COMPLEX[]>(max((INTEGER)1, (nmax * nmax) * need));
+     a = a_storage.get();
+-    if (allocatestatus != 0) {
+-        FEM_STOP("*** Not enough memory ***");
+-    }
+-    allocatestatus = 0;
+     b_storage = std::make_unique<COMPLEX[]>(max((INTEGER)1, (nmax * nmax) * 5));
+     b = b_storage.get();
+-    if (allocatestatus != 0) {
+-        FEM_STOP("*** Not enough memory ***");
+-    }
+-    allocatestatus = 0;
+     c_storage = std::make_unique<COMPLEX[]>(max((INTEGER)1, (ncmax * ncmax) * (ncmax * ncmax)));
+     c = c_storage.get();
+-    if (allocatestatus != 0) {
+-        FEM_STOP("*** Not enough memory ***");
+-    }
+-    allocatestatus = 0;
+     rwork_storage = std::make_unique<REAL[]>(max((INTEGER)1, lwork));
+     rwork = rwork_storage.get();
+-    if (allocatestatus != 0) {
+-        FEM_STOP("*** Not enough memory ***");
+-    }
+-    allocatestatus = 0;
+     work_storage = std::make_unique<COMPLEX[]>(max((INTEGER)1, lwork));
+     work = work_storage.get();
+-    if (allocatestatus != 0) {
+-        FEM_STOP("*** Not enough memory ***");
+-    }
      //
 -    a = 0.0;
 -    b = 0.0;
 -    c = 0.0;
 -    dc = 0.0;
-+    auto a_storage = std::make_unique<COMPLEX[]>(nmax * nmax * need);
-+    auto b_storage = std::make_unique<COMPLEX[]>(nmax * nmax * 5);
-+    auto c_storage = std::make_unique<COMPLEX[]>(ncmax * ncmax * ncmax * ncmax);
-+    auto dc_storage = std::make_unique<COMPLEX[]>(nmax * 6);
-+    COMPLEX *a = a_storage.get();
-+    COMPLEX *b = b_storage.get();
-+    COMPLEX *c = c_storage.get();
-+    COMPLEX *dc = dc_storage.get();
 +    const COMPLEX zero = COMPLEX(0.0);
 +    std::fill_n(a, nmax * nmax * need, zero);
 +    std::fill_n(b, nmax * nmax * 5, zero);
@@ -117,7 +157,7 @@
      s1 = dsecnd();
      fatal = false;
      nunit = nout;
-@@ -329,8 +350,8 @@
+@@ -373,8 +379,8 @@
          write(nout, format_9992), path;
          goto statement_380;
      }
@@ -128,7 +168,7 @@
      write(nout, format_9984);
      //
      // Read the number of values of M, P, and N.
-@@ -1054,7 +1075,7 @@
+@@ -1098,7 +1104,7 @@
                      iseed[k - 1] = ioldsd[k - 1];
                  }
              }
@@ -137,7 +177,7 @@
              Cchkhs(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], &a[(3 - 1) * lda], &a[(4 - 1) * lda], &a[(5 - 1) * lda], nmax, &a[(6 - 1) * lda], &a[(7 - 1) * lda], &dc[0], &dc[(2 - 1) * nmax], &a[(8 - 1) * lda], &a[(9 - 1) * lda], &a[(10 - 1) * lda], &a[(11 - 1) * lda], &a[(12 - 1) * lda], &dc[(3 - 1) * nmax], work, lwork, rwork, iwork, logwrk, result, info);
              if (info != 0) {
                  write(nout, format_9980), "Cchkhs", info;
-@@ -1590,4 +1611,4 @@
+@@ -1634,4 +1640,4 @@
      //
  }
  
