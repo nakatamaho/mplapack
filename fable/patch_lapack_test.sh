@@ -86,5 +86,4 @@ patch < ~/mplapack/fable/3.9.1/lapack/patch-csd.in
 patch < ~/mplapack/fable/3.9.1/lapack/patch-gsv.in
 patch < ~/mplapack/fable/3.9.1/lapack/patch-nep.in
 patch < ~/mplapack/fable/3.9.1/lapack/patch-sep.in
-patch < ~/mplapack/fable/3.9.1/lapack/patch-Rsg.in
 patch < ~/mplapack/fable/3.9.1/lapack/patch-Rgg.in
