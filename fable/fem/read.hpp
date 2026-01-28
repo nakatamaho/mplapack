@@ -13,10 +13,16 @@
 #if __has_include(<gmpxx.h>)
 #include <gmpxx.h>
 #endif
+#if __has_include(<mpc_class.h>)
+#include <mpc_class.h>
+#endif
 #endif
 #if defined(___MPLAPACK_BUILD_WITH_MPFR___)
 #if __has_include(<mpreal.h>)
 #include <mpreal.h>
+#endif
+#if __has_include(<mpcomplex.h>)
+#include <mpcomplex.h>
 #endif
 #endif
 #if defined(___MPLAPACK_BUILD_WITH_QD___) || defined(___MPLAPACK_BUILD_WITH_DD___)
@@ -54,6 +60,12 @@
 #endif
 #if __has_include(<qd/qd_real.h>)
 #include <qd/qd_real.h>
+#endif
+#if __has_include(<dd_complex.h>)
+#include <dd_complex.h>
+#endif
+#if __has_include(<qd_complex.h>)
+#include <qd_complex.h>
 #endif
 #if defined(FEM_RESTORE_sign)
 #  pragma pop_macro("sign")
@@ -431,18 +443,86 @@ class read_loop // TODO copy-constructor potential performance problem
 #if defined(___MPLAPACK_BUILD_WITH_DOUBLE___)
 // no-op
 #endif
+
+    // --- Helper function to read a complex literal "(real, imag)" as a string ---
+    // Returns the full token including parentheses, with D->E normalization applied.
+    std::string read_complex_token_string() {
+        // Skip leading whitespace and separators (list-directed: newlines are separators)
+        int c;
+        while (true) {
+            c = inp_get();
+            if (utils::is_stream_end(c)) {
+                if (this->iostat_ptr != 0)
+                    *iostat_ptr = IOSTAT_END;
+                throw read_end("End of input while reading complex value");
+            }
+            if (utils::is_end_of_line(c) || c == ',') {
+                continue;  // skip separators
+            }
+            if (!utils::is_whitespace(c)) {
+                break;  // found start of token
+            }
+        }
+        
+        // Expect '('
+        if (c != '(') {
+            throw io_err("Expected '(' at start of complex value, got: " + 
+                         utils::format_char_for_display(c));
+        }
+        
+        // Read until ')' to get the full complex literal "(real,imag)"
+        std::string token;
+        token.push_back('(');
+        while (true) {
+            c = inp_get();
+            if (utils::is_stream_end(c)) {
+                throw io_err("Unexpected end of input while reading complex value");
+            }
+            token.push_back(static_cast<char>(c));
+            if (c == ')') {
+                break;
+            }
+        }
+        
+        return normalize_fortran_numeric_string(token);
+    }
+
+    // --- Helper to parse "(real,imag)" string into two component strings ---
+    static void parse_complex_components(const std::string &normalized, 
+                                         std::string &real_str, std::string &imag_str) {
+        // normalized is "(real,imag)" with D->E conversion already done
+        std::string inside = normalized.substr(1, normalized.size() - 2);
+        size_t comma = inside.find(',');
+        if (comma == std::string::npos) {
+            throw io_err("Invalid complex format, missing comma: " + normalized);
+        }
+        real_str = inside.substr(0, comma);
+        imag_str = inside.substr(comma + 1);
+        
+        // Trim whitespace
+        auto trim = [](std::string &s) {
+            size_t b = s.find_first_not_of(' ');
+            if (b == std::string::npos) { s.clear(); return; }
+            size_t e = s.find_last_not_of(' ');
+            s = s.substr(b, e - b + 1);
+        };
+        trim(real_str);
+        trim(imag_str);
+    }
+
     read_loop &operator,(std::complex<float> &val) {
         if (io_mode == io_unformatted) {
             float re, im;
             from_stream_unformatted(reinterpret_cast<char *>(&re), sizeof(float));
             from_stream_unformatted(reinterpret_cast<char *>(&im), sizeof(float));
             val = std::complex<float>(re, im);
-        } else if (io_mode == io_list_directed) {
-            inp.reset();
-            throw TBXX_NOT_IMPLEMENTED();
         } else {
-            inp.reset();
-            throw TBXX_NOT_IMPLEMENTED();
+            std::string token = read_complex_token_string();
+            std::string real_str, imag_str;
+            parse_complex_components(token, real_str, imag_str);
+            float re = static_cast<float>(std::strtod(real_str.c_str(), nullptr));
+            float im = static_cast<float>(std::strtod(imag_str.c_str(), nullptr));
+            val = std::complex<float>(re, im);
         }
         return *this;
     }
@@ -452,15 +532,102 @@ class read_loop // TODO copy-constructor potential performance problem
             from_stream_unformatted(reinterpret_cast<char *>(&re), sizeof(double));
             from_stream_unformatted(reinterpret_cast<char *>(&im), sizeof(double));
             val = std::complex<double>(re, im);
-        } else if (io_mode == io_list_directed) {
-            inp.reset();
-            throw TBXX_NOT_IMPLEMENTED();
         } else {
-            inp.reset();
-            throw TBXX_NOT_IMPLEMENTED();
+            std::string token = read_complex_token_string();
+            std::string real_str, imag_str;
+            parse_complex_components(token, real_str, imag_str);
+            double re = std::strtod(real_str.c_str(), nullptr);
+            double im = std::strtod(imag_str.c_str(), nullptr);
+            val = std::complex<double>(re, im);
         }
         return *this;
     }
+#if defined(___MPLAPACK_BUILD_WITH_GMP___)
+    read_loop &operator,(mpc_class &val) {
+        if (io_mode == io_unformatted) {
+            throw TBXX_NOT_IMPLEMENTED();
+        }
+        std::string token = read_complex_token_string();
+        std::string real_str, imag_str;
+        parse_complex_components(token, real_str, imag_str);
+        mpf_class re(real_str.c_str());
+        mpf_class im(imag_str.c_str());
+        val = mpc_class(re, im);
+        return *this;
+    }
+#endif
+#if defined(___MPLAPACK_BUILD_WITH_MPFR___)
+    read_loop &operator,(mpcomplex &val) {
+        if (io_mode == io_unformatted) {
+            throw TBXX_NOT_IMPLEMENTED();
+        }
+        std::string token = read_complex_token_string();
+        std::string real_str, imag_str;
+        parse_complex_components(token, real_str, imag_str);
+        mpfr::mpreal re(real_str.c_str());
+        mpfr::mpreal im(imag_str.c_str());
+        val = mpcomplex(re, im);
+        return *this;
+    }
+#endif
+#if defined(___MPLAPACK_BUILD_WITH_DD___)
+    read_loop &operator,(dd_complex &val) {
+        if (io_mode == io_unformatted) {
+            throw TBXX_NOT_IMPLEMENTED();
+        }
+        std::string token = read_complex_token_string();
+        std::string real_str, imag_str;
+        parse_complex_components(token, real_str, imag_str);
+        dd_real re(real_str.c_str());
+        dd_real im(imag_str.c_str());
+        val = dd_complex(re, im);
+        return *this;
+    }
+#endif
+#if defined(___MPLAPACK_BUILD_WITH_QD___)
+    read_loop &operator,(qd_complex &val) {
+        if (io_mode == io_unformatted) {
+            throw TBXX_NOT_IMPLEMENTED();
+        }
+        std::string token = read_complex_token_string();
+        std::string real_str, imag_str;
+        parse_complex_components(token, real_str, imag_str);
+        qd_real re(real_str.c_str());
+        qd_real im(imag_str.c_str());
+        val = qd_complex(re, im);
+        return *this;
+    }
+#endif
+#if defined(___MPLAPACK_BUILD_WITH__FLOAT128___) && defined(__FLT128_MAX__)
+    read_loop &operator,(std::complex<_Float128> &val) {
+        if (io_mode == io_unformatted) {
+            throw TBXX_NOT_IMPLEMENTED();
+        }
+        std::string token = read_complex_token_string();
+        std::string real_str, imag_str;
+        parse_complex_components(token, real_str, imag_str);
+        long double ld_re = std::strtold(real_str.c_str(), nullptr);
+        long double ld_im = std::strtold(imag_str.c_str(), nullptr);
+        val = std::complex<_Float128>(static_cast<_Float128>(ld_re), 
+                                       static_cast<_Float128>(ld_im));
+        return *this;
+    }
+#endif
+#if defined(___MPLAPACK_BUILD_WITH__FLOAT64X___) && defined(__FLT64X_MAX__)
+    read_loop &operator,(std::complex<_Float64x> &val) {
+        if (io_mode == io_unformatted) {
+            throw TBXX_NOT_IMPLEMENTED();
+        }
+        std::string token = read_complex_token_string();
+        std::string real_str, imag_str;
+        parse_complex_components(token, real_str, imag_str);
+        long double ld_re = std::strtold(real_str.c_str(), nullptr);
+        long double ld_im = std::strtold(imag_str.c_str(), nullptr);
+        val = std::complex<_Float64x>(static_cast<_Float64x>(ld_re), 
+                                       static_cast<_Float64x>(ld_im));
+        return *this;
+    }
+#endif
     read_loop &operator,(str_ref const &val) {
         if (io_mode == io_unformatted) {
             from_stream_unformatted(val.elems(), val.len());
@@ -584,13 +751,17 @@ class read_loop // TODO copy-constructor potential performance problem
         return result;
     }
     long read_star_long() {
-        while (true) { // loop scanning for first non-whitespace
+        while (true) { // loop scanning for first token character
             int c = inp_get();
             if (utils::is_stream_end(c)) {
                 inp.reset();
                 if (this->iostat_ptr != 0)
                     *iostat_ptr = IOSTAT_END;
                 throw read_end("End of input while reading integer value");
+            }
+            // List-directed ("*") input: end-of-record is a separator, not data.
+            if (utils::is_end_of_line(c) || c == ',') {
+                continue;
             }
             if (!utils::is_whitespace(c)) {
                 bool negative = (c == '-');
@@ -608,7 +779,7 @@ class read_loop // TODO copy-constructor potential performance problem
                     result *= 10;
                     result += utils::digit_as_int(c);
                     c = inp_get();
-                    if (utils::is_stream_end(c) || utils::is_whitespace(c) || c == ',') {
+                    if (utils::is_stream_end(c) || utils::is_whitespace(c) || c == ',' || utils::is_end_of_line(c)) {
                         if (negative)
                             result *= -1;
                         if (utils::is_end_of_line(c))
