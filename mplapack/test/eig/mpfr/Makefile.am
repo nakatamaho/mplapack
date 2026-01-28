@@ -79,7 +79,7 @@ MPFR_EXTRA_ENV ?=
 # -----------------------------------------------------------------------------
 
 # Default: run all profiles in "make check"
-MPFR_CHECK_TARGETS ?= mpfr-check-all
+MPFR_CHECK_TARGETS = mpfr-check-all
 
 # GNU make: allow deferred expansion of prerequisites (Automake may reorder vars/rules)
 .SECONDEXPANSION:
@@ -91,6 +91,9 @@ FORCE:
 # All output logs: <test>.<profile>.out
 MPFR_EIG_OUTS = $(foreach t,$(MPFR_ALL_TESTS),$(foreach p,$(MPFR_PROFILES),$(t).$(p).out))
 CLEANFILES = $(MPFR_EIG_OUTS)
+
+# Re-run all test commands on every "make check" even if *.out already exists.
+$(MPFR_EIG_OUTS): FORCE
 
 check-local: mpfr-check
 
