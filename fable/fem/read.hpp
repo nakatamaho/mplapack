@@ -719,13 +719,9 @@ class read_loop // TODO copy-constructor potential performance problem
                 throw read_end("End of input while reading token");
             }
             if (utils::is_end_of_line(c)) {
-                // Empty token at end-of-line
-                inp->backup();
-                inp.reset();
-                if (this->iostat_ptr != 0) {
-                    *iostat_ptr = IOSTAT_END;
-                }
-                throw read_end("End of line while reading token");
+                // List-directed ("*") input: end-of-record is a separator, not an error.
+                // If we have not started a token yet, skip the record boundary and keep scanning.
+                continue;
             }
             if (!utils::is_whitespace(c) && c != ',') {
                 break;
