@@ -31,29 +31,29 @@
 // `qd::nint` into `qd::__dd_nint` and break the QD headers.
 // Temporarily disable such macros while including QD headers.
 #if defined(nint)
-#  pragma push_macro("nint")
-#  undef nint
-#  define FEM_RESTORE_nint 1
+#pragma push_macro("nint")
+#undef nint
+#define FEM_RESTORE_nint 1
 #endif
 #if defined(min)
-#  pragma push_macro("min")
-#  undef min
-#  define FEM_RESTORE_min 1
+#pragma push_macro("min")
+#undef min
+#define FEM_RESTORE_min 1
 #endif
 #if defined(max)
-#  pragma push_macro("max")
-#  undef max
-#  define FEM_RESTORE_max 1
+#pragma push_macro("max")
+#undef max
+#define FEM_RESTORE_max 1
 #endif
 #if defined(abs)
-#  pragma push_macro("abs")
-#  undef abs
-#  define FEM_RESTORE_abs 1
+#pragma push_macro("abs")
+#undef abs
+#define FEM_RESTORE_abs 1
 #endif
 #if defined(sign)
-#  pragma push_macro("sign")
-#  undef sign
-#  define FEM_RESTORE_sign 1
+#pragma push_macro("sign")
+#undef sign
+#define FEM_RESTORE_sign 1
 #endif
 #if __has_include(<qd/dd_real.h>)
 #include <qd/dd_real.h>
@@ -68,24 +68,24 @@
 #include <qd_complex.h>
 #endif
 #if defined(FEM_RESTORE_sign)
-#  pragma pop_macro("sign")
-#  undef FEM_RESTORE_sign
+#pragma pop_macro("sign")
+#undef FEM_RESTORE_sign
 #endif
 #if defined(FEM_RESTORE_abs)
-#  pragma pop_macro("abs")
-#  undef FEM_RESTORE_abs
+#pragma pop_macro("abs")
+#undef FEM_RESTORE_abs
 #endif
 #if defined(FEM_RESTORE_max)
-#  pragma pop_macro("max")
-#  undef FEM_RESTORE_max
+#pragma pop_macro("max")
+#undef FEM_RESTORE_max
 #endif
 #if defined(FEM_RESTORE_min)
-#  pragma pop_macro("min")
-#  undef FEM_RESTORE_min
+#pragma pop_macro("min")
+#undef FEM_RESTORE_min
 #endif
 #if defined(FEM_RESTORE_nint)
-#  pragma pop_macro("nint")
-#  undef FEM_RESTORE_nint
+#pragma pop_macro("nint")
+#undef FEM_RESTORE_nint
 #endif
 
 #endif
@@ -271,16 +271,20 @@ class read_loop // TODO copy-constructor potential performance problem
             }
 
             // Uppercase
-            for (char &c : s) {
+            for (char &c: s) {
                 c = static_cast<char>(std::toupper(static_cast<unsigned char>(c)));
             }
 
-            if (s == "T" || s == "TRUE") return true;
-            if (s == "F" || s == "FALSE") return false;
+            if (s == "T" || s == "TRUE")
+                return true;
+            if (s == "F" || s == "FALSE")
+                return false;
 
             // Also accept "1"/"0" defensively
-            if (s == "1") return true;
-            if (s == "0") return false;
+            if (s == "1")
+                return true;
+            if (s == "0")
+                return false;
 
             throw io_err("Invalid token while reading logical value: " + s);
         };
@@ -296,7 +300,7 @@ class read_loop // TODO copy-constructor potential performance problem
         int n = static_cast<int>(ed.size());
         if (n >= 2 && ed[0] == 'l') {
             int iw = utils::unsigned_integer_scan(ed.data(), 1, ed.size());
-            int w  = utils::unsigned_integer_value(ed.data(), 1, iw);
+            int w = utils::unsigned_integer_value(ed.data(), 1, iw);
             std::string s = read_fmt_token_string(w);
             val = parse_logical(s);
         } else {
@@ -457,19 +461,18 @@ class read_loop // TODO copy-constructor potential performance problem
                 throw read_end("End of input while reading complex value");
             }
             if (utils::is_end_of_line(c) || c == ',') {
-                continue;  // skip separators
+                continue; // skip separators
             }
             if (!utils::is_whitespace(c)) {
-                break;  // found start of token
+                break; // found start of token
             }
         }
-        
+
         // Expect '('
         if (c != '(') {
-            throw io_err("Expected '(' at start of complex value, got: " + 
-                         utils::format_char_for_display(c));
+            throw io_err("Expected '(' at start of complex value, got: " + utils::format_char_for_display(c));
         }
-        
+
         // Read until ')' to get the full complex literal "(real,imag)"
         std::string token;
         token.push_back('(');
@@ -483,13 +486,12 @@ class read_loop // TODO copy-constructor potential performance problem
                 break;
             }
         }
-        
+
         return normalize_fortran_numeric_string(token);
     }
 
     // --- Helper to parse "(real,imag)" string into two component strings ---
-    static void parse_complex_components(const std::string &normalized, 
-                                         std::string &real_str, std::string &imag_str) {
+    static void parse_complex_components(const std::string &normalized, std::string &real_str, std::string &imag_str) {
         // normalized is "(real,imag)" with D->E conversion already done
         std::string inside = normalized.substr(1, normalized.size() - 2);
         size_t comma = inside.find(',');
@@ -498,11 +500,14 @@ class read_loop // TODO copy-constructor potential performance problem
         }
         real_str = inside.substr(0, comma);
         imag_str = inside.substr(comma + 1);
-        
+
         // Trim whitespace
         auto trim = [](std::string &s) {
             size_t b = s.find_first_not_of(' ');
-            if (b == std::string::npos) { s.clear(); return; }
+            if (b == std::string::npos) {
+                s.clear();
+                return;
+            }
             size_t e = s.find_last_not_of(' ');
             s = s.substr(b, e - b + 1);
         };
@@ -608,8 +613,7 @@ class read_loop // TODO copy-constructor potential performance problem
         parse_complex_components(token, real_str, imag_str);
         long double ld_re = std::strtold(real_str.c_str(), nullptr);
         long double ld_im = std::strtold(imag_str.c_str(), nullptr);
-        val = std::complex<_Float128>(static_cast<_Float128>(ld_re), 
-                                       static_cast<_Float128>(ld_im));
+        val = std::complex<_Float128>(static_cast<_Float128>(ld_re), static_cast<_Float128>(ld_im));
         return *this;
     }
 #endif
@@ -623,8 +627,7 @@ class read_loop // TODO copy-constructor potential performance problem
         parse_complex_components(token, real_str, imag_str);
         long double ld_re = std::strtold(real_str.c_str(), nullptr);
         long double ld_im = std::strtold(imag_str.c_str(), nullptr);
-        val = std::complex<_Float64x>(static_cast<_Float64x>(ld_re), 
-                                       static_cast<_Float64x>(ld_im));
+        val = std::complex<_Float64x>(static_cast<_Float64x>(ld_re), static_cast<_Float64x>(ld_im));
         return *this;
     }
 #endif
