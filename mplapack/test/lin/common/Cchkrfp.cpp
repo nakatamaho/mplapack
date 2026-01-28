@@ -241,42 +241,78 @@ void Cchkrfp(void) {
     // Test the routines: zpftrf, zpftri, zpftrs (as in Cdrvpo).
     // This also tests the routines: ztfsm, ztftri, ztfttr, ztrttf.
     //
-    auto worka_storage = std::make_unique<COMPLEX[]>(nmax * nmax);
-    auto workasav_storage = std::make_unique<COMPLEX[]>(nmax * nmax);
-    auto workafac_storage = std::make_unique<COMPLEX[]>(nmax * nmax);
-    auto workainv_storage = std::make_unique<COMPLEX[]>(nmax * nmax);
-    auto workb_storage = std::make_unique<COMPLEX[]>(nmax * maxrhs);
-    auto workbsav_storage = std::make_unique<COMPLEX[]>(nmax * maxrhs);
-    auto workxact_storage = std::make_unique<COMPLEX[]>(nmax * maxrhs);
-    auto workx_storage = std::make_unique<COMPLEX[]>(nmax * maxrhs);
-    auto workarf_storage = std::make_unique<COMPLEX[]>((nmax * (nmax + 1)) / 2);
-    auto workarfinv_storage = std::make_unique<COMPLEX[]>((nmax * (nmax + 1)) / 2);
-    auto z_work_zlatms_storage = std::make_unique<COMPLEX[]>(3 * nmax);
-    auto z_work_zpot02_storage = std::make_unique<COMPLEX[]>(nmax * maxrhs);
-    auto z_work_zpot03_storage = std::make_unique<COMPLEX[]>(nmax * nmax);
-    auto d_work_zlatms_storage = std::make_unique<REAL[]>(nmax);
-    auto d_work_zlanhe_storage = std::make_unique<REAL[]>(nmax);
-    auto d_work_zpot01_storage = std::make_unique<REAL[]>(nmax);
-    auto d_work_zpot02_storage = std::make_unique<REAL[]>(nmax);
-    auto d_work_zpot03_storage = std::make_unique<REAL[]>(nmax);
-    COMPLEX *worka = worka_storage.get();
-    COMPLEX *workasav = workasav_storage.get();
-    COMPLEX *workafac = workafac_storage.get();
-    COMPLEX *workainv = workainv_storage.get();
-    COMPLEX *workb = workb_storage.get();
-    COMPLEX *workbsav = workbsav_storage.get();
-    COMPLEX *workxact = workxact_storage.get();
-    COMPLEX *workx = workx_storage.get();
-    COMPLEX *workarf = workarf_storage.get();
-    COMPLEX *workarfinv = workarfinv_storage.get();
-    COMPLEX *z_work_zlatms = z_work_zlatms_storage.get();
-    COMPLEX *z_work_zpot02 = z_work_zpot02_storage.get();
-    COMPLEX *z_work_zpot03 = z_work_zpot03_storage.get();
-    REAL *d_work_zlatms = d_work_zlatms_storage.get();
-    REAL *d_work_zlanhe = d_work_zlanhe_storage.get();
-    REAL *d_work_zpot01 = d_work_zpot01_storage.get();
-    REAL *d_work_zpot02 = d_work_zpot02_storage.get();
-    REAL *d_work_zpot03 = d_work_zpot03_storage.get();
+    std::unique_ptr<COMPLEX[]> worka_storage;
+    std::unique_ptr<COMPLEX[]> workasav_storage;
+    std::unique_ptr<COMPLEX[]> workafac_storage;
+    std::unique_ptr<COMPLEX[]> workainv_storage;
+    std::unique_ptr<COMPLEX[]> workb_storage;
+    std::unique_ptr<COMPLEX[]> workbsav_storage;
+    std::unique_ptr<COMPLEX[]> workxact_storage;
+    std::unique_ptr<COMPLEX[]> workx_storage;
+    std::unique_ptr<COMPLEX[]> workarf_storage;
+    std::unique_ptr<COMPLEX[]> workarfinv_storage;
+    std::unique_ptr<COMPLEX[]> z_work_zlatms_storage;
+    std::unique_ptr<COMPLEX[]> z_work_zpot02_storage;
+    std::unique_ptr<COMPLEX[]> z_work_zpot03_storage;
+    std::unique_ptr<REAL[]> d_work_zlatms_storage;
+    std::unique_ptr<REAL[]> d_work_zlanhe_storage;
+    std::unique_ptr<REAL[]> d_work_zpot01_storage;
+    std::unique_ptr<REAL[]> d_work_zpot02_storage;
+    std::unique_ptr<REAL[]> d_work_zpot03_storage;
+    COMPLEX *worka = nullptr;
+    COMPLEX *workasav = nullptr;
+    COMPLEX *workafac = nullptr;
+    COMPLEX *workainv = nullptr;
+    COMPLEX *workb = nullptr;
+    COMPLEX *workbsav = nullptr;
+    COMPLEX *workxact = nullptr;
+    COMPLEX *workx = nullptr;
+    COMPLEX *workarf = nullptr;
+    COMPLEX *workarfinv = nullptr;
+    COMPLEX *z_work_zlatms = nullptr;
+    COMPLEX *z_work_zpot02 = nullptr;
+    COMPLEX *z_work_zpot03 = nullptr;
+    REAL *d_work_zlatms = nullptr;
+    REAL *d_work_zlanhe = nullptr;
+    REAL *d_work_zpot01 = nullptr;
+    REAL *d_work_zpot02 = nullptr;
+    REAL *d_work_zpot03 = nullptr;
+    worka_storage.reset(new COMPLEX[std::max<INTEGER>(1, nmax * nmax)]);
+    workasav_storage.reset(new COMPLEX[std::max<INTEGER>(1, nmax * nmax)]);
+    workafac_storage.reset(new COMPLEX[std::max<INTEGER>(1, nmax * nmax)]);
+    workainv_storage.reset(new COMPLEX[std::max<INTEGER>(1, nmax * nmax)]);
+    workb_storage.reset(new COMPLEX[std::max<INTEGER>(1, nmax * maxrhs)]);
+    workbsav_storage.reset(new COMPLEX[std::max<INTEGER>(1, nmax * maxrhs)]);
+    workxact_storage.reset(new COMPLEX[std::max<INTEGER>(1, nmax * maxrhs)]);
+    workx_storage.reset(new COMPLEX[std::max<INTEGER>(1, nmax * maxrhs)]);
+    workarf_storage.reset(new COMPLEX[std::max<INTEGER>(1, (nmax * (nmax + 1)) / 2)]);
+    workarfinv_storage.reset(new COMPLEX[std::max<INTEGER>(1, (nmax * (nmax + 1)) / 2)]);
+    z_work_zlatms_storage.reset(new COMPLEX[std::max<INTEGER>(1, 3 * nmax)]);
+    z_work_zpot02_storage.reset(new COMPLEX[std::max<INTEGER>(1, nmax * maxrhs)]);
+    z_work_zpot03_storage.reset(new COMPLEX[std::max<INTEGER>(1, nmax * nmax)]);
+    d_work_zlatms_storage.reset(new REAL[std::max<INTEGER>(1, nmax)]);
+    d_work_zlanhe_storage.reset(new REAL[std::max<INTEGER>(1, nmax)]);
+    d_work_zpot01_storage.reset(new REAL[std::max<INTEGER>(1, nmax)]);
+    d_work_zpot02_storage.reset(new REAL[std::max<INTEGER>(1, nmax)]);
+    d_work_zpot03_storage.reset(new REAL[std::max<INTEGER>(1, nmax)]);
+    worka = worka_storage.get();
+    workasav = workasav_storage.get();
+    workafac = workafac_storage.get();
+    workainv = workainv_storage.get();
+    workb = workb_storage.get();
+    workbsav = workbsav_storage.get();
+    workxact = workxact_storage.get();
+    workx = workx_storage.get();
+    workarf = workarf_storage.get();
+    workarfinv = workarfinv_storage.get();
+    z_work_zlatms = z_work_zlatms_storage.get();
+    z_work_zpot02 = z_work_zpot02_storage.get();
+    z_work_zpot03 = z_work_zpot03_storage.get();
+    d_work_zlatms = d_work_zlatms_storage.get();
+    d_work_zlanhe = d_work_zlanhe_storage.get();
+    d_work_zpot01 = d_work_zpot01_storage.get();
+    d_work_zpot02 = d_work_zpot02_storage.get();
+    d_work_zpot03 = d_work_zpot03_storage.get();
     Cdrvrfp(nout, nn, nval, nns, nsval, nnt, ntval, thresh, worka, workasav, workafac, workainv, workb, workbsav, workxact, workx, workarf, workarfinv, z_work_zlatms, z_work_zpot02, z_work_zpot03, d_work_zlatms, d_work_zlanhe, d_work_zpot01, d_work_zpot02, d_work_zpot03);
     //
     // Test the routine: zlanhf
@@ -286,7 +322,10 @@ void Cchkrfp(void) {
     // Test the conversion routines:
     // zhfttp, ztpthf, ztfttr, ztrttf, ztrttp and ztpttr.
     //
-    COMPLEX workap[(nmax * (nmax + 1)) / 2];
+    std::unique_ptr<COMPLEX[]> workap_storage;
+    COMPLEX *workap = nullptr;
+    workap_storage.reset(new COMPLEX[std::max<INTEGER>(1, (nmax * (nmax + 1)) / 2)]);
+    workap = workap_storage.get();
     Cdrvrf2(nout, nn, nval, worka, nmax, workarf, workap, workasav);
     //
     // Test the routine: ztfsm
