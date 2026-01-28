@@ -48,6 +48,10 @@ patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cchkaa.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rchkrfp.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cchkrfp.cpp
 
+cd /home/docker/mplapack/mplapack/test/lin/
+patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rtest.in
+patch  < ~/mplapack/fable/3.9.1/lapack/patch-Ctest.in
+
 cd /home/docker/mplapack/mplapack/test/eig/common
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cget52.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Clctsx.cpp
