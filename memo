@@ -3,3 +3,4 @@ _Float128, _Float64x cleanup
 fable include cleanup
 remove all statics
 generate test inputs from original LAPACK. (just copying might be enough)
+get rid of vla https://chatgpt.com/c/69797bac-d998-83a7-8cb5-9773042512ca
