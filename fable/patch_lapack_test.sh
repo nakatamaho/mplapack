@@ -80,6 +80,7 @@ patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cchkee.cpp
 
 cd /home/docker/mplapack/mplapack/test/eig
 patch < ~/mplapack/fable/3.9.1/lapack/patch-Ced.in
+patch < ~/mplapack/fable/3.9.1/lapack/patch-Cbb.in
 patch < ~/mplapack/fable/3.9.1/lapack/patch-Red.in
 patch < ~/mplapack/fable/3.9.1/lapack/patch-csd.in
 patch < ~/mplapack/fable/3.9.1/lapack/patch-gsv.in
