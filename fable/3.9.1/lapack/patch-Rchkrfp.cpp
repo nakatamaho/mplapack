@@ -1,5 +1,5 @@
---- lin/common/Rchkrfp.cpp_	2026-01-25 14:24:06.191060368 +0900
-+++ lin/common/Rchkrfp.cpp	2026-01-25 14:24:06.197060495 +0900
+--- Rchkrfp.cpp_	2026-01-28 09:19:27.808322757 +0900
++++ Rchkrfp.cpp	2026-01-28 09:19:27.812322851 +0900
 @@ -43,8 +43,10 @@
  #include <mplapack_matgen.h>
  #include <mplapack_lin.h>
@@ -73,44 +73,54 @@
 -    REAL d_work_dlansy[nmax];
 -    REAL d_work_dpot02[nmax];
 -    REAL d_work_dpot03[nmax];
-+    auto worka_storage = std::make_unique<REAL[]>(nmax * nmax);
-+    auto workasav_storage = std::make_unique<REAL[]>(nmax * nmax);
-+    auto workafac_storage = std::make_unique<REAL[]>(nmax * nmax);
-+    auto workainv_storage = std::make_unique<REAL[]>(nmax * nmax);
-+    auto workb_storage = std::make_unique<REAL[]>(nmax * maxrhs);
-+    auto workbsav_storage = std::make_unique<REAL[]>(nmax * maxrhs);
-+    auto workxact_storage = std::make_unique<REAL[]>(nmax * maxrhs);
-+    auto workx_storage = std::make_unique<REAL[]>(nmax * maxrhs);
-+    auto workarf_storage = std::make_unique<REAL[]>((nmax * (nmax + 1)) / 2);
-+    auto workarfinv_storage = std::make_unique<REAL[]>((nmax * (nmax + 1)) / 2);
-+    auto d_work_dlatms_storage = std::make_unique<REAL[]>(3 * nmax);
-+    auto d_work_dpot01_storage = std::make_unique<REAL[]>(nmax);
-+    auto d_temp_dpot02_storage = std::make_unique<REAL[]>(nmax * maxrhs);
-+    auto d_temp_dpot03_storage = std::make_unique<REAL[]>(nmax * nmax);
-+    auto d_work_dlansy_storage = std::make_unique<REAL[]>(nmax);
-+    auto d_work_dpot02_storage = std::make_unique<REAL[]>(nmax);
-+    auto d_work_dpot03_storage = std::make_unique<REAL[]>(nmax);
++    auto worka_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nmax * nmax));
 +    REAL *worka = worka_storage.get();
++    auto workasav_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nmax * nmax));
 +    REAL *workasav = workasav_storage.get();
++    auto workafac_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nmax * nmax));
 +    REAL *workafac = workafac_storage.get();
++    auto workainv_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nmax * nmax));
 +    REAL *workainv = workainv_storage.get();
++    auto workb_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nmax * maxrhs));
 +    REAL *workb = workb_storage.get();
++    auto workbsav_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nmax * maxrhs));
 +    REAL *workbsav = workbsav_storage.get();
++    auto workxact_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nmax * maxrhs));
 +    REAL *workxact = workxact_storage.get();
++    auto workx_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nmax * maxrhs));
 +    REAL *workx = workx_storage.get();
++    auto workarf_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, (nmax * (nmax + 1)) / 2));
 +    REAL *workarf = workarf_storage.get();
++    auto workarfinv_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, (nmax * (nmax + 1)) / 2));
 +    REAL *workarfinv = workarfinv_storage.get();
++    auto d_work_dlatms_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, 3 * nmax));
 +    REAL *d_work_dlatms = d_work_dlatms_storage.get();
++    auto d_work_dpot01_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nmax));
 +    REAL *d_work_dpot01 = d_work_dpot01_storage.get();
++    auto d_temp_dpot02_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nmax * maxrhs));
 +    REAL *d_temp_dpot02 = d_temp_dpot02_storage.get();
++    auto d_temp_dpot03_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nmax * nmax));
 +    REAL *d_temp_dpot03 = d_temp_dpot03_storage.get();
++    auto d_work_dlansy_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nmax));
 +    REAL *d_work_dlansy = d_work_dlansy_storage.get();
++    auto d_work_dpot02_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nmax));
 +    REAL *d_work_dpot02 = d_work_dpot02_storage.get();
++    auto d_work_dpot03_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nmax));
 +    REAL *d_work_dpot03 = d_work_dpot03_storage.get();
      Rdrvrfp(nout, nn, nval, nns, nsval, nnt, ntval, thresh, worka, workasav, workafac, workainv, workb, workbsav, workxact, workx, workarf, workarfinv, d_work_dlatms, d_work_dpot01, d_temp_dpot02, d_temp_dpot03, d_work_dlansy, d_work_dpot02, d_work_dpot03);
      //
      // Test the routine: dlansf
-@@ -282,4 +304,4 @@
+@@ -262,7 +284,8 @@
+     // Test the conversion routines:
+     // dtfttp, dtpttf, dtfttr, dtrttf, dtrttp and dtpttr.
+     //
+-    REAL workap[(nmax * (nmax + 1)) / 2];
++    auto workap_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, (nmax * (nmax + 1)) / 2));
++    REAL* workap = workap_storage.get();
+     Rdrvrf2(nout, nn, nval, worka, nmax, workarf, workap, workasav);
+     //
+     // Test the routine: dtfsm
+@@ -282,4 +305,4 @@
      //
  }
  

@@ -1,5 +1,5 @@
---- lin/common/Rchkaa.cpp_	2026-01-25 14:24:06.176060054 +0900
-+++ lin/common/Rchkaa.cpp	2026-01-25 14:24:06.182060180 +0900
+--- Rchkaa.cpp_	2026-01-28 09:19:27.793322403 +0900
++++ Rchkaa.cpp	2026-01-28 09:19:27.800322568 +0900
 @@ -43,8 +43,10 @@
  #include <mplapack_matgen.h>
  #include <mplapack_lin.h>
@@ -38,17 +38,17 @@
 -    REAL b[nmax * maxrhs * 4];
 -    REAL work[nmax * 3 * nmax + maxrhs + 30];
 -    REAL rwork[5 * nmax + 2 * maxrhs];
-+    auto a_storage = std::make_unique<REAL[]>((kdmax + 1) * nmax * 7);
-+    auto b_storage = std::make_unique<REAL[]>(nmax * maxrhs * 4);
-+    auto work_storage = std::make_unique<REAL[]>(nmax * 3 * nmax + maxrhs + 30);
-+    auto rwork_storage = std::make_unique<REAL[]>(5 * nmax + 2 * maxrhs);
-+    auto s_storage = std::make_unique<REAL[]>(2 * nmax);
-+    auto e_storage = std::make_unique<REAL[]>(nmax);
++    auto a_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, (kdmax + 1) * nmax * 7));
 +    REAL *a = a_storage.get();
++    auto b_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nmax * maxrhs * 4));
 +    REAL *b = b_storage.get();
++    auto work_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nmax * 3 * nmax + maxrhs + 30));
 +    REAL *work = work_storage.get();
++    auto rwork_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, 5 * nmax + 2 * maxrhs));
 +    REAL *rwork = rwork_storage.get();
++    auto s_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, 2 * nmax));
 +    REAL *s = s_storage.get();
++    auto e_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nmax));
 +    REAL *e = e_storage.get();
      INTEGER iwork[25 * nmax];
 -    REAL s[2 * nmax];
