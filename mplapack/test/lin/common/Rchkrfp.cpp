@@ -241,74 +241,40 @@ void Rchkrfp(void) {
     // Test the routines: dpftrf, dpftri, dpftrs (as in Rdrvpo).
     // This also tests the routines: dtfsm, dtftri, dtfttr, dtrttf.
     //
-    std::unique_ptr<REAL[]> worka_storage;
-    std::unique_ptr<REAL[]> workasav_storage;
-    std::unique_ptr<REAL[]> workafac_storage;
-    std::unique_ptr<REAL[]> workainv_storage;
-    std::unique_ptr<REAL[]> workb_storage;
-    std::unique_ptr<REAL[]> workbsav_storage;
-    std::unique_ptr<REAL[]> workxact_storage;
-    std::unique_ptr<REAL[]> workx_storage;
-    std::unique_ptr<REAL[]> workarf_storage;
-    std::unique_ptr<REAL[]> workarfinv_storage;
-    std::unique_ptr<REAL[]> d_work_dlatms_storage;
-    std::unique_ptr<REAL[]> d_work_dpot01_storage;
-    std::unique_ptr<REAL[]> d_temp_dpot02_storage;
-    std::unique_ptr<REAL[]> d_temp_dpot03_storage;
-    std::unique_ptr<REAL[]> d_work_dlansy_storage;
-    std::unique_ptr<REAL[]> d_work_dpot02_storage;
-    std::unique_ptr<REAL[]> d_work_dpot03_storage;
-    REAL *worka = nullptr;
-    REAL *workasav = nullptr;
-    REAL *workafac = nullptr;
-    REAL *workainv = nullptr;
-    REAL *workb = nullptr;
-    REAL *workbsav = nullptr;
-    REAL *workxact = nullptr;
-    REAL *workx = nullptr;
-    REAL *workarf = nullptr;
-    REAL *workarfinv = nullptr;
-    REAL *d_work_dlatms = nullptr;
-    REAL *d_work_dpot01 = nullptr;
-    REAL *d_temp_dpot02 = nullptr;
-    REAL *d_temp_dpot03 = nullptr;
-    REAL *d_work_dlansy = nullptr;
-    REAL *d_work_dpot02 = nullptr;
-    REAL *d_work_dpot03 = nullptr;
-    worka_storage.reset(new REAL[std::max<INTEGER>(1, nmax * nmax)]);
-    workasav_storage.reset(new REAL[std::max<INTEGER>(1, nmax * nmax)]);
-    workafac_storage.reset(new REAL[std::max<INTEGER>(1, nmax * nmax)]);
-    workainv_storage.reset(new REAL[std::max<INTEGER>(1, nmax * nmax)]);
-    workb_storage.reset(new REAL[std::max<INTEGER>(1, nmax * maxrhs)]);
-    workbsav_storage.reset(new REAL[std::max<INTEGER>(1, nmax * maxrhs)]);
-    workxact_storage.reset(new REAL[std::max<INTEGER>(1, nmax * maxrhs)]);
-    workx_storage.reset(new REAL[std::max<INTEGER>(1, nmax * maxrhs)]);
-    workarf_storage.reset(new REAL[std::max<INTEGER>(1, (nmax * (nmax + 1)) / 2)]);
-    workarfinv_storage.reset(new REAL[std::max<INTEGER>(1, (nmax * (nmax + 1)) / 2)]);
-    d_work_dlatms_storage.reset(new REAL[std::max<INTEGER>(1, 3 * nmax)]);
-    d_work_dpot01_storage.reset(new REAL[std::max<INTEGER>(1, nmax)]);
-    d_temp_dpot02_storage.reset(new REAL[std::max<INTEGER>(1, nmax * maxrhs)]);
-    d_temp_dpot03_storage.reset(new REAL[std::max<INTEGER>(1, nmax * nmax)]);
-    d_work_dlansy_storage.reset(new REAL[std::max<INTEGER>(1, nmax)]);
-    d_work_dpot02_storage.reset(new REAL[std::max<INTEGER>(1, nmax)]);
-    d_work_dpot03_storage.reset(new REAL[std::max<INTEGER>(1, nmax)]);
-    worka = worka_storage.get();
-    workasav = workasav_storage.get();
-    workafac = workafac_storage.get();
-    workainv = workainv_storage.get();
-    workb = workb_storage.get();
-    workbsav = workbsav_storage.get();
-    workxact = workxact_storage.get();
-    workx = workx_storage.get();
-    workarf = workarf_storage.get();
-    workarfinv = workarfinv_storage.get();
-    d_work_dlatms = d_work_dlatms_storage.get();
-    d_work_dpot01 = d_work_dpot01_storage.get();
-    d_temp_dpot02 = d_temp_dpot02_storage.get();
-    d_temp_dpot03 = d_temp_dpot03_storage.get();
-    d_work_dlansy = d_work_dlansy_storage.get();
-    d_work_dpot02 = d_work_dpot02_storage.get();
-    d_work_dpot03 = d_work_dpot03_storage.get();
+    auto worka_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nmax * nmax));
+    REAL *worka = worka_storage.get();
+    auto workasav_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nmax * nmax));
+    REAL *workasav = workasav_storage.get();
+    auto workafac_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nmax * nmax));
+    REAL *workafac = workafac_storage.get();
+    auto workainv_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nmax * nmax));
+    REAL *workainv = workainv_storage.get();
+    auto workb_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nmax * maxrhs));
+    REAL *workb = workb_storage.get();
+    auto workbsav_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nmax * maxrhs));
+    REAL *workbsav = workbsav_storage.get();
+    auto workxact_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nmax * maxrhs));
+    REAL *workxact = workxact_storage.get();
+    auto workx_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nmax * maxrhs));
+    REAL *workx = workx_storage.get();
+    auto workarf_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, (nmax * (nmax + 1)) / 2));
+    REAL *workarf = workarf_storage.get();
+    auto workarfinv_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, (nmax * (nmax + 1)) / 2));
+    REAL *workarfinv = workarfinv_storage.get();
+    auto d_work_dlatms_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, 3 * nmax));
+    REAL *d_work_dlatms = d_work_dlatms_storage.get();
+    auto d_work_dpot01_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nmax));
+    REAL *d_work_dpot01 = d_work_dpot01_storage.get();
+    auto d_temp_dpot02_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nmax * maxrhs));
+    REAL *d_temp_dpot02 = d_temp_dpot02_storage.get();
+    auto d_temp_dpot03_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nmax * nmax));
+    REAL *d_temp_dpot03 = d_temp_dpot03_storage.get();
+    auto d_work_dlansy_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nmax));
+    REAL *d_work_dlansy = d_work_dlansy_storage.get();
+    auto d_work_dpot02_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nmax));
+    REAL *d_work_dpot02 = d_work_dpot02_storage.get();
+    auto d_work_dpot03_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nmax));
+    REAL *d_work_dpot03 = d_work_dpot03_storage.get();
     Rdrvrfp(nout, nn, nval, nns, nsval, nnt, ntval, thresh, worka, workasav, workafac, workainv, workb, workbsav, workxact, workx, workarf, workarfinv, d_work_dlatms, d_work_dpot01, d_temp_dpot02, d_temp_dpot03, d_work_dlansy, d_work_dpot02, d_work_dpot03);
     //
     // Test the routine: dlansf
@@ -318,10 +284,8 @@ void Rchkrfp(void) {
     // Test the conversion routines:
     // dtfttp, dtpttf, dtfttr, dtrttf, dtrttp and dtpttr.
     //
-    std::unique_ptr<REAL[]> workap_storage;
-    REAL *workap = nullptr;
-    workap_storage.reset(new REAL[std::max<INTEGER>(1, (nmax * (nmax + 1)) / 2)]);
-    workap = workap_storage.get();
+    auto workap_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, (nmax * (nmax + 1)) / 2));
+    REAL* workap = workap_storage.get();
     Rdrvrf2(nout, nn, nval, worka, nmax, workarf, workap, workasav);
     //
     // Test the routine: dtfsm
