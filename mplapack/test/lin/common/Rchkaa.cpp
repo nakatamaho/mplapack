@@ -104,7 +104,8 @@ void Rchkaa(void) {
     REAL *b = b_storage.get();
     auto work_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nmax * (3 * nmax + maxrhs + 30)));
     REAL *work = work_storage.get();
-    REAL rwork[5 * nmax + 2 * maxrhs];
+    auto rwork_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, 5 * nmax + 2 * maxrhs));
+    REAL *rwork = rwork_storage.get();
     INTEGER iwork[25 * nmax];
     REAL s[2 * nmax];
     INTEGER la = 0;
