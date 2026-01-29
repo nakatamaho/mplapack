@@ -42,6 +42,7 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
+#include <memory>
 
 void Cget38(REAL *rmax, INTEGER *lmax, INTEGER *ninfo, INTEGER &knt, INTEGER const nin) {
     common cmn;
@@ -70,7 +71,8 @@ void Cget38(REAL *rmax, INTEGER *lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
     REAL vmul = 0.0;
     COMPLEX tsav[ldt * ldt];
     const INTEGER lwork = 2 * ldt * (10 + ldt);
-    COMPLEX work[lwork];
+    auto work_storage = std::make_unique<COMPLEX[]>(std::max<INTEGER>(1, lwork));
+    COMPLEX *work = work_storage.get();
     INTEGER info = 0;
     COMPLEX q[ldt * ldt];
     const COMPLEX czero = COMPLEX(0.0, 0.0);

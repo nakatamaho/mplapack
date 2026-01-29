@@ -98,11 +98,11 @@ void Cdrvhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     INTEGER n_err_bnds = 0;
     fem::str<1> equed;
     REAL rpvgrw_svxx = 0.0;
-    std::unique_ptr<REAL[]> berr_storage(new REAL[nrhs]);
+    auto berr_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nrhs));
     REAL *berr = berr_storage.get();
-    std::unique_ptr<REAL[]> errbnds_n_storage(new REAL[nrhs * 3]);
+    auto errbnds_n_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nrhs * 3));
     REAL *errbnds_n = errbnds_n_storage.get();
-    std::unique_ptr<REAL[]> errbnds_c_storage(new REAL[nrhs * 3]);
+    auto errbnds_c_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nrhs * 3));
     REAL *errbnds_c = errbnds_c_storage.get();
     //
     static const char *format_9999 = "(1x,a,', UPLO=''',a1,''', N =',i5,', type ',i2,', test ',i2,', ratio =',"

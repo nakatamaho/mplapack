@@ -1,15 +1,11 @@
 --- Rchkee.cpp_	2026-01-28 11:33:05.873117076 +0900
 +++ Rchkee.cpp	2026-01-28 11:33:05.879117178 +0900
-@@ -42,28 +42,19 @@
- 
- #include <mplapack_matgen.h>
+@@ -44,13 +44,12 @@
  #include <mplapack_eig.h>
--#include <memory>
-+#include <mplapack_debug.h>
+ #include <memory>
  
 -void program_dchkee(int argc, char const *argv[]) {
 -    common cmn(argc, argv);
-+#include <memory>
 +void Rchkee(void) {
 +    common cmn;
      common_read read(cmn);
@@ -19,20 +15,7 @@
 -    INTEGER allocatestatus = 0;
      const INTEGER nmax = 132;
      const INTEGER need = 14;
--    std::unique_ptr<REAL[]> a_storage;
--    REAL *a = nullptr;
--    std::unique_ptr<REAL[]> b_storage;
--    REAL *b = nullptr;
-     const INTEGER ncmax = 20;
--    std::unique_ptr<REAL[]> c_storage;
--    REAL *c = nullptr;
-     const INTEGER lwork = nmax * (5 * nmax + 5) + 1;
--    std::unique_ptr<REAL[]> work_storage;
--    REAL *work = nullptr;
--    REAL d[nmax * 12];
-     REAL s1 = 0.0;
-     bool fatal = false;
-     const INTEGER nout = 6;
+     std::unique_ptr<REAL[]> a_storage;
 @@ -95,9 +86,12 @@
      bool dgk = false;
      REAL thresh = 0.0;
@@ -49,40 +32,6 @@
      INTEGER nn = 0;
      const INTEGER maxin = 20;
      INTEGER mval[maxin];
-@@ -138,15 +132,29 @@
-     const INTEGER liwork = nmax * (5 * nmax + 20);
-     INTEGER iwork[liwork];
-     bool logwrk[nmax];
--    REAL result[500];
-     INTEGER info = 0;
-     INTEGER nrhs = 0;
-     bool tstdif = false;
-     REAL thrshn = 0.0;
--    REAL x[5 * nmax];
--    REAL taua[nmax];
--    REAL taub[nmax];
-     REAL s2 = 0.0;
-+    auto d_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nmax * 12));
-+    REAL *d = d_storage.get();
-+    auto result_storage = std::make_unique<REAL[]>(500);
-+    REAL *result = result_storage.get();
-+    auto taua_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nmax));
-+    REAL *taua = taua_storage.get();
-+    auto taub_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nmax));
-+    REAL *taub = taub_storage.get();
-+    auto x_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, 5 * nmax));
-+    REAL *x = x_storage.get();
-+    std::unique_ptr<REAL[]> a_storage;
-+    REAL *a = nullptr;
-+    std::unique_ptr<REAL[]> b_storage;
-+    REAL *b = nullptr;
-+    std::unique_ptr<REAL[]> c_storage;
-+    REAL *c = nullptr;
-+    std::unique_ptr<REAL[]> work_storage;
-+    REAL *work = nullptr;
-     INTEGER lda = nmax * nmax;
-     INTEGER ldc = ncmax * ncmax;
-     INTEGER ldb = nmax * nmax;
 @@ -186,7 +194,9 @@
      static const char *format_9974 = "(' Tests of Rsbtrd',/,' (reduction of a symmetric band ',"
                                       "'matrix to tridiagonal form)')";

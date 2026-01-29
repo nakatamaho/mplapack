@@ -42,7 +42,6 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-
 #include <memory>
 
 void Rchkrfp(void) {
@@ -261,20 +260,15 @@ void Rchkrfp(void) {
     REAL *workarf = workarf_storage.get();
     auto workarfinv_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, (nmax * (nmax + 1)) / 2));
     REAL *workarfinv = workarfinv_storage.get();
-    auto d_work_dlatms_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, 3 * nmax));
-    REAL *d_work_dlatms = d_work_dlatms_storage.get();
-    auto d_work_dpot01_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nmax));
-    REAL *d_work_dpot01 = d_work_dpot01_storage.get();
+    REAL d_work_dlatms[3 * nmax];
+    REAL d_work_dpot01[nmax];
     auto d_temp_dpot02_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nmax * maxrhs));
     REAL *d_temp_dpot02 = d_temp_dpot02_storage.get();
     auto d_temp_dpot03_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nmax * nmax));
     REAL *d_temp_dpot03 = d_temp_dpot03_storage.get();
-    auto d_work_dlansy_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nmax));
-    REAL *d_work_dlansy = d_work_dlansy_storage.get();
-    auto d_work_dpot02_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nmax));
-    REAL *d_work_dpot02 = d_work_dpot02_storage.get();
-    auto d_work_dpot03_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nmax));
-    REAL *d_work_dpot03 = d_work_dpot03_storage.get();
+    REAL d_work_dlansy[nmax];
+    REAL d_work_dpot02[nmax];
+    REAL d_work_dpot03[nmax];
     Rdrvrfp(nout, nn, nval, nns, nsval, nnt, ntval, thresh, worka, workasav, workafac, workainv, workb, workbsav, workxact, workx, workarf, workarfinv, d_work_dlatms, d_work_dpot01, d_temp_dpot02, d_temp_dpot03, d_work_dlansy, d_work_dpot02, d_work_dpot03);
     //
     // Test the routine: dlansf
@@ -285,7 +279,7 @@ void Rchkrfp(void) {
     // dtfttp, dtpttf, dtfttr, dtrttf, dtrttp and dtpttr.
     //
     auto workap_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, (nmax * (nmax + 1)) / 2));
-    REAL* workap = workap_storage.get();
+    REAL *workap = workap_storage.get();
     Rdrvrf2(nout, nn, nval, worka, nmax, workarf, workap, workasav);
     //
     // Test the routine: dtfsm

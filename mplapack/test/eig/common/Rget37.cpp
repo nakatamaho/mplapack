@@ -42,6 +42,7 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
+#include <memory>
 
 void Rget37(REAL *rmax, INTEGER *lmax, INTEGER *ninfo, INTEGER &knt, INTEGER const nin) {
     common cmn;
@@ -63,7 +64,8 @@ void Rget37(REAL *rmax, INTEGER *lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
     REAL sin[ldt];
     REAL sepin[ldt];
     const INTEGER lwork = 2 * ldt * (10 + ldt);
-    REAL work[lwork];
+    auto work_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, lwork));
+    REAL *work = work_storage.get();
     REAL tnrm = 0.0;
     INTEGER iscl = 0;
     REAL t[ldt * ldt];

@@ -42,6 +42,7 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
+#include <memory>
 
 void program_dchkab(int argc, char const *argv[]) {
     common cmn(argc, argv);
@@ -81,11 +82,15 @@ void program_dchkab(int argc, char const *argv[]) {
     INTEGER ntypes = 0;
     bool dotype[matmax];
     const INTEGER ldamax = nmax;
-    REAL a[ldamax * nmax * 2];
-    REAL b[nmax * maxrhs * 2];
-    REAL work[nmax * maxrhs * 2];
+    auto a_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, (ldamax * nmax) * 2));
+    REAL *a = a_storage.get();
+    auto b_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, (nmax * maxrhs) * 2));
+    REAL *b = b_storage.get();
+    auto work_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nmax * maxrhs * 2));
+    REAL *work = work_storage.get();
     REAL rwork[nmax];
-    REAL swork[nmax * (nmax + maxrhs)];
+    auto swork_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nmax * (nmax + maxrhs)));
+    REAL *swork = swork_storage.get();
     INTEGER iwork[nmax];
     REAL s2 = 0.0;
     INTEGER ldaw = ldamax * nmax;

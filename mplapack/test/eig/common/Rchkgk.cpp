@@ -42,6 +42,7 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
+#include <memory>
 
 void Rchkgk(INTEGER const nin, INTEGER const nout) {
     common cmn;
@@ -57,32 +58,43 @@ void Rchkgk(INTEGER const nin, INTEGER const nout) {
     INTEGER m = 0;
     INTEGER i = 0;
     const INTEGER lda = 50;
-    REAL a[lda * lda];
+    auto a_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, lda * lda));
+    REAL *a = a_storage.get();
     INTEGER j = 0;
     const INTEGER ldb = 50;
-    REAL b[ldb * ldb];
+    auto b_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, ldb * ldb));
+    REAL *b = b_storage.get();
     const INTEGER ldvl = 50;
-    REAL vl[ldvl * ldvl];
+    auto vl_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, ldvl * ldvl));
+    REAL *vl = vl_storage.get();
     const INTEGER ldvr = 50;
-    REAL vr[ldvr * ldvr];
+    auto vr_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, ldvr * ldvr));
+    REAL *vr = vr_storage.get();
     const INTEGER ldwork = 50;
-    REAL work[ldwork * ldwork];
+    auto work_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, ldwork * ldwork));
+    REAL *work = work_storage.get();
     REAL anorm = 0.0;
     REAL bnorm = 0.0;
-    REAL af[lda * lda];
-    REAL bf[ldb * ldb];
+    auto af_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, lda * lda));
+    REAL *af = af_storage.get();
+    auto bf_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, ldb * ldb));
+    REAL *bf = bf_storage.get();
     INTEGER ilo = 0;
     INTEGER ihi = 0;
     REAL lscale[lda];
     REAL rscale[lda];
     INTEGER info = 0;
-    REAL vlf[ldvl * ldvl];
-    REAL vrf[ldvr * ldvr];
+    auto vlf_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, ldvl * ldvl));
+    REAL *vlf = vlf_storage.get();
+    auto vrf_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, ldvr * ldvr));
+    REAL *vrf = vrf_storage.get();
     const REAL one = 1.0;
     const INTEGER lde = 50;
-    REAL e[lde * lde];
+    auto e_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, lde * lde));
+    REAL *e = e_storage.get();
     const INTEGER ldf = 50;
-    REAL f[ldf * ldf];
+    auto f_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, ldf * ldf));
+    REAL *f = f_storage.get();
     REAL vmax = 0.0;
     static const char *format_9999 = "(1x,'.. test output of Rggbak .. ')";
     static const char *format_9998 = "(' value of largest test error                  =',d12.3)";

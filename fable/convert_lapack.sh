@@ -25,13 +25,13 @@ name_map_files_env="${core_name_map}:${testing_name_map}"
 fable_cout_env=()
 case "$mode" in
   lin|eig)
-    fable_cout_env=(env FABLE_SMALL_CHAR="0" FABLE_SUPPRESS_COMMON=True FABLE_SUPPRESS_SAVE=1 FABLE_NAME_MAP_FILES="$name_map_files_env" FABLE_COMMON_AS_GLOBALS=1)
+    fable_cout_env=(env FABLE_SMALL_ARRAY_SIZE="700" FABLE_SMALL_CHAR="0" FABLE_SUPPRESS_COMMON=True FABLE_SUPPRESS_SAVE=1 FABLE_NAME_MAP_FILES="$name_map_files_env" FABLE_COMMON_AS_GLOBALS=1)
     ;;
   matgen)
-    fable_cout_env=(env FABLE_SMALL_CHAR="0" FABLE_SUPPRESS_COMMON=True FABLE_SUPPRESS_SAVE=1 FABLE_NAME_MAP_FILES="$name_map_files_env" FABLE_COMMON_AS_GLOBALS=1)
+    fable_cout_env=(env FABLE_SMALL_ARRAY_SIZE="1000" FABLE_SMALL_CHAR="0" FABLE_SUPPRESS_COMMON=True FABLE_SUPPRESS_SAVE=1 FABLE_NAME_MAP_FILES="$name_map_files_env" FABLE_COMMON_AS_GLOBALS=1)
     ;;
   *)
-    fable_cout_env=(env FABLE_SMALL_CHAR="$FABLE_SMALL_CHAR" FABLE_NAME_MAP_FILES="$name_map_files_env" FABLE_COMMON_AS_GLOBALS=1)
+    fable_cout_env=(env FABLE_SMALL_ARRAY_SIZE="10000" FABLE_SMALL_CHAR="$FABLE_SMALL_CHAR" FABLE_NAME_MAP_FILES="$name_map_files_env" FABLE_COMMON_AS_GLOBALS=1)
     ;;
 esac
 

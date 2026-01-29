@@ -61,6 +61,14 @@ FABLE_SUPPRESS_COMMON = _env_flag("FABLE_SUPPRESS_COMMON", default=False)
 # rewritten into project-wide globals (e.g., MPLAPACK).
 FABLE_COMMON_AS_GLOBALS = _env_flag("FABLE_COMMON_AS_GLOBALS", default=False)
 
+# Maximum total size for small REAL/COMPLEX arrays to remain as plain C arrays.
+# Arrays larger than this threshold are allocated via std::make_unique to avoid
+# stack overflow. INTEGER/bool arrays are always kept as plain C arrays regardless
+# of this setting.
+# Default: 10 (arrays with total_size <= 10 stay on stack)
+# Example: FABLE_SMALL_ARRAY_SIZE=100 allows arrays up to 100 elements on stack.
+FABLE_SMALL_ARRAY_SIZE = _env_int("FABLE_SMALL_ARRAY_SIZE", default=10)
+
 
 def _parse_ident_list_env(name: str) -> typing.Set[str]:
     """Parse an environment variable as a list of identifiers.
@@ -4214,21 +4222,24 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
     elem_ctype = convert_data_type(
         conv_info=conv_info, fdecl=fdecl, crhs=None)[0]
     mplapack_elem_ctype = convert_to_mplapack_type(elem_ctype)
-    # Prefer plain C arrays when all extents are compile-time constants.
-    # If any extent depends on runtime values (e.g. MAX(M,N)), fall back to a
-    # heap allocation managed by std::unique_ptr<T[]> and expose a raw pointer
-    # with the original variable name for downstream indexing.
+
+    # Evaluate dimensions to determine if this is a compile-time constant array.
+    # This handles cases like: const INTEGER lda = 20; COMPLEX a[lda * lda];
     vals = conv_info.fproc.eval_dimensions_simple(
         dim_tokens=fdecl.dim_tokens, allow_power=False)
-    is_dynamic = (vals is None or vals.count(None) != 0)
+    
+    # Calculate total size if all dimensions are compile-time constants.
+    total_size = None
+    if vals is not None and vals.count(None) == 0:
+        total_size = 1
+        for v in vals:
+            total_size *= v
 
-    # Prefer symbolic size expressions for local work arrays.
-    # For 1D arrays like RWORK(MAXDIM) or WORK(4*MAXDIM) we want:
-    #   REAL rwork[maxdim];
-    #   COMPLEX work[4 * maxdim];
-    # For higher-rank arrays like WORK13(LDWORK,NBMAX) we flatten but keep
-    # the product of extents symbolically:
-    #   COMPLEX work13[ldwork * nbmax];
+    # Build symbolic size expression for local work arrays.
+    # For 1D arrays like RWORK(MAXDIM) or WORK(4*MAXDIM):
+    #   size_expr = "maxdim" or "4 * maxdim"
+    # For higher-rank arrays like WORK13(LDWORK,NBMAX):
+    #   size_expr = "ldwork * nbmax"
     dim_expr = convert_tokens(
         conv_info=conv_info,
         tokens=fdecl.dim_tokens,
@@ -4248,34 +4259,70 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
     else:
         parts = _split_actuals(dim_expr)
         if parts and len(parts) == dt_rank:
-            size_expr = " * ".join(parts)
+            # Parenthesize each part to preserve operator precedence when joining with *.
+            size_expr = " * ".join([parenthesize_if_necessary(p) for p in parts])
         else:
             # Conservative fallback: compute a symbolic product of extents.
             size_expr = convert_dims_to_static_size(
                 conv_info=conv_info, dim_tokens=fdecl.dim_tokens)
 
-    if is_dynamic:
-        # Runtime-sized local array: allocate on the heap and expose a raw pointer.
-        # Example:
-        #   DOUBLE PRECISION WNRM(MAX(M,N))
-        # ->
-        #   std::unique_ptr<REAL[]> fable_wnrm_storage(new REAL[max(m, n)]);
-        #   REAL *wnrm = wnrm_storage.get();
-        storage_name = f"{vname}_storage"
-        rapp("%sstd::unique_ptr<%s[]> %s(new %s[%s]);" % (
-            const_qualifier(), mplapack_elem_ctype, storage_name,
-            mplapack_elem_ctype, size_expr))
-        rapp("%s *%s = %s.get();" % (
-            mplapack_elem_ctype, vname, storage_name))
-        # If this declaration was triggered by an assignment (crhs != None),
-        # we still need to emit the assignment statement; C arrays / raw pointers
-        # cannot be initialized in the declaration.
+    # If total_size is still None, try to evaluate size_expr as a simple arithmetic expression.
+    # This handles cases like "3 - 0 + 1" from RMAGN(0:3) or "ntests" from RESULT(NTESTS).
+    if total_size is None:
+        try:
+            # Only evaluate if size_expr contains only digits, operators, and whitespace.
+            # This is safe and avoids evaluating arbitrary code.
+            if re.match(r'^[\d\s+\-*/()]+$', size_expr):
+                total_size = int(eval(size_expr))
+        except Exception:
+            pass
+
+    # Eliminate large REAL/COMPLEX arrays from stack: use std::make_unique.
+    # INTEGER/bool arrays and small constant arrays (size <= FABLE_SMALL_ARRAY_SIZE)
+    # are kept as plain C arrays. This avoids stack overflow for large work arrays
+    # while allowing simpler stack allocation for small arrays and integer work arrays.
+    #
+    # Example (REAL, large constant - lda=20):
+    #   const INTEGER lda = 20;
+    #   COMPLEX a[lda * lda];
+    # ->
+    #   auto a_storage = std::make_unique<COMPLEX[]>(std::max<INTEGER>(1, lda * lda));
+    #   COMPLEX *a = a_storage.get();
+    #
+    # Example (INTEGER, unchanged):
+    #   INTEGER ISAVE(3)
+    # ->
+    #   INTEGER isave[3];
+    #
+    # Example (REAL, small constant, unchanged):
+    #   REAL RESLTS(5)
+    # ->
+    #   REAL reslts[5];
+    #
+    # The std::max<INTEGER>(1, ...) guard ensures allocation of at least 1 element
+    # to avoid undefined behavior from zero-sized allocations.
+
+    # INTEGER/bool arrays: always keep as plain C arrays.
+    if mplapack_elem_ctype in ("INTEGER", "bool"):
+        rapp("%s%s %s[%s];" % (
+            const_qualifier(), mplapack_elem_ctype, vname, size_expr))
         return (crhs is not None)
 
-    # Constant-size local array: keep as a plain C array.
-    rapp("%s%s %s[%s];" % (
-        const_qualifier(), mplapack_elem_ctype, vname, size_expr))
-    # Same rationale as above: caller must emit the assignment if present.
+    # Small constant arrays (size <= FABLE_SMALL_ARRAY_SIZE): keep as plain C arrays.
+    if total_size is not None and total_size <= FABLE_SMALL_ARRAY_SIZE:
+        rapp("%s%s %s[%s];" % (
+            const_qualifier(), mplapack_elem_ctype, vname, size_expr))
+        return (crhs is not None)
+
+    # Large or variable-sized REAL/COMPLEX arrays: use make_unique.
+    storage_name = f"{vname}_storage"
+    rapp("auto %s = std::make_unique<%s[]>(std::max<INTEGER>(1, %s));" % (
+        storage_name, mplapack_elem_ctype, size_expr))
+    rapp("%s%s *%s = %s.get();" % (
+        const_qualifier(), mplapack_elem_ctype, vname, storage_name))
+    # If this declaration was triggered by an assignment (crhs != None),
+    # we still need to emit the assignment statement; raw pointers
+    # cannot be initialized in the declaration.
     return (crhs is not None)
 
 
@@ -8596,15 +8643,15 @@ def _postprocess_strip_wp_kind_suffix(lines):
 
 
 def _postprocess_add_memory_include(lines):
-    """Ensure '#include <memory>' exists when std::unique_ptr is used.
+    """Ensure '#include <memory>' exists when std::unique_ptr or std::make_unique is used.
 
     Policy:
-      - Insert only if std::unique_ptr appears and the include is missing.
+      - Insert only if std::unique_ptr or std::make_unique appears and the include is missing.
       - Place the include with other includes, keeping exactly one blank line
         between the include block and the following code/prototypes.
     """
 
-    needs = any("std::unique_ptr<" in ln for ln in lines)
+    needs = any("std::unique_ptr<" in ln or "std::make_unique<" in ln for ln in lines)
     if not needs:
         return lines
     if any(ln.strip() == "#include <memory>" for ln in lines):
