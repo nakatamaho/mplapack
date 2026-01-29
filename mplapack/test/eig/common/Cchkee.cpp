@@ -42,7 +42,6 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
-
 #include <memory>
 
 void Cchkee(void) {
@@ -52,9 +51,23 @@ void Cchkee(void) {
     static INTEGER ioldsd[4] = {0, 0, 0, 1};
     static fem::str<10> intstr = "0123456789";
     const INTEGER nmax = 132;
+    std::unique_ptr<REAL[]> s_storage;
+    REAL *s = nullptr;
     const INTEGER need = 14;
+    std::unique_ptr<COMPLEX[]> a_storage;
+    COMPLEX *a = nullptr;
+    std::unique_ptr<COMPLEX[]> b_storage;
+    COMPLEX *b = nullptr;
     const INTEGER ncmax = 20;
+    std::unique_ptr<COMPLEX[]> c_storage;
+    COMPLEX *c = nullptr;
     const INTEGER lwork = nmax * (5 * nmax + 20);
+    std::unique_ptr<REAL[]> rwork_storage;
+    REAL *rwork = nullptr;
+    std::unique_ptr<COMPLEX[]> work_storage;
+    COMPLEX *work = nullptr;
+    auto dc_storage = std::make_unique<COMPLEX[]>(std::max<INTEGER>(1, nmax * 6));
+    COMPLEX *dc = dc_storage.get();
     REAL s1 = 0.0;
     bool fatal = false;
     const INTEGER nout = 6;
@@ -132,38 +145,24 @@ void Cchkee(void) {
     const INTEGER liwork = nmax * (nmax + 20);
     INTEGER iwork[liwork];
     bool logwrk[nmax];
+    auto result_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, 500));
+    REAL *result = result_storage.get();
     INTEGER info = 0;
+    auto dr_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nmax * 12));
+    REAL *dr = dr_storage.get();
     INTEGER nrhs = 0;
     bool tstdif = false;
     REAL thrshn = 0.0;
-    auto alpha_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nmax));
-    REAL *alpha = alpha_storage.get();
-    auto beta_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nmax));
-    REAL *beta = beta_storage.get();
-    auto dr_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nmax * 12));
-    REAL *dr = dr_storage.get();
-    auto result_storage = std::make_unique<REAL[]>(500);
-    REAL *result = result_storage.get();
-    auto dc_storage = std::make_unique<COMPLEX[]>(std::max<INTEGER>(1, nmax * 6));
-    COMPLEX *dc = dc_storage.get();
+    auto x_storage = std::make_unique<COMPLEX[]>(std::max<INTEGER>(1, 5 * nmax));
+    COMPLEX *x = x_storage.get();
     auto taua_storage = std::make_unique<COMPLEX[]>(std::max<INTEGER>(1, nmax));
     COMPLEX *taua = taua_storage.get();
     auto taub_storage = std::make_unique<COMPLEX[]>(std::max<INTEGER>(1, nmax));
     COMPLEX *taub = taub_storage.get();
-    auto x_storage = std::make_unique<COMPLEX[]>(std::max<INTEGER>(1, 5 * nmax));
-    COMPLEX *x = x_storage.get();
-    std::unique_ptr<COMPLEX[]> work_storage;
-    COMPLEX *work = nullptr;
-    std::unique_ptr<REAL[]> rwork_storage;
-    REAL *rwork = nullptr;
-    std::unique_ptr<REAL[]> s_storage;
-    REAL *s = nullptr;
-    std::unique_ptr<COMPLEX[]> a_storage;
-    COMPLEX *a = nullptr;
-    std::unique_ptr<COMPLEX[]> b_storage;
-    COMPLEX *b = nullptr;
-    std::unique_ptr<COMPLEX[]> c_storage;
-    COMPLEX *c = nullptr;
+    auto alpha_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nmax));
+    REAL *alpha = alpha_storage.get();
+    auto beta_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nmax));
+    REAL *beta = beta_storage.get();
     REAL s2 = 0.0;
     INTEGER lda = nmax * nmax;
     INTEGER ldb = nmax * nmax;
