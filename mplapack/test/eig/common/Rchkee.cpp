@@ -42,9 +42,8 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
-#include <mplapack_debug.h>
-
 #include <memory>
+
 void Rchkee(void) {
     common cmn;
     common_read read(cmn);
@@ -53,8 +52,18 @@ void Rchkee(void) {
     static fem::str<10> intstr = "0123456789";
     const INTEGER nmax = 132;
     const INTEGER need = 14;
+    std::unique_ptr<REAL[]> a_storage;
+    REAL *a = nullptr;
+    std::unique_ptr<REAL[]> b_storage;
+    REAL *b = nullptr;
     const INTEGER ncmax = 20;
+    std::unique_ptr<REAL[]> c_storage;
+    REAL *c = nullptr;
     const INTEGER lwork = nmax * (5 * nmax + 5) + 1;
+    std::unique_ptr<REAL[]> work_storage;
+    REAL *work = nullptr;
+    auto d_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nmax * 12));
+    REAL *d = d_storage.get();
     REAL s1 = 0.0;
     bool fatal = false;
     const INTEGER nout = 6;
@@ -132,29 +141,19 @@ void Rchkee(void) {
     const INTEGER liwork = nmax * (5 * nmax + 20);
     INTEGER iwork[liwork];
     bool logwrk[nmax];
+    auto result_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, 500));
+    REAL *result = result_storage.get();
     INTEGER info = 0;
     INTEGER nrhs = 0;
     bool tstdif = false;
     REAL thrshn = 0.0;
-    REAL s2 = 0.0;
-    auto d_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nmax * 12));
-    REAL *d = d_storage.get();
-    auto result_storage = std::make_unique<REAL[]>(500);
-    REAL *result = result_storage.get();
+    auto x_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, 5 * nmax));
+    REAL *x = x_storage.get();
     auto taua_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nmax));
     REAL *taua = taua_storage.get();
     auto taub_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nmax));
     REAL *taub = taub_storage.get();
-    auto x_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, 5 * nmax));
-    REAL *x = x_storage.get();
-    std::unique_ptr<REAL[]> a_storage;
-    REAL *a = nullptr;
-    std::unique_ptr<REAL[]> b_storage;
-    REAL *b = nullptr;
-    std::unique_ptr<REAL[]> c_storage;
-    REAL *c = nullptr;
-    std::unique_ptr<REAL[]> work_storage;
-    REAL *work = nullptr;
+    REAL s2 = 0.0;
     INTEGER lda = nmax * nmax;
     INTEGER ldc = ncmax * ncmax;
     INTEGER ldb = nmax * nmax;
