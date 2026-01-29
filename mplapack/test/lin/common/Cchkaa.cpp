@@ -42,7 +42,6 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-
 #include <memory>
 
 void Cchkaa(void) {
