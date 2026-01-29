@@ -553,12 +553,9 @@ class write_loop : write_loop_base
     // Generic output path for MPLAPACK MP types:
     // If ::sprintnum(char*, T) exists, stringify and forward to existing string output.
     //
-    // This intentionally ignores Fortran numeric field widths (e.g., g10.3/g12.5),
-    // because MPLAPACK uses these prints mainly for diagnostics.
     // Fallback for MPLAPACK numeric types providing sprintnum_short().
-    // We intentionally ignore the numeric edit descriptor (g/f/e/d/...) and
-    // emit the short text produced by sprintnum_short.
-    template <typename T, typename = decltype(sprintnum_short(static_cast<char *>(nullptr), std::declval<T const &>()))> write_loop &operator,(T const &val) {
+    // Converts value to string and outputs with edit descriptor formatting.
+    template <typename T, typename = typename std::enable_if<!std::is_array<T>::value, decltype(sprintnum_short(static_cast<char *>(nullptr), std::declval<T const &>()))>::type> write_loop &operator,(T const &val) {
         if (io_mode == io_unformatted) {
             out.reset();
             throw TBXX_NOT_IMPLEMENTED();
@@ -571,7 +568,16 @@ class write_loop : write_loop_base
             to_stream(buf, std::strlen(buf));
             prev_was_string = false;
         } else {
-            (*this), buf;
+            // Use to_stream_fmt_double_given_string() to properly handle edit descriptors,
+            // consistent with dd_real/qd_real explicit overloads.
+            std::string s(buf);
+            size_t b = s.find_first_not_of(' ');
+            size_t e = s.find_last_not_of(' ');
+            if (b != std::string::npos && e != std::string::npos) {
+                s = s.substr(b, e - b + 1);
+            }
+            std::string const &ed = next_edit_descriptor();
+            to_stream_fmt_double_given_string(s, ed);
         }
         return *this;
     }
