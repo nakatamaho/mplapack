@@ -77,7 +77,7 @@ void Rerred(fem::str_cref path, INTEGER const nunit) {
     REAL wi[nmax];
     REAL vl[nmax * nmax];
     REAL vr[nmax * nmax];
-    REAL w[10];
+    REAL w[10 * nmax];
     INTEGER info = 0;
     INTEGER sdim = 0;
     bool b[nmax];

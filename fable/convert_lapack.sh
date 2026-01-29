@@ -248,10 +248,10 @@ def simplify_expr(expr: str) -> str:
     e = re.sub(r"\(\s*1\s*-\s*1\s*\)", "0", e)
     
     # 0 * NAME -> 0
-    e = re.sub(r"0\s*\*\s*[A-Za-z_][A-Za-z0-9_]*", "0", e)
+    e = re.sub(r"\b0\s*\*\s*[A-Za-z_][A-Za-z0-9_]*", "0", e)
     # NAME * 0 -> 0
-    e = re.sub(r"[A-Za-z_][A-Za-z0-9_]*\s*\*\s*0", "0", e)
     
+    e = re.sub(r"[A-Za-z_][A-Za-z0-9_]*\s*\*\s*0\b", "0", e)
     # -------------------------------------------------------------------------
     # STEP 2: Now handle addition/subtraction of zero
     # -------------------------------------------------------------------------

@@ -76,7 +76,7 @@ void Cerred(fem::str_cref path, INTEGER const nunit) {
     COMPLEX x[nmax];
     COMPLEX vl[nmax * nmax];
     COMPLEX vr[nmax * nmax];
-    COMPLEX w[10];
+    COMPLEX w[10 * nmax];
     const INTEGER lw = 5 * nmax;
     REAL rw[lw];
     INTEGER info = 0;
