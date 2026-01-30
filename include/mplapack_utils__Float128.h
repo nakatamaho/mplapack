@@ -740,4 +740,8 @@ inline mplapackint iceil(_Float128 x) {
 }
 #endif // MPLAPACK_ICEIL_FLOAT128_DEFINED
 
+#ifndef MPLAPACK_MOD_UTILS_H
+inline mplapackint mod(mplapackint a, mplapackint b) { return a % b; }
+#endif // MPLAPACK_MOD_UTILS_H
+
 #endif

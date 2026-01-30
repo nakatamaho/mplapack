@@ -454,4 +454,8 @@ inline mplapackint iceil(const mpf_class &x) {
 }
 #endif // MPLAPACK_ICEIL_MPF_CLASS_DEFINED
 
+#ifndef MPLAPACK_MOD_UTILS_H
+inline mplapackint mod(mplapackint a, mplapackint b) { return a % b; }
+#endif // MPLAPACK_MOD_UTILS_H
+
 #endif
