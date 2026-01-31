@@ -1,3 +1,0 @@
-      program prog
-        x = .
-      end

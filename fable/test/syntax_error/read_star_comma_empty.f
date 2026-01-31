@@ -1,3 +1,0 @@
-      program prog
-      read *,
-      end
