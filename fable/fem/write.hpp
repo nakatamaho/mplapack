@@ -1,5 +1,98 @@
 #ifndef FEM_WRITE_HPP
 #define FEM_WRITE_HPP
+
+// Ensure MPLAPACK utils expose sprintnum()/sprintnum_short() and __MPLAPACK_BUFLEN__.
+// In mplapack_utils_*.h these are guarded by ___MPLAPACK_INTERNAL___.
+#ifndef ___MPLAPACK_INTERNAL___
+#define ___MPLAPACK_INTERNAL___ 1
+#endif
+
+// MPLAPACK backend utilities (printnum/sprintnum, precision, buffer length, etc.)
+#if defined(___MPLAPACK_BUILD_WITH_GMP___)
+#include "mplapack_utils_gmp.h"
+#elif defined(___MPLAPACK_BUILD_WITH_MPFR___)
+#include "mplapack_utils_mpfr.h"
+#elif defined(___MPLAPACK_BUILD_WITH__FLOAT128___)
+#include "mplapack_utils__Float128.h"
+#elif defined(___MPLAPACK_BUILD_WITH__FLOAT64X___)
+#include "mplapack_utils__Float64x.h"
+#elif defined(___MPLAPACK_BUILD_WITH_DD___)
+#include "mplapack_utils_dd.h"
+#elif defined(___MPLAPACK_BUILD_WITH_QD___)
+#include "mplapack_utils_qd.h"
+#elif defined(___MPLAPACK_BUILD_WITH_DOUBLE___)
+#include "mplapack_utils_double.h"
+#else
+#error "No MPLAPACK backend macro is defined (___MPLAPACK_BUILD_WITH_*___)."
+#endif
+
+#if defined(___MPLAPACK_BUILD_WITH_QD___) || defined(___MPLAPACK_BUILD_WITH_DD___)
+// QD headers define and use qd::nint (and other short identifiers).
+// Temporarily disable macros that would interfere.
+#if defined(nint)
+#pragma push_macro("nint")
+#undef nint
+#define FEM_WRITE_RESTORE_nint 1
+#endif
+#if defined(min)
+#pragma push_macro("min")
+#undef min
+#define FEM_WRITE_RESTORE_min 1
+#endif
+#if defined(max)
+#pragma push_macro("max")
+#undef max
+#define FEM_WRITE_RESTORE_max 1
+#endif
+#if defined(abs)
+#pragma push_macro("abs")
+#undef abs
+#define FEM_WRITE_RESTORE_abs 1
+#endif
+#if defined(sign)
+#pragma push_macro("sign")
+#undef sign
+#define FEM_WRITE_RESTORE_sign 1
+#endif
+#if __has_include(<qd/dd_real.h>)
+#include <qd/dd_real.h>
+#endif
+#if __has_include(<qd/qd_real.h>)
+#include <qd/qd_real.h>
+#endif
+#if __has_include(<dd_complex.h>)
+#include <dd_complex.h>
+#endif
+#if __has_include(<qd_complex.h>)
+#include <qd_complex.h>
+#endif
+#if defined(FEM_WRITE_RESTORE_sign)
+#pragma pop_macro("sign")
+#undef FEM_WRITE_RESTORE_sign
+#endif
+#if defined(FEM_WRITE_RESTORE_abs)
+#pragma pop_macro("abs")
+#undef FEM_WRITE_RESTORE_abs
+#endif
+#if defined(FEM_WRITE_RESTORE_max)
+#pragma pop_macro("max")
+#undef FEM_WRITE_RESTORE_max
+#endif
+#if defined(FEM_WRITE_RESTORE_min)
+#pragma pop_macro("min")
+#undef FEM_WRITE_RESTORE_min
+#endif
+#if defined(FEM_WRITE_RESTORE_nint)
+#pragma pop_macro("nint")
+#undef FEM_WRITE_RESTORE_nint
+#endif
+#endif
+
+// Fallback buffer length (should be provided by mplapack_utils_*.h).
+#ifndef __MPLAPACK_BUFLEN__
+#define __MPLAPACK_BUFLEN__ 1024
+#endif
+
 #include <noexcept_false.hpp>
 #include <fem/common.hpp>
 #include <fem/format.hpp>
@@ -7,6 +100,8 @@
 #include <fem/str_arr_ref.hpp>
 #include <fem/utils/double_to_string.hpp>
 #include <fem/utils/misc.hpp>
+#include <type_traits>
+#include <utility>
 #include <fem/utils/real_as_string.hpp>
 #if defined(_MSC_VER)
 #define FEM_WRITE_CRLF true
@@ -14,6 +109,16 @@
 #define FEM_WRITE_CRLF false
 #endif
 namespace fem {
+// Helper for printing user-defined numeric types (e.g. multiprecision reals).
+// If sprintnum_short(char*, T const&) is available, we convert the value to a
+// short string and emit it as text, ignoring the numeric edit descriptor.
+namespace detail {
+    template <typename T> struct make_void {
+        typedef void type;
+    };
+    template <typename T, typename = void> struct has_sprintnum_short : std::false_type {};
+    template <typename T> struct has_sprintnum_short<T, typename make_void<decltype(sprintnum_short(std::declval<char *>(), std::declval<T const &>()))>::type> : std::true_type {};
+} // namespace detail
 struct write_loop_base {
     bool write_crlf;
     unsigned pos;
@@ -233,11 +338,146 @@ class write_loop : write_loop_base
             to_stream_star(s.data(), s.size());
             prev_was_string = false;
         } else {
-            out.reset();
-            throw TBXX_NOT_IMPLEMENTED();
+            std::string const &ed = next_edit_descriptor();
+            if (ed[0] == 'i') {
+                // Use long long formatting for INTEGER*8.
+                std::string fmt = "%" + ed.substr(1) + "lld";
+                char buf[64];
+                int n = std::snprintf(buf, sizeof(buf), fmt.c_str(), static_cast<long long>(val));
+                to_stream_fmt(buf, n);
+            } else {
+                char buf[64];
+                int n = std::snprintf(buf, sizeof(buf), " %lld", static_cast<long long>(val));
+                to_stream_fmt(buf, n);
+            }
         }
         return *this;
     }
+    // Helper function to format a string according to an edit descriptor.
+    // Must be defined before dd_real/qd_real overloads that use it.
+    void to_stream_fmt_double_given_string(std::string const &val_str, std::string const &ed) {
+        // Parse edit descriptor (e.g., "d20.10", "e25.15", "f15.8")
+        int n = static_cast<int>(ed.size());
+        if (n < 2) {
+            // Fallback: just output the string
+            for (char c: val_str) {
+                out->put(c);
+            }
+            pos += val_str.size();
+            return;
+        }
+        int iw = utils::unsigned_integer_scan(ed.data(), 1, ed.size());
+        int w = utils::unsigned_integer_value(ed.data(), 1, iw);
+
+        // Right-justify in field of width w
+        int padding = w - static_cast<int>(val_str.size());
+        for (int i = 0; i < padding; i++) {
+            out->put(' ');
+            pos++;
+        }
+        for (char c: val_str) {
+            out->put(c);
+            pos++;
+        }
+    }
+
+#if defined(___MPLAPACK_BUILD_WITH_DD___) || defined(___MPLAPACK_BUILD_WITH_QD___)
+    //
+    // Explicit overload for dd_real to prevent infinite recursion.
+    // Without this, dd_real goes through generic template -> char buffer ->
+    // dd_real(const char*) -> infinite loop -> stack overflow.
+    //
+    write_loop &operator,(dd_real const &val) {
+        if (io_mode == io_list_directed) {
+            // List-directed: convert to string and write
+            char buf[64];
+            val.write(buf, sizeof(buf), 32);
+            // Trim and write
+            std::string s(buf);
+            size_t b = s.find_first_not_of(' ');
+            size_t e = s.find_last_not_of(' ');
+            if (b != std::string::npos && e != std::string::npos) {
+                s = s.substr(b, e - b + 1);
+            }
+            // Add space separator for list-directed
+            if (pos != 0) {
+                out->put(' ');
+                pos++;
+            }
+            for (char c: s) {
+                out->put(c);
+                pos++;
+            }
+        } else if (io_mode == io_formatted) {
+            // Formatted output using edit descriptor
+            char buf[64];
+            val.write(buf, sizeof(buf), 32);
+            std::string s(buf);
+            size_t b = s.find_first_not_of(' ');
+            size_t e = s.find_last_not_of(' ');
+            if (b != std::string::npos && e != std::string::npos) {
+                s = s.substr(b, e - b + 1);
+            }
+            // Get edit descriptor and format accordingly
+            std::string const &ed = next_edit_descriptor();
+            to_stream_fmt_double_given_string(s, ed);
+        } else {
+            // Unformatted: write raw bytes
+            to_stream_unformatted(reinterpret_cast<char const *>(&val), sizeof(val));
+        }
+        return *this;
+    }
+
+    //
+    // Explicit overload for dd_complex
+    //
+    write_loop &operator,(dd_complex const &val) { return (*this), val.real(), val.imag(); }
+#endif
+
+#if defined(___MPLAPACK_BUILD_WITH_QD___)
+    //
+    // Explicit overload for qd_real
+    //
+    write_loop &operator,(qd_real const &val) {
+        if (io_mode == io_list_directed) {
+            char buf[128];
+            val.write(buf, sizeof(buf), 64);
+            std::string s(buf);
+            size_t b = s.find_first_not_of(' ');
+            size_t e = s.find_last_not_of(' ');
+            if (b != std::string::npos && e != std::string::npos) {
+                s = s.substr(b, e - b + 1);
+            }
+            if (pos != 0) {
+                out->put(' ');
+                pos++;
+            }
+            for (char c: s) {
+                out->put(c);
+                pos++;
+            }
+        } else if (io_mode == io_formatted) {
+            char buf[128];
+            val.write(buf, sizeof(buf), 64);
+            std::string s(buf);
+            size_t b = s.find_first_not_of(' ');
+            size_t e = s.find_last_not_of(' ');
+            if (b != std::string::npos && e != std::string::npos) {
+                s = s.substr(b, e - b + 1);
+            }
+            std::string const &ed = next_edit_descriptor();
+            to_stream_fmt_double_given_string(s, ed);
+        } else {
+            to_stream_unformatted(reinterpret_cast<char const *>(&val), sizeof(val));
+        }
+        return *this;
+    }
+
+    //
+    // Explicit overload for qd_complex
+    //
+    write_loop &operator,(qd_complex const &val) { return (*this), val.real(), val.imag(); }
+#endif
 
   protected: // implementation detail
     void to_stream_fmt_double(double const &val) {
@@ -307,6 +547,37 @@ class write_loop : write_loop_base
         } else {
             out.reset();
             throw TBXX_NOT_IMPLEMENTED();
+        }
+        return *this;
+    }
+    // Generic output path for MPLAPACK MP types:
+    // If ::sprintnum(char*, T) exists, stringify and forward to existing string output.
+    //
+    // Fallback for MPLAPACK numeric types providing sprintnum_short().
+    // Converts value to string and outputs with edit descriptor formatting.
+    template <typename T, typename = typename std::enable_if<!std::is_array<T>::value, decltype(sprintnum_short(static_cast<char *>(nullptr), std::declval<T const &>()))>::type> write_loop &operator,(T const &val) {
+        if (io_mode == io_unformatted) {
+            out.reset();
+            throw TBXX_NOT_IMPLEMENTED();
+        }
+        char buf[__MPLAPACK_BUFLEN__];
+        buf[0] = '\0';
+        sprintnum_short(buf, val);
+        buf[__MPLAPACK_BUFLEN__ - 1] = '\0';
+        if (io_mode == io_list_directed) {
+            to_stream(buf, std::strlen(buf));
+            prev_was_string = false;
+        } else {
+            // Use to_stream_fmt_double_given_string() to properly handle edit descriptors,
+            // consistent with dd_real/qd_real explicit overloads.
+            std::string s(buf);
+            size_t b = s.find_first_not_of(' ');
+            size_t e = s.find_last_not_of(' ');
+            if (b != std::string::npos && e != std::string::npos) {
+                s = s.substr(b, e - b + 1);
+            }
+            std::string const &ed = next_edit_descriptor();
+            to_stream_fmt_double_given_string(s, ed);
         }
         return *this;
     }

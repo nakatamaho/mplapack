@@ -6,6 +6,89 @@
 #include <fem/str_arr_ref.hpp>
 #include <fem/utils/misc.hpp>
 #include <fem/utils/string_to_double_fmt.hpp>
+#include <string>
+#include <cstdlib>
+#include <type_traits>
+#if defined(___MPLAPACK_BUILD_WITH_GMP___)
+#if __has_include(<gmpxx.h>)
+#include <gmpxx.h>
+#endif
+#if __has_include(<mpc_class.h>)
+#include <mpc_class.h>
+#endif
+#endif
+#if defined(___MPLAPACK_BUILD_WITH_MPFR___)
+#if __has_include(<mpreal.h>)
+#include <mpreal.h>
+#endif
+#if __has_include(<mpcomplex.h>)
+#include <mpcomplex.h>
+#endif
+#endif
+#if defined(___MPLAPACK_BUILD_WITH_QD___) || defined(___MPLAPACK_BUILD_WITH_DD___)
+// QD headers define and use qd::nint (and other short identifiers) inside the headers.
+// MPLAPACK (or other code) may define macros like `nint`, which would macro-expand
+// `qd::nint` into `qd::__dd_nint` and break the QD headers.
+// Temporarily disable such macros while including QD headers.
+#if defined(nint)
+#pragma push_macro("nint")
+#undef nint
+#define FEM_RESTORE_nint 1
+#endif
+#if defined(min)
+#pragma push_macro("min")
+#undef min
+#define FEM_RESTORE_min 1
+#endif
+#if defined(max)
+#pragma push_macro("max")
+#undef max
+#define FEM_RESTORE_max 1
+#endif
+#if defined(abs)
+#pragma push_macro("abs")
+#undef abs
+#define FEM_RESTORE_abs 1
+#endif
+#if defined(sign)
+#pragma push_macro("sign")
+#undef sign
+#define FEM_RESTORE_sign 1
+#endif
+#if __has_include(<qd/dd_real.h>)
+#include <qd/dd_real.h>
+#endif
+#if __has_include(<qd/qd_real.h>)
+#include <qd/qd_real.h>
+#endif
+#if __has_include(<dd_complex.h>)
+#include <dd_complex.h>
+#endif
+#if __has_include(<qd_complex.h>)
+#include <qd_complex.h>
+#endif
+#if defined(FEM_RESTORE_sign)
+#pragma pop_macro("sign")
+#undef FEM_RESTORE_sign
+#endif
+#if defined(FEM_RESTORE_abs)
+#pragma pop_macro("abs")
+#undef FEM_RESTORE_abs
+#endif
+#if defined(FEM_RESTORE_max)
+#pragma pop_macro("max")
+#undef FEM_RESTORE_max
+#endif
+#if defined(FEM_RESTORE_min)
+#pragma pop_macro("min")
+#undef FEM_RESTORE_min
+#endif
+#if defined(FEM_RESTORE_nint)
+#pragma pop_macro("nint")
+#undef FEM_RESTORE_nint
+#endif
+
+#endif
 #define IOSTAT_OK 0
 #define IOSTAT_ERROR 1
 #define IOSTAT_END -1
@@ -20,6 +103,29 @@ class read_loop // TODO copy-constructor potential performance problem
     int exp_scale;
     io_modes io_mode;
     int *iostat_ptr;
+    static inline void normalize_fortran_exponent(std::string &s) {
+        for (char &ch: s) {
+            if (ch == 'D' || ch == 'd') {
+                ch = 'E';
+            }
+        }
+    }
+    template <class T> static inline void assign_from_token_string(T &val, std::string s) {
+        normalize_fortran_exponent(s);
+        if constexpr (std::is_constructible<T, const char *>::value) {
+            val = T(s.c_str());
+        } else if constexpr (std::is_assignable<T &, double>::value) {
+            long double ld = std::strtold(s.c_str(), nullptr);
+            val = static_cast<double>(ld);
+        } else if constexpr (std::is_constructible<T, double>::value) {
+            long double ld = std::strtold(s.c_str(), nullptr);
+            val = T(static_cast<double>(ld));
+        } else {
+            // As a last resort, try long double via double conversion.
+            long double ld = std::strtold(s.c_str(), nullptr);
+            val = T(static_cast<double>(ld));
+        }
+    }
 
   public:
     read_loop(common &cmn, int const &unit, unformatted_type const &) : inp(cmn.io.simple_istream(unit)), first_inp_get(true), blanks_zero(false), exp_scale(0), io_mode(io_unformatted), iostat_ptr(0) {}
@@ -144,12 +250,62 @@ class read_loop // TODO copy-constructor potential performance problem
     read_loop &operator,(bool &val) {
         if (io_mode == io_unformatted) {
             from_stream_unformatted(reinterpret_cast<char *>(&val), sizeof(bool));
-        } else if (io_mode == io_list_directed) {
-            inp.reset();
-            throw TBXX_NOT_IMPLEMENTED();
+            return *this;
+        }
+
+        auto parse_logical = [&](std::string s) -> bool {
+            // Trim spaces
+            auto l = s.find_first_not_of(' ');
+            if (l == std::string::npos) {
+                throw io_err("Empty token while reading logical value");
+            }
+            auto r = s.find_last_not_of(' ');
+            s = s.substr(l, r - l + 1);
+
+            // Remove surrounding dots, e.g. ".TRUE." -> "TRUE"
+            if (!s.empty() && s.front() == '.') {
+                s.erase(s.begin());
+            }
+            if (!s.empty() && s.back() == '.') {
+                s.pop_back();
+            }
+
+            // Uppercase
+            for (char &c: s) {
+                c = static_cast<char>(std::toupper(static_cast<unsigned char>(c)));
+            }
+
+            if (s == "T" || s == "TRUE")
+                return true;
+            if (s == "F" || s == "FALSE")
+                return false;
+
+            // Also accept "1"/"0" defensively
+            if (s == "1")
+                return true;
+            if (s == "0")
+                return false;
+
+            throw io_err("Invalid token while reading logical value: " + s);
+        };
+
+        if (io_mode == io_list_directed) {
+            std::string s = read_star_token_string();
+            val = parse_logical(s);
+            return *this;
+        }
+
+        // io_formatted: Lw (logical) or fall back to list-directed tokenization
+        std::string const &ed = next_edit_descriptor();
+        int n = static_cast<int>(ed.size());
+        if (n >= 2 && ed[0] == 'l') {
+            int iw = utils::unsigned_integer_scan(ed.data(), 1, ed.size());
+            int w = utils::unsigned_integer_value(ed.data(), 1, iw);
+            std::string s = read_fmt_token_string(w);
+            val = parse_logical(s);
         } else {
-            inp.reset();
-            throw TBXX_NOT_IMPLEMENTED();
+            std::string s = read_star_token_string();
+            val = parse_logical(s);
         }
         return *this;
     }
@@ -199,11 +355,18 @@ class read_loop // TODO copy-constructor potential performance problem
         if (io_mode == io_unformatted) {
             from_stream_unformatted(reinterpret_cast<char *>(&val), sizeof(integer_star_8));
         } else if (io_mode == io_list_directed) {
-            inp.reset();
-            throw TBXX_NOT_IMPLEMENTED();
+            // List-directed integer read (Fortran "*")
+            val = static_cast<integer_star_8>(read_star_long());
         } else {
-            inp.reset();
-            throw TBXX_NOT_IMPLEMENTED();
+            // Formatted integer read (Iw) or fallback to list-directed rules
+            std::string const &ed = next_edit_descriptor();
+            int n = static_cast<int>(ed.size());
+            if (ed[0] == 'i' && n > 1) {
+                n = utils::unsigned_integer_value(ed.data(), 1, n);
+                val = static_cast<integer_star_8>(read_fmt_long(n));
+            } else {
+                val = static_cast<integer_star_8>(read_star_long());
+            }
         }
         return *this;
     }
@@ -223,18 +386,148 @@ class read_loop // TODO copy-constructor potential performance problem
         }
         return *this;
     }
+    // --- Selected multiprecision/back-end numeric types: read as string token, normalize, then assign ---
+    //
+    // Rationale: LAPACK test inputs are within binary64, but MPLAPACK back-ends may use
+    // mpf_class/mpreal/_Float128/_Float64x/QD/DD. Reading as a raw token and then
+    // constructing/assigning avoids heavy formatted parsing (g2.16 etc.) and handles
+    // Fortran 'D' exponents by normalization to 'E'.
+    //
+#if defined(___MPLAPACK_BUILD_WITH_GMP___)
+    read_loop &operator,(mpf_class &val) {
+        std::string s = read_numeric_as_string();
+        normalize_fortran_exponent(s);
+        val = mpf_class(s.c_str());
+        return *this;
+    }
+#endif
+#if defined(___MPLAPACK_BUILD_WITH_MPFR___)
+    read_loop &operator,(mpfr::mpreal &val) {
+        std::string s = read_numeric_as_string();
+        normalize_fortran_exponent(s);
+        val = mpfr::mpreal(s.c_str());
+        return *this;
+    }
+#endif
+#if defined(___MPLAPACK_BUILD_WITH__FLOAT128___) && defined(__FLT128_MAX__)
+    read_loop &operator,(_Float128 &val) {
+        std::string s = read_numeric_as_string();
+        normalize_fortran_exponent(s);
+        long double ld = std::strtold(s.c_str(), nullptr);
+        val = static_cast<_Float128>(ld);
+        return *this;
+    }
+#endif
+#if defined(___MPLAPACK_BUILD_WITH__FLOAT64X___) && defined(__FLT64X_MAX__)
+    read_loop &operator,(_Float64x &val) {
+        std::string s = read_numeric_as_string();
+        normalize_fortran_exponent(s);
+        long double ld = std::strtold(s.c_str(), nullptr);
+        val = static_cast<_Float64x>(ld);
+        return *this;
+    }
+#endif
+#if defined(___MPLAPACK_BUILD_WITH_DD___)
+    // QD library dd_real (double-double)
+    read_loop &operator,(dd_real &val) {
+        std::string s = read_numeric_as_string();
+        assign_from_token_string(val, s);
+        return *this;
+    }
+#endif
+#if defined(___MPLAPACK_BUILD_WITH_QD___)
+    // QD library qd_real (quad-double)
+    read_loop &operator,(qd_real &val) {
+        std::string s = read_numeric_as_string();
+        assign_from_token_string(val, s);
+        return *this;
+    }
+#endif
+// double is already handled by the existing arithmetic path.
+#if defined(___MPLAPACK_BUILD_WITH_DOUBLE___)
+// no-op
+#endif
+
+    // --- Helper function to read a complex literal "(real, imag)" as a string ---
+    // Returns the full token including parentheses, with D->E normalization applied.
+    std::string read_complex_token_string() {
+        // Skip leading whitespace and separators (list-directed: newlines are separators)
+        int c;
+        while (true) {
+            c = inp_get();
+            if (utils::is_stream_end(c)) {
+                if (this->iostat_ptr != 0)
+                    *iostat_ptr = IOSTAT_END;
+                throw read_end("End of input while reading complex value");
+            }
+            if (utils::is_end_of_line(c) || c == ',') {
+                continue; // skip separators
+            }
+            if (!utils::is_whitespace(c)) {
+                break; // found start of token
+            }
+        }
+
+        // Expect '('
+        if (c != '(') {
+            throw io_err("Expected '(' at start of complex value, got: " + utils::format_char_for_display(c));
+        }
+
+        // Read until ')' to get the full complex literal "(real,imag)"
+        std::string token;
+        token.push_back('(');
+        while (true) {
+            c = inp_get();
+            if (utils::is_stream_end(c)) {
+                throw io_err("Unexpected end of input while reading complex value");
+            }
+            token.push_back(static_cast<char>(c));
+            if (c == ')') {
+                break;
+            }
+        }
+
+        return normalize_fortran_numeric_string(token);
+    }
+
+    // --- Helper to parse "(real,imag)" string into two component strings ---
+    static void parse_complex_components(const std::string &normalized, std::string &real_str, std::string &imag_str) {
+        // normalized is "(real,imag)" with D->E conversion already done
+        std::string inside = normalized.substr(1, normalized.size() - 2);
+        size_t comma = inside.find(',');
+        if (comma == std::string::npos) {
+            throw io_err("Invalid complex format, missing comma: " + normalized);
+        }
+        real_str = inside.substr(0, comma);
+        imag_str = inside.substr(comma + 1);
+
+        // Trim whitespace
+        auto trim = [](std::string &s) {
+            size_t b = s.find_first_not_of(' ');
+            if (b == std::string::npos) {
+                s.clear();
+                return;
+            }
+            size_t e = s.find_last_not_of(' ');
+            s = s.substr(b, e - b + 1);
+        };
+        trim(real_str);
+        trim(imag_str);
+    }
+
     read_loop &operator,(std::complex<float> &val) {
         if (io_mode == io_unformatted) {
             float re, im;
             from_stream_unformatted(reinterpret_cast<char *>(&re), sizeof(float));
             from_stream_unformatted(reinterpret_cast<char *>(&im), sizeof(float));
             val = std::complex<float>(re, im);
-        } else if (io_mode == io_list_directed) {
-            inp.reset();
-            throw TBXX_NOT_IMPLEMENTED();
         } else {
-            inp.reset();
-            throw TBXX_NOT_IMPLEMENTED();
+            std::string token = read_complex_token_string();
+            std::string real_str, imag_str;
+            parse_complex_components(token, real_str, imag_str);
+            float re = static_cast<float>(std::strtod(real_str.c_str(), nullptr));
+            float im = static_cast<float>(std::strtod(imag_str.c_str(), nullptr));
+            val = std::complex<float>(re, im);
         }
         return *this;
     }
@@ -244,15 +537,100 @@ class read_loop // TODO copy-constructor potential performance problem
             from_stream_unformatted(reinterpret_cast<char *>(&re), sizeof(double));
             from_stream_unformatted(reinterpret_cast<char *>(&im), sizeof(double));
             val = std::complex<double>(re, im);
-        } else if (io_mode == io_list_directed) {
-            inp.reset();
-            throw TBXX_NOT_IMPLEMENTED();
         } else {
-            inp.reset();
-            throw TBXX_NOT_IMPLEMENTED();
+            std::string token = read_complex_token_string();
+            std::string real_str, imag_str;
+            parse_complex_components(token, real_str, imag_str);
+            double re = std::strtod(real_str.c_str(), nullptr);
+            double im = std::strtod(imag_str.c_str(), nullptr);
+            val = std::complex<double>(re, im);
         }
         return *this;
     }
+#if defined(___MPLAPACK_BUILD_WITH_GMP___)
+    read_loop &operator,(mpc_class &val) {
+        if (io_mode == io_unformatted) {
+            throw TBXX_NOT_IMPLEMENTED();
+        }
+        std::string token = read_complex_token_string();
+        std::string real_str, imag_str;
+        parse_complex_components(token, real_str, imag_str);
+        mpf_class re(real_str.c_str());
+        mpf_class im(imag_str.c_str());
+        val = mpc_class(re, im);
+        return *this;
+    }
+#endif
+#if defined(___MPLAPACK_BUILD_WITH_MPFR___)
+    read_loop &operator,(mpcomplex &val) {
+        if (io_mode == io_unformatted) {
+            throw TBXX_NOT_IMPLEMENTED();
+        }
+        std::string token = read_complex_token_string();
+        std::string real_str, imag_str;
+        parse_complex_components(token, real_str, imag_str);
+        mpfr::mpreal re(real_str.c_str());
+        mpfr::mpreal im(imag_str.c_str());
+        val = mpcomplex(re, im);
+        return *this;
+    }
+#endif
+#if defined(___MPLAPACK_BUILD_WITH_DD___)
+    read_loop &operator,(dd_complex &val) {
+        if (io_mode == io_unformatted) {
+            throw TBXX_NOT_IMPLEMENTED();
+        }
+        std::string token = read_complex_token_string();
+        std::string real_str, imag_str;
+        parse_complex_components(token, real_str, imag_str);
+        dd_real re(real_str.c_str());
+        dd_real im(imag_str.c_str());
+        val = dd_complex(re, im);
+        return *this;
+    }
+#endif
+#if defined(___MPLAPACK_BUILD_WITH_QD___)
+    read_loop &operator,(qd_complex &val) {
+        if (io_mode == io_unformatted) {
+            throw TBXX_NOT_IMPLEMENTED();
+        }
+        std::string token = read_complex_token_string();
+        std::string real_str, imag_str;
+        parse_complex_components(token, real_str, imag_str);
+        qd_real re(real_str.c_str());
+        qd_real im(imag_str.c_str());
+        val = qd_complex(re, im);
+        return *this;
+    }
+#endif
+#if defined(___MPLAPACK_BUILD_WITH__FLOAT128___) && defined(__FLT128_MAX__)
+    read_loop &operator,(std::complex<_Float128> &val) {
+        if (io_mode == io_unformatted) {
+            throw TBXX_NOT_IMPLEMENTED();
+        }
+        std::string token = read_complex_token_string();
+        std::string real_str, imag_str;
+        parse_complex_components(token, real_str, imag_str);
+        long double ld_re = std::strtold(real_str.c_str(), nullptr);
+        long double ld_im = std::strtold(imag_str.c_str(), nullptr);
+        val = std::complex<_Float128>(static_cast<_Float128>(ld_re), static_cast<_Float128>(ld_im));
+        return *this;
+    }
+#endif
+#if defined(___MPLAPACK_BUILD_WITH__FLOAT64X___) && defined(__FLT64X_MAX__)
+    read_loop &operator,(std::complex<_Float64x> &val) {
+        if (io_mode == io_unformatted) {
+            throw TBXX_NOT_IMPLEMENTED();
+        }
+        std::string token = read_complex_token_string();
+        std::string real_str, imag_str;
+        parse_complex_components(token, real_str, imag_str);
+        long double ld_re = std::strtold(real_str.c_str(), nullptr);
+        long double ld_im = std::strtold(imag_str.c_str(), nullptr);
+        val = std::complex<_Float64x>(static_cast<_Float64x>(ld_re), static_cast<_Float64x>(ld_im));
+        return *this;
+    }
+#endif
     read_loop &operator,(str_ref const &val) {
         if (io_mode == io_unformatted) {
             from_stream_unformatted(val.elems(), val.len());
@@ -376,13 +754,17 @@ class read_loop // TODO copy-constructor potential performance problem
         return result;
     }
     long read_star_long() {
-        while (true) { // loop scanning for first non-whitespace
+        while (true) { // loop scanning for first token character
             int c = inp_get();
             if (utils::is_stream_end(c)) {
                 inp.reset();
                 if (this->iostat_ptr != 0)
                     *iostat_ptr = IOSTAT_END;
                 throw read_end("End of input while reading integer value");
+            }
+            // List-directed ("*") input: end-of-record is a separator, not data.
+            if (utils::is_end_of_line(c) || c == ',') {
+                continue;
             }
             if (!utils::is_whitespace(c)) {
                 bool negative = (c == '-');
@@ -400,7 +782,7 @@ class read_loop // TODO copy-constructor potential performance problem
                     result *= 10;
                     result += utils::digit_as_int(c);
                     c = inp_get();
-                    if (utils::is_stream_end(c) || utils::is_whitespace(c) || c == ',') {
+                    if (utils::is_stream_end(c) || utils::is_whitespace(c) || c == ',' || utils::is_end_of_line(c)) {
                         if (negative)
                             result *= -1;
                         if (utils::is_end_of_line(c))
@@ -455,6 +837,125 @@ class read_loop // TODO copy-constructor potential performance problem
         if (this->iostat_ptr != 0)
             *iostat_ptr = IOSTAT_ERROR;
         throw io_err("Invalid character while reading floating-point value: " + utils::format_char_for_display(c));
+    }
+    // --- Helpers for reading numeric tokens as raw strings ---
+    // These are used for selected multiprecision types (mpf_class, mpfr::mpreal, _Float128, ...).
+    // For LAPACK test inputs, values are at most binary64, so string->ctor assignment is sufficient.
+    static std::string normalize_fortran_numeric_string(std::string s) {
+        // Convert Fortran 'D' exponent to 'E' (e.g., 1.0D+00 -> 1.0E+00).
+        // Also supports complex literals like "(-1.0D+00, 9.0D+00)" by
+        // normalizing each component.
+        auto trim_inplace = [](std::string &x) {
+            size_t b = x.find_first_not_of(' ');
+            if (b == std::string::npos) {
+                x.clear();
+                return;
+            }
+            size_t e = x.find_last_not_of(' ');
+            x = x.substr(b, e - b + 1);
+        };
+        trim_inplace(s);
+        if (s.size() >= 2 && s.front() == '(' && s.back() == ')') {
+            std::string inside = s.substr(1, s.size() - 2);
+            size_t comma = inside.find(',');
+            if (comma != std::string::npos) {
+                std::string a = inside.substr(0, comma);
+                std::string b = inside.substr(comma + 1);
+                trim_inplace(a);
+                trim_inplace(b);
+                for (char &c: a) {
+                    if (c == 'D' || c == 'd')
+                        c = 'E';
+                }
+                for (char &c: b) {
+                    if (c == 'D' || c == 'd')
+                        c = 'E';
+                }
+                return "(" + a + "," + b + ")";
+            }
+        }
+        for (char &c: s) {
+            if (c == 'D' || c == 'd')
+                c = 'E';
+        }
+        return s;
+    }
+    std::string read_star_token_string() {
+        // Skip leading whitespace and commas
+        int c = 0;
+        while (true) {
+            c = inp_get();
+            if (utils::is_stream_end(c)) {
+                inp.reset();
+                if (this->iostat_ptr != 0) {
+                    *iostat_ptr = IOSTAT_END;
+                }
+                throw read_end("End of input while reading token");
+            }
+            if (utils::is_end_of_line(c)) {
+                // List-directed ("*") input: end-of-record is a separator, not an error.
+                // If we have not started a token yet, skip the record boundary and keep scanning.
+                continue;
+            }
+            if (!utils::is_whitespace(c) && c != ',') {
+                break;
+            }
+        }
+        std::string s;
+        s.push_back(static_cast<char>(c));
+        while (true) {
+            c = inp_get();
+            if (utils::is_stream_end(c) || utils::is_whitespace(c) || c == ',') {
+                if (utils::is_end_of_line(c)) {
+                    inp->backup();
+                }
+                return s;
+            }
+            if (utils::is_end_of_line(c)) {
+                inp->backup();
+                return s;
+            }
+            s.push_back(static_cast<char>(c));
+        }
+    }
+    std::string read_fmt_token_string(int w) {
+        std::string s;
+        s.reserve(static_cast<size_t>(w));
+        for (int i = 0; i < w; i++) {
+            int c = inp_get();
+            if (utils::is_stream_end(c)) {
+                break;
+            }
+            if (utils::is_end_of_line(c)) {
+                inp->backup();
+                break;
+            }
+            s.push_back(static_cast<char>(c));
+        }
+        // Trim spaces on both ends
+        size_t b = s.find_first_not_of(' ');
+        if (b == std::string::npos) {
+            return std::string();
+        }
+        size_t e = s.find_last_not_of(' ');
+        return s.substr(b, e - b + 1);
+    }
+    std::string read_numeric_as_string() {
+        if (io_mode == io_unformatted) {
+            inp.reset();
+            throw TBXX_NOT_IMPLEMENTED();
+        }
+        if (io_mode == io_formatted) {
+            std::string const &ed = next_edit_descriptor();
+            int n = static_cast<int>(ed.size());
+            if (n >= 2 && std::strchr("defg", ed[0]) != 0) {
+                int iw = utils::unsigned_integer_scan(ed.data(), 1, ed.size());
+                int w = utils::unsigned_integer_value(ed.data(), 1, iw);
+                return normalize_fortran_numeric_string(read_fmt_token_string(w));
+            }
+            // Fallback to list-directed tokenization.
+        }
+        return normalize_fortran_numeric_string(read_star_token_string());
     }
     void from_stream_unformatted(char *target, unsigned target_size) {
         for (unsigned i = 0; i < target_size; i++) {

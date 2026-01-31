@@ -2,6 +2,7 @@
 #define FEM_STR_REF_HPP
 #include <fem/utils/misc.hpp>
 #include <fem/utils/string.hpp>
+#include <cstring>
 namespace fem {
 struct str_cref {
   protected:
@@ -48,7 +49,18 @@ struct str_ref : str_cref {
     str_ref(str_ref const &other, int len) : str_cref(other, len) {}
     char *elems() const { return const_cast<char *>(elems_); }
     char &operator[](int i) const { return elems()[i]; }
-    void operator=(char const *rhs) { utils::copy_with_blank_padding(rhs, elems(), len()); }
+    void operator=(char const *rhs) {
+        // Fortran fixed-length character assignment:
+        // - Copy up to destination length
+        // - Pad with blanks if source is shorter
+        // Never rely on the NUL-terminated overload because it can confuse
+        // the optimizer when destination length is very small (e.g., CHAR*1).
+        if (rhs == nullptr) {
+            utils::copy_with_blank_padding("", 0, elems(), len());
+        } else {
+            utils::copy_with_blank_padding(rhs, std::strlen(rhs), elems(), len());
+        }
+    }
     void operator=(std::string const &rhs) { utils::copy_with_blank_padding(rhs.data(), rhs.size(), elems(), len()); }
     void operator=(str_cref const &rhs) { utils::copy_with_blank_padding(rhs.elems(), rhs.len(), elems(), len()); }
     void operator=(str_ref const &rhs) { (*this) = static_cast<str_cref>(rhs); }
@@ -67,5 +79,18 @@ struct str_ref : str_cref {
     template <int StrLen> void operator=(str<StrLen> const &rhs);
     str_ref operator()(int first, int last) const { return str_ref(elems() + first - 1, last - first + 1); }
 };
+// Accept string literal (or const char*) on the left side of fem string concatenation.
+// This prevents ambiguous overload resolution with other libraries (e.g., mpfrc++).
+  template <std::size_t N>
+inline fem::str_addends operator+(char const (&lhs)[N], fem::str_cref const &rhs) {
+    // N includes the trailing '\0', so the string length is N-1.
+    return fem::str_addends(fem::str_cref(lhs, static_cast<int>(N - 1)), rhs);
+}
+
+// Optional symmetry (not strictly required, but nice to have)
+  template <std::size_t N>
+inline fem::str_addends operator+(fem::str_cref const &lhs, char const (&rhs)[N]) {
+return fem::str_addends(lhs, fem::str_cref(rhs, static_cast<int>(N - 1)));
+}
 } // namespace fem
 #endif // GUARD

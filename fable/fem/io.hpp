@@ -57,6 +57,33 @@ struct io_unit {
      */
     int iostat;
     io_unit(int number_, std::string file_name_ = std::string(""), std_file stream_ = std_file(0)) : number(number_), file_name(file_name_), stream(stream_), prev_op_was_write(false), access(ac_undef), form(fm_undef), recl(0), blank(bl_undef), status(st_undef), iostat(0) {}
+    // ---- Explicit connection API for standard Fortran units ----
+    // These methods intentionally avoid expressing connection state via the io_unit constructor.
+    void connect_stdin() {
+        file_name.clear();
+        stream = std_file(stdin);
+        prev_op_was_write = false;
+    }
+    void connect_stdout() {
+        file_name.clear();
+        stream = std_file(stdout);
+        prev_op_was_write = false;
+    }
+    void connect_stderr() {
+        file_name.clear();
+        stream = std_file(stderr);
+        prev_op_was_write = false;
+    }
+    void connect_default_for_std_unit() {
+        if (number == 0) {
+            connect_stderr();
+        } else if (number == 5) {
+            connect_stdin();
+        } else if (number == 6) {
+            connect_stdout();
+        }
+    }
+    bool is_process_stdio() const { return (stream.ptr == stdin || stream.ptr == stdout || stream.ptr == stderr); }
     std::string get_file_name_set_default_if_necessary() {
         if (file_name.size() == 0 && !is_std_io_unit(number)) {
             if (status != st_scratch) {
@@ -174,9 +201,14 @@ struct io_unit {
     }
     void close(int *iostat_ptr = 0, bool status_delete = false) {
         if (iostat_ptr != 0)
-            *iostat_ptr = 0; // XXX
-        if (is_std_io_unit(number))
+            *iostat_ptr = 0;
+        // Do not fclose() the process stdio streams.
+        // This keeps stdin/stdout/stderr valid even if fem::common objects
+        // are created/destroyed multiple times in one executable.
+        if (is_process_stdio()) {
+            prev_op_was_write = false;
             return;
+        }
         if (stream.ptr != 0) {
             std::fclose(stream.ptr);
             stream.ptr = 0;
@@ -210,9 +242,9 @@ struct io_unit {
 struct io : utils::noncopyable {
     std::map<int, io_unit> units;
     io() {
-        units.insert(std::make_pair(0, io_unit(0, "", stderr)));
-        units.insert(std::make_pair(5, io_unit(5, "", stdin)));
-        units.insert(std::make_pair(6, io_unit(6, "", stdout)));
+        units.insert(std::make_pair(0, io_unit(0))).first->second.connect_stderr();
+        units.insert(std::make_pair(5, io_unit(5))).first->second.connect_stdin();
+        units.insert(std::make_pair(6, io_unit(6))).first->second.connect_stdout();
     }
     ~io() {
         typedef std::map<int, io_unit>::iterator it;
@@ -225,10 +257,21 @@ struct io : utils::noncopyable {
         typedef std::map<int, io_unit>::iterator it;
         it map_iter = units.find(unit);
         if (map_iter == units.end()) {
+            // Standard units: connect explicitly to process stdio.
+            // (Do NOT use io_unit(unit, name, sf) to represent connection state.)
+            if (unit == 0 || unit == 5 || unit == 6) {
+                map_iter = units.insert(std::make_pair(unit, io_unit(unit))).first;
+                map_iter->second.connect_default_for_std_unit();
+                return &(map_iter->second);
+            }
             if (!auto_open)
                 return 0;
             map_iter = units.insert(std::make_pair(unit, io_unit(unit))).first;
             map_iter->second.open(/*iostat_ptr*/ 0);
+        }
+        // If a standard unit exists but somehow got disconnected, reconnect it.
+        if ((unit == 0 || unit == 5 || unit == 6) && map_iter->second.stream.ptr == 0) {
+            map_iter->second.connect_default_for_std_unit();
         }
         return &(map_iter->second);
     }
