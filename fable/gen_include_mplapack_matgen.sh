@@ -104,7 +104,7 @@ for mplib in $MPLIBS; do
         sed -i -e "s/iMparmq/iMparmq_${mplib}/g" mplapack_matgen_${mplib}.h 
     fi
 
-    clang-format -style="{BasedOnStyle: llvm, IndentWidth: 4, ColumnLimit: 10000 }" mplapack_matgen_${mplib}.h | sort > l ; mv l mplapack_matgen_${mplib}.h 
+    clang-format-19 -style="{BasedOnStyle: llvm, IndentWidth: 4, ColumnLimit: 10000 }" mplapack_matgen_${mplib}.h | sort > l ; mv l mplapack_matgen_${mplib}.h 
     cat ~/mplapack/mplapack/test/matgen/mplapack_matgen_${mplib}.h.in mplapack_matgen_${mplib}.h > ~/mplapack/include/mplapack_matgen_${mplib}.h
     rm mplapack_matgen_${mplib}.h
     echo "#endif" >> ~/mplapack/include/mplapack_matgen_${mplib}.h
