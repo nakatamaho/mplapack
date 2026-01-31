@@ -129,7 +129,7 @@ for mplib in $MPLIBS; do
         sed -i -e "s/iMparmq/iMparmq_${mplib}/g" mplapack_${mplib}.h 
     fi
 
-    clang-format -style="{BasedOnStyle: llvm, IndentWidth: 4, ColumnLimit: 10000 }" mplapack_${mplib}.h | sort > l ; mv l mplapack_${mplib}.h 
+    clang-format-19 -style="{BasedOnStyle: llvm, IndentWidth: 4, ColumnLimit: 10000 }" mplapack_${mplib}.h | sort > l ; mv l mplapack_${mplib}.h 
     cat ~/mplapack/mplapack/reference/mplapack_${mplib}.h.in mplapack_${mplib}.h > ~/mplapack/include/mplapack_${mplib}.h
     rm mplapack_${mplib}.h
     echo "#endif" >> ~/mplapack/include/mplapack_${mplib}.h
