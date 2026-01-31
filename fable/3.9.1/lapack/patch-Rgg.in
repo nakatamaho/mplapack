@@ -1,0 +1,20 @@
+--- Rgg.in_	2026-01-28 20:04:53.551395777 +0900
++++ Rgg.in	2026-01-28 20:04:53.557395892 +0900
+@@ -1,6 +1,6 @@
+ DGG:  Data file for testing Nonsymmetric Eigenvalue Problem routines
+-7                               Number of values of N
+-0 1 2 3 5 10 16                 Values of N (dimension)
++10                              Number of values of N
++0 1 2 3 5 9 15 16 20 40         Values of N (dimension) 
+ 4                               Number of parameter values
+ 1   1   2   2                   Values of NB (blocksize)
+ 40  40  2   2                   Values of NBMIN (minimum blocksize)
+@@ -10,7 +10,7 @@
+ 40  40  2   2                   Values of NBCOL (minimum col. dimension)
+ 20.0                            Threshold value
+ T                               Put T to test the LAPACK routines
+-F                               Put T to test the driver routines
++T                               Put T to test the driver routines
+ T                               Put T to test the error exits
+ 1                               Code to interpret the seed
+ DGG  26
