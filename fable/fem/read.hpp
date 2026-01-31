@@ -19,27 +19,27 @@ class read_loop // TODO copy-constructor potential performance problem
     bool blanks_zero;
     int exp_scale;
     io_modes io_mode;
-    int* iostat_ptr;
+    int *iostat_ptr;
 
   public:
-    read_loop(common& cmn, int const& unit, unformatted_type const&) : inp(cmn.io.simple_istream(unit)), first_inp_get(true), blanks_zero(false), exp_scale(0), io_mode(io_unformatted), iostat_ptr(0) {}
-    read_loop(common& cmn, int const& unit, star_type const&) : inp(cmn.io.simple_istream(unit)), first_inp_get(true), blanks_zero(false), exp_scale(0), io_mode(io_list_directed), iostat_ptr(0) {}
-    read_loop(common& cmn, int const& unit, str_cref fmt) : inp(cmn.io.simple_istream(unit)), first_inp_get(true), fmt_loop(fmt), blanks_zero(false), exp_scale(0), io_mode(io_formatted), iostat_ptr(0) {}
-    read_loop(str_cref const& internal_file, star_type const&) : inp(utils::slick_ptr<utils::simple_istream>(new utils::simple_istream_from_char_ptr_and_size(internal_file.elems(), internal_file.len()))), first_inp_get(true), blanks_zero(false), exp_scale(0), io_mode(io_list_directed), iostat_ptr(0) {}
-    read_loop(str_cref const& internal_file, str_cref fmt) : inp(utils::slick_ptr<utils::simple_istream>(new utils::simple_istream_from_char_ptr_and_size(internal_file.elems(), internal_file.len()))), first_inp_get(true), fmt_loop(fmt), blanks_zero(false), exp_scale(0), io_mode(io_formatted), iostat_ptr(0) {}
-    read_loop& rec(int const&) {
+    read_loop(common &cmn, int const &unit, unformatted_type const &) : inp(cmn.io.simple_istream(unit)), first_inp_get(true), blanks_zero(false), exp_scale(0), io_mode(io_unformatted), iostat_ptr(0) {}
+    read_loop(common &cmn, int const &unit, star_type const &) : inp(cmn.io.simple_istream(unit)), first_inp_get(true), blanks_zero(false), exp_scale(0), io_mode(io_list_directed), iostat_ptr(0) {}
+    read_loop(common &cmn, int const &unit, str_cref fmt) : inp(cmn.io.simple_istream(unit)), first_inp_get(true), fmt_loop(fmt), blanks_zero(false), exp_scale(0), io_mode(io_formatted), iostat_ptr(0) {}
+    read_loop(str_cref const &internal_file, star_type const &) : inp(utils::slick_ptr<utils::simple_istream>(new utils::simple_istream_from_char_ptr_and_size(internal_file.elems(), internal_file.len()))), first_inp_get(true), blanks_zero(false), exp_scale(0), io_mode(io_list_directed), iostat_ptr(0) {}
+    read_loop(str_cref const &internal_file, str_cref fmt) : inp(utils::slick_ptr<utils::simple_istream>(new utils::simple_istream_from_char_ptr_and_size(internal_file.elems(), internal_file.len()))), first_inp_get(true), fmt_loop(fmt), blanks_zero(false), exp_scale(0), io_mode(io_formatted), iostat_ptr(0) {}
+    read_loop &rec(int const &) {
         inp.reset();
         throw TBXX_NOT_IMPLEMENTED();
     }
-    read_loop& iostat(int& iostat) {
+    read_loop &iostat(int &iostat) {
         this->iostat_ptr = &iostat;
         iostat = IOSTAT_OK;
         return *this;
     }
-    std::string const& next_edit_descriptor() {
+    std::string const &next_edit_descriptor() {
         while (true) {
-            utils::token const* t = fmt_loop.next_executable_token();
-            std::string const& tv = t->value;
+            utils::token const *t = fmt_loop.next_executable_token();
+            std::string const &tv = t->value;
             if (t->type == "string") {
                 inp.reset();
                 throw TBXX_NOT_IMPLEMENTED();
@@ -136,14 +136,14 @@ class read_loop // TODO copy-constructor potential performance problem
             }
         }
     }
-    read_loop& operator,(char& val) {
+    read_loop &operator,(char &val) {
         inp.reset();
         throw TBXX_NOT_IMPLEMENTED();
         return *this;
     }
-    read_loop& operator,(bool& val) {
+    read_loop &operator,(bool &val) {
         if (io_mode == io_unformatted) {
-            from_stream_unformatted(reinterpret_cast<char*>(&val), sizeof(bool));
+            from_stream_unformatted(reinterpret_cast<char *>(&val), sizeof(bool));
         } else if (io_mode == io_list_directed) {
             inp.reset();
             throw TBXX_NOT_IMPLEMENTED();
@@ -153,7 +153,7 @@ class read_loop // TODO copy-constructor potential performance problem
         }
         return *this;
     }
-    read_loop& operator,(integer_star_1& val) {
+    read_loop &operator,(integer_star_1 &val) {
         if (io_mode == io_unformatted) {
             inp.reset();
             throw TBXX_NOT_IMPLEMENTED();
@@ -166,9 +166,9 @@ class read_loop // TODO copy-constructor potential performance problem
         }
         return *this;
     }
-    read_loop& operator,(integer_star_2& val) {
+    read_loop &operator,(integer_star_2 &val) {
         if (io_mode == io_unformatted) {
-            from_stream_unformatted(reinterpret_cast<char*>(&val), sizeof(integer_star_2));
+            from_stream_unformatted(reinterpret_cast<char *>(&val), sizeof(integer_star_2));
         } else if (io_mode == io_list_directed) {
             inp.reset();
             throw TBXX_NOT_IMPLEMENTED();
@@ -178,13 +178,13 @@ class read_loop // TODO copy-constructor potential performance problem
         }
         return *this;
     }
-    read_loop& operator,(integer_star_4& val) {
+    read_loop &operator,(integer_star_4 &val) {
         if (io_mode == io_unformatted) {
-            from_stream_unformatted(reinterpret_cast<char*>(&val), sizeof(integer_star_4));
+            from_stream_unformatted(reinterpret_cast<char *>(&val), sizeof(integer_star_4));
         } else if (io_mode == io_list_directed) {
             val = static_cast<int>(read_star_long());
         } else {
-            std::string const& ed = next_edit_descriptor();
+            std::string const &ed = next_edit_descriptor();
             int n = ed.size();
             if (ed[0] == 'i' && n > 1) {
                 n = utils::unsigned_integer_value(ed.data(), 1, n);
@@ -195,9 +195,9 @@ class read_loop // TODO copy-constructor potential performance problem
         }
         return *this;
     }
-    read_loop& operator,(integer_star_8& val) {
+    read_loop &operator,(integer_star_8 &val) {
         if (io_mode == io_unformatted) {
-            from_stream_unformatted(reinterpret_cast<char*>(&val), sizeof(integer_star_8));
+            from_stream_unformatted(reinterpret_cast<char *>(&val), sizeof(integer_star_8));
         } else if (io_mode == io_list_directed) {
             inp.reset();
             throw TBXX_NOT_IMPLEMENTED();
@@ -207,27 +207,27 @@ class read_loop // TODO copy-constructor potential performance problem
         }
         return *this;
     }
-    read_loop& operator,(float& val) {
+    read_loop &operator,(float &val) {
         if (io_mode == io_unformatted) {
-            from_stream_unformatted(reinterpret_cast<char*>(&val), sizeof(float));
+            from_stream_unformatted(reinterpret_cast<char *>(&val), sizeof(float));
         } else {
             val = static_cast<float>((io_mode == io_formatted ? read_fmt_double() : read_star_double()));
         }
         return *this;
     }
-    read_loop& operator,(double& val) {
+    read_loop &operator,(double &val) {
         if (io_mode == io_unformatted) {
-            from_stream_unformatted(reinterpret_cast<char*>(&val), sizeof(double));
+            from_stream_unformatted(reinterpret_cast<char *>(&val), sizeof(double));
         } else {
             val = (io_mode == io_formatted ? read_fmt_double() : read_star_double());
         }
         return *this;
     }
-    read_loop& operator,(std::complex<float>& val) {
+    read_loop &operator,(std::complex<float> &val) {
         if (io_mode == io_unformatted) {
             float re, im;
-            from_stream_unformatted(reinterpret_cast<char*>(&re), sizeof(float));
-            from_stream_unformatted(reinterpret_cast<char*>(&im), sizeof(float));
+            from_stream_unformatted(reinterpret_cast<char *>(&re), sizeof(float));
+            from_stream_unformatted(reinterpret_cast<char *>(&im), sizeof(float));
             val = std::complex<float>(re, im);
         } else if (io_mode == io_list_directed) {
             inp.reset();
@@ -238,11 +238,11 @@ class read_loop // TODO copy-constructor potential performance problem
         }
         return *this;
     }
-    read_loop& operator,(std::complex<double>& val) {
+    read_loop &operator,(std::complex<double> &val) {
         if (io_mode == io_unformatted) {
             double re, im;
-            from_stream_unformatted(reinterpret_cast<char*>(&re), sizeof(double));
-            from_stream_unformatted(reinterpret_cast<char*>(&im), sizeof(double));
+            from_stream_unformatted(reinterpret_cast<char *>(&re), sizeof(double));
+            from_stream_unformatted(reinterpret_cast<char *>(&im), sizeof(double));
             val = std::complex<double>(re, im);
         } else if (io_mode == io_list_directed) {
             inp.reset();
@@ -253,14 +253,14 @@ class read_loop // TODO copy-constructor potential performance problem
         }
         return *this;
     }
-    read_loop& operator,(str_ref const& val) {
+    read_loop &operator,(str_ref const &val) {
         if (io_mode == io_unformatted) {
             from_stream_unformatted(val.elems(), val.len());
         } else {
             int vl = val.len();
             int n = vl;
             if (io_mode == io_formatted) {
-                std::string const& ed = next_edit_descriptor();
+                std::string const &ed = next_edit_descriptor();
                 if (ed[0] == 'a' && ed.size() > 1) {
                     n = utils::unsigned_integer_value(ed.data(), 1, ed.size());
                 }
@@ -300,18 +300,18 @@ class read_loop // TODO copy-constructor potential performance problem
         }
         return *this;
     }
-    template <typename T, size_t Ndims> read_loop& operator,(arr_ref<T, Ndims> const& val) {
-        T* v = val.begin();
+    template <typename T, size_t Ndims> read_loop &operator,(arr_ref<T, Ndims> const &val) {
+        T *v = val.begin();
         size_t n = val.size_1d();
         for (size_t i = 0; i < n; i++) {
             (*this), v[i];
         }
         return *this;
     }
-    template <size_t Ndims> read_loop& operator,(str_arr_ref<Ndims> const& val) {
+    template <size_t Ndims> read_loop &operator,(str_arr_ref<Ndims> const &val) {
         size_t n = val.size_1d();
         int l = val.len();
-        char* val_begin = val.begin();
+        char *val_begin = val.begin();
         for (size_t i = 0; i < n; i++) {
             (*this), str_ref(&val_begin[i * l], l);
         }
@@ -411,7 +411,7 @@ class read_loop // TODO copy-constructor potential performance problem
             }
         }
     }
-    void throw_if_conv_error_message(utils::string_to_double const& conv) {
+    void throw_if_conv_error_message(utils::string_to_double const &conv) {
         if (conv.error_message) {
             inp.reset();
             if (conv.stream_end) {
@@ -425,7 +425,7 @@ class read_loop // TODO copy-constructor potential performance problem
         }
     }
     double read_fmt_double() {
-        std::string const& ed = next_edit_descriptor();
+        std::string const &ed = next_edit_descriptor();
         int n = ed.size();
         if (n < 2 || std::strchr("defg", ed[0]) == 0) {
             return read_star_double();
@@ -456,7 +456,7 @@ class read_loop // TODO copy-constructor potential performance problem
             *iostat_ptr = IOSTAT_ERROR;
         throw io_err("Invalid character while reading floating-point value: " + utils::format_char_for_display(c));
     }
-    void from_stream_unformatted(char* target, unsigned target_size) {
+    void from_stream_unformatted(char *target, unsigned target_size) {
         for (unsigned i = 0; i < target_size; i++) {
             int ic = inp_get();
             char c = static_cast<char>(ic);
@@ -483,28 +483,28 @@ class read_loop // TODO copy-constructor potential performance problem
     }
 };
 struct read_from_string : public read_loop {
-    read_from_string(std::string const& internal_file, str_cref fmt) : read_loop(str_cref(internal_file.data(), static_cast<int>(internal_file.size())), fmt) {}
+    read_from_string(std::string const &internal_file, str_cref fmt) : read_loop(str_cref(internal_file.data(), static_cast<int>(internal_file.size())), fmt) {}
 };
 struct common_read {
-    common& cmn;
-    common_read(common& cmn_) : cmn(cmn_) {}
-    read_loop operator()(int unit, unformatted_type const&) {
+    common &cmn;
+    common_read(common &cmn_) : cmn(cmn_) {}
+    read_loop operator()(int unit, unformatted_type const &) {
         read_loop result(cmn, unit, unformatted);
         return result;
     }
-    read_loop operator()(int unit, star_type const&) {
+    read_loop operator()(int unit, star_type const &) {
         read_loop result(cmn, unit, star);
         return result;
     }
-    read_loop operator()(int const& unit, str_cref fmt) {
+    read_loop operator()(int const &unit, str_cref fmt) {
         read_loop result(cmn, unit, fmt);
         return result;
     }
-    read_loop operator()(str_cref const& internal_file, star_type const&) {
+    read_loop operator()(str_cref const &internal_file, star_type const &) {
         read_loop result(internal_file, star);
         return result;
     }
-    read_loop operator()(str_cref const& internal_file, str_cref fmt) {
+    read_loop operator()(str_cref const &internal_file, str_cref fmt) {
         read_loop result(internal_file, fmt);
         return result;
     }

@@ -10,7 +10,7 @@ static const ssize_t ssize_t_max = std::numeric_limits<ssize_t>::max();
 template <typename T> struct array_of_2 {
     T elems[2];
     array_of_2() {}
-    array_of_2(T const& i, T const& j) {
+    array_of_2(T const &i, T const &j) {
         elems[0] = i;
         elems[1] = j;
     }
