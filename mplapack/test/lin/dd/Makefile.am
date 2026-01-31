@@ -12,7 +12,7 @@ libdepends = -L$(top_builddir)/mplapack/test/lin -llin_dd -llin_override_dd -L$(
 endif
 
 mplibs = -L$(MPC_LIBDIR) -L$(QD_LIBDIR) -lqd -lm
-cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_DD___ -D___MPLAPACK_INTERNAL___ -I$(top_srcdir)/mplapack/test/fable
+cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_DD___ -D___MPLAPACK_INTERNAL___ -I$(top_srcdir)/fable
 
 install-data-hook:
 if IS_MACOS

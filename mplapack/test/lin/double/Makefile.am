@@ -12,7 +12,7 @@ libdepends = -L.. -llin_double -llin_override_double -L$(top_builddir)/mplapack/
 endif
 
 mplibs = -lm
-cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_DOUBLE___ -I$(top_srcdir)/mplapack/test/fable -D___MPLAPACK_INTERNAL___
+cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_DOUBLE___ -I$(top_srcdir)/fable -D___MPLAPACK_INTERNAL___
 
 xlintstR_double_SOURCES  = ../common/Rchkaa.cpp
 xlintstR_double_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
