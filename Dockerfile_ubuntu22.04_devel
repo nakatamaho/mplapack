@@ -158,8 +158,9 @@ RUN cd ${WORK} && echo "cd /home/$DOCKER_USER" >> .bashrc
 
 ## intel one api and wine settings start ###
 RUN cd ${WORK} && echo "#source /opt/intel/oneapi/setvars.sh" >> .bashrc
-RUN cd ${WORK} && echo "export WINEPATH=\"/usr/x86_64-w64-mingw32/lib/;/usr/lib/gcc/x86_64-w64-mingw32/10-win32/;/usr/lib/gcc/x86_64-w64-mingw32/10-posix;/home/$DOCKER_USER/MPLAPACK_MINGW/bin\"" >> .bashrc
-RUN cd ${WORK} && echo "export PATH=\"$PATH:/opt/wine-stable/bin\"" >> .bashrc
+RUN cd ${WORK} && GCC_VER=$(x86_64-w64-mingw32-gcc -dumpversion | cut -d- -f1) && \
+    echo "export WINEPATH=\"/usr/x86_64-w64-mingw32/lib/;/usr/lib/gcc/x86_64-w64-mingw32/${GCC_VER}-win32/;/usr/lib/gcc/x86_64-w64-mingw32/${GCC_VER}-posix;/home/$DOCKER_USER/MPLAPACK_MINGW/bin\"" >> .bashrc
+RUN cd ${WORK} && echo "export PATH=\"\$PATH:/opt/wine-stable/bin\"" >> .bashrc
 RUN cd ${WORK} && echo "export WINEDEBUG=\"-all\"" >> .bashrc
 ## intel one api and wine settings end ###
 
@@ -208,10 +209,11 @@ RUN cd ${WORK}/mplapack && make clean
 RUN cd ${WORK}/mplapack && make -j
 RUN cd ${WORK}/mplapack && make install
 
-ARG WINEPATH="/usr/x86_64-w64-mingw32/lib/;/usr/lib/gcc/x86_64-w64-mingw32/10-win32/;/usr/lib/gcc/x86_64-w64-mingw32/10-posix"
-ARG WINEDEBUG="-all"
 ENV PATH="$PATH:/opt/wine-stable/bin"
-RUN cd ${WORK}/mplapack && bash -x misc/reconfig.ubuntu22.04.mingw64.sh
+RUN GCC_VER=$(x86_64-w64-mingw32-gcc -dumpversion | cut -d- -f1) && \
+    export WINEPATH="/usr/x86_64-w64-mingw32/lib/;/usr/lib/gcc/x86_64-w64-mingw32/${GCC_VER}-win32/;/usr/lib/gcc/x86_64-w64-mingw32/${GCC_VER}-posix" && \
+    export WINEDEBUG="-all" && \
+    cd ${WORK}/mplapack && bash -x misc/reconfig.ubuntu22.04.mingw64.sh
 RUN cd ${WORK}/mplapack && make clean
 RUN cd ${WORK}/mplapack && make -j
 RUN cd ${WORK}/mplapack && make install
