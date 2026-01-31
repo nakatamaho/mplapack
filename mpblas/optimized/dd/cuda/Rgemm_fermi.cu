@@ -144,7 +144,7 @@ void Rgemm_fermi_cuda(const char *transa, const char *transb, mplapackint m, mpl
             }
         }
     }
-    cudaThreadSynchronize();
+    cudaDeviceSynchronize();
 }
 
 void Rgemm_fermi(const char *transa, const char *transb, mplapackint m, mplapackint n, mplapackint k, dd_real alpha, dd_real * A, mplapackint lda, dd_real * B, mplapackint ldb, dd_real beta, dd_real * C, mplapackint ldc)
