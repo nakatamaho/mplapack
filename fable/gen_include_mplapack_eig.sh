@@ -10,7 +10,7 @@ fi
 
 FILES=`ls *cpp | grep -v Rlamch | grep -v Mlaenv | grep -v Mutils`
 for filename in $FILES; do
-/usr/local/bin/ctags -x --c++-kinds=pf --language-force=c++ --_xformat='%{typeref} %{name} %{signature};' ${filename} |  tr ':' ' ' | sed -e 's/^typename //' >  ${filename%.*}.hpp
+ctags -x --c++-kinds=pf --language-force=c++ --_xformat='%{typeref} %{name} %{signature};' "${filename}" | sed -E 's/^typename[[:space:]]*:[[:space:]]*//' > "${filename%.*}.hpp"
 done
 
 printf "REAL Rlamch(const char *cmach);\n" > Rlamch.hpp
@@ -22,6 +22,7 @@ awk '1' ./*.hpp \
   | grep -vE '^[[:space:]]*-' \
   | grep -vF 'common(int argc, char const *argv[]);' \
   | grep -vF 'common(int argc, const char *argv[]);' \
+  | grep -vF 'program_' \
   | grep -v main \
   | sort -u > header_all
 

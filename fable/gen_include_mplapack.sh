@@ -10,7 +10,7 @@ fi
 
 FILES=`ls *cpp | grep -v Rlamch`
 for filename in $FILES; do
-/usr/local/bin/ctags -x --c++-kinds=pf --language-force=c++ --_xformat='%{typeref} %{name} %{signature};' ${filename} |  tr ':' ' ' | sed -e 's/^typename //' >  ${filename%.*}.hpp
+ctags -x --c++-kinds=pf --language-force=c++ --_xformat='%{typeref} %{name} %{signature};' ${filename} |  tr ':' ' ' | sed -e 's/^typename //' >  ${filename%.*}.hpp
 done
 
 printf "REAL Rlamch(const char *cmach);\nREAL Rlamc3(REAL a, REAL b);\n" > Rlamch.hpp
