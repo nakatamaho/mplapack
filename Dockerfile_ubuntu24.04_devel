@@ -1,26 +1,26 @@
 # * How to build (for public users - read-only access)
-#  docker build -f Dockerfile_ubuntu24.04_fable -t mplapack:fable .
+#  docker build -f Dockerfile_ubuntu24.04_devel -t mplapack:devel .
 #
 # * How to build (for maintainers with SSH key - read-write access)
-# DOCKER_BUILDKIT=1 docker build -f Dockerfile_ubuntu24.04_fable   --build-arg DOCKER_UID="$(id -u)"   --build-arg DOCKER_GID="$(id -g)"   --build-arg USE_SSH=true   --build-arg SSH_KEY_NAME="${SSH_KEY_NAME:-id_ed25519}"   --secret id=ssh_key,src="$HOME/.ssh/${SSH_KEY_NAME:-id_ed25519}"   -t mplapack:fable .
+# DOCKER_BUILDKIT=1 docker build -f Dockerfile_ubuntu24.04_devel --build-arg DOCKER_UID="$(id -u)" --build-arg DOCKER_GID="$(id -g)" --build-arg USE_SSH=true --build-arg SSH_KEY_NAME="${SSH_KEY_NAME:-id_ed25519}" --secret id=ssh_key,src="$HOME/.ssh/${SSH_KEY_NAME:-id_ed25519}" -t mplapack:devel .
 #
 # * How to build with custom repository (for users with forks)
-# DOCKER_BUILDKIT=1 docker build -f Dockerfile_ubuntu24.04_fable --build-arg DOCKER_UID=$(id -u) --build-arg DOCKER_GID=$(id -g) --build-arg MPLAPACK_REPO=https://github.com/username/mplapack.git -t mplapack:fable .
+# DOCKER_BUILDKIT=1 docker build -f Dockerfile_ubuntu24.04_devel --build-arg DOCKER_UID=$(id -u) --build-arg DOCKER_GID=$(id -g) --build-arg MPLAPACK_REPO=https://github.com/username/mplapack.git -t mplapack:devel .
 #
 # * How to build with custom repository using SSH
-# SSH_KEY_NAME=id_ed25519 DOCKER_BUILDKIT=1 docker build -f Dockerfile_ubuntu24.04_fable --build-arg DOCKER_UID=$(id -u) --build-arg DOCKER_GID=$(id -g) --build-arg USE_SSH=true --build-arg SSH_KEY_NAME=${SSH_KEY_NAME} --build-arg MPLAPACK_REPO=https://github.com/<username>/mplapack.git --secret id=ssh_key,src=$HOME/.ssh/${SSH_KEY_NAME} -t mplapack:fable .
+# SSH_KEY_NAME=id_ed25519 DOCKER_BUILDKIT=1 docker build -f Dockerfile_ubuntu24.04_devel --build-arg DOCKER_UID=$(id -u) --build-arg DOCKER_GID=$(id -g) --build-arg USE_SSH=true --build-arg SSH_KEY_NAME=${SSH_KEY_NAME} --build-arg MPLAPACK_REPO=https://github.com/<username>/mplapack.git --secret id=ssh_key,src=$HOME/.ssh/${SSH_KEY_NAME} -t mplapack:devel .
 #
 # * How to run
 #  sudo sh -c 'echo -1 >/proc/sys/kernel/perf_event_paranoid' # to run perf
 #  or
 #  sudo sysctl -w kernel.perf_event_paranoid=-1 # to run perf
-#  docker run --privileged --gpus all -it --rm mplapack:fable /bin/bash
+#  docker run --privileged --gpus all -it --rm mplapack:devel /bin/bash
 #
 # * How to run with SSH key for git operations (maintainers only)
-#  eval $(ssh-agent); ssh-add ~/.ssh/id_ed25519; docker run --privileged --gpus all -v $SSH_AUTH_SOCK:/ssh-agent -e SSH_AUTH_SOCK=/ssh-agent -it --rm mplapack:fable /bin/bash
+#  eval $(ssh-agent); ssh-add ~/.ssh/id_ed25519; docker run --privileged --gpus all -v $SSH_AUTH_SOCK:/ssh-agent -e SSH_AUTH_SOCK=/ssh-agent -it --rm mplapack:devel /bin/bash
 #
 # https://hub.docker.com/r/nvidia/cuda/tags
-FROM nvidia/cuda:13.0.1-devel-ubuntu24.04
+FROM nvidia/cuda:13.1.1-devel-ubuntu24.04
 
 #git setting
 ARG GIT_EMAIL="maho.nakata@gmail.com"
@@ -57,11 +57,11 @@ RUN echo "${TZ}" > /etc/timezone \
   && ln -s /usr/share/zoneinfo/Asia/Tokyo /etc/localtime \
   && dpkg-reconfigure -f noninteractive tzdata
 
-RUN apt install -y build-essential python3 gcc g++ gfortran
-RUN apt install -y autotools-dev automake libtool libtool-bin gnuplot
+RUN apt install -y build-essential python3 python3-pip gcc g++ gfortran
+RUN apt install -y autotools-dev automake libtool libtool-bin universal-ctags gnuplot
 RUN apt install -y gdb valgrind linux-tools-`uname -r` google-perftools linux-headers-`uname -r`
 RUN apt install -y git wget gpg ccache time parallel bc
-RUN apt install -y pkg-config clangd clang-format unifdef octave
+RUN apt install -y pkg-config clangd python3-autopep8 clang-format-19 unifdef octave
 RUN apt install -y ng-common ng-cjk emacs-nox
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 1
 
@@ -93,56 +93,25 @@ RUN apt-get update -y && apt-get install -y --install-recommends winehq-stable
 #RUN apt install -y cuda-drivers
 ### cuda end ###
 
-### clang-format-19 start ###
-RUN apt update && apt install -y wget gnupg lsb-release
-RUN wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | gpg --dearmor -o /usr/share/keyrings/llvm-archive-keyring.gpg
-RUN echo "deb [signed-by=/usr/share/keyrings/llvm-archive-keyring.gpg] http://apt.llvm.org/jammy/ llvm-toolchain-jammy-19 main" \
-    > /etc/apt/sources.list.d/llvm.list
-RUN apt update && apt install -y clang-format-19
-### clang-format-19 end ###
-
 # create non-root user without password and allow passwordless sudo
 ARG DOCKER_UID=2000
 ARG DOCKER_GID=2000
 ARG DOCKER_USER=docker
 
 RUN set -eux; \
-    # 1. Check if a user with UID=DOCKER_UID already exists
-    if getent passwd "${DOCKER_UID}" >/dev/null; then \
-        old_user="$(getent passwd "${DOCKER_UID}" | cut -d: -f1)"; \
-        echo "Reusing existing user ${old_user} (uid=${DOCKER_UID}) as ${DOCKER_USER}"; \
-        \
-        # 2. If a group with GID=DOCKER_GID exists, rename it to DOCKER_USER if necessary
-        if getent group "${DOCKER_GID}" >/dev/null; then \
-            old_group="$(getent group "${DOCKER_GID}" | cut -d: -f1)"; \
-            if [ "${old_group}" != "${DOCKER_USER}" ]; then \
-                groupmod -n "${DOCKER_USER}" "${old_group}"; \
-            fi; \
-        fi; \
-        \
-        # 3. Rename the existing user to DOCKER_USER
-        if [ "${old_user}" != "${DOCKER_USER}" ]; then \
-            usermod -l "${DOCKER_USER}" "${old_user}"; \
-        fi; \
-        \
-        # 4. Change home directory to /home/DOCKER_USER and move its contents (-m)
-        usermod -d "/home/${DOCKER_USER}" -m "${DOCKER_USER}"; \
+    existing="$(getent passwd ${DOCKER_UID} | cut -d: -f1 || true)"; \
+    if [ -n "$existing" ]; then \
+        usermod -l "${DOCKER_USER}" -d "/home/${DOCKER_USER}" -m "$existing"; \
+        groupmod -n "${DOCKER_USER}" "$(id -gn ${DOCKER_UID})" 2>/dev/null || true; \
     else \
-        # UID is free: create a fresh user/group
-        groupadd -g "${DOCKER_GID}" "${DOCKER_USER}" || true; \
-        useradd -u "${DOCKER_UID}" -g "${DOCKER_GID}" -m "${DOCKER_USER}" --shell /bin/bash; \
+        groupadd -g "${DOCKER_GID}" "${DOCKER_USER}" 2>/dev/null || true; \
+        useradd -u "${DOCKER_UID}" -g "${DOCKER_GID}" -m -s /bin/bash "${DOCKER_USER}"; \
     fi; \
-    \
-    # 5. Add the user to sudo group and allow passwordless sudo
     usermod -aG sudo "${DOCKER_USER}"; \
-    echo "${DOCKER_USER} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/90-"${DOCKER_USER}"-nopasswd; \
-    chmod 0440 /etc/sudoers.d/90-"${DOCKER_USER}"-nopasswd
+    echo "${DOCKER_USER} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/"${DOCKER_USER}"; \
+    chmod 440 /etc/sudoers.d/"${DOCKER_USER}"
 
 ARG WORK=/home/${DOCKER_USER}
-
-#install ctag
-RUN cd ${WORK} && git clone https://github.com/universal-ctags/ctags.git
-RUN cd ${WORK} && cd ctags && ./autogen.sh && ./configure --prefix=/usr/local && make && make install
 
 USER docker     
 USER ${DOCKER_USER}
@@ -158,49 +127,13 @@ RUN echo -e "\n\
         END PROGRAM\n\
 " >> ${WORK}/sample.f
 
-#setting lsp mode for C++ https://emacs-lsp.github.io/lsp-mode/tutorials/CPP-guide/
-RUN cd ${WORK} && mkdir -p .emacs.d
-RUN echo -e "(require 'package)\n\
-(add-to-list 'package-archives '(\"melpa\" . \"http://melpa.org/packages/\") t)\n\
-(package-initialize)\n\
-\n\
-(setq package-selected-packages '(lsp-mode yasnippet lsp-treemacs helm-lsp\n\
-    projectile hydra flycheck company avy which-key helm-xref dap-mode))\n\
-\n\
-(when (cl-find-if-not #'package-installed-p package-selected-packages)\n\
-  (package-refresh-contents)\n\
-  (mapc #'package-install package-selected-packages))\n\
-\n\
-;; sample 'helm' configuration use https://github.com/emacs-helm/helm/ for details\n\
-(helm-mode)\n\
-(require 'helm-xref)\n\
-(define-key global-map [remap find-file] #'helm-find-files)\n\
-(define-key global-map [remap execute-extended-command] #'helm-M-x)\n\
-(define-key global-map [remap switch-to-buffer] #'helm-mini)\n\
-\n\
-(which-key-mode)\n\
-(add-hook 'c-mode-hook 'lsp)\n\
-(add-hook 'c++-mode-hook 'lsp)\n\
-\n\
-(setq gc-cons-threshold (* 100 1024 1024)\n\
-      read-process-output-max (* 1024 1024)\n\
-      treemacs-space-between-root-nodes nil\n\
-      company-idle-delay 0.0\n\
-      company-minimum-prefix-length 1\n\
-      lsp-idle-delay 0.1)  ;; clangd is fast\n\
-\n\
-(with-eval-after-load 'lsp-mode\n\
-  (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration)\n\
-  (require 'dap-cpptools)\n\
-  (yas-global-mode))\n\
-" >> ${WORK}/.emacs.d/init.el
-
 RUN cd ${WORK} && echo "cd /home/$DOCKER_USER" >> .bashrc
 
 ## intel one api and wine settings start ###
 RUN cd ${WORK} && echo "#source /opt/intel/oneapi/setvars.sh" >> .bashrc
-RUN cd ${WORK} && echo "export WINEPATH=\"/usr/x86_64-w64-mingw32/lib/;/usr/lib/gcc/x86_64-w64-mingw32/10-win32/;/usr/lib/gcc/x86_64-w64-mingw32/10-posix;/home/$DOCKER_USER/MPLAPACK_MINGW/bin\"" >> .bashrc
-RUN cd ${WORK} && echo "export PATH=\"$PATH:/opt/wine-stable/bin\"" >> .bashrc
+RUN cd ${WORK} && GCC_VER=$(x86_64-w64-mingw32-gcc -dumpversion | cut -d- -f1) && \
+    echo "export WINEPATH=\"/usr/x86_64-w64-mingw32/lib/;/usr/lib/gcc/x86_64-w64-mingw32/${GCC_VER}-win32/;/usr/lib/gcc/x86_64-w64-mingw32/${GCC_VER}-posix;/home/$DOCKER_USER/MPLAPACK_MINGW/bin\"" >> .bashrc
+RUN cd ${WORK} && echo "export PATH=\"\$PATH:/opt/wine-stable/bin\"" >> .bashrc
 RUN cd ${WORK} && echo "export WINEDEBUG=\"-all\"" >> .bashrc
 ## intel one api and wine settings end ###
 
@@ -218,7 +151,7 @@ RUN if [ "$USE_SSH" != "true" ]; then \
         echo "=== Cloning via HTTPS (public read-only mode) ===" && \
         echo "Repository: ${MPLAPACK_REPO}" && \
         cd ${WORK} && git clone ${MPLAPACK_REPO} && \
-        cd ${WORK}/mplapack && git checkout refactor/fable && \
+        cd ${WORK}/mplapack && git checkout release/2.1 && \
         cd ${WORK}/mplapack && git log -1; \
     fi
 
@@ -234,25 +167,26 @@ RUN --mount=type=secret,id=ssh_key,uid=${DOCKER_UID} \
         eval "$(ssh-agent -s)" && \
         ssh-add /home/$DOCKER_USER/.ssh/${SSH_KEY_NAME} && \
         cd ${WORK} && git clone ${SSH_REPO} && \
-        cd ${WORK}/mplapack && git checkout refactor/fable && \
+        cd ${WORK}/mplapack && git checkout release/2.1 && \
         cd ${WORK}/mplapack && git log -1 && \
         rm -f /home/$DOCKER_USER/.ssh/${SSH_KEY_NAME}; \
     fi
 
 RUN cd ${WORK}/mplapack && bash -x misc/reconfig.ubuntu24.04.sh
 RUN cd ${WORK}/mplapack && make clean
-RUN cd ${WORK}/mplapack && make -j`getconf _NPROCESSORS_ONLN`
+RUN cd ${WORK}/mplapack && make -j
 RUN cd ${WORK}/mplapack && make install
 
 RUN cd ${WORK}/mplapack && bash -x misc/reconfig.ubuntu24.04.nvidia.sh
 RUN cd ${WORK}/mplapack && make clean
-RUN cd ${WORK}/mplapack && make -j`getconf _NPROCESSORS_ONLN`
+RUN cd ${WORK}/mplapack && make -j
 RUN cd ${WORK}/mplapack && make install
 
-ARG WINEPATH="/usr/x86_64-w64-mingw32/lib/;/usr/lib/gcc/x86_64-w64-mingw32/10-win32/;/usr/lib/gcc/x86_64-w64-mingw32/10-posix"
-ARG WINEDEBUG="-all"
 ENV PATH="$PATH:/opt/wine-stable/bin"
-RUN cd ${WORK}/mplapack && bash -x misc/reconfig.ubuntu24.04.mingw64.sh
+RUN GCC_VER=$(x86_64-w64-mingw32-gcc -dumpversion | cut -d- -f1) && \
+    export WINEPATH="/usr/x86_64-w64-mingw32/lib/;/usr/lib/gcc/x86_64-w64-mingw32/${GCC_VER}-win32/;/usr/lib/gcc/x86_64-w64-mingw32/${GCC_VER}-posix" && \
+    export WINEDEBUG="-all" && \
+    cd ${WORK}/mplapack && bash -x misc/reconfig.ubuntu24.04.mingw64.sh
 RUN cd ${WORK}/mplapack && make clean
-RUN cd ${WORK}/mplapack && make -j`getconf _NPROCESSORS_ONLN`
+RUN cd ${WORK}/mplapack && make -j
 RUN cd ${WORK}/mplapack && make install

@@ -107,36 +107,17 @@ ARG DOCKER_GID=2000
 ARG DOCKER_USER=docker
 
 RUN set -eux; \
-    # 1. Check if a user with UID=DOCKER_UID already exists
-    if getent passwd "${DOCKER_UID}" >/dev/null; then \
-        old_user="$(getent passwd "${DOCKER_UID}" | cut -d: -f1)"; \
-        echo "Reusing existing user ${old_user} (uid=${DOCKER_UID}) as ${DOCKER_USER}"; \
-        \
-        # 2. If a group with GID=DOCKER_GID exists, rename it to DOCKER_USER if necessary
-        if getent group "${DOCKER_GID}" >/dev/null; then \
-            old_group="$(getent group "${DOCKER_GID}" | cut -d: -f1)"; \
-            if [ "${old_group}" != "${DOCKER_USER}" ]; then \
-                groupmod -n "${DOCKER_USER}" "${old_group}"; \
-            fi; \
-        fi; \
-        \
-        # 3. Rename the existing user to DOCKER_USER
-        if [ "${old_user}" != "${DOCKER_USER}" ]; then \
-            usermod -l "${DOCKER_USER}" "${old_user}"; \
-        fi; \
-        \
-        # 4. Change home directory to /home/DOCKER_USER and move its contents (-m)
-        usermod -d "/home/${DOCKER_USER}" -m "${DOCKER_USER}"; \
+    existing="$(getent passwd ${DOCKER_UID} | cut -d: -f1 || true)"; \
+    if [ -n "$existing" ]; then \
+        usermod -l "${DOCKER_USER}" -d "/home/${DOCKER_USER}" -m "$existing"; \
+        groupmod -n "${DOCKER_USER}" "$(id -gn ${DOCKER_UID})" 2>/dev/null || true; \
     else \
-        # UID is free: create a fresh user/group
-        groupadd -g "${DOCKER_GID}" "${DOCKER_USER}" || true; \
-        useradd -u "${DOCKER_UID}" -g "${DOCKER_GID}" -m "${DOCKER_USER}" --shell /bin/bash; \
+        groupadd -g "${DOCKER_GID}" "${DOCKER_USER}" 2>/dev/null || true; \
+        useradd -u "${DOCKER_UID}" -g "${DOCKER_GID}" -m -s /bin/bash "${DOCKER_USER}"; \
     fi; \
-    \
-    # 5. Add the user to sudo group and allow passwordless sudo
     usermod -aG sudo "${DOCKER_USER}"; \
-    echo "${DOCKER_USER} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/90-"${DOCKER_USER}"-nopasswd; \
-    chmod 0440 /etc/sudoers.d/90-"${DOCKER_USER}"-nopasswd
+    echo "${DOCKER_USER} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/"${DOCKER_USER}"; \
+    chmod 440 /etc/sudoers.d/"${DOCKER_USER}"
 
 ARG WORK=/home/${DOCKER_USER}
 
