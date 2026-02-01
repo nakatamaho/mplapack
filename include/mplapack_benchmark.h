@@ -44,6 +44,9 @@
 #define DYLIB_SUFFIX ".so"
 #endif
 
+using std::max;
+using std::min;
+
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
 #include <mplapack_benchmark_mpfr.h>
 #define MPLAPACK_REF_LIB "libmplapack_mpfr"
