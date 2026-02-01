@@ -136,11 +136,6 @@ inline void sprintnum_short(char *buf, std::complex<_Float128> rtmp) {
 }
 #endif
 
-inline _Float128 pow2(const _Float128 &a) { return a * a; }
-inline _Float128 pow4(const _Float128 &a) { return a * a * a * a; }
-inline std::complex<_Float128> pow2(const std::complex<_Float128> &a) { return a * a; }
-inline std::complex<_Float128> pow4(const std::complex<_Float128> &a) { return a * a * a * a; }
-
 // when _Float128 == long double, followings are already defined.
 
 #if !defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___
@@ -163,6 +158,14 @@ inline _Float128 log(const _Float128 &a) { return logf128(a); }
 inline _Float128 log10(const _Float128 &a) { return log10f128(a); }
 inline _Float128 log2(const _Float128 &a) { return logf128(a) / logf128(2.0); }
 inline _Float128 ceil(_Float128 a) { return ceilf128(a); }
+inline _Float128 ldexp(const _Float128 &a, int exp) { return ldexpf128(a, exp); }
+inline _Float128 nextafter(const _Float128 &a, const _Float128 &b) { return nextafterf128(a, b); }
+
+#else
+// _Float128 is long double
+inline _Float128 ldexp(const _Float128 &a, int exp) { return ldexpl(a, exp); }
+inline _Float128 nextafter(const _Float128 &a, const _Float128 &b) { return nextafterl(a, b); }
+
 #endif
 
 #ifdef __cplusplus
@@ -328,8 +331,6 @@ extern "C" {
 #endif
 typedef long double _Float128;
 
-inline long double pow2(const long double &a) { return a * a; }
-
 // implementation of sign transfer function.
 inline long double sign(long double a, long double b) {
     long double mtmp;
@@ -458,7 +459,6 @@ inline _Float128 pow(const _Float128 &a, const _Float128 &b) { return powq(a, b)
 inline _Float128 pow(const long &a, const long &b) { return powq((_Float128)a, (_Float128)b); }
 inline _Float128 pow(const int &a, const long &b) { return powq((_Float128)a, (_Float128)b); }
 inline _Float128 pow(const _Float128 &a, const long &b) { return powq(a, (_Float128)b); }
-inline _Float128 pow2(const _Float128 &a) { return a * a; }
 
 inline _Float128 sqrt(const _Float128 &a) { return sqrtq(a); }
 
@@ -473,6 +473,8 @@ inline _Float128 exp(const _Float128 &a) { return expq(a); }
 inline _Float128 log(const _Float128 &a) { return logq(a); }
 inline _Float128 log10(const _Float128 &a) { return log10q(a); }
 inline _Float128 log2(const _Float128 &a) { return logq(a) / logq(2.0); }
+inline _Float128 ldexp(const _Float128 &a, int exp) { return ldexpq(a, exp); }
+inline _Float128 nextafter(const _Float128 &a, const _Float128 &b) { return nextafterq(a, b); }
 
 #ifdef __cplusplus
 extern "C" {
@@ -690,6 +692,21 @@ template <typename... Args, typename = std::enable_if_t<(std::is_same_v<_Float12
 #define MPLAPACK_POW2_MPLAPACKINT_DEFINED
 inline mplapackint pow2(mplapackint a) { return a * a; }
 #endif // MPLAPACK_POW2_MPLAPACKINT_DEFINED
+
+// Square and quartic for REAL (computational kernels)
+#ifndef MPLAPACK_POW2_POW4_FLOAT128_DEFINED
+#define MPLAPACK_POW2_POW4_FLOAT128_DEFINED
+inline _Float128 pow2(const _Float128 &a) { return a * a; }
+inline _Float128 pow4(const _Float128 &a) {
+    _Float128 tmp = a * a;
+    return tmp * tmp;
+}
+inline std::complex<_Float128> pow2(const std::complex<_Float128> &a) { return a * a; }
+inline std::complex<_Float128> pow4(const std::complex<_Float128> &a) {
+    std::complex<_Float128> tmp = a * a;
+    return tmp * tmp;
+}
+#endif // MPLAPACK_POW2_POW4_FLOAT128_DEFINED
 
 #ifndef MPLAPACK_CHAR_UTILS_H
 #define MPLAPACK_CHAR_UTILS_H

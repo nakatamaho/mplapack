@@ -1653,31 +1653,37 @@ void Rlamch__Float128_test() {
         exit(1);
     };
 
-    // libm entry points for binary128 helpers.
-    _Float128 ldexpf128(_Float128, int);
-    _Float128 nextafterf128(_Float128, _Float128);
-
     const _Float128 zero = (_Float128)0.0;
     const _Float128 one = (_Float128)1.0;
     const _Float128 two = (_Float128)2.0;
 
-    // Expected values for IEEE-754 binary128 based on compiler-provided parameters.
+// Expected values for IEEE-754 binary128 based on compiler-provided parameters.
+// When _Float128 is actually long double (binary128), use __LDBL_* macros.
+#if defined(__FLT128_MANT_DIG__)
     const int p = (int)__FLT128_MANT_DIG__;
     const int emin = (int)__FLT128_MIN_EXP__;
     const int emax = (int)__FLT128_MAX_EXP__;
+#elif defined(__LDBL_MANT_DIG__) && __LDBL_MANT_DIG__ == 113
+    // long double is binary128 (e.g., aarch64, ppc64le with IEEE)
+    const int p = (int)__LDBL_MANT_DIG__;
+    const int emin = (int)__LDBL_MIN_EXP__;
+    const int emax = (int)__LDBL_MAX_EXP__;
+#else
+#error "Cannot determine binary128 parameters: neither __FLT128_* nor binary128 long double available"
+#endif
 
     const _Float128 exB = two;
     const _Float128 exN = (_Float128)p;
 
     // ulp(1) = 2^(1-p), unit roundoff E = ulp(1)/2.
-    const _Float128 exP = ldexpf128(one, 1 - p);
+    const _Float128 exP = ldexp(one, 1 - p);
     const _Float128 exE = exP / two;
 
     // DLAMCH-style exponents: rmin = 2^(emin-1), rmax = (1-E)*2^emax.
     const _Float128 exM = (_Float128)emin;
     const _Float128 exL = (_Float128)emax;
-    const _Float128 exU = ldexpf128(one, emin - 1);
-    const _Float128 exO = ldexpf128(one - ldexpf128(one, -p), emax);
+    const _Float128 exU = ldexp(one, emin - 1);
+    const _Float128 exO = ldexp(one - ldexp(one, -p), emax);
 
     // Safe minimum: max(rmin, (1/rmax)*(1+E)).
     const _Float128 small = one / exO;
@@ -1714,7 +1720,7 @@ void Rlamch__Float128_test() {
     assert_case(gotZ == exZ, "Z (dummy) is not 0");
 
     // Operational property checks.
-    const _Float128 next = nextafterf128(one, two);
+    const _Float128 next = nextafter(one, two);
     assert_case((next - one) == gotP, "P is not equal to ulp(1) = nextafter(1,2)-1");
     assert_case((gotE * two) == gotP, "expected P == 2*E");
 
@@ -1744,7 +1750,7 @@ void Rlamch__Float128_test() {
 
     // Cross-check: U*O == (1-E)*2^(emin+emax-1).
     const _Float128 got_prod = gotU * gotO;
-    const _Float128 expected_prod = ldexpf128(one - gotE, emin + emax - 1);
+    const _Float128 expected_prod = ldexp(one - gotE, emin + emax - 1);
     assert_case(got_prod == expected_prod, "U*O cross-check failed (inconsistent rmin/rmax model)");
 
     if (print_values) {
