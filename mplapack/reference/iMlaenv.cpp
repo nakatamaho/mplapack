@@ -56,7 +56,6 @@ iMlaenv(INTEGER const ispec, const char *name, const char *opts, INTEGER const n
     INTEGER nb = 0;
     INTEGER nbmin = 0;
     INTEGER nx = 0;
-    INTEGER name_len;
     //
     switch (ispec) {
     case 1:
@@ -509,7 +508,7 @@ statement_100:
     //
     // ISPEC = 6:  crossover point for SVD (used by xGELSS and xGESVD)
     //
-    return_value = castINTEGER(castREAL(min(n1, n2)) * 1.6e0);
+    return_value = castINTEGER(castREAL(min(n1, n2)) * 1.6);
     return return_value;
 //
 statement_110:

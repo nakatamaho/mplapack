@@ -198,7 +198,7 @@ void Rlag2(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const sa
     // Scale first eigenvalue
     //
     REAL wabs = abs(wr1) + abs(wi);
-    const REAL fuzzy1 = one + 1e-05;
+    const REAL fuzzy1 = one + 0.00001;
     REAL wsize = max(safmin, c1, fuzzy1 * (wabs * c2 + c3), min(c4, half * max(wabs, c5)));
     REAL wscale = 0.0;
     if (wsize != one) {
