@@ -106,4 +106,8 @@ typedef std::complex<_Float128> COMPLEX;
 #define castREAL castREAL__Float128
 #endif
 
+#include <algorithm>
+using std::max;
+using std::min;
+
 #endif

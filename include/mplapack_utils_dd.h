@@ -161,7 +161,7 @@ inline mplapackint castINTEGER_dd(dd_real a) {
     return i;
 }
 
-inline long __dd_nint(dd_real a) {
+inline long mplapack_dd_nint(dd_real a) {
     long i;
     dd_real tmp;
     a = a + 0.5;
@@ -330,7 +330,12 @@ inline mplapackint iceil(const dd_real &x) {
 #endif // MPLAPACK_ICEIL_DD_REAL_DEFINED
 
 #ifndef MPLAPACK_MOD_UTILS_H
+#define MPLAPACK_MOD_UTILS_H
 inline mplapackint mod(mplapackint a, mplapackint b) { return a % b; }
 #endif // MPLAPACK_MOD_UTILS_H
+
+#ifndef nint
+#define nint mplapack_dd_nint
+#endif
 
 #endif

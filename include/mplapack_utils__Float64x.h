@@ -427,6 +427,7 @@ inline mplapackint iceil(_Float64x x) {
 #endif // MPLAPACK_ICEIL_FLOAT64X_DEFINED
 
 #ifndef MPLAPACK_MOD_UTILS_H
+#define MPLAPACK_MOD_UTILS_H
 inline mplapackint mod(mplapackint a, mplapackint b) { return a % b; }
 #endif // MPLAPACK_MOD_UTILS_H
 

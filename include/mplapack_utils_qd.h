@@ -165,7 +165,7 @@ inline mplapackint castINTEGER_qd(qd_real a) {
     return i;
 }
 
-inline long __qd_nint(qd_real a) {
+inline long mplapack_qd_nint(qd_real a) {
     long i;
     qd_real tmp;
     a = a + 0.5;
@@ -329,7 +329,12 @@ inline mplapackint iceil(const qd_real &x) {
 #endif // MPLAPACK_ICEIL_QD_REAL_DEFINED
 
 #ifndef MPLAPACK_MOD_UTILS_H
+#define MPLAPACK_MOD_UTILS_H
 inline mplapackint mod(mplapackint a, mplapackint b) { return a % b; }
 #endif // MPLAPACK_MOD_UTILS_H
+
+#ifndef nint
+#define nint mplapack_qd_nint
+#endif
 
 #endif
