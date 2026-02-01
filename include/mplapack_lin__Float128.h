@@ -259,6 +259,7 @@ void Ctsqr01(fem::str_cref tssw, mplapackint const m, mplapackint const n, mplap
 void Cunhr_col01(mplapackint const m, mplapackint const n, mplapackint const mb1, mplapackint const nb1, mplapackint const nb2, _Float128 *result);
 void Cunhr_col02(mplapackint const m, mplapackint const n, mplapackint const mb1, mplapackint const nb1, mplapackint const nb2, _Float128 *result);
 void Mxerbla__Float128(const char *srname, int info);
+void Mxlaenv(mplapackint const ispec, mplapackint const nvalue);
 void Rchkeq(_Float128 const thresh, mplapackint const nout);
 void Rchkgb(bool *dotype, mplapackint const nm, mplapackint *mval, mplapackint const nn, mplapackint *nval, mplapackint const nnb, mplapackint *nbval, mplapackint const nns, mplapackint *nsval, _Float128 const thresh, bool const tsterr, _Float128 *a, mplapackint const la, _Float128 *afac, mplapackint const lafac, _Float128 *b, _Float128 *x, _Float128 *xact, _Float128 *work, _Float128 *rwork, mplapackint *iwork, mplapackint const nout);
 void Rchkge(bool *dotype, mplapackint const nm, mplapackint *mval, mplapackint const nn, mplapackint *nval, mplapackint const nnb, mplapackint *nbval, mplapackint const nns, mplapackint *nsval, _Float128 const thresh, bool const tsterr, mplapackint const nmax, _Float128 *a, _Float128 *afac, _Float128 *ainv, _Float128 *b, _Float128 *x, _Float128 *xact, _Float128 *work, _Float128 *rwork, mplapackint *iwork, mplapackint const nout);
@@ -421,7 +422,5 @@ void Rtrt03(fem::str_cref uplo, fem::str_cref trans, fem::str_cref diag, mplapac
 void Rtrt05(fem::str_cref uplo, fem::str_cref trans, fem::str_cref diag, mplapackint const n, mplapackint const nrhs, _Float128 *a, mplapackint const lda, _Float128 *b, mplapackint const ldb, _Float128 *x, mplapackint const ldx, _Float128 *xact, mplapackint const ldxact, _Float128 *ferr, _Float128 *berr, _Float128 *reslts);
 void Rtrt06(_Float128 const rcond, _Float128 const rcondc, fem::str_cref uplo, fem::str_cref diag, mplapackint const n, _Float128 *a, mplapackint const lda, _Float128 *work, _Float128 &rat);
 void Rtsqr01(fem::str_cref tssw, mplapackint const m, mplapackint const n, mplapackint const mb, mplapackint const nb, _Float128 *result);
-void chkxer(const char *srnamt, mplapackint const &infot, mplapackint const &nout, bool &lerr, bool &ok);
 void icopy(mplapackint const n, mplapackint *sx, mplapackint const incx, mplapackint *sy, mplapackint const incy);
-void xlaenv(mplapackint const &ispec, mplapackint const &nvalue);
 #endif

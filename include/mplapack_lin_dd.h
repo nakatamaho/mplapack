@@ -262,6 +262,7 @@ void Ctsqr01(fem::str_cref tssw, mplapackint const m, mplapackint const n, mplap
 void Cunhr_col01(mplapackint const m, mplapackint const n, mplapackint const mb1, mplapackint const nb1, mplapackint const nb2, dd_real *result);
 void Cunhr_col02(mplapackint const m, mplapackint const n, mplapackint const mb1, mplapackint const nb1, mplapackint const nb2, dd_real *result);
 void Mxerbla_dd(const char *srname, int info);
+void Mxlaenv(mplapackint const ispec, mplapackint const nvalue);
 void Rchkeq(dd_real const thresh, mplapackint const nout);
 void Rchkgb(bool *dotype, mplapackint const nm, mplapackint *mval, mplapackint const nn, mplapackint *nval, mplapackint const nnb, mplapackint *nbval, mplapackint const nns, mplapackint *nsval, dd_real const thresh, bool const tsterr, dd_real *a, mplapackint const la, dd_real *afac, mplapackint const lafac, dd_real *b, dd_real *x, dd_real *xact, dd_real *work, dd_real *rwork, mplapackint *iwork, mplapackint const nout);
 void Rchkge(bool *dotype, mplapackint const nm, mplapackint *mval, mplapackint const nn, mplapackint *nval, mplapackint const nnb, mplapackint *nbval, mplapackint const nns, mplapackint *nsval, dd_real const thresh, bool const tsterr, mplapackint const nmax, dd_real *a, dd_real *afac, dd_real *ainv, dd_real *b, dd_real *x, dd_real *xact, dd_real *work, dd_real *rwork, mplapackint *iwork, mplapackint const nout);
@@ -424,7 +425,5 @@ void Rtrt03(fem::str_cref uplo, fem::str_cref trans, fem::str_cref diag, mplapac
 void Rtrt05(fem::str_cref uplo, fem::str_cref trans, fem::str_cref diag, mplapackint const n, mplapackint const nrhs, dd_real *a, mplapackint const lda, dd_real *b, mplapackint const ldb, dd_real *x, mplapackint const ldx, dd_real *xact, mplapackint const ldxact, dd_real *ferr, dd_real *berr, dd_real *reslts);
 void Rtrt06(dd_real const rcond, dd_real const rcondc, fem::str_cref uplo, fem::str_cref diag, mplapackint const n, dd_real *a, mplapackint const lda, dd_real *work, dd_real &rat);
 void Rtsqr01(fem::str_cref tssw, mplapackint const m, mplapackint const n, mplapackint const mb, mplapackint const nb, dd_real *result);
-void chkxer(const char *srnamt, mplapackint const &infot, mplapackint const &nout, bool &lerr, bool &ok);
 void icopy(mplapackint const n, mplapackint *sx, mplapackint const incx, mplapackint *sy, mplapackint const incy);
-void xlaenv(mplapackint const &ispec, mplapackint const &nvalue);
 #endif
