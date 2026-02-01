@@ -40,36 +40,18 @@
 using namespace fem::major_types;
 using fem::common;
 
-#include <mplapack_matgen.h>
-#include <mplapack_lin.h>
-
 #define __MPLAPACK_XLAENV__
 #include <mplapack_debug.h>
 
-void xlaenv(INTEGER const &ispec, INTEGER const &nvalue) {
-    // COMMON claenv
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Arrays in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Save statement ..
-    //     ..
-    //     .. Executable Statements ..
+#include <mplapack_matgen.h>
+#include <mplapack_lin.h>
+
+void Mxlaenv(INTEGER const ispec, INTEGER const nvalue) {
     //
     if (ispec >= 1 && ispec <= 9) {
         iparms[ispec - 1] = nvalue;
     }
     //
-    // End of xlaenv
+    // End of Mxlaenv
     //
 }
