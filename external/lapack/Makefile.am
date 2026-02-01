@@ -42,8 +42,12 @@ work/$(CONFIGURE_STAMP): work/$(PATCH_STAMP)
 	echo "FFLAGS = $(FCFLAGS)" >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
 	echo "FFLAGS_DRV = \$$(FFLAGS)" >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
 	echo "FFLAGS_NOOPT = -O0" >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
-	echo "LDFLAGS ="       >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
-	echo "AR = $(AR)"         >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
+if IS_MINGW
+	echo "LDFLAGS = -Wl,--stack,33554432" >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
+else
+	echo "LDFLAGS =" >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
+endif
+	echo "AR = $(AR)"        >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
 	echo "ARFLAGS = cr"      >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
 	echo "RANLIB = $(RANLIB)"   >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
 if IS_INTELCC
