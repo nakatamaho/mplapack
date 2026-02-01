@@ -60,7 +60,6 @@ typedef qd_complex COMPLEX;
 #define Mxerbla Mxerbla_qd
 #define castINTEGER castINTEGER_qd
 #define castREAL castREAL_qd
-#define nint __qd_nint
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_DD___
@@ -72,7 +71,6 @@ typedef dd_complex COMPLEX;
 #define Mxerbla Mxerbla_dd
 #define castINTEGER castINTEGER_dd
 #define castREAL castREAL_dd
-#define nint __dd_nint
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_DOUBLE___
