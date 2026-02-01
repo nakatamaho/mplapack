@@ -29,6 +29,10 @@
 #ifndef _MPLAPACK_MATGEN_DD_H_
 #define _MPLAPACK_MATGEN_DD_H_
 
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+
 #include "mplapack_config.h"
 #include "qd/dd_real.h"
 #include "dd_complex.h"

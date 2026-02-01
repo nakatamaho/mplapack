@@ -29,6 +29,10 @@
 #ifndef _MPLAPACK_MATGEN__FLOAT64X_H_
 #define _MPLAPACK_MATGEN__FLOAT64X_H_
 
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+
 #include "mplapack_config.h"
 
 _Float64x Rlamch__Float64x(const char *cmach);
