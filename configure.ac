@@ -30,6 +30,7 @@ sed -e "s/%%mplapack_ver_major%%/MPLAPACK_VER_MAJOR/g" \
      mplapack/reference/iMlaver.cpp.in > mplapack/reference/iMlaver.cpp
 
 AC_CANONICAL_TARGET
+AX_CXX_COMPILE_STDCXX([17], [ext], [mandatory])
 
 : ${CFLAGS=""}
 : ${CXXFLAGS=""}
