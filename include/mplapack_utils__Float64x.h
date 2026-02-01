@@ -431,4 +431,14 @@ inline mplapackint iceil(_Float64x x) {
 inline mplapackint mod(mplapackint a, mplapackint b) { return a % b; }
 #endif // MPLAPACK_MOD_UTILS_H
 
+// MinGW lacks nextafterf64x; provide fallback using nextafterl.
+#ifndef MPLAPACK_NEXTAFTER_FLOAT64X_DEFINED
+#define MPLAPACK_NEXTAFTER_FLOAT64X_DEFINED
+#if defined(__MINGW32__) || defined(__MINGW64__)
+inline _Float64x nextafterf64x(_Float64x from, _Float64x to) {
+    return static_cast<_Float64x>(nextafterl(static_cast<long double>(from), static_cast<long double>(to)));
+}
+#endif
+#endif // MPLAPACK_NEXTAFTER_FLOAT64X_DEFINED
+
 #endif
