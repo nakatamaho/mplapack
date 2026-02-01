@@ -23,7 +23,6 @@ if IS_MIC
 	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_builddir)/patches/$(LAPACK_VERSION)/patch-mic
 endif
 	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_builddir)/patches/$(LAPACK_VERSION)/patch-print
-	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_builddir)/patches/$(LAPACK_VERSION)/patch-Makefile
 	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_builddir)/patches/$(LAPACK_VERSION)/patch-zchkhe_aa_2stage.f
 	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_builddir)/patches/$(LAPACK_VERSION)/patch-ddrvst2stg.f
 	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_builddir)/patches/$(LAPACK_VERSION)/patch-ddrvst.f
