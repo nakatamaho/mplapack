@@ -44,11 +44,12 @@ _MPLAPACK_XLAENV_EXTERN_ INTEGER iparms[100];
 #define _MPLAPACK_MXERBLA_EXTERN_ extern
 #endif
 #define srnamt_len 1024
-_MPLAPACK_MXERBLA_EXTERN_ int infot;
+_MPLAPACK_MXERBLA_EXTERN_ INTEGER infot;
+_MPLAPACK_MXERBLA_EXTERN_ INTEGER nunit;
 _MPLAPACK_MXERBLA_EXTERN_ INTEGER nout;
 _MPLAPACK_MXERBLA_EXTERN_ bool ok;
 _MPLAPACK_MXERBLA_EXTERN_ bool lerr;
-_MPLAPACK_MXERBLA_EXTERN_ char srnamt[srnamt_len];
+_MPLAPACK_MXERBLA_EXTERN_ fem::str<srnamt_len> srnamt;
 
 #include <mplapack_print_double.h>
 #include <mplapack_print.h>
