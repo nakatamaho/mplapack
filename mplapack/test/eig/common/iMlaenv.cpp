@@ -184,7 +184,7 @@ INTEGER iparmq(INTEGER const ispec, const char * /* name */, const char * /* opt
         if (nh >= 6000) {
             ns = 256;
         }
-        ns = max({(INTEGER)2, ns - mod(ns, 2)});
+        ns = max((INTEGER)2, ns - mod(ns, 2));
     }
     //
     const INTEGER inmin = 12;

@@ -48,7 +48,7 @@ void Rsyr2_test2(const char *uplo) {
     int errorflag = FALSE;
     int mplapack_errno1, mplapack_errno2;
     for (int n = MIN_N; n < MAX_N; n++) {
-        for (int lda = max_int(n, 1); lda < MAX_LDA; lda++) {
+        for (int lda = max(n, 1); lda < MAX_LDA; lda++) {
             for (int incx = MIN_INCX; incx <= MAX_INCX; incx++) {
                 for (int incy = MIN_INCY; incy < MAX_INCY; incy++) {
 #if defined VERBOSE_TEST

@@ -54,12 +54,12 @@ void Chemm_test3(const char *side, const char *uplo, COMPLEX_REF alpha_ref, COMP
         for (int m = MIN_M; m < MAX_M; m++) {
             int minlda;
             if (Mlsame(side, "L"))
-                minlda = max_int(1, m);
+                minlda = max(1, m);
             else
-                minlda = max_int(1, n);
+                minlda = max(1, n);
             for (int lda = minlda; lda < MAX_LDA; lda++) {
-                for (int ldb = max_int(1, m); ldb < MAX_LDB; ldb++) {
-                    for (int ldc = max_int(1, m); ldc < MAX_LDC; ldc++) {
+                for (int ldb = max(1, m); ldb < MAX_LDB; ldb++) {
+                    for (int ldc = max(1, m); ldc < MAX_LDC; ldc++) {
 #if defined VERBOSE_TEST
                         printf("#n is %d, m is %d, lda is %d, ldb is %d, ldc is %d ", n, m, lda, ldb, ldc);
                         printf("side is %s, uplo is %s \n", side, uplo);

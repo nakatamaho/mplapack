@@ -52,11 +52,11 @@ void Ctrsm_test3(const char *side, const char *uplo, const char *transa, const c
         for (int n = MIN_N; n < MAX_N; n++) {
             int minlda;
             if (Mlsame(side, "L"))
-                minlda = max_int(1, m);
+                minlda = max(1, m);
             else
-                minlda = max_int(1, n);
+                minlda = max(1, n);
             for (int lda = minlda; lda < MAX_LDA; lda++) {
-                for (int ldb = max_int(1, m); ldb < MAX_LDB; ldb++) {
+                for (int ldb = max(1, m); ldb < MAX_LDB; ldb++) {
                     int k = 0;
                     if (Mlsame(side, "L"))
                         k = m;
