@@ -97,7 +97,7 @@ inline void sprintnum_short(char *buf, dd_real rtmp) {
 inline void sprintnum(char *buf, dd_complex rtmp) {
     char buf1[__MPLAPACK_BUFLEN__], buf2[__MPLAPACK_BUFLEN__];
     rtmp.real().write(buf1, __MPLAPACK_BUFLEN__, DD_PRECISION);
-    rtmp.real().write(buf2, __MPLAPACK_BUFLEN__, DD_PRECISION);
+    rtmp.imag().write(buf2, __MPLAPACK_BUFLEN__, DD_PRECISION);
     strcat(buf, buf1);
     strcat(buf, buf2);
     strcat(buf, "i");
@@ -105,7 +105,7 @@ inline void sprintnum(char *buf, dd_complex rtmp) {
 inline void sprintnum_short(char *buf, dd_complex rtmp) {
     char buf1[__MPLAPACK_BUFLEN__], buf2[__MPLAPACK_BUFLEN__];
     rtmp.real().write(buf1, __MPLAPACK_BUFLEN__, DD_PRECISION_SHORT);
-    rtmp.real().write(buf2, __MPLAPACK_BUFLEN__, DD_PRECISION_SHORT);
+    rtmp.imag().write(buf2, __MPLAPACK_BUFLEN__, DD_PRECISION_SHORT);
     strcat(buf, buf1);
     strcat(buf, buf2);
     strcat(buf, "i");
@@ -119,6 +119,16 @@ inline dd_real pow2(dd_real a) {
 
 inline dd_complex pow2(dd_complex a) {
     dd_complex mtmp = a * a;
+    return mtmp;
+}
+
+inline dd_real pow4(dd_real a) {
+    dd_real mtmp = a * a * a * a;
+    return mtmp;
+}
+
+inline dd_complex pow4(dd_complex a) {
+    dd_complex mtmp = a * a * a * a;
     return mtmp;
 }
 
@@ -273,45 +283,33 @@ template <typename... Args, typename = std::enable_if_t<(std::is_same_v<dd_real,
 // Small helpers to build short option strings for ILAENV / IMlaenv calls.
 //
 // Typical usage:
-//   const char *jbcmpz = CHAR2(job, compz);
-//   nmin = iMlaenv(12, "Chseqr", jbcmpz, n, ilo, ihi, lwork);
+//   mnthr = iMlaenv(6, "Cgesvd", CHAR2(jobu, jobvt), m, n, 0, 0);
 //
-// job, compz, side, howmny, sense, ... are almost always const char* pointing
-// to single-character flags ("N", "V", "S", "E", etc.).
+// jobu/jobvt/... are often const char* pointing to single-character flags
+// ("N", "V", "S", "E", etc.).
 
-// 2-character helper -------------------------------------------------------
-inline const char *CHAR2(char c1, char c2) {
-    // Thread-local to avoid cross-call races.
-    static thread_local char buf[3];
-    buf[0] = c1;
-    buf[1] = c2;
-    buf[2] = '\0';
-    return buf;
-}
+struct charbuf2 {
+    char s[3];
+    constexpr charbuf2(char a, char b) : s{a, b, '\0'} {}
+    constexpr operator const char *() const { return s; }
+};
 
-inline const char *CHAR2(const char *c1, const char *c2) {
-    // Accept "N", "V", etc. as const char* and take their first characters.
-    const char a = (c1 && *c1) ? *c1 : '\0';
-    const char b = (c2 && *c2) ? *c2 : '\0';
-    return CHAR2(a, b);
-}
+struct charbuf3 {
+    char s[4];
+    constexpr charbuf3(char a, char b, char c) : s{a, b, c, '\0'} {}
+    constexpr operator const char *() const { return s; }
+};
 
-// 3-character helper -------------------------------------------------------
-inline const char *CHAR3(char c1, char c2, char c3) {
-    static thread_local char buf[4];
-    buf[0] = c1;
-    buf[1] = c2;
-    buf[2] = c3;
-    buf[3] = '\0';
-    return buf;
-}
+constexpr charbuf2 CHAR2(char a, char b) { return charbuf2(a, b); }
+constexpr charbuf3 CHAR3(char a, char b, char c) { return charbuf3(a, b, c); }
 
-inline const char *CHAR3(const char *c1, const char *c2, const char *c3) {
-    const char a = (c1 && *c1) ? *c1 : '\0';
-    const char b = (c2 && *c2) ? *c2 : '\0';
-    const char c = (c3 && *c3) ? *c3 : '\0';
-    return CHAR3(a, b, c);
-}
+// Extract first character from a 1-char C string (e.g. "N").
+// If p is null or empty, returns '\0' to fail loudly downstream.
+constexpr char first_char(const char *p) { return (p && p[0] != '\0') ? p[0] : '\0'; }
+
+// Overloads for the common MPLAPACK/LAPACK style: const char* flags.
+constexpr charbuf2 CHAR2(const char *a, const char *b) { return charbuf2(first_char(a), first_char(b)); }
+constexpr charbuf3 CHAR3(const char *a, const char *b, const char *c) { return charbuf3(first_char(a), first_char(b), first_char(c)); }
 
 #endif // MPLAPACK_CHAR_UTILS_H
 
@@ -330,5 +328,9 @@ inline mplapackint iceil(const dd_real &x) {
     return t;
 }
 #endif // MPLAPACK_ICEIL_DD_REAL_DEFINED
+
+#ifndef MPLAPACK_MOD_UTILS_H
+inline mplapackint mod(mplapackint a, mplapackint b) { return a % b; }
+#endif // MPLAPACK_MOD_UTILS_H
 
 #endif
