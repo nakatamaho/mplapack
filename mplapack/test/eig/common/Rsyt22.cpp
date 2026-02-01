@@ -43,9 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-void Rsyt22(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER const m, INTEGER const kband, REAL *a, INTEGER const lda, REAL *d, REAL *e, REAL *u, INTEGER const ldu, REAL * /* v */, INTEGER const ldv, REAL * /* tau */, REAL *work, REAL *result) {
+void Rsyt22(INTEGER const itype, fem::str_cref uplo, INTEGER const n, INTEGER const m, INTEGER const kband, REAL *a, INTEGER const lda, REAL *d, REAL *e, REAL *u, INTEGER const ldu, REAL * /* v */, INTEGER const ldv, REAL * /* tau */, REAL *work, REAL *result) {
     //
     const REAL zero = 0.0;
     result[1 - 1] = zero;
@@ -61,14 +59,14 @@ void Rsyt22(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
     //
     // Norm of A:
     //
-    REAL anorm = max(Rlansy("1", uplo, n, a, lda, work), unfl);
+    REAL anorm = max(Rlansy("1", uplo.elems(), n, a, lda, work), unfl);
     //
     // Compute error matrix:
     //
     // ITYPE=1: error = U**T A U - S
     //
     const REAL one = 1.0;
-    Rsymm("L", uplo, n, m, one, a, lda, u, ldu, zero, work, n);
+    Rsymm("L", uplo.elems(), n, m, one, a, lda, u, ldu, zero, work, n);
     INTEGER nn = n * n;
     INTEGER nnp1 = nn + 1;
     Rgemm("T", "N", m, m, n, one, u, ldu, work, n, zero, &work[nnp1 - 1], n);
@@ -88,15 +86,15 @@ void Rsyt22(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
             work[jj2 - 1] = work[jj2 - 1] - e[(j - 1) - 1];
         }
     }
-    REAL wnorm = Rlansy("1", uplo, m, &work[nnp1 - 1], n, &work[1 - 1]);
+    REAL wnorm = Rlansy("1", uplo.elems(), m, &work[nnp1 - 1], n, &work[1 - 1]);
     //
     if (anorm > wnorm) {
-        result[1 - 1] = (wnorm / anorm) / (castREAL(m) * ulp);
+        result[1 - 1] = (wnorm / anorm) / (m * ulp);
     } else {
         if (anorm < one) {
-            result[1 - 1] = (min(wnorm, REAL(castREAL(m) * anorm))) / anorm / (castREAL(m) * ulp);
+            result[1 - 1] = (min(wnorm, m * anorm) / anorm) / (m * ulp);
         } else {
-            result[1 - 1] = min(REAL(wnorm / anorm), castREAL(m)) / (castREAL(m) * ulp);
+            result[1 - 1] = min(wnorm / anorm, castREAL(m)) / (m * ulp);
         }
     }
     //

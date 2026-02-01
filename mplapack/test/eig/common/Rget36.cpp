@@ -43,22 +43,9 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-#include <iostream>
-#include <sstream>
-#include <string>
-#include <vector>
-#include <regex>
-
-using namespace std;
-using std::regex;
-using std::regex_replace;
-
 void Rget36(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt, INTEGER const nin) {
     common cmn;
     common_read read(cmn);
-    double dtmp;
     REAL eps = 0.0;
     const REAL zero = 0.0;
     INTEGER n = 0;
@@ -67,12 +54,9 @@ void Rget36(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
     INTEGER i = 0;
     const INTEGER ldt = 10;
     REAL tmp[ldt * ldt];
-    INTEGER ldtmp = ldt;
     INTEGER j = 0;
     REAL t1[ldt * ldt];
     REAL t2[ldt * ldt];
-    INTEGER ldt1 = ldt;
-    INTEGER ldt2 = ldt;
     INTEGER ifstsv = 0;
     INTEGER ilstsv = 0;
     INTEGER ifst1 = 0;
@@ -82,14 +66,12 @@ void Rget36(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
     REAL res = 0.0;
     const REAL one = 1.0;
     REAL q[ldt * ldt];
-    INTEGER ldq = ldt;
     const INTEGER lwork = 2 * ldt * ldt;
     REAL work[lwork];
     INTEGER info1 = 0;
     INTEGER info2 = 0;
     REAL result[2];
     INTEGER loc = 0;
-    string str;
     //
     eps = Rlamch("P");
     rmax = zero;
@@ -102,23 +84,17 @@ void Rget36(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
 // Read input data until N=0
 //
 statement_10:
-    getline(cin, str);
-    stringstream ss(str);
-    ss >> n;
-    ss >> ifst;
-    ss >> ilst;
+    read(nin, star), n, ifst, ilst;
     if (n == 0) {
         return;
     }
     knt++;
     for (i = 1; i <= n; i = i + 1) {
-        getline(cin, str);
-        string _r = regex_replace(str, regex("D\\+"), "e+");
-        str = regex_replace(_r, regex("D\\-"), "e-");
-        istringstream iss(str);
-        for (j = 1; j <= n; j = j + 1) {
-            iss >> dtmp;
-            tmp[(i - 1) + (j - 1) * ldtmp] = dtmp;
+        {
+            read_loop rloop(cmn, nin, star);
+            for (j = 1; j <= n; j = j + 1) {
+                rloop, tmp[(i - 1) + (j - 1) * ldt];
+            }
         }
     }
     Rlacpy("F", n, n, tmp, ldt, t1, ldt);
@@ -137,10 +113,10 @@ statement_10:
     Rtrexc("N", n, t1, ldt, q, ldt, ifst1, ilst1, work, info1);
     for (i = 1; i <= n; i = i + 1) {
         for (j = 1; j <= n; j = j + 1) {
-            if (i == j && q[(i - 1) + (j - 1) * ldq] != one) {
+            if (i == j && q[(i - 1) + (j - 1) * ldt] != one) {
                 res += one / eps;
             }
-            if (i != j && q[(i - 1) + (j - 1) * ldq] != zero) {
+            if (i != j && q[(i - 1) + (j - 1) * ldt] != zero) {
                 res += one / eps;
             }
         }
@@ -155,7 +131,7 @@ statement_10:
     //
     for (i = 1; i <= n; i = i + 1) {
         for (j = 1; j <= n; j = j + 1) {
-            if (t1[(i - 1) + (j - 1) * ldt1] != t2[(i - 1) + (j - 1) * ldt2]) {
+            if (t1[(i - 1) + (j - 1) * ldt] != t2[(i - 1) + (j - 1) * ldt]) {
                 res += one / eps;
             }
         }
@@ -192,18 +168,18 @@ statement_10:
     //
     loc = 1;
 statement_70:
-    if (t2[((loc + 1) - 1) + (loc - 1) * ldt2] != zero) {
+    if (t2[((loc + 1) - 1) + (loc - 1) * ldt] != zero) {
         //
         // 2 by 2 block
         //
-        if (t2[(loc - 1) + ((loc + 1) - 1) * ldt2] == zero || t2[(loc - 1) + (loc - 1) * ldt2] != t2[((loc + 1) - 1) + ((loc + 1) - 1) * ldt2] || sign(one, t2[(loc - 1) + ((loc + 1) - 1) * ldt2]) == sign(one, t2[((loc + 1) - 1) + (loc - 1) * ldt2])) {
+        if (t2[(loc - 1) + ((loc + 1) - 1) * ldt] == zero || t2[(loc - 1) + (loc - 1) * ldt] != t2[((loc + 1) - 1) + ((loc + 1) - 1) * ldt] || sign(one, t2[(loc - 1) + ((loc + 1) - 1) * ldt]) == sign(one, t2[((loc + 1) - 1) + (loc - 1) * ldt])) {
             res += one / eps;
         }
         for (i = loc + 2; i <= n; i = i + 1) {
-            if (t2[(i - 1) + (loc - 1) * ldt2] != zero) {
+            if (t2[(i - 1) + (loc - 1) * ldt] != zero) {
                 res += one / res;
             }
-            if (t2[(i - 1) + ((loc + 1) - 1) * ldt2] != zero) {
+            if (t2[(i - 1) + ((loc + 1) - 1) * ldt] != zero) {
                 res += one / res;
             }
         }
@@ -213,7 +189,7 @@ statement_70:
         // 1 by 1 block
         //
         for (i = loc + 1; i <= n; i = i + 1) {
-            if (t2[(i - 1) + (loc - 1) * ldt2] != zero) {
+            if (t2[(i - 1) + (loc - 1) * ldt] != zero) {
                 res += one / res;
             }
         }

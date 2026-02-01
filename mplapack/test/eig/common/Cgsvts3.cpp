@@ -43,12 +43,8 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
 void Cgsvts3(INTEGER const m, INTEGER const p, INTEGER const n, COMPLEX *a, COMPLEX *af, INTEGER const lda, COMPLEX *b, COMPLEX *bf, INTEGER const ldb, COMPLEX *u, INTEGER const ldu, COMPLEX *v, INTEGER const ldv, COMPLEX *q, INTEGER const ldq, REAL *alpha, REAL *beta, COMPLEX *r, INTEGER const ldr, INTEGER *iwork, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL *result) {
     //
-    INTEGER ldaf = lda;
-    INTEGER ldbf = ldb;
     REAL ulp = Rlamch("Precision");
     const REAL one = 1.0;
     REAL ulpinv = one / ulp;
@@ -59,8 +55,8 @@ void Cgsvts3(INTEGER const m, INTEGER const p, INTEGER const n, COMPLEX *a, COMP
     Clacpy("Full", m, n, a, lda, af, lda);
     Clacpy("Full", p, n, b, ldb, bf, ldb);
     //
-    REAL anorm = max({Clange("1", m, n, a, lda, rwork), unfl});
-    REAL bnorm = max({Clange("1", p, n, b, ldb, rwork), unfl});
+    REAL anorm = max(Clange("1", m, n, a, lda, rwork), unfl);
+    REAL bnorm = max(Clange("1", p, n, b, ldb, rwork), unfl);
     //
     // Factorize the matrices A and B in the arrays AF and BF.
     //
@@ -75,14 +71,14 @@ void Cgsvts3(INTEGER const m, INTEGER const p, INTEGER const n, COMPLEX *a, COMP
     INTEGER j = 0;
     for (i = 1; i <= min(k + l, m); i = i + 1) {
         for (j = i; j <= k + l; j = j + 1) {
-            r[(i - 1) + (j - 1) * ldr] = af[(i - 1) + ((n - k - l + j) - 1) * ldaf];
+            r[(i - 1) + (j - 1) * ldr] = af[(i - 1) + ((n - k - l + j) - 1) * lda];
         }
     }
     //
     if (m - k - l < 0) {
         for (i = m + 1; i <= k + l; i = i + 1) {
             for (j = i; j <= k + l; j = j + 1) {
-                r[(i - 1) + (j - 1) * ldr] = bf[((i - k) - 1) + ((n - k - l + j) - 1) * ldbf];
+                r[(i - 1) + (j - 1) * ldr] = bf[((i - k) - 1) + ((n - k - l + j) - 1) * ldb];
             }
         }
     }
@@ -112,7 +108,7 @@ void Cgsvts3(INTEGER const m, INTEGER const p, INTEGER const n, COMPLEX *a, COMP
     REAL resid = Clange("1", m, n, a, lda, rwork);
     const REAL zero = 0.0;
     if (anorm > zero) {
-        result[1 - 1] = ((resid / castREAL(max({(INTEGER)1, m, n}))) / anorm) / ulp;
+        result[1 - 1] = ((resid / castREAL(max((INTEGER)1, m, n))) / anorm) / ulp;
     } else {
         result[1 - 1] = zero;
     }
@@ -133,7 +129,7 @@ void Cgsvts3(INTEGER const m, INTEGER const p, INTEGER const n, COMPLEX *a, COMP
     //
     resid = Clange("1", p, n, b, ldb, rwork);
     if (bnorm > zero) {
-        result[2 - 1] = ((resid / castREAL(max({(INTEGER)1, p, n}))) / bnorm) / ulp;
+        result[2 - 1] = ((resid / castREAL(max((INTEGER)1, p, n))) / bnorm) / ulp;
     } else {
         result[2 - 1] = zero;
     }

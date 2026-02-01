@@ -44,73 +44,39 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Rqrt03(INTEGER const m, INTEGER const n, INTEGER const k, REAL *af, REAL *c, REAL *cc, REAL *q, INTEGER const lda, REAL *tau, REAL *work, INTEGER const lwork, REAL *rwork, REAL *result) {
+    static INTEGER iseed[4] = {1988, 1989, 1990, 1991};
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    INTEGER iseed[4] = {1, 2, 3, 4};
-    INTEGER ldaf = lda;
-    INTEGER ldc = lda;
-    INTEGER ldcc = lda;
-    INTEGER ldq = lda;
     REAL eps = Rlamch("Epsilon");
     //
     // Copy the first k columns of the factorization to the array Q
     //
-    const REAL rogue = -1.0e+10;
+    const REAL rogue = -10000000000.0;
     Rlaset("Full", m, m, rogue, rogue, q, lda);
     Rlacpy("Lower", m - 1, k, &af[(2 - 1)], lda, &q[(2 - 1)], lda);
     //
     // Generate the m-by-m matrix Q
     //
+    srnamt = "Rorgqr";
     INTEGER info = 0;
     Rorgqr(m, m, k, q, lda, tau, work, lwork, info);
     //
     INTEGER iside = 0;
-    char side;
+    fem::str<1> side;
     INTEGER mc = 0;
     INTEGER nc = 0;
     INTEGER j = 0;
     REAL cnorm = 0.0;
     const REAL one = 1.0;
     INTEGER itrans = 0;
-    char trans;
+    fem::str<1> trans;
     REAL resid = 0.0;
     for (iside = 1; iside <= 2; iside = iside + 1) {
         if (iside == 1) {
-            side = 'L';
+            side = "L";
             mc = m;
             nc = n;
         } else {
-            side = 'R';
+            side = "R";
             mc = n;
             nc = m;
         }
@@ -118,7 +84,7 @@ void Rqrt03(INTEGER const m, INTEGER const n, INTEGER const k, REAL *af, REAL *c
         // Generate MC by NC matrix C
         //
         for (j = 1; j <= nc; j = j + 1) {
-            Rlarnv(2, iseed, mc, &c[(j - 1) * ldc]);
+            Rlarnv(2, iseed, mc, &c[(j - 1) * lda]);
         }
         cnorm = Rlange("1", mc, nc, c, lda, rwork);
         if (cnorm == 0.0) {
@@ -127,9 +93,9 @@ void Rqrt03(INTEGER const m, INTEGER const n, INTEGER const k, REAL *af, REAL *c
         //
         for (itrans = 1; itrans <= 2; itrans = itrans + 1) {
             if (itrans == 1) {
-                trans = 'N';
+                trans = "N";
             } else {
-                trans = 'T';
+                trans = "T";
             }
             //
             // Copy C
@@ -138,14 +104,15 @@ void Rqrt03(INTEGER const m, INTEGER const n, INTEGER const k, REAL *af, REAL *c
             //
             // Apply Q or Q' to C
             //
-            Rormqr(&side, &trans, mc, nc, k, af, lda, tau, cc, lda, work, lwork, info);
+            srnamt = "Rormqr";
+            Rormqr(side.elems, trans.elems, mc, nc, k, af, lda, tau, cc, lda, work, lwork, info);
             //
             // Form explicit product and subtract
             //
-            if (Mlsame(&side, "L")) {
-                Rgemm(&trans, "No transpose", mc, nc, mc, -one, q, lda, c, lda, one, cc, lda);
+            if (Mlsame(side.elems, "L")) {
+                Rgemm(trans.elems, "No transpose", mc, nc, mc, -one, q, lda, c, lda, one, cc, lda);
             } else {
-                Rgemm("No transpose", &trans, mc, nc, nc, -one, c, lda, q, lda, one, cc, lda);
+                Rgemm("No transpose", trans.elems, mc, nc, nc, -one, c, lda, q, lda, one, cc, lda);
             }
             //
             // Compute error in the difference

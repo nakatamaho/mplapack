@@ -33,3 +33,13 @@
 #include "gmpxx.h"
 #include "mpc_class.h"
 
+#include <mpblas.h>
+#include <mplapack.h>
+
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+
+#include <mplapack_matgen.h>
+#include <mplapack_lin.h>
+#include <mplapack_debug.h>

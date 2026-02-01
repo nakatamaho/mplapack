@@ -40,7 +40,7 @@
 
 COMPLEX
 Clarnd(INTEGER const idist, INTEGER *iseed) {
-    COMPLEX return_value = (0.0, 0.0);
+    COMPLEX return_value = COMPLEX(0.0, 0.0);
     //
     // Generate a pair of real random numbers from a uniform (0,1)
     // distribution
@@ -48,7 +48,7 @@ Clarnd(INTEGER const idist, INTEGER *iseed) {
     REAL t1 = Rlaran(iseed);
     REAL t2 = Rlaran(iseed);
     //
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     const REAL one = 1.0;
     const REAL zero = 0.0;
     const REAL twopi = two * pi(zero);

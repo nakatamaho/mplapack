@@ -42,13 +42,9 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack_debug.h>
 
 void Clqt01(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, COMPLEX *q, COMPLEX *l, INTEGER const lda, COMPLEX *tau, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL *result) {
     //
-    INTEGER ldaf = lda;
-    INTEGER ldq = lda;
-    INTEGER ldl = lda;
     INTEGER minmn = min(m, n);
     REAL eps = Rlamch("Epsilon");
     //
@@ -58,19 +54,21 @@ void Clqt01(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, COMPLEX *
     //
     // Factorize the matrix A in the array AF.
     //
+    srnamt = "Cgelqf";
     INTEGER info = 0;
     Cgelqf(m, n, af, lda, tau, work, lwork, info);
     //
     // Copy details of Q
     //
-    const COMPLEX rogue = COMPLEX(-1.0e+10, -1.0e+10);
+    const COMPLEX rogue = COMPLEX(-10000000000.0, -10000000000.0);
     Claset("Full", n, n, rogue, rogue, q, lda);
     if (n > 1) {
-        Clacpy("Upper", m, n - 1, &af[(2 - 1) * ldaf], lda, &q[(2 - 1) * ldq], lda);
+        Clacpy("Upper", m, n - 1, &af[(2 - 1) * lda], lda, &q[(2 - 1) * lda], lda);
     }
     //
     // Generate the n-by-n matrix Q
     //
+    srnamt = "Cunglq";
     Cunglq(n, n, minmn, q, lda, tau, work, lwork, info);
     //
     // Copy L

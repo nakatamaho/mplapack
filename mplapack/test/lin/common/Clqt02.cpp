@@ -45,29 +45,17 @@ using fem::common;
 
 void Clqt02(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, COMPLEX *af, COMPLEX *q, COMPLEX *l, INTEGER const lda, COMPLEX *tau, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL *result) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    REAL eps = Rlamch("Epsilon");
     //
     // Copy the first k rows of the factorization to the array Q
     //
-    //  =====================================================================
+    const COMPLEX rogue = COMPLEX(-10000000000.0, -10000000000.0);
+    Claset("Full", m, n, rogue, rogue, q, lda);
+    Clacpy("Upper", k, n - 1, &af[(2 - 1) * lda], lda, &q[(2 - 1) * lda], lda);
     //
     // Generate the first n columns of the matrix Q
     //
-    REAL eps = Rlamch("Epsilon");
-    INTEGER ldaf = lda;
-    INTEGER ldq = lda;
-    INTEGER ldl = lda;
-    //
-    //     Copy the first k rows of the factorization to the array Q
-    //
-    const COMPLEX rogue = COMPLEX(-1.0e+10, -1.0e+10);
-    Claset("Full", m, n, rogue, rogue, q, lda);
-    Clacpy("Upper", k, n - 1, &af[(2 - 1) * ldaf], lda, &q[(2 - 1) * ldq], lda);
-    //
-    //     Generate the first n columns of the matrix Q
-    //
+    srnamt = "Cunglq";
     INTEGER info = 0;
     Cunglq(m, n, k, q, lda, tau, work, lwork, info);
     //

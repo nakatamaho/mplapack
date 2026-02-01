@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Rpbt02(const char *uplo, INTEGER const n, INTEGER const kd, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *x, INTEGER const ldx, REAL *b, INTEGER const ldb, REAL *rwork, REAL &resid) {
+void Rpbt02(fem::str_cref uplo, INTEGER const n, INTEGER const kd, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *x, INTEGER const ldx, REAL *b, INTEGER const ldb, REAL *rwork, REAL &resid) {
     //
     // Quick exit if N = 0 or NRHS = 0.
     //
@@ -56,7 +56,7 @@ void Rpbt02(const char *uplo, INTEGER const n, INTEGER const kd, INTEGER const n
     // Exit with RESID = 1/EPS if ANORM = 0.
     //
     REAL eps = Rlamch("Epsilon");
-    REAL anorm = Rlansb("1", uplo, n, kd, a, lda, rwork);
+    REAL anorm = Rlansb("1", uplo.elems(), n, kd, a, lda, rwork);
     const REAL one = 1.0;
     if (anorm <= zero) {
         resid = one / eps;
@@ -67,7 +67,7 @@ void Rpbt02(const char *uplo, INTEGER const n, INTEGER const kd, INTEGER const n
     //
     INTEGER j = 0;
     for (j = 1; j <= nrhs; j = j + 1) {
-        Rsbmv(uplo, n, kd, -one, a, lda, &x[(j - 1) * ldx], 1, one, &b[(j - 1) * ldb], 1);
+        Rsbmv(uplo.elems(), n, kd, -one, a, lda, &x[(j - 1) * ldx], 1, one, &b[(j - 1) * ldb], 1);
     }
     //
     // Compute the maximum over the number of right hand sides of
@@ -82,7 +82,7 @@ void Rpbt02(const char *uplo, INTEGER const n, INTEGER const kd, INTEGER const n
         if (xnorm <= zero) {
             resid = one / eps;
         } else {
-            resid = max(resid, REAL(((bnorm / anorm) / xnorm) / eps));
+            resid = max(resid, ((bnorm / anorm) / xnorm) / eps);
         }
     }
     //

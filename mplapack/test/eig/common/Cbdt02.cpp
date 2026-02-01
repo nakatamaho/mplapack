@@ -43,8 +43,6 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
 void Cbdt02(INTEGER const m, INTEGER const n, COMPLEX *b, INTEGER const ldb, COMPLEX *c, INTEGER const ldc, COMPLEX *u, INTEGER const ldu, COMPLEX *work, REAL *rwork, REAL &resid) {
     //
     // Quick return if possible
@@ -64,7 +62,7 @@ void Cbdt02(INTEGER const m, INTEGER const n, COMPLEX *b, INTEGER const ldb, COM
     for (j = 1; j <= n; j = j + 1) {
         Ccopy(m, &b[(j - 1) * ldb], 1, work, 1);
         Cgemv("No transpose", m, m, -COMPLEX(one), u, ldu, &c[(j - 1) * ldc], 1, COMPLEX(one), work, 1);
-        resid = max({resid, RCasum(m, work, 1)});
+        resid = max(resid, RCasum(m, work, 1));
     }
     //
     // Compute norm of B.
@@ -80,9 +78,9 @@ void Cbdt02(INTEGER const m, INTEGER const n, COMPLEX *b, INTEGER const ldb, COM
             resid = (resid / bnorm) / (realmn * eps);
         } else {
             if (bnorm < one) {
-                resid = (min(resid, REAL(realmn * bnorm)) / bnorm) / (realmn * eps);
+                resid = (min(resid, realmn * bnorm) / bnorm) / (realmn * eps);
             } else {
-                resid = min(REAL(resid / bnorm), realmn) / (realmn * eps);
+                resid = min(resid / bnorm, realmn) / (realmn * eps);
             }
         }
     }

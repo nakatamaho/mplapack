@@ -115,8 +115,6 @@ EIG_SOURCES = \
 common/Cslect.cpp \
 common/Rslect.cpp \
 common/Rlctsx.cpp \
-common/Rlacsg.cpp \
-common/Clacsg.cpp \
 common/Rlasum.cpp \
 common/Rlctes.cpp \
 common/Alasmg.cpp \
@@ -293,8 +291,8 @@ common/Rdrgsx.cpp \
 common/Alareq.cpp \
 common/Alarqg.cpp \
 common/iMlaenv.cpp \
-common/chkxer.cpp \
-common/xlaenv.cpp 
+common/Chkxer.cpp \
+common/Mxlaenv.cpp
 
 install-data-hook:
 if IS_MACOS

@@ -43,15 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
 void Rlsets(INTEGER const m, INTEGER const p, INTEGER const n, REAL *a, REAL *af, INTEGER const lda, REAL *b, REAL *bf, INTEGER const ldb, REAL *c, REAL *cf, REAL *d, REAL *df, REAL *x, REAL *work, INTEGER const lwork, REAL *rwork, REAL *result) {
-
-    INTEGER ldaf = lda;
-    INTEGER ldbf = ldb;
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
     //
     // Copy the matrices A and B to the arrays AF and BF,
     // and the vectors C and D to the arrays CF and DF,

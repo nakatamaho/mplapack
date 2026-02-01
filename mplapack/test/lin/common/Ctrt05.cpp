@@ -43,9 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-inline REAL abs1(COMPLEX zdum) { return abs(zdum.real()) + abs(zdum.imag()); }
-
-void Ctrt05(const char *uplo, const char *trans, const char *diag, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX *x, INTEGER const ldx, COMPLEX *xact, INTEGER const ldxact, REAL *ferr, REAL *berr, REAL *reslts) {
+void Ctrt05(fem::str_cref uplo, fem::str_cref trans, fem::str_cref diag, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX *x, INTEGER const ldx, COMPLEX *xact, INTEGER const ldxact, REAL *ferr, REAL *berr, REAL *reslts) {
     COMPLEX zdum = 0.0;
     const REAL zero = 0.0;
     REAL eps = 0.0;
@@ -77,9 +75,9 @@ void Ctrt05(const char *uplo, const char *trans, const char *diag, INTEGER const
     eps = Rlamch("Epsilon");
     unfl = Rlamch("Safe minimum");
     ovfl = one / unfl;
-    upper = Mlsame(uplo, "U");
-    notran = Mlsame(trans, "N");
-    unit = Mlsame(diag, "U");
+    upper = Mlsame(uplo.elems(), "U");
+    notran = Mlsame(trans.elems(), "N");
+    unit = Mlsame(diag.elems(), "U");
     //
     // Test 1:  Compute the maximum of
     // norm(X - XACT) / ( norm(X) * FERR )
@@ -88,10 +86,10 @@ void Ctrt05(const char *uplo, const char *trans, const char *diag, INTEGER const
     errbnd = zero;
     for (j = 1; j <= nrhs; j = j + 1) {
         imax = iCamax(n, &x[(j - 1) * ldx], 1);
-        xnorm = max(abs1(x[(imax - 1) + (j - 1) * ldx]), unfl);
+        xnorm = max(cabs1(x[(imax - 1) + (j - 1) * ldx]), unfl);
         diff = zero;
         for (i = 1; i <= n; i = i + 1) {
-            diff = max(diff, abs1(x[(i - 1) + (j - 1) * ldx] - xact[(i - 1) + (j - 1) * ldxact]));
+            diff = max(diff, cabs1(x[(i - 1) + (j - 1) * ldx] - xact[(i - 1) + (j - 1) * ldxact]));
         }
         //
         if (xnorm > one) {
@@ -105,7 +103,7 @@ void Ctrt05(const char *uplo, const char *trans, const char *diag, INTEGER const
     //
     statement_20:
         if (diff / xnorm <= ferr[j - 1]) {
-            errbnd = max(errbnd, REAL((diff / xnorm) / ferr[j - 1]));
+            errbnd = max(errbnd, (diff / xnorm) / ferr[j - 1]);
         } else {
             errbnd = one / eps;
         }
@@ -122,37 +120,37 @@ void Ctrt05(const char *uplo, const char *trans, const char *diag, INTEGER const
     }
     for (k = 1; k <= nrhs; k = k + 1) {
         for (i = 1; i <= n; i = i + 1) {
-            tmp = abs1(b[(i - 1) + (k - 1) * ldb]);
+            tmp = cabs1(b[(i - 1) + (k - 1) * ldb]);
             if (upper) {
                 if (!notran) {
                     for (j = 1; j <= i - ifu; j = j + 1) {
-                        tmp += abs1(a[(j - 1) + (i - 1) * lda]) * abs1(x[(j - 1) + (k - 1) * ldx]);
+                        tmp += cabs1(a[(j - 1) + (i - 1) * lda]) * cabs1(x[(j - 1) + (k - 1) * ldx]);
                     }
                     if (unit) {
-                        tmp += abs1(x[(i - 1) + (k - 1) * ldx]);
+                        tmp += cabs1(x[(i - 1) + (k - 1) * ldx]);
                     }
                 } else {
                     if (unit) {
-                        tmp += abs1(x[(i - 1) + (k - 1) * ldx]);
+                        tmp += cabs1(x[(i - 1) + (k - 1) * ldx]);
                     }
                     for (j = i + ifu; j <= n; j = j + 1) {
-                        tmp += abs1(a[(i - 1) + (j - 1) * lda]) * abs1(x[(j - 1) + (k - 1) * ldx]);
+                        tmp += cabs1(a[(i - 1) + (j - 1) * lda]) * cabs1(x[(j - 1) + (k - 1) * ldx]);
                     }
                 }
             } else {
                 if (notran) {
                     for (j = 1; j <= i - ifu; j = j + 1) {
-                        tmp += abs1(a[(i - 1) + (j - 1) * lda]) * abs1(x[(j - 1) + (k - 1) * ldx]);
+                        tmp += cabs1(a[(i - 1) + (j - 1) * lda]) * cabs1(x[(j - 1) + (k - 1) * ldx]);
                     }
                     if (unit) {
-                        tmp += abs1(x[(i - 1) + (k - 1) * ldx]);
+                        tmp += cabs1(x[(i - 1) + (k - 1) * ldx]);
                     }
                 } else {
                     if (unit) {
-                        tmp += abs1(x[(i - 1) + (k - 1) * ldx]);
+                        tmp += cabs1(x[(i - 1) + (k - 1) * ldx]);
                     }
                     for (j = i + ifu; j <= n; j = j + 1) {
-                        tmp += abs1(a[(j - 1) + (i - 1) * lda]) * abs1(x[(j - 1) + (k - 1) * ldx]);
+                        tmp += cabs1(a[(j - 1) + (i - 1) * lda]) * cabs1(x[(j - 1) + (k - 1) * ldx]);
                     }
                 }
             }
@@ -162,7 +160,7 @@ void Ctrt05(const char *uplo, const char *trans, const char *diag, INTEGER const
                 axbi = min(axbi, tmp);
             }
         }
-        tmp = berr[k - 1] / (castREAL(n + 1) * eps + castREAL(n + 1) * unfl / max(axbi, REAL(castREAL(n + 1) * unfl)));
+        tmp = berr[k - 1] / ((n + 1) * eps + (n + 1) * unfl / max(axbi, (n + 1) * unfl));
         if (k == 1) {
             reslts[2 - 1] = tmp;
         } else {

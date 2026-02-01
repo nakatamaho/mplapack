@@ -43,39 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
 void Rgrqts(INTEGER const m, INTEGER const p, INTEGER const n, REAL *a, REAL *af, REAL *q, REAL *r, INTEGER const lda, REAL *taua, REAL *b, REAL *bf, REAL *z, REAL *t, REAL *bwk, INTEGER const ldb, REAL *taub, REAL *work, INTEGER const lwork, REAL *rwork, REAL *result) {
-    INTEGER ldaf = lda;
-    INTEGER ldq = lda;
-    INTEGER ldr = lda;
-    INTEGER ldbf = ldb;
-    INTEGER ldz = ldb;
-    INTEGER ldt = ldb;
-    INTEGER ldbwk = ldb;
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     REAL ulp = Rlamch("Precision");
     REAL unfl = Rlamch("Safe minimum");
@@ -85,8 +53,8 @@ void Rgrqts(INTEGER const m, INTEGER const p, INTEGER const n, REAL *a, REAL *af
     Rlacpy("Full", m, n, a, lda, af, lda);
     Rlacpy("Full", p, n, b, ldb, bf, ldb);
     //
-    REAL anorm = max({Rlange("1", m, n, a, lda, rwork), unfl});
-    REAL bnorm = max({Rlange("1", p, n, b, ldb, rwork), unfl});
+    REAL anorm = max(Rlange("1", m, n, a, lda, rwork), unfl);
+    REAL bnorm = max(Rlange("1", p, n, b, ldb, rwork), unfl);
     //
     // Factorize the matrices A and B in the arrays AF and BF.
     //
@@ -95,14 +63,14 @@ void Rgrqts(INTEGER const m, INTEGER const p, INTEGER const n, REAL *a, REAL *af
     //
     // Generate the N-by-N matrix Q
     //
-    const REAL rogue = -1.0e+10;
+    const REAL rogue = -10000000000.0;
     Rlaset("Full", n, n, rogue, rogue, q, lda);
     if (m <= n) {
         if (m > 0 && m < n) {
             Rlacpy("Full", m, n - m, af, lda, &q[((n - m + 1) - 1)], lda);
         }
         if (m > 1) {
-            Rlacpy("Lower", m - 1, m - 1, &af[(2 - 1) + ((n - m + 1) - 1) * ldaf], lda, &q[((n - m + 2) - 1) + ((n - m + 1) - 1) * ldq], lda);
+            Rlacpy("Lower", m - 1, m - 1, &af[(2 - 1) + ((n - m + 1) - 1) * lda], lda, &q[((n - m + 2) - 1) + ((n - m + 1) - 1) * lda], lda);
         }
     } else {
         if (n > 1) {
@@ -124,7 +92,7 @@ void Rgrqts(INTEGER const m, INTEGER const p, INTEGER const n, REAL *a, REAL *af
     const REAL zero = 0.0;
     Rlaset("Full", m, n, zero, zero, r, lda);
     if (m <= n) {
-        Rlacpy("Upper", m, m, &af[((n - m + 1) - 1) * ldaf], lda, &r[((n - m + 1) - 1) * ldr], lda);
+        Rlacpy("Upper", m, m, &af[((n - m + 1) - 1) * lda], lda, &r[((n - m + 1) - 1) * lda], lda);
     } else {
         Rlacpy("Full", m - n, n, af, lda, r, lda);
         Rlacpy("Upper", n, n, &af[((m - n + 1) - 1)], lda, &r[((m - n + 1) - 1)], lda);
@@ -144,7 +112,7 @@ void Rgrqts(INTEGER const m, INTEGER const p, INTEGER const n, REAL *a, REAL *af
     //
     REAL resid = Rlange("1", m, n, r, lda, rwork);
     if (anorm > zero) {
-        result[1 - 1] = ((resid / castREAL(max({(INTEGER)1, m, n}))) / anorm) / ulp;
+        result[1 - 1] = ((resid / castREAL(max((INTEGER)1, m, n))) / anorm) / ulp;
     } else {
         result[1 - 1] = zero;
     }
@@ -158,7 +126,7 @@ void Rgrqts(INTEGER const m, INTEGER const p, INTEGER const n, REAL *a, REAL *af
     //
     resid = Rlange("1", p, n, bwk, ldb, rwork);
     if (bnorm > zero) {
-        result[2 - 1] = ((resid / castREAL(max({(INTEGER)1, p, m}))) / bnorm) / ulp;
+        result[2 - 1] = ((resid / castREAL(max((INTEGER)1, p, m))) / bnorm) / ulp;
     } else {
         result[2 - 1] = zero;
     }

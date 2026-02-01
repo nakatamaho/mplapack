@@ -44,20 +44,15 @@ using fem::common;
 #include <mplapack_eig.h>
 
 #include <mplapack_common_sslct.h>
-#include <mplapack_debug.h>
 
 void Cdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, INTEGER const nounit, COMPLEX *a, INTEGER const lda, COMPLEX *h, COMPLEX *ht, COMPLEX *w, COMPLEX *wt, COMPLEX *vs, INTEGER const ldvs, REAL *result, COMPLEX *work, INTEGER const nwork, REAL *rwork, INTEGER *iwork, bool *bwork, INTEGER &info) {
-    INTEGER ldh = lda;
-    INTEGER ldht = lda;
     common cmn;
     common_write write(cmn);
-    const INTEGER maxtyp = 21;
-    INTEGER ktype[21] = {1, 2, 3, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 9, 9, 9};
-    INTEGER kmagn[21] = {1, 1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 1, 2, 3};
-    INTEGER kmode[21] = {0, 0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 5, 4, 3, 1, 5, 5, 5, 4, 3, 1};
-    INTEGER kconds[21] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 0, 0, 0};
-    char path[4];
-    char buf[1024];
+    static INTEGER ktype[21] = {1, 2, 3, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 9, 9, 9};
+    static INTEGER kmagn[21] = {1, 1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 1, 2, 3};
+    static INTEGER kmode[21] = {0, 0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 5, 4, 3, 1, 5, 5, 5, 4, 3, 1};
+    static INTEGER kconds[21] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 0, 0, 0};
+    fem::str<3> path;
     INTEGER ntestt = 0;
     INTEGER ntestf = 0;
     bool badnn = false;
@@ -74,6 +69,7 @@ void Cdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     INTEGER nerrs = 0;
     INTEGER jsize = 0;
     INTEGER n = 0;
+    const INTEGER maxtyp = 21;
     INTEGER mtypes = 0;
     INTEGER jtype = 0;
     INTEGER ioldsd[4];
@@ -90,7 +86,7 @@ void Cdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     INTEGER iwk = 0;
     INTEGER nnwork = 0;
     INTEGER isort = 0;
-    char sort;
+    fem::str<1> sort;
     INTEGER rsub = 0;
     INTEGER sdim = 0;
     INTEGER i = 0;
@@ -99,15 +95,54 @@ void Cdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     INTEGER knteig = 0;
     INTEGER ntest = 0;
     INTEGER nfail = 0;
+    //
+    static const char *format_9999 = "(/,1x,a3,' -- Complex Schur Form Decomposition Driver',/,"
+                                     "' Matrix types (see Cdrves for details): ')";
+    //
+    static const char *format_9998 = "(/,' Special Matrices:',/,'  1=Zero matrix.             ','           ',"
+                                     "'  5=Diagonal: geometr. spaced entries.',/,"
+                                     "'  2=Identity matrix.                    ','  6=Diagona',"
+                                     "'l: clustered entries.',/,'  3=Transposed Jordan block.  ','          ',"
+                                     "'  7=Diagonal: large, evenly spaced.',/,'  ',"
+                                     "'4=Diagonal: evenly spaced entries.    ','  8=Diagonal: s',"
+                                     "'mall, evenly spaced.')";
+    static const char *format_9997 = "(' Dense, Non-Symmetric Matrices:',/,'  9=Well-cond., ev',"
+                                     "'enly spaced eigenvals.',' 14=Ill-cond., geomet. spaced e','igenals.',/,"
+                                     "' 10=Well-cond., geom. spaced eigenvals. ',"
+                                     "' 15=Ill-conditioned, clustered e.vals.',/,' 11=Well-cond',"
+                                     "'itioned, clustered e.vals. ',' 16=Ill-cond., random comp','lex ',a6,/,"
+                                     "' 12=Well-cond., random complex ',a6,'   ',"
+                                     "' 17=Ill-cond., large rand. complx ',a4,/,' 13=Ill-condi',"
+                                     "'tioned, evenly spaced.     ',' 18=Ill-cond., small rand.',' complx ',a4)";
+    static const char *format_9996 = "(' 19=Matrix with random O(1) entries.    ',' 21=Matrix ',"
+                                     "'with small random entries.',/,' 20=Matrix with large ran',"
+                                     "'dom entries.   ',/)";
+    static const char *format_9995 = "(' Tests performed with test threshold =',f8.2,/,"
+                                     "' ( A denotes A on input and T denotes A on output)',/,/,"
+                                     "' 1 = 0 if T in Schur form (no sort), ','  1/ulp otherwise',/,"
+                                     "' 2 = | A - VS T transpose(VS) | / ( n |A| ulp ) (no sort)',/,"
+                                     "' 3 = | I - VS transpose(VS) | / ( n ulp ) (no sort) ',/,"
+                                     "' 4 = 0 if W are eigenvalues of T (no sort),','  1/ulp otherwise',/,"
+                                     "' 5 = 0 if T same no matter if VS computed (no sort),',"
+                                     "'  1/ulp otherwise',/,"
+                                     "' 6 = 0 if W same no matter if VS computed (no sort)',"
+                                     "',  1/ulp otherwise')";
+    static const char *format_9994 = "(' 7 = 0 if T in Schur form (sort), ','  1/ulp otherwise',/,"
+                                     "' 8 = | A - VS T transpose(VS) | / ( n |A| ulp ) (sort)',/,"
+                                     "' 9 = | I - VS transpose(VS) | / ( n ulp ) (sort) ',/,"
+                                     "' 10 = 0 if W are eigenvalues of T (sort),','  1/ulp otherwise',/,"
+                                     "' 11 = 0 if T same no matter if VS computed (sort),','  1/ulp otherwise',"
+                                     "/,' 12 = 0 if W same no matter if VS computed (sort),',"
+                                     "'  1/ulp otherwise',/,' 13 = 0 if sorting successful, 1/ulp otherwise',/)";
+    static const char *format_9993 = "(' N=',i5,', IWK=',i2,', seed=',4(i4,','),' type ',i2,', test(',i2,')=',"
+                                     "g10.3)";
     static const char *format_9992 = "(' Cdrves: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
                                      "', ISEED=(',3(i5,','),i5,')')";
     //
-    path[0] = 'C';
-    path[1] = 'E';
-    path[2] = 'S';
-    path[3] = '\0';
+    path(1, 1) = "Zomplex precision";
+    path(2, 3) = "ES";
     //
-    //     Check for errors
+    // Check for errors
     //
     ntestt = 0;
     ntestf = 0;
@@ -141,7 +176,7 @@ void Cdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         info = -9;
     } else if (ldvs < 1 || ldvs < nmax) {
         info = -15;
-    } else if (5 * nmax + 2 * nmax * nmax > nwork) {
+    } else if (5 * nmax + 2 * pow2(nmax) > nwork) {
         info = -18;
     }
     //
@@ -332,7 +367,7 @@ void Cdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             }
             //
             if (iinfo != 0) {
-                write(nounit, format_9992), "Generator", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9992), "Generator", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 return;
             }
@@ -345,7 +380,7 @@ void Cdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 if (iwk == 1) {
                     nnwork = 3 * n;
                 } else {
-                    nnwork = 5 * n + 2 * n * n;
+                    nnwork = 5 * n + 2 * pow2(n);
                 }
                 nnwork = max(nnwork, (INTEGER)1);
                 //
@@ -359,20 +394,20 @@ void Cdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 for (isort = 0; isort <= 1; isort = isort + 1) {
                     if (isort == 0) {
-                        sort = 'N';
+                        sort = "N";
                         rsub = 0;
                     } else {
-                        sort = 'S';
+                        sort = "S";
                         rsub = 6;
                     }
                     //
                     // Compute Schur form and Schur vectors, and test them
                     //
                     Clacpy("F", n, n, a, lda, h, lda);
-                    Cgees("V", &sort, Cslect, n, h, lda, sdim, w, vs, ldvs, work, nnwork, rwork, bwork, iinfo);
+                    Cgees("V", sort.elems, Cslect, n, h, lda, sdim, w, vs, ldvs, work, nnwork, rwork, bwork, iinfo);
                     if (iinfo != 0) {
                         result[(1 + rsub) - 1] = ulpinv;
-                        write(nounit, format_9992), "Cgees1", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                        write(nounit, format_9992), "Cgees1", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         goto statement_190;
                     }
@@ -382,7 +417,7 @@ void Cdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     result[(1 + rsub) - 1] = zero;
                     for (j = 1; j <= n - 1; j = j + 1) {
                         for (i = j + 1; i <= n; i = i + 1) {
-                            if (h[(i - 1) + (j - 1) * ldh] != zero) {
+                            if (h[(i - 1) + (j - 1) * lda] != zero) {
                                 result[(1 + rsub) - 1] = ulpinv;
                             }
                         }
@@ -399,7 +434,7 @@ void Cdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     //
                     result[(4 + rsub) - 1] = zero;
                     for (i = 1; i <= n; i = i + 1) {
-                        if (h[(i - 1) + (i - 1) * ldh] != w[i - 1]) {
+                        if (h[(i - 1) + (i - 1) * lda] != w[i - 1]) {
                             result[(4 + rsub) - 1] = ulpinv;
                         }
                     }
@@ -407,10 +442,10 @@ void Cdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     // Do Test (5) or Test (11)
                     //
                     Clacpy("F", n, n, a, lda, ht, lda);
-                    Cgees("N", &sort, Cslect, n, ht, lda, sdim, wt, vs, ldvs, work, nnwork, rwork, bwork, iinfo);
+                    Cgees("N", sort.elems, Cslect, n, ht, lda, sdim, wt, vs, ldvs, work, nnwork, rwork, bwork, iinfo);
                     if (iinfo != 0) {
                         result[(5 + rsub) - 1] = ulpinv;
-                        write(nounit, format_9992), "Cgees2", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                        write(nounit, format_9992), "Cgees2", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         goto statement_190;
                     }
@@ -418,7 +453,7 @@ void Cdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     result[(5 + rsub) - 1] = zero;
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = 1; i <= n; i = i + 1) {
-                            if (h[(i - 1) + (j - 1) * ldh] != ht[(i - 1) + (j - 1) * ldht]) {
+                            if (h[(i - 1) + (j - 1) * lda] != ht[(i - 1) + (j - 1) * lda]) {
                                 result[(5 + rsub) - 1] = ulpinv;
                             }
                         }
@@ -474,59 +509,18 @@ void Cdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     ntestf++;
                 }
                 if (ntestf == 1) {
-                    write(nounit, "(/,1x,a3,' -- Complex Schur Form Decomposition Driver',/,"
-                                  "' Matrix types (see Cdrves for details): ')"),
-                        path;
-                    write(nounit, "(/,' Special Matrices:',/,'  1=Zero matrix.             ',"
-                                  "'           ','  5=Diagonal: geometr. spaced entries.',/,"
-                                  "'  2=Identity matrix.                    ','  6=Diagona',"
-                                  "'l: clustered entries.',/,'  3=Transposed Jordan block.  ',"
-                                  "'          ','  7=Diagonal: large, evenly spaced.',/,'  ',"
-                                  "'4=Diagonal: evenly spaced entries.    ','  8=Diagonal: s',"
-                                  "'mall, evenly spaced.')");
-                    write(nounit, "(' Dense, Non-Symmetric Matrices:',/,'  9=Well-cond., ev',"
-                                  "'enly spaced eigenvals.',' 14=Ill-cond., geomet. spaced e',"
-                                  "'igenals.',/,' 10=Well-cond., geom. spaced eigenvals. ',"
-                                  "' 15=Ill-conditioned, clustered e.vals.',/,' 11=Well-cond',"
-                                  "'itioned, clustered e.vals. ',' 16=Ill-cond., random comp',"
-                                  "'lex ',a6,/,' 12=Well-cond., random complex ',a6,'   ',"
-                                  "' 17=Ill-cond., large rand. complx ',a4,/,' 13=Ill-condi',"
-                                  "'tioned, evenly spaced.     ',' 18=Ill-cond., small rand.',"
-                                  "' complx ',a4)");
-                    write(nounit, "(' 19=Matrix with random O(1) entries.    ',' 21=Matrix ',"
-                                  "'with small random entries.',/,' 20=Matrix with large ran',"
-                                  "'dom entries.   ',/)");
-                    sprintnum_short(buf, thresh);
-                    write(nounit, "(' Tests performed with test threshold =',a,/,"
-                                  "' ( A denotes A on input and T denotes A on output)',/,/,"
-                                  "' 1 = 0 if T in Schur form (no sort), ','  1/ulp otherwise',/,"
-                                  "' 2 = | A - VS T transpose(VS) | / ( n |A| ulp ) (no sort)',/,"
-                                  "' 3 = | I - VS transpose(VS) | / ( n ulp ) (no sort) ',/,"
-                                  "' 4 = 0 if W are eigenvalues of T (no sort),',"
-                                  "'  1/ulp otherwise',/,"
-                                  "' 5 = 0 if T same no matter if VS computed (no sort),',"
-                                  "'  1/ulp otherwise',/,"
-                                  "' 6 = 0 if W same no matter if VS computed (no sort)',"
-                                  "',  1/ulp otherwise')"),
-                        buf;
-                    write(nounit, "(' 7 = 0 if T in Schur form (sort), ','  1/ulp otherwise',/,"
-                                  "' 8 = | A - VS T transpose(VS) | / ( n |A| ulp ) (sort)',/,"
-                                  "' 9 = | I - VS transpose(VS) | / ( n ulp ) (sort) ',/,"
-                                  "' 10 = 0 if W are eigenvalues of T (sort),','  1/ulp otherwise',"
-                                  "/,' 11 = 0 if T same no matter if VS computed (sort),',"
-                                  "'  1/ulp otherwise',/,"
-                                  "' 12 = 0 if W same no matter if VS computed (sort),',"
-                                  "'  1/ulp otherwise',/,"
-                                  "' 13 = 0 if sorting successful, 1/ulp otherwise',/)");
+                    write(nounit, format_9999), path;
+                    write(nounit, format_9998);
+                    write(nounit, format_9997);
+                    write(nounit, format_9996);
+                    write(nounit, format_9995), thresh;
+                    write(nounit, format_9994);
                     ntestf = 2;
                 }
                 //
                 for (j = 1; j <= 13; j = j + 1) {
                     if (result[j - 1] >= thresh) {
-                        sprintnum_short(buf, result[j - 1]);
-                        write(nounit, "(' N=',i5,', IWK=',i2,', seed=',4(i4,','),' type ',i2,"
-                                      "', test(',i2,')=',a)"),
-                            n, iwk, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3], jtype, j, buf;
+                        write(nounit, format_9993), n, iwk, ioldsd, jtype, j, result[j - 1];
                     }
                 }
                 //

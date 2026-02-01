@@ -43,31 +43,12 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-struct common_infoc {
-    int infot;
-    int nout;
-    bool ok;
-    bool lerr;
-
-    common_infoc() : infot(0), nout(0), ok(false), lerr(false) {}
-};
-
-struct common_srnamc {
-    fem::str<32> srnamt;
-
-    common_srnamc() : srnamt(0) {}
-};
-
-struct common : fem::common, common_infoc, common_srnamc {
-    common(int argc, char const *argv[]) : fem::common(argc, argv) {}
-};
-
 void Rerrac(INTEGER const nunit) {
+    common cmn;
     common_write write(cmn);
-    int &infot = cmn.infot;
-    int &nout = cmn.nout;
-    bool &ok = cmn.ok;
-    bool &lerr = cmn.lerr;
+    //
+    static const char *format_9999 = "(1x,a6,' drivers passed the tests of the error exits')";
+    static const char *format_9998 = "(' *** ',a6,' drivers failed the tests of the error ','exits ***')";
     //
     nout = nunit;
     write(nout, star);
@@ -101,36 +82,36 @@ void Rerrac(INTEGER const nunit) {
     }
     ok = true;
     //
-    cmn.srnamt = "DSPOSV";
+    srnamt = "Rsposv";
     infot = 1;
     REAL work[nmax * nmax];
     REAL swork[nmax * nmax];
     INTEGER iter = 0;
     INTEGER info = 0;
     Rsposv("/", 0, 0, a, 1, b, 1, x, 1, work, swork, iter, info);
-    Chkxer("DSPOSV", infot, nout, lerr, ok);
+    Chkxer("Rsposv", infot, nout, lerr, ok);
     infot = 2;
     Rsposv("U", -1, 0, a, 1, b, 1, x, 1, work, swork, iter, info);
-    Chkxer("DSPOSV", infot, nout, lerr, ok);
+    Chkxer("Rsposv", infot, nout, lerr, ok);
     infot = 3;
     Rsposv("U", 0, -1, a, 1, b, 1, x, 1, work, swork, iter, info);
-    Chkxer("DSPOSV", infot, nout, lerr, ok);
+    Chkxer("Rsposv", infot, nout, lerr, ok);
     infot = 5;
     Rsposv("U", 2, 1, a, 1, b, 2, x, 2, work, swork, iter, info);
-    Chkxer("DSPOSV", infot, nout, lerr, ok);
+    Chkxer("Rsposv", infot, nout, lerr, ok);
     infot = 7;
     Rsposv("U", 2, 1, a, 2, b, 1, x, 2, work, swork, iter, info);
-    Chkxer("DSPOSV", infot, nout, lerr, ok);
+    Chkxer("Rsposv", infot, nout, lerr, ok);
     infot = 9;
     Rsposv("U", 2, 1, a, 2, b, 2, x, 1, work, swork, iter, info);
-    Chkxer("DSPOSV", infot, nout, lerr, ok);
+    Chkxer("Rsposv", infot, nout, lerr, ok);
     //
     // Print a summary line.
     //
     if (ok) {
-        write(nout, "(1x,a6,' drivers passed the tests of the error exits')"), "DSPOSV";
+        write(nout, format_9999), "Rsposv";
     } else {
-        write(nout, "(' *** ',a6,' drivers failed the tests of the error ','exits ***')"), "DSPOSV";
+        write(nout, format_9998), "Rsposv";
     }
     //
     // End of Rerrac

@@ -43,8 +43,6 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
 void Rget51(INTEGER const itype, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *u, INTEGER const ldu, REAL *v, INTEGER const ldv, REAL *work, REAL &result) {
     //
     const REAL zero = 0.0;
@@ -76,16 +74,16 @@ void Rget51(INTEGER const itype, INTEGER const n, REAL *a, INTEGER const lda, RE
         //
         // Tests scaled by the norm(A)
         //
-        anorm = max({Rlange("1", n, n, a, lda, work), unfl});
+        anorm = max(Rlange("1", n, n, a, lda, work), unfl);
         //
         if (itype == 1) {
             //
             // ITYPE=1: Compute W = A - UBV'
             //
             Rlacpy(" ", n, n, a, lda, work, n);
-            Rgemm("N", "N", n, n, n, one, u, ldu, b, ldb, zero, &work[(n * n + 1) - 1], n);
+            Rgemm("N", "N", n, n, n, one, u, ldu, b, ldb, zero, &work[(pow2(n) + 1) - 1], n);
             //
-            Rgemm("N", "C", n, n, n, -one, &work[(n * n + 1) - 1], n, v, ldv, one, work, n);
+            Rgemm("N", "C", n, n, n, -one, &work[(pow2(n) + 1) - 1], n, v, ldv, one, work, n);
             //
         } else {
             //
@@ -102,15 +100,15 @@ void Rget51(INTEGER const itype, INTEGER const n, REAL *a, INTEGER const lda, RE
         //
         // Compute norm(W)/ ( ulp*norm(A) )
         //
-        wnorm = Rlange("1", n, n, work, n, &work[(n * n + 1) - 1]);
+        wnorm = Rlange("1", n, n, work, n, &work[(pow2(n) + 1) - 1]);
         //
         if (anorm > wnorm) {
-            result = (wnorm / anorm) / (castREAL(n) * ulp);
+            result = (wnorm / anorm) / (n * ulp);
         } else {
             if (anorm < one) {
-                result = (min(wnorm, REAL(castREAL(n) * anorm)) / anorm) / (castREAL(n) * ulp);
+                result = (min(wnorm, n * anorm) / anorm) / (n * ulp);
             } else {
-                result = min(REAL(wnorm / anorm), castREAL(n)) / (castREAL(n) * ulp);
+                result = min(wnorm / anorm, castREAL(n)) / (n * ulp);
             }
         }
         //
@@ -126,7 +124,7 @@ void Rget51(INTEGER const itype, INTEGER const n, REAL *a, INTEGER const lda, RE
             work[((n + 1) * (jdiag - 1) + 1) - 1] = work[((n + 1) * (jdiag - 1) + 1) - 1] - one;
         }
         //
-        result = min({Rlange("1", n, n, work, n, &work[(n * n + 1) - 1]), castREAL(n)}) / (n * ulp);
+        result = min(Rlange("1", n, n, work, n, &work[(pow2(n) + 1) - 1]), castREAL(n)) / (n * ulp);
     }
     //
     // End of Rget51

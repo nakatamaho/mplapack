@@ -42,63 +42,15 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-
-struct common_infoc {
-    int infot;
-    int nunit;
-    bool ok;
-    bool lerr;
-
-    common_infoc() : infot(0), nunit(0), ok(false), lerr(false) {}
-};
-
-struct common_srnamc {
-    fem::str<32> srnamt;
-
-    common_srnamc() : srnamt(0) {}
-};
-
-struct common : fem::common, common_infoc, common_srnamc {
-    fem::cmn_sve zdrvhe_sve;
-
-    common(int argc, char const *argv[]) : fem::common(argc, argv) {}
-};
-
-struct zdrvhe_save {
-    static const int nfact = 2;
-
-    arr<fem::str<1>> facts;
-    arr<int> iseedy;
-    arr<fem::str<1>> uplos;
-
-    zdrvhe_save() : facts(dimension(nfact), fem::fill0), iseedy(dimension(4), fem::fill0), uplos(dimension(2), fem::fill0) {}
-};
-
-const int zdrvhe_save::nfact;
+#include <memory>
 
 void Cdrvhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, REAL const thresh, bool const tsterr, INTEGER const nmax, COMPLEX *a, COMPLEX *afac, COMPLEX *ainv, COMPLEX *b, COMPLEX *x, COMPLEX *xact, COMPLEX *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
-    FEM_CMN_SVE(zdrvhe);
+    common cmn;
     common_write write(cmn);
-    fem::str<32> &srnamt = cmn.srnamt;
-    const INTEGER nfact = 2;
-    str_arr_ref<1> facts(sve.facts, dimension(nfact));
-    arr_ref<int> iseedy(sve.iseedy, dimension(4));
-    str_arr_ref<1> uplos(sve.uplos, dimension(2));
-    if (is_called_first_time) {
-        {
-            static const int values[] = {1988, 1989, 1990, 1991};
-            fem::data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
-        }
-        {
-            static const char *values[] = {"U", "L"};
-            fem::data_of_type_str(FEM_VALUES_AND_SIZE), uplos;
-        }
-        {
-            static const char *values[] = {"F", "N"};
-            fem::data_of_type_str(FEM_VALUES_AND_SIZE), facts;
-        }
-    }
-    char path[3];
+    static INTEGER iseedy[4] = {1988, 1989, 1990, 1991};
+    static fem::str<1> uplos[2] = {"U", "L"};
+    static fem::str<1> facts[2] = {"F", "N"};
+    fem::str<3> path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -110,20 +62,20 @@ void Cdrvhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     INTEGER in = 0;
     INTEGER n = 0;
     INTEGER lda = 0;
-    char xtype;
+    fem::str<1> xtype;
     const INTEGER ntypes = 10;
     INTEGER nimat = 0;
     INTEGER imat = 0;
     bool zerot = false;
     INTEGER iuplo = 0;
-    char uplo;
-    char type;
+    fem::str<1> uplo;
+    fem::str<1> type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist;
+    fem::str<1> dist;
     INTEGER info = 0;
     INTEGER izero = 0;
     INTEGER ioff = 0;
@@ -132,7 +84,8 @@ void Cdrvhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     INTEGER i2 = 0;
     INTEGER i1 = 0;
     INTEGER ifact = 0;
-    char fact;
+    const INTEGER nfact = 2;
+    fem::str<1> fact;
     REAL rcondc = 0.0;
     REAL ainvnm = 0.0;
     const REAL one = 1.0;
@@ -143,20 +96,23 @@ void Cdrvhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     REAL rcond = 0.0;
     INTEGER k1 = 0;
     INTEGER n_err_bnds = 0;
-    char equed;
+    fem::str<1> equed;
     REAL rpvgrw_svxx = 0.0;
-    std::unique_ptr<REAL[]> __berr_storage(new REAL[nrhs]);
-    REAL *berr = __berr_storage.get();
-    std::unique_ptr<REAL[]> __errbnds_n_storage(new REAL[nrhs * 3]);
-    REAL *errbnds_n = __errbnds_n_storage.get();
-    std::unique_ptr<REAL[]> __errbnds_c_storage(new REAL[nrhs * 3]);
-    REAL *errbnds_c = __errbnds_c_storage.get();
+    auto berr_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nrhs));
+    REAL *berr = berr_storage.get();
+    auto errbnds_n_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nrhs * 3));
+    REAL *errbnds_n = errbnds_n_storage.get();
+    auto errbnds_c_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nrhs * 3));
+    REAL *errbnds_c = errbnds_c_storage.get();
+    //
+    static const char *format_9999 = "(1x,a,', UPLO=''',a1,''', N =',i5,', type ',i2,', test ',i2,', ratio =',"
+                                     "g12.5)";
     static const char *format_9998 = "(1x,a,', FACT=''',a1,''', UPLO=''',a1,''', N =',i5,', type ',i2,"
                                      "', test ',i2,', ratio =',g12.5)";
     //
     // Initialize constants and the random number seed.
     //
-    path[0] = 'Z';
+    path(1, 1) = "Z";
     path(2, 3) = "HE";
     nrun = 0;
     nfail = 0;
@@ -171,21 +127,21 @@ void Cdrvhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     if (tsterr) {
         Cerrvx(path, nout);
     }
-    cmn.infot = 0;
+    infot = 0;
     //
     // Set the block size and minimum block size for testing.
     //
     nb = 1;
     nbmin = 2;
-    xlaenv(1, nb);
-    xlaenv(2, nbmin);
+    Mxlaenv(1, nb);
+    Mxlaenv(2, nbmin);
     //
     // Do for each value of N in NVAL
     //
     for (in = 1; in <= nn; in = in + 1) {
         n = nval[in - 1];
         lda = max(n, (INTEGER)1);
-        xtype = 'N';
+        xtype = "N";
         nimat = ntypes;
         if (n <= 0) {
             nimat = 1;
@@ -214,15 +170,15 @@ void Cdrvhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                 // Set up parameters with Clatb4 and generate a test matrix
                 // with Clatms.
                 //
-                Clatb4(path, imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
+                Clatb4(path, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
                 //
-                srnamt = "ZLATMS";
-                Clatms(n, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, &uplo, a, lda, work, info);
+                srnamt = "Clatms";
+                Clatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, uplo, a, lda, work, info);
                 //
                 // Check error code from Clatms.
                 //
                 if (info != 0) {
-                    Alaerh(path, "ZLATMS", info, 0, &uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Clatms", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     goto statement_160;
                 }
                 //
@@ -316,19 +272,19 @@ void Cdrvhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         //
                         // Compute the 1-norm of A.
                         //
-                        anorm = Clanhe("1", &uplo, n, a, lda, rwork);
+                        anorm = Clanhe("1", uplo.elems, n, a, lda, rwork);
                         //
                         // Factor the matrix A.
                         //
-                        Clacpy(&uplo, n, n, a, lda, afac, lda);
-                        Chetrf(&uplo, n, afac, lda, iwork, work, lwork, info);
+                        Clacpy(uplo.elems, n, n, a, lda, afac, lda);
+                        Chetrf(uplo.elems, n, afac, lda, iwork, work, lwork, info);
                         //
                         // Compute inv(A) and take its norm.
                         //
-                        Clacpy(&uplo, n, n, afac, lda, ainv, lda);
+                        Clacpy(uplo.elems, n, n, afac, lda, ainv, lda);
                         lwork = (n + nb + 1) * (nb + 3);
-                        Chetri2(&uplo, n, ainv, lda, iwork, work, lwork, info);
-                        ainvnm = Clanhe("1", &uplo, n, ainv, lda, rwork);
+                        Chetri2(uplo.elems, n, ainv, lda, iwork, work, lwork, info);
+                        ainvnm = Clanhe("1", uplo.elems, n, ainv, lda, rwork);
                         //
                         // Compute the 1-norm condition number of A.
                         //
@@ -341,20 +297,20 @@ void Cdrvhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     //
                     // Form an exact solution and set the right hand side.
                     //
-                    srnamt = "ZLARHS";
-                    Clarhs(path, &xtype, &uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
-                    xtype = 'C';
+                    srnamt = "Clarhs";
+                    Clarhs(path, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
+                    xtype = "C";
                     //
                     // --- Test Chesv  ---
                     //
                     if (ifact == 2) {
-                        Clacpy(&uplo, n, n, a, lda, afac, lda);
+                        Clacpy(uplo.elems, n, n, a, lda, afac, lda);
                         Clacpy("Full", n, nrhs, b, lda, x, lda);
                         //
                         // Factor the matrix and solve the system using Chesv.
                         //
-                        srnamt = "ZHESV ";
-                        Chesv(&uplo, n, nrhs, afac, lda, iwork, x, lda, work, lwork, info);
+                        srnamt = "Chesv";
+                        Chesv(uplo.elems, n, nrhs, afac, lda, iwork, x, lda, work, lwork, info);
                         //
                         // Adjust the expected value of INFO to account for
                         // pivoting.
@@ -376,7 +332,7 @@ void Cdrvhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         // Check error code from Chesv .
                         //
                         if (info != k) {
-                            Alaerh(path, "ZHESV ", info, k, &uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Chesv", info, k, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                             goto statement_120;
                         } else if (info != 0) {
                             goto statement_120;
@@ -385,16 +341,16 @@ void Cdrvhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         // Reconstruct matrix from factors and compute
                         // residual.
                         //
-                        Chet01(&uplo, n, a, lda, afac, lda, iwork, ainv, lda, rwork, result[0]);
+                        Chet01(uplo, n, a, lda, afac, lda, iwork, ainv, lda, rwork, result[1 - 1]);
                         //
                         // Compute residual of the computed solution.
                         //
                         Clacpy("Full", n, nrhs, b, lda, work, lda);
-                        Cpot02(&uplo, n, nrhs, a, lda, x, lda, work, lda, rwork, result[1]);
+                        Cpot02(uplo, n, nrhs, a, lda, x, lda, work, lda, rwork, result[2 - 1]);
                         //
                         // Check solution from generated exact solution.
                         //
-                        Cget04(n, nrhs, x, lda, xact, lda, rcondc, result[2]);
+                        Cget04(n, nrhs, x, lda, xact, lda, rcondc, result[3 - 1]);
                         nt = 3;
                         //
                         // Print information about the tests that did not pass
@@ -405,9 +361,7 @@ void Cdrvhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 if (nfail == 0 && nerrs == 0) {
                                     Aladhd(nout, path);
                                 }
-                                write(nout, "(1x,a,', UPLO=''',a1,''', N =',i5,', type ',i2,', test ',"
-                                            "i2,', ratio =',g12.5)"),
-                                    "ZHESV ", uplo, n, imat, k, result(k);
+                                write(nout, format_9999), "Chesv", uplo, n, imat, k, result[k - 1];
                                 nfail++;
                             }
                         }
@@ -418,15 +372,15 @@ void Cdrvhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     // --- Test Chesvx ---
                     //
                     if (ifact == 2) {
-                        Claset(&uplo, n, n, COMPLEX(zero), COMPLEX(zero), afac, lda);
+                        Claset(uplo.elems, n, n, COMPLEX(zero), COMPLEX(zero), afac, lda);
                     }
                     Claset("Full", n, nrhs, COMPLEX(zero), COMPLEX(zero), x, lda);
                     //
                     // Solve the system and compute the condition number and
                     // error bounds using Chesvx.
                     //
-                    srnamt = "ZHESVX";
-                    Chesvx(&fact, &uplo, n, nrhs, a, lda, afac, lda, iwork, b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, lwork, &rwork[(2 * nrhs + 1) - 1], info);
+                    srnamt = "Chesvx";
+                    Chesvx(fact.elems, uplo.elems, n, nrhs, a, lda, afac, lda, iwork, b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, lwork, &rwork[(2 * nrhs + 1) - 1], info);
                     //
                     // Adjust the expected value of INFO to account for
                     // pivoting.
@@ -448,7 +402,7 @@ void Cdrvhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     // Check the error code from Chesvx.
                     //
                     if (info != k) {
-                        Alaerh(path, "ZHESVX", info, k, fact + uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Chesvx", info, k, fact + uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                         goto statement_150;
                     }
                     //
@@ -458,7 +412,7 @@ void Cdrvhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             // Reconstruct matrix from factors and compute
                             // residual.
                             //
-                            Chet01(&uplo, n, a, lda, afac, lda, iwork, ainv, lda, &rwork[(2 * nrhs + 1) - 1], result[0]);
+                            Chet01(uplo, n, a, lda, afac, lda, iwork, ainv, lda, &rwork[(2 * nrhs + 1) - 1], result[1 - 1]);
                             k1 = 1;
                         } else {
                             k1 = 2;
@@ -467,15 +421,15 @@ void Cdrvhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         // Compute residual of the computed solution.
                         //
                         Clacpy("Full", n, nrhs, b, lda, work, lda);
-                        Cpot02(&uplo, n, nrhs, a, lda, x, lda, work, lda, &rwork[(2 * nrhs + 1) - 1], result[1]);
+                        Cpot02(uplo, n, nrhs, a, lda, x, lda, work, lda, &rwork[(2 * nrhs + 1) - 1], result[2 - 1]);
                         //
                         // Check solution from generated exact solution.
                         //
-                        Cget04(n, nrhs, x, lda, xact, lda, rcondc, result[2]);
+                        Cget04(n, nrhs, x, lda, xact, lda, rcondc, result[3 - 1]);
                         //
                         // Check the error bounds from iterative refinement.
                         //
-                        Cpot05(&uplo, n, nrhs, a, lda, b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], &result[3]);
+                        Cpot05(uplo, n, nrhs, a, lda, b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], &result[4 - 1]);
                     } else {
                         k1 = 6;
                     }
@@ -483,7 +437,7 @@ void Cdrvhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     // Compare RCOND from Chesvx with the computed value
                     // in RCONDC.
                     //
-                    result[5] = Rget06(rcond, rcondc);
+                    result[6 - 1] = Rget06(rcond, rcondc);
                     //
                     // Print information about the tests that did not pass
                     // the threshold.
@@ -493,7 +447,7 @@ void Cdrvhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             if (nfail == 0 && nerrs == 0) {
                                 Aladhd(nout, path);
                             }
-                            write(nout, format_9998), "ZHESVX", fact, uplo, n, imat, k, result(k);
+                            write(nout, format_9998), "Chesvx", fact, uplo, n, imat, k, result[k - 1];
                             nfail++;
                         }
                     }
@@ -504,16 +458,16 @@ void Cdrvhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     // Restore the matrices A and B.
                     //
                     if (ifact == 2) {
-                        Claset(&uplo, n, n, fem::cmplx(zero), fem::cmplx(zero), afac, lda);
+                        Claset(uplo.elems, n, n, fem::cmplx(zero), fem::cmplx(zero), afac, lda);
                     }
                     Claset("Full", n, nrhs, fem::cmplx(zero), fem::cmplx(zero), x, lda);
                     //
                     // Solve the system and compute the condition number
                     // and error bounds using Chesvxx.
                     //
-                    srnamt = "ZHESVXX";
+                    srnamt = "Chesvxx";
                     n_err_bnds = 3;
-                    equed = 'N';
+                    equed = "N";
                     Chesvxx(fact, uplo, n, nrhs, a, lda, afac, lda, iwork, equed, work[(n + 1) - 1], b, lda, x, lda, rcond, rpvgrw_svxx, berr, n_err_bnds, errbnds_n, errbnds_c, 0, zero, work, rwork[(2 * nrhs + 1) - 1], info);
                     //
                     // Adjust the expected value of INFO to account for
@@ -536,7 +490,7 @@ void Cdrvhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     // Check the error code from Chesvxx.
                     //
                     if (info != k && info <= n) {
-                        Alaerh(path, "ZHESVXX", info, k, fact + uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Chesvxx", info, k, fact + uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                         goto statement_150;
                     }
                     //
@@ -546,7 +500,7 @@ void Cdrvhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             // Reconstruct matrix from factors and compute
                             // residual.
                             //
-                            Chet01(&uplo, n, a, lda, afac, lda, iwork, ainv, lda, &rwork[(2 * nrhs + 1) - 1], result[0]);
+                            Chet01(uplo, n, a, lda, afac, lda, iwork, ainv, lda, &rwork[(2 * nrhs + 1) - 1], result[1 - 1]);
                             k1 = 1;
                         } else {
                             k1 = 2;
@@ -555,16 +509,16 @@ void Cdrvhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         // Compute residual of the computed solution.
                         //
                         Clacpy("Full", n, nrhs, b, lda, work, lda);
-                        Cpot02(&uplo, n, nrhs, a, lda, x, lda, work, lda, &rwork[(2 * nrhs + 1) - 1], result[1]);
-                        result[1] = 0.0;
+                        Cpot02(uplo, n, nrhs, a, lda, x, lda, work, lda, &rwork[(2 * nrhs + 1) - 1], result[2 - 1]);
+                        result[2 - 1] = 0.0;
                         //
                         // Check solution from generated exact solution.
                         //
-                        Cget04(n, nrhs, x, lda, xact, lda, rcondc, result[2]);
+                        Cget04(n, nrhs, x, lda, xact, lda, rcondc, result[3 - 1]);
                         //
                         // Check the error bounds from iterative refinement.
                         //
-                        Cpot05(&uplo, n, nrhs, a, lda, b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], &result[3]);
+                        Cpot05(uplo, n, nrhs, a, lda, b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], &result[4 - 1]);
                     } else {
                         k1 = 6;
                     }
@@ -572,7 +526,7 @@ void Cdrvhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     // Compare RCOND from Chesvxx with the computed value
                     // in RCONDC.
                     //
-                    result[5] = Rget06(rcond, rcondc);
+                    result[6 - 1] = Rget06(rcond, rcondc);
                     //
                     // Print information about the tests that did not pass
                     // the threshold.
@@ -582,7 +536,7 @@ void Cdrvhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             if (nfail == 0 && nerrs == 0) {
                                 Aladhd(nout, path);
                             }
-                            write(nout, format_9998), "ZHESVXX", fact, uplo, n, imat, k, result(k);
+                            write(nout, format_9998), "Chesvxx", fact, uplo, n, imat, k, result[k - 1];
                             nfail++;
                         }
                     }

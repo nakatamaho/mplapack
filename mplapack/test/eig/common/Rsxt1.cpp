@@ -43,8 +43,6 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
 REAL Rsxt1(INTEGER const ijob, REAL *d1, INTEGER const n1, REAL *d2, INTEGER const n2, REAL const abstol, REAL const ulp, REAL const unfl) {
     REAL return_value = 0.0;
     const REAL zero = 0.0;
@@ -65,12 +63,12 @@ REAL Rsxt1(INTEGER const ijob, REAL *d1, INTEGER const n1, REAL *d2, INTEGER con
         if (j == 1) {
             temp2 = abs(d2[j - 1] - d1[i - 1]);
             if (ijob == 2) {
-                temp2 = temp2 / max(unfl, REAL(abstol + ulp * abs(d1[i - 1])));
+                temp2 = temp2 / max(unfl, abstol + ulp * abs(d1[i - 1]));
             }
         } else {
             temp2 = min(abs(d2[j - 1] - d1[i - 1]), abs(d1[i - 1] - d2[(j - 1) - 1]));
             if (ijob == 2) {
-                temp2 = temp2 / max(unfl, REAL(abstol + ulp * abs(d1[i - 1])));
+                temp2 = temp2 / max(unfl, abstol + ulp * abs(d1[i - 1]));
             }
         }
         temp1 = max(temp1, temp2);

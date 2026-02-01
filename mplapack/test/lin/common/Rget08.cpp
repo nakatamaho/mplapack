@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Rget08(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *x, INTEGER const ldx, REAL *b, INTEGER const ldb, REAL *rwork, REAL &resid) {
+void Rget08(fem::str_cref trans, INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *x, INTEGER const ldx, REAL *b, INTEGER const ldb, REAL *rwork, REAL &resid) {
     //
     // Quick exit if M = 0 or N = 0 or NRHS = 0
     //
@@ -55,7 +55,7 @@ void Rget08(const char *trans, INTEGER const m, INTEGER const n, INTEGER const n
     //
     INTEGER n1 = 0;
     INTEGER n2 = 0;
-    if (Mlsame(trans, "T") || Mlsame(trans, "C")) {
+    if (Mlsame(trans.elems(), "T") || Mlsame(trans.elems(), "C")) {
         n1 = n;
         n2 = m;
     } else {
@@ -75,7 +75,7 @@ void Rget08(const char *trans, INTEGER const m, INTEGER const n, INTEGER const n
     //
     // Compute  B - A*X  (or  B - A'*X ) and store in B.
     //
-    Rgemm(trans, "No transpose", n1, nrhs, n2, -one, a, lda, x, ldx, one, b, ldb);
+    Rgemm(trans.elems(), "No transpose", n1, nrhs, n2, -one, a, lda, x, ldx, one, b, ldb);
     //
     // Compute the maximum over the number of right hand sides of
     // norm(B - A*X) / ( norm(A) * norm(X) * EPS ) .
@@ -85,14 +85,12 @@ void Rget08(const char *trans, INTEGER const m, INTEGER const n, INTEGER const n
     REAL bnorm = 0.0;
     REAL xnorm = 0.0;
     for (j = 1; j <= nrhs; j = j + 1) {
-        INTEGER bb = iRamax(n1, &b[(j - 1) * ldb], 1);
-        INTEGER xx = iRamax(n2, &x[(j - 1) * ldx], 1);
-        bnorm = abs(b[(bb - 1) + (j - 1) * lda]);
-        xnorm = abs(x[(xx - 1) + (j - 1) * lda]);
+        bnorm = abs(b[((iRamax(n1, &b[(j - 1) * ldb], 1)) - 1) + (j - 1) * ldb]);
+        xnorm = abs(x[((iRamax(n2, &x[(j - 1) * ldx], 1)) - 1) + (j - 1) * ldx]);
         if (xnorm <= zero) {
             resid = one / eps;
         } else {
-            resid = max(resid, REAL(((bnorm / anorm) / xnorm) / eps));
+            resid = max(resid, ((bnorm / anorm) / xnorm) / eps);
         }
     }
     //

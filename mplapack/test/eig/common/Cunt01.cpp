@@ -43,11 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-inline REAL abs1(COMPLEX zdum) { return abs(zdum.real()) + abs(zdum.imag()); }
-
-void Cunt01(const char *rowcol, INTEGER const m, INTEGER const n, COMPLEX *u, INTEGER const ldu, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL &resid) {
+void Cunt01(fem::str_cref rowcol, INTEGER const m, INTEGER const n, COMPLEX *u, INTEGER const ldu, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL &resid) {
     COMPLEX zdum = 0.0;
     //
     const REAL zero = 0.0;
@@ -60,13 +56,13 @@ void Cunt01(const char *rowcol, INTEGER const m, INTEGER const n, COMPLEX *u, IN
     }
     //
     REAL eps = Rlamch("Precision");
-    char transu;
+    fem::str<1> transu;
     INTEGER k = 0;
-    if (m < n || (m == n && Mlsame(rowcol, "R"))) {
-        transu = 'N';
+    if (m < n || (m == n && Mlsame(rowcol.elems(), "R"))) {
+        transu = "N";
         k = n;
     } else {
-        transu = 'C';
+        transu = "C";
         k = m;
     }
     INTEGER mnmin = min(m, n);
@@ -86,13 +82,13 @@ void Cunt01(const char *rowcol, INTEGER const m, INTEGER const n, COMPLEX *u, IN
         // Compute I - U*U' or I - U'*U.
         //
         Claset("Upper", mnmin, mnmin, COMPLEX(zero), COMPLEX(one), work, ldwork);
-        Cherk("Upper", &transu, mnmin, k, -one, u, ldu, one, work, ldwork);
+        Cherk("Upper", transu.elems, mnmin, k, -one, u, ldu, one, work, ldwork);
         //
         // Compute norm( I - U*U' ) / ( K * EPS ) .
         //
         resid = Clansy("1", "Upper", mnmin, work, ldwork, rwork);
         resid = (resid / castREAL(k)) / eps;
-    } else if (Mlsame(&transu, "C")) {
+    } else if (transu == "C") {
         //
         // Find the maximum element in abs( I - U'*U ) / ( m * EPS )
         //
@@ -104,7 +100,7 @@ void Cunt01(const char *rowcol, INTEGER const m, INTEGER const n, COMPLEX *u, IN
                     tmp = one;
                 }
                 tmp = tmp - Cdotc(m, &u[(i - 1) * ldu], 1, &u[(j - 1) * ldu], 1);
-                resid = max(resid, abs1(tmp));
+                resid = max(resid, cabs1(tmp));
             }
         }
         resid = (resid / castREAL(m)) / eps;
@@ -120,7 +116,7 @@ void Cunt01(const char *rowcol, INTEGER const m, INTEGER const n, COMPLEX *u, IN
                     tmp = one;
                 }
                 tmp = tmp - Cdotc(n, &u[(j - 1)], ldu, &u[(i - 1)], ldu);
-                resid = max(resid, abs1(tmp));
+                resid = max(resid, cabs1(tmp));
             }
         }
         resid = (resid / castREAL(n)) / eps;

@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Clavsp(const char *uplo, const char *trans, const char *diag, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER *ipiv, COMPLEX *b, INTEGER const ldb, INTEGER &info) {
+void Clavsp(fem::str_cref uplo, fem::str_cref trans, fem::str_cref diag, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER *ipiv, COMPLEX *b, INTEGER const ldb, INTEGER &info) {
     bool nounit = false;
     INTEGER k = 0;
     INTEGER kc = 0;
@@ -61,11 +61,11 @@ void Clavsp(const char *uplo, const char *trans, const char *diag, INTEGER const
     // Test the input parameters.
     //
     info = 0;
-    if (!Mlsame(uplo, "U") && !Mlsame(uplo, "L")) {
+    if (!Mlsame(uplo.elems(), "U") && !Mlsame(uplo.elems(), "L")) {
         info = -1;
-    } else if (!Mlsame(trans, "N") && !Mlsame(trans, "T")) {
+    } else if (!Mlsame(trans.elems(), "N") && !Mlsame(trans.elems(), "T")) {
         info = -2;
-    } else if (!Mlsame(diag, "U") && !Mlsame(diag, "N")) {
+    } else if (!Mlsame(diag.elems(), "U") && !Mlsame(diag.elems(), "N")) {
         info = -3;
     } else if (n < 0) {
         info = -4;
@@ -83,18 +83,18 @@ void Clavsp(const char *uplo, const char *trans, const char *diag, INTEGER const
         return;
     }
     //
-    nounit = Mlsame(diag, "N");
+    nounit = Mlsame(diag.elems(), "N");
     // ------------------------------------------
     //
     // Compute  B := A * B  (No transpose)
     //
     // ------------------------------------------
-    if (Mlsame(trans, "N")) {
+    if (Mlsame(trans.elems(), "N")) {
         //
         // Compute  B := U*B
         // where U = P(m)*inv(U(m))* ... *P(1)*inv(U(1))
         //
-        if (Mlsame(uplo, "U")) {
+        if (Mlsame(uplo.elems(), "U")) {
             //
             // Loop forward applying the transformations.
             //
@@ -121,7 +121,7 @@ void Clavsp(const char *uplo, const char *trans, const char *diag, INTEGER const
                     //
                     // Apply the transformation.
                     //
-                    Cgeru(k - 1, nrhs, one, &a[kc - 1], 1, &b[(k - 1)], ldb, &b[(1 - 1) + (1 - 1) * ldb], ldb);
+                    Cgeru(k - 1, nrhs, one, &a[kc - 1], 1, &b[(k - 1)], ldb, &b[0], ldb);
                     //
                     // Interchange if P(K) != I.
                     //
@@ -159,8 +159,8 @@ void Clavsp(const char *uplo, const char *trans, const char *diag, INTEGER const
                     //
                     // Apply the transformations.
                     //
-                    Cgeru(k - 1, nrhs, one, &a[kc - 1], 1, &b[(k - 1)], ldb, &b[(1 - 1) + (1 - 1) * ldb], ldb);
-                    Cgeru(k - 1, nrhs, one, &a[kcnext - 1], 1, &b[((k + 1) - 1)], ldb, &b[(1 - 1) + (1 - 1) * ldb], ldb);
+                    Cgeru(k - 1, nrhs, one, &a[kc - 1], 1, &b[(k - 1)], ldb, &b[0], ldb);
+                    Cgeru(k - 1, nrhs, one, &a[kcnext - 1], 1, &b[((k + 1) - 1)], ldb, &b[0], ldb);
                     //
                     // Interchange if P(K) != I.
                     //
@@ -276,7 +276,7 @@ void Clavsp(const char *uplo, const char *trans, const char *diag, INTEGER const
         // where U  = P(m)*inv(U(m))* ... *P(1)*inv(U(1))
         // and   U^T = inv(U^T(1))*P(1)* ... *inv(U^T(m))*P(m)
         //
-        if (Mlsame(uplo, "U")) {
+        if (Mlsame(uplo.elems(), "U")) {
             //
             // Loop backward applying the transformations.
             //

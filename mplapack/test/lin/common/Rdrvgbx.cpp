@@ -42,69 +42,16 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-
-struct common_infoc {
-    int infot;
-    int nunit;
-    bool ok;
-    bool lerr;
-
-    common_infoc() : infot(0), nunit(0), ok(false), lerr(false) {}
-};
-
-struct common_srnamc {
-    fem::str<32> srnamt;
-
-    common_srnamc() : srnamt(0) {}
-};
-
-struct common : fem::common, common_infoc, common_srnamc {
-    fem::cmn_sve ddrvgb_sve;
-
-    common(int argc, char const *argv[]) : fem::common(argc, argv) {}
-};
-
-struct ddrvgb_save {
-    static const int ntran = 3;
-
-    arr<fem::str<1>> equeds;
-    arr<fem::str<1>> facts;
-    arr<int> iseedy;
-    arr<fem::str<1>> transs;
-
-    ddrvgb_save() : equeds(dimension(4), fem::fill0), facts(dimension(3), fem::fill0), iseedy(dimension(4), fem::fill0), transs(dimension(ntran), fem::fill0) {}
-};
-
-const int ddrvgb_save::ntran;
+#include <memory>
 
 void Rdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, REAL const thresh, bool const tsterr, REAL *a, INTEGER const la, REAL *afb, INTEGER const lafb, REAL *asav, REAL *b, REAL *bsav, REAL *x, REAL *xact, REAL *s, REAL *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
-    FEM_CMN_SVE(ddrvgb);
+    common cmn;
     common_write write(cmn);
-    fem::str<32> &srnamt = cmn.srnamt;
-    str_arr_ref<1> equeds(sve.equeds, dimension(4));
-    str_arr_ref<1> facts(sve.facts, dimension(3));
-    arr_ref<int> iseedy(sve.iseedy, dimension(4));
-    const INTEGER ntran = 3;
-    str_arr_ref<1> transs(sve.transs, dimension(ntran));
-    if (is_called_first_time) {
-        {
-            static const int values[] = {1988, 1989, 1990, 1991};
-            fem::data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
-        }
-        {
-            static const char *values[] = {"N", "T", "C"};
-            fem::data_of_type_str(FEM_VALUES_AND_SIZE), transs;
-        }
-        {
-            static const char *values[] = {"F", "N", "E"};
-            fem::data_of_type_str(FEM_VALUES_AND_SIZE), facts;
-        }
-        {
-            static const char *values[] = {"N", "R", "C", "B"};
-            fem::data_of_type_str(FEM_VALUES_AND_SIZE), equeds;
-        }
-    }
-    char path[3];
+    static INTEGER iseedy[4] = {1988, 1989, 1990, 1991};
+    static fem::str<1> transs[3] = {"N", "T", "C"};
+    static fem::str<1> facts[3] = {"F", "N", "E"};
+    static fem::str<1> equeds[4] = {"N", "R", "C", "B"};
+    fem::str<3> path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -115,7 +62,7 @@ void Rdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     INTEGER in = 0;
     INTEGER n = 0;
     INTEGER ldb = 0;
-    char xtype;
+    fem::str<1> xtype;
     INTEGER nkl = 0;
     INTEGER nku = 0;
     const INTEGER ntypes = 8;
@@ -128,11 +75,11 @@ void Rdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     INTEGER ldafb = 0;
     INTEGER imat = 0;
     bool zerot = false;
-    char type;
+    fem::str<1> type;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist;
+    fem::str<1> dist;
     const REAL one = 1.0;
     REAL rcondc = 0.0;
     INTEGER info = 0;
@@ -143,10 +90,10 @@ void Rdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     const REAL zero = 0.0;
     INTEGER j = 0;
     INTEGER iequed = 0;
-    char equed;
+    fem::str<1> equed;
     INTEGER nfact = 0;
     INTEGER ifact = 0;
-    char fact;
+    fem::str<1> fact;
     bool prefac = false;
     bool nofact = false;
     bool equil = false;
@@ -161,7 +108,8 @@ void Rdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     REAL anormi = 0.0;
     REAL ainvnm = 0.0;
     INTEGER itran = 0;
-    char trans;
+    const INTEGER ntran = 3;
+    fem::str<1> trans;
     const INTEGER ntests = 7;
     REAL result[ntests];
     INTEGER nt = 0;
@@ -174,20 +122,27 @@ void Rdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     REAL roldc = 0.0;
     INTEGER n_err_bnds = 0;
     REAL rpvgrw_svxx = 0.0;
-    std::unique_ptr<REAL[]> __berr_storage(new REAL[nrhs]);
-    REAL *berr = __berr_storage.get();
-    std::unique_ptr<REAL[]> __errbnds_n_storage(new REAL[nrhs * 3]);
-    REAL *errbnds_n = __errbnds_n_storage.get();
-    std::unique_ptr<REAL[]> __errbnds_c_storage(new REAL[nrhs * 3]);
-    REAL *errbnds_c = __errbnds_c_storage.get();
-    static const char *format_9995 = "(1x,a,'( ''',a1,''',''',a1,''',',i5,',',i5,',',i5,',...), EQUED=''',a1,"
-                                     "''', type ',i1,', test(',i1,')=',g12.5)";
+    auto berr_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nrhs));
+    REAL *berr = berr_storage.get();
+    auto errbnds_n_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nrhs * 3));
+    REAL *errbnds_n = errbnds_n_storage.get();
+    auto errbnds_c_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nrhs * 3));
+    REAL *errbnds_c = errbnds_c_storage.get();
+    //
+    static const char *format_9999 = "(' *** In Rdrvgb, LA=',i5,' is too small for N=',i5,', KU=',i5,', KL=',"
+                                     "i5,/,' ==> Increase LA to at least ',i5)";
+    static const char *format_9998 = "(' *** In Rdrvgb, LAFB=',i5,' is too small for N=',i5,', KU=',i5,', KL=',"
+                                     "i5,/,' ==> Increase LAFB to at least ',i5)";
+    static const char *format_9997 = "(1x,a,', N=',i5,', KL=',i5,', KU=',i5,', type ',i1,', test(',i1,')=',"
+                                     "g12.5)";
     static const char *format_9996 = "(1x,a,'( ''',a1,''',''',a1,''',',i5,',',i5,',',i5,',...), type ',i1,"
                                      "', test(',i1,')=',g12.5)";
+    static const char *format_9995 = "(1x,a,'( ''',a1,''',''',a1,''',',i5,',',i5,',',i5,',...), EQUED=''',a1,"
+                                     "''', type ',i1,', test(',i1,')=',g12.5)";
     //
     // Initialize constants and the random number seed.
     //
-    path[0] = "Double precision";
+    path(1, 1) = "Double precision";
     path(2, 3) = "GB";
     nrun = 0;
     nfail = 0;
@@ -201,21 +156,21 @@ void Rdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     if (tsterr) {
         Rerrvx(path, nout);
     }
-    cmn.infot = 0;
+    infot = 0;
     //
     // Set the block size and minimum block size for testing.
     //
     nb = 1;
     nbmin = 2;
-    xlaenv(1, nb);
-    xlaenv(2, nbmin);
+    Mxlaenv(1, nb);
+    Mxlaenv(2, nbmin);
     //
     // Do for each value of N in NVAL
     //
     for (in = 1; in <= nn; in = in + 1) {
         n = nval[in - 1];
         ldb = max(n, (INTEGER)1);
-        xtype = 'N';
+        xtype = "N";
         //
         // Set limits on the number of loop iterations.
         //
@@ -269,15 +224,11 @@ void Rdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         Aladhd(nout, path);
                     }
                     if (lda * n > la) {
-                        write(nout, "(' *** In DDRVGB, LA=',i5,' is too small for N=',i5,', KU=',i5,"
-                                    "', KL=',i5,/,' ==> Increase LA to at least ',i5)"),
-                            la, n, kl, ku, n *(kl + ku + 1);
+                        write(nout, format_9999), la, n, kl, ku, n *(kl + ku + 1);
                         nerrs++;
                     }
                     if (ldafb * n > lafb) {
-                        write(nout, "(' *** In DDRVGB, LAFB=',i5,' is too small for N=',i5,', KU=',"
-                                    "i5,', KL=',i5,/,' ==> Increase LAFB to at least ',i5)"),
-                            lafb, n, kl, ku, n * (2 * kl + ku + 1);
+                        write(nout, format_9998), lafb, n, kl, ku, n * (2 * kl + ku + 1);
                         nerrs++;
                     }
                     goto statement_130;
@@ -301,16 +252,16 @@ void Rdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     // Set up parameters with Rlatb4 and generate a
                     // test matrix with Rlatms.
                     //
-                    Rlatb4(path, imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
+                    Rlatb4(path, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
                     rcondc = one / cndnum;
                     //
-                    srnamt = "DLATMS";
-                    Rlatms(n, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, "Z", a, lda, work, info);
+                    srnamt = "Rlatms";
+                    Rlatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, "Z", a, lda, work, info);
                     //
                     // Check the error code from Rlatms.
                     //
                     if (info != 0) {
-                        Alaerh(path, "DLATMS", info, 0, " ", n, n, kl, ku, -1, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Rlatms", info, 0, " ", n, n, kl, ku, -1, imat, nfail, nerrs, nout);
                         goto statement_120;
                     }
                     //
@@ -357,9 +308,9 @@ void Rdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         //
                         for (ifact = 1; ifact <= nfact; ifact = ifact + 1) {
                             fact = facts[ifact - 1];
-                            prefac = Mlsame(&fact, "F");
-                            nofact = Mlsame(&fact, "N");
-                            equil = Mlsame(&fact, "E");
+                            prefac = Mlsame(fact.elems, "F");
+                            nofact = Mlsame(fact.elems, "N");
+                            equil = Mlsame(fact.elems, "E");
                             //
                             if (zerot) {
                                 if (prefac) {
@@ -383,20 +334,20 @@ void Rdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                     //
                                     Rgbequ(n, n, kl, ku, &afb[(kl + 1) - 1], ldafb, s, &s[(n + 1) - 1], rowcnd, colcnd, amax, info);
                                     if (info == 0 && n > 0) {
-                                        if (Mlsame(&equed, "R")) {
+                                        if (Mlsame(equed.elems, "R")) {
                                             rowcnd = zero;
                                             colcnd = one;
-                                        } else if (Mlsame(&equed, "C")) {
+                                        } else if (Mlsame(equed.elems, "C")) {
                                             rowcnd = one;
                                             colcnd = zero;
-                                        } else if (Mlsame(&equed, "B")) {
+                                        } else if (Mlsame(equed.elems, "B")) {
                                             rowcnd = zero;
                                             colcnd = zero;
                                         }
                                         //
                                         // Equilibrate the matrix.
                                         //
-                                        Rlaqgb(n, n, kl, ku, &afb[(kl + 1) - 1], ldafb, s, &s[(n + 1) - 1], rowcnd, colcnd, amax, &equed);
+                                        Rlaqgb(n, n, kl, ku, &afb[(kl + 1) - 1], ldafb, s, &s[(n + 1) - 1], rowcnd, colcnd, amax, equed.elems);
                                     }
                                 }
                                 //
@@ -420,7 +371,7 @@ void Rdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 // Form the inverse of A.
                                 //
                                 Rlaset("Full", n, n, zero, one, work, ldb);
-                                srnamt = "DGBTRS";
+                                srnamt = "Rgbtrs";
                                 Rgbtrs("No transpose", n, kl, ku, n, afb, ldafb, iwork, work, ldb, info);
                                 //
                                 // Compute the 1-norm condition number of A.
@@ -461,9 +412,9 @@ void Rdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 // Form an exact solution and set the right hand
                                 // side.
                                 //
-                                srnamt = "DLARHS";
-                                Rlarhs(path, &xtype, "Full", &trans, n, n, kl, ku, nrhs, a, lda, xact, ldb, b, ldb, iseed, info);
-                                xtype = 'C';
+                                srnamt = "Rlarhs";
+                                Rlarhs(path, xtype, "Full", trans, n, n, kl, ku, nrhs, a, lda, xact, ldb, b, ldb, iseed, info);
+                                xtype = "C";
                                 Rlacpy("Full", n, nrhs, b, ldb, bsav, ldb);
                                 //
                                 if (nofact && itran == 1) {
@@ -476,19 +427,19 @@ void Rdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                     Rlacpy("Full", kl + ku + 1, n, a, lda, &afb[(kl + 1) - 1], ldafb);
                                     Rlacpy("Full", n, nrhs, b, ldb, x, ldb);
                                     //
-                                    srnamt = "DGBSV ";
+                                    srnamt = "Rgbsv";
                                     Rgbsv(n, kl, ku, nrhs, afb, ldafb, iwork, x, ldb, info);
                                     //
                                     // Check error code from Rgbsv .
                                     //
                                     if (info != izero) {
-                                        Alaerh(path, "DGBSV ", info, izero, " ", n, n, kl, ku, nrhs, imat, nfail, nerrs, nout);
+                                        Alaerh(path, "Rgbsv", info, izero, " ", n, n, kl, ku, nrhs, imat, nfail, nerrs, nout);
                                     }
                                     //
                                     // Reconstruct matrix from factors and
                                     // compute residual.
                                     //
-                                    Rgbt01(n, n, kl, ku, a, lda, afb, ldafb, iwork, work, result[0]);
+                                    Rgbt01(n, n, kl, ku, a, lda, afb, ldafb, iwork, work, result[1 - 1]);
                                     nt = 1;
                                     if (izero == 0) {
                                         //
@@ -496,12 +447,12 @@ void Rdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                         // solution.
                                         //
                                         Rlacpy("Full", n, nrhs, b, ldb, work, ldb);
-                                        Rgbt02("No transpose", n, n, kl, ku, nrhs, a, lda, x, ldb, work, ldb, result[1]);
+                                        Rgbt02("No transpose", n, n, kl, ku, nrhs, a, lda, x, ldb, work, ldb, result[2 - 1]);
                                         //
                                         // Check solution from generated exact
                                         // solution.
                                         //
-                                        Rget04(n, nrhs, x, ldb, xact, ldb, rcondc, result[2]);
+                                        Rget04(n, nrhs, x, ldb, xact, ldb, rcondc, result[3 - 1]);
                                         nt = 3;
                                     }
                                     //
@@ -513,9 +464,7 @@ void Rdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                             if (nfail == 0 && nerrs == 0) {
                                                 Aladhd(nout, path);
                                             }
-                                            write(nout, "(1x,a,', N=',i5,', KL=',i5,', KU=',i5,', type ',i1,"
-                                                        "', test(',i1,')=',g12.5)"),
-                                                "DGBSV ", n, kl, ku, imat, k, result(k);
+                                            write(nout, format_9997), "Rgbsv", n, kl, ku, imat, k, result[k - 1];
                                             nfail++;
                                         }
                                     }
@@ -533,19 +482,19 @@ void Rdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                     // Equilibrate the matrix if FACT = 'F' and
                                     // EQUED = 'R', 'C', or 'B'.
                                     //
-                                    Rlaqgb(n, n, kl, ku, a, lda, s, &s[(n + 1) - 1], rowcnd, colcnd, amax, &equed);
+                                    Rlaqgb(n, n, kl, ku, a, lda, s, &s[(n + 1) - 1], rowcnd, colcnd, amax, equed.elems);
                                 }
                                 //
                                 // Solve the system and compute the condition
                                 // number and error bounds using Rgbsvx.
                                 //
-                                srnamt = "DGBSVX";
-                                Rgbsvx(&fact, &trans, n, kl, ku, nrhs, a, lda, afb, ldafb, iwork, &equed, s, &s[(n + 1) - 1], b, ldb, x, ldb, rcond, rwork, &rwork[(nrhs + 1) - 1], work, &iwork[(n + 1) - 1], info);
+                                srnamt = "Rgbsvx";
+                                Rgbsvx(fact.elems, trans.elems, n, kl, ku, nrhs, a, lda, afb, ldafb, iwork, equed.elems, s, &s[(n + 1) - 1], b, ldb, x, ldb, rcond, rwork, &rwork[(nrhs + 1) - 1], work, &iwork[(n + 1) - 1], info);
                                 //
                                 // Check the error code from Rgbsvx.
                                 //
                                 if (info != izero) {
-                                    Alaerh(path, "DGBSVX", info, izero, fact + trans, n, n, kl, ku, nrhs, imat, nfail, nerrs, nout);
+                                    Alaerh(path, "Rgbsvx", info, izero, fact + trans, n, n, kl, ku, nrhs, imat, nfail, nerrs, nout);
                                 }
                                 //
                                 // Compare WORK(1) from Rgbsvx with the computed
@@ -572,14 +521,14 @@ void Rdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                         rpvgrw = Rlangb("M", n, kl, ku, a, lda, work) / rpvgrw;
                                     }
                                 }
-                                result[6] = abs(rpvgrw - work[0]) / max(work[0], rpvgrw) / Rlamch("E");
+                                result[7 - 1] = abs(rpvgrw - work[1 - 1]) / max(work[1 - 1], rpvgrw) / Rlamch("E");
                                 //
                                 if (!prefac) {
                                     //
                                     // Reconstruct matrix from factors and
                                     // compute residual.
                                     //
-                                    Rgbt01(n, n, kl, ku, a, lda, afb, ldafb, iwork, work, result[0]);
+                                    Rgbt01(n, n, kl, ku, a, lda, afb, ldafb, iwork, work, result[1 - 1]);
                                     k1 = 1;
                                 } else {
                                     k1 = 2;
@@ -591,26 +540,26 @@ void Rdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                     // Compute residual of the computed solution.
                                     //
                                     Rlacpy("Full", n, nrhs, bsav, ldb, work, ldb);
-                                    Rgbt02(&trans, n, n, kl, ku, nrhs, asav, lda, x, ldb, work, ldb, result[1]);
+                                    Rgbt02(trans, n, n, kl, ku, nrhs, asav, lda, x, ldb, work, ldb, result[2 - 1]);
                                     //
                                     // Check solution from generated exact
                                     // solution.
                                     //
-                                    if (nofact || (prefac && Mlsame(&equed, "N"))) {
-                                        Rget04(n, nrhs, x, ldb, xact, ldb, rcondc, result[2]);
+                                    if (nofact || (prefac && Mlsame(equed.elems, "N"))) {
+                                        Rget04(n, nrhs, x, ldb, xact, ldb, rcondc, result[3 - 1]);
                                     } else {
                                         if (itran == 1) {
                                             roldc = roldo;
                                         } else {
                                             roldc = roldi;
                                         }
-                                        Rget04(n, nrhs, x, ldb, xact, ldb, roldc, result[2]);
+                                        Rget04(n, nrhs, x, ldb, xact, ldb, roldc, result[3 - 1]);
                                     }
                                     //
                                     // Check the error bounds from iterative
                                     // refinement.
                                     //
-                                    Rgbt05(&trans, n, kl, ku, nrhs, asav, lda, b, ldb, x, ldb, xact, ldb, rwork, &rwork[(nrhs + 1) - 1], &result[3]);
+                                    Rgbt05(trans, n, kl, ku, nrhs, asav, lda, b, ldb, x, ldb, xact, ldb, rwork, &rwork[(nrhs + 1) - 1], &result[4 - 1]);
                                 } else {
                                     trfcon = true;
                                 }
@@ -618,7 +567,7 @@ void Rdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 // Compare RCOND from Rgbsvx with the computed
                                 // value in RCONDC.
                                 //
-                                result[5] = Rget06(rcond, rcondc);
+                                result[6 - 1] = Rget06(rcond, rcondc);
                                 //
                                 // Print information about the tests that did
                                 // not pass the threshold.
@@ -630,47 +579,47 @@ void Rdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                                 Aladhd(nout, path);
                                             }
                                             if (prefac) {
-                                                write(nout, format_9995), "DGBSVX", fact, trans, n, kl, ku, equed, imat, k, result(k);
+                                                write(nout, format_9995), "Rgbsvx", fact, trans, n, kl, ku, equed, imat, k, result[k - 1];
                                             } else {
-                                                write(nout, format_9996), "DGBSVX", fact, trans, n, kl, ku, imat, k, result(k);
+                                                write(nout, format_9996), "Rgbsvx", fact, trans, n, kl, ku, imat, k, result[k - 1];
                                             }
                                             nfail++;
                                         }
                                     }
                                     nrun += 7 - k1;
                                 } else {
-                                    if (result[0] >= thresh && !prefac) {
+                                    if (result[1 - 1] >= thresh && !prefac) {
                                         if (nfail == 0 && nerrs == 0) {
                                             Aladhd(nout, path);
                                         }
                                         if (prefac) {
-                                            write(nout, format_9995), "DGBSVX", fact, trans, n, kl, ku, equed, imat, 1, result(1);
+                                            write(nout, format_9995), "Rgbsvx", fact, trans, n, kl, ku, equed, imat, 1, result[1 - 1];
                                         } else {
-                                            write(nout, format_9996), "DGBSVX", fact, trans, n, kl, ku, imat, 1, result(1);
+                                            write(nout, format_9996), "Rgbsvx", fact, trans, n, kl, ku, imat, 1, result[1 - 1];
                                         }
                                         nfail++;
                                         nrun++;
                                     }
-                                    if (result[5] >= thresh) {
+                                    if (result[6 - 1] >= thresh) {
                                         if (nfail == 0 && nerrs == 0) {
                                             Aladhd(nout, path);
                                         }
                                         if (prefac) {
-                                            write(nout, format_9995), "DGBSVX", fact, trans, n, kl, ku, equed, imat, 6, result(6);
+                                            write(nout, format_9995), "Rgbsvx", fact, trans, n, kl, ku, equed, imat, 6, result[6 - 1];
                                         } else {
-                                            write(nout, format_9996), "DGBSVX", fact, trans, n, kl, ku, imat, 6, result(6);
+                                            write(nout, format_9996), "Rgbsvx", fact, trans, n, kl, ku, imat, 6, result[6 - 1];
                                         }
                                         nfail++;
                                         nrun++;
                                     }
-                                    if (result[6] >= thresh) {
+                                    if (result[7 - 1] >= thresh) {
                                         if (nfail == 0 && nerrs == 0) {
                                             Aladhd(nout, path);
                                         }
                                         if (prefac) {
-                                            write(nout, format_9995), "DGBSVX", fact, trans, n, kl, ku, equed, imat, 7, result(7);
+                                            write(nout, format_9995), "Rgbsvx", fact, trans, n, kl, ku, equed, imat, 7, result[7 - 1];
                                         } else {
-                                            write(nout, format_9996), "DGBSVX", fact, trans, n, kl, ku, imat, 7, result(7);
+                                            write(nout, format_9996), "Rgbsvx", fact, trans, n, kl, ku, imat, 7, result[7 - 1];
                                         }
                                         nfail++;
                                         nrun++;
@@ -694,13 +643,13 @@ void Rdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                     // Equilibrate the matrix if FACT = 'F' and
                                     // EQUED = 'R', 'C', or 'B'.
                                     //
-                                    Rlaqgb(n, n, kl, ku, a, lda, s, &s[(n + 1) - 1], rowcnd, colcnd, amax, &equed);
+                                    Rlaqgb(n, n, kl, ku, a, lda, s, &s[(n + 1) - 1], rowcnd, colcnd, amax, equed.elems);
                                 }
                                 //
                                 // Solve the system and compute the condition number
                                 // and error bounds using Rgbsvxx.
                                 //
-                                srnamt = "DGBSVXX";
+                                srnamt = "Rgbsvxx";
                                 n_err_bnds = 3;
                                 Rgbsvxx(fact, trans, n, kl, ku, nrhs, a, lda, afb, ldafb, iwork, equed, s, s[(n + 1) - 1], b, ldb, x, ldb, rcond, rpvgrw_svxx, berr, n_err_bnds, errbnds_n, errbnds_c, 0, zero, work, iwork[(n + 1) - 1], info);
                                 //
@@ -710,7 +659,7 @@ void Rdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                     goto statement_90;
                                 }
                                 if (info != izero) {
-                                    Alaerh(path, "DGBSVXX", info, izero, fact + trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                                    Alaerh(path, "Rgbsvxx", info, izero, fact + trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                                     goto statement_90;
                                 }
                                 //
@@ -723,14 +672,14 @@ void Rdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                     rpvgrw = Rla_gbrpvgrw(n, kl, ku, n, a, lda, afb, ldafb);
                                 }
                                 //
-                                result[6] = abs(rpvgrw - rpvgrw_svxx) / max(rpvgrw_svxx, rpvgrw) / Rlamch("E");
+                                result[7 - 1] = abs(rpvgrw - rpvgrw_svxx) / max(rpvgrw_svxx, rpvgrw) / Rlamch("E");
                                 //
                                 if (!prefac) {
                                     //
                                     // Reconstruct matrix from factors and compute
                                     // residual.
                                     //
-                                    Rgbt01(n, n, kl, ku, a, lda, afb, ldafb, iwork, work, result[0]);
+                                    Rgbt01(n, n, kl, ku, a, lda, afb, ldafb, iwork, work, result[1 - 1]);
                                     k1 = 1;
                                 } else {
                                     k1 = 2;
@@ -742,19 +691,19 @@ void Rdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                     // Compute residual of the computed solution.
                                     //
                                     Rlacpy("Full", n, nrhs, bsav, ldb, work, ldb);
-                                    Rgbt02(&trans, n, n, kl, ku, nrhs, asav, lda, x, ldb, work, ldb, result[1]);
+                                    Rgbt02(trans, n, n, kl, ku, nrhs, asav, lda, x, ldb, work, ldb, result[2 - 1]);
                                     //
                                     // Check solution from generated exact solution.
                                     //
-                                    if (nofact || (prefac && Mlsame(&equed, "N"))) {
-                                        Rget04(n, nrhs, x, ldb, xact, ldb, rcondc, result[2]);
+                                    if (nofact || (prefac && Mlsame(equed.elems, "N"))) {
+                                        Rget04(n, nrhs, x, ldb, xact, ldb, rcondc, result[3 - 1]);
                                     } else {
                                         if (itran == 1) {
                                             roldc = roldo;
                                         } else {
                                             roldc = roldi;
                                         }
-                                        Rget04(n, nrhs, x, ldb, xact, ldb, roldc, result[2]);
+                                        Rget04(n, nrhs, x, ldb, xact, ldb, roldc, result[3 - 1]);
                                     }
                                 } else {
                                     trfcon = true;
@@ -763,7 +712,7 @@ void Rdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 // Compare RCOND from Rgbsvxx with the computed value
                                 // in RCONDC.
                                 //
-                                result[5] = Rget06(rcond, rcondc);
+                                result[6 - 1] = Rget06(rcond, rcondc);
                                 //
                                 // Print information about the tests that did not pass
                                 // the threshold.
@@ -775,47 +724,47 @@ void Rdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                                 Aladhd(nout, path);
                                             }
                                             if (prefac) {
-                                                write(nout, format_9995), "DGBSVXX", fact, trans, n, kl, ku, equed, imat, k, result(k);
+                                                write(nout, format_9995), "Rgbsvxx", fact, trans, n, kl, ku, equed, imat, k, result[k - 1];
                                             } else {
-                                                write(nout, format_9996), "DGBSVXX", fact, trans, n, kl, ku, imat, k, result(k);
+                                                write(nout, format_9996), "Rgbsvxx", fact, trans, n, kl, ku, imat, k, result[k - 1];
                                             }
                                             nfail++;
                                         }
                                     }
                                     nrun += 7 - k1;
                                 } else {
-                                    if (result[0] >= thresh && !prefac) {
+                                    if (result[1 - 1] >= thresh && !prefac) {
                                         if (nfail == 0 && nerrs == 0) {
                                             Aladhd(nout, path);
                                         }
                                         if (prefac) {
-                                            write(nout, format_9995), "DGBSVXX", fact, trans, n, kl, ku, equed, imat, 1, result(1);
+                                            write(nout, format_9995), "Rgbsvxx", fact, trans, n, kl, ku, equed, imat, 1, result[1 - 1];
                                         } else {
-                                            write(nout, format_9996), "DGBSVXX", fact, trans, n, kl, ku, imat, 1, result(1);
+                                            write(nout, format_9996), "Rgbsvxx", fact, trans, n, kl, ku, imat, 1, result[1 - 1];
                                         }
                                         nfail++;
                                         nrun++;
                                     }
-                                    if (result[5] >= thresh) {
+                                    if (result[6 - 1] >= thresh) {
                                         if (nfail == 0 && nerrs == 0) {
                                             Aladhd(nout, path);
                                         }
                                         if (prefac) {
-                                            write(nout, format_9995), "DGBSVXX", fact, trans, n, kl, ku, equed, imat, 6, result(6);
+                                            write(nout, format_9995), "Rgbsvxx", fact, trans, n, kl, ku, equed, imat, 6, result[6 - 1];
                                         } else {
-                                            write(nout, format_9996), "DGBSVXX", fact, trans, n, kl, ku, imat, 6, result(6);
+                                            write(nout, format_9996), "Rgbsvxx", fact, trans, n, kl, ku, imat, 6, result[6 - 1];
                                         }
                                         nfail++;
                                         nrun++;
                                     }
-                                    if (result[6] >= thresh) {
+                                    if (result[7 - 1] >= thresh) {
                                         if (nfail == 0 && nerrs == 0) {
                                             Aladhd(nout, path);
                                         }
                                         if (prefac) {
-                                            write(nout, format_9995), "DGBSVXX", fact, trans, n, kl, ku, equed, imat, 7, result(7);
+                                            write(nout, format_9995), "Rgbsvxx", fact, trans, n, kl, ku, equed, imat, 7, result[7 - 1];
                                         } else {
-                                            write(nout, format_9996), "DGBSVXX", fact, trans, n, kl, ku, imat, 7, result(7);
+                                            write(nout, format_9996), "Rgbsvxx", fact, trans, n, kl, ku, imat, 7, result[7 - 1];
                                         }
                                         nfail++;
                                         nrun++;

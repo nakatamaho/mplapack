@@ -43,35 +43,17 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Clatsy(const char *uplo, INTEGER const n, COMPLEX *x, INTEGER const ldx, INTEGER *iseed) {
+void Clatsy(fem::str_cref uplo, INTEGER const n, COMPLEX *x, INTEGER const ldx, INTEGER *iseed) {
     //
     // Initialize constants
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Initialize constants
-    //
-
-    REAL seventeen = 8.0;
-    REAL eight = 8.0;
+    REAL one = 1.0;
     REAL two = 2.0;
-    REAL alpha = (1.0 + sqrt(seventeen)) / eight;
-    REAL beta = alpha - 1.0 / 1000.0;
+    REAL eight = 8.0;
+    REAL seventeen = 17.0;
+    REAL thousand = 1000.0;
+    REAL alpha = (one + sqrt(seventeen)) / eight;
+    REAL beta = alpha - one / thousand;
     REAL alpha3 = alpha * alpha * alpha;
     //
     // UPLO = 'U':  Upper triangular storage
@@ -84,7 +66,7 @@ void Clatsy(const char *uplo, INTEGER const n, COMPLEX *x, INTEGER const ldx, IN
     const COMPLEX eye = COMPLEX(0.0, 1.0);
     COMPLEX c = 0.0;
     COMPLEX r = 0.0;
-    if (Mlsame(uplo, "U")) {
+    if (Mlsame(uplo.elems(), "U")) {
         //
         // Fill the upper triangle of the matrix with zeros.
         //

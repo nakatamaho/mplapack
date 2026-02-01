@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Cspt03(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *ainv, COMPLEX *work, INTEGER const ldw, REAL *rwork, REAL &rcond, REAL &resid) {
+void Cspt03(fem::str_cref uplo, INTEGER const n, COMPLEX *a, COMPLEX *ainv, COMPLEX *work, INTEGER const ldw, REAL *rwork, REAL &rcond, REAL &resid) {
     //
     // Quick exit if N = 0.
     //
@@ -58,8 +58,8 @@ void Cspt03(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *ainv, COMPLE
     // Exit with RESID = 1/EPS if ANORM = 0 or AINVNM = 0.
     //
     REAL eps = Rlamch("Epsilon");
-    REAL anorm = Clansp("1", uplo, n, a, rwork);
-    REAL ainvnm = Clansp("1", uplo, n, ainv, rwork);
+    REAL anorm = Clansp("1", uplo.elems(), n, a, rwork);
+    REAL ainvnm = Clansp("1", uplo.elems(), n, ainv, rwork);
     if (anorm <= zero || ainvnm <= zero) {
         rcond = zero;
         resid = one / eps;
@@ -79,7 +79,7 @@ void Cspt03(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *ainv, COMPLE
     INTEGER kcol = 0;
     INTEGER k = 0;
     INTEGER nall = 0;
-    if (Mlsame(uplo, "U")) {
+    if (Mlsame(uplo.elems(), "U")) {
         for (i = 1; i <= n; i = i + 1) {
             icol = ((i - 1) * i) / 2 + 1;
             //

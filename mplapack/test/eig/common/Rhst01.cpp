@@ -43,8 +43,6 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
 void Rhst01(INTEGER const n, INTEGER const /* ilo */, INTEGER const /* ihi */, REAL *a, INTEGER const lda, REAL *h, INTEGER const ldh, REAL *q, INTEGER const ldq, REAL *work, INTEGER const lwork, REAL *result) {
     //
     // Quick return if possible
@@ -60,7 +58,8 @@ void Rhst01(INTEGER const n, INTEGER const /* ilo */, INTEGER const /* ihi */, R
     REAL eps = Rlamch("Precision");
     const REAL one = 1.0;
     REAL ovfl = one / unfl;
-    REAL smlnum = unfl * castREAL(n) / eps;
+    Rlabad(unfl, ovfl);
+    REAL smlnum = unfl * n / eps;
     //
     // Test 1:  Compute norm( A - Q*H*Q' ) / ( norm(A) * N * EPS )
     //
@@ -77,12 +76,12 @@ void Rhst01(INTEGER const n, INTEGER const /* ilo */, INTEGER const /* ihi */, R
     //
     Rgemm("No transpose", "Transpose", n, n, n, -one, &work[(ldwork * n + 1) - 1], ldwork, q, ldq, one, work, ldwork);
     //
-    REAL anorm = max({Rlange("1", n, n, a, lda, &work[(ldwork * n + 1) - 1]), unfl});
+    REAL anorm = max(Rlange("1", n, n, a, lda, &work[(ldwork * n + 1) - 1]), unfl);
     REAL wnorm = Rlange("1", n, n, work, ldwork, &work[(ldwork * n + 1) - 1]);
     //
     // Note that RESULT(1) cannot overflow and is bounded by 1/(N*EPS)
     //
-    result[1 - 1] = min(wnorm, anorm) / max(smlnum, REAL(anorm * eps)) / castREAL(n);
+    result[1 - 1] = min(wnorm, anorm) / max(smlnum, anorm * eps) / n;
     //
     // Test 2:  Compute norm( I - Q'*Q ) / ( N * EPS )
     //

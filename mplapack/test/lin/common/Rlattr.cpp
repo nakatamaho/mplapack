@@ -43,21 +43,22 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Rlattr(INTEGER const imat, const char *uplo, const char *trans, char *diag, INTEGER *iseed, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, REAL *work, INTEGER &info) {
+void Rlattr(INTEGER const imat, fem::str_cref uplo, fem::str_cref trans, fem::str_ref diag, INTEGER *iseed, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, REAL *work, INTEGER &info) {
     //
-    char path[4] = {};
-    path[0] = 'R';
-    path[1] = 'T';
-    path[2] = 'R';
+    fem::str<3> path = "Double precision";
+    path(2, 3) = "TR";
     REAL unfl = Rlamch("Safe minimum");
     REAL ulp = Rlamch("Epsilon") * Rlamch("Base");
     REAL smlnum = unfl;
     const REAL one = 1.0;
+    const REAL half = 0.5;
+    const REAL quarter = 0.25;
     REAL bignum = (one - ulp) / smlnum;
+    Rlabad(smlnum, bignum);
     if ((imat >= 7 && imat <= 10) || imat == 18) {
-        *diag = 'U';
+        diag = "U";
     } else {
-        *diag = 'N';
+        diag = "N";
     }
     info = 0;
     //
@@ -69,18 +70,18 @@ void Rlattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     //
     // Call Rlatb4 to set parameters for SLATMS.
     //
-    bool upper = Mlsame(uplo, "U");
-    char type;
+    bool upper = Mlsame(uplo.elems(), "U");
+    fem::str<1> type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist;
+    fem::str<1> dist;
     if (upper) {
-        Rlatb4(path, imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
+        Rlatb4(path, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
     } else {
-        Rlatb4(path, -imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
+        Rlatb4(path, -imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
     }
     //
     // IMAT <= 6:  Non-unit triangular matrix
@@ -100,7 +101,7 @@ void Rlattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     REAL rb = 0.0;
     REAL c = 0.0;
     REAL s = 0.0;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     INTEGER iy = 0;
     REAL bnorm = 0.0;
     REAL bscal = 0.0;
@@ -109,7 +110,7 @@ void Rlattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     REAL texp = 0.0;
     REAL tleft = 0.0;
     if (imat <= 6) {
-        Rlatms(n, n, &dist, iseed, &type, b, mode, cndnum, anorm, kl, ku, "No packing", a, lda, work, info);
+        Rlatms(n, n, dist, iseed, type, b, mode, cndnum, anorm, kl, ku, "No packing", a, lda, work, info);
         //
         // IMAT > 6:  Unit triangular matrix
         // The diagonal is deliberately set to something other than 1.
@@ -214,8 +215,8 @@ void Rlattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
         //
         // where c = w / sqrt(w**2+4) and s = 2 / sqrt(w**2+4).
         //
-        star1 = 0.25e0;
-        sfac = 0.5e0;
+        star1 = quarter;
+        sfac = half;
         plus1 = sfac;
         for (j = 1; j <= n; j = j + 2) {
             plus2 = star1 / plus1;
@@ -235,10 +236,9 @@ void Rlattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
             }
         }
         //
-        REAL two = 2.0;
         x = sqrt(cndnum) - 1 / sqrt(cndnum);
         if (n > 2) {
-            y = sqrt(two / (castREAL(n) - two)) * x;
+            y = sqrt(two / REAL(static_cast<double>(n - 2))) * x; //DD, QD don't have constructor dd_real(long int) and doesn't harm for other environment
         } else {
             y = zero;
         }
@@ -275,7 +275,7 @@ void Rlattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
         if (upper) {
             for (j = 1; j <= n - 1; j = j + 1) {
                 ra = a[(j - 1) + ((j + 1) - 1) * lda];
-                rb = 2.0;
+                rb = two;
                 Rrotg(ra, rb, c, s);
                 //
                 // Multiply by [ c  s; -s  c] on the left.
@@ -297,7 +297,7 @@ void Rlattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
         } else {
             for (j = 1; j <= n - 1; j = j + 1) {
                 ra = a[((j + 1) - 1) + (j - 1) * lda];
-                rb = 2.0;
+                rb = two;
                 Rrotg(ra, rb, c, s);
                 //
                 // Multiply by [ c -s;  s  c] on the right.
@@ -371,7 +371,7 @@ void Rlattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
                 }
                 a[(j - 1) + (j - 1) * lda] = sign(one, a[(j - 1) + (j - 1) * lda]);
             }
-            a[(1 - 1) + (1 - 1) * lda] = smlnum * a[(1 - 1) + (1 - 1) * lda];
+            a[0] = smlnum * a[0];
         }
         //
     } else if (imat == 13) {
@@ -392,7 +392,7 @@ void Rlattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
                 Rlarnv(2, iseed, n - j + 1, &a[(j - 1) + (j - 1) * lda]);
                 a[(j - 1) + (j - 1) * lda] = sign(one, a[(j - 1) + (j - 1) * lda]);
             }
-            a[(1 - 1) + (1 - 1) * lda] = smlnum * a[(1 - 1) + (1 - 1) * lda];
+            a[0] = smlnum * a[0];
         }
         //
     } else if (imat == 14) {
@@ -534,7 +534,7 @@ void Rlattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
                 a[((j - 1) - 1) * lda] = -(tscal / castREAL(n + 1)) / castREAL(n + 2);
                 a[((j - 1) - 1) + ((j - 1) - 1) * lda] = one;
                 b[(j - 1) - 1] = texp * castREAL(n * n + n - 1);
-                texp = texp * 2.0;
+                texp = texp * two;
             }
             b[1 - 1] = (castREAL(n + 1) / castREAL(n + 2)) * tscal;
         } else {
@@ -545,7 +545,7 @@ void Rlattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
                 a[(n - 1) + ((j + 1) - 1) * lda] = -(tscal / castREAL(n + 1)) / castREAL(n + 2);
                 a[((j + 1) - 1) + ((j + 1) - 1) * lda] = one;
                 b[(j + 1) - 1] = texp * castREAL(n * n + n - 1);
-                texp = texp * 2.0;
+                texp = texp * two;
             }
             b[n - 1] = (castREAL(n + 1) / castREAL(n + 2)) * tscal;
         }
@@ -608,7 +608,7 @@ void Rlattr(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     //
     // Flip the matrix if the transpose will be used.
     //
-    if (!Mlsame(trans, "N")) {
+    if (!Mlsame(trans.elems(), "N")) {
         if (upper) {
             for (j = 1; j <= n / 2; j = j + 1) {
                 Rswap(n - 2 * j + 1, &a[(j - 1) + (j - 1) * lda], lda, &a[((j + 1) - 1) + ((n - j + 1) - 1) * lda], -1);

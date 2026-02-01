@@ -43,34 +43,16 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-#include <iostream>
-#include <sstream>
-#include <string>
-#include <vector>
-#include <regex>
-
-using namespace std;
-using std::regex;
-using std::regex_replace;
-
 void Rdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, INTEGER const niunit, INTEGER const nounit, REAL *a, INTEGER const lda, REAL *h, REAL *wr, REAL *wi, REAL *wr1, REAL *wi1, REAL *vl, INTEGER const ldvl, REAL *vr, INTEGER const ldvr, REAL *lre, INTEGER const ldlre, REAL *rcondv, REAL *rcndv1, REAL *rcdvin, REAL *rconde, REAL *rcnde1, REAL *rcdein, REAL *scale, REAL *scale1, REAL *result, REAL *work, INTEGER const nwork, INTEGER *iwork, INTEGER &info) {
-
-    INTEGER ldh = lda;
     common cmn;
     common_read read(cmn);
     common_write write(cmn);
-    const INTEGER maxtyp = 21;
-    INTEGER ktype[21] = {1, 2, 3, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 9, 9, 9};
-    INTEGER kmagn[21] = {1, 1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 1, 2, 3};
-    INTEGER kmode[21] = {0, 0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 5, 4, 3, 1, 5, 5, 5, 4, 3, 1};
-    INTEGER kconds[21] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 0, 0, 0};
-    char bal[1 * 4] = {'N', 'P', 'S', 'B'};
-    char buf[1024];
-    double dtmp;
-    double dtmp1, dtmp2, dtmp3, dtmp4;
-    char path[4];
+    static INTEGER ktype[21] = {1, 2, 3, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 9, 9, 9};
+    static INTEGER kmagn[21] = {1, 1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 1, 2, 3};
+    static INTEGER kmode[21] = {0, 0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 5, 4, 3, 1, 5, 5, 5, 4, 3, 1};
+    static INTEGER kconds[21] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 0, 0, 0};
+    static fem::str<1> bal[4] = {"N", "P", "S", "B"};
+    fem::str<3> path;
     INTEGER ntestt = 0;
     INTEGER ntestf = 0;
     bool badnn = false;
@@ -87,6 +69,7 @@ void Rdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     INTEGER nerrs = 0;
     INTEGER jsize = 0;
     INTEGER n = 0;
+    const INTEGER maxtyp = 21;
     INTEGER mtypes = 0;
     INTEGER jtype = 0;
     INTEGER ioldsd[4];
@@ -97,16 +80,38 @@ void Rdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     REAL cond = 0.0;
     INTEGER jcol = 0;
     REAL conds = 0.0;
-    char adumma[1];
+    fem::str<1> adumma[1];
     INTEGER idumma[1];
     INTEGER iwk = 0;
     INTEGER nnwork = 0;
     INTEGER ibal = 0;
-    char balanc[1];
+    fem::str<1> balanc;
     INTEGER ntest = 0;
     INTEGER nfail = 0;
     INTEGER i = 0;
-    static const char *format_9995 = "(' Tests performed with test threshold =',a,/,/,"
+    //
+    static const char *format_9999 = "(/,1x,a3,' -- Real Eigenvalue-Eigenvector Decomposition',"
+                                     "' Expert Driver',/,' Matrix types (see Rdrvvx for details): ')";
+    //
+    static const char *format_9998 = "(/,' Special Matrices:',/,'  1=Zero matrix.             ','           ',"
+                                     "'  5=Diagonal: geometr. spaced entries.',/,"
+                                     "'  2=Identity matrix.                    ','  6=Diagona',"
+                                     "'l: clustered entries.',/,'  3=Transposed Jordan block.  ','          ',"
+                                     "'  7=Diagonal: large, evenly spaced.',/,'  ',"
+                                     "'4=Diagonal: evenly spaced entries.    ','  8=Diagonal: s',"
+                                     "'mall, evenly spaced.')";
+    static const char *format_9997 = "(' Dense, Non-Symmetric Matrices:',/,'  9=Well-cond., ev',"
+                                     "'enly spaced eigenvals.',' 14=Ill-cond., geomet. spaced e','igenals.',/,"
+                                     "' 10=Well-cond., geom. spaced eigenvals. ',"
+                                     "' 15=Ill-conditioned, clustered e.vals.',/,' 11=Well-cond',"
+                                     "'itioned, clustered e.vals. ',' 16=Ill-cond., random comp','lex ',/,"
+                                     "' 12=Well-cond., random complex ','         ',"
+                                     "' 17=Ill-cond., large rand. complx ',/,' 13=Ill-condi',"
+                                     "'tioned, evenly spaced.     ',' 18=Ill-cond., small rand.',' complx ')";
+    static const char *format_9996 = "(' 19=Matrix with random O(1) entries.    ',' 21=Matrix ',"
+                                     "'with small random entries.',/,' 20=Matrix with large ran',"
+                                     "'dom entries.   ',' 22=Matrix read from input file',/)";
+    static const char *format_9995 = "(' Tests performed with test threshold =',f8.2,/,/,"
                                      "' 1 = | A VR - VR W | / ( n |A| ulp ) ',/,"
                                      "' 2 = | transpose(A) VL - VL W | / ( n |A| ulp ) ',/,"
                                      "' 3 = | |VR(i)| - 1 | / ulp ',/,' 4 = | |VL(i)| - 1 | / ulp ',/,"
@@ -119,36 +124,16 @@ void Rdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                                      "' computed,  1/ulp otherwise',/,"
                                      "' 10 = | RCONDV - RCONDV(precomputed) | / cond(RCONDV),',/,"
                                      "' 11 = | RCONDE - RCONDE(precomputed) | / cond(RCONDE),')";
-    static const char *format_9996 = "(' 19=Matrix with random O(1) entries.    ',' 21=Matrix ',"
-                                     "'with small random entries.',/,' 20=Matrix with large ran',"
-                                     "'dom entries.   ',' 22=Matrix read from input file',/)";
-    static const char *format_9997 = "(' Dense, Non-Symmetric Matrices:',/,'  9=Well-cond., ev',"
-                                     "'enly spaced eigenvals.',' 14=Ill-cond., geomet. spaced e','igenals.',/,"
-                                     "' 10=Well-cond., geom. spaced eigenvals. ',"
-                                     "' 15=Ill-conditioned, clustered e.vals.',/,' 11=Well-cond',"
-                                     "'itioned, clustered e.vals. ',' 16=Ill-cond., random comp','lex ',/,"
-                                     "' 12=Well-cond., random complex ','         ',"
-                                     "' 17=Ill-cond., large rand. complx ',/,' 13=Ill-condi',"
-                                     "'tioned, evenly spaced.     ',' 18=Ill-cond., small rand.',' complx ')";
-    static const char *format_9998 = "(/,' Special Matrices:',/,'  1=Zero matrix.             ','           ',"
-                                     "'  5=Diagonal: geometr. spaced entries.',/,"
-                                     "'  2=Identity matrix.                    ','  6=Diagona',"
-                                     "'l: clustered entries.',/,'  3=Transposed Jordan block.  ','          ',"
-                                     "'  7=Diagonal: large, evenly spaced.',/,'  ',"
-                                     "'4=Diagonal: evenly spaced entries.    ','  8=Diagonal: s',"
-                                     "'mall, evenly spaced.')";
-    static const char *format_9999 = "(/,1x,a3,' -- Real Eigenvalue-Eigenvector Decomposition',"
-                                     "' Expert Driver',/,' Matrix types (see Rdrvvx for details): ')";
+    static const char *format_9994 = "(' BALANC=''',a1,''',N=',i4,',IWK=',i1,', seed=',4(i4,','),' type ',i2,"
+                                     "', test(',i2,')=',g10.3)";
+    static const char *format_9993 = "(' N=',i5,', input example =',i3,',  test(',i2,')=',g10.3)";
+    static const char *format_9992 = "(' Rdrvvx: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
+                                     "', ISEED=(',3(i5,','),i5,')')";
     //
+    path(1, 1) = "Double precision";
+    path(2, 3) = "VX";
     //
-    //     .. Executable Statements ..
-    //
-    path[0] = 'R';
-    path[1] = 'V';
-    path[2] = 'X';
-    path[3] = '\0';
-    //
-    //     Check for errors
+    // Check for errors
     //
     ntestt = 0;
     ntestf = 0;
@@ -187,7 +172,7 @@ void Rdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         info = -19;
     } else if (ldlre < 1 || ldlre < nmax) {
         info = -21;
-    } else if (6 * nmax + 2 * nmax * nmax > nwork) {
+    } else if (6 * nmax + 2 * pow2(nmax) > nwork) {
         info = -32;
     }
     //
@@ -206,6 +191,7 @@ void Rdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     //
     unfl = Rlamch("Safe minimum");
     ovfl = one / unfl;
+    Rlabad(unfl, ovfl);
     ulp = Rlamch("Precision");
     ulpinv = one / ulp;
     rtulp = sqrt(ulp);
@@ -338,8 +324,8 @@ void Rdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     conds = zero;
                 }
                 //
-                adumma[1 - 1] = ' ';
-                Rlatme(n, "S", iseed, work, imode, cond, one, adumma, "T", "T", "T", &work[(n + 1) - 1], 4, conds, n, n, anorm, a, lda, &work[(2 * n + 1) - 1], iinfo);
+                adumma[1 - 1] = " ";
+                Rlatme(n, "S", iseed, work, imode, cond, one, adumma[0].elems, "T", "T", "T", &work[(n + 1) - 1], 4, conds, n, n, anorm, a, lda, &work[(2 * n + 1) - 1], iinfo);
                 //
             } else if (itype == 7) {
                 //
@@ -377,9 +363,7 @@ void Rdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             }
             //
             if (iinfo != 0) {
-                write(nounit, "(' Rdrvvx: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
-                              "', ISEED=(',3(i5,','),i5,')')"),
-                    "Generator", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9992), "Generator", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 return;
             }
@@ -392,16 +376,16 @@ void Rdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 if (iwk == 1) {
                     nnwork = 3 * n;
                 } else if (iwk == 2) {
-                    nnwork = 6 * n + n * n;
+                    nnwork = 6 * n + pow2(n);
                 } else {
-                    nnwork = 6 * n + 2 * n * n;
+                    nnwork = 6 * n + 2 * pow2(n);
                 }
                 nnwork = max(nnwork, (INTEGER)1);
                 //
                 // Test for all balancing options
                 //
                 for (ibal = 1; ibal <= 4; ibal = ibal + 1) {
-                    balanc[0] = bal[ibal - 1];
+                    balanc = bal[ibal - 1];
                     //
                     // Perform tests
                     //
@@ -424,21 +408,17 @@ void Rdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         ntestf++;
                     }
                     if (ntestf == 1) {
-                        sprintnum_short(buf, thresh);
                         write(nounit, format_9999), path;
                         write(nounit, format_9998);
                         write(nounit, format_9997);
                         write(nounit, format_9996);
-                        write(nounit, format_9995), buf;
+                        write(nounit, format_9995), thresh;
                         ntestf = 2;
                     }
                     //
                     for (j = 1; j <= 9; j = j + 1) {
                         if (result[j - 1] >= thresh) {
-                            sprintnum_short(buf, result[j - 1]);
-                            write(nounit, "(' BALANC=''',a1,''',N=',i4,',IWK=',i1,', seed=',4(i4,','),"
-                                          "' type ',i2,', test(',i2,')=',a)"),
-                                balanc, n, iwk, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3], jtype, j, buf;
+                            write(nounit, format_9994), balanc, n, iwk, ioldsd, jtype, j, result[j - 1];
                         }
                     }
                     //
@@ -458,84 +438,67 @@ statement_160:
     // by real part, then decreasing by imaginary part)
     //
     jtype = 0;
-    string str;
-    istringstream iss;
-    while (1) {
-        getline(cin, str);
-        iss.clear();
-        iss.str(str);
-        iss >> n;
-        //
-        //     Read input data until N=0
-        //
-        if (n == 0)
-            break;
-        jtype++;
-        iseed[1 - 1] = jtype;
-        for (i = 1; i <= n; i = i + 1) {
-            getline(cin, str);
-            string _r = regex_replace(str, regex("D\\+"), "e+");
-            str = regex_replace(_r, regex("D\\-"), "e-");
-            iss.clear();
-            iss.str(str);
-            for (j = 1; j <= n; j = j + 1) {
-                iss >> dtmp;
-                a[(i - 1) + (j - 1) * lda] = dtmp;
-            }
-        }
-        for (i = 1; i <= n; i = i + 1) {
-            getline(cin, str);
-            string _r = regex_replace(str, regex("D\\+"), "e+");
-            str = regex_replace(_r, regex("D\\-"), "e-");
-            iss.clear();
-            iss.str(str);
-            iss >> dtmp1;
-            iss >> dtmp2;
-            iss >> dtmp3;
-            iss >> dtmp4;
-            wr1[i - 1] = dtmp1;
-            wi1[i - 1] = dtmp2;
-            rcdein[i - 1] = dtmp3;
-            rcdvin[i - 1] = dtmp4;
-        }
-        Rget23(true, "N", 22, thresh, iseed, nounit, n, a, lda, h, wr, wi, wr1, wi1, vl, ldvl, vr, ldvr, lre, ldlre, rcondv, rcndv1, rcdvin, rconde, rcnde1, rcdein, scale, scale1, result, work, 6 * n + 2 * n * n, iwork, info);
-        //
-        //     Check for RESULT(j) > THRESH
-        //
-        ntest = 0;
-        nfail = 0;
-        for (j = 1; j <= 11; j = j + 1) {
-            if (result[j - 1] >= zero) {
-                ntest++;
-            }
-            if (result[j - 1] >= thresh) {
-                nfail++;
-            }
-        }
-        //
-        if (nfail > 0) {
-            ntestf++;
-        }
-        if (ntestf == 1) {
-            sprintnum_short(buf, thresh);
-            write(nounit, format_9999), path;
-            write(nounit, format_9998);
-            write(nounit, format_9997);
-            write(nounit, format_9996);
-            write(nounit, format_9995), buf;
-            ntestf = 2;
-        }
-        //
-        for (j = 1; j <= 11; j = j + 1) {
-            if (result[j - 1] >= thresh) {
-                sprintnum_short(buf, result[j - 1]);
-                write(nounit, "(' N=',i5,', input example =',i3,',  test(',i2,')=',a)"), n, jtype, j, buf;
-            }
-        }
-        //
-        nerrs += nfail;
-        ntestt += ntest;
+statement_170:
+    try {
+        read(niunit, star), n;
+    } catch (fem::read_end const &) {
+        goto statement_220;
     }
+    //
+    // Read input data until N=0
+    //
+    if (n == 0) {
+        goto statement_220;
+    }
+    jtype++;
+    iseed[1 - 1] = jtype;
+    for (i = 1; i <= n; i = i + 1) {
+        {
+            read_loop rloop(cmn, niunit, star);
+            for (j = 1; j <= n; j = j + 1) {
+                rloop, a[(i - 1) + (j - 1) * lda];
+            }
+        }
+    }
+    for (i = 1; i <= n; i = i + 1) {
+        read(niunit, star), wr1[i - 1], wi1[i - 1], rcdein[i - 1], rcdvin[i - 1];
+    }
+    Rget23(true, "N", 22, thresh, iseed, nounit, n, a, lda, h, wr, wi, wr1, wi1, vl, ldvl, vr, ldvr, lre, ldlre, rcondv, rcndv1, rcdvin, rconde, rcnde1, rcdein, scale, scale1, result, work, 6 * n + 2 * pow2(n), iwork, info);
+    //
+    // Check for RESULT(j) > THRESH
+    //
+    ntest = 0;
+    nfail = 0;
+    for (j = 1; j <= 11; j = j + 1) {
+        if (result[j - 1] >= zero) {
+            ntest++;
+        }
+        if (result[j - 1] >= thresh) {
+            nfail++;
+        }
+    }
+    //
+    if (nfail > 0) {
+        ntestf++;
+    }
+    if (ntestf == 1) {
+        write(nounit, format_9999), path;
+        write(nounit, format_9998);
+        write(nounit, format_9997);
+        write(nounit, format_9996);
+        write(nounit, format_9995), thresh;
+        ntestf = 2;
+    }
+    //
+    for (j = 1; j <= 11; j = j + 1) {
+        if (result[j - 1] >= thresh) {
+            write(nounit, format_9993), n, jtype, j, result[j - 1];
+        }
+    }
+    //
+    nerrs += nfail;
+    ntestt += ntest;
+    goto statement_170;
 statement_220:
     //
     // Summary

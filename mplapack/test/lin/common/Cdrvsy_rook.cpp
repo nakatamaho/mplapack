@@ -43,19 +43,14 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-#include <mplapack_debug.h>
-
 void Cdrvsy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, REAL const thresh, bool const tsterr, INTEGER const nmax, COMPLEX *a, COMPLEX *afac, COMPLEX *ainv, COMPLEX *b, COMPLEX *x, COMPLEX *xact, COMPLEX *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
     common cmn;
     common_write write(cmn);
-    //
-    const INTEGER nfact = 2;
-    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
-    char uplos[] = {'U', 'L'};
-    char facts[] = {'F', 'N'};
-    char path[4] = {};
-    char matpath[4] = {};
-    char buf[1024];
+    static INTEGER iseedy[4] = {1988, 1989, 1990, 1991};
+    static fem::str<1> uplos[2] = {"U", "L"};
+    static fem::str<1> facts[2] = {"F", "N"};
+    fem::str<3> path;
+    fem::str<3> matpath;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -67,20 +62,20 @@ void Cdrvsy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nr
     INTEGER in = 0;
     INTEGER n = 0;
     INTEGER lda = 0;
-    char xtype[1];
+    fem::str<1> xtype;
     const INTEGER ntypes = 11;
     INTEGER nimat = 0;
     INTEGER imat = 0;
     bool zerot = false;
     INTEGER iuplo = 0;
-    char uplo[1];
-    char type[1];
+    fem::str<1> uplo;
+    fem::str<1> type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist[1];
+    fem::str<1> dist;
     INTEGER info = 0;
     INTEGER izero = 0;
     INTEGER ioff = 0;
@@ -89,7 +84,8 @@ void Cdrvsy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nr
     INTEGER i2 = 0;
     INTEGER i1 = 0;
     INTEGER ifact = 0;
-    char fact[1];
+    const INTEGER nfact = 2;
+    fem::str<1> fact;
     REAL rcondc = 0.0;
     REAL ainvnm = 0.0;
     const REAL one = 1.0;
@@ -98,16 +94,20 @@ void Cdrvsy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nr
     REAL result[ntests];
     INTEGER nt = 0;
     //
-    //     Test path
+    static const char *format_9999 = "(1x,a,', UPLO=''',a1,''', N =',i5,', type ',i2,', test ',i2,', ratio =',"
+                                     "g12.5)";
     //
-    path[0] = 'C';
-    path[1] = 'S';
-    path[2] = 'R';
+    // Initialize constants and the random number seed.
     //
-    //     Path to generate matrices
-    matpath[0] = 'C';
-    matpath[1] = 'S';
-    matpath[2] = 'Y';
+    // Test path
+    //
+    path(1, 1) = "Zomplex precision";
+    path(2, 3) = "SR";
+    //
+    // Path to generate matrices
+    //
+    matpath(1, 1) = "Zomplex precision";
+    matpath(2, 3) = "SY";
     //
     nrun = 0;
     nfail = 0;
@@ -115,7 +115,7 @@ void Cdrvsy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nr
     for (i = 1; i <= 4; i = i + 1) {
         iseed[i - 1] = iseedy[i - 1];
     }
-    lwork = max((INTEGER)2 * nmax, nmax * nrhs);
+    lwork = max(2 * nmax, nmax * nrhs);
     //
     // Test the error exits
     //
@@ -129,15 +129,15 @@ void Cdrvsy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nr
     //
     nb = 1;
     nbmin = 2;
-    xlaenv(1, nb);
-    xlaenv(2, nbmin);
+    Mxlaenv(1, nb);
+    Mxlaenv(2, nbmin);
     //
     // Do for each value of N in NVAL
     //
     for (in = 1; in <= nn; in = in + 1) {
         n = nval[in - 1];
         lda = max(n, (INTEGER)1);
-        xtype[0] = 'N';
+        xtype = "N";
         nimat = ntypes;
         if (n <= 0) {
             nimat = 1;
@@ -161,22 +161,23 @@ void Cdrvsy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nr
             // Do first for UPLO = 'U', then for UPLO = 'L'
             //
             for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
-                uplo[0] = uplos[iuplo - 1];
+                uplo = uplos[iuplo - 1];
                 //
                 if (imat != ntypes) {
                     //
-                    //              Begin generate the test matrix A.
+                    // Begin generate the test matrix A.
                     //
-                    //              Set up parameters with Clatb4 for the matrix generator
-                    //              based on the type of matrix to be generated.
+                    // Set up parameters with Clatb4 for the matrix generator
+                    // based on the type of matrix to be generated.
                     //
                     Clatb4(matpath, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
                     //
-                    //              Generate a matrix with Clatms.
+                    // Generate a matrix with Clatms.
                     //
+                    srnamt = "Clatms";
                     Clatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, uplo, a, lda, work, info);
                     //
-                    //              Check error code from Rlatms and handle error.
+                    // Check error code from Rlatms and handle error.
                     //
                     if (info != 0) {
                         Alaerh(path, "Clatms", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
@@ -262,7 +263,7 @@ void Cdrvsy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nr
                     //
                     // Do first for FACT = 'F', then for other values.
                     //
-                    fact[0] = facts[ifact - 1];
+                    fact = facts[ifact - 1];
                     //
                     // Compute the condition number for comparison with
                     // the value returned by ZSYSVX_ROOK.
@@ -277,19 +278,19 @@ void Cdrvsy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nr
                         //
                         // Compute the 1-norm of A.
                         //
-                        anorm = Clansy("1", uplo, n, a, lda, rwork);
+                        anorm = Clansy("1", uplo.elems, n, a, lda, rwork);
                         //
                         // Factor the matrix A.
                         //
-                        Clacpy(uplo, n, n, a, lda, afac, lda);
-                        Csytrf_rook(uplo, n, afac, lda, iwork, work, lwork, info);
+                        Clacpy(uplo.elems, n, n, a, lda, afac, lda);
+                        Csytrf_rook(uplo.elems, n, afac, lda, iwork, work, lwork, info);
                         //
                         // Compute inv(A) and take its norm.
                         //
-                        Clacpy(uplo, n, n, afac, lda, ainv, lda);
+                        Clacpy(uplo.elems, n, n, afac, lda, ainv, lda);
                         lwork = (n + nb + 1) * (nb + 3);
-                        Csytri_rook(uplo, n, ainv, lda, iwork, work, info);
-                        ainvnm = Clansy("1", uplo, n, ainv, lda, rwork);
+                        Csytri_rook(uplo.elems, n, ainv, lda, iwork, work, info);
+                        ainvnm = Clansy("1", uplo.elems, n, ainv, lda, rwork);
                         //
                         // Compute the 1-norm condition number of A.
                         //
@@ -300,24 +301,26 @@ void Cdrvsy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nr
                         }
                     }
                     //
-                    //                 Form an exact solution and set the right hand side.
+                    // Form an exact solution and set the right hand side.
                     //
+                    srnamt = "Clarhs";
                     Clarhs(matpath, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
-                    xtype[0] = 'C';
+                    xtype = "C";
                     //
-                    //                 --- Test Csysv_rook  ---
+                    // --- Test Csysv_rook  ---
                     //
                     if (ifact == 2) {
-                        Clacpy(uplo, n, n, a, lda, afac, lda);
+                        Clacpy(uplo.elems, n, n, a, lda, afac, lda);
                         Clacpy("Full", n, nrhs, b, lda, x, lda);
                         //
-                        //                    Factor the matrix and solve the system using
-                        //                    Csysv_rook.
+                        // Factor the matrix and solve the system using
+                        // Csysv_rook.
                         //
-                        Csysv_rook(uplo, n, nrhs, afac, lda, iwork, x, lda, work, lwork, info);
+                        srnamt = "Csysv_rook";
+                        Csysv_rook(uplo.elems, n, nrhs, afac, lda, iwork, x, lda, work, lwork, info);
                         //
-                        //                    Adjust the expected value of INFO to account for
-                        //                    pivoting.
+                        // Adjust the expected value of INFO to account for
+                        // pivoting.
                         //
                         k = izero;
                         if (k > 0) {
@@ -366,10 +369,7 @@ void Cdrvsy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nr
                                 if (nfail == 0 && nerrs == 0) {
                                     Aladhd(nout, path);
                                 }
-                                sprintnum_short(buf, result[k - 1]);
-                                write(nout, "(1x,a,', UPLO=''',a1,''', N =',i5,', type ',i2,', test ',"
-                                            "i2,', ratio =',g)"),
-                                    "Csysv_rook", uplo, n, imat, k, buf;
+                                write(nout, format_9999), "Csysv_rook", uplo, n, imat, k, result[k - 1];
                                 nfail++;
                             }
                         }

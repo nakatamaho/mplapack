@@ -43,8 +43,6 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-inline REAL abs1(COMPLEX zdum) { return abs(zdum.real()) + abs(zdum.imag()); }
-
 void Cget04(INTEGER const n, INTEGER const nrhs, COMPLEX *x, INTEGER const ldx, COMPLEX *xact, INTEGER const ldxact, REAL const rcond, REAL &resid) {
     COMPLEX zdum = 0.0;
     //
@@ -76,17 +74,17 @@ void Cget04(INTEGER const n, INTEGER const nrhs, COMPLEX *x, INTEGER const ldx, 
     INTEGER i = 0;
     for (j = 1; j <= nrhs; j = j + 1) {
         ix = iCamax(n, &xact[(j - 1) * ldxact], 1);
-        xnorm = abs1(xact[(ix - 1) + (j - 1) * ldxact]);
+        xnorm = cabs1(xact[(ix - 1) + (j - 1) * ldxact]);
         diffnm = zero;
         for (i = 1; i <= n; i = i + 1) {
-            diffnm = max(diffnm, abs1(x[(i - 1) + (j - 1) * ldx] - xact[(i - 1) + (j - 1) * ldxact]));
+            diffnm = max(diffnm, cabs1(x[(i - 1) + (j - 1) * ldx] - xact[(i - 1) + (j - 1) * ldxact]));
         }
         if (xnorm <= zero) {
             if (diffnm > zero) {
                 resid = 1.0 / eps;
             }
         } else {
-            resid = max(resid, REAL((diffnm / xnorm) * rcond));
+            resid = max(resid, (diffnm / xnorm) * rcond);
         }
     }
     if (resid * eps < 1.0) {

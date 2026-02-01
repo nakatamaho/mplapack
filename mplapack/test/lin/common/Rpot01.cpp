@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Rpot01(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL *afac, INTEGER const ldafac, REAL *rwork, REAL &resid) {
+void Rpot01(fem::str_cref uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL *afac, INTEGER const ldafac, REAL *rwork, REAL &resid) {
     //
     // Quick exit if N = 0.
     //
@@ -56,7 +56,7 @@ void Rpot01(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL 
     // Exit with RESID = 1/EPS if ANORM = 0.
     //
     REAL eps = Rlamch("Epsilon");
-    REAL anorm = Rlansy("1", uplo, n, a, lda, rwork);
+    REAL anorm = Rlansy("1", uplo.elems(), n, a, lda, rwork);
     const REAL one = 1.0;
     if (anorm <= zero) {
         resid = one / eps;
@@ -67,7 +67,7 @@ void Rpot01(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL 
     //
     INTEGER k = 0;
     REAL t = 0.0;
-    if (Mlsame(uplo, "U")) {
+    if (Mlsame(uplo.elems(), "U")) {
         for (k = n; k >= 1; k = k - 1) {
             //
             // Compute the (K,K) element of the result.
@@ -105,7 +105,7 @@ void Rpot01(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL 
     //
     INTEGER j = 0;
     INTEGER i = 0;
-    if (Mlsame(uplo, "U")) {
+    if (Mlsame(uplo.elems(), "U")) {
         for (j = 1; j <= n; j = j + 1) {
             for (i = 1; i <= j; i = i + 1) {
                 afac[(i - 1) + (j - 1) * ldafac] = afac[(i - 1) + (j - 1) * ldafac] - a[(i - 1) + (j - 1) * lda];
@@ -121,7 +121,7 @@ void Rpot01(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL 
     //
     // Compute norm( L*U - A ) / ( N * norm(A) * EPS )
     //
-    resid = Rlansy("1", uplo, n, afac, ldafac, rwork);
+    resid = Rlansy("1", uplo.elems(), n, afac, ldafac, rwork);
     //
     resid = ((resid / castREAL(n)) / anorm) / eps;
     //

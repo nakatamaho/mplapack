@@ -43,31 +43,12 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-struct common_infoc {
-    int infot;
-    int nout;
-    bool ok;
-    bool lerr;
-
-    common_infoc() : infot(0), nout(0), ok(false), lerr(false) {}
-};
-
-struct common_srnamc {
-    fem::str<32> srnamt;
-
-    common_srnamc() : srnamt(0) {}
-};
-
-struct common : fem::common, common_infoc, common_srnamc {
-    common(int argc, char const *argv[]) : fem::common(argc, argv) {}
-};
-
 void Cerrac(INTEGER const nunit) {
+    common cmn;
     common_write write(cmn);
-    int &infot = cmn.infot;
-    int &nout = cmn.nout;
-    bool &ok = cmn.ok;
-    bool &lerr = cmn.lerr;
+    //
+    static const char *format_9999 = "(1x,a6,' drivers passed the tests of the error exits')";
+    static const char *format_9998 = "(' *** ',a6,' drivers failed the tests of the error ','exits ***')";
     //
     nout = nunit;
     write(nout, star);
@@ -101,7 +82,7 @@ void Cerrac(INTEGER const nunit) {
     }
     ok = true;
     //
-    cmn.srnamt = "ZCPOSV";
+    srnamt = "Ccposv";
     infot = 1;
     COMPLEX work[nmax * nmax];
     COMPLEX swork[nmax * nmax];
@@ -109,29 +90,29 @@ void Cerrac(INTEGER const nunit) {
     INTEGER iter = 0;
     INTEGER info = 0;
     Ccposv("/", 0, 0, a, 1, b, 1, x, 1, work, swork, rwork, iter, info);
-    Chkxer("ZCPOSV", infot, nout, lerr, ok);
+    Chkxer("Ccposv", infot, nout, lerr, ok);
     infot = 2;
     Ccposv("U", -1, 0, a, 1, b, 1, x, 1, work, swork, rwork, iter, info);
-    Chkxer("ZCPOSV", infot, nout, lerr, ok);
+    Chkxer("Ccposv", infot, nout, lerr, ok);
     infot = 3;
     Ccposv("U", 0, -1, a, 1, b, 1, x, 1, work, swork, rwork, iter, info);
-    Chkxer("ZCPOSV", infot, nout, lerr, ok);
+    Chkxer("Ccposv", infot, nout, lerr, ok);
     infot = 5;
     Ccposv("U", 2, 1, a, 1, b, 2, x, 2, work, swork, rwork, iter, info);
-    Chkxer("ZCPOSV", infot, nout, lerr, ok);
+    Chkxer("Ccposv", infot, nout, lerr, ok);
     infot = 7;
     Ccposv("U", 2, 1, a, 2, b, 1, x, 2, work, swork, rwork, iter, info);
-    Chkxer("ZCPOSV", infot, nout, lerr, ok);
+    Chkxer("Ccposv", infot, nout, lerr, ok);
     infot = 9;
     Ccposv("U", 2, 1, a, 2, b, 2, x, 1, work, swork, rwork, iter, info);
-    Chkxer("ZCPOSV", infot, nout, lerr, ok);
+    Chkxer("Ccposv", infot, nout, lerr, ok);
     //
     // Print a summary line.
     //
     if (ok) {
-        write(nout, "(1x,a6,' drivers passed the tests of the error exits')"), "ZCPOSV";
+        write(nout, format_9999), "Ccposv";
     } else {
-        write(nout, "(' *** ',a6,' drivers failed the tests of the error ','exits ***')"), "ZCPOSV";
+        write(nout, format_9998), "Ccposv";
     }
     //
     // End of Cerrac

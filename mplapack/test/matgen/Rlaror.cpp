@@ -38,7 +38,7 @@
 
 #include <mplapack_matgen.h>
 
-void Rlaror(const char *side, const char *init, INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEGER *iseed, REAL *x, INTEGER &info) {
+void Rlaror(fem::str_cref side, fem::str_cref init, INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEGER *iseed, REAL *x, INTEGER &info) {
     //
     info = 0;
     if (n == 0 || m == 0) {
@@ -46,11 +46,11 @@ void Rlaror(const char *side, const char *init, INTEGER const m, INTEGER const n
     }
     //
     INTEGER itype = 0;
-    if (Mlsame(side, "L")) {
+    if (Mlsame(side.elems(), "L")) {
         itype = 1;
-    } else if (Mlsame(side, "R")) {
+    } else if (Mlsame(side.elems(), "R")) {
         itype = 2;
-    } else if (Mlsame(side, "C") || Mlsame(side, "T")) {
+    } else if (Mlsame(side.elems(), "C") || Mlsame(side.elems(), "T")) {
         itype = 3;
     }
     //
@@ -81,7 +81,7 @@ void Rlaror(const char *side, const char *init, INTEGER const m, INTEGER const n
     //
     const REAL zero = 0.0;
     const REAL one = 1.0;
-    if (Mlsame(init, "I")) {
+    if (Mlsame(init.elems(), "I")) {
         Rlaset("Full", m, n, zero, one, a, lda);
     }
     //

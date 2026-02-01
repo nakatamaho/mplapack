@@ -45,10 +45,10 @@ REAL Rlarnd(INTEGER const idist, INTEGER *iseed) {
     //
     REAL t1 = Rlaran(iseed);
     //
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     const REAL one = 1.0;
     REAL t2 = 0.0;
-    const REAL twopi = pi(one);
+    const REAL twopi = two * pi(one);
     if (idist == 1) {
         //
         // uniform (0,1)

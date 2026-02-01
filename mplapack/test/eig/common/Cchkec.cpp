@@ -43,44 +43,42 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
 void Cchkec(REAL const thresh, bool const tsterr, INTEGER const nin, INTEGER const nout) {
     common cmn;
     common_write write(cmn);
     //
-    char path[4];
-    char buf0[1024];
-    char buf1[1024];
-    char buf2[1024];
-    path[0] = 'C';
-    path[1] = 'E';
-    path[2] = 'C';
-    path[3] = '\0';
+    static const char *format_9999 = "(' Error in Ctrsyl: RMAX =',d12.3,/,' LMAX = ',i8,' NINFO=',i8,' KNT=',"
+                                     "i8)";
+    static const char *format_9998 = "(' Error in Ctrexc: RMAX =',d12.3,/,' LMAX = ',i8,' NINFO=',i8,' KNT=',"
+                                     "i8)";
+    static const char *format_9997 = "(' Error in Ctrsna: RMAX =',3d12.3,/,' LMAX = ',3i8,' NINFO=',3i8,"
+                                     "' KNT=',i8)";
+    static const char *format_9996 = "(' Error in Ctrsen: RMAX =',3d12.3,/,' LMAX = ',3i8,' NINFO=',3i8,"
+                                     "' KNT=',i8)";
+    static const char *format_9995 = "(/,1x,'All tests for ',a3,' routines passed the threshold ( ',i6,"
+                                     "' tests run)')";
+    static const char *format_9994 = "(' Tests of the Nonsymmetric eigenproblem condition',"
+                                     "' estimation routines',/,' Ctrsyl, Ctrexc, Ctrsna, Ctrsen',/)";
+    static const char *format_9993 = "(' Relative machine precision (EPS) = ',d16.6,/,"
+                                     "' Safe minimum (SFMIN)             = ',d16.6,/)";
+    static const char *format_9992 = "(' Routines pass computational tests if test ratio is ','less than',f8.2,"
+                                     "/,/)";
+    //
+    fem::str<3> path = "Zomplex precision";
+    path(2, 3) = "EC";
     REAL eps = Rlamch("P");
     REAL sfmin = Rlamch("S");
+    write(nout, format_9994);
+    write(nout, format_9993), eps, sfmin;
+    write(nout, format_9992), thresh;
     //
-    //     Print header information
-    //
-    sprintnum_short(buf1, eps);
-    sprintnum_short(buf2, sfmin);
-    write(nout, "(' Tests of the Nonsymmetric eigenproblem condition',"
-                "' estimation routines',/,' Ctrsyl, Ctrexc, Ctrsna, Ctrsen',/)");
-    write(nout, "(' Relative machine precision (EPS) = ',a,/,"
-                "' Safe minimum (SFMIN)             = ',a,/)"),
-        buf1, buf2;
-    sprintnum_short(buf1, thresh);
-    write(nout, "(' Routines pass computational tests if test ratio is ','less than',a,"
-                "/,/)"),
-        buf1;
-    //
-    //     Test error exits if TSTERR is .TRUE.
+    // Test error exits if TSTERR is .TRUE.
     //
     if (tsterr) {
         Cerrec(path, nout);
     }
     //
-    ok = true;
+    bool ok = true;
     REAL rtrsyl = 0.0;
     INTEGER ltrsyl = 0;
     INTEGER ntrsyl = 0;
@@ -88,10 +86,7 @@ void Cchkec(REAL const thresh, bool const tsterr, INTEGER const nin, INTEGER con
     Cget35(rtrsyl, ltrsyl, ntrsyl, ktrsyl, nin);
     if (rtrsyl > thresh) {
         ok = false;
-        sprintnum_short(buf1, rtrsyl);
-        write(nout, "(' Error in Ctrsyl: RMAX =',a,/,' LMAX = ',i8,' NINFO=',i8,' KNT=',"
-                    "i8)"),
-            buf1, ltrsyl, ntrsyl, ktrsyl;
+        write(nout, format_9999), rtrsyl, ltrsyl, ntrsyl, ktrsyl;
     }
     //
     REAL rtrexc = 0.0;
@@ -101,10 +96,7 @@ void Cchkec(REAL const thresh, bool const tsterr, INTEGER const nin, INTEGER con
     Cget36(rtrexc, ltrexc, ntrexc, ktrexc, nin);
     if (rtrexc > thresh || ntrexc > 0) {
         ok = false;
-        sprintnum_short(buf1, rtrexc);
-        write(nout, "(' Error in Ctrexc: RMAX =',a,/,' LMAX = ',i8,' NINFO=',i8,' KNT=',"
-                    "i8)"),
-            buf1, ltrexc, ntrexc, ktrexc;
+        write(nout, format_9998), rtrexc, ltrexc, ntrexc, ktrexc;
     }
     //
     REAL rtrsna[3];
@@ -114,12 +106,7 @@ void Cchkec(REAL const thresh, bool const tsterr, INTEGER const nin, INTEGER con
     Cget37(rtrsna, ltrsna, ntrsna, ktrsna, nin);
     if (rtrsna[1 - 1] > thresh || rtrsna[2 - 1] > thresh || ntrsna[1 - 1] != 0 || ntrsna[2 - 1] != 0 || ntrsna[3 - 1] != 0) {
         ok = false;
-        sprintnum_short(buf0, rtrsna[0]);
-        sprintnum_short(buf1, rtrsna[1]);
-        sprintnum_short(buf2, rtrsna[2]);
-        write(nout, "(' Error in Ctrsna: RMAX =',3a,/,' LMAX = ',3i8,' NINFO=',3i8,"
-                    "' KNT=',i8)"),
-            buf0, buf1, buf2, ltrsna, ntrsna, ktrsna;
+        write(nout, format_9997), rtrsna, ltrsna, ntrsna, ktrsna;
     }
     //
     REAL rtrsen[3];
@@ -129,19 +116,12 @@ void Cchkec(REAL const thresh, bool const tsterr, INTEGER const nin, INTEGER con
     Cget38(rtrsen, ltrsen, ntrsen, ktrsen, nin);
     if (rtrsen[1 - 1] > thresh || rtrsen[2 - 1] > thresh || ntrsen[1 - 1] != 0 || ntrsen[2 - 1] != 0 || ntrsen[3 - 1] != 0) {
         ok = false;
-        sprintnum_short(buf0, rtrsen[0]);
-        sprintnum_short(buf1, rtrsen[1]);
-        sprintnum_short(buf2, rtrsen[2]);
-        write(nout, "(' Error in Ctrsen: RMAX =',3a,/,' LMAX = ',3i8,' NINFO=',3i8,"
-                    "' KNT=',i8)"),
-            buf0, buf1, buf2, ltrsen, ntrsen, ktrsen;
+        write(nout, format_9996), rtrsen, ltrsen, ntrsen, ktrsen;
     }
     //
     INTEGER ntests = ktrsyl + ktrexc + ktrsna + ktrsen;
     if (ok) {
-        write(nout, "(/,1x,'All tests for ',a3,' routines passed the threshold ( ',i6,"
-                    "' tests run)')"),
-            path, ntests;
+        write(nout, format_9995), path, ntests;
     }
     //
     // End of Cchkec

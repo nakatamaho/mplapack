@@ -67,17 +67,16 @@ REAL Cqpt01(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, COMPL
     //
     INTEGER j = 0;
     INTEGER i = 0;
-    INTEGER ldaf = lda;
     for (j = 1; j <= k; j = j + 1) {
         for (i = 1; i <= min(j, m); i = i + 1) {
-            work[((j - 1) * m + i) - 1] = af[(i - 1) + (j - 1) * ldaf];
+            work[((j - 1) * m + i) - 1] = af[(i - 1) + (j - 1) * lda];
         }
         for (i = j + 1; i <= m; i = i + 1) {
             work[((j - 1) * m + i) - 1] = zero;
         }
     }
     for (j = k + 1; j <= n; j = j + 1) {
-        Ccopy(m, &af[(j - 1) * ldaf], 1, &work[((j - 1) * m + 1) - 1], 1);
+        Ccopy(m, &af[(j - 1) * lda], 1, &work[((j - 1) * m + 1) - 1], 1);
     }
     //
     INTEGER info = 0;

@@ -43,21 +43,20 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag, INTEGER *iseed, INTEGER const n, INTEGER const kd, REAL *ab, INTEGER const ldab, REAL *b, REAL *work, INTEGER &info) {
+void Rlattb(INTEGER const imat, fem::str_cref uplo, fem::str_cref trans, fem::str_ref diag, INTEGER *iseed, INTEGER const n, INTEGER const kd, REAL *ab, INTEGER const ldab, REAL *b, REAL *work, INTEGER &info) {
     //
-    char path[4] = {};
-    path[0] = 'R';
-    path[1] = 'T';
-    path[2] = 'B';
+    fem::str<3> path = "Double precision";
+    path(2, 3) = "TB";
     REAL unfl = Rlamch("Safe minimum");
     REAL ulp = Rlamch("Epsilon") * Rlamch("Base");
     REAL smlnum = unfl;
     const REAL one = 1.0;
     REAL bignum = (one - ulp) / smlnum;
+    Rlabad(smlnum, bignum);
     if ((imat >= 6 && imat <= 9) || imat == 17) {
-        *diag = 'U';
+        diag = "U";
     } else {
-        *diag = 'N';
+        diag = "N";
     }
     info = 0;
     //
@@ -69,28 +68,28 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     //
     // Call Rlatb4 to set parameters for SLATMS.
     //
-    bool upper = Mlsame(uplo, "U");
-    char type;
+    bool upper = Mlsame(uplo.elems(), "U");
+    fem::str<1> type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist;
+    fem::str<1> dist;
     INTEGER ioff = 0;
-    char packit;
+    fem::str<1> packit;
     if (upper) {
-        Rlatb4(path, imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
+        Rlatb4(path, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
         ku = kd;
         ioff = 1 + max((INTEGER)0, kd - n + 1);
         kl = 0;
-        packit = 'Q';
+        packit = "Q";
     } else {
-        Rlatb4(path, -imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
+        Rlatb4(path, -imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
         kl = kd;
         ioff = 1;
         ku = 0;
-        packit = 'B';
+        packit = "B";
     }
     //
     // IMAT <= 5:  Non-unit triangular matrix
@@ -105,7 +104,7 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     REAL plus1 = 0.0;
     REAL plus2 = 0.0;
     REAL rexp = 0.0;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     INTEGER iy = 0;
     REAL bnorm = 0.0;
     REAL bscal = 0.0;
@@ -114,7 +113,7 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     REAL texp = 0.0;
     REAL tleft = 0.0;
     if (imat <= 5) {
-        Rlatms(n, n, &dist, iseed, &type, b, mode, cndnum, anorm, kl, ku, &packit, &ab[(ioff - 1)], ldab, work, info);
+        Rlatms(n, n, dist, iseed, type, b, mode, cndnum, anorm, kl, ku, packit, &ab[(ioff - 1)], ldab, work, info);
         //
         // IMAT > 5:  Unit triangular matrix
         // The diagonal is deliberately set to something other than 1.
@@ -169,7 +168,7 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
         //
         if (kd == 1) {
             if (upper) {
-                ab[(1 - 1) + (2 - 1) * ldab] = sign(tnorm, Rlarnd(2, iseed));
+                ab[(2 - 1) * ldab] = sign(tnorm, Rlarnd(2, iseed));
                 lenj = (n - 3) / 2;
                 Rlarnv(2, iseed, lenj, work);
                 for (j = 1; j <= lenj; j = j + 1) {
@@ -295,7 +294,7 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
                 }
                 ab[(j - 1) * ldab] = sign(one, ab[(j - 1) * ldab]);
             }
-            ab[(1 - 1) + (1 - 1) * ldab] = smlnum * ab[(1 - 1) + (1 - 1) * ldab];
+            ab[0] = smlnum * ab[0];
         }
         //
     } else if (imat == 12) {
@@ -318,7 +317,7 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
                 Rlarnv(2, iseed, lenj, &ab[(j - 1) * ldab]);
                 ab[(j - 1) * ldab] = sign(one, ab[(j - 1) * ldab]);
             }
-            ab[(1 - 1) + (1 - 1) * ldab] = smlnum * ab[(1 - 1) + (1 - 1) * ldab];
+            ab[0] = smlnum * ab[0];
         }
         //
     } else if (imat == 13) {
@@ -468,7 +467,7 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
                         }
                         texp = texp * two;
                     }
-                    b[max(n, j - kd + 1) - 1] = (castREAL(kd + 2) / castREAL(kd + 3)) * tscal;
+                    b[max((INTEGER)1, j - kd + 1) - 1] = (castREAL(kd + 2) / castREAL(kd + 3)) * tscal;
                 }
             } else {
                 for (j = 1; j <= n; j = j + kd) {
@@ -556,7 +555,7 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     //
     // Flip the matrix if the transpose will be used.
     //
-    if (!Mlsame(trans, "N")) {
+    if (!Mlsame(trans.elems(), "N")) {
         if (upper) {
             for (j = 1; j <= n / 2; j = j + 1) {
                 lenj = min(n - 2 * j + 1, kd + 1);

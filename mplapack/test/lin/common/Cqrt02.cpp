@@ -49,12 +49,13 @@ void Cqrt02(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, COMPL
     //
     // Copy the first k columns of the factorization to the array Q
     //
-    const COMPLEX rogue = COMPLEX(-1.0e+10, -1.0e+10);
+    const COMPLEX rogue = COMPLEX(-10000000000.0, -10000000000.0);
     Claset("Full", m, n, rogue, rogue, q, lda);
     Clacpy("Lower", m - 1, k, &af[(2 - 1)], lda, &q[(2 - 1)], lda);
     //
     // Generate the first n columns of the matrix Q
     //
+    srnamt = "Cungqr";
     INTEGER info = 0;
     Cungqr(m, n, k, q, lda, tau, work, lwork, info);
     //

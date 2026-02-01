@@ -81,6 +81,7 @@ REAL Cqrt12(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REA
     REAL smlnum = Rlamch("S") / Rlamch("P");
     const REAL one = 1.0;
     REAL bignum = one / smlnum;
+    Rlabad(smlnum, bignum);
     //
     // Scale work if max entry outside range [SMLNUM,BIGNUM]
     //

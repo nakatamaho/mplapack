@@ -42,16 +42,13 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-
-#include <mplapack_debug.h>
+#include <memory>
 
 void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nns, INTEGER *nsval, INTEGER const nnb, INTEGER *nbval, INTEGER *nxval, REAL const thresh, bool const tsterr, REAL *a, REAL *copya, REAL *b, REAL *copyb, REAL *c, REAL *s, REAL *copys, INTEGER const nout) {
     common cmn;
     common_write write(cmn);
-    //
-    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
-    char path[4] = {};
-    char buf[1024];
+    static INTEGER iseedy[4] = {1988, 1989, 1990, 1991};
+    fem::str<3> path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -79,7 +76,7 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     INTEGER iscale = 0;
     INTEGER itype = 0;
     INTEGER itran = 0;
-    char trans[1];
+    fem::str<1> trans;
     REAL wq[1];
     INTEGER info = 0;
     INTEGER lwork_Rgels = 0;
@@ -90,6 +87,10 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     INTEGER lwork_Rgelss = 0;
     INTEGER lwork_Rgelsd = 0;
     INTEGER lwlsy = 0;
+    std::unique_ptr<REAL[]> work_storage;
+    REAL *work = nullptr;
+    std::unique_ptr<INTEGER[]> iwork_storage;
+    INTEGER *iwork = nullptr;
     INTEGER mb = 0;
     REAL norma = 0.0;
     INTEGER inb = 0;
@@ -106,9 +107,17 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     REAL normb = 0.0;
     INTEGER j = 0;
     //
-    path[0] = 'R';
-    path[1] = 'L';
-    path[2] = 'S';
+    static const char *format_9999 = "(' TRANS=''',a1,''', M=',i5,', N=',i5,', NRHS=',i4,', NB=',i4,', type',"
+                                     "i2,', test(',i2,')=',g12.5)";
+    static const char *format_9998 = "(' M=',i5,', N=',i5,', NRHS=',i4,', NB=',i4,', type',i2,', test(',i2,"
+                                     "')=',g12.5)";
+    static const char *format_9997 = "(' TRANS=''',a1,' M=',i5,', N=',i5,', NRHS=',i4,', MB=',i4,', NB=',i4,"
+                                     "', type',i2,', test(',i2,')=',g12.5)";
+    //
+    // Initialize constants and the random number seed.
+    //
+    path(1, 1) = "Double precision";
+    path(2, 3) = "LS";
     nrun = 0;
     nfail = 0;
     nerrs = 0;
@@ -123,8 +132,8 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     //
     // Test the error exits
     //
-    xlaenv(2, 2);
-    xlaenv(9, smlsiz);
+    Mxlaenv(2, 2);
+    Mxlaenv(9, smlsiz);
     if (tsterr) {
         Rerrls(path, nout);
     }
@@ -135,8 +144,8 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
         Alahd(nout, path);
     }
     infot = 0;
-    xlaenv(2, 2);
-    xlaenv(9, smlsiz);
+    Mxlaenv(2, 2);
+    Mxlaenv(9, smlsiz);
     //
     // Compute maximal workspace needed for all routines
     //
@@ -161,12 +170,12 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     m = mmax;
     n = nmax;
     nrhs = nsmax;
-    mnmin = max(min(m, n), (INTEGER)1);
+    mnmin = max(min(m, n), 1);
     //
     // Compute workspace needed for routines
     // Rqrt14, Rqrt17 (two side cases), Rqrt15 and Rqrt12
     //
-    lwork = max({(INTEGER)1, (m + n) * nrhs, (n + nrhs) * (m + 2), (m + nrhs) * (n + 2), max({m + mnmin, nrhs * mnmin, 2 * n + m}), max({m * n + 4 * mnmin + max(m, n), m * n + 2 * mnmin + 4 * n})});
+    lwork = max((INTEGER)1, (m + n) * nrhs, (n + nrhs) * (m + 2), (m + nrhs) * (n + 2), max(m + mnmin, nrhs * mnmin, 2 * n + m), max(m * n + 4 * mnmin + max(m, n), m * n + 2 * mnmin + 4 * n));
     liwork = 1;
     //
     // Iterate through all test cases and compute necessary workspace
@@ -177,8 +186,8 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
         lda = max((INTEGER)1, m);
         for (in = 1; in <= nn; in = in + 1) {
             n = nval[in - 1];
-            mnmin = max(min(m, n), (INTEGER)1);
-            ldb = max({(INTEGER)1, m, n});
+            mnmin = max(min(m, n), 1);
+            ldb = max((INTEGER)1, m, n);
             for (ins = 1; ins <= nns; ins = ins + 1) {
                 nrhs = nsval[ins - 1];
                 for (irank = 1; irank <= 2; irank = irank + 1) {
@@ -188,16 +197,16 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             if (irank == 1) {
                                 for (itran = 1; itran <= 2; itran = itran + 1) {
                                     if (itran == 1) {
-                                        trans[0] = 'N';
+                                        trans = "N";
                                     } else {
-                                        trans[0] = 'T';
+                                        trans = "T";
                                     }
                                     //
                                     // Compute workspace needed for Rgels
-                                    Rgels(trans, m, n, nrhs, a, lda, b, ldb, wq, -1, info);
+                                    Rgels(trans.elems, m, n, nrhs, a, lda, b, ldb, wq, -1, info);
                                     lwork_Rgels = castINTEGER(wq[1 - 1]);
                                     // Compute workspace needed for Rgetsls
-                                    Rgetsls(trans, m, n, nrhs, a, lda, b, ldb, wq, -1, info);
+                                    Rgetsls(trans.elems, m, n, nrhs, a, lda, b, ldb, wq, -1, info);
                                     lwork_Rgetsls = castINTEGER(wq[1 - 1]);
                                 }
                             }
@@ -211,9 +220,9 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             Rgelsd(m, n, nrhs, a, lda, b, ldb, s, rcond, crank, wq, -1, iwq, info);
                             lwork_Rgelsd = castINTEGER(wq[1 - 1]);
                             // Compute LIWORK workspace needed for Rgelsy and Rgelsd
-                            liwork = max({liwork, n, iwq[1 - 1]});
+                            liwork = max(liwork, n, iwq[1 - 1]);
                             // Compute LWORK workspace needed for all functions
-                            lwork = max({lwork, lwork_Rgels, lwork_Rgetsls, lwork_Rgelsy, lwork_Rgelss, lwork_Rgelsd});
+                            lwork = max(lwork, lwork_Rgels, lwork_Rgetsls, lwork_Rgelsy, lwork_Rgelss, lwork_Rgelsd);
                         }
                     }
                 }
@@ -223,16 +232,19 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     //
     lwlsy = lwork;
     //
-    REAL *work = new REAL[lwork];
-    INTEGER *iwork = new INTEGER[liwork];
+    work_storage = std::make_unique<REAL[]>(max((INTEGER)1, lwork));
+    work = work_storage.get();
+    iwork_storage = std::make_unique<INTEGER[]>(max((INTEGER)1, liwork));
+    iwork = iwork_storage.get();
+    //
     for (im = 1; im <= nm; im = im + 1) {
         m = mval[im - 1];
         lda = max((INTEGER)1, m);
         //
         for (in = 1; in <= nn; in = in + 1) {
             n = nval[in - 1];
-            mnmin = max(min(m, n), (INTEGER)1);
-            ldb = max({(INTEGER)1, m, n});
+            mnmin = max(min(m, n), 1);
+            ldb = max((INTEGER)1, m, n);
             mb = (mnmin + 1);
             //
             for (ins = 1; ins <= nns; ins = ins + 1) {
@@ -254,14 +266,16 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             Rqrt13(iscale, m, n, copya, lda, norma, iseed);
                             for (inb = 1; inb <= nnb; inb = inb + 1) {
                                 nb = nbval[inb - 1];
+                                Mxlaenv(1, nb);
+                                Mxlaenv(3, nxval[inb - 1]);
                                 //
                                 for (itran = 1; itran <= 2; itran = itran + 1) {
                                     if (itran == 1) {
-                                        trans[0] = 'N';
+                                        trans = "N";
                                         nrows = m;
                                         ncols = n;
                                     } else {
-                                        trans[0] = 'T';
+                                        trans = "T";
                                         nrows = n;
                                         ncols = m;
                                     }
@@ -273,7 +287,7 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                         Rlarnv(2, iseed, ncols * nrhs, work);
                                         Rscal(ncols * nrhs, one / castREAL(ncols), work, 1);
                                     }
-                                    Rgemm(trans, "No transpose", nrows, nrhs, ncols, one, copya, lda, work, ldwork, zero, b, ldb);
+                                    Rgemm(trans.elems, "No transpose", nrows, nrhs, ncols, one, copya, lda, work, ldwork, zero, b, ldb);
                                     Rlacpy("Full", nrows, nrhs, b, ldb, copyb, ldb);
                                     //
                                     // Solve LS or overdetermined system
@@ -282,8 +296,8 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                         Rlacpy("Full", m, n, copya, lda, a, lda);
                                         Rlacpy("Full", nrows, nrhs, copyb, ldb, b, ldb);
                                     }
-                                    strncpy(srnamt, "Rgels", srnamt_len);
-                                    Rgels(trans, m, n, nrhs, a, lda, b, ldb, work, lwork, info);
+                                    srnamt = "Rgels";
+                                    Rgels(trans.elems, m, n, nrhs, a, lda, b, ldb, work, lwork, info);
                                     if (info != 0) {
                                         Alaerh(path, "Rgels", info, 0, trans, m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
                                     }
@@ -316,10 +330,7 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                             if (nfail == 0 && nerrs == 0) {
                                                 Alahd(nout, path);
                                             }
-                                            sprintnum_short(buf, result[k - 1]);
-                                            write(nout, "(' TRANS=''',a1,''', M=',i5,', N=',i5,', NRHS=',i4,"
-                                                        "', NB=',i4,', type',i2,', test(',i2,')=',a)"),
-                                                trans, m, n, nrhs, nb, itype, k, buf;
+                                            write(nout, format_9999), trans, m, n, nrhs, nb, itype, k, result[k - 1];
                                             nfail++;
                                         }
                                     }
@@ -334,16 +345,18 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             Rqrt13(iscale, m, n, copya, lda, norma, iseed);
                             for (inb = 1; inb <= nnb; inb = inb + 1) {
                                 mb = nbval[inb - 1];
+                                Mxlaenv(1, mb);
                                 for (imb = 1; imb <= nnb; imb = imb + 1) {
                                     nb = nbval[imb - 1];
+                                    Mxlaenv(2, nb);
                                     //
                                     for (itran = 1; itran <= 2; itran = itran + 1) {
                                         if (itran == 1) {
-                                            trans[0] = 'N';
+                                            trans = "N";
                                             nrows = m;
                                             ncols = n;
                                         } else {
-                                            trans[0] = 'T';
+                                            trans = "T";
                                             nrows = n;
                                             ncols = m;
                                         }
@@ -355,7 +368,7 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                             Rlarnv(2, iseed, ncols * nrhs, work);
                                             Rscal(ncols * nrhs, one / castREAL(ncols), work, 1);
                                         }
-                                        Rgemm(trans, "No transpose", nrows, nrhs, ncols, one, copya, lda, work, ldwork, zero, b, ldb);
+                                        Rgemm(trans.elems, "No transpose", nrows, nrhs, ncols, one, copya, lda, work, ldwork, zero, b, ldb);
                                         Rlacpy("Full", nrows, nrhs, b, ldb, copyb, ldb);
                                         //
                                         // Solve LS or overdetermined system
@@ -364,8 +377,8 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                             Rlacpy("Full", m, n, copya, lda, a, lda);
                                             Rlacpy("Full", nrows, nrhs, copyb, ldb, b, ldb);
                                         }
-                                        strncpy(srnamt, "Rgetsls", srnamt_len);
-                                        Rgetsls(trans, m, n, nrhs, a, lda, b, ldb, work, lwork, info);
+                                        srnamt = "Rgetsls";
+                                        Rgetsls(trans.elems, m, n, nrhs, a, lda, b, ldb, work, lwork, info);
                                         if (info != 0) {
                                             Alaerh(path, "Rgetsls", info, 0, trans, m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
                                         }
@@ -398,11 +411,7 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                                 if (nfail == 0 && nerrs == 0) {
                                                     Alahd(nout, path);
                                                 }
-                                                sprintnum_short(buf, result[k - 1]);
-                                                write(nout, "(' TRANS=''',a1,' M=',i5,', N=',i5,', NRHS=',i4,"
-                                                            "', MB=',i4,', NB=',i4,', type',i2,', test(',i2,"
-                                                            "')=',a)"),
-                                                    trans, m, n, nrhs, mb, nb, itype, k, buf;
+                                                write(nout, format_9997), trans, m, n, nrhs, mb, nb, itype, k, result[k - 1];
                                                 nfail++;
                                             }
                                         }
@@ -425,15 +434,17 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                         //
                         for (inb = 1; inb <= nnb; inb = inb + 1) {
                             nb = nbval[inb - 1];
+                            Mxlaenv(1, nb);
+                            Mxlaenv(3, nxval[inb - 1]);
                             //
-                            //                       Test Rgelsy
+                            // Test Rgelsy
                             //
-                            //                       Rgelsy:  Compute the minimum-norm solution X
-                            //                       to min( norm( A * X - B ) )
-                            //                       using the rank-revealing orthogonal
-                            //                       factorization.
+                            // Rgelsy:  Compute the minimum-norm solution X
+                            // to min( norm( A * X - B ) )
+                            // using the rank-revealing orthogonal
+                            // factorization.
                             //
-                            //                       Initialize vector IWORK.
+                            // Initialize vector IWORK.
                             //
                             for (j = 1; j <= n; j = j + 1) {
                                 iwork[j - 1] = 0;
@@ -442,7 +453,7 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             Rlacpy("Full", m, n, copya, lda, a, lda);
                             Rlacpy("Full", m, nrhs, copyb, ldb, b, ldb);
                             //
-                            strncpy(srnamt, "Rgelsy", srnamt_len);
+                            srnamt = "Rgelsy";
                             Rgelsy(m, n, nrhs, a, lda, b, ldb, iwork, rcond, crank, work, lwlsy, info);
                             if (info != 0) {
                                 Alaerh(path, "Rgelsy", info, 0, " ", m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
@@ -484,7 +495,7 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             //
                             Rlacpy("Full", m, n, copya, lda, a, lda);
                             Rlacpy("Full", m, nrhs, copyb, ldb, b, ldb);
-                            strncpy(srnamt, "Rgelss", srnamt_len);
+                            srnamt = "Rgelss";
                             Rgelss(m, n, nrhs, a, lda, b, ldb, s, rcond, crank, work, lwork, info);
                             if (info != 0) {
                                 Alaerh(path, "Rgelss", info, 0, " ", m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
@@ -536,7 +547,7 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             Rlacpy("Full", m, n, copya, lda, a, lda);
                             Rlacpy("Full", m, nrhs, copyb, ldb, b, ldb);
                             //
-                            strncpy(srnamt, "Rgelsd", srnamt_len);
+                            srnamt = "Rgelsd";
                             Rgelsd(m, n, nrhs, a, lda, b, ldb, s, rcond, crank, work, lwork, iwork, info);
                             if (info != 0) {
                                 Alaerh(path, "Rgelsd", info, 0, " ", m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
@@ -578,10 +589,7 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                     if (nfail == 0 && nerrs == 0) {
                                         Alahd(nout, path);
                                     }
-                                    sprintnum_short(buf, result[k - 1]);
-                                    write(nout, "(' M=',i5,', N=',i5,', NRHS=',i4,', NB=',i4,', type',i2,"
-                                                "', test(',i2,')=',a)"),
-                                        m, n, nrhs, nb, itype, k, buf;
+                                    write(nout, format_9998), m, n, nrhs, nb, itype, k, result[k - 1];
                                     nfail++;
                                 }
                             }
@@ -598,9 +606,6 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     // Print a summary of the results.
     //
     Alasvm(path, nout, nfail, nrun, nerrs);
-    //
-    delete[] work;
-    delete[] iwork;
     //
     // End of Rdrvls
     //

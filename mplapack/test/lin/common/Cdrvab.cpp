@@ -43,44 +43,12 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-struct common_infoc {
-    int infot;
-    int nunit;
-    bool ok;
-    bool lerr;
-
-    common_infoc() : infot(0), nunit(0), ok(false), lerr(false) {}
-};
-
-struct common_srnamc {
-    fem::str<32> srnamt;
-
-    common_srnamc() : srnamt(0) {}
-};
-
-struct common : fem::common, common_infoc, common_srnamc {
-    fem::cmn_sve zdrvab_sve;
-
-    common(int argc, char const *argv[]) : fem::common(argc, argv) {}
-};
-
-struct zdrvab_save {
-    arr<int> iseedy;
-
-    zdrvab_save() : iseedy(dimension(4), fem::fill0) {}
-};
-
 void Cdrvab(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, INTEGER *nsval, REAL const thresh, INTEGER const /* nmax */, COMPLEX *a, COMPLEX *afac, COMPLEX *b, COMPLEX *x, COMPLEX *work, REAL *rwork, COMPLEX *swork, INTEGER *iwork, INTEGER const nout) {
-    FEM_CMN_SVE(zdrvab);
+    common cmn;
     common_write write(cmn);
-    fem::str<32> &srnamt = cmn.srnamt;
-    arr_ref<int> iseedy(sve.iseedy, dimension(4));
-    if (is_called_first_time) {
-        static const int values[] = {2006, 2007, 2008, 2009};
-        fem::data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
-    }
+    static INTEGER iseedy[4] = {2006, 2007, 2008, 2009};
     INTEGER kase = 0;
-    char path[3];
+    fem::str<3> path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -94,29 +62,56 @@ void Cdrvab(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, IN
     INTEGER nimat = 0;
     INTEGER imat = 0;
     bool zerot = false;
-    char type;
+    fem::str<1> type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist;
+    fem::str<1> dist;
     INTEGER info = 0;
     INTEGER izero = 0;
     INTEGER ioff = 0;
     const REAL zero = 0.0;
     INTEGER irhs = 0;
     INTEGER nrhs = 0;
-    char xtype;
-    char trans;
+    fem::str<1> xtype;
+    fem::str<1> trans;
     INTEGER iter = 0;
     const INTEGER ntests = 1;
     REAL result[ntests];
     //
+    static const char *format_9998 = "(' TRANS=''',a1,''', N =',i5,', NRHS=',i3,', type ',i2,', test(',i2,"
+                                     "') =',g12.5)";
+    static const char *format_9996 = "(1x,a6,': ',i6,' out of ',i6,' tests failed to pass the threshold')";
+    static const char *format_9995 = "(/,1x,'All tests for ',a6,' routines passed the threshold ( ',i6,"
+                                     "' tests run)')";
+    static const char *format_9994 = "(6x,i6,' error messages recorded')";
+    //
+    // SUBNAM, INFO, INFOE, M, IMAT
+    //
+    static const char *format_9988 = "(' *** ',a6,' returned with INFO =',i5,' instead of ',i5,/,' ==> M =',i5,"
+                                     "', type ',i2)";
+    //
+    // SUBNAM, INFO, M, IMAT
+    //
+    static const char *format_9975 = "(' *** Error code from ',a6,'=',i5,' for M=',i5,', type ',i2)";
+    static const char *format_8999 = "(/,1x,a3,':  General dense matrices')";
+    static const char *format_8979 = "(4x,'1. Diagonal',24x,'7. Last n/2 columns zero',/,4x,"
+                                     "'2. Upper triangular',16x,'8. Random, CNDNUM = sqrt(0.1/EPS)',/,4x,"
+                                     "'3. Lower triangular',16x,'9. Random, CNDNUM = 0.1/EPS',/,4x,"
+                                     "'4. Random, CNDNUM = 2',13x,'10. Scaled near underflow',/,4x,"
+                                     "'5. First column zero',14x,'11. Scaled near overflow',/,4x,"
+                                     "'6. Last column zero')";
+    static const char *format_8960 = "(3x,i2,': norm_1( B - A * X )  / ',"
+                                     "'( norm_1(A) * norm_1(X) * EPS * SQRT(N) ) > 1 if ITERREF',/,4x,"
+                                     "'or norm_1( B - A * X )  / ',"
+                                     "'( norm_1(A) * norm_1(X) * EPS ) > THRES if Rgetrf')";
+    //
     // Initialize constants and the random number seed.
     //
     kase = 0;
-    path[0] = "Zomplex precision";
+    path(1, 1) = "Zomplex precision";
     path(2, 3) = "GE";
     nrun = 0;
     nfail = 0;
@@ -125,7 +120,7 @@ void Cdrvab(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, IN
         iseed[i - 1] = iseedy[i - 1];
     }
     //
-    cmn.infot = 0;
+    infot = 0;
     //
     // Do for each value of M in MVAL
     //
@@ -157,15 +152,15 @@ void Cdrvab(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, IN
             // Set up parameters with Clatb4 and generate a test matrix
             // with Clatms.
             //
-            Clatb4(path, imat, m, n, &type, kl, ku, anorm, mode, cndnum, &dist);
+            Clatb4(path, imat, m, n, type, kl, ku, anorm, mode, cndnum, dist);
             //
-            srnamt = "ZLATMS";
-            Clatms(m, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, "No packing", a, lda, work, info);
+            srnamt = "Clatms";
+            Clatms(m, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, "No packing", a, lda, work, info);
             //
             // Check error code from Clatms.
             //
             if (info != 0) {
-                Alaerh(path, "ZLATMS", info, 0, " ", m, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                Alaerh(path, "Clatms", info, 0, " ", m, n, -1, -1, -1, imat, nfail, nerrs, nout);
                 goto statement_100;
             }
             //
@@ -194,13 +189,13 @@ void Cdrvab(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, IN
             //
             for (irhs = 1; irhs <= nns; irhs = irhs + 1) {
                 nrhs = nsval[irhs - 1];
-                xtype = 'N';
-                trans = 'N';
+                xtype = "N";
+                trans = "N";
                 //
-                srnamt = "ZLARHS";
-                Clarhs(path, &xtype, " ", &trans, n, n, kl, ku, nrhs, a, lda, x, lda, b, lda, iseed, info);
+                srnamt = "Clarhs";
+                Clarhs(path, xtype, " ", trans, n, n, kl, ku, nrhs, a, lda, x, lda, b, lda, iseed, info);
                 //
-                srnamt = "ZCGESV";
+                srnamt = "Ccgesv";
                 //
                 kase++;
                 //
@@ -223,11 +218,9 @@ void Cdrvab(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, IN
                     nerrs++;
                     //
                     if (info != izero && izero != 0) {
-                        write(nout, "(' *** ',a6,' returned with INFO =',i5,' instead of ',i5,/,"
-                                    "' ==> M =',i5,', type ',i2)"),
-                            "ZCGESV", info, izero, m, imat;
+                        write(nout, format_9988), "Ccgesv", info, izero, m, imat;
                     } else {
-                        write(nout, "(' *** Error code from ',a6,'=',i5,' for M=',i5,', type ',i2)"), "ZCGESV", info, m, imat;
+                        write(nout, format_9975), "Ccgesv", info, m, imat;
                     }
                 }
                 //
@@ -241,7 +234,7 @@ void Cdrvab(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, IN
                 //
                 Clacpy("Full", n, nrhs, b, lda, work, lda);
                 //
-                Cget08(&trans, n, n, nrhs, a, lda, x, lda, work, lda, rwork, result[0]);
+                Cget08(trans, n, n, nrhs, a, lda, x, lda, work, lda, rwork, result[1 - 1]);
                 //
                 // Check if the test passes the tesing.
                 // Print information about the tests that did not
@@ -255,29 +248,18 @@ void Cdrvab(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, IN
                 // NORMI(B - A*X)/(NORMI(A)*NORMI(X)*EPS) < THRES
                 // (Cf. the linear solver testing routines)
                 //
-                if ((thresh <= 0.0e+00) || ((iter >= 0) && (n > 0) && (result[0] >= sqrt(castREAL(n)))) || ((iter < 0) && (result[0] >= thresh))) {
+                if ((thresh <= 0.0) || ((iter >= 0) && (n > 0) && (result[1 - 1] >= sqrt(castREAL(n)))) || ((iter < 0) && (result[1 - 1] >= thresh))) {
                     //
                     if (nfail == 0 && nerrs == 0) {
-                        write(nout, "(/,1x,a3,':  General dense matrices')"), "DGE";
+                        write(nout, format_8999), "DGE";
                         write(nout, "(' Matrix types:')");
-                        write(nout, "(4x,'1. Diagonal',24x,'7. Last n/2 columns zero',/,4x,"
-                                    "'2. Upper triangular',16x,'8. Random, CNDNUM = sqrt(0.1/EPS)',"
-                                    "/,4x,'3. Lower triangular',16x,'9. Random, CNDNUM = 0.1/EPS',/,"
-                                    "4x,'4. Random, CNDNUM = 2',13x,'10. Scaled near underflow',/,"
-                                    "4x,'5. First column zero',14x,'11. Scaled near overflow',/,4x,"
-                                    "'6. Last column zero')");
+                        write(nout, format_8979);
                         write(nout, "(' Test ratios:')");
-                        write(nout, "(3x,i2,': norm_1( B - A * X )  / ',"
-                                    "'( norm_1(A) * norm_1(X) * EPS * SQRT(N) ) > 1 if ITERREF',/,"
-                                    "4x,'or norm_1( B - A * X )  / ',"
-                                    "'( norm_1(A) * norm_1(X) * EPS ) > THRES if DGETRF')"),
-                            1;
+                        write(nout, format_8960), 1;
                         write(nout, "(' Messages:')");
                     }
                     //
-                    write(nout, "(' TRANS=''',a1,''', N =',i5,', NRHS=',i3,', type ',i2,', test(',"
-                                "i2,') =',g12.5)"),
-                        trans, n, nrhs, imat, 1, result(1);
+                    write(nout, format_9998), trans, n, nrhs, imat, 1, result[1 - 1];
                     nfail++;
                 }
                 nrun++;
@@ -289,19 +271,13 @@ void Cdrvab(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nns, IN
     // Print a summary of the results.
     //
     if (nfail > 0) {
-        write(nout, "(1x,a6,': ',i6,' out of ',i6,' tests failed to pass the threshold')"), "ZCGESV", nfail, nrun;
+        write(nout, format_9996), "Ccgesv", nfail, nrun;
     } else {
-        write(nout, "(/,1x,'All tests for ',a6,' routines passed the threshold ( ',i6,"
-                    "' tests run)')"),
-            "ZCGESV", nrun;
+        write(nout, format_9995), "Ccgesv", nrun;
     }
     if (nerrs > 0) {
-        write(nout, "(6x,i6,' error messages recorded')"), nerrs;
+        write(nout, format_9994), nerrs;
     }
-    //
-    // SUBNAM, INFO, INFOE, M, IMAT
-    //
-    // SUBNAM, INFO, M, IMAT
     //
     // End of Cdrvab
     //

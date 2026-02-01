@@ -43,8 +43,6 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
 void Rsvdch(INTEGER const n, REAL *s, REAL *e, REAL *svd, REAL const tol, INTEGER &info) {
     REAL unfl = 0.0;
     REAL ovfl = 0.0;
@@ -79,7 +77,7 @@ void Rsvdch(INTEGER const n, REAL *s, REAL *e, REAL *svd, REAL const tol, INTEGE
     //
     // The value of EPS works best when TOL .GE. 10.
     //
-    eps = tol * max(REAL(castREAL(n) / 10.0), REAL(1.0)) * eps;
+    eps = tol * max(n / 10, (INTEGER)1) * eps;
     //
     // TPNT points to singular value at right endpoint of interval
     // BPNT points to singular value at left  endpoint of interval

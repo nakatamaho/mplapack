@@ -43,9 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-inline REAL abs1(COMPLEX zdum) { return abs(zdum.real()) + abs(zdum.imag()); }
-
-void Cpbt05(const char *uplo, INTEGER const n, INTEGER const kd, INTEGER const nrhs, COMPLEX *ab, INTEGER const ldab, COMPLEX *b, INTEGER const ldb, COMPLEX *x, INTEGER const ldx, COMPLEX *xact, INTEGER const ldxact, REAL *ferr, REAL *berr, REAL *reslts) {
+void Cpbt05(fem::str_cref uplo, INTEGER const n, INTEGER const kd, INTEGER const nrhs, COMPLEX *ab, INTEGER const ldab, COMPLEX *b, INTEGER const ldb, COMPLEX *x, INTEGER const ldx, COMPLEX *xact, INTEGER const ldxact, REAL *ferr, REAL *berr, REAL *reslts) {
     COMPLEX zdum = 0.0;
     const REAL zero = 0.0;
     REAL eps = 0.0;
@@ -75,7 +73,7 @@ void Cpbt05(const char *uplo, INTEGER const n, INTEGER const kd, INTEGER const n
     eps = Rlamch("Epsilon");
     unfl = Rlamch("Safe minimum");
     ovfl = one / unfl;
-    upper = Mlsame(uplo, "U");
+    upper = Mlsame(uplo.elems(), "U");
     nz = 2 * max(kd, n - 1) + 1;
     //
     // Test 1:  Compute the maximum of
@@ -85,10 +83,10 @@ void Cpbt05(const char *uplo, INTEGER const n, INTEGER const kd, INTEGER const n
     errbnd = zero;
     for (j = 1; j <= nrhs; j = j + 1) {
         imax = iCamax(n, &x[(j - 1) * ldx], 1);
-        xnorm = max(abs1(x[(imax - 1) + (j - 1) * ldx]), unfl);
+        xnorm = max(cabs1(x[(imax - 1) + (j - 1) * ldx]), unfl);
         diff = zero;
         for (i = 1; i <= n; i = i + 1) {
-            diff = max(diff, abs1(x[(i - 1) + (j - 1) * ldx] - xact[(i - 1) + (j - 1) * ldxact]));
+            diff = max(diff, cabs1(x[(i - 1) + (j - 1) * ldx] - xact[(i - 1) + (j - 1) * ldxact]));
         }
         //
         if (xnorm > one) {
@@ -102,7 +100,7 @@ void Cpbt05(const char *uplo, INTEGER const n, INTEGER const kd, INTEGER const n
     //
     statement_20:
         if (diff / xnorm <= ferr[j - 1]) {
-            errbnd = max(errbnd, REAL((diff / xnorm) / ferr[j - 1]));
+            errbnd = max(errbnd, (diff / xnorm) / ferr[j - 1]);
         } else {
             errbnd = one / eps;
         }
@@ -115,22 +113,22 @@ void Cpbt05(const char *uplo, INTEGER const n, INTEGER const kd, INTEGER const n
     //
     for (k = 1; k <= nrhs; k = k + 1) {
         for (i = 1; i <= n; i = i + 1) {
-            tmp = abs1(b[(i - 1) + (k - 1) * ldb]);
+            tmp = cabs1(b[(i - 1) + (k - 1) * ldb]);
             if (upper) {
                 for (j = max(i - kd, (INTEGER)1); j <= i - 1; j = j + 1) {
-                    tmp += abs1(ab[((kd + 1 - i + j) - 1) + (i - 1) * ldab]) * abs1(x[(j - 1) + (k - 1) * ldx]);
+                    tmp += cabs1(ab[((kd + 1 - i + j) - 1) + (i - 1) * ldab]) * cabs1(x[(j - 1) + (k - 1) * ldx]);
                 }
-                tmp += abs(ab[((kd + 1) - 1) + (i - 1) * ldab].real()) * abs1(x[(i - 1) + (k - 1) * ldx]);
+                tmp += abs(ab[((kd + 1) - 1) + (i - 1) * ldab].real()) * cabs1(x[(i - 1) + (k - 1) * ldx]);
                 for (j = i + 1; j <= min(i + kd, n); j = j + 1) {
-                    tmp += abs1(ab[((kd + 1 + i - j) - 1) + (j - 1) * ldab]) * abs1(x[(j - 1) + (k - 1) * ldx]);
+                    tmp += cabs1(ab[((kd + 1 + i - j) - 1) + (j - 1) * ldab]) * cabs1(x[(j - 1) + (k - 1) * ldx]);
                 }
             } else {
                 for (j = max(i - kd, (INTEGER)1); j <= i - 1; j = j + 1) {
-                    tmp += abs1(ab[((1 + i - j) - 1) + (j - 1) * ldab]) * abs1(x[(j - 1) + (k - 1) * ldx]);
+                    tmp += cabs1(ab[((1 + i - j) - 1) + (j - 1) * ldab]) * cabs1(x[(j - 1) + (k - 1) * ldx]);
                 }
-                tmp += abs(ab[(i - 1) * ldab].real()) * abs1(x[(i - 1) + (k - 1) * ldx]);
+                tmp += abs(ab[(i - 1) * ldab].real()) * cabs1(x[(i - 1) + (k - 1) * ldx]);
                 for (j = i + 1; j <= min(i + kd, n); j = j + 1) {
-                    tmp += abs1(ab[((1 + j - i) - 1) + (i - 1) * ldab]) * abs1(x[(j - 1) + (k - 1) * ldx]);
+                    tmp += cabs1(ab[((1 + j - i) - 1) + (i - 1) * ldab]) * cabs1(x[(j - 1) + (k - 1) * ldx]);
                 }
             }
             if (i == 1) {
@@ -139,7 +137,7 @@ void Cpbt05(const char *uplo, INTEGER const n, INTEGER const kd, INTEGER const n
                 axbi = min(axbi, tmp);
             }
         }
-        tmp = berr[k - 1] / (nz * eps + nz * unfl / max(axbi, REAL(nz * unfl)));
+        tmp = berr[k - 1] / (nz * eps + nz * unfl / max(axbi, nz * unfl));
         if (k == 1) {
             reslts[2 - 1] = tmp;
         } else {

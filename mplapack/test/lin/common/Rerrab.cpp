@@ -43,31 +43,12 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-struct common_infoc {
-    int infot;
-    int nout;
-    bool ok;
-    bool lerr;
-
-    common_infoc() : infot(0), nout(0), ok(false), lerr(false) {}
-};
-
-struct common_srnamc {
-    fem::str<32> srnamt;
-
-    common_srnamc() : srnamt(0) {}
-};
-
-struct common : fem::common, common_infoc, common_srnamc {
-    common(int argc, char const *argv[]) : fem::common(argc, argv) {}
-};
-
 void Rerrab(INTEGER const nunit) {
+    common cmn;
     common_write write(cmn);
-    int &infot = cmn.infot;
-    int &nout = cmn.nout;
-    bool &ok = cmn.ok;
-    bool &lerr = cmn.lerr;
+    //
+    static const char *format_9999 = "(1x,a6,' drivers passed the tests of the error exits')";
+    static const char *format_9998 = "(' *** ',a6,' drivers failed the tests of the error ','exits ***')";
     //
     nout = nunit;
     write(nout, star);
@@ -103,33 +84,33 @@ void Rerrab(INTEGER const nunit) {
     }
     ok = true;
     //
-    cmn.srnamt = "DSGESV";
+    srnamt = "Rsgesv";
     infot = 1;
     REAL work[1];
     REAL swork[1];
     INTEGER iter = 0;
     INTEGER info = 0;
     Rsgesv(-1, 0, a, 1, ip, b, 1, x, 1, work, swork, iter, info);
-    Chkxer("DSGESV", infot, nout, lerr, ok);
+    Chkxer("Rsgesv", infot, nout, lerr, ok);
     infot = 2;
     Rsgesv(0, -1, a, 1, ip, b, 1, x, 1, work, swork, iter, info);
-    Chkxer("DSGESV", infot, nout, lerr, ok);
+    Chkxer("Rsgesv", infot, nout, lerr, ok);
     infot = 4;
     Rsgesv(2, 1, a, 1, ip, b, 2, x, 2, work, swork, iter, info);
-    Chkxer("DSGESV", infot, nout, lerr, ok);
+    Chkxer("Rsgesv", infot, nout, lerr, ok);
     infot = 7;
     Rsgesv(2, 1, a, 2, ip, b, 1, x, 2, work, swork, iter, info);
-    Chkxer("DSGESV", infot, nout, lerr, ok);
+    Chkxer("Rsgesv", infot, nout, lerr, ok);
     infot = 9;
     Rsgesv(2, 1, a, 2, ip, b, 2, x, 1, work, swork, iter, info);
-    Chkxer("DSGESV", infot, nout, lerr, ok);
+    Chkxer("Rsgesv", infot, nout, lerr, ok);
     //
     // Print a summary line.
     //
     if (ok) {
-        write(nout, "(1x,a6,' drivers passed the tests of the error exits')"), "DSGESV";
+        write(nout, format_9999), "Rsgesv";
     } else {
-        write(nout, "(' *** ',a6,' drivers failed the tests of the error ','exits ***')"), "DSGESV";
+        write(nout, format_9998), "Rsgesv";
     }
     //
     // End of Rerrab

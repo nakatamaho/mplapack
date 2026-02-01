@@ -43,17 +43,16 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-#include <mplapack_debug.h>
-
 void Cchklqt(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nout) {
     common cmn;
     common_write write(cmn);
     //
-    char path[4] = {};
-    path[0] = 'C';
-    path[1] = 'T';
-    path[2] = 'Q';
-    char buf[1024];
+    static const char *format_9999 = "(' M=',i5,', N=',i5,', NB=',i4,' test(',i2,')=',g12.5)";
+    //
+    // Initialize constants
+    //
+    fem::str<3> path = "Z";
+    path(2, 3) = "TQ";
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -104,8 +103,7 @@ void Cchklqt(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *mv
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
-                            sprintnum_short(buf, result[t - 1]);
-                            write(nout, "(' M=',i5,', N=',i5,', NB=',i4,' test(',i2,')=',a)"), m, n, nb, t, buf;
+                            write(nout, format_9999), m, n, nb, t, result[t - 1];
                             nfail++;
                         }
                     }

@@ -43,9 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-void Rspt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER const kband, REAL *ap, REAL *d, REAL *e, REAL *u, INTEGER const ldu, REAL *vp, REAL *tau, REAL *work, REAL *result) {
+void Rspt21(INTEGER const itype, fem::str_cref uplo, INTEGER const n, INTEGER const kband, REAL *ap, REAL *d, REAL *e, REAL *u, INTEGER const ldu, REAL *vp, REAL *tau, REAL *work, REAL *result) {
     //
     // 1)      Constants
     //
@@ -61,13 +59,13 @@ void Rspt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
     INTEGER lap = (n * (n + 1)) / 2;
     //
     bool lower = false;
-    char cuplo;
-    if (Mlsame(uplo, "U")) {
+    fem::str<1> cuplo;
+    if (Mlsame(uplo.elems(), "U")) {
         lower = false;
-        cuplo = 'U';
+        cuplo = "U";
     } else {
         lower = true;
-        cuplo = 'L';
+        cuplo = "L";
     }
     //
     REAL unfl = Rlamch("Safe minimum");
@@ -90,7 +88,7 @@ void Rspt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
     if (itype == 3) {
         anorm = one;
     } else {
-        anorm = max({Rlansp("1", &cuplo, n, ap, work), unfl});
+        anorm = max(Rlansp("1", cuplo.elems, n, ap, work), unfl);
     }
     //
     // Compute error matrix:
@@ -101,7 +99,7 @@ void Rspt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
     INTEGER jp1 = 0;
     INTEGER jr = 0;
     REAL vsave = 0.0;
-    const REAL half = 1.0 / 2.0e+0;
+    const REAL half = 1.0 / 2.0;
     REAL temp = 0.0;
     INTEGER iinfo = 0;
     if (itype == 1) {
@@ -112,15 +110,15 @@ void Rspt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
         Rcopy(lap, ap, 1, work, 1);
         //
         for (j = 1; j <= n; j = j + 1) {
-            Rspr(&cuplo, n, -d[j - 1], &u[(j - 1) * ldu], 1, work);
+            Rspr(cuplo.elems, n, -d[j - 1], &u[(j - 1) * ldu], 1, work);
         }
         //
         if (n > 1 && kband == 1) {
             for (j = 1; j <= n - 1; j = j + 1) {
-                Rspr2(&cuplo, n, -e[j - 1], &u[(j - 1) * ldu], 1, &u[((j + 1) - 1) * ldu], 1, work);
+                Rspr2(cuplo.elems, n, -e[j - 1], &u[(j - 1) * ldu], 1, &u[((j + 1) - 1) * ldu], 1, work);
             }
         }
-        wnorm = Rlansp("1", &cuplo, n, work, &work[(n * n + 1) - 1]);
+        wnorm = Rlansp("1", cuplo.elems, n, work, &work[(pow2(n) + 1) - 1]);
         //
     } else if (itype == 2) {
         //
@@ -179,7 +177,7 @@ void Rspt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
         for (j = 1; j <= lap; j = j + 1) {
             work[j - 1] = work[j - 1] - ap[j - 1];
         }
-        wnorm = Rlansp("1", &cuplo, n, work, &work[(lap + 1) - 1]);
+        wnorm = Rlansp("1", cuplo.elems, n, work, &work[(lap + 1) - 1]);
         //
     } else if (itype == 3) {
         //
@@ -189,7 +187,7 @@ void Rspt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
             return;
         }
         Rlacpy(" ", n, n, u, ldu, work, n);
-        Ropmtr("R", &cuplo, "T", n, n, vp, tau, work, n, &work[(n * n + 1) - 1], iinfo);
+        Ropmtr("R", cuplo.elems, "T", n, n, vp, tau, work, n, &work[(pow2(n) + 1) - 1], iinfo);
         if (iinfo != 0) {
             result[1 - 1] = ten / ulp;
             return;
@@ -199,16 +197,16 @@ void Rspt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
             work[((n + 1) * (j - 1) + 1) - 1] = work[((n + 1) * (j - 1) + 1) - 1] - one;
         }
         //
-        wnorm = Rlange("1", n, n, work, n, &work[(n * n + 1) - 1]);
+        wnorm = Rlange("1", n, n, work, n, &work[(pow2(n) + 1) - 1]);
     }
     //
     if (anorm > wnorm) {
         result[1 - 1] = (wnorm / anorm) / (n * ulp);
     } else {
         if (anorm < one) {
-            result[1 - 1] = (min(wnorm, REAL(n * anorm)) / anorm) / (n * ulp);
+            result[1 - 1] = (min(wnorm, n * anorm) / anorm) / (n * ulp);
         } else {
-            result[1 - 1] = min(REAL(wnorm / anorm), castREAL(n)) / (n * ulp);
+            result[1 - 1] = min(wnorm / anorm, castREAL(n)) / (n * ulp);
         }
     }
     //
@@ -223,7 +221,7 @@ void Rspt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
             work[((n + 1) * (j - 1) + 1) - 1] = work[((n + 1) * (j - 1) + 1) - 1] - one;
         }
         //
-        result[2 - 1] = min({Rlange("1", n, n, work, n, &work[(n * n + 1) - 1]), castREAL(n)}) / (n * ulp);
+        result[2 - 1] = min(Rlange("1", n, n, work, n, &work[(pow2(n) + 1) - 1]), castREAL(n)) / (n * ulp);
     }
     //
     // End of Rspt21

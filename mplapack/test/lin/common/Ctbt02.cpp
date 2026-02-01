@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Ctbt02(const char *uplo, const char *trans, const char *diag, INTEGER const n, INTEGER const kd, INTEGER const nrhs, COMPLEX *ab, INTEGER const ldab, COMPLEX *x, INTEGER const ldx, COMPLEX *b, INTEGER const ldb, COMPLEX *work, REAL *rwork, REAL &resid) {
+void Ctbt02(fem::str_cref uplo, fem::str_cref trans, fem::str_cref diag, INTEGER const n, INTEGER const kd, INTEGER const nrhs, COMPLEX *ab, INTEGER const ldab, COMPLEX *x, INTEGER const ldx, COMPLEX *b, INTEGER const ldb, COMPLEX *work, REAL *rwork, REAL &resid) {
     //
     // Quick exit if N = 0 or NRHS = 0
     //
@@ -56,10 +56,10 @@ void Ctbt02(const char *uplo, const char *trans, const char *diag, INTEGER const
     // Compute the 1-norm of A or A'.
     //
     REAL anorm = 0.0;
-    if (Mlsame(trans, "N")) {
-        anorm = Clantb("1", uplo, diag, n, kd, ab, ldab, rwork);
+    if (Mlsame(trans.elems(), "N")) {
+        anorm = Clantb("1", uplo.elems(), diag.elems(), n, kd, ab, ldab, rwork);
     } else {
-        anorm = Clantb("I", uplo, diag, n, kd, ab, ldab, rwork);
+        anorm = Clantb("I", uplo.elems(), diag.elems(), n, kd, ab, ldab, rwork);
     }
     //
     // Exit with RESID = 1/EPS if ANORM = 0.
@@ -80,14 +80,14 @@ void Ctbt02(const char *uplo, const char *trans, const char *diag, INTEGER const
     REAL xnorm = 0.0;
     for (j = 1; j <= nrhs; j = j + 1) {
         Ccopy(n, &x[(j - 1) * ldx], 1, work, 1);
-        Ctbmv(uplo, trans, diag, n, kd, ab, ldab, work, 1);
+        Ctbmv(uplo.elems(), trans.elems(), diag.elems(), n, kd, ab, ldab, work, 1);
         Caxpy(n, COMPLEX(-one), &b[(j - 1) * ldb], 1, work, 1);
         bnorm = RCasum(n, work, 1);
         xnorm = RCasum(n, &x[(j - 1) * ldx], 1);
         if (xnorm <= zero) {
             resid = one / eps;
         } else {
-            resid = max(resid, REAL(((bnorm / anorm) / xnorm) / eps));
+            resid = max(resid, ((bnorm / anorm) / xnorm) / eps);
         }
     }
     //

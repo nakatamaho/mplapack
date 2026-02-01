@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Rtrt01(const char *uplo, const char *diag, INTEGER const n, REAL *a, INTEGER const lda, REAL *ainv, INTEGER const ldainv, REAL &rcond, REAL *work, REAL &resid) {
+void Rtrt01(fem::str_cref uplo, fem::str_cref diag, INTEGER const n, REAL *a, INTEGER const lda, REAL *ainv, INTEGER const ldainv, REAL &rcond, REAL *work, REAL &resid) {
     //
     // Quick exit if N = 0
     //
@@ -58,8 +58,8 @@ void Rtrt01(const char *uplo, const char *diag, INTEGER const n, REAL *a, INTEGE
     // Exit with RESID = 1/EPS if ANORM = 0 or AINVNM = 0.
     //
     REAL eps = Rlamch("Epsilon");
-    REAL anorm = Rlantr("1", uplo, diag, n, n, a, lda, work);
-    REAL ainvnm = Rlantr("1", uplo, diag, n, n, ainv, ldainv, work);
+    REAL anorm = Rlantr("1", uplo.elems(), diag.elems(), n, n, a, lda, work);
+    REAL ainvnm = Rlantr("1", uplo.elems(), diag.elems(), n, n, ainv, ldainv, work);
     if (anorm <= zero || ainvnm <= zero) {
         rcond = zero;
         resid = one / eps;
@@ -70,7 +70,7 @@ void Rtrt01(const char *uplo, const char *diag, INTEGER const n, REAL *a, INTEGE
     // Set the diagonal of AINV to 1 if AINV has unit diagonal.
     //
     INTEGER j = 0;
-    if (Mlsame(diag, "U")) {
+    if (Mlsame(diag.elems(), "U")) {
         for (j = 1; j <= n; j = j + 1) {
             ainv[(j - 1) + (j - 1) * ldainv] = one;
         }
@@ -78,13 +78,13 @@ void Rtrt01(const char *uplo, const char *diag, INTEGER const n, REAL *a, INTEGE
     //
     // Compute A * AINV, overwriting AINV.
     //
-    if (Mlsame(uplo, "U")) {
+    if (Mlsame(uplo.elems(), "U")) {
         for (j = 1; j <= n; j = j + 1) {
-            Rtrmv("Upper", "No transpose", diag, j, a, lda, &ainv[(j - 1) * ldainv], 1);
+            Rtrmv("Upper", "No transpose", diag.elems(), j, a, lda, &ainv[(j - 1) * ldainv], 1);
         }
     } else {
         for (j = 1; j <= n; j = j + 1) {
-            Rtrmv("Lower", "No transpose", diag, n - j + 1, &a[(j - 1) + (j - 1) * lda], lda, &ainv[(j - 1) + (j - 1) * ldainv], 1);
+            Rtrmv("Lower", "No transpose", diag.elems(), n - j + 1, &a[(j - 1) + (j - 1) * lda], lda, &ainv[(j - 1) + (j - 1) * ldainv], 1);
         }
     }
     //
@@ -96,7 +96,7 @@ void Rtrt01(const char *uplo, const char *diag, INTEGER const n, REAL *a, INTEGE
     //
     // Compute norm(A*AINV - I) / (N * norm(A) * norm(AINV) * EPS)
     //
-    resid = Rlantr("1", uplo, "Non-unit", n, n, ainv, ldainv, work);
+    resid = Rlantr("1", uplo.elems(), "Non-unit", n, n, ainv, ldainv, work);
     //
     resid = ((resid * rcond) / castREAL(n)) / eps;
     //

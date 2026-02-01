@@ -38,7 +38,7 @@
 
 #include <mplapack_matgen.h>
 
-void Clatme(INTEGER const n, const char *dist, INTEGER *iseed, COMPLEX *d, INTEGER const mode, REAL const cond, COMPLEX const dmax, const char *rsign, const char *upper, const char *sim, REAL *ds, INTEGER const modes, REAL const conds, INTEGER const kl, INTEGER const ku, REAL const anorm, COMPLEX *a, INTEGER const lda, COMPLEX *work, INTEGER &info) {
+void Clatme(INTEGER const n, fem::str_cref dist, INTEGER *iseed, COMPLEX *d, INTEGER const mode, REAL const cond, COMPLEX const dmax, fem::str_cref rsign, fem::str_cref upper, fem::str_cref sim, REAL *ds, INTEGER const modes, REAL const conds, INTEGER const kl, INTEGER const ku, REAL const anorm, COMPLEX *a, INTEGER const lda, COMPLEX *work, INTEGER &info) {
     //
     // 1)      Decode and Test the input parameters.
     // Initialize flags & seed.
@@ -54,13 +54,13 @@ void Clatme(INTEGER const n, const char *dist, INTEGER *iseed, COMPLEX *d, INTEG
     // Decode DIST
     //
     INTEGER idist = 0;
-    if (Mlsame(dist, "U")) {
+    if (Mlsame(dist.elems(), "U")) {
         idist = 1;
-    } else if (Mlsame(dist, "S")) {
+    } else if (Mlsame(dist.elems(), "S")) {
         idist = 2;
-    } else if (Mlsame(dist, "N")) {
+    } else if (Mlsame(dist.elems(), "N")) {
         idist = 3;
-    } else if (Mlsame(dist, "D")) {
+    } else if (Mlsame(dist.elems(), "D")) {
         idist = 4;
     } else {
         idist = -1;
@@ -69,9 +69,9 @@ void Clatme(INTEGER const n, const char *dist, INTEGER *iseed, COMPLEX *d, INTEG
     // Decode RSIGN
     //
     INTEGER irsign = 0;
-    if (Mlsame(rsign, "T")) {
+    if (Mlsame(rsign.elems(), "T")) {
         irsign = 1;
-    } else if (Mlsame(rsign, "F")) {
+    } else if (Mlsame(rsign.elems(), "F")) {
         irsign = 0;
     } else {
         irsign = -1;
@@ -80,9 +80,9 @@ void Clatme(INTEGER const n, const char *dist, INTEGER *iseed, COMPLEX *d, INTEG
     // Decode UPPER
     //
     INTEGER iupper = 0;
-    if (Mlsame(upper, "T")) {
+    if (Mlsame(upper.elems(), "T")) {
         iupper = 1;
-    } else if (Mlsame(upper, "F")) {
+    } else if (Mlsame(upper.elems(), "F")) {
         iupper = 0;
     } else {
         iupper = -1;
@@ -91,9 +91,9 @@ void Clatme(INTEGER const n, const char *dist, INTEGER *iseed, COMPLEX *d, INTEG
     // Decode SIM
     //
     INTEGER isim = 0;
-    if (Mlsame(sim, "T")) {
+    if (Mlsame(sim.elems(), "T")) {
         isim = 1;
-    } else if (Mlsame(sim, "F")) {
+    } else if (Mlsame(sim.elems(), "F")) {
         isim = 0;
     } else {
         isim = -1;

@@ -43,9 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-void Chpt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER const kband, COMPLEX *ap, REAL *d, REAL *e, COMPLEX *u, INTEGER const ldu, COMPLEX *vp, COMPLEX *tau, COMPLEX *work, REAL *rwork, REAL *result) {
+void Chpt21(INTEGER const itype, fem::str_cref uplo, INTEGER const n, INTEGER const kband, COMPLEX *ap, REAL *d, REAL *e, COMPLEX *u, INTEGER const ldu, COMPLEX *vp, COMPLEX *tau, COMPLEX *work, REAL *rwork, REAL *result) {
     //
     // Constants
     //
@@ -61,13 +59,13 @@ void Chpt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
     INTEGER lap = (n * (n + 1)) / 2;
     //
     bool lower = false;
-    char cuplo;
-    if (Mlsame(uplo, "U")) {
+    fem::str<1> cuplo;
+    if (Mlsame(uplo.elems(), "U")) {
         lower = false;
-        cuplo = 'U';
+        cuplo = "U";
     } else {
         lower = true;
-        cuplo = 'L';
+        cuplo = "L";
     }
     //
     REAL unfl = Rlamch("Safe minimum");
@@ -90,7 +88,7 @@ void Chpt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
     if (itype == 3) {
         anorm = one;
     } else {
-        anorm = max({Clanhp("1", &cuplo, n, ap, rwork), unfl});
+        anorm = max(Clanhp("1", cuplo.elems, n, ap, rwork), unfl);
     }
     //
     // Compute error matrix:
@@ -103,7 +101,7 @@ void Chpt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     INTEGER jr = 0;
     COMPLEX vsave = 0.0;
-    const REAL half = 1.0 / 2.0e+0;
+    const REAL half = 1.0 / 2.0;
     COMPLEX temp = 0.0;
     INTEGER iinfo = 0;
     if (itype == 1) {
@@ -114,15 +112,15 @@ void Chpt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
         Ccopy(lap, ap, 1, work, 1);
         //
         for (j = 1; j <= n; j = j + 1) {
-            Chpr(&cuplo, n, -d[j - 1], &u[(j - 1) * ldu], 1, work);
+            Chpr(cuplo.elems, n, -d[j - 1], &u[(j - 1) * ldu], 1, work);
         }
         //
         if (n > 1 && kband == 1) {
             for (j = 2; j <= n - 1; j = j + 1) {
-                Chpr2(&cuplo, n, -COMPLEX(e[j - 1]), &u[(j - 1) * ldu], 1, &u[((j - 1) - 1) * ldu], 1, work);
+                Chpr2(cuplo.elems, n, -COMPLEX(e[j - 1]), &u[(j - 1) * ldu], 1, &u[((j - 1) - 1) * ldu], 1, work);
             }
         }
-        wnorm = Clanhp("1", &cuplo, n, work, rwork);
+        wnorm = Clanhp("1", cuplo.elems, n, work, rwork);
         //
     } else if (itype == 2) {
         //
@@ -182,7 +180,7 @@ void Chpt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
         for (j = 1; j <= lap; j = j + 1) {
             work[j - 1] = work[j - 1] - ap[j - 1];
         }
-        wnorm = Clanhp("1", &cuplo, n, work, rwork);
+        wnorm = Clanhp("1", cuplo.elems, n, work, rwork);
         //
     } else if (itype == 3) {
         //
@@ -192,7 +190,7 @@ void Chpt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
             return;
         }
         Clacpy(" ", n, n, u, ldu, work, n);
-        Cupmtr("R", &cuplo, "C", n, n, vp, tau, work, n, &work[(n * n + 1) - 1], iinfo);
+        Cupmtr("R", cuplo.elems, "C", n, n, vp, tau, work, n, &work[(pow2(n) + 1) - 1], iinfo);
         if (iinfo != 0) {
             result[1 - 1] = ten / ulp;
             return;
@@ -209,9 +207,9 @@ void Chpt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
         result[1 - 1] = (wnorm / anorm) / (n * ulp);
     } else {
         if (anorm < one) {
-            result[1 - 1] = (min(wnorm, REAL(n * anorm)) / anorm) / (n * ulp);
+            result[1 - 1] = (min(wnorm, n * anorm) / anorm) / (n * ulp);
         } else {
-            result[1 - 1] = min(REAL(wnorm / anorm), castREAL(n)) / (n * ulp);
+            result[1 - 1] = min(wnorm / anorm, castREAL(n)) / (n * ulp);
         }
     }
     //
@@ -226,7 +224,7 @@ void Chpt21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
             work[((n + 1) * (j - 1) + 1) - 1] = work[((n + 1) * (j - 1) + 1) - 1] - cone;
         }
         //
-        result[2 - 1] = min({Clange("1", n, n, work, n, rwork), castREAL(n)}) / (n * ulp);
+        result[2 - 1] = min(Clange("1", n, n, work, n, rwork), castREAL(n)) / (n * ulp);
     }
     //
     // End of Chpt21

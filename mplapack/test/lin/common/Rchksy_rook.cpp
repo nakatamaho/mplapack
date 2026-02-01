@@ -43,21 +43,17 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-#include <mplapack_debug.h>
-
 void Rchksy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, INTEGER const /* nmax */, REAL *a, REAL *afac, REAL *ainv, REAL *b, REAL *x, REAL *xact, REAL *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
     common cmn;
     common_write write(cmn);
-    //
-    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
-    const char uplos[] = {'U', 'L'};
+    static INTEGER iseedy[4] = {1988, 1989, 1990, 1991};
+    static fem::str<1> uplos[2] = {"U", "L"};
     const REAL one = 1.0;
-    const REAL sevten = 17.0e+0;
-    const REAL eight = 8.0e+0;
+    const REAL sevten = 17.0;
+    const REAL eight = 8.0;
     REAL alpha = 0.0;
-    char path[4] = {};
-    char matpath[4] = {};
-    char buf[1024];
+    fem::str<3> path;
+    fem::str<3> matpath;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -66,21 +62,21 @@ void Rchksy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
     INTEGER in = 0;
     INTEGER n = 0;
     INTEGER lda = 0;
-    char xtype;
+    fem::str<1> xtype;
     const INTEGER ntypes = 10;
     INTEGER nimat = 0;
     INTEGER izero = 0;
     INTEGER imat = 0;
     bool zerot = false;
     INTEGER iuplo = 0;
-    char uplo;
-    char type;
+    fem::str<1> uplo;
+    fem::str<1> type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist;
+    fem::str<1> dist;
     INTEGER info = 0;
     INTEGER ioff = 0;
     const REAL zero = 0.0;
@@ -97,64 +93,36 @@ void Rchksy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
     INTEGER nt = 0;
     REAL rcondc = 0.0;
     REAL dtemp = 0.0;
-    REAL _const = 0.0;
+    REAL identifier_const = 0.0;
     REAL block[2 * 2];
-    INTEGER ldblock = 2;
     REAL ddummy[1];
     REAL sing_max = 0.0;
     REAL sing_min = 0.0;
     INTEGER irhs = 0;
     INTEGER nrhs = 0;
     REAL rcond = 0.0;
+    INTEGER ldblock = 2;
+    //
     static const char *format_9999 = "(' UPLO = ''',a1,''', N =',i5,', NB =',i4,', type ',i2,', test ',i2,"
-                                     "', ratio =',a)";
+                                     "', ratio =',g12.5)";
+    static const char *format_9998 = "(' UPLO = ''',a1,''', N =',i5,', NRHS=',i3,', type ',i2,', test(',i2,"
+                                     "') =',g12.5)";
+    static const char *format_9997 = "(' UPLO = ''',a1,''', N =',i5,',',10x,' type ',i2,', test(',i2,') =',"
+                                     "g12.5)";
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Initialize constants and the random number seed.
+    // Initialize constants and the random number seed.
     //
     alpha = (one + sqrt(sevten)) / eight;
     //
-    //     Test path
+    // Test path
     //
-    path[0] = 'R';
-    path[1] = 'S';
-    path[2] = 'R';
+    path(1, 1) = "Double precision";
+    path(2, 3) = "SR";
     //
-    //     Path to generate matrices
+    // Path to generate matrices
     //
-    matpath[0] = 'R';
-    matpath[1] = 'S';
-    matpath[2] = 'Y';
+    matpath(1, 1) = "Double precision";
+    matpath(2, 3) = "SY";
     //
     nrun = 0;
     nfail = 0;
@@ -173,14 +141,14 @@ void Rchksy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
     // Set the minimum block size for which the block routine should
     // be used, which will be later returned by iMlaenv
     //
-    xlaenv(2, 2);
+    Mxlaenv(2, 2);
     //
     // Do for each value of N in NVAL
     //
     for (in = 1; in <= nn; in = in + 1) {
         n = nval[in - 1];
         lda = max(n, (INTEGER)1);
-        xtype = 'N';
+        xtype = "N";
         nimat = ntypes;
         if (n <= 0) {
             nimat = 1;
@@ -215,16 +183,17 @@ void Rchksy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
                 // Set up parameters with Rlatb4 for the matrix generator
                 // based on the type of matrix to be generated.
                 //
-                Rlatb4(matpath, imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
+                Rlatb4(matpath, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
                 //
-                //              Generate a matrix with Rlatms.
+                // Generate a matrix with Rlatms.
                 //
-                Rlatms(n, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, &uplo, a, lda, work, info);
+                srnamt = "Rlatms";
+                Rlatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, uplo, a, lda, work, info);
                 //
                 // Check error code from Rlatms and handle error.
                 //
                 if (info != 0) {
-                    Alaerh(path, "Rlatms", info, 0, &uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Rlatms", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     //
                     // Skip all tests for this generated matrix
                     //
@@ -310,13 +279,13 @@ void Rchksy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
                     // returned by iMlaenv.
                     //
                     nb = nbval[inb - 1];
-                    xlaenv(1, nb);
+                    Mxlaenv(1, nb);
                     //
                     // Copy the test matrix A into matrix AFAC which
                     // will be factorized in place. This is needed to
                     // preserve the test matrix A for subsequent tests.
                     //
-                    Rlacpy(&uplo, n, n, a, lda, afac, lda);
+                    Rlacpy(uplo.elems, n, n, a, lda, afac, lda);
                     //
                     // Compute the L*D*L**T or U*D*U**T factorization of the
                     // matrix. IWORK stores details of the interchanges and
@@ -324,8 +293,8 @@ void Rchksy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
                     // block factorization, LWORK is the length of AINV.
                     //
                     lwork = max((INTEGER)2, nb) * lda;
-                    strncpy(srnamt, "Rsytrf_rook", srnamt_len);
-                    Rsytrf_rook(&uplo, n, afac, lda, iwork, ainv, lwork, info);
+                    srnamt = "Rsytrf_rook";
+                    Rsytrf_rook(uplo.elems, n, afac, lda, iwork, ainv, lwork, info);
                     //
                     // Adjust the expected value of INFO to account for
                     // pivoting.
@@ -347,7 +316,7 @@ void Rchksy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
                     // Check error code from Rsytrf_rook and handle error.
                     //
                     if (info != k) {
-                        Alaerh(path, "Rsytrf_rook", info, k, &uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Rsytrf_rook", info, k, uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
                     }
                     //
                     // Set the condition estimate flag if the INFO is not 0.
@@ -361,7 +330,7 @@ void Rchksy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
                     // +    TEST 1
                     // Reconstruct matrix from factors and compute residual.
                     //
-                    Rsyt01_rook(&uplo, n, a, lda, afac, lda, iwork, ainv, lda, rwork, result[1 - 1]);
+                    Rsyt01_rook(uplo, n, a, lda, afac, lda, iwork, ainv, lda, rwork, result[1 - 1]);
                     nt = 1;
                     //
                     // +    TEST 2
@@ -371,20 +340,20 @@ void Rchksy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
                     // Do it only for the first block size.
                     //
                     if (inb == 1 && !trfcon) {
-                        Rlacpy(&uplo, n, n, afac, lda, ainv, lda);
-                        strncpy(srnamt, "Rsytri_rook", srnamt_len);
-                        Rsytri_rook(&uplo, n, ainv, lda, iwork, work, info);
+                        Rlacpy(uplo.elems, n, n, afac, lda, ainv, lda);
+                        srnamt = "Rsytri_rook";
+                        Rsytri_rook(uplo.elems, n, ainv, lda, iwork, work, info);
                         //
                         // Check error code from Rsytri_rook and handle error.
                         //
                         if (info != 0) {
-                            Alaerh(path, "Rsytri_rook", info, -1, &uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Rsytri_rook", info, -1, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                         }
                         //
                         // Compute the residual for a symmetric matrix times
                         // its inverse.
                         //
-                        Rpot03(&uplo, n, a, lda, ainv, lda, work, lda, rwork, rcondc, result[2 - 1]);
+                        Rpot03(uplo, n, a, lda, ainv, lda, work, lda, rwork, rcondc, result[2 - 1]);
                         nt = 2;
                     }
                     //
@@ -396,8 +365,7 @@ void Rchksy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
-                            sprintnum_short(buf, result[k - 1]);
-                            write(nout, format_9999), uplo, n, nb, imat, k, buf;
+                            write(nout, format_9999), uplo, n, nb, imat, k, result[k - 1];
                             nfail++;
                         }
                     }
@@ -409,7 +377,7 @@ void Rchksy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
                     result[3 - 1] = zero;
                     dtemp = zero;
                     //
-                    _const = one / (one - alpha);
+                    identifier_const = one / (one - alpha);
                     //
                     if (iuplo == 1) {
                         //
@@ -439,7 +407,7 @@ void Rchksy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
                         //
                         // DTEMP should be bounded by CONST
                         //
-                        dtemp = dtemp - _const + thresh;
+                        dtemp = dtemp - identifier_const + thresh;
                         if (dtemp > result[3 - 1]) {
                             result[3 - 1] = dtemp;
                         }
@@ -477,7 +445,7 @@ void Rchksy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
                         //
                         // DTEMP should be bounded by CONST
                         //
-                        dtemp = dtemp - _const + thresh;
+                        dtemp = dtemp - identifier_const + thresh;
                         if (dtemp > result[3 - 1]) {
                             result[3 - 1] = dtemp;
                         }
@@ -495,8 +463,8 @@ void Rchksy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
                     result[4 - 1] = zero;
                     dtemp = zero;
                     //
-                    _const = (one + alpha) / (one - alpha);
-                    Rlacpy(&uplo, n, n, afac, lda, ainv, lda);
+                    identifier_const = (one + alpha) / (one - alpha);
+                    Rlacpy(uplo.elems, n, n, afac, lda, ainv, lda);
                     //
                     if (iuplo == 1) {
                         //
@@ -514,7 +482,7 @@ void Rchksy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
                             // (real and non-negative) of a 2-by-2 block,
                             // store them in RWORK array
                             //
-                            block[(1 - 1)] = afac[((k - 2) * lda + k - 1) - 1];
+                            block[0] = afac[((k - 2) * lda + k - 1) - 1];
                             block[(2 - 1) * ldblock] = afac[((k - 1) * lda + k - 1) - 1];
                             block[(2 - 1)] = block[(2 - 1) * ldblock];
                             block[(2 - 1) + (2 - 1) * ldblock] = afac[((k - 1) * lda + k) - 1];
@@ -528,7 +496,7 @@ void Rchksy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
                             //
                             // DTEMP should be bounded by CONST
                             //
-                            dtemp = dtemp - _const + thresh;
+                            dtemp = dtemp - identifier_const + thresh;
                             if (dtemp > result[4 - 1]) {
                                 result[4 - 1] = dtemp;
                             }
@@ -557,7 +525,7 @@ void Rchksy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
                             // (real and non-negative) of a 2-by-2 block,
                             // store them in RWORK array
                             //
-                            block[(1 - 1)] = afac[((k - 1) * lda + k) - 1];
+                            block[0] = afac[((k - 1) * lda + k) - 1];
                             block[(2 - 1)] = afac[((k - 1) * lda + k + 1) - 1];
                             block[(2 - 1) * ldblock] = block[(2 - 1)];
                             block[(2 - 1) + (2 - 1) * ldblock] = afac[(k * lda + k + 1) - 1];
@@ -571,7 +539,7 @@ void Rchksy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
                             //
                             // DTEMP should be bounded by CONST
                             //
-                            dtemp = dtemp - _const + thresh;
+                            dtemp = dtemp - identifier_const + thresh;
                             if (dtemp > result[4 - 1]) {
                                 result[4 - 1] = dtemp;
                             }
@@ -593,8 +561,7 @@ void Rchksy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
-                            sprintnum_short(buf, result[k - 1]);
-                            write(nout, format_9999), uplo, n, nb, imat, k, buf;
+                            write(nout, format_9999), uplo, n, nb, imat, k, result[k - 1];
                             nfail++;
                         }
                     }
@@ -625,24 +592,24 @@ void Rchksy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
                         // Choose a set of NRHS random solution vectors
                         // stored in XACT and set up the right hand side B
                         //
-                        strncpy(srnamt, "Rlarhs", srnamt_len);
-                        Rlarhs(matpath, &xtype, &uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
+                        srnamt = "Rlarhs";
+                        Rlarhs(matpath, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                         Rlacpy("Full", n, nrhs, b, lda, x, lda);
                         //
-                        strncpy(srnamt, "Rsytrs_rook", srnamt_len);
-                        Rsytrs_rook(&uplo, n, nrhs, afac, lda, iwork, x, lda, info);
+                        srnamt = "Rsytrs_rook";
+                        Rsytrs_rook(uplo.elems, n, nrhs, afac, lda, iwork, x, lda, info);
                         //
                         // Check error code from Rsytrs_rook and handle error.
                         //
                         if (info != 0) {
-                            Alaerh(path, "Rsytrs_rook", info, 0, &uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Rsytrs_rook", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                         }
                         //
                         Rlacpy("Full", n, nrhs, b, lda, work, lda);
                         //
                         // Compute the residual for the solution
                         //
-                        Rpot02(&uplo, n, nrhs, a, lda, x, lda, work, lda, rwork, result[5 - 1]);
+                        Rpot02(uplo, n, nrhs, a, lda, x, lda, work, lda, rwork, result[5 - 1]);
                         //
                         // +    TEST 6
                         // Check solution from generated exact solution.
@@ -657,10 +624,7 @@ void Rchksy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
                                 if (nfail == 0 && nerrs == 0) {
                                     Alahd(nout, path);
                                 }
-                                sprintnum_short(buf, result[k - 1]);
-                                write(nout, "(' UPLO = ''',a1,''', N =',i5,', NRHS=',i3,', type ',i2,"
-                                            "', test(',i2,') =',a)"),
-                                    uplo, n, nrhs, imat, k, buf;
+                                write(nout, format_9998), uplo, n, nrhs, imat, k, result[k - 1];
                                 nfail++;
                             }
                         }
@@ -674,14 +638,14 @@ void Rchksy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
                 // Get an estimate of RCOND = 1/CNDNUM.
                 //
                 statement_230:
-                    anorm = Rlansy("1", &uplo, n, a, lda, rwork);
-                    strncpy(srnamt, "Rsycon_rook", srnamt_len);
-                    Rsycon_rook(&uplo, n, afac, lda, iwork, anorm, rcond, work, &iwork[(n + 1) - 1], info);
+                    anorm = Rlansy("1", uplo.elems, n, a, lda, rwork);
+                    srnamt = "Rsycon_rook";
+                    Rsycon_rook(uplo.elems, n, afac, lda, iwork, anorm, rcond, work, &iwork[(n + 1) - 1], info);
                     //
                     // Check error code from Rsycon_rook and handle error.
                     //
                     if (info != 0) {
-                        Alaerh(path, "Rsycon_rook", info, 0, &uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Rsycon_rook", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     }
                     //
                     // Compute the test ratio to compare to values of RCOND
@@ -695,10 +659,7 @@ void Rchksy_rook(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nn
                         if (nfail == 0 && nerrs == 0) {
                             Alahd(nout, path);
                         }
-                        sprintnum_short(buf, result[7 - 1]);
-                        write(nout, "(' UPLO = ''',a1,''', N =',i5,',',10x,' type ',i2,', test(',i2,"
-                                    "') =',a)"),
-                            uplo, n, imat, 7, buf;
+                        write(nout, format_9997), uplo, n, imat, 7, result[7 - 1];
                         nfail++;
                     }
                     nrun++;

@@ -43,9 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-bool Rlctes(REAL const zr, REAL const zi, REAL const d) {
+bool Rlctes(REAL const zr, REAL const /* zi */, REAL const d) {
     bool return_value = false;
     //
     const REAL zero = 0.0;

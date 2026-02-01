@@ -34,11 +34,14 @@
 //   NAG Ltd.
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Rget04(INTEGER const n, INTEGER const nrhs, REAL *x, INTEGER const ldx, REAL *xact, INTEGER const ldxact, REAL const rcond, REAL &resid) {
     //
@@ -73,14 +76,14 @@ void Rget04(INTEGER const n, INTEGER const nrhs, REAL *x, INTEGER const ldx, REA
         xnorm = abs(xact[(ix - 1) + (j - 1) * ldxact]);
         diffnm = zero;
         for (i = 1; i <= n; i = i + 1) {
-            diffnm = max(diffnm, REAL(abs(x[(i - 1) + (j - 1) * ldx] - xact[(i - 1) + (j - 1) * ldxact])));
+            diffnm = max(diffnm, abs(x[(i - 1) + (j - 1) * ldx] - xact[(i - 1) + (j - 1) * ldxact]));
         }
         if (xnorm <= zero) {
             if (diffnm > zero) {
                 resid = 1.0 / eps;
             }
         } else {
-            resid = max(resid, REAL((diffnm / xnorm) * rcond));
+            resid = max(resid, (diffnm / xnorm) * rcond);
         }
     }
     if (resid * eps < 1.0) {

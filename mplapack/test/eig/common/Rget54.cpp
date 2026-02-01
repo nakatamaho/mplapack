@@ -43,8 +43,6 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
 void Rget54(INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *s, INTEGER const lds, REAL *t, INTEGER const ldt, REAL *u, INTEGER const ldu, REAL *v, INTEGER const ldv, REAL *work, REAL &result) {
     //
     const REAL zero = 0.0;
@@ -63,7 +61,7 @@ void Rget54(INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const 
     Rlacpy("Full", n, n, a, lda, work, n);
     Rlacpy("Full", n, n, b, ldb, &work[(n * n + 1) - 1], n);
     REAL dum[1];
-    REAL abnorm = max({Rlange("1", n, 2 * n, work, n, dum), unfl});
+    REAL abnorm = max(Rlange("1", n, 2 * n, work, n, dum), unfl);
     //
     // Compute W1 = A - U*S*V', and put in the array WORK(1:N*N)
     //
@@ -88,9 +86,9 @@ void Rget54(INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const 
         result = (wnorm / abnorm) / (2 * n * ulp);
     } else {
         if (abnorm < one) {
-            result = (min(wnorm, REAL((castREAL(2 * n) * abnorm) / abnorm))) / (castREAL(2 * n) * ulp);
+            result = (min(wnorm, 2 * n * abnorm) / abnorm) / (2 * n * ulp);
         } else {
-            result = min(REAL(wnorm / abnorm), castREAL(2 * n)) / (castREAL(2 * n) * ulp);
+            result = min(wnorm / abnorm, castREAL(2 * n)) / (2 * n * ulp);
         }
     }
     //

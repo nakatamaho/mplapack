@@ -43,8 +43,6 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-#include <mplapack_debug.h>
-
 void Cget03(INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *ainv, INTEGER const ldainv, COMPLEX *work, INTEGER const ldwork, REAL *rwork, REAL &rcond, REAL &resid) {
     //
     // Quick exit if N = 0.

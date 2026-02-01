@@ -92,7 +92,7 @@ void Rlahilb(INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, RE
     INTEGER j = 0;
     for (j = 1; j <= n; j = j + 1) {
         for (i = 1; i <= n; i = i + 1) {
-            a[(i - 1) + (j - 1) * lda] = castREAL(m) / castREAL(i + j - 1);
+            a[(i - 1) + (j - 1) * lda] = castREAL(m) / (i + j - 1);
         }
     }
     //
@@ -105,12 +105,12 @@ void Rlahilb(INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, RE
     // of the inverse Hilbert matrix.
     work[1 - 1] = n;
     for (j = 2; j <= n; j = j + 1) {
-        work[j - 1] = (((work[(j - 1) - 1] / castREAL(j - 1)) * castREAL(j - 1 - n)) / castREAL(j - 1)) * castREAL(n + j - 1);
+        work[j - 1] = (((work[(j - 1) - 1] / (j - 1)) * (j - 1 - n)) / (j - 1)) * (n + j - 1);
     }
     //
     for (j = 1; j <= nrhs; j = j + 1) {
         for (i = 1; i <= n; i = i + 1) {
-            x[(i - 1) + (j - 1) * ldx] = (work[i - 1] * work[j - 1]) / castREAL(i + j - 1);
+            x[(i - 1) + (j - 1) * ldx] = (work[i - 1] * work[j - 1]) / (i + j - 1);
         }
     }
     //

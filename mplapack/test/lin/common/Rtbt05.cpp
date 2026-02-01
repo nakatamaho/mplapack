@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Rtbt05(const char *uplo, const char *trans, const char *diag, INTEGER const n, INTEGER const kd, INTEGER const nrhs, REAL *ab, INTEGER const ldab, REAL *b, INTEGER const ldb, REAL *x, INTEGER const ldx, REAL *xact, INTEGER const ldxact, REAL *ferr, REAL *berr, REAL *reslts) {
+void Rtbt05(fem::str_cref uplo, fem::str_cref trans, fem::str_cref diag, INTEGER const n, INTEGER const kd, INTEGER const nrhs, REAL *ab, INTEGER const ldab, REAL *b, INTEGER const ldb, REAL *x, INTEGER const ldx, REAL *xact, INTEGER const ldxact, REAL *ferr, REAL *berr, REAL *reslts) {
     const REAL zero = 0.0;
     REAL eps = 0.0;
     REAL unfl = 0.0;
@@ -75,9 +75,9 @@ void Rtbt05(const char *uplo, const char *trans, const char *diag, INTEGER const
     eps = Rlamch("Epsilon");
     unfl = Rlamch("Safe minimum");
     ovfl = one / unfl;
-    upper = Mlsame(uplo, "U");
-    notran = Mlsame(trans, "N");
-    unit = Mlsame(diag, "U");
+    upper = Mlsame(uplo.elems(), "U");
+    notran = Mlsame(trans.elems(), "N");
+    unit = Mlsame(diag.elems(), "U");
     nz = min(kd, n - 1) + 1;
     //
     // Test 1:  Compute the maximum of
@@ -87,10 +87,10 @@ void Rtbt05(const char *uplo, const char *trans, const char *diag, INTEGER const
     errbnd = zero;
     for (j = 1; j <= nrhs; j = j + 1) {
         imax = iRamax(n, &x[(j - 1) * ldx], 1);
-        xnorm = max(REAL(abs(x[(imax - 1) + (j - 1) * ldx])), unfl);
+        xnorm = max(abs(x[(imax - 1) + (j - 1) * ldx]), unfl);
         diff = zero;
         for (i = 1; i <= n; i = i + 1) {
-            diff = max(diff, REAL(abs(x[(i - 1) + (j - 1) * ldx] - xact[(i - 1) + (j - 1) * ldxact])));
+            diff = max(diff, abs(x[(i - 1) + (j - 1) * ldx] - xact[(i - 1) + (j - 1) * ldxact]));
         }
         //
         if (xnorm > one) {
@@ -104,7 +104,7 @@ void Rtbt05(const char *uplo, const char *trans, const char *diag, INTEGER const
     //
     statement_20:
         if (diff / xnorm <= ferr[j - 1]) {
-            errbnd = max(errbnd, REAL((diff / xnorm) / ferr[j - 1]));
+            errbnd = max(errbnd, (diff / xnorm) / ferr[j - 1]);
         } else {
             errbnd = one / eps;
         }
@@ -161,7 +161,7 @@ void Rtbt05(const char *uplo, const char *trans, const char *diag, INTEGER const
                 axbi = min(axbi, tmp);
             }
         }
-        tmp = berr[k - 1] / (nz * eps + nz * unfl / max(axbi, REAL(nz * unfl)));
+        tmp = berr[k - 1] / (nz * eps + nz * unfl / max(axbi, nz * unfl));
         if (k == 1) {
             reslts[2 - 1] = tmp;
         } else {

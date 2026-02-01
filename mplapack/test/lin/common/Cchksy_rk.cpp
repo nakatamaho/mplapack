@@ -43,21 +43,17 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-#include <mplapack_debug.h>
-
 void Cchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, INTEGER const /* nmax */, COMPLEX *a, COMPLEX *afac, COMPLEX *e, COMPLEX *ainv, COMPLEX *b, COMPLEX *x, COMPLEX *xact, COMPLEX *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
     common cmn;
     common_write write(cmn);
-    //
-    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
-    char uplos[] = {'U', 'L'};
+    static INTEGER iseedy[4] = {1988, 1989, 1990, 1991};
+    static fem::str<1> uplos[2] = {"U", "L"};
     const REAL one = 1.0;
-    const REAL sevten = 17.0e+0;
-    const REAL eight = 8.0e+0;
+    const REAL sevten = 17.0;
+    const REAL eight = 8.0;
     REAL alpha = 0.0;
-    char path[4] = {};
-    char matpath[4] = {};
-    char buf[1024];
+    fem::str<3> path;
+    fem::str<3> matpath;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -66,21 +62,21 @@ void Cchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
     INTEGER in = 0;
     INTEGER n = 0;
     INTEGER lda = 0;
-    char xtype;
+    fem::str<1> xtype;
     const INTEGER ntypes = 11;
     INTEGER nimat = 0;
     INTEGER izero = 0;
     INTEGER imat = 0;
     bool zerot = false;
     INTEGER iuplo = 0;
-    char uplo[1];
-    char type[1];
+    fem::str<1> uplo;
+    fem::str<1> type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist[1];
+    fem::str<1> dist;
     INTEGER info = 0;
     INTEGER ioff = 0;
     const COMPLEX czero = COMPLEX(0.0, 0.0);
@@ -98,34 +94,37 @@ void Cchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
     REAL rcondc = 0.0;
     const REAL zero = 0.0;
     REAL dtemp = 0.0;
-    const REAL onehalf = 0.5e+0;
-    REAL _const = 0.0;
+    const REAL onehalf = 0.5;
+    REAL identifier_const = 0.0;
     COMPLEX block[2 * 2];
-    INTEGER ldblock = 2;
     COMPLEX zdummy[1];
     REAL sing_max = 0.0;
     REAL sing_min = 0.0;
     INTEGER irhs = 0;
     INTEGER nrhs = 0;
     REAL rcond = 0.0;
+    INTEGER ldblock = 2;
+    //
     static const char *format_9999 = "(' UPLO = ''',a1,''', N =',i5,', NB =',i4,', type ',i2,', test ',i2,"
-                                     "', ratio =',a)";
+                                     "', ratio =',g12.5)";
+    static const char *format_9998 = "(' UPLO = ''',a1,''', N =',i5,', NRHS=',i3,', type ',i2,', test(',i2,"
+                                     "') =',g12.5)";
+    static const char *format_9997 = "(' UPLO = ''',a1,''', N =',i5,',',10x,' type ',i2,', test(',i2,') =',"
+                                     "g12.5)";
     //
     // Initialize constants and the random number seed.
     //
     alpha = (one + sqrt(sevten)) / eight;
     //
-    //     Test path
+    // Test path
     //
-    path[0] = 'C';
-    path[1] = 'S';
-    path[2] = 'K';
+    path(1, 1) = "Zomplex precision";
+    path(2, 3) = "SK";
     //
-    //     Path to generate matrices
+    // Path to generate matrices
     //
-    matpath[0] = 'C';
-    matpath[1] = 'S';
-    matpath[2] = 'Y';
+    matpath(1, 1) = "Zomplex precision";
+    matpath(2, 3) = "SY";
     //
     nrun = 0;
     nfail = 0;
@@ -144,14 +143,14 @@ void Cchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
     // Set the minimum block size for which the block routine should
     // be used, which will be later returned by iMlaenv
     //
-    xlaenv(2, 2);
+    Mxlaenv(2, 2);
     //
     // Do for each value of N in NVAL
     //
     for (in = 1; in <= nn; in = in + 1) {
         n = nval[in - 1];
         lda = max(n, (INTEGER)1);
-        xtype = 'N';
+        xtype = "N";
         nimat = ntypes;
         if (n <= 0) {
             nimat = 1;
@@ -179,7 +178,7 @@ void Cchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
             // Do first for UPLO = 'U', then for UPLO = 'L'
             //
             for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
-                uplo[0] = uplos[iuplo - 1];
+                uplo = uplos[iuplo - 1];
                 //
                 // Begin generate test matrix A.
                 //
@@ -192,7 +191,7 @@ void Cchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                     //
                     // Generate a matrix with Clatms.
                     //
-                    strncpy(srnamt, "Clatms", srnamt_len);
+                    srnamt = "Clatms";
                     Clatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, uplo, a, lda, work, info);
                     //
                     // Check error code from Clatms and handle error.
@@ -294,13 +293,13 @@ void Cchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                     // returned by iMlaenv.
                     //
                     nb = nbval[inb - 1];
-                    xlaenv(1, nb);
+                    Mxlaenv(1, nb);
                     //
                     // Copy the test matrix A into matrix AFAC which
                     // will be factorized in place. This is needed to
                     // preserve the test matrix A for subsequent tests.
                     //
-                    Clacpy(uplo, n, n, a, lda, afac, lda);
+                    Clacpy(uplo.elems, n, n, a, lda, afac, lda);
                     //
                     // Compute the L*D*L**T or U*D*U**T factorization of the
                     // matrix. IWORK stores details of the interchanges and
@@ -308,8 +307,8 @@ void Cchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                     // block factorization, LWORK is the length of AINV.
                     //
                     lwork = max((INTEGER)2, nb) * lda;
-                    strncpy(srnamt, "Csytrf_rk", srnamt_len);
-                    Csytrf_rk(uplo, n, afac, lda, e, iwork, ainv, lwork, info);
+                    srnamt = "Csytrf_rk";
+                    Csytrf_rk(uplo.elems, n, afac, lda, e, iwork, ainv, lwork, info);
                     //
                     // Adjust the expected value of INFO to account for
                     // pivoting.
@@ -355,15 +354,15 @@ void Cchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                     // Do it only for the first block size.
                     //
                     if (inb == 1 && !trfcon) {
-                        Clacpy(uplo, n, n, afac, lda, ainv, lda);
-                        strncpy(srnamt, "Csytri_3", srnamt_len);
+                        Clacpy(uplo.elems, n, n, afac, lda, ainv, lda);
+                        srnamt = "Csytri_3";
                         //
                         // Another reason that we need to compute the inverse
                         // is that Csyt03 produces RCONDC which is used later
                         // in TEST6 and TEST7.
                         //
                         lwork = (n + nb + 1) * (nb + 3);
-                        Csytri_3(uplo, n, ainv, lda, e, iwork, work, lwork, info);
+                        Csytri_3(uplo.elems, n, ainv, lda, e, iwork, work, lwork, info);
                         //
                         // Check error code from Csytri_3 and handle error.
                         //
@@ -386,8 +385,7 @@ void Cchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
-                            sprintnum_short(buf, result[k - 1]);
-                            write(nout, format_9999), uplo, n, nb, imat, k, buf;
+                            write(nout, format_9999), uplo, n, nb, imat, k, result[k - 1];
                             nfail++;
                         }
                     }
@@ -399,7 +397,7 @@ void Cchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                     result[3 - 1] = zero;
                     dtemp = zero;
                     //
-                    _const = ((pow2(alpha) - one) / (pow2(alpha) - onehalf)) / (one - alpha);
+                    identifier_const = ((pow2(alpha) - one) / (pow2(alpha) - onehalf)) / (one - alpha);
                     //
                     if (iuplo == 1) {
                         //
@@ -429,7 +427,7 @@ void Cchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                         //
                         // DTEMP should be bounded by CONST
                         //
-                        dtemp = dtemp - _const + thresh;
+                        dtemp = dtemp - identifier_const + thresh;
                         if (dtemp > result[3 - 1]) {
                             result[3 - 1] = dtemp;
                         }
@@ -467,7 +465,7 @@ void Cchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                         //
                         // DTEMP should be bounded by CONST
                         //
-                        dtemp = dtemp - _const + thresh;
+                        dtemp = dtemp - identifier_const + thresh;
                         if (dtemp > result[3 - 1]) {
                             result[3 - 1] = dtemp;
                         }
@@ -485,7 +483,7 @@ void Cchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                     result[4 - 1] = zero;
                     dtemp = zero;
                     //
-                    _const = ((pow2(alpha) - one) / (pow2(alpha) - onehalf)) * ((one + alpha) / (one - alpha));
+                    identifier_const = ((pow2(alpha) - one) / (pow2(alpha) - onehalf)) * ((one + alpha) / (one - alpha));
                     //
                     if (iuplo == 1) {
                         //
@@ -503,7 +501,7 @@ void Cchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                             // (real and non-negative) of a 2-by-2 block,
                             // store them in RWORK array
                             //
-                            block[(1 - 1)] = afac[((k - 2) * lda + k - 1) - 1];
+                            block[0] = afac[((k - 2) * lda + k - 1) - 1];
                             block[(2 - 1) * ldblock] = e[k - 1];
                             block[(2 - 1)] = block[(2 - 1) * ldblock];
                             block[(2 - 1) + (2 - 1) * ldblock] = afac[((k - 1) * lda + k) - 1];
@@ -517,7 +515,7 @@ void Cchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                             //
                             // DTEMP should be bounded by CONST
                             //
-                            dtemp = dtemp - _const + thresh;
+                            dtemp = dtemp - identifier_const + thresh;
                             if (dtemp > result[4 - 1]) {
                                 result[4 - 1] = dtemp;
                             }
@@ -546,7 +544,7 @@ void Cchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                             // (real and non-negative) of a 2-by-2 block,
                             // store them in RWORK array
                             //
-                            block[(1 - 1)] = afac[((k - 1) * lda + k) - 1];
+                            block[0] = afac[((k - 1) * lda + k) - 1];
                             block[(2 - 1)] = e[k - 1];
                             block[(2 - 1) * ldblock] = block[(2 - 1)];
                             block[(2 - 1) + (2 - 1) * ldblock] = afac[(k * lda + k + 1) - 1];
@@ -560,7 +558,7 @@ void Cchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                             //
                             // DTEMP should be bounded by CONST
                             //
-                            dtemp = dtemp - _const + thresh;
+                            dtemp = dtemp - identifier_const + thresh;
                             if (dtemp > result[4 - 1]) {
                                 result[4 - 1] = dtemp;
                             }
@@ -582,8 +580,7 @@ void Cchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
-                            sprintnum_short(buf, result[k - 1]);
-                            write(nout, format_9999), uplo, n, nb, imat, k, buf;
+                            write(nout, format_9999), uplo, n, nb, imat, k, result[k - 1];
                             nfail++;
                         }
                     }
@@ -614,12 +611,12 @@ void Cchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                         // Choose a set of NRHS random solution vectors
                         // stored in XACT and set up the right hand side B
                         //
-                        strncpy(srnamt, "Clarhs", srnamt_len);
-                        Clarhs(matpath, &xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
+                        srnamt = "Clarhs";
+                        Clarhs(matpath, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                         Clacpy("Full", n, nrhs, b, lda, x, lda);
                         //
-                        strncpy(srnamt, "Csytrs_3", srnamt_len);
-                        Csytrs_3(uplo, n, nrhs, afac, lda, e, iwork, x, lda, info);
+                        srnamt = "Csytrs_3";
+                        Csytrs_3(uplo.elems, n, nrhs, afac, lda, e, iwork, x, lda, info);
                         //
                         // Check error code from Csytrs_3 and handle error.
                         //
@@ -646,10 +643,7 @@ void Cchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                                 if (nfail == 0 && nerrs == 0) {
                                     Alahd(nout, path);
                                 }
-                                sprintnum_short(buf, result[k - 1]);
-                                write(nout, "(' UPLO = ''',a1,''', N =',i5,', NRHS=',i3,', type ',i2,"
-                                            "', test(',i2,') =',a)"),
-                                    uplo, n, nrhs, imat, k, buf;
+                                write(nout, format_9998), uplo, n, nrhs, imat, k, result[k - 1];
                                 nfail++;
                             }
                         }
@@ -663,9 +657,9 @@ void Cchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                 // Get an estimate of RCOND = 1/CNDNUM.
                 //
                 statement_230:
-                    anorm = Clansy("1", uplo, n, a, lda, rwork);
-                    strncpy(srnamt, "Csycon_3", srnamt_len);
-                    Csycon_3(uplo, n, afac, lda, e, iwork, anorm, rcond, work, info);
+                    anorm = Clansy("1", uplo.elems, n, a, lda, rwork);
+                    srnamt = "Csycon_3";
+                    Csycon_3(uplo.elems, n, afac, lda, e, iwork, anorm, rcond, work, info);
                     //
                     // Check error code from Csycon_3 and handle error.
                     //
@@ -684,10 +678,7 @@ void Cchksy_rk(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                         if (nfail == 0 && nerrs == 0) {
                             Alahd(nout, path);
                         }
-                        sprintnum_short(buf, result[7 - 1]);
-                        write(nout, "(' UPLO = ''',a1,''', N =',i5,',',10x,' type ',i2,', test(',i2,"
-                                    "') =',a)"),
-                            uplo, n, imat, 7, buf;
+                        write(nout, format_9997), uplo, n, imat, 7, result[7 - 1];
                         nfail++;
                     }
                     nrun++;

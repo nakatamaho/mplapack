@@ -38,7 +38,7 @@
 
 #include <mplapack_matgen.h>
 
-void Rlatmr(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, const char *sym, REAL *d, INTEGER const mode, REAL const cond, REAL const dmax, const char *rsign, const char *grade, REAL *dl, INTEGER const model, REAL const condl, REAL *dr, INTEGER const moder, REAL const condr, const char *pivtng, INTEGER *ipivot, INTEGER const kl, INTEGER const ku, REAL const sparse, REAL const anorm, const char *pack, REAL *a, INTEGER const lda, INTEGER *iwork, INTEGER &info) {
+void Rlatmr(INTEGER const m, INTEGER const n, fem::str_cref dist, INTEGER *iseed, fem::str_cref sym, REAL *d, INTEGER const mode, REAL const cond, REAL const dmax, fem::str_cref rsign, fem::str_cref grade, REAL *dl, INTEGER const model, REAL const condl, REAL *dr, INTEGER const moder, REAL const condr, fem::str_cref pivtng, INTEGER *ipivot, INTEGER const kl, INTEGER const ku, REAL const sparse, REAL const anorm, fem::str_cref pack, REAL *a, INTEGER const lda, INTEGER *iwork, INTEGER &info) {
     //
     // 1)      Decode and Test the input parameters.
     // Initialize flags & seed.
@@ -54,11 +54,11 @@ void Rlatmr(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
     // Decode DIST
     //
     INTEGER idist = 0;
-    if (Mlsame(dist, "U")) {
+    if (Mlsame(dist.elems(), "U")) {
         idist = 1;
-    } else if (Mlsame(dist, "S")) {
+    } else if (Mlsame(dist.elems(), "S")) {
         idist = 2;
-    } else if (Mlsame(dist, "N")) {
+    } else if (Mlsame(dist.elems(), "N")) {
         idist = 3;
     } else {
         idist = -1;
@@ -67,11 +67,11 @@ void Rlatmr(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
     // Decode SYM
     //
     INTEGER isym = 0;
-    if (Mlsame(sym, "S")) {
+    if (Mlsame(sym.elems(), "S")) {
         isym = 0;
-    } else if (Mlsame(sym, "N")) {
+    } else if (Mlsame(sym.elems(), "N")) {
         isym = 1;
-    } else if (Mlsame(sym, "H")) {
+    } else if (Mlsame(sym.elems(), "H")) {
         isym = 0;
     } else {
         isym = -1;
@@ -80,9 +80,9 @@ void Rlatmr(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
     // Decode RSIGN
     //
     INTEGER irsign = 0;
-    if (Mlsame(rsign, "F")) {
+    if (Mlsame(rsign.elems(), "F")) {
         irsign = 0;
-    } else if (Mlsame(rsign, "T")) {
+    } else if (Mlsame(rsign.elems(), "T")) {
         irsign = 1;
     } else {
         irsign = -1;
@@ -92,20 +92,20 @@ void Rlatmr(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
     //
     INTEGER ipvtng = 0;
     INTEGER npvts = 0;
-    if (Mlsame(pivtng, "N")) {
+    if (Mlsame(pivtng.elems(), "N")) {
         ipvtng = 0;
-    } else if (Mlsame(pivtng, " ")) {
+    } else if (Mlsame(pivtng.elems(), " ")) {
         ipvtng = 0;
-    } else if (Mlsame(pivtng, "L")) {
+    } else if (Mlsame(pivtng.elems(), "L")) {
         ipvtng = 1;
         npvts = m;
-    } else if (Mlsame(pivtng, "R")) {
+    } else if (Mlsame(pivtng.elems(), "R")) {
         ipvtng = 2;
         npvts = n;
-    } else if (Mlsame(pivtng, "B")) {
+    } else if (Mlsame(pivtng.elems(), "B")) {
         ipvtng = 3;
         npvts = min(n, m);
-    } else if (Mlsame(pivtng, "F")) {
+    } else if (Mlsame(pivtng.elems(), "F")) {
         ipvtng = 3;
         npvts = min(n, m);
     } else {
@@ -115,17 +115,17 @@ void Rlatmr(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
     // Decode GRADE
     //
     INTEGER igrade = 0;
-    if (Mlsame(grade, "N")) {
+    if (Mlsame(grade.elems(), "N")) {
         igrade = 0;
-    } else if (Mlsame(grade, "L")) {
+    } else if (Mlsame(grade.elems(), "L")) {
         igrade = 1;
-    } else if (Mlsame(grade, "R")) {
+    } else if (Mlsame(grade.elems(), "R")) {
         igrade = 2;
-    } else if (Mlsame(grade, "B")) {
+    } else if (Mlsame(grade.elems(), "B")) {
         igrade = 3;
-    } else if (Mlsame(grade, "E")) {
+    } else if (Mlsame(grade.elems(), "E")) {
         igrade = 4;
-    } else if (Mlsame(grade, "H") || Mlsame(grade, "S")) {
+    } else if (Mlsame(grade.elems(), "H") || Mlsame(grade.elems(), "S")) {
         igrade = 5;
     } else {
         igrade = -1;
@@ -134,21 +134,21 @@ void Rlatmr(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
     // Decode PACK
     //
     INTEGER ipack = 0;
-    if (Mlsame(pack, "N")) {
+    if (Mlsame(pack.elems(), "N")) {
         ipack = 0;
-    } else if (Mlsame(pack, "U")) {
+    } else if (Mlsame(pack.elems(), "U")) {
         ipack = 1;
-    } else if (Mlsame(pack, "L")) {
+    } else if (Mlsame(pack.elems(), "L")) {
         ipack = 2;
-    } else if (Mlsame(pack, "C")) {
+    } else if (Mlsame(pack.elems(), "C")) {
         ipack = 3;
-    } else if (Mlsame(pack, "R")) {
+    } else if (Mlsame(pack.elems(), "R")) {
         ipack = 4;
-    } else if (Mlsame(pack, "B")) {
+    } else if (Mlsame(pack.elems(), "B")) {
         ipack = 5;
-    } else if (Mlsame(pack, "Q")) {
+    } else if (Mlsame(pack.elems(), "Q")) {
         ipack = 6;
-    } else if (Mlsame(pack, "Z")) {
+    } else if (Mlsame(pack.elems(), "Z")) {
         ipack = 7;
     } else {
         ipack = -1;
@@ -269,7 +269,7 @@ void Rlatmr(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
         //
         temp = abs(d[1 - 1]);
         for (i = 2; i <= mnmin; i = i + 1) {
-            temp = max(temp, REAL(abs(d[i - 1])));
+            temp = max(temp, abs(d[i - 1]));
         }
         if (temp == zero && dmax != zero) {
             info = 2;

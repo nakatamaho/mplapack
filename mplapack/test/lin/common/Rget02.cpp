@@ -34,13 +34,16 @@
 //   NAG Ltd.
 
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
-#include <mplapack_lin.h>
-#include <mplapack.h>
 
-void Rget02(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *x, INTEGER const ldx, REAL *b, INTEGER const ldb, REAL *rwork, REAL &resid) {
+#include <mplapack_matgen.h>
+#include <mplapack_lin.h>
+
+void Rget02(fem::str_cref trans, INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *x, INTEGER const ldx, REAL *b, INTEGER const ldb, REAL *rwork, REAL &resid) {
     //
     // Quick exit if M = 0 or N = 0 or NRHS = 0
     //
@@ -52,7 +55,7 @@ void Rget02(const char *trans, INTEGER const m, INTEGER const n, INTEGER const n
     //
     INTEGER n1 = 0;
     INTEGER n2 = 0;
-    if (Mlsame(trans, "T") || Mlsame(trans, "C")) {
+    if (Mlsame(trans.elems(), "T") || Mlsame(trans.elems(), "C")) {
         n1 = n;
         n2 = m;
     } else {
@@ -72,7 +75,7 @@ void Rget02(const char *trans, INTEGER const m, INTEGER const n, INTEGER const n
     //
     // Compute  B - A*X  (or  B - A'*X ) and store in B.
     //
-    Rgemm(trans, "No transpose", n1, nrhs, n2, -one, a, lda, x, ldx, one, b, ldb);
+    Rgemm(trans.elems(), "No transpose", n1, nrhs, n2, -one, a, lda, x, ldx, one, b, ldb);
     //
     // Compute the maximum over the number of right hand sides of
     // norm(B - A*X) / ( norm(A) * norm(X) * EPS ) .
@@ -87,7 +90,7 @@ void Rget02(const char *trans, INTEGER const m, INTEGER const n, INTEGER const n
         if (xnorm <= zero) {
             resid = one / eps;
         } else {
-            resid = max(resid, REAL(((bnorm / anorm) / xnorm) / eps));
+            resid = max(resid, ((bnorm / anorm) / xnorm) / eps);
         }
     }
     //

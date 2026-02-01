@@ -43,9 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-void Rbdt04(const char *uplo, INTEGER const n, REAL *d, REAL *e, REAL *s, INTEGER const ns, REAL *u, INTEGER const ldu, REAL *vt, INTEGER const ldvt, REAL *work, REAL &resid) {
+void Rbdt04(fem::str_cref uplo, INTEGER const n, REAL *d, REAL *e, REAL *s, INTEGER const ns, REAL *u, INTEGER const ldu, REAL *vt, INTEGER const ldvt, REAL *work, REAL &resid) {
     //
     // Quick return if possible.
     //
@@ -64,7 +62,7 @@ void Rbdt04(const char *uplo, INTEGER const n, REAL *d, REAL *e, REAL *s, INTEGE
     INTEGER k = 0;
     INTEGER i = 0;
     INTEGER j = 0;
-    if (Mlsame(uplo, "U")) {
+    if (Mlsame(uplo.elems(), "U")) {
         //
         // B is upper bidiagonal.
         //
@@ -79,7 +77,7 @@ void Rbdt04(const char *uplo, INTEGER const n, REAL *d, REAL *e, REAL *s, INTEGE
         }
         bnorm = abs(d[1 - 1]);
         for (i = 2; i <= n; i = i + 1) {
-            bnorm = max(bnorm, REAL(abs(d[i - 1]) + abs(e[(i - 1) - 1])));
+            bnorm = max(bnorm, abs(d[i - 1]) + abs(e[(i - 1) - 1]));
         }
     } else {
         //
@@ -96,7 +94,7 @@ void Rbdt04(const char *uplo, INTEGER const n, REAL *d, REAL *e, REAL *s, INTEGE
         }
         bnorm = abs(d[n - 1]);
         for (i = 1; i <= n - 1; i = i + 1) {
-            bnorm = max(bnorm, REAL(abs(d[i - 1]) + abs(e[i - 1])));
+            bnorm = max(bnorm, abs(d[i - 1]) + abs(e[i - 1]));
         }
     }
     //
@@ -108,7 +106,7 @@ void Rbdt04(const char *uplo, INTEGER const n, REAL *d, REAL *e, REAL *s, INTEGE
     k = n * ns;
     for (i = 1; i <= ns; i = i + 1) {
         work[(k + i) - 1] += s[i - 1];
-        resid = max({resid, Rasum(ns, &work[(k + 1) - 1], 1)});
+        resid = max(resid, Rasum(ns, &work[(k + 1) - 1], 1));
         k += ns;
     }
     //
@@ -121,9 +119,9 @@ void Rbdt04(const char *uplo, INTEGER const n, REAL *d, REAL *e, REAL *s, INTEGE
             resid = (resid / bnorm) / (castREAL(n) * eps);
         } else {
             if (bnorm < one) {
-                resid = (min(resid, REAL(castREAL(n) * bnorm)) / bnorm) / (castREAL(n) * eps);
+                resid = (min(resid, castREAL(n) * bnorm) / bnorm) / (castREAL(n) * eps);
             } else {
-                resid = min(REAL(resid / bnorm), castREAL(n)) / (castREAL(n) * eps);
+                resid = min(resid / bnorm, castREAL(n)) / (castREAL(n) * eps);
             }
         }
     }

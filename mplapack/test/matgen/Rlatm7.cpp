@@ -44,7 +44,7 @@ void Rlatm7(INTEGER const mode, REAL const cond, INTEGER const irsign, INTEGER c
     const REAL zero = 0.0;
     REAL alpha = 0.0;
     REAL temp = 0.0;
-    const REAL half = 0.5e0;
+    const REAL half = 0.5;
     //
     // Decode and Test the input parameters. Initialize flags & seed.
     //

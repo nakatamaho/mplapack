@@ -36,6 +36,8 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+#include <mplapack_matgen.h>
+
 void Rlagsy(INTEGER const n, INTEGER const k, REAL *d, REAL *a, INTEGER const lda, INTEGER *iseed, REAL *work, INTEGER &info) {
     //
     // Test the input arguments
@@ -74,7 +76,7 @@ void Rlagsy(INTEGER const n, INTEGER const k, REAL *d, REAL *a, INTEGER const ld
     REAL tau = 0.0;
     REAL wb = 0.0;
     const REAL one = 1.0;
-    const REAL half = 0.5e+0;
+    const REAL half = 0.5;
     REAL alpha = 0.0;
     for (i = n - 1; i >= 1; i = i - 1) {
         //
