@@ -124,7 +124,6 @@ void Chet22(mplapackint const itype, fem::str_cref uplo, mplapackint const n, mp
 void Chkxer(fem::str_cref srnamt, mplapackint const infot, mplapackint const nout, bool &lerr, bool &ok);
 void Chpt21(mplapackint const itype, fem::str_cref uplo, mplapackint const n, mplapackint const kband, qd_complex *ap, qd_real *d, qd_real *e, qd_complex *u, mplapackint const ldu, qd_complex *vp, qd_complex *tau, qd_complex *work, qd_real *rwork, qd_real *result);
 void Chst01(mplapackint const n, mplapackint const, mplapackint const, qd_complex *a, mplapackint const lda, qd_complex *h, mplapackint const ldh, qd_complex *q, mplapackint const ldq, qd_complex *work, mplapackint const lwork, qd_real *rwork, qd_real *result);
-void Clacsg(mplapackint const &m, mplapackint const &p, mplapackint const &q, qd_real *theta, mplapackint *iseed, qd_complex *x, mplapackint const &ldx, qd_complex *work);
 void Clacsg(mplapackint const m, mplapackint const p, mplapackint const q, qd_real *theta, mplapackint *iseed, qd_complex *x, mplapackint const ldx, qd_complex *work);
 void Clarfy(fem::str_cref uplo, mplapackint const n, qd_complex *v, mplapackint const incv, qd_complex const tau, qd_complex *c, mplapackint const ldc, qd_complex *work);
 void Clarhs(fem::str_cref path, fem::str_cref xtype, fem::str_cref uplo, fem::str_cref trans, mplapackint const m, mplapackint const n, mplapackint const kl, mplapackint const ku, mplapackint const nrhs, qd_complex *a, mplapackint const lda, qd_complex *x, mplapackint const ldx, qd_complex *b, mplapackint const ldb, mplapackint *iseed, mplapackint &info);
@@ -137,6 +136,7 @@ void Cstt22(mplapackint const n, mplapackint const m, mplapackint const kband, q
 void Cunt01(fem::str_cref rowcol, mplapackint const m, mplapackint const n, qd_complex *u, mplapackint const ldu, qd_complex *work, mplapackint const lwork, qd_real *rwork, qd_real &resid);
 void Cunt03(fem::str_cref rc, mplapackint const mu, mplapackint const mv, mplapackint const n, mplapackint const k, qd_complex *u, mplapackint const ldu, qd_complex *v, mplapackint const ldv, qd_complex *work, mplapackint const lwork, qd_real *rwork, qd_real &result, mplapackint &info);
 void Mxerbla_qd(const char *srname, int info);
+void Mxlaenv(mplapackint const ispec, mplapackint const nvalue);
 void Rbdt01(mplapackint const m, mplapackint const n, mplapackint const kd, qd_real *a, mplapackint const lda, qd_real *q, mplapackint const ldq, qd_real *d, qd_real *e, qd_real *pt, mplapackint const ldpt, qd_real *work, qd_real &resid);
 void Rbdt02(mplapackint const m, mplapackint const n, qd_real *b, mplapackint const ldb, qd_real *c, mplapackint const ldc, qd_real *u, mplapackint const ldu, qd_real *work, qd_real &resid);
 void Rbdt03(fem::str_cref uplo, mplapackint const n, mplapackint const kd, qd_real *d, qd_real *e, qd_real *u, mplapackint const ldu, qd_real *s, qd_real *vt, mplapackint const ldvt, qd_real *work, qd_real &resid);
@@ -206,7 +206,6 @@ void Rgqrts(mplapackint const n, mplapackint const m, mplapackint const p, qd_re
 void Rgrqts(mplapackint const m, mplapackint const p, mplapackint const n, qd_real *a, qd_real *af, qd_real *q, qd_real *r, mplapackint const lda, qd_real *taua, qd_real *b, qd_real *bf, qd_real *z, qd_real *t, qd_real *bwk, mplapackint const ldb, qd_real *taub, qd_real *work, mplapackint const lwork, qd_real *rwork, qd_real *result);
 void Rgsvts3(mplapackint const m, mplapackint const p, mplapackint const n, qd_real *a, qd_real *af, mplapackint const lda, qd_real *b, qd_real *bf, mplapackint const ldb, qd_real *u, mplapackint const ldu, qd_real *v, mplapackint const ldv, qd_real *q, mplapackint const ldq, qd_real *alpha, qd_real *beta, qd_real *r, mplapackint const ldr, mplapackint *iwork, qd_real *work, mplapackint const lwork, qd_real *rwork, qd_real *result);
 void Rhst01(mplapackint const n, mplapackint const, mplapackint const, qd_real *a, mplapackint const lda, qd_real *h, mplapackint const ldh, qd_real *q, mplapackint const ldq, qd_real *work, mplapackint const lwork, qd_real *result);
-void Rlacsg(mplapackint const &m, mplapackint const &p, mplapackint const &q, qd_real *theta, mplapackint *iseed, qd_real *x, mplapackint const &ldx, qd_real *work);
 void Rlacsg(mplapackint const m, mplapackint const p, mplapackint const q, qd_real *theta, mplapackint *iseed, qd_real *x, mplapackint const ldx, qd_real *work);
 void Rlafts(fem::str_cref type, mplapackint const m, mplapackint const n, mplapackint const imat, mplapackint const ntests, qd_real *result, mplapackint *iseed, qd_real const thresh, mplapackint const iounit, mplapackint &ie);
 void Rlahd2(mplapackint const iounit, fem::str_cref path);
@@ -229,5 +228,4 @@ void Rsvdch(mplapackint const n, qd_real *s, qd_real *e, qd_real *svd, qd_real c
 void Rsvdct(mplapackint const n, qd_real *s, qd_real *e, qd_real const shift, mplapackint &num);
 void Rsyt21(mplapackint const itype, fem::str_cref uplo, mplapackint const n, mplapackint const kband, qd_real *a, mplapackint const lda, qd_real *d, qd_real *e, qd_real *u, mplapackint const ldu, qd_real *v, mplapackint const ldv, qd_real *tau, qd_real *work, qd_real *result);
 void Rsyt22(mplapackint const itype, fem::str_cref uplo, mplapackint const n, mplapackint const m, mplapackint const kband, qd_real *a, mplapackint const lda, qd_real *d, qd_real *e, qd_real *u, mplapackint const ldu, qd_real *, mplapackint const ldv, qd_real *, qd_real *work, qd_real *result);
-void xlaenv(mplapackint const &ispec, mplapackint const &nvalue);
 #endif
