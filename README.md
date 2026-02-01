@@ -38,7 +38,7 @@ We use MPFR + MPC as the primary arithmetic class.
 * CentOS 7,8 (amd64, AArch64)
 * Ubuntu 20.04 (amd64) + Intel oneAPI
 * macOS (Intel) + gcc via macports (you may use homebrew instead, small modification of build script req'ed)
-* Windows (64bit; mingw64 on Ubuntu with wine64)
+* Windows (64bit; mingw64 on Ubuntu with wine)
 
 # MPLAPACK test results
 * https://github.com/nakatamaho/mplapack/tree/master/mplapack/test/lin/results

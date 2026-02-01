@@ -46,8 +46,8 @@ work/$(BUILD_STAMP): work/$(CONFIGURE_STAMP)
 
 work/$(CHECK_STAMP): work/$(BUILD_STAMP)
 if IS_MINGW
-	cd $(abs_builddir)/work/internal/mpc-$(MPCVERSION) ; ${MAKE} check LOG_COMPILER=wine64
-	cd $(abs_builddir)/work/install/mpc-$(MPCVERSION)  ; ${MAKE} check LOG_COMPILER=wine64
+	cd $(abs_builddir)/work/internal/mpc-$(MPCVERSION) ; ${MAKE} check LOG_COMPILER=wine
+	cd $(abs_builddir)/work/install/mpc-$(MPCVERSION)  ; ${MAKE} check LOG_COMPILER=wine
 else
 	cd $(abs_builddir)/work/internal/mpc-$(MPCVERSION) ; ${MAKE} check
 	cd $(abs_builddir)/work/install/mpc-$(MPCVERSION) ; ${MAKE} check

@@ -14,19 +14,19 @@ LINCOMPLEX_RFPS=`ls *xlintstrfC_*exe | grep -v log`
 rm -f .parallel.test_lin_all_mingw.sh
 
 for linreal in $LINREALS; do
-    echo "wine64 $linreal < ./Rtest.in >& log.$linreal" >> .parallel.test_lin_all_mingw.sh
+    echo "wine $linreal < ./Rtest.in >& log.$linreal" >> .parallel.test_lin_all_mingw.sh
 done
 
 for lincomplex in $LINCOMPLEXES; do
-    echo "wine64 $lincomplex < ./Ctest.in >& log.$lincomplex" >> .parallel.test_lin_all_mingw.sh
+    echo "wine $lincomplex < ./Ctest.in >& log.$lincomplex" >> .parallel.test_lin_all_mingw.sh
 done
 
 for linreal_rfp in $LINREAL_RFPS; do
-    echo "wine64 $linreal_rfp < ./Rtest_rfp.in >& log.$linreal_rfp" >> .parallel.test_lin_all_mingw.sh
+    echo "wine $linreal_rfp < ./Rtest_rfp.in >& log.$linreal_rfp" >> .parallel.test_lin_all_mingw.sh
 done
 
 for lincomplex_rfp in $LINCOMPLEX_RFPS; do
-    echo "wine64 $lincomplex_rfp < ./Ctest_rfp.in >& log.$lincomplex_rfp" >> .parallel.test_lin_all_mingw.sh
+    echo "wine $lincomplex_rfp < ./Ctest_rfp.in >& log.$lincomplex_rfp" >> .parallel.test_lin_all_mingw.sh
 done
 
 cat .parallel.test_lin_all_mingw.sh | parallel --jobs $JOBS

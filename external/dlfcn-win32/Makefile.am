@@ -19,7 +19,7 @@ work/$(PATCH_STAMP): work/$(EXTRACT_STAMP)
 	touch $(abs_builddir)/work/$(PATCH_STAMP)
 
 work/$(CONFIGURE_STAMP): work/$(PATCH_STAMP)
-	cd $(abs_builddir)/work/install/dlfcn-win32-$(DLFCN_WIN32VERSION); ./configure --enable-wine=wine64 --cross-prefix=x86_64-w64-mingw32- --prefix=$(abs_builddir)/../i/DLFCN_WIN32/
+	cd $(abs_builddir)/work/install/dlfcn-win32-$(DLFCN_WIN32VERSION); ./configure --enable-wine=wine --cross-prefix=x86_64-w64-mingw32- --prefix=$(abs_builddir)/../i/DLFCN_WIN32/
 	touch $(abs_builddir)/work/$(CONFIGURE_STAMP)
 
 work/$(BUILD_STAMP): work/$(CONFIGURE_STAMP)
