@@ -18,6 +18,9 @@ RUN apt-get update && apt-get install -y \
 # Configure ccache (directory will be mounted at runtime)
 ENV CCACHE_DIR=/ccache
 ENV PATH="/usr/lib/ccache:${PATH}"
+ENV CC="ccache gcc"
+ENV CXX="ccache g++"
+ENV FC="ccache gfortran"
 
 WORKDIR /work
 
@@ -36,9 +39,6 @@ CMD ["/bin/bash", "-c", "\
         CONFIGURE_OPTS=\"$COMMON_OPTS\"; \
     fi && \
     echo \"Configure options: $CONFIGURE_OPTS\" && \
-    export CC="ccache gcc" && \
-    export CXX="ccache g++" && \
-    export FC="ccache gfortran" && \
     ./configure $CONFIGURE_OPTS && \
     make -j$(nproc) && \
     echo '=== ccache stats (after) ===' && \
