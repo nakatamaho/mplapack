@@ -1,7 +1,7 @@
 #!/bin/bash
 # build-all.sh
 # Multi-environment build and test script for MPLAPACK release validation
-# Uses host-mounted ccache directory
+# Uses host-mounted ccache directory; supports cross-arch via binfmt/qemu
 
 set -euo pipefail
 
@@ -31,6 +31,50 @@ docker buildx inspect mplapack-builder >/dev/null 2>&1 || \
 
 log() {
     echo "[$(date +%H:%M:%S)] $*"
+}
+
+
+# Image naming (safer than mplapack-*)
+IMAGE_PREFIX="${IMAGE_PREFIX:-mplapack-qa}"   # e.g., mplapack-qa, mplapack-ci
+IMAGE_TTL_HOURS="${IMAGE_TTL_HOURS:-}"        # optional: used only for label metadata
+
+sanitize_token() {
+    # Keep only [a-z0-9._-], convert others to "-". Lowercase output.
+    local s="$1"
+    s="$(echo "$s" | tr "[:upper:]" "[:lower:]" )"
+    s="$(echo "$s" | sed -E 's/[^a-z0-9._-]+/-/g; s/^-+//; s/-+$//; s/-+/-/g')"
+    echo "$s"
+}
+
+git_meta() {
+    # Print: <branch> <sha7>. If not a git repo, print: nogit nogit
+    local dir="$1"
+    local br="nogit" sha="nogit"
+    if command -v git >/dev/null 2>&1 && git -C "$dir" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+        br="$(git -C "$dir" rev-parse --abbrev-ref HEAD 2>/dev/null || echo nogit)"
+        sha="$(git -C "$dir" rev-parse --short=7 HEAD 2>/dev/null || echo nogit)"
+    fi
+    echo "$br $sha"
+}
+
+make_image_tag() {
+    # Usage: make_image_tag <name> <arch_short> <source_type>
+    local name_raw="$1" arch_short="$2" source_type="$3"
+    local name arch src br sha stamp extra
+    name="$(sanitize_token "$name_raw")"
+    arch="$(sanitize_token "$arch_short")"
+    src="$(sanitize_token "$source_type")"
+    read -r br sha <<< "$(git_meta "$PROJECT_ROOT")"
+    br="$(sanitize_token "$br")"
+    sha="$(sanitize_token "$sha")"
+    stamp="$(date +%Y%m%d_%H%M%S)"
+    extra="${EXTRA_TAG:-}"
+    if [[ -n "$extra" ]]; then extra="$(sanitize_token "$extra")"; fi
+
+    # Format: <prefix>:<name>-<arch>-<src>-<branch>-<sha>-<timestamp>[-<extra>]
+    local tag="${IMAGE_PREFIX}:${name}-${arch}-${src}-${br}-${sha}-${stamp}"
+    if [[ -n "$extra" ]]; then tag="${tag}-${extra}"; fi
+    echo "$tag"
 }
 
 setup_ccache() {
@@ -152,8 +196,21 @@ build_one() {
     local test_cmd=$5
     local source_type=$6
 
+    # Refuse editor backup Dockerfiles (very common footgun: Dockerfile.debian~)
+    if [[ "$dockerfile" == *"~" ]]; then
+        log "ERROR: Refusing backup Dockerfile: $DOCKER_DIR/$dockerfile"
+        log "       Fix build-matrix.conf or remove the backup file."
+        echo "$name,${arch##*/},$base,image,FAILED,0,$source_type"
+        return 1
+    fi
+    if [[ ! -f "$DOCKER_DIR/$dockerfile" ]]; then
+        log "ERROR: Dockerfile not found: $DOCKER_DIR/$dockerfile"
+        echo "$name,${arch##*/},$base,image,FAILED,0,$source_type"
+        return 1
+    fi
+
     local arch_short=${arch##*/}
-    local tag="mplapack-${name}-${arch_short}"
+    local tag="$(make_image_tag "$name" "$arch_short" "$source_type")"
     local logprefix="$LOGDIR/${name}_${arch_short}"
     local start=$(date +%s)
     local gpu_flag=""
@@ -198,6 +255,11 @@ fi
     if ! docker buildx build \
         --platform "$arch" \
         --build-arg BASE="$base" \
+        --label org.mplapack.project=mplapack \
+        --label org.mplapack.purpose="${IMAGE_PREFIX}" \
+        --label org.mplapack.matrix_name="$name" \
+        --label org.mplapack.arch="$arch" \
+        --label org.mplapack.source_type="$source_type" \
         --load \
         -t "$tag" \
         -f "$DOCKER_DIR/$dockerfile" \
@@ -234,7 +296,7 @@ fi
         -e CCACHE_MAXSIZE="$CCACHE_MAXSIZE" \
         $gpu_flag \
         "$tag" \
-        sh -c "$test_cmd" \
+        /bin/bash -lc "$test_cmd" \
         > "${logprefix}_test.log" 2>&1; then
 
         local elapsed=$(($(date +%s) - start))

@@ -151,7 +151,7 @@ list:
 
 clean:
 	rm -rf logs/
-	-docker images 'mplapack-*' -q 2>/dev/null | xargs -r docker rmi -f
+	-docker images -q --filter label=org.mplapack.project=mplapack --filter label=org.mplapack.purpose=mplapack-qa | xargs -r docker rmi -f
 
 help:
 	@echo "MPLAPACK Release Engineering"
