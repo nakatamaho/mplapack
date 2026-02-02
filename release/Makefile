@@ -5,14 +5,17 @@ SCRIPT_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 PROJECT_ROOT := $(abspath $(SCRIPT_DIR)/..)
 CONF_FILE ?= $(SCRIPT_DIR)/build-matrix.conf
 LOGDIR ?= $(SCRIPT_DIR)/logs/$(shell date +%Y%m%d_%H%M%S)
+HOST_WORK_DIR ?= $(PROJECT_ROOT)
+HOST_CCACHE_DIR ?= /work/ccache
 
-export CONF_FILE LOGDIR PROJECT_ROOT
+export CONF_FILE LOGDIR PROJECT_ROOT HOST_WORK_DIR HOST_CCACHE_DIR
 
 .PHONY: all branch tarball dist clean list help
 .PHONY: intel mingw cuda ubuntu debian fedora rocky suse alpine
 .PHONY: amd64 arm64 ppc64le i386 s390x mips64le
 .PHONY: branch-ubuntu branch-debian branch-amd64 branch-cuda branch-rocky branch-suse
 .PHONY: tarball-ubuntu tarball-debian tarball-amd64 tarball-cuda tarball-rocky tarball-suse
+.PHONY: ccache-stats ccache-clear
 
 # === Main Targets ===
 
@@ -69,11 +72,11 @@ amd64:
 arm64:
 	@FILTER_ARCH=arm64 ./build-all.sh
 
+i386:
+	@FILTER_ARCH=386 ./build-all.sh
+
 ppc64le:
 	@FILTER_ARCH=ppc64le ./build-all.sh
-
-i386 386:
-	@FILTER_ARCH=386 ./build-all.sh
 
 s390x:
 	@FILTER_ARCH=s390x ./build-all.sh
@@ -119,18 +122,35 @@ tarball-rocky:
 tarball-suse:
 	@FILTER_NAME=suse ./build-all.sh tarball
 
+# === ccache Utilities ===
+	@echo ""
+	@echo "Architecture notes:"
+	@echo "  - i386/s390x/mips64le: Debian only (QEMU, very slow)"
+	@echo "  - arm64/ppc64le: QEMU on non-native hosts"
+	@echo "  - amd64: Native on x86_64 hosts"
+
+ccache-stats:
+	@echo "ccache directory: $(HOST_CCACHE_DIR)"
+	@ccache -d $(HOST_CCACHE_DIR) -s 2>/dev/null || \
+		echo "Install ccache on host or check directory permissions"
+
+ccache-clear:
+	@echo "Clearing ccache at $(HOST_CCACHE_DIR)..."
+	@ccache -d $(HOST_CCACHE_DIR) -C 2>/dev/null || \
+		rm -rf $(HOST_CCACHE_DIR)/*
+	@echo "Done."
+
 # === Utilities ===
 
 list:
 	@echo "=== Build Matrix ==="
 	@printf "%-25s %-45s %-40s %s\n" "NAME" "BASE" "ARCHS" "SOURCE"
-	@echo "------------------------------------------------------------------------------------------------------------------------------"
+	@echo "----------------------------------------------------------------------------------------------------------------------"
 	@grep -v '^#' $(CONF_FILE) | grep -v '^$$' | \
 		awk -F'|' '{printf "%-25s %-45s %-40s %s\n", $$1, $$2, $$3, $$6}'
 
 clean:
 	rm -rf logs/
-	rm -f docker/mplapack-*.tar.gz
 	-docker images 'mplapack-*' -q 2>/dev/null | xargs -r docker rmi -f
 
 help:
@@ -171,6 +191,14 @@ help:
 	@echo "  make branch-suse      - openSUSE branch tests"
 	@echo "  make branch-cuda      - CUDA branch tests"
 	@echo "  make tarball-amd64    - amd64 tarball tests"
+	@echo ""
+	@echo "ccache:"
+	@echo "  make ccache-stats     - show ccache statistics"
+	@echo "  make ccache-clear     - clear ccache"
+	@echo "  HOST_CCACHE_DIR=/path - override ccache directory (default: /work/ccache)"
+	@echo ""
+	@echo "Mount options:"
+	@echo "  HOST_WORK_DIR=/path   - override source directory (default: project root)"
 	@echo ""
 	@echo "Utilities:"
 	@echo "  make list        - show build matrix"
