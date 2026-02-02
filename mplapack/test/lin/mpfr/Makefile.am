@@ -63,6 +63,15 @@ VALGRIND_FLAGS ?= --show-leak-kinds=all --track-origins=yes --leak-check=full --
 MPFR_EXTRA_ENV ?=
 
 # -----------------------------------------------------------------------------
+# Cross-compilation support (wine for MinGW)
+# -----------------------------------------------------------------------------
+if IS_MINGW
+WINE = wine
+else
+WINE =
+endif
+
+# -----------------------------------------------------------------------------
 # Hook into Automake's "make check"
 # -----------------------------------------------------------------------------
 
@@ -107,50 +116,46 @@ mpfr-check-%: Rtest.%.out Ctest.%.out Rtest_rfp.%.out Ctest_rfp.%.out
 # Test rules (profile-abstracted)
 # -----------------------------------------------------------------------------
 
-Rtest.%.out: ../Rtest.in xlintstR_mpfr
+Rtest.%.out: ../Rtest.in xlintstR_mpfr$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
 	fi; \
 	echo "Testing Real MPLAPACK linear equation routines [$(MPFR_PROFILE_LABEL_$*)]"; \
-	echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xlintstR_mpfr < ../Rtest.in > $@ 2>&1"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xlintstR_mpfr < ../Rtest.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xlintstR_mpfr$(EXEEXT) < ../Rtest.in; \
 	} > $@ 2>&1
 
-Ctest.%.out: ../Ctest.in xlintstC_mpfr
+Ctest.%.out: ../Ctest.in xlintstC_mpfr$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
 	fi; \
 	echo "Testing Complex MPLAPACK linear equation routines [$(MPFR_PROFILE_LABEL_$*)]"; \
-	echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xlintstC_mpfr < ../Ctest.in > $@ 2>&1"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xlintstC_mpfr < ../Ctest.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xlintstC_mpfr$(EXEEXT) < ../Ctest.in; \
 	} > $@ 2>&1
 
-Rtest_rfp.%.out: ../Rtest_rfp.in xlintstrfR_mpfr
+Rtest_rfp.%.out: ../Rtest_rfp.in xlintstrfR_mpfr$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
 	fi; \
 	echo "Testing Real MPLAPACK RFP prototype linear equation routines [$(MPFR_PROFILE_LABEL_$*)]"; \
-	echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xlintstrfR_mpfr < ../Rtest_rfp.in > $@ 2>&1"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xlintstrfR_mpfr < ../Rtest_rfp.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xlintstrfR_mpfr$(EXEEXT) < ../Rtest_rfp.in; \
 	} > $@ 2>&1
 
-Ctest_rfp.%.out: ../Ctest_rfp.in xlintstrfC_mpfr
+Ctest_rfp.%.out: ../Ctest_rfp.in xlintstrfC_mpfr$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
 	fi; \
 	echo "Testing Complex MPLAPACK RFP prototype linear equation routines [$(MPFR_PROFILE_LABEL_$*)]"; \
-	echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xlintstrfC_mpfr < ../Ctest_rfp.in > $@ 2>&1"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xlintstrfC_mpfr < ../Ctest_rfp.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xlintstrfC_mpfr$(EXEEXT) < ../Ctest_rfp.in; \
 	} > $@ 2>&1
