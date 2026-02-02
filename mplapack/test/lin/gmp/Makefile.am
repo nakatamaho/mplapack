@@ -39,23 +39,100 @@ if IS_MACOS
 	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mplapack_gmp_testdir) $(prefix)
 endif
 
-check: Rtest.out Ctest.out Rtest_rfp.out Ctest_rfp.out
+# -----------------------------------------------------------------------------
+# Test sets (base names; outputs are <test>.out)
+# -----------------------------------------------------------------------------
+
+GMP_LIN_TESTS = Rtest Ctest Rtest_rfp Ctest_rfp
+
+# -----------------------------------------------------------------------------
+# Optional valgrind wrapper (toggle from command line)
+# -----------------------------------------------------------------------------
+
+VALGRIND ?=
+VALGRIND_FLAGS ?= --show-leak-kinds=all --track-origins=yes --leak-check=full --error-exitcode=99
+
+# Extra env appended (last assignment wins)
+GMP_EXTRA_ENV ?=
+
+# -----------------------------------------------------------------------------
+# Cross-compilation support (wine for MinGW)
+# -----------------------------------------------------------------------------
+if IS_MINGW
+WINE = wine
+else
+WINE =
+endif
+
+# -----------------------------------------------------------------------------
+# Hook into Automake's "make check" (parallel-capable)
+# -----------------------------------------------------------------------------
+
+# GNU make: allow deferred expansion of prerequisites (Automake may reorder vars/rules)
+.SECONDEXPANSION:
+
+# Force test execution even if *.out already exists
+.PHONY: gmp-check FORCE
+FORCE:
+
+# All output logs: <test>.out
+GMP_LIN_OUTS = $(foreach t,$(GMP_LIN_TESTS),$(t).out)
+CLEANFILES = $(GMP_LIN_OUTS)
+
+# Re-run all test commands on every "make check" even if *.out already exists.
+$(GMP_LIN_OUTS): FORCE
+
+check-local: gmp-check
+
+.PRECIOUS: $(GMP_LIN_OUTS)
+
+gmp-check: $$(GMP_LIN_OUTS)
+	@echo "GMP lin tests done."
 
 clean-local:
 	rm -f *.out *~ \#*
 
-Rtest.out: ../Rtest.in xlintstR_gmp
-	@echo Testing Real MPLAPACK linear equation routines
-	./xlintstR_gmp < ../Rtest.in > $@ 2>&1
+# -----------------------------------------------------------------------------
+# Test rules (one output per test)
+# -----------------------------------------------------------------------------
 
-Ctest.out: ../Ctest.in xlintstC_gmp
-	@echo Testing Complex MPLAPACK linear equation routines
-	./xlintstC_gmp < ../Ctest.in > $@ 2>&1
+Rtest.out: ../Rtest.in xlintstR_gmp$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "Testing Real MPLAPACK linear equation routines"; \
+	set -e; { \
+		$(GMP_EXTRA_ENV) $$wrapper $(WINE) ./xlintstR_gmp$(EXEEXT) < ../Rtest.in; \
+	} > $@ 2>&1
 
-Rtest_rfp.out: ../Rtest_rfp.in xlintstrfR_gmp
-	@echo Testing Real MPLAPACK RFP prototype linear equation routines
-	./xlintstrfR_gmp < ../Rtest_rfp.in > $@ 2>&1
+Ctest.out: ../Ctest.in xlintstC_gmp$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "Testing Complex MPLAPACK linear equation routines"; \
+	set -e; { \
+		$(GMP_EXTRA_ENV) $$wrapper $(WINE) ./xlintstC_gmp$(EXEEXT) < ../Ctest.in; \
+	} > $@ 2>&1
 
-Ctest_rfp.out: ../Ctest_rfp.in xlintstrfC_gmp
-	@echo Testing Complex MPLAPACK RFP prototype linear equation routines
-	./xlintstrfC_gmp < ../Ctest_rfp.in > $@ 2>&1
+Rtest_rfp.out: ../Rtest_rfp.in xlintstrfR_gmp$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "Testing Real MPLAPACK RFP prototype linear equation routines"; \
+	set -e; { \
+		$(GMP_EXTRA_ENV) $$wrapper $(WINE) ./xlintstrfR_gmp$(EXEEXT) < ../Rtest_rfp.in; \
+	} > $@ 2>&1
+
+Ctest_rfp.out: ../Ctest_rfp.in xlintstrfC_gmp$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "Testing Complex MPLAPACK RFP prototype linear equation routines"; \
+	set -e; { \
+		$(GMP_EXTRA_ENV) $$wrapper $(WINE) ./xlintstrfC_gmp$(EXEEXT) < ../Ctest_rfp.in; \
+	} > $@ 2>&1
+
