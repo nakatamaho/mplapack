@@ -36,6 +36,9 @@ CMD ["/bin/bash", "-c", "\
         CONFIGURE_OPTS=\"$COMMON_OPTS\"; \
     fi && \
     echo \"Configure options: $CONFIGURE_OPTS\" && \
+    export CC="ccache gcc" && \
+    export CXX="ccache g++" && \
+    export FC="ccache gfortran" && \
     ./configure $CONFIGURE_OPTS && \
     make -j$(nproc) && \
     echo '=== ccache stats (after) ===' && \
