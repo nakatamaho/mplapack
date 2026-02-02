@@ -63,6 +63,15 @@
          write(nout, format_9990), path;
          //
      } else if (nmats <= 0) {
+@@ -939,7 +939,7 @@ statement_140:
+     cmn.io.close(nin);
+     s2 = dsecnd();
+     write(nout, format_9998);
+-    write(nout, format_9997), s2 - s1;
++    write(nout, format_9997), cast2double(s2 - s1);
+     //
+     // End of Rchkaa
+     //
 @@ -943,4 +947,4 @@
      //
  }

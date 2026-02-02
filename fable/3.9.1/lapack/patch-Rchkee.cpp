@@ -104,6 +104,15 @@
              Rchkhs(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], &a[(3 - 1) * lda], &a[(4 - 1) * lda], &a[(5 - 1) * lda], nmax, &a[(6 - 1) * lda], &a[(7 - 1) * lda], &d[0], &d[(2 - 1) * nmax], &d[(3 - 1) * nmax], &d[(4 - 1) * nmax], &d[(5 - 1) * nmax], &d[(6 - 1) * nmax], &a[(8 - 1) * lda], &a[(9 - 1) * lda], &a[(10 - 1) * lda], &a[(11 - 1) * lda], &a[(12 - 1) * lda], &d[(7 - 1) * nmax], work, lwork, iwork, logwrk, result, info);
              if (info != 0) {
                  write(nout, format_9980), "Rchkhs", info;
+@@ -1602,7 +1602,7 @@ statement_190:
+ statement_380:
+     write(nout, format_9994);
+     s2 = dsecnd();
+-    write(nout, format_9993), s2 - s1;
++    write(nout, format_9993), cast2double(s2 - s1);
+     //
+     // End of Rchkee
+     //
 @@ -1618,4 +1613,4 @@
      //
  }

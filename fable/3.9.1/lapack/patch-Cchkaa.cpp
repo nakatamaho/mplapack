@@ -60,9 +60,19 @@
          write(nout, format_9990), path;
          //
      } else if (nmats <= 0) {
+@@ -1085,7 +1085,7 @@ statement_140:
+     cmn.io.close(nin);
+     s2 = dsecnd();
+     write(nout, format_9998);
+-    write(nout, format_9997), s2 - s1;
++    write(nout, format_9997), cast2double(s2 - s1);
+     //
+     // End of Cchkaa
+     //
 @@ -1089,4 +1094,4 @@
      //
  }
  
 -int main(int argc, char const *argv[]) { return fem::main_with_catch(argc, argv, program_zchkaa); }
 +int main(int argc, char const *argv[]) { Cchkaa(); }
+diff --git a/mplapack/test/lin/common/Cchkaa.cpp b/mplapack/test/lin/common/Cchkaa.cpp

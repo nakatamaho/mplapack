@@ -49,6 +49,15 @@
      //
      // Read the values of N
      //
+@@ -294,7 +294,7 @@ void Cchkrfp(void) {
+     cmn.io.close(nin);
+     REAL s2 = dsecnd();
+     write(nout, format_9998);
+-    write(nout, format_9997), s2 - s1;
++    write(nout, format_9997), cast2double(s2 - s1);
+     //
+     // End of Cchkrfp
+     //
 @@ -302,4 +306,4 @@
      //
  }

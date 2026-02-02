@@ -1611,7 +1611,7 @@ statement_190:
 statement_380:
     write(nout, format_9994);
     s2 = dsecnd();
-    write(nout, format_9993), s2 - s1;
+    write(nout, format_9993), cast2double(s2 - s1);
     //
     // End of Cchkee
     //
