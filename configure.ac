@@ -73,7 +73,7 @@ if test x"$is_intelcxx" = x"1"; then
 fi
 
 LT_INIT([win32-dll])
-AM_INIT_AUTOMAKE([subdir-objects])
+AM_INIT_AUTOMAKE([subdir-objects -Wno-portability])
 AC_CONFIG_MACRO_DIR([m4])
 
 dnl OpenMP Compiler flags.
