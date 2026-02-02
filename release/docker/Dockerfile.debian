@@ -1,5 +1,6 @@
 # Dockerfile.debian
-# GCC build for Debian/Ubuntu (branch: requires autoreconf)
+# GCC build environment for Debian/Ubuntu (branch: requires autoreconf)
+# Build happens at runtime with ccache mounted from host
 
 ARG BASE=ubuntu:22.04
 FROM ${BASE}
@@ -10,18 +11,33 @@ RUN apt-get update && apt-get install -y \
     autoconf \
     automake \
     libtool \
-    libgmp-dev \
-    libmpfr-dev \
-    libmpc-dev \
-    libblas-dev \
-    liblapack-dev \
+    ccache \
+    python3 \
     && rm -rf /var/lib/apt/lists/*
 
-COPY . /work
+# Configure ccache (directory will be mounted at runtime)
+ENV CCACHE_DIR=/ccache
+ENV PATH="/usr/lib/ccache:${PATH}"
+
 WORKDIR /work
 
-RUN autoreconf -fi && \
-    ./configure && \
-    make -j$(nproc)
-
-CMD ["make", "check"]
+# Build script executed at runtime
+CMD ["/bin/bash", "-c", "\
+    echo '=== ccache stats (before) ===' && \
+    ccache -s && \
+    cd /work/mplapack/test/compare && bash gen.Makefile.am.sh && cd /work && \
+    autoreconf --force --install && \
+    ARCH=$(dpkg --print-architecture) && \
+    echo \"Detected architecture: $ARCH\" && \
+    COMMON_OPTS=\"--enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes --enable-benchmark=yes\" && \
+    if [ \"$ARCH\" = \"amd64\" ] || [ \"$ARCH\" = \"i386\" ]; then \
+        CONFIGURE_OPTS=\"$COMMON_OPTS --enable-_Float64x=yes\"; \
+    else \
+        CONFIGURE_OPTS=\"$COMMON_OPTS\"; \
+    fi && \
+    echo \"Configure options: $CONFIGURE_OPTS\" && \
+    ./configure $CONFIGURE_OPTS && \
+    make -j$(nproc) && \
+    echo '=== ccache stats (after) ===' && \
+    ccache -s \
+"]
