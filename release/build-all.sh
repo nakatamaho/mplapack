@@ -1,6 +1,7 @@
 #!/bin/bash
 # build-all.sh
 # Multi-environment build and test script for MPLAPACK release validation
+# Uses host-mounted ccache directory
 
 set -euo pipefail
 
@@ -15,8 +16,14 @@ PHASE="${PHASE:-all}"
 FILTER_NAME="${FILTER_NAME:-}"
 FILTER_ARCH="${FILTER_ARCH:-}"
 USE_GPU="${USE_GPU:-auto}"
+CCACHE_MAXSIZE="${CCACHE_MAXSIZE:-40G}"
+
+# Host directories
+HOST_WORK_DIR="${HOST_WORK_DIR:-$PROJECT_ROOT}"
+HOST_CCACHE_DIR="${HOST_CCACHE_DIR:-/work/ccache}"
 
 mkdir -p "$LOGDIR"
+mkdir -p "$HOST_CCACHE_DIR"
 
 # Initialize buildx builder if not exists
 docker buildx inspect mplapack-builder >/dev/null 2>&1 || \
@@ -26,6 +33,30 @@ log() {
     echo "[$(date +%H:%M:%S)] $*"
 }
 
+setup_ccache() {
+    local conf="$HOST_CCACHE_DIR/ccache.conf"
+
+    log "Configuring ccache: dir=$HOST_CCACHE_DIR max_size=$CCACHE_MAXSIZE"
+
+    # Prefer using ccache itself if available on the host.
+    if command -v ccache >/dev/null 2>&1; then
+        CCACHE_DIR="$HOST_CCACHE_DIR" ccache -M "$CCACHE_MAXSIZE" >/dev/null 2>&1 || true
+    fi
+
+    # Ensure the cache-specific config file exists and contains max_size.
+    if [[ -f "$conf" ]]; then
+        if grep -qE '^[[:space:]]*max_size[[:space:]]*=' "$conf"; then
+            sed -i.bak -E "s|^[[:space:]]*max_size[[:space:]]*=.*|max_size = ${CCACHE_MAXSIZE}|" "$conf"
+        else
+            printf "max_size = %s\n" "$CCACHE_MAXSIZE" >> "$conf"
+        fi
+    else
+        printf "max_size = %s\n" "$CCACHE_MAXSIZE" > "$conf"
+    fi
+}
+
+setup_ccache
+
 # Check if NVIDIA GPU is available
 check_gpu() {
     if [[ "$USE_GPU" == "no" ]]; then
@@ -33,7 +64,6 @@ check_gpu() {
     elif [[ "$USE_GPU" == "yes" ]]; then
         return 0
     else
-        # auto-detect
         docker run --rm --gpus all nvidia/cuda:12.4.0-base-ubuntu22.04 nvidia-smi >/dev/null 2>&1
     fi
 }
@@ -80,37 +110,57 @@ build_one() {
     local tag="mplapack-${name}-${arch_short}"
     local logprefix="$LOGDIR/${name}_${arch_short}"
     local start=$(date +%s)
-    local is_cuda=false
     local gpu_flag=""
 
     # Detect CUDA build
     if [[ "$name" == *cuda* ]]; then
-        is_cuda=true
         if check_gpu; then
             gpu_flag="--gpus all"
-            log "  (GPU detected, will use --gpus all for tests)"
+            log "  (GPU detected)"
         else
             log "  (No GPU detected, tests may be limited)"
         fi
     fi
 
-    # Copy tarball to docker context if tarball test
+    # Prepare work directory
+    local work_mount="$HOST_WORK_DIR"
+
+    # For tarball tests, create temp directory with tarball
     if [[ "$source_type" == "tarball" ]]; then
         if [[ -z "$TARBALL" || ! -f "$TARBALL" ]]; then
             echo "$name,$arch_short,$base,build,SKIPPED,0,$source_type"
             return 0
         fi
-        cp "$TARBALL" "$DOCKER_DIR/"
+        local tmpdir="$LOGDIR/workdir_${name}_${arch_short}"
+        mkdir -p "$tmpdir"
+        cp "$TARBALL" "$tmpdir/"
+        work_mount="$tmpdir"
     fi
 
-    # Build image
+    # Build image (environment setup only, no compilation)
     if ! docker buildx build \
         --platform "$arch" \
         --build-arg BASE="$base" \
         --load \
         -t "$tag" \
         -f "$DOCKER_DIR/$dockerfile" \
-        "$PROJECT_ROOT" \
+        "$DOCKER_DIR" \
+        > "${logprefix}_image.log" 2>&1; then
+
+        local elapsed=$(($(date +%s) - start))
+        echo "$name,$arch_short,$base,image,FAILED,$elapsed,$source_type"
+        return 1
+    fi
+
+    # Run build with host directories mounted
+    if ! docker run --rm \
+        --platform "$arch" \
+        -v "$work_mount:/work:rw" \
+        -v "$HOST_CCACHE_DIR:/ccache:rw" \
+        -e CCACHE_DIR=/ccache \
+        -e CCACHE_MAXSIZE="$CCACHE_MAXSIZE" \
+        $gpu_flag \
+        "$tag" \
         > "${logprefix}_build.log" 2>&1; then
 
         local elapsed=$(($(date +%s) - start))
@@ -118,8 +168,16 @@ build_one() {
         return 1
     fi
 
-    # Run tests (with GPU if available for CUDA builds)
-    if ! docker run --rm --platform "$arch" $gpu_flag "$tag" sh -c "$test_cmd" \
+    # Run tests
+    if ! docker run --rm \
+        --platform "$arch" \
+        -v "$work_mount:/work:rw" \
+        -v "$HOST_CCACHE_DIR:/ccache:rw" \
+        -e CCACHE_DIR=/ccache \
+        -e CCACHE_MAXSIZE="$CCACHE_MAXSIZE" \
+        $gpu_flag \
+        "$tag" \
+        sh -c "$test_cmd" \
         > "${logprefix}_test.log" 2>&1; then
 
         local elapsed=$(($(date +%s) - start))
@@ -178,7 +236,8 @@ show_summary() {
 
     echo ""
     echo "Total: $total | Passed: $passed | Failed: $failed | Skipped: $skipped"
-    echo "Logs:  $LOGDIR/"
+    echo "Logs:   $LOGDIR/"
+    echo "ccache: $HOST_CCACHE_DIR"
 
     [[ $failed -eq 0 ]] || exit 1
 }
