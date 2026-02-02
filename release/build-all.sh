@@ -16,7 +16,7 @@ PHASE="${PHASE:-all}"
 FILTER_NAME="${FILTER_NAME:-}"
 FILTER_ARCH="${FILTER_ARCH:-}"
 USE_GPU="${USE_GPU:-auto}"
-CCACHE_MAXSIZE="${CCACHE_MAXSIZE:-40G}"
+CCACHE_MAXSIZE="${CCACHE_MAXSIZE:-200G}"
 
 # Host directories
 HOST_WORK_DIR="${HOST_WORK_DIR:-$PROJECT_ROOT}"
@@ -321,7 +321,7 @@ run_matrix() {
 
         # Set defaults
         source_type="${source_type:-branch}"
-        test_cmd="${test_cmd:-make check}"
+        test_cmd="${test_cmd:-make check -j}"
 
         # Apply phase filter
         [[ "$PHASE" != "all" && "$source_type" != "$PHASE" ]] && continue
