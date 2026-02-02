@@ -1,0 +1,28 @@
+# Dockerfile.suse
+# GCC build for openSUSE (branch: requires autoreconf)
+
+ARG BASE=opensuse/leap:15.5
+FROM ${BASE}
+
+RUN zypper --non-interactive install \
+    gcc-c++ \
+    gcc-fortran \
+    make \
+    autoconf \
+    automake \
+    libtool \
+    gmp-devel \
+    mpfr-devel \
+    mpc-devel \
+    blas-devel \
+    lapack-devel \
+    && zypper clean --all
+
+COPY . /work
+WORKDIR /work
+
+RUN autoreconf -fi && \
+    ./configure && \
+    make -j$(nproc)
+
+CMD ["make", "check"]

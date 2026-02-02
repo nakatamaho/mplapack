@@ -1,0 +1,27 @@
+# Dockerfile.debian
+# GCC build for Debian/Ubuntu (branch: requires autoreconf)
+
+ARG BASE=ubuntu:22.04
+FROM ${BASE}
+
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    gfortran \
+    autoconf \
+    automake \
+    libtool \
+    libgmp-dev \
+    libmpfr-dev \
+    libmpc-dev \
+    libblas-dev \
+    liblapack-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY . /work
+WORKDIR /work
+
+RUN autoreconf -fi && \
+    ./configure && \
+    make -j$(nproc)
+
+CMD ["make", "check"]

@@ -1,0 +1,25 @@
+# Dockerfile.alpine
+# GCC build for Alpine (musl libc, branch: requires autoreconf)
+
+ARG BASE=alpine:3.19
+FROM ${BASE}
+
+RUN apk add --no-cache \
+    build-base \
+    gfortran \
+    autoconf \
+    automake \
+    libtool \
+    gmp-dev \
+    mpfr-dev \
+    mpc1-dev \
+    openblas-dev
+
+COPY . /work
+WORKDIR /work
+
+RUN autoreconf -fi && \
+    ./configure && \
+    make -j$(nproc)
+
+CMD ["make", "check"]

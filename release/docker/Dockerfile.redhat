@@ -1,0 +1,28 @@
+# Dockerfile.redhat
+# GCC build for RHEL/Fedora (branch: requires autoreconf)
+
+ARG BASE=fedora:39
+FROM ${BASE}
+
+RUN dnf install -y \
+    gcc-c++ \
+    gcc-gfortran \
+    make \
+    autoconf \
+    automake \
+    libtool \
+    gmp-devel \
+    mpfr-devel \
+    libmpc-devel \
+    blas-devel \
+    lapack-devel \
+    && dnf clean all
+
+COPY . /work
+WORKDIR /work
+
+RUN autoreconf -fi && \
+    ./configure && \
+    make -j$(nproc)
+
+CMD ["make", "check"]

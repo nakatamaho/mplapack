@@ -1,0 +1,39 @@
+# Dockerfile.intel
+# Intel oneAPI compiler build (branch: requires autoreconf)
+
+ARG BASE=ubuntu:22.04
+FROM ${BASE}
+
+# Install Intel oneAPI repository
+RUN apt-get update && apt-get install -y \
+    wget \
+    gnupg \
+    ca-certificates \
+    && wget -qO- https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB | \
+       gpg --dearmor -o /usr/share/keyrings/intel-oneapi.gpg \
+    && echo "deb [signed-by=/usr/share/keyrings/intel-oneapi.gpg] https://apt.repos.intel.com/oneapi all main" \
+       > /etc/apt/sources.list.d/intel-oneapi.list
+
+# Install compilers and dependencies
+RUN apt-get update && apt-get install -y \
+    intel-oneapi-compiler-dpcpp-cpp \
+    intel-oneapi-compiler-fortran \
+    intel-oneapi-mkl-devel \
+    autoconf \
+    automake \
+    libtool \
+    libgmp-dev \
+    libmpfr-dev \
+    libmpc-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY . /work
+WORKDIR /work
+
+# Build with Intel compilers
+RUN . /opt/intel/oneapi/setvars.sh && \
+    autoreconf -fi && \
+    ./configure CC=icx CXX=icpx FC=ifx && \
+    make -j$(nproc)
+
+CMD ["/bin/bash", "-c", ". /opt/intel/oneapi/setvars.sh && make check"]

@@ -29,168 +29,465 @@ if IS_MACOS
 	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mplapack_dd_testdir) $(prefix)
 endif
 
-check: Rnep.out Rsep.out Rse2.out Rsvd.out Rec.out Red.out Rgg.out Rgd.out Rsb.out Rsg.out Rbal.out Rbak.out Rgbal.out Rgbak.out Rbb.out Rglm.out Rgqr.out Rgsv.out Rcsd.out Rlse.out \
-       Cnep.out Csep.out Cse2.out Csvd.out Cec.out Ced.out Cgg.out Cgd.out Csb.out Csg.out Cbal.out Cbak.out Cgbal.out Cgbak.out Cbb.out Cglm.out Cgqr.out Cgsv.out Ccsd.out Clse.out
+# -----------------------------------------------------------------------------
+# Test sets (base names; outputs are <test>.out)
+# -----------------------------------------------------------------------------
+
+DD_REAL_TESTS = \
+	Rnep Rsep Rse2 Rsvd Rec Red Rgg Rgd Rsb Rsg Rbal Rbak Rgbal Rgbak Rbb Rglm Rgqr Rgsv Rcsd Rlse
+
+DD_COMPLEX_TESTS = \
+	Cnep Csep Cse2 Csvd Cec Ced Cgg Cgd Csb Csg Cbal Cbak Cgbal Cgbak Cbb Cglm Cgqr Cgsv Ccsd Clse
+
+DD_ALL_TESTS = $(DD_REAL_TESTS) $(DD_COMPLEX_TESTS)
+
+# -----------------------------------------------------------------------------
+# Optional valgrind wrapper (toggle from command line)
+# -----------------------------------------------------------------------------
+
+VALGRIND ?=
+VALGRIND_FLAGS ?= --show-leak-kinds=all --track-origins=yes --leak-check=full --error-exitcode=99
+
+# Extra env appended (last assignment wins)
+DD_EXTRA_ENV ?=
+
+# -----------------------------------------------------------------------------
+# Cross-compilation support (wine for MinGW)
+# -----------------------------------------------------------------------------
+if IS_MINGW
+WINE = wine
+else
+WINE =
+endif
+
+# -----------------------------------------------------------------------------
+# Hook into Automake's "make check" (parallel-capable)
+# -----------------------------------------------------------------------------
+
+# GNU make: allow deferred expansion of prerequisites (Automake may reorder vars/rules)
+.SECONDEXPANSION:
+
+# Force test execution even if *.out already exists
+.PHONY: dd-check FORCE
+FORCE:
+
+# All output logs: <test>.out
+DD_EIG_OUTS = $(foreach t,$(DD_ALL_TESTS),$(t).out)
+CLEANFILES = $(DD_EIG_OUTS)
+
+# Re-run all test commands on every "make check" even if *.out already exists.
+$(DD_EIG_OUTS): FORCE
+
+check-local: dd-check
+
+.PRECIOUS: $(DD_EIG_OUTS)
+
+dd-check: $$(DD_EIG_OUTS)
+	@echo "DD eig tests done."
 
 clean-local:
 	rm -f *.out *~ \#*
 
-Rnep.out: ../nep.in xeigtstR_dd
-	@echo NEP: Testing Nonsymmetric Eigenvalue Problem routines
-	libtool --mode=execute valgrind --show-leak-kinds=all --track-origins=yes --leak-check=full ./xeigtstR_dd < ../nep.in > $@ 2>&1
+# -----------------------------------------------------------------------------
+# Test rules (one output per test)
+# -----------------------------------------------------------------------------
 
-Rsep.out: ../sep.in xeigtstR_dd
-	@echo SEP: Testing Symmetric Eigenvalue Problem routines
-	libtool --mode=execute valgrind --show-leak-kinds=all --track-origins=yes --leak-check=full ./xeigtstR_dd < ../sep.in > $@ 2>&1
+Rnep.out: ../nep.in xeigtstR_dd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "NEP: Testing Nonsymmetric Eigenvalue Problem routines"; \
+	set -e; { \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < ../nep.in; \
+	} > $@ 2>&1
 
-Rse2.out: ../se2.in xeigtstR_dd
-	@echo SEP: Testing Symmetric Eigenvalue Problem routines
-	libtool --mode=execute valgrind --show-leak-kinds=all --track-origins=yes --leak-check=full ./xeigtstR_dd < ../se2.in > $@ 2>&1
+Rsep.out: ../sep.in xeigtstR_dd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "SEP: Testing Symmetric Eigenvalue Problem routines"; \
+	set -e; { \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < ../sep.in; \
+	} > $@ 2>&1
 
-Rsvd.out: ../svd.in xeigtstR_dd
-	@echo SVD: Testing Singular Value Decomposition routines
-	libtool --mode=execute valgrind --show-leak-kinds=all --track-origins=yes --leak-check=full ./xeigtstR_dd < ../svd.in > $@ 2>&1
+Rse2.out: ../se2.in xeigtstR_dd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "SEP: Testing Symmetric Eigenvalue Problem routines"; \
+	set -e; { \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < ../se2.in; \
+	} > $@ 2>&1
 
-Rec.out: ../Rec.in xeigtstR_dd
-	@echo DEC: Testing Eigen Condition Routines
-	libtool --mode=execute valgrind --show-leak-kinds=all --track-origins=yes --leak-check=full ./xeigtstR_dd < ../Rec.in > $@ 2>&1
+Rsvd.out: ../svd.in xeigtstR_dd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "SVD: Testing Singular Value Decomposition routines"; \
+	set -e; { \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < ../svd.in; \
+	} > $@ 2>&1
 
-Red.out: ../Red.in xeigtstR_dd
-	@echo DEV: Testing Nonsymmetric Eigenvalue Driver
-	libtool --mode=execute valgrind --show-leak-kinds=all --track-origins=yes --leak-check=full ./xeigtstR_dd < ../Red.in > $@ 2>&1
+Rec.out: ../Rec.in xeigtstR_dd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "DEC: Testing Eigen Condition Routines"; \
+	set -e; { \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < ../Rec.in; \
+	} > $@ 2>&1
 
-Rgg.out: ../Rgg.in xeigtstR_dd
-	@echo DGG: Testing Nonsymmetric Generalized Eigenvalue Problem routines
-	libtool --mode=execute valgrind --show-leak-kinds=all --track-origins=yes --leak-check=full ./xeigtstR_dd < ../Rgg.in > $@ 2>&1
+Red.out: ../Red.in xeigtstR_dd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "DEV: Testing Nonsymmetric Eigenvalue Driver"; \
+	set -e; { \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < ../Red.in; \
+	} > $@ 2>&1
 
-Rgd.out: ../Rgd.in xeigtstR_dd
-	@echo DGD: Testing Nonsymmetric Generalized Eigenvalue Problem driver routines
-	libtool --mode=execute valgrind --show-leak-kinds=all --track-origins=yes --leak-check=full ./xeigtstR_dd < ../Rgd.in > $@ 2>&1
+Rgg.out: ../Rgg.in xeigtstR_dd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "GGS: Testing Generalized Nonsymmetric Eigenvalue Problem routines"; \
+	set -e; { \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < ../Rgg.in; \
+	} > $@ 2>&1
 
-Rsb.out: ../Rsb.in xeigtstR_dd
-	@echo DSB: Testing Symmetric Eigenvalue Problem routines
-	libtool --mode=execute valgrind --show-leak-kinds=all --track-origins=yes --leak-check=full ./xeigtstR_dd < ../Rsb.in > $@ 2>&1
+Rgd.out: ../Rgd.in xeigtstR_dd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "DGD: Testing Nonsymmetric Generalized Eigenvalue Problem driver routine"; \
+	set -e; { \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < ../Rgd.in; \
+	} > $@ 2>&1
 
-Rsg.out: ../Rsg.in xeigtstR_dd
-	@echo DSG: Testing Symmetric Generalized Eigenvalue Problem routines
-	libtool --mode=execute valgrind --show-leak-kinds=all --track-origins=yes --leak-check=full ./xeigtstR_dd < ../Rsg.in > $@ 2>&1
+Rsb.out: ../Rsb.in xeigtstR_dd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "SBB: Testing banded Schur decomposition routines"; \
+	set -e; { \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < ../Rsb.in; \
+	} > $@ 2>&1
 
-Rbal.out: ../Rbal.in xeigtstR_dd
-	@echo Rgebal: Testing the balancing of a general matrix
-	libtool --mode=execute valgrind --show-leak-kinds=all --track-origins=yes --leak-check=full ./xeigtstR_dd < ../Rbal.in > $@ 2>&1
+Rsg.out: ../Rsg.in xeigtstR_dd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "SGG: Testing Generalized Symmetric Eigenvalue Problem routines"; \
+	set -e; { \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < ../Rsg.in; \
+	} > $@ 2>&1
 
-Rbak.out: ../Rbak.in xeigtstR_dd
-	@echo Rgebak: Testing the back transformation of balanced matrix
-	libtool --mode=execute valgrind --show-leak-kinds=all --track-origins=yes --leak-check=full ./xeigtstR_dd < ../Rbak.in > $@ 2>&1
+Rbal.out: ../Rbal.in xeigtstR_dd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "DGEBAL: Testing the balancing of a real general matrix"; \
+	set -e; { \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < ../Rbal.in; \
+	} > $@ 2>&1
 
-Rgbal.out: ../Rgbal.in xeigtstR_dd
-	@echo Rggbal: Testing the balancing of a pair of general matrices
-	libtool --mode=execute valgrind --show-leak-kinds=all --track-origins=yes --leak-check=full ./xeigtstR_dd < ../Rgbal.in > $@ 2>&1
+Rbak.out: ../Rbak.in xeigtstR_dd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "DGEBAK: Testing the back transformation of a real balanced matrix"; \
+	set -e; { \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < ../Rbak.in; \
+	} > $@ 2>&1
 
-Rgbak.out: ../Rgbak.in xeigtstR_dd
-	@echo Rggbak: Testing the back transformation of a pair of balanced matrices
-	libtool --mode=execute valgrind --show-leak-kinds=all --track-origins=yes --leak-check=full ./xeigtstR_dd < ../Rgbak.in > $@ 2>&1
+Rgbal.out: ../Rgbal.in xeigtstR_dd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "DGGBAL: Testing the balancing of a pair of real general matrices"; \
+	set -e; { \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < ../Rgbal.in; \
+	} > $@ 2>&1
 
-Rbb.out: ../Rbb.in xeigtstR_dd
-	@echo DBB: Testing banded Singular Value Decomposition routines
-	libtool --mode=execute valgrind --show-leak-kinds=all --track-origins=yes --leak-check=full ./xeigtstR_dd < ../Rbb.in > $@ 2>&1
+Rgbak.out: ../Rgbak.in xeigtstR_dd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "DGGBAK: Testing the back transformation of a pair of real balanced matrices"; \
+	set -e; { \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < ../Rgbak.in; \
+	} > $@ 2>&1
 
-Rglm.out: ../glm.in xeigtstR_dd
-	@echo GLM: Testing Generalized Linear Regression Model routines
-	libtool --mode=execute valgrind --show-leak-kinds=all --track-origins=yes --leak-check=full ./xeigtstR_dd < ../glm.in > $@ 2>&1
+Rbb.out: ../Rbb.in xeigtstR_dd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "DBB: Testing banded Singular Value Decomposition routines"; \
+	set -e; { \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < ../Rbb.in; \
+	} > $@ 2>&1
 
-Rgqr.out: ../gqr.in xeigtstR_dd
-	@echo GQR: Testing Generalized QR and RQ factorization routines
-	libtool --mode=execute valgrind --show-leak-kinds=all --track-origins=yes --leak-check=full ./xeigtstR_dd < ../gqr.in > $@ 2>&1
+Rglm.out: ../glm.in xeigtstR_dd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "GLM: Testing Generalized Linear Regression Model routines"; \
+	set -e; { \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < ../glm.in; \
+	} > $@ 2>&1
 
-Rgsv.out: ../gsv.in xeigtstR_dd
-	@echo GSV: Testing Generalized Singular Value Decomposition routines
-	libtool --mode=execute valgrind --show-leak-kinds=all --track-origins=yes --leak-check=full ./xeigtstR_dd < ../gsv.in > $@ 2>&1
+Rgqr.out: ../gqr.in xeigtstR_dd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "GQR: Testing Generalized QR and RQ factorization routines"; \
+	set -e; { \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < ../gqr.in; \
+	} > $@ 2>&1
 
-Rcsd.out: ../csd.in xeigtstR_dd
-	@echo CSD: Testing CS Decomposition routines
-	libtool --mode=execute valgrind --show-leak-kinds=all --track-origins=yes --leak-check=full ./xeigtstR_dd < ../csd.in > $@ 2>&1
+Rgsv.out: ../gsv.in xeigtstR_dd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "GSV: Testing Generalized Singular Value Decomposition routines"; \
+	set -e; { \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < ../gsv.in; \
+	} > $@ 2>&1
 
-Rlse.out: ../lse.in xeigtstR_dd
-	@echo LSE: Testing Constrained Linear Least Squares routines
-	libtool --mode=execute valgrind --show-leak-kinds=all --track-origins=yes --leak-check=full ./xeigtstR_dd < ../lse.in > $@ 2>&1
+Rcsd.out: ../csd.in xeigtstR_dd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "CSD: Testing CS Decomposition routines"; \
+	set -e; { \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < ../csd.in; \
+	} > $@ 2>&1
 
-Cnep.out: ../nep.in ./xeigtstC_dd
-	@echo NEP: Testing Nonsymmetric Eigenvalue Problem routines
-	libtool --mode=execute valgrind --show-leak-kinds=all --track-origins=yes --leak-check=full ./xeigtstC_dd < ../nep.in > $@ 2>&1
+Rlse.out: ../lse.in xeigtstR_dd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "LSE: Testing Constrained Linear Least Squares routines"; \
+	set -e; { \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < ../lse.in; \
+	} > $@ 2>&1
 
-Csep.out: ../sep.in ./xeigtstC_dd
-	@echo SEP: Testing Symmetric Eigenvalue Problem routines
-	libtool --mode=execute valgrind --show-leak-kinds=all --track-origins=yes --leak-check=full ./xeigtstC_dd < ../sep.in > $@ 2>&1
+Cnep.out: ../nep.in xeigtstC_dd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "NEP: Testing Nonsymmetric Eigenvalue Problem routines"; \
+	set -e; { \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < ../nep.in; \
+	} > $@ 2>&1
 
-Cse2.out: ../se2.in ./xeigtstC_dd
-	@echo SEP: Testing Symmetric Eigenvalue Problem routines
-	libtool --mode=execute valgrind --show-leak-kinds=all --track-origins=yes --leak-check=full ./xeigtstC_dd < ../se2.in > $@ 2>&1
+Csep.out: ../sep.in xeigtstC_dd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "SEP: Testing Symmetric Eigenvalue Problem routines"; \
+	set -e; { \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < ../sep.in; \
+	} > $@ 2>&1
 
-Csvd.out: ../svd.in ./xeigtstC_dd
-	@echo SVD: Testing Singular Value Decomposition routines
-	libtool --mode=execute valgrind --show-leak-kinds=all --track-origins=yes --leak-check=full ./xeigtstC_dd < ../svd.in > $@ 2>&1
+Cse2.out: ../se2.in xeigtstC_dd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "SEP: Testing Symmetric Eigenvalue Problem routines"; \
+	set -e; { \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < ../se2.in; \
+	} > $@ 2>&1
 
-Cec.out: ../Cec.in ./xeigtstC_dd
-	@echo CEC: Testing COMPLEX Eigen Condition Routines
-	libtool --mode=execute valgrind --show-leak-kinds=all --track-origins=yes --leak-check=full ./xeigtstC_dd < ../Cec.in > $@ 2>&1
+Csvd.out: ../svd.in xeigtstC_dd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "SVD: Testing Singular Value Decomposition routines"; \
+	set -e; { \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < ../svd.in; \
+	} > $@ 2>&1
 
-Ced.out: ../Ced.in ./xeigtstC_dd
-	@echo CES: Testing COMPLEX Nonsymmetric Schur Form Driver
-	libtool --mode=execute valgrind --show-leak-kinds=all --track-origins=yes --leak-check=full ./xeigtstC_dd < ../Ced.in > $@ 2>&1
+Cec.out: ../Cec.in xeigtstC_dd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "DEC: Testing Eigen Condition Routines"; \
+	set -e; { \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < ../Cec.in; \
+	} > $@ 2>&1
 
-Cgg.out: ../Cgg.in ./xeigtstC_dd
-	@echo CGG: Testing COMPLEX Nonsymmetric Generalized Eigenvalue Problem routines
-	libtool --mode=execute valgrind --show-leak-kinds=all --track-origins=yes --leak-check=full ./xeigtstC_dd < ../Cgg.in > $@ 2>&1
+Ced.out: ../Ced.in xeigtstC_dd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "DEV: Testing Nonsymmetric Eigenvalue Driver"; \
+	set -e; { \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < ../Ced.in; \
+	} > $@ 2>&1
 
-Cgd.out: ../Cgd.in ./xeigtstC_dd
-	@echo CGD: Testing COMPLEX Nonsymmetric Generalized Eigenvalue Problem driver routines
-	libtool --mode=execute valgrind --show-leak-kinds=all --track-origins=yes --leak-check=full ./xeigtstC_dd < ../Cgd.in > $@ 2>&1
+Cgg.out: ../Cgg.in xeigtstC_dd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "GGS: Testing Generalized Nonsymmetric Eigenvalue Problem routines"; \
+	set -e; { \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < ../Cgg.in; \
+	} > $@ 2>&1
 
-Csb.out: ../Csb.in ./xeigtstC_dd
-	@echo CHB: Testing Hermitian Eigenvalue Problem routines
-	libtool --mode=execute valgrind --show-leak-kinds=all --track-origins=yes --leak-check=full ./xeigtstC_dd < ../Csb.in > $@ 2>&1
+Cgd.out: ../Cgd.in xeigtstC_dd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "CGD: Testing Nonsymmetric Generalized Eigenvalue Problem driver routine"; \
+	set -e; { \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < ../Cgd.in; \
+	} > $@ 2>&1
 
-Csg.out: ../Csg.in ./xeigtstC_dd
-	@echo CSG: Testing Symmetric Generalized Eigenvalue Problem routines
-	libtool --mode=execute valgrind --show-leak-kinds=all --track-origins=yes --leak-check=full ./xeigtstC_dd < ../Csg.in > $@ 2>&1
+Csb.out: ../Csb.in xeigtstC_dd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "SBB: Testing banded Schur decomposition routines"; \
+	set -e; { \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < ../Csb.in; \
+	} > $@ 2>&1
 
-Cbal.out: ../Cbal.in ./xeigtstC_dd
-	@echo CGEBAL: Testing the balancing of a COMPLEX general matrix
-	libtool --mode=execute valgrind --show-leak-kinds=all --track-origins=yes --leak-check=full ./xeigtstC_dd < ../Cbal.in > $@ 2>&1
+Csg.out: ../Csg.in xeigtstC_dd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "SGG: Testing Generalized Symmetric Eigenvalue Problem routines"; \
+	set -e; { \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < ../Csg.in; \
+	} > $@ 2>&1
 
-Cbak.out: ../Cbak.in ./xeigtstC_dd
-	@echo CGEBAK: Testing the back transformation of a COMPLEX balanced matrix
-	libtool --mode=execute valgrind --show-leak-kinds=all --track-origins=yes --leak-check=full ./xeigtstC_dd < ../Cbak.in > $@ 2>&1
+Cbal.out: ../Cbal.in xeigtstC_dd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "CGEBAL: Testing the balancing of a COMPLEX general matrix"; \
+	set -e; { \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < ../Cbal.in; \
+	} > $@ 2>&1
 
-Cgbal.out: ../Cgbal.in ./xeigtstC_dd
-	@echo CGGBAL: Testing the balancing of a pair of COMPLEX general matrices
-	libtool --mode=execute valgrind --show-leak-kinds=all --track-origins=yes --leak-check=full ./xeigtstC_dd < ../Cgbal.in > $@ 2>&1
+Cbak.out: ../Cbak.in xeigtstC_dd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "CGEBAK: Testing the back transformation of a COMPLEX balanced matrix"; \
+	set -e; { \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < ../Cbak.in; \
+	} > $@ 2>&1
 
-Cgbak.out: ../Cgbak.in ./xeigtstC_dd
-	@echo CGGBAK: Testing the back transformation of a pair of COMPLEX balanced matrices
-	libtool --mode=execute valgrind --show-leak-kinds=all --track-origins=yes --leak-check=full ./xeigtstC_dd < ../Cgbak.in > $@ 2>&1
+Cgbal.out: ../Cgbal.in xeigtstC_dd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "CGGBAL: Testing the balancing of a pair of COMPLEX general matrices"; \
+	set -e; { \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < ../Cgbal.in; \
+	} > $@ 2>&1
 
-Cbb.out: ../Cbb.in ./xeigtstC_dd
-	@echo CBB: Testing banded Singular Value Decomposition routines
-	libtool --mode=execute valgrind --show-leak-kinds=all --track-origins=yes --leak-check=full ./xeigtstC_dd < ../Cbb.in > $@ 2>&1
+Cgbak.out: ../Cgbak.in xeigtstC_dd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "CGGBAK: Testing the back transformation of a pair of COMPLEX balanced matrices"; \
+	set -e; { \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < ../Cgbak.in; \
+	} > $@ 2>&1
 
-Cglm.out: ../glm.in ./xeigtstC_dd
-	@echo GLM: Testing Generalized Linear Regression Model routines
-	libtool --mode=execute valgrind --show-leak-kinds=all --track-origins=yes --leak-check=full ./xeigtstC_dd < ../glm.in > $@ 2>&1
+Cbb.out: ../Cbb.in xeigtstC_dd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "CBB: Testing banded Singular Value Decomposition routines"; \
+	set -e; { \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < ../Cbb.in; \
+	} > $@ 2>&1
 
-Cgqr.out: ../gqr.in ./xeigtstC_dd
-	@echo GQR: Testing Generalized QR and RQ factorization routines
-	libtool --mode=execute valgrind --show-leak-kinds=all --track-origins=yes --leak-check=full ./xeigtstC_dd < ../gqr.in > $@ 2>&1
+Cglm.out: ../glm.in xeigtstC_dd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "GLM: Testing Generalized Linear Regression Model routines"; \
+	set -e; { \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < ../glm.in; \
+	} > $@ 2>&1
 
-Cgsv.out: ../gsv.in ./xeigtstC_dd
-	@echo GSV: Testing Generalized Singular Value Decomposition routines
-	libtool --mode=execute valgrind --show-leak-kinds=all --track-origins=yes --leak-check=full ./xeigtstC_dd < ../gsv.in > $@ 2>&1
+Cgqr.out: ../gqr.in xeigtstC_dd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "GQR: Testing Generalized QR and RQ factorization routines"; \
+	set -e; { \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < ../gqr.in; \
+	} > $@ 2>&1
 
-Ccsd.out: ../csd.in ./xeigtstC_dd
-	@echo CSD: Testing CS Decomposition routines
-	libtool --mode=execute valgrind --show-leak-kinds=all --track-origins=yes --leak-check=full ./xeigtstC_dd < ../csd.in > $@ 2>&1
+Cgsv.out: ../gsv.in xeigtstC_dd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "GSV: Testing Generalized Singular Value Decomposition routines"; \
+	set -e; { \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < ../gsv.in; \
+	} > $@ 2>&1
 
-Clse.out: ../lse.in ./xeigtstC_dd
-	@echo LSE: Testing Constrained Linear Least Squares routines
-	libtool --mode=execute valgrind --show-leak-kinds=all --track-origins=yes --leak-check=full ./xeigtstC_dd < ../lse.in > $@ 2>&1
+Ccsd.out: ../csd.in xeigtstC_dd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "CSD: Testing CS Decomposition routines"; \
+	set -e; { \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < ../csd.in; \
+	} > $@ 2>&1
+
+Clse.out: ../lse.in xeigtstC_dd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "LSE: Testing Constrained Linear Least Squares routines"; \
+	set -e; { \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < ../lse.in; \
+	} > $@ 2>&1

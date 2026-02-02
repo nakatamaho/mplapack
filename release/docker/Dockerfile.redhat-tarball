@@ -1,0 +1,26 @@
+# Dockerfile.redhat-tarball
+# GCC build for RHEL/Fedora (tarball: no autoreconf needed)
+
+ARG BASE=fedora:39
+FROM ${BASE}
+
+RUN dnf install -y \
+    gcc-c++ \
+    gcc-gfortran \
+    make \
+    gmp-devel \
+    mpfr-devel \
+    libmpc-devel \
+    blas-devel \
+    lapack-devel \
+    && dnf clean all
+
+# Extract and build from tarball
+COPY mplapack-*.tar.gz /tmp/
+WORKDIR /tmp
+RUN tar xzf mplapack-*.tar.gz && rm mplapack-*.tar.gz
+
+WORKDIR /tmp/mplapack-*
+RUN ./configure && make -j$(nproc)
+
+CMD ["make", "check"]
