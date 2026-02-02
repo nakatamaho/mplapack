@@ -12,7 +12,7 @@ mplapack_mpfr_testdir = $(prefix)/lib/$(target)/mplapack/test/eig
 #
 # Add a new profile by:
 #   1) appending its name to MPFR_PROFILES
-#   2) defining MPFR_ENV_<name> and MPFR_PROFILE_LABEL_<name>
+#   2) defining MPFR_ENV_<n> and MPFR_PROFILE_LABEL_<n>
 # -----------------------------------------------------------------------------
 
 MPFR_PROFILES = default binary64 binary128
@@ -75,6 +75,15 @@ VALGRIND_FLAGS ?= --show-leak-kinds=all --track-origins=yes --leak-check=full --
 MPFR_EXTRA_ENV ?=
 
 # -----------------------------------------------------------------------------
+# Cross-compilation support (wine for MinGW)
+# -----------------------------------------------------------------------------
+if IS_MINGW
+WINE = wine
+else
+WINE =
+endif
+
+# -----------------------------------------------------------------------------
 # Hook into Automake's "make check" (profile-abstracted; parallel like LIN)
 # -----------------------------------------------------------------------------
 
@@ -117,522 +126,442 @@ clean-local:
 # Test rules (profile-abstracted; one output per test per profile)
 # -----------------------------------------------------------------------------
 
-Rnep.%.out: ../nep.in xeigtstR_mpfr
+Rnep.%.out: ../nep.in xeigtstR_mpfr$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
 	fi; \
 	echo "NEP: Testing Nonsymmetric Eigenvalue Problem routines [$(MPFR_PROFILE_LABEL_$*)]"; \
-	echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../nep.in > $@ 2>&1"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../nep.in"; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../nep.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < ../nep.in; \
 	} > $@ 2>&1
 
-Rsep.%.out: ../sep.in xeigtstR_mpfr
+Rsep.%.out: ../sep.in xeigtstR_mpfr$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
 	fi; \
 	echo "SEP: Testing Symmetric Eigenvalue Problem routines [$(MPFR_PROFILE_LABEL_$*)]"; \
-	echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../sep.in > $@ 2>&1"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../sep.in"; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../sep.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < ../sep.in; \
 	} > $@ 2>&1
 
-Rse2.%.out: ../se2.in xeigtstR_mpfr
+Rse2.%.out: ../se2.in xeigtstR_mpfr$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
 	fi; \
 	echo "SEP: Testing Symmetric Eigenvalue Problem routines [$(MPFR_PROFILE_LABEL_$*)]"; \
-	echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../se2.in > $@ 2>&1"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../se2.in"; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../se2.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < ../se2.in; \
 	} > $@ 2>&1
 
-Rsvd.%.out: ../svd.in xeigtstR_mpfr
+Rsvd.%.out: ../svd.in xeigtstR_mpfr$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
 	fi; \
 	echo "SVD: Testing Singular Value Decomposition routines [$(MPFR_PROFILE_LABEL_$*)]"; \
-	echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../svd.in > $@ 2>&1"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../svd.in"; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../svd.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < ../svd.in; \
 	} > $@ 2>&1
 
-Rec.%.out: ../Rec.in xeigtstR_mpfr
+Rec.%.out: ../Rec.in xeigtstR_mpfr$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
 	fi; \
 	echo "DEC: Testing Eigen Condition Routines [$(MPFR_PROFILE_LABEL_$*)]"; \
-	echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../Rec.in > $@ 2>&1"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../Rec.in"; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../Rec.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < ../Rec.in; \
 	} > $@ 2>&1
 
-Red.%.out: ../Red.in xeigtstR_mpfr
+Red.%.out: ../Red.in xeigtstR_mpfr$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
 	fi; \
 	echo "DEV: Testing Nonsymmetric Eigenvalue Driver [$(MPFR_PROFILE_LABEL_$*)]"; \
-	echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../Red.in > $@ 2>&1"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../Red.in"; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../Red.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < ../Red.in; \
 	} > $@ 2>&1
 
-Rgg.%.out: ../Rgg.in xeigtstR_mpfr
+Rgg.%.out: ../Rgg.in xeigtstR_mpfr$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
 	fi; \
 	echo "GGS: Testing Generalized Nonsymmetric Eigenvalue Problem routines [$(MPFR_PROFILE_LABEL_$*)]"; \
-	echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../Rgg.in > $@ 2>&1"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../Rgg.in"; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../Rgg.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < ../Rgg.in; \
 	} > $@ 2>&1
 
-Rgd.%.out: ../Rgd.in xeigtstR_mpfr
+Rgd.%.out: ../Rgd.in xeigtstR_mpfr$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
 	fi; \
 	echo "DGD: Testing Nonsymmetric Generalized Eigenvalue Problem driver routine [$(MPFR_PROFILE_LABEL_$*)]"; \
-	echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../Rgd.in > $@ 2>&1"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../Rgd.in"; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../Rgd.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < ../Rgd.in; \
 	} > $@ 2>&1
 
-Rsb.%.out: ../Rsb.in xeigtstR_mpfr
+Rsb.%.out: ../Rsb.in xeigtstR_mpfr$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
 	fi; \
 	echo "SBB: Testing banded Schur decomposition routines [$(MPFR_PROFILE_LABEL_$*)]"; \
-	echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../Rsb.in > $@ 2>&1"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../Rsb.in"; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../Rsb.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < ../Rsb.in; \
 	} > $@ 2>&1
 
-Rsg.%.out: ../Rsg.in xeigtstR_mpfr
+Rsg.%.out: ../Rsg.in xeigtstR_mpfr$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
 	fi; \
 	echo "SGG: Testing Generalized Symmetric Eigenvalue Problem routines [$(MPFR_PROFILE_LABEL_$*)]"; \
-	echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../Rsg.in > $@ 2>&1"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../Rsg.in"; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../Rsg.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < ../Rsg.in; \
 	} > $@ 2>&1
 
-Rbal.%.out: ../Rbal.in xeigtstR_mpfr
+Rbal.%.out: ../Rbal.in xeigtstR_mpfr$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
 	fi; \
 	echo "DGEBAL: Testing the balancing of a real general matrix [$(MPFR_PROFILE_LABEL_$*)]"; \
-	echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../Rbal.in > $@ 2>&1"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../Rbal.in"; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../Rbal.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < ../Rbal.in; \
 	} > $@ 2>&1
 
-Rbak.%.out: ../Rbak.in xeigtstR_mpfr
+Rbak.%.out: ../Rbak.in xeigtstR_mpfr$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
 	fi; \
 	echo "DGEBAK: Testing the back transformation of a real balanced matrix [$(MPFR_PROFILE_LABEL_$*)]"; \
-	echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../Rbak.in > $@ 2>&1"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../Rbak.in"; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../Rbak.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < ../Rbak.in; \
 	} > $@ 2>&1
 
-Rgbal.%.out: ../Rgbal.in xeigtstR_mpfr
+Rgbal.%.out: ../Rgbal.in xeigtstR_mpfr$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
 	fi; \
 	echo "DGGBAL: Testing the balancing of a pair of real general matrices [$(MPFR_PROFILE_LABEL_$*)]"; \
-	echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../Rgbal.in > $@ 2>&1"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../Rgbal.in"; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../Rgbal.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < ../Rgbal.in; \
 	} > $@ 2>&1
 
-Rgbak.%.out: ../Rgbak.in xeigtstR_mpfr
+Rgbak.%.out: ../Rgbak.in xeigtstR_mpfr$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
 	fi; \
 	echo "DGGBAK: Testing the back transformation of a pair of real balanced matrices [$(MPFR_PROFILE_LABEL_$*)]"; \
-	echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../Rgbak.in > $@ 2>&1"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../Rgbak.in"; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../Rgbak.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < ../Rgbak.in; \
 	} > $@ 2>&1
 
-Rbb.%.out: ../Rbb.in xeigtstR_mpfr
+Rbb.%.out: ../Rbb.in xeigtstR_mpfr$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
 	fi; \
 	echo "DBB: Testing banded Singular Value Decomposition routines [$(MPFR_PROFILE_LABEL_$*)]"; \
-	echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../Rbb.in > $@ 2>&1"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../Rbb.in"; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../Rbb.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < ../Rbb.in; \
 	} > $@ 2>&1
 
-Rglm.%.out: ../glm.in xeigtstR_mpfr
+Rglm.%.out: ../glm.in xeigtstR_mpfr$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
 	fi; \
 	echo "GLM: Testing Generalized Linear Regression Model routines [$(MPFR_PROFILE_LABEL_$*)]"; \
-	echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../glm.in > $@ 2>&1"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../glm.in"; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../glm.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < ../glm.in; \
 	} > $@ 2>&1
 
-Rgqr.%.out: ../gqr.in xeigtstR_mpfr
+Rgqr.%.out: ../gqr.in xeigtstR_mpfr$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
 	fi; \
 	echo "GQR: Testing Generalized QR and RQ factorization routines [$(MPFR_PROFILE_LABEL_$*)]"; \
-	echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../gqr.in > $@ 2>&1"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../gqr.in"; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../gqr.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < ../gqr.in; \
 	} > $@ 2>&1
 
-Rgsv.%.out: ../gsv.in xeigtstR_mpfr
+Rgsv.%.out: ../gsv.in xeigtstR_mpfr$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
 	fi; \
 	echo "GSV: Testing Generalized Singular Value Decomposition routines [$(MPFR_PROFILE_LABEL_$*)]"; \
-	echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../gsv.in > $@ 2>&1"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../gsv.in"; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../gsv.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < ../gsv.in; \
 	} > $@ 2>&1
 
-Rcsd.%.out: ../csd.in xeigtstR_mpfr
+Rcsd.%.out: ../csd.in xeigtstR_mpfr$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
 	fi; \
 	echo "CSD: Testing CS Decomposition routines [$(MPFR_PROFILE_LABEL_$*)]"; \
-	echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../csd.in > $@ 2>&1"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../csd.in"; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../csd.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < ../csd.in; \
 	} > $@ 2>&1
 
-Rlse.%.out: ../lse.in xeigtstR_mpfr
+Rlse.%.out: ../lse.in xeigtstR_mpfr$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
 	fi; \
 	echo "LSE: Testing Constrained Linear Least Squares routines [$(MPFR_PROFILE_LABEL_$*)]"; \
-	echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../lse.in > $@ 2>&1"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../lse.in"; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstR_mpfr < ../lse.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < ../lse.in; \
 	} > $@ 2>&1
 
-Cnep.%.out: ../nep.in xeigtstC_mpfr
+Cnep.%.out: ../nep.in xeigtstC_mpfr$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
 	fi; \
 	echo "NEP: Testing Nonsymmetric Eigenvalue Problem routines [$(MPFR_PROFILE_LABEL_$*)]"; \
-	echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../nep.in > $@ 2>&1"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../nep.in"; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../nep.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < ../nep.in; \
 	} > $@ 2>&1
 
-Csep.%.out: ../sep.in xeigtstC_mpfr
+Csep.%.out: ../sep.in xeigtstC_mpfr$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
 	fi; \
 	echo "SEP: Testing Symmetric Eigenvalue Problem routines [$(MPFR_PROFILE_LABEL_$*)]"; \
-	echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../sep.in > $@ 2>&1"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../sep.in"; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../sep.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < ../sep.in; \
 	} > $@ 2>&1
 
-Cse2.%.out: ../se2.in xeigtstC_mpfr
+Cse2.%.out: ../se2.in xeigtstC_mpfr$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
 	fi; \
 	echo "SEP: Testing Symmetric Eigenvalue Problem routines [$(MPFR_PROFILE_LABEL_$*)]"; \
-	echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../se2.in > $@ 2>&1"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../se2.in"; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../se2.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < ../se2.in; \
 	} > $@ 2>&1
 
-Csvd.%.out: ../svd.in xeigtstC_mpfr
+Csvd.%.out: ../svd.in xeigtstC_mpfr$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
 	fi; \
 	echo "SVD: Testing Singular Value Decomposition routines [$(MPFR_PROFILE_LABEL_$*)]"; \
-	echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../svd.in > $@ 2>&1"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../svd.in"; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../svd.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < ../svd.in; \
 	} > $@ 2>&1
 
-Cec.%.out: ../Cec.in xeigtstC_mpfr
+Cec.%.out: ../Cec.in xeigtstC_mpfr$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
 	fi; \
 	echo "DEC: Testing Eigen Condition Routines [$(MPFR_PROFILE_LABEL_$*)]"; \
-	echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../Cec.in > $@ 2>&1"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../Cec.in"; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../Cec.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < ../Cec.in; \
 	} > $@ 2>&1
 
-Ced.%.out: ../Ced.in xeigtstC_mpfr
+Ced.%.out: ../Ced.in xeigtstC_mpfr$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
 	fi; \
 	echo "DEV: Testing Nonsymmetric Eigenvalue Driver [$(MPFR_PROFILE_LABEL_$*)]"; \
-	echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../Ced.in > $@ 2>&1"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../Ced.in"; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../Ced.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < ../Ced.in; \
 	} > $@ 2>&1
 
-Cgg.%.out: ../Cgg.in xeigtstC_mpfr
+Cgg.%.out: ../Cgg.in xeigtstC_mpfr$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
 	fi; \
 	echo "GGS: Testing Generalized Nonsymmetric Eigenvalue Problem routines [$(MPFR_PROFILE_LABEL_$*)]"; \
-	echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../Cgg.in > $@ 2>&1"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../Cgg.in"; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../Cgg.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < ../Cgg.in; \
 	} > $@ 2>&1
 
-Cgd.%.out: ../Cgd.in xeigtstC_mpfr
+Cgd.%.out: ../Cgd.in xeigtstC_mpfr$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
 	fi; \
 	echo "CGD: Testing Nonsymmetric Generalized Eigenvalue Problem driver routine [$(MPFR_PROFILE_LABEL_$*)]"; \
-	echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../Cgd.in > $@ 2>&1"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../Cgd.in"; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../Cgd.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < ../Cgd.in; \
 	} > $@ 2>&1
 
-Csb.%.out: ../Csb.in xeigtstC_mpfr
+Csb.%.out: ../Csb.in xeigtstC_mpfr$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
 	fi; \
 	echo "SBB: Testing banded Schur decomposition routines [$(MPFR_PROFILE_LABEL_$*)]"; \
-	echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../Csb.in > $@ 2>&1"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../Csb.in"; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../Csb.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < ../Csb.in; \
 	} > $@ 2>&1
 
-Csg.%.out: ../Csg.in xeigtstC_mpfr
+Csg.%.out: ../Csg.in xeigtstC_mpfr$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
 	fi; \
 	echo "SGG: Testing Generalized Symmetric Eigenvalue Problem routines [$(MPFR_PROFILE_LABEL_$*)]"; \
-	echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../Csg.in > $@ 2>&1"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../Csg.in"; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../Csg.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < ../Csg.in; \
 	} > $@ 2>&1
 
-Cbal.%.out: ../Cbal.in xeigtstC_mpfr
+Cbal.%.out: ../Cbal.in xeigtstC_mpfr$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
 	fi; \
 	echo "CGEBAL: Testing the balancing of a COMPLEX general matrix [$(MPFR_PROFILE_LABEL_$*)]"; \
-	echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../Cbal.in > $@ 2>&1"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../Cbal.in"; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../Cbal.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < ../Cbal.in; \
 	} > $@ 2>&1
 
-Cbak.%.out: ../Cbak.in xeigtstC_mpfr
+Cbak.%.out: ../Cbak.in xeigtstC_mpfr$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
 	fi; \
 	echo "CGEBAK: Testing the back transformation of a COMPLEX balanced matrix [$(MPFR_PROFILE_LABEL_$*)]"; \
-	echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../Cbak.in > $@ 2>&1"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../Cbak.in"; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../Cbak.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < ../Cbak.in; \
 	} > $@ 2>&1
 
-Cgbal.%.out: ../Cgbal.in xeigtstC_mpfr
+Cgbal.%.out: ../Cgbal.in xeigtstC_mpfr$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
 	fi; \
 	echo "CGGBAL: Testing the balancing of a pair of COMPLEX general matrices [$(MPFR_PROFILE_LABEL_$*)]"; \
-	echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../Cgbal.in > $@ 2>&1"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../Cgbal.in"; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../Cgbal.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < ../Cgbal.in; \
 	} > $@ 2>&1
 
-Cgbak.%.out: ../Cgbak.in xeigtstC_mpfr
+Cgbak.%.out: ../Cgbak.in xeigtstC_mpfr$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
 	fi; \
 	echo "CGGBAK: Testing the back transformation of a pair of COMPLEX balanced matrices [$(MPFR_PROFILE_LABEL_$*)]"; \
-	echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../Cgbak.in > $@ 2>&1"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../Cgbak.in"; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../Cgbak.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < ../Cgbak.in; \
 	} > $@ 2>&1
 
-Cbb.%.out: ../Cbb.in xeigtstC_mpfr
+Cbb.%.out: ../Cbb.in xeigtstC_mpfr$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
 	fi; \
 	echo "CBB: Testing banded Singular Value Decomposition routines [$(MPFR_PROFILE_LABEL_$*)]"; \
-	echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../Cbb.in > $@ 2>&1"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../Cbb.in"; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../Cbb.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < ../Cbb.in; \
 	} > $@ 2>&1
 
-Cglm.%.out: ../glm.in xeigtstC_mpfr
+Cglm.%.out: ../glm.in xeigtstC_mpfr$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
 	fi; \
 	echo "GLM: Testing Generalized Linear Regression Model routines [$(MPFR_PROFILE_LABEL_$*)]"; \
-	echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../glm.in > $@ 2>&1"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../glm.in"; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../glm.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < ../glm.in; \
 	} > $@ 2>&1
 
-Cgqr.%.out: ../gqr.in xeigtstC_mpfr
+Cgqr.%.out: ../gqr.in xeigtstC_mpfr$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
 	fi; \
 	echo "GQR: Testing Generalized QR and RQ factorization routines [$(MPFR_PROFILE_LABEL_$*)]"; \
-	echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../gqr.in > $@ 2>&1"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../gqr.in"; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../gqr.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < ../gqr.in; \
 	} > $@ 2>&1
 
-Cgsv.%.out: ../gsv.in xeigtstC_mpfr
+Cgsv.%.out: ../gsv.in xeigtstC_mpfr$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
 	fi; \
 	echo "GSV: Testing Generalized Singular Value Decomposition routines [$(MPFR_PROFILE_LABEL_$*)]"; \
-	echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../gsv.in > $@ 2>&1"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../gsv.in"; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../gsv.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < ../gsv.in; \
 	} > $@ 2>&1
 
-Ccsd.%.out: ../csd.in xeigtstC_mpfr
+Ccsd.%.out: ../csd.in xeigtstC_mpfr$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
 	fi; \
 	echo "CSD: Testing CS Decomposition routines [$(MPFR_PROFILE_LABEL_$*)]"; \
-	echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../csd.in > $@ 2>&1"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../csd.in"; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../csd.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < ../csd.in; \
 	} > $@ 2>&1
 
-Clse.%.out: ../lse.in xeigtstC_mpfr
+Clse.%.out: ../lse.in xeigtstC_mpfr$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
 	fi; \
 	echo "LSE: Testing Constrained Linear Least Squares routines [$(MPFR_PROFILE_LABEL_$*)]"; \
-	echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../lse.in > $@ 2>&1"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		echo "CMD: $(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../lse.in"; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper ./xeigtstC_mpfr < ../lse.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < ../lse.in; \
 	} > $@ 2>&1
