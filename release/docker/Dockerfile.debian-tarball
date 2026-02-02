@@ -7,19 +7,26 @@ FROM ${BASE}
 RUN apt-get update && apt-get install -y \
     build-essential \
     gfortran \
-    libgmp-dev \
-    libmpfr-dev \
-    libmpc-dev \
-    libblas-dev \
-    liblapack-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Extract and build from tarball
+# Extract tarball
 COPY mplapack-*.tar.gz /tmp/
 WORKDIR /tmp
 RUN tar xzf mplapack-*.tar.gz && rm mplapack-*.tar.gz
 
 WORKDIR /tmp/mplapack-*
-RUN ./configure && make -j$(nproc)
+
+# Detect architecture and set configure options
+RUN ARCH=$(dpkg --print-architecture) && \
+    echo "Detected architecture: $ARCH" && \
+    COMMON_OPTS="--enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes --enable-benchmark=yes" && \
+    if [ "$ARCH" = "amd64" ] || [ "$ARCH" = "i386" ]; then \
+        CONFIGURE_OPTS="$COMMON_OPTS --enable-_Float64x=yes"; \
+    else \
+        CONFIGURE_OPTS="$COMMON_OPTS"; \
+    fi && \
+    echo "Configure options: $CONFIGURE_OPTS" && \
+    ./configure $CONFIGURE_OPTS && \
+    make -j$(nproc)
 
 CMD ["make", "check"]
