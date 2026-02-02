@@ -57,6 +57,52 @@ setup_ccache() {
 
 setup_ccache
 
+
+# Detect host Docker platform (best-effort)
+detect_host_platform() {
+    local m
+    m="$(uname -m)"
+    case "$m" in
+        x86_64|amd64) echo "linux/amd64" ;;
+        aarch64|arm64) echo "linux/arm64" ;;
+        armv7l|armv7*) echo "linux/arm/v7" ;;
+        armv6l|armv6*) echo "linux/arm/v6" ;;
+        ppc64le) echo "linux/ppc64le" ;;
+        s390x) echo "linux/s390x" ;;
+        *) echo "" ;;
+    esac
+}
+
+HOST_PLATFORM="$(detect_host_platform)"
+EMULATE="${EMULATE:-auto}"   # auto|yes|no
+
+# Ensure binfmt/qemu is installed for cross-arch runs (Docker Desktop often has this already)
+ensure_binfmt() {
+    local target="$1"
+    if [[ "$EMULATE" == "no" ]]; then
+        return 1
+    fi
+
+    # If we can't detect host platform, play it safe and attempt to install binfmt in auto mode.
+    if [[ -n "${HOST_PLATFORM:-}" && "$target" == "$HOST_PLATFORM" ]]; then
+        return 0
+    fi
+
+    # Quick sanity check: can we run a trivial container for target arch?
+    if docker run --rm --platform "$target" alpine:3.19 true >/dev/null 2>&1; then
+        return 0
+    fi
+
+    if [[ "$EMULATE" == "auto" || "$EMULATE" == "yes" ]]; then
+        log "Enabling binfmt/qemu for cross-arch ($HOST_PLATFORM -> $target)"
+        docker run --privileged --rm tonistiigi/binfmt:latest --install all >/dev/null 2>&1 || true
+        # Re-test after install
+        docker run --rm --platform "$target" alpine:3.19 true >/dev/null 2>&1
+    else
+        return 1
+    fi
+}
+
 # Check if NVIDIA GPU is available
 check_gpu() {
     if [[ "$USE_GPU" == "no" ]]; then
@@ -112,7 +158,18 @@ build_one() {
     local start=$(date +%s)
     local gpu_flag=""
 
-    # Detect CUDA build
+
+# Cross-architecture support (qemu/binfmt)
+if [[ -n "${HOST_PLATFORM:-}" && "$arch" != "$HOST_PLATFORM" ]]; then
+    if ! ensure_binfmt "$arch"; then
+        log "  (Cross-arch disabled or binfmt unavailable; skipping $name / ${arch_short})"
+        echo "$name,$arch_short,$base,build,SKIPPED,0,$source_type"
+        return 0
+    fi
+    log "  (Cross-arch enabled: $HOST_PLATFORM -> $arch)"
+fi
+
+# Detect CUDA build
     if [[ "$name" == *cuda* ]]; then
         if check_gpu; then
             gpu_flag="--gpus all"
