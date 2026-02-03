@@ -29,168 +29,466 @@ if IS_MACOS
 	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mplapack_qd_testdir) $(prefix)
 endif
 
-check: Rnep.out Rsep.out Rse2.out Rsvd.out Rec.out Red.out Rgg.out Rgd.out Rsb.out Rsg.out Rbal.out Rbak.out Rgbal.out Rgbak.out Rbb.out Rglm.out Rgqr.out Rgsv.out Rcsd.out Rlse.out \
-       Cnep.out Csep.out Cse2.out Csvd.out Cec.out Ced.out Cgg.out Cgd.out Csb.out Csg.out Cbal.out Cbak.out Cgbal.out Cgbak.out Cbb.out Cglm.out Cgqr.out Cgsv.out Ccsd.out Clse.out
+# -----------------------------------------------------------------------------
+# Test sets (base names; outputs are <test>.out)
+# -----------------------------------------------------------------------------
+
+QD_REAL_TESTS = \
+	Rnep Rsep Rse2 Rsvd Rec Red Rgg Rgd Rsb Rsg Rbal Rbak Rgbal Rgbak Rbb Rglm Rgqr Rgsv Rcsd Rlse
+
+QD_COMPLEX_TESTS = \
+	Cnep Csep Cse2 Csvd Cec Ced Cgg Cgd Csb Csg Cbal Cbak Cgbal Cgbak Cbb Cglm Cgqr Cgsv Ccsd Clse
+
+QD_ALL_TESTS = $(QD_REAL_TESTS) $(QD_COMPLEX_TESTS)
+
+# -----------------------------------------------------------------------------
+# Optional valgrind wrapper (toggle from command line)
+# -----------------------------------------------------------------------------
+
+VALGRIND ?=
+VALGRIND_FLAGS ?= --show-leak-kinds=all --track-origins=yes --leak-check=full --error-exitcode=99
+
+# Extra env appended before running the test (last assignment wins)
+QD_EXTRA_ENV ?=
+QD_LABEL ?= qd
+
+# -----------------------------------------------------------------------------
+# Cross-compilation support (wine for MinGW)
+# -----------------------------------------------------------------------------
+if IS_MINGW
+WINE = wine
+else
+WINE =
+endif
+
+# -----------------------------------------------------------------------------
+# Hook into Automake's "make check" (parallel like LIN)
+# -----------------------------------------------------------------------------
+
+# GNU make: allow deferred expansion of prerequisites (Automake may reorder vars/rules)
+.SECONDEXPANSION:
+
+# Force test execution even if *.out already exists
+.PHONY: qd-check FORCE
+FORCE:
+
+QD_EIG_OUTS = $(foreach t,$(QD_ALL_TESTS),$(t).out)
+CLEANFILES = $(QD_EIG_OUTS)
+
+# Re-run all test commands on every "make check" even if *.out already exists.
+$(QD_EIG_OUTS): FORCE
+
+check-local: qd-check
+
+.PRECIOUS: $(QD_EIG_OUTS)
+
+qd-check: $(QD_EIG_OUTS)
+	@echo "$(QD_LABEL) eig tests done: $(QD_ALL_TESTS)"
 
 clean-local:
 	rm -f *.out *~ \#*
 
-Rnep.out: ../nep.in xeigtstR_qd
-	@echo NEP: Testing Nonsymmetric Eigenvalue Problem routines
-	./xeigtstR_qd < ../nep.in > $@ 2>&1
+# -----------------------------------------------------------------------------
+# Test rules (one output per test)
+# -----------------------------------------------------------------------------
 
-Rsep.out: ../sep.in xeigtstR_qd
-	@echo SEP: Testing Symmetric Eigenvalue Problem routines
-	./xeigtstR_qd < ../sep.in > $@ 2>&1
-
-Rse2.out: ../se2.in xeigtstR_qd
-	@echo SEP: Testing Symmetric Eigenvalue Problem routines
-	./xeigtstR_qd < ../se2.in > $@ 2>&1
-
-Rsvd.out: ../svd.in xeigtstR_qd
-	@echo SVD: Testing Singular Value Decomposition routines
-	./xeigtstR_qd < ../svd.in > $@ 2>&1
-
-Rec.out: ../Rec.in xeigtstR_qd
-	@echo DEC: Testing Eigen Condition Routines
-	./xeigtstR_qd < ../Rec.in > $@ 2>&1
-
-Red.out: ../Red.in xeigtstR_qd
-	@echo DEV: Testing Nonsymmetric Eigenvalue Driver
-	./xeigtstR_qd < ../Red.in > $@ 2>&1
-
-Rgg.out: ../Rgg.in xeigtstR_qd
-	@echo DGG: Testing Nonsymmetric Generalized Eigenvalue Problem routines
-	./xeigtstR_qd < ../Rgg.in > $@ 2>&1
-
-Rgd.out: ../Rgd.in xeigtstR_qd
-	@echo DGD: Testing Nonsymmetric Generalized Eigenvalue Problem driver routines
-	./xeigtstR_qd < ../Rgd.in > $@ 2>&1
-
-Rsb.out: ../Rsb.in xeigtstR_qd
-	@echo DSB: Testing Symmetric Eigenvalue Problem routines
-	./xeigtstR_qd < ../Rsb.in > $@ 2>&1
-
-Rsg.out: ../Rsg.in xeigtstR_qd
-	@echo DSG: Testing Symmetric Generalized Eigenvalue Problem routines
-	./xeigtstR_qd < ../Rsg.in > $@ 2>&1
-
-Rbal.out: ../Rbal.in xeigtstR_qd
-	@echo Rgebal: Testing the balancing of a general matrix
-	./xeigtstR_qd < ../Rbal.in > $@ 2>&1
-
-Rbak.out: ../Rbak.in xeigtstR_qd
-	@echo Rgebak: Testing the back transformation of balanced matrix
-	./xeigtstR_qd < ../Rbak.in > $@ 2>&1
-
-Rgbal.out: ../Rgbal.in xeigtstR_qd
-	@echo Rggbal: Testing the balancing of a pair of general matrices
-	./xeigtstR_qd < ../Rgbal.in > $@ 2>&1
-
-Rgbak.out: ../Rgbak.in xeigtstR_qd
-	@echo Rggbak: Testing the back transformation of a pair of balanced matrices
-	./xeigtstR_qd < ../Rgbak.in > $@ 2>&1
-
-Rbb.out: ../Rbb.in xeigtstR_qd
-	@echo DBB: Testing banded Singular Value Decomposition routines
-	./xeigtstR_qd < ../Rbb.in > $@ 2>&1
-
-Rglm.out: ../glm.in xeigtstR_qd
-	@echo GLM: Testing Generalized Linear Regression Model routines
-	./xeigtstR_qd < ../glm.in > $@ 2>&1
-
-Rgqr.out: ../gqr.in xeigtstR_qd
-	@echo GQR: Testing Generalized QR and RQ factorization routines
-	./xeigtstR_qd < ../gqr.in > $@ 2>&1
-
-Rgsv.out: ../gsv.in xeigtstR_qd
-	@echo GSV: Testing Generalized Singular Value Decomposition routines
-	./xeigtstR_qd < ../gsv.in > $@ 2>&1
-
-Rcsd.out: ../csd.in xeigtstR_qd
-	@echo CSD: Testing CS Decomposition routines
-	./xeigtstR_qd < ../csd.in > $@ 2>&1
-
-Rlse.out: ../lse.in xeigtstR_qd
-	@echo LSE: Testing Constrained Linear Least Squares routines
-	./xeigtstR_qd < ../lse.in > $@ 2>&1
-
-Cnep.out: ../nep.in ./xeigtstC_qd
-	@echo NEP: Testing Nonsymmetric Eigenvalue Problem routines
-	./xeigtstC_qd < ../nep.in > $@ 2>&1
-
-Csep.out: ../sep.in ./xeigtstC_qd
-	@echo SEP: Testing Symmetric Eigenvalue Problem routines
-	./xeigtstC_qd < ../sep.in > $@ 2>&1
-
-Cse2.out: ../se2.in ./xeigtstC_qd
-	@echo SEP: Testing Symmetric Eigenvalue Problem routines
-	./xeigtstC_qd < ../se2.in > $@ 2>&1
-
-Csvd.out: ../svd.in ./xeigtstC_qd
-	@echo SVD: Testing Singular Value Decomposition routines
-	./xeigtstC_qd < ../svd.in > $@ 2>&1
-
-Cec.out: ../Cec.in ./xeigtstC_qd
-	@echo CEC: Testing COMPLEX Eigen Condition Routines
-	./xeigtstC_qd < ../Cec.in > $@ 2>&1
-
-Ced.out: ../Ced.in ./xeigtstC_qd
-	@echo CES: Testing COMPLEX Nonsymmetric Schur Form Driver
-	./xeigtstC_qd < ../Ced.in > $@ 2>&1
-
-Cgg.out: ../Cgg.in ./xeigtstC_qd
-	@echo CGG: Testing COMPLEX Nonsymmetric Generalized Eigenvalue Problem routines
-	./xeigtstC_qd < ../Cgg.in > $@ 2>&1
-
-Cgd.out: ../Cgd.in ./xeigtstC_qd
-	@echo CGD: Testing COMPLEX Nonsymmetric Generalized Eigenvalue Problem driver routines
-	./xeigtstC_qd < ../Cgd.in > $@ 2>&1
-
-Csb.out: ../Csb.in ./xeigtstC_qd
-	@echo CHB: Testing Hermitian Eigenvalue Problem routines
-	./xeigtstC_qd < ../Csb.in > $@ 2>&1
-
-Csg.out: ../Csg.in ./xeigtstC_qd
-	@echo CSG: Testing Symmetric Generalized Eigenvalue Problem routines
-	./xeigtstC_qd < ../Csg.in > $@ 2>&1
-
-Cbal.out: ../Cbal.in ./xeigtstC_qd
-	@echo CGEBAL: Testing the balancing of a COMPLEX general matrix
-	./xeigtstC_qd < ../Cbal.in > $@ 2>&1
-
-Cbak.out: ../Cbak.in ./xeigtstC_qd
-	@echo CGEBAK: Testing the back transformation of a COMPLEX balanced matrix
-	./xeigtstC_qd < ../Cbak.in > $@ 2>&1
-
-Cgbal.out: ../Cgbal.in ./xeigtstC_qd
-	@echo CGGBAL: Testing the balancing of a pair of COMPLEX general matrices
-	./xeigtstC_qd < ../Cgbal.in > $@ 2>&1
-
-Cgbak.out: ../Cgbak.in ./xeigtstC_qd
-	@echo CGGBAK: Testing the back transformation of a pair of COMPLEX balanced matrices
-	./xeigtstC_qd < ../Cgbak.in > $@ 2>&1
-
-Cbb.out: ../Cbb.in ./xeigtstC_qd
-	@echo CBB: Testing banded Singular Value Decomposition routines
-	./xeigtstC_qd < ../Cbb.in > $@ 2>&1
-
-Cglm.out: ../glm.in ./xeigtstC_qd
-	@echo GLM: Testing Generalized Linear Regression Model routines
-	./xeigtstC_qd < ../glm.in > $@ 2>&1
-
-Cgqr.out: ../gqr.in ./xeigtstC_qd
-	@echo GQR: Testing Generalized QR and RQ factorization routines
-	./xeigtstC_qd < ../gqr.in > $@ 2>&1
-
-Cgsv.out: ../gsv.in ./xeigtstC_qd
-	@echo GSV: Testing Generalized Singular Value Decomposition routines
-	./xeigtstC_qd < ../gsv.in > $@ 2>&1
-
-Ccsd.out: ../csd.in ./xeigtstC_qd
-	@echo CSD: Testing CS Decomposition routines
-	./xeigtstC_qd < ../csd.in > $@ 2>&1
-
-Clse.out: ../lse.in ./xeigtstC_qd
-	@echo LSE: Testing Constrained Linear Least Squares routines
-	./xeigtstC_qd < ../lse.in > $@ 2>&1
+Rnep.out: ../nep.in xeigtstR_qd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "NEP: Testing Nonsymmetric Eigenvalue Problem routines [$(QD_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(QD_LABEL) ==="; \
+		$(QD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_qd$(EXEEXT) < ../nep.in; \
+	} > $@ 2>&1
+Rsep.out: ../sep.in xeigtstR_qd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "SEP: Testing Symmetric Eigenvalue Problem routines [$(QD_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(QD_LABEL) ==="; \
+		$(QD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_qd$(EXEEXT) < ../sep.in; \
+	} > $@ 2>&1
+Rse2.out: ../se2.in xeigtstR_qd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "SEP: Testing Symmetric Eigenvalue Problem routines [$(QD_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(QD_LABEL) ==="; \
+		$(QD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_qd$(EXEEXT) < ../se2.in; \
+	} > $@ 2>&1
+Rsvd.out: ../svd.in xeigtstR_qd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "SVD: Testing Singular Value Decomposition routines [$(QD_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(QD_LABEL) ==="; \
+		$(QD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_qd$(EXEEXT) < ../svd.in; \
+	} > $@ 2>&1
+Rec.out: ../Rec.in xeigtstR_qd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "DEC: Testing Eigen Condition Routines [$(QD_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(QD_LABEL) ==="; \
+		$(QD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_qd$(EXEEXT) < ../Rec.in; \
+	} > $@ 2>&1
+Red.out: ../Red.in xeigtstR_qd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "DEV: Testing Nonsymmetric Eigenvalue Driver [$(QD_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(QD_LABEL) ==="; \
+		$(QD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_qd$(EXEEXT) < ../Red.in; \
+	} > $@ 2>&1
+Rgg.out: ../Rgg.in xeigtstR_qd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "DGG: Testing Nonsymmetric Generalized Eigenvalue Problem routines [$(QD_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(QD_LABEL) ==="; \
+		$(QD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_qd$(EXEEXT) < ../Rgg.in; \
+	} > $@ 2>&1
+Rgd.out: ../Rgd.in xeigtstR_qd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "DGD: Testing Nonsymmetric Generalized Eigenvalue Problem driver routines [$(QD_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(QD_LABEL) ==="; \
+		$(QD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_qd$(EXEEXT) < ../Rgd.in; \
+	} > $@ 2>&1
+Rsb.out: ../Rsb.in xeigtstR_qd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "DSB: Testing Symmetric Eigenvalue Problem routines [$(QD_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(QD_LABEL) ==="; \
+		$(QD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_qd$(EXEEXT) < ../Rsb.in; \
+	} > $@ 2>&1
+Rsg.out: ../Rsg.in xeigtstR_qd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "DSG: Testing Symmetric Generalized Eigenvalue Problem routines [$(QD_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(QD_LABEL) ==="; \
+		$(QD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_qd$(EXEEXT) < ../Rsg.in; \
+	} > $@ 2>&1
+Rbal.out: ../Rbal.in xeigtstR_qd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "Rgebal: Testing the balancing of a general matrix [$(QD_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(QD_LABEL) ==="; \
+		$(QD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_qd$(EXEEXT) < ../Rbal.in; \
+	} > $@ 2>&1
+Rbak.out: ../Rbak.in xeigtstR_qd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "Rgebak: Testing the back transformation of balanced matrix [$(QD_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(QD_LABEL) ==="; \
+		$(QD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_qd$(EXEEXT) < ../Rbak.in; \
+	} > $@ 2>&1
+Rgbal.out: ../Rgbal.in xeigtstR_qd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "Rggbal: Testing the balancing of a pair of general matrices [$(QD_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(QD_LABEL) ==="; \
+		$(QD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_qd$(EXEEXT) < ../Rgbal.in; \
+	} > $@ 2>&1
+Rgbak.out: ../Rgbak.in xeigtstR_qd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "Rggbak: Testing the back transformation of a pair of balanced matrices [$(QD_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(QD_LABEL) ==="; \
+		$(QD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_qd$(EXEEXT) < ../Rgbak.in; \
+	} > $@ 2>&1
+Rbb.out: ../Rbb.in xeigtstR_qd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "DBB: Testing banded Singular Value Decomposition routines [$(QD_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(QD_LABEL) ==="; \
+		$(QD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_qd$(EXEEXT) < ../Rbb.in; \
+	} > $@ 2>&1
+Rglm.out: ../glm.in xeigtstR_qd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "GLM: Testing Generalized Linear Regression Model routines [$(QD_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(QD_LABEL) ==="; \
+		$(QD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_qd$(EXEEXT) < ../glm.in; \
+	} > $@ 2>&1
+Rgqr.out: ../gqr.in xeigtstR_qd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "GQR: Testing Generalized QR and RQ factorization routines [$(QD_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(QD_LABEL) ==="; \
+		$(QD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_qd$(EXEEXT) < ../gqr.in; \
+	} > $@ 2>&1
+Rgsv.out: ../gsv.in xeigtstR_qd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "GSV: Testing Generalized Singular Value Decomposition routines [$(QD_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(QD_LABEL) ==="; \
+		$(QD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_qd$(EXEEXT) < ../gsv.in; \
+	} > $@ 2>&1
+Rcsd.out: ../csd.in xeigtstR_qd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "CSD: Testing CS Decomposition routines [$(QD_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(QD_LABEL) ==="; \
+		$(QD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_qd$(EXEEXT) < ../csd.in; \
+	} > $@ 2>&1
+Rlse.out: ../lse.in xeigtstR_qd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "LSE: Testing Constrained Linear Least Squares routines [$(QD_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(QD_LABEL) ==="; \
+		$(QD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_qd$(EXEEXT) < ../lse.in; \
+	} > $@ 2>&1
+Cnep.out: ../nep.in xeigtstC_qd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "NEP: Testing Nonsymmetric Eigenvalue Problem routines [$(QD_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(QD_LABEL) ==="; \
+		$(QD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_qd$(EXEEXT) < ../nep.in; \
+	} > $@ 2>&1
+Csep.out: ../sep.in xeigtstC_qd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "SEP: Testing Symmetric Eigenvalue Problem routines [$(QD_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(QD_LABEL) ==="; \
+		$(QD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_qd$(EXEEXT) < ../sep.in; \
+	} > $@ 2>&1
+Cse2.out: ../se2.in xeigtstC_qd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "SEP: Testing Symmetric Eigenvalue Problem routines [$(QD_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(QD_LABEL) ==="; \
+		$(QD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_qd$(EXEEXT) < ../se2.in; \
+	} > $@ 2>&1
+Csvd.out: ../svd.in xeigtstC_qd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "SVD: Testing Singular Value Decomposition routines [$(QD_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(QD_LABEL) ==="; \
+		$(QD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_qd$(EXEEXT) < ../svd.in; \
+	} > $@ 2>&1
+Cec.out: ../Cec.in xeigtstC_qd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "CEC: Testing COMPLEX Eigen Condition Routines [$(QD_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(QD_LABEL) ==="; \
+		$(QD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_qd$(EXEEXT) < ../Cec.in; \
+	} > $@ 2>&1
+Ced.out: ../Ced.in xeigtstC_qd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "CES: Testing COMPLEX Nonsymmetric Schur Form Driver [$(QD_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(QD_LABEL) ==="; \
+		$(QD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_qd$(EXEEXT) < ../Ced.in; \
+	} > $@ 2>&1
+Cgg.out: ../Cgg.in xeigtstC_qd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "CGG: Testing COMPLEX Nonsymmetric Generalized Eigenvalue Problem routines [$(QD_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(QD_LABEL) ==="; \
+		$(QD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_qd$(EXEEXT) < ../Cgg.in; \
+	} > $@ 2>&1
+Cgd.out: ../Cgd.in xeigtstC_qd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "CGD: Testing COMPLEX Nonsymmetric Generalized Eigenvalue Problem driver routines [$(QD_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(QD_LABEL) ==="; \
+		$(QD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_qd$(EXEEXT) < ../Cgd.in; \
+	} > $@ 2>&1
+Csb.out: ../Csb.in xeigtstC_qd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "CHB: Testing Hermitian Eigenvalue Problem routines [$(QD_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(QD_LABEL) ==="; \
+		$(QD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_qd$(EXEEXT) < ../Csb.in; \
+	} > $@ 2>&1
+Csg.out: ../Csg.in xeigtstC_qd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "CSG: Testing Symmetric Generalized Eigenvalue Problem routines [$(QD_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(QD_LABEL) ==="; \
+		$(QD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_qd$(EXEEXT) < ../Csg.in; \
+	} > $@ 2>&1
+Cbal.out: ../Cbal.in xeigtstC_qd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "CGEBAL: Testing the balancing of a COMPLEX general matrix [$(QD_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(QD_LABEL) ==="; \
+		$(QD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_qd$(EXEEXT) < ../Cbal.in; \
+	} > $@ 2>&1
+Cbak.out: ../Cbak.in xeigtstC_qd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "CGEBAK: Testing the back transformation of a COMPLEX balanced matrix [$(QD_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(QD_LABEL) ==="; \
+		$(QD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_qd$(EXEEXT) < ../Cbak.in; \
+	} > $@ 2>&1
+Cgbal.out: ../Cgbal.in xeigtstC_qd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "CGGBAL: Testing the balancing of a pair of COMPLEX general matrices [$(QD_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(QD_LABEL) ==="; \
+		$(QD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_qd$(EXEEXT) < ../Cgbal.in; \
+	} > $@ 2>&1
+Cgbak.out: ../Cgbak.in xeigtstC_qd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "CGGBAK: Testing the back transformation of a pair of COMPLEX balanced matrices [$(QD_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(QD_LABEL) ==="; \
+		$(QD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_qd$(EXEEXT) < ../Cgbak.in; \
+	} > $@ 2>&1
+Cbb.out: ../Cbb.in xeigtstC_qd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "CBB: Testing banded Singular Value Decomposition routines [$(QD_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(QD_LABEL) ==="; \
+		$(QD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_qd$(EXEEXT) < ../Cbb.in; \
+	} > $@ 2>&1
+Cglm.out: ../glm.in xeigtstC_qd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "GLM: Testing Generalized Linear Regression Model routines [$(QD_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(QD_LABEL) ==="; \
+		$(QD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_qd$(EXEEXT) < ../glm.in; \
+	} > $@ 2>&1
+Cgqr.out: ../gqr.in xeigtstC_qd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "GQR: Testing Generalized QR and RQ factorization routines [$(QD_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(QD_LABEL) ==="; \
+		$(QD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_qd$(EXEEXT) < ../gqr.in; \
+	} > $@ 2>&1
+Cgsv.out: ../gsv.in xeigtstC_qd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "GSV: Testing Generalized Singular Value Decomposition routines [$(QD_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(QD_LABEL) ==="; \
+		$(QD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_qd$(EXEEXT) < ../gsv.in; \
+	} > $@ 2>&1
+Ccsd.out: ../csd.in xeigtstC_qd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "CSD: Testing CS Decomposition routines [$(QD_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(QD_LABEL) ==="; \
+		$(QD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_qd$(EXEEXT) < ../csd.in; \
+	} > $@ 2>&1
+Clse.out: ../lse.in xeigtstC_qd$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "LSE: Testing Constrained Linear Least Squares routines [$(QD_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(QD_LABEL) ==="; \
+		$(QD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_qd$(EXEEXT) < ../lse.in; \
+	} > $@ 2>&1

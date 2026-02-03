@@ -23,168 +23,472 @@ xeigtstC_double_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke 
 xeigtstC_double_LDFLAGS += -Wl,-rpath,$(libdir)
 xeigtstC_double_CXXFLAGS = $(cxxflags)
 
-check: Rnep.out Rsep.out Rse2.out Rsvd.out Rec.out Red.out Rgg.out Rgd.out Rsb.out Rsg.out Rbal.out Rbak.out Rgbal.out Rgbak.out Rbb.out Rglm.out Rgqr.out Rgsv.out Rcsd.out Rlse.out \
-       Cnep.out Csep.out Cse2.out Csvd.out Cec.out Ced.out Cgg.out Cgd.out Csb.out Csg.out Cbal.out Cbak.out Cgbal.out Cgbak.out Cbb.out Cglm.out Cgqr.out Cgsv.out Ccsd.out Clse.out
+
+install-data-hook:
+if IS_MACOS
+	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mplapack_double_testdir) $(prefix)
+endif
+
+# -----------------------------------------------------------------------------
+# Test sets (base names; outputs are <test>.out)
+# -----------------------------------------------------------------------------
+
+DOUBLE_REAL_TESTS = \
+	Rnep Rsep Rse2 Rsvd Rec Red Rgg Rgd Rsb Rsg Rbal Rbak Rgbal Rgbak Rbb Rglm Rgqr Rgsv Rcsd Rlse
+
+DOUBLE_COMPLEX_TESTS = \
+	Cnep Csep Cse2 Csvd Cec Ced Cgg Cgd Csb Csg Cbal Cbak Cgbal Cgbak Cbb Cglm Cgqr Cgsv Ccsd Clse
+
+DOUBLE_ALL_TESTS = $(DOUBLE_REAL_TESTS) $(DOUBLE_COMPLEX_TESTS)
+
+# -----------------------------------------------------------------------------
+# Optional valgrind wrapper (toggle from command line)
+# -----------------------------------------------------------------------------
+
+VALGRIND ?=
+VALGRIND_FLAGS ?= --show-leak-kinds=all --track-origins=yes --leak-check=full --error-exitcode=99
+
+# Extra env appended before running the test (last assignment wins)
+DOUBLE_EXTRA_ENV ?=
+DOUBLE_LABEL ?= double
+
+# -----------------------------------------------------------------------------
+# Cross-compilation support (wine for MinGW)
+# -----------------------------------------------------------------------------
+if IS_MINGW
+WINE = wine
+else
+WINE =
+endif
+
+# -----------------------------------------------------------------------------
+# Hook into Automake's "make check" (parallel like LIN)
+# -----------------------------------------------------------------------------
+
+# GNU make: allow deferred expansion of prerequisites (Automake may reorder vars/rules)
+.SECONDEXPANSION:
+
+# Force test execution even if *.out already exists
+.PHONY: double-check FORCE
+FORCE:
+
+DOUBLE_EIG_OUTS = $(foreach t,$(DOUBLE_ALL_TESTS),$(t).out)
+CLEANFILES = $(DOUBLE_EIG_OUTS)
+
+# Re-run all test commands on every "make check" even if *.out already exists.
+$(DOUBLE_EIG_OUTS): FORCE
+
+check-local: double-check
+
+.PRECIOUS: $(DOUBLE_EIG_OUTS)
+
+double-check: $(DOUBLE_EIG_OUTS)
+	@echo "$(DOUBLE_LABEL) eig tests done: $(DOUBLE_ALL_TESTS)"
 
 clean-local:
 	rm -f *.out *~ \#*
 
-Rnep.out: ../nep.in xeigtstR_double
-	@echo NEP: Testing Nonsymmetric Eigenvalue Problem routines
-	./xeigtstR_double < ../nep.in > $@ 2>&1
+# -----------------------------------------------------------------------------
+# Test rules (one output per test)
+# -----------------------------------------------------------------------------
 
-Rsep.out: ../sep.in xeigtstR_double
-	@echo SEP: Testing Symmetric Eigenvalue Problem routines
-	./xeigtstR_double < ../sep.in > $@ 2>&1
-
-Rse2.out: ../se2.in xeigtstR_double
-	@echo SEP: Testing Symmetric Eigenvalue Problem routines
-	./xeigtstR_double < ../se2.in > $@ 2>&1
-
-Rsvd.out: ../svd.in xeigtstR_double
-	@echo SVD: Testing Singular Value Decomposition routines
-	./xeigtstR_double < ../svd.in > $@ 2>&1
-
-Rec.out: ../Rec.in xeigtstR_double
-	@echo DEC: Testing Eigen Condition Routines
-	./xeigtstR_double < ../Rec.in > $@ 2>&1
-
-Red.out: ../Red.in xeigtstR_double
-	@echo DEV: Testing Nonsymmetric Eigenvalue Driver
-	./xeigtstR_double < ../Red.in > $@ 2>&1
-
-Rgg.out: ../Rgg.in xeigtstR_double
-	@echo DGG: Testing Nonsymmetric Generalized Eigenvalue Problem routines
-	./xeigtstR_double < ../Rgg.in > $@ 2>&1
-
-Rgd.out: ../Rgd.in xeigtstR_double
-	@echo DGD: Testing Nonsymmetric Generalized Eigenvalue Problem driver routines
-	./xeigtstR_double < ../Rgd.in > $@ 2>&1
-
-Rsb.out: ../Rsb.in xeigtstR_double
-	@echo DSB: Testing Symmetric Eigenvalue Problem routines
-	./xeigtstR_double < ../Rsb.in > $@ 2>&1
-
-Rsg.out: ../Rsg.in xeigtstR_double
-	@echo DSG: Testing Symmetric Generalized Eigenvalue Problem routines
-	./xeigtstR_double < ../Rsg.in > $@ 2>&1
-
-Rbal.out: ../Rbal_double.in xeigtstR_double
-	@echo Rgebal: Testing the balancing of a general matrix
-	./xeigtstR_double < ../Rbal_double.in > $@ 2>&1
-
-Rbak.out: ../Rbak.in xeigtstR_double
-	@echo Rgebak: Testing the back transformation of balanced matrix
-	./xeigtstR_double < ../Rbak.in > $@ 2>&1
-
-Rgbal.out: ../Rgbal.in xeigtstR_double
-	@echo Rggbal: Testing the balancing of a pair of general matrices
-	./xeigtstR_double < ../Rgbal.in > $@ 2>&1
-
-Rgbak.out: ../Rgbak.in xeigtstR_double
-	@echo Rggbak: Testing the back transformation of a pair of balanced matrices
-	./xeigtstR_double < ../Rgbak.in > $@ 2>&1
-
-Rbb.out: ../Rbb.in xeigtstR_double
-	@echo DBB: Testing banded Singular Value Decomposition routines
-	./xeigtstR_double < ../Rbb.in > $@ 2>&1
-
-Rglm.out: ../glm.in xeigtstR_double
-	@echo GLM: Testing Generalized Linear Regression Model routines
-	./xeigtstR_double < ../glm.in > $@ 2>&1
-
-Rgqr.out: ../gqr.in xeigtstR_double
-	@echo GQR: Testing Generalized QR and RQ factorization routines
-	./xeigtstR_double < ../gqr.in > $@ 2>&1
-
-Rgsv.out: ../gsv.in xeigtstR_double
-	@echo GSV: Testing Generalized Singular Value Decomposition routines
-	./xeigtstR_double < ../gsv.in > $@ 2>&1
-
-Rcsd.out: ../csd.in xeigtstR_double
-	@echo CSD: Testing CS Decomposition routines
-	./xeigtstR_double < ../csd.in > $@ 2>&1
-
-Rlse.out: ../lse.in xeigtstR_double
-	@echo LSE: Testing Constrained Linear Least Squares routines
-	./xeigtstR_double < ../lse.in > $@ 2>&1
-
-Cnep.out: ../nep.in ./xeigtstC_double
-	@echo NEP: Testing Nonsymmetric Eigenvalue Problem routines
-	./xeigtstC_double < ../nep.in > $@ 2>&1
-
-Csep.out: ../sep.in ./xeigtstC_double
-	@echo SEP: Testing Symmetric Eigenvalue Problem routines
-	./xeigtstC_double < ../sep.in > $@ 2>&1
-
-Cse2.out: ../se2.in ./xeigtstC_double
-	@echo SEP: Testing Symmetric Eigenvalue Problem routines
-	./xeigtstC_double < ../se2.in > $@ 2>&1
-
-Csvd.out: ../svd.in ./xeigtstC_double
-	@echo SVD: Testing Singular Value Decomposition routines
-	./xeigtstC_double < ../svd.in > $@ 2>&1
-
-Cec.out: ../Cec.in ./xeigtstC_double
-	@echo CEC: Testing COMPLEX Eigen Condition Routines
-	./xeigtstC_double < ../Cec.in > $@ 2>&1
-
-Ced.out: ../Ced.in ./xeigtstC_double
-	@echo CES: Testing COMPLEX Nonsymmetric Schur Form Driver
-	./xeigtstC_double < ../Ced.in > $@ 2>&1
-
-Cgg.out: ../Cgg.in ./xeigtstC_double
-	@echo CGG: Testing COMPLEX Nonsymmetric Generalized Eigenvalue Problem routines
-	./xeigtstC_double < ../Cgg.in > $@ 2>&1
-
-Cgd.out: ../Cgd.in ./xeigtstC_double
-	@echo CGD: Testing COMPLEX Nonsymmetric Generalized Eigenvalue Problem driver routines
-	./xeigtstC_double < ../Cgd.in > $@ 2>&1
-
-Csb.out: ../Csb.in ./xeigtstC_double
-	@echo CHB: Testing Hermitian Eigenvalue Problem routines
-	./xeigtstC_double < ../Csb.in > $@ 2>&1
-
-Csg.out: ../Csg.in ./xeigtstC_double
-	@echo CSG: Testing Symmetric Generalized Eigenvalue Problem routines
-	./xeigtstC_double < ../Csg.in > $@ 2>&1
-
-Cbal.out: ../Cbal_double.in ./xeigtstC_double
-	@echo CGEBAL: Testing the balancing of a COMPLEX general matrix
-	./xeigtstC_double < ../Cbal_double.in > $@ 2>&1
-
-Cbak.out: ../Cbak.in ./xeigtstC_double
-	@echo CGEBAK: Testing the back transformation of a COMPLEX balanced matrix
-	./xeigtstC_double < ../Cbak.in > $@ 2>&1
-
-Cgbal.out: ../Cgbal.in ./xeigtstC_double
-	@echo CGGBAL: Testing the balancing of a pair of COMPLEX general matrices
-	./xeigtstC_double < ../Cgbal.in > $@ 2>&1
-
-Cgbak.out: ../Cgbak.in ./xeigtstC_double
-	@echo CGGBAK: Testing the back transformation of a pair of COMPLEX balanced matrices
-	./xeigtstC_double < ../Cgbak.in > $@ 2>&1
-
-Cbb.out: ../Cbb.in ./xeigtstC_double
-	@echo CBB: Testing banded Singular Value Decomposition routines
-	./xeigtstC_double < ../Cbb.in > $@ 2>&1
-
-Cglm.out: ../glm.in ./xeigtstC_double
-	@echo GLM: Testing Generalized Linear Regression Model routines
-	./xeigtstC_double < ../glm.in > $@ 2>&1
-
-Cgqr.out: ../gqr.in ./xeigtstC_double
-	@echo GQR: Testing Generalized QR and RQ factorization routines
-	./xeigtstC_double < ../gqr.in > $@ 2>&1
-
-Cgsv.out: ../gsv.in ./xeigtstC_double
-	@echo GSV: Testing Generalized Singular Value Decomposition routines
-	./xeigtstC_double < ../gsv.in > $@ 2>&1
-
-Ccsd.out: ../csd.in ./xeigtstC_double
-	@echo CSD: Testing CS Decomposition routines
-	./xeigtstC_double < ../csd.in > $@ 2>&1
-
-Clse.out: ../lse.in ./xeigtstC_double
-	@echo LSE: Testing Constrained Linear Least Squares routines
-	./xeigtstC_double < ../lse.in > $@ 2>&1
+Rnep.out: ../nep.in xeigtstR_double$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "NEP: Testing Nonsymmetric Eigenvalue Problem routines [$(DOUBLE_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(DOUBLE_LABEL) ==="; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < ../nep.in; \
+	} > $@ 2>&1
+Rsep.out: ../sep.in xeigtstR_double$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "SEP: Testing Symmetric Eigenvalue Problem routines [$(DOUBLE_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(DOUBLE_LABEL) ==="; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < ../sep.in; \
+	} > $@ 2>&1
+Rse2.out: ../se2.in xeigtstR_double$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "SEP: Testing Symmetric Eigenvalue Problem routines [$(DOUBLE_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(DOUBLE_LABEL) ==="; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < ../se2.in; \
+	} > $@ 2>&1
+Rsvd.out: ../svd.in xeigtstR_double$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "SVD: Testing Singular Value Decomposition routines [$(DOUBLE_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(DOUBLE_LABEL) ==="; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < ../svd.in; \
+	} > $@ 2>&1
+Rec.out: ../Rec.in xeigtstR_double$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "DEC: Testing Eigen Condition Routines [$(DOUBLE_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(DOUBLE_LABEL) ==="; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < ../Rec.in; \
+	} > $@ 2>&1
+Red.out: ../Red.in xeigtstR_double$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "DEV: Testing Nonsymmetric Eigenvalue Driver [$(DOUBLE_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(DOUBLE_LABEL) ==="; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < ../Red.in; \
+	} > $@ 2>&1
+Rgg.out: ../Rgg.in xeigtstR_double$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "DGG: Testing Nonsymmetric Generalized Eigenvalue Problem routines [$(DOUBLE_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(DOUBLE_LABEL) ==="; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < ../Rgg.in; \
+	} > $@ 2>&1
+Rgd.out: ../Rgd.in xeigtstR_double$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "DGD: Testing Nonsymmetric Generalized Eigenvalue Problem driver routines [$(DOUBLE_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(DOUBLE_LABEL) ==="; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < ../Rgd.in; \
+	} > $@ 2>&1
+Rsb.out: ../Rsb.in xeigtstR_double$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "DSB: Testing Symmetric Eigenvalue Problem routines [$(DOUBLE_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(DOUBLE_LABEL) ==="; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < ../Rsb.in; \
+	} > $@ 2>&1
+Rsg.out: ../Rsg.in xeigtstR_double$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "DSG: Testing Symmetric Generalized Eigenvalue Problem routines [$(DOUBLE_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(DOUBLE_LABEL) ==="; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < ../Rsg.in; \
+	} > $@ 2>&1
+Rbal.out: ../Rbal_double.in xeigtstR_double$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "Rgebal: Testing the balancing of a general matrix [$(DOUBLE_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(DOUBLE_LABEL) ==="; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < ../Rbal_double.in; \
+	} > $@ 2>&1
+Rbak.out: ../Rbak.in xeigtstR_double$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "Rgebak: Testing the back transformation of balanced matrix [$(DOUBLE_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(DOUBLE_LABEL) ==="; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < ../Rbak.in; \
+	} > $@ 2>&1
+Rgbal.out: ../Rgbal.in xeigtstR_double$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "Rggbal: Testing the balancing of a pair of general matrices [$(DOUBLE_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(DOUBLE_LABEL) ==="; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < ../Rgbal.in; \
+	} > $@ 2>&1
+Rgbak.out: ../Rgbak.in xeigtstR_double$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "Rggbak: Testing the back transformation of a pair of balanced matrices [$(DOUBLE_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(DOUBLE_LABEL) ==="; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < ../Rgbak.in; \
+	} > $@ 2>&1
+Rbb.out: ../Rbb.in xeigtstR_double$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "DBB: Testing banded Singular Value Decomposition routines [$(DOUBLE_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(DOUBLE_LABEL) ==="; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < ../Rbb.in; \
+	} > $@ 2>&1
+Rglm.out: ../glm.in xeigtstR_double$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "GLM: Testing Generalized Linear Regression Model routines [$(DOUBLE_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(DOUBLE_LABEL) ==="; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < ../glm.in; \
+	} > $@ 2>&1
+Rgqr.out: ../gqr.in xeigtstR_double$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "GQR: Testing Generalized QR and RQ factorization routines [$(DOUBLE_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(DOUBLE_LABEL) ==="; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < ../gqr.in; \
+	} > $@ 2>&1
+Rgsv.out: ../gsv.in xeigtstR_double$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "GSV: Testing Generalized Singular Value Decomposition routines [$(DOUBLE_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(DOUBLE_LABEL) ==="; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < ../gsv.in; \
+	} > $@ 2>&1
+Rcsd.out: ../csd.in xeigtstR_double$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "CSD: Testing CS Decomposition routines [$(DOUBLE_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(DOUBLE_LABEL) ==="; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < ../csd.in; \
+	} > $@ 2>&1
+Rlse.out: ../lse.in xeigtstR_double$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "LSE: Testing Constrained Linear Least Squares routines [$(DOUBLE_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(DOUBLE_LABEL) ==="; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < ../lse.in; \
+	} > $@ 2>&1
+Cnep.out: ../nep.in xeigtstC_double$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "NEP: Testing Nonsymmetric Eigenvalue Problem routines [$(DOUBLE_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(DOUBLE_LABEL) ==="; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < ../nep.in; \
+	} > $@ 2>&1
+Csep.out: ../sep.in xeigtstC_double$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "SEP: Testing Symmetric Eigenvalue Problem routines [$(DOUBLE_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(DOUBLE_LABEL) ==="; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < ../sep.in; \
+	} > $@ 2>&1
+Cse2.out: ../se2.in xeigtstC_double$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "SEP: Testing Symmetric Eigenvalue Problem routines [$(DOUBLE_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(DOUBLE_LABEL) ==="; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < ../se2.in; \
+	} > $@ 2>&1
+Csvd.out: ../svd.in xeigtstC_double$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "SVD: Testing Singular Value Decomposition routines [$(DOUBLE_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(DOUBLE_LABEL) ==="; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < ../svd.in; \
+	} > $@ 2>&1
+Cec.out: ../Cec.in xeigtstC_double$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "CEC: Testing COMPLEX Eigen Condition Routines [$(DOUBLE_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(DOUBLE_LABEL) ==="; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < ../Cec.in; \
+	} > $@ 2>&1
+Ced.out: ../Ced.in xeigtstC_double$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "CES: Testing COMPLEX Nonsymmetric Schur Form Driver [$(DOUBLE_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(DOUBLE_LABEL) ==="; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < ../Ced.in; \
+	} > $@ 2>&1
+Cgg.out: ../Cgg.in xeigtstC_double$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "CGG: Testing COMPLEX Nonsymmetric Generalized Eigenvalue Problem routines [$(DOUBLE_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(DOUBLE_LABEL) ==="; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < ../Cgg.in; \
+	} > $@ 2>&1
+Cgd.out: ../Cgd.in xeigtstC_double$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "CGD: Testing COMPLEX Nonsymmetric Generalized Eigenvalue Problem driver routines [$(DOUBLE_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(DOUBLE_LABEL) ==="; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < ../Cgd.in; \
+	} > $@ 2>&1
+Csb.out: ../Csb.in xeigtstC_double$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "CHB: Testing Hermitian Eigenvalue Problem routines [$(DOUBLE_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(DOUBLE_LABEL) ==="; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < ../Csb.in; \
+	} > $@ 2>&1
+Csg.out: ../Csg.in xeigtstC_double$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "CSG: Testing Symmetric Generalized Eigenvalue Problem routines [$(DOUBLE_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(DOUBLE_LABEL) ==="; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < ../Csg.in; \
+	} > $@ 2>&1
+Cbal.out: ../Cbal_double.in xeigtstC_double$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "CGEBAL: Testing the balancing of a COMPLEX general matrix [$(DOUBLE_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(DOUBLE_LABEL) ==="; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < ../Cbal_double.in; \
+	} > $@ 2>&1
+Cbak.out: ../Cbak.in xeigtstC_double$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "CGEBAK: Testing the back transformation of a COMPLEX balanced matrix [$(DOUBLE_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(DOUBLE_LABEL) ==="; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < ../Cbak.in; \
+	} > $@ 2>&1
+Cgbal.out: ../Cgbal.in xeigtstC_double$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "CGGBAL: Testing the balancing of a pair of COMPLEX general matrices [$(DOUBLE_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(DOUBLE_LABEL) ==="; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < ../Cgbal.in; \
+	} > $@ 2>&1
+Cgbak.out: ../Cgbak.in xeigtstC_double$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "CGGBAK: Testing the back transformation of a pair of COMPLEX balanced matrices [$(DOUBLE_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(DOUBLE_LABEL) ==="; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < ../Cgbak.in; \
+	} > $@ 2>&1
+Cbb.out: ../Cbb.in xeigtstC_double$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "CBB: Testing banded Singular Value Decomposition routines [$(DOUBLE_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(DOUBLE_LABEL) ==="; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < ../Cbb.in; \
+	} > $@ 2>&1
+Cglm.out: ../glm.in xeigtstC_double$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "GLM: Testing Generalized Linear Regression Model routines [$(DOUBLE_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(DOUBLE_LABEL) ==="; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < ../glm.in; \
+	} > $@ 2>&1
+Cgqr.out: ../gqr.in xeigtstC_double$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "GQR: Testing Generalized QR and RQ factorization routines [$(DOUBLE_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(DOUBLE_LABEL) ==="; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < ../gqr.in; \
+	} > $@ 2>&1
+Cgsv.out: ../gsv.in xeigtstC_double$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "GSV: Testing Generalized Singular Value Decomposition routines [$(DOUBLE_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(DOUBLE_LABEL) ==="; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < ../gsv.in; \
+	} > $@ 2>&1
+Ccsd.out: ../csd.in xeigtstC_double$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "CSD: Testing CS Decomposition routines [$(DOUBLE_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(DOUBLE_LABEL) ==="; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < ../csd.in; \
+	} > $@ 2>&1
+Clse.out: ../lse.in xeigtstC_double$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "LSE: Testing Constrained Linear Least Squares routines [$(DOUBLE_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(DOUBLE_LABEL) ==="; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < ../lse.in; \
+	} > $@ 2>&1

@@ -24,168 +24,509 @@ xeigtstC__Float64x_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapac
 xeigtstC__Float64x_LDFLAGS += -Wl,-rpath,$(libdir)
 xeigtstC__Float64x_CXXFLAGS = $(cxxflags)
 
-check: Rnep.out Rsep.out Rse2.out Rsvd.out Rec.out Red.out Rgg.out Rgd.out Rsb.out Rsg.out Rbal.out Rbak.out Rgbal.out Rgbak.out Rbb.out Rglm.out Rgqr.out Rgsv.out Rcsd.out Rlse.out \
-       Cnep.out Csep.out Cse2.out Csvd.out Cec.out Ced.out Cgg.out Cgd.out Csb.out Csg.out Cbal.out Cbak.out Cgbal.out Cgbak.out Cbb.out Cglm.out Cgqr.out Cgsv.out Ccsd.out Clse.out
+install-data-hook:
+if IS_MACOS
+	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mplapack__Float64x_testdir) $(prefix)
+endif
+
+# -----------------------------------------------------------------------------
+# Test sets (base names; outputs are <test>.out)
+# -----------------------------------------------------------------------------
+
+FLOAT64X_REAL_TESTS = \
+	Rnep Rsep Rse2 Rsvd Rec Red Rgg Rgd Rsb Rsg Rbal Rbak Rgbal Rgbak Rbb Rglm Rgqr Rgsv Rcsd Rlse
+
+FLOAT64X_COMPLEX_TESTS = \
+	Cnep Csep Cse2 Csvd Cec Ced Cgg Cgd Csb Csg Cbal Cbak Cgbal Cgbak Cbb Cglm Cgqr Cgsv Ccsd Clse
+
+FLOAT64X_ALL_TESTS = $(FLOAT64X_REAL_TESTS) $(FLOAT64X_COMPLEX_TESTS)
+
+# -----------------------------------------------------------------------------
+# Optional valgrind wrapper (toggle from command line)
+# -----------------------------------------------------------------------------
+
+VALGRIND ?=
+VALGRIND_FLAGS ?= --show-leak-kinds=all --track-origins=yes --leak-check=full --error-exitcode=99
+
+# Extra env appended before running the test (last assignment wins)
+FLOAT64X_EXTRA_ENV ?=
+FLOAT64X_LABEL ?= _Float64x
+
+# -----------------------------------------------------------------------------
+# Cross-compilation support (wine for MinGW)
+# -----------------------------------------------------------------------------
+if IS_MINGW
+WINE = wine
+else
+WINE =
+endif
+
+# -----------------------------------------------------------------------------
+# Hook into Automake's "make check" (parallel like LIN)
+# -----------------------------------------------------------------------------
+
+# GNU make: allow deferred expansion of prerequisites (Automake may reorder vars/rules)
+.SECONDEXPANSION:
+
+# Force test execution even if *.out already exists
+.PHONY: float64x-check FORCE
+FORCE:
+
+FLOAT64X_EIG_OUTS = $(foreach t,$(FLOAT64X_ALL_TESTS),$(t).out)
+CLEANFILES = $(FLOAT64X_EIG_OUTS)
+
+# Re-run all test commands on every "make check" even if *.out already exists.
+$(FLOAT64X_EIG_OUTS): FORCE
+
+check-local: float64x-check
+
+.PRECIOUS: $(FLOAT64X_EIG_OUTS)
+
+float64x-check: $(FLOAT64X_EIG_OUTS)
+	@echo "_Float64x eig tests done: $(FLOAT64X_ALL_TESTS)"
 
 clean-local:
 	rm -f *.out *~ \#*
 
-Rnep.out: ../nep.in xeigtstR__Float64x
-	@echo NEP: Testing Nonsymmetric Eigenvalue Problem routines
-	./xeigtstR__Float64x < ../nep.in > $@ 2>&1
+# -----------------------------------------------------------------------------
+# Test rules (one output per test)
+# -----------------------------------------------------------------------------
 
-Rsep.out: ../sep.in xeigtstR__Float64x
-	@echo SEP: Testing Symmetric Eigenvalue Problem routines
-	./xeigtstR__Float64x < ../sep.in > $@ 2>&1
+Rnep.out: ../nep.in xeigtstR__Float64x$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "NEP: Testing Nonsymmetric Eigenvalue Problem routines [$(FLOAT64X_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float64x$(EXEEXT) < ../nep.in; \
+	} > $@ 2>&1
 
-Rse2.out: ../se2.in xeigtstR__Float64x
-	@echo SEP: Testing Symmetric Eigenvalue Problem routines
-	./xeigtstR__Float64x < ../se2.in > $@ 2>&1
+Rsep.out: ../sep.in xeigtstR__Float64x$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "SEP: Testing Symmetric Eigenvalue Problem routines [$(FLOAT64X_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float64x$(EXEEXT) < ../sep.in; \
+	} > $@ 2>&1
 
-Rsvd.out: ../svd.in xeigtstR__Float64x
-	@echo SVD: Testing Singular Value Decomposition routines
-	./xeigtstR__Float64x < ../svd.in > $@ 2>&1
+Rse2.out: ../se2.in xeigtstR__Float64x$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "SEP: Testing Symmetric Eigenvalue Problem routines [$(FLOAT64X_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float64x$(EXEEXT) < ../se2.in; \
+	} > $@ 2>&1
 
-Rec.out: ../Rec.in xeigtstR__Float64x
-	@echo DEC: Testing Eigen Condition Routines
-	./xeigtstR__Float64x < ../Rec.in > $@ 2>&1
+Rsvd.out: ../svd.in xeigtstR__Float64x$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "SVD: Testing Singular Value Decomposition routines [$(FLOAT64X_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float64x$(EXEEXT) < ../svd.in; \
+	} > $@ 2>&1
 
-Red.out: ../Red.in xeigtstR__Float64x
-	@echo DEV: Testing Nonsymmetric Eigenvalue Driver
-	./xeigtstR__Float64x < ../Red.in > $@ 2>&1
+Rec.out: ../Rec.in xeigtstR__Float64x$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "DEC: Testing Eigen Condition Routines [$(FLOAT64X_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float64x$(EXEEXT) < ../Rec.in; \
+	} > $@ 2>&1
 
-Rgg.out: ../Rgg.in xeigtstR__Float64x
-	@echo DGG: Testing Nonsymmetric Generalized Eigenvalue Problem routines
-	./xeigtstR__Float64x < ../Rgg.in > $@ 2>&1
+Red.out: ../Red.in xeigtstR__Float64x$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "DEV: Testing Nonsymmetric Eigenvalue Driver [$(FLOAT64X_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float64x$(EXEEXT) < ../Red.in; \
+	} > $@ 2>&1
 
-Rgd.out: ../Rgd.in xeigtstR__Float64x
-	@echo DGD: Testing Nonsymmetric Generalized Eigenvalue Problem driver routines
-	./xeigtstR__Float64x < ../Rgd.in > $@ 2>&1
+Rgg.out: ../Rgg.in xeigtstR__Float64x$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "DGG: Testing Nonsymmetric Generalized Eigenvalue Problem routines [$(FLOAT64X_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float64x$(EXEEXT) < ../Rgg.in; \
+	} > $@ 2>&1
 
-Rsb.out: ../Rsb.in xeigtstR__Float64x
-	@echo DSB: Testing Symmetric Eigenvalue Problem routines
-	./xeigtstR__Float64x < ../Rsb.in > $@ 2>&1
+Rgd.out: ../Rgd.in xeigtstR__Float64x$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "DGD: Testing Nonsymmetric Generalized Eigenvalue Problem driver routines [$(FLOAT64X_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float64x$(EXEEXT) < ../Rgd.in; \
+	} > $@ 2>&1
 
-Rsg.out: ../Rsg.in xeigtstR__Float64x
-	@echo DSG: Testing Symmetric Generalized Eigenvalue Problem routines
-	./xeigtstR__Float64x < ../Rsg.in > $@ 2>&1
+Rsb.out: ../Rsb.in xeigtstR__Float64x$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "DSB: Testing Symmetric Eigenvalue Problem routines [$(FLOAT64X_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float64x$(EXEEXT) < ../Rsb.in; \
+	} > $@ 2>&1
 
-Rbal.out: ../Rbal.in xeigtstR__Float64x
-	@echo Rgebal: Testing the balancing of a general matrix
-	./xeigtstR__Float64x < ../Rbal.in > $@ 2>&1
+Rsg.out: ../Rsg.in xeigtstR__Float64x$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "DSG: Testing Symmetric Generalized Eigenvalue Problem routines [$(FLOAT64X_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float64x$(EXEEXT) < ../Rsg.in; \
+	} > $@ 2>&1
 
-Rbak.out: ../Rbak.in xeigtstR__Float64x
-	@echo Rgebak: Testing the back transformation of balanced matrix
-	./xeigtstR__Float64x < ../Rbak.in > $@ 2>&1
+Rbal.out: ../Rbal.in xeigtstR__Float64x$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "Rgebal: Testing the balancing of a general matrix [$(FLOAT64X_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float64x$(EXEEXT) < ../Rbal.in; \
+	} > $@ 2>&1
 
-Rgbal.out: ../Rgbal.in xeigtstR__Float64x
-	@echo Rggbal: Testing the balancing of a pair of general matrices
-	./xeigtstR__Float64x < ../Rgbal.in > $@ 2>&1
+Rbak.out: ../Rbak.in xeigtstR__Float64x$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "Rgebak: Testing the back transformation of balanced matrix [$(FLOAT64X_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float64x$(EXEEXT) < ../Rbak.in; \
+	} > $@ 2>&1
 
-Rgbak.out: ../Rgbak.in xeigtstR__Float64x
-	@echo Rggbak: Testing the back transformation of a pair of balanced matrices
-	./xeigtstR__Float64x < ../Rgbak.in > $@ 2>&1
+Rgbal.out: ../Rgbal.in xeigtstR__Float64x$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "Rggbal: Testing the balancing of a pair of general matrices [$(FLOAT64X_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float64x$(EXEEXT) < ../Rgbal.in; \
+	} > $@ 2>&1
 
-Rbb.out: ../Rbb.in xeigtstR__Float64x
-	@echo DBB: Testing banded Singular Value Decomposition routines
-	./xeigtstR__Float64x < ../Rbb.in > $@ 2>&1
+Rgbak.out: ../Rgbak.in xeigtstR__Float64x$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "Rggbak: Testing the back transformation of a pair of balanced matrices [$(FLOAT64X_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float64x$(EXEEXT) < ../Rgbak.in; \
+	} > $@ 2>&1
 
-Rglm.out: ../glm.in xeigtstR__Float64x
-	@echo GLM: Testing Generalized Linear Regression Model routines
-	./xeigtstR__Float64x < ../glm.in > $@ 2>&1
+Rbb.out: ../Rbb.in xeigtstR__Float64x$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "DBB: Testing banded Singular Value Decomposition routines [$(FLOAT64X_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float64x$(EXEEXT) < ../Rbb.in; \
+	} > $@ 2>&1
 
-Rgqr.out: ../gqr.in xeigtstR__Float64x
-	@echo GQR: Testing Generalized QR and RQ factorization routines
-	./xeigtstR__Float64x < ../gqr.in > $@ 2>&1
+Rglm.out: ../glm.in xeigtstR__Float64x$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "GLM: Testing Generalized Linear Regression Model routines [$(FLOAT64X_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float64x$(EXEEXT) < ../glm.in; \
+	} > $@ 2>&1
 
-Rgsv.out: ../gsv.in xeigtstR__Float64x
-	@echo GSV: Testing Generalized Singular Value Decomposition routines
-	./xeigtstR__Float64x < ../gsv.in > $@ 2>&1
+Rgqr.out: ../gqr.in xeigtstR__Float64x$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "GQR: Testing Generalized QR and RQ factorization routines [$(FLOAT64X_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float64x$(EXEEXT) < ../gqr.in; \
+	} > $@ 2>&1
 
-Rcsd.out: ../csd.in xeigtstR__Float64x
-	@echo CSD: Testing CS Decomposition routines
-	./xeigtstR__Float64x < ../csd.in > $@ 2>&1
+Rgsv.out: ../gsv.in xeigtstR__Float64x$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "GSV: Testing Generalized Singular Value Decomposition routines [$(FLOAT64X_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float64x$(EXEEXT) < ../gsv.in; \
+	} > $@ 2>&1
 
-Rlse.out: ../lse.in xeigtstR__Float64x
-	@echo LSE: Testing Constrained Linear Least Squares routines
-	./xeigtstR__Float64x < ../lse.in > $@ 2>&1
+Rcsd.out: ../csd.in xeigtstR__Float64x$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "CSD: Testing CS Decomposition routines [$(FLOAT64X_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float64x$(EXEEXT) < ../csd.in; \
+	} > $@ 2>&1
 
-Cnep.out: ../nep.in ./xeigtstC__Float64x
-	@echo NEP: Testing Nonsymmetric Eigenvalue Problem routines
-	./xeigtstC__Float64x < ../nep.in > $@ 2>&1
+Rlse.out: ../lse.in xeigtstR__Float64x$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "LSE: Testing Constrained Linear Least Squares routines [$(FLOAT64X_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float64x$(EXEEXT) < ../lse.in; \
+	} > $@ 2>&1
 
-Csep.out: ../sep.in ./xeigtstC__Float64x
-	@echo SEP: Testing Symmetric Eigenvalue Problem routines
-	./xeigtstC__Float64x < ../sep.in > $@ 2>&1
+Cnep.out: ../nep.in xeigtstC__Float64x$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "NEP: Testing Nonsymmetric Eigenvalue Problem routines [$(FLOAT64X_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float64x$(EXEEXT) < ../nep.in; \
+	} > $@ 2>&1
 
-Cse2.out: ../se2.in ./xeigtstC__Float64x
-	@echo SEP: Testing Symmetric Eigenvalue Problem routines
-	./xeigtstC__Float64x < ../se2.in > $@ 2>&1
+Csep.out: ../sep.in xeigtstC__Float64x$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "SEP: Testing Symmetric Eigenvalue Problem routines [$(FLOAT64X_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float64x$(EXEEXT) < ../sep.in; \
+	} > $@ 2>&1
 
-Csvd.out: ../svd.in ./xeigtstC__Float64x
-	@echo SVD: Testing Singular Value Decomposition routines
-	./xeigtstC__Float64x < ../svd.in > $@ 2>&1
+Cse2.out: ../se2.in xeigtstC__Float64x$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "SEP: Testing Symmetric Eigenvalue Problem routines [$(FLOAT64X_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float64x$(EXEEXT) < ../se2.in; \
+	} > $@ 2>&1
 
-Cec.out: ../Cec.in ./xeigtstC__Float64x
-	@echo CEC: Testing COMPLEX Eigen Condition Routines
-	./xeigtstC__Float64x < ../Cec.in > $@ 2>&1
+Csvd.out: ../svd.in xeigtstC__Float64x$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "SVD: Testing Singular Value Decomposition routines [$(FLOAT64X_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float64x$(EXEEXT) < ../svd.in; \
+	} > $@ 2>&1
 
-Ced.out: ../Ced.in ./xeigtstC__Float64x
-	@echo CES: Testing COMPLEX Nonsymmetric Schur Form Driver
-	./xeigtstC__Float64x < ../Ced.in > $@ 2>&1
+Cec.out: ../Cec.in xeigtstC__Float64x$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "CEC: Testing COMPLEX Eigen Condition Routines [$(FLOAT64X_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float64x$(EXEEXT) < ../Cec.in; \
+	} > $@ 2>&1
 
-Cgg.out: ../Cgg.in ./xeigtstC__Float64x
-	@echo CGG: Testing COMPLEX Nonsymmetric Generalized Eigenvalue Problem routines
-	./xeigtstC__Float64x < ../Cgg.in > $@ 2>&1
+Ced.out: ../Ced.in xeigtstC__Float64x$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "CES: Testing COMPLEX Nonsymmetric Schur Form Driver [$(FLOAT64X_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float64x$(EXEEXT) < ../Ced.in; \
+	} > $@ 2>&1
 
-Cgd.out: ../Cgd.in ./xeigtstC__Float64x
-	@echo CGD: Testing COMPLEX Nonsymmetric Generalized Eigenvalue Problem driver routines
-	./xeigtstC__Float64x < ../Cgd.in > $@ 2>&1
+Cgg.out: ../Cgg.in xeigtstC__Float64x$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "CGG: Testing COMPLEX Nonsymmetric Generalized Eigenvalue Problem routines [$(FLOAT64X_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float64x$(EXEEXT) < ../Cgg.in; \
+	} > $@ 2>&1
 
-Csb.out: ../Csb.in ./xeigtstC__Float64x
-	@echo CHB: Testing Hermitian Eigenvalue Problem routines
-	./xeigtstC__Float64x < ../Csb.in > $@ 2>&1
+Cgd.out: ../Cgd.in xeigtstC__Float64x$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "CGD: Testing COMPLEX Nonsymmetric Generalized Eigenvalue Problem driver routines [$(FLOAT64X_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float64x$(EXEEXT) < ../Cgd.in; \
+	} > $@ 2>&1
 
-Csg.out: ../Csg.in ./xeigtstC__Float64x
-	@echo CSG: Testing Symmetric Generalized Eigenvalue Problem routines
-	./xeigtstC__Float64x < ../Csg.in > $@ 2>&1
+Csb.out: ../Csb.in xeigtstC__Float64x$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "CHB: Testing Hermitian Eigenvalue Problem routines [$(FLOAT64X_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float64x$(EXEEXT) < ../Csb.in; \
+	} > $@ 2>&1
 
-Cbal.out: ../Cbal.in ./xeigtstC__Float64x
-	@echo CGEBAL: Testing the balancing of a COMPLEX general matrix
-	./xeigtstC__Float64x < ../Cbal.in > $@ 2>&1
+Csg.out: ../Csg.in xeigtstC__Float64x$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "CSG: Testing Symmetric Generalized Eigenvalue Problem routines [$(FLOAT64X_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float64x$(EXEEXT) < ../Csg.in; \
+	} > $@ 2>&1
 
-Cbak.out: ../Cbak.in ./xeigtstC__Float64x
-	@echo CGEBAK: Testing the back transformation of a COMPLEX balanced matrix
-	./xeigtstC__Float64x < ../Cbak.in > $@ 2>&1
+Cbal.out: ../Cbal.in xeigtstC__Float64x$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "CGEBAL: Testing the balancing of a COMPLEX general matrix [$(FLOAT64X_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float64x$(EXEEXT) < ../Cbal.in; \
+	} > $@ 2>&1
 
-Cgbal.out: ../Cgbal.in ./xeigtstC__Float64x
-	@echo CGGBAL: Testing the balancing of a pair of COMPLEX general matrices
-	./xeigtstC__Float64x < ../Cgbal.in > $@ 2>&1
+Cbak.out: ../Cbak.in xeigtstC__Float64x$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "CGEBAK: Testing the back transformation of a COMPLEX balanced matrix [$(FLOAT64X_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float64x$(EXEEXT) < ../Cbak.in; \
+	} > $@ 2>&1
 
-Cgbak.out: ../Cgbak.in ./xeigtstC__Float64x
-	@echo CGGBAK: Testing the back transformation of a pair of COMPLEX balanced matrices
-	./xeigtstC__Float64x < ../Cgbak.in > $@ 2>&1
+Cgbal.out: ../Cgbal.in xeigtstC__Float64x$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "CGGBAL: Testing the balancing of a pair of COMPLEX general matrices [$(FLOAT64X_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float64x$(EXEEXT) < ../Cgbal.in; \
+	} > $@ 2>&1
 
-Cbb.out: ../Cbb.in ./xeigtstC__Float64x
-	@echo CBB: Testing banded Singular Value Decomposition routines
-	./xeigtstC__Float64x < ../Cbb.in > $@ 2>&1
+Cgbak.out: ../Cgbak.in xeigtstC__Float64x$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "CGGBAK: Testing the back transformation of a pair of COMPLEX balanced matrices [$(FLOAT64X_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float64x$(EXEEXT) < ../Cgbak.in; \
+	} > $@ 2>&1
 
-Cglm.out: ../glm.in ./xeigtstC__Float64x
-	@echo GLM: Testing Generalized Linear Regression Model routines
-	./xeigtstC__Float64x < ../glm.in > $@ 2>&1
+Cbb.out: ../Cbb.in xeigtstC__Float64x$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "CBB: Testing banded Singular Value Decomposition routines [$(FLOAT64X_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float64x$(EXEEXT) < ../Cbb.in; \
+	} > $@ 2>&1
 
-Cgqr.out: ../gqr.in ./xeigtstC__Float64x
-	@echo GQR: Testing Generalized QR and RQ factorization routines
-	./xeigtstC__Float64x < ../gqr.in > $@ 2>&1
+Cglm.out: ../glm.in xeigtstC__Float64x$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "GLM: Testing Generalized Linear Regression Model routines [$(FLOAT64X_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float64x$(EXEEXT) < ../glm.in; \
+	} > $@ 2>&1
 
-Cgsv.out: ../gsv.in ./xeigtstC__Float64x
-	@echo GSV: Testing Generalized Singular Value Decomposition routines
-	./xeigtstC__Float64x < ../gsv.in > $@ 2>&1
+Cgqr.out: ../gqr.in xeigtstC__Float64x$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "GQR: Testing Generalized QR and RQ factorization routines [$(FLOAT64X_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float64x$(EXEEXT) < ../gqr.in; \
+	} > $@ 2>&1
 
-Ccsd.out: ../csd.in ./xeigtstC__Float64x
-	@echo CSD: Testing CS Decomposition routines
-	./xeigtstC__Float64x < ../csd.in > $@ 2>&1
+Cgsv.out: ../gsv.in xeigtstC__Float64x$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "GSV: Testing Generalized Singular Value Decomposition routines [$(FLOAT64X_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float64x$(EXEEXT) < ../gsv.in; \
+	} > $@ 2>&1
+Ccsd.out: ../csd.in xeigtstC__Float64x$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "CSD: Testing CS Decomposition routines [$(FLOAT64X_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float64x$(EXEEXT) < ../csd.in; \
+	} > $@ 2>&1
 
-Clse.out: ../lse.in ./xeigtstC__Float64x
-	@echo LSE: Testing Constrained Linear Least Squares routines
-	./xeigtstC__Float64x < ../lse.in > $@ 2>&1
+Clse.out: ../lse.in xeigtstC__Float64x$(EXEEXT)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "LSE: Testing Constrained Linear Least Squares routines [$(FLOAT64X_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float64x$(EXEEXT) < ../lse.in; \
+	} > $@ 2>&1
