@@ -237,7 +237,10 @@ fi
     fi
 
     # Prepare work directory
-    local work_mount="$HOST_WORK_DIR"
+    # NOTE: /work must NOT be bind-mounted from the host.
+    # Keep /work inside the container (tmpfs) and mount only /ccache from the host.
+    # If a tarball is used, mount it to /input (read-only) instead of /work.
+    local input_mount=""
 
     # For tarball tests, create temp directory with tarball
     if [[ "$source_type" == "tarball" ]]; then
@@ -248,7 +251,27 @@ fi
         local tmpdir="$LOGDIR/workdir_${name}_${arch_short}"
         mkdir -p "$tmpdir"
         cp "$TARBALL" "$tmpdir/"
-        work_mount="$tmpdir"
+        input_mount="$tmpdir"
+    fi
+
+    # Common docker run arguments: /work is container-local; only /ccache is bind-mounted.
+    # - /work is tmpfs to enforce clean builds and avoid leaking host state.
+    # - For tarball mode, the tarball directory is mounted to /input:ro.
+    local -a docker_run_args
+    docker_run_args=(
+        --rm
+        --platform "$arch"
+        --tmpfs /work:rw,exec
+        -v "$HOST_CCACHE_DIR:/ccache:rw"
+        -e CCACHE_DIR=/ccache
+        -e CCACHE_MAXSIZE="$CCACHE_MAXSIZE"
+    )
+    if [[ -n "$gpu_flag" ]]; then
+        # gpu_flag may contain multiple tokens (e.g., "--gpus all")
+        docker_run_args+=( $gpu_flag )
+    fi
+    if [[ -n "$input_mount" ]]; then
+        docker_run_args+=( -v "$input_mount:/input:ro" )
     fi
 
     # Build image (environment setup only, no compilation)
@@ -272,13 +295,7 @@ fi
     fi
 
     # Run build with host directories mounted
-    if ! docker run --rm \
-        --platform "$arch" \
-        -v "$work_mount:/work:rw" \
-        -v "$HOST_CCACHE_DIR:/ccache:rw" \
-        -e CCACHE_DIR=/ccache \
-        -e CCACHE_MAXSIZE="$CCACHE_MAXSIZE" \
-        $gpu_flag \
+    if ! docker run "${docker_run_args[@]}" \
         "$tag" \
         > "${logprefix}_build.log" 2>&1; then
 
@@ -288,13 +305,7 @@ fi
     fi
 
     # Run tests
-    if ! docker run --rm \
-        --platform "$arch" \
-        -v "$work_mount:/work:rw" \
-        -v "$HOST_CCACHE_DIR:/ccache:rw" \
-        -e CCACHE_DIR=/ccache \
-        -e CCACHE_MAXSIZE="$CCACHE_MAXSIZE" \
-        $gpu_flag \
+    if ! docker run "${docker_run_args[@]}" \
         "$tag" \
         /bin/bash -lc "$test_cmd" \
         > "${logprefix}_test.log" 2>&1; then
