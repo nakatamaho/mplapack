@@ -123,8 +123,6 @@ benchmark/mplapack/go.Rgetrf_cuda.sh \
 benchmark/mplapack/go.Rpotrf.sh \
 benchmark/mplapack/go.Rpotrf_cuda.sh \
 misc/cudalt.py \
-misc/build_mplapack_for_mic.sh \
-misc/prepare_mplapacklibs_for_mic.sh \
 misc/fix_dylib_macOS.sh \
 misc/add_ldlibpath.sh \
 mpblas/optimized/dd/cuda/dd_real_cuda.h \
