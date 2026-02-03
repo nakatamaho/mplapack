@@ -1,11 +1,17 @@
-2026/02/01    Nakata Maho <maho@riken.jp> 2.1.0
+2026/02/01    Nakata Maho <maho@riken.jp> 2.1 branch
             * Maintenance release: no new user-facing features
             * Internal improvements:
-              - Redesigned FABLE conversion workflow: two-stage process (automated conversion + minimal patches)
-              - FABLE converter enhancements: FORMAT hoisting, array operations, type conversion fixes
-              - MPLAPACK source code is now FABLE-independent (FABLE used only for testing)
-              - Improved long-term maintainability and build reproducibility
+                - Redesigned FABLE conversion workflow: two-stage process (automated conversion + minimal patches)
+                - FABLE converter enhancements: FORMAT hoisting, array operations, type conversion fixes
+                - Reviewed and corrected Rlamch implementation for accuracy and consistency
+                - LAPACK test programs are now almost fully auto-converted, reducing manual edits and improving fidelity; no changes to the original LAPACK routines
+                - Separated all manual conversions into standalone patch files for clean provenance and long-term maintenance
+                - Included the automated conversion scripts used for generating the test sources
+                - Improved long-term maintainability and build reproducibility
+                - Added Docker-based release engineering scripts to standardize and streamline the release workflow
+                - Improved consistency and efficiency by running build/test/release steps in a reproducible containerized environment
             * Updated dependencies: GMP 6.3.0, MPFR 4.2.2, MPC 1.3.1, QD 2.3.24
+
 
 2022/09/12    Nakata Maho <maho@riken.jp> 2.0.1
             * tag 2.0.1
