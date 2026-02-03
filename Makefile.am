@@ -163,7 +163,6 @@ examples/mplapack/04_NonsymmetricEigenproblems/Matrix_*.txt \
 examples/mplapack/05_SingularValueDecomposition/Matrix_*.txt \
 mplapack/test/eig/Cbak.in \
 mplapack/test/eig/Cbal.in \
-mplapack/test/eig/Cbal_double.in \
 mplapack/test/eig/Cbb.in \
 mplapack/test/eig/Cec.in \
 mplapack/test/eig/Ced.in \
@@ -175,7 +174,6 @@ mplapack/test/eig/Csb.in \
 mplapack/test/eig/Csg.in \
 mplapack/test/eig/Rbak.in \
 mplapack/test/eig/Rbal.in \
-mplapack/test/eig/Rbal_double.in \
 mplapack/test/eig/Rbb.in \
 mplapack/test/eig/Rec.in \
 mplapack/test/eig/Red.in \
