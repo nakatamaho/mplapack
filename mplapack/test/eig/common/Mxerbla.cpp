@@ -66,7 +66,7 @@ void Mxerbla(const char *srname, int info) {
     }
     // Fortran-style compare (blank padding aware)
     if (!(srnamt == srname)) {
-        write(nout, "(' *** XERBLA was called with Rrname= ',a,' instead of ',a9,' ***')"), srname, srnamt;
+        write(nout, "(' *** XERBLA was called with srname= ',a,' instead of ',a9,' ***')"), srname, srnamt;
         ok = false;
     }
     //
