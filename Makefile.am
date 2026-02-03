@@ -142,8 +142,9 @@ external/qd/patches/patch-* \
 external/lapack/Makefile.am \
 external/lapack/Makefile.in \
 external/lapack/download/*.tar.gz \
-external/lapack/patches/patch-* \
 external/lapack/patches/print.c \
+external/lapack/patches/3.9.1/* \
+external/lapack/patches/3.12.1/* \
 mpfrc++/copying.lib mpfrc++/copying mpfrc++/makefile.org \
 mpfrc++/org/copying mpfrc++/org/copying.lib mpfrc++/org/example.cpp \
 mpfrc++/org/makefile mpfrc++/org/mpfrc++.tar.gz \
@@ -190,8 +191,6 @@ mplapack/test/eig/nep.in \
 mplapack/test/eig/se2.in \
 mplapack/test/eig/sep.in \
 mplapack/test/eig/svd.in \
-mplapack/test/eig/test_eig_all.sh \
-mplapack/test/eig/test_eig_all_mingw.sh \
 mplapack/test/lin/Ctest.in \
 mplapack/test/lin/Ctest_rfp.in \
 mplapack/test/lin/Rtest.in \
