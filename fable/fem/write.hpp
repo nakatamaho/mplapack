@@ -1,6 +1,10 @@
 #ifndef FEM_WRITE_HPP
 #define FEM_WRITE_HPP
 
+#include <limits>
+#include <cmath>
+#include <cerrno>
+
 // Ensure MPLAPACK utils expose sprintnum()/sprintnum_short() and __MPLAPACK_BUFLEN__.
 // In mplapack_utils_*.h these are guarded by ___MPLAPACK_INTERNAL___.
 #ifndef ___MPLAPACK_INTERNAL___
@@ -538,15 +542,53 @@ class write_loop : write_loop_base
         }
         return *this;
     }
+    // Convert long double to a reasonable Fortran-ish textual form.
+    // This is not a perfect Fortran formatting emulation, but it avoids crashes
+    // and preserves enough precision for test logs.
+    static inline void long_double_to_chars(char *buf, std::size_t buf_sz, long double v) {
+        // Handle NaN/Inf explicitly for stable output across libcs.
+        if (std::isnan(v)) {
+            std::snprintf(buf, buf_sz, "NaN");
+            return;
+        }
+        if (std::isinf(v)) {
+            if (v > 0)
+                std::snprintf(buf, buf_sz, "Inf");
+            else
+                std::snprintf(buf, buf_sz, "-Inf");
+            return;
+        }
+
+        // Use max_digits10 to round-trip when possible.
+        // %.*Lg uses either fixed or scientific depending on magnitude (like G format).
+        int prec = std::numeric_limits<long double>::max_digits10;
+        if (prec < 1)
+            prec = 1;
+        // Leave room; if snprintf fails, fall back to something minimal.
+        int n = std::snprintf(buf, buf_sz, "%.*Lg", prec, v);
+        if (n <= 0 || static_cast<std::size_t>(n) >= buf_sz) {
+            // Fallback: shorter precision
+            std::snprintf(buf, buf_sz, "%.18Lg", v);
+        }
+    }
     write_loop &operator,(long double const &val) {
         if (io_mode == io_unformatted) {
             to_stream_unformatted(reinterpret_cast<char const *>(&val), actual_sizeof_long_double);
         } else if (io_mode == io_list_directed) {
-            out.reset();
-            throw TBXX_NOT_IMPLEMENTED();
+            // List-directed: emit a space separator if needed, then value.
+            // This follows the existing behavior for doubles (prev_was_string).
+            char tmp[256];
+            long_double_to_chars(tmp, sizeof(tmp), val);
+            to_stream(tmp, std::strlen(tmp));
+            prev_was_string = false;
         } else {
-            out.reset();
-            throw TBXX_NOT_IMPLEMENTED();
+            // Formatted: approximate by emitting the textual value.
+            // If you want strict width/scale behavior, implement a dedicated
+            // to_stream_fmt_long_double() and hook it here.
+            char tmp[256];
+            long_double_to_chars(tmp, sizeof(tmp), val);
+            to_stream(tmp, std::strlen(tmp));
+            prev_was_string = false;
         }
         return *this;
     }
@@ -620,11 +662,20 @@ class write_loop : write_loop_base
             to_stream_unformatted(reinterpret_cast<char const *>(&re), actual_sizeof_long_double);
             to_stream_unformatted(reinterpret_cast<char const *>(&im), actual_sizeof_long_double);
         } else if (io_mode == io_list_directed) {
-            out.reset();
-            throw TBXX_NOT_IMPLEMENTED();
+            // List-directed complex: reuse the same "* complex" emitter as double.
+            char re_buf[256];
+            char im_buf[256];
+            long_double_to_chars(re_buf, sizeof(re_buf), val.real());
+            long_double_to_chars(im_buf, sizeof(im_buf), val.imag());
+            to_stream_star_complex(re_buf, std::strlen(re_buf), im_buf, std::strlen(im_buf));
         } else {
-            out.reset();
-            throw TBXX_NOT_IMPLEMENTED();
+            // Formatted complex output is not fully implemented.
+            // Fallback to a reasonable textual representation to avoid abort.
+            char re_buf[256];
+            char im_buf[256];
+            long_double_to_chars(re_buf, sizeof(re_buf), val.real());
+            long_double_to_chars(im_buf, sizeof(im_buf), val.imag());
+            to_stream_star_complex(re_buf, std::strlen(re_buf), im_buf, std::strlen(im_buf));
         }
         return *this;
     }
