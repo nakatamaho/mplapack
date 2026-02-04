@@ -41,10 +41,13 @@ Rsyr2k.cpp Rsyrk.cpp Rtbmv.cpp Rtbsv.cpp Rtpmv.cpp Rtpsv.cpp Rtrmm.cpp \
 Rtrmv.cpp Rtrsm.cpp Rtrsv.cpp iCamax.cpp iRamax.cpp \
 Mlsame.cpp Mxerbla.cpp mplapackinit.cpp
 
+MPLAPACK_LT_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
+MPLAPACK_RPATH_LDFLAGS = -Wl,-rpath,$(libdir)
+
 if ENABLE_GMP
 libmpblas_gmp_la_CPPFLAGS = -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_GMP___
 libmpblas_gmp_la_SOURCES = $(MPBLAS_SOURCES)
-libmpblas_gmp_la_LDFLAGS = -Wl,-rpath,$(libdir) #-L$(GMP_LIBDIR) -lgmpxx -lgmp
+libmpblas_gmp_la_LDFLAGS = $(MPLAPACK_LT_LDFLAGS) $(MPLAPACK_RPATH_LDFLAGS)
 if IS_MACOS
 libmpblas_gmp_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
@@ -56,7 +59,7 @@ endif
 if ENABLE_MPFR
 libmpblas_mpfr_la_CPPFLAGS = -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___
 libmpblas_mpfr_la_SOURCES = $(MPBLAS_SOURCES)
-libmpblas_mpfr_la_LDFLAGS = -Wl,-rpath,$(libdir) #-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpc -lmpfr -lgmp
+libmpblas_mpfr_la_LDFLAGS = $(MPLAPACK_LT_LDFLAGS) $(MPLAPACK_RPATH_LDFLAGS)
 if IS_MACOS
 libmpblas_mpfr_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
@@ -68,7 +71,7 @@ endif
 if ENABLE_QD
 libmpblas_qd_la_CPPFLAGS = -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_QD___
 libmpblas_qd_la_SOURCES = $(MPBLAS_SOURCES)
-libmpblas_qd_la_LDFLAGS = -Wl,-rpath,$(libdir) #-L$(QD_LIBDIR) -lqd
+libmpblas_qd_la_LDFLAGS = $(MPLAPACK_LT_LDFLAGS) $(MPLAPACK_RPATH_LDFLAGS)
 if IS_MACOS
 libmpblas_qd_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
@@ -80,7 +83,7 @@ endif
 if ENABLE_DD
 libmpblas_dd_la_CPPFLAGS = -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_DD___
 libmpblas_dd_la_SOURCES = $(MPBLAS_SOURCES)
-libmpblas_dd_la_LDFLAGS = -Wl,-rpath,$(libdir) #-L$(QD_LIBDIR) -lqd
+libmpblas_dd_la_LDFLAGS = $(MPLAPACK_LT_LDFLAGS) $(MPLAPACK_RPATH_LDFLAGS)
 if IS_MACOS
 libmpblas_dd_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
@@ -92,33 +95,36 @@ endif
 if ENABLE_DOUBLE
 libmpblas_double_la_CPPFLAGS = -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_DOUBLE___
 libmpblas_double_la_SOURCES = $(MPBLAS_SOURCES)
+libmpblas_double_la_LDFLAGS = $(MPLAPACK_LT_LDFLAGS)
 if IS_MACOS
-libmpblas_double_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
+libmpblas_double_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 if IS_MINGW
-libmpblas_double_la_LDFLAGS = -no-undefined
+libmpblas_double_la_LDFLAGS += -no-undefined
 endif
 endif
 
 if ENABLE__FLOAT64X
 libmpblas__Float64x_la_CPPFLAGS = -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH__FLOAT64X___
 libmpblas__Float64x_la_SOURCES = $(MPBLAS_SOURCES)
+libmpblas__Float64x_la_LDFLAGS = $(MPLAPACK_LT_LDFLAGS)
 if IS_MACOS
-libmpblas__Float64x_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
+libmpblas__Float64x_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 if IS_MINGW
-libmpblas__Float64x_la_LDFLAGS = -no-undefined
+libmpblas__Float64x_la_LDFLAGS += -no-undefined
 endif
 endif
 
 if ENABLE__FLOAT128
 libmpblas__Float128_la_CPPFLAGS = -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH__FLOAT128___
 libmpblas__Float128_la_SOURCES = $(MPBLAS_SOURCES)
+libmpblas__Float128_la_LDFLAGS = $(MPLAPACK_LT_LDFLAGS)
 if IS_MACOS
-libmpblas__Float128_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
+libmpblas__Float128_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 if IS_MINGW
-libmpblas__Float128_la_LDFLAGS = -no-undefined -lquadmath
+libmpblas__Float128_la_LDFLAGS += -no-undefined -lquadmath
 endif
 endif
 
