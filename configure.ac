@@ -46,36 +46,35 @@ AC_PROG_CC
 IS_INTELCC=0
 AC_COMPILE_IFELSE([
     AC_LANG_SOURCE([[
-    #if !defined __INTEL_COMPILER
+    #if !defined __INTEL_COMPILER && !defined __INTEL_LLVM_COMPILER
     #error
     #endif
     #include <stdio.h>
     int main() {
-        return 0;    
+        return 0;
     }
-   ]]) 
+   ]])
 ], [is_intelcc=1])
 AM_CONDITIONAL(IS_INTELCC, test x$is_intelcc = x1)
 if test x"$is_intelcc" = x"1"; then
-    AC_MSG_RESULT([Intel One API (icc) detected])
+    AC_MSG_RESULT([Intel compiler (icc/icx) detected])
 fi
-
 AC_PROG_CXX
 IS_INTELCXX=0
 AC_COMPILE_IFELSE([
     AC_LANG_SOURCE([[
-    #if !defined __INTEL_COMPILER
+    #if !defined __INTEL_COMPILER && !defined __INTEL_LLVM_COMPILER
     #error
     #endif
     #include <stdio.h>
     int main() {
-        return 0;    
+        return 0;
     }
-   ]]) 
+   ]])
 ], [is_intelcxx=1])
 AM_CONDITIONAL(IS_INTELCXX, test x$is_intelcxx = x1)
 if test x"$is_intelcxx" = x"1"; then
-    AC_MSG_RESULT([Intel One API (icpc) detected])
+    AC_MSG_RESULT([Intel compiler (icpc/icpx) detected])
 fi
 
 LT_INIT([win32-dll])
@@ -85,6 +84,7 @@ AC_CONFIG_MACRO_DIR([m4])
 dnl OpenMP Compiler flags.
 AC_LANG([C++])
 AC_OPENMP
+AC_SUBST([OPENMP_CXXFLAGS])
 
 dnl Checking host name
 AC_CANONICAL_HOST

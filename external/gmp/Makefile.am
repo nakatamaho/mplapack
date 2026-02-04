@@ -32,6 +32,9 @@ endif
 if IS_INTELCC
 GMP_CC_EXTRA += -fp-model precise
 GMP_CXX_EXTRA += -fp-model precise
+STRIP_CCACHE=1
+else
+STRIP_CCACHE =
 endif
 
 EXTRACT_STAMP=.gmp_extract_done
@@ -62,6 +65,10 @@ work/$(CONFIGURE_STAMP): work/$(EXTRACT_STAMP)
 	@set -e; \
 	cc="$(CC) $(GMP_CC_EXTRA)"; \
 	cxx="$(CXX) $(GMP_CXX_EXTRA)"; \
+	if [ "$(STRIP_CCACHE)" = "1" ]; then \
+	  cc=$$(echo "$$cc" | sed 's/ccache //g'); \
+	  cxx=$$(echo "$$cxx" | sed 's/ccache //g'); \
+	fi; \
 	ldflags="$(LDFLAGS)"; \
 	f77="$(F77)"; \
 	nm="$(NM)"; \
