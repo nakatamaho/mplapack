@@ -374,7 +374,19 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
-typedef __float128 _Float128;
+
+#if defined(__clang__)
+#  if !__has_keyword(_Float128)
+     typedef __float128 _Float128;
+#  endif
+#elif defined(__GNUC__)
+/* Skip typedef for GCC 13+ to avoid redeclaration error */
+#  if (__GNUC__ < 13)
+     typedef __float128 _Float128;
+#  endif
+#else
+   typedef __float128 _Float128;
+#endif
 
 #if defined ___MPLAPACK_INTERNAL___
 #if !defined __MPLAPACK_BUFLEN__
