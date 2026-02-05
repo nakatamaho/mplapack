@@ -1,3 +1,7 @@
+2026/02/05    Nakata Maho <maho@riken.jp> 2.1 branch
+            * Standardized naming: _Float128/_Float64x build variants are now labeled binary128/binary80
+              across directory names, file names, and library targets
+
 2026/02/01    Nakata Maho <maho@riken.jp> 2.1 branch
             * Maintenance release: no new user-facing features
             * Internal improvements:
