@@ -1694,17 +1694,17 @@ void Rlamch_binary128_test() {
     const mplapack_binary128_t exZ = zero;
 
     // Fetch actual values from Rlamch_mplapack_binary128_t.
-    const mplapack_binary128_t gotE = Rlamch_mplapack_binary128_t("E");
-    const mplapack_binary128_t gotS = Rlamch_mplapack_binary128_t("S");
-    const mplapack_binary128_t gotB = Rlamch_mplapack_binary128_t("B");
-    const mplapack_binary128_t gotP = Rlamch_mplapack_binary128_t("P");
-    const mplapack_binary128_t gotN = Rlamch_mplapack_binary128_t("N");
-    const mplapack_binary128_t gotR = Rlamch_mplapack_binary128_t("R");
-    const mplapack_binary128_t gotM = Rlamch_mplapack_binary128_t("M");
-    const mplapack_binary128_t gotU = Rlamch_mplapack_binary128_t("U");
-    const mplapack_binary128_t gotL = Rlamch_mplapack_binary128_t("L");
-    const mplapack_binary128_t gotO = Rlamch_mplapack_binary128_t("O");
-    const mplapack_binary128_t gotZ = Rlamch_mplapack_binary128_t("Z");
+    const mplapack_binary128_t gotE = Rlamch_binary128("E");
+    const mplapack_binary128_t gotS = Rlamch_binary128("S");
+    const mplapack_binary128_t gotB = Rlamch_binary128("B");
+    const mplapack_binary128_t gotP = Rlamch_binary128("P");
+    const mplapack_binary128_t gotN = Rlamch_binary128("N");
+    const mplapack_binary128_t gotR = Rlamch_binary128("R");
+    const mplapack_binary128_t gotM = Rlamch_binary128("M");
+    const mplapack_binary128_t gotU = Rlamch_binary128("U");
+    const mplapack_binary128_t gotL = Rlamch_binary128("L");
+    const mplapack_binary128_t gotO = Rlamch_binary128("O");
+    const mplapack_binary128_t gotZ = Rlamch_binary128("Z");
 
     // Exact-value checks.
     assert_equal("E", gotE, exE);
@@ -1875,17 +1875,17 @@ void Rlamch_mplapack_binary80_t_test() {
     const mplapack_binary80_t exZ = zero;
 
     // Fetch actual values from Rlamch_mplapack_binary80_t.
-    const mplapack_binary80_t gotE = Rlamch_mplapack_binary80_t("E");
-    const mplapack_binary80_t gotS = Rlamch_mplapack_binary80_t("S");
-    const mplapack_binary80_t gotB = Rlamch_mplapack_binary80_t("B");
-    const mplapack_binary80_t gotP = Rlamch_mplapack_binary80_t("P");
-    const mplapack_binary80_t gotN = Rlamch_mplapack_binary80_t("N");
-    const mplapack_binary80_t gotR = Rlamch_mplapack_binary80_t("R");
-    const mplapack_binary80_t gotM = Rlamch_mplapack_binary80_t("M");
-    const mplapack_binary80_t gotU = Rlamch_mplapack_binary80_t("U");
-    const mplapack_binary80_t gotL = Rlamch_mplapack_binary80_t("L");
-    const mplapack_binary80_t gotO = Rlamch_mplapack_binary80_t("O");
-    const mplapack_binary80_t gotZ = Rlamch_mplapack_binary80_t("Z");
+    const mplapack_binary80_t gotE = Rlamch_binary80("E");
+    const mplapack_binary80_t gotS = Rlamch_binary80("S");
+    const mplapack_binary80_t gotB = Rlamch_binary80("B");
+    const mplapack_binary80_t gotP = Rlamch_binary80("P");
+    const mplapack_binary80_t gotN = Rlamch_binary80("N");
+    const mplapack_binary80_t gotR = Rlamch_binary80("R");
+    const mplapack_binary80_t gotM = Rlamch_binary80("M");
+    const mplapack_binary80_t gotU = Rlamch_binary80("U");
+    const mplapack_binary80_t gotL = Rlamch_binary80("L");
+    const mplapack_binary80_t gotO = Rlamch_binary80("O");
+    const mplapack_binary80_t gotZ = Rlamch_binary80("Z");
 
     // Exact-value checks.
     assert_equal("E", gotE, exE);
@@ -2002,10 +2002,10 @@ int main(int argc, char *argv[]) {
     Rlamch_double_test();
 #endif
 #if defined ___MPLAPACK_BUILD_WITH_BINARY80___
-    Rlamch_mplapack_binary80_t_test();
+    Rlamch_binary80_test();
 #endif
 #if defined ___MPLAPACK_BUILD_WITH_BINARY128___
-    Rlamch_mplapack_binary128_t_test();
+    Rlamch_binary128_test();
 #endif
     printf("*** Testing Rlamch successful ***\n");
     return (0);
