@@ -1791,7 +1791,7 @@ void Rlamch_binary128_test() {
 #if defined ___MPLAPACK_BUILD_WITH_BINARY80___
 #include <cfenv> // std::fegetround, FE_TONEAREST
 
-void Rlamch_mplapack_binary80_t_test() {
+void Rlamch_binary80_test() {
 #if defined VERBOSE_TEST
     const bool print_values = true;
 #else
