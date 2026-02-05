@@ -32,11 +32,11 @@
 #include <float.h>
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
+#if defined ___MPLAPACK_BUILD_WITH_BINARY80___
 #include <float.h>
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && defined ___MPLAPACK_WANT_LIBQUADMATH___
+#if defined ___MPLAPACK_BUILD_WITH_BINARY128___ && defined ___MPLAPACK_WANT_LIBQUADMATH___
 #include <quadmath.h>
 #else
 #include <float.h>
@@ -654,21 +654,21 @@ double Rlamch_double(const char *cmach) {
 }
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
-_Float64x RlamchE__Float64x(void);
-_Float64x RlamchS__Float64x(void);
-_Float64x RlamchB__Float64x(void);
-_Float64x RlamchP__Float64x(void);
-_Float64x RlamchN__Float64x(void);
-_Float64x RlamchR__Float64x(void);
-_Float64x RlamchM__Float64x(void);
-_Float64x RlamchU__Float64x(void);
-_Float64x RlamchL__Float64x(void);
-_Float64x RlamchO__Float64x(void);
-_Float64x RlamchZ__Float64x(void);
+#if defined ___MPLAPACK_BUILD_WITH_BINARY80___
+_Float64x RlamchE_binary80(void);
+_Float64x RlamchS_binary80(void);
+_Float64x RlamchB_binary80(void);
+_Float64x RlamchP_binary80(void);
+_Float64x RlamchN_binary80(void);
+_Float64x RlamchR_binary80(void);
+_Float64x RlamchM_binary80(void);
+_Float64x RlamchU_binary80(void);
+_Float64x RlamchL_binary80(void);
+_Float64x RlamchO_binary80(void);
+_Float64x RlamchZ_binary80(void);
 
 // "E" : relative machine precision (unit roundoff), assume rounding
-_Float64x RlamchE__Float64x(void) {
+_Float64x RlamchE_binary80(void) {
     static _Float64x eps;
     static int called = 0;
 
@@ -692,7 +692,7 @@ _Float64x RlamchE__Float64x(void) {
 }
 
 // "S" : safe minimum such that 1/sfmin does not overflow
-_Float64x RlamchS__Float64x(void) {
+_Float64x RlamchS_binary80(void) {
 #if defined(FLT64X_MIN)
     return (_Float64x)FLT64X_MIN;
 #else
@@ -702,13 +702,13 @@ _Float64x RlamchS__Float64x(void) {
 }
 
 // "B" : base of the machine
-_Float64x RlamchB__Float64x(void) { return (_Float64x)2.0; }
+_Float64x RlamchB_binary80(void) { return (_Float64x)2.0; }
 
 // "P" : precision = eps*base
-_Float64x RlamchP__Float64x(void) { return RlamchE__Float64x() * RlamchB__Float64x(); }
+_Float64x RlamchP_binary80(void) { return RlamchE_binary80() * RlamchB_binary80(); }
 
 // "N" : number of digits in mantissa
-_Float64x RlamchN__Float64x(void) {
+_Float64x RlamchN_binary80(void) {
 #if defined(FLT64X_MANT_DIG)
     return (_Float64x)FLT64X_MANT_DIG;
 #else
@@ -717,10 +717,10 @@ _Float64x RlamchN__Float64x(void) {
 }
 
 // "R" : 1.0 when rounding occurs in addition, 0.0 otherwise
-_Float64x RlamchR__Float64x(void) { return (_Float64x)1.0; }
+_Float64x RlamchR_binary80(void) { return (_Float64x)1.0; }
 
 // "M" : minimum exponent (emin) used by DLAMCH
-_Float64x RlamchM__Float64x(void) {
+_Float64x RlamchM_binary80(void) {
 #if defined(FLT64X_MIN_EXP)
     return (_Float64x)FLT64X_MIN_EXP;
 #else
@@ -729,7 +729,7 @@ _Float64x RlamchM__Float64x(void) {
 }
 
 // "U" : underflow threshold (rmin; minimum positive normal)
-_Float64x RlamchU__Float64x(void) {
+_Float64x RlamchU_binary80(void) {
 #if defined(FLT64X_MIN)
     return (_Float64x)FLT64X_MIN;
 #else
@@ -738,7 +738,7 @@ _Float64x RlamchU__Float64x(void) {
 }
 
 // "L" : largest exponent (emax) used by DLAMCH
-_Float64x RlamchL__Float64x(void) {
+_Float64x RlamchL_binary80(void) {
 #if defined(FLT64X_MAX_EXP)
     return (_Float64x)FLT64X_MAX_EXP;
 #else
@@ -747,7 +747,7 @@ _Float64x RlamchL__Float64x(void) {
 }
 
 // "O" : overflow threshold (rmax; maximum finite)
-_Float64x RlamchO__Float64x(void) {
+_Float64x RlamchO_binary80(void) {
 #if defined(FLT64X_MAX)
     return (_Float64x)FLT64X_MAX;
 #else
@@ -756,50 +756,50 @@ _Float64x RlamchO__Float64x(void) {
 }
 
 // "Z" : dummy
-_Float64x RlamchZ__Float64x(void) { return (_Float64x)0.0; }
+_Float64x RlamchZ_binary80(void) { return (_Float64x)0.0; }
 
-_Float64x Rlamch__Float64x(const char *cmach) {
+_Float64x Rlamch_binary80(const char *cmach) {
     if (Mlsame(cmach, "E"))
-        return RlamchE__Float64x();
+        return RlamchE_binary80();
     if (Mlsame(cmach, "S"))
-        return RlamchS__Float64x();
+        return RlamchS_binary80();
     if (Mlsame(cmach, "B"))
-        return RlamchB__Float64x();
+        return RlamchB_binary80();
     if (Mlsame(cmach, "P"))
-        return RlamchP__Float64x();
+        return RlamchP_binary80();
     if (Mlsame(cmach, "N"))
-        return RlamchN__Float64x();
+        return RlamchN_binary80();
     if (Mlsame(cmach, "R"))
-        return RlamchR__Float64x();
+        return RlamchR_binary80();
     if (Mlsame(cmach, "M"))
-        return RlamchM__Float64x();
+        return RlamchM_binary80();
     if (Mlsame(cmach, "U"))
-        return RlamchU__Float64x();
+        return RlamchU_binary80();
     if (Mlsame(cmach, "L"))
-        return RlamchL__Float64x();
+        return RlamchL_binary80();
     if (Mlsame(cmach, "O"))
-        return RlamchO__Float64x();
+        return RlamchO_binary80();
     Mxerbla("Rlamch", 1);
-    return RlamchZ__Float64x();
+    return RlamchZ_binary80();
 }
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
-_Float128 RlamchE__Float128(void);
-_Float128 RlamchS__Float128(void);
-_Float128 RlamchB__Float128(void);
-_Float128 RlamchP__Float128(void);
-_Float128 RlamchN__Float128(void);
-_Float128 RlamchR__Float128(void);
-_Float128 RlamchM__Float128(void);
-_Float128 RlamchU__Float128(void);
-_Float128 RlamchL__Float128(void);
-_Float128 RlamchO__Float128(void);
-_Float128 RlamchZ__Float128(void);
+#if defined ___MPLAPACK_BUILD_WITH_BINARY128___
+_Float128 RlamchE_binary128(void);
+_Float128 RlamchS_binary128(void);
+_Float128 RlamchB_binary128(void);
+_Float128 RlamchP_binary128(void);
+_Float128 RlamchN_binary128(void);
+_Float128 RlamchR_binary128(void);
+_Float128 RlamchM_binary128(void);
+_Float128 RlamchU_binary128(void);
+_Float128 RlamchL_binary128(void);
+_Float128 RlamchO_binary128(void);
+_Float128 RlamchZ_binary128(void);
 
 // "E" : relative machine precision (unit roundoff), assume rounding
 // DLAMCH('E') corresponds to 0.5 * (gap near 1) when rounding occurs.
-_Float128 RlamchE__Float128(void) {
+_Float128 RlamchE_binary128(void) {
 #if defined ___MPLAPACK_WANT_LIBQUADMATH___
     return (_Float128)FLT128_EPSILON * (_Float128)0.5;
 #elif defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
@@ -813,12 +813,12 @@ _Float128 RlamchE__Float128(void) {
 
 // "S" : safe minimum such that 1/sfmin does not overflow (netlib logic)
 // sfmin = rmin; small = 1/rmax; if (small >= sfmin) sfmin = small*(1+eps)
-_Float128 RlamchS__Float128(void) {
+_Float128 RlamchS_binary128(void) {
     const _Float128 one = (_Float128)1.0;
-    const _Float128 eps = RlamchE__Float128();
+    const _Float128 eps = RlamchE_binary128();
 
-    _Float128 sfmin = RlamchU__Float128();
-    const _Float128 small = one / RlamchO__Float128();
+    _Float128 sfmin = RlamchU_binary128();
+    const _Float128 small = one / RlamchO_binary128();
 
     if (small >= sfmin) {
         sfmin = small * (one + eps);
@@ -827,13 +827,13 @@ _Float128 RlamchS__Float128(void) {
 }
 
 // "B" : base of the machine
-_Float128 RlamchB__Float128(void) { return (_Float128)2.0; }
+_Float128 RlamchB_binary128(void) { return (_Float128)2.0; }
 
 // "P" : precision = eps*base
-_Float128 RlamchP__Float128(void) { return RlamchE__Float128() * RlamchB__Float128(); }
+_Float128 RlamchP_binary128(void) { return RlamchE_binary128() * RlamchB_binary128(); }
 
 // "N" : number of digits in mantissa
-_Float128 RlamchN__Float128(void) {
+_Float128 RlamchN_binary128(void) {
 #if defined ___MPLAPACK_WANT_LIBQUADMATH___
     return (_Float128)FLT128_MANT_DIG; // 113
 #else
@@ -842,12 +842,12 @@ _Float128 RlamchN__Float128(void) {
 }
 
 // "R" : 1.0 when rounding occurs in addition, 0.0 otherwise
-_Float128 RlamchR__Float128(void) { return (_Float128)1.0; }
+_Float128 RlamchR_binary128(void) { return (_Float128)1.0; }
 
 // "M" : minimum exponent (emin) used by DLAMCH
 // For IEEE binary128, FLT128_MIN is 2^(-16382) and DLAMCH uses rmin = base^(emin-1).
 // Thus emin = -16381 so that emin-1 = -16382.
-_Float128 RlamchM__Float128(void) {
+_Float128 RlamchM_binary128(void) {
 #if defined ___MPLAPACK_WANT_LIBQUADMATH___
     return (_Float128)FLT128_MIN_EXP; // -16381
 #else
@@ -856,7 +856,7 @@ _Float128 RlamchM__Float128(void) {
 }
 
 // "U" : underflow threshold (rmin; minimum positive normal)
-_Float128 RlamchU__Float128(void) {
+_Float128 RlamchU_binary128(void) {
 #if defined ___MPLAPACK_WANT_LIBQUADMATH___
     return (_Float128)FLT128_MIN;
 #elif defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
@@ -867,7 +867,7 @@ _Float128 RlamchU__Float128(void) {
 }
 
 // "L" : largest exponent (emax) used by DLAMCH
-_Float128 RlamchL__Float128(void) {
+_Float128 RlamchL_binary128(void) {
 #if defined ___MPLAPACK_WANT_LIBQUADMATH___
     return (_Float128)FLT128_MAX_EXP; // 16384
 #else
@@ -876,7 +876,7 @@ _Float128 RlamchL__Float128(void) {
 }
 
 // "O" : overflow threshold (rmax; maximum finite)
-_Float128 RlamchO__Float128(void) {
+_Float128 RlamchO_binary128(void) {
 #if defined ___MPLAPACK_WANT_LIBQUADMATH___
     return (_Float128)FLT128_MAX;
 #elif defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
@@ -887,32 +887,32 @@ _Float128 RlamchO__Float128(void) {
 }
 
 // "Z" : dummy
-_Float128 RlamchZ__Float128(void) { return (_Float128)0.0; }
+_Float128 RlamchZ_binary128(void) { return (_Float128)0.0; }
 
-_Float128 Rlamch__Float128(const char *cmach) {
+_Float128 Rlamch_binary128(const char *cmach) {
     if (Mlsame(cmach, "E"))
-        return RlamchE__Float128();
+        return RlamchE_binary128();
     if (Mlsame(cmach, "S"))
-        return RlamchS__Float128();
+        return RlamchS_binary128();
     if (Mlsame(cmach, "B"))
-        return RlamchB__Float128();
+        return RlamchB_binary128();
     if (Mlsame(cmach, "P"))
-        return RlamchP__Float128();
+        return RlamchP_binary128();
     if (Mlsame(cmach, "N"))
-        return RlamchN__Float128();
+        return RlamchN_binary128();
     if (Mlsame(cmach, "R"))
-        return RlamchR__Float128();
+        return RlamchR_binary128();
     if (Mlsame(cmach, "M"))
-        return RlamchM__Float128();
+        return RlamchM_binary128();
     if (Mlsame(cmach, "U"))
-        return RlamchU__Float128();
+        return RlamchU_binary128();
     if (Mlsame(cmach, "L"))
-        return RlamchL__Float128();
+        return RlamchL_binary128();
     if (Mlsame(cmach, "O"))
-        return RlamchO__Float128();
+        return RlamchO_binary128();
 
     Mxerbla("Rlamch", 1);
-    return RlamchZ__Float128();
+    return RlamchZ_binary128();
 }
 #endif
 

@@ -84,7 +84,7 @@ void Rlaruv(INTEGER *iseed, INTEGER const n, REAL *x) {
     }
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
+#if defined ___MPLAPACK_BUILD_WITH_BINARY128___
     std::random_device rd;
     std::mt19937_64 mt(rd());
     std::uniform_real_distribution<double> dist(0.0, 1.0);
@@ -92,7 +92,7 @@ void Rlaruv(INTEGER *iseed, INTEGER const n, REAL *x) {
         x[i] = dist(mt) + dist(mt) * 0x1p-53 + dist(mt) * 0x1p-106;
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
+#if defined ___MPLAPACK_BUILD_WITH_BINARY80___
     std::random_device rd;
     std::mt19937_64 mt(rd());
     std::uniform_real_distribution<double> dist(0, 1.0);

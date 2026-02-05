@@ -21,11 +21,11 @@ lib_LTLIBRARIES += libmplapack_double.la
 endif
 
 if ENABLE_BINARY80
-lib_LTLIBRARIES += libmplapack__Float64x.la
+lib_LTLIBRARIES += libmplapack_binary80.la
 endif
 
 if ENABLE_BINARY128
-lib_LTLIBRARIES += libmplapack__Float128.la
+lib_LTLIBRARIES += libmplapack_binary128.la
 endif
 
 if ENABLE_GMP
@@ -91,26 +91,26 @@ endif
 endif
 
 if ENABLE_BINARY80
-libmplapack__Float64x_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH__FLOAT64X___
-libmplapack__Float64x_la_SOURCES = $(MPLAPACK_SOURCES)
-libmplapack__Float64x_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO) -Wl,-rpath,$(libdir)
+libmplapack_binary80_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_BINARY80___
+libmplapack_binary80_la_SOURCES = $(MPLAPACK_SOURCES)
+libmplapack_binary80_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO) -Wl,-rpath,$(libdir)
 if IS_MACOS
-libmplapack__Float64x_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
+libmplapack_binary80_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 if IS_MINGW
-libmplapack__Float64x_la_LDFLAGS += -no-undefined -L$(top_builddir)/mpblas/reference -lmpblas__Float64x
+libmplapack_binary80_la_LDFLAGS += -no-undefined -L$(top_builddir)/mpblas/reference -lmpblas_binary80
 endif
 endif
 
 if ENABLE_BINARY128
-libmplapack__Float128_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH__FLOAT128___
-libmplapack__Float128_la_SOURCES = $(MPLAPACK_SOURCES)
-libmplapack__Float128_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO) -Wl,-rpath,$(libdir)
+libmplapack_binary128_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_BINARY128___
+libmplapack_binary128_la_SOURCES = $(MPLAPACK_SOURCES)
+libmplapack_binary128_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO) -Wl,-rpath,$(libdir)
 if IS_MACOS
-libmplapack__Float128_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
+libmplapack_binary128_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 if IS_MINGW
-libmplapack__Float128_la_LDFLAGS += -no-undefined -L$(top_builddir)/mpblas/reference -lmpblas__Float128 -lquadmath
+libmplapack_binary128_la_LDFLAGS += -no-undefined -L$(top_builddir)/mpblas/reference -lmpblas_binary128 -lquadmath
 endif
 endif
 
