@@ -23,7 +23,7 @@ pushd mplapack/test/compare ; bash gen.Makefile.am.sh ; popd
 
 autoreconf --force --install
 
-./configure --prefix=$HOME/MPLAPACK_MINGW --host=x86_64-w64-mingw32 --target=x86_64-w64-mingw32 --enable-gmp=yes --enable-mpfr=yes --enable-double=yes --enable-_Float64x=yes --enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-test=yes --enable-benchmark=yes
+./configure --prefix=$HOME/MPLAPACK_MINGW --host=x86_64-w64-mingw32 --target=x86_64-w64-mingw32 --enable-gmp=yes --enable-mpfr=yes --enable-double=yes --enable-binary80=yes --enable-binary128=yes --enable-qd=yes --enable-dd=yes --enable-test=yes --enable-benchmark=yes
 
 
 
