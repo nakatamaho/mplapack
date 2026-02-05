@@ -330,6 +330,9 @@ if test x$enable_binary128 = x"yes"; then
     have___float128=no
     longdouble_is_binary128=no
     _Float128_is_longdouble=no
+    float128_types_same=no
+    float128_implicit_gnu_to_std=no
+    float128_implicit_std_to_gnu=no
 
     dnl Check _Float128
     AC_COMPILE_IFELSE([
@@ -357,19 +360,18 @@ if test x$enable_binary128 = x"yes"; then
         ]])
     ], [have___float128=yes], [])
 
-    dnl Check if long double is binary128 (113-bit mantissa)
+    dnl Check if long double is binary128-like: mantissa=113 and exponent range like binary128
     AC_COMPILE_IFELSE([
         AC_LANG_SOURCE([[
-            int main() {
-            #if __LDBL_MANT_DIG__ >= 113
+            int main(void) {
+            #if (__LDBL_MANT_DIG__ >= 113) && (__LDBL_MAX_EXP__ >= 16384)
                 return 0;
             #else
-            #error "long double is not binary128"
+            # error "long double is not binary128 (mantissa/exponent mismatch)"
             #endif
             }
         ]])
-    ], [longdouble_is_binary128=yes], [])
-
+    ], [longdouble_is_binary128=yes], [longdouble_is_binary128=no])
     dnl Check if _Float128 == long double
     if test "$have__Float128" = "yes"; then
         AC_COMPILE_IFELSE([
@@ -383,7 +385,49 @@ if test x$enable_binary128 = x"yes"; then
         ], [_Float128_is_longdouble=yes], [])
     fi
 
-    AC_MSG_RESULT([_Float128=$have__Float128, __float128=$have___float128, ldbl_binary128=$longdouble_is_binary128])
+    dnl Check convertibility between __float128 (GNU) and _Float128 (standard) (C++)
+    if test "x$have__Float128" = "xyes" && test "x$have___float128" = "xyes"; then
+        AC_LANG_PUSH([C++])
+
+        dnl Same type?
+        AC_COMPILE_IFELSE([
+            AC_LANG_SOURCE([[
+                #include <type_traits>
+                int main() {
+                    static_assert(std::is_same<_Float128, __float128>::value, "not same");
+                    return 0;
+                }
+            ]])
+        ], [float128_types_same=yes], [float128_types_same=no])
+
+        dnl Implicitly convertible? (__float128 -> _Float128)
+        AC_COMPILE_IFELSE([
+            AC_LANG_SOURCE([[
+                #include <type_traits>
+                int main() {
+                    static_assert(std::is_convertible<__float128, _Float128>::value,
+                                  "not convertible gnu_f128 -> std_f128");
+                    return 0;
+                }
+            ]])
+        ], [float128_implicit_gnu_to_std=yes], [float128_implicit_gnu_to_std=no])
+
+        dnl Implicitly convertible? (_Float128 -> __float128)
+        AC_COMPILE_IFELSE([
+            AC_LANG_SOURCE([[
+                #include <type_traits>
+                int main() {
+                    static_assert(std::is_convertible<_Float128, __float128>::value,
+                                  "not convertible std_f128 -> gnu_f128");
+                    return 0;
+                }
+            ]])
+        ], [float128_implicit_std_to_gnu=yes], [float128_implicit_std_to_gnu=no])
+
+        AC_LANG_POP([C++])
+    fi
+
+    AC_MSG_RESULT([_Float128=$have__Float128, __float128=$have___float128, ldbl_binary128=$longdouble_is_binary128, same_types=$float128_types_same, implicit_gnu_to_std=$float128_implicit_gnu_to_std, implicit_std_to_gnu=$float128_implicit_std_to_gnu])
 
     dnl ===================================================================
     dnl Phase 2: I/O Function Detection
@@ -621,14 +665,36 @@ fi
 dnl ===================================================================
 dnl Define macros for config.h
 dnl ===================================================================
-AC_DEFINE_UNQUOTED([MPLAPACK_BINARY128_MODE], [$mplapack_binary128_mode],
-    [Binary128 type mode: 0=DISABLED, 1=LDBL, 2=FLOAT128, 3=QUADMATH])
+mplapack_has__Float128_type=0
+mplapack_has___float128_type=0
+mplapack_ldbl_is_binary128=0
+mplapack__Float128_is_long_double=0
+mplapack_float128_types_same=0
+mplapack_implicit_gnu_to_std_f128=0
+mplapack_implicit_std_to_gnu_f128=0
 
-AC_DEFINE_UNQUOTED([MPLAPACK_BINARY128_IO], [$mplapack_binary128_io],
-    [Binary128 I/O mode: 0=NONE, 1=SNPRINTF_LDBL, 2=STRFROMF128, 3=QUADMATH_SNPRINTF])
+AS_IF([test "x$have__Float128" = "xyes"], [mplapack_has__Float128_type=1])
+AS_IF([test "x$have___float128" = "xyes"], [mplapack_has___float128_type=1])
+AS_IF([test "x$longdouble_is_binary128" = "xyes"], [mplapack_ldbl_is_binary128=1])
+AS_IF([test "x$_Float128_is_longdouble" = "xyes"], [mplapack__Float128_is_long_double=1])
+AS_IF([test "x$float128_types_same" = "xyes"], [mplapack_float128_types_same=1])
+AS_IF([test "x$float128_implicit_gnu_to_std" = "xyes"], [mplapack_implicit_gnu_to_std_f128=1])
+AS_IF([test "x$float128_implicit_std_to_gnu" = "xyes"], [mplapack_implicit_std_to_gnu_f128=1])
 
-AC_DEFINE_UNQUOTED([MPLAPACK_BINARY128_MATH], [$mplapack_binary128_math],
-    [Binary128 math mode: 0=NONE, 1=LDBL, 2=F128, 3=QUADMATH])
+AC_DEFINE_UNQUOTED([MPLAPACK_HAVE__FLOAT128], [$mplapack_has__Float128_type],
+    [1 if _Float128 is supported by the compiler, else 0])
+AC_DEFINE_UNQUOTED([MPLAPACK_HAVE___FLOAT128], [$mplapack_has___float128_type],
+    [1 if __float128 is supported by the compiler, else 0])
+AC_DEFINE_UNQUOTED([MPLAPACK_LDBL_IS_BINARY128], [$mplapack_ldbl_is_binary128],
+    [1 if long double is binary128-like (mantissa/exponent), else 0])
+AC_DEFINE_UNQUOTED([MPLAPACK__FLOAT128_IS_LDBL], [$mplapack__Float128_is_long_double],
+    [1 if _Float128 is the same type as long double, else 0])
+AC_DEFINE_UNQUOTED([MPLAPACK_FLOAT128_SAME_TYPES], [$mplapack_float128_types_same],
+    [1 if _Float128 and __float128 are the same type, else 0])
+AC_DEFINE_UNQUOTED([MPLAPACK_FLOAT128_CONVERT_GNU_TO_STD], [$mplapack_implicit_gnu_to_std_f128],
+    [1 If __float128 is implicitly convertible to _Float128, else 0])
+AC_DEFINE_UNQUOTED([MPLAPACK_FLOAT128_CONVERT_STD_TO_GNU], [$mplapack_implicit_std_to_gnu_f128],
+    [1 if _Float128 is implicitly convertible to __float128, else 0])
 
 dnl ===================================================================
 dnl Constants for config.h

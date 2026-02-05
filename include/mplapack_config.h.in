@@ -91,16 +91,6 @@
 /* Define to the sub-directory where libtool stores uninstalled libraries. */
 #undef LT_OBJDIR
 
-/* Binary128 I/O mode: 0=NONE, 1=SNPRINTF_LDBL, 2=STRFROMF128,
-   3=QUADMATH_SNPRINTF */
-#undef MPLAPACK_BINARY128_IO
-
-/* Binary128 math mode: 0=NONE, 1=LDBL, 2=F128, 3=QUADMATH */
-#undef MPLAPACK_BINARY128_MATH
-
-/* Binary128 type mode: 0=DISABLED, 1=LDBL, 2=FLOAT128, 3=QUADMATH */
-#undef MPLAPACK_BINARY128_MODE
-
 /* Binary80 I/O mode: 0=NONE, 1=SNPRINTF_LDBL, 2=STRFROMF64X */
 #undef MPLAPACK_BINARY80_IO
 
@@ -109,6 +99,27 @@
 
 /* Binary80 type mode: 0=DISABLED, 1=LDBL80, 2=FLOAT64X */
 #undef MPLAPACK_BINARY80_MODE
+
+/* 1 If __float128 is implicitly convertible to _Float128, else 0 */
+#undef MPLAPACK_FLOAT128_CONVERT_GNU_TO_STD
+
+/* 1 if _Float128 is implicitly convertible to __float128, else 0 */
+#undef MPLAPACK_FLOAT128_CONVERT_STD_TO_GNU
+
+/* 1 if _Float128 and __float128 are the same type, else 0 */
+#undef MPLAPACK_FLOAT128_SAME_TYPES
+
+/* 1 if _Float128 is supported by the compiler, else 0 */
+#undef MPLAPACK_HAVE__FLOAT128
+
+/* 1 if __float128 is supported by the compiler, else 0 */
+#undef MPLAPACK_HAVE___FLOAT128
+
+/* 1 if long double is binary128-like (mantissa/exponent), else 0 */
+#undef MPLAPACK_LDBL_IS_BINARY128
+
+/* 1 if _Float128 is the same type as long double, else 0 */
+#undef MPLAPACK__FLOAT128_IS_LDBL
 
 /* Name of package */
 #undef PACKAGE
