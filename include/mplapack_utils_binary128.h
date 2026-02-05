@@ -33,7 +33,7 @@
 
 #if MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_QUADMATH
 #include <quadmath.h>
-#endif //  MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_QUADMATH
+#endif // MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_QUADMATH
 
 #if MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_QUADMATH_SNPRINTF
 #if defined ___MPLAPACK_INTERNAL___
@@ -114,7 +114,7 @@ inline void sprintnum_short(char *buf, std::complex<__float128> rtmp) {
 }
 #endif
 
-#endif  // MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_QUADMATH_SNPRINTF
+#endif // MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_QUADMATH_SNPRINTF
 
 #if MPLAPACK_BINARY128_MATH == MPLAPACK_BINARY128_MATH_QUADMATH
 #include <quadmath.h>
@@ -153,8 +153,19 @@ inline std::complex<__float128> sqrt(const std::complex<__float128> a) {
     c.imag(__imag__(tmp));
     return c;
 }
+inline std::complex<__float128> exp(const std::complex<__float128> &a) {
+    __float128 _Complex b, tmp;
+    std::complex<__float128> c;
+    __real__(b) = (a.real());
+    __imag__(b) = (a.imag());
+    tmp = cexpq(b);
+    c.real(__real__(tmp));
+    c.imag(__imag__(tmp));
+    return c;
+}
+inline __float128 pi(__float128 dummy) { return M_PIq; }
 
-#endif //MPLAPACK_BINARY128_MATH == MPLAPACK_BINARY128_MATH_QUADMATH
+#endif // MPLAPACK_BINARY128_MATH == MPLAPACK_BINARY128_MATH_QUADMATH
 
 // support functions for mplapack, general ones
 #include <cmath>
@@ -169,12 +180,12 @@ inline mplapack_binary128_t sign(mplapack_binary128_t a, mplapack_binary128_t b)
     return mtmp;
 }
 
-inline mplapack_binary128_t castREAL_mplapack_binary128_t(mplapackint n) {
+inline mplapack_binary128_t castREAL_binary128(mplapackint n) {
     mplapack_binary128_t ret = n;
     return ret;
 }
 
-inline mplapackint castINTEGER_mplapack_binary128_t(mplapack_binary128_t a) {
+inline mplapackint castINTEGER_binary128(mplapack_binary128_t a) {
     mplapackint i = a;
     return i;
 }

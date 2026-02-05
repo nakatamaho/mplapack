@@ -31,11 +31,10 @@
 
 #include "mplapack_config.h"
 
+#include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
-
-#if defined ___MPLAPACK_MATGEN_WANT_LIBQUADMATH___
-#include "quadmath.h"
-#endif
 

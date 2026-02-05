@@ -26,10 +26,10 @@
  *
  */
 
-#ifndef _MPBLAS__FLOAT128_H_
-#define _MPBLAS__FLOAT128_H_
+#ifndef _MPBLAS_BINARY128_H_
+#define _MPBLAS_BINARY128_H_
 
 #include <complex>
 #include "mplapack_config.h"
-#include "mplapack_utils__Float128.h"
+#include "mplapack_utils_binary128.h"
 

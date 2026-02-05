@@ -34,7 +34,7 @@
 
 #if MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_LDBL80
 
-#endif //MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_LDBL80
+#endif // MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_LDBL80
 
 #if MPLAPACK_BINARY80_IO == MPLAPACK_BINARY80_IO_SNPRINTF_LDBL
 #if defined ___MPLAPACK_INTERNAL___
@@ -60,6 +60,25 @@ inline void sprintnum_short(char *buf, std::complex<long double> ctmp) { snprint
 #endif
 
 #if MPLAPACK_BINARY80_MATH == MPLAPACK_BINARY80_MATH_LDBL
+
+inline long double pow(const long double &a, const long double &b) { return powl(a, b); }
+inline long double pow(const long &a, const long &b) { return powl((long double)a, (long double)b); }
+inline long double pow(const int &a, const long &b) { return powl((long double)a, (long double)b); }
+inline long double pow(const long double &a, const long &b) { return powl(a, (long double)b); }
+
+inline long double sqrt(const long double &a) { return sqrtl(a); }
+inline long double sin(long double a) { return sinl(a); }
+inline long double sinh(long double a) { return sinhl(a); }
+inline long double cos(long double a) { return cosl(a); }
+inline long double cosh(long double a) { return coshl(a); }
+inline long double atan2(long double a, long double b) { return atan2l(a, b); }
+inline long double exp(const long double &a) { return expl(a); }
+inline long double log(const long double &a) { return logl(a); }
+inline long double log10(const long double &a) { return log10l(a); }
+inline long double log2(const long double &a) { return logl(a) / logl(2.0L); }
+inline long double ldexp(const long double &a, int exp) { return ldexpl(a, exp); }
+inline long double nextafter(const long double &a, const long double &b) { return nextafterl(a, b); }
+
 inline long double pow2(const long double &a) { return a * a; }
 inline long double pow4(const long double &a) { return a * a * a * a; }
 inline std::complex<long double> pow2(const std::complex<long double> &a) { return a * a; }

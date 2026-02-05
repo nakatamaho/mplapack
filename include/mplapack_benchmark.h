@@ -119,10 +119,10 @@ double randomnumber(double dummy) {
 }
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
-#include <mplapack_benchmark__Float64x.h>
-#define MPLAPACK_REF_LIB "libmplapack__Float64x"
-#define MPBLAS_REF_LIB "libmpblas__Float64x"
+#if defined ___MPLAPACK_BUILD_WITH_BINARY80___
+#include <mplapack_benchmark_binary80.h>
+#define MPLAPACK_REF_LIB "libmplapack_binary80"
+#define MPBLAS_REF_LIB "libmpblas_binary80"
 #define ___MPLAPACK_INITIALIZE___
 _Float64x randomnumber(_Float64x dummy) {
     _Float64x mtmp;
@@ -138,10 +138,10 @@ _Float64x randomnumber(_Float64x dummy) {
 }
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
-#include <mplapack_benchmark__Float128.h>
-#define MPLAPACK_REF_LIB "libmplapack__Float128"
-#define MPBLAS_REF_LIB "libmpblas__Float128"
+#if defined ___MPLAPACK_BUILD_WITH_BINARY128___
+#include <mplapack_benchmark_binary128.h>
+#define MPLAPACK_REF_LIB "libmplapack_binary128"
+#define MPBLAS_REF_LIB "libmpblas_binary128"
 #define ___MPLAPACK_INITIALIZE___
 _Float128 randomnumber(_Float128 dummy) {
     _Float128 mtmp;

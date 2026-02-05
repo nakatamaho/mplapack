@@ -258,12 +258,12 @@ void set_random_number1to2(mpcomplex &a, complex<_Float64x> &b);
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_BINARY128___
-_Float128 mpf_randomnumber(_Float128 dummy);
-complex<_Float128> mpc_randomnumber(complex<_Float128> dummy);
-void set_random_number(mpreal &a, _Float128 &b);
-void set_random_number(mpcomplex &a, complex<_Float128> &b);
-void set_random_number1to2(mpreal &a, _Float128 &b);
-void set_random_number1to2(mpcomplex &a, complex<_Float128> &b);
+mplapack_binary128_t mpf_randomnumber(mplapack_binary128_t dummy);
+complex<mplapack_binary128_t> mpc_randomnumber(complex<mplapack_binary128_t> dummy);
+void set_random_number(mpreal &a, mplapack_binary128_t &b);
+void set_random_number(mpcomplex &a, complex<mplapack_binary128_t> &b);
+void set_random_number1to2(mpreal &a, mplapack_binary128_t &b);
+void set_random_number1to2(mpcomplex &a, complex<mplapack_binary128_t> &b);
 #endif
 
 template <class X_REF, class X> void set_random_vector(X_REF *vec_ref, X *vec, int len) {
@@ -349,7 +349,7 @@ template <class X_REF, class X> void set_random_symmmat_cond(X_REF *p_ref, X *p,
 #elif defined(___MPLAPACK_BUILD_WITH_DOUBLE___)
             p[i + j * ldp] = (_Float64x)(tmpmat3_mpreal[i + j * ldp]);
 #elif defined(___MPLAPACK_BUILD_WITH_BINARY128___)
-            p[i + j * ldp] = cast2_Float128(tmpmat3_mpreal[i + j * ldp]);
+            p[i + j * ldp] = cast2mplapack_binary128_t(tmpmat3_mpreal[i + j * ldp]);
 #endif
             p_ref[i + j * ldp] = tmpmat3_mpreal[i + j * ldp];
         }
