@@ -237,26 +237,26 @@ void mplapack_finalize_double(void) {
 }
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
-void __attribute__((constructor)) mplapack_initialize__Float64x(void);
-void __attribute__((destructor)) mplapack_finalize__Float64x(void);
-void mplapack_initialize__Float64x(void) {
+#if defined ___MPLAPACK_BUILD_WITH_BINARY80___
+void __attribute__((constructor)) mplapack_initialize_binary80(void);
+void __attribute__((destructor)) mplapack_finalize_binary80(void);
+void mplapack_initialize_binary80(void) {
     // no initializization needed
 }
 
-void mplapack_finalize__Float64x(void) {
+void mplapack_finalize_binary80(void) {
     // no finalization needed
 }
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
+#if defined ___MPLAPACK_BUILD_WITH_BINARY128___
 void __attribute__((constructor)) mplapack_initialize_binary128(void);
 void __attribute__((destructor)) mplapack_finalize_binary128(void);
-void mplapack_initialize__Float128(void) {
+void mplapack_initialize_binary128(void) {
     // no initializization needed
 }
 
-void mplapack_finalize__Float128(void) {
+void mplapack_finalize_binary128(void) {
     // no finalization needed
 }
 #endif

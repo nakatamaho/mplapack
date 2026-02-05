@@ -21,11 +21,11 @@ lib_LTLIBRARIES += libmpblas_double.la
 endif
 
 if ENABLE_BINARY80
-lib_LTLIBRARIES += libmpblas__Float64x.la
+lib_LTLIBRARIES += libmpblas_binary80.la
 endif
 
 if ENABLE_BINARY128
-lib_LTLIBRARIES += libmpblas__Float128.la
+lib_LTLIBRARIES += libmpblas_binary128.la
 endif
 
 MPBLAS_SOURCES = Caxpy.cpp Ccopy.cpp Cdotc.cpp Cdotu.cpp Cgbmv.cpp \
@@ -105,26 +105,26 @@ endif
 endif
 
 if ENABLE_BINARY80
-libmpblas__Float64x_la_CPPFLAGS = -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH__FLOAT64X___
-libmpblas__Float64x_la_SOURCES = $(MPBLAS_SOURCES)
-libmpblas__Float64x_la_LDFLAGS = $(MPLAPACK_LT_LDFLAGS)
+libmpblas_binary80_la_CPPFLAGS = -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_BINARY80___
+libmpblas_binary80_la_SOURCES = $(MPBLAS_SOURCES)
+libmpblas_binary80_la_LDFLAGS = $(MPLAPACK_LT_LDFLAGS)
 if IS_MACOS
-libmpblas__Float64x_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
+libmpblas_binary80_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 if IS_MINGW
-libmpblas__Float64x_la_LDFLAGS += -no-undefined
+libmpblas_binary80_la_LDFLAGS += -no-undefined
 endif
 endif
 
 if ENABLE_BINARY128
-libmpblas__Float128_la_CPPFLAGS = -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH__FLOAT128___
-libmpblas__Float128_la_SOURCES = $(MPBLAS_SOURCES)
-libmpblas__Float128_la_LDFLAGS = $(MPLAPACK_LT_LDFLAGS)
+libmpblas_binary128_la_CPPFLAGS = -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_BINARY128___
+libmpblas_binary128_la_SOURCES = $(MPBLAS_SOURCES)
+libmpblas_binary128_la_LDFLAGS = $(MPLAPACK_LT_LDFLAGS)
 if IS_MACOS
-libmpblas__Float128_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
+libmpblas_binary128_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 if IS_MINGW
-libmpblas__Float128_la_LDFLAGS += -no-undefined -lquadmath
+libmpblas_binary128_la_LDFLAGS += -no-undefined -lquadmath
 endif
 endif
 
