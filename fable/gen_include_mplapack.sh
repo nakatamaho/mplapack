@@ -19,7 +19,7 @@ cat *hpp | sort | grep -v Mxerbla | grep -v abs1 | grep -v abs2 | grep -v ___mpl
 
 rm *hpp
 
-MPLIBS="gmp mpfr binary128 dd qd double _Float64x"
+MPLIBS="gmp mpfr binary128 dd qd double binary80"
 for mplib in $MPLIBS; do
     if [ x"$mplib" = x"gmp" ]; then
         cat header_all | grep -v mpfr > mplapack_${mplib}.h 
@@ -102,8 +102,8 @@ for mplib in $MPLIBS; do
     if [ x"$mplib" = x"binary128" ]; then
         cat header_all | grep -v gmp | grep -v mpfr > mplapack_${mplib}.h 
         sed -i -e 's/INTEGER/mplapackint/g' mplapack_${mplib}.h 
-        sed -i -e 's/COMPLEX/std::complex<_Float128>/g' mplapack_${mplib}.h 
-        sed -i -e 's/REAL/_Float128/g' mplapack_${mplib}.h 
+        sed -i -e 's/COMPLEX/std::complex<mplapack_binary128_t>/g' mplapack_${mplib}.h
+        sed -i -e 's/REAL/mplapack_binary128_t/g' mplapack_${mplib}.h
         sed -i -e "s/Rlamch/Rlamch_${mplib}/g" mplapack_${mplib}.h 
         sed -i -e "s/Mlsamen/Mlsamen_${mplib}/g" mplapack_${mplib}.h
         sed -i -e "s/\<iMlaenv2stage\>/iMlaenv2stage_${mplib}/g" mplapack_${mplib}.h 
@@ -116,12 +116,12 @@ for mplib in $MPLIBS; do
 
     if [ x"$mplib" = x"binary80" ]; then
         cat header_all | grep -v gmp | grep -v mpfr > mplapack_${mplib}.h 
-        sed -i -e 's/INTEGER/mplapackint/g' mplapack_${mplib}.h 
-        sed -i -e 's/COMPLEX/std::complex<_Float64x>/g' mplapack_${mplib}.h 
-        sed -i -e 's/REAL/_Float64x/g' mplapack_${mplib}.h 
-        sed -i -e "s/Rlamch/Rlamch_${mplib}/g" mplapack_${mplib}.h 
+        sed -i -e 's/INTEGER/mplapackint/g' mplapack_${mplib}.h
+        sed -i -e 's/COMPLEX/std::complex<mplapack_binary80_t>/g' mplapack_${mplib}.h
+        sed -i -e 's/REAL/mplapack_binary80_t/g' mplapack_${mplib}.h
+        sed -i -e "s/Rlamch/Rlamch_${mplib}/g" mplapack_${mplib}.h
         sed -i -e "s/Mlsamen/Mlsamen_${mplib}/g" mplapack_${mplib}.h
-        sed -i -e "s/\<iMlaenv2stage\>/iMlaenv2stage_${mplib}/g" mplapack_${mplib}.h 
+        sed -i -e "s/\<iMlaenv2stage\>/iMlaenv2stage_${mplib}/g" mplapack_${mplib}.h
         sed -i -e "s/\<iMlaenv\>/iMlaenv_${mplib}/g" mplapack_${mplib}.h 
         sed -i -e "s/iMlaver/iMlaver_${mplib}/g" mplapack_${mplib}.h 
         sed -i -e "s/iMieeeck/iMieeeck_${mplib}/g" mplapack_${mplib}.h 

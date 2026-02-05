@@ -69,19 +69,19 @@ for mplib in $MPLIBS; do
     if [ x"$mplib" = x"binary128" ]; then
         cp header_all mpblas_${mplib}.h 
         sed -i -e 's/INTEGER/mplapackint/g' mpblas_${mplib}.h 
-        sed -i -e 's/COMPLEX/std::complex<_Float128>/g' mpblas_${mplib}.h 
-        sed -i -e 's/REAL/_Float128/g' mpblas_${mplib}.h 
-        sed -i -e "s/Mlsame/Mlsame_${mplib}/g" mpblas_${mplib}.h 
+        sed -i -e 's/COMPLEX/std::complex<mplapack_binary128_t>/g' mpblas_${mplib}.h
+        sed -i -e 's/REAL/mplapack_binary128_t/g' mpblas_${mplib}.h
+        sed -i -e "s/Mlsame/Mlsame_${mplib}/g" mpblas_${mplib}.h
         sed -i -e "s/Mxerbla/Mxerbla_${mplib}/g" mpblas_${mplib}.h 
     fi
 
     if [ x"$mplib" = x"binary80" ]; then
         cp header_all mpblas_${mplib}.h 
-        sed -i -e 's/INTEGER/mplapackint/g' mpblas_${mplib}.h 
-        sed -i -e 's/COMPLEX/std::complex<_Float64x>/g' mpblas_${mplib}.h 
-        sed -i -e 's/REAL/_Float64x/g' mpblas_${mplib}.h 
-        sed -i -e "s/Mlsame/Mlsame_${mplib}/g" mpblas_${mplib}.h 
-        sed -i -e "s/Mxerbla/Mxerbla_${mplib}/g" mpblas_${mplib}.h 
+        sed -i -e 's/INTEGER/mplapackint/g' mpblas_${mplib}.h
+        sed -i -e 's/COMPLEX/std::complex<mplapack_binary80_t>/g' mpblas_${mplib}.h
+        sed -i -e 's/REAL/mplapack_binary80_t/g' mpblas_${mplib}.h
+        sed -i -e "s/Mlsame/Mlsame_${mplib}/g" mpblas_${mplib}.h
+        sed -i -e "s/Mxerbla/Mxerbla_${mplib}/g" mpblas_${mplib}.h
     fi
 
     clang-format-19 -style="{BasedOnStyle: llvm, IndentWidth: 4, ColumnLimit: 10000 }" mpblas_${mplib}.h | sort > l ; mv l mpblas_${mplib}.h 

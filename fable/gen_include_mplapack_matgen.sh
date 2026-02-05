@@ -85,8 +85,8 @@ for mplib in $MPLIBS; do
     if [ x"$mplib" = x"binary128" ]; then
         cp header_all mplapack_matgen_${mplib}.h 
         sed -i -e 's/INTEGER/mplapackint/g' mplapack_matgen_${mplib}.h 
-        sed -i -e 's/COMPLEX/std::complex<_Float128>/g' mplapack_matgen_${mplib}.h 
-        sed -i -e 's/REAL/_Float128/g' mplapack_matgen_${mplib}.h 
+        sed -i -e 's/COMPLEX/std::complex<mplapack_binary128_t>/g' mplapack_matgen_${mplib}.h
+        sed -i -e 's/REAL/mplapack_binary128_t/g' mplapack_matgen_${mplib}.h
         sed -i -e "s/Rlamch/Rlamch_${mplib}/g" mplapack_matgen_${mplib}.h 
         sed -i -e "s/iMlaenv/iMlaenv_${mplib}/g" mplapack_matgen_${mplib}.h 
         sed -i -e "s/iMieeeck/iMieeeck_${mplib}/g" mplapack_matgen_${mplib}.h 
@@ -96,8 +96,8 @@ for mplib in $MPLIBS; do
     if [ x"$mplib" = x"binary80" ]; then
         cp header_all mplapack_matgen_${mplib}.h 
         sed -i -e 's/INTEGER/mplapackint/g' mplapack_matgen_${mplib}.h 
-        sed -i -e 's/COMPLEX/std::complex<_Float64x>/g' mplapack_matgen_${mplib}.h 
-        sed -i -e 's/REAL/_Float64x/g' mplapack_matgen_${mplib}.h 
+        sed -i -e 's/COMPLEX/std::complex<mplapack_binary80_t>/g' mplapack_matgen_${mplib}.h
+        sed -i -e 's/REAL/mplapack_binary80_t/g' mplapack_matgen_${mplib}.h
         sed -i -e "s/Rlamch/Rlamch_${mplib}/g" mplapack_matgen_${mplib}.h 
         sed -i -e "s/iMlaenv/iMlaenv_${mplib}/g" mplapack_matgen_${mplib}.h 
         sed -i -e "s/iMieeeck/iMieeeck_${mplib}/g" mplapack_matgen_${mplib}.h 

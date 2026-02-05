@@ -106,8 +106,8 @@ for mplib in $MPLIBS; do
     if [ x"$mplib" = x"binary128" ]; then
         cat header_all | grep -v gmp | grep -v mpfr > mplapack_lin_${mplib}.h 
         sed -i -e 's/INTEGER/mplapackint/g' mplapack_lin_${mplib}.h 
-        sed -i -e 's/COMPLEX/std::complex<_Float128>/g' mplapack_lin_${mplib}.h 
-        sed -i -e 's/REAL/_Float128/g' mplapack_lin_${mplib}.h 
+        sed -i -e 's/COMPLEX/std::complex<mplapack_binary128_t>/g' mplapack_lin_${mplib}.h
+        sed -i -e 's/REAL/mplapack_binary128_t/g' mplapack_lin_${mplib}.h
         sed -i -e "s/Rlamch/Rlamch_${mplib}/g" mplapack_lin_${mplib}.h 
         sed -i -e "s/Mlsamen/Mlsamen_${mplib}/g" mplapack_lin_${mplib}.h
         sed -i -e "s/Mxerbla/Mxerbla_${mplib}/g" mplapack_lin_${mplib}.h
@@ -121,8 +121,8 @@ for mplib in $MPLIBS; do
     if [ x"$mplib" = x"binary80" ]; then
         cat header_all | grep -v gmp | grep -v mpfr > mplapack_lin_${mplib}.h 
         sed -i -e 's/INTEGER/mplapackint/g' mplapack_lin_${mplib}.h 
-        sed -i -e 's/COMPLEX/std::complex<_Float64x>/g' mplapack_lin_${mplib}.h 
-        sed -i -e 's/REAL/_Float64x/g' mplapack_lin_${mplib}.h 
+        sed -i -e 's/COMPLEX/std::complex<mplapack_binary80_t>/g' mplapack_lin_${mplib}.h
+        sed -i -e 's/REAL/mplapack_binary80_t/g' mplapack_lin_${mplib}.h
         sed -i -e "s/Rlamch/Rlamch_${mplib}/g" mplapack_lin_${mplib}.h 
         sed -i -e "s/Mlsamen/Mlsamen_${mplib}/g" mplapack_lin_${mplib}.h
         sed -i -e "s/Mxerbla/Mxerbla_${mplib}/g" mplapack_lin_${mplib}.h
