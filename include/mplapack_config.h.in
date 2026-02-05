@@ -91,6 +91,16 @@
 /* Define to the sub-directory where libtool stores uninstalled libraries. */
 #undef LT_OBJDIR
 
+/* Binary128 I/O mode: 0=NONE, 1=SNPRINTF_LDBL, 2=STRFROMF128,
+   3=QUADMATH_SNPRINTF */
+#undef MPLAPACK_BINARY128_IO
+
+/* Binary128 math mode: 0=NONE, 1=LDBL, 2=F128, 3=QUADMATH */
+#undef MPLAPACK_BINARY128_MATH
+
+/* Binary128 type mode: 0=DISABLED, 1=LDBL, 2=FLOAT128, 3=QUADMATH */
+#undef MPLAPACK_BINARY128_MODE
+
 /* Binary80 I/O mode: 0=NONE, 1=SNPRINTF_LDBL, 2=STRFROMF64X */
 #undef MPLAPACK_BINARY80_IO
 
@@ -109,17 +119,41 @@
 /* 1 if _Float128 and __float128 are the same type, else 0 */
 #undef MPLAPACK_FLOAT128_SAME_TYPES
 
+/* 1 if _Float64x matches binary80 (mantissa/exponent), else 0 */
+#undef MPLAPACK_FLOAT64X_IS_BINARY80
+
+/* 1 if __float80 is implicitly convertible to _Float64x, else 0 */
+#undef MPLAPACK_FLOAT80_CONVERT_GNU_TO_STD
+
+/* 1 if _Float64x is implicitly convertible to __float80, else 0 */
+#undef MPLAPACK_FLOAT80_CONVERT_STD_TO_GNU
+
+/* 1 if _Float64x and __float80 are the same type, else 0 */
+#undef MPLAPACK_FLOAT80_SAME_TYPES
+
 /* 1 if _Float128 is supported by the compiler, else 0 */
 #undef MPLAPACK_HAVE__FLOAT128
+
+/* 1 if _Float64x is supported by the compiler, else 0 */
+#undef MPLAPACK_HAVE__FLOAT64X
 
 /* 1 if __float128 is supported by the compiler, else 0 */
 #undef MPLAPACK_HAVE___FLOAT128
 
+/* 1 if __float80 is supported by the compiler, else 0 */
+#undef MPLAPACK_HAVE___FLOAT80
+
 /* 1 if long double is binary128-like (mantissa/exponent), else 0 */
 #undef MPLAPACK_LDBL_IS_BINARY128
 
+/* 1 if long double is binary80 (mantissa/exponent), else 0 */
+#undef MPLAPACK_LDBL_IS_BINARY80
+
 /* 1 if _Float128 is the same type as long double, else 0 */
 #undef MPLAPACK__FLOAT128_IS_LDBL
+
+/* 1 if _Float64x is the same type as long double, else 0 */
+#undef MPLAPACK__FLOAT64X_IS_LDBL
 
 /* Name of package */
 #undef PACKAGE
@@ -154,6 +188,19 @@
 /* Public ABI typedefs.  (Kept here intentionally: this header is installed.) */
 #include <inttypes.h>
 #include <stdlib.h>
+
+#if MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_FLOAT128
+  using mplapack_binary128_t = _Float128;
+#elif MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_QUADMATH
+  using mplapack_binary128_t = __float128;
+#elif MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_LDBL
+  using mplapack_binary128_t = long double;
+#endif
+#if MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_LDBL80
+  using mplapack_binary80_t = long double;
+#elif MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_FLOAT64X
+  using mplapack_binary80_t = _Float64x;
+#endif
 
 #define USE64BITINT 1 /* Keep historical default: ILP64-ish integer type. */
 

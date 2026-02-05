@@ -27,6 +27,19 @@ AH_BOTTOM([
 #include <inttypes.h>
 #include <stdlib.h>
 
+#if MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_FLOAT128
+  using mplapack_binary128_t = _Float128;
+#elif MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_QUADMATH
+  using mplapack_binary128_t = __float128;
+#elif MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_LDBL
+  using mplapack_binary128_t = long double;
+#endif
+#if MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_LDBL80
+  using mplapack_binary80_t = long double;
+#elif MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_FLOAT64X
+  using mplapack_binary80_t = _Float64x;
+#endif
+
 #define USE64BITINT 1 /* Keep historical default: ILP64-ish integer type. */
 
 #ifdef USE64BITINT
@@ -697,6 +710,16 @@ AC_DEFINE_UNQUOTED([MPLAPACK_FLOAT128_CONVERT_STD_TO_GNU], [$mplapack_implicit_s
     [1 if _Float128 is implicitly convertible to __float128, else 0])
 
 dnl ===================================================================
+dnl Selected Binary128 configuration (mode / I/O / math)
+dnl ===================================================================
+AC_DEFINE_UNQUOTED([MPLAPACK_BINARY128_MODE], [$mplapack_binary128_mode],
+    [Binary128 type mode: 0=DISABLED, 1=LDBL, 2=FLOAT128, 3=QUADMATH])
+AC_DEFINE_UNQUOTED([MPLAPACK_BINARY128_IO], [$mplapack_binary128_io],
+    [Binary128 I/O mode: 0=NONE, 1=SNPRINTF_LDBL, 2=STRFROMF128, 3=QUADMATH_SNPRINTF])
+AC_DEFINE_UNQUOTED([MPLAPACK_BINARY128_MATH], [$mplapack_binary128_math],
+    [Binary128 math mode: 0=NONE, 1=LDBL, 2=F128, 3=QUADMATH])
+
+dnl ===================================================================
 dnl Constants for config.h
 dnl ===================================================================
 AH_VERBATIM([BINARY128_MODE_CONSTANTS],
@@ -763,7 +786,7 @@ dnl MPLAPACK 2.1.0 - Binary80 Support Detection
 dnl =========================================================================
 dnl
 dnl Detection is organized into 4 independent phases:
-dnl   Phase 1: Type availability (long double as _Float64x, __float80)
+dnl   Phase 1: Type availability (long double, _Float64x, __float80)
 dnl   Phase 2: I/O functions (strfromf64x, snprintf %Lg)
 dnl   Phase 3: Math functions (sqrtl, sqrtf64x, ...)
 dnl   Phase 4: Literal suffix (L, f64x) [optional]
@@ -772,7 +795,7 @@ dnl Then we determine the best combination to use.
 dnl =========================================================================
 
 AC_ARG_ENABLE(binary80,
-AS_HELP_STRING([--enable-binary80], [Enable binary80 version]),
+AS_HELP_STRING([--enable-binary80], [Enable binary80 (80-bit IEEE extended) version]),
 [case "${enableval}" in
     yes) enable_binary80=yes ;;
     no)  enable_binary80=no  ;;
@@ -784,17 +807,21 @@ mplapack_binary80_mode=0
 mplapack_binary80_io=0
 mplapack_binary80_math=0
 
+have__Float64x=no
+have___float80=no
+longdouble_is_binary80=no
+_Float64x_is_binary80=no
+_Float64x_is_longdouble=no
+float80_types_same=no
+float80_implicit_gnu_to_std=no
+float80_implicit_std_to_gnu=no
+
 if test x$enable_binary80 = x"yes"; then
 
     dnl ===================================================================
     dnl Phase 1: Type Detection
     dnl ===================================================================
     AC_MSG_CHECKING([for binary80 type support])
-
-    have__Float64x=no
-    have___float80=no
-    longdouble_is_binary80=no
-    _Float64x_is_binary80=no
 
     dnl Check _Float64x
     AC_COMPILE_IFELSE([
@@ -824,21 +851,21 @@ if test x$enable_binary80 = x"yes"; then
         ]])
     ], [have___float80=yes], [])
 
-    dnl Check if long double is binary80 (64-bit mantissa, max exp 16384)
+    dnl Check if long double is binary80 (mantissa=64, max exp=16384)
     AC_COMPILE_IFELSE([
         AC_LANG_SOURCE([[
             int main(void) {
             #if (__LDBL_MANT_DIG__ == 64) && (__LDBL_MAX_EXP__ == 16384)
                 return 0;
             #else
-            #error "long double is not binary80"
+            # error "long double is not binary80"
             #endif
             }
         ]])
     ], [longdouble_is_binary80=yes], [])
 
-    dnl Check if _Float64x is binary80 (64-bit mantissa, max exp 16384)
-    if test "$have__Float64x" = "yes"; then
+    dnl Check if _Float64x is binary80 (mantissa=64, max exp=16384)
+    if test "x$have__Float64x" = "xyes"; then
         AC_COMPILE_IFELSE([
             AC_LANG_SOURCE([[
                 int main(void) {
@@ -846,17 +873,74 @@ if test x$enable_binary80 = x"yes"; then
                 #if (__FLT64X_MANT_DIG__ == 64) && (__FLT64X_MAX_EXP__ == 16384)
                     return 0;
                 #else
-                #error "_Float64x is not binary80"
+                # error "_Float64x is not binary80"
                 #endif
                 #else
-                #error "Missing __FLT64X_* macros"
+                # error "Missing __FLT64X_* macros"
                 #endif
                 }
             ]])
         ], [_Float64x_is_binary80=yes], [])
     fi
 
-    AC_MSG_RESULT([ldbl_binary80=$longdouble_is_binary80, _Float64x=$have__Float64x (_binary80=$_Float64x_is_binary80), __float80=$have___float80])
+    dnl Check if _Float64x == long double (C++)
+    if test "x$have__Float64x" = "xyes"; then
+        AC_LANG_PUSH([C++])
+        AC_COMPILE_IFELSE([
+            AC_LANG_SOURCE([[
+                #include <type_traits>
+                int main() {
+                    static_assert(std::is_same<_Float64x, long double>::value, "not same");
+                    return 0;
+                }
+            ]])
+        ], [_Float64x_is_longdouble=yes], [_Float64x_is_longdouble=no])
+        AC_LANG_POP([C++])
+    fi
+
+    dnl Check convertibility between __float80 (GNU) and _Float64x (C++)
+    if test "x$have__Float64x" = "xyes" && test "x$have___float80" = "xyes"; then
+        AC_LANG_PUSH([C++])
+
+        dnl Same type?
+        AC_COMPILE_IFELSE([
+            AC_LANG_SOURCE([[
+                #include <type_traits>
+                int main() {
+                    static_assert(std::is_same<_Float64x, __float80>::value, "not same");
+                    return 0;
+                }
+            ]])
+        ], [float80_types_same=yes], [float80_types_same=no])
+
+        dnl Implicitly convertible? (__float80 -> _Float64x)
+        AC_COMPILE_IFELSE([
+            AC_LANG_SOURCE([[
+                #include <type_traits>
+                int main() {
+                    static_assert(std::is_convertible<__float80, _Float64x>::value,
+                                  "not convertible gnu_f80 -> std_f64x");
+                    return 0;
+                }
+            ]])
+        ], [float80_implicit_gnu_to_std=yes], [float80_implicit_gnu_to_std=no])
+
+        dnl Implicitly convertible? (_Float64x -> __float80)
+        AC_COMPILE_IFELSE([
+            AC_LANG_SOURCE([[
+                #include <type_traits>
+                int main() {
+                    static_assert(std::is_convertible<_Float64x, __float80>::value,
+                                  "not convertible std_f64x -> gnu_f80");
+                    return 0;
+                }
+            ]])
+        ], [float80_implicit_std_to_gnu=yes], [float80_implicit_std_to_gnu=no])
+
+        AC_LANG_POP([C++])
+    fi
+
+    AC_MSG_RESULT([_Float64x=$have__Float64x (_binary80=$_Float64x_is_binary80, is_ldbl=$_Float64x_is_longdouble), __float80=$have___float80 (same_types=$float80_types_same, implicit_gnu_to_std=$float80_implicit_gnu_to_std, implicit_std_to_gnu=$float80_implicit_std_to_gnu), ldbl_binary80=$longdouble_is_binary80])
 
     dnl ===================================================================
     dnl Phase 2: I/O Function Detection
@@ -867,10 +951,11 @@ if test x$enable_binary80 = x"yes"; then
     have_snprintf_Lg=no
 
     dnl Check strfromf64x (TS 18661-3, typically glibc)
-    if test "$have__Float64x" = "yes" && test "$_Float64x_is_binary80" = "yes"; then
+    if test "x$have__Float64x" = "xyes" && test "x$_Float64x_is_binary80" = "xyes"; then
         AC_LINK_IFELSE([
             AC_LANG_SOURCE([[
                 #define __STDC_WANT_IEC_60559_TYPES_EXT__ 1
+                #define __STDC_WANT_IEC_60559_FUNCS_EXT__ 1
                 #include <stdlib.h>
                 int main(void) {
                     _Float64x a = 1.0;
@@ -883,7 +968,7 @@ if test x$enable_binary80 = x"yes"; then
     fi
 
     dnl Check snprintf %Lg (for long double binary80)
-    if test "$longdouble_is_binary80" = "yes"; then
+    if test "x$longdouble_is_binary80" = "xyes"; then
         AC_LINK_IFELSE([
             AC_LANG_SOURCE([[
                 #include <stdio.h>
@@ -908,12 +993,13 @@ if test x$enable_binary80 = x"yes"; then
     have_ldbl_math=no
 
     dnl Check _Float64x math (sqrtf64x, expf64x, logf64x, ...)
-    if test "$have__Float64x" = "yes" && test "$_Float64x_is_binary80" = "yes"; then
+    if test "x$have__Float64x" = "xyes" && test "x$_Float64x_is_binary80" = "xyes"; then
         save_LIBS="$LIBS"
         LIBS="$LIBS -lm"
         AC_LINK_IFELSE([
             AC_LANG_SOURCE([[
                 #define __STDC_WANT_IEC_60559_TYPES_EXT__ 1
+                #define __STDC_WANT_IEC_60559_FUNCS_EXT__ 1
                 #include <math.h>
                 int main(void) {
                     _Float64x x = 2.0;
@@ -931,7 +1017,7 @@ if test x$enable_binary80 = x"yes"; then
     fi
 
     dnl Check long double math (sqrtl, expl, logl, ...)
-    if test "$longdouble_is_binary80" = "yes"; then
+    if test "x$longdouble_is_binary80" = "xyes"; then
         save_LIBS="$LIBS"
         LIBS="$LIBS -lm"
         AC_LINK_IFELSE([
@@ -962,12 +1048,13 @@ if test x$enable_binary80 = x"yes"; then
     have_suffix_L_binary80=no
     have_suffix_f64x=no
 
-    if test "$longdouble_is_binary80" = "yes"; then
+    dnl L suffix produces binary80 (when long double is binary80)
+    if test "x$longdouble_is_binary80" = "xyes"; then
         have_suffix_L_binary80=yes
     fi
 
     dnl Check f64x suffix (GCC/Clang with TS literal suffix support)
-    if test "$have__Float64x" = "yes"; then
+    if test "x$have__Float64x" = "xyes"; then
         AC_COMPILE_IFELSE([
             AC_LANG_SOURCE([[
                 int main(void) {
@@ -986,12 +1073,16 @@ if test x$enable_binary80 = x"yes"; then
     dnl ===================================================================
     AC_MSG_CHECKING([binary80 configuration])
 
+    dnl For each selected type, we need:
+    dnl   - A working I/O method
+    dnl   - Working math functions
+
     binary80_configured=no
 
     dnl Priority: long double (binary80) > _Float64x (binary80)
-    if test "$longdouble_is_binary80" = "yes" && \
-       test "$have_snprintf_Lg" = "yes" && \
-       test "$have_ldbl_math" = "yes"; then
+    if test "x$longdouble_is_binary80" = "xyes" && \
+       test "x$have_snprintf_Lg" = "xyes" && \
+       test "x$have_ldbl_math" = "xyes"; then
 
         mplapack_binary80_mode=1   # LDBL80
         mplapack_binary80_io=1     # SNPRINTF_LDBL
@@ -1000,11 +1091,11 @@ if test x$enable_binary80 = x"yes"; then
         AC_MSG_RESULT([long double (binary80)])
     fi
 
-    if test "$binary80_configured" = "no" && \
-       test "$have__Float64x" = "yes" && \
-       test "$_Float64x_is_binary80" = "yes" && \
-       test "$have_strfromf64x" = "yes" && \
-       test "$have_f64x_math" = "yes"; then
+    if test "x$binary80_configured" = "xno" && \
+       test "x$have__Float64x" = "xyes" && \
+       test "x$_Float64x_is_binary80" = "xyes" && \
+       test "x$have_strfromf64x" = "xyes" && \
+       test "x$have_f64x_math" = "xyes"; then
 
         mplapack_binary80_mode=2   # FLOAT64X
         mplapack_binary80_io=2     # STRFROMF64X
@@ -1013,20 +1104,56 @@ if test x$enable_binary80 = x"yes"; then
         AC_MSG_RESULT([_Float64x (binary80)])
     fi
 
-    if test "$binary80_configured" = "no"; then
+    if test "x$binary80_configured" = "xno"; then
         AC_MSG_ERROR([binary80 is not supported on this system])
     fi
 fi
 
 dnl ===================================================================
-dnl Define macros for config.h
+dnl Define macros for config.h (type availability / relationships)
+dnl ===================================================================
+mplapack_has__Float64x_type=0
+mplapack_has___float80_type=0
+mplapack_ldbl_is_binary80=0
+mplapack_float64x_is_binary80=0
+mplapack__Float64x_is_long_double=0
+mplapack_float80_types_same=0
+mplapack_implicit_gnu_to_std_f80=0
+mplapack_implicit_std_to_gnu_f80=0
+
+AS_IF([test "x$have__Float64x" = "xyes"], [mplapack_has__Float64x_type=1])
+AS_IF([test "x$have___float80" = "xyes"], [mplapack_has___float80_type=1])
+AS_IF([test "x$longdouble_is_binary80" = "xyes"], [mplapack_ldbl_is_binary80=1])
+AS_IF([test "x$_Float64x_is_binary80" = "xyes"], [mplapack_float64x_is_binary80=1])
+AS_IF([test "x$_Float64x_is_longdouble" = "xyes"], [mplapack__Float64x_is_long_double=1])
+AS_IF([test "x$float80_types_same" = "xyes"], [mplapack_float80_types_same=1])
+AS_IF([test "x$float80_implicit_gnu_to_std" = "xyes"], [mplapack_implicit_gnu_to_std_f80=1])
+AS_IF([test "x$float80_implicit_std_to_gnu" = "xyes"], [mplapack_implicit_std_to_gnu_f80=1])
+
+AC_DEFINE_UNQUOTED([MPLAPACK_HAVE__FLOAT64X], [$mplapack_has__Float64x_type],
+    [1 if _Float64x is supported by the compiler, else 0])
+AC_DEFINE_UNQUOTED([MPLAPACK_HAVE___FLOAT80], [$mplapack_has___float80_type],
+    [1 if __float80 is supported by the compiler, else 0])
+AC_DEFINE_UNQUOTED([MPLAPACK_LDBL_IS_BINARY80], [$mplapack_ldbl_is_binary80],
+    [1 if long double is binary80 (mantissa/exponent), else 0])
+AC_DEFINE_UNQUOTED([MPLAPACK_FLOAT64X_IS_BINARY80], [$mplapack_float64x_is_binary80],
+    [1 if _Float64x matches binary80 (mantissa/exponent), else 0])
+AC_DEFINE_UNQUOTED([MPLAPACK__FLOAT64X_IS_LDBL], [$mplapack__Float64x_is_long_double],
+    [1 if _Float64x is the same type as long double, else 0])
+AC_DEFINE_UNQUOTED([MPLAPACK_FLOAT80_SAME_TYPES], [$mplapack_float80_types_same],
+    [1 if _Float64x and __float80 are the same type, else 0])
+AC_DEFINE_UNQUOTED([MPLAPACK_FLOAT80_CONVERT_GNU_TO_STD], [$mplapack_implicit_gnu_to_std_f80],
+    [1 if __float80 is implicitly convertible to _Float64x, else 0])
+AC_DEFINE_UNQUOTED([MPLAPACK_FLOAT80_CONVERT_STD_TO_GNU], [$mplapack_implicit_std_to_gnu_f80],
+    [1 if _Float64x is implicitly convertible to __float80, else 0])
+
+dnl ===================================================================
+dnl Selected Binary80 configuration (mode / I/O / math)
 dnl ===================================================================
 AC_DEFINE_UNQUOTED([MPLAPACK_BINARY80_MODE], [$mplapack_binary80_mode],
     [Binary80 type mode: 0=DISABLED, 1=LDBL80, 2=FLOAT64X])
-
 AC_DEFINE_UNQUOTED([MPLAPACK_BINARY80_IO], [$mplapack_binary80_io],
     [Binary80 I/O mode: 0=NONE, 1=SNPRINTF_LDBL, 2=STRFROMF64X])
-
 AC_DEFINE_UNQUOTED([MPLAPACK_BINARY80_MATH], [$mplapack_binary80_math],
     [Binary80 math mode: 0=NONE, 1=LDBL, 2=F64X])
 
@@ -1483,16 +1610,16 @@ if test x$enable_mpc = x"yes"; then
 fi
 if test x$enable_binary128 = x"yes"; then
     if test "$want_libquadmath" = "yes"; then
-        PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack__Float128 -lmpblas__Float128 -lquadmath"
+        PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_binary128 -lmpblas_binary128 -lquadmath"
     else
-        PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack__Float128 -lmpblas__Float128"
+        PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_binary128 -lmpblas_binary128"
     fi
 fi
 if test x$enable_double = x"yes"; then
   PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_double -lmpblas_double"
 fi
 if test x$enable_binary80 = x"yes"; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack__Float64x -lmpblas__Float64x"
+  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_binary80 -lmpblas_binary80"
 fi
 
 # add external libraries only if they will be installed with the package
