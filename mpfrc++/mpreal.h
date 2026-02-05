@@ -42,7 +42,7 @@
 #include <cfloat>
 #include <cmath>
 
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
+#if defined ___MPLAPACK_BUILD_WITH_BINARY128___
 #define MPFR_WANT_FLOAT128
 #endif
 
@@ -61,7 +61,7 @@
 #if defined ___MPLAPACK_BUILD_WITH_DD___
 #include "qd/dd_real.h"
 #endif
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && defined ___MPLAPACK_WANT_LIBQUADMATH___
+#if defined ___MPLAPACK_BUILD_WITH_BINARY128___ && defined ___MPLAPACK_WANT_LIBQUADMATH___
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -415,18 +415,14 @@ class mpreal {
     mpreal(const dd_real &a, mp_prec_t prec = default_prec, mp_rnd_t mode = default_rnd);
     mpreal &operator=(const dd_real &a);
 #endif
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && !defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___ && !defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
-    mpreal(const _Float128 &a, mp_prec_t prec = default_prec, mp_rnd_t mode = default_rnd);
-    mpreal &operator=(const _Float128 &a);
-#endif
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT64X___ && defined ___MPLAPACK__FLOAT64X_IS_LONGDOUBLE___
-//    mpreal(const _Float64x &a, mp_prec_t prec = default_prec, mp_rnd_t mode = default_rnd);
-//    mpreal &operator=(const _Float64x &a);
+#if defined ___MPLAPACK_BUILD_WITH_BINARY128___
+    mpreal(const mplapack_binary128_t &a, mp_prec_t prec = default_prec, mp_rnd_t mode = default_rnd);
+    mpreal &operator=(const mplapack_binary128_t &a);
 #endif
 };
 
 #if defined ___MPLAPACK_MPLAPACK_INIT___
-mp_rnd_t mpfr::mpreal::default_rnd = MPFR_RNDN; //must be initialized at mpblas/reference/mplapackinit.cpp
+mp_rnd_t mpfr::mpreal::default_rnd = MPFR_RNDN; // must be initialized at mpblas/reference/mplapackinit.cpp
 mp_prec_t mpfr::mpreal::default_prec = ___MPREAL_DEFAULT_PRECISION___;
 int mpfr::mpreal::default_base = 2;
 int mpfr::mpreal::double_bits = -1;
@@ -2335,36 +2331,35 @@ inline double cast2double(const mpreal &b) {
     return p;
 }
 
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && !defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___ && !defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
-inline mpreal &mpreal::operator=(const _Float128 &a) {
+#if defined ___MPLAPACK_BUILD_WITH_BINARY128___
+inline mpreal &mpreal::operator=(const mplapack_binary128_t &a) {
     mpfr_init2(mp, default_prec);
     mpfr_set_float128(mp, a, default_rnd);
     return *this;
 }
 
-inline mpreal::mpreal(const _Float128 &a, mp_prec_t prec, mp_rnd_t mode) {
+inline mpreal::mpreal(const mplapack_binary128_t &a, mp_prec_t prec, mp_rnd_t mode) {
     mpfr_init2(mp, prec);
     mpfr_set_float128(mp, a, mode);
 }
 
-inline const mpreal operator-(const _Float128 a, const mpreal b) { return mpreal(a) -= b; }
+inline const mpreal operator-(const mplapack_binary128_t a, const mpreal b) { return mpreal(a) -= b; }
 
-inline const mpreal operator-(const mpreal &a, const _Float128 &b) {
+inline const mpreal operator-(const mpreal &a, const mplapack_binary128_t &b) {
     mpreal tmp(b);
     return -(mpreal(b) -= a);
 }
-#endif
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
-inline _Float128 cast2_Float128(const mpreal &b) {
-    _Float128 q;
+
+inline mplapack_binary128_t cast2mplapack_binary128_t(const mpreal &b) {
+    mplapack_binary128_t q;
     mpreal a(b);
     q = mpfr_get_float128((mpfr_ptr)a, mpreal::default_rnd);
     return q;
 }
-
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT64X___ && defined ___MPLAPACK__FLOAT64X_IS_LONGDOUBLE___
+#if defined ___MPLAPACK_BUILD_WITH_BINARY80___
+#if MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_LDBL80
 /*
 inline mpreal &mpreal::operator=(const _Float128 &a) {
   mpfr_init2((mpfr_ptr)mp, default_prec);
@@ -2384,13 +2379,17 @@ inline const mpreal operator-(const mpreal &a, const _Float64x &b) {
   return -(mpreal(b) -= a);
 }
 */
-inline _Float64x cast2_Float64x(const mpreal &b) {
+inline long double cast2mplapack_binary80_t(const mpreal &b) {
     // mpreal -> mpfr -> long double
     long double q;
     mpreal a(b);
     q = mpfr_get_ld((mpfr_ptr)a, mpreal::default_rnd);
     return q;
 }
+#else
+#error
+#endif
+
 #endif
 
 } // namespace mpfr

@@ -230,11 +230,11 @@ class mpcomplex {
     mpcomplex(const dd_complex &a, mp_prec_t pr = default_real_prec, mp_prec_t pi = default_imag_prec, mpc_rnd_t mode = default_rnd);
     mpcomplex &operator=(const dd_complex &a);
 #endif
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && !defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___ && !defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
+#if defined ___MPLAPACK_BUILD_WITH_BINARY128___ && !defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___ && !defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
     mpcomplex(const std::complex<_Float128> &a, mp_prec_t pr = default_real_prec, mp_prec_t pi = default_imag_prec, mpc_rnd_t mode = default_rnd);
     mpcomplex &operator=(const std::complex<_Float128> &a);
 #endif
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT64X___ && defined ___MPLAPACK__FLOAT64X_IS_LONGDOUBLE___
+#if defined ___MPLAPACK_BUILD_WITH_BINARY80___ && defined ___MPLAPACK__FLOAT64X_IS_LONGDOUBLE___
 //    mpcomplex(const std::complex<_Float64x> &a, mp_prec_t pr = default_real_prec, mp_prec_t pi = default_imag_prec, mpc_rnd_t mode = default_rnd);
 //    mpcomplex &operator=(const std::complex<_Float64x> &a);
 #endif
@@ -1158,7 +1158,7 @@ inline mpcomplex &mpcomplex::operator=(const dd_complex &a) {
 
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && !defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___ && !defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
+#if defined ___MPLAPACK_BUILD_WITH_BINARY128___ && !defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___ && !defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
 inline mpcomplex::mpcomplex(const std::complex<_Float128> &a, mp_prec_t pr, mp_prec_t pi, mpc_rnd_t mode) {
     mpfr_t mp_real, mp_imag;
     mpc_init3(mpc, pr, pi);
@@ -1183,7 +1183,7 @@ inline mpcomplex &mpcomplex::operator=(const std::complex<_Float128> &a) {
     return *this;
 }
 #endif
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
+#if defined ___MPLAPACK_BUILD_WITH_BINARY128___
 inline std::complex<_Float128> cast2complex_Float128(const mpcomplex &b) {
     std::complex<_Float128> q;
     mpreal re_tmp, im_tmp;
