@@ -64,11 +64,11 @@ Rsyevr_Frank_gmp_LDFLAGS = $(gmp_libdepends)
 
 endif
 
-if ENABLE__FLOAT128
+if ENABLE_BINARY128
 mplapackexamples_PROGRAMS += Cheev_test__Float128 Rsyev_Frank__Float128 Rsyev_test__Float128 Rsyevd_DingDong__Float128 Rsyevd_Frank__Float128 Rsyevr_Frank__Float128
 
 _Float128_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include
-if WANT_QUADMATH
+if BINARY128_USE_QUADMATH
 _Float128_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack__Float128 -L$(top_builddir)/mpblas/reference -lmpblas__Float128 -lquadmath
 else
 _Float128_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack__Float128 -L$(top_builddir)/mpblas/reference -lmpblas__Float128
@@ -100,7 +100,7 @@ Rsyevr_Frank__Float128_LDFLAGS = $(_Float128_libdepends)
 
 endif
 
-if ENABLE__FLOAT64X
+if ENABLE_BINARY80
 mplapackexamples_PROGRAMS += Cheev_test__Float64x Rsyev_Frank__Float64x Rsyev_test__Float64x Rsyevd_DingDong__Float64x Rsyevd_Frank__Float64x Rsyevr_Frank__Float64x
 
 _Float64x_cxxflags = $(OPENMP_CXXFLAGS)

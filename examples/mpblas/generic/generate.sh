@@ -101,7 +101,7 @@ for _mplib in $MPLIBS; do
         echo "mpblasexamples_PROGRAMS += $executefilenames" >> ../Makefile.am
         echo ""               >> ../Makefile.am
         echo "${_mplib}_cxxflags = \$(OPENMP_CXXFLAGS) -I\$(top_srcdir)/include" >> ../Makefile.am
-        echo "if WANT_QUADMATH" >> ../Makefile.am
+        echo "if BINARY128_USE_QUADMATH" >> ../Makefile.am
         echo "${_mplib}_libdepends = -L\$(top_builddir)/mpblas/reference -lmpblas_${_mplib} -lquadmath"  >> ../Makefile.am
         echo "else" >> ../Makefile.am
         echo "${_mplib}_libdepends = -L\$(top_builddir)/mpblas/reference -lmpblas_${_mplib}"  >> ../Makefile.am   

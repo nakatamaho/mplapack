@@ -20,11 +20,11 @@ if ENABLE_DOUBLE
 lib_LTLIBRARIES += libmatgen_double.la
 endif
 
-if ENABLE__FLOAT64X
+if ENABLE_BINARY80
 lib_LTLIBRARIES += libmatgen__Float64x.la
 endif
 
-if ENABLE__FLOAT128
+if ENABLE_BINARY128
 lib_LTLIBRARIES += libmatgen__Float128.la
 endif
 
@@ -74,7 +74,7 @@ libmatgen_double_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 endif
 
-if ENABLE__FLOAT64X
+if ENABLE_BINARY80
 libmatgen__Float64x_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -D___MPLAPACK_BUILD_WITH__FLOAT64X___ -D___MPLAPACK_INTERNAL___
 libmatgen__Float64x_la_SOURCES = $(MATGEN_SOURCES)
 libmatgen__Float64x_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
@@ -83,7 +83,7 @@ libmatgen__Float64x_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 endif
 
-if ENABLE__FLOAT128
+if ENABLE_BINARY128
 libmatgen__Float128_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -D___MPLAPACK_BUILD_WITH__FLOAT128___ -D___MPLAPACK_INTERNAL___
 libmatgen__Float128_la_SOURCES = $(MATGEN_SOURCES)
 libmatgen__Float128_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)

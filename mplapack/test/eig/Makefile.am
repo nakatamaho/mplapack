@@ -31,12 +31,12 @@ lib_LTLIBRARIES += libeig_double.la libeig_override_double.la
 SUBDIRS += double
 endif
 
-if ENABLE__FLOAT64X
+if ENABLE_BINARY80
 lib_LTLIBRARIES += libeig__Float64x.la libeig_override__Float64x.la
 SUBDIRS += _Float64x
 endif
 
-if ENABLE__FLOAT128
+if ENABLE_BINARY128
 lib_LTLIBRARIES += libeig__Float128.la libeig_override__Float128.la
 SUBDIRS += _Float128
 endif
@@ -106,7 +106,7 @@ libeig_override_double_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_look
 endif
 endif
 
-if ENABLE__FLOAT64X
+if ENABLE_BINARY80
 libeig__Float64x_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(LAPACK_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH__FLOAT64X___ -D___MPLAPACK_INTERNAL___
 libeig__Float64x_la_SOURCES = $(EIG_SOURCES)
 libeig__Float64x_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
@@ -119,7 +119,7 @@ libeig_override__Float64x_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_l
 endif
 endif
 
-if ENABLE__FLOAT128
+if ENABLE_BINARY128
 libeig__Float128_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(LAPACK_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH__FLOAT128___ -D___MPLAPACK_INTERNAL___
 libeig__Float128_la_SOURCES = $(EIG_SOURCES)
 libeig__Float128_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)

@@ -517,50 +517,14 @@ inline std::complex<_Float128> sqrt(const std::complex<_Float128> a) {
     c.imag(__imag__(tmp));
     return c;
 }
+#endif // MPLAPACK_BINARY128_MATH_QUADMATH
 
-inline std::complex<_Float128> sin(const std::complex<_Float128> a) {
-    _Float128 _Complex b, tmp;
-    std::complex<_Float128> c;
-    __real__(b) = (a.real());
-    __imag__(b) = (a.imag());
-    tmp = csinq(b);
-    c.real(__real__(tmp));
-    c.imag(__imag__(tmp));
-    return c;
-}
-
-inline std::complex<_Float128> cos(const std::complex<_Float128> a) {
-    _Float128 _Complex b, tmp;
-    std::complex<_Float128> c;
-    __real__(b) = (a.real());
-    __imag__(b) = (a.imag());
-    tmp = ccosq(b);
-    c.real(__real__(tmp));
-    c.imag(__imag__(tmp));
-    return c;
-}
-
-inline std::complex<_Float128> exp(const std::complex<_Float128> &a) {
-    _Float128 _Complex b, tmp;
-    std::complex<_Float128> c;
-    __real__(b) = (a.real());
-    __imag__(b) = (a.imag());
-    tmp = cexpq(b);
-    c.real(__real__(tmp));
-    c.imag(__imag__(tmp));
-    return c;
-}
-
-inline std::complex<_Float128> log(const std::complex<_Float128> &a) {
-    _Float128 _Complex b, tmp;
-    std::complex<_Float128> c;
-    __real__(b) = (a.real());
-    __imag__(b) = (a.imag());
-    tmp = clogq(b);
-    c.real(__real__(tmp));
-    c.imag(__imag__(tmp));
-    return c;
-}
+// general utils
+#include <cmath>
+inline _Float128 pow2(const _Float128 &a) { return a * a; }
+inline _Float128 pow4(const _Float128 &a) { return a * a * a * a; }
+inline std::complex<_Float128> pow2(const std::complex<_Float128> &a) { return a * a; }
+inline std::complex<_Float128> pow4(const std::complex<_Float128> &a) { return a * a * a * a; }
 
 // implementation of sign transfer function.
 inline _Float128 sign(_Float128 a, _Float128 b) {
@@ -586,45 +550,13 @@ inline long nint(_Float128 a) {
     long i;
     _Float128 tmp;
     a = a + 0.5;
-    tmp = floorq(a);
+    tmp = floorf128(a);
     i = (long)tmp;
     return i;
 }
-
-inline _Float128 ceil(_Float128 a) { return ceilq(a); }
 inline double cast2double(_Float128 a) { return (double)a; }
 
-inline _Float128 pi(_Float128 dummy) { return M_PIq; }
-
-#endif //___MPLAPACK_WANT_LIBQUADMATH___
-
-// Following specialization should be done in the libc/compiler side.
-#if !defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___ && !defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
-template <> template <> inline std::complex<_Float128> &std::complex<_Float128>::operator/=(const std::complex<_Float128> &b) {
-    _Float128 abr, abi, ratio, den;
-    if ((abr = b.real()) < 0.)
-        abr = -abr;
-    if ((abi = b.imag()) < 0.)
-        abi = -abi;
-    if (abr <= abi) {
-        if (abi == 0) {
-            if (this->imag() != 0 || this->real() != 0)
-                abi = 1.;
-            *this = std::complex<_Float128>(abi / abr, abi / abr);
-            return (*this);
-        }
-        ratio = b.real() / b.imag();
-        den = b.imag() * (1.0 + ratio * ratio);
-        (*this) = std::complex<_Float128>((this->real() * ratio + this->imag()) / den, (this->imag() * ratio - this->real()) / den);
-    } else {
-        ratio = b.imag() / b.real();
-        den = b.real() * (1.0 + ratio * ratio);
-        (*this) = std::complex<_Float128>((this->real() + this->imag() * ratio) / den, (this->imag() - this->real() * ratio) / den);
-    }
-    return *this;
-}
-#endif
-
+// support functions for mplapack
 static inline _Float128 cabs1(const std::complex<_Float128> &z) { return abs(z.real()) + abs(z.imag()); }
 
 #include <type_traits>

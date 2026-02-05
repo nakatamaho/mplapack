@@ -20,11 +20,11 @@ if ENABLE_DOUBLE
 lib_LTLIBRARIES += libmplapack_double.la
 endif
 
-if ENABLE__FLOAT64X
+if ENABLE_BINARY80
 lib_LTLIBRARIES += libmplapack__Float64x.la
 endif
 
-if ENABLE__FLOAT128
+if ENABLE_BINARY128
 lib_LTLIBRARIES += libmplapack__Float128.la
 endif
 
@@ -90,7 +90,7 @@ libmplapack_double_la_LDFLAGS += -no-undefined -L$(top_builddir)/mpblas/referenc
 endif
 endif
 
-if ENABLE__FLOAT64X
+if ENABLE_BINARY80
 libmplapack__Float64x_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH__FLOAT64X___
 libmplapack__Float64x_la_SOURCES = $(MPLAPACK_SOURCES)
 libmplapack__Float64x_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO) -Wl,-rpath,$(libdir)
@@ -102,7 +102,7 @@ libmplapack__Float64x_la_LDFLAGS += -no-undefined -L$(top_builddir)/mpblas/refer
 endif
 endif
 
-if ENABLE__FLOAT128
+if ENABLE_BINARY128
 libmplapack__Float128_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH__FLOAT128___
 libmplapack__Float128_la_SOURCES = $(MPLAPACK_SOURCES)
 libmplapack__Float128_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO) -Wl,-rpath,$(libdir)

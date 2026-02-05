@@ -9,7 +9,7 @@ Rgemv._Float64x Rgemv._Float64x_opt
 #lapack is needed for Rlange
 _Float64xcxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH__FLOAT64X___
 _Float64xlapack_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack__Float64x
-if WANT_QUADMATH
+if BINARY128_USE_QUADMATH
 _Float64x_libdepends = $(_Float64xlapack_libdepends) -L$(top_builddir)/mpblas/reference -lmpblas__Float64x -lquadmath $(DYLD)
 _Float64xopt_libdepends = $(_Float64xlapack_libdepends) -L$(top_builddir)/mpblas/optimized/_Float64x -lmpblas__Float64x_opt -lquadmath $(DYLD)
 else

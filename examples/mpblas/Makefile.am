@@ -50,11 +50,11 @@ Rgemm_gmp_opt_LDFLAGS = $(gmp_opt_libdepends)
 
 endif
 
-if ENABLE__FLOAT128
+if ENABLE_BINARY128
 mpblasexamples_PROGRAMS += Cgemm__Float128 Rgemm__Float128 Cgemm__Float128_opt Rgemm__Float128_opt
 
 _Float128_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include
-if WANT_QUADMATH
+if BINARY128_USE_QUADMATH
 _Float128_libdepends = -L$(top_builddir)/mpblas/reference -lmpblas__Float128 -lquadmath
 _Float128_opt_libdepends = -L$(top_builddir)/mpblas/optimized/_Float128 -lmpblas__Float128_opt -lquadmath
 else
@@ -80,7 +80,7 @@ Rgemm__Float128_opt_LDFLAGS = $(_Float128_opt_libdepends)
 
 endif
 
-if ENABLE__FLOAT64X
+if ENABLE_BINARY80
 mpblasexamples_PROGRAMS += Cgemm__Float64x Rgemm__Float64x Cgemm__Float64x_opt Rgemm__Float64x_opt
 
 _Float64x_cxxflags = $(OPENMP_CXXFLAGS)

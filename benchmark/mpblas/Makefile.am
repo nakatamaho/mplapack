@@ -35,11 +35,11 @@ if ENABLE_DOUBLE
 include Makefile.double.am
 endif
 
-if ENABLE__FLOAT128
+if ENABLE_BINARY128
 include Makefile._Float128.am
 endif
 
-if ENABLE__FLOAT64X
+if ENABLE_BINARY80
 include Makefile._Float64x.am
 endif
 

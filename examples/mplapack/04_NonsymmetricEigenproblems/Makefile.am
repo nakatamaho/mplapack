@@ -100,11 +100,11 @@ Rgeev_test_gmp_LDFLAGS = $(gmp_libdepends)
 
 endif
 
-if ENABLE__FLOAT128
+if ENABLE_BINARY128
 mplapackexamples_PROGRAMS += Cgees_test__Float128 Cgeev_NPR__Float128 Cgeev_test2__Float128 Cgeev_test__Float128 Rgees_Grcar__Float128 Rgees_readfromfile__Float128 Rgees_test__Float128 Rgeev_Frank__Float128 Rgeev_random_highcond__Float128 Rgeev_readfromfile__Float128 Rgeev_test__Float128
 
 _Float128_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include
-if WANT_QUADMATH
+if BINARY128_USE_QUADMATH
 _Float128_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack__Float128 -L$(top_builddir)/mpblas/reference -lmpblas__Float128 -lquadmath
 else
 _Float128_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack__Float128 -L$(top_builddir)/mpblas/reference -lmpblas__Float128
@@ -156,7 +156,7 @@ Rgeev_test__Float128_LDFLAGS = $(_Float128_libdepends)
 
 endif
 
-if ENABLE__FLOAT64X
+if ENABLE_BINARY80
 mplapackexamples_PROGRAMS += Cgees_test__Float64x Cgeev_NPR__Float64x Cgeev_test2__Float64x Cgeev_test__Float64x Rgees_Grcar__Float64x Rgees_readfromfile__Float64x Rgees_test__Float64x Rgeev_Frank__Float64x Rgeev_random_highcond__Float64x Rgeev_readfromfile__Float64x Rgeev_test__Float64x
 
 _Float64x_cxxflags = $(OPENMP_CXXFLAGS)

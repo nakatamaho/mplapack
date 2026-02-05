@@ -54,23 +54,23 @@ mplapack_include_HEADERS += \
     include/mplapack_double.h
 endif
 
-if ENABLE__FLOAT64X
+if ENABLE_BINARY80
 mplapack_include_HEADERS += \
     include/mpblas__Float64x.h \
     include/mplapack__Float64x.h
 endif
 
-if ENABLE__FLOAT128
+if ENABLE_BINARY128
 mplapack_include_HEADERS += \
     include/mpblas__Float128.h \
     include/mplapack__Float128.h
 endif
 
 nodist_mplapack_include_HEADERS = include/mplapack_config.h
-if ENABLE__FLOAT64X
+if ENABLE_BINARY80
 nodist_mplapack_include_HEADERS += include/mplapack_utils__Float64x.h
 endif
-if ENABLE__FLOAT128
+if ENABLE_BINARY128
 nodist_mplapack_include_HEADERS += include/mplapack_utils__Float128.h
 endif
 

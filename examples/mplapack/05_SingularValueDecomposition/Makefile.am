@@ -56,11 +56,11 @@ Rgesvd_test_gmp_LDFLAGS = $(gmp_libdepends)
 
 endif
 
-if ENABLE__FLOAT128
+if ENABLE_BINARY128
 mplapackexamples_PROGRAMS += Cgesvd_test__Float128 Rgesvd_random_highcond__Float128 Rgesvd_readfromfile__Float128 Rgesvd_test2__Float128 Rgesvd_test__Float128
 
 _Float128_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include
-if WANT_QUADMATH
+if BINARY128_USE_QUADMATH
 _Float128_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack__Float128 -L$(top_builddir)/mpblas/reference -lmpblas__Float128 -lquadmath
 else
 _Float128_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack__Float128 -L$(top_builddir)/mpblas/reference -lmpblas__Float128
@@ -88,7 +88,7 @@ Rgesvd_test__Float128_LDFLAGS = $(_Float128_libdepends)
 
 endif
 
-if ENABLE__FLOAT64X
+if ENABLE_BINARY80
 mplapackexamples_PROGRAMS += Cgesvd_test__Float64x Rgesvd_random_highcond__Float64x Rgesvd_readfromfile__Float64x Rgesvd_test2__Float64x Rgesvd_test__Float64x
 
 _Float64x_cxxflags = $(OPENMP_CXXFLAGS)

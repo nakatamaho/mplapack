@@ -20,11 +20,11 @@ if ENABLE_DOUBLE
 lib_LTLIBRARIES += libmpblas_double.la
 endif
 
-if ENABLE__FLOAT64X
+if ENABLE_BINARY80
 lib_LTLIBRARIES += libmpblas__Float64x.la
 endif
 
-if ENABLE__FLOAT128
+if ENABLE_BINARY128
 lib_LTLIBRARIES += libmpblas__Float128.la
 endif
 
@@ -104,7 +104,7 @@ libmpblas_double_la_LDFLAGS += -no-undefined
 endif
 endif
 
-if ENABLE__FLOAT64X
+if ENABLE_BINARY80
 libmpblas__Float64x_la_CPPFLAGS = -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH__FLOAT64X___
 libmpblas__Float64x_la_SOURCES = $(MPBLAS_SOURCES)
 libmpblas__Float64x_la_LDFLAGS = $(MPLAPACK_LT_LDFLAGS)
@@ -116,7 +116,7 @@ libmpblas__Float64x_la_LDFLAGS += -no-undefined
 endif
 endif
 
-if ENABLE__FLOAT128
+if ENABLE_BINARY128
 libmpblas__Float128_la_CPPFLAGS = -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH__FLOAT128___
 libmpblas__Float128_la_SOURCES = $(MPBLAS_SOURCES)
 libmpblas__Float128_la_LDFLAGS = $(MPLAPACK_LT_LDFLAGS)

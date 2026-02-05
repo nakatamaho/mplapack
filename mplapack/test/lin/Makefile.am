@@ -29,12 +29,12 @@ lib_LTLIBRARIES += liblin_double.la liblin_override_double.la
 SUBDIRS += double
 endif
 
-if ENABLE__FLOAT64X
+if ENABLE_BINARY80
 lib_LTLIBRARIES += liblin__Float64x.la liblin_override__Float64x.la
 SUBDIRS += _Float64x
 endif
 
-if ENABLE__FLOAT128
+if ENABLE_BINARY128
 lib_LTLIBRARIES += liblin__Float128.la liblin_override__Float128.la
 SUBDIRS += _Float128
 endif

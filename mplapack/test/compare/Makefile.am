@@ -20,11 +20,11 @@ if ENABLE_DOUBLE
 SUBDIRS += double
 endif
 
-if ENABLE__FLOAT128
+if ENABLE_BINARY128
 SUBDIRS += _Float128
 endif
 
-if ENABLE__FLOAT64X
+if ENABLE_BINARY80
 SUBDIRS += _Float64x
 endif
 

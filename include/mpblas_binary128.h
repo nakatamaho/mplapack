@@ -29,9 +29,9 @@
 #ifndef _MPBLAS__FLOAT128_H_
 #define _MPBLAS__FLOAT128_H_
 
-#include <complex>
 #include "mplapack_config.h"
 #include "mplapack_utils__Float128.h"
+#include <complex>
 
 _Float128 RCabs1(std::complex<_Float128> const z);
 _Float128 RCasum(mplapackint const n, std::complex<_Float128> *zx, mplapackint const incx);

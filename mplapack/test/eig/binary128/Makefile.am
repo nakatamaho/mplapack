@@ -11,7 +11,7 @@ else
 libdepends = -L$(top_builddir)/mplapack/test/eig -leig__Float128 -leig_override__Float128 -L$(top_builddir)/mplapack/test/matgen -lmatgen__Float128 -L$(top_builddir)/mplapack/reference -lmplapack__Float128 -L$(top_builddir)/mpblas/reference -lmpblas__Float128
 endif
 
-if WANT_QUADMATH
+if BINARY128_USE_QUADMATH
 mplibs = -lm -lquadmath
 else
 mplibs = -lm
