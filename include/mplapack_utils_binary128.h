@@ -198,6 +198,15 @@ inline std::complex<__float128> log(const std::complex<__float128> &a) {
     return c;
 }
 
+inline long nint(mplapack_binary128_t a) {
+    long i;
+    mplapack_binary128_t tmp;
+    a = a + 0.5;
+    tmp = floorq(a);
+    i = (long)tmp;
+    return i;
+}
+
 inline __float128 pi(__float128 dummy) { return M_PIq; }
 
 #endif // MPLAPACK_BINARY128_MATH == MPLAPACK_BINARY128_MATH_QUADMATH
@@ -222,15 +231,6 @@ inline mplapack_binary128_t castREAL_binary128(mplapackint n) {
 
 inline mplapackint castINTEGER_binary128(mplapack_binary128_t a) {
     mplapackint i = a;
-    return i;
-}
-
-inline long nint(mplapack_binary128_t a) {
-    long i;
-    mplapack_binary128_t tmp;
-    a = a + 0.5;
-    tmp = floorf128(a);
-    i = (long)tmp;
     return i;
 }
 

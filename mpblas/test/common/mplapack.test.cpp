@@ -418,13 +418,13 @@ std::complex<mplapack_binary80_t> mpc_randomnumber(std::complex<mplapack_binary8
 
 void set_random_number(mpreal &a, mplapack_binary80_t &b) {
     a = mpf_randomnumber(static_cast<mplapack_binary80_t>(0));
-    b = cast2mplapack_binary80_t(a);
+    b = cast2binary80_t(a);
 }
 
 void set_random_number(mpcomplex &a, std::complex<mplapack_binary80_t> &b) {
     a = mpc_randomnumber(std::complex<mplapack_binary80_t>(0, 0));
-    b.real(cast2mplapack_binary80_t(a.real()));
-    b.imag(cast2mplapack_binary80_t(a.imag()));
+    b.real(cast2binary80_t(a.real()));
+    b.imag(cast2binary80_t(a.imag()));
 }
 
 void set_random_number1to2(mpreal &a, mplapack_binary80_t &b) {
@@ -433,7 +433,7 @@ void set_random_number1to2(mpreal &a, mplapack_binary80_t &b) {
         a = a + 1.0;
     else
         a = a - 1.0;
-    b = cast2mplapack_binary80_t(a);
+    b = cast2binary80_t(a);
 }
 
 void set_random_number1to2(mpcomplex &a, std::complex<mplapack_binary80_t> &b) {
@@ -444,8 +444,8 @@ void set_random_number1to2(mpcomplex &a, std::complex<mplapack_binary80_t> &b) {
 
     a = a + mpcomplex(p, q);
 
-    b.real(cast2mplapack_binary80_t(a.real()));
-    b.imag(cast2mplapack_binary80_t(a.imag()));
+    b.real(cast2binary80_t(a.real()));
+    b.imag(cast2binary80_t(a.imag()));
 }
 #endif //___MPLAPACK_BUILD_WITH_BINARY80___
 
@@ -483,13 +483,13 @@ std::complex<mplapack_binary128_t> mpc_randomnumber(std::complex<mplapack_binary
 void set_random_number(mpreal &a, mplapack_binary128_t &b) {
     mpreal dummy;
     a = mpf_randomnumber(dummy);
-    b = cast2mplapack_binary128_t(a);
+    b = cast2binary128_t(a);
 }
 void set_random_number(mpcomplex &a, std::complex<mplapack_binary128_t> &b) {
     mpcomplex dummy;
     a = mpc_randomnumber(dummy);
-    b.real(cast2mplapack_binary128_t(a.real()));
-    b.imag(cast2mplapack_binary128_t(a.imag()));
+    b.real(cast2binary128_t(a.real()));
+    b.imag(cast2binary128_t(a.imag()));
 }
 void set_random_number1to2(mpreal &a, mplapack_binary128_t &b) {
     mpreal dummy;
@@ -498,7 +498,7 @@ void set_random_number1to2(mpreal &a, mplapack_binary128_t &b) {
         a = a + 1.0;
     else
         a = a - 1.0;
-    b = cast2mplapack_binary128_t(a);
+    b = cast2binary128_t(a);
 }
 void set_random_number1to2(mpcomplex &a, std::complex<mplapack_binary128_t> &b) {
     mpcomplex dummy;
@@ -513,8 +513,8 @@ void set_random_number1to2(mpcomplex &a, std::complex<mplapack_binary128_t> &b) 
     else
         q = -1.0;
     a = a + std::complex<mplapack_binary128_t>(p, q);
-    b.real(cast2mplapack_binary128_t(a.real()));
-    b.imag(cast2mplapack_binary128_t(a.imag()));
+    b.real(cast2binary128_t(a.real()));
+    b.imag(cast2binary128_t(a.imag()));
 }
 #else
 #error "Not implimented yet"

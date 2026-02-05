@@ -346,10 +346,10 @@ template <class X_REF, class X> void set_random_symmmat_cond(X_REF *p_ref, X *p,
             p[i + j * ldp] = cast2dd_real(tmpmat3_mpreal[i + j * ldp]);
 #elif defined(___MPLAPACK_BUILD_WITH_DOUBLE___)
             p[i + j * ldp] = (double)(tmpmat3_mpreal[i + j * ldp]);
-#elif defined(___MPLAPACK_BUILD_WITH_DOUBLE___)
-            p[i + j * ldp] = (_Float64x)(tmpmat3_mpreal[i + j * ldp]);
+#elif defined(___MPLAPACK_BUILD_WITH_BINARY80___)
+            p[i + j * ldp] = cast2binary80_t(tmpmat3_mpreal[i + j * ldp]);
 #elif defined(___MPLAPACK_BUILD_WITH_BINARY128___)
-            p[i + j * ldp] = cast2mplapack_binary128_t(tmpmat3_mpreal[i + j * ldp]);
+            p[i + j * ldp] = cast2binary128_t(tmpmat3_mpreal[i + j * ldp]);
 #endif
             p_ref[i + j * ldp] = tmpmat3_mpreal[i + j * ldp];
         }

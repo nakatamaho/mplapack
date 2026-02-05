@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2021-2026
  *	Nakata, Maho
  * 	All rights reserved.
  *

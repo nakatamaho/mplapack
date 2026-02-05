@@ -2350,7 +2350,7 @@ inline const mpreal operator-(const mpreal &a, const mplapack_binary128_t &b) {
     return -(mpreal(b) -= a);
 }
 
-inline mplapack_binary128_t cast2mplapack_binary128_t(const mpreal &b) {
+inline mplapack_binary128_t cast2binary128_t(const mpreal &b) {
     mplapack_binary128_t q;
     mpreal a(b);
     q = mpfr_get_float128((mpfr_ptr)a, mpreal::default_rnd);
@@ -2379,7 +2379,7 @@ inline const mpreal operator-(const mpreal &a, const _Float64x &b) {
   return -(mpreal(b) -= a);
 }
 */
-inline long double cast2mplapack_binary80_t(const mpreal &b) {
+inline long double cast2binary80_t(const mpreal &b) {
     // mpreal -> mpfr -> long double
     long double q;
     mpreal a(b);
