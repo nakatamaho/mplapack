@@ -1,7 +1,7 @@
-check_PROGRAMS = $(mplapack__Float64x_test_PROGRAMS)
+check_PROGRAMS = $(mplapack_binary80_test_PROGRAMS)
 
-mplapack__Float64x_test_PROGRAMS = xeigtstR_binary80 xeigtstC_binary80
-mplapack__Float64x_testdir = $(prefix)/lib/$(target)/mplapack/test/eig
+mplapack_binary80_test_PROGRAMS = xeigtstR_binary80 xeigtstC_binary80
+mplapack_binary80_testdir = $(prefix)/lib/$(target)/mplapack/test/eig
 
 $(check_PROGRAMS): ../libeig_binary80.la ../libeig_override_binary80.la
 
@@ -14,19 +14,19 @@ endif
 mplibs = -lm
 cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(LAPACK_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_BINARY80___ -D___MPLAPACK_INTERNAL___ -I$(top_srcdir)/fable
 
-xeigtstR__Float64x_SOURCES  = ../common/Rchkee.cpp
-xeigtstR__Float64x_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xeigtstR__Float64x_LDFLAGS += -Wl,-rpath,$(libdir)
-xeigtstR__Float64x_CXXFLAGS = $(cxxflags)
+xeigtstR_binary80_SOURCES  = ../common/Rchkee.cpp
+xeigtstR_binary80_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xeigtstR_binary80_LDFLAGS += -Wl,-rpath,$(libdir)
+xeigtstR_binary80_CXXFLAGS = $(cxxflags)
 
-xeigtstC__Float64x_SOURCES  = ../common/Cchkee.cpp
-xeigtstC__Float64x_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xeigtstC__Float64x_LDFLAGS += -Wl,-rpath,$(libdir)
-xeigtstC__Float64x_CXXFLAGS = $(cxxflags)
+xeigtstC_binary80_SOURCES  = ../common/Cchkee.cpp
+xeigtstC_binary80_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xeigtstC_binary80_LDFLAGS += -Wl,-rpath,$(libdir)
+xeigtstC_binary80_CXXFLAGS = $(cxxflags)
 
 install-data-hook:
 if IS_MACOS
-	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mplapack__Float64x_testdir) $(prefix)
+	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mplapack_binary80_testdir) $(prefix)
 endif
 
 # -----------------------------------------------------------------------------
@@ -50,7 +50,7 @@ VALGRIND_FLAGS ?= --show-leak-kinds=all --track-origins=yes --leak-check=full --
 
 # Extra env appended before running the test (last assignment wins)
 FLOAT64X_EXTRA_ENV ?=
-FLOAT64X_LABEL ?= _Float64x
+FLOAT64X_LABEL ?= binary80
 
 # -----------------------------------------------------------------------------
 # Cross-compilation support (wine for MinGW)
@@ -83,7 +83,7 @@ check-local: float64x-check
 .PRECIOUS: $(FLOAT64X_EIG_OUTS)
 
 float64x-check: $(FLOAT64X_EIG_OUTS)
-	@echo "_Float64x eig tests done: $(FLOAT64X_ALL_TESTS)"
+	@echo "binary80 eig tests done: $(FLOAT64X_ALL_TESTS)"
 
 clean-local:
 	rm -f *.out *~ \#*

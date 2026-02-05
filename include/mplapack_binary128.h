@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2025
+ * Copyright (c) 2012-2026
  *	Nakata, Maho
  * 	All rights reserved.
  *
@@ -26,13 +26,13 @@
  *
  */
 
-#ifndef _MPLAPACK__FLOAT128_H_
-#define _MPLAPACK__FLOAT128_H_
+#ifndef _MPLAPACK_BINARY128_H_
+#define _MPLAPACK_BINARY128_H_
 
 #include "mplapack_config.h"
 
-#if defined ___MPLAPACK_WANT_LIBQUADMATH___
-#include "quadmath.h"
+#if MPLAPACK_BINARY128_MATH == MPLAPACK_BINARY128_MATH_QUADMATH
+#include <quadmath.h>
 #endif
 
 bool Mlsamen_binary128(mplapackint n, const char *a, const char *b);

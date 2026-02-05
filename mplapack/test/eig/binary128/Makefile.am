@@ -1,7 +1,7 @@
-check_PROGRAMS = $(mplapack__Float128_test_PROGRAMS)
+check_PROGRAMS = $(mplapack_binary128_test_PROGRAMS)
 
-mplapack__Float128_test_PROGRAMS = xeigtstR_binary128 xeigtstC_binary128
-mplapack__Float128_testdir = $(prefix)/lib/$(target)/mplapack/test/eig
+mplapack_binary128_test_PROGRAMS = xeigtstR_binary128 xeigtstC_binary128
+mplapack_binary128_testdir = $(prefix)/lib/$(target)/mplapack/test/eig
 
 $(check_PROGRAMS): ../libeig_binary128.la ../libeig_override_binary128.la
 
@@ -18,19 +18,19 @@ mplibs = -lm
 endif
 cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(LAPACK_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_BINARY128___ -D___MPLAPACK_INTERNAL___ -I$(top_srcdir)/fable
 
-xeigtstR__Float128_SOURCES  = ../common/Rchkee.cpp
-xeigtstR__Float128_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xeigtstR__Float128_LDFLAGS += -Wl,-rpath,$(libdir)
-xeigtstR__Float128_CXXFLAGS = $(cxxflags)
+xeigtstR_binary128_SOURCES  = ../common/Rchkee.cpp
+xeigtstR_binary128_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xeigtstR_binary128_LDFLAGS += -Wl,-rpath,$(libdir)
+xeigtstR_binary128_CXXFLAGS = $(cxxflags)
 
-xeigtstC__Float128_SOURCES  = ../common/Cchkee.cpp
-xeigtstC__Float128_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xeigtstC__Float128_LDFLAGS += -Wl,-rpath,$(libdir)
-xeigtstC__Float128_CXXFLAGS = $(cxxflags)
+xeigtstC_binary128_SOURCES  = ../common/Cchkee.cpp
+xeigtstC_binary128_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xeigtstC_binary128_LDFLAGS += -Wl,-rpath,$(libdir)
+xeigtstC_binary128_CXXFLAGS = $(cxxflags)
 
 install-data-hook:
 if IS_MACOS
-	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mplapack__Float128_testdir) $(prefix)
+	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mplapack_binary128_testdir) $(prefix)
 endif
 
 # -----------------------------------------------------------------------------
@@ -54,7 +54,7 @@ VALGRIND_FLAGS ?= --show-leak-kinds=all --track-origins=yes --leak-check=full --
 
 # Extra env appended before running the test (last assignment wins)
 FLOAT128_EXTRA_ENV ?=
-FLOAT128_LABEL ?= _Float128
+FLOAT128_LABEL ?= binary128
 
 # -----------------------------------------------------------------------------
 # Cross-compilation support (wine for MinGW)
@@ -87,7 +87,7 @@ check-local: float128-check
 .PRECIOUS: $(FLOAT128_EIG_OUTS)
 
 float128-check: $(FLOAT128_EIG_OUTS)
-	@echo "_Float128 eig tests done: $(FLOAT128_ALL_TESTS)"
+	@echo "binary128 eig tests done: $(FLOAT128_ALL_TESTS)"
 
 clean-local:
 	rm -f *.out *~ \#*

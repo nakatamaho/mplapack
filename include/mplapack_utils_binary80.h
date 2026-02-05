@@ -60,29 +60,34 @@ inline void sprintnum_short(char *buf, std::complex<long double> ctmp) { snprint
 #endif
 
 #if MPLAPACK_BINARY80_MATH == MPLAPACK_BINARY80_MATH_LDBL
+#include <cmath> // do not rely on transitive includes
 
-inline long double pow(const long double &a, const long double &b) { return powl(a, b); }
+// Expose <cmath> overload sets for unqualified calls in auto-converted LAPACK code.
+// This ensures long double stays long double (avoids accidental long double -> double demotion),
+// and avoids ambiguous overloads caused by custom global wrappers.
+using std::atan2;
+using std::cos;
+using std::cosh;
+using std::exp;
+using std::floor;
+using std::log;
+using std::log10;
+using std::log2;
+using std::pow;
+using std::sin;
+using std::sinh;
+using std::sqrt;
+
 inline long double pow(const long &a, const long &b) { return powl((long double)a, (long double)b); }
 inline long double pow(const int &a, const long &b) { return powl((long double)a, (long double)b); }
 inline long double pow(const long double &a, const long &b) { return powl(a, (long double)b); }
-
-inline long double sqrt(const long double &a) { return sqrtl(a); }
-inline long double sin(long double a) { return sinl(a); }
-inline long double sinh(long double a) { return sinhl(a); }
-inline long double cos(long double a) { return cosl(a); }
-inline long double cosh(long double a) { return coshl(a); }
-inline long double atan2(long double a, long double b) { return atan2l(a, b); }
-inline long double exp(const long double &a) { return expl(a); }
-inline long double log(const long double &a) { return logl(a); }
-inline long double log10(const long double &a) { return log10l(a); }
-inline long double log2(const long double &a) { return logl(a) / logl(2.0L); }
-inline long double ldexp(const long double &a, int exp) { return ldexpl(a, exp); }
-inline long double nextafter(const long double &a, const long double &b) { return nextafterl(a, b); }
-
 inline long double pow2(const long double &a) { return a * a; }
 inline long double pow4(const long double &a) { return a * a * a * a; }
 inline std::complex<long double> pow2(const std::complex<long double> &a) { return a * a; }
 inline std::complex<long double> pow4(const std::complex<long double> &a) { return a * a * a * a; }
+
+inline long double ldexp(const long double &a, int exp) { return ldexpl(a, exp); }
+inline long double nextafter(const long double &a, const long double &b) { return nextafterl(a, b); }
 
 // implementation of sign transfer function.
 inline long double sign(const long double &a, const long double &b) {

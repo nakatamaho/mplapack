@@ -1,7 +1,7 @@
-check_PROGRAMS = $(mplapack__Float128_test_PROGRAMS)
+check_PROGRAMS = $(mplapack_binary128_test_PROGRAMS)
 
-mplapack__Float128_test_PROGRAMS = xlintstR_binary128 xlintstC_binary128 xlintstrfR_binary128 xlintstrfC_binary128
-mplapack__Float128_testdir = $(prefix)/lib/$(target)/mplapack/test/lin
+mplapack_binary128_test_PROGRAMS = xlintstR_binary128 xlintstC_binary128 xlintstrfR_binary128 xlintstrfC_binary128
+mplapack_binary128_testdir = $(prefix)/lib/$(target)/mplapack/test/lin
 
 $(check_PROGRAMS): ../liblin_binary128.la ../liblin_override_binary128.la
 
@@ -19,29 +19,29 @@ endif
 
 cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_BINARY128___ -D___MPLAPACK_INTERNAL___ -I$(top_srcdir)/fable
 
-xlintstR__Float128_SOURCES  = ../common/Rchkaa.cpp
-xlintstR__Float128_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xlintstR__Float128_LDFLAGS += -Wl,-rpath,$(libdir)
-xlintstR__Float128_CXXFLAGS = $(cxxflags)
+xlintstR_binary128_SOURCES  = ../common/Rchkaa.cpp
+xlintstR_binary128_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstR_binary128_LDFLAGS += -Wl,-rpath,$(libdir)
+xlintstR_binary128_CXXFLAGS = $(cxxflags)
 
-xlintstC__Float128_SOURCES  = ../common/Cchkaa.cpp
-xlintstC__Float128_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xlintstC__Float128_LDFLAGS += -Wl,-rpath,$(libdir)
-xlintstC__Float128_CXXFLAGS = $(cxxflags)
+xlintstC_binary128_SOURCES  = ../common/Cchkaa.cpp
+xlintstC_binary128_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstC_binary128_LDFLAGS += -Wl,-rpath,$(libdir)
+xlintstC_binary128_CXXFLAGS = $(cxxflags)
 
-xlintstrfR__Float128_SOURCES  = ../common/Rchkrfp.cpp
-xlintstrfR__Float128_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xlintstrfR__Float128_LDFLAGS += -Wl,-rpath,$(libdir)
-xlintstrfR__Float128_CXXFLAGS = $(cxxflags)
+xlintstrfR_binary128_SOURCES  = ../common/Rchkrfp.cpp
+xlintstrfR_binary128_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstrfR_binary128_LDFLAGS += -Wl,-rpath,$(libdir)
+xlintstrfR_binary128_CXXFLAGS = $(cxxflags)
 
-xlintstrfC__Float128_SOURCES  = ../common/Cchkrfp.cpp
-xlintstrfC__Float128_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xlintstrfC__Float128_LDFLAGS += -Wl,-rpath,$(libdir)
-xlintstrfC__Float128_CXXFLAGS = $(cxxflags)
+xlintstrfC_binary128_SOURCES  = ../common/Cchkrfp.cpp
+xlintstrfC_binary128_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstrfC_binary128_LDFLAGS += -Wl,-rpath,$(libdir)
+xlintstrfC_binary128_CXXFLAGS = $(cxxflags)
 
 install-data-hook:
 if IS_MACOS
-	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mplapack__Float128_testdir) $(prefix)
+	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mplapack_binary128_testdir) $(prefix)
 endif
 
 # -----------------------------------------------------------------------------
@@ -92,7 +92,7 @@ check-local: f128-check
 .PRECIOUS: $(F128_LIN_OUTS)
 
 f128-check: $$(F128_LIN_OUTS)
-	@echo "_Float128 lin tests done."
+	@echo "binary128 lin tests done."
 
 clean-local:
 	rm -f *.out *~ \#*

@@ -1,7 +1,7 @@
-check_PROGRAMS = $(mplapack__Float64x_test_PROGRAMS)
+check_PROGRAMS = $(mplapack_binary80_test_PROGRAMS)
 
-mplapack__Float64x_test_PROGRAMS = xlintstR_binary80 xlintstC_binary80 xlintstrfR_binary80 xlintstrfC_binary80
-mplapack__Float64x_testdir = $(prefix)/lib/$(target)/mplapack/test/lin
+mplapack_binary80_test_PROGRAMS = xlintstR_binary80 xlintstC_binary80 xlintstrfR_binary80 xlintstrfC_binary80
+mplapack_binary80_testdir = $(prefix)/lib/$(target)/mplapack/test/lin
 
 $(check_PROGRAMS): ../liblin_binary80.la ../liblin_override_binary80.la
 
@@ -14,29 +14,29 @@ endif
 mplibs = -lm
 cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_BINARY80___ -D___MPLAPACK_INTERNAL___ -I$(top_srcdir)/fable
 
-xlintstR__Float64x_SOURCES  = ../common/Rchkaa.cpp
-xlintstR__Float64x_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xlintstR__Float64x_LDFLAGS += -Wl,-rpath,$(libdir)
-xlintstR__Float64x_CXXFLAGS = $(cxxflags)
+xlintstR_binary80_SOURCES  = ../common/Rchkaa.cpp
+xlintstR_binary80_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstR_binary80_LDFLAGS += -Wl,-rpath,$(libdir)
+xlintstR_binary80_CXXFLAGS = $(cxxflags)
 
-xlintstC__Float64x_SOURCES  = ../common/Cchkaa.cpp
-xlintstC__Float64x_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xlintstC__Float64x_LDFLAGS += -Wl,-rpath,$(libdir)
-xlintstC__Float64x_CXXFLAGS = $(cxxflags)
+xlintstC_binary80_SOURCES  = ../common/Cchkaa.cpp
+xlintstC_binary80_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstC_binary80_LDFLAGS += -Wl,-rpath,$(libdir)
+xlintstC_binary80_CXXFLAGS = $(cxxflags)
 
-xlintstrfR__Float64x_SOURCES  = ../common/Rchkrfp.cpp
-xlintstrfR__Float64x_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xlintstrfR__Float64x_LDFLAGS += -Wl,-rpath,$(libdir)
-xlintstrfR__Float64x_CXXFLAGS = $(cxxflags)
+xlintstrfR_binary80_SOURCES  = ../common/Rchkrfp.cpp
+xlintstrfR_binary80_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstrfR_binary80_LDFLAGS += -Wl,-rpath,$(libdir)
+xlintstrfR_binary80_CXXFLAGS = $(cxxflags)
 
-xlintstrfC__Float64x_SOURCES  = ../common/Cchkrfp.cpp
-xlintstrfC__Float64x_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xlintstrfC__Float64x_LDFLAGS += -Wl,-rpath,$(libdir)
-xlintstrfC__Float64x_CXXFLAGS = $(cxxflags)
+xlintstrfC_binary80_SOURCES  = ../common/Cchkrfp.cpp
+xlintstrfC_binary80_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstrfC_binary80_LDFLAGS += -Wl,-rpath,$(libdir)
+xlintstrfC_binary80_CXXFLAGS = $(cxxflags)
 
 install-data-hook:
 if IS_MACOS
-	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mplapack__Float64x_testdir) $(prefix)
+	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mplapack_binary80_testdir) $(prefix)
 endif
 
 # -----------------------------------------------------------------------------
@@ -87,7 +87,7 @@ check-local: f64x-check
 .PRECIOUS: $(F64X_LIN_OUTS)
 
 f64x-check: $$(F64X_LIN_OUTS)
-	@echo "_Float64x lin tests done."
+	@echo "binary80 lin tests done."
 
 clean-local:
 	rm -f *.out *~ \#*
