@@ -200,7 +200,7 @@ $ CC="gcc-mp-9" ; export CC
 $ FC="gfortran-mp-9"; export FC
 $ F77="gfortran-mp-9"; export F77
 $ ./configure --prefix=/Users/maho/MPLAPACK --enable-gmp=yes --enable-mpfr=yes \
---enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes \
+--enable-binary128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes \
 --enable-_Float64x=yes --enable-test=yes
 ...
 $ make -j6
@@ -583,7 +583,7 @@ In this case, we see the result below two ``{\tt ans =}'' are the same. The {\tt
 
 Let us see how we can multiply matrices using {\tt \_Float128} (binary128). The list is the following.
 \begin{lstlisting}
-#include <mpblas__Float128.h>
+#include <mpblas_binary128.h>
 #include <stdio.h>
 #define BUFLEN 1024
 
@@ -681,19 +681,19 @@ $ LD_LIBRARY_PATH=/home/docker/MPLAPACK/lib ./a.out
 \item FP80 (extended double) version
 \begin{verbatim}
 $ g++ -O2 -I/home/docker/MPLAPACK/include -I/home/docker/MPLAPACK/include/mplapack \
-Rgemm__Float64x.cpp -L/home/docker/MPLAPACK/lib -lmpblas__Float64x
+Rgemm_binary80.cpp -L/home/docker/MPLAPACK/lib -lmpblas_binary80
 $ LD_LIBRARY_PATH=/home/docker/MPLAPACK/lib ./a.out
 \end{verbatim}
 \item binary128 version
 \begin{verbatim}
 $ g++ -O2 -I/home/docker/MPLAPACK/include -I/home/docker/MPLAPACK/include/mplapack \
-Rgemm__Float128.cpp -L/home/docker/MPLAPACK/lib -lmpblas__Float128
+Rgemm_binary128.cpp -L/home/docker/MPLAPACK/lib -lmpblas_binary128
  LD_LIBRARY_PATH=/home/docker/MPLAPACK/lib ./a.out
 \end{verbatim}
 or (on macOS, mingw64 and CentOS7 amd64)
 \begin{verbatim}
 $ g++ -O2 -I/home/docker/MPLAPACK/include -I/home/docker/MPLAPACK/include/mplapack \
-Rgemm__Float128.cpp -L/home/docker/MPLAPACK/lib -lmpblas__Float128 -lquadmath
+Rgemm_binary128.cpp -L/home/docker/MPLAPACK/lib -lmpblas_binary128 -lquadmath
 $ LD_LIBRARY_PATH=/home/docker/MPLAPACK/lib ./a.out
 \end{verbatim}
 \item double-double version
@@ -962,22 +962,22 @@ $ LD_LIBRARY_PATH=/home/docker/MPLAPACK/lib ./a.out
 \item FP80 (extended double) version
 \begin{verbatim}
 $ g++ -O2 -I/home/docker/MPLAPACK/include -I/home/docker/MPLAPACK/include/mplapack \
-Rsyev_test__Float64x.cpp -L/home/docker/MPLAPACK/lib -lmplapack__Float64x \
--lmpblas__Float64x
+Rsyev_test_binary80.cpp -L/home/docker/MPLAPACK/lib -lmplapack_binary80 \
+-lmpblas_binary80
 $ LD_LIBRARY_PATH=/home/docker/MPLAPACK/lib ./a.out
 \end{verbatim}
 \item binary128 version
 \begin{verbatim}
 $ g++ -O2 -I/home/docker/MPLAPACK/include -I/home/docker/MPLAPACK/include/mplapack \
-Rsyev_test__Float128.cpp -L/home/docker/MPLAPACK/lib -lmplapack__Float128 \
--lmpblas__Float128
+Rsyev_test_binary128.cpp -L/home/docker/MPLAPACK/lib -lmplapack_binary128 \
+-lmpblas_binary128
  LD_LIBRARY_PATH=/home/docker/MPLAPACK/lib ./a.out
 \end{verbatim}
 or (on macOS, mingw64 and CentOS7 amd64)
 \begin{verbatim}
 $ g++ -O2 -I/home/docker/MPLAPACK/include -I/home/docker/MPLAPACK/include/mplapack \
-Rsyev_test__Float128.cpp -L/home/docker/MPLAPACK/lib -lmplapack__Float128 \
--lmpblas__Float128 -lquadmath
+Rsyev_test_binary128.cpp -L/home/docker/MPLAPACK/lib -lmplapack_binary128 \
+-lmpblas_binary128 -lquadmath
 $ LD_LIBRARY_PATH=/home/docker/MPLAPACK/lib ./a.out
 \end{verbatim}
 \item double-double version
