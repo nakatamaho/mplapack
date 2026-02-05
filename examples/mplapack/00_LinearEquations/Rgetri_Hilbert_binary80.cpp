@@ -70,7 +70,7 @@ void inv_hilbert_matrix(int n) {
     lwork = -1;
     _Float64x *work = new _Float64x[1];
     Rgetri(n, ainv, n, ipiv, work, lwork, info);
-    lwork = castINTEGER__Float64x(work[0]);
+    lwork = castINTEGER_binary80(work[0]);
     delete[] work;
     work = new _Float64x[std::max(1, (int)lwork)];
 

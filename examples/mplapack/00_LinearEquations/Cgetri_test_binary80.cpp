@@ -68,7 +68,7 @@ int main()
     std::complex<_Float64x> *work = new std::complex<_Float64x>[1];
 
     Cgetri(n, a, n, ipiv, work, lwork, info);
-    lwork = castINTEGER__Float64x (work[0].real());
+    lwork = castINTEGER_binary80 (work[0].real());
     delete[]work;
     work = new std::complex<_Float64x>[std::max(1, (int) lwork)];
 

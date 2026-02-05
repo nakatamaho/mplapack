@@ -60,7 +60,7 @@ void Frank(mplapackint n) {
     _Float64x vudummy;
     mplapackint ildummy;
     mplapackint iudummy;
-    _Float64x abstol = Rlamch__Float64x("U");
+    _Float64x abstol = Rlamch_binary80("U");
     _Float64x PI;
     PI = pi(PI);
 
@@ -96,7 +96,7 @@ void Frank(mplapackint n) {
     // print out
     printf("# analytic eigenvalues\n");
     for (int i = 1; i <= n; i++) {
-        lambda[(n - i)] = 0.5 * 1.0 / (1.0 - cos((2.0 * i - 1.0) * PI / castREAL__Float64x(2 * n + 1)));
+        lambda[(n - i)] = 0.5 * 1.0 / (1.0 - cos((2.0 * i - 1.0) * PI / castREAL_binary80(2 * n + 1)));
     }
     printf("lambda ="); printvec(lambda, n); printf("\n");
 

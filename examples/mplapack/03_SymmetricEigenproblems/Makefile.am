@@ -65,70 +65,70 @@ Rsyevr_Frank_gmp_LDFLAGS = $(gmp_libdepends)
 endif
 
 if ENABLE_BINARY128
-mplapackexamples_PROGRAMS += Cheev_test__Float128 Rsyev_Frank__Float128 Rsyev_test__Float128 Rsyevd_DingDong__Float128 Rsyevd_Frank__Float128 Rsyevr_Frank__Float128
+mplapackexamples_PROGRAMS += Cheev_test_binary128 Rsyev_Frank_binary128 Rsyev_test_binary128 Rsyevd_DingDong_binary128 Rsyevd_Frank_binary128 Rsyevr_Frank_binary128
 
 _Float128_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include
 if BINARY128_USE_QUADMATH
-_Float128_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack__Float128 -L$(top_builddir)/mpblas/reference -lmpblas__Float128 -lquadmath
+_Float128_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_binary128 -L$(top_builddir)/mpblas/reference -lmpblas_binary128 -lquadmath
 else
-_Float128_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack__Float128 -L$(top_builddir)/mpblas/reference -lmpblas__Float128
+_Float128_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_binary128 -L$(top_builddir)/mpblas/reference -lmpblas_binary128
 endif
 
-Cheev_test__Float128_SOURCES = Cheev_test__Float128.cpp
-Cheev_test__Float128_CXXFLAGS = $(_Float128_cxxflags)
-Cheev_test__Float128_LDFLAGS = $(_Float128_libdepends)
+Cheev_test_binary128_SOURCES = Cheev_test_binary128.cpp
+Cheev_test_binary128_CXXFLAGS = $(_Float128_cxxflags)
+Cheev_test_binary128_LDFLAGS = $(_Float128_libdepends)
 
-Rsyev_Frank__Float128_SOURCES = Rsyev_Frank__Float128.cpp
-Rsyev_Frank__Float128_CXXFLAGS = $(_Float128_cxxflags)
-Rsyev_Frank__Float128_LDFLAGS = $(_Float128_libdepends)
+Rsyev_Frank_binary128_SOURCES = Rsyev_Frank_binary128.cpp
+Rsyev_Frank_binary128_CXXFLAGS = $(_Float128_cxxflags)
+Rsyev_Frank_binary128_LDFLAGS = $(_Float128_libdepends)
 
-Rsyev_test__Float128_SOURCES = Rsyev_test__Float128.cpp
-Rsyev_test__Float128_CXXFLAGS = $(_Float128_cxxflags)
-Rsyev_test__Float128_LDFLAGS = $(_Float128_libdepends)
+Rsyev_test_binary128_SOURCES = Rsyev_test_binary128.cpp
+Rsyev_test_binary128_CXXFLAGS = $(_Float128_cxxflags)
+Rsyev_test_binary128_LDFLAGS = $(_Float128_libdepends)
 
-Rsyevd_DingDong__Float128_SOURCES = Rsyevd_DingDong__Float128.cpp
-Rsyevd_DingDong__Float128_CXXFLAGS = $(_Float128_cxxflags)
-Rsyevd_DingDong__Float128_LDFLAGS = $(_Float128_libdepends)
+Rsyevd_DingDong_binary128_SOURCES = Rsyevd_DingDong_binary128.cpp
+Rsyevd_DingDong_binary128_CXXFLAGS = $(_Float128_cxxflags)
+Rsyevd_DingDong_binary128_LDFLAGS = $(_Float128_libdepends)
 
-Rsyevd_Frank__Float128_SOURCES = Rsyevd_Frank__Float128.cpp
-Rsyevd_Frank__Float128_CXXFLAGS = $(_Float128_cxxflags)
-Rsyevd_Frank__Float128_LDFLAGS = $(_Float128_libdepends)
+Rsyevd_Frank_binary128_SOURCES = Rsyevd_Frank_binary128.cpp
+Rsyevd_Frank_binary128_CXXFLAGS = $(_Float128_cxxflags)
+Rsyevd_Frank_binary128_LDFLAGS = $(_Float128_libdepends)
 
-Rsyevr_Frank__Float128_SOURCES = Rsyevr_Frank__Float128.cpp
-Rsyevr_Frank__Float128_CXXFLAGS = $(_Float128_cxxflags)
-Rsyevr_Frank__Float128_LDFLAGS = $(_Float128_libdepends)
+Rsyevr_Frank_binary128_SOURCES = Rsyevr_Frank_binary128.cpp
+Rsyevr_Frank_binary128_CXXFLAGS = $(_Float128_cxxflags)
+Rsyevr_Frank_binary128_LDFLAGS = $(_Float128_libdepends)
 
 endif
 
 if ENABLE_BINARY80
-mplapackexamples_PROGRAMS += Cheev_test__Float64x Rsyev_Frank__Float64x Rsyev_test__Float64x Rsyevd_DingDong__Float64x Rsyevd_Frank__Float64x Rsyevr_Frank__Float64x
+mplapackexamples_PROGRAMS += Cheev_test_binary80 Rsyev_Frank_binary80 Rsyev_test_binary80 Rsyevd_DingDong_binary80 Rsyevd_Frank_binary80 Rsyevr_Frank_binary80
 
 _Float64x_cxxflags = $(OPENMP_CXXFLAGS)
-_Float64x_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack__Float64x -L$(top_builddir)/mpblas/reference -lmpblas__Float64x
+_Float64x_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_binary80 -L$(top_builddir)/mpblas/reference -lmpblas_binary80
 
-Cheev_test__Float64x_SOURCES = Cheev_test__Float64x.cpp
-Cheev_test__Float64x_CXXFLAGS = $(_Float64x_cxxflags)
-Cheev_test__Float64x_LDFLAGS = $(_Float64x_libdepends)
+Cheev_test_binary80_SOURCES = Cheev_test_binary80.cpp
+Cheev_test_binary80_CXXFLAGS = $(_Float64x_cxxflags)
+Cheev_test_binary80_LDFLAGS = $(_Float64x_libdepends)
 
-Rsyev_Frank__Float64x_SOURCES = Rsyev_Frank__Float64x.cpp
-Rsyev_Frank__Float64x_CXXFLAGS = $(_Float64x_cxxflags)
-Rsyev_Frank__Float64x_LDFLAGS = $(_Float64x_libdepends)
+Rsyev_Frank_binary80_SOURCES = Rsyev_Frank_binary80.cpp
+Rsyev_Frank_binary80_CXXFLAGS = $(_Float64x_cxxflags)
+Rsyev_Frank_binary80_LDFLAGS = $(_Float64x_libdepends)
 
-Rsyev_test__Float64x_SOURCES = Rsyev_test__Float64x.cpp
-Rsyev_test__Float64x_CXXFLAGS = $(_Float64x_cxxflags)
-Rsyev_test__Float64x_LDFLAGS = $(_Float64x_libdepends)
+Rsyev_test_binary80_SOURCES = Rsyev_test_binary80.cpp
+Rsyev_test_binary80_CXXFLAGS = $(_Float64x_cxxflags)
+Rsyev_test_binary80_LDFLAGS = $(_Float64x_libdepends)
 
-Rsyevd_DingDong__Float64x_SOURCES = Rsyevd_DingDong__Float64x.cpp
-Rsyevd_DingDong__Float64x_CXXFLAGS = $(_Float64x_cxxflags)
-Rsyevd_DingDong__Float64x_LDFLAGS = $(_Float64x_libdepends)
+Rsyevd_DingDong_binary80_SOURCES = Rsyevd_DingDong_binary80.cpp
+Rsyevd_DingDong_binary80_CXXFLAGS = $(_Float64x_cxxflags)
+Rsyevd_DingDong_binary80_LDFLAGS = $(_Float64x_libdepends)
 
-Rsyevd_Frank__Float64x_SOURCES = Rsyevd_Frank__Float64x.cpp
-Rsyevd_Frank__Float64x_CXXFLAGS = $(_Float64x_cxxflags)
-Rsyevd_Frank__Float64x_LDFLAGS = $(_Float64x_libdepends)
+Rsyevd_Frank_binary80_SOURCES = Rsyevd_Frank_binary80.cpp
+Rsyevd_Frank_binary80_CXXFLAGS = $(_Float64x_cxxflags)
+Rsyevd_Frank_binary80_LDFLAGS = $(_Float64x_libdepends)
 
-Rsyevr_Frank__Float64x_SOURCES = Rsyevr_Frank__Float64x.cpp
-Rsyevr_Frank__Float64x_CXXFLAGS = $(_Float64x_cxxflags)
-Rsyevr_Frank__Float64x_LDFLAGS = $(_Float64x_libdepends)
+Rsyevr_Frank_binary80_SOURCES = Rsyevr_Frank_binary80.cpp
+Rsyevr_Frank_binary80_CXXFLAGS = $(_Float64x_cxxflags)
+Rsyevr_Frank_binary80_LDFLAGS = $(_Float64x_libdepends)
 
 endif
 
@@ -230,7 +230,7 @@ endif
 
 mplapackexamplesdir=$(prefix)/share/examples/mplapack/03_SymmetricEigenproblems
 
-mplapackexamples_DATA = Cheev_test_mpfr.cpp Cheev_test_gmp.cpp Cheev_test__Float128.cpp Cheev_test__Float64x.cpp Cheev_test_double.cpp Cheev_test_dd.cpp Cheev_test_qd.cpp Rsyev_Frank_mpfr.cpp Rsyev_Frank_gmp.cpp Rsyev_Frank__Float128.cpp Rsyev_Frank__Float64x.cpp Rsyev_Frank_double.cpp Rsyev_Frank_dd.cpp Rsyev_Frank_qd.cpp Rsyev_test_mpfr.cpp Rsyev_test_gmp.cpp Rsyev_test__Float128.cpp Rsyev_test__Float64x.cpp Rsyev_test_double.cpp Rsyev_test_dd.cpp Rsyev_test_qd.cpp Rsyevd_DingDong_mpfr.cpp Rsyevd_DingDong_gmp.cpp Rsyevd_DingDong__Float128.cpp Rsyevd_DingDong__Float64x.cpp Rsyevd_DingDong_double.cpp Rsyevd_DingDong_dd.cpp Rsyevd_DingDong_qd.cpp Rsyevd_Frank_mpfr.cpp Rsyevd_Frank_gmp.cpp Rsyevd_Frank__Float128.cpp Rsyevd_Frank__Float64x.cpp Rsyevd_Frank_double.cpp Rsyevd_Frank_dd.cpp Rsyevd_Frank_qd.cpp Rsyevr_Frank_mpfr.cpp Rsyevr_Frank_gmp.cpp Rsyevr_Frank__Float128.cpp Rsyevr_Frank__Float64x.cpp Rsyevr_Frank_double.cpp Rsyevr_Frank_dd.cpp Rsyevr_Frank_qd.cpp \
+mplapackexamples_DATA = Cheev_test_mpfr.cpp Cheev_test_gmp.cpp Cheev_test_binary128.cpp Cheev_test_binary80.cpp Cheev_test_double.cpp Cheev_test_dd.cpp Cheev_test_qd.cpp Rsyev_Frank_mpfr.cpp Rsyev_Frank_gmp.cpp Rsyev_Frank_binary128.cpp Rsyev_Frank_binary80.cpp Rsyev_Frank_double.cpp Rsyev_Frank_dd.cpp Rsyev_Frank_qd.cpp Rsyev_test_mpfr.cpp Rsyev_test_gmp.cpp Rsyev_test_binary128.cpp Rsyev_test_binary80.cpp Rsyev_test_double.cpp Rsyev_test_dd.cpp Rsyev_test_qd.cpp Rsyevd_DingDong_mpfr.cpp Rsyevd_DingDong_gmp.cpp Rsyevd_DingDong_binary128.cpp Rsyevd_DingDong_binary80.cpp Rsyevd_DingDong_double.cpp Rsyevd_DingDong_dd.cpp Rsyevd_DingDong_qd.cpp Rsyevd_Frank_mpfr.cpp Rsyevd_Frank_gmp.cpp Rsyevd_Frank_binary128.cpp Rsyevd_Frank_binary80.cpp Rsyevd_Frank_double.cpp Rsyevd_Frank_dd.cpp Rsyevd_Frank_qd.cpp Rsyevr_Frank_mpfr.cpp Rsyevr_Frank_gmp.cpp Rsyevr_Frank_binary128.cpp Rsyevr_Frank_binary80.cpp Rsyevr_Frank_double.cpp Rsyevr_Frank_dd.cpp Rsyevr_Frank_qd.cpp \
  Makefile.freebsd Makefile.linux Makefile.macos Makefile.mingw
 
 install-data-hook:

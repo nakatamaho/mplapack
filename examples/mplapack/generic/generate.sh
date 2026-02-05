@@ -108,7 +108,7 @@ for _mplib in $MPLIBS; do
 
     if [ x"$_mplib" = x"_Float128" ]; then
         echo ""               >> ../Makefile.am
-        echo "if ENABLE__FLOAT128" >> ../Makefile.am
+        echo "if ENABLE_BINARY128" >> ../Makefile.am
         executefilenames=`echo $FILES | $SED 's/\.cpp//g' | $SED "s/generic/${_mplib}/g"`
         echo "mplapackexamples_PROGRAMS += $executefilenames" >> ../Makefile.am
         echo ""               >> ../Makefile.am
@@ -131,7 +131,7 @@ for _mplib in $MPLIBS; do
 
     if [ x"$_mplib" = x"_Float64x" ]; then
         echo ""               >> ../Makefile.am
-        echo "if ENABLE__FLOAT64X" >> ../Makefile.am
+        echo "if ENABLE_BINARY80" >> ../Makefile.am
         executefilenames=`echo $FILES | $SED 's/\.cpp//g' | $SED "s/generic/${_mplib}/g"`
         echo "mplapackexamples_PROGRAMS += $executefilenames" >> ../Makefile.am
         echo ""               >> ../Makefile.am

@@ -83,7 +83,7 @@ int main()
     _Float128 *work = new _Float128[1];
 
     Rgetri(n, a, n, ipiv, work, lwork, info);
-    lwork = castINTEGER__Float128 (work[0]);
+    lwork = castINTEGER_binary128 (work[0]);
     delete[]work;
     work = new _Float128[std::max(1, (int) lwork)];
 

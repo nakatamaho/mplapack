@@ -45,7 +45,7 @@ template <class X> void printmat(int n, int m, X *a, int lda)
     }
     printf("]");
 }
-#include <mplapack_utils__Float64x.h>
+#include <mplapack_utils_binary80.h>
 
 bool rselect(_Float64x ar, _Float64x ai) {
     // sorting rule for eigenvalues.
