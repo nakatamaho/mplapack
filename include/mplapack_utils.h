@@ -50,12 +50,12 @@
 #include <mplapack_utils_double.h>
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
-#include <mplapack_utils__Float64x.h>
+#if defined ___MPLAPACK_BUILD_WITH_BINARY80___
+#include <mplapack_utils_binary80.h>
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
-#include <mplapack_utils__Float128.h>
+#if defined ___MPLAPACK_BUILD_WITH_BINARY128___
+#include <mplapack_utils_binary128.h>
 #endif
 
 #if defined ___MPLAPACK_INTERNAL___
