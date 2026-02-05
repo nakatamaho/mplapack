@@ -16,9 +16,9 @@
 #include "mplapack_utils_gmp.h"
 #elif defined(___MPLAPACK_BUILD_WITH_MPFR___)
 #include "mplapack_utils_mpfr.h"
-#elif defined(___MPLAPACK_BUILD_WITH__FLOAT128___)
+#elif defined(___MPLAPACK_BUILD_WITH_BINARY128___)
 #include "mplapack_utils_binary128.h"
-#elif defined(___MPLAPACK_BUILD_WITH__FLOAT64X___)
+#elif defined(___MPLAPACK_BUILD_WITH_BINARY80___)
 #include "mplapack_utils_binary80.h"
 #elif defined(___MPLAPACK_BUILD_WITH_DD___)
 #include "mplapack_utils_dd.h"

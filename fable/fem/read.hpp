@@ -1,5 +1,31 @@
 #ifndef FEM_READ_HPP
 #define FEM_READ_HPP
+
+// Ensure MPLAPACK utils expose sprintnum()/sprintnum_short() and __MPLAPACK_BUFLEN__.
+// In mplapack_utils_*.h these are guarded by ___MPLAPACK_INTERNAL___.
+#ifndef ___MPLAPACK_INTERNAL___
+#define ___MPLAPACK_INTERNAL___ 1
+#endif
+
+// MPLAPACK backend utilities (printnum/sprintnum, precision, buffer length, etc.)
+#if defined(___MPLAPACK_BUILD_WITH_GMP___)
+#include "mplapack_utils_gmp.h"
+#elif defined(___MPLAPACK_BUILD_WITH_MPFR___)
+#include "mplapack_utils_mpfr.h"
+#elif defined(___MPLAPACK_BUILD_WITH_BINARY128___)
+#include "mplapack_utils_binary128.h"
+#elif defined(___MPLAPACK_BUILD_WITH_BINARY80___)
+#include "mplapack_utils_binary80.h"
+#elif defined(___MPLAPACK_BUILD_WITH_DD___)
+#include "mplapack_utils_dd.h"
+#elif defined(___MPLAPACK_BUILD_WITH_QD___)
+#include "mplapack_utils_qd.h"
+#elif defined(___MPLAPACK_BUILD_WITH_DOUBLE___)
+#include "mplapack_utils_double.h"
+#else
+#error "No MPLAPACK backend macro is defined (___MPLAPACK_BUILD_WITH_*___)."
+#endif
+
 #include <fem/common.hpp>
 #include <fem/format.hpp>
 #include <fem/star.hpp>
@@ -389,7 +415,7 @@ class read_loop // TODO copy-constructor potential performance problem
     // --- Selected multiprecision/back-end numeric types: read as string token, normalize, then assign ---
     //
     // Rationale: LAPACK test inputs are within binary64, but MPLAPACK back-ends may use
-    // mpf_class/mpreal/_Float128/_Float64x/QD/DD. Reading as a raw token and then
+    // mpf_class/mpreal/binary128/binary80/QD/DD. Reading as a raw token and then
     // constructing/assigning avoids heavy formatted parsing (g2.16 etc.) and handles
     // Fortran 'D' exponents by normalization to 'E'.
     //
@@ -409,21 +435,21 @@ class read_loop // TODO copy-constructor potential performance problem
         return *this;
     }
 #endif
-#if defined(___MPLAPACK_BUILD_WITH__FLOAT128___) && defined(__FLT128_MAX__)
-    read_loop &operator,(_Float128 &val) {
+#if defined(___MPLAPACK_BUILD_WITH_BINARY128___) && defined(__FLT128_MAX__)
+    read_loop &operator,(mplapack_binary128_t &val) {
         std::string s = read_numeric_as_string();
         normalize_fortran_exponent(s);
         long double ld = std::strtold(s.c_str(), nullptr);
-        val = static_cast<_Float128>(ld);
+        val = static_cast<mplapack_binary128_t>(ld);
         return *this;
     }
 #endif
-#if defined(___MPLAPACK_BUILD_WITH__FLOAT64X___) && defined(__FLT64X_MAX__)
-    read_loop &operator,(_Float64x &val) {
+#if defined(___MPLAPACK_BUILD_WITH_BINARY80___) && defined(__FLT64X_MAX__)
+    read_loop &operator,(mplapack_binary80_t &val) {
         std::string s = read_numeric_as_string();
         normalize_fortran_exponent(s);
         long double ld = std::strtold(s.c_str(), nullptr);
-        val = static_cast<_Float64x>(ld);
+        val = static_cast<mplapack_binary80_t>(ld);
         return *this;
     }
 #endif
@@ -603,8 +629,8 @@ class read_loop // TODO copy-constructor potential performance problem
         return *this;
     }
 #endif
-#if defined(___MPLAPACK_BUILD_WITH__FLOAT128___) && defined(__FLT128_MAX__)
-    read_loop &operator,(std::complex<_Float128> &val) {
+#if defined(___MPLAPACK_BUILD_WITH_BINARY128___) && defined(__FLT128_MAX__)
+    read_loop &operator,(std::complex<mplapack_binary128_t> &val) {
         if (io_mode == io_unformatted) {
             throw TBXX_NOT_IMPLEMENTED();
         }
@@ -613,12 +639,12 @@ class read_loop // TODO copy-constructor potential performance problem
         parse_complex_components(token, real_str, imag_str);
         long double ld_re = std::strtold(real_str.c_str(), nullptr);
         long double ld_im = std::strtold(imag_str.c_str(), nullptr);
-        val = std::complex<_Float128>(static_cast<_Float128>(ld_re), static_cast<_Float128>(ld_im));
+        val = std::complex<mplapack_binary128_t>(static_cast<mplapack_binary128_t>(ld_re), static_cast<mplapack_binary128_t>(ld_im));
         return *this;
     }
 #endif
-#if defined(___MPLAPACK_BUILD_WITH__FLOAT64X___) && defined(__FLT64X_MAX__)
-    read_loop &operator,(std::complex<_Float64x> &val) {
+#if defined(___MPLAPACK_BUILD_WITH_BINARY80___) && defined(__FLT64X_MAX__)
+    read_loop &operator,(std::complex<mplapack_binary80_t> &val) {
         if (io_mode == io_unformatted) {
             throw TBXX_NOT_IMPLEMENTED();
         }
@@ -627,7 +653,7 @@ class read_loop // TODO copy-constructor potential performance problem
         parse_complex_components(token, real_str, imag_str);
         long double ld_re = std::strtold(real_str.c_str(), nullptr);
         long double ld_im = std::strtold(imag_str.c_str(), nullptr);
-        val = std::complex<_Float64x>(static_cast<_Float64x>(ld_re), static_cast<_Float64x>(ld_im));
+        val = std::complex<mplapack_binary80_t>(static_cast<mplapack_binary80_t>(ld_re), static_cast<mplapack_binary80_t>(ld_im));
         return *this;
     }
 #endif
@@ -839,7 +865,7 @@ class read_loop // TODO copy-constructor potential performance problem
         throw io_err("Invalid character while reading floating-point value: " + utils::format_char_for_display(c));
     }
     // --- Helpers for reading numeric tokens as raw strings ---
-    // These are used for selected multiprecision types (mpf_class, mpfr::mpreal, _Float128, ...).
+    // These are used for selected multiprecision types (mpf_class, mpfr::mpreal, mplapack_binary128_t, ...).
     // For LAPACK test inputs, values are at most binary64, so string->ctor assignment is sufficient.
     static std::string normalize_fortran_numeric_string(std::string s) {
         // Convert Fortran 'D' exponent to 'E' (e.g., 1.0D+00 -> 1.0E+00).
