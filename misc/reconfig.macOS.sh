@@ -20,7 +20,7 @@ CONFIG_FLAGS=(
   "--prefix=$HOME/MPLAPACK"
   "--enable-gmp=yes"
   "--enable-mpfr=yes"
-  "--enable-_Float128=yes"
+  "--enable-binary128=yes"
   "--enable-qd=yes"
   "--enable-dd=yes"
   "--enable-double=yes"
@@ -31,14 +31,14 @@ CONFIG_FLAGS=(
 arch="$(uname -m)"
 case "$arch" in
   x86_64|amd64)
-    CONFIG_FLAGS+=("--enable-_Float64x=yes")
+    CONFIG_FLAGS+=("--enable-binary80=yes")
     ;;
   arm64|aarch64)
-    CONFIG_FLAGS+=("--enable-_Float64x=no")
+    CONFIG_FLAGS+=("--enable-binary80=no")
     ;;
   *)
-    echo "Unknown arch: $arch (disabling _Float64x by default)" >&2
-    CONFIG_FLAGS+=("--enable-_Float64x=no")
+    echo "Unknown arch: $arch (disabling binary80 by default)" >&2
+    CONFIG_FLAGS+=("--enable-binary80=no")
     ;;
 esac
 
