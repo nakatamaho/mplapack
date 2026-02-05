@@ -122,7 +122,7 @@ typedef std::complex<double> COMPLEX;
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
-#include <mplapack__Float64x.h>
+#include <mplapack_binary80.h>
 typedef mplapackint INTEGER;
 typedef mplapacklogical LOGICAL;
 typedef _Float64x REAL;
@@ -140,7 +140,7 @@ typedef std::complex<_Float64x> COMPLEX;
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
-#include <mplapack__Float128.h>
+#include <mplapack_binary128.h>
 typedef mplapackint INTEGER;
 typedef mplapacklogical LOGICAL;
 typedef _Float128 REAL;

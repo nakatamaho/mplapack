@@ -28,7 +28,7 @@
  *
  */
 
-#include <mpblas__Float128.h>
+#include <mpblas_binary128.h>
 
 void Raxpy_omp(mplapackint n, _Float128 da, _Float128 * dx, mplapackint incx, _Float128 * dy, mplapackint incy);
 void Raxpy_ref(mplapackint n, _Float128 da, _Float128 * dx, mplapackint incx, _Float128 * dy, mplapackint incy);

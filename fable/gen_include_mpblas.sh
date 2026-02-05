@@ -18,7 +18,7 @@ ctags -x --c++-kinds=pf --language-force=c++ --_xformat='%{typeref} %{name} %{si
 cat *hpp > header_all
 rm *hpp
 
-MPLIBS="gmp mpfr _Float128 dd qd double _Float64x"
+MPLIBS="gmp mpfr binary128 dd qd double binary80"
 for mplib in $MPLIBS; do
     if [ x"$mplib" = x"gmp" ]; then
         cp header_all mpblas_${mplib}.h 
@@ -66,7 +66,7 @@ for mplib in $MPLIBS; do
         sed -i -e "s/Mxerbla/Mxerbla_${mplib}/g" mpblas_${mplib}.h 
     fi
 
-    if [ x"$mplib" = x"_Float128" ]; then
+    if [ x"$mplib" = x"binary128" ]; then
         cp header_all mpblas_${mplib}.h 
         sed -i -e 's/INTEGER/mplapackint/g' mpblas_${mplib}.h 
         sed -i -e 's/COMPLEX/std::complex<_Float128>/g' mpblas_${mplib}.h 
@@ -75,7 +75,7 @@ for mplib in $MPLIBS; do
         sed -i -e "s/Mxerbla/Mxerbla_${mplib}/g" mpblas_${mplib}.h 
     fi
 
-    if [ x"$mplib" = x"_Float64x" ]; then
+    if [ x"$mplib" = x"binary80" ]; then
         cp header_all mpblas_${mplib}.h 
         sed -i -e 's/INTEGER/mplapackint/g' mpblas_${mplib}.h 
         sed -i -e 's/COMPLEX/std::complex<_Float64x>/g' mpblas_${mplib}.h 

@@ -21,10 +21,10 @@ SUBDIRS += double
 endif
 
 if ENABLE_BINARY128
-SUBDIRS += _Float128
+SUBDIRS += binary128
 endif
 
 if ENABLE_BINARY80
-SUBDIRS += _Float64x
+SUBDIRS += binary80
 endif
 

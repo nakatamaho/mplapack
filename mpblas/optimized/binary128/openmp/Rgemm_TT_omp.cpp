@@ -27,7 +27,7 @@
  * SUCH DAMAGE.
  *
  */
-#include <mpblas__Float128.h>
+#include <mpblas_binary128.h>
 
 void Rgemm_TT_omp(mplapackint m, mplapackint n, mplapackint k, _Float128 alpha, _Float128 * A, mplapackint lda, _Float128 * B, mplapackint ldb,
 		  _Float128 beta, _Float128 * C, mplapackint ldc)

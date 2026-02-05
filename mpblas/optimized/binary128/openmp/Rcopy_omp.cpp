@@ -72,7 +72,7 @@ Based on http://www.netlib.org/blas/dcopy.f
 Rcopy copies a vector, x, to a vector, y.
 */
 
-#include <mpblas__Float128.h>
+#include <mpblas_binary128.h>
 #ifdef _OPENMP
 #include <omp.h>
 #endif

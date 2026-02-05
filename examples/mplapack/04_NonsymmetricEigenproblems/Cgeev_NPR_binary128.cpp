@@ -1,6 +1,6 @@
 //public domain
-#include <mpblas__Float128.h>
-#include <mplapack__Float128.h>
+#include <mpblas_binary128.h>
+#include <mplapack_binary128.h>
 #include <iostream>
 #include <stdio.h>
 #include <cstring>

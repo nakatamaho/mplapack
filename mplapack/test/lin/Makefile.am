@@ -30,13 +30,13 @@ SUBDIRS += double
 endif
 
 if ENABLE_BINARY80
-lib_LTLIBRARIES += liblin__Float64x.la liblin_override__Float64x.la
-SUBDIRS += _Float64x
+lib_LTLIBRARIES += liblin_binary80.la liblin_override_binary80.la
+SUBDIRS += binary80
 endif
 
 if ENABLE_BINARY128
-lib_LTLIBRARIES += liblin__Float128.la liblin_override__Float128.la
-SUBDIRS += _Float128
+lib_LTLIBRARIES += liblin_binary128.la liblin_override_binary128.la
+SUBDIRS += binary128
 endif
 
 # SUBDIRS contains "."; we only parallelize real subdirectories.
@@ -116,29 +116,29 @@ liblin_override_double_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_look
 endif
 endif
 
-if ENABLE__FLOAT64X
-liblin__Float64x_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -D___MPLAPACK_BUILD_WITH__FLOAT64X___ -D___MPLAPACK_INTERNAL___
-liblin__Float64x_la_SOURCES = $(LIN_SOURCES)
-liblin__Float64x_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
-liblin_override__Float64x_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -D___MPLAPACK_BUILD_WITH__FLOAT64X___
-liblin_override__Float64x_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp common/Mxlaenv.cpp
-liblin_override__Float64x_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
+if ENABLE_BINARY80
+liblin_binary80_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -D___MPLAPACK_BUILD_WITH_BINARY80___ -D___MPLAPACK_INTERNAL___
+liblin_binary80_la_SOURCES = $(LIN_SOURCES)
+liblin_binary80_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
+liblin_override_binary80_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -D___MPLAPACK_BUILD_WITH_BINARY80___
+liblin_override_binary80_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp common/Mxlaenv.cpp
+liblin_override_binary80_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 if IS_MACOS
-liblin__Float64x_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
-liblin_override__Float64x_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
+liblin_binary80_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
+liblin_override_binary80_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 endif
 
-if ENABLE__FLOAT128
-liblin__Float128_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -D___MPLAPACK_BUILD_WITH__FLOAT128___ -D___MPLAPACK_INTERNAL___
-liblin__Float128_la_SOURCES = $(LIN_SOURCES)
-liblin__Float128_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
-liblin_override__Float128_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -D___MPLAPACK_BUILD_WITH__FLOAT128___
-liblin_override__Float128_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp common/Mxlaenv.cpp
-liblin_override__Float128_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
+if ENABLE_BINARY128
+liblin_binary128_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -D___MPLAPACK_BUILD_WITH_BINARY128___ -D___MPLAPACK_INTERNAL___
+liblin_binary128_la_SOURCES = $(LIN_SOURCES)
+liblin_binary128_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
+liblin_override_binary128_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -D___MPLAPACK_BUILD_WITH_BINARY128___
+liblin_override_binary128_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp common/Mxlaenv.cpp
+liblin_override_binary128_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 if IS_MACOS
-liblin__Float128_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
-liblin_override__Float128_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
+liblin_binary128_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
+liblin_override_binary128_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 endif
 

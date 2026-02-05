@@ -28,7 +28,7 @@
  *
  */
 
-#include <mpblas__Float128.h>
+#include <mpblas_binary128.h>
 #ifdef _OPENMP
 #include <omp.h>
 #endif

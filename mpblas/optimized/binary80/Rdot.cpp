@@ -28,7 +28,7 @@
  *
  */
 
-#include <mpblas__Float64x.h>
+#include <mpblas_binary80.h>
 
 _Float64x Rdot_ref(mplapackint n, _Float64x * dx, mplapackint incx, _Float64x * dy, mplapackint incy);
 _Float64x Rdot_omp(mplapackint n, _Float64x * dx, mplapackint incx, _Float64x * dy, mplapackint incy);

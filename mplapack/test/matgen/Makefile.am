@@ -25,7 +25,7 @@ lib_LTLIBRARIES += libmatgen_binary80.la
 endif
 
 if ENABLE_BINARY128
-lib_LTLIBRARIES += libmatgen__Float128.la
+lib_LTLIBRARIES += libmatgen_binary128.la
 endif
 
 

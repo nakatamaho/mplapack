@@ -1,5 +1,5 @@
 //public domain
-#include <mpblas__Float64x.h>
+#include <mpblas_binary80.h>
 #include <iostream>
 #include <stdio.h>
 #include <cstring>
