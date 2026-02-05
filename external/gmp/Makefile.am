@@ -6,7 +6,7 @@ CONFIGURE_ARGS=--enable-cxx --prefix=$(abs_builddir)/../i/GMP/
 CONFIGURE_ARGS2=--enable-cxx --prefix=$(prefix)
 GMP_CC_EXTRA =
 GMP_CXX_EXTRA =
-GMP_USE_LD_CLASSIC=
+GMP_USE_LD_CLASSIC=1
 GMP_DISABLE_ASM =
 GMP_CC_FOR_BUILD =
 else
