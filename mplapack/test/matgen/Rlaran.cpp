@@ -76,7 +76,7 @@ REAL Rlaran(INTEGER *iseed) {
     x = x + dist(mt) * 0x1p-159;
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
+#if defined ___MPLAPACK_BUILD_WITH_BINARY128___
     _Float128 x;
     std::random_device rd;
     std::mt19937_64 mt(rd());
@@ -84,7 +84,7 @@ REAL Rlaran(INTEGER *iseed) {
     x = dist(mt) + dist(mt) * 0x1p-53 + dist(mt) * 0x1p-106;
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
+#if defined ___MPLAPACK_BUILD_WITH_BINARY80___
     _Float64x x;
     std::random_device rd;
     std::mt19937_64 mt(rd());

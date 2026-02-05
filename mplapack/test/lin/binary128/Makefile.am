@@ -1,14 +1,14 @@
 check_PROGRAMS = $(mplapack__Float128_test_PROGRAMS)
 
-mplapack__Float128_test_PROGRAMS = xlintstR__Float128 xlintstC__Float128 xlintstrfR__Float128 xlintstrfC__Float128
+mplapack__Float128_test_PROGRAMS = xlintstR_binary128 xlintstC_binary128 xlintstrfR_binary128 xlintstrfC_binary128
 mplapack__Float128_testdir = $(prefix)/lib/$(target)/mplapack/test/lin
 
-$(check_PROGRAMS): ../liblin__Float128.la ../liblin_override__Float128.la
+$(check_PROGRAMS): ../liblin_binary128.la ../liblin_override_binary128.la
 
 if IS_MINGW
-libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/lin/.libs/liblin__Float128.a,$(top_builddir)/mplapack/test/lin/.libs/liblin_override__Float128.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen__Float128.a,$(top_builddir)/mpblas/reference/.libs/libmpblas__Float128.a,$(top_builddir)/mplapack/reference/.libs/libmplapack__Float128.a,--no-whole-archive
+libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/lin/.libs/liblin_binary128.a,$(top_builddir)/mplapack/test/lin/.libs/liblin_override_binary128.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_binary128.a,$(top_builddir)/mpblas/reference/.libs/libmpblas_binary128.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_binary128.a,--no-whole-archive
 else
-libdepends = -L$(top_builddir)/mplapack/test/lin -llin__Float128 -llin_override__Float128 -L$(top_builddir)/mplapack/test/matgen -lmatgen__Float128 -L$(top_builddir)/mplapack/reference -lmplapack__Float128 -L$(top_builddir)/mpblas/reference -lmpblas__Float128
+libdepends = -L$(top_builddir)/mplapack/test/lin -llin_binary128 -llin_override_binary128 -L$(top_builddir)/mplapack/test/matgen -lmatgen_binary128 -L$(top_builddir)/mplapack/reference -lmplapack_binary128 -L$(top_builddir)/mpblas/reference -lmpblas_binary128
 endif
 
 if BINARY128_USE_QUADMATH
@@ -17,7 +17,7 @@ else
 mplibs = -lm
 endif
 
-cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH__FLOAT128___ -D___MPLAPACK_INTERNAL___ -I$(top_srcdir)/fable
+cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_BINARY128___ -D___MPLAPACK_INTERNAL___ -I$(top_srcdir)/fable
 
 xlintstR__Float128_SOURCES  = ../common/Rchkaa.cpp
 xlintstR__Float128_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
@@ -101,42 +101,42 @@ clean-local:
 # Test rules (one output per test)
 # -----------------------------------------------------------------------------
 
-Rtest.out: ../Rtest.in xlintstR__Float128$(EXEEXT)
+Rtest.out: ../Rtest.in xlintstR_binary128$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
 	fi; \
 	echo "Testing Real MPLAPACK linear equation routines"; \
 	set -e; { \
-		$(F128_EXTRA_ENV) $$wrapper $(WINE) ./xlintstR__Float128$(EXEEXT) < ../Rtest.in; \
+		$(F128_EXTRA_ENV) $$wrapper $(WINE) ./xlintstR_binary128$(EXEEXT) < ../Rtest.in; \
 	} > $@ 2>&1
 
-Ctest.out: ../Ctest.in xlintstC__Float128$(EXEEXT)
+Ctest.out: ../Ctest.in xlintstC_binary128$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
 	fi; \
 	echo "Testing Complex MPLAPACK linear equation routines"; \
 	set -e; { \
-		$(F128_EXTRA_ENV) $$wrapper $(WINE) ./xlintstC__Float128$(EXEEXT) < ../Ctest.in; \
+		$(F128_EXTRA_ENV) $$wrapper $(WINE) ./xlintstC_binary128$(EXEEXT) < ../Ctest.in; \
 	} > $@ 2>&1
 
-Rtest_rfp.out: ../Rtest_rfp.in xlintstrfR__Float128$(EXEEXT)
+Rtest_rfp.out: ../Rtest_rfp.in xlintstrfR_binary128$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
 	fi; \
 	echo "Testing Real MPLAPACK RFP prototype linear equation routines"; \
 	set -e; { \
-		$(F128_EXTRA_ENV) $$wrapper $(WINE) ./xlintstrfR__Float128$(EXEEXT) < ../Rtest_rfp.in; \
+		$(F128_EXTRA_ENV) $$wrapper $(WINE) ./xlintstrfR_binary128$(EXEEXT) < ../Rtest_rfp.in; \
 	} > $@ 2>&1
 
-Ctest_rfp.out: ../Ctest_rfp.in xlintstrfC__Float128$(EXEEXT)
+Ctest_rfp.out: ../Ctest_rfp.in xlintstrfC_binary128$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
 	fi; \
 	echo "Testing Complex MPLAPACK RFP prototype linear equation routines"; \
 	set -e; { \
-		$(F128_EXTRA_ENV) $$wrapper $(WINE) ./xlintstrfC__Float128$(EXEEXT) < ../Ctest_rfp.in; \
+		$(F128_EXTRA_ENV) $$wrapper $(WINE) ./xlintstrfC_binary128$(EXEEXT) < ../Ctest_rfp.in; \
 	} > $@ 2>&1

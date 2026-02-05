@@ -1,14 +1,14 @@
 check_PROGRAMS = $(mplapack__Float128_test_PROGRAMS)
 
-mplapack__Float128_test_PROGRAMS = xeigtstR__Float128 xeigtstC__Float128
+mplapack__Float128_test_PROGRAMS = xeigtstR_binary128 xeigtstC_binary128
 mplapack__Float128_testdir = $(prefix)/lib/$(target)/mplapack/test/eig
 
-$(check_PROGRAMS): ../libeig__Float128.la ../libeig_override__Float128.la
+$(check_PROGRAMS): ../libeig_binary128.la ../libeig_override_binary128.la
 
 if IS_MINGW
-libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/eig/.libs/libeig__Float128.a,$(top_builddir)/mplapack/test/eig/.libs/libeig_override__Float128.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen__Float128.a,$(top_builddir)/mpblas/reference/.libs/libmpblas__Float128.a,$(top_builddir)/mplapack/reference/.libs/libmplapack__Float128.a,--no-whole-archive
+libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/eig/.libs/libeig_binary128.a,$(top_builddir)/mplapack/test/eig/.libs/libeig_override_binary128.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_binary128.a,$(top_builddir)/mpblas/reference/.libs/libmpblas_binary128.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_binary128.a,--no-whole-archive
 else
-libdepends = -L$(top_builddir)/mplapack/test/eig -leig__Float128 -leig_override__Float128 -L$(top_builddir)/mplapack/test/matgen -lmatgen__Float128 -L$(top_builddir)/mplapack/reference -lmplapack__Float128 -L$(top_builddir)/mpblas/reference -lmpblas__Float128
+libdepends = -L$(top_builddir)/mplapack/test/eig -leig_binary128 -leig_override_binary128 -L$(top_builddir)/mplapack/test/matgen -lmatgen_binary128 -L$(top_builddir)/mplapack/reference -lmplapack_binary128 -L$(top_builddir)/mpblas/reference -lmpblas_binary128
 endif
 
 if BINARY128_USE_QUADMATH
@@ -16,7 +16,7 @@ mplibs = -lm -lquadmath
 else
 mplibs = -lm
 endif
-cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(LAPACK_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH__FLOAT128___ -D___MPLAPACK_INTERNAL___ -I$(top_srcdir)/fable
+cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(LAPACK_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_BINARY128___ -D___MPLAPACK_INTERNAL___ -I$(top_srcdir)/fable
 
 xeigtstR__Float128_SOURCES  = ../common/Rchkee.cpp
 xeigtstR__Float128_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
@@ -96,7 +96,7 @@ clean-local:
 # Test rules (one output per test)
 # -----------------------------------------------------------------------------
 
-Rnep.out: ../nep.in xeigtstR__Float128$(EXEEXT)
+Rnep.out: ../nep.in xeigtstR_binary128$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -104,10 +104,10 @@ Rnep.out: ../nep.in xeigtstR__Float128$(EXEEXT)
 	echo "NEP: Testing Nonsymmetric Eigenvalue Problem routines [$(FLOAT128_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT128_LABEL) ==="; \
-		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float128$(EXEEXT) < ../nep.in; \
+		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_binary128$(EXEEXT) < ../nep.in; \
 	} > $@ 2>&1
 
-Rsep.out: ../sep.in xeigtstR__Float128$(EXEEXT)
+Rsep.out: ../sep.in xeigtstR_binary128$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -115,10 +115,10 @@ Rsep.out: ../sep.in xeigtstR__Float128$(EXEEXT)
 	echo "SEP: Testing Symmetric Eigenvalue Problem routines [$(FLOAT128_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT128_LABEL) ==="; \
-		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float128$(EXEEXT) < ../sep.in; \
+		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_binary128$(EXEEXT) < ../sep.in; \
 	} > $@ 2>&1
 
-Rse2.out: ../se2.in xeigtstR__Float128$(EXEEXT)
+Rse2.out: ../se2.in xeigtstR_binary128$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -126,10 +126,10 @@ Rse2.out: ../se2.in xeigtstR__Float128$(EXEEXT)
 	echo "SEP: Testing Symmetric Eigenvalue Problem routines [$(FLOAT128_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT128_LABEL) ==="; \
-		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float128$(EXEEXT) < ../se2.in; \
+		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_binary128$(EXEEXT) < ../se2.in; \
 	} > $@ 2>&1
 
-Rsvd.out: ../svd.in xeigtstR__Float128$(EXEEXT)
+Rsvd.out: ../svd.in xeigtstR_binary128$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -137,10 +137,10 @@ Rsvd.out: ../svd.in xeigtstR__Float128$(EXEEXT)
 	echo "SVD: Testing Singular Value Decomposition routines [$(FLOAT128_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT128_LABEL) ==="; \
-		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float128$(EXEEXT) < ../svd.in; \
+		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_binary128$(EXEEXT) < ../svd.in; \
 	} > $@ 2>&1
 
-Rec.out: ../Rec.in xeigtstR__Float128$(EXEEXT)
+Rec.out: ../Rec.in xeigtstR_binary128$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -148,10 +148,10 @@ Rec.out: ../Rec.in xeigtstR__Float128$(EXEEXT)
 	echo "DEC: Testing Eigen Condition Routines [$(FLOAT128_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT128_LABEL) ==="; \
-		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float128$(EXEEXT) < ../Rec.in; \
+		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_binary128$(EXEEXT) < ../Rec.in; \
 	} > $@ 2>&1
 
-Red.out: ../Red.in xeigtstR__Float128$(EXEEXT)
+Red.out: ../Red.in xeigtstR_binary128$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -159,10 +159,10 @@ Red.out: ../Red.in xeigtstR__Float128$(EXEEXT)
 	echo "DEV: Testing Nonsymmetric Eigenvalue Driver [$(FLOAT128_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT128_LABEL) ==="; \
-		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float128$(EXEEXT) < ../Red.in; \
+		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_binary128$(EXEEXT) < ../Red.in; \
 	} > $@ 2>&1
 
-Rgg.out: ../Rgg.in xeigtstR__Float128$(EXEEXT)
+Rgg.out: ../Rgg.in xeigtstR_binary128$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -170,10 +170,10 @@ Rgg.out: ../Rgg.in xeigtstR__Float128$(EXEEXT)
 	echo "DGG: Testing Nonsymmetric Generalized Eigenvalue Problem routines [$(FLOAT128_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT128_LABEL) ==="; \
-		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float128$(EXEEXT) < ../Rgg.in; \
+		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_binary128$(EXEEXT) < ../Rgg.in; \
 	} > $@ 2>&1
 
-Rgd.out: ../Rgd.in xeigtstR__Float128$(EXEEXT)
+Rgd.out: ../Rgd.in xeigtstR_binary128$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -181,10 +181,10 @@ Rgd.out: ../Rgd.in xeigtstR__Float128$(EXEEXT)
 	echo "DGD: Testing Nonsymmetric Generalized Eigenvalue Problem driver routines [$(FLOAT128_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT128_LABEL) ==="; \
-		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float128$(EXEEXT) < ../Rgd.in; \
+		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_binary128$(EXEEXT) < ../Rgd.in; \
 	} > $@ 2>&1
 
-Rsb.out: ../Rsb.in xeigtstR__Float128$(EXEEXT)
+Rsb.out: ../Rsb.in xeigtstR_binary128$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -192,10 +192,10 @@ Rsb.out: ../Rsb.in xeigtstR__Float128$(EXEEXT)
 	echo "DSB: Testing Symmetric Eigenvalue Problem routines [$(FLOAT128_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT128_LABEL) ==="; \
-		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float128$(EXEEXT) < ../Rsb.in; \
+		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_binary128$(EXEEXT) < ../Rsb.in; \
 	} > $@ 2>&1
 
-Rsg.out: ../Rsg.in xeigtstR__Float128$(EXEEXT)
+Rsg.out: ../Rsg.in xeigtstR_binary128$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -203,10 +203,10 @@ Rsg.out: ../Rsg.in xeigtstR__Float128$(EXEEXT)
 	echo "DSG: Testing Symmetric Generalized Eigenvalue Problem routines [$(FLOAT128_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT128_LABEL) ==="; \
-		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float128$(EXEEXT) < ../Rsg.in; \
+		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_binary128$(EXEEXT) < ../Rsg.in; \
 	} > $@ 2>&1
 
-Rbal.out: ../Rbal.in xeigtstR__Float128$(EXEEXT)
+Rbal.out: ../Rbal.in xeigtstR_binary128$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -214,10 +214,10 @@ Rbal.out: ../Rbal.in xeigtstR__Float128$(EXEEXT)
 	echo "Rgebal: Testing the balancing of a general matrix [$(FLOAT128_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT128_LABEL) ==="; \
-		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float128$(EXEEXT) < ../Rbal.in; \
+		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_binary128$(EXEEXT) < ../Rbal.in; \
 	} > $@ 2>&1
 
-Rbak.out: ../Rbak.in xeigtstR__Float128$(EXEEXT)
+Rbak.out: ../Rbak.in xeigtstR_binary128$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -225,10 +225,10 @@ Rbak.out: ../Rbak.in xeigtstR__Float128$(EXEEXT)
 	echo "Rgebak: Testing the back transformation of balanced matrix [$(FLOAT128_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT128_LABEL) ==="; \
-		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float128$(EXEEXT) < ../Rbak.in; \
+		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_binary128$(EXEEXT) < ../Rbak.in; \
 	} > $@ 2>&1
 
-Rgbal.out: ../Rgbal.in xeigtstR__Float128$(EXEEXT)
+Rgbal.out: ../Rgbal.in xeigtstR_binary128$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -236,10 +236,10 @@ Rgbal.out: ../Rgbal.in xeigtstR__Float128$(EXEEXT)
 	echo "Rggbal: Testing the balancing of a pair of general matrices [$(FLOAT128_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT128_LABEL) ==="; \
-		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float128$(EXEEXT) < ../Rgbal.in; \
+		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_binary128$(EXEEXT) < ../Rgbal.in; \
 	} > $@ 2>&1
 
-Rgbak.out: ../Rgbak.in xeigtstR__Float128$(EXEEXT)
+Rgbak.out: ../Rgbak.in xeigtstR_binary128$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -247,10 +247,10 @@ Rgbak.out: ../Rgbak.in xeigtstR__Float128$(EXEEXT)
 	echo "Rggbak: Testing the back transformation of a pair of balanced matrices [$(FLOAT128_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT128_LABEL) ==="; \
-		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float128$(EXEEXT) < ../Rgbak.in; \
+		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_binary128$(EXEEXT) < ../Rgbak.in; \
 	} > $@ 2>&1
 
-Rbb.out: ../Rbb.in xeigtstR__Float128$(EXEEXT)
+Rbb.out: ../Rbb.in xeigtstR_binary128$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -258,10 +258,10 @@ Rbb.out: ../Rbb.in xeigtstR__Float128$(EXEEXT)
 	echo "DBB: Testing banded Singular Value Decomposition routines [$(FLOAT128_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT128_LABEL) ==="; \
-		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float128$(EXEEXT) < ../Rbb.in; \
+		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_binary128$(EXEEXT) < ../Rbb.in; \
 	} > $@ 2>&1
 
-Rglm.out: ../glm.in xeigtstR__Float128$(EXEEXT)
+Rglm.out: ../glm.in xeigtstR_binary128$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -269,10 +269,10 @@ Rglm.out: ../glm.in xeigtstR__Float128$(EXEEXT)
 	echo "GLM: Testing Generalized Linear Regression Model routines [$(FLOAT128_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT128_LABEL) ==="; \
-		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float128$(EXEEXT) < ../glm.in; \
+		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_binary128$(EXEEXT) < ../glm.in; \
 	} > $@ 2>&1
 
-Rgqr.out: ../gqr.in xeigtstR__Float128$(EXEEXT)
+Rgqr.out: ../gqr.in xeigtstR_binary128$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -280,10 +280,10 @@ Rgqr.out: ../gqr.in xeigtstR__Float128$(EXEEXT)
 	echo "GQR: Testing Generalized QR and RQ factorization routines [$(FLOAT128_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT128_LABEL) ==="; \
-		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float128$(EXEEXT) < ../gqr.in; \
+		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_binary128$(EXEEXT) < ../gqr.in; \
 	} > $@ 2>&1
 
-Rgsv.out: ../gsv.in xeigtstR__Float128$(EXEEXT)
+Rgsv.out: ../gsv.in xeigtstR_binary128$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -291,10 +291,10 @@ Rgsv.out: ../gsv.in xeigtstR__Float128$(EXEEXT)
 	echo "GSV: Testing Generalized Singular Value Decomposition routines [$(FLOAT128_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT128_LABEL) ==="; \
-		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float128$(EXEEXT) < ../gsv.in; \
+		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_binary128$(EXEEXT) < ../gsv.in; \
 	} > $@ 2>&1
 
-Rcsd.out: ../csd.in xeigtstR__Float128$(EXEEXT)
+Rcsd.out: ../csd.in xeigtstR_binary128$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -302,10 +302,10 @@ Rcsd.out: ../csd.in xeigtstR__Float128$(EXEEXT)
 	echo "CSD: Testing CS Decomposition routines [$(FLOAT128_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT128_LABEL) ==="; \
-		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float128$(EXEEXT) < ../csd.in; \
+		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_binary128$(EXEEXT) < ../csd.in; \
 	} > $@ 2>&1
 
-Rlse.out: ../lse.in xeigtstR__Float128$(EXEEXT)
+Rlse.out: ../lse.in xeigtstR_binary128$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -313,10 +313,10 @@ Rlse.out: ../lse.in xeigtstR__Float128$(EXEEXT)
 	echo "LSE: Testing Constrained Linear Least Squares routines [$(FLOAT128_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT128_LABEL) ==="; \
-		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float128$(EXEEXT) < ../lse.in; \
+		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_binary128$(EXEEXT) < ../lse.in; \
 	} > $@ 2>&1
 
-Cnep.out: ../nep.in xeigtstC__Float128$(EXEEXT)
+Cnep.out: ../nep.in xeigtstC_binary128$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -324,10 +324,10 @@ Cnep.out: ../nep.in xeigtstC__Float128$(EXEEXT)
 	echo "NEP: Testing Nonsymmetric Eigenvalue Problem routines [$(FLOAT128_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT128_LABEL) ==="; \
-		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float128$(EXEEXT) < ../nep.in; \
+		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_binary128$(EXEEXT) < ../nep.in; \
 	} > $@ 2>&1
 
-Csep.out: ../sep.in xeigtstC__Float128$(EXEEXT)
+Csep.out: ../sep.in xeigtstC_binary128$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -335,10 +335,10 @@ Csep.out: ../sep.in xeigtstC__Float128$(EXEEXT)
 	echo "SEP: Testing Symmetric Eigenvalue Problem routines [$(FLOAT128_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT128_LABEL) ==="; \
-		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float128$(EXEEXT) < ../sep.in; \
+		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_binary128$(EXEEXT) < ../sep.in; \
 	} > $@ 2>&1
 
-Cse2.out: ../se2.in xeigtstC__Float128$(EXEEXT)
+Cse2.out: ../se2.in xeigtstC_binary128$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -346,10 +346,10 @@ Cse2.out: ../se2.in xeigtstC__Float128$(EXEEXT)
 	echo "SEP: Testing Symmetric Eigenvalue Problem routines [$(FLOAT128_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT128_LABEL) ==="; \
-		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float128$(EXEEXT) < ../se2.in; \
+		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_binary128$(EXEEXT) < ../se2.in; \
 	} > $@ 2>&1
 
-Csvd.out: ../svd.in xeigtstC__Float128$(EXEEXT)
+Csvd.out: ../svd.in xeigtstC_binary128$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -357,10 +357,10 @@ Csvd.out: ../svd.in xeigtstC__Float128$(EXEEXT)
 	echo "SVD: Testing Singular Value Decomposition routines [$(FLOAT128_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT128_LABEL) ==="; \
-		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float128$(EXEEXT) < ../svd.in; \
+		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_binary128$(EXEEXT) < ../svd.in; \
 	} > $@ 2>&1
 
-Cec.out: ../Cec.in xeigtstC__Float128$(EXEEXT)
+Cec.out: ../Cec.in xeigtstC_binary128$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -368,10 +368,10 @@ Cec.out: ../Cec.in xeigtstC__Float128$(EXEEXT)
 	echo "CEC: Testing COMPLEX Eigen Condition Routines [$(FLOAT128_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT128_LABEL) ==="; \
-		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float128$(EXEEXT) < ../Cec.in; \
+		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_binary128$(EXEEXT) < ../Cec.in; \
 	} > $@ 2>&1
 
-Ced.out: ../Ced.in xeigtstC__Float128$(EXEEXT)
+Ced.out: ../Ced.in xeigtstC_binary128$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -379,10 +379,10 @@ Ced.out: ../Ced.in xeigtstC__Float128$(EXEEXT)
 	echo "CES: Testing COMPLEX Nonsymmetric Schur Form Driver [$(FLOAT128_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT128_LABEL) ==="; \
-		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float128$(EXEEXT) < ../Ced.in; \
+		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_binary128$(EXEEXT) < ../Ced.in; \
 	} > $@ 2>&1
 
-Cgg.out: ../Cgg.in xeigtstC__Float128$(EXEEXT)
+Cgg.out: ../Cgg.in xeigtstC_binary128$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -390,10 +390,10 @@ Cgg.out: ../Cgg.in xeigtstC__Float128$(EXEEXT)
 	echo "CGG: Testing COMPLEX Nonsymmetric Generalized Eigenvalue Problem routines [$(FLOAT128_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT128_LABEL) ==="; \
-		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float128$(EXEEXT) < ../Cgg.in; \
+		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_binary128$(EXEEXT) < ../Cgg.in; \
 	} > $@ 2>&1
 
-Cgd.out: ../Cgd.in xeigtstC__Float128$(EXEEXT)
+Cgd.out: ../Cgd.in xeigtstC_binary128$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -401,10 +401,10 @@ Cgd.out: ../Cgd.in xeigtstC__Float128$(EXEEXT)
 	echo "CGD: Testing COMPLEX Nonsymmetric Generalized Eigenvalue Problem driver routines [$(FLOAT128_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT128_LABEL) ==="; \
-		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float128$(EXEEXT) < ../Cgd.in; \
+		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_binary128$(EXEEXT) < ../Cgd.in; \
 	} > $@ 2>&1
 
-Csb.out: ../Csb.in xeigtstC__Float128$(EXEEXT)
+Csb.out: ../Csb.in xeigtstC_binary128$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -412,10 +412,10 @@ Csb.out: ../Csb.in xeigtstC__Float128$(EXEEXT)
 	echo "CHB: Testing Hermitian Eigenvalue Problem routines [$(FLOAT128_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT128_LABEL) ==="; \
-		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float128$(EXEEXT) < ../Csb.in; \
+		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_binary128$(EXEEXT) < ../Csb.in; \
 	} > $@ 2>&1
 
-Csg.out: ../Csg.in xeigtstC__Float128$(EXEEXT)
+Csg.out: ../Csg.in xeigtstC_binary128$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -423,10 +423,10 @@ Csg.out: ../Csg.in xeigtstC__Float128$(EXEEXT)
 	echo "CSG: Testing Symmetric Generalized Eigenvalue Problem routines [$(FLOAT128_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT128_LABEL) ==="; \
-		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float128$(EXEEXT) < ../Csg.in; \
+		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_binary128$(EXEEXT) < ../Csg.in; \
 	} > $@ 2>&1
 
-Cbal.out: ../Cbal.in xeigtstC__Float128$(EXEEXT)
+Cbal.out: ../Cbal.in xeigtstC_binary128$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -434,10 +434,10 @@ Cbal.out: ../Cbal.in xeigtstC__Float128$(EXEEXT)
 	echo "CGEBAL: Testing the balancing of a COMPLEX general matrix [$(FLOAT128_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT128_LABEL) ==="; \
-		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float128$(EXEEXT) < ../Cbal.in; \
+		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_binary128$(EXEEXT) < ../Cbal.in; \
 	} > $@ 2>&1
 
-Cbak.out: ../Cbak.in xeigtstC__Float128$(EXEEXT)
+Cbak.out: ../Cbak.in xeigtstC_binary128$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -445,10 +445,10 @@ Cbak.out: ../Cbak.in xeigtstC__Float128$(EXEEXT)
 	echo "CGEBAK: Testing the back transformation of a COMPLEX balanced matrix [$(FLOAT128_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT128_LABEL) ==="; \
-		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float128$(EXEEXT) < ../Cbak.in; \
+		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_binary128$(EXEEXT) < ../Cbak.in; \
 	} > $@ 2>&1
 
-Cgbal.out: ../Cgbal.in xeigtstC__Float128$(EXEEXT)
+Cgbal.out: ../Cgbal.in xeigtstC_binary128$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -456,10 +456,10 @@ Cgbal.out: ../Cgbal.in xeigtstC__Float128$(EXEEXT)
 	echo "CGGBAL: Testing the balancing of a pair of COMPLEX general matrices [$(FLOAT128_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT128_LABEL) ==="; \
-		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float128$(EXEEXT) < ../Cgbal.in; \
+		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_binary128$(EXEEXT) < ../Cgbal.in; \
 	} > $@ 2>&1
 
-Cgbak.out: ../Cgbak.in xeigtstC__Float128$(EXEEXT)
+Cgbak.out: ../Cgbak.in xeigtstC_binary128$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -467,10 +467,10 @@ Cgbak.out: ../Cgbak.in xeigtstC__Float128$(EXEEXT)
 	echo "CGGBAK: Testing the back transformation of a pair of COMPLEX balanced matrices [$(FLOAT128_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT128_LABEL) ==="; \
-		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float128$(EXEEXT) < ../Cgbak.in; \
+		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_binary128$(EXEEXT) < ../Cgbak.in; \
 	} > $@ 2>&1
 
-Cbb.out: ../Cbb.in xeigtstC__Float128$(EXEEXT)
+Cbb.out: ../Cbb.in xeigtstC_binary128$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -478,10 +478,10 @@ Cbb.out: ../Cbb.in xeigtstC__Float128$(EXEEXT)
 	echo "CBB: Testing banded Singular Value Decomposition routines [$(FLOAT128_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT128_LABEL) ==="; \
-		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float128$(EXEEXT) < ../Cbb.in; \
+		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_binary128$(EXEEXT) < ../Cbb.in; \
 	} > $@ 2>&1
 
-Cglm.out: ../glm.in xeigtstC__Float128$(EXEEXT)
+Cglm.out: ../glm.in xeigtstC_binary128$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -489,10 +489,10 @@ Cglm.out: ../glm.in xeigtstC__Float128$(EXEEXT)
 	echo "GLM: Testing Generalized Linear Regression Model routines [$(FLOAT128_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT128_LABEL) ==="; \
-		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float128$(EXEEXT) < ../glm.in; \
+		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_binary128$(EXEEXT) < ../glm.in; \
 	} > $@ 2>&1
 
-Cgqr.out: ../gqr.in xeigtstC__Float128$(EXEEXT)
+Cgqr.out: ../gqr.in xeigtstC_binary128$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -500,10 +500,10 @@ Cgqr.out: ../gqr.in xeigtstC__Float128$(EXEEXT)
 	echo "GQR: Testing Generalized QR and RQ factorization routines [$(FLOAT128_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT128_LABEL) ==="; \
-		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float128$(EXEEXT) < ../gqr.in; \
+		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_binary128$(EXEEXT) < ../gqr.in; \
 	} > $@ 2>&1
 
-Cgsv.out: ../gsv.in xeigtstC__Float128$(EXEEXT)
+Cgsv.out: ../gsv.in xeigtstC_binary128$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -511,10 +511,10 @@ Cgsv.out: ../gsv.in xeigtstC__Float128$(EXEEXT)
 	echo "GSV: Testing Generalized Singular Value Decomposition routines [$(FLOAT128_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT128_LABEL) ==="; \
-		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float128$(EXEEXT) < ../gsv.in; \
+		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_binary128$(EXEEXT) < ../gsv.in; \
 	} > $@ 2>&1
 
-Ccsd.out: ../csd.in xeigtstC__Float128$(EXEEXT)
+Ccsd.out: ../csd.in xeigtstC_binary128$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -522,10 +522,10 @@ Ccsd.out: ../csd.in xeigtstC__Float128$(EXEEXT)
 	echo "CSD: Testing CS Decomposition routines [$(FLOAT128_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT128_LABEL) ==="; \
-		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float128$(EXEEXT) < ../csd.in; \
+		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_binary128$(EXEEXT) < ../csd.in; \
 	} > $@ 2>&1
 
-Clse.out: ../lse.in xeigtstC__Float128$(EXEEXT)
+Clse.out: ../lse.in xeigtstC_binary128$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -533,5 +533,5 @@ Clse.out: ../lse.in xeigtstC__Float128$(EXEEXT)
 	echo "LSE: Testing Constrained Linear Least Squares routines [$(FLOAT128_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT128_LABEL) ==="; \
-		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float128$(EXEEXT) < ../lse.in; \
+		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_binary128$(EXEEXT) < ../lse.in; \
 	} > $@ 2>&1

@@ -1614,10 +1614,10 @@ void Rlamch_double_test() {
 
 #endif // ___MPLAPACK_BUILD_WITH_DOUBLE___
 
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
+#if defined ___MPLAPACK_BUILD_WITH_BINARY128___
 #include <cfenv> // std::fegetround, FE_TONEAREST
 
-void Rlamch__Float128_test() {
+void Rlamch_binary128_test() {
 #if defined VERBOSE_TEST
     const bool print_values = true;
 #else
@@ -1627,7 +1627,7 @@ void Rlamch__Float128_test() {
     const char *tag = "binary128";
 
     auto fail = [&](const char *what) {
-        printf("*** Testing Mutils (_Float128) failed: %s ***\n", what);
+        printf("*** Testing Mutils (binary128) failed: %s ***\n", what);
         exit(1);
     };
 
@@ -1639,11 +1639,11 @@ void Rlamch__Float128_test() {
         fail(buf);
     };
 
-    auto assert_equal = [&](const char *name, _Float128 got, _Float128 expected) {
+    auto assert_equal = [&](const char *name, mplapack_binary128_t got, mplapack_binary128_t expected) {
         if (got == expected)
             return;
 
-        printf("*** Testing Mutils (_Float128) failed: %s mismatch in %s ***\n", tag, name);
+        printf("*** Testing Mutils (binary128) failed: %s mismatch in %s ***\n", tag, name);
         printf("    got      = ");
         printnum(got);
         printf("\n");
@@ -1653,12 +1653,12 @@ void Rlamch__Float128_test() {
         exit(1);
     };
 
-    const _Float128 zero = (_Float128)0.0;
-    const _Float128 one = (_Float128)1.0;
-    const _Float128 two = (_Float128)2.0;
+    const mplapack_binary128_t zero = (mplapack_binary128_t)0.0;
+    const mplapack_binary128_t one = (mplapack_binary128_t)1.0;
+    const mplapack_binary128_t two = (mplapack_binary128_t)2.0;
 
 // Expected values for IEEE-754 binary128 based on compiler-provided parameters.
-// When _Float128 is actually long double (binary128), use __LDBL_* macros.
+// When binary128 is actually long double (binary128), use __LDBL_* macros.
 #if defined(__FLT128_MANT_DIG__)
     const int p = (int)__FLT128_MANT_DIG__;
     const int emin = (int)__FLT128_MIN_EXP__;
@@ -1672,39 +1672,39 @@ void Rlamch__Float128_test() {
 #error "Cannot determine binary128 parameters: neither __FLT128_* nor binary128 long double available"
 #endif
 
-    const _Float128 exB = two;
-    const _Float128 exN = (_Float128)p;
+    const mplapack_binary128_t exB = two;
+    const mplapack_binary128_t exN = (mplapack_binary128_t)p;
 
     // ulp(1) = 2^(1-p), unit roundoff E = ulp(1)/2.
-    const _Float128 exP = ldexp(one, 1 - p);
-    const _Float128 exE = exP / two;
+    const mplapack_binary128_t exP = ldexp(one, 1 - p);
+    const mplapack_binary128_t exE = exP / two;
 
     // DLAMCH-style exponents: rmin = 2^(emin-1), rmax = (1-E)*2^emax.
-    const _Float128 exM = (_Float128)emin;
-    const _Float128 exL = (_Float128)emax;
-    const _Float128 exU = ldexp(one, emin - 1);
-    const _Float128 exO = ldexp(one - ldexp(one, -p), emax);
+    const mplapack_binary128_t exM = (mplapack_binary128_t)emin;
+    const mplapack_binary128_t exL = (mplapack_binary128_t)emax;
+    const mplapack_binary128_t exU = ldexp(one, emin - 1);
+    const mplapack_binary128_t exO = ldexp(one - ldexp(one, -p), emax);
 
     // Safe minimum: max(rmin, (1/rmax)*(1+E)).
-    const _Float128 small = one / exO;
-    const _Float128 candidate = small * (one + exE);
-    const _Float128 exS = (candidate >= exU) ? candidate : exU;
+    const mplapack_binary128_t small = one / exO;
+    const mplapack_binary128_t candidate = small * (one + exE);
+    const mplapack_binary128_t exS = (candidate >= exU) ? candidate : exU;
 
-    const _Float128 exR = one;
-    const _Float128 exZ = zero;
+    const mplapack_binary128_t exR = one;
+    const mplapack_binary128_t exZ = zero;
 
-    // Fetch actual values from Rlamch__Float128.
-    const _Float128 gotE = Rlamch__Float128("E");
-    const _Float128 gotS = Rlamch__Float128("S");
-    const _Float128 gotB = Rlamch__Float128("B");
-    const _Float128 gotP = Rlamch__Float128("P");
-    const _Float128 gotN = Rlamch__Float128("N");
-    const _Float128 gotR = Rlamch__Float128("R");
-    const _Float128 gotM = Rlamch__Float128("M");
-    const _Float128 gotU = Rlamch__Float128("U");
-    const _Float128 gotL = Rlamch__Float128("L");
-    const _Float128 gotO = Rlamch__Float128("O");
-    const _Float128 gotZ = Rlamch__Float128("Z");
+    // Fetch actual values from Rlamch_mplapack_binary128_t.
+    const mplapack_binary128_t gotE = Rlamch_mplapack_binary128_t("E");
+    const mplapack_binary128_t gotS = Rlamch_mplapack_binary128_t("S");
+    const mplapack_binary128_t gotB = Rlamch_mplapack_binary128_t("B");
+    const mplapack_binary128_t gotP = Rlamch_mplapack_binary128_t("P");
+    const mplapack_binary128_t gotN = Rlamch_mplapack_binary128_t("N");
+    const mplapack_binary128_t gotR = Rlamch_mplapack_binary128_t("R");
+    const mplapack_binary128_t gotM = Rlamch_mplapack_binary128_t("M");
+    const mplapack_binary128_t gotU = Rlamch_mplapack_binary128_t("U");
+    const mplapack_binary128_t gotL = Rlamch_mplapack_binary128_t("L");
+    const mplapack_binary128_t gotO = Rlamch_mplapack_binary128_t("O");
+    const mplapack_binary128_t gotZ = Rlamch_mplapack_binary128_t("Z");
 
     // Exact-value checks.
     assert_equal("E", gotE, exE);
@@ -1720,18 +1720,18 @@ void Rlamch__Float128_test() {
     assert_case(gotZ == exZ, "Z (dummy) is not 0");
 
     // Operational property checks.
-    const _Float128 next = nextafter(one, two);
+    const mplapack_binary128_t next = nextafter(one, two);
     assert_case((next - one) == gotP, "P is not equal to ulp(1) = nextafter(1,2)-1");
     assert_case((gotE * two) == gotP, "expected P == 2*E");
 
     // Strong, rounding-mode-independent check for 1 + P
-    volatile _Float128 b = one + gotP;
+    volatile mplapack_binary128_t b = one + gotP;
     assert_case(b == next, "expected fl(1 + P) == nextafter(1,2)");
     assert_case(b > one, "expected fl(1 + 2E) > 1"); // this is effectivly covered by b==next.
 
     // Tie check: only assert when FE_TONEAREST
     if (std::fegetround() == FE_TONEAREST) {
-        volatile _Float128 a = one + gotE;
+        volatile mplapack_binary128_t a = one + gotE;
         assert_case(a == one, "expected fl(1 + E) == 1 under ties-to-even");
     }
 
@@ -1749,8 +1749,8 @@ void Rlamch__Float128_test() {
     assert_case(gotS >= (one / gotO), "S < 1/O (violates sfmin >= 1/rmax)");
 
     // Cross-check: U*O == (1-E)*2^(emin+emax-1).
-    const _Float128 got_prod = gotU * gotO;
-    const _Float128 expected_prod = ldexp(one - gotE, emin + emax - 1);
+    const mplapack_binary128_t got_prod = gotU * gotO;
+    const mplapack_binary128_t expected_prod = ldexp(one - gotE, emin + emax - 1);
     assert_case(got_prod == expected_prod, "U*O cross-check failed (inconsistent rmin/rmax model)");
 
     if (print_values) {
@@ -1788,10 +1788,10 @@ void Rlamch__Float128_test() {
 }
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
+#if defined ___MPLAPACK_BUILD_WITH_BINARY80___
 #include <cfenv> // std::fegetround, FE_TONEAREST
 
-void Rlamch__Float64x_test() {
+void Rlamch_mplapack_binary80_t_test() {
 #if defined VERBOSE_TEST
     const bool print_values = true;
 #else
@@ -1801,7 +1801,7 @@ void Rlamch__Float64x_test() {
     const char *tag = "Float64x";
 
     auto fail = [&](const char *what) {
-        printf("*** Testing Mutils (_Float64x) failed: %s ***\n", what);
+        printf("*** Testing Mutils (mplapack_binary80_t) failed: %s ***\n", what);
         exit(1);
     };
 
@@ -1813,11 +1813,11 @@ void Rlamch__Float64x_test() {
         fail(buf);
     };
 
-    auto assert_equal = [&](const char *name, _Float64x got, _Float64x expected) {
+    auto assert_equal = [&](const char *name, mplapack_binary80_t got, mplapack_binary80_t expected) {
         if (got == expected)
             return;
 
-        printf("*** Testing Mutils (_Float64x) failed: %s mismatch in %s ***\n", tag, name);
+        printf("*** Testing Mutils (mplapack_binary80_t) failed: %s mismatch in %s ***\n", tag, name);
         printf("    got      = ");
         printnum(got);
         printf("\n");
@@ -1827,65 +1827,65 @@ void Rlamch__Float64x_test() {
         exit(1);
     };
 
-    const _Float64x zero = (_Float64x)0.0;
-    const _Float64x one = (_Float64x)1.0;
-    const _Float64x two = (_Float64x)2.0;
+    const mplapack_binary80_t zero = (mplapack_binary80_t)0.0;
+    const mplapack_binary80_t one = (mplapack_binary80_t)1.0;
+    const mplapack_binary80_t two = (mplapack_binary80_t)2.0;
 
-    // Expected values for _Float64x based on compiler-provided parameters.
+    // Expected values for mplapack_binary80_t based on compiler-provided parameters.
     const int p = (int)__FLT64X_MANT_DIG__;
     const int emin = (int)__FLT64X_MIN_EXP__;
     const int emax = (int)__FLT64X_MAX_EXP__;
 
-    const _Float64x exB = two;
-    const _Float64x exN = (_Float64x)p;
+    const mplapack_binary80_t exB = two;
+    const mplapack_binary80_t exN = (mplapack_binary80_t)p;
 
     // ulp(1) = 2^(1-p), unit roundoff E = ulp(1)/2.
-    _Float64x exP = one;
+    mplapack_binary80_t exP = one;
     for (int i = 0; i < p - 1; ++i) {
         exP /= two;
     }
-    const _Float64x exE = exP / two;
+    const mplapack_binary80_t exE = exP / two;
 
     // rmin = 2^(emin-1)
-    _Float64x exU = one;
+    mplapack_binary80_t exU = one;
     // emin is negative for IEEE binary formats.
     for (int i = 0; i < (-emin + 1); ++i) {
         exU /= two;
     }
 
     // rmax = (1 - 2^(-p)) * 2^emax  (computed without overflowing intermediates)
-    _Float64x two_to_minus_p = one;
+    mplapack_binary80_t two_to_minus_p = one;
     for (int i = 0; i < p; ++i) {
         two_to_minus_p /= two;
     }
-    _Float64x exO = one - two_to_minus_p;
+    mplapack_binary80_t exO = one - two_to_minus_p;
     for (int i = 0; i < emax; ++i) {
         exO *= two;
     }
 
-    const _Float64x exM = (_Float64x)emin;
-    const _Float64x exL = (_Float64x)emax;
+    const mplapack_binary80_t exM = (mplapack_binary80_t)emin;
+    const mplapack_binary80_t exL = (mplapack_binary80_t)emax;
 
     // Safe minimum: max(rmin, (1/rmax)*(1+E)).
-    const _Float64x small = one / exO;
-    const _Float64x candidate = small * (one + exE);
-    const _Float64x exS = (candidate >= exU) ? candidate : exU;
+    const mplapack_binary80_t small = one / exO;
+    const mplapack_binary80_t candidate = small * (one + exE);
+    const mplapack_binary80_t exS = (candidate >= exU) ? candidate : exU;
 
-    const _Float64x exR = one;
-    const _Float64x exZ = zero;
+    const mplapack_binary80_t exR = one;
+    const mplapack_binary80_t exZ = zero;
 
-    // Fetch actual values from Rlamch__Float64x.
-    const _Float64x gotE = Rlamch__Float64x("E");
-    const _Float64x gotS = Rlamch__Float64x("S");
-    const _Float64x gotB = Rlamch__Float64x("B");
-    const _Float64x gotP = Rlamch__Float64x("P");
-    const _Float64x gotN = Rlamch__Float64x("N");
-    const _Float64x gotR = Rlamch__Float64x("R");
-    const _Float64x gotM = Rlamch__Float64x("M");
-    const _Float64x gotU = Rlamch__Float64x("U");
-    const _Float64x gotL = Rlamch__Float64x("L");
-    const _Float64x gotO = Rlamch__Float64x("O");
-    const _Float64x gotZ = Rlamch__Float64x("Z");
+    // Fetch actual values from Rlamch_mplapack_binary80_t.
+    const mplapack_binary80_t gotE = Rlamch_mplapack_binary80_t("E");
+    const mplapack_binary80_t gotS = Rlamch_mplapack_binary80_t("S");
+    const mplapack_binary80_t gotB = Rlamch_mplapack_binary80_t("B");
+    const mplapack_binary80_t gotP = Rlamch_mplapack_binary80_t("P");
+    const mplapack_binary80_t gotN = Rlamch_mplapack_binary80_t("N");
+    const mplapack_binary80_t gotR = Rlamch_mplapack_binary80_t("R");
+    const mplapack_binary80_t gotM = Rlamch_mplapack_binary80_t("M");
+    const mplapack_binary80_t gotU = Rlamch_mplapack_binary80_t("U");
+    const mplapack_binary80_t gotL = Rlamch_mplapack_binary80_t("L");
+    const mplapack_binary80_t gotO = Rlamch_mplapack_binary80_t("O");
+    const mplapack_binary80_t gotZ = Rlamch_mplapack_binary80_t("Z");
 
     // Exact-value checks.
     assert_equal("E", gotE, exE);
@@ -1900,9 +1900,9 @@ void Rlamch__Float64x_test() {
     assert_equal("S", gotS, exS);
     assert_case(gotZ == exZ, "Z (dummy) is not 0");
 
-    // Operational property checks (_Float64x)
-    const _Float64x next = nextafterf64x(one, two);
-    // const _Float64x next = (_Float64x)nextafterl((long double)one, (long double)two);
+    // Operational property checks (mplapack_binary80_t)
+    const mplapack_binary80_t next = nextafterf64x(one, two);
+    // const mplapack_binary80_t next = (mplapack_binary80_t)nextafterl((long double)one, (long double)two);
 
     // P == ulp(1) == nextafter(1,2) - 1
     assert_case((next - one) == gotP, "P is not equal to ulp(1) = nextafterf64x(1,2)-1");
@@ -1911,13 +1911,13 @@ void Rlamch__Float64x_test() {
     assert_case((gotE * two) == gotP, "expected P == 2*E");
 
     // Strong, rounding-mode-independent check: fl(1 + P) == nextafter(1,2)
-    volatile _Float64x b = one + gotP;
+    volatile mplapack_binary80_t b = one + gotP;
     assert_case(b == next, "expected fl(1 + P) == nextafterf64x(1,2)");
     assert_case(b > one, "expected fl(1 + 2E) > 1");
 
     // Tie check: only assert under round-to-nearest (ties-to-even)
     if (std::fegetround() == FE_TONEAREST) {
-        volatile _Float64x a = one + gotE; // 1 + ulp/2 (midpoint)
+        volatile mplapack_binary80_t a = one + gotE; // 1 + ulp/2 (midpoint)
         assert_case(a == one, "expected fl(1 + E) == 1 under FE_TONEAREST (ties-to-even)");
     }
     // Range and reciprocal sanity checks.
@@ -1936,7 +1936,7 @@ void Rlamch__Float64x_test() {
     // Cross-check: U*O == (1-E)*2^(emin+emax-1).
     const int exp_sum = emin + emax - 1;
     if (exp_sum >= -128 && exp_sum <= 128) {
-        _Float64x pow2 = one;
+        mplapack_binary80_t pow2 = one;
         if (exp_sum > 0) {
             for (int i = 0; i < exp_sum; ++i)
                 pow2 *= two;
@@ -1944,8 +1944,8 @@ void Rlamch__Float64x_test() {
             for (int i = 0; i < -exp_sum; ++i)
                 pow2 /= two;
         }
-        const _Float64x got_prod = gotU * gotO;
-        const _Float64x expected_prod = (one - exE) * pow2;
+        const mplapack_binary80_t got_prod = gotU * gotO;
+        const mplapack_binary80_t expected_prod = (one - exE) * pow2;
         assert_case(got_prod == expected_prod, "U*O cross-check failed (inconsistent rmin/rmax model)");
     }
 
@@ -2001,11 +2001,11 @@ int main(int argc, char *argv[]) {
 #if defined ___MPLAPACK_BUILD_WITH_DOUBLE___
     Rlamch_double_test();
 #endif
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
-    Rlamch__Float64x_test();
+#if defined ___MPLAPACK_BUILD_WITH_BINARY80___
+    Rlamch_mplapack_binary80_t_test();
 #endif
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
-    Rlamch__Float128_test();
+#if defined ___MPLAPACK_BUILD_WITH_BINARY128___
+    Rlamch_mplapack_binary128_t_test();
 #endif
     printf("*** Testing Rlamch successful ***\n");
     return (0);

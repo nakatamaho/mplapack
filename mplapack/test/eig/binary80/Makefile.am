@@ -1,18 +1,18 @@
 check_PROGRAMS = $(mplapack__Float64x_test_PROGRAMS)
 
-mplapack__Float64x_test_PROGRAMS = xeigtstR__Float64x xeigtstC__Float64x
+mplapack__Float64x_test_PROGRAMS = xeigtstR_binary80 xeigtstC_binary80
 mplapack__Float64x_testdir = $(prefix)/lib/$(target)/mplapack/test/eig
 
-$(check_PROGRAMS): ../libeig__Float64x.la ../libeig_override__Float64x.la
+$(check_PROGRAMS): ../libeig_binary80.la ../libeig_override_binary80.la
 
 if IS_MINGW
-libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/eig/.libs/libeig__Float64x.a,$(top_builddir)/mplapack/test/eig/.libs/libeig_override__Float64x.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen__Float64x.a,$(top_builddir)/mpblas/reference/.libs/libmpblas__Float64x.a,$(top_builddir)/mplapack/reference/.libs/libmplapack__Float64x.a,--no-whole-archive
+libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/eig/.libs/libeig_binary80.a,$(top_builddir)/mplapack/test/eig/.libs/libeig_override_binary80.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_binary80.a,$(top_builddir)/mpblas/reference/.libs/libmpblas_binary80.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_binary80.a,--no-whole-archive
 else
-libdepends = -L$(top_builddir)/mplapack/test/eig -leig__Float64x -leig_override__Float64x -L$(top_builddir)/mplapack/test/matgen -lmatgen__Float64x -L$(top_builddir)/mplapack/reference -lmplapack__Float64x -L$(top_builddir)/mpblas/reference -lmpblas__Float64x
+libdepends = -L$(top_builddir)/mplapack/test/eig -leig_binary80 -leig_override_binary80 -L$(top_builddir)/mplapack/test/matgen -lmatgen_binary80 -L$(top_builddir)/mplapack/reference -lmplapack_binary80 -L$(top_builddir)/mpblas/reference -lmpblas_binary80
 endif
 
 mplibs = -lm
-cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(LAPACK_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH__FLOAT64X___ -D___MPLAPACK_INTERNAL___ -I$(top_srcdir)/fable
+cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(LAPACK_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_BINARY80___ -D___MPLAPACK_INTERNAL___ -I$(top_srcdir)/fable
 
 xeigtstR__Float64x_SOURCES  = ../common/Rchkee.cpp
 xeigtstR__Float64x_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
@@ -92,7 +92,7 @@ clean-local:
 # Test rules (one output per test)
 # -----------------------------------------------------------------------------
 
-Rnep.out: ../nep.in xeigtstR__Float64x$(EXEEXT)
+Rnep.out: ../nep.in xeigtstR_binary80$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -100,10 +100,10 @@ Rnep.out: ../nep.in xeigtstR__Float64x$(EXEEXT)
 	echo "NEP: Testing Nonsymmetric Eigenvalue Problem routines [$(FLOAT64X_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
-		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float64x$(EXEEXT) < ../nep.in; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_binary80$(EXEEXT) < ../nep.in; \
 	} > $@ 2>&1
 
-Rsep.out: ../sep.in xeigtstR__Float64x$(EXEEXT)
+Rsep.out: ../sep.in xeigtstR_binary80$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -111,10 +111,10 @@ Rsep.out: ../sep.in xeigtstR__Float64x$(EXEEXT)
 	echo "SEP: Testing Symmetric Eigenvalue Problem routines [$(FLOAT64X_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
-		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float64x$(EXEEXT) < ../sep.in; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_binary80$(EXEEXT) < ../sep.in; \
 	} > $@ 2>&1
 
-Rse2.out: ../se2.in xeigtstR__Float64x$(EXEEXT)
+Rse2.out: ../se2.in xeigtstR_binary80$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -122,10 +122,10 @@ Rse2.out: ../se2.in xeigtstR__Float64x$(EXEEXT)
 	echo "SEP: Testing Symmetric Eigenvalue Problem routines [$(FLOAT64X_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
-		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float64x$(EXEEXT) < ../se2.in; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_binary80$(EXEEXT) < ../se2.in; \
 	} > $@ 2>&1
 
-Rsvd.out: ../svd.in xeigtstR__Float64x$(EXEEXT)
+Rsvd.out: ../svd.in xeigtstR_binary80$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -133,10 +133,10 @@ Rsvd.out: ../svd.in xeigtstR__Float64x$(EXEEXT)
 	echo "SVD: Testing Singular Value Decomposition routines [$(FLOAT64X_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
-		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float64x$(EXEEXT) < ../svd.in; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_binary80$(EXEEXT) < ../svd.in; \
 	} > $@ 2>&1
 
-Rec.out: ../Rec.in xeigtstR__Float64x$(EXEEXT)
+Rec.out: ../Rec.in xeigtstR_binary80$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -144,10 +144,10 @@ Rec.out: ../Rec.in xeigtstR__Float64x$(EXEEXT)
 	echo "DEC: Testing Eigen Condition Routines [$(FLOAT64X_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
-		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float64x$(EXEEXT) < ../Rec.in; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_binary80$(EXEEXT) < ../Rec.in; \
 	} > $@ 2>&1
 
-Red.out: ../Red.in xeigtstR__Float64x$(EXEEXT)
+Red.out: ../Red.in xeigtstR_binary80$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -155,10 +155,10 @@ Red.out: ../Red.in xeigtstR__Float64x$(EXEEXT)
 	echo "DEV: Testing Nonsymmetric Eigenvalue Driver [$(FLOAT64X_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
-		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float64x$(EXEEXT) < ../Red.in; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_binary80$(EXEEXT) < ../Red.in; \
 	} > $@ 2>&1
 
-Rgg.out: ../Rgg.in xeigtstR__Float64x$(EXEEXT)
+Rgg.out: ../Rgg.in xeigtstR_binary80$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -166,10 +166,10 @@ Rgg.out: ../Rgg.in xeigtstR__Float64x$(EXEEXT)
 	echo "DGG: Testing Nonsymmetric Generalized Eigenvalue Problem routines [$(FLOAT64X_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
-		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float64x$(EXEEXT) < ../Rgg.in; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_binary80$(EXEEXT) < ../Rgg.in; \
 	} > $@ 2>&1
 
-Rgd.out: ../Rgd.in xeigtstR__Float64x$(EXEEXT)
+Rgd.out: ../Rgd.in xeigtstR_binary80$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -177,10 +177,10 @@ Rgd.out: ../Rgd.in xeigtstR__Float64x$(EXEEXT)
 	echo "DGD: Testing Nonsymmetric Generalized Eigenvalue Problem driver routines [$(FLOAT64X_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
-		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float64x$(EXEEXT) < ../Rgd.in; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_binary80$(EXEEXT) < ../Rgd.in; \
 	} > $@ 2>&1
 
-Rsb.out: ../Rsb.in xeigtstR__Float64x$(EXEEXT)
+Rsb.out: ../Rsb.in xeigtstR_binary80$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -188,10 +188,10 @@ Rsb.out: ../Rsb.in xeigtstR__Float64x$(EXEEXT)
 	echo "DSB: Testing Symmetric Eigenvalue Problem routines [$(FLOAT64X_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
-		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float64x$(EXEEXT) < ../Rsb.in; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_binary80$(EXEEXT) < ../Rsb.in; \
 	} > $@ 2>&1
 
-Rsg.out: ../Rsg.in xeigtstR__Float64x$(EXEEXT)
+Rsg.out: ../Rsg.in xeigtstR_binary80$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -199,10 +199,10 @@ Rsg.out: ../Rsg.in xeigtstR__Float64x$(EXEEXT)
 	echo "DSG: Testing Symmetric Generalized Eigenvalue Problem routines [$(FLOAT64X_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
-		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float64x$(EXEEXT) < ../Rsg.in; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_binary80$(EXEEXT) < ../Rsg.in; \
 	} > $@ 2>&1
 
-Rbal.out: ../Rbal.in xeigtstR__Float64x$(EXEEXT)
+Rbal.out: ../Rbal.in xeigtstR_binary80$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -210,10 +210,10 @@ Rbal.out: ../Rbal.in xeigtstR__Float64x$(EXEEXT)
 	echo "Rgebal: Testing the balancing of a general matrix [$(FLOAT64X_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
-		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float64x$(EXEEXT) < ../Rbal.in; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_binary80$(EXEEXT) < ../Rbal.in; \
 	} > $@ 2>&1
 
-Rbak.out: ../Rbak.in xeigtstR__Float64x$(EXEEXT)
+Rbak.out: ../Rbak.in xeigtstR_binary80$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -221,10 +221,10 @@ Rbak.out: ../Rbak.in xeigtstR__Float64x$(EXEEXT)
 	echo "Rgebak: Testing the back transformation of balanced matrix [$(FLOAT64X_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
-		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float64x$(EXEEXT) < ../Rbak.in; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_binary80$(EXEEXT) < ../Rbak.in; \
 	} > $@ 2>&1
 
-Rgbal.out: ../Rgbal.in xeigtstR__Float64x$(EXEEXT)
+Rgbal.out: ../Rgbal.in xeigtstR_binary80$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -232,10 +232,10 @@ Rgbal.out: ../Rgbal.in xeigtstR__Float64x$(EXEEXT)
 	echo "Rggbal: Testing the balancing of a pair of general matrices [$(FLOAT64X_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
-		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float64x$(EXEEXT) < ../Rgbal.in; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_binary80$(EXEEXT) < ../Rgbal.in; \
 	} > $@ 2>&1
 
-Rgbak.out: ../Rgbak.in xeigtstR__Float64x$(EXEEXT)
+Rgbak.out: ../Rgbak.in xeigtstR_binary80$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -243,10 +243,10 @@ Rgbak.out: ../Rgbak.in xeigtstR__Float64x$(EXEEXT)
 	echo "Rggbak: Testing the back transformation of a pair of balanced matrices [$(FLOAT64X_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
-		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float64x$(EXEEXT) < ../Rgbak.in; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_binary80$(EXEEXT) < ../Rgbak.in; \
 	} > $@ 2>&1
 
-Rbb.out: ../Rbb.in xeigtstR__Float64x$(EXEEXT)
+Rbb.out: ../Rbb.in xeigtstR_binary80$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -254,10 +254,10 @@ Rbb.out: ../Rbb.in xeigtstR__Float64x$(EXEEXT)
 	echo "DBB: Testing banded Singular Value Decomposition routines [$(FLOAT64X_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
-		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float64x$(EXEEXT) < ../Rbb.in; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_binary80$(EXEEXT) < ../Rbb.in; \
 	} > $@ 2>&1
 
-Rglm.out: ../glm.in xeigtstR__Float64x$(EXEEXT)
+Rglm.out: ../glm.in xeigtstR_binary80$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -265,10 +265,10 @@ Rglm.out: ../glm.in xeigtstR__Float64x$(EXEEXT)
 	echo "GLM: Testing Generalized Linear Regression Model routines [$(FLOAT64X_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
-		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float64x$(EXEEXT) < ../glm.in; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_binary80$(EXEEXT) < ../glm.in; \
 	} > $@ 2>&1
 
-Rgqr.out: ../gqr.in xeigtstR__Float64x$(EXEEXT)
+Rgqr.out: ../gqr.in xeigtstR_binary80$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -276,10 +276,10 @@ Rgqr.out: ../gqr.in xeigtstR__Float64x$(EXEEXT)
 	echo "GQR: Testing Generalized QR and RQ factorization routines [$(FLOAT64X_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
-		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float64x$(EXEEXT) < ../gqr.in; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_binary80$(EXEEXT) < ../gqr.in; \
 	} > $@ 2>&1
 
-Rgsv.out: ../gsv.in xeigtstR__Float64x$(EXEEXT)
+Rgsv.out: ../gsv.in xeigtstR_binary80$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -287,10 +287,10 @@ Rgsv.out: ../gsv.in xeigtstR__Float64x$(EXEEXT)
 	echo "GSV: Testing Generalized Singular Value Decomposition routines [$(FLOAT64X_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
-		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float64x$(EXEEXT) < ../gsv.in; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_binary80$(EXEEXT) < ../gsv.in; \
 	} > $@ 2>&1
 
-Rcsd.out: ../csd.in xeigtstR__Float64x$(EXEEXT)
+Rcsd.out: ../csd.in xeigtstR_binary80$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -298,10 +298,10 @@ Rcsd.out: ../csd.in xeigtstR__Float64x$(EXEEXT)
 	echo "CSD: Testing CS Decomposition routines [$(FLOAT64X_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
-		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float64x$(EXEEXT) < ../csd.in; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_binary80$(EXEEXT) < ../csd.in; \
 	} > $@ 2>&1
 
-Rlse.out: ../lse.in xeigtstR__Float64x$(EXEEXT)
+Rlse.out: ../lse.in xeigtstR_binary80$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -309,10 +309,10 @@ Rlse.out: ../lse.in xeigtstR__Float64x$(EXEEXT)
 	echo "LSE: Testing Constrained Linear Least Squares routines [$(FLOAT64X_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
-		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR__Float64x$(EXEEXT) < ../lse.in; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_binary80$(EXEEXT) < ../lse.in; \
 	} > $@ 2>&1
 
-Cnep.out: ../nep.in xeigtstC__Float64x$(EXEEXT)
+Cnep.out: ../nep.in xeigtstC_binary80$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -320,10 +320,10 @@ Cnep.out: ../nep.in xeigtstC__Float64x$(EXEEXT)
 	echo "NEP: Testing Nonsymmetric Eigenvalue Problem routines [$(FLOAT64X_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
-		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float64x$(EXEEXT) < ../nep.in; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_binary80$(EXEEXT) < ../nep.in; \
 	} > $@ 2>&1
 
-Csep.out: ../sep.in xeigtstC__Float64x$(EXEEXT)
+Csep.out: ../sep.in xeigtstC_binary80$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -331,10 +331,10 @@ Csep.out: ../sep.in xeigtstC__Float64x$(EXEEXT)
 	echo "SEP: Testing Symmetric Eigenvalue Problem routines [$(FLOAT64X_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
-		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float64x$(EXEEXT) < ../sep.in; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_binary80$(EXEEXT) < ../sep.in; \
 	} > $@ 2>&1
 
-Cse2.out: ../se2.in xeigtstC__Float64x$(EXEEXT)
+Cse2.out: ../se2.in xeigtstC_binary80$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -342,10 +342,10 @@ Cse2.out: ../se2.in xeigtstC__Float64x$(EXEEXT)
 	echo "SEP: Testing Symmetric Eigenvalue Problem routines [$(FLOAT64X_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
-		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float64x$(EXEEXT) < ../se2.in; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_binary80$(EXEEXT) < ../se2.in; \
 	} > $@ 2>&1
 
-Csvd.out: ../svd.in xeigtstC__Float64x$(EXEEXT)
+Csvd.out: ../svd.in xeigtstC_binary80$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -353,10 +353,10 @@ Csvd.out: ../svd.in xeigtstC__Float64x$(EXEEXT)
 	echo "SVD: Testing Singular Value Decomposition routines [$(FLOAT64X_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
-		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float64x$(EXEEXT) < ../svd.in; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_binary80$(EXEEXT) < ../svd.in; \
 	} > $@ 2>&1
 
-Cec.out: ../Cec.in xeigtstC__Float64x$(EXEEXT)
+Cec.out: ../Cec.in xeigtstC_binary80$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -364,10 +364,10 @@ Cec.out: ../Cec.in xeigtstC__Float64x$(EXEEXT)
 	echo "CEC: Testing COMPLEX Eigen Condition Routines [$(FLOAT64X_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
-		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float64x$(EXEEXT) < ../Cec.in; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_binary80$(EXEEXT) < ../Cec.in; \
 	} > $@ 2>&1
 
-Ced.out: ../Ced.in xeigtstC__Float64x$(EXEEXT)
+Ced.out: ../Ced.in xeigtstC_binary80$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -375,10 +375,10 @@ Ced.out: ../Ced.in xeigtstC__Float64x$(EXEEXT)
 	echo "CES: Testing COMPLEX Nonsymmetric Schur Form Driver [$(FLOAT64X_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
-		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float64x$(EXEEXT) < ../Ced.in; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_binary80$(EXEEXT) < ../Ced.in; \
 	} > $@ 2>&1
 
-Cgg.out: ../Cgg.in xeigtstC__Float64x$(EXEEXT)
+Cgg.out: ../Cgg.in xeigtstC_binary80$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -386,10 +386,10 @@ Cgg.out: ../Cgg.in xeigtstC__Float64x$(EXEEXT)
 	echo "CGG: Testing COMPLEX Nonsymmetric Generalized Eigenvalue Problem routines [$(FLOAT64X_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
-		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float64x$(EXEEXT) < ../Cgg.in; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_binary80$(EXEEXT) < ../Cgg.in; \
 	} > $@ 2>&1
 
-Cgd.out: ../Cgd.in xeigtstC__Float64x$(EXEEXT)
+Cgd.out: ../Cgd.in xeigtstC_binary80$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -397,10 +397,10 @@ Cgd.out: ../Cgd.in xeigtstC__Float64x$(EXEEXT)
 	echo "CGD: Testing COMPLEX Nonsymmetric Generalized Eigenvalue Problem driver routines [$(FLOAT64X_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
-		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float64x$(EXEEXT) < ../Cgd.in; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_binary80$(EXEEXT) < ../Cgd.in; \
 	} > $@ 2>&1
 
-Csb.out: ../Csb.in xeigtstC__Float64x$(EXEEXT)
+Csb.out: ../Csb.in xeigtstC_binary80$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -408,10 +408,10 @@ Csb.out: ../Csb.in xeigtstC__Float64x$(EXEEXT)
 	echo "CHB: Testing Hermitian Eigenvalue Problem routines [$(FLOAT64X_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
-		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float64x$(EXEEXT) < ../Csb.in; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_binary80$(EXEEXT) < ../Csb.in; \
 	} > $@ 2>&1
 
-Csg.out: ../Csg.in xeigtstC__Float64x$(EXEEXT)
+Csg.out: ../Csg.in xeigtstC_binary80$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -419,10 +419,10 @@ Csg.out: ../Csg.in xeigtstC__Float64x$(EXEEXT)
 	echo "CSG: Testing Symmetric Generalized Eigenvalue Problem routines [$(FLOAT64X_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
-		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float64x$(EXEEXT) < ../Csg.in; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_binary80$(EXEEXT) < ../Csg.in; \
 	} > $@ 2>&1
 
-Cbal.out: ../Cbal.in xeigtstC__Float64x$(EXEEXT)
+Cbal.out: ../Cbal.in xeigtstC_binary80$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -430,10 +430,10 @@ Cbal.out: ../Cbal.in xeigtstC__Float64x$(EXEEXT)
 	echo "CGEBAL: Testing the balancing of a COMPLEX general matrix [$(FLOAT64X_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
-		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float64x$(EXEEXT) < ../Cbal.in; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_binary80$(EXEEXT) < ../Cbal.in; \
 	} > $@ 2>&1
 
-Cbak.out: ../Cbak.in xeigtstC__Float64x$(EXEEXT)
+Cbak.out: ../Cbak.in xeigtstC_binary80$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -441,10 +441,10 @@ Cbak.out: ../Cbak.in xeigtstC__Float64x$(EXEEXT)
 	echo "CGEBAK: Testing the back transformation of a COMPLEX balanced matrix [$(FLOAT64X_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
-		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float64x$(EXEEXT) < ../Cbak.in; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_binary80$(EXEEXT) < ../Cbak.in; \
 	} > $@ 2>&1
 
-Cgbal.out: ../Cgbal.in xeigtstC__Float64x$(EXEEXT)
+Cgbal.out: ../Cgbal.in xeigtstC_binary80$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -452,10 +452,10 @@ Cgbal.out: ../Cgbal.in xeigtstC__Float64x$(EXEEXT)
 	echo "CGGBAL: Testing the balancing of a pair of COMPLEX general matrices [$(FLOAT64X_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
-		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float64x$(EXEEXT) < ../Cgbal.in; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_binary80$(EXEEXT) < ../Cgbal.in; \
 	} > $@ 2>&1
 
-Cgbak.out: ../Cgbak.in xeigtstC__Float64x$(EXEEXT)
+Cgbak.out: ../Cgbak.in xeigtstC_binary80$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -463,10 +463,10 @@ Cgbak.out: ../Cgbak.in xeigtstC__Float64x$(EXEEXT)
 	echo "CGGBAK: Testing the back transformation of a pair of COMPLEX balanced matrices [$(FLOAT64X_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
-		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float64x$(EXEEXT) < ../Cgbak.in; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_binary80$(EXEEXT) < ../Cgbak.in; \
 	} > $@ 2>&1
 
-Cbb.out: ../Cbb.in xeigtstC__Float64x$(EXEEXT)
+Cbb.out: ../Cbb.in xeigtstC_binary80$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -474,10 +474,10 @@ Cbb.out: ../Cbb.in xeigtstC__Float64x$(EXEEXT)
 	echo "CBB: Testing banded Singular Value Decomposition routines [$(FLOAT64X_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
-		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float64x$(EXEEXT) < ../Cbb.in; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_binary80$(EXEEXT) < ../Cbb.in; \
 	} > $@ 2>&1
 
-Cglm.out: ../glm.in xeigtstC__Float64x$(EXEEXT)
+Cglm.out: ../glm.in xeigtstC_binary80$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -485,10 +485,10 @@ Cglm.out: ../glm.in xeigtstC__Float64x$(EXEEXT)
 	echo "GLM: Testing Generalized Linear Regression Model routines [$(FLOAT64X_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
-		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float64x$(EXEEXT) < ../glm.in; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_binary80$(EXEEXT) < ../glm.in; \
 	} > $@ 2>&1
 
-Cgqr.out: ../gqr.in xeigtstC__Float64x$(EXEEXT)
+Cgqr.out: ../gqr.in xeigtstC_binary80$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -496,10 +496,10 @@ Cgqr.out: ../gqr.in xeigtstC__Float64x$(EXEEXT)
 	echo "GQR: Testing Generalized QR and RQ factorization routines [$(FLOAT64X_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
-		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float64x$(EXEEXT) < ../gqr.in; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_binary80$(EXEEXT) < ../gqr.in; \
 	} > $@ 2>&1
 
-Cgsv.out: ../gsv.in xeigtstC__Float64x$(EXEEXT)
+Cgsv.out: ../gsv.in xeigtstC_binary80$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -507,9 +507,9 @@ Cgsv.out: ../gsv.in xeigtstC__Float64x$(EXEEXT)
 	echo "GSV: Testing Generalized Singular Value Decomposition routines [$(FLOAT64X_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
-		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float64x$(EXEEXT) < ../gsv.in; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_binary80$(EXEEXT) < ../gsv.in; \
 	} > $@ 2>&1
-Ccsd.out: ../csd.in xeigtstC__Float64x$(EXEEXT)
+Ccsd.out: ../csd.in xeigtstC_binary80$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -517,10 +517,10 @@ Ccsd.out: ../csd.in xeigtstC__Float64x$(EXEEXT)
 	echo "CSD: Testing CS Decomposition routines [$(FLOAT64X_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
-		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float64x$(EXEEXT) < ../csd.in; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_binary80$(EXEEXT) < ../csd.in; \
 	} > $@ 2>&1
 
-Clse.out: ../lse.in xeigtstC__Float64x$(EXEEXT)
+Clse.out: ../lse.in xeigtstC_binary80$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -528,5 +528,5 @@ Clse.out: ../lse.in xeigtstC__Float64x$(EXEEXT)
 	echo "LSE: Testing Constrained Linear Least Squares routines [$(FLOAT64X_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
-		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC__Float64x$(EXEEXT) < ../lse.in; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_binary80$(EXEEXT) < ../lse.in; \
 	} > $@ 2>&1
