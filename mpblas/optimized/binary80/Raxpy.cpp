@@ -30,14 +30,14 @@
 
 #include <mpblas_binary80.h>
 
-void Raxpy_omp(mplapackint n, _Float64x da, _Float64x * dx, mplapackint incx, _Float64x * dy, mplapackint incy);
-void Raxpy_ref(mplapackint n, _Float64x da, _Float64x * dx, mplapackint incx, _Float64x * dy, mplapackint incy);
+void Raxpy_omp(mplapackint n, mplapack_binary80_t da, mplapack_binary80_t * dx, mplapackint incx, mplapack_binary80_t * dy, mplapackint incy);
+void Raxpy_ref(mplapackint n, mplapack_binary80_t da, mplapack_binary80_t * dx, mplapackint incx, mplapack_binary80_t * dy, mplapackint incy);
 
 #define SINGLEOROMP 1000
 
-void Raxpy(mplapackint const n, _Float64x const da, _Float64x *dx, mplapackint const incx, _Float64x *dy, mplapackint const incy)
+void Raxpy(mplapackint const n, mplapack_binary80_t const da, mplapack_binary80_t *dx, mplapackint const incx, mplapack_binary80_t *dy, mplapackint const incy)
 {
-    _Float64x Zero = 0.0;
+    mplapack_binary80_t Zero = 0.0;
     mplapackint i;
 
     if (n <= 0)

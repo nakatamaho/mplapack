@@ -1,7 +1,7 @@
-lib_LTLIBRARIES = libmpblas__Float64x_opt.la
+lib_LTLIBRARIES = libmpblas_binary80_opt.la
 
-libmpblas__Float64x_opt_la_CPPFLAGS = -I. -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) $(OPENMP_CXXFLAGS) -D___MPLAPACK_BUILD_WITH__FLOAT64X___
-libmpblas__Float64x_opt_la_SOURCES = \
+libmpblas_binary80_opt_la_CPPFLAGS = -I. -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) $(OPENMP_CXXFLAGS) -D___MPLAPACK_BUILD_WITH_BINARY80___
+libmpblas_binary80_opt_la_SOURCES = \
 Rcopy.cpp Rcopy_ref.cpp openmp/Rcopy_omp.cpp \
 Rdot.cpp  Rdot_ref.cpp  openmp/Rdot_omp.cpp \
 Rgemm.cpp Rgemm_ref.cpp openmp/Rgemm_NN_omp.cpp openmp/Rgemm_NT_omp.cpp openmp/Rgemm_TN_omp.cpp openmp/Rgemm_TT_omp.cpp \
@@ -79,10 +79,10 @@ Raxpy.cpp Raxpy_ref.cpp openmp/Raxpy_omp.cpp \
 ../../reference/iRamax.cpp \
 ../../reference/mplapackinit.cpp
 
-libmpblas__Float64x_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO) -Wl,-rpath,$(libdir)
+libmpblas_binary80_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO) -Wl,-rpath,$(libdir)
 if IS_MACOS
-libmpblas__Float64x_opt_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
+libmpblas_binary80_opt_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 if IS_MINGW
-libmpblas__Float64x_opt_la_LDFLAGS += -fopenmp -no-undefined
+libmpblas_binary80_opt_la_LDFLAGS += -fopenmp -no-undefined
 endif

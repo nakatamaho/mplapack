@@ -30,12 +30,12 @@
 
 #include <mpblas_binary128.h>
 
-_Float128 Rdot_ref(mplapackint n, _Float128 * dx, mplapackint incx, _Float128 * dy, mplapackint incy);
-_Float128 Rdot_omp(mplapackint n, _Float128 * dx, mplapackint incx, _Float128 * dy, mplapackint incy);
+mplapack_binary128_t Rdot_ref(mplapackint n, mplapack_binary128_t * dx, mplapackint incx, mplapack_binary128_t * dy, mplapackint incy);
+mplapack_binary128_t Rdot_omp(mplapackint n, mplapack_binary128_t * dx, mplapackint incx, mplapack_binary128_t * dy, mplapackint incy);
 
 #define SINGLEOROMP 1000
 
-_Float128 Rdot(mplapackint const n, _Float128 *dx, mplapackint const incx, _Float128 *dy, mplapackint const incy)
+mplapack_binary128_t Rdot(mplapackint const n, mplapack_binary128_t *dx, mplapackint const incx, mplapack_binary128_t *dy, mplapackint const incy)
 {
     mplapackint ix = 0;
     mplapackint iy = 0;

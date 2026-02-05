@@ -29,12 +29,12 @@
  */
 #include <mpblas_binary128.h>
 
-void Rgemm_NT_omp(mplapackint m, mplapackint n, mplapackint k, _Float128 alpha, _Float128 * A, mplapackint lda, _Float128 * B, mplapackint ldb,
-		  _Float128 beta, _Float128 * C, mplapackint ldc)
+void Rgemm_NT_omp(mplapackint m, mplapackint n, mplapackint k, mplapack_binary128_t alpha, mplapack_binary128_t * A, mplapackint lda, mplapack_binary128_t * B, mplapackint ldb,
+		  mplapack_binary128_t beta, mplapack_binary128_t * C, mplapackint ldc)
 {
 //Form  C := alpha*A*B' + beta*C.
     mplapackint i, j, l;
-    _Float128 temp;
+    mplapack_binary128_t temp;
     for (j = 0; j < n; j++) {
 	if (beta == 0.0) {
 	    for (i = 0; i < m; i++) {

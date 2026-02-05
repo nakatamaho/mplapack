@@ -74,12 +74,12 @@ Rcopy copies a vector, x, to a vector, y.
 
 #include <mpblas_binary80.h>
 
-void Rcopy_ref(mplapackint n, _Float64x * dx, mplapackint incx, _Float64x * dy, mplapackint incy);
-void Rcopy_omp(mplapackint n, _Float64x * dx, mplapackint incx, _Float64x * dy, mplapackint incy);
+void Rcopy_ref(mplapackint n, mplapack_binary80_t * dx, mplapackint incx, mplapack_binary80_t * dy, mplapackint incy);
+void Rcopy_omp(mplapackint n, mplapack_binary80_t * dx, mplapackint incx, mplapack_binary80_t * dy, mplapackint incy);
 
 #define SINGLEOROMP 1000
 
-void Rcopy(mplapackint const n, _Float64x *dx, mplapackint const incx, _Float64x *dy, mplapackint const incy)
+void Rcopy(mplapackint const n, mplapack_binary80_t *dx, mplapackint const incx, mplapack_binary80_t *dy, mplapackint const incy)
 {
     mplapackint ix = 0;
     mplapackint iy = 0;

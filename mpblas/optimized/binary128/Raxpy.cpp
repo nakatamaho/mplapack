@@ -30,14 +30,14 @@
 
 #include <mpblas_binary128.h>
 
-void Raxpy_omp(mplapackint n, _Float128 da, _Float128 * dx, mplapackint incx, _Float128 * dy, mplapackint incy);
-void Raxpy_ref(mplapackint n, _Float128 da, _Float128 * dx, mplapackint incx, _Float128 * dy, mplapackint incy);
+void Raxpy_omp(mplapackint n, mplapack_binary128_t da, mplapack_binary128_t * dx, mplapackint incx, mplapack_binary128_t * dy, mplapackint incy);
+void Raxpy_ref(mplapackint n, mplapack_binary128_t da, mplapack_binary128_t * dx, mplapackint incx, mplapack_binary128_t * dy, mplapackint incy);
 
 #define SINGLEOROMP 1000
 
-void Raxpy(mplapackint const n, _Float128 const da, _Float128 *dx, mplapackint const incx, _Float128 *dy, mplapackint const incy)
+void Raxpy(mplapackint const n, mplapack_binary128_t const da, mplapack_binary128_t *dx, mplapackint const incx, mplapack_binary128_t *dy, mplapackint const incy)
 {
-    _Float128 Zero = 0.0;
+    mplapack_binary128_t Zero = 0.0;
     mplapackint i;
 
     if (n <= 0)

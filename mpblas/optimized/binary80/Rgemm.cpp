@@ -30,22 +30,22 @@
 
 #include <mpblas_binary80.h>
 
-void Rgemm_NN_omp(mplapackint m, mplapackint n, mplapackint k, _Float64x alpha, _Float64x * A, mplapackint lda, _Float64x * B, mplapackint ldb, _Float64x beta, _Float64x * C, mplapackint ldc);
-void Rgemm_TN_omp(mplapackint m, mplapackint n, mplapackint k, _Float64x alpha, _Float64x * A, mplapackint lda, _Float64x * B, mplapackint ldb, _Float64x beta, _Float64x * C, mplapackint ldc);
-void Rgemm_NT_omp(mplapackint m, mplapackint n, mplapackint k, _Float64x alpha, _Float64x * A, mplapackint lda, _Float64x * B, mplapackint ldb, _Float64x beta, _Float64x * C, mplapackint ldc);
-void Rgemm_TT_omp(mplapackint m, mplapackint n, mplapackint k, _Float64x alpha, _Float64x * A, mplapackint lda, _Float64x * B, mplapackint ldb, _Float64x beta, _Float64x * C, mplapackint ldc);
-void Rgemm_ref(const char *transa, const char *transb, mplapackint m, mplapackint n, mplapackint k, _Float64x alpha, _Float64x * A, mplapackint lda, _Float64x * B, mplapackint ldb, _Float64x beta, _Float64x * C, mplapackint ldc);
+void Rgemm_NN_omp(mplapackint m, mplapackint n, mplapackint k, mplapack_binary80_t alpha, mplapack_binary80_t * A, mplapackint lda, mplapack_binary80_t * B, mplapackint ldb, mplapack_binary80_t beta, mplapack_binary80_t * C, mplapackint ldc);
+void Rgemm_TN_omp(mplapackint m, mplapackint n, mplapackint k, mplapack_binary80_t alpha, mplapack_binary80_t * A, mplapackint lda, mplapack_binary80_t * B, mplapackint ldb, mplapack_binary80_t beta, mplapack_binary80_t * C, mplapackint ldc);
+void Rgemm_NT_omp(mplapackint m, mplapackint n, mplapackint k, mplapack_binary80_t alpha, mplapack_binary80_t * A, mplapackint lda, mplapack_binary80_t * B, mplapackint ldb, mplapack_binary80_t beta, mplapack_binary80_t * C, mplapackint ldc);
+void Rgemm_TT_omp(mplapackint m, mplapackint n, mplapackint k, mplapack_binary80_t alpha, mplapack_binary80_t * A, mplapackint lda, mplapack_binary80_t * B, mplapackint ldb, mplapack_binary80_t beta, mplapack_binary80_t * C, mplapackint ldc);
+void Rgemm_ref(const char *transa, const char *transb, mplapackint m, mplapackint n, mplapackint k, mplapack_binary80_t alpha, mplapack_binary80_t * A, mplapackint lda, mplapack_binary80_t * B, mplapackint ldb, mplapack_binary80_t beta, mplapack_binary80_t * C, mplapackint ldc);
 
 #define SINGLEOROMP 1000000
 
-void Rgemm(const char *transa, const char *transb, mplapackint const m, mplapackint const n, mplapackint const k, _Float64x const alpha, _Float64x *A, mplapackint const lda, _Float64x *B, mplapackint const ldb, _Float64x const beta, _Float64x *C, mplapackint const ldc)
+void Rgemm(const char *transa, const char *transb, mplapackint const m, mplapackint const n, mplapackint const k, mplapack_binary80_t const alpha, mplapack_binary80_t *A, mplapackint const lda, mplapack_binary80_t *B, mplapackint const ldb, mplapack_binary80_t const beta, mplapack_binary80_t *C, mplapackint const ldc)
 {
     mplapackint i, j, l, nota, notb, nrowa, ncola, nrowb, info;
-    _Float64x temp;
-    _Float64x Zero = 0.0, One = 1.0;
+    mplapack_binary80_t temp;
+    mplapack_binary80_t Zero = 0.0, One = 1.0;
 
-    nota = Mlsame__Float64x(transa, "N");
-    notb = Mlsame__Float64x(transb, "N");
+    nota = Mlsame_binary80(transa, "N");
+    notb = Mlsame_binary80(transb, "N");
     if (nota) {
 	nrowa = m;
 	ncola = k;
@@ -60,9 +60,9 @@ void Rgemm(const char *transa, const char *transb, mplapackint const m, mplapack
     }
 //Test the input parameters.
     info = 0;
-    if (!nota && (!Mlsame__Float64x(transa, "C")) && (!Mlsame__Float64x(transa, "T")))
+    if (!nota && (!Mlsame_binary80(transa, "C")) && (!Mlsame_binary80(transa, "T")))
 	info = 1;
-    else if (!notb && (!Mlsame__Float64x(transb, "C")) && (!Mlsame__Float64x(transb, "T")))
+    else if (!notb && (!Mlsame_binary80(transb, "C")) && (!Mlsame_binary80(transb, "T")))
 	info = 2;
     else if (m < 0)
 	info = 3;
@@ -77,7 +77,7 @@ void Rgemm(const char *transa, const char *transb, mplapackint const m, mplapack
     else if (ldc < std::max((mplapackint) 1, m))
 	info = 13;
     if (info != 0) {
-	Mxerbla__Float64x("Rgemm ", info);
+	Mxerbla_binary80("Rgemm ", info);
 	return;
     }
 //Quick return if possible.
