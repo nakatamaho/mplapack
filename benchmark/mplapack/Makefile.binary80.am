@@ -3,15 +3,15 @@ Rpotrf._Float64x Rpotrf._Float64x_opt \
 Rpotf2._Float64x Rpotf2._Float64x_opt \
 Rgetrf._Float64x Rgetrf._Float64x_opt
 
-_Float64xcxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH__FLOAT64X___
-_Float64xlapack_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack__Float64x
+_Float64xcxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_BINARY80___
+_Float64xlapack_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_binary80
 
 if BINARY128_USE_QUADMATH
-_Float64x_libdepends = $(_Float64xlapack_libdepends) -L$(top_builddir)/mpblas/reference -lmpblas__Float64x -lquadmath $(DYLD)
-_Float64xopt_libdepends = $(_Float64xlapack_libdepends) -L$(top_builddir)/mpblas/optimized/_Float64x -lmpblas__Float64x_opt -lquadmath $(DYLD)
+_Float64x_libdepends = $(_Float64xlapack_libdepends) -L$(top_builddir)/mpblas/reference -lmpblas_binary80 -lquadmath $(DYLD)
+_Float64xopt_libdepends = $(_Float64xlapack_libdepends) -L$(top_builddir)/mpblas/optimized/binary80 -lmpblas_binary80_opt -lquadmath $(DYLD)
 else
-_Float64x_libdepends = $(_Float64xlapack_libdepends) -L$(top_builddir)/mpblas/reference -lmpblas__Float64x $(DYLD)
-_Float64xopt_libdepends = $(_Float64xlapack_libdepends) -L$(top_builddir)/mpblas/optimized/_Float64x -lmpblas__Float64x_opt $(DYLD)
+_Float64x_libdepends = $(_Float64xlapack_libdepends) -L$(top_builddir)/mpblas/reference -lmpblas_binary80 $(DYLD)
+_Float64xopt_libdepends = $(_Float64xlapack_libdepends) -L$(top_builddir)/mpblas/optimized/binary80 -lmpblas_binary80_opt $(DYLD)
 endif
 
 if IS_MINGW
