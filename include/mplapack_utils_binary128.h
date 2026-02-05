@@ -153,6 +153,29 @@ inline std::complex<__float128> sqrt(const std::complex<__float128> a) {
     c.imag(__imag__(tmp));
     return c;
 }
+
+inline std::complex<__float128> sin(const std::complex<__float128> a) {
+    __float128 _Complex b, tmp;
+    std::complex<__float128> c;
+    __real__(b) = (a.real());
+    __imag__(b) = (a.imag());
+    tmp = csinq(b);
+    c.real(__real__(tmp));
+    c.imag(__imag__(tmp));
+    return c;
+}
+
+inline std::complex<__float128> cos(const std::complex<__float128> a) {
+    __float128 _Complex b, tmp;
+    std::complex<__float128> c;
+    __real__(b) = (a.real());
+    __imag__(b) = (a.imag());
+    tmp = ccosq(b);
+    c.real(__real__(tmp));
+    c.imag(__imag__(tmp));
+    return c;
+}
+
 inline std::complex<__float128> exp(const std::complex<__float128> &a) {
     __float128 _Complex b, tmp;
     std::complex<__float128> c;
@@ -163,6 +186,18 @@ inline std::complex<__float128> exp(const std::complex<__float128> &a) {
     c.imag(__imag__(tmp));
     return c;
 }
+
+inline std::complex<__float128> log(const std::complex<__float128> &a) {
+    __float128 _Complex b, tmp;
+    std::complex<__float128> c;
+    __real__(b) = (a.real());
+    __imag__(b) = (a.imag());
+    tmp = clogq(b);
+    c.real(__real__(tmp));
+    c.imag(__imag__(tmp));
+    return c;
+}
+
 inline __float128 pi(__float128 dummy) { return M_PIq; }
 
 #endif // MPLAPACK_BINARY128_MATH == MPLAPACK_BINARY128_MATH_QUADMATH
