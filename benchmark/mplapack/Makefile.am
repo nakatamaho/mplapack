@@ -30,11 +30,11 @@ include Makefile.double.am
 endif
 
 if ENABLE_BINARY128
-include Makefile._Float128.am
+include Makefile.binary128.am
 endif
 
 if ENABLE_BINARY80
-include Makefile._Float64x.am
+include Makefile.binary80.am
 endif
 
 if ENABLE_BENCHMARK

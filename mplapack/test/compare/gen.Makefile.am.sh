@@ -8,7 +8,7 @@ fi
 rm -f _tmpfilelist
 pushd common ; ls *test.cpp > ../_tmpfilelist_test ; popd
 
-MPLIBS="gmp mpfr _Float128 dd qd double _Float64x"
+MPLIBS="gmp mpfr binary128 dd qd double binary80"
 
 for _mplib in $MPLIBS; do
     rm -f $_mplib/Makefile.am

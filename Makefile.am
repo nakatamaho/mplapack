@@ -56,25 +56,25 @@ endif
 
 if ENABLE_BINARY80
 mplapack_include_HEADERS += \
-    include/mpblas__Float64x.h \
-    include/mplapack__Float64x.h
+    include/mpblas_binary80.h \
+    include/mplapack_binary80.h
 endif
 
 if ENABLE_BINARY128
 mplapack_include_HEADERS += \
-    include/mpblas__Float128.h \
-    include/mplapack__Float128.h
+    include/mpblas_binary128.h \
+    include/mplapack_binary128.h
 endif
 
 nodist_mplapack_include_HEADERS = include/mplapack_config.h
 if ENABLE_BINARY80
-nodist_mplapack_include_HEADERS += include/mplapack_utils__Float64x.h
+nodist_mplapack_include_HEADERS += include/mplapack_utils_binary80.h
 endif
 if ENABLE_BINARY128
-nodist_mplapack_include_HEADERS += include/mplapack_utils__Float128.h
+nodist_mplapack_include_HEADERS += include/mplapack_utils_binary128.h
 endif
 
-noinst_HEADERS = include/mplapack_debug.h include/mplapack_utils.h include/mpblas.h include/mplapack.h include/mplapack_generic.h include/mplapack_benchmark.h include/mplapack_benchmark__Float128.h include/mplapack_benchmark_dd.h include/mplapack_benchmark_double.h include/mplapack_benchmark_gmp.h include/mplapack_benchmark_mpfr.h include/mplapack_benchmark_qd.h include/mplapack_compare_debug.h include/mplapack_print_double.h include/mplapack_print.h include/mplapack_matgen.h include/mplapack_matgen__Float128.h include/mplapack_matgen__Float64x.h include/mplapack_matgen_dd.h include/mplapack_matgen_double.h include/mplapack_matgen_gmp.h include/mplapack_matgen_mpfr.h include/mplapack_matgen_qd.h include/mplapack_lin.h include/mplapack_lin__Float128.h include/mplapack_lin__Float64x.h include/mplapack_lin_dd.h include/mplapack_lin_double.h include/mplapack_lin_gmp.h include/mplapack_lin_mpfr.h include/mplapack_lin_qd.h include/mplapack_eig.h include/mplapack_eig__Float128.h include/mplapack_eig__Float64x.h include/mplapack_eig_dd.h include/mplapack_eig_double.h include/mplapack_eig_gmp.h include/mplapack_eig_mpfr.h include/mplapack_eig_qd.h include/mplapack_common_sslct.h include/mplapack_common_mn.h include/mplapack_benchmark.h include/mplapack_benchmark__Float128.h include/mplapack_benchmark__Float64x.h include/mplapack_benchmark_dd.h include/mplapack_benchmark_double.h include/mplapack_benchmark_gmp.h include/mplapack_benchmark_mpfr.h include/mplapack_benchmark_qd.h
+noinst_HEADERS = include/mplapack_debug.h include/mplapack_utils.h include/mpblas.h include/mplapack.h include/mplapack_generic.h include/mplapack_benchmark.h include/mplapack_benchmark_binary128.h include/mplapack_benchmark_dd.h include/mplapack_benchmark_double.h include/mplapack_benchmark_gmp.h include/mplapack_benchmark_mpfr.h include/mplapack_benchmark_qd.h include/mplapack_compare_debug.h include/mplapack_print_double.h include/mplapack_print.h include/mplapack_matgen.h include/mplapack_matgen_binary128.h include/mplapack_matgen_binary80.h include/mplapack_matgen_dd.h include/mplapack_matgen_double.h include/mplapack_matgen_gmp.h include/mplapack_matgen_mpfr.h include/mplapack_matgen_qd.h include/mplapack_lin.h include/mplapack_lin_binary128.h include/mplapack_lin_binary80.h include/mplapack_lin_dd.h include/mplapack_lin_double.h include/mplapack_lin_gmp.h include/mplapack_lin_mpfr.h include/mplapack_lin_qd.h include/mplapack_eig.h include/mplapack_eig_binary128.h include/mplapack_eig_binary80.h include/mplapack_eig_dd.h include/mplapack_eig_double.h include/mplapack_eig_gmp.h include/mplapack_eig_mpfr.h include/mplapack_eig_qd.h include/mplapack_common_sslct.h include/mplapack_common_mn.h include/mplapack_benchmark.h include/mplapack_benchmark_binary128.h include/mplapack_benchmark_binary80.h include/mplapack_benchmark_dd.h include/mplapack_benchmark_double.h include/mplapack_benchmark_gmp.h include/mplapack_benchmark_mpfr.h include/mplapack_benchmark_qd.h
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = mplapack.pc
