@@ -1365,6 +1365,40 @@ AC_SUBST(MPC_LIBDIR, [$MPC_LIBDIR])
 dnl MPC library end
 
 dnl QD library start
+dnl Extra CXXFLAGS for building the bundled QD library only.
+dnl We keep them conservative to avoid miscompilations (e.g., dd_real::exp()).
+dnl cf. https://bugzilla.redhat.com/show_bug.cgi?id=1076070 and https://src.fedoraproject.org/rpms/qd/c/354e1d9b9999dc6fc9a13398f355c10a93ba1a44
+AC_CANONICAL_HOST
+
+qd_extra_cxxflags=""
+qd_candidate_flags="-fno-fast-math -ffp-contract=off"
+
+case "$host_cpu" in
+  x86_64|amd64)
+    dnl GCC-only-ish flag; we will probe it before using.
+    qd_candidate_flags="$qd_candidate_flags -fno-tree-vectorize"
+    ;;
+  aarch64|arm64)
+    : dnl no extra arch-specific flags for now
+    ;;
+  *)
+    : dnl keep defaults
+    ;;
+esac
+save_CXXFLAGS="$CXXFLAGS"
+AC_LANG_PUSH([C++])
+for qd_flag in $qd_candidate_flags; do
+  CXXFLAGS="$save_CXXFLAGS $qd_flag"
+  AC_MSG_CHECKING([whether $CXX accepts $qd_flag])
+  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([], [])],
+    [AC_MSG_RESULT([yes]); qd_extra_cxxflags="$qd_extra_cxxflags $qd_flag"],
+    [AC_MSG_RESULT([no])])
+done
+AC_LANG_POP([C++])
+CXXFLAGS="$save_CXXFLAGS"
+
+AC_SUBST([QD_EXTRA_CXXFLAGS], [$qd_extra_cxxflags])
+
 AC_ARG_WITH(system-qd,
 AS_HELP_STRING([--with-system-qd=PREFIX],
 	    [ ="yes" if it is at the default location (/usr/local/lib), or alternative prefix path to qd library]
