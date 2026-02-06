@@ -85,6 +85,14 @@ extern "C" {
 #define IsInf(x) std::isinf(x) // C99 conformance
 #endif
 
+// Include <array> and <cstddef> before namespace for binary80 _Float64x mode
+#if defined ___MPLAPACK_BUILD_WITH_BINARY80___
+#if MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_FLOAT64X && MPLAPACK_BINARY80_IO == MPLAPACK_BINARY80_IO_STRFROMF64X
+#include <array>
+#include <cstddef>
+#endif
+#endif
+
 namespace mpfr {
 
 class mpreal {
@@ -418,6 +426,12 @@ class mpreal {
 #if defined ___MPLAPACK_BUILD_WITH_BINARY128___
     mpreal(const mplapack_binary128_t &a, mp_prec_t prec = default_prec, mp_rnd_t mode = default_rnd);
     mpreal &operator=(const mplapack_binary128_t &a);
+#endif
+#if defined ___MPLAPACK_BUILD_WITH_BINARY80___
+#if MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_FLOAT64X
+    mpreal(const _Float64x &a, mp_prec_t prec = default_prec, mp_rnd_t mode = default_rnd);
+    mpreal &operator=(const _Float64x &a);
+#endif
 #endif
 };
 
@@ -2360,37 +2374,82 @@ inline mplapack_binary128_t cast2binary128_t(const mpreal &b) {
 
 #if defined ___MPLAPACK_BUILD_WITH_BINARY80___
 #if MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_LDBL80
-/*
-inline mpreal &mpreal::operator=(const _Float128 &a) {
-  mpfr_init2((mpfr_ptr)mp, default_prec);
-  mpfr_set_ld((mpfr_ptr)mp, a, default_rnd);
-  return *this;
+inline long double cast2binary80_t(const mpreal &b) {
+    // mpreal -> MPFR -> long double
+    mpreal a(b);
+    return mpfr_get_ld((mpfr_ptr)a, mpreal::default_rnd);
+}
+#elif MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_FLOAT64X && MPLAPACK_BINARY80_IO == MPLAPACK_BINARY80_IO_STRFROMF64X
+extern "C" _Float64x strtof64x(const char *nptr, char **endptr);
+
+inline mpreal &mpreal::operator=(const _Float64x &a) {
+    mpfr_init2(mp, default_prec);
+    // Convert _Float64x to string, then parse into MPFR
+#if defined(__FLT64X_DECIMAL_DIG__)
+    constexpr int kDigits = __FLT64X_DECIMAL_DIG__ + 8;
+#else
+    constexpr int kDigits = 96;
+#endif
+    std::array<char, static_cast<std::size_t>(kDigits) + 64> buf{};
+    // Build format string: "%.XXe" where XX is kDigits
+    char fmt[32];
+    snprintf(fmt, sizeof(fmt), "%%.%de", kDigits);
+
+    int n = strfromf64x(buf.data(), buf.size(), fmt, a);
+    if (n < 0 || n >= static_cast<int>(buf.size())) {
+        mpfr_set_ui(mp, 0, default_rnd);
+    } else {
+        mpfr_set_str(mp, buf.data(), 10, default_rnd);
+    }
+    return *this;
 }
 
 inline mpreal::mpreal(const _Float64x &a, mp_prec_t prec, mp_rnd_t mode) {
-  mpfr_init2(mp, prec);
-  mpfr_set_ld(mp, a, mode);
+    mpfr_init2(mp, prec);
+    // Convert _Float64x to string, then parse into MPFR
+#if defined(__FLT64X_DECIMAL_DIG__)
+    constexpr int kDigits = __FLT64X_DECIMAL_DIG__ + 8;
+#else
+    constexpr int kDigits = 96;
+#endif
+    std::array<char, static_cast<std::size_t>(kDigits) + 64> buf{};
+    // Build format string: "%.XXe" where XX is kDigits
+    char fmt[32];
+    snprintf(fmt, sizeof(fmt), "%%.%de", kDigits);
+
+    int n = strfromf64x(buf.data(), buf.size(), fmt, a);
+    if (n < 0 || n >= static_cast<int>(buf.size())) {
+        mpfr_set_ui(mp, 0, mode);
+    } else {
+        mpfr_set_str(mp, buf.data(), 10, mode);
+    }
 }
 
 inline const mpreal operator-(const _Float64x a, const mpreal b) { return mpreal(a) -= b; }
-
 inline const mpreal operator-(const mpreal &a, const _Float64x &b) {
-  mpreal tmp(b);
-  return -(mpreal(b) -= a);
+    mpreal tmp(b);
+    return -(mpreal(b) -= a);
 }
-*/
-inline long double cast2binary80_t(const mpreal &b) {
-    // mpreal -> mpfr -> long double
-    long double q;
+inline _Float64x cast2binary80_t(const mpreal &b) {
     mpreal a(b);
-    q = mpfr_get_ld((mpfr_ptr)a, mpreal::default_rnd);
-    return q;
+#if defined(__FLT64X_DECIMAL_DIG__)
+    constexpr int kDigits = __FLT64X_DECIMAL_DIG__ + 8; // extra guard digits
+#else
+    constexpr int kDigits = 96; // conservative fallback
+#endif
+    std::array<char, static_cast<std::size_t>(kDigits) + 64> buf{};
+    // Print with kDigits significant digits; then let strtof64x round to _Float64x.
+    int n = mpfr_snprintf(buf.data(), buf.size(), "%.*Rg", kDigits, (mpfr_ptr)a);
+    if (n < 0) {
+        return static_cast<_Float64x>(0);
+    }
+    char *endp = nullptr;
+    return strtof64x(buf.data(), &endp);
 }
 #else
-#error
-#endif
-
-#endif
+#error "Unsupported MPLAPACK_BINARY80_MODE"
+#endif // MPLAPACK_BINARY80_MODE
+#endif // defined ___MPLAPACK_BUILD_WITH_BINARY80___
 
 } // namespace mpfr
 
