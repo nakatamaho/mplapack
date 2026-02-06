@@ -516,9 +516,92 @@ void set_random_number1to2(mpcomplex &a, std::complex<mplapack_binary128_t> &b) 
     b.real(cast2binary128_t(a.real()));
     b.imag(cast2binary128_t(a.imag()));
 }
+#elif MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_FLOAT128
+#include <random>
+#include <complex>
+#include <cstdint>
+#include <math.h> // ldexpf128 / scalbnf128 (glibc)
+
+static inline std::mt19937_64 &mplapack_rng64() {
+    // Deterministic seed; change if you want different streams.
+    static thread_local std::mt19937_64 rng(0x243f6a8885a308d3ULL);
+    return rng;
+}
+
+// Prefer ldexpf128; fall back to scalbnf128 if needed.
+static inline _Float128 mplapack_ldexp_f128(_Float128 x, int e) {
+#if defined(ldexpf128) || (defined(__GLIBC__) && !defined(__cplusplus))
+    // Some libcs expose it as a macro; keep it simple.
+    return ::ldexpf128(x, e);
 #else
-#error "Not implimented yet"
-#endif // MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_QUADMATH
+    // Many libm provide scalbnf128 even if ldexpf128 is missing.
+    return ::scalbnf128(x, e);
+#endif
+}
+
+// Uniform in [0, 1) with 113-bit resolution (binary128 significand bits).
+static inline _Float128 uniform01_binary128_f128() {
+    constexpr int kFracBits = 113;
+
+    uint64_t hi = mplapack_rng64()();
+    uint64_t lo = mplapack_rng64()();
+
+    __uint128_t x = (static_cast<__uint128_t>(hi) << 64) | static_cast<__uint128_t>(lo);
+    x >>= (128 - kFracBits); // keep top 113 bits
+
+    _Float128 r = static_cast<_Float128>(x); // exact (x < 2^113)
+    r = mplapack_ldexp_f128(r, -kFracBits);  // r / 2^113
+    return r;                                // [0,1)
+}
+
+mplapack_binary128_t mpf_randomnumber(mplapack_binary128_t /*dummy*/) {
+    _Float128 u = uniform01_binary128_f128();            // [0,1)
+    _Float128 v = (_Float128)2.0L * u - (_Float128)1.0L; // [-1,1)
+    return static_cast<mplapack_binary128_t>(v);
+}
+
+std::complex<mplapack_binary128_t> mpc_randomnumber(std::complex<mplapack_binary128_t> /*dummy*/) {
+    mplapack_binary128_t re = mpf_randomnumber(static_cast<mplapack_binary128_t>(0));
+    mplapack_binary128_t im = mpf_randomnumber(static_cast<mplapack_binary128_t>(0));
+    return std::complex<mplapack_binary128_t>(re, im);
+}
+
+void set_random_number(mpreal &a, mplapack_binary128_t &b) {
+    mpreal dummy;
+    a = mpf_randomnumber(dummy);
+    b = cast2binary128_t(a);
+}
+
+void set_random_number(mpcomplex &a, std::complex<mplapack_binary128_t> &b) {
+    mpcomplex dummy;
+    a = mpc_randomnumber(dummy);
+    b.real(cast2binary128_t(a.real()));
+    b.imag(cast2binary128_t(a.imag()));
+}
+
+void set_random_number1to2(mpreal &a, mplapack_binary128_t &b) {
+    mpreal dummy;
+    a = mpf_randomnumber(dummy);
+    if (a > 0.0)
+        a = a + 1.0;
+    else
+        a = a - 1.0;
+    b = cast2binary128_t(a);
+}
+
+void set_random_number1to2(mpcomplex &a, std::complex<mplapack_binary128_t> &b) {
+    mpcomplex dummy;
+    mplapack_binary128_t p, q;
+    a = mpc_randomnumber(dummy);
+
+    p = (a.real() > 0.0) ? (mplapack_binary128_t)1.0L : (mplapack_binary128_t)(-1.0L);
+    q = (a.imag() > 0.0) ? (mplapack_binary128_t)1.0L : (mplapack_binary128_t)(-1.0L);
+
+    a = a + std::complex<mplapack_binary128_t>(p, q);
+    b.real(cast2binary128_t(a.real()));
+    b.imag(cast2binary128_t(a.imag()));
+}
+#endif // MPLAPACK_BINARY128_MODE
 #endif // ___MPLAPACK_BUILD_WITH_BINARY128___
 
 REAL_REF infnorm(COMPLEX_REF *vec_ref, COMPLEX *vec, int len, int inc) {
