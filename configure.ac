@@ -1079,20 +1079,8 @@ if test x$enable_binary80 = x"yes"; then
 
     binary80_configured=no
 
-    dnl Priority: long double (binary80) > _Float64x (binary80)
-    if test "x$longdouble_is_binary80" = "xyes" && \
-       test "x$have_snprintf_Lg" = "xyes" && \
-       test "x$have_ldbl_math" = "xyes"; then
-
-        mplapack_binary80_mode=1   # LDBL80
-        mplapack_binary80_io=1     # SNPRINTF_LDBL
-        mplapack_binary80_math=1   # LDBL
-        binary80_configured=yes
-        AC_MSG_RESULT([long double (binary80)])
-    fi
-
-    if test "x$binary80_configured" = "xno" && \
-       test "x$have__Float64x" = "xyes" && \
+    dnl Priority: _Float64x (binary80) > long double (binary80)
+    if test "x$have__Float64x" = "xyes" && \
        test "x$_Float64x_is_binary80" = "xyes" && \
        test "x$have_strfromf64x" = "xyes" && \
        test "x$have_f64x_math" = "xyes"; then
@@ -1102,6 +1090,18 @@ if test x$enable_binary80 = x"yes"; then
         mplapack_binary80_math=2   # F64X
         binary80_configured=yes
         AC_MSG_RESULT([_Float64x (binary80)])
+    fi
+
+    if test "x$binary80_configured" = "xno" && \
+       test "x$longdouble_is_binary80" = "xyes" && \
+       test "x$have_snprintf_Lg" = "xyes" && \
+       test "x$have_ldbl_math" = "xyes"; then
+
+        mplapack_binary80_mode=1   # LDBL80
+        mplapack_binary80_io=1     # SNPRINTF_LDBL
+        mplapack_binary80_math=1   # LDBL
+        binary80_configured=yes
+        AC_MSG_RESULT([long double (binary80)])
     fi
 
     if test "x$binary80_configured" = "xno"; then
