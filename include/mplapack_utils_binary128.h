@@ -112,9 +112,107 @@ inline void sprintnum_short(char *buf, std::complex<__float128> rtmp) {
     quadmath_snprintf(buf, __MPLAPACK_BUFLEN__, BINARY128_SHORT_FORMAT BINARY128_SHORT_FORMAT, width, rtmp.real(), rtmp.imag());
     return;
 }
+#endif //___MPLAPACK_INTERNAL___
+#elif MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_STRFROMF128
+#if defined ___MPLAPACK_INTERNAL___
+#if !defined __MPLAPACK_BUFLEN__
+#define __MPLAPACK_BUFLEN__ 1024
 #endif
+#include <string.h>
 
-#endif // MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_QUADMATH_SNPRINTF
+// Full precision format (40 digits)
+#define FLOAT128_FORMAT "%+-#*.40e"
+// Short format (16 digits)
+#define FLOAT128_SHORT_FORMAT "%+-#*.16e"
+
+// printnum - full precision output to stdout
+inline void printnum(_Float128 rtmp) {
+    int width = 42;
+    char buf[__MPLAPACK_BUFLEN__];
+    strfromf128(buf, sizeof buf, FLOAT128_FORMAT, rtmp);
+    printf("%s", buf);
+    return;
+}
+
+inline void printnum(std::complex<_Float128> rtmp) {
+    int width = 42;
+    char buf[__MPLAPACK_BUFLEN__], buf2[__MPLAPACK_BUFLEN__];
+    strfromf128(buf, sizeof buf, FLOAT128_FORMAT, rtmp.real());
+    printf("%s", buf);
+    strfromf128(buf2, sizeof buf, FLOAT128_FORMAT, rtmp.imag());
+    printf("%s", buf2);
+    printf("i");
+    return;
+}
+
+// sprintnum - full precision output to buffer
+inline void sprintnum(char *buf, _Float128 rtmp) {
+    int width = 42;
+    strfromf128(buf, __MPLAPACK_BUFLEN__, FLOAT128_FORMAT, rtmp);
+    return;
+}
+
+inline void sprintnum(char *buf, std::complex<_Float128> rtmp) {
+    char buf1[__MPLAPACK_BUFLEN__], buf2[__MPLAPACK_BUFLEN__];
+    buf[0] = '\0';
+    if (rtmp.real() >= 0.0)
+        strcat(buf, "+");
+    strfromf128(buf1, __MPLAPACK_BUFLEN__, FLOAT128_FORMAT, rtmp.real());
+    strcat(buf, buf1);
+    if (rtmp.imag() >= 0.0)
+        strcat(buf, "+");
+    strfromf128(buf2, __MPLAPACK_BUFLEN__, FLOAT128_FORMAT, rtmp.imag());
+    strcat(buf, buf2);
+    strcat(buf, "i");
+    return;
+}
+
+// printnum_short - short precision output to stdout
+inline void printnum_short(_Float128 rtmp) {
+    int width = 42;
+    char buf[__MPLAPACK_BUFLEN__];
+    strfromf128(buf, sizeof buf, FLOAT128_SHORT_FORMAT, rtmp);
+    printf("%s", buf);
+    return;
+}
+
+inline void printnum_short(std::complex<_Float128> rtmp) {
+    int width = 42;
+    char buf[__MPLAPACK_BUFLEN__], buf2[__MPLAPACK_BUFLEN__];
+    strfromf128(buf, sizeof buf, FLOAT128_SHORT_FORMAT, rtmp.real());
+    printf("%s", buf);
+    strfromf128(buf2, sizeof buf, FLOAT128_SHORT_FORMAT, rtmp.imag());
+    printf("%s", buf2);
+    printf("i");
+    return;
+}
+
+// sprintnum_short - short precision output to buffer
+inline void sprintnum_short(char *buf, _Float128 rtmp) {
+    int width = 42;
+    strfromf128(buf, __MPLAPACK_BUFLEN__, FLOAT128_SHORT_FORMAT, rtmp);
+    return;
+}
+
+inline void sprintnum_short(char *buf, std::complex<_Float128> rtmp) {
+    char buf1[__MPLAPACK_BUFLEN__], buf2[__MPLAPACK_BUFLEN__];
+    buf[0] = '\0';
+    if (rtmp.real() >= 0.0)
+        strcat(buf, "+");
+    strfromf128(buf1, __MPLAPACK_BUFLEN__, FLOAT128_SHORT_FORMAT, rtmp.real());
+    strcat(buf, buf1);
+    if (rtmp.imag() >= 0.0)
+        strcat(buf, "+");
+    strfromf128(buf2, __MPLAPACK_BUFLEN__, FLOAT128_SHORT_FORMAT, rtmp.imag());
+    strcat(buf, buf2);
+    strcat(buf, "i");
+    return;
+}
+
+#endif // ___MPLAPACK_INTERNAL___
+#else
+#error
+#endif // MPLAPACK_BINARY128_IO
 
 #if MPLAPACK_BINARY128_MATH == MPLAPACK_BINARY128_MATH_QUADMATH
 #include <quadmath.h>
@@ -124,6 +222,7 @@ inline __float128 pow(const long &a, const long &b) { return powq((__float128)a,
 inline __float128 pow(const int &a, const long &b) { return powq((__float128)a, (__float128)b); }
 inline __float128 pow(const __float128 &a, const long &b) { return powq(a, (__float128)b); }
 inline __float128 sqrt(const __float128 &a) { return sqrtq(a); }
+inline __float128 abs(const __float128 &a) { return absq(a); }
 inline __float128 sin(__float128 a) { return sinq(a); }
 inline __float128 sinh(__float128 a) { return sinhq(a); }
 inline __float128 cos(__float128 a) { return cosq(a); }
@@ -226,6 +325,7 @@ inline _Float128 pow(const long &a, const long &b) { return powf128((_Float128)a
 inline _Float128 pow(const int &a, const long &b) { return powf128((_Float128)a, (_Float128)b); }
 inline _Float128 pow(const _Float128 &a, const long &b) { return powf128(a, (_Float128)b); }
 inline _Float128 sqrt(const _Float128 &a) { return sqrtf128(a); }
+inline _Float128 abs(const _Float128 &a) { return fabsf128(a); }
 
 inline _Float128 sin(_Float128 a) { return sinf128(a); }
 inline _Float128 sinh(_Float128 a) { return sinhf128(a); }
@@ -239,6 +339,8 @@ inline _Float128 log(const _Float128 &a) { return logf128(a); }
 inline _Float128 log10(const _Float128 &a) { return log10f128(a); }
 inline _Float128 log2(const _Float128 &a) { return logf128(a) / logf128(2.0); }
 inline _Float128 ceil(_Float128 a) { return ceilf128(a); }
+inline _Float128 ldexp(const _Float128 &a, int exp) { return ldexpf128(a, exp); }
+
 inline _Float128 abs(const std::complex<_Float128> &a) {
     _Float128 _Complex b, tmp;
     _Float128 c;
