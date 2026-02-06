@@ -32,32 +32,168 @@
 
 #include "mplapack_config.h"
 
-#if MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_LDBL80
-
-#endif // MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_LDBL80
+#if defined ___MPLAPACK_INTERNAL___
 
 #if MPLAPACK_BINARY80_IO == MPLAPACK_BINARY80_IO_SNPRINTF_LDBL
-#if defined ___MPLAPACK_INTERNAL___
-#define BINARY80_FORMAT "%+25.21Le"
-#define BINARY80_SHORT_FORMAT "%+20.16Le"
+
+#define LDBL_FORMAT "%+25.21Le"
+#define LDBL_SHORT_FORMAT "%+20.16Le"
 
 #if !defined __MPLAPACK_BUFLEN__
 #define __MPLAPACK_BUFLEN__ 1024
 #endif
 
-inline void printnum(long double rtmp) { printf(BINARY80_FORMAT, rtmp); }
-inline void printnum(std::complex<long double> ctmp) { printf(BINARY80_FORMAT BINARY80_FORMAT "i", ctmp.real(), ctmp.imag()); }
+inline void printnum(long double rtmp) { printf(LDBL_FORMAT, rtmp); }
+inline void printnum(std::complex<long double> ctmp) { printf(LDBL_FORMAT LDBL_FORMAT "i", ctmp.real(), ctmp.imag()); }
+inline void printnum_short(long double rtmp) { printf(LDBL_SHORT_FORMAT, rtmp); }
+inline void printnum_short(std::complex<long double> ctmp) { printf(LDBL_SHORT_FORMAT LDBL_SHORT_FORMAT "i", ctmp.real(), ctmp.imag()); }
+inline void sprintnum(char *buf, long double rtmp) { snprintf(buf, __MPLAPACK_BUFLEN__, LDBL_FORMAT, rtmp); }
+inline void sprintnum(char *buf, std::complex<long double> ctmp) { snprintf(buf, __MPLAPACK_BUFLEN__, LDBL_FORMAT LDBL_FORMAT "i", ctmp.real(), ctmp.imag()); }
+inline void sprintnum_short(char *buf, long double rtmp) { snprintf(buf, __MPLAPACK_BUFLEN__, LDBL_SHORT_FORMAT, rtmp); }
+inline void sprintnum_short(char *buf, std::complex<long double> ctmp) { snprintf(buf, __MPLAPACK_BUFLEN__, LDBL_SHORT_FORMAT LDBL_SHORT_FORMAT "i", ctmp.real(), ctmp.imag()); }
 
-inline void printnum_short(long double rtmp) { printf(BINARY80_SHORT_FORMAT, rtmp); }
-inline void printnum_short(std::complex<long double> ctmp) { printf(BINARY80_SHORT_FORMAT BINARY80_SHORT_FORMAT "i", ctmp.real(), ctmp.imag()); }
+#elif MPLAPACK_BINARY80_IO == MPLAPACK_BINARY80_IO_STRFROMF64X
 
-inline void sprintnum(char *buf, long double rtmp) { snprintf(buf, __MPLAPACK_BUFLEN__, BINARY80_FORMAT, rtmp); }
-inline void sprintnum(char *buf, std::complex<long double> ctmp) { snprintf(buf, __MPLAPACK_BUFLEN__, BINARY80_FORMAT BINARY80_FORMAT "i", ctmp.real(), ctmp.imag()); }
+#define FLOAT64X_FORMAT "%25.21e"
+#define FLOAT64X_SHORT_FORMAT "%20.16e"
 
-inline void sprintnum_short(char *buf, long double rtmp) { snprintf(buf, __MPLAPACK_BUFLEN__, BINARY80_SHORT_FORMAT, rtmp); }
-inline void sprintnum_short(char *buf, std::complex<long double> ctmp) { snprintf(buf, __MPLAPACK_BUFLEN__, BINARY80_SHORT_FORMAT BINARY80_SHORT_FORMAT "i", ctmp.real(), ctmp.imag()); }
+#if !defined __MPLAPACK_BUFLEN__
+#define __MPLAPACK_BUFLEN__ 1024
 #endif
+
+// Must be before including <stdlib.h> on glibc to expose strfromf64x.
+#ifndef __STDC_WANT_IEC_60559_TYPES_EXT__
+#define __STDC_WANT_IEC_60559_TYPES_EXT__ 1
 #endif
+#ifndef __STDC_WANT_IEC_60559_FUNCS_EXT__
+#define __STDC_WANT_IEC_60559_FUNCS_EXT__ 1
+#endif
+
+#include <stdlib.h> // strfromf64x
+#include <stdio.h>  // fputs, putchar
+#include <complex>
+
+// Helper: convert _Float64x to string using strfromf64x.
+// Returns number of chars written (excluding NUL) or negative on error.
+static inline int mplapack_strfromf64x(char *buf, size_t buflen, const char *fmt, _Float64x x) {
+    if (buf == nullptr || buflen == 0 || fmt == nullptr)
+        return -1;
+    int n = strfromf64x(buf, buflen, fmt, x);
+    if (n < 0) { // encoding error etc.
+        if (buflen > 0)
+            buf[0] = '\0';
+        return n;
+    }
+    // If truncated, C standard says it returns the number of chars that would have been written.
+    // Ensure buffer is always NUL-terminated.
+    buf[buflen - 1] = '\0';
+    return n;
+}
+
+// printnum / printnum_short: stringize then print
+inline void printnum(_Float64x rtmp) {
+    char buf[__MPLAPACK_BUFLEN__];
+    strfromf64x(buf, sizeof(buf), FLOAT64X_FORMAT, rtmp);
+    fputs(buf, stdout);
+}
+
+inline void printnum(std::complex<_Float64x> ctmp) {
+    char re[__MPLAPACK_BUFLEN__];
+    char im[__MPLAPACK_BUFLEN__];
+    strfromf64x(re, sizeof(re), FLOAT64X_FORMAT, ctmp.real());
+    strfromf64x(im, sizeof(im), FLOAT64X_FORMAT, ctmp.imag());
+    fputs(re, stdout);
+    fputs(im, stdout);
+    putchar('i');
+}
+
+inline void printnum_short(_Float64x rtmp) {
+    char buf[__MPLAPACK_BUFLEN__];
+    strfromf64x(buf, sizeof(buf), FLOAT64X_SHORT_FORMAT, rtmp);
+    fputs(buf, stdout);
+}
+
+inline void printnum_short(std::complex<_Float64x> ctmp) {
+    char re[__MPLAPACK_BUFLEN__];
+    char im[__MPLAPACK_BUFLEN__];
+    strfromf64x(re, sizeof(re), FLOAT64X_SHORT_FORMAT, ctmp.real());
+    strfromf64x(im, sizeof(im), FLOAT64X_SHORT_FORMAT, ctmp.imag());
+    fputs(re, stdout);
+    fputs(im, stdout);
+    putchar('i');
+}
+
+// sprintnum / sprintnum_short: write into caller-provided buf
+inline void sprintnum(char *buf, _Float64x rtmp) { strfromf64x(buf, __MPLAPACK_BUFLEN__, FLOAT64X_FORMAT, rtmp); }
+inline void sprintnum(char *buf, std::complex<_Float64x> ctmp) {
+    if (buf == nullptr)
+        return;
+    // Write real part
+    int nre = strfromf64x(buf, __MPLAPACK_BUFLEN__, FLOAT64X_FORMAT, ctmp.real());
+    if (nre < 0) {
+        buf[0] = '\0';
+        return;
+    }
+    // Append imag part into remaining space
+    size_t used = 0;
+    while (used + 1 < (size_t)__MPLAPACK_BUFLEN__ && buf[used] != '\0')
+        used++;
+
+    if (used + 1 >= (size_t)__MPLAPACK_BUFLEN__) {
+        buf[__MPLAPACK_BUFLEN__ - 1] = '\0';
+        return;
+    }
+    int nim = strfromf64x(buf + used, (size_t)__MPLAPACK_BUFLEN__ - used, FLOAT64X_FORMAT, ctmp.imag());
+    if (nim < 0) {
+        buf[used] = '\0';
+        return;
+    }
+    // Append 'i' if space
+    used = 0;
+    while (used + 1 < (size_t)__MPLAPACK_BUFLEN__ && buf[used] != '\0')
+        used++;
+    if (used + 2 <= (size_t)__MPLAPACK_BUFLEN__) {
+        buf[used] = 'i';
+        buf[used + 1] = '\0';
+    } else {
+        buf[__MPLAPACK_BUFLEN__ - 1] = '\0';
+    }
+}
+inline void sprintnum_short(char *buf, _Float64x rtmp) { (void)strfromf64x(buf, __MPLAPACK_BUFLEN__, FLOAT64X_SHORT_FORMAT, rtmp); }
+inline void sprintnum_short(char *buf, std::complex<_Float64x> ctmp) {
+    if (buf == nullptr)
+        return;
+    int nre = strfromf64x(buf, __MPLAPACK_BUFLEN__, FLOAT64X_SHORT_FORMAT, ctmp.real());
+    if (nre < 0) {
+        buf[0] = '\0';
+        return;
+    }
+    size_t used = 0;
+    while (used + 1 < (size_t)__MPLAPACK_BUFLEN__ && buf[used] != '\0')
+        used++;
+    if (used + 1 >= (size_t)__MPLAPACK_BUFLEN__) {
+        buf[__MPLAPACK_BUFLEN__ - 1] = '\0';
+        return;
+    }
+    int nim = strfromf64x(buf + used, (size_t)__MPLAPACK_BUFLEN__ - used, FLOAT64X_SHORT_FORMAT, ctmp.imag());
+    if (nim < 0) {
+        buf[used] = '\0';
+        return;
+    }
+    used = 0;
+    while (used + 1 < (size_t)__MPLAPACK_BUFLEN__ && buf[used] != '\0')
+        used++;
+    if (used + 2 <= (size_t)__MPLAPACK_BUFLEN__) {
+        buf[used] = 'i';
+        buf[used + 1] = '\0';
+    } else {
+        buf[__MPLAPACK_BUFLEN__ - 1] = '\0';
+    }
+}
+#else
+#error
+#endif // MPLAPACK_BINARY80_IO
+#endif // ___MPLAPACK_INTERNAL___
 
 #if MPLAPACK_BINARY80_MATH == MPLAPACK_BINARY80_MATH_LDBL
 #include <cmath> // do not rely on transitive includes
@@ -129,8 +265,78 @@ inline long double pi(long double dummy) {
     return M_PIl;
 #endif
 }
+#elif MPLAPACK_BINARY80_MATH == MPLAPACK_BINARY80_MATH_F64X
+#pragma once
+#include <cmath>
+#include <math.h>
+#include <complex>
+// Basic real functions
+inline _Float64x atan2(_Float64x a, _Float64x b) { return ::atan2f64x(a, b); }
+inline _Float64x cos(_Float64x a) { return ::cosf64x(a); }
+inline _Float64x cosh(_Float64x a) { return ::coshf64x(a); }
+inline _Float64x exp(_Float64x a) { return ::expf64x(a); }
+inline _Float64x floor(_Float64x a) { return ::floorf64x(a); }
+inline _Float64x log(_Float64x a) { return ::logf64x(a); }
+inline _Float64x log10(_Float64x a) { return ::log10f64x(a); }
+inline _Float64x log2(_Float64x a) { return ::log2f64x(a); }
+inline _Float64x pow(_Float64x a, _Float64x b) { return ::powf64x(a, b); }
+inline _Float64x sin(_Float64x a) { return ::sinf64x(a); }
+inline _Float64x sinh(_Float64x a) { return ::sinhf64x(a); }
+inline _Float64x sqrt(_Float64x a) { return ::sqrtf64x(a); }
 
-#endif
+// Integer-exponent convenience overloads (matches your long double intent)
+inline _Float64x pow(const long &a, const long &b) { return ::powf64x((_Float64x)a, (_Float64x)b); }
+inline _Float64x pow(const int &a, const long &b) { return ::powf64x((_Float64x)a, (_Float64x)b); }
+inline _Float64x pow(const _Float64x &a, const long &b) { return ::powf64x(a, (_Float64x)b); }
+
+// pow2/pow4 (real/complex)
+inline _Float64x pow2(const _Float64x &a) { return a * a; }
+inline _Float64x pow4(const _Float64x &a) {
+    _Float64x t = a * a;
+    return t * t;
+}
+
+inline std::complex<_Float64x> pow2(const std::complex<_Float64x> &a) { return a * a; }
+inline std::complex<_Float64x> pow4(const std::complex<_Float64x> &a) {
+    auto t = a * a;
+    return t * t;
+}
+
+// ldexp/nextafter
+inline _Float64x ldexp(const _Float64x &a, int exp) { return ::ldexpf64x(a, exp); }
+inline _Float64x nextafter(const _Float64x &a, const _Float64x &b) { return ::nextafterf64x(a, b); }
+
+// absolute value
+inline _Float64x abs(_Float64x a) { return ::fabsf64x(a); }
+
+// sign transfer (your semantics preserved)
+inline _Float64x sign(const _Float64x &a, const _Float64x &b) {
+    _Float64x mtmp = abs(a);
+    if (b < (_Float64x)0.0)
+        mtmp = -mtmp;
+    return mtmp;
+}
+
+// cast
+inline double cast2double(_Float64x a) { return (double)a; }
+
+// nint: your exact behavior preserved (ties go away-from-zero due to +0.5 then floor)
+inline long nint(_Float64x a) {
+    a = a + (_Float64x)0.5;
+    _Float64x tmp = floor(a);
+    long i = (long)tmp;
+    return i;
+}
+
+// integer/real casts
+inline _Float64x castREAL_binary80(mplapackint n) { return (_Float64x)n; }
+inline mplapackint castINTEGER_binary80(_Float64x a) { return (mplapackint)a; }
+
+// pi: avoid M_PIl dependence for _Float64x; use a hex float and cast.
+inline _Float64x pi(_Float64x /*dummy*/) { return (_Float64x)0xc.90fdaa22168c235p-2L; }
+#else
+#error
+#endif // MPLAPACK_BINARY80_MATH
 
 static inline mplapack_binary80_t cabs1(const std::complex<mplapack_binary80_t> &z) { return abs(z.real()) + abs(z.imag()); }
 
