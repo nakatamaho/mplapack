@@ -119,6 +119,9 @@
 /* 1 if _Float128 and __float128 are the same type, else 0 */
 #undef MPLAPACK_FLOAT128_SAME_TYPES
 
+/* Define to 0 if std::abs(__float128) is not available */
+#undef MPLAPACK_HAVE_STD_ABS_FLOAT128
+
 /* 1 if _Float64x matches binary80 (mantissa/exponent), else 0 */
 #undef MPLAPACK_FLOAT64X_IS_BINARY80
 

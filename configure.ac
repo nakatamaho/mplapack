@@ -675,6 +675,35 @@ if test x$enable_binary128 = x"yes"; then
     fi
 fi
 
+# on older gcc's abs(__float128) appears with gnu++17 extension
+dnl Check whether std::abs(__float128) exists.
+AC_LANG_PUSH([C++])
+AC_MSG_CHECKING([for std::abs(__float128)])
+AC_COMPILE_IFELSE(
+  [AC_LANG_SOURCE([[
+#include <cmath>
+int main() {
+#if !defined(__SIZEOF_FLOAT128__)
+#error "__float128 is not available"
+#endif
+  __float128 x = 0;
+  auto y = std::abs(x);
+  (void)y;
+  return 0;
+}
+]])],
+  [mplapack_have_std_abs_float128=yes],
+  [mplapack_have_std_abs_float128=no]
+)
+AC_MSG_RESULT([$mplapack_have_std_abs_float128])
+AS_IF([test "x$mplapack_have_std_abs_float128" = "xyes"],
+  [AC_DEFINE([MPLAPACK_HAVE_STD_ABS_FLOAT128],[1],
+    [Define to 1 if std::abs(__float128) is available])],
+  [AC_DEFINE([MPLAPACK_HAVE_STD_ABS_FLOAT128],[0],
+    [Define to 0 if std::abs(__float128) is not available])]
+)
+AC_LANG_POP([C++])
+
 dnl ===================================================================
 dnl Define macros for config.h
 dnl ===================================================================

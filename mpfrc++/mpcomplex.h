@@ -238,8 +238,7 @@ class mpcomplex {
     mpcomplex(const std::complex<__float128> &a, mp_prec_t pr = default_real_prec, mp_prec_t pi = default_imag_prec, mpc_rnd_t mode = default_rnd);
     mpcomplex &operator=(const std::complex<__float128> &a);
 #elif MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_LDBL
-    mpcomplex(const std::complex<long double> &a, mp_prec_t pr = default_real_prec, mp_prec_t pi = default_imag_prec, mpc_rnd_t mode = default_rnd);
-    mpcomplex &operator=(const std::complex<long double> &a);
+    // nothing to be done
 #endif
 #endif // ___MPLAPACK_BUILD_WITH_BINARY128___
 
@@ -248,8 +247,7 @@ class mpcomplex {
     mpcomplex(const std::complex<_Float64x> &a, mp_prec_t pr = default_real_prec, mp_prec_t pi = default_imag_prec, mpc_rnd_t mode = default_rnd);
     mpcomplex &operator=(const std::complex<_Float64x> &a);
 #elif MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_LDBL
-    mpcomplex(const std::complex<long double> &a, mp_prec_t pr = default_real_prec, mp_prec_t pi = default_imag_prec, mpc_rnd_t mode = default_rnd);
-    mpcomplex &operator=(const std::complex<long double> &a);
+    // nothing to be done
 #endif
 #endif // ___MPLAPACK_BUILD_WITH_BINARY80___
 };
@@ -1211,10 +1209,10 @@ inline mpcomplex::mpcomplex(const std::complex<mplapack_binary128_t> &a, mp_prec
     mpc_init3(mpc, pr, pi);
 
     mpfr_init2(mp_real, pr);
-    mpfr_setmplapack_binary128_t((mpfr_ptr)mp_real, a.real(), mpreal::default_rnd);
+    mpfr_set_float128((mpfr_ptr)mp_real, a.real(), mpreal::default_rnd);
 
     mpfr_init2(mp_imag, pi);
-    mpfr_setmplapack_binary128_t((mpfr_ptr)mp_imag, a.imag(), mpreal::default_rnd);
+    mpfr_set_float128((mpfr_ptr)mp_imag, a.imag(), mpreal::default_rnd);
 
     mpc_set_fr_fr(mpc, mp_real, mp_imag, mode);
     mpfr_clear(mp_imag);
@@ -1244,6 +1242,7 @@ inline std::complex<mplapack_binary128_t> cast2complex_binary128(const mpcomplex
 
 // Binary80 (extended precision) support
 #if defined ___MPLAPACK_BUILD_WITH_BINARY80___
+#if MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_FLOAT64X
 inline mpcomplex::mpcomplex(const std::complex<mplapack_binary80_t> &a, mp_prec_t pr, mp_prec_t pi, mpc_rnd_t mode) {
     mpfr_t mp_real, mp_imag;
     mpc_init3(mpc, pr, pi);
@@ -1278,6 +1277,11 @@ inline std::complex<mplapack_binary80_t> cast2complex_binary80(const mpcomplex &
     q.imag((mplapack_binary80_t)mpfr_get_ld((mpfr_ptr)(im_tmp), mpreal::default_rnd));
     return q;
 }
+#elif MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_LDBL80
+// nothing to be done
+#else
+#error
+#endif // MPLAPACK_BINARY80_MODE
 #endif //___MPLAPACK_BUILD_WITH_BINARY80___
 
 } // namespace mpfr

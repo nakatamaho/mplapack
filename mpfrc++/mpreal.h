@@ -54,20 +54,20 @@
 
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
 #include "gmpxx.h"
+#include "mplapack_config.h"
 #endif
 #if defined ___MPLAPACK_BUILD_WITH_QD___
 #include "qd/qd_real.h"
+#include "mplapack_config.h"
 #endif
 #if defined ___MPLAPACK_BUILD_WITH_DD___
 #include "qd/dd_real.h"
+#include "mplapack_config.h"
 #endif
-#if defined ___MPLAPACK_BUILD_WITH_BINARY128___ && defined ___MPLAPACK_WANT_LIBQUADMATH___
-#ifdef __cplusplus
-extern "C" {
-#endif
+#if defined ___MPLAPACK_BUILD_WITH_BINARY128___
+#include "mplapack_config.h"
+#if (MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_QUADMATH)
 #include <quadmath.h>
-#ifdef __cplusplus
-}
 #endif
 #endif
 
