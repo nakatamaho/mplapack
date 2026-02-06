@@ -249,12 +249,12 @@ void set_random_number1to2(mpcomplex &a, complex<double> &b);
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_BINARY80___
-_Float64x mpf_randomnumber(_Float64x dummy);
-complex<_Float64x> mpc_randomnumber(complex<_Float64x> dummy);
-void set_random_number(mpreal &a, _Float64x &b);
-void set_random_number(mpcomplex &a, complex<_Float64x> &b);
-void set_random_number1to2(mpreal &a, _Float64x &b);
-void set_random_number1to2(mpcomplex &a, complex<_Float64x> &b);
+mplapack_binary80_t mpf_randomnumber(mplapack_binary80_t dummy);
+complex<mplapack_binary80_t> mpc_randomnumber(complex<mplapack_binary80_t> dummy);
+void set_random_number(mpreal &a, mplapack_binary80_t &b);
+void set_random_number(mpcomplex &a, complex<mplapack_binary80_t> &b);
+void set_random_number1to2(mpreal &a, mplapack_binary80_t &b);
+void set_random_number1to2(mpcomplex &a, complex<mplapack_binary80_t> &b);
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_BINARY128___

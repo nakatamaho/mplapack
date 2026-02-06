@@ -29,17 +29,18 @@
 #include <mplapack.h>
 
 #if defined ___MPLAPACK_BUILD_WITH_DOUBLE___
-#include <float.h>
+#include <cfloat>
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_BINARY80___
-#include <float.h>
+#include <cfloat>
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_BINARY128___ && defined ___MPLAPACK_WANT_LIBQUADMATH___
+#if defined ___MPLAPACK_BUILD_WITH_BINARY128___
+#if MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_QUADMATH
 #include <quadmath.h>
-#else
-#include <float.h>
+#endif
+#include <cfloat>
 #endif
 
 #include <stdio.h>
@@ -655,110 +656,172 @@ double Rlamch_double(const char *cmach) {
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_BINARY80___
-_Float64x RlamchE_binary80(void);
-_Float64x RlamchS_binary80(void);
-_Float64x RlamchB_binary80(void);
-_Float64x RlamchP_binary80(void);
-_Float64x RlamchN_binary80(void);
-_Float64x RlamchR_binary80(void);
-_Float64x RlamchM_binary80(void);
-_Float64x RlamchU_binary80(void);
-_Float64x RlamchL_binary80(void);
-_Float64x RlamchO_binary80(void);
-_Float64x RlamchZ_binary80(void);
+mplapack_binary80_t RlamchE_binary80(void);
+mplapack_binary80_t RlamchS_binary80(void);
+mplapack_binary80_t RlamchB_binary80(void);
+mplapack_binary80_t RlamchP_binary80(void);
+mplapack_binary80_t RlamchN_binary80(void);
+mplapack_binary80_t RlamchR_binary80(void);
+mplapack_binary80_t RlamchM_binary80(void);
+mplapack_binary80_t RlamchU_binary80(void);
+mplapack_binary80_t RlamchL_binary80(void);
+mplapack_binary80_t RlamchO_binary80(void);
+mplapack_binary80_t RlamchZ_binary80(void);
 
-// "E" : relative machine precision (unit roundoff), assume rounding
-_Float64x RlamchE_binary80(void) {
-    static _Float64x eps;
-    static int called = 0;
-
-    if (called)
-        return eps;
-
-    eps = (_Float64x)1.0;
-
-#if defined(FLT64X_MANT_DIG)
-    // Compute eps = 2^(-FLT64X_MANT_DIG)
-    for (int i = 0; i < FLT64X_MANT_DIG; i++)
-        eps /= (_Float64x)2.0;
-#else
-    // Fallback: assume _Float64x matches long double characteristics.
-    for (int i = 0; i < LDBL_MANT_DIG; i++)
-        eps /= (_Float64x)2.0;
+// "E" : relative machine precision (machine epsilon), assume rounding
+mplapack_binary80_t RlamchE_binary80(void) {
+#if MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_FLOAT64X
+#if !defined(FLT64X_MANT_DIG)
+#error "MPLAPACK_BINARY80_MODE_FLOAT64X requires FLT64X_MANT_DIG"
 #endif
-
-    called = 1;
+    constexpr int kMantDig = FLT64X_MANT_DIG;
+#elif MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_LDBL80
+    constexpr int kMantDig = LDBL_MANT_DIG;
+#else
+#error "Binary80 is disabled or MPLAPACK_BINARY80_MODE is unknown"
+#endif
+    // For base-2 with rounding: eps = 2^(1 - kMantDig)
+    mplapack_binary80_t eps = (mplapack_binary80_t)1.0;
+    for (int i = 1; i < kMantDig; ++i) {
+        eps /= (mplapack_binary80_t)2.0;
+    }
     return eps;
 }
 
 // "S" : safe minimum such that 1/sfmin does not overflow
-_Float64x RlamchS_binary80(void) {
-#if defined(FLT64X_MIN)
-    return (_Float64x)FLT64X_MIN;
-#else
-    // Fallback: assume _Float64x matches long double characteristics.
-    return (_Float64x)LDBL_MIN;
+mplapack_binary80_t RlamchS_binary80(void) {
+#if MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_FLOAT64X
+#if !defined(FLT64X_MIN) || !defined(FLT64X_MAX)
+#error "FLT64X_MIN/FLT64X_MAX are not defined, but MPLAPACK_BINARY80_MODE_FLOAT64X is selected."
 #endif
+    const mplapack_binary80_t rmin = (mplapack_binary80_t)FLT64X_MIN;
+    const mplapack_binary80_t rmax = (mplapack_binary80_t)FLT64X_MAX;
+
+#elif MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_LDBL80
+#if !defined(LDBL_MIN) || !defined(LDBL_MAX)
+#error "LDBL_MIN/LDBL_MAX are not defined, but MPLAPACK_BINARY80_MODE_LDBL80 is selected."
+#endif
+    const mplapack_binary80_t rmin = (mplapack_binary80_t)LDBL_MIN;
+    const mplapack_binary80_t rmax = (mplapack_binary80_t)LDBL_MAX;
+
+#elif MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_DISABLED
+#error "Binary80 is disabled (MPLAPACK_BINARY80_MODE_DISABLED). RlamchS_binary80 must not be compiled."
+#else
+#error "Unknown MPLAPACK_BINARY80_MODE value."
+#endif
+
+    // LAPACK-style: sfmin = max(rmin, 1/rmax). If 1/rmax dominates, bump by (1+eps)
+    // to avoid rounding making sfmin slightly too small (which could overflow on reciprocal).
+    mplapack_binary80_t s = rmin;
+    const mplapack_binary80_t small = (mplapack_binary80_t)1.0 / rmax;
+    if (small > s) {
+        s = small * ((mplapack_binary80_t)1.0 + RlamchE_binary80());
+    }
+    return s;
 }
 
 // "B" : base of the machine
-_Float64x RlamchB_binary80(void) { return (_Float64x)2.0; }
+mplapack_binary80_t RlamchB_binary80(void) { return (mplapack_binary80_t)2.0; }
 
 // "P" : precision = eps*base
-_Float64x RlamchP_binary80(void) { return RlamchE_binary80() * RlamchB_binary80(); }
+mplapack_binary80_t RlamchP_binary80(void) { return RlamchE_binary80() * RlamchB_binary80(); }
 
-// "N" : number of digits in mantissa
-_Float64x RlamchN_binary80(void) {
-#if defined(FLT64X_MANT_DIG)
-    return (_Float64x)FLT64X_MANT_DIG;
-#else
-    return (_Float64x)LDBL_MANT_DIG;
+// "N" : number of base digits in mantissa (for base-2, this is significand bits)
+mplapack_binary80_t RlamchN_binary80(void) {
+#if MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_FLOAT64X
+#if !defined(FLT64X_MANT_DIG)
+#error "FLT64X_MANT_DIG is not defined, but MPLAPACK_BINARY80_MODE_FLOAT64X is selected."
 #endif
-}
+    constexpr int kMantDig = FLT64X_MANT_DIG;
 
-// "R" : 1.0 when rounding occurs in addition, 0.0 otherwise
-_Float64x RlamchR_binary80(void) { return (_Float64x)1.0; }
-
-// "M" : minimum exponent (emin) used by DLAMCH
-_Float64x RlamchM_binary80(void) {
-#if defined(FLT64X_MIN_EXP)
-    return (_Float64x)FLT64X_MIN_EXP;
-#else
-    return (_Float64x)LDBL_MIN_EXP;
+#elif MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_LDBL80
+#if !defined(LDBL_MANT_DIG)
+#error "LDBL_MANT_DIG is not defined, but MPLAPACK_BINARY80_MODE_LDBL80 is selected."
 #endif
+    constexpr int kMantDig = LDBL_MANT_DIG;
+
+#elif MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_DISABLED
+#error "Binary80 is disabled (MPLAPACK_BINARY80_MODE_DISABLED). RlamchN_binary80 must not be compiled."
+#else
+#error "Unknown MPLAPACK_BINARY80_MODE value."
+#endif
+
+    return (mplapack_binary80_t)kMantDig;
 }
 
 // "U" : underflow threshold (rmin; minimum positive normal)
-_Float64x RlamchU_binary80(void) {
-#if defined(FLT64X_MIN)
-    return (_Float64x)FLT64X_MIN;
-#else
-    return (_Float64x)LDBL_MIN;
+mplapack_binary80_t RlamchU_binary80(void) {
+#if MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_FLOAT64X
+#if !defined(FLT64X_MIN)
+#error "FLT64X_MIN is not defined, but MPLAPACK_BINARY80_MODE_FLOAT64X is selected."
 #endif
+    const mplapack_binary80_t rmin = (mplapack_binary80_t)FLT64X_MIN;
+
+#elif MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_LDBL80
+#if !defined(LDBL_MIN)
+#error "LDBL_MIN is not defined, but MPLAPACK_BINARY80_MODE_LDBL80 is selected."
+#endif
+    const mplapack_binary80_t rmin = (mplapack_binary80_t)LDBL_MIN;
+
+#elif MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_DISABLED
+#error "Binary80 is disabled (MPLAPACK_BINARY80_MODE_DISABLED). RlamchU_binary80 must not be compiled."
+#else
+#error "Unknown MPLAPACK_BINARY80_MODE value."
+#endif
+
+    return rmin;
 }
 
-// "L" : largest exponent (emax) used by DLAMCH
-_Float64x RlamchL_binary80(void) {
-#if defined(FLT64X_MAX_EXP)
-    return (_Float64x)FLT64X_MAX_EXP;
-#else
-    return (_Float64x)LDBL_MAX_EXP;
+// "L" : largest exponent (emax) used by *LAMCH
+mplapack_binary80_t RlamchL_binary80(void) {
+#if MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_FLOAT64X
+#if !defined(FLT64X_MAX_EXP)
+#error "FLT64X_MAX_EXP is not defined, but MPLAPACK_BINARY80_MODE_FLOAT64X is selected."
 #endif
+    constexpr int kMaxExp = FLT64X_MAX_EXP;
+
+#elif MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_LDBL80
+#if !defined(LDBL_MAX_EXP)
+#error "LDBL_MAX_EXP is not defined, but MPLAPACK_BINARY80_MODE_LDBL80 is selected."
+#endif
+    constexpr int kMaxExp = LDBL_MAX_EXP;
+
+#elif MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_DISABLED
+#error "Binary80 is disabled (MPLAPACK_BINARY80_MODE_DISABLED). RlamchL_binary80 must not be compiled."
+#else
+#error "Unknown MPLAPACK_BINARY80_MODE value."
+#endif
+
+    return (mplapack_binary80_t)kMaxExp;
 }
 
 // "O" : overflow threshold (rmax; maximum finite)
-_Float64x RlamchO_binary80(void) {
-#if defined(FLT64X_MAX)
-    return (_Float64x)FLT64X_MAX;
-#else
-    return (_Float64x)LDBL_MAX;
+mplapack_binary80_t RlamchO_binary80(void) {
+#if MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_FLOAT64X
+#if !defined(FLT64X_MAX)
+#error "FLT64X_MAX is not defined, but MPLAPACK_BINARY80_MODE_FLOAT64X is selected."
 #endif
+    const mplapack_binary80_t rmax = (mplapack_binary80_t)FLT64X_MAX;
+
+#elif MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_LDBL80
+#if !defined(LDBL_MAX)
+#error "LDBL_MAX is not defined, but MPLAPACK_BINARY80_MODE_LDBL80 is selected."
+#endif
+    const mplapack_binary80_t rmax = (mplapack_binary80_t)LDBL_MAX;
+
+#elif MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_DISABLED
+#error "Binary80 is disabled (MPLAPACK_BINARY80_MODE_DISABLED). RlamchO_binary80 must not be compiled."
+#else
+#error "Unknown MPLAPACK_BINARY80_MODE value."
+#endif
+
+    return rmax;
 }
 
 // "Z" : dummy
-_Float64x RlamchZ_binary80(void) { return (_Float64x)0.0; }
+mplapack_binary80_t RlamchZ_binary80(void) { return (mplapack_binary80_t)0.0; }
 
-_Float64x Rlamch_binary80(const char *cmach) {
+mplapack_binary80_t Rlamch_binary80(const char *cmach) {
     if (Mlsame(cmach, "E"))
         return RlamchE_binary80();
     if (Mlsame(cmach, "S"))
@@ -785,40 +848,64 @@ _Float64x Rlamch_binary80(const char *cmach) {
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_BINARY128___
-_Float128 RlamchE_binary128(void);
-_Float128 RlamchS_binary128(void);
-_Float128 RlamchB_binary128(void);
-_Float128 RlamchP_binary128(void);
-_Float128 RlamchN_binary128(void);
-_Float128 RlamchR_binary128(void);
-_Float128 RlamchM_binary128(void);
-_Float128 RlamchU_binary128(void);
-_Float128 RlamchL_binary128(void);
-_Float128 RlamchO_binary128(void);
-_Float128 RlamchZ_binary128(void);
+mplapack_binary128_t RlamchE_binary128(void);
+mplapack_binary128_t RlamchS_binary128(void);
+mplapack_binary128_t RlamchB_binary128(void);
+mplapack_binary128_t RlamchP_binary128(void);
+mplapack_binary128_t RlamchN_binary128(void);
+mplapack_binary128_t RlamchR_binary128(void);
+mplapack_binary128_t RlamchM_binary128(void);
+mplapack_binary128_t RlamchU_binary128(void);
+mplapack_binary128_t RlamchL_binary128(void);
+mplapack_binary128_t RlamchO_binary128(void);
+mplapack_binary128_t RlamchZ_binary128(void);
 
 // "E" : relative machine precision (unit roundoff), assume rounding
 // DLAMCH('E') corresponds to 0.5 * (gap near 1) when rounding occurs.
-_Float128 RlamchE_binary128(void) {
-#if defined ___MPLAPACK_WANT_LIBQUADMATH___
-    return (_Float128)FLT128_EPSILON * (_Float128)0.5;
-#elif defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
-    // 2^-113
-    return 9.6296497219361792652798897129246365926905e-35L;
-#else
-    // 2^-113
-    return 9.6296497219361792652798897129246365926905e-35Q;
+mplapack_binary128_t RlamchE_binary128(void) {
+#if MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_FLOAT128
+#if !defined(FLT128_MANT_DIG)
+#error "FLT128_MANT_DIG is not defined, but MPLAPACK_BINARY128_MODE_FLOAT128 is selected."
 #endif
+    constexpr int p = FLT128_MANT_DIG;
+
+#elif MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_LDBL
+#if !defined(LDBL_MANT_DIG)
+#error "LDBL_MANT_DIG is not defined, but MPLAPACK_BINARY128_MODE_LDBL is selected."
+#endif
+    constexpr int p = LDBL_MANT_DIG;
+
+#elif MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_QUADMATH
+#if defined(__FLT128_MANT_DIG__)
+    constexpr int p = __FLT128_MANT_DIG__;
+#elif defined(FLT128_MANT_DIG)
+    constexpr int p = FLT128_MANT_DIG;
+#else
+#error "__FLT128_MANT_DIG__/FLT128_MANT_DIG is not defined, but MPLAPACK_BINARY128_MODE_QUADMATH is selected."
+#endif
+
+#elif MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_DISABLED
+#error "Binary128 is disabled (MPLAPACK_BINARY128_MODE_DISABLED). RlamchE_binary128 must not be compiled."
+#else
+#error "Unknown MPLAPACK_BINARY128_MODE value."
+#endif
+
+    // Unit roundoff for base-2: u = 2^(-p) (assuming rounding to nearest).
+    mplapack_binary128_t e = (mplapack_binary128_t)1.0;
+    for (int i = 0; i < p; ++i) {
+        e /= (mplapack_binary128_t)2.0;
+    }
+    return e;
 }
 
 // "S" : safe minimum such that 1/sfmin does not overflow (netlib logic)
 // sfmin = rmin; small = 1/rmax; if (small >= sfmin) sfmin = small*(1+eps)
-_Float128 RlamchS_binary128(void) {
-    const _Float128 one = (_Float128)1.0;
-    const _Float128 eps = RlamchE_binary128();
+mplapack_binary128_t RlamchS_binary128(void) {
+    const mplapack_binary128_t one = (mplapack_binary128_t)1.0;
+    const mplapack_binary128_t eps = RlamchE_binary128();
 
-    _Float128 sfmin = RlamchU_binary128();
-    const _Float128 small = one / RlamchO_binary128();
+    mplapack_binary128_t sfmin = RlamchU_binary128();
+    const mplapack_binary128_t small = one / RlamchO_binary128();
 
     if (small >= sfmin) {
         sfmin = small * (one + eps);
@@ -827,69 +914,179 @@ _Float128 RlamchS_binary128(void) {
 }
 
 // "B" : base of the machine
-_Float128 RlamchB_binary128(void) { return (_Float128)2.0; }
+mplapack_binary128_t RlamchB_binary128(void) { return (mplapack_binary128_t)2.0; }
 
 // "P" : precision = eps*base
-_Float128 RlamchP_binary128(void) { return RlamchE_binary128() * RlamchB_binary128(); }
+mplapack_binary128_t RlamchP_binary128(void) { return RlamchE_binary128() * RlamchB_binary128(); }
 
-// "N" : number of digits in mantissa
-_Float128 RlamchN_binary128(void) {
-#if defined ___MPLAPACK_WANT_LIBQUADMATH___
-    return (_Float128)FLT128_MANT_DIG; // 113
-#else
-    return (_Float128)113;
+// "N" : number of base digits in mantissa (for base-2, this is significand bits)
+mplapack_binary128_t RlamchN_binary128(void) {
+#if MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_FLOAT128
+#if !defined(FLT128_MANT_DIG)
+#error "FLT128_MANT_DIG is not defined, but MPLAPACK_BINARY128_MODE_FLOAT128 is selected."
 #endif
+    constexpr int p = FLT128_MANT_DIG;
+
+#elif MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_LDBL
+#if !defined(LDBL_MANT_DIG)
+#error "LDBL_MANT_DIG is not defined, but MPLAPACK_BINARY128_MODE_LDBL is selected."
+#endif
+    constexpr int p = LDBL_MANT_DIG;
+
+#elif MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_QUADMATH
+#if defined(__FLT128_MANT_DIG__)
+    constexpr int p = __FLT128_MANT_DIG__;
+#elif defined(FLT128_MANT_DIG)
+    constexpr int p = FLT128_MANT_DIG;
+#else
+#error "__FLT128_MANT_DIG__/FLT128_MANT_DIG is not defined, but MPLAPACK_BINARY128_MODE_QUADMATH is selected."
+#endif
+
+#elif MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_DISABLED
+#error "Binary128 is disabled (MPLAPACK_BINARY128_MODE_DISABLED). RlamchN_binary128 must not be compiled."
+#else
+#error "Unknown MPLAPACK_BINARY128_MODE value."
+#endif
+
+    return (mplapack_binary128_t)p;
 }
 
 // "R" : 1.0 when rounding occurs in addition, 0.0 otherwise
-_Float128 RlamchR_binary128(void) { return (_Float128)1.0; }
+// MPLAPACK assumes IEEE-like rounding in normal builds.
+mplapack_binary128_t RlamchR_binary128(void) { return (mplapack_binary128_t)1.0; }
 
-// "M" : minimum exponent (emin) used by DLAMCH
-// For IEEE binary128, FLT128_MIN is 2^(-16382) and DLAMCH uses rmin = base^(emin-1).
-// Thus emin = -16381 so that emin-1 = -16382.
-_Float128 RlamchM_binary128(void) {
-#if defined ___MPLAPACK_WANT_LIBQUADMATH___
-    return (_Float128)FLT128_MIN_EXP; // -16381
-#else
-    return (_Float128)(-16381);
+// "M" : minimum exponent (emin) used by *LAMCH
+// *LAMCH uses rmin = base^(emin-1). For IEEE binary128: rmin = 2^-16382 => emin = -16381.
+mplapack_binary128_t RlamchM_binary128(void) {
+#if MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_FLOAT128
+#if !defined(FLT128_MIN_EXP)
+#error "FLT128_MIN_EXP is not defined, but MPLAPACK_BINARY128_MODE_FLOAT128 is selected."
 #endif
+    constexpr int emin = FLT128_MIN_EXP;
+
+#elif MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_LDBL
+#if !defined(LDBL_MIN_EXP)
+#error "LDBL_MIN_EXP is not defined, but MPLAPACK_BINARY128_MODE_LDBL is selected."
+#endif
+    constexpr int emin = LDBL_MIN_EXP;
+
+#elif MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_QUADMATH
+#if defined(__FLT128_MIN_EXP__)
+    constexpr int emin = __FLT128_MIN_EXP__;
+#elif defined(FLT128_MIN_EXP)
+    constexpr int emin = FLT128_MIN_EXP;
+#else
+#error "__FLT128_MIN_EXP__/FLT128_MIN_EXP is not defined, but MPLAPACK_BINARY128_MODE_QUADMATH is selected."
+#endif
+
+#elif MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_DISABLED
+#error "Binary128 is disabled (MPLAPACK_BINARY128_MODE_DISABLED). RlamchM_binary128 must not be compiled."
+#else
+#error "Unknown MPLAPACK_BINARY128_MODE value."
+#endif
+
+    return (mplapack_binary128_t)emin;
 }
 
 // "U" : underflow threshold (rmin; minimum positive normal)
-_Float128 RlamchU_binary128(void) {
-#if defined ___MPLAPACK_WANT_LIBQUADMATH___
-    return (_Float128)FLT128_MIN;
-#elif defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
-    return 3.3621031431120935062626778173217526025981e-4932L;
-#else
-    return 3.3621031431120935062626778173217526025981e-4932Q;
+mplapack_binary128_t RlamchU_binary128(void) {
+#if MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_FLOAT128
+#if !defined(FLT128_MIN)
+#error "FLT128_MIN is not defined, but MPLAPACK_BINARY128_MODE_FLOAT128 is selected."
 #endif
+    const mplapack_binary128_t rmin = (mplapack_binary128_t)FLT128_MIN;
+
+#elif MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_LDBL
+#if !defined(LDBL_MIN)
+#error "LDBL_MIN is not defined, but MPLAPACK_BINARY128_MODE_LDBL is selected."
+#endif
+    const mplapack_binary128_t rmin = (mplapack_binary128_t)LDBL_MIN;
+
+#elif MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_QUADMATH
+#if defined(__FLT128_MIN__)
+    const mplapack_binary128_t rmin = (mplapack_binary128_t)__FLT128_MIN__;
+#elif defined(FLT128_MIN)
+    const mplapack_binary128_t rmin = (mplapack_binary128_t)FLT128_MIN;
+#else
+#error "__FLT128_MIN__/FLT128_MIN is not defined, but MPLAPACK_BINARY128_MODE_QUADMATH is selected."
+#endif
+
+#elif MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_DISABLED
+#error "Binary128 is disabled (MPLAPACK_BINARY128_MODE_DISABLED). RlamchU_binary128 must not be compiled."
+#else
+#error "Unknown MPLAPACK_BINARY128_MODE value."
+#endif
+
+    return rmin;
 }
 
-// "L" : largest exponent (emax) used by DLAMCH
-_Float128 RlamchL_binary128(void) {
-#if defined ___MPLAPACK_WANT_LIBQUADMATH___
-    return (_Float128)FLT128_MAX_EXP; // 16384
-#else
-    return (_Float128)16384;
+// "L" : largest exponent (emax) used by *LAMCH
+mplapack_binary128_t RlamchL_binary128(void) {
+#if MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_FLOAT128
+#if !defined(FLT128_MAX_EXP)
+#error "FLT128_MAX_EXP is not defined, but MPLAPACK_BINARY128_MODE_FLOAT128 is selected."
 #endif
-}
+    constexpr int emax = FLT128_MAX_EXP;
 
+#elif MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_LDBL
+#if !defined(LDBL_MAX_EXP)
+#error "LDBL_MAX_EXP is not defined, but MPLAPACK_BINARY128_MODE_LDBL is selected."
+#endif
+    constexpr int emax = LDBL_MAX_EXP;
+
+#elif MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_QUADMATH
+#if defined(__FLT128_MAX_EXP__)
+    constexpr int emax = __FLT128_MAX_EXP__;
+#elif defined(FLT128_MAX_EXP)
+    constexpr int emax = FLT128_MAX_EXP;
+#else
+#error "__FLT128_MAX_EXP__/FLT128_MAX_EXP is not defined, but MPLAPACK_BINARY128_MODE_QUADMATH is selected."
+#endif
+
+#elif MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_DISABLED
+#error "Binary128 is disabled (MPLAPACK_BINARY128_MODE_DISABLED). RlamchL_binary128 must not be compiled."
+#else
+#error "Unknown MPLAPACK_BINARY128_MODE value."
+#endif
+
+    return (mplapack_binary128_t)emax;
+}
 // "O" : overflow threshold (rmax; maximum finite)
-_Float128 RlamchO_binary128(void) {
-#if defined ___MPLAPACK_WANT_LIBQUADMATH___
-    return (_Float128)FLT128_MAX;
-#elif defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
-    return 1.1897314953572317650857593266280070161965e+4932L;
-#else
-    return 1.1897314953572317650857593266280070161965e+4932Q;
+mplapack_binary128_t RlamchO_binary128(void) {
+#if MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_FLOAT128
+#if !defined(FLT128_MAX)
+#error "FLT128_MAX is not defined, but MPLAPACK_BINARY128_MODE_FLOAT128 is selected."
 #endif
+    const mplapack_binary128_t rmax = (mplapack_binary128_t)FLT128_MAX;
+
+#elif MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_LDBL
+#if !defined(LDBL_MAX)
+#error "LDBL_MAX is not defined, but MPLAPACK_BINARY128_MODE_LDBL is selected."
+#endif
+    const mplapack_binary128_t rmax = (mplapack_binary128_t)LDBL_MAX;
+
+#elif MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_QUADMATH
+#if defined(__FLT128_MAX__)
+    const mplapack_binary128_t rmax = (mplapack_binary128_t)__FLT128_MAX__;
+#elif defined(FLT128_MAX)
+    const mplapack_binary128_t rmax = (mplapack_binary128_t)FLT128_MAX;
+#else
+#error "__FLT128_MAX__/FLT128_MAX is not defined, but MPLAPACK_BINARY128_MODE_QUADMATH is selected."
+#endif
+
+#elif MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_DISABLED
+#error "Binary128 is disabled (MPLAPACK_BINARY128_MODE_DISABLED). RlamchO_binary128 must not be compiled."
+#else
+#error "Unknown MPLAPACK_BINARY128_MODE value."
+#endif
+
+    return rmax;
 }
 
 // "Z" : dummy
-_Float128 RlamchZ_binary128(void) { return (_Float128)0.0; }
+mplapack_binary128_t RlamchZ_binary128(void) { return (mplapack_binary128_t)0.0; }
 
-_Float128 Rlamch_binary128(const char *cmach) {
+mplapack_binary128_t Rlamch_binary128(const char *cmach) {
     if (Mlsame(cmach, "E"))
         return RlamchE_binary128();
     if (Mlsame(cmach, "S"))

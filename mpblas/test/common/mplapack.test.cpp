@@ -378,14 +378,6 @@ static_assert(FLT64X_MANT_DIG == 64, "_Float64x is not IEEE binary80 (mantissa m
 #endif
 #endif
 
-#if defined(MPLAPACK_BINARY80_MODE) && defined(MPLAPACK_BINARY80_MODE_FLOAT80)
-#if MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_FLOAT80
-#if defined(__FLT80_MANT_DIG__)
-static_assert(__FLT80_MANT_DIG__ == 64, "__float80 is not IEEE binary80 (mantissa must be 64 bits).");
-#endif
-#endif
-#endif
-
 static inline std::mt19937_64 &mplapack_rng64_binary80() {
     // Deterministic by default; change seed policy if needed.
     static thread_local std::mt19937_64 rng(0x9e3779b97f4a7c15ULL);
