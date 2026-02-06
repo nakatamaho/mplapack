@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2025
+ * Copyright (c) 2012-2026
  *	Nakata, Maho
  * 	All rights reserved.
  *
@@ -206,10 +206,114 @@ inline long nint(mplapack_binary128_t a) {
     i = (long)tmp;
     return i;
 }
-
 inline __float128 pi(__float128 dummy) { return M_PIq; }
 
-#endif // MPLAPACK_BINARY128_MATH == MPLAPACK_BINARY128_MATH_QUADMATH
+#elif MPLAPACK_BINARY128_MATH == MPLAPACK_BINARY128_MATH_F128
+// Request IEC 60559 / TS 18661 (C23) extended floating and math/complex prototypes from glibc.
+// Must be defined before including <math.h>/<complex.h> through <cmath>/<complex>.
+#ifndef __STDC_WANT_IEC_60559_TYPES_EXT__
+#define __STDC_WANT_IEC_60559_TYPES_EXT__ 1
+#endif
+#ifndef __STDC_WANT_IEC_60559_FUNCS_EXT__
+#define __STDC_WANT_IEC_60559_FUNCS_EXT__ 1
+#endif
+
+#include <complex>
+#include <complex.h>
+
+inline _Float128 pow(const _Float128 &a, const _Float128 &b) { return powf128(a, b); }
+inline _Float128 pow(const long &a, const long &b) { return powf128((_Float128)a, (_Float128)b); }
+inline _Float128 pow(const int &a, const long &b) { return powf128((_Float128)a, (_Float128)b); }
+inline _Float128 pow(const _Float128 &a, const long &b) { return powf128(a, (_Float128)b); }
+inline _Float128 sqrt(const _Float128 &a) { return sqrtf128(a); }
+
+inline _Float128 sin(_Float128 a) { return sinf128(a); }
+inline _Float128 sinh(_Float128 a) { return sinhf128(a); }
+inline _Float128 cos(_Float128 a) { return cosf128(a); }
+inline _Float128 cosh(_Float128 a) { return coshf128(a); }
+
+inline _Float128 atan2(_Float128 a, _Float128 b) { return atan2f128(a, b); }
+
+inline _Float128 exp(const _Float128 &a) { return expf128(a); }
+inline _Float128 log(const _Float128 &a) { return logf128(a); }
+inline _Float128 log10(const _Float128 &a) { return log10f128(a); }
+inline _Float128 log2(const _Float128 &a) { return logf128(a) / logf128(2.0); }
+inline _Float128 ceil(_Float128 a) { return ceilf128(a); }
+inline _Float128 abs(const std::complex<_Float128> &a) {
+    _Float128 _Complex b, tmp;
+    _Float128 c;
+    __real__(b) = (a.real());
+    __imag__(b) = (a.imag());
+    c = cabsf128(b);
+    return c;
+}
+
+inline std::complex<_Float128> sqrt(const std::complex<_Float128> a) {
+    _Float128 _Complex b, tmp;
+    std::complex<_Float128> c;
+    __real__(b) = (a.real());
+    __imag__(b) = (a.imag());
+    tmp = csqrtf128(b);
+    c.real(__real__(tmp));
+    c.imag(__imag__(tmp));
+    return c;
+}
+
+inline std::complex<_Float128> sin(const std::complex<_Float128> a) {
+    _Float128 _Complex b, tmp;
+    std::complex<_Float128> c;
+    __real__(b) = (a.real());
+    __imag__(b) = (a.imag());
+    tmp = csinf128(b);
+    c.real(__real__(tmp));
+    c.imag(__imag__(tmp));
+    return c;
+}
+
+inline std::complex<_Float128> cos(const std::complex<_Float128> a) {
+    _Float128 _Complex b, tmp;
+    std::complex<_Float128> c;
+    __real__(b) = (a.real());
+    __imag__(b) = (a.imag());
+    tmp = ccosf128(b);
+    c.real(__real__(tmp));
+    c.imag(__imag__(tmp));
+    return c;
+}
+
+inline std::complex<_Float128> exp(const std::complex<_Float128> &a) {
+    _Float128 _Complex b, tmp;
+    std::complex<_Float128> c;
+    __real__(b) = (a.real());
+    __imag__(b) = (a.imag());
+    tmp = cexpf128(b);
+    c.real(__real__(tmp));
+    c.imag(__imag__(tmp));
+    return c;
+}
+
+inline std::complex<_Float128> log(const std::complex<_Float128> &a) {
+    _Float128 _Complex b, tmp;
+    std::complex<_Float128> c;
+    __real__(b) = (a.real());
+    __imag__(b) = (a.imag());
+    tmp = clogf128(b);
+    c.real(__real__(tmp));
+    c.imag(__imag__(tmp));
+    return c;
+}
+
+inline mplapackint nint(_Float128 a) {
+    mplapackint i;
+    _Float128 tmp;
+    a = a + 0.5;
+    tmp = floorf128(a);
+    i = (mplapackint)tmp;
+    return i;
+}
+
+inline _Float128 pi(_Float128 dummy) { return M_PIf128; }
+#endif // MPLAPACK_BINARY128_MATH
 
 // support functions for mplapack, general ones
 #include <cmath>
