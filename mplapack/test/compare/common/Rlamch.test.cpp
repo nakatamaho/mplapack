@@ -1937,18 +1937,17 @@ void Rlamch_binary80_test() {
     assert_case(gotZ == exZ, "Z (dummy) is not 0");
 
     // Operational property checks (mplapack_binary80_t)
-    const mplapack_binary80_t next = nextafterf64x(one, two);
-    // const mplapack_binary80_t next = (mplapack_binary80_t)nextafterl((long double)one, (long double)two);
+    const mplapack_binary80_t next = nextafter(one, two);
 
     // P == ulp(1) == nextafter(1,2) - 1
-    assert_case((next - one) == gotP, "P is not equal to ulp(1) = nextafterf64x(1,2)-1");
+    assert_case((next - one) == gotP, "P is not equal to ulp(1) = nextafterx(1,2)-1");
 
     // Consistency: P == 2*E
     assert_case((gotE * two) == gotP, "expected P == 2*E");
 
     // Strong, rounding-mode-independent check: fl(1 + P) == nextafter(1,2)
     volatile mplapack_binary80_t b = one + gotP;
-    assert_case(b == next, "expected fl(1 + P) == nextafterf64x(1,2)");
+    assert_case(b == next, "expected fl(1 + P) == nextafter(1,2)");
     assert_case(b > one, "expected fl(1 + 2E) > 1");
 
     // Tie check: only assert under round-to-nearest (ties-to-even)
