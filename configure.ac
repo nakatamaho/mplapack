@@ -105,7 +105,7 @@ AC_COMPILE_IFELSE([
 ], [is_intelcc=1])
 AM_CONDITIONAL(IS_INTELCC, test x$is_intelcc = x1)
 if test x"$is_intelcc" = x"1"; then
-    AC_MSG_RESULT([Intel compiler (icc/icx) detected])
+    AC_MSG_RESULT([Intel compiler (icx/icpx) detected])
 fi
 AC_PROG_CXX
 IS_INTELCXX=0
@@ -1754,11 +1754,11 @@ if test x"$enable_optimization" = x"yes" && test x"$enable_debug" != x"yes" ; th
 fi
 
 if test x"$is_intelcc" = x"1"; then
-    CFLAGS="$CFLAGS -fp-model precise"
+    CFLAGS="$CFLAGS -Wno-error=return-type-c-linkage -Wno-return-type-c-linkage -Wno-error=deprecated-literal-operator -Wno-deprecated-literal-operator -fp-model precise"
 fi
 
 if test x"$is_intelcxx" = x"1"; then
-    CXXFLAGS="$CXXFLAGS -fp-model precise"
+    CXXFLAGS="$CXXFLAGS -Wno-error=return-type-c-linkage -Wno-return-type-c-linkage -Wno-error=deprecated-literal-operator -Wno-deprecated-literal-operator -fp-model precise"
 fi
 
 AC_SUBST(CFLAGS)
