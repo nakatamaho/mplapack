@@ -1940,7 +1940,7 @@ void Rlamch_binary80_test() {
     const mplapack_binary80_t next = nextafter(one, two);
 
     // P == ulp(1) == nextafter(1,2) - 1
-    assert_case((next - one) == gotP, "P is not equal to ulp(1) = nextafterx(1,2)-1");
+    assert_case((next - one) == gotP, "P is not equal to ulp(1) = nextafter(1,2)-1");
 
     // Consistency: P == 2*E
     assert_case((gotE * two) == gotP, "expected P == 2*E");
