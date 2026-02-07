@@ -103,8 +103,8 @@ typedef std::complex<double> COMPLEX;
 #include <mplapack_eig_binary80.h>
 typedef mplapackint INTEGER;
 typedef mplapacklogical LOGICAL;
-typedef _Float64x REAL;
-typedef std::complex<_Float64x> COMPLEX;
+typedef mplapack_binary80_t REAL;
+typedef std::complex<mplapack_binary80_t> COMPLEX;
 #define Mlsame Mlsame_binary80
 #define Mxerbla Mxerbla_binary80
 #define Rlamch Rlamch_binary80
@@ -117,8 +117,8 @@ typedef std::complex<_Float64x> COMPLEX;
 #include <mplapack_eig_binary128.h>
 typedef mplapackint INTEGER;
 typedef mplapacklogical LOGICAL;
-typedef _Float128 REAL;
-typedef std::complex<_Float128> COMPLEX;
+typedef mplapack_binary128_t REAL;
+typedef std::complex<mplapack_binary128_t> COMPLEX;
 #define Mlsame Mlsame_binary128
 #define Mxerbla Mxerbla_binary128
 #define Rlamch Rlamch_binary128
