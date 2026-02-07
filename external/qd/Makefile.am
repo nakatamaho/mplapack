@@ -39,8 +39,8 @@ endif
 
 work/$(CONFIGURE_STAMP): work/$(PATCH_STAMP)
 if IS_INTELCC
-	QD_CFLAGS="$${CFLAGS// -xHost/} -O2 -fp-model precise" ; \
-	QD_CXXFLAGS="$${CXXFLAGS// -xHost/} -O2 -fp-model precise" ; \
+	QD_CFLAGS="$${CFLAGS// -xHost/} -O2 -fp-model strict" ; \
+	QD_CXXFLAGS="$${CXXFLAGS// -xHost/} -O2 -fp-model strict" ; \
 	cd $(abs_builddir)/work/internal/QD-$(QDVERSION) ; autoreconf -f -i ; \
 	env "CC=$(CC)" "CXX=$(CXX)" "CFLAGS=$$QD_CFLAGS" "CXXFLAGS=$$QD_CXXFLAGS" "FC=$(FC)" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS) ; \
 	cd $(abs_builddir)/work/install/QD-$(QDVERSION) ; autoreconf -f -i ; \
