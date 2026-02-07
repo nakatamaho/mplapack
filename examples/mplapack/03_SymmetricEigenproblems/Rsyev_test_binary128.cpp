@@ -8,13 +8,13 @@
 
 #define BUFLEN 1024
 
-void printnum(_Float128 rtmp)
+void printnum(mplapack_binary128_t rtmp)
 {
     int width = 42;
     char buf[BUFLEN];
-#if defined ___MPLAPACK_WANT_LIBQUADMATH___
+#if MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_QUADMATH_SNPRINTF
     int n = quadmath_snprintf (buf, sizeof buf, "%*.35Qe", width, rtmp);
-#elif defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
+#elif MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_SNPRINTF_LDBL
     snprintf (buf, sizeof buf, "%.35Le", rtmp);
 #else
     strfromf128(buf, sizeof(buf), "%.35e", rtmp);
@@ -27,8 +27,8 @@ void printnum(_Float128 rtmp)
 }
 
 //Matlab/Octave format
-void printvec(_Float128 *a, int len) {
-    _Float128 tmp;
+void printvec(mplapack_binary128_t *a, int len) {
+    mplapack_binary128_t tmp;
     printf("[ ");
     for (int i = 0; i < len; i++) {
         tmp = a[i];
@@ -39,9 +39,9 @@ void printvec(_Float128 *a, int len) {
     printf("]");
 }
 
-void printmat(int n, int m, _Float128 *a, int lda)
+void printmat(int n, int m, mplapack_binary128_t *a, int lda)
 {
-    _Float128 mtmp;
+    mplapack_binary128_t mtmp;
 
     printf("[ ");
     for (int i = 0; i < n; i++) {
@@ -64,8 +64,8 @@ int main()
     mplapackint n = 4;
     mplapackint lwork, info;
 
-    _Float128 *A = new _Float128[n * n];
-    _Float128 *w = new _Float128[n];
+    mplapack_binary128_t *A = new mplapack_binary128_t[n * n];
+    mplapack_binary128_t *w = new mplapack_binary128_t[n];
 
 //setting A matrix
     A[0 + 0 * n] = 5;    A[0 + 1 * n] = 4;    A[0 + 2 * n] = 1;    A[0 + 3 * n] = 1;
@@ -76,12 +76,12 @@ int main()
     printf("A ="); printmat(n, n, A, n); printf("\n");
 //work space query
     lwork = -1;
-    _Float128 *work = new _Float128[1];
+    mplapack_binary128_t *work = new mplapack_binary128_t[1];
 
     Rsyev("V", "U", n, A, n, w, work, lwork, info);
     lwork = (int) cast2double (work[0]);
     delete[]work;
-    work = new _Float128[std::max((mplapackint) 1, lwork)];
+    work = new mplapack_binary128_t[std::max((mplapackint) 1, lwork)];
 //inverse matrix
     Rsyev("V", "U", n, A, n, w, work, lwork, info);
 //print out some results.

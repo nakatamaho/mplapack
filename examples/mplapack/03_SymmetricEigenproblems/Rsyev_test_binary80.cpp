@@ -9,15 +9,15 @@
 #define FLOAT64X_FORMAT "%+25.21Le"
 #define FLOAT64X_SHORT_FORMAT "%+20.16Le"
 
-void printnum(_Float64x rtmp)
+void printnum(mplapack_binary80_t rtmp)
 {
     printf(FLOAT64X_FORMAT, rtmp);
     return;
 }
 
 //Matlab/Octave format
-void printvec(_Float64x *a, int len) {
-    _Float64x tmp;
+void printvec(mplapack_binary80_t *a, int len) {
+    mplapack_binary80_t tmp;
     printf("[ ");
     for (int i = 0; i < len; i++) {
         tmp = a[i];
@@ -28,9 +28,9 @@ void printvec(_Float64x *a, int len) {
     printf("]");
 }
 
-void printmat(int n, int m, _Float64x *a, int lda)
+void printmat(int n, int m, mplapack_binary80_t *a, int lda)
 {
-    _Float64x mtmp;
+    mplapack_binary80_t mtmp;
 
     printf("[ ");
     for (int i = 0; i < n; i++) {
@@ -53,8 +53,8 @@ int main()
     mplapackint n = 4;
     mplapackint lwork, info;
 
-    _Float64x *A = new _Float64x[n * n];
-    _Float64x *w = new _Float64x[n];
+    mplapack_binary80_t *A = new mplapack_binary80_t[n * n];
+    mplapack_binary80_t *w = new mplapack_binary80_t[n];
 
 //setting A matrix
     A[0 + 0 * n] = 5;    A[0 + 1 * n] = 4;    A[0 + 2 * n] = 1;    A[0 + 3 * n] = 1;
@@ -65,12 +65,12 @@ int main()
     printf("A ="); printmat(n, n, A, n); printf("\n");
 //work space query
     lwork = -1;
-    _Float64x *work = new _Float64x[1];
+    mplapack_binary80_t *work = new mplapack_binary80_t[1];
 
     Rsyev("V", "U", n, A, n, w, work, lwork, info);
     lwork = (int) cast2double (work[0]);
     delete[]work;
-    work = new _Float64x[std::max((mplapackint) 1, lwork)];
+    work = new mplapack_binary80_t[std::max((mplapackint) 1, lwork)];
 //inverse matrix
     Rsyev("V", "U", n, A, n, w, work, lwork, info);
 //print out some results.

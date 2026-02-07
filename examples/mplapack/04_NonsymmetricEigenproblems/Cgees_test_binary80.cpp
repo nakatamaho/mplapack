@@ -9,8 +9,8 @@
 #define FLOAT64X_FORMAT "%+25.21Le"
 #define FLOAT64X_SHORT_FORMAT "%+20.16Le"
 
-void printnum(_Float64x rtmp) { printf(FLOAT64X_FORMAT, rtmp); return;}
-void printnum(std::complex<_Float64x> ctmp) { printf(FLOAT64X_FORMAT FLOAT64X_FORMAT "i", ctmp.real(), ctmp.imag()); }
+void printnum(mplapack_binary80_t rtmp) { printf(FLOAT64X_FORMAT, rtmp); return;}
+void printnum(std::complex<mplapack_binary80_t> ctmp) { printf(FLOAT64X_FORMAT FLOAT64X_FORMAT "i", ctmp.real(), ctmp.imag()); }
 
 //Matlab/Octave format
 template <class X> void printvec(X *a, int len) {
@@ -45,7 +45,7 @@ template <class X> void printmat(int n, int m, X *a, int lda)
     }
     printf("]");
 }
-bool cselect(std::complex<_Float64x> a) {
+bool cselect(std::complex<mplapack_binary80_t> a) {
     // sorting rule for eigenvalues.
     return false;
 }
@@ -53,21 +53,21 @@ bool cselect(std::complex<_Float64x> a) {
 int main() {
     mplapackint n = 4;
 
-    std::complex<_Float64x> *a = new std::complex<_Float64x>[n * n];
+    std::complex<mplapack_binary80_t> *a = new std::complex<mplapack_binary80_t>[n * n];
     mplapackint sdim = 0;
     mplapackint lwork = 2 * n;
-    std::complex<_Float64x> *w = new std::complex<_Float64x>[n];
-    std::complex<_Float64x> *vs = new std::complex<_Float64x>[n * n];
-    std::complex<_Float64x> *work = new std::complex<_Float64x>[lwork];
-    _Float64x *rwork = new _Float64x[n];
+    std::complex<mplapack_binary80_t> *w = new std::complex<mplapack_binary80_t>[n];
+    std::complex<mplapack_binary80_t> *vs = new std::complex<mplapack_binary80_t>[n * n];
+    std::complex<mplapack_binary80_t> *work = new std::complex<mplapack_binary80_t>[lwork];
+    mplapack_binary80_t *rwork = new mplapack_binary80_t[n];
     bool bwork[n];
     mplapackint info;
 
     // setting A matrix
-    a[0 + 0 * n] = std::complex<_Float64x>(5.0,  9.0); a[0 + 1 * n] = std::complex<_Float64x>(5.0, 5.0);   a[0 + 2 * n] = std::complex<_Float64x>(-6.0, -6.0); a[0 + 3 * n] = std::complex<_Float64x>(-7.0,-7.0);
-    a[1 + 0 * n] = std::complex<_Float64x>(3.0,  3.0); a[1 + 1 * n] = std::complex<_Float64x>(6.0,10.0);   a[1 + 2 * n] = std::complex<_Float64x>(-5.0, -5.0); a[1 + 3 * n] = std::complex<_Float64x>(-6.0,-6.0);
-    a[2 + 0 * n] = std::complex<_Float64x>(2.0,  2.0); a[2 + 1 * n] = std::complex<_Float64x>(3.0, 3.0);   a[2 + 2 * n] = std::complex<_Float64x>(-1.0, 3.0);  a[2 + 3 * n] = std::complex<_Float64x>(-5.0,-5.0);
-    a[3 + 0 * n] = std::complex<_Float64x>(1.0,  1.0); a[3 + 1 * n] = std::complex<_Float64x>(2.0, 2.0);   a[3 + 2 * n] = std::complex<_Float64x>(-3.0,-3.0);  a[3 + 3 * n] = std::complex<_Float64x>(0.0, 4.0);
+    a[0 + 0 * n] = std::complex<mplapack_binary80_t>(5.0,  9.0); a[0 + 1 * n] = std::complex<mplapack_binary80_t>(5.0, 5.0);   a[0 + 2 * n] = std::complex<mplapack_binary80_t>(-6.0, -6.0); a[0 + 3 * n] = std::complex<mplapack_binary80_t>(-7.0,-7.0);
+    a[1 + 0 * n] = std::complex<mplapack_binary80_t>(3.0,  3.0); a[1 + 1 * n] = std::complex<mplapack_binary80_t>(6.0,10.0);   a[1 + 2 * n] = std::complex<mplapack_binary80_t>(-5.0, -5.0); a[1 + 3 * n] = std::complex<mplapack_binary80_t>(-6.0,-6.0);
+    a[2 + 0 * n] = std::complex<mplapack_binary80_t>(2.0,  2.0); a[2 + 1 * n] = std::complex<mplapack_binary80_t>(3.0, 3.0);   a[2 + 2 * n] = std::complex<mplapack_binary80_t>(-1.0, 3.0);  a[2 + 3 * n] = std::complex<mplapack_binary80_t>(-5.0,-5.0);
+    a[3 + 0 * n] = std::complex<mplapack_binary80_t>(1.0,  1.0); a[3 + 1 * n] = std::complex<mplapack_binary80_t>(2.0, 2.0);   a[3 + 2 * n] = std::complex<mplapack_binary80_t>(-3.0,-3.0);  a[3 + 3 * n] = std::complex<mplapack_binary80_t>(0.0, 4.0);
 
     printf("# Ex. 6.5 p. 116, Collection of Matrices for Testing Computational Algorithms, Robert T. Gregory, David L. Karney\n");
     printf("# octave check\n");

@@ -83,25 +83,25 @@ endif
 if ENABLE_BINARY80
 mpblasexamples_PROGRAMS += Cgemm_binary80 Rgemm_binary80 Cgemm_binary80_opt Rgemm_binary80_opt
 
-_Float64x_cxxflags = $(OPENMP_CXXFLAGS)
-_Float64x_libdepends = -L$(top_builddir)/mpblas/reference -lmpblas_binary80
-_Float64x_opt_libdepends = -L$(top_builddir)/mpblas/optimized/binary80 -lmpblas_binary80_opt
+mplapack_binary80_t_cxxflags = $(OPENMP_CXXFLAGS)
+mplapack_binary80_t_libdepends = -L$(top_builddir)/mpblas/reference -lmpblas_binary80
+mplapack_binary80_t_opt_libdepends = -L$(top_builddir)/mpblas/optimized/binary80 -lmpblas_binary80_opt
 
 Cgemm_binary80_SOURCES = Cgemm_binary80.cpp
-Cgemm_binary80_CXXFLAGS = $(_Float64x_cxxflags)
-Cgemm_binary80_LDFLAGS = $(_Float64x_libdepends)
+Cgemm_binary80_CXXFLAGS = $(mplapack_binary80_t_cxxflags)
+Cgemm_binary80_LDFLAGS = $(mplapack_binary80_t_libdepends)
 
 Rgemm_binary80_SOURCES = Rgemm_binary80.cpp
-Rgemm_binary80_CXXFLAGS = $(_Float64x_cxxflags)
-Rgemm_binary80_LDFLAGS = $(_Float64x_libdepends)
+Rgemm_binary80_CXXFLAGS = $(mplapack_binary80_t_cxxflags)
+Rgemm_binary80_LDFLAGS = $(mplapack_binary80_t_libdepends)
 
 Cgemm_binary80_opt_SOURCES = Cgemm_binary80.cpp
-Cgemm_binary80_opt_CXXFLAGS = $(_Float64x_cxxflags)
-Cgemm_binary80_opt_LDFLAGS = $(_Float64x_opt_libdepends)
+Cgemm_binary80_opt_CXXFLAGS = $(mplapack_binary80_t_cxxflags)
+Cgemm_binary80_opt_LDFLAGS = $(mplapack_binary80_t_opt_libdepends)
 
 Rgemm_binary80_opt_SOURCES = Rgemm_binary80.cpp
-Rgemm_binary80_opt_CXXFLAGS = $(_Float64x_cxxflags)
-Rgemm_binary80_opt_LDFLAGS = $(_Float64x_opt_libdepends)
+Rgemm_binary80_opt_CXXFLAGS = $(mplapack_binary80_t_cxxflags)
+Rgemm_binary80_opt_LDFLAGS = $(mplapack_binary80_t_opt_libdepends)
 
 endif
 

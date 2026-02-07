@@ -9,8 +9,8 @@
 #define FLOAT64X_FORMAT "%+25.21Le"
 #define FLOAT64X_SHORT_FORMAT "%+20.16Le"
 
-void printnum(_Float64x rtmp) { printf(FLOAT64X_FORMAT, rtmp); return;}
-void printnum(std::complex<_Float64x> ctmp) { printf(FLOAT64X_FORMAT FLOAT64X_FORMAT "i", ctmp.real(), ctmp.imag()); }
+void printnum(mplapack_binary80_t rtmp) { printf(FLOAT64X_FORMAT, rtmp); return;}
+void printnum(std::complex<mplapack_binary80_t> ctmp) { printf(FLOAT64X_FORMAT FLOAT64X_FORMAT "i", ctmp.real(), ctmp.imag()); }
 
 //Matlab/Octave format
 template <class X> void printvec(X *a, int len) {

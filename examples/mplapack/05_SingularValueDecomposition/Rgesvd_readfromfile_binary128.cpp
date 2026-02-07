@@ -8,13 +8,13 @@
 
 #define BUFLEN 1024
 
-void printnum(_Float128 rtmp)
+void printnum(mplapack_binary128_t rtmp)
 {
     int width = 42;
     char buf[BUFLEN];
-#if defined ___MPLAPACK_WANT_LIBQUADMATH___
+#if MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_QUADMATH_SNPRINTF
     int n = quadmath_snprintf (buf, sizeof buf, "%*.35Qe", width, rtmp);
-#elif defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
+#elif MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_SNPRINTF_LDBL
     snprintf (buf, sizeof buf, "%.35Le", rtmp);
 #else
     strfromf128(buf, sizeof(buf), "%.35e", rtmp);
@@ -27,8 +27,8 @@ void printnum(_Float128 rtmp)
 }
 
 //Matlab/Octave format
-void printvec(_Float128 *a, int len) {
-    _Float128 tmp;
+void printvec(mplapack_binary128_t *a, int len) {
+    mplapack_binary128_t tmp;
     printf("[ ");
     for (int i = 0; i < len; i++) {
         tmp = a[i];
@@ -39,9 +39,9 @@ void printvec(_Float128 *a, int len) {
     printf("]");
 }
 
-void printmat(int n, int m, _Float128 *a, int lda)
+void printmat(int n, int m, mplapack_binary128_t *a, int lda)
 {
-    _Float128 mtmp;
+    mplapack_binary128_t mtmp;
 
     printf("[ ");
     for (int i = 0; i < n; i++) {
@@ -74,12 +74,12 @@ int main() {
     ss >> n;
     printf("# m n %d %d \n", (int)m, (int)m);
 
-    _Float128 *a = new _Float128[m * n];
-    _Float128 *s = new _Float128[std::min(m, n)];
-    _Float128 *u = new _Float128[m * m];
-    _Float128 *vt = new _Float128[n * n];
+    mplapack_binary128_t *a = new mplapack_binary128_t[m * n];
+    mplapack_binary128_t *s = new mplapack_binary128_t[std::min(m, n)];
+    mplapack_binary128_t *u = new mplapack_binary128_t[m * m];
+    mplapack_binary128_t *vt = new mplapack_binary128_t[n * n];
     mplapackint lwork = std::max({(mplapackint)1, 3 * std::min(m, n) + std::max(m, n), 5 * std::min(m, n)});
-    _Float128 *work = new _Float128[lwork];
+    mplapack_binary128_t *work = new mplapack_binary128_t[lwork];
     mplapackint info;
     double dtmp;
     for (int i = 0; i < m; i++) {

@@ -9,15 +9,15 @@
 #define FLOAT64X_FORMAT "%+25.21Le"
 #define FLOAT64X_SHORT_FORMAT "%+20.16Le"
 
-void printnum(_Float64x rtmp)
+void printnum(mplapack_binary80_t rtmp)
 {
     printf(FLOAT64X_FORMAT, rtmp);
     return;
 }
 
 //Matlab/Octave format
-void printvec(_Float64x *a, int len) {
-    _Float64x tmp;
+void printvec(mplapack_binary80_t *a, int len) {
+    mplapack_binary80_t tmp;
     printf("[ ");
     for (int i = 0; i < len; i++) {
         tmp = a[i];
@@ -28,9 +28,9 @@ void printvec(_Float64x *a, int len) {
     printf("]");
 }
 
-void printmat(int n, int m, _Float64x *a, int lda)
+void printmat(int n, int m, mplapack_binary80_t *a, int lda)
 {
-    _Float64x mtmp;
+    mplapack_binary80_t mtmp;
 
     printf("[ ");
     for (int i = 0; i < n; i++) {
@@ -50,11 +50,11 @@ void printmat(int n, int m, _Float64x *a, int lda)
 }
 void Frank(mplapackint n) {
     mplapackint lwork, info;
-    _Float64x *a = new _Float64x[n * n];
-    _Float64x *w = new _Float64x[n];
-    _Float64x *lambda = new _Float64x[n];
-    _Float64x *reldiff = new _Float64x[n];
-    _Float64x PI;
+    mplapack_binary80_t *a = new mplapack_binary80_t[n * n];
+    mplapack_binary80_t *w = new mplapack_binary80_t[n];
+    mplapack_binary80_t *lambda = new mplapack_binary80_t[n];
+    mplapack_binary80_t *reldiff = new mplapack_binary80_t[n];
+    mplapack_binary80_t PI;
     PI = pi(PI);
 
     // setting A matrix
@@ -67,12 +67,12 @@ void Frank(mplapackint n) {
 
     // work space query
     lwork = -1;
-    _Float64x *work = new _Float64x[1];
+    mplapack_binary80_t *work = new mplapack_binary80_t[1];
 
     Rsyev("N", "U", n, a, n, w, work, lwork, info);
     lwork = (int)cast2double(work[0]);
     delete[] work;
-    work = new _Float64x[std::max((mplapackint)1, lwork)];
+    work = new mplapack_binary80_t[std::max((mplapackint)1, lwork)];
 
     // diagonalize matrix
     Rsyev("N", "U", n, a, n, w, work, lwork, info);
@@ -93,7 +93,7 @@ void Frank(mplapackint n) {
     }
     printf("reldiff ="); printvec(reldiff, n); printf("\n");
 
-    _Float64x maxreldiff = 0.0;
+    mplapack_binary80_t maxreldiff = 0.0;
     maxreldiff = reldiff[0];
     for (int i = 2; i <= n; i++) {
         maxreldiff = std::max(reldiff[i - 1], maxreldiff);

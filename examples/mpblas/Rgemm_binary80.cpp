@@ -8,15 +8,15 @@
 #define FLOAT64X_FORMAT "%+25.21Le"
 #define FLOAT64X_SHORT_FORMAT "%+20.16Le"
 
-void printnum(_Float64x rtmp)
+void printnum(mplapack_binary80_t rtmp)
 {
     printf(FLOAT64X_FORMAT, rtmp);
     return;
 }
 
 //Matlab/Octave format
-void printvec(_Float64x *a, int len) {
-    _Float64x tmp;
+void printvec(mplapack_binary80_t *a, int len) {
+    mplapack_binary80_t tmp;
     printf("[ ");
     for (int i = 0; i < len; i++) {
         tmp = a[i];
@@ -27,9 +27,9 @@ void printvec(_Float64x *a, int len) {
     printf("]");
 }
 
-void printmat(int n, int m, _Float64x *a, int lda)
+void printmat(int n, int m, mplapack_binary80_t *a, int lda)
 {
-    _Float64x mtmp;
+    mplapack_binary80_t mtmp;
 
     printf("[ ");
     for (int i = 0; i < n; i++) {
@@ -51,10 +51,10 @@ int main()
 {
     mplapackint n = 3;
 
-    _Float64x *a = new _Float64x[n * n];
-    _Float64x *b = new _Float64x[n * n];
-    _Float64x *c = new _Float64x[n * n];
-    _Float64x alpha, beta;
+    mplapack_binary80_t *a = new mplapack_binary80_t[n * n];
+    mplapack_binary80_t *b = new mplapack_binary80_t[n * n];
+    mplapack_binary80_t *c = new mplapack_binary80_t[n * n];
+    mplapack_binary80_t alpha, beta;
 
 //setting A matrix
     a[0 + 0 * n] = 1;    a[0 + 1 * n] = 8;    a[0 + 2 * n] = 3;

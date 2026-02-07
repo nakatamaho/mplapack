@@ -8,13 +8,13 @@
 
 #define BUFLEN 1024
 
-void printnum(_Float128 rtmp)
+void printnum(mplapack_binary128_t rtmp)
 {
     int width = 42;
     char buf[BUFLEN];
-#if defined ___MPLAPACK_WANT_LIBQUADMATH___
+#if MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_QUADMATH_SNPRINTF
     int n = quadmath_snprintf (buf, sizeof buf, "%*.35Qe", width, rtmp);
-#elif defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
+#elif MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_SNPRINTF_LDBL
     snprintf (buf, sizeof buf, "%.35Le", rtmp);
 #else
     strfromf128(buf, sizeof(buf), "%.35e", rtmp);
@@ -27,8 +27,8 @@ void printnum(_Float128 rtmp)
 }
 
 //Matlab/Octave format
-void printvec(_Float128 *a, int len) {
-    _Float128 tmp;
+void printvec(mplapack_binary128_t *a, int len) {
+    mplapack_binary128_t tmp;
     printf("[ ");
     for (int i = 0; i < len; i++) {
         tmp = a[i];
@@ -39,9 +39,9 @@ void printvec(_Float128 *a, int len) {
     printf("]");
 }
 
-void printmat(int n, int m, _Float128 *a, int lda)
+void printmat(int n, int m, mplapack_binary128_t *a, int lda)
 {
-    _Float128 mtmp;
+    mplapack_binary128_t mtmp;
 
     printf("[ ");
     for (int i = 0; i < n; i++) {
@@ -64,7 +64,7 @@ void printmat(int n, int m, _Float128 *a, int lda)
 
 int compare_real(const void *a, const void *b)
 {
-    return *(_Float128*)a > *(_Float128*)b;
+    return *(mplapack_binary128_t*)a > *(mplapack_binary128_t*)b;
 }
 
 int main(int argc, char *argv[]) {
@@ -82,14 +82,14 @@ int main(int argc, char *argv[]) {
     }
 
     printf("#dimension %d, dispersion = %d \n", (int)n, (int)dispersion);
-    _Float128 *a = new _Float128[n * n];
-    _Float128 *aorg = new _Float128[n * n];
-    _Float128 *ainv = new _Float128[n * n];
-    _Float128 *s = new _Float128[n * n];
-    _Float128 *wr = new _Float128[n];
-    _Float128 *wi = new _Float128[n];
-    _Float128 *vl = new _Float128[n * n]; //not used
-    _Float128 *vr = new _Float128[n * n]; //not used
+    mplapack_binary128_t *a = new mplapack_binary128_t[n * n];
+    mplapack_binary128_t *aorg = new mplapack_binary128_t[n * n];
+    mplapack_binary128_t *ainv = new mplapack_binary128_t[n * n];
+    mplapack_binary128_t *s = new mplapack_binary128_t[n * n];
+    mplapack_binary128_t *wr = new mplapack_binary128_t[n];
+    mplapack_binary128_t *wi = new mplapack_binary128_t[n];
+    mplapack_binary128_t *vl = new mplapack_binary128_t[n * n]; //not used
+    mplapack_binary128_t *vr = new mplapack_binary128_t[n * n]; //not used
 
     mplapackint *ipiv = new mplapackint[n];
     mplapackint info;
@@ -97,11 +97,11 @@ int main(int argc, char *argv[]) {
 
     // work space query
     lwork = -1;
-    _Float128 *work = new _Float128[1];
+    mplapack_binary128_t *work = new mplapack_binary128_t[1];
     Rgeev("N", "N", n, a, n, wr, wi, vl, n, vr, n, work, lwork, info);
     lwork = (int)cast2double(work[0]);
     delete[] work;
-    work = new _Float128[std::max((mplapackint)1, lwork)];
+    work = new mplapack_binary128_t[std::max((mplapackint)1, lwork)];
 
     std::random_device seed_gen;
     std::mt19937 engine(seed_gen());
@@ -144,7 +144,7 @@ int main(int argc, char *argv[]) {
     //2. get determinant via LU factorization
     Rgetrf(n, n, a, n, ipiv, info);
     //printf("aLU ="); printmat(n, n, a, n); printf("\n");
-    _Float128 det = 1;
+    mplapack_binary128_t det = 1;
     for (int i = 0; i < n; i++) {
         det = det * a[i + i * n];
         if (ipiv[i] != i+1) det = det * -1.0;
@@ -177,7 +177,7 @@ int main(int argc, char *argv[]) {
     printf("ainv ="); printmat(n, n, ainv, n); printf("\n");
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            _Float128 rtmp = 0.0;
+            mplapack_binary128_t rtmp = 0.0;
             for (int k = 0; k < n; k++) {
                 for (int l = 0; l < n; l++) {
                 rtmp = rtmp + ainv [i + k * n] * s[k + l * n] * aorg[l + j *n];
@@ -190,7 +190,7 @@ int main(int argc, char *argv[]) {
     //6. Check eigenvalues. These must be the same as the obtained series in 4.
     Rgeev("V", "V", n, a, n, wr, wi, vl, n, vr, n, work, lwork, info);
 
-    qsort(wr, n, sizeof(_Float128), compare_real);
+    qsort(wr, n, sizeof(mplapack_binary128_t), compare_real);
     for (int i = 0; i < n; i = i + 1) {
         printf("w_%d = ", (int)i); printnum(wr[i]); printf("\n");
     }

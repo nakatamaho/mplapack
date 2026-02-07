@@ -8,13 +8,13 @@
 
 #define BUFLEN 1024
 
-void printnum(_Float128 rtmp)
+void printnum(mplapack_binary128_t rtmp)
 {
     int width = 42;
     char buf[BUFLEN];
-#if defined ___MPLAPACK_WANT_LIBQUADMATH___
+#if MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_QUADMATH_SNPRINTF
     int n = quadmath_snprintf (buf, sizeof buf, "%*.35Qe", width, rtmp);
-#elif defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
+#elif MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_SNPRINTF_LDBL
     snprintf (buf, sizeof buf, "%.35Le", rtmp);
 #else
     strfromf128(buf, sizeof(buf), "%.35e", rtmp);
@@ -27,8 +27,8 @@ void printnum(_Float128 rtmp)
 }
 
 //Matlab/Octave format
-void printvec(_Float128 *a, int len) {
-    _Float128 tmp;
+void printvec(mplapack_binary128_t *a, int len) {
+    mplapack_binary128_t tmp;
     printf("[ ");
     for (int i = 0; i < len; i++) {
         tmp = a[i];
@@ -39,9 +39,9 @@ void printvec(_Float128 *a, int len) {
     printf("]");
 }
 
-void printmat(int n, int m, _Float128 *a, int lda)
+void printmat(int n, int m, mplapack_binary128_t *a, int lda)
 {
-    _Float128 mtmp;
+    mplapack_binary128_t mtmp;
 
     printf("[ ");
     for (int i = 0; i < n; i++) {
@@ -61,18 +61,18 @@ void printmat(int n, int m, _Float128 *a, int lda)
 }
 void Frank(mplapackint n) {
     mplapackint lwork, liwork, info, m;
-    _Float128 *a = new _Float128[n * n];
-    _Float128 *z = new _Float128[n * n]; //not used
+    mplapack_binary128_t *a = new mplapack_binary128_t[n * n];
+    mplapack_binary128_t *z = new mplapack_binary128_t[n * n]; //not used
     mplapackint *isuppz = new mplapackint[2 * n]; //not used
-    _Float128 *w = new _Float128[n];
-    _Float128 *lambda = new _Float128[n];
-    _Float128 *reldiff = new _Float128[n];
-    _Float128 vldummy;
-    _Float128 vudummy;
+    mplapack_binary128_t *w = new mplapack_binary128_t[n];
+    mplapack_binary128_t *lambda = new mplapack_binary128_t[n];
+    mplapack_binary128_t *reldiff = new mplapack_binary128_t[n];
+    mplapack_binary128_t vldummy;
+    mplapack_binary128_t vudummy;
     mplapackint ildummy;
     mplapackint iudummy;
-    _Float128 abstol = Rlamch_binary128("U");
-    _Float128 PI;
+    mplapack_binary128_t abstol = Rlamch_binary128("U");
+    mplapack_binary128_t PI;
     PI = pi(PI);
 
     // setting A matrix
@@ -85,14 +85,14 @@ void Frank(mplapackint n) {
 
     // work space query
     lwork = -1;
-    _Float128 *work = new _Float128[1];
+    mplapack_binary128_t *work = new mplapack_binary128_t[1];
     liwork = -1;
     mplapackint *iwork = new mplapackint[1];
 
     Rsyevr("N", "A", "U", n, a, n, vldummy, vudummy, ildummy, iudummy, abstol, m, w, z, n, isuppz, work, lwork, iwork, liwork, info);
     lwork = (int)cast2double(work[0]);
     delete[] work;
-    work = new _Float128[std::max((mplapackint)1, lwork)];
+    work = new mplapack_binary128_t[std::max((mplapackint)1, lwork)];
     liwork = iwork[0];
     delete[] iwork;
     iwork = new mplapackint[std::max((mplapackint)1, liwork)];
@@ -116,7 +116,7 @@ void Frank(mplapackint n) {
     }
     printf("reldiff ="); printvec(reldiff, n); printf("\n");
 
-    _Float128 maxreldiff = 0.0;
+    mplapack_binary128_t maxreldiff = 0.0;
     maxreldiff = reldiff[0]; 
     for (int i = 2; i <= n; i++) {
         maxreldiff = std::max(reldiff[i - 1], maxreldiff);

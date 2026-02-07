@@ -7,13 +7,13 @@
 
 #define BUFLEN 1024
 
-void printnum(_Float128 rtmp)
+void printnum(mplapack_binary128_t rtmp)
 {
     int width = 42;
     char buf[BUFLEN];
-#if defined ___MPLAPACK_WANT_LIBQUADMATH___
+#if MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_QUADMATH_SNPRINTF
     int n = quadmath_snprintf (buf, sizeof buf, "%*.35Qe", width, rtmp);
-#elif defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
+#elif MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_SNPRINTF_LDBL
     snprintf (buf, sizeof buf, "%.35Le", rtmp);
 #else
     strfromf128(buf, sizeof(buf), "%.35e", rtmp);
@@ -26,8 +26,8 @@ void printnum(_Float128 rtmp)
 }
 
 //Matlab/Octave format
-void printvec(_Float128 *a, int len) {
-    _Float128 tmp;
+void printvec(mplapack_binary128_t *a, int len) {
+    mplapack_binary128_t tmp;
     printf("[ ");
     for (int i = 0; i < len; i++) {
         tmp = a[i];
@@ -38,9 +38,9 @@ void printvec(_Float128 *a, int len) {
     printf("]");
 }
 
-void printmat(int n, int m, _Float128 *a, int lda)
+void printmat(int n, int m, mplapack_binary128_t *a, int lda)
 {
-    _Float128 mtmp;
+    mplapack_binary128_t mtmp;
 
     printf("[ ");
     for (int i = 0; i < n; i++) {
@@ -62,10 +62,10 @@ int main()
 {
     mplapackint n = 3;
 
-    _Float128 *a = new _Float128[n * n];
-    _Float128 *b = new _Float128[n * n];
-    _Float128 *c = new _Float128[n * n];
-    _Float128 alpha, beta;
+    mplapack_binary128_t *a = new mplapack_binary128_t[n * n];
+    mplapack_binary128_t *b = new mplapack_binary128_t[n * n];
+    mplapack_binary128_t *c = new mplapack_binary128_t[n * n];
+    mplapack_binary128_t alpha, beta;
 
 //setting A matrix
     a[0 + 0 * n] = 1;    a[0 + 1 * n] = 8;    a[0 + 2 * n] = 3;

@@ -9,8 +9,8 @@
 #define FLOAT64X_FORMAT "%+25.21Le"
 #define FLOAT64X_SHORT_FORMAT "%+20.16Le"
 
-void printnum(_Float64x rtmp) { printf(FLOAT64X_FORMAT, rtmp); return;}
-void printnum(std::complex<_Float64x> ctmp) { printf(FLOAT64X_FORMAT FLOAT64X_FORMAT "i", ctmp.real(), ctmp.imag()); }
+void printnum(mplapack_binary80_t rtmp) { printf(FLOAT64X_FORMAT, rtmp); return;}
+void printnum(std::complex<mplapack_binary80_t> ctmp) { printf(FLOAT64X_FORMAT FLOAT64X_FORMAT "i", ctmp.real(), ctmp.imag()); }
 
 //Matlab/Octave format
 template <class X> void printvec(X *a, int len) {
@@ -51,26 +51,26 @@ int main()
     mplapackint n = 3;
     mplapackint lwork, info;
 
-    std::complex<_Float64x> *a = new std::complex<_Float64x>[n * n];
+    std::complex<mplapack_binary80_t> *a = new std::complex<mplapack_binary80_t>[n * n];
     mplapackint *ipiv = new mplapackint[n];
 
 //setting a matrix
 
 
-    a[0 + 0 * n] = std::complex<_Float64x>(1.0, 0.0);   a[0 + 1 * n] = std::complex<_Float64x>(1.0, 2.0);    a[0 + 2 * n] = std::complex<_Float64x>(2.0, 10.0);
-    a[1 + 0 * n] = std::complex<_Float64x>(1.0, 1.0);   a[1 + 1 * n] = std::complex<_Float64x>(0.0, 3.0);    a[1 + 2 * n] = std::complex<_Float64x>(-5.0, 14.0);
-    a[2 + 0 * n] = std::complex<_Float64x>(1.0, 1.0);   a[2 + 1 * n] = std::complex<_Float64x>(0.0, 5.0);    a[2 + 2 * n] = std::complex<_Float64x>(-8.0, 20.0);
+    a[0 + 0 * n] = std::complex<mplapack_binary80_t>(1.0, 0.0);   a[0 + 1 * n] = std::complex<mplapack_binary80_t>(1.0, 2.0);    a[0 + 2 * n] = std::complex<mplapack_binary80_t>(2.0, 10.0);
+    a[1 + 0 * n] = std::complex<mplapack_binary80_t>(1.0, 1.0);   a[1 + 1 * n] = std::complex<mplapack_binary80_t>(0.0, 3.0);    a[1 + 2 * n] = std::complex<mplapack_binary80_t>(-5.0, 14.0);
+    a[2 + 0 * n] = std::complex<mplapack_binary80_t>(1.0, 1.0);   a[2 + 1 * n] = std::complex<mplapack_binary80_t>(0.0, 5.0);    a[2 + 2 * n] = std::complex<mplapack_binary80_t>(-8.0, 20.0);
 
     printf("a ="); printmat(n, n, a, n); printf("\n");
 
 //work space query
     lwork = -1;
-    std::complex<_Float64x> *work = new std::complex<_Float64x>[1];
+    std::complex<mplapack_binary80_t> *work = new std::complex<mplapack_binary80_t>[1];
 
     Cgetri(n, a, n, ipiv, work, lwork, info);
     lwork = castINTEGER_binary80 (work[0].real());
     delete[]work;
-    work = new std::complex<_Float64x>[std::max(1, (int) lwork)];
+    work = new std::complex<mplapack_binary80_t>[std::max(1, (int) lwork)];
 
 //inverse matrix
     Cgetrf(n, n, a, n, ipiv, info);

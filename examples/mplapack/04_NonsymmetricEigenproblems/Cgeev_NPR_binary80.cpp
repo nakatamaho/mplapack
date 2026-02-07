@@ -9,8 +9,8 @@
 #define FLOAT64X_FORMAT "%+25.21Le"
 #define FLOAT64X_SHORT_FORMAT "%+20.16Le"
 
-void printnum(_Float64x rtmp) { printf(FLOAT64X_FORMAT, rtmp); return;}
-void printnum(std::complex<_Float64x> ctmp) { printf(FLOAT64X_FORMAT FLOAT64X_FORMAT "i", ctmp.real(), ctmp.imag()); }
+void printnum(mplapack_binary80_t rtmp) { printf(FLOAT64X_FORMAT, rtmp); return;}
+void printnum(std::complex<mplapack_binary80_t> ctmp) { printf(FLOAT64X_FORMAT FLOAT64X_FORMAT "i", ctmp.real(), ctmp.imag()); }
 
 //Matlab/Octave format
 template <class X> void printvec(X *a, int len) {
@@ -47,20 +47,20 @@ template <class X> void printmat(int n, int m, X *a, int lda)
 }
 #include <mplapack_utils_binary80.h>
 
-bool rselect(_Float64x ar, _Float64x ai) {
+bool rselect(mplapack_binary80_t ar, mplapack_binary80_t ai) {
     // sorting rule for eigenvalues.
     return false;
 }
 
 int main() {
     mplapackint n = 10;
-    std::complex<_Float64x> *a = new std::complex<_Float64x>[n * n];
-    std::complex<_Float64x> *w = new std::complex<_Float64x>[n];
-    std::complex<_Float64x> *vl = new std::complex<_Float64x>[n * n];
-    std::complex<_Float64x> *vr = new std::complex<_Float64x>[n * n];
+    std::complex<mplapack_binary80_t> *a = new std::complex<mplapack_binary80_t>[n * n];
+    std::complex<mplapack_binary80_t> *w = new std::complex<mplapack_binary80_t>[n];
+    std::complex<mplapack_binary80_t> *vl = new std::complex<mplapack_binary80_t>[n * n];
+    std::complex<mplapack_binary80_t> *vr = new std::complex<mplapack_binary80_t>[n * n];
     mplapackint lwork = 4 * n;
-    std::complex<_Float64x> *work = new std::complex<_Float64x>[lwork];    
-    _Float64x *rwork = new _Float64x[lwork];
+    std::complex<mplapack_binary80_t> *work = new std::complex<mplapack_binary80_t>[lwork];    
+    mplapack_binary80_t *rwork = new mplapack_binary80_t[lwork];
     mplapackint info;
     // setting A matrix
     for (int i = 1; i <= n; i++) {
@@ -72,9 +72,9 @@ int main() {
     //https://doi.org/10.1002/nla.1811
     //http://www.math.kent.edu/~reichel/publications/toep3.pdf
 
-    std::complex<_Float64x> sigma = std::complex<_Float64x>(4.0, 3.0) / _Float64x(8.0);
-    std::complex<_Float64x> delta = std::complex<_Float64x>(16.0, -3.0);
-    std::complex<_Float64x> tau   = std::complex<_Float64x>(0.0, -5.0);
+    std::complex<mplapack_binary80_t> sigma = std::complex<mplapack_binary80_t>(4.0, 3.0) / mplapack_binary80_t(8.0);
+    std::complex<mplapack_binary80_t> delta = std::complex<mplapack_binary80_t>(16.0, -3.0);
+    std::complex<mplapack_binary80_t> tau   = std::complex<mplapack_binary80_t>(0.0, -5.0);
 
     for (int i = 1; i <= n; i++) {
         a [ (i - 1) + (i - 1) * n ] = delta;
@@ -92,10 +92,10 @@ int main() {
     Cgeev("V", "V", n, a, n, w, vl, n, vr, n, work, lwork, rwork, info);
     printf("lambda ="); printvec(w,n); printf("\n");
 
-    std::complex<_Float64x> _pi = pi(_Float64x(0.0));
-    std::complex<_Float64x> *lambda = new std::complex<_Float64x>[n];
+    std::complex<mplapack_binary80_t> _pi = pi(mplapack_binary80_t(0.0));
+    std::complex<mplapack_binary80_t> *lambda = new std::complex<mplapack_binary80_t>[n];
     for (int h = 1; h <= n; h++) {
-        lambda [h - 1] = delta + std::complex<_Float64x>(2.0, 0.0) * sqrt (sigma * tau) * cos( (_Float64x(h) * _pi) / _Float64x((int)n + 1) );
+        lambda [h - 1] = delta + std::complex<mplapack_binary80_t>(2.0, 0.0) * sqrt (sigma * tau) * cos( (mplapack_binary80_t(h) * _pi) / mplapack_binary80_t((int)n + 1) );
     }
     printf("lambda_true = "); printvec(lambda, n); printf("\n");
     printf("vr ="); printmat(n,n,vr,n); printf("\n");    

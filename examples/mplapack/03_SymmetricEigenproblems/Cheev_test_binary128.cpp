@@ -8,13 +8,13 @@
 
 #define BUFLEN 1024
 
-void printnum(_Float128 rtmp)
+void printnum(mplapack_binary128_t rtmp)
 {
     int width = 42;
     char buf[BUFLEN];
-#if defined ___MPLAPACK_WANT_LIBQUADMATH___
+#if MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_QUADMATH_SNPRINTF
     int n = quadmath_snprintf (buf, sizeof buf, "%*.35Qe", width, rtmp);
-#elif defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
+#elif MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_SNPRINTF_LDBL
     snprintf (buf, sizeof buf, "%.35Le", rtmp);
 #else
     strfromf128(buf, sizeof(buf), "%.35e", rtmp);
@@ -26,13 +26,13 @@ void printnum(_Float128 rtmp)
     return;
 }
 
-void printnum(std::complex<_Float128> rtmp)
+void printnum(std::complex<mplapack_binary128_t> rtmp)
 {
     int width = 42;
     char buf[BUFLEN];
-#if defined ___MPLAPACK_WANT_LIBQUADMATH___
+#if MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_QUADMATH_SNPRINTF
     int n = quadmath_snprintf (buf, sizeof buf, "%*.35Qe", width, rtmp.real());
-#elif defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
+#elif MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_SNPRINTF_LDBL
     snprintf (buf, sizeof buf, "%.35Le", rtmp.real());
 #else
     strfromf128(buf, sizeof(buf), "%.35e", rtmp.real());
@@ -41,9 +41,9 @@ void printnum(std::complex<_Float128> rtmp)
         printf ("+%s", buf);
     else
         printf ("%s", buf);
-#if defined ___MPLAPACK_WANT_LIBQUADMATH___
+#if MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_QUADMATH_SNPRINTF
     n = quadmath_snprintf (buf, sizeof buf, "%*.35Qe", width, rtmp.imag());
-#elif defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
+#elif MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_SNPRINTF_LDBL
     snprintf (buf, sizeof buf, "%.35Le", rtmp.imag());
 #else
     strfromf128(buf, sizeof(buf), "%.35e", rtmp.imag());
@@ -93,24 +93,24 @@ int main()
     mplapackint n = 3;
     mplapackint lwork, info;
 
-    std::complex<_Float128> *A = new std::complex<_Float128>[n * n];
-    _Float128 *w = new _Float128[n];
-    _Float128 *rwork = new _Float128[3 * n - 1];
+    std::complex<mplapack_binary128_t> *A = new std::complex<mplapack_binary128_t>[n * n];
+    mplapack_binary128_t *w = new mplapack_binary128_t[n];
+    mplapack_binary128_t *rwork = new mplapack_binary128_t[3 * n - 1];
 
 //setting A matrix
-    A[0 + 0 * n] = 2.0;               A[0 + 1 * n] = std::complex<_Float128>(0.0, -1.0);    A[0 + 2 * n] = 0.0;
-    A[1 + 0 * n] = std::complex<_Float128>(0.0, 1.0); A[1 + 1 * n] = 2.0;                   A[1 + 2 * n] = 0.0;
+    A[0 + 0 * n] = 2.0;               A[0 + 1 * n] = std::complex<mplapack_binary128_t>(0.0, -1.0);    A[0 + 2 * n] = 0.0;
+    A[1 + 0 * n] = std::complex<mplapack_binary128_t>(0.0, 1.0); A[1 + 1 * n] = 2.0;                   A[1 + 2 * n] = 0.0;
     A[2 + 0 * n] = 0.0;               A[2 + 1 * n] = 0.0;                   A[2 + 2 * n] = 3.0;
 
     printf("A ="); printmat(n, n, A, n); printf("\n");
 //work space query
     lwork = -1;
-    std::complex<_Float128> *work = new std::complex<_Float128>[1];
+    std::complex<mplapack_binary128_t> *work = new std::complex<mplapack_binary128_t>[1];
 
     Cheev("V", "U", n, A, n, w, work, lwork, rwork, info);
     lwork = (int) cast2double (work[0].real());
     delete[]work;
-    work = new std::complex<_Float128>[std::max((mplapackint) 1, lwork)];
+    work = new std::complex<mplapack_binary128_t>[std::max((mplapackint) 1, lwork)];
 //inverse matrix
     Cheev("V", "U", n, A, n, w, work, lwork, rwork, info);
 //print out some results.

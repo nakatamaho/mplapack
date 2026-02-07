@@ -8,7 +8,7 @@
 
 #define BUFLEN 1024
 
-void printnum(_Float128 rtmp)
+void printnum(mplapack_binary128_t rtmp)
 {
     int width = 42;
     char buf[BUFLEN];
@@ -26,7 +26,7 @@ void printnum(_Float128 rtmp)
     return;
 }
 
-void printnum(std::complex<_Float128> rtmp)
+void printnum(std::complex<mplapack_binary128_t> rtmp)
 {
     int width = 42;
     char buf[BUFLEN];

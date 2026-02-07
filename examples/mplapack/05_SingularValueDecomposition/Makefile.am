@@ -59,60 +59,60 @@ endif
 if ENABLE_BINARY128
 mplapackexamples_PROGRAMS += Cgesvd_test_binary128 Rgesvd_random_highcond_binary128 Rgesvd_readfromfile_binary128 Rgesvd_test2_binary128 Rgesvd_test_binary128
 
-_Float128_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include
+mplapack_binary128_t_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include
 if BINARY128_USE_QUADMATH
-_Float128_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_binary128 -L$(top_builddir)/mpblas/reference -lmpblas_binary128 -lquadmath
+mplapack_binary128_t_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_binary128 -L$(top_builddir)/mpblas/reference -lmpblas_binary128 -lquadmath
 else
-_Float128_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_binary128 -L$(top_builddir)/mpblas/reference -lmpblas_binary128
+mplapack_binary128_t_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_binary128 -L$(top_builddir)/mpblas/reference -lmpblas_binary128
 endif
 
 Cgesvd_test_binary128_SOURCES = Cgesvd_test_binary128.cpp
-Cgesvd_test_binary128_CXXFLAGS = $(_Float128_cxxflags)
-Cgesvd_test_binary128_LDFLAGS = $(_Float128_libdepends)
+Cgesvd_test_binary128_CXXFLAGS = $(mplapack_binary128_t_cxxflags)
+Cgesvd_test_binary128_LDFLAGS = $(mplapack_binary128_t_libdepends)
 
 Rgesvd_random_highcond_binary128_SOURCES = Rgesvd_random_highcond_binary128.cpp
-Rgesvd_random_highcond_binary128_CXXFLAGS = $(_Float128_cxxflags)
-Rgesvd_random_highcond_binary128_LDFLAGS = $(_Float128_libdepends)
+Rgesvd_random_highcond_binary128_CXXFLAGS = $(mplapack_binary128_t_cxxflags)
+Rgesvd_random_highcond_binary128_LDFLAGS = $(mplapack_binary128_t_libdepends)
 
 Rgesvd_readfromfile_binary128_SOURCES = Rgesvd_readfromfile_binary128.cpp
-Rgesvd_readfromfile_binary128_CXXFLAGS = $(_Float128_cxxflags)
-Rgesvd_readfromfile_binary128_LDFLAGS = $(_Float128_libdepends)
+Rgesvd_readfromfile_binary128_CXXFLAGS = $(mplapack_binary128_t_cxxflags)
+Rgesvd_readfromfile_binary128_LDFLAGS = $(mplapack_binary128_t_libdepends)
 
 Rgesvd_test2_binary128_SOURCES = Rgesvd_test2_binary128.cpp
-Rgesvd_test2_binary128_CXXFLAGS = $(_Float128_cxxflags)
-Rgesvd_test2_binary128_LDFLAGS = $(_Float128_libdepends)
+Rgesvd_test2_binary128_CXXFLAGS = $(mplapack_binary128_t_cxxflags)
+Rgesvd_test2_binary128_LDFLAGS = $(mplapack_binary128_t_libdepends)
 
 Rgesvd_test_binary128_SOURCES = Rgesvd_test_binary128.cpp
-Rgesvd_test_binary128_CXXFLAGS = $(_Float128_cxxflags)
-Rgesvd_test_binary128_LDFLAGS = $(_Float128_libdepends)
+Rgesvd_test_binary128_CXXFLAGS = $(mplapack_binary128_t_cxxflags)
+Rgesvd_test_binary128_LDFLAGS = $(mplapack_binary128_t_libdepends)
 
 endif
 
 if ENABLE_BINARY80
 mplapackexamples_PROGRAMS += Cgesvd_test_binary80 Rgesvd_random_highcond_binary80 Rgesvd_readfromfile_binary80 Rgesvd_test2_binary80 Rgesvd_test_binary80
 
-_Float64x_cxxflags = $(OPENMP_CXXFLAGS)
-_Float64x_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_binary80 -L$(top_builddir)/mpblas/reference -lmpblas_binary80
+mplapack_binary80_t_cxxflags = $(OPENMP_CXXFLAGS)
+mplapack_binary80_t_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_binary80 -L$(top_builddir)/mpblas/reference -lmpblas_binary80
 
 Cgesvd_test_binary80_SOURCES = Cgesvd_test_binary80.cpp
-Cgesvd_test_binary80_CXXFLAGS = $(_Float64x_cxxflags)
-Cgesvd_test_binary80_LDFLAGS = $(_Float64x_libdepends)
+Cgesvd_test_binary80_CXXFLAGS = $(mplapack_binary80_t_cxxflags)
+Cgesvd_test_binary80_LDFLAGS = $(mplapack_binary80_t_libdepends)
 
 Rgesvd_random_highcond_binary80_SOURCES = Rgesvd_random_highcond_binary80.cpp
-Rgesvd_random_highcond_binary80_CXXFLAGS = $(_Float64x_cxxflags)
-Rgesvd_random_highcond_binary80_LDFLAGS = $(_Float64x_libdepends)
+Rgesvd_random_highcond_binary80_CXXFLAGS = $(mplapack_binary80_t_cxxflags)
+Rgesvd_random_highcond_binary80_LDFLAGS = $(mplapack_binary80_t_libdepends)
 
 Rgesvd_readfromfile_binary80_SOURCES = Rgesvd_readfromfile_binary80.cpp
-Rgesvd_readfromfile_binary80_CXXFLAGS = $(_Float64x_cxxflags)
-Rgesvd_readfromfile_binary80_LDFLAGS = $(_Float64x_libdepends)
+Rgesvd_readfromfile_binary80_CXXFLAGS = $(mplapack_binary80_t_cxxflags)
+Rgesvd_readfromfile_binary80_LDFLAGS = $(mplapack_binary80_t_libdepends)
 
 Rgesvd_test2_binary80_SOURCES = Rgesvd_test2_binary80.cpp
-Rgesvd_test2_binary80_CXXFLAGS = $(_Float64x_cxxflags)
-Rgesvd_test2_binary80_LDFLAGS = $(_Float64x_libdepends)
+Rgesvd_test2_binary80_CXXFLAGS = $(mplapack_binary80_t_cxxflags)
+Rgesvd_test2_binary80_LDFLAGS = $(mplapack_binary80_t_libdepends)
 
 Rgesvd_test_binary80_SOURCES = Rgesvd_test_binary80.cpp
-Rgesvd_test_binary80_CXXFLAGS = $(_Float64x_cxxflags)
-Rgesvd_test_binary80_LDFLAGS = $(_Float64x_libdepends)
+Rgesvd_test_binary80_CXXFLAGS = $(mplapack_binary80_t_cxxflags)
+Rgesvd_test_binary80_LDFLAGS = $(mplapack_binary80_t_libdepends)
 
 endif
 

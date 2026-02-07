@@ -8,13 +8,13 @@
 
 #define BUFLEN 1024
 
-void printnum(_Float128 rtmp)
+void printnum(mplapack_binary128_t rtmp)
 {
     int width = 42;
     char buf[BUFLEN];
-#if defined ___MPLAPACK_WANT_LIBQUADMATH___
+#if MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_QUADMATH_SNPRINTF
     int n = quadmath_snprintf (buf, sizeof buf, "%*.35Qe", width, rtmp);
-#elif defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
+#elif MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_SNPRINTF_LDBL
     snprintf (buf, sizeof buf, "%.35Le", rtmp);
 #else
     strfromf128(buf, sizeof(buf), "%.35e", rtmp);
@@ -26,13 +26,13 @@ void printnum(_Float128 rtmp)
     return;
 }
 
-void printnum(std::complex<_Float128> rtmp)
+void printnum(std::complex<mplapack_binary128_t> rtmp)
 {
     int width = 42;
     char buf[BUFLEN];
-#if defined ___MPLAPACK_WANT_LIBQUADMATH___
+#if MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_QUADMATH_SNPRINTF
     int n = quadmath_snprintf (buf, sizeof buf, "%*.35Qe", width, rtmp.real());
-#elif defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
+#elif MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_SNPRINTF_LDBL
     snprintf (buf, sizeof buf, "%.35Le", rtmp.real());
 #else
     strfromf128(buf, sizeof(buf), "%.35e", rtmp.real());
@@ -41,9 +41,9 @@ void printnum(std::complex<_Float128> rtmp)
         printf ("+%s", buf);
     else
         printf ("%s", buf);
-#if defined ___MPLAPACK_WANT_LIBQUADMATH___
+#if MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_QUADMATH_SNPRINTF
     n = quadmath_snprintf (buf, sizeof buf, "%*.35Qe", width, rtmp.imag());
-#elif defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
+#elif MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_SNPRINTF_LDBL
     snprintf (buf, sizeof buf, "%.35Le", rtmp.imag());
 #else
     strfromf128(buf, sizeof(buf), "%.35e", rtmp.imag());
@@ -90,20 +90,20 @@ template <class X> void printmat(int n, int m, X *a, int lda)
 }
 #include <mplapack_utils_binary128.h>
 
-bool rselect(_Float128 ar, _Float128 ai) {
+bool rselect(mplapack_binary128_t ar, mplapack_binary128_t ai) {
     // sorting rule for eigenvalues.
     return false;
 }
 
 int main() {
     mplapackint n = 10;
-    std::complex<_Float128> *a = new std::complex<_Float128>[n * n];
-    std::complex<_Float128> *w = new std::complex<_Float128>[n];
-    std::complex<_Float128> *vl = new std::complex<_Float128>[n * n];
-    std::complex<_Float128> *vr = new std::complex<_Float128>[n * n];
+    std::complex<mplapack_binary128_t> *a = new std::complex<mplapack_binary128_t>[n * n];
+    std::complex<mplapack_binary128_t> *w = new std::complex<mplapack_binary128_t>[n];
+    std::complex<mplapack_binary128_t> *vl = new std::complex<mplapack_binary128_t>[n * n];
+    std::complex<mplapack_binary128_t> *vr = new std::complex<mplapack_binary128_t>[n * n];
     mplapackint lwork = 4 * n;
-    std::complex<_Float128> *work = new std::complex<_Float128>[lwork];    
-    _Float128 *rwork = new _Float128[lwork];
+    std::complex<mplapack_binary128_t> *work = new std::complex<mplapack_binary128_t>[lwork];    
+    mplapack_binary128_t *rwork = new mplapack_binary128_t[lwork];
     mplapackint info;
     // setting A matrix
     for (int i = 1; i <= n; i++) {
@@ -115,9 +115,9 @@ int main() {
     //https://doi.org/10.1002/nla.1811
     //http://www.math.kent.edu/~reichel/publications/toep3.pdf
 
-    std::complex<_Float128> sigma = std::complex<_Float128>(4.0, 3.0) / _Float128(8.0);
-    std::complex<_Float128> delta = std::complex<_Float128>(16.0, -3.0);
-    std::complex<_Float128> tau   = std::complex<_Float128>(0.0, -5.0);
+    std::complex<mplapack_binary128_t> sigma = std::complex<mplapack_binary128_t>(4.0, 3.0) / mplapack_binary128_t(8.0);
+    std::complex<mplapack_binary128_t> delta = std::complex<mplapack_binary128_t>(16.0, -3.0);
+    std::complex<mplapack_binary128_t> tau   = std::complex<mplapack_binary128_t>(0.0, -5.0);
 
     for (int i = 1; i <= n; i++) {
         a [ (i - 1) + (i - 1) * n ] = delta;
@@ -135,10 +135,10 @@ int main() {
     Cgeev("V", "V", n, a, n, w, vl, n, vr, n, work, lwork, rwork, info);
     printf("lambda ="); printvec(w,n); printf("\n");
 
-    std::complex<_Float128> _pi = pi(_Float128(0.0));
-    std::complex<_Float128> *lambda = new std::complex<_Float128>[n];
+    std::complex<mplapack_binary128_t> _pi = pi(mplapack_binary128_t(0.0));
+    std::complex<mplapack_binary128_t> *lambda = new std::complex<mplapack_binary128_t>[n];
     for (int h = 1; h <= n; h++) {
-        lambda [h - 1] = delta + std::complex<_Float128>(2.0, 0.0) * sqrt (sigma * tau) * cos( (_Float128(h) * _pi) / _Float128((int)n + 1) );
+        lambda [h - 1] = delta + std::complex<mplapack_binary128_t>(2.0, 0.0) * sqrt (sigma * tau) * cos( (mplapack_binary128_t(h) * _pi) / mplapack_binary128_t((int)n + 1) );
     }
     printf("lambda_true = "); printvec(lambda, n); printf("\n");
     printf("vr ="); printmat(n,n,vr,n); printf("\n");    

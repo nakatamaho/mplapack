@@ -8,13 +8,13 @@
 
 #define BUFLEN 1024
 
-void printnum(_Float128 rtmp)
+void printnum(mplapack_binary128_t rtmp)
 {
     int width = 42;
     char buf[BUFLEN];
-#if defined ___MPLAPACK_WANT_LIBQUADMATH___
+#if MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_QUADMATH_SNPRINTF
     int n = quadmath_snprintf (buf, sizeof buf, "%*.35Qe", width, rtmp);
-#elif defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
+#elif MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_SNPRINTF_LDBL
     snprintf (buf, sizeof buf, "%.35Le", rtmp);
 #else
     strfromf128(buf, sizeof(buf), "%.35e", rtmp);
@@ -27,8 +27,8 @@ void printnum(_Float128 rtmp)
 }
 
 //Matlab/Octave format
-void printvec(_Float128 *a, int len) {
-    _Float128 tmp;
+void printvec(mplapack_binary128_t *a, int len) {
+    mplapack_binary128_t tmp;
     printf("[ ");
     for (int i = 0; i < len; i++) {
         tmp = a[i];
@@ -39,9 +39,9 @@ void printvec(_Float128 *a, int len) {
     printf("]");
 }
 
-void printmat(int n, int m, _Float128 *a, int lda)
+void printmat(int n, int m, mplapack_binary128_t *a, int lda)
 {
-    _Float128 mtmp;
+    mplapack_binary128_t mtmp;
 
     printf("[ ");
     for (int i = 0; i < n; i++) {
@@ -59,7 +59,7 @@ void printmat(int n, int m, _Float128 *a, int lda)
     }
     printf("]");
 }
-bool rselect(_Float128 ar, _Float128 ai) {
+bool rselect(mplapack_binary128_t ar, mplapack_binary128_t ai) {
     // sorting rule for eigenvalues.
     return false;
 }
@@ -78,14 +78,14 @@ int main() {
     ss >> n;
     printf("# n %d\n", (int)n);
 
-    _Float128 *a = new _Float128[n * n];
-    _Float128 *vl = new _Float128[n * n];
-    _Float128 *vr = new _Float128[n * n];
+    mplapack_binary128_t *a = new mplapack_binary128_t[n * n];
+    mplapack_binary128_t *vl = new mplapack_binary128_t[n * n];
+    mplapack_binary128_t *vr = new mplapack_binary128_t[n * n];
     mplapackint sdim = 0;
     mplapackint lwork = 4 * n;
-    _Float128 *wr = new _Float128[n];
-    _Float128 *wi = new _Float128[n];
-    _Float128 *work = new _Float128[lwork];
+    mplapack_binary128_t *wr = new mplapack_binary128_t[n];
+    mplapack_binary128_t *wi = new mplapack_binary128_t[n];
+    mplapack_binary128_t *work = new mplapack_binary128_t[lwork];
     mplapackint info;
     double dtmp;
     for (int i = 0; i < n; i++) {

@@ -9,15 +9,15 @@
 #define FLOAT64X_FORMAT "%+25.21Le"
 #define FLOAT64X_SHORT_FORMAT "%+20.16Le"
 
-void printnum(_Float64x rtmp)
+void printnum(mplapack_binary80_t rtmp)
 {
     printf(FLOAT64X_FORMAT, rtmp);
     return;
 }
 
 //Matlab/Octave format
-void printvec(_Float64x *a, int len) {
-    _Float64x tmp;
+void printvec(mplapack_binary80_t *a, int len) {
+    mplapack_binary80_t tmp;
     printf("[ ");
     for (int i = 0; i < len; i++) {
         tmp = a[i];
@@ -28,9 +28,9 @@ void printvec(_Float64x *a, int len) {
     printf("]");
 }
 
-void printmat(int n, int m, _Float64x *a, int lda)
+void printmat(int n, int m, mplapack_binary80_t *a, int lda)
 {
-    _Float64x mtmp;
+    mplapack_binary80_t mtmp;
 
     printf("[ ");
     for (int i = 0; i < n; i++) {
@@ -52,7 +52,7 @@ void printmat(int n, int m, _Float64x *a, int lda)
 
 int compare_real(const void *a, const void *b)
 {
-    return *(_Float64x*)a > *(_Float64x*)b;
+    return *(mplapack_binary80_t*)a > *(mplapack_binary80_t*)b;
 }
 
 int main(int argc, char *argv[]) {
@@ -70,23 +70,23 @@ int main(int argc, char *argv[]) {
     }
     printf("#dimension %d, dispersion = %d \n", (int)n, (int)dispersion);
 
-    _Float64x *a = new _Float64x[n * n];
-    _Float64x *aorg = new _Float64x[n * n];
-    _Float64x *ainv = new _Float64x[n * n];
-    _Float64x *at_a = new _Float64x[n * n];
-    _Float64x *I_ = new _Float64x[n * n]; //I is reserved for imaginary number 
-    _Float64x *s = new _Float64x[n * n];
-    _Float64x *sorg = new _Float64x[n];
-    _Float64x *u = new _Float64x[n * n];
-    _Float64x *vt = new _Float64x[n * n];
-    _Float64x *w = new _Float64x[n * n];
+    mplapack_binary80_t *a = new mplapack_binary80_t[n * n];
+    mplapack_binary80_t *aorg = new mplapack_binary80_t[n * n];
+    mplapack_binary80_t *ainv = new mplapack_binary80_t[n * n];
+    mplapack_binary80_t *at_a = new mplapack_binary80_t[n * n];
+    mplapack_binary80_t *I_ = new mplapack_binary80_t[n * n]; //I is reserved for imaginary number 
+    mplapack_binary80_t *s = new mplapack_binary80_t[n * n];
+    mplapack_binary80_t *sorg = new mplapack_binary80_t[n];
+    mplapack_binary80_t *u = new mplapack_binary80_t[n * n];
+    mplapack_binary80_t *vt = new mplapack_binary80_t[n * n];
+    mplapack_binary80_t *w = new mplapack_binary80_t[n * n];
 
     mplapackint lwork = std::max({(mplapackint)1, 3 * n + n, 5 * n});
     mplapackint liwork;
     mplapackint *ipiv = new mplapackint[n];
     mplapackint info;
 
-    _Float64x *work = new _Float64x[lwork];
+    mplapack_binary80_t *work = new mplapack_binary80_t[lwork];
 
     std::random_device seed_gen;
     std::mt19937 engine(seed_gen());
@@ -129,7 +129,7 @@ int main(int argc, char *argv[]) {
     // 2. get determinant via LU factorization
     Rgetrf(n, n, a, n, ipiv, info);
     // printf("aLU ="); printmat(n, n, a, n); printf("\n");
-    _Float64x det = 1;
+    mplapack_binary80_t det = 1;
     for (int i = 0; i < n; i++) {
         det = det * a[i + i * n];
         if (ipiv[i] != i + 1)
@@ -172,7 +172,7 @@ int main(int argc, char *argv[]) {
     // 5.5. verify Ainv * A = I
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            _Float64x rtmp = 0.0;
+            mplapack_binary80_t rtmp = 0.0;
             for (int k = 0; k < n; k++) {
                 rtmp = rtmp + ainv[i + k * n] * a[k + j * n];
             }
@@ -185,7 +185,7 @@ int main(int argc, char *argv[]) {
     printf("ainv ="); printmat(n, n, ainv, n); printf("\n");
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            _Float64x rtmp = 0.0;
+            mplapack_binary80_t rtmp = 0.0;
             for (int k = 0; k < n; k++) {
                 for (int l = 0; l < n; l++) {
                     rtmp = rtmp + ainv[i + k * n] * s[k + l * n] * aorg[l + j * n];
@@ -208,7 +208,7 @@ int main(int argc, char *argv[]) {
     }
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            _Float64x rtmp = 0.0;
+            mplapack_binary80_t rtmp = 0.0;
             for (int k = 0; k < n; k++) {
                 rtmp = rtmp + a[k + i * n] * a[k + j * n];
             }
@@ -218,7 +218,7 @@ int main(int argc, char *argv[]) {
     // 7. eig(A^t A).
     printf("at_a ="); printmat(n, n, at_a, n); printf("\n");
     printf("eig(at_a)\n");
-    _Float64x rtmp = 0.0;
+    mplapack_binary80_t rtmp = 0.0;
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
             if ( abs(at_a[i + j * n]) > abs(rtmp) )
@@ -237,14 +237,14 @@ int main(int argc, char *argv[]) {
 
     // work space query
     lwork = -1;
-    work = new _Float64x[1];
+    work = new mplapack_binary80_t[1];
     liwork = -1;
     mplapackint *iwork = new mplapackint[1];
 
     Rsyevd("N", "U", n, at_a, n, w, work, lwork, iwork, liwork, info);
     lwork = (int)cast2double(work[0]);
     delete[] work;
-    work = new _Float64x[std::max((mplapackint)1, lwork)];
+    work = new mplapack_binary80_t[std::max((mplapackint)1, lwork)];
     liwork = iwork[0];
     delete[] iwork;
     iwork = new mplapackint[std::max((mplapackint)1, liwork)];
@@ -252,7 +252,7 @@ int main(int argc, char *argv[]) {
     // diagonalize matrix
     Rsyevd("N", "U", n, at_a, n, w, work, lwork, iwork, liwork, info);
 
-    qsort(s, n, sizeof(_Float64x), compare_real);
+    qsort(s, n, sizeof(mplapack_binary80_t), compare_real);
     printf("s=[");
     for (int i = 0; i < n; i++) { printnum(s[i]); printf(" "); } printf(" ] \n");
     printf("s_squared=["); for (int i = 0; i < n; i++) { printnum(s[i] * s[i]); printf(" "); } printf(" ] \n");
@@ -262,7 +262,7 @@ int main(int argc, char *argv[]) {
     // \lambda_i = \sigma_i^2
     // 9. Relative error
 
-    _Float64x relerror;
+    mplapack_binary80_t relerror;
     for (int i = 0; i < n; i = i + 1) {
         relerror = abs ( (w[i] - s[i] * s[i]) / (s[i] * s[i]) ) ;
         printf("Relative_error_%d = ", (int)i); printnum(relerror); printf("\n");

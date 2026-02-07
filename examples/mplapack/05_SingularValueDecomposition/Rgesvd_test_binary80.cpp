@@ -9,15 +9,15 @@
 #define FLOAT64X_FORMAT "%+25.21Le"
 #define FLOAT64X_SHORT_FORMAT "%+20.16Le"
 
-void printnum(_Float64x rtmp)
+void printnum(mplapack_binary80_t rtmp)
 {
     printf(FLOAT64X_FORMAT, rtmp);
     return;
 }
 
 //Matlab/Octave format
-void printvec(_Float64x *a, int len) {
-    _Float64x tmp;
+void printvec(mplapack_binary80_t *a, int len) {
+    mplapack_binary80_t tmp;
     printf("[ ");
     for (int i = 0; i < len; i++) {
         tmp = a[i];
@@ -28,9 +28,9 @@ void printvec(_Float64x *a, int len) {
     printf("]");
 }
 
-void printmat(int n, int m, _Float64x *a, int lda)
+void printmat(int n, int m, mplapack_binary80_t *a, int lda)
 {
-    _Float64x mtmp;
+    mplapack_binary80_t mtmp;
 
     printf("[ ");
     for (int i = 0; i < n; i++) {
@@ -52,12 +52,12 @@ int main() {
     mplapackint n = 5;
     mplapackint m = 4;
 
-    _Float64x *a = new _Float64x[m * n];
-    _Float64x *s = new _Float64x[std::min(m, n)];
-    _Float64x *u = new _Float64x[m * m];
-    _Float64x *vt = new _Float64x[n * n];
+    mplapack_binary80_t *a = new mplapack_binary80_t[m * n];
+    mplapack_binary80_t *s = new mplapack_binary80_t[std::min(m, n)];
+    mplapack_binary80_t *u = new mplapack_binary80_t[m * m];
+    mplapack_binary80_t *vt = new mplapack_binary80_t[n * n];
     mplapackint lwork = std::max({(mplapackint)1, 3 * std::min(m, n) + std::max(m, n), 5 * std::min(m, n)});
-    _Float64x *work = new _Float64x[lwork];
+    mplapack_binary80_t *work = new mplapack_binary80_t[lwork];
     mplapackint info;
 
     // setting A matrix

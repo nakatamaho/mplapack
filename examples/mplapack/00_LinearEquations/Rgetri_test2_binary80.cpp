@@ -9,15 +9,15 @@
 #define FLOAT64X_FORMAT "%+25.21Le"
 #define FLOAT64X_SHORT_FORMAT "%+20.16Le"
 
-void printnum(_Float64x rtmp)
+void printnum(mplapack_binary80_t rtmp)
 {
     printf(FLOAT64X_FORMAT, rtmp);
     return;
 }
 
 //Matlab/Octave format
-void printvec(_Float64x *a, int len) {
-    _Float64x tmp;
+void printvec(mplapack_binary80_t *a, int len) {
+    mplapack_binary80_t tmp;
     printf("[ ");
     for (int i = 0; i < len; i++) {
         tmp = a[i];
@@ -28,9 +28,9 @@ void printvec(_Float64x *a, int len) {
     printf("]");
 }
 
-void printmat(int n, int m, _Float64x *a, int lda)
+void printmat(int n, int m, mplapack_binary80_t *a, int lda)
 {
-    _Float64x mtmp;
+    mplapack_binary80_t mtmp;
 
     printf("[ ");
     for (int i = 0; i < n; i++) {
@@ -53,7 +53,7 @@ int main()
     mplapackint n = 4;
     mplapackint lwork, info;
 
-    _Float64x *a = new _Float64x[n * n];
+    mplapack_binary80_t *a = new mplapack_binary80_t[n * n];
     mplapackint *ipiv = new mplapackint[n];
 
 //setting a matrix
@@ -69,12 +69,12 @@ int main()
 
 //work space query
     lwork = -1;
-    _Float64x *work = new _Float64x[1];
+    mplapack_binary80_t *work = new mplapack_binary80_t[1];
 
     Rgetri(n, a, n, ipiv, work, lwork, info);
     lwork = castINTEGER_binary80 (work[0]);
     delete[]work;
-    work = new _Float64x[std::max(1, (int) lwork)];
+    work = new mplapack_binary80_t[std::max(1, (int) lwork)];
 
 //inverse matrix
     Rgetrf(n, n, a, n, ipiv, info);
