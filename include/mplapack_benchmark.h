@@ -124,8 +124,8 @@ double randomnumber(double dummy) {
 #define MPLAPACK_REF_LIB "libmplapack_binary80"
 #define MPBLAS_REF_LIB "libmpblas_binary80"
 #define ___MPLAPACK_INITIALIZE___
-_Float64x randomnumber(_Float64x dummy) {
-    _Float64x mtmp;
+mplapack_binary80_t randomnumber(mplapack_binary80_t dummy) {
+    mplapack_binary80_t mtmp;
 #if defined _WIN32
     mtmp = ((double)rand() / (double)RAND_MAX);          // uniform random between [0,1] via rand
     mtmp += ((double)rand() / (double)RAND_MAX) * 1e-16; // uniform random between [0,1] via rand
@@ -143,8 +143,8 @@ _Float64x randomnumber(_Float64x dummy) {
 #define MPLAPACK_REF_LIB "libmplapack_binary128"
 #define MPBLAS_REF_LIB "libmpblas_binary128"
 #define ___MPLAPACK_INITIALIZE___
-_Float128 randomnumber(_Float128 dummy) {
-    _Float128 mtmp;
+mplapack_binary128_t randomnumber(mplapack_binary128_t dummy) {
+    mplapack_binary128_t mtmp;
 #if defined _WIN32
     mtmp = ((double)rand() / (double)RAND_MAX);          // uniform random between [0,1] via rand
     mtmp += ((double)rand() / (double)RAND_MAX) * 1e-16; // uniform random between [0,1] via rand

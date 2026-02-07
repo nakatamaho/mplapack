@@ -125,6 +125,95 @@ if test x"$is_intelcxx" = x"1"; then
     AC_MSG_RESULT([Intel compiler (icpc/icpx) detected])
 fi
 
+dnl ===================================================================
+dnl M4 Macro: Auto-detect quadmath library paths (for Intel compilers)
+dnl ===================================================================
+AC_DEFUN([AX_FIND_QUADMATH], [
+  AC_MSG_CHECKING([for quadmath library and headers])
+  
+  quadmath_found=no
+  quadmath_include_dir=""
+  quadmath_lib_dir=""
+  
+  dnl First try standard paths
+  save_LIBS="$LIBS"
+  save_CPPFLAGS="$CPPFLAGS"
+  LIBS="-lquadmath $LIBS"
+  
+  AC_LINK_IFELSE([
+    AC_LANG_PROGRAM([[#include <quadmath.h>]],
+                     [[__float128 x = 1.0Q; quadmath_snprintf(0,0,"%.1Qf",x);]])
+  ], [
+    quadmath_found=yes
+    AC_MSG_RESULT([yes (in standard paths)])
+  ], [
+    dnl Not in standard paths, try to find via gcc
+    LIBS="$save_LIBS"
+    
+    dnl Try to get GCC's include path
+    if command -v gcc >/dev/null 2>&1; then
+      gcc_include=$(gcc -print-file-name=include 2>/dev/null)
+      if test -n "$gcc_include" && test -f "$gcc_include/quadmath.h"; then
+        quadmath_include_dir="$gcc_include"
+      fi
+      
+      dnl Try to get GCC's lib path
+      gcc_libdir=$(gcc -print-file-name=libquadmath.so 2>/dev/null | xargs dirname 2>/dev/null)
+      if test -z "$gcc_libdir" || ! test -d "$gcc_libdir"; then
+        gcc_libdir=$(gcc -print-file-name=libquadmath.a 2>/dev/null | xargs dirname 2>/dev/null)
+      fi
+      
+      dnl Try with detected paths
+      if test -n "$quadmath_include_dir" && test -n "$gcc_libdir" && test -d "$gcc_libdir"; then
+        quadmath_lib_dir="$gcc_libdir"
+        CPPFLAGS="$save_CPPFLAGS -idirafter $quadmath_include_dir"
+        LIBS="-L$quadmath_lib_dir -lquadmath $save_LIBS"
+        
+        AC_LINK_IFELSE([
+          AC_LANG_PROGRAM([[#include <quadmath.h>]],
+                           [[__float128 x = 1.0Q; quadmath_snprintf(0,0,"%.1Qf",x);]])
+        ], [
+          quadmath_found=yes
+          AC_MSG_RESULT([yes (found via gcc)])
+          AC_MSG_RESULT([  Include: $quadmath_include_dir])
+          AC_MSG_RESULT([  Library: $quadmath_lib_dir])
+        ], [
+          CPPFLAGS="$save_CPPFLAGS"
+          LIBS="$save_LIBS"
+        ])
+      fi
+    fi
+    
+    if test "x$quadmath_found" = "xno"; then
+      AC_MSG_RESULT([no])
+      CPPFLAGS="$save_CPPFLAGS"
+      LIBS="$save_LIBS"
+    fi
+  ])
+  
+  dnl Export results
+  if test "x$quadmath_found" = "xyes"; then
+    dnl Only set CPPFLAGS if quadmath.h is NOT in standard paths
+    if test -n "$quadmath_include_dir"; then
+      QUADMATH_CPPFLAGS="-idirafter $quadmath_include_dir"
+    else
+      dnl quadmath.h found in standard path, no special include needed
+      QUADMATH_CPPFLAGS=""
+    fi
+    if test -n "$quadmath_lib_dir"; then
+      QUADMATH_LDFLAGS="-L$quadmath_lib_dir"
+    else
+      dnl libquadmath found in standard path, no special -L needed
+      QUADMATH_LDFLAGS=""
+    fi
+    QUADMATH_LIBS="-lquadmath"
+  fi
+  
+  AC_SUBST([QUADMATH_CPPFLAGS])
+  AC_SUBST([QUADMATH_LDFLAGS])
+  AC_SUBST([QUADMATH_LIBS])
+])
+
 LT_INIT([win32-dll])
 AM_INIT_AUTOMAKE([subdir-objects -Wno-portability])
 AC_CONFIG_MACRO_DIR([m4])
@@ -454,6 +543,17 @@ if test x$enable_binary128 = x"yes"; then
     dnl ===================================================================
     dnl Phase 2: I/O Function Detection
     dnl ===================================================================
+
+    dnl Auto-detect quadmath paths for Intel compiler
+    if test "$have___float128" = "yes" && test "x$is_intelcxx" = "x1"; then
+        AX_FIND_QUADMATH
+        if test -n "$QUADMATH_CPPFLAGS"; then
+            CPPFLAGS="$CPPFLAGS $QUADMATH_CPPFLAGS"
+        fi
+        if test -n "$QUADMATH_LDFLAGS"; then
+            LDFLAGS="$LDFLAGS $QUADMATH_LDFLAGS"
+        fi
+    fi
     AC_MSG_CHECKING([for binary128 I/O functions])
 
     have_strfromf128=no

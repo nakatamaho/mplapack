@@ -42,12 +42,6 @@
 #include <cfloat>
 #include <cmath>
 
-#if defined ___MPLAPACK_BUILD_WITH_BINARY128___
-#define MPFR_WANT_FLOAT128
-#endif
-
-#include "mpfr.h"
-
 #ifndef ___MPREAL_DEFAULT_PRECISION___
 #define ___MPREAL_DEFAULT_PRECISION___ 512
 #endif
@@ -67,9 +61,18 @@
 #if defined ___MPLAPACK_BUILD_WITH_BINARY128___
 #include "mplapack_config.h"
 #if (MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_QUADMATH)
+#ifndef mpfr_float128
+#define mpfr_float128 __float128
+#endif
 #include <quadmath.h>
 #endif
 #endif
+
+#if defined ___MPLAPACK_BUILD_WITH_BINARY128___
+#define MPFR_WANT_FLOAT128
+#endif
+
+#include "mpfr.h"
 
 // Detect compiler using signatures from http://predef.sourceforge.net/
 #if defined(__GNUC__) && defined(__INTEL_COMPILER)
