@@ -537,21 +537,28 @@ inline const mpcomplex mpcomplex::operator++(int) {
 
 // + Addition again
 inline const mpcomplex operator+(const mpcomplex &a, const mpcomplex &b) {
-    mpcomplex tmp;
-    if (!a.get_prec() == 0 && !b.get_prec() == 0) {
-        if (a.get_prec() > b.get_prec()) {
-            tmp = a;
-            tmp += b;
-            return tmp;
-        } else {
-            tmp = b;
-            tmp += a;
-            return tmp;
-        }
-    } else {
-        tmp = a;
-        tmp.set_prec2(std::max(a.get_prec_re(), b.get_prec_re()), std::max(a.get_prec_im(), b.get_prec_im()), mpcomplex::default_rnd);
-        return tmp += b;
+    mp_prec_t prec_re_a = a.get_prec_re();
+    mp_prec_t prec_im_a = a.get_prec_im();
+    mp_prec_t prec_re_b = b.get_prec_re();
+    mp_prec_t prec_im_b = b.get_prec_im();
+
+    mp_prec_t prec_re_max = std::max(prec_re_a, prec_re_b);
+    mp_prec_t prec_im_max = std::max(prec_im_a, prec_im_b);
+
+    // If a already has maximum precision in both components
+    if (prec_re_a == prec_re_max && prec_im_a == prec_im_max) {
+        return mpcomplex(a) += b;
+    }
+    // If b already has maximum precision in both components
+    else if (prec_re_b == prec_re_max && prec_im_b == prec_im_max) {
+        return mpcomplex(b) += a;
+    }
+    // Mixed precision case
+    else {
+        mpcomplex result;
+        result.set_prec2(prec_re_max, prec_im_max, mpcomplex::default_rnd);
+        result = a; // Use assignment operator
+        return result += b;
     }
 }
 
@@ -644,7 +651,7 @@ inline const mpcomplex mpcomplex::operator--(int) {
 }
 
 inline const mpcomplex operator-(const mpcomplex &a, const mpcomplex &b) {
-    if (!a.get_prec() == 0 && !b.get_prec() == 0) {
+    if (a.get_prec() != 0 && b.get_prec() != 0) {
         if (a.get_prec() > b.get_prec())
             return mpcomplex(a) -= b;
         else
@@ -669,7 +676,7 @@ inline const mpcomplex operator-(const std::complex<long double> &a, const mpcom
 inline const mpcomplex operator-(const char *a, const mpcomplex &b) { return mpcomplex(a) - b; }
 
 inline const mpcomplex operator-(const mpcomplex &a, const mpreal b) {
-    if (!a.get_prec() == 0 && !b.get_prec() == 0) {
+    if (a.get_prec() != 0 && b.get_prec() != 0) {
         if (a.get_prec() > b.get_prec())
             return mpcomplex(a) -= b;
         else
@@ -722,39 +729,11 @@ inline mpcomplex &mpcomplex::operator*=(const double a) {
     return *this;
 }
 
-inline const mpcomplex operator*(const mpcomplex &a, const mpcomplex &b) {
-    return mpcomplex(a) *= b;
-    /*
-        if (!a.get_prec() == 0 && !b.get_prec() == 0) {
-            if (a.get_prec() > b.get_prec())
-                return mpcomplex(a) *= b;
-            else
-                return mpcomplex(b) *= a;
-        } else {
-            mpcomplex tmp(a);
-            tmp.set_prec2(std::max(a.get_prec_re(), b.get_prec_re()), std::max(a.get_prec_im(), b.get_prec_im()), mpcomplex::default_rnd);
-            return tmp *= b;
-        }
-    */
-}
+inline const mpcomplex operator*(const mpcomplex &a, const mpcomplex &b) { return mpcomplex(a) *= b; }
 
-inline const mpcomplex operator*(const mpcomplex &a, const mpreal &b) {
-    return mpcomplex(a) *= mpcomplex(b);
-    /*
-        mpcomplex tmp(a);
-        tmp.set_prec2(std::max(a.get_prec_re(), b.get_prec()), a.get_prec_im(), mpcomplex::default_rnd);
-        return tmp *= mpcomplex(b);
-    */
-}
+inline const mpcomplex operator*(const mpcomplex &a, const mpreal &b) { return mpcomplex(a) *= mpcomplex(b); }
 
-inline const mpcomplex operator*(const mpreal &a, const mpcomplex &b) {
-    return mpcomplex(a) *= mpcomplex(b);
-    /*
-        mpcomplex tmp(a);
-        tmp.set_prec2(std::max(b.get_prec_re(), a.get_prec()), b.get_prec_im(), mpcomplex::default_rnd);
-        return tmp *= b;
-    */
-}
+inline const mpcomplex operator*(const mpreal &a, const mpcomplex &b) { return mpcomplex(a) *= mpcomplex(b); }
 
 // / division
 inline mpcomplex &mpcomplex::operator/=(const mpcomplex &a) {
@@ -825,16 +804,15 @@ inline bool operator==(const mpreal &a, const mpcomplex &b) {
     return (mpc_cmp(c.mpc, b.mpc) == 0);
 }
 
-inline bool operator!=(const mpcomplex &a, const mpcomplex &b) { return (!mpc_cmp(a.mpc, b.mpc) == 0); }
-
+inline bool operator!=(const mpcomplex &a, const mpcomplex &b) { return (mpc_cmp(a.mpc, b.mpc) != 0); }
 inline bool operator!=(const mpcomplex &a, const mpreal &b) {
     mpcomplex c(b);
-    return (!mpc_cmp(a.mpc, c.mpc) == 0);
+    return (mpc_cmp(a.mpc, c.mpc) != 0);
 }
 
 inline bool operator!=(const mpreal &a, const mpcomplex &b) {
     mpcomplex c(a);
-    return (!mpc_cmp(b.mpc, c.mpc) == 0);
+    return (mpc_cmp(b.mpc, c.mpc) != 0);
 }
 
 inline mpcomplex::operator std::complex<double>() const {
@@ -1158,8 +1136,8 @@ inline dd_complex cast2dd_complex(const mpcomplex &b) {
 
     return q;
 }
-inline const mpcomplex operator-(const mpcomplex &a, const dd_complex &b) { return mpcomplex(b) -= a; }
 
+inline const mpcomplex operator-(const mpcomplex &a, const dd_complex &b) { return mpcomplex(b) -= a; }
 inline const mpcomplex operator-(const dd_complex &a, const mpcomplex &b) { return -(mpcomplex(a) -= b); }
 
 inline mpcomplex &mpcomplex::operator=(const dd_complex &a) {
