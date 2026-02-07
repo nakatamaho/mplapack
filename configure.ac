@@ -132,6 +132,15 @@ AC_CONFIG_MACRO_DIR([m4])
 dnl OpenMP Compiler flags.
 AC_LANG([C++])
 AC_OPENMP
+
+dnl Intel compilers prefer -qopenmp over -fopenmp
+if test x"$is_intelcxx" = x"1"; then
+    if test x"$OPENMP_CXXFLAGS" = x"-fopenmp"; then
+        OPENMP_CXXFLAGS="-qopenmp"
+        AC_MSG_RESULT([Using -qopenmp for Intel C++ compiler])
+    fi
+fi
+
 AC_SUBST([OPENMP_CXXFLAGS])
 
 dnl Checking host name
@@ -1601,6 +1610,16 @@ if test x"$enable_test" = x"yes"; then
     AC_SUBST(FCLIBS)
     AC_LANG_PUSH([Fortran])
     AC_OPENMP
+    
+    dnl Intel Fortran compilers prefer -qopenmp over -fopenmp
+    dnl Check if FC is ifort or ifx
+    if echo "$FC" | grep -qE '(ifort|ifx)'; then
+        if test x"$OPENMP_FCFLAGS" = x"-fopenmp"; then
+            OPENMP_FCFLAGS="-qopenmp"
+            AC_MSG_RESULT([Using -qopenmp for Intel Fortran compiler])
+        fi
+    fi
+    
     AC_LANG_POP([Fortran])
 fi
 
