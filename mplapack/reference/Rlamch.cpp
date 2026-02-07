@@ -749,6 +749,34 @@ mplapack_binary80_t RlamchN_binary80(void) {
     return (mplapack_binary80_t)kMantDig;
 }
 
+//"R" rnd   = 1.0 when rounding occurs in addition, 0.0 otherwise
+// cf.http://www.netlib.org/blas/dlamch.f
+mplapack_binary80_t RlamchR_binary80(void) {
+    mplapack_binary80_t mtmp;
+    mtmp = 1.0;
+    return mtmp;
+}
+
+//"M"
+// cf.http://www.netlib.org/blas/dlamch.f
+mplapack_binary80_t RlamchM_binary80(void) {
+#if MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_FLOAT64X
+#if !defined(FLT64X_MIN_EXP)
+#error "FLT64X_MIN_EXP is not defined, but MPLAPACK_BINARY80_MODE_FLOAT64X is selected."
+#endif
+    return (mplapack_binary80_t)FLT64X_MIN_EXP;
+#elif MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_LDBL80
+#if !defined(LDBL_MIN_EXP)
+#error "LDBL_MIN_EXP is not defined, but MPLAPACK_BINARY80_MODE_LDBL80 is selected."
+#endif
+    return (mplapack_binary80_t)LDBL_MIN_EXP;
+#elif MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_DISABLED
+#error "Binary80 is disabled (MPLAPACK_BINARY80_MODE_DISABLED). RlamchM_binary80 must not be compiled."
+#else
+#error "Unknown MPLAPACK_BINARY80_MODE value."
+#endif
+}
+
 // "U" : underflow threshold (rmin; minimum positive normal)
 mplapack_binary80_t RlamchU_binary80(void) {
 #if MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_FLOAT64X
