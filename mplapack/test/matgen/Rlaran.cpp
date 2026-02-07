@@ -77,7 +77,7 @@ REAL Rlaran(INTEGER *iseed) {
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_BINARY128___
-    _Float128 x;
+    mplapack_binary128_t x;
     std::random_device rd;
     std::mt19937_64 mt(rd());
     std::uniform_real_distribution<double> dist(0.0, 1.0);
@@ -85,7 +85,7 @@ REAL Rlaran(INTEGER *iseed) {
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_BINARY80___
-    _Float64x x;
+    mplapack_binary80_t x;
     std::random_device rd;
     std::mt19937_64 mt(rd());
     std::uniform_real_distribution<double> dist(0, 1.0);
