@@ -39,8 +39,12 @@ endif
 
 work/$(CONFIGURE_STAMP): work/$(PATCH_STAMP)
 if IS_INTELCC
-	cd $(abs_builddir)/work/internal/QD-$(QDVERSION) ; autoreconf -f -i ; env "CC=$(CC)" "CXX=$(CXX)" "CFLAGS=$(CFLAGS) -fp-model precise" "CXXFLAGS=$(CXXFLAGS) -fp-model precise" "FC=$(FC)" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS)
-	cd $(abs_builddir)/work/install/QD-$(QDVERSION) ; autoreconf -f -i ; env "CC=$(CC)" "CXX=$(CXX)"  "CFLAGS=$(CFLAGS) -fp-model precise" "CXXFLAGS=$(CXXFLAGS) -fp-model precise" "FC=$(FC)" "LDFLAGS=$(LDFLAGS) -Wl,-rpath=$(libdir)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS2)
+	QD_CFLAGS="$${CFLAGS// -xHost/} -O2 -fp-model precise" ; \
+	QD_CXXFLAGS="$${CXXFLAGS// -xHost/} -O2 -fp-model precise" ; \
+	cd $(abs_builddir)/work/internal/QD-$(QDVERSION) ; autoreconf -f -i ; \
+	env "CC=$(CC)" "CXX=$(CXX)" "CFLAGS=$$QD_CFLAGS" "CXXFLAGS=$$QD_CXXFLAGS" "FC=$(FC)" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS) ; \
+	cd $(abs_builddir)/work/install/QD-$(QDVERSION) ; autoreconf -f -i ; \
+	env "CC=$(CC)" "CXX=$(CXX)" "CFLAGS=$$QD_CFLAGS" "CXXFLAGS=$$QD_CXXFLAGS" "FC=$(FC)" "LDFLAGS=$(LDFLAGS) -Wl,-rpath=$(libdir)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS2)
 else
 	cd $(abs_builddir)/work/internal/QD-$(QDVERSION) ; autoreconf -f -i ; env "CC=$(CC)" "CXX=$(CXX)" "CXXFLAGS=$(CXXFLAGS) @QD_EXTRA_CXXFLAGS@" "FC=$(FC)" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS)
 	cd $(abs_builddir)/work/install/QD-$(QDVERSION) ; autoreconf -f -i ; env "CC=$(CC)" "CXX=$(CXX)" "CXXFLAGS=$(CXXFLAGS) @QD_EXTRA_CXXFLAGS@" "FC=$(FC)" "LDFLAGS=$(LDFLAGS) -Wl,-rpath,$(libdir)" "NM=$(NM)" "RANLIB=$(RANLIB)" ./configure $(CONFIGURE_ARGS2)
