@@ -1658,18 +1658,37 @@ void Rlamch_binary128_test() {
     const mplapack_binary128_t two = (mplapack_binary128_t)2.0;
 
 // Expected values for IEEE-754 binary128 based on compiler-provided parameters.
-// When binary128 is actually long double (binary128), use __LDBL_* macros.
+#if MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_FLOAT128
+// Using _Float128
 #if defined(__FLT128_MANT_DIG__)
     const int p = (int)__FLT128_MANT_DIG__;
     const int emin = (int)__FLT128_MIN_EXP__;
     const int emax = (int)__FLT128_MAX_EXP__;
-#elif defined(__LDBL_MANT_DIG__) && __LDBL_MANT_DIG__ == 113
-    // long double is binary128 (e.g., aarch64, ppc64le with IEEE)
+#else
+#error "_Float128 mode selected but __FLT128_MANT_DIG__ not available"
+#endif
+#elif MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_QUADMATH
+// Using __float128 (GCC quadmath extension)
+#if defined(__FLT128_MANT_DIG__)
+    const int p = (int)__FLT128_MANT_DIG__;
+    const int emin = (int)__FLT128_MIN_EXP__;
+    const int emax = (int)__FLT128_MAX_EXP__;
+#else
+    const int p = (int)FLT128_MANT_DIG; //defined in quadmath.h
+    const int emin = (int)FLT128_MIN_EXP;
+    const int emax = (int)FLT128_MAX_EXP;
+#endif
+#elif MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_LDBL
+// Using long double (must be binary128)
+#if defined(__LDBL_MANT_DIG__) && __LDBL_MANT_DIG__ == 113
     const int p = (int)__LDBL_MANT_DIG__;
     const int emin = (int)__LDBL_MIN_EXP__;
     const int emax = (int)__LDBL_MAX_EXP__;
 #else
-#error "Cannot determine binary128 parameters: neither __FLT128_* nor binary128 long double available"
+#error "long double mode selected but long double is not binary128 (113-bit mantissa required)"
+#endif
+#else
+#error "Invalid or disabled MPLAPACK_BINARY128_MODE"
 #endif
 
     const mplapack_binary128_t exB = two;
@@ -1832,10 +1851,27 @@ void Rlamch_binary80_test() {
     const mplapack_binary80_t two = (mplapack_binary80_t)2.0;
 
     // Expected values for mplapack_binary80_t based on compiler-provided parameters.
+#if MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_FLOAT64X
+    // Using _Float64x
+#if defined(__FLT64X_MANT_DIG__)
     const int p = (int)__FLT64X_MANT_DIG__;
     const int emin = (int)__FLT64X_MIN_EXP__;
     const int emax = (int)__FLT64X_MAX_EXP__;
-
+    #else
+    #error "_Float64x mode selected but __FLT64X_MANT_DIG__ not available"
+    #endif
+    #elif MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_LDBL80
+    // Using long double (must be binary80)
+#if defined(__LDBL_MANT_DIG__) && __LDBL_MANT_DIG__ == 64
+    const int p = (int)__LDBL_MANT_DIG__;
+    const int emin = (int)__LDBL_MIN_EXP__;
+    const int emax = (int)__LDBL_MAX_EXP__;
+    #else
+    #error "long double mode selected but long double is not binary80 (64-bit mantissa required)"
+    #endif
+    #else
+    #error "Invalid MPLAPACK_BINARY80_MODE specified"
+    #endif
     const mplapack_binary80_t exB = two;
     const mplapack_binary80_t exN = (mplapack_binary80_t)p;
 
