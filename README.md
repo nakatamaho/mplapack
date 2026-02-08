@@ -201,11 +201,11 @@ $ cd ; fable.cout sample.f
 
 ### Tier-S Representative Gate Matrix (Release Blockers)
 
-**Key idea:** We do **not** run the full Cartesian product (OS × Arch × Compiler × Features).  
+**Key idea:** We do **not** run the full Cartesian product (OS x Arch x Compiler x Features).  
 Instead, we define a **minimal set of representative builds** that collectively covers all Tier-S requirements.
 
 | # | Tier | OS | Arch | Compiler | binary80 | binary128 | Required tasks | Date |
-|---:|:---:|:---|:---|:---|:---:|:---:|:---|:---| - |
+|---:|:---:|:---|:---|:---|:---:|:---:|:---|:---|
 | 1 | S | Ubuntu 24.04 | amd64 | GCC | ✅ | ✅ | build / tests / `make check` / examples | - |
 | 2 | S | Ubuntu 22.04 | amd64 | GCC | ✅ | ✅ | build / tests / `make check` / examples | - |
 | 3 | S | Ubuntu 24.04 | arm64 | GCC | N/A (or ✅ if supported) | ✅ | build / tests / `make check` / examples | - |
@@ -213,7 +213,6 @@ Instead, we define a **minimal set of representative builds** that collectively 
 | 5 | S | Rocky (8/9) | amd64 | GCC | ✅ | ✅ | build / tests / `make check` / examples | - |
 | 6 | S | macOS (arm64) | arm64 | GCC (e.g., MacPorts) | N/A (or ✅ if supported) | ✅ (if supported) | build / tests / `make check` / examples | - |
 | 7 | S | Windows | amd64 | GCC (MinGW-w64) | ✅ | ✅ | build / tests / `make check` / examples | - |
-
 ### Tier Policy (Dimensions)
 
 > **Tier-S**: release blockers (must be green on the representative gate matrix)
