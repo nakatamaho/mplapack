@@ -1031,10 +1031,10 @@ mplapack_binary128_t RlamchU_binary128(void) {
     const mplapack_binary128_t rmin = (mplapack_binary128_t)LDBL_MIN;
 
 #elif MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_QUADMATH
-#if defined(__FLT128_MIN__)
-    const mplapack_binary128_t rmin = (mplapack_binary128_t)__FLT128_MIN__;
-#elif defined(FLT128_MIN)
-    const mplapack_binary128_t rmin = (mplapack_binary128_t)FLT128_MIN;
+#if defined(FLT128_MIN)
+    const mplapack_binary128_t rmin = FLT128_MIN;
+#elif defined(__FLT128_MIN__)
+    const mplapack_binary128_t rmin = __FLT128_MIN__;
 #else
 #error "__FLT128_MIN__/FLT128_MIN is not defined, but MPLAPACK_BINARY128_MODE_QUADMATH is selected."
 #endif
@@ -1094,10 +1094,10 @@ mplapack_binary128_t RlamchO_binary128(void) {
     const mplapack_binary128_t rmax = (mplapack_binary128_t)LDBL_MAX;
 
 #elif MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_QUADMATH
-#if defined(__FLT128_MAX__)
-    const mplapack_binary128_t rmax = (mplapack_binary128_t)__FLT128_MAX__;
-#elif defined(FLT128_MAX)
-    const mplapack_binary128_t rmax = (mplapack_binary128_t)FLT128_MAX;
+#if defined(FLT128_MAX)
+    const mplapack_binary128_t rmax = FLT128_MAX;
+#elif defined(__FLT128_MAX__)
+    const mplapack_binary128_t rmax = __FLT128_MAX__;
 #else
 #error "__FLT128_MAX__/FLT128_MAX is not defined, but MPLAPACK_BINARY128_MODE_QUADMATH is selected."
 #endif
