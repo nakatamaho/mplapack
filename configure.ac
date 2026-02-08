@@ -1738,14 +1738,14 @@ if test x"$enable_optimization" = x"yes" && test x"$enable_debug" != x"yes" ; th
         ;;
         *)
             if test x"$is_intelcc" = x"1"; then
-                CFLAGS="$CFLAGS -xHost -O2"
+                CFLAGS="$CFLAGS -O2" # -xHost and -march-native break build drastically
             else
                 CFLAGS="$CFLAGS -march=native -O2"
                 FCFLAGS="$FCFLAGS -march=native -O2"
             fi
             
             if test x"$is_intelcxx" = x"1"; then
-                CXXFLAGS="$CXXFLAGS -xHost -O2"
+                CXXFLAGS="$CXXFLAGS -O2" # -xHost and -march-native break build drastically
             else
                 CXXFLAGS="$CXXFLAGS -march=native -O2"
             fi
