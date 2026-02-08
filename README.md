@@ -3,6 +3,7 @@ This particular package has undergone a comprehensive conversion into the C++ pr
 
 # News
 
+* 2026-02-08  MPLAPACK 2.1.0 is in release process.
 * 2022-09-12, MPLAPACK 2.0.1 was released, featuring CUDA versions of Rgemm (dd) and Rsyrk (dd) for use on Vota and Ampere, and on Tesla V100, with performance reaching approximately 450 GFlops. Support for V100 and A100 was also reintroduced by Nakazato (aizu-u). We also provide DLLs provided for MINGW mplapack.
 * 2022-07-26, MPLAPACK 2.0.0 was released, with all routines, with the exception of mixed precision routines, now functional and extensively tested for all multiple precisions.
 
@@ -192,6 +193,62 @@ $ cd ; fable.cout sample.f
 ```
 
 # MPLAPACK Release process
+
+
+
+
+## MPLAPACK 2.1.0 Release process
+
+### Tier-S Representative Gate Matrix (Release Blockers)
+
+**Key idea:** We do **not** run the full Cartesian product (OS × Arch × Compiler × Features).  
+Instead, we define a **minimal set of representative builds** that collectively covers all Tier-S requirements.
+
+| # | Tier | OS | Arch | Compiler | binary80 | binary128 | Required tasks | Date |
+|---:|:---:|:---|:---|:---|:---:|:---:|:---|:---| - |
+| 1 | S | Ubuntu 24.04 | amd64 | GCC | ✅ | ✅ | build / tests / `make check` / examples | - |
+| 2 | S | Ubuntu 22.04 | amd64 | GCC | ✅ | ✅ | build / tests / `make check` / examples | - |
+| 3 | S | Ubuntu 24.04 | arm64 | GCC | N/A (or ✅ if supported) | ✅ | build / tests / `make check` / examples | - |
+| 4 | S | Ubuntu (i386) | i386 | GCC | ✅ | N/A | build / tests / `make check` / examples | - |
+| 5 | S | Rocky (8/9) | amd64 | GCC | ✅ | ✅ | build / tests / `make check` / examples | - |
+| 6 | S | macOS (arm64) | arm64 | GCC (e.g., MacPorts) | N/A (or ✅ if supported) | ✅ (if supported) | build / tests / `make check` / examples | - |
+| 7 | S | Windows | amd64 | GCC (MinGW-w64) | ✅ | ✅ | build / tests / `make check` / examples | - |
+
+### Tier Policy (Dimensions)
+
+> **Tier-S**: release blockers (must be green on the representative gate matrix)
+> **Tier-A**: best-effort (may be allowed to fail, but should be tracked)
+
+#### CPU Architecture Tiers
+
+| Tier | Architectures | Expectation |
+|:---:|:---|:---|
+| S | amd64, arm64, i386 | build + tests + `make check` + examples test |
+| A | s390x, ppc64le, mips64le | build-only by default (smoke tests if feasible) |
+
+#### OS Tiers
+
+| Tier | Operating Systems | Expectation |
+|:---:|:---|:---|
+| S | Ubuntu, Rocky, macOS, Windows | Must be green on the Tier-S representative gate matrix |
+| A | Debian | Aim for green build; tests are best-effort |
+
+#### Compiler Tiers
+
+| Tier | Compilers | Expectation |
+|:---:|:---|:---|
+| S | GCC (native), GCC (MinGW-w64) | Must be green |
+| A | Clang, Intel oneAPI | Clang: build + minimal tests; oneAPI: quarantine if affected by known compiler bugs (failure signature should be stable & documented) |
+
+#### Feature Tiers (Precision)
+
+| Tier | Feature | Primary coverage targets | Notes |
+|:---:|:---|:---|:---|
+| S | binary80 | amd64, i386, Windows (MinGW-w64) | Some platforms/toolchains may be **N/A**. Tier-S still requires binary80 to be exercised on at least one supported representative build. |
+| S | binary128 | amd64, arm64, macOS (GCC), Windows (MinGW-w64) | Some platforms/toolchains may be **N/A**. Tier-S still requires binary128 to be exercised on at least one supported representative build. |
+
+> **N/A rule:** If a feature is not supported on a given platform/toolchain, mark it **N/A** in the gate matrix.
+> Tier-S compliance is judged by **coverage across the representative set**, not by forcing every feature on every platform.
 
 ## MPLAPACK 3.0.0 Release process
 This is the release process for MPLAPACK 3.0.0
