@@ -17,36 +17,29 @@ reflapack=-L$(top_builddir)/external/i/LAPACK/lib -llapack $(FCLIBS)
 test_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_BINARY80___ -D___MPLAPACK_INTERNAL___
 AM_FFLAGS = -x f77-cpp-input -g
 
-test_srcdepends = ../../../../mpblas/test/common/xerbla.cpp ../../../../mpblas/test/common/mplapack.test.cpp ../../../../mpblas/test/common/Mxerbla.override.cpp
+test_srcdepends = ../../../../mpblas/test/common/xerbla.cpp ../../../../mpblas/test/common/mplapack.test.cpp
 
 if IS_MACOS
 mplibs+=-Wl,-flat_namespace,-undefined,dynamic_lookup
-# DYLD_INSERT_LIBRARIES approach is removed
-endif
-
-if IS_MINGW
-test_libdepends = $(mplibs) $(reflapack) $(refblas) -Wl,--allow-multiple-definition
-else
-test_libdepends = $(mplibs) $(reflapack) $(refblas)
 endif
 
 if IS_MINGW
 $(check_PROGRAMS): libmxerbla_override.la
 lib_LTLIBRARIES = libmxerbla_override.la
 libmxerbla_override_la_CPPFLAGS = -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_BINARY80___
-libmxerbla_override_la_SOURCES =  ../../../../mpblas/test/common/Mxerbla.override.cpp
-test_srcdepends = ../../../../mpblas/test/common/xerbla.cpp ../../../../mpblas/test/common/mplapack.test.cpp
+libmxerbla_override_la_SOURCES = ../../../../mpblas/test/common/Mxerbla.override.cpp
 libmxerbla_override_la_LDFLAGS = -no-undefined
-endif
 
-if IS_MINGW
+test_libdepends = $(mplibs) $(reflapack) $(refblas) -Wl,--allow-multiple-definition
 libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,.libs/libmxerbla_override.a,$(top_builddir)/mpblas/reference/.libs/libmpblas_binary80.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_binary80.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_mpfr.a,$(top_builddir)/mpblas/reference/.libs/libmpblas_mpfr.a,--no-whole-archive
 else
+test_srcdepends += ../../../../mpblas/test/common/Mxerbla.override.cpp
+test_libdepends = $(mplibs) $(reflapack) $(refblas)
 libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_binary80 -lmplapack_mpfr -L$(top_builddir)/mpblas/reference -lmpblas_binary80 -lmpblas_mpfr
 endif
 
 Mutils_test_binary80_SOURCES  = ../common/Mutils.test.cpp $(test_srcdepends) ../common/ilaenv.cpp
-Mutils_test_binary80_LDFLAGS    = $(libdepends) $(test_libdepends)
+Mutils_test_binary80_LDFLAGS  = $(libdepends) $(test_libdepends)
 Mutils_test_binary80_CXXFLAGS = $(test_cxxflags)
 
 %%insert here2%%
@@ -57,3 +50,8 @@ Mutils_test_binary80_CXXFLAGS = $(test_cxxflags)
 %%TEST%%_test_binary80_SOURCES  = ../common/%%TEST%%.test.cpp $(test_srcdepends)
 %%TEST%%_test_binary80_LDFLAGS  = $(libdepends) $(test_libdepends)
 %%TEST%%_test_binary80_CXXFLAGS = $(test_cxxflags)
+
+install-data-hook:
+if IS_MACOS
+	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mplapack_binary80_testdir) $(prefix)
+endif
