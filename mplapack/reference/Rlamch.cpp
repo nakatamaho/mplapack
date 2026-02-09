@@ -33,6 +33,9 @@
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_BINARY80___
+#ifndef __STDC_WANT_IEC_60559_TYPES_EXT__
+#define __STDC_WANT_IEC_60559_TYPES_EXT__ 1
+#endif
 #include <cfloat>
 #endif
 
@@ -671,10 +674,13 @@ mplapack_binary80_t RlamchZ_binary80(void);
 // "E" : relative machine precision (machine epsilon), assume rounding
 mplapack_binary80_t RlamchE_binary80(void) {
 #if MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_FLOAT64X
-#if !defined(FLT64X_MANT_DIG)
-#error "MPLAPACK_BINARY80_MODE_FLOAT64X requires FLT64X_MANT_DIG"
-#endif
+#if defined(FLT64X_MANT_DIG)
     constexpr int kMantDig = FLT64X_MANT_DIG;
+#elif defined(__FLT64X_MANT_DIG__)
+    constexpr int kMantDig = __FLT64X_MANT_DIG__;
+#else
+#error "MPLAPACK_BINARY80_MODE_FLOAT64X requires FLT64X_MANT_DIG or __FLT64X_MANT_DIG__"
+#endif
 #elif MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_LDBL80
     constexpr int kMantDig = LDBL_MANT_DIG;
 #else
@@ -691,11 +697,15 @@ mplapack_binary80_t RlamchE_binary80(void) {
 // "S" : safe minimum such that 1/sfmin does not overflow
 mplapack_binary80_t RlamchS_binary80(void) {
 #if MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_FLOAT64X
-#if !defined(FLT64X_MIN) || !defined(FLT64X_MAX)
-#error "FLT64X_MIN/FLT64X_MAX are not defined, but MPLAPACK_BINARY80_MODE_FLOAT64X is selected."
-#endif
+#if defined(FLT64X_MIN) && defined(FLT64X_MAX)
     const mplapack_binary80_t rmin = (mplapack_binary80_t)FLT64X_MIN;
     const mplapack_binary80_t rmax = (mplapack_binary80_t)FLT64X_MAX;
+#elif defined(__FLT64X_MIN__) && defined(__FLT64X_MAX__)
+    const mplapack_binary80_t rmin = (mplapack_binary80_t)__FLT64X_MIN__;
+    const mplapack_binary80_t rmax = (mplapack_binary80_t)__FLT64X_MAX__;
+#else
+#error "FLT64X_MIN/FLT64X_MAX or __FLT64X_MIN__/__FLT64X_MAX__ are required for MPLAPACK_BINARY80_MODE_FLOAT64X"
+#endif
 
 #elif MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_LDBL80
 #if !defined(LDBL_MIN) || !defined(LDBL_MAX)
@@ -729,10 +739,13 @@ mplapack_binary80_t RlamchP_binary80(void) { return RlamchE_binary80() * RlamchB
 // "N" : number of base digits in mantissa (for base-2, this is significand bits)
 mplapack_binary80_t RlamchN_binary80(void) {
 #if MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_FLOAT64X
-#if !defined(FLT64X_MANT_DIG)
-#error "FLT64X_MANT_DIG is not defined, but MPLAPACK_BINARY80_MODE_FLOAT64X is selected."
-#endif
+#if defined(FLT64X_MANT_DIG)
     constexpr int kMantDig = FLT64X_MANT_DIG;
+#elif defined(__FLT64X_MANT_DIG__)
+    constexpr int kMantDig = __FLT64X_MANT_DIG__;
+#else
+#error "FLT64X_MANT_DIG or __FLT64X_MANT_DIG__ is required for MPLAPACK_BINARY80_MODE_FLOAT64X"
+#endif
 
 #elif MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_LDBL80
 #if !defined(LDBL_MANT_DIG)
@@ -761,10 +774,13 @@ mplapack_binary80_t RlamchR_binary80(void) {
 // cf.http://www.netlib.org/blas/dlamch.f
 mplapack_binary80_t RlamchM_binary80(void) {
 #if MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_FLOAT64X
-#if !defined(FLT64X_MIN_EXP)
-#error "FLT64X_MIN_EXP is not defined, but MPLAPACK_BINARY80_MODE_FLOAT64X is selected."
-#endif
+#if defined(FLT64X_MIN_EXP)
     return (mplapack_binary80_t)FLT64X_MIN_EXP;
+#elif defined(__FLT64X_MIN_EXP__)
+    return (mplapack_binary80_t)__FLT64X_MIN_EXP__;
+#else
+#error "FLT64X_MIN_EXP or __FLT64X_MIN_EXP__ is required for MPLAPACK_BINARY80_MODE_FLOAT64X"
+#endif
 #elif MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_LDBL80
 #if !defined(LDBL_MIN_EXP)
 #error "LDBL_MIN_EXP is not defined, but MPLAPACK_BINARY80_MODE_LDBL80 is selected."
@@ -780,10 +796,13 @@ mplapack_binary80_t RlamchM_binary80(void) {
 // "U" : underflow threshold (rmin; minimum positive normal)
 mplapack_binary80_t RlamchU_binary80(void) {
 #if MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_FLOAT64X
-#if !defined(FLT64X_MIN)
-#error "FLT64X_MIN is not defined, but MPLAPACK_BINARY80_MODE_FLOAT64X is selected."
-#endif
+#if defined(FLT64X_MIN)
     const mplapack_binary80_t rmin = (mplapack_binary80_t)FLT64X_MIN;
+#elif defined(__FLT64X_MIN__)
+    const mplapack_binary80_t rmin = (mplapack_binary80_t)__FLT64X_MIN__;
+#else
+#error "FLT64X_MIN or __FLT64X_MIN__ is required for MPLAPACK_BINARY80_MODE_FLOAT64X"
+#endif
 
 #elif MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_LDBL80
 #if !defined(LDBL_MIN)
@@ -803,10 +822,13 @@ mplapack_binary80_t RlamchU_binary80(void) {
 // "L" : largest exponent (emax) used by *LAMCH
 mplapack_binary80_t RlamchL_binary80(void) {
 #if MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_FLOAT64X
-#if !defined(FLT64X_MAX_EXP)
-#error "FLT64X_MAX_EXP is not defined, but MPLAPACK_BINARY80_MODE_FLOAT64X is selected."
-#endif
+#if defined(FLT64X_MAX_EXP)
     constexpr int kMaxExp = FLT64X_MAX_EXP;
+#elif defined(__FLT64X_MAX_EXP__)
+    constexpr int kMaxExp = __FLT64X_MAX_EXP__;
+#else
+#error "FLT64X_MAX_EXP or __FLT64X_MAX_EXP__ is required for MPLAPACK_BINARY80_MODE_FLOAT64X"
+#endif
 
 #elif MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_LDBL80
 #if !defined(LDBL_MAX_EXP)
@@ -826,10 +848,13 @@ mplapack_binary80_t RlamchL_binary80(void) {
 // "O" : overflow threshold (rmax; maximum finite)
 mplapack_binary80_t RlamchO_binary80(void) {
 #if MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_FLOAT64X
-#if !defined(FLT64X_MAX)
-#error "FLT64X_MAX is not defined, but MPLAPACK_BINARY80_MODE_FLOAT64X is selected."
-#endif
+#if defined(FLT64X_MAX)
     const mplapack_binary80_t rmax = (mplapack_binary80_t)FLT64X_MAX;
+#elif defined(__FLT64X_MAX__)
+    const mplapack_binary80_t rmax = (mplapack_binary80_t)__FLT64X_MAX__;
+#else
+#error "FLT64X_MAX or __FLT64X_MAX__ is required for MPLAPACK_BINARY80_MODE_FLOAT64X"
+#endif
 
 #elif MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_LDBL80
 #if !defined(LDBL_MAX)
