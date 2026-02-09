@@ -1,23 +1,23 @@
 # * How to build (for public users - read-only access)
-#  docker build -f Dockerfile_ubuntu24.04_devel -t mplapack:devel .
+#  docker build -f Dockerfile_ubuntu24.04_devel -t mplapack:devel2404 .
 #
 # * How to build (for maintainers with SSH key - read-write access)
-# DOCKER_BUILDKIT=1 docker build -f Dockerfile_ubuntu24.04_devel --build-arg DOCKER_UID="$(id -u)" --build-arg DOCKER_GID="$(id -g)" --build-arg USE_SSH=true --build-arg SSH_KEY_NAME="${SSH_KEY_NAME:-id_ed25519}" --secret id=ssh_key,src="$HOME/.ssh/${SSH_KEY_NAME:-id_ed25519}" -t mplapack:devel .
+# DOCKER_BUILDKIT=1 docker build -f Dockerfile_ubuntu24.04_devel --build-arg DOCKER_UID="$(id -u)" --build-arg DOCKER_GID="$(id -g)" --build-arg USE_SSH=true --build-arg SSH_KEY_NAME="${SSH_KEY_NAME:-id_ed25519}" --secret id=ssh_key,src="$HOME/.ssh/${SSH_KEY_NAME:-id_ed25519}" -t mplapack:devel2404 .
 #
 # * How to build with custom repository (for users with forks)
-# DOCKER_BUILDKIT=1 docker build -f Dockerfile_ubuntu24.04_devel --build-arg DOCKER_UID=$(id -u) --build-arg DOCKER_GID=$(id -g) --build-arg MPLAPACK_REPO=https://github.com/username/mplapack.git -t mplapack:devel .
+# DOCKER_BUILDKIT=1 docker build -f Dockerfile_ubuntu24.04_devel --build-arg DOCKER_UID=$(id -u) --build-arg DOCKER_GID=$(id -g) --build-arg MPLAPACK_REPO=https://github.com/username/mplapack.git -t mplapack:devel2404 .
 #
 # * How to build with custom repository using SSH
-# SSH_KEY_NAME=id_ed25519 DOCKER_BUILDKIT=1 docker build -f Dockerfile_ubuntu24.04_devel --build-arg DOCKER_UID=$(id -u) --build-arg DOCKER_GID=$(id -g) --build-arg USE_SSH=true --build-arg SSH_KEY_NAME=${SSH_KEY_NAME} --build-arg MPLAPACK_REPO=https://github.com/<username>/mplapack.git --secret id=ssh_key,src=$HOME/.ssh/${SSH_KEY_NAME} -t mplapack:devel .
+# SSH_KEY_NAME=id_ed25519 DOCKER_BUILDKIT=1 docker build -f Dockerfile_ubuntu24.04_devel --build-arg DOCKER_UID=$(id -u) --build-arg DOCKER_GID=$(id -g) --build-arg USE_SSH=true --build-arg SSH_KEY_NAME=${SSH_KEY_NAME} --build-arg MPLAPACK_REPO=https://github.com/<username>/mplapack.git --secret id=ssh_key,src=$HOME/.ssh/${SSH_KEY_NAME} -t mplapack:devel2404 .
 #
 # * How to run
 #  sudo sh -c 'echo -1 >/proc/sys/kernel/perf_event_paranoid' # to run perf
 #  or
 #  sudo sysctl -w kernel.perf_event_paranoid=-1 # to run perf
-#  docker run --privileged --gpus all -it --rm mplapack:devel /bin/bash
+#  docker run --privileged --gpus all -it --rm mplapack:devel2404 /bin/bash
 #
 # * How to run with SSH key for git operations (maintainers only)
-#  eval $(ssh-agent); ssh-add ~/.ssh/id_ed25519; docker run --privileged --gpus all -v $SSH_AUTH_SOCK:/ssh-agent -e SSH_AUTH_SOCK=/ssh-agent -it --rm mplapack:devel /bin/bash
+#  eval $(ssh-agent); ssh-add ~/.ssh/id_ed25519; docker run --privileged --gpus all -v $SSH_AUTH_SOCK:/ssh-agent -e SSH_AUTH_SOCK=/ssh-agent -it --rm mplapack:devel2404 /bin/bash
 #
 # https://hub.docker.com/r/nvidia/cuda/tags
 FROM nvidia/cuda:13.1.1-devel-ubuntu24.04
