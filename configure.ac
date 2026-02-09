@@ -1480,15 +1480,11 @@ dnl cf. https://bugzilla.redhat.com/show_bug.cgi?id=1076070 and https://src.fedo
 AC_CANONICAL_HOST
 
 qd_extra_cxxflags=""
-qd_candidate_flags="-fno-fast-math -ffp-contract=off"
+qd_candidate_flags="-ffp-contract=off"
 
 case "$host_cpu" in
-  x86_64|amd64)
-    dnl GCC-only-ish flag; we will probe it before using.
-    qd_candidate_flags="$qd_candidate_flags -fno-tree-vectorize"
-    ;;
-  aarch64|arm64)
-    : dnl no extra arch-specific flags for now
+  x86_64|amd64|aarch64|arm64|ppc64le|s390|s390x)
+    qd_candidate_flags="$qd_candidate_flags"
     ;;
   *)
     : dnl keep defaults
