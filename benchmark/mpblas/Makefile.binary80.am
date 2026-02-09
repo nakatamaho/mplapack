@@ -1,74 +1,74 @@
 bench_PROGRAMS += \
-Raxpy.binary80 Raxpy._Float64x_opt \
-Rcopy.binary80 Rcopy._Float64x_opt \
-Rdot.binary80  Rdot._Float64x_opt \
-Rgemm.binary80 Rgemm._Float64x_opt \
-Rsyrk.binary80 Rsyrk._Float64x_opt \
-Rgemv.binary80 Rgemv._Float64x_opt
+Raxpy.binary80 Raxpy.binary80_opt \
+Rcopy.binary80 Rcopy.binary80_opt \
+Rdot.binary80  Rdot.binary80_opt \
+Rgemm.binary80 Rgemm.binary80_opt \
+Rsyrk.binary80 Rsyrk.binary80_opt \
+Rgemv.binary80 Rgemv.binary80_opt
 
 #lapack is needed for Rlange
-_Float64xcxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_BINARY80___
-_Float64xlapack_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_binary80
+binary80cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_BINARY80___
+binary80lapack_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_binary80
 if BINARY128_USE_QUADMATH
-_Float64x_libdepends = $(_Float64xlapack_libdepends) -L$(top_builddir)/mpblas/reference -lmpblas_binary80 -lquadmath $(DYLD)
-_Float64xopt_libdepends = $(_Float64xlapack_libdepends) -L$(top_builddir)/mpblas/optimized/binary80 -lmpblas_binary80_opt -lquadmath $(DYLD)
+binary80_libdepends = $(binary80lapack_libdepends) -L$(top_builddir)/mpblas/reference -lmpblas_binary80 -lquadmath $(DYLD)
+binary80opt_libdepends = $(binary80lapack_libdepends) -L$(top_builddir)/mpblas/optimized/binary80 -lmpblas_binary80_opt -lquadmath $(DYLD)
 else
-_Float64x_libdepends = $(_Float64xlapack_libdepends) -L$(top_builddir)/mpblas/reference -lmpblas_binary80 $(DYLD)
-_Float64xopt_libdepends = $(_Float64xlapack_libdepends) -L$(top_builddir)/mpblas/optimized/binary80 -lmpblas_binary80_opt $(DYLD)
+binary80_libdepends = $(binary80lapack_libdepends) -L$(top_builddir)/mpblas/reference -lmpblas_binary80 $(DYLD)
+binary80opt_libdepends = $(binary80lapack_libdepends) -L$(top_builddir)/mpblas/optimized/binary80 -lmpblas_binary80_opt $(DYLD)
 endif
 
 if IS_MINGW
-_Float64xcxxflags += -I$(DLFCN_WIN32_INCLUDEDIR)
-_Float64x_libdepends += -L$(DLFCN_WIN32_LIBDIR) -ldl
-_Float64xopt_libdepends += -L$(DLFCN_WIN32_LIBDIR) -ldl
+binary80cxxflags += -I$(DLFCN_WIN32_INCLUDEDIR)
+binary80_libdepends += -L$(DLFCN_WIN32_LIBDIR) -ldl
+binary80opt_libdepends += -L$(DLFCN_WIN32_LIBDIR) -ldl
 endif
 
-Raxpy__Float64x_opt_SOURCES= Raxpy.cpp
-Raxpy__Float64x_opt_CXXFLAGS= $(_Float64xcxxflags)
-Raxpy__Float64x_opt_LDFLAGS= $(_Float64xopt_libdepends)
+Raxpy_binary80_opt_SOURCES= Raxpy.cpp
+Raxpy_binary80_opt_CXXFLAGS= $(binary80cxxflags)
+Raxpy_binary80_opt_LDFLAGS= $(binary80opt_libdepends)
 
-Raxpy__Float64x_SOURCES= Raxpy.cpp
-Raxpy__Float64x_CXXFLAGS= $(_Float64xcxxflags)
-Raxpy__Float64x_LDFLAGS= $(_Float64x_libdepends)
+Raxpy_binary80_SOURCES= Raxpy.cpp
+Raxpy_binary80_CXXFLAGS= $(binary80cxxflags)
+Raxpy_binary80_LDFLAGS= $(binary80_libdepends)
 
-Rcopy__Float64x_opt_SOURCES= Rcopy.cpp
-Rcopy__Float64x_opt_CXXFLAGS= $(_Float64xcxxflags)
-Rcopy__Float64x_opt_LDFLAGS= $(_Float64xopt_libdepends)
+Rcopy_binary80_opt_SOURCES= Rcopy.cpp
+Rcopy_binary80_opt_CXXFLAGS= $(binary80cxxflags)
+Rcopy_binary80_opt_LDFLAGS= $(binary80opt_libdepends)
 
-Rcopy__Float64x_SOURCES= Rcopy.cpp
-Rcopy__Float64x_CXXFLAGS= $(_Float64xcxxflags)
-Rcopy__Float64x_LDFLAGS= $(_Float64x_libdepends)
+Rcopy_binary80_SOURCES= Rcopy.cpp
+Rcopy_binary80_CXXFLAGS= $(binary80cxxflags)
+Rcopy_binary80_LDFLAGS= $(binary80_libdepends)
 
-Rdot__Float64x_opt_SOURCES= Rdot.cpp
-Rdot__Float64x_opt_CXXFLAGS= $(_Float64xcxxflags)
-Rdot__Float64x_opt_LDFLAGS= $(_Float64xopt_libdepends)
+Rdot_binary80_opt_SOURCES= Rdot.cpp
+Rdot_binary80_opt_CXXFLAGS= $(binary80cxxflags)
+Rdot_binary80_opt_LDFLAGS= $(binary80opt_libdepends)
 
-Rdot__Float64x_SOURCES= Rdot.cpp
-Rdot__Float64x_CXXFLAGS= $(_Float64xcxxflags)
-Rdot__Float64x_LDFLAGS= $(_Float64x_libdepends)
+Rdot_binary80_SOURCES= Rdot.cpp
+Rdot_binary80_CXXFLAGS= $(binary80cxxflags)
+Rdot_binary80_LDFLAGS= $(binary80_libdepends)
 
-Rgemm__Float64x_opt_SOURCES= Rgemm.cpp
-Rgemm__Float64x_opt_CXXFLAGS= $(_Float64xcxxflags)
-Rgemm__Float64x_opt_LDFLAGS= $(_Float64xopt_libdepends)
+Rgemm_binary80_opt_SOURCES= Rgemm.cpp
+Rgemm_binary80_opt_CXXFLAGS= $(binary80cxxflags)
+Rgemm_binary80_opt_LDFLAGS= $(binary80opt_libdepends)
 
-Rgemm__Float64x_SOURCES= Rgemm.cpp
-Rgemm__Float64x_CXXFLAGS= $(_Float64xcxxflags)
-Rgemm__Float64x_LDFLAGS= $(_Float64x_libdepends)
+Rgemm_binary80_SOURCES= Rgemm.cpp
+Rgemm_binary80_CXXFLAGS= $(binary80cxxflags)
+Rgemm_binary80_LDFLAGS= $(binary80_libdepends)
 
-Rsyrk__Float64x_opt_SOURCES= Rsyrk.cpp
-Rsyrk__Float64x_opt_CXXFLAGS= $(_Float64xcxxflags)
-Rsyrk__Float64x_opt_LDFLAGS= $(_Float64xopt_libdepends)
+Rsyrk_binary80_opt_SOURCES= Rsyrk.cpp
+Rsyrk_binary80_opt_CXXFLAGS= $(binary80cxxflags)
+Rsyrk_binary80_opt_LDFLAGS= $(binary80opt_libdepends)
 
-Rsyrk__Float64x_SOURCES= Rsyrk.cpp
-Rsyrk__Float64x_CXXFLAGS= $(_Float64xcxxflags)
-Rsyrk__Float64x_LDFLAGS= $(_Float64x_libdepends)
+Rsyrk_binary80_SOURCES= Rsyrk.cpp
+Rsyrk_binary80_CXXFLAGS= $(binary80cxxflags)
+Rsyrk_binary80_LDFLAGS= $(binary80_libdepends)
 
-Rgemv__Float64x_opt_SOURCES= Rgemv.cpp
-Rgemv__Float64x_opt_CXXFLAGS= $(_Float64xcxxflags)
-Rgemv__Float64x_opt_LDFLAGS= $(_Float64xopt_libdepends)
+Rgemv_binary80_opt_SOURCES= Rgemv.cpp
+Rgemv_binary80_opt_CXXFLAGS= $(binary80cxxflags)
+Rgemv_binary80_opt_LDFLAGS= $(binary80opt_libdepends)
 
-Rgemv__Float64x_SOURCES= Rgemv.cpp
-Rgemv__Float64x_CXXFLAGS= $(_Float64xcxxflags)
-Rgemv__Float64x_LDFLAGS= $(_Float64x_libdepends)
+Rgemv_binary80_SOURCES= Rgemv.cpp
+Rgemv_binary80_CXXFLAGS= $(binary80cxxflags)
+Rgemv_binary80_LDFLAGS= $(binary80_libdepends)
 
 
