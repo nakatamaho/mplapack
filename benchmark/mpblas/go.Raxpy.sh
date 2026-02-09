@@ -12,7 +12,7 @@ env $LDPATHPREFIX timeout $TIMEOUT ./daxpy_ref      -STEP 7 -TOTALSTEPS 42857 -L
 env $LDPATHPREFIX timeout $TIMEOUT ./daxpy_openblas -STEP 7 -TOTALSTEPS 42857 -LOOPS 3 >& log.daxpy.openblas
 
 ####
-MPLIBS="_Float128 _Float64x dd double"
+MPLIBS="binary128 binary80 dd double"
 
 for _mplib in $MPLIBS; do
 env $LDPATHPREFIX timeout $TIMEOUT ./Raxpy.${_mplib}_opt -NOCHECK  >& log.Raxpy.${_mplib}_opt

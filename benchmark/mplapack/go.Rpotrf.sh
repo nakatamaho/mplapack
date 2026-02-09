@@ -12,7 +12,7 @@ env $LDPATHPREFIX timeout $TIMEOUT ./dpotrf_ref       -TOTALSTEPS 500 -STEP 7 >&
 env $LDPATHPREFIX timeout $TIMEOUT ./dpotrf_openblas  -TOTALSTEPS 500 -STEP 7 >& log.dpotrf.openblas
 
 ####
-MPLIBS="_Float64x dd double _Float128"
+MPLIBS="binary80 dd double binary128"
 
 for _mplib in $MPLIBS; do
 env $LDPATHPREFIX timeout $TIMEOUT ./Rpotrf.${_mplib}_opt -NOCHECK -TOTALSTEPS 200 -STEP 5    >& log.Rpotrf.${_mplib}_opt

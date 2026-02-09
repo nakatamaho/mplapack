@@ -12,7 +12,7 @@ env $LDPATHPREFIX timeout $TIMEOUT ./dgemv_ref      -TOTALSTEPS 10000 >& log.dge
 env $LDPATHPREFIX timeout $TIMEOUT ./dgemv_openblas -TOTALSTEPS 10000 >& log.dgemv.openblas
 
 ####
-MPLIBS="_Float128 _Float64x dd double"
+MPLIBS="binary128 binary80 dd double"
 
 for _mplib in $MPLIBS; do
 env $LDPATHPREFIX timeout $TIMEOUT ./Rgemv.${_mplib}_opt -NOCHECK -TOTALSTEPS 10000 >& log.Rgemv.${_mplib}_opt

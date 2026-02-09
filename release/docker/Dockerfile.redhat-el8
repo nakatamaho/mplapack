@@ -51,9 +51,9 @@ CMD ["/bin/bash", "-lc", "\
     \
     ARCH=$(uname -m); \
     echo \"Detected architecture: $ARCH\"; \
-    COMMON_OPTS=\"--enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes --enable-benchmark=yes\"; \
+    COMMON_OPTS=\"--enable-gmp=yes --enable-mpfr=yes --enable-binary128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes --enable-benchmark=yes\"; \
     if [ \"$ARCH\" = \"x86_64\" ] || [ \"$ARCH\" = \"i686\" ] || [ \"$ARCH\" = \"i386\" ]; then \
-        CONFIGURE_OPTS=\"$COMMON_OPTS --enable-_Float64x=yes\"; \
+        CONFIGURE_OPTS=\"$COMMON_OPTS --enable-binary80=yes\"; \
     else \
         CONFIGURE_OPTS=\"$COMMON_OPTS\"; \
     fi; \

@@ -12,7 +12,7 @@ env $LDPATHPREFIX timeout $TIMEOUT ./dcopy_ref      -STEP 7 -TOTALSTEPS 42857 -L
 env $LDPATHPREFIX timeout $TIMEOUT ./dcopy_openblas -STEP 7 -TOTALSTEPS 42857 -LOOPS 3 >& log.dcopy.openblas
 
 ####
-MPLIBS="_Float128 _Float64x dd double"
+MPLIBS="binary128 binary80 dd double"
 
 for _mplib in $MPLIBS; do
 env $LDPATHPREFIX timeout $TIMEOUT ./Rcopy.${_mplib}_opt -NOCHECK  >& log.Rcopy.${_mplib}_opt

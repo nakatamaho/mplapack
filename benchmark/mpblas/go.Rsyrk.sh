@@ -12,7 +12,7 @@ env $LDPATHPREFIX timeout $TIMEOUT ./dsyrk_ref      -STEP 7 -TOTALSTEPS 714 -LOO
 env $LDPATHPREFIX timeout $TIMEOUT ./dsyrk_openblas -STEP 7 -TOTALSTEPS 714 -LOOPS 3 >& log.dsyrk.openblas
 
 ####
-MPLIBS="_Float64x dd double _Float128"
+MPLIBS="binary80 dd double binary128"
 
 for _mplib in $MPLIBS; do
 env $LDPATHPREFIX timeout $TIMEOUT ./Rsyrk.${_mplib}_opt -NOCHECK    >& log.Rsyrk.${_mplib}_opt

@@ -1,10 +1,10 @@
 bench_PROGRAMS += \
-Raxpy._Float64x Raxpy._Float64x_opt \
-Rcopy._Float64x Rcopy._Float64x_opt \
-Rdot._Float64x  Rdot._Float64x_opt \
-Rgemm._Float64x Rgemm._Float64x_opt \
-Rsyrk._Float64x Rsyrk._Float64x_opt \
-Rgemv._Float64x Rgemv._Float64x_opt
+Raxpy.binary80 Raxpy._Float64x_opt \
+Rcopy.binary80 Rcopy._Float64x_opt \
+Rdot.binary80  Rdot._Float64x_opt \
+Rgemm.binary80 Rgemm._Float64x_opt \
+Rsyrk.binary80 Rsyrk._Float64x_opt \
+Rgemv.binary80 Rgemv._Float64x_opt
 
 #lapack is needed for Rlange
 _Float64xcxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_BINARY80___

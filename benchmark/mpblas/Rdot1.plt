@@ -9,9 +9,9 @@ set key above
 set terminal pdf
 
 plot \
-"log.Rdot._Float128"       using 1:2 title '\_Float128'             with lines linewidth 1, \
-"log.Rdot._Float128_opt"   using 1:2 title '\_Float128 (OpenMP)'    with lines linewidth 1, \
-"log.Rdot._Float64x"       using 1:2 title '\_Float64x'             with lines linewidth 1, \
-"log.Rdot._Float64x_opt"   using 1:2 title '\_Float64x (OpenMP)'    with lines linewidth 1, \
+"log.Rdot.binary128"       using 1:2 title 'binary128'             with lines linewidth 1, \
+"log.Rdot._Float128_opt"   using 1:2 title 'binary128 (OpenMP)'    with lines linewidth 1, \
+"log.Rdot.binary80"       using 1:2 title 'binary80'             with lines linewidth 1, \
+"log.Rdot._Float64x_opt"   using 1:2 title 'binary80 (OpenMP)'    with lines linewidth 1, \
 "log.Rdot.dd"              using 1:2 title 'double-double'          with lines linewidth 1, \
 "log.Rdot.dd_opt"          using 1:2 title 'double-double (OpenMP)' with lines linewidth 1
