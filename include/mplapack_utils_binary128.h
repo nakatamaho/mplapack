@@ -121,9 +121,9 @@ inline void sprintnum_short(char *buf, std::complex<__float128> rtmp) {
 #include <string.h>
 
 // Full precision format (40 digits)
-#define FLOAT128_FORMAT "%+-#*.40e"
+#define FLOAT128_FORMAT "%.40e"
 // Short format (16 digits)
-#define FLOAT128_SHORT_FORMAT "%+-#*.16e"
+#define FLOAT128_SHORT_FORMAT "%.16e"
 
 // printnum - full precision output to stdout
 inline void printnum(_Float128 rtmp) {
