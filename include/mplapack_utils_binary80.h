@@ -54,8 +54,8 @@ inline void sprintnum_short(char *buf, std::complex<long double> ctmp) { snprint
 
 #elif MPLAPACK_BINARY80_IO == MPLAPACK_BINARY80_IO_STRFROMF64X
 
-#define FLOAT64X_FORMAT "%25.21e"
-#define FLOAT64X_SHORT_FORMAT "%20.16e"
+#define FLOAT64X_FORMAT "%.21e"
+#define FLOAT64X_SHORT_FORMAT "%.16e"
 
 #if !defined __MPLAPACK_BUFLEN__
 #define __MPLAPACK_BUFLEN__ 1024
