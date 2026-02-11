@@ -33,6 +33,7 @@
 //   - Linux:  ELF dynamic symbol table parsing via DT_HASH / DT_GNU_HASH
 //   - macOS:  Mach-O symbol table parsing via LC_SYMTAB + dyld APIs
 //   - MinGW:  PE export table parsing via IMAGE_EXPORT_DIRECTORY
+//             using dlfcn-win32 for dlopen/dlsym/dlclose
 //
 // All platforms share a common nm-based fallback.
 //
@@ -42,8 +43,19 @@
 //
 // Verbose output (stderr):
 //   resolve_symbol: "Rgemm" -> "_Z5RgemmPKcS0_lllgPglS1_lgS1_l"
-//                   in /usr/local/lib/libmpblas_dd.so [via elf]
-//   resolve_symbol: "Raxpy" NOT FOUND in /usr/local/lib/libmpblas_dd.so
+//                   in /usr/local/lib/libmpblas_dd.so [via elf, scanned 342 syms]
+//   resolve_symbol: "Raxpy" NOT FOUND in /usr/local/lib/libmpblas_dd.so [scanned 342 syms via elf]
+//
+// Notes:
+//   - Matches by demangled pattern "FuncName(" with boundary detection,
+//     so overloaded functions resolve to whichever is found first
+//     (non-deterministic).
+//   - Namespace-qualified names (e.g. mplapack::Rgemm) ARE matched
+//     via boundary-aware substring search.
+//   - MSVC-demangled names with return type / calling convention prefixes
+//     (e.g. "void __cdecl Rgemm(") are also handled correctly.
+//   - Results are cached per (handle, func_name) pair for the process
+//     lifetime.  Call resolve_cache_clear() to invalidate.
 
 #ifndef MPLAPACK_SYMBOL_RESOLVER_H
 #define MPLAPACK_SYMBOL_RESOLVER_H
@@ -52,11 +64,18 @@
 #include <cstdlib>
 #include <cstring>
 #include <cstdint>
+#include <string>
+#include <unordered_map>
+#include <utility>
 
 // ---- Platform headers ----
 #if defined(_WIN32)
+// dlfcn-win32 provides POSIX-compatible dlopen/dlsym/dlclose/dlerror.
+// On MinGW, dlfcn-win32's dlopen() returns the HMODULE directly cast
+// to void*, so (HMODULE)handle is a valid conversion.
+// We do NOT statically link dbghelp; it is loaded on demand at runtime
+// to support MSVC-mangled symbols when present.
 #include <windows.h>
-#include <dbghelp.h>
 #include <dlfcn.h>
 #elif defined(__APPLE__)
 #include <dlfcn.h>
@@ -72,6 +91,116 @@
 #include <cxxabi.h>
 
 namespace mplapack_resolver {
+
+// ============================================================
+//  Result cache
+// ============================================================
+// Key:   (handle address as uintptr_t, func_name)
+// Value: resolved pointer (nullptr means "confirmed not found")
+//
+// The sentinel kNotCached distinguishes "looked up and got nullptr"
+// from "never looked up".
+
+static const void *kNotCached = reinterpret_cast<const void *>(~uintptr_t(0));
+
+struct CacheKeyHash {
+    size_t operator()(const std::pair<uintptr_t, std::string> &k) const {
+        size_t h1 = std::hash<uintptr_t>()(k.first);
+        size_t h2 = std::hash<std::string>()(k.second);
+        return h1 ^ (h2 * 0x9e3779b97f4a7c15ULL + 0x517cc1b727220a95ULL);
+    }
+};
+
+static std::unordered_map<std::pair<uintptr_t, std::string>, void *, CacheKeyHash> &resolve_cache_map() {
+    static std::unordered_map<std::pair<uintptr_t, std::string>, void *, CacheKeyHash> cache;
+    return cache;
+}
+
+static void *cache_lookup(void *handle, const char *func_name) {
+    auto &cache = resolve_cache_map();
+    auto key = std::make_pair(reinterpret_cast<uintptr_t>(handle), std::string(func_name));
+    auto it = cache.find(key);
+    if (it != cache.end())
+        return it->second;
+    return const_cast<void *>(kNotCached);
+}
+
+static void cache_store(void *handle, const char *func_name, void *result) {
+    auto &cache = resolve_cache_map();
+    auto key = std::make_pair(reinterpret_cast<uintptr_t>(handle), std::string(func_name));
+    cache[key] = result;
+}
+
+// Clear the entire resolution cache (e.g. after dlclose + re-dlopen).
+static void resolve_cache_clear() { resolve_cache_map().clear(); }
+
+// ============================================================
+//  Windows: dlfcn-win32 handle -> HMODULE conversion
+// ============================================================
+#if defined(_WIN32)
+
+static HMODULE handle_to_hmodule(void *handle) {
+    if (!handle)
+        return nullptr;
+
+    // Fast path: dlfcn-win32 returns HMODULE directly.
+    // Validate by probing the memory region with VirtualQuery.
+    // This is safe on MinGW (no SEH __try/__except needed).
+    HMODULE hmod = reinterpret_cast<HMODULE>(handle);
+    MEMORY_BASIC_INFORMATION mbi;
+    if (VirtualQuery(hmod, &mbi, sizeof(mbi)) != 0) {
+        // The allocation base of a loaded module equals the HMODULE.
+        if (mbi.AllocationBase == hmod) {
+            const IMAGE_DOS_HEADER *dos = reinterpret_cast<const IMAGE_DOS_HEADER *>(hmod);
+            if (dos->e_magic == IMAGE_DOS_SIGNATURE)
+                return hmod;
+        }
+    }
+
+    // Slow path: resolve any symbol from the library, then use
+    // GetModuleHandleExA(FROM_ADDRESS) to recover the HMODULE.
+    static const char *probe_syms[] = {"_init", "_fini", "DllMain", nullptr};
+    for (const char **p = probe_syms; *p; ++p) {
+        void *addr = dlsym(handle, *p);
+        if (addr) {
+            HMODULE recovered = nullptr;
+            if (GetModuleHandleExA(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, reinterpret_cast<LPCSTR>(addr), &recovered) && recovered) {
+                return recovered;
+            }
+        }
+    }
+
+    // Last resort: trust the dlfcn-win32 contract
+    return hmod;
+}
+
+// ============================================================
+//  Windows: dbghelp UnDecorateSymbolName (dynamically loaded)
+// ============================================================
+
+typedef DWORD(WINAPI *UnDecorateSymbolName_t)(const char *, char *, DWORD, DWORD);
+
+static UnDecorateSymbolName_t get_undecorate_fn() {
+    static UnDecorateSymbolName_t fn = nullptr;
+    static bool tried = false;
+    if (!tried) {
+        tried = true;
+        HMODULE hDbg = LoadLibraryA("dbghelp.dll");
+        if (hDbg)
+            fn = reinterpret_cast<UnDecorateSymbolName_t>(GetProcAddress(hDbg, "UnDecorateSymbolName"));
+        // Intentionally leak hDbg; it stays loaded for process lifetime.
+    }
+    return fn;
+}
+
+#ifndef UNDNAME_COMPLETE
+#define UNDNAME_COMPLETE 0x0000
+#endif
+#ifndef UNDNAME_NO_ACCESS_SPECIFIERS
+#define UNDNAME_NO_ACCESS_SPECIFIERS 0x0080
+#endif
+
+#endif // _WIN32
 
 // ============================================================
 //  Helper: get library file path from a dlopen handle
@@ -103,8 +232,9 @@ static const char *get_library_path(void *handle) {
             dlclose(test);
     }
 #elif defined(_WIN32)
-    HMODULE hmod = reinterpret_cast<HMODULE>(handle);
-    GetModuleFileNameA(hmod, path_buf, sizeof(path_buf));
+    HMODULE hmod = handle_to_hmodule(handle);
+    if (hmod)
+        GetModuleFileNameA(hmod, path_buf, sizeof(path_buf));
 #endif
 
     if (!path_buf[0])
@@ -113,36 +243,77 @@ static const char *get_library_path(void *handle) {
 }
 
 // ============================================================
+//  Helper: boundary-aware substring match for "FuncName("
+// ============================================================
+//
+// Checks whether the demangled string contains "FuncName(" at a
+// valid word boundary.  This correctly handles:
+//
+//   "Rgemm("                     -- plain global function
+//   "mplapack::Rgemm("           -- namespace-qualified
+//   "void __cdecl Rgemm("        -- MSVC with return type prefix
+//   "dd_real Rgemm("             -- return type before name
+//
+// A "boundary" is: start of string, or a preceding character that
+// is not alphanumeric and not '_' (so "fooRgemm(" does NOT match).
+//
+static bool contains_func_call(const char *demangled, const char *target_with_paren, size_t target_len) {
+    const char *p = demangled;
+    while ((p = strstr(p, target_with_paren)) != nullptr) {
+        if (p == demangled) {
+            return true;
+        }
+        char prev = *(p - 1);
+        // Valid boundary: anything that is NOT part of a C++ identifier
+        if (prev != '_' && !(prev >= 'a' && prev <= 'z') && !(prev >= 'A' && prev <= 'Z') && !(prev >= '0' && prev <= '9')) {
+            return true;
+        }
+        p += target_len;
+    }
+    return false;
+}
+
+// ============================================================
 //  Helper: demangle and check if name matches "FuncName("
 //  If matched, copies the original mangled name to out_mangled.
 // ============================================================
 static bool demangled_matches(const char *mangled, const char *target, size_t target_len, char *out_mangled, size_t out_mangled_size) {
+    // ---- Itanium ABI demangling (GCC / Clang / MinGW) ----
     int status = -1;
     char *demangled = abi::__cxa_demangle(mangled, nullptr, nullptr, &status);
-    if (status != 0 || !demangled) {
+    if (status == 0 && demangled) {
+        bool match = contains_func_call(demangled, target, target_len);
+        if (match && out_mangled && out_mangled_size > 0) {
+            strncpy(out_mangled, mangled, out_mangled_size - 1);
+            out_mangled[out_mangled_size - 1] = '\0';
+        }
+        free(demangled);
+        return match;
+    }
+    free(demangled);
+
 #if defined(_WIN32)
-        // Try MSVC-style demangling (for MSVC-compiled DLLs loaded from MinGW)
+    // ---- MSVC demangling via dbghelp (for DLLs built with MSVC) ----
+    // MSVC-demangled names typically look like:
+    //   "void __cdecl Rgemm(char const *,...)"
+    //   "class dd_real __cdecl Rgemm(char const *,...)"
+    // so we use boundary-aware substring matching.
+    UnDecorateSymbolName_t undecorate = get_undecorate_fn();
+    if (undecorate) {
         char buf[1024];
-        if (UnDecorateSymbolName(mangled, buf, sizeof(buf), UNDNAME_COMPLETE | UNDNAME_NO_ACCESS_SPECIFIERS)) {
-            bool match = (strncmp(buf, target, target_len) == 0);
+        DWORD result = undecorate(mangled, buf, sizeof(buf), UNDNAME_COMPLETE | UNDNAME_NO_ACCESS_SPECIFIERS);
+        if (result > 0) {
+            bool match = contains_func_call(buf, target, target_len);
             if (match && out_mangled && out_mangled_size > 0) {
                 strncpy(out_mangled, mangled, out_mangled_size - 1);
                 out_mangled[out_mangled_size - 1] = '\0';
             }
-            free(demangled);
             return match;
         }
+    }
 #endif
-        free(demangled);
-        return false;
-    }
-    bool match = (strncmp(demangled, target, target_len) == 0);
-    if (match && out_mangled && out_mangled_size > 0) {
-        strncpy(out_mangled, mangled, out_mangled_size - 1);
-        out_mangled[out_mangled_size - 1] = '\0';
-    }
-    free(demangled);
-    return match;
+
+    return false;
 }
 
 // ============================================================
@@ -150,7 +321,9 @@ static bool demangled_matches(const char *mangled, const char *target, size_t ta
 // ============================================================
 #if defined(__linux__)
 
-static void *resolve_via_elf(void *handle, const char *func_name, char *out_mangled, size_t out_mangled_size) {
+static void *resolve_via_elf(void *handle, const char *func_name, char *out_mangled, size_t out_mangled_size, size_t *out_nsyms) {
+    *out_nsyms = 0;
+
     struct link_map *lm = nullptr;
     if (dlinfo(handle, RTLD_DI_LINKMAP, &lm) != 0 || !lm)
         return nullptr;
@@ -184,7 +357,8 @@ static void *resolve_via_elf(void *handle, const char *func_name, char *out_mang
     if (!symtab || !strtab)
         return nullptr;
 
-    // Determine symbol count
+    // Determine symbol count.
+    // Prefer DT_HASH (nchain is exact) over DT_GNU_HASH (estimated).
     size_t nsyms = 0;
 
     if (hashtab) {
@@ -219,6 +393,7 @@ static void *resolve_via_elf(void *handle, const char *func_name, char *out_mang
         }
     }
 
+    *out_nsyms = nsyms;
     if (nsyms == 0)
         return nullptr;
 
@@ -250,7 +425,9 @@ static void *resolve_via_elf(void *handle, const char *func_name, char *out_mang
 // ============================================================
 #if defined(__APPLE__)
 
-static void *resolve_via_macho(void *handle, const char *func_name, char *out_mangled, size_t out_mangled_size) {
+static void *resolve_via_macho(void *handle, const char *func_name, char *out_mangled, size_t out_mangled_size, size_t *out_nsyms) {
+    *out_nsyms = 0;
+
     char target[256];
     snprintf(target, sizeof(target), "%s(", func_name);
     size_t target_len = strlen(target);
@@ -258,6 +435,17 @@ static void *resolve_via_macho(void *handle, const char *func_name, char *out_ma
     uint32_t image_count = _dyld_image_count();
 
     for (uint32_t img = 0; img < image_count; ++img) {
+        // Only scan the image that corresponds to this handle.
+        const char *img_name = _dyld_get_image_name(img);
+        if (!img_name)
+            continue;
+        void *img_handle = dlopen(img_name, RTLD_LAZY | RTLD_NOLOAD);
+        bool is_target = (img_handle == handle);
+        if (img_handle)
+            dlclose(img_handle);
+        if (!is_target)
+            continue;
+
         const struct mach_header_64 *hdr = reinterpret_cast<const struct mach_header_64 *>(_dyld_get_image_header(img));
         if (!hdr || hdr->magic != MH_MAGIC_64)
             continue;
@@ -292,6 +480,8 @@ static void *resolve_via_macho(void *handle, const char *func_name, char *out_ma
         const struct nlist_64 *symtab = reinterpret_cast<const struct nlist_64 *>(linkedit_base + symtab_cmd->symoff);
         const char *strtab = reinterpret_cast<const char *>(linkedit_base + symtab_cmd->stroff);
 
+        *out_nsyms = symtab_cmd->nsyms;
+
         for (uint32_t s = 0; s < symtab_cmd->nsyms; ++s) {
             const struct nlist_64 *nl = &symtab[s];
 
@@ -305,20 +495,25 @@ static void *resolve_via_macho(void *handle, const char *func_name, char *out_ma
             if (!name[0])
                 continue;
 
-            // Mach-O symbols have a leading underscore; skip it for demangling
+            // Mach-O external symbols have a leading underscore.
+            // Strip it for demangling, but keep the original for dlsym fallback.
             const char *mangled = name;
             if (name[0] == '_')
                 mangled = name + 1;
 
             if (demangled_matches(mangled, target, target_len, out_mangled, out_mangled_size)) {
+                // Try the Itanium mangled name (without leading '_')
                 void *sym = dlsym(handle, mangled);
                 if (sym)
                     return sym;
-                sym = dlsym(handle, name + 1);
+                // Try the raw Mach-O symbol name (with leading '_')
+                sym = dlsym(handle, name);
                 if (sym)
                     return sym;
             }
         }
+        // We found and scanned the target image; stop iterating.
+        break;
     }
     return nullptr;
 }
@@ -326,12 +521,16 @@ static void *resolve_via_macho(void *handle, const char *func_name, char *out_ma
 #endif // __APPLE__
 
 // ============================================================
-//  MinGW / Windows: PE export table parsing
+//  MinGW / Windows: PE export table parsing (dlfcn-win32)
 // ============================================================
 #if defined(_WIN32)
 
-static void *resolve_via_pe(void *handle, const char *func_name, char *out_mangled, size_t out_mangled_size) {
-    HMODULE hmod = reinterpret_cast<HMODULE>(handle);
+static void *resolve_via_pe(void *handle, const char *func_name, char *out_mangled, size_t out_mangled_size, size_t *out_nsyms) {
+    *out_nsyms = 0;
+
+    HMODULE hmod = handle_to_hmodule(handle);
+    if (!hmod)
+        return nullptr;
 
     const IMAGE_DOS_HEADER *dos_hdr = reinterpret_cast<const IMAGE_DOS_HEADER *>(hmod);
     if (dos_hdr->e_magic != IMAGE_DOS_SIGNATURE)
@@ -360,6 +559,8 @@ static void *resolve_via_pe(void *handle, const char *func_name, char *out_mangl
     const WORD *ordinals = reinterpret_cast<const WORD *>(base + exports->AddressOfNameOrdinals);
     const DWORD *funcs = reinterpret_cast<const DWORD *>(base + exports->AddressOfFunctions);
 
+    *out_nsyms = exports->NumberOfNames;
+
     char target[256];
     snprintf(target, sizeof(target), "%s(", func_name);
     size_t target_len = strlen(target);
@@ -373,7 +574,8 @@ static void *resolve_via_pe(void *handle, const char *func_name, char *out_mangl
             WORD ord = ordinals[i];
             DWORD func_rva = funcs[ord];
 
-            // Check for forwarder (RVA falls within export directory range)
+            // Forwarder export: RVA falls within the export directory range.
+            // Let dlfcn-win32's dlsym (-> GetProcAddress) resolve the chain.
             if (func_rva >= export_rva && func_rva < export_rva + export_size) {
                 void *sym = dlsym(handle, mangled);
                 if (sym)
@@ -389,7 +591,17 @@ static void *resolve_via_pe(void *handle, const char *func_name, char *out_mangl
 #endif // _WIN32
 
 // ============================================================
-//  Fallback: nm command (all platforms)
+//  Fallback: nm command (Linux / macOS / MinGW)
+// ============================================================
+//
+// On MinGW / MSYS2, GNU binutils `nm` is typically available and
+// can read PE/COFF exports.  We use `nm -g` for global symbols.
+// On Linux, `nm -D` for dynamic symbols.
+// On macOS, `nm -gU` for defined global symbols.
+//
+// Note: objdump fallback was intentionally removed.  Its output
+// format differs from nm and a shared parser cannot handle both
+// reliably.  If nm is unavailable, this returns nullptr.
 // ============================================================
 static void *resolve_via_nm(void *handle, const char *func_name, char *out_mangled, size_t out_mangled_size) {
     const char *lib_path = nullptr;
@@ -425,11 +637,11 @@ static void *resolve_via_nm(void *handle, const char *func_name, char *out_mangl
     nm_flags = "-gU";
 #elif defined(_WIN32)
     static char win_path[MAX_PATH];
-    HMODULE hmod = reinterpret_cast<HMODULE>(handle);
-    if (GetModuleFileNameA(hmod, win_path, sizeof(win_path)) == 0)
+    HMODULE hmod = handle_to_hmodule(handle);
+    if (!hmod || GetModuleFileNameA(hmod, win_path, sizeof(win_path)) == 0)
         return nullptr;
     lib_path = win_path;
-    nm_flags = "";
+    nm_flags = "-g";
 #else
     return nullptr;
 #endif
@@ -438,7 +650,11 @@ static void *resolve_via_nm(void *handle, const char *func_name, char *out_mangl
         return nullptr;
 
     char cmd[4096];
+#if defined(_WIN32)
+    snprintf(cmd, sizeof(cmd), "nm %s \"%s\" 2>NUL", nm_flags, lib_path);
+#else
     snprintf(cmd, sizeof(cmd), "nm %s '%s' 2>/dev/null", nm_flags, lib_path);
+#endif
 
     FILE *pipe = popen(cmd, "r");
     if (!pipe)
@@ -472,6 +688,7 @@ static void *resolve_via_nm(void *handle, const char *func_name, char *out_mangl
 
         const char *mangled = name_pos;
 #if defined(__APPLE__)
+        // Mach-O: strip leading '_' for demangling
         if (name_pos[0] == '_')
             mangled = name_pos + 1;
 #endif
@@ -479,8 +696,9 @@ static void *resolve_via_nm(void *handle, const char *func_name, char *out_mangl
         if (demangled_matches(mangled, target, target_len, out_mangled, out_mangled_size)) {
             result = dlsym(handle, mangled);
 #if defined(__APPLE__)
-            if (!result && name_pos[0] == '_')
-                result = dlsym(handle, name_pos + 1);
+            // Also try the original name with leading '_'
+            if (!result)
+                result = dlsym(handle, name_pos);
 #endif
             if (result)
                 break;
@@ -500,34 +718,43 @@ static void *resolve_via_nm(void *handle, const char *func_name, char *out_mangl
 //
 // If verbose == true (default), prints diagnostic info to stderr:
 //   resolve_symbol: "Rgemm" -> "_Z5RgemmPKcS0_lllgPglS1_lgS1_l"
-//                   in /usr/local/lib/libmpblas_dd.so [via elf]
-//   resolve_symbol: "Raxpy" NOT FOUND in /usr/local/lib/libmpblas_dd.so
+//                   in /usr/local/lib/libmpblas_dd.so [via elf, scanned 342 syms]
+//   resolve_symbol: "Raxpy" NOT FOUND in /usr/local/lib/libmpblas_dd.so [scanned 342 syms via elf]
 //
 // Resolution order:
-//   1. Native table parsing (ELF / Mach-O / PE)
-//   2. nm command fallback
+//   1. Cache lookup
+//   2. Native table parsing (ELF / Mach-O / PE)
+//   3. nm command fallback
 static void *resolve_symbol(void *handle, const char *func_name, bool verbose = true) {
     if (!handle || !func_name)
         return nullptr;
+
+    // ---- Cache lookup ----
+    void *cached = cache_lookup(handle, func_name);
+    if (cached != kNotCached) {
+        if (verbose && cached) {
+            const char *lib = get_library_path(handle);
+            fprintf(stderr, "resolve_symbol: \"%s\" (cached) in %s\n", func_name, lib);
+        }
+        return cached;
+    }
 
     char mangled_buf[1024];
     mangled_buf[0] = '\0';
 
     void *sym = nullptr;
     const char *method = "none";
+    size_t nsyms = 0;
 
 #if defined(__linux__)
-    sym = resolve_via_elf(handle, func_name, mangled_buf, sizeof(mangled_buf));
-    if (sym)
-        method = "elf";
+    sym = resolve_via_elf(handle, func_name, mangled_buf, sizeof(mangled_buf), &nsyms);
+    method = "elf";
 #elif defined(__APPLE__)
-    sym = resolve_via_macho(handle, func_name, mangled_buf, sizeof(mangled_buf));
-    if (sym)
-        method = "macho";
+    sym = resolve_via_macho(handle, func_name, mangled_buf, sizeof(mangled_buf), &nsyms);
+    method = "macho";
 #elif defined(_WIN32)
-    sym = resolve_via_pe(handle, func_name, mangled_buf, sizeof(mangled_buf));
-    if (sym)
-        method = "pe";
+    sym = resolve_via_pe(handle, func_name, mangled_buf, sizeof(mangled_buf), &nsyms);
+    method = "pe";
 #endif
 
     if (!sym) {
@@ -537,12 +764,15 @@ static void *resolve_symbol(void *handle, const char *func_name, bool verbose = 
             method = "nm";
     }
 
+    // ---- Store in cache ----
+    cache_store(handle, func_name, sym);
+
     if (verbose) {
         const char *lib = get_library_path(handle);
         if (sym) {
-            fprintf(stderr, "resolve_symbol: \"%s\" -> \"%s\" in %s [via %s]\n", func_name, mangled_buf[0] ? mangled_buf : "(unknown mangled name)", lib, method);
+            fprintf(stderr, "resolve_symbol: \"%s\" -> \"%s\" in %s [via %s, scanned %zu syms]\n", func_name, mangled_buf[0] ? mangled_buf : "(unknown mangled name)", lib, method, nsyms);
         } else {
-            fprintf(stderr, "resolve_symbol: \"%s\" NOT FOUND in %s\n", func_name, lib);
+            fprintf(stderr, "resolve_symbol: \"%s\" NOT FOUND in %s [scanned %zu syms via %s]\n", func_name, lib, nsyms, method);
         }
     }
 
