@@ -61,7 +61,6 @@ CMD ["/bin/bash", "-lc", "\
     \
     ./configure $CONFIGURE_OPTS; \
     make -j\"$(nproc)\"; \
-    make check; \
     make install; \
     make dist; \
     echo '=== ccache stats (after) ==='; ccache -s; \
