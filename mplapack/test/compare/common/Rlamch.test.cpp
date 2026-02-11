@@ -492,7 +492,7 @@ void Rlamch_mpfr_test() {
 
         // Emulations: IEEE-like formats.
         {"binary64", false, (mpfr_prec_t)53, (mpfr_exp_t)-1021, (mpfr_exp_t)1024},
-        {"binary80x", false, (mpfr_prec_t)64, (mpfr_exp_t)-16381, (mpfr_exp_t)16384},
+        {"binary80", false, (mpfr_prec_t)64, (mpfr_exp_t)-16381, (mpfr_exp_t)16384},
         {"binary128", false, (mpfr_prec_t)113, (mpfr_exp_t)-16381, (mpfr_exp_t)16384},
 
         // Vary precision only (keep binary64 exponent range).
