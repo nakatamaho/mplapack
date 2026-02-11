@@ -1728,22 +1728,22 @@ fi
 if test x"$enable_optimization" = x"yes" && test x"$enable_debug" != x"yes" ; then
     case $target in
         powerpc*-*-*)
-            CFLAGS="$CFLAGS -mcpu=native -O2"
-            CXXFLAGS="$CXXFLAGS -mcpu=native -O2"
-            FCFLAGS="$FCFLAGS -mcpu=native -O2"
+            CFLAGS="$CFLAGS -O2"
+            CXXFLAGS="$CXXFLAGS -O2"
+            FCFLAGS="$FCFLAGS -O2"
         ;;
         *)
             if test x"$is_intelcc" = x"1"; then
                 CFLAGS="$CFLAGS -O2" # -xHost and -march-native break build drastically
             else
-                CFLAGS="$CFLAGS -march=native -O2"
-                FCFLAGS="$FCFLAGS -march=native -O2"
+                CFLAGS="$CFLAGS -O2"
+                FCFLAGS="$FCFLAGS -O2"
             fi
             
             if test x"$is_intelcxx" = x"1"; then
                 CXXFLAGS="$CXXFLAGS -O2" # -xHost and -march-native break build drastically
             else
-                CXXFLAGS="$CXXFLAGS -march=native -O2"
+                CXXFLAGS="$CXXFLAGS -O2"
             fi
         ;;
     esac
