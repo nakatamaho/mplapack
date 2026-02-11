@@ -192,7 +192,7 @@ Rsg.out: ../Rsg.in xeigtstR_double$(EXEEXT)
 		echo "=== precision: $(DOUBLE_LABEL) ==="; \
 		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < ../Rsg.in; \
 	} > $@ 2>&1
-Rbal.out: ../Rbal_double.in xeigtstR_double$(EXEEXT)
+Rbal.out: ../Rbal.in xeigtstR_double$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -200,7 +200,7 @@ Rbal.out: ../Rbal_double.in xeigtstR_double$(EXEEXT)
 	echo "Rgebal: Testing the balancing of a general matrix [$(DOUBLE_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(DOUBLE_LABEL) ==="; \
-		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < ../Rbal_double.in; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < ../Rbal.in; \
 	} > $@ 2>&1
 Rbak.out: ../Rbak.in xeigtstR_double$(EXEEXT)
 	@wrapper=""; \
@@ -392,7 +392,7 @@ Csg.out: ../Csg.in xeigtstC_double$(EXEEXT)
 		echo "=== precision: $(DOUBLE_LABEL) ==="; \
 		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < ../Csg.in; \
 	} > $@ 2>&1
-Cbal.out: ../Cbal_double.in xeigtstC_double$(EXEEXT)
+Cbal.out: ../Cbal.in xeigtstC_double$(EXEEXT)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -400,7 +400,7 @@ Cbal.out: ../Cbal_double.in xeigtstC_double$(EXEEXT)
 	echo "CGEBAL: Testing the balancing of a COMPLEX general matrix [$(DOUBLE_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(DOUBLE_LABEL) ==="; \
-		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < ../Cbal_double.in; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < ../Cbal.in; \
 	} > $@ 2>&1
 Cbak.out: ../Cbak.in xeigtstC_double$(EXEEXT)
 	@wrapper=""; \
