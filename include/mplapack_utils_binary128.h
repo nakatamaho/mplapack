@@ -348,6 +348,7 @@ inline _Float128 log(const _Float128 &a) { return logf128(a); }
 inline _Float128 log10(const _Float128 &a) { return log10f128(a); }
 inline _Float128 log2(const _Float128 &a) { return logf128(a) / logf128(2.0); }
 inline _Float128 ceil(_Float128 a) { return ceilf128(a); }
+inline _Float128 nextafter(const _Float128 &a, const _Float128 &b) { return nextafterf128(a, b); }
 inline _Float128 ldexp(const _Float128 &a, int exp) { return ldexpf128(a, exp); }
 
 inline _Float128 abs(const std::complex<_Float128> &a) {
