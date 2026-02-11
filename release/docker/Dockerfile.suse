@@ -14,6 +14,8 @@ RUN zypper --non-interactive install \
     ccache \
     python3 \
     git-core \
+    gzip \
+    awk \
     xz \
     bzip2 \
     patch \
