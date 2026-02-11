@@ -671,7 +671,7 @@ mplapack_binary80_t RlamchL_binary80(void);
 mplapack_binary80_t RlamchO_binary80(void);
 mplapack_binary80_t RlamchZ_binary80(void);
 
-// "E" : relative machine precision (machine epsilon), assume rounding
+// "E": unit roundoff (LAPACK lamch('E')), assume rounding-to-nearest
 mplapack_binary80_t RlamchE_binary80(void) {
 #if MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_FLOAT64X
 #if defined(FLT64X_MANT_DIG)
@@ -686,11 +686,15 @@ mplapack_binary80_t RlamchE_binary80(void) {
 #else
 #error "Binary80 is disabled or MPLAPACK_BINARY80_MODE is unknown"
 #endif
-    // For base-2 with rounding: eps = 2^(1 - kMantDig)
+
+    // ulp(1) = 2^(1 - p)
     mplapack_binary80_t eps = (mplapack_binary80_t)1.0;
     for (int i = 1; i < kMantDig; ++i) {
         eps /= (mplapack_binary80_t)2.0;
     }
+
+    // unit roundoff u = ulp(1)/2 = 2^(-p) for rounding-to-nearest
+    eps /= (mplapack_binary80_t)2.0;
     return eps;
 }
 

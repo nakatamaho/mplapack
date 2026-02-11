@@ -1817,7 +1817,13 @@ void Rlamch_binary80_test() {
     const bool print_values = false;
 #endif
 
-    const char *tag = "Float64x";
+#if MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_LDBL80
+    const char *tag = "long double(binary80)";
+#elif MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_FLOAT64X
+    const char *tag = "_Float64x";
+#else
+    #error "unknown binary80 type"
+#endif
 
     auto fail = [&](const char *what) {
         printf("*** Testing Mutils (mplapack_binary80_t) failed: %s ***\n", what);
