@@ -71,8 +71,8 @@ void Rlarrk(INTEGER const n, INTEGER const iw, REAL const gl, REAL const gu, REA
     //
     itmax = castINTEGER((log(tnorm + pivmin) - log(pivmin)) / log(two)) + 2;
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-    if (itmax > 1024)
-        itmax = 1024; // XXX itmax can be too large for MPFR (=10^8)
+    if (itmax > 20000)
+        itmax = 20000; // XXX itmax can be too large for MPFR (=10^8)
 #endif
     //
     info = -1;

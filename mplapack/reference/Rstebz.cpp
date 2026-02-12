@@ -55,7 +55,6 @@ void Rstebz(const char *range, const char *order, INTEGER const n, REAL const vl
     REAL gl = 0.0;
     REAL tmp2 = 0.0;
     REAL tnorm = 0.0;
-    REAL default_atol;
     const REAL fudge = 2.1;
     const REAL two = 2.0;
     INTEGER itmax = 0;
@@ -231,11 +230,14 @@ void Rstebz(const char *range, const char *order, INTEGER const n, REAL const vl
         // Compute Iteration parameters
         //
         itmax = castINTEGER((log(tnorm + pivmin) - log(pivmin)) / log(two)) + 2;
-        default_atol = ulp * tnorm;
+#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+        if (itmax >= 20000)
+            itmax = 20000; // XXX itmax can be too large for MPFR (=10^8)
+#endif
         if (abstol <= zero) {
             atoli = ulp * tnorm;
         } else {
-            atoli = max(abstol, default_atol);
+            atoli = abstol;
         }
         //
         work[(n + 1) - 1] = gl;
@@ -283,11 +285,10 @@ void Rstebz(const char *range, const char *order, INTEGER const n, REAL const vl
             tnorm = max(tnorm, abs(d[j - 1]) + abs(e[(j - 1) - 1]) + abs(e[j - 1]));
         }
         //
-        default_atol = ulp * tnorm;
         if (abstol <= zero) {
             atoli = ulp * tnorm;
         } else {
-            atoli = max(abstol, default_atol);
+            atoli = abstol;
         }
         //
         if (irange == 2) {
@@ -356,11 +357,10 @@ void Rstebz(const char *range, const char *order, INTEGER const n, REAL const vl
             //
             // Compute ATOLI for the current submatrix
             //
-            default_atol = ulp * max(abs(gl), abs(gu));
             if (abstol <= zero) {
-                atoli = default_atol;
+                atoli = ulp * max(abs(gl), abs(gu));
             } else {
-                atoli = max(abstol, default_atol);
+                atoli = abstol;
             }
             //
             if (irange > 1) {
@@ -389,6 +389,10 @@ void Rstebz(const char *range, const char *order, INTEGER const n, REAL const vl
             // Compute Eigenvalues
             //
             itmax = castINTEGER((log(gu - gl + pivmin) - log(pivmin)) / log(two)) + 2;
+#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+            if (itmax >= 20000)
+                itmax = 20000; // XXX itmax can be too large for MPFR (=10^8)
+#endif
             Rlaebz(2, itmax, in, in, 1, nb, atoli, rtoli, pivmin, &d[ibegin - 1], &e[ibegin - 1], &work[ibegin - 1], idumma, &work[(n + 1) - 1], &work[(n + 2 * in + 1) - 1], iout, iwork, &w[(m + 1) - 1], &iblock[(m + 1) - 1], iinfo);
             //
             // Copy Eigenvalues Into W and IBLOCK

@@ -7,8 +7,8 @@
 -    maxitr = castINTEGER((log(spdiam + pivmin) - log(pivmin)) / log(two)) + 2;
 +    maxitr = castINTEGER((log(spdiam + pivmin) - log(pivmin)) / log(two)) + (INTEGER)2;
 +#if defined ___MPLAPACK_BUILD_WITH_MPFR___
-+    if (maxitr >= 1024)
-+        maxitr = 1024; // XXX itmax can be too large for MPFR (=10^8)
++    if (maxitr >= 20000)
++        maxitr = 20000; // XXX itmax can be too large for MPFR (=10^8)
 +#endif
      mnwdth = two * pivmin;
      //
