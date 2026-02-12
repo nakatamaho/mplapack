@@ -30,8 +30,8 @@ patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Cpotf2.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Cpptrf.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Csyequb.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Csytri2x.cpp
-patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Ctgevc.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Ctfttp.cpp
+patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Ctgevc.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Ctpttf.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Ctrexc.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Ctrsyl.cpp
@@ -45,9 +45,11 @@ patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rlarrb.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rlarrd.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rlarrk.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rlasy2.cpp
+patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rsbgvx.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rspgvd.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rstebz.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rsyequb.cpp
+patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rsyevx.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rsygvd.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rtfttp.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rtpttf.cpp
@@ -55,5 +57,3 @@ patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-iMieeeck.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-iMlaenv.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-iMparam2stage.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-iMparmq.cpp
-patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rsbgvx.cpp
-patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rstebz.cpp
