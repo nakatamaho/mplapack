@@ -78,6 +78,7 @@ patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cdrvsg.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rchkee.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cchkee.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rcsdts.cpp
+patch  < ~/mplapack/fable/3.9.1/lapack/patch-Ccsdts.cpp
 
 cd /home/docker/mplapack/mplapack/test/eig
 patch < ~/mplapack/fable/3.9.1/lapack/patch-Ced.in
