@@ -12,10 +12,10 @@ patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Cggev3.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Cggevx.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Cgttrs.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Cheequb.cpp
-patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Cheevx.cpp
+#patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Cheevx.cpp https://claude.ai/chat/882e0ac3-a907-4577-8154-07127ff80ad0
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Chegvd.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Chgeqz.cpp
-patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Chpevx.cpp
+#patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Chpevx.cpp https://claude.ai/chat/882e0ac3-a907-4577-8154-07127ff80ad0
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Chpgvd.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Clacon.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Clags2.cpp
@@ -51,7 +51,7 @@ patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rsbgvx.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rspgvd.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rstebz.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rsyequb.cpp
-patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rsyevx.cpp
+#patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rsyevx.cpp https://claude.ai/chat/882e0ac3-a907-4577-8154-07127ff80ad0
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rsygvd.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rtfttp.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rtpttf.cpp
