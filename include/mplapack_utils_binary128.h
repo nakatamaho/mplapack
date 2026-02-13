@@ -472,32 +472,18 @@ static inline _Float128 cabs1(const std::complex<_Float128> &z) { return fabsf12
 inline _Float128 pi(_Float128 dummy) { return M_PIf128; }
 
 #elif MPLAPACK_BINARY128_MATH == MPLAPACK_BINARY128_MATH_LDBL
+#include <cmath>
+using std::log; using std::log2; using std::log10;
+using std::exp; using std::sin; using std::cos; using std::pow;
+using std::abs;
 
-inline long double pow(const long double &a, const long double &b) { return powl(a, b); }
 inline long double pow(const long &a, const long &b) { return powl((long double)a, (long double)b); }
 inline long double pow(const int &a, const long &b) { return powl((long double)a, (long double)b); }
 inline long double pow(const long double &a, const long &b) { return powl(a, (long double)b); }
-inline long double sqrt(const long double &a) { return sqrtl(a); }
 
-inline long double sin(long double a) { return sinl(a); }
-inline long double sinh(long double a) { return sinhl(a); }
-inline long double cos(long double a) { return cosl(a); }
-inline long double cosh(long double a) { return coshl(a); }
-
-inline long double atan2(long double a, long double b) { return atan2l(a, b); }
-
-inline long double exp(const long double &a) { return expl(a); }
-inline long double log(const long double &a) { return logl(a); }
-inline long double log10(const long double &a) { return log10l(a); }
-inline long double log2(const long double &a) { return logl(a) / logl(2.0); }
-inline long double ceil(long double a) { return ceill(a); }
 inline long double nextafter(const long double &a, const long double &b) { return nextafterl(a, b); }
 inline long double ldexp(const long double &a, int exp) { return ldexpl(a, exp); }
 
-#include <complex>
-#include <cmath>
-
-using std::abs;
 inline std::complex<long double> sqrt(const std::complex<long double> a) { return std::sqrt(a); }
 inline std::complex<long double> sin(const std::complex<long double> a) { return std::sin(a); }
 inline std::complex<long double> cos(const std::complex<long double> a) { return std::cos(a); }
