@@ -12,6 +12,7 @@ patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Cggev3.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Cggevx.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Cgttrs.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Cheequb.cpp
+patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Cheevx.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Chegvd.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Chgeqz.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Chpgvd.cpp
