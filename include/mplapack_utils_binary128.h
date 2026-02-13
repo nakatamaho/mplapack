@@ -210,8 +210,51 @@ inline void sprintnum_short(char *buf, std::complex<_Float128> rtmp) {
 }
 
 #endif // ___MPLAPACK_INTERNAL___
+#elif MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_SNPRINTF_LDBL
+#if defined ___MPLAPACK_INTERNAL___
+#if !defined __MPLAPACK_BUFLEN__
+#define __MPLAPACK_BUFLEN__ 1024
+#endif
+#include <string.h>
+
+#define FLOAT128_FORMAT "%+.40Le"
+#define FLOAT128_SHORT_FORMAT "%+.16Le"
+
+inline void printnum(long double rtmp) {
+    printf(FLOAT128_FORMAT, rtmp);
+    return;
+}
+inline void printnum(std::complex<long double> ctmp) {
+    printf(FLOAT128_FORMAT FLOAT128_FORMAT "i", ctmp.real(), ctmp.imag());
+    return;
+}
+inline void sprintnum(char *buf, long double rtmp) {
+    snprintf(buf, __MPLAPACK_BUFLEN__, FLOAT128_FORMAT, rtmp);
+    return;
+}
+inline void sprintnum(char *buf, std::complex<long double> ctmp) {
+    snprintf(buf, __MPLAPACK_BUFLEN__, FLOAT128_FORMAT FLOAT128_FORMAT "i", ctmp.real(), ctmp.imag());
+    return;
+}
+inline void printnum_short(long double rtmp) {
+    printf(FLOAT128_SHORT_FORMAT, rtmp);
+    return;
+}
+inline void printnum_short(std::complex<long double> ctmp) {
+    printf(FLOAT128_SHORT_FORMAT FLOAT128_SHORT_FORMAT "i", ctmp.real(), ctmp.imag());
+    return;
+}
+inline void sprintnum_short(char *buf, long double rtmp) {
+    snprintf(buf, __MPLAPACK_BUFLEN__, FLOAT128_SHORT_FORMAT, rtmp);
+    return;
+}
+inline void sprintnum_short(char *buf, std::complex<long double> ctmp) {
+    snprintf(buf, __MPLAPACK_BUFLEN__, FLOAT128_SHORT_FORMAT FLOAT128_SHORT_FORMAT "i", ctmp.real(), ctmp.imag());
+    return;
+}
+#endif // ___MPLAPACK_INTERNAL___
 #else
-#error
+#error "unknown MPLAPACK_BINARY128_IO type"
 #endif // MPLAPACK_BINARY128_IO
 
 #if MPLAPACK_BINARY128_MATH == MPLAPACK_BINARY128_MATH_QUADMATH
@@ -229,7 +272,7 @@ inline __float128 sqrt(const __float128 &a) { return sqrtq(a); }
 
 #if !MPLAPACK_HAVE_STD_ABS_FLOAT128
 // Define a fallback abs for __float128 only when std::abs(__float128) is missing.
-inline __float128 abs(const __float128 &a) { return absq(a); }
+inline __float128 abs(const __float128 &a) { return fabsq(a); }
 #endif
 
 inline __float128 sin(__float128 a) { return sinq(a); }
@@ -306,14 +349,15 @@ inline std::complex<__float128> log(const std::complex<__float128> &a) {
     return c;
 }
 
-inline long nint(mplapack_binary128_t a) {
+inline long nint(__float128 a) {
     long i;
-    mplapack_binary128_t tmp;
+    __float128 tmp;
     a = a + 0.5;
     tmp = floorq(a);
     i = (long)tmp;
     return i;
 }
+static inline __float128 cabs1(const std::complex<__float128> &z) { return fabsq(z.real()) + fabsq(z.imag()); }
 inline __float128 pi(__float128 dummy) { return M_PIq; }
 
 #elif MPLAPACK_BINARY128_MATH == MPLAPACK_BINARY128_MATH_F128
@@ -424,7 +468,45 @@ inline mplapackint nint(_Float128 a) {
     return i;
 }
 
+static inline _Float128 cabs1(const std::complex<_Float128> &z) { return fabsf128(z.real()) + fabsf128(z.imag()); }
 inline _Float128 pi(_Float128 dummy) { return M_PIf128; }
+
+#elif MPLAPACK_BINARY128_MATH == MPLAPACK_BINARY128_MATH_LDBL
+
+inline long double pow(const long double &a, const long double &b) { return powl(a, b); }
+inline long double pow(const long &a, const long &b) { return powl((long double)a, (long double)b); }
+inline long double pow(const int &a, const long &b) { return powl((long double)a, (long double)b); }
+inline long double pow(const long double &a, const long &b) { return powl(a, (long double)b); }
+inline long double sqrt(const long double &a) { return sqrtl(a); }
+
+inline long double sin(long double a) { return sinl(a); }
+inline long double sinh(long double a) { return sinhl(a); }
+inline long double cos(long double a) { return cosl(a); }
+inline long double cosh(long double a) { return coshl(a); }
+
+inline long double atan2(long double a, long double b) { return atan2l(a, b); }
+
+inline long double exp(const long double &a) { return expl(a); }
+inline long double log(const long double &a) { return logl(a); }
+inline long double log10(const long double &a) { return log10l(a); }
+inline long double log2(const long double &a) { return logl(a) / logl(2.0); }
+inline long double ceil(long double a) { return ceill(a); }
+inline long double nextafter(const long double &a, const long double &b) { return nextafterl(a, b); }
+inline long double ldexp(const long double &a, int exp) { return ldexpl(a, exp); }
+
+#include <complex>
+#include <cmath>
+
+using std::abs;
+inline std::complex<long double> sqrt(const std::complex<long double> a) { return std::sqrt(a); }
+inline std::complex<long double> sin(const std::complex<long double> a) { return std::sin(a); }
+inline std::complex<long double> cos(const std::complex<long double> a) { return std::cos(a); }
+inline std::complex<long double> exp(const std::complex<long double> &a) { return std::exp(a); }
+inline std::complex<long double> log(const std::complex<long double> &a) { return std::log(a); }
+inline long nint(long double a) { return (long)floorl(a + 0.5); }
+inline long double pi(long double dummy) { return M_PIl; }
+static inline long double cabs1(const std::complex<long double> &z) { return fabsl(z.real()) + fabsl(z.imag()); }
+
 #endif // MPLAPACK_BINARY128_MATH
 
 // support functions for mplapack, general ones
@@ -451,8 +533,6 @@ inline mplapackint castINTEGER_binary128(mplapack_binary128_t a) {
 }
 
 inline double cast2double(mplapack_binary128_t a) { return (double)a; }
-
-static inline mplapack_binary128_t cabs1(const std::complex<mplapack_binary128_t> &z) { return abs(z.real()) + abs(z.imag()); }
 
 #include <type_traits>
 
