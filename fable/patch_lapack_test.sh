@@ -62,6 +62,7 @@ patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cdrges3.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cdrgsx.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cdrves.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cdrvsg.cpp
+patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cdrvsg2stg.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cget24.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Cget52.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Clctsx.cpp
