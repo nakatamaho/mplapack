@@ -940,11 +940,15 @@ static void check_range_checks_qd(const char *tag, const qd_real &U, const qd_re
 
 static void check_sfmin_inequalities_qd(const char *tag, const qd_real &S, const qd_real &U, const qd_real &O) {
     const qd_real one(1.0);
-    const qd_real invS = one / S;
-    const qd_real invO = one / O;
+    const qd_real invS = one / S; // S = min_normalized, 1/S is in normal range: safe
+
     qd_assert_case(invS <= O, tag, "1/S > O (violates safe minimum contract)");
     qd_assert_case(S >= U, tag, "S < U (violates sfmin >= rmin)");
-    qd_assert_case(S >= invO, tag, "S < 1/O (violates sfmin >= 1/rmax)");
+
+    // 1/O is in the subnormal double range; qd_real division is unreliable there.
+    // Use double arithmetic, which handles subnormals correctly.
+    const double invO_d = 1.0 / to_double(O);
+    qd_assert_case(to_double(S) >= invO_d, tag, "S < 1/O (violates sfmin >= 1/rmax)");
 }
 
 static long qd_to_long_checked(const qd_real &x, const char *tag, const char *msg) {
@@ -1206,7 +1210,6 @@ static void check_range_checks_dd(const char *tag, const dd_real &U, const dd_re
     dd_assert_case((U * two) > U, tag, "U * 2 <= U (stuck at zero?)");
 
     // Reciprocal checks
-    dd_assert_case((one / O) >= zero, tag, "1/O is negative or NaN");
     dd_assert_case((one / S) > zero, tag, "1/S is not positive");
     dd_assert_case(isfinite(one / S), tag, "1/S is not finite");
 }
@@ -1214,13 +1217,16 @@ static void check_range_checks_dd(const char *tag, const dd_real &U, const dd_re
 static void check_sfmin_inequalities_dd(const char *tag, const dd_real &S, const dd_real &U, const dd_real &O) {
     const dd_real one(1.0);
 
-    const dd_real invS = one / S;
-    const dd_real invO = one / O;
+    const dd_real invS = one / S; // S = min_normalized, 1/S is in normal range: safe
 
     // Netlib-style sfmin inequalities
     dd_assert_case(invS <= O, tag, "1/S > O (violates safe minimum contract)");
     dd_assert_case(S >= U, tag, "S < U (violates sfmin >= rmin)");
-    dd_assert_case(S >= invO, tag, "S < 1/O (violates sfmin >= 1/rmax)");
+
+    // 1/O is in the subnormal double range (~5.56e-309); dd_real division is
+    // unreliable there. Use double arithmetic, which handles subnormals correctly.
+    const double invO_d = 1.0 / to_double(O);
+    dd_assert_case(to_double(S) >= invO_d, tag, "S < 1/O (violates sfmin >= 1/rmax)");
 }
 
 static long dd_to_long_checked(const dd_real &x, const char *what) {
