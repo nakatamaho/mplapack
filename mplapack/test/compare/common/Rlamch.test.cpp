@@ -1680,7 +1680,7 @@ void Rlamch_binary128_test() {
     const int emin = (int)__FLT128_MIN_EXP__;
     const int emax = (int)__FLT128_MAX_EXP__;
 #else
-    const int p = (int)FLT128_MANT_DIG; //defined in quadmath.h
+    const int p = (int)FLT128_MANT_DIG; // defined in quadmath.h
     const int emin = (int)FLT128_MIN_EXP;
     const int emax = (int)FLT128_MAX_EXP;
 #endif
@@ -1828,7 +1828,7 @@ void Rlamch_binary80_test() {
 #elif MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_FLOAT64X
     const char *tag = "_Float64x";
 #else
-    #error "unknown binary80 type"
+#error "unknown binary80 type"
 #endif
 
     auto fail = [&](const char *what) {
@@ -1869,21 +1869,21 @@ void Rlamch_binary80_test() {
     const int p = (int)__FLT64X_MANT_DIG__;
     const int emin = (int)__FLT64X_MIN_EXP__;
     const int emax = (int)__FLT64X_MAX_EXP__;
-    #else
-    #error "_Float64x mode selected but __FLT64X_MANT_DIG__ not available"
-    #endif
-    #elif MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_LDBL80
+#else
+#error "_Float64x mode selected but __FLT64X_MANT_DIG__ not available"
+#endif
+#elif MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_LDBL80
     // Using long double (must be binary80)
 #if defined(__LDBL_MANT_DIG__) && __LDBL_MANT_DIG__ == 64
     const int p = (int)__LDBL_MANT_DIG__;
     const int emin = (int)__LDBL_MIN_EXP__;
     const int emax = (int)__LDBL_MAX_EXP__;
-    #else
-    #error "long double mode selected but long double is not binary80 (64-bit mantissa required)"
-    #endif
-    #else
-    #error "Invalid MPLAPACK_BINARY80_MODE specified"
-    #endif
+#else
+#error "long double mode selected but long double is not binary80 (64-bit mantissa required)"
+#endif
+#else
+#error "Invalid MPLAPACK_BINARY80_MODE specified"
+#endif
     const mplapack_binary80_t exB = two;
     const mplapack_binary80_t exN = (mplapack_binary80_t)p;
 
