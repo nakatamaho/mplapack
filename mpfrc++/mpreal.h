@@ -427,8 +427,10 @@ class mpreal {
     mpreal &operator=(const dd_real &a);
 #endif
 #if defined ___MPLAPACK_BUILD_WITH_BINARY128___
+#if !(MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_LDBL)
     mpreal(const mplapack_binary128_t &a, mp_prec_t prec = default_prec, mp_rnd_t mode = default_rnd);
     mpreal &operator=(const mplapack_binary128_t &a);
+#endif
 #endif
 #if defined ___MPLAPACK_BUILD_WITH_BINARY80___
 #if MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_FLOAT64X
@@ -2349,6 +2351,9 @@ inline double cast2double(const mpreal &b) {
 }
 
 #if defined ___MPLAPACK_BUILD_WITH_BINARY128___
+#if MPLAPACK_BINARY128_MODE != MPLAPACK_BINARY128_MODE_LDBL
+// These would be duplicates of the existing long double overloads when
+// mplapack_binary128_t == long double (LDBL mode).
 inline mpreal &mpreal::operator=(const mplapack_binary128_t &a) {
     mpfr_init2(mp, default_prec);
     mpfr_set_float128(mp, a, default_rnd);
@@ -2366,14 +2371,14 @@ inline const mpreal operator-(const mpreal &a, const mplapack_binary128_t &b) {
     mpreal tmp(b);
     return -(mpreal(b) -= a);
 }
-
+#endif // MPLAPACK_BINARY128_MODE != MPLAPACK_BINARY128_MODE_LDBL
 inline mplapack_binary128_t cast2binary128_t(const mpreal &b) {
     mplapack_binary128_t q;
     mpreal a(b);
     q = mpfr_get_float128((mpfr_ptr)a, mpreal::default_rnd);
     return q;
 }
-#endif
+#endif // ___MPLAPACK_BUILD_WITH_BINARY128___
 
 #if defined ___MPLAPACK_BUILD_WITH_BINARY80___
 #if MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_LDBL80
