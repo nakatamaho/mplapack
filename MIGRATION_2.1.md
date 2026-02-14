@@ -202,7 +202,71 @@ Most remaining issues will be:
 
 ---
 
-## 9. References (implementation context)
+## 9. Known problems (2.1.0)
+
+### 9.1 MPFR default profile: Csg (Hermitian generalized eigenvalue) test failures
+
+**Symptom**
+
+When running the `Csg` eigenvalue test suite under the MPFR default profile (512-bit mantissa, exponent range ≈ ±323 228 496), two classes of failures are observed:
+
+| NB | Failures | Description |
+|-----|----------|-------------|
+| 1 | 9 / 11172 | Test ratios of order 10^153 (type 8, 9, 11, 18) |
+| 3 | 6 / 11172 | Test ratios of order 10^153 (type 17, 19) |
+| 20 | fatal | `Cstein` parameter 6 error → test abort |
+
+The same test suite passes completely under the MPFR `binary128` profile (precision=113, emin=−16381, emax=16384).
+
+**Root cause 1 — bisection iteration cap (`itmax` clamping in `Rstebz`)**
+
+`Rstebz` computes the maximum number of bisection iterations as:
+
+```
+itmax = ⌊(log(gu − gl + pivmin) − log(pivmin)) / log(2)⌋ + 2
+```
+
+For the MPFR default profile this yields itmax on the order of 10^8 or more, which is clamped to 20 000:
+
+```cpp
+#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+    if (itmax >= 20000)
+        itmax = 20000; // XXX itmax can be too large for MPFR
+#endif
+```
+
+For test matrices with large eigenvalues (kmagn=2, `anorm = rtovfl × ulp × aninv ≈ 10^{161 614 093}`), 20 000 bisection steps reduce the interval by a factor of 2^20000 ≈ 10^6021, leaving the interval width at approximately 10^{161 608 072} — far above the required tolerance of `ulp × |eigenvalue|`. The bisection therefore does not converge, producing meaningless eigenvalue approximations and the observed enormous test ratios.
+
+Under the `binary128` profile the required `itmax` is approximately 32 750, so 20 000 iterations are more than sufficient for the much smaller exponent range.
+
+**Root cause 2 — missing error propagation from `Rstebz` to `Cstein` in `Cheevx`**
+
+When `Rstebz` fails to converge, it marks unconverged eigenvalues with **negative** block indices (`iblock[j] = −jb`). `Cheevx` does not check `Rstebz`'s return code before calling `Cstein`:
+
+```cpp
+// Cheevx.cpp — no info check between these two calls
+Rstebz(range, &order, n, vll, vuu, il, iu, abstll, ...rwork..., info);
+if (wantz) {
+    Cstein(n, ...iwork[indibl]..., info);   // receives negative iblock values
+```
+
+`Cstein` validates that `iblock` is monotonically non-decreasing; negative values violate this, triggering `info = −6` (`parameter 6 had an illegal value`). This is the direct cause of the NB=20 fatal error. The same latent issue exists for NB=1 and NB=3 but is masked by the test driver's skip logic.
+
+**Scope and impact**
+
+- Affects **only** the MPFR default profile where the exponent range is extremely large relative to the mantissa precision.
+- Does **not** affect the `binary128` or `binary80` profiles, nor `dd`, `qd`, or `gmp` backends.
+- Does **not** affect user code that calls `Cheev`/`Cheevd` (which use QR iteration, not bisection) or code that uses `Cheevx`/`Chegvx` with `abstol = 0` on matrices whose eigenvalues are within a "normal" floating-point range.
+- The test driver (`Cdrvsg2stg`) sets `abstol = 2 × underflow`, which forces the `Rstebz`→`Cstein` code path in `Cheevx`. Typical user code with `abstol = 0` would take the `Rsterf`/`Csteqr` path first, avoiding this issue.
+
+**Planned resolution**
+
+- Root cause 1 (`itmax` clamping): deferred to a future release. A proper fix requires either adapting the bisection iteration limit to the actual precision/exponent-range ratio, or restructuring the test matrices to avoid eigenvalue magnitudes that exceed the feasible bisection range.
+- Root cause 2 (error propagation): a defensive check will be added to `Cheevx` to skip the `Cstein` call when `Rstebz` reports non-convergence (negative `iblock` entries), preventing the spurious parameter error.
+
+---
+
+## 10. References (implementation context)
 
 Primary commits that introduced the renames and mode selection:
 
@@ -214,4 +278,3 @@ Primary commits that introduced the renames and mode selection:
 
 * Mode-based architecture for binary80/binary128 and Rlamch-related refactor:
   [https://github.com/nakatamaho/mplapack/commit/f92d11d085e78055b6918aa1c863c4ad4008f7e3](https://github.com/nakatamaho/mplapack/commit/f92d11d085e78055b6918aa1c863c4ad4008f7e3)
-
