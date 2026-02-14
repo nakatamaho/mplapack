@@ -6,16 +6,30 @@ echo "Post-processing mplapack/reference/iMlaenv.cpp with fix_iMlaenv.py"
 python $HOME/mplapack/fable/fix_iMlaenv.py iMlaenv.cpp
 python $HOME/mplapack/fable/fix_iMlaenv.py iMparmq.cpp
 
+#https://claude.ai/chat/ff991a40-a314-41e6-8699-d718148aec7e
+#https://claude.ai/chat/238930a7-ded0-4d54-bc32-362acb7ff57e
+patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Chbevx.cpp
+patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Chbevx_2stage.cpp
+patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Chbgvx.cpp
+patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Cheevx.cpp
+patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Cheevx_2stage.cpp
+patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Chpevx.cpp
+patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rsbevx.cpp
+patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rsbevx_2stage.cpp
+patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rsbgvx.cpp
+patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rspevx.cpp
+patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rstevx.cpp
+patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rsyevx.cpp
+patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rsyevx_2stage.cpp
+
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Cbbcsd.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Cggev.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Cggev3.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Cggevx.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Cgttrs.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Cheequb.cpp
-#patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Cheevx.cpp https://claude.ai/chat/882e0ac3-a907-4577-8154-07127ff80ad0
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Chegvd.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Chgeqz.cpp
-#patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Chpevx.cpp https://claude.ai/chat/882e0ac3-a907-4577-8154-07127ff80ad0
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Chpgvd.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Clacon.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Clags2.cpp
@@ -47,11 +61,9 @@ patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rlarrb.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rlarrd.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rlarrk.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rlasy2.cpp
-patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rsbgvx.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rspgvd.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rstebz.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rsyequb.cpp
-#patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rsyevx.cpp https://claude.ai/chat/882e0ac3-a907-4577-8154-07127ff80ad0
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rsygvd.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rtfttp.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rtpttf.cpp

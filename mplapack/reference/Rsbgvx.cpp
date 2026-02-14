@@ -189,7 +189,7 @@ void Rsbgvx(const char *jobz, const char *range, const char *uplo, INTEGER const
     indiwo = indisp + n;
     Rstebz(range, &order, n, vl, vu, il, iu, abstol, &work[indd - 1], &work[inde - 1], m, nsplit, w, &iwork[indibl - 1], &iwork[indisp - 1], &work[indwrk - 1], &iwork[indiwo - 1], info);
     if (info != 0) {
-        return;  // propagate INFO (1/3) upwards
+        return;  // propagate INFO from Rstebz; IBLOCK may be invalid
     }
     //
     if (wantz) {
