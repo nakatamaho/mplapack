@@ -65,7 +65,11 @@ void Mxerbla(const char *srname, int info) {
         ok = false;
     }
     // Fortran-style compare (blank padding aware)
-    if (!(srnamt == srname)) {
+    if (infot == 0) {
+        // srnamt was not set by the test harness: unexpected XERBLA call
+        write(nout, "(' *** XERBLA was called with srname= ',a,' but no srname was expected (srnamt not set) ***')"), srname;
+        ok = false;
+    } else if (!(srnamt == srname)) {
         write(nout, "(' *** XERBLA was called with srname= ',a,' instead of ',a9,' ***')"), srname, srnamt;
         ok = false;
     }
