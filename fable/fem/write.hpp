@@ -582,12 +582,30 @@ class write_loop : write_loop_base
             to_stream(tmp, std::strlen(tmp));
             prev_was_string = false;
         } else {
-            // Formatted: approximate by emitting the textual value.
-            // If you want strict width/scale behavior, implement a dedicated
-            // to_stream_fmt_long_double() and hook it here.
+            // Formatted: for binary80 long double builds that use snprintf("%Lg") I/O,
+            // fall back to sprintnum_short() so edit-descriptor width handling is at least consistent.
+#if defined(MPLAPACK_BINARY80_IO) && (MPLAPACK_BINARY80_IO == MPLAPACK_BINARY80_IO_SNPRINTF_LDBL)
+            char buf[__MPLAPACK_BUFLEN__];
+            buf[0] = '\0';
+            // Avoid sprintnum_short(...) overload ambiguity (qd/gmp/etc).
+            // Generate a "short" long double representation directly.
+            // NOTE: This is intentionally minimal; strict Fortran formatting is not implemented here.
+            std::snprintf(buf, sizeof(buf), "%+24.20Le", val);
+            buf[sizeof(buf) - 1] = '\0';
+            std::string s(buf);
+            size_t b = s.find_first_not_of(' ');
+            size_t e = s.find_last_not_of(' ');
+            if (b != std::string::npos && e != std::string::npos) {
+                s = s.substr(b, e - b + 1);
+           }
+            std::string const &ed = next_edit_descriptor();
+            to_stream_fmt_double_given_string(s, ed);
+#else
+            // Generic fallback: emit the textual value (does not honor edit-descriptor width/scale).
             char tmp[256];
             long_double_to_chars(tmp, sizeof(tmp), val);
             to_stream(tmp, std::strlen(tmp));
+#endif
             prev_was_string = false;
         }
         return *this;
