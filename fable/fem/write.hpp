@@ -597,7 +597,25 @@ class write_loop : write_loop_base
             size_t e = s.find_last_not_of(' ');
             if (b != std::string::npos && e != std::string::npos) {
                 s = s.substr(b, e - b + 1);
-           }
+            }
+            std::string const &ed = next_edit_descriptor();
+            to_stream_fmt_double_given_string(s, ed);
+#elif defined(MPLAPACK_BINARY128_IO) && (MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_SNPRINTF_LDBL)
+            char buf[__MPLAPACK_BUFLEN__];
+            buf[0] = '\0';
+            // Avoid sprintnum_short(...) overload ambiguity (qd/gmp/etc).
+            // Generate a "short" long double (binary128 on arm64) representation directly.
+            // binary128: 112-bit mantissa => ~33.97 decimal digits; use 35 for safe round-trip.
+            // Exponent range: +-16383 (5 digits) => field width 46 is sufficient.
+            // NOTE: This is intentionally minimal; strict Fortran formatting is not implemented here.
+            std::snprintf(buf, sizeof(buf), "%+46.35Le", val);
+            buf[sizeof(buf) - 1] = '\0';
+            std::string s(buf);
+            size_t b = s.find_first_not_of(' ');
+            size_t e = s.find_last_not_of(' ');
+            if (b != std::string::npos && e != std::string::npos) {
+                s = s.substr(b, e - b + 1);
+            }
             std::string const &ed = next_edit_descriptor();
             to_stream_fmt_double_given_string(s, ed);
 #else
