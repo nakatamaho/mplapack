@@ -46,9 +46,15 @@ void __attribute__((destructor)) ___mplapack_Rlaruv_mpfr_finalize(void) { gmp_ra
 #endif
 
 // GMP backend: global non-deterministic state
+// Note: C++ guarantees globals in the same TU are initialized in definition order.
+// gmp_randclass is constructed first, then the seeder initializes it.
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
 gmp_randclass ___random_mplapack_gmp(gmp_randinit_default);
-void __attribute__((constructor)) ___mplapack_Rlaruv_gmp_initialize(void) { ___random_mplapack_gmp.seed(static_cast<unsigned long int>(std::time(nullptr))); }
+namespace {
+struct ___mplapack_Rlaruv_gmp_seeder {
+    ___mplapack_Rlaruv_gmp_seeder() { ___random_mplapack_gmp.seed(static_cast<unsigned long int>(std::time(nullptr))); }
+} ___mplapack_Rlaruv_gmp_seeder_instance;
+} // namespace
 #endif
 
 // For DD, QD, binary128, binary80, and double backends:
