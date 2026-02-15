@@ -34,6 +34,22 @@ The naming visible in code, example targets, and some build glue was standardize
 - `_Float128/_Float64x` **labels** → `binary128/binary80`
 - compiler-specific types → MPLAPACK **portable type aliases**
 
+### 1.3 MPFR default exponent range truncation
+
+MPLAPACK 2.1 restricts the MPFR exponent range to `emin = −prec × 64`, `emax = +prec × 64` by default, where `prec` is the mantissa precision in bits. Previously, MPFR's native exponent range was used unchanged.
+
+| Profile | prec | emin (new) | emax (new) | emin (old / MPFR native) |
+|---------|------|-----------|-----------|--------------------------|
+| 512-bit (default) | 512 | −32 768 | +32 768 | ≈ −1.07 × 10^9 |
+| 1024-bit | 1024 | −65 536 | +65 536 | ≈ −1.07 × 10^9 |
+| binary128 emulation | 113 | −7 232 | +7 232 | ≈ −1.07 × 10^9 |
+
+MPFR's native 64-bit exponent range (emin ≈ −1.07 × 10^9) is vastly disproportionate to the mantissa precision. This causes pathological behavior in LAPACK's bisection routines (`Rstebz`, `Rlarrb`, `Rlarrd`, `Rlarrk`), where the iteration count `itmax ∝ emax − emin` reaches billions — far beyond what can execute in finite time. The `prec × 64` formula provides an exponent range that is large enough for all practical numerical work while keeping `itmax` within feasible bounds (e.g., 65 536 for 512-bit precision).
+
+**Action**
+- If your code depends on the full MPFR native exponent range, set the environment variables `MPLAPACK_MPFR_EMIN` and `MPLAPACK_MPFR_EMAX` before calling MPLAPACK routines. Note that extremely wide exponent ranges may cause bisection-based eigenvalue routines (`Rsyevx`, `Cheevx`, etc.) to hit the iteration cap and report non-convergence.
+- If you previously worked around MPFR exponent-related issues in your code (e.g., manually calling `mpfr_set_emin`/`mpfr_set_emax`), those workarounds may now be redundant.
+
 ---
 
 ## 2. Quick replacement table (do this first)
@@ -259,10 +275,12 @@ if (wantz) {
 - Does **not** affect user code that calls `Cheev`/`Cheevd` (which use QR iteration, not bisection) or code that uses `Cheevx`/`Chegvx` with `abstol = 0` on matrices whose eigenvalues are within a "normal" floating-point range.
 - The test driver (`Cdrvsg2stg`) sets `abstol = 2 × underflow`, which forces the `Rstebz`→`Cstein` code path in `Cheevx`. Typical user code with `abstol = 0` would take the `Rsterf`/`Csteqr` path first, avoiding this issue.
 
-**Planned resolution**
+**Resolution**
 
-- Root cause 1 (`itmax` clamping): deferred to a future release. A proper fix requires either adapting the bisection iteration limit to the actual precision/exponent-range ratio, or restructuring the test matrices to avoid eigenvalue magnitudes that exceed the feasible bisection range.
-- Root cause 2 (error propagation): a defensive check will be added to `Cheevx` to skip the `Cstein` call when `Rstebz` reports non-convergence (negative `iblock` entries), preventing the spurious parameter error.
+Both root causes have been addressed in 2.1.0:
+
+- **Root cause 1 (bisection iteration cap)**: Resolved by the MPFR default exponent range truncation described in section 1.3. With `emin = −prec × 64` (e.g., −32 768 for 512-bit precision), `itmax` stays well within the 100 000 safety cap and bisection converges without requiring an `atoli` clamp. The `atoli` clamp (which forced `atoli = ulp × tnorm` under wide exponent ranges, destroying precision for small eigenvalues) has been removed entirely. The `itmax` safety cap of 100 000 is retained as a fallback for users who override the exponent range via environment variables.
+- **Root cause 2 (error propagation)**: A defensive check has been added to all six affected routines (`Cheevx`, `Chpevx`, `Chbevx`, `Rsyevx`, `Rspevx`, `Rsbevx`). After `Rstebz` returns with non-convergence, the routines scan `iblock` for negative entries and skip the `Cstein`/`Rstein` call if found, allowing the positive `info` value from `Rstebz` to propagate to the caller. This converts the fatal parameter error (`info = −6`) into a non-convergence report (`info > 0`), which the test driver handles gracefully without aborting.
 
 ### 9.2 MPFR binary128 profile: Cgesvj (Jacobi SVD) test failures on type 4 matrices
 
