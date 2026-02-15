@@ -213,6 +213,13 @@ class write_loop : write_loop_base
             }
         }
     }
+    // C-style array: expand all elements into the write loop (Fortran array I/O semantics)
+    template <typename T, std::size_t N, typename = typename std::enable_if<!std::is_same<typename std::remove_cv<T>::type, char>::value>::type> write_loop &operator,(T const (&arr)[N]) {
+        for (std::size_t i = 0; i < N; i++) {
+            (*this), arr[i];
+        }
+        return *this;
+    }
     write_loop &operator,(char const &val) {
         if (io_mode == io_unformatted) {
             to_stream_unformatted(&val, 1);
