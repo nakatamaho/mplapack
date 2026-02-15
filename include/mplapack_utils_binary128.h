@@ -475,7 +475,7 @@ inline _Float128 pi(_Float128 dummy) { return M_PIf128; }
 #include <cmath>
 using std::log; using std::log2; using std::log10;
 using std::exp; using std::sin; using std::cos; using std::pow;
-using std::abs; using std::sqrt;
+using std::abs; using std::sqrt; using std::atan2;
 
 inline long double pow(const long &a, const long &b) { return powl((long double)a, (long double)b); }
 inline long double pow(const int &a, const long &b) { return powl((long double)a, (long double)b); }
