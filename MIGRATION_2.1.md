@@ -264,6 +264,57 @@ if (wantz) {
 - Root cause 1 (`itmax` clamping): deferred to a future release. A proper fix requires either adapting the bisection iteration limit to the actual precision/exponent-range ratio, or restructuring the test matrices to avoid eigenvalue magnitudes that exceed the feasible bisection range.
 - Root cause 2 (error propagation): a defensive check will be added to `Cheevx` to skip the `Cstein` call when `Rstebz` reports non-convergence (negative `iblock` entries), preventing the spurious parameter error.
 
+### 9.2 MPFR binary128 profile: Cgesvj (Jacobi SVD) test failures on type 4 matrices
+
+**Symptom**
+
+When running the complex SVD test suite (`Cdrvbd`) under the MPFR `binary128` profile (precision=113, emin=−16381, emax=16384), `Cgesvj` fails test 15 for all type 4 matrices ("evenly spaced singular values near underflow"). The failure is consistent across all matrix sizes and workspace variants:
+
+| NB settings | Failures | Test ratio |
+|-------------|----------|------------|
+| All 5 NB/NBMIN/NX combinations | 28 / 14340 each | +5.1922968585348276e+33 |
+
+The test ratio equals exactly 1/ulp = 2^112, which is the LAPACK sentinel for total decomposition failure. All other SVD drivers (`Cgesvd`, `Cgesdd`, `Cgesvdx`, `Cgesvdq`) and the `ZGESJV` driver pass the same tests. The `ZBD` bidiagonalization routines also pass completely.
+
+**Root cause — MPFR lacks IEEE 754 subnormal (gradual underflow) emulation**
+
+MPFR internally maintains a fully normalized mantissa at all times. Although the binary128 profile sets `emin=−16381` (corresponding to IEEE 754 binary128's smallest normal number ≈ 3.36×10^−4932), MPFR does not perform gradual underflow. Without explicit calls to `mpfr_subnormalize()` after every arithmetic operation, values below the smallest normal are flushed to zero instead of being represented as subnormal numbers with reduced precision.
+
+IEEE 754 binary128 has a subnormal range spanning exponents [−16494, −16382), which covers 112 bits (approximately 34 decimal orders of magnitude). Any intermediate result landing in this range is:
+
+- **IEEE 754 binary128**: a subnormal number (non-zero, with reduced but non-zero precision)
+- **MPFR without `mpfr_subnormalize()`**: exactly zero
+
+This divergence is catastrophic for `Cgesvj`, which uses Jacobi rotations with column-norm-based convergence criteria. Specifically:
+
+1. **`Rlassq` (column norm computation)**: For type 4 matrices, some column entries fall below `smlnum`. IEEE 754 preserves these as subnormals, yielding small but non-zero column norms. MPFR flushes them to zero, producing zero norms for columns that should have non-zero norms.
+
+2. **Jacobi rotation decisions**: `Cgesvj` compares products of the form `aapp * smlnum` against column norms `aaqq`. When `aapp < 1` (which is virtually always for near-underflow matrices), `aapp * smlnum` falls in the subnormal range — non-zero in IEEE 754 but zero in MPFR. This causes different branch paths in the rotation logic.
+
+3. **Scaling via `Rlascl`**: When `Rlascl` is called with `cfrom` values that are themselves subnormal (valid in IEEE 754), MPFR sees `cfrom = 0` and returns `info = −4` (invalid input).
+
+The fact that the test ratio is identical (exactly 1/ulp) for all matrix sizes and workspace settings confirms that the failure is deterministic and originates from a systematic flush-to-zero effect, not from a numerical precision issue.
+
+**Why other SVD drivers are unaffected**
+
+`Cgesvd` and `Cgesdd` use bidiagonalization followed by QR iteration or divide-and-conquer, which do not rely on column-norm comparisons in the subnormal range. `Cgesvdx` uses bisection on the bidiagonal matrix. These algorithms are structurally less sensitive to the subnormal/zero distinction because their intermediate quantities remain in the normal floating-point range after initial scaling.
+
+**Scope and impact**
+
+- Affects **only** the MPFR `binary128` profile. The MPFR default profile (512-bit mantissa) has a much smaller `smlnum` relative to its precision, so subnormal-sensitive code paths are not triggered by the test matrices.
+- Does **not** affect `dd`, `qd`, `gmp`, native `binary128`, or native `binary80` backends.
+- Does **not** affect user code that calls other SVD drivers (`Cgesvd`, `Cgesdd`, `Cgesvdx`, `Cgesvdq`), which all pass the same tests.
+- The analogous real-valued routine `Rgesvj` is expected to exhibit the same failure under identical conditions.
+
+**Planned resolution**
+
+Two approaches are under consideration:
+
+- **Option A — subnormal emulation in the MPFR binary128 wrapper**: Introduce `mpfr_subnormalize()` calls after each arithmetic operation in the MPFR wrapper layer when operating under the binary128 profile. This would produce IEEE 754–compliant behavior at the cost of significant performance degradation.
+- **Option B — adjust `Cgesvj` scaling thresholds for MPFR**: Modify the underflow-sensitive comparisons in `Cgesvj` (and `Rgesvj`) to account for MPFR's flush-to-zero behavior when subnormal emulation is not active. This is less invasive but makes the algorithm MPFR-aware.
+
+Neither fix is included in the 2.1.0 release. Users requiring Jacobi SVD on near-underflow matrices under the MPFR binary128 profile should use `Cgesvd` or `Cgesdd` as a workaround.
+
 ---
 
 ## 10. References (implementation context)
