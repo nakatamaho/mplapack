@@ -1,7 +1,7 @@
 # Dockerfile.debian-tarball
 # GCC build for Debian/Ubuntu (tarball: no autoreconf needed)
 
-ARG BASE=debian:12
+ARG BASE=ubuntu:22.04
 FROM ${BASE}
 
 RUN apt-get update && apt-get install -y \

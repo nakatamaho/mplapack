@@ -30,7 +30,7 @@ docker buildx inspect mplapack-builder >/dev/null 2>&1 || \
     docker buildx create --name mplapack-builder --use >/dev/null
 
 log() {
-    echo "[$(date +%H:%M:%S)] $*"
+    echo "[$(date +%H:%M:%S)] $*" >&2
 }
 
 
@@ -187,6 +187,8 @@ make_dist() {
     cd "$SCRIPT_DIR"
 }
 
+
+
 # Build and test single configuration
 build_one() {
     local name=$1
@@ -266,6 +268,17 @@ fi
         -e CCACHE_DIR=/ccache
         -e CCACHE_MAXSIZE="$CCACHE_MAXSIZE"
     )
+
+    # Personality note: linux/386 on x86_64 host is handled by
+    # entrypoint.sh inside the Dockerfile (auto-detects and wraps with linux32).
+    # Do NOT use --entrypoint here; it would override the Dockerfile ENTRYPOINT.
+    if [[ "$arch" == "linux/386" && "$HOST_PLATFORM" == "linux/amd64" ]]; then
+        log "  (i386 on amd64: entrypoint.sh will apply linux32 personality)"
+    fi
+
+    # Pass test command via env; the Dockerfile CMD runs it after the build.
+    docker_run_args+=( -e TEST_CMD="$test_cmd" )
+
     if [[ -n "$gpu_flag" ]]; then
         # gpu_flag may contain multiple tokens (e.g., "--gpus all")
         docker_run_args+=( $gpu_flag )
@@ -294,24 +307,20 @@ fi
         return 1
     fi
 
-    # Run build with host directories mounted
+    # Run build + test in a single container.
+    # /work is tmpfs so a second docker run would lose all build artifacts.
+    # The Dockerfile CMD does the build; TEST_CMD env var triggers tests at the end.
     if ! docker run "${docker_run_args[@]}" \
         "$tag" \
         > "${logprefix}_build.log" 2>&1; then
 
         local elapsed=$(($(date +%s) - start))
-        echo "$name,$arch_short,$base,build,FAILED,$elapsed,$source_type"
-        return 1
-    fi
-
-    # Run tests
-    if ! docker run "${docker_run_args[@]}" \
-        "$tag" \
-        /bin/bash -lc "$test_cmd" \
-        > "${logprefix}_test.log" 2>&1; then
-
-        local elapsed=$(($(date +%s) - start))
-        echo "$name,$arch_short,$base,test,FAILED,$elapsed,$source_type"
+        # Inspect the log to distinguish build vs test failure
+        if grep -q '=== Running tests ===' "${logprefix}_build.log" 2>/dev/null; then
+            echo "$name,$arch_short,$base,test,FAILED,$elapsed,$source_type"
+        else
+            echo "$name,$arch_short,$base,build,FAILED,$elapsed,$source_type"
+        fi
         return 1
     fi
 
@@ -355,19 +364,19 @@ run_matrix() {
 show_summary() {
     [[ -f "$LOGDIR/results.csv" ]] || return
 
-    echo ""
+    echo "" >&2
     log "=== SUMMARY ==="
-    column -t -s, "$LOGDIR/results.csv"
+    column -t -s, "$LOGDIR/results.csv" >&2
 
     local total=$(( $(wc -l < "$LOGDIR/results.csv") - 1 ))
-    local passed=$(grep -c ',OK,' "$LOGDIR/results.csv" || echo 0)
-    local failed=$(grep -c ',FAILED,' "$LOGDIR/results.csv" || echo 0)
-    local skipped=$(grep -c ',SKIPPED,' "$LOGDIR/results.csv" || echo 0)
+    local passed; passed=$(grep -c ',OK,' "$LOGDIR/results.csv") || passed=0
+    local failed; failed=$(grep -c ',FAILED,' "$LOGDIR/results.csv") || failed=0
+    local skipped; skipped=$(grep -c ',SKIPPED,' "$LOGDIR/results.csv") || skipped=0
 
-    echo ""
-    echo "Total: $total | Passed: $passed | Failed: $failed | Skipped: $skipped"
-    echo "Logs:   $LOGDIR/"
-    echo "ccache: $HOST_CCACHE_DIR"
+    echo "" >&2
+    echo "Total: $total | Passed: $passed | Failed: $failed | Skipped: $skipped" >&2
+    echo "Logs:   $LOGDIR/" >&2
+    echo "ccache: $HOST_CCACHE_DIR" >&2
 
     [[ $failed -eq 0 ]] || exit 1
 }
@@ -391,10 +400,10 @@ case "${1:-}" in
         log "=== Phase 1: Branch tests ==="
         PHASE=branch run_matrix | tee "$LOGDIR/results_branch.csv"
 
-        echo ""
+        echo "" >&2
         make_dist
 
-        echo ""
+        echo "" >&2
         log "=== Phase 2: Tarball tests ==="
         PHASE=tarball run_matrix | tee "$LOGDIR/results_tarball.csv"
 

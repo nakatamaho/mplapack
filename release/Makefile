@@ -38,51 +38,51 @@ tarball-with:
 # === Distro Filters ===
 
 intel:
-	@FILTER_NAME=intel ./build-all.sh
+	@FILTER_NAME=intel ./build-all.sh branch
 
 mingw:
-	@FILTER_NAME=mingw ./build-all.sh
+	@FILTER_NAME=mingw ./build-all.sh branch
 
 cuda:
-	@FILTER_NAME=cuda ./build-all.sh
+	@FILTER_NAME=cuda ./build-all.sh branch
 
 ubuntu:
-	@FILTER_NAME=ubuntu ./build-all.sh
+	@FILTER_NAME=ubuntu ./build-all.sh branch
 
 debian:
-	@FILTER_NAME=debian ./build-all.sh
+	@FILTER_NAME=debian ./build-all.sh branch
 
 fedora:
-	@FILTER_NAME=fedora ./build-all.sh
+	@FILTER_NAME=fedora ./build-all.sh branch
 
 rocky:
-	@FILTER_NAME=rocky ./build-all.sh
+	@FILTER_NAME=rocky ./build-all.sh branch
 
 suse:
-	@FILTER_NAME=suse ./build-all.sh
+	@FILTER_NAME=suse ./build-all.sh branch
 
 alpine:
-	@FILTER_NAME=alpine ./build-all.sh
+	@FILTER_NAME=alpine ./build-all.sh branch
 
 # === Arch Filters ===
 
 amd64:
-	@FILTER_ARCH=amd64 ./build-all.sh
+	@FILTER_ARCH=amd64 ./build-all.sh branch
 
 arm64:
-	@FILTER_ARCH=arm64 ./build-all.sh
+	@FILTER_ARCH=arm64 ./build-all.sh branch
 
 i386:
-	@FILTER_ARCH=386 ./build-all.sh
+	@FILTER_ARCH=386 ./build-all.sh branch
 
 ppc64le:
-	@FILTER_ARCH=ppc64le ./build-all.sh
+	@FILTER_ARCH=ppc64le ./build-all.sh branch
 
 s390x:
-	@FILTER_ARCH=s390x ./build-all.sh
+	@FILTER_ARCH=s390x ./build-all.sh branch
 
 mips64le:
-	@FILTER_ARCH=mips64le ./build-all.sh
+	@FILTER_ARCH=mips64le ./build-all.sh branch
 
 # === Combined Filters ===
 
@@ -123,11 +123,6 @@ tarball-suse:
 	@FILTER_NAME=suse ./build-all.sh tarball
 
 # === ccache Utilities ===
-	@echo ""
-	@echo "Architecture notes:"
-	@echo "  - i386/s390x/mips64le: Debian only (QEMU, very slow)"
-	@echo "  - arm64/ppc64le: QEMU on non-native hosts"
-	@echo "  - amd64: Native on x86_64 hosts"
 
 ccache-stats:
 	@echo "ccache directory: $(HOST_CCACHE_DIR)"
