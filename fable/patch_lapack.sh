@@ -22,6 +22,13 @@ patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rstevx.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rsyevx.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rsyevx_2stage.cpp
 
+#https://claude.ai/chat/f3c3ff73-215d-44ed-9dae-8e75808e06d9
+#https://chatgpt.com/c/69929fe4-b980-83a7-8fd7-0988abca4785
+patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Cgejsv.cpp
+patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Cgesvj.cpp
+patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rgejsv.cpp
+patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rgesvj.cpp
+
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Cbbcsd.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Cggev.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Cggev3.cpp
