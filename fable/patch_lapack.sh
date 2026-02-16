@@ -51,6 +51,7 @@ patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Ctgevc.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Ctpttf.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Ctrexc.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Ctrsyl.cpp
+patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Cunbdb.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rbbcsd.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rbdsvdx.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rlacon.cpp
@@ -61,6 +62,7 @@ patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rlarrb.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rlarrd.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rlarrk.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rlasy2.cpp
+patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rorbdb.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rspgvd.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rstebz.cpp
 patch -p3 < ~/mplapack/fable/3.9.1/lapack/patch-Rsyequb.cpp
