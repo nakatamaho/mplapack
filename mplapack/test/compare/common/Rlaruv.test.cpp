@@ -93,15 +93,23 @@ int main(int argc, char *argv[]) {
     }
 
     // Validate seed according to LAPACK convention
-    for (int i = 0; i < 3; ++i) {
-        if (seed[i] < 0 || seed[i] > 4095) {
-            std::fprintf(stderr, "Error: iseed%d must be in [0,4095], got %ld\n", i + 1, static_cast<long>(seed[i]));
+    const bool nondet = (seed[0] == 0 && seed[1] == 0 && seed[2] == 0 && seed[3] == 0);
+
+    if (!nondet) {
+        for (int i = 0; i < 3; ++i) {
+            if (seed[i] < 0 || seed[i] > 4095) {
+                std::fprintf(stderr, "Error: iseed%d must be in [0,4095], got %ld\n", i + 1, static_cast<long>(seed[i]));
+                return 2;
+            }
+        }
+        if ((seed[3] % 2) == 0) {
+            std::fprintf(stderr, "Error: iseed4 must be odd, got %ld\n", static_cast<long>(seed[3]));
             return 2;
         }
-    }
-    if ((seed[3] % 2) == 0) {
-        std::fprintf(stderr, "Error: iseed4 must be odd, got %ld\n", static_cast<long>(seed[3]));
-        return 2;
+        if (seed[3] < 0 || seed[3] > 4095) {
+            std::fprintf(stderr, "Error: iseed4 must be in [0,4095], got %ld\n", static_cast<long>(seed[3]));
+            return 2;
+        }
     }
 
     std::ofstream outputfile(outname);
