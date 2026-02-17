@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, INTEGER const nounit, COMPLEX *a, INTEGER const lda, COMPLEX *ap, REAL *sd, REAL *se, REAL *d1, REAL *d2, REAL *d3, REAL *d4, REAL *d5, REAL *wa1, REAL *wa2, REAL *wa3, REAL *wr, COMPLEX *u, INTEGER const ldu, COMPLEX *v, COMPLEX *vp, COMPLEX *tau, COMPLEX *z, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER const lrwork, INTEGER *iwork, INTEGER const liwork, REAL *result, INTEGER &info) {
+void Cchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER (&iseed)[4], REAL const thresh, INTEGER const nounit, COMPLEX *a, INTEGER const lda, COMPLEX *ap, REAL *sd, REAL *se, REAL *d1, REAL *d2, REAL *d3, REAL *d4, REAL *d5, REAL *wa1, REAL *wa2, REAL *wa3, REAL *wr, COMPLEX *u, INTEGER const ldu, COMPLEX *v, COMPLEX *vp, COMPLEX *tau, COMPLEX *z, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER const lrwork, INTEGER *iwork, INTEGER const liwork, REAL *result, INTEGER &info) {
     common cmn;
     common_write write(cmn);
     static INTEGER ktype[21] = {1, 2, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 8, 8, 8, 9, 9, 9, 9, 9, 10};

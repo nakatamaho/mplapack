@@ -9,7 +9,7 @@
 +#pragma GCC optimize("O0")
 +#endif
 +
- void Claror(fem::str_cref side, fem::str_cref init, INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *iseed, COMPLEX *x, INTEGER &info) {
+ void Claror(fem::str_cref side, fem::str_cref init, INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER (&iseed)[4], COMPLEX *x, INTEGER &info) {
      //
      info = 0;
 @@ -110,7 +115,7 @@

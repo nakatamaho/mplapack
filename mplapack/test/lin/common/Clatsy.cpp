@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Clatsy(fem::str_cref uplo, INTEGER const n, COMPLEX *x, INTEGER const ldx, INTEGER *iseed) {
+void Clatsy(fem::str_cref uplo, INTEGER const n, COMPLEX *x, INTEGER const ldx, INTEGER (&iseed)[4]) {
     //
     // Initialize constants
     //

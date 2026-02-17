@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Clatsp(fem::str_cref uplo, INTEGER const n, COMPLEX *x, INTEGER *iseed) {
+void Clatsp(fem::str_cref uplo, INTEGER const n, COMPLEX *x, INTEGER (&iseed)[4]) {
     //
     // Initialize constants
     //

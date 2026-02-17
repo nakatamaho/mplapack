@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-void Rlafts(fem::str_cref type, INTEGER const m, INTEGER const n, INTEGER const imat, INTEGER const ntests, REAL *result, INTEGER *iseed, REAL const thresh, INTEGER const iounit, INTEGER &ie) {
+void Rlafts(fem::str_cref type, INTEGER const m, INTEGER const n, INTEGER const imat, INTEGER const ntests, REAL *result, INTEGER (&iseed)[4], REAL const thresh, INTEGER const iounit, INTEGER &ie) {
     common cmn;
     common_write write(cmn);
     static const char *format_9999 = "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),' result ',i3,"

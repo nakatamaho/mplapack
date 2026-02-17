@@ -38,7 +38,7 @@
 
 #include <mplapack_matgen.h>
 
-REAL Rlarnd(INTEGER const idist, INTEGER *iseed) {
+REAL Rlarnd(INTEGER const idist, INTEGER (&iseed)[4]) {
     REAL return_value = 0.0;
     //
     // Generate a real random number from a uniform (0,1) distribution

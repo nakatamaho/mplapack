@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-void Cckglm(INTEGER const nn, INTEGER *nval, INTEGER *mval, INTEGER *pval, INTEGER const nmats, INTEGER *iseed, REAL const thresh, INTEGER const nmax, COMPLEX *a, COMPLEX *af, COMPLEX *b, COMPLEX *bf, COMPLEX *x, COMPLEX *work, REAL *rwork, INTEGER const nin, INTEGER const nout, INTEGER &info) {
+void Cckglm(INTEGER const nn, INTEGER *nval, INTEGER *mval, INTEGER *pval, INTEGER const nmats, INTEGER (&iseed)[4], REAL const thresh, INTEGER const nmax, COMPLEX *a, COMPLEX *af, COMPLEX *b, COMPLEX *bf, COMPLEX *x, COMPLEX *work, REAL *rwork, INTEGER const nin, INTEGER const nout, INTEGER &info) {
     common cmn;
     common_write write(cmn);
     fem::str<3> path;

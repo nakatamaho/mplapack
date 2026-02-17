@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, INTEGER const nounit, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *d, REAL *z, INTEGER const ldz, REAL *ab, REAL *bb, REAL *ap, REAL *bp, REAL *work, INTEGER const nwork, INTEGER *iwork, INTEGER const liwork, REAL *result, INTEGER &info) {
+void Rdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER (&iseed)[4], REAL const thresh, INTEGER const nounit, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *d, REAL *z, INTEGER const ldz, REAL *ab, REAL *bb, REAL *ap, REAL *bp, REAL *work, INTEGER const nwork, INTEGER *iwork, INTEGER const liwork, REAL *result, INTEGER &info) {
     common cmn;
     common_write write(cmn);
     static INTEGER ktype[21] = {1, 2, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 8, 8, 8, 9, 9, 9, 9, 9, 9};

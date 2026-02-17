@@ -38,7 +38,7 @@
 
 #include <mplapack_matgen.h>
 
-void Rlatmt(INTEGER const m, INTEGER const n, fem::str_cref dist, INTEGER *iseed, fem::str_cref sym, REAL *d, INTEGER const mode, REAL const cond, REAL const dmax, INTEGER const rank, INTEGER const kl, INTEGER const ku, fem::str_cref pack, REAL *a, INTEGER const lda, REAL *work, INTEGER &info) {
+void Rlatmt(INTEGER const m, INTEGER const n, fem::str_cref dist, INTEGER (&iseed)[4], fem::str_cref sym, REAL *d, INTEGER const mode, REAL const cond, REAL const dmax, INTEGER const rank, INTEGER const kl, INTEGER const ku, fem::str_cref pack, REAL *a, INTEGER const lda, REAL *work, INTEGER &info) {
     //
     // 1)      Decode and Test the input parameters.
     // Initialize flags & seed.

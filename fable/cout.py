@@ -274,6 +274,36 @@ def _adjust_actuals_using_signature(arg_string: str, signature, conv_info=None, 
     for part, kind in zip(parts, signature):
         s = part.lstrip()
 
+        if kind == "REF_ARRAY4":
+            # REF_ARRAY4: fixed-length numeric array reference (ISEED(4)).
+            # Never pass iseed[0]; normalize any pointer-ish spellings back to the base name.
+            if s.startswith("&"):
+                # &name -> name
+                m = re.fullmatch(r"&\s*([A-Za-z_][A-Za-z0-9_]*)\s*$", s)
+                if m:
+                    leading = part[:len(part) - len(s)]
+                    part = leading + m.group(1)
+                    new_parts.append(part)
+                    continue
+                # &name[0] -> name
+                m = re.fullmatch(r"&\s*([A-Za-z_][A-Za-z0-9_]*)\s*\[\s*0\s*\]\s*$", s)
+                if m:
+                    leading = part[:len(part) - len(s)]
+                    part = leading + m.group(1)
+                    new_parts.append(part)
+                    continue
+
+            # name[0] -> name
+            m = re.fullmatch(r"([A-Za-z_][A-Za-z0-9_]*)\s*\[\s*0\s*\]\s*$", s)
+            if m:
+                leading = part[:len(part) - len(s)]
+                part = leading + m.group(1)
+                new_parts.append(part)
+                continue
+
+            new_parts.append(part)
+            continue
+
         if kind == "REF_SCALAR":
             # REF_SCALAR: scalar reference (e.g., REAL& alpha).
 
@@ -6689,6 +6719,10 @@ def _sig_kind_requires_mutable_actual(kind: str) -> bool:
     if k == "REF_SCALAR":
         return True
 
+    # Fixed-length array passed by non-const reference (ISEED(4)).
+    if k == "REF_ARRAY4":
+        return True
+    
     # Character pointers: distinguish input vs output/inout explicitly.
     # - PTR_CHAR_IN  : const char*  (input-only) -> does NOT require mutable actual
     # - PTR_CHAR_OUT : char*        (output/inout) -> requires mutable actual
@@ -7256,6 +7290,64 @@ def convert_to_cpp_function(
 
             else:
                 # Array argument: use plain pointer (REAL*, INTEGER*, ...)
+                #
+                # Special-case: Fortran explicit-shape INTEGER ISEED(4) must keep its extent in the C++ type:
+                #     INTEGER (&iseed)[4]
+                #
+                # Some routines (e.g., lin/common/Clatsp) may fail to expose dim_tokens for ISEED;
+                # in that case, fall back to scanning the Fortran declaration text for "ISEED(4)"
+                # or "DIMENSION(4) :: ISEED". This fallback is restricted to ISEED only.
+                if str(id_tok.value).lower() == "iseed" and dt_code == "integer":
+                    is_dim4 = False
+
+                    # Primary path: use parsed dimension tokens if available.
+                    if fdecl.dim_tokens is not None and len(fdecl.dim_tokens) == 1:
+                        vals = conv_info.fproc.eval_dimensions_simple(
+                            dim_tokens=fdecl.dim_tokens, allow_power=False)
+                        if vals is not None and vals.count(None) == 0:
+                            try:
+                                is_dim4 = (int(vals[0]) == 4)
+                            except Exception:
+                                is_dim4 = False
+
+                    # Fallback path: scan original Fortran source lines for an explicit ISEED(4) declaration.
+                    if not is_dim4:
+                        try:
+                            # Collect raw Fortran text (declarations live near the top; scanning whole body is fine).
+                            lines = []
+                            for ssl in getattr(conv_info.fproc, "body_lines", []) or []:
+                                if ssl is None:
+                                    continue
+                                for sl in getattr(ssl, "source_line_cluster", []) or []:
+                                    t = getattr(sl, "text", None)
+                                    if t:
+                                        lines.append(t)
+
+                            # Only accept *declaration* lines, not element references.
+                            # Strip comments and require "integer" on the same line.
+                            decl_dim4 = False
+                            for raw in lines:
+                                s = raw.split("!")[0].strip().lower()
+                                if not s:
+                                    continue
+                                # INTEGER ISEED(4)
+                                if re.search(r"^\s*integer\b.*\biseed\s*\(\s*4\s*\)", s):
+                                    decl_dim4 = True
+                                    break
+                                # INTEGER, DIMENSION(4) :: ISEED
+                                if re.search(r"^\s*integer\b.*\bdimension\s*\(\s*4\s*\)\b.*::\s*iseed\b", s):
+                                    decl_dim4 = True
+                                    break
+                            if decl_dim4:
+                                is_dim4 = True
+
+                        except Exception:
+                            is_dim4 = False
+
+                    if is_dim4:
+                        fptr.append(f"{mplapack_type} (&)[4]")
+                        cargs.append(f"{mplapack_type} (&{arg_name})[4]")
+                        continue
                 cargs_append("%s *" % mplapack_type, arg_name)
 
                 # Track COMPLEX dummy arrays (COMPLEX* a, x, y, ...)

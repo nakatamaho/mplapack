@@ -38,7 +38,7 @@
 
 #include <mplapack_matgen.h>
 
-void Rlagsy(INTEGER const n, INTEGER const k, REAL *d, REAL *a, INTEGER const lda, INTEGER *iseed, REAL *work, INTEGER &info) {
+void Rlagsy(INTEGER const n, INTEGER const k, REAL *d, REAL *a, INTEGER const lda, INTEGER (&iseed)[4], REAL *work, INTEGER &info) {
     //
     // Test the input arguments
     //

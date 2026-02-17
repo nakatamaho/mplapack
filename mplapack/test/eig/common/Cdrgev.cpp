@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-void Cdrgev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, INTEGER const nounit, COMPLEX *a, INTEGER const lda, COMPLEX *b, COMPLEX *s, COMPLEX *t, COMPLEX *q, INTEGER const ldq, COMPLEX *z, COMPLEX *qe, INTEGER const ldqe, COMPLEX *alpha, COMPLEX *beta, COMPLEX *alpha1, COMPLEX *beta1, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL *result, INTEGER &info) {
+void Cdrgev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER (&iseed)[4], REAL const thresh, INTEGER const nounit, COMPLEX *a, INTEGER const lda, COMPLEX *b, COMPLEX *s, COMPLEX *t, COMPLEX *q, INTEGER const ldq, COMPLEX *z, COMPLEX *qe, INTEGER const ldqe, COMPLEX *alpha, COMPLEX *beta, COMPLEX *alpha1, COMPLEX *beta1, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL *result, INTEGER &info) {
     common cmn;
     common_write write(cmn);
     static INTEGER kclass[26] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3};

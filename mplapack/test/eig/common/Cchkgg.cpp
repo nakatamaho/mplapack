@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, bool const tstdif, REAL const thrshn, INTEGER const nounit, COMPLEX *a, INTEGER const lda, COMPLEX *b, COMPLEX *h, COMPLEX *t, COMPLEX *s1, COMPLEX *s2, COMPLEX *p1, COMPLEX *p2, COMPLEX *u, INTEGER const ldu, COMPLEX *v, COMPLEX *q, COMPLEX *z, COMPLEX *alpha1, COMPLEX *beta1, COMPLEX *alpha3, COMPLEX *beta3, COMPLEX *evectl, COMPLEX *evectr, COMPLEX *work, INTEGER const lwork, REAL *rwork, bool *llwork, REAL *result, INTEGER &info) {
+void Cchkgg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER (&iseed)[4], REAL const thresh, bool const tstdif, REAL const thrshn, INTEGER const nounit, COMPLEX *a, INTEGER const lda, COMPLEX *b, COMPLEX *h, COMPLEX *t, COMPLEX *s1, COMPLEX *s2, COMPLEX *p1, COMPLEX *p2, COMPLEX *u, INTEGER const ldu, COMPLEX *v, COMPLEX *q, COMPLEX *z, COMPLEX *alpha1, COMPLEX *beta1, COMPLEX *alpha3, COMPLEX *beta3, COMPLEX *evectl, COMPLEX *evectr, COMPLEX *work, INTEGER const lwork, REAL *rwork, bool *llwork, REAL *result, INTEGER &info) {
     common cmn;
     common_write write(cmn);
     static INTEGER kclass[26] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3};

@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-void Cchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, INTEGER const nounit, COMPLEX *a, INTEGER const lda, COMPLEX *h, COMPLEX *t1, COMPLEX *t2, COMPLEX *u, INTEGER const ldu, COMPLEX *z, COMPLEX *uz, COMPLEX *w1, COMPLEX *w3, COMPLEX *evectl, COMPLEX *evectr, COMPLEX *evecty, COMPLEX *evectx, COMPLEX *uu, COMPLEX *tau, COMPLEX *work, INTEGER const nwork, REAL *rwork, INTEGER *iwork, bool *select, REAL *result, INTEGER &info) {
+void Cchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER (&iseed)[4], REAL const thresh, INTEGER const nounit, COMPLEX *a, INTEGER const lda, COMPLEX *h, COMPLEX *t1, COMPLEX *t2, COMPLEX *u, INTEGER const ldu, COMPLEX *z, COMPLEX *uz, COMPLEX *w1, COMPLEX *w3, COMPLEX *evectl, COMPLEX *evectr, COMPLEX *evecty, COMPLEX *evectx, COMPLEX *uu, COMPLEX *tau, COMPLEX *work, INTEGER const nwork, REAL *rwork, INTEGER *iwork, bool *select, REAL *result, INTEGER &info) {
     common cmn;
     common_write write(cmn);
     static INTEGER ktype[21] = {1, 2, 3, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 9, 9, 9};

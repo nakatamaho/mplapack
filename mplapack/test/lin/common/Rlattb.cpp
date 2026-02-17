@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Rlattb(INTEGER const imat, fem::str_cref uplo, fem::str_cref trans, fem::str_ref diag, INTEGER *iseed, INTEGER const n, INTEGER const kd, REAL *ab, INTEGER const ldab, REAL *b, REAL *work, INTEGER &info) {
+void Rlattb(INTEGER const imat, fem::str_cref uplo, fem::str_cref trans, fem::str_ref diag, INTEGER (&iseed)[4], INTEGER const n, INTEGER const kd, REAL *ab, INTEGER const ldab, REAL *b, REAL *work, INTEGER &info) {
     //
     fem::str<3> path = "Double precision";
     path(2, 3) = "TB";

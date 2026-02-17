@@ -45,7 +45,7 @@ using fem::common;
 
 #include <mplapack_common_sslct.h>
 
-void Cget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *iseed, INTEGER const nounit, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *h, COMPLEX *ht, COMPLEX *w, COMPLEX *wt, COMPLEX *wtmp, COMPLEX *vs, INTEGER const ldvs, COMPLEX *vs1, REAL const rcdein, REAL const rcdvin, INTEGER const nslct, INTEGER *islct, INTEGER const isrt, REAL *result, COMPLEX *work, INTEGER const lwork, REAL *rwork, bool *bwork, INTEGER &info) {
+void Cget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER (&iseed)[4], INTEGER const nounit, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *h, COMPLEX *ht, COMPLEX *w, COMPLEX *wt, COMPLEX *wtmp, COMPLEX *vs, INTEGER const ldvs, COMPLEX *vs1, REAL const rcdein, REAL const rcdvin, INTEGER const nslct, INTEGER *islct, INTEGER const isrt, REAL *result, COMPLEX *work, INTEGER const lwork, REAL *rwork, bool *bwork, INTEGER &info) {
     common cmn;
     common_write write(cmn);
     const REAL zero = 0.0;

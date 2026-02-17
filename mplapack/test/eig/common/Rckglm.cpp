@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-void Rckglm(INTEGER const nn, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEGER const nmats, INTEGER *iseed, REAL const thresh, INTEGER const nmax, REAL *a, REAL *af, REAL *b, REAL *bf, REAL *x, REAL *work, REAL *rwork, INTEGER const nin, INTEGER const nout, INTEGER &info) {
+void Rckglm(INTEGER const nn, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEGER const nmats, INTEGER (&iseed)[4], REAL const thresh, INTEGER const nmax, REAL *a, REAL *af, REAL *b, REAL *bf, REAL *x, REAL *work, REAL *rwork, INTEGER const nin, INTEGER const nout, INTEGER &info) {
     common cmn;
     common_write write(cmn);
     fem::str<3> path;

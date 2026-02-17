@@ -38,7 +38,7 @@
 
 #include <mplapack_matgen.h>
 
-void Rlaror(fem::str_cref side, fem::str_cref init, INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEGER *iseed, REAL *x, INTEGER &info) {
+void Rlaror(fem::str_cref side, fem::str_cref init, INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEGER (&iseed)[4], REAL *x, INTEGER &info) {
     //
     info = 0;
     if (n == 0 || m == 0) {

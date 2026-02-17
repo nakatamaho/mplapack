@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-void Rdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, INTEGER const niunit, INTEGER const nounit, REAL *a, INTEGER const lda, REAL *h, REAL *wr, REAL *wi, REAL *wr1, REAL *wi1, REAL *vl, INTEGER const ldvl, REAL *vr, INTEGER const ldvr, REAL *lre, INTEGER const ldlre, REAL *rcondv, REAL *rcndv1, REAL *rcdvin, REAL *rconde, REAL *rcnde1, REAL *rcdein, REAL *scale, REAL *scale1, REAL *result, REAL *work, INTEGER const nwork, INTEGER *iwork, INTEGER &info) {
+void Rdrvvx(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER (&iseed)[4], REAL const thresh, INTEGER const niunit, INTEGER const nounit, REAL *a, INTEGER const lda, REAL *h, REAL *wr, REAL *wi, REAL *wr1, REAL *wi1, REAL *vl, INTEGER const ldvl, REAL *vr, INTEGER const ldvr, REAL *lre, INTEGER const ldlre, REAL *rcondv, REAL *rcndv1, REAL *rcdvin, REAL *rconde, REAL *rcnde1, REAL *rcdein, REAL *scale, REAL *scale1, REAL *result, REAL *work, INTEGER const nwork, INTEGER *iwork, INTEGER &info) {
     common cmn;
     common_read read(cmn);
     common_write write(cmn);

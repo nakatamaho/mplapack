@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-void Rckgsv(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEGER const nmats, INTEGER *iseed, REAL const thresh, INTEGER const nmax, REAL *a, REAL *af, REAL *b, REAL *bf, REAL *u, REAL *v, REAL *q, REAL *alpha, REAL *beta, REAL *r, INTEGER *iwork, REAL *work, REAL *rwork, INTEGER const nin, INTEGER const nout, INTEGER &info) {
+void Rckgsv(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEGER const nmats, INTEGER (&iseed)[4], REAL const thresh, INTEGER const nmax, REAL *a, REAL *af, REAL *b, REAL *bf, REAL *u, REAL *v, REAL *q, REAL *alpha, REAL *beta, REAL *r, INTEGER *iwork, REAL *work, REAL *rwork, INTEGER const nin, INTEGER const nout, INTEGER &info) {
     common cmn;
     common_write write(cmn);
     fem::str<3> path;

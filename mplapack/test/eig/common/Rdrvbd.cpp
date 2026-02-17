@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, REAL *a, INTEGER const lda, REAL *u, INTEGER const ldu, REAL *vt, INTEGER const ldvt, REAL *asav, REAL *usav, REAL *vtsav, REAL *s, REAL *ssav, REAL *e, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const nout, INTEGER &info) {
+void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER (&iseed)[4], REAL const thresh, REAL *a, INTEGER const lda, REAL *u, INTEGER const ldu, REAL *vt, INTEGER const ldvt, REAL *asav, REAL *usav, REAL *vtsav, REAL *s, REAL *ssav, REAL *e, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const nout, INTEGER &info) {
     common cmn;
     common_write write(cmn);
     static fem::str<1> cjob[4] = {"N", "O", "S", "A"};

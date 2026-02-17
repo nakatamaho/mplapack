@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-void Clatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER const nz2, bool const rsign, REAL const amagn, REAL const rcond, REAL const triang, INTEGER const idist, INTEGER *iseed, COMPLEX *a, INTEGER const lda) {
+void Clatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER const nz2, bool const rsign, REAL const amagn, REAL const rcond, REAL const triang, INTEGER const idist, INTEGER (&iseed)[4], COMPLEX *a, INTEGER const lda) {
     const COMPLEX czero = COMPLEX(0.0, 0.0);
     INTEGER kbeg = 0;
     INTEGER kend = 0;

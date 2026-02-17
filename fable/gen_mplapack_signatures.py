@@ -107,6 +107,7 @@ def classify_arg(arg: str) -> str:
     Classify a single argument into one of:
       - "VAL":        value (integer/real/logical by value)
       - "REF_SCALAR": reference to scalar (REAL&, COMPLEX&, INTEGER&)
+      - "REF_ARRAY4": fixed-length numeric array reference (ISEED(4))
       - "PTR_CHAR_IN":  pointer to const character data (const char*, char const*)
       - "PTR_CHAR_OUT": pointer to mutable character data (char*)
       - "PTR_NUMERIC":pointer to numeric data (REAL*, COMPLEX*, INTEGER*)
@@ -119,6 +120,19 @@ def classify_arg(arg: str) -> str:
     # Function pointer: we never try to add '&' to these.
     if "(*" in arg:
         return "PTR_OTHER"
+
+    # Fixed-length numeric array reference (ISEED(4)):
+    #   INTEGER (&iseed)[4] / mplapackint (&iseed)[4]
+    # Only classify this specific argument to avoid affecting other arrays.
+    m = re.search(r"\(\s*&\s*([A-Za-z_][A-Za-z0-9_]*)\s*\)\s*\[\s*(\d+)\s*\]", arg)
+    if m:
+        name = m.group(1)
+        try:
+            n = int(m.group(2))
+        except Exception:
+            n = None
+        if name.lower() == "iseed" and n == 4:
+            return "REF_ARRAY4"
 
     # Pointer types (check before reference since we look for '*')
     if "*" in arg:

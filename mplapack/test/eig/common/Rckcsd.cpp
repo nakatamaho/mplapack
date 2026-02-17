@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-void Rlacsg(INTEGER const m, INTEGER const p, INTEGER const q, REAL *theta, INTEGER *iseed, REAL *x, INTEGER const ldx, REAL *work) {
+void Rlacsg(INTEGER const m, INTEGER const p, INTEGER const q, REAL *theta, INTEGER (&iseed)[4], REAL *x, INTEGER const ldx, REAL *work) {
     //
     INTEGER r = min(p, m - p, q, m - q);
     //
@@ -84,7 +84,7 @@ void Rlacsg(INTEGER const m, INTEGER const p, INTEGER const q, REAL *theta, INTE
     //
 }
 
-void Rckcsd(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *qval, INTEGER const nmats, INTEGER *iseed, REAL const thresh, INTEGER const mmax, REAL *x, REAL *xf, REAL *u1, REAL *u2, REAL *v1t, REAL *v2t, REAL *theta, INTEGER *iwork, REAL *work, REAL *rwork, INTEGER const nin, INTEGER const nout, INTEGER &info) {
+void Rckcsd(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *qval, INTEGER const nmats, INTEGER (&iseed)[4], REAL const thresh, INTEGER const mmax, REAL *x, REAL *xf, REAL *u1, REAL *u2, REAL *v1t, REAL *v2t, REAL *theta, INTEGER *iwork, REAL *work, REAL *rwork, INTEGER const nin, INTEGER const nout, INTEGER &info) {
     common cmn;
     common_write write(cmn);
     fem::str<3> path;

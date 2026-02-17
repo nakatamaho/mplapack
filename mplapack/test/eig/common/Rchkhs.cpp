@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, INTEGER const nounit, REAL *a, INTEGER const lda, REAL *h, REAL *t1, REAL *t2, REAL *u, INTEGER const ldu, REAL *z, REAL *uz, REAL *wr1, REAL *wi1, REAL *wr2, REAL *wi2, REAL *wr3, REAL *wi3, REAL *evectl, REAL *evectr, REAL *evecty, REAL *evectx, REAL *uu, REAL *tau, REAL *work, INTEGER const nwork, INTEGER *iwork, bool *select, REAL *result, INTEGER &info) {
+void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER (&iseed)[4], REAL const thresh, INTEGER const nounit, REAL *a, INTEGER const lda, REAL *h, REAL *t1, REAL *t2, REAL *u, INTEGER const ldu, REAL *z, REAL *uz, REAL *wr1, REAL *wi1, REAL *wr2, REAL *wi2, REAL *wr3, REAL *wi3, REAL *evectl, REAL *evectr, REAL *evecty, REAL *evectx, REAL *uu, REAL *tau, REAL *work, INTEGER const nwork, INTEGER *iwork, bool *select, REAL *result, INTEGER &info) {
     common cmn;
     common_write write(cmn);
     static INTEGER ktype[21] = {1, 2, 3, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 9, 9, 9};

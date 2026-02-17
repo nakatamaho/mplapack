@@ -38,7 +38,7 @@
 
 #include <mplapack_matgen.h>
 
-void Rlagge(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, REAL *d, REAL *a, INTEGER const lda, INTEGER *iseed, REAL *work, INTEGER &info) {
+void Rlagge(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, REAL *d, REAL *a, INTEGER const lda, INTEGER (&iseed)[4], REAL *work, INTEGER &info) {
     //
     // Test the input arguments
     //

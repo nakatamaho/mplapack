@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-void Clacsg(INTEGER const m, INTEGER const p, INTEGER const q, REAL *theta, INTEGER *iseed, COMPLEX *x, INTEGER const ldx, COMPLEX *work) {
+void Clacsg(INTEGER const m, INTEGER const p, INTEGER const q, REAL *theta, INTEGER (&iseed)[4], COMPLEX *x, INTEGER const ldx, COMPLEX *work) {
     //
     INTEGER r = min(p, m - p, q, m - q);
     //
@@ -84,7 +84,7 @@ void Clacsg(INTEGER const m, INTEGER const p, INTEGER const q, REAL *theta, INTE
     //
 }
 
-void Cckcsd(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *qval, INTEGER const nmats, INTEGER *iseed, REAL const thresh, INTEGER const mmax, COMPLEX *x, COMPLEX *xf, COMPLEX *u1, COMPLEX *u2, COMPLEX *v1t, COMPLEX *v2t, REAL *theta, INTEGER *iwork, COMPLEX *work, REAL *rwork, INTEGER const nin, INTEGER const nout, INTEGER &info) {
+void Cckcsd(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *qval, INTEGER const nmats, INTEGER (&iseed)[4], REAL const thresh, INTEGER const mmax, COMPLEX *x, COMPLEX *xf, COMPLEX *u1, COMPLEX *u2, COMPLEX *v1t, COMPLEX *v2t, REAL *theta, INTEGER *iwork, COMPLEX *work, REAL *rwork, INTEGER const nin, INTEGER const nout, INTEGER &info) {
     common cmn;
     common_write write(cmn);
     fem::str<3> path;

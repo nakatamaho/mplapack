@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Cqrt13(INTEGER const scale, INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL &norma, INTEGER *iseed) {
+void Cqrt13(INTEGER const scale, INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL &norma, INTEGER (&iseed)[4]) {
     //
     if (m <= 0 || n <= 0) {
         return;

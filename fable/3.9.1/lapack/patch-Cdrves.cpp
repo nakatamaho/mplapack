@@ -6,6 +6,6 @@
  
 +#include <mplapack_common_sslct.h>
 +
- void Cdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, INTEGER const nounit, COMPLEX *a, INTEGER const lda, COMPLEX *h, COMPLEX *ht, COMPLEX *w, COMPLEX *wt, COMPLEX *vs, INTEGER const ldvs, REAL *result, COMPLEX *work, INTEGER const nwork, REAL *rwork, INTEGER *iwork, bool *bwork, INTEGER &info) {
+ void Cdrves(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER (&iseed)[4], REAL const thresh, INTEGER const nounit, COMPLEX *a, INTEGER const lda, COMPLEX *h, COMPLEX *ht, COMPLEX *w, COMPLEX *wt, COMPLEX *vs, INTEGER const ldvs, REAL *result, COMPLEX *work, INTEGER const nwork, REAL *rwork, INTEGER *iwork, bool *bwork, INTEGER &info) {
      common cmn;
      common_write write(cmn);

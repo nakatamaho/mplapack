@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Clattp(INTEGER const imat, fem::str_cref uplo, fem::str_cref trans, fem::str_ref diag, INTEGER *iseed, INTEGER const n, COMPLEX *ap, COMPLEX *b, COMPLEX *work, REAL *rwork, INTEGER &info) {
+void Clattp(INTEGER const imat, fem::str_cref uplo, fem::str_cref trans, fem::str_ref diag, INTEGER (&iseed)[4], INTEGER const n, COMPLEX *ap, COMPLEX *b, COMPLEX *work, REAL *rwork, INTEGER &info) {
     //
     fem::str<3> path = "Zomplex precision";
     path(2, 3) = "TP";

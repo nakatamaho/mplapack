@@ -46,7 +46,7 @@ extern gmp_randstate_t ___random_mplapack_gmp_state;
 extern gmp_randclass ___random_mplapack_gmp;
 #endif
 
-REAL Rlaran(INTEGER *iseed) {
+REAL Rlaran(INTEGER (&iseed)[4]) {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
     mpreal x = urandom(___random_mplapack_mpfr_state);
 #endif

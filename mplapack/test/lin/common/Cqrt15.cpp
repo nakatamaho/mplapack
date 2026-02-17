@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Cqrt15(INTEGER const scale, INTEGER const rksel, INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, REAL *s, INTEGER &rank, REAL &norma, REAL &normb, INTEGER *iseed, COMPLEX *work, INTEGER const lwork) {
+void Cqrt15(INTEGER const scale, INTEGER const rksel, INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, REAL *s, INTEGER &rank, REAL &norma, REAL &normb, INTEGER (&iseed)[4], COMPLEX *work, INTEGER const lwork) {
     INTEGER mn = 0;
     REAL smlnum = 0.0;
     const REAL one = 1.0;

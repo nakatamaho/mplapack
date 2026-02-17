@@ -39,7 +39,7 @@
 #include <mplapack_matgen.h>
 
 COMPLEX
-Clarnd(INTEGER const idist, INTEGER *iseed) {
+Clarnd(INTEGER const idist, INTEGER (&iseed)[4]) {
     COMPLEX return_value = COMPLEX(0.0, 0.0);
     //
     // Generate a pair of real random numbers from a uniform (0,1)

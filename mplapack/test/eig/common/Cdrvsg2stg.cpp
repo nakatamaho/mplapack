@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, INTEGER const nounit, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, REAL *d, REAL *d2, COMPLEX *z, INTEGER const ldz, COMPLEX *ab, COMPLEX *bb, COMPLEX *ap, COMPLEX *bp, COMPLEX *work, INTEGER const nwork, REAL *rwork, INTEGER const lrwork, INTEGER *iwork, INTEGER const liwork, REAL *result, INTEGER &info) {
+void Cdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER (&iseed)[4], REAL const thresh, INTEGER const nounit, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, REAL *d, REAL *d2, COMPLEX *z, INTEGER const ldz, COMPLEX *ab, COMPLEX *bb, COMPLEX *ap, COMPLEX *bp, COMPLEX *work, INTEGER const nwork, REAL *rwork, INTEGER const lrwork, INTEGER *iwork, INTEGER const liwork, REAL *result, INTEGER &info) {
     common cmn;
     common_write write(cmn);
     static INTEGER ktype[21] = {1, 2, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 8, 8, 8, 9, 9, 9, 9, 9, 9};
