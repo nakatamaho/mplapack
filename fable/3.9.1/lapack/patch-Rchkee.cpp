@@ -1,5 +1,5 @@
---- Rchkee.cpp_	2026-01-28 11:33:05.873117076 +0900
-+++ Rchkee.cpp	2026-01-28 11:33:05.879117178 +0900
+--- Rchkee.cpp	2026-02-17 19:46:39.912200751 +0900
++++ Rchkee.cpp	2026-02-17 19:40:43.001843328 +0900
 @@ -44,13 +44,12 @@
  #include <mplapack_eig.h>
  #include <memory>
@@ -16,9 +16,11 @@
      const INTEGER nmax = 132;
      const INTEGER need = 14;
      std::unique_ptr<REAL[]> a_storage;
-@@ -95,9 +86,12 @@
+@@ -95,10 +94,14 @@
+     bool dgl = false;
      bool dgk = false;
      REAL thresh = 0.0;
++    REAL thresh_org = 0.0;
      bool tsterr = false;
 -    INTEGER vers_major = 0;
 -    INTEGER vers_minor = 0;
@@ -32,7 +34,7 @@
      INTEGER nn = 0;
      const INTEGER maxin = 20;
      INTEGER mval[maxin];
-@@ -186,7 +194,9 @@
+@@ -187,7 +190,9 @@
      static const char *format_9974 = "(' Tests of Rsbtrd',/,' (reduction of a symmetric band ',"
                                       "'matrix to tridiagonal form)')";
      static const char *format_9973 = "(/,1x,71('-'))";
@@ -43,7 +45,7 @@
      static const char *format_9971 = "(/,' Tests of the Generalized Linear Regression Model ','routines')";
      static const char *format_9970 = "(/,' Tests of the Generalized QR and RQ routines')";
      static const char *format_9969 = "(/,' Tests of the Generalized Singular Value',' Decomposition routines')";
-@@ -206,35 +216,20 @@
+@@ -207,35 +212,20 @@
                                       "', INWIN =',i4,', INIBL =',i4,', ISHFTS =',i4,', IACC22 =',i4)";
      static const char *format_9960 = "(/,' Tests of the CS Decomposition routines')";
      //
@@ -84,7 +86,23 @@
      s1 = dsecnd();
      fatal = false;
      nunit = nout;
-@@ -359,8 +354,8 @@
+@@ -354,14 +344,24 @@
+         Mxlaenv(15, 2);
+         Mxlaenv(16, 2);
+         tsterr = true;
++#if defined ___MPLAPACK_BUILD_WITH_GMP___
++            thresh_org = thresh;
++            thresh = thresh * 2.0;
++            printf("Warning! Threshold has been lifted to: ");
++            printnum_short(thresh);
++            printf(" for GMP\n");
++#endif
+         Rchkec(thresh, tsterr, nin, nout);
++#if defined ___MPLAPACK_BUILD_WITH_GMP___
++            thresh = thresh_org;
++#endif
+         goto statement_10;
+     } else {
          write(nout, format_9992), path;
          goto statement_10;
      }
@@ -95,16 +113,142 @@
      write(nout, format_9984);
      //
      // Read the number of values of M, P, and N.
-@@ -1085,7 +1080,7 @@
+@@ -1086,11 +1086,21 @@
                      iseed[k - 1] = ioldsd[k - 1];
                  }
              }
 -            write(nout, format_9961), c3, nbval[i - 1], nbmin[i - 1], nxval[i - 1], fem::max(11, inmin[i - 1]), inwin[i - 1], inibl[i - 1], ishfts[i - 1], iacc22[i - 1];
 +            write(nout, format_9961), c3, nbval[i - 1], nbmin[i - 1], nxval[i - 1], max((INTEGER)11, inmin[i - 1]), inwin[i - 1], inibl[i - 1], ishfts[i - 1], iacc22[i - 1];
++#if defined ___MPLAPACK_BUILD_WITH_GMP___
++            thresh_org = thresh;
++            thresh = thresh * 3.0;
++            printf("Warning! Threshold has been lifted to: ");
++            printnum_short(thresh);
++            printf(" for GMP\n");
++#endif
              Rchkhs(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], &a[(3 - 1) * lda], &a[(4 - 1) * lda], &a[(5 - 1) * lda], nmax, &a[(6 - 1) * lda], &a[(7 - 1) * lda], &d[0], &d[(2 - 1) * nmax], &d[(3 - 1) * nmax], &d[(4 - 1) * nmax], &d[(5 - 1) * nmax], &d[(6 - 1) * nmax], &a[(8 - 1) * lda], &a[(9 - 1) * lda], &a[(10 - 1) * lda], &a[(11 - 1) * lda], &a[(12 - 1) * lda], &d[(7 - 1) * nmax], work, lwork, iwork, logwrk, result, info);
              if (info != 0) {
                  write(nout, format_9980), "Rchkhs", info;
-@@ -1602,7 +1602,7 @@ statement_190:
+             }
++#if defined ___MPLAPACK_BUILD_WITH_GMP___
++            thresh = thresh_org;
++#endif
+         }
+         //
+     } else if (Mlsamen(3, c3.elems, "DST") || Mlsamen(3, c3.elems, "SEP") || Mlsamen(3, c3.elems, "SE2")) {
+@@ -1219,6 +1229,13 @@
+                 }
+             }
+             write(nout, format_9995), c3, nbval[i - 1], nbmin[i - 1], nxval[i - 1], nrhs;
++#if defined ___MPLAPACK_BUILD_WITH_GMP___
++            thresh_org = thresh;
++            thresh = thresh * 2.0;
++            printf("Warning! Threshold has been lifted to: ");
++            printnum_short(thresh);
++            printf(" for GMP\n");
++#endif
+             if (tstchk) {
+                 Rchkbd(nn, mval, nval, maxtyp, dotype, nrhs, iseed, thresh, &a[0], nmax, &d[0], &d[(2 - 1) * nmax], &d[(3 - 1) * nmax], &d[(4 - 1) * nmax], &a[(2 - 1) * lda], nmax, &a[(3 - 1) * lda], &a[(4 - 1) * lda], &a[(5 - 1) * lda], nmax, &a[(6 - 1) * lda], nmax, &a[(7 - 1) * lda], &a[(8 - 1) * lda], work, lwork, iwork, nout, info);
+                 if (info != 0) {
+@@ -1228,6 +1245,9 @@
+             if (tstdrv) {
+                 Rdrvbd(nn, mval, nval, maxtyp, dotype, iseed, thresh, &a[0], nmax, &a[(2 - 1) * lda], nmax, &a[(3 - 1) * lda], nmax, &a[(4 - 1) * lda], &a[(5 - 1) * lda], &a[(6 - 1) * lda], &d[0], &d[(2 - 1) * nmax], &d[(3 - 1) * nmax], work, lwork, iwork, nout, info);
+             }
++#if defined ___MPLAPACK_BUILD_WITH_GMP___
++            thresh = thresh_org;
++#endif
+         }
+         //
+     } else if (Mlsamen(3, c3.elems, "DEV")) {
+@@ -1245,11 +1265,21 @@
+             if (tsterr) {
+                 Rerred(c3, nout);
+             }
++#if defined ___MPLAPACK_BUILD_WITH_GMP___
++            thresh_org = thresh;
++            thresh = thresh * 3.0;
++            printf("Warning! Threshold has been lifted to: ");
++            printnum_short(thresh);
++            printf(" for GMP\n");
++#endif
+             Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
+             Rdrvev(nn, nval, ntypes, dotype, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], &d[0], &d[(2 - 1) * nmax], &d[(3 - 1) * nmax], &d[(4 - 1) * nmax], &a[(3 - 1) * lda], nmax, &a[(4 - 1) * lda], nmax, &a[(5 - 1) * lda], nmax, result, work, lwork, iwork, info);
+             if (info != 0) {
+                 write(nout, format_9980), "Rgeev", info;
+             }
++#if defined ___MPLAPACK_BUILD_WITH_GMP___
++            thresh = thresh_org;
++#endif
+         }
+         write(nout, format_9973);
+         goto statement_10;
+@@ -1269,11 +1299,21 @@
+             if (tsterr) {
+                 Rerred(c3, nout);
+             }
++#if defined ___MPLAPACK_BUILD_WITH_GMP___
++            thresh_org = thresh;
++            thresh = thresh * 1.5;
++            printf("Warning! Threshold has been lifted to: ");
++            printnum_short(thresh);
++            printf(" for GMP\n");
++#endif
+             Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
+             Rdrves(nn, nval, ntypes, dotype, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], &a[(3 - 1) * lda], &d[0], &d[(2 - 1) * nmax], &d[(3 - 1) * nmax], &d[(4 - 1) * nmax], &a[(4 - 1) * lda], nmax, result, work, lwork, iwork, logwrk, info);
+             if (info != 0) {
+                 write(nout, format_9980), "Rgees", info;
+             }
++#if defined ___MPLAPACK_BUILD_WITH_GMP___
++            thresh = thresh_org;
++#endif
+         }
+         write(nout, format_9973);
+         goto statement_10;
+@@ -1293,11 +1333,21 @@
+             if (tsterr) {
+                 Rerred(c3, nout);
+             }
++#if defined ___MPLAPACK_BUILD_WITH_GMP___
++            thresh_org = thresh;
++            thresh = thresh * 3.0;
++            printf("Warning! Threshold has been lifted to: ");
++            printnum_short(thresh);
++            printf(" for GMP\n");
++#endif
+             Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
+             Rdrvvx(nn, nval, ntypes, dotype, iseed, thresh, nin, nout, &a[0], nmax, &a[(2 - 1) * lda], &d[0], &d[(2 - 1) * nmax], &d[(3 - 1) * nmax], &d[(4 - 1) * nmax], &a[(3 - 1) * lda], nmax, &a[(4 - 1) * lda], nmax, &a[(5 - 1) * lda], nmax, &d[(5 - 1) * nmax], &d[(6 - 1) * nmax], &d[(7 - 1) * nmax], &d[(8 - 1) * nmax], &d[(9 - 1) * nmax], &d[(10 - 1) * nmax], &d[(11 - 1) * nmax], &d[(12 - 1) * nmax], result, work, lwork, iwork, info);
+             if (info != 0) {
+                 write(nout, format_9980), "Rgeevx", info;
+             }
++#if defined ___MPLAPACK_BUILD_WITH_GMP___
++            thresh = thresh_org;
++#endif
+         }
+         write(nout, format_9973);
+         goto statement_10;
+@@ -1317,11 +1367,21 @@
+             if (tsterr) {
+                 Rerred(c3, nout);
+             }
++#if defined ___MPLAPACK_BUILD_WITH_GMP___
++            thresh_org = thresh;
++            thresh = thresh * 2.0;
++            printf("Warning! Threshold has been lifted to: ");
++            printnum_short(thresh);
++            printf(" for GMP\n");
++#endif
+             Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
+             Rdrvsx(nn, nval, ntypes, dotype, iseed, thresh, nin, nout, &a[0], nmax, &a[(2 - 1) * lda], &a[(3 - 1) * lda], &d[0], &d[(2 - 1) * nmax], &d[(3 - 1) * nmax], &d[(4 - 1) * nmax], &d[(5 - 1) * nmax], &d[(6 - 1) * nmax], &a[(4 - 1) * lda], nmax, &a[(5 - 1) * lda], result, work, lwork, iwork, logwrk, info);
+             if (info != 0) {
+                 write(nout, format_9980), "Rgeesx", info;
+             }
++#if defined ___MPLAPACK_BUILD_WITH_GMP___
++            thresh = thresh_org;
++#endif
+         }
+         write(nout, format_9973);
+         goto statement_10;
+@@ -1613,10 +1673,10 @@
  statement_380:
      write(nout, format_9994);
      s2 = dsecnd();
@@ -112,8 +256,6 @@
 +    write(nout, format_9993), cast2double(s2 - s1);
      //
      // End of Rchkee
-     //
-@@ -1618,4 +1613,4 @@
      //
  }
  

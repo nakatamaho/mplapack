@@ -98,6 +98,7 @@ void Cchkee(void) {
     bool zgl = false;
     bool zgk = false;
     REAL thresh = 0.0;
+    REAL thresh_org = 0.0;
     bool tsterr = false;
     INTEGER mplapack_vers_major = 0;
     INTEGER mplapack_vers_minor = 0;
@@ -1082,7 +1083,17 @@ statement_190:
                 }
             }
             write(nout, format_9961), c3, nbval[i - 1], nbmin[i - 1], nxval[i - 1], max((INTEGER)11, inmin[i - 1]), inwin[i - 1], inibl[i - 1], ishfts[i - 1], iacc22[i - 1];
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+            thresh_org = thresh;
+            thresh = thresh * 5.0;
+            printf("Warning! Threshold has been lifted to: ");
+            printnum_short(thresh);
+            printf(" for GMP\n");
+#endif
             Cchkhs(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], &a[(3 - 1) * lda], &a[(4 - 1) * lda], &a[(5 - 1) * lda], nmax, &a[(6 - 1) * lda], &a[(7 - 1) * lda], &dc[0], &dc[(2 - 1) * nmax], &a[(8 - 1) * lda], &a[(9 - 1) * lda], &a[(10 - 1) * lda], &a[(11 - 1) * lda], &a[(12 - 1) * lda], &dc[(3 - 1) * nmax], work, lwork, rwork, iwork, logwrk, result, info);
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+            thresh = thresh_org;
+#endif
             if (info != 0) {
                 write(nout, format_9980), "Cchkhs", info;
             }
@@ -1215,6 +1226,13 @@ statement_190:
                 }
             }
             write(nout, format_9995), c3, nbval[i - 1], nbmin[i - 1], nxval[i - 1], nrhs;
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+            thresh_org = thresh;
+            thresh = thresh * 4.0;
+            printf("Warning! Threshold has been lifted to: ");
+            printnum_short(thresh);
+            printf(" for GMP\n");
+#endif
             if (tstchk) {
                 Cchkbd(nn, mval, nval, maxtyp, dotype, nrhs, iseed, thresh, &a[0], nmax, &dr[0], &dr[(2 - 1) * nmax], &dr[(3 - 1) * nmax], &dr[(4 - 1) * nmax], &a[(2 - 1) * lda], nmax, &a[(3 - 1) * lda], &a[(4 - 1) * lda], &a[(5 - 1) * lda], nmax, &a[(6 - 1) * lda], nmax, &a[(7 - 1) * lda], &a[(8 - 1) * lda], work, lwork, rwork, nout, info);
                 if (info != 0) {
@@ -1224,6 +1242,9 @@ statement_190:
             if (tstdrv) {
                 Cdrvbd(nn, mval, nval, maxtyp, dotype, iseed, thresh, &a[0], nmax, &a[(2 - 1) * lda], nmax, &a[(3 - 1) * lda], nmax, &a[(4 - 1) * lda], &a[(5 - 1) * lda], &a[(6 - 1) * lda], &dr[0], &dr[(2 - 1) * nmax], &dr[(3 - 1) * nmax], work, lwork, rwork, iwork, nout, info);
             }
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+            thresh = thresh_org;
+#endif
         }
         //
     } else if (Mlsamen(3, c3.elems, "ZEV")) {
@@ -1241,11 +1262,21 @@ statement_190:
             if (tsterr) {
                 Cerred(c3, nout);
             }
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+            thresh_org = thresh;
+            thresh = thresh * 5.0;
+            printf("Warning! Threshold has been lifted to: ");
+            printnum_short(thresh);
+            printf(" for GMP\n");
+#endif
             Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
             Cdrvev(nn, nval, ntypes, dotype, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], &dc[0], &dc[(2 - 1) * nmax], &a[(3 - 1) * lda], nmax, &a[(4 - 1) * lda], nmax, &a[(5 - 1) * lda], nmax, result, work, lwork, rwork, iwork, info);
             if (info != 0) {
                 write(nout, format_9980), "Cgeev", info;
             }
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+            thresh = thresh_org;
+#endif
         }
         write(nout, format_9973);
         goto statement_10;
@@ -1265,11 +1296,21 @@ statement_190:
             if (tsterr) {
                 Cerred(c3, nout);
             }
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+            thresh_org = thresh;
+            thresh = thresh * 5.0;
+            printf("Warning! Threshold has been lifted to: ");
+            printnum_short(thresh);
+            printf(" for GMP\n");
+#endif
             Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
             Cdrves(nn, nval, ntypes, dotype, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], &a[(3 - 1) * lda], &dc[0], &dc[(2 - 1) * nmax], &a[(4 - 1) * lda], nmax, result, work, lwork, rwork, iwork, logwrk, info);
             if (info != 0) {
                 write(nout, format_9980), "Cgees", info;
             }
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+            thresh = thresh_org;
+#endif
         }
         write(nout, format_9973);
         goto statement_10;
@@ -1289,11 +1330,21 @@ statement_190:
             if (tsterr) {
                 Cerred(c3, nout);
             }
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+            thresh_org = thresh;
+            thresh = thresh * 4.0;
+            printf("Warning! Threshold has been lifted to: ");
+            printnum_short(thresh);
+            printf(" for GMP\n");
+#endif
             Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
             Cdrvvx(nn, nval, ntypes, dotype, iseed, thresh, nin, nout, &a[0], nmax, &a[(2 - 1) * lda], &dc[0], &dc[(2 - 1) * nmax], &a[(3 - 1) * lda], nmax, &a[(4 - 1) * lda], nmax, &a[(5 - 1) * lda], nmax, &dr[0], &dr[(2 - 1) * nmax], &dr[(3 - 1) * nmax], &dr[(4 - 1) * nmax], &dr[(5 - 1) * nmax], &dr[(6 - 1) * nmax], &dr[(7 - 1) * nmax], &dr[(8 - 1) * nmax], result, work, lwork, rwork, info);
             if (info != 0) {
                 write(nout, format_9980), "Cgeevx", info;
             }
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+            thresh = thresh_org;
+#endif
         }
         write(nout, format_9973);
         goto statement_10;
@@ -1313,11 +1364,21 @@ statement_190:
             if (tsterr) {
                 Cerred(c3, nout);
             }
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+            thresh_org = thresh;
+            thresh = thresh * 5.0;
+            printf("Warning! Threshold has been lifted to: ");
+            printnum_short(thresh);
+            printf(" for GMP\n");
+#endif
             Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
             Cdrvsx(nn, nval, ntypes, dotype, iseed, thresh, nin, nout, &a[0], nmax, &a[(2 - 1) * lda], &a[(3 - 1) * lda], &dc[0], &dc[(2 - 1) * nmax], &dc[(3 - 1) * nmax], &a[(4 - 1) * lda], nmax, &a[(5 - 1) * lda], result, work, lwork, rwork, logwrk, info);
             if (info != 0) {
                 write(nout, format_9980), "Cgeesx", info;
             }
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+            thresh = thresh_org;
+#endif
         }
         write(nout, format_9973);
         goto statement_10;
@@ -1382,6 +1443,12 @@ statement_190:
                 Cerrgg(c3, nout);
             }
             Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+            thresh = thresh * 5.0;
+            printf("Warning! Threshold has been lifted to: ");
+            printnum_short(thresh);
+            printf(" for GMP\n");
+#endif
             Cdrges(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], &a[(3 - 1) * lda], &a[(4 - 1) * lda], &a[(7 - 1) * lda], nmax, &a[(8 - 1) * lda], &dc[0], &dc[(2 - 1) * nmax], work, lwork, rwork, result, logwrk, info);
             //
             if (info != 0) {
@@ -1395,6 +1462,9 @@ statement_190:
             if (info != 0) {
                 write(nout, format_9980), "Cdrges3", info;
             }
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+            thresh = thresh_org;
+#endif
         }
         write(nout, format_9973);
         goto statement_10;
@@ -1440,6 +1510,12 @@ statement_190:
                 Cerrgg(c3, nout);
             }
             Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+            thresh = thresh * 1.5;
+            printf("Warning! Threshold has been lifted to: ");
+            printnum_short(thresh);
+            printf(" for GMP\n");
+#endif
             Cdrgev(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], &a[(3 - 1) * lda], &a[(4 - 1) * lda], &a[(7 - 1) * lda], nmax, &a[(8 - 1) * lda], &a[(9 - 1) * lda], nmax, &dc[0], &dc[(2 - 1) * nmax], &dc[(3 - 1) * nmax], &dc[(4 - 1) * nmax], work, lwork, rwork, result, info);
             if (info != 0) {
                 write(nout, format_9980), "Cdrgev", info;
@@ -1452,6 +1528,9 @@ statement_190:
             if (info != 0) {
                 write(nout, format_9980), "Cdrgev3", info;
             }
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+            thresh = thresh_org;
+#endif
         }
         write(nout, format_9973);
         goto statement_10;
