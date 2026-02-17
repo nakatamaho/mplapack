@@ -48,6 +48,17 @@
 
 #include <stdio.h>
 
+#pragma STDC FP_CONTRACT OFF
+#pragma STDC FENV_ACCESS ON
+
+#if defined(__clang__)
+#pragma clang fp contract(off)
+#elif defined(__GNUC__) && !defined(__clang__)
+#pragma GCC push_options
+#pragma GCC optimize("O0")
+#pragma GCC optimize("no-tree-vectorize")
+#endif
+
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
 
 REAL RlamchE_mpfr(void);
@@ -1171,3 +1182,7 @@ mplapack_binary128_t Rlamch_binary128(const char *cmach) {
 #endif
 
 REAL Rlamc3(REAL a, REAL b) { return a + b; }
+
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC pop_options
+#endif
