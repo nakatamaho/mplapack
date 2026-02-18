@@ -39,6 +39,7 @@
 #include <cerrno>
 #include <climits>
 #include <limits>
+#include <cstring>
 
 #define MAX_N 128
 #define outname "Rlaruv.txt"
@@ -130,6 +131,10 @@ int main(int argc, char *argv[]) {
         for (int i = 0; i < len; ++i) {
             char buf[4096];
             sprintnum(buf, x[i]);
+            // Trim a leading '+' to keep output stable and minimal.
+            if (buf[0] == '+') {
+                std::memmove(buf, buf + 1, std::strlen(buf));
+            }
             outputfile << buf << "\n";
         }
     }

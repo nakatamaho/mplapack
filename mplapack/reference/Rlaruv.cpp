@@ -100,6 +100,38 @@ inline void advance_iseed(INTEGER *iseed, INTEGER n) {
     iseed[2] = static_cast<INTEGER>((next >> 24) & 0xFFF);
     iseed[3] = static_cast<INTEGER>(((next >> 36) & 0xFFF) | 1); // ensure odd
 }
+
+// Deterministic real generation from mt19937_64 without std::uniform_real_distribution.
+// Build x in [0,1) as a fixed-point fraction constructed from raw RNG bits.
+// This avoids implementation-defined rounding differences across libstdc++/libc++ and libm.
+template <typename T> inline T fixed_point_from_u32x4(std::mt19937_64 &mt) {
+    // 128-bit fraction: (u0 + u1*2^-32 + u2*2^-64 + u3*2^-96) * 2^-32
+    // Equivalent: sum_{i=1..4} u_i * 2^(-32*i)
+    uint64_t a = mt();
+    uint64_t b = mt();
+    uint32_t u0 = static_cast<uint32_t>(a & 0xFFFFFFFFu);
+    uint32_t u1 = static_cast<uint32_t>((a >> 32) & 0xFFFFFFFFu);
+    uint32_t u2 = static_cast<uint32_t>(b & 0xFFFFFFFFu);
+    uint32_t u3 = static_cast<uint32_t>((b >> 32) & 0xFFFFFFFFu);
+
+    const T s32 = T(0x1p-32); // exact power of two
+    T x = static_cast<T>(u0) * s32;
+    x += static_cast<T>(u1) * (s32 * s32);
+    x += static_cast<T>(u2) * (s32 * s32 * s32);
+    x += static_cast<T>(u3) * (s32 * s32 * s32 * s32);
+    return x;
+}
+
+template <typename T> inline T fixed_point_63bits(std::mt19937_64 &mt) {
+    // 63-bit fraction: hi32 * 2^-32 + lo31 * 2^-63
+    uint64_t u = mt();
+    u >>= 1; // keep 63 bits
+    uint32_t hi32 = static_cast<uint32_t>((u >> 31) & 0xFFFFFFFFu);
+    uint32_t lo31 = static_cast<uint32_t>(u & 0x7FFFFFFFu);
+    T x = static_cast<T>(hi32) * T(0x1p-32);
+    x += static_cast<T>(lo31) * T(0x1p-63);
+    return x;
+}
 } // namespace
 
 void Rlaruv(INTEGER *iseed, INTEGER const n, REAL *x) {
@@ -185,9 +217,8 @@ void Rlaruv(INTEGER *iseed, INTEGER const n, REAL *x) {
             x[i] = nondeterministic_rand() + nondeterministic_rand() * 0x1p-53 + nondeterministic_rand() * 0x1p-106;
     } else {
         std::mt19937_64 mt(iseed_to_seed64(iseed));
-        std::uniform_real_distribution<double> dist(0.0, 1.0);
         for (int i = 0; i < n; i++)
-            x[i] = dist(mt) + dist(mt) * 0x1p-53 + dist(mt) * 0x1p-106;
+            x[i] = fixed_point_from_u32x4<REAL>(mt);
         advance_iseed(iseed, n);
     }
 #endif
@@ -198,9 +229,8 @@ void Rlaruv(INTEGER *iseed, INTEGER const n, REAL *x) {
             x[i] = nondeterministic_rand() + nondeterministic_rand() * 0x1p-64;
     } else {
         std::mt19937_64 mt(iseed_to_seed64(iseed));
-        std::uniform_real_distribution<double> dist(0.0, 1.0);
         for (int i = 0; i < n; i++)
-            x[i] = dist(mt) + dist(mt) * 0x1p-64;
+            x[i] = fixed_point_63bits<REAL>(mt);
         advance_iseed(iseed, n);
     }
 #endif
