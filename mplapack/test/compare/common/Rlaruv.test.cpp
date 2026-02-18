@@ -55,14 +55,18 @@ static bool parse_int(const char *s, long &out) {
 }
 
 static void usage(const char *prog) {
-    std::fprintf(stderr,
-                 "Usage:\n"
+std::fprintf(stderr,
+	     "Usage:\n"
                  "  %s [iseed1 iseed2 iseed3 iseed4]\n\n"
-                 "If omitted, defaults to: 4 3 2 1\n"
-                 "Seed rules (MPLAPACK extension):\n"
-                 "  - 0 0 0 0 : non-deterministic (seeded from current time / random_device); NOT reproducible\n"
-                 "  - otherwise: deterministic (same iseed => same sequence); reproducible\n"
-                 "LAPACK convention (deterministic mode): 0<=iseed1..3<=4095 and iseed4 must be odd.\n",
+	     "If omitted, defaults to: 4 3 2 1\n\n"
+	     "Deterministic mode (default):\n"
+	     "  - ISEED is four 16-bit values: 0 <= iseed[i] <= 65535\n"
+	     "  - ISEED = {-1,-1,-1,-1} is rejected.\n\n"
+	     "Non-deterministic mode (MPLAPACK extension):\n"
+	     "  - Enable by setting environment variable:\n"
+                 "      MPLAPACK_RLARUV_NONDET=1\n"
+                 "  - When enabled, ISEED arguments are ignored and the output is intentionally non-reproducible.\n"
+                 "  - Rlaruv prints a one-time notice to stderr when this mode is enabled.\n",
                  prog);
 }
 
@@ -146,6 +150,10 @@ int main(int argc, char *argv[]) {
     for (int i = 0; i < big_n; ++i) {
         char buf[4096];
         sprintnum(buf, x[i]);
+        // Trim a leading '+' to keep output stable and minimal.
+        if (buf[0] == '+') {
+            std::memmove(buf, buf + 1, std::strlen(buf));
+        }
         outputfile << buf << "\n";
     }
 

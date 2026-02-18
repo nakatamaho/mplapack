@@ -29,6 +29,9 @@
 #include <mpblas.h>
 #include <mplapack.h>
 #include <cstdint>
+#include <cstdio>
+#include <cstdlib>
+#include <mutex>
 #include <random>
 
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___ || defined ___MPLAPACK_BUILD_WITH_GMP___
@@ -69,17 +72,32 @@ inline double nondeterministic_rand() {
 } // namespace
 #endif
 
-// Utility: convert LAPACK-style iseed[4] to a 64-bit seed.
-// LAPACK convention: iseed[0..2] in [0, 4095], iseed[3] odd and in [0, 4095].
-// iseed == {0,0,0,0} selects non-deterministic mode.
+// Utility: convert iseed[4] to a 64-bit seed.
+// Each element contributes 16 bits (packed at bit offsets 0/16/32/48).
+// iseed == {-1,-1,-1,-1} is reserved and rejected in deterministic mode.
 namespace {
-inline bool iseed_is_nondeterministic(INTEGER *iseed) { return (iseed[0] == 0 && iseed[1] == 0 && iseed[2] == 0 && iseed[3] == 0); }
+inline bool rlaruv_nondeterministic_enabled() {
+    const char *v = std::getenv("MPLAPACK_RLARUV_NONDET");
+    return (v != nullptr && v[0] == '1' && v[1] == '\0');
+}
 
-inline uint64_t iseed_to_seed64(INTEGER *iseed) {
-    uint64_t s = static_cast<uint64_t>(iseed[0] & 0xFFF);
-    s |= static_cast<uint64_t>(iseed[1] & 0xFFF) << 12;
-    s |= static_cast<uint64_t>(iseed[2] & 0xFFF) << 24;
-    s |= static_cast<uint64_t>(iseed[3] & 0xFFF) << 36;
+inline void rlaruv_print_nondet_banner_once() {
+    static std::once_flag once;
+    std::call_once(once, []() {
+        std::fprintf(stderr, "Rlaruv: non-deterministic mode enabled by MPLAPACK_RLARUV_NONDET=1\n");
+        std::fflush(stderr);
+    });
+}
+
+inline bool iseed_is_all_minus_one(const INTEGER *iseed) {
+    return (iseed[0] == -1 && iseed[1] == -1 && iseed[2] == -1 && iseed[3] == -1);
+}
+
+inline uint64_t iseed_to_seed64(const INTEGER *iseed) {
+    uint64_t s = static_cast<uint64_t>(static_cast<uint16_t>(iseed[0]));
+    s |= static_cast<uint64_t>(static_cast<uint16_t>(iseed[1])) << 16;
+    s |= static_cast<uint64_t>(static_cast<uint16_t>(iseed[2])) << 32;
+    s |= static_cast<uint64_t>(static_cast<uint16_t>(iseed[3])) << 48;
     // splitmix64 finalizer to improve avalanche for small iseed values
     s ^= s >> 17;
     s *= 0xbf58476d1ce4e5b9ULL;
@@ -90,16 +108,17 @@ inline uint64_t iseed_to_seed64(INTEGER *iseed) {
 }
 
 // Update iseed so that consecutive calls with the same initial iseed
-// produce different sequences. Values stay in LAPACK convention.
+// produce different sequences. Each element is kept within 16 bits.
 inline void advance_iseed(INTEGER *iseed, INTEGER n) {
     std::mt19937_64 tmp(iseed_to_seed64(iseed));
     tmp.discard(static_cast<unsigned long long>(n));
-    auto next = tmp();
-    iseed[0] = static_cast<INTEGER>((next >> 0) & 0xFFF);
-    iseed[1] = static_cast<INTEGER>((next >> 12) & 0xFFF);
-    iseed[2] = static_cast<INTEGER>((next >> 24) & 0xFFF);
-    iseed[3] = static_cast<INTEGER>(((next >> 36) & 0xFFF) | 1); // ensure odd
+    uint64_t next = tmp();
+    iseed[0] = static_cast<INTEGER>((next >> 0) & 0xFFFFu);
+    iseed[1] = static_cast<INTEGER>((next >> 16) & 0xFFFFu);
+    iseed[2] = static_cast<INTEGER>((next >> 32) & 0xFFFFu);
+    iseed[3] = static_cast<INTEGER>((next >> 48) & 0xFFFFu);
 }
+
 
 // Deterministic real generation from mt19937_64 without std::uniform_real_distribution.
 // Build x in [0,1) as a fixed-point fraction constructed from raw RNG bits.
@@ -135,7 +154,16 @@ template <typename T> inline T fixed_point_63bits(std::mt19937_64 &mt) {
 } // namespace
 
 void Rlaruv(INTEGER *iseed, INTEGER const n, REAL *x) {
-    bool nondet = iseed_is_nondeterministic(iseed);
+    bool nondet = rlaruv_nondeterministic_enabled();
+    if (nondet) {
+        rlaruv_print_nondet_banner_once();
+    } else {
+        if (iseed_is_all_minus_one(iseed)) {
+            Mxerbla("Rlaruv", 1);
+            return;
+        }
+    }
+
 
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
     if (nondet) {
