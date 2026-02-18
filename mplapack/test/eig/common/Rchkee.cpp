@@ -1267,7 +1267,7 @@ statement_190:
             }
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
             thresh_org = thresh;
-            thresh = thresh * 3.0;
+            thresh = thresh * 4.0;
             printf("Warning! Threshold has been lifted to: ");
             printnum_short(thresh);
             printf(" for GMP\n");
@@ -1301,7 +1301,7 @@ statement_190:
             }
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
             thresh_org = thresh;
-            thresh = thresh * 1.5;
+            thresh = thresh * 2.0;
             printf("Warning! Threshold has been lifted to: ");
             printnum_short(thresh);
             printf(" for GMP\n");
