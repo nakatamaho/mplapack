@@ -377,6 +377,42 @@ class read_loop // TODO copy-constructor potential performance problem
         }
         return *this;
     }
+    // ---------------------------------------------------------------------
+    // Explicit overloads for 'long' and 'unsigned long'.
+    //
+    // In C++, 'long' is always a distinct type from 'int' and 'long long',
+    // even when sizeof(long)==sizeof(int) (ILP32, LLP64 / Windows).
+    // Without these overloads the compiler cannot match 'long &' to the
+    // integer_star_4 (int) or integer_star_8 (long long) overloads above,
+    // causing compile errors or silent wrong conversions.
+    //
+    // The enable_if guard prevents a duplicate-overload error on LP64 Linux
+    // where integer_star_8 is already typedef'd to 'long'.
+    // ---------------------------------------------------------------------
+    template <typename T, std::enable_if_t<std::is_same_v<T, long> && !std::is_same_v<long, integer_star_4> && !std::is_same_v<long, integer_star_8>, int> = 0> read_loop &operator,(T &val) {
+        if constexpr (sizeof(long) == sizeof(integer_star_4)) {
+            integer_star_4 tmp{};
+            (*this), tmp;
+            val = static_cast<long>(tmp);
+        } else {
+            integer_star_8 tmp{};
+            (*this), tmp;
+            val = static_cast<long>(tmp);
+        }
+        return *this;
+    }
+    template <typename T, std::enable_if_t<std::is_same_v<T, unsigned long> && !std::is_same_v<unsigned long, std::uint32_t> && !std::is_same_v<unsigned long, std::uint64_t>, int> = 0> read_loop &operator,(T &val) {
+        if constexpr (sizeof(unsigned long) == sizeof(integer_star_4)) {
+            integer_star_4 tmp{};
+            (*this), tmp;
+            val = static_cast<unsigned long>(tmp);
+        } else {
+            integer_star_8 tmp{};
+            (*this), tmp;
+            val = static_cast<unsigned long>(tmp);
+        }
+        return *this;
+    }
     read_loop &operator,(integer_star_8 &val) {
         if (io_mode == io_unformatted) {
             from_stream_unformatted(reinterpret_cast<char *>(&val), sizeof(integer_star_8));

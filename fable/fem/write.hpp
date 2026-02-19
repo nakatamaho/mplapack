@@ -378,8 +378,8 @@ class write_loop : write_loop_base
     // integer_star_4 or integer_star_8 overloads above.
     template <typename U = long int,
               typename std::enable_if<
-                  !std::is_same<long int, integer_star_4>::value &&
-                  !std::is_same<long int, integer_star_8>::value,
+                  !std::is_same<U, integer_star_4>::value &&
+                  !std::is_same<U, integer_star_8>::value,
               int>::type = 0>
     write_loop &operator,(long int const &val) {
         // Delegate to the appropriately-sized fixed-width overload.
@@ -392,8 +392,8 @@ class write_loop : write_loop_base
     // Ditto for 'unsigned long int'.
     template <typename U = unsigned long int,
               typename std::enable_if<
-                  !std::is_same<unsigned long int, uint32_t>::value &&
-                  !std::is_same<unsigned long int, uint64_t>::value,
+                  !std::is_same<U, uint32_t>::value &&
+                  !std::is_same<U, uint64_t>::value,
               int>::type = 0>
     write_loop &operator,(unsigned long int const &val) {
         if (sizeof(unsigned long int) == sizeof(integer_star_4)) {
