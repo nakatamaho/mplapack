@@ -451,17 +451,21 @@ static inline std::mt19937_64 &mplapack_rng64() {
 }
 // Uniform in [0, 1) with 113-bit resolution (binary128 significand bits).
 static inline __float128 uniform01_binary128() {
+    // Generates a uniform random value in [0, 1) as an integer multiple of 2^-113,
+    // using the full 113-bit significand of __float128.
+    // Distribution: integer-grid uniform (not float-space uniform).
     constexpr int kFracBits = 113;
+    constexpr int lo_bits   = kFracBits - 64; // 49
 
-    uint64_t hi = mplapack_rng64()();
-    uint64_t lo = mplapack_rng64()();
+    auto &rng = mplapack_rng64(); // ensure single RNG instance
+    uint64_t hi     = rng();
+    uint64_t lo_top = rng() >> (64 - lo_bits); // top 49 bits
 
-    __uint128_t x = (static_cast<__uint128_t>(hi) << 64) | static_cast<__uint128_t>(lo);
-    x >>= (128 - kFracBits); // keep top 113 bits
-
-    __float128 r = static_cast<__float128>(x); // exact (x < 2^113)
-    r = ldexpq(r, -kFracBits);                 // r / 2^113
-    return r;                                  // [0,1)
+    __float128 r = static_cast<__float128>(hi);
+    r = ldexpq(r, lo_bits);           // r = hi * 2^49
+    r += static_cast<__float128>(lo_top);
+    r = ldexpq(r, -kFracBits);        // r /= 2^113
+    return r;
 }
 mplapack_binary128_t mpf_randomnumber(mplapack_binary128_t /*dummy*/) {
     __float128 u = uniform01_binary128();                      // [0,1)

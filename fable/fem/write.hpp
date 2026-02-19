@@ -364,6 +364,44 @@ class write_loop : write_loop_base
         }
         return *this;
     }
+    // Explicit overload for plain 'long int' to resolve ambiguity on platforms
+    // where long int is distinct from both int32_t and int64_t.
+    //
+    // ILP32  (32-bit Linux/etc.) : int=32b, long=32b, ll=64b
+    //                              int32_t=int, int64_t=long long  => long is distinct
+    // LLP64  (Windows 64-bit)   : int=32b, long=32b, ll=64b
+    //                              int32_t=int, int64_t=long long  => long is distinct
+    // LP64   (64-bit Linux/etc.) : int=32b, long=64b, ll=64b
+    // int32_t=int, int64_t=long       => long == integer_star_8 (already covered)
+    //
+    // SFINAE: only instantiate when 'long' is not already covered by the
+    // integer_star_4 or integer_star_8 overloads above.
+    template <typename U = long int,
+              typename std::enable_if<
+                  !std::is_same<long int, integer_star_4>::value &&
+                  !std::is_same<long int, integer_star_8>::value,
+              int>::type = 0>
+    write_loop &operator,(long int const &val) {
+        // Delegate to the appropriately-sized fixed-width overload.
+        if (sizeof(long int) == sizeof(integer_star_4)) {
+            return (*this), static_cast<integer_star_4>(val);
+        } else {
+            return (*this), static_cast<integer_star_8>(val);
+        }
+    }
+    // Ditto for 'unsigned long int'.
+    template <typename U = unsigned long int,
+              typename std::enable_if<
+                  !std::is_same<unsigned long int, uint32_t>::value &&
+                  !std::is_same<unsigned long int, uint64_t>::value,
+              int>::type = 0>
+    write_loop &operator,(unsigned long int const &val) {
+        if (sizeof(unsigned long int) == sizeof(integer_star_4)) {
+            return (*this), static_cast<integer_star_4>(static_cast<long int>(val));
+        } else {
+            return (*this), static_cast<integer_star_8>(static_cast<long long>(val));
+        }
+    }
     // Helper function to format a string according to an edit descriptor.
     // Must be defined before dd_real/qd_real overloads that use it.
     void to_stream_fmt_double_given_string(std::string const &val_str, std::string const &ed) {

@@ -40,19 +40,12 @@ AH_BOTTOM([
   using mplapack_binary80_t = _Float64x;
 #endif
 
-#define USE64BITINT 1 /* Keep historical default: ILP64-ish integer type. */
+#include <stdint.h>
+#include <limits>
 
-#ifdef USE64BITINT
-#if defined _WIN32
-typedef long int mplapackint;
-#elif defined __APPLE__
+// ILP32 (BSD/Linux 32bit, Windows 32bit) and LLP64 long=32bit (Windows 64bit)
+// LP64 long=64bit (BSD/Linux/macOS 64bit)
 typedef long mplapackint;
-#else
-typedef int64_t mplapackint;
-#endif
-#else
-typedef int mplapackint;
-#endif
 
 typedef mplapackint mplapacklogical;
 
