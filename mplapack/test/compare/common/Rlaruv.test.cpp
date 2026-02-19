@@ -198,7 +198,7 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    outputfile << std::setprecision(17);
+    outputfile << std::setprecision(10);
     outputfile << "# stats_n " << stats_n << "\n";
     outputfile << "# stats_mean " << stats_mean << " theory " << stats_theory_mean << " diff " << (stats_mean - stats_theory_mean) << "\n";
     outputfile << "# stats_var_pop " << stats_var_pop << " theory " << stats_theory_var_pop << " diff " << (stats_var_pop - stats_theory_var_pop) << "\n";
