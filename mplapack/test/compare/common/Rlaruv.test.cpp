@@ -83,7 +83,7 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    std::ofstream outputfile(outname);
+    std::ofstream outputfile(outname, std::ios::binary);
     if (!outputfile.is_open()) {
         std::fprintf(stderr, "Error: cannot open output file '%s'\n", outname);
         return 1;
