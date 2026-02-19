@@ -32,6 +32,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <mutex>
+#include <atomic>
 #include <random>
 
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___ || defined ___MPLAPACK_BUILD_WITH_GMP___
@@ -82,11 +83,11 @@ inline bool rlaruv_nondeterministic_enabled() {
 }
 
 inline void rlaruv_print_nondet_banner_once() {
-    static std::once_flag once;
-    std::call_once(once, []() {
+    static std::atomic<bool> printed{false};
+    if (!printed.exchange(true)) {
         std::fprintf(stderr, "Rlaruv: non-deterministic mode enabled by MPLAPACK_RLARUV_NONDET=1\n");
         std::fflush(stderr);
-    });
+    }
 }
 
 inline bool iseed_is_all_minus_one(const INTEGER *iseed) {
