@@ -125,21 +125,54 @@ inline void sprintnum_short(char *buf, std::complex<__float128> rtmp) {
 // Short format (16 digits)
 #define FLOAT128_SHORT_FORMAT "%.16e"
 
+// Helper: convert _Float128 to string using strfromf128, then explicitly
+// prepend '+' for non-negative values (including +0, +inf, +nan).
+// strfromf128 does not portably support the '+' flag, so we do it manually.
+// Returns number of chars written (excluding NUL), or negative on error.
+static inline int mplapack_strfromf128(char *buf, size_t buflen, const char *fmt, _Float128 x) {
+    if (buf == nullptr || buflen == 0 || fmt == nullptr)
+        return -1;
+    // Use a staging buffer so we have room to insert '+' without clobbering buf.
+    char tmp[__MPLAPACK_BUFLEN__];
+    size_t tmplen = (buflen <= sizeof(tmp)) ? buflen : sizeof(tmp);
+    int n = strfromf128(tmp, tmplen, fmt, x);
+    if (n < 0) {
+        buf[0] = '\0';
+        return n;
+    }
+    tmp[tmplen - 1] = '\0'; // always NUL-terminate
+    // If the result does not start with '-', explicitly prepend '+'.
+    if (tmp[0] != '-') {
+        size_t len = strlen(tmp);
+        if (len + 2 <= tmplen) {
+            memmove(tmp + 1, tmp, len + 1); // shift right, carries NUL
+            tmp[0] = '+';
+            n = (int)(len + 1);
+        }
+        // If no room (extremely truncated), leave without '+' rather than corrupt.
+    }
+    // Copy into caller-provided buffer.
+    size_t copy_len = strlen(tmp);
+    if (copy_len >= buflen)
+        copy_len = buflen - 1;
+    memcpy(buf, tmp, copy_len);
+    buf[copy_len] = '\0';
+    return (int)copy_len;
+}
+
 // printnum - full precision output to stdout
 inline void printnum(_Float128 rtmp) {
-    int width = 42;
     char buf[__MPLAPACK_BUFLEN__];
-    strfromf128(buf, sizeof buf, FLOAT128_FORMAT, rtmp);
+    mplapack_strfromf128(buf, sizeof(buf), FLOAT128_FORMAT, rtmp);
     printf("%s", buf);
     return;
 }
 
 inline void printnum(std::complex<_Float128> rtmp) {
-    int width = 42;
     char buf[__MPLAPACK_BUFLEN__], buf2[__MPLAPACK_BUFLEN__];
-    strfromf128(buf, sizeof buf, FLOAT128_FORMAT, rtmp.real());
+    mplapack_strfromf128(buf, sizeof(buf), FLOAT128_FORMAT, rtmp.real());
     printf("%s", buf);
-    strfromf128(buf2, sizeof buf, FLOAT128_FORMAT, rtmp.imag());
+    mplapack_strfromf128(buf2, sizeof(buf2), FLOAT128_FORMAT, rtmp.imag());
     printf("%s", buf2);
     printf("i");
     return;
@@ -147,41 +180,33 @@ inline void printnum(std::complex<_Float128> rtmp) {
 
 // sprintnum - full precision output to buffer
 inline void sprintnum(char *buf, _Float128 rtmp) {
-    int width = 42;
-    strfromf128(buf, __MPLAPACK_BUFLEN__, FLOAT128_FORMAT, rtmp);
+    mplapack_strfromf128(buf, __MPLAPACK_BUFLEN__, FLOAT128_FORMAT, rtmp);
     return;
 }
 
 inline void sprintnum(char *buf, std::complex<_Float128> rtmp) {
+    if (buf == nullptr)
+        return;
     char buf1[__MPLAPACK_BUFLEN__], buf2[__MPLAPACK_BUFLEN__];
-    buf[0] = '\0';
-    if (rtmp.real() >= 0.0)
-        strcat(buf, "+");
-    strfromf128(buf1, __MPLAPACK_BUFLEN__, FLOAT128_FORMAT, rtmp.real());
-    strcat(buf, buf1);
-    if (rtmp.imag() >= 0.0)
-        strcat(buf, "+");
-    strfromf128(buf2, __MPLAPACK_BUFLEN__, FLOAT128_FORMAT, rtmp.imag());
-    strcat(buf, buf2);
-    strcat(buf, "i");
+    mplapack_strfromf128(buf1, sizeof(buf1), FLOAT128_FORMAT, rtmp.real());
+    mplapack_strfromf128(buf2, sizeof(buf2), FLOAT128_FORMAT, rtmp.imag());
+    snprintf(buf, __MPLAPACK_BUFLEN__, "%s%si", buf1, buf2);
     return;
 }
 
 // printnum_short - short precision output to stdout
 inline void printnum_short(_Float128 rtmp) {
-    int width = 42;
     char buf[__MPLAPACK_BUFLEN__];
-    strfromf128(buf, sizeof buf, FLOAT128_SHORT_FORMAT, rtmp);
+    mplapack_strfromf128(buf, sizeof(buf), FLOAT128_SHORT_FORMAT, rtmp);
     printf("%s", buf);
     return;
 }
 
 inline void printnum_short(std::complex<_Float128> rtmp) {
-    int width = 42;
     char buf[__MPLAPACK_BUFLEN__], buf2[__MPLAPACK_BUFLEN__];
-    strfromf128(buf, sizeof buf, FLOAT128_SHORT_FORMAT, rtmp.real());
+    mplapack_strfromf128(buf, sizeof(buf), FLOAT128_SHORT_FORMAT, rtmp.real());
     printf("%s", buf);
-    strfromf128(buf2, sizeof buf, FLOAT128_SHORT_FORMAT, rtmp.imag());
+    mplapack_strfromf128(buf2, sizeof(buf2), FLOAT128_SHORT_FORMAT, rtmp.imag());
     printf("%s", buf2);
     printf("i");
     return;
@@ -189,23 +214,17 @@ inline void printnum_short(std::complex<_Float128> rtmp) {
 
 // sprintnum_short - short precision output to buffer
 inline void sprintnum_short(char *buf, _Float128 rtmp) {
-    int width = 42;
-    strfromf128(buf, __MPLAPACK_BUFLEN__, FLOAT128_SHORT_FORMAT, rtmp);
+    mplapack_strfromf128(buf, __MPLAPACK_BUFLEN__, FLOAT128_SHORT_FORMAT, rtmp);
     return;
 }
 
 inline void sprintnum_short(char *buf, std::complex<_Float128> rtmp) {
+    if (buf == nullptr)
+        return;
     char buf1[__MPLAPACK_BUFLEN__], buf2[__MPLAPACK_BUFLEN__];
-    buf[0] = '\0';
-    if (rtmp.real() >= 0.0)
-        strcat(buf, "+");
-    strfromf128(buf1, __MPLAPACK_BUFLEN__, FLOAT128_SHORT_FORMAT, rtmp.real());
-    strcat(buf, buf1);
-    if (rtmp.imag() >= 0.0)
-        strcat(buf, "+");
-    strfromf128(buf2, __MPLAPACK_BUFLEN__, FLOAT128_SHORT_FORMAT, rtmp.imag());
-    strcat(buf, buf2);
-    strcat(buf, "i");
+    mplapack_strfromf128(buf1, sizeof(buf1), FLOAT128_SHORT_FORMAT, rtmp.real());
+    mplapack_strfromf128(buf2, sizeof(buf2), FLOAT128_SHORT_FORMAT, rtmp.imag());
+    snprintf(buf, __MPLAPACK_BUFLEN__, "%s%si", buf1, buf2);
     return;
 }
 
@@ -473,9 +492,16 @@ inline _Float128 pi(_Float128 dummy) { return M_PIf128; }
 
 #elif MPLAPACK_BINARY128_MATH == MPLAPACK_BINARY128_MATH_LDBL
 #include <cmath>
-using std::log; using std::log2; using std::log10;
-using std::exp; using std::sin; using std::cos; using std::pow;
-using std::abs; using std::sqrt; using std::atan2;
+using std::abs;
+using std::atan2;
+using std::cos;
+using std::exp;
+using std::log;
+using std::log10;
+using std::log2;
+using std::pow;
+using std::sin;
+using std::sqrt;
 
 inline long double pow(const long &a, const long &b) { return powl((long double)a, (long double)b); }
 inline long double pow(const int &a, const long &b) { return powl((long double)a, (long double)b); }

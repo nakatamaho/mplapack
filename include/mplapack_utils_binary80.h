@@ -71,37 +71,56 @@ inline void sprintnum_short(char *buf, std::complex<long double> ctmp) { snprint
 
 #include <stdlib.h> // strfromf64x
 #include <stdio.h>  // fputs, putchar
+#include <string.h> // memmove, strlen, memcpy
 #include <complex>
 
-// Helper: convert _Float64x to string using strfromf64x.
-// Returns number of chars written (excluding NUL) or negative on error.
+// Helper: convert _Float64x to string using strfromf64x, then explicitly
+// prepend '+' for non-negative values (including +0, +inf, +nan).
+// strfromf64x does not portably support the '+' flag, so we do it manually.
+// Returns number of chars written (excluding NUL), or negative on error.
 static inline int mplapack_strfromf64x(char *buf, size_t buflen, const char *fmt, _Float64x x) {
     if (buf == nullptr || buflen == 0 || fmt == nullptr)
         return -1;
-    int n = strfromf64x(buf, buflen, fmt, x);
-    if (n < 0) { // encoding error etc.
-        if (buflen > 0)
-            buf[0] = '\0';
+    // Use a staging buffer so we have room to insert '+' without clobbering buf.
+    char tmp[__MPLAPACK_BUFLEN__];
+    size_t tmplen = (buflen <= sizeof(tmp)) ? buflen : sizeof(tmp);
+    int n = strfromf64x(tmp, tmplen, fmt, x);
+    if (n < 0) {
+        buf[0] = '\0';
         return n;
     }
-    // If truncated, C standard says it returns the number of chars that would have been written.
-    // Ensure buffer is always NUL-terminated.
-    buf[buflen - 1] = '\0';
-    return n;
+    tmp[tmplen - 1] = '\0'; // always NUL-terminate
+    // If the result does not start with '-', explicitly prepend '+'.
+    if (tmp[0] != '-') {
+        size_t len = strlen(tmp);
+        if (len + 2 <= tmplen) {
+            memmove(tmp + 1, tmp, len + 1); // shift right, carries NUL
+            tmp[0] = '+';
+            n = (int)(len + 1);
+        }
+        // If no room (extremely truncated), leave without '+' rather than corrupt.
+    }
+    // Copy into caller-provided buffer.
+    size_t copy_len = strlen(tmp);
+    if (copy_len >= buflen)
+        copy_len = buflen - 1;
+    memcpy(buf, tmp, copy_len);
+    buf[copy_len] = '\0';
+    return (int)copy_len;
 }
 
 // printnum / printnum_short: stringize then print
 inline void printnum(_Float64x rtmp) {
     char buf[__MPLAPACK_BUFLEN__];
-    strfromf64x(buf, sizeof(buf), FLOAT64X_FORMAT, rtmp);
+    mplapack_strfromf64x(buf, sizeof(buf), FLOAT64X_FORMAT, rtmp);
     fputs(buf, stdout);
 }
 
 inline void printnum(std::complex<_Float64x> ctmp) {
     char re[__MPLAPACK_BUFLEN__];
     char im[__MPLAPACK_BUFLEN__];
-    strfromf64x(re, sizeof(re), FLOAT64X_FORMAT, ctmp.real());
-    strfromf64x(im, sizeof(im), FLOAT64X_FORMAT, ctmp.imag());
+    mplapack_strfromf64x(re, sizeof(re), FLOAT64X_FORMAT, ctmp.real());
+    mplapack_strfromf64x(im, sizeof(im), FLOAT64X_FORMAT, ctmp.imag());
     fputs(re, stdout);
     fputs(im, stdout);
     putchar('i');
@@ -109,27 +128,27 @@ inline void printnum(std::complex<_Float64x> ctmp) {
 
 inline void printnum_short(_Float64x rtmp) {
     char buf[__MPLAPACK_BUFLEN__];
-    strfromf64x(buf, sizeof(buf), FLOAT64X_SHORT_FORMAT, rtmp);
+    mplapack_strfromf64x(buf, sizeof(buf), FLOAT64X_SHORT_FORMAT, rtmp);
     fputs(buf, stdout);
 }
 
 inline void printnum_short(std::complex<_Float64x> ctmp) {
     char re[__MPLAPACK_BUFLEN__];
     char im[__MPLAPACK_BUFLEN__];
-    strfromf64x(re, sizeof(re), FLOAT64X_SHORT_FORMAT, ctmp.real());
-    strfromf64x(im, sizeof(im), FLOAT64X_SHORT_FORMAT, ctmp.imag());
+    mplapack_strfromf64x(re, sizeof(re), FLOAT64X_SHORT_FORMAT, ctmp.real());
+    mplapack_strfromf64x(im, sizeof(im), FLOAT64X_SHORT_FORMAT, ctmp.imag());
     fputs(re, stdout);
     fputs(im, stdout);
     putchar('i');
 }
 
 // sprintnum / sprintnum_short: write into caller-provided buf
-inline void sprintnum(char *buf, _Float64x rtmp) { strfromf64x(buf, __MPLAPACK_BUFLEN__, FLOAT64X_FORMAT, rtmp); }
+inline void sprintnum(char *buf, _Float64x rtmp) { mplapack_strfromf64x(buf, __MPLAPACK_BUFLEN__, FLOAT64X_FORMAT, rtmp); }
 inline void sprintnum(char *buf, std::complex<_Float64x> ctmp) {
     if (buf == nullptr)
         return;
     // Write real part
-    int nre = strfromf64x(buf, __MPLAPACK_BUFLEN__, FLOAT64X_FORMAT, ctmp.real());
+    int nre = mplapack_strfromf64x(buf, __MPLAPACK_BUFLEN__, FLOAT64X_FORMAT, ctmp.real());
     if (nre < 0) {
         buf[0] = '\0';
         return;
@@ -143,7 +162,7 @@ inline void sprintnum(char *buf, std::complex<_Float64x> ctmp) {
         buf[__MPLAPACK_BUFLEN__ - 1] = '\0';
         return;
     }
-    int nim = strfromf64x(buf + used, (size_t)__MPLAPACK_BUFLEN__ - used, FLOAT64X_FORMAT, ctmp.imag());
+    int nim = mplapack_strfromf64x(buf + used, (size_t)__MPLAPACK_BUFLEN__ - used, FLOAT64X_FORMAT, ctmp.imag());
     if (nim < 0) {
         buf[used] = '\0';
         return;
@@ -159,11 +178,11 @@ inline void sprintnum(char *buf, std::complex<_Float64x> ctmp) {
         buf[__MPLAPACK_BUFLEN__ - 1] = '\0';
     }
 }
-inline void sprintnum_short(char *buf, _Float64x rtmp) { (void)strfromf64x(buf, __MPLAPACK_BUFLEN__, FLOAT64X_SHORT_FORMAT, rtmp); }
+inline void sprintnum_short(char *buf, _Float64x rtmp) { (void)mplapack_strfromf64x(buf, __MPLAPACK_BUFLEN__, FLOAT64X_SHORT_FORMAT, rtmp); }
 inline void sprintnum_short(char *buf, std::complex<_Float64x> ctmp) {
     if (buf == nullptr)
         return;
-    int nre = strfromf64x(buf, __MPLAPACK_BUFLEN__, FLOAT64X_SHORT_FORMAT, ctmp.real());
+    int nre = mplapack_strfromf64x(buf, __MPLAPACK_BUFLEN__, FLOAT64X_SHORT_FORMAT, ctmp.real());
     if (nre < 0) {
         buf[0] = '\0';
         return;
@@ -175,7 +194,7 @@ inline void sprintnum_short(char *buf, std::complex<_Float64x> ctmp) {
         buf[__MPLAPACK_BUFLEN__ - 1] = '\0';
         return;
     }
-    int nim = strfromf64x(buf + used, (size_t)__MPLAPACK_BUFLEN__ - used, FLOAT64X_SHORT_FORMAT, ctmp.imag());
+    int nim = mplapack_strfromf64x(buf + used, (size_t)__MPLAPACK_BUFLEN__ - used, FLOAT64X_SHORT_FORMAT, ctmp.imag());
     if (nim < 0) {
         buf[used] = '\0';
         return;
