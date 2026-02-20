@@ -27,6 +27,8 @@
  */
 
 #include <iostream>
+#include <cstdarg>
+#include <cstdio>
 #include <mpblas.h>
 #include <mplapack.h>
 #include <mplapack_compare_debug.h>
@@ -34,6 +36,23 @@
 #include <lapack.h>
 
 #define VERBOSE_TEST
+
+// ---------------------------------------------------------------------------
+// Dual output: write to stdout and to Rlamch.txt simultaneously.
+// ---------------------------------------------------------------------------
+static FILE *g_lamch_file = nullptr;
+
+static void dual_printf(const char *fmt, ...) {
+    va_list ap;
+    va_start(ap, fmt);
+    vprintf(fmt, ap);
+    va_end(ap);
+    if (g_lamch_file) {
+        va_start(ap, fmt);
+        vfprintf(g_lamch_file, fmt, ap);
+        va_end(ap);
+    }
+}
 
 /* dlamch result on FreeBSD 6/i386 + Lapack 3.1.1
   Epsilon                      =   1.110223024625157E-016
@@ -421,36 +440,17 @@ static void check_lamch_mpfr_values(const char *tag, const MpfrEnvSnapshot &cfg,
     check_cross_consistency_rmin_rmax(tag, cfg.emin, cfg.emax, cfg.real_rnd, gotE, gotU, gotO);
 
     if (print_values) {
-        printf("Rlamch E: Epsilon                      ");
-        printnum(gotE);
-        printf("\n");
-        printf("Rlamch S: Safe minimum                 ");
-        printnum(gotS);
-        printf("\n");
-        printf("Rlamch B: Base                         ");
-        printnum(gotB);
-        printf("\n");
-        printf("Rlamch P: Precision                    ");
-        printnum(gotP);
-        printf("\n");
-        printf("Rlamch N: Number of digits in mantissa ");
-        printnum(gotN);
-        printf("\n");
-        printf("Rlamch R: Rounding mode                ");
-        printnum(gotR);
-        printf("\n");
-        printf("Rlamch M: Minimum exponent             ");
-        printnum(gotM);
-        printf("\n");
-        printf("Rlamch U: Underflow threshold          ");
-        printnum(gotU);
-        printf("\n");
-        printf("Rlamch L: Largest exponent             ");
-        printnum(gotL);
-        printf("\n");
-        printf("Rlamch O: Overflow threshold           ");
-        printnum(gotO);
-        printf("\n");
+        char _spbuf[__MPLAPACK_BUFLEN__];
+        sprintnum(_spbuf, gotE); dual_printf("Rlamch E: Epsilon                      %s\n", _spbuf);
+        sprintnum(_spbuf, gotS); dual_printf("Rlamch S: Safe minimum                 %s\n", _spbuf);
+        sprintnum(_spbuf, gotB); dual_printf("Rlamch B: Base                         %s\n", _spbuf);
+        sprintnum(_spbuf, gotP); dual_printf("Rlamch P: Precision                    %s\n", _spbuf);
+        sprintnum(_spbuf, gotN); dual_printf("Rlamch N: Number of digits in mantissa %s\n", _spbuf);
+        sprintnum(_spbuf, gotR); dual_printf("Rlamch R: Rounding mode                %s\n", _spbuf);
+        sprintnum(_spbuf, gotM); dual_printf("Rlamch M: Minimum exponent             %s\n", _spbuf);
+        sprintnum(_spbuf, gotU); dual_printf("Rlamch U: Underflow threshold          %s\n", _spbuf);
+        sprintnum(_spbuf, gotL); dual_printf("Rlamch L: Largest exponent             %s\n", _spbuf);
+        sprintnum(_spbuf, gotO); dual_printf("Rlamch O: Overflow threshold           %s\n", _spbuf);
     }
 }
 
@@ -535,7 +535,7 @@ void Rlamch_mpfr_test() {
             snprintf(tagbuf, sizeof(tagbuf), "%s/%s", ec.tag, rc.name);
 
             // Print the target environment settings for each case.
-            printf("[MPFR] case=%s mpfr_prec=%llu real_prec=%llu emin=%lld emax=%lld rnd=%s\n", tagbuf, (unsigned long long)cfg.mpfr_prec, (unsigned long long)cfg.real_prec, (long long)cfg.emin, (long long)cfg.emax, rc.name);
+            dual_printf("[MPFR] case=%s mpfr_prec=%llu real_prec=%llu emin=%lld emax=%lld rnd=%s\n", tagbuf, (unsigned long long)cfg.mpfr_prec, (unsigned long long)cfg.real_prec, (long long)cfg.emin, (long long)cfg.emax, rc.name);
 
             run_mpfr_env_test(tagbuf, cfg, print_values);
         }
@@ -749,36 +749,17 @@ static void check_lamch_gmp_values(const char *tag, mp_bitcnt_t prec_bits, bool 
     gmp_assert_case(shifted == (one - gotE), tag, "O * 2^(-L) cross-check failed (expected 1 - E)");
 
     if (print_values) {
-        printf("Rlamch E: Epsilon                      ");
-        printnum(gotE);
-        printf("\n");
-        printf("Rlamch S: Safe minimum                 ");
-        printnum(gotS);
-        printf("\n");
-        printf("Rlamch B: Base                         ");
-        printnum(gotB);
-        printf("\n");
-        printf("Rlamch P: Precision                    ");
-        printnum(gotP);
-        printf("\n");
-        printf("Rlamch N: Number of digits in mantissa ");
-        printnum(gotN);
-        printf("\n");
-        printf("Rlamch R: Rounding mode                ");
-        printnum(gotR);
-        printf("\n");
-        printf("Rlamch M: Minimum exponent             ");
-        printnum(gotM);
-        printf("\n");
-        printf("Rlamch U: Underflow threshold          ");
-        printnum(gotU);
-        printf("\n");
-        printf("Rlamch L: Largest exponent             ");
-        printnum(gotL);
-        printf("\n");
-        printf("Rlamch O: Overflow threshold           ");
-        printnum(gotO);
-        printf("\n");
+        char _spbuf[__MPLAPACK_BUFLEN__];
+        sprintnum(_spbuf, gotE); dual_printf("Rlamch E: Epsilon                      %s\n", _spbuf);
+        sprintnum(_spbuf, gotS); dual_printf("Rlamch S: Safe minimum                 %s\n", _spbuf);
+        sprintnum(_spbuf, gotB); dual_printf("Rlamch B: Base                         %s\n", _spbuf);
+        sprintnum(_spbuf, gotP); dual_printf("Rlamch P: Precision                    %s\n", _spbuf);
+        sprintnum(_spbuf, gotN); dual_printf("Rlamch N: Number of digits in mantissa %s\n", _spbuf);
+        sprintnum(_spbuf, gotR); dual_printf("Rlamch R: Rounding mode                %s\n", _spbuf);
+        sprintnum(_spbuf, gotM); dual_printf("Rlamch M: Minimum exponent             %s\n", _spbuf);
+        sprintnum(_spbuf, gotU); dual_printf("Rlamch U: Underflow threshold          %s\n", _spbuf);
+        sprintnum(_spbuf, gotL); dual_printf("Rlamch L: Largest exponent             %s\n", _spbuf);
+        sprintnum(_spbuf, gotO); dual_printf("Rlamch O: Overflow threshold           %s\n", _spbuf);
     }
 }
 
@@ -799,7 +780,7 @@ void Rlamch_gmp_test() {
     const mp_bitcnt_t requested_precisions[] = {4096, 128, 64};
 
     for (size_t i = 0; i < (sizeof(requested_precisions) / sizeof(requested_precisions[0])); ++i) {
-        printf("[GMP] precision=%ld\n", requested_precisions[i]);
+        dual_printf("[GMP] precision=%ld\n", requested_precisions[i]);
         const mp_bitcnt_t req = requested_precisions[i];
         const mp_bitcnt_t saved = mpf_get_default_prec();
         mpf_set_default_prec(req);
@@ -1013,36 +994,17 @@ static void check_lamch_qd_values(const char *tag, bool print_values) {
     check_cross_consistency_rmin_rmax_qd(tag, gotM, gotU, gotL, gotO);
 
     if (print_values) {
-        printf("Rlamch E: Epsilon                      ");
-        printnum(gotE);
-        printf("\n");
-        printf("Rlamch S: Safe minimum                 ");
-        printnum(gotS);
-        printf("\n");
-        printf("Rlamch B: Base                         ");
-        printnum(gotB);
-        printf("\n");
-        printf("Rlamch P: Precision                    ");
-        printnum(gotP);
-        printf("\n");
-        printf("Rlamch N: Number of digits in mantissa ");
-        printnum(gotN);
-        printf("\n");
-        printf("Rlamch R: Rounding mode                ");
-        printnum(gotR);
-        printf("\n");
-        printf("Rlamch M: Minimum exponent             ");
-        printnum(gotM);
-        printf("\n");
-        printf("Rlamch U: Underflow threshold          ");
-        printnum(gotU);
-        printf("\n");
-        printf("Rlamch L: Largest exponent             ");
-        printnum(gotL);
-        printf("\n");
-        printf("Rlamch O: Overflow threshold           ");
-        printnum(gotO);
-        printf("\n");
+        char _spbuf[__MPLAPACK_BUFLEN__];
+        sprintnum(_spbuf, gotE); dual_printf("Rlamch E: Epsilon                      %s\n", _spbuf);
+        sprintnum(_spbuf, gotS); dual_printf("Rlamch S: Safe minimum                 %s\n", _spbuf);
+        sprintnum(_spbuf, gotB); dual_printf("Rlamch B: Base                         %s\n", _spbuf);
+        sprintnum(_spbuf, gotP); dual_printf("Rlamch P: Precision                    %s\n", _spbuf);
+        sprintnum(_spbuf, gotN); dual_printf("Rlamch N: Number of digits in mantissa %s\n", _spbuf);
+        sprintnum(_spbuf, gotR); dual_printf("Rlamch R: Rounding mode                %s\n", _spbuf);
+        sprintnum(_spbuf, gotM); dual_printf("Rlamch M: Minimum exponent             %s\n", _spbuf);
+        sprintnum(_spbuf, gotU); dual_printf("Rlamch U: Underflow threshold          %s\n", _spbuf);
+        sprintnum(_spbuf, gotL); dual_printf("Rlamch L: Largest exponent             %s\n", _spbuf);
+        sprintnum(_spbuf, gotO); dual_printf("Rlamch O: Overflow threshold           %s\n", _spbuf);
     }
 }
 
@@ -1298,36 +1260,17 @@ static void check_lamch_dd_values(const char *tag, bool print_values) {
     check_cross_consistency_rmin_rmax_dd(tag, gotM, gotU, gotL, gotO);
 
     if (print_values) {
-        printf("Rlamch E: Epsilon                      ");
-        printnum(gotE);
-        printf("\n");
-        printf("Rlamch S: Safe minimum                 ");
-        printnum(gotS);
-        printf("\n");
-        printf("Rlamch B: Base                         ");
-        printnum(gotB);
-        printf("\n");
-        printf("Rlamch P: Precision                    ");
-        printnum(gotP);
-        printf("\n");
-        printf("Rlamch N: Number of digits in mantissa ");
-        printnum(gotN);
-        printf("\n");
-        printf("Rlamch R: Rounding mode                ");
-        printnum(gotR);
-        printf("\n");
-        printf("Rlamch M: Minimum exponent             ");
-        printnum(gotM);
-        printf("\n");
-        printf("Rlamch U: Underflow threshold          ");
-        printnum(gotU);
-        printf("\n");
-        printf("Rlamch L: Largest exponent             ");
-        printnum(gotL);
-        printf("\n");
-        printf("Rlamch O: Overflow threshold           ");
-        printnum(gotO);
-        printf("\n");
+        char _spbuf[__MPLAPACK_BUFLEN__];
+        sprintnum(_spbuf, gotE); dual_printf("Rlamch E: Epsilon                      %s\n", _spbuf);
+        sprintnum(_spbuf, gotS); dual_printf("Rlamch S: Safe minimum                 %s\n", _spbuf);
+        sprintnum(_spbuf, gotB); dual_printf("Rlamch B: Base                         %s\n", _spbuf);
+        sprintnum(_spbuf, gotP); dual_printf("Rlamch P: Precision                    %s\n", _spbuf);
+        sprintnum(_spbuf, gotN); dual_printf("Rlamch N: Number of digits in mantissa %s\n", _spbuf);
+        sprintnum(_spbuf, gotR); dual_printf("Rlamch R: Rounding mode                %s\n", _spbuf);
+        sprintnum(_spbuf, gotM); dual_printf("Rlamch M: Minimum exponent             %s\n", _spbuf);
+        sprintnum(_spbuf, gotU); dual_printf("Rlamch U: Underflow threshold          %s\n", _spbuf);
+        sprintnum(_spbuf, gotL); dual_printf("Rlamch L: Largest exponent             %s\n", _spbuf);
+        sprintnum(_spbuf, gotO); dual_printf("Rlamch O: Overflow threshold           %s\n", _spbuf);
     }
 }
 
@@ -1572,36 +1515,17 @@ static void check_lamch_double_values(const char *tag, bool print_values) {
     check_cross_consistency_rmin_rmax_double(tag, gotE, gotU, gotO);
 
     if (print_values) {
-        printf("Rlamch E: Epsilon                      ");
-        printnum(gotE);
-        printf("\n");
-        printf("Rlamch S: Safe minimum                 ");
-        printnum(gotS);
-        printf("\n");
-        printf("Rlamch B: Base                         ");
-        printnum(gotB);
-        printf("\n");
-        printf("Rlamch P: Precision                    ");
-        printnum(gotP);
-        printf("\n");
-        printf("Rlamch N: Number of digits in mantissa ");
-        printnum(gotN);
-        printf("\n");
-        printf("Rlamch R: Rounding mode                ");
-        printnum(gotR);
-        printf("\n");
-        printf("Rlamch M: Minimum exponent             ");
-        printnum(gotM);
-        printf("\n");
-        printf("Rlamch U: Underflow threshold          ");
-        printnum(gotU);
-        printf("\n");
-        printf("Rlamch L: Largest exponent             ");
-        printnum(gotL);
-        printf("\n");
-        printf("Rlamch O: Overflow threshold           ");
-        printnum(gotO);
-        printf("\n");
+        char _spbuf[64];
+        snprintf(_spbuf, sizeof(_spbuf), "%.17e", gotE); dual_printf("Rlamch E: Epsilon                      %s\n", _spbuf);
+        snprintf(_spbuf, sizeof(_spbuf), "%.17e", gotS); dual_printf("Rlamch S: Safe minimum                 %s\n", _spbuf);
+        snprintf(_spbuf, sizeof(_spbuf), "%.17e", gotB); dual_printf("Rlamch B: Base                         %s\n", _spbuf);
+        snprintf(_spbuf, sizeof(_spbuf), "%.17e", gotP); dual_printf("Rlamch P: Precision                    %s\n", _spbuf);
+        snprintf(_spbuf, sizeof(_spbuf), "%.17e", gotN); dual_printf("Rlamch N: Number of digits in mantissa %s\n", _spbuf);
+        snprintf(_spbuf, sizeof(_spbuf), "%.17e", gotR); dual_printf("Rlamch R: Rounding mode                %s\n", _spbuf);
+        snprintf(_spbuf, sizeof(_spbuf), "%.17e", gotM); dual_printf("Rlamch M: Minimum exponent             %s\n", _spbuf);
+        snprintf(_spbuf, sizeof(_spbuf), "%.17e", gotU); dual_printf("Rlamch U: Underflow threshold          %s\n", _spbuf);
+        snprintf(_spbuf, sizeof(_spbuf), "%.17e", gotL); dual_printf("Rlamch L: Largest exponent             %s\n", _spbuf);
+        snprintf(_spbuf, sizeof(_spbuf), "%.17e", gotO); dual_printf("Rlamch O: Overflow threshold           %s\n", _spbuf);
     }
 }
 
@@ -1779,36 +1703,17 @@ void Rlamch_binary128_test() {
     assert_case(got_prod == expected_prod, "U*O cross-check failed (inconsistent rmin/rmax model)");
 
     if (print_values) {
-        printf("Rlamch E: Epsilon                      ");
-        printnum(gotE);
-        printf("\n");
-        printf("Rlamch S: Safe minimum                 ");
-        printnum(gotS);
-        printf("\n");
-        printf("Rlamch B: Base                         ");
-        printnum(gotB);
-        printf("\n");
-        printf("Rlamch P: Precision                    ");
-        printnum(gotP);
-        printf("\n");
-        printf("Rlamch N: Number of digits in mantissa ");
-        printnum(gotN);
-        printf("\n");
-        printf("Rlamch R: Rounding mode                ");
-        printnum(gotR);
-        printf("\n");
-        printf("Rlamch M: Minimum exponent             ");
-        printnum(gotM);
-        printf("\n");
-        printf("Rlamch U: Underflow threshold          ");
-        printnum(gotU);
-        printf("\n");
-        printf("Rlamch L: Largest exponent             ");
-        printnum(gotL);
-        printf("\n");
-        printf("Rlamch O: Overflow threshold           ");
-        printnum(gotO);
-        printf("\n");
+        char _spbuf[__MPLAPACK_BUFLEN__];
+        sprintnum(_spbuf, gotE); dual_printf("Rlamch E: Epsilon                      %s\n", _spbuf);
+        sprintnum(_spbuf, gotS); dual_printf("Rlamch S: Safe minimum                 %s\n", _spbuf);
+        sprintnum(_spbuf, gotB); dual_printf("Rlamch B: Base                         %s\n", _spbuf);
+        sprintnum(_spbuf, gotP); dual_printf("Rlamch P: Precision                    %s\n", _spbuf);
+        sprintnum(_spbuf, gotN); dual_printf("Rlamch N: Number of digits in mantissa %s\n", _spbuf);
+        sprintnum(_spbuf, gotR); dual_printf("Rlamch R: Rounding mode                %s\n", _spbuf);
+        sprintnum(_spbuf, gotM); dual_printf("Rlamch M: Minimum exponent             %s\n", _spbuf);
+        sprintnum(_spbuf, gotU); dual_printf("Rlamch U: Underflow threshold          %s\n", _spbuf);
+        sprintnum(_spbuf, gotL); dual_printf("Rlamch L: Largest exponent             %s\n", _spbuf);
+        sprintnum(_spbuf, gotO); dual_printf("Rlamch O: Overflow threshold           %s\n", _spbuf);
     }
 }
 #endif
@@ -1997,42 +1902,28 @@ void Rlamch_binary80_test() {
     }
 
     if (print_values) {
-        printf("Rlamch E: Epsilon                      ");
-        printnum(gotE);
-        printf("\n");
-        printf("Rlamch S: Safe minimum                 ");
-        printnum(gotS);
-        printf("\n");
-        printf("Rlamch B: Base                         ");
-        printnum(gotB);
-        printf("\n");
-        printf("Rlamch P: Precision                    ");
-        printnum(gotP);
-        printf("\n");
-        printf("Rlamch N: Number of digits in mantissa ");
-        printnum(gotN);
-        printf("\n");
-        printf("Rlamch R: Rounding mode                ");
-        printnum(gotR);
-        printf("\n");
-        printf("Rlamch M: Minimum exponent             ");
-        printnum(gotM);
-        printf("\n");
-        printf("Rlamch U: Underflow threshold          ");
-        printnum(gotU);
-        printf("\n");
-        printf("Rlamch L: Largest exponent             ");
-        printnum(gotL);
-        printf("\n");
-        printf("Rlamch O: Overflow threshold           ");
-        printnum(gotO);
-        printf("\n");
+        char _spbuf[__MPLAPACK_BUFLEN__];
+        sprintnum(_spbuf, gotE); dual_printf("Rlamch E: Epsilon                      %s\n", _spbuf);
+        sprintnum(_spbuf, gotS); dual_printf("Rlamch S: Safe minimum                 %s\n", _spbuf);
+        sprintnum(_spbuf, gotB); dual_printf("Rlamch B: Base                         %s\n", _spbuf);
+        sprintnum(_spbuf, gotP); dual_printf("Rlamch P: Precision                    %s\n", _spbuf);
+        sprintnum(_spbuf, gotN); dual_printf("Rlamch N: Number of digits in mantissa %s\n", _spbuf);
+        sprintnum(_spbuf, gotR); dual_printf("Rlamch R: Rounding mode                %s\n", _spbuf);
+        sprintnum(_spbuf, gotM); dual_printf("Rlamch M: Minimum exponent             %s\n", _spbuf);
+        sprintnum(_spbuf, gotU); dual_printf("Rlamch U: Underflow threshold          %s\n", _spbuf);
+        sprintnum(_spbuf, gotL); dual_printf("Rlamch L: Largest exponent             %s\n", _spbuf);
+        sprintnum(_spbuf, gotO); dual_printf("Rlamch O: Overflow threshold           %s\n", _spbuf);
     }
 }
 #endif
 
 int main(int argc, char *argv[]) {
-    printf("*** Testing Rlamch start ***\n");
+    g_lamch_file = fopen("Rlamch.txt", "wb"); // binary mode: suppress \r\n conversion on MinGW/Windows
+    if (!g_lamch_file) {
+        fprintf(stderr, "Warning: could not open Rlamch.txt for writing\n");
+    }
+
+    dual_printf("*** Testing Rlamch start ***\n");
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
     Rlamch_mpfr_test();
 #endif
@@ -2054,6 +1945,11 @@ int main(int argc, char *argv[]) {
 #if defined ___MPLAPACK_BUILD_WITH_BINARY128___
     Rlamch_binary128_test();
 #endif
-    printf("*** Testing Rlamch successful ***\n");
+    dual_printf("*** Testing Rlamch successful ***\n");
+
+    if (g_lamch_file) {
+        fclose(g_lamch_file);
+        g_lamch_file = nullptr;
+    }
     return (0);
 }
