@@ -15,3 +15,6 @@ check-subdir-lin:
 
 check-subdir-eig:
 	$(AM_V_at)$(MAKE) -C eig $(AM_MAKEFLAGS) check
+
+check-local:
+	python summarize_mplapack_tests.py .
