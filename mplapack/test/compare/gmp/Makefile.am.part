@@ -1,5 +1,8 @@
 check_PROGRAMS = $(mplapack_gmp_test_PROGRAMS)
-TESTS = $(check_PROGRAMS)
+TESTS = Rlaruv.test_gmp Rlamch.test_gmp
+.PHONY: check-all
+check-all: $(check_PROGRAMS)
+	$(MAKE) $(AM_MAKEFLAGS) check TESTS="$(mplapack_gmp_test_PROGRAMS)"
 mplapack_gmp_test_PROGRAMS = \
 %%insert here1%%
 

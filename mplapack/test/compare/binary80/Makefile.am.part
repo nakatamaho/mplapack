@@ -1,5 +1,8 @@
 check_PROGRAMS = $(mplapack_binary80_test_PROGRAMS)
-TESTS = $(check_PROGRAMS)
+TESTS = Rlaruv.test_binary80 Rlamch.test_binary80
+.PHONY: check-all
+check-all: $(check_PROGRAMS)
+	$(MAKE) $(AM_MAKEFLAGS) check TESTS="$(mplapack_binary80_test_PROGRAMS)"
 mplapack_binary80_test_PROGRAMS = \
 %%insert here1%%
 
