@@ -33,6 +33,7 @@
 #include <fem/utils/misc.hpp>
 #include <fem/utils/string_to_double_fmt.hpp>
 #include <string>
+#include <cstdint>
 #include <cstdlib>
 #include <type_traits>
 #if defined(___MPLAPACK_BUILD_WITH_GMP___)
