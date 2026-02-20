@@ -85,7 +85,13 @@ namespace utils {
             }
             static const int max_nd_significant = 16;
             static const double multipliers_dbl[] = {1e0, 1e1, 1e2, 1e3, 1e4, 1e5, 1e6, 1e7, 1e8, 1e9, 1e10, 1e11, 1e12, 1e13, 1e14, 1e15, 1e16};
+#if defined(_WIN32) || defined(_WIN64)
+            // On Windows (LLP64), 'long' is 32-bit, so utils::int64_t may be too narrow.
+            // 'long long' is guaranteed 64-bit on all platforms.
+            typedef long long i64;
+#else
             typedef utils::int64_t i64;
+#endif
             TBXX_ASSERT(sizeof(i64) >= sizeof(double));
             static i64 multipliers_i64[max_nd_significant + 1] = {0};
             if (multipliers_i64[0] == 0) {
