@@ -1,7 +1,10 @@
 #CTBSV, CTPSV might have bugs or intrinsically inaccurate
 #Rnrm2 should be checked more
 check_PROGRAMS = $(mpblas_double_test_PROGRAMS) 
-TESTS = $(check_PROGRAMS)
+TESTS = arithmetic.test_double complex.test_double
+.PHONY: check-all
+check-all: $(check_PROGRAMS)
+	$(MAKE) $(AM_MAKEFLAGS) check TESTS="$(mpblas_double_test_PROGRAMS)"
 mpblas_double_test_PROGRAMS = \
 arithmetic.test_double \
 complex.test_double \
