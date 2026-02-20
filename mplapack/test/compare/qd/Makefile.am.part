@@ -6,9 +6,9 @@ TEST_EXTENSIONS = .sh
 SH_LOG_COMPILER = $(SHELL)
 
 AM_TESTS_ENVIRONMENT = \
-	LOG_COMPILER='$(LOG_COMPILER)' \
-	EXEEXT='$(EXEEXT)' \
-	srcdir='$(srcdir)';
+    LOG_COMPILER='$(LOG_COMPILER)'; export LOG_COMPILER; \
+    EXEEXT='$(EXEEXT)'; export EXEEXT; \
+    srcdir='$(srcdir)'; export srcdir;
 
 run_Rlaruv_test.sh: Makefile
 	@echo '#!/bin/sh' > $@

@@ -6,9 +6,9 @@ TEST_EXTENSIONS = .sh
 SH_LOG_COMPILER = $(SHELL)
 
 AM_TESTS_ENVIRONMENT = \
-	LOG_COMPILER='$(LOG_COMPILER)' \
-	EXEEXT='$(EXEEXT)' \
-	srcdir='$(srcdir)';
+    LOG_COMPILER='$(LOG_COMPILER)'; export LOG_COMPILER; \
+    EXEEXT='$(EXEEXT)'; export EXEEXT; \
+    srcdir='$(srcdir)'; export srcdir;
 
 run_Rlaruv_test.sh: Makefile
 	@echo '#!/bin/sh' > $@
@@ -23,14 +23,14 @@ run_Rlaruv_test.sh: Makefile
 run_Rlamch_test.sh: Makefile
 	@echo '#!/bin/sh' > $@
 	@echo '$${LOG_COMPILER} ./Rlamch.test_gmp$${EXEEXT} || true' >> $@
-	@echo 'if diff -u $${srcdir}/Rlamch_reference.txt Rlamch.txt > /dev/null 2>&1; then' >> $@
-	@echo '  echo "PASS: Rlamch"; exit 0' >> $@
+	@echo 'if diff -u $${srcdir}/Rlamch_reference@ABI_BITS@.txt Rlamch.txt > /dev/null 2>&1; then' >> $@
+	@echo '  echo "PASS: Rlamch (@ABI_BITS@-bit)"; exit 0' >> $@
 	@echo 'else' >> $@
-	@echo '  echo "FAIL: Rlamch"; diff $${srcdir}/Rlamch_reference.txt Rlamch.txt; exit 1' >> $@
+	@echo '  echo "FAIL: Rlamch (@ABI_BITS@-bit)"; diff $${srcdir}/Rlamch_reference@ABI_BITS@.txt Rlamch.txt; exit 1' >> $@
 	@echo 'fi' >> $@
 	@chmod +x $@
 
-EXTRA_DIST = Rlaruv_reference.txt Rlamch_reference.txt
+EXTRA_DIST = Rlamch_reference32.txt Rlamch_reference64.txt Rlaruv_reference.txt
 
 .PHONY: check-all
 check-all: $(check_PROGRAMS)

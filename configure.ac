@@ -118,6 +118,12 @@ if test x"$is_intelcxx" = x"1"; then
     AC_MSG_RESULT([Intel compiler (icpc/icpx) detected])
 fi
 
+AC_CHECK_SIZEOF([long])
+AS_IF([test "$ac_cv_sizeof_long" = "8"],
+    [ABI_BITS=64],
+    [ABI_BITS=32])
+AC_SUBST([ABI_BITS])
+
 dnl ===================================================================
 dnl M4 Macro: Auto-detect quadmath library paths (for Intel compilers)
 dnl ===================================================================
