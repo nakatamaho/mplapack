@@ -1,20 +1,24 @@
-#!/bin/sh
 # -----------------------------------------------------------------------------
 # Deterministic platform identifier for CI/test output directories.
 #
 # Output format:
-#   <cpu_model>-<os_name><os_version>
+#   <cpu_model>|<os_name><os_version>|<cpu_raw>
 #
 # Examples:
-#   Core_i5-8500B-macos15
-#   Ryzen_Threadripper_3970X-ubuntu2204
-#   Xeon_Gold_6338-rocky93
+#   Core_i5-8500B|macos15|Intel(R) Core(TM) i5-8500B CPU @ 3.00GHz
+#   Ryzen_Threadripper_3970X|ubuntu2204|AMD Ryzen Threadripper 3970X 32-Core Processor
+#   Xeon_Gold_6338|rocky93|Intel(R) Xeon(R) Gold 6338 CPU @ 2.00GHz
+#
+# Field 1: directory-safe CPU tag    (for OUTDIR)
+# Field 2: OS identifier             (for OUTDIR)
+# Field 3: human-readable CPU string (for gnuplot MODELNAME)
 #
 # Design goals:
 # - POSIX sh (no bashisms)
 # - Works in minimal environments (no non-standard packages required)
 # - Never exits without printing *something*
 # - Deterministic string normalization for directory naming
+# - Field 3 added without breaking existing consumers of fields 1 and 2
 # -----------------------------------------------------------------------------
 
 have_cmd() {
@@ -27,7 +31,6 @@ have_cmd() {
 # - collapse repeated _
 # - trim leading/trailing _
 dir_safe_token() {
-    # Reads stdin, writes token to stdout.
     tr ' ' '_' |
     sed 's/[^A-Za-z0-9._+-]/_/g; s/__*/_/g; s/^_*//; s/_*$//'
 }
@@ -39,13 +42,11 @@ detect_cpu_raw() {
 
     case "$os_s" in
         Linux*)
-            # Priority 1: lscpu
             if have_cmd lscpu; then
                 raw=$(LC_ALL=C lscpu 2>/dev/null |
                     awk -F: '/Model name/ {sub(/^[ \t]+/, "", $2); print $2; exit}')
             fi
 
-            # Priority 2: /proc/cpuinfo
             if [ -z "$raw" ] && [ -r /proc/cpuinfo ]; then
                 raw=$(awk -F: '
                     {
@@ -59,7 +60,6 @@ detect_cpu_raw() {
             fi
             ;;
         Darwin*)
-            # Priority: sysctl machdep.cpu.brand_string, fallback hw.model
             if have_cmd sysctl; then
                 raw=$(sysctl -n machdep.cpu.brand_string 2>/dev/null)
                 if [ -z "$raw" ]; then
@@ -68,7 +68,6 @@ detect_cpu_raw() {
             fi
             ;;
         CYGWIN*|MINGW*|MSYS*)
-            # Priority: wmic cpu get Name, fallback: powershell.exe
             if have_cmd wmic; then
                 raw=$(wmic cpu get Name 2>/dev/null |
                     tr -d '\r' |
@@ -84,7 +83,6 @@ detect_cpu_raw() {
             ;;
     esac
 
-    # Final fallback: uname -m
     if [ -z "$raw" ]; then
         raw=$(uname -m 2>/dev/null || echo "")
     fi
@@ -99,17 +97,10 @@ detect_cpu_raw() {
 normalize_cpu() {
     in=$1
 
-    # Strip CR (common in Windows command output).
     in=$(printf '%s' "$in" | tr -d '\r')
-
-    # Remove trademark markers and symbols.
-    # (These are common in brand strings: Intel(R), Core(TM), etc.)
     in=$(printf '%s' "$in" | LC_ALL=C tr -cd '\000-\177' | LC_ALL=C sed 's/(R)//g; s/(TM)//g')
-
-    # Make frequency parsing easier by removing '@'.
     in=$(printf '%s' "$in" | tr '@' ' ')
 
-    # Token-level filtering to remove required noise while keeping family + model.
     filtered=$(printf '%s\n' "$in" | awk '
         function lc(s) { return tolower(s) }
         {
@@ -122,23 +113,13 @@ normalize_cpu() {
                 if (t == "") continue
                 tl = lc(t)
 
-                # Remove vendor noise.
                 if (tl == "intel" || tl == "amd") continue
-
-                # Remove generic words.
                 if (tl == "cpu" || tl == "processor") continue
-
-                # Remove core count phrases: "32-Core", "16-Core", etc.
                 if (t ~ /^[0-9]+-[Cc]ore(s)?$/) continue
-
-                # Remove "N Core" (two-token form).
                 if (t ~ /^[0-9]+$/ && i < n && lc(a[i+1]) ~ /^core(s)?$/) { i++; continue }
-
-                # Remove frequency info: "3.00GHz", "3000MHz", etc.
                 if (t ~ /^[0-9]+(\.[0-9]+)?[GgMm][Hh][Zz]$/) continue
                 if (tl == "mhz" || tl == "ghz") continue
 
-                # Keep token.
                 if (out == "") out = t
                 else out = out " " t
             }
@@ -165,35 +146,29 @@ detect_os() {
             os_ver=""
 
             if [ -r /etc/os-release ]; then
-                # /etc/os-release is designed to be shell-sourceable.
                 . /etc/os-release 2>/dev/null
                 os_name=$ID
                 os_ver=$VERSION_ID
             fi
 
-            # Minimal fallback if /etc/os-release is missing or incomplete.
             if [ -z "$os_name" ]; then
                 os_name="linux"
             fi
 
-            # VERSION_ID: remove dots (e.g. 22.04 -> 2204).
             if [ -n "$os_ver" ]; then
                 os_ver=$(printf '%s' "$os_ver" | tr '.' '_')
             fi
 
-            # Make os_name directory-safe (rarely needed, but harmless).
             os_name=$(printf '%s' "$os_name" | dir_safe_token)
 
             printf '%s%s\n' "$os_name" "$os_ver"
             ;;
         Darwin*)
-            # macOS: use major version only.
             major=""
             if have_cmd sw_vers; then
                 major=$(sw_vers -productVersion 2>/dev/null | awk -F. 'NR==1 {print $1; exit}')
             fi
 
-            # If we cannot read the version, still emit a stable identifier.
             if [ -z "$major" ]; then
                 printf 'macos\n'
             else
@@ -201,7 +176,6 @@ detect_os() {
             fi
             ;;
         CYGWIN*|MINGW*|MSYS*)
-            # Windows: version is optional by requirement; keep it stable.
             printf 'windows\n'
             ;;
         *)
@@ -215,11 +189,14 @@ main() {
     cpu_norm=$(normalize_cpu "$cpu_raw")
     os_id=$(detect_os)
 
-    # Absolute last-resort guards (must never print empty).
     if [ -z "$cpu_norm" ]; then cpu_norm="unknown_cpu"; fi
-    if [ -z "$os_id" ]; then os_id="unknown_os"; fi
+    if [ -z "$os_id" ];    then os_id="unknown_os";    fi
+    if [ -z "$cpu_raw" ];  then cpu_raw="$cpu_norm";   fi
 
-    printf '%s|%s\n' "$cpu_norm" "$os_id"
+    # Field 1: directory-safe CPU tag      (e.g. Ryzen_Threadripper_3970X)
+    # Field 2: OS identifier               (e.g. ubuntu2204)
+    # Field 3: human-readable CPU string   (e.g. AMD Ryzen Threadripper 3970X 32-Core Processor)
+    printf '%s|%s|%s\n' "$cpu_norm" "$os_id" "$cpu_raw"
 }
 
 main
