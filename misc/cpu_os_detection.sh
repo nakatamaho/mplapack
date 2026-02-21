@@ -104,7 +104,7 @@ normalize_cpu() {
 
     # Remove trademark markers and symbols.
     # (These are common in brand strings: Intel(R), Core(TM), etc.)
-    in=$(printf '%s' "$in" | sed 's/(R)//g; s/(TM)//g; s/è//g; s/‚Ñ¢//g')
+    in=$(printf '%s' "$in" | LC_ALL=C tr -cd '\000-\177' | LC_ALL=C sed 's/(R)//g; s/(TM)//g')
 
     # Make frequency parsing easier by removing '@'.
     in=$(printf '%s' "$in" | tr '@' ' ')
