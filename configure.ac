@@ -893,7 +893,12 @@ dnl ===================================================================
 AM_CONDITIONAL(ENABLE_BINARY128, test x$enable_binary128 = xyes)
 AM_CONDITIONAL(BINARY128_USE_QUADMATH, test "$mplapack_binary128_mode" = "3")
 AM_CONDITIONAL(BINARY128_USE_FLOAT128, test "$mplapack_binary128_mode" = "2")
-AM_CONDITIONAL(BINARY128_USE_LDBL, test "$mplapack_binary128_mode" = "1")
+AM_CONDITIONAL(BINARY128_USE_LDBL,     test "$mplapack_binary128_mode" = "1")
+
+dnl Aliases with MPLAPACK_BINARY128_MODE_ prefix (used in Makefile.am)
+AM_CONDITIONAL(MPLAPACK_BINARY128_MODE_QUADMATH, test "$mplapack_binary128_mode" = "3")
+AM_CONDITIONAL(MPLAPACK_BINARY128_MODE_FLOAT128, test "$mplapack_binary128_mode" = "2")
+AM_CONDITIONAL(MPLAPACK_BINARY128_MODE_LDBL,     test "$mplapack_binary128_mode" = "1")
 
 if test "$enable_examples" != "no" ; then
 # always requires libquadmath
@@ -1327,7 +1332,10 @@ dnl Automake conditionals
 dnl ===================================================================
 AM_CONDITIONAL(ENABLE_BINARY80, test x$enable_binary80 = xyes)
 AM_CONDITIONAL(BINARY80_USE_FLOAT64X, test "$mplapack_binary80_mode" = "2")
-AM_CONDITIONAL(BINARY80_USE_LDBL80, test "$mplapack_binary80_mode" = "1")
+AM_CONDITIONAL(BINARY80_USE_LDBL80,   test "$mplapack_binary80_mode" = "1")
+dnl Aliases with MPLAPACK_BINARY80_MODE_ prefix (referenced by Makefile.am)
+AM_CONDITIONAL(MPLAPACK_BINARY80_MODE_FLOAT64X, test "$mplapack_binary80_mode" = "2")
+AM_CONDITIONAL(MPLAPACK_BINARY80_MODE_LDBL80,   test "$mplapack_binary80_mode" = "1")
 
 highest_abs_top_srcdir=`cd "$srcdir" && pwd` 
 
