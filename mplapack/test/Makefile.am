@@ -31,9 +31,9 @@ _CPU_TAG    := $(word 1,$(subst |, ,$(_CPU_OS_RAW)))
 _OS_TAG     := $(word 2,$(subst |, ,$(_CPU_OS_RAW)))
 
 if IS_MINGW
-OUTDIR = $(_CPU_TAG)_$(MPLAPACK_CC_TAG)_windows
+OUTDIR = $(_CPU_TAG)_windows_$(MPLAPACK_CC_TAG)
 else
-OUTDIR = $(_CPU_TAG)_$(MPLAPACK_CC_TAG)_$(_OS_TAG)
+OUTDIR = $(_CPU_TAG)_$(_OS_TAG)_$(MPLAPACK_CC_TAG)
 endif
 
 check-local:
