@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022
+ * Copyright (c) 2008-2026
  *	Nakata, Maho
  * 	All rights reserved.
  *
@@ -29,19 +29,42 @@
 #include <stdio.h>
 #include <string.h>
 #include <chrono>
-#include <dlfcn.h>
+#include <algorithm>
+#include <cmath>
+#include <vector>
 #include <mpblas.h>
 #include <mplapack.h>
 #include <mplapack_benchmark.h>
 
+struct BenchStats {
+    double mean, stddev, min, max, median;
+};
+
+static BenchStats compute_stats(std::vector<double> &v) {
+    BenchStats s;
+    int n = (int)v.size();
+    if (n == 0) { s.mean = s.stddev = s.min = s.max = s.median = 0.0; return s; }
+    std::sort(v.begin(), v.end());
+    s.min = v[0]; s.max = v[n - 1];
+    s.median = (n % 2 == 1) ? v[n / 2] : (v[n / 2 - 1] + v[n / 2]) / 2.0;
+    double sum = 0.0;
+    for (int i = 0; i < n; i++) sum += v[i];
+    s.mean = sum / n;
+    double var = 0.0;
+    for (int i = 0; i < n; i++) { double d = v[i] - s.mean; var += d * d; }
+    s.stddev = (n > 1) ? std::sqrt(var / (n - 1)) : 0.0;
+    return s;
+}
+
 int main(int argc, char *argv[]) {
     mplapackint n = 1;
-    mplapackint incx = 1, incy = 1, STEP = 97, LOOPS = 3, TOTALSTEPS = 3092;
+    mplapackint incx = 1, incy = 1;
+    int STEP = 97, LOOPS = 3, TOTALSTEPS = 3092;
+    int WARMUP = 1;
+    int check_flag = 1;
+    int csv_flag = 0, stats_flag = 0;
 
     REAL dummy;
-    double elapsedtime;
-    int i, p;
-    int check_flag = 1;
 
     using Clock = std::chrono::high_resolution_clock;
     using std::chrono::duration_cast;
@@ -50,58 +73,101 @@ int main(int argc, char *argv[]) {
     ___MPLAPACK_INITIALIZE___
 
     REAL diff;
-    double diffr;
+    double diffr = 0.0;
 
-    if (argc != 1) {
-        for (i = 1; i < argc; i++) {
-            if (strcmp("-N", argv[i]) == 0) {
-                n = atoi(argv[++i]);
-            } else if (strcmp("-STEP", argv[i]) == 0) {
-                STEP = atoi(argv[++i]);
-            } else if (strcmp("-NOCHECK", argv[i]) == 0) {
-                check_flag = 0;
-            } else if (strcmp("-LOOPS", argv[i]) == 0) {
-                LOOPS = atoi(argv[++i]);
-            } else if (strcmp("-TOTALSTEPS", argv[i]) == 0) {
-                TOTALSTEPS = atoi(argv[++i]);
-            }
+    for (int i = 1; i < argc; i++) {
+        if      (strcmp("-N",          argv[i]) == 0) n          = atoi(argv[++i]);
+        else if (strcmp("-STEP",       argv[i]) == 0) STEP       = atoi(argv[++i]);
+        else if (strcmp("-NOCHECK",    argv[i]) == 0) check_flag = 0;
+        else if (strcmp("-LOOPS",      argv[i]) == 0) LOOPS      = atoi(argv[++i]);
+        else if (strcmp("-WARMUP",     argv[i]) == 0) WARMUP     = atoi(argv[++i]);
+        else if (strcmp("-TOTALSTEPS", argv[i]) == 0) TOTALSTEPS = atoi(argv[++i]);
+        else if (strcmp("-CSV",        argv[i]) == 0) csv_flag   = 1;
+        else if (strcmp("-STATS",      argv[i]) == 0) stats_flag = 1;
+    }
+
+    mplapackint max_n = n + (mplapackint)STEP * (TOTALSTEPS - 1);
+    REAL *x     = new REAL[max_n];
+    REAL *x_org = check_flag ? new REAL[max_n] : nullptr;
+    REAL *y     = new REAL[max_n];
+
+    std::vector<double> times(LOOPS);
+
+    if (csv_flag) {
+        if (stats_flag) {
+            if (check_flag) printf("n,loops,mfloats_mean,mfloats_median,mfloats_min,mfloats_max,mfloats_stddev,cv_pct,error\n");
+            else            printf("n,loops,mfloats_mean,mfloats_median,mfloats_min,mfloats_max,mfloats_stddev,cv_pct\n");
+        } else {
+            if (check_flag) printf("n,loops,mfloats,error\n");
+            else            printf("n,loops,mfloats\n");
+        }
+    } else {
+        if (stats_flag) {
+            if (check_flag) printf("         n  MFLOATS(mean) MFLOATS(med) MFLOATS(min) MFLOATS(max)  cv(%%)       error   loops\n");
+            else            printf("         n  MFLOATS(mean) MFLOATS(med) MFLOATS(min) MFLOATS(max)  cv(%%)     loops\n");
+        } else {
+            if (check_flag) printf("         n      MFLOATS      error   loops\n");
+            else            printf("         n      MFLOATS    loops\n");
         }
     }
-    for (p = 0; p < TOTALSTEPS; p++) {
-        REAL *x = new REAL[n];
-        REAL *x_org = new REAL[n];
-        REAL *y = new REAL[n];
-        if (check_flag) {
-            for (i = 0; i < n; i++) {
-                x[i] = x_org[i] = randomnumber(dummy);
-                y[i] = randomnumber(dummy);
-            }
+
+    for (int p = 0; p < TOTALSTEPS; p++) {
+        for (mplapackint i = 0; i < n; i++) {
+            x[i] = randomnumber(dummy);
+            if (check_flag) x_org[i] = x[i];
+            y[i] = randomnumber(dummy);
+        }
+
+        for (int w = 0; w < WARMUP; w++)
+            Rcopy(n, x, incx, y, incy);
+
+        for (int j = 0; j < LOOPS; j++) {
+            for (mplapackint i = 0; i < n; i++) y[i] = randomnumber(dummy);
             auto t1 = Clock::now();
             Rcopy(n, x, incx, y, incy);
             auto t2 = Clock::now();
-            elapsedtime = (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
-            for (i = 0; i < n; i++) {
-                x[i] = x_org[i] - y[i];
-            }
-            diff = Rasum(n, x, incx);
-            diffr = cast2double(diff);
-            printf("         n      MFLOATS      error\n");
-            printf("%10d   %10.3f   %10.2e\n", (int)n, (double)n / elapsedtime * MFLOPS, diffr);
-        } else {
-            elapsedtime = 0.0;
-            for (int j = 0; j < LOOPS; j++) {
-                auto t1 = Clock::now();
-                Rcopy(n, x, incx, y, incy);
-                auto t2 = Clock::now();
-                elapsedtime = elapsedtime + (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
-            }
-            elapsedtime = elapsedtime / (double)LOOPS;
-            printf("         n        MFLOATS\n");
-            printf("%10d     %10.3f\n", (int)n, (double)n / elapsedtime * MFLOPS);
+            times[j] = (double)duration_cast<nanoseconds>(t2 - t1).count() / 1.0e9;
         }
-        delete[] y;
-        delete[] x_org;
-        delete[] x;
-        n = n + STEP;
+
+        // Accuracy check: after Rcopy, y should equal x_org
+        if (check_flag) {
+            for (mplapackint i = 0; i < n; i++) x[i] = x_org[i] - y[i];
+            diff  = Rasum(n, x, incx);
+            diffr = cast2double(diff);
+            // Restore x
+            for (mplapackint i = 0; i < n; i++) x[i] = x_org[i];
+        }
+
+        double flop = (double)n; // elements copied
+        if (stats_flag) {
+            std::vector<double> mf(LOOPS);
+            for (int j = 0; j < LOOPS; j++) mf[j] = flop / times[j] * MFLOPS;
+            BenchStats st = compute_stats(mf);
+            double cv = (st.mean > 0.0) ? (st.stddev / st.mean * 100.0) : 0.0;
+            if (csv_flag) {
+                if (check_flag) printf("%d,%d,%.3f,%.3f,%.3f,%.3f,%.3f,%.2f,%.2e\n", (int)n, LOOPS, st.mean, st.median, st.min, st.max, st.stddev, cv, diffr);
+                else            printf("%d,%d,%.3f,%.3f,%.3f,%.3f,%.3f,%.2f\n",       (int)n, LOOPS, st.mean, st.median, st.min, st.max, st.stddev, cv);
+            } else {
+                if (check_flag) printf("%10d  %11.3f  %11.3f  %11.3f  %11.3f  %7.2f%%  %5.2e   %3d\n", (int)n, st.mean, st.median, st.min, st.max, cv, diffr, LOOPS);
+                else            printf("%10d  %11.3f  %11.3f  %11.3f  %11.3f  %7.2f%%   %3d\n",         (int)n, st.mean, st.median, st.min, st.max, cv, LOOPS);
+            }
+        } else {
+            BenchStats st = compute_stats(times);
+            double mflops_val = flop / st.mean * MFLOPS;
+            if (csv_flag) {
+                if (check_flag) printf("%d,%d,%.3f,%.2e\n", (int)n, LOOPS, mflops_val, diffr);
+                else            printf("%d,%d,%.3f\n",       (int)n, LOOPS, mflops_val);
+            } else {
+                if (check_flag) printf("%10d   %10.3f   %5.2e   %3d\n", (int)n, mflops_val, diffr, LOOPS);
+                else            printf("%10d   %10.3f   %3d\n",          (int)n, mflops_val, LOOPS);
+            }
+        }
+
+        n += STEP;
     }
+
+    delete[] y;
+    delete[] x_org;
+    delete[] x;
+    return 0;
 }
