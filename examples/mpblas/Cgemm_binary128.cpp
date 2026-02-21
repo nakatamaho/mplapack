@@ -11,12 +11,14 @@ void printnum(mplapack_binary128_t rtmp)
 {
     int width = 42;
     char buf[BUFLEN];
-#if MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_QUADMATH_SNPRINTF
+#if MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_STRFROMF128
+    strfromf128(buf, sizeof(buf), "%.35e", rtmp);
+#elif MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_QUADMATH_SNPRINTF
     int n = quadmath_snprintf (buf, sizeof buf, "%*.35Qe", width, rtmp);
 #elif MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_SNPRINTF_LDBL
     snprintf (buf, sizeof buf, "%.35Le", rtmp);
 #else
-    strfromf128(buf, sizeof(buf), "%.35e", rtmp);
+    #error "unsupported binary128 type"
 #endif
     if (rtmp >= 0.0)
         printf ("+%s", buf);
@@ -29,23 +31,27 @@ void printnum(std::complex<mplapack_binary128_t> rtmp)
 {
     int width = 42;
     char buf[BUFLEN];
-#if MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_QUADMATH_SNPRINTF
+#if MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_STRFROMF128
+    strfromf128(buf, sizeof(buf), "%.35e", rtmp.real());
+#elif MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_QUADMATH_SNPRINTF
     int n = quadmath_snprintf (buf, sizeof buf, "%*.35Qe", width, rtmp.real());
 #elif MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_SNPRINTF_LDBL
     snprintf (buf, sizeof buf, "%.35Le", rtmp.real());
 #else
-    strfromf128(buf, sizeof(buf), "%.35e", rtmp.real());
+    #error "unsupported binary128 type"
 #endif
     if (rtmp.real() >= 0.0)
         printf ("+%s", buf);
     else
         printf ("%s", buf);
-#if MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_QUADMATH_SNPRINTF
-    n = quadmath_snprintf (buf, sizeof buf, "%*.35Qe", width, rtmp.imag());
+#if MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_STRFROMF128
+    strfromf128(buf, sizeof(buf), "%.35e", rtmp.imag());
+#elif MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_QUADMATH_SNPRINTF
+    int n = quadmath_snprintf (buf, sizeof buf, "%*.35Qe", width, rtmp.imag());
 #elif MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_SNPRINTF_LDBL
     snprintf (buf, sizeof buf, "%.35Le", rtmp.imag());
 #else
-    strfromf128(buf, sizeof(buf), "%.35e", rtmp.imag());
+    #error "unsupported binary128 type"
 #endif
     if (rtmp.imag() >= 0.0)
         printf ("+%si", buf);

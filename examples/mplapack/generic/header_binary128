@@ -12,12 +12,14 @@ void printnum(mplapack_binary128_t rtmp)
 {
     int width = 42;
     char buf[BUFLEN];
-#if defined ___MPLAPACK_WANT_LIBQUADMATH___
+#if MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_QUADMATH
     int n = quadmath_snprintf (buf, sizeof buf, "%*.35Qe", width, rtmp);
-#elif defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
+#elif MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_SNPRINTF_LDBL
     snprintf (buf, sizeof buf, "%.35Le", rtmp);
-#else
+#elif MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_STRFROMF128
     strfromf128(buf, sizeof(buf), "%.35e", rtmp);
+#else
+    #error "Unknown binary128 IO type"
 #endif
     if (rtmp >= 0.0)
         printf ("+%s", buf);

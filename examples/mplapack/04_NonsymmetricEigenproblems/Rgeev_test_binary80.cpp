@@ -48,20 +48,20 @@ void printmat(int n, int m, mplapack_binary80_t *a, int lda)
     }
     printf("]");
 }
-bool rselect(mplapack_binary80_t ar, mplapack_binary80_t ai) {
+bool rselect(mplapack_binary128_t ar, mplapack_binary128_t ai) {
     // sorting rule for eigenvalues.
     return false;
 }
 
 int main() {
     mplapackint n = 4;
-    mplapack_binary80_t *a = new mplapack_binary80_t[n * n];
-    mplapack_binary80_t *vl = new mplapack_binary80_t[n * n];
-    mplapack_binary80_t *vr = new mplapack_binary80_t[n * n];
+    mplapack_binary128_t *a = new mplapack_binary128_t[n * n];
+    mplapack_binary128_t *vl = new mplapack_binary128_t[n * n];
+    mplapack_binary128_t *vr = new mplapack_binary128_t[n * n];
     mplapackint lwork = 4 * n;
-    mplapack_binary80_t *wr = new mplapack_binary80_t[n];
-    mplapack_binary80_t *wi = new mplapack_binary80_t[n];
-    mplapack_binary80_t *work = new mplapack_binary80_t[lwork];
+    mplapack_binary128_t *wr = new mplapack_binary128_t[n];
+    mplapack_binary128_t *wi = new mplapack_binary128_t[n];
+    mplapack_binary128_t *work = new mplapack_binary128_t[lwork];
     mplapackint info;
     // setting A matrix
     a[0 + 0 * n] = 4.0; a[0 + 1 * n] = -5.0; a[0 + 2 * n] =  0.0;  a[0 + 3 * n] =  3.0;

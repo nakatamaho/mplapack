@@ -51,26 +51,26 @@ int main()
     mplapackint n = 3;
     mplapackint lwork, info;
 
-    std::complex<mplapack_binary80_t> *a = new std::complex<mplapack_binary80_t>[n * n];
+    std::complex<mplapack_binary128_t> *a = new std::complex<mplapack_binary128_t>[n * n];
     mplapackint *ipiv = new mplapackint[n];
 
 //setting a matrix
 
 
-    a[0 + 0 * n] = std::complex<mplapack_binary80_t>(1.0, 0.0);   a[0 + 1 * n] = std::complex<mplapack_binary80_t>(1.0, 2.0);    a[0 + 2 * n] = std::complex<mplapack_binary80_t>(2.0, 10.0);
-    a[1 + 0 * n] = std::complex<mplapack_binary80_t>(1.0, 1.0);   a[1 + 1 * n] = std::complex<mplapack_binary80_t>(0.0, 3.0);    a[1 + 2 * n] = std::complex<mplapack_binary80_t>(-5.0, 14.0);
-    a[2 + 0 * n] = std::complex<mplapack_binary80_t>(1.0, 1.0);   a[2 + 1 * n] = std::complex<mplapack_binary80_t>(0.0, 5.0);    a[2 + 2 * n] = std::complex<mplapack_binary80_t>(-8.0, 20.0);
+    a[0 + 0 * n] = std::complex<mplapack_binary128_t>(1.0, 0.0);   a[0 + 1 * n] = std::complex<mplapack_binary128_t>(1.0, 2.0);    a[0 + 2 * n] = std::complex<mplapack_binary128_t>(2.0, 10.0);
+    a[1 + 0 * n] = std::complex<mplapack_binary128_t>(1.0, 1.0);   a[1 + 1 * n] = std::complex<mplapack_binary128_t>(0.0, 3.0);    a[1 + 2 * n] = std::complex<mplapack_binary128_t>(-5.0, 14.0);
+    a[2 + 0 * n] = std::complex<mplapack_binary128_t>(1.0, 1.0);   a[2 + 1 * n] = std::complex<mplapack_binary128_t>(0.0, 5.0);    a[2 + 2 * n] = std::complex<mplapack_binary128_t>(-8.0, 20.0);
 
     printf("a ="); printmat(n, n, a, n); printf("\n");
 
 //work space query
     lwork = -1;
-    std::complex<mplapack_binary80_t> *work = new std::complex<mplapack_binary80_t>[1];
+    std::complex<mplapack_binary128_t> *work = new std::complex<mplapack_binary128_t>[1];
 
     Cgetri(n, a, n, ipiv, work, lwork, info);
     lwork = castINTEGER_binary80 (work[0].real());
     delete[]work;
-    work = new std::complex<mplapack_binary80_t>[std::max(1, (int) lwork)];
+    work = new std::complex<mplapack_binary128_t>[std::max(1, (int) lwork)];
 
 //inverse matrix
     Cgetrf(n, n, a, n, ipiv, info);

@@ -50,11 +50,11 @@ void printmat(int n, int m, mplapack_binary80_t *a, int lda)
 }
 void Frank(mplapackint n) {
     mplapackint lwork, info;
-    mplapack_binary80_t *a = new mplapack_binary80_t[n * n];
-    mplapack_binary80_t *w = new mplapack_binary80_t[n];
-    mplapack_binary80_t *lambda = new mplapack_binary80_t[n];
-    mplapack_binary80_t *reldiff = new mplapack_binary80_t[n];
-    mplapack_binary80_t PI;
+    mplapack_binary128_t *a = new mplapack_binary128_t[n * n];
+    mplapack_binary128_t *w = new mplapack_binary128_t[n];
+    mplapack_binary128_t *lambda = new mplapack_binary128_t[n];
+    mplapack_binary128_t *reldiff = new mplapack_binary128_t[n];
+    mplapack_binary128_t PI;
     PI = pi(PI);
 
     // setting A matrix
@@ -67,12 +67,12 @@ void Frank(mplapackint n) {
 
     // work space query
     lwork = -1;
-    mplapack_binary80_t *work = new mplapack_binary80_t[1];
+    mplapack_binary128_t *work = new mplapack_binary128_t[1];
 
     Rsyev("N", "U", n, a, n, w, work, lwork, info);
     lwork = (int)cast2double(work[0]);
     delete[] work;
-    work = new mplapack_binary80_t[std::max((mplapackint)1, lwork)];
+    work = new mplapack_binary128_t[std::max((mplapackint)1, lwork)];
 
     // diagonalize matrix
     Rsyev("N", "U", n, a, n, w, work, lwork, info);
@@ -93,7 +93,7 @@ void Frank(mplapackint n) {
     }
     printf("reldiff ="); printvec(reldiff, n); printf("\n");
 
-    mplapack_binary80_t maxreldiff = 0.0;
+    mplapack_binary128_t maxreldiff = 0.0;
     maxreldiff = reldiff[0];
     for (int i = 2; i <= n; i++) {
         maxreldiff = std::max(reldiff[i - 1], maxreldiff);

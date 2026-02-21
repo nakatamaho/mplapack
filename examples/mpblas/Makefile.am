@@ -54,12 +54,13 @@ if ENABLE_BINARY128
 mpblasexamples_PROGRAMS += Cgemm_binary128 Rgemm_binary128 Cgemm_binary128_opt Rgemm_binary128_opt
 
 binary128_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include
-if BINARY128_USE_QUADMATH
-binary128_libdepends = -L$(top_builddir)/mpblas/reference -lmpblas_binary128 -lquadmath
-binary128_opt_libdepends = -L$(top_builddir)/mpblas/optimized/binary128 -lmpblas_binary128_opt -lquadmath
-else
 binary128_libdepends = -L$(top_builddir)/mpblas/reference -lmpblas_binary128
+if MPLAPACK_BINARY128_MODE_QUADMATH
+binary128_libdepends += -lquadmath
+endif
 binary128_opt_libdepends = -L$(top_builddir)/mpblas/optimized/binary128 -lmpblas_binary128_opt
+if MPLAPACK_BINARY128_MODE_QUADMATH
+binary128_opt_libdepends += -lquadmath
 endif
 
 Cgemm_binary128_SOURCES = Cgemm_binary128.cpp
@@ -83,25 +84,25 @@ endif
 if ENABLE_BINARY80
 mpblasexamples_PROGRAMS += Cgemm_binary80 Rgemm_binary80 Cgemm_binary80_opt Rgemm_binary80_opt
 
-mplapack_binary80_t_cxxflags = $(OPENMP_CXXFLAGS)
-mplapack_binary80_t_libdepends = -L$(top_builddir)/mpblas/reference -lmpblas_binary80
-mplapack_binary80_t_opt_libdepends = -L$(top_builddir)/mpblas/optimized/binary80 -lmpblas_binary80_opt
+binary80_cxxflags = $(OPENMP_CXXFLAGS)
+binary80_libdepends = -L$(top_builddir)/mpblas/reference -lmpblas_binary80
+binary80_opt_libdepends = -L$(top_builddir)/mpblas/optimized/binary80 -lmpblas_binary80_opt
 
 Cgemm_binary80_SOURCES = Cgemm_binary80.cpp
-Cgemm_binary80_CXXFLAGS = $(mplapack_binary80_t_cxxflags)
-Cgemm_binary80_LDFLAGS = $(mplapack_binary80_t_libdepends)
+Cgemm_binary80_CXXFLAGS = $(binary80_cxxflags)
+Cgemm_binary80_LDFLAGS = $(binary80_libdepends)
 
 Rgemm_binary80_SOURCES = Rgemm_binary80.cpp
-Rgemm_binary80_CXXFLAGS = $(mplapack_binary80_t_cxxflags)
-Rgemm_binary80_LDFLAGS = $(mplapack_binary80_t_libdepends)
+Rgemm_binary80_CXXFLAGS = $(binary80_cxxflags)
+Rgemm_binary80_LDFLAGS = $(binary80_libdepends)
 
 Cgemm_binary80_opt_SOURCES = Cgemm_binary80.cpp
-Cgemm_binary80_opt_CXXFLAGS = $(mplapack_binary80_t_cxxflags)
-Cgemm_binary80_opt_LDFLAGS = $(mplapack_binary80_t_opt_libdepends)
+Cgemm_binary80_opt_CXXFLAGS = $(binary80_cxxflags)
+Cgemm_binary80_opt_LDFLAGS = $(binary80_opt_libdepends)
 
 Rgemm_binary80_opt_SOURCES = Rgemm_binary80.cpp
-Rgemm_binary80_opt_CXXFLAGS = $(mplapack_binary80_t_cxxflags)
-Rgemm_binary80_opt_LDFLAGS = $(mplapack_binary80_t_opt_libdepends)
+Rgemm_binary80_opt_CXXFLAGS = $(binary80_cxxflags)
+Rgemm_binary80_opt_LDFLAGS = $(binary80_opt_libdepends)
 
 endif
 

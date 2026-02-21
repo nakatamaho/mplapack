@@ -6,7 +6,7 @@
 FILES=`ls R*generic.cpp C*generic.cpp`
 pushd .. ; _MATFILES=`ls M*.txt` ; popd
 MATFILES=`echo $_MATFILES`
-MPLIBS="mpfr gmp mplapack_binary128_t mplapack_binary80_t double dd qd"
+MPLIBS="mpfr gmp binary128 binary80 double dd qd"
 
 if [ `uname` = "Darwin" ]; then
     SED=gsed
@@ -22,9 +22,9 @@ $SED -e "s|%%ROUTINE%%|$_FILE|g" ../../generic/Makefile.mingw.in   > ../Makefile
 
 SOURCEFILES=""
 for _file in $FILES; do
-    MPLIBS="mpfr gmp mplapack_binary128_t mplapack_binary80_t double dd qd"
+    MPLIBS="mpfr gmp binary128 binary80 double dd qd"
     if [ "$_file" = "Cgeev_NPR_generic.cpp" ]; then
-        MPLIBS="mpfr mplapack_binary128_t mplapack_binary80_t double dd qd"
+        MPLIBS="mpfr binary128 binary80 double dd qd"
     fi
     for _mplib in $MPLIBS; do
         resultfilename=`echo $_file | $SED "s/generic/${_mplib}/g"`
@@ -52,10 +52,10 @@ for _file in $FILES; do
         if [ x"$_mplib" = x"qd" ]; then
             $SED -i -e "s/REAL/qd_real/g" -e "s/COMPLEX/qd_complex/g" -e "s/INTEGER/mplapackint/g" -e "s/InTEGER/INTEGER_${_mplib}/g" -e "s/ReAL/REAL_${_mplib}/g" -e "s/Rlamch/Rlamch_${_mplib}/g" -e "s/%%MPLIB%%/${_mplib}/g" ../$resultfilename
         fi
-        if [ x"$_mplib" = x"mplapack_binary128_t" ]; then
+        if [ x"$_mplib" = x"binary128" ]; then
             $SED -i -e "s/REAL/mplapack_binary128_t/g" -e "s/COMPLEX/std::complex<mplapack_binary128_t>/g" -e "s/INTEGER/mplapackint/g" -e "s/InTEGER/INTEGER_${_mplib}/g" -e "s/ReAL/REAL_${_mplib}/g" -e "s/Rlamch/Rlamch_${_mplib}/g" -e "s/%%MPLIB%%/${_mplib}/g" ../$resultfilename
         fi
-        if [ x"$_mplib" = x"mplapack_binary80_t" ]; then
+        if [ x"$_mplib" = x"binary80" ]; then
             $SED -i -e "s/REAL/mplapack_binary80_t/g" -e "s/COMPLEX/std::complex<mplapack_binary80_t>/g" -e "s/INTEGER/mplapackint/g" -e "s/InTEGER/INTEGER_${_mplib}/g" -e "s/ReAL/REAL_${_mplib}/g" -e "s/Rlamch/Rlamch_${_mplib}/g" -e "s/%%MPLIB%%/${_mplib}/g" ../$resultfilename
         fi
     done
@@ -63,7 +63,7 @@ done
 
 echo "mplapackexamples_PROGRAMS =" > ../Makefile.am
 
-MPLIBS="mpfr gmp mplapack_binary128_t mplapack_binary80_t double dd qd"
+MPLIBS="mpfr gmp binary128 binary80 double dd qd"
 for _mplib in $MPLIBS; do
     if [ x"$_mplib" = x"mpfr" ]; then
         echo ""               >> ../Makefile.am
@@ -106,14 +106,14 @@ for _mplib in $MPLIBS; do
         echo "endif"             >> ../Makefile.am
     fi
 
-    if [ x"$_mplib" = x"mplapack_binary128_t" ]; then
+    if [ x"$_mplib" = x"binary128" ]; then
         echo ""               >> ../Makefile.am
         echo "if ENABLE_BINARY128" >> ../Makefile.am
         executefilenames=`echo $FILES | $SED 's/\.cpp//g' | $SED "s/generic/${_mplib}/g"`
         echo "mplapackexamples_PROGRAMS += $executefilenames" >> ../Makefile.am
         echo ""               >> ../Makefile.am
         echo "${_mplib}_cxxflags = \$(OPENMP_CXXFLAGS) -I\$(top_srcdir)/include" >> ../Makefile.am
-        echo "if BINARY128_USE_QUADMATH" >> ../Makefile.am
+        echo "if MPLAPACK_BINARY128_MODE_QUADMATH" >> ../Makefile.am
         echo "${_mplib}_libdepends = -Wl,-rpath,\$(libdir) -L\$(top_builddir)/mplapack/reference -lmplapack_${_mplib} -L\$(top_builddir)/mpblas/reference -lmpblas_${_mplib} -lquadmath"  >> ../Makefile.am
         echo "else" >> ../Makefile.am
         echo "${_mplib}_libdepends = -Wl,-rpath,\$(libdir) -L\$(top_builddir)/mplapack/reference -lmplapack_${_mplib} -L\$(top_builddir)/mpblas/reference -lmpblas_${_mplib}"  >> ../Makefile.am
@@ -129,7 +129,7 @@ for _mplib in $MPLIBS; do
         echo "endif"             >> ../Makefile.am
     fi
 
-    if [ x"$_mplib" = x"mplapack_binary80_t" ]; then
+    if [ x"$_mplib" = x"binary80" ]; then
         echo ""               >> ../Makefile.am
         echo "if ENABLE_BINARY80" >> ../Makefile.am
         executefilenames=`echo $FILES | $SED 's/\.cpp//g' | $SED "s/generic/${_mplib}/g"`

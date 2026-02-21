@@ -103,108 +103,108 @@ endif
 if ENABLE_BINARY128
 mplapackexamples_PROGRAMS += Cgees_test_binary128 Cgeev_NPR_binary128 Cgeev_test2_binary128 Cgeev_test_binary128 Rgees_Grcar_binary128 Rgees_readfromfile_binary128 Rgees_test_binary128 Rgeev_Frank_binary128 Rgeev_random_highcond_binary128 Rgeev_readfromfile_binary128 Rgeev_test_binary128
 
-mplapack_binary128_t_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include
-if BINARY128_USE_QUADMATH
-mplapack_binary128_t_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_binary128 -L$(top_builddir)/mpblas/reference -lmpblas_binary128 -lquadmath
+binary128_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include
+if MPLAPACK_BINARY128_MODE_QUADMATH
+binary128_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_binary128 -L$(top_builddir)/mpblas/reference -lmpblas_binary128 -lquadmath
 else
-mplapack_binary128_t_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_binary128 -L$(top_builddir)/mpblas/reference -lmpblas_binary128
+binary128_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_binary128 -L$(top_builddir)/mpblas/reference -lmpblas_binary128
 endif
 
 Cgees_test_binary128_SOURCES = Cgees_test_binary128.cpp
-Cgees_test_binary128_CXXFLAGS = $(mplapack_binary128_t_cxxflags)
-Cgees_test_binary128_LDFLAGS = $(mplapack_binary128_t_libdepends)
+Cgees_test_binary128_CXXFLAGS = $(binary128_cxxflags)
+Cgees_test_binary128_LDFLAGS = $(binary128_libdepends)
 
 Cgeev_NPR_binary128_SOURCES = Cgeev_NPR_binary128.cpp
-Cgeev_NPR_binary128_CXXFLAGS = $(mplapack_binary128_t_cxxflags)
-Cgeev_NPR_binary128_LDFLAGS = $(mplapack_binary128_t_libdepends)
+Cgeev_NPR_binary128_CXXFLAGS = $(binary128_cxxflags)
+Cgeev_NPR_binary128_LDFLAGS = $(binary128_libdepends)
 
 Cgeev_test2_binary128_SOURCES = Cgeev_test2_binary128.cpp
-Cgeev_test2_binary128_CXXFLAGS = $(mplapack_binary128_t_cxxflags)
-Cgeev_test2_binary128_LDFLAGS = $(mplapack_binary128_t_libdepends)
+Cgeev_test2_binary128_CXXFLAGS = $(binary128_cxxflags)
+Cgeev_test2_binary128_LDFLAGS = $(binary128_libdepends)
 
 Cgeev_test_binary128_SOURCES = Cgeev_test_binary128.cpp
-Cgeev_test_binary128_CXXFLAGS = $(mplapack_binary128_t_cxxflags)
-Cgeev_test_binary128_LDFLAGS = $(mplapack_binary128_t_libdepends)
+Cgeev_test_binary128_CXXFLAGS = $(binary128_cxxflags)
+Cgeev_test_binary128_LDFLAGS = $(binary128_libdepends)
 
 Rgees_Grcar_binary128_SOURCES = Rgees_Grcar_binary128.cpp
-Rgees_Grcar_binary128_CXXFLAGS = $(mplapack_binary128_t_cxxflags)
-Rgees_Grcar_binary128_LDFLAGS = $(mplapack_binary128_t_libdepends)
+Rgees_Grcar_binary128_CXXFLAGS = $(binary128_cxxflags)
+Rgees_Grcar_binary128_LDFLAGS = $(binary128_libdepends)
 
 Rgees_readfromfile_binary128_SOURCES = Rgees_readfromfile_binary128.cpp
-Rgees_readfromfile_binary128_CXXFLAGS = $(mplapack_binary128_t_cxxflags)
-Rgees_readfromfile_binary128_LDFLAGS = $(mplapack_binary128_t_libdepends)
+Rgees_readfromfile_binary128_CXXFLAGS = $(binary128_cxxflags)
+Rgees_readfromfile_binary128_LDFLAGS = $(binary128_libdepends)
 
 Rgees_test_binary128_SOURCES = Rgees_test_binary128.cpp
-Rgees_test_binary128_CXXFLAGS = $(mplapack_binary128_t_cxxflags)
-Rgees_test_binary128_LDFLAGS = $(mplapack_binary128_t_libdepends)
+Rgees_test_binary128_CXXFLAGS = $(binary128_cxxflags)
+Rgees_test_binary128_LDFLAGS = $(binary128_libdepends)
 
 Rgeev_Frank_binary128_SOURCES = Rgeev_Frank_binary128.cpp
-Rgeev_Frank_binary128_CXXFLAGS = $(mplapack_binary128_t_cxxflags)
-Rgeev_Frank_binary128_LDFLAGS = $(mplapack_binary128_t_libdepends)
+Rgeev_Frank_binary128_CXXFLAGS = $(binary128_cxxflags)
+Rgeev_Frank_binary128_LDFLAGS = $(binary128_libdepends)
 
 Rgeev_random_highcond_binary128_SOURCES = Rgeev_random_highcond_binary128.cpp
-Rgeev_random_highcond_binary128_CXXFLAGS = $(mplapack_binary128_t_cxxflags)
-Rgeev_random_highcond_binary128_LDFLAGS = $(mplapack_binary128_t_libdepends)
+Rgeev_random_highcond_binary128_CXXFLAGS = $(binary128_cxxflags)
+Rgeev_random_highcond_binary128_LDFLAGS = $(binary128_libdepends)
 
 Rgeev_readfromfile_binary128_SOURCES = Rgeev_readfromfile_binary128.cpp
-Rgeev_readfromfile_binary128_CXXFLAGS = $(mplapack_binary128_t_cxxflags)
-Rgeev_readfromfile_binary128_LDFLAGS = $(mplapack_binary128_t_libdepends)
+Rgeev_readfromfile_binary128_CXXFLAGS = $(binary128_cxxflags)
+Rgeev_readfromfile_binary128_LDFLAGS = $(binary128_libdepends)
 
 Rgeev_test_binary128_SOURCES = Rgeev_test_binary128.cpp
-Rgeev_test_binary128_CXXFLAGS = $(mplapack_binary128_t_cxxflags)
-Rgeev_test_binary128_LDFLAGS = $(mplapack_binary128_t_libdepends)
+Rgeev_test_binary128_CXXFLAGS = $(binary128_cxxflags)
+Rgeev_test_binary128_LDFLAGS = $(binary128_libdepends)
 
 endif
 
 if ENABLE_BINARY80
 mplapackexamples_PROGRAMS += Cgees_test_binary80 Cgeev_NPR_binary80 Cgeev_test2_binary80 Cgeev_test_binary80 Rgees_Grcar_binary80 Rgees_readfromfile_binary80 Rgees_test_binary80 Rgeev_Frank_binary80 Rgeev_random_highcond_binary80 Rgeev_readfromfile_binary80 Rgeev_test_binary80
 
-mplapack_binary80_t_cxxflags = $(OPENMP_CXXFLAGS)
-mplapack_binary80_t_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_binary80 -L$(top_builddir)/mpblas/reference -lmpblas_binary80
+binary80_cxxflags = $(OPENMP_CXXFLAGS)
+binary80_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_binary80 -L$(top_builddir)/mpblas/reference -lmpblas_binary80
 
 Cgees_test_binary80_SOURCES = Cgees_test_binary80.cpp
-Cgees_test_binary80_CXXFLAGS = $(mplapack_binary80_t_cxxflags)
-Cgees_test_binary80_LDFLAGS = $(mplapack_binary80_t_libdepends)
+Cgees_test_binary80_CXXFLAGS = $(binary80_cxxflags)
+Cgees_test_binary80_LDFLAGS = $(binary80_libdepends)
 
 Cgeev_NPR_binary80_SOURCES = Cgeev_NPR_binary80.cpp
-Cgeev_NPR_binary80_CXXFLAGS = $(mplapack_binary80_t_cxxflags)
-Cgeev_NPR_binary80_LDFLAGS = $(mplapack_binary80_t_libdepends)
+Cgeev_NPR_binary80_CXXFLAGS = $(binary80_cxxflags)
+Cgeev_NPR_binary80_LDFLAGS = $(binary80_libdepends)
 
 Cgeev_test2_binary80_SOURCES = Cgeev_test2_binary80.cpp
-Cgeev_test2_binary80_CXXFLAGS = $(mplapack_binary80_t_cxxflags)
-Cgeev_test2_binary80_LDFLAGS = $(mplapack_binary80_t_libdepends)
+Cgeev_test2_binary80_CXXFLAGS = $(binary80_cxxflags)
+Cgeev_test2_binary80_LDFLAGS = $(binary80_libdepends)
 
 Cgeev_test_binary80_SOURCES = Cgeev_test_binary80.cpp
-Cgeev_test_binary80_CXXFLAGS = $(mplapack_binary80_t_cxxflags)
-Cgeev_test_binary80_LDFLAGS = $(mplapack_binary80_t_libdepends)
+Cgeev_test_binary80_CXXFLAGS = $(binary80_cxxflags)
+Cgeev_test_binary80_LDFLAGS = $(binary80_libdepends)
 
 Rgees_Grcar_binary80_SOURCES = Rgees_Grcar_binary80.cpp
-Rgees_Grcar_binary80_CXXFLAGS = $(mplapack_binary80_t_cxxflags)
-Rgees_Grcar_binary80_LDFLAGS = $(mplapack_binary80_t_libdepends)
+Rgees_Grcar_binary80_CXXFLAGS = $(binary80_cxxflags)
+Rgees_Grcar_binary80_LDFLAGS = $(binary80_libdepends)
 
 Rgees_readfromfile_binary80_SOURCES = Rgees_readfromfile_binary80.cpp
-Rgees_readfromfile_binary80_CXXFLAGS = $(mplapack_binary80_t_cxxflags)
-Rgees_readfromfile_binary80_LDFLAGS = $(mplapack_binary80_t_libdepends)
+Rgees_readfromfile_binary80_CXXFLAGS = $(binary80_cxxflags)
+Rgees_readfromfile_binary80_LDFLAGS = $(binary80_libdepends)
 
 Rgees_test_binary80_SOURCES = Rgees_test_binary80.cpp
-Rgees_test_binary80_CXXFLAGS = $(mplapack_binary80_t_cxxflags)
-Rgees_test_binary80_LDFLAGS = $(mplapack_binary80_t_libdepends)
+Rgees_test_binary80_CXXFLAGS = $(binary80_cxxflags)
+Rgees_test_binary80_LDFLAGS = $(binary80_libdepends)
 
 Rgeev_Frank_binary80_SOURCES = Rgeev_Frank_binary80.cpp
-Rgeev_Frank_binary80_CXXFLAGS = $(mplapack_binary80_t_cxxflags)
-Rgeev_Frank_binary80_LDFLAGS = $(mplapack_binary80_t_libdepends)
+Rgeev_Frank_binary80_CXXFLAGS = $(binary80_cxxflags)
+Rgeev_Frank_binary80_LDFLAGS = $(binary80_libdepends)
 
 Rgeev_random_highcond_binary80_SOURCES = Rgeev_random_highcond_binary80.cpp
-Rgeev_random_highcond_binary80_CXXFLAGS = $(mplapack_binary80_t_cxxflags)
-Rgeev_random_highcond_binary80_LDFLAGS = $(mplapack_binary80_t_libdepends)
+Rgeev_random_highcond_binary80_CXXFLAGS = $(binary80_cxxflags)
+Rgeev_random_highcond_binary80_LDFLAGS = $(binary80_libdepends)
 
 Rgeev_readfromfile_binary80_SOURCES = Rgeev_readfromfile_binary80.cpp
-Rgeev_readfromfile_binary80_CXXFLAGS = $(mplapack_binary80_t_cxxflags)
-Rgeev_readfromfile_binary80_LDFLAGS = $(mplapack_binary80_t_libdepends)
+Rgeev_readfromfile_binary80_CXXFLAGS = $(binary80_cxxflags)
+Rgeev_readfromfile_binary80_LDFLAGS = $(binary80_libdepends)
 
 Rgeev_test_binary80_SOURCES = Rgeev_test_binary80.cpp
-Rgeev_test_binary80_CXXFLAGS = $(mplapack_binary80_t_cxxflags)
-Rgeev_test_binary80_LDFLAGS = $(mplapack_binary80_t_libdepends)
+Rgeev_test_binary80_CXXFLAGS = $(binary80_cxxflags)
+Rgeev_test_binary80_LDFLAGS = $(binary80_libdepends)
 
 endif
 

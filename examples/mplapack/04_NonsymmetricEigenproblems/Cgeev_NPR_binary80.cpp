@@ -47,20 +47,20 @@ template <class X> void printmat(int n, int m, X *a, int lda)
 }
 #include <mplapack_utils_binary80.h>
 
-bool rselect(mplapack_binary80_t ar, mplapack_binary80_t ai) {
+bool rselect(mplapack_binary128_t ar, mplapack_binary128_t ai) {
     // sorting rule for eigenvalues.
     return false;
 }
 
 int main() {
     mplapackint n = 10;
-    std::complex<mplapack_binary80_t> *a = new std::complex<mplapack_binary80_t>[n * n];
-    std::complex<mplapack_binary80_t> *w = new std::complex<mplapack_binary80_t>[n];
-    std::complex<mplapack_binary80_t> *vl = new std::complex<mplapack_binary80_t>[n * n];
-    std::complex<mplapack_binary80_t> *vr = new std::complex<mplapack_binary80_t>[n * n];
+    std::complex<mplapack_binary128_t> *a = new std::complex<mplapack_binary128_t>[n * n];
+    std::complex<mplapack_binary128_t> *w = new std::complex<mplapack_binary128_t>[n];
+    std::complex<mplapack_binary128_t> *vl = new std::complex<mplapack_binary128_t>[n * n];
+    std::complex<mplapack_binary128_t> *vr = new std::complex<mplapack_binary128_t>[n * n];
     mplapackint lwork = 4 * n;
-    std::complex<mplapack_binary80_t> *work = new std::complex<mplapack_binary80_t>[lwork];    
-    mplapack_binary80_t *rwork = new mplapack_binary80_t[lwork];
+    std::complex<mplapack_binary128_t> *work = new std::complex<mplapack_binary128_t>[lwork];    
+    mplapack_binary128_t *rwork = new mplapack_binary128_t[lwork];
     mplapackint info;
     // setting A matrix
     for (int i = 1; i <= n; i++) {
@@ -72,9 +72,9 @@ int main() {
     //https://doi.org/10.1002/nla.1811
     //http://www.math.kent.edu/~reichel/publications/toep3.pdf
 
-    std::complex<mplapack_binary80_t> sigma = std::complex<mplapack_binary80_t>(4.0, 3.0) / mplapack_binary80_t(8.0);
-    std::complex<mplapack_binary80_t> delta = std::complex<mplapack_binary80_t>(16.0, -3.0);
-    std::complex<mplapack_binary80_t> tau   = std::complex<mplapack_binary80_t>(0.0, -5.0);
+    std::complex<mplapack_binary128_t> sigma = std::complex<mplapack_binary128_t>(4.0, 3.0) / mplapack_binary128_t(8.0);
+    std::complex<mplapack_binary128_t> delta = std::complex<mplapack_binary128_t>(16.0, -3.0);
+    std::complex<mplapack_binary128_t> tau   = std::complex<mplapack_binary128_t>(0.0, -5.0);
 
     for (int i = 1; i <= n; i++) {
         a [ (i - 1) + (i - 1) * n ] = delta;
@@ -92,10 +92,10 @@ int main() {
     Cgeev("V", "V", n, a, n, w, vl, n, vr, n, work, lwork, rwork, info);
     printf("lambda ="); printvec(w,n); printf("\n");
 
-    std::complex<mplapack_binary80_t> _pi = pi(mplapack_binary80_t(0.0));
-    std::complex<mplapack_binary80_t> *lambda = new std::complex<mplapack_binary80_t>[n];
+    std::complex<mplapack_binary128_t> _pi = pi(mplapack_binary128_t(0.0));
+    std::complex<mplapack_binary128_t> *lambda = new std::complex<mplapack_binary128_t>[n];
     for (int h = 1; h <= n; h++) {
-        lambda [h - 1] = delta + std::complex<mplapack_binary80_t>(2.0, 0.0) * sqrt (sigma * tau) * cos( (mplapack_binary80_t(h) * _pi) / mplapack_binary80_t((int)n + 1) );
+        lambda [h - 1] = delta + std::complex<mplapack_binary128_t>(2.0, 0.0) * sqrt (sigma * tau) * cos( (mplapack_binary128_t(h) * _pi) / mplapack_binary128_t((int)n + 1) );
     }
     printf("lambda_true = "); printvec(lambda, n); printf("\n");
     printf("vr ="); printmat(n,n,vr,n); printf("\n");    

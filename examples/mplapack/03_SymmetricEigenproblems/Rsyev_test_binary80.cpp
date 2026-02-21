@@ -53,8 +53,8 @@ int main()
     mplapackint n = 4;
     mplapackint lwork, info;
 
-    mplapack_binary80_t *A = new mplapack_binary80_t[n * n];
-    mplapack_binary80_t *w = new mplapack_binary80_t[n];
+    mplapack_binary128_t *A = new mplapack_binary128_t[n * n];
+    mplapack_binary128_t *w = new mplapack_binary128_t[n];
 
 //setting A matrix
     A[0 + 0 * n] = 5;    A[0 + 1 * n] = 4;    A[0 + 2 * n] = 1;    A[0 + 3 * n] = 1;
@@ -65,12 +65,12 @@ int main()
     printf("A ="); printmat(n, n, A, n); printf("\n");
 //work space query
     lwork = -1;
-    mplapack_binary80_t *work = new mplapack_binary80_t[1];
+    mplapack_binary128_t *work = new mplapack_binary128_t[1];
 
     Rsyev("V", "U", n, A, n, w, work, lwork, info);
     lwork = (int) cast2double (work[0]);
     delete[]work;
-    work = new mplapack_binary80_t[std::max((mplapackint) 1, lwork)];
+    work = new mplapack_binary128_t[std::max((mplapackint) 1, lwork)];
 //inverse matrix
     Rsyev("V", "U", n, A, n, w, work, lwork, info);
 //print out some results.

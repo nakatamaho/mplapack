@@ -50,11 +50,11 @@ void printmat(int n, int m, mplapack_binary80_t *a, int lda)
 }
 void inv_hilbert_matrix(int n) {
     mplapackint lwork, info;
-    mplapack_binary80_t *ainv = new mplapack_binary80_t[n * n];
-    mplapack_binary80_t *aorg = new mplapack_binary80_t[n * n];
-    mplapack_binary80_t *c = new mplapack_binary80_t[n * n];
+    mplapack_binary128_t *ainv = new mplapack_binary128_t[n * n];
+    mplapack_binary128_t *aorg = new mplapack_binary128_t[n * n];
+    mplapack_binary128_t *c = new mplapack_binary128_t[n * n];
     mplapackint *ipiv = new mplapackint[n];
-    mplapack_binary80_t one = 1.0, zero = 0.0, mtmp;
+    mplapack_binary128_t one = 1.0, zero = 0.0, mtmp;
 
     // setting A matrix
     for (int i = 0; i < n; i++) {
@@ -68,11 +68,11 @@ void inv_hilbert_matrix(int n) {
     printf("a = "); printmat(n, n, ainv, n); printf("\n");
     // work space query
     lwork = -1;
-    mplapack_binary80_t *work = new mplapack_binary80_t[1];
+    mplapack_binary128_t *work = new mplapack_binary128_t[1];
     Rgetri(n, ainv, n, ipiv, work, lwork, info);
     lwork = castINTEGER_binary80(work[0]);
     delete[] work;
-    work = new mplapack_binary80_t[std::max(1, (int)lwork)];
+    work = new mplapack_binary128_t[std::max(1, (int)lwork)];
 
     // inverse matrix
     Rgetrf(n, n, ainv, n, ipiv, info);

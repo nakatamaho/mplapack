@@ -53,7 +53,7 @@ int main()
     mplapackint n = 4;
     mplapackint lwork, info;
 
-    mplapack_binary80_t *a = new mplapack_binary80_t[n * n];
+    mplapack_binary128_t *a = new mplapack_binary128_t[n * n];
     mplapackint *ipiv = new mplapackint[n];
 
 //setting a matrix
@@ -69,12 +69,12 @@ int main()
 
 //work space query
     lwork = -1;
-    mplapack_binary80_t *work = new mplapack_binary80_t[1];
+    mplapack_binary128_t *work = new mplapack_binary128_t[1];
 
     Rgetri(n, a, n, ipiv, work, lwork, info);
     lwork = castINTEGER_binary80 (work[0]);
     delete[]work;
-    work = new mplapack_binary80_t[std::max(1, (int) lwork)];
+    work = new mplapack_binary128_t[std::max(1, (int) lwork)];
 
 //inverse matrix
     Rgetrf(n, n, a, n, ipiv, info);

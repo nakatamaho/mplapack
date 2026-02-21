@@ -53,29 +53,29 @@ void printmat(int n, int m, mplapack_binary80_t *a, int lda)
 
 void DingDong(mplapackint n) {
     mplapackint lwork, liwork, info, m;
-    mplapack_binary80_t *a = new mplapack_binary80_t[n * n];
-    mplapack_binary80_t *w = new mplapack_binary80_t[n];
-    mplapack_binary80_t PI;
+    mplapack_binary128_t *a = new mplapack_binary128_t[n * n];
+    mplapack_binary128_t *w = new mplapack_binary128_t[n];
+    mplapack_binary128_t PI;
     PI = pi(PI);
 
     // setting A matrix
     for (int i = 1; i <= n; i++) {
         for (int j = 1; j <= n; j++) {
-            a[(i - 1) + (j - 1) * n] = 1.0 / mplapack_binary80_t( 2.0 * ( n - i - j + 3.0 / 2.0 ));
+            a[(i - 1) + (j - 1) * n] = 1.0 / mplapack_binary128_t( 2.0 * ( n - i - j + 3.0 / 2.0 ));
         }
     }
     printf("a ="); printmat(n, n, a, n); printf("\n");
 
     // work space query
     lwork = -1;
-    mplapack_binary80_t *work = new mplapack_binary80_t[1];
+    mplapack_binary128_t *work = new mplapack_binary128_t[1];
     liwork = -1;
     mplapackint *iwork = new mplapackint[1];
 
     Rsyevd("N", "U", n, a, n, w, work, lwork, iwork, liwork, info);
     lwork = (int)cast2double(work[0]);
     delete[] work;
-    work = new mplapack_binary80_t[std::max((mplapackint)1, lwork)];
+    work = new mplapack_binary128_t[std::max((mplapackint)1, lwork)];
     liwork = iwork[0];
     delete[] iwork;
     iwork = new mplapackint[std::max((mplapackint)1, liwork)];

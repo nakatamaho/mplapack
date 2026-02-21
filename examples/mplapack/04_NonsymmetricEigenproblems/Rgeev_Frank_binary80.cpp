@@ -50,11 +50,11 @@ void printmat(int n, int m, mplapack_binary80_t *a, int lda)
 }
 void Frank(mplapackint n) {
     mplapackint lwork, liwork, info, m;
-    mplapack_binary80_t *a = new mplapack_binary80_t[n * n];
-    mplapack_binary80_t *vl = new mplapack_binary80_t[n * n]; //not used
-    mplapack_binary80_t *vr = new mplapack_binary80_t[n * n]; //not used
-    mplapack_binary80_t *wr = new mplapack_binary80_t[n];
-    mplapack_binary80_t *wi = new mplapack_binary80_t[n];
+    mplapack_binary128_t *a = new mplapack_binary128_t[n * n];
+    mplapack_binary128_t *vl = new mplapack_binary128_t[n * n]; //not used
+    mplapack_binary128_t *vr = new mplapack_binary128_t[n * n]; //not used
+    mplapack_binary128_t *wr = new mplapack_binary128_t[n];
+    mplapack_binary128_t *wi = new mplapack_binary128_t[n];
 
     // setting A matrix
     for (int i = 1; i <= n; i++) {
@@ -76,11 +76,11 @@ void Frank(mplapackint n) {
 
     // work space query
     lwork = -1;
-    mplapack_binary80_t *work = new mplapack_binary80_t[1];
+    mplapack_binary128_t *work = new mplapack_binary128_t[1];
     Rgeev("N", "N", n, a, n, wr, wi, vl, n, vr, n, work, lwork, info);
     lwork = (int)cast2double(work[0]);
     delete[] work;
-    work = new mplapack_binary80_t[std::max((mplapackint)1, lwork)];
+    work = new mplapack_binary128_t[std::max((mplapackint)1, lwork)];
 
     // diagonalize matrix
     Rgeev("N", "N", n, a, n, wr, wi, vl, n, vr, n, work, lwork, info);
@@ -99,7 +99,7 @@ void Frank(mplapackint n) {
     delete[] a;
 }
 
-bool rselect(mplapack_binary80_t ar, mplapack_binary80_t ai) {
+bool rselect(mplapack_binary128_t ar, mplapack_binary128_t ai) {
     // sorting rule for eigenvalues.
     return false;
 }

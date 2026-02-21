@@ -12,9 +12,9 @@ void printnum(mplapack_binary128_t rtmp)
 {
     int width = 42;
     char buf[BUFLEN];
-#if MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_QUADMATH_SNPRINTF
+#if defined ___MPLAPACK_WANT_LIBQUADMATH___
     int n = quadmath_snprintf (buf, sizeof buf, "%*.35Qe", width, rtmp);
-#elif MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_SNPRINTF_LDBL
+#elif defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
     snprintf (buf, sizeof buf, "%.35Le", rtmp);
 #else
     strfromf128(buf, sizeof(buf), "%.35e", rtmp);
@@ -30,9 +30,9 @@ void printnum(std::complex<mplapack_binary128_t> rtmp)
 {
     int width = 42;
     char buf[BUFLEN];
-#if MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_QUADMATH_SNPRINTF
+#if defined ___MPLAPACK_WANT_LIBQUADMATH___
     int n = quadmath_snprintf (buf, sizeof buf, "%*.35Qe", width, rtmp.real());
-#elif MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_SNPRINTF_LDBL
+#elif defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
     snprintf (buf, sizeof buf, "%.35Le", rtmp.real());
 #else
     strfromf128(buf, sizeof(buf), "%.35e", rtmp.real());
@@ -41,9 +41,9 @@ void printnum(std::complex<mplapack_binary128_t> rtmp)
         printf ("+%s", buf);
     else
         printf ("%s", buf);
-#if MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_QUADMATH_SNPRINTF
+#if defined ___MPLAPACK_WANT_LIBQUADMATH___
     n = quadmath_snprintf (buf, sizeof buf, "%*.35Qe", width, rtmp.imag());
-#elif MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_SNPRINTF_LDBL
+#elif defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
     snprintf (buf, sizeof buf, "%.35Le", rtmp.imag());
 #else
     strfromf128(buf, sizeof(buf), "%.35e", rtmp.imag());

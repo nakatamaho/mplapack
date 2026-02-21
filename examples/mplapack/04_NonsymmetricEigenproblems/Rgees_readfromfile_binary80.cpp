@@ -48,7 +48,7 @@ void printmat(int n, int m, mplapack_binary80_t *a, int lda)
     }
     printf("]");
 }
-bool rselect(mplapack_binary80_t ar, mplapack_binary80_t ai) {
+bool rselect(mplapack_binary128_t ar, mplapack_binary128_t ai) {
     // sorting rule for eigenvalues.
     return false;
 }
@@ -67,13 +67,13 @@ int main() {
     ss >> n;
     printf("# n %d\n", (int)n);
 
-    mplapack_binary80_t *a = new mplapack_binary80_t[n * n];
-    mplapack_binary80_t *vs = new mplapack_binary80_t[n * n];
+    mplapack_binary128_t *a = new mplapack_binary128_t[n * n];
+    mplapack_binary128_t *vs = new mplapack_binary128_t[n * n];
     mplapackint sdim = 0;
     mplapackint lwork = 3 * n;
-    mplapack_binary80_t *wr = new mplapack_binary80_t[n];
-    mplapack_binary80_t *wi = new mplapack_binary80_t[n];
-    mplapack_binary80_t *work = new mplapack_binary80_t[lwork];
+    mplapack_binary128_t *wr = new mplapack_binary128_t[n];
+    mplapack_binary128_t *wi = new mplapack_binary128_t[n];
+    mplapack_binary128_t *work = new mplapack_binary128_t[lwork];
     bool bwork[n];
     mplapackint info;
     double dtmp;

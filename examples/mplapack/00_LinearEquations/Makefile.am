@@ -67,68 +67,68 @@ endif
 if ENABLE_BINARY128
 mplapackexamples_PROGRAMS += Cgetri_test_binary128 Rgesv_test_binary128 Rgetri_Hilbert_binary128 Rgetri_test2_binary128 Rgetri_test3_binary128 Rgetri_test_binary128
 
-mplapack_binary128_t_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include
-if BINARY128_USE_QUADMATH
-mplapack_binary128_t_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_binary128 -L$(top_builddir)/mpblas/reference -lmpblas_binary128 -lquadmath
+binary128_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include
+if MPLAPACK_BINARY128_MODE_QUADMATH
+binary128_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_binary128 -L$(top_builddir)/mpblas/reference -lmpblas_binary128 -lquadmath
 else
-mplapack_binary128_t_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_binary128 -L$(top_builddir)/mpblas/reference -lmpblas_binary128
+binary128_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_binary128 -L$(top_builddir)/mpblas/reference -lmpblas_binary128
 endif
 
 Cgetri_test_binary128_SOURCES = Cgetri_test_binary128.cpp
-Cgetri_test_binary128_CXXFLAGS = $(mplapack_binary128_t_cxxflags)
-Cgetri_test_binary128_LDFLAGS = $(mplapack_binary128_t_libdepends)
+Cgetri_test_binary128_CXXFLAGS = $(binary128_cxxflags)
+Cgetri_test_binary128_LDFLAGS = $(binary128_libdepends)
 
 Rgesv_test_binary128_SOURCES = Rgesv_test_binary128.cpp
-Rgesv_test_binary128_CXXFLAGS = $(mplapack_binary128_t_cxxflags)
-Rgesv_test_binary128_LDFLAGS = $(mplapack_binary128_t_libdepends)
+Rgesv_test_binary128_CXXFLAGS = $(binary128_cxxflags)
+Rgesv_test_binary128_LDFLAGS = $(binary128_libdepends)
 
 Rgetri_Hilbert_binary128_SOURCES = Rgetri_Hilbert_binary128.cpp
-Rgetri_Hilbert_binary128_CXXFLAGS = $(mplapack_binary128_t_cxxflags)
-Rgetri_Hilbert_binary128_LDFLAGS = $(mplapack_binary128_t_libdepends)
+Rgetri_Hilbert_binary128_CXXFLAGS = $(binary128_cxxflags)
+Rgetri_Hilbert_binary128_LDFLAGS = $(binary128_libdepends)
 
 Rgetri_test2_binary128_SOURCES = Rgetri_test2_binary128.cpp
-Rgetri_test2_binary128_CXXFLAGS = $(mplapack_binary128_t_cxxflags)
-Rgetri_test2_binary128_LDFLAGS = $(mplapack_binary128_t_libdepends)
+Rgetri_test2_binary128_CXXFLAGS = $(binary128_cxxflags)
+Rgetri_test2_binary128_LDFLAGS = $(binary128_libdepends)
 
 Rgetri_test3_binary128_SOURCES = Rgetri_test3_binary128.cpp
-Rgetri_test3_binary128_CXXFLAGS = $(mplapack_binary128_t_cxxflags)
-Rgetri_test3_binary128_LDFLAGS = $(mplapack_binary128_t_libdepends)
+Rgetri_test3_binary128_CXXFLAGS = $(binary128_cxxflags)
+Rgetri_test3_binary128_LDFLAGS = $(binary128_libdepends)
 
 Rgetri_test_binary128_SOURCES = Rgetri_test_binary128.cpp
-Rgetri_test_binary128_CXXFLAGS = $(mplapack_binary128_t_cxxflags)
-Rgetri_test_binary128_LDFLAGS = $(mplapack_binary128_t_libdepends)
+Rgetri_test_binary128_CXXFLAGS = $(binary128_cxxflags)
+Rgetri_test_binary128_LDFLAGS = $(binary128_libdepends)
 
 endif
 
 if ENABLE_BINARY80
 mplapackexamples_PROGRAMS += Cgetri_test_binary80 Rgesv_test_binary80 Rgetri_Hilbert_binary80 Rgetri_test2_binary80 Rgetri_test3_binary80 Rgetri_test_binary80
 
-mplapack_binary80_t_cxxflags = $(OPENMP_CXXFLAGS)
-mplapack_binary80_t_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_binary80 -L$(top_builddir)/mpblas/reference -lmpblas_binary80
+binary80_cxxflags = $(OPENMP_CXXFLAGS)
+binary80_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_binary80 -L$(top_builddir)/mpblas/reference -lmpblas_binary80
 
 Cgetri_test_binary80_SOURCES = Cgetri_test_binary80.cpp
-Cgetri_test_binary80_CXXFLAGS = $(mplapack_binary80_t_cxxflags)
-Cgetri_test_binary80_LDFLAGS = $(mplapack_binary80_t_libdepends)
+Cgetri_test_binary80_CXXFLAGS = $(binary80_cxxflags)
+Cgetri_test_binary80_LDFLAGS = $(binary80_libdepends)
 
 Rgesv_test_binary80_SOURCES = Rgesv_test_binary80.cpp
-Rgesv_test_binary80_CXXFLAGS = $(mplapack_binary80_t_cxxflags)
-Rgesv_test_binary80_LDFLAGS = $(mplapack_binary80_t_libdepends)
+Rgesv_test_binary80_CXXFLAGS = $(binary80_cxxflags)
+Rgesv_test_binary80_LDFLAGS = $(binary80_libdepends)
 
 Rgetri_Hilbert_binary80_SOURCES = Rgetri_Hilbert_binary80.cpp
-Rgetri_Hilbert_binary80_CXXFLAGS = $(mplapack_binary80_t_cxxflags)
-Rgetri_Hilbert_binary80_LDFLAGS = $(mplapack_binary80_t_libdepends)
+Rgetri_Hilbert_binary80_CXXFLAGS = $(binary80_cxxflags)
+Rgetri_Hilbert_binary80_LDFLAGS = $(binary80_libdepends)
 
 Rgetri_test2_binary80_SOURCES = Rgetri_test2_binary80.cpp
-Rgetri_test2_binary80_CXXFLAGS = $(mplapack_binary80_t_cxxflags)
-Rgetri_test2_binary80_LDFLAGS = $(mplapack_binary80_t_libdepends)
+Rgetri_test2_binary80_CXXFLAGS = $(binary80_cxxflags)
+Rgetri_test2_binary80_LDFLAGS = $(binary80_libdepends)
 
 Rgetri_test3_binary80_SOURCES = Rgetri_test3_binary80.cpp
-Rgetri_test3_binary80_CXXFLAGS = $(mplapack_binary80_t_cxxflags)
-Rgetri_test3_binary80_LDFLAGS = $(mplapack_binary80_t_libdepends)
+Rgetri_test3_binary80_CXXFLAGS = $(binary80_cxxflags)
+Rgetri_test3_binary80_LDFLAGS = $(binary80_libdepends)
 
 Rgetri_test_binary80_SOURCES = Rgetri_test_binary80.cpp
-Rgetri_test_binary80_CXXFLAGS = $(mplapack_binary80_t_cxxflags)
-Rgetri_test_binary80_LDFLAGS = $(mplapack_binary80_t_libdepends)
+Rgetri_test_binary80_CXXFLAGS = $(binary80_cxxflags)
+Rgetri_test_binary80_LDFLAGS = $(binary80_libdepends)
 
 endif
 

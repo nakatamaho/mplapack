@@ -52,12 +52,12 @@ int main() {
     mplapackint n = 5;
     mplapackint m = 4;
 
-    mplapack_binary80_t *a = new mplapack_binary80_t[m * n];
-    mplapack_binary80_t *s = new mplapack_binary80_t[std::min(m, n)];
-    mplapack_binary80_t *u = new mplapack_binary80_t[m * m];
-    mplapack_binary80_t *vt = new mplapack_binary80_t[n * n];
+    mplapack_binary128_t *a = new mplapack_binary128_t[m * n];
+    mplapack_binary128_t *s = new mplapack_binary128_t[std::min(m, n)];
+    mplapack_binary128_t *u = new mplapack_binary128_t[m * m];
+    mplapack_binary128_t *vt = new mplapack_binary128_t[n * n];
     mplapackint lwork = std::max({(mplapackint)1, 3 * std::min(m, n) + std::max(m, n), 5 * std::min(m, n)});
-    mplapack_binary80_t *work = new mplapack_binary80_t[lwork];
+    mplapack_binary128_t *work = new mplapack_binary128_t[lwork];
     mplapackint info;
 
     // setting A matrix

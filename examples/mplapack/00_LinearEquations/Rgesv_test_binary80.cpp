@@ -52,8 +52,8 @@ int main()
 {
     mplapackint n = 4;
     mplapackint info;
-    mplapack_binary80_t *a = new mplapack_binary80_t[n * n];
-    mplapack_binary80_t *b = new mplapack_binary80_t[n];
+    mplapack_binary128_t *a = new mplapack_binary128_t[n * n];
+    mplapack_binary128_t *b = new mplapack_binary128_t[n];
     mplapackint *ipiv = new mplapackint[n];
 
 //setting a matrix

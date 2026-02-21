@@ -45,26 +45,26 @@ template <class X> void printmat(int n, int m, X *a, int lda)
     }
     printf("]");
 }
-bool rselect(mplapack_binary80_t ar, mplapack_binary80_t ai) {
+bool rselect(mplapack_binary128_t ar, mplapack_binary128_t ai) {
     // sorting rule for eigenvalues.
     return false;
 }
 
 int main() {
     mplapackint n = 4;
-    std::complex<mplapack_binary80_t> *a = new std::complex<mplapack_binary80_t>[n * n];
-    std::complex<mplapack_binary80_t> *w = new std::complex<mplapack_binary80_t>[n];
-    std::complex<mplapack_binary80_t> *vl = new std::complex<mplapack_binary80_t>[n * n];
-    std::complex<mplapack_binary80_t> *vr = new std::complex<mplapack_binary80_t>[n * n];
+    std::complex<mplapack_binary128_t> *a = new std::complex<mplapack_binary128_t>[n * n];
+    std::complex<mplapack_binary128_t> *w = new std::complex<mplapack_binary128_t>[n];
+    std::complex<mplapack_binary128_t> *vl = new std::complex<mplapack_binary128_t>[n * n];
+    std::complex<mplapack_binary128_t> *vr = new std::complex<mplapack_binary128_t>[n * n];
     mplapackint lwork = 4 * n;
-    std::complex<mplapack_binary80_t> *work = new std::complex<mplapack_binary80_t>[lwork];    
-    mplapack_binary80_t *rwork = new mplapack_binary80_t[lwork];
+    std::complex<mplapack_binary128_t> *work = new std::complex<mplapack_binary128_t>[lwork];    
+    mplapack_binary128_t *rwork = new mplapack_binary128_t[lwork];
     mplapackint info;
     // setting A matrix
-    a[0 + 0 * n] = std::complex<mplapack_binary80_t>(7.0, 0.0);   a[0 + 1 * n] = std::complex<mplapack_binary80_t>(3.0, 0.0);  a[0 + 2 * n] = std::complex<mplapack_binary80_t>(1.0, 2.0);   a[0 + 3 * n] = std::complex<mplapack_binary80_t>(-1.0, 2.0);
-    a[1 + 0 * n] = std::complex<mplapack_binary80_t>(3.0, 0.0);   a[1 + 1 * n] = std::complex<mplapack_binary80_t>(7.0, 0.0);  a[1 + 2 * n] = std::complex<mplapack_binary80_t>(1.0, -2.0);  a[1 + 3 * n] = std::complex<mplapack_binary80_t>(-1.0, -2.0);
-    a[2 + 0 * n] = std::complex<mplapack_binary80_t>(1.0, -2.0);  a[2 + 1 * n] = std::complex<mplapack_binary80_t>(1.0, 2.0);  a[2 + 2 * n] = std::complex<mplapack_binary80_t>(7.0, 0.0);   a[2 + 3 * n] = std::complex<mplapack_binary80_t>(-3.0, 0.0);
-    a[3 + 0 * n] = std::complex<mplapack_binary80_t>(-1.0, -2.0); a[3 + 1 * n] = std::complex<mplapack_binary80_t>(-1.0, 2.0); a[3 + 2 * n] = std::complex<mplapack_binary80_t>(-3.0, 0.0);  a[3 + 3 * n] = std::complex<mplapack_binary80_t>(7.0, 0.0); 
+    a[0 + 0 * n] = std::complex<mplapack_binary128_t>(7.0, 0.0);   a[0 + 1 * n] = std::complex<mplapack_binary128_t>(3.0, 0.0);  a[0 + 2 * n] = std::complex<mplapack_binary128_t>(1.0, 2.0);   a[0 + 3 * n] = std::complex<mplapack_binary128_t>(-1.0, 2.0);
+    a[1 + 0 * n] = std::complex<mplapack_binary128_t>(3.0, 0.0);   a[1 + 1 * n] = std::complex<mplapack_binary128_t>(7.0, 0.0);  a[1 + 2 * n] = std::complex<mplapack_binary128_t>(1.0, -2.0);  a[1 + 3 * n] = std::complex<mplapack_binary128_t>(-1.0, -2.0);
+    a[2 + 0 * n] = std::complex<mplapack_binary128_t>(1.0, -2.0);  a[2 + 1 * n] = std::complex<mplapack_binary128_t>(1.0, 2.0);  a[2 + 2 * n] = std::complex<mplapack_binary128_t>(7.0, 0.0);   a[2 + 3 * n] = std::complex<mplapack_binary128_t>(-3.0, 0.0);
+    a[3 + 0 * n] = std::complex<mplapack_binary128_t>(-1.0, -2.0); a[3 + 1 * n] = std::complex<mplapack_binary128_t>(-1.0, 2.0); a[3 + 2 * n] = std::complex<mplapack_binary128_t>(-3.0, 0.0);  a[3 + 3 * n] = std::complex<mplapack_binary128_t>(7.0, 0.0); 
 
     printf("# Ex. 6.7 p. 117, Collection of Matrices for Testing Computational Algorithms, Robert T. Gregory, David L. Karney\n");
     printf("# octave check\n");

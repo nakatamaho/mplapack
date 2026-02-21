@@ -1,5 +1,5 @@
 # public domain
-# whether _FLOAT128 libs is requred or not is heavily dependent on your environment.
+# whether BINARY128 libs is requred or not is heavily dependent on your environment.
 
 CXX=c++
 MPLAPACKDIR=%%MPLAPACKDIR%%
@@ -10,8 +10,8 @@ MPFRLIBS=-lmpblas_mpfr -lmpfr -lmpc -lgmp
 GMPLIBS=-lmpblas_gmp -lgmpxx -lgmp 
 QDLIBS=-lmpblas_qd -lqd
 DDLIBS=-fopenmp -lmpblas_dd_cuda -lcudart -lmpblas_dd_opt -lqd
-_FLOAT64xLIBS=-lmpblas_binary80
-_FLOAT128LIBS=-lmpblas_binary128%%LIBQUADMATH%%
+BINARY80LIBS=-lmpblas_binary80
+BINARY128LIBS=-lmpblas_binary128%%LIBQUADMATH%%
 DOUBLELIBS=-lmpblas_double
 BLAS=
 LAPACK=

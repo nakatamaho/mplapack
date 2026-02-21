@@ -50,24 +50,24 @@ int main()
     mplapackint n = 3;
     mplapackint lwork, info;
 
-    std::complex<mplapack_binary80_t> *A = new std::complex<mplapack_binary80_t>[n * n];
-    mplapack_binary80_t *w = new mplapack_binary80_t[n];
-    mplapack_binary80_t *rwork = new mplapack_binary80_t[3 * n - 1];
+    std::complex<mplapack_binary128_t> *A = new std::complex<mplapack_binary128_t>[n * n];
+    mplapack_binary128_t *w = new mplapack_binary128_t[n];
+    mplapack_binary128_t *rwork = new mplapack_binary128_t[3 * n - 1];
 
 //setting A matrix
-    A[0 + 0 * n] = 2.0;               A[0 + 1 * n] = std::complex<mplapack_binary80_t>(0.0, -1.0);    A[0 + 2 * n] = 0.0;
-    A[1 + 0 * n] = std::complex<mplapack_binary80_t>(0.0, 1.0); A[1 + 1 * n] = 2.0;                   A[1 + 2 * n] = 0.0;
+    A[0 + 0 * n] = 2.0;               A[0 + 1 * n] = std::complex<mplapack_binary128_t>(0.0, -1.0);    A[0 + 2 * n] = 0.0;
+    A[1 + 0 * n] = std::complex<mplapack_binary128_t>(0.0, 1.0); A[1 + 1 * n] = 2.0;                   A[1 + 2 * n] = 0.0;
     A[2 + 0 * n] = 0.0;               A[2 + 1 * n] = 0.0;                   A[2 + 2 * n] = 3.0;
 
     printf("A ="); printmat(n, n, A, n); printf("\n");
 //work space query
     lwork = -1;
-    std::complex<mplapack_binary80_t> *work = new std::complex<mplapack_binary80_t>[1];
+    std::complex<mplapack_binary128_t> *work = new std::complex<mplapack_binary128_t>[1];
 
     Cheev("V", "U", n, A, n, w, work, lwork, rwork, info);
     lwork = (int) cast2double (work[0].real());
     delete[]work;
-    work = new std::complex<mplapack_binary80_t>[std::max((mplapackint) 1, lwork)];
+    work = new std::complex<mplapack_binary128_t>[std::max((mplapackint) 1, lwork)];
 //inverse matrix
     Cheev("V", "U", n, A, n, w, work, lwork, rwork, info);
 //print out some results.

@@ -52,7 +52,7 @@ void printmat(int n, int m, mplapack_binary80_t *a, int lda)
 
 int compare_real(const void *a, const void *b)
 {
-    return *(mplapack_binary80_t*)a > *(mplapack_binary80_t*)b;
+    return *(mplapack_binary128_t*)a > *(mplapack_binary128_t*)b;
 }
 
 int main(int argc, char *argv[]) {
@@ -70,23 +70,23 @@ int main(int argc, char *argv[]) {
     }
     printf("#dimension %d, dispersion = %d \n", (int)n, (int)dispersion);
 
-    mplapack_binary80_t *a = new mplapack_binary80_t[n * n];
-    mplapack_binary80_t *aorg = new mplapack_binary80_t[n * n];
-    mplapack_binary80_t *ainv = new mplapack_binary80_t[n * n];
-    mplapack_binary80_t *at_a = new mplapack_binary80_t[n * n];
-    mplapack_binary80_t *I_ = new mplapack_binary80_t[n * n]; //I is reserved for imaginary number 
-    mplapack_binary80_t *s = new mplapack_binary80_t[n * n];
-    mplapack_binary80_t *sorg = new mplapack_binary80_t[n];
-    mplapack_binary80_t *u = new mplapack_binary80_t[n * n];
-    mplapack_binary80_t *vt = new mplapack_binary80_t[n * n];
-    mplapack_binary80_t *w = new mplapack_binary80_t[n * n];
+    mplapack_binary128_t *a = new mplapack_binary128_t[n * n];
+    mplapack_binary128_t *aorg = new mplapack_binary128_t[n * n];
+    mplapack_binary128_t *ainv = new mplapack_binary128_t[n * n];
+    mplapack_binary128_t *at_a = new mplapack_binary128_t[n * n];
+    mplapack_binary128_t *I_ = new mplapack_binary128_t[n * n]; //I is reserved for imaginary number 
+    mplapack_binary128_t *s = new mplapack_binary128_t[n * n];
+    mplapack_binary128_t *sorg = new mplapack_binary128_t[n];
+    mplapack_binary128_t *u = new mplapack_binary128_t[n * n];
+    mplapack_binary128_t *vt = new mplapack_binary128_t[n * n];
+    mplapack_binary128_t *w = new mplapack_binary128_t[n * n];
 
     mplapackint lwork = std::max({(mplapackint)1, 3 * n + n, 5 * n});
     mplapackint liwork;
     mplapackint *ipiv = new mplapackint[n];
     mplapackint info;
 
-    mplapack_binary80_t *work = new mplapack_binary80_t[lwork];
+    mplapack_binary128_t *work = new mplapack_binary128_t[lwork];
 
     std::random_device seed_gen;
     std::mt19937 engine(seed_gen());
@@ -129,7 +129,7 @@ int main(int argc, char *argv[]) {
     // 2. get determinant via LU factorization
     Rgetrf(n, n, a, n, ipiv, info);
     // printf("aLU ="); printmat(n, n, a, n); printf("\n");
-    mplapack_binary80_t det = 1;
+    mplapack_binary128_t det = 1;
     for (int i = 0; i < n; i++) {
         det = det * a[i + i * n];
         if (ipiv[i] != i + 1)
@@ -172,7 +172,7 @@ int main(int argc, char *argv[]) {
     // 5.5. verify Ainv * A = I
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            mplapack_binary80_t rtmp = 0.0;
+            mplapack_binary128_t rtmp = 0.0;
             for (int k = 0; k < n; k++) {
                 rtmp = rtmp + ainv[i + k * n] * a[k + j * n];
             }
@@ -185,7 +185,7 @@ int main(int argc, char *argv[]) {
     printf("ainv ="); printmat(n, n, ainv, n); printf("\n");
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            mplapack_binary80_t rtmp = 0.0;
+            mplapack_binary128_t rtmp = 0.0;
             for (int k = 0; k < n; k++) {
                 for (int l = 0; l < n; l++) {
                     rtmp = rtmp + ainv[i + k * n] * s[k + l * n] * aorg[l + j * n];
@@ -208,7 +208,7 @@ int main(int argc, char *argv[]) {
     }
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            mplapack_binary80_t rtmp = 0.0;
+            mplapack_binary128_t rtmp = 0.0;
             for (int k = 0; k < n; k++) {
                 rtmp = rtmp + a[k + i * n] * a[k + j * n];
             }
@@ -218,7 +218,7 @@ int main(int argc, char *argv[]) {
     // 7. eig(A^t A).
     printf("at_a ="); printmat(n, n, at_a, n); printf("\n");
     printf("eig(at_a)\n");
-    mplapack_binary80_t rtmp = 0.0;
+    mplapack_binary128_t rtmp = 0.0;
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
             if ( abs(at_a[i + j * n]) > abs(rtmp) )
@@ -237,14 +237,14 @@ int main(int argc, char *argv[]) {
 
     // work space query
     lwork = -1;
-    work = new mplapack_binary80_t[1];
+    work = new mplapack_binary128_t[1];
     liwork = -1;
     mplapackint *iwork = new mplapackint[1];
 
     Rsyevd("N", "U", n, at_a, n, w, work, lwork, iwork, liwork, info);
     lwork = (int)cast2double(work[0]);
     delete[] work;
-    work = new mplapack_binary80_t[std::max((mplapackint)1, lwork)];
+    work = new mplapack_binary128_t[std::max((mplapackint)1, lwork)];
     liwork = iwork[0];
     delete[] iwork;
     iwork = new mplapackint[std::max((mplapackint)1, liwork)];
@@ -252,7 +252,7 @@ int main(int argc, char *argv[]) {
     // diagonalize matrix
     Rsyevd("N", "U", n, at_a, n, w, work, lwork, iwork, liwork, info);
 
-    qsort(s, n, sizeof(mplapack_binary80_t), compare_real);
+    qsort(s, n, sizeof(mplapack_binary128_t), compare_real);
     printf("s=[");
     for (int i = 0; i < n; i++) { printnum(s[i]); printf(" "); } printf(" ] \n");
     printf("s_squared=["); for (int i = 0; i < n; i++) { printnum(s[i] * s[i]); printf(" "); } printf(" ] \n");
@@ -262,7 +262,7 @@ int main(int argc, char *argv[]) {
     // \lambda_i = \sigma_i^2
     // 9. Relative error
 
-    mplapack_binary80_t relerror;
+    mplapack_binary128_t relerror;
     for (int i = 0; i < n; i = i + 1) {
         relerror = abs ( (w[i] - s[i] * s[i]) / (s[i] * s[i]) ) ;
         printf("Relative_error_%d = ", (int)i); printnum(relerror); printf("\n");
