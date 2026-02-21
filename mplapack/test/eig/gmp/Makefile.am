@@ -28,9 +28,32 @@ install-data-hook:
 if IS_MACOS
 	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mplapack_gmp_testdir) $(prefix)
 endif
+# -----------------------------------------------------------------------------
+# Output directory: CPU_COMPILER_OS  (or CPU_COMPILER_mingw for MinGW builds)
+#
+# cpu_os_detection.sh prints "CPU|OS" (e.g. "Ryzen_Threadripper_3970X|ubuntu22_04").
+# MPLAPACK_CC_TAG is set by AX_MPLAPACK_CC_TAG in configure.ac (e.g. "gcc_14_2_0").
+#
+# Native layout : Ryzen_Threadripper_3970X_gcc_14_2_0_ubuntu22_04/<test>.out
+# MinGW  layout : Ryzen_Threadripper_3970X_gcc_14_2_0_windows/<test>.out
+# -----------------------------------------------------------------------------
+
+_CPU_OS_RAW := $(shell bash $(abs_top_builddir)/misc/cpu_os_detection.sh)
+_CPU_TAG    := $(word 1,$(subst |, ,$(_CPU_OS_RAW)))
+_OS_TAG     := $(word 2,$(subst |, ,$(_CPU_OS_RAW)))
+
+if IS_MINGW
+OUTDIR = $(_CPU_TAG)_$(MPLAPACK_CC_TAG)_windows
+else
+OUTDIR = $(_CPU_TAG)_$(MPLAPACK_CC_TAG)_$(_OS_TAG)
+endif
+
+$(OUTDIR):
+	$(MKDIR_P) $@
+
 
 # -----------------------------------------------------------------------------
-# Test sets (base names; outputs are <test>.out)
+# Test sets (base names; outputs are <OUTDIR>/<test>.out)
 # -----------------------------------------------------------------------------
 
 GMP_REAL_TESTS = \
@@ -72,7 +95,7 @@ endif
 .PHONY: gmp-check FORCE
 FORCE:
 
-GMP_EIG_OUTS = $(foreach t,$(GMP_ALL_TESTS),$(t).out)
+GMP_EIG_OUTS = $(foreach t,$(GMP_ALL_TESTS),$(OUTDIR)/$(t).out)
 CLEANFILES = $(GMP_EIG_OUTS)
 
 # Re-run all test commands on every "make check" even if *.out already exists.
@@ -84,15 +107,17 @@ check-local: gmp-check
 
 gmp-check: $(GMP_EIG_OUTS)
 	@echo "$(GMP_LABEL) eig tests done: $(GMP_ALL_TESTS)"
+	@echo "Output directory: $(OUTDIR)"
 
 clean-local:
-	rm -f *.out *~ \#*
+	rm -f $(GMP_EIG_OUTS) *~ \#*
+	@if test -d "$(OUTDIR)"; then rmdir -p "$(OUTDIR)" 2>/dev/null || true; fi
 
 # -----------------------------------------------------------------------------
 # Test rules (one output per test)
 # -----------------------------------------------------------------------------
 
-Rnep.out: ../nep.in xeigtstR_gmp$(EXEEXT)
+$(OUTDIR)/Rnep.out: ../nep.in xeigtstR_gmp$(EXEEXT) | $(OUTDIR)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -102,7 +127,7 @@ Rnep.out: ../nep.in xeigtstR_gmp$(EXEEXT)
 		echo "=== precision: $(GMP_LABEL) ==="; \
 		$(GMP_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_gmp$(EXEEXT) < ../nep.in; \
 	} > $@ 2>&1
-Rsep.out: ../sep.in xeigtstR_gmp$(EXEEXT)
+$(OUTDIR)/Rsep.out: ../sep.in xeigtstR_gmp$(EXEEXT) | $(OUTDIR)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -112,7 +137,7 @@ Rsep.out: ../sep.in xeigtstR_gmp$(EXEEXT)
 		echo "=== precision: $(GMP_LABEL) ==="; \
 		$(GMP_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_gmp$(EXEEXT) < ../sep.in; \
 	} > $@ 2>&1
-Rse2.out: ../se2.in xeigtstR_gmp$(EXEEXT)
+$(OUTDIR)/Rse2.out: ../se2.in xeigtstR_gmp$(EXEEXT) | $(OUTDIR)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -122,7 +147,7 @@ Rse2.out: ../se2.in xeigtstR_gmp$(EXEEXT)
 		echo "=== precision: $(GMP_LABEL) ==="; \
 		$(GMP_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_gmp$(EXEEXT) < ../se2.in; \
 	} > $@ 2>&1
-Rsvd.out: ../svd.in xeigtstR_gmp$(EXEEXT)
+$(OUTDIR)/Rsvd.out: ../svd.in xeigtstR_gmp$(EXEEXT) | $(OUTDIR)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -132,7 +157,7 @@ Rsvd.out: ../svd.in xeigtstR_gmp$(EXEEXT)
 		echo "=== precision: $(GMP_LABEL) ==="; \
 		$(GMP_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_gmp$(EXEEXT) < ../svd.in; \
 	} > $@ 2>&1
-Rec.out: ../Rec.in xeigtstR_gmp$(EXEEXT)
+$(OUTDIR)/Rec.out: ../Rec.in xeigtstR_gmp$(EXEEXT) | $(OUTDIR)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -142,7 +167,7 @@ Rec.out: ../Rec.in xeigtstR_gmp$(EXEEXT)
 		echo "=== precision: $(GMP_LABEL) ==="; \
 		$(GMP_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_gmp$(EXEEXT) < ../Rec.in; \
 	} > $@ 2>&1
-Red.out: ../Red.in xeigtstR_gmp$(EXEEXT)
+$(OUTDIR)/Red.out: ../Red.in xeigtstR_gmp$(EXEEXT) | $(OUTDIR)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -152,7 +177,7 @@ Red.out: ../Red.in xeigtstR_gmp$(EXEEXT)
 		echo "=== precision: $(GMP_LABEL) ==="; \
 		$(GMP_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_gmp$(EXEEXT) < ../Red.in; \
 	} > $@ 2>&1
-Rgg.out: ../Rgg.in xeigtstR_gmp$(EXEEXT)
+$(OUTDIR)/Rgg.out: ../Rgg.in xeigtstR_gmp$(EXEEXT) | $(OUTDIR)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -162,7 +187,7 @@ Rgg.out: ../Rgg.in xeigtstR_gmp$(EXEEXT)
 		echo "=== precision: $(GMP_LABEL) ==="; \
 		$(GMP_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_gmp$(EXEEXT) < ../Rgg.in; \
 	} > $@ 2>&1
-Rgd.out: ../Rgd.in xeigtstR_gmp$(EXEEXT)
+$(OUTDIR)/Rgd.out: ../Rgd.in xeigtstR_gmp$(EXEEXT) | $(OUTDIR)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -172,7 +197,7 @@ Rgd.out: ../Rgd.in xeigtstR_gmp$(EXEEXT)
 		echo "=== precision: $(GMP_LABEL) ==="; \
 		$(GMP_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_gmp$(EXEEXT) < ../Rgd.in; \
 	} > $@ 2>&1
-Rsb.out: ../Rsb.in xeigtstR_gmp$(EXEEXT)
+$(OUTDIR)/Rsb.out: ../Rsb.in xeigtstR_gmp$(EXEEXT) | $(OUTDIR)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -182,7 +207,7 @@ Rsb.out: ../Rsb.in xeigtstR_gmp$(EXEEXT)
 		echo "=== precision: $(GMP_LABEL) ==="; \
 		$(GMP_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_gmp$(EXEEXT) < ../Rsb.in; \
 	} > $@ 2>&1
-Rsg.out: ../Rsg.in xeigtstR_gmp$(EXEEXT)
+$(OUTDIR)/Rsg.out: ../Rsg.in xeigtstR_gmp$(EXEEXT) | $(OUTDIR)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -192,7 +217,7 @@ Rsg.out: ../Rsg.in xeigtstR_gmp$(EXEEXT)
 		echo "=== precision: $(GMP_LABEL) ==="; \
 		$(GMP_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_gmp$(EXEEXT) < ../Rsg.in; \
 	} > $@ 2>&1
-Rbal.out: ../Rbal.in xeigtstR_gmp$(EXEEXT)
+$(OUTDIR)/Rbal.out: ../Rbal.in xeigtstR_gmp$(EXEEXT) | $(OUTDIR)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -202,7 +227,7 @@ Rbal.out: ../Rbal.in xeigtstR_gmp$(EXEEXT)
 		echo "=== precision: $(GMP_LABEL) ==="; \
 		$(GMP_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_gmp$(EXEEXT) < ../Rbal.in; \
 	} > $@ 2>&1
-Rbak.out: ../Rbak.in xeigtstR_gmp$(EXEEXT)
+$(OUTDIR)/Rbak.out: ../Rbak.in xeigtstR_gmp$(EXEEXT) | $(OUTDIR)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -212,7 +237,7 @@ Rbak.out: ../Rbak.in xeigtstR_gmp$(EXEEXT)
 		echo "=== precision: $(GMP_LABEL) ==="; \
 		$(GMP_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_gmp$(EXEEXT) < ../Rbak.in; \
 	} > $@ 2>&1
-Rgbal.out: ../Rgbal.in xeigtstR_gmp$(EXEEXT)
+$(OUTDIR)/Rgbal.out: ../Rgbal.in xeigtstR_gmp$(EXEEXT) | $(OUTDIR)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -222,7 +247,7 @@ Rgbal.out: ../Rgbal.in xeigtstR_gmp$(EXEEXT)
 		echo "=== precision: $(GMP_LABEL) ==="; \
 		$(GMP_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_gmp$(EXEEXT) < ../Rgbal.in; \
 	} > $@ 2>&1
-Rgbak.out: ../Rgbak.in xeigtstR_gmp$(EXEEXT)
+$(OUTDIR)/Rgbak.out: ../Rgbak.in xeigtstR_gmp$(EXEEXT) | $(OUTDIR)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -232,7 +257,7 @@ Rgbak.out: ../Rgbak.in xeigtstR_gmp$(EXEEXT)
 		echo "=== precision: $(GMP_LABEL) ==="; \
 		$(GMP_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_gmp$(EXEEXT) < ../Rgbak.in; \
 	} > $@ 2>&1
-Rbb.out: ../Rbb.in xeigtstR_gmp$(EXEEXT)
+$(OUTDIR)/Rbb.out: ../Rbb.in xeigtstR_gmp$(EXEEXT) | $(OUTDIR)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -242,7 +267,7 @@ Rbb.out: ../Rbb.in xeigtstR_gmp$(EXEEXT)
 		echo "=== precision: $(GMP_LABEL) ==="; \
 		$(GMP_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_gmp$(EXEEXT) < ../Rbb.in; \
 	} > $@ 2>&1
-Rglm.out: ../glm.in xeigtstR_gmp$(EXEEXT)
+$(OUTDIR)/Rglm.out: ../glm.in xeigtstR_gmp$(EXEEXT) | $(OUTDIR)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -252,7 +277,7 @@ Rglm.out: ../glm.in xeigtstR_gmp$(EXEEXT)
 		echo "=== precision: $(GMP_LABEL) ==="; \
 		$(GMP_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_gmp$(EXEEXT) < ../glm.in; \
 	} > $@ 2>&1
-Rgqr.out: ../gqr.in xeigtstR_gmp$(EXEEXT)
+$(OUTDIR)/Rgqr.out: ../gqr.in xeigtstR_gmp$(EXEEXT) | $(OUTDIR)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -262,7 +287,7 @@ Rgqr.out: ../gqr.in xeigtstR_gmp$(EXEEXT)
 		echo "=== precision: $(GMP_LABEL) ==="; \
 		$(GMP_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_gmp$(EXEEXT) < ../gqr.in; \
 	} > $@ 2>&1
-Rgsv.out: ../gsv.in xeigtstR_gmp$(EXEEXT)
+$(OUTDIR)/Rgsv.out: ../gsv.in xeigtstR_gmp$(EXEEXT) | $(OUTDIR)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -272,7 +297,7 @@ Rgsv.out: ../gsv.in xeigtstR_gmp$(EXEEXT)
 		echo "=== precision: $(GMP_LABEL) ==="; \
 		$(GMP_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_gmp$(EXEEXT) < ../gsv.in; \
 	} > $@ 2>&1
-Rlse.out: ../lse.in xeigtstR_gmp$(EXEEXT)
+$(OUTDIR)/Rlse.out: ../lse.in xeigtstR_gmp$(EXEEXT) | $(OUTDIR)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -282,7 +307,7 @@ Rlse.out: ../lse.in xeigtstR_gmp$(EXEEXT)
 		echo "=== precision: $(GMP_LABEL) ==="; \
 		$(GMP_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_gmp$(EXEEXT) < ../lse.in; \
 	} > $@ 2>&1
-Cnep.out: ../nep.in xeigtstC_gmp$(EXEEXT)
+$(OUTDIR)/Cnep.out: ../nep.in xeigtstC_gmp$(EXEEXT) | $(OUTDIR)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -292,7 +317,7 @@ Cnep.out: ../nep.in xeigtstC_gmp$(EXEEXT)
 		echo "=== precision: $(GMP_LABEL) ==="; \
 		$(GMP_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_gmp$(EXEEXT) < ../nep.in; \
 	} > $@ 2>&1
-Csep.out: ../sep.in xeigtstC_gmp$(EXEEXT)
+$(OUTDIR)/Csep.out: ../sep.in xeigtstC_gmp$(EXEEXT) | $(OUTDIR)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -302,7 +327,7 @@ Csep.out: ../sep.in xeigtstC_gmp$(EXEEXT)
 		echo "=== precision: $(GMP_LABEL) ==="; \
 		$(GMP_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_gmp$(EXEEXT) < ../sep.in; \
 	} > $@ 2>&1
-Cse2.out: ../se2.in xeigtstC_gmp$(EXEEXT)
+$(OUTDIR)/Cse2.out: ../se2.in xeigtstC_gmp$(EXEEXT) | $(OUTDIR)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -312,7 +337,7 @@ Cse2.out: ../se2.in xeigtstC_gmp$(EXEEXT)
 		echo "=== precision: $(GMP_LABEL) ==="; \
 		$(GMP_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_gmp$(EXEEXT) < ../se2.in; \
 	} > $@ 2>&1
-Csvd.out: ../svd.in xeigtstC_gmp$(EXEEXT)
+$(OUTDIR)/Csvd.out: ../svd.in xeigtstC_gmp$(EXEEXT) | $(OUTDIR)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -322,7 +347,7 @@ Csvd.out: ../svd.in xeigtstC_gmp$(EXEEXT)
 		echo "=== precision: $(GMP_LABEL) ==="; \
 		$(GMP_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_gmp$(EXEEXT) < ../svd.in; \
 	} > $@ 2>&1
-Cec.out: ../Cec.in xeigtstC_gmp$(EXEEXT)
+$(OUTDIR)/Cec.out: ../Cec.in xeigtstC_gmp$(EXEEXT) | $(OUTDIR)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -332,7 +357,7 @@ Cec.out: ../Cec.in xeigtstC_gmp$(EXEEXT)
 		echo "=== precision: $(GMP_LABEL) ==="; \
 		$(GMP_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_gmp$(EXEEXT) < ../Cec.in; \
 	} > $@ 2>&1
-Ced.out: ../Ced.in xeigtstC_gmp$(EXEEXT)
+$(OUTDIR)/Ced.out: ../Ced.in xeigtstC_gmp$(EXEEXT) | $(OUTDIR)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -342,7 +367,7 @@ Ced.out: ../Ced.in xeigtstC_gmp$(EXEEXT)
 		echo "=== precision: $(GMP_LABEL) ==="; \
 		$(GMP_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_gmp$(EXEEXT) < ../Ced.in; \
 	} > $@ 2>&1
-Cgg.out: ../Cgg.in xeigtstC_gmp$(EXEEXT)
+$(OUTDIR)/Cgg.out: ../Cgg.in xeigtstC_gmp$(EXEEXT) | $(OUTDIR)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -352,7 +377,7 @@ Cgg.out: ../Cgg.in xeigtstC_gmp$(EXEEXT)
 		echo "=== precision: $(GMP_LABEL) ==="; \
 		$(GMP_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_gmp$(EXEEXT) < ../Cgg.in; \
 	} > $@ 2>&1
-Cgd.out: ../Cgd.in xeigtstC_gmp$(EXEEXT)
+$(OUTDIR)/Cgd.out: ../Cgd.in xeigtstC_gmp$(EXEEXT) | $(OUTDIR)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -362,7 +387,7 @@ Cgd.out: ../Cgd.in xeigtstC_gmp$(EXEEXT)
 		echo "=== precision: $(GMP_LABEL) ==="; \
 		$(GMP_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_gmp$(EXEEXT) < ../Cgd.in; \
 	} > $@ 2>&1
-Csb.out: ../Csb.in xeigtstC_gmp$(EXEEXT)
+$(OUTDIR)/Csb.out: ../Csb.in xeigtstC_gmp$(EXEEXT) | $(OUTDIR)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -372,7 +397,7 @@ Csb.out: ../Csb.in xeigtstC_gmp$(EXEEXT)
 		echo "=== precision: $(GMP_LABEL) ==="; \
 		$(GMP_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_gmp$(EXEEXT) < ../Csb.in; \
 	} > $@ 2>&1
-Csg.out: ../Csg.in xeigtstC_gmp$(EXEEXT)
+$(OUTDIR)/Csg.out: ../Csg.in xeigtstC_gmp$(EXEEXT) | $(OUTDIR)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -382,7 +407,7 @@ Csg.out: ../Csg.in xeigtstC_gmp$(EXEEXT)
 		echo "=== precision: $(GMP_LABEL) ==="; \
 		$(GMP_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_gmp$(EXEEXT) < ../Csg.in; \
 	} > $@ 2>&1
-Cbal.out: ../Cbal.in xeigtstC_gmp$(EXEEXT)
+$(OUTDIR)/Cbal.out: ../Cbal.in xeigtstC_gmp$(EXEEXT) | $(OUTDIR)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -392,7 +417,7 @@ Cbal.out: ../Cbal.in xeigtstC_gmp$(EXEEXT)
 		echo "=== precision: $(GMP_LABEL) ==="; \
 		$(GMP_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_gmp$(EXEEXT) < ../Cbal.in; \
 	} > $@ 2>&1
-Cbak.out: ../Cbak.in xeigtstC_gmp$(EXEEXT)
+$(OUTDIR)/Cbak.out: ../Cbak.in xeigtstC_gmp$(EXEEXT) | $(OUTDIR)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -402,7 +427,7 @@ Cbak.out: ../Cbak.in xeigtstC_gmp$(EXEEXT)
 		echo "=== precision: $(GMP_LABEL) ==="; \
 		$(GMP_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_gmp$(EXEEXT) < ../Cbak.in; \
 	} > $@ 2>&1
-Cgbal.out: ../Cgbal.in xeigtstC_gmp$(EXEEXT)
+$(OUTDIR)/Cgbal.out: ../Cgbal.in xeigtstC_gmp$(EXEEXT) | $(OUTDIR)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -412,7 +437,7 @@ Cgbal.out: ../Cgbal.in xeigtstC_gmp$(EXEEXT)
 		echo "=== precision: $(GMP_LABEL) ==="; \
 		$(GMP_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_gmp$(EXEEXT) < ../Cgbal.in; \
 	} > $@ 2>&1
-Cgbak.out: ../Cgbak.in xeigtstC_gmp$(EXEEXT)
+$(OUTDIR)/Cgbak.out: ../Cgbak.in xeigtstC_gmp$(EXEEXT) | $(OUTDIR)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -422,7 +447,7 @@ Cgbak.out: ../Cgbak.in xeigtstC_gmp$(EXEEXT)
 		echo "=== precision: $(GMP_LABEL) ==="; \
 		$(GMP_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_gmp$(EXEEXT) < ../Cgbak.in; \
 	} > $@ 2>&1
-Cbb.out: ../Cbb.in xeigtstC_gmp$(EXEEXT)
+$(OUTDIR)/Cbb.out: ../Cbb.in xeigtstC_gmp$(EXEEXT) | $(OUTDIR)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -432,7 +457,7 @@ Cbb.out: ../Cbb.in xeigtstC_gmp$(EXEEXT)
 		echo "=== precision: $(GMP_LABEL) ==="; \
 		$(GMP_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_gmp$(EXEEXT) < ../Cbb.in; \
 	} > $@ 2>&1
-Cglm.out: ../glm.in xeigtstC_gmp$(EXEEXT)
+$(OUTDIR)/Cglm.out: ../glm.in xeigtstC_gmp$(EXEEXT) | $(OUTDIR)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -442,7 +467,7 @@ Cglm.out: ../glm.in xeigtstC_gmp$(EXEEXT)
 		echo "=== precision: $(GMP_LABEL) ==="; \
 		$(GMP_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_gmp$(EXEEXT) < ../glm.in; \
 	} > $@ 2>&1
-Cgqr.out: ../gqr.in xeigtstC_gmp$(EXEEXT)
+$(OUTDIR)/Cgqr.out: ../gqr.in xeigtstC_gmp$(EXEEXT) | $(OUTDIR)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -452,7 +477,7 @@ Cgqr.out: ../gqr.in xeigtstC_gmp$(EXEEXT)
 		echo "=== precision: $(GMP_LABEL) ==="; \
 		$(GMP_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_gmp$(EXEEXT) < ../gqr.in; \
 	} > $@ 2>&1
-Cgsv.out: ../gsv.in xeigtstC_gmp$(EXEEXT)
+$(OUTDIR)/Cgsv.out: ../gsv.in xeigtstC_gmp$(EXEEXT) | $(OUTDIR)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -462,7 +487,7 @@ Cgsv.out: ../gsv.in xeigtstC_gmp$(EXEEXT)
 		echo "=== precision: $(GMP_LABEL) ==="; \
 		$(GMP_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_gmp$(EXEEXT) < ../gsv.in; \
 	} > $@ 2>&1
-Clse.out: ../lse.in xeigtstC_gmp$(EXEEXT)
+$(OUTDIR)/Clse.out: ../lse.in xeigtstC_gmp$(EXEEXT) | $(OUTDIR)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \

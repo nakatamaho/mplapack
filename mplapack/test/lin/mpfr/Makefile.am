@@ -18,6 +18,30 @@ install-data-hook:
 if IS_MACOS
 	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mplapack_mpfr_testdir) $(prefix)
 endif
+# -----------------------------------------------------------------------------
+# Output directory: CPU_COMPILER_OS  (or CPU_COMPILER_mingw for MinGW builds)
+#
+# cpu_os_detection.sh prints "CPU|OS" (e.g. "Ryzen_Threadripper_3970X|ubuntu22_04").
+# MPLAPACK_CC_TAG is set by AX_MPLAPACK_CC_TAG in configure.ac (e.g. "gcc_14_2_0").
+#
+# Native layout : Ryzen_Threadripper_3970X_gcc_14_2_0_ubuntu22_04/<test>.<profile>.out
+# MinGW  layout : Ryzen_Threadripper_3970X_gcc_14_2_0_windows/<test>.<profile>.out
+# -----------------------------------------------------------------------------
+
+_CPU_OS_RAW := $(shell bash $(abs_top_builddir)/misc/cpu_os_detection.sh)
+_CPU_TAG    := $(word 1,$(subst |, ,$(_CPU_OS_RAW)))
+_OS_TAG     := $(word 2,$(subst |, ,$(_CPU_OS_RAW)))
+
+if IS_MINGW
+OUTDIR = $(_CPU_TAG)_$(MPLAPACK_CC_TAG)_windows
+else
+OUTDIR = $(_CPU_TAG)_$(MPLAPACK_CC_TAG)_$(_OS_TAG)
+endif
+
+$(OUTDIR):
+	$(MKDIR_P) $@
+
+
 
 xlintstR_mpfr_SOURCES  = ../common/Rchkaa.cpp
 xlintstR_mpfr_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
@@ -87,14 +111,15 @@ FORCE:
 
 # Also remove test logs on "make clean"
 clean-local:
-	rm -f *.out
+	rm -f $(MPFR_OUTFILES) *~ \#*
+	@if test -d "$(OUTDIR)"; then rmdir -p "$(OUTDIR)" 2>/dev/null || true; fi
 
 # Clean test logs on "make clean"
 MPFR_OUTFILES = \
-	$(MPFR_PROFILES:%=Rtest.%.out) \
-	$(MPFR_PROFILES:%=Ctest.%.out) \
-	$(MPFR_PROFILES:%=Rtest_rfp.%.out) \
-	$(MPFR_PROFILES:%=Ctest_rfp.%.out)
+	$(MPFR_PROFILES:%=$(OUTDIR)/Rtest.%.out) \
+	$(MPFR_PROFILES:%=$(OUTDIR)/Ctest.%.out) \
+	$(MPFR_PROFILES:%=$(OUTDIR)/Rtest_rfp.%.out) \
+	$(MPFR_PROFILES:%=$(OUTDIR)/Ctest_rfp.%.out)
 CLEANFILES = $(MPFR_OUTFILES)
 
 .PRECIOUS: $(MPFR_OUTFILES)
@@ -103,20 +128,21 @@ check-local: mpfr-check
 
 mpfr-check: $(MPFR_CHECK_TARGETS)
 	@echo "MPFR lin tests done: $(MPFR_CHECK_TARGETS)"
+	@echo "Output directory: $(OUTDIR)"
 
 # Run all profiles listed in MPFR_PROFILES
 mpfr-check-all: $$(addprefix mpfr-check-,$$(MPFR_PROFILES))
 	@echo "MPFR lin tests done for profiles: $(MPFR_PROFILES)"
 
 # One rule for any profile name (default/binary64/binary128/...)
-mpfr-check-%: Rtest.%.out Ctest.%.out Rtest_rfp.%.out Ctest_rfp.%.out
+mpfr-check-%: $(OUTDIR)/Rtest.%.out $(OUTDIR)/Ctest.%.out $(OUTDIR)/Rtest_rfp.%.out $(OUTDIR)/Ctest_rfp.%.out
 	@echo "MPFR profile '$*' done."
 
 # -----------------------------------------------------------------------------
 # Test rules (profile-abstracted)
 # -----------------------------------------------------------------------------
 
-Rtest.%.out: ../Rtest.in xlintstR_mpfr$(EXEEXT)
+$(OUTDIR)/Rtest.%.out: ../Rtest.in xlintstR_mpfr$(EXEEXT) | $(OUTDIR)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -127,7 +153,7 @@ Rtest.%.out: ../Rtest.in xlintstR_mpfr$(EXEEXT)
 		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xlintstR_mpfr$(EXEEXT) < ../Rtest.in; \
 	} > $@ 2>&1
 
-Ctest.%.out: ../Ctest.in xlintstC_mpfr$(EXEEXT)
+$(OUTDIR)/Ctest.%.out: ../Ctest.in xlintstC_mpfr$(EXEEXT) | $(OUTDIR)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -138,7 +164,7 @@ Ctest.%.out: ../Ctest.in xlintstC_mpfr$(EXEEXT)
 		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xlintstC_mpfr$(EXEEXT) < ../Ctest.in; \
 	} > $@ 2>&1
 
-Rtest_rfp.%.out: ../Rtest_rfp.in xlintstrfR_mpfr$(EXEEXT)
+$(OUTDIR)/Rtest_rfp.%.out: ../Rtest_rfp.in xlintstrfR_mpfr$(EXEEXT) | $(OUTDIR)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -149,7 +175,7 @@ Rtest_rfp.%.out: ../Rtest_rfp.in xlintstrfR_mpfr$(EXEEXT)
 		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xlintstrfR_mpfr$(EXEEXT) < ../Rtest_rfp.in; \
 	} > $@ 2>&1
 
-Ctest_rfp.%.out: ../Ctest_rfp.in xlintstrfC_mpfr$(EXEEXT)
+$(OUTDIR)/Ctest_rfp.%.out: ../Ctest_rfp.in xlintstrfC_mpfr$(EXEEXT) | $(OUTDIR)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \

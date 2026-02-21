@@ -69,15 +69,15 @@ RE_MPFR_VARIANT = re.compile(r"^.+\.(default|binary64|binary128)\.out$", re.IGNO
 # Path helpers
 # ---------------------------------------------------------------------------
 
-def detect_precision(out_path: Path, category_root: Path) -> str:
+def detect_precision(out_path: Path, search_root: Path) -> str:
     """
     Derive a single precision label from an .out file path.
 
-    Layout:  <category_root>/<backend>/.../<file>.out
+    Layout:  <search_root>/<backend>/<outdir>/<file>.out
     For mpfr the variant is embedded in the filename suffix.
     """
     try:
-        rel = out_path.relative_to(category_root)
+        rel = out_path.relative_to(search_root)
     except ValueError:
         return "unknown"
 
@@ -92,17 +92,28 @@ def detect_precision(out_path: Path, category_root: Path) -> str:
     return f"mpfr ({variant})"
 
 
+def _infer_category(search_root: Path) -> str:
+    """
+    Infer eig/lin category from the resolved path of the search root.
+    Falls back to the directory's own name, then 'unknown'.
+    """
+    for part in reversed(search_root.resolve().parts):
+        if part in ("eig", "lin"):
+            return part
+    return search_root.resolve().name or "unknown"
+
+
 # ---------------------------------------------------------------------------
 # Parser
 # ---------------------------------------------------------------------------
 
-def parse_out_file(out_path: Path, category: str, category_root: Path) -> list[TestRecord]:
+def parse_out_file(out_path: Path, category: str, search_root: Path) -> list[TestRecord]:
     """
     Parse a single .out file and return zero or more TestRecord entries.
     Returns one UNKNOWN record if no recognizable result lines are found.
     """
-    precision = detect_precision(out_path, category_root)
-    rel_file  = str(out_path.relative_to(category_root.parent))
+    precision = detect_precision(out_path, search_root)
+    rel_file  = str(out_path.relative_to(search_root))
 
     try:
         text = out_path.read_text(errors="replace")
@@ -133,17 +144,36 @@ def parse_out_file(out_path: Path, category: str, category_root: Path) -> list[T
     return records
 
 
-def collect_all_records(root: Path) -> list[TestRecord]:
-    """Walk eig/ and lin/ under root and parse every *.out file found."""
-    all_records: list[TestRecord] = []
+def collect_all_records(outdir: str, search_root: Path) -> list[TestRecord]:
+    """
+    Walk all backend subdirectories of search_root and parse every
+    *.out file found inside <backend>/<outdir>/.
 
-    for category in ("eig", "lin"):
-        cat_root = root / category
-        if not cat_root.is_dir():
-            print(f"[INFO] Directory not found, skipping: {cat_root}", file=sys.stderr)
+    Expected layout:
+        <search_root>/mpfr/<outdir>/*.out
+        <search_root>/dd/<outdir>/*.out
+        <search_root>/qd/<outdir>/*.out
+        ...
+    """
+    all_records: list[TestRecord] = []
+    category = _infer_category(search_root)
+
+    found_any = False
+    for backend_dir in sorted(search_root.iterdir()):
+        if not backend_dir.is_dir():
             continue
-        for out_path in sorted(cat_root.rglob("*.out")):
-            all_records.extend(parse_out_file(out_path, category, cat_root))
+        target_dir = backend_dir / outdir
+        if not target_dir.is_dir():
+            continue
+        for out_path in sorted(target_dir.glob("*.out")):
+            found_any = True
+            all_records.extend(parse_out_file(out_path, category, search_root))
+
+    if not found_any:
+        print(
+            f"[INFO] No <backend>/{outdir}/*.out files found under: {search_root}",
+            file=sys.stderr,
+        )
 
     return all_records
 
@@ -323,9 +353,23 @@ def build_parser() -> argparse.ArgumentParser:
         epilog=__doc__,
     )
     p.add_argument(
-        "root",
-        metavar="ROOT_DIR",
-        help="Path to the test root (must contain eig/ and/or lin/).",
+        "outdir",
+        metavar="OUTDIR",
+        help=(
+            "Output subdirectory name (e.g. Ryzen_Threadripper_3970X_gcc_14_2_0_ubuntu22_04). "
+            "The script searches SEARCH_ROOT/<backend>/OUTDIR/*.out for every backend "
+            "subdirectory found inside SEARCH_ROOT."
+        ),
+    )
+    p.add_argument(
+        "search_root",
+        metavar="SEARCH_ROOT",
+        nargs="?",
+        default=".",
+        help=(
+            "Directory that contains backend subdirectories (mpfr/, dd/, qd/, ...). "
+            "Defaults to the current directory."
+        ),
     )
     p.add_argument(
         "--only-fail",
@@ -350,16 +394,20 @@ def main() -> int:
     parser = build_parser()
     args   = parser.parse_args()
 
-    root = Path(args.root).expanduser().resolve()
-    if not root.is_dir():
-        print(f"[ERROR] ROOT_DIR does not exist or is not a directory: {root}", file=sys.stderr)
+    search_root = Path(args.search_root).expanduser().resolve()
+    if not search_root.is_dir():
+        print(f"[ERROR] SEARCH_ROOT does not exist or is not a directory: {search_root}",
+              file=sys.stderr)
         return 1
 
-    records = collect_all_records(root)
+    records = collect_all_records(args.outdir, search_root)
 
     if not records:
-        print("[WARNING] No records extracted. Check that *.out files exist under ROOT_DIR.",
-              file=sys.stderr)
+        print(
+            f"[WARNING] No records extracted. "
+            f"Check that <backend>/{args.outdir}/*.out files exist under {search_root}.",
+            file=sys.stderr,
+        )
         return 0
 
     if not args.no_sort:
@@ -389,18 +437,25 @@ if __name__ == "__main__":
 # README / Usage Examples
 # =============================================================================
 #
-# BASIC USAGE
-#   python summarize_mplapack_tests.py /path/to/mplapack/mplapack/test
+# BASIC USAGE  (run from within an eig/ or lin/ build directory)
+#   python summarize_mplapack_tests.py <OUTDIR>
+#   python summarize_mplapack_tests.py Ryzen_Threadripper_3970X_gcc_14_2_0_ubuntu22_04
+#
+# WITH EXPLICIT SEARCH ROOT
+#   python summarize_mplapack_tests.py <OUTDIR> /path/to/eig
+#
+# The script discovers every backend subdirectory (mpfr/, dd/, qd/, ...) inside
+# SEARCH_ROOT and reads SEARCH_ROOT/<backend>/<OUTDIR>/*.out.
 #
 # SHOW ONLY FAILURES
-#   python summarize_mplapack_tests.py .../test --only-fail
+#   python summarize_mplapack_tests.py <OUTDIR> . --only-fail
 #
 # CSV / JSON
-#   python summarize_mplapack_tests.py .../test --format csv  > results.csv
-#   python summarize_mplapack_tests.py .../test --format json > results.json
+#   python summarize_mplapack_tests.py <OUTDIR> . --format csv  > results.csv
+#   python summarize_mplapack_tests.py <OUTDIR> . --format json > results.json
 #
 # DISABLE SORT (keep filesystem discovery order)
-#   python summarize_mplapack_tests.py .../test --no-sort
+#   python summarize_mplapack_tests.py <OUTDIR> . --no-sort
 #
 # =============================================================================
 # SAMPLE AGGREGATED OUTPUT

@@ -38,9 +38,32 @@ install-data-hook:
 if IS_MACOS
 	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mplapack_qd_testdir) $(prefix)
 endif
+# -----------------------------------------------------------------------------
+# Output directory: CPU_COMPILER_OS  (or CPU_COMPILER_mingw for MinGW builds)
+#
+# cpu_os_detection.sh prints "CPU|OS" (e.g. "Ryzen_Threadripper_3970X|ubuntu22_04").
+# MPLAPACK_CC_TAG is set by AX_MPLAPACK_CC_TAG in configure.ac (e.g. "gcc_14_2_0").
+#
+# Native layout : Ryzen_Threadripper_3970X_gcc_14_2_0_ubuntu22_04/<test>.out
+# MinGW  layout : Ryzen_Threadripper_3970X_gcc_14_2_0_windows/<test>.out
+# -----------------------------------------------------------------------------
+
+_CPU_OS_RAW := $(shell bash $(abs_top_builddir)/misc/cpu_os_detection.sh)
+_CPU_TAG    := $(word 1,$(subst |, ,$(_CPU_OS_RAW)))
+_OS_TAG     := $(word 2,$(subst |, ,$(_CPU_OS_RAW)))
+
+if IS_MINGW
+OUTDIR = $(_CPU_TAG)_$(MPLAPACK_CC_TAG)_windows
+else
+OUTDIR = $(_CPU_TAG)_$(MPLAPACK_CC_TAG)_$(_OS_TAG)
+endif
+
+$(OUTDIR):
+	$(MKDIR_P) $@
+
 
 # -----------------------------------------------------------------------------
-# Test sets (base names; outputs are <test>.out)
+# Test sets (base names; outputs are <OUTDIR>/<test>.out)
 # -----------------------------------------------------------------------------
 
 QD_LIN_TESTS = Rtest Ctest Rtest_rfp Ctest_rfp
@@ -75,8 +98,8 @@ endif
 .PHONY: qd-check FORCE
 FORCE:
 
-# All output logs: <test>.out
-QD_LIN_OUTS = $(foreach t,$(QD_LIN_TESTS),$(t).out)
+# All output logs: <OUTDIR>/<test>.out
+QD_LIN_OUTS = $(foreach t,$(QD_LIN_TESTS),$(OUTDIR)/$(t).out)
 CLEANFILES = $(QD_LIN_OUTS)
 
 # Re-run all test commands on every "make check" even if *.out already exists.
@@ -88,15 +111,17 @@ check-local: qd-check
 
 qd-check: $$(QD_LIN_OUTS)
 	@echo "QD lin tests done."
+	@echo "Output directory: $(OUTDIR)"
 
 clean-local:
-	rm -f *.out *~ \#*
+	rm -f $(QD_LIN_OUTS) *~ \#*
+	@if test -d "$(OUTDIR)"; then rmdir -p "$(OUTDIR)" 2>/dev/null || true; fi
 
 # -----------------------------------------------------------------------------
 # Test rules (one output per test)
 # -----------------------------------------------------------------------------
 
-Rtest.out: ../Rtest.in xlintstR_qd$(EXEEXT)
+$(OUTDIR)/Rtest.out: ../Rtest.in xlintstR_qd$(EXEEXT) | $(OUTDIR)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -106,7 +131,7 @@ Rtest.out: ../Rtest.in xlintstR_qd$(EXEEXT)
 		$(QD_EXTRA_ENV) $$wrapper $(WINE) ./xlintstR_qd$(EXEEXT) < ../Rtest.in; \
 	} > $@ 2>&1
 
-Ctest.out: ../Ctest.in xlintstC_qd$(EXEEXT)
+$(OUTDIR)/Ctest.out: ../Ctest.in xlintstC_qd$(EXEEXT) | $(OUTDIR)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
