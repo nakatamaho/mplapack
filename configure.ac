@@ -1880,8 +1880,6 @@ external/dlfcn-win32/Makefile
 if test x$enable_benchmark != xno; then
 AC_CONFIG_FILES([
 benchmark/Makefile
-benchmark/mpblas/Makefile
-benchmark/mplapack/Makefile
 ])
 fi
 if test x$enable_examples != xno; then
