@@ -31,7 +31,7 @@
 #define _MUTILS_QD_H_
 
 #if defined ___MPLAPACK_INTERNAL___
-#define QD_PRECISION 64
+#define QD_PRECISION 62
 #define QD_PRECISION_SHORT 16
 
 #include <cstring>
