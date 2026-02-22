@@ -135,14 +135,17 @@ def parse_out_file(out_path: Path, category: str, search_root: Path) -> list[Tes
         total = int(m.group(2))
         records.append(TestRecord(category, precision, rel_file, suite, 0, total, "PASS"))
 
-    # Collect FAIL matches (skip suites already captured as PASS)
-    pass_suites = {r.suite for r in records}
+    # Collect FAIL matches.
+    # NOTE: Do NOT skip suites already seen in pass_suites.
+    # A single .out file runs the same suite multiple times with different NB settings.
+    # Some NB runs may PASS while others FAIL; every result line must be recorded
+    # independently.  Filtering by pass_suites would silently drop FAIL records and
+    # under-count both total_tests and total_failed.
     for m in RE_FAIL.finditer(text):
         suite  = m.group(1).strip()
         failed = int(m.group(2))
         total  = int(m.group(3))
-        if suite not in pass_suites:
-            records.append(TestRecord(category, precision, rel_file, suite, failed, total, "FAIL"))
+        records.append(TestRecord(category, precision, rel_file, suite, failed, total, "FAIL"))
 
     if not records:
         records.append(TestRecord(category, precision, rel_file, "UNKNOWN", 0, 0, "UNKNOWN"))
@@ -228,7 +231,11 @@ def build_summary(records: list[TestRecord]) -> dict:
         g   = groups[key]
         g["total_tests"]  += r.total
         g["total_failed"] += r.failed
-        g["file_count"].add(r.file)
+        # Count only files that produced at least one real test result.
+        # UNKNOWN records (total=0) come from files with no recognizable output
+        # (e.g. Cbak.out, Cbal.out) and should not inflate file_count.
+        if r.status != "UNKNOWN":
+            g["file_count"].add(r.file)
         if r.failed > 0:
             g["files_with_fail"].add(r.file)
 
@@ -434,10 +441,12 @@ def main() -> int:
     if not args.no_sort:
         records = sort_records(records)
 
+    # Build summary from ALL records before any display filtering,
+    # so aggregate totals are always accurate regardless of --only-fail.
+    summary = build_summary(records)
+
     if args.only_fail:
         records = [r for r in records if r.status == "FAIL"]
-
-    summary = build_summary(records)
 
     if args.format == "text":
         output = format_text(records, summary)
