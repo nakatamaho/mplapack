@@ -1,5 +1,18 @@
 SUBDIRS = .
 lib_LTLIBRARIES = 
+# -----------------------------------------------------------------------------
+# Parallel 'make -j check' across independent backend subdirectories.
+#
+# Automake's default recursive rule (check-recursive) walks SUBDIRS serially
+# even when GNU make is invoked with -j.  Backend test suites are independent,
+# so we expose each backend check as a separate make target.  GNU make can
+# then schedule them in parallel while the jobserver is correctly inherited
+# by the sub-makes via '+$(MAKE)'.
+#
+# NOTE: We override only 'check-recursive'.  All other recursive targets
+# (all/install/clean/dist/...) keep Automake's standard behavior.
+# -----------------------------------------------------------------------------
+CHECK_BACKENDS =
 
 mplapack_eig_DATA = Cbak.in Cbal.in Cbb.in Cec.in Ced.in Cgbak.in Cgbal.in Cgd.in Cgg.in \
 Csb.in Csg.in Rbak.in Rbal.in Rbb.in Rec.in Red.in Rgbak.in Rgbal.in Rgd.in Rgg.in Rsb.in Rsg.in \
@@ -9,37 +22,69 @@ mplapack_eigdir = $(prefix)/lib/$(target)/mplapack/test/eig
 if ENABLE_MPFR
 lib_LTLIBRARIES += libeig_mpfr.la libeig_override_mpfr.la
 SUBDIRS += mpfr
+CHECK_BACKENDS += mpfr
 endif
 
 if ENABLE_GMP
 lib_LTLIBRARIES += libeig_gmp.la libeig_override_gmp.la
 SUBDIRS += gmp
+CHECK_BACKENDS += gmp
 endif
 
 if ENABLE_DD
 lib_LTLIBRARIES += libeig_dd.la libeig_override_dd.la
 SUBDIRS += dd
+CHECK_BACKENDS += dd
 endif
 
 if ENABLE_QD
 lib_LTLIBRARIES += libeig_qd.la libeig_override_qd.la
 SUBDIRS += qd
+CHECK_BACKENDS += qd
 endif
 
 if ENABLE_DOUBLE
 lib_LTLIBRARIES += libeig_double.la libeig_override_double.la
 SUBDIRS += double
+CHECK_BACKENDS += double
 endif
 
 if ENABLE_BINARY80
 lib_LTLIBRARIES += libeig_binary80.la libeig_override_binary80.la
 SUBDIRS += binary80
+CHECK_BACKENDS += binary80
 endif
 
 if ENABLE_BINARY128
 lib_LTLIBRARIES += libeig_binary128.la libeig_override_binary128.la
 SUBDIRS += binary128
+CHECK_BACKENDS += binary128
 endif
+
+# -----------------------------------------------------------------------------
+# Parallel backend checks (GNU make jobserver aware)
+# -----------------------------------------------------------------------------
+CHECK_BACKEND_TARGETS = $(patsubst %,check-backend-%,$(CHECK_BACKENDS))
+
+.PHONY: check-parallel
+
+# Run local checks first (check-am builds this directory and runs any local
+# tests), then run each backend check in parallel.
+check-parallel: check-am $(CHECK_BACKEND_TARGETS)
+
+# Each backend is an independent recursive make. The order-only prerequisite
+# ensures that 'check-am' (and thus 'all-am') has completed before any backend
+# starts, without forcing rebuilds when the directory list changes.
+# NOTE: Do not declare check-backend-* targets as phony.
+# GNU make does not apply pattern rules to phony targets.
+check-backend-%: | check-am
+	+$(MAKE) $(AM_MAKEFLAGS) -C $* check
+
+# Override Automake's default serial recursive driver for 'make check' in this
+# directory. Other recursive targets (all/install/clean/dist/...) keep the
+# standard Automake behavior.
+check-recursive: check-parallel
+	@:
 
 if ENABLE_MPFR
 libeig_mpfr_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(LAPACK_INCLUDEDIR) -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR)  -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___ -D___MPLAPACK_INTERNAL___
