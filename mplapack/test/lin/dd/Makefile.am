@@ -143,7 +143,8 @@ $(OUTDIR_PATH)/Ctest.out: ../Ctest.in xlintstC_dd$(EXEEXT)
 		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xlintstC_dd$(EXEEXT) < ../Ctest.in; \
 	} > $@ 2>&1
 
-Rtest_rfp.out: ../Rtest_rfp.in xlintstrfR_dd$(EXEEXT)
+$(OUTDIR_PATH)/Rtest_rfp.out: ../Rtest_rfp.in xlintstrfR_dd$(EXEEXT)
+	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -153,7 +154,8 @@ Rtest_rfp.out: ../Rtest_rfp.in xlintstrfR_dd$(EXEEXT)
 		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xlintstrfR_dd$(EXEEXT) < ../Rtest_rfp.in; \
 	} > $@ 2>&1
 
-Ctest_rfp.out: ../Ctest_rfp.in xlintstrfC_dd$(EXEEXT)
+$(OUTDIR_PATH)/Ctest_rfp.out: ../Ctest_rfp.in xlintstrfC_dd$(EXEEXT)
+	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \

@@ -143,7 +143,8 @@ $(OUTDIR_PATH)/Ctest.out: ../Ctest.in xlintstC_gmp$(EXEEXT)
 		$(GMP_EXTRA_ENV) $$wrapper $(WINE) ./xlintstC_gmp$(EXEEXT) < ../Ctest.in; \
 	} > $@ 2>&1
 
-Rtest_rfp.out: ../Rtest_rfp.in xlintstrfR_gmp$(EXEEXT)
+$(OUTDIR_PATH)/Rtest_rfp.out: ../Rtest_rfp.in xlintstrfR_gmp$(EXEEXT)
+	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -153,7 +154,8 @@ Rtest_rfp.out: ../Rtest_rfp.in xlintstrfR_gmp$(EXEEXT)
 		$(GMP_EXTRA_ENV) $$wrapper $(WINE) ./xlintstrfR_gmp$(EXEEXT) < ../Rtest_rfp.in; \
 	} > $@ 2>&1
 
-Ctest_rfp.out: ../Ctest_rfp.in xlintstrfC_gmp$(EXEEXT)
+$(OUTDIR_PATH)/Ctest_rfp.out: ../Ctest_rfp.in xlintstrfC_gmp$(EXEEXT)
+	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -162,4 +164,3 @@ Ctest_rfp.out: ../Ctest_rfp.in xlintstrfC_gmp$(EXEEXT)
 	set -e; { \
 		$(GMP_EXTRA_ENV) $$wrapper $(WINE) ./xlintstrfC_gmp$(EXEEXT) < ../Ctest_rfp.in; \
 	} > $@ 2>&1
-
