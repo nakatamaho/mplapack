@@ -13,6 +13,7 @@ $SED -e "s|%%ROUTINE%%|$_FILE|g" Makefile.freebsd.in > ../Makefile.freebsd.in
 $SED -e "s|%%ROUTINE%%|$_FILE|g" Makefile.macos.in   > ../Makefile.macos.in
 $SED -e "s|%%ROUTINE%%|$_FILE|g" Makefile.linux.in   > ../Makefile.linux.in
 $SED -e "s|%%ROUTINE%%|$_FILE|g" Makefile.mingw.in   > ../Makefile.mingw.in
+cp Makefile.linux_cuda.in ../Makefile.linux_cuda.in
 
 SOURCEFILES=""
 rm -f source_files
