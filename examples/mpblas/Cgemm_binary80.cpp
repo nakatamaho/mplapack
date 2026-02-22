@@ -4,12 +4,43 @@
 #include <stdio.h>
 #include <cstring>
 #include <algorithm>
-
-#define FLOAT64X_FORMAT "%+25.21Le"
-#define FLOAT64X_SHORT_FORMAT "%+20.16Le"
-
-void printnum(mplapack_binary80_t rtmp) { printf(FLOAT64X_FORMAT, rtmp); return;}
-void printnum(std::complex<mplapack_binary80_t> ctmp) { printf(FLOAT64X_FORMAT FLOAT64X_FORMAT "i", ctmp.real(), ctmp.imag()); }
+#define BUFLEN 1024
+void printnum(mplapack_binary80_t rtmp)
+{
+    int width = 25;
+    char buf[BUFLEN];
+#if MPLAPACK_BINARY80_IO == MPLAPACK_BINARY80_IO_STRFROMF64X
+    strfromf64x(buf, sizeof(buf), "%.21e", rtmp);
+#elif MPLAPACK_BINARY80_IO == MPLAPACK_BINARY80_IO_SNPRINTF_LDBL
+    snprintf(buf, sizeof(buf), "%*.21Le", width, rtmp);
+#else
+    #error "unsupported binary80 type"
+#endif
+    if (rtmp >= 0.0)
+        printf("+%s", buf);
+    else
+        printf("%s", buf);
+    return;
+}
+void printnum(std::complex<mplapack_binary80_t> ctmp)
+{
+    int width = 25;
+    char buf[BUFLEN];
+#if MPLAPACK_BINARY80_IO == MPLAPACK_BINARY80_IO_STRFROMF64X
+    strfromf64x(buf, sizeof(buf), "%.21e", ctmp.real());
+    if (ctmp.real() >= 0.0) printf("+%s", buf); else printf("%s", buf);
+    strfromf64x(buf, sizeof(buf), "%.21e", ctmp.imag());
+    if (ctmp.imag() >= 0.0) printf("+%s", buf); else printf("%s", buf);
+#elif MPLAPACK_BINARY80_IO == MPLAPACK_BINARY80_IO_SNPRINTF_LDBL
+    snprintf(buf, sizeof(buf), "%*.21Le", width, ctmp.real());
+    if (ctmp.real() >= 0.0) printf("+%s", buf); else printf("%s", buf);
+    snprintf(buf, sizeof(buf), "%*.21Le", width, ctmp.imag());
+    if (ctmp.imag() >= 0.0) printf("+%s", buf); else printf("%s", buf);
+#else
+    #error "unsupported binary80 type"
+#endif
+    printf("i");
+}
 
 //Matlab/Octave format
 template <class X> void printvec(X *a, int len) {

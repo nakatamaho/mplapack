@@ -5,13 +5,22 @@
 #include <stdio.h>
 #include <cstring>
 #include <algorithm>
-
-#define FLOAT64X_FORMAT "%+25.21Le"
-#define FLOAT64X_SHORT_FORMAT "%+20.16Le"
-
+#define BUFLEN 1024
 void printnum(mplapack_binary80_t rtmp)
 {
-    printf(FLOAT64X_FORMAT, rtmp);
+    int width = 25;
+    char buf[BUFLEN];
+#if MPLAPACK_BINARY80_IO == MPLAPACK_BINARY80_IO_STRFROMF64X
+    strfromf64x(buf, sizeof(buf), "%.21e", rtmp);
+#elif MPLAPACK_BINARY80_IO == MPLAPACK_BINARY80_IO_SNPRINTF_LDBL
+    snprintf(buf, sizeof(buf), "%*.21Le", width, rtmp);
+#else
+    #error "unsupported binary80 type"
+#endif
+    if (rtmp >= 0.0)
+        printf("+%s", buf);
+    else
+        printf("%s", buf);
     return;
 }
 
@@ -53,29 +62,29 @@ void printmat(int n, int m, mplapack_binary80_t *a, int lda)
 
 void DingDong(mplapackint n) {
     mplapackint lwork, liwork, info, m;
-    mplapack_binary128_t *a = new mplapack_binary128_t[n * n];
-    mplapack_binary128_t *w = new mplapack_binary128_t[n];
-    mplapack_binary128_t PI;
+    mplapack_binary80_t *a = new mplapack_binary80_t[n * n];
+    mplapack_binary80_t *w = new mplapack_binary80_t[n];
+    mplapack_binary80_t PI;
     PI = pi(PI);
 
     // setting A matrix
     for (int i = 1; i <= n; i++) {
         for (int j = 1; j <= n; j++) {
-            a[(i - 1) + (j - 1) * n] = 1.0 / mplapack_binary128_t( 2.0 * ( n - i - j + 3.0 / 2.0 ));
+            a[(i - 1) + (j - 1) * n] = 1.0 / mplapack_binary80_t( 2.0 * ( n - i - j + 3.0 / 2.0 ));
         }
     }
     printf("a ="); printmat(n, n, a, n); printf("\n");
 
     // work space query
     lwork = -1;
-    mplapack_binary128_t *work = new mplapack_binary128_t[1];
+    mplapack_binary80_t *work = new mplapack_binary80_t[1];
     liwork = -1;
     mplapackint *iwork = new mplapackint[1];
 
     Rsyevd("N", "U", n, a, n, w, work, lwork, iwork, liwork, info);
     lwork = (int)cast2double(work[0]);
     delete[] work;
-    work = new mplapack_binary128_t[std::max((mplapackint)1, lwork)];
+    work = new mplapack_binary80_t[std::max((mplapackint)1, lwork)];
     liwork = iwork[0];
     delete[] iwork;
     iwork = new mplapackint[std::max((mplapackint)1, liwork)];

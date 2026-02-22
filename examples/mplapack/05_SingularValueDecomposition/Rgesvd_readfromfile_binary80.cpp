@@ -5,13 +5,22 @@
 #include <stdio.h>
 #include <cstring>
 #include <algorithm>
-
-#define FLOAT64X_FORMAT "%+25.21Le"
-#define FLOAT64X_SHORT_FORMAT "%+20.16Le"
-
+#define BUFLEN 1024
 void printnum(mplapack_binary80_t rtmp)
 {
-    printf(FLOAT64X_FORMAT, rtmp);
+    int width = 25;
+    char buf[BUFLEN];
+#if MPLAPACK_BINARY80_IO == MPLAPACK_BINARY80_IO_STRFROMF64X
+    strfromf64x(buf, sizeof(buf), "%.21e", rtmp);
+#elif MPLAPACK_BINARY80_IO == MPLAPACK_BINARY80_IO_SNPRINTF_LDBL
+    snprintf(buf, sizeof(buf), "%*.21Le", width, rtmp);
+#else
+    #error "unsupported binary80 type"
+#endif
+    if (rtmp >= 0.0)
+        printf("+%s", buf);
+    else
+        printf("%s", buf);
     return;
 }
 
@@ -63,12 +72,12 @@ int main() {
     ss >> n;
     printf("# m n %d %d \n", (int)m, (int)m);
 
-    mplapack_binary128_t *a = new mplapack_binary128_t[m * n];
-    mplapack_binary128_t *s = new mplapack_binary128_t[std::min(m, n)];
-    mplapack_binary128_t *u = new mplapack_binary128_t[m * m];
-    mplapack_binary128_t *vt = new mplapack_binary128_t[n * n];
+    mplapack_binary80_t *a = new mplapack_binary80_t[m * n];
+    mplapack_binary80_t *s = new mplapack_binary80_t[std::min(m, n)];
+    mplapack_binary80_t *u = new mplapack_binary80_t[m * m];
+    mplapack_binary80_t *vt = new mplapack_binary80_t[n * n];
     mplapackint lwork = std::max({(mplapackint)1, 3 * std::min(m, n) + std::max(m, n), 5 * std::min(m, n)});
-    mplapack_binary128_t *work = new mplapack_binary128_t[lwork];
+    mplapack_binary80_t *work = new mplapack_binary80_t[lwork];
     mplapackint info;
     double dtmp;
     for (int i = 0; i < m; i++) {

@@ -5,13 +5,22 @@
 #include <stdio.h>
 #include <cstring>
 #include <algorithm>
-
-#define FLOAT64X_FORMAT "%+25.21Le"
-#define FLOAT64X_SHORT_FORMAT "%+20.16Le"
-
+#define BUFLEN 1024
 void printnum(mplapack_binary80_t rtmp)
 {
-    printf(FLOAT64X_FORMAT, rtmp);
+    int width = 25;
+    char buf[BUFLEN];
+#if MPLAPACK_BINARY80_IO == MPLAPACK_BINARY80_IO_STRFROMF64X
+    strfromf64x(buf, sizeof(buf), "%.21e", rtmp);
+#elif MPLAPACK_BINARY80_IO == MPLAPACK_BINARY80_IO_SNPRINTF_LDBL
+    snprintf(buf, sizeof(buf), "%*.21Le", width, rtmp);
+#else
+    #error "unsupported binary80 type"
+#endif
+    if (rtmp >= 0.0)
+        printf("+%s", buf);
+    else
+        printf("%s", buf);
     return;
 }
 
@@ -48,20 +57,20 @@ void printmat(int n, int m, mplapack_binary80_t *a, int lda)
     }
     printf("]");
 }
-bool rselect(mplapack_binary128_t ar, mplapack_binary128_t ai) {
+bool rselect(mplapack_binary80_t ar, mplapack_binary80_t ai) {
     // sorting rule for eigenvalues.
     return false;
 }
 
 int main() {
     mplapackint n = 4;
-    mplapack_binary128_t *a = new mplapack_binary128_t[n * n];
-    mplapack_binary128_t *vl = new mplapack_binary128_t[n * n];
-    mplapack_binary128_t *vr = new mplapack_binary128_t[n * n];
+    mplapack_binary80_t *a = new mplapack_binary80_t[n * n];
+    mplapack_binary80_t *vl = new mplapack_binary80_t[n * n];
+    mplapack_binary80_t *vr = new mplapack_binary80_t[n * n];
     mplapackint lwork = 4 * n;
-    mplapack_binary128_t *wr = new mplapack_binary128_t[n];
-    mplapack_binary128_t *wi = new mplapack_binary128_t[n];
-    mplapack_binary128_t *work = new mplapack_binary128_t[lwork];
+    mplapack_binary80_t *wr = new mplapack_binary80_t[n];
+    mplapack_binary80_t *wi = new mplapack_binary80_t[n];
+    mplapack_binary80_t *work = new mplapack_binary80_t[lwork];
     mplapackint info;
     // setting A matrix
     a[0 + 0 * n] = 4.0; a[0 + 1 * n] = -5.0; a[0 + 2 * n] =  0.0;  a[0 + 3 * n] =  3.0;

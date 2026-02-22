@@ -264,7 +264,7 @@ path=`pwd`
 echo "mpblasexamplesdir=\$(prefix)/share/examples/mpblas/"   >> ../Makefile.am
 echo ""               >> ../Makefile.am
 echo "mpblasexamples_DATA = $SOURCEFILES \\" >> ../Makefile.am
-echo "Makefile.freebsd Makefile.linux Makefile.macos Makefile.mingw" >> ../Makefile.am
+echo "Makefile.freebsd Makefile.linux Makefile.linux_cuda Makefile.macos Makefile.mingw" >> ../Makefile.am
 echo ""               >> ../Makefile.am
 cat >> ../Makefile.am << EOF
 install-data-hook:

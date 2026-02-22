@@ -5,13 +5,22 @@
 #include <stdio.h>
 #include <cstring>
 #include <algorithm>
-
-#define FLOAT64X_FORMAT "%+25.21Le"
-#define FLOAT64X_SHORT_FORMAT "%+20.16Le"
-
+#define BUFLEN 1024
 void printnum(mplapack_binary80_t rtmp)
 {
-    printf(FLOAT64X_FORMAT, rtmp);
+    int width = 25;
+    char buf[BUFLEN];
+#if MPLAPACK_BINARY80_IO == MPLAPACK_BINARY80_IO_STRFROMF64X
+    strfromf64x(buf, sizeof(buf), "%.21e", rtmp);
+#elif MPLAPACK_BINARY80_IO == MPLAPACK_BINARY80_IO_SNPRINTF_LDBL
+    snprintf(buf, sizeof(buf), "%*.21Le", width, rtmp);
+#else
+    #error "unsupported binary80 type"
+#endif
+    if (rtmp >= 0.0)
+        printf("+%s", buf);
+    else
+        printf("%s", buf);
     return;
 }
 
@@ -52,8 +61,8 @@ int main()
 {
     mplapackint n = 4;
     mplapackint info;
-    mplapack_binary128_t *a = new mplapack_binary128_t[n * n];
-    mplapack_binary128_t *b = new mplapack_binary128_t[n];
+    mplapack_binary80_t *a = new mplapack_binary80_t[n * n];
+    mplapack_binary80_t *b = new mplapack_binary80_t[n];
     mplapackint *ipiv = new mplapackint[n];
 
 //setting a matrix

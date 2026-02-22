@@ -5,13 +5,22 @@
 #include <stdio.h>
 #include <cstring>
 #include <algorithm>
-
-#define FLOAT64X_FORMAT "%+25.21Le"
-#define FLOAT64X_SHORT_FORMAT "%+20.16Le"
-
+#define BUFLEN 1024
 void printnum(mplapack_binary80_t rtmp)
 {
-    printf(FLOAT64X_FORMAT, rtmp);
+    int width = 25;
+    char buf[BUFLEN];
+#if MPLAPACK_BINARY80_IO == MPLAPACK_BINARY80_IO_STRFROMF64X
+    strfromf64x(buf, sizeof(buf), "%.21e", rtmp);
+#elif MPLAPACK_BINARY80_IO == MPLAPACK_BINARY80_IO_SNPRINTF_LDBL
+    snprintf(buf, sizeof(buf), "%*.21Le", width, rtmp);
+#else
+    #error "unsupported binary80 type"
+#endif
+    if (rtmp >= 0.0)
+        printf("+%s", buf);
+    else
+        printf("%s", buf);
     return;
 }
 
@@ -53,8 +62,8 @@ int main()
     mplapackint n = 4;
     mplapackint lwork, info;
 
-    mplapack_binary128_t *A = new mplapack_binary128_t[n * n];
-    mplapack_binary128_t *w = new mplapack_binary128_t[n];
+    mplapack_binary80_t *A = new mplapack_binary80_t[n * n];
+    mplapack_binary80_t *w = new mplapack_binary80_t[n];
 
 //setting A matrix
     A[0 + 0 * n] = 5;    A[0 + 1 * n] = 4;    A[0 + 2 * n] = 1;    A[0 + 3 * n] = 1;
@@ -65,12 +74,12 @@ int main()
     printf("A ="); printmat(n, n, A, n); printf("\n");
 //work space query
     lwork = -1;
-    mplapack_binary128_t *work = new mplapack_binary128_t[1];
+    mplapack_binary80_t *work = new mplapack_binary80_t[1];
 
     Rsyev("V", "U", n, A, n, w, work, lwork, info);
     lwork = (int) cast2double (work[0]);
     delete[]work;
-    work = new mplapack_binary128_t[std::max((mplapackint) 1, lwork)];
+    work = new mplapack_binary80_t[std::max((mplapackint) 1, lwork)];
 //inverse matrix
     Rsyev("V", "U", n, A, n, w, work, lwork, info);
 //print out some results.

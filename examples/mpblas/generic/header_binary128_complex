@@ -47,7 +47,7 @@ void printnum(std::complex<mplapack_binary128_t> rtmp)
 #if MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_STRFROMF128
     strfromf128(buf, sizeof(buf), "%.35e", rtmp.imag());
 #elif MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_QUADMATH_SNPRINTF
-    int n = quadmath_snprintf (buf, sizeof buf, "%*.35Qe", width, rtmp.imag());
+    n = quadmath_snprintf (buf, sizeof buf, "%*.35Qe", width, rtmp.imag());
 #elif MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_SNPRINTF_LDBL
     snprintf (buf, sizeof buf, "%.35Le", rtmp.imag());
 #else

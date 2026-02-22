@@ -5,12 +5,43 @@
 #include <stdio.h>
 #include <cstring>
 #include <algorithm>
-
-#define FLOAT64X_FORMAT "%+25.21Le"
-#define FLOAT64X_SHORT_FORMAT "%+20.16Le"
-
-void printnum(mplapack_binary80_t rtmp) { printf(FLOAT64X_FORMAT, rtmp); return;}
-void printnum(std::complex<mplapack_binary80_t> ctmp) { printf(FLOAT64X_FORMAT FLOAT64X_FORMAT "i", ctmp.real(), ctmp.imag()); }
+#define BUFLEN 1024
+void printnum(mplapack_binary80_t rtmp)
+{
+    int width = 25;
+    char buf[BUFLEN];
+#if MPLAPACK_BINARY80_IO == MPLAPACK_BINARY80_IO_STRFROMF64X
+    strfromf64x(buf, sizeof(buf), "%.21e", rtmp);
+#elif MPLAPACK_BINARY80_IO == MPLAPACK_BINARY80_IO_SNPRINTF_LDBL
+    snprintf(buf, sizeof(buf), "%*.21Le", width, rtmp);
+#else
+    #error "unsupported binary80 type"
+#endif
+    if (rtmp >= 0.0)
+        printf("+%s", buf);
+    else
+        printf("%s", buf);
+    return;
+}
+void printnum(std::complex<mplapack_binary80_t> ctmp)
+{
+    int width = 25;
+    char buf[BUFLEN];
+#if MPLAPACK_BINARY80_IO == MPLAPACK_BINARY80_IO_STRFROMF64X
+    strfromf64x(buf, sizeof(buf), "%.21e", ctmp.real());
+    if (ctmp.real() >= 0.0) printf("+%s", buf); else printf("%s", buf);
+    strfromf64x(buf, sizeof(buf), "%.21e", ctmp.imag());
+    if (ctmp.imag() >= 0.0) printf("+%s", buf); else printf("%s", buf);
+#elif MPLAPACK_BINARY80_IO == MPLAPACK_BINARY80_IO_SNPRINTF_LDBL
+    snprintf(buf, sizeof(buf), "%*.21Le", width, ctmp.real());
+    if (ctmp.real() >= 0.0) printf("+%s", buf); else printf("%s", buf);
+    snprintf(buf, sizeof(buf), "%*.21Le", width, ctmp.imag());
+    if (ctmp.imag() >= 0.0) printf("+%s", buf); else printf("%s", buf);
+#else
+    #error "unsupported binary80 type"
+#endif
+    printf("i");
+}
 
 //Matlab/Octave format
 template <class X> void printvec(X *a, int len) {
@@ -45,7 +76,7 @@ template <class X> void printmat(int n, int m, X *a, int lda)
     }
     printf("]");
 }
-bool cselect(std::complex<mplapack_binary128_t> a) {
+bool cselect(std::complex<mplapack_binary80_t> a) {
     // sorting rule for eigenvalues.
     return false;
 }
@@ -53,21 +84,21 @@ bool cselect(std::complex<mplapack_binary128_t> a) {
 int main() {
     mplapackint n = 4;
 
-    std::complex<mplapack_binary128_t> *a = new std::complex<mplapack_binary128_t>[n * n];
+    std::complex<mplapack_binary80_t> *a = new std::complex<mplapack_binary80_t>[n * n];
     mplapackint sdim = 0;
     mplapackint lwork = 2 * n;
-    std::complex<mplapack_binary128_t> *w = new std::complex<mplapack_binary128_t>[n];
-    std::complex<mplapack_binary128_t> *vs = new std::complex<mplapack_binary128_t>[n * n];
-    std::complex<mplapack_binary128_t> *work = new std::complex<mplapack_binary128_t>[lwork];
-    mplapack_binary128_t *rwork = new mplapack_binary128_t[n];
+    std::complex<mplapack_binary80_t> *w = new std::complex<mplapack_binary80_t>[n];
+    std::complex<mplapack_binary80_t> *vs = new std::complex<mplapack_binary80_t>[n * n];
+    std::complex<mplapack_binary80_t> *work = new std::complex<mplapack_binary80_t>[lwork];
+    mplapack_binary80_t *rwork = new mplapack_binary80_t[n];
     bool bwork[n];
     mplapackint info;
 
     // setting A matrix
-    a[0 + 0 * n] = std::complex<mplapack_binary128_t>(5.0,  9.0); a[0 + 1 * n] = std::complex<mplapack_binary128_t>(5.0, 5.0);   a[0 + 2 * n] = std::complex<mplapack_binary128_t>(-6.0, -6.0); a[0 + 3 * n] = std::complex<mplapack_binary128_t>(-7.0,-7.0);
-    a[1 + 0 * n] = std::complex<mplapack_binary128_t>(3.0,  3.0); a[1 + 1 * n] = std::complex<mplapack_binary128_t>(6.0,10.0);   a[1 + 2 * n] = std::complex<mplapack_binary128_t>(-5.0, -5.0); a[1 + 3 * n] = std::complex<mplapack_binary128_t>(-6.0,-6.0);
-    a[2 + 0 * n] = std::complex<mplapack_binary128_t>(2.0,  2.0); a[2 + 1 * n] = std::complex<mplapack_binary128_t>(3.0, 3.0);   a[2 + 2 * n] = std::complex<mplapack_binary128_t>(-1.0, 3.0);  a[2 + 3 * n] = std::complex<mplapack_binary128_t>(-5.0,-5.0);
-    a[3 + 0 * n] = std::complex<mplapack_binary128_t>(1.0,  1.0); a[3 + 1 * n] = std::complex<mplapack_binary128_t>(2.0, 2.0);   a[3 + 2 * n] = std::complex<mplapack_binary128_t>(-3.0,-3.0);  a[3 + 3 * n] = std::complex<mplapack_binary128_t>(0.0, 4.0);
+    a[0 + 0 * n] = std::complex<mplapack_binary80_t>(5.0,  9.0); a[0 + 1 * n] = std::complex<mplapack_binary80_t>(5.0, 5.0);   a[0 + 2 * n] = std::complex<mplapack_binary80_t>(-6.0, -6.0); a[0 + 3 * n] = std::complex<mplapack_binary80_t>(-7.0,-7.0);
+    a[1 + 0 * n] = std::complex<mplapack_binary80_t>(3.0,  3.0); a[1 + 1 * n] = std::complex<mplapack_binary80_t>(6.0,10.0);   a[1 + 2 * n] = std::complex<mplapack_binary80_t>(-5.0, -5.0); a[1 + 3 * n] = std::complex<mplapack_binary80_t>(-6.0,-6.0);
+    a[2 + 0 * n] = std::complex<mplapack_binary80_t>(2.0,  2.0); a[2 + 1 * n] = std::complex<mplapack_binary80_t>(3.0, 3.0);   a[2 + 2 * n] = std::complex<mplapack_binary80_t>(-1.0, 3.0);  a[2 + 3 * n] = std::complex<mplapack_binary80_t>(-5.0,-5.0);
+    a[3 + 0 * n] = std::complex<mplapack_binary80_t>(1.0,  1.0); a[3 + 1 * n] = std::complex<mplapack_binary80_t>(2.0, 2.0);   a[3 + 2 * n] = std::complex<mplapack_binary80_t>(-3.0,-3.0);  a[3 + 3 * n] = std::complex<mplapack_binary80_t>(0.0, 4.0);
 
     printf("# Ex. 6.5 p. 116, Collection of Matrices for Testing Computational Algorithms, Robert T. Gregory, David L. Karney\n");
     printf("# octave check\n");
