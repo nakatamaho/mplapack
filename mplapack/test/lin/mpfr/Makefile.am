@@ -33,13 +33,13 @@ _CPU_TAG    := $(word 1,$(subst |, ,$(_CPU_OS_RAW)))
 _OS_TAG     := $(word 2,$(subst |, ,$(_CPU_OS_RAW)))
 
 if IS_MINGW
-OUTDIR = $(_CPU_TAG)_$(MPLAPACK_CC_TAG)_windows
+OUTDIR = $(_CPU_TAG)_windows_$(MPLAPACK_CC_TAG)
 else
-OUTDIR = $(_CPU_TAG)_$(MPLAPACK_CC_TAG)_$(_OS_TAG)
+OUTDIR = $(_CPU_TAG)_$(_OS_TAG)_$(MPLAPACK_CC_TAG)
 endif
 
-$(OUTDIR):
-	$(MKDIR_P) $@
+OUTDIR_PATH = ../results/$(OUTDIR)/mpfr
+
 
 
 
@@ -112,14 +112,14 @@ FORCE:
 # Also remove test logs on "make clean"
 clean-local:
 	rm -f $(MPFR_OUTFILES) *~ \#*
-	@if test -d "$(OUTDIR)"; then rmdir -p "$(OUTDIR)" 2>/dev/null || true; fi
+	@if test -d "$(OUTDIR_PATH)"; then rmdir -p "$(OUTDIR_PATH)" 2>/dev/null || true; fi
 
 # Clean test logs on "make clean"
 MPFR_OUTFILES = \
-	$(MPFR_PROFILES:%=$(OUTDIR)/Rtest.%.out) \
-	$(MPFR_PROFILES:%=$(OUTDIR)/Ctest.%.out) \
-	$(MPFR_PROFILES:%=$(OUTDIR)/Rtest_rfp.%.out) \
-	$(MPFR_PROFILES:%=$(OUTDIR)/Ctest_rfp.%.out)
+	$(MPFR_PROFILES:%=$(OUTDIR_PATH)/Rtest.%.out) \
+	$(MPFR_PROFILES:%=$(OUTDIR_PATH)/Ctest.%.out) \
+	$(MPFR_PROFILES:%=$(OUTDIR_PATH)/Rtest_rfp.%.out) \
+	$(MPFR_PROFILES:%=$(OUTDIR_PATH)/Ctest_rfp.%.out)
 CLEANFILES = $(MPFR_OUTFILES)
 
 .PRECIOUS: $(MPFR_OUTFILES)
@@ -128,21 +128,22 @@ check-local: mpfr-check
 
 mpfr-check: $(MPFR_CHECK_TARGETS)
 	@echo "MPFR lin tests done: $(MPFR_CHECK_TARGETS)"
-	@echo "Output directory: $(OUTDIR)"
+	@echo "Output directory: $(OUTDIR_PATH)"
 
 # Run all profiles listed in MPFR_PROFILES
 mpfr-check-all: $$(addprefix mpfr-check-,$$(MPFR_PROFILES))
 	@echo "MPFR lin tests done for profiles: $(MPFR_PROFILES)"
 
 # One rule for any profile name (default/binary64/binary128/...)
-mpfr-check-%: $(OUTDIR)/Rtest.%.out $(OUTDIR)/Ctest.%.out $(OUTDIR)/Rtest_rfp.%.out $(OUTDIR)/Ctest_rfp.%.out
+mpfr-check-%: $(OUTDIR_PATH)/Rtest.%.out $(OUTDIR_PATH)/Ctest.%.out $(OUTDIR_PATH)/Rtest_rfp.%.out $(OUTDIR_PATH)/Ctest_rfp.%.out
 	@echo "MPFR profile '$*' done."
 
 # -----------------------------------------------------------------------------
 # Test rules (profile-abstracted)
 # -----------------------------------------------------------------------------
 
-$(OUTDIR)/Rtest.%.out: ../Rtest.in xlintstR_mpfr$(EXEEXT) | $(OUTDIR)
+$(OUTDIR_PATH)/Rtest.%.out: ../Rtest.in xlintstR_mpfr$(EXEEXT)
+	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -153,7 +154,8 @@ $(OUTDIR)/Rtest.%.out: ../Rtest.in xlintstR_mpfr$(EXEEXT) | $(OUTDIR)
 		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xlintstR_mpfr$(EXEEXT) < ../Rtest.in; \
 	} > $@ 2>&1
 
-$(OUTDIR)/Ctest.%.out: ../Ctest.in xlintstC_mpfr$(EXEEXT) | $(OUTDIR)
+$(OUTDIR_PATH)/Ctest.%.out: ../Ctest.in xlintstC_mpfr$(EXEEXT)
+	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -164,7 +166,8 @@ $(OUTDIR)/Ctest.%.out: ../Ctest.in xlintstC_mpfr$(EXEEXT) | $(OUTDIR)
 		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xlintstC_mpfr$(EXEEXT) < ../Ctest.in; \
 	} > $@ 2>&1
 
-$(OUTDIR)/Rtest_rfp.%.out: ../Rtest_rfp.in xlintstrfR_mpfr$(EXEEXT) | $(OUTDIR)
+$(OUTDIR_PATH)/Rtest_rfp.%.out: ../Rtest_rfp.in xlintstrfR_mpfr$(EXEEXT)
+	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -175,7 +178,8 @@ $(OUTDIR)/Rtest_rfp.%.out: ../Rtest_rfp.in xlintstrfR_mpfr$(EXEEXT) | $(OUTDIR)
 		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xlintstrfR_mpfr$(EXEEXT) < ../Rtest_rfp.in; \
 	} > $@ 2>&1
 
-$(OUTDIR)/Ctest_rfp.%.out: ../Ctest_rfp.in xlintstrfC_mpfr$(EXEEXT) | $(OUTDIR)
+$(OUTDIR_PATH)/Ctest_rfp.%.out: ../Ctest_rfp.in xlintstrfC_mpfr$(EXEEXT)
+	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \

@@ -53,13 +53,13 @@ _CPU_TAG    := $(word 1,$(subst |, ,$(_CPU_OS_RAW)))
 _OS_TAG     := $(word 2,$(subst |, ,$(_CPU_OS_RAW)))
 
 if IS_MINGW
-OUTDIR = $(_CPU_TAG)_$(MPLAPACK_CC_TAG)_windows
+OUTDIR = $(_CPU_TAG)_windows_$(MPLAPACK_CC_TAG)
 else
-OUTDIR = $(_CPU_TAG)_$(MPLAPACK_CC_TAG)_$(_OS_TAG)
+OUTDIR = $(_CPU_TAG)_$(_OS_TAG)_$(MPLAPACK_CC_TAG)
 endif
 
-$(OUTDIR):
-	$(MKDIR_P) $@
+OUTDIR_PATH = ../results/$(OUTDIR)/dd
+
 
 
 # -----------------------------------------------------------------------------
@@ -99,7 +99,7 @@ endif
 FORCE:
 
 # All output logs: <OUTDIR>/<test>.out
-DD_LIN_OUTS = $(foreach t,$(DD_LIN_TESTS),$(OUTDIR)/$(t).out)
+DD_LIN_OUTS = $(foreach t,$(DD_LIN_TESTS),$(OUTDIR_PATH)/$(t).out)
 CLEANFILES = $(DD_LIN_OUTS)
 
 # Re-run all test commands on every "make check" even if *.out already exists.
@@ -111,17 +111,18 @@ check-local: dd-check
 
 dd-check: $$(DD_LIN_OUTS)
 	@echo "DD lin tests done."
-	@echo "Output directory: $(OUTDIR)"
+	@echo "Output directory: $(OUTDIR_PATH)"
 
 clean-local:
 	rm -f $(DD_LIN_OUTS) *~ \#*
-	@if test -d "$(OUTDIR)"; then rmdir -p "$(OUTDIR)" 2>/dev/null || true; fi
+	@if test -d "$(OUTDIR_PATH)"; then rmdir -p "$(OUTDIR_PATH)" 2>/dev/null || true; fi
 
 # -----------------------------------------------------------------------------
 # Test rules (one output per test)
 # -----------------------------------------------------------------------------
 
-$(OUTDIR)/Rtest.out: ../Rtest.in xlintstR_dd$(EXEEXT) | $(OUTDIR)
+$(OUTDIR_PATH)/Rtest.out: ../Rtest.in xlintstR_dd$(EXEEXT)
+	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
@@ -131,7 +132,8 @@ $(OUTDIR)/Rtest.out: ../Rtest.in xlintstR_dd$(EXEEXT) | $(OUTDIR)
 		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xlintstR_dd$(EXEEXT) < ../Rtest.in; \
 	} > $@ 2>&1
 
-$(OUTDIR)/Ctest.out: ../Ctest.in xlintstC_dd$(EXEEXT) | $(OUTDIR)
+$(OUTDIR_PATH)/Ctest.out: ../Ctest.in xlintstC_dd$(EXEEXT)
+	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
 		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \

@@ -73,7 +73,8 @@ def detect_precision(out_path: Path, search_root: Path) -> str:
     """
     Derive a single precision label from an .out file path.
 
-    Layout:  <search_root>/<backend>/<outdir>/<file>.out
+    New layout:  <search_root>/results/<outdir>/<backend>/<file>.out
+    Old layout:  <search_root>/<backend>/<outdir>/<file>.out
     For mpfr the variant is embedded in the filename suffix.
     """
     try:
@@ -81,7 +82,12 @@ def detect_precision(out_path: Path, search_root: Path) -> str:
     except ValueError:
         return "unknown"
 
-    backend = rel.parts[0] if rel.parts else "unknown"
+    # New layout: results / <outdir> / <backend> / <file>.out  -> parts[2]
+    # Old layout: <backend> / <outdir> / <file>.out            -> parts[0]
+    if len(rel.parts) >= 3 and rel.parts[0] == "results":
+        backend = rel.parts[2]
+    else:
+        backend = rel.parts[0] if rel.parts else "unknown"
 
     if backend != "mpfr":
         return backend
@@ -146,32 +152,46 @@ def parse_out_file(out_path: Path, category: str, search_root: Path) -> list[Tes
 
 def collect_all_records(outdir: str, search_root: Path) -> list[TestRecord]:
     """
-    Walk all backend subdirectories of search_root and parse every
-    *.out file found inside <backend>/<outdir>/.
+    Walk all backend subdirectories and parse every *.out file.
 
-    Expected layout:
-        <search_root>/mpfr/<outdir>/*.out
-        <search_root>/dd/<outdir>/*.out
-        <search_root>/qd/<outdir>/*.out
-        ...
+    New layout (preferred):
+        <search_root>/results/<outdir>/<backend>/*.out
+
+    Old layout (fallback):
+        <search_root>/<backend>/<outdir>/*.out
     """
     all_records: list[TestRecord] = []
     category = _infer_category(search_root)
 
     found_any = False
-    for backend_dir in sorted(search_root.iterdir()):
-        if not backend_dir.is_dir():
-            continue
-        target_dir = backend_dir / outdir
-        if not target_dir.is_dir():
-            continue
-        for out_path in sorted(target_dir.glob("*.out")):
-            found_any = True
-            all_records.extend(parse_out_file(out_path, category, search_root))
+
+    # --- New layout: results/<outdir>/<backend>/*.out ---
+    new_root = search_root / "results" / outdir
+    if new_root.is_dir():
+        for backend_dir in sorted(new_root.iterdir()):
+            if not backend_dir.is_dir():
+                continue
+            for out_path in sorted(backend_dir.glob("*.out")):
+                found_any = True
+                all_records.extend(parse_out_file(out_path, category, search_root))
+
+    # --- Old layout fallback: <backend>/<outdir>/*.out ---
+    if not found_any:
+        for backend_dir in sorted(search_root.iterdir()):
+            if not backend_dir.is_dir() or backend_dir.name == "results":
+                continue
+            target_dir = backend_dir / outdir
+            if not target_dir.is_dir():
+                continue
+            for out_path in sorted(target_dir.glob("*.out")):
+                found_any = True
+                all_records.extend(parse_out_file(out_path, category, search_root))
 
     if not found_any:
         print(
-            f"[INFO] No <backend>/{outdir}/*.out files found under: {search_root}",
+            f"[INFO] No *.out files found for OUTDIR='{outdir}' under: {search_root}\n"
+            f"       Tried: {search_root}/results/{outdir}/<backend>/*.out\n"
+            f"       and:  {search_root}/<backend>/{outdir}/*.out",
             file=sys.stderr,
         )
 
@@ -357,8 +377,8 @@ def build_parser() -> argparse.ArgumentParser:
         metavar="OUTDIR",
         help=(
             "Output subdirectory name (e.g. Ryzen_Threadripper_3970X_gcc_14_2_0_ubuntu22_04). "
-            "The script searches SEARCH_ROOT/<backend>/OUTDIR/*.out for every backend "
-            "subdirectory found inside SEARCH_ROOT."
+            "The script first tries SEARCH_ROOT/results/OUTDIR/<backend>/*.out (new layout), "
+            "then falls back to SEARCH_ROOT/<backend>/OUTDIR/*.out (old layout)."
         ),
     )
     p.add_argument(
@@ -367,7 +387,8 @@ def build_parser() -> argparse.ArgumentParser:
         nargs="?",
         default=".",
         help=(
-            "Directory that contains backend subdirectories (mpfr/, dd/, qd/, ...). "
+            "The eig/ or lin/ directory. "
+            "For the new layout this must contain a results/ subdirectory. "
             "Defaults to the current directory."
         ),
     )
@@ -437,15 +458,17 @@ if __name__ == "__main__":
 # README / Usage Examples
 # =============================================================================
 #
-# BASIC USAGE  (run from within an eig/ or lin/ build directory)
+# BASIC USAGE  (run from within an eig/ or lin/ results-containing directory)
 #   python summarize_mplapack_tests.py <OUTDIR>
 #   python summarize_mplapack_tests.py Ryzen_Threadripper_3970X_gcc_14_2_0_ubuntu22_04
 #
 # WITH EXPLICIT SEARCH ROOT
 #   python summarize_mplapack_tests.py <OUTDIR> /path/to/eig
 #
-# The script discovers every backend subdirectory (mpfr/, dd/, qd/, ...) inside
-# SEARCH_ROOT and reads SEARCH_ROOT/<backend>/<OUTDIR>/*.out.
+# The script first looks for the new layout:
+#   SEARCH_ROOT/results/<OUTDIR>/<backend>/*.out
+# and falls back to the old layout if results/ is absent:
+#   SEARCH_ROOT/<backend>/<OUTDIR>/*.out
 #
 # SHOW ONLY FAILURES
 #   python summarize_mplapack_tests.py <OUTDIR> . --only-fail
