@@ -272,3 +272,52 @@ if IS_MACOS
 	bash \$(top_builddir)/misc/fix_dylib_macOS.sh \$(mpblasexamplesdir) \$(prefix)
 endif
 EOF
+
+cat >> ../Makefile.am << 'EOF'
+
+EXTRA_DIST = \
+	Makefile.freebsd.in \
+	Makefile.linux.in \
+	Makefile.linux_cuda.in \
+	Makefile.macos.in \
+	Makefile.mingw.in
+
+GENERATED_MAKEFILES = \
+	Makefile.freebsd \
+	Makefile.linux \
+	Makefile.linux_cuda \
+	Makefile.macos \
+	Makefile.mingw
+
+# Resolve %%LIBQUADMATH%% based on whether quadmath backend is selected.
+if MPLAPACK_BINARY128_MODE_QUADMATH
+LIBQUADMATH_SUBST = -lquadmath
+else
+LIBQUADMATH_SUBST =
+endif
+
+# Common sed substitution expression (assigned once, reused in every rule).
+MPLAPACK_SED_SUBST = \
+	-e 's|%%MPLAPACKDIR%%|$(prefix)|g' \
+	-e 's|%%LIBQUADMATH%%|$(LIBQUADMATH_SUBST)|g'
+
+Makefile.freebsd: Makefile.freebsd.in
+	sed $(MPLAPACK_SED_SUBST) $< > $@
+
+Makefile.linux: Makefile.linux.in
+	sed $(MPLAPACK_SED_SUBST) $< > $@
+
+Makefile.linux_cuda: Makefile.linux_cuda.in
+	sed $(MPLAPACK_SED_SUBST) $< > $@
+
+Makefile.macos: Makefile.macos.in
+	sed $(MPLAPACK_SED_SUBST) $< > $@
+
+Makefile.mingw: Makefile.mingw.in
+	sed $(MPLAPACK_SED_SUBST) $< > $@
+
+all-local: $(GENERATED_MAKEFILES)
+
+clean-local:
+	rm -f $(GENERATED_MAKEFILES)
+EOF

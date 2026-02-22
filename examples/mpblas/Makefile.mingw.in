@@ -43,7 +43,7 @@ Rgemm_gmp.exe: Rgemm_gmp.o
 	$(CXX) -o Rgemm_gmp.exe Rgemm_gmp.o $(LIBFLAGS) $(GMPLIBS)
 
 Rgemm_gmp_opt.exe: Rgemm_gmp.o
-	$(CXX) -o Rgemm_gmp_opt.exe Rgemm_gmp_opt.o $(LIBFLAGS) $(GMPOPTLIBS)
+	$(CXX) -o Rgemm_gmp_opt.exe Rgemm_gmp.o $(LIBFLAGS) $(GMPOPTLIBS)
 
 Rgemm_qd.exe: Rgemm_qd.o
 	$(CXX) -o Rgemm_qd.exe Rgemm_qd.o $(LIBFLAGS) $(QDLIBS)

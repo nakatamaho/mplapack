@@ -44,7 +44,7 @@ Rgemm_gmp: Rgemm_gmp.o
 	$(CXX) -o Rgemm_gmp Rgemm_gmp.o $(LIBFLAGS) $(GMPLIBS)
 
 Rgemm_gmp_opt: Rgemm_gmp.o
-	$(CXX) -o Rgemm_gmp_opt Rgemm_gmp_opt.o $(LIBFLAGS) $(GMPOPTLIBS)
+	$(CXX) -o Rgemm_gmp_opt Rgemm_gmp.o $(LIBFLAGS) $(GMPOPTLIBS)
 
 Rgemm_qd: Rgemm_qd.o
 	$(CXX) -o Rgemm_qd Rgemm_qd.o $(LIBFLAGS) $(QDLIBS)

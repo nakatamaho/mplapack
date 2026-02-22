@@ -43,7 +43,7 @@ all: $(programs)
 	$(CXX) -o %%ROUTINE%%_gmp.exe %%ROUTINE%%_gmp.o $(LIBFLAGS) $(GMPLIBS)
 
 %%ROUTINE%%_gmp_opt.exe: %%ROUTINE%%_gmp.o
-	$(CXX) -o %%ROUTINE%%_gmp_opt.exe %%ROUTINE%%_gmp_opt.o $(LIBFLAGS) $(GMPOPTLIBS)
+	$(CXX) -o %%ROUTINE%%_gmp_opt.exe %%ROUTINE%%_gmp.o $(LIBFLAGS) $(GMPOPTLIBS)
 
 %%ROUTINE%%_qd.exe: %%ROUTINE%%_qd.o
 	$(CXX) -o %%ROUTINE%%_qd.exe %%ROUTINE%%_qd.o $(LIBFLAGS) $(QDLIBS)
