@@ -455,16 +455,16 @@ static inline __float128 uniform01_binary128() {
     // using the full 113-bit significand of __float128.
     // Distribution: integer-grid uniform (not float-space uniform).
     constexpr int kFracBits = 113;
-    constexpr int lo_bits   = kFracBits - 64; // 49
+    constexpr int lo_bits = kFracBits - 64; // 49
 
     auto &rng = mplapack_rng64(); // ensure single RNG instance
-    uint64_t hi     = rng();
+    uint64_t hi = rng();
     uint64_t lo_top = rng() >> (64 - lo_bits); // top 49 bits
 
     __float128 r = static_cast<__float128>(hi);
-    r = ldexpq(r, lo_bits);           // r = hi * 2^49
+    r = ldexpq(r, lo_bits); // r = hi * 2^49
     r += static_cast<__float128>(lo_top);
-    r = ldexpq(r, -kFracBits);        // r /= 2^113
+    r = ldexpq(r, -kFracBits); // r /= 2^113
     return r;
 }
 mplapack_binary128_t mpf_randomnumber(mplapack_binary128_t /*dummy*/) {
@@ -538,16 +538,22 @@ static inline _Float128 mplapack_ldexp_f128(_Float128 x, int e) {
 // Uniform in [0, 1) with 113-bit resolution (binary128 significand bits).
 static inline _Float128 uniform01_binary128_f128() {
     constexpr int kFracBits = 113;
+    constexpr int kShift = 128 - kFracBits; // 15
 
     uint64_t hi = mplapack_rng64()();
     uint64_t lo = mplapack_rng64()();
 
-    __uint128_t x = (static_cast<__uint128_t>(hi) << 64) | static_cast<__uint128_t>(lo);
-    x >>= (128 - kFracBits); // keep top 113 bits
+    // Extract top 113 bits of (hi:lo) by right-shifting the 128-bit value by 15.
+    uint64_t a = hi >> kShift;                           // top 49 bits
+    uint64_t b = (hi << (64 - kShift)) | (lo >> kShift); // next 64 bits
 
-    _Float128 r = static_cast<_Float128>(x); // exact (x < 2^113)
-    r = mplapack_ldexp_f128(r, -kFracBits);  // r / 2^113
-    return r;                                // [0,1)
+    // Build exact integer: x = a * 2^64 + b  (0 <= x < 2^113)
+    _Float128 r = mplapack_ldexp_f128(static_cast<_Float128>(a), 64); // a * 2^64
+    r += static_cast<_Float128>(b);                                   // + b
+
+    // Scale to [0, 1)
+    r = mplapack_ldexp_f128(r, -kFracBits); // / 2^113
+    return r;
 }
 
 mplapack_binary128_t mpf_randomnumber(mplapack_binary128_t /*dummy*/) {
@@ -611,21 +617,36 @@ static inline std::mt19937_64 &mplapack_rng64_binary128_ldbl() {
 
 // Uniform in [0, 1) with LDBL_MANT_DIG-bit resolution.
 static inline long double uniform01_binary128_ldbl() {
-    constexpr int kFracBits = LDBL_MANT_DIG; // 64 on x86 binary80, 113 on true binary128 targets
+    constexpr int kFracBits = LDBL_MANT_DIG; // 64 (binary80), 113 (binary128 long double)
+    static_assert(kFracBits >= 2 && kFracBits <= 113, "Unexpected LDBL_MANT_DIG");
 
     uint64_t hi = mplapack_rng64_binary128_ldbl()();
     uint64_t lo = mplapack_rng64_binary128_ldbl()();
 
-    __uint128_t x = (static_cast<__uint128_t>(hi) << 64) | static_cast<__uint128_t>(lo);
-    x >>= (128 - kFracBits); // keep top kFracBits bits
+    if constexpr (kFracBits <= 64) {
+        // Top k bits of the 128-bit stream live entirely in hi.
+        // Equivalent to: ((hi<<64 | lo) >> (128-k)) but without 128-bit ints.
+        constexpr int sh = 64 - kFracBits;        // 0..63
+        uint64_t x = (sh == 0) ? hi : (hi >> sh); // k-bit integer (< 2^k)
+        long double r = static_cast<long double>(x);
+        return std::ldexp(r, -kFracBits); // r / 2^k
+    } else {
+        // k in (64,113], so shift s = 128-k is in [15,63].
+        constexpr int s = 128 - kFracBits; // 1..63 in practice here
 
-    long double r = static_cast<long double>(x); // exact for kFracBits <= 64 (x < 2^64)
-    r = ldexp(r, -kFracBits);                    // r / 2^kFracBits
-    return r;                                    // [0,1)
+        // 128-bit right shift by s using two 64-bit limbs (hi:lo).
+        uint64_t y_hi = hi >> s;
+        uint64_t y_lo = (hi << (64 - s)) | (lo >> s);
+
+        // Build exact integer y = y_hi*2^64 + y_lo (needs >=113-bit long double to be exact).
+        long double r = std::ldexp(static_cast<long double>(y_hi), 64);
+        r += static_cast<long double>(y_lo);
+        return std::ldexp(r, -kFracBits); // / 2^k
+    }
 }
 
 mplapack_binary128_t mpf_randomnumber(mplapack_binary128_t /*dummy*/) {
-    long double u = uniform01_binary128_ldbl();    // [0,1)
+    long double u = uniform01_binary128_ldbl();                // [0,1)
     return static_cast<mplapack_binary128_t>(2.0L * u - 1.0L); // [-1,1)
 }
 
