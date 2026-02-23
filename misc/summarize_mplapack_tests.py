@@ -56,8 +56,15 @@ RE_PASS = re.compile(
 # Pattern B - failed:
 #   "DES:    2 out of  3822 tests failed to pass the threshold"
 #   "DGS drivers:      1 out of   1555 tests failed to pass the threshold"
+#
+# NOTE: suite name must start with a letter ([A-Za-z]).
+# When a test suite fails, LAPACK also emits per-matrix-type lines such as:
+#   "  2:   1 out of    1 tests failed to pass the threshold"
+# where "2" is a matrix-type index, not a suite name.  Anchoring the capture
+# group to start with [A-Za-z] rejects those bare-number lines while still
+# matching all real suite names (DES, ZST drivers, ZBD routines, etc.).
 RE_FAIL = re.compile(
-    r"^([\w\s]+?):\s+(\d+)\s+out\s+of\s+(\d+)\s+tests\s+failed\s+to\s+pass\s+the\s+threshold",
+    r"^[ \t]*([A-Za-z][\w\s]*?):\s+(\d+)\s+out\s+of\s+(\d+)\s+tests\s+failed\s+to\s+pass\s+the\s+threshold",
     re.IGNORECASE | re.MULTILINE,
 )
 
