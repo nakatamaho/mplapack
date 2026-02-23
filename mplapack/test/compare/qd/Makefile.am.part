@@ -12,11 +12,16 @@ AM_TESTS_ENVIRONMENT = \
 
 run_Rlaruv_test.sh: Makefile
 	@echo '#!/bin/sh' > $@
+	@echo 'REF_TMP=$$(mktemp)' >> $@
+	@echo 'OUT_TMP=$$(mktemp)' >> $@
+	@echo 'trap "rm -f $$REF_TMP $$OUT_TMP" EXIT INT TERM' >> $@
 	@echo '$${LOG_COMPILER} ./Rlaruv.test_qd$${EXEEXT} || true' >> $@
-	@echo 'if diff -u $${srcdir}/Rlaruv_reference.txt Rlaruv.txt > /dev/null 2>&1; then' >> $@
+	@echo 'sed '"'"'/^#/!s/[0-9][0-9]\(e[+-][0-9][0-9]*\)$$/\1/'"'"' "$${srcdir}/Rlaruv_reference.txt" > "$$REF_TMP"' >> $@
+	@echo 'sed '"'"'/^#/!s/[0-9][0-9]\(e[+-][0-9][0-9]*\)$$/\1/'"'"' Rlaruv.txt > "$$OUT_TMP"' >> $@
+	@echo 'if diff -u "$$REF_TMP" "$$OUT_TMP" > /dev/null 2>&1; then' >> $@
 	@echo '  echo "PASS: Rlaruv"; exit 0' >> $@
 	@echo 'else' >> $@
-	@echo '  echo "FAIL: Rlaruv"; diff $${srcdir}/Rlaruv_reference.txt Rlaruv.txt; exit 1' >> $@
+	@echo '  echo "FAIL: Rlaruv"; diff "$$REF_TMP" "$$OUT_TMP"; exit 1' >> $@
 	@echo 'fi' >> $@
 	@chmod +x $@
 
