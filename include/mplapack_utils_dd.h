@@ -30,7 +30,7 @@
 #define _MUTILS_DD_H_
 
 #if defined ___MPLAPACK_INTERNAL___
-#define DD_PRECISION 31
+#define DD_PRECISION 30
 #define DD_PRECISION_SHORT 16
 
 #if !defined __MPLAPACK_BUFLEN__

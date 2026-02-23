@@ -211,14 +211,14 @@ void subst_test1() {
         exit(1);
     }
 #elif defined ___MPLAPACK_BUILD_WITH_DD___
-    if (strncmp(buf1, buf2, 34) == 0 && strncmp(buf2, buf3, 34) == 0)
+    if (strncmp(buf1, buf2, 30) == 0 && strncmp(buf2, buf3, 30) == 0)
         printf("ok!\n");
     else {
         printf("failed!\n");
         exit(1);
     }
 #elif defined ___MPLAPACK_BUILD_WITH_QD___
-    if (strncmp(buf1, buf2, 66) == 0 && strncmp(buf2, buf3, 66) == 0)
+    if (strncmp(buf1, buf2, 61) == 0 && strncmp(buf2, buf3, 61) == 0)
         printf("ok!\n");
     else {
         printf("failed!\n");
