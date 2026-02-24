@@ -229,10 +229,15 @@ else
 LIBQUADMATH_SUBST =
 endif
 
-# Common sed substitution expression (assigned once, reused in every rule).
+if MPLAPACK_BINARY128_MODE_QUADMATH
 MPLAPACK_SED_SUBST = \
-	-e 's|%%MPLAPACKDIR%%|$(prefix)|g' \
-	-e 's|%%LIBQUADMATH%%|$(LIBQUADMATH_SUBST)|g'
+        -e 's|%%MPLAPACKDIR%%|$(prefix)|g' \
+        -e 's|%%LIBQUADMATH%%| -lquadmath|g'
+else
+MPLAPACK_SED_SUBST = \
+        -e 's|%%MPLAPACKDIR%%|$(prefix)|g' \
+        -e 's|%%LIBQUADMATH%%||g'
+endif
 
 Makefile.freebsd: Makefile.freebsd.in
 	sed $(MPLAPACK_SED_SUBST) $< > $@
