@@ -1,6 +1,13 @@
 QDVERSION=2.3.24
 MAKEFLAGS =
 
+# Ensure dist tarball contains the vendor tarball and our patch set
+EXTRA_DIST = \
+	download/qd-$(QDVERSION).tar.gz \
+	patches/patch-overflow \
+	patches/patch-no-doc \
+	patches/patch-mingw
+
 if IS_MINGW
 CONFIGURE_ARGS=--prefix=$(abs_builddir)/../i/QD/ --host=$(host) --enable-fortran=no --enable-ieee-add=yes --enable-sloppy-mul=no --enable-sloppy-div=no --enable-shared=yes --enable-static=no $(QDLIB_FLAGS)
 CONFIGURE_ARGS2=--prefix=$(prefix) --host=$(host) --enable-fortran=no --enable-ieee-add=yes --enable-sloppy-mul=no --enable-sloppy-div=no --enable-shared=yes --enable-static=no $(QDLIB_FLAGS)
@@ -27,13 +34,13 @@ work/$(EXTRACT_STAMP):
 
 work/$(PATCH_STAMP): work/$(EXTRACT_STAMP)
 if IS_MINGW
-	cd $(abs_builddir)/work/internal/QD-$(QDVERSION); patch -p0 < $(abs_builddir)/patches/patch-mingw ; autoreconf -f -i ; cp config/* .
-	cd $(abs_builddir)/work/install/QD-$(QDVERSION); patch -p0 < $(abs_builddir)/patches/patch-mingw ; autoreconf -f -i ; cp config/* .
+	cd $(abs_builddir)/work/internal/QD-$(QDVERSION); patch -p0 < $(abs_srcdir)/patches/patch-mingw ; autoreconf -f -i ; cp config/* .
+	cd $(abs_builddir)/work/install/QD-$(QDVERSION); patch -p0 < $(abs_srcdir)/patches/patch-mingw ; autoreconf -f -i ; cp config/* .
 endif
-	cd $(abs_builddir)/work/internal/QD-$(QDVERSION); patch -p0 < $(abs_builddir)/patches/patch-overflow
-	cd $(abs_builddir)/work/install/QD-$(QDVERSION); patch -p0 < $(abs_builddir)/patches/patch-overflow
-	cd $(abs_builddir)/work/internal/QD-$(QDVERSION); patch -p0 < $(abs_builddir)/patches/patch-no-doc
-	cd $(abs_builddir)/work/install/QD-$(QDVERSION); patch -p0 < $(abs_builddir)/patches/patch-no-doc
+	cd $(abs_builddir)/work/internal/QD-$(QDVERSION); patch -p0 < $(abs_srcdir)/patches/patch-overflow
+	cd $(abs_builddir)/work/install/QD-$(QDVERSION); patch -p0 < $(abs_srcdir)/patches/patch-overflow
+	cd $(abs_builddir)/work/internal/QD-$(QDVERSION); patch -p0 < $(abs_srcdir)/patches/patch-no-doc
+	cd $(abs_builddir)/work/install/QD-$(QDVERSION); patch -p0 < $(abs_srcdir)/patches/patch-no-doc
 
 	touch $(abs_builddir)/work/$(PATCH_STAMP)
 
@@ -87,8 +94,6 @@ check: work/$(CHECK_STAMP)
 install_internal: work/$(INSTALL_INTERNAL_STAMP)
 
 install: work/$(INSTALL_STAMP)
-
-distdir:
 
 clean:
 	rm -rf work
