@@ -21,8 +21,8 @@ all: extract patch config build check install_internal
 
 work/$(EXTRACT_STAMP):
 	rm -rf work ; mkdir -p work/internal  ; mkdir -p work/install
-	cd $(abs_builddir)/work/internal; tar xvfz ../../download/qd-$(QDVERSION).tar.gz
-	cd $(abs_builddir)/work/install; tar xvfz ../../download/qd-$(QDVERSION).tar.gz
+	cd $(abs_builddir)/work/internal; tar xvfz $(abs_srcdir)/download/qd-$(QDVERSION).tar.gz
+	cd $(abs_builddir)/work/install; tar xvfz $(abs_srcdir)/download/qd-$(QDVERSION).tar.gz
 	touch $(abs_builddir)/work/$(EXTRACT_STAMP)
 
 work/$(PATCH_STAMP): work/$(EXTRACT_STAMP)

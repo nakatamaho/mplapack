@@ -80,15 +80,15 @@ pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = mplapack.pc
 
 EXTRA_DIST = \
-benchmark/benchall.sh \
 benchmark/Rgetrf1.plt.in \
 benchmark/Rgetrf2.plt.in \
 benchmark/Rgetrf3.plt.in \
+benchmark/Rgetrf_cuda.plt.in \
 benchmark/Rpotrf1.plt.in \
 benchmark/Rpotrf2.plt.in \
 benchmark/Rpotrf3.plt.in \
-benchmark/Rgetrf_cuda.plt.in \
 benchmark/Rpotrf_cuda.plt.in \
+benchmark/benchall.sh \
 benchmark/go.Raxpy.sh \
 benchmark/go.Rcopy.sh \
 benchmark/go.Rdot.sh \
@@ -101,6 +101,35 @@ benchmark/go.Rpotrf.sh \
 benchmark/go.Rpotrf_cuda.sh \
 benchmark/go.Rsyrk.sh \
 benchmark/go.Rsyrk_cuda.sh \
+examples/mplapack/04_NonsymmetricEigenproblems/Matrix_*.txt \
+examples/mplapack/05_SingularValueDecomposition/Matrix_*.txt \
+external/dlfcn-win32/Makefile.in \
+external/dlfcn-win32/Makefile.am \
+external/dlfcn-win32/download/dlfcn-win32-1.4.2.tar.gz \
+external/gmp/Makefile.am \
+external/gmp/Makefile.in \
+external/gmp/download/gmp-6.3.0.tar.xz \
+external/lapack/Makefile.am \
+external/lapack/Makefile.in \
+external/lapack/download/lapack-3.12.1.tar.gz \
+external/lapack/download/lapack-3.9.1.tar.gz \
+external/lapack/patches/3.12.1/* \
+external/lapack/patches/3.9.1/* \
+external/lapack/patches/print.c \
+external/mpc/Makefile.am \
+external/mpc/Makefile.in \
+external/mpc/download/mpc-1.3.1.tar.gz \
+external/mpfr/Makefile.am \
+external/mpfr/Makefile.in \
+external/mpfr/download/mpfr-4.2.2.tar.bz2 \
+external/openblas/Makefile.am \
+external/openblas/Makefile.in \
+external/openblas/download/OpenBLAS-0.3.30.tar.gz \
+external/openblas/patches/patch-mingw \
+external/qd/Makefile.am \
+external/qd/Makefile.in \
+external/qd/download/qd-2.3.24.tar.gz \
+external/qd/patches/patch-* \
 misc/add_ldlibpath.sh \
 misc/buildtest_tier1_amd64_macOS.sh \
 misc/buildtest_tier1_amd64_mingw.sh \
@@ -116,40 +145,10 @@ misc/reconfig.ubuntu24.04.nvidia.sh \
 misc/reconfig.ubuntu24.04.sh \
 misc/summarize_mplapack_tests.py \
 mpblas/optimized/dd/cuda/dd_real_cuda.h \
-external/gmp/download/*.tar.bz2 \
-external/gmp/Makefile.am \
-external/gmp/Makefile.in \
-external/mpfr/download/*.tar.bz2 \
-external/mpfr/Makefile.am \
-external/mpfr/Makefile.in \
-external/mpc/download/*.tar.gz \
-external/mpc/Makefile.am \
-external/mpc/Makefile.in \
-external/qd/download/*.tar.gz \
-external/qd/Makefile.am \
-external/qd/Makefile.in \
-external/qd/patches/patch-* \
-external/lapack/Makefile.am \
-external/lapack/Makefile.in \
-external/lapack/download/*.tar.gz \
-external/lapack/patches/print.c \
-external/lapack/patches/3.9.1/* \
-external/lapack/patches/3.12.1/* \
 mpfrc++/copying.lib mpfrc++/copying mpfrc++/makefile.org \
 mpfrc++/org/copying mpfrc++/org/copying.lib mpfrc++/org/example.cpp \
 mpfrc++/org/makefile mpfrc++/org/mpfrc++.tar.gz \
 mpfrc++/org/mpreal.cpp mpfrc++/org/mpreal.h \
-examples/mpblas/Makefile.freebsd.in \
-examples/mpblas/Makefile.linux.in \
-examples/mpblas/Makefile.linux_cuda.in \
-examples/mpblas/Makefile.macos.in \
-examples/mpblas/Makefile.mingw.in \
-examples/mplapack/*/Makefile.freebsd.in \
-examples/mplapack/*/Makefile.linux.in \
-examples/mplapack/*/Makefile.macos.in \
-examples/mplapack/*/Makefile.mingw.in \
-examples/mplapack/04_NonsymmetricEigenproblems/Matrix_*.txt \
-examples/mplapack/05_SingularValueDecomposition/Matrix_*.txt \
 mplapack/test/eig/Cbak.in \
 mplapack/test/eig/Cbal.in \
 mplapack/test/eig/Cbb.in \

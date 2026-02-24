@@ -19,8 +19,8 @@ all: extract config build check install_internal
 
 work/$(EXTRACT_STAMP):
 	rm -rf work ; mkdir -p work/internal  ; mkdir -p work/install
-	cd $(abs_builddir)/work/internal; tar xvfj ../../download/mpfr-$(MPFRVERSION).tar.bz2
-	cd $(abs_builddir)/work/install; tar xvfj ../../download/mpfr-$(MPFRVERSION).tar.bz2
+	cd $(abs_builddir)/work/internal; tar xvfj $(abs_srcdir)/download/mpfr-$(MPFRVERSION).tar.bz2
+	cd $(abs_builddir)/work/install; tar xvfj $(abs_srcdir)/download/mpfr-$(MPFRVERSION).tar.bz2
 	touch $(abs_builddir)/work/$(EXTRACT_STAMP)
 
 work/$(PATCH_STAMP): work/$(EXTRACT_STAMP)

@@ -3,10 +3,28 @@ dnl Configure for MPLAPACK
 dnl
 
 m4_define([MPLAPACK_VER_MAJOR], [2])
-m4_define([MPLAPACK_VER_MINOR], [0])
-m4_define([MPLAPACK_VER_PATCH], [1])
+m4_define([MPLAPACK_VER_MINOR], [1])
+m4_define([MPLAPACK_VER_PATCH], [0])
 m4_define([MPLAPACK_VERSION], [MPLAPACK_VER_MAJOR.MPLAPACK_VER_MINOR.MPLAPACK_VER_PATCH])
 AC_INIT(mplapack, [MPLAPACK_VERSION])
+
+mplapack_ver_major=MPLAPACK_VER_MAJOR
+mplapack_ver_minor=MPLAPACK_VER_MINOR
+mplapack_ver_patch=MPLAPACK_VER_PATCH
+AC_SUBST([mplapack_ver_major])
+AC_SUBST([mplapack_ver_minor])
+AC_SUBST([mplapack_ver_patch])
+
+LAPACK_VER_MAJOR="3"
+LAPACK_VER_MINOR="9"
+LAPACK_VER_PATCH="1"
+LAPACK_VERSION="${LAPACK_VER_MAJOR}.${LAPACK_VER_MINOR}.${LAPACK_VER_PATCH}"
+AC_SUBST([LAPACK_VERSION])
+AC_SUBST([LAPACK_VER_MAJOR])
+AC_SUBST([LAPACK_VER_MINOR])
+AC_SUBST([LAPACK_VER_PATCH])
+
+AC_CONFIG_FILES([mplapack/reference/iMlaver.cpp])
 
 MPLAPACK_LT_CURRENT=1
 MPLAPACK_LT_REVISION=0
@@ -61,20 +79,6 @@ typedef mplapacklogical (*LFP)();
 AC_CONFIG_HEADERS([include/mplapack_config.h])
 AC_CONFIG_FILES([ Makefile mplapack.pc ])
 AC_CONFIG_FILES([packaging/PKGBUILD packaging/mplapack.spec])
-
-LAPACK_VER_MAJOR="3"
-LAPACK_VER_MINOR="9"
-LAPACK_VER_PATCH="1"
-LAPACK_VERSION=${LAPACK_VER_MAJOR}.${LAPACK_VER_MINOR}.${LAPACK_VER_PATCH}
-AC_SUBST(LAPACK_VERSION)
-
-sed -e "s/%%mplapack_ver_major%%/MPLAPACK_VER_MAJOR/g" \
-    -e "s/%%mplapack_ver_minor%%/MPLAPACK_VER_MINOR/g" \
-    -e "s/%%mplapack_ver_patch%%/MPLAPACK_VER_PATCH/g" \
-    -e "s/%%lapack_ver_major%%/$LAPACK_VER_MAJOR/g" \
-    -e "s/%%lapack_ver_minor%%/$LAPACK_VER_MINOR/g" \
-    -e "s/%%lapack_ver_patch%%/$LAPACK_VER_PATCH/g" \
-     mplapack/reference/iMlaver.cpp.in > mplapack/reference/iMlaver.cpp
 
 AC_CANONICAL_TARGET
 AX_CXX_COMPILE_STDCXX([17], [ext], [mandatory])
@@ -899,28 +903,6 @@ dnl Aliases with MPLAPACK_BINARY128_MODE_ prefix (used in Makefile.am)
 AM_CONDITIONAL(MPLAPACK_BINARY128_MODE_QUADMATH, test "$mplapack_binary128_mode" = "3")
 AM_CONDITIONAL(MPLAPACK_BINARY128_MODE_FLOAT128, test "$mplapack_binary128_mode" = "2")
 AM_CONDITIONAL(MPLAPACK_BINARY128_MODE_LDBL,     test "$mplapack_binary128_mode" = "1")
-
-if test "$enable_examples" != "no" ; then
-# always requires libquadmath
-    _FILES=`ls examples/mpblas/Makefile.macos.in examples/mpblas/Makefile.mingw.in examples/mplapack/*/Makefile.macos.in examples/mplapack/*/Makefile.mingw.in`
-    for _file in $_FILES; do
-        __file=`echo $_file | sed 's/\.in//g'`
-        sed -e "s|%%MPLAPACKDIR%%|$prefix|g" -e "s|%%LIBQUADMATH%%| -lquadmath|g" $_file > $__file
-    done
-# see FreeBSD ABI: https://www.freebsd.org/cgi/man.cgi?query=arch&sektion=7&format=html
-    _FILES=`ls examples/mpblas/Makefile.linux.in examples/mpblas/Makefile.linux_cuda.in examples/mpblas/Makefile.freebsd.in examples/mplapack/*/Makefile.linux.in examples/mplapack/*/Makefile.freebsd.in`
-    if test "$want_libquadmath" = "yes" ; then
-        for _file in $_FILES; do
-            __file=`echo $_file | sed 's/\.in//g'`
-            sed -e "s|%%MPLAPACKDIR%%|$prefix|g" -e "s|%%LIBQUADMATH%%| -lquadmath|g" $_file > $__file
-        done
-    else
-        for _file in $_FILES; do
-            __file=`echo $_file | sed 's/\.in//g'`
-            sed -e "s|%%MPLAPACKDIR%%|$prefix|g" -e "s|%%LIBQUADMATH%%||g" $_file > $__file
-        done
-    fi
-fi
 
 CXXFLAGS="$SAVE_CXXFLAGS"
 
