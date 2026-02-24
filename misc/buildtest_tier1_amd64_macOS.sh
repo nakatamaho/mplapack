@@ -86,8 +86,10 @@ log_env() {
 # ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
-PREFIX_DIR="${HOME}/MPLAPACK_macOS"
-WORKDIR="${HOME}/mplapack"
+PREFIX_DIR="${HOME}/MPLAPACK"
+# NOTE: On case-insensitive filesystems (default macOS APFS), paths that differ
+# only by letter case collide (e.g., "$HOME/mplapack" vs "$HOME/MPLAPACK").
+# WORKDIR is created per-run via mktemp in the Main section to avoid collisions.
 
 # ---------------------------------------------------------------------------
 # DISTCHECK_CONFIGURE_FLAGS: feature flags only, no --prefix
@@ -112,7 +114,25 @@ log "DISTCHECK_CONFIGURE_FLAGS: ${DISTCHECK_CONFIGURE_FLAGS}"
 # ---------------------------------------------------------------------------
 log_env
 safe_rmdir "${PREFIX_DIR}"
-safe_rmdir "${WORKDIR}"
+
+# Create a unique per-run WORKDIR under $HOME/tmp.
+# Include a timestamp so the directory is identifiable when kept for debugging.
+: "${HOME:?HOME is not set}"
+mkdir -p "${HOME}/tmp"
+ts="$(LANG=C date +%Y%m%d_%H%M%S)"
+WORKDIR="$(mktemp -d "${HOME}/tmp/mplapack.${ts}.XXXXXX")"
+log "WORKDIR: ${WORKDIR}"
+
+cleanup() {
+    rc=$?
+    cd "${HOME}" || true
+    if [ "${rc}" -eq 0 ]; then
+        rm -rf "${WORKDIR}" || true
+    else
+        echo "Keeping WORKDIR for debugging: ${WORKDIR}" | tee -a "${LOG_DIR}/summary.log"
+    fi
+}
+trap cleanup EXIT
 
 git clone --depth 1 --branch release/2.1 git@github.com:nakatamaho/mplapack.git "${WORKDIR}"
 cd "${WORKDIR}"
