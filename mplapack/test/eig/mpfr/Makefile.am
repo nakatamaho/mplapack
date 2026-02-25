@@ -61,7 +61,7 @@ endif
 #   Ryzen_Threadripper_3970X_ubuntu22_04/gcc_14_2_0/<test>.<profile>.out
 # -----------------------------------------------------------------------------
 
-_CPU_OS_RAW  := $(shell bash $(abs_top_builddir)/misc/cpu_os_detection.sh)
+_CPU_OS_RAW  := $(shell bash $(abs_top_srcdir)/misc/cpu_os_detection.sh)
 _CPU_TAG     := $(word 1,$(subst |, ,$(_CPU_OS_RAW)))
 _OS_TAG      := $(word 2,$(subst |, ,$(_CPU_OS_RAW)))
 

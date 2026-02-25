@@ -103,7 +103,7 @@ endif
 if ENABLE_BINARY80
 mplapackexamples_PROGRAMS += Cheev_test_binary80 Rsyev_Frank_binary80 Rsyev_test_binary80 Rsyevd_DingDong_binary80 Rsyevd_Frank_binary80 Rsyevr_Frank_binary80
 
-binary80_cxxflags = $(OPENMP_CXXFLAGS)
+binary80_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include
 binary80_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_binary80 -L$(top_builddir)/mpblas/reference -lmpblas_binary80
 
 Cheev_test_binary80_SOURCES = Cheev_test_binary80.cpp
@@ -135,7 +135,7 @@ endif
 if ENABLE_DOUBLE
 mplapackexamples_PROGRAMS += Cheev_test_double Rsyev_Frank_double Rsyev_test_double Rsyevd_DingDong_double Rsyevd_Frank_double Rsyevr_Frank_double
 
-double_cxxflags = $(OPENMP_CXXFLAGS)
+double_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include
 double_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_double -L$(top_builddir)/mpblas/reference -lmpblas_double
 
 Cheev_test_double_SOURCES = Cheev_test_double.cpp

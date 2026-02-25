@@ -4,7 +4,7 @@ bench_PROGRAMS =
 # Static data: gnuplot templates (.plt.in) installed alongside binaries.
 # go.*.sh are generated at build time from .sh.in; not listed here.
 # -----------------------------------------------------------------------------
-bench_DATA = \
+dist_bench_DATA = \
     Raxpy1.plt.in  Raxpy2.plt.in  Raxpy3.plt.in  \
     Rcopy1.plt.in  Rcopy2.plt.in  Rcopy3.plt.in  \
     Rdot1.plt.in   Rdot2.plt.in   Rdot3.plt.in   \
@@ -36,12 +36,17 @@ EXTRA_DIST = \
     go.Rpotrf_cuda.sh.in
 
 # -----------------------------------------------------------------------------
-# Generated scripts (built in builddir, cleaned on "make clean").
-# %%CPU_OS_DETECTION_SH%% -> builddir path here; overwritten at install time.
-# %%CC_TAG%%              -> baked in at build time (never changes per install).
-# %%PREFIX%%              -> builddir abs path here; overwritten at install time.
+# Generated scripts.
+# BUILT_SOURCES is intentionally NOT used here: it is reserved for files that
+# must exist before compilation starts (e.g. generated headers).  Shell scripts
+# are driven via all-local instead.
+#
+# Placeholder substitution strategy:
+#   Build time : %%CC_TAG%% only  (compiler tag is fixed per configure run)
+#   Install time: %%CPU_OS_DETECTION_SH%% and %%PREFIX%%
+#                 (paths differ between builddir and installdir)
 # -----------------------------------------------------------------------------
-BUILT_SOURCES = \
+GO_SH_FILES = \
     go.Raxpy.sh       \
     go.Rcopy.sh       \
     go.Rdot.sh        \
@@ -55,13 +60,16 @@ BUILT_SOURCES = \
     go.Rpotrf.sh      \
     go.Rpotrf_cuda.sh
 
-CLEANFILES = $(BUILT_SOURCES)
+CLEANFILES = $(GO_SH_FILES)
 
+all-local: $(GO_SH_FILES)
+
+# At build time substitute only %%CC_TAG%%.
+# %%CPU_OS_DETECTION_SH%% and %%PREFIX%% are left as-is for install-exec-hook.
 go.%.sh: $(srcdir)/go.%.sh.in
 	$(SED) \
-	  -e "s|%%CPU_OS_DETECTION_SH%%|$(abs_top_srcdir)/misc/cpu_os_detection.sh|g" \
 	  -e "s|%%CC_TAG%%|$(MPLAPACK_CC_TAG)|g" \
-	  -e "s|%%PREFIX%%|$(abs_top_builddir)|g" \
+	  -e "s|%%CPU_OS_DETECTION_SH%%|$(abs_top_srcdir)/misc/cpu_os_detection.sh|g" \
 	  $< > $@
 	chmod +x $@
 
@@ -103,17 +111,22 @@ include Makefile.blas.am
 endif
 
 # -----------------------------------------------------------------------------
-# Install go.*.sh: copy generated scripts, then rewrite builddir paths to
-# installed paths.  %%CC_TAG%% is already baked in; only paths need updating.
+# Install go.*.sh: copy generated scripts, then rewrite the remaining
+# placeholders (%%CPU_OS_DETECTION_SH%% and %%PREFIX%%) to installed paths.
+# %%CC_TAG%% is already baked in at build time and needs no further treatment.
+#
+# Portability note: "sed -i" differs between GNU sed and BSD sed (macOS).
+# Use a .bak suffix and remove it explicitly to work on both.
 # -----------------------------------------------------------------------------
 install-exec-hook:
 	$(MKDIR_P) $(DESTDIR)$(benchdir)
-	for f in $(BUILT_SOURCES); do \
+	for f in $(GO_SH_FILES); do \
 	  $(INSTALL_SCRIPT) $$f $(DESTDIR)$(benchdir)/$$f; \
-	  $(SED) -i \
-	    -e "s|%%CPU_OS_DETECTION_SH%%|$(prefix)/misc/cpu_os_detection.sh|g" \
+	  $(SED) -i.bak \
+	    -e "s|$(abs_top_srcdir)/misc/cpu_os_detection.sh|$(prefix)/misc/cpu_os_detection.sh|g" \
 	    -e "s|%%PREFIX%%|$(prefix)|g" \
 	    $(DESTDIR)$(benchdir)/$$f; \
+	  rm -f $(DESTDIR)$(benchdir)/$$f.bak; \
 	done
 	bash $(top_builddir)/misc/add_ldlibpath.sh $(prefix) $(DESTDIR)$(benchdir)/go.*.sh
 if IS_MACOS
@@ -121,10 +134,10 @@ if IS_MACOS
 endif
 
 .PHONY: benchmarks
-benchmarks: $(bench_PROGRAMS) $(BUILT_SOURCES)
+benchmarks: $(bench_PROGRAMS) $(GO_SH_FILES)
 	@echo "=== Starting MPLAPACK benchmarks ==="
 	@failed=""; \
-	for sh in $(BUILT_SOURCES); do \
+	for sh in $(GO_SH_FILES); do \
 	  echo "--- $$sh ---"; \
 	  bash $$sh || failed="$$failed $$sh"; \
 	done; \

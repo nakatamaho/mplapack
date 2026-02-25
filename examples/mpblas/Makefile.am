@@ -84,7 +84,7 @@ endif
 if ENABLE_BINARY80
 mpblasexamples_PROGRAMS += Cgemm_binary80 Rgemm_binary80 Cgemm_binary80_opt Rgemm_binary80_opt
 
-binary80_cxxflags = $(OPENMP_CXXFLAGS)
+binary80_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include
 binary80_libdepends = -L$(top_builddir)/mpblas/reference -lmpblas_binary80
 binary80_opt_libdepends = -L$(top_builddir)/mpblas/optimized/binary80 -lmpblas_binary80_opt
 
@@ -109,7 +109,7 @@ endif
 if ENABLE_DOUBLE
 mpblasexamples_PROGRAMS += Cgemm_double Rgemm_double Cgemm_double_opt Rgemm_double_opt
 
-double_cxxflags = $(OPENMP_CXXFLAGS)
+double_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include
 double_libdepends = -L$(top_builddir)/mpblas/reference -lmpblas_double
 double_opt_libdepends = -L$(top_builddir)/mpblas/optimized/double -lmpblas_double_opt
 

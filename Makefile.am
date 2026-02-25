@@ -184,6 +184,7 @@ fable/tbxx/libc_backtrace.hpp \
 fable/tbxx/optional_copy.hpp \
 fable/tbxx/pretty_type_name.hpp \
 fable/tbxx/time_accu.hpp \
+include/mplapack_symbol_resolver.h \
 misc/add_ldlibpath.sh \
 misc/buildtest_tier1_amd64_macOS.sh \
 misc/buildtest_tier1_amd64_mingw.sh \

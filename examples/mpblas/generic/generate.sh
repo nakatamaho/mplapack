@@ -154,7 +154,7 @@ for _mplib in $MPLIBS; do
         executefilenames_opt=`echo $executefilenames | $SED "s/binary80/binary80_opt/g"`
         echo "mpblasexamples_PROGRAMS += $executefilenames $executefilenames_opt" >> ../Makefile.am
         echo ""               >> ../Makefile.am
-        echo "${_mplib}_cxxflags = \$(OPENMP_CXXFLAGS)" >> ../Makefile.am
+        echo "${_mplib}_cxxflags = \$(OPENMP_CXXFLAGS) -I\$(top_srcdir)/include" >> ../Makefile.am
         echo "${_mplib}_libdepends = -L\$(top_builddir)/mpblas/reference -lmpblas_${_mplib}"  >> ../Makefile.am
         echo "${_mplib}_opt_libdepends = -L\$(top_builddir)/mpblas/optimized/${_mplib} -lmpblas_${_mplib}_opt"  >> ../Makefile.am
         echo ""               >> ../Makefile.am
@@ -182,7 +182,7 @@ for _mplib in $MPLIBS; do
         executefilenames_opt=`echo $executefilenames | $SED "s/${_mplib}/${_mplib}_opt/g"`
         echo "mpblasexamples_PROGRAMS += $executefilenames $executefilenames_opt" >> ../Makefile.am
         echo ""               >> ../Makefile.am
-        echo "${_mplib}_cxxflags = \$(OPENMP_CXXFLAGS)" >> ../Makefile.am
+        echo "${_mplib}_cxxflags = \$(OPENMP_CXXFLAGS) -I\$(top_srcdir)/include" >> ../Makefile.am
         echo "${_mplib}_libdepends = -L\$(top_builddir)/mpblas/reference -lmpblas_${_mplib}"  >> ../Makefile.am
         echo "${_mplib}_opt_libdepends = -L\$(top_builddir)/mpblas/optimized/${_mplib} -lmpblas_${_mplib}_opt"  >> ../Makefile.am
         echo ""               >> ../Makefile.am

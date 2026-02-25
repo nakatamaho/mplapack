@@ -159,7 +159,7 @@ endif
 if ENABLE_BINARY80
 mplapackexamples_PROGRAMS += Cgees_test_binary80 Cgeev_NPR_binary80 Cgeev_test2_binary80 Cgeev_test_binary80 Rgees_Grcar_binary80 Rgees_readfromfile_binary80 Rgees_test_binary80 Rgeev_Frank_binary80 Rgeev_random_highcond_binary80 Rgeev_readfromfile_binary80 Rgeev_test_binary80
 
-binary80_cxxflags = $(OPENMP_CXXFLAGS)
+binary80_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include
 binary80_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_binary80 -L$(top_builddir)/mpblas/reference -lmpblas_binary80
 
 Cgees_test_binary80_SOURCES = Cgees_test_binary80.cpp
@@ -211,7 +211,7 @@ endif
 if ENABLE_DOUBLE
 mplapackexamples_PROGRAMS += Cgees_test_double Cgeev_NPR_double Cgeev_test2_double Cgeev_test_double Rgees_Grcar_double Rgees_readfromfile_double Rgees_test_double Rgeev_Frank_double Rgeev_random_highcond_double Rgeev_readfromfile_double Rgeev_test_double
 
-double_cxxflags = $(OPENMP_CXXFLAGS)
+double_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include
 double_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_double -L$(top_builddir)/mpblas/reference -lmpblas_double
 
 Cgees_test_double_SOURCES = Cgees_test_double.cpp
