@@ -121,7 +121,7 @@ clean-local:
 # Test rules (one output per test)
 # -----------------------------------------------------------------------------
 
-$(OUTDIR_PATH)/Rtest.out: ../Rtest.in xlintstR_double$(EXEEXT)
+$(OUTDIR_PATH)/Rtest.out: $(srcdir)/../Rtest.in xlintstR_double$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -129,10 +129,10 @@ $(OUTDIR_PATH)/Rtest.out: ../Rtest.in xlintstR_double$(EXEEXT)
 	fi; \
 	echo "Testing Real MPLAPACK linear equation routines"; \
 	set -e; { \
-		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xlintstR_double$(EXEEXT) < ../Rtest.in; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xlintstR_double$(EXEEXT) < $(srcdir)/../Rtest.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Ctest.out: ../Ctest.in xlintstC_double$(EXEEXT)
+$(OUTDIR_PATH)/Ctest.out: $(srcdir)/../Ctest.in xlintstC_double$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -140,10 +140,10 @@ $(OUTDIR_PATH)/Ctest.out: ../Ctest.in xlintstC_double$(EXEEXT)
 	fi; \
 	echo "Testing Complex MPLAPACK linear equation routines"; \
 	set -e; { \
-		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xlintstC_double$(EXEEXT) < ../Ctest.in; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xlintstC_double$(EXEEXT) < $(srcdir)/../Ctest.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Rtest_rfp.out: ../Rtest_rfp.in xlintstrfR_double$(EXEEXT)
+$(OUTDIR_PATH)/Rtest_rfp.out: $(srcdir)/../Rtest_rfp.in xlintstrfR_double$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -151,10 +151,10 @@ $(OUTDIR_PATH)/Rtest_rfp.out: ../Rtest_rfp.in xlintstrfR_double$(EXEEXT)
 	fi; \
 	echo "Testing Real MPLAPACK RFP prototype linear equation routines"; \
 	set -e; { \
-		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xlintstrfR_double$(EXEEXT) < ../Rtest_rfp.in; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xlintstrfR_double$(EXEEXT) < $(srcdir)/../Rtest_rfp.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Ctest_rfp.out: ../Ctest_rfp.in xlintstrfC_double$(EXEEXT)
+$(OUTDIR_PATH)/Ctest_rfp.out: $(srcdir)/../Ctest_rfp.in xlintstrfC_double$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -162,5 +162,5 @@ $(OUTDIR_PATH)/Ctest_rfp.out: ../Ctest_rfp.in xlintstrfC_double$(EXEEXT)
 	fi; \
 	echo "Testing Complex MPLAPACK RFP prototype linear equation routines"; \
 	set -e; { \
-		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xlintstrfC_double$(EXEEXT) < ../Ctest_rfp.in; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xlintstrfC_double$(EXEEXT) < $(srcdir)/../Ctest_rfp.in; \
 	} > $@ 2>&1

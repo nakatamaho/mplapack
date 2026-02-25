@@ -117,7 +117,7 @@ clean-local:
 # Test rules (one output per test)
 # -----------------------------------------------------------------------------
 
-$(OUTDIR_PATH)/Rnep.out: ../nep.in xeigtstR_double$(EXEEXT)
+$(OUTDIR_PATH)/Rnep.out: $(srcdir)/../nep.in xeigtstR_double$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -126,9 +126,9 @@ $(OUTDIR_PATH)/Rnep.out: ../nep.in xeigtstR_double$(EXEEXT)
 	echo "NEP: Testing Nonsymmetric Eigenvalue Problem routines [$(DOUBLE_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(DOUBLE_LABEL) ==="; \
-		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < ../nep.in; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < $(srcdir)/../nep.in; \
 	} > $@ 2>&1
-$(OUTDIR_PATH)/Rsep.out: ../sep.in xeigtstR_double$(EXEEXT)
+$(OUTDIR_PATH)/Rsep.out: $(srcdir)/../sep.in xeigtstR_double$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -137,9 +137,9 @@ $(OUTDIR_PATH)/Rsep.out: ../sep.in xeigtstR_double$(EXEEXT)
 	echo "SEP: Testing Symmetric Eigenvalue Problem routines [$(DOUBLE_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(DOUBLE_LABEL) ==="; \
-		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < ../sep.in; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < $(srcdir)/../sep.in; \
 	} > $@ 2>&1
-$(OUTDIR_PATH)/Rse2.out: ../se2.in xeigtstR_double$(EXEEXT)
+$(OUTDIR_PATH)/Rse2.out: $(srcdir)/../se2.in xeigtstR_double$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -148,9 +148,9 @@ $(OUTDIR_PATH)/Rse2.out: ../se2.in xeigtstR_double$(EXEEXT)
 	echo "SEP: Testing Symmetric Eigenvalue Problem routines [$(DOUBLE_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(DOUBLE_LABEL) ==="; \
-		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < ../se2.in; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < $(srcdir)/../se2.in; \
 	} > $@ 2>&1
-$(OUTDIR_PATH)/Rsvd.out: ../svd.in xeigtstR_double$(EXEEXT)
+$(OUTDIR_PATH)/Rsvd.out: $(srcdir)/../svd.in xeigtstR_double$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -159,9 +159,9 @@ $(OUTDIR_PATH)/Rsvd.out: ../svd.in xeigtstR_double$(EXEEXT)
 	echo "SVD: Testing Singular Value Decomposition routines [$(DOUBLE_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(DOUBLE_LABEL) ==="; \
-		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < ../svd.in; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < $(srcdir)/../svd.in; \
 	} > $@ 2>&1
-$(OUTDIR_PATH)/Rec.out: ../Rec.in xeigtstR_double$(EXEEXT)
+$(OUTDIR_PATH)/Rec.out: $(srcdir)/../Rec.in xeigtstR_double$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -170,9 +170,9 @@ $(OUTDIR_PATH)/Rec.out: ../Rec.in xeigtstR_double$(EXEEXT)
 	echo "DEC: Testing Eigen Condition Routines [$(DOUBLE_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(DOUBLE_LABEL) ==="; \
-		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < ../Rec.in; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < $(srcdir)/../Rec.in; \
 	} > $@ 2>&1
-$(OUTDIR_PATH)/Red.out: ../Red.in xeigtstR_double$(EXEEXT)
+$(OUTDIR_PATH)/Red.out: $(srcdir)/../Red.in xeigtstR_double$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -181,9 +181,9 @@ $(OUTDIR_PATH)/Red.out: ../Red.in xeigtstR_double$(EXEEXT)
 	echo "DEV: Testing Nonsymmetric Eigenvalue Driver [$(DOUBLE_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(DOUBLE_LABEL) ==="; \
-		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < ../Red.in; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < $(srcdir)/../Red.in; \
 	} > $@ 2>&1
-$(OUTDIR_PATH)/Rgg.out: ../Rgg.in xeigtstR_double$(EXEEXT)
+$(OUTDIR_PATH)/Rgg.out: $(srcdir)/../Rgg.in xeigtstR_double$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -192,9 +192,9 @@ $(OUTDIR_PATH)/Rgg.out: ../Rgg.in xeigtstR_double$(EXEEXT)
 	echo "DGG: Testing Nonsymmetric Generalized Eigenvalue Problem routines [$(DOUBLE_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(DOUBLE_LABEL) ==="; \
-		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < ../Rgg.in; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < $(srcdir)/../Rgg.in; \
 	} > $@ 2>&1
-$(OUTDIR_PATH)/Rgd.out: ../Rgd.in xeigtstR_double$(EXEEXT)
+$(OUTDIR_PATH)/Rgd.out: $(srcdir)/../Rgd.in xeigtstR_double$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -203,9 +203,9 @@ $(OUTDIR_PATH)/Rgd.out: ../Rgd.in xeigtstR_double$(EXEEXT)
 	echo "DGD: Testing Nonsymmetric Generalized Eigenvalue Problem driver routines [$(DOUBLE_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(DOUBLE_LABEL) ==="; \
-		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < ../Rgd.in; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < $(srcdir)/../Rgd.in; \
 	} > $@ 2>&1
-$(OUTDIR_PATH)/Rsb.out: ../Rsb.in xeigtstR_double$(EXEEXT)
+$(OUTDIR_PATH)/Rsb.out: $(srcdir)/../Rsb.in xeigtstR_double$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -214,9 +214,9 @@ $(OUTDIR_PATH)/Rsb.out: ../Rsb.in xeigtstR_double$(EXEEXT)
 	echo "DSB: Testing Symmetric Eigenvalue Problem routines [$(DOUBLE_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(DOUBLE_LABEL) ==="; \
-		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < ../Rsb.in; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < $(srcdir)/../Rsb.in; \
 	} > $@ 2>&1
-$(OUTDIR_PATH)/Rsg.out: ../Rsg.in xeigtstR_double$(EXEEXT)
+$(OUTDIR_PATH)/Rsg.out: $(srcdir)/../Rsg.in xeigtstR_double$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -225,9 +225,9 @@ $(OUTDIR_PATH)/Rsg.out: ../Rsg.in xeigtstR_double$(EXEEXT)
 	echo "DSG: Testing Symmetric Generalized Eigenvalue Problem routines [$(DOUBLE_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(DOUBLE_LABEL) ==="; \
-		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < ../Rsg.in; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < $(srcdir)/../Rsg.in; \
 	} > $@ 2>&1
-$(OUTDIR_PATH)/Rbal.out: ../Rbal.in xeigtstR_double$(EXEEXT)
+$(OUTDIR_PATH)/Rbal.out: $(srcdir)/../Rbal.in xeigtstR_double$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -236,9 +236,9 @@ $(OUTDIR_PATH)/Rbal.out: ../Rbal.in xeigtstR_double$(EXEEXT)
 	echo "Rgebal: Testing the balancing of a general matrix [$(DOUBLE_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(DOUBLE_LABEL) ==="; \
-		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < ../Rbal.in; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < $(srcdir)/../Rbal.in; \
 	} > $@ 2>&1
-$(OUTDIR_PATH)/Rbak.out: ../Rbak.in xeigtstR_double$(EXEEXT)
+$(OUTDIR_PATH)/Rbak.out: $(srcdir)/../Rbak.in xeigtstR_double$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -247,9 +247,9 @@ $(OUTDIR_PATH)/Rbak.out: ../Rbak.in xeigtstR_double$(EXEEXT)
 	echo "Rgebak: Testing the back transformation of balanced matrix [$(DOUBLE_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(DOUBLE_LABEL) ==="; \
-		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < ../Rbak.in; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < $(srcdir)/../Rbak.in; \
 	} > $@ 2>&1
-$(OUTDIR_PATH)/Rgbal.out: ../Rgbal.in xeigtstR_double$(EXEEXT)
+$(OUTDIR_PATH)/Rgbal.out: $(srcdir)/../Rgbal.in xeigtstR_double$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -258,9 +258,9 @@ $(OUTDIR_PATH)/Rgbal.out: ../Rgbal.in xeigtstR_double$(EXEEXT)
 	echo "Rggbal: Testing the balancing of a pair of general matrices [$(DOUBLE_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(DOUBLE_LABEL) ==="; \
-		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < ../Rgbal.in; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < $(srcdir)/../Rgbal.in; \
 	} > $@ 2>&1
-$(OUTDIR_PATH)/Rgbak.out: ../Rgbak.in xeigtstR_double$(EXEEXT)
+$(OUTDIR_PATH)/Rgbak.out: $(srcdir)/../Rgbak.in xeigtstR_double$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -269,9 +269,9 @@ $(OUTDIR_PATH)/Rgbak.out: ../Rgbak.in xeigtstR_double$(EXEEXT)
 	echo "Rggbak: Testing the back transformation of a pair of balanced matrices [$(DOUBLE_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(DOUBLE_LABEL) ==="; \
-		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < ../Rgbak.in; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < $(srcdir)/../Rgbak.in; \
 	} > $@ 2>&1
-$(OUTDIR_PATH)/Rbb.out: ../Rbb.in xeigtstR_double$(EXEEXT)
+$(OUTDIR_PATH)/Rbb.out: $(srcdir)/../Rbb.in xeigtstR_double$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -280,9 +280,9 @@ $(OUTDIR_PATH)/Rbb.out: ../Rbb.in xeigtstR_double$(EXEEXT)
 	echo "DBB: Testing banded Singular Value Decomposition routines [$(DOUBLE_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(DOUBLE_LABEL) ==="; \
-		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < ../Rbb.in; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < $(srcdir)/../Rbb.in; \
 	} > $@ 2>&1
-$(OUTDIR_PATH)/Rglm.out: ../glm.in xeigtstR_double$(EXEEXT)
+$(OUTDIR_PATH)/Rglm.out: $(srcdir)/../glm.in xeigtstR_double$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -291,9 +291,9 @@ $(OUTDIR_PATH)/Rglm.out: ../glm.in xeigtstR_double$(EXEEXT)
 	echo "GLM: Testing Generalized Linear Regression Model routines [$(DOUBLE_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(DOUBLE_LABEL) ==="; \
-		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < ../glm.in; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < $(srcdir)/../glm.in; \
 	} > $@ 2>&1
-$(OUTDIR_PATH)/Rgqr.out: ../gqr.in xeigtstR_double$(EXEEXT)
+$(OUTDIR_PATH)/Rgqr.out: $(srcdir)/../gqr.in xeigtstR_double$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -302,9 +302,9 @@ $(OUTDIR_PATH)/Rgqr.out: ../gqr.in xeigtstR_double$(EXEEXT)
 	echo "GQR: Testing Generalized QR and RQ factorization routines [$(DOUBLE_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(DOUBLE_LABEL) ==="; \
-		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < ../gqr.in; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < $(srcdir)/../gqr.in; \
 	} > $@ 2>&1
-$(OUTDIR_PATH)/Rgsv.out: ../gsv.in xeigtstR_double$(EXEEXT)
+$(OUTDIR_PATH)/Rgsv.out: $(srcdir)/../gsv.in xeigtstR_double$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -313,9 +313,9 @@ $(OUTDIR_PATH)/Rgsv.out: ../gsv.in xeigtstR_double$(EXEEXT)
 	echo "GSV: Testing Generalized Singular Value Decomposition routines [$(DOUBLE_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(DOUBLE_LABEL) ==="; \
-		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < ../gsv.in; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < $(srcdir)/../gsv.in; \
 	} > $@ 2>&1
-$(OUTDIR_PATH)/Rcsd.out: ../csd.in xeigtstR_double$(EXEEXT)
+$(OUTDIR_PATH)/Rcsd.out: $(srcdir)/../csd.in xeigtstR_double$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -324,9 +324,9 @@ $(OUTDIR_PATH)/Rcsd.out: ../csd.in xeigtstR_double$(EXEEXT)
 	echo "CSD: Testing CS Decomposition routines [$(DOUBLE_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(DOUBLE_LABEL) ==="; \
-		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < ../csd.in; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < $(srcdir)/../csd.in; \
 	} > $@ 2>&1
-$(OUTDIR_PATH)/Rlse.out: ../lse.in xeigtstR_double$(EXEEXT)
+$(OUTDIR_PATH)/Rlse.out: $(srcdir)/../lse.in xeigtstR_double$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -335,9 +335,9 @@ $(OUTDIR_PATH)/Rlse.out: ../lse.in xeigtstR_double$(EXEEXT)
 	echo "LSE: Testing Constrained Linear Least Squares routines [$(DOUBLE_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(DOUBLE_LABEL) ==="; \
-		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < ../lse.in; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_double$(EXEEXT) < $(srcdir)/../lse.in; \
 	} > $@ 2>&1
-$(OUTDIR_PATH)/Cnep.out: ../nep.in xeigtstC_double$(EXEEXT)
+$(OUTDIR_PATH)/Cnep.out: $(srcdir)/../nep.in xeigtstC_double$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -346,9 +346,9 @@ $(OUTDIR_PATH)/Cnep.out: ../nep.in xeigtstC_double$(EXEEXT)
 	echo "NEP: Testing Nonsymmetric Eigenvalue Problem routines [$(DOUBLE_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(DOUBLE_LABEL) ==="; \
-		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < ../nep.in; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < $(srcdir)/../nep.in; \
 	} > $@ 2>&1
-$(OUTDIR_PATH)/Csep.out: ../sep.in xeigtstC_double$(EXEEXT)
+$(OUTDIR_PATH)/Csep.out: $(srcdir)/../sep.in xeigtstC_double$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -357,9 +357,9 @@ $(OUTDIR_PATH)/Csep.out: ../sep.in xeigtstC_double$(EXEEXT)
 	echo "SEP: Testing Symmetric Eigenvalue Problem routines [$(DOUBLE_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(DOUBLE_LABEL) ==="; \
-		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < ../sep.in; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < $(srcdir)/../sep.in; \
 	} > $@ 2>&1
-$(OUTDIR_PATH)/Cse2.out: ../se2.in xeigtstC_double$(EXEEXT)
+$(OUTDIR_PATH)/Cse2.out: $(srcdir)/../se2.in xeigtstC_double$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -368,9 +368,9 @@ $(OUTDIR_PATH)/Cse2.out: ../se2.in xeigtstC_double$(EXEEXT)
 	echo "SEP: Testing Symmetric Eigenvalue Problem routines [$(DOUBLE_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(DOUBLE_LABEL) ==="; \
-		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < ../se2.in; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < $(srcdir)/../se2.in; \
 	} > $@ 2>&1
-$(OUTDIR_PATH)/Csvd.out: ../svd.in xeigtstC_double$(EXEEXT)
+$(OUTDIR_PATH)/Csvd.out: $(srcdir)/../svd.in xeigtstC_double$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -379,9 +379,9 @@ $(OUTDIR_PATH)/Csvd.out: ../svd.in xeigtstC_double$(EXEEXT)
 	echo "SVD: Testing Singular Value Decomposition routines [$(DOUBLE_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(DOUBLE_LABEL) ==="; \
-		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < ../svd.in; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < $(srcdir)/../svd.in; \
 	} > $@ 2>&1
-$(OUTDIR_PATH)/Cec.out: ../Cec.in xeigtstC_double$(EXEEXT)
+$(OUTDIR_PATH)/Cec.out: $(srcdir)/../Cec.in xeigtstC_double$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -390,9 +390,9 @@ $(OUTDIR_PATH)/Cec.out: ../Cec.in xeigtstC_double$(EXEEXT)
 	echo "CEC: Testing COMPLEX Eigen Condition Routines [$(DOUBLE_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(DOUBLE_LABEL) ==="; \
-		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < ../Cec.in; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < $(srcdir)/../Cec.in; \
 	} > $@ 2>&1
-$(OUTDIR_PATH)/Ced.out: ../Ced.in xeigtstC_double$(EXEEXT)
+$(OUTDIR_PATH)/Ced.out: $(srcdir)/../Ced.in xeigtstC_double$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -401,9 +401,9 @@ $(OUTDIR_PATH)/Ced.out: ../Ced.in xeigtstC_double$(EXEEXT)
 	echo "CES: Testing COMPLEX Nonsymmetric Schur Form Driver [$(DOUBLE_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(DOUBLE_LABEL) ==="; \
-		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < ../Ced.in; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < $(srcdir)/../Ced.in; \
 	} > $@ 2>&1
-$(OUTDIR_PATH)/Cgg.out: ../Cgg.in xeigtstC_double$(EXEEXT)
+$(OUTDIR_PATH)/Cgg.out: $(srcdir)/../Cgg.in xeigtstC_double$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -412,9 +412,9 @@ $(OUTDIR_PATH)/Cgg.out: ../Cgg.in xeigtstC_double$(EXEEXT)
 	echo "CGG: Testing COMPLEX Nonsymmetric Generalized Eigenvalue Problem routines [$(DOUBLE_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(DOUBLE_LABEL) ==="; \
-		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < ../Cgg.in; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < $(srcdir)/../Cgg.in; \
 	} > $@ 2>&1
-$(OUTDIR_PATH)/Cgd.out: ../Cgd.in xeigtstC_double$(EXEEXT)
+$(OUTDIR_PATH)/Cgd.out: $(srcdir)/../Cgd.in xeigtstC_double$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -423,9 +423,9 @@ $(OUTDIR_PATH)/Cgd.out: ../Cgd.in xeigtstC_double$(EXEEXT)
 	echo "CGD: Testing COMPLEX Nonsymmetric Generalized Eigenvalue Problem driver routines [$(DOUBLE_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(DOUBLE_LABEL) ==="; \
-		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < ../Cgd.in; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < $(srcdir)/../Cgd.in; \
 	} > $@ 2>&1
-$(OUTDIR_PATH)/Csb.out: ../Csb.in xeigtstC_double$(EXEEXT)
+$(OUTDIR_PATH)/Csb.out: $(srcdir)/../Csb.in xeigtstC_double$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -434,9 +434,9 @@ $(OUTDIR_PATH)/Csb.out: ../Csb.in xeigtstC_double$(EXEEXT)
 	echo "CHB: Testing Hermitian Eigenvalue Problem routines [$(DOUBLE_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(DOUBLE_LABEL) ==="; \
-		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < ../Csb.in; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < $(srcdir)/../Csb.in; \
 	} > $@ 2>&1
-$(OUTDIR_PATH)/Csg.out: ../Csg.in xeigtstC_double$(EXEEXT)
+$(OUTDIR_PATH)/Csg.out: $(srcdir)/../Csg.in xeigtstC_double$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -445,9 +445,9 @@ $(OUTDIR_PATH)/Csg.out: ../Csg.in xeigtstC_double$(EXEEXT)
 	echo "CSG: Testing Symmetric Generalized Eigenvalue Problem routines [$(DOUBLE_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(DOUBLE_LABEL) ==="; \
-		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < ../Csg.in; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < $(srcdir)/../Csg.in; \
 	} > $@ 2>&1
-$(OUTDIR_PATH)/Cbal.out: ../Cbal.in xeigtstC_double$(EXEEXT)
+$(OUTDIR_PATH)/Cbal.out: $(srcdir)/../Cbal.in xeigtstC_double$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -456,9 +456,9 @@ $(OUTDIR_PATH)/Cbal.out: ../Cbal.in xeigtstC_double$(EXEEXT)
 	echo "CGEBAL: Testing the balancing of a COMPLEX general matrix [$(DOUBLE_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(DOUBLE_LABEL) ==="; \
-		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < ../Cbal.in; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < $(srcdir)/../Cbal.in; \
 	} > $@ 2>&1
-$(OUTDIR_PATH)/Cbak.out: ../Cbak.in xeigtstC_double$(EXEEXT)
+$(OUTDIR_PATH)/Cbak.out: $(srcdir)/../Cbak.in xeigtstC_double$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -467,9 +467,9 @@ $(OUTDIR_PATH)/Cbak.out: ../Cbak.in xeigtstC_double$(EXEEXT)
 	echo "CGEBAK: Testing the back transformation of a COMPLEX balanced matrix [$(DOUBLE_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(DOUBLE_LABEL) ==="; \
-		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < ../Cbak.in; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < $(srcdir)/../Cbak.in; \
 	} > $@ 2>&1
-$(OUTDIR_PATH)/Cgbal.out: ../Cgbal.in xeigtstC_double$(EXEEXT)
+$(OUTDIR_PATH)/Cgbal.out: $(srcdir)/../Cgbal.in xeigtstC_double$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -478,9 +478,9 @@ $(OUTDIR_PATH)/Cgbal.out: ../Cgbal.in xeigtstC_double$(EXEEXT)
 	echo "CGGBAL: Testing the balancing of a pair of COMPLEX general matrices [$(DOUBLE_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(DOUBLE_LABEL) ==="; \
-		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < ../Cgbal.in; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < $(srcdir)/../Cgbal.in; \
 	} > $@ 2>&1
-$(OUTDIR_PATH)/Cgbak.out: ../Cgbak.in xeigtstC_double$(EXEEXT)
+$(OUTDIR_PATH)/Cgbak.out: $(srcdir)/../Cgbak.in xeigtstC_double$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -489,9 +489,9 @@ $(OUTDIR_PATH)/Cgbak.out: ../Cgbak.in xeigtstC_double$(EXEEXT)
 	echo "CGGBAK: Testing the back transformation of a pair of COMPLEX balanced matrices [$(DOUBLE_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(DOUBLE_LABEL) ==="; \
-		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < ../Cgbak.in; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < $(srcdir)/../Cgbak.in; \
 	} > $@ 2>&1
-$(OUTDIR_PATH)/Cbb.out: ../Cbb.in xeigtstC_double$(EXEEXT)
+$(OUTDIR_PATH)/Cbb.out: $(srcdir)/../Cbb.in xeigtstC_double$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -500,9 +500,9 @@ $(OUTDIR_PATH)/Cbb.out: ../Cbb.in xeigtstC_double$(EXEEXT)
 	echo "CBB: Testing banded Singular Value Decomposition routines [$(DOUBLE_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(DOUBLE_LABEL) ==="; \
-		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < ../Cbb.in; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < $(srcdir)/../Cbb.in; \
 	} > $@ 2>&1
-$(OUTDIR_PATH)/Cglm.out: ../glm.in xeigtstC_double$(EXEEXT)
+$(OUTDIR_PATH)/Cglm.out: $(srcdir)/../glm.in xeigtstC_double$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -511,9 +511,9 @@ $(OUTDIR_PATH)/Cglm.out: ../glm.in xeigtstC_double$(EXEEXT)
 	echo "GLM: Testing Generalized Linear Regression Model routines [$(DOUBLE_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(DOUBLE_LABEL) ==="; \
-		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < ../glm.in; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < $(srcdir)/../glm.in; \
 	} > $@ 2>&1
-$(OUTDIR_PATH)/Cgqr.out: ../gqr.in xeigtstC_double$(EXEEXT)
+$(OUTDIR_PATH)/Cgqr.out: $(srcdir)/../gqr.in xeigtstC_double$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -522,9 +522,9 @@ $(OUTDIR_PATH)/Cgqr.out: ../gqr.in xeigtstC_double$(EXEEXT)
 	echo "GQR: Testing Generalized QR and RQ factorization routines [$(DOUBLE_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(DOUBLE_LABEL) ==="; \
-		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < ../gqr.in; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < $(srcdir)/../gqr.in; \
 	} > $@ 2>&1
-$(OUTDIR_PATH)/Cgsv.out: ../gsv.in xeigtstC_double$(EXEEXT)
+$(OUTDIR_PATH)/Cgsv.out: $(srcdir)/../gsv.in xeigtstC_double$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -533,9 +533,9 @@ $(OUTDIR_PATH)/Cgsv.out: ../gsv.in xeigtstC_double$(EXEEXT)
 	echo "GSV: Testing Generalized Singular Value Decomposition routines [$(DOUBLE_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(DOUBLE_LABEL) ==="; \
-		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < ../gsv.in; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < $(srcdir)/../gsv.in; \
 	} > $@ 2>&1
-$(OUTDIR_PATH)/Ccsd.out: ../csd.in xeigtstC_double$(EXEEXT)
+$(OUTDIR_PATH)/Ccsd.out: $(srcdir)/../csd.in xeigtstC_double$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -544,9 +544,9 @@ $(OUTDIR_PATH)/Ccsd.out: ../csd.in xeigtstC_double$(EXEEXT)
 	echo "CSD: Testing CS Decomposition routines [$(DOUBLE_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(DOUBLE_LABEL) ==="; \
-		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < ../csd.in; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < $(srcdir)/../csd.in; \
 	} > $@ 2>&1
-$(OUTDIR_PATH)/Clse.out: ../lse.in xeigtstC_double$(EXEEXT)
+$(OUTDIR_PATH)/Clse.out: $(srcdir)/../lse.in xeigtstC_double$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -555,5 +555,5 @@ $(OUTDIR_PATH)/Clse.out: ../lse.in xeigtstC_double$(EXEEXT)
 	echo "LSE: Testing Constrained Linear Least Squares routines [$(DOUBLE_LABEL)]"; \
 	set -e; { \
 		echo "=== precision: $(DOUBLE_LABEL) ==="; \
-		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < ../lse.in; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < $(srcdir)/../lse.in; \
 	} > $@ 2>&1

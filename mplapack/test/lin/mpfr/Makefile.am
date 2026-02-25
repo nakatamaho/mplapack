@@ -142,7 +142,7 @@ mpfr-check-%: $(OUTDIR_PATH)/Rtest.%.out $(OUTDIR_PATH)/Ctest.%.out $(OUTDIR_PAT
 # Test rules (profile-abstracted)
 # -----------------------------------------------------------------------------
 
-$(OUTDIR_PATH)/Rtest.%.out: ../Rtest.in xlintstR_mpfr$(EXEEXT)
+$(OUTDIR_PATH)/Rtest.%.out: $(srcdir)/../Rtest.in xlintstR_mpfr$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -151,10 +151,10 @@ $(OUTDIR_PATH)/Rtest.%.out: ../Rtest.in xlintstR_mpfr$(EXEEXT)
 	echo "Testing Real MPLAPACK linear equation routines [$(MPFR_PROFILE_LABEL_$*)]"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xlintstR_mpfr$(EXEEXT) < ../Rtest.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xlintstR_mpfr$(EXEEXT) < $(srcdir)/../Rtest.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Ctest.%.out: ../Ctest.in xlintstC_mpfr$(EXEEXT)
+$(OUTDIR_PATH)/Ctest.%.out: $(srcdir)/../Ctest.in xlintstC_mpfr$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -163,10 +163,10 @@ $(OUTDIR_PATH)/Ctest.%.out: ../Ctest.in xlintstC_mpfr$(EXEEXT)
 	echo "Testing Complex MPLAPACK linear equation routines [$(MPFR_PROFILE_LABEL_$*)]"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xlintstC_mpfr$(EXEEXT) < ../Ctest.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xlintstC_mpfr$(EXEEXT) < $(srcdir)/../Ctest.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Rtest_rfp.%.out: ../Rtest_rfp.in xlintstrfR_mpfr$(EXEEXT)
+$(OUTDIR_PATH)/Rtest_rfp.%.out: $(srcdir)/../Rtest_rfp.in xlintstrfR_mpfr$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -175,10 +175,10 @@ $(OUTDIR_PATH)/Rtest_rfp.%.out: ../Rtest_rfp.in xlintstrfR_mpfr$(EXEEXT)
 	echo "Testing Real MPLAPACK RFP prototype linear equation routines [$(MPFR_PROFILE_LABEL_$*)]"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xlintstrfR_mpfr$(EXEEXT) < ../Rtest_rfp.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xlintstrfR_mpfr$(EXEEXT) < $(srcdir)/../Rtest_rfp.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Ctest_rfp.%.out: ../Ctest_rfp.in xlintstrfC_mpfr$(EXEEXT)
+$(OUTDIR_PATH)/Ctest_rfp.%.out: $(srcdir)/../Ctest_rfp.in xlintstrfC_mpfr$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -187,5 +187,5 @@ $(OUTDIR_PATH)/Ctest_rfp.%.out: ../Ctest_rfp.in xlintstrfC_mpfr$(EXEEXT)
 	echo "Testing Complex MPLAPACK RFP prototype linear equation routines [$(MPFR_PROFILE_LABEL_$*)]"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xlintstrfC_mpfr$(EXEEXT) < ../Ctest_rfp.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xlintstrfC_mpfr$(EXEEXT) < $(srcdir)/../Ctest_rfp.in; \
 	} > $@ 2>&1

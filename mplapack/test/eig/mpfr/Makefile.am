@@ -150,7 +150,7 @@ clean-local:
 # Test rules (profile-abstracted; one output per test per profile)
 # -----------------------------------------------------------------------------
 
-$(OUTDIR_PATH)/Rnep.%.out: ../nep.in xeigtstR_mpfr$(EXEEXT)
+$(OUTDIR_PATH)/Rnep.%.out: $(srcdir)/../nep.in xeigtstR_mpfr$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -159,10 +159,10 @@ $(OUTDIR_PATH)/Rnep.%.out: ../nep.in xeigtstR_mpfr$(EXEEXT)
 	echo "NEP: Testing Nonsymmetric Eigenvalue Problem routines [$(MPFR_PROFILE_LABEL_$*)]"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < ../nep.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < $(srcdir)/../nep.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Rsep.%.out: ../sep.in xeigtstR_mpfr$(EXEEXT)
+$(OUTDIR_PATH)/Rsep.%.out: $(srcdir)/../sep.in xeigtstR_mpfr$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -171,10 +171,10 @@ $(OUTDIR_PATH)/Rsep.%.out: ../sep.in xeigtstR_mpfr$(EXEEXT)
 	echo "SEP: Testing Symmetric Eigenvalue Problem routines [$(MPFR_PROFILE_LABEL_$*)]"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < ../sep.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < $(srcdir)/../sep.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Rse2.%.out: ../se2.in xeigtstR_mpfr$(EXEEXT)
+$(OUTDIR_PATH)/Rse2.%.out: $(srcdir)/../se2.in xeigtstR_mpfr$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -183,10 +183,10 @@ $(OUTDIR_PATH)/Rse2.%.out: ../se2.in xeigtstR_mpfr$(EXEEXT)
 	echo "SEP: Testing Symmetric Eigenvalue Problem routines [$(MPFR_PROFILE_LABEL_$*)]"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < ../se2.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < $(srcdir)/../se2.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Rsvd.%.out: ../svd.in xeigtstR_mpfr$(EXEEXT)
+$(OUTDIR_PATH)/Rsvd.%.out: $(srcdir)/../svd.in xeigtstR_mpfr$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -195,10 +195,10 @@ $(OUTDIR_PATH)/Rsvd.%.out: ../svd.in xeigtstR_mpfr$(EXEEXT)
 	echo "SVD: Testing Singular Value Decomposition routines [$(MPFR_PROFILE_LABEL_$*)]"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < ../svd.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < $(srcdir)/../svd.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Rec.%.out: ../Rec.in xeigtstR_mpfr$(EXEEXT)
+$(OUTDIR_PATH)/Rec.%.out: $(srcdir)/../Rec.in xeigtstR_mpfr$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -207,10 +207,10 @@ $(OUTDIR_PATH)/Rec.%.out: ../Rec.in xeigtstR_mpfr$(EXEEXT)
 	echo "DEC: Testing Eigen Condition Routines [$(MPFR_PROFILE_LABEL_$*)]"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < ../Rec.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < $(srcdir)/../Rec.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Red.%.out: ../Red.in xeigtstR_mpfr$(EXEEXT)
+$(OUTDIR_PATH)/Red.%.out: $(srcdir)/../Red.in xeigtstR_mpfr$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -219,10 +219,10 @@ $(OUTDIR_PATH)/Red.%.out: ../Red.in xeigtstR_mpfr$(EXEEXT)
 	echo "DEV: Testing Nonsymmetric Eigenvalue Driver [$(MPFR_PROFILE_LABEL_$*)]"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < ../Red.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < $(srcdir)/../Red.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Rgg.%.out: ../Rgg.in xeigtstR_mpfr$(EXEEXT)
+$(OUTDIR_PATH)/Rgg.%.out: $(srcdir)/../Rgg.in xeigtstR_mpfr$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -231,10 +231,10 @@ $(OUTDIR_PATH)/Rgg.%.out: ../Rgg.in xeigtstR_mpfr$(EXEEXT)
 	echo "GGS: Testing Generalized Nonsymmetric Eigenvalue Problem routines [$(MPFR_PROFILE_LABEL_$*)]"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < ../Rgg.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < $(srcdir)/../Rgg.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Rgd.%.out: ../Rgd.in xeigtstR_mpfr$(EXEEXT)
+$(OUTDIR_PATH)/Rgd.%.out: $(srcdir)/../Rgd.in xeigtstR_mpfr$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -243,10 +243,10 @@ $(OUTDIR_PATH)/Rgd.%.out: ../Rgd.in xeigtstR_mpfr$(EXEEXT)
 	echo "GGD: Testing Nonsymmetric Generalized Eigenvalue Problem driver routine [$(MPFR_PROFILE_LABEL_$*)]"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < ../Rgd.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < $(srcdir)/../Rgd.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Rsb.%.out: ../Rsb.in xeigtstR_mpfr$(EXEEXT)
+$(OUTDIR_PATH)/Rsb.%.out: $(srcdir)/../Rsb.in xeigtstR_mpfr$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -255,10 +255,10 @@ $(OUTDIR_PATH)/Rsb.%.out: ../Rsb.in xeigtstR_mpfr$(EXEEXT)
 	echo "SBB: Testing banded Schur decomposition routines [$(MPFR_PROFILE_LABEL_$*)]"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < ../Rsb.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < $(srcdir)/../Rsb.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Rsg.%.out: ../Rsg.in xeigtstR_mpfr$(EXEEXT)
+$(OUTDIR_PATH)/Rsg.%.out: $(srcdir)/../Rsg.in xeigtstR_mpfr$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -267,10 +267,10 @@ $(OUTDIR_PATH)/Rsg.%.out: ../Rsg.in xeigtstR_mpfr$(EXEEXT)
 	echo "SGG: Testing Generalized Symmetric Eigenvalue Problem routines [$(MPFR_PROFILE_LABEL_$*)]"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < ../Rsg.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < $(srcdir)/../Rsg.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Rbal.%.out: ../Rbal.in xeigtstR_mpfr$(EXEEXT)
+$(OUTDIR_PATH)/Rbal.%.out: $(srcdir)/../Rbal.in xeigtstR_mpfr$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -279,10 +279,10 @@ $(OUTDIR_PATH)/Rbal.%.out: ../Rbal.in xeigtstR_mpfr$(EXEEXT)
 	echo "RGEBAL: Testing the balancing of a REAL general matrix [$(MPFR_PROFILE_LABEL_$*)]"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < ../Rbal.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < $(srcdir)/../Rbal.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Rbak.%.out: ../Rbak.in xeigtstR_mpfr$(EXEEXT)
+$(OUTDIR_PATH)/Rbak.%.out: $(srcdir)/../Rbak.in xeigtstR_mpfr$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -291,10 +291,10 @@ $(OUTDIR_PATH)/Rbak.%.out: ../Rbak.in xeigtstR_mpfr$(EXEEXT)
 	echo "RGEBAK: Testing the back transformation of a REAL balanced matrix [$(MPFR_PROFILE_LABEL_$*)]"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < ../Rbak.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < $(srcdir)/../Rbak.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Rgbal.%.out: ../Rgbal.in xeigtstR_mpfr$(EXEEXT)
+$(OUTDIR_PATH)/Rgbal.%.out: $(srcdir)/../Rgbal.in xeigtstR_mpfr$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -303,10 +303,10 @@ $(OUTDIR_PATH)/Rgbal.%.out: ../Rgbal.in xeigtstR_mpfr$(EXEEXT)
 	echo "RGGBAL: Testing the balancing of a pair of REAL general matrices [$(MPFR_PROFILE_LABEL_$*)]"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < ../Rgbal.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < $(srcdir)/../Rgbal.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Rgbak.%.out: ../Rgbak.in xeigtstR_mpfr$(EXEEXT)
+$(OUTDIR_PATH)/Rgbak.%.out: $(srcdir)/../Rgbak.in xeigtstR_mpfr$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -315,10 +315,10 @@ $(OUTDIR_PATH)/Rgbak.%.out: ../Rgbak.in xeigtstR_mpfr$(EXEEXT)
 	echo "RGGBAK: Testing the back transformation of a pair of REAL balanced matrices [$(MPFR_PROFILE_LABEL_$*)]"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < ../Rgbak.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < $(srcdir)/../Rgbak.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Rbb.%.out: ../Rbb.in xeigtstR_mpfr$(EXEEXT)
+$(OUTDIR_PATH)/Rbb.%.out: $(srcdir)/../Rbb.in xeigtstR_mpfr$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -327,10 +327,10 @@ $(OUTDIR_PATH)/Rbb.%.out: ../Rbb.in xeigtstR_mpfr$(EXEEXT)
 	echo "RBB: Testing banded Singular Value Decomposition routines [$(MPFR_PROFILE_LABEL_$*)]"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < ../Rbb.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < $(srcdir)/../Rbb.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Rglm.%.out: ../glm.in xeigtstR_mpfr$(EXEEXT)
+$(OUTDIR_PATH)/Rglm.%.out: $(srcdir)/../glm.in xeigtstR_mpfr$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -339,10 +339,10 @@ $(OUTDIR_PATH)/Rglm.%.out: ../glm.in xeigtstR_mpfr$(EXEEXT)
 	echo "GLM: Testing Generalized Linear Regression Model routines [$(MPFR_PROFILE_LABEL_$*)]"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < ../glm.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < $(srcdir)/../glm.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Rgqr.%.out: ../gqr.in xeigtstR_mpfr$(EXEEXT)
+$(OUTDIR_PATH)/Rgqr.%.out: $(srcdir)/../gqr.in xeigtstR_mpfr$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -351,10 +351,10 @@ $(OUTDIR_PATH)/Rgqr.%.out: ../gqr.in xeigtstR_mpfr$(EXEEXT)
 	echo "GQR: Testing Generalized QR and RQ factorization routines [$(MPFR_PROFILE_LABEL_$*)]"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < ../gqr.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < $(srcdir)/../gqr.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Rgsv.%.out: ../gsv.in xeigtstR_mpfr$(EXEEXT)
+$(OUTDIR_PATH)/Rgsv.%.out: $(srcdir)/../gsv.in xeigtstR_mpfr$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -363,10 +363,10 @@ $(OUTDIR_PATH)/Rgsv.%.out: ../gsv.in xeigtstR_mpfr$(EXEEXT)
 	echo "GSV: Testing Generalized Singular Value Decomposition routines [$(MPFR_PROFILE_LABEL_$*)]"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < ../gsv.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < $(srcdir)/../gsv.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Rcsd.%.out: ../csd.in xeigtstR_mpfr$(EXEEXT)
+$(OUTDIR_PATH)/Rcsd.%.out: $(srcdir)/../csd.in xeigtstR_mpfr$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -375,10 +375,10 @@ $(OUTDIR_PATH)/Rcsd.%.out: ../csd.in xeigtstR_mpfr$(EXEEXT)
 	echo "CSD: Testing CS Decomposition routines [$(MPFR_PROFILE_LABEL_$*)]"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < ../csd.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < $(srcdir)/../csd.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Rlse.%.out: ../lse.in xeigtstR_mpfr$(EXEEXT)
+$(OUTDIR_PATH)/Rlse.%.out: $(srcdir)/../lse.in xeigtstR_mpfr$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -387,10 +387,10 @@ $(OUTDIR_PATH)/Rlse.%.out: ../lse.in xeigtstR_mpfr$(EXEEXT)
 	echo "LSE: Testing Constrained Linear Least Squares routines [$(MPFR_PROFILE_LABEL_$*)]"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < ../lse.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_mpfr$(EXEEXT) < $(srcdir)/../lse.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Cnep.%.out: ../nep.in xeigtstC_mpfr$(EXEEXT)
+$(OUTDIR_PATH)/Cnep.%.out: $(srcdir)/../nep.in xeigtstC_mpfr$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -399,10 +399,10 @@ $(OUTDIR_PATH)/Cnep.%.out: ../nep.in xeigtstC_mpfr$(EXEEXT)
 	echo "NEP: Testing Nonsymmetric Eigenvalue Problem routines [$(MPFR_PROFILE_LABEL_$*)]"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < ../nep.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < $(srcdir)/../nep.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Csep.%.out: ../sep.in xeigtstC_mpfr$(EXEEXT)
+$(OUTDIR_PATH)/Csep.%.out: $(srcdir)/../sep.in xeigtstC_mpfr$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -411,10 +411,10 @@ $(OUTDIR_PATH)/Csep.%.out: ../sep.in xeigtstC_mpfr$(EXEEXT)
 	echo "SEP: Testing Symmetric Eigenvalue Problem routines [$(MPFR_PROFILE_LABEL_$*)]"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < ../sep.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < $(srcdir)/../sep.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Cse2.%.out: ../se2.in xeigtstC_mpfr$(EXEEXT)
+$(OUTDIR_PATH)/Cse2.%.out: $(srcdir)/../se2.in xeigtstC_mpfr$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -423,10 +423,10 @@ $(OUTDIR_PATH)/Cse2.%.out: ../se2.in xeigtstC_mpfr$(EXEEXT)
 	echo "SEP: Testing Symmetric Eigenvalue Problem routines [$(MPFR_PROFILE_LABEL_$*)]"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < ../se2.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < $(srcdir)/../se2.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Csvd.%.out: ../svd.in xeigtstC_mpfr$(EXEEXT)
+$(OUTDIR_PATH)/Csvd.%.out: $(srcdir)/../svd.in xeigtstC_mpfr$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -435,10 +435,10 @@ $(OUTDIR_PATH)/Csvd.%.out: ../svd.in xeigtstC_mpfr$(EXEEXT)
 	echo "SVD: Testing Singular Value Decomposition routines [$(MPFR_PROFILE_LABEL_$*)]"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < ../svd.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < $(srcdir)/../svd.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Cec.%.out: ../Cec.in xeigtstC_mpfr$(EXEEXT)
+$(OUTDIR_PATH)/Cec.%.out: $(srcdir)/../Cec.in xeigtstC_mpfr$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -447,10 +447,10 @@ $(OUTDIR_PATH)/Cec.%.out: ../Cec.in xeigtstC_mpfr$(EXEEXT)
 	echo "DEC: Testing Eigen Condition Routines [$(MPFR_PROFILE_LABEL_$*)]"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < ../Cec.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < $(srcdir)/../Cec.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Ced.%.out: ../Ced.in xeigtstC_mpfr$(EXEEXT)
+$(OUTDIR_PATH)/Ced.%.out: $(srcdir)/../Ced.in xeigtstC_mpfr$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -459,10 +459,10 @@ $(OUTDIR_PATH)/Ced.%.out: ../Ced.in xeigtstC_mpfr$(EXEEXT)
 	echo "DEV: Testing Nonsymmetric Eigenvalue Driver [$(MPFR_PROFILE_LABEL_$*)]"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < ../Ced.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < $(srcdir)/../Ced.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Cgg.%.out: ../Cgg.in xeigtstC_mpfr$(EXEEXT)
+$(OUTDIR_PATH)/Cgg.%.out: $(srcdir)/../Cgg.in xeigtstC_mpfr$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -471,10 +471,10 @@ $(OUTDIR_PATH)/Cgg.%.out: ../Cgg.in xeigtstC_mpfr$(EXEEXT)
 	echo "GGS: Testing Generalized Nonsymmetric Eigenvalue Problem routines [$(MPFR_PROFILE_LABEL_$*)]"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < ../Cgg.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < $(srcdir)/../Cgg.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Cgd.%.out: ../Cgd.in xeigtstC_mpfr$(EXEEXT)
+$(OUTDIR_PATH)/Cgd.%.out: $(srcdir)/../Cgd.in xeigtstC_mpfr$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -483,10 +483,10 @@ $(OUTDIR_PATH)/Cgd.%.out: ../Cgd.in xeigtstC_mpfr$(EXEEXT)
 	echo "CGD: Testing Nonsymmetric Generalized Eigenvalue Problem driver routine [$(MPFR_PROFILE_LABEL_$*)]"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < ../Cgd.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < $(srcdir)/../Cgd.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Csb.%.out: ../Csb.in xeigtstC_mpfr$(EXEEXT)
+$(OUTDIR_PATH)/Csb.%.out: $(srcdir)/../Csb.in xeigtstC_mpfr$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -495,10 +495,10 @@ $(OUTDIR_PATH)/Csb.%.out: ../Csb.in xeigtstC_mpfr$(EXEEXT)
 	echo "SBB: Testing banded Schur decomposition routines [$(MPFR_PROFILE_LABEL_$*)]"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < ../Csb.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < $(srcdir)/../Csb.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Csg.%.out: ../Csg.in xeigtstC_mpfr$(EXEEXT)
+$(OUTDIR_PATH)/Csg.%.out: $(srcdir)/../Csg.in xeigtstC_mpfr$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -507,10 +507,10 @@ $(OUTDIR_PATH)/Csg.%.out: ../Csg.in xeigtstC_mpfr$(EXEEXT)
 	echo "SGG: Testing Generalized Symmetric Eigenvalue Problem routines [$(MPFR_PROFILE_LABEL_$*)]"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < ../Csg.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < $(srcdir)/../Csg.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Cbal.%.out: ../Cbal.in xeigtstC_mpfr$(EXEEXT)
+$(OUTDIR_PATH)/Cbal.%.out: $(srcdir)/../Cbal.in xeigtstC_mpfr$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -519,10 +519,10 @@ $(OUTDIR_PATH)/Cbal.%.out: ../Cbal.in xeigtstC_mpfr$(EXEEXT)
 	echo "CGEBAL: Testing the balancing of a COMPLEX general matrix [$(MPFR_PROFILE_LABEL_$*)]"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < ../Cbal.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < $(srcdir)/../Cbal.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Cbak.%.out: ../Cbak.in xeigtstC_mpfr$(EXEEXT)
+$(OUTDIR_PATH)/Cbak.%.out: $(srcdir)/../Cbak.in xeigtstC_mpfr$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -531,10 +531,10 @@ $(OUTDIR_PATH)/Cbak.%.out: ../Cbak.in xeigtstC_mpfr$(EXEEXT)
 	echo "CGEBAK: Testing the back transformation of a COMPLEX balanced matrix [$(MPFR_PROFILE_LABEL_$*)]"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < ../Cbak.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < $(srcdir)/../Cbak.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Cgbal.%.out: ../Cgbal.in xeigtstC_mpfr$(EXEEXT)
+$(OUTDIR_PATH)/Cgbal.%.out: $(srcdir)/../Cgbal.in xeigtstC_mpfr$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -543,10 +543,10 @@ $(OUTDIR_PATH)/Cgbal.%.out: ../Cgbal.in xeigtstC_mpfr$(EXEEXT)
 	echo "CGGBAL: Testing the balancing of a pair of COMPLEX general matrices [$(MPFR_PROFILE_LABEL_$*)]"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < ../Cgbal.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < $(srcdir)/../Cgbal.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Cgbak.%.out: ../Cgbak.in xeigtstC_mpfr$(EXEEXT)
+$(OUTDIR_PATH)/Cgbak.%.out: $(srcdir)/../Cgbak.in xeigtstC_mpfr$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -555,10 +555,10 @@ $(OUTDIR_PATH)/Cgbak.%.out: ../Cgbak.in xeigtstC_mpfr$(EXEEXT)
 	echo "CGGBAK: Testing the back transformation of a pair of COMPLEX balanced matrices [$(MPFR_PROFILE_LABEL_$*)]"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < ../Cgbak.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < $(srcdir)/../Cgbak.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Cbb.%.out: ../Cbb.in xeigtstC_mpfr$(EXEEXT)
+$(OUTDIR_PATH)/Cbb.%.out: $(srcdir)/../Cbb.in xeigtstC_mpfr$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -567,10 +567,10 @@ $(OUTDIR_PATH)/Cbb.%.out: ../Cbb.in xeigtstC_mpfr$(EXEEXT)
 	echo "CBB: Testing banded Singular Value Decomposition routines [$(MPFR_PROFILE_LABEL_$*)]"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < ../Cbb.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < $(srcdir)/../Cbb.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Cglm.%.out: ../glm.in xeigtstC_mpfr$(EXEEXT)
+$(OUTDIR_PATH)/Cglm.%.out: $(srcdir)/../glm.in xeigtstC_mpfr$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -579,10 +579,10 @@ $(OUTDIR_PATH)/Cglm.%.out: ../glm.in xeigtstC_mpfr$(EXEEXT)
 	echo "GLM: Testing Generalized Linear Regression Model routines [$(MPFR_PROFILE_LABEL_$*)]"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < ../glm.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < $(srcdir)/../glm.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Cgqr.%.out: ../gqr.in xeigtstC_mpfr$(EXEEXT)
+$(OUTDIR_PATH)/Cgqr.%.out: $(srcdir)/../gqr.in xeigtstC_mpfr$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -591,10 +591,10 @@ $(OUTDIR_PATH)/Cgqr.%.out: ../gqr.in xeigtstC_mpfr$(EXEEXT)
 	echo "GQR: Testing Generalized QR and RQ factorization routines [$(MPFR_PROFILE_LABEL_$*)]"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < ../gqr.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < $(srcdir)/../gqr.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Cgsv.%.out: ../gsv.in xeigtstC_mpfr$(EXEEXT)
+$(OUTDIR_PATH)/Cgsv.%.out: $(srcdir)/../gsv.in xeigtstC_mpfr$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -603,10 +603,10 @@ $(OUTDIR_PATH)/Cgsv.%.out: ../gsv.in xeigtstC_mpfr$(EXEEXT)
 	echo "GSV: Testing Generalized Singular Value Decomposition routines [$(MPFR_PROFILE_LABEL_$*)]"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < ../gsv.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < $(srcdir)/../gsv.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Ccsd.%.out: ../csd.in xeigtstC_mpfr$(EXEEXT)
+$(OUTDIR_PATH)/Ccsd.%.out: $(srcdir)/../csd.in xeigtstC_mpfr$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -615,10 +615,10 @@ $(OUTDIR_PATH)/Ccsd.%.out: ../csd.in xeigtstC_mpfr$(EXEEXT)
 	echo "CSD: Testing CS Decomposition routines [$(MPFR_PROFILE_LABEL_$*)]"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < ../csd.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < $(srcdir)/../csd.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Clse.%.out: ../lse.in xeigtstC_mpfr$(EXEEXT)
+$(OUTDIR_PATH)/Clse.%.out: $(srcdir)/../lse.in xeigtstC_mpfr$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -627,5 +627,5 @@ $(OUTDIR_PATH)/Clse.%.out: ../lse.in xeigtstC_mpfr$(EXEEXT)
 	echo "LSE: Testing Constrained Linear Least Squares routines [$(MPFR_PROFILE_LABEL_$*)]"; \
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
-		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < ../lse.in; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < $(srcdir)/../lse.in; \
 	} > $@ 2>&1

@@ -117,7 +117,7 @@ clean-local:
 # Test rules (one output per test)
 # -----------------------------------------------------------------------------
 
-$(OUTDIR_PATH)/Rnep.out: ../nep.in xeigtstR_dd$(EXEEXT)
+$(OUTDIR_PATH)/Rnep.out: $(srcdir)/../nep.in xeigtstR_dd$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -125,10 +125,10 @@ $(OUTDIR_PATH)/Rnep.out: ../nep.in xeigtstR_dd$(EXEEXT)
 	fi; \
 	echo "NEP: Testing Nonsymmetric Eigenvalue Problem routines"; \
 	set -e; { \
-		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < ../nep.in; \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < $(srcdir)/../nep.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Rsep.out: ../sep.in xeigtstR_dd$(EXEEXT)
+$(OUTDIR_PATH)/Rsep.out: $(srcdir)/../sep.in xeigtstR_dd$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -136,10 +136,10 @@ $(OUTDIR_PATH)/Rsep.out: ../sep.in xeigtstR_dd$(EXEEXT)
 	fi; \
 	echo "SEP: Testing Symmetric Eigenvalue Problem routines"; \
 	set -e; { \
-		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < ../sep.in; \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < $(srcdir)/../sep.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Rse2.out: ../se2.in xeigtstR_dd$(EXEEXT)
+$(OUTDIR_PATH)/Rse2.out: $(srcdir)/../se2.in xeigtstR_dd$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -147,10 +147,10 @@ $(OUTDIR_PATH)/Rse2.out: ../se2.in xeigtstR_dd$(EXEEXT)
 	fi; \
 	echo "SEP: Testing Symmetric Eigenvalue Problem routines"; \
 	set -e; { \
-		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < ../se2.in; \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < $(srcdir)/../se2.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Rsvd.out: ../svd.in xeigtstR_dd$(EXEEXT)
+$(OUTDIR_PATH)/Rsvd.out: $(srcdir)/../svd.in xeigtstR_dd$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -158,10 +158,10 @@ $(OUTDIR_PATH)/Rsvd.out: ../svd.in xeigtstR_dd$(EXEEXT)
 	fi; \
 	echo "SVD: Testing Singular Value Decomposition routines"; \
 	set -e; { \
-		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < ../svd.in; \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < $(srcdir)/../svd.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Rec.out: ../Rec.in xeigtstR_dd$(EXEEXT)
+$(OUTDIR_PATH)/Rec.out: $(srcdir)/../Rec.in xeigtstR_dd$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -169,10 +169,10 @@ $(OUTDIR_PATH)/Rec.out: ../Rec.in xeigtstR_dd$(EXEEXT)
 	fi; \
 	echo "DEC: Testing Eigen Condition Routines"; \
 	set -e; { \
-		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < ../Rec.in; \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < $(srcdir)/../Rec.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Red.out: ../Red.in xeigtstR_dd$(EXEEXT)
+$(OUTDIR_PATH)/Red.out: $(srcdir)/../Red.in xeigtstR_dd$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -180,10 +180,10 @@ $(OUTDIR_PATH)/Red.out: ../Red.in xeigtstR_dd$(EXEEXT)
 	fi; \
 	echo "DEV: Testing Nonsymmetric Eigenvalue Driver"; \
 	set -e; { \
-		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < ../Red.in; \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < $(srcdir)/../Red.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Rgg.out: ../Rgg.in xeigtstR_dd$(EXEEXT)
+$(OUTDIR_PATH)/Rgg.out: $(srcdir)/../Rgg.in xeigtstR_dd$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -191,10 +191,10 @@ $(OUTDIR_PATH)/Rgg.out: ../Rgg.in xeigtstR_dd$(EXEEXT)
 	fi; \
 	echo "GGS: Testing Generalized Nonsymmetric Eigenvalue Problem routines"; \
 	set -e; { \
-		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < ../Rgg.in; \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < $(srcdir)/../Rgg.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Rgd.out: ../Rgd.in xeigtstR_dd$(EXEEXT)
+$(OUTDIR_PATH)/Rgd.out: $(srcdir)/../Rgd.in xeigtstR_dd$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -202,10 +202,10 @@ $(OUTDIR_PATH)/Rgd.out: ../Rgd.in xeigtstR_dd$(EXEEXT)
 	fi; \
 	echo "DGD: Testing Nonsymmetric Generalized Eigenvalue Problem driver routine"; \
 	set -e; { \
-		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < ../Rgd.in; \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < $(srcdir)/../Rgd.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Rsb.out: ../Rsb.in xeigtstR_dd$(EXEEXT)
+$(OUTDIR_PATH)/Rsb.out: $(srcdir)/../Rsb.in xeigtstR_dd$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -213,10 +213,10 @@ $(OUTDIR_PATH)/Rsb.out: ../Rsb.in xeigtstR_dd$(EXEEXT)
 	fi; \
 	echo "SBB: Testing banded Schur decomposition routines"; \
 	set -e; { \
-		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < ../Rsb.in; \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < $(srcdir)/../Rsb.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Rsg.out: ../Rsg.in xeigtstR_dd$(EXEEXT)
+$(OUTDIR_PATH)/Rsg.out: $(srcdir)/../Rsg.in xeigtstR_dd$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -224,10 +224,10 @@ $(OUTDIR_PATH)/Rsg.out: ../Rsg.in xeigtstR_dd$(EXEEXT)
 	fi; \
 	echo "SGG: Testing Generalized Symmetric Eigenvalue Problem routines"; \
 	set -e; { \
-		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < ../Rsg.in; \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < $(srcdir)/../Rsg.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Rbal.out: ../Rbal.in xeigtstR_dd$(EXEEXT)
+$(OUTDIR_PATH)/Rbal.out: $(srcdir)/../Rbal.in xeigtstR_dd$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -235,10 +235,10 @@ $(OUTDIR_PATH)/Rbal.out: ../Rbal.in xeigtstR_dd$(EXEEXT)
 	fi; \
 	echo "DGEBAL: Testing the balancing of a real general matrix"; \
 	set -e; { \
-		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < ../Rbal.in; \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < $(srcdir)/../Rbal.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Rbak.out: ../Rbak.in xeigtstR_dd$(EXEEXT)
+$(OUTDIR_PATH)/Rbak.out: $(srcdir)/../Rbak.in xeigtstR_dd$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -246,10 +246,10 @@ $(OUTDIR_PATH)/Rbak.out: ../Rbak.in xeigtstR_dd$(EXEEXT)
 	fi; \
 	echo "DGEBAK: Testing the back transformation of a real balanced matrix"; \
 	set -e; { \
-		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < ../Rbak.in; \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < $(srcdir)/../Rbak.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Rgbal.out: ../Rgbal.in xeigtstR_dd$(EXEEXT)
+$(OUTDIR_PATH)/Rgbal.out: $(srcdir)/../Rgbal.in xeigtstR_dd$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -257,10 +257,10 @@ $(OUTDIR_PATH)/Rgbal.out: ../Rgbal.in xeigtstR_dd$(EXEEXT)
 	fi; \
 	echo "DGGBAL: Testing the balancing of a pair of real general matrices"; \
 	set -e; { \
-		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < ../Rgbal.in; \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < $(srcdir)/../Rgbal.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Rgbak.out: ../Rgbak.in xeigtstR_dd$(EXEEXT)
+$(OUTDIR_PATH)/Rgbak.out: $(srcdir)/../Rgbak.in xeigtstR_dd$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -268,10 +268,10 @@ $(OUTDIR_PATH)/Rgbak.out: ../Rgbak.in xeigtstR_dd$(EXEEXT)
 	fi; \
 	echo "DGGBAK: Testing the back transformation of a pair of real balanced matrices"; \
 	set -e; { \
-		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < ../Rgbak.in; \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < $(srcdir)/../Rgbak.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Rbb.out: ../Rbb.in xeigtstR_dd$(EXEEXT)
+$(OUTDIR_PATH)/Rbb.out: $(srcdir)/../Rbb.in xeigtstR_dd$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -279,10 +279,10 @@ $(OUTDIR_PATH)/Rbb.out: ../Rbb.in xeigtstR_dd$(EXEEXT)
 	fi; \
 	echo "DBB: Testing banded Singular Value Decomposition routines"; \
 	set -e; { \
-		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < ../Rbb.in; \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < $(srcdir)/../Rbb.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Rglm.out: ../glm.in xeigtstR_dd$(EXEEXT)
+$(OUTDIR_PATH)/Rglm.out: $(srcdir)/../glm.in xeigtstR_dd$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -290,10 +290,10 @@ $(OUTDIR_PATH)/Rglm.out: ../glm.in xeigtstR_dd$(EXEEXT)
 	fi; \
 	echo "GLM: Testing Generalized Linear Regression Model routines"; \
 	set -e; { \
-		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < ../glm.in; \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < $(srcdir)/../glm.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Rgqr.out: ../gqr.in xeigtstR_dd$(EXEEXT)
+$(OUTDIR_PATH)/Rgqr.out: $(srcdir)/../gqr.in xeigtstR_dd$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -301,10 +301,10 @@ $(OUTDIR_PATH)/Rgqr.out: ../gqr.in xeigtstR_dd$(EXEEXT)
 	fi; \
 	echo "GQR: Testing Generalized QR and RQ factorization routines"; \
 	set -e; { \
-		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < ../gqr.in; \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < $(srcdir)/../gqr.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Rgsv.out: ../gsv.in xeigtstR_dd$(EXEEXT)
+$(OUTDIR_PATH)/Rgsv.out: $(srcdir)/../gsv.in xeigtstR_dd$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -312,10 +312,10 @@ $(OUTDIR_PATH)/Rgsv.out: ../gsv.in xeigtstR_dd$(EXEEXT)
 	fi; \
 	echo "GSV: Testing Generalized Singular Value Decomposition routines"; \
 	set -e; { \
-		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < ../gsv.in; \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < $(srcdir)/../gsv.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Rcsd.out: ../csd.in xeigtstR_dd$(EXEEXT)
+$(OUTDIR_PATH)/Rcsd.out: $(srcdir)/../csd.in xeigtstR_dd$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -323,10 +323,10 @@ $(OUTDIR_PATH)/Rcsd.out: ../csd.in xeigtstR_dd$(EXEEXT)
 	fi; \
 	echo "CSD: Testing CS Decomposition routines"; \
 	set -e; { \
-		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < ../csd.in; \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < $(srcdir)/../csd.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Rlse.out: ../lse.in xeigtstR_dd$(EXEEXT)
+$(OUTDIR_PATH)/Rlse.out: $(srcdir)/../lse.in xeigtstR_dd$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -334,10 +334,10 @@ $(OUTDIR_PATH)/Rlse.out: ../lse.in xeigtstR_dd$(EXEEXT)
 	fi; \
 	echo "LSE: Testing Constrained Linear Least Squares routines"; \
 	set -e; { \
-		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < ../lse.in; \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_dd$(EXEEXT) < $(srcdir)/../lse.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Cnep.out: ../nep.in xeigtstC_dd$(EXEEXT)
+$(OUTDIR_PATH)/Cnep.out: $(srcdir)/../nep.in xeigtstC_dd$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -345,10 +345,10 @@ $(OUTDIR_PATH)/Cnep.out: ../nep.in xeigtstC_dd$(EXEEXT)
 	fi; \
 	echo "NEP: Testing Nonsymmetric Eigenvalue Problem routines"; \
 	set -e; { \
-		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < ../nep.in; \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < $(srcdir)/../nep.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Csep.out: ../sep.in xeigtstC_dd$(EXEEXT)
+$(OUTDIR_PATH)/Csep.out: $(srcdir)/../sep.in xeigtstC_dd$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -356,10 +356,10 @@ $(OUTDIR_PATH)/Csep.out: ../sep.in xeigtstC_dd$(EXEEXT)
 	fi; \
 	echo "SEP: Testing Symmetric Eigenvalue Problem routines"; \
 	set -e; { \
-		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < ../sep.in; \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < $(srcdir)/../sep.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Cse2.out: ../se2.in xeigtstC_dd$(EXEEXT)
+$(OUTDIR_PATH)/Cse2.out: $(srcdir)/../se2.in xeigtstC_dd$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -367,10 +367,10 @@ $(OUTDIR_PATH)/Cse2.out: ../se2.in xeigtstC_dd$(EXEEXT)
 	fi; \
 	echo "SEP: Testing Symmetric Eigenvalue Problem routines"; \
 	set -e; { \
-		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < ../se2.in; \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < $(srcdir)/../se2.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Csvd.out: ../svd.in xeigtstC_dd$(EXEEXT)
+$(OUTDIR_PATH)/Csvd.out: $(srcdir)/../svd.in xeigtstC_dd$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -378,10 +378,10 @@ $(OUTDIR_PATH)/Csvd.out: ../svd.in xeigtstC_dd$(EXEEXT)
 	fi; \
 	echo "SVD: Testing Singular Value Decomposition routines"; \
 	set -e; { \
-		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < ../svd.in; \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < $(srcdir)/../svd.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Cec.out: ../Cec.in xeigtstC_dd$(EXEEXT)
+$(OUTDIR_PATH)/Cec.out: $(srcdir)/../Cec.in xeigtstC_dd$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -389,10 +389,10 @@ $(OUTDIR_PATH)/Cec.out: ../Cec.in xeigtstC_dd$(EXEEXT)
 	fi; \
 	echo "DEC: Testing Eigen Condition Routines"; \
 	set -e; { \
-		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < ../Cec.in; \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < $(srcdir)/../Cec.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Ced.out: ../Ced.in xeigtstC_dd$(EXEEXT)
+$(OUTDIR_PATH)/Ced.out: $(srcdir)/../Ced.in xeigtstC_dd$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -400,10 +400,10 @@ $(OUTDIR_PATH)/Ced.out: ../Ced.in xeigtstC_dd$(EXEEXT)
 	fi; \
 	echo "DEV: Testing Nonsymmetric Eigenvalue Driver"; \
 	set -e; { \
-		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < ../Ced.in; \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < $(srcdir)/../Ced.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Cgg.out: ../Cgg.in xeigtstC_dd$(EXEEXT)
+$(OUTDIR_PATH)/Cgg.out: $(srcdir)/../Cgg.in xeigtstC_dd$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -411,10 +411,10 @@ $(OUTDIR_PATH)/Cgg.out: ../Cgg.in xeigtstC_dd$(EXEEXT)
 	fi; \
 	echo "GGS: Testing Generalized Nonsymmetric Eigenvalue Problem routines"; \
 	set -e; { \
-		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < ../Cgg.in; \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < $(srcdir)/../Cgg.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Cgd.out: ../Cgd.in xeigtstC_dd$(EXEEXT)
+$(OUTDIR_PATH)/Cgd.out: $(srcdir)/../Cgd.in xeigtstC_dd$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -422,10 +422,10 @@ $(OUTDIR_PATH)/Cgd.out: ../Cgd.in xeigtstC_dd$(EXEEXT)
 	fi; \
 	echo "CGD: Testing Nonsymmetric Generalized Eigenvalue Problem driver routine"; \
 	set -e; { \
-		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < ../Cgd.in; \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < $(srcdir)/../Cgd.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Csb.out: ../Csb.in xeigtstC_dd$(EXEEXT)
+$(OUTDIR_PATH)/Csb.out: $(srcdir)/../Csb.in xeigtstC_dd$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -433,10 +433,10 @@ $(OUTDIR_PATH)/Csb.out: ../Csb.in xeigtstC_dd$(EXEEXT)
 	fi; \
 	echo "SBB: Testing banded Schur decomposition routines"; \
 	set -e; { \
-		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < ../Csb.in; \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < $(srcdir)/../Csb.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Csg.out: ../Csg.in xeigtstC_dd$(EXEEXT)
+$(OUTDIR_PATH)/Csg.out: $(srcdir)/../Csg.in xeigtstC_dd$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -444,10 +444,10 @@ $(OUTDIR_PATH)/Csg.out: ../Csg.in xeigtstC_dd$(EXEEXT)
 	fi; \
 	echo "SGG: Testing Generalized Symmetric Eigenvalue Problem routines"; \
 	set -e; { \
-		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < ../Csg.in; \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < $(srcdir)/../Csg.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Cbal.out: ../Cbal.in xeigtstC_dd$(EXEEXT)
+$(OUTDIR_PATH)/Cbal.out: $(srcdir)/../Cbal.in xeigtstC_dd$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -455,10 +455,10 @@ $(OUTDIR_PATH)/Cbal.out: ../Cbal.in xeigtstC_dd$(EXEEXT)
 	fi; \
 	echo "CGEBAL: Testing the balancing of a COMPLEX general matrix"; \
 	set -e; { \
-		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < ../Cbal.in; \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < $(srcdir)/../Cbal.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Cbak.out: ../Cbak.in xeigtstC_dd$(EXEEXT)
+$(OUTDIR_PATH)/Cbak.out: $(srcdir)/../Cbak.in xeigtstC_dd$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -466,10 +466,10 @@ $(OUTDIR_PATH)/Cbak.out: ../Cbak.in xeigtstC_dd$(EXEEXT)
 	fi; \
 	echo "CGEBAK: Testing the back transformation of a COMPLEX balanced matrix"; \
 	set -e; { \
-		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < ../Cbak.in; \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < $(srcdir)/../Cbak.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Cgbal.out: ../Cgbal.in xeigtstC_dd$(EXEEXT)
+$(OUTDIR_PATH)/Cgbal.out: $(srcdir)/../Cgbal.in xeigtstC_dd$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -477,10 +477,10 @@ $(OUTDIR_PATH)/Cgbal.out: ../Cgbal.in xeigtstC_dd$(EXEEXT)
 	fi; \
 	echo "CGGBAL: Testing the balancing of a pair of COMPLEX general matrices"; \
 	set -e; { \
-		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < ../Cgbal.in; \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < $(srcdir)/../Cgbal.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Cgbak.out: ../Cgbak.in xeigtstC_dd$(EXEEXT)
+$(OUTDIR_PATH)/Cgbak.out: $(srcdir)/../Cgbak.in xeigtstC_dd$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -488,10 +488,10 @@ $(OUTDIR_PATH)/Cgbak.out: ../Cgbak.in xeigtstC_dd$(EXEEXT)
 	fi; \
 	echo "CGGBAK: Testing the back transformation of a pair of COMPLEX balanced matrices"; \
 	set -e; { \
-		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < ../Cgbak.in; \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < $(srcdir)/../Cgbak.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Cbb.out: ../Cbb.in xeigtstC_dd$(EXEEXT)
+$(OUTDIR_PATH)/Cbb.out: $(srcdir)/../Cbb.in xeigtstC_dd$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -499,10 +499,10 @@ $(OUTDIR_PATH)/Cbb.out: ../Cbb.in xeigtstC_dd$(EXEEXT)
 	fi; \
 	echo "CBB: Testing banded Singular Value Decomposition routines"; \
 	set -e; { \
-		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < ../Cbb.in; \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < $(srcdir)/../Cbb.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Cglm.out: ../glm.in xeigtstC_dd$(EXEEXT)
+$(OUTDIR_PATH)/Cglm.out: $(srcdir)/../glm.in xeigtstC_dd$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -510,10 +510,10 @@ $(OUTDIR_PATH)/Cglm.out: ../glm.in xeigtstC_dd$(EXEEXT)
 	fi; \
 	echo "GLM: Testing Generalized Linear Regression Model routines"; \
 	set -e; { \
-		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < ../glm.in; \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < $(srcdir)/../glm.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Cgqr.out: ../gqr.in xeigtstC_dd$(EXEEXT)
+$(OUTDIR_PATH)/Cgqr.out: $(srcdir)/../gqr.in xeigtstC_dd$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -521,10 +521,10 @@ $(OUTDIR_PATH)/Cgqr.out: ../gqr.in xeigtstC_dd$(EXEEXT)
 	fi; \
 	echo "GQR: Testing Generalized QR and RQ factorization routines"; \
 	set -e; { \
-		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < ../gqr.in; \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < $(srcdir)/../gqr.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Cgsv.out: ../gsv.in xeigtstC_dd$(EXEEXT)
+$(OUTDIR_PATH)/Cgsv.out: $(srcdir)/../gsv.in xeigtstC_dd$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -532,10 +532,10 @@ $(OUTDIR_PATH)/Cgsv.out: ../gsv.in xeigtstC_dd$(EXEEXT)
 	fi; \
 	echo "GSV: Testing Generalized Singular Value Decomposition routines"; \
 	set -e; { \
-		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < ../gsv.in; \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < $(srcdir)/../gsv.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Ccsd.out: ../csd.in xeigtstC_dd$(EXEEXT)
+$(OUTDIR_PATH)/Ccsd.out: $(srcdir)/../csd.in xeigtstC_dd$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -543,10 +543,10 @@ $(OUTDIR_PATH)/Ccsd.out: ../csd.in xeigtstC_dd$(EXEEXT)
 	fi; \
 	echo "CSD: Testing CS Decomposition routines"; \
 	set -e; { \
-		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < ../csd.in; \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < $(srcdir)/../csd.in; \
 	} > $@ 2>&1
 
-$(OUTDIR_PATH)/Clse.out: ../lse.in xeigtstC_dd$(EXEEXT)
+$(OUTDIR_PATH)/Clse.out: $(srcdir)/../lse.in xeigtstC_dd$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
 	if test -n "$(VALGRIND)"; then \
@@ -554,5 +554,5 @@ $(OUTDIR_PATH)/Clse.out: ../lse.in xeigtstC_dd$(EXEEXT)
 	fi; \
 	echo "LSE: Testing Constrained Linear Least Squares routines"; \
 	set -e; { \
-		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < ../lse.in; \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < $(srcdir)/../lse.in; \
 	} > $@ 2>&1
