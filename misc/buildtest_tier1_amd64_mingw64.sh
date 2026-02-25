@@ -117,7 +117,7 @@ git clone --depth 1 --branch release/2.1 git@github.com:nakatamaho/mplapack.git 
 cd "${WORKDIR}"
 git --no-pager log -1 | tee "${LOG_DIR}/git_log.log" | tee -a "${LOG_DIR}/summary.log"
 
-run_step "reconfig"       bash misc/reconfig.ubuntu24.04.mingw.sh
+run_step "reconfig"       bash misc/reconfig.ubuntu24.04.mingw64.sh
 run_step "make"           make -j32
 run_step "make_install"   make install
 
