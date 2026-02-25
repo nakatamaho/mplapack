@@ -53,6 +53,7 @@ safe_rmdir() {
         log "ERROR: HOME is '${HOME:-<unset>}', refusing to rm -rf '${target}'."
         exit 1
     fi
+    # Confirm target starts with $HOME to prevent accidental wide deletion
     case "${target}" in
         "${HOME}/"*)
             rm -rf "${target}"
@@ -72,13 +73,10 @@ log_env() {
         echo '=== Environment snapshot ==='
         LANG=C uname -a
         if [ -f /etc/os-release ]; then cat /etc/os-release; fi
-        echo '--- compiler versions (host) ---'
-        gcc   --version 2>/dev/null || true
-        g++   --version 2>/dev/null || true
-        echo '--- compiler versions (cross) ---'
-        x86_64-w64-mingw32-gcc --version 2>/dev/null || true
-        x86_64-w64-mingw32-g++ --version 2>/dev/null || true
-        wine --version 2>/dev/null || true
+        echo '--- compiler versions ---'
+        x86_64-w64-mingw32-gcc   --version 2>/dev/null || true
+        x86_64-w64-mingw32-g++   --version 2>/dev/null || true
+        x86_64-w64-mingw32-gfortran --version 2>/dev/null || true
         echo '--- PATH ---'
         echo "${PATH}"
         echo '=== End of environment snapshot ===='
@@ -88,17 +86,24 @@ log_env() {
 # ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
-PREFIX_DIR="${HOME}/MPLAPACK"
+PREFIX_DIR="${HOME}/MPLAPACK_MINGW"
 WORKDIR="${HOME}/mplapack"
 
 # ---------------------------------------------------------------------------
 # DISTCHECK_CONFIGURE_FLAGS: feature flags only, no --prefix
-# Target is always x86_64-w64-mingw32, so binary80 is always enabled.
-# make distcheck is skipped: distcheck's internal configure cannot cross-compile
-# without explicit toolchain flags, and binaries require wine to run.
 # ---------------------------------------------------------------------------
-DISTCHECK_CONFIGURE_FLAGS="--enable-gmp=yes --enable-mpfr=yes --enable-binary128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-binary80=yes --enable-test=yes --enable-benchmark=yes"
+COMMON_FLAGS="--enable-gmp=yes --enable-mpfr=yes --enable-binary128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes"
+ARCH=$(uname -m)
+case "${ARCH}" in
+    x86_64|i686|i586|i386)
+        DISTCHECK_CONFIGURE_FLAGS="${COMMON_FLAGS} --enable-binary80=yes --enable-benchmark=yes"
+        ;;
+    *)
+        DISTCHECK_CONFIGURE_FLAGS="${COMMON_FLAGS}"
+        ;;
+esac
 export DISTCHECK_CONFIGURE_FLAGS
+log "ARCH: ${ARCH}"
 log "DISTCHECK_CONFIGURE_FLAGS: ${DISTCHECK_CONFIGURE_FLAGS}"
 
 # ---------------------------------------------------------------------------
@@ -112,15 +117,22 @@ git clone --depth 1 --branch release/2.1 git@github.com:nakatamaho/mplapack.git 
 cd "${WORKDIR}"
 git --no-pager log -1 | tee "${LOG_DIR}/git_log.log" | tee -a "${LOG_DIR}/summary.log"
 
-run_step "reconfig"     bash misc/reconfig.ubuntu24.04.mingw64.sh
-run_step "make"         make -j32
-run_step "make_install" make install
+run_step "reconfig"       bash misc/reconfig.ubuntu24.04.mingw.sh
+run_step "make"           make -j32
+run_step "make_install"   make install
 
+# Copy config.log (records actual configure invocation and detected settings)
 cp config.log "${LOG_DIR}/config.log" 2>/dev/null || true
 grep "^  \$ \./configure" "${LOG_DIR}/config.log" 2>/dev/null \
     | tee -a "${LOG_DIR}/summary.log" || true
 
-run_step "make_check"   make LOG_COMPILER=wine check -j32
+# make distcheck internally does: dist -> extract -> configure -> make -> check -> install -> uninstall
+# --prefix must NOT be in DISTCHECK_CONFIGURE_FLAGS (distcheck uses its own isolated prefix)
+safe_rmdir "${PREFIX_DIR}"
+run_step "autoreconf"     autoreconf -fi
+run_step "make_distcheck" env CC="ccache x86_64-w64-mingw32-gcc" CXX="ccache x86_64-w64-mingw32-g++" FC="ccache x86_64-w64-mingw32-gfortran" \
+                          make distcheck LOG_COMPILER=wine MAKEFLAGS="-j32" DISTCHECK_CONFIGURE_FLAGS="--host=x86_64-w64-mingw32 ${DISTCHECK_CONFIGURE_FLAGS}"
+run_step "make_check"     make LOG_COMPILER=wine check -j32
 
 log ""
 log "=== ALL STEPS COMPLETED SUCCESSFULLY ==="

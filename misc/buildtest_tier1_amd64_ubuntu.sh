@@ -92,11 +92,11 @@ WORKDIR="${HOME}/mplapack"
 # ---------------------------------------------------------------------------
 # DISTCHECK_CONFIGURE_FLAGS: feature flags only, no --prefix
 # ---------------------------------------------------------------------------
-COMMON_FLAGS="--enable-gmp=yes --enable-mpfr=yes --enable-binary128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes --enable-benchmark=yes"
+COMMON_FLAGS="--enable-gmp=yes --enable-mpfr=yes --enable-binary128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes"
 ARCH=$(uname -m)
 case "${ARCH}" in
     x86_64|i686|i586|i386)
-        DISTCHECK_CONFIGURE_FLAGS="${COMMON_FLAGS} --enable-binary80=yes"
+        DISTCHECK_CONFIGURE_FLAGS="${COMMON_FLAGS} --enable-binary80=yes --enable-benchmark=yes"
         ;;
     *)
         DISTCHECK_CONFIGURE_FLAGS="${COMMON_FLAGS}"
@@ -129,7 +129,9 @@ grep "^  \$ \./configure" "${LOG_DIR}/config.log" 2>/dev/null \
 # make distcheck internally does: dist -> extract -> configure -> make -> check -> install -> uninstall
 # --prefix must NOT be in DISTCHECK_CONFIGURE_FLAGS (distcheck uses its own isolated prefix)
 safe_rmdir "${PREFIX_DIR}"
-run_step "make_distcheck" make distcheck DISTCHECK_CONFIGURE_FLAGS="${DISTCHECK_CONFIGURE_FLAGS}"
+run_step "autoreconf"     autoreconf -fi
+run_step "make_distcheck" env CC="ccache gcc" CXX="ccache g++" FC="ccache gfortran" \
+                          make distcheck MAKEFLAGS="-j32" DISTCHECK_CONFIGURE_FLAGS="${DISTCHECK_CONFIGURE_FLAGS}"
 run_step "make_check"     make check -j32
 
 log ""

@@ -53,6 +53,7 @@ safe_rmdir() {
         log "ERROR: HOME is '${HOME:-<unset>}', refusing to rm -rf '${target}'."
         exit 1
     fi
+    # Confirm target starts with $HOME to prevent accidental wide deletion
     case "${target}" in
         "${HOME}/"*)
             rm -rf "${target}"
@@ -73,9 +74,9 @@ log_env() {
         LANG=C uname -a
         sw_vers 2>/dev/null || true
         echo '--- compiler versions ---'
-        clang   --version 2>/dev/null || true
-        clang++ --version 2>/dev/null || true
-        gfortran --version 2>/dev/null || true
+        gcc-mp-14   --version 2>/dev/null || true
+        g++-mp-14 --version 2>/dev/null || true
+        gfortran-mp-14 --version 2>/dev/null || true
         brew --version 2>/dev/null || true
         echo '--- PATH ---'
         echo "${PATH}"
@@ -95,11 +96,11 @@ PREFIX_DIR="${HOME}/MPLAPACK"
 # DISTCHECK_CONFIGURE_FLAGS: feature flags only, no --prefix
 # Note: Apple Silicon (arm64) does not have x87, so binary80 is x86_64 only
 # ---------------------------------------------------------------------------
-COMMON_FLAGS="--enable-gmp=yes --enable-mpfr=yes --enable-binary128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes --enable-benchmark=yes"
+COMMON_FLAGS="--enable-gmp=yes --enable-mpfr=yes --enable-binary128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes"
 ARCH=$(uname -m)
 case "${ARCH}" in
     x86_64|i686|i586|i386)
-        DISTCHECK_CONFIGURE_FLAGS="${COMMON_FLAGS} --enable-binary80=yes"
+        DISTCHECK_CONFIGURE_FLAGS="${COMMON_FLAGS} --enable-binary80=yes --enable-benchmark=yes"
         ;;
     *)
         DISTCHECK_CONFIGURE_FLAGS="${COMMON_FLAGS}"
@@ -221,12 +222,17 @@ run_step "reconfig"       bash misc/reconfig.macOS.sh
 run_step "make"           make -j4
 run_step "make_install"   make install
 
+# Copy config.log (records actual configure invocation and detected settings)
 cp config.log "${LOG_DIR}/config.log" 2>/dev/null || true
 grep "^  \$ \./configure" "${LOG_DIR}/config.log" 2>/dev/null \
     | tee -a "${LOG_DIR}/summary.log" || true
 
+# make distcheck internally does: dist -> extract -> configure -> make -> check -> install -> uninstall
+# --prefix must NOT be in DISTCHECK_CONFIGURE_FLAGS (distcheck uses its own isolated prefix)
 safe_rmdir "${PREFIX_DIR}"
-run_step "make_distcheck" make distcheck DISTCHECK_CONFIGURE_FLAGS="${DISTCHECK_CONFIGURE_FLAGS}"
+run_step "autoreconf"     autoreconf -fi
+run_step "make_distcheck" env CC="ccache gcc" CXX="ccache g++" FC="ccache gfortran" \
+                          make distcheck MAKEFLAGS="-j4" DISTCHECK_CONFIGURE_FLAGS="${DISTCHECK_CONFIGURE_FLAGS}"
 run_step "make_check"     make check -j4
 
 log ""
