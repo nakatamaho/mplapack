@@ -1319,24 +1319,24 @@ dnl Aliases with MPLAPACK_BINARY80_MODE_ prefix (referenced by Makefile.am)
 AM_CONDITIONAL(MPLAPACK_BINARY80_MODE_FLOAT64X, test "$mplapack_binary80_mode" = "2")
 AM_CONDITIONAL(MPLAPACK_BINARY80_MODE_LDBL80,   test "$mplapack_binary80_mode" = "1")
 
-highest_abs_top_srcdir=`cd "$srcdir" && pwd` 
-
+highest_abs_top_srcdir=`cd "$srcdir" && pwd`
+highest_abs_top_builddir=`pwd`
 dnl GMP library start
 AC_ARG_WITH(system-gmp,
 AS_HELP_STRING([--with-system-gmp=PREFIX],
-	    [ ="yes" if it is at the default location (/usr/local/lib), or alternative prefix path to gmp library]
-	  ),
-	  GMP_PATHSET=1,
-	  GMP_PATHSET=0;
-	  with_system_gmp="no";
-	  )
-GMP_INCLUDEDIR=$highest_abs_top_srcdir/external/i/GMP/include/
-GMP_LIBDIR=$highest_abs_top_srcdir/external/i/GMP/lib/
+            [ ="yes" if it is at the default location (/usr/local/lib), or alternative prefix path to gmp library]
+          ),
+          GMP_PATHSET=1,
+          GMP_PATHSET=0;
+          with_system_gmp="no";
+          )
+GMP_INCLUDEDIR=$highest_abs_top_builddir/external/i/GMP/include/
+GMP_LIBDIR=$highest_abs_top_builddir/external/i/GMP/lib/
 if test  $GMP_PATHSET = 1 ; then
-	if test $with_system_gmp != "yes"; then
-		GMP_INCLUDEDIR="$with_system_gmp/include"
-		GMP_LIBDIR="$with_system_gmp/lib"
-	fi
+        if test $with_system_gmp != "yes"; then
+                GMP_INCLUDEDIR="$with_system_gmp/include"
+                GMP_LIBDIR="$with_system_gmp/lib"
+        fi
 fi
 
 if test x$enable_gmp = x"yes" -o x$enable_mpfr = x"yes" -o x$enable_test = x"yes"; then
@@ -1360,8 +1360,8 @@ if test x$enable_gmp = x"yes" -o x$enable_mpfr = x"yes" -o x$enable_test = x"yes
         fi
     else
         AC_MSG_RESULT([Using GMP library comes with MPLAPACK])
-        GMP_INCLUDEDIR=$highest_abs_top_srcdir/external/i/GMP/include/
-        GMP_LIBDIR=$highest_abs_top_srcdir/external/i/GMP/lib/
+        GMP_INCLUDEDIR=$highest_abs_top_builddir/external/i/GMP/include/
+        GMP_LIBDIR=$highest_abs_top_builddir/external/i/GMP/lib/
     fi
 fi
 AM_CONDITIONAL(SYSTEM_GMP, test x$SYSTEM_GMP = xyes)
@@ -1378,8 +1378,8 @@ AS_HELP_STRING([--with-system-mpfr=PREFIX],
 	  MPFR_PATHSET=0;
 	  with_system_mpfr="no";
 	  )
-MPFR_INCLUDEDIR=$highest_abs_top_srcdir/external/i/MPFR/include/
-MPFR_LIBDIR=$highest_abs_top_srcdir/external/i/MPFR/lib/
+MPFR_INCLUDEDIR=$highest_abs_top_builddir/external/i/MPFR/include/
+MPFR_LIBDIR=$highest_abs_top_builddir/external/i/MPFR/lib/
 if test  $MPFR_PATHSET = 1 ; then
 	if test $with_system_mpfr != "yes"; then
 		MPFR_INCLUDEDIR="$with_system_mpfr/include"
@@ -1407,8 +1407,8 @@ if test x$enable_mpfr = x"yes" -o x$enable_test = x"yes"; then
         CXXFLAGS=$save_CXXFLAGS
     else
         AC_MSG_RESULT([Using MPFR comes with MPLAPACK])
-        MPFR_INCLUDEDIR=$highest_abs_top_srcdir/external/i/MPFR/include/
-        MPFR_LIBDIR=$highest_abs_top_srcdir/external/i/MPFR/lib/
+        MPFR_INCLUDEDIR=$highest_abs_top_builddir/external/i/MPFR/include/
+        MPFR_LIBDIR=$highest_abs_top_builddir/external/i/MPFR/lib/
     fi
 fi
 AM_CONDITIONAL(SYSTEM_MPFR, test x$SYSTEM_MPFR = xyes)
@@ -1425,8 +1425,8 @@ AS_HELP_STRING([--with-system-mpc=PREFIX],
 	  MPC_PATHSET=0;
 	  with_system_mpc="no";
 	  )
-MPC_INCLUDEDIR=$highest_abs_top_srcdir/external/i/MPC/include/
-MPC_LIBDIR=$highest_abs_top_srcdir/external/i/MPC/lib/
+MPC_INCLUDEDIR=$highest_abs_top_builddir/external/i/MPC/include/
+MPC_LIBDIR=$highest_abs_top_builddir/external/i/MPC/lib/
 if test  $MPC_PATHSET = 1 ; then
 	if test $with_system_mpc != "yes"; then
 		MPC_INCLUDEDIR="$with_system_mpc/include"
@@ -1454,8 +1454,8 @@ if test x$enable_mpfr = x"yes" -o x$enable_test = x"yes"; then
         CXXFLAGS=$save_CXXFLAGS
     else
 	AC_MSG_RESULT([Using MPC library comes with MPLAPACK])
-        MPC_INCLUDEDIR=$highest_abs_top_srcdir/external/i/MPC/include/
-        MPC_LIBDIR=$highest_abs_top_srcdir/external/i/MPC/lib/
+        MPC_INCLUDEDIR=$highest_abs_top_builddir/external/i/MPC/include/
+        MPC_LIBDIR=$highest_abs_top_builddir/external/i/MPC/lib/
     fi
 fi
 AM_CONDITIONAL(SYSTEM_MPC, test x$SYSTEM_MPC = xyes)
@@ -1502,8 +1502,8 @@ AS_HELP_STRING([--with-system-qd=PREFIX],
 	  QD_PATHSET=0;
 	  with_system_qd="no";
 	  )
-QD_INCLUDEDIR=$highest_abs_top_srcdir/external/i/QD/include/
-QD_LIBDIR=$highest_abs_top_srcdir/external/i/QD/lib/
+QD_INCLUDEDIR=$highest_abs_top_builddir/external/i/QD/include/
+QD_LIBDIR=$highest_abs_top_builddir/external/i/QD/lib/
 if test  $QD_PATHSET = 1 ; then
 	if test $with_system_qd != "yes"; then
 		QD_INCLUDEDIR="$with_system_qd/include"
@@ -1531,8 +1531,8 @@ if test x$enable_qd = x"yes" -o x$enable_dd = x"yes" -o x$enable_test = x"yes"; 
         fi
     else
         AC_MSG_RESULT([Using QD library comes with MPLAPACK])
-        QD_INCLUDEDIR=$highest_abs_top_srcdir/external/i/QD/include/
-        QD_LIBDIR=$highest_abs_top_srcdir/external/i/QD/lib/
+        QD_INCLUDEDIR=$highest_abs_top_builddir/external/i/QD/include/
+        QD_LIBDIR=$highest_abs_top_builddir/external/i/QD/lib/
     fi   
 fi
 AM_CONDITIONAL(SYSTEM_QD, test x$SYSTEM_QD = xyes)
@@ -1575,8 +1575,8 @@ if test x$enable_benchmark = x"yes"; then
     need_internal_openblas=yes
     AC_SUBST(OPENBLAS_DIR, [openblas])
     if test x$IS_MINGW = x"1"; then
-	DLFCN_WIN32_INCLUDEDIR=$highest_abs_top_srcdir/external/i/DLFCN_WIN32/include/
-	DLFCN_WIN32_LIBDIR=$highest_abs_top_srcdir/external/i/DLFCN_WIN32/lib/
+	DLFCN_WIN32_INCLUDEDIR=$highest_abs_top_builddir/external/i/DLFCN_WIN32/include/
+	DLFCN_WIN32_LIBDIR=$highest_abs_top_builddir/external/i/DLFCN_WIN32/lib/
         AC_SUBST(DLFCN_WIN32_INCLUDEDIR, [$DLFCN_WIN32_INCLUDEDIR])
         AC_SUBST(DLFCN_WIN32_LIBDIR, [$DLFCN_WIN32_LIBDIR])
     fi
@@ -1673,8 +1673,8 @@ fi
 if test x$enable_test = x"yes" || test x$enable_bench = x"yes" ; then
 AC_MSG_RESULT([Build internal LAPACK])
 AC_SUBST(LAPACK_DIR, [lapack])
-LAPACK_INCLUDEDIR=$highest_abs_top_srcdir/external/i/LAPACK/include/
-LAPACK_LIBDIR=$highest_abs_top_srcdir/external/i/LAPACK/lib/
+LAPACK_INCLUDEDIR=$highest_abs_top_builddir/external/i/LAPACK/include/
+LAPACK_LIBDIR=$highest_abs_top_builddir/external/i/LAPACK/lib/
 AC_SUBST(LAPACK_INCLUDEDIR, [$LAPACK_INCLUDEDIR])
 AC_SUBST(LAPACK_LIBDIR, [$LAPACK_LIBDIR])
 else

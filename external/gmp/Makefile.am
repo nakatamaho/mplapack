@@ -33,8 +33,8 @@ work/$(EXTRACT_STAMP):
 work/$(PATCH_STAMP): work/$(EXTRACT_STAMP)
 #https://trac.macports.org/ticket/70859
 if IS_MACOS
-	cd $(abs_builddir)/work/internal/gmp-$(GMPVERSION) && patch -p0 < $(abs_builddir)/patches/gmp-6.3.0_libtool-2.4.7.patch
-	cd $(abs_builddir)/work/install/gmp-$(GMPVERSION)  && patch -p0 < $(abs_builddir)/patches/gmp-6.3.0_libtool-2.4.7.patch
+	cd $(abs_builddir)/work/internal/gmp-$(GMPVERSION) && patch -p0 < $(abs_srcdir)/patches/gmp-6.3.0_libtool-2.4.7.patch
+	cd $(abs_builddir)/work/install/gmp-$(GMPVERSION)  && patch -p0 < $(abs_srcdir)/patches/gmp-6.3.0_libtool-2.4.7.patch
 endif
 	touch $(abs_builddir)/work/$(PATCH_STAMP)
 

@@ -17,22 +17,22 @@ work/$(EXTRACT_STAMP):
 
 work/$(PATCH_STAMP): work/$(EXTRACT_STAMP)
 if IS_MINGW
-	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_builddir)/patches/$(LAPACK_VERSION)/patch-mingw
+	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_srcdir)/patches/$(LAPACK_VERSION)/patch-mingw
 endif
 if IS_MIC
-	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_builddir)/patches/$(LAPACK_VERSION)/patch-mic
+	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_srcdir)/patches/$(LAPACK_VERSION)/patch-mic
 endif
-	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_builddir)/patches/$(LAPACK_VERSION)/patch-print
-	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_builddir)/patches/$(LAPACK_VERSION)/patch-zchkhe_aa_2stage.f
-	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_builddir)/patches/$(LAPACK_VERSION)/patch-ddrvst2stg.f
-	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_builddir)/patches/$(LAPACK_VERSION)/patch-ddrvst.f
-	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_builddir)/patches/$(LAPACK_VERSION)/patch-dlatm4.f
-	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_builddir)/patches/$(LAPACK_VERSION)/patch-zlqt04.f
-	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_builddir)/patches/$(LAPACK_VERSION)/patch-zlqt05.f
-	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_builddir)/patches/$(LAPACK_VERSION)/patch-ztsqr01.f
-	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_builddir)/patches/$(LAPACK_VERSION)/patch-iseed
+	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_srcdir)/patches/$(LAPACK_VERSION)/patch-print
+	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_srcdir)/patches/$(LAPACK_VERSION)/patch-zchkhe_aa_2stage.f
+	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_srcdir)/patches/$(LAPACK_VERSION)/patch-ddrvst2stg.f
+	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_srcdir)/patches/$(LAPACK_VERSION)/patch-ddrvst.f
+	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_srcdir)/patches/$(LAPACK_VERSION)/patch-dlatm4.f
+	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_srcdir)/patches/$(LAPACK_VERSION)/patch-zlqt04.f
+	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_srcdir)/patches/$(LAPACK_VERSION)/patch-zlqt05.f
+	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_srcdir)/patches/$(LAPACK_VERSION)/patch-ztsqr01.f
+	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_srcdir)/patches/$(LAPACK_VERSION)/patch-iseed
 
-	cp $(abs_builddir)/patches/print.c $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/BLAS/SRC
+	cp $(abs_srcdir)/patches/print.c $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/BLAS/SRC
 	touch $(abs_builddir)/work/$(PATCH_STAMP)
 
 work/$(CONFIGURE_STAMP): work/$(PATCH_STAMP)
