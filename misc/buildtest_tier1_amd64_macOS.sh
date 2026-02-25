@@ -118,21 +118,100 @@ safe_rmdir "${PREFIX_DIR}"
 # Create a unique per-run WORKDIR under $HOME/tmp.
 # Include a timestamp so the directory is identifiable when kept for debugging.
 : "${HOME:?HOME is not set}"
-mkdir -p "${HOME}/tmp"
-ts="$(LANG=C date +%Y%m%d_%H%M%S)"
-WORKDIR="$(mktemp -d "${HOME}/tmp/mplapack.${ts}.XXXXXX")"
-log "WORKDIR: ${WORKDIR}"
 
-cleanup() {
-    rc=$?
-    cd "${HOME}" || true
-    if [ "${rc}" -eq 0 ]; then
-        rm -rf "${WORKDIR}" || true
-    else
-        echo "Keeping WORKDIR for debugging: ${WORKDIR}" | tee -a "${LOG_DIR}/summary.log"
+realpath_safe() {
+    # Resolve to a canonical absolute path (no symlinks).
+    # Prefer realpath(1), then python3, then perl.
+    local p="$1"
+    if command -v realpath >/dev/null 2>&1; then
+        realpath "$p"
+        return
     fi
+    if command -v python3 >/dev/null 2>&1; then
+        python3 -c 'import os,sys; print(os.path.realpath(sys.argv[1]))' "$p"
+        return
+    fi
+    if command -v perl >/dev/null 2>&1; then
+        perl -MCwd=realpath -e 'print realpath($ARGV[0])' "$p"
+        return
+    fi
+    # Last resort: best-effort physical path for an existing directory.
+    (cd "$p" 2>/dev/null && pwd -P) || return 1
 }
-trap cleanup EXIT
+
+# Use a fixed WORKDIR to improve ccache hit rate (avoid per-run path variability).
+BASE_TMP_DIR="${HOME}/tmp"
+WORKDIR="${BASE_TMP_DIR}/mplapack"
+
+# Prevent concurrent runs from clobbering each other.
+# Use an atomic mkdir lock to avoid relying on flock(1) availability.
+LOCKDIR="${WORKDIR}.lock"
+
+mkdir -p "${BASE_TMP_DIR}"
+
+# Safety guard: refuse to operate if WORKDIR is not exactly what we expect.
+case "${WORKDIR}" in
+    "${HOME}/tmp/mplapack") ;;
+    *)
+        echo "ERROR: Refusing to use unexpected WORKDIR: ${WORKDIR}" >&2
+        exit 1
+        ;;
+esac
+
+# Symlink guard: refuse if BASE_TMP_DIR or WORKDIR is a symlink (prevents deleting through links).
+if [ -L "${BASE_TMP_DIR}" ]; then
+    echo "ERROR: Refusing symlink BASE_TMP_DIR: ${BASE_TMP_DIR}" >&2
+    exit 1
+fi
+if [ -L "${WORKDIR}" ]; then
+    echo "ERROR: Refusing symlink WORKDIR: ${WORKDIR}" >&2
+    exit 1
+fi
+
+# Realpath guard: ensure resolved WORKDIR matches resolved expected path.
+EXPECTED_WORKDIR="${HOME}/tmp/mplapack"
+WORKDIR_REAL="$(realpath_safe "${WORKDIR}")" || { echo "ERROR: Failed to resolve realpath: ${WORKDIR}" >&2; exit 1; }
+EXPECTED_REAL="$(realpath_safe "${EXPECTED_WORKDIR}")" || { echo "ERROR: Failed to resolve realpath: ${EXPECTED_WORKDIR}" >&2; exit 1; }
+if [ "${WORKDIR_REAL}" != "${EXPECTED_REAL}" ]; then
+    echo "ERROR: WORKDIR realpath mismatch: '${WORKDIR_REAL}' != '${EXPECTED_REAL}'" >&2
+    exit 1
+fi
+
+# Acquire lock (with stale-lock detection).
+if mkdir "${LOCKDIR}" 2>/dev/null; then
+    printf '%s\n' "$$" > "${LOCKDIR}/pid"
+else
+    if [ -f "${LOCKDIR}/pid" ]; then
+        old_pid="$(cat "${LOCKDIR}/pid" 2>/dev/null || true)"
+    else
+        old_pid=""
+    fi
+
+    if [ -n "${old_pid}" ] && kill -0 "${old_pid}" 2>/dev/null; then
+        echo "ERROR: Another buildtest instance is running (lock: ${LOCKDIR}, pid: ${old_pid})" >&2
+        exit 1
+    fi
+
+    echo "WARNING: Stale lock detected; removing it: ${LOCKDIR}" >&2
+    rm -rf "${LOCKDIR}"
+    if ! mkdir "${LOCKDIR}" 2>/dev/null; then
+        echo "ERROR: Failed to acquire lock after removing stale lock: ${LOCKDIR}" >&2
+        exit 1
+    fi
+    printf '%s\n' "$$" > "${LOCKDIR}/pid"
+fi
+
+# Always release the lock on exit.
+cleanup_lock() {
+    rm -rf "${LOCKDIR}"
+}
+trap cleanup_lock EXIT INT TERM HUP
+
+# Create the work directory and clean its contents (safer than rm -rf WORKDIR).
+mkdir -p "${WORKDIR}"
+find "${WORKDIR}" -mindepth 1 -maxdepth 1 -exec rm -rf -- {} +
+
+log "WORKDIR: ${WORKDIR}"
 
 git clone --depth 1 --branch release/2.1 git@github.com:nakatamaho/mplapack.git "${WORKDIR}"
 cd "${WORKDIR}"
