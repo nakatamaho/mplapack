@@ -17,13 +17,11 @@ RUN apt-get update && apt-get install -y \
     patch \
     util-linux \
     && rm -rf /var/lib/apt/lists/*
-
 # Personality wrapper: when running linux/386 on an x86_64 host, the shared
 # kernel makes uname -m return "x86_64" despite 32-bit userland.
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
-
 # Configure ccache (directory will be mounted at runtime)
 ENV CCACHE_DIR=/ccache
 ENV PATH="/usr/lib/ccache:${PATH}"
@@ -57,9 +55,9 @@ CMD ["/bin/bash", "-lc", "\
     \
     ARCH=$(dpkg --print-architecture); \
     echo \"Detected architecture: $ARCH\"; \
-    COMMON_OPTS=\"--enable-gmp=yes --enable-mpfr=yes --enable-binary128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes --enable-benchmark=yes\"; \
+    COMMON_OPTS=\"--enable-gmp=yes --enable-mpfr=yes --enable-binary128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes\"; \
     if [ \"$ARCH\" = \"amd64\" ] || [ \"$ARCH\" = \"i386\" ]; then \
-        CONFIGURE_OPTS=\"$COMMON_OPTS --enable-binary80=yes\"; \
+        CONFIGURE_OPTS=\"$COMMON_OPTS --enable-benchmark=yes --enable-binary80=yes\"; \
     else \
         CONFIGURE_OPTS=\"$COMMON_OPTS\"; \
     fi; \
@@ -68,11 +66,10 @@ CMD ["/bin/bash", "-lc", "\
     ./configure $CONFIGURE_OPTS; \
     make -j\"$(nproc)\"; \
     make install; \
-    make dist; \
-    echo '=== ccache stats (after) ==='; ccache -s; \
-    \
-    if [ -n \"$TEST_CMD\" ]; then \
-        echo '=== Running tests ==='; \
-        eval \"$TEST_CMD\"; \
+    make distcheck DISTCHECK_CONFIGURE_FLAGS=\"$CONFIGURE_OPTS\"; \
+    if [ \"$ARCH\" = \"amd64\" ] || [ \"$ARCH\" = \"i386\" ]; then \
+        echo '=== Running make check ==='; \
+        make check -j32; \
     fi; \
+    echo '=== ccache stats (after) ==='; ccache -s; \
 "]
