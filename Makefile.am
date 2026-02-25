@@ -188,7 +188,7 @@ fable/tbxx/time_accu.hpp \
 include/mplapack_symbol_resolver.h \
 misc/add_ldlibpath.sh \
 misc/buildtest_tier1_amd64_macOS.sh \
-misc/buildtest_tier1_amd64_mingw.sh \
+misc/buildtest_tier1_amd64_mingw64.sh \
 misc/buildtest_tier1_amd64_ubuntu.sh \
 misc/buildtest_tier2_arm64_ubuntu.sh \
 misc/cpu_os_detection.sh \
