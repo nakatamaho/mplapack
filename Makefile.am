@@ -57,13 +57,15 @@ endif
 if ENABLE_BINARY80
 mplapack_include_HEADERS += \
     include/mpblas_binary80.h \
-    include/mplapack_binary80.h
+    include/mplapack_binary80.h \
+    include/mplapack_utils_binary80.h
 endif
 
 if ENABLE_BINARY128
 mplapack_include_HEADERS += \
     include/mpblas_binary128.h \
-    include/mplapack_binary128.h
+    include/mplapack_binary128.h \
+    include/mplapack_utils_binary128.h
 endif
 
 nodist_mplapack_include_HEADERS = include/mplapack_config.h
@@ -130,6 +132,58 @@ external/qd/Makefile.am \
 external/qd/Makefile.in \
 external/qd/download/qd-2.3.24.tar.gz \
 external/qd/patches/patch-* \
+fable/fem.hpp \
+fable/noexcept_false.hpp \
+fable/fem/do.hpp \
+fable/fem/intrinsics.hpp \
+fable/fem/arr_size.hpp \
+fable/fem/main.hpp \
+fable/fem/arr_and_str_indices.hpp \
+fable/fem/open_chain.hpp \
+fable/fem/format.hpp \
+fable/fem/arr.hpp \
+fable/fem/major_types.hpp \
+fable/fem/data.hpp \
+fable/fem/utils/string_to_double_fmt.hpp \
+fable/fem/utils/int_types.hpp \
+fable/fem/utils/char.hpp \
+fable/fem/utils/double_to_string.hpp \
+fable/fem/utils/string.hpp \
+fable/fem/utils/simple_streams.hpp \
+fable/fem/utils/string_to_double.hpp \
+fable/fem/utils/path.hpp \
+fable/fem/utils/misc.hpp \
+fable/fem/utils/real_as_string.hpp \
+fable/fem/utils/random.hpp \
+fable/fem/utils/token.hpp \
+fable/fem/utils/equivalence.hpp \
+fable/fem/str_arr_ref.hpp \
+fable/fem/size_t.hpp \
+fable/fem/read.hpp \
+fable/fem/error_utils.hpp \
+fable/fem/str_ref.hpp \
+fable/fem/file_positioning_chain.hpp \
+fable/fem/zero.hpp \
+fable/fem/io_exceptions.hpp \
+fable/fem/variant.hpp \
+fable/fem/intrinsics_extra.hpp \
+fable/fem/inquire_chain.hpp \
+fable/fem/common.hpp \
+fable/fem/arr_ref.hpp \
+fable/fem/data_of_type.hpp \
+fable/fem/str.hpp \
+fable/fem/data_type_star.hpp \
+fable/fem/star.hpp \
+fable/fem/dimension.hpp \
+fable/fem/close_chain.hpp \
+fable/fem/stop.hpp \
+fable/fem/io.hpp \
+fable/fem/write.hpp \
+fable/tbxx/error_utils.hpp \
+fable/tbxx/libc_backtrace.hpp \
+fable/tbxx/optional_copy.hpp \
+fable/tbxx/pretty_type_name.hpp \
+fable/tbxx/time_accu.hpp \
 misc/add_ldlibpath.sh \
 misc/buildtest_tier1_amd64_macOS.sh \
 misc/buildtest_tier1_amd64_mingw.sh \
