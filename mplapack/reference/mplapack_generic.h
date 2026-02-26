@@ -289,7 +289,7 @@ void Clarft(const char *direct, const char *storev, INTEGER const n, INTEGER con
 void Clarfx(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, COMPLEX const tau, COMPLEX *c, INTEGER const ldc, COMPLEX *work);
 void Clarfy(const char *uplo, INTEGER const n, COMPLEX *v, INTEGER const incv, COMPLEX const tau, COMPLEX *c, INTEGER const ldc, COMPLEX *work);
 void Clargv(INTEGER const n, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER const incy, REAL *c, INTEGER const incc);
-void Clarnv(INTEGER const idist, INTEGER *iseed, INTEGER const n, COMPLEX *x);
+void Clarnv(INTEGER const idist, INTEGER (&iseed)[4], INTEGER const n, COMPLEX *x);
 void Clarrv(INTEGER const n, REAL const vl, REAL const, REAL *d, REAL *l, REAL const pivmin, INTEGER *isplit, INTEGER const m, INTEGER const dol, INTEGER const dou, REAL const minrgp, REAL &rtol1, REAL &rtol2, REAL *w, REAL *werr, REAL *wgap, INTEGER *iblock, INTEGER *indexw, REAL *gers, COMPLEX *z, INTEGER const ldz, INTEGER *isuppz, REAL *work, INTEGER *iwork, INTEGER &info);
 void Clarscl2(INTEGER const m, INTEGER const n, REAL *d, COMPLEX *x, INTEGER const ldx);
 void Clartg(COMPLEX const f, COMPLEX const g, REAL &cs, COMPLEX &sn, COMPLEX &r);
@@ -664,7 +664,7 @@ void Rlarft(const char *direct, const char *storev, INTEGER const n, INTEGER con
 void Rlarfx(const char *side, INTEGER const m, INTEGER const n, REAL *v, REAL const tau, REAL *c, INTEGER const ldc, REAL *work);
 void Rlarfy(const char *uplo, INTEGER const n, REAL *v, INTEGER const incv, REAL const tau, REAL *c, INTEGER const ldc, REAL *work);
 void Rlargv(INTEGER const n, REAL *x, INTEGER const incx, REAL *y, INTEGER const incy, REAL *c, INTEGER const incc);
-void Rlarnv(INTEGER const idist, INTEGER *iseed, INTEGER const n, REAL *x);
+void Rlarnv(INTEGER const idist, INTEGER (&iseed)[4], INTEGER const n, REAL *x);
 void Rlarra(INTEGER const n, REAL *d, REAL *e, REAL *e2, REAL const spltol, REAL const tnrm, INTEGER &nsplit, INTEGER *isplit, INTEGER &info);
 void Rlarrb(INTEGER const n, REAL *d, REAL *lld, INTEGER const ifirst, INTEGER const ilast, REAL const rtol1, REAL const rtol2, INTEGER const offset, REAL *w, REAL *wgap, REAL *werr, REAL *work, INTEGER *iwork, REAL const pivmin, REAL const spdiam, INTEGER const twist, INTEGER &info);
 void Rlarrc(const char *jobt, INTEGER const n, REAL const vl, REAL const vu, REAL *d, REAL *e, REAL const, INTEGER &eigcnt, INTEGER &lcnt, INTEGER &rcnt, INTEGER &info);

@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Clarnv(INTEGER const idist, INTEGER *iseed, INTEGER const n, COMPLEX *x) {
+void Clarnv(INTEGER const idist, INTEGER (&iseed)[4], INTEGER const n, COMPLEX *x) {
     //
     INTEGER iv = 0;
     const INTEGER lv = 128;
