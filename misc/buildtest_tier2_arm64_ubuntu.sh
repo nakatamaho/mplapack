@@ -95,7 +95,7 @@ WORKDIR="${HOME}/mplapack"
 COMMON_FLAGS="--enable-gmp=yes --enable-mpfr=yes --enable-binary128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes"
 ARCH=$(uname -m)
 case "${ARCH}" in
-    x86_64|i686|i586|i386)
+    x86_64|i686|i586|i486|i386)
         DISTCHECK_CONFIGURE_FLAGS="${COMMON_FLAGS} --enable-binary80=yes --enable-benchmark=yes"
         ;;
     *)
