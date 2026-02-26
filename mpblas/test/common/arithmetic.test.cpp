@@ -52,6 +52,13 @@
 #define __MPLAPACK_BUFLEN__ 1024
 #endif
 
+#if defined ___MPLAPACK_BUILD_WITH_QD___ || defined ___MPLAPACK_BUILD_WITH_DD___
+#include <qd/fpu.h>
+static unsigned int g_oldcw;
+static void __attribute__((constructor)) mplapack_test_fpu_init(void) { fpu_fix_start(&g_oldcw); }
+static void __attribute__((destructor))  mplapack_test_fpu_fini(void) { fpu_fix_end(&g_oldcw); }
+#endif
+
 /* Basic deterministic test cases: avoid "edge of overflow/underflow".
  * These values are chosen to exercise signs, zeros, unity, and typical magnitudes.
  */
