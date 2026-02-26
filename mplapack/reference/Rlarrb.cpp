@@ -74,9 +74,9 @@ void Rlarrb(INTEGER const n, REAL *d, REAL *lld, INTEGER const ifirst, INTEGER c
     }
     //
     maxitr = castINTEGER((log(spdiam + pivmin) - log(pivmin)) / log(two)) + (INTEGER)2;
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined ___MPLAPACK_BUILD_WITH_MPFR___ || defined ___MPLAPACK_BUILD_WITH_GMP___
     if (maxitr >= 100000)
-        maxitr = 100000; // XXX itmax can be too large for MPFR (=10^8)
+        maxitr = 100000; // XXX itmax can be too large for MPFR/GMP (=10^8)
 #endif
     mnwdth = two * pivmin;
     //
