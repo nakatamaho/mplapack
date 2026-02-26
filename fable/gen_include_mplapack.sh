@@ -15,7 +15,7 @@ done
 
 printf "REAL Rlamch(const char *cmach);\nREAL Rlamc3(REAL a, REAL b);\n" > Rlamch.hpp
 
-cat *hpp | sort | grep -v Mxerbla | grep -v abs1 | grep -v abs2 | grep -v ___mplapack_ | grep -v nondeterministic | grep -v advance_iseed | grep -v iseed_to_seed64 | grep -v abssq | grep -v ___random_mplapack_gmp > header_all
+cat *hpp | sort | grep -v iseed_is_all_minus_one | grep -v rlaruv_print_nondet_banner_once | grep -v fixed_point | grep -v Mxerbla | grep -v abs1 | grep -v abs2 | grep -v ___mplapack_ | grep -v nondeterministic | grep -v advance_iseed | grep -v iseed_to_seed64 | grep -v abssq | grep -v ___random_mplapack_gmp > header_all
 
 rm *hpp
 
