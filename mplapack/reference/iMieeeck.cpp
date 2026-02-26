@@ -46,13 +46,13 @@ INTEGER iMieeeck(INTEGER const ispec, REAL const zero, REAL const one) {
     return 0;
 #endif
 #if defined ___MPLAPACK_BUILD_WITH_DD___
-  // DD (double-double) arithmetic does not comply with IEEE 754: it lacks
+    // DD (double-double) arithmetic does not comply with IEEE 754: it lacks
     // proper handling of infinities, NaN, and signed zero.  The runtime checks
     // below would invoke undefined behavior on DD arithmetic, so return 0 here.
     return 0;
 #endif
 #if defined ___MPLAPACK_BUILD_WITH_QD___
-  // QD (quad-double) arithmetic does not comply with IEEE 754: it lacks
+    // QD (quad-double) arithmetic does not comply with IEEE 754: it lacks
     // proper handling of infinities, NaN, and signed zero.  The runtime checks
     // below would invoke undefined behavior on QD arithmetic, so return 0 here.
     return 0;
