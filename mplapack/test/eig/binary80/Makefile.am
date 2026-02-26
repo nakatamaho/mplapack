@@ -26,7 +26,7 @@ xeigtstC_binary80_CXXFLAGS = $(cxxflags)
 
 install-data-hook:
 if IS_MACOS
-	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mplapack_binary80_testdir) $(prefix)
+	bash $(top_srcdir)/misc/fix_dylib_macOS.sh $(mplapack_binary80_testdir) $(prefix)
 endif
 # -----------------------------------------------------------------------------
 # Output directory: CPU_COMPILER_OS  (or CPU_COMPILER_mingw for MinGW builds)

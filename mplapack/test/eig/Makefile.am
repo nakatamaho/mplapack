@@ -362,5 +362,5 @@ common/Mxlaenv.cpp
 
 install-data-hook:
 if IS_MACOS
-	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mplapack_eigdir) $(prefix)
+	bash $(top_srcdir)/misc/fix_dylib_macOS.sh $(mplapack_eigdir) $(prefix)
 endif
