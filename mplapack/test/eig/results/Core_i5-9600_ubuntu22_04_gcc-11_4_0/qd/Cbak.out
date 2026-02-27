@@ -1,0 +1,12 @@
+=== precision: qd ===
+ .. test output of Cgebak .. 
+ value of largest test error             = 2.4235928426068480692577919915503872532688702337169048161462326600e-02
+ example number where info is not zero   =    0
+ example number having largest error     =    7
+ number of examples where info is not 0  =    0
+ total number of examples tested         =    7
+
+
+ End of tests
+ Total time used =         0.03 seconds
+

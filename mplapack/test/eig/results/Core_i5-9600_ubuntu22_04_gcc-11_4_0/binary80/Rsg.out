@@ -1,0 +1,76 @@
+=== precision: binary80 ===
+ Tests of the Symmetric Eigenvalue Problem routines
+ Tests of the Multiple precision version of LAPACK 2.1.0
+ Based on the original LAPACK VERSION 3.9.1
+
+The following parameter values will be used:
+
+ The following parameter values will be used:
+    M:         0     1     2     3     5    10    16
+    N:         0     1     2     3     5    10    16
+    NB:        1     3    20
+    NBMIN:     2     2     2
+    NX:        1     1     1
+ 
+ Relative machine underflow is taken to be+3.36210314311209350626e-4932
+ Relative machine overflow  is taken to be+1.18973149535723176502e+4932
+ Relative machine precision is taken to be+5.42101086242752217004e-20
+
+ Routines pass computational tests if test ratio is less than+2.00000000000000000000e+01
+
+
+
+ DSG:  NB =   1, NBMIN =   2, NX =   1
+
+ All tests for DSG passed the threshold ( 11172 tests run)
+
+
+ DSG:  NB =   3, NBMIN =   2, NX =   1
+
+ All tests for DSG passed the threshold ( 11172 tests run)
+
+
+ DSG:  NB =  20, NBMIN =   2, NX =   1
+
+ DSG -- Real Symmetric Generalized eigenvalue problem
+ Matrix types (see xDRVSG for details): 
+
+ Special Matrices:
+  1=Zero matrix.                          5=Diagonal: clustered entries.
+  2=Identity matrix.                      6=Diagonal: large, evenly spaced.
+  3=Diagonal: evenly spaced entries.      7=Diagonal: small, evenly spaced.
+  4=Diagonal: geometr. spaced entries.
+ Dense or Banded Symmetric Matrices: 
+  8=Evenly spaced eigenvals.          15=Matrix with small random entries.
+  9=Geometrically spaced eigenvals.   16=Evenly spaced eigenvals, KA=1, KB=1.
+ 10=Clustered eigenvalues.            17=Evenly spaced eigenvals, KA=2, KB=1.
+ 11=Large, evenly spaced eigenvals.   18=Evenly spaced eigenvals, KA=2, KB=2.
+ 12=Small, evenly spaced eigenvals.   19=Evenly spaced eigenvals, KA=3, KB=1.
+ 13=Matrix with random O(1) entries.  20=Evenly spaced eigenvals, KA=3, KB=2.
+ 14=Matrix with large random entries. 21=Evenly spaced eigenvals, KA=3, KB=3.
+
+ Tests performed:   
+( For each pair (A,B), where A is of the given type 
+ and B is a random well-conditioned matrix. D is 
+ diagonal, and Z is orthogonal. )
+ 1 = Rsygv, with ITYPE=1 and UPLO='U':  | A Z - B Z D | / ( |A| |Z| n ulp )     
+ 2 = Rspgv, with ITYPE=1 and UPLO='U':  | A Z - B Z D | / ( |A| |Z| n ulp )     
+ 3 = Rsbgv, with ITYPE=1 and UPLO='U':  | A Z - B Z D | / ( |A| |Z| n ulp )     
+ 4 = Rsygv, with ITYPE=1 and UPLO='L':  | A Z - B Z D | / ( |A| |Z| n ulp )     
+ 5 = Rspgv, with ITYPE=1 and UPLO='L':  | A Z - B Z D | / ( |A| |Z| n ulp )     
+ 6 = Rsbgv, with ITYPE=1 and UPLO='L':  | A Z - B Z D | / ( |A| |Z| n ulp )     
+ 7 = Rsygv, with ITYPE=2 and UPLO='U':  | A B Z - Z D | / ( |A| |Z| n ulp )     
+ 8 = Rspgv, with ITYPE=2 and UPLO='U':  | A B Z - Z D | / ( |A| |Z| n ulp )     
+ 9 = Rspgv, with ITYPE=2 and UPLO='L':  | A B Z - Z D | / ( |A| |Z| n ulp )     
+10 = Rspgv, with ITYPE=2 and UPLO='L':  | A B Z - Z D | / ( |A| |Z| n ulp )     
+11 = Rsygv, with ITYPE=3 and UPLO='U':  | B A Z - Z D | / ( |A| |Z| n ulp )     
+12 = Rspgv, with ITYPE=3 and UPLO='U':  | B A Z - Z D | / ( |A| |Z| n ulp )     
+13 = Rsygv, with ITYPE=3 and UPLO='L':  | B A Z - Z D | / ( |A| |Z| n ulp )     
+14 = Rspgv, with ITYPE=3 and UPLO='L':  | B A Z - Z D | / ( |A| |Z| n ulp )     
+ Matrix order=   10, type=10, seed=12380,22284,40176,9996, result  63 is+4.83890781109589644127e+01
+ DSG:    1 out of 11172 tests failed to pass the threshold
+
+
+ End of tests
+ Total time used =        11.36 seconds
+
