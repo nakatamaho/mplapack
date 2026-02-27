@@ -12,7 +12,7 @@ libdepends = -L$(top_builddir)/mplapack/test/lin -llin_qd -llin_override_qd -L$(
 endif
 
 mplibs = -L$(QD_LIBDIR) -lqd -lm
-cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_QD___ -D___MPLAPACK_INTERNAL___ -I$(top_srcdir)/fable
+cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_QD___ @qd_extra_cxxflags@ -D___MPLAPACK_INTERNAL___ -I$(top_srcdir)/fable
 
 xlintstR_qd_SOURCES  = ../common/Rchkaa.cpp
 xlintstR_qd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran

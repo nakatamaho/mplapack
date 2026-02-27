@@ -1489,6 +1489,7 @@ for qd_flag in $qd_candidate_flags; do
     [AC_MSG_RESULT([yes]); qd_extra_cxxflags="$qd_extra_cxxflags $qd_flag"],
     [AC_MSG_RESULT([no])])
 done
+AC_SUBST([qd_extra_cxxflags])
 AC_LANG_POP([C++])
 CXXFLAGS="$save_CXXFLAGS"
 

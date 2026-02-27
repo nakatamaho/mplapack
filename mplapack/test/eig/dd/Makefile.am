@@ -12,7 +12,7 @@ libdepends = -L$(top_builddir)/mplapack/test/eig -leig_dd -leig_override_dd -L$(
 endif
 
 mplibs = -L$(QD_LIBDIR) -lqd -lm
-cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(LAPACK_INCLUDEDIR) -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_DD___ -D___MPLAPACK_INTERNAL___ -I$(top_srcdir)/fable
+cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(LAPACK_INCLUDEDIR) -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_DD___ @qd_extra_cxxflags@ -D___MPLAPACK_INTERNAL___ -I$(top_srcdir)/fable
 
 xeigtstR_dd_SOURCES  = ../common/Rchkee.cpp
 xeigtstR_dd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
