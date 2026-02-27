@@ -145,3 +145,12 @@ benchmarks: $(bench_PROGRAMS) $(GO_SH_FILES)
 	  echo "WARNING: the following scripts reported errors:$$failed" >&2; \
 	fi; \
 	echo "=== Done ==="
+
+# -----------------------------------------------------------------------------
+# Uninstall go.*.sh installed by install-exec-hook.
+# -----------------------------------------------------------------------------
+uninstall-hook:
+	for f in $(GO_SH_FILES); do \
+	  rm -f $(DESTDIR)$(benchdir)/$$f; \
+	done
+	-rmdir $(DESTDIR)$(benchdir)
