@@ -371,7 +371,7 @@ Matrix_01.txt Matrix_02.txt Matrix_03.txt Matrix_04.txt Matrix_05.txt Matrix_06.
 
 install-data-hook:
 if IS_MACOS
-	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mplapackexamplesdir) $(prefix)
+	bash $(top_srcdir)/misc/fix_dylib_macOS.sh $(mplapackexamplesdir) $(prefix)
 endif
 
 EXTRA_DIST = \

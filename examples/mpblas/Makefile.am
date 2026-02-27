@@ -188,7 +188,7 @@ Makefile.freebsd Makefile.linux Makefile.linux_cuda Makefile.macos Makefile.ming
 
 install-data-hook:
 if IS_MACOS
-	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mpblasexamplesdir) $(prefix)
+	bash $(top_srcdir)/misc/fix_dylib_macOS.sh $(mpblasexamplesdir) $(prefix)
 endif
 
 EXTRA_DIST = \

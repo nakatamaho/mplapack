@@ -128,9 +128,9 @@ install-exec-hook:
 	    $(DESTDIR)$(benchdir)/$$f; \
 	  rm -f $(DESTDIR)$(benchdir)/$$f.bak; \
 	done
-	bash $(top_builddir)/misc/add_ldlibpath.sh $(prefix) $(DESTDIR)$(benchdir)/go.*.sh
+	bash $(top_srcdir)/misc/add_ldlibpath.sh $(prefix) $(DESTDIR)$(benchdir)/go.*.sh
 if IS_MACOS
-	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(DESTDIR)$(benchdir) $(prefix)
+	bash $(top_srcdir)/misc/fix_dylib_macOS.sh $(DESTDIR)$(benchdir) $(prefix)
 endif
 
 .PHONY: benchmarks

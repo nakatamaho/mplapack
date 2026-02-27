@@ -207,7 +207,7 @@ Matrix_01.txt Matrix_02.txt Matrix_03.txt Makefile.freebsd Makefile.linux Makefi
 
 install-data-hook:
 if IS_MACOS
-	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mplapackexamplesdir) $(prefix)
+	bash $(top_srcdir)/misc/fix_dylib_macOS.sh $(mplapackexamplesdir) $(prefix)
 endif
 
 EXTRA_DIST = \

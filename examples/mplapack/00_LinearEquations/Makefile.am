@@ -235,7 +235,7 @@ mplapackexamples_DATA = Cgetri_test_mpfr.cpp Cgetri_test_gmp.cpp Cgetri_test_bin
 
 install-data-hook:
 if IS_MACOS
-	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mplapackexamplesdir) $(prefix)
+	bash $(top_srcdir)/misc/fix_dylib_macOS.sh $(mplapackexamplesdir) $(prefix)
 endif
 
 EXTRA_DIST = \

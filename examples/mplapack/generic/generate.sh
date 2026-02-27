@@ -218,7 +218,7 @@ echo ""               >> ../Makefile.am
 cat >> ../Makefile.am << 'EOF'
 install-data-hook:
 if IS_MACOS
-	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mplapackexamplesdir) $(prefix)
+	bash $(top_srcdir)/misc/fix_dylib_macOS.sh $(mplapackexamplesdir) $(prefix)
 endif
 
 EXTRA_DIST = \
