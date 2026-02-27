@@ -132,7 +132,6 @@ safe_rmdir "${PREFIX_DIR}"
 run_step "autoreconf"     autoreconf -fi
 run_step "make_distcheck" env CC="ccache x86_64-w64-mingw32-gcc" CXX="ccache x86_64-w64-mingw32-g++" FC="ccache x86_64-w64-mingw32-gfortran" \
                           make distcheck LOG_COMPILER=wine MAKEFLAGS="-j32" DISTCHECK_CONFIGURE_FLAGS="--host=x86_64-w64-mingw32 ${DISTCHECK_CONFIGURE_FLAGS}"
-run_step "make_check"     make LOG_COMPILER=wine check -j32
 
 log ""
 log "=== ALL STEPS COMPLETED SUCCESSFULLY ==="

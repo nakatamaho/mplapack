@@ -132,7 +132,6 @@ safe_rmdir "${PREFIX_DIR}"
 run_step "autoreconf"     autoreconf -fi
 run_step "make_distcheck" env CC="ccache gcc" CXX="ccache g++" FC="ccache gfortran" \
                           make distcheck MAKEFLAGS="-j32" DISTCHECK_CONFIGURE_FLAGS="${DISTCHECK_CONFIGURE_FLAGS}"
-run_step "make_check"     make check -j32
 
 log ""
 log "=== ALL STEPS COMPLETED SUCCESSFULLY ==="
