@@ -48,7 +48,7 @@ install: work/$(INSTALL_STAMP)
 
 distdir:
 
-clean:
+clean-local:
 	rm -rf work
-distclean:
+distclean-local:
 	rm -rf work

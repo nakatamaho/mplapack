@@ -98,8 +98,8 @@ install_internal: work/$(INSTALL_INTERNAL_STAMP)
 
 distdir:
 
-clean:
+clean-local:
 	rm -rf work
-distclean:
+distclean-local:
 	rm -rf work
 

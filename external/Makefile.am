@@ -7,7 +7,11 @@ endif
 
 all:
 
-clean:
+clean-local:
 	rm -rf */work
-distclean:
 
+distclean-local:
+	rm -rf i
+
+uninstall-hook:
+	-rm -f $(DESTDIR)$(infodir)/dir

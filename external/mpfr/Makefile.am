@@ -88,8 +88,8 @@ uninstall:
 
 distdir:
 
-clean:
+clean-local:
 	rm -rf work
 
-distclean:
+distclean-local:
 	rm -rf work

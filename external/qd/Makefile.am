@@ -97,7 +97,7 @@ install: work/$(INSTALL_STAMP)
 
 uninstall:
 	-cd $(abs_builddir)/work/install/QD-$(QDVERSION) ; ${MAKE} uninstall
-clean:
+clean-local:
 	rm -rf work
-distclean:
+distclean-local:
 	rm -rf work

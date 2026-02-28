@@ -82,11 +82,12 @@ uninstall:
 	-rm -f  $(DESTDIR)$(prefix)/include/lapack.h
 	-rm -f  $(DESTDIR)$(prefix)/include/openblas_config.h
 	-rm -f  $(DESTDIR)$(prefix)/include/f77blas.h
+	-rm -f  $(DESTDIR)$(prefix)/bin/libopenblas*.dll
 
 distdir:
 
-clean:
+clean-local:
 	rm -rf work
-distclean:
+distclean-local:
 	rm -rf work
 
