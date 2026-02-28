@@ -65,9 +65,9 @@ endif
 	touch $(abs_builddir)/work/$(CONFIGURE_STAMP)
 
 work/$(BUILD_STAMP): work/$(CONFIGURE_STAMP)
-	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/BLAS/SRC ; ${MAKE}
-	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION) ; ${MAKE}
-	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/LAPACKE ; ${MAKE}
+	+cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/BLAS/SRC ; ${MAKE}
+	+cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION) ; ${MAKE}
+	+cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/LAPACKE ; ${MAKE}
 	touch $(abs_builddir)/work/$(BUILD_STAMP)
 
 work/$(CHECK_STAMP): work/$(BUILD_STAMP)

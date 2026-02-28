@@ -27,31 +27,31 @@ endif
 
 work/$(BUILD_STAMP): work/$(PATCH_STAMP)
 if IS_MINGW
-	cd $(abs_builddir)/work/install/OpenBLAS-$(OPENBLASVERSION) ; ${MAKE} BINARY=64 CC=`$(_CC)` FC=`$(_FC)` DYNAMIC_ARCH=1 HOSTCC=gcc
+	+cd $(abs_builddir)/work/install/OpenBLAS-$(OPENBLASVERSION) ; ${MAKE} BINARY=64 CC=`$(_CC)` FC=`$(_FC)` DYNAMIC_ARCH=1 HOSTCC=gcc
 else
-	cd $(abs_builddir)/work/install/OpenBLAS-$(OPENBLASVERSION) ; ${MAKE} BINARY=64 CC=`$(_CC)` FC=`$(_FC)` DYNAMIC_ARCH=1
+	+cd $(abs_builddir)/work/install/OpenBLAS-$(OPENBLASVERSION) ; ${MAKE} BINARY=64 CC=`$(_CC)` FC=`$(_FC)` DYNAMIC_ARCH=1
 endif
 	touch $(abs_builddir)/work/$(BUILD_STAMP)
 
 work/$(CHECK_STAMP): work/$(BUILD_STAMP)
 if !IS_MINGW
-	cd $(abs_builddir)/work/install/OpenBLAS-$(OPENBLASVERSION) ; ${MAKE} -j lapack-test
+	+cd $(abs_builddir)/work/install/OpenBLAS-$(OPENBLASVERSION) ; ${MAKE} -j lapack-test
 endif
 	touch $(abs_builddir)/work/$(CHECK_STAMP)
 
 work/$(INSTALL_INTERNAL_STAMP): work/$(CHECK_STAMP)
 if IS_MINGW
-	cd $(abs_builddir)/work/install/OpenBLAS-$(OPENBLASVERSION) ; ${MAKE} CC=`$(_CC)` FC=`$(_FC)` DYNAMIC_ARCH=1 HOSTCC=gcc PREFIX=$(abs_builddir)/../i/OPENBLAS/ install
+	+cd $(abs_builddir)/work/install/OpenBLAS-$(OPENBLASVERSION) ; ${MAKE} CC=`$(_CC)` FC=`$(_FC)` DYNAMIC_ARCH=1 HOSTCC=gcc PREFIX=$(abs_builddir)/../i/OPENBLAS/ install
 else
-	cd $(abs_builddir)/work/install/OpenBLAS-$(OPENBLASVERSION) ; ${MAKE} PREFIX=$(abs_builddir)/../i/OPENBLAS/ install
+	+cd $(abs_builddir)/work/install/OpenBLAS-$(OPENBLASVERSION) ; ${MAKE} PREFIX=$(abs_builddir)/../i/OPENBLAS/ install
 endif
 	touch $(abs_builddir)/work/$(INSTALL_INTERNAL_STAMP)
 
 work/$(INSTALL_STAMP): work/$(CHECK_STAMP)
 if IS_MINGW
-	cd $(abs_builddir)/work/install/OpenBLAS-$(OPENBLASVERSION) ; ${MAKE} CC=`$(_CC)` FC=`$(_FC)` DYNAMIC_ARCH=1 HOSTCC=gcc PREFIX=$(prefix) install
+	+cd $(abs_builddir)/work/install/OpenBLAS-$(OPENBLASVERSION) ; ${MAKE} CC=`$(_CC)` FC=`$(_FC)` DYNAMIC_ARCH=1 HOSTCC=gcc PREFIX=$(prefix) install
 else
-	cd $(abs_builddir)/work/install/OpenBLAS-$(OPENBLASVERSION) ; ${MAKE} PREFIX=$(prefix) install
+	+cd $(abs_builddir)/work/install/OpenBLAS-$(OPENBLASVERSION) ; ${MAKE} PREFIX=$(prefix) install
 endif
 	touch $(abs_builddir)/work/$(INSTALL_STAMP)
 
@@ -90,4 +90,3 @@ clean-local:
 	rm -rf work
 distclean-local:
 	rm -rf work
-

@@ -40,22 +40,22 @@ endif
 	touch $(abs_builddir)/work/$(CONFIGURE_STAMP)
 
 work/$(BUILD_STAMP): work/$(CONFIGURE_STAMP)
-	cd $(abs_builddir)/work/internal/mpc-$(MPCVERSION) ; ${MAKE}
-	cd $(abs_builddir)/work/install/mpc-$(MPCVERSION) ; ${MAKE}
+	+cd $(abs_builddir)/work/internal/mpc-$(MPCVERSION) ; ${MAKE}
+	+cd $(abs_builddir)/work/install/mpc-$(MPCVERSION) ; ${MAKE}
 	touch $(abs_builddir)/work/$(BUILD_STAMP)
 
 work/$(CHECK_STAMP): work/$(BUILD_STAMP)
 if IS_MINGW
-	cd $(abs_builddir)/work/internal/mpc-$(MPCVERSION) ; ${MAKE} check LOG_COMPILER=wine
-	cd $(abs_builddir)/work/install/mpc-$(MPCVERSION)  ; ${MAKE} check LOG_COMPILER=wine
+	+cd $(abs_builddir)/work/internal/mpc-$(MPCVERSION) ; ${MAKE} check LOG_COMPILER=wine
+	+cd $(abs_builddir)/work/install/mpc-$(MPCVERSION)  ; ${MAKE} check LOG_COMPILER=wine
 else
-	cd $(abs_builddir)/work/internal/mpc-$(MPCVERSION) ; ${MAKE} check
-	cd $(abs_builddir)/work/install/mpc-$(MPCVERSION) ; ${MAKE} check
+	+cd $(abs_builddir)/work/internal/mpc-$(MPCVERSION) ; ${MAKE} check
+	+cd $(abs_builddir)/work/install/mpc-$(MPCVERSION) ; ${MAKE} check
 endif
 	touch $(abs_builddir)/work/$(CHECK_STAMP)
 
 work/$(INSTALL_INTERNAL_STAMP): work/$(CHECK_STAMP)
-	cd $(abs_builddir)/work/internal/mpc-$(MPCVERSION) ; ${MAKE} install
+	+cd $(abs_builddir)/work/internal/mpc-$(MPCVERSION) ; ${MAKE} install
 	touch $(abs_builddir)/work/$(INSTALL_INTERNAL_STAMP)
 
 work/$(INSTALL_STAMP): work/$(CHECK_STAMP)
@@ -75,7 +75,7 @@ if !SYSTEM_MPFR
 	install_name_tool -change $$ORG $$FIX $(abs_builddir)/work/install/mpc-$(MPCVERSION)/src/.libs/libmpc.dylib
 endif
 endif
-	cd $(abs_builddir)/work/install/mpc-$(MPCVERSION) ; ${MAKE} install
+	+cd $(abs_builddir)/work/install/mpc-$(MPCVERSION) ; ${MAKE} install
 	touch $(abs_builddir)/work/$(INSTALL_STAMP)
 
 extract: work/$(EXTRACT_STAMP)
@@ -93,7 +93,7 @@ install_internal: work/$(INSTALL_INTERNAL_STAMP)
 install: work/$(INSTALL_STAMP)
 
 uninstall:
-	-cd $(abs_builddir)/work/install/mpc-$(MPCVERSION) ; ${MAKE} uninstall
+	-+cd $(abs_builddir)/work/install/mpc-$(MPCVERSION) ; ${MAKE} uninstall
 
 distdir:
 
