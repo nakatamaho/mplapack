@@ -23,15 +23,15 @@ work/$(CONFIGURE_STAMP): work/$(PATCH_STAMP)
 	touch $(abs_builddir)/work/$(CONFIGURE_STAMP)
 
 work/$(BUILD_STAMP): work/$(CONFIGURE_STAMP)
-	cd $(abs_builddir)/work/install/dlfcn-win32-$(DLFCN_WIN32VERSION); make
-	cd $(abs_builddir)/work/install/dlfcn-win32-$(DLFCN_WIN32VERSION)
+	+cd $(abs_builddir)/work/install/dlfcn-win32-$(DLFCN_WIN32VERSION); ${MAKE}
 	touch $(abs_builddir)/work/$(BUILD_STAMP)
 
 work/$(CHECK_STAMP): work/$(BUILD_STAMP)
 	touch $(abs_builddir)/work/$(CHECK_STAMP)
 
+
 work/$(INSTALL_STAMP): work/$(CHECK_STAMP)
-	cd $(abs_builddir)/work/install/dlfcn-win32-$(DLFCN_WIN32VERSION) ; ${MAKE} install
+	+cd $(abs_builddir)/work/install/dlfcn-win32-$(DLFCN_WIN32VERSION) ; ${MAKE} install
 	touch $(abs_builddir)/work/$(INSTALL_STAMP)
 
 extract: work/$(EXTRACT_STAMP)
@@ -45,6 +45,9 @@ build: work/$(BUILD_STAMP)
 check: work/$(CHECK_STAMP)
 
 install: work/$(INSTALL_STAMP)
+
+uninstall:
+	-+cd $(abs_builddir)/work/install/dlfcn-win32-$(DLFCN_WIN32VERSION) ; ${MAKE} uninstall
 
 distdir:
 
