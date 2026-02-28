@@ -13,6 +13,7 @@ RUN apk add --no-cache \
     ccache \
     python3 \
     git \
+    sed \
     bash \
     xz \
     bzip2 \
