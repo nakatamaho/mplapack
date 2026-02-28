@@ -74,6 +74,7 @@ patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rchkgg.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rckcsd.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rcsdts.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rdrgsx.cpp
+patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rdrst2stg.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rdrves.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rdrvsg.cpp
 patch  < ~/mplapack/fable/3.9.1/lapack/patch-Rget24.cpp
