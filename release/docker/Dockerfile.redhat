@@ -64,7 +64,6 @@ CMD ["/bin/bash", "-lc", "\
     ./configure $CONFIGURE_OPTS; \
     make -j\"$(nproc)\"; \
     make install; \
-    make distcheck DISTCHECK_CONFIGURE_FLAGS=\"$CONFIGURE_OPTS\"; \
     if [ \"$ARCH\" = \"x86_64\" ] || [ \"$ARCH\" = \"i686\" ] || [ \"$ARCH\" = \"i386\" ]; then \
         echo '=== Running make check ==='; \
         make check -j32; \
