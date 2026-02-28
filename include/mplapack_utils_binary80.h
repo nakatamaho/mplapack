@@ -274,15 +274,8 @@ inline mplapackint castINTEGER_binary80(long double a) {
     mplapackint i = a;
     return i;
 }
-
-inline long double pi(long double dummy) {
-#if defined __APPLE__ // __MATH_LONG_DOUBLE_CONSTANTS looks broken
+inline long double pi([[maybe_unused]] long double dummy) {
     return 0xc.90fdaa22168c235p-2L;
-#elif defined __MINGW32__
-    return 0xc.90fdaa22168c235p-2L;
-#else
-    return M_PIl;
-#endif
 }
 #elif MPLAPACK_BINARY80_MATH == MPLAPACK_BINARY80_MATH_F64X
 #pragma once
