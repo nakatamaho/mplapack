@@ -5,17 +5,34 @@
 #include <cstdlib>
 #include <cstring>
 
+// Some libcs (e.g., musl on Alpine) do not provide <execinfo.h> by default.
+// Use feature detection instead of assuming "Linux => execinfo.h".
 #if defined(__GNUC__)
-#if defined(__linux) \
- || (defined(__APPLE_CC__) && __APPLE_CC__ >= 5465)
-#include <execinfo.h>
-#define TBXX_LIBC_BACKTRACE_HAVE_EXECINFO_H
-#if ((__GNUC__ > 3) || ((__GNUC__ == 3) && (__GNUC_MINOR__ >= 1))) \
- && !defined(__EDG_VERSION__)
-#include <cxxabi.h>
-#define TBXX_LIBC_BACKTRACE_HAVE_CXXABI_H
-#endif
-#endif
+#  if defined(__has_include)
+#    if __has_include(<execinfo.h>)
+#      include <execinfo.h>
+#      define TBXX_LIBC_BACKTRACE_HAVE_EXECINFO_H
+#      if ((__GNUC__ > 3) || ((__GNUC__ == 3) && (__GNUC_MINOR__ >= 1))) \
+       && !defined(__EDG_VERSION__)
+#        if __has_include(<cxxabi.h>)
+#          include <cxxabi.h>
+#          define TBXX_LIBC_BACKTRACE_HAVE_CXXABI_H
+#        endif
+#      endif
+#    endif
+#  else
+     // Fallback for older compilers without __has_include:
+     // keep previous behavior for Apple and glibc-ish Linux.
+#    if (defined(__APPLE_CC__) && __APPLE_CC__ >= 5465) || defined(__GLIBC__)
+#      include <execinfo.h>
+#      define TBXX_LIBC_BACKTRACE_HAVE_EXECINFO_H
+#      if ((__GNUC__ > 3) || ((__GNUC__ == 3) && (__GNUC_MINOR__ >= 1))) \
+       && !defined(__EDG_VERSION__)
+#        include <cxxabi.h>
+#        define TBXX_LIBC_BACKTRACE_HAVE_CXXABI_H
+#      endif
+#    endif
+#  endif
 #endif
 
 namespace tbxx { namespace libc_backtrace {
