@@ -95,6 +95,8 @@ install_internal: work/$(INSTALL_INTERNAL_STAMP)
 
 install: work/$(INSTALL_STAMP)
 
+uninstall:
+	-cd $(abs_builddir)/work/install/QD-$(QDVERSION) ; ${MAKE} uninstall
 clean:
 	rm -rf work
 distclean:

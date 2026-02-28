@@ -228,3 +228,6 @@ mplapack/test/lin/Ctest.in \
 mplapack/test/lin/Ctest_rfp.in \
 mplapack/test/lin/Rtest.in \
 mplapack/test/lin/Rtest_rfp.in
+
+uninstall-hook:
+	-rm -f $(DESTDIR)$(infodir)/dir

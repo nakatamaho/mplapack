@@ -69,6 +69,20 @@ install_internal: work/$(INSTALL_INTERNAL_STAMP)
 
 install: work/$(INSTALL_STAMP)
 
+uninstall:
+	-rm -f  $(DESTDIR)$(prefix)/lib/libopenblas*.a
+	-rm -f  $(DESTDIR)$(prefix)/lib/libopenblas*.so*
+	-rm -f  $(DESTDIR)$(prefix)/lib/pkgconfig/openblas.pc
+	-rm -rf $(DESTDIR)$(prefix)/lib/cmake/openblas
+	-rm -f  $(DESTDIR)$(prefix)/include/cblas.h
+	-rm -f  $(DESTDIR)$(prefix)/include/lapacke.h
+	-rm -f  $(DESTDIR)$(prefix)/include/lapacke_config.h
+	-rm -f  $(DESTDIR)$(prefix)/include/lapacke_mangling.h
+	-rm -f  $(DESTDIR)$(prefix)/include/lapacke_utils.h
+	-rm -f  $(DESTDIR)$(prefix)/include/lapack.h
+	-rm -f  $(DESTDIR)$(prefix)/include/openblas_config.h
+	-rm -f  $(DESTDIR)$(prefix)/include/f77blas.h
+
 distdir:
 
 clean:
