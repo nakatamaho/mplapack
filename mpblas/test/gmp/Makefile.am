@@ -709,5 +709,5 @@ Rtrsv_test_gmp_LDFLAGS=$(libdepends) $(mplibs) $(refblas)
 
 install-data-hook:
 if IS_MACOS
-	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mpblas_gmp_testdir) $(prefix)
+	bash $(top_srcdir)/misc/fix_dylib_macOS.sh $(mpblas_gmp_testdir) $(prefix)
 endif
