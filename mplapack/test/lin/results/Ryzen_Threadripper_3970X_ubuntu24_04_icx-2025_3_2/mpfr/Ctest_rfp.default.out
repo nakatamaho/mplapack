@@ -1,0 +1,16 @@
+=== MPFR profile: default ===
+ Tests of the Multiple precision version of LAPACK MPLAPACK VERSION 2.1.0
+ Based on original LAPACK VERSION 3.9.1
+
+The following parameter values will be used:
+    N   :       0     1     2     3     5     6    10    11    50
+    NRHS:       1     2    15
+    TYPE:       1     2     3     4     5     6     7     8     9
+
+ Routines pass computational tests if test ratio is less than+3.0000000000000000e+01
+
+ Relative machine underflow is taken to be+3.5324179827888182e-9865
+ Relative machine overflow  is taken to be+1.4154610310449548e+9864
+ Relative machine precision is taken to be+7.4583407312002067e-155
+ 
+ COMPLEX*16 RFP routines passed the tests of the error exits

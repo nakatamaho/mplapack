@@ -1,0 +1,24 @@
+=== precision: binary128 ===
+ Tests of the Nonsymmetric eigenproblem condition estimation routines
+ Rlaln2, Rlasy2, Rlanv2, Rlaexc, DTRSYL, Rtrexc, Rtrsna, Rtrsen, Rlaqtr, Rtgexc
+
+ Relative machine precision (EPS) = +1.9259299443872359e-34
+ Safe minimum (SFMIN)             = +3.3621031431120935e-4932
+
+ Routines pass computational tests if test ratio is less than+0.0000000000000000e+00
+
+
+ DEC routines passed the tests of the error exits ( 35 tests done)
+ Error in Rlaln2: RMAX =+2.2500000000000000e+00
+ LMAX =    60533 NINFO=       0   71292 KNT=  230400
+ Error in Rlasy2: RMAX =+8.6516402170389212e-01
+ LMAX =    52605 NINFO=   56196 KNT=  135000
+ Error in Rlanv2: RMAX =+7.2500000000000000e+00
+ LMAX =    16313 NINFO=       0 KNT=   20736
+ Error in Rlaexc: RMAX =+5.2916666666666667e+00
+ LMAX =    28968 NINFO=     148       0 KNT=   42258
+ Error in Rtrsyl: RMAX =+2.0389012452345762e+00
+ LMAX =    19891 NINFO=    2556 KNT=   27648
+terminate called after throwing an instance of 'fem::io_err'
+  what():  Invalid character while reading integer value.
+/bin/bash: line 9: 4134457 Aborted                 (core dumped) $wrapper ./xeigtstR_binary128 < ./../Rec.in

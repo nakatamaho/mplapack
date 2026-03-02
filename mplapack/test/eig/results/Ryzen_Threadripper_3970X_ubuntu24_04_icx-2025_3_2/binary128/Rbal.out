@@ -1,0 +1,4 @@
+=== precision: binary128 ===
+terminate called after throwing an instance of 'fem::io_err'
+  what():  Invalid character while reading integer value.
+/bin/bash: line 9: 4127798 Aborted                 (core dumped) $wrapper ./xeigtstR_binary128 < ./../Rbal.in
