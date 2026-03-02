@@ -120,31 +120,82 @@ detect_host_platform() {
 HOST_PLATFORM="$(detect_host_platform)"
 EMULATE="${EMULATE:-auto}"   # auto|yes|no
 
-# Ensure binfmt/qemu is installed for cross-arch runs (Docker Desktop often has this already)
+# Return 0 if IMAGE has a manifest entry for PLATFORM (e.g., linux/mips64le)
+has_manifest() {
+    local image="$1" platform="$2"
+    docker buildx imagetools inspect "$image" 2>/dev/null | grep -qE "[[:space:]]${platform}([[:space:]]|$)"
+}
+
+# Pick a probe image that actually supports the target platform (best-effort).
+# You can extend this list over time; order matters.
+pick_probe_image() {
+    local target="$1"
+    # Prefer images that tend to be multi-arch across many platforms.
+    local candidates=(
+        "debian:12"
+        "ubuntu:24.04"
+        "alpine:3.19"
+        "busybox:1.36"
+    )
+
+    local img
+    for img in "${candidates[@]}"; do
+        if has_manifest "$img" "$target"; then
+            echo "$img"
+            return 0
+        fi
+    done
+
+    # Fallback: nothing found
+    return 1
+}
+
+# Ensure binfmt/qemu is installed for cross-arch runs
 ensure_binfmt() {
     local target="$1"
-    if [[ "$EMULATE" == "no" ]]; then
+
+    # Respect explicit disable
+    if [[ "${EMULATE:-auto}" == "no" ]]; then
         return 1
     fi
 
-    # If we can't detect host platform, play it safe and attempt to install binfmt in auto mode.
+    # Native run: no emulation needed
     if [[ -n "${HOST_PLATFORM:-}" && "$target" == "$HOST_PLATFORM" ]]; then
         return 0
     fi
 
+    # Choose an appropriate probe image for this target
+    local probe_img=""
+    if probe_img="$(pick_probe_image "$target")"; then
+        :
+    else
+        # We cannot even find a probe image that has a manifest for target.
+        # This is NOT a binfmt problem.
+        log "No probe image found with manifest for $target (base image coverage issue)."
+        return 1
+    fi
+
     # Quick sanity check: can we run a trivial container for target arch?
-    if docker run --rm --platform "$target" alpine:3.19 true >/dev/null 2>&1; then
+    if docker run --rm --platform "$target" "$probe_img" true >/dev/null 2>&1; then
         return 0
     fi
 
-    if [[ "$EMULATE" == "auto" || "$EMULATE" == "yes" ]]; then
-        log "Enabling binfmt/qemu for cross-arch ($HOST_PLATFORM -> $target)"
+    # If not runnable, try enabling binfmt (if allowed)
+    if [[ "${EMULATE:-auto}" == "auto" || "${EMULATE:-auto}" == "yes" ]]; then
+        log "Enabling binfmt/qemu for cross-arch (${HOST_PLATFORM:-unknown} -> $target)"
         docker run --privileged --rm tonistiigi/binfmt:latest --install all >/dev/null 2>&1 || true
-        # Re-test after install
-        docker run --rm --platform "$target" alpine:3.19 true >/dev/null 2>&1
-    else
+
+        # Re-test after install with the SAME probe image
+        if docker run --rm --platform "$target" "$probe_img" true >/dev/null 2>&1; then
+            return 0
+        fi
+
+        # Still failing: now it really is an emulation/runtime limitation.
+        log "Cross-arch run still failing for $target even after binfmt install (probe=$probe_img)."
         return 1
     fi
+
+    return 1
 }
 
 # Check if NVIDIA GPU is available
