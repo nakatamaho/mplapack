@@ -41,8 +41,9 @@ license, supplemental to the original LAPACK license.
 * **double** (binary64)
 * **DD, QD** https://www.davidhbailey.com/dhbsoftware/
   (DD ≈ binary128, QD ≈ binary256)
-* **binary128** (`_Float128` / `__float128`; via glibc or libquadmath; GCC only)
-* **binary80** (`_Float64x`; 80-bit extended precision; Intel/AMD x86 only; GCC or Clang)
+* **binary128** (IEEE 754-2018; compiler and platform support is complex —
+  see [binary128_binary80_type_support.md](binary128_binary80_type_support.md))
+* **binary80** (80-bit extended precision; Intel/AMD x86 only)
 
 # Compiler Support
 
