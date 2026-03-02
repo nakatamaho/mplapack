@@ -224,43 +224,7 @@ If you maintain hardcoded precision constants in your own code:
 
 ---
 
-## 4. Extended BLAS Routines Removed
-
-**Impact:** Users who call extended BLAS routines directly, or call MPLAPACK routines that
-depended on them.
-
-### What changed
-
-Extended BLAS routines have been removed from `libmpblas`. All MPLAPACK routines that
-internally depended on extended BLAS have also been removed.
-
-### Who needs to act
-
-Anyone who:
-- Links against `libmpblas` and calls extended BLAS routines directly.
-- Links against `libmplapack` and calls LAPACK routines that were removed because they
-  depended on extended BLAS.
-
-### Migration
-
-Check your source code for calls to extended BLAS routines. If you used them, you must
-either implement equivalent functionality yourself or reorganize the algorithm to use the
-standard BLAS subset.
-
-```cpp
-// Extended BLAS (REMOVED in 2.1.0) — example pattern
-// Rgemm2(...);   // no longer available
-
-// Standard BLAS alternative — still available
-Rgemm("N", "N", m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
-```
-
-Compile your project against 2.1.0 and fix any undefined-reference linker errors that
-appear for extended BLAS symbols.
-
----
-
-## 5. Compiler Restrictions: oneAPI and Clang
+## 4. Compiler Restrictions: oneAPI and Clang
 
 **Impact:** Users building with Intel oneAPI (icx/icpx) or Clang/LLVM.
 
@@ -268,24 +232,27 @@ appear for extended BLAS symbols.
 
 | Compiler | binary128 | binary80 |
 |---|---|---|
-| Intel oneAPI (icx/icpx) | ❌ Not supported | ❌ Not supported |
+| Intel oneAPI (icx/icpx) | ❌ Broken | ❌ Broken |
 | Clang/LLVM | ❌ Not supported | ✅ Available |
 | GCC | ✅ Available | ✅ Available |
 
-These backends are not supported due to missing compiler-level support (`_Float128`,
-`__float128`, and related intrinsics are GCC-specific).
+`_Float128` / `__float128` and related intrinsics are GCC-specific and are not reliably
+supported by other compilers.
+
+> **Intel oneAPI:** Both `binary128` and `binary80` are broken with icx/icpx. This is a
+> known issue and is under investigation (issue not yet registered).
 
 ### Who needs to act
 
-- Developers using Intel oneAPI who relied on `binary128` or `binary80` precision.
-- Developers using Clang who relied on `binary128` precision.
+- Developers using Intel oneAPI who rely on `binary128` or `binary80` precision.
+- Developers using Clang who rely on `binary128` precision.
 
 ### Migration
 
-Switch to GCC for builds requiring `binary128` or (if using oneAPI) `binary80`.
+Switch to GCC for builds requiring `binary128` or (for oneAPI users) either backend.
 
 ```sh
-# If using oneAPI and needing binary128/binary80: switch to GCC
+# If using oneAPI: switch to GCC for any binary128/binary80 work
 export CC=gcc
 export CXX=g++
 ./configure --enable-binary128=yes --enable-binary80=yes ...
@@ -297,8 +264,7 @@ export CXX=clang++
 # Do NOT pass --enable-binary128=yes with Clang
 ```
 
-If your build system detects the compiler and conditionally enables these backends, add a
-GCC check before passing `--enable-binary128`:
+If your build system detects the compiler and conditionally enables these backends:
 
 ```sh
 if [ "$(${CXX} --version | head -1 | grep -c 'g++')" = "1" ]; then
@@ -308,89 +274,95 @@ fi
 
 ---
 
-## 6. Fable as Top-Level Standalone Component
+## 5. Fable Conversion Pipeline: Not in Release Tarball
 
-**Impact:** Developers who build MPLAPACK from source, package maintainers, and anyone
-who integrates the MPLAPACK source tree into larger build systems.
+**Impact:** Developers who want to regenerate BLAS/LAPACK C++ sources or test programs
+from Fortran, or who build MPLAPACK directly from a Git clone.
 
 ### What changed
 
-`fable/` is now a top-level directory and an independent component of the repository.
-It is no longer buried inside another subdirectory. The component includes:
+`fable/` is a top-level standalone component of the repository that provides automated
+Fortran-to-C++ conversion. However, **the Fable conversion pipeline is not included in the
+release tarball** (`mplapack-2.1.0.tar.xz`). The tarball contains only the pre-generated
+C++ sources.
 
-- A modified version of Fable (Fortran-to-C++ converter)
-- A modified version of FEM (Fortran Emulator, used in test programs only)
-- `fable/3.9.1/`: 152 patches for LAPACK 3.9.1 sources that Fable cannot convert automatically
-- `go.sh` and `go_testing.sh` driver scripts
+To use Fable (e.g., to regenerate sources or apply your own patches), you must:
+
+1. Clone the repository directly from Git.
+2. Expand the bundled LAPACK 3.9.1 source under `external/lapack/` before running the
+   conversion scripts.
 
 ### Who needs to act
 
-- Packagers who enumerate source directories explicitly.
-- Developers who maintain out-of-tree patches against the MPLAPACK directory structure.
-- Build system integrators.
+- Developers who want to regenerate library or test C++ sources from Fortran.
+- Developers maintaining out-of-tree patches against the Fortran sources.
+- Anyone who previously used the Fable Docker build environment.
 
 ### Migration
 
-Update any path references from the old location to `fable/` at the top level:
-
 ```sh
-# Old: fable sources were not at top level
-# New: top-level component
-ls fable/
-# go.sh  go_testing.sh  3.9.1/  ...
+# Step 1: clone the repository (tarball is not sufficient)
+git clone https://github.com/nakatamaho/mplapack
+cd mplapack
+
+# Step 2: expand the bundled LAPACK sources under external/
+cd external/lapack
+tar xvf lapack-3.9.1.tar.gz    # or equivalent expansion step
+cd ../..
+
+# Step 3: run the conversion pipeline
+bash fable/go.sh          # library routines (BLAS/LAPACK C++ sources + headers + patches)
+bash fable/go_testing.sh  # test programs (EIG/LIN/MATGEN C++ sources + headers + patches)
 ```
 
-If you drive code generation yourself, use the provided scripts:
-
-```sh
-# Regenerate library routines (BLAS/LAPACK C++ sources + headers + patches)
-cd ~/mplapack
-bash fable/go.sh
-
-# Regenerate test programs (EIG/LIN/MATGEN C++ sources + headers + patches)
-cd ~/mplapack
-bash fable/go_testing.sh
-```
+The generated C++ sources are placed in their respective directories under `mpblas/` and
+`mplapack/`. The 152 patches under `fable/3.9.1/` are applied automatically by the scripts.
 
 ---
 
-## 7. Auto-Generated Public Headers
+## 6. Auto-Generated MPBLAS/MPLAPACK Public Headers (Subset)
 
-**Impact:** Developers who manually maintain or patch `mpblas*.h` / `mplapack*.h` public headers.
+**Impact:** Developers who include or patch the public headers for GMP, MPFR, or
+test-category-specific backends (EIG, LIN, MATGEN).
 
 ### What changed
 
-Public headers for MPBLAS and MPLAPACK are now generated by shell scripts
-(`gen_include_mpblas.sh`, `gen_include_mplapack.sh`) rather than being hand-maintained.
-The old template files `mplapack_utils__Float64x.h.in` and `mplapack_utils__Float128.h.in`
-are no longer used.
+A subset of public headers is now auto-generated by shell scripts rather than being
+hand-maintained. The auto-generated headers are:
+
+- `mpblas_gmp.h`, `mplapack_gmp.h`
+- Headers for each combination of test category (EIG, LIN, MATGEN) and precision backend
+
+Other headers such as `mplapack_utils_*.h` are **not** auto-generated and remain
+hand-maintained source files.
 
 ### Who needs to act
 
-- Anyone who patches the public headers directly and re-applies patches on each release.
-- Anyone whose build system treats these headers as stable source files.
+- Developers who patch `mpblas_gmp.h`, `mplapack_gmp.h`, or the test-category headers
+  directly and re-apply patches on each release.
 
 ### Migration
 
-Do not patch the generated headers directly. Patch the generator scripts or the template
-inputs instead, so your changes survive regeneration.
+Do not patch auto-generated headers directly — they will be overwritten. Patch the
+generator scripts instead:
 
 ```sh
-# Do NOT edit these directly — they are overwritten by go.sh / go_testing.sh:
-# include/mpblas_*.h
-# include/mplapack_*.h
+# Auto-generated (do NOT patch directly):
+# include/mpblas_gmp.h
+# include/mplapack_gmp.h
+# include/mplapack_{eig,lin,matgen}_*.h  (per-precision variants)
 
-# Instead, modify the generator:
+# Patch the generators instead:
 vi fable/gen_include_mpblas.sh
 vi fable/gen_include_mplapack.sh
 
-# Then regenerate:
+# Then regenerate (requires Git clone + external/lapack expanded; see §5):
 bash fable/go.sh
 ```
 
 ---
 
-## 8. Benchmark Directory Restructured
+## 7. Benchmark Directory Restructured
 
 **Impact:** Developers or CI scripts that reference benchmark source paths directly.
 
@@ -406,8 +378,7 @@ be added to `EXTRA_DIST`.
 ### Who needs to act
 
 - CI pipelines that reference `benchmark/mpblas/` or `benchmark/mplapack/` paths.
-- Developers who invoke benchmark runner scripts from their source tree rather than the
-  installed prefix.
+- Developers who invoke benchmark runner scripts from the source tree.
 
 ### Migration
 
@@ -420,14 +391,13 @@ be added to `EXTRA_DIST`.
 # benchmark/go.Rgemm_double.sh    (build tree, after make)
 # $prefix/bin/go.Rgemm_mpfr.sh   (after make install)
 
-# To run benchmarks after build:
 make
 ./benchmark/go.Rgemm_mpfr.sh
 ```
 
 ---
 
-## 9. Test Output Directory Layout Changed
+## 8. Test Output Directory Layout Changed
 
 **Impact:** CI pipelines and scripts that parse or archive test output files by path.
 
@@ -450,7 +420,6 @@ CI scripts or post-processing tools that collect test output files by hardcoded 
 # mplapack/test/eig/mpfr/<CPU>-<OS>-<Compiler>/eigtst_mpfr.out
 # e.g.: mplapack/test/eig/mpfr/Ryzen3970X-Ubuntu2204-GCC1140/eigtst_mpfr.out
 
-# Update glob patterns to include the subdirectory level:
 find mplapack/test/eig -name "*.out" | xargs grep FAIL
 ```
 
@@ -462,35 +431,55 @@ python3 misc/summarize_mplapack_tests.py
 
 ---
 
-## 10. ILP32 Platform: `mplapackint` Changed to `long`
+## 9. ILP32/LP64: `mplapackint` Tracks Platform `long`
 
-**Impact:** Users building on 32-bit platforms (Debian i386) or cross-compiling for ILP32.
+**Impact:** Users building on or for 32-bit platforms (Debian i386, ILP32) or LP64
+platforms where the integer width matters for GMP/MPFR interoperability.
 
 ### What changed
 
-`mplapackint` is now unified with the platform `long` type. On ILP32 platforms this means
-`mplapackint` is 32 bits. Associated `long`/`unsigned long` I/O overloads have been added to
-prevent truncation.
+`mplapackint` is now unified with the platform `long` type:
+
+- On **ILP32** platforms (e.g., Debian i386): `long` is 32 bits → `mplapackint` is 32 bits.
+- On **LP64** platforms (e.g., Linux amd64/arm64): `long` is 64 bits → `mplapackint` is 64 bits.
+
+**Why `long` specifically:** The GMP and MPFR C APIs accept integers only as `long` (e.g.,
+`mpfr_set_si`, `mpz_get_si`). Neither `gmpxx.h` nor `mpreal.h` provide overloads for
+`int64_t` or `int32_t` independently of `long`. Unifying `mplapackint` with `long` ensures
+that MPLAPACK integer arguments can be passed directly to GMP/MPFR without conversion,
+and that the correct width is used on both ILP32 and LP64 without custom wrappers at the
+call site.
+
+Associated `long`/`unsigned long` I/O overloads have been added to prevent truncation on
+ILP32.
 
 ### Who needs to act
 
-Users building on or for 32-bit (ILP32) platforms who pass integer arrays to MPLAPACK routines.
+- Users building on or for ILP32 platforms who pass integer arrays to MPLAPACK routines.
+- Developers who assumed `mplapackint` is always 64 bits.
 
 ### Migration
 
-Verify that integer arrays passed to MPLAPACK routines match `mplapackint` (i.e., `long` on
-your platform). On ILP32 platforms, do not assume 64-bit integers.
+Do not assume `mplapackint` is 64 bits. Use `mplapackint` (or `long`) consistently for
+all integer arguments passed to MPLAPACK/MPBLAS routines.
 
 ```cpp
-// Check mplapackint size at compile time
+// Do NOT assume 64-bit integers
+// int64_t n = 1000;       // may truncate on ILP32
+// int      n = 1000;      // may truncate on LP64 if > INT_MAX
+
+// Correct: use mplapackint (= long on your platform)
 #include <mplapack_config.h>
+mplapackint n = 1000;
+
+// Verify the width at compile time if needed:
 static_assert(sizeof(mplapackint) == sizeof(long),
               "mplapackint must match platform long");
 ```
 
 ---
 
-## 11. Known Issue: lin/dd on AArch64 (ARM)
+## 10. Known Issue: lin/dd on AArch64 (ARM)
 
 **Impact:** Users running the `lin/dd` test suite on AArch64 hardware (e.g., Raspberry Pi 4,
 AWS Graviton, Apple Silicon with GCC).
@@ -518,13 +507,10 @@ There is no fix available in 2.1.0. If you encounter this failure pattern on AAr
 it is expected and tracked. You may suppress the `lin/dd` failure gate on AArch64 in CI
 until the issue is resolved.
 
-To confirm you are hitting the same issue, check whether the failure count is around 226
-and the failing files number exactly 2 out of 4:
-
 ```sh
-# After make check, run the summarizer:
+# After make check, confirm with the summarizer:
 python3 misc/summarize_mplapack_tests.py
-# Expected anomaly:
+# Expected anomaly on AArch64:
 # lin  dd  865775  226  0.03%  2  4
 ```
 
@@ -534,15 +520,14 @@ python3 misc/summarize_mplapack_tests.py
 
 | User type | Actions required |
 |---|---|
-| User setting MPLAPACK_MPFR_PRECISION | Verify emin/emax behavior; pin explicitly if needed (§1) |
-| Application developer using binary128/binary80 | Update configure flags, library names, headers, types (§2) |
+| User setting `MPLAPACK_MPFR_PRECISION` | Verify emin/emax behavior; pin explicitly if needed (§1) |
+| User of binary128/binary80 backends | Update configure flags, library names, headers, types (§2) |
 | User with DD/QD golden-value tests | Regenerate reference files (§3) |
-| Application developer using extended BLAS | Remove extended BLAS calls (§4) |
-| Intel oneAPI user | Switch to GCC for binary128/binary80 (§5) |
-| Clang user needing binary128 | Switch to GCC (§5) |
-| Packager / build system integrator | Update fable/ paths and benchmark paths (§6, §8) |
-| Developer patching public headers | Patch generators instead of headers (§7) |
-| CI pipeline collecting test output | Update output path globs (§9) |
-| i386 / ILP32 platform developer | Verify integer type assumptions (§10) |
-| AArch64 user running lin/dd tests | See known issue §11; failures are expected and tracked |
-
+| Intel oneAPI user | Switch to GCC; binary128 and binary80 both broken (§4) |
+| Clang user needing binary128 | Switch to GCC (§4) |
+| Developer regenerating C++ sources from Fortran | Use Git clone + expand external/lapack (§5) |
+| Developer patching auto-generated headers | Patch generators instead of headers (§6) |
+| CI pipeline referencing benchmark paths | Update paths under benchmark/ (§7) |
+| CI pipeline collecting test output | Update output path globs (§8) |
+| ILP32 / LP64 platform developer | Use `mplapackint` (= `long`) for all integer args (§9) |
+| AArch64 user running lin/dd tests | Failures are expected and tracked; see §10 |
