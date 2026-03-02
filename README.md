@@ -38,19 +38,8 @@ license, supplemental to the original LAPACK license.
 * **double** (binary64)
 * **DD, QD** https://www.davidhbailey.com/dhbsoftware/
   (DD ≈ binary128, QD ≈ binary256)
-* **\_Float128** (binary128; via glibc or libquadmath; auto-detected)
-* **\_Float64x** (binary80 extended precision; Intel/AMD x86 only)
-
-# Compiler Support
-
-| Compiler | binary128 (\_Float128) | binary80 (\_Float64x) |
-|---|---|---|
-| GCC | ✅ | ✅ (x86/x86\_64 only) |
-| Intel oneAPI (icx/icpx) | ❌ Not supported | ❌ Not supported |
-| Clang/LLVM | ❌ Not supported | ✅ |
-
-> GCC is required for `binary128` support. Intel oneAPI does not support either
-> `binary128` or `binary80`.
+* **binary128** (via glibc or libquadmath; auto-detected)
+* **binary80** (xtended precision; Intel/AMD x86 only)
 
 # Supported Platforms
 
