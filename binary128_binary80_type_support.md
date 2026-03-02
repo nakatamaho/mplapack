@@ -29,7 +29,7 @@ error-free intermediate accumulation ― e.g., iterative refinement and eigenval
 
 ---
 
-## Table 1: All Platforms (OS-sorted, duplicates removed)
+## Table 1: All Platforms
 
 | Platform | Arch | Compiler | binary128 config | binary80 config |
 |----------|------|----------|-----------------|-----------------|
