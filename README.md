@@ -14,6 +14,15 @@ license, supplemental to the original LAPACK license.
 * 2022-07-26  MPLAPACK 2.0.0 released. All routines (except mixed-precision) functional and
   tested across all supported precisions.
 
+# Release Checksums
+
+## MPLAPACK 2.1.0
+
+| File | Algorithm | Checksum |
+|:---|:---|:---|
+| `mplapack-2.1.0.tar.gz` | MD5 | `d436f2fc61f6f010ab7be156c2b949e2` |
+| `mplapack-2.1.0.tar.gz` | SHA-256 | `45b8a147b0d5c49f609cfe54f3f1f1a5d4ea0b77aba2b37d5072221cf50be496` |
+
 # Capabilities
 
 * **MPBLAS:** All BLAS routines in multiple-precision arithmetic.
@@ -64,8 +73,8 @@ built automatically. No separate installation of these libraries is required.
 
 ```sh
 cd $HOME/tmp
-wget https://github.com/nakatamaho/mplapack/releases/download/v2.1.0/mplapack-2.1.0.tar.xz
-tar xvf mplapack-2.1.0.tar.xz
+wget https://github.com/nakatamaho/mplapack/releases/download/v2.1.0/mplapack-2.1.0.tar.gz
+tar xvf mplapack-2.1.0.tar.gz
 cd mplapack-2.1.0
 export CXX=g++
 export CC=gcc
@@ -107,8 +116,8 @@ FSF GCC is required. Clang (the default macOS compiler) does not support `_Float
 ```sh
 sudo port install gcc14 coreutils git gsed
 cd $HOME/tmp
-wget https://github.com/nakatamaho/mplapack/releases/download/v2.1.0/mplapack-2.1.0.tar.xz
-tar xvf mplapack-2.1.0.tar.xz
+wget https://github.com/nakatamaho/mplapack/releases/download/v2.1.0/mplapack-2.1.0.tar.gz
+tar xvf mplapack-2.1.0.tar.gz
 cd mplapack-2.1.0
 export CXX=g++-mp-14
 export CC=gcc-mp-14
@@ -133,8 +142,8 @@ make install
 ```sh
 sudo apt-get install gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64 gfortran-mingw-w64-x86-64
 cd $HOME/tmp
-wget https://github.com/nakatamaho/mplapack/releases/download/v2.1.0/mplapack-2.1.0.tar.xz
-tar xvf mplapack-2.1.0.tar.xz
+wget https://github.com/nakatamaho/mplapack/releases/download/v2.1.0/mplapack-2.1.0.tar.gz
+tar xvf mplapack-2.1.0.tar.gz
 cd mplapack-2.1.0
 export CXX=x86_64-w64-mingw32-g++
 export CC=x86_64-w64-mingw32-gcc
