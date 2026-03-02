@@ -240,7 +240,7 @@ If you maintain hardcoded precision constants in your own code:
 supported by other compilers.
 
 > **Intel oneAPI:** Both `binary128` and `binary80` are broken with icx/icpx. This is a
-> known issue and is under investigation (issue not yet registered).
+> known issue and is under investigation see #77.
 
 ### Who needs to act
 
