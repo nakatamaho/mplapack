@@ -8,20 +8,13 @@ license, supplemental to the original LAPACK license.
 
 # News
 
-* 2026-03-02  MPLAPACK 2.1.0 released.
+* 2026-03-02  MPLAPACK 2.1.0 released. binary128/binary80 naming unified, MPFR emin/emax
+  auto-adjustment, Fable standalone pipeline, extended build matrix, numerous bug fixes.
+  See [CHANGES.md](CHANGES.md) and [MIGRATION.md](MIGRATION.md).
 * 2022-09-12  MPLAPACK 2.0.1 released, featuring CUDA versions of Rgemm (dd) and Rsyrk (dd)
   for Volta and Ampere architectures (~450 GFlops on V100), and Windows DLLs for MinGW-w64.
 * 2022-07-26  MPLAPACK 2.0.0 released. All routines (except mixed-precision) functional and
   tested across all supported precisions.
-
-# Release Checksums
-
-## MPLAPACK 2.1.0
-
-| File | Algorithm | Checksum |
-|:---|:---|:---|
-| `mplapack-2.1.0.tar.gz` | MD5 | `d436f2fc61f6f010ab7be156c2b949e2` |
-| `mplapack-2.1.0.tar.gz` | SHA-256 | `45b8a147b0d5c49f609cfe54f3f1f1a5d4ea0b77aba2b37d5072221cf50be496` |
 
 # Capabilities
 
@@ -47,8 +40,23 @@ license, supplemental to the original LAPACK license.
 * **double** (binary64)
 * **DD, QD** https://www.davidhbailey.com/dhbsoftware/
   (DD ≈ binary128, QD ≈ binary256)
-* **binary128** (via glibc or libquadmath; auto-detected)
-* **binary80** (xtended precision; Intel/AMD x86 only)
+* **binary128** (`_Float128` / `__float128`; via glibc or libquadmath; GCC only)
+* **binary80** (`_Float64x`; 80-bit extended precision; Intel/AMD x86 only; GCC or Clang)
+
+# Compiler Support
+
+| Compiler | binary128 | binary80 |
+|---|---|---|
+| GCC | ✅ Supported | ✅ (x86/x86\_64 only) |
+| Intel oneAPI (icx/icpx) | ❌ Broken | ❌ Broken |
+| Clang/LLVM | ❌ Not supported | ✅ Supported |
+
+> **Intel oneAPI users:** Both `binary128` and `binary80` are broken with current
+> icx/icpx releases. Intel oneAPI 2023 and earlier worked correctly, but those versions
+> are no longer readily available. Use GCC for `binary128` and `binary80`.
+> Known issue: https://github.com/nakatamaho/mplapack/issues/77
+>
+> **Clang users:** `binary128` is not supported. Use GCC for `binary128`.
 
 # Supported Platforms
 
@@ -72,13 +80,11 @@ built automatically. No separate installation of these libraries is required.
 ## Linux (amd64 / arm64)
 
 ```sh
-cd $HOME/tmp
-wget https://github.com/nakatamaho/mplapack/releases/download/v2.1.0/mplapack-2.1.0.tar.gz
-tar xvf mplapack-2.1.0.tar.gz
+mkdir -p $HOME/tmp && cd $HOME/tmp
+wget https://github.com/nakatamaho/mplapack/releases/download/v2.1.0/mplapack-2.1.0.tar.xz
+tar xvf mplapack-2.1.0.tar.xz
 cd mplapack-2.1.0
-export CXX=g++
-export CC=gcc
-export FC=gfortran
+export CXX=g++ CC=gcc FC=gfortran
 ./configure \
     --prefix=$HOME/MPLAPACK \
     --enable-gmp=yes \
@@ -93,15 +99,15 @@ make -j$(nproc)
 make install
 ```
 
-To enable `binary80` (Intel/AMD x86 only), add `--enable-binary80=yes`:
+To also enable `binary80` (Intel/AMD x86 only), add `--enable-binary80=yes`:
 
 ```sh
 ./configure \
     --prefix=$HOME/MPLAPACK \
     --enable-binary80=yes \
+    --enable-binary128=yes \
     --enable-gmp=yes \
     --enable-mpfr=yes \
-    --enable-binary128=yes \
     --enable-qd=yes \
     --enable-dd=yes \
     --enable-double=yes \
@@ -111,17 +117,15 @@ To enable `binary80` (Intel/AMD x86 only), add `--enable-binary80=yes`:
 
 ## macOS (Intel; using MacPorts)
 
-FSF GCC is required. Clang (the default macOS compiler) does neither support `_Float128` nor `__float128` 
+FSF GCC is required. The default Apple Clang does not support `binary128`.
 
 ```sh
 sudo port install gcc14 coreutils git gsed
-cd $HOME/tmp
-wget https://github.com/nakatamaho/mplapack/releases/download/v2.1.0/mplapack-2.1.0.tar.gz
-tar xvf mplapack-2.1.0.tar.gz
+mkdir -p $HOME/tmp && cd $HOME/tmp
+wget https://github.com/nakatamaho/mplapack/releases/download/v2.1.0/mplapack-2.1.0.tar.xz
+tar xvf mplapack-2.1.0.tar.xz
 cd mplapack-2.1.0
-export CXX=g++-mp-14
-export CC=gcc-mp-14
-export FC=gfortran-mp-14
+export CXX=g++-mp-14 CC=gcc-mp-14 FC=gfortran-mp-14
 ./configure \
     --prefix=$HOME/MPLAPACK \
     --enable-gmp=yes \
@@ -141,9 +145,9 @@ make install
 
 ```sh
 sudo apt-get install gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64 gfortran-mingw-w64-x86-64
-cd $HOME/tmp
-wget https://github.com/nakatamaho/mplapack/releases/download/v2.1.0/mplapack-2.1.0.tar.gz
-tar xvf mplapack-2.1.0.tar.gz
+mkdir -p $HOME/tmp && cd $HOME/tmp
+wget https://github.com/nakatamaho/mplapack/releases/download/v2.1.0/mplapack-2.1.0.tar.xz
+tar xvf mplapack-2.1.0.tar.xz
 cd mplapack-2.1.0
 export CXX=x86_64-w64-mingw32-g++
 export CC=x86_64-w64-mingw32-gcc
@@ -173,15 +177,26 @@ Test results are summarized automatically by `misc/summarize_mplapack_tests.py`.
 
 # Fable — Fortran-to-C++ Conversion Pipeline
 
-MPLAPACK 2.1.0 includes [Fable](https://cci.lbl.gov/fable/) as a top-level standalone
-component (`fable/`). BLAS/LAPACK library routines and test programs (EIG/LIN/MATGEN)
-are generated from LAPACK 3.9.1 Fortran sources via automated conversion.
+> **Note:** The Fable conversion pipeline is **not included in the release tarball**.
+> It is available only via Git clone. Regenerating sources also requires expanding the
+> bundled LAPACK 3.9.1 source under `external/lapack/` before running the scripts.
 
-To regenerate library routines or test programs from source:
+`fable/` is a top-level standalone component providing automated Fortran-to-C++ conversion
+of LAPACK 3.9.1 sources via [Fable](https://cci.lbl.gov/fable/) and FEM (Fortran Emulator).
 
 ```sh
+# Step 1: clone the repository
+git clone https://github.com/nakatamaho/mplapack
+cd mplapack
+
+# Step 2: expand bundled LAPACK sources
+cd external/lapack
+tar xvf lapack-3.9.1.tar.gz
+cd ../..
+
+# Step 3: run the conversion pipeline
 bash fable/go.sh          # library routines (BLAS/LAPACK C++ sources + headers + patches)
-bash fable/go_testing.sh  # test programs (EIG/LIN/MATGEN C++ sources + headers + patches)
+bash fable/go_testing.sh  # test programs (EIG/LIN/MATGEN)
 ```
 
 # MPLAPACK Test Results
@@ -250,14 +265,15 @@ bash fable/go_testing.sh  # test programs (EIG/LIN/MATGEN C++ sources + headers 
 | Tier | Compilers | Expectation |
 |:---:|:---|:---|
 | 1 | GCC (native), GCC (MinGW-w64) | Must be green |
-| 2 | Clang, Intel oneAPI | Build only; binary128 N/A for Clang; binary128+binary80 N/A for oneAPI |
+| 2 | Clang | Build only; binary128 N/A |
+| — | Intel oneAPI | binary128 and binary80 broken (2024+); oneAPI 2023 worked but no longer readily available; https://github.com/nakatamaho/mplapack/issues/77 |
 
 #### Feature Tiers (Precision)
 
 | Tier | Feature | Primary coverage targets | Notes |
 |:---:|:---|:---|:---|
-| 1 | binary80 | amd64, i386, Windows (MinGW-w64) | N/A on arm64, Clang is supported, oneAPI is not |
-| 1 | binary128 | amd64, arm64, macOS (GCC), Windows (MinGW-w64) | N/A on Clang and oneAPI |
+| 1 | binary80 | amd64, i386, Windows (MinGW-w64) | N/A on arm64; Clang supported; oneAPI broken |
+| 1 | binary128 | amd64, arm64, macOS (GCC), Windows (MinGW-w64) | N/A on Clang; oneAPI broken |
 
 ## MPLAPACK 3.0.0 Release Process
 
@@ -286,8 +302,9 @@ bash fable/go_testing.sh  # test programs (EIG/LIN/MATGEN C++ sources + headers 
 
 # History
 
-* 2026/03/02  MPLAPACK 2.1.0 released. Fable standalone, automated Fortran-to-C++ pipeline,
-  extended build matrix (Alpine, Rocky, Debian i386, CUDA 13.1.1), numerous bug fixes.
+* 2026/03/02  MPLAPACK 2.1.0 released. binary128/binary80 naming unified, MPFR emin/emax
+  auto-adjustment, Fable standalone pipeline, extended build matrix (Alpine, Rocky,
+  Debian i386, CUDA 13.1.1), numerous bug fixes.
 * 2022/09/12  MPLAPACK 2.0.1 released.
 * 2022/07/26  MPLAPACK 2.0.0 released.
 * 2022/06/14  MPLAPACK 2.0.0 alpha released.
