@@ -1,4 +1,4 @@
-# MPLAPACK ― Multi-Precision Linear Algebra Package
+# MPLAPACK — Multi-Precision Linear Algebra Package
 
 MPLAPACK is a multi-precision linear algebra package based on BLAS and LAPACK,
 implemented in C++. It supports a range of high-precision arithmetic libraries
@@ -40,8 +40,8 @@ license, supplemental to the original LAPACK license.
 * **GMP** https://gmplib.org/ (arbitrary precision)
 * **double** (binary64)
 * **DD, QD** https://www.davidhbailey.com/dhbsoftware/
-  (DD  binary128, QD  binary256)
-* **binary128** (IEEE 754-2018; compiler and platform support is complex ―
+  (DD ≈ binary128, QD ≈ binary256)
+* **binary128** (IEEE 754-2018; compiler and platform support is complex —
   see [binary128_binary80_type_support.md](binary128_binary80_type_support.md))
 * **binary80** (80-bit extended precision; Intel/AMD x86 only)
 
@@ -49,9 +49,9 @@ license, supplemental to the original LAPACK license.
 
 | Compiler | binary128 | binary80 |
 |---|---|---|
-| GCC |  Supported |  (x86/x86\_64 only) |
-| Intel oneAPI (icx/icpx) |  Broken |  Broken |
-| Clang/LLVM |  Not supported |  Supported |
+| GCC | ✅ Supported | ✅ (x86/x86\_64 only) |
+| Intel oneAPI (icx/icpx) | ❌ Broken | ❌ Broken |
+| Clang/LLVM | ❌ Not supported | ✅ Supported |
 
 > **Intel oneAPI users:** Both `binary128` and `binary80` are broken with current
 > icx/icpx releases. Intel oneAPI 2023 and earlier worked correctly, but those versions
@@ -65,7 +65,7 @@ license, supplemental to the original LAPACK license.
 | Tier | Guarantee | Platforms |
 |---|---|---|
 | **Tier 1** | `make distcheck` + full test suite | macOS Intel Sonoma (amd64), Windows / MinGW-w64 (amd64), Ubuntu 22.04 (amd64), Ubuntu 24.04 (amd64) |
-| **Tier 2** | Build + `make check` only | Alpine Linux 3.19 (amd64, arm64), Rocky Linux 8/9 (amd64), Debian 12 (amd64, arm64, i386, mips64le), Debian 13 (amd64), Ubuntu 22.04 (arm64), Ubuntu 24.04 (arm64) |
+| **Tier 2** | Build + `make check` only | Debian 12/13 (amd64, arm64, i386, ppc64le, s390x, mips64le), Alpine Linux 3.19 (amd64, arm64), Rocky Linux 8/9 (amd64), Ubuntu 22.04/24.04 (arm64) |
 | **Tier 3** | Patches accepted; no CI coverage | Other platforms |
 
 Tier 1/2 build scripts are in `misc/`:
@@ -186,7 +186,7 @@ make check
 
 Test results are summarized automatically by `misc/summarize_mplapack_tests.py`.
 
-# Fable ― Fortran-to-C++ Conversion Pipeline
+# Fable — Fortran-to-C++ Conversion Pipeline
 
 > **Note:** The Fable conversion pipeline is **not included in the release tarball**.
 > It is available only via Git clone. Regenerating sources also requires expanding the
@@ -253,16 +253,16 @@ run build and `make check` only.
 
 | # | Tier | OS | Arch | Compiler | binary80 | binary128 | Required tasks | Date |
 |---:|:---:|:---|:---|:---|:---:|:---:|:---|:---|
-| 1 | 1 | macOS Intel Sonoma | amd64 | GCC (MacPorts) |  |  | `make distcheck` + examples | - |
-| 2 | 1 | Windows | amd64 | GCC (MinGW-w64) |  |  | `make distcheck` + examples | - |
-| 3 | 1 | Ubuntu 22.04 | amd64 | GCC |  |  | `make distcheck` + examples | - |
-| 4 | 1 | Ubuntu 24.04 | amd64 | GCC |  |  | `make distcheck` + examples | - |
-| 5 | 2 | Ubuntu 24.04 | arm64 | GCC | N/A |  | build + `make check` | - |
-| 6 | 2 | Debian 12 | i386 | GCC |  | N/A | build + `make check` | - |
-| 7 | 2 | Rocky 8/9 | amd64 | GCC |  |  | build + `make check` | - |
-| 8 | 2 | Alpine 3.19 | amd64, arm64 | GCC |  |  | build + `make check` | - |
-| 9 | 2 | Debian 12 | mips64le | GCC | N/A |  | build + `make check` | - |
-| 10 | 2 | Debian 13 | amd64 | GCC |  |  | build + `make check` | - |
+| 1 | 1 | macOS Intel Sonoma | amd64 | GCC (MacPorts) | ✅ | ✅ | `make distcheck` + examples | - |
+| 2 | 1 | Windows | amd64 | GCC (MinGW-w64) | ✅ | ✅ | `make distcheck` + examples | - |
+| 3 | 1 | Ubuntu 22.04 | amd64 | GCC | ✅ | ✅ | `make distcheck` + examples | - |
+| 4 | 1 | Ubuntu 24.04 | amd64 | GCC | ✅ | ✅ | `make distcheck` + examples | - |
+| 5 | 2 | Ubuntu 24.04 | arm64 | GCC | N/A | ✅ | build + `make check` | - |
+| 6 | 2 | Debian 12 | i386 | GCC | ✅ | N/A | build + `make check` | - |
+| 7 | 2 | Rocky 8/9 | amd64 | GCC | ✅ | ✅ | build + `make check` | - |
+| 8 | 2 | Alpine 3.19 | amd64, arm64 | GCC | ✅ | ✅ | build + `make check` | - |
+| 9 | 2 | Debian 12 | ppc64le, s390x, mips64le | GCC | N/A | ✅ | build + `make check` | - |
+| 10 | 2 | Debian 13 | amd64 | GCC | ✅ | ✅ | build + `make check` | - |
 
 ### Tier Policy
 
@@ -275,8 +275,8 @@ run build and `make check` only.
 | Tier | Architectures | Expectation |
 |:---:|:---|:---|
 | 1 | amd64 (macOS, Windows, Ubuntu) | `make distcheck` + examples |
-| 2 | arm64, i386, mips64le | build + `make check` |
-| 3 | riscv64, others | build-only best-effort |
+| 2 | arm64, i386, ppc64le, s390x, mips64le | build + `make check` |
+| 3 | others | build-only best-effort |
 
 #### Compiler Tiers
 
@@ -284,7 +284,7 @@ run build and `make check` only.
 |:---:|:---|:---|
 | 1 | GCC (native), GCC (MinGW-w64) | Must be green |
 | 2 | Clang | Build only; binary128 N/A |
-| ― | Intel oneAPI | binary128 and binary80 broken (2024+); oneAPI 2023 worked but no longer readily available; https://github.com/nakatamaho/mplapack/issues/77 |
+| — | Intel oneAPI | binary128 and binary80 broken (2024+); oneAPI 2023 worked but no longer readily available; https://github.com/nakatamaho/mplapack/issues/77 |
 
 #### Feature Tiers (Precision)
 
@@ -320,24 +320,24 @@ run build and `make check` only.
 
 # History
 
-* 2026/03/03  MPLAPACK 2.1.0 released. binary128/binary80 naming unified, MPFR emin/emax
+* 2026-03-03  MPLAPACK 2.1.0 released. binary128/binary80 naming unified, MPFR emin/emax
   auto-adjustment, extended build matrix (Alpine, Rocky, Debian i386, CUDA 13.1.1).
   LAPACK 3.9.1 Fortran sources mechanically converted to idiomatic C++ via Fable and
   bundled in the release tarball.
-* 2022/09/12  MPLAPACK 2.0.1 released.
-* 2022/07/26  MPLAPACK 2.0.0 released.
-* 2022/06/14  MPLAPACK 2.0.0 alpha released.
-* 2021/11/01  1.0.1 release. Fixed DD and QD arithmetic with Intel oneAPI.
-* 2021/10/01  1.0.0 release. All real LAPACK routines available; SVD and non-symmetric
+* 2022-09-12  MPLAPACK 2.0.1 released.
+* 2022-07-26  MPLAPACK 2.0.0 released.
+* 2022-06-14  MPLAPACK 2.0.0 alpha released.
+* 2021-11-01  1.0.1 release. Fixed DD and QD arithmetic with Intel oneAPI.
+* 2021-10-01  1.0.0 release. All real LAPACK routines available; SVD and non-symmetric
   eigenproblem solvers added.
-* 2021/04/11  0.9.3 release. CentOS 7 AArch64 support.
-* 2021/04/01  0.9.0 release. Renamed to mplapack.
-* 2012/12/25  MPACK 0.8.0. NVIDIA C2050 support for Rgemm (double-double).
-* 2010/08/20  MPACK 0.6.7. Condition number estimators added (Rgecon, Rpocon).
+* 2021-04-11  0.9.3 release. CentOS 7 AArch64 support.
+* 2021-04-01  0.9.0 release. Renamed to mplapack.
+* 2012-12-25  MPACK 0.8.0. NVIDIA C2050 support for Rgemm (double-double).
+* 2010-08-20  MPACK 0.6.7. Condition number estimators added (Rgecon, Rpocon).
   License changed to 2-clause BSD.
-* 2009/11/24  MPACK 0.6.0.
-* 2008/07/15  mpack-0.0.1. Now configurable and installable.
-* 2008/06/24  Project page created.
+* 2009-11-24  MPACK 0.6.0.
+* 2008-07-15  mpack-0.0.1. Now configurable and installable.
+* 2008-06-24  Project page created.
 
 # Old Page
 
@@ -348,7 +348,7 @@ http://mplapack.sourceforge.net/
 This work has been supported by:
 The Special Postdoctoral Researchers' Program of RIKEN (2008, 2009),
 Grant-in-Aid for Scientific Research (B) 21300017 from the Japan Society for the Promotion
-of Science (20092011), Microsoft Research CORE6 (2010), JSPS KAKENHI Grant no. 18H03206,
+of Science (2009–2011), Microsoft Research CORE6 (2010), JSPS KAKENHI Grant no. 18H03206,
 and TIS inc.
 
 M.N. would like to thank Dr. Imamura Toshiyuki, Dr. Nakasato Naohito, Dr. Fujisawa Katsuki,
