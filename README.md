@@ -65,7 +65,7 @@ license, supplemental to the original LAPACK license.
 | Tier | Guarantee | Platforms |
 |---|---|---|
 | **Tier 1** | `make distcheck` + full test suite | macOS Intel Sonoma (amd64), Windows / MinGW-w64 (amd64), Ubuntu 22.04 (amd64), Ubuntu 24.04 (amd64) |
-| **Tier 2** | Build + `make check` only | Debian 12/13 (amd64, arm64, i386, ppc64le, s390x, mips64le), Alpine Linux 3.19 (amd64, arm64), Rocky Linux 8/9 (amd64), Ubuntu 22.04/24.04 (arm64) |
+| **Tier 2** | Build only | Debian 12/13 (amd64, arm64, i386, ppc64le, s390x, riscv64), Alpine Linux 3.19 (amd64, arm64), Rocky Linux 8/9 (amd64), Ubuntu 22.04/24.04 (arm64) |
 | **Tier 3** | Patches accepted; no CI coverage | Other platforms |
 
 Tier 1/2 build scripts are in `misc/`:
@@ -248,8 +248,7 @@ bash fable/go_testing.sh  # test programs (EIG/LIN/MATGEN)
 
 ### Tier-S Representative Gate Matrix (Release Blockers)
 
-Tier 1 platforms run the full pipeline including `make distcheck`. All other platforms
-run build and `make check` only.
+Tier 1 platforms run the full pipeline including `make distcheck`. Tier 2 platforms run build only.
 
 | # | Tier | OS | Arch | Compiler | binary80 | binary128 | Required tasks | Date |
 |---:|:---:|:---|:---|:---|:---:|:---:|:---|:---|
@@ -257,17 +256,17 @@ run build and `make check` only.
 | 2 | 1 | Windows | amd64 | GCC (MinGW-w64) | ✅ | ✅ | `make distcheck` + examples | - |
 | 3 | 1 | Ubuntu 22.04 | amd64 | GCC | ✅ | ✅ | `make distcheck` + examples | - |
 | 4 | 1 | Ubuntu 24.04 | amd64 | GCC | ✅ | ✅ | `make distcheck` + examples | - |
-| 5 | 2 | Ubuntu 24.04 | arm64 | GCC | N/A | ✅ | build + `make check` | - |
-| 6 | 2 | Debian 12 | i386 | GCC | ✅ | N/A | build + `make check` | - |
-| 7 | 2 | Rocky 8/9 | amd64 | GCC | ✅ | ✅ | build + `make check` | - |
-| 8 | 2 | Alpine 3.19 | amd64, arm64 | GCC | ✅ | ✅ | build + `make check` | - |
-| 9 | 2 | Debian 12 | ppc64le, s390x, mips64le | GCC | N/A | ✅ | build + `make check` | - |
-| 10 | 2 | Debian 13 | amd64 | GCC | ✅ | ✅ | build + `make check` | - |
+| 5 | 2 | Ubuntu 24.04 | arm64 | GCC | N/A | ✅ | build only | - |
+| 6 | 2 | Debian 12 | i386 | GCC | ✅ | N/A | build only | - |
+| 7 | 2 | Rocky 8/9 | amd64 | GCC | ✅ | ✅ | build only | - |
+| 8 | 2 | Alpine 3.19 | amd64, arm64 | GCC | ✅ | ✅ | build only | - |
+| 9 | 2 | Debian 12 | ppc64le, s390x, riscv64 | GCC | N/A | ✅ | build only | - |
+| 10 | 2 | Debian 13 | amd64 | GCC | ✅ | ✅ | build only | - |
 
 ### Tier Policy
 
 > **Tier 1 (release blockers):** `make distcheck` must pass on all four Tier 1 platforms.
-> **Tier 2 (build guarantee):** build + `make check` tracked; not release-blocking.
+> **Tier 2 (build guarantee):** build only; not release-blocking.
 > **Tier 3 (patches accepted):** no CI coverage.
 
 #### CPU Architecture Tiers
@@ -275,7 +274,7 @@ run build and `make check` only.
 | Tier | Architectures | Expectation |
 |:---:|:---|:---|
 | 1 | amd64 (macOS, Windows, Ubuntu) | `make distcheck` + examples |
-| 2 | arm64, i386, ppc64le, s390x, mips64le | build + `make check` |
+| 2 | arm64, i386, ppc64le, s390x, riscv64 | build only |
 | 3 | others | build-only best-effort |
 
 #### Compiler Tiers
