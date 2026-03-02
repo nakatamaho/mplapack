@@ -8,7 +8,7 @@ license, supplemental to the original LAPACK license.
 
 # News
 
-* 2026-03-02  MPLAPACK 2.1.0 released. binary128/binary80 naming unified, MPFR emin/emax
+* 2026-03-03  MPLAPACK 2.1.0 released. binary128/binary80 naming unified, MPFR emin/emax
   auto-adjustment, extended build matrix. LAPACK 3.9.1 Fortran sources are now mechanically
   converted to idiomatic C++ via Fable and bundled in the release tarball.
   See [CHANGES.md](CHANGES.md), [MIGRATION.md](MIGRATION.md) and [binary128_binary80_type_support.md](binary128_binary80_type_support.md).
@@ -313,7 +313,7 @@ bash fable/go_testing.sh  # test programs (EIG/LIN/MATGEN)
 
 # History
 
-* 2026/03/02  MPLAPACK 2.1.0 released. binary128/binary80 naming unified, MPFR emin/emax
+* 2026/03/03  MPLAPACK 2.1.0 released. binary128/binary80 naming unified, MPFR emin/emax
   auto-adjustment, extended build matrix (Alpine, Rocky, Debian i386, CUDA 13.1.1).
   LAPACK 3.9.1 Fortran sources mechanically converted to idiomatic C++ via Fable and
   bundled in the release tarball.
