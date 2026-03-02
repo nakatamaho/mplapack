@@ -101,7 +101,7 @@ To enable `binary80` (Intel/AMD x86 only), add `--enable-binary80=yes`:
     --enable-binary80=yes \
     --enable-gmp=yes \
     --enable-mpfr=yes \
-    --enable-_Float128=yes \
+    --enable-binary128=yes \
     --enable-qd=yes \
     --enable-dd=yes \
     --enable-double=yes \
@@ -111,7 +111,7 @@ To enable `binary80` (Intel/AMD x86 only), add `--enable-binary80=yes`:
 
 ## macOS (Intel; using MacPorts)
 
-FSF GCC is required. Clang (the default macOS compiler) does not support `_Float128`.
+FSF GCC is required. Clang (the default macOS compiler) does neither support `_Float128` nor `__float128` 
 
 ```sh
 sudo port install gcc14 coreutils git gsed
