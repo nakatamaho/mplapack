@@ -5,86 +5,177 @@ downstream package maintainers.
 
 ---
 
-## 1. Extended BLAS Routines Removed
+## 1. MPFR Exponent Range Now Auto-Adjusted with Precision
 
-**Impact:** Users who call extended BLAS routines directly, or call MPLAPACK routines that
-depended on them.
+**Impact:** Users who set `MPLAPACK_MPFR_PRECISION` via environment variable, or who rely
+on specific MPFR exponent range (emin/emax) values at runtime.
 
 ### What changed
 
-Extended BLAS routines have been removed from `libmpblas`. All MPLAPACK routines that
-internally depended on extended BLAS have also been removed.
+When `MPLAPACK_MPFR_PRECISION` is set, MPLAPACK now automatically adjusts `emin`/`emax`
+proportionally to the requested precision:
+
+```
+emax =  prec * 64   (clamped to mpfr_get_emax_max())
+emin = -prec * 64   (clamped to mpfr_get_emin_min())
+```
+
+This adjustment is applied only when no explicit exponent range is given via environment
+variables. If `MPLAPACK_MPFR_EMIN` / `MPLAPACK_MPFR_EMAX` are set explicitly, they take
+precedence and no automatic adjustment is made.
+
+In 2.0.x, the exponent range was not adjusted when precision changed, which could cause
+underflow or overflow in high-precision computations where the default MPFR exponent range
+was too narrow for the requested precision.
+
+### Who needs to act
+
+- Users who set `MPLAPACK_MPFR_PRECISION` and relied on the old (fixed) emin/emax.
+- Users whose code assumes specific emin/emax values after initialization.
+
+### Migration
+
+If you need to preserve the old fixed exponent range regardless of precision, set
+`MPLAPACK_MPFR_EMIN` and `MPLAPACK_MPFR_EMAX` explicitly to prevent auto-adjustment:
+
+```sh
+# Disable auto-adjustment by pinning the exponent range explicitly
+export MPLAPACK_MPFR_PRECISION=256
+export MPLAPACK_MPFR_EMIN=-1073741823    # mpfr_get_emin_min() on most platforms
+export MPLAPACK_MPFR_EMAX=1073741823     # mpfr_get_emax_max() on most platforms
+```
+
+If you want the new auto-adjusted range (recommended), simply set precision and let
+MPLAPACK compute emin/emax automatically:
+
+```sh
+export MPLAPACK_MPFR_PRECISION=256
+# emin/emax will be set to ±16384 (= ±256*64) automatically
+```
+
+To inspect the effective exponent range at runtime:
+
+```cpp
+#include <mpfr.h>
+mpfr_exp_t emin = mpfr_get_emin();
+mpfr_exp_t emax = mpfr_get_emax();
+```
+
+---
+
+## 2. binary128 and binary80 Library and Type Names Changed
+
+**Impact:** All users who link against the `_Float128` or `_Float64x` precision backends,
+use their types directly, or reference them in build scripts, configure flags, or headers.
+
+### What changed
+
+All names have been unified under the `binary128` / `binary80` naming scheme to abstract
+away platform-specific type names and improve portability.
+
+#### Configure flags
+
+| 2.0.x | 2.1.0 |
+|---|---|
+| `--enable-_Float128=yes` | `--enable-binary128=yes` |
+| `--enable-_Float64x=yes` | `--enable-binary80=yes` |
+
+#### Library names
+
+| 2.0.x | 2.1.0 |
+|---|---|
+| `libmplapack__Float128` | `libmplapack_binary128` |
+| `libmpblas__Float128` | `libmpblas_binary128` |
+| `libmplapack__Float64x` | `libmplapack_binary80` |
+| `libmpblas__Float64x` | `libmpblas_binary80` |
+
+#### Header names
+
+| 2.0.x | 2.1.0 |
+|---|---|
+| `mplapack__Float128.h` | `mplapack_binary128.h` |
+| `mpblas__Float128.h` | `mpblas_binary128.h` |
+| `mplapack__Float64x.h` | `mplapack_binary80.h` |
+| `mpblas__Float64x.h` | `mpblas_binary80.h` |
+
+#### Type names
+
+The platform-specific types (`_Float128`, `__float128`, `_Float64x`, `long double` used
+as extended precision) are now abstracted by typedefs. Use these in all new code:
+
+| 2.0.x (platform-specific) | 2.1.0 |
+|---|---|
+| `_Float128` / `__float128` | `mplapack_binary128_t` |
+| `_Float64x` / `long double` (extended) | `mplapack_binary80_t` |
+
+`mplapack_binary128_t` and `mplapack_binary80_t` are defined in `mplapack_config.h` and
+resolve to the correct underlying type for each platform and compiler, allowing code to be
+written once without `#ifdef` guards for different compilers or platforms.
 
 ### Who needs to act
 
 Anyone who:
-- Links against `libmpblas` and calls extended BLAS routines directly.
-- Links against `libmplapack` and calls LAPACK routines that were removed because they
-  depended on extended BLAS.
+- Passes `--enable-_Float128` or `--enable-_Float64x` to `./configure`.
+- Links against `libmplapack__Float128`, `libmpblas__Float128`, `libmplapack__Float64x`,
+  or `libmpblas__Float64x` by name (in Makefiles, CMakeLists, pkg-config, etc.).
+- Includes `mplapack__Float128.h`, `mpblas__Float128.h`, `mplapack__Float64x.h`, or
+  `mpblas__Float64x.h` directly.
+- Uses `_Float128`, `__float128`, or `_Float64x` as the scalar type in MPLAPACK calls.
 
 ### Migration
 
-Check your source code for calls to extended BLAS routines. If you used them, you must
-either implement equivalent functionality yourself or reorganize the algorithm to use the
-standard BLAS subset.
+#### Build system / configure
+
+```sh
+# Old (2.0.x)
+./configure --enable-_Float128=yes --enable-_Float64x=yes ...
+
+# New (2.1.0)
+./configure --enable-binary128=yes --enable-binary80=yes ...
+```
+
+#### Linking
+
+```sh
+# Old (2.0.x)
+-lmplapack__Float128 -lmpblas__Float128
+-lmplapack__Float64x -lmpblas__Float64x
+
+# New (2.1.0)
+-lmplapack_binary128 -lmpblas_binary128
+-lmplapack_binary80  -lmpblas_binary80
+```
+
+#### Headers
 
 ```cpp
-// Extended BLAS (REMOVED in 2.1.0) — example pattern
-// Rgemm2(...);   // no longer available
+// Old (2.0.x)
+#include <mplapack__Float128.h>
+#include <mpblas__Float128.h>
+#include <mplapack__Float64x.h>
+#include <mpblas__Float64x.h>
 
-// Standard BLAS alternative — still available
-Rgemm("N", "N", m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
+// New (2.1.0)
+#include <mplapack_binary128.h>
+#include <mpblas_binary128.h>
+#include <mplapack_binary80.h>
+#include <mpblas_binary80.h>
 ```
 
-Compile your project against 2.1.0 and fix any undefined-reference linker errors that
-appear for extended BLAS symbols.
+#### Type usage in application code
 
----
+```cpp
+// Old (2.0.x) — platform-specific, required #ifdef for portability
+#if defined(__GNUC__)
+    _Float128 x = 1.0Q;
+#elif defined(__ICC)
+    __float128 x = ...;
+#endif
 
-## 2. Compiler Restrictions: oneAPI and Clang
-
-**Impact:** Users building with Intel oneAPI (icx/icpx) or Clang/LLVM.
-
-### What changed
-
-| Compiler | binary128 | binary80 |
-|---|---|---|
-| Intel oneAPI (icx/icpx) | ❌ Removed | ❌ Removed |
-| Clang/LLVM | ❌ Removed | ✅ Available |
-| GCC | ✅ Available | ✅ Available |
-
-These backends are not supported due to missing compiler-level support (128-bit floating-point
-types, `__float128`, and related intrinsics are GCC-specific).
-
-### Who needs to act
-
-- Developers using Intel oneAPI who relied on `binary128` or `binary80` precision.
-- Developers using Clang who relied on `binary128` precision.
-
-### Migration
-
-Switch to GCC for builds requiring `binary128` or (if using oneAPI) `binary80`.
-
-```sh
-# If using oneAPI and needing binary128/binary80: switch to GCC
-export CC=gcc
-export CXX=g++
-./configure --enable-binary128=yes --enable-binary80=yes ...
-
-# Clang: binary80 is available; binary128 is not
-export CC=clang
-export CXX=clang++
-./configure --enable-binary80=yes ...
-# Do NOT pass --enable-binary128=yes with Clang
-```
-
-If your build system detects the compiler and conditionally enables these backends, add a
-GCC check before passing `--enable-binary128`:
-
-```sh
-if [ "$(${CXX} --version | head -1 | grep -c 'g++')" = "1" ]; then
-    BINARY128_FLAG="--enable-binary128=yes"
-fi
+// New (2.1.0) — portable, no #ifdef needed
+#include <mplapack_config.h>
+mplapack_binary128_t x = 1.0Q;
+mplapack_binary80_t  y = 1.0L;
 ```
 
 ---
@@ -133,7 +224,91 @@ If you maintain hardcoded precision constants in your own code:
 
 ---
 
-## 4. Fable as Top-Level Standalone Component
+## 4. Extended BLAS Routines Removed
+
+**Impact:** Users who call extended BLAS routines directly, or call MPLAPACK routines that
+depended on them.
+
+### What changed
+
+Extended BLAS routines have been removed from `libmpblas`. All MPLAPACK routines that
+internally depended on extended BLAS have also been removed.
+
+### Who needs to act
+
+Anyone who:
+- Links against `libmpblas` and calls extended BLAS routines directly.
+- Links against `libmplapack` and calls LAPACK routines that were removed because they
+  depended on extended BLAS.
+
+### Migration
+
+Check your source code for calls to extended BLAS routines. If you used them, you must
+either implement equivalent functionality yourself or reorganize the algorithm to use the
+standard BLAS subset.
+
+```cpp
+// Extended BLAS (REMOVED in 2.1.0) — example pattern
+// Rgemm2(...);   // no longer available
+
+// Standard BLAS alternative — still available
+Rgemm("N", "N", m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
+```
+
+Compile your project against 2.1.0 and fix any undefined-reference linker errors that
+appear for extended BLAS symbols.
+
+---
+
+## 5. Compiler Restrictions: oneAPI and Clang
+
+**Impact:** Users building with Intel oneAPI (icx/icpx) or Clang/LLVM.
+
+### What changed
+
+| Compiler | binary128 | binary80 |
+|---|---|---|
+| Intel oneAPI (icx/icpx) | ❌ Not supported | ❌ Not supported |
+| Clang/LLVM | ❌ Not supported | ✅ Available |
+| GCC | ✅ Available | ✅ Available |
+
+These backends are not supported due to missing compiler-level support (`_Float128`,
+`__float128`, and related intrinsics are GCC-specific).
+
+### Who needs to act
+
+- Developers using Intel oneAPI who relied on `binary128` or `binary80` precision.
+- Developers using Clang who relied on `binary128` precision.
+
+### Migration
+
+Switch to GCC for builds requiring `binary128` or (if using oneAPI) `binary80`.
+
+```sh
+# If using oneAPI and needing binary128/binary80: switch to GCC
+export CC=gcc
+export CXX=g++
+./configure --enable-binary128=yes --enable-binary80=yes ...
+
+# Clang: binary80 is available; binary128 is not
+export CC=clang
+export CXX=clang++
+./configure --enable-binary80=yes ...
+# Do NOT pass --enable-binary128=yes with Clang
+```
+
+If your build system detects the compiler and conditionally enables these backends, add a
+GCC check before passing `--enable-binary128`:
+
+```sh
+if [ "$(${CXX} --version | head -1 | grep -c 'g++')" = "1" ]; then
+    BINARY128_FLAG="--enable-binary128=yes"
+fi
+```
+
+---
+
+## 6. Fable as Top-Level Standalone Component
 
 **Impact:** Developers who build MPLAPACK from source, package maintainers, and anyone
 who integrates the MPLAPACK source tree into larger build systems.
@@ -179,7 +354,7 @@ bash fable/go_testing.sh
 
 ---
 
-## 5. Auto-Generated Public Headers
+## 7. Auto-Generated Public Headers
 
 **Impact:** Developers who manually maintain or patch `mpblas*.h` / `mplapack*.h` public headers.
 
@@ -215,7 +390,7 @@ bash fable/go.sh
 
 ---
 
-## 6. Benchmark Directory Restructured
+## 8. Benchmark Directory Restructured
 
 **Impact:** Developers or CI scripts that reference benchmark source paths directly.
 
@@ -252,7 +427,7 @@ make
 
 ---
 
-## 7. Test Output Directory Layout Changed
+## 9. Test Output Directory Layout Changed
 
 **Impact:** CI pipelines and scripts that parse or archive test output files by path.
 
@@ -287,7 +462,7 @@ python3 misc/summarize_mplapack_tests.py
 
 ---
 
-## 8. ILP32 Platform: `mplapackint` Changed to `long`
+## 10. ILP32 Platform: `mplapackint` Changed to `long`
 
 **Impact:** Users building on 32-bit platforms (Debian i386) or cross-compiling for ILP32.
 
@@ -315,7 +490,7 @@ static_assert(sizeof(mplapackint) == sizeof(long),
 
 ---
 
-## 9. Known Issue: lin/dd on AArch64 (ARM)
+## 11. Known Issue: lin/dd on AArch64 (ARM)
 
 **Impact:** Users running the `lin/dd` test suite on AArch64 hardware (e.g., Raspberry Pi 4,
 AWS Graviton, Apple Silicon with GCC).
@@ -359,13 +534,15 @@ python3 misc/summarize_mplapack_tests.py
 
 | User type | Actions required |
 |---|---|
-| Application developer using standard BLAS/LAPACK routines | None for most users; check for extended BLAS usage |
-| Application developer using extended BLAS | Remove extended BLAS calls (§1) |
-| Intel oneAPI user | Switch to GCC for binary128/binary80 (§2) |
-| Clang user needing binary128 | Switch to GCC (§2) |
+| User setting MPLAPACK_MPFR_PRECISION | Verify emin/emax behavior; pin explicitly if needed (§1) |
+| Application developer using binary128/binary80 | Update configure flags, library names, headers, types (§2) |
 | User with DD/QD golden-value tests | Regenerate reference files (§3) |
-| Packager / build system integrator | Update fable/ paths and benchmark paths (§4, §6) |
-| Developer patching public headers | Patch generators instead of headers (§5) |
-| CI pipeline collecting test output | Update output path globs (§7) |
-| i386 / ILP32 platform developer | Verify integer type assumptions (§8) |
-| AArch64 user running lin/dd tests | See known issue §9; failures are expected and tracked |
+| Application developer using extended BLAS | Remove extended BLAS calls (§4) |
+| Intel oneAPI user | Switch to GCC for binary128/binary80 (§5) |
+| Clang user needing binary128 | Switch to GCC (§5) |
+| Packager / build system integrator | Update fable/ paths and benchmark paths (§6, §8) |
+| Developer patching public headers | Patch generators instead of headers (§7) |
+| CI pipeline collecting test output | Update output path globs (§9) |
+| i386 / ILP32 platform developer | Verify integer type assumptions (§10) |
+| AArch64 user running lin/dd tests | See known issue §11; failures are expected and tracked |
+
