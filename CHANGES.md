@@ -82,6 +82,16 @@ See [MIGRATION.md](MIGRATION.md) for full migration instructions.
 - **`long`/`unsigned long` I/O overloads** fixed for ILP32/LLP64 platforms to prevent
   32-bit truncation on Windows and Debian i386.
 
+### Known Issues
+
+- **`lin/dd`: elevated failure count on AArch64 (ARM) — suspected GCC bug.**
+  On Raspberry Pi 4 (Cortex-A72, AArch64, Ubuntu 24.04, GCC 13.3.0), the `lin/dd` test
+  suite shows 226 failures (0.03%) vs. the expected ≤ 12 (0.00%) on amd64. All other
+  backends (`binary128`, `mpfr`, `qd`, etc.) and `eig/dd` on the same hardware are within
+  normal range. The root cause is under investigation and is suspected to be a GCC bug on
+  AArch64 affecting double-double arithmetic.
+  See: https://github.com/nakatamaho/mplapack/issues/76
+
 ### Portability / Platform
 
 - **`binary80`: `M_PIl` replaced with portable hex-float literal.**

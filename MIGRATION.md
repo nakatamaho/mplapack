@@ -315,6 +315,46 @@ static_assert(sizeof(mplapackint) == sizeof(long),
 
 ---
 
+## 9. Known Issue: lin/dd on AArch64 (ARM)
+
+**Impact:** Users running the `lin/dd` test suite on AArch64 hardware (e.g., Raspberry Pi 4,
+AWS Graviton, Apple Silicon with GCC).
+
+### What is observed
+
+On Raspberry Pi 4 (Cortex-A72, AArch64, Ubuntu 24.04, GCC 13.3.0), the `lin/dd` test suite
+produces 226 failures (0.03%), compared to ≤ 12 (0.00%) on all tested amd64 platforms.
+All other backends and `eig/dd` on the same hardware are within the normal range.
+
+This is **not** a regression in MPLAPACK routines themselves. The root cause is under
+investigation and is suspected to be a GCC bug on AArch64 affecting double-double arithmetic.
+
+See: https://github.com/nakatamaho/mplapack/issues/76
+
+### Who is affected
+
+Users who:
+- Build and run `make check` with `--enable-dd=yes` on AArch64 hardware.
+- Use `lin/dd` test results as a pass/fail gate in CI on AArch64.
+
+### Workaround
+
+There is no fix available in 2.1.0. If you encounter this failure pattern on AArch64,
+it is expected and tracked. You may suppress the `lin/dd` failure gate on AArch64 in CI
+until the issue is resolved.
+
+To confirm you are hitting the same issue, check whether the failure count is around 226
+and the failing files number exactly 2 out of 4:
+
+```sh
+# After make check, run the summarizer:
+python3 misc/summarize_mplapack_tests.py
+# Expected anomaly:
+# lin  dd  865775  226  0.03%  2  4
+```
+
+---
+
 ## Summary of Required Actions by User Type
 
 | User type | Actions required |
@@ -328,3 +368,4 @@ static_assert(sizeof(mplapackint) == sizeof(long),
 | Developer patching public headers | Patch generators instead of headers (§5) |
 | CI pipeline collecting test output | Update output path globs (§7) |
 | i386 / ILP32 platform developer | Verify integer type assumptions (§8) |
+| AArch64 user running lin/dd tests | See known issue §9; failures are expected and tracked |
