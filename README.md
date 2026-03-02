@@ -1,4 +1,4 @@
-# MPLAPACK — Multi-Precision Linear Algebra Package
+# MPLAPACK ― Multi-Precision Linear Algebra Package
 
 MPLAPACK is a multi-precision linear algebra package based on BLAS and LAPACK,
 implemented in C++. It supports a range of high-precision arithmetic libraries
@@ -11,7 +11,7 @@ license, supplemental to the original LAPACK license.
 * 2026-03-03  MPLAPACK 2.1.0 released. binary128/binary80 naming unified, MPFR emin/emax
   auto-adjustment, extended build matrix. LAPACK 3.9.1 Fortran sources are now mechanically
   converted to idiomatic C++ via Fable and bundled in the release tarball.
-  See [CHANGES.md](CHANGES.md), [MIGRATION.md](MIGRATION.md) and [binary128_binary80_type_support.md](binary128_binary80_type_support.md).
+  See [CHANGES.md](CHANGES.md) and [MIGRATION.md](MIGRATION.md).
 * 2022-09-12  MPLAPACK 2.0.1 released, featuring CUDA versions of Rgemm (dd) and Rsyrk (dd)
   for Volta and Ampere architectures (~450 GFlops on V100), and Windows DLLs for MinGW-w64.
 * 2022-07-26  MPLAPACK 2.0.0 released. All routines (except mixed-precision) functional and
@@ -40,8 +40,8 @@ license, supplemental to the original LAPACK license.
 * **GMP** https://gmplib.org/ (arbitrary precision)
 * **double** (binary64)
 * **DD, QD** https://www.davidhbailey.com/dhbsoftware/
-  (DD ≈ binary128, QD ≈ binary256)
-* **binary128** (IEEE 754-2018; compiler and platform support is complex —
+  (DD  binary128, QD  binary256)
+* **binary128** (IEEE 754-2018; compiler and platform support is complex ―
   see [binary128_binary80_type_support.md](binary128_binary80_type_support.md))
 * **binary80** (80-bit extended precision; Intel/AMD x86 only)
 
@@ -49,9 +49,9 @@ license, supplemental to the original LAPACK license.
 
 | Compiler | binary128 | binary80 |
 |---|---|---|
-| GCC | ✅ Supported | ✅ (x86/x86\_64 only) |
-| Intel oneAPI (icx/icpx) | ❌ Broken | ❌ Broken |
-| Clang/LLVM | ❌ Not supported | ✅ Supported |
+| GCC |  Supported |  (x86/x86\_64 only) |
+| Intel oneAPI (icx/icpx) |  Broken |  Broken |
+| Clang/LLVM |  Not supported |  Supported |
 
 > **Intel oneAPI users:** Both `binary128` and `binary80` are broken with current
 > icx/icpx releases. Intel oneAPI 2023 and earlier worked correctly, but those versions
@@ -64,8 +64,8 @@ license, supplemental to the original LAPACK license.
 
 | Tier | Guarantee | Platforms |
 |---|---|---|
-| **Tier 1** | Functionality guaranteed (build + full test suite) | macOS Intel Sonoma (amd64), Windows / MinGW-w64 (amd64), Ubuntu 22.04 (amd64), Ubuntu 24.04 (amd64) |
-| **Tier 2** | Build guaranteed | Alpine Linux 3.19 (amd64, arm64), Rocky Linux 8/9 (amd64), Debian 12 (amd64, arm64, i386, mips64le), Debian 13 (amd64), Ubuntu 22.04 (arm64), Ubuntu 24.04 (arm64) |
+| **Tier 1** | `make distcheck` + full test suite | macOS Intel Sonoma (amd64), Windows / MinGW-w64 (amd64), Ubuntu 22.04 (amd64), Ubuntu 24.04 (amd64) |
+| **Tier 2** | Build + `make check` only | Alpine Linux 3.19 (amd64, arm64), Rocky Linux 8/9 (amd64), Debian 12 (amd64, arm64, i386, mips64le), Debian 13 (amd64), Ubuntu 22.04 (arm64), Ubuntu 24.04 (arm64) |
 | **Tier 3** | Patches accepted; no CI coverage | Other platforms |
 
 Tier 1/2 build scripts are in `misc/`:
@@ -186,7 +186,7 @@ make check
 
 Test results are summarized automatically by `misc/summarize_mplapack_tests.py`.
 
-# Fable — Fortran-to-C++ Conversion Pipeline
+# Fable ― Fortran-to-C++ Conversion Pipeline
 
 > **Note:** The Fable conversion pipeline is **not included in the release tarball**.
 > It is available only via Git clone. Regenerating sources also requires expanding the
@@ -248,28 +248,35 @@ bash fable/go_testing.sh  # test programs (EIG/LIN/MATGEN)
 
 ### Tier-S Representative Gate Matrix (Release Blockers)
 
+Tier 1 platforms run the full pipeline including `make distcheck`. All other platforms
+run build and `make check` only.
+
 | # | Tier | OS | Arch | Compiler | binary80 | binary128 | Required tasks | Date |
 |---:|:---:|:---|:---|:---|:---:|:---:|:---|:---|
-| 1 | S | Ubuntu 24.04 | amd64 | GCC | ✅ | ✅ | build / tests / `make check` / examples | - |
-| 2 | S | Ubuntu 22.04 | amd64 | GCC | ✅ | ✅ | build / tests / `make check` / examples | - |
-| 3 | S | Ubuntu 24.04 | arm64 | GCC | N/A | ✅ | build / tests / `make check` / examples | - |
-| 4 | S | Debian 12 | i386 | GCC | ✅ | N/A | build / tests / `make check` / examples | - |
-| 5 | S | Rocky 8/9 | amd64 | GCC | ✅ | ✅ | build / tests / `make check` / examples | - |
-| 6 | S | macOS Intel Sonoma | amd64 | GCC (MacPorts) | ✅ | ✅ | build / tests / `make check` / examples | - |
-| 7 | S | Windows | amd64 | GCC (MinGW-w64) | ✅ | ✅ | build / tests / `make check` / examples | - |
+| 1 | 1 | macOS Intel Sonoma | amd64 | GCC (MacPorts) |  |  | `make distcheck` + examples | - |
+| 2 | 1 | Windows | amd64 | GCC (MinGW-w64) |  |  | `make distcheck` + examples | - |
+| 3 | 1 | Ubuntu 22.04 | amd64 | GCC |  |  | `make distcheck` + examples | - |
+| 4 | 1 | Ubuntu 24.04 | amd64 | GCC |  |  | `make distcheck` + examples | - |
+| 5 | 2 | Ubuntu 24.04 | arm64 | GCC | N/A |  | build + `make check` | - |
+| 6 | 2 | Debian 12 | i386 | GCC |  | N/A | build + `make check` | - |
+| 7 | 2 | Rocky 8/9 | amd64 | GCC |  |  | build + `make check` | - |
+| 8 | 2 | Alpine 3.19 | amd64, arm64 | GCC |  |  | build + `make check` | - |
+| 9 | 2 | Debian 12 | mips64le | GCC | N/A |  | build + `make check` | - |
+| 10 | 2 | Debian 13 | amd64 | GCC |  |  | build + `make check` | - |
 
 ### Tier Policy
 
-> **Tier 1 (release blockers):** must be green on the representative gate matrix above.
-> **Tier 2 (build guarantee):** tracked but not release-blocking.
+> **Tier 1 (release blockers):** `make distcheck` must pass on all four Tier 1 platforms.
+> **Tier 2 (build guarantee):** build + `make check` tracked; not release-blocking.
 > **Tier 3 (patches accepted):** no CI coverage.
 
 #### CPU Architecture Tiers
 
 | Tier | Architectures | Expectation |
 |:---:|:---|:---|
-| 1 | amd64, arm64, i386 | build + tests + `make check` + examples |
-| 2 | mips64le, riscv64 | build-only by default |
+| 1 | amd64 (macOS, Windows, Ubuntu) | `make distcheck` + examples |
+| 2 | arm64, i386, mips64le | build + `make check` |
+| 3 | riscv64, others | build-only best-effort |
 
 #### Compiler Tiers
 
@@ -277,7 +284,7 @@ bash fable/go_testing.sh  # test programs (EIG/LIN/MATGEN)
 |:---:|:---|:---|
 | 1 | GCC (native), GCC (MinGW-w64) | Must be green |
 | 2 | Clang | Build only; binary128 N/A |
-| — | Intel oneAPI | binary128 and binary80 broken (2024+); oneAPI 2023 worked but no longer readily available; https://github.com/nakatamaho/mplapack/issues/77 |
+| ― | Intel oneAPI | binary128 and binary80 broken (2024+); oneAPI 2023 worked but no longer readily available; https://github.com/nakatamaho/mplapack/issues/77 |
 
 #### Feature Tiers (Precision)
 
@@ -341,7 +348,7 @@ http://mplapack.sourceforge.net/
 This work has been supported by:
 The Special Postdoctoral Researchers' Program of RIKEN (2008, 2009),
 Grant-in-Aid for Scientific Research (B) 21300017 from the Japan Society for the Promotion
-of Science (2009–2011), Microsoft Research CORE6 (2010), JSPS KAKENHI Grant no. 18H03206,
+of Science (20092011), Microsoft Research CORE6 (2010), JSPS KAKENHI Grant no. 18H03206,
 and TIS inc.
 
 M.N. would like to thank Dr. Imamura Toshiyuki, Dr. Nakasato Naohito, Dr. Fujisawa Katsuki,
