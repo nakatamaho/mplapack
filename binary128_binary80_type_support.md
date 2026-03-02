@@ -40,7 +40,7 @@
 | # | binary128 config | binary80 config | Representative platform(s) |
 |---|-----------------|-----------------|---------------------------|
 | A | `__float128` + libquadmath | `long double` (binary80) | Ubuntu 22.04 amd64 / MinGW-w64 GCC 10; Alpine 3.19 x86_64 GCC 13; macOS Sonoma x86_64 GCC-MP-14; Debian 12 i386 GCC 12; Ubuntu 24.04 amd64 / MinGW-w64 GCC 13 |
-| B | `__float128` + libquadmath | ― | Debian 12 ppc64le GCC 12 (×2 entries) |
+| B | `__float128` + libquadmath | ― | Debian 12 ppc64le GCC 12 |
 | C | `_Float128` + strfromf128 | `_Float64x` (binary80) | Ubuntu 24.04 amd64 GCC 13; Debian 12 amd64 GCC 14; Debian 13 amd64 GCC 14; Debian 13 i686 GCC 14 |
 | D | `_Float128` + strfromf128 | ― | Ubuntu 24.04 arm64 GCC 13; Debian 13 arm64/ppc64le/s390x GCC 14 |
 | E | `long double` (binary128) | ― | Debian 12 arm64 GCC 12; Debian 12 s390x GCC 12 |
@@ -77,13 +77,6 @@ Both ABIs map `long double` to IEEE 754 binary128, so 128-bit precision is avail
 cases. However, the I/O and math function sets differ, which affects portability of formatting
 and special-function code.
 
-### 4. ppc64le binary80 absence ― the libquadmath-without-binary80 trap
-
-Debian 12 ppc64le GCC 12 is the only case where the binary128 path is `__float128 +
-libquadmath` while binary80 is absent (combination **B**). On ppc64le, `long double` is either
-IBM double-double or IEEE binary128 depending on the ABI; neither is binary80. Build logic that
-assumes "if libquadmath is present then binary80 is present" will fail here. The duplicate log
-entry for this platform confirms the result is reproducible and not a transient build failure.
 
 ### 5. MinGW cross-compilation always falls back to combination A
 
