@@ -43,7 +43,7 @@ mplapack_gmp_testdir = $(prefix)/lib/$(target)/mplapack/test/compare/gmp
 
 install-data-hook:
 if IS_MACOS
-	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mplapack_gmp_testdir) $(prefix)
+	bash $(top_srcdir)/misc/fix_dylib_macOS.sh $(mplapack_gmp_testdir) $(prefix)
 endif
 
 mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -lmpc -lmpfr -lgmpxx -lgmp
