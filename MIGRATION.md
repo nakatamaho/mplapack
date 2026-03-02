@@ -239,8 +239,10 @@ If you maintain hardcoded precision constants in your own code:
 `_Float128` / `__float128` and related intrinsics are GCC-specific and are not reliably
 supported by other compilers.
 
-> **Intel oneAPI:** Both `binary128` and `binary80` are broken with icx/icpx. This is a
-> known issue and is under investigation see #77.
+> **Intel oneAPI:** Both `binary128` and `binary80` are broken with current icx/icpx
+> releases. Intel oneAPI 2023 and earlier worked correctly, but those versions are no
+> longer readily available. The practical workaround is to switch to GCC.
+> Known issue: https://github.com/nakatamaho/mplapack/issues/77
 
 ### Who needs to act
 
