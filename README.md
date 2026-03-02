@@ -83,7 +83,7 @@ export FC=gfortran
     --prefix=$HOME/MPLAPACK \
     --enable-gmp=yes \
     --enable-mpfr=yes \
-    --enable-_Float128=yes \
+    --enable-binary128=yes \
     --enable-qd=yes \
     --enable-dd=yes \
     --enable-double=yes \
@@ -93,12 +93,12 @@ make -j$(nproc)
 make install
 ```
 
-To enable `binary80` (Intel/AMD x86 only), add `--enable-_Float64x=yes`:
+To enable `binary80` (Intel/AMD x86 only), add `--enable-binary80=yes`:
 
 ```sh
 ./configure \
     --prefix=$HOME/MPLAPACK \
-    --enable-_Float64x=yes \
+    --enable-binary80=yes \
     --enable-gmp=yes \
     --enable-mpfr=yes \
     --enable-_Float128=yes \
@@ -126,8 +126,8 @@ export FC=gfortran-mp-14
     --prefix=$HOME/MPLAPACK \
     --enable-gmp=yes \
     --enable-mpfr=yes \
-    --enable-_Float128=yes \
-    --enable-_Float64x=yes \
+    --enable-binary128=yes \
+    --enable-binary80=yes \
     --enable-qd=yes \
     --enable-dd=yes \
     --enable-double=yes \
@@ -153,8 +153,8 @@ export FC=x86_64-w64-mingw32-gfortran
     --prefix=$HOME/MPLAPACK \
     --enable-gmp=yes \
     --enable-mpfr=yes \
-    --enable-_Float128=yes \
-    --enable-_Float64x=yes \
+    --enable-binary128=yes \
+    --enable-binary80=yes \
     --enable-qd=yes \
     --enable-dd=yes \
     --enable-double=yes \
