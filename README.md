@@ -9,7 +9,8 @@ license, supplemental to the original LAPACK license.
 # News
 
 * 2026-03-02  MPLAPACK 2.1.0 released. binary128/binary80 naming unified, MPFR emin/emax
-  auto-adjustment, Fable standalone pipeline, extended build matrix, numerous bug fixes.
+  auto-adjustment, extended build matrix. LAPACK 3.9.1 Fortran sources are now mechanically
+  converted to idiomatic C++ via Fable and bundled in the release tarball.
   See [CHANGES.md](CHANGES.md) and [MIGRATION.md](MIGRATION.md).
 * 2022-09-12  MPLAPACK 2.0.1 released, featuring CUDA versions of Rgemm (dd) and Rsyrk (dd)
   for Volta and Ampere architectures (~450 GFlops on V100), and Windows DLLs for MinGW-w64.
@@ -65,6 +66,15 @@ license, supplemental to the original LAPACK license.
 | **Tier 1** | Functionality guaranteed (build + full test suite) | macOS Intel Sonoma (amd64), Windows / MinGW-w64 (amd64), Ubuntu 22.04 (amd64), Ubuntu 24.04 (amd64) |
 | **Tier 2** | Build guaranteed | Alpine Linux 3.19 (amd64, arm64), Rocky Linux 8/9 (amd64), Debian 12 (amd64, arm64, i386, mips64le), Debian 13 (amd64), Ubuntu 22.04 (arm64), Ubuntu 24.04 (arm64) |
 | **Tier 3** | Patches accepted; no CI coverage | Other platforms |
+
+Tier 1/2 build scripts are in `misc/`:
+```
+misc/buildtest_tier1_amd64_macOS.sh
+misc/buildtest_tier1_amd64_mingw64.sh
+misc/buildtest_tier1_amd64_ubuntu.sh
+misc/buildtest_tier2_arm64_ubuntu.sh
+misc/buildtest_tier2_i386_debian.sh
+```
 
 # How to Build and Install
 
@@ -303,8 +313,9 @@ bash fable/go_testing.sh  # test programs (EIG/LIN/MATGEN)
 # History
 
 * 2026/03/02  MPLAPACK 2.1.0 released. binary128/binary80 naming unified, MPFR emin/emax
-  auto-adjustment, Fable standalone pipeline, extended build matrix (Alpine, Rocky,
-  Debian i386, CUDA 13.1.1), numerous bug fixes.
+  auto-adjustment, extended build matrix (Alpine, Rocky, Debian i386, CUDA 13.1.1).
+  LAPACK 3.9.1 Fortran sources mechanically converted to idiomatic C++ via Fable and
+  bundled in the release tarball.
 * 2022/09/12  MPLAPACK 2.0.1 released.
 * 2022/07/26  MPLAPACK 2.0.0 released.
 * 2022/06/14  MPLAPACK 2.0.0 alpha released.
