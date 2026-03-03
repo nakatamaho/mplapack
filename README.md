@@ -1,10 +1,10 @@
 # MPLAPACK — Multi-Precision Linear Algebra Package
 
 MPLAPACK is a multi-precision linear algebra package based on BLAS and LAPACK,
-implemented in C++. It supports a range of high-precision arithmetic libraries
-including GMP, MPFR, and QD, allowing users to select the backend that best suits
-their requirements. MPLAPACK is free software distributed under a 2-clause BSD-style
-license, supplemental to the original LAPACK license.
+implemented in C++ (C++17 required). It supports a range of high-precision arithmetic
+libraries including GMP, MPFR, and QD, allowing users to select the backend that best
+suits their requirements. MPLAPACK is free software distributed under a 2-clause
+BSD-style license, supplemental to the original LAPACK license.
 
 # News
 
@@ -81,7 +81,7 @@ misc/buildtest_tier2_i386_debian.sh
 
 ## Prerequisites
 
-* GCC / G++ / GFortran
+* GCC 7 or later / G++ / GFortran (C++17 is required)
 * Standard autotools: `autoconf`, `automake`, `libtool`
 * `wget` or `curl` (to fetch the tarball)
 

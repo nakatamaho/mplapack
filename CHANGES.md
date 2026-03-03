@@ -2,6 +2,11 @@
 
 ## Highlights
 
+### C++17 Now Required — Breaking Change ⚠️
+
+MPLAPACK 2.1.0 requires C++17 or later. GCC 7 or later is needed.
+Users building with older compilers must upgrade their toolchain.
+
 ### binary128 / binary80 Unified Naming — Breaking Change ⚠️
 
 All library names, configure flags, header names, and type names for the
@@ -80,6 +85,7 @@ bash fable/go_testing.sh  # test programs (EIG/LIN/MATGEN)
 
 ## Breaking Changes
 
+- **C++17 now required.** GCC 7 or later is needed. Older compilers are no longer supported.
 - **binary128/binary80 rename:** configure flags, library names, headers, and types all
   changed. All users of these backends must update. See [MIGRATION.md §2](MIGRATION.md).
 - **MPFR emin/emax auto-adjustment:** behavior when `MPLAPACK_MPFR_PRECISION` is set has

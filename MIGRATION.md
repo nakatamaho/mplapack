@@ -5,7 +5,53 @@ downstream package maintainers.
 
 ---
 
-## 1. MPFR Exponent Range Now Auto-Adjusted with Precision
+## 1. C++17 Now Required
+
+**Impact:** All users building MPLAPACK from source.
+
+### What changed
+
+MPLAPACK 2.1.0 requires C++17 or later. The codebase uses C++17 features including
+`std::optional`, structured bindings, `if constexpr`, and `std::atomic` with aggregate
+initialization. These are not available in C++14 or earlier.
+
+In 2.0.x, C++11/14 was sufficient for most build configurations.
+
+### Who needs to act
+
+Anyone building MPLAPACK with GCC older than 7, or with any compiler that does not
+support C++17.
+
+### Migration
+
+Upgrade to GCC 7 or later (GCC 9+ recommended). The configure step will fail with an
+explicit error if C++17 is not available.
+
+```sh
+# Verify your compiler supports C++17
+g++ --version   # must be 7.0 or later
+g++ -std=c++17 -x c++ - <<'EOF'
+#include <optional>
+int main() { std::optional<int> x = 1; return 0; }
+EOF
+echo "C++17 OK"
+
+# Configure as usual — C++17 is enabled automatically
+export CXX=g++ CC=gcc FC=gfortran
+./configure --prefix=$HOME/MPLAPACK ...
+```
+
+On macOS, ensure the FSF GCC from MacPorts is used, not Apple Clang:
+
+```sh
+export CXX=g++-mp-14
+export CC=gcc-mp-14
+export FC=gfortran-mp-14
+```
+
+---
+
+## 2. MPFR Exponent Range Now Auto-Adjusted with Precision
 
 **Impact:** Users who set `MPLAPACK_MPFR_PRECISION` via environment variable, or who rely
 on specific MPFR exponent range (emin/emax) values at runtime.
@@ -63,7 +109,7 @@ mpfr_exp_t emax = mpfr_get_emax();
 
 ---
 
-## 2. binary128 and binary80 Library and Type Names Changed
+## 3. binary128 and binary80 Library and Type Names Changed
 
 **Impact:** All users who link against the `_Float128` or `_Float64x` precision backends,
 use their types directly, or reference them in build scripts, configure flags, or headers.
@@ -180,7 +226,7 @@ mplapack_binary80_t  y = 1.0L;
 
 ---
 
-## 3. DD and QD Output Precision Reduced
+## 4. DD and QD Output Precision Reduced
 
 **Impact:** Users who parse or compare textual output from DD/QD MPLAPACK routines, or who
 use reference output files for golden-value testing.
@@ -224,7 +270,7 @@ If you maintain hardcoded precision constants in your own code:
 
 ---
 
-## 4. Compiler Restrictions: oneAPI and Clang
+## 5. Compiler Restrictions: oneAPI and Clang
 
 **Impact:** Users building with Intel oneAPI (icx/icpx) or Clang/LLVM.
 
@@ -276,7 +322,7 @@ fi
 
 ---
 
-## 5. Fable Conversion Pipeline: Not in Release Tarball
+## 6. Fable Conversion Pipeline: Not in Release Tarball
 
 **Impact:** Developers who want to regenerate BLAS/LAPACK C++ sources or test programs
 from Fortran, or who build MPLAPACK directly from a Git clone.
@@ -322,7 +368,7 @@ The generated C++ sources are placed in their respective directories under `mpbl
 
 ---
 
-## 6. Auto-Generated MPBLAS/MPLAPACK Public Headers (Subset)
+## 7. Auto-Generated MPBLAS/MPLAPACK Public Headers (Subset)
 
 **Impact:** Developers who include or patch the public headers for GMP, MPFR, or
 test-category-specific backends (EIG, LIN, MATGEN).
@@ -364,7 +410,7 @@ bash fable/go.sh
 
 ---
 
-## 7. Benchmark Directory Restructured
+## 8. Benchmark Directory Restructured
 
 **Impact:** Developers or CI scripts that reference benchmark source paths directly.
 
@@ -399,7 +445,7 @@ make
 
 ---
 
-## 8. Test Output Directory Layout Changed
+## 9. Test Output Directory Layout Changed
 
 **Impact:** CI pipelines and scripts that parse or archive test output files by path.
 
@@ -433,7 +479,7 @@ python3 misc/summarize_mplapack_tests.py
 
 ---
 
-## 9. ILP32/LP64: `mplapackint` Tracks Platform `long`
+## 10. ILP32/LP64: `mplapackint` Tracks Platform `long`
 
 **Impact:** Users building on or for 32-bit platforms (Debian i386, ILP32) or LP64
 platforms where the integer width matters for GMP/MPFR interoperability.
@@ -481,7 +527,7 @@ static_assert(sizeof(mplapackint) == sizeof(long),
 
 ---
 
-## 10. Known Issue: lin/dd on AArch64 (ARM)
+## 11. Known Issue: lin/dd on AArch64 (ARM)
 
 **Impact:** Users running the `lin/dd` test suite on AArch64 hardware (e.g., Raspberry Pi 4,
 AWS Graviton, Apple Silicon with GCC).
@@ -522,14 +568,15 @@ python3 misc/summarize_mplapack_tests.py
 
 | User type | Actions required |
 |---|---|
-| User setting `MPLAPACK_MPFR_PRECISION` | Verify emin/emax behavior; pin explicitly if needed (§1) |
-| User of binary128/binary80 backends | Update configure flags, library names, headers, types (§2) |
-| User with DD/QD golden-value tests | Regenerate reference files (§3) |
-| Intel oneAPI user | Switch to GCC; binary128 and binary80 both broken (§4) |
-| Clang user needing binary128 | Switch to GCC (§4) |
-| Developer regenerating C++ sources from Fortran | Use Git clone + expand external/lapack (§5) |
-| Developer patching auto-generated headers | Patch generators instead of headers (§6) |
-| CI pipeline referencing benchmark paths | Update paths under benchmark/ (§7) |
-| CI pipeline collecting test output | Update output path globs (§8) |
-| ILP32 / LP64 platform developer | Use `mplapackint` (= `long`) for all integer args (§9) |
-| AArch64 user running lin/dd tests | Failures are expected and tracked; see §10 |
+| All users building from source | Upgrade to GCC 7+ (C++17 required) (§1) |
+| User setting `MPLAPACK_MPFR_PRECISION` | Verify emin/emax behavior; pin explicitly if needed (§2) |
+| User of binary128/binary80 backends | Update configure flags, library names, headers, types (§3) |
+| User with DD/QD golden-value tests | Regenerate reference files (§4) |
+| Intel oneAPI user | Switch to GCC; binary128 and binary80 both broken (§5) |
+| Clang user needing binary128 | Switch to GCC (§5) |
+| Developer regenerating C++ sources from Fortran | Use Git clone + expand external/lapack (§6) |
+| Developer patching auto-generated headers | Patch generators instead of headers (§7) |
+| CI pipeline referencing benchmark paths | Update paths under benchmark/ (§8) |
+| CI pipeline collecting test output | Update output path globs (§9) |
+| ILP32 / LP64 platform developer | Use `mplapackint` (= `long`) for all integer args (§10) |
+| AArch64 user running lin/dd tests | Failures are expected and tracked; see §11 |
