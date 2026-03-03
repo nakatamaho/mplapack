@@ -279,17 +279,13 @@ inline void sprintnum_short(char *buf, std::complex<long double> ctmp) {
 #if MPLAPACK_BINARY128_MATH == MPLAPACK_BINARY128_MATH_QUADMATH
 #include <quadmath.h>
 
-#ifndef MPLAPACK_HAVE_STD_ABS_FLOAT128
-#define MPLAPACK_HAVE_STD_ABS_FLOAT128 0
-#endif
-
 inline __float128 pow(const __float128 &a, const __float128 &b) { return powq(a, b); }
 inline __float128 pow(const long &a, const long &b) { return powq((__float128)a, (__float128)b); }
 inline __float128 pow(const int &a, const long &b) { return powq((__float128)a, (__float128)b); }
 inline __float128 pow(const __float128 &a, const long &b) { return powq(a, (__float128)b); }
 inline __float128 sqrt(const __float128 &a) { return sqrtq(a); }
 
-#if !MPLAPACK_HAVE_STD_ABS_FLOAT128
+#if !defined(MPLAPACK_HAVE_STD_ABS_FLOAT128) || (MPLAPACK_HAVE_STD_ABS_FLOAT128 != 1)
 // Define a fallback abs for __float128 only when std::abs(__float128) is missing.
 inline __float128 abs(const __float128 &a) { return fabsq(a); }
 #endif
