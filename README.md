@@ -82,7 +82,7 @@ misc/buildtest_tier2_i386_debian.sh
 
 ## Prerequisites
 
-* GCC 7 or later / G++ / GFortran (C++17 is required)
+* GCC / G++ / GFortran (C++17 is required)
 * Standard autotools: `autoconf`, `automake`, `libtool`
 * `wget` or `curl` (to fetch the tarball)
 
