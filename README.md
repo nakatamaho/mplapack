@@ -8,8 +8,9 @@ BSD-style license, supplemental to the original LAPACK license.
 
 # News
 
-* 2026-03-03  MPLAPACK 2.1.0 released. binary128/binary80 naming unified, MPFR emin/emax
-  auto-adjustment, extended build matrix. LAPACK 3.9.1 Fortran sources are now mechanically
+* 2026-03-03  MPLAPACK 2.1.0 released. C++17 now required.
+  binary128/binary80 naming unified, MPFR emin/emax auto-adjustment,
+  extended build matrix. LAPACK 3.9.1 Fortran sources are now mechanically
   converted to idiomatic C++ via Fable and bundled in the release tarball.
   See [CHANGES.md](CHANGES.md) and [MIGRATION.md](MIGRATION.md).
 * 2022-09-12  MPLAPACK 2.0.1 released, featuring CUDA versions of Rgemm (dd) and Rsyrk (dd)
