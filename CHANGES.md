@@ -4,7 +4,7 @@
 
 ### C++17 Now Required — Breaking Change ⚠️
 
-MPLAPACK 2.1.0 requires C++17 or later. GCC 7 or later is needed.
+MPLAPACK 2.1.0 requires C++17 or later.
 Users building with older compilers must upgrade their toolchain.
 
 ### binary128 / binary80 Unified Naming — Breaking Change ⚠️
