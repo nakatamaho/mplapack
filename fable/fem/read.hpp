@@ -472,7 +472,7 @@ class read_loop // TODO copy-constructor potential performance problem
         return *this;
     }
 #endif
-#if defined(___MPLAPACK_BUILD_WITH_BINARY128___) && defined(__FLT128_MAX__)
+#if defined(___MPLAPACK_BUILD_WITH_BINARY128___)
     read_loop &operator,(mplapack_binary128_t &val) {
         std::string s = read_numeric_as_string();
         normalize_fortran_exponent(s);
@@ -481,7 +481,7 @@ class read_loop // TODO copy-constructor potential performance problem
         return *this;
     }
 #endif
-#if defined(___MPLAPACK_BUILD_WITH_BINARY80___) && defined(__FLT64X_MAX__)
+#if defined(___MPLAPACK_BUILD_WITH_BINARY80___)
     read_loop &operator,(mplapack_binary80_t &val) {
         std::string s = read_numeric_as_string();
         normalize_fortran_exponent(s);
@@ -666,7 +666,7 @@ class read_loop // TODO copy-constructor potential performance problem
         return *this;
     }
 #endif
-#if defined(___MPLAPACK_BUILD_WITH_BINARY128___) && defined(__FLT128_MAX__)
+#if defined(___MPLAPACK_BUILD_WITH_BINARY128___)
     read_loop &operator,(std::complex<mplapack_binary128_t> &val) {
         if (io_mode == io_unformatted) {
             throw TBXX_NOT_IMPLEMENTED();
@@ -680,7 +680,7 @@ class read_loop // TODO copy-constructor potential performance problem
         return *this;
     }
 #endif
-#if defined(___MPLAPACK_BUILD_WITH_BINARY80___) && defined(__FLT64X_MAX__)
+#if defined(___MPLAPACK_BUILD_WITH_BINARY80___)
     read_loop &operator,(std::complex<mplapack_binary80_t> &val) {
         if (io_mode == io_unformatted) {
             throw TBXX_NOT_IMPLEMENTED();
