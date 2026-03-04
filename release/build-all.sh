@@ -122,30 +122,47 @@ EMULATE="${EMULATE:-auto}"   # auto|yes|no
 
 # Return 0 if IMAGE has a manifest entry for PLATFORM (e.g., linux/mips64le)
 has_manifest() {
-    local image="$1" platform="$2"
-    docker buildx imagetools inspect "$image" 2>/dev/null | grep -qE "[[:space:]]${platform}([[:space:]]|$)"
+    local image="$1" platform="$2" pat
+    case "$platform" in
+        linux/arm64)
+            # buildx prints "linux/arm64" or "linux/arm64/v8"; both are arm64
+            pat='linux/arm64(/v8)?'
+            ;;
+        linux/arm/v7)
+            pat='linux/arm/v7'
+            ;;
+        linux/arm/v6)
+            pat='linux/arm(/v6)?'
+            ;;
+        *)
+            pat="$(echo "$platform" | sed 's|/|\\/|g')"
+            ;;
+    esac
+    # "docker buildx imagetools inspect" outputs "Platform: linux/arm64/v8" lines.
+    # Match the Platform field directly so trailing version suffixes don't cause misses.
+    docker buildx imagetools inspect "$image" 2>/dev/null \
+        | grep -qE "Platform:[[:space:]]+${pat}([[:space:]]|/|$)"
 }
 
+# Ordered list of candidate probe images for multi-arch manifest checks.
+# These are well-known images that publish manifests for most platforms.
+PROBE_CANDIDATES=(
+    "debian:12"
+    "ubuntu:24.04"
+    "alpine:3.19"
+    "busybox:1.36"
+)
+
 # Pick a probe image that actually supports the target platform (best-effort).
-# You can extend this list over time; order matters.
 pick_probe_image() {
     local target="$1"
-    # Prefer images that tend to be multi-arch across many platforms.
-    local candidates=(
-        "debian:12"
-        "ubuntu:24.04"
-        "alpine:3.19"
-        "busybox:1.36"
-    )
-
     local img
-    for img in "${candidates[@]}"; do
+    for img in "${PROBE_CANDIDATES[@]}"; do
         if has_manifest "$img" "$target"; then
             echo "$img"
             return 0
         fi
     done
-
     # Fallback: nothing found
     return 1
 }
@@ -171,8 +188,21 @@ ensure_binfmt() {
     else
         # We cannot even find a probe image that has a manifest for target.
         # This is NOT a binfmt problem.
-        log "No probe image found with manifest for $target (base image coverage issue)."
-        return 1
+        log "No probe image found with manifest for $target (probe image coverage / manifest-detection issue)."
+        log "  (This is probe selection/manifest-detection failure, not a binfmt problem.)"
+        log "  (Probe candidates: ${PROBE_CANDIDATES[*]})"
+        # Emit a compact per-candidate verdict for debugging without flooding logs.
+        for img in "${PROBE_CANDIDATES[@]}"; do
+            if has_manifest "$img" "$target"; then
+                log "  (probe check: OK  image=$img target=$target)"
+            else
+                log "  (probe check: NG  image=$img target=$target)"
+            fi
+        done
+        if command -v docker >/dev/null 2>&1; then
+            log "  (docker buildx version: $(docker buildx version 2>/dev/null | tr '\n' ' '))"
+        fi
+        log "  (Tip: arm64 may appear as linux/arm64/v8 in buildx output.)"
     fi
 
     # Quick sanity check: can we run a trivial container for target arch?

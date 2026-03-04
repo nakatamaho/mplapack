@@ -146,6 +146,10 @@ list:
 
 clean:
 	rm -rf logs/
+	@# Stop and remove any running containers using our labeled images first.
+	@# "docker rmi -f" cannot remove images used by *running* containers even with -f.
+	-docker ps -q  --filter label=org.mplapack.project=mplapack --filter label=org.mplapack.purpose=mplapack-qa | xargs -r docker stop
+	-docker ps -aq --filter label=org.mplapack.project=mplapack --filter label=org.mplapack.purpose=mplapack-qa | xargs -r docker rm -f
 	-docker images -q --filter label=org.mplapack.project=mplapack --filter label=org.mplapack.purpose=mplapack-qa | xargs -r docker rmi -f
 
 help:
