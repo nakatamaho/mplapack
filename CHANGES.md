@@ -47,14 +47,9 @@ See [MIGRATION.md §1](MIGRATION.md) for details.
 | Compiler | binary128 | binary80 |
 |---|---|---|
 | GCC | ✅ Supported | ✅ (x86/x86\_64 only) |
-| Intel oneAPI (icx/icpx) | ❌ Broken | ❌ Broken |
+| Intel oneAPI (icx/icpx) |  ✅ Supported | ✅ (x86/x86\_64 only) |
 | Clang/LLVM | ❌ Not supported | ✅ Supported |
 
-> **Intel oneAPI users:** Both `binary128` and `binary80` are broken with current
-> icx/icpx releases. Intel oneAPI 2023 and earlier worked correctly, but those versions
-> are no longer readily available. Use GCC for `binary128` and `binary80`.
-> Known issue: https://github.com/nakatamaho/mplapack/issues/77
->
 > **Clang users:** `binary128` is not supported. Use GCC for full precision support.
 
 ### Fable Standalone Component — Automated Fortran-to-C++ Conversion
