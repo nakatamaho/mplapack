@@ -56,6 +56,9 @@ safe_rmdir() {
     # Confirm target starts with $HOME to prevent accidental wide deletion
     case "${target}" in
         "${HOME}/"*)
+            # make distcheck leaves read-only files in extracted tarball trees;
+            # restore write permission before removal so rm -rf succeeds on rerun.
+            chmod -R u+rwX "${target}" 2>/dev/null || true
             rm -rf "${target}"
             ;;
         *)
