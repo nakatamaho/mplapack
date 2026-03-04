@@ -208,8 +208,10 @@ cleanup_lock() {
 }
 trap cleanup_lock EXIT INT TERM HUP
 
-# Create the work directory and clean its contents (safer than rm -rf WORKDIR).
 mkdir -p "${WORKDIR}"
+# make distcheck leaves read-only files in the extracted tarball tree;
+# restore write permission before removal so rm -rf succeeds on rerun.
+chmod -R u+rwX "${WORKDIR}" 2>/dev/null || true
 find "${WORKDIR}" -mindepth 1 -maxdepth 1 -exec rm -rf -- {} +
 
 log "WORKDIR: ${WORKDIR}"
