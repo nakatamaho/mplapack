@@ -270,7 +270,7 @@ If you maintain hardcoded precision constants in your own code:
 
 ---
 
-## 5. Compiler Restrictions: oneAPI and Clang
+## 5. Compiler Restrictions: Clang
 
 **Impact:** Users building with Intel oneAPI (icx/icpx) or Clang/LLVM.
 
@@ -278,17 +278,12 @@ If you maintain hardcoded precision constants in your own code:
 
 | Compiler | binary128 | binary80 |
 |---|---|---|
-| Intel oneAPI (icx/icpx) | ❌ Broken | ❌ Broken |
 | Clang/LLVM | ❌ Not supported | ✅ Available |
 | GCC | ✅ Available | ✅ Available |
+| Intel oneAPI (icx/icpx) | ✅ Available | ✅ Available |
 
 `_Float128` / `__float128` and related intrinsics are GCC-specific and are not reliably
 supported by other compilers.
-
-> **Intel oneAPI:** Both `binary128` and `binary80` are broken with current icx/icpx
-> releases. Intel oneAPI 2023 and earlier worked correctly, but those versions are no
-> longer readily available. The practical workaround is to switch to GCC.
-> Known issue: https://github.com/nakatamaho/mplapack/issues/77
 
 ### Who needs to act
 
