@@ -8,7 +8,7 @@ BSD-style license, supplemental to the original LAPACK license.
 
 # News
 
-* 2026-03-04  MPLAPACK 2.1.0 released. C++17 now required.
+* 2026-03-05  MPLAPACK 2.1.0 released. C++17 now required.
   binary128/binary80 naming unified, MPFR emin/emax auto-adjustment,
   extended build matrix. LAPACK 3.9.1 Fortran sources are now mechanically
   converted to idiomatic C++ via Fable and bundled in the release tarball.
@@ -320,7 +320,7 @@ Tier 1 platforms run the full pipeline including `make distcheck`. Tier 2 platfo
 
 # History
 
-* 2026-03-04  MPLAPACK 2.1.0 released. binary128/binary80 naming unified, MPFR emin/emax
+* 2026-03-05  MPLAPACK 2.1.0 released. binary128/binary80 naming unified, MPFR emin/emax
   auto-adjustment, extended build matrix (Alpine, Rocky, Debian i386, CUDA 13.1.1).
   LAPACK 3.9.1 Fortran sources mechanically converted to idiomatic C++ via Fable and
   bundled in the release tarball.
