@@ -72,6 +72,7 @@ install: work/$(INSTALL_STAMP)
 uninstall:
 	-rm -f  $(DESTDIR)$(prefix)/lib/libopenblas*.a
 	-rm -f  $(DESTDIR)$(prefix)/lib/libopenblas*.so*
+	-rm -f  $(DESTDIR)$(prefix)/lib/libopenblas*.dylib
 	-rm -f  $(DESTDIR)$(prefix)/lib/pkgconfig/openblas.pc
 	-rm -rf $(DESTDIR)$(prefix)/lib/cmake/openblas
 	-rm -f  $(DESTDIR)$(prefix)/include/cblas.h
