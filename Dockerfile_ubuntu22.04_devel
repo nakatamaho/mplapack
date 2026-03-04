@@ -182,19 +182,20 @@ RUN --mount=type=secret,id=ssh_key,uid=${DOCKER_UID} \
 
 RUN cd ${WORK}/mplapack && bash -x misc/reconfig.ubuntu22.04.sh
 RUN cd ${WORK}/mplapack && make clean
-RUN cd ${WORK}/mplapack && make -j
+RUN cd ${WORK}/mplapack && make -j"$(nproc)"
 RUN cd ${WORK}/mplapack && make install
 
 RUN cd ${WORK}/mplapack && bash -x misc/reconfig.ubuntu22.04.nvidia.sh
 RUN cd ${WORK}/mplapack && make clean
-RUN cd ${WORK}/mplapack && make -j
+RUN cd ${WORK}/mplapack && make -j"$(nproc)"
 RUN cd ${WORK}/mplapack && make install
 
-ENV PATH="$PATH:/opt/wine-stable/bin"
-RUN GCC_VER=$(x86_64-w64-mingw32-gcc -dumpversion | cut -d- -f1) && \
-    export WINEPATH="/usr/x86_64-w64-mingw32/lib/;/usr/lib/gcc/x86_64-w64-mingw32/${GCC_VER}-win32/;/usr/lib/gcc/x86_64-w64-mingw32/${GCC_VER}-posix" && \
-    export WINEDEBUG="-all" && \
-    cd ${WORK}/mplapack && bash -x misc/reconfig.ubuntu22.04.mingw64.sh
+RUN bash -i -c "cd ${WORK}/mplapack && bash -x misc/reconfig.ubuntu22.04.mingw64.sh"
+RUN bash -i -c "cd ${WORK}/mplapack && make clean"
+RUN bash -i -c "cd ${WORK}/mplapack && make -j\"\$(nproc)\""
+RUN bash -i -c "cd ${WORK}/mplapack && make install"
+
+RUN cd ${WORK}/mplapack && bash -x misc/reconfig.ubuntu22.04.intel.sh
 RUN cd ${WORK}/mplapack && make clean
-RUN cd ${WORK}/mplapack && make -j
-RUN cd ${WORK}/mplapack && make install
+RUN bash -c "cd ${WORK}/mplapack && source /opt/intel/oneapi/setvars.sh && make -j$(nproc)"
+RUN bash -c "cd ${WORK}/mplapack && source /opt/intel/oneapi/setvars.sh && make install"
