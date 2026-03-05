@@ -198,5 +198,5 @@ SW: M=    1, N=    3, MB=   20, NB=    3 test( 5)=+3.7693826600867715e+01
  All tests for DHH routines passed the threshold (  15900 tests run)
 
  End of tests
- Total time used =       718.52 seconds
+ Total time used =       482.03 seconds
 

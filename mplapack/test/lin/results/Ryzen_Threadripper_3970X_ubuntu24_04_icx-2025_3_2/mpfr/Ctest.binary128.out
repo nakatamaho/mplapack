@@ -46,12 +46,12 @@
     6: RCOND * CNDNUM - 1.0
     7: abs( WORK(1) - RPVGRW ) / ( max( WORK(1), RPVGRW ) * EPS )
  Messages:
- Cgbsvx( 'E','T',   50,   12,   12,...), type 6, test(5)=+1.0351368120040017e+03
- Cgbsvx( 'E','C',   50,   12,   12,...), type 6, test(5)=+9.4037105738508019e+03
- Cgbsvx( 'F','T',   50,   12,   12,...), EQUED='R', type 6, test(5)=+2.7855490758710371e+03
- Cgbsvx( 'F','C',   50,   12,   12,...), EQUED='R', type 6, test(5)=+1.0402912150007436e+04
- Cgbsvx( 'F','T',   50,   12,   12,...), EQUED='B', type 6, test(5)=+1.0351368120040017e+03
- Cgbsvx( 'F','C',   50,   12,   12,...), EQUED='B', type 6, test(5)=+9.4037105738508019e+03
+ Cgbsvx( 'E','T',   50,   12,   12,...), type 6, test(5)=+1.9894832695162794e+08
+ Cgbsvx( 'E','C',   50,   12,   12,...), type 6, test(5)=+7.0262411764359225e+07
+ Cgbsvx( 'F','T',   50,   12,   12,...), EQUED='R', type 6, test(5)=+5.9762774635613202e+08
+ Cgbsvx( 'F','C',   50,   12,   12,...), EQUED='R', type 6, test(5)=+6.6739412049298392e+08
+ Cgbsvx( 'F','T',   50,   12,   12,...), EQUED='B', type 6, test(5)=+1.9894832695162794e+08
+ Cgbsvx( 'F','C',   50,   12,   12,...), EQUED='B', type 6, test(5)=+7.0262411764359225e+07
  ZGB drivers:      6 out of  36567 tests failed to pass the threshold
  
  ZGT routines passed the tests of the error exits
@@ -259,5 +259,5 @@
  All tests for ZHH routines passed the threshold (  15900 tests run)
 
  End of tests
- Total time used =      2304.37 seconds
+ Total time used =      1829.15 seconds
 

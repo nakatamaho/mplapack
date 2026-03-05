@@ -5,20 +5,14 @@
  Relative machine precision (EPS) = +1.08420217248550443401e-19
  Safe minimum (SFMIN)             = +3.36210314311209350626e-4932
 
- Routines pass computational tests if test ratio is less than+0.00000000000000000000e+00
+ Routines pass computational tests if test ratio is less than+2.00000000000000000000e+01
 
 
  DEC routines passed the tests of the error exits ( 35 tests done)
- Error in Rlaln2: RMAX =+2.24999999999999999978e+00
- LMAX =    60631 NINFO=       0   74322 KNT=  230400
- Error in Rlasy2: RMAX =+1.09333333333333333358e+00
- LMAX =    53249 NINFO=   56196 KNT=  135000
- Error in Rlanv2: RMAX =+9.48007755419574331401e+00
- LMAX =    11403 NINFO=       0 KNT=   20736
- Error in Rlaexc: RMAX =+4.38324293028766593782e+00
- LMAX =    10374 NINFO=     148       0 KNT=   42258
- Error in Rtrsyl: RMAX =+2.39294230375150291930e+00
- LMAX =    19927 NINFO=    2568 KNT=   27648
-terminate called after throwing an instance of 'fem::io_err'
-  what():  Invalid character while reading integer value.
-/bin/bash: line 9: 4131872 Aborted                 (core dumped) $wrapper ./xeigtstR_binary80 < ./../Rec.in
+
+ All tests for DEC routines passed the threshold ( 501261 tests run)
+
+
+ End of tests
+ Total time used =         0.72 seconds
+

@@ -49,37 +49,9 @@ The following parameter values will be used:
 
  NEP:  NB =  20, NBMIN =   2, NX =   1, INMIN=  11, INWIN =   2, INIBL = 200, ISHFTS =   1, IACC22 =   1
 
- DHS -- Real Non-symmetric eigenvalue problem
- Matrix types (see xCHKHS for details): 
-
- Special Matrices:
-  1=Zero matrix.                          5=Diagonal: geometr. spaced entries.
-  2=Identity matrix.                      6=Diagonal: clustered entries.
-  3=Transposed Jordan block.              7=Diagonal: large, evenly spaced.
-  4=Diagonal: evenly spaced entries.      8=Diagonal: small, evenly spaced.
- Dense, Non-Symmetric Matrices:
-  9=Well-cond., evenly spaced eigenvals. 14=Ill-cond., geomet. spaced eigenals.
- 10=Well-cond., geom. spaced eigenvals.  15=Ill-conditioned, clustered e.vals.
- 11=Well-conditioned, clustered e.vals.  16=Ill-cond., random complex pairs 
- 12=Well-cond., random complex pairs     17=Ill-cond., large rand. complx prs.
- 13=Ill-conditioned, evenly spaced.      18=Ill-cond., small rand. complx prs.
- 19=Matrix with random O(1) entries.     21=Matrix with small random entries.
- 20=Matrix with large random entries.   
-
- Tests performed:   (H is Hessenberg, T is Schur, U and Z are orthogonal,
-                    '=transpose, W is a diagonal matrix of eigenvalues,
-                    L and R are the left and right eigenvector matrices)
-  1 = | A - U H U' | / ( |A| n ulp )           2 = | I - U U' | / ( n ulp )
-  3 = | H - Z T Z' | / ( |H| n ulp )           4 = | I - Z Z' | / ( n ulp )
-  5 = | A - UZ T (UZ)' | / ( |A| n ulp )       6 = | I - UZ (UZ)' | / ( n ulp )
-  7 = | T(e.vects.) - T(no e.vects.) | / ( |T| ulp )
-  8 = | W(e.vects.) - W(no e.vects.) | / ( |W| ulp )
-  9 = | TR - RW | / ( |T| |R| ulp )      10 = | LT - WL | / ( |T| |L| ulp )
- 11= |HX - XW| / (|H| |X| ulp)  (inv.it) 12= |YH - WY| / (|H| |Y| ulp)  (inv.it)
- Matrix order=   30, type=18, seed=40261,46238,15235,60661, result  11 is   22.87
- DHS:    1 out of  1764 tests failed to pass the threshold
+ All tests for DHS passed the threshold (  1764 tests run)
 
 
  End of tests
- Total time used =         0.26 seconds
+ Total time used =         0.18 seconds
 

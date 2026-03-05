@@ -15,72 +15,12 @@ The following parameter values will be used:
  Relative machine overflow  is taken to be+1.18973149535723176502e+4932
  Relative machine precision is taken to be+5.42101086242752217004e-20
 
- Routines pass computational tests if test ratio is less than+0.00000000000000000000e+00
+ Routines pass computational tests if test ratio is less than+2.00000000000000000000e+01
 
  
  GLM routines passed the tests of the error exits (  8 tests done)
 
- GLM: GLM Problem
- Matrix types: 
-    1: A-diagonal matrix  B-lower triangular
-    2: A-lower triangular B-diagonal triangular
-    3: A-lower triangular B-upper triangular
-    4: Random matrices cond(A)=100, cond(B)=10,
-    5: Random matrices cond(A)=100, cond(B)=10,
-    6: Random matrices cond(A)=100, cond(B)=10,
-    7: Random matrices cond(A)=100, cond(B)=10,
-    8: Random matrices cond(A)=100, cond(B)=10,
- Test ratios: 
-    1: norm( d - A*x - B*y ) / ( (norm(A)+norm(B) )*(norm(x)+norm(y))*EPS )
- N=   5 M=   0, P=   9, type  1, test  1, ratio=+7.78846933149690185544e-01
- N=   5 M=   0, P=   9, type  2, test  1, ratio=+1.75621179868639579435e-01
- N=   5 M=   0, P=   9, type  3, test  1, ratio=+1.42275496334411123711e+00
- N=   5 M=   0, P=   9, type  4, test  1, ratio=+7.63635746516379743348e-01
- N=   5 M=   0, P=   9, type  5, test  1, ratio=+6.44873445929570821792e-01
- N=   5 M=   0, P=   9, type  6, test  1, ratio=+8.63983879771268259407e-01
- N=   5 M=   0, P=   9, type  7, test  1, ratio=+1.35446910944056902082e+00
- N=   5 M=   0, P=   9, type  8, test  1, ratio=+5.04768930671203392075e-01
- N=   5 M=   5, P=   0, type  1, test  1, ratio=+0.00000000000000000000e+00
- N=   5 M=   5, P=   0, type  2, test  1, ratio=+4.37237615646676496800e-02
- N=   5 M=   5, P=   0, type  3, test  1, ratio=+5.01963254382854118821e-02
- N=   5 M=   5, P=   0, type  4, test  1, ratio=+7.23248142634888791609e-01
- N=   5 M=   5, P=   0, type  5, test  1, ratio=+9.04187091519207119432e-01
- N=   5 M=   5, P=   0, type  6, test  1, ratio=+1.08792211307114828429e+00
- N=   5 M=   5, P=   0, type  7, test  1, ratio=+2.73702777102201388860e-01
- N=   5 M=   5, P=   0, type  8, test  1, ratio=+6.65965272682031414421e-01
- N=  10 M=   8, P=  15, type  1, test  1, ratio=+3.99101777846620270522e-04
- N=  10 M=   8, P=  15, type  2, test  1, ratio=+2.01985897505197514042e-03
- N=  10 M=   8, P=  15, type  3, test  1, ratio=+1.53346829152114758317e-03
- N=  10 M=   8, P=  15, type  4, test  1, ratio=+4.62169862104508686818e-03
- N=  10 M=   8, P=  15, type  5, test  1, ratio=+4.34005151416354599044e-03
- N=  10 M=   8, P=  15, type  6, test  1, ratio=+1.68031491358522240426e-03
- N=  10 M=   8, P=  15, type  7, test  1, ratio=+2.71348612644458729298e-03
- N=  10 M=   8, P=  15, type  8, test  1, ratio=+5.97253104448098586676e-03
- N=  25 M=  15, P=  12, type  1, test  1, ratio=+5.16483686234411242390e-04
- N=  25 M=  15, P=  12, type  2, test  1, ratio=+6.24429124578474695120e-03
- N=  25 M=  15, P=  12, type  3, test  1, ratio=+2.17369425142810502106e-03
- N=  25 M=  15, P=  12, type  4, test  1, ratio=+4.05877876959866615019e-03
- N=  25 M=  15, P=  12, type  5, test  1, ratio=+1.99893356791061296250e-03
- N=  25 M=  15, P=  12, type  6, test  1, ratio=+7.06799967141634548035e-03
- N=  25 M=  15, P=  12, type  7, test  1, ratio=+3.36789458829110878525e-03
- N=  25 M=  15, P=  12, type  8, test  1, ratio=+4.62654164184135079443e-03
- N=  30 M=  20, P=  15, type  1, test  1, ratio=+4.82724973107157030730e-04
- N=  30 M=  20, P=  15, type  2, test  1, ratio=+4.41299164298377518630e-03
- N=  30 M=  20, P=  15, type  3, test  1, ratio=+2.02753010107197365140e-03
- N=  30 M=  20, P=  15, type  4, test  1, ratio=+4.47244053391443350926e-03
- N=  30 M=  20, P=  15, type  5, test  1, ratio=+4.55407815595407558732e-03
- N=  30 M=  20, P=  15, type  6, test  1, ratio=+3.49753488954948227217e-03
- N=  30 M=  20, P=  15, type  7, test  1, ratio=+3.26544994432306813632e-03
- N=  30 M=  20, P=  15, type  8, test  1, ratio=+3.58708436567372192616e-03
- N=  40 M=  40, P=  30, type  1, test  1, ratio=+1.74740047138138114990e-05
- N=  40 M=  40, P=  30, type  2, test  1, ratio=+2.66734281183681430687e-03
- N=  40 M=  40, P=  30, type  3, test  1, ratio=+1.36006709954420898725e-03
- N=  40 M=  40, P=  30, type  4, test  1, ratio=+2.83122980987947961595e-03
- N=  40 M=  40, P=  30, type  5, test  1, ratio=+3.39346384928325034910e-03
- N=  40 M=  40, P=  30, type  6, test  1, ratio=+3.63122767249025403060e-03
- N=  40 M=  40, P=  30, type  7, test  1, ratio=+3.05057000718472725879e-03
- N=  40 M=  40, P=  30, type  8, test  1, ratio=+3.16604100770364910579e-03
- GLM:     48 out of     48 tests failed to pass the threshold
+ All tests for GLM routines passed the threshold (     48 tests run)
 
 
  End of tests
