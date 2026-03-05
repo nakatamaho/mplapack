@@ -43,9 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-void Rsgt01(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER const m, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *z, INTEGER const ldz, REAL *d, REAL *work, REAL *result) {
+void Rsgt01(INTEGER const itype, fem::str_cref uplo, INTEGER const n, INTEGER const m, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *z, INTEGER const ldz, REAL *d, REAL *work, REAL *result) {
     //
     const REAL zero = 0.0;
     result[1 - 1] = zero;
@@ -57,7 +55,7 @@ void Rsgt01(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
     //
     // Compute product of 1-norms of A and Z.
     //
-    REAL anorm = Rlansy("1", uplo, n, a, lda, work) * Rlange("1", n, m, z, ldz, work);
+    REAL anorm = Rlansy("1", uplo.elems(), n, a, lda, work) * Rlange("1", n, m, z, ldz, work);
     const REAL one = 1.0;
     if (anorm == zero) {
         anorm = one;
@@ -68,11 +66,11 @@ void Rsgt01(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
         //
         // Norm of AZ - BZD
         //
-        Rsymm("Left", uplo, n, m, one, a, lda, z, ldz, zero, work, n);
+        Rsymm("Left", uplo.elems(), n, m, one, a, lda, z, ldz, zero, work, n);
         for (i = 1; i <= m; i = i + 1) {
             Rscal(n, d[i - 1], &z[(i - 1) * ldz], 1);
         }
-        Rsymm("Left", uplo, n, m, one, b, ldb, z, ldz, -one, work, n);
+        Rsymm("Left", uplo.elems(), n, m, one, b, ldb, z, ldz, -one, work, n);
         //
         result[1 - 1] = (Rlange("1", n, m, work, n, work) / anorm) / (n * ulp);
         //
@@ -80,11 +78,11 @@ void Rsgt01(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
         //
         // Norm of ABZ - ZD
         //
-        Rsymm("Left", uplo, n, m, one, b, ldb, z, ldz, zero, work, n);
+        Rsymm("Left", uplo.elems(), n, m, one, b, ldb, z, ldz, zero, work, n);
         for (i = 1; i <= m; i = i + 1) {
             Rscal(n, d[i - 1], &z[(i - 1) * ldz], 1);
         }
-        Rsymm("Left", uplo, n, m, one, a, lda, work, n, -one, z, ldz);
+        Rsymm("Left", uplo.elems(), n, m, one, a, lda, work, n, -one, z, ldz);
         //
         result[1 - 1] = (Rlange("1", n, m, z, ldz, work) / anorm) / (n * ulp);
         //
@@ -92,11 +90,11 @@ void Rsgt01(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
         //
         // Norm of BAZ - ZD
         //
-        Rsymm("Left", uplo, n, m, one, a, lda, z, ldz, zero, work, n);
+        Rsymm("Left", uplo.elems(), n, m, one, a, lda, z, ldz, zero, work, n);
         for (i = 1; i <= m; i = i + 1) {
             Rscal(n, d[i - 1], &z[(i - 1) * ldz], 1);
         }
-        Rsymm("Left", uplo, n, m, one, b, ldb, work, n, -one, z, ldz);
+        Rsymm("Left", uplo.elems(), n, m, one, b, ldb, work, n, -one, z, ldz);
         //
         result[1 - 1] = (Rlange("1", n, m, z, ldz, work) / anorm) / (n * ulp);
     }

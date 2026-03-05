@@ -38,7 +38,7 @@
 
 #include <mplapack_matgen.h>
 
-void Clatm1(INTEGER const mode, REAL const cond, INTEGER const irsign, INTEGER const idist, INTEGER *iseed, COMPLEX *d, INTEGER const n, INTEGER &info) {
+void Clatm1(INTEGER const mode, REAL const cond, INTEGER const irsign, INTEGER const idist, INTEGER (&iseed)[4], COMPLEX *d, INTEGER const n, INTEGER &info) {
     const REAL one = 1.0;
     INTEGER i = 0;
     REAL alpha = 0.0;
@@ -117,7 +117,7 @@ void Clatm1(INTEGER const mode, REAL const cond, INTEGER const irsign, INTEGER c
     statement_50:
         d[1 - 1] = one;
         if (n > 1) {
-            alpha = pow(cond, -one / castREAL(n - 1));
+            alpha = pow(cond, (-one / castREAL(n - 1)));
             for (i = 2; i <= n; i = i + 1) {
                 d[i - 1] = pow(alpha, (i - 1));
             }

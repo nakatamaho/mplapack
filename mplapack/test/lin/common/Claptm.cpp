@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Claptm(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL const alpha, REAL *d, COMPLEX *e, COMPLEX *x, INTEGER const ldx, REAL const beta, COMPLEX *b, INTEGER const ldb) {
+void Claptm(fem::str_cref uplo, INTEGER const n, INTEGER const nrhs, REAL const alpha, REAL *d, COMPLEX *e, COMPLEX *x, INTEGER const ldx, REAL const beta, COMPLEX *b, INTEGER const ldb) {
     //
     if (n == 0) {
         return;
@@ -68,7 +68,7 @@ void Claptm(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL const al
     }
     //
     if (alpha == one) {
-        if (Mlsame(uplo, "U")) {
+        if (Mlsame(uplo.elems(), "U")) {
             //
             // Compute B := B + A*X, where E is the superdiagonal of A.
             //
@@ -100,7 +100,7 @@ void Claptm(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL const al
             }
         }
     } else if (alpha == -one) {
-        if (Mlsame(uplo, "U")) {
+        if (Mlsame(uplo.elems(), "U")) {
             //
             // Compute B := B - A*X, where E is the superdiagonal of A.
             //

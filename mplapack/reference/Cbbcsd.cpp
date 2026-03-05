@@ -126,7 +126,8 @@ void Cbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
     //
     INTEGER i = 0;
     const REAL zero = 0.0;
-    const REAL piover2 = pi(zero) / 2.0;
+    const REAL two = 2.0;
+    const REAL piover2 = pi(zero) / two;
     for (i = 1; i <= q; i = i + 1) {
         if (theta[i - 1] < thresh) {
             theta[i - 1] = zero;

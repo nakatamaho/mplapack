@@ -12,26 +12,26 @@ all: extract patch config build check install
 
 work/$(EXTRACT_STAMP):
 	rm -rf work ; mkdir -p work/install
-	cd $(abs_builddir)/work/install; tar xvfz ../../download/dlfcn-win32-$(DLFCN_WIN32VERSION).tar.gz
+	cd $(abs_builddir)/work/install; tar xvfz $(abs_srcdir)/download/dlfcn-win32-$(DLFCN_WIN32VERSION).tar.gz
 	touch $(abs_builddir)/work/$(EXTRACT_STAMP)
 
 work/$(PATCH_STAMP): work/$(EXTRACT_STAMP)
 	touch $(abs_builddir)/work/$(PATCH_STAMP)
 
 work/$(CONFIGURE_STAMP): work/$(PATCH_STAMP)
-	cd $(abs_builddir)/work/install/dlfcn-win32-$(DLFCN_WIN32VERSION); ./configure --enable-wine=wine64 --cross-prefix=x86_64-w64-mingw32- --prefix=$(abs_builddir)/../i/DLFCN_WIN32/
+	cd $(abs_builddir)/work/install/dlfcn-win32-$(DLFCN_WIN32VERSION); ./configure --enable-wine=wine --cross-prefix=x86_64-w64-mingw32- --prefix=$(abs_builddir)/../i/DLFCN_WIN32/
 	touch $(abs_builddir)/work/$(CONFIGURE_STAMP)
 
 work/$(BUILD_STAMP): work/$(CONFIGURE_STAMP)
-	cd $(abs_builddir)/work/install/dlfcn-win32-$(DLFCN_WIN32VERSION); make
-	cd $(abs_builddir)/work/install/dlfcn-win32-$(DLFCN_WIN32VERSION)
+	+cd $(abs_builddir)/work/install/dlfcn-win32-$(DLFCN_WIN32VERSION); ${MAKE}
 	touch $(abs_builddir)/work/$(BUILD_STAMP)
 
 work/$(CHECK_STAMP): work/$(BUILD_STAMP)
 	touch $(abs_builddir)/work/$(CHECK_STAMP)
 
+
 work/$(INSTALL_STAMP): work/$(CHECK_STAMP)
-	cd $(abs_builddir)/work/install/dlfcn-win32-$(DLFCN_WIN32VERSION) ; ${MAKE} install
+	+cd $(abs_builddir)/work/install/dlfcn-win32-$(DLFCN_WIN32VERSION) ; ${MAKE} install
 	touch $(abs_builddir)/work/$(INSTALL_STAMP)
 
 extract: work/$(EXTRACT_STAMP)
@@ -46,9 +46,12 @@ check: work/$(CHECK_STAMP)
 
 install: work/$(INSTALL_STAMP)
 
+uninstall:
+	-+cd $(abs_builddir)/work/install/dlfcn-win32-$(DLFCN_WIN32VERSION) ; ${MAKE} uninstall
+
 distdir:
 
-clean:
+clean-local:
 	rm -rf work
-distclean:
+distclean-local:
 	rm -rf work

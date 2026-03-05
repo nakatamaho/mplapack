@@ -43,14 +43,14 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-REAL Cqrt14(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const ldx, COMPLEX *work, INTEGER const lwork) {
+REAL Cqrt14(fem::str_cref trans, INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const ldx, COMPLEX *work, INTEGER const lwork) {
     REAL return_value = 0.0;
     //
     const REAL zero = 0.0;
     return_value = zero;
     INTEGER ldwork = 0;
     bool tpsd = false;
-    if (Mlsame(trans, "N")) {
+    if (Mlsame(trans.elems(), "N")) {
         ldwork = m + nrhs;
         tpsd = false;
         if (lwork < (m + nrhs) * (n + 2)) {
@@ -59,7 +59,7 @@ REAL Cqrt14(const char *trans, INTEGER const m, INTEGER const n, INTEGER const n
         } else if (n <= 0 || nrhs <= 0) {
             return return_value;
         }
-    } else if (Mlsame(trans, "C")) {
+    } else if (Mlsame(trans.elems(), "C")) {
         ldwork = m;
         tpsd = true;
         if (lwork < (n + nrhs) * (m + 2)) {
@@ -146,7 +146,7 @@ REAL Cqrt14(const char *trans, INTEGER const m, INTEGER const n, INTEGER const n
         //
     }
     //
-    return_value = err / (castREAL(max({m, n, nrhs})) * Rlamch("Epsilon"));
+    return_value = err / (castREAL(max(m, n, nrhs)) * Rlamch("Epsilon"));
     //
     return return_value;
     //

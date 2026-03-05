@@ -43,8 +43,6 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
 void Cbdt01(INTEGER const m, INTEGER const n, INTEGER const kd, COMPLEX *a, INTEGER const lda, COMPLEX *q, INTEGER const ldq, REAL *d, REAL *e, COMPLEX *pt, INTEGER const ldpt, COMPLEX *work, REAL *rwork, REAL &resid) {
     //
     // Quick return if possible
@@ -76,7 +74,7 @@ void Cbdt01(INTEGER const m, INTEGER const n, INTEGER const kd, COMPLEX *a, INTE
                 }
                 work[(m + n) - 1] = d[n - 1] * pt[(n - 1) + (j - 1) * ldpt];
                 Cgemv("No transpose", m, n, -COMPLEX(one), q, ldq, &work[(m + 1) - 1], 1, COMPLEX(one), work, 1);
-                resid = max({resid, RCasum(m, work, 1)});
+                resid = max(resid, RCasum(m, work, 1));
             }
         } else if (kd < 0) {
             //
@@ -89,7 +87,7 @@ void Cbdt01(INTEGER const m, INTEGER const n, INTEGER const kd, COMPLEX *a, INTE
                 }
                 work[(m + m) - 1] = d[m - 1] * pt[(m - 1) + (j - 1) * ldpt];
                 Cgemv("No transpose", m, m, -COMPLEX(one), q, ldq, &work[(m + 1) - 1], 1, COMPLEX(one), work, 1);
-                resid = max({resid, RCasum(m, work, 1)});
+                resid = max(resid, RCasum(m, work, 1));
             }
         } else {
             //
@@ -102,7 +100,7 @@ void Cbdt01(INTEGER const m, INTEGER const n, INTEGER const kd, COMPLEX *a, INTE
                     work[(m + i) - 1] = e[(i - 1) - 1] * pt[((i - 1) - 1) + (j - 1) * ldpt] + d[i - 1] * pt[(i - 1) + (j - 1) * ldpt];
                 }
                 Cgemv("No transpose", m, m, -COMPLEX(one), q, ldq, &work[(m + 1) - 1], 1, COMPLEX(one), work, 1);
-                resid = max({resid, RCasum(m, work, 1)});
+                resid = max(resid, RCasum(m, work, 1));
             }
         }
     } else {
@@ -116,7 +114,7 @@ void Cbdt01(INTEGER const m, INTEGER const n, INTEGER const kd, COMPLEX *a, INTE
                     work[(m + i) - 1] = d[i - 1] * pt[(i - 1) + (j - 1) * ldpt];
                 }
                 Cgemv("No transpose", m, n, -COMPLEX(one), q, ldq, &work[(m + 1) - 1], 1, COMPLEX(one), work, 1);
-                resid = max({resid, RCasum(m, work, 1)});
+                resid = max(resid, RCasum(m, work, 1));
             }
         } else {
             for (j = 1; j <= n; j = j + 1) {
@@ -125,7 +123,7 @@ void Cbdt01(INTEGER const m, INTEGER const n, INTEGER const kd, COMPLEX *a, INTE
                     work[(m + i) - 1] = d[i - 1] * pt[(i - 1) + (j - 1) * ldpt];
                 }
                 Cgemv("No transpose", m, m, -COMPLEX(one), q, ldq, &work[(m + 1) - 1], 1, COMPLEX(one), work, 1);
-                resid = max({resid, RCasum(m, work, 1)});
+                resid = max(resid, RCasum(m, work, 1));
             }
         }
     }
@@ -144,9 +142,9 @@ void Cbdt01(INTEGER const m, INTEGER const n, INTEGER const kd, COMPLEX *a, INTE
             resid = (resid / anorm) / (castREAL(n) * eps);
         } else {
             if (anorm < one) {
-                resid = (min(resid, REAL(castREAL(n) * anorm)) / anorm) / (castREAL(n) * eps);
+                resid = (min(resid, castREAL(n) * anorm) / anorm) / (castREAL(n) * eps);
             } else {
-                resid = min(REAL(resid / anorm), castREAL(n)) / (castREAL(n) * eps);
+                resid = min(resid / anorm, castREAL(n)) / (castREAL(n) * eps);
             }
         }
     }

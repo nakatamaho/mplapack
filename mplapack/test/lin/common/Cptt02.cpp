@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Cptt02(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *d, COMPLEX *e, COMPLEX *x, INTEGER const ldx, COMPLEX *b, INTEGER const ldb, REAL &resid) {
+void Cptt02(fem::str_cref uplo, INTEGER const n, INTEGER const nrhs, REAL *d, COMPLEX *e, COMPLEX *x, INTEGER const ldx, COMPLEX *b, INTEGER const ldb, REAL &resid) {
     //
     // Quick return if possible
     //
@@ -83,7 +83,7 @@ void Cptt02(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *d, COMP
         if (xnorm <= zero) {
             resid = one / eps;
         } else {
-            resid = max(resid, REAL(((bnorm / anorm) / xnorm) / eps));
+            resid = max(resid, ((bnorm / anorm) / xnorm) / eps);
         }
     }
     //

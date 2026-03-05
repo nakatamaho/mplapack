@@ -38,13 +38,13 @@
 
 #include <mplapack_matgen.h>
 
-void Rlatm7(INTEGER const mode, REAL const cond, INTEGER const irsign, INTEGER const idist, INTEGER *iseed, REAL *d, INTEGER const n, INTEGER const rank, INTEGER &info) {
+void Rlatm7(INTEGER const mode, REAL const cond, INTEGER const irsign, INTEGER const idist, INTEGER (&iseed)[4], REAL *d, INTEGER const n, INTEGER const rank, INTEGER &info) {
     const REAL one = 1.0;
     INTEGER i = 0;
     const REAL zero = 0.0;
     REAL alpha = 0.0;
     REAL temp = 0.0;
-    const REAL half = 0.5e0;
+    const REAL half = 0.5;
     //
     // Decode and Test the input parameters. Initialize flags & seed.
     //

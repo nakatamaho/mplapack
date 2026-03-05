@@ -1,0 +1,42 @@
+#!/bin/bash
+
+TIMEOUT=7200
+
+if [ "$(uname)" = "Darwin" ]; then
+    LDPATHPREFIX="DYLD_LIBRARY_PATH=%%PREFIX%%/lib"
+else
+    LDPATHPREFIX="LD_LIBRARY_PATH=%%PREFIX%%/lib:${LD_LIBRARY_PATH}"
+fi
+
+# double-precision reference / OpenBLAS
+env $LDPATHPREFIX timeout $TIMEOUT ./dpotrf_ref      -TOTALSTEPS 500 -STEP 7 >& log.dpotrf.ref
+env $LDPATHPREFIX timeout $TIMEOUT ./dpotrf_openblas -TOTALSTEPS 500 -STEP 7 >& log.dpotrf.openblas
+
+# fixed-size multiple-precision backends
+for _mplib in binary80 dd double binary128; do
+    env $LDPATHPREFIX timeout $TIMEOUT ./Rpotrf.${_mplib}_opt -NOCHECK -TOTALSTEPS 200 -STEP 5 >& log.Rpotrf.${_mplib}_opt
+    env $LDPATHPREFIX timeout $TIMEOUT ./Rpotrf.${_mplib}     -NOCHECK -TOTALSTEPS 200 -STEP 5 >& log.Rpotrf.${_mplib}
+done
+
+# arbitrary-precision backends
+for _mplib in mpfr gmp qd; do
+    env $LDPATHPREFIX timeout $TIMEOUT ./Rpotrf.${_mplib}_opt -NOCHECK -TOTALSTEPS 200 -STEP 5 >& log.Rpotrf.${_mplib}_opt
+    env $LDPATHPREFIX timeout $TIMEOUT ./Rpotrf.${_mplib}     -NOCHECK -TOTALSTEPS 200 -STEP 5 >& log.Rpotrf.${_mplib}
+done
+
+# detect CPU model name and sed command
+if [ "$(uname)" = "Linux" ]; then
+    MODELNAME=$(lscpu | grep 'Model name' | uniq | awk '{for(i=3;i<=NF;i++) printf $i FS}')
+    SED=sed
+elif [ "$(uname)" = "Darwin" ]; then
+    MODELNAME=$(sysctl machdep.cpu.brand_string | awk '{for(i=2;i<=NF;i++) printf $i FS}')
+    SED=gsed
+else
+    MODELNAME="unknown"
+    SED=sed
+fi
+
+for i in 1 2 3; do
+    $SED -e "s/%%MODELNAME%%/$MODELNAME/g" Rpotrf${i}.plt.in > Rpotrf${i}.plt
+    gnuplot Rpotrf${i}.plt > Rpotrf${i}.pdf
+done

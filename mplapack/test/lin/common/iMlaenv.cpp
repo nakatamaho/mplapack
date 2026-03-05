@@ -47,28 +47,6 @@ using fem::common;
 INTEGER iMlaenv(INTEGER const ispec, const char *name, const char * /* opts */, INTEGER const n1, INTEGER const n2, INTEGER const n3, INTEGER const /* n4 */) {
     INTEGER return_value = 0;
     //
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Arrays in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Save statement ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     std::string str = name;
     char *subname = new char[str.size() + 1];
     std::strcpy(subname, str.c_str());
@@ -96,7 +74,7 @@ INTEGER iMlaenv(INTEGER const ispec, const char *name, const char * /* opts */, 
         //
         // Compute SVD crossover point.
         //
-        return_value = castINTEGER(castREAL(min(n1, castINTEGER(castREAL(n2) * 1.6))));
+        return_value = castINTEGER(castREAL(min(n1, n2)) * 1.6);
         //
     } else if (ispec >= 7 && ispec <= 9) {
         //
@@ -140,23 +118,6 @@ INTEGER iMlaenv(INTEGER const ispec, const char *name, const char * /* opts */, 
 
 INTEGER iMlaenv2stage(INTEGER const ispec, const char *name, const char *opts, INTEGER const n1, INTEGER const n2, INTEGER const n3, INTEGER const n4) {
     INTEGER return_value = 0;
-    //
-    //
-    // .. Scalar Arguments ..
-    // ..
-    //
-    // =====================================================================
-    //
-    // .. Local variables ..
-    // .. External Functions ..
-    // ..
-    // .. Arrays in Common ..
-    // ..
-    // .. Common blocks ..
-    // ..
-    // .. Save statement ..
-    // ..
-    // .. Executable Statements ..
     //
     INTEGER iispec = 0;
     if ((ispec >= 1) && (ispec <= 5)) {

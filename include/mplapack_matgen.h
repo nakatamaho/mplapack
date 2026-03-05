@@ -71,9 +71,6 @@ typedef qd_complex COMPLEX;
 #define iMlaenv iMlaenv_qd
 #define iMieeeck iMieeeck_qd
 #define iMparmq iMparmq_qd
-#if !defined __MUTILS_CPP__
-#define nint __qd_nint
-#endif
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_DD___
@@ -88,9 +85,6 @@ typedef dd_complex COMPLEX;
 #define iMlaenv iMlaenv_dd
 #define iMieeeck iMieeeck_dd
 #define iMparmq iMparmq_dd
-#if !defined __MUTILS_CPP__
-#define nint __dd_nint
-#endif
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_DOUBLE___
@@ -107,32 +101,32 @@ typedef std::complex<double> COMPLEX;
 #define iMparmq iMparmq_double
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
-#include <mplapack_matgen__Float64x.h>
+#if defined ___MPLAPACK_BUILD_WITH_BINARY80___
+#include <mplapack_matgen_binary80.h>
 typedef mplapackint INTEGER;
 typedef mplapacklogical LOGICAL;
-typedef _Float64x REAL;
-typedef std::complex<_Float64x> COMPLEX;
-#define Mlsame Mlsame__Float64x
-#define Mxerbla Mxerbla__Float64x
-#define Rlamch Rlamch__Float64x
-#define iMlaenv iMlaenv__Float64x
-#define iMieeeck iMieeeck__Float64x
-#define iMparmq iMparmq__Float64x
+typedef mplapack_binary80_t REAL;
+typedef std::complex<mplapack_binary80_t> COMPLEX;
+#define Mlsame Mlsame_binary80
+#define Mxerbla Mxerbla_binary80
+#define Rlamch Rlamch_binary80
+#define iMlaenv iMlaenv_binary80
+#define iMieeeck iMieeeck_binary80
+#define iMparmq iMparmq_binary80
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
-#include <mplapack_matgen__Float128.h>
+#if defined ___MPLAPACK_BUILD_WITH_BINARY128___
+#include <mplapack_matgen_binary128.h>
 typedef mplapackint INTEGER;
 typedef mplapacklogical LOGICAL;
-typedef _Float128 REAL;
-typedef std::complex<_Float128> COMPLEX;
-#define Mlsame Mlsame__Float128
-#define Mxerbla Mxerbla__Float128
-#define Rlamch Rlamch__Float128
-#define iMlaenv iMlaenv__Float128
-#define iMieeeck iMieeeck__Float128
-#define iMparmq iMparmq__Float128
+typedef mplapack_binary128_t REAL;
+typedef std::complex<mplapack_binary128_t> COMPLEX;
+#define Mlsame Mlsame_binary128
+#define Mxerbla Mxerbla_binary128
+#define Rlamch Rlamch_binary128
+#define iMlaenv iMlaenv_binary128
+#define iMieeeck iMieeeck_binary128
+#define iMparmq iMparmq_binary128
 #endif
 
 #endif

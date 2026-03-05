@@ -43,19 +43,14 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-void Rdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, INTEGER const nounit, REAL *a, INTEGER const lda, REAL *h, REAL *wr, REAL *wi, REAL *wr1, REAL *wi1, REAL *vl, INTEGER const ldvl, REAL *vr, INTEGER const ldvr, REAL *lre, INTEGER const ldlre, REAL *result, REAL *work, INTEGER const nwork, INTEGER *iwork, INTEGER &info) {
-    INTEGER ldh = lda;
+void Rdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER (&iseed)[4], REAL const thresh, INTEGER const nounit, REAL *a, INTEGER const lda, REAL *h, REAL *wr, REAL *wi, REAL *wr1, REAL *wi1, REAL *vl, INTEGER const ldvl, REAL *vr, INTEGER const ldvr, REAL *lre, INTEGER const ldlre, REAL *result, REAL *work, INTEGER const nwork, INTEGER *iwork, INTEGER &info) {
     common cmn;
     common_write write(cmn);
-    const INTEGER maxtyp = 21;
-    INTEGER ktype[21] = {1, 2, 3, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 9, 9, 9};
-    INTEGER kmagn[21] = {1, 1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 1, 2, 3};
-    INTEGER kmode[21] = {0, 0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 5, 4, 3, 1, 5, 5, 5, 4, 3, 1};
-    INTEGER kconds[21] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 0, 0, 0};
-    char path[4];
-    char buf[1024];
+    static INTEGER ktype[21] = {1, 2, 3, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 9, 9, 9};
+    static INTEGER kmagn[21] = {1, 1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 1, 2, 3};
+    static INTEGER kmode[21] = {0, 0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 5, 4, 3, 1, 5, 5, 5, 4, 3, 1};
+    static INTEGER kconds[21] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 0, 0, 0};
+    fem::str<3> path;
     INTEGER ntestt = 0;
     INTEGER ntestf = 0;
     bool badnn = false;
@@ -72,6 +67,7 @@ void Rdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     INTEGER nerrs = 0;
     INTEGER jsize = 0;
     INTEGER n = 0;
+    const INTEGER maxtyp = 21;
     INTEGER mtypes = 0;
     INTEGER jtype = 0;
     INTEGER ioldsd[4];
@@ -82,7 +78,7 @@ void Rdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     REAL cond = 0.0;
     INTEGER jcol = 0;
     REAL conds = 0.0;
-    char adumma[1];
+    fem::str<1> adumma[1];
     INTEGER idumma[1];
     INTEGER iwk = 0;
     INTEGER nnwork = 0;
@@ -96,15 +92,44 @@ void Rdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     REAL dum[1];
     INTEGER ntest = 0;
     INTEGER nfail = 0;
+    //
+    static const char *format_9999 = "(/,1x,a3,' -- Real Eigenvalue-Eigenvector Decomposition',' Driver',/,"
+                                     "' Matrix types (see Rdrvev for details): ')";
+    //
+    static const char *format_9998 = "(/,' Special Matrices:',/,'  1=Zero matrix.             ','           ',"
+                                     "'  5=Diagonal: geometr. spaced entries.',/,"
+                                     "'  2=Identity matrix.                    ','  6=Diagona',"
+                                     "'l: clustered entries.',/,'  3=Transposed Jordan block.  ','          ',"
+                                     "'  7=Diagonal: large, evenly spaced.',/,'  ',"
+                                     "'4=Diagonal: evenly spaced entries.    ','  8=Diagonal: s',"
+                                     "'mall, evenly spaced.')";
+    static const char *format_9997 = "(' Dense, Non-Symmetric Matrices:',/,'  9=Well-cond., ev',"
+                                     "'enly spaced eigenvals.',' 14=Ill-cond., geomet. spaced e','igenals.',/,"
+                                     "' 10=Well-cond., geom. spaced eigenvals. ',"
+                                     "' 15=Ill-conditioned, clustered e.vals.',/,' 11=Well-cond',"
+                                     "'itioned, clustered e.vals. ',' 16=Ill-cond., random comp','lex ',/,"
+                                     "' 12=Well-cond., random complex ',6x,'   ',"
+                                     "' 17=Ill-cond., large rand. complx ',/,' 13=Ill-condi',"
+                                     "'tioned, evenly spaced.     ',' 18=Ill-cond., small rand.',' complx ')";
+    static const char *format_9996 = "(' 19=Matrix with random O(1) entries.    ',' 21=Matrix ',"
+                                     "'with small random entries.',/,' 20=Matrix with large ran',"
+                                     "'dom entries.   ',/)";
+    static const char *format_9995 = "(' Tests performed with test threshold =',f8.2,/,/,"
+                                     "' 1 = | A VR - VR W | / ( n |A| ulp ) ',/,"
+                                     "' 2 = | transpose(A) VL - VL W | / ( n |A| ulp ) ',/,"
+                                     "' 3 = | |VR(i)| - 1 | / ulp ',/,' 4 = | |VL(i)| - 1 | / ulp ',/,"
+                                     "' 5 = 0 if W same no matter if VR or VL computed,',' 1/ulp otherwise',/,"
+                                     "' 6 = 0 if VR same no matter if VL computed,','  1/ulp otherwise',/,"
+                                     "' 7 = 0 if VL same no matter if VR computed,','  1/ulp otherwise',/)";
+    static const char *format_9994 = "(' N=',i5,', IWK=',i2,', seed=',4(i4,','),' type ',i2,', test(',i2,')=',"
+                                     "g10.3)";
     static const char *format_9993 = "(' Rdrvev: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
                                      "', ISEED=(',3(i5,','),i5,')')";
     //
-    path[0] = 'R';
-    path[1] = 'E';
-    path[2] = 'V';
-    path[3] = '\0';
+    path(1, 1) = "Double precision";
+    path(2, 3) = "EV";
     //
-    //     Check for errors
+    // Check for errors
     //
     ntestt = 0;
     ntestf = 0;
@@ -141,7 +166,7 @@ void Rdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         info = -18;
     } else if (ldlre < 1 || ldlre < nmax) {
         info = -20;
-    } else if (5 * nmax + 2 * nmax * nmax > nwork) {
+    } else if (5 * nmax + 2 * pow2(nmax) > nwork) {
         info = -23;
     }
     //
@@ -160,6 +185,7 @@ void Rdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     //
     unfl = Rlamch("Safe minimum");
     ovfl = one / unfl;
+    Rlabad(unfl, ovfl);
     ulp = Rlamch("Precision");
     ulpinv = one / ulp;
     rtulp = sqrt(ulp);
@@ -292,8 +318,8 @@ void Rdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     conds = zero;
                 }
                 //
-                adumma[1 - 1] = ' ';
-                Rlatme(n, "S", iseed, work, imode, cond, one, adumma, "T", "T", "T", &work[(n + 1) - 1], 4, conds, n, n, anorm, a, lda, &work[(2 * n + 1) - 1], iinfo);
+                adumma[1 - 1] = " ";
+                Rlatme(n, "S", iseed, work, imode, cond, one, adumma[0].elems, "T", "T", "T", &work[(n + 1) - 1], 4, conds, n, n, anorm, a, lda, &work[(2 * n + 1) - 1], iinfo);
                 //
             } else if (itype == 7) {
                 //
@@ -331,7 +357,7 @@ void Rdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             }
             //
             if (iinfo != 0) {
-                write(nounit, format_9993), "Generator", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9993), "Generator", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 return;
             }
@@ -344,7 +370,7 @@ void Rdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 if (iwk == 1) {
                     nnwork = 4 * n;
                 } else {
-                    nnwork = 5 * n + 2 * n * n;
+                    nnwork = 5 * n + 2 * pow2(n);
                 }
                 nnwork = max(nnwork, (INTEGER)1);
                 //
@@ -360,7 +386,7 @@ void Rdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 Rgeev("V", "V", n, h, lda, wr, wi, vl, ldvl, vr, ldvr, work, nnwork, iinfo);
                 if (iinfo != 0) {
                     result[1 - 1] = ulpinv;
-                    write(nounit, format_9993), "Rgeev1", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9993), "Rgeev1", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     goto statement_220;
                 }
@@ -384,7 +410,7 @@ void Rdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     } else if (wi[j - 1] > zero) {
                         tnrm = Rlapy2(Rnrm2(n, &vr[(j - 1) * ldvr], 1), Rnrm2(n, &vr[((j + 1) - 1) * ldvr], 1));
                     }
-                    result[3 - 1] = max(result[3 - 1], min(ulpinv, REAL(abs(tnrm - one) / ulp)));
+                    result[3 - 1] = max(result[3 - 1], min(ulpinv, abs(tnrm - one) / ulp));
                     if (wi[j - 1] > zero) {
                         vmx = zero;
                         vrmx = zero;
@@ -412,7 +438,7 @@ void Rdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     } else if (wi[j - 1] > zero) {
                         tnrm = Rlapy2(Rnrm2(n, &vl[(j - 1) * ldvl], 1), Rnrm2(n, &vl[((j + 1) - 1) * ldvl], 1));
                     }
-                    result[4 - 1] = max(result[4 - 1], min(ulpinv, REAL(abs(tnrm - one) / ulp)));
+                    result[4 - 1] = max(result[4 - 1], min(ulpinv, abs(tnrm - one) / ulp));
                     if (wi[j - 1] > zero) {
                         vmx = zero;
                         vrmx = zero;
@@ -437,7 +463,7 @@ void Rdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 Rgeev("N", "N", n, h, lda, wr1, wi1, dum, 1, dum, 1, work, nnwork, iinfo);
                 if (iinfo != 0) {
                     result[1 - 1] = ulpinv;
-                    write(nounit, format_9993), "Rgeev2", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9993), "Rgeev2", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     goto statement_220;
                 }
@@ -456,7 +482,7 @@ void Rdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 Rgeev("N", "V", n, h, lda, wr1, wi1, dum, 1, lre, ldlre, work, nnwork, iinfo);
                 if (iinfo != 0) {
                     result[1 - 1] = ulpinv;
-                    write(nounit, format_9993), "Rgeev3", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9993), "Rgeev3", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     goto statement_220;
                 }
@@ -485,7 +511,7 @@ void Rdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 Rgeev("V", "N", n, h, lda, wr1, wi1, lre, ldlre, dum, 1, work, nnwork, iinfo);
                 if (iinfo != 0) {
                     result[1 - 1] = ulpinv;
-                    write(nounit, format_9993), "Rgeev4", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9993), "Rgeev4", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     goto statement_220;
                 }
@@ -527,49 +553,17 @@ void Rdrvev(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     ntestf++;
                 }
                 if (ntestf == 1) {
-                    write(nounit, "(/,1x,a3,' -- Real Eigenvalue-Eigenvector Decomposition',"
-                                  "' Driver',/,' Matrix types (see Rdrvev for details): ')"),
-                        path;
-                    write(nounit, "(/,' Special Matrices:',/,'  1=Zero matrix.             ',"
-                                  "'           ','  5=Diagonal: geometr. spaced entries.',/,"
-                                  "'  2=Identity matrix.                    ','  6=Diagona',"
-                                  "'l: clustered entries.',/,'  3=Transposed Jordan block.  ',"
-                                  "'          ','  7=Diagonal: large, evenly spaced.',/,'  ',"
-                                  "'4=Diagonal: evenly spaced entries.    ','  8=Diagonal: s',"
-                                  "'mall, evenly spaced.')");
-                    write(nounit, "(' Dense, Non-Symmetric Matrices:',/,'  9=Well-cond., ev',"
-                                  "'enly spaced eigenvals.',' 14=Ill-cond., geomet. spaced e',"
-                                  "'igenals.',/,' 10=Well-cond., geom. spaced eigenvals. ',"
-                                  "' 15=Ill-conditioned, clustered e.vals.',/,' 11=Well-cond',"
-                                  "'itioned, clustered e.vals. ',' 16=Ill-cond., random comp',"
-                                  "'lex ',/,' 12=Well-cond., random complex ',6x,'   ',"
-                                  "' 17=Ill-cond., large rand. complx ',/,' 13=Ill-condi',"
-                                  "'tioned, evenly spaced.     ',' 18=Ill-cond., small rand.',"
-                                  "' complx ')");
-                    write(nounit, "(' 19=Matrix with random O(1) entries.    ',' 21=Matrix ',"
-                                  "'with small random entries.',/,' 20=Matrix with large ran',"
-                                  "'dom entries.   ',/)");
-                    sprintnum_short(buf, thresh);
-                    write(nounit, "(' Tests performed with test threshold =',a,/,/,"
-                                  "' 1 = | A VR - VR W | / ( n |A| ulp ) ',/,"
-                                  "' 2 = | transpose(A) VL - VL W | / ( n |A| ulp ) ',/,"
-                                  "' 3 = | |VR(i)| - 1 | / ulp ',/,' 4 = | |VL(i)| - 1 | / ulp ',/,"
-                                  "' 5 = 0 if W same no matter if VR or VL computed,',"
-                                  "' 1/ulp otherwise',/,"
-                                  "' 6 = 0 if VR same no matter if VL computed,',"
-                                  "'  1/ulp otherwise',/,"
-                                  "' 7 = 0 if VL same no matter if VR computed,',"
-                                  "'  1/ulp otherwise',/)"),
-                        buf;
+                    write(nounit, format_9999), path;
+                    write(nounit, format_9998);
+                    write(nounit, format_9997);
+                    write(nounit, format_9996);
+                    write(nounit, format_9995), thresh;
                     ntestf = 2;
                 }
                 //
                 for (j = 1; j <= 7; j = j + 1) {
                     if (result[j - 1] >= thresh) {
-                        sprintnum_short(buf, result[j - 1]);
-                        write(nounit, "(' N=',i5,', IWK=',i2,', seed=',4(i4,','),' type ',i2,"
-                                      "', test(',i2,')=',a)"),
-                            n, iwk, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3], jtype, j, buf;
+                        write(nounit, format_9994), n, iwk, ioldsd, jtype, j, result[j - 1];
                     }
                 }
                 //

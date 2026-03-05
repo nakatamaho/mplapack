@@ -43,39 +43,38 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Clatb5(const char *path, INTEGER const imat, INTEGER const n, char *type, INTEGER &kl, INTEGER &ku, REAL &anorm, INTEGER &mode, REAL &cndnum, char *dist) {
+void Clatb5(fem::str_cref path, INTEGER const imat, INTEGER const n, fem::str_ref type, INTEGER &kl, INTEGER &ku, REAL &anorm, INTEGER &mode, REAL &cndnum, fem::str_ref dist) {
     //
     // Set some constants for use in the subroutine.
     //
-    const REAL tenth = 0.1e+0;
+    const REAL tenth = 0.1;
     const REAL one = 1.0;
-    const REAL shrink = 0.25e0;
-    REAL badc1;
-    REAL badc2;
-    REAL eps;
-    REAL large;
-    REAL small;
-    eps = Rlamch("Precision");
-    badc2 = tenth / eps;
-    badc1 = sqrt(badc2);
-    small = Rlamch("Safe minimum");
-    large = one / small;
+    const REAL shrink = 0.25;
+
+    REAL eps = Rlamch("Precision");
+    REAL badc2 = tenth / eps;
+    REAL badc1 = sqrt(badc2);
+    REAL small = Rlamch("Safe minimum");
+    REAL large = one / small;
     //
+    // If it looks like we're on a Cray, take the square root of
+    // SMALL and LARGE to avoid overflow and underflow problems.
+    //
+    Rlabad(small, large);
     small = shrink * (small / eps);
     large = one / small;
+
     //
-    char c2[2];
-    c2[0] = path[1];
-    c2[1] = path[2];
+    fem::str<2> c2 = path(2, 3);
     //
     // Set some parameters
     //
-    *dist = 'S';
+    dist = "S";
     mode = 3;
     //
     // Set TYPE, the type of matrix to be generated.
     //
-    *type = c2[0];
+    type = c2(1, 1);
     //
     // Set the lower and upper bandwidths.
     //
@@ -88,15 +87,15 @@ void Clatb5(const char *path, INTEGER const imat, INTEGER const n, char *type, I
     //
     // Set the condition number and norm.etc
     //
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     if (imat == 3) {
-        cndnum = 1.0e12;
+        cndnum = 1000000000000.0;
         mode = 2;
     } else if (imat == 4) {
-        cndnum = 1.0e12;
+        cndnum = 1000000000000.0;
         mode = 1;
     } else if (imat == 5) {
-        cndnum = 1.0e12;
+        cndnum = 1000000000000.0;
         mode = 3;
     } else if (imat == 6) {
         cndnum = badc1;

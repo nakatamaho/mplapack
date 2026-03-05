@@ -79,7 +79,7 @@ Raxpy.cpp Raxpy_ref.cpp openmp/Raxpy_omp.cpp \
 ../../reference/iRamax.cpp \
 ../../reference/mplapackinit.cpp
 
-libmpblas_mpfr_opt_la_LDFLAGS = -Wl,-rpath,$(libdir)
+libmpblas_mpfr_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO) -Wl,-rpath,$(libdir)
 if IS_MACOS
 libmpblas_mpfr_opt_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif

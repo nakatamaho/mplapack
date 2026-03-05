@@ -43,8 +43,6 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
 bool Clctes(COMPLEX const z, COMPLEX const d) {
     bool return_value = false;
     //

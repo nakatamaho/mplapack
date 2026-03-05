@@ -1,5 +1,41 @@
 check_PROGRAMS = $(mplapack_gmp_test_PROGRAMS)
-TESTS = $(check_PROGRAMS)
+TESTS = run_Rlaruv_test.sh run_Rlamch_test.sh
+CLEANFILES = run_Rlaruv_test.sh run_Rlamch_test.sh Rlaruv.txt Rlamch.txt
+
+TEST_EXTENSIONS = .sh
+SH_LOG_COMPILER = $(SHELL)
+
+AM_TESTS_ENVIRONMENT = \
+    LOG_COMPILER='$(LOG_COMPILER)'; export LOG_COMPILER; \
+    EXEEXT='$(EXEEXT)'; export EXEEXT; \
+    srcdir='$(srcdir)'; export srcdir;
+
+run_Rlaruv_test.sh: Makefile
+	@echo '#!/bin/sh' > $@
+	@echo '$${LOG_COMPILER} ./Rlaruv.test_gmp$${EXEEXT} || true' >> $@
+	@echo 'if diff -u $${srcdir}/Rlaruv_reference.txt Rlaruv.txt > /dev/null 2>&1; then' >> $@
+	@echo '  echo "PASS: Rlaruv"; exit 0' >> $@
+	@echo 'else' >> $@
+	@echo '  echo "FAIL: Rlaruv"; diff $${srcdir}/Rlaruv_reference.txt Rlaruv.txt; exit 1' >> $@
+	@echo 'fi' >> $@
+	@chmod +x $@
+
+run_Rlamch_test.sh: Makefile
+	@echo '#!/bin/sh' > $@
+	@echo '$${LOG_COMPILER} ./Rlamch.test_gmp$${EXEEXT} || true' >> $@
+	@echo 'if diff -u $${srcdir}/Rlamch_reference@ABI_BITS@.txt Rlamch.txt > /dev/null 2>&1; then' >> $@
+	@echo '  echo "PASS: Rlamch (@ABI_BITS@-bit)"; exit 0' >> $@
+	@echo 'else' >> $@
+	@echo '  echo "FAIL: Rlamch (@ABI_BITS@-bit)"; diff $${srcdir}/Rlamch_reference@ABI_BITS@.txt Rlamch.txt; exit 1' >> $@
+	@echo 'fi' >> $@
+	@chmod +x $@
+
+EXTRA_DIST = Rlamch_reference32.txt Rlamch_reference64.txt Rlaruv_reference.txt
+
+.PHONY: check-all
+check-all: $(check_PROGRAMS)
+	$(MAKE) $(AM_MAKEFLAGS) check TESTS="$(mplapack_gmp_test_PROGRAMS)"
+
 mplapack_gmp_test_PROGRAMS = \
 %%insert here1%%
 
@@ -7,65 +43,46 @@ mplapack_gmp_testdir = $(prefix)/lib/$(target)/mplapack/test/compare/gmp
 
 install-data-hook:
 if IS_MACOS
-	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mplapack_gmp_testdir) $(prefix)
+	bash $(top_srcdir)/misc/fix_dylib_macOS.sh $(mplapack_gmp_testdir) $(prefix)
 endif
 
-mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpc -lmpfr -lgmpxx -lgmp 
+mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -lmpc -lmpfr -lgmpxx -lgmp
 refblas=-L$(top_builddir)/external/i/LAPACK/lib -lblas $(FCLIBS)
 reflapack=-L$(top_builddir)/external/i/LAPACK/lib -llapack $(FCLIBS)
 
 test_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_GMP___ -D___MPLAPACK_INTERNAL___
 AM_FFLAGS = -x f77-cpp-input -g
 
-if IS_MINGW
-test_libdepends = $(mplibs) $(reflapack) $(refblas) -Wl,--allow-multiple-definition
-else
-test_libdepends = $(mplibs) $(reflapack) $(refblas)
-endif
-
-if !IS_MACOS
-test_srcdepends = ../../../../mpblas/test/common/xerbla.cpp ../../../../mpblas/test/common/mplapack.test.cpp ../../../../mpblas/test/common/Mxerbla.override.cpp
-endif
+test_srcdepends = ../../../../mpblas/test/common/xerbla.cpp ../../../../mpblas/test/common/mplapack.test.cpp
 
 if IS_MACOS
-lib_LTLIBRARIES = libmxerbla_override.la
-libmxerbla_override_la_CPPFLAGS = -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_GMP___
-libmxerbla_override_la_SOURCES =  ../../../../mpblas/test/common/Mxerbla.override.cpp
-libmxerbla_override_la_LDFLAGS= -Wl,-flat_namespace,-undefined,dynamic_lookup
-test_srcdepends = ../../../../mpblas/test/common/xerbla.cpp ../../../../mpblas/test/common/mplapack.test.cpp
 mplibs+=-Wl,-flat_namespace,-undefined,dynamic_lookup
-TESTS_ENVIRONMENT=DYLD_INSERT_LIBRARIES=.libs/libmxerbla_override.0.dylib
 endif
 
 if IS_MINGW
 $(check_PROGRAMS): libmxerbla_override.la
 lib_LTLIBRARIES = libmxerbla_override.la
 libmxerbla_override_la_CPPFLAGS = -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_GMP___
-libmxerbla_override_la_SOURCES =  ../../../../mpblas/test/common/Mxerbla.override.cpp
-test_srcdepends = ../../../../mpblas/test/common/xerbla.cpp ../../../../mpblas/test/common/mplapack.test.cpp
+libmxerbla_override_la_SOURCES = ../../../../mpblas/test/common/Mxerbla.override.cpp
 libmxerbla_override_la_LDFLAGS = -no-undefined
-endif
 
-if IS_MINGW
+test_libdepends = $(mplibs) $(reflapack) $(refblas) -Wl,--allow-multiple-definition
 libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,.libs/libmxerbla_override.a,$(top_builddir)/mpblas/reference/.libs/libmpblas_gmp.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_gmp.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_mpfr.a,$(top_builddir)/mpblas/reference/.libs/libmpblas_mpfr.a,--no-whole-archive
 else
+test_srcdepends += ../../../../mpblas/test/common/Mxerbla.override.cpp
+test_libdepends = $(mplibs) $(reflapack) $(refblas)
 libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_gmp -lmplapack_mpfr -L$(top_builddir)/mpblas/reference -lmpblas_gmp -lmpblas_mpfr
 endif
 
 Mutils_test_gmp_SOURCES  = ../common/Mutils.test.cpp $(test_srcdepends) ../common/ilaenv.cpp
-Mutils_test_gmp_LDFLAGS    = $(libdepends) $(test_libdepends)
-Mutils_test_gmp_CXXFLAGS = $(test_cxxflags)  
+Mutils_test_gmp_LDFLAGS  = $(libdepends) $(test_libdepends)
+Mutils_test_gmp_CXXFLAGS = $(test_cxxflags)
 
 %%insert here2%%
 %%FUNCTION%%_test_gmp_SOURCES  = ../common/%%FUNCTION%%.test.cpp $(test_srcdepends)
-%%FUNCTION%%_test_gmp_LDFLAGS    = $(libdepends) $(test_libdepends)
-%%FUNCTION%%_test_gmp_CXXFLAGS = $(test_cxxflags)  
+%%FUNCTION%%_test_gmp_LDFLAGS  = $(libdepends) $(test_libdepends)
+%%FUNCTION%%_test_gmp_CXXFLAGS = $(test_cxxflags)
 
 %%TEST%%_test_gmp_SOURCES  = ../common/%%TEST%%.test.cpp $(test_srcdepends)
-%%TEST%%_test_gmp_LDFLAGS    = $(libdepends) $(test_libdepends)
+%%TEST%%_test_gmp_LDFLAGS  = $(libdepends) $(test_libdepends)
 %%TEST%%_test_gmp_CXXFLAGS = $(test_cxxflags)
-
-install-data-hook:
-if IS_MACOS
-	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mplapack_gmp_testdir) $(prefix)
-endif

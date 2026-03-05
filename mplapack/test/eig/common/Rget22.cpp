@@ -43,11 +43,10 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-void Rget22(const char *transa, const char *transe, const char *transw, INTEGER const n, REAL *a, INTEGER const lda, REAL *e, INTEGER const lde, REAL *wr, REAL *wi, REAL *work, REAL *result) {
+void Rget22(fem::str_cref transa, fem::str_cref transe, fem::str_cref transw, INTEGER const n, REAL *a, INTEGER const lda, REAL *e, INTEGER const lde, REAL *wr, REAL *wi, REAL *work, REAL *result) {
+    INTEGER ldwmat = 2;
     //
-    //     Initialize RESULT (in case N=0)
+    // Initialize RESULT (in case N=0)
     //
     const REAL zero = 0.0;
     result[1 - 1] = zero;
@@ -61,16 +60,14 @@ void Rget22(const char *transa, const char *transe, const char *transw, INTEGER 
     //
     INTEGER itrnse = 0;
     INTEGER ince = 1;
-    char norma;
-    char norme;
-    norma = 'O';
-    norme = 'O';
+    fem::str<1> norma = "O";
+    fem::str<1> norme = "O";
     //
-    if (Mlsame(transa, "T") || Mlsame(transa, "C")) {
-        norma = 'I';
+    if (Mlsame(transa.elems(), "T") || Mlsame(transa.elems(), "C")) {
+        norma = "I";
     }
-    if (Mlsame(transe, "T") || Mlsame(transe, "C")) {
-        norme = 'I';
+    if (Mlsame(transe.elems(), "T") || Mlsame(transe.elems(), "C")) {
+        norme = "I";
         itrnse = 1;
         ince = lde;
     }
@@ -99,7 +96,7 @@ void Rget22(const char *transa, const char *transe, const char *transw, INTEGER 
                 // Complex eigenvector
                 //
                 for (j = 1; j <= n; j = j + 1) {
-                    temp1 = max(temp1, REAL(abs(e[(j - 1) + (jvec - 1) * lde]) + abs(e[(j - 1) + ((jvec + 1) - 1) * lde])));
+                    temp1 = max(temp1, abs(e[(j - 1) + (jvec - 1) * lde]) + abs(e[(j - 1) + ((jvec + 1) - 1) * lde]));
                 }
                 enrmin = min(enrmin, temp1);
                 enrmax = max(enrmax, temp1);
@@ -111,7 +108,7 @@ void Rget22(const char *transa, const char *transe, const char *transw, INTEGER 
                 // Real eigenvector
                 //
                 for (j = 1; j <= n; j = j + 1) {
-                    temp1 = max(temp1, REAL(abs(e[(j - 1) + (jvec - 1) * lde])));
+                    temp1 = max(temp1, abs(e[(j - 1) + (jvec - 1) * lde]));
                 }
                 enrmin = min(enrmin, temp1);
                 enrmax = max(enrmax, temp1);
@@ -134,12 +131,12 @@ void Rget22(const char *transa, const char *transe, const char *transw, INTEGER 
                     ipair = 1;
                 }
                 if (ipair == 1) {
-                    work[jvec - 1] = max(work[jvec - 1], REAL(abs(e[(j - 1) + (jvec - 1) * lde]) + abs(e[(j - 1) + ((jvec + 1) - 1) * lde])));
+                    work[jvec - 1] = max(work[jvec - 1], abs(e[(j - 1) + (jvec - 1) * lde]) + abs(e[(j - 1) + ((jvec + 1) - 1) * lde]));
                     work[(jvec + 1) - 1] = work[jvec - 1];
                 } else if (ipair == 2) {
                     ipair = 0;
                 } else {
-                    work[jvec - 1] = max(work[jvec - 1], REAL(abs(e[(j - 1) + (jvec - 1) * lde])));
+                    work[jvec - 1] = max(work[jvec - 1], abs(e[(j - 1) + (jvec - 1) * lde]));
                     ipair = 0;
                 }
             }
@@ -153,11 +150,11 @@ void Rget22(const char *transa, const char *transe, const char *transw, INTEGER 
     //
     // Norm of A:
     //
-    REAL anorm = max(Rlange(&norma, n, n, a, lda, work), unfl);
+    REAL anorm = max(Rlange(norma.elems, n, n, a, lda, work), unfl);
     //
     // Norm of E:
     //
-    REAL enorm = max(Rlange(&norme, n, n, e, lde, work), ulp);
+    REAL enorm = max(Rlange(norme.elems, n, n, e, lde, work), ulp);
     //
     // Norm of error:
     //
@@ -171,7 +168,6 @@ void Rget22(const char *transa, const char *transe, const char *transw, INTEGER 
     //
     INTEGER jcol = 0;
     REAL wmat[2 * 2];
-    INTEGER ldwmat = 2;
     for (jcol = 1; jcol <= n; jcol = jcol + 1) {
         if (itrnse == 1) {
             ierow = jcol;
@@ -184,11 +180,11 @@ void Rget22(const char *transa, const char *transe, const char *transw, INTEGER 
         }
         //
         if (ipair == 1) {
-            wmat[(1 - 1)] = wr[jcol - 1];
+            wmat[0] = wr[jcol - 1];
             wmat[(2 - 1)] = -wi[jcol - 1];
             wmat[(2 - 1) * ldwmat] = wi[jcol - 1];
             wmat[(2 - 1) + (2 - 1) * ldwmat] = wr[jcol - 1];
-            Rgemm(transe, transw, n, 2, 2, one, &e[(ierow - 1) + (iecol - 1) * lde], lde, wmat, 2, zero, &work[(n * (jcol - 1) + 1) - 1], n);
+            Rgemm(transe.elems(), transw.elems(), n, 2, 2, one, &e[(ierow - 1) + (iecol - 1) * lde], lde, wmat, 2, zero, &work[(n * (jcol - 1) + 1) - 1], n);
             ipair = 2;
         } else if (ipair == 2) {
             ipair = 0;
@@ -201,7 +197,7 @@ void Rget22(const char *transa, const char *transe, const char *transw, INTEGER 
         //
     }
     //
-    Rgemm(transa, transe, n, n, n, one, a, lda, e, lde, -one, work, n);
+    Rgemm(transa.elems(), transe.elems(), n, n, n, one, a, lda, e, lde, -one, work, n);
     //
     REAL errnrm = Rlange("One", n, n, work, n, &work[(n * n + 1) - 1]) / enorm;
     //
@@ -213,7 +209,7 @@ void Rget22(const char *transa, const char *transe, const char *transw, INTEGER 
         if (anorm < one) {
             result[1 - 1] = (min(errnrm, anorm) / anorm) / ulp;
         } else {
-            result[1 - 1] = min(REAL(errnrm / anorm), one) / ulp;
+            result[1 - 1] = min(errnrm / anorm, one) / ulp;
         }
     }
     //

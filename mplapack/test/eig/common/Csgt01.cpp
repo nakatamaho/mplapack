@@ -43,9 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-void Csgt01(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER const m, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX *z, INTEGER const ldz, REAL *d, COMPLEX *work, REAL *rwork, REAL *result) {
+void Csgt01(INTEGER const itype, fem::str_cref uplo, INTEGER const n, INTEGER const m, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX *z, INTEGER const ldz, REAL *d, COMPLEX *work, REAL *rwork, REAL *result) {
     //
     const REAL zero = 0.0;
     result[1 - 1] = zero;
@@ -57,7 +55,7 @@ void Csgt01(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
     //
     // Compute product of 1-norms of A and Z.
     //
-    REAL anorm = Clanhe("1", uplo, n, a, lda, rwork) * Clange("1", n, m, z, ldz, rwork);
+    REAL anorm = Clanhe("1", uplo.elems(), n, a, lda, rwork) * Clange("1", n, m, z, ldz, rwork);
     const REAL one = 1.0;
     if (anorm == zero) {
         anorm = one;
@@ -70,11 +68,11 @@ void Csgt01(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
         //
         // Norm of AZ - BZD
         //
-        Chemm("Left", uplo, n, m, cone, a, lda, z, ldz, czero, work, n);
+        Chemm("Left", uplo.elems(), n, m, cone, a, lda, z, ldz, czero, work, n);
         for (i = 1; i <= m; i = i + 1) {
             CRscal(n, d[i - 1], &z[(i - 1) * ldz], 1);
         }
-        Chemm("Left", uplo, n, m, cone, b, ldb, z, ldz, -cone, work, n);
+        Chemm("Left", uplo.elems(), n, m, cone, b, ldb, z, ldz, -cone, work, n);
         //
         result[1 - 1] = (Clange("1", n, m, work, n, rwork) / anorm) / (n * ulp);
         //
@@ -82,11 +80,11 @@ void Csgt01(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
         //
         // Norm of ABZ - ZD
         //
-        Chemm("Left", uplo, n, m, cone, b, ldb, z, ldz, czero, work, n);
+        Chemm("Left", uplo.elems(), n, m, cone, b, ldb, z, ldz, czero, work, n);
         for (i = 1; i <= m; i = i + 1) {
             CRscal(n, d[i - 1], &z[(i - 1) * ldz], 1);
         }
-        Chemm("Left", uplo, n, m, cone, a, lda, work, n, -cone, z, ldz);
+        Chemm("Left", uplo.elems(), n, m, cone, a, lda, work, n, -cone, z, ldz);
         //
         result[1 - 1] = (Clange("1", n, m, z, ldz, rwork) / anorm) / (n * ulp);
         //
@@ -94,11 +92,11 @@ void Csgt01(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
         //
         // Norm of BAZ - ZD
         //
-        Chemm("Left", uplo, n, m, cone, a, lda, z, ldz, czero, work, n);
+        Chemm("Left", uplo.elems(), n, m, cone, a, lda, z, ldz, czero, work, n);
         for (i = 1; i <= m; i = i + 1) {
             CRscal(n, d[i - 1], &z[(i - 1) * ldz], 1);
         }
-        Chemm("Left", uplo, n, m, cone, b, ldb, work, n, -cone, z, ldz);
+        Chemm("Left", uplo.elems(), n, m, cone, b, ldb, work, n, -cone, z, ldz);
         //
         result[1 - 1] = (Clange("1", n, m, z, ldz, rwork) / anorm) / (n * ulp);
     }

@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Rppt01(const char *uplo, INTEGER const n, REAL *a, REAL *afac, REAL *rwork, REAL &resid) {
+void Rppt01(fem::str_cref uplo, INTEGER const n, REAL *a, REAL *afac, REAL *rwork, REAL &resid) {
     //
     // Quick exit if N = 0
     //
@@ -56,7 +56,7 @@ void Rppt01(const char *uplo, INTEGER const n, REAL *a, REAL *afac, REAL *rwork,
     // Exit with RESID = 1/EPS if ANORM = 0.
     //
     REAL eps = Rlamch("Epsilon");
-    REAL anorm = Rlansp("1", uplo, n, a, rwork);
+    REAL anorm = Rlansp("1", uplo.elems(), n, a, rwork);
     const REAL one = 1.0;
     if (anorm <= zero) {
         resid = one / eps;
@@ -68,7 +68,7 @@ void Rppt01(const char *uplo, INTEGER const n, REAL *a, REAL *afac, REAL *rwork,
     INTEGER kc = 0;
     INTEGER k = 0;
     REAL t = 0.0;
-    if (Mlsame(uplo, "U")) {
+    if (Mlsame(uplo.elems(), "U")) {
         kc = (n * (n - 1)) / 2 + 1;
         for (k = n; k >= 1; k = k - 1) {
             //
@@ -117,7 +117,7 @@ void Rppt01(const char *uplo, INTEGER const n, REAL *a, REAL *afac, REAL *rwork,
     //
     // Compute norm( L*U - A ) / ( N * norm(A) * EPS )
     //
-    resid = Rlansp("1", uplo, n, afac, rwork);
+    resid = Rlansp("1", uplo.elems(), n, afac, rwork);
     //
     resid = ((resid / castREAL(n)) / anorm) / eps;
     //

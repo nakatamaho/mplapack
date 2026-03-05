@@ -51,7 +51,7 @@ void Rsymv_test3(const char *uplo, REAL_REF alpha_ref, REAL_REF beta_ref, REAL a
     for (int incx = MIN_INCX; incx <= MAX_INCX; incx++) {
         for (int incy = MIN_INCY; incy < MAX_INCY; incy++) {
             for (int n = MIN_N; n < MAX_N; n++) {
-                for (int lda = max_int(1, n); lda < MAX_LDA; lda++) {
+                for (int lda = max(1, n); lda < MAX_LDA; lda++) {
 #if defined VERBOSE_TEST
                     printf("#n is %d, lda is %d incx %d incy %d uplo %s\n", n, lda, incx, incy, uplo);
 #endif

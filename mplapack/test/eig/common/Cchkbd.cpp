@@ -43,19 +43,12 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-#if defined ___MPLAPACK_DEBUG_COMPARE_WITH_DOUBLE___
-#include <lapacke.h>
-#endif
-
-void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const ntypes, bool *dotype, INTEGER const nrhs, INTEGER *iseed, REAL const thresh, COMPLEX *a, INTEGER const lda, REAL *bd, REAL *be, REAL *s1, REAL *s2, COMPLEX *x, INTEGER const ldx, COMPLEX *y, COMPLEX *z, COMPLEX *q, INTEGER const ldq, COMPLEX *pt, INTEGER const ldpt, COMPLEX *u, COMPLEX *vt, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER const nout, INTEGER &info) {
+void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const ntypes, bool *dotype, INTEGER const nrhs, INTEGER (&iseed)[4], REAL const thresh, COMPLEX *a, INTEGER const lda, REAL *bd, REAL *be, REAL *s1, REAL *s2, COMPLEX *x, INTEGER const ldx, COMPLEX *y, COMPLEX *z, COMPLEX *q, INTEGER const ldq, COMPLEX *pt, INTEGER const ldpt, COMPLEX *u, COMPLEX *vt, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER const nout, INTEGER &info) {
     common cmn;
     common_write write(cmn);
-    const INTEGER maxtyp = 16;
-    INTEGER ktype[16] = {1, 2, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, 9, 9, 9, 10};
-    INTEGER kmagn[16] = {1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 2, 3, 1, 2, 3, 0};
-    INTEGER kmode[16] = {0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 4, 4, 0, 0, 0, 0};
+    static INTEGER ktype[16] = {1, 2, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, 9, 9, 9, 10};
+    static INTEGER kmagn[16] = {1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 2, 3, 1, 2, 3, 0};
+    static INTEGER kmode[16] = {0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 4, 4, 0, 0, 0, 0};
     bool badmm = false;
     bool badnn = false;
     INTEGER mmax = 0;
@@ -63,7 +56,7 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
     INTEGER mnmax = 0;
     INTEGER minwrk = 0;
     INTEGER j = 0;
-    char path[4];
+    fem::str<3> path;
     INTEGER nfail = 0;
     INTEGER ntest = 0;
     REAL unfl = 0.0;
@@ -80,11 +73,12 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
     INTEGER n = 0;
     INTEGER mnmin = 0;
     REAL amninv = 0.0;
+    const INTEGER maxtyp = 16;
     INTEGER mtypes = 0;
     INTEGER jtype = 0;
     INTEGER ioldsd[4];
     REAL result[14];
-    char uplo;
+    fem::str<1> uplo;
     INTEGER itype = 0;
     INTEGER imode = 0;
     REAL anorm = 0.0;
@@ -100,13 +94,13 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
     INTEGER mq = 0;
     INTEGER i = 0;
     REAL temp2 = 0.0;
-    const REAL half = 0.5e0;
+    const REAL half = 0.5;
     REAL dumma[1];
-    INTEGER ldvt = ldpt;
-    INTEGER ldu = ldpt;
-    INTEGER ldy = ldx;
-    INTEGER ldz = ldx;
-    char buf[1024];
+    //
+    // End of Cchkbd
+    //
+    static const char *format_9999 = "(' M=',i5,', N=',i5,', type ',i2,', seed=',4(i4,','),' test(',i2,')=',"
+                                     "g11.4)";
     static const char *format_9998 = "(' Cchkbd: ',a,' returned INFO=',i6,'.',/,9x,'M=',i6,', N=',i6,"
                                      "', JTYPE=',i6,', ISEED=(',3(i5,','),i5,')')";
     //
@@ -129,8 +123,8 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
         if (nval[j - 1] < 0) {
             badnn = true;
         }
-        mnmax = max({mnmax, min(mval[j - 1], nval[j - 1])});
-        minwrk = max({minwrk, 3 * (mval[j - 1] + nval[j - 1]), mval[j - 1] * (mval[j - 1] + max({mval[j - 1], nval[j - 1], nrhs}) + 1) + nval[j - 1] * min(nval[j - 1], mval[j - 1])});
+        mnmax = max(mnmax, min(mval[j - 1], nval[j - 1]));
+        minwrk = max(minwrk, 3 * (mval[j - 1] + nval[j - 1]), mval[j - 1] * (mval[j - 1] + max(mval[j - 1], nval[j - 1], nrhs) + 1) + nval[j - 1] * min(nval[j - 1], mval[j - 1]));
     }
     //
     // Check for errors
@@ -162,32 +156,29 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
         return;
     }
     //
-    //     Initialize constants
+    // Initialize constants
     //
-    path[0] = 'C';
-    path[1] = 'B';
-    path[2] = 'D';
-    path[3] = '\0';
+    path(1, 1) = "Zomplex precision";
+    path(2, 3) = "BD";
     nfail = 0;
     ntest = 0;
     unfl = Rlamch("Safe minimum");
-#if defined ___MPLAPACK_DEBUG_COMPARE_WITH_QD___
-    unfl = unfl * 1e+16
-#endif
     ovfl = Rlamch("Overflow");
+    Rlabad(unfl, ovfl);
     ulp = Rlamch("Precision");
     ulpinv = one / ulp;
     log2ui = castINTEGER(log(ulpinv) / log(two));
     rtunfl = sqrt(unfl);
     rtovfl = sqrt(ovfl);
+    infot = 0;
     //
-    //     Loop over sizes, types
+    // Loop over sizes, types
     //
     for (jsize = 1; jsize <= nsizes; jsize = jsize + 1) {
         m = mval[jsize - 1];
         n = nval[jsize - 1];
         mnmin = min(m, n);
-        amninv = one / max({m, n, (INTEGER)1});
+        amninv = one / max(m, n, (INTEGER)1);
         //
         if (nsizes != 1) {
             mtypes = min(maxtyp, ntypes);
@@ -208,7 +199,7 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 result[j - 1] = -one;
             }
             //
-            uplo = ' ';
+            uplo = " ";
             //
             // Compute "A"
             //
@@ -255,7 +246,7 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             goto statement_70;
         //
         statement_60:
-            anorm = rtunfl * castREAL(max(m, n)) * ulpinv;
+            anorm = rtunfl * max(m, n) * ulpinv;
             goto statement_70;
         //
         statement_70:
@@ -330,9 +321,9 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 iinfo = 0;
                 bidiag = true;
                 if (m >= n) {
-                    uplo = 'U';
+                    uplo = "U";
                 } else {
-                    uplo = 'L';
+                    uplo = "L";
                 }
             } else {
                 iinfo = 1;
@@ -352,7 +343,7 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             // Error Exit
             //
             if (iinfo != 0) {
-                write(nout, format_9998), "Generator", iinfo, m, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nout, format_9998), "Generator", iinfo, m, n, jtype, ioldsd;
                 info = abs(iinfo);
                 return;
             }
@@ -368,50 +359,20 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 //
                 Clacpy(" ", m, n, a, lda, q, ldq);
                 Cgebrd(m, n, q, ldq, bd, be, work, &work[(mnmin + 1) - 1], &work[(2 * mnmin + 1) - 1], lwork - 2 * mnmin, iinfo);
-                //                printf("bd="); printvec(bd, mnmin); printf("\n");
-                //                printf("be="); printvec(be, mnmin - 1); printf("\n");
-#ifdef ___MPLAPACK_DEBUG_COMPARE_WITH_DOUBLE___
-                {
-                    __complex__ double *a_d = new __complex__ double[m * n];
-                    double *bd_d = new double[mnmin];
-                    double *be_d = new double[mnmin];
-                    __complex__ double *tauq_d = new __complex__ double[mnmin];
-                    __complex__ double *taup_d = new __complex__ double[mnmin];
-                    int lda_d = m;
-                    for (int pp = 0; pp < m; pp++) {
-                        for (int qq = 0; qq < n; qq++) {
-                            __real__ a_d[pp + qq * lda_d] = cast2double(a[pp + qq * lda].real());
-                            __imag__ a_d[pp + qq * lda_d] = cast2double(a[pp + qq * lda].imag());
-                        }
-                    }
-                    LAPACKE_zgebrd(LAPACK_COL_MAJOR, (int)m, (int)n, a_d, lda_d, bd_d, be_d, tauq_d, taup_d);
-                    printf("bd_d=");
-                    printvec(bd_d, mnmin);
-                    printf("\n");
-                    printf("be_d=");
-                    printvec(be_d, mnmin - 1);
-                    printf("\n");
-                    delete[] taup_d;
-                    delete[] tauq_d;
-                    delete[] bd_d;
-                    delete[] be_d;
-                    delete[] a_d;
-                }
-#endif
                 //
-                //              Check error code from Cgebrd.
+                // Check error code from Cgebrd.
                 //
                 if (iinfo != 0) {
-                    write(nout, format_9998), "Cgebrd", iinfo, m, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nout, format_9998), "Cgebrd", iinfo, m, n, jtype, ioldsd;
                     info = abs(iinfo);
                     return;
                 }
                 //
                 Clacpy(" ", m, n, q, ldq, pt, ldpt);
                 if (m >= n) {
-                    uplo = 'U';
+                    uplo = "U";
                 } else {
-                    uplo = 'L';
+                    uplo = "L";
                 }
                 //
                 // Generate Q
@@ -425,7 +386,7 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 // Check error code from Cungbr.
                 //
                 if (iinfo != 0) {
-                    write(nout, format_9998), "Cungbr(Q)", iinfo, m, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nout, format_9998), "Cungbr(Q)", iinfo, m, n, jtype, ioldsd;
                     info = abs(iinfo);
                     return;
                 }
@@ -437,7 +398,7 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 // Check error code from Cungbr.
                 //
                 if (iinfo != 0) {
-                    write(nout, format_9998), "Cungbr(P)", iinfo, m, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nout, format_9998), "Cungbr(P)", iinfo, m, n, jtype, ioldsd;
                     info = abs(iinfo);
                     return;
                 }
@@ -466,12 +427,12 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             Claset("Full", mnmin, mnmin, czero, cone, u, ldpt);
             Claset("Full", mnmin, mnmin, czero, cone, vt, ldpt);
             //
-            Cbdsqr(&uplo, mnmin, mnmin, mnmin, nrhs, s1, rwork, vt, ldpt, u, ldpt, z, ldx, &rwork[(mnmin + 1) - 1], iinfo);
+            Cbdsqr(uplo.elems, mnmin, mnmin, mnmin, nrhs, s1, rwork, vt, ldpt, u, ldpt, z, ldx, &rwork[(mnmin + 1) - 1], iinfo);
             //
             // Check error code from Cbdsqr.
             //
             if (iinfo != 0) {
-                write(nout, format_9998), "Cbdsqr(vects)", iinfo, m, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nout, format_9998), "Cbdsqr(vects)", iinfo, m, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -489,12 +450,12 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 Rcopy(mnmin - 1, be, 1, rwork, 1);
             }
             //
-            Cbdsqr(&uplo, mnmin, 0, 0, 0, s2, rwork, vt, ldpt, u, ldpt, z, ldx, &rwork[(mnmin + 1) - 1], iinfo);
+            Cbdsqr(uplo.elems, mnmin, 0, 0, 0, s2, rwork, vt, ldpt, u, ldpt, z, ldx, &rwork[(mnmin + 1) - 1], iinfo);
             //
             // Check error code from Cbdsqr.
             //
             if (iinfo != 0) {
-                write(nout, format_9998), "Cbdsqr(values)", iinfo, m, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nout, format_9998), "Cbdsqr(values)", iinfo, m, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -509,7 +470,7 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             // 6:  Check the orthogonality of U
             // 7:  Check the orthogonality of VT
             //
-            Cbdt03(&uplo, mnmin, 1, bd, be, u, ldpt, s1, vt, ldpt, work, result[4 - 1]);
+            Cbdt03(uplo, mnmin, 1, bd, be, u, ldpt, s1, vt, ldpt, work, result[4 - 1]);
             Cbdt02(mnmin, nrhs, y, ldx, z, ldx, u, ldpt, work, rwork, result[5 - 1]);
             Cunt01("Columns", mnmin, mnmin, u, ldpt, work, lwork, rwork, result[6 - 1]);
             Cunt01("Rows", mnmin, mnmin, vt, ldpt, work, lwork, rwork, result[7 - 1]);
@@ -537,7 +498,7 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             temp2 = zero;
             //
             for (j = 1; j <= mnmin; j = j + 1) {
-                temp1 = abs(s1[j - 1] - s2[j - 1]) / max({REAL(sqrt(unfl) * max(s1[1 - 1], one)), REAL(ulp * max(abs(s1[j - 1]), abs(s2[j - 1])))});
+                temp1 = abs(s1[j - 1] - s2[j - 1]) / max(sqrt(unfl) * max(s1[1 - 1], one), ulp * max(abs(s1[j - 1]), abs(s2[j - 1])));
                 temp2 = max(temp1, temp2);
             }
             //
@@ -568,7 +529,7 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                     Rcopy(mnmin - 1, be, 1, rwork, 1);
                 }
                 //
-                Cbdsqr(&uplo, mnmin, n, m, nrhs, s2, rwork, pt, ldpt, q, ldq, y, ldx, &rwork[(mnmin + 1) - 1], iinfo);
+                Cbdsqr(uplo.elems, mnmin, n, m, nrhs, s2, rwork, pt, ldpt, q, ldq, y, ldx, &rwork[(mnmin + 1) - 1], iinfo);
                 //
                 // Test 11:  Check the decomposition A := Q*U * S2 * VT*PT
                 // 12:  Check the computation Z := U' * Q' * X
@@ -589,10 +550,7 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                     if (nfail == 0) {
                         Rlahd2(nout, path);
                     }
-                    sprintnum_short(buf, result[j - 1]);
-                    write(nout, "(' M=',i5,', N=',i5,', type ',i2,', seed=',4(i4,','),' test(',i2,"
-                                "')=',a)"),
-                        m, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3], j, buf;
+                    write(nout, format_9999), m, n, jtype, ioldsd, j, result[j - 1];
                     nfail++;
                 }
             }
@@ -609,7 +567,5 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
     // Summary
     //
     Alasum(path, nout, nfail, ntest, 0);
-    //
-    // End of Cchkbd
     //
 }

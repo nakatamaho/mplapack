@@ -39,8 +39,8 @@
 #include <mplapack_matgen.h>
 
 COMPLEX
-Clatm3(INTEGER const m, INTEGER const n, INTEGER const i, INTEGER const j, INTEGER &isub, INTEGER &jsub, INTEGER const kl, INTEGER const ku, INTEGER const idist, INTEGER *iseed, COMPLEX *d, INTEGER const igrade, COMPLEX *dl, COMPLEX *dr, INTEGER const ipvtng, INTEGER *iwork, REAL const sparse) {
-    COMPLEX return_value = (0.0, 0.0);
+Clatm3(INTEGER const m, INTEGER const n, INTEGER const i, INTEGER const j, INTEGER &isub, INTEGER &jsub, INTEGER const kl, INTEGER const ku, INTEGER const idist, INTEGER (&iseed)[4], COMPLEX *d, INTEGER const igrade, COMPLEX *dl, COMPLEX *dr, INTEGER const ipvtng, INTEGER *iwork, REAL const sparse) {
+    COMPLEX return_value = COMPLEX(0.0, 0.0);
     //
     // Check for I and J in range
     //

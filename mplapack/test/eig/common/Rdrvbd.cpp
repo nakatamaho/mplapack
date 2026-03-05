@@ -43,18 +43,12 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, REAL *a, INTEGER const lda, REAL *u, INTEGER const ldu, REAL *vt, INTEGER const ldvt, REAL *asav, REAL *usav, REAL *vtsav, REAL *s, REAL *ssav, REAL *e, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const nout, INTEGER &info) {
-    INTEGER ldasav = lda;
-    INTEGER ldusav = ldu;
-    INTEGER ldvtsav = ldvt;
+void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER (&iseed)[4], REAL const thresh, REAL *a, INTEGER const lda, REAL *u, INTEGER const ldu, REAL *vt, INTEGER const ldvt, REAL *asav, REAL *usav, REAL *vtsav, REAL *s, REAL *ssav, REAL *e, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const nout, INTEGER &info) {
     common cmn;
     common_write write(cmn);
-    char cjob[4] = {'N', 'O', 'S', 'A'};
-    char cjobr[3] = {'A', 'V', 'I'};
-    char cjobv[2] = {'N', 'V'};
-    char buf[1024];
+    static fem::str<1> cjob[4] = {"N", "O", "S", "A"};
+    static fem::str<1> cjobr[3] = {"A", "V", "I"};
+    static fem::str<1> cjobv[2] = {"N", "V"};
     bool badmm = false;
     bool badnn = false;
     INTEGER mmax = 0;
@@ -62,7 +56,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
     INTEGER mnmax = 0;
     INTEGER minwrk = 0;
     INTEGER j = 0;
-    char path[4];
+    fem::str<3> path;
     INTEGER nfail = 0;
     INTEGER ntest = 0;
     REAL unfl = 0.0;
@@ -89,12 +83,12 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
     INTEGER i = 0;
     INTEGER iju = 0;
     INTEGER ijvt = 0;
-    char jobu;
-    char jobvt;
+    fem::str<1> jobu;
+    fem::str<1> jobvt;
     REAL dif = 0.0;
     REAL div = 0.0;
     INTEGER ijq = 0;
-    char jobq;
+    fem::str<1> jobq;
     INTEGER lrwork = 0;
     INTEGER liwork = 0;
     INTEGER numrank = 0;
@@ -104,13 +98,67 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
     INTEGER il = 0;
     INTEGER iu = 0;
     INTEGER ns = 0;
-    char range;
+    fem::str<1> range;
     INTEGER iseed2[4];
     INTEGER itemp = 0;
     INTEGER nsi = 0;
-    const REAL half = 0.5e0;
+    const REAL half = 0.5;
     const REAL two = 2.0;
     INTEGER nsv = 0;
+    //
+    static const char *format_9999 = "(' SVD -- Real Singular Value Decomposition Driver ',/,"
+                                     "' Matrix types (see Rdrvbd for details):',/,/,' 1 = Zero matrix',/,"
+                                     "' 2 = Identity matrix',/,' 3 = Evenly spaced singular values near 1',/,"
+                                     "' 4 = Evenly spaced singular values near underflow',/,"
+                                     "' 5 = Evenly spaced singular values near overflow',/,/,"
+                                     "' Tests performed: ( A is dense, U and V are orthogonal,',/,19x,"
+                                     "' S is an array, and Upartial, VTpartial, and',/,19x,"
+                                     "' Spartial are partially computed U, VT and S),',/)";
+    static const char *format_9998 = "(' 1 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) ',/,"
+                                     "' 2 = | I - U**T U | / ( M ulp ) ',/,"
+                                     "' 3 = | I - VT VT**T | / ( N ulp ) ',/,"
+                                     "' 4 = 0 if S contains min(M,N) nonnegative values in',"
+                                     "' decreasing order, else 1/ulp',/,' 5 = | U - Upartial | / ( M ulp )',/,"
+                                     "' 6 = | VT - VTpartial | / ( N ulp )',/,"
+                                     "' 7 = | S - Spartial | / ( min(M,N) ulp |S| )',/,"
+                                     "' 8 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) ',/,"
+                                     "' 9 = | I - U**T U | / ( M ulp ) ',/,"
+                                     "'10 = | I - VT VT**T | / ( N ulp ) ',/,"
+                                     "'11 = 0 if S contains min(M,N) nonnegative values in',"
+                                     "' decreasing order, else 1/ulp',/,'12 = | U - Upartial | / ( M ulp )',/,"
+                                     "'13 = | VT - VTpartial | / ( N ulp )',/,"
+                                     "'14 = | S - Spartial | / ( min(M,N) ulp |S| )',/,"
+                                     "'15 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) ',/,"
+                                     "'16 = | I - U**T U | / ( M ulp ) ',/,"
+                                     "'17 = | I - VT VT**T | / ( N ulp ) ',/,"
+                                     "'18 = 0 if S contains min(M,N) nonnegative values in',"
+                                     "' decreasing order, else 1/ulp',/,'19 = | U - Upartial | / ( M ulp )',/,"
+                                     "'20 = | VT - VTpartial | / ( N ulp )',/,"
+                                     "'21 = | S - Spartial | / ( min(M,N) ulp |S| )',/,"
+                                     "'22 = 0 if S contains min(M,N) nonnegative values in',"
+                                     "' decreasing order, else 1/ulp',/,"
+                                     "'23 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ),',' Rgesvdx(V,V,A) ',/,"
+                                     "'24 = | I - U**T U | / ( M ulp ) ',/,"
+                                     "'25 = | I - VT VT**T | / ( N ulp ) ',/,"
+                                     "'26 = 0 if S contains min(M,N) nonnegative values in',"
+                                     "' decreasing order, else 1/ulp',/,'27 = | U - Upartial | / ( M ulp )',/,"
+                                     "'28 = | VT - VTpartial | / ( N ulp )',/,"
+                                     "'29 = | S - Spartial | / ( min(M,N) ulp |S| )',/,"
+                                     "'30 = | U**T A VT**T - diag(S) | / ( |A| max(M,N) ulp ),',"
+                                     "' Rgesvdx(V,V,I) ',/,'31 = | I - U**T U | / ( M ulp ) ',/,"
+                                     "'32 = | I - VT VT**T | / ( N ulp ) ',/,"
+                                     "'33 = | U**T A VT**T - diag(S) | / ( |A| max(M,N) ulp ),',"
+                                     "' Rgesvdx(V,V,V) ',/,'34 = | I - U**T U | / ( M ulp ) ',/,"
+                                     "'35 = | I - VT VT**T | / ( N ulp ) ',' Rgesvdq(H,N,N,A,A',/,"
+                                     "'36 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) ',/,"
+                                     "'37 = | I - U**T U | / ( M ulp ) ',/,"
+                                     "'38 = | I - VT VT**T | / ( N ulp ) ',/,"
+                                     "'39 = 0 if S contains min(M,N) nonnegative values in',"
+                                     "' decreasing order, else 1/ulp',/,/)";
+    static const char *format_9997 = "(' M=',i5,', N=',i5,', type ',i1,', IWS=',i1,', seed=',4(i4,','),"
+                                     "' test(',i2,')=',g11.4)";
+    static const char *format_9996 = "(' Rdrvbd: ',a,' returned INFO=',i6,'.',/,9x,'M=',i6,', N=',i6,"
+                                     "', JTYPE=',i6,', ISEED=(',3(i5,','),i5,')')";
     static const char *format_9995 = "(' Rdrvbd: ',a,' returned INFO=',i6,'.',/,9x,'M=',i6,', N=',i6,"
                                      "', JTYPE=',i6,', LSWORK=',i6,/,9x,'ISEED=(',3(i5,','),i5,')')";
     //
@@ -132,8 +180,8 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
         if (nn[j - 1] < 0) {
             badnn = true;
         }
-        mnmax = max({mnmax, min(mm[j - 1], nn[j - 1])});
-        minwrk = max(minwrk, max({3 * min(mm[j - 1], nn[j - 1]) + max(mm[j - 1], nn[j - 1]), 5 * min(mm[j - 1], nn[j - 1] - 4)}) + 2 * min(mm[j - 1], nn[j - 1]) * min(mm[j - 1], nn[j - 1]));
+        mnmax = max(mnmax, min(mm[j - 1], nn[j - 1]));
+        minwrk = max(minwrk, max(3 * min(mm[j - 1], nn[j - 1]) + max(mm[j - 1], nn[j - 1]), 5 * min(mm[j - 1], nn[j - 1] - 4)) + 2 * pow2(min(mm[j - 1], nn[j - 1])));
     }
     //
     // Check for errors
@@ -161,16 +209,15 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
         return;
     }
     //
-    //     Initialize constants
+    // Initialize constants
     //
-    path[0] = 'D';
-    path[1] = 'B';
-    path[2] = 'D';
-    path[3] = '\0';    
+    path(1, 1) = "Double precision";
+    path(2, 3) = "BD";
     nfail = 0;
     ntest = 0;
     unfl = Rlamch("Safe minimum");
     ovfl = one / unfl;
+    Rlabad(unfl, ovfl);
     ulp = Rlamch("Precision");
     rtunfl = sqrt(unfl);
     ulpinv = one / ulp;
@@ -231,9 +278,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 }
                 Rlatms(m, n, "U", iseed, "N", s, 4, castREAL(mnmin), anorm, m - 1, n - 1, "N", a, lda, work, iinfo);
                 if (iinfo != 0) {
-                    write(nout, "(' Rdrvbd: ',a,' returned INFO=',i6,'.',/,9x,'M=',i6,', N=',i6,"
-                                "', JTYPE=',i6,', ISEED=(',3(i5,','),i5,')')"),
-                        "Generator", iinfo, m, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nout, format_9996), "Generator", iinfo, m, n, jtype, ioldsd;
                     info = abs(iinfo);
                     return;
                 }
@@ -252,7 +297,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 //
                 // Test Rgesvd: Factorize A
                 //
-                iwtmp = max({3 * min(m, n) + max(m, n), 5 * min(m, n)});
+                iwtmp = max(3 * min(m, n) + max(m, n), 5 * min(m, n));
                 lswork = iwtmp + (iws - 1) * (lwork - iwtmp) / 3;
                 lswork = min(lswork, lwork);
                 lswork = max(lswork, (INTEGER)1);
@@ -263,10 +308,10 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 if (iws > 1) {
                     Rlacpy("F", m, n, asav, lda, a, lda);
                 }
-                strncpy(srnamt, "Rgesvd", srnamt_len);
+                srnamt = "Rgesvd";
                 Rgesvd("A", "A", m, n, a, lda, ssav, usav, ldu, vtsav, ldvt, work, lswork, iinfo);
                 if (iinfo != 0) {
-                    write(nout, format_9995), "GESVD", iinfo, m, n, jtype, lswork, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nout, format_9995), "GESVD", iinfo, m, n, jtype, lswork, ioldsd;
                     info = abs(iinfo);
                     return;
                 }
@@ -306,8 +351,8 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                         jobu = cjob[(iju + 1) - 1];
                         jobvt = cjob[(ijvt + 1) - 1];
                         Rlacpy("F", m, n, asav, lda, a, lda);
-                        strncpy(srnamt, "Rgesvd", srnamt_len);
-                        Rgesvd(&jobu, &jobvt, m, n, a, lda, s, u, ldu, vt, ldvt, work, lswork, iinfo);
+                        srnamt = "Rgesvd";
+                        Rgesvd(jobu.elems, jobvt.elems, m, n, a, lda, s, u, ldu, vt, ldvt, work, lswork, iinfo);
                         //
                         // Compare U
                         //
@@ -340,7 +385,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                         // Compare S
                         //
                         dif = zero;
-                        div = max(REAL(mnmin * ulp * s[1 - 1]), unfl);
+                        div = max(mnmin * ulp * s[1 - 1], unfl);
                         for (i = 1; i <= mnmin - 1; i = i + 1) {
                             if (ssav[i - 1] < ssav[(i + 1) - 1]) {
                                 dif = ulpinv;
@@ -348,7 +393,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                             if (ssav[i - 1] < zero) {
                                 dif = ulpinv;
                             }
-                            dif = max(dif, REAL(abs(ssav[i - 1] - s[i - 1]) / div));
+                            dif = max(dif, abs(ssav[i - 1] - s[i - 1]) / div);
                         }
                         result[7 - 1] = max(result[7 - 1], dif);
                     statement_70:;
@@ -366,10 +411,10 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 }
                 //
                 Rlacpy("F", m, n, asav, lda, a, lda);
-                strncpy(srnamt, "Rgesdd", srnamt_len);
+                srnamt = "Rgesdd";
                 Rgesdd("A", m, n, a, lda, ssav, usav, ldu, vtsav, ldvt, work, lswork, iwork, iinfo);
                 if (iinfo != 0) {
-                    write(nout, format_9995), "GESDD", iinfo, m, n, jtype, lswork, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nout, format_9995), "GESDD", iinfo, m, n, jtype, lswork, ioldsd;
                     info = abs(iinfo);
                     return;
                 }
@@ -404,8 +449,8 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 for (ijq = 0; ijq <= 2; ijq = ijq + 1) {
                     jobq = cjob[(ijq + 1) - 1];
                     Rlacpy("F", m, n, asav, lda, a, lda);
-                    strncpy(srnamt, "Rgesdd", srnamt_len);
-                    Rgesdd(&jobq, m, n, a, lda, s, u, ldu, vt, ldvt, work, lswork, iwork, iinfo);
+                    srnamt = "Rgesdd";
+                    Rgesdd(jobq.elems, m, n, a, lda, s, u, ldu, vt, ldvt, work, lswork, iwork, iinfo);
                     //
                     // Compare U
                     //
@@ -442,7 +487,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     // Compare S
                     //
                     dif = zero;
-                    div = max(REAL(mnmin * ulp * s[1 - 1]), unfl);
+                    div = max(mnmin * ulp * s[1 - 1], unfl);
                     for (i = 1; i <= mnmin - 1; i = i + 1) {
                         if (ssav[i - 1] < ssav[(i + 1) - 1]) {
                             dif = ulpinv;
@@ -450,7 +495,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                         if (ssav[i - 1] < zero) {
                             dif = ulpinv;
                         }
-                        dif = max(dif, REAL(abs(ssav[i - 1] - s[i - 1]) / div));
+                        dif = max(dif, abs(ssav[i - 1] - s[i - 1]) / div);
                     }
                     result[14 - 1] = max(result[14 - 1], dif);
                 }
@@ -473,14 +518,14 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     }
                     //
                     Rlacpy("F", m, n, asav, lda, a, lda);
+                    srnamt = "Rgesvdq";
                     //
                     lrwork = 2;
                     liwork = max(n, (INTEGER)1);
-                    strncpy(srnamt, "Rgesvdq", srnamt_len);
                     Rgesvdq("H", "N", "N", "A", "A", m, n, a, lda, ssav, usav, ldu, vtsav, ldvt, numrank, iwork, liwork, work, lwork, rwork, lrwork, iinfo);
                     //
                     if (iinfo != 0) {
-                        write(nout, format_9995), "Rgesvdq", iinfo, m, n, jtype, lswork, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                        write(nout, format_9995), "Rgesvdq", iinfo, m, n, jtype, lswork, ioldsd;
                         info = abs(iinfo);
                         return;
                     }
@@ -526,19 +571,19 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     }
                     //
                     Rlacpy("F", m, n, asav, lda, usav, lda);
-                    strncpy(srnamt, "Rgesvj", srnamt_len);
+                    srnamt = "Rgesvj";
                     Rgesvj("G", "U", "V", m, n, usav, lda, ssav, 0, a, ldvt, work, lwork, info);
                     //
                     // Rgesvj returns V not VT
                     //
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = 1; i <= n; i = i + 1) {
-                            vtsav[(j - 1) + (i - 1) * ldvtsav] = a[(i - 1) + (j - 1) * lda];
+                            vtsav[(j - 1) + (i - 1) * ldvt] = a[(i - 1) + (j - 1) * lda];
                         }
                     }
                     //
                     if (iinfo != 0) {
-                        write(nout, format_9995), "GESVJ", iinfo, m, n, jtype, lswork, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                        write(nout, format_9995), "GESVJ", iinfo, m, n, jtype, lswork, ioldsd;
                         info = abs(iinfo);
                         return;
                     }
@@ -583,18 +628,19 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     }
                     //
                     Rlacpy("F", m, n, asav, lda, vtsav, lda);
+                    srnamt = "Rgejsv";
                     Rgejsv("G", "U", "V", "R", "N", "N", m, n, vtsav, lda, ssav, usav, ldu, a, ldvt, work, lwork, iwork, info);
                     //
                     // Rgejsv returns V not VT
                     //
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = 1; i <= n; i = i + 1) {
-                            vtsav[(j - 1) + (i - 1) * ldvtsav] = a[(i - 1) + (j - 1) * lda];
+                            vtsav[(j - 1) + (i - 1) * ldvt] = a[(i - 1) + (j - 1) * lda];
                         }
                     }
                     //
                     if (iinfo != 0) {
-                        write(nout, format_9995), "GEJSV", iinfo, m, n, jtype, lswork, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                        write(nout, format_9995), "GEJSV", iinfo, m, n, jtype, lswork, ioldsd;
                         info = abs(iinfo);
                         return;
                     }
@@ -627,7 +673,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 Rlacpy("F", m, n, asav, lda, a, lda);
                 Rgesvdx("V", "V", "A", m, n, a, lda, vl, vu, il, iu, ns, ssav, usav, ldu, vtsav, ldvt, work, lwork, iwork, iinfo);
                 if (iinfo != 0) {
-                    write(nout, format_9995), "GESVDX", iinfo, m, n, jtype, lswork, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nout, format_9995), "GESVDX", iinfo, m, n, jtype, lswork, ioldsd;
                     info = abs(iinfo);
                     return;
                 }
@@ -671,7 +717,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                         jobvt = cjobv[(ijvt + 1) - 1];
                         range = cjobr[1 - 1];
                         Rlacpy("F", m, n, asav, lda, a, lda);
-                        Rgesvdx(&jobu, &jobvt, &range, m, n, a, lda, vl, vu, il, iu, ns, s, u, ldu, vt, ldvt, work, lwork, iwork, iinfo);
+                        Rgesvdx(jobu.elems, jobvt.elems, range.elems, m, n, a, lda, vl, vu, il, iu, ns, s, u, ldu, vt, ldvt, work, lwork, iwork, iinfo);
                         //
                         // Compare U
                         //
@@ -696,7 +742,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                         // Compare S
                         //
                         dif = zero;
-                        div = max(REAL(mnmin * ulp * s[1 - 1]), unfl);
+                        div = max(mnmin * ulp * s[1 - 1], unfl);
                         for (i = 1; i <= mnmin - 1; i = i + 1) {
                             if (ssav[i - 1] < ssav[(i + 1) - 1]) {
                                 dif = ulpinv;
@@ -704,7 +750,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                             if (ssav[i - 1] < zero) {
                                 dif = ulpinv;
                             }
-                            dif = max(dif, REAL(abs(ssav[i - 1] - s[i - 1]) / div));
+                            dif = max(dif, abs(ssav[i - 1] - s[i - 1]) / div);
                         }
                         result[29 - 1] = max(result[29 - 1], dif);
                     statement_170:;
@@ -720,8 +766,8 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     il = 1;
                     iu = max((INTEGER)1, mnmin);
                 } else {
-                    il = 1 + castINTEGER(castREAL(mnmin - 1) * Rlarnd(1, iseed2));
-                    iu = 1 + castINTEGER(castREAL(mnmin - 1) * Rlarnd(1, iseed2));
+                    il = 1 + castINTEGER((mnmin - 1) * Rlarnd(1, iseed2));
+                    iu = 1 + castINTEGER((mnmin - 1) * Rlarnd(1, iseed2));
                     if (iu < il) {
                         itemp = iu;
                         iu = il;
@@ -731,7 +777,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 Rlacpy("F", m, n, asav, lda, a, lda);
                 Rgesvdx("V", "V", "I", m, n, a, lda, vl, vu, il, iu, nsi, s, u, ldu, vt, ldvt, work, lwork, iwork, iinfo);
                 if (iinfo != 0) {
-                    write(nout, format_9995), "GESVDX", iinfo, m, n, jtype, lswork, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nout, format_9995), "GESVDX", iinfo, m, n, jtype, lswork, ioldsd;
                     info = abs(iinfo);
                     return;
                 }
@@ -747,19 +793,19 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 //
                 if (mnmin > 0 && nsi > 1) {
                     if (il != 1) {
-                        vu = ssav[il - 1] + max({REAL(half * abs(ssav[il - 1] - ssav[(il - 1) - 1])), REAL(ulp * anorm), REAL(two * rtunfl)});
+                        vu = ssav[il - 1] + max(half * abs(ssav[il - 1] - ssav[(il - 1) - 1]), ulp * anorm, two * rtunfl);
                     } else {
-                        vu = ssav[1 - 1] + max({REAL(half * abs(ssav[ns - 1] - ssav[1 - 1])), REAL(ulp * anorm), REAL(two * rtunfl)});
+                        vu = ssav[1 - 1] + max(half * abs(ssav[ns - 1] - ssav[1 - 1]), ulp * anorm, two * rtunfl);
                     }
                     if (iu != ns) {
-                        vl = ssav[iu - 1] - max({REAL(ulp * anorm), REAL(two * rtunfl), REAL(half * abs(ssav[(iu + 1) - 1] - ssav[iu - 1]))});
+                        vl = ssav[iu - 1] - max(ulp * anorm, two * rtunfl, half * abs(ssav[(iu + 1) - 1] - ssav[iu - 1]));
                     } else {
-                        vl = ssav[ns - 1] - max({REAL(ulp * anorm), REAL(two * rtunfl), REAL(half * abs(ssav[ns - 1] - ssav[1 - 1]))});
+                        vl = ssav[ns - 1] - max(ulp * anorm, two * rtunfl, half * abs(ssav[ns - 1] - ssav[1 - 1]));
                     }
                     vl = max(vl, zero);
                     vu = max(vu, zero);
                     if (vl >= vu) {
-                        vu = max(REAL(vu * 2), REAL(vu + vl + half));
+                        vu = max(vu * 2, vu + vl + half);
                     }
                 } else {
                     vl = zero;
@@ -768,7 +814,7 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 Rlacpy("F", m, n, asav, lda, a, lda);
                 Rgesvdx("V", "V", "V", m, n, a, lda, vl, vu, il, iu, nsv, s, u, ldu, vt, ldvt, work, lwork, iwork, iinfo);
                 if (iinfo != 0) {
-                    write(nout, format_9995), "GESVDX", iinfo, m, n, jtype, lswork, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nout, format_9995), "GESVDX", iinfo, m, n, jtype, lswork, ioldsd;
                     info = abs(iinfo);
                     return;
                 }
@@ -785,65 +831,10 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                 for (j = 1; j <= 39; j = j + 1) {
                     if (result[j - 1] >= thresh) {
                         if (nfail == 0) {
-                            write(nout, "(' SVD -- Real Singular Value Decomposition Driver ',/,"
-                                        "' Matrix types (see Rdrvbd for details):',/,/,"
-                                        "' 1 = Zero matrix',/,' 2 = Identity matrix',/,"
-                                        "' 3 = Evenly spaced singular values near 1',/,"
-                                        "' 4 = Evenly spaced singular values near underflow',/,"
-                                        "' 5 = Evenly spaced singular values near overflow',/,/,"
-                                        "' Tests performed: ( A is dense, U and V are orthogonal,',/,"
-                                        "19x,' S is an array, and Upartial, VTpartial, and',/,19x,"
-                                        "' Spartial are partially computed U, VT and S),',/)");
-                            write(nout, "(' 1 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) ',/,"
-                                        "' 2 = | I - U**T U | / ( M ulp ) ',/,"
-                                        "' 3 = | I - VT VT**T | / ( N ulp ) ',/,"
-                                        "' 4 = 0 if S contains min(M,N) nonnegative values in',"
-                                        "' decreasing order, else 1/ulp',/,"
-                                        "' 5 = | U - Upartial | / ( M ulp )',/,"
-                                        "' 6 = | VT - VTpartial | / ( N ulp )',/,"
-                                        "' 7 = | S - Spartial | / ( min(M,N) ulp |S| )',/,"
-                                        "' 8 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) ',/,"
-                                        "' 9 = | I - U**T U | / ( M ulp ) ',/,"
-                                        "'10 = | I - VT VT**T | / ( N ulp ) ',/,"
-                                        "'11 = 0 if S contains min(M,N) nonnegative values in',"
-                                        "' decreasing order, else 1/ulp',/,"
-                                        "'12 = | U - Upartial | / ( M ulp )',/,"
-                                        "'13 = | VT - VTpartial | / ( N ulp )',/,"
-                                        "'14 = | S - Spartial | / ( min(M,N) ulp |S| )',/,"
-                                        "'15 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) ',/,"
-                                        "'16 = | I - U**T U | / ( M ulp ) ',/,"
-                                        "'17 = | I - VT VT**T | / ( N ulp ) ',/,"
-                                        "'18 = 0 if S contains min(M,N) nonnegative values in',"
-                                        "' decreasing order, else 1/ulp',/,"
-                                        "'19 = | U - Upartial | / ( M ulp )',/,"
-                                        "'20 = | VT - VTpartial | / ( N ulp )',/,"
-                                        "'21 = | S - Spartial | / ( min(M,N) ulp |S| )',/,"
-                                        "'22 = 0 if S contains min(M,N) nonnegative values in',"
-                                        "' decreasing order, else 1/ulp',/,"
-                                        "'23 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ),',"
-                                        "' Rgesvdx(V,V,A) ',/,'24 = | I - U**T U | / ( M ulp ) ',/,"
-                                        "'25 = | I - VT VT**T | / ( N ulp ) ',/,"
-                                        "'26 = 0 if S contains min(M,N) nonnegative values in',"
-                                        "' decreasing order, else 1/ulp',/,"
-                                        "'27 = | U - Upartial | / ( M ulp )',/,"
-                                        "'28 = | VT - VTpartial | / ( N ulp )',/,"
-                                        "'29 = | S - Spartial | / ( min(M,N) ulp |S| )',/,"
-                                        "'30 = | U**T A VT**T - diag(S) | / ( |A| max(M,N) ulp ),',"
-                                        "' Rgesvdx(V,V,I) ',/,'31 = | I - U**T U | / ( M ulp ) ',/,"
-                                        "'32 = | I - VT VT**T | / ( N ulp ) ',/,"
-                                        "'33 = | U**T A VT**T - diag(S) | / ( |A| max(M,N) ulp ),',"
-                                        "' Rgesvdx(V,V,V) ',/,'34 = | I - U**T U | / ( M ulp ) ',/,"
-                                        "'35 = | I - VT VT**T | / ( N ulp ) ',' Rgesvdq(H,N,N,A,A',/,"
-                                        "'36 = | A - U diag(S) VT | / ( |A| max(M,N) ulp ) ',/,"
-                                        "'37 = | I - U**T U | / ( M ulp ) ',/,"
-                                        "'38 = | I - VT VT**T | / ( N ulp ) ',/,"
-                                        "'39 = 0 if S contains min(M,N) nonnegative values in',"
-                                        "' decreasing order, else 1/ulp',/,/)");
+                            write(nout, format_9999);
+                            write(nout, format_9998);
                         }
-                        sprintnum_short(buf, result[j - 1]);
-                        write(nout, "(' M=',i5,', N=',i5,', type ',i1,', IWS=',i1,', seed=',4(i4,"
-                                    "','),' test(',i2,')=',a)"),
-                            m, n, jtype, iws, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3], j, buf;
+                        write(nout, format_9997), m, n, jtype, iws, ioldsd, j, result[j - 1];
                         nfail++;
                     }
                 }

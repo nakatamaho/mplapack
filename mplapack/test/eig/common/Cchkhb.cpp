@@ -43,15 +43,12 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-void Cchkhb(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER *kk, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, INTEGER const nounit, COMPLEX *a, INTEGER const lda, REAL *sd, REAL *se, COMPLEX *u, INTEGER const ldu, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL *result, INTEGER &info) {
+void Cchkhb(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER *kk, INTEGER const ntypes, bool *dotype, INTEGER (&iseed)[4], REAL const thresh, INTEGER const nounit, COMPLEX *a, INTEGER const lda, REAL *sd, REAL *se, COMPLEX *u, INTEGER const ldu, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL *result, INTEGER &info) {
     common cmn;
     common_write write(cmn);
-    const INTEGER maxtyp = 15;
-    INTEGER ktype[15] = {1, 2, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 8, 8, 8};
-    INTEGER kmagn[15] = {1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 2, 3, 1, 2, 3};
-    INTEGER kmode[15] = {0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 4, 4, 0, 0, 0};
+    static INTEGER ktype[15] = {1, 2, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 8, 8, 8};
+    static INTEGER kmagn[15] = {1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 2, 3, 1, 2, 3};
+    static INTEGER kmode[15] = {0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 4, 4, 0, 0, 0};
     INTEGER ntestt = 0;
     bool badnn = false;
     INTEGER nmax = 0;
@@ -72,6 +69,7 @@ void Cchkhb(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER *kk
     REAL aninv = 0.0;
     INTEGER jwidth = 0;
     INTEGER k = 0;
+    const INTEGER maxtyp = 15;
     INTEGER mtypes = 0;
     INTEGER jtype = 0;
     INTEGER ntest = 0;
@@ -89,13 +87,40 @@ void Cchkhb(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER *kk
     const REAL zero = 0.0;
     INTEGER i = 0;
     REAL temp1 = 0.0;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     const REAL half = one / two;
     INTEGER jc = 0;
     INTEGER jr = 0;
-    char buf[1024];
+    //
     static const char *format_9999 = "(' Cchkhb: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
                                      "', ISEED=(',3(i5,','),i5,')')";
+    static const char *format_9998 = "(/,1x,a3,' -- Complex Hermitian Banded Tridiagonal Reduction Routines')";
+    static const char *format_9997 = "(' Matrix types (see DCHK23 for details): ')";
+    //
+    static const char *format_9996 = "(/,' Special Matrices:',/,'  1=Zero matrix.                        ',"
+                                     "'  5=Diagonal: clustered entries.',/,"
+                                     "'  2=Identity matrix.                    ',"
+                                     "'  6=Diagonal: large, evenly spaced.',/,"
+                                     "'  3=Diagonal: evenly spaced entries.    ',"
+                                     "'  7=Diagonal: small, evenly spaced.',/,"
+                                     "'  4=Diagonal: geometr. spaced entries.')";
+    static const char *format_9995 = "(' Dense ',a,' Banded Matrices:',/,"
+                                     "'  8=Evenly spaced eigenvals.            ',"
+                                     "' 12=Small, evenly spaced eigenvals.',/,"
+                                     "'  9=Geometrically spaced eigenvals.     ',"
+                                     "' 13=Matrix with random O(1) entries.',/,"
+                                     "' 10=Clustered eigenvalues.              ',"
+                                     "' 14=Matrix with large random entries.',/,"
+                                     "' 11=Large, evenly spaced eigenvals.     ',"
+                                     "' 15=Matrix with small random entries.')";
+    //
+    static const char *format_9994 = "(/,' Tests performed:   (S is Tridiag,  U is ',a,',',/,20x,a,' means ',a,"
+                                     "'.',/,' UPLO=''U'':',/,'  1= | A - U S U',a1,' | / ( |A| n ulp )     ',"
+                                     "'  2= | I - U U',a1,' | / ( n ulp )',/,' UPLO=''L'':',/,"
+                                     "'  3= | A - U S U',a1,' | / ( |A| n ulp )     ','  4= | I - U U',a1,"
+                                     "' | / ( n ulp )')";
+    static const char *format_9993 = "(' N=',i5,', K=',i4,', seed=',4(i4,','),' type ',i2,', test(',i2,')=',"
+                                     "g10.3)";
     //
     // Check for errors
     //
@@ -177,7 +202,7 @@ void Cchkhb(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER *kk
             if (k > n) {
                 goto statement_180;
             }
-            k = max({(INTEGER)0, min(n - 1, k)});
+            k = max((INTEGER)0, min(n - 1, k));
             //
             if (nsizes != 1) {
                 mtypes = min(maxtyp, ntypes);
@@ -321,7 +346,7 @@ void Cchkhb(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER *kk
                 }
                 //
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Generator", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9999), "Generator", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     return;
                 }
@@ -336,7 +361,7 @@ void Cchkhb(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER *kk
                 Chbtrd("V", "U", n, k, work, lda, sd, se, u, ldu, &work[(lda * n + 1) - 1], iinfo);
                 //
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Chbtrd(U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9999), "Chbtrd(U)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -372,7 +397,7 @@ void Cchkhb(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER *kk
                 Chbtrd("V", "L", n, k, work, lda, sd, se, u, ldu, &work[(lda * n + 1) - 1], iinfo);
                 //
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Chbtrd(L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9999), "Chbtrd(L)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -401,37 +426,12 @@ void Cchkhb(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER *kk
                         // print a header to the data file.
                         //
                         if (nerrs == 0) {
-                            write(nounit, "(/,1x,a3,"
-                                          "' -- Complex Hermitian Banded Tridiagonal Reduction Routines'"
-                                          ")"),
-                                "ZHB";
-                            write(nounit, "(' Matrix types (see DCHK23 for details): ')");
-                            write(nounit, "(/,' Special Matrices:',/,"
-                                          "'  1=Zero matrix.                        ',"
-                                          "'  5=Diagonal: clustered entries.',/,"
-                                          "'  2=Identity matrix.                    ',"
-                                          "'  6=Diagonal: large, evenly spaced.',/,"
-                                          "'  3=Diagonal: evenly spaced entries.    ',"
-                                          "'  7=Diagonal: small, evenly spaced.',/,"
-                                          "'  4=Diagonal: geometr. spaced entries.')");
-                            write(nounit, "(' Dense ',a,' Banded Matrices:',/,"
-                                          "'  8=Evenly spaced eigenvals.            ',"
-                                          "' 12=Small, evenly spaced eigenvals.',/,"
-                                          "'  9=Geometrically spaced eigenvals.     ',"
-                                          "' 13=Matrix with random O(1) entries.',/,"
-                                          "' 10=Clustered eigenvalues.              ',"
-                                          "' 14=Matrix with large random entries.',/,"
-                                          "' 11=Large, evenly spaced eigenvals.     ',"
-                                          "' 15=Matrix with small random entries.')"),
-                                "Hermitian";
+                            write(nounit, format_9998), "ZHB";
+                            write(nounit, format_9997);
+                            write(nounit, format_9996);
+                            write(nounit, format_9995), "Hermitian";
                             {
-                                write_loop wloop(cmn, nounit,
-                                                 "(/,' Tests performed:   (S is Tridiag,  U is ',a,',',/,20x,"
-                                                 "a,' means ',a,'.',/,' UPLO=''U'':',/,'  1= | A - U S U',a1,"
-                                                 "' | / ( |A| n ulp )     ','  2= | I - U U',a1,"
-                                                 "' | / ( n ulp )',/,' UPLO=''L'':',/,'  3= | A - U S U',a1,"
-                                                 "' | / ( |A| n ulp )     ','  4= | I - U U',a1,"
-                                                 "' | / ( n ulp )')");
+                                write_loop wloop(cmn, nounit, format_9994);
                                 wloop, "unitary", "*", "conjugate transpose";
                                 for (j = 1; j <= 4; j = j + 1) {
                                     wloop, "*";
@@ -439,10 +439,7 @@ void Cchkhb(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER *kk
                             }
                         }
                         nerrs++;
-                        sprintnum_short(buf, result[jr - 1]);
-                        write(nounit, "(' N=',i5,', K=',i4,', seed=',4(i4,','),' type ',i2,', test(',"
-                                      "i2,')=',a)"),
-                            n, k, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3], jtype, jr, buf;
+                        write(nounit, format_9993), n, k, ioldsd, jtype, jr, result[jr - 1];
                     }
                 }
             //

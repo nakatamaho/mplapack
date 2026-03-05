@@ -43,9 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-void Rort01(const char *rowcol, INTEGER const m, INTEGER const n, REAL *u, INTEGER const ldu, REAL *work, INTEGER const lwork, REAL &resid) {
+void Rort01(fem::str_cref rowcol, INTEGER const m, INTEGER const n, REAL *u, INTEGER const ldu, REAL *work, INTEGER const lwork, REAL &resid) {
     //
     const REAL zero = 0.0;
     resid = zero;
@@ -57,13 +55,13 @@ void Rort01(const char *rowcol, INTEGER const m, INTEGER const n, REAL *u, INTEG
     }
     //
     REAL eps = Rlamch("Precision");
-    char transu;
+    fem::str<1> transu;
     INTEGER k = 0;
-    if (m < n || (m == n && Mlsame(rowcol, "R"))) {
-        transu = 'N';
+    if (m < n || (m == n && Mlsame(rowcol.elems(), "R"))) {
+        transu = "N";
         k = n;
     } else {
-        transu = 'T';
+        transu = "T";
         k = m;
     }
     INTEGER mnmin = min(m, n);
@@ -83,13 +81,13 @@ void Rort01(const char *rowcol, INTEGER const m, INTEGER const n, REAL *u, INTEG
         // Compute I - U*U' or I - U'*U.
         //
         Rlaset("Upper", mnmin, mnmin, zero, one, work, ldwork);
-        Rsyrk("Upper", &transu, mnmin, k, -one, u, ldu, one, work, ldwork);
+        Rsyrk("Upper", transu.elems, mnmin, k, -one, u, ldu, one, work, ldwork);
         //
         // Compute norm( I - U*U' ) / ( K * EPS ) .
         //
         resid = Rlansy("1", "Upper", mnmin, work, ldwork, &work[(ldwork * mnmin + 1) - 1]);
         resid = (resid / castREAL(k)) / eps;
-    } else if (transu == 'T') {
+    } else if (transu == "T") {
         //
         // Find the maximum element in abs( I - U'*U ) / ( m * EPS )
         //
@@ -101,7 +99,7 @@ void Rort01(const char *rowcol, INTEGER const m, INTEGER const n, REAL *u, INTEG
                     tmp = one;
                 }
                 tmp = tmp - Rdot(m, &u[(i - 1) * ldu], 1, &u[(j - 1) * ldu], 1);
-                resid = max(resid, REAL(abs(tmp)));
+                resid = max(resid, abs(tmp));
             }
         }
         resid = (resid / castREAL(m)) / eps;
@@ -117,7 +115,7 @@ void Rort01(const char *rowcol, INTEGER const m, INTEGER const n, REAL *u, INTEG
                     tmp = one;
                 }
                 tmp = tmp - Rdot(n, &u[(j - 1)], ldu, &u[(i - 1)], ldu);
-                resid = max(resid, REAL(abs(tmp)));
+                resid = max(resid, abs(tmp));
             }
         }
         resid = (resid / castREAL(n)) / eps;

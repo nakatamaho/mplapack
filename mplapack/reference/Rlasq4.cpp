@@ -52,7 +52,7 @@ void Rlasq4(INTEGER const i0, INTEGER const n0, REAL *z, INTEGER const pp, INTEG
     INTEGER np = 0;
     INTEGER i4 = 0;
     const REAL hundrd = 100.0;
-    const REAL cnst1 = 0.5629999999999999;
+    const REAL cnst1 = 0.563;
     const REAL cnst3 = 1.05;
     const REAL one = 1.0;
     const REAL cnst2 = 1.01;

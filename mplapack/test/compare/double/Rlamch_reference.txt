@@ -1,0 +1,12 @@
+*** Testing Rlamch start ***
+Rlamch E: Epsilon                      1.11022302462515654e-16
+Rlamch S: Safe minimum                 2.22507385850720138e-308
+Rlamch B: Base                         2.00000000000000000e+00
+Rlamch P: Precision                    2.22044604925031308e-16
+Rlamch N: Number of digits in mantissa 5.30000000000000000e+01
+Rlamch R: Rounding mode                1.00000000000000000e+00
+Rlamch M: Minimum exponent             -1.02100000000000000e+03
+Rlamch U: Underflow threshold          2.22507385850720138e-308
+Rlamch L: Largest exponent             1.02400000000000000e+03
+Rlamch O: Overflow threshold           1.79769313486231571e+308
+*** Testing Rlamch successful ***

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2012
+ * Copyright (c) 2008-2026
  *	Nakata, Maho
  * 	All rights reserved.
  *
@@ -50,6 +50,13 @@
 
 #if !defined __MPLAPACK_BUFLEN__
 #define __MPLAPACK_BUFLEN__ 1024
+#endif
+
+#if defined ___MPLAPACK_BUILD_WITH_QD___ || defined ___MPLAPACK_BUILD_WITH_DD___
+#include <qd/fpu.h>
+static unsigned int g_oldcw;
+static void __attribute__((constructor)) mplapack_test_fpu_init(void) { fpu_fix_start(&g_oldcw); }
+static void __attribute__((destructor))  mplapack_test_fpu_fini(void) { fpu_fix_end(&g_oldcw); }
 #endif
 
 /* Basic deterministic test cases: avoid "edge of overflow/underflow".
@@ -163,18 +170,26 @@ void subst_test1() {
     printf("*** Substitution test 1 ***\n");
     strcpy(buf1, "-1.234567890123456789012345678901234567890123456789012345678901234567890E1");
 // tmp1 = buf1;
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
-#if defined ___MPLAPACK_WANT_LIBQUADMATH___
-    tmp1 = strtoflt128(buf1, NULL);
-#elif !defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___ && !defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
-    tmp1 = strtof128(buf1, NULL);
-#else
-    sscanf(buf1, "%Le", &tmp1);
-#endif
+#if defined ___MPLAPACK_BUILD_WITH_BINARY128___
+    #if MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_QUADMATH_SNPRINTF
+        tmp1 = strtoflt128(buf1, NULL);
+    #elif MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_STRFROMF128
+        tmp1 = strtof128(buf1, NULL);
+    #elif MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_SNPRINTF_LDBL
+        sscanf(buf1, "%Le", &tmp1);
+    #else
+        #error "Unsupported MPLAPACK_BINARY128_IO value"
+    #endif
 #elif defined ___MPLAPACK_BUILD_WITH_DOUBLE___
     sscanf(buf1, "%le", &tmp1);
-#elif defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
-    sscanf(buf1, "%Le", &tmp1);
+#elif defined ___MPLAPACK_BUILD_WITH_BINARY80___
+    #if MPLAPACK_BINARY80_IO == MPLAPACK_BINARY80_IO_SNPRINTF_LDBL
+        sscanf(buf1, "%Le", &tmp1);
+    #elif MPLAPACK_BINARY80_IO == MPLAPACK_BINARY80_IO_STRFROMF64X
+        tmp1 = strtof64x(buf1, NULL);
+    #else
+        #error "Unsupported MPLAPACK_BINARY80_IO value"
+    #endif
 #else
     tmp1 = buf1;
 #endif
@@ -203,14 +218,14 @@ void subst_test1() {
         exit(1);
     }
 #elif defined ___MPLAPACK_BUILD_WITH_DD___
-    if (strncmp(buf1, buf2, 34) == 0 && strncmp(buf2, buf3, 34) == 0)
+    if (strncmp(buf1, buf2, 30) == 0 && strncmp(buf2, buf3, 30) == 0)
         printf("ok!\n");
     else {
         printf("failed!\n");
         exit(1);
     }
 #elif defined ___MPLAPACK_BUILD_WITH_QD___
-    if (strncmp(buf1, buf2, 66) == 0 && strncmp(buf2, buf3, 66) == 0)
+    if (strncmp(buf1, buf2, 61) == 0 && strncmp(buf2, buf3, 61) == 0)
         printf("ok!\n");
     else {
         printf("failed!\n");
@@ -223,14 +238,14 @@ void subst_test1() {
         printf("failed!\n");
         exit(1);
     }
-#elif defined ___MPLAPACK_BUILD_WITH__FLOAT128___
+#elif defined ___MPLAPACK_BUILD_WITH_BINARY128___
     if (strncmp(buf1, buf2, 37) == 0 && strncmp(buf2, buf3, 37) == 0)
         printf("ok!\n");
     else {
         printf("failed!\n");
         exit(1);
     }
-#elif defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
+#elif defined ___MPLAPACK_BUILD_WITH_BINARY80___
     if (strncmp(buf1, buf2, 21) == 0 && strncmp(buf2, buf3, 21) == 0)
         printf("ok!\n");
     else {

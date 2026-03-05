@@ -43,43 +43,9 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-#include <mplapack_debug.h>
-
 void Rqrt01(INTEGER const m, INTEGER const n, REAL *a, REAL *af, REAL *q, REAL *r, INTEGER const lda, REAL *tau, REAL *work, INTEGER const lwork, REAL *rwork, REAL *result) {
-    // COMMON srnamc
-    //
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Executable Statements ..
     //
     INTEGER minmn = min(m, n);
-    INTEGER ldaf = lda;
-    INTEGER ldq = lda;
-    INTEGER ldr = lda;
     REAL eps = Rlamch("Epsilon");
     //
     // Copy the matrix A to the array AF.
@@ -88,19 +54,19 @@ void Rqrt01(INTEGER const m, INTEGER const n, REAL *a, REAL *af, REAL *q, REAL *
     //
     // Factorize the matrix A in the array AF.
     //
+    srnamt = "Rgeqrf";
     INTEGER info = 0;
-    strncpy(srnamt, "Rgeqrf", srnamt_len);
     Rgeqrf(m, n, af, lda, tau, work, lwork, info);
     //
     // Copy details of Q
     //
-    const REAL rogue = -1.0e+10;
+    const REAL rogue = -10000000000.0;
     Rlaset("Full", m, m, rogue, rogue, q, lda);
     Rlacpy("Lower", m - 1, n, &af[(2 - 1)], lda, &q[(2 - 1)], lda);
     //
     // Generate the m-by-m matrix Q
     //
-    strncpy(srnamt, "Rorgqr", srnamt_len);
+    srnamt = "Rorgqr";
     Rorgqr(m, m, minmn, q, lda, tau, work, lwork, info);
     //
     // Copy R

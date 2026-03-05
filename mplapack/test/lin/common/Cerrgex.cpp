@@ -43,36 +43,13 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-struct common_infoc {
-    int infot;
-    int nout;
-    bool ok;
-    bool lerr;
-
-    common_infoc() : infot(0), nout(0), ok(false), lerr(false) {}
-};
-
-struct common_srnamc {
-    fem::str<32> srnamt;
-
-    common_srnamc() : srnamt(0) {}
-};
-
-struct common : fem::common, common_infoc, common_srnamc {
-    common(int argc, char const *argv[]) : fem::common(argc, argv) {}
-};
-
-void Cerrge(const char *path, INTEGER const nunit) {
+void Cerrge(fem::str_cref path, INTEGER const nunit) {
+    common cmn;
     common_write write(cmn);
-    int &infot = cmn.infot;
-    int &nout = cmn.nout;
-    bool &ok = cmn.ok;
-    bool &lerr = cmn.lerr;
-    fem::str<32> &srnamt = cmn.srnamt;
     //
     nout = nunit;
     write(nout, star);
-    char c2[2];
+    fem::str<2> c2 = path(2, 3);
     //
     // Set the variables to innocuous values.
     //
@@ -112,7 +89,7 @@ void Cerrge(const char *path, INTEGER const nunit) {
     REAL r[nmax];
     INTEGER n_err_bnds = 0;
     INTEGER nparams = 0;
-    char eq;
+    fem::str<1> eq;
     REAL rcond = 0.0;
     REAL berr = 0.0;
     COMPLEX err_bnds_n[nmax * 3];
@@ -120,359 +97,359 @@ void Cerrge(const char *path, INTEGER const nunit) {
     COMPLEX params = 0.0;
     REAL anrm = 0.0;
     REAL ccond = 0.0;
-    if (Mlsamen(2, c2, "GE")) {
+    if (Mlsamen(2, c2.elems, "GE")) {
         //
         // Cgetrf
         //
-        srnamt = "ZGETRF";
+        srnamt = "Cgetrf";
         infot = 1;
         Cgetrf(-1, 0, a, 1, ip, info);
-        Chkxer("ZGETRF", infot, nout, lerr, ok);
+        Chkxer("Cgetrf", infot, nout, lerr, ok);
         infot = 2;
         Cgetrf(0, -1, a, 1, ip, info);
-        Chkxer("ZGETRF", infot, nout, lerr, ok);
+        Chkxer("Cgetrf", infot, nout, lerr, ok);
         infot = 4;
         Cgetrf(2, 1, a, 1, ip, info);
-        Chkxer("ZGETRF", infot, nout, lerr, ok);
+        Chkxer("Cgetrf", infot, nout, lerr, ok);
         //
         // Cgetf2
         //
-        srnamt = "ZGETF2";
+        srnamt = "Cgetf2";
         infot = 1;
         Cgetf2(-1, 0, a, 1, ip, info);
-        Chkxer("ZGETF2", infot, nout, lerr, ok);
+        Chkxer("Cgetf2", infot, nout, lerr, ok);
         infot = 2;
         Cgetf2(0, -1, a, 1, ip, info);
-        Chkxer("ZGETF2", infot, nout, lerr, ok);
+        Chkxer("Cgetf2", infot, nout, lerr, ok);
         infot = 4;
         Cgetf2(2, 1, a, 1, ip, info);
-        Chkxer("ZGETF2", infot, nout, lerr, ok);
+        Chkxer("Cgetf2", infot, nout, lerr, ok);
         //
         // Cgetri
         //
-        srnamt = "ZGETRI";
+        srnamt = "Cgetri";
         infot = 1;
         Cgetri(-1, a, 1, ip, w, 1, info);
-        Chkxer("ZGETRI", infot, nout, lerr, ok);
+        Chkxer("Cgetri", infot, nout, lerr, ok);
         infot = 3;
         Cgetri(2, a, 1, ip, w, 2, info);
-        Chkxer("ZGETRI", infot, nout, lerr, ok);
+        Chkxer("Cgetri", infot, nout, lerr, ok);
         infot = 6;
         Cgetri(2, a, 2, ip, w, 1, info);
-        Chkxer("ZGETRI", infot, nout, lerr, ok);
+        Chkxer("Cgetri", infot, nout, lerr, ok);
         //
         // Cgetrs
         //
-        srnamt = "ZGETRS";
+        srnamt = "Cgetrs";
         infot = 1;
         Cgetrs("/", 0, 0, a, 1, ip, b, 1, info);
-        Chkxer("ZGETRS", infot, nout, lerr, ok);
+        Chkxer("Cgetrs", infot, nout, lerr, ok);
         infot = 2;
         Cgetrs("N", -1, 0, a, 1, ip, b, 1, info);
-        Chkxer("ZGETRS", infot, nout, lerr, ok);
+        Chkxer("Cgetrs", infot, nout, lerr, ok);
         infot = 3;
         Cgetrs("N", 0, -1, a, 1, ip, b, 1, info);
-        Chkxer("ZGETRS", infot, nout, lerr, ok);
+        Chkxer("Cgetrs", infot, nout, lerr, ok);
         infot = 5;
         Cgetrs("N", 2, 1, a, 1, ip, b, 2, info);
-        Chkxer("ZGETRS", infot, nout, lerr, ok);
+        Chkxer("Cgetrs", infot, nout, lerr, ok);
         infot = 8;
         Cgetrs("N", 2, 1, a, 2, ip, b, 1, info);
-        Chkxer("ZGETRS", infot, nout, lerr, ok);
+        Chkxer("Cgetrs", infot, nout, lerr, ok);
         //
         // Cgerfs
         //
-        srnamt = "ZGERFS";
+        srnamt = "Cgerfs";
         infot = 1;
         Cgerfs("/", 0, 0, a, 1, af, 1, ip, b, 1, x, 1, r1, r2, w, r, info);
-        Chkxer("ZGERFS", infot, nout, lerr, ok);
+        Chkxer("Cgerfs", infot, nout, lerr, ok);
         infot = 2;
         Cgerfs("N", -1, 0, a, 1, af, 1, ip, b, 1, x, 1, r1, r2, w, r, info);
-        Chkxer("ZGERFS", infot, nout, lerr, ok);
+        Chkxer("Cgerfs", infot, nout, lerr, ok);
         infot = 3;
         Cgerfs("N", 0, -1, a, 1, af, 1, ip, b, 1, x, 1, r1, r2, w, r, info);
-        Chkxer("ZGERFS", infot, nout, lerr, ok);
+        Chkxer("Cgerfs", infot, nout, lerr, ok);
         infot = 5;
         Cgerfs("N", 2, 1, a, 1, af, 2, ip, b, 2, x, 2, r1, r2, w, r, info);
-        Chkxer("ZGERFS", infot, nout, lerr, ok);
+        Chkxer("Cgerfs", infot, nout, lerr, ok);
         infot = 7;
         Cgerfs("N", 2, 1, a, 2, af, 1, ip, b, 2, x, 2, r1, r2, w, r, info);
-        Chkxer("ZGERFS", infot, nout, lerr, ok);
+        Chkxer("Cgerfs", infot, nout, lerr, ok);
         infot = 10;
         Cgerfs("N", 2, 1, a, 2, af, 2, ip, b, 1, x, 2, r1, r2, w, r, info);
-        Chkxer("ZGERFS", infot, nout, lerr, ok);
+        Chkxer("Cgerfs", infot, nout, lerr, ok);
         infot = 12;
         Cgerfs("N", 2, 1, a, 2, af, 2, ip, b, 2, x, 1, r1, r2, w, r, info);
-        Chkxer("ZGERFS", infot, nout, lerr, ok);
+        Chkxer("Cgerfs", infot, nout, lerr, ok);
         //
         // Cgerfsx
         //
         n_err_bnds = 3;
         nparams = 0;
-        srnamt = "ZGERFSX";
+        srnamt = "Cgerfsx";
         infot = 1;
         Cgerfsx("/", eq, 0, 0, a, 1, af, 1, ip, rs, cs, b, 1, x, 1, rcond, berr, n_err_bnds, err_bnds_n, err_bnds_c, nparams, params, w, r, info);
-        Chkxer("ZGERFSX", infot, nout, lerr, ok);
+        Chkxer("Cgerfsx", infot, nout, lerr, ok);
         infot = 2;
-        eq = '/';
+        eq = "/";
         Cgerfsx("N", eq, 2, 1, a, 1, af, 2, ip, rs, cs, b, 2, x, 2, rcond, berr, n_err_bnds, err_bnds_n, err_bnds_c, nparams, params, w, r, info);
-        Chkxer("ZGERFSX", infot, nout, lerr, ok);
+        Chkxer("Cgerfsx", infot, nout, lerr, ok);
         infot = 3;
-        eq = 'R';
+        eq = "R";
         Cgerfsx("N", eq, -1, 0, a, 1, af, 1, ip, rs, cs, b, 1, x, 1, rcond, berr, n_err_bnds, err_bnds_n, err_bnds_c, nparams, params, w, r, info);
-        Chkxer("ZGERFSX", infot, nout, lerr, ok);
+        Chkxer("Cgerfsx", infot, nout, lerr, ok);
         infot = 4;
         Cgerfsx("N", eq, 0, -1, a, 1, af, 1, ip, rs, cs, b, 1, x, 1, rcond, berr, n_err_bnds, err_bnds_n, err_bnds_c, nparams, params, w, r, info);
-        Chkxer("ZGERFSX", infot, nout, lerr, ok);
+        Chkxer("Cgerfsx", infot, nout, lerr, ok);
         infot = 6;
         Cgerfsx("N", eq, 2, 1, a, 1, af, 2, ip, rs, cs, b, 2, x, 2, rcond, berr, n_err_bnds, err_bnds_n, err_bnds_c, nparams, params, w, r, info);
-        Chkxer("ZGERFSX", infot, nout, lerr, ok);
+        Chkxer("Cgerfsx", infot, nout, lerr, ok);
         infot = 8;
         Cgerfsx("N", eq, 2, 1, a, 2, af, 1, ip, rs, cs, b, 2, x, 2, rcond, berr, n_err_bnds, err_bnds_n, err_bnds_c, nparams, params, w, r, info);
-        Chkxer("ZGERFSX", infot, nout, lerr, ok);
+        Chkxer("Cgerfsx", infot, nout, lerr, ok);
         infot = 13;
-        eq = 'C';
+        eq = "C";
         Cgerfsx("N", eq, 2, 1, a, 2, af, 2, ip, rs, cs, b, 1, x, 2, rcond, berr, n_err_bnds, err_bnds_n, err_bnds_c, nparams, params, w, r, info);
-        Chkxer("ZGERFSX", infot, nout, lerr, ok);
+        Chkxer("Cgerfsx", infot, nout, lerr, ok);
         infot = 15;
         Cgerfsx("N", eq, 2, 1, a, 2, af, 2, ip, rs, cs, b, 2, x, 1, rcond, berr, n_err_bnds, err_bnds_n, err_bnds_c, nparams, params, w, r, info);
-        Chkxer("ZGERFSX", infot, nout, lerr, ok);
+        Chkxer("Cgerfsx", infot, nout, lerr, ok);
         //
         // Cgecon
         //
-        srnamt = "ZGECON";
+        srnamt = "Cgecon";
         infot = 1;
         Cgecon("/", 0, a, 1, anrm, rcond, w, r, info);
-        Chkxer("ZGECON", infot, nout, lerr, ok);
+        Chkxer("Cgecon", infot, nout, lerr, ok);
         infot = 2;
         Cgecon("1", -1, a, 1, anrm, rcond, w, r, info);
-        Chkxer("ZGECON", infot, nout, lerr, ok);
+        Chkxer("Cgecon", infot, nout, lerr, ok);
         infot = 4;
         Cgecon("1", 2, a, 1, anrm, rcond, w, r, info);
-        Chkxer("ZGECON", infot, nout, lerr, ok);
+        Chkxer("Cgecon", infot, nout, lerr, ok);
         //
         // Cgeequ
         //
-        srnamt = "ZGEEQU";
+        srnamt = "Cgeequ";
         infot = 1;
         Cgeequ(-1, 0, a, 1, r1, r2, rcond, ccond, anrm, info);
-        Chkxer("ZGEEQU", infot, nout, lerr, ok);
+        Chkxer("Cgeequ", infot, nout, lerr, ok);
         infot = 2;
         Cgeequ(0, -1, a, 1, r1, r2, rcond, ccond, anrm, info);
-        Chkxer("ZGEEQU", infot, nout, lerr, ok);
+        Chkxer("Cgeequ", infot, nout, lerr, ok);
         infot = 4;
         Cgeequ(2, 2, a, 1, r1, r2, rcond, ccond, anrm, info);
-        Chkxer("ZGEEQU", infot, nout, lerr, ok);
+        Chkxer("Cgeequ", infot, nout, lerr, ok);
         //
         // Cgeequb
         //
-        srnamt = "ZGEEQUB";
+        srnamt = "Cgeequb";
         infot = 1;
         Cgeequb(-1, 0, a, 1, r1, r2, rcond, ccond, anrm, info);
-        Chkxer("ZGEEQUB", infot, nout, lerr, ok);
+        Chkxer("Cgeequb", infot, nout, lerr, ok);
         infot = 2;
         Cgeequb(0, -1, a, 1, r1, r2, rcond, ccond, anrm, info);
-        Chkxer("ZGEEQUB", infot, nout, lerr, ok);
+        Chkxer("Cgeequb", infot, nout, lerr, ok);
         infot = 4;
         Cgeequb(2, 2, a, 1, r1, r2, rcond, ccond, anrm, info);
-        Chkxer("ZGEEQUB", infot, nout, lerr, ok);
+        Chkxer("Cgeequb", infot, nout, lerr, ok);
         //
         // Test error exits of the routines that use the LU decomposition
         // of a general band matrix.
         //
-    } else if (Mlsamen(2, c2, "GB")) {
+    } else if (Mlsamen(2, c2.elems, "GB")) {
         //
         // Cgbtrf
         //
-        srnamt = "ZGBTRF";
+        srnamt = "Cgbtrf";
         infot = 1;
         Cgbtrf(-1, 0, 0, 0, a, 1, ip, info);
-        Chkxer("ZGBTRF", infot, nout, lerr, ok);
+        Chkxer("Cgbtrf", infot, nout, lerr, ok);
         infot = 2;
         Cgbtrf(0, -1, 0, 0, a, 1, ip, info);
-        Chkxer("ZGBTRF", infot, nout, lerr, ok);
+        Chkxer("Cgbtrf", infot, nout, lerr, ok);
         infot = 3;
         Cgbtrf(1, 1, -1, 0, a, 1, ip, info);
-        Chkxer("ZGBTRF", infot, nout, lerr, ok);
+        Chkxer("Cgbtrf", infot, nout, lerr, ok);
         infot = 4;
         Cgbtrf(1, 1, 0, -1, a, 1, ip, info);
-        Chkxer("ZGBTRF", infot, nout, lerr, ok);
+        Chkxer("Cgbtrf", infot, nout, lerr, ok);
         infot = 6;
         Cgbtrf(2, 2, 1, 1, a, 3, ip, info);
-        Chkxer("ZGBTRF", infot, nout, lerr, ok);
+        Chkxer("Cgbtrf", infot, nout, lerr, ok);
         //
         // Cgbtf2
         //
-        srnamt = "ZGBTF2";
+        srnamt = "Cgbtf2";
         infot = 1;
         Cgbtf2(-1, 0, 0, 0, a, 1, ip, info);
-        Chkxer("ZGBTF2", infot, nout, lerr, ok);
+        Chkxer("Cgbtf2", infot, nout, lerr, ok);
         infot = 2;
         Cgbtf2(0, -1, 0, 0, a, 1, ip, info);
-        Chkxer("ZGBTF2", infot, nout, lerr, ok);
+        Chkxer("Cgbtf2", infot, nout, lerr, ok);
         infot = 3;
         Cgbtf2(1, 1, -1, 0, a, 1, ip, info);
-        Chkxer("ZGBTF2", infot, nout, lerr, ok);
+        Chkxer("Cgbtf2", infot, nout, lerr, ok);
         infot = 4;
         Cgbtf2(1, 1, 0, -1, a, 1, ip, info);
-        Chkxer("ZGBTF2", infot, nout, lerr, ok);
+        Chkxer("Cgbtf2", infot, nout, lerr, ok);
         infot = 6;
         Cgbtf2(2, 2, 1, 1, a, 3, ip, info);
-        Chkxer("ZGBTF2", infot, nout, lerr, ok);
+        Chkxer("Cgbtf2", infot, nout, lerr, ok);
         //
         // Cgbtrs
         //
-        srnamt = "ZGBTRS";
+        srnamt = "Cgbtrs";
         infot = 1;
         Cgbtrs("/", 0, 0, 0, 1, a, 1, ip, b, 1, info);
-        Chkxer("ZGBTRS", infot, nout, lerr, ok);
+        Chkxer("Cgbtrs", infot, nout, lerr, ok);
         infot = 2;
         Cgbtrs("N", -1, 0, 0, 1, a, 1, ip, b, 1, info);
-        Chkxer("ZGBTRS", infot, nout, lerr, ok);
+        Chkxer("Cgbtrs", infot, nout, lerr, ok);
         infot = 3;
         Cgbtrs("N", 1, -1, 0, 1, a, 1, ip, b, 1, info);
-        Chkxer("ZGBTRS", infot, nout, lerr, ok);
+        Chkxer("Cgbtrs", infot, nout, lerr, ok);
         infot = 4;
         Cgbtrs("N", 1, 0, -1, 1, a, 1, ip, b, 1, info);
-        Chkxer("ZGBTRS", infot, nout, lerr, ok);
+        Chkxer("Cgbtrs", infot, nout, lerr, ok);
         infot = 5;
         Cgbtrs("N", 1, 0, 0, -1, a, 1, ip, b, 1, info);
-        Chkxer("ZGBTRS", infot, nout, lerr, ok);
+        Chkxer("Cgbtrs", infot, nout, lerr, ok);
         infot = 7;
         Cgbtrs("N", 2, 1, 1, 1, a, 3, ip, b, 2, info);
-        Chkxer("ZGBTRS", infot, nout, lerr, ok);
+        Chkxer("Cgbtrs", infot, nout, lerr, ok);
         infot = 10;
         Cgbtrs("N", 2, 0, 0, 1, a, 1, ip, b, 1, info);
-        Chkxer("ZGBTRS", infot, nout, lerr, ok);
+        Chkxer("Cgbtrs", infot, nout, lerr, ok);
         //
         // Cgbrfs
         //
-        srnamt = "ZGBRFS";
+        srnamt = "Cgbrfs";
         infot = 1;
         Cgbrfs("/", 0, 0, 0, 0, a, 1, af, 1, ip, b, 1, x, 1, r1, r2, w, r, info);
-        Chkxer("ZGBRFS", infot, nout, lerr, ok);
+        Chkxer("Cgbrfs", infot, nout, lerr, ok);
         infot = 2;
         Cgbrfs("N", -1, 0, 0, 0, a, 1, af, 1, ip, b, 1, x, 1, r1, r2, w, r, info);
-        Chkxer("ZGBRFS", infot, nout, lerr, ok);
+        Chkxer("Cgbrfs", infot, nout, lerr, ok);
         infot = 3;
         Cgbrfs("N", 1, -1, 0, 0, a, 1, af, 1, ip, b, 1, x, 1, r1, r2, w, r, info);
-        Chkxer("ZGBRFS", infot, nout, lerr, ok);
+        Chkxer("Cgbrfs", infot, nout, lerr, ok);
         infot = 4;
         Cgbrfs("N", 1, 0, -1, 0, a, 1, af, 1, ip, b, 1, x, 1, r1, r2, w, r, info);
-        Chkxer("ZGBRFS", infot, nout, lerr, ok);
+        Chkxer("Cgbrfs", infot, nout, lerr, ok);
         infot = 5;
         Cgbrfs("N", 1, 0, 0, -1, a, 1, af, 1, ip, b, 1, x, 1, r1, r2, w, r, info);
-        Chkxer("ZGBRFS", infot, nout, lerr, ok);
+        Chkxer("Cgbrfs", infot, nout, lerr, ok);
         infot = 7;
         Cgbrfs("N", 2, 1, 1, 1, a, 2, af, 4, ip, b, 2, x, 2, r1, r2, w, r, info);
-        Chkxer("ZGBRFS", infot, nout, lerr, ok);
+        Chkxer("Cgbrfs", infot, nout, lerr, ok);
         infot = 9;
         Cgbrfs("N", 2, 1, 1, 1, a, 3, af, 3, ip, b, 2, x, 2, r1, r2, w, r, info);
-        Chkxer("ZGBRFS", infot, nout, lerr, ok);
+        Chkxer("Cgbrfs", infot, nout, lerr, ok);
         infot = 12;
         Cgbrfs("N", 2, 0, 0, 1, a, 1, af, 1, ip, b, 1, x, 2, r1, r2, w, r, info);
-        Chkxer("ZGBRFS", infot, nout, lerr, ok);
+        Chkxer("Cgbrfs", infot, nout, lerr, ok);
         infot = 14;
         Cgbrfs("N", 2, 0, 0, 1, a, 1, af, 1, ip, b, 2, x, 1, r1, r2, w, r, info);
-        Chkxer("ZGBRFS", infot, nout, lerr, ok);
+        Chkxer("Cgbrfs", infot, nout, lerr, ok);
         //
         // Cgbrfsx
         //
         n_err_bnds = 3;
         nparams = 0;
-        srnamt = "ZGBRFSX";
+        srnamt = "Cgbrfsx";
         infot = 1;
         Cgbrfsx("/", eq, 0, 0, 0, 0, a, 1, af, 1, ip, rs, cs, b, 1, x, 1, rcond, berr, n_err_bnds, err_bnds_n, err_bnds_c, nparams, params, w, r, info);
-        Chkxer("ZGBRFSX", infot, nout, lerr, ok);
+        Chkxer("Cgbrfsx", infot, nout, lerr, ok);
         infot = 2;
-        eq = '/';
+        eq = "/";
         Cgbrfsx("N", eq, 2, 1, 1, 1, a, 1, af, 2, ip, rs, cs, b, 2, x, 2, rcond, berr, n_err_bnds, err_bnds_n, err_bnds_c, nparams, params, w, r, info);
-        Chkxer("ZGBRFSX", infot, nout, lerr, ok);
+        Chkxer("Cgbrfsx", infot, nout, lerr, ok);
         infot = 3;
-        eq = 'R';
+        eq = "R";
         Cgbrfsx("N", eq, -1, 1, 1, 0, a, 1, af, 1, ip, rs, cs, b, 1, x, 1, rcond, berr, n_err_bnds, err_bnds_n, err_bnds_c, nparams, params, w, r, info);
-        Chkxer("ZGBRFSX", infot, nout, lerr, ok);
+        Chkxer("Cgbrfsx", infot, nout, lerr, ok);
         infot = 4;
-        eq = 'R';
+        eq = "R";
         Cgbrfsx("N", eq, 2, -1, 1, 1, a, 3, af, 4, ip, rs, cs, b, 1, x, 1, rcond, berr, n_err_bnds, err_bnds_n, err_bnds_c, nparams, params, w, r, info);
-        Chkxer("ZGBRFSX", infot, nout, lerr, ok);
+        Chkxer("Cgbrfsx", infot, nout, lerr, ok);
         infot = 5;
-        eq = 'R';
+        eq = "R";
         Cgbrfsx("N", eq, 2, 1, -1, 1, a, 3, af, 4, ip, rs, cs, b, 1, x, 1, rcond, berr, n_err_bnds, err_bnds_n, err_bnds_c, nparams, params, w, r, info);
-        Chkxer("ZGBRFSX", infot, nout, lerr, ok);
+        Chkxer("Cgbrfsx", infot, nout, lerr, ok);
         infot = 6;
         Cgbrfsx("N", eq, 0, 0, 0, -1, a, 1, af, 1, ip, rs, cs, b, 1, x, 1, rcond, berr, n_err_bnds, err_bnds_n, err_bnds_c, nparams, params, w, r, info);
-        Chkxer("ZGBRFSX", infot, nout, lerr, ok);
+        Chkxer("Cgbrfsx", infot, nout, lerr, ok);
         infot = 8;
         Cgbrfsx("N", eq, 2, 1, 1, 1, a, 1, af, 2, ip, rs, cs, b, 2, x, 2, rcond, berr, n_err_bnds, err_bnds_n, err_bnds_c, nparams, params, w, r, info);
-        Chkxer("ZGBRFSX", infot, nout, lerr, ok);
+        Chkxer("Cgbrfsx", infot, nout, lerr, ok);
         infot = 10;
         Cgbrfsx("N", eq, 2, 1, 1, 1, a, 3, af, 3, ip, rs, cs, b, 2, x, 2, rcond, berr, n_err_bnds, err_bnds_n, err_bnds_c, nparams, params, w, r, info);
-        Chkxer("ZGBRFSX", infot, nout, lerr, ok);
+        Chkxer("Cgbrfsx", infot, nout, lerr, ok);
         infot = 13;
-        eq = 'C';
+        eq = "C";
         Cgbrfsx("N", eq, 2, 1, 1, 1, a, 3, af, 5, ip, rs, cs, b, 1, x, 2, rcond, berr, n_err_bnds, err_bnds_n, err_bnds_c, nparams, params, w, r, info);
-        Chkxer("ZGBRFSX", infot, nout, lerr, ok);
+        Chkxer("Cgbrfsx", infot, nout, lerr, ok);
         infot = 15;
         Cgbrfsx("N", eq, 2, 1, 1, 1, a, 3, af, 5, ip, rs, cs, b, 2, x, 1, rcond, berr, n_err_bnds, err_bnds_n, err_bnds_c, nparams, params, w, r, info);
-        Chkxer("ZGBRFSX", infot, nout, lerr, ok);
+        Chkxer("Cgbrfsx", infot, nout, lerr, ok);
         //
         // Cgbcon
         //
-        srnamt = "ZGBCON";
+        srnamt = "Cgbcon";
         infot = 1;
         Cgbcon("/", 0, 0, 0, a, 1, ip, anrm, rcond, w, r, info);
-        Chkxer("ZGBCON", infot, nout, lerr, ok);
+        Chkxer("Cgbcon", infot, nout, lerr, ok);
         infot = 2;
         Cgbcon("1", -1, 0, 0, a, 1, ip, anrm, rcond, w, r, info);
-        Chkxer("ZGBCON", infot, nout, lerr, ok);
+        Chkxer("Cgbcon", infot, nout, lerr, ok);
         infot = 3;
         Cgbcon("1", 1, -1, 0, a, 1, ip, anrm, rcond, w, r, info);
-        Chkxer("ZGBCON", infot, nout, lerr, ok);
+        Chkxer("Cgbcon", infot, nout, lerr, ok);
         infot = 4;
         Cgbcon("1", 1, 0, -1, a, 1, ip, anrm, rcond, w, r, info);
-        Chkxer("ZGBCON", infot, nout, lerr, ok);
+        Chkxer("Cgbcon", infot, nout, lerr, ok);
         infot = 6;
         Cgbcon("1", 2, 1, 1, a, 3, ip, anrm, rcond, w, r, info);
-        Chkxer("ZGBCON", infot, nout, lerr, ok);
+        Chkxer("Cgbcon", infot, nout, lerr, ok);
         //
         // Cgbequ
         //
-        srnamt = "ZGBEQU";
+        srnamt = "Cgbequ";
         infot = 1;
         Cgbequ(-1, 0, 0, 0, a, 1, r1, r2, rcond, ccond, anrm, info);
-        Chkxer("ZGBEQU", infot, nout, lerr, ok);
+        Chkxer("Cgbequ", infot, nout, lerr, ok);
         infot = 2;
         Cgbequ(0, -1, 0, 0, a, 1, r1, r2, rcond, ccond, anrm, info);
-        Chkxer("ZGBEQU", infot, nout, lerr, ok);
+        Chkxer("Cgbequ", infot, nout, lerr, ok);
         infot = 3;
         Cgbequ(1, 1, -1, 0, a, 1, r1, r2, rcond, ccond, anrm, info);
-        Chkxer("ZGBEQU", infot, nout, lerr, ok);
+        Chkxer("Cgbequ", infot, nout, lerr, ok);
         infot = 4;
         Cgbequ(1, 1, 0, -1, a, 1, r1, r2, rcond, ccond, anrm, info);
-        Chkxer("ZGBEQU", infot, nout, lerr, ok);
+        Chkxer("Cgbequ", infot, nout, lerr, ok);
         infot = 6;
         Cgbequ(2, 2, 1, 1, a, 2, r1, r2, rcond, ccond, anrm, info);
-        Chkxer("ZGBEQU", infot, nout, lerr, ok);
+        Chkxer("Cgbequ", infot, nout, lerr, ok);
         //
         // Cgbequb
         //
-        srnamt = "ZGBEQUB";
+        srnamt = "Cgbequb";
         infot = 1;
         Cgbequb(-1, 0, 0, 0, a, 1, r1, r2, rcond, ccond, anrm, info);
-        Chkxer("ZGBEQUB", infot, nout, lerr, ok);
+        Chkxer("Cgbequb", infot, nout, lerr, ok);
         infot = 2;
         Cgbequb(0, -1, 0, 0, a, 1, r1, r2, rcond, ccond, anrm, info);
-        Chkxer("ZGBEQUB", infot, nout, lerr, ok);
+        Chkxer("Cgbequb", infot, nout, lerr, ok);
         infot = 3;
         Cgbequb(1, 1, -1, 0, a, 1, r1, r2, rcond, ccond, anrm, info);
-        Chkxer("ZGBEQUB", infot, nout, lerr, ok);
+        Chkxer("Cgbequb", infot, nout, lerr, ok);
         infot = 4;
         Cgbequb(1, 1, 0, -1, a, 1, r1, r2, rcond, ccond, anrm, info);
-        Chkxer("ZGBEQUB", infot, nout, lerr, ok);
+        Chkxer("Cgbequb", infot, nout, lerr, ok);
         infot = 6;
         Cgbequb(2, 2, 1, 1, a, 2, r1, r2, rcond, ccond, anrm, info);
-        Chkxer("ZGBEQUB", infot, nout, lerr, ok);
+        Chkxer("Cgbequb", infot, nout, lerr, ok);
     }
     //
     // Print a summary line.

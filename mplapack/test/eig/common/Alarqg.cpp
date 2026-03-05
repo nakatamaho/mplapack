@@ -43,23 +43,31 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-void Alarqg(const char *path, INTEGER const nmats, bool *dotype, INTEGER const ntypes, INTEGER const nin, INTEGER const nout) {
+void Alarqg(fem::str_cref path, INTEGER const nmats, bool *dotype, INTEGER const ntypes, INTEGER const nin, INTEGER const nout) {
     common cmn;
     common_read read(cmn);
     common_write write(cmn);
+    static fem::str<10> intstr = "0123456789";
     INTEGER i = 0;
     bool firstt = false;
-    char line[80];
+    fem::str<80> line;
     INTEGER lenp = 0;
     INTEGER j = 0;
     INTEGER nreq[100];
     INTEGER i1 = 0;
-    char c1;
+    fem::str<1> c1;
     INTEGER k = 0;
     INTEGER ic = 0;
     INTEGER nt = 0;
+    static const char *format_9999 = "(' *** Invalid type request for ',a3,', type  ',i4,"
+                                     "': must satisfy  1 <= type <= ',i2)";
+    static const char *format_9998 = "(/,' *** End of file reached when trying to read matrix ','types for ',"
+                                     "a3,/,' *** Check that you are requesting the',"
+                                     "' right number of types for each path',/)";
+    static const char *format_9997 = "(' *** Warning:  duplicate request of matrix type ',i2,' for ',a3)";
+    static const char *format_9996 = "(/,/,' *** Invalid integer value in column ',i2,' of input',' line:',/,"
+                                     "a79)";
+    static const char *format_9995 = "(/,/,' *** Not enough matrix types on input line',/,a79)";
     static const char *format_9994 = "(' ==> Specify ',i4,' matrix types on this line or ',"
                                      "'adjust NTYPES on previous line')";
     //
@@ -71,9 +79,6 @@ void Alarqg(const char *path, INTEGER const nmats, bool *dotype, INTEGER const n
             dotype[i - 1] = true;
         }
     } else {
-        printf("Not yet supported \n");
-        exit(-1);
-#ifdef NOTYET
         for (i = 1; i <= ntypes; i = i + 1) {
             dotype[i - 1] = false;
         }
@@ -84,10 +89,10 @@ void Alarqg(const char *path, INTEGER const nmats, bool *dotype, INTEGER const n
         if (nmats > 0) {
             try {
                 read(nin, "(a80)"), line;
-            } catch (read_end const) {
+            } catch (fem::read_end const &) {
                 goto statement_90;
             }
-            lenp = len[line - 1];
+            lenp = fem::len(line);
             i = 0;
             for (j = 1; j <= nmats; j = j + 1) {
                 nreq[j - 1] = 0;
@@ -98,26 +103,24 @@ void Alarqg(const char *path, INTEGER const nmats, bool *dotype, INTEGER const n
                     if (j == nmats && i1 > 0) {
                         goto statement_60;
                     } else {
-                        write(nout, "(/,/,' *** Not enough matrix types on input line',/,a79)"), line;
+                        write(nout, format_9995), line;
                         write(nout, format_9994), nmats;
                         goto statement_80;
                     }
                 }
-                if (line[(i - 1) + (i - 1) * ldline] != " " && line[(i - 1) + (i - 1) * ldline] != ",") {
+                if (line(i, i) != " " && line(i, i) != ",") {
                     i1 = i;
-                    c1 = line[(i1 - 1) + (i1 - 1) * ldline];
+                    c1 = line(i1, i1);
                     //
                     // Check that a valid integer was read
                     //
                     for (k = 1; k <= 10; k = k + 1) {
-                        if (c1 == intstr[(k - 1) + (k - 1) * ldintstr]) {
+                        if (c1 == intstr(k, k)) {
                             ic = k - 1;
                             goto statement_50;
                         }
                     }
-                    write(nout, "(/,/,' *** Invalid integer value in column ',i2,' of input',"
-                                "' line:',/,a79)"),
-                        i, line;
+                    write(nout, format_9996), i, line;
                     write(nout, format_9994), nmats;
                     goto statement_80;
                 statement_50:
@@ -139,28 +142,21 @@ void Alarqg(const char *path, INTEGER const nmats, bool *dotype, INTEGER const n
                         write(nout, star);
                     }
                     firstt = false;
-                    write(nout, "(' *** Warning:  duplicate request of matrix type ',i2,' for ',"
-                                "a3)"),
-                        nt, path;
+                    write(nout, format_9997), nt, path;
                 }
                 dotype[nt - 1] = true;
             } else {
-                write(nout, "(' *** Invalid type request for ',a3,', type  ',i4,"
-                            "': must satisfy  1 <= type <= ',i2)"),
-                    path, nt, ntypes;
+                write(nout, format_9999), path, nt, ntypes;
             }
         }
     statement_80:;
-#endif
     }
     return;
 //
 statement_90:
-    write(nout, "(/,' *** End of file reached when trying to read matrix ','types for ',"
-                "a3,/,' *** Check that you are requesting the',"
-                "' right number of types for each path',/)"),
-        path;
+    write(nout, format_9998), path;
     write(nout, star);
+    FEM_STOP(0);
     //
     // End of Alarqg
     //

@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Rsyt01_3(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL *afac, INTEGER const ldafac, REAL *e, INTEGER *ipiv, REAL *c, INTEGER const ldc, REAL *rwork, REAL &resid) {
+void Rsyt01_3(fem::str_cref uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL *afac, INTEGER const ldafac, REAL *e, INTEGER *ipiv, REAL *c, INTEGER const ldc, REAL *rwork, REAL &resid) {
     //
     // Quick exit if N = 0.
     //
@@ -56,12 +56,12 @@ void Rsyt01_3(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REA
     // a) Revert to multiplyers of L
     //
     INTEGER info = 0;
-    Rsyconvf_rook(uplo, "R", n, afac, ldafac, e, ipiv, info);
+    Rsyconvf_rook(uplo.elems(), "R", n, afac, ldafac, e, ipiv, info);
     //
     // 1) Determine EPS and the norm of A.
     //
     REAL eps = Rlamch("Epsilon");
-    REAL anorm = Rlansy("1", uplo, n, a, lda, rwork);
+    REAL anorm = Rlansy("1", uplo.elems(), n, a, lda, rwork);
     //
     // 2) Initialize C to the identity matrix.
     //
@@ -80,7 +80,7 @@ void Rsyt01_3(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REA
     //
     INTEGER j = 0;
     INTEGER i = 0;
-    if (Mlsame(uplo, "U")) {
+    if (Mlsame(uplo.elems(), "U")) {
         for (j = 1; j <= n; j = j + 1) {
             for (i = 1; i <= j; i = i + 1) {
                 c[(i - 1) + (j - 1) * ldc] = c[(i - 1) + (j - 1) * ldc] - a[(i - 1) + (j - 1) * lda];
@@ -96,7 +96,7 @@ void Rsyt01_3(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REA
     //
     // 6) Compute norm( C - A ) / ( N * norm(A) * EPS )
     //
-    resid = Rlansy("1", uplo, n, c, ldc, rwork);
+    resid = Rlansy("1", uplo.elems(), n, c, ldc, rwork);
     //
     if (anorm <= zero) {
         if (resid != zero) {
@@ -108,7 +108,7 @@ void Rsyt01_3(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REA
     //
     // b) Convert to factor of L (or U)
     //
-    Rsyconvf_rook(uplo, "C", n, afac, ldafac, e, ipiv, info);
+    Rsyconvf_rook(uplo.elems(), "C", n, afac, ldafac, e, ipiv, info);
     //
     // End of Rsyt01_3
     //

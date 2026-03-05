@@ -42,44 +42,30 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
-
-#include <mplapack_debug.h>
-
-#include <iostream>
-#include <sstream>
-#include <string>
-#include <vector>
-#include <regex>
-
-using namespace std;
-using std::regex;
-using std::regex_replace;
+#include <memory>
 
 void Rget37(REAL *rmax, INTEGER *lmax, INTEGER *ninfo, INTEGER &knt, INTEGER const nin) {
     common cmn;
     common_read read(cmn);
-    common_write write(cmn);
-    double dtmp;
-    char buf[1024];
     REAL eps = 0.0;
     REAL smlnum = 0.0;
     const REAL one = 1.0;
     REAL bignum = 0.0;
-    const REAL epsin = 5.9605e-8;
+    const REAL epsin = 0.000000059605;
     const REAL zero = 0.0;
     REAL val[3];
     INTEGER n = 0;
     INTEGER i = 0;
     const INTEGER ldt = 20;
     REAL tmp[ldt * ldt];
-    INTEGER ldtmp = ldt;
     INTEGER j = 0;
     REAL wrin[ldt];
     REAL wiin[ldt];
     REAL sin[ldt];
     REAL sepin[ldt];
     const INTEGER lwork = 2 * ldt * (10 + ldt);
-    REAL work[lwork];
+    auto work_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, lwork));
+    REAL *work = work_storage.get();
     REAL tnrm = 0.0;
     INTEGER iscl = 0;
     REAL t[ldt * ldt];
@@ -91,8 +77,6 @@ void Rget37(REAL *rmax, INTEGER *lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
     bool select[ldt];
     REAL le[ldt * ldt];
     REAL re[ldt * ldt];
-    INTEGER ldle = ldt;
-    INTEGER ldre = ldt;
     INTEGER m = 0;
     REAL s[ldt];
     REAL sep[ldt];
@@ -116,8 +100,9 @@ void Rget37(REAL *rmax, INTEGER *lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
     eps = Rlamch("P");
     smlnum = Rlamch("S") / eps;
     bignum = one / smlnum;
+    Rlabad(smlnum, bignum);
     //
-    //     EPSIN = 2**(-24) = precision to which input data computed
+    // EPSIN = 2**(-24) = precision to which input data computed
     //
     eps = max(eps, epsin);
     rmax[1 - 1] = zero;
@@ -134,42 +119,26 @@ void Rget37(REAL *rmax, INTEGER *lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
     val[1 - 1] = sqrt(smlnum);
     val[2 - 1] = one;
     val[3 - 1] = sqrt(bignum);
-    //
-    string str;
-    //     Read input data until N=0.  Assume input eigenvalues are sorted
-    //     lexicographically (increasing by real part, then decreasing by
-    //     imaginary part)
-    //
+//
+// Read input data until N=0.  Assume input eigenvalues are sorted
+// lexicographically (increasing by real part, then decreasing by
+// imaginary part)
+//
 statement_10:
-    getline(cin, str);
-    stringstream ss(str);
-    ss >> n;
+    read(nin, star), n;
     if (n == 0) {
         return;
     }
     for (i = 1; i <= n; i = i + 1) {
-        getline(cin, str);
-        string _r = regex_replace(str, regex("D\\+"), "e+");
-        str = regex_replace(_r, regex("D\\-"), "e-");
-        istringstream iss(str);
-        for (j = 1; j <= n; j = j + 1) {
-            iss >> dtmp;
-            tmp[(i - 1) + (j - 1) * ldtmp] = dtmp;
+        {
+            read_loop rloop(cmn, nin, star);
+            for (j = 1; j <= n; j = j + 1) {
+                rloop, tmp[(i - 1) + (j - 1) * ldt];
+            }
         }
     }
     for (i = 1; i <= n; i = i + 1) {
-        getline(cin, str);
-        string _r = regex_replace(str, regex("D\\+"), "e+");
-        str = regex_replace(_r, regex("D\\-"), "e-");
-        istringstream iss(str);
-        iss >> dtmp;
-        wrin[i - 1] = dtmp;
-        iss >> dtmp;
-        wiin[i - 1] = dtmp;
-        iss >> dtmp;
-        sin[i - 1] = dtmp;
-        iss >> dtmp;
-        sepin[i - 1] = dtmp;
+        read(nin, star), wrin[i - 1], wiin[i - 1], sin[i - 1], sepin[i - 1];
     }
     tnrm = Rlange("M", n, n, tmp, ldt, work);
     //
@@ -259,7 +228,7 @@ statement_10:
         // Compare condition numbers for eigenvalues
         // taking their condition numbers into account
         //
-        v = max(REAL(two * castREAL(n) * eps * tnrm), smlnum);
+        v = max(two * castREAL(n) * eps * tnrm, smlnum);
         if (tnrm == zero) {
             v = one;
         }
@@ -274,8 +243,8 @@ statement_10:
             } else {
                 tolin = v / sepin[i - 1];
             }
-            tol = max(tol, REAL(smlnum / eps));
-            tolin = max(tolin, REAL(smlnum / eps));
+            tol = max(tol, smlnum / eps);
+            tolin = max(tolin, smlnum / eps);
             if (eps * (sin[i - 1] - tolin) > stmp[i - 1] + tol) {
                 vmax = one / eps;
             } else if (sin[i - 1] - tolin > stmp[i - 1] + tol) {
@@ -309,8 +278,8 @@ statement_10:
             } else {
                 tolin = v / sin[i - 1];
             }
-            tol = max(tol, REAL(smlnum / eps));
-            tolin = max(tolin, REAL(smlnum / eps));
+            tol = max(tol, smlnum / eps);
+            tolin = max(tolin, smlnum / eps);
             if (eps * (sepin[i - 1] - tolin) > septmp[i - 1] + tol) {
                 vmax = one / eps;
             } else if (sepin[i - 1] - tolin > septmp[i - 1] + tol) {
@@ -498,10 +467,10 @@ statement_10:
                     ifnd = 1;
                     lcmp[2 - 1] = i;
                     lcmp[3 - 1] = i + 1;
-                    Rcopy(n, &re[(i - 1) * ldre], 1, &re[(2 - 1) * ldre], 1);
-                    Rcopy(n, &re[((i + 1) - 1) * ldre], 1, &re[(3 - 1) * ldre], 1);
-                    Rcopy(n, &le[(i - 1) * ldle], 1, &le[(2 - 1) * ldle], 1);
-                    Rcopy(n, &le[((i + 1) - 1) * ldle], 1, &le[(3 - 1) * ldle], 1);
+                    Rcopy(n, &re[(i - 1) * ldt], 1, &re[(2 - 1) * ldt], 1);
+                    Rcopy(n, &re[((i + 1) - 1) * ldt], 1, &re[(3 - 1) * ldt], 1);
+                    Rcopy(n, &le[(i - 1) * ldt], 1, &le[(2 - 1) * ldt], 1);
+                    Rcopy(n, &le[((i + 1) - 1) * ldt], 1, &le[(3 - 1) * ldt], 1);
                 }
             }
             if (ifnd == 0) {
@@ -519,8 +488,8 @@ statement_10:
                 } else {
                     lcmp[3 - 1] = i;
                     ifnd = 1;
-                    Rcopy(n, &re[(i - 1) * ldre], 1, &re[(3 - 1) * ldre], 1);
-                    Rcopy(n, &le[(i - 1) * ldle], 1, &le[(3 - 1) * ldle], 1);
+                    Rcopy(n, &re[(i - 1) * ldt], 1, &re[(3 - 1) * ldt], 1);
+                    Rcopy(n, &le[(i - 1) * ldt], 1, &le[(3 - 1) * ldt], 1);
                 }
             }
             if (ifnd == 0) {

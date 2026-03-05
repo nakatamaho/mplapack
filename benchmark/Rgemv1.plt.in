@@ -1,0 +1,18 @@
+set xlabel font "Helvetica,20"
+set ylabel font "Helvetica,20"
+set key font "Helvetica,16"
+set title font "Helvetica,20"
+set title "Rgemv on %%MODELNAME%%"
+set xlabel "Dimension"
+set ylabel "MFLOPS"
+set key above
+set terminal pdf
+
+plot \
+"log.Rgemv.binary128"       using 1:3 title 'binary128'             with lines linewidth 1, \
+"log.Rgemv._Float128_opt"   using 1:3 title 'binary128 (OpenMP)'    with lines linewidth 1, \
+"log.Rgemv.binary80"       using 1:3 title 'binary80'             with lines linewidth 1, \
+"log.Rgemv._Float64x_opt"   using 1:3 title 'binary80 (OpenMP)'    with lines linewidth 1, \
+"log.Rgemv.dd"              using 1:3 title 'double-double'          with lines linewidth 1, \
+"log.Rgemv.dd_opt"          using 1:3 title 'double-double (OpenMP)' with lines linewidth 1
+

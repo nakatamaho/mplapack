@@ -38,7 +38,7 @@
 
 #include <mplapack_matgen.h>
 
-void Clatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, const char *sym, REAL *d, INTEGER const mode, REAL const cond, REAL const dmax, INTEGER const kl, INTEGER const ku, const char *pack, COMPLEX *a, INTEGER const lda, COMPLEX *work, INTEGER &info) {
+void Clatms(INTEGER const m, INTEGER const n, fem::str_cref dist, INTEGER (&iseed)[4], fem::str_cref sym, REAL *d, INTEGER const mode, REAL const cond, REAL const dmax, INTEGER const kl, INTEGER const ku, fem::str_cref pack, COMPLEX *a, INTEGER const lda, COMPLEX *work, INTEGER &info) {
     //
     // 1)      Decode and Test the input parameters.
     // Initialize flags & seed.
@@ -54,11 +54,11 @@ void Clatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
     // Decode DIST
     //
     INTEGER idist = 0;
-    if (Mlsame(dist, "U")) {
+    if (Mlsame(dist.elems(), "U")) {
         idist = 1;
-    } else if (Mlsame(dist, "S")) {
+    } else if (Mlsame(dist.elems(), "S")) {
         idist = 2;
-    } else if (Mlsame(dist, "N")) {
+    } else if (Mlsame(dist.elems(), "N")) {
         idist = 3;
     } else {
         idist = -1;
@@ -69,19 +69,19 @@ void Clatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
     INTEGER isym = 0;
     INTEGER irsign = 0;
     bool zsym = false;
-    if (Mlsame(sym, "N")) {
+    if (Mlsame(sym.elems(), "N")) {
         isym = 1;
         irsign = 0;
         zsym = false;
-    } else if (Mlsame(sym, "P")) {
+    } else if (Mlsame(sym.elems(), "P")) {
         isym = 2;
         irsign = 0;
         zsym = false;
-    } else if (Mlsame(sym, "S")) {
+    } else if (Mlsame(sym.elems(), "S")) {
         isym = 2;
         irsign = 0;
         zsym = true;
-    } else if (Mlsame(sym, "H")) {
+    } else if (Mlsame(sym.elems(), "H")) {
         isym = 2;
         irsign = 1;
         zsym = false;
@@ -93,27 +93,27 @@ void Clatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
     //
     INTEGER isympk = 0;
     INTEGER ipack = 0;
-    if (Mlsame(pack, "N")) {
+    if (Mlsame(pack.elems(), "N")) {
         ipack = 0;
-    } else if (Mlsame(pack, "U")) {
+    } else if (Mlsame(pack.elems(), "U")) {
         ipack = 1;
         isympk = 1;
-    } else if (Mlsame(pack, "L")) {
+    } else if (Mlsame(pack.elems(), "L")) {
         ipack = 2;
         isympk = 1;
-    } else if (Mlsame(pack, "C")) {
+    } else if (Mlsame(pack.elems(), "C")) {
         ipack = 3;
         isympk = 2;
-    } else if (Mlsame(pack, "R")) {
+    } else if (Mlsame(pack.elems(), "R")) {
         ipack = 4;
         isympk = 3;
-    } else if (Mlsame(pack, "B")) {
+    } else if (Mlsame(pack.elems(), "B")) {
         ipack = 5;
         isympk = 3;
-    } else if (Mlsame(pack, "Q")) {
+    } else if (Mlsame(pack.elems(), "Q")) {
         ipack = 6;
         isympk = 2;
-    } else if (Mlsame(pack, "Z")) {
+    } else if (Mlsame(pack.elems(), "Z")) {
         ipack = 7;
     } else {
         ipack = -1;
@@ -192,9 +192,13 @@ void Clatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
         iseed[i - 1] = mod(abs(iseed[i - 1]), 4096);
     }
     //
-    //     2)      Set up D  if indicated.
+    if (mod(iseed[4 - 1], 2) != 1) {
+        iseed[4 - 1]++;
+    }
     //
-    //             Compute D according to COND and MODE
+    // 2)      Set up D  if indicated.
+    //
+    // Compute D according to COND and MODE
     //
     INTEGER iinfo = 0;
     Rlatm1(mode, cond, irsign, idist, iseed, d, mnmin, iinfo);
@@ -222,7 +226,7 @@ void Clatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
         //
         temp = abs(d[1 - 1]);
         for (i = 2; i <= mnmin; i = i + 1) {
-            temp = max(temp, REAL(abs(d[i - 1])));
+            temp = max(temp, abs(d[i - 1]));
         }
         //
         if (temp > zero) {
@@ -279,7 +283,8 @@ void Clatms(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
     INTEGER jku = 0;
     INTEGER jr = 0;
     COMPLEX extra = 0.0;
-    const REAL twopi = 6.28318530717958647692528676655900576839e+0;
+    const REAL two = 2.0;
+    const REAL twopi = two * pi(temp);
     REAL angle = 0.0;
     COMPLEX c = 0.0;
     COMPLEX s = 0.0;

@@ -64,78 +64,78 @@ Rgetri_test_gmp_LDFLAGS = $(gmp_libdepends)
 
 endif
 
-if ENABLE__FLOAT128
-mplapackexamples_PROGRAMS += Cgetri_test__Float128 Rgesv_test__Float128 Rgetri_Hilbert__Float128 Rgetri_test2__Float128 Rgetri_test3__Float128 Rgetri_test__Float128
+if ENABLE_BINARY128
+mplapackexamples_PROGRAMS += Cgetri_test_binary128 Rgesv_test_binary128 Rgetri_Hilbert_binary128 Rgetri_test2_binary128 Rgetri_test3_binary128 Rgetri_test_binary128
 
-_Float128_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include
-if WANT_QUADMATH
-_Float128_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack__Float128 -L$(top_builddir)/mpblas/reference -lmpblas__Float128 -lquadmath
+binary128_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include
+if MPLAPACK_BINARY128_MODE_QUADMATH
+binary128_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_binary128 -L$(top_builddir)/mpblas/reference -lmpblas_binary128 -lquadmath
 else
-_Float128_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack__Float128 -L$(top_builddir)/mpblas/reference -lmpblas__Float128
+binary128_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_binary128 -L$(top_builddir)/mpblas/reference -lmpblas_binary128
 endif
 
-Cgetri_test__Float128_SOURCES = Cgetri_test__Float128.cpp
-Cgetri_test__Float128_CXXFLAGS = $(_Float128_cxxflags)
-Cgetri_test__Float128_LDFLAGS = $(_Float128_libdepends)
+Cgetri_test_binary128_SOURCES = Cgetri_test_binary128.cpp
+Cgetri_test_binary128_CXXFLAGS = $(binary128_cxxflags)
+Cgetri_test_binary128_LDFLAGS = $(binary128_libdepends)
 
-Rgesv_test__Float128_SOURCES = Rgesv_test__Float128.cpp
-Rgesv_test__Float128_CXXFLAGS = $(_Float128_cxxflags)
-Rgesv_test__Float128_LDFLAGS = $(_Float128_libdepends)
+Rgesv_test_binary128_SOURCES = Rgesv_test_binary128.cpp
+Rgesv_test_binary128_CXXFLAGS = $(binary128_cxxflags)
+Rgesv_test_binary128_LDFLAGS = $(binary128_libdepends)
 
-Rgetri_Hilbert__Float128_SOURCES = Rgetri_Hilbert__Float128.cpp
-Rgetri_Hilbert__Float128_CXXFLAGS = $(_Float128_cxxflags)
-Rgetri_Hilbert__Float128_LDFLAGS = $(_Float128_libdepends)
+Rgetri_Hilbert_binary128_SOURCES = Rgetri_Hilbert_binary128.cpp
+Rgetri_Hilbert_binary128_CXXFLAGS = $(binary128_cxxflags)
+Rgetri_Hilbert_binary128_LDFLAGS = $(binary128_libdepends)
 
-Rgetri_test2__Float128_SOURCES = Rgetri_test2__Float128.cpp
-Rgetri_test2__Float128_CXXFLAGS = $(_Float128_cxxflags)
-Rgetri_test2__Float128_LDFLAGS = $(_Float128_libdepends)
+Rgetri_test2_binary128_SOURCES = Rgetri_test2_binary128.cpp
+Rgetri_test2_binary128_CXXFLAGS = $(binary128_cxxflags)
+Rgetri_test2_binary128_LDFLAGS = $(binary128_libdepends)
 
-Rgetri_test3__Float128_SOURCES = Rgetri_test3__Float128.cpp
-Rgetri_test3__Float128_CXXFLAGS = $(_Float128_cxxflags)
-Rgetri_test3__Float128_LDFLAGS = $(_Float128_libdepends)
+Rgetri_test3_binary128_SOURCES = Rgetri_test3_binary128.cpp
+Rgetri_test3_binary128_CXXFLAGS = $(binary128_cxxflags)
+Rgetri_test3_binary128_LDFLAGS = $(binary128_libdepends)
 
-Rgetri_test__Float128_SOURCES = Rgetri_test__Float128.cpp
-Rgetri_test__Float128_CXXFLAGS = $(_Float128_cxxflags)
-Rgetri_test__Float128_LDFLAGS = $(_Float128_libdepends)
+Rgetri_test_binary128_SOURCES = Rgetri_test_binary128.cpp
+Rgetri_test_binary128_CXXFLAGS = $(binary128_cxxflags)
+Rgetri_test_binary128_LDFLAGS = $(binary128_libdepends)
 
 endif
 
-if ENABLE__FLOAT64X
-mplapackexamples_PROGRAMS += Cgetri_test__Float64x Rgesv_test__Float64x Rgetri_Hilbert__Float64x Rgetri_test2__Float64x Rgetri_test3__Float64x Rgetri_test__Float64x
+if ENABLE_BINARY80
+mplapackexamples_PROGRAMS += Cgetri_test_binary80 Rgesv_test_binary80 Rgetri_Hilbert_binary80 Rgetri_test2_binary80 Rgetri_test3_binary80 Rgetri_test_binary80
 
-_Float64x_cxxflags = $(OPENMP_CXXFLAGS)
-_Float64x_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack__Float64x -L$(top_builddir)/mpblas/reference -lmpblas__Float64x
+binary80_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include
+binary80_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_binary80 -L$(top_builddir)/mpblas/reference -lmpblas_binary80
 
-Cgetri_test__Float64x_SOURCES = Cgetri_test__Float64x.cpp
-Cgetri_test__Float64x_CXXFLAGS = $(_Float64x_cxxflags)
-Cgetri_test__Float64x_LDFLAGS = $(_Float64x_libdepends)
+Cgetri_test_binary80_SOURCES = Cgetri_test_binary80.cpp
+Cgetri_test_binary80_CXXFLAGS = $(binary80_cxxflags)
+Cgetri_test_binary80_LDFLAGS = $(binary80_libdepends)
 
-Rgesv_test__Float64x_SOURCES = Rgesv_test__Float64x.cpp
-Rgesv_test__Float64x_CXXFLAGS = $(_Float64x_cxxflags)
-Rgesv_test__Float64x_LDFLAGS = $(_Float64x_libdepends)
+Rgesv_test_binary80_SOURCES = Rgesv_test_binary80.cpp
+Rgesv_test_binary80_CXXFLAGS = $(binary80_cxxflags)
+Rgesv_test_binary80_LDFLAGS = $(binary80_libdepends)
 
-Rgetri_Hilbert__Float64x_SOURCES = Rgetri_Hilbert__Float64x.cpp
-Rgetri_Hilbert__Float64x_CXXFLAGS = $(_Float64x_cxxflags)
-Rgetri_Hilbert__Float64x_LDFLAGS = $(_Float64x_libdepends)
+Rgetri_Hilbert_binary80_SOURCES = Rgetri_Hilbert_binary80.cpp
+Rgetri_Hilbert_binary80_CXXFLAGS = $(binary80_cxxflags)
+Rgetri_Hilbert_binary80_LDFLAGS = $(binary80_libdepends)
 
-Rgetri_test2__Float64x_SOURCES = Rgetri_test2__Float64x.cpp
-Rgetri_test2__Float64x_CXXFLAGS = $(_Float64x_cxxflags)
-Rgetri_test2__Float64x_LDFLAGS = $(_Float64x_libdepends)
+Rgetri_test2_binary80_SOURCES = Rgetri_test2_binary80.cpp
+Rgetri_test2_binary80_CXXFLAGS = $(binary80_cxxflags)
+Rgetri_test2_binary80_LDFLAGS = $(binary80_libdepends)
 
-Rgetri_test3__Float64x_SOURCES = Rgetri_test3__Float64x.cpp
-Rgetri_test3__Float64x_CXXFLAGS = $(_Float64x_cxxflags)
-Rgetri_test3__Float64x_LDFLAGS = $(_Float64x_libdepends)
+Rgetri_test3_binary80_SOURCES = Rgetri_test3_binary80.cpp
+Rgetri_test3_binary80_CXXFLAGS = $(binary80_cxxflags)
+Rgetri_test3_binary80_LDFLAGS = $(binary80_libdepends)
 
-Rgetri_test__Float64x_SOURCES = Rgetri_test__Float64x.cpp
-Rgetri_test__Float64x_CXXFLAGS = $(_Float64x_cxxflags)
-Rgetri_test__Float64x_LDFLAGS = $(_Float64x_libdepends)
+Rgetri_test_binary80_SOURCES = Rgetri_test_binary80.cpp
+Rgetri_test_binary80_CXXFLAGS = $(binary80_cxxflags)
+Rgetri_test_binary80_LDFLAGS = $(binary80_libdepends)
 
 endif
 
 if ENABLE_DOUBLE
 mplapackexamples_PROGRAMS += Cgetri_test_double Rgesv_test_double Rgetri_Hilbert_double Rgetri_test2_double Rgetri_test3_double Rgetri_test_double
 
-double_cxxflags = $(OPENMP_CXXFLAGS)
+double_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include
 double_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_double -L$(top_builddir)/mpblas/reference -lmpblas_double
 
 Cgetri_test_double_SOURCES = Cgetri_test_double.cpp
@@ -230,10 +230,56 @@ endif
 
 mplapackexamplesdir=$(prefix)/share/examples/mplapack/00_LinearEquations
 
-mplapackexamples_DATA = Cgetri_test_mpfr.cpp Cgetri_test_gmp.cpp Cgetri_test__Float128.cpp Cgetri_test__Float64x.cpp Cgetri_test_double.cpp Cgetri_test_dd.cpp Cgetri_test_qd.cpp Rgesv_test_mpfr.cpp Rgesv_test_gmp.cpp Rgesv_test__Float128.cpp Rgesv_test__Float64x.cpp Rgesv_test_double.cpp Rgesv_test_dd.cpp Rgesv_test_qd.cpp Rgetri_Hilbert_mpfr.cpp Rgetri_Hilbert_gmp.cpp Rgetri_Hilbert__Float128.cpp Rgetri_Hilbert__Float64x.cpp Rgetri_Hilbert_double.cpp Rgetri_Hilbert_dd.cpp Rgetri_Hilbert_qd.cpp Rgetri_test2_mpfr.cpp Rgetri_test2_gmp.cpp Rgetri_test2__Float128.cpp Rgetri_test2__Float64x.cpp Rgetri_test2_double.cpp Rgetri_test2_dd.cpp Rgetri_test2_qd.cpp Rgetri_test3_mpfr.cpp Rgetri_test3_gmp.cpp Rgetri_test3__Float128.cpp Rgetri_test3__Float64x.cpp Rgetri_test3_double.cpp Rgetri_test3_dd.cpp Rgetri_test3_qd.cpp Rgetri_test_mpfr.cpp Rgetri_test_gmp.cpp Rgetri_test__Float128.cpp Rgetri_test__Float64x.cpp Rgetri_test_double.cpp Rgetri_test_dd.cpp Rgetri_test_qd.cpp \
+mplapackexamples_DATA = Cgetri_test_mpfr.cpp Cgetri_test_gmp.cpp Cgetri_test_binary128.cpp Cgetri_test_binary80.cpp Cgetri_test_double.cpp Cgetri_test_dd.cpp Cgetri_test_qd.cpp Rgesv_test_mpfr.cpp Rgesv_test_gmp.cpp Rgesv_test_binary128.cpp Rgesv_test_binary80.cpp Rgesv_test_double.cpp Rgesv_test_dd.cpp Rgesv_test_qd.cpp Rgetri_Hilbert_mpfr.cpp Rgetri_Hilbert_gmp.cpp Rgetri_Hilbert_binary128.cpp Rgetri_Hilbert_binary80.cpp Rgetri_Hilbert_double.cpp Rgetri_Hilbert_dd.cpp Rgetri_Hilbert_qd.cpp Rgetri_test2_mpfr.cpp Rgetri_test2_gmp.cpp Rgetri_test2_binary128.cpp Rgetri_test2_binary80.cpp Rgetri_test2_double.cpp Rgetri_test2_dd.cpp Rgetri_test2_qd.cpp Rgetri_test3_mpfr.cpp Rgetri_test3_gmp.cpp Rgetri_test3_binary128.cpp Rgetri_test3_binary80.cpp Rgetri_test3_double.cpp Rgetri_test3_dd.cpp Rgetri_test3_qd.cpp Rgetri_test_mpfr.cpp Rgetri_test_gmp.cpp Rgetri_test_binary128.cpp Rgetri_test_binary80.cpp Rgetri_test_double.cpp Rgetri_test_dd.cpp Rgetri_test_qd.cpp \
  Makefile.freebsd Makefile.linux Makefile.macos Makefile.mingw
 
 install-data-hook:
 if IS_MACOS
-	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mplapackexamplesdir) $(prefix)
+	bash $(top_srcdir)/misc/fix_dylib_macOS.sh $(mplapackexamplesdir) $(prefix)
 endif
+
+EXTRA_DIST = \
+	Makefile.freebsd.in \
+	Makefile.linux.in \
+	Makefile.macos.in \
+	Makefile.mingw.in
+
+GENERATED_MAKEFILES = \
+	Makefile.freebsd \
+	Makefile.linux \
+	Makefile.macos \
+	Makefile.mingw
+
+# Resolve %%LIBQUADMATH%% based on whether quadmath backend is selected.
+if MPLAPACK_BINARY128_MODE_QUADMATH
+LIBQUADMATH_SUBST = -lquadmath
+else
+LIBQUADMATH_SUBST =
+endif
+
+if MPLAPACK_BINARY128_MODE_QUADMATH
+MPLAPACK_SED_SUBST = \
+        -e 's|%%MPLAPACKDIR%%|$(prefix)|g' \
+        -e 's|%%LIBQUADMATH%%| -lquadmath|g'
+else
+MPLAPACK_SED_SUBST = \
+        -e 's|%%MPLAPACKDIR%%|$(prefix)|g' \
+        -e 's|%%LIBQUADMATH%%||g'
+endif
+
+Makefile.freebsd: Makefile.freebsd.in
+	sed $(MPLAPACK_SED_SUBST) $< > $@
+
+Makefile.linux: Makefile.linux.in
+	sed $(MPLAPACK_SED_SUBST) $< > $@
+
+Makefile.macos: Makefile.macos.in
+	sed $(MPLAPACK_SED_SUBST) $< > $@
+
+Makefile.mingw: Makefile.mingw.in
+	sed $(MPLAPACK_SED_SUBST) $< > $@
+
+all-local: $(GENERATED_MAKEFILES)
+
+clean-local:
+	rm -f $(GENERATED_MAKEFILES)

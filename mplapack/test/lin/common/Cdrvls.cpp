@@ -42,16 +42,13 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-
-#include <mplapack_debug.h>
+#include <memory>
 
 void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nns, INTEGER *nsval, INTEGER const nnb, INTEGER *nbval, INTEGER *nxval, REAL const thresh, bool const tsterr, COMPLEX *a, COMPLEX *copya, COMPLEX *b, COMPLEX *copyb, COMPLEX *c, REAL *s, REAL *copys, INTEGER const nout) {
     common cmn;
     common_write write(cmn);
-    //
-    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
-    char path[4] = {};
-    char buf[1024];
+    static INTEGER iseedy[4] = {1988, 1989, 1990, 1991};
+    fem::str<3> path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -80,7 +77,7 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     INTEGER iscale = 0;
     INTEGER itype = 0;
     INTEGER itran = 0;
-    char trans[1];
+    fem::str<1> trans;
     COMPLEX wq[1];
     INTEGER info = 0;
     INTEGER lwork_Cgels = 0;
@@ -89,12 +86,20 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     INTEGER crank = 0;
     REAL rwq[1];
     INTEGER lwork_Cgelsy = 0;
-    INTEGER lrwork_Cgelsy = 0;
+    INTEGER lrwork_zgelsy = 0;
     INTEGER lwork_Cgelss = 0;
-    INTEGER lrwork_Cgelss = 0;
+    INTEGER lrwork_zgelss = 0;
     INTEGER lwork_Cgelsd = 0;
-    INTEGER lrwork_Cgelsd = 0;
+    INTEGER lrwork_zgelsd = 0;
     INTEGER lwlsy = 0;
+    std::unique_ptr<COMPLEX[]> work_storage;
+    COMPLEX *work = nullptr;
+    std::unique_ptr<REAL[]> work2_storage;
+    REAL *work2 = nullptr;
+    std::unique_ptr<INTEGER[]> iwork_storage;
+    INTEGER *iwork = nullptr;
+    std::unique_ptr<REAL[]> rwork_storage;
+    REAL *rwork = nullptr;
     INTEGER mb = 0;
     REAL norma = 0.0;
     INTEGER inb = 0;
@@ -113,11 +118,17 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     REAL normb = 0.0;
     INTEGER j = 0;
     //
-    //     Initialize constants and the random number seed.
+    static const char *format_9999 = "(' TRANS=''',a1,''', M=',i5,', N=',i5,', NRHS=',i4,', NB=',i4,', type',"
+                                     "i2,', test(',i2,')=',g12.5)";
+    static const char *format_9998 = "(' M=',i5,', N=',i5,', NRHS=',i4,', NB=',i4,', type',i2,', test(',i2,"
+                                     "')=',g12.5)";
+    static const char *format_9997 = "(' TRANS=''',a1,' M=',i5,', N=',i5,', NRHS=',i4,', MB=',i4,', NB=',i4,"
+                                     "', type',i2,', test(',i2,')=',g12.5)";
     //
-    path[0] = 'C';
-    path[1] = 'L';
-    path[2] = 'S';
+    // Initialize constants and the random number seed.
+    //
+    path(1, 1) = "Zomplex precision";
+    path(2, 3) = "LS";
     nrun = 0;
     nfail = 0;
     nerrs = 0;
@@ -128,11 +139,11 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     //
     // Threshold for rank estimation
     //
-    rcond = sqrt(eps) - (sqrt(eps) - eps) / 2.0;
+    rcond = sqrt(eps) - (sqrt(eps) - eps) / 2;
     //
     // Test the error exits
     //
-    xlaenv(9, smlsiz);
+    Mxlaenv(9, smlsiz);
     if (tsterr) {
         Cerrls(path, nout);
     }
@@ -167,12 +178,12 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     m = mmax;
     n = nmax;
     nrhs = nsmax;
-    mnmin = max(min(m, n), (INTEGER)1);
+    mnmin = max(min(m, n), 1);
     //
     // Compute workspace needed for routines
     // Cqrt14, Cqrt17 (two side cases), Cqrt15 and Cqrt12
     //
-    lwork = max({(INTEGER)1, (m + n) * nrhs, (n + nrhs) * (m + 2), (m + nrhs) * (n + 2), max({m + mnmin, nrhs * mnmin, 2 * n + m}), max({m * n + 4 * mnmin + max(m, n), m * n + 2 * mnmin + 4 * n})});
+    lwork = max((INTEGER)1, (m + n) * nrhs, (n + nrhs) * (m + 2), (m + nrhs) * (n + 2), max(m + mnmin, nrhs * mnmin, 2 * n + m), max(m * n + 4 * mnmin + max(m, n), m * n + 2 * mnmin + 4 * n));
     lrwork = 1;
     liwork = 1;
     //
@@ -184,8 +195,8 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
         lda = max((INTEGER)1, m);
         for (in = 1; in <= nn; in = in + 1) {
             n = nval[in - 1];
-            mnmin = max(min(m, n), (INTEGER)1);
-            ldb = max({(INTEGER)1, m, n});
+            mnmin = max(min(m, n), 1);
+            ldb = max((INTEGER)1, m, n);
             for (ins = 1; ins <= nns; ins = ins + 1) {
                 nrhs = nsval[ins - 1];
                 for (irank = 1; irank <= 2; irank = irank + 1) {
@@ -195,37 +206,37 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             if (irank == 1) {
                                 for (itran = 1; itran <= 2; itran = itran + 1) {
                                     if (itran == 1) {
-                                        trans[0] = 'N';
+                                        trans = "N";
                                     } else {
-                                        trans[0] = 'C';
+                                        trans = "C";
                                     }
                                     //
                                     // Compute workspace needed for Cgels
-                                    Cgels(trans, m, n, nrhs, a, lda, b, ldb, wq, -1, info);
+                                    Cgels(trans.elems, m, n, nrhs, a, lda, b, ldb, wq, -1, info);
                                     lwork_Cgels = castINTEGER(wq[1 - 1].real());
                                     // Compute workspace needed for Cgetsls
-                                    Cgetsls(trans, m, n, nrhs, a, lda, b, ldb, wq, -1, info);
+                                    Cgetsls(trans.elems, m, n, nrhs, a, lda, b, ldb, wq, -1, info);
                                     lwork_Cgetsls = castINTEGER(wq[1 - 1].real());
                                 }
                             }
                             // Compute workspace needed for Cgelsy
                             Cgelsy(m, n, nrhs, a, lda, b, ldb, iwq, rcond, crank, wq, -1, rwq, info);
                             lwork_Cgelsy = castINTEGER(wq[1 - 1].real());
-                            lrwork_Cgelsy = 2 * n;
+                            lrwork_zgelsy = 2 * n;
                             // Compute workspace needed for Cgelss
                             Cgelss(m, n, nrhs, a, lda, b, ldb, s, rcond, crank, wq, -1, rwq, info);
                             lwork_Cgelss = castINTEGER(wq[1 - 1].real());
-                            lrwork_Cgelss = 5 * mnmin;
+                            lrwork_zgelss = 5 * mnmin;
                             // Compute workspace needed for Cgelsd
                             Cgelsd(m, n, nrhs, a, lda, b, ldb, s, rcond, crank, wq, -1, rwq, iwq, info);
                             lwork_Cgelsd = castINTEGER(wq[1 - 1].real());
-                            lrwork_Cgelsd = castINTEGER(rwq[1 - 1]);
+                            lrwork_zgelsd = castINTEGER(rwq[1 - 1]);
                             // Compute LIWORK workspace needed for Cgelsy and Cgelsd
-                            liwork = max({liwork, n, iwq[1 - 1]});
+                            liwork = max(liwork, n, iwq[1 - 1]);
                             // Compute LRWORK workspace needed for Cgelsy, Cgelss and Cgelsd
-                            lrwork = max({lrwork, lrwork_Cgelsy, lrwork_Cgelss, lrwork_Cgelsd});
+                            lrwork = max(lrwork, lrwork_zgelsy, lrwork_zgelss, lrwork_zgelsd);
                             // Compute LWORK workspace needed for all functions
-                            lwork = max({lwork, lwork_Cgels, lwork_Cgetsls, lwork_Cgelsy, lwork_Cgelss, lwork_Cgelsd});
+                            lwork = max(lwork, lwork_Cgels, lwork_Cgetsls, lwork_Cgelsy, lwork_Cgelss, lwork_Cgelsd);
                         }
                     }
                 }
@@ -235,10 +246,14 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     //
     lwlsy = lwork;
     //
-    COMPLEX *work = new COMPLEX[lwork];
-    REAL *work2 = new REAL[2 * lwork];
-    INTEGER *iwork = new INTEGER[liwork];
-    REAL *rwork = new REAL[lrwork];
+    work_storage = std::make_unique<COMPLEX[]>(max((INTEGER)1, lwork));
+    work = work_storage.get();
+    work2_storage = std::make_unique<REAL[]>(max((INTEGER)1, (2 * lwork)));
+    work2 = work2_storage.get();
+    iwork_storage = std::make_unique<INTEGER[]>(max((INTEGER)1, liwork));
+    iwork = iwork_storage.get();
+    rwork_storage = std::make_unique<REAL[]>(max((INTEGER)1, lrwork));
+    rwork = rwork_storage.get();
     //
     for (im = 1; im <= nm; im = im + 1) {
         m = mval[im - 1];
@@ -246,8 +261,8 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
         //
         for (in = 1; in <= nn; in = in + 1) {
             n = nval[in - 1];
-            mnmin = max(min(m, n), (INTEGER)1);
-            ldb = max({(INTEGER)1, m, n});
+            mnmin = max(min(m, n), 1);
+            ldb = max((INTEGER)1, m, n);
             mb = (mnmin + 1);
             //
             for (ins = 1; ins <= nns; ins = ins + 1) {
@@ -269,14 +284,16 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             Cqrt13(iscale, m, n, copya, lda, norma, iseed);
                             for (inb = 1; inb <= nnb; inb = inb + 1) {
                                 nb = nbval[inb - 1];
+                                Mxlaenv(1, nb);
+                                Mxlaenv(3, nxval[inb - 1]);
                                 //
                                 for (itran = 1; itran <= 2; itran = itran + 1) {
                                     if (itran == 1) {
-                                        trans[0] = 'N';
+                                        trans = "N";
                                         nrows = m;
                                         ncols = n;
                                     } else {
-                                        trans[0] = 'C';
+                                        trans = "C";
                                         nrows = n;
                                         ncols = m;
                                     }
@@ -288,7 +305,7 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                         Clarnv(2, iseed, ncols * nrhs, work);
                                         CRscal(ncols * nrhs, one / castREAL(ncols), work, 1);
                                     }
-                                    Cgemm(trans, "No transpose", nrows, nrhs, ncols, cone, copya, lda, work, ldwork, czero, b, ldb);
+                                    Cgemm(trans.elems, "No transpose", nrows, nrhs, ncols, cone, copya, lda, work, ldwork, czero, b, ldb);
                                     Clacpy("Full", nrows, nrhs, b, ldb, copyb, ldb);
                                     //
                                     // Solve LS or overdetermined system
@@ -297,10 +314,11 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                         Clacpy("Full", m, n, copya, lda, a, lda);
                                         Clacpy("Full", nrows, nrhs, copyb, ldb, b, ldb);
                                     }
-                                    Cgels(trans, m, n, nrhs, a, lda, b, ldb, work, lwork, info);
+                                    srnamt = "Cgels";
+                                    Cgels(trans.elems, m, n, nrhs, a, lda, b, ldb, work, lwork, info);
                                     //
                                     if (info != 0) {
-                                        Alaerh(path, "Cgels ", info, 0, trans, m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
+                                        Alaerh(path, "Cgels", info, 0, trans, m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
                                     }
                                     //
                                     // Check correctness of results
@@ -331,10 +349,7 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                             if (nfail == 0 && nerrs == 0) {
                                                 Alahd(nout, path);
                                             }
-                                            sprintnum_short(buf, result[k - 1]);
-                                            write(nout, "(' TRANS=''',a1,''', M=',i5,', N=',i5,', NRHS=',i4,"
-                                                        "', NB=',i4,', type',i2,', test(',i2,')=',a)"),
-                                                trans, m, n, nrhs, nb, itype, k, buf;
+                                            write(nout, format_9999), trans, m, n, nrhs, nb, itype, k, result[k - 1];
                                             nfail++;
                                         }
                                     }
@@ -349,16 +364,18 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             Cqrt13(iscale, m, n, copya, lda, norma, iseed);
                             for (inb = 1; inb <= nnb; inb = inb + 1) {
                                 mb = nbval[inb - 1];
+                                Mxlaenv(1, mb);
                                 for (imb = 1; imb <= nnb; imb = imb + 1) {
                                     nb = nbval[imb - 1];
+                                    Mxlaenv(2, nb);
                                     //
                                     for (itran = 1; itran <= 2; itran = itran + 1) {
                                         if (itran == 1) {
-                                            trans[0] = 'N';
+                                            trans = "N";
                                             nrows = m;
                                             ncols = n;
                                         } else {
-                                            trans[0] = 'C';
+                                            trans = "C";
                                             nrows = n;
                                             ncols = m;
                                         }
@@ -370,7 +387,7 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                             Clarnv(2, iseed, ncols * nrhs, work);
                                             Cscal(ncols * nrhs, cone / castREAL(ncols), work, 1);
                                         }
-                                        Cgemm(trans, "No transpose", nrows, nrhs, ncols, cone, copya, lda, work, ldwork, czero, b, ldb);
+                                        Cgemm(trans.elems, "No transpose", nrows, nrhs, ncols, cone, copya, lda, work, ldwork, czero, b, ldb);
                                         Clacpy("Full", nrows, nrhs, b, ldb, copyb, ldb);
                                         //
                                         // Solve LS or overdetermined system
@@ -379,9 +396,10 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                             Clacpy("Full", m, n, copya, lda, a, lda);
                                             Clacpy("Full", nrows, nrhs, copyb, ldb, b, ldb);
                                         }
-                                        Cgetsls(trans, m, n, nrhs, a, lda, b, ldb, work, lwork, info);
+                                        srnamt = "Cgetsls";
+                                        Cgetsls(trans.elems, m, n, nrhs, a, lda, b, ldb, work, lwork, info);
                                         if (info != 0) {
-                                            Alaerh(path, "Cgetsls ", info, 0, trans, m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
+                                            Alaerh(path, "Cgetsls", info, 0, trans, m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
                                         }
                                         //
                                         // Check correctness of results
@@ -412,11 +430,7 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                                 if (nfail == 0 && nerrs == 0) {
                                                     Alahd(nout, path);
                                                 }
-                                                sprintnum_short(buf, result[k - 1]);
-                                                write(nout, "(' TRANS=''',a1,' M=',i5,', N=',i5,', NRHS=',i4,"
-                                                            "', MB=',i4,', NB=',i4,', type',i2,', test(',i2,"
-                                                            "')=',a)"),
-                                                    trans, m, n, nrhs, mb, nb, itype, k, buf;
+                                                write(nout, format_9997), trans, m, n, nrhs, mb, nb, itype, k, result[k - 1];
                                                 nfail++;
                                             }
                                         }
@@ -439,13 +453,15 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                         //
                         for (inb = 1; inb <= nnb; inb = inb + 1) {
                             nb = nbval[inb - 1];
+                            Mxlaenv(1, nb);
+                            Mxlaenv(3, nxval[inb - 1]);
                             //
-                            //                       Test Cgelsy
+                            // Test Cgelsy
                             //
-                            //                       Cgelsy:  Compute the minimum-norm solution
-                            //                       X to min( norm( A * X - B ) )
-                            //                       using the rank-revealing orthogonal
-                            //                       factorization.
+                            // Cgelsy:  Compute the minimum-norm solution
+                            // X to min( norm( A * X - B ) )
+                            // using the rank-revealing orthogonal
+                            // factorization.
                             //
                             Clacpy("Full", m, n, copya, lda, a, lda);
                             Clacpy("Full", m, nrhs, copyb, ldb, b, ldb);
@@ -456,6 +472,7 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                 iwork[j - 1] = 0;
                             }
                             //
+                            srnamt = "Cgelsy";
                             Cgelsy(m, n, nrhs, a, lda, b, ldb, iwork, rcond, crank, work, lwlsy, rwork, info);
                             if (info != 0) {
                                 Alaerh(path, "Cgelsy", info, 0, " ", m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
@@ -499,6 +516,7 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             //
                             Clacpy("Full", m, n, copya, lda, a, lda);
                             Clacpy("Full", m, nrhs, copyb, ldb, b, ldb);
+                            srnamt = "Cgelss";
                             Cgelss(m, n, nrhs, a, lda, b, ldb, s, rcond, crank, work, lwork, rwork, info);
                             //
                             if (info != 0) {
@@ -536,16 +554,18 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                 result[10 - 1] = Cqrt14("No transpose", m, n, nrhs, copya, lda, b, ldb, work, lwork);
                             }
                             //
-                            //                       Test Cgelsd
+                            // Test Cgelsd
                             //
-                            //                       Cgelsd:  Compute the minimum-norm solution X
-                            //                       to min( norm( A * X - B ) ) using a
-                            //                       divide and conquer SVD.
+                            // Cgelsd:  Compute the minimum-norm solution X
+                            // to min( norm( A * X - B ) ) using a
+                            // divide and conquer SVD.
                             //
+                            Mxlaenv(9, 25);
                             //
                             Clacpy("Full", m, n, copya, lda, a, lda);
                             Clacpy("Full", m, nrhs, copyb, ldb, b, ldb);
                             //
+                            srnamt = "Cgelsd";
                             Cgelsd(m, n, nrhs, a, lda, b, ldb, s, rcond, crank, work, lwork, rwork, iwork, info);
                             if (info != 0) {
                                 Alaerh(path, "Cgelsd", info, 0, " ", m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
@@ -587,10 +607,7 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                     if (nfail == 0 && nerrs == 0) {
                                         Alahd(nout, path);
                                     }
-                                    sprintnum_short(buf, result[k - 1]);
-                                    write(nout, "(' M=',i5,', N=',i5,', NRHS=',i4,', NB=',i4,', type',i2,"
-                                                "', test(',i2,')=',a)"),
-                                        m, n, nrhs, nb, itype, k, buf;
+                                    write(nout, format_9998), m, n, nrhs, nb, itype, k, result[k - 1];
                                     nfail++;
                                 }
                             }
@@ -608,11 +625,6 @@ void Cdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     //
     Alasvm(path, nout, nfail, nrun, nerrs);
     //
-    delete[] work;
-    delete[] work2;
-    delete[] iwork;
-    delete[] rwork;
-    //
-    //     End of Cdrvls
+    // End of Cdrvls
     //
 }

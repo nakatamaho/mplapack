@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Cpot03(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *ainv, INTEGER const ldainv, COMPLEX *work, INTEGER const ldwork, REAL *rwork, REAL &rcond, REAL &resid) {
+void Cpot03(fem::str_cref uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *ainv, INTEGER const ldainv, COMPLEX *work, INTEGER const ldwork, REAL *rwork, REAL &rcond, REAL &resid) {
     //
     // Quick exit if N = 0.
     //
@@ -58,8 +58,8 @@ void Cpot03(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
     // Exit with RESID = 1/EPS if ANORM = 0 or AINVNM = 0.
     //
     REAL eps = Rlamch("Epsilon");
-    REAL anorm = Clanhe("1", uplo, n, a, lda, rwork);
-    REAL ainvnm = Clanhe("1", uplo, n, ainv, ldainv, rwork);
+    REAL anorm = Clanhe("1", uplo.elems(), n, a, lda, rwork);
+    REAL ainvnm = Clanhe("1", uplo.elems(), n, ainv, ldainv, rwork);
     if (anorm <= zero || ainvnm <= zero) {
         rcond = zero;
         resid = one / eps;
@@ -72,7 +72,7 @@ void Cpot03(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
     //
     INTEGER j = 0;
     INTEGER i = 0;
-    if (Mlsame(uplo, "U")) {
+    if (Mlsame(uplo.elems(), "U")) {
         for (j = 1; j <= n; j = j + 1) {
             for (i = 1; i <= j - 1; i = i + 1) {
                 ainv[(j - 1) + (i - 1) * ldainv] = conj(ainv[(i - 1) + (j - 1) * ldainv]);
@@ -87,7 +87,7 @@ void Cpot03(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
     }
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     const COMPLEX czero = COMPLEX(0.0, 0.0);
-    Chemm("Left", uplo, n, n, -cone, a, lda, ainv, ldainv, czero, work, ldwork);
+    Chemm("Left", uplo.elems(), n, n, -cone, a, lda, ainv, ldainv, czero, work, ldwork);
     //
     // Add the identity matrix to WORK .
     //

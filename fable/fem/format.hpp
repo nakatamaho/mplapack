@@ -12,14 +12,14 @@ namespace fem {
 namespace format {
     struct tokenizer : utils::noncopyable {
       protected:
-        char* code;
-        char* str_buf;
+        char *code;
+        char *str_buf;
         unsigned stop;
         unsigned i;
 
       public:
         std::vector<utils::token> tokens;
-        tokenizer(char const* fmt, unsigned fmt_stop) {
+        tokenizer(char const *fmt, unsigned fmt_stop) {
             utils::simple_buffer<char> buffer(fmt_stop * 2);
             code = buffer.space;
             str_buf = code + fmt_stop;
@@ -65,9 +65,9 @@ namespace format {
 
       protected:
         void raise_invalid() { throw std::runtime_error("Invalid FORMAT specification: " + std::string(code, stop + 1)); }
-        bool starts_with(char const* substr, unsigned start) { return utils::starts_with(code, start, stop, substr); }
+        bool starts_with(char const *substr, unsigned start) { return utils::starts_with(code, start, stop, substr); }
         int unsigned_integer_scan(unsigned start) { return utils::unsigned_integer_scan(code, start, stop); }
-        void add_token(char const* type, unsigned start) { tokens.push_back(utils::token(type, std::string(&code[start], &code[i]))); }
+        void add_token(char const *type, unsigned start) { tokens.push_back(utils::token(type, std::string(&code[start], &code[i]))); }
         void add_token_string() {
             unsigned str_size = 0;
             char opening_quote = code[i];
@@ -195,7 +195,7 @@ namespace format {
             fmt_tokens.swap(tz.tokens);
             repeat_points.reserve(32); // uncritical; avoids reallocation in most
         } // cases
-        utils::token const* next_executable_token(bool final = false) {
+        utils::token const *next_executable_token(bool final = false) {
             if (simple_repeat != 0) {
                 simple_repeat--;
                 i_fmt--;
@@ -213,8 +213,8 @@ namespace format {
                     static const utils::token op_slash("op", "/");
                     return &op_slash;
                 }
-                utils::token const* t = &fmt_tokens[i_fmt++];
-                std::string const& tv = t->value;
+                utils::token const *t = &fmt_tokens[i_fmt++];
+                std::string const &tv = t->value;
                 if (t->type == "integer") {
                     if (i_fmt == fmt_tokens.size()) {
                         throw std::runtime_error("Trailing lone repeat count in format string.");
@@ -245,7 +245,7 @@ namespace format {
                             if (repeat_points.size() == 0) {
                                 throw std::runtime_error("Unexpected closing parenthesis in format string.");
                             }
-                            repeat_point& rp = repeat_points.back();
+                            repeat_point &rp = repeat_points.back();
                             rp.n--;
                             if (rp.n == 0) {
                                 repeat_points.pop_back();

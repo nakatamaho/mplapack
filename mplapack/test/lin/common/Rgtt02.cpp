@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Rgtt02(const char *trans, INTEGER const n, INTEGER const nrhs, REAL *dl, REAL *d, REAL *du, REAL *x, INTEGER const ldx, REAL *b, INTEGER const ldb, REAL &resid) {
+void Rgtt02(fem::str_cref trans, INTEGER const n, INTEGER const nrhs, REAL *dl, REAL *d, REAL *du, REAL *x, INTEGER const ldx, REAL *b, INTEGER const ldb, REAL &resid) {
     //
     // Quick exit if N = 0 or NRHS = 0
     //
@@ -57,7 +57,7 @@ void Rgtt02(const char *trans, INTEGER const n, INTEGER const nrhs, REAL *dl, RE
     // norm(B - op(A)*X) / ( norm(A) * norm(X) * EPS ).
     //
     REAL anorm = 0.0;
-    if (Mlsame(trans, "N")) {
+    if (Mlsame(trans.elems(), "N")) {
         anorm = Rlangt("1", n, dl, d, du);
     } else {
         anorm = Rlangt("I", n, dl, d, du);
@@ -74,7 +74,7 @@ void Rgtt02(const char *trans, INTEGER const n, INTEGER const nrhs, REAL *dl, RE
     //
     // Compute B - op(A)*X.
     //
-    Rlagtm(trans, n, nrhs, -one, dl, d, du, x, ldx, one, b, ldb);
+    Rlagtm(trans.elems(), n, nrhs, -one, dl, d, du, x, ldx, one, b, ldb);
     //
     INTEGER j = 0;
     REAL bnorm = 0.0;
@@ -85,7 +85,7 @@ void Rgtt02(const char *trans, INTEGER const n, INTEGER const nrhs, REAL *dl, RE
         if (xnorm <= zero) {
             resid = one / eps;
         } else {
-            resid = max(resid, REAL(((bnorm / anorm) / xnorm) / eps));
+            resid = max(resid, ((bnorm / anorm) / xnorm) / eps);
         }
     }
     //

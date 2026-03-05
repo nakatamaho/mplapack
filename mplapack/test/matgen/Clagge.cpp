@@ -36,7 +36,9 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Clagge(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, REAL *d, COMPLEX *a, INTEGER const lda, INTEGER *iseed, COMPLEX *work, INTEGER &info) {
+#include <mplapack_matgen.h>
+
+void Clagge(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, REAL *d, COMPLEX *a, INTEGER const lda, INTEGER (&iseed)[4], COMPLEX *work, INTEGER &info) {
     //
     // Test the input arguments
     //

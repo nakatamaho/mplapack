@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Ctpt01(const char *uplo, const char *diag, INTEGER const n, COMPLEX *ap, COMPLEX *ainvp, REAL &rcond, REAL *rwork, REAL &resid) {
+void Ctpt01(fem::str_cref uplo, fem::str_cref diag, INTEGER const n, COMPLEX *ap, COMPLEX *ainvp, REAL &rcond, REAL *rwork, REAL &resid) {
     //
     // Quick exit if N = 0.
     //
@@ -58,8 +58,8 @@ void Ctpt01(const char *uplo, const char *diag, INTEGER const n, COMPLEX *ap, CO
     // Exit with RESID = 1/EPS if ANORM = 0 or AINVNM = 0.
     //
     REAL eps = Rlamch("Epsilon");
-    REAL anorm = Clantp("1", uplo, diag, n, ap, rwork);
-    REAL ainvnm = Clantp("1", uplo, diag, n, ainvp, rwork);
+    REAL anorm = Clantp("1", uplo.elems(), diag.elems(), n, ap, rwork);
+    REAL ainvnm = Clantp("1", uplo.elems(), diag.elems(), n, ainvp, rwork);
     if (anorm <= zero || ainvnm <= zero) {
         rcond = zero;
         resid = one / eps;
@@ -69,10 +69,10 @@ void Ctpt01(const char *uplo, const char *diag, INTEGER const n, COMPLEX *ap, CO
     //
     // Compute A * AINV, overwriting AINV.
     //
-    bool unitd = Mlsame(diag, "U");
+    bool unitd = Mlsame(diag.elems(), "U");
     INTEGER jc = 0;
     INTEGER j = 0;
-    if (Mlsame(uplo, "U")) {
+    if (Mlsame(uplo.elems(), "U")) {
         jc = 1;
         for (j = 1; j <= n; j = j + 1) {
             if (unitd) {
@@ -81,7 +81,7 @@ void Ctpt01(const char *uplo, const char *diag, INTEGER const n, COMPLEX *ap, CO
             //
             // Form the j-th column of A*AINV.
             //
-            Ctpmv("Upper", "No transpose", diag, j, ap, &ainvp[jc - 1], 1);
+            Ctpmv("Upper", "No transpose", diag.elems(), j, ap, &ainvp[jc - 1], 1);
             //
             // Subtract 1 from the diagonal to form A*AINV - I.
             //
@@ -97,7 +97,7 @@ void Ctpt01(const char *uplo, const char *diag, INTEGER const n, COMPLEX *ap, CO
             //
             // Form the j-th column of A*AINV.
             //
-            Ctpmv("Lower", "No transpose", diag, n - j + 1, &ap[jc - 1], &ainvp[jc - 1], 1);
+            Ctpmv("Lower", "No transpose", diag.elems(), n - j + 1, &ap[jc - 1], &ainvp[jc - 1], 1);
             //
             // Subtract 1 from the diagonal to form A*AINV - I.
             //
@@ -108,7 +108,7 @@ void Ctpt01(const char *uplo, const char *diag, INTEGER const n, COMPLEX *ap, CO
     //
     // Compute norm(A*AINV - I) / (N * norm(A) * norm(AINV) * EPS)
     //
-    resid = Clantp("1", uplo, "Non-unit", n, ainvp, rwork);
+    resid = Clantp("1", uplo.elems(), "Non-unit", n, ainvp, rwork);
     //
     resid = ((resid * rcond) / castREAL(n)) / eps;
     //

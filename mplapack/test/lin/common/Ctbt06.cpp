@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Ctbt06(REAL const rcond, REAL const rcondc, const char *uplo, const char *diag, INTEGER const n, INTEGER const kd, COMPLEX *ab, INTEGER const ldab, REAL *rwork, REAL &rat) {
+void Ctbt06(REAL const rcond, REAL const rcondc, fem::str_cref uplo, fem::str_cref diag, INTEGER const n, INTEGER const kd, COMPLEX *ab, INTEGER const ldab, REAL *rwork, REAL &rat) {
     //
     REAL eps = Rlamch("Epsilon");
     REAL rmax = max(rcond, rcondc);
@@ -82,9 +82,9 @@ void Ctbt06(REAL const rcond, REAL const rcondc, const char *uplo, const char *d
         // element in absolute value in A.
         //
         bignum = one / Rlamch("Safe minimum");
-        anorm = Clantb("M", uplo, diag, n, kd, ab, ldab, rwork);
+        anorm = Clantb("M", uplo.elems(), diag.elems(), n, kd, ab, ldab, rwork);
         //
-        rat = rmax * (min({bignum / max(one, anorm), one / eps}));
+        rat = rmax * (min(bignum / max(one, anorm), one / eps));
     }
     //
     // End of Ctbt06

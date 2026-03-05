@@ -48,7 +48,7 @@ void Rtrsv_test2(const char *uplo, const char *trans, const char *diag) {
     int mplapack_errno1, mplapack_errno2;
     for (int incx = MIN_INCX; incx <= MAX_INCX; incx++) {
         for (int n = MIN_N; n <= MAX_N; n++) {
-            for (int lda = max_int(1, n); lda <= MAX_LDA; lda++) {
+            for (int lda = max(1, n); lda <= MAX_LDA; lda++) {
 #if defined VERBOSE_TEST
                 printf("#n is %d, lda is %d, incx is %d, uplo is %s, trans is %s, diag is %s \n", n, lda, incx, uplo, trans, diag);
 #endif

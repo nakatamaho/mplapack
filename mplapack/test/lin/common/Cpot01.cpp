@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Cpot01(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *afac, INTEGER const ldafac, REAL *rwork, REAL &resid) {
+void Cpot01(fem::str_cref uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *afac, INTEGER const ldafac, REAL *rwork, REAL &resid) {
     //
     // Quick exit if N = 0.
     //
@@ -56,7 +56,7 @@ void Cpot01(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
     // Exit with RESID = 1/EPS if ANORM = 0.
     //
     REAL eps = Rlamch("Epsilon");
-    REAL anorm = Clanhe("1", uplo, n, a, lda, rwork);
+    REAL anorm = Clanhe("1", uplo.elems(), n, a, lda, rwork);
     const REAL one = 1.0;
     if (anorm <= zero) {
         resid = one / eps;
@@ -79,7 +79,7 @@ void Cpot01(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
     INTEGER k = 0;
     REAL tr = 0.0;
     COMPLEX tc = 0.0;
-    if (Mlsame(uplo, "U")) {
+    if (Mlsame(uplo.elems(), "U")) {
         for (k = n; k >= 1; k = k - 1) {
             //
             // Compute the (K,K) element of the result.
@@ -116,16 +116,16 @@ void Cpot01(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
     // Compute the difference  L*L' - A (or U'*U - A).
     //
     INTEGER i = 0;
-    if (Mlsame(uplo, "U")) {
+    if (Mlsame(uplo.elems(), "U")) {
         for (j = 1; j <= n; j = j + 1) {
             for (i = 1; i <= j - 1; i = i + 1) {
                 afac[(i - 1) + (j - 1) * ldafac] = afac[(i - 1) + (j - 1) * ldafac] - a[(i - 1) + (j - 1) * lda];
             }
-            afac[(j - 1) + (j - 1) * ldafac] = afac[(j - 1) + (j - 1) * ldafac] - (a[(j - 1) + (j - 1) * lda]).real();
+            afac[(j - 1) + (j - 1) * ldafac] = afac[(j - 1) + (j - 1) * ldafac] - a[(j - 1) + (j - 1) * lda].real();
         }
     } else {
         for (j = 1; j <= n; j = j + 1) {
-            afac[(j - 1) + (j - 1) * ldafac] = afac[(j - 1) + (j - 1) * ldafac] - (a[(j - 1) + (j - 1) * lda]).real();
+            afac[(j - 1) + (j - 1) * ldafac] = afac[(j - 1) + (j - 1) * ldafac] - a[(j - 1) + (j - 1) * lda].real();
             for (i = j + 1; i <= n; i = i + 1) {
                 afac[(i - 1) + (j - 1) * ldafac] = afac[(i - 1) + (j - 1) * ldafac] - a[(i - 1) + (j - 1) * lda];
             }
@@ -134,7 +134,7 @@ void Cpot01(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
     //
     // Compute norm( L*U - A ) / ( N * norm(A) * EPS )
     //
-    resid = Clanhe("1", uplo, n, afac, ldafac, rwork);
+    resid = Clanhe("1", uplo.elems(), n, afac, ldafac, rwork);
     //
     resid = ((resid / castREAL(n)) / anorm) / eps;
     //

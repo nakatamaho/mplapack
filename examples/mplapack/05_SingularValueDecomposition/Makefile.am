@@ -56,70 +56,70 @@ Rgesvd_test_gmp_LDFLAGS = $(gmp_libdepends)
 
 endif
 
-if ENABLE__FLOAT128
-mplapackexamples_PROGRAMS += Cgesvd_test__Float128 Rgesvd_random_highcond__Float128 Rgesvd_readfromfile__Float128 Rgesvd_test2__Float128 Rgesvd_test__Float128
+if ENABLE_BINARY128
+mplapackexamples_PROGRAMS += Cgesvd_test_binary128 Rgesvd_random_highcond_binary128 Rgesvd_readfromfile_binary128 Rgesvd_test2_binary128 Rgesvd_test_binary128
 
-_Float128_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include
-if WANT_QUADMATH
-_Float128_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack__Float128 -L$(top_builddir)/mpblas/reference -lmpblas__Float128 -lquadmath
+binary128_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include
+if MPLAPACK_BINARY128_MODE_QUADMATH
+binary128_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_binary128 -L$(top_builddir)/mpblas/reference -lmpblas_binary128 -lquadmath
 else
-_Float128_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack__Float128 -L$(top_builddir)/mpblas/reference -lmpblas__Float128
+binary128_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_binary128 -L$(top_builddir)/mpblas/reference -lmpblas_binary128
 endif
 
-Cgesvd_test__Float128_SOURCES = Cgesvd_test__Float128.cpp
-Cgesvd_test__Float128_CXXFLAGS = $(_Float128_cxxflags)
-Cgesvd_test__Float128_LDFLAGS = $(_Float128_libdepends)
+Cgesvd_test_binary128_SOURCES = Cgesvd_test_binary128.cpp
+Cgesvd_test_binary128_CXXFLAGS = $(binary128_cxxflags)
+Cgesvd_test_binary128_LDFLAGS = $(binary128_libdepends)
 
-Rgesvd_random_highcond__Float128_SOURCES = Rgesvd_random_highcond__Float128.cpp
-Rgesvd_random_highcond__Float128_CXXFLAGS = $(_Float128_cxxflags)
-Rgesvd_random_highcond__Float128_LDFLAGS = $(_Float128_libdepends)
+Rgesvd_random_highcond_binary128_SOURCES = Rgesvd_random_highcond_binary128.cpp
+Rgesvd_random_highcond_binary128_CXXFLAGS = $(binary128_cxxflags)
+Rgesvd_random_highcond_binary128_LDFLAGS = $(binary128_libdepends)
 
-Rgesvd_readfromfile__Float128_SOURCES = Rgesvd_readfromfile__Float128.cpp
-Rgesvd_readfromfile__Float128_CXXFLAGS = $(_Float128_cxxflags)
-Rgesvd_readfromfile__Float128_LDFLAGS = $(_Float128_libdepends)
+Rgesvd_readfromfile_binary128_SOURCES = Rgesvd_readfromfile_binary128.cpp
+Rgesvd_readfromfile_binary128_CXXFLAGS = $(binary128_cxxflags)
+Rgesvd_readfromfile_binary128_LDFLAGS = $(binary128_libdepends)
 
-Rgesvd_test2__Float128_SOURCES = Rgesvd_test2__Float128.cpp
-Rgesvd_test2__Float128_CXXFLAGS = $(_Float128_cxxflags)
-Rgesvd_test2__Float128_LDFLAGS = $(_Float128_libdepends)
+Rgesvd_test2_binary128_SOURCES = Rgesvd_test2_binary128.cpp
+Rgesvd_test2_binary128_CXXFLAGS = $(binary128_cxxflags)
+Rgesvd_test2_binary128_LDFLAGS = $(binary128_libdepends)
 
-Rgesvd_test__Float128_SOURCES = Rgesvd_test__Float128.cpp
-Rgesvd_test__Float128_CXXFLAGS = $(_Float128_cxxflags)
-Rgesvd_test__Float128_LDFLAGS = $(_Float128_libdepends)
+Rgesvd_test_binary128_SOURCES = Rgesvd_test_binary128.cpp
+Rgesvd_test_binary128_CXXFLAGS = $(binary128_cxxflags)
+Rgesvd_test_binary128_LDFLAGS = $(binary128_libdepends)
 
 endif
 
-if ENABLE__FLOAT64X
-mplapackexamples_PROGRAMS += Cgesvd_test__Float64x Rgesvd_random_highcond__Float64x Rgesvd_readfromfile__Float64x Rgesvd_test2__Float64x Rgesvd_test__Float64x
+if ENABLE_BINARY80
+mplapackexamples_PROGRAMS += Cgesvd_test_binary80 Rgesvd_random_highcond_binary80 Rgesvd_readfromfile_binary80 Rgesvd_test2_binary80 Rgesvd_test_binary80
 
-_Float64x_cxxflags = $(OPENMP_CXXFLAGS)
-_Float64x_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack__Float64x -L$(top_builddir)/mpblas/reference -lmpblas__Float64x
+binary80_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include
+binary80_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_binary80 -L$(top_builddir)/mpblas/reference -lmpblas_binary80
 
-Cgesvd_test__Float64x_SOURCES = Cgesvd_test__Float64x.cpp
-Cgesvd_test__Float64x_CXXFLAGS = $(_Float64x_cxxflags)
-Cgesvd_test__Float64x_LDFLAGS = $(_Float64x_libdepends)
+Cgesvd_test_binary80_SOURCES = Cgesvd_test_binary80.cpp
+Cgesvd_test_binary80_CXXFLAGS = $(binary80_cxxflags)
+Cgesvd_test_binary80_LDFLAGS = $(binary80_libdepends)
 
-Rgesvd_random_highcond__Float64x_SOURCES = Rgesvd_random_highcond__Float64x.cpp
-Rgesvd_random_highcond__Float64x_CXXFLAGS = $(_Float64x_cxxflags)
-Rgesvd_random_highcond__Float64x_LDFLAGS = $(_Float64x_libdepends)
+Rgesvd_random_highcond_binary80_SOURCES = Rgesvd_random_highcond_binary80.cpp
+Rgesvd_random_highcond_binary80_CXXFLAGS = $(binary80_cxxflags)
+Rgesvd_random_highcond_binary80_LDFLAGS = $(binary80_libdepends)
 
-Rgesvd_readfromfile__Float64x_SOURCES = Rgesvd_readfromfile__Float64x.cpp
-Rgesvd_readfromfile__Float64x_CXXFLAGS = $(_Float64x_cxxflags)
-Rgesvd_readfromfile__Float64x_LDFLAGS = $(_Float64x_libdepends)
+Rgesvd_readfromfile_binary80_SOURCES = Rgesvd_readfromfile_binary80.cpp
+Rgesvd_readfromfile_binary80_CXXFLAGS = $(binary80_cxxflags)
+Rgesvd_readfromfile_binary80_LDFLAGS = $(binary80_libdepends)
 
-Rgesvd_test2__Float64x_SOURCES = Rgesvd_test2__Float64x.cpp
-Rgesvd_test2__Float64x_CXXFLAGS = $(_Float64x_cxxflags)
-Rgesvd_test2__Float64x_LDFLAGS = $(_Float64x_libdepends)
+Rgesvd_test2_binary80_SOURCES = Rgesvd_test2_binary80.cpp
+Rgesvd_test2_binary80_CXXFLAGS = $(binary80_cxxflags)
+Rgesvd_test2_binary80_LDFLAGS = $(binary80_libdepends)
 
-Rgesvd_test__Float64x_SOURCES = Rgesvd_test__Float64x.cpp
-Rgesvd_test__Float64x_CXXFLAGS = $(_Float64x_cxxflags)
-Rgesvd_test__Float64x_LDFLAGS = $(_Float64x_libdepends)
+Rgesvd_test_binary80_SOURCES = Rgesvd_test_binary80.cpp
+Rgesvd_test_binary80_CXXFLAGS = $(binary80_cxxflags)
+Rgesvd_test_binary80_LDFLAGS = $(binary80_libdepends)
 
 endif
 
 if ENABLE_DOUBLE
 mplapackexamples_PROGRAMS += Cgesvd_test_double Rgesvd_random_highcond_double Rgesvd_readfromfile_double Rgesvd_test2_double Rgesvd_test_double
 
-double_cxxflags = $(OPENMP_CXXFLAGS)
+double_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include
 double_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_double -L$(top_builddir)/mpblas/reference -lmpblas_double
 
 Cgesvd_test_double_SOURCES = Cgesvd_test_double.cpp
@@ -202,10 +202,56 @@ endif
 
 mplapackexamplesdir=$(prefix)/share/examples/mplapack/05_SingularValueDecomposition
 
-mplapackexamples_DATA = Cgesvd_test_mpfr.cpp Cgesvd_test_gmp.cpp Cgesvd_test__Float128.cpp Cgesvd_test__Float64x.cpp Cgesvd_test_double.cpp Cgesvd_test_dd.cpp Cgesvd_test_qd.cpp Rgesvd_random_highcond_mpfr.cpp Rgesvd_random_highcond_gmp.cpp Rgesvd_random_highcond__Float128.cpp Rgesvd_random_highcond__Float64x.cpp Rgesvd_random_highcond_double.cpp Rgesvd_random_highcond_dd.cpp Rgesvd_random_highcond_qd.cpp Rgesvd_readfromfile_mpfr.cpp Rgesvd_readfromfile_gmp.cpp Rgesvd_readfromfile__Float128.cpp Rgesvd_readfromfile__Float64x.cpp Rgesvd_readfromfile_double.cpp Rgesvd_readfromfile_dd.cpp Rgesvd_readfromfile_qd.cpp Rgesvd_test2_mpfr.cpp Rgesvd_test2_gmp.cpp Rgesvd_test2__Float128.cpp Rgesvd_test2__Float64x.cpp Rgesvd_test2_double.cpp Rgesvd_test2_dd.cpp Rgesvd_test2_qd.cpp Rgesvd_test_mpfr.cpp Rgesvd_test_gmp.cpp Rgesvd_test__Float128.cpp Rgesvd_test__Float64x.cpp Rgesvd_test_double.cpp Rgesvd_test_dd.cpp Rgesvd_test_qd.cpp \
+mplapackexamples_DATA = Cgesvd_test_mpfr.cpp Cgesvd_test_gmp.cpp Cgesvd_test_binary128.cpp Cgesvd_test_binary80.cpp Cgesvd_test_double.cpp Cgesvd_test_dd.cpp Cgesvd_test_qd.cpp Rgesvd_random_highcond_mpfr.cpp Rgesvd_random_highcond_gmp.cpp Rgesvd_random_highcond_binary128.cpp Rgesvd_random_highcond_binary80.cpp Rgesvd_random_highcond_double.cpp Rgesvd_random_highcond_dd.cpp Rgesvd_random_highcond_qd.cpp Rgesvd_readfromfile_mpfr.cpp Rgesvd_readfromfile_gmp.cpp Rgesvd_readfromfile_binary128.cpp Rgesvd_readfromfile_binary80.cpp Rgesvd_readfromfile_double.cpp Rgesvd_readfromfile_dd.cpp Rgesvd_readfromfile_qd.cpp Rgesvd_test2_mpfr.cpp Rgesvd_test2_gmp.cpp Rgesvd_test2_binary128.cpp Rgesvd_test2_binary80.cpp Rgesvd_test2_double.cpp Rgesvd_test2_dd.cpp Rgesvd_test2_qd.cpp Rgesvd_test_mpfr.cpp Rgesvd_test_gmp.cpp Rgesvd_test_binary128.cpp Rgesvd_test_binary80.cpp Rgesvd_test_double.cpp Rgesvd_test_dd.cpp Rgesvd_test_qd.cpp \
 Matrix_01.txt Matrix_02.txt Matrix_03.txt Makefile.freebsd Makefile.linux Makefile.macos Makefile.mingw
 
 install-data-hook:
 if IS_MACOS
-	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mplapackexamplesdir) $(prefix)
+	bash $(top_srcdir)/misc/fix_dylib_macOS.sh $(mplapackexamplesdir) $(prefix)
 endif
+
+EXTRA_DIST = \
+	Makefile.freebsd.in \
+	Makefile.linux.in \
+	Makefile.macos.in \
+	Makefile.mingw.in
+
+GENERATED_MAKEFILES = \
+	Makefile.freebsd \
+	Makefile.linux \
+	Makefile.macos \
+	Makefile.mingw
+
+# Resolve %%LIBQUADMATH%% based on whether quadmath backend is selected.
+if MPLAPACK_BINARY128_MODE_QUADMATH
+LIBQUADMATH_SUBST = -lquadmath
+else
+LIBQUADMATH_SUBST =
+endif
+
+if MPLAPACK_BINARY128_MODE_QUADMATH
+MPLAPACK_SED_SUBST = \
+        -e 's|%%MPLAPACKDIR%%|$(prefix)|g' \
+        -e 's|%%LIBQUADMATH%%| -lquadmath|g'
+else
+MPLAPACK_SED_SUBST = \
+        -e 's|%%MPLAPACKDIR%%|$(prefix)|g' \
+        -e 's|%%LIBQUADMATH%%||g'
+endif
+
+Makefile.freebsd: Makefile.freebsd.in
+	sed $(MPLAPACK_SED_SUBST) $< > $@
+
+Makefile.linux: Makefile.linux.in
+	sed $(MPLAPACK_SED_SUBST) $< > $@
+
+Makefile.macos: Makefile.macos.in
+	sed $(MPLAPACK_SED_SUBST) $< > $@
+
+Makefile.mingw: Makefile.mingw.in
+	sed $(MPLAPACK_SED_SUBST) $< > $@
+
+all-local: $(GENERATED_MAKEFILES)
+
+clean-local:
+	rm -f $(GENERATED_MAKEFILES)

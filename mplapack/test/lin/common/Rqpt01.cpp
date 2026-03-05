@@ -48,7 +48,6 @@ REAL Rqpt01(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, REAL *af
     //
     const REAL zero = 0.0;
     return_value = zero;
-    INTEGER ldaf = lda;
     //
     // Test if there is enough workspace
     //
@@ -70,14 +69,14 @@ REAL Rqpt01(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, REAL *af
     INTEGER i = 0;
     for (j = 1; j <= k; j = j + 1) {
         for (i = 1; i <= min(j, m); i = i + 1) {
-            work[((j - 1) * m + i) - 1] = af[(i - 1) + (j - 1) * ldaf];
+            work[((j - 1) * m + i) - 1] = af[(i - 1) + (j - 1) * lda];
         }
         for (i = j + 1; i <= m; i = i + 1) {
             work[((j - 1) * m + i) - 1] = zero;
         }
     }
     for (j = k + 1; j <= n; j = j + 1) {
-        Rcopy(m, &af[(j - 1) * ldaf], 1, &work[((j - 1) * m + 1) - 1], 1);
+        Rcopy(m, &af[(j - 1) * lda], 1, &work[((j - 1) * m + 1) - 1], 1);
     }
     //
     INTEGER info = 0;

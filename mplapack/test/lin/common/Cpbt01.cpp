@@ -43,9 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-inline REAL abs1(COMPLEX zdum) { return abs(zdum.real()) + abs(zdum.imag()); }
-
-void Cpbt01(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *a, INTEGER const lda, COMPLEX *afac, INTEGER const ldafac, REAL *rwork, REAL &resid) {
+void Cpbt01(fem::str_cref uplo, INTEGER const n, INTEGER const kd, COMPLEX *a, INTEGER const lda, COMPLEX *afac, INTEGER const ldafac, REAL *rwork, REAL &resid) {
     //
     // Quick exit if N = 0.
     //
@@ -58,7 +56,7 @@ void Cpbt01(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *a, INT
     // Exit with RESID = 1/EPS if ANORM = 0.
     //
     REAL eps = Rlamch("Epsilon");
-    REAL anorm = Clanhb("1", uplo, n, kd, a, lda, rwork);
+    REAL anorm = Clanhb("1", uplo.elems(), n, kd, a, lda, rwork);
     const REAL one = 1.0;
     if (anorm <= zero) {
         resid = one / eps;
@@ -69,7 +67,7 @@ void Cpbt01(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *a, INT
     // an error code if any are nonzero.
     //
     INTEGER j = 0;
-    if (Mlsame(uplo, "U")) {
+    if (Mlsame(uplo.elems(), "U")) {
         for (j = 1; j <= n; j = j + 1) {
             if (afac[((kd + 1) - 1) + (j - 1) * ldafac].imag() != zero) {
                 resid = one / eps;
@@ -91,7 +89,7 @@ void Cpbt01(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *a, INT
     INTEGER kc = 0;
     INTEGER klen = 0;
     REAL akk = 0.0;
-    if (Mlsame(uplo, "U")) {
+    if (Mlsame(uplo.elems(), "U")) {
         for (k = n; k >= 1; k = k - 1) {
             kc = max((INTEGER)1, kd + 2 - k);
             klen = kd + 1 - kc;
@@ -135,7 +133,7 @@ void Cpbt01(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *a, INT
     INTEGER mu = 0;
     INTEGER i = 0;
     INTEGER ml = 0;
-    if (Mlsame(uplo, "U")) {
+    if (Mlsame(uplo.elems(), "U")) {
         for (j = 1; j <= n; j = j + 1) {
             mu = max((INTEGER)1, kd + 2 - j);
             for (i = mu; i <= kd + 1; i = i + 1) {
@@ -153,7 +151,7 @@ void Cpbt01(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *a, INT
     //
     // Compute norm( L*L' - A ) / ( N * norm(A) * EPS )
     //
-    resid = Clanhb("1", uplo, n, kd, afac, ldafac, rwork);
+    resid = Clanhb("1", uplo.elems(), n, kd, afac, ldafac, rwork);
     //
     resid = ((resid / castREAL(n)) / anorm) / eps;
     //

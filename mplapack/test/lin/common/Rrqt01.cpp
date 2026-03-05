@@ -45,37 +45,6 @@ using fem::common;
 
 void Rrqt01(INTEGER const m, INTEGER const n, REAL *a, REAL *af, REAL *q, REAL *r, INTEGER const lda, REAL *tau, REAL *work, INTEGER const lwork, REAL *rwork, REAL *result) {
     //
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    INTEGER ldaf = lda;
-    INTEGER ldq = lda;
-    INTEGER ldr = lda;
     INTEGER minmn = min(m, n);
     REAL eps = Rlamch("Epsilon");
     //
@@ -85,19 +54,20 @@ void Rrqt01(INTEGER const m, INTEGER const n, REAL *a, REAL *af, REAL *q, REAL *
     //
     // Factorize the matrix A in the array AF.
     //
+    srnamt = "Rgerqf";
     INTEGER info = 0;
     Rgerqf(m, n, af, lda, tau, work, lwork, info);
     //
     // Copy details of Q
     //
-    const REAL rogue = -1.0e+10;
+    const REAL rogue = -10000000000.0;
     Rlaset("Full", n, n, rogue, rogue, q, lda);
     if (m <= n) {
         if (m > 0 && m < n) {
             Rlacpy("Full", m, n - m, af, lda, &q[((n - m + 1) - 1)], lda);
         }
         if (m > 1) {
-            Rlacpy("Lower", m - 1, m - 1, &af[(2 - 1) + ((n - m + 1) - 1) * ldaf], lda, &q[((n - m + 2) - 1) + ((n - m + 1) - 1) * ldq], lda);
+            Rlacpy("Lower", m - 1, m - 1, &af[(2 - 1) + ((n - m + 1) - 1) * lda], lda, &q[((n - m + 2) - 1) + ((n - m + 1) - 1) * lda], lda);
         }
     } else {
         if (n > 1) {
@@ -107,6 +77,7 @@ void Rrqt01(INTEGER const m, INTEGER const n, REAL *a, REAL *af, REAL *q, REAL *
     //
     // Generate the n-by-n matrix Q
     //
+    srnamt = "Rorgrq";
     Rorgrq(n, n, minmn, q, lda, tau, work, lwork, info);
     //
     // Copy R
@@ -115,7 +86,7 @@ void Rrqt01(INTEGER const m, INTEGER const n, REAL *a, REAL *af, REAL *q, REAL *
     Rlaset("Full", m, n, zero, zero, r, lda);
     if (m <= n) {
         if (m > 0) {
-            Rlacpy("Upper", m, m, &af[((n - m + 1) - 1) * ldaf], lda, &r[((n - m + 1) - 1) * ldr], lda);
+            Rlacpy("Upper", m, m, &af[((n - m + 1) - 1) * lda], lda, &r[((n - m + 1) - 1) * lda], lda);
         }
     } else {
         if (m > n && n > 0) {

@@ -42,69 +42,16 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-
-struct common_infoc {
-    int infot;
-    int nunit;
-    bool ok;
-    bool lerr;
-
-    common_infoc() : infot(0), nunit(0), ok(false), lerr(false) {}
-};
-
-struct common_srnamc {
-    fem::str<32> srnamt;
-
-    common_srnamc() : srnamt(0) {}
-};
-
-struct common : fem::common, common_infoc, common_srnamc {
-    fem::cmn_sve zdrvge_sve;
-
-    common(int argc, char const *argv[]) : fem::common(argc, argv) {}
-};
-
-struct zdrvge_save {
-    static const int ntran = 3;
-
-    arr<fem::str<1>> equeds;
-    arr<fem::str<1>> facts;
-    arr<int> iseedy;
-    arr<fem::str<1>> transs;
-
-    zdrvge_save() : equeds(dimension(4), fem::fill0), facts(dimension(3), fem::fill0), iseedy(dimension(4), fem::fill0), transs(dimension(ntran), fem::fill0) {}
-};
-
-const int zdrvge_save::ntran;
+#include <memory>
 
 void Cdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, REAL const thresh, bool const tsterr, INTEGER const nmax, COMPLEX *a, COMPLEX *afac, COMPLEX *asav, COMPLEX *b, COMPLEX *bsav, COMPLEX *x, COMPLEX *xact, REAL *s, COMPLEX *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
-    FEM_CMN_SVE(zdrvge);
+    common cmn;
     common_write write(cmn);
-    fem::str<32> &srnamt = cmn.srnamt;
-    str_arr_ref<1> equeds(sve.equeds, dimension(4));
-    str_arr_ref<1> facts(sve.facts, dimension(3));
-    arr_ref<int> iseedy(sve.iseedy, dimension(4));
-    const INTEGER ntran = 3;
-    str_arr_ref<1> transs(sve.transs, dimension(ntran));
-    if (is_called_first_time) {
-        {
-            static const int values[] = {1988, 1989, 1990, 1991};
-            fem::data_of_type<int>(FEM_VALUES_AND_SIZE), iseedy;
-        }
-        {
-            static const char *values[] = {"N", "T", "C"};
-            fem::data_of_type_str(FEM_VALUES_AND_SIZE), transs;
-        }
-        {
-            static const char *values[] = {"F", "N", "E"};
-            fem::data_of_type_str(FEM_VALUES_AND_SIZE), facts;
-        }
-        {
-            static const char *values[] = {"N", "R", "C", "B"};
-            fem::data_of_type_str(FEM_VALUES_AND_SIZE), equeds;
-        }
-    }
-    char path[3];
+    static INTEGER iseedy[4] = {1988, 1989, 1990, 1991};
+    static fem::str<1> transs[3] = {"N", "T", "C"};
+    static fem::str<1> facts[3] = {"F", "N", "E"};
+    static fem::str<1> equeds[4] = {"N", "R", "C", "B"};
+    fem::str<3> path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -115,18 +62,18 @@ void Cdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     INTEGER in = 0;
     INTEGER n = 0;
     INTEGER lda = 0;
-    char xtype;
+    fem::str<1> xtype;
     const INTEGER ntypes = 11;
     INTEGER nimat = 0;
     INTEGER imat = 0;
     bool zerot = false;
-    char type;
+    fem::str<1> type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist;
+    fem::str<1> dist;
     const REAL one = 1.0;
     REAL rcondc = 0.0;
     INTEGER info = 0;
@@ -134,10 +81,10 @@ void Cdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     INTEGER ioff = 0;
     const REAL zero = 0.0;
     INTEGER iequed = 0;
-    char equed;
+    fem::str<1> equed;
     INTEGER nfact = 0;
     INTEGER ifact = 0;
-    char fact;
+    fem::str<1> fact;
     bool prefac = false;
     bool nofact = false;
     bool equil = false;
@@ -153,7 +100,8 @@ void Cdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     INTEGER lwork = 0;
     REAL ainvnm = 0.0;
     INTEGER itran = 0;
-    char trans;
+    const INTEGER ntran = 3;
+    fem::str<1> trans;
     const INTEGER ntests = 7;
     REAL result[ntests];
     INTEGER nt = 0;
@@ -166,20 +114,22 @@ void Cdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     REAL roldc = 0.0;
     INTEGER n_err_bnds = 0;
     REAL rpvgrw_svxx = 0.0;
-    std::unique_ptr<REAL[]> __berr_storage(new REAL[nrhs]);
-    REAL *berr = __berr_storage.get();
-    std::unique_ptr<REAL[]> __errbnds_n_storage(new REAL[nrhs * 3]);
-    REAL *errbnds_n = __errbnds_n_storage.get();
-    std::unique_ptr<REAL[]> __errbnds_c_storage(new REAL[nrhs * 3]);
-    REAL *errbnds_c = __errbnds_c_storage.get();
-    static const char *format_9997 = "(1x,a,', FACT=''',a1,''', TRANS=''',a1,''', N=',i5,', EQUED=''',a1,"
-                                     "''', type ',i2,', test(',i1,')=',g12.5)";
+    auto berr_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nrhs));
+    REAL *berr = berr_storage.get();
+    auto errbnds_n_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nrhs * 3));
+    REAL *errbnds_n = errbnds_n_storage.get();
+    auto errbnds_c_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nrhs * 3));
+    REAL *errbnds_c = errbnds_c_storage.get();
+    //
+    static const char *format_9999 = "(1x,a,', N =',i5,', type ',i2,', test(',i2,') =',g12.5)";
     static const char *format_9998 = "(1x,a,', FACT=''',a1,''', TRANS=''',a1,''', N=',i5,', type ',i2,"
                                      "', test(',i1,')=',g12.5)";
+    static const char *format_9997 = "(1x,a,', FACT=''',a1,''', TRANS=''',a1,''', N=',i5,', EQUED=''',a1,"
+                                     "''', type ',i2,', test(',i1,')=',g12.5)";
     //
     // Initialize constants and the random number seed.
     //
-    path[0] = "Zomplex precision";
+    path(1, 1) = "Zomplex precision";
     path(2, 3) = "GE";
     nrun = 0;
     nfail = 0;
@@ -193,21 +143,21 @@ void Cdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     if (tsterr) {
         Cerrvx(path, nout);
     }
-    cmn.infot = 0;
+    infot = 0;
     //
     // Set the block size and minimum block size for testing.
     //
     nb = 1;
     nbmin = 2;
-    xlaenv(1, nb);
-    xlaenv(2, nbmin);
+    Mxlaenv(1, nb);
+    Mxlaenv(2, nbmin);
     //
     // Do for each value of N in NVAL
     //
     for (in = 1; in <= nn; in = in + 1) {
         n = nval[in - 1];
         lda = max(n, (INTEGER)1);
-        xtype = 'N';
+        xtype = "N";
         nimat = ntypes;
         if (n <= 0) {
             nimat = 1;
@@ -231,16 +181,16 @@ void Cdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
             // Set up parameters with Clatb4 and generate a test matrix
             // with Clatms.
             //
-            Clatb4(path, imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
+            Clatb4(path, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
             rcondc = one / cndnum;
             //
-            srnamt = "ZLATMS";
-            Clatms(n, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, "No packing", a, lda, work, info);
+            srnamt = "Clatms";
+            Clatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, "No packing", a, lda, work, info);
             //
             // Check error code from Clatms.
             //
             if (info != 0) {
-                Alaerh(path, "ZLATMS", info, 0, " ", n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                Alaerh(path, "Clatms", info, 0, " ", n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                 goto statement_80;
             }
             //
@@ -281,9 +231,9 @@ void Cdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                 //
                 for (ifact = 1; ifact <= nfact; ifact = ifact + 1) {
                     fact = facts[ifact - 1];
-                    prefac = Mlsame(&fact, "F");
-                    nofact = Mlsame(&fact, "N");
-                    equil = Mlsame(&fact, "E");
+                    prefac = Mlsame(fact.elems, "F");
+                    nofact = Mlsame(fact.elems, "N");
+                    equil = Mlsame(fact.elems, "E");
                     //
                     if (zerot) {
                         if (prefac) {
@@ -307,20 +257,20 @@ void Cdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             //
                             Cgeequ(n, n, afac, lda, s, &s[(n + 1) - 1], rowcnd, colcnd, amax, info);
                             if (info == 0 && n > 0) {
-                                if (Mlsame(&equed, "R")) {
+                                if (Mlsame(equed.elems, "R")) {
                                     rowcnd = zero;
                                     colcnd = one;
-                                } else if (Mlsame(&equed, "C")) {
+                                } else if (Mlsame(equed.elems, "C")) {
                                     rowcnd = one;
                                     colcnd = zero;
-                                } else if (Mlsame(&equed, "B")) {
+                                } else if (Mlsame(equed.elems, "B")) {
                                     rowcnd = zero;
                                     colcnd = zero;
                                 }
                                 //
                                 // Equilibrate the matrix.
                                 //
-                                Claqge(n, n, afac, lda, s, &s[(n + 1) - 1], rowcnd, colcnd, amax, &equed);
+                                Claqge(n, n, afac, lda, s, &s[(n + 1) - 1], rowcnd, colcnd, amax, equed.elems);
                             }
                         }
                         //
@@ -383,9 +333,9 @@ void Cdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         //
                         // Form an exact solution and set the right hand side.
                         //
-                        srnamt = "ZLARHS";
-                        Clarhs(path, &xtype, "Full", &trans, n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
-                        xtype = 'C';
+                        srnamt = "Clarhs";
+                        Clarhs(path, xtype, "Full", trans, n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
+                        xtype = "C";
                         Clacpy("Full", n, nrhs, b, lda, bsav, lda);
                         //
                         if (nofact && itran == 1) {
@@ -398,30 +348,30 @@ void Cdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             Clacpy("Full", n, n, a, lda, afac, lda);
                             Clacpy("Full", n, nrhs, b, lda, x, lda);
                             //
-                            srnamt = "ZGESV ";
+                            srnamt = "Cgesv";
                             Cgesv(n, nrhs, afac, lda, iwork, x, lda, info);
                             //
                             // Check error code from Cgesv .
                             //
                             if (info != izero) {
-                                Alaerh(path, "ZGESV ", info, izero, " ", n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                                Alaerh(path, "Cgesv", info, izero, " ", n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                             }
                             //
                             // Reconstruct matrix from factors and compute
                             // residual.
                             //
-                            Cget01(n, n, a, lda, afac, lda, iwork, rwork, result[0]);
+                            Cget01(n, n, a, lda, afac, lda, iwork, rwork, result[1 - 1]);
                             nt = 1;
                             if (izero == 0) {
                                 //
                                 // Compute residual of the computed solution.
                                 //
                                 Clacpy("Full", n, nrhs, b, lda, work, lda);
-                                Cget02("No transpose", n, n, nrhs, a, lda, x, lda, work, lda, rwork, result[1]);
+                                Cget02("No transpose", n, n, nrhs, a, lda, x, lda, work, lda, rwork, result[2 - 1]);
                                 //
                                 // Check solution from generated exact solution.
                                 //
-                                Cget04(n, nrhs, x, lda, xact, lda, rcondc, result[2]);
+                                Cget04(n, nrhs, x, lda, xact, lda, rcondc, result[3 - 1]);
                                 nt = 3;
                             }
                             //
@@ -433,7 +383,7 @@ void Cdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                     if (nfail == 0 && nerrs == 0) {
                                         Aladhd(nout, path);
                                     }
-                                    write(nout, "(1x,a,', N =',i5,', type ',i2,', test(',i2,') =',g12.5)"), "ZGESV ", n, imat, k, result(k);
+                                    write(nout, format_9999), "Cgesv", n, imat, k, result[k - 1];
                                     nfail++;
                                 }
                             }
@@ -451,19 +401,19 @@ void Cdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             // Equilibrate the matrix if FACT = 'F' and
                             // EQUED = 'R', 'C', or 'B'.
                             //
-                            Claqge(n, n, a, lda, s, &s[(n + 1) - 1], rowcnd, colcnd, amax, &equed);
+                            Claqge(n, n, a, lda, s, &s[(n + 1) - 1], rowcnd, colcnd, amax, equed.elems);
                         }
                         //
                         // Solve the system and compute the condition number
                         // and error bounds using Cgesvx.
                         //
-                        srnamt = "ZGESVX";
-                        Cgesvx(&fact, &trans, n, nrhs, a, lda, afac, lda, iwork, &equed, s, &s[(n + 1) - 1], b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
+                        srnamt = "Cgesvx";
+                        Cgesvx(fact.elems, trans.elems, n, nrhs, a, lda, afac, lda, iwork, equed.elems, s, &s[(n + 1) - 1], b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                         //
                         // Check the error code from Cgesvx.
                         //
                         if (info != izero) {
-                            Alaerh(path, "ZGESVX", info, izero, fact + trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Cgesvx", info, izero, fact + trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                         }
                         //
                         // Compare RWORK(2*NRHS+1) from Cgesvx with the
@@ -484,14 +434,14 @@ void Cdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 rpvgrw = Clange("M", n, n, a, lda, rdum) / rpvgrw;
                             }
                         }
-                        result[6] = abs(rpvgrw - rwork[(2 * nrhs + 1) - 1]) / max(rwork[(2 * nrhs + 1) - 1], rpvgrw) / Rlamch("E");
+                        result[7 - 1] = abs(rpvgrw - rwork[(2 * nrhs + 1) - 1]) / max(rwork[(2 * nrhs + 1) - 1], rpvgrw) / Rlamch("E");
                         //
                         if (!prefac) {
                             //
                             // Reconstruct matrix from factors and compute
                             // residual.
                             //
-                            Cget01(n, n, a, lda, afac, lda, iwork, &rwork[(2 * nrhs + 1) - 1], result[0]);
+                            Cget01(n, n, a, lda, afac, lda, iwork, &rwork[(2 * nrhs + 1) - 1], result[1 - 1]);
                             k1 = 1;
                         } else {
                             k1 = 2;
@@ -503,25 +453,25 @@ void Cdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             // Compute residual of the computed solution.
                             //
                             Clacpy("Full", n, nrhs, bsav, lda, work, lda);
-                            Cget02(&trans, n, n, nrhs, asav, lda, x, lda, work, lda, &rwork[(2 * nrhs + 1) - 1], result[1]);
+                            Cget02(trans, n, n, nrhs, asav, lda, x, lda, work, lda, &rwork[(2 * nrhs + 1) - 1], result[2 - 1]);
                             //
                             // Check solution from generated exact solution.
                             //
-                            if (nofact || (prefac && Mlsame(&equed, "N"))) {
-                                Cget04(n, nrhs, x, lda, xact, lda, rcondc, result[2]);
+                            if (nofact || (prefac && Mlsame(equed.elems, "N"))) {
+                                Cget04(n, nrhs, x, lda, xact, lda, rcondc, result[3 - 1]);
                             } else {
                                 if (itran == 1) {
                                     roldc = roldo;
                                 } else {
                                     roldc = roldi;
                                 }
-                                Cget04(n, nrhs, x, lda, xact, lda, roldc, result[2]);
+                                Cget04(n, nrhs, x, lda, xact, lda, roldc, result[3 - 1]);
                             }
                             //
                             // Check the error bounds from iterative
                             // refinement.
                             //
-                            Cget07(&trans, n, nrhs, asav, lda, b, lda, x, lda, xact, lda, rwork, true, &rwork[(nrhs + 1) - 1], &result[3]);
+                            Cget07(trans, n, nrhs, asav, lda, b, lda, x, lda, xact, lda, rwork, true, &rwork[(nrhs + 1) - 1], &result[4 - 1]);
                         } else {
                             trfcon = true;
                         }
@@ -529,7 +479,7 @@ void Cdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         // Compare RCOND from Cgesvx with the computed value
                         // in RCONDC.
                         //
-                        result[5] = Rget06(rcond, rcondc);
+                        result[6 - 1] = Rget06(rcond, rcondc);
                         //
                         // Print information about the tests that did not pass
                         // the threshold.
@@ -541,47 +491,47 @@ void Cdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                         Aladhd(nout, path);
                                     }
                                     if (prefac) {
-                                        write(nout, format_9997), "ZGESVX", fact, trans, n, equed, imat, k, result(k);
+                                        write(nout, format_9997), "Cgesvx", fact, trans, n, equed, imat, k, result[k - 1];
                                     } else {
-                                        write(nout, format_9998), "ZGESVX", fact, trans, n, imat, k, result(k);
+                                        write(nout, format_9998), "Cgesvx", fact, trans, n, imat, k, result[k - 1];
                                     }
                                     nfail++;
                                 }
                             }
                             nrun += 7 - k1;
                         } else {
-                            if (result[0] >= thresh && !prefac) {
+                            if (result[1 - 1] >= thresh && !prefac) {
                                 if (nfail == 0 && nerrs == 0) {
                                     Aladhd(nout, path);
                                 }
                                 if (prefac) {
-                                    write(nout, format_9997), "ZGESVX", fact, trans, n, equed, imat, 1, result(1);
+                                    write(nout, format_9997), "Cgesvx", fact, trans, n, equed, imat, 1, result[1 - 1];
                                 } else {
-                                    write(nout, format_9998), "ZGESVX", fact, trans, n, imat, 1, result(1);
+                                    write(nout, format_9998), "Cgesvx", fact, trans, n, imat, 1, result[1 - 1];
                                 }
                                 nfail++;
                                 nrun++;
                             }
-                            if (result[5] >= thresh) {
+                            if (result[6 - 1] >= thresh) {
                                 if (nfail == 0 && nerrs == 0) {
                                     Aladhd(nout, path);
                                 }
                                 if (prefac) {
-                                    write(nout, format_9997), "ZGESVX", fact, trans, n, equed, imat, 6, result(6);
+                                    write(nout, format_9997), "Cgesvx", fact, trans, n, equed, imat, 6, result[6 - 1];
                                 } else {
-                                    write(nout, format_9998), "ZGESVX", fact, trans, n, imat, 6, result(6);
+                                    write(nout, format_9998), "Cgesvx", fact, trans, n, imat, 6, result[6 - 1];
                                 }
                                 nfail++;
                                 nrun++;
                             }
-                            if (result[6] >= thresh) {
+                            if (result[7 - 1] >= thresh) {
                                 if (nfail == 0 && nerrs == 0) {
                                     Aladhd(nout, path);
                                 }
                                 if (prefac) {
-                                    write(nout, format_9997), "ZGESVX", fact, trans, n, equed, imat, 7, result(7);
+                                    write(nout, format_9997), "Cgesvx", fact, trans, n, equed, imat, 7, result[7 - 1];
                                 } else {
-                                    write(nout, format_9998), "ZGESVX", fact, trans, n, imat, 7, result(7);
+                                    write(nout, format_9998), "Cgesvx", fact, trans, n, imat, 7, result[7 - 1];
                                 }
                                 nfail++;
                                 nrun++;
@@ -605,13 +555,13 @@ void Cdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             // Equilibrate the matrix if FACT = 'F' and
                             // EQUED = 'R', 'C', or 'B'.
                             //
-                            Claqge(n, n, a, lda, s, &s[(n + 1) - 1], rowcnd, colcnd, amax, &equed);
+                            Claqge(n, n, a, lda, s, &s[(n + 1) - 1], rowcnd, colcnd, amax, equed.elems);
                         }
                         //
                         // Solve the system and compute the condition number
                         // and error bounds using Cgesvxx.
                         //
-                        srnamt = "ZGESVXX";
+                        srnamt = "Cgesvxx";
                         n_err_bnds = 3;
                         Cgesvxx(fact, trans, n, nrhs, a, lda, afac, lda, iwork, equed, s, s[(n + 1) - 1], b, lda, x, lda, rcond, rpvgrw_svxx, berr, n_err_bnds, errbnds_n, errbnds_c, 0, zero, work, rwork, info);
                         //
@@ -621,7 +571,7 @@ void Cdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             goto statement_50;
                         }
                         if (info != izero) {
-                            Alaerh(path, "ZGESVXX", info, izero, fact + trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Cgesvxx", info, izero, fact + trans, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                             goto statement_50;
                         }
                         //
@@ -634,14 +584,14 @@ void Cdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             rpvgrw = Cla_gerpvgrw(n, n, a, lda, afac, lda);
                         }
                         //
-                        result[6] = abs(rpvgrw - rpvgrw_svxx) / max(rpvgrw_svxx, rpvgrw) / Rlamch("E");
+                        result[7 - 1] = abs(rpvgrw - rpvgrw_svxx) / max(rpvgrw_svxx, rpvgrw) / Rlamch("E");
                         //
                         if (!prefac) {
                             //
                             // Reconstruct matrix from factors and compute
                             // residual.
                             //
-                            Cget01(n, n, a, lda, afac, lda, iwork, &rwork[(2 * nrhs + 1) - 1], result[0]);
+                            Cget01(n, n, a, lda, afac, lda, iwork, &rwork[(2 * nrhs + 1) - 1], result[1 - 1]);
                             k1 = 1;
                         } else {
                             k1 = 2;
@@ -653,19 +603,19 @@ void Cdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             // Compute residual of the computed solution.
                             //
                             Clacpy("Full", n, nrhs, bsav, lda, work, lda);
-                            Cget02(&trans, n, n, nrhs, asav, lda, x, lda, work, lda, &rwork[(2 * nrhs + 1) - 1], result[1]);
+                            Cget02(trans, n, n, nrhs, asav, lda, x, lda, work, lda, &rwork[(2 * nrhs + 1) - 1], result[2 - 1]);
                             //
                             // Check solution from generated exact solution.
                             //
-                            if (nofact || (prefac && Mlsame(&equed, "N"))) {
-                                Cget04(n, nrhs, x, lda, xact, lda, rcondc, result[2]);
+                            if (nofact || (prefac && Mlsame(equed.elems, "N"))) {
+                                Cget04(n, nrhs, x, lda, xact, lda, rcondc, result[3 - 1]);
                             } else {
                                 if (itran == 1) {
                                     roldc = roldo;
                                 } else {
                                     roldc = roldi;
                                 }
-                                Cget04(n, nrhs, x, lda, xact, lda, roldc, result[2]);
+                                Cget04(n, nrhs, x, lda, xact, lda, roldc, result[3 - 1]);
                             }
                         } else {
                             trfcon = true;
@@ -674,7 +624,7 @@ void Cdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         // Compare RCOND from Cgesvxx with the computed value
                         // in RCONDC.
                         //
-                        result[5] = Rget06(rcond, rcondc);
+                        result[6 - 1] = Rget06(rcond, rcondc);
                         //
                         // Print information about the tests that did not pass
                         // the threshold.
@@ -686,47 +636,47 @@ void Cdrvge(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                         Aladhd(nout, path);
                                     }
                                     if (prefac) {
-                                        write(nout, format_9997), "ZGESVXX", fact, trans, n, equed, imat, k, result(k);
+                                        write(nout, format_9997), "Cgesvxx", fact, trans, n, equed, imat, k, result[k - 1];
                                     } else {
-                                        write(nout, format_9998), "ZGESVXX", fact, trans, n, imat, k, result(k);
+                                        write(nout, format_9998), "Cgesvxx", fact, trans, n, imat, k, result[k - 1];
                                     }
                                     nfail++;
                                 }
                             }
                             nrun += 7 - k1;
                         } else {
-                            if (result[0] >= thresh && !prefac) {
+                            if (result[1 - 1] >= thresh && !prefac) {
                                 if (nfail == 0 && nerrs == 0) {
                                     Aladhd(nout, path);
                                 }
                                 if (prefac) {
-                                    write(nout, format_9997), "ZGESVXX", fact, trans, n, equed, imat, 1, result(1);
+                                    write(nout, format_9997), "Cgesvxx", fact, trans, n, equed, imat, 1, result[1 - 1];
                                 } else {
-                                    write(nout, format_9998), "ZGESVXX", fact, trans, n, imat, 1, result(1);
+                                    write(nout, format_9998), "Cgesvxx", fact, trans, n, imat, 1, result[1 - 1];
                                 }
                                 nfail++;
                                 nrun++;
                             }
-                            if (result[5] >= thresh) {
+                            if (result[6 - 1] >= thresh) {
                                 if (nfail == 0 && nerrs == 0) {
                                     Aladhd(nout, path);
                                 }
                                 if (prefac) {
-                                    write(nout, format_9997), "ZGESVXX", fact, trans, n, equed, imat, 6, result(6);
+                                    write(nout, format_9997), "Cgesvxx", fact, trans, n, equed, imat, 6, result[6 - 1];
                                 } else {
-                                    write(nout, format_9998), "ZGESVXX", fact, trans, n, imat, 6, result(6);
+                                    write(nout, format_9998), "Cgesvxx", fact, trans, n, imat, 6, result[6 - 1];
                                 }
                                 nfail++;
                                 nrun++;
                             }
-                            if (result[6] >= thresh) {
+                            if (result[7 - 1] >= thresh) {
                                 if (nfail == 0 && nerrs == 0) {
                                     Aladhd(nout, path);
                                 }
                                 if (prefac) {
-                                    write(nout, format_9997), "ZGESVXX", fact, trans, n, equed, imat, 7, result(7);
+                                    write(nout, format_9997), "Cgesvxx", fact, trans, n, equed, imat, 7, result[7 - 1];
                                 } else {
-                                    write(nout, format_9998), "ZGESVXX", fact, trans, n, imat, 7, result(7);
+                                    write(nout, format_9998), "Cgesvxx", fact, trans, n, imat, 7, result[7 - 1];
                                 }
                                 nfail++;
                                 nrun++;

@@ -43,12 +43,12 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Csbmv(const char *uplo, INTEGER const n, INTEGER const k, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx, COMPLEX const beta, COMPLEX *y, INTEGER const incy) {
+void Csbmv(fem::str_cref uplo, INTEGER const n, INTEGER const k, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx, COMPLEX const beta, COMPLEX *y, INTEGER const incy) {
     //
     // Test the input parameters.
     //
     INTEGER info = 0;
-    if (!Mlsame(uplo, "U") && !Mlsame(uplo, "L")) {
+    if (!Mlsame(uplo.elems(), "U") && !Mlsame(uplo.elems(), "L")) {
         info = 1;
     } else if (n < 0) {
         info = 2;
@@ -133,7 +133,7 @@ void Csbmv(const char *uplo, INTEGER const n, INTEGER const k, COMPLEX const alp
     INTEGER jx = 0;
     INTEGER jy = 0;
     INTEGER ix = 0;
-    if (Mlsame(uplo, "U")) {
+    if (Mlsame(uplo.elems(), "U")) {
         //
         // Form  y  when upper triangle of A is stored.
         //

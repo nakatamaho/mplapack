@@ -43,14 +43,14 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-REAL Rqrt14(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *x, INTEGER const ldx, REAL *work, INTEGER const lwork) {
+REAL Rqrt14(fem::str_cref trans, INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *x, INTEGER const ldx, REAL *work, INTEGER const lwork) {
     REAL return_value = 0.0;
     //
     const REAL zero = 0.0;
     return_value = zero;
     INTEGER ldwork = 0;
     bool tpsd = false;
-    if (Mlsame(trans, "N")) {
+    if (Mlsame(trans.elems(), "N")) {
         ldwork = m + nrhs;
         tpsd = false;
         if (lwork < (m + nrhs) * (n + 2)) {
@@ -59,7 +59,7 @@ REAL Rqrt14(const char *trans, INTEGER const m, INTEGER const n, INTEGER const n
         } else if (n <= 0 || nrhs <= 0) {
             return return_value;
         }
-    } else if (Mlsame(trans, "T")) {
+    } else if (Mlsame(trans.elems(), "T")) {
         ldwork = m;
         tpsd = true;
         if (lwork < (n + nrhs) * (m + 2)) {
@@ -111,7 +111,7 @@ REAL Rqrt14(const char *trans, INTEGER const m, INTEGER const n, INTEGER const n
         err = zero;
         for (j = n + 1; j <= n + nrhs; j = j + 1) {
             for (i = n + 1; i <= min(m, j); i = i + 1) {
-                err = max(err, REAL(abs(work[(i + (j - 1) * m) - 1])));
+                err = max(err, abs(work[(i + (j - 1) * m) - 1]));
             }
         }
         //
@@ -140,13 +140,13 @@ REAL Rqrt14(const char *trans, INTEGER const m, INTEGER const n, INTEGER const n
         err = zero;
         for (j = m + 1; j <= n; j = j + 1) {
             for (i = j; i <= ldwork; i = i + 1) {
-                err = max(err, REAL(abs(work[(i + (j - 1) * ldwork) - 1])));
+                err = max(err, abs(work[(i + (j - 1) * ldwork) - 1]));
             }
         }
         //
     }
     //
-    return_value = err / (castREAL(max({m, n, nrhs})) * Rlamch("Epsilon"));
+    return_value = err / (castREAL(max(m, n, nrhs)) * Rlamch("Epsilon"));
     //
     return return_value;
     //

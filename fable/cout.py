@@ -1,11 +1,98 @@
 import os
 import re
-from itertools import product
 from io import StringIO
 import os.path
 import math
 import tempfile
 import typing
+from decimal import Decimal, InvalidOperation
+
+def _env_int(name: str, default: int) -> int:
+    v = os.environ.get(name)
+    if v is None:
+        return default
+    try:
+        return int(str(v).strip())
+    except Exception:
+        return default
+
+def _env_str(name: str, default: str) -> str:
+    v = os.environ.get(name)
+    if v is None:
+        return default
+    return str(v).strip()
+
+def _env_flag(name: str, default: bool = False) -> bool:
+    """Parse a boolean environment variable.
+
+    Accepted truthy values:  1, true, yes, on
+    Accepted falsy values:   0, false, no, off, (empty)
+    Other values fall back to Python truthiness.
+    """
+    v = os.environ.get(name)
+    if v is None:
+        return default
+    v = str(v).strip().lower()
+    if v in ("1", "true", "yes", "on"):
+        return True
+    if v in ("0", "false", "no", "off", ""):
+        return False
+    return bool(v)
+
+# Enable the legacy small CHARACTER*n -> char[] optimization only when requested.
+# Default is OFF to prefer fem::str<N> (lower maintenance, fewer edge cases).
+FABLE_SMALL_CHAR_ENABLED = _env_flag("FABLE_SMALL_CHAR", default=False)
+
+# Compatibility mode for test conversions: when FABLE_SMALL_CHAR is set to "0",
+# emit string view types (str_cref / str_ref) for scalar CHARACTER dummy args,
+# and keep CHARACTER*1 scalars as fem::str<1> (not plain char).
+#
+# This avoids mixing plain 'char' with fem::str_ref in generated test code
+# (e.g., c1 = aline(i,i)), and still allows MPLAPACK calls to receive raw
+# buffers via ' .elems' when needed.
+FABLE_SMALL_CHAR_VIEW = (
+    str(os.environ.get("FABLE_SMALL_CHAR", "")).strip() == "0")
+
+# If set, do not emit COMMON/SAVE boilerplate structs into generated C++.
+FABLE_SUPPRESS_COMMON = _env_flag("FABLE_SUPPRESS_COMMON", default=False)
+
+# If set, treat all COMMON variables as externally provided globals (no "cmn." prefix)
+# and do not emit local reference aliases/wrappers for them. Useful when COMMON is
+# rewritten into project-wide globals (e.g., MPLAPACK).
+FABLE_COMMON_AS_GLOBALS = _env_flag("FABLE_COMMON_AS_GLOBALS", default=False)
+
+# Maximum total size for small REAL/COMPLEX arrays to remain as plain C arrays.
+# Arrays larger than this threshold are allocated via std::make_unique to avoid
+# stack overflow. INTEGER/bool arrays are always kept as plain C arrays regardless
+# of this setting.
+# Default: 10 (arrays with total_size <= 10 stay on stack)
+# Example: FABLE_SMALL_ARRAY_SIZE=100 allows arrays up to 100 elements on stack.
+FABLE_SMALL_ARRAY_SIZE = _env_int("FABLE_SMALL_ARRAY_SIZE", default=10)
+
+
+def _parse_ident_list_env(name: str) -> typing.Set[str]:
+    """Parse an environment variable as a list of identifiers.
+
+    Splits on commas and whitespace, returns lowercase identifiers.
+    """
+    v = os.environ.get(name)
+    if v is None:
+        return set()
+    s = str(v).strip()
+    if not s:
+        return set()
+    parts = re.split(r"[,\s]+", s)
+    return {p.lower() for p in parts if p}
+
+
+# COMMON scalars that should be treated as externally provided globals
+# instead of being accessed as members of `cmn`.
+FABLE_EXTERN_COMMON_SCALARS = _parse_ident_list_env(
+    "FABLE_EXTERN_COMMON_SCALARS")
+if FABLE_SUPPRESS_COMMON:
+    # LAPACK test harness commonly externalizes these.
+    FABLE_EXTERN_COMMON_SCALARS.update(
+        {"infot", "srnamt", "ok", "lerr", "nout"})
 
 
 def _load_mplapack_signatures():
@@ -140,7 +227,7 @@ def _is_array_variable(conv_info, name: str) -> bool:
         return False
 
 
-def _adjust_actuals_using_signature(arg_string: str, signature, conv_info=None) -> str:
+def _adjust_actuals_using_signature(arg_string: str, signature, conv_info=None, force_elems_call: bool = False) -> str:
     """Adjust actual arguments based on pointer/value signature.
 
     For PTR_NUMERIC arguments, if the expression looks like an array
@@ -170,8 +257,52 @@ def _adjust_actuals_using_signature(arg_string: str, signature, conv_info=None) 
 
     new_parts = []
 
+    def _elems_suffix_for_identifier(name: str) -> str:
+        """Return correct accessor to obtain a (const) char* buffer.
+        - For view-style CHARACTER dummies (fem::str_cref/fem::str_ref), elems is a
+          member function: use '.elems()'.
+        - For fixed-length fem::str<N>, elems is a data member array: use '.elems'.
+        """
+        # In view-mode test conversions (FABLE_SMALL_CHAR=0), core MPLAPACK routines
+        # expect raw (const) char* buffers. Force '.elems' on fem::str/str_view actuals
+        # for those calls to avoid '&fem::str' type mismatches.
+        if (conv_info is not None
+                and _is_dummy_character_arg(conv_info, name)
+                and not _is_plain_character_pointer_dummy(conv_info, name)):
+            return ".elems()"
+        return ".elems"
     for part, kind in zip(parts, signature):
         s = part.lstrip()
+
+        if kind == "REF_ARRAY4":
+            # REF_ARRAY4: fixed-length numeric array reference (ISEED(4)).
+            # Never pass iseed[0]; normalize any pointer-ish spellings back to the base name.
+            if s.startswith("&"):
+                # &name -> name
+                m = re.fullmatch(r"&\s*([A-Za-z_][A-Za-z0-9_]*)\s*$", s)
+                if m:
+                    leading = part[:len(part) - len(s)]
+                    part = leading + m.group(1)
+                    new_parts.append(part)
+                    continue
+                # &name[0] -> name
+                m = re.fullmatch(r"&\s*([A-Za-z_][A-Za-z0-9_]*)\s*\[\s*0\s*\]\s*$", s)
+                if m:
+                    leading = part[:len(part) - len(s)]
+                    part = leading + m.group(1)
+                    new_parts.append(part)
+                    continue
+
+            # name[0] -> name
+            m = re.fullmatch(r"([A-Za-z_][A-Za-z0-9_]*)\s*\[\s*0\s*\]\s*$", s)
+            if m:
+                leading = part[:len(part) - len(s)]
+                part = leading + m.group(1)
+                new_parts.append(part)
+                continue
+
+            new_parts.append(part)
+            continue
 
         if kind == "REF_SCALAR":
             # REF_SCALAR: scalar reference (e.g., REAL& alpha).
@@ -218,8 +349,93 @@ def _adjust_actuals_using_signature(arg_string: str, signature, conv_info=None) 
                 part = leading + "&" + s
 
         elif kind in ("PTR_CHAR", "PTR_CHAR_IN", "PTR_CHAR_OUT"):
+            # fem::str<N> is not implicitly convertible to (const) char*.
+            # For character-pointer parameters, pass the underlying buffer.
+            # CHARACTER*1 arrays are often emitted as fem::str<1> name[...].
+            # '&name' yields a pointer-to-array type, so pass name[0].elems instead.
+            m_arr = re.fullmatch(r"&\s*([A-Za-z_][A-Za-z0-9_]*)$", s)
+            if m_arr and _is_fem_str_len1_array(conv_info, m_arr.group(1)):
+                leading = part[:len(part) - len(s)]
+                name = m_arr.group(1)
+                part = leading + f"{name}[0]" + \
+                    _elems_suffix_for_identifier(name)
+                new_parts.append(part)
+                continue
+
+            # '&name[idx]' where name is a CHARACTER*1 array -> name[idx].elems
+            m_arr_el = re.fullmatch(
+                r"&\s*([A-Za-z_][A-Za-z0-9_]*)\s*\[\s*([^\]]+)\s*\]\s*$", s)
+            if m_arr_el and _is_fem_str_len1_array(conv_info, m_arr_el.group(1)):
+                leading = part[:len(part) - len(s)]
+                name = m_arr_el.group(1)
+                idx = m_arr_el.group(2).strip()
+                part = leading + f"{name}[{idx}]" + \
+                    _elems_suffix_for_identifier(name)
+                new_parts.append(part)
+                continue
+
+            m = re.fullmatch(r"&\s*([A-Za-z_][A-Za-z0-9_]*)$", s)
+            if m and (
+                _is_fem_str_scalar(conv_info, m.group(1))
+                or (conv_info is not None and _is_dummy_character_arg(conv_info, m.group(1))
+                    and not _is_plain_character_pointer_dummy(conv_info, m.group(1)))
+                or (conv_info is not None and _is_scalar_character_fem_str(conv_info, m.group(1)))
+            ):
+                leading = part[:len(part) - len(s)]
+                name = m.group(1)
+                part = leading + name + _elems_suffix_for_identifier(name)
+                new_parts.append(part)
+                continue
+
+            if re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*$", s) and (
+                _is_fem_str_scalar(conv_info, s)
+                or (conv_info is not None and _is_dummy_character_arg(conv_info, s)
+                    and not _is_plain_character_pointer_dummy(conv_info, s))
+                or (conv_info is not None and _is_scalar_character_fem_str(conv_info, s))
+            ):
+                leading = part[:len(part) - len(s)]
+                part = leading + s + _elems_suffix_for_identifier(s)
+                new_parts.append(part)
+                continue
             # Already passing by address.
             if s.startswith("&"):
+                new_parts.append(part)
+                continue
+
+            # Fortran substring on plain CHARACTER dummy (emitted as const char*):
+            #   name(i,j)  ->  name + (i-1)
+            # This matches LAPACK-style usage (e.g. LSAMEN/LSAME) where the length
+            # is explicit or only leading characters are inspected.
+            m = re.fullmatch(
+                r"([A-Za-z_][A-Za-z0-9_]*)\s*\(\s*([^,()]+?)\s*,\s*([^,()]+?)\s*\)",
+                s,
+            )
+            if m and conv_info is not None and (
+                (_is_fem_str_scalar(conv_info, m.group(1))
+                 or _is_scalar_character_fem_str(conv_info, m.group(1)))
+                or (_is_dummy_character_arg(conv_info, m.group(1)) and not _is_plain_character_pointer_dummy(conv_info, m.group(1)))
+            ):
+                base = m.group(1)
+                a = m.group(2).strip()
+                b = m.group(3).strip()
+                leading = part[:len(part) - len(s)]
+                # Substring yields a view type (str_ref/str_cref): elems is a function.
+                part = leading + f"{base}({a}, {b}).elems()"
+                new_parts.append(part)
+                continue
+
+            if m and conv_info is not None and _is_plain_character_pointer_dummy(conv_info, m.group(1)):
+                base = m.group(1)
+                a = m.group(2).strip()  # start index (Fortran 1-based)
+                leading = part[:len(part) - len(s)]
+                try:
+                    off = int(a) - 1
+                    if off == 0:
+                        part = leading + base
+                    else:
+                        part = leading + f"{base} + {off}"
+                except Exception:
+                    part = leading + f"{base} + (({a}) - 1)"
                 new_parts.append(part)
                 continue
 
@@ -232,7 +448,9 @@ def _adjust_actuals_using_signature(arg_string: str, signature, conv_info=None) 
             # IMPORTANT: only do this when the base identifier is a CHARACTER dummy
             # argument emitted as a plain (const) char* (scalar or CHARACTER*1 array),
             # or a small CHARACTER*n scalar mapped to char[].
-            m = re.match(r"^([A-Za-z_][A-Za-z0-9_]*)\s*\[", s)
+            # NOTE: use fullmatch so we do NOT prefix '&' to compound expressions
+            # like 'job[0] + compz[0]' (this would create invalid pointer arithmetic).
+            m = re.fullmatch(r"([A-Za-z_][A-Za-z0-9_]*)\s*\[[^\]]+\]\s*$", s)
             if m:
                 base = m.group(1)
                 if (base in small_char_identifiers
@@ -242,12 +460,43 @@ def _adjust_actuals_using_signature(arg_string: str, signature, conv_info=None) 
                     new_parts.append(part)
                     continue
 
+            # fem::str<1> CHARACTER arrays: name[idx] -> name[idx].elems
+            m_fem_arr_el = re.fullmatch(
+                r"([A-Za-z_][A-Za-z0-9_]*)\s*\[\s*([^\]]+)\s*\]\s*$", s)
+            if m_fem_arr_el and _is_fem_str_len1_array(conv_info, m_fem_arr_el.group(1)):
+                leading = part[:len(part) - len(s)]
+                base = m_fem_arr_el.group(1)
+                idx = m_fem_arr_el.group(2).strip()
+                part = leading + f"{base}[{idx}]" + \
+                    _elems_suffix_for_identifier(base)
+                new_parts.append(part)
+                continue
+
             # Bare identifier (e.g. normin) -> &normin,
             # unless it is a CHARACTER dummy argument (already a pointer),
             # or a small CHARACTER*n scalar we mapped to char[].
+            # fem::str<1> CHARACTER arrays: pass pointer to first element buffer.
+            if re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*$", s) and _is_fem_str_len1_array(conv_info, s):
+                leading = part[:len(part) - len(s)]
+                part = leading + f"{s}[0]" + _elems_suffix_for_identifier(s)
+                new_parts.append(part)
+                continue
+
             if re.match(r"[A-Za-z_][A-Za-z0-9_]*$", s):
-                # CHARACTER dummy arguments are already const char*.
+                # CHARACTER dummy arguments may be plain (const) char* or view types.
                 if conv_info is not None and _is_dummy_character_arg(conv_info, s):
+                    if _is_plain_character_pointer_dummy(conv_info, s):
+                        new_parts.append(part)
+                        continue
+                    leading = part[:len(part) - len(s)]
+                    part = leading + s + _elems_suffix_for_identifier(s)
+                    new_parts.append(part)
+                    continue
+                # Scalar CHARACTER*n locals emitted as fem::str<N> do NOT
+                # implicitly convert to (const) char*. Pass the fixed buffer.
+                if conv_info is not None and _is_scalar_character_fem_str(conv_info, s):
+                    leading = part[:len(part) - len(s)]
+                    part = leading + s + _elems_suffix_for_identifier(s)
                     new_parts.append(part)
                     continue
                 # Small CHARACTER*n scalars mapped to char[] decay to char*,
@@ -263,8 +512,31 @@ def _adjust_actuals_using_signature(arg_string: str, signature, conv_info=None) 
     return ", ".join(p.strip() for p in new_parts)
 
 
-def _load_mplapack_name_map(path=None):
-    """Load Fortran -> MPLAPACK C++ name mapping from an external text file.
+def _resolve_name_map_path(filename: str) -> str:
+    """Resolve the path to a name-map file.
+
+    Search order:
+      1) current working directory
+      2) directory containing this module
+
+    This supports pipelines that `cd` into a tools directory before running
+    `python -m fable.command_line.cout`.
+    """
+    candidates = [
+        os.path.join(os.getcwd(), filename),
+        os.path.join(os.path.dirname(__file__), filename),
+    ]
+    for p in candidates:
+        try:
+            if os.path.isfile(p):
+                return p
+        except Exception:
+            pass
+    return candidates[-1]
+
+
+def _load_mplapack_name_map_file(path: str) -> dict:
+    """Load Fortran -> MPLAPACK C++ routine name mapping from a text file.
 
     Format (whitespace separated, # for comments):
 
@@ -274,14 +546,10 @@ def _load_mplapack_name_map(path=None):
         xerbla          Mxerbla
         dcabs1          RCabs1
     """
-    if path is None:
-        base_dir = os.path.dirname(__file__)
-        path = os.path.join(base_dir, "mplapack_name_map.txt")
     mapping = {}
     try:
         with open(path) as f:
             for line in f:
-                # Strip comments after '#'
                 line = line.split("#", 1)[0].strip()
                 if not line:
                     continue
@@ -289,19 +557,54 @@ def _load_mplapack_name_map(path=None):
                 if len(parts) < 2:
                     continue
                 src, dst = parts[0], parts[1]
-                mapping[src.lower()] = dst
+                mapping[str(src).lower()] = str(dst)
     except OSError:
-        # Map file is optional; fall back to default naming rules.
+        # Map files are optional; fall back to default naming rules.
         pass
     return mapping
 
 
-_MPLAPACK_NAME_MAP = _load_mplapack_name_map()
+def _load_mplapack_name_maps():
+    """Load core/testing name maps.
+
+    Policy:
+      - View mode (FABLE_SMALL_CHAR=0): read BOTH
+          * mplapack_name_map.txt
+          * mplapack_testing_name_map.txt
+      - Non-view mode (!=0): read ONLY
+          * mplapack_name_map.txt
+
+    The maps are kept separate so we can apply special call-site rules
+    (e.g., forcing '.elems' for core MPLAPACK routines in view mode).
+    """
+    core_path = _resolve_name_map_path("mplapack_name_map.txt")
+    core = _load_mplapack_name_map_file(core_path)
+
+    testing = {}
+    if FABLE_SMALL_CHAR_VIEW:
+        testing_path = _resolve_name_map_path("mplapack_testing_name_map.txt")
+        testing = _load_mplapack_name_map_file(testing_path)
+
+    combined = dict(core)
+    # Keep core precedence if a key accidentally overlaps.
+    for k, v in testing.items():
+        if k not in combined:
+            combined[k] = v
+    return core, testing, combined
+
+
+_MPLAPACK_NAME_MAP_CORE, _MPLAPACK_NAME_MAP_TESTING, _MPLAPACK_NAME_MAP = _load_mplapack_name_maps()
 
 # Reverse lookup: C++ routine name (lowercase) -> Fortran name (lowercase)
 _MPLAPACK_CPP_TO_FORTRAN = {
-    cpp.lower(): f_name.lower() for (f_name, cpp) in _MPLAPACK_NAME_MAP.items()
+    str(cpp).lower(): str(f_name).lower() for (f_name, cpp) in _MPLAPACK_NAME_MAP.items()
 }
+
+# C++-side routine names that belong to the CORE map (lowercase).
+# Used to force '.elems' for fem::str/str_view actuals when FABLE_SMALL_CHAR=0.
+_MPLAPACK_CORE_CPP_NAMES = {str(cpp).lower()
+                            for cpp in _MPLAPACK_NAME_MAP_CORE.values()}
+
 
 # Track COMPLEX-typed C++ identifiers in the current procedure.
 # Names are C++ identifiers after vmapping (e.g. "alpha", "a", "cmn.z").
@@ -310,6 +613,55 @@ complex_pointer_identifiers = set()
 # small fixed-length CHARACTER scalars mapped to char[]
 small_char_identifiers = set()
 small_char_identifier_lengths = {}  # name -> int length for small char[]
+
+# -----------------------------------------------------------------------------
+# Allocatable array support (Fortran ALLOCATABLE + ALLOCATE)
+#
+# We translate Fortran's runtime allocation semantics into C++ RAII:
+#   - Preprocess:
+#       ALLOCATE(work(n), stat=info)
+#     becomes:
+#       info = 0
+#       CALL FABLE_ALLOCATE(work, n)
+#
+#   - C++ emission:
+#       std::unique_ptr<T[]> work_storage;
+#       T *work = nullptr;
+#       work_storage.reset(new T[max((INTEGER)1, n)]);
+#       work = work_storage.get();
+#
+# This avoids allocating with an uninitialized size at function entry.
+# -----------------------------------------------------------------------------
+_FABLE_ALLOCATABLE_DECLARED = set()  # (id(fproc), fortran_identifier_lower)
+_FABLE_ALLOCATABLE_DIMS = {}        # (id(fproc), fortran_identifier_lower) -> [dim0, dim1, ...]
+
+
+def _fable_small_char_max_len() -> int:
+    """Return max CHARACTER*n length to map to a plain C char[].
+
+    Controlled by env var FABLE_SMALL_CHAR.
+
+    Accepted values:
+      - unset                 : default 10 (historical behavior)
+      - integer string        : use that value (<= 1 disables small-char arrays)
+      - 'false'/'off'/'no'/0  : disable
+      - 'true'/'on'/'yes'     : default 10
+    """
+    raw = os.environ.get("FABLE_SMALL_CHAR")
+    if raw is None:
+        return 10
+    s = str(raw).strip().lower()
+    if s in ("", "true", "on", "yes"):
+        return 10
+    if s in ("false", "off", "no", "0"):
+        return 0
+    try:
+        return int(s)
+    except ValueError:
+        return 10
+
+
+_FABLE_SMALL_CHAR_MAX_LEN = _fable_small_char_max_len()
 
 # -----------------------------------------------------------------------------
 # Machine-constant-style intrinsics in F90 PARAMETER expressions
@@ -570,7 +922,7 @@ def break_lines(cpp_text, prev_line=None):
     def callback(line):
         if (prev_line[0] is None
             or line != prev_line[0]
-                or not line.lstrip().startswith("//C")):
+                or line.strip() != "//"):
             result.append(line)
             prev_line[0] = line
     for line in "\n".join(cpp_text).splitlines():
@@ -656,7 +1008,100 @@ def convert_complex_literal(vmap, tok):
     return "COMPLEX(%s)" % ", ".join(cc)
 
 
-def convert_token(vmap, leading, tok, had_str_concat=None):
+def _normalize_leading_dot_float_literal(s: str) -> str:
+    """Normalize leading-dot decimals: .5 -> 0.5, -.5 -> -0.5.
+
+    This is a cosmetic normalization to keep generated C++ consistent.
+    It intentionally avoids touching member access like `obj.5`.
+    """
+    return re.sub(r'(?<![0-9A-Za-z_])([+-]?)\.(\d)', r'\g<1>0.\g<2>', s)
+
+
+def _format_decimal_float_literal(tv: str, *, is_double_precision: bool) -> str:
+    """Pretty-print Fortran floating literals for C++.
+
+    - Unifies REAL and DOUBLE PRECISION formatting.
+    - Converts Fortran D-exponents to e-exponents.
+    - Optionally expands scientific notation (1e-3 -> 0.001) when reasonable.
+
+    Controls (optional env vars):
+      FABLE_FLOAT_LITERAL_STYLE = auto|fixed|scientific|original
+      FABLE_FLOAT_FIXED_EXP_MAX = max |exp10| to expand in auto mode (default 20)
+      FABLE_FLOAT_FIXED_MAXLEN  = max output length for fixed in auto mode (default 120)
+    """
+    s = tv.strip()
+
+    # Normalize Fortran exponent letters to 'e'.
+    # For DOUBLE PRECISION, D (or d) is the canonical exponent marker.
+    # For REAL, E (or e) is canonical, but we defensively normalize D as well.
+    if is_double_precision:
+        s = s.replace('D', 'd').replace('d', 'e')
+    else:
+        # Only rewrite D/d when it looks like an exponent marker.
+        s = re.sub(r'([dD])([+-]?\d+)\s*$', lambda m: 'e' + m.group(2), s)
+
+    style = os.environ.get('FABLE_FLOAT_LITERAL_STYLE', 'auto').strip().lower()
+    try:
+        fixed_exp_max = int(os.environ.get('FABLE_FLOAT_FIXED_EXP_MAX', '20'))
+    except Exception:
+        fixed_exp_max = 20
+    try:
+        fixed_max_len = int(os.environ.get('FABLE_FLOAT_FIXED_MAXLEN', '120'))
+    except Exception:
+        fixed_max_len = 120
+
+    # Extract base-10 exponent from the literal text (if present).
+    m = re.search(r'[eE]([+-]?\d+)\s*$', s)
+    exp10 = 0
+    if m:
+        try:
+            exp10 = int(m.group(1))
+        except Exception:
+            exp10 = 0
+
+    if style == 'original':
+        out = s
+    else:
+        try:
+            d = Decimal(s)
+        except (InvalidOperation, ValueError):
+            out = s
+        else:
+            if d.is_zero():
+                return '0.0'
+            if d == 1:
+                return '1.0'
+
+            fixed = format(d, 'f')
+            if '.' in fixed:
+                fixed = fixed.rstrip('0').rstrip('.')
+
+            sci = format(d.normalize(), 'E').replace(
+                'E', 'e').replace('e+', 'e')
+
+            if style == 'fixed':
+                out = fixed
+            elif style == 'scientific':
+                out = sci
+            else:
+                # auto: expand only if exponent is moderate and string does not explode.
+                if abs(exp10) <= fixed_exp_max and len(fixed) <= fixed_max_len:
+                    out = fixed
+                else:
+                    out = sci
+
+    out = _normalize_leading_dot_float_literal(out)
+
+    # Ensure it looks like a floating literal in C++.
+    if ('e' not in out and 'E' not in out
+            and '.' not in out
+            and 'nan' not in out.lower()
+            and 'inf' not in out.lower()):
+        out += '.0'
+    return out
+
+
+def convert_token(vmap, leading, tok, had_str_concat=None, prev_operand_is_string=False):
     tv = tok.value
     if tok.is_identifier():
         # Apply vmap first (Fortran name -> C++ name or other mapped names)
@@ -721,7 +1166,13 @@ def convert_token(vmap, leading, tok, had_str_concat=None):
         s = '"' + escape_string_literal(tok.value) + '"'
         if (had_str_concat is None or not had_str_concat.value):
             return s
-        return "str_cref(%s)" % s
+        # In a concatenation chain, keep string literals as raw "..." unless the
+        # previous operand was also a string literal. This avoids invalid C++ like
+        # "A" + "B" while keeping generated code clean when fem provides
+        # operator+ overloads for (char[] + fem::str_cref).
+        if (prev_operand_is_string):
+            return "fem::str_cref(%s)" % s
+        return s
     if (tok.is_logical()):
         if (tv == ".false."):
             return "false"
@@ -731,34 +1182,29 @@ def convert_token(vmap, leading, tok, had_str_concat=None):
     if (tok.is_hexadecimal()):
         return "0x"+tv
     if (tok.is_real()):
-        return tv+"f"
+        return _format_decimal_float_literal(tv, is_double_precision=False)
     if (tok.is_double_precision()):
-        # Pretty-print double precision literals:
-        # - Normalize Fortran D exponent to e/E
-        # - Use 0.0 / 1.0 instead of 0.0e+0 / 1.0e+0
-        s = tv.replace("D", "d").replace("d", "e")
-        try:
-            v = float(s)
-        except Exception:
-            # Fallback: simple d->e replacement
-            return s
-        # Special cases for common constants
-        if v == 0.0:
-            return "0.0"
-        if v == 1.0:
-            return "1.0"
-        # Generic formatting
-        out = format(v, ".16g")
-        # Ensure it looks like a floating literal in C++
-        if ("e" not in out and "E" not in out
-                and "." not in out
-                and "nan" not in out
-                and "inf" not in out):
-            out += ".0"
-        return out
+        return _format_decimal_float_literal(tv, is_double_precision=True)
+
     if (tok.is_complex()):
         return convert_complex_literal(vmap=vmap, tok=tok)
     tok.raise_not_supported()
+
+
+def _tokens_have_str_concat(tokens):
+    """Return True if the token tree contains the Fortran string concat operator '//'."""
+    if not tokens:
+        return False
+    for tok in tokens:
+        try:
+            if tok.is_op_with(value="//"):
+                return True
+        except Exception:
+            pass
+        v = getattr(tok, "value", None)
+        if isinstance(v, list) and _tokens_have_str_concat(v):
+            return True
+    return False
 
 
 class major_types_cache(object):
@@ -830,7 +1276,38 @@ def produce_comment_given_sl(callback, sl):
     else:
         t = None
     if (t is not None):
-        callback("//C%s" % t.expandtabs().rstrip())
+        _emit_cpp_comment(callback, t, tag=None)
+
+
+def _emit_cpp_comment(callback, t, tag=None):
+    """Emit a single C++ line comment.
+
+    If tag is provided (e.g., "FMT_HDR"), the line is prefixed with:
+        //FMT_HDR <text>
+    or for an empty spacer:
+        //FMT_HDR
+    """
+    if t is None:
+        return
+    t2 = t.expandtabs().strip()
+    if tag:
+        if t2:
+            callback(f"//{tag} " + t2)
+        else:
+            callback(f"//{tag}")
+    else:
+        callback("//" + (" " + t2 if t2 else ""))
+
+
+def produce_fmt_hdr_comment_given_sl(callback, sl):
+    """Emit a Fortran comment line as a tagged C++ comment for FORMAT headings."""
+    if (sl.stmt_offs is None):
+        t = sl.text[1:]
+    elif (sl.index_of_exclamation_mark is not None):
+        t = sl.stmt[sl.index_of_exclamation_mark+1:]
+    else:
+        t = None
+    _emit_cpp_comment(callback, t, tag="FMT_HDR")
 
 
 def produce_comments(callback, ssl_list):
@@ -853,12 +1330,12 @@ def produce_comments(callback, ssl_list):
                 t = None
 
             if t is not None:
-                callback("//C%s" % t.expandtabs().rstrip())
+                _emit_cpp_comment(callback, t, tag=None)
 
 
 def flush_comments_if_non_trivial(callback, buffer):
     for line in buffer:
-        if (line != "//C"):
+        if (line != "//"):
             for line in buffer:
                 callback(line)
             return
@@ -925,6 +1402,139 @@ class comment_manager(object):
     def flush_remaining(O, callback):
         while (O.index != len(O.sl_list)):
             O.produce(callback=callback)
+
+    def remove_line_indices(O, indices_to_remove):
+        """Remove source lines with global_line_index in indices_to_remove set."""
+        if not indices_to_remove:
+            return
+        O.sl_list = [
+            sl for sl in O.sl_list if sl.global_line_index not in indices_to_remove]
+
+
+def _is_comment_ssl(ssl):
+    """Check if ssl is a comment (stmt_offs=None on first source line)."""
+    if ssl is None or not ssl.source_line_cluster:
+        return False
+    return ssl.source_line_cluster[0].stmt_offs is None
+
+
+def _get_ssl_first_line_index(ssl):
+    """Get the global_line_index of the first line in ssl."""
+    if ssl is None or not ssl.source_line_cluster:
+        return float('inf')
+    return ssl.source_line_cluster[0].global_line_index
+
+
+def _detect_format_label_from_ssl(ssl, fproc_format_dict):
+    """Detect if ssl is a FORMAT statement and return label if so."""
+    import re
+    if ssl is None or not ssl.source_line_cluster:
+        return None
+    sl = ssl.source_line_cluster[0]
+    if sl.stmt_offs is None:
+        return None
+    text = getattr(sl, 'text', None)
+    if text:
+        patterns = [
+            re.compile(r'^(.{0,5}?)(\d+)\s+FORMAT\b', re.IGNORECASE),
+            re.compile(r'^\s*(\d+)\s+FORMAT\b', re.IGNORECASE),
+        ]
+        for pat in patterns:
+            m = pat.match(text)
+            if m:
+                label = m.group(2) if m.lastindex >= 2 else m.group(1)
+                if label in fproc_format_dict:
+                    return label
+    return None
+
+
+def _collect_format_comments_from_body_lines(fproc):
+    """Collect FORMAT statements and their preceding comment blocks (ssl level).
+
+    Returns:
+        dict: {label: (line_idx, [comment_sl, ...])} - comments stored per label
+        set: hoisted_indices - global_line_index values to remove from comment_manager
+    """
+    import sys
+    DEBUG = os.environ.get("DEBUG_FORMAT_HOIST",
+                           "").lower() in ("1", "true", "yes")
+
+    # Build list of (first_line_index, ssl, is_comment)
+    ssl_list = []
+    for ssl in fproc.body_lines:
+        if ssl is None:
+            continue
+        first_idx = _get_ssl_first_line_index(ssl)
+        is_comment = _is_comment_ssl(ssl)
+        ssl_list.append((first_idx, ssl, is_comment))
+    ssl_list.sort(key=lambda x: x[0])
+
+    if DEBUG:
+        print(
+            f"[DEBUG] _collect_format_comments: {len(ssl_list)} ssl entries from body_lines", file=sys.stderr)
+        print(
+            f"[DEBUG] fproc.format keys: {list(fproc.format.keys())[:15]}...", file=sys.stderr)
+
+    # Find FORMAT ssls and their positions
+    format_positions = []
+    for i, (first_idx, ssl, is_comment) in enumerate(ssl_list):
+        if is_comment:
+            continue
+        label = _detect_format_label_from_ssl(ssl, fproc.format)
+        if label is not None:
+            format_positions.append((i, label, first_idx))
+            if DEBUG:
+                text = getattr(ssl.source_line_cluster[0], 'text', '')[
+                    :60] if ssl.source_line_cluster else ''
+                print(
+                    f"[DEBUG] Found FORMAT {label} at ssl pos {i}, line {first_idx}: {repr(text)}", file=sys.stderr)
+
+    if DEBUG:
+        print(
+            f"[DEBUG] Total FORMAT positions found: {len(format_positions)}", file=sys.stderr)
+
+    # Use dict to store results (label -> (line_idx, comment_sls))
+    # This ensures data is not lost due to variable scope issues
+    format_comments_dict = {}
+    hoisted_indices = set()
+
+    for pos, label, first_idx in format_positions:
+        # Collect preceding comments
+        collected_comments = []
+        p = pos - 1
+        while p >= 0:
+            prev_first_idx, prev_ssl, prev_is_comment = ssl_list[p]
+            if prev_is_comment:
+                # Collect ALL source lines from this comment ssl (in correct order)
+                for sl in prev_ssl.source_line_cluster:
+                    collected_comments.insert(0, sl)
+                    hoisted_indices.add(sl.global_line_index)
+                p -= 1
+            else:
+                break
+
+        if DEBUG:
+            print(
+                f"[DEBUG] FORMAT {label} has {len(collected_comments)} preceding comment lines", file=sys.stderr)
+
+        # Store in dict with a copy of the list
+        format_comments_dict[label] = (first_idx, list(collected_comments))
+
+    # Convert to list sorted by source line index
+    format_info_list = [
+        (label, line_idx, comment_sls)
+        for label, (line_idx, comment_sls) in format_comments_dict.items()
+    ]
+    format_info_list.sort(key=lambda x: x[1])
+
+    if DEBUG:
+        print(
+            f"[DEBUG] format_info_list has {len(format_info_list)} entries", file=sys.stderr)
+        for label, line_idx, comment_sls in format_info_list[:5]:
+            print(
+                f"[DEBUG]   {label}: line={line_idx}, comments={len(comment_sls)}", file=sys.stderr)
+
+    return format_info_list, hoisted_indices
 
 
 class conv_hook_info(object):
@@ -995,7 +1605,10 @@ class conversion_info(global_conversion_info):
         "comment_manager",
         "vmap",
         "data_initializers",
+        "array_data_initializers",
+        "hoisted_data_array_names",
         "ld_constant_decls",
+        "ld_stride_name_map",
     ]
 
     def __init__(O,
@@ -1020,9 +1633,20 @@ class conversion_info(global_conversion_info):
         # IMPORTANT: initialize DATA initializer map
         O.data_initializers = None
 
+        # Map: array name (lower) -> (elem_ctype, dims_ints:list[int], init_list:list[str], rank:int)
+        # Used to fold DATA statements into a single static array initializer.
+        O.array_data_initializers = None
+
+        # Set of array names (lower) that were hoisted and emitted as static initializers.
+        O.hoisted_data_array_names = set()
+
         # Map: auto-generated leading-dimension variable -> initializer expression.
         # This avoids hardcoding constants and repeating expressions in flattened 2D indexing.
         O.ld_constant_decls = {}
+
+        # Map: default leading-dimension base name (e.g. "lda") -> chosen stride variable name (e.g. "ldaw").
+        # This ensures repeated uses of the same array reuse the same stride variable.
+        O.ld_stride_name_map = {}
 
     def set_vmap_force_local(O, fdecl):
         identifier = fdecl.id_tok.value
@@ -1047,8 +1671,19 @@ class conversion_info(global_conversion_info):
     def set_vmap_from_fdecl(O, fdecl):
         identifier = fdecl.id_tok.value
         if (fdecl.is_common()):
-            O.vmap[identifier] = "cmn." + \
-                prepend_identifier_if_necessary(identifier)
+            if FABLE_COMMON_AS_GLOBALS:
+                # COMMON variables are rewritten as globals in the target project.
+                # Emit plain identifiers (no `cmn.` access).
+                O.vmap[identifier] = prepend_identifier_if_necessary(
+                    identifier)
+            elif (getattr(fdecl, "dim_tokens", None) is None
+                    and identifier.lower() in FABLE_EXTERN_COMMON_SCALARS):
+                # COMMON scalar is provided externally (declared as an extern global).
+                O.vmap[identifier] = prepend_identifier_if_necessary(
+                    identifier)
+            else:
+                O.vmap[identifier] = "cmn." + \
+                    prepend_identifier_if_necessary(identifier)
         elif (fdecl.is_save()
               and not (O.fproc is not None
                        and getattr(O.fproc, "conv_hook", None) is not None
@@ -1363,7 +1998,7 @@ def _rewrite_small_char_substrings(text: str) -> str:
     return out
 
 
-def _emit_small_char_string_assignment(curr_scope, clhs: str, crhs: str) -> bool:
+def _emit_small_char_string_assignment(curr_scope, clhs: str, crhs: str, conv_info=None) -> bool:
     """Emit element-wise assignments for small CHARACTER*n scalars mapped to char[].
 
     This is needed because plain C arrays cannot be assigned in C++:
@@ -1397,7 +2032,9 @@ def _emit_small_char_string_assignment(curr_scope, clhs: str, crhs: str) -> bool
 
     src = m.group(1)
     if src not in small_char_identifiers:
-        return False
+        # Allow substring copies from dummy CHARACTER arguments modeled as plain char*.
+        if conv_info is None or src not in _plain_char_ptr_dummy_cpp_names(conv_info):
+            return False
 
     inner = m.group(2)
     args = _split_top_level_commas(inner)
@@ -1793,6 +2430,88 @@ def _is_dummy_character_arg(conv_info, name: str) -> bool:
     return key in _dummy_character_args
 
 
+def _is_fem_str_scalar(conv_info, name: str) -> bool:
+    """Return True if 'name' is a scalar CHARACTER mapped to fem::str<N>."""
+    if conv_info is None or getattr(conv_info, "fproc", None) is None:
+        return False
+    if _is_dummy_character_arg(conv_info, name):
+        return False
+    if name in small_char_identifiers:
+        return False
+    try:
+        fdecl = conv_info.fproc.fdecl_by_identifier.get(
+            name.lower()) or conv_info.fproc.fdecl_by_identifier.get(name)
+    except Exception:
+        return False
+    if fdecl is None:
+        return False
+    dt = getattr(fdecl, "data_type", None)
+    dt_code = dt if isinstance(dt, str) else getattr(dt, "value", None)
+    if str(dt_code).lower() != "character":
+        return False
+    if getattr(fdecl, "dim_tokens", None) is not None:
+        return False
+    st = getattr(fdecl, "size_tokens", None)
+    if st is None:
+        return False
+    try:
+        if len(st) == 1 and getattr(st[0], "is_integer", None) and st[0].is_integer() and st[0].value == "1":
+            return False
+    except Exception:
+        pass
+    return True
+
+
+def _is_fem_str_len1_array(conv_info, name: str) -> bool:
+    """Return True if 'name' is an array of CHARACTER*1 emitted as fem::str<1> name[...].
+
+    This is a common Fable representation for Fortran CHARACTER*1 arrays.
+    Such arrays cannot be passed to const char* by taking '&name' because that
+    yields a pointer-to-array type (e.g. fem::str<1>(*)[1]). Instead, callers
+    should pass a pointer to the first element's underlying buffer:
+        name[0].elems
+    """
+    if conv_info is None or getattr(conv_info, "fproc", None) is None:
+        return False
+    if _is_dummy_character_arg(conv_info, name):
+        return False
+    if name in small_char_identifiers:
+        return False
+    try:
+        fdecl = (
+            conv_info.fproc.fdecl_by_identifier.get(name.lower())
+            or conv_info.fproc.fdecl_by_identifier.get(name)
+        )
+    except Exception:
+        return False
+    if fdecl is None:
+        return False
+    dt = getattr(fdecl, "data_type", None)
+    dt_code = dt if isinstance(dt, str) else getattr(dt, "value", None)
+    if str(dt_code).lower() != "character":
+        return False
+    if getattr(fdecl, "dim_tokens", None) is None:
+        return False
+
+    # Default CHARACTER length is 1 if not explicitly given.
+    st = getattr(fdecl, "size_tokens", None)
+    if st is None:
+        return True
+    try:
+        if len(st) == 1 and getattr(st[0], "is_integer", None) and st[0].is_integer() and st[0].value == "1":
+            return True
+    except Exception:
+        pass
+    try:
+        size_expr = convert_tokens(
+            conv_info=conv_info, tokens=st, commas=False).strip()
+        if size_expr == "1":
+            return True
+    except Exception:
+        pass
+    return False
+
+
 def _is_plain_character_pointer_dummy(conv_info, name: str) -> bool:
     """Return True if 'name' is a CHARACTER dummy argument emitted as (const) char*.
 
@@ -1818,9 +2537,9 @@ def _is_plain_character_pointer_dummy(conv_info, name: str) -> bool:
     dt_code = getattr(dt, "value", None) if dt is not None else None
     if dt_code != "character":
         return False
-    # Scalar CHARACTER dummy: emitted as (const) char*
+    # Scalar CHARACTER dummy: emitted as (const) char* unless view mode is enabled.
     if getattr(fdecl, "dim_tokens", None) is None:
-        return True
+        return (not FABLE_SMALL_CHAR_VIEW)
     # Array CHARACTER dummy: only CHARACTER*1 arrays are treated as plain pointer.
     st = getattr(fdecl, "size_tokens", None)
     if st is None:
@@ -1831,6 +2550,111 @@ def _is_plain_character_pointer_dummy(conv_info, name: str) -> bool:
     except Exception:
         pass
     return False
+
+
+def _is_scalar_character_fem_str(conv_info, name: str) -> bool:
+    """True if 'name' is scalar CHARACTER emitted as fem::str<...> (not char/char[]/dummy)."""
+    if conv_info is None or getattr(conv_info, "fproc", None) is None:
+        return False
+    if _is_dummy_character_arg(conv_info, name):
+        return False
+    if name in small_char_identifiers:
+        return False
+    try:
+        fdecl = conv_info.fproc.fdecl_by_identifier.get(name.lower()) or \
+            conv_info.fproc.fdecl_by_identifier.get(name)
+    except Exception:
+        return False
+    if fdecl is None:
+        return False
+    dt = getattr(fdecl, "data_type", None)
+    dt_code = dt if isinstance(dt, str) else getattr(dt, "value", None)
+    if dt_code != "character":
+        return False
+    if getattr(fdecl, "dim_tokens", None) is not None:
+        return False
+    st = getattr(fdecl, "size_tokens", None)
+    # In view mode, CHARACTER*1 scalars are emitted as fem::str<1> (not plain char).
+    if st is None:
+        return bool(FABLE_SMALL_CHAR_VIEW)
+    try:
+        if len(st) == 1 and st[0].is_integer() and st[0].value == "1":
+            return bool(FABLE_SMALL_CHAR_VIEW)
+    except Exception:
+        pass
+    try:
+        size_expr = convert_tokens(
+            conv_info=conv_info, tokens=st, commas=False).strip()
+        if size_expr == "1":
+            return bool(FABLE_SMALL_CHAR_VIEW)
+    except Exception:
+        pass
+    return True
+
+
+def _plain_char_ptr_dummy_cpp_names(conv_info):
+    """Return a cached set of C++ names for CHARACTER dummy arguments modeled as plain (const) char*."""
+    if conv_info is None or getattr(conv_info, "fproc", None) is None:
+        return set()
+    names = set()
+    for id_tok in getattr(conv_info.fproc, "args", []) or []:
+        try:
+            if getattr(id_tok, "value", None) == "*":
+                continue
+            if _is_plain_character_pointer_dummy(conv_info, id_tok.value):
+                cpp_name = conv_info.vmap.get(
+                    id_tok.value, prepend_identifier_if_necessary(id_tok.value))
+                names.add(cpp_name)
+        except Exception:
+            continue
+    return names
+
+
+def _rewrite_plain_char_ptr_unit_substrings(text: str, conv_info) -> str:
+    """Rewrite Fortran-style unit-length substrings on plain char* dummies.
+
+    Example:
+        path(1, 1)  ->  path[(1) - 1]
+
+    This is only applied to dummy CHARACTER arguments emitted as (const) char*.
+    We intentionally only rewrite unit-length substrings (start == end) because
+    longer substrings generally require an explicit temporary buffer.
+    """
+    names = _plain_char_ptr_dummy_cpp_names(conv_info)
+    if not names:
+        return text
+
+    int_re = re.compile(r'^[+-]?[0-9]+$')
+    name_re = re.compile(r'^[A-Za-z_]\w*$')
+
+    out = text
+    for name in names:
+        # Match: name(arg1, arg2) where arg1/arg2 have no nested parentheses.
+        pat = re.compile(
+            rf"\b{re.escape(name)}\s*\(\s*([^,()]+?)\s*,\s*([^,()]+?)\s*\)")
+
+        def _repl(m):
+            a = m.group(1).strip()
+            b = m.group(2).strip()
+            if a.replace(" ", "") != b.replace(" ", ""):
+                return m.group(0)
+            # Prefer clean C++ for simple cases:
+            #   path(1,1) -> path[0]
+            #   path(i,i) -> path[i - 1]
+            a_key = a.replace(" ", "")
+            if int_re.fullmatch(a_key):
+                try:
+                    return f"{name}[{int(a_key) - 1}]"
+                except Exception:
+                    # Fallback (should be rare)
+                    return f"{name}[{a_key} - 1]"
+            if name_re.fullmatch(a_key):
+                return f"{name}[{a_key} - 1]"
+            # Complex expression: keep parentheses for safety
+            return f"{name}[({a}) - 1]"
+
+        out = pat.sub(_repl, out)
+    return out
 
 
 def _rewrite_unary_intrinsic(text: str, func_name: str, repl_func):
@@ -2049,6 +2873,20 @@ def get_leading_dimension_expr(conv_info, fdecl, default=None):
     if dt is None or len(dt) == 0:
         return default
 
+    # If this array was allocated via a FABLE_ALLOCATE pseudo-call, prefer the
+    # recorded first-dimension extent for correct 2D flattening.
+    try:
+        fproc = getattr(conv_info, "fproc", None)
+        name_lower = str(getattr(getattr(fdecl, "id_tok", None), "value", "")).lower()
+        key = (id(fproc), name_lower)
+        dims = _FABLE_ALLOCATABLE_DIMS.get(key)
+        if isinstance(dims, (list, tuple)) and len(dims) >= 1:
+            d0 = str(dims[0]).strip()
+            if d0:
+                return d0
+    except Exception:
+        pass
+
     try:
         dim0 = dt[0].value
 
@@ -2092,41 +2930,142 @@ _ident_re = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 
 
 def _maybe_use_ld_variable(conv_info, ldexpr: str, default_ldname: str) -> str:
-    """Prefer a symbolic leading-dimension variable over an inlined expression.
+    """Decide the stride (leading-dimension) symbol to use for 2D/ND flattening.
 
-    Rules:
-      - If ldexpr is a simple identifier (e.g. "lda", "ldwork"), keep it.
-      - Otherwise, use default_ldname (e.g. "ldwork") and remember a declaration
-        "INTEGER ldwork = <ldexpr>;" to be emitted near the top of the generated function.
-
-    This avoids hardcoding constants (e.g. "2") and also avoids repeating
-    expressions (e.g. "n + nb + 1") in flattened 2D indexing.
+    Policy (MPLAPACK / safety-first):
+      - The ONLY source of truth is the array declaration's first-dimension *extent*
+        expression (ldexpr) extracted from the AST.
+      - If ldexpr is a single identifier:
+          * If that identifier is a PARAMETER: use it as-is (do not rename, do not create).
+          * Otherwise: use it directly as the stride (no redundant alias like "ldb = lda").
+      - If ldexpr is not a single identifier (compound expression): ALWAYS snapshot it into
+        a NEW stride variable.
+      - New stride variable naming:
+          * base name is default_ldname (already computed as lower-case, e.g. "lda"/"ldb"/"ldwork").
+          * if the base is already used, append trailing 'w' until unique:
+                lda, ldaw, ldaww, ...
+          * generated names are always lower-case.
     """
     if conv_info is None or default_ldname is None:
         return ldexpr
 
-    core = _strip_outer_parens_balanced(ldexpr)
+    # Reuse the chosen stride variable for this default name (per-array base).
+    stride_map = getattr(conv_info, "ld_stride_name_map", None)
+    key = str(default_ldname).lower()
+    if isinstance(stride_map, dict):
+        cached = stride_map.get(key)
+        if isinstance(cached, str) and cached:
+            return cached
 
-    # Already symbolic (single token): keep as-is.
-    if _ident_re.fullmatch(core):
+    core = _strip_outer_parens_balanced(str(ldexpr))
+
+    def _lookup_fdecl(name: str):
+        fproc = getattr(conv_info, "fproc", None)
+        fdecl_map = getattr(fproc, "fdecl_by_identifier",
+                            None) if fproc is not None else None
+        if not fdecl_map:
+            return None
+        return fdecl_map.get(name.lower()) or fdecl_map.get(name)
+
+    def _is_parameter_identifier(name: str) -> bool:
+        try:
+            fdecl = _lookup_fdecl(name)
+            if fdecl is None:
+                return False
+            return bool(getattr(fdecl, "is_parameter", lambda: False)())
+        except Exception:
+            return False
+
+    def _collect_used_lower_names() -> set:
+        used = set()
+        # Any Fortran identifier in this procedure counts as "used" (case-insensitive).
+        fproc = getattr(conv_info, "fproc", None)
+        fdecl_map = getattr(fproc, "fdecl_by_identifier",
+                            None) if fproc is not None else None
+        if fdecl_map:
+            for k in fdecl_map.keys():
+                try:
+                    used.add(str(k).lower())
+                except Exception:
+                    pass
+
+        # Already created stride variables / ld constants.
+        ld_map = getattr(conv_info, "ld_constant_decls", None)
+        if isinstance(ld_map, dict):
+            used.update({str(k).lower() for k in ld_map.keys()})
+
+        # Already decided stride names.
+        if isinstance(stride_map, dict):
+            used.update({str(v).lower()
+                        for v in stride_map.values() if isinstance(v, str)})
+
+        return used
+
+    def _unique_stride_name(base: str) -> str:
+        base = str(base).lower()
+        used = _collect_used_lower_names()
+        name = base
+        while name.lower() in used:
+            name = name + "w"
+        return name
+
+    def _record_stride(init_expr: str) -> str:
+        # Ensure maps exist
+        if getattr(conv_info, "ld_constant_decls", None) is None:
+            conv_info.ld_constant_decls = {}
+        if getattr(conv_info, "ld_stride_name_map", None) is None:
+            conv_info.ld_stride_name_map = {}
+        # Choose a unique generated name derived from the default base.
+        chosen = _unique_stride_name(default_ldname)
+
+        # Record declaration initializer (first-wins, deterministic for a given chosen name).
+        # If the chosen name somehow already exists with a different initializer, keep
+        # appending 'w' until we find an unused slot.
+        init_core = _strip_outer_parens_balanced(init_expr)
+        while True:
+            prev = conv_info.ld_constant_decls.get(chosen)
+            if prev is None:
+                conv_info.ld_constant_decls[chosen] = init_core
+                break
+            if str(prev).strip() == init_core:
+                break
+            chosen = chosen + "w"
+            # Keep appending until the name is globally unique in this procedure.
+            while chosen.lower() in _collect_used_lower_names():
+                chosen = chosen + "w"
+
+        conv_info.ld_stride_name_map[str(default_ldname).lower()] = chosen
+        return chosen
+
+    # ------------------------------------------------------------
+    # Rule 3-A: ldexpr is a PARAMETER identifier -> use as-is.
+    # ------------------------------------------------------------
+    if _ident_re.fullmatch(core) and _is_parameter_identifier(core):
+        # Do not rename; do not create a new stride variable.
+        if getattr(conv_info, "ld_stride_name_map", None) is None:
+            conv_info.ld_stride_name_map = {}
+        if isinstance(conv_info.ld_stride_name_map, dict):
+            conv_info.ld_stride_name_map.setdefault(key, core)
         return core
 
-    # If the default name already exists as a Fortran identifier, prefer it
-    # (we assume the original code assigns it appropriately).
-    fproc = getattr(conv_info, "fproc", None)
-    fdecl_map = getattr(fproc, "fdecl_by_identifier",
-                        None) if fproc is not None else None
-    if fdecl_map is not None:
-        if default_ldname.lower() in fdecl_map or default_ldname in fdecl_map:
-            return default_ldname
+    # ------------------------------------------------------------
+    # Rule 3 (identifier): if ldexpr is a single identifier, use it
+    # directly (do not rename; do not introduce redundant snapshot vars
+    # like "ldb = lda"). Generated stride variables are only needed for
+    # compound expressions.
+    # ------------------------------------------------------------
+    if _ident_re.fullmatch(core):
+        if getattr(conv_info, "ld_stride_name_map", None) is None:
+            conv_info.ld_stride_name_map = {}
+        if isinstance(conv_info.ld_stride_name_map, dict):
+            conv_info.ld_stride_name_map.setdefault(key, core)
+        return core
 
-    # Otherwise, create a local ld variable initialized with the expression.
-    if getattr(conv_info, "ld_constant_decls", None) is None:
-        conv_info.ld_constant_decls = {}
-
-    # Keep the first initializer we saw (should be stable for a given array).
-    conv_info.ld_constant_decls.setdefault(default_ldname, core)
-    return default_ldname
+    # ------------------------------------------------------------
+    # Rule 2 (compound expression): ALWAYS snapshot into a new stride
+    # variable derived from default_ldname (lda/ldb/..., w-suffix).
+    # ------------------------------------------------------------
+    return _record_stride(core)
 
 
 def _emit_constant_ld_decls(top_scope, conv_info) -> None:
@@ -2290,6 +3229,7 @@ def rewrite_intrinsics(text: str) -> str:
     # --------------------------------------------------------------
     simple_map = {
         "fem::pow2":  "pow2",
+        "fem::pow4":  "pow4",
         "fem::mod":   "mod",
 
         # elementary math
@@ -2363,12 +3303,531 @@ def rewrite_unary_bracket_parens(text: str) -> str:
     return "".join(out)
 
 
+def _convert_parentheses_postfix(conv_info, prev_tok, tok, had_str_concat):
+    """Return the postfix string for a parentheses token.
+
+    This centralizes the translation of Fortran-style parentheses that follow
+    an identifier:
+      - array element / slice: a(i), a(i,j), a(i:j), z(i:j, col)
+      - function call: foo(...)
+      - plain grouping: (expr)
+
+    The same logic must be used by both convert_tokens() and convert_io_loop()
+    so that array flattening (lower-bound shifts and leading-dimension
+    multiplication) is defined in exactly one place.
+    """
+
+    # Detect array reference: a(i) or a(i,j)
+    is_array_ref = False
+    fdecl = None
+    data_rank = None
+    data_dims_ints = None
+
+    if (prev_tok is not None
+            and getattr(prev_tok, 'is_identifier', lambda: False)()
+            and conv_info is not None
+            and getattr(conv_info, 'fproc', None) is not None):
+        try:
+            fdecl = conv_info.fproc.get_fdecl(id_tok=prev_tok)
+        except Exception:
+            fdecl = None
+
+    if (fdecl is not None
+            and getattr(fdecl, 'dim_tokens', None) is not None
+            and not fdecl.is_user_defined_callable()):
+        # Non-callable with dimensions -> array reference
+        is_array_ref = True
+
+    # Fallback: arrays hoisted from DATA may be emitted as `static T name[] = {...};`.
+    # In some corner cases get_fdecl() can fail at use sites; use DATA initializer metadata.
+    if (not is_array_ref
+            and prev_tok is not None
+            and getattr(prev_tok, 'is_identifier', lambda: False)()
+            and conv_info is not None
+            and getattr(conv_info, 'fproc', None) is not None):
+        try:
+            if getattr(conv_info, 'array_data_initializers', None) is None:
+                conv_info.array_data_initializers = build_array_data_initializers(
+                    conv_info)
+            rec = (conv_info.array_data_initializers or {}).get(
+                prev_tok.value.lower())
+            if rec is not None:
+                _elem_ctype, dims_ints, _init_list, rank = rec
+                data_rank = rank
+                data_dims_ints = dims_ints
+                is_array_ref = True
+        except Exception:
+            pass
+
+    if is_array_ref:
+        # Check if this is an array slice (contains ':' operator)
+        def _contains_colon_op(tokens):
+            """Return True if token list contains a colon operator (array slice)."""
+            for t in tokens:
+                if hasattr(t, 'is_op_with') and t.is_op_with(value=':'):
+                    return True
+                if hasattr(t, 'value') and isinstance(t.value, (list, tuple)):
+                    if _contains_colon_op(t.value):
+                        return True
+            return False
+
+        is_array_slice = _contains_colon_op(tok.value)
+
+        # Convert indices inside parentheses to C++ array indexing
+        idx_str = convert_tokens(
+            conv_info=conv_info,
+            tokens=tok.value,
+            commas=True,
+            had_str_concat=had_str_concat)
+
+        # Split by top-level commas, ignoring commas inside nested parentheses
+        parts = _split_actuals(idx_str)
+
+        if is_array_slice and len(parts) == 2:
+            # 1D slice: a(start:end) -> [__SLICE__(start, end)]
+            start_expr = parts[0].strip()
+            end_expr = parts[1].strip()
+            return f'[__SLICE__({start_expr}, {end_expr})]'
+
+        if is_array_slice and len(parts) == 3:
+            # Two possible meanings:
+            #   (A) 1D slice with stride: a(start:end:step)
+            #   (B) 2D slice on first dimension: z(start:end, col)
+            # Disambiguate using declared rank.
+            rank = 0
+            try:
+                rank = len(getattr(fdecl, 'dim_tokens', None) or [])
+            except Exception:
+                rank = 0
+            if rank == 0 and data_rank is not None:
+                try:
+                    rank = int(data_rank)
+                except Exception:
+                    pass
+
+            if rank == 1:
+                start_expr = parts[0].strip()
+                end_expr = parts[1].strip()
+                step_expr = parts[2].strip()
+                return f'[__SLICE__({start_expr}, {end_expr}, {step_expr})]'
+
+            # 2D slice on first dimension: [__SLICE2D__(start, end, col, ldname)]
+            start_expr = parts[0].strip()
+            end_expr = parts[1].strip()
+            col_expr = parts[2].strip()
+            default_ldname = 'ld' + prev_tok.value.lower()
+            if fdecl is not None:
+                ldexpr0 = get_leading_dimension_expr(
+                    conv_info, fdecl, default=default_ldname)
+            else:
+                ldexpr0 = str(int(data_dims_ints[0])) if (
+                    data_dims_ints and len(data_dims_ints) >= 1) else "1"
+            ldexpr = _maybe_use_ld_variable(conv_info, ldexpr0, default_ldname)
+            return f'[__SLICE2D__({start_expr}, {end_expr}, {col_expr}, {ldexpr})]'
+
+        if len(parts) == 1:
+            # One-dimensional array: a(i)
+            i_expr = parts[0].strip()
+            lb_expr = get_lower_bound(conv_info, fdecl, 0).strip()
+
+            int_re = re.compile(r'^[0-9]+$')
+            name_re = re.compile(r'^[A-Za-z_][A-Za-z0-9_]*$')
+            array_elem_re = re.compile(
+                r'^[A-Za-z_][A-Za-z0-9_]*\s*\[[^\[\]]+\]\s*$')
+
+            def canonical_simple_index(s):
+                """Return canonical simple index (identifier/int/array/func) or None."""
+                s = s.strip()
+                # Strip outer layers of parentheses if they enclose the whole expr.
+                while s.startswith('(') and s.endswith(')'):
+                    depth = 0
+                    balanced_outer = True
+                    for pos, ch in enumerate(s):
+                        if ch == '(':
+                            depth += 1
+                        elif ch == ')':
+                            depth -= 1
+                        if depth == 0 and pos != len(s) - 1:
+                            balanced_outer = False
+                            break
+                    if not balanced_outer:
+                        break
+                    s = s[1:-1].strip()
+
+                if name_re.fullmatch(s) or int_re.fullmatch(s):
+                    return s
+                if array_elem_re.fullmatch(s):
+                    return s
+
+                # Recognize NAME( ... ) with balanced parentheses.
+                if not s:
+                    return None
+                if not (s[0].isalpha() or s[0] == '_'):
+                    return None
+                pos = 0
+                while pos < len(s) and (s[pos].isalnum() or s[pos] == '_'):
+                    pos += 1
+                name = s[:pos]
+                while pos < len(s) and s[pos].isspace():
+                    pos += 1
+                if pos >= len(s) or s[pos] != '(':
+                    return None
+
+                start_paren = pos
+                depth = 0
+                end_paren = None
+                for i in range(start_paren, len(s)):
+                    ch = s[i]
+                    if ch == '(':
+                        depth += 1
+                    elif ch == ')':
+                        depth -= 1
+                        if depth == 0:
+                            end_paren = i
+                            break
+                if end_paren is None:
+                    return None
+
+                pos = end_paren + 1
+                while pos < len(s) and s[pos].isspace():
+                    pos += 1
+                if pos != len(s):
+                    return None
+
+                inner = s[start_paren + 1:end_paren]
+                return f'{name}({inner})'
+
+            # Keep "1 - 1" (do not fold into 0) for auditability.
+            canon_i = canonical_simple_index(i_expr)
+
+            if lb_expr == '0':
+                index_expr = canon_i if canon_i is not None else f'({i_expr})'
+            else:
+                lb_simple = bool(name_re.fullmatch(lb_expr)
+                                 or int_re.fullmatch(lb_expr))
+                idx_simple = canon_i is not None
+                if idx_simple and lb_simple:
+                    index_expr = f'{canon_i} - {lb_expr}'
+                elif idx_simple and not lb_simple:
+                    index_expr = f'{canon_i} - ({lb_expr})'
+                elif not idx_simple and lb_simple:
+                    index_expr = f'({i_expr}) - {lb_expr}'
+                else:
+                    index_expr = f'({i_expr}) - ({lb_expr})'
+
+            return '[' + index_expr + ']'
+
+        if len(parts) == 2:
+            # Two-dimensional array: a(i, j)
+            i_expr, j_expr = parts
+            i_expr = i_expr.strip()
+            j_expr = j_expr.strip()
+
+            default_ldname = 'ld' + prev_tok.value.lower()
+            ldexpr = get_leading_dimension_expr(
+                conv_info, fdecl, default=default_ldname)
+            ldexpr = _maybe_use_ld_variable(conv_info, ldexpr, default_ldname)
+
+            lb1 = get_lower_bound(conv_info, fdecl, 0).strip()
+            lb2 = get_lower_bound(conv_info, fdecl, 1).strip()
+
+            simple_name = re.compile(r'^[A-Za-z_][A-Za-z0-9_]*$')
+            simple_int = re.compile(r'^[0-9]+$')
+
+            def canonical_simple_2(s):
+                """Return canonical simple index (identifier/int/array element) or None."""
+                s = s.strip()
+                while s.startswith('(') and s.endswith(')'):
+                    depth = 0
+                    balanced_outer = True
+                    for pos, ch in enumerate(s):
+                        if ch == '(':
+                            depth += 1
+                        elif ch == ')':
+                            depth -= 1
+                        if depth == 0 and pos != len(s) - 1:
+                            balanced_outer = False
+                            break
+                    if not balanced_outer:
+                        break
+                    s = s[1:-1].strip()
+
+                if simple_name.fullmatch(s) or simple_int.fullmatch(s):
+                    return s
+
+                # Recognize NAME[ ... ] with balanced brackets.
+                if not s:
+                    return None
+                if not (s[0].isalpha() or s[0] == '_'):
+                    return None
+                pos = 0
+                while pos < len(s) and (s[pos].isalnum() or s[pos] == '_'):
+                    pos += 1
+                name = s[:pos]
+                while pos < len(s) and s[pos].isspace():
+                    pos += 1
+                if pos >= len(s) or s[pos] != '[':
+                    return None
+
+                start_bracket = pos
+                depth = 0
+                end_bracket = None
+                for i in range(start_bracket, len(s)):
+                    ch = s[i]
+                    if ch == '[':
+                        depth += 1
+                    elif ch == ']':
+                        depth -= 1
+                        if depth == 0:
+                            end_bracket = i
+                            break
+                if end_bracket is None:
+                    return None
+
+                pos = end_bracket + 1
+                while pos < len(s) and s[pos].isspace():
+                    pos += 1
+                if pos != len(s):
+                    return None
+
+                inner = s[start_bracket + 1:end_bracket]
+                return f'{name}[{inner}]'
+
+            if lb1 == '1' and lb2 == '1':
+                core_i = canonical_simple_2(i_expr)
+                if core_i is not None:
+                    i_term = f'{core_i} - 1'
+                else:
+                    if simple_name.match(i_expr) or simple_int.match(i_expr):
+                        i_term = f'{i_expr} - 1'
+                    else:
+                        i_term = f'({i_expr}) - 1'
+
+                core_j = canonical_simple_2(j_expr)
+                if core_j is not None:
+                    j_term = f'({core_j} - 1)'
+                else:
+                    if simple_name.match(j_expr) or simple_int.match(j_expr):
+                        j_term = f'({j_expr} - 1)'
+                    else:
+                        j_term = f'(({j_expr}) - 1)'
+
+                index_expr = f'({i_term}) + {j_term}*{ldexpr}'
+                return '[' + index_expr + ']'
+
+            # General lower-bound aware path
+            def make_offset(idx_expr: str, lb_expr: str) -> str:
+                idx_expr = idx_expr.strip()
+                lb_expr = lb_expr.strip()
+                core = canonical_simple_2(idx_expr)
+
+                if lb_expr == '0':
+                    return core if core is not None else f'({idx_expr})'
+
+                lb_simple = bool(simple_name.fullmatch(
+                    lb_expr) or simple_int.fullmatch(lb_expr))
+
+                if core is not None:
+                    return f'{core} - {lb_expr}' if lb_simple else f'{core} - ({lb_expr})'
+
+                return f'({idx_expr}) - {lb_expr}' if lb_simple else f'({idx_expr}) - ({lb_expr})'
+
+            row_off = make_offset(i_expr, lb1)
+            col_off = make_offset(j_expr, lb2)
+            array_elem_re = re.compile(
+                r'^[A-Za-z_][A-Za-z0-9_]*\s*\[[^\[\]]+\]\s*$')
+
+            def is_zero_literal(expr: str) -> bool:
+                return (_strip_outer_parens_balanced(expr.strip()) == '0')
+
+            def is_simple_term(expr: str) -> bool:
+                expr = _strip_outer_parens_balanced(expr.strip())
+                return (bool(simple_name.fullmatch(expr))
+                        or bool(simple_int.fullmatch(expr))
+                        or bool(array_elem_re.fullmatch(expr)))
+
+            def wrap_add_term(expr: str) -> str:
+                core = _strip_outer_parens_balanced(expr.strip())
+                return core if is_simple_term(core) else f'({core})'
+
+            terms = []
+            if not is_zero_literal(row_off):
+                terms.append(wrap_add_term(row_off))
+            if not is_zero_literal(col_off):
+                terms.append(f'{wrap_add_term(col_off)} * {ldexpr}')
+
+            index_expr = ' + '.join(terms) if terms else '0'
+            return '[' + index_expr + ']'
+
+        if len(parts) == 3:
+            # Three-dimensional array: a(i, j, k)
+            # Only handle element access (no ':' slice) when the declared rank is 3.
+            rank = 0
+            try:
+                rank = len(getattr(fdecl, 'dim_tokens', None) or [])
+            except Exception:
+                rank = 0
+            if rank == 0 and data_rank is not None:
+                try:
+                    rank = int(data_rank)
+                except Exception:
+                    pass
+            if rank == 3 and (not is_array_slice):
+                i_expr, j_expr, k_expr = parts
+                i_expr = i_expr.strip()
+                j_expr = j_expr.strip()
+                k_expr = k_expr.strip()
+
+                # Stride of the 2nd dimension is the extent of the 1st dimension.
+                default_ld1 = 'ld' + prev_tok.value.lower()
+                if fdecl is not None:
+                    ld1_expr = get_leading_dimension_expr(
+                        conv_info, fdecl, default=default_ld1)
+                else:
+                    ld1_expr = str(int(data_dims_ints[0])) if (
+                        data_dims_ints and len(data_dims_ints) >= 1) else "1"
+                ld1 = _maybe_use_ld_variable(conv_info, ld1_expr, default_ld1)
+
+                # Extent of the 2nd dimension (used as the multiplier for dim-3 stride).
+                if fdecl is not None:
+                    ld2_expr = None
+                    try:
+                        dt = getattr(fdecl, 'dim_tokens', None) or []
+                        if len(dt) >= 2:
+                            dim1_tokens = dt[1].value
+                            simple = _try_extract_first_dim_extent_identifier(
+                                conv_info, dim1_tokens)
+                            if simple:
+                                ld2_expr = simple
+                            else:
+                                ld2_expr = convert_dim_to_static_size(
+                                    conv_info, tokens=dim1_tokens).strip()
+                    except Exception:
+                        ld2_expr = None
+                    if ld2_expr is None or not str(ld2_expr).strip():
+                        ld2_expr = "1"
+                else:
+                    ld2_expr = str(int(data_dims_ints[1])) if (
+                        data_dims_ints and len(data_dims_ints) >= 2) else "1"
+
+                default_ld2 = 'ld2' + prev_tok.value.lower()
+                ld2 = _maybe_use_ld_variable(conv_info, ld2_expr, default_ld2)
+
+                lb1 = get_lower_bound(conv_info, fdecl, 0).strip()
+                lb2 = get_lower_bound(conv_info, fdecl, 1).strip()
+                lb3 = get_lower_bound(conv_info, fdecl, 2).strip()
+
+                simple_name = re.compile(r'^[A-Za-z_][A-Za-z0-9_]*$')
+                simple_int = re.compile(r'^[0-9]+$')
+                array_elem_re = re.compile(
+                    r'^[A-Za-z_][A-Za-z0-9_]*\s*\[[^\[\]]+\]\s*$')
+
+                def is_simple_index(expr: str) -> bool:
+                    expr = expr.strip()
+                    return (bool(simple_name.fullmatch(expr))
+                            or bool(simple_int.fullmatch(expr))
+                            or bool(array_elem_re.fullmatch(expr)))
+
+                def make_offset(idx_expr: str, lb_expr: str) -> str:
+                    idx_expr = idx_expr.strip()
+                    lb_expr = lb_expr.strip()
+
+                    if lb_expr == '0':
+                        return idx_expr if is_simple_index(idx_expr) else f'({idx_expr})'
+
+                    lb_simple = bool(simple_name.fullmatch(
+                        lb_expr) or simple_int.fullmatch(lb_expr))
+                    idx_simple = is_simple_index(idx_expr)
+
+                    if idx_simple and lb_simple:
+                        return f'{idx_expr} - {lb_expr}'
+                    if idx_simple and not lb_simple:
+                        return f'{idx_expr} - ({lb_expr})'
+                    if (not idx_simple) and lb_simple:
+                        return f'({idx_expr}) - {lb_expr}'
+                    return f'({idx_expr}) - ({lb_expr})'
+
+                off1 = make_offset(i_expr, lb1)
+                off2 = make_offset(j_expr, lb2)
+                off3 = make_offset(k_expr, lb3)
+
+                # Fortran column-major flattening:
+                #   a(i,j,k) -> a[(i-lb1) + (j-lb2)*ld1 + (k-lb3)*ld1*ld2]
+                def is_zero_literal(expr: str) -> bool:
+                    return (_strip_outer_parens_balanced(expr.strip()) == '0')
+
+                def wrap_add_term(expr: str) -> str:
+                    core = _strip_outer_parens_balanced(expr.strip())
+                    return core if is_simple_index(core) else f'({core})'
+
+                terms = []
+                if not is_zero_literal(off1):
+                    terms.append(wrap_add_term(off1))
+                if not is_zero_literal(off2):
+                    terms.append(f'{wrap_add_term(off2)} * {ld1}')
+                if not is_zero_literal(off3):
+                    terms.append(f'{wrap_add_term(off3)} * {ld1} * {ld2}')
+
+                index_expr = ' + '.join(terms) if terms else '0'
+                return '[' + index_expr + ']'
+
+        # Fallback: treat like a normal call/parenthesized expression
+        if (cmn_needs_to_be_inserted(conv_info=conv_info, prev_tok=prev_tok)):
+            if (len(tok.value) != 0) and (len(tok.value[0].value) != 0):
+                op = '(cmn, '
+            else:
+                op = '(cmn'
+        else:
+            op = '('
+        inner = convert_tokens(
+            conv_info=conv_info,
+            tokens=tok.value,
+            commas=True,
+            had_str_concat=had_str_concat)
+        return op + inner + ')'
+
+    # Normal function call or parenthesized expression
+    inner = convert_tokens(
+        conv_info=conv_info,
+        tokens=tok.value,
+        commas=True,
+        had_str_concat=had_str_concat)
+
+    # If the previous token is an identifier and corresponds to a known signature,
+    # adjust actual arguments according to pointer/value information.
+    if (prev_tok is not None and getattr(prev_tok, 'is_identifier', lambda: False)()):
+        sig = _lookup_routine_signature(prev_tok.value)
+        if sig is not None:
+            force_elems = False
+            if FABLE_SMALL_CHAR_VIEW:
+                base_name = str(prev_tok.value).split("::")[-1].strip()
+                mapped_name = convert_function_name_to_mplapack(base_name)
+                force_elems = (str(mapped_name).lower()
+                               in _MPLAPACK_CORE_CPP_NAMES)
+            inner = _adjust_actuals_using_signature(
+                inner, sig, conv_info, force_elems_call=force_elems)
+
+    # Decide whether we need to inject "cmn" as the first argument.
+    if (cmn_needs_to_be_inserted(conv_info=conv_info, prev_tok=prev_tok)):
+        if (len(tok.value) != 0) and (len(tok.value[0].value) != 0):
+            op = '(cmn, '
+        else:
+            op = '(cmn'
+    else:
+        op = '('
+
+    return op + inner + ')'
+
+
 def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
     result = []
     rapp = result.append
     prev_tok = None
+    prev_operand_is_string = False
     if (had_str_concat is None):
         had_str_concat = mutable(value=False)
+    if (not had_str_concat.value) and _tokens_have_str_concat(tokens):
+        had_str_concat.value = True
     from fable.tokenization import group_power
     for tok in group_power(tokens=tokens):
         if (tok.is_seq()):
@@ -2383,428 +3842,11 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
                     commas=False,
                     had_str_concat=had_str_concat))
         elif (tok.is_parentheses()):
-            # Detect array reference: a(i) or a(i,j)
-            is_array_ref = False
-            fdecl = None
-            if (prev_tok is not None
-                    and prev_tok.is_identifier()
-                    and conv_info.fproc is not None):
-                try:
-                    fdecl = conv_info.fproc.get_fdecl(id_tok=prev_tok)
-                except Exception:
-                    fdecl = None
-
-            if (fdecl is not None
-                    and getattr(fdecl, "dim_tokens", None) is not None
-                    and not fdecl.is_user_defined_callable()):
-                # Non-callable with dimensions -> array reference
-                is_array_ref = True
-
-            if is_array_ref:
-                # Check if this is an array slice (contains ':' operator)
-                def _contains_colon_op(tokens):
-                    """Check if token list contains a colon operator (array slice)."""
-                    for t in tokens:
-                        if hasattr(t, 'is_op_with') and t.is_op_with(value=":"):
-                            return True
-                        if hasattr(t, 'value') and isinstance(t.value, (list, tuple)):
-                            if _contains_colon_op(t.value):
-                                return True
-                    return False
-
-                is_array_slice = _contains_colon_op(tok.value)
-
-                # Convert indices inside parentheses to C++ array indexing
-                idx_str = convert_tokens(
-                    conv_info=conv_info,
-                    tokens=tok.value,
-                    commas=True,
-                    had_str_concat=had_str_concat)
-
-                # Split by top-level commas, ignoring commas inside nested parentheses
-                parts = _split_actuals(idx_str)
-
-                if is_array_slice and len(parts) == 2:
-                    # 1D Array slice: a(start:end) was converted to "start, end"
-                    # Output special marker format that will be processed later
-                    # Format: [__SLICE__(start, end)]
-                    # This marker will be transformed by _postprocess_mmaxloc for Mmaxloc calls
-                    start_expr = parts[0].strip()
-                    end_expr = parts[1].strip()
-                    rapp(f"[__SLICE__({start_expr}, {end_expr})]")
-                elif is_array_slice and len(parts) == 3:
-                    # Two possible meanings:
-                    #   (A) 1D slice with stride: a(start:end:step)
-                    #   (B) 2D slice on first dimension: z(start:end, col)
-                    #
-                    # Disambiguate using the declared rank of the array.
-                    # Rank==1 -> treat as (A), otherwise treat as (B).
-                    rank = 0
-                    try:
-                        rank = len(getattr(fdecl, "dim_tokens", None) or [])
-                    except Exception:
-                        rank = 0
-
-                    if rank == 1:
-                        # 1D slice with stride: a(start:end:step)
-                        start_expr = parts[0].strip()
-                        end_expr = parts[1].strip()
-                        step_expr = parts[2].strip()
-                        # Encode the stride explicitly in __SLICE__ so postprocessing
-                        # can emit Mmaxval/Mminval(..., incx) correctly.
-                        rapp(
-                            f"[__SLICE__({start_expr}, {end_expr}, {step_expr})]")
-                    else:
-                        # 2D Array slice on first dimension: z(start:end, col)
-                        # was converted to "start, end, col"
-                        # Format: [__SLICE2D__(start, end, col, ldname)]
-                        start_expr = parts[0].strip()
-                        end_expr = parts[1].strip()
-                        col_expr = parts[2].strip()
-                        default_ldname = "ld" + prev_tok.value.lower()
-                        ldexpr = get_leading_dimension_expr(
-                            conv_info, fdecl, default=default_ldname)
-                        ldexpr = _maybe_use_ld_variable(
-                            conv_info, ldexpr, default_ldname)
-                        rapp(
-                            f"[__SLICE2D__({start_expr}, {end_expr}, {col_expr}, {ldexpr})]")
-
-                elif len(parts) == 1:
-                    # One-dimensional array: a(i)
-                    i_expr = parts[0].strip()
-                    lb_expr = get_lower_bound(conv_info, fdecl, 0).strip()
-
-                    int_re = re.compile(r"^[0-9]+$")
-                    name_re = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
-                    array_elem_re = re.compile(
-                        r"^[A-Za-z_][A-Za-z0-9_]*\s*\[[^\[\]]+\]\s*$"
-                    )
-
-                    def canonical_simple_index(s):
-                        """Return canonical simple index (identifier/int/array/func) or None.
-
-                        Simple indices include:
-                        - plain identifiers: i, j, idx
-                        - integer literals: 0, 1, 10
-                        - single array elements: name[...]
-                        - single function calls: name(...)
-                        Outer parentheses around the whole expression are stripped.
-                        """
-                        s = s.strip()
-                        # Strip outer layers of parentheses if they enclose the whole expr.
-                        while s.startswith("(") and s.endswith(")"):
-                            depth = 0
-                            balanced_outer = True
-                            for pos, ch in enumerate(s):
-                                if ch == "(":
-                                    depth += 1
-                                elif ch == ")":
-                                    depth -= 1
-                                if depth == 0 and pos != len(s) - 1:
-                                    balanced_outer = False
-                                    break
-                            if not balanced_outer:
-                                break
-                            s = s[1:-1].strip()
-
-                        # Plain identifier or integer literal
-                        if name_re.fullmatch(s):
-                            return s
-                        if int_re.fullmatch(s):
-                            return s
-                        # Simple array element (non-nested) handled via regex
-                        if array_elem_re.fullmatch(s):
-                            return s
-
-                        # Try to recognize NAME( ... ) with balanced parentheses,
-                        # allowing nested parentheses inside the argument list.
-                        if not s:
-                            return None
-                        if not (s[0].isalpha() or s[0] == "_"):
-                            return None
-                        pos = 0
-                        while pos < len(s) and (s[pos].isalnum() or s[pos] == "_"):
-                            pos += 1
-                        name = s[:pos]
-                        # Skip whitespace.
-                        while pos < len(s) and s[pos].isspace():
-                            pos += 1
-                        if pos >= len(s) or s[pos] != "(":
-                            return None
-
-                        # Find matching closing parenthesis.
-                        start_paren = pos
-                        depth = 0
-                        end_paren = None
-                        for i in range(start_paren, len(s)):
-                            ch = s[i]
-                            if ch == "(":
-                                depth += 1
-                            elif ch == ")":
-                                depth -= 1
-                                if depth == 0:
-                                    end_paren = i
-                                    break
-                        if end_paren is None:
-                            return None
-
-                        # After ')', only whitespace is allowed.
-                        pos = end_paren + 1
-                        while pos < len(s) and s[pos].isspace():
-                            pos += 1
-                        if pos != len(s):
-                            return None
-
-                        inner = s[start_paren + 1: end_paren]
-                        return f"{name}({inner})"
-
-                    # NOTE: Do not constant-fold "1 - 1" into "0" for 1D indexing.
-                    # Keeping "a[1 - 1]" helps auditing generated code vs. Fortran sources.
-                    canon_i = canonical_simple_index(i_expr)
-
-                    # If lower bound is exactly 0, avoid generating "i - 0".
-                    if lb_expr == "0":
-                        if canon_i is not None:
-                            # a(i) with lb=0 -> a[i]
-                            index_expr = canon_i
-                        else:
-                            # Complex index: group once: a(f(i)) -> a[(f(i))]
-                            index_expr = f"({i_expr})"
-                    else:
-                        # Non-zero lower bound: generate "index - lb"
-                        lb_simple = bool(
-                            name_re.fullmatch(
-                                lb_expr) or int_re.fullmatch(lb_expr)
-                        )
-                        idx_simple = canon_i is not None
-
-                        if idx_simple and lb_simple:
-                            index_expr = f"{canon_i} - {lb_expr}"
-                        elif idx_simple and not lb_simple:
-                            index_expr = f"{canon_i} - ({lb_expr})"
-                        elif not idx_simple and lb_simple:
-                            index_expr = f"({i_expr}) - {lb_expr}"
-                        else:
-                            index_expr = f"({i_expr}) - ({lb_expr})"
-
-                    rapp("[" + index_expr + "]")
-
-                elif len(parts) == 2:
-                    # Two-dimensional array: a(i, j)
-                    i_expr, j_expr = parts
-                    i_expr = i_expr.strip()
-                    j_expr = j_expr.strip()
-                    default_ldname = "ld" + prev_tok.value.lower()
-                    ldexpr = get_leading_dimension_expr(
-                        conv_info, fdecl, default=default_ldname)
-                    ldexpr = _maybe_use_ld_variable(
-                        conv_info, ldexpr, default_ldname)
-
-                    lb1 = get_lower_bound(conv_info, fdecl, 0).strip()
-                    lb2 = get_lower_bound(conv_info, fdecl, 1).strip()
-
-                    simple_name = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
-                    simple_int = re.compile(r"^[0-9]+$")
-                    array_elem_re = re.compile(
-                        r"^[A-Za-z_][A-Za-z0-9_]*\s*\[[^\[\]]+\]\s*$"
-                    )
-
-                    def canonical_simple_2(s):
-                        """Return canonical simple index (identifier/int/array element) or None.
-
-                        This strips outer parentheses that enclose the whole expression, e.g.
-                        "(perm[i - 1])" -> "perm[i - 1]". It also recognizes array
-                        elements of the form NAME[ ... ] even if the index expression
-                        itself contains nested brackets.
-                        """
-                        s = s.strip()
-
-                        # Strip outer layers of parentheses if they enclose the whole expr.
-                        while s.startswith("(") and s.endswith(")"):
-                            depth = 0
-                            balanced_outer = True
-                            for pos, ch in enumerate(s):
-                                if ch == "(":
-                                    depth += 1
-                                elif ch == ")":
-                                    depth -= 1
-                                # If we close the outermost paren before the end,
-                                # then these are not purely outer parentheses.
-                                if depth == 0 and pos != len(s) - 1:
-                                    balanced_outer = False
-                                    break
-                            if not balanced_outer:
-                                break
-                            # Drop the outermost pair.
-                            s = s[1:-1].strip()
-
-                        # Plain identifier or integer literal
-                        if simple_name.fullmatch(s):
-                            return s
-                        if simple_int.fullmatch(s):
-                            return s
-
-                        # Try to recognize NAME[ ... ] with a balanced bracketed index,
-                        # allowing nested brackets inside the index expression.
-                        if not s:
-                            return None
-                        # Parse the leading NAME.
-                        if not (s[0].isalpha() or s[0] == "_"):
-                            return None
-                        pos = 0
-                        while pos < len(s) and (s[pos].isalnum() or s[pos] == "_"):
-                            pos += 1
-                        name = s[:pos]
-                        # Skip whitespace.
-                        while pos < len(s) and s[pos].isspace():
-                            pos += 1
-                        if pos >= len(s) or s[pos] != "[":
-                            return None
-
-                        # Find the matching closing bracket, tracking nested brackets.
-                        start_bracket = pos
-                        depth = 0
-                        end_bracket = None
-                        for i in range(start_bracket, len(s)):
-                            ch = s[i]
-                            if ch == "[":
-                                depth += 1
-                            elif ch == "]":
-                                depth -= 1
-                                if depth == 0:
-                                    end_bracket = i
-                                    break
-                        if end_bracket is None:
-                            return None
-
-                        # After the matching ']', only whitespace is allowed.
-                        pos = end_bracket + 1
-                        while pos < len(s) and s[pos].isspace():
-                            pos += 1
-                        if pos != len(s):
-                            # Trailing junk -> not a simple array element
-                            return None
-
-                        # Canonical form: NAME[inner]
-                        inner = s[start_bracket + 1: end_bracket]
-                        return f"{name}[{inner}]"
-
-                    # --- Fast path: both lower bounds are 1 (LAPACK-style arrays) ---
-                    if lb1 == "1" and lb2 == "1":
-                        # Row index term (first dimension)
-                        core_i = canonical_simple_2(i_expr)
-                        if core_i is not None:
-                            # Simple core: i, m, perm[i-1], givcol[...]
-                            i_term = f"{core_i} - 1"
-                        else:
-                            # Fallback to legacy behavior
-                            if simple_name.match(i_expr) or simple_int.match(i_expr):
-                                i_term = f"{i_expr} - 1"
-                            else:
-                                i_term = f"({i_expr}) - 1"
-
-                        # Column index term (second dimension)
-                        core_j = canonical_simple_2(j_expr)
-                        if core_j is not None:
-                            j_term = f"({core_j} - 1)"
-                        else:
-                            if simple_name.match(j_expr) or simple_int.match(j_expr):
-                                j_term = f"({j_expr} - 1)"
-                            else:
-                                j_term = f"(({j_expr}) - 1)"
-
-                        # Flattened index: (i_term) + (j_term)*ldname
-                        index_expr = f"({i_term}) + {j_term}*{ldexpr}"
-                        rapp("[" + index_expr + "]")
-
-                    else:
-                        # --- General lower-bound aware path (0-based or arbitrary L1,L2) ---
-
-                        def make_offset(idx_expr: str, lb_expr: str) -> str:
-                            """Build a single-dimension offset term (row or column)."""
-                            idx_expr = idx_expr.strip()
-                            lb_expr = lb_expr.strip()
-                            core = canonical_simple_2(idx_expr)
-
-                            # Lower bound exactly 0: do not emit "- 0".
-                            if lb_expr == "0":
-                                if core is not None:
-                                    return core
-                                return f"({idx_expr})"
-
-                            # Non-zero lower bound
-                            lb_simple = bool(
-                                simple_name.fullmatch(lb_expr)
-                                or simple_int.fullmatch(lb_expr)
-                            )
-
-                            if core is not None:
-                                # Simple core: use "core - lb"
-                                if lb_simple:
-                                    return f"{core} - {lb_expr}"
-                                else:
-                                    return f"{core} - ({lb_expr})"
-
-                            # Complex index with no simple core
-                            if lb_simple:
-                                return f"({idx_expr}) - {lb_expr}"
-                            return f"({idx_expr}) - ({lb_expr})"
-
-                        # Row (first dimension) and column (second dimension) offsets
-                        row_off = make_offset(i_expr, lb1)
-                        col_off = make_offset(j_expr, lb2)
-
-                        # Multiply the (possibly parenthesized) column offset by ldname.
-                        index_expr = f"{row_off} + {col_off}*{ldexpr}"
-                        rapp("[" + index_expr + "]")
-
-                else:
-                    # Fallback: treat like a normal call/parenthesized expression
-                    if (cmn_needs_to_be_inserted(
-                            conv_info=conv_info, prev_tok=prev_tok)):
-                        if (len(tok.value) != 0) and (len(tok.value[0].value) != 0):
-                            op = "(cmn, "
-                        else:
-                            op = "(cmn"
-                    else:
-                        op = "("
-                    inner = convert_tokens(
-                        conv_info=conv_info,
-                        tokens=tok.value,
-                        commas=True,
-                        had_str_concat=had_str_concat)
-                    rapp(op + inner + ")")
-            else:
-                # Normal function call or parenthesized expression
-                # First, convert the inside of parentheses to a string
-                inner = convert_tokens(
-                    conv_info=conv_info,
-                    tokens=tok.value,
-                    commas=True,
-                    had_str_concat=had_str_concat)
-
-                # If the previous token is an identifier and corresponds to a
-                # BLAS/LAPACK routine with a known signature, adjust actual
-                # arguments according to the pointer/value information.
-                if (prev_tok is not None
-                        and prev_tok.is_identifier()):
-                    sig = _lookup_routine_signature(prev_tok.value)
-
-                    if sig is not None:
-                        inner = _adjust_actuals_using_signature(
-                            inner, sig, conv_info)
-
-                # Then decide whether we need to inject "cmn" as the first argument
-                if (cmn_needs_to_be_inserted(conv_info=conv_info, prev_tok=prev_tok)):
-                    if (len(tok.value) != 0) and (len(tok.value[0].value) != 0):
-                        op = "(cmn, "
-                    else:
-                        op = "(cmn"
-                else:
-                    op = "("
-
-                rapp(op + inner + ")")
-
+            rapp(_convert_parentheses_postfix(
+                conv_info=conv_info,
+                prev_tok=prev_tok,
+                tok=tok,
+                had_str_concat=had_str_concat))
         elif (tok.is_implied_do()):
             raise AssertionError
         elif (tok.is_power()):
@@ -2814,8 +3856,15 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
                 vmap=conv_info.vmap,
                 leading=(len(result) == 0),
                 tok=tok,
-                had_str_concat=had_str_concat))
+                had_str_concat=had_str_concat,
+                prev_operand_is_string=prev_operand_is_string))
         prev_tok = tok
+        if (tok.is_op()):
+            pass
+        elif (tok.is_string()):
+            prev_operand_is_string = True
+        else:
+            prev_operand_is_string = False
 
     # Build base string
     if (commas):
@@ -2827,6 +3876,8 @@ def convert_tokens(conv_info, tokens, commas=False, had_str_concat=None):
     s = rewrite_intrinsics(s)
     # Clean redundant parentheses for unary subscripts only, e.g. a[(k)] -> a[k]
     s = rewrite_unary_bracket_parens(s)
+    # Rewrite unit-length substrings on plain char* dummy arguments: path(1,1) -> path[(1)-1]
+    s = _rewrite_plain_char_ptr_unit_substrings(s, conv_info)
     return s
 
 
@@ -2857,15 +3908,24 @@ def convert_data_type(conv_info, fdecl, crhs):
             csize = convert_tokens(conv_info=conv_info, tokens=size_tokens)
 
         # CHARACTER*1 scalar → plain char (no implicit initialization)
-        if csize.strip() == "1" and dim_tokens is None:
+        if csize.strip() == "1" and dim_tokens is None and not FABLE_SMALL_CHAR_VIEW:
             ctype = "char"
             # Do not set crhs here if there is no explicit initializer.
             # If the Fortran code had "CHARACTER*1 normin /'N'/", that will
             # already be reflected in crhs before this point.
         else:
+            # For CHARACTER*n (n > 1) scalars we use fem::str<n>.
+            # IMPORTANT: do not inject an implicit initializer here.
+            #
+            # Reason:
+            #   If we set crhs="0" at this stage, later declaration emission
+            #   cannot see and apply a DATA initializer like:
+            #       DATA intstr / '0123456789' /
+            #
+            # The actual initializer is resolved in convert_declaration() via
+            # build_scalar_data_initializers(), falling back to a zero shortcut
+            # only when no DATA initializer exists.
             ctype = f"fem::str<{csize}>"
-            if crhs is None:
-                crhs = "0"
 
     else:
         def convert_to_ctype_with_size(ctype):
@@ -3080,7 +4140,7 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
         # becomes
         #   char name[2];
         #
-        # We only apply this to short fixed-length scalars (length 24).
+        # We only apply this to short fixed-length scalars (length <= _FABLE_SMALL_CHAR_MAX_LEN).
         if dt_code == "character" and fdecl.size_tokens is not None:
             size_expr = convert_tokens(
                 conv_info=conv_info,
@@ -3090,13 +4150,13 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
             length_is_small = False
             try:
                 length_val = int(size_expr)
-                if 1 < length_val <= 10:
+                if 1 < length_val <= _FABLE_SMALL_CHAR_MAX_LEN:
                     length_is_small = True
             except ValueError:
                 # Non-numeric length expression -> fall back to fem::str<...>
                 length_is_small = False
 
-            if length_is_small:
+            if length_is_small and FABLE_SMALL_CHAR_ENABLED:
                 def const_qualifier():
                     if const:
                         return "const "
@@ -3108,6 +4168,11 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
                 # Remember that this scalar CHARACTER*n was mapped to a small char[].
                 small_char_identifiers.add(vname)
                 small_char_identifier_lengths[vname] = length_val
+                # If this declaration had an initializer (typically from a merged assignment),
+                # we cannot initialize a plain C array in the declaration. Ask the caller
+                # to emit an assignment statement that will be expanded into element copies.
+                if crhs is not None:
+                    return True
                 return False
 
         # For plain CHARACTER*1 (mapped to C++ 'char') without an explicit
@@ -3138,6 +4203,21 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
                 if init is not None:
                     crhs = init
 
+            # For fixed-length CHARACTER scalars emitted as fem::str<N>, avoid injecting
+            # an artificial initializer (no fem::zero<> fallback). If there is no DATA
+            # initializer, keep the declaration uninitialized to match Fortran semantics.
+            #
+            # This preserves DATA initialization when it exists, e.g.:
+            #   DATA threq / 2.0d0 / , intstr / '0123456789' /
+            if crhs is None and ctype.startswith("fem::str<") and not const:
+                def const_qualifier():
+                    if const:
+                        return "const "
+                    return ""
+                mplapack_ctype = convert_to_mplapack_type(ctype)
+                rapp("%s%s %s;" % (const_qualifier(), mplapack_ctype, vname))
+                return False
+
             # Fallback: zero-initialize as before
             if crhs is None:
                 crhs = zero_shortcut_if_possible(ctype=ctype)
@@ -3154,6 +4234,15 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
     # Array declaration (local fixed-size arrays).
     # MPLAPACK reference code prefers plain C arrays for small work arrays,
     # e.g. "INTEGER isave[3];".
+    # If this array was already emitted as a hoisted static DATA initializer,
+    # suppress the plain declaration here.
+    try:
+        if (hasattr(conv_info, "hoisted_data_array_names")
+                and fdecl.id_tok.value.lower() in conv_info.hoisted_data_array_names):
+            return False
+    except Exception:
+        pass
+
     def const_qualifier():
         if (const):
             return "const "
@@ -3163,21 +4252,24 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
     elem_ctype = convert_data_type(
         conv_info=conv_info, fdecl=fdecl, crhs=None)[0]
     mplapack_elem_ctype = convert_to_mplapack_type(elem_ctype)
-    # Prefer plain C arrays when all extents are compile-time constants.
-    # If any extent depends on runtime values (e.g. MAX(M,N)), fall back to a
-    # heap allocation managed by std::unique_ptr<T[]> and expose a raw pointer
-    # with the original variable name for downstream indexing.
+
+    # Evaluate dimensions to determine if this is a compile-time constant array.
+    # This handles cases like: const INTEGER lda = 20; COMPLEX a[lda * lda];
     vals = conv_info.fproc.eval_dimensions_simple(
         dim_tokens=fdecl.dim_tokens, allow_power=False)
-    is_dynamic = (vals is None or vals.count(None) != 0)
+    
+    # Calculate total size if all dimensions are compile-time constants.
+    total_size = None
+    if vals is not None and vals.count(None) == 0:
+        total_size = 1
+        for v in vals:
+            total_size *= v
 
-    # Prefer symbolic size expressions for local work arrays.
-    # For 1D arrays like RWORK(MAXDIM) or WORK(4*MAXDIM) we want:
-    #   REAL rwork[maxdim];
-    #   COMPLEX work[4 * maxdim];
-    # For higher-rank arrays like WORK13(LDWORK,NBMAX) we flatten but keep
-    # the product of extents symbolically:
-    #   COMPLEX work13[ldwork * nbmax];
+    # Build symbolic size expression for local work arrays.
+    # For 1D arrays like RWORK(MAXDIM) or WORK(4*MAXDIM):
+    #   size_expr = "maxdim" or "4 * maxdim"
+    # For higher-rank arrays like WORK13(LDWORK,NBMAX):
+    #   size_expr = "ldwork * nbmax"
     dim_expr = convert_tokens(
         conv_info=conv_info,
         tokens=fdecl.dim_tokens,
@@ -3185,37 +4277,83 @@ def convert_declaration(rapp, conv_info, fdecl, crhs, const):
     ).strip()
 
     # Build a single "number of elements" expression.
+    # Policy: never fold extents into numeric literals, even if they are compile-time constants.
     dt_rank = len(fdecl.dim_tokens) if fdecl.dim_tokens is not None else 0
+
     if dt_rank == 1:
-        size_expr = dim_expr
+        # Single-rank Fortran arrays may use explicit lower bounds, e.g. RMAGN(0:2).
+        # convert_tokens(..., commas=True) turns "0:2" into "0, 2", which is not a valid
+        # C++ array bound. Convert to an extent expression: upper-lower+1.
+        size_expr = convert_dim_to_static_size(
+            conv_info=conv_info, tokens=fdecl.dim_tokens[0].value)
     else:
         parts = _split_actuals(dim_expr)
         if parts and len(parts) == dt_rank:
-            size_expr = " * ".join(parts)
+            # Parenthesize each part to preserve operator precedence when joining with *.
+            size_expr = " * ".join([parenthesize_if_necessary(p) for p in parts])
         else:
             # Conservative fallback: compute a symbolic product of extents.
             size_expr = convert_dims_to_static_size(
                 conv_info=conv_info, dim_tokens=fdecl.dim_tokens)
 
-    if is_dynamic:
-        # Runtime-sized local array: allocate on the heap and expose a raw pointer.
-        # Example:
-        #   DOUBLE PRECISION WNRM(MAX(M,N))
-        # ->
-        #   std::unique_ptr<REAL[]> fable_wnrm_storage(new REAL[max(m, n)]);
-        #   REAL *wnrm = __wnrm_storage.get();
-        storage_name = f"__{vname}_storage"
-        rapp("%sstd::unique_ptr<%s[]> %s(new %s[%s]);" % (
-            const_qualifier(), mplapack_elem_ctype, storage_name,
-            mplapack_elem_ctype, size_expr))
-        rapp("%s *%s = %s.get();" % (
-            mplapack_elem_ctype, vname, storage_name))
-        return False
+    # If total_size is still None, try to evaluate size_expr as a simple arithmetic expression.
+    # This handles cases like "3 - 0 + 1" from RMAGN(0:3) or "ntests" from RESULT(NTESTS).
+    if total_size is None:
+        try:
+            # Only evaluate if size_expr contains only digits, operators, and whitespace.
+            # This is safe and avoids evaluating arbitrary code.
+            if re.match(r'^[\d\s+\-*/()]+$', size_expr):
+                total_size = int(eval(size_expr))
+        except Exception:
+            pass
 
-    # Constant-size local array: keep as a plain C array.
-    rapp("%s%s %s[%s];" % (
-        const_qualifier(), mplapack_elem_ctype, vname, size_expr))
-    return False
+    # Eliminate large REAL/COMPLEX arrays from stack: use std::make_unique.
+    # INTEGER/bool arrays and small constant arrays (size <= FABLE_SMALL_ARRAY_SIZE)
+    # are kept as plain C arrays. This avoids stack overflow for large work arrays
+    # while allowing simpler stack allocation for small arrays and integer work arrays.
+    #
+    # Example (REAL, large constant - lda=20):
+    #   const INTEGER lda = 20;
+    #   COMPLEX a[lda * lda];
+    # ->
+    #   auto a_storage = std::make_unique<COMPLEX[]>(std::max<INTEGER>(1, lda * lda));
+    #   COMPLEX *a = a_storage.get();
+    #
+    # Example (INTEGER, unchanged):
+    #   INTEGER ISAVE(3)
+    # ->
+    #   INTEGER isave[3];
+    #
+    # Example (REAL, small constant, unchanged):
+    #   REAL RESLTS(5)
+    # ->
+    #   REAL reslts[5];
+    #
+    # The std::max<INTEGER>(1, ...) guard ensures allocation of at least 1 element
+    # to avoid undefined behavior from zero-sized allocations.
+
+    # INTEGER/bool arrays: always keep as plain C arrays.
+    if mplapack_elem_ctype in ("INTEGER", "bool"):
+        rapp("%s%s %s[%s];" % (
+            const_qualifier(), mplapack_elem_ctype, vname, size_expr))
+        return (crhs is not None)
+
+    # Small constant arrays (size <= FABLE_SMALL_ARRAY_SIZE): keep as plain C arrays.
+    if total_size is not None and total_size <= FABLE_SMALL_ARRAY_SIZE:
+        rapp("%s%s %s[%s];" % (
+            const_qualifier(), mplapack_elem_ctype, vname, size_expr))
+        return (crhs is not None)
+
+    # Large or variable-sized REAL/COMPLEX arrays: use make_unique.
+    storage_name = f"{vname}_storage"
+    rapp("auto %s = std::make_unique<%s[]>(std::max<INTEGER>(1, %s));" % (
+        storage_name, mplapack_elem_ctype, size_expr))
+    rapp("%s%s *%s = %s.get();" % (
+        const_qualifier(), mplapack_elem_ctype, vname, storage_name))
+    # If this declaration was triggered by an assignment (crhs != None),
+    # we still need to emit the assignment statement; raw pointers
+    # cannot be initialized in the declaration.
+    return (crhs is not None)
 
 
 class scope(object):
@@ -3454,8 +4592,12 @@ def convert_io_loop(
     else:
         owning_cbuf = False
     prev_tok = None
+    prev_operand_is_string = False
     if (had_str_concat is None):
         had_str_concat = mutable(value=False)
+    if (not had_str_concat.value) and _tokens_have_str_concat(tokens):
+        had_str_concat.value = True
+
     from fable.tokenization import group_power
     for tok in group_power(tokens=tokens):
         if (tok.is_seq()):
@@ -3468,19 +4610,11 @@ def convert_io_loop(
                 had_str_concat=had_str_concat)
             cbuf.append_comma()
         elif (tok.is_parentheses()):
-            cbuf.append_opening_parenthesis()
-            if (cmn_needs_to_be_inserted(conv_info=conv_info, prev_tok=prev_tok)):
-                cbuf.append("cmn")
-                if (len(tok.value) != 0):
-                    cbuf.append_comma()
-            convert_io_loop(
-                io_scope,
-                io_op,
-                conv_info,
-                tokens=tok.value,
-                cbuf=cbuf,
-                had_str_concat=had_str_concat)
-            cbuf.append_closing_parenthesis()
+            cbuf.append(_convert_parentheses_postfix(
+                conv_info=conv_info,
+                prev_tok=prev_tok,
+                tok=tok,
+                had_str_concat=had_str_concat))
         elif (tok.is_implied_do()):
             cbuf.flush()
             from fable.tokenization import implied_do_info
@@ -3505,8 +4639,15 @@ def convert_io_loop(
                 vmap=conv_info.vmap,
                 leading=cbuf.leading,
                 tok=tok,
-                had_str_concat=had_str_concat))
+                had_str_concat=had_str_concat,
+                prev_operand_is_string=prev_operand_is_string))
         prev_tok = tok
+        if (tok.is_op()):
+            pass
+        elif (tok.is_string()):
+            prev_operand_is_string = True
+        else:
+            prev_operand_is_string = False
     if (owning_cbuf):
         cbuf.flush()
 
@@ -3966,6 +5107,109 @@ def build_scalar_data_initializers(conv_info):
     return init
 
 
+def build_array_data_initializers(conv_info):
+    """Collect constant DATA initializers for local arrays.
+
+    Supported patterns (safe subset):
+      - Single target array name
+      - Any rank >= 1 with compile-time constant extents
+      - No implied DO loops
+      - Optional repetition factors (e.g. 5*4) where the repetition is an integer literal
+
+    Returns:
+      dict name_lower -> (elem_ctype:str, dims_ints:list[int], init_list:list[str], rank:int)
+
+    Notes:
+      - Multi-dimensional DATA is flattened in Fortran storage order as it appears in the DATA list.
+      - We require that the expanded DATA list length equals the product of extents.
+    """
+    init = {}
+    fproc = getattr(conv_info, "fproc", None)
+    if fproc is None:
+        return init
+
+    for nlist, clist in getattr(fproc, "data", []) or []:
+        # Skip implied DO loops
+        implied_dos = []
+        find_implied_dos(result=implied_dos, tokens=nlist)
+        if implied_dos:
+            continue
+
+        # Only handle single simple identifier target
+        if len(nlist) != 1:
+            continue
+        toks = getattr(nlist[0], "value", None)
+        if not toks or len(toks) != 1 or not toks[0].is_identifier():
+            continue
+        id_tok = toks[0]
+
+        try:
+            fdecl = fproc.get_fdecl(id_tok=id_tok)
+        except Exception:
+            fdecl = None
+        if fdecl is None or getattr(fdecl, "dim_tokens", None) is None:
+            continue
+
+        rank = len(getattr(fdecl, "dim_tokens", []) or [])
+        if rank <= 0:
+            continue
+
+        vals = fproc.eval_dimensions_simple(
+            dim_tokens=fdecl.dim_tokens, allow_power=False)
+        if vals is None or vals.count(None) != 0:
+            continue
+        try:
+            dims_ints = [int(v) for v in vals]
+        except Exception:
+            continue
+        if any(v <= 0 for v in dims_ints):
+            continue
+
+        try:
+            n_elems = int(math.prod(dims_ints))
+        except Exception:
+            continue
+        if n_elems <= 0:
+            continue
+
+        expanded = []
+        ok = True
+        for repetition_tok, ctoks in clist:
+            cc = convert_tokens(conv_info=conv_info, tokens=ctoks)
+            rep = 1
+            if repetition_tok is not None:
+                rep_s = convert_tokens(conv_info=conv_info, tokens=[
+                                       repetition_tok]).strip()
+                try:
+                    rep = int(rep_s)
+                except Exception:
+                    ok = False
+                    break
+                if rep <= 0:
+                    ok = False
+                    break
+            expanded.extend([cc] * rep)
+            if len(expanded) > n_elems:
+                ok = False
+                break
+
+        if not ok:
+            continue
+        if len(expanded) != n_elems:
+            continue
+
+        try:
+            elem_ctype = convert_data_type(
+                conv_info=conv_info, fdecl=fdecl, crhs=None)[0]
+        except Exception:
+            elem_ctype = None
+
+        init[str(id_tok.value).lower()] = (
+            elem_ctype, dims_ints, expanded, rank)
+
+    return init
+
+
 def declare_identifiers_parameter_recursion(
         conv_info, top_scope, curr_scope, tokens):
     from fable.tokenization import extract_identifiers
@@ -4213,6 +5457,13 @@ def declare_identifier(conv_info, top_scope, curr_scope, id_tok, crhs=None):
         return result
     identifier = id_tok.value
 
+    # If the target project rewrites COMMON into globals, do not generate
+    # `cmn.` accesses or local alias wrappers (they become self-referential).
+    if (fdecl is not None and fdecl.is_common() and FABLE_COMMON_AS_GLOBALS):
+        conv_info.vmap[identifier] = prepend_identifier_if_necessary(
+            identifier)
+        return crhs is not None
+
     def get_common_name_if_cast_is_needed():
         if (not fdecl.is_common()):
             return None
@@ -4232,6 +5483,15 @@ def declare_identifier(conv_info, top_scope, curr_scope, id_tok, crhs=None):
             common_name, prepend_identifier_if_necessary(identifier))
     else:
         src_var = conv_info.vmap[identifier]
+
+    # COMMON scalar handled externally: keep it as a plain identifier and
+    # do not emit local reference aliases like `T& x = cmn.x;`.
+    if (fdecl.is_common()
+            and getattr(fdecl, "dim_tokens", None) is None
+            and identifier.lower() in FABLE_EXTERN_COMMON_SCALARS):
+        conv_info.vmap[identifier] = prepend_identifier_if_necessary(
+            identifier)
+        return crhs is not None
 
     # For COMMON or SAVE variables, we sometimes create local references
     # like "REAL& x = cmn.x;" or "REAL& x = sve.x;".
@@ -4284,13 +5544,7 @@ def declare_identifier(conv_info, top_scope, curr_scope, id_tok, crhs=None):
 def convert_executable(
         callback, conv_info, args_fdecl_with_dim=None, blockdata=None):
     top_scope = scope(parent=None)
-    if (conv_info.fproc.uses_save
-            and not (getattr(conv_info.fproc, "conv_hook", None) is not None
-                     and conv_info.fproc.conv_hook.ignore_common_and_save)):
-        macro = "FEM_CMN_SVE"
-        if (conv_info.fproc.conv_hook.needs_sve_dynamic_parameters):
-            macro += "_DYNAMIC_PARAMETERS"
-        top_scope.append("%s(%s);" % (macro, conv_info.fproc.name.value))
+    # User policy: do not emit FEM_CMN_SVE(...) boilerplate.
     top_scope.remember_insert_point()
     curr_scope = top_scope
     if (args_fdecl_with_dim is not None):
@@ -4340,6 +5594,107 @@ def convert_executable(
                     curr_scope=curr_scope,
                     id_tok=id_tok)
     from fable.tokenization import extract_identifiers
+
+    # Hoist constant DATA initializers for local arrays as static declarations.
+    # This avoids runtime DATA initialization blocks and keeps the static tables
+    # grouped at the top of the function.
+    try:
+        if conv_info.array_data_initializers is None:
+            conv_info.array_data_initializers = build_array_data_initializers(
+                conv_info)
+        if conv_info.array_data_initializers:
+            for nlist, _clist in conv_info.fproc.data:
+                if not nlist or len(nlist) != 1:
+                    continue
+                toks = getattr(nlist[0], "value", None)
+                if not toks or len(toks) != 1 or not toks[0].is_identifier():
+                    continue
+                tgt = toks[0].value.lower()
+                if tgt in conv_info.hoisted_data_array_names:
+                    continue
+                rec = conv_info.array_data_initializers.get(tgt)
+                if rec is None:
+                    continue
+                elem_ctype, dims_ints, init_list, rank = rec
+                fdecl = conv_info.fproc.get_fdecl(id_tok=toks[0])
+                if fdecl is None:
+                    continue
+                # Only hoist local arrays.
+                if not (fdecl.is_local() or fdecl.is_save() or fdecl.is_parameter()):
+                    continue
+                # DATA-initialized local arrays are safe to treat as function-local static.
+                # Force local mapping to avoid invalid names like `sve.X` in declarations.
+                conv_info.set_vmap_force_local(fdecl=fdecl)
+                vname = conv_info.vmapped(fdecl=fdecl)
+                mplapack_elem_ctype = convert_to_mplapack_type(elem_ctype)
+                if rank == 1 and dims_ints and len(dims_ints) == 1:
+                    dim_part = f"[{int(dims_ints[0])}]"
+                else:
+                    # For multi-dimensional DATA (e.g. IPIVOT(4,4)), emit an unsized initializer.
+                    dim_part = "[]"
+                top_scope.append(
+                    "static %s %s%s = {%s};" % (
+                        mplapack_elem_ctype,
+                        vname,
+                        dim_part,
+                        ", ".join(init_list),
+                    )
+                )
+                conv_info.hoisted_data_array_names.add(tgt)
+    except Exception:
+        pass
+
+    # Hoist constant DATA initializers for local scalars as static declarations.
+    # This covers patterns like:
+    #   DATA threq / 2.0d0 / , intstr / '0123456789' /
+    # even when runtime DATA init blocks are suppressed.
+    try:
+        if conv_info.data_initializers is None:
+            conv_info.data_initializers = build_scalar_data_initializers(
+                conv_info)
+        if conv_info.data_initializers:
+            for fdecl in conv_info.fproc.fdecl_by_identifier.values():
+                if fdecl is None:
+                    continue
+                # Only scalars.
+                if getattr(fdecl, "dim_tokens", None) is not None:
+                    continue
+                # Only local/SAVE/PARAMETER (skip COMMON).
+                if not (fdecl.is_local() or fdecl.is_save() or fdecl.is_parameter()):
+                    continue
+                name_lower = fdecl.id_tok.value.lower()
+                init_expr = conv_info.data_initializers.get(name_lower)
+                if init_expr is None:
+                    continue
+                # Avoid redeclaration if already mapped/declared.
+                if fdecl.id_tok.value in conv_info.vmap:
+                    continue
+                # Skip dummy CHARACTER arguments (already in signature).
+                if _is_dummy_character_arg(conv_info, fdecl.id_tok.value):
+                    continue
+
+                # DATA implies SAVE for local variables: emit as function-local static.
+                conv_info.set_vmap_force_local(fdecl=fdecl)
+                vname = conv_info.vmapped(fdecl=fdecl)
+
+                ctype = convert_data_type(
+                    conv_info=conv_info, fdecl=fdecl, crhs=None)[0]
+                mplapack_ctype = convert_to_mplapack_type(ctype)
+                # If the target is a plain char (CHARACTER*1), convert "X" -> 'X'.
+                if mplapack_ctype == "char":
+                    m = re.match(r'^"((?:\\.)|[^\\])"$', init_expr)
+                    if m:
+                        inner = m.group(1)
+                        # Escape single quote inside the char literal.
+                        if inner == "'":
+                            inner = "\\'"
+                        init_expr = "'" + inner + "'"
+
+                top_scope.append(
+                    f"static {mplapack_ctype} {vname} = {init_expr};")
+    except Exception:
+        pass
+
     variant_buffers = convert_variant_allocate_and_bindings(
         conv_info=conv_info, top_scope=top_scope)
     top_scope.remember_insert_point()
@@ -4359,7 +5714,8 @@ def convert_executable(
     if (not top_scope.insert_point_is_current()):
         top_scope.top_append("// SAVE")
         top_scope.append("//")
-    if (conv_info.fproc.conv_hook.needs_is_called_first_time):
+    # User policy: do not emit runtime DATA initialization blocks.
+    if (False and conv_info.fproc.conv_hook.needs_is_called_first_time):
         first_time_scope = top_scope.open_nested_scope(
             opening_text=["if (is_called_first_time) {"])
         if (len(variant_buffers.first_time) != 0):
@@ -4394,7 +5750,7 @@ def convert_executable(
     for line in variant_buffers.bindings:
         top_scope.append(line)
     top_scope.remember_insert_point()
-    if (conv_info.fproc.conv_hook.data_init_after_variant_bind):
+    if (False and conv_info.fproc.conv_hook.data_init_after_variant_bind):
         data_init_scope = top_scope.open_nested_scope(
             opening_text=["if (is_called_first_time) {"])
         convert_data(conv_info=conv_info, data_init_scope=data_init_scope)
@@ -4411,11 +5767,56 @@ def convert_executable(
             tokens=fmt_tokens, comma=fmt_comma_placeholder)) + ')"'
     fmt_counts_by_statement_label = \
         conv_info.fproc.fmt_counts_by_statement_label()
-    for stmt_label in sorted(fmt_counts_by_statement_label.keys()):
-        if (fmt_counts_by_statement_label[stmt_label] > 1):
-            cfmt = get_cfmt_from_format(stmt_label=stmt_label)
+
+    # === FORMAT comment hoist: collect and output ===
+    import sys
+    DEBUG_FMT = os.environ.get(
+        "DEBUG_FORMAT_HOIST", "").lower() in ("1", "true", "yes")
+
+    format_info_list, hoisted_indices = _collect_format_comments_from_body_lines(
+        conv_info.fproc)
+
+    # Remove hoisted comments from comment_manager to prevent double output
+    if hoisted_indices:
+        conv_info.comment_manager.remove_line_indices(hoisted_indices)
+        if DEBUG_FMT:
+            print(
+                f"[DEBUG] Removed {len(hoisted_indices)} hoisted indices from comment_manager", file=sys.stderr)
+
+    found_labels = {label for label, _, _ in format_info_list}
+
+    if DEBUG_FMT:
+        print(
+            f"[DEBUG] Outputting {len(format_info_list)} FORMAT definitions with comments", file=sys.stderr)
+
+    # Output FORMAT definitions in source order with preceding comments
+    for label, line_idx, comment_sls in format_info_list:
+        if fmt_counts_by_statement_label.get(label, 0) >= 1:
+            # Output preceding comments first
+            if DEBUG_FMT:
+                print(
+                    f"[DEBUG] FORMAT {label}: outputting {len(comment_sls)} comment lines", file=sys.stderr)
+            for sl in comment_sls:
+                if DEBUG_FMT:
+                    print(
+                        f"[DEBUG]   sl.stmt_offs={sl.stmt_offs}, sl.text={repr(sl.text[:40] if sl.text else None)}", file=sys.stderr)
+                produce_fmt_hdr_comment_given_sl(
+                    callback=top_scope.append, sl=sl)
+            # Output FORMAT definition
+            cfmt = get_cfmt_from_format(stmt_label=label)
             top_scope.append(
-                "static const char* format_%s = %s;" % (stmt_label, cfmt))
+                "static const char* format_%s = %s;" % (label, cfmt))
+
+    # Fallback: output any FORMAT labels not found in source scan
+    for stmt_label in sorted(fmt_counts_by_statement_label.keys()):
+        if stmt_label not in found_labels:
+            if fmt_counts_by_statement_label[stmt_label] >= 1:
+                if DEBUG_FMT:
+                    print(
+                        f"[DEBUG] Fallback FORMAT {stmt_label}", file=sys.stderr)
+                cfmt = get_cfmt_from_format(stmt_label=stmt_label)
+                top_scope.append(
+                    "static const char* format_%s = %s;" % (stmt_label, cfmt))
 
     def curr_scope_append_return_function():
         curr_scope.append(
@@ -4625,14 +6026,19 @@ def convert_executable(
                 clhs = convert_tokens(
                     conv_info=conv_info, tokens=ei.lhs_tokens)
 
-                # For scalar CHARACTER dummy arguments that were mapped as char *,
+                # For scalar CHARACTER dummy arguments emitted as plain (const) char*,
                 # assignments should dereference the pointer:
                 #   EQUED = 'N'  ->  *equed = 'N';
+                #
+                # In view mode (FABLE_SMALL_CHAR=0), scalar CHARACTER dummies are
+                # emitted as fem::str_ref / fem::str_cref, so dereferencing would
+                # be incorrect (e.g. dist = 'S' must stay as `dist = "S";`).
                 if (
                     lhs_is_character
                     and lhs_fdecl is not None
                     and lhs_fdecl.dim_tokens is None
                     and _is_dummy_character_arg(conv_info, id_tok.value)
+                    and _is_plain_character_pointer_dummy(conv_info, id_tok.value)
                 ):
                     # clhs is typically just the mapped name (e.g. "equed")
                     if not clhs.startswith("*"):
@@ -4698,7 +6104,7 @@ def convert_executable(
                         return True
                     if (not in_place_op_left() and not in_place_op_right()):
                         if _emit_small_char_string_assignment(
-                                curr_scope=curr_scope, clhs=clhs, crhs=crhs):
+                                curr_scope=curr_scope, clhs=clhs, crhs=crhs, conv_info=conv_info):
                             pass
                         else:
                             # Rewrite substring-style calls on small CHARACTER*n scalars
@@ -4805,7 +6211,7 @@ def convert_executable(
                             return "star"
                         if (tok.is_integer()):
                             stmt_label = tok.value
-                            if (fmt_counts_by_statement_label[stmt_label] > 1):
+                            if (fmt_counts_by_statement_label[stmt_label] >= 1):
                                 return "format_%s" % stmt_label
                             return get_cfmt_from_format(stmt_label=stmt_label)
                     return convert_tokens(conv_info=conv_info, tokens=tl)
@@ -5028,6 +6434,76 @@ def convert_executable(
                 curr_scope.append("default: goto %s;" % lbl(2))
                 curr_scope = curr_scope.close_nested_scope()
             elif (ei.key == "call"):
+                # ------------------------------------------------------------
+                # Pseudo-call emitted by the Fortran preprocessor:
+                #   CALL FABLE_ALLOCATE(var, d1 [, d2 [, d3]])
+                # This corresponds to Fortran ALLOCATE(var(d1,...)).
+                # ------------------------------------------------------------
+                if (ei.subroutine_name is not None
+                        and str(ei.subroutine_name.value).lower() == "fable_allocate"):
+                    if ei.arg_token is None or getattr(ei.arg_token, "value", None) is None:
+                        curr_scope.append("// UNHANDLED: FABLE_ALLOCATE without arguments")
+                        continue
+
+                    actuals = _split_call_actuals_tokens(ei.arg_token.value)
+                    if len(actuals) < 2:
+                        curr_scope.append("// UNHANDLED: FABLE_ALLOCATE expects at least (var, n)")
+                        continue
+
+                    tgt_tokens = actuals[0]
+                    if not (len(tgt_tokens) == 1 and tgt_tokens[0].is_identifier()):
+                        curr_scope.append("// UNHANDLED: FABLE_ALLOCATE target must be an identifier")
+                        continue
+
+                    tgt_id_tok = tgt_tokens[0]
+                    tgt_name_lower = str(tgt_id_tok.value).lower()
+
+                    # Declare identifiers used in size expressions, but do NOT let the
+                    # default path emit a fixed-size array declaration for the target.
+                    id_tokens = extract_identifiers(tokens=ei.arg_token.value)
+                    for id_tok in id_tokens:
+                        if str(id_tok.value).lower() == tgt_name_lower:
+                            continue
+                        if id_tok.value not in conv_info.vmap:
+                            declare_identifier(
+                                conv_info=conv_info,
+                                top_scope=top_scope,
+                                curr_scope=curr_scope,
+                                id_tok=id_tok)
+
+                    try:
+                        tgt_fdecl = conv_info.fproc.get_fdecl(id_tok=tgt_id_tok)
+                    except Exception:
+                        curr_scope.append(f"// UNHANDLED: unknown allocatable target {tgt_id_tok.value}")
+                        continue
+
+                    conv_info.set_vmap_from_fdecl(fdecl=tgt_fdecl)
+                    vname = conv_info.vmapped(fdecl=tgt_fdecl)
+
+                    elem_ctype = convert_data_type(
+                        conv_info=conv_info, fdecl=tgt_fdecl, crhs=None)[0]
+                    mpl_elem = convert_to_mplapack_type(elem_ctype)
+                    storage_name = f"{vname}_storage"
+
+                    key = (id(conv_info.fproc), tgt_name_lower)
+                    if key not in _FABLE_ALLOCATABLE_DECLARED:
+                        have_goto = (len(conv_info.fproc.target_statement_labels()) != 0)
+                        rapp_decl = top_scope.top_append if have_goto else top_scope.append
+                        rapp_decl(f"std::unique_ptr<{mpl_elem}[]> {storage_name};")
+                        rapp_decl(f"{mpl_elem} *{vname} = nullptr;")
+                        _FABLE_ALLOCATABLE_DECLARED.add(key)
+
+                    dim_exprs = []
+                    for dim_toks in actuals[1:]:
+                        dim_exprs.append(convert_tokens(conv_info=conv_info, tokens=dim_toks).strip() or "1")
+                    _FABLE_ALLOCATABLE_DIMS[key] = list(dim_exprs)
+
+                    n_elems = " * ".join([parenthesize_if_necessary(d) for d in dim_exprs]) or "1"
+                    alloc_n = f"max((INTEGER)1, {n_elems})"
+                    curr_scope.append(f"{storage_name} = std::make_unique<{mpl_elem}[]>({alloc_n});")
+                    curr_scope.append(f"{vname} = {storage_name}.get();")
+                    continue
+
                 fdecl = conv_info.fproc.get_fdecl(id_tok=ei.subroutine_name)
                 if (fdecl.is_intrinsic()):
                     from fable import intrinsics
@@ -5074,7 +6550,10 @@ def convert_executable(
                     callee_key = called.split("::")[-1]
                     sig = _lookup_routine_signature(callee_key)
                     if sig is not None:
-                        a = _adjust_actuals_using_signature(a, sig, conv_info)
+                        force_elems = bool(
+                            FABLE_SMALL_CHAR_VIEW and callee_key.lower() in _MPLAPACK_CORE_CPP_NAMES)
+                        a = _adjust_actuals_using_signature(
+                            a, sig, conv_info, force_elems_call=force_elems)
 
                     def cmn_a():
                         if (len(cmn) == 0):
@@ -5090,6 +6569,12 @@ def convert_executable(
                 elif (ei is not conv_info.fproc.executable[-1]):
                     curr_scope.append("return;")
             elif (ei.key == "continue"):
+                pass
+            elif (ei.key == "deallocate"):
+                # Policy: ignore DEALLOCATE statements in executable code.
+                # Local allocatable arrays are typically rewritten into explicit-shape
+                # locals or RAII-managed storage during preprocessing / declaration
+                # conversion, so an explicit DEALLOCATE would be redundant.
                 pass
             elif (ei.key == "goto"):
                 curr_scope.append("goto statement_%s;" % ei.label.value)
@@ -5152,6 +6637,10 @@ def convert_executable(
 
 
 def export_save_struct(callback, conv_info):
+    # User policy: when COMMON/SAVE boilerplate is suppressed, do not emit
+    # any auto-generated SAVE structs. These will be provided manually.
+    if FABLE_SUPPRESS_COMMON:
+        return
     cci = conv_info.converted_commons_info
     if (cci is not None):
         buffer = cci.save_struct_buffers.get(conv_info.fproc.name.value)
@@ -5230,6 +6719,10 @@ def _sig_kind_requires_mutable_actual(kind: str) -> bool:
     if k == "REF_SCALAR":
         return True
 
+    # Fixed-length array passed by non-const reference (ISEED(4)).
+    if k == "REF_ARRAY4":
+        return True
+    
     # Character pointers: distinguish input vs output/inout explicitly.
     # - PTR_CHAR_IN  : const char*  (input-only) -> does NOT require mutable actual
     # - PTR_CHAR_OUT : char*        (output/inout) -> requires mutable actual
@@ -5659,6 +7152,25 @@ def _infer_user_defined_callable_signatures(conv_info):
         _INFERRED_CALLABLE_SIGNATURES[key] = final
 
 
+_CMN_WORD_RE = re.compile(r"\bcmn\b")
+
+
+def _needs_cmn_object_from_lines(lines: typing.Iterable[str]) -> bool:
+    """Return True if any emitted C++ line references the `cmn` variable.
+
+    We look for the standalone identifier `cmn` in the code part of each line,
+    ignoring anything after '//' comments. This avoids emitting an unused
+    `common cmn;` in routines that do not touch COMMON/IO helpers.
+    """
+    for ln in lines:
+        if ln is None:
+            continue
+        code = str(ln).split("//", 1)[0]
+        if _CMN_WORD_RE.search(code):
+            return True
+    return False
+
+
 def convert_to_cpp_function(
         cpp_callback,
         hpp_callback,
@@ -5705,12 +7217,18 @@ def convert_to_cpp_function(
             _mark_dummy_character_arg(conv_info, id_tok.value)
             if (fdecl.dim_tokens is None):
                 # Scalar CHARACTER argument.
-                # If it is modified (INTENT OUT/INOUT), use char *.
-                # Otherwise, treat as input-only and use const char *.
-                if fdecl.is_modified:
-                    cargs_append("char *", arg_name)
+                #   - Default: classic LAPACK-style (const) char*
+                #   - View mode (FABLE_SMALL_CHAR=0): str_cref / str_ref
+                if FABLE_SMALL_CHAR_VIEW:
+                    if fdecl.is_modified:
+                        cargs_append("fem::str_ref", arg_name)
+                    else:
+                        cargs_append("fem::str_cref", arg_name)
                 else:
-                    cargs_append("const char *", arg_name)
+                    if fdecl.is_modified:
+                        cargs_append("char *", arg_name)
+                    else:
+                        cargs_append("const char *", arg_name)
             else:
                 # CHARACTER arrays:
                 #   - CHARACTER*1 arrays are modeled as a plain char pointer (char*/const char*)
@@ -5772,6 +7290,64 @@ def convert_to_cpp_function(
 
             else:
                 # Array argument: use plain pointer (REAL*, INTEGER*, ...)
+                #
+                # Special-case: Fortran explicit-shape INTEGER ISEED(4) must keep its extent in the C++ type:
+                #     INTEGER (&iseed)[4]
+                #
+                # Some routines (e.g., lin/common/Clatsp) may fail to expose dim_tokens for ISEED;
+                # in that case, fall back to scanning the Fortran declaration text for "ISEED(4)"
+                # or "DIMENSION(4) :: ISEED". This fallback is restricted to ISEED only.
+                if str(id_tok.value).lower() == "iseed" and dt_code == "integer":
+                    is_dim4 = False
+
+                    # Primary path: use parsed dimension tokens if available.
+                    if fdecl.dim_tokens is not None and len(fdecl.dim_tokens) == 1:
+                        vals = conv_info.fproc.eval_dimensions_simple(
+                            dim_tokens=fdecl.dim_tokens, allow_power=False)
+                        if vals is not None and vals.count(None) == 0:
+                            try:
+                                is_dim4 = (int(vals[0]) == 4)
+                            except Exception:
+                                is_dim4 = False
+
+                    # Fallback path: scan original Fortran source lines for an explicit ISEED(4) declaration.
+                    if not is_dim4:
+                        try:
+                            # Collect raw Fortran text (declarations live near the top; scanning whole body is fine).
+                            lines = []
+                            for ssl in getattr(conv_info.fproc, "body_lines", []) or []:
+                                if ssl is None:
+                                    continue
+                                for sl in getattr(ssl, "source_line_cluster", []) or []:
+                                    t = getattr(sl, "text", None)
+                                    if t:
+                                        lines.append(t)
+
+                            # Only accept *declaration* lines, not element references.
+                            # Strip comments and require "integer" on the same line.
+                            decl_dim4 = False
+                            for raw in lines:
+                                s = raw.split("!")[0].strip().lower()
+                                if not s:
+                                    continue
+                                # INTEGER ISEED(4)
+                                if re.search(r"^\s*integer\b.*\biseed\s*\(\s*4\s*\)", s):
+                                    decl_dim4 = True
+                                    break
+                                # INTEGER, DIMENSION(4) :: ISEED
+                                if re.search(r"^\s*integer\b.*\bdimension\s*\(\s*4\s*\)\b.*::\s*iseed\b", s):
+                                    decl_dim4 = True
+                                    break
+                            if decl_dim4:
+                                is_dim4 = True
+
+                        except Exception:
+                            is_dim4 = False
+
+                    if is_dim4:
+                        fptr.append(f"{mplapack_type} (&)[4]")
+                        cargs.append(f"{mplapack_type} (&{arg_name})[4]")
+                        continue
                 cargs_append("%s *" % mplapack_type, arg_name)
 
                 # Track COMPLEX dummy arrays (COMPLEX* a, x, y, ...)
@@ -5863,18 +7439,25 @@ def convert_to_cpp_function(
         else:
             callback(cname + "(\n  " + ",\n  ".join(cargs) + ")" + last)
     cpp_callback("{")
+    body_buffer = []
+
     if (cdecl != "void"):
-        cpp_callback("  %s %s = %s;" % (
+        body_buffer.append("  %s %s = %s;" % (
             cdecl,
             conv_info.vmap[conv_info.fproc.name.value],
             zero_shortcut_if_possible(ctype=cdecl)))
     if (force_not_implemented):
-        cpp_callback("  throw TBXX_NOT_IMPLEMENTED();")
+        body_buffer.append("  throw TBXX_NOT_IMPLEMENTED();")
     else:
         convert_executable(
-            callback=cpp_callback,
+            callback=body_buffer.append,
             conv_info=conv_info,
             args_fdecl_with_dim=args_fdecl_with_dim)
+    need_local_cmn = _needs_cmn_object_from_lines(body_buffer)
+    if need_local_cmn:
+        cpp_callback("  common cmn;")
+    for line in body_buffer:
+        cpp_callback(line)
     cpp_callback("}")
     produce_trailing_comments(callback=callback, fproc=conv_info.fproc)
 
@@ -6451,7 +8034,12 @@ void
                 raise
             show_traceback()
         else:
-            if (fproc.needs_cmn and not fproc.conv_hook.ignore_common_and_save):
+            need_cmn_obj = _needs_cmn_object_from_lines(result_buffer)
+            if (not need_cmn_obj):
+                callback("""  if (argc != 1) {
+    throw std::runtime_error("Unexpected command-line arguments.");
+  }""")
+            if need_cmn_obj:
                 callback("  common cmn(argc, argv);")
             for line in result_buffer:
                 callback(line)
@@ -6487,9 +8075,160 @@ default_arr_nd_size_max = 256
 
 
 def _postprocess_mplapack_labels_and_comments(lines):
-    """MPLAPACK-specific postprocessing for labels, comments, and trivial zero offsets."""
-    import re
+    """MPLAPACK-specific postprocessing for labels, comments, and trivial zero offsets.
 
+    This function also performs a conservative stride (leading-dimension) dedup:
+      - If we accidentally generated an auto stride like `ldabw` because `ldab`
+        already exists, and BOTH have the SAME initializer expression, then:
+          * rewrite all uses of `ldabw` -> `ldab`
+          * drop the redundant `ldabw = ...;` declaration
+
+    Debug (stderr):
+      - Set env var DEBUG_LD_DEDUP=1 to print alias decisions.
+    """
+    import re
+    import os
+    import sys
+
+    # ------------------------------------------------------------
+    # Pass 0: detect and remove redundant ld*{w...} aliases
+    # ------------------------------------------------------------
+    DEBUG_LD = os.environ.get("DEBUG_LD_DEDUP", "").strip().lower() in ("1", "true", "yes", "on")
+
+    # Match INTEGER declarations with an initializer, allowing common qualifiers:
+    #   INTEGER ldab = ...;
+    #   const INTEGER ldab = ...;
+    #   INTEGER const ldab = ...;
+    #   static const INTEGER ldab = ...;
+    decl_re = re.compile(
+        r'^\s*(?:(?:static|constexpr)\s+)?'
+        r'(?:(?:const)\s+)?INTEGER\s+(?:(?:const)\s+)?'
+        r'(?P<name>[A-Za-z_][A-Za-z0-9_]*)\s*=\s*(?P<init>[^;]+);\s*$'
+    )
+
+    def _norm_init(expr: str) -> str:
+        # Normalize initializer to compare across whitespace / extra parentheses.
+        # Keep it purely syntactic (no algebraic simplification).
+        s = (expr or "").strip()
+        try:
+            s = _strip_outer_parens_balanced(s)
+        except Exception:
+            pass
+        # remove all whitespace
+        return re.sub(r"\s+", "", s)
+
+    # Collect declarations: name_lower -> (norm_init, first_line_index)
+    decls = {}
+    decl_line_idx = {}
+    for i, line in enumerate(lines):
+        m = decl_re.match(line)
+        if not m:
+            continue
+        name = m.group("name")
+        init = m.group("init")
+        if not name:
+            continue
+        nl = name.lower()
+        # Only consider ld* (stride-like) names.
+        if not nl.startswith("ld"):
+            continue
+        ni = _norm_init(init)
+        # Keep the first one deterministically.
+        if nl not in decls:
+            decls[nl] = ni
+            decl_line_idx[nl] = i
+
+    # Determine alias -> base mapping.
+    # Example: ldabw -> ldab when both initializers match.
+    alias_to_base = {}
+    for name, ninit in decls.items():
+        if not name.endswith("w"):
+            continue
+        # Strip trailing w's progressively to find an existing base.
+        probe = name
+        while probe.endswith("w"):
+            base = probe[:-1]
+            if base in decls and decls[base] == ninit:
+                alias_to_base[name] = base
+                break
+            probe = base
+
+    if DEBUG_LD and alias_to_base:
+        print("[DEBUG_LD_DEDUP] decls:", file=sys.stderr)
+        for k in sorted(decls.keys()):
+            print(f"  {k} = {decls[k]}", file=sys.stderr)
+        print("[DEBUG_LD_DEDUP] alias_to_base:", file=sys.stderr)
+        for a, b in sorted(alias_to_base.items()):
+            print(f"  {a} -> {b}", file=sys.stderr)
+
+    # Apply rewrites and drop redundant alias declarations safely.
+    # IMPORTANT: Drop alias decl lines BEFORE rewriting, otherwise the decl line
+    # itself gets renamed (ldabw -> ldab) and becomes indistinguishable from a
+    # real base declaration, producing duplicate ldab declarations.
+    if alias_to_base:
+        # Identify alias declaration lines (by original text) that are true
+        # duplicates of an existing base declaration with the same initializer.
+        alias_decl_idxs = set()
+        for i, line in enumerate(lines):
+            m = decl_re.match(line)
+            if not m:
+                continue
+            name = (m.group("name") or "").lower()
+            if name not in alias_to_base:
+                continue
+            base = alias_to_base[name]
+            init = m.group("init")
+            if base in decls and _norm_init(init) == decls[base]:
+                alias_decl_idxs.add(i)
+
+        if DEBUG_LD and alias_decl_idxs:
+            print(f"[DEBUG_LD_DEDUP] alias decl line(s) to drop: {sorted(alias_decl_idxs)}", file=sys.stderr)
+
+        # Drop alias decl lines first (pre-rewrite).
+        if alias_decl_idxs:
+            lines = [ln for j, ln in enumerate(lines) if j not in alias_decl_idxs]
+
+        # Rewrite uses (whole-word) in the remaining lines.
+        alias_patterns = [
+            (re.compile(rf"\b{re.escape(alias)}\b"), base)
+            for alias, base in sorted(alias_to_base.items(), key=lambda x: (-len(x[0]), x[0]))
+        ]
+        rewritten = []
+        for line in lines:
+            new_line = line
+            for pat, base in alias_patterns:
+                new_line = pat.sub(base, new_line)
+            rewritten.append(new_line)
+        lines = rewritten
+
+        # Drop duplicate base declarations (same name, same initializer, same brace depth).
+        # This catches cases where the alias decl was renamed earlier by other passes.
+        depth = 0
+        seen = set()
+        kept = []
+        dropped_dups = 0
+        for line in lines:
+            cur_depth = depth
+            m = decl_re.match(line)
+            if m:
+                name = (m.group("name") or "").lower()
+                init = m.group("init")
+                key = (cur_depth, name, _norm_init(init))
+                if name.startswith("ld") and not name.endswith("w"):
+                    if key in seen:
+                        dropped_dups += 1
+                        depth += line.count("{") - line.count("}")
+                        continue
+                    seen.add(key)
+            kept.append(line)
+            depth += line.count("{") - line.count("}")
+
+        if DEBUG_LD:
+            print(f"[DEBUG_LD_DEDUP] dropped {len(alias_decl_idxs)} redundant ld alias decl(s) and {dropped_dups} duplicate base decl(s).", file=sys.stderr)
+        lines = kept
+    # ------------------------------------------------------------
+    # Pass 1: existing label/comment/index micro-fixes (line-by-line)
+    # ------------------------------------------------------------
     new_lines = []
     for line in lines:
         # 1) Fix Mxerbla("XXXX ", info) labels using the MPLAPACK name map
@@ -6539,8 +8278,6 @@ def _postprocess_mplapack_labels_and_comments(lines):
 
         new_lines.append(line)
     return new_lines
-
-
 def _normalize_fortran_comment_prefix(lines):
     """Normalize Fortran-derived comments: //C... -> // ..."""
     normalized = []
@@ -6885,15 +8622,19 @@ def _postprocess_ilaenv_char_concat(lines):
             r'^([A-Za-z_][A-Za-z0-9_]*)\s*\(\s*:?\s*1\s*\)$')
         substr_pat3 = re.compile(
             r'^([A-Za-z_][A-Za-z0-9_]*)\s*\(\s*1\s*:\s*1\s*\)$')
+        # Also accept C++-style element forms produced by earlier rewrites:
+        #   job[0], &job[0], job[(1) - 1], &job[(1) - 1]
+        arr0_pat = re.compile(
+            r'^\s*&?\s*([A-Za-z_][A-Za-z0-9_]*)\s*\[\s*0\s*\]\s*$')
+        arr1m1_pat = re.compile(
+            r'^\s*&?\s*([A-Za-z_][A-Za-z0-9_]*)\s*\[\s*\(?\s*1\s*\)?\s*-\s*1\s*\]\s*$')
 
         norm_parts = []
         for p in parts:
-            m = substr_pat1.match(p) or substr_pat2.match(
-                p) or substr_pat3.match(p)
-            if m:
-                base = m.group(1)
-            else:
-                base = p
+            p0 = p.strip()
+            m = (substr_pat1.match(p0) or substr_pat2.match(p0) or substr_pat3.match(p0)
+                 or arr0_pat.match(p0) or arr1m1_pat.match(p0))
+            base = m.group(1) if m else p0
             if not ident_pat.match(base):
                 return None
             norm_parts.append(base.lower())
@@ -6991,6 +8732,49 @@ def _postprocess_strip_wp_kind_suffix(lines):
         code = pat.sub(r'\g<num>', code)
         out.append(code + comment)
     return out
+
+
+def _postprocess_add_memory_include(lines):
+    """Ensure '#include <memory>' exists when std::unique_ptr or std::make_unique is used.
+
+    Policy:
+      - Insert only if std::unique_ptr or std::make_unique appears and the include is missing.
+      - Place the include with other includes, keeping exactly one blank line
+        between the include block and the following code/prototypes.
+    """
+
+    needs = any("std::unique_ptr<" in ln or "std::make_unique<" in ln for ln in lines)
+    if not needs:
+        return lines
+    if any(ln.strip() == "#include <memory>" for ln in lines):
+        return lines
+
+    # Find the last include line near the top of the file.
+    last_inc = -1
+    for i, ln in enumerate(lines):
+        if ln.startswith("#include "):
+            last_inc = i
+            continue
+        # Allow preprocessor directives / comments before includes.
+        if last_inc < 0 and (ln.startswith("#") or ln.strip().startswith("//") or ln.strip() == ""):
+            continue
+        if last_inc >= 0:
+            # We are past the include block.
+            break
+
+    if last_inc < 0:
+        # No includes found; insert at the beginning.
+        new_lines = ["#include <memory>"] + lines
+        return new_lines
+
+    new_lines = lines[:last_inc + 1] + \
+        ["#include <memory>"] + lines[last_inc + 1:]
+
+    # Ensure a blank line after the include block.
+    j = last_inc + 2
+    if j < len(new_lines) and new_lines[j].strip() != "":
+        new_lines.insert(j, "")
+    return new_lines
 
 
 def _postprocess_index_zero_simplify(text):
@@ -7686,6 +9470,75 @@ def _postprocess_complex_zero_initializers(lines):
         line = pat_var.sub(r'\1COMPLEX(0.0, 0.0);', line)
         line = pat_const.sub(r'\1COMPLEX(0.0, 0.0);', line)
         out.append(line)
+    return out
+
+
+def _postprocess_fix_scalar_str_length_from_slices(lines):
+    """Fix wrong fem::str<N> length for scalar locals when slices exceed N.
+
+    Why this exists:
+      Some Fortran forms like "CHARACTER(LEN=3) PATH" may not surface as
+      fdecl.size_tokens depending on the upstream parser. When that happens we may
+      accidentally emit fem::str<1> based on later scalar assignments, while the
+      code still contains substring operations like PATH(2:3). That yields
+      -Wstringop-overflow in optimized builds.
+
+    Strategy:
+      1) Collect scalar fem::str<N> declarations (locals).
+      2) Collect maximum substring end index used for those identifiers.
+      3) If max_end > N, widen the declaration to fem::str<max_end>.
+
+    This is a conservative postprocess: it only widens and never shrinks.
+    """
+
+    # Match scalar fem::str<N> declarations (optionally initialized).
+    decl_re = re.compile(
+        r"\b(?P<type>fem::str<(?P<n>\d+)>)\s+"
+        r"(?P<name>[A-Za-z_]\w*)\b(?!\s*\[)"
+    )
+
+    # Match substring usage: name(2, 3)
+    slice_re = re.compile(
+        r"\b(?P<name>[A-Za-z_]\w*)\s*\(\s*(?P<first>\d+)\s*,\s*(?P<last>\d+)\s*\)"
+    )
+
+    declared_len = {}
+    for line in lines:
+        m = decl_re.search(line)
+        if not m:
+            continue
+        name = m.group("name")
+        # Skip references and declarations in function parameter lists.
+        if "&" in line[: m.start("name")]:
+            continue
+        declared_len[name] = int(m.group("n"))
+
+    if not declared_len:
+        return lines
+
+    need_len = dict(declared_len)
+    for line in lines:
+        for m in slice_re.finditer(line):
+            name = m.group("name")
+            if name not in need_len:
+                continue
+            last = int(m.group("last"))
+            if last > need_len[name]:
+                need_len[name] = last
+
+    out = []
+    for line in lines:
+        m = decl_re.search(line)
+        if not m:
+            out.append(line)
+            continue
+        name = m.group("name")
+        old_n = int(m.group("n"))
+        new_n = need_len.get(name, old_n)
+        if new_n <= old_n:
+            out.append(line)
+            continue
+        out.append(line.replace(f"fem::str<{old_n}>", f"fem::str<{new_n}>", 1))
     return out
 
 
@@ -8714,10 +10567,35 @@ def _fix_fortran_f90_decl_syntax(src: str) -> str:
                     allocate_shapes.setdefault(name.lower(), shape)
         i = j
 
-    # Pass 2: rewrite continued declarations and optionally remove continued ALLOCATE.
+    # Pass 2: rewrite continued declarations and rewrite ALLOCATE(...) into
+    # a legacy-parser-friendly pseudo call:
+    #   ALLOCATE(a(n), stat=info)  ->  info = 0; CALL FABLE_ALLOCATE(a, n)
     out_lines = []
-    raii_alloc_names = set()  # all ALLOCATABLE vars we rewrite into explicit-shape decls
     indent = "      "
+
+    def _is_if_alloc_stat_stop(stmt: str, stat_var: str) -> bool:
+        low = stmt.lower().lstrip()
+        if not low.startswith("if"):
+            return False
+        sv = re.escape(stat_var.lower())
+        cmp_op = r"(?:\.ne\.|/=|!=|<>)"
+        pat1 = rf"^if\s*\(\s*{sv}\s*{cmp_op}\s*0\s*\)\s*stop\b"
+        pat2 = rf"^if\s*\(\s*0\s*{cmp_op}\s*{sv}\s*\)\s*stop\b"
+        return bool(re.match(pat1, low) or re.match(pat2, low))
+
+    def _is_if_alloc_stat_then(stmt: str, stat_var: str) -> bool:
+        low = stmt.lower().lstrip()
+        if not low.startswith("if"):
+            return False
+        sv = re.escape(stat_var.lower())
+        cmp_op = r"(?:\.ne\.|/=|!=|<>)"
+        pat1 = rf"^if\s*\(\s*{sv}\s*{cmp_op}\s*0\s*\)\s*then\b"
+        pat2 = rf"^if\s*\(\s*0\s*{cmp_op}\s*{sv}\s*\)\s*then\b"
+        return bool(re.match(pat1, low) or re.match(pat2, low))
+
+    def _is_endif_stmt(stmt: str) -> bool:
+        low = re.sub(r"\s+", "", stmt.lower().lstrip())
+        return low == "endif"
 
     i = 0
     while i < len(lines):
@@ -8730,19 +10608,25 @@ def _fix_fortran_f90_decl_syntax(src: str) -> str:
 
         stmt, first_cmt, eol0, j = gather_fixed_statement(lines, i)
 
-        # Remove ALLOCATE(...) if it only targets RAII variables.
+        # Rewrite ALLOCATE(...) into CALL FABLE_ALLOCATE(...)
+        # so the downstream fixed-form reader sees only F77-style CALL.
+        #
+        # We intentionally do not try to preserve STAT= error reporting.
+        # In C++ the allocation uses new[], which throws on failure.
         parsed_alloc = parse_allocate_statement(stmt)
         if parsed_alloc:
             objs, stat_var = parsed_alloc
-            if objs and all((name.lower() in raii_alloc_names) for name, _ in objs):
-                out_lines.append(
-                    f"!FABLE: ALLOCATE removed (RAII in C++){eol0}")
-                if stat_var:
-                    out_lines.append(f"{indent}{stat_var} = 0{eol0}")
-                i = j
-                continue
-            # Keep original lines unchanged.
-            out_lines.extend(lines[i:j])
+            if stat_var:
+                out_lines.append(f"{indent}{stat_var} = 0{eol0}")
+            for k_obj, (name, shape) in enumerate(objs or []):
+                if not name:
+                    continue
+                args = [name]
+                if shape:
+                    dims = _split_top_level_commas(shape)
+                    args.extend([d.strip() for d in dims if d.strip()])
+                cmt = first_cmt if k_obj == 0 else ""
+                out_lines.append(f"{indent}CALL FABLE_ALLOCATE({', '.join(args)}){cmt}{eol0}")
             i = j
             continue
 
@@ -8852,15 +10736,18 @@ def _fix_fortran_f90_decl_syntax(src: str) -> str:
                 dim = dim_attr_norm
 
             if is_allocatable:
-                # Prefer explicit shape from ALLOCATE mapping (RAII-friendly).
-                shape = allocate_shapes.get(name.lower())
-                if shape:
-                    dim = shape.strip()
-                # Mark as RAII-converted regardless.
-                raii_alloc_names.add(name.lower())
-                # If still unknown, force minimal placeholder.
+                # Do NOT substitute the allocation shape into the declaration.
+                # The ALLOCATE(...) size expressions can depend on runtime values
+                # (e.g. LWORK) and must be handled at the ALLOCATE statement site.
+                # Keep a parsable explicit-shape placeholder of the correct rank.
                 if dim is None:
-                    dim = "1"
+                    shape = allocate_shapes.get(name.lower())
+                    if shape:
+                        dims = [d.strip() for d in _split_top_level_commas(shape) if d.strip()]
+                        nd = max(1, len(dims))
+                        dim = ", ".join(["1"] * nd)
+                    else:
+                        dim = "1"
 
             if dim:
                 declarators.append(f"{name}({dim})")
@@ -9400,6 +11287,10 @@ def process(
         debug=False):
     assert [file_names, all_fprocs].count(None) == 1
 
+    # Environment override: suppress emitting COMMON/SAVE boilerplate structs.
+    if FABLE_SUPPRESS_COMMON:
+        suppress_common = True
+
     # Reset per-run marker set (used to force UNHANDLED initializers for
     # machine-constant-style PARAMETER expressions).
     _FORCE_UNHANDLED_PARAMETER_NAMES.clear()
@@ -9559,7 +11450,8 @@ def process(
                     fproc.dynamic_parameters.add(dp_props.name)
     #
 
-    if (separate_cmn_hpp):
+    emit_cmn_hpp = (separate_cmn_hpp and not suppress_common)
+    if (emit_cmn_hpp):
         cmn_buffer = []
         cmn_callback = cmn_buffer.append
         include_guard(
@@ -9584,7 +11476,7 @@ def process(
             raise
         show_traceback()
         converted_commons_info = None
-    if (separate_cmn_hpp):
+    if (emit_cmn_hpp):
         close_namespace(callback=cmn_callback,
                         namespace=namespace, hpp_guard=True)
         with open("cmn.hpp", "w") as f:
@@ -9803,8 +11695,11 @@ def process(
                 raise
             show_traceback()
 
-    # Rewrite single-character string literals for CHARACTER*1 variables.
-    result = [rewrite_single_char_string_literals(line) for line in result]
+    # Rewrite single-character string literals for CHARACTER*1 variables (char scalars).
+    # In view mode (FABLE_SMALL_CHAR=0), scalar CHARACTER dummies/locals are fem::str, so
+    # rewriting "A" -> 'A' would break assignments like: fem::str_ref dist; dist = "S";
+    if not FABLE_SMALL_CHAR_VIEW:
+        result = [rewrite_single_char_string_literals(line) for line in result]
 
     result = _postprocess_mplapack_labels_and_comments(result)
     result = _normalize_fortran_comment_prefix(result)
@@ -9843,6 +11738,16 @@ def process(
 
     # Convert array slice assignments to for loops
     result = _postprocess_slice_assignment(result)
+
+    # Add missing standard includes based on emitted C++ constructs.
+    result = _postprocess_add_memory_include(result)
+
+    # Widen fem::str<N> scalar locals when substring slices exceed N.
+    # This fixes cases like:
+    #   CHARACTER(LEN=3) PATH
+    # where the upstream parser may drop LEN=3 and we would otherwise emit
+    # fem::str<1> path but still generate path(2, 3) = ...
+    result = _postprocess_fix_scalar_str_length_from_slices(result)
 
     # Clean up temporary Fortran files created for preprocessing.
     for tmp in temp_files:

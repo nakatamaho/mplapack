@@ -42,43 +42,13 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-
-struct common_infoc {
-    int infot;
-    int nunit;
-    bool ok;
-    bool lerr;
-
-    common_infoc() : infot(0), nunit(0), ok(false), lerr(false) {}
-};
-
-struct common_srnamc {
-    fem::str<32> srnamt;
-
-    common_srnamc() : srnamt(0) {}
-};
-
-struct common : fem::common, common_infoc, common_srnamc {
-    fem::cmn_sve program_zchkab_sve;
-
-    common(int argc, char const *argv[]) : fem::common(argc, argv) {}
-};
-
-struct program_zchkab_save {
-    fem::str<10> intstr;
-
-    program_zchkab_save() : intstr(0) {}
-};
+#include <memory>
 
 void program_zchkab(int argc, char const *argv[]) {
     common cmn(argc, argv);
-    FEM_CMN_SVE(program_zchkab);
     common_read read(cmn);
     common_write write(cmn);
-    fem::str<10> &intstr = sve.intstr;
-    if (is_called_first_time) {
-        intstr = "0123456789";
-    }
+    static fem::str<10> intstr = "0123456789";
     REAL s1 = 0.0;
     const INTEGER nmax = 132;
     INTEGER lda = 0;
@@ -100,33 +70,46 @@ void program_zchkab(int argc, char const *argv[]) {
     bool tsterr = false;
     REAL seps = 0.0;
     REAL eps = 0.0;
-    fem::str<72> aline = 0;
-    char path[3];
+    fem::str<72> aline;
+    fem::str<3> path;
     const INTEGER matmax = 30;
     INTEGER nmats = 0;
-    char c1;
+    fem::str<1> c1;
     INTEGER k = 0;
     INTEGER ic = 0;
-    char c2[2];
+    fem::str<2> c2;
     INTEGER nrhs = 0;
     INTEGER ntypes = 0;
     bool dotype[matmax];
     const INTEGER ldamax = nmax;
-    COMPLEX a[ldamax * nmax * 2];
-    COMPLEX b[nmax * maxrhs * 2];
-    COMPLEX work[nmax * maxrhs * 2];
+    auto a_storage = std::make_unique<COMPLEX[]>(std::max<INTEGER>(1, (ldamax * nmax) * 2));
+    COMPLEX *a = a_storage.get();
+    auto b_storage = std::make_unique<COMPLEX[]>(std::max<INTEGER>(1, (nmax * maxrhs) * 2));
+    COMPLEX *b = b_storage.get();
+    auto work_storage = std::make_unique<COMPLEX[]>(std::max<INTEGER>(1, nmax * maxrhs * 2));
+    COMPLEX *work = work_storage.get();
     REAL rwork[nmax];
-    COMPLEX swork[nmax * (nmax + maxrhs)];
+    auto swork_storage = std::make_unique<COMPLEX[]>(std::max<INTEGER>(1, nmax * (nmax + maxrhs)));
+    COMPLEX *swork = swork_storage.get();
     INTEGER iwork[nmax];
     REAL s2 = 0.0;
+    INTEGER ldaw = ldamax * nmax;
     INTEGER ldb = nmax * maxrhs;
-    static const char *format_9989 = "(/,1x,a6,' driver routines were not tested')";
-    static const char *format_9990 = "(/,1x,a6,' routines were not tested')";
-    static const char *format_9991 = "(' Relative machine ',a,' is taken to be',d16.6)";
-    static const char *format_9993 = "(4x,a4,':  ',10i6,/,11x,10i6)";
-    static const char *format_9995 = "(' Invalid input value: ',a4,'=',i6,'; must be <=',i6)";
-    static const char *format_9996 = "(' Invalid input value: ',a4,'=',i6,'; must be >=',i6)";
     //
+    static const char *format_9999 = "(/,' Execution not attempted due to input errors')";
+    static const char *format_9998 = "(/,' End of tests')";
+    static const char *format_9997 = "(' Total time used = ',f12.2,' seconds',/)";
+    static const char *format_9996 = "(' Invalid input value: ',a4,'=',i6,'; must be >=',i6)";
+    static const char *format_9995 = "(' Invalid input value: ',a4,'=',i6,'; must be <=',i6)";
+    static const char *format_9994 = "(' Tests of the COMPLEX*16 LAPACK Ccgesv/Ccposv routines ',/,"
+                                     "' LAPACK VERSION ',i1,'.',i1,'.',i1,/,/,"
+                                     "' The following parameter values will be used:')";
+    static const char *format_9993 = "(4x,a4,':  ',10i6,/,11x,10i6)";
+    static const char *format_9992 = "(/,' Routines pass computational tests if test ratio is ','less than',"
+                                     "f8.2,/)";
+    static const char *format_9991 = "(' Relative machine ',a,' is taken to be',d16.6)";
+    static const char *format_9990 = "(/,1x,a6,' routines were not tested')";
+    static const char *format_9989 = "(/,1x,a6,' driver routines were not tested')";
     //
     //
     s1 = dsecnd();
@@ -140,10 +123,7 @@ void program_zchkab(int argc, char const *argv[]) {
     // Report values of parameters.
     //
     ilaver(vers_major, vers_minor, vers_patch);
-    write(nout, "(' Tests of the COMPLEX*16 LAPACK ZCGESV/ZCPOSV routines ',/,"
-                "' LAPACK VERSION ',i1,'.',i1,'.',i1,/,/,"
-                "' The following parameter values will be used:')"),
-        vers_major, vers_minor, vers_patch;
+    write(nout, format_9994), vers_major, vers_minor, vers_patch;
     //
     // Read the values of M
     //
@@ -160,15 +140,15 @@ void program_zchkab(int argc, char const *argv[]) {
     {
         read_loop rloop(cmn, nin, star);
         for (i = 1; i <= nm; i = i + 1) {
-            rloop, mval(i);
+            rloop, mval[i - 1];
         }
     }
     for (i = 1; i <= nm; i = i + 1) {
         if (mval[i - 1] < 0) {
-            write(nout, format_9996), " M  ", mval(i), 0;
+            write(nout, format_9996), " M  ", mval[i - 1], 0;
             fatal = true;
         } else if (mval[i - 1] > nmax) {
-            write(nout, format_9995), " M  ", mval(i), nmax;
+            write(nout, format_9995), " M  ", mval[i - 1], nmax;
             fatal = true;
         }
     }
@@ -177,7 +157,7 @@ void program_zchkab(int argc, char const *argv[]) {
             write_loop wloop(cmn, nout, format_9993);
             wloop, "M   ";
             for (i = 1; i <= nm; i = i + 1) {
-                wloop, mval(i);
+                wloop, mval[i - 1];
             }
         }
     }
@@ -197,15 +177,15 @@ void program_zchkab(int argc, char const *argv[]) {
     {
         read_loop rloop(cmn, nin, star);
         for (i = 1; i <= nns; i = i + 1) {
-            rloop, nsval(i);
+            rloop, nsval[i - 1];
         }
     }
     for (i = 1; i <= nns; i = i + 1) {
         if (nsval[i - 1] < 0) {
-            write(nout, format_9996), "NRHS", nsval(i), 0;
+            write(nout, format_9996), "NRHS", nsval[i - 1], 0;
             fatal = true;
         } else if (nsval[i - 1] > maxrhs) {
-            write(nout, format_9995), "NRHS", nsval(i), maxrhs;
+            write(nout, format_9995), "NRHS", nsval[i - 1], maxrhs;
             fatal = true;
         }
     }
@@ -214,7 +194,7 @@ void program_zchkab(int argc, char const *argv[]) {
             write_loop wloop(cmn, nout, format_9993);
             wloop, "NRHS";
             for (i = 1; i <= nns; i = i + 1) {
-                wloop, nsval(i);
+                wloop, nsval[i - 1];
             }
         }
     }
@@ -222,9 +202,7 @@ void program_zchkab(int argc, char const *argv[]) {
     // Read the threshold value for the test ratios.
     //
     read(nin, star), thresh;
-    write(nout, "(/,' Routines pass computational tests if test ratio is ','less than',"
-                "f8.2,/)"),
-        thresh;
+    write(nout, format_9992), thresh;
     //
     // Read the flag that indicates whether to test the driver routine.
     //
@@ -235,7 +213,7 @@ void program_zchkab(int argc, char const *argv[]) {
     read(nin, star), tsterr;
     //
     if (fatal) {
-        write(nout, "(/,' Execution not attempted due to input errors')");
+        write(nout, format_9999);
         FEM_STOP(0);
     }
     //
@@ -296,25 +274,24 @@ statement_120:
     }
     goto statement_100;
 statement_130:
-    c1 = path[0];
-    c2[0] = path[(2 - 1)];
-    c2[1] = path[(3 - 1)];
-    nrhs = nsval[0];
-    nrhs = nsval[0];
+    c1 = path(1, 1);
+    c2 = path(2, 3);
+    nrhs = nsval[1 - 1];
+    nrhs = nsval[1 - 1];
     //
     // Check first character for correct precision.
     //
-    if (!Mlsame(&c1, "Zomplex precision")) {
+    if (!Mlsame(c1.elems, "Zomplex precision")) {
         write(nout, format_9990), path;
         //
     } else if (nmats <= 0) {
         //
         // Check for a positive number of tests requested.
         //
-        write(nout, format_9990), "ZCGESV";
+        write(nout, format_9990), "Ccgesv";
         goto statement_140;
         //
-    } else if (Mlsamen(2, c2, "GE")) {
+    } else if (Mlsamen(2, c2.elems, "GE")) {
         //
         // GE:  general matrices
         //
@@ -328,12 +305,12 @@ statement_130:
         }
         //
         if (tstdrv) {
-            Cdrvab(dotype, nm, mval, nns, nsval, thresh, lda, &a[0], &a[(2 - 1) * lda], &b[0], &b[(2 - 1) * ldb], work, rwork, swork, iwork, nout);
+            Cdrvab(dotype, nm, mval, nns, nsval, thresh, lda, &a[0], &a[(2 - 1) * ldaw], &b[0], &b[(2 - 1) * ldb], work, rwork, swork, iwork, nout);
         } else {
-            write(nout, format_9989), "ZCGESV";
+            write(nout, format_9989), "Ccgesv";
         }
         //
-    } else if (Mlsamen(2, c2, "PO")) {
+    } else if (Mlsamen(2, c2.elems, "PO")) {
         //
         // PO:  positive definite matrices
         //
@@ -345,9 +322,9 @@ statement_130:
         }
         //
         if (tstdrv) {
-            Cdrvac(dotype, nm, mval, nns, nsval, thresh, lda, &a[0], &a[(2 - 1) * lda], &b[0], &b[(2 - 1) * ldb], work, rwork, swork, nout);
+            Cdrvac(dotype, nm, mval, nns, nsval, thresh, lda, &a[0], &a[(2 - 1) * ldaw], &b[0], &b[(2 - 1) * ldb], work, rwork, swork, nout);
         } else {
-            write(nout, format_9989), "ZCPOSV";
+            write(nout, format_9989), "Ccposv";
         }
         //
     } else {
@@ -363,8 +340,8 @@ statement_130:
 statement_140:
     cmn.io.close(nin);
     s2 = dsecnd();
-    write(nout, "(/,' End of tests')");
-    write(nout, "(' Total time used = ',f12.2,' seconds',/)"), s2 - s1;
+    write(nout, format_9998);
+    write(nout, format_9997), s2 - s1;
     //
     // End of Cchkab
     //

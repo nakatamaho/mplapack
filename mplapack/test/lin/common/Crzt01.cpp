@@ -68,10 +68,9 @@ REAL Crzt01(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, INTEGER c
     Claset("Full", m, n, COMPLEX(zero), COMPLEX(zero), work, m);
     INTEGER j = 0;
     INTEGER i = 0;
-    INTEGER ldaf = lda;
     for (j = 1; j <= m; j = j + 1) {
         for (i = 1; i <= j; i = i + 1) {
-            work[((j - 1) * m + i) - 1] = af[(i - 1) + (j - 1) * ldaf];
+            work[((j - 1) * m + i) - 1] = af[(i - 1) + (j - 1) * lda];
         }
     }
     //

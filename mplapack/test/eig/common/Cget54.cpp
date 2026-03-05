@@ -43,8 +43,6 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
 void Cget54(INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX *s, INTEGER const lds, COMPLEX *t, INTEGER const ldt, COMPLEX *u, INTEGER const ldu, COMPLEX *v, INTEGER const ldv, COMPLEX *work, REAL &result) {
     //
     const REAL zero = 0.0;
@@ -63,7 +61,7 @@ void Cget54(INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER 
     Clacpy("Full", n, n, a, lda, work, n);
     Clacpy("Full", n, n, b, ldb, &work[(n * n + 1) - 1], n);
     REAL dum[1];
-    REAL abnorm = max({Clange("1", n, 2 * n, work, n, dum), unfl});
+    REAL abnorm = max(Clange("1", n, 2 * n, work, n, dum), unfl);
     //
     // Compute W1 = A - U*S*V', and put in the array WORK(1:N*N)
     //
@@ -87,12 +85,12 @@ void Cget54(INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER 
     //
     const REAL one = 1.0;
     if (abnorm > wnorm) {
-        result = (wnorm / abnorm) / (castREAL(2 * n) * ulp);
+        result = (wnorm / abnorm) / (2 * n * ulp);
     } else {
         if (abnorm < one) {
-            result = (min(wnorm, REAL(castREAL(2 * n) * abnorm)) / abnorm) / (castREAL(2 * n) * ulp);
+            result = (min(wnorm, 2 * n * abnorm) / abnorm) / (2 * n * ulp);
         } else {
-            result = min(REAL(wnorm / abnorm), castREAL(2 * n)) / (castREAL(2 * n) * ulp);
+            result = min(wnorm / abnorm, castREAL(2 * n)) / (2 * n * ulp);
         }
     }
     //

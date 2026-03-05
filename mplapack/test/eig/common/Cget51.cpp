@@ -43,8 +43,6 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
 void Cget51(INTEGER const itype, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX *u, INTEGER const ldu, COMPLEX *v, INTEGER const ldv, COMPLEX *work, REAL *rwork, REAL &result) {
     //
     const REAL zero = 0.0;
@@ -78,16 +76,16 @@ void Cget51(INTEGER const itype, INTEGER const n, COMPLEX *a, INTEGER const lda,
         //
         // Tests scaled by the norm(A)
         //
-        anorm = max({Clange("1", n, n, a, lda, rwork), unfl});
+        anorm = max(Clange("1", n, n, a, lda, rwork), unfl);
         //
         if (itype == 1) {
             //
             // ITYPE=1: Compute W = A - U B V**H
             //
             Clacpy(" ", n, n, a, lda, work, n);
-            Cgemm("N", "N", n, n, n, cone, u, ldu, b, ldb, czero, &work[(n * n + 1) - 1], n);
+            Cgemm("N", "N", n, n, n, cone, u, ldu, b, ldb, czero, &work[(pow2(n) + 1) - 1], n);
             //
-            Cgemm("N", "C", n, n, n, -cone, &work[(n * n + 1) - 1], n, v, ldv, cone, work, n);
+            Cgemm("N", "C", n, n, n, -cone, &work[(pow2(n) + 1) - 1], n, v, ldv, cone, work, n);
             //
         } else {
             //
@@ -110,9 +108,9 @@ void Cget51(INTEGER const itype, INTEGER const n, COMPLEX *a, INTEGER const lda,
             result = (wnorm / anorm) / (n * ulp);
         } else {
             if (anorm < one) {
-                result = (min(wnorm, REAL(castREAL(n) * anorm)) / anorm) / (castREAL(n) * ulp);
+                result = (min(wnorm, n * anorm) / anorm) / (n * ulp);
             } else {
-                result = min(REAL(wnorm / anorm), castREAL(n)) / (castREAL(n) * ulp);
+                result = min(wnorm / anorm, castREAL(n)) / (n * ulp);
             }
         }
         //
@@ -128,7 +126,7 @@ void Cget51(INTEGER const itype, INTEGER const n, COMPLEX *a, INTEGER const lda,
             work[((n + 1) * (jdiag - 1) + 1) - 1] = work[((n + 1) * (jdiag - 1) + 1) - 1] - cone;
         }
         //
-        result = min({Clange("1", n, n, work, n, rwork), castREAL(n)}) / (n * ulp);
+        result = min(Clange("1", n, n, work, n, rwork), castREAL(n)) / (n * ulp);
     }
     //
     // End of Cget51

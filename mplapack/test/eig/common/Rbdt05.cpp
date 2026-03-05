@@ -43,8 +43,6 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
 void Rbdt05(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *s, INTEGER const ns, REAL *u, INTEGER const ldu, REAL *vt, INTEGER const ldvt, REAL *work, REAL &resid) {
     //
     // Quick return if possible.
@@ -70,7 +68,7 @@ void Rbdt05(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
     INTEGER i = 0;
     for (i = 1; i <= ns; i = i + 1) {
         work[(j + i) - 1] += s[i - 1];
-        resid = max({resid, Rasum(ns, &work[(j + 1) - 1], 1)});
+        resid = max(resid, Rasum(ns, &work[(j + 1) - 1], 1));
         j += ns;
     }
     //
@@ -83,9 +81,9 @@ void Rbdt05(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
             resid = (resid / anorm) / (castREAL(n) * eps);
         } else {
             if (anorm < one) {
-                resid = (min(resid, REAL(castREAL(n) * anorm)) / anorm) / (castREAL(n) * eps);
+                resid = (min(resid, castREAL(n) * anorm) / anorm) / (castREAL(n) * eps);
             } else {
-                resid = min(REAL(resid / anorm), castREAL(n)) / (castREAL(n) * eps);
+                resid = min(resid / anorm, castREAL(n)) / (castREAL(n) * eps);
             }
         }
     }

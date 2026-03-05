@@ -43,9 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-void Rlatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER const nz2, INTEGER const isign, REAL const amagn, REAL const rcond, REAL const triang, INTEGER const idist, INTEGER *iseed, REAL *a, INTEGER const lda) {
+void Rlatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER const nz2, INTEGER const isign, REAL const amagn, REAL const rcond, REAL const triang, INTEGER const idist, INTEGER (&iseed)[4], REAL *a, INTEGER const lda) {
     const REAL zero = 0.0;
     INTEGER kbeg = 0;
     INTEGER kend = 0;
@@ -76,13 +74,19 @@ void Rlatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
     }
     Rlaset("Full", n, n, zero, zero, a, lda);
     //
-    //     Compute diagonal and subdiagonal according to ITYPE, NZ1, NZ2,
-    //     and RCOND
+    // Insure a correct ISEED
+    //
+    if (mod(iseed[4 - 1], 2) != 1) {
+        iseed[4 - 1]++;
+    }
+    //
+    // Compute diagonal and subdiagonal according to ITYPE, NZ1, NZ2,
+    // and RCOND
     //
     if (itype != 0) {
         if (abs(itype) >= 4) {
-            kbeg = max({(INTEGER)1, min(n, nz1 + 1)});
-            kend = max({kbeg, min(n, n - nz2)});
+            kbeg = max((INTEGER)1, min(n, nz1 + 1));
+            kend = max(kbeg, min(n, n - nz2));
             klen = kend + 1 - kbeg;
         } else {
             kbeg = 1;
@@ -273,7 +277,7 @@ void Rlatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
                     //
                     cl = two * Rlaran(iseed) - one;
                     sl = two * Rlaran(iseed) - one;
-                    temp = one / max(safmin, REAL(sqrt(cl * cl + sl * sl)));
+                    temp = one / max(safmin, sqrt(pow2(cl) + pow2(sl)));
                     cl = cl * temp;
                     sl = sl * temp;
                     //
@@ -281,7 +285,7 @@ void Rlatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
                     //
                     cr = two * Rlaran(iseed) - one;
                     sr = two * Rlaran(iseed) - one;
-                    temp = one / max(safmin, REAL(sqrt(cr * cr + sr * sr)));
+                    temp = one / max(safmin, sqrt(pow2(cr) + pow2(sr)));
                     cr = cr * temp;
                     sr = sr * temp;
                     //

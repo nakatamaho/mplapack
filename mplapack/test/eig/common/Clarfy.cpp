@@ -43,9 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-void Clarfy(const char *uplo, INTEGER const n, COMPLEX *v, INTEGER const incv, COMPLEX const tau, COMPLEX *c, INTEGER const ldc, COMPLEX *work) {
+void Clarfy(fem::str_cref uplo, INTEGER const n, COMPLEX *v, INTEGER const incv, COMPLEX const tau, COMPLEX *c, INTEGER const ldc, COMPLEX *work) {
     //
     const COMPLEX zero = COMPLEX(0.0, 0.0);
     if (tau == zero) {
@@ -55,15 +53,15 @@ void Clarfy(const char *uplo, INTEGER const n, COMPLEX *v, INTEGER const incv, C
     // Form  w:= C * v
     //
     const COMPLEX one = COMPLEX(1.0, 0.0);
-    Chemv(uplo, n, one, c, ldc, v, incv, zero, work, 1);
+    Chemv(uplo.elems(), n, one, c, ldc, v, incv, zero, work, 1);
     //
-    const COMPLEX half = COMPLEX(0.5e+0, 0.0);
+    const COMPLEX half = COMPLEX(0.5, 0.0);
     COMPLEX alpha = -half * tau * Cdotc(n, work, 1, v, incv);
     Caxpy(n, alpha, v, incv, work, 1);
     //
     // C := C - v * w' - w * v'
     //
-    Cher2(uplo, n, -tau, v, incv, work, 1, c, ldc);
+    Cher2(uplo.elems(), n, -tau, v, incv, work, 1, c, ldc);
     //
     // End of Clarfy
     //

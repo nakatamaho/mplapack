@@ -43,8 +43,6 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-inline REAL abs1(COMPLEX zdum) { return abs(zdum.real()) + abs(zdum.imag()); }
-
 void Cptt05(INTEGER const n, INTEGER const nrhs, REAL *d, COMPLEX *e, COMPLEX *b, INTEGER const ldb, COMPLEX *x, INTEGER const ldx, COMPLEX *xact, INTEGER const ldxact, REAL *ferr, REAL *berr, REAL *reslts) {
     COMPLEX zdum = 0.0;
     const REAL zero = 0.0;
@@ -83,10 +81,10 @@ void Cptt05(INTEGER const n, INTEGER const nrhs, REAL *d, COMPLEX *e, COMPLEX *b
     errbnd = zero;
     for (j = 1; j <= nrhs; j = j + 1) {
         imax = iCamax(n, &x[(j - 1) * ldx], 1);
-        xnorm = max(abs1(x[(imax - 1) + (j - 1) * ldx]), unfl);
+        xnorm = max(cabs1(x[(imax - 1) + (j - 1) * ldx]), unfl);
         diff = zero;
         for (i = 1; i <= n; i = i + 1) {
-            diff = max(diff, abs1(x[(i - 1) + (j - 1) * ldx] - xact[(i - 1) + (j - 1) * ldxact]));
+            diff = max(diff, cabs1(x[(i - 1) + (j - 1) * ldx] - xact[(i - 1) + (j - 1) * ldxact]));
         }
         //
         if (xnorm > one) {
@@ -100,7 +98,7 @@ void Cptt05(INTEGER const n, INTEGER const nrhs, REAL *d, COMPLEX *e, COMPLEX *b
     //
     statement_20:
         if (diff / xnorm <= ferr[j - 1]) {
-            errbnd = max(errbnd, REAL((diff / xnorm) / ferr[j - 1]));
+            errbnd = max(errbnd, (diff / xnorm) / ferr[j - 1]);
         } else {
             errbnd = one / eps;
         }
@@ -113,17 +111,17 @@ void Cptt05(INTEGER const n, INTEGER const nrhs, REAL *d, COMPLEX *e, COMPLEX *b
     //
     for (k = 1; k <= nrhs; k = k + 1) {
         if (n == 1) {
-            axbi = abs1(b[(k - 1) * ldb]) + abs1(d[1 - 1] * x[(k - 1) * ldx]);
+            axbi = cabs1(b[(k - 1) * ldb]) + cabs1(d[1 - 1] * x[(k - 1) * ldx]);
         } else {
-            axbi = abs1(b[(k - 1) * ldb]) + abs1(d[1 - 1] * x[(k - 1) * ldx]) + abs1(e[1 - 1]) * abs1(x[(2 - 1) + (k - 1) * ldx]);
+            axbi = cabs1(b[(k - 1) * ldb]) + cabs1(d[1 - 1] * x[(k - 1) * ldx]) + cabs1(e[1 - 1]) * cabs1(x[(2 - 1) + (k - 1) * ldx]);
             for (i = 2; i <= n - 1; i = i + 1) {
-                tmp = abs1(b[(i - 1) + (k - 1) * ldb]) + abs1(e[(i - 1) - 1]) * abs1(x[((i - 1) - 1) + (k - 1) * ldx]) + abs1(d[i - 1] * x[(i - 1) + (k - 1) * ldx]) + abs1(e[i - 1]) * abs1(x[((i + 1) - 1) + (k - 1) * ldx]);
+                tmp = cabs1(b[(i - 1) + (k - 1) * ldb]) + cabs1(e[(i - 1) - 1]) * cabs1(x[((i - 1) - 1) + (k - 1) * ldx]) + cabs1(d[i - 1] * x[(i - 1) + (k - 1) * ldx]) + cabs1(e[i - 1]) * cabs1(x[((i + 1) - 1) + (k - 1) * ldx]);
                 axbi = min(axbi, tmp);
             }
-            tmp = abs1(b[(n - 1) + (k - 1) * ldb]) + abs1(e[(n - 1) - 1]) * abs1(x[((n - 1) - 1) + (k - 1) * ldx]) + abs1(d[n - 1] * x[(n - 1) + (k - 1) * ldx]);
+            tmp = cabs1(b[(n - 1) + (k - 1) * ldb]) + cabs1(e[(n - 1) - 1]) * cabs1(x[((n - 1) - 1) + (k - 1) * ldx]) + cabs1(d[n - 1] * x[(n - 1) + (k - 1) * ldx]);
             axbi = min(axbi, tmp);
         }
-        tmp = berr[k - 1] / (nz * eps + nz * unfl / max(axbi, REAL(nz * unfl)));
+        tmp = berr[k - 1] / (nz * eps + nz * unfl / max(axbi, nz * unfl));
         if (k == 1) {
             reslts[2 - 1] = tmp;
         } else {

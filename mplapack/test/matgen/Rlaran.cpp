@@ -46,7 +46,7 @@ extern gmp_randstate_t ___random_mplapack_gmp_state;
 extern gmp_randclass ___random_mplapack_gmp;
 #endif
 
-REAL Rlaran(INTEGER *iseed) {
+REAL Rlaran(INTEGER (&iseed)[4]) {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
     mpreal x = urandom(___random_mplapack_mpfr_state);
 #endif
@@ -76,16 +76,16 @@ REAL Rlaran(INTEGER *iseed) {
     x = x + dist(mt) * 0x1p-159;
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
-    _Float128 x;
+#if defined ___MPLAPACK_BUILD_WITH_BINARY128___
+    mplapack_binary128_t x;
     std::random_device rd;
     std::mt19937_64 mt(rd());
     std::uniform_real_distribution<double> dist(0.0, 1.0);
     x = dist(mt) + dist(mt) * 0x1p-53 + dist(mt) * 0x1p-106;
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
-    _Float64x x;
+#if defined ___MPLAPACK_BUILD_WITH_BINARY80___
+    mplapack_binary80_t x;
     std::random_device rd;
     std::mt19937_64 mt(rd());
     std::uniform_real_distribution<double> dist(0, 1.0);

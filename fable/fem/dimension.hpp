@@ -13,14 +13,14 @@ template <size_t Ndims> struct dims_base_1 {
             result *= all[i];
         return result;
     }
-    template <size_t BufferNdims> void set_dims(dims_base_1<BufferNdims> const& source) {
+    template <size_t BufferNdims> void set_dims(dims_base_1<BufferNdims> const &source) {
         for (size_t i = 0; i < Ndims; i++)
             all[i] = source.all[i];
     }
 };
 template <size_t Ndims> struct dim_data : dims_base_1<Ndims> {
     ssize_t origin[Ndims];
-    template <size_t BufferNdims> void set_dims(dim_data<BufferNdims> const& source) {
+    template <size_t BufferNdims> void set_dims(dim_data<BufferNdims> const &source) {
         dims_base_1<Ndims>::set_dims(source);
         for (size_t i = 0; i < Ndims; i++)
             origin[i] = source.origin[i];
@@ -48,28 +48,28 @@ template <> struct dims<6> : dim_data<6> {
 struct dim_buffer : dims<arr_dim_max> {
     size_t actual_number_of_dimensions;
     dim_buffer() : actual_number_of_dimensions(0) {}
-    dim_buffer(dim_buffer const& other) : actual_number_of_dimensions(other.actual_number_of_dimensions) {
+    dim_buffer(dim_buffer const &other) : actual_number_of_dimensions(other.actual_number_of_dimensions) {
         std::copy(other.all, other.all + actual_number_of_dimensions, all);
         std::copy(other.origin, other.origin + actual_number_of_dimensions, origin);
     }
-    template <size_t BufferNdims> dim_buffer(dims<BufferNdims> const& source) : actual_number_of_dimensions(BufferNdims) { this->set_dims(source); }
-    template <unsigned I> void set_origin_all_star() {
-        actual_number_of_dimensions = (I + 1);
-        all[I] = size_t_max;
-        origin[I] = 1;
+    template <size_t BufferNdims> dim_buffer(dims<BufferNdims> const &source) : actual_number_of_dimensions(BufferNdims) { this->set_dims(source); }
+    template <unsigned II> void set_origin_all_star() {
+        actual_number_of_dimensions = (II + 1);
+        all[II] = size_t_max;
+        origin[II] = 1;
     }
-    template <unsigned I> void set_origin_all(ssize_t first, star_type const&) {
-        actual_number_of_dimensions = (I + 1);
-        all[I] = size_t_max - 1;
-        origin[I] = first;
+    template <unsigned II> void set_origin_all(ssize_t first, star_type const &) {
+        actual_number_of_dimensions = (II + 1);
+        all[II] = size_t_max - 1;
+        origin[II] = first;
     }
-    template <unsigned I> void set_origin_all(ssize_t first, ssize_t last) {
-        actual_number_of_dimensions = (I + 1);
-        all[I] = last - first + 1;
-        origin[I] = first;
+    template <unsigned II> void set_origin_all(ssize_t first, ssize_t last) {
+        actual_number_of_dimensions = (II + 1);
+        all[II] = last - first + 1;
+        origin[II] = first;
     }
     size_t actual_size_1d() const { return size_1d(actual_number_of_dimensions); }
-    template <size_t MaxNdims> size_t actual_index_1d(arr_index_data<MaxNdims> const& arr_index) const {
+    template <size_t MaxNdims> size_t actual_index_1d(arr_index_data<MaxNdims> const &arr_index) const {
         TBXX_ASSERT(arr_index.actual_number_of_dimensions == actual_number_of_dimensions);
         size_t i = actual_number_of_dimensions;
         if (i == 0)
@@ -85,96 +85,96 @@ struct dim_buffer : dims<arr_dim_max> {
     }
 };
 struct dim_chain : dim_buffer {
-    dim_chain(star_type const&) { this->set_origin_all_star<0>(); }
+    dim_chain(star_type const &) { this->set_origin_all_star<0>(); }
     dim_chain(size_t n) { this->set_origin_all<0>(1, n); }
-    dim_chain(ssize_t first, star_type const&) { this->set_origin_all<0>(first, star_type()); }
+    dim_chain(ssize_t first, star_type const &) { this->set_origin_all<0>(first, star_type()); }
     dim_chain(ssize_t first, ssize_t last) { this->set_origin_all<0>(first, last); }
-    dim_chain& dim2(star_type const&) {
+    dim_chain &dim2(star_type const &) {
         this->set_origin_all_star<1>();
         return *this;
     }
-    dim_chain& dim2(size_t n) {
+    dim_chain &dim2(size_t n) {
         this->set_origin_all<1>(1, n);
         return *this;
     }
-    dim_chain& dim2(ssize_t first, star_type const&) {
+    dim_chain &dim2(ssize_t first, star_type const &) {
         this->set_origin_all<1>(first, star_type());
         return *this;
     }
-    dim_chain& dim2(ssize_t first, ssize_t last) {
+    dim_chain &dim2(ssize_t first, ssize_t last) {
         this->set_origin_all<1>(first, last);
         return *this;
     }
-    dim_chain& dim3(star_type const&) {
+    dim_chain &dim3(star_type const &) {
         this->set_origin_all_star<2>();
         return *this;
     }
-    dim_chain& dim3(size_t n) {
+    dim_chain &dim3(size_t n) {
         this->set_origin_all<2>(1, n);
         return *this;
     }
-    dim_chain& dim3(ssize_t first, star_type const&) {
+    dim_chain &dim3(ssize_t first, star_type const &) {
         this->set_origin_all<2>(first, star_type());
         return *this;
     }
-    dim_chain& dim3(ssize_t first, ssize_t last) {
+    dim_chain &dim3(ssize_t first, ssize_t last) {
         this->set_origin_all<2>(first, last);
         return *this;
     }
-    dim_chain& dim4(star_type const&) {
+    dim_chain &dim4(star_type const &) {
         this->set_origin_all_star<3>();
         return *this;
     }
-    dim_chain& dim4(size_t n) {
+    dim_chain &dim4(size_t n) {
         this->set_origin_all<3>(1, n);
         return *this;
     }
-    dim_chain& dim4(ssize_t first, star_type const&) {
+    dim_chain &dim4(ssize_t first, star_type const &) {
         this->set_origin_all<3>(first, star_type());
         return *this;
     }
-    dim_chain& dim4(ssize_t first, ssize_t last) {
+    dim_chain &dim4(ssize_t first, ssize_t last) {
         this->set_origin_all<3>(first, last);
         return *this;
     }
-    dim_chain& dim5(star_type const&) {
+    dim_chain &dim5(star_type const &) {
         this->set_origin_all_star<4>();
         return *this;
     }
-    dim_chain& dim5(size_t n) {
+    dim_chain &dim5(size_t n) {
         this->set_origin_all<4>(1, n);
         return *this;
     }
-    dim_chain& dim5(ssize_t first, star_type const&) {
+    dim_chain &dim5(ssize_t first, star_type const &) {
         this->set_origin_all<4>(first, star_type());
         return *this;
     }
-    dim_chain& dim5(ssize_t first, ssize_t last) {
+    dim_chain &dim5(ssize_t first, ssize_t last) {
         this->set_origin_all<4>(first, last);
         return *this;
     }
-    dim_chain& dim6(star_type const&) {
+    dim_chain &dim6(star_type const &) {
         this->set_origin_all_star<5>();
         return *this;
     }
-    dim_chain& dim6(size_t n) {
+    dim_chain &dim6(size_t n) {
         this->set_origin_all<5>(1, n);
         return *this;
     }
-    dim_chain& dim6(ssize_t first, star_type const&) {
+    dim_chain &dim6(ssize_t first, star_type const &) {
         this->set_origin_all<5>(first, star_type());
         return *this;
     }
-    dim_chain& dim6(ssize_t first, ssize_t last) {
+    dim_chain &dim6(ssize_t first, ssize_t last) {
         this->set_origin_all<5>(first, last);
         return *this;
     }
 };
-inline dim_chain dim1(star_type const&) { return dim_chain(star_type()); }
+inline dim_chain dim1(star_type const &) { return dim_chain(star_type()); }
 inline dim_chain dim1(size_t n) { return dim_chain(n); }
-inline dim_chain dim1(ssize_t first, star_type const&) { return dim_chain(first, star_type()); }
+inline dim_chain dim1(ssize_t first, star_type const &) { return dim_chain(first, star_type()); }
 inline dim_chain dim1(ssize_t first, ssize_t last) { return dim_chain(first, last); }
-inline dims<1> dimension(star_type const&) {
+inline dims<1> dimension(star_type const &) {
     dims<1> result;
     result.all[0] = size_t_max;
     result.origin[0] = 1;
@@ -186,7 +186,7 @@ inline dims<1> dimension(size_t n) {
     result.origin[0] = 1;
     return result;
 }
-inline dims<2> dimension(size_t n1, star_type const&) {
+inline dims<2> dimension(size_t n1, star_type const &) {
     dims<2> result;
     result.all[0] = n1;
     result.all[1] = size_t_max;
@@ -202,7 +202,7 @@ inline dims<2> dimension(size_t n1, size_t n2) {
     result.origin[1] = 1;
     return result;
 }
-inline dims<3> dimension(size_t n1, size_t n2, star_type const&) {
+inline dims<3> dimension(size_t n1, size_t n2, star_type const &) {
     dims<3> result;
     result.all[0] = n1;
     result.all[1] = n2;
@@ -222,7 +222,7 @@ inline dims<3> dimension(size_t n1, size_t n2, size_t n3) {
     result.origin[2] = 1;
     return result;
 }
-inline dims<4> dimension(size_t n1, size_t n2, size_t n3, star_type const&) {
+inline dims<4> dimension(size_t n1, size_t n2, size_t n3, star_type const &) {
     dims<4> result;
     result.all[0] = n1;
     result.all[1] = n2;
@@ -246,7 +246,7 @@ inline dims<4> dimension(size_t n1, size_t n2, size_t n3, size_t n4) {
     result.origin[3] = 1;
     return result;
 }
-inline dims<5> dimension(size_t n1, size_t n2, size_t n3, size_t n4, star_type const&) {
+inline dims<5> dimension(size_t n1, size_t n2, size_t n3, size_t n4, star_type const &) {
     dims<5> result;
     result.all[0] = n1;
     result.all[1] = n2;
@@ -274,7 +274,7 @@ inline dims<5> dimension(size_t n1, size_t n2, size_t n3, size_t n4, size_t n5) 
     result.origin[4] = 1;
     return result;
 }
-inline dims<6> dimension(size_t n1, size_t n2, size_t n3, size_t n4, size_t n5, star_type const&) {
+inline dims<6> dimension(size_t n1, size_t n2, size_t n3, size_t n4, size_t n5, star_type const &) {
     dims<6> result;
     result.all[0] = n1;
     result.all[1] = n2;

@@ -43,16 +43,12 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-#include <mplapack_debug.h>
-
 void Rchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, INTEGER const /* nmax */, REAL *a, REAL *afac, REAL *ainv, REAL *b, REAL *x, REAL *xact, REAL *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
     common cmn;
     common_write write(cmn);
-    //
-    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
-    char uplos[] = {'U', 'L'};
-    char path[4] = {};
-    char buf[1024];
+    static INTEGER iseedy[4] = {1988, 1989, 1990, 1991};
+    static fem::str<1> uplos[2] = {"U", "L"};
+    fem::str<3> path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -61,21 +57,21 @@ void Rchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     INTEGER in = 0;
     INTEGER n = 0;
     INTEGER lda = 0;
-    char xtype;
+    fem::str<1> xtype;
     const INTEGER ntypes = 9;
     INTEGER nimat = 0;
     INTEGER izero = 0;
     INTEGER imat = 0;
     bool zerot = false;
     INTEGER iuplo = 0;
-    char uplo;
-    char type;
+    fem::str<1> uplo;
+    fem::str<1> type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist;
+    fem::str<1> dist;
     INTEGER info = 0;
     INTEGER ioff = 0;
     const REAL zero = 0.0;
@@ -89,46 +85,20 @@ void Rchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     INTEGER nrhs = 0;
     REAL rcond = 0.0;
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    static const char *format_9999 = "(' UPLO = ''',a1,''', N =',i5,', NB =',i4,', type ',i2,', test ',i2,"
+                                     "', ratio =',g12.5)";
+    static const char *format_9998 = "(' UPLO = ''',a1,''', N =',i5,', NRHS=',i3,', type ',i2,', test(',i2,"
+                                     "') =',g12.5)";
+    static const char *format_9997 = "(' UPLO = ''',a1,''', N =',i5,',',10x,' type ',i2,', test(',i2,') =',"
+                                     "g12.5)";
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
+    // Initialize constants and the random number seed.
     //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Initialize constants and the random number seed.
-    //
-    path[0] = 'R';
-    path[1] = 'P';
-    path[2] = 'O';
+    path(1, 1) = "Double precision";
+    path(2, 3) = "PO";
     nrun = 0;
     nfail = 0;
     nerrs = 0;
-    infot = 0;
     for (i = 1; i <= 4; i = i + 1) {
         iseed[i - 1] = iseedy[i - 1];
     }
@@ -138,14 +108,15 @@ void Rchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     if (tsterr) {
         Rerrpo(path, nout);
     }
-    xlaenv(2, 2);
+    infot = 0;
+    Mxlaenv(2, 2);
     //
     // Do for each value of N in NVAL
     //
     for (in = 1; in <= nn; in = in + 1) {
         n = nval[in - 1];
         lda = max(n, (INTEGER)1);
-        xtype = 'N';
+        xtype = "N";
         nimat = ntypes;
         if (n <= 0) {
             nimat = 1;
@@ -175,15 +146,15 @@ void Rchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                 // Set up parameters with Rlatb4 and generate a test matrix
                 // with Rlatms.
                 //
-                Rlatb4(path, imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
+                Rlatb4(path, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
                 //
-                strncpy(srnamt, "Rlatms", srnamt_len);
-                Rlatms(n, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, &uplo, a, lda, work, info);
+                srnamt = "Rlatms";
+                Rlatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, uplo, a, lda, work, info);
                 //
                 // Check error code from Rlatms.
                 //
                 if (info != 0) {
-                    Alaerh(path, "Rlatms", info, 0, &uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Rlatms", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     goto statement_100;
                 }
                 //
@@ -230,18 +201,18 @@ void Rchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                 //
                 for (inb = 1; inb <= nnb; inb = inb + 1) {
                     nb = nbval[inb - 1];
-                    xlaenv(1, nb);
+                    Mxlaenv(1, nb);
                     //
                     // Compute the L*L' or U'*U factorization of the matrix.
                     //
-                    Rlacpy(&uplo, n, n, a, lda, afac, lda);
-                    strncpy(srnamt, "Rpotrf", srnamt_len);
-                    Rpotrf(&uplo, n, afac, lda, info);
+                    Rlacpy(uplo.elems, n, n, a, lda, afac, lda);
+                    srnamt = "Rpotrf";
+                    Rpotrf(uplo.elems, n, afac, lda, info);
                     //
                     // Check error code from Rpotrf.
                     //
                     if (info != izero) {
-                        Alaerh(path, "Rpotrf", info, izero, &uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Rpotrf", info, izero, uplo, n, n, -1, -1, nb, imat, nfail, nerrs, nout);
                         goto statement_90;
                     }
                     //
@@ -254,23 +225,23 @@ void Rchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     // +    TEST 1
                     // Reconstruct matrix from factors and compute residual.
                     //
-                    Rlacpy(&uplo, n, n, afac, lda, ainv, lda);
-                    Rpot01(&uplo, n, a, lda, ainv, lda, rwork, result[1 - 1]);
+                    Rlacpy(uplo.elems, n, n, afac, lda, ainv, lda);
+                    Rpot01(uplo, n, a, lda, ainv, lda, rwork, result[1 - 1]);
                     //
                     // +    TEST 2
                     // Form the inverse and compute the residual.
                     //
-                    Rlacpy(&uplo, n, n, afac, lda, ainv, lda);
-                    strncpy(srnamt, "Rpotri", srnamt_len);
-                    Rpotri(&uplo, n, ainv, lda, info);
+                    Rlacpy(uplo.elems, n, n, afac, lda, ainv, lda);
+                    srnamt = "Rpotri";
+                    Rpotri(uplo.elems, n, ainv, lda, info);
                     //
                     // Check error code from Rpotri.
                     //
                     if (info != 0) {
-                        Alaerh(path, "Rpotri", info, 0, &uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Rpotri", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     }
                     //
-                    Rpot03(&uplo, n, a, lda, ainv, lda, work, lda, rwork, rcondc, result[2 - 1]);
+                    Rpot03(uplo, n, a, lda, ainv, lda, work, lda, rwork, rcondc, result[2 - 1]);
                     //
                     // Print information about the tests that did not pass
                     // the threshold.
@@ -280,10 +251,7 @@ void Rchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
-                            sprintnum_short(buf, result[k - 1]);
-                            write(nout, "(' UPLO = ''',a1,''', N =',i5,', NB =',i4,', type ',i2,"
-                                        "', test ',i2,', ratio =',a)"),
-                                &uplo, n, nb, imat, k, buf;
+                            write(nout, format_9999), uplo, n, nb, imat, k, result[k - 1];
                             nfail++;
                         }
                     }
@@ -299,24 +267,24 @@ void Rchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     for (irhs = 1; irhs <= nns; irhs = irhs + 1) {
                         nrhs = nsval[irhs - 1];
                         //
-                        //+    TEST 3
-                        //                 Solve and compute residual for A * X = B .
+                        // +    TEST 3
+                        // Solve and compute residual for A * X = B .
                         //
-                        Rlarhs(path, &xtype, &uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
-                        strncpy(srnamt, "Rlarhs", srnamt_len);
+                        srnamt = "Rlarhs";
+                        Rlarhs(path, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                         Rlacpy("Full", n, nrhs, b, lda, x, lda);
                         //
-                        strncpy(srnamt, "Rpotrs", srnamt_len);
-                        Rpotrs(&uplo, n, nrhs, afac, lda, x, lda, info);
+                        srnamt = "Rpotrs";
+                        Rpotrs(uplo.elems, n, nrhs, afac, lda, x, lda, info);
                         //
                         // Check error code from Rpotrs.
                         //
                         if (info != 0) {
-                            Alaerh(path, "Rpotrs", info, 0, &uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Rpotrs", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                         }
                         //
                         Rlacpy("Full", n, nrhs, b, lda, work, lda);
-                        Rpot02(&uplo, n, nrhs, a, lda, x, lda, work, lda, rwork, result[3 - 1]);
+                        Rpot02(uplo, n, nrhs, a, lda, x, lda, work, lda, rwork, result[3 - 1]);
                         //
                         // +    TEST 4
                         // Check solution from generated exact solution.
@@ -326,17 +294,17 @@ void Rchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         // +    TESTS 5, 6, and 7
                         // Use iterative refinement to improve the solution.
                         //
-                        strncpy(srnamt, "Rporfs", srnamt_len);
-                        Rporfs(&uplo, n, nrhs, a, lda, afac, lda, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, iwork, info);
+                        srnamt = "Rporfs";
+                        Rporfs(uplo.elems, n, nrhs, a, lda, afac, lda, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, iwork, info);
                         //
                         // Check error code from Rporfs.
                         //
                         if (info != 0) {
-                            Alaerh(path, "Rporfs", info, 0, &uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Rporfs", info, 0, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                         }
                         //
                         Rget04(n, nrhs, x, lda, xact, lda, rcondc, result[5 - 1]);
-                        Rpot05(&uplo, n, nrhs, a, lda, b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], &result[6 - 1]);
+                        Rpot05(uplo, n, nrhs, a, lda, b, lda, x, lda, xact, lda, rwork, &rwork[(nrhs + 1) - 1], &result[6 - 1]);
                         //
                         // Print information about the tests that did not pass
                         // the threshold.
@@ -346,10 +314,7 @@ void Rchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                                 if (nfail == 0 && nerrs == 0) {
                                     Alahd(nout, path);
                                 }
-                                sprintnum_short(buf, result[k - 1]);
-                                write(nout, "(' UPLO = ''',a1,''', N =',i5,', NRHS=',i3,', type ',i2,"
-                                            "', test(',i2,') =',a)"),
-                                    &uplo, n, nrhs, imat, k, buf;
+                                write(nout, format_9998), uplo, n, nrhs, imat, k, result[k - 1];
                                 nfail++;
                             }
                         }
@@ -359,14 +324,14 @@ void Rchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     // +    TEST 8
                     // Get an estimate of RCOND = 1/CNDNUM.
                     //
-                    anorm = Rlansy("1", &uplo, n, a, lda, rwork);
-                    strncpy(srnamt, "Rpocon", srnamt_len);
-                    Rpocon(&uplo, n, afac, lda, anorm, rcond, work, iwork, info);
+                    anorm = Rlansy("1", uplo.elems, n, a, lda, rwork);
+                    srnamt = "Rpocon";
+                    Rpocon(uplo.elems, n, afac, lda, anorm, rcond, work, iwork, info);
                     //
                     // Check error code from Rpocon.
                     //
                     if (info != 0) {
-                        Alaerh(path, "Rpocon", info, 0, &uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Rpocon", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     }
                     //
                     result[8 - 1] = Rget06(rcond, rcondc);
@@ -377,10 +342,7 @@ void Rchkpo(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         if (nfail == 0 && nerrs == 0) {
                             Alahd(nout, path);
                         }
-                        sprintnum_short(buf, result[8 - 1]);
-                        write(nout, "(' UPLO = ''',a1,''', N =',i5,',',10x,' type ',i2,', test(',i2,"
-                                    "') =',a)"),
-                            &uplo, n, imat, 8, buf;
+                        write(nout, format_9997), uplo, n, imat, 8, result[8 - 1];
                         nfail++;
                     }
                     nrun++;

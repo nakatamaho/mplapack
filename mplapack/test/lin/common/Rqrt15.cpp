@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Rqrt15(INTEGER const scale, INTEGER const rksel, INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *s, INTEGER &rank, REAL &norma, REAL &normb, INTEGER *iseed, REAL *work, INTEGER const lwork) {
+void Rqrt15(INTEGER const scale, INTEGER const rksel, INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *s, INTEGER &rank, REAL &norma, REAL &normb, INTEGER (&iseed)[4], REAL *work, INTEGER const lwork) {
     INTEGER mn = 0;
     REAL smlnum = 0.0;
     const REAL one = 1.0;
@@ -52,13 +52,13 @@ void Rqrt15(INTEGER const scale, INTEGER const rksel, INTEGER const m, INTEGER c
     INTEGER j = 0;
     const REAL zero = 0.0;
     REAL temp = 0.0;
-    const REAL svmin = 0.1e0;
+    const REAL svmin = 0.1;
     const REAL two = 2.0;
     INTEGER info = 0;
     REAL dummy[1];
     //
     mn = min(m, n);
-    if (lwork < max({m + mn, mn * nrhs, 2 * n + m})) {
+    if (lwork < max(m + mn, mn * nrhs, 2 * n + m)) {
         Mxerbla("Rqrt15", 16);
         return;
     }

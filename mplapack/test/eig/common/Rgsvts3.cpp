@@ -43,12 +43,8 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
 void Rgsvts3(INTEGER const m, INTEGER const p, INTEGER const n, REAL *a, REAL *af, INTEGER const lda, REAL *b, REAL *bf, INTEGER const ldb, REAL *u, INTEGER const ldu, REAL *v, INTEGER const ldv, REAL *q, INTEGER const ldq, REAL *alpha, REAL *beta, REAL *r, INTEGER const ldr, INTEGER *iwork, REAL *work, INTEGER const lwork, REAL *rwork, REAL *result) {
     //
-    INTEGER ldaf = lda;
-    INTEGER ldbf = ldb;
     REAL ulp = Rlamch("Precision");
     const REAL one = 1.0;
     REAL ulpinv = one / ulp;
@@ -59,8 +55,8 @@ void Rgsvts3(INTEGER const m, INTEGER const p, INTEGER const n, REAL *a, REAL *a
     Rlacpy("Full", m, n, a, lda, af, lda);
     Rlacpy("Full", p, n, b, ldb, bf, ldb);
     //
-    REAL anorm = max({Rlange("1", m, n, a, lda, rwork), unfl});
-    REAL bnorm = max({Rlange("1", p, n, b, ldb, rwork), unfl});
+    REAL anorm = max(Rlange("1", m, n, a, lda, rwork), unfl);
+    REAL bnorm = max(Rlange("1", p, n, b, ldb, rwork), unfl);
     //
     // Factorize the matrices A and B in the arrays AF and BF.
     //
@@ -75,14 +71,14 @@ void Rgsvts3(INTEGER const m, INTEGER const p, INTEGER const n, REAL *a, REAL *a
     INTEGER j = 0;
     for (i = 1; i <= min(k + l, m); i = i + 1) {
         for (j = i; j <= k + l; j = j + 1) {
-            r[(i - 1) + (j - 1) * ldr] = af[(i - 1) + ((n - k - l + j) - 1) * ldaf];
+            r[(i - 1) + (j - 1) * ldr] = af[(i - 1) + ((n - k - l + j) - 1) * lda];
         }
     }
     //
     if (m - k - l < 0) {
         for (i = m + 1; i <= k + l; i = i + 1) {
             for (j = i; j <= k + l; j = j + 1) {
-                r[(i - 1) + (j - 1) * ldr] = bf[((i - k) - 1) + ((n - k - l + j) - 1) * ldbf];
+                r[(i - 1) + (j - 1) * ldr] = bf[((i - k) - 1) + ((n - k - l + j) - 1) * ldb];
             }
         }
     }
@@ -111,7 +107,7 @@ void Rgsvts3(INTEGER const m, INTEGER const p, INTEGER const n, REAL *a, REAL *a
     REAL resid = Rlange("1", m, n, a, lda, rwork);
     //
     if (anorm > zero) {
-        result[1 - 1] = ((resid / castREAL(max({(INTEGER)1, m, n}))) / anorm) / ulp;
+        result[1 - 1] = ((resid / castREAL(max((INTEGER)1, m, n))) / anorm) / ulp;
     } else {
         result[1 - 1] = zero;
     }
@@ -132,7 +128,7 @@ void Rgsvts3(INTEGER const m, INTEGER const p, INTEGER const n, REAL *a, REAL *a
     //
     resid = Rlange("1", p, n, b, ldb, rwork);
     if (bnorm > zero) {
-        result[2 - 1] = ((resid / castREAL(max({(INTEGER)1, p, n}))) / bnorm) / ulp;
+        result[2 - 1] = ((resid / castREAL(max((INTEGER)1, p, n))) / bnorm) / ulp;
     } else {
         result[2 - 1] = zero;
     }

@@ -43,18 +43,12 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-#include <mplapack_debug.h>
-
 void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, INTEGER const /* nmax */, COMPLEX *a, COMPLEX *afac, COMPLEX *ainv, COMPLEX *b, COMPLEX *x, COMPLEX *xact, COMPLEX *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
     common cmn;
     common_write write(cmn);
-    //
-    const INTEGER nfact = 2;
-    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
-    char uplos[] = {'U', 'L'};
-    char path[4] = {};
-    char matpath[4] = {};
-    char buf[1024];
+    static INTEGER iseedy[4] = {1988, 1989, 1990, 1991};
+    static fem::str<1> uplos[2] = {"U", "L"};
+    fem::str<3> path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -63,21 +57,21 @@ void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     INTEGER in = 0;
     INTEGER n = 0;
     INTEGER lda = 0;
-    char xtype;
+    fem::str<1> xtype;
     const INTEGER ntypes = 11;
     INTEGER nimat = 0;
     INTEGER imat = 0;
     bool zerot = false;
     INTEGER iuplo = 0;
-    char uplo[1];
-    char packit;
-    char type[1];
+    fem::str<1> uplo;
+    fem::str<1> packit;
+    fem::str<1> type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist[1];
+    fem::str<1> dist;
     INTEGER info = 0;
     INTEGER izero = 0;
     INTEGER ioff = 0;
@@ -95,14 +89,16 @@ void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     INTEGER irhs = 0;
     INTEGER nrhs = 0;
     REAL rcond = 0.0;
+    //
     static const char *format_9999 = "(' UPLO = ''',a1,''', N =',i5,', type ',i2,', test ',i2,', ratio =',"
-                                     "a)";
+                                     "g12.5)";
+    static const char *format_9998 = "(' UPLO = ''',a1,''', N =',i5,', NRHS=',i3,', type ',i2,', test(',i2,"
+                                     "') =',g12.5)";
     //
-    //     Initialize constants and the random number seed.
+    // Initialize constants and the random number seed.
     //
-    path[0] = 'C';
-    path[1] = 'S';
-    path[2] = 'P';
+    path(1, 1) = "Zomplex precision";
+    path(2, 3) = "SP";
     nrun = 0;
     nfail = 0;
     nerrs = 0;
@@ -122,7 +118,7 @@ void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
     for (in = 1; in <= nn; in = in + 1) {
         n = nval[in - 1];
         lda = max(n, (INTEGER)1);
-        xtype = 'N';
+        xtype = "N";
         nimat = ntypes;
         if (n <= 0) {
             nimat = 1;
@@ -146,11 +142,11 @@ void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
             // Do first for UPLO = 'U', then for UPLO = 'L'
             //
             for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
-                uplo[0] = uplos[iuplo - 1];
-                if (Mlsame(uplo, "U")) {
-                    packit = 'C';
+                uplo = uplos[iuplo - 1];
+                if (Mlsame(uplo.elems, "U")) {
+                    packit = "C";
                 } else {
-                    packit = 'R';
+                    packit = "R";
                 }
                 //
                 if (imat != ntypes) {
@@ -160,8 +156,8 @@ void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     //
                     Clatb4(path, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
                     //
-                    strncpy(srnamt, "Clatms", srnamt_len);
-                    Clatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, &packit, a, lda, work, info);
+                    srnamt = "Clatms";
+                    Clatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, packit, a, lda, work, info);
                     //
                     // Check error code from Clatms.
                     //
@@ -249,8 +245,8 @@ void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 //
                 npp = n * (n + 1) / 2;
                 Ccopy(npp, a, 1, afac, 1);
-                strncpy(srnamt, "Csptrf", srnamt_len);
-                Csptrf(uplo, n, afac, iwork, info);
+                srnamt = "Csptrf";
+                Csptrf(uplo.elems, n, afac, iwork, info);
                 //
                 // Adjust the expected value of INFO to account for
                 // pivoting.
@@ -291,8 +287,8 @@ void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                 //
                 if (!trfcon) {
                     Ccopy(npp, afac, 1, ainv, 1);
-                    strncpy(srnamt, "Csptri", srnamt_len);
-                    Csptri(uplo, n, ainv, iwork, work, info);
+                    srnamt = "Csptri";
+                    Csptri(uplo.elems, n, ainv, iwork, work, info);
                     //
                     // Check error code from Csptri.
                     //
@@ -312,8 +308,7 @@ void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                         if (nfail == 0 && nerrs == 0) {
                             Alahd(nout, path);
                         }
-                        sprintnum_short(buf, result[k - 1]);
-                        write(nout, format_9999), uplo, n, imat, k, buf;
+                        write(nout, format_9999), uplo, n, imat, k, result[k - 1];
                         nfail++;
                     }
                 }
@@ -332,12 +327,12 @@ void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     // +    TEST 3
                     // Solve and compute residual for  A * X = B.
                     //
-                    strncpy(srnamt, "Clarhs", srnamt_len);
-                    Clarhs(path, &xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
+                    srnamt = "Clarhs";
+                    Clarhs(path, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                     Clacpy("Full", n, nrhs, b, lda, x, lda);
                     //
-                    strncpy(srnamt, "Csptrs", srnamt_len);
-                    Csptrs(uplo, n, nrhs, afac, iwork, x, lda, info);
+                    srnamt = "Csptrs";
+                    Csptrs(uplo.elems, n, nrhs, afac, iwork, x, lda, info);
                     //
                     // Check error code from Csptrs.
                     //
@@ -356,8 +351,8 @@ void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     // +    TESTS 5, 6, and 7
                     // Use iterative refinement to improve the solution.
                     //
-                    strncpy(srnamt, "Csprfs", srnamt_len);
-                    Csprfs(uplo, n, nrhs, a, afac, iwork, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
+                    srnamt = "Csprfs";
+                    Csprfs(uplo.elems, n, nrhs, a, afac, iwork, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                     //
                     // Check error code from Csprfs.
                     //
@@ -376,10 +371,7 @@ void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
-                            sprintnum_short(buf, result[k - 1]);
-                            write(nout, "(' UPLO = ''',a1,''', N =',i5,', NRHS=',i3,', type ',i2,"
-                                        "', test(',i2,') =',a)"),
-                                uplo, n, nrhs, imat, k, buf;
+                            write(nout, format_9998), uplo, n, nrhs, imat, k, result[k - 1];
                             nfail++;
                         }
                     }
@@ -390,9 +382,9 @@ void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
             // Get an estimate of RCOND = 1/CNDNUM.
             //
             statement_140:
-                anorm = Clansp("1", uplo, n, a, rwork);
-                strncpy(srnamt, "Cspcon", srnamt_len);
-                Cspcon(uplo, n, afac, iwork, anorm, rcond, work, info);
+                anorm = Clansp("1", uplo.elems, n, a, rwork);
+                srnamt = "Cspcon";
+                Cspcon(uplo.elems, n, afac, iwork, anorm, rcond, work, info);
                 //
                 // Check error code from Cspcon.
                 //
@@ -408,8 +400,7 @@ void Cchksp(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nns, IN
                     if (nfail == 0 && nerrs == 0) {
                         Alahd(nout, path);
                     }
-                    sprintnum_short(buf, result[8 - 1]);
-                    write(nout, format_9999), uplo, n, imat, 8, buf;
+                    write(nout, format_9999), uplo, n, imat, 8, result[8 - 1];
                     nfail++;
                 }
                 nrun++;

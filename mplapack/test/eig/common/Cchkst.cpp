@@ -43,18 +43,12 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, INTEGER const nounit, COMPLEX *a, INTEGER const lda, COMPLEX *ap, REAL *sd, REAL *se, REAL *d1, REAL *d2, REAL *d3, REAL *d4, REAL *d5, REAL *wa1, REAL *wa2, REAL *wa3, REAL *wr, COMPLEX *u, INTEGER const ldu, COMPLEX *v, COMPLEX *vp, COMPLEX *tau, COMPLEX *z, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER const lrwork, INTEGER *iwork, INTEGER const liwork, REAL *result, INTEGER &info) {
-    INTEGER ldv = ldu;
-    INTEGER ldz = ldu;
+void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER (&iseed)[4], REAL const thresh, INTEGER const nounit, COMPLEX *a, INTEGER const lda, COMPLEX *ap, REAL *sd, REAL *se, REAL *d1, REAL *d2, REAL *d3, REAL *d4, REAL *d5, REAL *wa1, REAL *wa2, REAL *wa3, REAL *wr, COMPLEX *u, INTEGER const ldu, COMPLEX *v, COMPLEX *vp, COMPLEX *tau, COMPLEX *z, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER const lrwork, INTEGER *iwork, INTEGER const liwork, REAL *result, INTEGER &info) {
     common cmn;
     common_write write(cmn);
-    char buf[1024];
-    const INTEGER maxtyp = 21;
-    INTEGER ktype[21] = {1, 2, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 8, 8, 8, 9, 9, 9, 9, 9, 10};
-    INTEGER kmagn[21] = {1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 2, 3, 1, 2, 3, 1, 1, 1, 2, 3, 1};
-    INTEGER kmode[21] = {0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 4, 4, 0, 0, 0, 4, 3, 1, 4, 4, 3};
+    static INTEGER ktype[21] = {1, 2, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 8, 8, 8, 9, 9, 9, 9, 9, 10};
+    static INTEGER kmagn[21] = {1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 2, 3, 1, 2, 3, 1, 1, 1, 2, 3, 1};
+    static INTEGER kmode[21] = {0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 4, 4, 0, 0, 0, 4, 3, 1, 4, 4, 3};
     INTEGER idumma[1];
     INTEGER ntestt = 0;
     bool badnn = false;
@@ -83,6 +77,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     INTEGER liwedc = 0;
     INTEGER nap = 0;
     REAL aninv = 0.0;
+    const INTEGER maxtyp = 21;
     INTEGER mtypes = 0;
     INTEGER jtype = 0;
     INTEGER ntest = 0;
@@ -120,8 +115,42 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     INTEGER indrwk = 0;
     const bool crel = false;
     const bool crange = false;
+    //
     static const char *format_9999 = "(' Cchkst: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
                                      "', ISEED=(',3(i5,','),i5,')')";
+    //
+    static const char *format_9998 = "(/,1x,a3,' -- Complex Hermitian eigenvalue problem')";
+    static const char *format_9997 = "(' Matrix types (see Cchkst for details): ')";
+    //
+    static const char *format_9996 = "(/,' Special Matrices:',/,'  1=Zero matrix.                        ',"
+                                     "'  5=Diagonal: clustered entries.',/,"
+                                     "'  2=Identity matrix.                    ',"
+                                     "'  6=Diagonal: large, evenly spaced.',/,"
+                                     "'  3=Diagonal: evenly spaced entries.    ',"
+                                     "'  7=Diagonal: small, evenly spaced.',/,"
+                                     "'  4=Diagonal: geometr. spaced entries.')";
+    static const char *format_9995 = "(' Dense ',a,' Matrices:',/,'  8=Evenly spaced eigenvals.            ',"
+                                     "' 12=Small, evenly spaced eigenvals.',/,"
+                                     "'  9=Geometrically spaced eigenvals.     ',"
+                                     "' 13=Matrix with random O(1) entries.',/,"
+                                     "' 10=Clustered eigenvalues.              ',"
+                                     "' 14=Matrix with large random entries.',/,"
+                                     "' 11=Large, evenly spaced eigenvals.     ',"
+                                     "' 15=Matrix with small random entries.')";
+    static const char *format_9994 = "(' 16=Positive definite, evenly spaced eigenvalues',/,"
+                                     "' 17=Positive definite, geometrically spaced eigenvlaues',/,"
+                                     "' 18=Positive definite, clustered eigenvalues',/,"
+                                     "' 19=Positive definite, small evenly spaced eigenvalues',/,"
+                                     "' 20=Positive definite, large evenly spaced eigenvalues',/,"
+                                     "' 21=Diagonally dominant tridiagonal, geometrically',"
+                                     "' spaced eigenvalues')";
+    //
+    static const char *format_9989 = "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),' result ',i3,"
+                                     "' is',0p,f8.2)";
+    static const char *format_9988 = "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),' result ',i3,"
+                                     "' is',1p,d10.3)";
+    //
+    static const char *format_9987 = "(/,'Test performed:  see Cchkst for details.',/)";
     //
     // Keep ftnchek happy
     idumma[1 - 1] = 1;
@@ -144,7 +173,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     }
     //
     nblock = iMlaenv(1, "Chetrd", "L", nmax, -1, -1, -1);
-    nblock = min({nmax, max((INTEGER)1, nblock)});
+    nblock = min(nmax, max((INTEGER)1, nblock));
     //
     // Check for errors
     //
@@ -158,7 +187,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         info = -9;
     } else if (ldu < nmax) {
         info = -23;
-    } else if (2 * max((INTEGER)2, nmax) * max((INTEGER)2, nmax) > lwork) {
+    } else if (2 * pow2(max((INTEGER)2, nmax)) > lwork) {
         info = -29;
     }
     //
@@ -177,6 +206,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     //
     unfl = Rlamch("Safe minimum");
     ovfl = one / unfl;
+    Rlabad(unfl, ovfl);
     ulp = Rlamch("Epsilon") * Rlamch("Base");
     ulpinv = one / ulp;
     log2ui = castINTEGER(log(ulpinv) / log(two));
@@ -195,14 +225,14 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         n = nn[jsize - 1];
         if (n > 0) {
             lgn = castINTEGER(log(castREAL(n)) / log(two));
-            if (std::pow(2, lgn) < n) {
+            if ((INTEGER(1) << (lgn)) < n) {
                 lgn++;
             }
-            if (std::pow(2, lgn) < n) {
+            if ((INTEGER(1) << (lgn)) < n) {
                 lgn++;
             }
-            lwedc = 1 + 4 * n + 2 * n * lgn + 4 * n * n;
-            lrwedc = 1 + 3 * n + 2 * n * lgn + 4 * n * n;
+            lwedc = 1 + 4 * n + 2 * n * lgn + 4 * pow2(n);
+            lrwedc = 1 + 3 * n + 2 * n * lgn + 4 * pow2(n);
             liwedc = 6 + 6 * n + 5 * n * lgn;
         } else {
             lwedc = 8;
@@ -352,7 +382,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             }
             //
             if (iinfo != 0) {
-                write(nounit, format_9999), "Generator", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Generator", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 return;
             }
@@ -368,7 +398,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             Chetrd("U", n, v, ldu, sd, se, tau, work, lwork, iinfo);
             //
             if (iinfo != 0) {
-                write(nounit, format_9999), "Chetrd(U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Chetrd(U)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -383,7 +413,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             ntest = 2;
             Cungtr("U", n, u, ldu, tau, work, lwork, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Cungtr(U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Cungtr(U)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -407,7 +437,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             Chetrd("L", n, v, ldu, sd, se, tau, work, lwork, iinfo);
             //
             if (iinfo != 0) {
-                write(nounit, format_9999), "Chetrd(L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Chetrd(L)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -422,7 +452,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             ntest = 4;
             Cungtr("L", n, u, ldu, tau, work, lwork, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Cungtr(L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Cungtr(L)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -453,7 +483,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             Chptrd("U", n, vp, sd, se, tau, iinfo);
             //
             if (iinfo != 0) {
-                write(nounit, format_9999), "Chptrd(U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Chptrd(U)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -466,7 +496,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             ntest = 6;
             Cupgtr("U", n, vp, tau, u, ldu, work, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Cupgtr(U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Cupgtr(U)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -499,7 +529,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             Chptrd("L", n, vp, sd, se, tau, iinfo);
             //
             if (iinfo != 0) {
-                write(nounit, format_9999), "Chptrd(L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Chptrd(L)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -512,7 +542,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             ntest = 8;
             Cupgtr("L", n, vp, tau, u, ldu, work, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Cupgtr(L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Cupgtr(L)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -538,7 +568,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             ntest = 9;
             Csteqr("V", n, d1, rwork, z, ldu, &rwork[(n + 1) - 1], iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Csteqr(V)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Csteqr(V)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -558,7 +588,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             ntest = 11;
             Csteqr("N", n, d2, rwork, work, ldu, &rwork[(n + 1) - 1], iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Csteqr(N)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Csteqr(N)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -578,7 +608,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             ntest = 12;
             Rsterf(n, d3, rwork, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Rsterf", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Rsterf", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -600,14 +630,14 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             temp4 = zero;
             //
             for (j = 1; j <= n; j = j + 1) {
-                temp1 = max({temp1, REAL(abs(d1[j - 1])), REAL(abs(d2[j - 1]))});
-                temp2 = max(temp2, REAL(abs(d1[j - 1] - d2[j - 1])));
-                temp3 = max({temp3, REAL(abs(d1[j - 1])), REAL(abs(d3[j - 1]))});
-                temp4 = max(temp4, REAL(abs(d1[j - 1] - d3[j - 1])));
+                temp1 = max(temp1, abs(d1[j - 1]), abs(d2[j - 1]));
+                temp2 = max(temp2, abs(d1[j - 1] - d2[j - 1]));
+                temp3 = max(temp3, abs(d1[j - 1]), abs(d3[j - 1]));
+                temp4 = max(temp4, abs(d1[j - 1] - d3[j - 1]));
             }
             //
-            result[11 - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
-            result[12 - 1] = temp4 / max(unfl, REAL(ulp * max(temp3, temp4)));
+            result[11 - 1] = temp2 / max(unfl, ulp * max(temp1, temp2));
+            result[12 - 1] = temp4 / max(unfl, ulp * max(temp3, temp4));
             //
             // Do Test 13 -- Sturm Sequence Test of Eigenvalues
             // Go up by factors of two until it succeeds
@@ -642,7 +672,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 ntest = 14;
                 Cpteqr("V", n, d4, rwork, z, ldu, &rwork[(n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Cpteqr(V)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9999), "Cpteqr(V)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -666,7 +696,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 ntest = 16;
                 Cpteqr("N", n, d5, rwork, z, ldu, &rwork[(n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Cpteqr(N)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9999), "Cpteqr(N)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -681,11 +711,11 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 temp1 = zero;
                 temp2 = zero;
                 for (j = 1; j <= n; j = j + 1) {
-                    temp1 = max({temp1, REAL(abs(d4[j - 1])), REAL(abs(d5[j - 1]))});
-                    temp2 = max(temp2, REAL(abs(d4[j - 1] - d5[j - 1])));
+                    temp1 = max(temp1, abs(d4[j - 1]), abs(d5[j - 1]));
+                    temp2 = max(temp2, abs(d4[j - 1] - d5[j - 1]));
                 }
                 //
-                result[16 - 1] = temp2 / max(unfl, REAL(hun * ulp * max(temp1, temp2)));
+                result[16 - 1] = temp2 / max(unfl, hun * ulp * max(temp1, temp2));
             } else {
                 result[14 - 1] = zero;
                 result[15 - 1] = zero;
@@ -706,7 +736,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 abstol = unfl + unfl;
                 Rstebz("A", "E", n, vl, vu, il, iu, abstol, sd, se, m, nsplit, wr, &iwork[1 - 1], &iwork[(n + 1) - 1], rwork, &iwork[(2 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Rstebz(A,rel)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9999), "Rstebz(A,rel)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -718,11 +748,11 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 // Do test 17
                 //
-                temp2 = two * (two * n - one) * ulp * (one + eight * half * half) / ((one - half) * (one - half) * (one - half) * (one - half));
+                temp2 = two * (two * n - one) * ulp * (one + eight * pow2(half)) / pow4((one - half));
                 //
                 temp1 = zero;
                 for (j = 1; j <= n; j = j + 1) {
-                    temp1 = max(temp1, REAL(abs(d4[j - 1] - wr[(n - j + 1) - 1]) / (abstol + abs(d4[j - 1]))));
+                    temp1 = max(temp1, abs(d4[j - 1] - wr[(n - j + 1) - 1]) / (abstol + abs(d4[j - 1])));
                 }
                 //
                 result[17 - 1] = temp1 / temp2;
@@ -736,7 +766,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             abstol = unfl + unfl;
             Rstebz("A", "E", n, vl, vu, il, iu, abstol, sd, se, m, nsplit, wa1, &iwork[1 - 1], &iwork[(n + 1) - 1], rwork, &iwork[(2 * n + 1) - 1], iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Rstebz(A)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Rstebz(A)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -751,11 +781,11 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             temp1 = zero;
             temp2 = zero;
             for (j = 1; j <= n; j = j + 1) {
-                temp1 = max({temp1, REAL(abs(d3[j - 1])), REAL(abs(wa1[j - 1]))});
-                temp2 = max(temp2, REAL(abs(d3[j - 1] - wa1[j - 1])));
+                temp1 = max(temp1, abs(d3[j - 1]), abs(wa1[j - 1]));
+                temp2 = max(temp2, abs(d3[j - 1] - wa1[j - 1]));
             }
             //
-            result[18 - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
+            result[18 - 1] = temp2 / max(unfl, ulp * max(temp1, temp2));
             //
             // Choose random values for IL and IU, and ask for the
             // IL-th through IU-th eigenvalues.
@@ -765,8 +795,8 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 il = 1;
                 iu = n;
             } else {
-                il = 1 + castINTEGER(castREAL(n - 1) * Rlarnd(1, iseed2));
-                iu = 1 + castINTEGER(castREAL(n - 1) * Rlarnd(1, iseed2));
+                il = 1 + (n - 1) * castINTEGER(Rlarnd(1, iseed2));
+                iu = 1 + (n - 1) * castINTEGER(Rlarnd(1, iseed2));
                 if (iu < il) {
                     itemp = iu;
                     iu = il;
@@ -776,7 +806,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Rstebz("I", "E", n, vl, vu, il, iu, abstol, sd, se, m2, nsplit, wa2, &iwork[1 - 1], &iwork[(n + 1) - 1], rwork, &iwork[(2 * n + 1) - 1], iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Rstebz(I)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Rstebz(I)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -791,14 +821,14 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             if (n > 0) {
                 if (il != 1) {
-                    vl = wa1[il - 1] - max({REAL(half * (wa1[il - 1] - wa1[(il - 1) - 1])), REAL(ulp * anorm), REAL(two * rtunfl)});
+                    vl = wa1[il - 1] - max(half * (wa1[il - 1] - wa1[(il - 1) - 1]), ulp * anorm, two * rtunfl);
                 } else {
-                    vl = wa1[1 - 1] - max({REAL(half * (wa1[n - 1] - wa1[1 - 1])), REAL(ulp * anorm), REAL(two * rtunfl)});
+                    vl = wa1[1 - 1] - max(half * (wa1[n - 1] - wa1[1 - 1]), ulp * anorm, two * rtunfl);
                 }
                 if (iu != n) {
-                    vu = wa1[iu - 1] + max({REAL(half * (wa1[(iu + 1) - 1] - wa1[iu - 1])), REAL(ulp * anorm), REAL(two * rtunfl)});
+                    vu = wa1[iu - 1] + max(half * (wa1[(iu + 1) - 1] - wa1[iu - 1]), ulp * anorm, two * rtunfl);
                 } else {
-                    vu = wa1[n - 1] + max({REAL(half * (wa1[n - 1] - wa1[1 - 1])), REAL(ulp * anorm), REAL(two * rtunfl)});
+                    vu = wa1[n - 1] + max(half * (wa1[n - 1] - wa1[1 - 1]), ulp * anorm, two * rtunfl);
                 }
             } else {
                 vl = zero;
@@ -807,7 +837,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Rstebz("V", "E", n, vl, vu, il, iu, abstol, sd, se, m3, nsplit, wa3, &iwork[1 - 1], &iwork[(n + 1) - 1], rwork, &iwork[(2 * n + 1) - 1], iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Rstebz(V)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Rstebz(V)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -832,7 +862,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 temp3 = zero;
             }
             //
-            result[19 - 1] = (temp1 + temp2) / max(unfl, REAL(temp3 * ulp));
+            result[19 - 1] = (temp1 + temp2) / max(unfl, temp3 * ulp);
             //
             // Call Cstein to compute eigenvectors corresponding to
             // eigenvalues in WA1.  (First call Rstebz again, to make sure
@@ -841,7 +871,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             ntest = 21;
             Rstebz("A", "B", n, vl, vu, il, iu, abstol, sd, se, m, nsplit, wa1, &iwork[1 - 1], &iwork[(n + 1) - 1], rwork, &iwork[(2 * n + 1) - 1], iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Rstebz(A,B)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Rstebz(A,B)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -854,7 +884,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Cstein(n, sd, se, m, wa1, &iwork[1 - 1], &iwork[(n + 1) - 1], z, ldu, rwork, &iwork[(2 * n + 1) - 1], &iwork[(3 * n + 1) - 1], iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Cstein", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Cstein", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -884,7 +914,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             ntest = 22;
             Cstedc("I", n, d1, &rwork[inde - 1], z, ldu, work, lwedc, &rwork[indrwk - 1], lrwedc, iwork, liwedc, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Cstedc(I)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Cstedc(I)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -911,7 +941,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             ntest = 24;
             Cstedc("V", n, d1, &rwork[inde - 1], z, ldu, work, lwedc, &rwork[indrwk - 1], lrwedc, iwork, liwedc, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Cstedc(V)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Cstedc(V)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -938,7 +968,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             ntest = 26;
             Cstedc("N", n, d2, &rwork[inde - 1], z, ldu, work, lwedc, &rwork[indrwk - 1], lrwedc, iwork, liwedc, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Cstedc(N)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Cstedc(N)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -954,11 +984,11 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             temp2 = zero;
             //
             for (j = 1; j <= n; j = j + 1) {
-                temp1 = max({temp1, REAL(abs(d1[j - 1])), REAL(abs(d2[j - 1]))});
-                temp2 = max(temp2, REAL(abs(d1[j - 1] - d2[j - 1])));
+                temp1 = max(temp1, abs(d1[j - 1]), abs(d2[j - 1]));
+                temp2 = max(temp2, abs(d1[j - 1] - d2[j - 1]));
             }
             //
-            result[26 - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
+            result[26 - 1] = temp2 / max(unfl, ulp * max(temp1, temp2));
             //
             // Only test Cstemr if IEEE compliant
             //
@@ -978,7 +1008,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     abstol = unfl + unfl;
                     Cstemr("V", "A", n, sd, se, vl, vu, il, iu, m, wr, z, ldu, n, &iwork[1 - 1], tryrac, rwork, lrwork, &iwork[(2 * n + 1) - 1], lwork - 2 * n, iinfo);
                     if (iinfo != 0) {
-                        write(nounit, format_9999), "Cstemr(V,A,rel)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                        write(nounit, format_9999), "Cstemr(V,A,rel)", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -988,20 +1018,19 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         }
                     }
                     //
-                    //              Do test 27
+                    // Do test 27
                     //
-                    temp2 = two * (two * n - one) * ulp * (one + eight * half * half) / ((one - half) * (one - half) * (one - half) * (one - half));
-
+                    temp2 = two * (two * n - one) * ulp * (one + eight * pow2(half)) / pow4((one - half));
                     //
                     temp1 = zero;
                     for (j = 1; j <= n; j = j + 1) {
-                        temp1 = max(temp1, REAL(abs(d4[j - 1] - wr[(n - j + 1) - 1]) / (abstol + abs(d4[j - 1]))));
+                        temp1 = max(temp1, abs(d4[j - 1] - wr[(n - j + 1) - 1]) / (abstol + abs(d4[j - 1])));
                     }
                     //
                     result[27 - 1] = temp1 / temp2;
                     //
-                    il = 1 + castINTEGER(castREAL(n - 1) * Rlarnd(1, iseed2));
-                    iu = 1 + castINTEGER(castREAL(n - 1) * Rlarnd(1, iseed2));
+                    il = 1 + (n - 1) * castINTEGER(Rlarnd(1, iseed2));
+                    iu = 1 + (n - 1) * castINTEGER(Rlarnd(1, iseed2));
                     if (iu < il) {
                         itemp = iu;
                         iu = il;
@@ -1014,7 +1043,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         Cstemr("V", "I", n, sd, se, vl, vu, il, iu, m, wr, z, ldu, n, &iwork[1 - 1], tryrac, rwork, lrwork, &iwork[(2 * n + 1) - 1], lwork - 2 * n, iinfo);
                         //
                         if (iinfo != 0) {
-                            write(nounit, format_9999), "Cstemr(V,I,rel)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                            write(nounit, format_9999), "Cstemr(V,I,rel)", iinfo, n, jtype, ioldsd;
                             info = abs(iinfo);
                             if (iinfo < 0) {
                                 return;
@@ -1026,11 +1055,11 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         //
                         // Do test 28
                         //
-                        temp2 = two * (two * n - one) * ulp * (one + eight * half * half) / ((one - half) * (one - half) * (one - half) * (one - half));
+                        temp2 = two * (two * n - one) * ulp * (one + eight * pow2(half)) / pow4((one - half));
                         //
                         temp1 = zero;
                         for (j = il; j <= iu; j = j + 1) {
-                            temp1 = max(temp1, REAL(abs(wr[(j - il + 1) - 1] - d4[(n - j + 1) - 1]) / (abstol + abs(wr[(j - il + 1) - 1]))));
+                            temp1 = max(temp1, abs(wr[(j - il + 1) - 1] - d4[(n - j + 1) - 1]) / (abstol + abs(wr[(j - il + 1) - 1])));
                         }
                         //
                         result[28 - 1] = temp1 / temp2;
@@ -1054,8 +1083,8 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 if (crange) {
                     ntest = 29;
-                    il = 1 + castINTEGER(castREAL(n - 1) * Rlarnd(1, iseed2));
-                    iu = 1 + castINTEGER(castREAL(n - 1) * Rlarnd(1, iseed2));
+                    il = 1 + (n - 1) * castINTEGER(Rlarnd(1, iseed2));
+                    iu = 1 + (n - 1) * castINTEGER(Rlarnd(1, iseed2));
                     if (iu < il) {
                         itemp = iu;
                         iu = il;
@@ -1063,7 +1092,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     }
                     Cstemr("V", "I", n, d5, rwork, vl, vu, il, iu, m, d1, z, ldu, n, &iwork[1 - 1], tryrac, &rwork[(n + 1) - 1], lrwork - n, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                     if (iinfo != 0) {
-                        write(nounit, format_9999), "Cstemr(V,I)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                        write(nounit, format_9999), "Cstemr(V,I)", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -1087,7 +1116,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     ntest = 31;
                     Cstemr("N", "I", n, d5, rwork, vl, vu, il, iu, m, d2, z, ldu, n, &iwork[1 - 1], tryrac, &rwork[(n + 1) - 1], lrwork - n, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                     if (iinfo != 0) {
-                        write(nounit, format_9999), "Cstemr(N,I)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                        write(nounit, format_9999), "Cstemr(N,I)", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -1103,11 +1132,11 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     temp2 = zero;
                     //
                     for (j = 1; j <= iu - il + 1; j = j + 1) {
-                        temp1 = max({temp1, REAL(abs(d1[j - 1])), REAL(abs(d2[j - 1]))});
-                        temp2 = max(temp2, REAL(abs(d1[j - 1] - d2[j - 1])));
+                        temp1 = max(temp1, abs(d1[j - 1]), abs(d2[j - 1]));
+                        temp2 = max(temp2, abs(d1[j - 1] - d2[j - 1]));
                     }
                     //
-                    result[31 - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
+                    result[31 - 1] = temp2 / max(unfl, ulp * max(temp1, temp2));
                     //
                     // Call Cstemr(V,V) to compute D1 and Z, do tests.
                     //
@@ -1123,14 +1152,14 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     //
                     if (n > 0) {
                         if (il != 1) {
-                            vl = d2[il - 1] - max({REAL(half * (d2[il - 1] - d2[(il - 1) - 1])), REAL(ulp * anorm), REAL(two * rtunfl)});
+                            vl = d2[il - 1] - max(half * (d2[il - 1] - d2[(il - 1) - 1]), ulp * anorm, two * rtunfl);
                         } else {
-                            vl = d2[1 - 1] - max({REAL(half * (d2[n - 1] - d2[1 - 1])), REAL(ulp * anorm), REAL(two * rtunfl)});
+                            vl = d2[1 - 1] - max(half * (d2[n - 1] - d2[1 - 1]), ulp * anorm, two * rtunfl);
                         }
                         if (iu != n) {
-                            vu = d2[iu - 1] + max({REAL(half * (d2[(iu + 1) - 1] - d2[iu - 1])), REAL(ulp * anorm), REAL(two * rtunfl)});
+                            vu = d2[iu - 1] + max(half * (d2[(iu + 1) - 1] - d2[iu - 1]), ulp * anorm, two * rtunfl);
                         } else {
-                            vu = d2[n - 1] + max({REAL(half * (d2[n - 1] - d2[1 - 1])), REAL(ulp * anorm), REAL(two * rtunfl)});
+                            vu = d2[n - 1] + max(half * (d2[n - 1] - d2[1 - 1]), ulp * anorm, two * rtunfl);
                         }
                     } else {
                         vl = zero;
@@ -1139,7 +1168,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     //
                     Cstemr("V", "V", n, d5, rwork, vl, vu, il, iu, m, d1, z, ldu, m, &iwork[1 - 1], tryrac, &rwork[(n + 1) - 1], lrwork - n, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                     if (iinfo != 0) {
-                        write(nounit, format_9999), "Cstemr(V,V)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                        write(nounit, format_9999), "Cstemr(V,V)", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -1165,7 +1194,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     ntest = 34;
                     Cstemr("N", "V", n, d5, rwork, vl, vu, il, iu, m, d2, z, ldu, n, &iwork[1 - 1], tryrac, &rwork[(n + 1) - 1], lrwork - n, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                     if (iinfo != 0) {
-                        write(nounit, format_9999), "Cstemr(N,V)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                        write(nounit, format_9999), "Cstemr(N,V)", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -1181,11 +1210,11 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     temp2 = zero;
                     //
                     for (j = 1; j <= iu - il + 1; j = j + 1) {
-                        temp1 = max({temp1, REAL(abs(d1[j - 1])), REAL(abs(d2[j - 1]))});
-                        temp2 = max(temp2, REAL(abs(d1[j - 1] - d2[j - 1])));
+                        temp1 = max(temp1, abs(d1[j - 1]), abs(d2[j - 1]));
+                        temp2 = max(temp2, abs(d1[j - 1] - d2[j - 1]));
                     }
                     //
-                    result[34 - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
+                    result[34 - 1] = temp2 / max(unfl, ulp * max(temp1, temp2));
                 } else {
                     result[29 - 1] = zero;
                     result[30 - 1] = zero;
@@ -1208,7 +1237,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 Cstemr("V", "A", n, d5, rwork, vl, vu, il, iu, m, d1, z, ldu, n, &iwork[1 - 1], tryrac, &rwork[(n + 1) - 1], lrwork - n, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Cstemr(V,A)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9999), "Cstemr(V,A)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1234,7 +1263,7 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 ntest = 37;
                 Cstemr("N", "A", n, d5, rwork, vl, vu, il, iu, m, d2, z, ldu, n, &iwork[1 - 1], tryrac, &rwork[(n + 1) - 1], lrwork - n, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Cstemr(N,A)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9999), "Cstemr(N,A)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1250,11 +1279,11 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 temp2 = zero;
                 //
                 for (j = 1; j <= n; j = j + 1) {
-                    temp1 = max({temp1, REAL(abs(d1[j - 1])), REAL(abs(d2[j - 1]))});
-                    temp2 = max(temp2, REAL(abs(d1[j - 1] - d2[j - 1])));
+                    temp1 = max(temp1, abs(d1[j - 1]), abs(d2[j - 1]));
+                    temp2 = max(temp2, abs(d1[j - 1] - d2[j - 1]));
                 }
                 //
-                result[37 - 1] = temp2 / max({unfl, REAL(ulp * max(temp1, temp2))});
+                result[37 - 1] = temp2 / max(unfl, ulp * max(temp1, temp2));
             }
         statement_270:
         statement_280:
@@ -1271,49 +1300,21 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     // print a header to the data file.
                     //
                     if (nerrs == 0) {
-                        write(nounit, "(/,1x,a3,' -- Complex Hermitian eigenvalue problem')"), "ZST";
-                        write(nounit, "(' Matrix types (see Cchkst for details): ')");
-                        write(nounit, "(/,' Special Matrices:',/,"
-                                      "'  1=Zero matrix.                        ',"
-                                      "'  5=Diagonal: clustered entries.',/,"
-                                      "'  2=Identity matrix.                    ',"
-                                      "'  6=Diagonal: large, evenly spaced.',/,"
-                                      "'  3=Diagonal: evenly spaced entries.    ',"
-                                      "'  7=Diagonal: small, evenly spaced.',/,"
-                                      "'  4=Diagonal: geometr. spaced entries.')");
-                        write(nounit, "(' Dense ',a,' Matrices:',/,"
-                                      "'  8=Evenly spaced eigenvals.            ',"
-                                      "' 12=Small, evenly spaced eigenvals.',/,"
-                                      "'  9=Geometrically spaced eigenvals.     ',"
-                                      "' 13=Matrix with random O(1) entries.',/,"
-                                      "' 10=Clustered eigenvalues.              ',"
-                                      "' 14=Matrix with large random entries.',/,"
-                                      "' 11=Large, evenly spaced eigenvals.     ',"
-                                      "' 15=Matrix with small random entries.')"),
-                            "Hermitian";
-                        write(nounit, "(' 16=Positive definite, evenly spaced eigenvalues',/,"
-                                      "' 17=Positive definite, geometrically spaced eigenvlaues',/,"
-                                      "' 18=Positive definite, clustered eigenvalues',/,"
-                                      "' 19=Positive definite, small evenly spaced eigenvalues',/,"
-                                      "' 20=Positive definite, large evenly spaced eigenvalues',/,"
-                                      "' 21=Diagonally dominant tridiagonal, geometrically',"
-                                      "' spaced eigenvalues')");
+                        write(nounit, format_9998), "ZST";
+                        write(nounit, format_9997);
+                        write(nounit, format_9996);
+                        write(nounit, format_9995), "Hermitian";
+                        write(nounit, format_9994);
                         //
                         // Tests performed
                         //
-                        write(nounit, "(/,'Test performed:  see Cchkst for details.',/)");
+                        write(nounit, format_9987);
                     }
                     nerrs++;
                     if (result[jr - 1] < 10000.0) {
-                        sprintnum_short(buf, result[jr - 1]);
-                        write(nounit, "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),"
-                                      "' result ',i3,' is',0p,a)"),
-                            n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3], jr, buf;
+                        write(nounit, format_9989), n, jtype, ioldsd, jr, result[jr - 1];
                     } else {
-                        sprintnum_short(buf, result[jr - 1]);
-                        write(nounit, "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),"
-                                      "' result ',i3,' is',1p,a)"),
-                            n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3], jr, buf;
+                        write(nounit, format_9988), n, jtype, ioldsd, jr, result[jr - 1];
                     }
                 }
             }
@@ -1324,7 +1325,6 @@ void Cchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     // Summary
     //
     Rlasum("ZST", nounit, nerrs, ntestt);
-    //
     // End of Cchkst
     //
 }

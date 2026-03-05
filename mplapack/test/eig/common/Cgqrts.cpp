@@ -43,40 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
 void Cgqrts(INTEGER const n, INTEGER const m, INTEGER const p, COMPLEX *a, COMPLEX *af, COMPLEX *q, COMPLEX *r, INTEGER const lda, COMPLEX *taua, COMPLEX *b, COMPLEX *bf, COMPLEX *z, COMPLEX *t, COMPLEX *bwk, INTEGER const ldb, COMPLEX *taub, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL *result) {
-
-    INTEGER ldaf = lda;
-    INTEGER ldq = lda;
-    INTEGER ldr = lda;
-    INTEGER ldbf = ldb;
-    INTEGER ldz = ldb;
-    INTEGER ldt = ldb;
-    INTEGER ldbwk = ldb;
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     REAL ulp = Rlamch("Precision");
     REAL unfl = Rlamch("Safe minimum");
@@ -86,8 +53,8 @@ void Cgqrts(INTEGER const n, INTEGER const m, INTEGER const p, COMPLEX *a, COMPL
     Clacpy("Full", n, m, a, lda, af, lda);
     Clacpy("Full", n, p, b, ldb, bf, ldb);
     //
-    REAL anorm = max({Clange("1", n, m, a, lda, rwork), unfl});
-    REAL bnorm = max({Clange("1", n, p, b, ldb, rwork), unfl});
+    REAL anorm = max(Clange("1", n, m, a, lda, rwork), unfl);
+    REAL bnorm = max(Clange("1", n, p, b, ldb, rwork), unfl);
     //
     // Factorize the matrices A and B in the arrays AF and BF.
     //
@@ -96,7 +63,7 @@ void Cgqrts(INTEGER const n, INTEGER const m, INTEGER const p, COMPLEX *a, COMPL
     //
     // Generate the N-by-N matrix Q
     //
-    const COMPLEX crogue = COMPLEX(-1.0e+10, 0.0);
+    const COMPLEX crogue = COMPLEX(-10000000000.0, 0.0);
     Claset("Full", n, n, crogue, crogue, q, lda);
     Clacpy("Lower", n - 1, m, &af[(2 - 1)], lda, &q[(2 - 1)], lda);
     Cungqr(n, n, min(n, m), q, lda, taua, work, lwork, info);
@@ -109,7 +76,7 @@ void Cgqrts(INTEGER const n, INTEGER const m, INTEGER const p, COMPLEX *a, COMPL
             Clacpy("Full", n, p - n, bf, ldb, &z[((p - n + 1) - 1)], ldb);
         }
         if (n > 1) {
-            Clacpy("Lower", n - 1, n - 1, &bf[(2 - 1) + ((p - n + 1) - 1) * ldbf], ldb, &z[((p - n + 2) - 1) + ((p - n + 1) - 1) * ldz], ldb);
+            Clacpy("Lower", n - 1, n - 1, &bf[(2 - 1) + ((p - n + 1) - 1) * ldb], ldb, &z[((p - n + 2) - 1) + ((p - n + 1) - 1) * ldb], ldb);
         }
     } else {
         if (p > 1) {
@@ -128,7 +95,7 @@ void Cgqrts(INTEGER const n, INTEGER const m, INTEGER const p, COMPLEX *a, COMPL
     //
     Claset("Full", n, p, czero, czero, t, ldb);
     if (n <= p) {
-        Clacpy("Upper", n, n, &bf[((p - n + 1) - 1) * ldbf], ldb, &t[((p - n + 1) - 1) * ldt], ldb);
+        Clacpy("Upper", n, n, &bf[((p - n + 1) - 1) * ldb], ldb, &t[((p - n + 1) - 1) * ldb], ldb);
     } else {
         Clacpy("Full", n - p, p, bf, ldb, t, ldb);
         Clacpy("Upper", p, p, &bf[((n - p + 1) - 1)], ldb, &t[((n - p + 1) - 1)], ldb);
@@ -144,7 +111,7 @@ void Cgqrts(INTEGER const n, INTEGER const m, INTEGER const p, COMPLEX *a, COMPL
     REAL resid = Clange("1", n, m, r, lda, rwork);
     const REAL zero = 0.0;
     if (anorm > zero) {
-        result[1 - 1] = ((resid / castREAL(max({(INTEGER)1, m, n}))) / anorm) / ulp;
+        result[1 - 1] = ((resid / castREAL(max((INTEGER)1, m, n))) / anorm) / ulp;
     } else {
         result[1 - 1] = zero;
     }
@@ -158,7 +125,7 @@ void Cgqrts(INTEGER const n, INTEGER const m, INTEGER const p, COMPLEX *a, COMPL
     //
     resid = Clange("1", n, p, bwk, ldb, rwork);
     if (bnorm > zero) {
-        result[2 - 1] = ((resid / castREAL(max({(INTEGER)1, p, n}))) / bnorm) / ulp;
+        result[2 - 1] = ((resid / castREAL(max((INTEGER)1, p, n))) / bnorm) / ulp;
     } else {
         result[2 - 1] = zero;
     }

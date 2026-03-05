@@ -19,8 +19,8 @@ all: extract config build check install_internal
 
 work/$(EXTRACT_STAMP):
 	rm -rf work ; mkdir -p work/internal  ; mkdir -p work/install
-	cd $(abs_builddir)/work/internal; tar xvfj ../../download/mpfr-$(MPFRVERSION).tar.bz2
-	cd $(abs_builddir)/work/install; tar xvfj ../../download/mpfr-$(MPFRVERSION).tar.bz2
+	cd $(abs_builddir)/work/internal; tar xvfj $(abs_srcdir)/download/mpfr-$(MPFRVERSION).tar.bz2
+	cd $(abs_builddir)/work/install; tar xvfj $(abs_srcdir)/download/mpfr-$(MPFRVERSION).tar.bz2
 	touch $(abs_builddir)/work/$(EXTRACT_STAMP)
 
 work/$(PATCH_STAMP): work/$(EXTRACT_STAMP)
@@ -39,22 +39,22 @@ endif
 	touch $(abs_builddir)/work/$(CONFIGURE_STAMP)
 
 work/$(BUILD_STAMP): work/$(CONFIGURE_STAMP)
-	cd $(abs_builddir)/work/internal/mpfr-$(MPFRVERSION) ; ${MAKE}
-	cd $(abs_builddir)/work/install/mpfr-$(MPFRVERSION) ; ${MAKE}
+	+cd $(abs_builddir)/work/internal/mpfr-$(MPFRVERSION) ; ${MAKE}
+	+cd $(abs_builddir)/work/install/mpfr-$(MPFRVERSION) ; ${MAKE}
 	touch $(abs_builddir)/work/$(BUILD_STAMP)
 
 work/$(CHECK_STAMP): work/$(BUILD_STAMP)
 	touch $(abs_builddir)/work/$(CHECK_STAMP)
 if IS_MINGW
-	cd $(abs_builddir)/work/internal/mpfr-$(MPFRVERSION) ; VERBOSE=1 ${MAKE} check LOG_COMPILER=wine64
-	cd $(abs_builddir)/work/install/mpfr-$(MPFRVERSION)  ; VERBOSE=1 ${MAKE} check LOG_COMPILER=wine64
+	+cd $(abs_builddir)/work/internal/mpfr-$(MPFRVERSION) ; VERBOSE=1 ${MAKE} check LOG_COMPILER=wine
+	+cd $(abs_builddir)/work/install/mpfr-$(MPFRVERSION)  ; VERBOSE=1 ${MAKE} check LOG_COMPILER=wine
 else
-	cd $(abs_builddir)/work/internal/mpfr-$(MPFRVERSION) ; ${MAKE} check
-	cd $(abs_builddir)/work/install/mpfr-$(MPFRVERSION) ; ${MAKE} check
+	+cd $(abs_builddir)/work/internal/mpfr-$(MPFRVERSION) ; ${MAKE} check
+	+cd $(abs_builddir)/work/install/mpfr-$(MPFRVERSION) ; ${MAKE} check
 endif
 
 work/$(INSTALL_INTERNAL_STAMP): work/$(CHECK_STAMP)
-	cd $(abs_builddir)/work/internal/mpfr-$(MPFRVERSION) ; ${MAKE} install
+	+cd $(abs_builddir)/work/internal/mpfr-$(MPFRVERSION) ; ${MAKE} install
 	touch $(abs_builddir)/work/$(INSTALL_INTERNAL_STAMP)
 
 work/$(INSTALL_STAMP): work/$(CHECK_STAMP)
@@ -66,7 +66,7 @@ if !SYSTEM_GMP
 	install_name_tool -change $$ORG $$FIX $(abs_builddir)/work/install/mpfr-$(MPFRVERSION)/src/.libs/libmpfr.dylib
 endif
 endif
-	cd $(abs_builddir)/work/install/mpfr-$(MPFRVERSION) ; ${MAKE} install
+	+cd $(abs_builddir)/work/install/mpfr-$(MPFRVERSION) ; ${MAKE} install
 	touch $(abs_builddir)/work/$(INSTALL_STAMP)
 
 extract: work/$(EXTRACT_STAMP)
@@ -83,10 +83,13 @@ install_internal: work/$(INSTALL_INTERNAL_STAMP)
 
 install: work/$(INSTALL_STAMP)
 
+uninstall:
+	-+cd $(abs_builddir)/work/install/mpfr-$(MPFRVERSION) ; ${MAKE} uninstall
+
 distdir:
 
-clean:
+clean-local:
 	rm -rf work
 
-distclean:
+distclean-local:
 	rm -rf work

@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Ctpt03(const char *uplo, const char *trans, const char *diag, INTEGER const n, INTEGER const nrhs, COMPLEX *ap, REAL const scale, REAL *cnorm, REAL const tscal, COMPLEX *x, INTEGER const ldx, COMPLEX *b, INTEGER const ldb, COMPLEX *work, REAL &resid) {
+void Ctpt03(fem::str_cref uplo, fem::str_cref trans, fem::str_cref diag, INTEGER const n, INTEGER const nrhs, COMPLEX *ap, REAL const scale, REAL *cnorm, REAL const tscal, COMPLEX *x, INTEGER const ldx, COMPLEX *b, INTEGER const ldb, COMPLEX *work, REAL &resid) {
     //
     // Quick exit if N = 0.
     //
@@ -61,23 +61,23 @@ void Ctpt03(const char *uplo, const char *trans, const char *diag, INTEGER const
     REAL tnorm = 0.0;
     INTEGER jj = 0;
     INTEGER j = 0;
-    if (Mlsame(diag, "N")) {
-        if (Mlsame(uplo, "U")) {
+    if (Mlsame(diag.elems(), "N")) {
+        if (Mlsame(uplo.elems(), "U")) {
             jj = 1;
             for (j = 1; j <= n; j = j + 1) {
-                tnorm = max(tnorm, REAL(tscal * abs(ap[jj - 1]) + cnorm[j - 1]));
+                tnorm = max(tnorm, tscal * abs(ap[jj - 1]) + cnorm[j - 1]);
                 jj += j;
             }
         } else {
             jj = 1;
             for (j = 1; j <= n; j = j + 1) {
-                tnorm = max(tnorm, REAL(tscal * abs(ap[jj - 1]) + cnorm[j - 1]));
+                tnorm = max(tnorm, tscal * abs(ap[jj - 1]) + cnorm[j - 1]);
                 jj += n - j + 1;
             }
         }
     } else {
         for (j = 1; j <= n; j = j + 1) {
-            tnorm = max(tnorm, REAL(tscal + cnorm[j - 1]));
+            tnorm = max(tnorm, tscal + cnorm[j - 1]);
         }
     }
     //
@@ -96,7 +96,7 @@ void Ctpt03(const char *uplo, const char *trans, const char *diag, INTEGER const
         xnorm = max(one, abs(x[(ix - 1) + (j - 1) * ldx]));
         xscal = (one / xnorm) / castREAL(n);
         CRscal(n, xscal, work, 1);
-        Ctpmv(uplo, trans, diag, n, ap, work, 1);
+        Ctpmv(uplo.elems(), trans.elems(), diag.elems(), n, ap, work, 1);
         Caxpy(n, COMPLEX(-scale * xscal), &b[(j - 1) * ldb], 1, work, 1);
         ix = iCamax(n, work, 1);
         err = tscal * abs(work[ix - 1]);

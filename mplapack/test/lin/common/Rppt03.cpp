@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Rppt03(const char *uplo, INTEGER const n, REAL *a, REAL *ainv, REAL *work, INTEGER const ldwork, REAL *rwork, REAL &rcond, REAL &resid) {
+void Rppt03(fem::str_cref uplo, INTEGER const n, REAL *a, REAL *ainv, REAL *work, INTEGER const ldwork, REAL *rwork, REAL &rcond, REAL &resid) {
     //
     // Quick exit if N = 0.
     //
@@ -58,8 +58,8 @@ void Rppt03(const char *uplo, INTEGER const n, REAL *a, REAL *ainv, REAL *work, 
     // Exit with RESID = 1/EPS if ANORM = 0 or AINVNM = 0.
     //
     REAL eps = Rlamch("Epsilon");
-    REAL anorm = Rlansp("1", uplo, n, a, rwork);
-    REAL ainvnm = Rlansp("1", uplo, n, ainv, rwork);
+    REAL anorm = Rlansp("1", uplo.elems(), n, a, rwork);
+    REAL ainvnm = Rlansp("1", uplo.elems(), n, ainv, rwork);
     if (anorm <= zero || ainvnm == zero) {
         rcond = zero;
         resid = one / eps;
@@ -74,7 +74,7 @@ void Rppt03(const char *uplo, INTEGER const n, REAL *a, REAL *ainv, REAL *work, 
     //
     INTEGER jj = 0;
     INTEGER j = 0;
-    if (Mlsame(uplo, "U")) {
+    if (Mlsame(uplo.elems(), "U")) {
         //
         // Copy AINV
         //
@@ -102,7 +102,7 @@ void Rppt03(const char *uplo, INTEGER const n, REAL *a, REAL *ainv, REAL *work, 
         //
         // Copy AINV
         //
-        Rcopy(n - 1, &ainv[2 - 1], 1, &work[(1 - 1)], ldwork);
+        Rcopy(n - 1, &ainv[2 - 1], 1, &work[0], ldwork);
         jj = n + 1;
         for (j = 2; j <= n; j = j + 1) {
             Rcopy(n - j + 1, &ainv[jj - 1], 1, &work[(j - 1) + ((j - 1) - 1) * ldwork], 1);
@@ -115,7 +115,7 @@ void Rppt03(const char *uplo, INTEGER const n, REAL *a, REAL *ainv, REAL *work, 
         for (j = n; j >= 2; j = j - 1) {
             Rspmv("Lower", n, -one, a, &work[((j - 1) - 1) * ldwork], 1, zero, &work[(j - 1) * ldwork], 1);
         }
-        Rspmv("Lower", n, -one, a, &ainv[1 - 1], 1, zero, &work[(1 - 1)], 1);
+        Rspmv("Lower", n, -one, a, &ainv[1 - 1], 1, zero, &work[0], 1);
         //
     }
     //

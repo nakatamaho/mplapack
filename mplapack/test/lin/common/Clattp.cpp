@@ -43,23 +43,22 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Clattp(INTEGER const imat, const char *uplo, const char *trans, char *diag, INTEGER *iseed, INTEGER const n, COMPLEX *ap, COMPLEX *b, COMPLEX *work, REAL *rwork, INTEGER &info) {
+void Clattp(INTEGER const imat, fem::str_cref uplo, fem::str_cref trans, fem::str_ref diag, INTEGER (&iseed)[4], INTEGER const n, COMPLEX *ap, COMPLEX *b, COMPLEX *work, REAL *rwork, INTEGER &info) {
     //
-    char path[4] = {};
-    path[0] = 'C';
-    path[1] = 'T';
-    path[2] = 'P';
+    fem::str<3> path = "Zomplex precision";
+    path(2, 3) = "TP";
     REAL unfl = Rlamch("Safe minimum");
     REAL ulp = Rlamch("Epsilon") * Rlamch("Base");
     REAL smlnum = unfl;
     const REAL one = 1.0;
-    const REAL quarter = 0.25;
-    const REAL half = 0.25;
+    const REAL half = 0.5;
+    const REAL quarter = 0.25;    
     REAL bignum = (one - ulp) / smlnum;
+    Rlabad(smlnum, bignum);
     if ((imat >= 7 && imat <= 10) || imat == 18) {
-        *diag = 'U';
+        diag = "U";
     } else {
-        *diag = 'N';
+        diag = "N";
     }
     info = 0;
     //
@@ -71,21 +70,21 @@ void Clattp(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     //
     // Call Clatb4 to set parameters for CLATMS.
     //
-    bool upper = Mlsame(uplo, "U");
-    char type;
+    bool upper = Mlsame(uplo.elems(), "U");
+    fem::str<1> type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist;
-    char packit;
+    fem::str<1> dist;
+    fem::str<1> packit;
     if (upper) {
-        Clatb4(path, imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
-        packit = 'C';
+        Clatb4(path, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
+        packit = "C";
     } else {
-        Clatb4(path, -imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
-        packit = 'R';
+        Clatb4(path, -imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
+        packit = "R";
     }
     //
     // IMAT <= 6:  Non-unit triangular matrix
@@ -100,7 +99,7 @@ void Clattp(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     COMPLEX plus2 = 0.0;
     REAL rexp = 0.0;
     REAL x = 0.0;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     REAL y = 0.0;
     REAL z = 0.0;
     INTEGER jcnext = 0;
@@ -118,7 +117,7 @@ void Clattp(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     REAL texp = 0.0;
     REAL tleft = 0.0;
     if (imat <= 6) {
-        Clatms(n, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, &packit, ap, n, work, info);
+        Clatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, packit, ap, n, work, info);
         //
         // IMAT > 6:  Unit triangular matrix
         // The diagonal is deliberately set to something other than 1.
@@ -700,7 +699,7 @@ void Clattp(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     INTEGER jr = 0;
     INTEGER jl = 0;
     REAL t = 0.0;
-    if (!Mlsame(trans, "N")) {
+    if (!Mlsame(trans.elems(), "N")) {
         if (upper) {
             jj = 1;
             jr = n * (n + 1) / 2;

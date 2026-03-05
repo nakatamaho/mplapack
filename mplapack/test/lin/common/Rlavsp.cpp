@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Rlavsp(const char *uplo, const char *trans, const char *diag, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER *ipiv, REAL *b, INTEGER const ldb, INTEGER &info) {
+void Rlavsp(fem::str_cref uplo, fem::str_cref trans, fem::str_cref diag, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER *ipiv, REAL *b, INTEGER const ldb, INTEGER &info) {
     bool nounit = false;
     INTEGER k = 0;
     INTEGER kc = 0;
@@ -61,11 +61,11 @@ void Rlavsp(const char *uplo, const char *trans, const char *diag, INTEGER const
     // Test the input parameters.
     //
     info = 0;
-    if (!Mlsame(uplo, "U") && !Mlsame(uplo, "L")) {
+    if (!Mlsame(uplo.elems(), "U") && !Mlsame(uplo.elems(), "L")) {
         info = -1;
-    } else if (!Mlsame(trans, "N") && !Mlsame(trans, "T") && !Mlsame(trans, "C")) {
+    } else if (!Mlsame(trans.elems(), "N") && !Mlsame(trans.elems(), "T") && !Mlsame(trans.elems(), "C")) {
         info = -2;
-    } else if (!Mlsame(diag, "U") && !Mlsame(diag, "N")) {
+    } else if (!Mlsame(diag.elems(), "U") && !Mlsame(diag.elems(), "N")) {
         info = -3;
     } else if (n < 0) {
         info = -4;
@@ -83,18 +83,18 @@ void Rlavsp(const char *uplo, const char *trans, const char *diag, INTEGER const
         return;
     }
     //
-    nounit = Mlsame(diag, "N");
+    nounit = Mlsame(diag.elems(), "N");
     // ------------------------------------------
     //
     // Compute  B := A * B  (No transpose)
     //
     // ------------------------------------------
-    if (Mlsame(trans, "N")) {
+    if (Mlsame(trans.elems(), "N")) {
         //
         // Compute  B := U*B
         // where U = P(m)*inv(U(m))* ... *P(1)*inv(U(1))
         //
-        if (Mlsame(uplo, "U")) {
+        if (Mlsame(uplo.elems(), "U")) {
             //
             // Loop forward applying the transformations.
             //
@@ -121,7 +121,7 @@ void Rlavsp(const char *uplo, const char *trans, const char *diag, INTEGER const
                     //
                     // Apply the transformation.
                     //
-                    Rger(k - 1, nrhs, one, &a[kc - 1], 1, &b[(k - 1)], ldb, &b[(1 - 1) + (1 - 1) * ldb], ldb);
+                    Rger(k - 1, nrhs, one, &a[kc - 1], 1, &b[(k - 1)], ldb, &b[0], ldb);
                     //
                     // Interchange if P(K) != I.
                     //
@@ -159,8 +159,8 @@ void Rlavsp(const char *uplo, const char *trans, const char *diag, INTEGER const
                     //
                     // Apply the transformations.
                     //
-                    Rger(k - 1, nrhs, one, &a[kc - 1], 1, &b[(k - 1)], ldb, &b[(1 - 1) + (1 - 1) * ldb], ldb);
-                    Rger(k - 1, nrhs, one, &a[kcnext - 1], 1, &b[((k + 1) - 1)], ldb, &b[(1 - 1) + (1 - 1) * ldb], ldb);
+                    Rger(k - 1, nrhs, one, &a[kc - 1], 1, &b[(k - 1)], ldb, &b[0], ldb);
+                    Rger(k - 1, nrhs, one, &a[kcnext - 1], 1, &b[((k + 1) - 1)], ldb, &b[0], ldb);
                     //
                     // Interchange if P(K) != I.
                     //
@@ -276,7 +276,7 @@ void Rlavsp(const char *uplo, const char *trans, const char *diag, INTEGER const
         // where U  = P(m)*inv(U(m))* ... *P(1)*inv(U(1))
         // and   U' = inv(U'(1))*P(1)* ... *inv(U'(m))*P(m)
         //
-        if (Mlsame(uplo, "U")) {
+        if (Mlsame(uplo.elems(), "U")) {
             //
             // Loop backward applying the transformations.
             //

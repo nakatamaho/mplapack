@@ -43,16 +43,12 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-#include <mplapack_debug.h>
-
 void Cchkhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, INTEGER const /* nmax */, COMPLEX *a, COMPLEX *afac, COMPLEX *ainv, COMPLEX *b, COMPLEX *x, COMPLEX *xact, COMPLEX *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
     common cmn;
     common_write write(cmn);
-    //
-    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
-    char uplos[] = {'U', 'L'};
-    char path[4] = {};
-    char buf[1024];
+    static INTEGER iseedy[4] = {1988, 1989, 1990, 1991};
+    static fem::str<1> uplos[2] = {"U", "L"};
+    fem::str<3> path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -61,21 +57,21 @@ void Cchkhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     INTEGER in = 0;
     INTEGER n = 0;
     INTEGER lda = 0;
-    char xtype[1];
+    fem::str<1> xtype;
     const INTEGER ntypes = 10;
     INTEGER nimat = 0;
     INTEGER izero = 0;
     INTEGER imat = 0;
     bool zerot = false;
     INTEGER iuplo = 0;
-    char uplo[1];
-    char type[1];
+    fem::str<1> uplo;
+    fem::str<1> type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist[1];
+    fem::str<1> dist;
     INTEGER info = 0;
     INTEGER ioff = 0;
     const COMPLEX czero = COMPLEX(0.0, 0.0);
@@ -96,9 +92,17 @@ void Cchkhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     INTEGER nrhs = 0;
     REAL rcond = 0.0;
     //
-    path[0] = 'C';
-    path[1] = 'H';
-    path[2] = 'E';
+    static const char *format_9999 = "(' UPLO = ''',a1,''', N =',i5,', NB =',i4,', type ',i2,', test ',i2,"
+                                     "', ratio =',g12.5)";
+    static const char *format_9998 = "(' UPLO = ''',a1,''', N =',i5,', NRHS=',i3,', type ',i2,', test(',i2,"
+                                     "') =',g12.5)";
+    static const char *format_9997 = "(' UPLO = ''',a1,''', N =',i5,',',10x,' type ',i2,', test(',i2,') =',"
+                                     "g12.5)";
+    //
+    // Initialize constants and the random number seed.
+    //
+    path(1, 1) = "Zomplex precision";
+    path(2, 3) = "HE";
     nrun = 0;
     nfail = 0;
     nerrs = 0;
@@ -116,14 +120,14 @@ void Cchkhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     // Set the minimum block size for which the block routine should
     // be used, which will be later returned by iMlaenv
     //
-    xlaenv(2, 2);
+    Mxlaenv(2, 2);
     //
     // Do for each value of N in NVAL
     //
     for (in = 1; in <= nn; in = in + 1) {
         n = nval[in - 1];
         lda = max(n, (INTEGER)1);
-        xtype[0] = 'N';
+        xtype = "N";
         nimat = ntypes;
         if (n <= 0) {
             nimat = 1;
@@ -148,7 +152,7 @@ void Cchkhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
             // Do first for UPLO = 'U', then for UPLO = 'L'
             //
             for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
-                uplo[0] = uplos[iuplo - 1];
+                uplo = uplos[iuplo - 1];
                 //
                 // Set up parameters with Clatb4 for the matrix generator
                 // based on the type of matrix to be generated.
@@ -157,7 +161,7 @@ void Cchkhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                 //
                 // Generate a matrix with Clatms.
                 //
-                strncpy(srnamt, "Clatms", srnamt_len);
+                srnamt = "Clatms";
                 Clatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, uplo, a, lda, work, info);
                 //
                 // Check error code from Clatms and handle error.
@@ -252,13 +256,13 @@ void Cchkhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     // returned by iMlaenv.
                     //
                     nb = nbval[inb - 1];
-                    xlaenv(1, nb);
+                    Mxlaenv(1, nb);
                     //
                     // Copy the test matrix A into matrix AFAC which
                     // will be factorized in place. This is needed to
                     // preserve the test matrix A for subsequent tests.
                     //
-                    Clacpy(uplo, n, n, a, lda, afac, lda);
+                    Clacpy(uplo.elems, n, n, a, lda, afac, lda);
                     //
                     // Compute the L*D*L**T or U*D*U**T factorization of the
                     // matrix. IWORK stores details of the interchanges and
@@ -266,8 +270,8 @@ void Cchkhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     // block factorization, LWORK is the length of AINV.
                     //
                     lwork = max((INTEGER)2, nb) * lda;
-                    strncpy(srnamt, "Chetrf", srnamt_len);
-                    Chetrf(uplo, n, afac, lda, iwork, ainv, lwork, info);
+                    srnamt = "Chetrf";
+                    Chetrf(uplo.elems, n, afac, lda, iwork, ainv, lwork, info);
                     //
                     // Adjust the expected value of INFO to account for
                     // pivoting.
@@ -310,10 +314,10 @@ void Cchkhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     // Form the inverse and compute the residual.
                     //
                     if (inb == 1 && !trfcon) {
-                        Clacpy(uplo, n, n, afac, lda, ainv, lda);
-                        strncpy(srnamt, "Chetri2", srnamt_len);
+                        Clacpy(uplo.elems, n, n, afac, lda, ainv, lda);
+                        srnamt = "Chetri2";
                         lwork = (n + nb + 1) * (nb + 3);
-                        Chetri2(uplo, n, ainv, lda, iwork, work, lwork, info);
+                        Chetri2(uplo.elems, n, ainv, lda, iwork, work, lwork, info);
                         //
                         // Check error code from Chetri and handle error.
                         //
@@ -336,10 +340,7 @@ void Cchkhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
-                            sprintnum_short(buf, result[k - 1]);
-                            write(nout, "(' UPLO = ''',a1,''', N =',i5,', NB =',i4,', type ',i2,"
-                                        "', test ',i2,', ratio =',a)"),
-                                uplo, n, nb, imat, k, buf;
+                            write(nout, format_9999), uplo, n, nb, imat, k, result[k - 1];
                             nfail++;
                         }
                     }
@@ -370,12 +371,12 @@ void Cchkhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         // Choose a set of NRHS random solution vectors
                         // stored in XACT and set up the right hand side B
                         //
-                        strncpy(srnamt, "Clarhs", srnamt_len);
+                        srnamt = "Clarhs";
                         Clarhs(path, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                         Clacpy("Full", n, nrhs, b, lda, x, lda);
                         //
-                        strncpy(srnamt, "Chetrs", srnamt_len);
-                        Chetrs(uplo, n, nrhs, afac, lda, iwork, x, lda, info);
+                        srnamt = "Chetrs";
+                        Chetrs(uplo.elems, n, nrhs, afac, lda, iwork, x, lda, info);
                         //
                         // Check error code from Chetrs and handle error.
                         //
@@ -395,12 +396,12 @@ void Cchkhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         // Choose a set of NRHS random solution vectors
                         // stored in XACT and set up the right hand side B
                         //
-                        strncpy(srnamt, "Clarhs", srnamt_len);
+                        srnamt = "Clarhs";
                         Clarhs(path, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                         Clacpy("Full", n, nrhs, b, lda, x, lda);
                         //
-                        strncpy(srnamt, "Chetrs2", srnamt_len);
-                        Chetrs2(uplo, n, nrhs, afac, lda, iwork, x, lda, work, info);
+                        srnamt = "Chetrs2";
+                        Chetrs2(uplo.elems, n, nrhs, afac, lda, iwork, x, lda, work, info);
                         //
                         // Check error code from Chetrs2 and handle error.
                         //
@@ -422,8 +423,8 @@ void Cchkhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         // +    TESTS 6, 7, and 8
                         // Use iterative refinement to improve the solution.
                         //
-                        strncpy(srnamt, "Cherfs", srnamt_len);
-                        Cherfs(uplo, n, nrhs, a, lda, afac, lda, iwork, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
+                        srnamt = "Cherfs";
+                        Cherfs(uplo.elems, n, nrhs, a, lda, afac, lda, iwork, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                         //
                         // Check error code from Cherfs.
                         //
@@ -442,10 +443,7 @@ void Cchkhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                                 if (nfail == 0 && nerrs == 0) {
                                     Alahd(nout, path);
                                 }
-                                sprintnum_short(buf, result[k - 1]);
-                                write(nout, "(' UPLO = ''',a1,''', N =',i5,', NRHS=',i3,', type ',i2,"
-                                            "', test(',i2,') =',a)"),
-                                    uplo, n, nrhs, imat, k, buf;
+                                write(nout, format_9998), uplo, n, nrhs, imat, k, result[k - 1];
                                 nfail++;
                             }
                         }
@@ -459,9 +457,9 @@ void Cchkhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                 // Get an estimate of RCOND = 1/CNDNUM.
                 //
                 statement_140:
-                    anorm = Clanhe("1", uplo, n, a, lda, rwork);
-                    strncpy(srnamt, "Checon", srnamt_len);
-                    Checon(uplo, n, afac, lda, iwork, anorm, rcond, work, info);
+                    anorm = Clanhe("1", uplo.elems, n, a, lda, rwork);
+                    srnamt = "Checon";
+                    Checon(uplo.elems, n, afac, lda, iwork, anorm, rcond, work, info);
                     //
                     // Check error code from Checon and handle error.
                     //
@@ -478,10 +476,7 @@ void Cchkhe(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         if (nfail == 0 && nerrs == 0) {
                             Alahd(nout, path);
                         }
-                        sprintnum_short(buf, result[9 - 1]);
-                        write(nout, "(' UPLO = ''',a1,''', N =',i5,',',10x,' type ',i2,', test(',i2,"
-                                    "') =',a)"),
-                            uplo, n, imat, 9, buf;
+                        write(nout, format_9997), uplo, n, imat, 9, result[9 - 1];
                         nfail++;
                     }
                     nrun++;

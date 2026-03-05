@@ -43,17 +43,13 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-#include <mplapack_debug.h>
-
 void Cdrvrf1(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thresh, COMPLEX *a, INTEGER const lda, COMPLEX *arf, REAL *work) {
     common cmn;
     common_write write(cmn);
-    //
-    char forms[] = {'N', 'C'};
-    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
-    char norms[] = {'M', '1', 'I', 'F'};
-    char uplos[] = {'U', 'L'};
-    char buf[1024];
+    static INTEGER iseedy[4] = {1988, 1989, 1990, 1991};
+    static fem::str<1> uplos[2] = {"U", "L"};
+    static fem::str<1> forms[2] = {"N", "C"};
+    static fem::str<1> norms[4] = {"M", "1", "I", "F"};
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -69,16 +65,25 @@ void Cdrvrf1(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
     INTEGER iit = 0;
     INTEGER j = 0;
     INTEGER iuplo = 0;
-    char uplo;
+    fem::str<1> uplo;
     INTEGER iform = 0;
-    char cform;
+    fem::str<1> cform;
     INTEGER inorm = 0;
-    char norm;
+    fem::str<1> norm;
     REAL normarf = 0.0;
     REAL norma = 0.0;
     const INTEGER ntests = 1;
     REAL result[ntests];
+    //
     static const char *format_9999 = "(1x,' *** Error(s) or Failure(s) while testing Clanhf         ***')";
+    static const char *format_9998 = "(1x,'     Error in ',a6,' with UPLO=''',a1,''', FORM=''',a1,''', N=',i5)";
+    static const char *format_9997 = "(1x,'     Failure in ',a6,' N=',i5,' TYPE=',i5,' UPLO=''',a1,"
+                                     "''', FORM =''',a1,''', NORM=''',a1,''', test=',g12.5)";
+    static const char *format_9996 = "(1x,'All tests for ',a6,' auxiliary routine passed the ','threshold ( ',"
+                                     "i5,' tests run)')";
+    static const char *format_9995 = "(1x,a6,' auxiliary routine:',i5,' out of ',i5,"
+                                     "' tests failed to pass the threshold')";
+    static const char *format_9994 = "(26x,i5,' error message recorded (',a6,')')";
     //
     // Initialize constants and the random number seed.
     //
@@ -144,7 +149,8 @@ void Cdrvrf1(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                     //
                     cform = forms[iform - 1];
                     //
-                    Ctrttf(&cform, &uplo, n, a, lda, arf, info);
+                    srnamt = "Ctrttf";
+                    Ctrttf(cform.elems, uplo.elems, n, a, lda, arf, info);
                     //
                     // Check error code from Ctrttf
                     //
@@ -153,9 +159,7 @@ void Cdrvrf1(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                             write(nout, star);
                             write(nout, format_9999);
                         }
-                        write(nout, "(1x,'     Error in ',a6,' with UPLO=''',a1,''', FORM=''',a1,"
-                                    "''', N=',i5)"),
-                            "Ctrttf", &uplo, &cform, n;
+                        write(nout, format_9998), srnamt, uplo, cform, n;
                         nerrs++;
                         goto statement_100;
                     }
@@ -165,8 +169,8 @@ void Cdrvrf1(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                         // Check all four norms: 'M', '1', 'I', 'F'
                         //
                         norm = norms[inorm - 1];
-                        normarf = Clanhf(&norm, &cform, &uplo, n, arf, work);
-                        norma = Clanhe(&norm, &uplo, n, a, lda, work);
+                        normarf = Clanhf(norm.elems, cform.elems, uplo.elems, n, arf, work);
+                        norma = Clanhe(norm.elems, uplo.elems, n, a, lda, work);
                         //
                         result[1 - 1] = (norma - normarf) / norma / eps;
                         nrun++;
@@ -176,10 +180,7 @@ void Cdrvrf1(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                                 write(nout, star);
                                 write(nout, format_9999);
                             }
-                            sprintnum_short(buf, result[0]);
-                            write(nout, "(1x,'     Failure in ',a6,' N=',i5,' TYPE=',i5,' UPLO=''',a1,"
-                                        "''', FORM =''',a1,''', NORM=''',a1,''', test=',a)"),
-                                "Clanhf", n, iit, &uplo, &cform, &norm, buf;
+                            write(nout, format_9997), "Clanhf", n, iit, uplo, cform, norm, result[1 - 1];
                             nfail++;
                         }
                     }
@@ -192,16 +193,12 @@ void Cdrvrf1(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
     // Print a summary of the results.
     //
     if (nfail == 0) {
-        write(nout, "(1x,'All tests for ',a6,' auxiliary routine passed the ',"
-                    "'threshold ( ',i5,' tests run)')"),
-            "Clanhf", nrun;
+        write(nout, format_9996), "Clanhf", nrun;
     } else {
-        write(nout, "(1x,a6,' auxiliary routine:',i5,' out of ',i5,"
-                    "' tests failed to pass the threshold')"),
-            "Clanhf", nfail, nrun;
+        write(nout, format_9995), "Clanhf", nfail, nrun;
     }
     if (nerrs != 0) {
-        write(nout, "(26x,i5,' error message recorded (',a6,')')"), nerrs, "Clanhf";
+        write(nout, format_9994), nerrs, "Clanhf";
     }
     //
     // End of Cdrvrf1

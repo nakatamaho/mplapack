@@ -43,8 +43,6 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
 void Rstech(INTEGER const n, REAL *a, REAL *b, REAL *eig, REAL const tol, REAL *work, INTEGER &info) {
     const REAL zero = 0.0;
     REAL eps = 0.0;
@@ -88,9 +86,9 @@ void Rstech(INTEGER const n, REAL *a, REAL *b, REAL *eig, REAL const tol, REAL *
     //
     mx = abs(eig[1 - 1]);
     for (i = 2; i <= n; i = i + 1) {
-        mx = max(mx, REAL(abs(eig[i - 1])));
+        mx = max(mx, abs(eig[i - 1]));
     }
-    eps = max(REAL(eps * mx), unflep);
+    eps = max(eps * mx, unflep);
     //
     // Sort eigenvalues from EIG into WORK
     //

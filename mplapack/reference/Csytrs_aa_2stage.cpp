@@ -69,7 +69,7 @@ void Csytrs_aa_2stage(const char *uplo, INTEGER const n, INTEGER const nrhs, COM
     INTEGER nb = castINTEGER(tb[1 - 1].real());
     INTEGER ldtb = ltb / n;
     //
-    const COMPLEX one = COMPLEX(1.0e+0, 0.0e+0);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
     if (upper) {
         //
         // Solve A*X = B, where A = U**T*T*U.

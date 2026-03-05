@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Cqrt16(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const ldx, COMPLEX *b, INTEGER const ldb, REAL *rwork, REAL &resid) {
+void Cqrt16(fem::str_cref trans, INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const ldx, COMPLEX *b, INTEGER const ldb, REAL *rwork, REAL &resid) {
     //
     // Quick exit if M = 0 or N = 0 or NRHS = 0
     //
@@ -56,7 +56,7 @@ void Cqrt16(const char *trans, INTEGER const m, INTEGER const n, INTEGER const n
     REAL anorm = 0.0;
     INTEGER n1 = 0;
     INTEGER n2 = 0;
-    if (Mlsame(trans, "T") || Mlsame(trans, "C")) {
+    if (Mlsame(trans.elems(), "T") || Mlsame(trans.elems(), "C")) {
         anorm = Clange("I", m, n, a, lda, rwork);
         n1 = n;
         n2 = m;
@@ -71,7 +71,7 @@ void Cqrt16(const char *trans, INTEGER const m, INTEGER const n, INTEGER const n
     // Compute  B - A*X  (or  B - A'*X ) and store in B.
     //
     const COMPLEX cone = COMPLEX(1.0, 0.0);
-    Cgemm(trans, "No transpose", n1, nrhs, n2, -cone, a, lda, x, ldx, cone, b, ldb);
+    Cgemm(trans.elems(), "No transpose", n1, nrhs, n2, -cone, a, lda, x, ldx, cone, b, ldb);
     //
     // Compute the maximum over the number of right hand sides of
     // norm(B - A*X) / ( max(m,n) * norm(A) * norm(X) * EPS ) .
@@ -89,7 +89,7 @@ void Cqrt16(const char *trans, INTEGER const m, INTEGER const n, INTEGER const n
         } else if (anorm <= zero || xnorm <= zero) {
             resid = one / eps;
         } else {
-            resid = max(resid, REAL(((bnorm / anorm) / xnorm) / (castREAL(max(m, n)) * eps)));
+            resid = max(resid, ((bnorm / anorm) / xnorm) / (max(m, n) * eps));
         }
     }
     //

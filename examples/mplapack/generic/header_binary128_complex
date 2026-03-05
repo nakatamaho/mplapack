@@ -1,0 +1,96 @@
+//public domain
+#include <mpblas_binary128.h>
+#include <mplapack_binary128.h>
+#include <iostream>
+#include <stdio.h>
+#include <cstring>
+#include <algorithm>
+
+#define BUFLEN 1024
+
+void printnum(mplapack_binary128_t rtmp)
+{
+    int width = 42;
+    char buf[BUFLEN];
+#if MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_STRFROMF128
+    strfromf128(buf, sizeof(buf), "%.35e", rtmp);
+#elif MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_QUADMATH_SNPRINTF
+    int n = quadmath_snprintf (buf, sizeof buf, "%*.35Qe", width, rtmp);
+#elif MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_SNPRINTF_LDBL
+    snprintf (buf, sizeof buf, "%.35Le", rtmp);
+#else
+    #error "unsupported binary128 type"
+#endif
+    if (rtmp >= 0.0)
+        printf ("+%s", buf);
+    else
+        printf ("%s", buf);
+    return;
+}
+
+void printnum(std::complex<mplapack_binary128_t> rtmp)
+{
+    int width = 42;
+    char buf[BUFLEN];
+#if MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_STRFROMF128
+    strfromf128(buf, sizeof(buf), "%.35e", rtmp.real());
+#elif MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_QUADMATH_SNPRINTF
+    int n = quadmath_snprintf (buf, sizeof buf, "%*.35Qe", width, rtmp.real());
+#elif MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_SNPRINTF_LDBL
+    snprintf (buf, sizeof buf, "%.35Le", rtmp.real());
+#else
+    #error "unsupported binary128 type"
+#endif
+    if (rtmp.real() >= 0.0)
+        printf ("+%s", buf);
+    else
+        printf ("%s", buf);
+#if MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_STRFROMF128
+    strfromf128(buf, sizeof(buf), "%.35e", rtmp.imag());
+#elif MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_QUADMATH_SNPRINTF
+    n = quadmath_snprintf (buf, sizeof buf, "%*.35Qe", width, rtmp.imag());
+#elif MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_SNPRINTF_LDBL
+    snprintf (buf, sizeof buf, "%.35Le", rtmp.imag());
+#else
+    #error "unsupported binary128 type"
+#endif
+    if (rtmp.imag() >= 0.0)
+        printf ("+%si", buf);
+    else
+        printf ("%si", buf);
+    return;
+}
+
+//Matlab/Octave format
+template <class X> void printvec(X *a, int len) {
+    X tmp;
+    printf("[ ");
+    for (int i = 0; i < len; i++) {
+        tmp = a[i];
+        printnum(tmp);
+        if (i < len - 1)
+            printf(", ");
+    }
+    printf("]");
+}
+
+template <class X> void printmat(int n, int m, X *a, int lda)
+{
+    X mtmp;
+
+    printf("[ ");
+    for (int i = 0; i < n; i++) {
+        printf("[ ");
+        for (int j = 0; j < m; j++) {
+            mtmp = a[i + j * lda];
+            printnum(mtmp);
+            if (j < m - 1)
+                printf(", ");
+        }
+        if (i < n - 1)
+            printf("]; ");
+        else
+            printf("] ");
+    }
+    printf("]");
+}

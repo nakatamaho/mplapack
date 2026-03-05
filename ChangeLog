@@ -1,3 +1,45 @@
+2026/02/05    Nakata Maho <maho@riken.jp> 2.1 branch
+            * 2.1 maintenance release: no new numerical routines/algorithms; focuses on build, portability,
+              tooling, reproducibility, and internal quality improvements
+            * Breaking / migration notes:
+                - Switched to C++17 (GNU extensions) as the minimum required C++ standard
+                - Standardized naming: _Float128/_Float64x build variants are now labeled binary128/binary80
+                  across directory names, file names, and library targets (and related public aliases/APIs where applicable)
+                - Removed Boost.Python-based fable_ext module
+                - Added libtool version-info to libraries (may affect SONAME / packaging)
+                - See MIGRATION_2.1.md for the complete migration mapping and step-by-step instructions
+                  (_Float128/_Float64x -> binary128/binary80, target/library renames, header/type updates)
+            * Build / platform:
+                - Improved Intel oneAPI (icx/icpx) support (OpenMP flags, diagnostics, quadmath detection, FP model settings)
+                - macOS build updates (including gcc-14 / arm64 related fixes)
+                - MinGW cross-compilation improvements; Wine-based test execution support; fallbacks for missing f64x math
+                - CUDA build maintenance (removed legacy GPU architectures / deprecated usage where applicable)
+                - Build system cleanup and flag simplification (remove obsolete inputs, conservative backend flags, etc.)
+            * FABLE / conversion workflow:
+                - Redesigned conversion workflow: two-stage process (automated conversion + minimal patchset)
+                - Converter enhancements: FORMAT hoisting, array operations, type conversion fixes
+                - LAPACK test programs are now almost fully auto-converted, reducing manual edits and improving fidelity;
+                  no changes to the original LAPACK routines
+                - Separated all manual conversions into standalone patch files for clean provenance and long-term maintenance
+                - Included the automated conversion scripts used for generating the test sources
+                - Improved long-term maintainability and build reproducibility
+            * Numerical / correctness fixes:
+                - Reviewed and corrected Rlamch implementation for accuracy and consistency
+                - Fixed operator precedence issues in mpcomplex operators
+                - Fixed complex number formatting/printing issues in dd/qd backends
+                - Fixed mpblas Cherk
+                - Improved _Float128 portability (compiler typedef conflicts, __float128 math/complex helper detection)
+            * Tests / QA:
+                - Improved test reproducibility (e.g., deterministic RNG behavior for binary128 tests)
+                - Refactored/unified test harnesses and improved parallel `make check`
+                - Restored original LAPACK 3.9.1 test input files now that the converter can parse them
+                - Removed/updated obsolete test helper scripts and adjusted installation of legacy test artifacts
+            * Release engineering:
+                - Added Docker-based release engineering scripts to standardize and streamline the release workflow
+                - Improved consistency and efficiency by running build/test/release steps in a reproducible containerized environment
+            * Updated dependencies:
+                - GMP 6.3.0, MPFR 4.2.2, MPC 1.3.1, QD 2.3.24
+
 2022/09/12    Nakata Maho <maho@riken.jp> 2.0.1
             * tag 2.0.1
             * Cuda support for Rgemm dd and Rsyrk dd (Tesla V100 and A100); V100 and A100 support revived by Nakazato (aizu-u)

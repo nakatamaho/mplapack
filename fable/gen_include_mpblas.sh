@@ -10,15 +10,15 @@ cd ~/mplapack/mpblas/reference
 FILES=`ls *cpp | grep -v mplapackinit.cpp`
 
 for _file in $FILES; do
-/usr/local/bin/ctags -x --c++-kinds=pf --language-force=c++ --_xformat='%{typeref} %{name} %{signature};' ${_file} |  tr ':' ' ' | sed -e 's/^typename //' > ${_file%.*}.hpp
+ctags -x --c++-kinds=pf --language-force=c++ --_xformat='%{typeref} %{name} %{signature};' ${_file} |  tr ':' ' ' | sed -e 's/^typename //' > ${_file%.*}.hpp
 done
-/usr/local/bin/ctags -x --c++-kinds=pf --language-force=c++ --_xformat='%{typeref} %{name} %{signature};' Mxerbla.cpp |  tr ':' ' ' | sed -e 's/^typename //' > Mxerbla.hpp
-/usr/local/bin/ctags -x --c++-kinds=pf --language-force=c++ --_xformat='%{typeref} %{name} %{signature};' Mlsame.cpp |  tr ':' ' ' | sed -e 's/^typename //' > Mlsame.hpp
+ctags -x --c++-kinds=pf --language-force=c++ --_xformat='%{typeref} %{name} %{signature};' Mxerbla.cpp |  tr ':' ' ' | sed -e 's/^typename //' > Mxerbla.hpp
+ctags -x --c++-kinds=pf --language-force=c++ --_xformat='%{typeref} %{name} %{signature};' Mlsame.cpp |  tr ':' ' ' | sed -e 's/^typename //' > Mlsame.hpp
 
 cat *hpp > header_all
 rm *hpp
 
-MPLIBS="gmp mpfr _Float128 dd qd double _Float64x"
+MPLIBS="gmp mpfr binary128 dd qd double binary80"
 for mplib in $MPLIBS; do
     if [ x"$mplib" = x"gmp" ]; then
         cp header_all mpblas_${mplib}.h 
@@ -66,25 +66,25 @@ for mplib in $MPLIBS; do
         sed -i -e "s/Mxerbla/Mxerbla_${mplib}/g" mpblas_${mplib}.h 
     fi
 
-    if [ x"$mplib" = x"_Float128" ]; then
+    if [ x"$mplib" = x"binary128" ]; then
         cp header_all mpblas_${mplib}.h 
         sed -i -e 's/INTEGER/mplapackint/g' mpblas_${mplib}.h 
-        sed -i -e 's/COMPLEX/std::complex<_Float128>/g' mpblas_${mplib}.h 
-        sed -i -e 's/REAL/_Float128/g' mpblas_${mplib}.h 
-        sed -i -e "s/Mlsame/Mlsame_${mplib}/g" mpblas_${mplib}.h 
+        sed -i -e 's/COMPLEX/std::complex<mplapack_binary128_t>/g' mpblas_${mplib}.h
+        sed -i -e 's/REAL/mplapack_binary128_t/g' mpblas_${mplib}.h
+        sed -i -e "s/Mlsame/Mlsame_${mplib}/g" mpblas_${mplib}.h
         sed -i -e "s/Mxerbla/Mxerbla_${mplib}/g" mpblas_${mplib}.h 
     fi
 
-    if [ x"$mplib" = x"_Float64x" ]; then
+    if [ x"$mplib" = x"binary80" ]; then
         cp header_all mpblas_${mplib}.h 
-        sed -i -e 's/INTEGER/mplapackint/g' mpblas_${mplib}.h 
-        sed -i -e 's/COMPLEX/std::complex<_Float64x>/g' mpblas_${mplib}.h 
-        sed -i -e 's/REAL/_Float64x/g' mpblas_${mplib}.h 
-        sed -i -e "s/Mlsame/Mlsame_${mplib}/g" mpblas_${mplib}.h 
-        sed -i -e "s/Mxerbla/Mxerbla_${mplib}/g" mpblas_${mplib}.h 
+        sed -i -e 's/INTEGER/mplapackint/g' mpblas_${mplib}.h
+        sed -i -e 's/COMPLEX/std::complex<mplapack_binary80_t>/g' mpblas_${mplib}.h
+        sed -i -e 's/REAL/mplapack_binary80_t/g' mpblas_${mplib}.h
+        sed -i -e "s/Mlsame/Mlsame_${mplib}/g" mpblas_${mplib}.h
+        sed -i -e "s/Mxerbla/Mxerbla_${mplib}/g" mpblas_${mplib}.h
     fi
 
-    clang-format -style="{BasedOnStyle: llvm, IndentWidth: 4, ColumnLimit: 10000 }" mpblas_${mplib}.h | sort > l ; mv l mpblas_${mplib}.h 
+    clang-format-19 -style="{BasedOnStyle: llvm, IndentWidth: 4, ColumnLimit: 10000 }" mpblas_${mplib}.h | sort > l ; mv l mpblas_${mplib}.h 
     cat ~/mplapack/mpblas/reference/mpblas_${mplib}.h.in mpblas_${mplib}.h > ~/mplapack/include/mpblas_${mplib}.h
     rm mpblas_${mplib}.h
     echo "#endif" >> ~/mplapack/include/mpblas_${mplib}.h

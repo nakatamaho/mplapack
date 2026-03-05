@@ -43,10 +43,6 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-inline REAL abs1(COMPLEX x) { return abs(x.real()) + abs(x.imag()); }
-
 void Cget52(bool const left, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX *e, INTEGER const lde, COMPLEX *alpha, COMPLEX *beta, COMPLEX *work, REAL *rwork, REAL *result) {
     COMPLEX x = 0.0;
     //
@@ -62,21 +58,21 @@ void Cget52(bool const left, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
     REAL safmax = one / safmin;
     REAL ulp = Rlamch("Epsilon") * Rlamch("Base");
     //
-    char trans;
-    char normab;
+    fem::str<1> trans;
+    fem::str<1> normab;
     if (left) {
-        trans = 'C';
-        normab = 'I';
+        trans = "C";
+        normab = "I";
     } else {
-        trans = 'N';
-        normab = 'O';
+        trans = "N";
+        normab = "O";
     }
     //
     // Norm of A, B, and E:
     //
-    REAL anorm = max({Clange(&normab, n, n, a, lda, rwork), safmin});
-    REAL bnorm = max({Clange(&normab, n, n, b, ldb, rwork), safmin});
-    REAL enorm = max({Clange("O", n, n, e, lde, rwork), ulp});
+    REAL anorm = max(Clange(normab.elems, n, n, a, lda, rwork), safmin);
+    REAL bnorm = max(Clange(normab.elems, n, n, b, ldb, rwork), safmin);
+    REAL enorm = max(Clange("O", n, n, e, lde, rwork), ulp);
     REAL alfmax = safmax / max(one, bnorm);
     REAL betmax = safmax / max(one, anorm);
     //
@@ -95,21 +91,21 @@ void Cget52(bool const left, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
     for (jvec = 1; jvec <= n; jvec = jvec + 1) {
         alphai = alpha[jvec - 1];
         betai = beta[jvec - 1];
-        abmax = max(abs1(alphai), abs1(betai));
-        if (abs1(alphai) > alfmax || abs1(betai) > betmax || abmax < one) {
+        abmax = max(cabs1(alphai), cabs1(betai));
+        if (cabs1(alphai) > alfmax || cabs1(betai) > betmax || abmax < one) {
             scale = one / max(abmax, safmin);
             alphai = scale * alphai;
             betai = scale * betai;
         }
-        scale = one / max({REAL(abs1(alphai) * bnorm), REAL(abs1(betai) * anorm), safmin});
+        scale = one / max(cabs1(alphai) * bnorm, cabs1(betai) * anorm, safmin);
         acoeff = scale * betai;
         bcoeff = scale * alphai;
         if (left) {
             acoeff = conj(acoeff);
             bcoeff = conj(bcoeff);
         }
-        Cgemv(&trans, n, n, acoeff, a, lda, &e[(jvec - 1) * lde], 1, czero, &work[(n * (jvec - 1) + 1) - 1], 1);
-        Cgemv(&trans, n, n, -bcoeff, b, lda, &e[(jvec - 1) * lde], 1, cone, &work[(n * (jvec - 1) + 1) - 1], 1);
+        Cgemv(trans.elems, n, n, acoeff, a, lda, &e[(jvec - 1) * lde], 1, czero, &work[(n * (jvec - 1) + 1) - 1], 1);
+        Cgemv(trans.elems, n, n, -bcoeff, b, lda, &e[(jvec - 1) * lde], 1, cone, &work[(n * (jvec - 1) + 1) - 1], 1);
     }
     //
     REAL errnrm = Clange("One", n, n, work, n, rwork) / enorm;
@@ -126,9 +122,9 @@ void Cget52(bool const left, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
     for (jvec = 1; jvec <= n; jvec = jvec + 1) {
         temp1 = zero;
         for (j = 1; j <= n; j = j + 1) {
-            temp1 = max(temp1, abs1(e[(j - 1) + (jvec - 1) * lde]));
+            temp1 = max(temp1, cabs1(e[(j - 1) + (jvec - 1) * lde]));
         }
-        enrmer = max(enrmer, REAL(temp1 - one));
+        enrmer = max(enrmer, temp1 - one);
     }
     //
     // Compute RESULT(2) : the normalization error in E.

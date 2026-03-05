@@ -43,8 +43,6 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
 void Cbdt05(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL *s, INTEGER const ns, COMPLEX *u, INTEGER const ldu, COMPLEX *vt, INTEGER const ldvt, COMPLEX *work, REAL &resid) {
     //
     // Quick return if possible.
@@ -72,7 +70,7 @@ void Cbdt05(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REA
     INTEGER i = 0;
     for (i = 1; i <= ns; i = i + 1) {
         work[(j + i) - 1] += COMPLEX(s[i - 1], zero);
-        resid = max({resid, RCasum(ns, &work[(j + 1) - 1], 1)});
+        resid = max(resid, RCasum(ns, &work[(j + 1) - 1], 1));
         j += ns;
     }
     //
@@ -86,9 +84,9 @@ void Cbdt05(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REA
             resid = (resid / anorm) / (castREAL(n) * eps);
         } else {
             if (anorm < one) {
-                resid = (min(resid, REAL((castREAL(n) * anorm) / anorm))) / (castREAL(n) * eps);
+                resid = (min(resid, castREAL(n) * anorm) / anorm) / (castREAL(n) * eps);
             } else {
-                resid = min(REAL(resid / anorm), castREAL(n)) / (castREAL(n) * eps);
+                resid = min(resid / anorm, castREAL(n)) / (castREAL(n) * eps);
             }
         }
     }

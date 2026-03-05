@@ -43,9 +43,11 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
 void Rget33(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
+    INTEGER ldt = 2;
+    INTEGER ldt1 = 2;
+    INTEGER ldq = 2;
+    INTEGER ldt2 = 2;
     //
     // Get machine parameters
     //
@@ -53,6 +55,7 @@ void Rget33(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
     REAL smlnum = Rlamch("S") / eps;
     const REAL one = 1.0;
     REAL bignum = one / smlnum;
+    Rlabad(smlnum, bignum);
     //
     // Set up test case parameters
     //
@@ -85,12 +88,9 @@ void Rget33(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
     INTEGER im3 = 0;
     INTEGER im4 = 0;
     REAL t[2 * 2];
-    INTEGER ldt = 2;
     REAL tnrm = 0.0;
     REAL t1[2 * 2];
-    INTEGER ldt1 = 2;
     REAL q[2 * 2];
-    INTEGER ldq = 2;
     REAL wr1 = 0.0;
     REAL wi1 = 0.0;
     REAL wr2 = 0.0;
@@ -101,7 +101,6 @@ void Rget33(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
     REAL res = 0.0;
     INTEGER j2 = 0;
     REAL t2[2 * 2];
-    INTEGER ldt2 = 2;
     INTEGER j3 = 0;
     REAL sum = 0.0;
     for (i1 = 1; i1 <= 4; i1 = i1 + 1) {
@@ -112,21 +111,21 @@ void Rget33(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
                         for (im2 = 1; im2 <= 3; im2 = im2 + 1) {
                             for (im3 = 1; im3 <= 3; im3 = im3 + 1) {
                                 for (im4 = 1; im4 <= 3; im4 = im4 + 1) {
-                                    t[(1 - 1)] = val[i1 - 1] * vm[im1 - 1];
+                                    t[0] = val[i1 - 1] * vm[im1 - 1];
                                     t[(2 - 1) * ldt] = val[i2 - 1] * vm[im2 - 1];
                                     t[(2 - 1)] = -val[i3 - 1] * vm[im3 - 1];
                                     t[(2 - 1) + (2 - 1) * ldt] = val[i4 - 1] * vm[im4 - 1];
-                                    tnrm = max({abs(t[(1 - 1)]), abs(t[(2 - 1) * ldt]), abs(t[(2 - 1)]), abs(t[(2 - 1) + (2 - 1) * ldt])});
-                                    t1[(1 - 1)] = t[(1 - 1)];
+                                    tnrm = max(abs(t[0]), abs(t[(2 - 1) * ldt]), abs(t[(2 - 1)]), abs(t[(2 - 1) + (2 - 1) * ldt]));
+                                    t1[0] = t[0];
                                     t1[(2 - 1) * ldt1] = t[(2 - 1) * ldt];
                                     t1[(2 - 1)] = t[(2 - 1)];
                                     t1[(2 - 1) + (2 - 1) * ldt1] = t[(2 - 1) + (2 - 1) * ldt];
-                                    q[(1 - 1)] = one;
+                                    q[0] = one;
                                     q[(2 - 1) * ldq] = zero;
                                     q[(2 - 1)] = zero;
                                     q[(2 - 1) + (2 - 1) * ldq] = one;
                                     //
-                                    Rlanv2(t[(1 - 1)], t[(2 - 1) * ldt], t[(2 - 1)], t[(2 - 1) + (2 - 1) * ldt], wr1, wi1, wr2, wi2, cs, sn);
+                                    Rlanv2(t[0], t[(2 - 1) * ldt], t[(2 - 1)], t[(2 - 1) + (2 - 1) * ldt], wr1, wi1, wr2, wi2, cs, sn);
                                     for (j1 = 1; j1 <= 2; j1 = j1 + 1) {
                                         res = q[(j1 - 1)] * cs + q[(j1 - 1) + (2 - 1) * ldq] * sn;
                                         q[(j1 - 1) + (2 - 1) * ldq] = -q[(j1 - 1)] * sn + q[(j1 - 1) + (2 - 1) * ldq] * cs;
@@ -134,9 +133,9 @@ void Rget33(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
                                     }
                                     //
                                     res = zero;
-                                    res += abs(pow2(q[(1 - 1)]) + pow2(q[(2 - 1) * ldq]) - one) / eps;
+                                    res += abs(pow2(q[0]) + pow2(q[(2 - 1) * ldq]) - one) / eps;
                                     res += abs(pow2(q[(2 - 1) + (2 - 1) * ldq]) + pow2(q[(2 - 1)]) - one) / eps;
-                                    res += abs(q[(1 - 1)] * q[(2 - 1)] + q[(2 - 1) * ldq] * q[(2 - 1) + (2 - 1) * ldq]) / eps;
+                                    res += abs(q[0] * q[(2 - 1)] + q[(2 - 1) * ldq] * q[(2 - 1) + (2 - 1) * ldq]) / eps;
                                     for (j1 = 1; j1 <= 2; j1 = j1 + 1) {
                                         for (j2 = 1; j2 <= 2; j2 = j2 + 1) {
                                             t2[(j1 - 1) + (j2 - 1) * ldt2] = zero;
@@ -154,7 +153,7 @@ void Rget33(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
                                             res += abs(sum) / eps / tnrm;
                                         }
                                     }
-                                    if (t[(2 - 1)] != zero && (t[(1 - 1)] != t[(2 - 1) + (2 - 1) * ldt] || sign(one, t[(2 - 1) * ldt]) * sign(one, t[(2 - 1)]) > zero)) {
+                                    if (t[(2 - 1)] != zero && (t[0] != t[(2 - 1) + (2 - 1) * ldt] || sign(one, t[(2 - 1) * ldt]) * sign(one, t[(2 - 1)]) > zero)) {
                                         res += one / eps;
                                     }
                                     knt++;

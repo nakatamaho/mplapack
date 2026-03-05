@@ -1,5 +1,5 @@
---- a/mplapack/reference/Clacon.cpp
-+++ b/mplapack/reference/Clacon.cpp
+--- a/mplapack/reference/Clacon.cpp_	2026-01-21 21:03:48.611266540 +0900
++++ b/mplapack/reference/Clacon.cpp	2026-01-21 21:03:48.618266651 +0900
 @@ -37,16 +37,16 @@
  #include <mplapack.h>
  

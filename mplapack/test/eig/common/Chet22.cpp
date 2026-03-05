@@ -43,9 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-void Chet22(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER const m, INTEGER const kband, COMPLEX *a, INTEGER const lda, REAL *d, REAL *e, COMPLEX *u, INTEGER const ldu, COMPLEX * /* v */, INTEGER const ldv, COMPLEX * /* tau */, COMPLEX *work, REAL *rwork, REAL *result) {
+void Chet22(INTEGER const itype, fem::str_cref uplo, INTEGER const n, INTEGER const m, INTEGER const kband, COMPLEX *a, INTEGER const lda, REAL *d, REAL *e, COMPLEX *u, INTEGER const ldu, COMPLEX * /* v */, INTEGER const ldv, COMPLEX * /* tau */, COMPLEX *work, REAL *rwork, REAL *result) {
     //
     const REAL zero = 0.0;
     result[1 - 1] = zero;
@@ -61,7 +59,7 @@ void Chet22(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
     //
     // Norm of A:
     //
-    REAL anorm = max({Clanhe("1", uplo, n, a, lda, rwork), unfl});
+    REAL anorm = max(Clanhe("1", uplo.elems(), n, a, lda, rwork), unfl);
     //
     // Compute error matrix:
     //
@@ -69,7 +67,7 @@ void Chet22(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
     //
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     const COMPLEX czero = COMPLEX(0.0, 0.0);
-    Chemm("L", uplo, n, m, cone, a, lda, u, ldu, czero, work, n);
+    Chemm("L", uplo.elems(), n, m, cone, a, lda, u, ldu, czero, work, n);
     INTEGER nn = n * n;
     INTEGER nnp1 = nn + 1;
     Cgemm("C", "N", m, m, n, cone, u, ldu, work, n, czero, &work[nnp1 - 1], n);
@@ -89,16 +87,16 @@ void Chet22(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
             work[jj2 - 1] = work[jj2 - 1] - e[(j - 1) - 1];
         }
     }
-    REAL wnorm = Clanhe("1", uplo, m, &work[nnp1 - 1], n, rwork);
+    REAL wnorm = Clanhe("1", uplo.elems(), m, &work[nnp1 - 1], n, rwork);
     //
     const REAL one = 1.0;
     if (anorm > wnorm) {
         result[1 - 1] = (wnorm / anorm) / (m * ulp);
     } else {
         if (anorm < one) {
-            result[1 - 1] = (min(wnorm, REAL(castREAL(m) * anorm)) / anorm) / (castREAL(m) * ulp);
+            result[1 - 1] = (min(wnorm, m * anorm) / anorm) / (m * ulp);
         } else {
-            result[1 - 1] = min(REAL(wnorm / anorm), castREAL(m)) / (castREAL(m) * ulp);
+            result[1 - 1] = min(wnorm / anorm, castREAL(m)) / (m * ulp);
         }
     }
     //

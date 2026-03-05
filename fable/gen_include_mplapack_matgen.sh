@@ -10,7 +10,7 @@ fi
 
 FILES=`ls *cpp | grep -v Rlamch | grep -v iMlaenv | grep -v Mutils`
 for filename in $FILES; do
-/usr/local/bin/ctags -x --c++-kinds=pf --language-force=c++ --_xformat='%{typeref} %{name} %{signature};' ${filename} |  tr ':' ' ' | sed -e 's/^typename //' >  ${filename%.*}.hpp
+ctags -x --c++-kinds=pf --language-force=c++ --_xformat='%{typeref} %{name} %{signature};' "${filename}" | sed -E 's/^typename[[:space:]]*:[[:space:]]*//' > "${filename%.*}.hpp"
 done
 
 printf "REAL Rlamch(const char *cmach);" > Rlamch.hpp
@@ -25,7 +25,7 @@ cat *hpp \
 
 rm *hpp
 
-MPLIBS="gmp mpfr _Float128 dd qd double _Float64x"
+MPLIBS="gmp mpfr binary128 dd qd double binary80"
 for mplib in $MPLIBS; do
     if [ x"$mplib" = x"gmp" ]; then
         cp header_all mplapack_matgen_${mplib}.h 
@@ -82,29 +82,29 @@ for mplib in $MPLIBS; do
         sed -i -e "s/iMparmq/iMparmq_${mplib}/g" mplapack_matgen_${mplib}.h 
     fi
 
-    if [ x"$mplib" = x"_Float128" ]; then
+    if [ x"$mplib" = x"binary128" ]; then
         cp header_all mplapack_matgen_${mplib}.h 
         sed -i -e 's/INTEGER/mplapackint/g' mplapack_matgen_${mplib}.h 
-        sed -i -e 's/COMPLEX/std::complex<_Float128>/g' mplapack_matgen_${mplib}.h 
-        sed -i -e 's/REAL/_Float128/g' mplapack_matgen_${mplib}.h 
+        sed -i -e 's/COMPLEX/std::complex<mplapack_binary128_t>/g' mplapack_matgen_${mplib}.h
+        sed -i -e 's/REAL/mplapack_binary128_t/g' mplapack_matgen_${mplib}.h
         sed -i -e "s/Rlamch/Rlamch_${mplib}/g" mplapack_matgen_${mplib}.h 
         sed -i -e "s/iMlaenv/iMlaenv_${mplib}/g" mplapack_matgen_${mplib}.h 
         sed -i -e "s/iMieeeck/iMieeeck_${mplib}/g" mplapack_matgen_${mplib}.h 
         sed -i -e "s/iMparmq/iMparmq_${mplib}/g" mplapack_matgen_${mplib}.h 
     fi
 
-    if [ x"$mplib" = x"_Float64x" ]; then
+    if [ x"$mplib" = x"binary80" ]; then
         cp header_all mplapack_matgen_${mplib}.h 
         sed -i -e 's/INTEGER/mplapackint/g' mplapack_matgen_${mplib}.h 
-        sed -i -e 's/COMPLEX/std::complex<_Float64x>/g' mplapack_matgen_${mplib}.h 
-        sed -i -e 's/REAL/_Float64x/g' mplapack_matgen_${mplib}.h 
+        sed -i -e 's/COMPLEX/std::complex<mplapack_binary80_t>/g' mplapack_matgen_${mplib}.h
+        sed -i -e 's/REAL/mplapack_binary80_t/g' mplapack_matgen_${mplib}.h
         sed -i -e "s/Rlamch/Rlamch_${mplib}/g" mplapack_matgen_${mplib}.h 
         sed -i -e "s/iMlaenv/iMlaenv_${mplib}/g" mplapack_matgen_${mplib}.h 
         sed -i -e "s/iMieeeck/iMieeeck_${mplib}/g" mplapack_matgen_${mplib}.h 
         sed -i -e "s/iMparmq/iMparmq_${mplib}/g" mplapack_matgen_${mplib}.h 
     fi
 
-    clang-format -style="{BasedOnStyle: llvm, IndentWidth: 4, ColumnLimit: 10000 }" mplapack_matgen_${mplib}.h | sort > l ; mv l mplapack_matgen_${mplib}.h 
+    clang-format-19 -style="{BasedOnStyle: llvm, IndentWidth: 4, ColumnLimit: 10000 }" mplapack_matgen_${mplib}.h | sort > l ; mv l mplapack_matgen_${mplib}.h 
     cat ~/mplapack/mplapack/test/matgen/mplapack_matgen_${mplib}.h.in mplapack_matgen_${mplib}.h > ~/mplapack/include/mplapack_matgen_${mplib}.h
     rm mplapack_matgen_${mplib}.h
     echo "#endif" >> ~/mplapack/include/mplapack_matgen_${mplib}.h

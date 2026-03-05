@@ -59,18 +59,18 @@ void Rgemm_test3(const char *transa, const char *transb, REAL_REF alpha_ref, REA
                 int minlda, minldb;
 
                 if (Mlsame(transa, "N"))
-                    minlda = max_int(1, m);
+                    minlda = max(1, m);
                 else
-                    minlda = max_int(1, k);
+                    minlda = max(1, k);
 
                 if (Mlsame(transb, "N"))
-                    minldb = max_int(1, k);
+                    minldb = max(1, k);
                 else
-                    minldb = max_int(1, n);
+                    minldb = max(1, n);
 
                 for (int lda = minlda; lda < MAX_LDA; lda++) {
                     for (int ldb = minldb; ldb < MAX_LDB; ldb++) {
-                        for (int ldc = max_int(1, m); ldc < MAX_LDC; ldc++) {
+                        for (int ldc = max(1, m); ldc < MAX_LDC; ldc++) {
 #if defined VERBOSE_TEST
                             printf("#k is %d, n is %d, m is %d, lda is %d, ldb is %d, ldc is %d\n", k, n, m, lda, ldb, ldc);
                             printf("#transa is %s, transb is %s\n", transa, transb);

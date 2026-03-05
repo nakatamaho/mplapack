@@ -36,6 +36,8 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+#include <mplapack_matgen.h>
+
 void Rlakf2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, REAL *d, REAL *e, REAL *z, INTEGER const ldz) {
     //
     // Initialize Z
@@ -49,9 +51,6 @@ void Rlakf2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
     INTEGER l = 0;
     INTEGER i = 0;
     INTEGER j = 0;
-    INTEGER ldb = lda;
-    INTEGER ldd = lda;
-    INTEGER lde = lda;
     for (l = 1; l <= n; l = l + 1) {
         //
         // form kron(In, A)
@@ -66,7 +65,7 @@ void Rlakf2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
         //
         for (i = 1; i <= m; i = i + 1) {
             for (j = 1; j <= m; j = j + 1) {
-                z[((ik + mn + i - 1) - 1) + ((ik + j - 1) - 1) * ldz] = d[(i - 1) + (j - 1) * ldd];
+                z[((ik + mn + i - 1) - 1) + ((ik + j - 1) - 1) * ldz] = d[(i - 1) + (j - 1) * lda];
             }
         }
         //
@@ -83,13 +82,13 @@ void Rlakf2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
             // form -kron(B', Im)
             //
             for (i = 1; i <= m; i = i + 1) {
-                z[((ik + i - 1) - 1) + ((jk + i - 1) - 1) * ldz] = -b[(j - 1) + (l - 1) * ldb];
+                z[((ik + i - 1) - 1) + ((jk + i - 1) - 1) * ldz] = -b[(j - 1) + (l - 1) * lda];
             }
             //
             // form -kron(E', Im)
             //
             for (i = 1; i <= m; i = i + 1) {
-                z[((ik + mn + i - 1) - 1) + ((jk + i - 1) - 1) * ldz] = -e[(j - 1) + (l - 1) * lde];
+                z[((ik + mn + i - 1) - 1) + ((jk + i - 1) - 1) * ldz] = -e[(j - 1) + (l - 1) * lda];
             }
             //
             jk += m;

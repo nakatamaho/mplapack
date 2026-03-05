@@ -43,16 +43,12 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-#include <mplapack_debug.h>
-
 void Cchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, INTEGER const nmax, COMPLEX *a, COMPLEX *afac, COMPLEX *ainv, COMPLEX *b, COMPLEX *x, COMPLEX *xact, COMPLEX *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
     common cmn;
     common_write write(cmn);
-    //
-    const INTEGER ntran = 3;
-    char transs[ntran] = {'N', 'T', 'C'};
-    char path[4] = {};
-    char buf[1024];
+    static INTEGER iseedy[4] = {1988, 1989, 1990, 1991};
+    static fem::str<1> transs[3] = {"N", "T", "C"};
+    fem::str<3> path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -63,18 +59,18 @@ void Cchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     INTEGER lda = 0;
     INTEGER in = 0;
     INTEGER n = 0;
-    char xtype[1];
+    fem::str<1> xtype;
     const INTEGER ntypes = 11;
     INTEGER nimat = 0;
     INTEGER imat = 0;
     bool zerot = false;
-    char type[1];
+    fem::str<1> type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist[1];
+    fem::str<1> dist;
     INTEGER info = 0;
     INTEGER izero = 0;
     INTEGER ioff = 0;
@@ -96,27 +92,38 @@ void Cchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     INTEGER k = 0;
     INTEGER irhs = 0;
     INTEGER itran = 0;
-    char trans[1];
+    const INTEGER ntran = 3;
+    fem::str<1> trans;
     REAL rcondc = 0.0;
-    char norm[1];
+    fem::str<1> norm;
     REAL rcond = 0.0;
     REAL dummy = 0.0;
     //
-    path[0] = 'C';
-    path[1] = 'G';
-    path[2] = 'E';
+    static const char *format_9999 = "(' M = ',i5,', N =',i5,', NB =',i4,', type ',i2,', test(',i2,') =',g12.5)";
+    static const char *format_9998 = "(' TRANS=''',a1,''', N =',i5,', NRHS=',i3,', type ',i2,', test(',i2,"
+                                     "') =',g12.5)";
+    static const char *format_9997 = "(' NORM =''',a1,''', N =',i5,',',10x,' type ',i2,', test(',i2,') =',"
+                                     "g12.5)";
+    //
+    // Initialize constants and the random number seed.
+    //
+    path(1, 1) = "Zomplex precision";
+    path(2, 3) = "GE";
     nrun = 0;
     nfail = 0;
     nerrs = 0;
+    for (i = 1; i <= 4; i = i + 1) {
+        iseed[i - 1] = iseedy[i - 1];
+    }
     //
-    //     Test the error exits
+    // Test the error exits
     //
-    xlaenv(1, 1);
+    Mxlaenv(1, 1);
     if (tsterr) {
         Cerrge(path, nout);
     }
     infot = 0;
-    xlaenv(2, 2);
+    Mxlaenv(2, 2);
     //
     // Do for each value of M in MVAL
     //
@@ -128,7 +135,7 @@ void Cchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
         //
         for (in = 1; in <= nn; in = in + 1) {
             n = nval[in - 1];
-            xtype[0] = 'N';
+            xtype = "N";
             nimat = ntypes;
             if (m <= 0 || n <= 0) {
                 nimat = 1;
@@ -154,7 +161,7 @@ void Cchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                 //
                 Clatb4(path, imat, m, n, type, kl, ku, anorm, mode, cndnum, dist);
                 //
-                strncpy(srnamt, "Clatms", srnamt_len);
+                srnamt = "Clatms";
                 Clatms(m, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, "No packing", a, lda, work, info);
                 //
                 // Check error code from Clatms.
@@ -197,12 +204,12 @@ void Cchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                 //
                 for (inb = 1; inb <= nnb; inb = inb + 1) {
                     nb = nbval[inb - 1];
-                    xlaenv(1, nb);
+                    Mxlaenv(1, nb);
                     //
                     // Compute the LU factorization of the matrix.
                     //
                     Clacpy("Full", m, n, a, lda, afac, lda);
-                    strncpy(srnamt, "Cgetrf", srnamt_len);
+                    srnamt = "Cgetrf";
                     Cgetrf(m, n, afac, lda, iwork, info);
                     //
                     // Check error code from Cgetrf.
@@ -225,9 +232,9 @@ void Cchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                     //
                     if (m == n && info == 0) {
                         Clacpy("Full", n, n, afac, lda, ainv, lda);
+                        srnamt = "Cgetri";
                         nrhs = nsval[1 - 1];
                         lwork = nmax * max((INTEGER)3, nrhs);
-                        strncpy(srnamt, "Cgetri", srnamt_len);
                         Cgetri(n, ainv, lda, iwork, work, lwork, info);
                         //
                         // Check error code from Cgetri.
@@ -272,10 +279,7 @@ void Cchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
-                            sprintnum_short(buf, result[k - 1]);
-                            write(nout, "(' M = ',i5,', N =',i5,', NB =',i4,', type ',i2,', test(',i2,"
-                                        "') =',a)"),
-                                m, n, nb, imat, k, buf;
+                            write(nout, format_9999), m, n, nb, imat, k, result[k - 1];
                             nfail++;
                         }
                     }
@@ -294,10 +298,10 @@ void Cchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                     //
                     for (irhs = 1; irhs <= nns; irhs = irhs + 1) {
                         nrhs = nsval[irhs - 1];
-                        xtype[0] = 'N';
+                        xtype = "N";
                         //
                         for (itran = 1; itran <= ntran; itran = itran + 1) {
-                            trans[0] = transs[itran - 1];
+                            trans = transs[itran - 1];
                             if (itran == 1) {
                                 rcondc = rcondo;
                             } else {
@@ -307,13 +311,13 @@ void Cchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             // +    TEST 3
                             // Solve and compute residual for A * X = B.
                             //
-                            strncpy(srnamt, "Clarhs", srnamt_len);
+                            srnamt = "Clarhs";
                             Clarhs(path, xtype, " ", trans, n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
-                            xtype[0] = 'C';
+                            xtype = "C";
                             //
                             Clacpy("Full", n, nrhs, b, lda, x, lda);
-                            strncpy(srnamt, "Cgetrs", srnamt_len);
-                            Cgetrs(trans, n, nrhs, afac, lda, iwork, x, lda, info);
+                            srnamt = "Cgetrs";
+                            Cgetrs(trans.elems, n, nrhs, afac, lda, iwork, x, lda, info);
                             //
                             // Check error code from Cgetrs.
                             //
@@ -333,8 +337,8 @@ void Cchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             // Use iterative refinement to improve the
                             // solution.
                             //
-                            strncpy(srnamt, "Cgerfs", srnamt_len);
-                            Cgerfs(trans, n, nrhs, a, lda, afac, lda, iwork, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
+                            srnamt = "Cgerfs";
+                            Cgerfs(trans.elems, n, nrhs, a, lda, afac, lda, iwork, b, lda, x, lda, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                             //
                             // Check error code from Cgerfs.
                             //
@@ -353,10 +357,7 @@ void Cchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                     if (nfail == 0 && nerrs == 0) {
                                         Alahd(nout, path);
                                     }
-                                    sprintnum_short(buf, result[k - 1]);
-                                    write(nout, "(' TRANS=''',a1,''', N =',i5,', NRHS=',i3,', type ',i2,"
-                                                "', test(',i2,') =',a)"),
-                                        trans, n, nrhs, imat, k, buf;
+                                    write(nout, format_9998), trans, n, nrhs, imat, k, result[k - 1];
                                     nfail++;
                                 }
                             }
@@ -372,14 +373,14 @@ void Cchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                         if (itran == 1) {
                             anorm = anormo;
                             rcondc = rcondo;
-                            norm[0] = 'O';
+                            norm = "O";
                         } else {
                             anorm = anormi;
                             rcondc = rcondi;
-                            norm[0] = 'I';
+                            norm = "I";
                         }
-                        strncpy(srnamt, "Cgecon", srnamt_len);
-                        Cgecon(norm, n, afac, lda, anorm, rcond, work, rwork, info);
+                        srnamt = "Cgecon";
+                        Cgecon(norm.elems, n, afac, lda, anorm, rcond, work, rwork, info);
                         //
                         // Check error code from Cgecon.
                         //
@@ -400,10 +401,7 @@ void Cchkge(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
-                            sprintnum_short(buf, result[8 - 1]);
-                            write(nout, "(' NORM =''',a1,''', N =',i5,',',10x,' type ',i2,', test(',"
-                                        "i2,') =',a)"),
-                                norm, n, imat, 8, buf;
+                            write(nout, format_9997), norm, n, imat, 8, result[8 - 1];
                             nfail++;
                         }
                         nrun++;

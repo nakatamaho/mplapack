@@ -43,17 +43,12 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-#include <mplapack_debug.h>
-
 void Rdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, REAL const thresh, bool const tsterr, REAL *a, REAL *af, REAL *b, REAL *x, REAL *xact, REAL *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
     common cmn;
     common_write write(cmn);
-    //
-    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
-    char fact_trans[3];
-    char transs[] = {'N', 'T', 'C'};
-    char path[4] = {};
-    char buf[1024];
+    static INTEGER iseedy[4] = {0, 0, 0, 1};
+    static fem::str<1> transs[3] = {"N", "T", "C"};
+    fem::str<3> path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -66,13 +61,13 @@ void Rdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     const INTEGER ntypes = 12;
     INTEGER nimat = 0;
     INTEGER imat = 0;
-    char type[1];
+    fem::str<1> type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cond = 0.0;
-    char dist[1];
+    fem::str<1> dist;
     bool zerot = false;
     INTEGER koff = 0;
     INTEGER info = 0;
@@ -81,7 +76,7 @@ void Rdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     REAL z[3];
     const REAL zero = 0.0;
     INTEGER ifact = 0;
-    char fact[1];
+    fem::str<1> fact;
     REAL rcondo = 0.0;
     REAL rcondi = 0.0;
     REAL anormo = 0.0;
@@ -89,7 +84,7 @@ void Rdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     REAL ainvnm = 0.0;
     INTEGER j = 0;
     INTEGER itran = 0;
-    char trans[1];
+    fem::str<1> trans;
     REAL rcondc = 0.0;
     INTEGER ix = 0;
     INTEGER nt = 0;
@@ -99,13 +94,13 @@ void Rdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
     REAL rcond = 0.0;
     INTEGER k1 = 0;
     bool trfcon = false;
-    static const char *format_9998 = "(1x,a,', FACT=''',a1,''', TRANS=''',a1,''', N =',i5,', type ',i2,"
-                                     "', test ',i2,', ratio = ',a)";
     //
-    path[0] = 'R';
-    path[1] = 'G';
-    path[2] = 'T';
-    path[3] = '\0';
+    static const char *format_9999 = "(1x,a,', N =',i5,', type ',i2,', test ',i2,', ratio = ',g12.5)";
+    static const char *format_9998 = "(1x,a,', FACT=''',a1,''', TRANS=''',a1,''', N =',i5,', type ',i2,"
+                                     "', test ',i2,', ratio = ',g12.5)";
+    //
+    path(1, 1) = "Double precision";
+    path(2, 3) = "GT";
     nrun = 0;
     nfail = 0;
     nerrs = 0;
@@ -149,8 +144,8 @@ void Rdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                 //
                 // Types 1-6:  generate matrices of known condition number.
                 //
-                koff = max({(INTEGER)2 - ku, 3 - max((INTEGER)1, n)});
-                strncpy(srnamt, "Rlatms", srnamt_len);
+                koff = max(2 - ku, 3 - max((INTEGER)1, n));
+                srnamt = "Rlatms";
                 Rlatms(n, n, dist, iseed, type, rwork, mode, cond, anorm, kl, ku, "Z", &af[koff - 1], 3, work, info);
                 //
                 // Check the error code from Rlatms.
@@ -231,9 +226,9 @@ void Rdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
             //
             for (ifact = 1; ifact <= 2; ifact = ifact + 1) {
                 if (ifact == 1) {
-                    fact[0] = 'F';
+                    fact = "F";
                 } else {
-                    fact[0] = 'N';
+                    fact = "N";
                 }
                 //
                 // Compute the condition number for comparison with
@@ -268,7 +263,7 @@ void Rdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         }
                         x[i - 1] = one;
                         Rgttrs("No transpose", n, 1, af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], &af[(n + 2 * m + 1) - 1], iwork, x, lda, info);
-                        ainvnm = max({ainvnm, Rasum(n, x, 1)});
+                        ainvnm = max(ainvnm, Rasum(n, x, 1));
                     }
                     //
                     // Compute the 1-norm condition number of A.
@@ -289,7 +284,7 @@ void Rdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         }
                         x[i - 1] = one;
                         Rgttrs("Transpose", n, 1, af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], &af[(n + 2 * m + 1) - 1], iwork, x, lda, info);
-                        ainvnm = max({ainvnm, Rasum(n, x, 1)});
+                        ainvnm = max(ainvnm, Rasum(n, x, 1));
                     }
                     //
                     // Compute the infinity-norm condition number of A.
@@ -302,7 +297,7 @@ void Rdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                 }
                 //
                 for (itran = 1; itran <= 3; itran = itran + 1) {
-                    trans[0] = transs[itran - 1];
+                    trans = transs[itran - 1];
                     if (itran == 1) {
                         rcondc = rcondo;
                     } else {
@@ -319,7 +314,7 @@ void Rdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     //
                     // Set the right hand side.
                     //
-                    Rlagtm(trans, n, nrhs, one, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], xact, lda, zero, b, lda);
+                    Rlagtm(trans.elems, n, nrhs, one, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], xact, lda, zero, b, lda);
                     //
                     if (ifact == 2 && itran == 1) {
                         //
@@ -331,7 +326,7 @@ void Rdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         Rcopy(n + 2 * m, a, 1, af, 1);
                         Rlacpy("Full", n, nrhs, b, lda, x, lda);
                         //
-                        strncpy(srnamt, "Rgtsv", srnamt_len);
+                        srnamt = "Rgtsv";
                         Rgtsv(n, nrhs, af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], x, lda, info);
                         //
                         // Check error code from Rgtsv .
@@ -361,10 +356,7 @@ void Rdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                 if (nfail == 0 && nerrs == 0) {
                                     Aladhd(nout, path);
                                 }
-                                sprintnum_short(buf, result[k - 1]);
-                                write(nout, "(1x,a,', N =',i5,', type ',i2,', test ',i2,', ratio = ',"
-                                            "a)"),
-                                    "Rgtsv ", n, imat, k, buf;
+                                write(nout, format_9999), "Rgtsv", n, imat, k, result[k - 1];
                                 nfail++;
                             }
                         }
@@ -386,16 +378,13 @@ void Rdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                     // Solve the system and compute the condition number and
                     // error bounds using Rgtsvx.
                     //
-                    strncpy(srnamt, "Rgtsvx", srnamt_len);
-                    Rgtsvx(fact, trans, n, nrhs, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], &af[(n + 2 * m + 1) - 1], iwork, b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, &iwork[(n + 1) - 1], info);
+                    srnamt = "Rgtsvx";
+                    Rgtsvx(fact.elems, trans.elems, n, nrhs, a, &a[(m + 1) - 1], &a[(n + m + 1) - 1], af, &af[(m + 1) - 1], &af[(n + m + 1) - 1], &af[(n + 2 * m + 1) - 1], iwork, b, lda, x, lda, rcond, rwork, &rwork[(nrhs + 1) - 1], work, &iwork[(n + 1) - 1], info);
                     //
                     // Check the error code from Rgtsvx.
                     //
                     if (info != izero) {
-                        fact_trans[0] = fact[0];
-                        fact_trans[1] = trans[0];
-                        fact_trans[2] = '\0';
-                        Alaerh(path, "Rgtsvx", info, izero, fact_trans, n, n, 1, 1, nrhs, imat, nfail, nerrs, nout);
+                        Alaerh(path, "Rgtsvx", info, izero, fact + trans, n, n, 1, 1, nrhs, imat, nfail, nerrs, nout);
                     }
                     //
                     if (ifact >= 2) {
@@ -435,8 +424,7 @@ void Rdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                             if (nfail == 0 && nerrs == 0) {
                                 Aladhd(nout, path);
                             }
-                            sprintnum_short(buf, result[k - 1]);
-                            write(nout, format_9998), "Rgtsvx", fact, trans, n, imat, k, buf;
+                            write(nout, format_9998), "Rgtsvx", fact, trans, n, imat, k, result[k - 1];
                             nfail++;
                         }
                     }
@@ -448,8 +436,7 @@ void Rdrvgt(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                         if (nfail == 0 && nerrs == 0) {
                             Aladhd(nout, path);
                         }
-                        sprintnum_short(buf, result[k - 1]);
-                        write(nout, format_9998), "Rgtsvx", fact, trans, n, imat, k, buf;
+                        write(nout, format_9998), "Rgtsvx", fact, trans, n, imat, k, result[k - 1];
                         nfail++;
                     }
                     nrun += nt - k1 + 2;

@@ -43,36 +43,17 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Clatsp(const char *uplo, INTEGER const n, COMPLEX *x, INTEGER *iseed) {
+void Clatsp(fem::str_cref uplo, INTEGER const n, COMPLEX *x, INTEGER (&iseed)[4]) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    // Initialize constants
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Initialize constants
-    //
-    REAL seventeen = 17.0;
-    REAL eight = 17.0;
+    REAL one = 1.0;
     REAL two = 2.0;
-    REAL alpha = (1.0 + sqrt(seventeen)) / eight;
-    REAL beta = alpha - 1.0 / 1000.0;
+    REAL eight = 8.0;
+    REAL seventeen = 17.0;
+    REAL thousand = 1000.0;
+    REAL alpha = (one + sqrt(seventeen)) / eight;
+    REAL beta = alpha - one / thousand;
     REAL alpha3 = alpha * alpha * alpha;
     //
     // Fill the matrix with zeros.
@@ -91,7 +72,7 @@ void Clatsp(const char *uplo, INTEGER const n, COMPLEX *x, INTEGER *iseed) {
     const COMPLEX eye = COMPLEX(0.0, 1.0);
     COMPLEX c = 0.0;
     COMPLEX r = 0.0;
-    if (Mlsame(uplo, "U")) {
+    if (Mlsame(uplo.elems(), "U")) {
         n5 = n / 5;
         n5 = n - 5 * n5 + 1;
         //

@@ -180,7 +180,7 @@ INTEGER iMparam2stage(INTEGER const ispec, const char *name, const char *opts, I
         // TRD_stage 2: = (2NB+1)*N + KD*NTHREADS
         // TRD_both   : = max(stage1,stage2) + AB ( AB=(KD+1)*N )
         // = N*KD + N*max(KD+1,FACTOPTNB)
-        // + max((INTEGER)2*KD*KD, KD*NTHREADS)
+        // + max(2*KD*KD, KD*NTHREADS)
         // + (KD+1)*N
         lwork = -1;
         subnam[0] = prec;

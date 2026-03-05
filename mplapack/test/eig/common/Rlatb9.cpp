@@ -43,71 +43,38 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-void Rlatb9(const char *path, INTEGER const imat, INTEGER const m, INTEGER const p, INTEGER const n, char *type, INTEGER &kla, INTEGER &kua, INTEGER &klb, INTEGER &kub, REAL &anorm, REAL &bnorm, INTEGER &modea, INTEGER &modeb, REAL &cndnma, REAL &cndnmb, char *dista, char *distb) {
-
-    REAL badc1;
-    REAL badc2;
-    REAL eps;
-    bool first;
-    REAL large;
-    REAL small;
+void Rlatb9(fem::str_cref path, INTEGER const imat, INTEGER const m, INTEGER const p, INTEGER const n, fem::str_ref type, INTEGER &kla, INTEGER &kua, INTEGER &klb, INTEGER &kub, REAL &anorm, REAL &bnorm, INTEGER &modea, INTEGER &modeb, REAL &cndnma, REAL &cndnmb, fem::str_ref dista, fem::str_ref distb) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    // Set some constants for use in the subroutine.
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Save statement ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Set some constants for use in the subroutine.
-    //
-    const REAL tenth = 0.1e+0;
+    const REAL tenth = 0.1;
     const REAL one = 1.0;
-    const REAL shrink = 0.25e0;
-    first = false;
-    eps = Rlamch("Precision");
-    badc2 = tenth / eps;
-    badc1 = sqrt(badc2);
-    small = Rlamch("Safe minimum");
-    large = one / small;
+    const REAL shrink = 0.25;
+    REAL eps = Rlamch("Precision");
+    REAL badc2 = tenth / eps;
+    REAL badc1 = sqrt(badc2);
+    REAL small = Rlamch("Safe minimum");
+    REAL large = one / small;
     //
-    //        If it looks like we're on a Cray, take the square root of
-    //        SMALL and LARGE to avoid overflow and underflow problems.
+    // If it looks like we're on a Cray, take the square root of
+    // SMALL and LARGE to avoid overflow and underflow problems.
     //
+    Rlabad(small, large);
     small = shrink * (small / eps);
     large = one / small;
+
     //
-    //     Set some parameters we don't plan to change.
+    // Set some parameters we don't plan to change.
     //
-    *type = 'N';
-    *dista = 'S';
-    *distb = 'S';
+    type = "N";
+    dista = "S";
+    distb = "S";
     modea = 3;
     modeb = 4;
     //
     // Set the lower and upper bandwidths.
     //
-    if (Mlsamen(3, path, "GRQ") || Mlsamen(3, path, "LSE") || Mlsamen(3, path, "GSV")) {
+    if (Mlsamen(3, path.elems(), "GRQ") || Mlsamen(3, path.elems(), "LSE") || Mlsamen(3, path.elems(), "GSV")) {
         //
         // A: M by N, B: P by N
         //
@@ -149,7 +116,7 @@ void Rlatb9(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
             //
         }
         //
-    } else if (Mlsamen(3, path, "GQR") || Mlsamen(3, path, "GLM")) {
+    } else if (Mlsamen(3, path.elems(), "GQR") || Mlsamen(3, path.elems(), "GLM")) {
         //
         // A: N by M, B: N by P
         //
@@ -193,10 +160,10 @@ void Rlatb9(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
     //
     // Set the condition number and norm.
     //
-    const REAL ten = 1.0e+1;
+    const REAL ten = 10.0;
     cndnma = ten * ten;
     cndnmb = ten;
-    if (Mlsamen(3, path, "GQR") || Mlsamen(3, path, "GRQ") || Mlsamen(3, path, "GSV")) {
+    if (Mlsamen(3, path.elems(), "GQR") || Mlsamen(3, path.elems(), "GRQ") || Mlsamen(3, path.elems(), "GSV")) {
         if (imat == 5) {
             cndnma = badc1;
             cndnmb = badc1;
@@ -214,7 +181,7 @@ void Rlatb9(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
     //
     anorm = ten;
     bnorm = ten * ten * ten;
-    if (Mlsamen(3, path, "GQR") || Mlsamen(3, path, "GRQ")) {
+    if (Mlsamen(3, path.elems(), "GQR") || Mlsamen(3, path.elems(), "GRQ")) {
         if (imat == 7) {
             anorm = small;
             bnorm = large;

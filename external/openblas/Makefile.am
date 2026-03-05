@@ -16,42 +16,42 @@ all: extract build check install_internal
 
 work/$(EXTRACT_STAMP):
 	rm -rf work ; mkdir -p work/install
-	cd $(abs_builddir)/work/install; tar xvfz ../../download/OpenBLAS-$(OPENBLASVERSION).tar.gz
+	cd $(abs_builddir)/work/install; tar xvfz $(abs_srcdir)/download/OpenBLAS-$(OPENBLASVERSION).tar.gz
 	touch $(abs_builddir)/work/$(EXTRACT_STAMP)
 
 work/$(PATCH_STAMP): work/$(EXTRACT_STAMP)
 if IS_MINGW
-	cd $(abs_builddir)/work/install/OpenBLAS-$(OPENBLASVERSION) ; #patch -p0 < $(abs_builddir)/patches/patch-mingw
+	cd $(abs_builddir)/work/install/OpenBLAS-$(OPENBLASVERSION) ; #patch -p0 < $(abs_srcdir)/patches/patch-mingw
 endif
 	touch $(abs_builddir)/work/$(PATCH_STAMP)
 
 work/$(BUILD_STAMP): work/$(PATCH_STAMP)
 if IS_MINGW
-	cd $(abs_builddir)/work/install/OpenBLAS-$(OPENBLASVERSION) ; ${MAKE} BINARY=64 CC=`$(_CC)` FC=`$(_FC)` DYNAMIC_ARCH=1 HOSTCC=gcc
+	+cd $(abs_builddir)/work/install/OpenBLAS-$(OPENBLASVERSION) ; ${MAKE} BINARY=64 CC=`$(_CC)` FC=`$(_FC)` DYNAMIC_ARCH=1 HOSTCC=gcc
 else
-	cd $(abs_builddir)/work/install/OpenBLAS-$(OPENBLASVERSION) ; ${MAKE} BINARY=64 CC=`$(_CC)` FC=`$(_FC)` DYNAMIC_ARCH=1
+	+cd $(abs_builddir)/work/install/OpenBLAS-$(OPENBLASVERSION) ; ${MAKE} BINARY=64 CC=`$(_CC)` FC=`$(_FC)` DYNAMIC_ARCH=1
 endif
 	touch $(abs_builddir)/work/$(BUILD_STAMP)
 
 work/$(CHECK_STAMP): work/$(BUILD_STAMP)
 if !IS_MINGW
-	cd $(abs_builddir)/work/install/OpenBLAS-$(OPENBLASVERSION) ; ${MAKE} -j lapack-test
+	+cd $(abs_builddir)/work/install/OpenBLAS-$(OPENBLASVERSION) ; ${MAKE} -j lapack-test
 endif
 	touch $(abs_builddir)/work/$(CHECK_STAMP)
 
 work/$(INSTALL_INTERNAL_STAMP): work/$(CHECK_STAMP)
 if IS_MINGW
-	cd $(abs_builddir)/work/install/OpenBLAS-$(OPENBLASVERSION) ; ${MAKE} CC=`$(_CC)` FC=`$(_FC)` DYNAMIC_ARCH=1 HOSTCC=gcc PREFIX=$(abs_builddir)/../i/OPENBLAS/ install
+	+cd $(abs_builddir)/work/install/OpenBLAS-$(OPENBLASVERSION) ; ${MAKE} CC=`$(_CC)` FC=`$(_FC)` DYNAMIC_ARCH=1 HOSTCC=gcc PREFIX=$(abs_builddir)/../i/OPENBLAS/ install
 else
-	cd $(abs_builddir)/work/install/OpenBLAS-$(OPENBLASVERSION) ; ${MAKE} PREFIX=$(abs_builddir)/../i/OPENBLAS/ install
+	+cd $(abs_builddir)/work/install/OpenBLAS-$(OPENBLASVERSION) ; ${MAKE} PREFIX=$(abs_builddir)/../i/OPENBLAS/ install
 endif
 	touch $(abs_builddir)/work/$(INSTALL_INTERNAL_STAMP)
 
 work/$(INSTALL_STAMP): work/$(CHECK_STAMP)
 if IS_MINGW
-	cd $(abs_builddir)/work/install/OpenBLAS-$(OPENBLASVERSION) ; ${MAKE} CC=`$(_CC)` FC=`$(_FC)` DYNAMIC_ARCH=1 HOSTCC=gcc PREFIX=$(prefix) install
+	+cd $(abs_builddir)/work/install/OpenBLAS-$(OPENBLASVERSION) ; ${MAKE} CC=`$(_CC)` FC=`$(_FC)` DYNAMIC_ARCH=1 HOSTCC=gcc PREFIX=$(prefix) install
 else
-	cd $(abs_builddir)/work/install/OpenBLAS-$(OPENBLASVERSION) ; ${MAKE} PREFIX=$(prefix) install
+	+cd $(abs_builddir)/work/install/OpenBLAS-$(OPENBLASVERSION) ; ${MAKE} PREFIX=$(prefix) install
 endif
 	touch $(abs_builddir)/work/$(INSTALL_STAMP)
 
@@ -69,10 +69,25 @@ install_internal: work/$(INSTALL_INTERNAL_STAMP)
 
 install: work/$(INSTALL_STAMP)
 
+uninstall:
+	-rm -f  $(DESTDIR)$(prefix)/lib/libopenblas*.a
+	-rm -f  $(DESTDIR)$(prefix)/lib/libopenblas*.so*
+	-rm -f  $(DESTDIR)$(prefix)/lib/libopenblas*.dylib
+	-rm -f  $(DESTDIR)$(prefix)/lib/pkgconfig/openblas.pc
+	-rm -rf $(DESTDIR)$(prefix)/lib/cmake/openblas
+	-rm -f  $(DESTDIR)$(prefix)/include/cblas.h
+	-rm -f  $(DESTDIR)$(prefix)/include/lapacke.h
+	-rm -f  $(DESTDIR)$(prefix)/include/lapacke_config.h
+	-rm -f  $(DESTDIR)$(prefix)/include/lapacke_mangling.h
+	-rm -f  $(DESTDIR)$(prefix)/include/lapacke_utils.h
+	-rm -f  $(DESTDIR)$(prefix)/include/lapack.h
+	-rm -f  $(DESTDIR)$(prefix)/include/openblas_config.h
+	-rm -f  $(DESTDIR)$(prefix)/include/f77blas.h
+	-rm -f  $(DESTDIR)$(prefix)/bin/libopenblas*.dll
+
 distdir:
 
-clean:
+clean-local:
 	rm -rf work
-distclean:
+distclean-local:
 	rm -rf work
-

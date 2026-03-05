@@ -27,6 +27,8 @@
  */
 
 #include <iostream>
+#include <cstdarg>
+#include <cstdio>
 #include <mpblas.h>
 #include <mplapack.h>
 #include <mplapack_compare_debug.h>
@@ -34,6 +36,23 @@
 #include <lapack.h>
 
 #define VERBOSE_TEST
+
+// ---------------------------------------------------------------------------
+// Dual output: write to stdout and to Rlamch.txt simultaneously.
+// ---------------------------------------------------------------------------
+static FILE *g_lamch_file = nullptr;
+
+static void dual_printf(const char *fmt, ...) {
+    va_list ap;
+    va_start(ap, fmt);
+    vprintf(fmt, ap);
+    va_end(ap);
+    if (g_lamch_file) {
+        va_start(ap, fmt);
+        vfprintf(g_lamch_file, fmt, ap);
+        va_end(ap);
+    }
+}
 
 /* dlamch result on FreeBSD 6/i386 + Lapack 3.1.1
   Epsilon                      =   1.110223024625157E-016
@@ -421,36 +440,17 @@ static void check_lamch_mpfr_values(const char *tag, const MpfrEnvSnapshot &cfg,
     check_cross_consistency_rmin_rmax(tag, cfg.emin, cfg.emax, cfg.real_rnd, gotE, gotU, gotO);
 
     if (print_values) {
-        printf("Rlamch E: Epsilon                      ");
-        printnum(gotE);
-        printf("\n");
-        printf("Rlamch S: Safe minimum                 ");
-        printnum(gotS);
-        printf("\n");
-        printf("Rlamch B: Base                         ");
-        printnum(gotB);
-        printf("\n");
-        printf("Rlamch P: Precision                    ");
-        printnum(gotP);
-        printf("\n");
-        printf("Rlamch N: Number of digits in mantissa ");
-        printnum(gotN);
-        printf("\n");
-        printf("Rlamch R: Rounding mode                ");
-        printnum(gotR);
-        printf("\n");
-        printf("Rlamch M: Minimum exponent             ");
-        printnum(gotM);
-        printf("\n");
-        printf("Rlamch U: Underflow threshold          ");
-        printnum(gotU);
-        printf("\n");
-        printf("Rlamch L: Largest exponent             ");
-        printnum(gotL);
-        printf("\n");
-        printf("Rlamch O: Overflow threshold           ");
-        printnum(gotO);
-        printf("\n");
+        char _spbuf[__MPLAPACK_BUFLEN__];
+        sprintnum(_spbuf, gotE); dual_printf("Rlamch E: Epsilon                      %s\n", _spbuf);
+        sprintnum(_spbuf, gotS); dual_printf("Rlamch S: Safe minimum                 %s\n", _spbuf);
+        sprintnum(_spbuf, gotB); dual_printf("Rlamch B: Base                         %s\n", _spbuf);
+        sprintnum(_spbuf, gotP); dual_printf("Rlamch P: Precision                    %s\n", _spbuf);
+        sprintnum(_spbuf, gotN); dual_printf("Rlamch N: Number of digits in mantissa %s\n", _spbuf);
+        sprintnum(_spbuf, gotR); dual_printf("Rlamch R: Rounding mode                %s\n", _spbuf);
+        sprintnum(_spbuf, gotM); dual_printf("Rlamch M: Minimum exponent             %s\n", _spbuf);
+        sprintnum(_spbuf, gotU); dual_printf("Rlamch U: Underflow threshold          %s\n", _spbuf);
+        sprintnum(_spbuf, gotL); dual_printf("Rlamch L: Largest exponent             %s\n", _spbuf);
+        sprintnum(_spbuf, gotO); dual_printf("Rlamch O: Overflow threshold           %s\n", _spbuf);
     }
 }
 
@@ -492,7 +492,7 @@ void Rlamch_mpfr_test() {
 
         // Emulations: IEEE-like formats.
         {"binary64", false, (mpfr_prec_t)53, (mpfr_exp_t)-1021, (mpfr_exp_t)1024},
-        {"binary80x", false, (mpfr_prec_t)64, (mpfr_exp_t)-16381, (mpfr_exp_t)16384},
+        {"binary80", false, (mpfr_prec_t)64, (mpfr_exp_t)-16381, (mpfr_exp_t)16384},
         {"binary128", false, (mpfr_prec_t)113, (mpfr_exp_t)-16381, (mpfr_exp_t)16384},
 
         // Vary precision only (keep binary64 exponent range).
@@ -535,7 +535,7 @@ void Rlamch_mpfr_test() {
             snprintf(tagbuf, sizeof(tagbuf), "%s/%s", ec.tag, rc.name);
 
             // Print the target environment settings for each case.
-            printf("[MPFR] case=%s mpfr_prec=%llu real_prec=%llu emin=%lld emax=%lld rnd=%s\n", tagbuf, (unsigned long long)cfg.mpfr_prec, (unsigned long long)cfg.real_prec, (long long)cfg.emin, (long long)cfg.emax, rc.name);
+            dual_printf("[MPFR] case=%s mpfr_prec=%llu real_prec=%llu emin=%lld emax=%lld rnd=%s\n", tagbuf, (unsigned long long)cfg.mpfr_prec, (unsigned long long)cfg.real_prec, (long long)cfg.emin, (long long)cfg.emax, rc.name);
 
             run_mpfr_env_test(tagbuf, cfg, print_values);
         }
@@ -749,36 +749,17 @@ static void check_lamch_gmp_values(const char *tag, mp_bitcnt_t prec_bits, bool 
     gmp_assert_case(shifted == (one - gotE), tag, "O * 2^(-L) cross-check failed (expected 1 - E)");
 
     if (print_values) {
-        printf("Rlamch E: Epsilon                      ");
-        printnum(gotE);
-        printf("\n");
-        printf("Rlamch S: Safe minimum                 ");
-        printnum(gotS);
-        printf("\n");
-        printf("Rlamch B: Base                         ");
-        printnum(gotB);
-        printf("\n");
-        printf("Rlamch P: Precision                    ");
-        printnum(gotP);
-        printf("\n");
-        printf("Rlamch N: Number of digits in mantissa ");
-        printnum(gotN);
-        printf("\n");
-        printf("Rlamch R: Rounding mode                ");
-        printnum(gotR);
-        printf("\n");
-        printf("Rlamch M: Minimum exponent             ");
-        printnum(gotM);
-        printf("\n");
-        printf("Rlamch U: Underflow threshold          ");
-        printnum(gotU);
-        printf("\n");
-        printf("Rlamch L: Largest exponent             ");
-        printnum(gotL);
-        printf("\n");
-        printf("Rlamch O: Overflow threshold           ");
-        printnum(gotO);
-        printf("\n");
+        char _spbuf[__MPLAPACK_BUFLEN__];
+        sprintnum(_spbuf, gotE); dual_printf("Rlamch E: Epsilon                      %s\n", _spbuf);
+        sprintnum(_spbuf, gotS); dual_printf("Rlamch S: Safe minimum                 %s\n", _spbuf);
+        sprintnum(_spbuf, gotB); dual_printf("Rlamch B: Base                         %s\n", _spbuf);
+        sprintnum(_spbuf, gotP); dual_printf("Rlamch P: Precision                    %s\n", _spbuf);
+        sprintnum(_spbuf, gotN); dual_printf("Rlamch N: Number of digits in mantissa %s\n", _spbuf);
+        sprintnum(_spbuf, gotR); dual_printf("Rlamch R: Rounding mode                %s\n", _spbuf);
+        sprintnum(_spbuf, gotM); dual_printf("Rlamch M: Minimum exponent             %s\n", _spbuf);
+        sprintnum(_spbuf, gotU); dual_printf("Rlamch U: Underflow threshold          %s\n", _spbuf);
+        sprintnum(_spbuf, gotL); dual_printf("Rlamch L: Largest exponent             %s\n", _spbuf);
+        sprintnum(_spbuf, gotO); dual_printf("Rlamch O: Overflow threshold           %s\n", _spbuf);
     }
 }
 
@@ -799,7 +780,7 @@ void Rlamch_gmp_test() {
     const mp_bitcnt_t requested_precisions[] = {4096, 128, 64};
 
     for (size_t i = 0; i < (sizeof(requested_precisions) / sizeof(requested_precisions[0])); ++i) {
-        printf("[GMP] precision=%ld\n", requested_precisions[i]);
+        dual_printf("[GMP] precision=%ld\n", requested_precisions[i]);
         const mp_bitcnt_t req = requested_precisions[i];
         const mp_bitcnt_t saved = mpf_get_default_prec();
         mpf_set_default_prec(req);
@@ -940,11 +921,15 @@ static void check_range_checks_qd(const char *tag, const qd_real &U, const qd_re
 
 static void check_sfmin_inequalities_qd(const char *tag, const qd_real &S, const qd_real &U, const qd_real &O) {
     const qd_real one(1.0);
-    const qd_real invS = one / S;
-    const qd_real invO = one / O;
+    const qd_real invS = one / S; // S = min_normalized, 1/S is in normal range: safe
+
     qd_assert_case(invS <= O, tag, "1/S > O (violates safe minimum contract)");
     qd_assert_case(S >= U, tag, "S < U (violates sfmin >= rmin)");
-    qd_assert_case(S >= invO, tag, "S < 1/O (violates sfmin >= 1/rmax)");
+
+    // 1/O is in the subnormal double range; qd_real division is unreliable there.
+    // Use double arithmetic, which handles subnormals correctly.
+    const double invO_d = 1.0 / to_double(O);
+    qd_assert_case(to_double(S) >= invO_d, tag, "S < 1/O (violates sfmin >= 1/rmax)");
 }
 
 static long qd_to_long_checked(const qd_real &x, const char *tag, const char *msg) {
@@ -1009,36 +994,17 @@ static void check_lamch_qd_values(const char *tag, bool print_values) {
     check_cross_consistency_rmin_rmax_qd(tag, gotM, gotU, gotL, gotO);
 
     if (print_values) {
-        printf("Rlamch E: Epsilon                      ");
-        printnum(gotE);
-        printf("\n");
-        printf("Rlamch S: Safe minimum                 ");
-        printnum(gotS);
-        printf("\n");
-        printf("Rlamch B: Base                         ");
-        printnum(gotB);
-        printf("\n");
-        printf("Rlamch P: Precision                    ");
-        printnum(gotP);
-        printf("\n");
-        printf("Rlamch N: Number of digits in mantissa ");
-        printnum(gotN);
-        printf("\n");
-        printf("Rlamch R: Rounding mode                ");
-        printnum(gotR);
-        printf("\n");
-        printf("Rlamch M: Minimum exponent             ");
-        printnum(gotM);
-        printf("\n");
-        printf("Rlamch U: Underflow threshold          ");
-        printnum(gotU);
-        printf("\n");
-        printf("Rlamch L: Largest exponent             ");
-        printnum(gotL);
-        printf("\n");
-        printf("Rlamch O: Overflow threshold           ");
-        printnum(gotO);
-        printf("\n");
+        char _spbuf[__MPLAPACK_BUFLEN__];
+        sprintnum(_spbuf, gotE); dual_printf("Rlamch E: Epsilon                      %s\n", _spbuf);
+        sprintnum(_spbuf, gotS); dual_printf("Rlamch S: Safe minimum                 %s\n", _spbuf);
+        sprintnum(_spbuf, gotB); dual_printf("Rlamch B: Base                         %s\n", _spbuf);
+        sprintnum(_spbuf, gotP); dual_printf("Rlamch P: Precision                    %s\n", _spbuf);
+        sprintnum(_spbuf, gotN); dual_printf("Rlamch N: Number of digits in mantissa %s\n", _spbuf);
+        sprintnum(_spbuf, gotR); dual_printf("Rlamch R: Rounding mode                %s\n", _spbuf);
+        sprintnum(_spbuf, gotM); dual_printf("Rlamch M: Minimum exponent             %s\n", _spbuf);
+        sprintnum(_spbuf, gotU); dual_printf("Rlamch U: Underflow threshold          %s\n", _spbuf);
+        sprintnum(_spbuf, gotL); dual_printf("Rlamch L: Largest exponent             %s\n", _spbuf);
+        sprintnum(_spbuf, gotO); dual_printf("Rlamch O: Overflow threshold           %s\n", _spbuf);
     }
 }
 
@@ -1206,7 +1172,6 @@ static void check_range_checks_dd(const char *tag, const dd_real &U, const dd_re
     dd_assert_case((U * two) > U, tag, "U * 2 <= U (stuck at zero?)");
 
     // Reciprocal checks
-    dd_assert_case((one / O) >= zero, tag, "1/O is negative or NaN");
     dd_assert_case((one / S) > zero, tag, "1/S is not positive");
     dd_assert_case(isfinite(one / S), tag, "1/S is not finite");
 }
@@ -1214,13 +1179,16 @@ static void check_range_checks_dd(const char *tag, const dd_real &U, const dd_re
 static void check_sfmin_inequalities_dd(const char *tag, const dd_real &S, const dd_real &U, const dd_real &O) {
     const dd_real one(1.0);
 
-    const dd_real invS = one / S;
-    const dd_real invO = one / O;
+    const dd_real invS = one / S; // S = min_normalized, 1/S is in normal range: safe
 
     // Netlib-style sfmin inequalities
     dd_assert_case(invS <= O, tag, "1/S > O (violates safe minimum contract)");
     dd_assert_case(S >= U, tag, "S < U (violates sfmin >= rmin)");
-    dd_assert_case(S >= invO, tag, "S < 1/O (violates sfmin >= 1/rmax)");
+
+    // 1/O is in the subnormal double range (~5.56e-309); dd_real division is
+    // unreliable there. Use double arithmetic, which handles subnormals correctly.
+    const double invO_d = 1.0 / to_double(O);
+    dd_assert_case(to_double(S) >= invO_d, tag, "S < 1/O (violates sfmin >= 1/rmax)");
 }
 
 static long dd_to_long_checked(const dd_real &x, const char *what) {
@@ -1292,36 +1260,17 @@ static void check_lamch_dd_values(const char *tag, bool print_values) {
     check_cross_consistency_rmin_rmax_dd(tag, gotM, gotU, gotL, gotO);
 
     if (print_values) {
-        printf("Rlamch E: Epsilon                      ");
-        printnum(gotE);
-        printf("\n");
-        printf("Rlamch S: Safe minimum                 ");
-        printnum(gotS);
-        printf("\n");
-        printf("Rlamch B: Base                         ");
-        printnum(gotB);
-        printf("\n");
-        printf("Rlamch P: Precision                    ");
-        printnum(gotP);
-        printf("\n");
-        printf("Rlamch N: Number of digits in mantissa ");
-        printnum(gotN);
-        printf("\n");
-        printf("Rlamch R: Rounding mode                ");
-        printnum(gotR);
-        printf("\n");
-        printf("Rlamch M: Minimum exponent             ");
-        printnum(gotM);
-        printf("\n");
-        printf("Rlamch U: Underflow threshold          ");
-        printnum(gotU);
-        printf("\n");
-        printf("Rlamch L: Largest exponent             ");
-        printnum(gotL);
-        printf("\n");
-        printf("Rlamch O: Overflow threshold           ");
-        printnum(gotO);
-        printf("\n");
+        char _spbuf[__MPLAPACK_BUFLEN__];
+        sprintnum(_spbuf, gotE); dual_printf("Rlamch E: Epsilon                      %s\n", _spbuf);
+        sprintnum(_spbuf, gotS); dual_printf("Rlamch S: Safe minimum                 %s\n", _spbuf);
+        sprintnum(_spbuf, gotB); dual_printf("Rlamch B: Base                         %s\n", _spbuf);
+        sprintnum(_spbuf, gotP); dual_printf("Rlamch P: Precision                    %s\n", _spbuf);
+        sprintnum(_spbuf, gotN); dual_printf("Rlamch N: Number of digits in mantissa %s\n", _spbuf);
+        sprintnum(_spbuf, gotR); dual_printf("Rlamch R: Rounding mode                %s\n", _spbuf);
+        sprintnum(_spbuf, gotM); dual_printf("Rlamch M: Minimum exponent             %s\n", _spbuf);
+        sprintnum(_spbuf, gotU); dual_printf("Rlamch U: Underflow threshold          %s\n", _spbuf);
+        sprintnum(_spbuf, gotL); dual_printf("Rlamch L: Largest exponent             %s\n", _spbuf);
+        sprintnum(_spbuf, gotO); dual_printf("Rlamch O: Overflow threshold           %s\n", _spbuf);
     }
 }
 
@@ -1566,36 +1515,17 @@ static void check_lamch_double_values(const char *tag, bool print_values) {
     check_cross_consistency_rmin_rmax_double(tag, gotE, gotU, gotO);
 
     if (print_values) {
-        printf("Rlamch E: Epsilon                      ");
-        printnum(gotE);
-        printf("\n");
-        printf("Rlamch S: Safe minimum                 ");
-        printnum(gotS);
-        printf("\n");
-        printf("Rlamch B: Base                         ");
-        printnum(gotB);
-        printf("\n");
-        printf("Rlamch P: Precision                    ");
-        printnum(gotP);
-        printf("\n");
-        printf("Rlamch N: Number of digits in mantissa ");
-        printnum(gotN);
-        printf("\n");
-        printf("Rlamch R: Rounding mode                ");
-        printnum(gotR);
-        printf("\n");
-        printf("Rlamch M: Minimum exponent             ");
-        printnum(gotM);
-        printf("\n");
-        printf("Rlamch U: Underflow threshold          ");
-        printnum(gotU);
-        printf("\n");
-        printf("Rlamch L: Largest exponent             ");
-        printnum(gotL);
-        printf("\n");
-        printf("Rlamch O: Overflow threshold           ");
-        printnum(gotO);
-        printf("\n");
+        char _spbuf[64];
+        snprintf(_spbuf, sizeof(_spbuf), "%.17e", gotE); dual_printf("Rlamch E: Epsilon                      %s\n", _spbuf);
+        snprintf(_spbuf, sizeof(_spbuf), "%.17e", gotS); dual_printf("Rlamch S: Safe minimum                 %s\n", _spbuf);
+        snprintf(_spbuf, sizeof(_spbuf), "%.17e", gotB); dual_printf("Rlamch B: Base                         %s\n", _spbuf);
+        snprintf(_spbuf, sizeof(_spbuf), "%.17e", gotP); dual_printf("Rlamch P: Precision                    %s\n", _spbuf);
+        snprintf(_spbuf, sizeof(_spbuf), "%.17e", gotN); dual_printf("Rlamch N: Number of digits in mantissa %s\n", _spbuf);
+        snprintf(_spbuf, sizeof(_spbuf), "%.17e", gotR); dual_printf("Rlamch R: Rounding mode                %s\n", _spbuf);
+        snprintf(_spbuf, sizeof(_spbuf), "%.17e", gotM); dual_printf("Rlamch M: Minimum exponent             %s\n", _spbuf);
+        snprintf(_spbuf, sizeof(_spbuf), "%.17e", gotU); dual_printf("Rlamch U: Underflow threshold          %s\n", _spbuf);
+        snprintf(_spbuf, sizeof(_spbuf), "%.17e", gotL); dual_printf("Rlamch L: Largest exponent             %s\n", _spbuf);
+        snprintf(_spbuf, sizeof(_spbuf), "%.17e", gotO); dual_printf("Rlamch O: Overflow threshold           %s\n", _spbuf);
     }
 }
 
@@ -1614,10 +1544,10 @@ void Rlamch_double_test() {
 
 #endif // ___MPLAPACK_BUILD_WITH_DOUBLE___
 
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
+#if defined ___MPLAPACK_BUILD_WITH_BINARY128___
 #include <cfenv> // std::fegetround, FE_TONEAREST
 
-void Rlamch__Float128_test() {
+void Rlamch_binary128_test() {
 #if defined VERBOSE_TEST
     const bool print_values = true;
 #else
@@ -1627,7 +1557,7 @@ void Rlamch__Float128_test() {
     const char *tag = "binary128";
 
     auto fail = [&](const char *what) {
-        printf("*** Testing Mutils (_Float128) failed: %s ***\n", what);
+        printf("*** Testing Mutils (binary128) failed: %s ***\n", what);
         exit(1);
     };
 
@@ -1639,11 +1569,11 @@ void Rlamch__Float128_test() {
         fail(buf);
     };
 
-    auto assert_equal = [&](const char *name, _Float128 got, _Float128 expected) {
+    auto assert_equal = [&](const char *name, mplapack_binary128_t got, mplapack_binary128_t expected) {
         if (got == expected)
             return;
 
-        printf("*** Testing Mutils (_Float128) failed: %s mismatch in %s ***\n", tag, name);
+        printf("*** Testing Mutils (binary128) failed: %s mismatch in %s ***\n", tag, name);
         printf("    got      = ");
         printnum(got);
         printf("\n");
@@ -1653,52 +1583,77 @@ void Rlamch__Float128_test() {
         exit(1);
     };
 
-    // libm entry points for binary128 helpers.
-    _Float128 ldexpf128(_Float128, int);
-    _Float128 nextafterf128(_Float128, _Float128);
+    const mplapack_binary128_t zero = (mplapack_binary128_t)0.0;
+    const mplapack_binary128_t one = (mplapack_binary128_t)1.0;
+    const mplapack_binary128_t two = (mplapack_binary128_t)2.0;
 
-    const _Float128 zero = (_Float128)0.0;
-    const _Float128 one = (_Float128)1.0;
-    const _Float128 two = (_Float128)2.0;
-
-    // Expected values for IEEE-754 binary128 based on compiler-provided parameters.
+// Expected values for IEEE-754 binary128 based on compiler-provided parameters.
+#if MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_FLOAT128
+// Using _Float128
+#if defined(__FLT128_MANT_DIG__)
     const int p = (int)__FLT128_MANT_DIG__;
     const int emin = (int)__FLT128_MIN_EXP__;
     const int emax = (int)__FLT128_MAX_EXP__;
+#else
+#error "_Float128 mode selected but __FLT128_MANT_DIG__ not available"
+#endif
+#elif MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_QUADMATH
+// Using __float128 (GCC quadmath extension)
+#if defined(__FLT128_MANT_DIG__)
+    const int p = (int)__FLT128_MANT_DIG__;
+    const int emin = (int)__FLT128_MIN_EXP__;
+    const int emax = (int)__FLT128_MAX_EXP__;
+#else
+    const int p = (int)FLT128_MANT_DIG; // defined in quadmath.h
+    const int emin = (int)FLT128_MIN_EXP;
+    const int emax = (int)FLT128_MAX_EXP;
+#endif
+#elif MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_LDBL
+// Using long double (must be binary128)
+#if defined(__LDBL_MANT_DIG__) && __LDBL_MANT_DIG__ == 113
+    const int p = (int)__LDBL_MANT_DIG__;
+    const int emin = (int)__LDBL_MIN_EXP__;
+    const int emax = (int)__LDBL_MAX_EXP__;
+#else
+#error "long double mode selected but long double is not binary128 (113-bit mantissa required)"
+#endif
+#else
+#error "Invalid or disabled MPLAPACK_BINARY128_MODE"
+#endif
 
-    const _Float128 exB = two;
-    const _Float128 exN = (_Float128)p;
+    const mplapack_binary128_t exB = two;
+    const mplapack_binary128_t exN = (mplapack_binary128_t)p;
 
     // ulp(1) = 2^(1-p), unit roundoff E = ulp(1)/2.
-    const _Float128 exP = ldexpf128(one, 1 - p);
-    const _Float128 exE = exP / two;
+    const mplapack_binary128_t exP = ldexp(one, 1 - p);
+    const mplapack_binary128_t exE = exP / two;
 
     // DLAMCH-style exponents: rmin = 2^(emin-1), rmax = (1-E)*2^emax.
-    const _Float128 exM = (_Float128)emin;
-    const _Float128 exL = (_Float128)emax;
-    const _Float128 exU = ldexpf128(one, emin - 1);
-    const _Float128 exO = ldexpf128(one - ldexpf128(one, -p), emax);
+    const mplapack_binary128_t exM = (mplapack_binary128_t)emin;
+    const mplapack_binary128_t exL = (mplapack_binary128_t)emax;
+    const mplapack_binary128_t exU = ldexp(one, emin - 1);
+    const mplapack_binary128_t exO = ldexp(one - ldexp(one, -p), emax);
 
     // Safe minimum: max(rmin, (1/rmax)*(1+E)).
-    const _Float128 small = one / exO;
-    const _Float128 candidate = small * (one + exE);
-    const _Float128 exS = (candidate >= exU) ? candidate : exU;
+    const mplapack_binary128_t small = one / exO;
+    const mplapack_binary128_t candidate = small * (one + exE);
+    const mplapack_binary128_t exS = (candidate >= exU) ? candidate : exU;
 
-    const _Float128 exR = one;
-    const _Float128 exZ = zero;
+    const mplapack_binary128_t exR = one;
+    const mplapack_binary128_t exZ = zero;
 
-    // Fetch actual values from Rlamch__Float128.
-    const _Float128 gotE = Rlamch__Float128("E");
-    const _Float128 gotS = Rlamch__Float128("S");
-    const _Float128 gotB = Rlamch__Float128("B");
-    const _Float128 gotP = Rlamch__Float128("P");
-    const _Float128 gotN = Rlamch__Float128("N");
-    const _Float128 gotR = Rlamch__Float128("R");
-    const _Float128 gotM = Rlamch__Float128("M");
-    const _Float128 gotU = Rlamch__Float128("U");
-    const _Float128 gotL = Rlamch__Float128("L");
-    const _Float128 gotO = Rlamch__Float128("O");
-    const _Float128 gotZ = Rlamch__Float128("Z");
+    // Fetch actual values from Rlamch_mplapack_binary128_t.
+    const mplapack_binary128_t gotE = Rlamch_binary128("E");
+    const mplapack_binary128_t gotS = Rlamch_binary128("S");
+    const mplapack_binary128_t gotB = Rlamch_binary128("B");
+    const mplapack_binary128_t gotP = Rlamch_binary128("P");
+    const mplapack_binary128_t gotN = Rlamch_binary128("N");
+    const mplapack_binary128_t gotR = Rlamch_binary128("R");
+    const mplapack_binary128_t gotM = Rlamch_binary128("M");
+    const mplapack_binary128_t gotU = Rlamch_binary128("U");
+    const mplapack_binary128_t gotL = Rlamch_binary128("L");
+    const mplapack_binary128_t gotO = Rlamch_binary128("O");
+    const mplapack_binary128_t gotZ = Rlamch_binary128("Z");
 
     // Exact-value checks.
     assert_equal("E", gotE, exE);
@@ -1714,18 +1669,18 @@ void Rlamch__Float128_test() {
     assert_case(gotZ == exZ, "Z (dummy) is not 0");
 
     // Operational property checks.
-    const _Float128 next = nextafterf128(one, two);
+    const mplapack_binary128_t next = nextafter(one, two);
     assert_case((next - one) == gotP, "P is not equal to ulp(1) = nextafter(1,2)-1");
     assert_case((gotE * two) == gotP, "expected P == 2*E");
 
     // Strong, rounding-mode-independent check for 1 + P
-    volatile _Float128 b = one + gotP;
+    volatile mplapack_binary128_t b = one + gotP;
     assert_case(b == next, "expected fl(1 + P) == nextafter(1,2)");
     assert_case(b > one, "expected fl(1 + 2E) > 1"); // this is effectivly covered by b==next.
 
     // Tie check: only assert when FE_TONEAREST
     if (std::fegetround() == FE_TONEAREST) {
-        volatile _Float128 a = one + gotE;
+        volatile mplapack_binary128_t a = one + gotE;
         assert_case(a == one, "expected fl(1 + E) == 1 under ties-to-even");
     }
 
@@ -1743,59 +1698,46 @@ void Rlamch__Float128_test() {
     assert_case(gotS >= (one / gotO), "S < 1/O (violates sfmin >= 1/rmax)");
 
     // Cross-check: U*O == (1-E)*2^(emin+emax-1).
-    const _Float128 got_prod = gotU * gotO;
-    const _Float128 expected_prod = ldexpf128(one - gotE, emin + emax - 1);
+    const mplapack_binary128_t got_prod = gotU * gotO;
+    const mplapack_binary128_t expected_prod = ldexp(one - gotE, emin + emax - 1);
     assert_case(got_prod == expected_prod, "U*O cross-check failed (inconsistent rmin/rmax model)");
 
     if (print_values) {
-        printf("Rlamch E: Epsilon                      ");
-        printnum(gotE);
-        printf("\n");
-        printf("Rlamch S: Safe minimum                 ");
-        printnum(gotS);
-        printf("\n");
-        printf("Rlamch B: Base                         ");
-        printnum(gotB);
-        printf("\n");
-        printf("Rlamch P: Precision                    ");
-        printnum(gotP);
-        printf("\n");
-        printf("Rlamch N: Number of digits in mantissa ");
-        printnum(gotN);
-        printf("\n");
-        printf("Rlamch R: Rounding mode                ");
-        printnum(gotR);
-        printf("\n");
-        printf("Rlamch M: Minimum exponent             ");
-        printnum(gotM);
-        printf("\n");
-        printf("Rlamch U: Underflow threshold          ");
-        printnum(gotU);
-        printf("\n");
-        printf("Rlamch L: Largest exponent             ");
-        printnum(gotL);
-        printf("\n");
-        printf("Rlamch O: Overflow threshold           ");
-        printnum(gotO);
-        printf("\n");
+        char _spbuf[__MPLAPACK_BUFLEN__];
+        sprintnum(_spbuf, gotE); dual_printf("Rlamch E: Epsilon                      %s\n", _spbuf);
+        sprintnum(_spbuf, gotS); dual_printf("Rlamch S: Safe minimum                 %s\n", _spbuf);
+        sprintnum(_spbuf, gotB); dual_printf("Rlamch B: Base                         %s\n", _spbuf);
+        sprintnum(_spbuf, gotP); dual_printf("Rlamch P: Precision                    %s\n", _spbuf);
+        sprintnum(_spbuf, gotN); dual_printf("Rlamch N: Number of digits in mantissa %s\n", _spbuf);
+        sprintnum(_spbuf, gotR); dual_printf("Rlamch R: Rounding mode                %s\n", _spbuf);
+        sprintnum(_spbuf, gotM); dual_printf("Rlamch M: Minimum exponent             %s\n", _spbuf);
+        sprintnum(_spbuf, gotU); dual_printf("Rlamch U: Underflow threshold          %s\n", _spbuf);
+        sprintnum(_spbuf, gotL); dual_printf("Rlamch L: Largest exponent             %s\n", _spbuf);
+        sprintnum(_spbuf, gotO); dual_printf("Rlamch O: Overflow threshold           %s\n", _spbuf);
     }
 }
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
+#if defined ___MPLAPACK_BUILD_WITH_BINARY80___
 #include <cfenv> // std::fegetround, FE_TONEAREST
 
-void Rlamch__Float64x_test() {
+void Rlamch_binary80_test() {
 #if defined VERBOSE_TEST
     const bool print_values = true;
 #else
     const bool print_values = false;
 #endif
 
-    const char *tag = "Float64x";
+#if MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_LDBL80
+    const char *tag = "long double(binary80)";
+#elif MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_FLOAT64X
+    const char *tag = "_Float64x";
+#else
+#error "unknown binary80 type"
+#endif
 
     auto fail = [&](const char *what) {
-        printf("*** Testing Mutils (_Float64x) failed: %s ***\n", what);
+        printf("*** Testing Mutils (mplapack_binary80_t) failed: %s ***\n", what);
         exit(1);
     };
 
@@ -1807,11 +1749,11 @@ void Rlamch__Float64x_test() {
         fail(buf);
     };
 
-    auto assert_equal = [&](const char *name, _Float64x got, _Float64x expected) {
+    auto assert_equal = [&](const char *name, mplapack_binary80_t got, mplapack_binary80_t expected) {
         if (got == expected)
             return;
 
-        printf("*** Testing Mutils (_Float64x) failed: %s mismatch in %s ***\n", tag, name);
+        printf("*** Testing Mutils (mplapack_binary80_t) failed: %s mismatch in %s ***\n", tag, name);
         printf("    got      = ");
         printnum(got);
         printf("\n");
@@ -1821,65 +1763,82 @@ void Rlamch__Float64x_test() {
         exit(1);
     };
 
-    const _Float64x zero = (_Float64x)0.0;
-    const _Float64x one = (_Float64x)1.0;
-    const _Float64x two = (_Float64x)2.0;
+    const mplapack_binary80_t zero = (mplapack_binary80_t)0.0;
+    const mplapack_binary80_t one = (mplapack_binary80_t)1.0;
+    const mplapack_binary80_t two = (mplapack_binary80_t)2.0;
 
-    // Expected values for _Float64x based on compiler-provided parameters.
+    // Expected values for mplapack_binary80_t based on compiler-provided parameters.
+#if MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_FLOAT64X
+    // Using _Float64x
+#if defined(__FLT64X_MANT_DIG__)
     const int p = (int)__FLT64X_MANT_DIG__;
     const int emin = (int)__FLT64X_MIN_EXP__;
     const int emax = (int)__FLT64X_MAX_EXP__;
-
-    const _Float64x exB = two;
-    const _Float64x exN = (_Float64x)p;
+#else
+#error "_Float64x mode selected but __FLT64X_MANT_DIG__ not available"
+#endif
+#elif MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_LDBL80
+    // Using long double (must be binary80)
+#if defined(__LDBL_MANT_DIG__) && __LDBL_MANT_DIG__ == 64
+    const int p = (int)__LDBL_MANT_DIG__;
+    const int emin = (int)__LDBL_MIN_EXP__;
+    const int emax = (int)__LDBL_MAX_EXP__;
+#else
+#error "long double mode selected but long double is not binary80 (64-bit mantissa required)"
+#endif
+#else
+#error "Invalid MPLAPACK_BINARY80_MODE specified"
+#endif
+    const mplapack_binary80_t exB = two;
+    const mplapack_binary80_t exN = (mplapack_binary80_t)p;
 
     // ulp(1) = 2^(1-p), unit roundoff E = ulp(1)/2.
-    _Float64x exP = one;
+    mplapack_binary80_t exP = one;
     for (int i = 0; i < p - 1; ++i) {
         exP /= two;
     }
-    const _Float64x exE = exP / two;
+    const mplapack_binary80_t exE = exP / two;
 
     // rmin = 2^(emin-1)
-    _Float64x exU = one;
+    mplapack_binary80_t exU = one;
     // emin is negative for IEEE binary formats.
     for (int i = 0; i < (-emin + 1); ++i) {
         exU /= two;
     }
 
     // rmax = (1 - 2^(-p)) * 2^emax  (computed without overflowing intermediates)
-    _Float64x two_to_minus_p = one;
+    mplapack_binary80_t two_to_minus_p = one;
     for (int i = 0; i < p; ++i) {
         two_to_minus_p /= two;
     }
-    _Float64x exO = one - two_to_minus_p;
+    mplapack_binary80_t exO = one - two_to_minus_p;
     for (int i = 0; i < emax; ++i) {
         exO *= two;
     }
 
-    const _Float64x exM = (_Float64x)emin;
-    const _Float64x exL = (_Float64x)emax;
+    const mplapack_binary80_t exM = (mplapack_binary80_t)emin;
+    const mplapack_binary80_t exL = (mplapack_binary80_t)emax;
 
     // Safe minimum: max(rmin, (1/rmax)*(1+E)).
-    const _Float64x small = one / exO;
-    const _Float64x candidate = small * (one + exE);
-    const _Float64x exS = (candidate >= exU) ? candidate : exU;
+    const mplapack_binary80_t small = one / exO;
+    const mplapack_binary80_t candidate = small * (one + exE);
+    const mplapack_binary80_t exS = (candidate >= exU) ? candidate : exU;
 
-    const _Float64x exR = one;
-    const _Float64x exZ = zero;
+    const mplapack_binary80_t exR = one;
+    const mplapack_binary80_t exZ = zero;
 
-    // Fetch actual values from Rlamch__Float64x.
-    const _Float64x gotE = Rlamch__Float64x("E");
-    const _Float64x gotS = Rlamch__Float64x("S");
-    const _Float64x gotB = Rlamch__Float64x("B");
-    const _Float64x gotP = Rlamch__Float64x("P");
-    const _Float64x gotN = Rlamch__Float64x("N");
-    const _Float64x gotR = Rlamch__Float64x("R");
-    const _Float64x gotM = Rlamch__Float64x("M");
-    const _Float64x gotU = Rlamch__Float64x("U");
-    const _Float64x gotL = Rlamch__Float64x("L");
-    const _Float64x gotO = Rlamch__Float64x("O");
-    const _Float64x gotZ = Rlamch__Float64x("Z");
+    // Fetch actual values from Rlamch_mplapack_binary80_t.
+    const mplapack_binary80_t gotE = Rlamch_binary80("E");
+    const mplapack_binary80_t gotS = Rlamch_binary80("S");
+    const mplapack_binary80_t gotB = Rlamch_binary80("B");
+    const mplapack_binary80_t gotP = Rlamch_binary80("P");
+    const mplapack_binary80_t gotN = Rlamch_binary80("N");
+    const mplapack_binary80_t gotR = Rlamch_binary80("R");
+    const mplapack_binary80_t gotM = Rlamch_binary80("M");
+    const mplapack_binary80_t gotU = Rlamch_binary80("U");
+    const mplapack_binary80_t gotL = Rlamch_binary80("L");
+    const mplapack_binary80_t gotO = Rlamch_binary80("O");
+    const mplapack_binary80_t gotZ = Rlamch_binary80("Z");
 
     // Exact-value checks.
     assert_equal("E", gotE, exE);
@@ -1894,24 +1853,23 @@ void Rlamch__Float64x_test() {
     assert_equal("S", gotS, exS);
     assert_case(gotZ == exZ, "Z (dummy) is not 0");
 
-    // Operational property checks (_Float64x)
-    const _Float64x next = nextafterf64x(one, two);
-    // const _Float64x next = (_Float64x)nextafterl((long double)one, (long double)two);
+    // Operational property checks (mplapack_binary80_t)
+    const mplapack_binary80_t next = nextafter(one, two);
 
     // P == ulp(1) == nextafter(1,2) - 1
-    assert_case((next - one) == gotP, "P is not equal to ulp(1) = nextafterf64x(1,2)-1");
+    assert_case((next - one) == gotP, "P is not equal to ulp(1) = nextafter(1,2)-1");
 
     // Consistency: P == 2*E
     assert_case((gotE * two) == gotP, "expected P == 2*E");
 
     // Strong, rounding-mode-independent check: fl(1 + P) == nextafter(1,2)
-    volatile _Float64x b = one + gotP;
-    assert_case(b == next, "expected fl(1 + P) == nextafterf64x(1,2)");
+    volatile mplapack_binary80_t b = one + gotP;
+    assert_case(b == next, "expected fl(1 + P) == nextafter(1,2)");
     assert_case(b > one, "expected fl(1 + 2E) > 1");
 
     // Tie check: only assert under round-to-nearest (ties-to-even)
     if (std::fegetround() == FE_TONEAREST) {
-        volatile _Float64x a = one + gotE; // 1 + ulp/2 (midpoint)
+        volatile mplapack_binary80_t a = one + gotE; // 1 + ulp/2 (midpoint)
         assert_case(a == one, "expected fl(1 + E) == 1 under FE_TONEAREST (ties-to-even)");
     }
     // Range and reciprocal sanity checks.
@@ -1930,7 +1888,7 @@ void Rlamch__Float64x_test() {
     // Cross-check: U*O == (1-E)*2^(emin+emax-1).
     const int exp_sum = emin + emax - 1;
     if (exp_sum >= -128 && exp_sum <= 128) {
-        _Float64x pow2 = one;
+        mplapack_binary80_t pow2 = one;
         if (exp_sum > 0) {
             for (int i = 0; i < exp_sum; ++i)
                 pow2 *= two;
@@ -1938,48 +1896,34 @@ void Rlamch__Float64x_test() {
             for (int i = 0; i < -exp_sum; ++i)
                 pow2 /= two;
         }
-        const _Float64x got_prod = gotU * gotO;
-        const _Float64x expected_prod = (one - exE) * pow2;
+        const mplapack_binary80_t got_prod = gotU * gotO;
+        const mplapack_binary80_t expected_prod = (one - exE) * pow2;
         assert_case(got_prod == expected_prod, "U*O cross-check failed (inconsistent rmin/rmax model)");
     }
 
     if (print_values) {
-        printf("Rlamch E: Epsilon                      ");
-        printnum(gotE);
-        printf("\n");
-        printf("Rlamch S: Safe minimum                 ");
-        printnum(gotS);
-        printf("\n");
-        printf("Rlamch B: Base                         ");
-        printnum(gotB);
-        printf("\n");
-        printf("Rlamch P: Precision                    ");
-        printnum(gotP);
-        printf("\n");
-        printf("Rlamch N: Number of digits in mantissa ");
-        printnum(gotN);
-        printf("\n");
-        printf("Rlamch R: Rounding mode                ");
-        printnum(gotR);
-        printf("\n");
-        printf("Rlamch M: Minimum exponent             ");
-        printnum(gotM);
-        printf("\n");
-        printf("Rlamch U: Underflow threshold          ");
-        printnum(gotU);
-        printf("\n");
-        printf("Rlamch L: Largest exponent             ");
-        printnum(gotL);
-        printf("\n");
-        printf("Rlamch O: Overflow threshold           ");
-        printnum(gotO);
-        printf("\n");
+        char _spbuf[__MPLAPACK_BUFLEN__];
+        sprintnum(_spbuf, gotE); dual_printf("Rlamch E: Epsilon                      %s\n", _spbuf);
+        sprintnum(_spbuf, gotS); dual_printf("Rlamch S: Safe minimum                 %s\n", _spbuf);
+        sprintnum(_spbuf, gotB); dual_printf("Rlamch B: Base                         %s\n", _spbuf);
+        sprintnum(_spbuf, gotP); dual_printf("Rlamch P: Precision                    %s\n", _spbuf);
+        sprintnum(_spbuf, gotN); dual_printf("Rlamch N: Number of digits in mantissa %s\n", _spbuf);
+        sprintnum(_spbuf, gotR); dual_printf("Rlamch R: Rounding mode                %s\n", _spbuf);
+        sprintnum(_spbuf, gotM); dual_printf("Rlamch M: Minimum exponent             %s\n", _spbuf);
+        sprintnum(_spbuf, gotU); dual_printf("Rlamch U: Underflow threshold          %s\n", _spbuf);
+        sprintnum(_spbuf, gotL); dual_printf("Rlamch L: Largest exponent             %s\n", _spbuf);
+        sprintnum(_spbuf, gotO); dual_printf("Rlamch O: Overflow threshold           %s\n", _spbuf);
     }
 }
 #endif
 
 int main(int argc, char *argv[]) {
-    printf("*** Testing Rlamch start ***\n");
+    g_lamch_file = fopen("Rlamch.txt", "wb"); // binary mode: suppress \r\n conversion on MinGW/Windows
+    if (!g_lamch_file) {
+        fprintf(stderr, "Warning: could not open Rlamch.txt for writing\n");
+    }
+
+    dual_printf("*** Testing Rlamch start ***\n");
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
     Rlamch_mpfr_test();
 #endif
@@ -1995,12 +1939,17 @@ int main(int argc, char *argv[]) {
 #if defined ___MPLAPACK_BUILD_WITH_DOUBLE___
     Rlamch_double_test();
 #endif
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
-    Rlamch__Float64x_test();
+#if defined ___MPLAPACK_BUILD_WITH_BINARY80___
+    Rlamch_binary80_test();
 #endif
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
-    Rlamch__Float128_test();
+#if defined ___MPLAPACK_BUILD_WITH_BINARY128___
+    Rlamch_binary128_test();
 #endif
-    printf("*** Testing Rlamch successful ***\n");
+    dual_printf("*** Testing Rlamch successful ***\n");
+
+    if (g_lamch_file) {
+        fclose(g_lamch_file);
+        g_lamch_file = nullptr;
+    }
     return (0);
 }

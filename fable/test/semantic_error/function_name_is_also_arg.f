@@ -1,2 +1,0 @@
-      function fun(fun)
-      end

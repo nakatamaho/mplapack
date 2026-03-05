@@ -83,7 +83,7 @@ void Rptt02(INTEGER const n, INTEGER const nrhs, REAL *d, REAL *e, REAL *x, INTE
         if (xnorm <= zero) {
             resid = one / eps;
         } else {
-            resid = max(resid, REAL(((bnorm / anorm) / xnorm) / eps));
+            resid = max(resid, ((bnorm / anorm) / xnorm) / eps);
         }
     }
     //

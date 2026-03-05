@@ -36,14 +36,9 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-#include <fem.hpp> // Fortran EMulation library of fable module
-using namespace fem::major_types;
-using fem::common;
-
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#define __MPLAPACK_COMMON_SSLCT__
 #include <mplapack_common_sslct.h>
 #include <mplapack_debug.h>
 

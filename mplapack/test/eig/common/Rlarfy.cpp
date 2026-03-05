@@ -43,9 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-void Rlarfy(const char *uplo, INTEGER const n, REAL *v, INTEGER const incv, REAL const tau, REAL *c, INTEGER const ldc, REAL *work) {
+void Rlarfy(fem::str_cref uplo, INTEGER const n, REAL *v, INTEGER const incv, REAL const tau, REAL *c, INTEGER const ldc, REAL *work) {
     //
     const REAL zero = 0.0;
     if (tau == zero) {
@@ -55,15 +53,15 @@ void Rlarfy(const char *uplo, INTEGER const n, REAL *v, INTEGER const incv, REAL
     // Form  w:= C * v
     //
     const REAL one = 1.0;
-    Rsymv(uplo, n, one, c, ldc, v, incv, zero, work, 1);
+    Rsymv(uplo.elems(), n, one, c, ldc, v, incv, zero, work, 1);
     //
-    const REAL half = 0.5e+0;
+    const REAL half = 0.5;
     REAL alpha = -half * tau * Rdot(n, work, 1, v, incv);
     Raxpy(n, alpha, v, incv, work, 1);
     //
     // C := C - v * w' - w * v'
     //
-    Rsyr2(uplo, n, -tau, v, incv, work, 1, c, ldc);
+    Rsyr2(uplo.elems(), n, -tau, v, incv, work, 1, c, ldc);
     //
     // End of Rlarfy
     //

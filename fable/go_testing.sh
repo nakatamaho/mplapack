@@ -19,7 +19,11 @@ shopt -s nullglob
 # We skip single precision real/complex families: s* and c*.
 EXCLUDE_PREFIXES=( s c )
 # Exclude specific files by name (case-insensitive).
-EXCLUDE_FILES=( )
+EXCLUDE_FILES=( dlaran xerbla ilaenv xlaenv )
+
+# Force-include specific utility routines even if they match excluded prefixes.
+# Example: chkxer is required by many LAPACK tests but starts with "c".
+FORCE_INCLUDE_STEMS=( chkxer )
 
 PASSES="${1:-2}"
 
@@ -191,23 +195,34 @@ convert_dir() {
     fi
 
     local files=()
-    local src base base_lower stem stem_lower skip pfx ex ex_lower ex_stem
+    local src base base_lower stem stem_lower skip force inc inc_lower pfx ex ex_lower ex_stem
     for src in "${all[@]}"; do
       base="${src##*/}"      # e.g., cbdt01.f
       base_lower="${base,,}"
       stem="${base%%.*}"     # e.g., cbdt01
       stem_lower="${stem,,}" # case-insensitive compare
 
-      skip=false
-      for pfx in "${EXCLUDE_PREFIXES[@]}"; do
-        if [[ "${stem_lower}" == "${pfx}"* ]]; then
-          skip=true
+      force=false
+      for inc in "${FORCE_INCLUDE_STEMS[@]}"; do
+        inc_lower="${inc,,}"
+        if [[ "${stem_lower}" == "${inc_lower}" ]]; then
+          force=true
           break
         fi
       done
 
+      skip=false
+      if ! $force; then
+        for pfx in "${EXCLUDE_PREFIXES[@]}"; do
+          if [[ "${stem_lower}" == "${pfx}"* ]]; then
+            skip=true
+            break
+          fi
+        done
+      fi
+
       # Check exact-file exceptions
-      if ! $skip && (( ${#EXCLUDE_FILES[@]} > 0 )); then
+      if ! $skip && ! $force && (( ${#EXCLUDE_FILES[@]} > 0 )); then
         for ex in "${EXCLUDE_FILES[@]}"; do
           ex_lower="${ex,,}"
           ex_stem="${ex_lower%%.*}"  # allow both "foo.f" and "foo"
@@ -336,5 +351,12 @@ for pass in $(seq 1 "${PASSES}"); do
     fi
   fi
 done
+
+python3 ~/mplapack/fable/rename_routine_literals.py --in-place --map ~/mplapack/fable/mplapack_name_map.txt --map ~/mplapack/fable/mplapack_testing_name_map.txt ~/mplapack/mplapack/test/eig
+python3 ~/mplapack/fable/rename_routine_literals.py --in-place --map ~/mplapack/fable/mplapack_name_map.txt --map ~/mplapack/fable/mplapack_testing_name_map.txt ~/mplapack/mplapack/test/lin
+python3 ~/mplapack/fable/rename_routine_literals.py --in-place --map ~/mplapack/fable/mplapack_name_map.txt --map ~/mplapack/fable/mplapack_testing_name_map.txt ~/mplapack/mplapack/test/matgen
+
+bash "${FABLE}/sync_test_inputs.sh"
+bash "${FABLE}/patch_lapack_test.sh"
 
 echo "ALL DONE"

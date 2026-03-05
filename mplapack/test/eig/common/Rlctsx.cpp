@@ -36,16 +36,10 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-#include <fem.hpp> // Fortran EMulation library of fable module
-using namespace fem::major_types;
-using fem::common;
-
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#define __MPLAPACK_COMMON_MN__
 #include <mplapack_common_mn.h>
-
 #include <mplapack_debug.h>
 
 bool Rlctsx(REAL const /* ar */, REAL const /* ai */, REAL const /* beta */) {

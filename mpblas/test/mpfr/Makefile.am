@@ -1,7 +1,10 @@
 #CTBSV, CTPSV might have bugs or intrinsically inaccurate
 #Rnrm2 should be checked more
 check_PROGRAMS = $(mpblas_mpfr_test_PROGRAMS) 
-TESTS = $(check_PROGRAMS)
+TESTS = arithmetic.test_mpfr complex.test_mpfr
+.PHONY: check-all
+check-all: $(check_PROGRAMS)
+	$(MAKE) $(AM_MAKEFLAGS) check TESTS="$(mpblas_mpfr_test_PROGRAMS)"
 mpblas_mpfr_test_PROGRAMS = \
 arithmetic.test_mpfr \
 complex.test_mpfr \
@@ -81,43 +84,25 @@ Rtrsm.test.mpfr_opt  Rtrsm.test.mpfr	\
 Rtrsv.test.mpfr_opt  Rtrsv.test.mpfr
 
 mpblas_mpfr_testdir = $(prefix)/lib/$(target)/mplapack/test/compare/mpfr
-
 mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp
 refblas=-L$(top_builddir)/external/i/LAPACK/lib -lblas $(FCLIBS)
-
-test_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mpfrc++ -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_MPFR___ -D___MPLAPACK_INTERNAL___
-
-if !IS_MACOS
+test_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___ -D___MPLAPACK_INTERNAL___
 test_srcdepends = ../common/xerbla.cpp ../common/mplapack.test.cpp ../common/Mxerbla.override.cpp
-endif
 
 if IS_MACOS
-lib_LTLIBRARIES = libmxerbla_override.la
-libmxerbla_override_la_CPPFLAGS = -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_MPFR___
-libmxerbla_override_la_SOURCES =  ../common/Mxerbla.override.cpp
-libmxerbla_override_la_LDFLAGS= -Wl,-flat_namespace,-undefined,dynamic_lookup
-test_srcdepends = ../common/xerbla.cpp ../common/mplapack.test.cpp
 mplibs+=-Wl,-flat_namespace,-undefined,dynamic_lookup
-TESTS_ENVIRONMENT=DYLD_INSERT_LIBRARIES=.libs/libmxerbla_override.0.dylib
 endif
 
 if IS_MINGW
 $(check_PROGRAMS): libmxerbla_override.la
 lib_LTLIBRARIES = libmxerbla_override.la
 libmxerbla_override_la_CPPFLAGS = -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_MPFR___
-libmxerbla_override_la_SOURCES =  ../common/Mxerbla.override.cpp
+libmxerbla_override_la_SOURCES = ../common/Mxerbla.override.cpp
 libmxerbla_override_la_LDFLAGS = -no-undefined
-endif
-
-if IS_MINGW
 libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,.libs/libmxerbla_override.a,$(top_builddir)/mpblas/reference/.libs/libmpblas_mpfr.a,--no-whole-archive
-else
-libdepends = -L$(top_builddir)/mpblas/reference -lmpblas_mpfr -lmpblas_mpfr
-endif
-
-if IS_MINGW
 opt_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,.libs/libmxerbla_override.a,$(top_builddir)/mpblas/optimized/mpfr/.libs/libmpblas_mpfr_opt.a,--no-whole-archive
 else
+libdepends = -L$(top_builddir)/mpblas/reference -lmpblas_mpfr
 opt_libdepends = -L$(top_builddir)/mpblas/optimized/mpfr -lmpblas_mpfr_opt -L$(top_builddir)/mpblas/reference -lmpblas_mpfr
 endif
 
@@ -724,5 +709,5 @@ Rtrsv_test_mpfr_LDFLAGS=$(libdepends) $(mplibs) $(refblas)
 
 install-data-hook:
 if IS_MACOS
-	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mpblas_mpfr_testdir) $(prefix)
+	bash $(top_srcdir)/misc/fix_dylib_macOS.sh $(mpblas_mpfr_testdir) $(prefix)
 endif

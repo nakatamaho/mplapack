@@ -102,7 +102,7 @@ void Cgtt01(INTEGER const n, COMPLEX *dl, COMPLEX *d, COMPLEX *du, COMPLEX *dlf,
     //
     // Subtract the matrix A.
     //
-    work[(1 - 1)] = work[(1 - 1)] - d[1 - 1];
+    work[0] = work[0] - d[1 - 1];
     if (n > 1) {
         work[(2 - 1) * ldwork] = work[(2 - 1) * ldwork] - du[1 - 1];
         work[(n - 1) + ((n - 1) - 1) * ldwork] = work[(n - 1) + ((n - 1) - 1) * ldwork] - dl[(n - 1) - 1];

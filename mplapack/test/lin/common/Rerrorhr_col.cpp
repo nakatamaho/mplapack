@@ -43,37 +43,9 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-#include <mplapack_debug.h>
-
-void Rerrorhr_col(const char *path, INTEGER const nunit) {
+void Rerrorhr_col(fem::str_cref path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
-    //
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     nout = nunit;
     write(nout, star);
@@ -86,14 +58,12 @@ void Rerrorhr_col(const char *path, INTEGER const nunit) {
     REAL a[nmax * nmax];
     REAL t[nmax * nmax];
     REAL d[nmax];
-    INTEGER lda = nmax;
-    INTEGER ldt = nmax;
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
-            a[(i - 1) + (j - 1) * lda] = 1.e+0 / castREAL(i + j);
-            t[(i - 1) + (j - 1) * ldt] = 1.e+0 / castREAL(i + j);
+            a[(i - 1) + (j - 1) * nmax] = 1.0 / castREAL(i + j);
+            t[(i - 1) + (j - 1) * nmax] = 1.0 / castREAL(i + j);
         }
-        d[j - 1] = 0.e+0;
+        d[j - 1] = 0.0;
     }
     ok = true;
     //
@@ -101,45 +71,45 @@ void Rerrorhr_col(const char *path, INTEGER const nunit) {
     //
     // Rorhr_col
     //
+    srnamt = "Rorhr_col";
     //
     infot = 1;
     INTEGER info = 0;
-    strncpy(srnamt, "Rorhr_col", srnamt_len);
     Rorhr_col(-1, 0, 1, a, 1, t, 1, d, info);
-    chkxer("Rorhr_col", infot, nout, lerr, ok);
+    Chkxer("Rorhr_col", infot, nout, lerr, ok);
     //
     infot = 2;
     Rorhr_col(0, -1, 1, a, 1, t, 1, d, info);
-    chkxer("Rorhr_col", infot, nout, lerr, ok);
+    Chkxer("Rorhr_col", infot, nout, lerr, ok);
     Rorhr_col(1, 2, 1, a, 1, t, 1, d, info);
-    chkxer("Rorhr_col", infot, nout, lerr, ok);
+    Chkxer("Rorhr_col", infot, nout, lerr, ok);
     //
     infot = 3;
     Rorhr_col(0, 0, -1, a, 1, t, 1, d, info);
-    chkxer("Rorhr_col", infot, nout, lerr, ok);
+    Chkxer("Rorhr_col", infot, nout, lerr, ok);
     //
     Rorhr_col(0, 0, 0, a, 1, t, 1, d, info);
-    chkxer("Rorhr_col", infot, nout, lerr, ok);
+    Chkxer("Rorhr_col", infot, nout, lerr, ok);
     //
     infot = 5;
     Rorhr_col(0, 0, 1, a, -1, t, 1, d, info);
-    chkxer("Rorhr_col", infot, nout, lerr, ok);
+    Chkxer("Rorhr_col", infot, nout, lerr, ok);
     //
     Rorhr_col(0, 0, 1, a, 0, t, 1, d, info);
-    chkxer("Rorhr_col", infot, nout, lerr, ok);
+    Chkxer("Rorhr_col", infot, nout, lerr, ok);
     //
     Rorhr_col(2, 0, 1, a, 1, t, 1, d, info);
-    chkxer("Rorhr_col", infot, nout, lerr, ok);
+    Chkxer("Rorhr_col", infot, nout, lerr, ok);
     //
     infot = 7;
     Rorhr_col(0, 0, 1, a, 1, t, -1, d, info);
-    chkxer("Rorhr_col", infot, nout, lerr, ok);
+    Chkxer("Rorhr_col", infot, nout, lerr, ok);
     //
     Rorhr_col(0, 0, 1, a, 1, t, 0, d, info);
-    chkxer("Rorhr_col", infot, nout, lerr, ok);
+    Chkxer("Rorhr_col", infot, nout, lerr, ok);
     //
     Rorhr_col(4, 3, 2, a, 4, t, 1, d, info);
-    chkxer("Rorhr_col", infot, nout, lerr, ok);
+    Chkxer("Rorhr_col", infot, nout, lerr, ok);
     //
     // Print a summary line.
     //

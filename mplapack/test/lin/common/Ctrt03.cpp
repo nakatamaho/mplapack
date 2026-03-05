@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Ctrt03(const char *uplo, const char *trans, const char *diag, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, REAL const scale, REAL *cnorm, REAL const tscal, COMPLEX *x, INTEGER const ldx, COMPLEX *b, INTEGER const ldb, COMPLEX *work, REAL &resid) {
+void Ctrt03(fem::str_cref uplo, fem::str_cref trans, fem::str_cref diag, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, REAL const scale, REAL *cnorm, REAL const tscal, COMPLEX *x, INTEGER const ldx, COMPLEX *b, INTEGER const ldb, COMPLEX *work, REAL &resid) {
     //
     // Quick exit if N = 0
     //
@@ -60,13 +60,13 @@ void Ctrt03(const char *uplo, const char *trans, const char *diag, INTEGER const
     //
     REAL tnorm = zero;
     INTEGER j = 0;
-    if (Mlsame(diag, "N")) {
+    if (Mlsame(diag.elems(), "N")) {
         for (j = 1; j <= n; j = j + 1) {
-            tnorm = max(tnorm, REAL(tscal * abs(a[(j - 1) + (j - 1) * lda]) + cnorm[j - 1]));
+            tnorm = max(tnorm, tscal * abs(a[(j - 1) + (j - 1) * lda]) + cnorm[j - 1]);
         }
     } else {
         for (j = 1; j <= n; j = j + 1) {
-            tnorm = max(tnorm, REAL(tscal + cnorm[j - 1]));
+            tnorm = max(tnorm, tscal + cnorm[j - 1]);
         }
     }
     //
@@ -85,7 +85,7 @@ void Ctrt03(const char *uplo, const char *trans, const char *diag, INTEGER const
         xnorm = max(one, abs(x[(ix - 1) + (j - 1) * ldx]));
         xscal = (one / xnorm) / castREAL(n);
         CRscal(n, xscal, work, 1);
-        Ctrmv(uplo, trans, diag, n, a, lda, work, 1);
+        Ctrmv(uplo.elems(), trans.elems(), diag.elems(), n, a, lda, work, 1);
         Caxpy(n, COMPLEX(-scale * xscal), &b[(j - 1) * ldb], 1, work, 1);
         ix = iCamax(n, work, 1);
         err = tscal * abs(work[ix - 1]);

@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Rppt05(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *ap, REAL *b, INTEGER const ldb, REAL *x, INTEGER const ldx, REAL *xact, INTEGER const ldxact, REAL *ferr, REAL *berr, REAL *reslts) {
+void Rppt05(fem::str_cref uplo, INTEGER const n, INTEGER const nrhs, REAL *ap, REAL *b, INTEGER const ldb, REAL *x, INTEGER const ldx, REAL *xact, INTEGER const ldxact, REAL *ferr, REAL *berr, REAL *reslts) {
     const REAL zero = 0.0;
     REAL eps = 0.0;
     REAL unfl = 0.0;
@@ -72,7 +72,7 @@ void Rppt05(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *ap, REA
     eps = Rlamch("Epsilon");
     unfl = Rlamch("Safe minimum");
     ovfl = one / unfl;
-    upper = Mlsame(uplo, "U");
+    upper = Mlsame(uplo.elems(), "U");
     //
     // Test 1:  Compute the maximum of
     // norm(X - XACT) / ( norm(X) * FERR )
@@ -81,10 +81,10 @@ void Rppt05(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *ap, REA
     errbnd = zero;
     for (j = 1; j <= nrhs; j = j + 1) {
         imax = iRamax(n, &x[(j - 1) * ldx], 1);
-        xnorm = max(REAL(abs(x[(imax - 1) + (j - 1) * ldx])), unfl);
+        xnorm = max(abs(x[(imax - 1) + (j - 1) * ldx]), unfl);
         diff = zero;
         for (i = 1; i <= n; i = i + 1) {
-            diff = max(diff, REAL(abs(x[(i - 1) + (j - 1) * ldx] - xact[(i - 1) + (j - 1) * ldxact])));
+            diff = max(diff, abs(x[(i - 1) + (j - 1) * ldx] - xact[(i - 1) + (j - 1) * ldxact]));
         }
         //
         if (xnorm > one) {
@@ -98,7 +98,7 @@ void Rppt05(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *ap, REA
     //
     statement_20:
         if (diff / xnorm <= ferr[j - 1]) {
-            errbnd = max(errbnd, REAL((diff / xnorm) / ferr[j - 1]));
+            errbnd = max(errbnd, (diff / xnorm) / ferr[j - 1]);
         } else {
             errbnd = one / eps;
         }
@@ -138,7 +138,7 @@ void Rppt05(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *ap, REA
                 axbi = min(axbi, tmp);
             }
         }
-        tmp = berr[k - 1] / (castREAL(n + 1) * eps + castREAL(n + 1) * unfl / max(axbi, REAL(castREAL(n + 1) * unfl)));
+        tmp = berr[k - 1] / ((n + 1) * eps + (n + 1) * unfl / max(axbi, (n + 1) * unfl));
         if (k == 1) {
             reslts[2 - 1] = tmp;
         } else {

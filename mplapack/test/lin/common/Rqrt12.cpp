@@ -51,7 +51,7 @@ REAL Rqrt12(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
     //
     // Test that enough workspace is supplied
     //
-    if (lwork < max({m * n + 4 * min(m, n) + max(m, n), m * n + 2 * min(m, n) + 4 * n})) {
+    if (lwork < max(m * n + 4 * min(m, n) + max(m, n), m * n + 2 * min(m, n) + 4 * n)) {
         Mxerbla("Rqrt12", 7);
         return return_value;
     }
@@ -81,6 +81,7 @@ REAL Rqrt12(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
     REAL smlnum = Rlamch("S") / Rlamch("P");
     const REAL one = 1.0;
     REAL bignum = one / smlnum;
+    Rlabad(smlnum, bignum);
     //
     // Scale work if max entry outside range [SMLNUM,BIGNUM]
     //

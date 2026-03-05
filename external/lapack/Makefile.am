@@ -12,18 +12,27 @@ all: extract config build check install_internal
 
 work/$(EXTRACT_STAMP):
 	rm -rf work ; mkdir -p work/internal
-	cd $(abs_builddir)/work/internal; tar xvfz ../../download/lapack-$(LAPACKVERSION).tar.gz
+	cd $(abs_builddir)/work/internal; tar xvfz $(abs_srcdir)/download/lapack-$(LAPACKVERSION).tar.gz
 	touch $(abs_builddir)/work/$(EXTRACT_STAMP)
 
 work/$(PATCH_STAMP): work/$(EXTRACT_STAMP)
 if IS_MINGW
-	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_builddir)/patches/$(LAPACK_VERSION)/patch-mingw
+	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_srcdir)/patches/$(LAPACK_VERSION)/patch-mingw
 endif
 if IS_MIC
-	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_builddir)/patches/$(LAPACK_VERSION)/patch-mic
+	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_srcdir)/patches/$(LAPACK_VERSION)/patch-mic
 endif
-	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_builddir)/patches/$(LAPACK_VERSION)/patch-print
-	cp $(abs_builddir)/patches/print.c $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/BLAS/SRC
+	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_srcdir)/patches/$(LAPACK_VERSION)/patch-print
+	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_srcdir)/patches/$(LAPACK_VERSION)/patch-zchkhe_aa_2stage.f
+	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_srcdir)/patches/$(LAPACK_VERSION)/patch-ddrvst2stg.f
+	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_srcdir)/patches/$(LAPACK_VERSION)/patch-ddrvst.f
+	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_srcdir)/patches/$(LAPACK_VERSION)/patch-dlatm4.f
+	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_srcdir)/patches/$(LAPACK_VERSION)/patch-zlqt04.f
+	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_srcdir)/patches/$(LAPACK_VERSION)/patch-zlqt05.f
+	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_srcdir)/patches/$(LAPACK_VERSION)/patch-ztsqr01.f
+	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_srcdir)/patches/$(LAPACK_VERSION)/patch-iseed
+
+	cp $(abs_srcdir)/patches/print.c $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/BLAS/SRC
 	touch $(abs_builddir)/work/$(PATCH_STAMP)
 
 work/$(CONFIGURE_STAMP): work/$(PATCH_STAMP)
@@ -34,8 +43,12 @@ work/$(CONFIGURE_STAMP): work/$(PATCH_STAMP)
 	echo "FFLAGS = $(FCFLAGS)" >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
 	echo "FFLAGS_DRV = \$$(FFLAGS)" >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
 	echo "FFLAGS_NOOPT = -O0" >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
-	echo "LDFLAGS ="       >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
-	echo "AR = $(AR)"         >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
+if IS_MINGW
+	echo "LDFLAGS = -Wl,--stack,33554432" >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
+else
+	echo "LDFLAGS =" >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
+endif
+	echo "AR = $(AR)"        >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
 	echo "ARFLAGS = cr"      >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
 	echo "RANLIB = $(RANLIB)"   >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
 if IS_INTELCC
@@ -52,9 +65,9 @@ endif
 	touch $(abs_builddir)/work/$(CONFIGURE_STAMP)
 
 work/$(BUILD_STAMP): work/$(CONFIGURE_STAMP)
-	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/BLAS/SRC ; ${MAKE}
-	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION) ; ${MAKE}
-	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/LAPACKE ; ${MAKE}
+	+cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/BLAS/SRC ; ${MAKE}
+	+cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION) ; ${MAKE}
+	+cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/LAPACKE ; ${MAKE}
 	touch $(abs_builddir)/work/$(BUILD_STAMP)
 
 work/$(CHECK_STAMP): work/$(BUILD_STAMP)
@@ -85,8 +98,8 @@ install_internal: work/$(INSTALL_INTERNAL_STAMP)
 
 distdir:
 
-clean:
+clean-local:
 	rm -rf work
-distclean:
+distclean-local:
 	rm -rf work
 

@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Chpt01(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *afac, INTEGER *ipiv, COMPLEX *c, INTEGER const ldc, REAL *rwork, REAL &resid) {
+void Chpt01(fem::str_cref uplo, INTEGER const n, COMPLEX *a, COMPLEX *afac, INTEGER *ipiv, COMPLEX *c, INTEGER const ldc, REAL *rwork, REAL &resid) {
     //
     // Quick exit if N = 0.
     //
@@ -56,7 +56,7 @@ void Chpt01(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *afac, INTEGE
     // Determine EPS and the norm of A.
     //
     REAL eps = Rlamch("Epsilon");
-    REAL anorm = Clanhp("1", uplo, n, a, rwork);
+    REAL anorm = Clanhp("1", uplo.elems(), n, a, rwork);
     //
     // Check the imaginary parts of the diagonal elements and return with
     // an error code if any are nonzero.
@@ -64,7 +64,7 @@ void Chpt01(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *afac, INTEGE
     INTEGER jc = 1;
     INTEGER j = 0;
     const REAL one = 1.0;
-    if (Mlsame(uplo, "U")) {
+    if (Mlsame(uplo.elems(), "U")) {
         for (j = 1; j <= n; j = j + 1) {
             if (afac[jc - 1].imag() != zero) {
                 resid = one / eps;
@@ -100,19 +100,19 @@ void Chpt01(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *afac, INTEGE
     // Compute the difference  C - A .
     //
     INTEGER i = 0;
-    if (Mlsame(uplo, "U")) {
+    if (Mlsame(uplo.elems(), "U")) {
         jc = 0;
         for (j = 1; j <= n; j = j + 1) {
             for (i = 1; i <= j - 1; i = i + 1) {
                 c[(i - 1) + (j - 1) * ldc] = c[(i - 1) + (j - 1) * ldc] - a[(jc + i) - 1];
             }
-            c[(j - 1) + (j - 1) * ldc] = c[(j - 1) + (j - 1) * ldc] - (a[(jc + j) - 1]).real();
+            c[(j - 1) + (j - 1) * ldc] = c[(j - 1) + (j - 1) * ldc] - a[(jc + j) - 1].real();
             jc += j;
         }
     } else {
         jc = 1;
         for (j = 1; j <= n; j = j + 1) {
-            c[(j - 1) + (j - 1) * ldc] = c[(j - 1) + (j - 1) * ldc] - (a[jc - 1]).real();
+            c[(j - 1) + (j - 1) * ldc] = c[(j - 1) + (j - 1) * ldc] - a[jc - 1].real();
             for (i = j + 1; i <= n; i = i + 1) {
                 c[(i - 1) + (j - 1) * ldc] = c[(i - 1) + (j - 1) * ldc] - a[(jc + i - j) - 1];
             }
@@ -122,7 +122,7 @@ void Chpt01(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *afac, INTEGE
     //
     // Compute norm( C - A ) / ( N * norm(A) * EPS )
     //
-    resid = Clanhe("1", uplo, n, c, ldc, rwork);
+    resid = Clanhe("1", uplo.elems(), n, c, ldc, rwork);
     //
     if (anorm <= zero) {
         if (resid != zero) {

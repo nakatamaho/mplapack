@@ -43,23 +43,27 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-#include <mplapack_debug.h>
-
-void Rdrvrf3(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thresh, REAL *a, INTEGER const lda, REAL *arf, REAL *b1, REAL *b2, REAL *d_work_Rlange, REAL *d_work_Rgeqrf, REAL *tau) {
-    //
-    //     Initialize constants and the random number seed.
-    //
+void Rdrvrf3(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thresh, REAL *a, INTEGER const lda, REAL *arf, REAL *b1, REAL *b2, REAL *d_work_dlange, REAL *d_work_dgeqrf, REAL *tau) {
     common cmn;
     common_write write(cmn);
-    char transs[] = {'N', 'T'};
-    char diags[] = {'N', 'U'};
-    char forms[] = {'N', 'T'};
-    char sides[] = {'L', 'R'};
-    char uplos[] = {'U', 'L'};
-    char buf[1024];
-    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
-    INTEGER ldb1 = lda;
-    INTEGER ldb2 = lda;
+    static INTEGER iseedy[4] = {1988, 1989, 1990, 1991};
+    static fem::str<1> uplos[2] = {"U", "L"};
+    static fem::str<1> forms[2] = {"N", "T"};
+    static fem::str<1> sides[2] = {"L", "R"};
+    static fem::str<1> transs[2] = {"N", "T"};
+    static fem::str<1> diags[2] = {"N", "U"};
+    //
+    static const char *format_9999 = "(1x,' *** Error(s) or Failure(s) while testing Rtfsm         ***')";
+    static const char *format_9997 = "(1x,'     Failure in ',a5,', CFORM=''',a1,''',',' SIDE=''',a1,''',',"
+                                     "' UPLO=''',a1,''',',' TRANS=''',a1,''',',' DIAG=''',a1,''',',' M=',i3,"
+                                     "', N =',i3,', test=',g12.5)";
+    static const char *format_9996 = "(1x,'All tests for ',a5,' auxiliary routine passed the ','threshold ( ',"
+                                     "i5,' tests run)')";
+    static const char *format_9995 = "(1x,a6,' auxiliary routine: ',i5,' out of ',i5,"
+                                     "' tests failed to pass the threshold')";
+    //
+    // Initialize constants and the random number seed.
+    //
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER info = 0;
@@ -75,19 +79,19 @@ void Rdrvrf3(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
     INTEGER iin = 0;
     INTEGER n = 0;
     INTEGER iform = 0;
-    char cform;
+    fem::str<1> cform;
     INTEGER iuplo = 0;
-    char uplo;
+    fem::str<1> uplo;
     INTEGER iside = 0;
-    char side;
+    fem::str<1> side;
     INTEGER itrans = 0;
-    char trans;
+    fem::str<1> trans;
     INTEGER idiag = 0;
-    char diag;
+    fem::str<1> diag;
     INTEGER ialpha = 0;
-    const REAL zero = (0.0, 0.0);
+    const REAL zero = 0.0;
     REAL alpha = 0.0;
-    const REAL one = (1.0, 0.0);
+    const REAL one = 1.0;
     INTEGER na = 0;
     INTEGER j = 0;
     const INTEGER ntests = 1;
@@ -169,66 +173,65 @@ void Rdrvrf3(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                                     //
                                     if (iuplo == 1) {
                                         //
-                                        //                                The case IUPLO.EQ.1 is when SIDE.EQ.'U'
-                                        //                                -> QR factorization.
+                                        // The case IUPLO.EQ.1 is when SIDE.EQ.'U'
+                                        // -> QR factorization.
                                         //
-                                        Rgeqrf(na, na, a, lda, tau, d_work_Rgeqrf, lda, info);
+                                        srnamt = "Rgeqrf";
+                                        Rgeqrf(na, na, a, lda, tau, d_work_dgeqrf, lda, info);
                                     } else {
                                         //
-                                        //                                The case IUPLO.EQ.2 is when SIDE.EQ.'L'
-                                        //                                -> QL factorization.
+                                        // The case IUPLO.EQ.2 is when SIDE.EQ.'L'
+                                        // -> QL factorization.
                                         //
-                                        Rgelqf(na, na, a, lda, tau, d_work_Rgeqrf, lda, info);
+                                        srnamt = "Rgelqf";
+                                        Rgelqf(na, na, a, lda, tau, d_work_dgeqrf, lda, info);
                                     }
                                     //
-                                    //                             Store a copy of A in RFP format (in ARF).
+                                    // Store a copy of A in RFP format (in ARF).
                                     //
-                                    Rtrttf(&cform, &uplo, na, a, lda, arf, info);
+                                    srnamt = "Rtrttf";
+                                    Rtrttf(cform.elems, uplo.elems, na, a, lda, arf, info);
                                     //
                                     // Generate B1 our M--by--N right-hand side
                                     // and store a copy in B2.
                                     //
                                     for (j = 1; j <= n; j = j + 1) {
                                         for (i = 1; i <= m; i = i + 1) {
-                                            b1[(i - 1) + (j - 1) * ldb1] = Rlarnd(2, iseed);
-                                            b2[(i - 1) + (j - 1) * ldb2] = b1[(i - 1) + (j - 1) * ldb1];
+                                            b1[(i - 1) + (j - 1) * lda] = Rlarnd(2, iseed);
+                                            b2[(i - 1) + (j - 1) * lda] = b1[(i - 1) + (j - 1) * lda];
                                         }
                                     }
                                     //
-                                    //                             Solve op( A ) X = B or X op( A ) = B
-                                    //                             with Rtrsm
+                                    // Solve op( A ) X = B or X op( A ) = B
+                                    // with Rtrsm
                                     //
-                                    Rtrsm(&side, &uplo, &trans, &diag, m, n, alpha, a, lda, b1, lda);
+                                    srnamt = "Rtrsm";
+                                    Rtrsm(side.elems, uplo.elems, trans.elems, diag.elems, m, n, alpha, a, lda, b1, lda);
                                     //
-                                    //                             Solve op( A ) X = B or X op( A ) = B
-                                    //                             with Rtfsm
+                                    // Solve op( A ) X = B or X op( A ) = B
+                                    // with Rtfsm
                                     //
-                                    Rtfsm(&cform, &side, &uplo, &trans, &diag, m, n, alpha, arf, b2, lda);
+                                    srnamt = "Rtfsm";
+                                    Rtfsm(cform.elems, side.elems, uplo.elems, trans.elems, diag.elems, m, n, alpha, arf, b2, lda);
                                     //
                                     // Check that the result agrees.
                                     //
                                     for (j = 1; j <= n; j = j + 1) {
                                         for (i = 1; i <= m; i = i + 1) {
-                                            b1[(i - 1) + (j - 1) * ldb1] = b2[(i - 1) + (j - 1) * ldb2] - b1[(i - 1) + (j - 1) * ldb1];
+                                            b1[(i - 1) + (j - 1) * lda] = b2[(i - 1) + (j - 1) * lda] - b1[(i - 1) + (j - 1) * lda];
                                         }
                                     }
                                     //
-                                    result[1 - 1] = Rlange("I", m, n, b1, lda, d_work_Rlange);
+                                    result[1 - 1] = Rlange("I", m, n, b1, lda, d_work_dlange);
                                     //
-                                    result[1 - 1] = result[1 - 1] / sqrt(eps) / castREAL(max({max(m, n), (INTEGER)1}));
+                                    result[1 - 1] = result[1 - 1] / sqrt(eps) / max(max(m, n), 1);
                                     //
                                     if (result[1 - 1] >= thresh) {
                                         if (nfail == 0) {
                                             write(nout, star);
-                                            write(nout, "(1x,' *** Error(s) or Failure(s) while testing Rtfsm "
-                                                        "        ***')");
+                                            write(nout, format_9999);
                                         }
-                                        sprintnum_short(buf, result[1 - 1]);
-                                        write(nout, "(1x,'     Failure in ',a5,', CFORM=''',a1,''',',"
-                                                    "' SIDE=''',a1,''',',' UPLO=''',a1,''',',' TRANS=''',a1,"
-                                                    "''',',' DIAG=''',a1,''',',' M=',i3,', N =',i3,"
-                                                    "', test=',a)"),
-                                            "Rtfsm", &cform, &side, &uplo, &trans, &diag, m, n, buf;
+                                        write(nout, format_9997), "Rtfsm", cform, side, uplo, trans, diag, m, n, result[1 - 1];
                                         nfail++;
                                     }
                                     //
@@ -244,13 +247,9 @@ void Rdrvrf3(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
     // Print a summary of the results.
     //
     if (nfail == 0) {
-        write(nout, "(1x,'All tests for ',a5,' auxiliary routine passed the ',"
-                    "'threshold ( ',i5,' tests run)')"),
-            "Rtfsm", nrun;
+        write(nout, format_9996), "Rtfsm", nrun;
     } else {
-        write(nout, "(1x,a6,' auxiliary routine: ',i5,' out of ',i5,"
-                    "' tests failed to pass the threshold')"),
-            "Rtfsm", nfail, nrun;
+        write(nout, format_9995), "Rtfsm", nfail, nrun;
     }
     //
     // End of Rdrvrf3

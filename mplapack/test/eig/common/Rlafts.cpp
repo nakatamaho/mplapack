@@ -43,12 +43,17 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-void Rlafts(const char *type, INTEGER const m, INTEGER const n, INTEGER const imat, INTEGER const ntests, REAL *result, INTEGER *iseed, REAL const thresh, INTEGER const iounit, INTEGER &ie) {
+void Rlafts(fem::str_cref type, INTEGER const m, INTEGER const n, INTEGER const imat, INTEGER const ntests, REAL *result, INTEGER (&iseed)[4], REAL const thresh, INTEGER const iounit, INTEGER &ie) {
     common cmn;
     common_write write(cmn);
-    char buf[1024];
+    static const char *format_9999 = "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),' result ',i3,"
+                                     "' is',0p,f8.2)";
+    static const char *format_9998 = "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),' result ',i3,"
+                                     "' is',1p,d10.3)";
+    static const char *format_9997 = "(1x,i5,' x',i5,' matrix, type=',i2,', s','eed=',3(i4,','),i4,': result ',"
+                                     "i3,' is',0p,f8.2)";
+    static const char *format_9996 = "(1x,i5,' x',i5,' matrix, type=',i2,', s','eed=',3(i4,','),i4,': result ',"
+                                     "i3,' is',1p,d10.3)";
     //
     INTEGER k = 0;
     if (m == n) {
@@ -66,15 +71,9 @@ void Rlafts(const char *type, INTEGER const m, INTEGER const n, INTEGER const im
                 }
                 ie++;
                 if (result[k - 1] < 10000.0) {
-                    sprintnum_short(buf, result[k - 1]);
-                    write(iounit, "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),' result ',"
-                                  "i3,' is ',0p,a)"),
-                        n, imat, iseed[0], iseed[1], iseed[2], iseed[3], k, buf;
+                    write(iounit, format_9999), n, imat, iseed, k, result[k - 1];
                 } else {
-                    sprintnum_short(buf, result[k - 1]);
-                    write(iounit, "(' Matrix order=',i5,', type=',i2,', seed=',4(i4,','),' result ',"
-                                  "i3,' is ',1p,a)"),
-                        n, imat, iseed[0], iseed[1], iseed[2], iseed[3], k, buf;
+                    write(iounit, format_9998), n, imat, iseed, k, result[k - 1];
                 }
             }
         }
@@ -93,15 +92,9 @@ void Rlafts(const char *type, INTEGER const m, INTEGER const n, INTEGER const im
                 }
                 ie++;
                 if (result[k - 1] < 10000.0) {
-                    sprintnum_short(buf, result[k - 1]);
-                    write(iounit, "(1x,i5,' x',i5,' matrix, type=',i2,', seed=',3(i4,','),i4,"
-                                  "': result ',i3,' is ',0p,a)"),
-                        m, n, imat, iseed[0], iseed[1], iseed[2], iseed[3], k, buf;
+                    write(iounit, format_9997), m, n, imat, iseed, k, result[k - 1];
                 } else {
-                    sprintnum_short(buf, result[k - 1]);
-                    write(iounit, "(1x,i5,' x',i5,' matrix, type=',i2,', seed=',3(i4,','),i4,"
-                                  "': result ',i3,' is ',1p,a)"),
-                        m, n, imat, iseed[0], iseed[1], iseed[2], iseed[3], k, buf;
+                    write(iounit, format_9996), m, n, imat, iseed, k, result[k - 1];
                 }
             }
         }

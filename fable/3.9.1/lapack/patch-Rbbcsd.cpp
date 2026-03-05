@@ -4,7 +4,7 @@
      //
      INTEGER i = 0;
      const REAL zero = 0.0;
--    const REAL piover2 = 1.570796326794897;
+-    const REAL piover2 = 1.5707963267948966192313216916397514421;
 +    const REAL piover2 = pi(zero) / 2.0;
      for (i = 1; i <= q; i = i + 1) {
          if (theta[i - 1] < thresh) {

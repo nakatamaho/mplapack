@@ -43,16 +43,12 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-#include <mplapack_debug.h>
-
 void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, COMPLEX *a, INTEGER const la, COMPLEX *afac, INTEGER const lafac, COMPLEX *b, COMPLEX *x, COMPLEX *xact, COMPLEX *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
     common cmn;
     common_write write(cmn);
-    //
-    const INTEGER ntran = 3;
-    char transs[ntran] = {'N', 'T', 'C'};
-    char path[4] = {};
-    char buf[1024];
+    static INTEGER iseedy[4] = {1988, 1989, 1990, 1991};
+    static fem::str<1> transs[3] = {"N", "T", "C"};
+    fem::str<3> path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -65,7 +61,7 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     INTEGER m = 0;
     INTEGER in = 0;
     INTEGER n = 0;
-    char xtype[1];
+    fem::str<1> xtype;
     INTEGER nkl = 0;
     INTEGER nku = 0;
     const INTEGER ntypes = 8;
@@ -78,11 +74,11 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     INTEGER ldafac = 0;
     INTEGER imat = 0;
     bool zerot = false;
-    char type[1];
+    fem::str<1> type;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist[1];
+    fem::str<1> dist;
     INTEGER koff = 0;
     const REAL zero = 0.0;
     INTEGER info = 0;
@@ -106,21 +102,36 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     INTEGER irhs = 0;
     INTEGER nrhs = 0;
     INTEGER itran = 0;
-    char trans[1];
+    const INTEGER ntran = 3;
+    fem::str<1> trans;
     REAL rcondc = 0.0;
-    char norm[1];
+    fem::str<1> norm;
     INTEGER k = 0;
     REAL rcond = 0.0;
     //
-    path[0] = 'C';
-    path[1] = 'G';
-    path[2] = 'B';
-    path[3] = '\0';
+    static const char *format_9999 = "(' *** In Cchkgb, LA=',i5,' is too small for M=',i5,', N=',i5,', KL=',i4,"
+                                     "', KU=',i4,/,' ==> Increase LA to at least ',i5)";
+    static const char *format_9998 = "(' *** In Cchkgb, LAFAC=',i5,' is too small for M=',i5,', N=',i5,', KL=',"
+                                     "i4,', KU=',i4,/,' ==> Increase LAFAC to at least ',i5)";
+    static const char *format_9997 = "(' M =',i5,', N =',i5,', KL=',i5,', KU=',i5,', NB =',i4,', type ',i1,"
+                                     "', test(',i1,')=',g12.5)";
+    static const char *format_9996 = "(' TRANS=''',a1,''', N=',i5,', KL=',i5,', KU=',i5,', NRHS=',i3,', type ',"
+                                     "i1,', test(',i1,')=',g12.5)";
+    static const char *format_9995 = "(' NORM =''',a1,''', N=',i5,', KL=',i5,', KU=',i5,',',10x,' type ',i1,"
+                                     "', test(',i1,')=',g12.5)";
+    //
+    // Initialize constants and the random number seed.
+    //
+    path(1, 1) = "Zomplex precision";
+    path(2, 3) = "GB";
     nrun = 0;
     nfail = 0;
     nerrs = 0;
+    for (i = 1; i <= 4; i = i + 1) {
+        iseed[i - 1] = iseedy[i - 1];
+    }
     //
-    //     Test the error exits
+    // Test the error exits
     //
     if (tsterr) {
         Cerrge(path, nout);
@@ -150,7 +161,7 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
         //
         for (in = 1; in <= nn; in = in + 1) {
             n = nval[in - 1];
-            xtype[0] = 'N';
+            xtype = "N";
             //
             // Set values to use for the upper bandwidth.
             //
@@ -201,17 +212,11 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             Alahd(nout, path);
                         }
                         if (n * (kl + ku + 1) > la) {
-                            write(nout, "(' *** In Cchkgb, LA=',i5,' is too small for M=',i5,', N=',"
-                                        "i5,', KL=',i4,', KU=',i4,/,' ==> Increase LA to at least ',"
-                                        "i5)"),
-                                la, m, n, kl, ku, n *(kl + ku + 1);
+                            write(nout, format_9999), la, m, n, kl, ku, n *(kl + ku + 1);
                             nerrs++;
                         }
                         if (n * (2 * kl + ku + 1) > lafac) {
-                            write(nout, "(' *** In Cchkgb, LAFAC=',i5,' is too small for M=',i5,"
-                                        "', N=',i5,', KL=',i4,', KU=',i4,/,"
-                                        "' ==> Increase LAFAC to at least ',i5)"),
-                                lafac, m, n, kl, ku, n *(2 * kl + ku + 1);
+                            write(nout, format_9998), lafac, m, n, kl, ku, n * (2 * kl + ku + 1);
                             nerrs++;
                         }
                         goto statement_130;
@@ -244,9 +249,10 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             for (i = 1; i <= koff - 1; i = i + 1) {
                                 a[i - 1] = zero;
                             }
+                            srnamt = "Clatms";
                             Clatms(m, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, "Z", &a[koff - 1], lda, work, info);
                             //
-                            //                       Check the error code from Clatms.
+                            // Check the error code from Clatms.
                             //
                             if (info != 0) {
                                 Alaerh(path, "Clatms", info, 0, " ", m, n, kl, ku, -1, imat, nfail, nerrs, nout);
@@ -305,13 +311,14 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                         //
                         for (inb = 1; inb <= nnb; inb = inb + 1) {
                             nb = nbval[inb - 1];
-                            xlaenv(1, nb);
+                            Mxlaenv(1, nb);
                             //
                             // Compute the LU factorization of the band matrix.
                             //
                             if (m > 0 && n > 0) {
                                 Clacpy("Full", kl + ku + 1, n, a, lda, &afac[(kl + 1) - 1], ldafac);
                             }
+                            srnamt = "Cgbtrf";
                             Cgbtrf(m, n, kl, ku, afac, ldafac, iwork, info);
                             //
                             // Check error code from Cgbtrf.
@@ -334,10 +341,7 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                 if (nfail == 0 && nerrs == 0) {
                                     Alahd(nout, path);
                                 }
-                                sprintnum_short(buf, result[1 - 1]);
-                                write(nout, "(' M =',i5,', N =',i5,', KL=',i5,', KU=',i5,', NB =',i4,"
-                                            "', type ',i1,', test(',i1,')=',a)"),
-                                    m, n, kl, ku, nb, imat, 1, buf;
+                                write(nout, format_9997), m, n, kl, ku, nb, imat, 1, result[1 - 1];
                                 nfail++;
                             }
                             nrun++;
@@ -359,6 +363,7 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                 //
                                 ldb = max((INTEGER)1, n);
                                 Claset("Full", n, n, COMPLEX(zero), COMPLEX(one), work, ldb);
+                                srnamt = "Cgbtrs";
                                 Cgbtrs("No transpose", n, kl, ku, n, afac, ldafac, iwork, work, ldb, info);
                                 //
                                 // Compute the 1-norm condition number of A.
@@ -396,28 +401,30 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             //
                             for (irhs = 1; irhs <= nns; irhs = irhs + 1) {
                                 nrhs = nsval[irhs - 1];
-                                xtype[0] = 'N';
+                                xtype = "N";
                                 //
                                 for (itran = 1; itran <= ntran; itran = itran + 1) {
-                                    trans[0] = transs[itran - 1];
+                                    trans = transs[itran - 1];
                                     if (itran == 1) {
                                         rcondc = rcondo;
-                                        norm[0] = 'O';
+                                        norm = "O";
                                     } else {
                                         rcondc = rcondi;
-                                        norm[0] = 'I';
+                                        norm = "I";
                                     }
                                     //
-                                    //+    TEST 2:
-                                    //                             Solve and compute residual for A * X = B.
+                                    // +    TEST 2:
+                                    // Solve and compute residual for A * X = B.
                                     //
+                                    srnamt = "Clarhs";
                                     Clarhs(path, xtype, " ", trans, n, n, kl, ku, nrhs, a, lda, xact, ldb, b, ldb, iseed, info);
-                                    xtype[0] = 'C';
+                                    xtype = "C";
                                     Clacpy("Full", n, nrhs, b, ldb, x, ldb);
                                     //
-                                    Cgbtrs(trans, n, kl, ku, nrhs, afac, ldafac, iwork, x, ldb, info);
+                                    srnamt = "Cgbtrs";
+                                    Cgbtrs(trans.elems, n, kl, ku, nrhs, afac, ldafac, iwork, x, ldb, info);
                                     //
-                                    //                             Check error code from Cgbtrs.
+                                    // Check error code from Cgbtrs.
                                     //
                                     if (info != 0) {
                                         Alaerh(path, "Cgbtrs", info, 0, trans, n, n, kl, ku, -1, imat, nfail, nerrs, nout);
@@ -426,19 +433,20 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                     Clacpy("Full", n, nrhs, b, ldb, work, ldb);
                                     Cgbt02(trans, m, n, kl, ku, nrhs, a, lda, x, ldb, work, ldb, result[2 - 1]);
                                     //
-                                    //+    TEST 3:
-                                    //                             Check solution from generated exact
-                                    //                             solution.
+                                    // +    TEST 3:
+                                    // Check solution from generated exact
+                                    // solution.
                                     //
                                     Cget04(n, nrhs, x, ldb, xact, ldb, rcondc, result[3 - 1]);
                                     //
-                                    //+    TESTS 4, 5, 6:
-                                    //                             Use iterative refinement to improve the
-                                    //                             solution.
+                                    // +    TESTS 4, 5, 6:
+                                    // Use iterative refinement to improve the
+                                    // solution.
                                     //
-                                    Cgbrfs(trans, n, kl, ku, nrhs, a, lda, afac, ldafac, iwork, b, ldb, x, ldb, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
+                                    srnamt = "Cgbrfs";
+                                    Cgbrfs(trans.elems, n, kl, ku, nrhs, a, lda, afac, ldafac, iwork, b, ldb, x, ldb, rwork, &rwork[(nrhs + 1) - 1], work, &rwork[(2 * nrhs + 1) - 1], info);
                                     //
-                                    //                             Check error code from Cgbrfs.
+                                    // Check error code from Cgbrfs.
                                     //
                                     if (info != 0) {
                                         Alaerh(path, "Cgbrfs", info, 0, trans, n, n, kl, ku, nrhs, imat, nfail, nerrs, nout);
@@ -455,10 +463,7 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                             if (nfail == 0 && nerrs == 0) {
                                                 Alahd(nout, path);
                                             }
-                                            sprintnum_short(buf, result[k - 1]);
-                                            write(nout, "(' TRANS=''',a1,''', N=',i5,', KL=',i5,', KU=',i5,"
-                                                        "', NRHS=',i3,', type ',i1,', test(',i1,')=',a)"),
-                                                trans, n, kl, ku, nrhs, imat, k, buf;
+                                            write(nout, format_9996), trans, n, kl, ku, nrhs, imat, k, result[k - 1];
                                             nfail++;
                                         }
                                     }
@@ -474,15 +479,16 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                 if (itran == 1) {
                                     anorm = anormo;
                                     rcondc = rcondo;
-                                    norm[0] = 'O';
+                                    norm = "O";
                                 } else {
                                     anorm = anormi;
                                     rcondc = rcondi;
-                                    norm[0] = 'I';
+                                    norm = "I";
                                 }
-                                Cgbcon(norm, n, kl, ku, afac, ldafac, iwork, anorm, rcond, work, rwork, info);
+                                srnamt = "Cgbcon";
+                                Cgbcon(norm.elems, n, kl, ku, afac, ldafac, iwork, anorm, rcond, work, rwork, info);
                                 //
-                                //                             Check error code from Cgbcon.
+                                // Check error code from Cgbcon.
                                 //
                                 if (info != 0) {
                                     Alaerh(path, "Cgbcon", info, 0, norm, n, n, kl, ku, -1, imat, nfail, nerrs, nout);
@@ -497,10 +503,7 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                     if (nfail == 0 && nerrs == 0) {
                                         Alahd(nout, path);
                                     }
-                                    sprintnum_short(buf, result[7 - 1]);
-                                    write(nout, "(' NORM =''',a1,''', N=',i5,', KL=',i5,', KU=',i5,',',"
-                                                "10x,' type ',i1,', test(',i1,')=',a)"),
-                                        norm, n, kl, ku, imat, 7, buf;
+                                    write(nout, format_9995), norm, n, kl, ku, imat, 7, result[7 - 1];
                                     nfail++;
                                 }
                                 nrun++;

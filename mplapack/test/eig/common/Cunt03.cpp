@@ -43,17 +43,15 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-void Cunt03(const char *rc, INTEGER const mu, INTEGER const mv, INTEGER const n, INTEGER const k, COMPLEX *u, INTEGER const ldu, COMPLEX *v, INTEGER const ldv, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL &result, INTEGER &info) {
+void Cunt03(fem::str_cref rc, INTEGER const mu, INTEGER const mv, INTEGER const n, INTEGER const k, COMPLEX *u, INTEGER const ldu, COMPLEX *v, INTEGER const ldv, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL &result, INTEGER &info) {
     //
     // Check inputs
     //
     info = 0;
     INTEGER irc = 0;
-    if (Mlsame(rc, "R")) {
+    if (Mlsame(rc.elems(), "R")) {
         irc = 0;
-    } else if (Mlsame(rc, "C")) {
+    } else if (Mlsame(rc.elems(), "C")) {
         irc = 1;
     } else {
         irc = -1;
@@ -156,7 +154,7 @@ void Cunt03(const char *rc, INTEGER const mu, INTEGER const mv, INTEGER const n,
         Cunt01("Columns", n, mv, v, ldv, work, lwork, rwork, res2);
     }
     //
-    result = min(REAL(max(res1, res2)), REAL(one / ulp));
+    result = min(max(res1, res2), one / ulp);
     //
     // End of Cunt03
     //

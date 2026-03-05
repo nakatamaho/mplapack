@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Cpbt02(const char *uplo, INTEGER const n, INTEGER const kd, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const ldx, COMPLEX *b, INTEGER const ldb, REAL *rwork, REAL &resid) {
+void Cpbt02(fem::str_cref uplo, INTEGER const n, INTEGER const kd, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const ldx, COMPLEX *b, INTEGER const ldb, REAL *rwork, REAL &resid) {
     //
     // Quick exit if N = 0 or NRHS = 0.
     //
@@ -56,7 +56,7 @@ void Cpbt02(const char *uplo, INTEGER const n, INTEGER const kd, INTEGER const n
     // Exit with RESID = 1/EPS if ANORM = 0.
     //
     REAL eps = Rlamch("Epsilon");
-    REAL anorm = Clanhb("1", uplo, n, kd, a, lda, rwork);
+    REAL anorm = Clanhb("1", uplo.elems(), n, kd, a, lda, rwork);
     const REAL one = 1.0;
     if (anorm <= zero) {
         resid = one / eps;
@@ -68,7 +68,7 @@ void Cpbt02(const char *uplo, INTEGER const n, INTEGER const kd, INTEGER const n
     INTEGER j = 0;
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     for (j = 1; j <= nrhs; j = j + 1) {
-        Chbmv(uplo, n, kd, -cone, a, lda, &x[(j - 1) * ldx], 1, cone, &b[(j - 1) * ldb], 1);
+        Chbmv(uplo.elems(), n, kd, -cone, a, lda, &x[(j - 1) * ldx], 1, cone, &b[(j - 1) * ldb], 1);
     }
     //
     // Compute the maximum over the number of right hand sides of
@@ -83,7 +83,7 @@ void Cpbt02(const char *uplo, INTEGER const n, INTEGER const kd, INTEGER const n
         if (xnorm <= zero) {
             resid = one / eps;
         } else {
-            resid = max(resid, REAL(((bnorm / anorm) / xnorm) / eps));
+            resid = max(resid, ((bnorm / anorm) / xnorm) / eps);
         }
     }
     //

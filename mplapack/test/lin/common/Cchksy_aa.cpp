@@ -43,16 +43,13 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-#include <mplapack_debug.h>
-
 void Cchksy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, INTEGER const nmax, COMPLEX *a, COMPLEX *afac, COMPLEX *ainv, COMPLEX *b, COMPLEX *x, COMPLEX *xact, COMPLEX *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
     common cmn;
     common_write write(cmn);
-    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
-    char uplos[] = {'U', 'L'};
-    char path[4] = {};
-    char matpath[4] = {};
-    char buf[1024];
+    static INTEGER iseedy[4] = {1988, 1989, 1990, 1991};
+    static fem::str<1> uplos[2] = {"U", "L"};
+    fem::str<3> path;
+    fem::str<3> matpath;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -61,21 +58,21 @@ void Cchksy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
     INTEGER in = 0;
     INTEGER n = 0;
     INTEGER lda = 0;
-    char xtype[1];
+    fem::str<1> xtype;
     const INTEGER ntypes = 10;
     INTEGER nimat = 0;
     INTEGER izero = 0;
     INTEGER imat = 0;
     bool zerot = false;
     INTEGER iuplo = 0;
-    char uplo[1];
-    char type[1];
+    fem::str<1> uplo;
+    fem::str<1> type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist[1];
+    fem::str<1> dist;
     INTEGER info = 0;
     INTEGER ioff = 0;
     const COMPLEX czero = COMPLEX(0.0, 0.0);
@@ -92,17 +89,23 @@ void Cchksy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
     INTEGER irhs = 0;
     INTEGER nrhs = 0;
     //
+    static const char *format_9999 = "(' UPLO = ''',a1,''', N =',i5,', NB =',i4,', type ',i2,', test ',i2,"
+                                     "', ratio =',g12.5)";
+    static const char *format_9998 = "(' UPLO = ''',a1,''', N =',i5,', NRHS=',i3,', type ',i2,', test(',i2,"
+                                     "') =',g12.5)";
+    static const char *format_9995 = "(' Invalid input value: ',a4,'=',i6,'; must be <=',i6)";
+    //
     // Initialize constants and the random number seed.
     //
-    path[0] = 'C';
-    path[1] = 'S';
-    path[2] = 'A';
+    // Test path
     //
+    path(1, 1) = "Zomplex precision";
+    path(2, 3) = "SA";
     //
     // Path to generate matrices
-    matpath[0] = 'C';
-    matpath[1] = 'S';
-    matpath[2] = 'Y';
+    //
+    matpath(1, 1) = "Zomplex precision";
+    matpath(2, 3) = "SY";
     nrun = 0;
     nfail = 0;
     nerrs = 0;
@@ -120,7 +123,7 @@ void Cchksy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
     // Set the minimum block size for which the block routine should
     // be used, which will be later returned by iMlaenv
     //
-    xlaenv(2, 2);
+    Mxlaenv(2, 2);
     //
     // Do for each value of N in NVAL
     //
@@ -128,11 +131,11 @@ void Cchksy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
         n = nval[in - 1];
         if (n > nmax) {
             nfail++;
-            write(nout, "(' Invalid input value: ',a4,'=',i6,'; must be <=',i6)"), "M ", n, nmax;
+            write(nout, format_9995), "M ", n, nmax;
             goto statement_180;
         }
         lda = max(n, (INTEGER)1);
-        xtype[0] = 'N';
+        xtype = "N";
         nimat = ntypes;
         if (n <= 0) {
             nimat = 1;
@@ -160,20 +163,21 @@ void Cchksy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
             // Do first for UPLO = 'U', then for UPLO = 'L'
             //
             for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
-                uplo[0] = uplos[iuplo - 1];
+                uplo = uplos[iuplo - 1];
                 //
-                //              Begin generate the test matrix A.
+                // Begin generate the test matrix A.
                 //
-                //              Set up parameters with Clatb4 for the matrix generator
-                //              based on the type of matrix to be generated.
+                // Set up parameters with Clatb4 for the matrix generator
+                // based on the type of matrix to be generated.
                 //
                 Clatb4(matpath, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
                 //
-                //              Generate a matrix with Clatms.
+                // Generate a matrix with Clatms.
                 //
+                srnamt = "Clatms";
                 Clatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, uplo, a, lda, work, info);
                 //
-                //              Check error code from Clatms and handle error.
+                // Check error code from Clatms and handle error.
                 //
                 if (info != 0) {
                     Alaerh(path, "Clatms", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
@@ -263,21 +267,22 @@ void Cchksy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                     // returned by iMlaenv.
                     //
                     nb = nbval[inb - 1];
-                    xlaenv(1, nb);
+                    Mxlaenv(1, nb);
                     //
-                    //                 Copy the test matrix A into matrix AFAC which
-                    //                 will be factorized in place. This is needed to
-                    //                 preserve the test matrix A for subsequent tests.
+                    // Copy the test matrix A into matrix AFAC which
+                    // will be factorized in place. This is needed to
+                    // preserve the test matrix A for subsequent tests.
                     //
-                    Clacpy(uplo, n, n, a, lda, afac, lda);
+                    Clacpy(uplo.elems, n, n, a, lda, afac, lda);
                     //
-                    //                 Compute the L*D*L**T or U*D*U**T factorization of the
-                    //                 matrix. IWORK stores details of the interchanges and
-                    //                 the block structure of D. AINV is a work array for
-                    //                 block factorization, LWORK is the length of AINV.
+                    // Compute the L*D*L**T or U*D*U**T factorization of the
+                    // matrix. IWORK stores details of the interchanges and
+                    // the block structure of D. AINV is a work array for
+                    // block factorization, LWORK is the length of AINV.
                     //
+                    srnamt = "Csytrf_aa";
                     lwork = max((INTEGER)1, n * nb + n);
-                    Csytrf_aa(uplo, n, afac, lda, iwork, ainv, lwork, info);
+                    Csytrf_aa(uplo.elems, n, afac, lda, iwork, ainv, lwork, info);
                     //
                     // Adjust the expected value of INFO to account for
                     // pivoting.
@@ -319,10 +324,7 @@ void Cchksy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
-                            sprintnum_short(buf, result[k - 1]);
-                            write(nout, "(' UPLO = ''',a1,''', N =',i5,', NB =',i4,', type ',i2,"
-                                        "', test ',i2,', ratio =',a)"),
-                                uplo, n, nb, imat, k, buf;
+                            write(nout, format_9999), uplo, n, nb, imat, k, result[k - 1];
                             nfail++;
                         }
                     }
@@ -339,17 +341,19 @@ void Cchksy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                     for (irhs = 1; irhs <= nns; irhs = irhs + 1) {
                         nrhs = nsval[irhs - 1];
                         //
-                        //+    TEST 2 (Using TRS)
-                        //                 Solve and compute residual for  A * X = B.
+                        // +    TEST 2 (Using TRS)
+                        // Solve and compute residual for  A * X = B.
                         //
-                        //                    Choose a set of NRHS random solution vectors
-                        //                    stored in XACT and set up the right hand side B
+                        // Choose a set of NRHS random solution vectors
+                        // stored in XACT and set up the right hand side B
                         //
+                        srnamt = "Clarhs";
                         Clarhs(matpath, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                         Clacpy("Full", n, nrhs, b, lda, x, lda);
                         //
+                        srnamt = "Csytrs_aa";
                         lwork = max((INTEGER)1, 3 * n - 2);
-                        Csytrs_aa(uplo, n, nrhs, afac, lda, iwork, x, lda, work, lwork, info);
+                        Csytrs_aa(uplo.elems, n, nrhs, afac, lda, iwork, x, lda, work, lwork, info);
                         //
                         // Check error code from Csytrs and handle error.
                         //
@@ -372,10 +376,7 @@ void Cchksy_aa(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb,
                                     if (nfail == 0 && nerrs == 0) {
                                         Alahd(nout, path);
                                     }
-                                    sprintnum_short(buf, result[k - 1]);
-                                    write(nout, "(' UPLO = ''',a1,''', N =',i5,', NRHS=',i3,', type ',i2,"
-                                                "', test(',i2,') =',a)"),
-                                        uplo, n, nrhs, imat, k, buf;
+                                    write(nout, format_9998), uplo, n, nrhs, imat, k, result[k - 1];
                                     nfail++;
                                 }
                             }

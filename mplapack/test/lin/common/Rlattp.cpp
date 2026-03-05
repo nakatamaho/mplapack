@@ -43,21 +43,20 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Rlattp(INTEGER const imat, const char *uplo, const char *trans, char *diag, INTEGER *iseed, INTEGER const n, REAL *a, REAL *b, REAL *work, INTEGER &info) {
+void Rlattp(INTEGER const imat, fem::str_cref uplo, fem::str_cref trans, fem::str_ref diag, INTEGER (&iseed)[4], INTEGER const n, REAL *a, REAL *b, REAL *work, INTEGER &info) {
     //
-    char path[4] = {};
-    path[0] = 'R';
-    path[1] = 'T';
-    path[2] = 'P';
+    fem::str<3> path = "Double precision";
+    path(2, 3) = "TP";
     REAL unfl = Rlamch("Safe minimum");
     REAL ulp = Rlamch("Epsilon") * Rlamch("Base");
     REAL smlnum = unfl;
     const REAL one = 1.0;
     REAL bignum = (one - ulp) / smlnum;
+    Rlabad(smlnum, bignum);
     if ((imat >= 7 && imat <= 10) || imat == 18) {
-        *diag = 'U';
+        diag = "U";
     } else {
-        *diag = 'N';
+        diag = "N";
     }
     info = 0;
     //
@@ -69,21 +68,21 @@ void Rlattp(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     //
     // Call Rlatb4 to set parameters for SLATMS.
     //
-    bool upper = Mlsame(uplo, "U");
-    char type;
+    bool upper = Mlsame(uplo.elems(), "U");
+    fem::str<1> type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist;
-    char packit;
+    fem::str<1> dist;
+    fem::str<1> packit;
     if (upper) {
-        Rlatb4(path, imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
-        packit = 'C';
+        Rlatb4(path, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
+        packit = "C";
     } else {
-        Rlatb4(path, -imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
-        packit = 'R';
+        Rlatb4(path, -imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
+        packit = "R";
     }
     //
     // IMAT <= 6:  Non-unit triangular matrix
@@ -98,7 +97,7 @@ void Rlattp(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     REAL plus2 = 0.0;
     REAL rexp = 0.0;
     REAL x = 0.0;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     REAL y = 0.0;
     REAL z = 0.0;
     INTEGER jcnext = 0;
@@ -116,7 +115,7 @@ void Rlattp(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     REAL texp = 0.0;
     REAL tleft = 0.0;
     if (imat <= 6) {
-        Rlatms(n, n, &dist, iseed, &type, b, mode, cndnum, anorm, kl, ku, &packit, a, n, work, info);
+        Rlatms(n, n, dist, iseed, type, b, mode, cndnum, anorm, kl, ku, packit, a, n, work, info);
         //
         // IMAT > 6:  Unit triangular matrix
         // The diagonal is deliberately set to something other than 1.
@@ -229,8 +228,8 @@ void Rlattp(INTEGER const imat, const char *uplo, const char *trans, char *diag,
         //
         // where c = w / sqrt(w**2+4) and s = 2 / sqrt(w**2+4).
         //
-        star1 = 0.25e0;
-        sfac = 0.5e0;
+        star1 = 0.25;
+        sfac = 0.5;
         plus1 = sfac;
         for (j = 1; j <= n; j = j + 2) {
             plus2 = star1 / plus1;
@@ -693,7 +692,7 @@ void Rlattp(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     INTEGER jr = 0;
     INTEGER jl = 0;
     REAL t = 0.0;
-    if (!Mlsame(trans, "N")) {
+    if (!Mlsame(trans.elems(), "N")) {
         if (upper) {
             jj = 1;
             jr = n * (n + 1) / 2;

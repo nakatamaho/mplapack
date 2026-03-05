@@ -8,11 +8,11 @@ MPFRLIBS=-lmplapack_mpfr -lmpblas_mpfr -lmpfr -lmpc -lgmp
 GMPLIBS=-lmplapack_gmp -lmpblas_gmp -lgmpxx -lgmp
 QDLIBS=-lmplapack_qd -lmpblas_qd -lqd
 DDLIBS=-lmplapack_dd -lmpblas_dd -lqd
-_FLOAT64xLIBS=-lmplapack__Float64x -lmpblas__Float64x
-_FLOAT128LIBS=-lmplapack__Float128 -lmpblas__Float128%%LIBQUADMATH%%
+BINARY80LIBS=-lmplapack_binary80 -lmpblas_binary80
+BINARY128LIBS=-lmplapack_binary128 -lmpblas_binary128%%LIBQUADMATH%%
 DOUBLELIBS=-lmplapack_double -lmpblas_double
 
-programs=Rgesvd_random_highcond_mpfr Rgesvd_random_highcond_gmp Rgesvd_random_highcond_qd Rgesvd_random_highcond_dd Rgesvd_random_highcond__Float64x Rgesvd_random_highcond__Float128 Rgesvd_random_highcond_double
+programs=Rgesvd_random_highcond_mpfr Rgesvd_random_highcond_gmp Rgesvd_random_highcond_qd Rgesvd_random_highcond_dd Rgesvd_random_highcond_binary80 Rgesvd_random_highcond_binary128 Rgesvd_random_highcond_double
 
 all: $(programs)
 
@@ -31,11 +31,11 @@ Rgesvd_random_highcond_qd: Rgesvd_random_highcond_qd.o
 Rgesvd_random_highcond_dd: Rgesvd_random_highcond_dd.o
 	$(CXX) -o Rgesvd_random_highcond_dd Rgesvd_random_highcond_dd.o $(LIBFLAGS) $(DDLIBS)
 
-Rgesvd_random_highcond__Float64x: Rgesvd_random_highcond__Float64x.o
-	$(CXX) -o Rgesvd_random_highcond__Float64x Rgesvd_random_highcond__Float64x.o $(LIBFLAGS) $(_FLOAT64xLIBS)
+Rgesvd_random_highcond_binary80: Rgesvd_random_highcond_binary80.o
+	$(CXX) -o Rgesvd_random_highcond_binary80 Rgesvd_random_highcond_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
 
-Rgesvd_random_highcond__Float128: Rgesvd_random_highcond__Float128.o
-	$(CXX) -o Rgesvd_random_highcond__Float128 Rgesvd_random_highcond__Float128.o $(LIBFLAGS) $(_FLOAT128LIBS)
+Rgesvd_random_highcond_binary128: Rgesvd_random_highcond_binary128.o
+	$(CXX) -o Rgesvd_random_highcond_binary128 Rgesvd_random_highcond_binary128.o $(LIBFLAGS) $(BINARY128LIBS)
 
 Rgesvd_random_highcond_double: Rgesvd_random_highcond_double.o
 	$(CXX) -o Rgesvd_random_highcond_double Rgesvd_random_highcond_double.o $(LIBFLAGS) $(DOUBLELIBS)

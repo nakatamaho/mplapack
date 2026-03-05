@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Cgbt02(const char *trans, INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const ldx, COMPLEX *b, INTEGER const ldb, REAL &resid) {
+void Cgbt02(fem::str_cref trans, INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const ldx, COMPLEX *b, INTEGER const ldb, REAL &resid) {
     //
     // Quick return if N = 0 pr NRHS = 0
     //
@@ -64,7 +64,7 @@ void Cgbt02(const char *trans, INTEGER const m, INTEGER const n, INTEGER const k
     for (j = 1; j <= n; j = j + 1) {
         i1 = max(kd + 1 - j, (INTEGER)1);
         i2 = min(kd + m - j, kl + kd);
-        anorm = max({anorm, RCasum(i2 - i1 + 1, &a[(i1 - 1) + (j - 1) * lda], 1)});
+        anorm = max(anorm, RCasum(i2 - i1 + 1, &a[(i1 - 1) + (j - 1) * lda], 1));
     }
     const REAL one = 1.0;
     if (anorm <= zero) {
@@ -73,7 +73,7 @@ void Cgbt02(const char *trans, INTEGER const m, INTEGER const n, INTEGER const k
     }
     //
     INTEGER n1 = 0;
-    if (Mlsame(trans, "T") || Mlsame(trans, "C")) {
+    if (Mlsame(trans.elems(), "T") || Mlsame(trans.elems(), "C")) {
         n1 = n;
     } else {
         n1 = m;
@@ -83,7 +83,7 @@ void Cgbt02(const char *trans, INTEGER const m, INTEGER const n, INTEGER const k
     //
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     for (j = 1; j <= nrhs; j = j + 1) {
-        Cgbmv(trans, m, n, kl, ku, -cone, a, lda, &x[(j - 1) * ldx], 1, cone, &b[(j - 1) * ldb], 1);
+        Cgbmv(trans.elems(), m, n, kl, ku, -cone, a, lda, &x[(j - 1) * ldx], 1, cone, &b[(j - 1) * ldb], 1);
     }
     //
     // Compute the maximum over the number of right hand sides of
@@ -98,7 +98,7 @@ void Cgbt02(const char *trans, INTEGER const m, INTEGER const n, INTEGER const k
         if (xnorm <= zero) {
             resid = one / eps;
         } else {
-            resid = max(resid, REAL(((bnorm / anorm) / xnorm) / eps));
+            resid = max(resid, ((bnorm / anorm) / xnorm) / eps);
         }
     }
     //

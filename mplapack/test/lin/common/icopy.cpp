@@ -36,7 +36,14 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void icopy(INTEGER const &n, INTEGER *sx, INTEGER const &incx, INTEGER *sy, INTEGER const &incy) {
+#include <fem.hpp> // Fortran EMulation library of fable module
+using namespace fem::major_types;
+using fem::common;
+
+#include <mplapack_matgen.h>
+#include <mplapack_lin.h>
+
+void icopy(INTEGER const n, INTEGER *sx, INTEGER const incx, INTEGER *sy, INTEGER const incy) {
     INTEGER ix = 0;
     INTEGER iy = 0;
     INTEGER i = 0;
