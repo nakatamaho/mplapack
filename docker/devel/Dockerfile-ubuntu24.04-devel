@@ -20,12 +20,7 @@
 #  eval $(ssh-agent); ssh-add ~/.ssh/id_ed25519; docker run --privileged --gpus all -v $SSH_AUTH_SOCK:/ssh-agent -e SSH_AUTH_SOCK=/ssh-agent -it --rm mplapack:devel2404 /bin/bash
 #
 # * How to run with LLM coding assistant (requires docker-compose-llm.yml running)
-#  docker run --privileged --gpus all -it --rm \
-#    --network mplapack-llm_llm-net \
-#    -e OPENAI_API_BASE=http://172.31.0.10:8080/v1 \
-#    -e NO_COLOR=1 \
-#    -v /path/to/mplapack:/home/docker/mplapack:rw \
-#    mplapack:devel2404 /bin/bash
+#  eval $(ssh-agent); ssh-add ~/.ssh/id_ed25519; docker run --privileged --gpus all -it --rm --network mplapack-llm_llm-net -e OPENAI_API_BASE=http://172.31.0.10:8080/v1 -e NO_COLOR=1 mplapack:devel2404 /bin/bash
 #  Then inside: aider  (or)  emacs src/Rlasq2.cpp  then C-c a a
 #
 # https://hub.docker.com/r/nvidia/cuda/tags
