@@ -137,6 +137,7 @@ cp .env.llm.example .env.llm
 # and set MODEL_FILE to match the downloaded filename.
 nano .env.llm
 
+docker compose -f docker-compose-llm.yml --env-file .env.llm build inference
 docker compose -f docker-compose-llm.yml --env-file .env.llm up -d
 
 # Wait for model load (60-120 seconds)

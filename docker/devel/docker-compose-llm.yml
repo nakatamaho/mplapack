@@ -18,9 +18,13 @@ networks:
 
 services:
   inference:
-    image: ghcr.io/ggerganov/llama.cpp:server-cuda
-    # If the above image does not support qwen35moe architecture,
-    # build from source: see Dockerfile.inference in the llm-local-agent/ directory.
+    build:
+      context: .
+      dockerfile: Dockerfile.inference
+      args:
+        LLAMA_CPP_REF: ${LLAMA_CPP_REF:-HEAD}
+        CUDA_ARCH: ${CUDA_ARCH:-80}
+    image: llm-local-agent/inference:latest
     container_name: llm-inference
     restart: unless-stopped
 
