@@ -10,7 +10,7 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 CONF_FILE="${CONF_FILE:-$SCRIPT_DIR/build-matrix.conf}"
 LOGDIR="${LOGDIR:-$SCRIPT_DIR/logs/$(date +%Y%m%d_%H%M%S)}"
-DOCKER_DIR="$SCRIPT_DIR/docker"
+DOCKER_DIR="$SCRIPT_DIR/../docker/release"
 TARBALL="${TARBALL:-}"
 PHASE="${PHASE:-all}"
 FILTER_NAME="${FILTER_NAME:-}"
