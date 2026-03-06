@@ -62,7 +62,6 @@ docker run --privileged --gpus all -it --rm \
   --network mplapack-llm_llm-net \
   -e OPENAI_API_BASE=http://172.31.0.10:8080/v1 \
   -e NO_COLOR=1 \
-  -v /path/to/mplapack:/home/docker/mplapack:rw \
   mplapack:devel2404 /bin/bash
 ```
 
