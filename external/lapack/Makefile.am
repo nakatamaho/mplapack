@@ -15,24 +15,37 @@ work/$(EXTRACT_STAMP):
 	cd $(abs_builddir)/work/internal; tar xvfz $(abs_srcdir)/download/lapack-$(LAPACKVERSION).tar.gz
 	touch $(abs_builddir)/work/$(EXTRACT_STAMP)
 
-work/$(PATCH_STAMP): work/$(EXTRACT_STAMP)
-if IS_MINGW
-	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_srcdir)/patches/$(LAPACK_VERSION)/patch-mingw
-endif
-if IS_MIC
-	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_srcdir)/patches/$(LAPACK_VERSION)/patch-mic
-endif
-	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_srcdir)/patches/$(LAPACK_VERSION)/patch-print
-	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_srcdir)/patches/$(LAPACK_VERSION)/patch-zchkhe_aa_2stage.f
-	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_srcdir)/patches/$(LAPACK_VERSION)/patch-ddrvst2stg.f
-	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_srcdir)/patches/$(LAPACK_VERSION)/patch-ddrvst.f
-	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_srcdir)/patches/$(LAPACK_VERSION)/patch-dlatm4.f
-	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_srcdir)/patches/$(LAPACK_VERSION)/patch-zlqt04.f
-	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_srcdir)/patches/$(LAPACK_VERSION)/patch-zlqt05.f
-	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_srcdir)/patches/$(LAPACK_VERSION)/patch-ztsqr01.f
-	cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION); patch -p0 < $(abs_srcdir)/patches/$(LAPACK_VERSION)/patch-iseed
+LAPACK_WORK_DIR = $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)
+LAPACK_PATCH_DIR = $(abs_srcdir)/patches/$(LAPACK_VERSION)
 
-	cp $(abs_srcdir)/patches/print.c $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/BLAS/SRC
+PATCHES_3_9_1 = \
+	patch-zchkhe_aa_2stage.f \
+	patch-ddrvst2stg.f \
+	patch-ddrvst.f \
+	patch-dlatm4.f \
+	patch-zlqt04.f \
+	patch-zlqt05.f \
+	patch-ztsqr01.f \
+	patch-iseed
+
+PATCHES_3_12_1 = \
+	patch-iseed
+
+work/$(PATCH_STAMP): work/$(EXTRACT_STAMP)
+	cd $(LAPACK_WORK_DIR) && patch -p0 < $(LAPACK_PATCH_DIR)/patch-print
+if IS_MINGW
+	cd $(LAPACK_WORK_DIR) && patch -p0 < $(LAPACK_PATCH_DIR)/patch-mingw
+endif
+	@if test "x$(LAPACK_VERSION)" = "x3.9.1"; then \
+		$(foreach patch,$(PATCHES_3_9_1), \
+			cd $(LAPACK_WORK_DIR) && patch -p0 < $(LAPACK_PATCH_DIR)/$(patch) && ) \
+		cp $(abs_srcdir)/patches/print.c $(LAPACK_WORK_DIR)/BLAS/SRC; \
+	fi
+	@if test "x$(LAPACK_VERSION)" = "x3.12.1"; then \
+		$(foreach patch,$(PATCHES_3_12_1), \
+			cd $(LAPACK_WORK_DIR) && patch -p2 < $(LAPACK_PATCH_DIR)/$(patch) && ) \
+		cp $(abs_srcdir)/patches/print.c $(LAPACK_WORK_DIR)/BLAS/SRC; \
+	fi
 	touch $(abs_builddir)/work/$(PATCH_STAMP)
 
 work/$(CONFIGURE_STAMP): work/$(PATCH_STAMP)

@@ -1,16 +1,57 @@
---- TESTING/LIN/zlatsy.f~	2026-02-18 00:52:38.217426212 +0900
-+++ TESTING/LIN/zlatsy.f	2026-02-18 00:55:27.203491197 +0900
+diff -ur a/lapack-3.12.1/TESTING/LIN/clatsp.f b/lapack-3.12.1/TESTING/LIN/clatsp.f
+--- a/lapack-3.12.1/TESTING/LIN/clatsp.f	2024-12-03 20:39:11.000000000 +0900
++++ b/lapack-3.12.1/TESTING/LIN/clatsp.f	2026-03-07 10:42:19.242684746 +0900
+@@ -15,7 +15,7 @@
+ *       INTEGER            N
+ *       ..
+ *       .. Array Arguments ..
+-*       INTEGER            ISEED( * )
++*       INTEGER            ISEED( 4 )
+ *       COMPLEX            X( * )
+ *       ..
+ *
+@@ -91,7 +91,7 @@
+       INTEGER            N
+ *     ..
+ *     .. Array Arguments ..
+-      INTEGER            ISEED( * )
++      INTEGER            ISEED( 4 )
+       COMPLEX            X( * )
+ *     ..
+ *
+diff -ur a/lapack-3.12.1/TESTING/LIN/clatsy.f b/lapack-3.12.1/TESTING/LIN/clatsy.f
+--- a/lapack-3.12.1/TESTING/LIN/clatsy.f	2024-12-03 20:39:11.000000000 +0900
++++ b/lapack-3.12.1/TESTING/LIN/clatsy.f	2026-03-07 10:42:19.243684766 +0900
+@@ -15,7 +15,7 @@
+ *       INTEGER            LDX, N
+ *       ..
+ *       .. Array Arguments ..
+-*       INTEGER            ISEED( * )
++*       INTEGER            ISEED( 4 )
+ *       COMPLEX            X( LDX, * )
+ *       ..
+ *
 @@ -96,7 +96,7 @@
        INTEGER            LDX, N
  *     ..
  *     .. Array Arguments ..
 -      INTEGER            ISEED( * )
 +      INTEGER            ISEED( 4 )
-       COMPLEX*16         X( LDX, * )
+       COMPLEX            X( LDX, * )
  *     ..
  *
---- TESTING/LIN/zlatsp.f~	2026-02-18 00:52:38.218426236 +0900
-+++ TESTING/LIN/zlatsp.f	2026-02-18 00:56:52.980524822 +0900
+diff -ur a/lapack-3.12.1/TESTING/LIN/zlatsp.f b/lapack-3.12.1/TESTING/LIN/zlatsp.f
+--- a/lapack-3.12.1/TESTING/LIN/zlatsp.f	2024-12-03 20:39:11.000000000 +0900
++++ b/lapack-3.12.1/TESTING/LIN/zlatsp.f	2026-03-07 10:42:19.243684766 +0900
+@@ -15,7 +15,7 @@
+ *       INTEGER            N
+ *       ..
+ *       .. Array Arguments ..
+-*       INTEGER            ISEED( * )
++*       INTEGER            ISEED( 4 )
+ *       COMPLEX*16         X( * )
+ *       ..
+ *
 @@ -91,7 +91,7 @@
        INTEGER            N
  *     ..
@@ -18,5 +59,26 @@
 -      INTEGER            ISEED( * )
 +      INTEGER            ISEED( 4 )
        COMPLEX*16         X( * )
+ *     ..
+ *
+diff -ur a/lapack-3.12.1/TESTING/LIN/zlatsy.f b/lapack-3.12.1/TESTING/LIN/zlatsy.f
+--- a/lapack-3.12.1/TESTING/LIN/zlatsy.f	2024-12-03 20:39:11.000000000 +0900
++++ b/lapack-3.12.1/TESTING/LIN/zlatsy.f	2026-03-07 10:42:19.242684746 +0900
+@@ -15,7 +15,7 @@
+ *       INTEGER            LDX, N
+ *       ..
+ *       .. Array Arguments ..
+-*       INTEGER            ISEED( * )
++*       INTEGER            ISEED( 4 )
+ *       COMPLEX*16         X( LDX, * )
+ *       ..
+ *
+@@ -96,7 +96,7 @@
+       INTEGER            LDX, N
+ *     ..
+ *     .. Array Arguments ..
+-      INTEGER            ISEED( * )
++      INTEGER            ISEED( 4 )
+       COMPLEX*16         X( LDX, * )
  *     ..
  *
