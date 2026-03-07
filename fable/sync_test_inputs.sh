@@ -23,7 +23,7 @@ USAGE
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 
-src_dir="${HOME}/mplapack/external/lapack/work/internal/lapack-3.9.1/TESTING"
+src_dir="${HOME}/mplapack/external/lapack/work/internal/lapack-3.12.1/TESTING"
 dest_root="${HOME}/mplapack/mplapack"
 dry_run=0
 

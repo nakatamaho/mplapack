@@ -252,6 +252,6 @@ for pass in $(seq 1 "${PASSES}"); do
   fi
 done
 
-bash "${FABLE}/patch_lapack.sh"
+bash "${FABLE}/patch_lapack_3.12.1.sh"
 
 echo "ALL DONE"
