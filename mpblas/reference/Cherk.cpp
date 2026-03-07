@@ -224,6 +224,6 @@ void Cherk(const char *uplo, const char *trans, INTEGER const n, INTEGER const k
         }
     }
     //
-    // End of Cherk .
+    // End of Cherk
     //
 }

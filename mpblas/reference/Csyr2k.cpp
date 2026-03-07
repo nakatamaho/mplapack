@@ -204,6 +204,6 @@ void Csyr2k(const char *uplo, const char *trans, INTEGER const n, INTEGER const 
         }
     }
     //
-    // End of Csyr2k.
+    // End of Csyr2k
     //
 }

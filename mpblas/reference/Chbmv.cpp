@@ -204,6 +204,6 @@ void Chbmv(const char *uplo, INTEGER const n, INTEGER const k, COMPLEX const alp
         }
     }
     //
-    // End of Chbmv .
+    // End of Chbmv
     //
 }

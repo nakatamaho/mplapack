@@ -276,6 +276,6 @@ void Ctbsv(const char *uplo, const char *trans, const char *diag, INTEGER const 
         }
     }
     //
-    // End of Ctbsv .
+    // End of Ctbsv
     //
 }

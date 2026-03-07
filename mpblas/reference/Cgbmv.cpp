@@ -215,6 +215,6 @@ void Cgbmv(const char *trans, INTEGER const m, INTEGER const n, INTEGER const kl
         }
     }
     //
-    // End of Cgbmv .
+    // End of Cgbmv
     //
 }

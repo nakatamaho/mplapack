@@ -135,6 +135,6 @@ void Rsyr(const char *uplo, INTEGER const n, REAL const alpha, REAL *x, INTEGER 
         }
     }
     //
-    // End of Rsyr  .
+    // End of Rsyr
     //
 }

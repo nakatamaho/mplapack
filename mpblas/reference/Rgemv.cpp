@@ -184,6 +184,6 @@ void Rgemv(const char *trans, INTEGER const m, INTEGER const n, REAL const alpha
         }
     }
     //
-    // End of Rgemv .
+    // End of Rgemv
     //
 }

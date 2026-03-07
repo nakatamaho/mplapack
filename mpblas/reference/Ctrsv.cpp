@@ -253,6 +253,6 @@ void Ctrsv(const char *uplo, const char *trans, const char *diag, INTEGER const 
         }
     }
     //
-    // End of Ctrsv .
+    // End of Ctrsv
     //
 }

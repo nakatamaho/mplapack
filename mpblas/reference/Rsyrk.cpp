@@ -195,6 +195,6 @@ void Rsyrk(const char *uplo, const char *trans, INTEGER const n, INTEGER const k
         }
     }
     //
-    // End of Rsyrk .
+    // End of Rsyrk
     //
 }

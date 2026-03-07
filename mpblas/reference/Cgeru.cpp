@@ -106,6 +106,6 @@ void Cgeru(INTEGER const m, INTEGER const n, COMPLEX const alpha, COMPLEX *x, IN
         }
     }
     //
-    // End of Cgeru .
+    // End of Cgeru
     //
 }

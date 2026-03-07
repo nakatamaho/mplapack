@@ -179,6 +179,6 @@ void Rsymm(const char *side, const char *uplo, INTEGER const m, INTEGER const n,
         }
     }
     //
-    // End of Rsymm .
+    // End of Rsymm
     //
 }

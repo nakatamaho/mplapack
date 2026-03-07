@@ -195,6 +195,6 @@ void Csyrk(const char *uplo, const char *trans, INTEGER const n, INTEGER const k
         }
     }
     //
-    // End of Csyrk .
+    // End of Csyrk
     //
 }

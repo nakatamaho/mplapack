@@ -232,6 +232,6 @@ void Cher2k(const char *uplo, const char *trans, INTEGER const n, INTEGER const 
         }
     }
     //
-    // End of Cher2k.
+    // End of Cher2k
     //
 }

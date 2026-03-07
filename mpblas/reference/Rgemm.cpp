@@ -196,6 +196,6 @@ void Rgemm(const char *transa, const char *transb, INTEGER const m, INTEGER cons
         }
     }
     //
-    // End of Rgemm .
+    // End of Rgemm
     //
 }

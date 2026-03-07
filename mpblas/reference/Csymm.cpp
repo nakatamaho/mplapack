@@ -179,6 +179,6 @@ void Csymm(const char *side, const char *uplo, INTEGER const m, INTEGER const n,
         }
     }
     //
-    // End of Csymm .
+    // End of Csymm
     //
 }

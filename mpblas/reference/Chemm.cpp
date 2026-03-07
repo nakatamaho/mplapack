@@ -179,6 +179,6 @@ void Chemm(const char *side, const char *uplo, INTEGER const m, INTEGER const n,
         }
     }
     //
-    // End of Chemm .
+    // End of Chemm
     //
 }

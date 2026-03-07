@@ -132,4 +132,7 @@ void Rrotm(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER cons
             }
         }
     }
+    //
+    // End of Rrotm
+    //
 }

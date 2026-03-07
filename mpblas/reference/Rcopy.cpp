@@ -88,4 +88,7 @@ void Rcopy(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER cons
             iy += incy;
         }
     }
+    //
+    // End of Rcopy
+    //
 }

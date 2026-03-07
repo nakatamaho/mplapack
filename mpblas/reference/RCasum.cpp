@@ -62,4 +62,7 @@ REAL RCasum(INTEGER const n, COMPLEX *zx, INTEGER const incx) {
     }
     return_value = stemp;
     return return_value;
+    //
+    // End of RCasum
+    //
 }

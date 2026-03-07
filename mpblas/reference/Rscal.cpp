@@ -75,4 +75,7 @@ void Rscal(INTEGER const n, REAL const da, REAL *dx, INTEGER const incx) {
             dx[i - 1] = da * dx[i - 1];
         }
     }
+    //
+    // End of Rscal
+    //
 }

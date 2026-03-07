@@ -214,6 +214,6 @@ void Rtrmv(const char *uplo, const char *trans, const char *diag, INTEGER const 
         }
     }
     //
-    // End of Rtrmv .
+    // End of Rtrmv
     //
 }

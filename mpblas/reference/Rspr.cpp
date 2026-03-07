@@ -142,6 +142,6 @@ void Rspr(const char *uplo, INTEGER const n, REAL const alpha, REAL *x, INTEGER 
         }
     }
     //
-    // End of Rspr  .
+    // End of Rspr
     //
 }

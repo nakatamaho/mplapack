@@ -200,6 +200,6 @@ void Rgbmv(const char *trans, INTEGER const m, INTEGER const n, INTEGER const kl
         }
     }
     //
-    // End of Rgbmv .
+    // End of Rgbmv
     //
 }

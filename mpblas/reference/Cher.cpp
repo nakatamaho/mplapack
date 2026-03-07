@@ -147,6 +147,6 @@ void Cher(const char *uplo, INTEGER const n, REAL const alpha, COMPLEX *x, INTEG
         }
     }
     //
-    // End of Cher  .
+    // End of Cher
     //
 }

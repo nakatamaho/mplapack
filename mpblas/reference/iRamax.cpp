@@ -76,4 +76,7 @@ iRamax(INTEGER const n, REAL *dx, INTEGER const incx) {
         }
     }
     return return_value;
+    //
+    // End of iRamax
+    //
 }

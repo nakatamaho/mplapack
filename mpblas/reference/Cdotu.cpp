@@ -74,4 +74,7 @@ Cdotu(INTEGER const n, COMPLEX *zx, INTEGER const incx, COMPLEX *zy, INTEGER con
     }
     return_value = ztemp;
     return return_value;
+    //
+    // End of Cdotu
+    //
 }

@@ -192,4 +192,7 @@ void Rrotmg(REAL &dd1, REAL &dd2, REAL &dx1, REAL const dy1, REAL *dparam) {
     }
     //
     dparam[1 - 1] = dflag;
+    //
+    // End of Rrotmg
+    //
 }

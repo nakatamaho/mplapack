@@ -57,4 +57,7 @@ void Cscal(INTEGER const n, COMPLEX const za, COMPLEX *zx, INTEGER const incx) {
             zx[i - 1] = za * zx[i - 1];
         }
     }
+    //
+    // End of Cscal
+    //
 }

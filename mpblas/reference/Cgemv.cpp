@@ -199,6 +199,6 @@ void Cgemv(const char *trans, INTEGER const m, INTEGER const n, COMPLEX const al
         }
     }
     //
-    // End of Cgemv .
+    // End of Cgemv
     //
 }
