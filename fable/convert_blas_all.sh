@@ -36,7 +36,7 @@ EXCLUDE_BASENAMES=(
 
 files=()
 
-for src in *.f*; do
+for src in *.f *.f90 *.F; do
     base="${src##*/}"       # e.g., zgemv.f
     stem="${base%%.*}"      # e.g., zgemv
 
