@@ -761,6 +761,62 @@ def load_includes(global_line_index_generator, stripped_source_lines):
     return result
 
 
+def _split_overlong_fixed_form_lines(lines):
+    """Split lines exceeding 72 columns into continuation lines.
+
+    Fixed-form Fortran uses columns 7-72 for statement text.
+    source_line.__init__ extracts text[6:72], silently discarding
+    anything beyond column 72.  If a string literal straddles the
+    boundary, its closing quote is lost and the parser raises
+    "Missing terminating ' character".
+
+    This function hard-cuts at column 72 and emits continuation lines.
+    strip_spaces_separate_strings() already handles string literals
+    that span continuation lines, so cutting mid-string is safe.
+
+    The only hazard is splitting a doubled quote ('') at the boundary:
+    the parser would see the first quote as a string terminator.
+    We guard against this by backing up one column when the cut falls
+    between the two halves of a doubled quote.
+    """
+    MAX_COL = 72
+
+    out = []
+    for line in lines:
+        if len(line) <= MAX_COL:
+            out.append(line)
+            continue
+
+        # Leave comment lines untouched (they are ignored by the parser)
+        if line and line[0] in ("c", "C", "*", "!"):
+            out.append(line)
+            continue
+        # Lines produced by _rewrite_free_form_to_fixed_form_lines for
+        # comments are empty strings; skip those too.
+        if line.strip() == "":
+            out.append(line)
+            continue
+
+        # Hard cut with doubled-quote guard
+        remaining = line
+        first = True
+        while len(remaining) > MAX_COL:
+            cut = MAX_COL
+            # Guard: do not split between two halves of a doubled quote
+            if (cut < len(remaining)
+                    and remaining[cut - 1] in ("'", '"')
+                    and remaining[cut] == remaining[cut - 1]):
+                cut -= 1
+            out.append(remaining[:cut])
+            remainder = remaining[cut:]
+            # Build continuation line: cols 1-5 blank, col 6 = '1'
+            remaining = " " * 5 + "1" + remainder
+            first = False
+        out.append(remaining)
+
+    return out
+
+
 def load(global_line_index_generator, file_name, skip_load_includes=False):
     source_lines = []
     with open(file_name) as f:
@@ -769,6 +825,15 @@ def load(global_line_index_generator, file_name, skip_load_includes=False):
     # This must happen before constructing source_line objects.
     lines = _rewrite_free_form_to_fixed_form_lines(
         file_name=file_name, lines=lines)
+    # Ensure no line exceeds the fixed-form 72-column limit.
+    # source_line.__init__ extracts text[6:72] as the statement field; any
+    # content beyond column 72 is silently discarded, which can cut string
+    # literals and cause "Missing terminating ' character" errors.
+    # This safety net covers both:
+    #   - .f90 files where _rewrite_free_form_to_fixed_form_lines produced
+    #     overlong lines (free-form allows up to 132 chars per line)
+    #   - .f temp files from cout.py's free-to-fixed lowering
+    lines = _split_overlong_fixed_form_lines(lines)
     for i_line, line in enumerate(lines):
         source_lines.append(source_line(
             global_line_index_generator=global_line_index_generator,
