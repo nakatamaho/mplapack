@@ -1,3 +1,5 @@
+https://github.com/Reference-LAPACK/lapack/pull/1197
+
 diff -ur a/lapack-3.12.1/TESTING/LIN/clatsp.f b/lapack-3.12.1/TESTING/LIN/clatsp.f
 --- a/lapack-3.12.1/TESTING/LIN/clatsp.f	2024-12-03 20:39:11.000000000 +0900
 +++ b/lapack-3.12.1/TESTING/LIN/clatsp.f	2026-03-07 10:42:19.242684746 +0900
