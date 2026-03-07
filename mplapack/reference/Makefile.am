@@ -1056,6 +1056,37 @@ iMlaver.cpp \
 iMlazlc.cpp \
 iMlazlr.cpp \
 iMparam2stage.cpp \
-iMparmq.cpp
+iMparmq.cpp \
+Cgedmd.cpp \
+Cgedmdq.cpp \
+Cgelst.cpp \
+Cgeqp3rk.cpp \
+Claqp2rk.cpp \
+Claqp3rk.cpp \
+Claqz0.cpp \
+Claqz1.cpp \
+Claqz2.cpp \
+Claqz3.cpp \
+Clarf1f.cpp \
+Clarf1l.cpp \
+Clatrs3.cpp \
+Crscl.cpp \
+Ctrsyl3.cpp \
+Rgedmd.cpp \
+Rgedmdq.cpp \
+Rgelst.cpp \
+Rgeqp3rk.cpp \
+Rlaqp2rk.cpp \
+Rlaqp3rk.cpp \
+Rlaqz0.cpp \
+Rlaqz1.cpp \
+Rlaqz2.cpp \
+Rlaqz3.cpp \
+Rlaqz4.cpp \
+Rlarf1f.cpp \
+Rlarf1l.cpp \
+Rlarmm.cpp \
+Rlatrs3.cpp \
+Rtrsyl3.cpp
 
 EXTRA_DIST = iMlaver.cpp.in
