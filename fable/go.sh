@@ -9,7 +9,7 @@ ROOT="/home/docker/mplapack"
 # Ensure Python can import the in-tree 'fable' package.
 export PYTHONPATH="${ROOT}:${PYTHONPATH:-}"
 
-LAPACK_ROOT="${ROOT}/external/lapack/work/internal/lapack-3.9.1"
+LAPACK_ROOT="${ROOT}/external/lapack/work/internal/lapack-3.12.1"
 BLAS_SRC="${LAPACK_ROOT}/BLAS/SRC"
 LAPACK_SRC="${LAPACK_ROOT}/SRC"
 

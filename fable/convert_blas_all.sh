@@ -77,4 +77,4 @@ parallel -j "${JOBS:-$(nproc)}" '
      bash "$FABLE_CONVERT" "{}"
  ' ::: "${files[@]}"
 
-patch < "$HOME/mplapack/fable/3.9.1/patch-blas"
+patch < "$HOME/mplapack/fable/3.12.1/patch-blas"

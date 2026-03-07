@@ -7,7 +7,7 @@ set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 mplapack_root="$(cd "${script_dir}/.." && pwd)"
-lapack_version="${LAPACK_VERSION:-3.9.1}"
+lapack_version="${LAPACK_VERSION:-3.12.1}"
 
 # Core (BLAS/LAPACK library) sources
 blas_src="${mplapack_root}/external/lapack/work/internal/lapack-${lapack_version}/BLAS/SRC"

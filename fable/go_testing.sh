@@ -2,7 +2,7 @@
 # go_testing.sh: multi-pass Fortran->C++ conversion for LAPACK TESTING sources.
 #
 # Scope:
-#   - Convert LAPACK 3.9.1 TESTING/{EIG,LIN,MATGEN} Fortran sources to C++.
+#   - Convert LAPACK 3.12.1 TESTING/{EIG,LIN,MATGEN} Fortran sources to C++.
 #   - Generate include headers using:
 #       * gen_include_mplapack_eig.sh
 #       * gen_include_mplapack_lin.sh
@@ -31,7 +31,7 @@ ROOT="${ROOT:-/home/docker/mplapack}"
 export PYTHONPATH="${ROOT}:${PYTHONPATH:-}"
 
 FABLE="${ROOT}/fable"
-LAPACK_ROOT="${ROOT}/external/lapack/work/internal/lapack-3.9.1"
+LAPACK_ROOT="${ROOT}/external/lapack/work/internal/lapack-3.12.1"
 TESTING_ROOT="${LAPACK_ROOT}/TESTING"
 
 EIG_SRC="${TESTING_ROOT}/EIG"
