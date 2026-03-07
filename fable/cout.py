@@ -10293,6 +10293,7 @@ def _preprocess_fortran_fixed_form(src: str) -> typing.Tuple[str, str]:
     new_src = _fix_fortran_iso_fortran_env_real64(
         new_src)  # harmless even if not present
     new_src = _fix_fortran_intrinsic_kind_keyword_arguments(new_src)
+    new_src = _fix_fortran_kind_wp_inline(new_src)
     new_src = _fix_fortran_f90_decl_syntax(new_src)
     new_src = _fix_fortran_select_case_to_if(new_src)
     new_src = _fix_fortran_end_statements(new_src)
@@ -10312,12 +10313,13 @@ def _preprocess_fortran_free_form(src: str) -> typing.Tuple[str, str]:
     new_src = _drop_fortran_intrinsic_statements(
         new_src, source_form="free")  # drop unconditionally
     new_src = _fix_fortran_intrinsic_kind_keyword_arguments(new_src)
+    new_src = _fix_fortran_kind_wp_inline(new_src)
     lower_to_fixed = _should_lower_free_to_fixed(new_src)
 
     if lower_to_fixed:
         # Lowering pipeline: free-form -> fixed-form
         new_src = _fix_fortran_iso_fortran_env_real64(new_src)
-        new_src = _fix_fortran_f90_decl_syntax(new_src)
+        new_src = _fix_fortran_f90_decl_syntax(new_src, source_form="free")
         new_src = _fix_fortran_select_case_to_if(new_src)
         new_src = _fix_fortran_free_form_ampersand_continuations(new_src)
         new_src = _normalize_free_form_to_fixed_form_layout(new_src)
@@ -10350,7 +10352,7 @@ def _split_top_level_commas(s: str):
     return items
 
 
-def _fix_fortran_f90_decl_syntax(src: str) -> str:
+def _fix_fortran_f90_decl_syntax(src: str, source_form: str = "fixed") -> str:
     """
     Rewrite a subset of Fortran 90 declaration syntax into a form that fable's
     fixed-form reader accepts.
@@ -10415,22 +10417,64 @@ def _fix_fortran_f90_decl_syntax(src: str) -> str:
 
     def gather_fixed_statement(lines, i: int):
         """
-        Gather a full fixed-form statement starting at line i, consuming continuation
-        lines (col 6 continuation). Returns:
+        Gather a full statement starting at line i, consuming continuation
+        lines.  Handles BOTH:
+          - Fixed-form continuation (col 6 non-blank)
+          - Free-form continuation (trailing '&')
+        The first line is extracted via lstrip() so this works regardless of
+        the source form (free or fixed).  Fixed-form continuation lines use
+        the standard col-7+ extraction; free-form continuations use lstrip().
+        Returns:
           (stmt_text, first_inline_comment, first_eol, j_next)
         where j_next is the first line index after the statement.
         """
         raw0, eol0 = split_eol(lines[i])
         code0, cmt0 = split_inline_comment(raw0)
-        stmt = code_field_fixed_form(code0).rstrip()
+        # Use lstrip() for the first line so both free-form and fixed-form
+        # inputs are handled correctly (code_field_fixed_form would cut into
+        # type names when free-form indentation is < 6 spaces).
+        stmt = code0.lstrip().rstrip()
+
+        # Check if first line ends with '&' (free-form continuation)
+        trailing_amp = stmt.endswith("&")
+        if trailing_amp:
+            stmt = stmt[:-1].rstrip()
 
         j = i + 1
         while j < len(lines):
             rawj, _ = split_eol(lines[j])
-            if not is_fixed_form_continuation(rawj):
+
+            # Skip comment-only lines inside &-continued statements
+            if is_full_line_comment(rawj):
+                if trailing_amp:
+                    j += 1
+                    continue
                 break
+
+            # In free-form source, col-6 has no continuation meaning;
+            # only trailing '&' matters.  In fixed-form, check col-6.
+            is_fixed_cont = (source_form != "free"
+                             and is_fixed_form_continuation(rawj))
+            is_free_cont = trailing_amp
+
+            if not is_fixed_cont and not is_free_cont:
+                break
+
             codej, _ = split_inline_comment(rawj)
-            part = code_field_fixed_form(codej).strip()
+            if is_fixed_cont:
+                # Fixed-form: col 7+ is the statement text
+                part = code_field_fixed_form(codej).strip()
+            else:
+                # Free-form continuation: strip leading whitespace and '&'
+                part = codej.lstrip().rstrip()
+                if part.startswith("&"):
+                    part = part[1:].lstrip()
+
+            # Check if this continuation line also ends with '&'
+            trailing_amp = part.endswith("&")
+            if trailing_amp:
+                part = part[:-1].rstrip()
+
             if part:
                 stmt += " " + part
             j += 1
@@ -10572,6 +10616,51 @@ def _fix_fortran_f90_decl_syntax(src: str) -> str:
     #   ALLOCATE(a(n), stat=info)  ->  info = 0; CALL FABLE_ALLOCATE(a, n)
     out_lines = []
     indent = "      "
+    max_col = 72  # fixed-form line width limit
+
+    def _emit_with_continuation(text, eol):
+        """Emit a statement, splitting into &-continuation lines if needed.
+
+        When source_form is 'free' and the line would exceed 72 columns,
+        split at commas or spaces using free-form '&' continuation so that
+        the downstream _fix_fortran_free_form_ampersand_continuations pass
+        can convert them into proper fixed-form continuation lines.
+        """
+        line = f"{indent}{text}"
+        if source_form != "free" or len(line) <= max_col:
+            out_lines.append(line + eol)
+            return
+        # Split the long line using &-continuation.
+        content = text
+        cont_indent = indent + "     "  # 11 spaces for continuation
+        first = True
+        while content:
+            prefix = indent if first else cont_indent + "& "
+            avail = max_col - len(prefix) - 2  # -2 for ' &'
+            if len(prefix) + len(content) <= max_col:
+                out_lines.append(prefix + content + eol)
+                break
+            # Find a good break point within avail chars.
+            chunk = content[:avail]
+            # Prefer breaking after a comma+space at top nesting level.
+            best = -1
+            depth = 0
+            for ci in range(len(chunk)):
+                ch = chunk[ci]
+                if ch == '(':
+                    depth += 1
+                elif ch == ')':
+                    depth = max(0, depth - 1)
+                elif ch == ',' and depth == 0:
+                    best = ci + 1  # break after the comma
+            if best <= 0:
+                # Fall back: break at last space.
+                best = chunk.rfind(' ')
+            if best <= 0:
+                best = avail  # hard break
+            out_lines.append(prefix + content[:best].rstrip() + " &" + eol)
+            content = content[best:].lstrip()
+            first = False
 
     def _is_if_alloc_stat_stop(stmt: str, stat_var: str) -> bool:
         low = stmt.lower().lstrip()
@@ -10695,9 +10784,9 @@ def _fix_fortran_f90_decl_syntax(src: str) -> str:
                         _FORCE_UNHANDLED_PARAMETER_NAMES.add(nm.lower())
 
             # If this PARAMETER statement was continued, we already gathered it into stmt,
-            # so we can emit it in one line.
-            out_lines.append(
-                f"{indent}PARAMETER ({', '.join([it.strip() for it in decl_items if it.strip()])}){eol0}")
+            # so we can emit it in one line (or with & continuation if too long).
+            param_text = f"PARAMETER ({', '.join([it.strip() for it in decl_items if it.strip()])})"
+            _emit_with_continuation(param_text, eol0)
             i = j
             continue
 
@@ -11016,6 +11105,139 @@ def _normalize_free_form_to_fixed_form_layout(src: str) -> str:
             out.append("      " + lstr + eol)
 
     return "".join(out)
+
+
+def _fix_fortran_kind_wp_inline(src: str) -> str:
+    """Resolve inline 'integer, parameter :: wp = kind(1.d0)' to F77 equivalents.
+
+    Handles the LAPACK 3.12.1 BLAS pattern where wp is defined inline
+    (not via USE LA_CONSTANTS or USE iso_fortran_env).
+
+    Strategy:
+      1) Detect 'integer, parameter :: wp = kind(1.d0)' or kind(1.e0)
+      2) Comment out the wp definition line
+      3) Rewrite real(wp) / complex(wp) -> DOUBLE PRECISION / DOUBLE COMPLEX
+      4) Rewrite positional-kind type conversions: real(expr, wp) -> dble(expr)
+      5) Rewrite _wp literals: 1.0_wp -> 1.0d0
+    """
+    import re
+
+    def split_eol(line):
+        if line.endswith("\r\n"):
+            return line[:-2], "\r\n"
+        if line.endswith("\n"):
+            return line[:-1], "\n"
+        if line.endswith("\r"):
+            return line[:-1], "\r"
+        return line, ""
+
+    # --- Phase 1: Detect wp = kind(...) -----------------------------------
+    WP_KIND_RE = re.compile(
+        r'^\s*integer\s*,\s*parameter\s*::\s*wp\s*=\s*kind\s*\('
+        r'[^)]*\)\s*$',
+        flags=re.IGNORECASE,
+    )
+    KIND_ARG_RE = re.compile(
+        r'kind\s*\(\s*([^)]+)\s*\)',
+        flags=re.IGNORECASE,
+    )
+
+    lines = src.splitlines(True)
+    out = []
+    wp_kind = None  # "dp" or "sp"
+
+    for line in lines:
+        raw, eol = split_eol(line)
+        if WP_KIND_RE.match(raw):
+            m = KIND_ARG_RE.search(raw)
+            if m:
+                arg = m.group(1).strip().lower()
+                # 1.d0, 1.0d0 -> double precision; otherwise single
+                wp_kind = "dp" if "d" in arg else "sp"
+            else:
+                wp_kind = "dp"
+            out.append("! [fable] " + raw.lstrip() + eol)
+            continue
+        out.append(raw + eol)
+
+    if wp_kind is None:
+        return src  # No inline wp found; nothing to do
+
+    src2 = "".join(out)
+
+    # --- Phase 2: Rewrite type specifiers ---------------------------------
+    if wp_kind == "dp":
+        f77_real = "DOUBLE PRECISION"
+        f77_complex = "DOUBLE COMPLEX"
+        conv_func = "dble"
+    else:
+        f77_real = "REAL"
+        f77_complex = "COMPLEX"
+        conv_func = "real"
+
+    src2 = re.sub(r'\breal\s*\(\s*kind\s*=\s*wp\s*\)',
+                  f77_real, src2, flags=re.IGNORECASE)
+    src2 = re.sub(r'\breal\s*\(\s*wp\s*\)',
+                  f77_real, src2, flags=re.IGNORECASE)
+    src2 = re.sub(r'\bcomplex\s*\(\s*kind\s*=\s*wp\s*\)',
+                  f77_complex, src2, flags=re.IGNORECASE)
+    src2 = re.sub(r'\bcomplex\s*\(\s*wp\s*\)',
+                  f77_complex, src2, flags=re.IGNORECASE)
+
+    # --- Phase 3: Rewrite real(expr, wp) type conversions -----------------
+    # After Phase 2, remaining 'real(..., wp)' are intrinsic conversions.
+    def _rewrite_real_conv(src_text):
+        CALL_RE = re.compile(r'\breal\s*\(', flags=re.IGNORECASE)
+        result = []
+        pos = 0
+        while pos < len(src_text):
+            m = CALL_RE.search(src_text, pos)
+            if not m:
+                result.append(src_text[pos:])
+                break
+            result.append(src_text[pos:m.start()])
+            paren_start = m.end() - 1
+            depth = 0
+            end = paren_start
+            for k in range(paren_start, len(src_text)):
+                if src_text[k] == '(':
+                    depth += 1
+                elif src_text[k] == ')':
+                    depth -= 1
+                    if depth == 0:
+                        end = k
+                        break
+            inner = src_text[paren_start + 1:end]
+            args = _split_top_level_commas(inner)
+            if (len(args) == 2
+                    and args[-1].strip().lower() == 'wp'):
+                result.append(f"{conv_func}({args[0].strip()})")
+            else:
+                result.append(src_text[m.start():end + 1])
+            pos = end + 1
+        return "".join(result)
+
+    src2 = _rewrite_real_conv(src2)
+
+    # --- Phase 4: Rewrite _wp literals ------------------------------------
+    if wp_kind == "dp":
+        def _wp_lit(m):
+            num = m.group("num")
+            num = re.sub(r'[eE]([+\-]?\d+)', r'D\1', num)
+            return num if ("D" in num or "d" in num) else (num + "D0")
+    else:
+        def _wp_lit(m):
+            num = m.group("num")
+            num = re.sub(r'[dD]([+\-]?\d+)', r'E\1', num)
+            return num if ("E" in num or "e" in num) else (num + "E0")
+
+    WP_LIT_RE = re.compile(
+        r'(?P<num>(?:\d+\.\d*|\d*\.\d+|\d+)(?:[eEdD][+\-]?\d+)?)\s*_wp\b',
+        flags=re.IGNORECASE,
+    )
+    src2 = WP_LIT_RE.sub(_wp_lit, src2)
+
+    return src2
 
 
 def _fix_fortran_iso_fortran_env_real64(src: str) -> str:
