@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+LAPACK_VERSION="${LAPACK_VERSION:-3.12.1}"
+
 # Path to the FABLE Fortran->C++ converter
-FABLE_CONVERT="$HOME/mplapack/fable/convert_blas.sh"
+FABLE_CONVERT="${SCRIPT_DIR}/convert_blas.sh"
 
 # Enable nullglob to avoid literal "*.f*" when no files exist
 shopt -s nullglob
@@ -70,11 +73,10 @@ done
 # (convert_blas.sh / cout.py decide the .cpp name and do all postprocessing)
 # ------------------------------------------------------------
 
-FABLE_CONVERT="$HOME/mplapack/fable/convert_blas.sh"
 export FABLE_CONVERT
 parallel -j "${JOBS:-$(nproc)}" '
      echo "Converting {}"
      bash "$FABLE_CONVERT" "{}"
  ' ::: "${files[@]}"
 
-patch < "$HOME/mplapack/fable/3.12.1/patch-blas"
+patch < "${SCRIPT_DIR}/${LAPACK_VERSION}/patch-blas"
