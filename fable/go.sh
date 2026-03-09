@@ -17,14 +17,14 @@ LAPACK_VERSION="${LAPACK_VERSION:-3.12.1}"
 LAPACK_ROOT="${ROOT}/external/lapack/work/internal/lapack-${LAPACK_VERSION}"
 BLAS_SRC="${LAPACK_ROOT}/BLAS/SRC"
 LAPACK_SRC="${LAPACK_ROOT}/SRC"
-LAPACK_WORK="${ROOT}/external/lapack/work"
+LAPACK_BUILD_ROOT="${ROOT}/external/lapack"
 
 if [ ! -d "${LAPACK_ROOT}" ]; then
   echo "[INFO] Missing LAPACK tree: ${LAPACK_ROOT}"
-  echo "[INFO] Re-extracting LAPACK sources in: ${LAPACK_WORK}"
+  echo "[INFO] Re-extracting LAPACK sources in: ${LAPACK_BUILD_ROOT}/work"
   (
-    cd "${LAPACK_WORK}"
-    rm -f ".lapack_extract_${LAPACK_VERSION}_done" .lapack_extract_done
+    cd "${LAPACK_BUILD_ROOT}"
+    rm -f work/".lapack_extract_${LAPACK_VERSION}_done" work/.lapack_extract_done
     make extract LAPACK_VERSION="${LAPACK_VERSION}"
   )
 fi
