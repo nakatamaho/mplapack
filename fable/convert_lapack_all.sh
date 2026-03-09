@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Path to the FABLE Fortran->C++ converter
-FABLE_CONVERT="$HOME/mplapack/fable/convert_lapack.sh"
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+ROOT="$(cd -- "${SCRIPT_DIR}/.." && pwd)"
+
+FABLE_CONVERT="${SCRIPT_DIR}/convert_lapack.sh"
 
 # Enable nullglob to avoid literal "*.f*" when no files exist
 shopt -s nullglob
@@ -94,6 +96,18 @@ EXCLUDE_BASENAMES=(
   "${EXCLUDE_BASENAMES_MISC[@]}"
 )
 
+# Files to keep in mplapack/reference when cleaning old generated outputs
+KEEP_REFERENCE_FILES=(
+  Mmaxloc.cpp
+  Mlsamen.cpp
+  Mmaxval.cpp
+  Mminval.cpp
+  Rlamch.cpp
+  Rlaruv.cpp
+  iMladiag.cpp
+  iMlaver.cpp
+)
+
 # ------------------------------------------------------------
 # Collect all Fortran files (*.f, *.f90) except those in exceptions
 # ------------------------------------------------------------
@@ -133,6 +147,21 @@ done
 #    echo "Converting $src"
 #    bash "$FABLE_CONVERT" "$src"
 #done
+
+MPLAPACK_REF="${ROOT}/mplapack/reference"
+
+find_args=(
+  "${MPLAPACK_REF}"
+  -maxdepth 1
+  -type f
+  "(" -name '*.cpp' -o -name '*.hpp' -o -name '*.h' ")"
+)
+
+for keep in "${KEEP_REFERENCE_FILES[@]}"; do
+  find_args+=( ! -name "${keep}" )
+done
+
+find "${find_args[@]}" -print -delete
 
 export FABLE_CONVERT
 parallel -j "${JOBS:-$(nproc)}" '
