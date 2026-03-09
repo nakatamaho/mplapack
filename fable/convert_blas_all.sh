@@ -2,6 +2,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+ROOT="$(cd -- "${SCRIPT_DIR}/.." && pwd)"
 LAPACK_VERSION="${LAPACK_VERSION:-3.12.1}"
 
 # Path to the FABLE Fortran->C++ converter
@@ -31,6 +32,13 @@ EXCLUDE_BASENAMES=(
   "${EXCLUDE_BASENAMES_MANUAL[@]}"
   "${EXCLUDE_BASENAMES_UNUSED[@]}"
   "${EXCLUDE_BASENAMES_MISC[@]}"
+)
+
+# Files to keep in mpblas/reference when cleaning old generated outputs
+KEEP_REFERENCE_FILES=(
+  Mxerbla.cpp
+  Mlsame.cpp
+  mplapackinit.cpp
 )
 
 # ------------------------------------------------------------
@@ -72,6 +80,20 @@ done
 # Convert each selected Fortran file using convert_blas.sh
 # (convert_blas.sh / cout.py decide the .cpp name and do all postprocessing)
 # ------------------------------------------------------------
+MPBLAS_REF="${ROOT}/mpblas/reference"
+
+find_args=(
+  "${MPBLAS_REF}"
+  -maxdepth 1
+  -type f
+  "(" -name '*.cpp' -o -name '*.hpp' -o -name '*.h' ")"
+)
+
+for keep in "${KEEP_REFERENCE_FILES[@]}"; do
+  find_args+=( ! -name "${keep}" )
+done
+
+find "${find_args[@]}" -print -delete
 
 export FABLE_CONVERT
 parallel -j "${JOBS:-$(nproc)}" '
