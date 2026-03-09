@@ -24,8 +24,8 @@ if [ ! -d "${LAPACK_ROOT}" ]; then
   echo "[INFO] Re-extracting LAPACK sources in: ${LAPACK_WORK}"
   (
     cd "${LAPACK_WORK}"
-    rm -f .lapack_extract_done
-    make extract
+    rm -f ".lapack_extract_${LAPACK_VERSION}_done" .lapack_extract_done
+    make extract LAPACK_VERSION="${LAPACK_VERSION}"
   )
 fi
 

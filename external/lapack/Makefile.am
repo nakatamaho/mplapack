@@ -1,21 +1,21 @@
-LAPACKVERSION=$(LAPACK_VERSION)
+LAPACK_VERSION ?= 3.12.1
 MAKEFLAGS =
 
-EXTRACT_STAMP=.lapack_extract_done
-PATCH_STAMP=.lapack_patch_done
-CONFIGURE_STAMP=.lapack_configure_done
-BUILD_STAMP=.lapack_build_done
-INSTALL_INTERNAL_STAMP=.lapack_install_internal_done
-CHECK_STAMP=.lapack_check_done
+EXTRACT_STAMP=.lapack_extract_$(LAPACK_VERSION)_done
+PATCH_STAMP=.lapack_patch_$(LAPACK_VERSION)_done
+CONFIGURE_STAMP=.lapack_configure_$(LAPACK_VERSION)_done
+BUILD_STAMP=.lapack_build_$(LAPACK_VERSION)_done
+INSTALL_INTERNAL_STAMP=.lapack_install_internal_$(LAPACK_VERSION)_done
+CHECK_STAMP=.lapack_check_$(LAPACK_VERSION)_done
 
 all: extract config build check install_internal
 
 work/$(EXTRACT_STAMP):
 	rm -rf work ; mkdir -p work/internal
-	cd $(abs_builddir)/work/internal; tar xvfz $(abs_srcdir)/download/lapack-$(LAPACKVERSION).tar.gz
+	cd $(abs_builddir)/work/internal; tar xvfz $(abs_srcdir)/download/lapack-$(LAPACK_VERSION).tar.gz
 	touch $(abs_builddir)/work/$(EXTRACT_STAMP)
 
-LAPACK_WORK_DIR = $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)
+LAPACK_WORK_DIR = $(abs_builddir)/work/internal/lapack-$(LAPACK_VERSION)
 LAPACK_PATCH_DIR = $(abs_srcdir)/patches/$(LAPACK_VERSION)
 
 PATCHES_3_9_1 = \
@@ -49,38 +49,38 @@ endif
 	touch $(abs_builddir)/work/$(PATCH_STAMP)
 
 work/$(CONFIGURE_STAMP): work/$(PATCH_STAMP)
-	echo "SHELL = /bin/sh"      >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
-	echo "CC = $(CC)"           >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
-	echo "CFLAGS = $(CFLAGS)"   >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
-	echo "FC = $(FC)"           >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
-	echo "FFLAGS = $(FCFLAGS)" >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
-	echo "FFLAGS_DRV = \$$(FFLAGS)" >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
-	echo "FFLAGS_NOOPT = -O0" >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
+	echo "SHELL = /bin/sh"      >> $(abs_builddir)/work/internal/lapack-$(LAPACK_VERSION)/make.inc
+	echo "CC = $(CC)"           >> $(abs_builddir)/work/internal/lapack-$(LAPACK_VERSION)/make.inc
+	echo "CFLAGS = $(CFLAGS)"   >> $(abs_builddir)/work/internal/lapack-$(LAPACK_VERSION)/make.inc
+	echo "FC = $(FC)"           >> $(abs_builddir)/work/internal/lapack-$(LAPACK_VERSION)/make.inc
+	echo "FFLAGS = $(FCFLAGS)" >> $(abs_builddir)/work/internal/lapack-$(LAPACK_VERSION)/make.inc
+	echo "FFLAGS_DRV = \$$(FFLAGS)" >> $(abs_builddir)/work/internal/lapack-$(LAPACK_VERSION)/make.inc
+	echo "FFLAGS_NOOPT = -O0" >> $(abs_builddir)/work/internal/lapack-$(LAPACK_VERSION)/make.inc
 if IS_MINGW
-	echo "LDFLAGS = -Wl,--stack,33554432" >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
+	echo "LDFLAGS = -Wl,--stack,33554432" >> $(abs_builddir)/work/internal/lapack-$(LAPACK_VERSION)/make.inc
 else
-	echo "LDFLAGS =" >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
+	echo "LDFLAGS =" >> $(abs_builddir)/work/internal/lapack-$(LAPACK_VERSION)/make.inc
 endif
-	echo "AR = $(AR)"        >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
-	echo "ARFLAGS = cr"      >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
-	echo "RANLIB = $(RANLIB)"   >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
+	echo "AR = $(AR)"        >> $(abs_builddir)/work/internal/lapack-$(LAPACK_VERSION)/make.inc
+	echo "ARFLAGS = cr"      >> $(abs_builddir)/work/internal/lapack-$(LAPACK_VERSION)/make.inc
+	echo "RANLIB = $(RANLIB)"   >> $(abs_builddir)/work/internal/lapack-$(LAPACK_VERSION)/make.inc
 if IS_INTELCC
-	echo "TIMER = INT_CPU_TIME"      >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
+	echo "TIMER = INT_CPU_TIME"      >> $(abs_builddir)/work/internal/lapack-$(LAPACK_VERSION)/make.inc
 else
-	echo "TIMER = INT_ETIME"      >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
+	echo "TIMER = INT_ETIME"      >> $(abs_builddir)/work/internal/lapack-$(LAPACK_VERSION)/make.inc
 endif
-	echo "TOPSRCDIR = $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)" >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
-	echo "BLASLIB      = \$$(TOPSRCDIR)/libblas.a"     >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
-	echo "LAPACKLIB    = \$$(TOPSRCDIR)/liblapack.a"   >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
-	echo "LAPACKELIB   = \$$(TOPSRCDIR)/liblapacke.a"  >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
-	echo "TMGLIB       = \$$(TOPSRCDIR)/libtmglib.a"   >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
-	echo "LAPACK_WITH_TMG = Yes"                       >> $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/make.inc
+	echo "TOPSRCDIR = $(abs_builddir)/work/internal/lapack-$(LAPACK_VERSION)" >> $(abs_builddir)/work/internal/lapack-$(LAPACK_VERSION)/make.inc
+	echo "BLASLIB      = \$$(TOPSRCDIR)/libblas.a"     >> $(abs_builddir)/work/internal/lapack-$(LAPACK_VERSION)/make.inc
+	echo "LAPACKLIB    = \$$(TOPSRCDIR)/liblapack.a"   >> $(abs_builddir)/work/internal/lapack-$(LAPACK_VERSION)/make.inc
+	echo "LAPACKELIB   = \$$(TOPSRCDIR)/liblapacke.a"  >> $(abs_builddir)/work/internal/lapack-$(LAPACK_VERSION)/make.inc
+	echo "TMGLIB       = \$$(TOPSRCDIR)/libtmglib.a"   >> $(abs_builddir)/work/internal/lapack-$(LAPACK_VERSION)/make.inc
+	echo "LAPACK_WITH_TMG = Yes"                       >> $(abs_builddir)/work/internal/lapack-$(LAPACK_VERSION)/make.inc
 	touch $(abs_builddir)/work/$(CONFIGURE_STAMP)
 
 work/$(BUILD_STAMP): work/$(CONFIGURE_STAMP)
-	+cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/BLAS/SRC ; ${MAKE}
-	+cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION) ; ${MAKE}
-	+cd $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/LAPACKE ; ${MAKE}
+	+cd $(abs_builddir)/work/internal/lapack-$(LAPACK_VERSION)/BLAS/SRC ; ${MAKE}
+	+cd $(abs_builddir)/work/internal/lapack-$(LAPACK_VERSION) ; ${MAKE}
+	+cd $(abs_builddir)/work/internal/lapack-$(LAPACK_VERSION)/LAPACKE ; ${MAKE}
 	touch $(abs_builddir)/work/$(BUILD_STAMP)
 
 work/$(CHECK_STAMP): work/$(BUILD_STAMP)
@@ -90,11 +90,11 @@ work/$(INSTALL_INTERNAL_STAMP): work/$(CHECK_STAMP)
 	rm -rf $(abs_builddir)/../i/LAPACK
 	mkdir -p $(abs_builddir)/../i/LAPACK/lib
 	mkdir -p $(abs_builddir)/../i/LAPACK/include
-	cp $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/liblapack.*  $(abs_builddir)/../i/LAPACK/lib 
-	cp $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/libblas.*    $(abs_builddir)/../i/LAPACK/lib
-	cp $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/libtmglib.*  $(abs_builddir)/../i/LAPACK/lib
-	cp $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/liblapacke.* $(abs_builddir)/../i/LAPACK/lib
-	cp $(abs_builddir)/work/internal/lapack-$(LAPACKVERSION)/LAPACKE/include/*.h $(abs_builddir)/../i/LAPACK/include
+	cp $(abs_builddir)/work/internal/lapack-$(LAPACK_VERSION)/liblapack.*  $(abs_builddir)/../i/LAPACK/lib 
+	cp $(abs_builddir)/work/internal/lapack-$(LAPACK_VERSION)/libblas.*    $(abs_builddir)/../i/LAPACK/lib
+	cp $(abs_builddir)/work/internal/lapack-$(LAPACK_VERSION)/libtmglib.*  $(abs_builddir)/../i/LAPACK/lib
+	cp $(abs_builddir)/work/internal/lapack-$(LAPACK_VERSION)/liblapacke.* $(abs_builddir)/../i/LAPACK/lib
+	cp $(abs_builddir)/work/internal/lapack-$(LAPACK_VERSION)/LAPACKE/include/*.h $(abs_builddir)/../i/LAPACK/include
 	touch $(abs_builddir)/work/$(INSTALL_INTERNAL_STAMP)
 
 extract: work/$(EXTRACT_STAMP)
