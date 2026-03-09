@@ -5,13 +5,34 @@ shopt -s nullglob
 
 PASSES="${1:-2}"
 
-ROOT="/home/docker/mplapack"
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+ROOT="$(cd -- "${SCRIPT_DIR}/.." && pwd)"
+
 # Ensure Python can import the in-tree 'fable' package.
 export PYTHONPATH="${ROOT}:${PYTHONPATH:-}"
 
-LAPACK_ROOT="${ROOT}/external/lapack/work/internal/lapack-3.12.1"
+# LAPACK version (ex: 3.9.1, 3.12.1)
+LAPACK_VERSION="${LAPACK_VERSION:-3.12.1}"
+
+LAPACK_ROOT="${ROOT}/external/lapack/work/internal/lapack-${LAPACK_VERSION}"
 BLAS_SRC="${LAPACK_ROOT}/BLAS/SRC"
 LAPACK_SRC="${LAPACK_ROOT}/SRC"
+LAPACK_WORK="${ROOT}/external/lapack/work"
+
+if [ ! -d "${LAPACK_ROOT}" ]; then
+  echo "[INFO] Missing LAPACK tree: ${LAPACK_ROOT}"
+  echo "[INFO] Re-extracting LAPACK sources in: ${LAPACK_WORK}"
+  (
+    cd "${LAPACK_WORK}"
+    rm -f .lapack_extract_done
+    make extract
+  )
+fi
+
+if [ ! -d "${LAPACK_ROOT}" ]; then
+  echo "ERROR: LAPACK tree was not created: ${LAPACK_ROOT}" >&2
+  exit 1
+fi
 
 FABLE="${ROOT}/fable"
 MPBLAS_REF="${ROOT}/mpblas/reference"
@@ -252,6 +273,6 @@ for pass in $(seq 1 "${PASSES}"); do
   fi
 done
 
-bash "${FABLE}/patch_lapack_3.12.1.sh"
+bash "${FABLE}/patch_lapack_${LAPACK_VERSION}.sh"
 
 echo "ALL DONE"
