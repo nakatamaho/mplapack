@@ -26,6 +26,7 @@ if [ ! -d "${LAPACK_ROOT}" ]; then
     cd "${LAPACK_BUILD_ROOT}"
     rm -f work/".lapack_extract_${LAPACK_VERSION}_done" work/.lapack_extract_done
     make extract LAPACK_VERSION="${LAPACK_VERSION}"
+    make patch LAPACK_VERSION="${LAPACK_VERSION}"
   )
 fi
 

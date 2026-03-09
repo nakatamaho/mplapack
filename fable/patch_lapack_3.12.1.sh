@@ -1,82 +1,91 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
-cd /home/docker/mplapack/mplapack/reference
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+ROOT="$(cd -- "${SCRIPT_DIR}/.." && pwd)"
+
+REF_DIR="${ROOT}/mplapack/reference"
+FIX_IMLAENV="${SCRIPT_DIR}/fix_iMlaenv.py"
+PATCH_DIR="${SCRIPT_DIR}/3.12.1/lapack"
+
+cd "${REF_DIR}"
 
 echo "Post-processing mplapack/reference/iMlaenv.cpp with fix_iMlaenv.py"
-python $HOME/mplapack/fable/fix_iMlaenv.py iMlaenv.cpp
-python $HOME/mplapack/fable/fix_iMlaenv.py iMparmq.cpp
+python3 "${FIX_IMLAENV}" iMlaenv.cpp
+python3 "${FIX_IMLAENV}" iMparmq.cpp
 
 #https://claude.ai/chat/ff991a40-a314-41e6-8699-d718148aec7e
 #https://claude.ai/chat/238930a7-ded0-4d54-bc32-362acb7ff57e
-patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Chbevx.cpp
-patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Chbevx_2stage.cpp
-#patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Chbgvx.cpp
-patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Cheevx.cpp
-patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Cheevx_2stage.cpp
-#patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Chpevx.cpp
-patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Rsbevx.cpp
-patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Rsbevx_2stage.cpp
-#patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Rsbgvx.cpp
-#patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Rspevx.cpp
-#patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Rstevx.cpp
-patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Rsyevx.cpp
-patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Rsyevx_2stage.cpp
+patch -p3 < "${PATCH_DIR}/patch-Chbevx.cpp"
+patch -p3 < "${PATCH_DIR}/patch-Chbevx_2stage.cpp"
+#patch -p3 < "${PATCH_DIR}/patch-Chbgvx.cpp"
+patch -p3 < "${PATCH_DIR}/patch-Cheevx.cpp"
+patch -p3 < "${PATCH_DIR}/patch-Cheevx_2stage.cpp"
+#patch -p3 < "${PATCH_DIR}/patch-Chpevx.cpp"
+patch -p3 < "${PATCH_DIR}/patch-Rsbevx.cpp"
+patch -p3 < "${PATCH_DIR}/patch-Rsbevx_2stage.cpp"
+#patch -p3 < "${PATCH_DIR}/patch-Rsbgvx.cpp"
+#patch -p3 < "${PATCH_DIR}/patch-Rspevx.cpp"
+#patch -p3 < "${PATCH_DIR}/patch-Rstevx.cpp"
+patch -p3 < "${PATCH_DIR}/patch-Rsyevx.cpp"
+patch -p3 < "${PATCH_DIR}/patch-Rsyevx_2stage.cpp"
 
 #https://claude.ai/chat/f3c3ff73-215d-44ed-9dae-8e75808e06d9
 #https://chatgpt.com/c/69929fe4-b980-83a7-8fd7-0988abca4785
-patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Cgejsv.cpp
-patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Cgesvj.cpp
-patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Rgejsv.cpp
-patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Rgesvj.cpp
+patch -p3 < "${PATCH_DIR}/patch-Cgejsv.cpp"
+patch -p3 < "${PATCH_DIR}/patch-Cgesvj.cpp"
+patch -p3 < "${PATCH_DIR}/patch-Rgejsv.cpp"
+patch -p3 < "${PATCH_DIR}/patch-Rgesvj.cpp"
 
-patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Cbbcsd.cpp
-patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Cggev.cpp
-patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Cggev3.cpp
-patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Cggevx.cpp
-patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Cgttrs.cpp
-#patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Cheequb.cpp
-#patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Chegvd.cpp
-patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Chgeqz.cpp
-#patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Chpgvd.cpp
-patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Clacon.cpp
-patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Clags2.cpp
-patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Clahef_aa.cpp
-#patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Claic1.cpp
-patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Clargv.cpp
-patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Clarnv.cpp
-#patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Clartg.cpp
-patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Clasyf_aa.cpp
-patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Clatbs.cpp
-patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Clatps.cpp
-patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Clatrs.cpp
-#patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Cpotf2.cpp
-#patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Cpptrf.cpp
-#patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Csyequb.cpp
-#patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Csytri2x.cpp
-patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Ctfttp.cpp
-patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Ctgevc.cpp
-patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Ctpttf.cpp
-patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Ctrexc.cpp
-patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Ctrsyl.cpp
-patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Cunbdb.cpp
-patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Rbbcsd.cpp
-patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Rbdsvdx.cpp
-patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Rlacon.cpp
-patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Rladiv.cpp
-patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Rlaln2.cpp
-patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Rlarnv.cpp
-patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Rlarrb.cpp
-patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Rlarrd.cpp
-patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Rlarrk.cpp
-patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Rlasy2.cpp
-patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Rorbdb.cpp
-#patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Rspgvd.cpp
-patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Rstebz.cpp
-patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Rsyequb.cpp
-#patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Rsygvd.cpp
-patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Rtfttp.cpp
-patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-Rtpttf.cpp
-patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-iMieeeck.cpp
-patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-iMlaenv.cpp
-#patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-iMparam2stage.cpp
-patch -p3 < ~/mplapack/fable/3.12.1/lapack/patch-iMparmq.cpp
+patch -p3 < "${PATCH_DIR}/patch-Cbbcsd.cpp"
+patch -p3 < "${PATCH_DIR}/patch-Cggev.cpp"
+patch -p3 < "${PATCH_DIR}/patch-Cggev3.cpp"
+patch -p3 < "${PATCH_DIR}/patch-Cggevx.cpp"
+patch -p3 < "${PATCH_DIR}/patch-Cgttrs.cpp"
+#patch -p3 < "${PATCH_DIR}/patch-Cheequb.cpp"
+#patch -p3 < "${PATCH_DIR}/patch-Chegvd.cpp"
+patch -p3 < "${PATCH_DIR}/patch-Chgeqz.cpp"
+#patch -p3 < "${PATCH_DIR}/patch-Chpgvd.cpp"
+patch -p3 < "${PATCH_DIR}/patch-Clacon.cpp"
+patch -p3 < "${PATCH_DIR}/patch-Clags2.cpp"
+patch -p3 < "${PATCH_DIR}/patch-Clahef_aa.cpp"
+#patch -p3 < "${PATCH_DIR}/patch-Claic1.cpp"
+patch -p3 < "${PATCH_DIR}/patch-Clargv.cpp"
+patch -p3 < "${PATCH_DIR}/patch-Clarnv.cpp"
+#patch -p3 < "${PATCH_DIR}/patch-Clartg.cpp"
+patch -p3 < "${PATCH_DIR}/patch-Clasyf_aa.cpp"
+patch -p3 < "${PATCH_DIR}/patch-Clatbs.cpp"
+patch -p3 < "${PATCH_DIR}/patch-Clatps.cpp"
+patch -p3 < "${PATCH_DIR}/patch-Clatrs.cpp"
+#patch -p3 < "${PATCH_DIR}/patch-Cpotf2.cpp"
+#patch -p3 < "${PATCH_DIR}/patch-Cpptrf.cpp"
+#patch -p3 < "${PATCH_DIR}/patch-Csyequb.cpp"
+#patch -p3 < "${PATCH_DIR}/patch-Csytri2x.cpp"
+patch -p3 < "${PATCH_DIR}/patch-Ctfttp.cpp"
+patch -p3 < "${PATCH_DIR}/patch-Ctgevc.cpp"
+patch -p3 < "${PATCH_DIR}/patch-Ctpttf.cpp"
+patch -p3 < "${PATCH_DIR}/patch-Ctrexc.cpp"
+patch -p3 < "${PATCH_DIR}/patch-Ctrsyl.cpp"
+patch -p3 < "${PATCH_DIR}/patch-Cunbdb.cpp"
+patch -p3 < "${PATCH_DIR}/patch-Rbbcsd.cpp"
+patch -p3 < "${PATCH_DIR}/patch-Rbdsvdx.cpp"
+patch -p3 < "${PATCH_DIR}/patch-Rlacon.cpp"
+patch -p3 < "${PATCH_DIR}/patch-Rladiv.cpp"
+patch -p3 < "${PATCH_DIR}/patch-Rlaln2.cpp"
+patch -p3 < "${PATCH_DIR}/patch-Rlarnv.cpp"
+patch -p3 < "${PATCH_DIR}/patch-Rlarrb.cpp"
+patch -p3 < "${PATCH_DIR}/patch-Rlarrd.cpp"
+patch -p3 < "${PATCH_DIR}/patch-Rlarrk.cpp"
+patch -p3 < "${PATCH_DIR}/patch-Rlasy2.cpp"
+patch -p3 < "${PATCH_DIR}/patch-Rorbdb.cpp"
+#patch -p3 < "${PATCH_DIR}/patch-Rspgvd.cpp"
+patch -p3 < "${PATCH_DIR}/patch-Rstebz.cpp"
+patch -p3 < "${PATCH_DIR}/patch-Rsyequb.cpp"
+#patch -p3 < "${PATCH_DIR}/patch-Rsygvd.cpp"
+patch -p3 < "${PATCH_DIR}/patch-Rtfttp.cpp"
+patch -p3 < "${PATCH_DIR}/patch-Rtpttf.cpp"
+patch -p3 < "${PATCH_DIR}/patch-iMieeeck.cpp"
+patch -p3 < "${PATCH_DIR}/patch-iMlaenv.cpp"
+#patch -p3 < "${PATCH_DIR}/patch-iMparam2stage.cpp"
+patch -p3 < "${PATCH_DIR}/patch-iMparmq.cpp"
+

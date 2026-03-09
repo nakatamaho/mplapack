@@ -2,7 +2,7 @@
 # go_testing.sh: multi-pass Fortran->C++ conversion for LAPACK TESTING sources.
 #
 # Scope:
-#   - Convert LAPACK 3.12.1 TESTING/{EIG,LIN,MATGEN} Fortran sources to C++.
+#   - Convert LAPACK TESTING/{EIG,LIN,MATGEN} Fortran sources to C++.
 #   - Generate include headers using:
 #       * gen_include_mplapack_eig.sh
 #       * gen_include_mplapack_lin.sh
@@ -27,11 +27,16 @@ FORCE_INCLUDE_STEMS=( chkxer )
 
 PASSES="${1:-2}"
 
-ROOT="${ROOT:-/home/docker/mplapack}"
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+ROOT="${ROOT:-$(cd -- "${SCRIPT_DIR}/.." && pwd)}"
+
+# Default LAPACK version
+LAPACK_VERSION="${LAPACK_VERSION:-3.12.1}"
+
 export PYTHONPATH="${ROOT}:${PYTHONPATH:-}"
 
 FABLE="${ROOT}/fable"
-LAPACK_ROOT="${ROOT}/external/lapack/work/internal/lapack-3.12.1"
+LAPACK_ROOT="${ROOT}/external/lapack/work/internal/lapack-${LAPACK_VERSION}"
 TESTING_ROOT="${LAPACK_ROOT}/TESTING"
 
 EIG_SRC="${TESTING_ROOT}/EIG"
@@ -352,11 +357,11 @@ for pass in $(seq 1 "${PASSES}"); do
   fi
 done
 
-python3 ~/mplapack/fable/rename_routine_literals.py --in-place --map ~/mplapack/fable/mplapack_name_map.txt --map ~/mplapack/fable/mplapack_testing_name_map.txt ~/mplapack/mplapack/test/eig
-python3 ~/mplapack/fable/rename_routine_literals.py --in-place --map ~/mplapack/fable/mplapack_name_map.txt --map ~/mplapack/fable/mplapack_testing_name_map.txt ~/mplapack/mplapack/test/lin
-python3 ~/mplapack/fable/rename_routine_literals.py --in-place --map ~/mplapack/fable/mplapack_name_map.txt --map ~/mplapack/fable/mplapack_testing_name_map.txt ~/mplapack/mplapack/test/matgen
+python3 "${FABLE}/rename_routine_literals.py" --in-place --map "${FABLE}/mplapack_name_map.txt" --map "${FABLE}/mplapack_testing_name_map.txt" "${ROOT}/mplapack/test/eig"
+python3 "${FABLE}/rename_routine_literals.py" --in-place --map "${FABLE}/mplapack_name_map.txt" --map "${FABLE}/mplapack_testing_name_map.txt" "${ROOT}/mplapack/test/lin"
+python3 "${FABLE}/rename_routine_literals.py" --in-place --map "${FABLE}/mplapack_name_map.txt" --map "${FABLE}/mplapack_testing_name_map.txt" "${ROOT}/mplapack/test/matgen"
 
 bash "${FABLE}/sync_test_inputs.sh"
-bash "${FABLE}/patch_lapack_test_3.12.1.sh"
+bash "${FABLE}/patch_lapack_test_${LAPACK_VERSION}.sh"
 
 echo "ALL DONE"

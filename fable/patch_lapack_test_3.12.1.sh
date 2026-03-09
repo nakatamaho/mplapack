@@ -1,94 +1,101 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
-cd /home/docker/mplapack/mplapack/test/matgen
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+ROOT="$(cd -- "${SCRIPT_DIR}/.." && pwd)"
 
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Clarnd.cpp
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Claror.cpp
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Clatm5.cpp
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Clatms.cpp
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Clatmt.cpp
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Rlarnd.cpp
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Rlaror.cpp
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Rlatms.cpp
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Rlatmt.cpp
+REF_DIR="${ROOT}/mplapack/test"
+PATCH_DIR="${SCRIPT_DIR}/3.12.1/lapack"
 
-cd /home/docker/mplapack/mplapack/test/lin/common
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Cchkaa.cpp
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Cchkeq.cpp
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Cchkrfp.cpp
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Cerrlqt.cpp
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Cerrlqtp.cpp
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Cerrqrt.cpp
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Cerrqrtp.cpp
-#patch  < ~/mplapack/fable/3.12.1/lapack/patch-Clatb4.cpp
-#patch  < ~/mplapack/fable/3.12.1/lapack/patch-Clatb5.cpp
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Clatsp.cpp
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Clatsy.cpp
-#patch  < ~/mplapack/fable/3.12.1/lapack/patch-Clattp.cpp
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Clattr.cpp
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Clqt04.cpp
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Clqt05.cpp
-#patch  < ~/mplapack/fable/3.12.1/lapack/patch-Cpbt01.cpp
-#patch  < ~/mplapack/fable/3.12.1/lapack/patch-Cpot01.cpp
-#patch  < ~/mplapack/fable/3.12.1/lapack/patch-Cppt01.cpp
-#patch  < ~/mplapack/fable/3.12.1/lapack/patch-Cpst01.cpp
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Cqrt04.cpp
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Cqrt05.cpp
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Ctsqr01.cpp
-#patch  < ~/mplapack/fable/3.12.1/lapack/patch-Cunhr_col01.cpp
-#patch  < ~/mplapack/fable/3.12.1/lapack/patch-Cunhr_col02.cpp
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Rchkaa.cpp
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Rchkeq.cpp
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Rchkrfp.cpp
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Rdrvrf3.cpp
-#patch  < ~/mplapack/fable/3.12.1/lapack/patch-Rlatb4.cpp
-#patch  < ~/mplapack/fable/3.12.1/lapack/patch-Rlatb5.cpp
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Rlattr.cpp
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Rorhr_col01.cpp
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Rorhr_col02.cpp
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Rtsqr01.cpp
+cd "${REF_DIR}/matgen"
 
-cd /home/docker/mplapack/mplapack/test/lin/
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Ctest.in
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Rtest.in
+patch  < "${PATCH_DIR}/patch-Clarnd.cpp"
+patch  < "${PATCH_DIR}/patch-Claror.cpp"
+patch  < "${PATCH_DIR}/patch-Clatm5.cpp"
+patch  < "${PATCH_DIR}/patch-Clatms.cpp"
+patch  < "${PATCH_DIR}/patch-Clatmt.cpp"
+patch  < "${PATCH_DIR}/patch-Rlarnd.cpp"
+patch  < "${PATCH_DIR}/patch-Rlaror.cpp"
+patch  < "${PATCH_DIR}/patch-Rlatms.cpp"
+patch  < "${PATCH_DIR}/patch-Rlatmt.cpp"
 
-cd /home/docker/mplapack/mplapack/test/eig/common
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Cchkbd.cpp
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Cchkee.cpp
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Cchkgg.cpp
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Ccsdts.cpp
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Cdrges.cpp
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Cdrges3.cpp
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Cdrgsx.cpp
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Cdrves.cpp
-#patch  < ~/mplapack/fable/3.12.1/lapack/patch-Cdrvsg.cpp
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Cdrvsg2stg.cpp
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Cget24.cpp
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Cget52.cpp
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Clctsx.cpp
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Cslect.cpp
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Rchkbd.cpp
-#patch  < ~/mplapack/fable/3.12.1/lapack/patch-Rchkec.cpp
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Rchkee.cpp
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Rchkgg.cpp
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Rckcsd.cpp
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Rcsdts.cpp
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Rdrgsx.cpp
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Rdrst2stg.cpp
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Rdrves.cpp
-#patch  < ~/mplapack/fable/3.12.1/lapack/patch-Rdrvsg.cpp
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Rget24.cpp
-#patch  < ~/mplapack/fable/3.12.1/lapack/patch-Rlatb9.cpp
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Rlctsx.cpp
-patch  < ~/mplapack/fable/3.12.1/lapack/patch-Rslect.cpp
+cd "${REF_DIR}/lin/common"
+patch  < "${PATCH_DIR}/patch-Cchkaa.cpp"
+patch  < "${PATCH_DIR}/patch-Cchkeq.cpp"
+patch  < "${PATCH_DIR}/patch-Cchkrfp.cpp"
+patch  < "${PATCH_DIR}/patch-Cerrlqt.cpp"
+patch  < "${PATCH_DIR}/patch-Cerrlqtp.cpp"
+patch  < "${PATCH_DIR}/patch-Cerrqrt.cpp"
+patch  < "${PATCH_DIR}/patch-Cerrqrtp.cpp"
+#patch  < "${PATCH_DIR}/patch-Clatb4.cpp"
+#patch  < "${PATCH_DIR}/patch-Clatb5.cpp"
+patch  < "${PATCH_DIR}/patch-Clatsp.cpp"
+patch  < "${PATCH_DIR}/patch-Clatsy.cpp"
+#patch  < "${PATCH_DIR}/patch-Clattp.cpp"
+patch  < "${PATCH_DIR}/patch-Clattr.cpp"
+patch  < "${PATCH_DIR}/patch-Clqt04.cpp"
+patch  < "${PATCH_DIR}/patch-Clqt05.cpp"
+#patch  < "${PATCH_DIR}/patch-Cpbt01.cpp"
+#patch  < "${PATCH_DIR}/patch-Cpot01.cpp"
+#patch  < "${PATCH_DIR}/patch-Cppt01.cpp"
+#patch  < "${PATCH_DIR}/patch-Cpst01.cpp"
+patch  < "${PATCH_DIR}/patch-Cqrt04.cpp"
+patch  < "${PATCH_DIR}/patch-Cqrt05.cpp"
+patch  < "${PATCH_DIR}/patch-Ctsqr01.cpp"
+#patch  < "${PATCH_DIR}/patch-Cunhr_col01.cpp"
+#patch  < "${PATCH_DIR}/patch-Cunhr_col02.cpp"
+patch  < "${PATCH_DIR}/patch-Rchkaa.cpp"
+patch  < "${PATCH_DIR}/patch-Rchkeq.cpp"
+patch  < "${PATCH_DIR}/patch-Rchkrfp.cpp"
+patch  < "${PATCH_DIR}/patch-Rdrvrf3.cpp"
+#patch  < "${PATCH_DIR}/patch-Rlatb4.cpp"
+#patch  < "${PATCH_DIR}/patch-Rlatb5.cpp"
+patch  < "${PATCH_DIR}/patch-Rlattr.cpp"
+patch  < "${PATCH_DIR}/patch-Rorhr_col01.cpp"
+patch  < "${PATCH_DIR}/patch-Rorhr_col02.cpp"
+patch  < "${PATCH_DIR}/patch-Rtsqr01.cpp"
 
-cd /home/docker/mplapack/mplapack/test/eig
-patch < ~/mplapack/fable/3.12.1/lapack/patch-Cbb.in
-#patch < ~/mplapack/fable/3.12.1/lapack/patch-Ced.in
-#patch < ~/mplapack/fable/3.12.1/lapack/patch-Red.in
-patch < ~/mplapack/fable/3.12.1/lapack/patch-Rgg.in
-patch < ~/mplapack/fable/3.12.1/lapack/patch-csd.in
-patch < ~/mplapack/fable/3.12.1/lapack/patch-gsv.in
-patch < ~/mplapack/fable/3.12.1/lapack/patch-nep.in
-patch < ~/mplapack/fable/3.12.1/lapack/patch-se2.in
-patch < ~/mplapack/fable/3.12.1/lapack/patch-sep.in
+cd "${REF_DIR}/lin"
+patch  < "${PATCH_DIR}/patch-Ctest.in"
+patch  < "${PATCH_DIR}/patch-Rtest.in"
+
+cd "${REF_DIR}/eig/common"
+patch  < "${PATCH_DIR}/patch-Cchkbd.cpp"
+patch  < "${PATCH_DIR}/patch-Cchkee.cpp"
+patch  < "${PATCH_DIR}/patch-Cchkgg.cpp"
+patch  < "${PATCH_DIR}/patch-Ccsdts.cpp"
+patch  < "${PATCH_DIR}/patch-Cdrges.cpp"
+patch  < "${PATCH_DIR}/patch-Cdrges3.cpp"
+patch  < "${PATCH_DIR}/patch-Cdrgsx.cpp"
+patch  < "${PATCH_DIR}/patch-Cdrves.cpp"
+#patch  < "${PATCH_DIR}/patch-Cdrvsg.cpp"
+patch  < "${PATCH_DIR}/patch-Cdrvsg2stg.cpp"
+patch  < "${PATCH_DIR}/patch-Cget24.cpp"
+patch  < "${PATCH_DIR}/patch-Cget52.cpp"
+patch  < "${PATCH_DIR}/patch-Clctsx.cpp"
+patch  < "${PATCH_DIR}/patch-Cslect.cpp"
+patch  < "${PATCH_DIR}/patch-Rchkbd.cpp"
+#patch  < "${PATCH_DIR}/patch-Rchkec.cpp"
+patch  < "${PATCH_DIR}/patch-Rchkee.cpp"
+patch  < "${PATCH_DIR}/patch-Rchkgg.cpp"
+patch  < "${PATCH_DIR}/patch-Rckcsd.cpp"
+patch  < "${PATCH_DIR}/patch-Rcsdts.cpp"
+patch  < "${PATCH_DIR}/patch-Rdrgsx.cpp"
+patch  < "${PATCH_DIR}/patch-Rdrst2stg.cpp"
+patch  < "${PATCH_DIR}/patch-Rdrves.cpp"
+#patch  < "${PATCH_DIR}/patch-Rdrvsg.cpp"
+patch  < "${PATCH_DIR}/patch-Rget24.cpp"
+#patch  < "${PATCH_DIR}/patch-Rlatb9.cpp"
+patch  < "${PATCH_DIR}/patch-Rlctsx.cpp"
+patch  < "${PATCH_DIR}/patch-Rslect.cpp"
+
+cd "${REF_DIR}/eig"
+patch < "${PATCH_DIR}/patch-Cbb.in"
+#patch < "${PATCH_DIR}/patch-Ced.in"
+#patch < "${PATCH_DIR}/patch-Red.in"
+patch < "${PATCH_DIR}/patch-Rgg.in"
+patch < "${PATCH_DIR}/patch-csd.in"
+patch < "${PATCH_DIR}/patch-gsv.in"
+patch < "${PATCH_DIR}/patch-nep.in"
+patch < "${PATCH_DIR}/patch-se2.in"
+patch < "${PATCH_DIR}/patch-sep.in"
