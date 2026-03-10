@@ -30,7 +30,9 @@ ENV CXX="ccache g++"
 ENV FC="ccache gfortran"
 ENV MPLAPACK_REPO=https://github.com/nakatamaho/mplapack.git
 # Branch name or commit SHA. Example: release/2.1 or a full SHA.
-ENV MPLAPACK_REF="release/2.1"
+# ENV MPLAPACK_REF="release/2.1"
+ENV MPLAPACK_REF="master"
+
 WORKDIR /work
 # TEST_CMD is passed via docker run -e; if set, tests run after the build.
 ENV TEST_CMD=""
