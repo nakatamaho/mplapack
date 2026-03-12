@@ -58,12 +58,14 @@ void Cunmqr_test2(const char *side, const char *trans) {
     REAL_REF diff;
     INTEGER_REF info_ref, worksize_ref, lwork;
     INTEGER info, worksize;
-      
+
     for (m = MIN_M; m <= MAX_M; m++) {
         for (n = MIN_N; n <= m; n++) {
             for (k = MIN_K; k <= n; k++) {
-                if (Mlsame(side, "R")) minlda = max(1, n);
-                if (Mlsame(side, "L")) minlda = max(1, m);
+                if (Mlsame(side, "R"))
+                    minlda = max(1, n);
+                if (Mlsame(side, "L"))
+                    minlda = max(1, m);
                 for (lda = minlda; lda <= MAX_LDA; lda++) {
                     for (ldc = max(1, m); ldc <= MAX_LDC; ldc++) {
 #if defined VERBOSE_TEST
@@ -93,8 +95,8 @@ void Cunmqr_test2(const char *side, const char *trans) {
 #endif
                             Cunmqr(side, trans, m, n, k, A, lda, tau, C, ldc, work, lwork, info);
 
-//                            printf("C="); printmat(ldc,n,C,ldc); printf("\n");
-//                            printf("Cref="); printmat(ldc,n,C_ref,ldc); printf("\n");
+                            // printf("C="); printmat(ldc,n,C,ldc); printf("\n");
+                            // printf("Cref="); printmat(ldc,n,C_ref,ldc); printf("\n");
                             diff = infnorm(C_ref, C, matlen(ldc, n), 1);
                             if (diff > EPSILON11) {
                                 printf("error in C: ");
