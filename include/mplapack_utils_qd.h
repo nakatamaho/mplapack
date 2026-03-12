@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2026
  *	Nakata, Maho
  * 	All rights reserved.
  *
@@ -114,6 +114,26 @@ inline void sprintnum_short(char *buf, qd_complex rtmp) {
     strcat(buf, buf2);
     strcat(buf, "i");
 }
+
+#include <mplapack_hex_helpers.h>
+
+inline void sprinthex_qd(char *buf, size_t n, const qd_real &x) {
+    // Enough room for "[a b c d]" with each limb formatted by
+    // format_hex_double_fixedexp().
+    char x0_buf[128];
+    char x1_buf[128];
+    char x2_buf[128];
+    char x3_buf[128];
+
+    format_hex_double_fixedexp(x0_buf, sizeof(x0_buf), x[0]);
+    format_hex_double_fixedexp(x1_buf, sizeof(x1_buf), x[1]);
+    format_hex_double_fixedexp(x2_buf, sizeof(x2_buf), x[2]);
+    format_hex_double_fixedexp(x3_buf, sizeof(x3_buf), x[3]);
+
+    // Caller should provide a sufficiently large buffer.
+    snprintf(buf, n, "[%s %s %s %s]", x0_buf, x1_buf, x2_buf, x3_buf);
+}
+
 #endif
 
 inline qd_real pow2(qd_real a) {

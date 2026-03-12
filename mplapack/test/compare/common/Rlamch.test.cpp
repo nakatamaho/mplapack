@@ -32,6 +32,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 #include <mplapack_compare_debug.h>
+#include <mplapack_arithmetic_params.h>
 #include <blas.h>
 #include <lapack.h>
 
@@ -441,16 +442,163 @@ static void check_lamch_mpfr_values(const char *tag, const MpfrEnvSnapshot &cfg,
 
     if (print_values) {
         char _spbuf[__MPLAPACK_BUFLEN__];
-        sprintnum(_spbuf, gotE); dual_printf("Rlamch E: Epsilon                      %s\n", _spbuf);
-        sprintnum(_spbuf, gotS); dual_printf("Rlamch S: Safe minimum                 %s\n", _spbuf);
-        sprintnum(_spbuf, gotB); dual_printf("Rlamch B: Base                         %s\n", _spbuf);
-        sprintnum(_spbuf, gotP); dual_printf("Rlamch P: Precision                    %s\n", _spbuf);
-        sprintnum(_spbuf, gotN); dual_printf("Rlamch N: Number of digits in mantissa %s\n", _spbuf);
-        sprintnum(_spbuf, gotR); dual_printf("Rlamch R: Rounding mode                %s\n", _spbuf);
-        sprintnum(_spbuf, gotM); dual_printf("Rlamch M: Minimum exponent             %s\n", _spbuf);
-        sprintnum(_spbuf, gotU); dual_printf("Rlamch U: Underflow threshold          %s\n", _spbuf);
-        sprintnum(_spbuf, gotL); dual_printf("Rlamch L: Largest exponent             %s\n", _spbuf);
-        sprintnum(_spbuf, gotO); dual_printf("Rlamch O: Overflow threshold           %s\n", _spbuf);
+        char _sphexbuf[__MPLAPACK_BUFLEN__];
+
+        sprintnum(_spbuf, gotE);
+        sprinthex_mpfr_fixed(_sphexbuf, sizeof(_sphexbuf), gotE);
+        dual_printf("Rlamch E: Epsilon                      %80s    %80s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotS);
+        sprinthex_mpfr_fixed(_sphexbuf, sizeof(_sphexbuf), gotS);
+        dual_printf("Rlamch S: Safe minimum                 %80s    %80s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotB);
+        sprinthex_mpfr_fixed(_sphexbuf, sizeof(_sphexbuf), gotB);
+        dual_printf("Rlamch B: Base                         %80s    %80s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotP);
+        sprinthex_mpfr_fixed(_sphexbuf, sizeof(_sphexbuf), gotP);
+        dual_printf("Rlamch P: Precision                    %80s    %80s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotN);
+        sprinthex_mpfr_fixed(_sphexbuf, sizeof(_sphexbuf), gotN);
+        dual_printf("Rlamch N: Number of digits in mantissa %80s    %80s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotR);
+        sprinthex_mpfr_fixed(_sphexbuf, sizeof(_sphexbuf), gotR);
+        dual_printf("Rlamch R: Rounding mode                %80s    %80s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotM);
+        sprinthex_mpfr_fixed(_sphexbuf, sizeof(_sphexbuf), gotM);
+        dual_printf("Rlamch M: Minimum exponent             %80s    %80s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotU);
+        sprinthex_mpfr_fixed(_sphexbuf, sizeof(_sphexbuf), gotU);
+        dual_printf("Rlamch U: Underflow threshold          %80s    %80s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotL);
+        sprinthex_mpfr_fixed(_sphexbuf, sizeof(_sphexbuf), gotL);
+        dual_printf("Rlamch L: Largest exponent             %80s    %80s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotO);
+        sprinthex_mpfr_fixed(_sphexbuf, sizeof(_sphexbuf), gotO);
+        dual_printf("Rlamch O: Overflow threshold           %80s    %80s\n", _spbuf, _sphexbuf);
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Blue scaling parameter check for MPFR.
+// Must be called with the target MPFR environment already active.
+// ---------------------------------------------------------------------------
+static void check_blue_scaling_mpfr(const char *tag, bool print_values) {
+    using mplapack::arithmetic_int;
+
+    const auto q = mplapack::get_blue_scaling_params<REAL>();
+
+    const mpfr_prec_t real_prec = current_real_default_prec();
+    const mpfr_exp_t active_emin = mpfr_get_emin();
+    const mpfr_exp_t active_emax = mpfr_get_emax();
+
+    const arithmetic_int digits = static_cast<arithmetic_int>(real_prec);
+    const arithmetic_int emin = static_cast<arithmetic_int>(active_emin);
+    const arithmetic_int emax = static_cast<arithmetic_int>(active_emax);
+
+    const arithmetic_int ex_exp_tsml = mplapack::detail::ceildiv2(emin - 1);
+    const arithmetic_int ex_exp_tbig = mplapack::detail::floordiv2(emax - digits + 1);
+    const arithmetic_int ex_exp_ssml = -mplapack::detail::floordiv2(emin - digits);
+    const arithmetic_int ex_exp_sbig = -mplapack::detail::ceildiv2(emax + digits - 1);
+
+    mpfr_assert_case(q.exp_tsml == ex_exp_tsml, tag, "BlueScale: exp_tsml mismatch");
+    mpfr_assert_case(q.exp_tbig == ex_exp_tbig, tag, "BlueScale: exp_tbig mismatch");
+    mpfr_assert_case(q.exp_ssml == ex_exp_ssml, tag, "BlueScale: exp_ssml mismatch");
+    mpfr_assert_case(q.exp_sbig == ex_exp_sbig, tag, "BlueScale: exp_sbig mismatch");
+
+    const mpfr_rnd_t rnd = current_real_default_rnd();
+    const REAL ex_tsml = pow2_from_exp(static_cast<mpfr_exp_t>(q.exp_tsml), rnd);
+    const REAL ex_tbig = pow2_from_exp(static_cast<mpfr_exp_t>(q.exp_tbig), rnd);
+    REAL ex_ssml(1.0), ex_sbig(1.0);
+    mpfr_mul_2si(mpfr_ptr(ex_ssml), mpfr_ptr(ex_ssml), checked_exp_to_long(static_cast<mpfr_exp_t>(q.exp_ssml), "BlueScale: exp_ssml overflows long"), rnd);
+    mpfr_mul_2si(mpfr_ptr(ex_sbig), mpfr_ptr(ex_sbig), checked_exp_to_long(static_cast<mpfr_exp_t>(q.exp_sbig), "BlueScale: exp_sbig overflows long"), rnd);
+
+    assert_equal_real(tag, "BlueScale tsml", q.tsml, ex_tsml);
+    assert_equal_real(tag, "BlueScale tbig", q.tbig, ex_tbig);
+    assert_equal_real(tag, "BlueScale ssml", q.ssml, ex_ssml);
+    assert_equal_real(tag, "BlueScale sbig", q.sbig, ex_sbig);
+
+    // ordering_valid: the full chain  0 < sbig < tsml < 1 < tbig < ssml  holds
+    // iff all four exponent inequalities are satisfied:
+    //   exp_tsml < 0            (tsml < 1)
+    //   exp_tbig > 0            (tbig > 1)
+    //   exp_ssml > exp_tbig     (ssml > tbig)
+    //   exp_sbig < exp_tsml     (sbig < tsml)
+    // For standard IEEE formats (emax  |emin|) all four are always true.
+    // They break for MPFR environments with artificially small |emin| or |emax|.
+    const bool ordering_valid = (ex_exp_tsml < 0) && (ex_exp_tbig > 0) && (ex_exp_ssml > ex_exp_tbig) && (ex_exp_sbig < ex_exp_tsml);
+    if (!ordering_valid) {
+        dual_printf("BlueScale note [%s]: ordering does not hold "
+                    "(exp_tsml=%lld exp_tbig=%lld exp_ssml=%lld exp_sbig=%lld "
+                    "emin=%lld emax=%lld) ― non-standard MPFR env, "
+                    "ssml/sbig checks skipped\n",
+                    tag, (long long)ex_exp_tsml, (long long)ex_exp_tbig, (long long)ex_exp_ssml, (long long)ex_exp_sbig, (long long)emin, (long long)emax);
+    }
+
+    assert_equal_real(tag, "BlueScale tsml", q.tsml, ex_tsml);
+    assert_equal_real(tag, "BlueScale tbig", q.tbig, ex_tbig);
+    if (ordering_valid) {
+        assert_equal_real(tag, "BlueScale ssml", q.ssml, ex_ssml);
+        assert_equal_real(tag, "BlueScale sbig", q.sbig, ex_sbig);
+    }
+
+    const REAL zero(0.0), one(1.0);
+    mpfr_assert_case(q.tsml > zero, tag, "BlueScale: tsml must be positive");
+    mpfr_assert_case(q.tsml < one, tag, "BlueScale: tsml must be < 1");
+    mpfr_assert_case(q.tbig > one, tag, "BlueScale: tbig must be > 1");
+    if (ordering_valid) {
+        mpfr_assert_case(q.ssml > q.tbig, tag, "BlueScale: ssml must be > tbig");
+        mpfr_assert_case(q.sbig > zero, tag, "BlueScale: sbig must be positive");
+        mpfr_assert_case(q.sbig < q.tsml, tag, "BlueScale: sbig must be < tsml");
+    }
+
+    if (ordering_valid) {
+        REAL prod_ts = q.tsml * q.ssml;
+        mpfr_assert_case(mpfr_number_p(mpfr_ptr(prod_ts)) != 0, tag, "BlueScale: tsml*ssml is not a number");
+        mpfr_assert_case(prod_ts > zero, tag, "BlueScale: tsml*ssml must be positive");
+
+        REAL prod_bs = q.tbig * q.sbig;
+        mpfr_assert_case(mpfr_number_p(mpfr_ptr(prod_bs)) != 0, tag, "BlueScale: tbig*sbig is not a number");
+        mpfr_assert_case(prod_bs > zero, tag, "BlueScale: tbig*sbig must be positive");
+
+        REAL tsml_sq = q.tsml * q.tsml;
+        mpfr_assert_case(mpfr_number_p(mpfr_ptr(tsml_sq)) != 0, tag, "BlueScale: tsml^2 is not a number");
+        mpfr_assert_case(tsml_sq > zero, tag, "BlueScale: tsml^2 underflowed to zero");
+    }
+
+    REAL tbig_sq = q.tbig * q.tbig;
+    mpfr_assert_case(mpfr_number_p(mpfr_ptr(tbig_sq)) != 0, tag, "BlueScale: tbig^2 overflowed (not a finite number)");
+
+    if (print_values) {
+        char _spbuf[__MPLAPACK_BUFLEN__];
+        char _sphexbuf[__MPLAPACK_BUFLEN__];
+        dual_printf("BlueScale exp_tsml: %lld\n", (long long)q.exp_tsml);
+        dual_printf("BlueScale exp_tbig: %lld\n", (long long)q.exp_tbig);
+        dual_printf("BlueScale exp_ssml: %lld\n", (long long)q.exp_ssml);
+        dual_printf("BlueScale exp_sbig: %lld\n", (long long)q.exp_sbig);
+
+        sprintnum(_spbuf, q.tsml);
+        sprinthex_mpfr_fixed(_sphexbuf, sizeof(_sphexbuf), q.tsml);
+        dual_printf("BlueScale tsml:     %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q.tbig);
+        sprinthex_mpfr_fixed(_sphexbuf, sizeof(_sphexbuf), q.tbig);
+        dual_printf("BlueScale tbig:     %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q.ssml);
+        sprinthex_mpfr_fixed(_sphexbuf, sizeof(_sphexbuf), q.ssml);
+        dual_printf("BlueScale ssml:     %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q.sbig);
+        sprinthex_mpfr_fixed(_sphexbuf, sizeof(_sphexbuf), q.sbig);
+        dual_printf("BlueScale sbig:     %40s    %40s\n", _spbuf, _sphexbuf);
     }
 }
 
@@ -458,6 +606,7 @@ static void run_mpfr_env_test(const char *tag, const MpfrEnvSnapshot &cfg, bool 
     MpfrEnvGuard guard; // Save current environment; restore on scope exit.
     mpfr_env_apply(cfg);
     check_lamch_mpfr_values(tag, cfg, print_values);
+    check_blue_scaling_mpfr(tag, print_values);
 }
 
 } // namespace
@@ -489,6 +638,7 @@ void Rlamch_mpfr_test() {
     // "current" starts from the captured process-wide settings.
     static const MpfrEnvCase env_cases[] = {
         {"current", true, 0, 0, 0},
+        {"binary512", false, (mpfr_prec_t)513, (mpfr_exp_t)-65533, (mpfr_exp_t)65536},
 
         // Emulations: IEEE-like formats.
         {"binary64", false, (mpfr_prec_t)53, (mpfr_exp_t)-1021, (mpfr_exp_t)1024},
@@ -677,6 +827,111 @@ static LamchExpectedGmp compute_expected_gmp(mp_bitcnt_t prec_bits, mp_bitcnt_t 
     return ex;
 }
 
+static void check_blue_scaling_gmp(const char *tag, mp_bitcnt_t prec_bits, bool print_values) {
+    using mplapack::arithmetic_int;
+
+    const auto q = mplapack::get_blue_scaling_params<REAL>();
+
+    const mp_bitcnt_t Eexp = get_max_safe_exponent();
+    const arithmetic_int emin = static_cast<arithmetic_int>(1) - static_cast<arithmetic_int>(Eexp);
+    const arithmetic_int emax = static_cast<arithmetic_int>(Eexp);
+    const arithmetic_int digits = static_cast<arithmetic_int>(prec_bits);
+
+    const arithmetic_int ex_exp_tsml = mplapack::detail::ceildiv2(emin - 1);
+    const arithmetic_int ex_exp_tbig = mplapack::detail::floordiv2(emax - digits + 1);
+    const arithmetic_int ex_exp_ssml = -mplapack::detail::floordiv2(emin - digits);
+    const arithmetic_int ex_exp_sbig = -mplapack::detail::ceildiv2(emax + digits - 1);
+
+    gmp_assert_case(q.exp_tsml == ex_exp_tsml, tag, "BlueScale: exp_tsml mismatch");
+    gmp_assert_case(q.exp_tbig == ex_exp_tbig, tag, "BlueScale: exp_tbig mismatch");
+    gmp_assert_case(q.exp_ssml == ex_exp_ssml, tag, "BlueScale: exp_ssml mismatch");
+    gmp_assert_case(q.exp_sbig == ex_exp_sbig, tag, "BlueScale: exp_sbig mismatch");
+
+    const REAL one(1.0), zero(0.0);
+    REAL ex_tsml(1.0), ex_tbig(1.0), ex_ssml(1.0), ex_sbig(1.0);
+    if (q.exp_tsml >= 0)
+        mpf_mul_2exp(ex_tsml.get_mpf_t(), ex_tsml.get_mpf_t(), static_cast<mp_bitcnt_t>(q.exp_tsml));
+    else
+        mpf_div_2exp(ex_tsml.get_mpf_t(), ex_tsml.get_mpf_t(), static_cast<mp_bitcnt_t>(-q.exp_tsml));
+    if (q.exp_tbig >= 0)
+        mpf_mul_2exp(ex_tbig.get_mpf_t(), ex_tbig.get_mpf_t(), static_cast<mp_bitcnt_t>(q.exp_tbig));
+    else
+        mpf_div_2exp(ex_tbig.get_mpf_t(), ex_tbig.get_mpf_t(), static_cast<mp_bitcnt_t>(-q.exp_tbig));
+    if (q.exp_ssml >= 0)
+        mpf_mul_2exp(ex_ssml.get_mpf_t(), ex_ssml.get_mpf_t(), static_cast<mp_bitcnt_t>(q.exp_ssml));
+    else
+        mpf_div_2exp(ex_ssml.get_mpf_t(), ex_ssml.get_mpf_t(), static_cast<mp_bitcnt_t>(-q.exp_ssml));
+    if (q.exp_sbig >= 0)
+        mpf_mul_2exp(ex_sbig.get_mpf_t(), ex_sbig.get_mpf_t(), static_cast<mp_bitcnt_t>(q.exp_sbig));
+    else
+        mpf_div_2exp(ex_sbig.get_mpf_t(), ex_sbig.get_mpf_t(), static_cast<mp_bitcnt_t>(-q.exp_sbig));
+
+    gmp_assert_equal_real(tag, "BlueScale tsml", q.tsml, ex_tsml);
+    gmp_assert_equal_real(tag, "BlueScale tbig", q.tbig, ex_tbig);
+    gmp_assert_equal_real(tag, "BlueScale ssml", q.ssml, ex_ssml);
+    gmp_assert_equal_real(tag, "BlueScale sbig", q.sbig, ex_sbig);
+
+    const bool ordering_valid = (ex_exp_tsml < 0) && (ex_exp_tbig > 0) && (ex_exp_ssml > ex_exp_tbig) && (ex_exp_sbig < ex_exp_tsml);
+    if (!ordering_valid) {
+        dual_printf("BlueScale note [%s]: ordering does not hold "
+                    "(exp_tsml=%lld exp_tbig=%lld exp_ssml=%lld exp_sbig=%lld "
+                    "emin=%lld emax=%lld) ― non-standard GMP env, "
+                    "ssml/sbig checks skipped\n",
+                    tag, (long long)ex_exp_tsml, (long long)ex_exp_tbig, (long long)ex_exp_ssml, (long long)ex_exp_sbig, (long long)emin, (long long)emax);
+    }
+
+    gmp_assert_equal_real(tag, "BlueScale tsml", q.tsml, ex_tsml);
+    gmp_assert_equal_real(tag, "BlueScale tbig", q.tbig, ex_tbig);
+    if (ordering_valid) {
+        gmp_assert_equal_real(tag, "BlueScale ssml", q.ssml, ex_ssml);
+        gmp_assert_equal_real(tag, "BlueScale sbig", q.sbig, ex_sbig);
+    }
+
+    gmp_assert_case(q.tsml > zero, tag, "BlueScale: tsml must be positive");
+    gmp_assert_case(q.tsml < one, tag, "BlueScale: tsml must be < 1");
+    gmp_assert_case(q.tbig > one, tag, "BlueScale: tbig must be > 1");
+    if (ordering_valid) {
+        gmp_assert_case(q.ssml > q.tbig, tag, "BlueScale: ssml must be > tbig");
+        gmp_assert_case(q.sbig > zero, tag, "BlueScale: sbig must be positive");
+        gmp_assert_case(q.sbig < q.tsml, tag, "BlueScale: sbig must be < tsml");
+    }
+
+    if (ordering_valid) {
+        const REAL prod_ts = q.tsml * q.ssml;
+        gmp_assert_case(prod_ts > zero, tag, "BlueScale: tsml*ssml must be positive");
+        const REAL prod_bs = q.tbig * q.sbig;
+        gmp_assert_case(prod_bs > zero, tag, "BlueScale: tbig*sbig must be positive");
+        const REAL tsml_sq = q.tsml * q.tsml;
+        gmp_assert_case(tsml_sq > zero, tag, "BlueScale: tsml^2 underflowed to zero");
+    }
+
+    if (print_values) {
+        char _spbuf[__MPLAPACK_BUFLEN__];
+        char _sphexbuf[__MPLAPACK_BUFLEN__];
+
+        dual_printf("BlueScale exp_tsml: %lld\n", (long long)q.exp_tsml);
+        dual_printf("BlueScale exp_tbig: %lld\n", (long long)q.exp_tbig);
+        dual_printf("BlueScale exp_ssml: %lld\n", (long long)q.exp_ssml);
+        dual_printf("BlueScale exp_sbig: %lld\n", (long long)q.exp_sbig);
+
+        sprintnum(_spbuf, q.tsml);
+        sprinthex_gmp_fixed(_sphexbuf, sizeof(_sphexbuf), q.tsml);
+        dual_printf("BlueScale tsml:     %130s    %130s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q.tbig);
+        sprinthex_gmp_fixed(_sphexbuf, sizeof(_sphexbuf), q.tbig);
+        dual_printf("BlueScale tbig:     %130s    %130s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q.ssml);
+        sprinthex_gmp_fixed(_sphexbuf, sizeof(_sphexbuf), q.ssml);
+        dual_printf("BlueScale ssml:     %130s    %130s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q.sbig);
+        sprinthex_gmp_fixed(_sphexbuf, sizeof(_sphexbuf), q.sbig);
+        dual_printf("BlueScale sbig:     %130s    %130s\n", _spbuf, _sphexbuf);
+    }
+}
+
 static void check_lamch_gmp_values(const char *tag, mp_bitcnt_t prec_bits, bool print_values) {
     const REAL zero = 0.0;
     const REAL one = 1.0;
@@ -750,17 +1005,50 @@ static void check_lamch_gmp_values(const char *tag, mp_bitcnt_t prec_bits, bool 
 
     if (print_values) {
         char _spbuf[__MPLAPACK_BUFLEN__];
-        sprintnum(_spbuf, gotE); dual_printf("Rlamch E: Epsilon                      %s\n", _spbuf);
-        sprintnum(_spbuf, gotS); dual_printf("Rlamch S: Safe minimum                 %s\n", _spbuf);
-        sprintnum(_spbuf, gotB); dual_printf("Rlamch B: Base                         %s\n", _spbuf);
-        sprintnum(_spbuf, gotP); dual_printf("Rlamch P: Precision                    %s\n", _spbuf);
-        sprintnum(_spbuf, gotN); dual_printf("Rlamch N: Number of digits in mantissa %s\n", _spbuf);
-        sprintnum(_spbuf, gotR); dual_printf("Rlamch R: Rounding mode                %s\n", _spbuf);
-        sprintnum(_spbuf, gotM); dual_printf("Rlamch M: Minimum exponent             %s\n", _spbuf);
-        sprintnum(_spbuf, gotU); dual_printf("Rlamch U: Underflow threshold          %s\n", _spbuf);
-        sprintnum(_spbuf, gotL); dual_printf("Rlamch L: Largest exponent             %s\n", _spbuf);
-        sprintnum(_spbuf, gotO); dual_printf("Rlamch O: Overflow threshold           %s\n", _spbuf);
+        char _sphexbuf[__MPLAPACK_BUFLEN__];
+
+        sprintnum(_spbuf, gotE);
+        sprinthex_gmp_fixed(_sphexbuf, sizeof(_sphexbuf), gotE);
+        dual_printf("Rlamch E: Epsilon                      %130s    %130s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotS);
+        sprinthex_gmp_fixed(_sphexbuf, sizeof(_sphexbuf), gotS);
+        dual_printf("Rlamch S: Safe minimum                 %130s    %130s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotB);
+        sprinthex_gmp_fixed(_sphexbuf, sizeof(_sphexbuf), gotB);
+        dual_printf("Rlamch B: Base                         %130s    %130s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotP);
+        sprinthex_gmp_fixed(_sphexbuf, sizeof(_sphexbuf), gotP);
+        dual_printf("Rlamch P: Precision                    %130s    %130s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotN);
+        sprinthex_gmp_fixed(_sphexbuf, sizeof(_sphexbuf), gotN);
+        dual_printf("Rlamch N: Number of digits in mantissa %130s    %130s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotR);
+        sprinthex_gmp_fixed(_sphexbuf, sizeof(_sphexbuf), gotR);
+        dual_printf("Rlamch R: Rounding mode                %130s    %130s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotM);
+        sprinthex_gmp_fixed(_sphexbuf, sizeof(_sphexbuf), gotM);
+        dual_printf("Rlamch M: Minimum exponent             %130s    %130s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotU);
+        sprinthex_gmp_fixed(_sphexbuf, sizeof(_sphexbuf), gotU);
+        dual_printf("Rlamch U: Underflow threshold          %130s    %130s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotL);
+        sprinthex_gmp_fixed(_sphexbuf, sizeof(_sphexbuf), gotL);
+        dual_printf("Rlamch L: Largest exponent             %130s    %130s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotO);
+        sprinthex_gmp_fixed(_sphexbuf, sizeof(_sphexbuf), gotO);
+        dual_printf("Rlamch O: Overflow threshold           %130s    %130s\n", _spbuf, _sphexbuf);
     }
+
+    check_blue_scaling_gmp(tag, prec_bits, print_values);
 }
 
 void Rlamch_gmp_test() {
@@ -961,6 +1249,71 @@ static void check_cross_consistency_rmin_rmax_qd(const char *tag, const qd_real 
     qd_assert_case(expO == l, tag, "frexp exponent of O inconsistent with L");
 }
 
+static void check_blue_scaling_qd(const char *tag, bool print_values) {
+    using mplapack::arithmetic_int;
+
+    const auto q = mplapack::get_blue_scaling_params<qd_real>();
+
+    int emin_int = 0;
+    (void)std::frexp(qd_real::_min_normalized, &emin_int);
+    const arithmetic_int emin = static_cast<arithmetic_int>(emin_int);
+    const arithmetic_int emax = static_cast<arithmetic_int>(std::numeric_limits<double>::max_exponent);
+    const arithmetic_int digits = static_cast<arithmetic_int>(std::numeric_limits<qd_real>::digits);
+
+    qd_assert_case(q.exp_tsml == mplapack::detail::ceildiv2(emin - 1), tag, "BlueScale: exp_tsml mismatch");
+    qd_assert_case(q.exp_tbig == mplapack::detail::floordiv2(emax - digits + 1), tag, "BlueScale: exp_tbig mismatch");
+    qd_assert_case(q.exp_ssml == -mplapack::detail::floordiv2(emin - digits), tag, "BlueScale: exp_ssml mismatch");
+    qd_assert_case(q.exp_sbig == -mplapack::detail::ceildiv2(emax + digits - 1), tag, "BlueScale: exp_sbig mismatch");
+
+    assert_equal_qd(tag, "BlueScale tsml", q.tsml, ::ldexp(qd_real(1.0), static_cast<int>(q.exp_tsml)));
+    assert_equal_qd(tag, "BlueScale tbig", q.tbig, ::ldexp(qd_real(1.0), static_cast<int>(q.exp_tbig)));
+    assert_equal_qd(tag, "BlueScale ssml", q.ssml, ::ldexp(qd_real(1.0), static_cast<int>(q.exp_ssml)));
+    assert_equal_qd(tag, "BlueScale sbig", q.sbig, ::ldexp(qd_real(1.0), static_cast<int>(q.exp_sbig)));
+
+    const qd_real zero(0.0), one(1.0);
+    qd_assert_case(q.tsml > zero, tag, "BlueScale: tsml must be positive");
+    qd_assert_case(q.tsml < one, tag, "BlueScale: tsml must be < 1");
+    qd_assert_case(q.tbig > one, tag, "BlueScale: tbig must be > 1");
+    qd_assert_case(q.ssml > q.tbig, tag, "BlueScale: ssml must be > tbig");
+    qd_assert_case(q.sbig > zero, tag, "BlueScale: sbig must be positive");
+    qd_assert_case(q.sbig < q.tsml, tag, "BlueScale: sbig must be < tsml");
+
+    const qd_real prod_ts = q.tsml * q.ssml;
+    qd_assert_case(std::isfinite(to_double(prod_ts)) && to_double(prod_ts) > 0.0, tag, "BlueScale: tsml*ssml is not a positive finite value");
+    const qd_real prod_bs = q.tbig * q.sbig;
+    qd_assert_case(std::isfinite(to_double(prod_bs)) && to_double(prod_bs) > 0.0, tag, "BlueScale: tbig*sbig is not a positive finite value");
+    const qd_real tsml_sq = q.tsml * q.tsml;
+    qd_assert_case(to_double(tsml_sq) > 0.0, tag, "BlueScale: tsml^2 underflowed to zero");
+    const qd_real tbig_sq = q.tbig * q.tbig;
+    qd_assert_case(std::isfinite(to_double(tbig_sq)), tag, "BlueScale: tbig^2 overflowed");
+
+    if (print_values) {
+        char _spbuf[__MPLAPACK_BUFLEN__];
+        char _sphexbuf[__MPLAPACK_BUFLEN__];
+
+        dual_printf("BlueScale exp_tsml: %lld\n", (long long)q.exp_tsml);
+        dual_printf("BlueScale exp_tbig: %lld\n", (long long)q.exp_tbig);
+        dual_printf("BlueScale exp_ssml: %lld\n", (long long)q.exp_ssml);
+        dual_printf("BlueScale exp_sbig: %lld\n", (long long)q.exp_sbig);
+
+        sprintnum(_spbuf, q.tsml);
+        sprinthex_qd(_sphexbuf, sizeof(_sphexbuf), q.tsml);
+        dual_printf("BlueScale tsml:     %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q.tbig);
+        sprinthex_qd(_sphexbuf, sizeof(_sphexbuf), q.tbig);
+        dual_printf("BlueScale tbig:     %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q.ssml);
+        sprinthex_qd(_sphexbuf, sizeof(_sphexbuf), q.ssml);
+        dual_printf("BlueScale ssml:     %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q.sbig);
+        sprinthex_qd(_sphexbuf, sizeof(_sphexbuf), q.sbig);
+        dual_printf("BlueScale sbig:     %40s    %40s\n", _spbuf, _sphexbuf);
+    }
+}
+
 static void check_lamch_qd_values(const char *tag, bool print_values) {
     const LamchExpectedQD ex = compute_expected_qd();
 
@@ -995,16 +1348,47 @@ static void check_lamch_qd_values(const char *tag, bool print_values) {
 
     if (print_values) {
         char _spbuf[__MPLAPACK_BUFLEN__];
-        sprintnum(_spbuf, gotE); dual_printf("Rlamch E: Epsilon                      %s\n", _spbuf);
-        sprintnum(_spbuf, gotS); dual_printf("Rlamch S: Safe minimum                 %s\n", _spbuf);
-        sprintnum(_spbuf, gotB); dual_printf("Rlamch B: Base                         %s\n", _spbuf);
-        sprintnum(_spbuf, gotP); dual_printf("Rlamch P: Precision                    %s\n", _spbuf);
-        sprintnum(_spbuf, gotN); dual_printf("Rlamch N: Number of digits in mantissa %s\n", _spbuf);
-        sprintnum(_spbuf, gotR); dual_printf("Rlamch R: Rounding mode                %s\n", _spbuf);
-        sprintnum(_spbuf, gotM); dual_printf("Rlamch M: Minimum exponent             %s\n", _spbuf);
-        sprintnum(_spbuf, gotU); dual_printf("Rlamch U: Underflow threshold          %s\n", _spbuf);
-        sprintnum(_spbuf, gotL); dual_printf("Rlamch L: Largest exponent             %s\n", _spbuf);
-        sprintnum(_spbuf, gotO); dual_printf("Rlamch O: Overflow threshold           %s\n", _spbuf);
+        char _sphexbuf[__MPLAPACK_BUFLEN__];
+
+        sprintnum(_spbuf, gotE);
+        sprinthex_qd(_sphexbuf, sizeof(_sphexbuf), gotE);
+        dual_printf("Rlamch E: Epsilon                      %70s    %70s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotS);
+        sprinthex_qd(_sphexbuf, sizeof(_sphexbuf), gotS);
+        dual_printf("Rlamch S: Safe minimum                 %70s    %70s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotB);
+        sprinthex_qd(_sphexbuf, sizeof(_sphexbuf), gotB);
+        dual_printf("Rlamch B: Base                         %70s    %70s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotP);
+        sprinthex_qd(_sphexbuf, sizeof(_sphexbuf), gotP);
+        dual_printf("Rlamch P: Precision                    %70s    %70s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotN);
+        sprinthex_qd(_sphexbuf, sizeof(_sphexbuf), gotN);
+        dual_printf("Rlamch N: Number of digits in mantissa %70s    %70s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotR);
+        sprinthex_qd(_sphexbuf, sizeof(_sphexbuf), gotR);
+        dual_printf("Rlamch R: Rounding mode                %70s    %70s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotM);
+        sprinthex_qd(_sphexbuf, sizeof(_sphexbuf), gotM);
+        dual_printf("Rlamch M: Minimum exponent             %70s    %70s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotU);
+        sprinthex_qd(_sphexbuf, sizeof(_sphexbuf), gotU);
+        dual_printf("Rlamch U: Underflow threshold          %70s    %70s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotL);
+        sprinthex_qd(_sphexbuf, sizeof(_sphexbuf), gotL);
+        dual_printf("Rlamch L: Largest exponent             %70s    %70s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotO);
+        sprinthex_qd(_sphexbuf, sizeof(_sphexbuf), gotO);
+        dual_printf("Rlamch O: Overflow threshold           %70s    %70s\n", _spbuf, _sphexbuf);
     }
 }
 
@@ -1019,6 +1403,7 @@ void Rlamch_qd_test() {
 
     const char *tag = "qd_real";
     check_lamch_qd_values(tag, print_values);
+    check_blue_scaling_qd(tag, print_values);
 }
 
 #endif // ___MPLAPACK_BUILD_WITH_QD___
@@ -1224,6 +1609,71 @@ static void check_cross_consistency_rmin_rmax_dd(const char *tag, const dd_real 
     dd_assert_case(expO == l, tag, "frexp exponent of O inconsistent with L");
 }
 
+static void check_blue_scaling_dd(const char *tag, bool print_values) {
+    using mplapack::arithmetic_int;
+
+    const auto q = mplapack::get_blue_scaling_params<dd_real>();
+
+    int emin_int = 0;
+    (void)std::frexp(dd_real::_min_normalized, &emin_int);
+    const arithmetic_int emin = static_cast<arithmetic_int>(emin_int);
+    const arithmetic_int emax = static_cast<arithmetic_int>(std::numeric_limits<double>::max_exponent);
+    const arithmetic_int digits = static_cast<arithmetic_int>(std::numeric_limits<dd_real>::digits);
+
+    dd_assert_case(q.exp_tsml == mplapack::detail::ceildiv2(emin - 1), tag, "BlueScale: exp_tsml mismatch");
+    dd_assert_case(q.exp_tbig == mplapack::detail::floordiv2(emax - digits + 1), tag, "BlueScale: exp_tbig mismatch");
+    dd_assert_case(q.exp_ssml == -mplapack::detail::floordiv2(emin - digits), tag, "BlueScale: exp_ssml mismatch");
+    dd_assert_case(q.exp_sbig == -mplapack::detail::ceildiv2(emax + digits - 1), tag, "BlueScale: exp_sbig mismatch");
+
+    assert_equal_dd(tag, "BlueScale tsml", q.tsml, ::ldexp(dd_real(1.0), static_cast<int>(q.exp_tsml)));
+    assert_equal_dd(tag, "BlueScale tbig", q.tbig, ::ldexp(dd_real(1.0), static_cast<int>(q.exp_tbig)));
+    assert_equal_dd(tag, "BlueScale ssml", q.ssml, ::ldexp(dd_real(1.0), static_cast<int>(q.exp_ssml)));
+    assert_equal_dd(tag, "BlueScale sbig", q.sbig, ::ldexp(dd_real(1.0), static_cast<int>(q.exp_sbig)));
+
+    const dd_real zero(0.0), one(1.0);
+    dd_assert_case(q.tsml > zero, tag, "BlueScale: tsml must be positive");
+    dd_assert_case(q.tsml < one, tag, "BlueScale: tsml must be < 1");
+    dd_assert_case(q.tbig > one, tag, "BlueScale: tbig must be > 1");
+    dd_assert_case(q.ssml > q.tbig, tag, "BlueScale: ssml must be > tbig");
+    dd_assert_case(q.sbig > zero, tag, "BlueScale: sbig must be positive");
+    dd_assert_case(q.sbig < q.tsml, tag, "BlueScale: sbig must be < tsml");
+
+    const dd_real prod_ts = q.tsml * q.ssml;
+    dd_assert_case(isfinite(prod_ts) && prod_ts > zero, tag, "BlueScale: tsml*ssml is not a positive finite value");
+    const dd_real prod_bs = q.tbig * q.sbig;
+    dd_assert_case(isfinite(prod_bs) && prod_bs > zero, tag, "BlueScale: tbig*sbig is not a positive finite value");
+    const dd_real tsml_sq = q.tsml * q.tsml;
+    dd_assert_case(tsml_sq > zero, tag, "BlueScale: tsml^2 underflowed to zero");
+    const dd_real tbig_sq = q.tbig * q.tbig;
+    dd_assert_case(isfinite(tbig_sq), tag, "BlueScale: tbig^2 overflowed");
+
+    if (print_values) {
+        char _spbuf[__MPLAPACK_BUFLEN__];
+        char _sphexbuf[__MPLAPACK_BUFLEN__];
+
+        dual_printf("BlueScale exp_tsml: %lld\n", (long long)q.exp_tsml);
+        dual_printf("BlueScale exp_tbig: %lld\n", (long long)q.exp_tbig);
+        dual_printf("BlueScale exp_ssml: %lld\n", (long long)q.exp_ssml);
+        dual_printf("BlueScale exp_sbig: %lld\n", (long long)q.exp_sbig);
+
+        sprintnum(_spbuf, q.tsml);
+        sprinthex_dd(_sphexbuf, sizeof(_sphexbuf), q.tsml);
+        dual_printf("BlueScale tsml:     %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q.tbig);
+        sprinthex_dd(_sphexbuf, sizeof(_sphexbuf), q.tbig);
+        dual_printf("BlueScale tbig:     %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q.ssml);
+        sprinthex_dd(_sphexbuf, sizeof(_sphexbuf), q.ssml);
+        dual_printf("BlueScale ssml:     %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q.sbig);
+        sprinthex_dd(_sphexbuf, sizeof(_sphexbuf), q.sbig);
+        dual_printf("BlueScale sbig:     %40s    %40s\n", _spbuf, _sphexbuf);
+    }
+}
+
 static void check_lamch_dd_values(const char *tag, bool print_values) {
     const LamchExpectedDD ex = compute_expected_dd();
 
@@ -1261,16 +1711,47 @@ static void check_lamch_dd_values(const char *tag, bool print_values) {
 
     if (print_values) {
         char _spbuf[__MPLAPACK_BUFLEN__];
-        sprintnum(_spbuf, gotE); dual_printf("Rlamch E: Epsilon                      %s\n", _spbuf);
-        sprintnum(_spbuf, gotS); dual_printf("Rlamch S: Safe minimum                 %s\n", _spbuf);
-        sprintnum(_spbuf, gotB); dual_printf("Rlamch B: Base                         %s\n", _spbuf);
-        sprintnum(_spbuf, gotP); dual_printf("Rlamch P: Precision                    %s\n", _spbuf);
-        sprintnum(_spbuf, gotN); dual_printf("Rlamch N: Number of digits in mantissa %s\n", _spbuf);
-        sprintnum(_spbuf, gotR); dual_printf("Rlamch R: Rounding mode                %s\n", _spbuf);
-        sprintnum(_spbuf, gotM); dual_printf("Rlamch M: Minimum exponent             %s\n", _spbuf);
-        sprintnum(_spbuf, gotU); dual_printf("Rlamch U: Underflow threshold          %s\n", _spbuf);
-        sprintnum(_spbuf, gotL); dual_printf("Rlamch L: Largest exponent             %s\n", _spbuf);
-        sprintnum(_spbuf, gotO); dual_printf("Rlamch O: Overflow threshold           %s\n", _spbuf);
+        char _sphexbuf[__MPLAPACK_BUFLEN__];
+
+        sprintnum(_spbuf, gotE);
+        sprinthex_dd(_sphexbuf, sizeof(_sphexbuf), gotE);
+        dual_printf("Rlamch E: Epsilon                      %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotS);
+        sprinthex_dd(_sphexbuf, sizeof(_sphexbuf), gotS);
+        dual_printf("Rlamch S: Safe minimum                 %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotB);
+        sprinthex_dd(_sphexbuf, sizeof(_sphexbuf), gotB);
+        dual_printf("Rlamch B: Base                         %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotP);
+        sprinthex_dd(_sphexbuf, sizeof(_sphexbuf), gotP);
+        dual_printf("Rlamch P: Precision                    %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotN);
+        sprinthex_dd(_sphexbuf, sizeof(_sphexbuf), gotN);
+        dual_printf("Rlamch N: Number of digits in mantissa %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotR);
+        sprinthex_dd(_sphexbuf, sizeof(_sphexbuf), gotR);
+        dual_printf("Rlamch R: Rounding mode                %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotM);
+        sprinthex_dd(_sphexbuf, sizeof(_sphexbuf), gotM);
+        dual_printf("Rlamch M: Minimum exponent             %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotU);
+        sprinthex_dd(_sphexbuf, sizeof(_sphexbuf), gotU);
+        dual_printf("Rlamch U: Underflow threshold          %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotL);
+        sprinthex_dd(_sphexbuf, sizeof(_sphexbuf), gotL);
+        dual_printf("Rlamch L: Largest exponent             %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotO);
+        sprinthex_dd(_sphexbuf, sizeof(_sphexbuf), gotO);
+        dual_printf("Rlamch O: Overflow threshold           %40s    %40s\n", _spbuf, _sphexbuf);
     }
 }
 
@@ -1285,6 +1766,7 @@ void Rlamch_dd_test() {
 
     const char *tag = "dd_real";
     check_lamch_dd_values(tag, print_values);
+    check_blue_scaling_dd(tag, print_values);
 }
 
 #endif // ___MPLAPACK_BUILD_WITH_DD___
@@ -1479,6 +1961,73 @@ static void check_cross_consistency_rmin_rmax_double(const char *tag, double E, 
     double_assert_case(std::abs(log2O - 1024.0) < 1.0, tag, "log2(O) inconsistent with expected max exponent");
 }
 
+static void check_blue_scaling_double(const char *tag, bool print_values) {
+    using mplapack::arithmetic_int;
+
+    const auto q = mplapack::get_blue_scaling_params<double>();
+
+    constexpr arithmetic_int emin = static_cast<arithmetic_int>(DBL_MIN_EXP);
+    constexpr arithmetic_int emax = static_cast<arithmetic_int>(DBL_MAX_EXP);
+    constexpr arithmetic_int digits = static_cast<arithmetic_int>(DBL_MANT_DIG);
+
+    double_assert_case(q.exp_tsml == mplapack::detail::ceildiv2(emin - 1), tag, "BlueScale: exp_tsml mismatch");
+    double_assert_case(q.exp_tbig == mplapack::detail::floordiv2(emax - digits + 1), tag, "BlueScale: exp_tbig mismatch");
+    double_assert_case(q.exp_ssml == -mplapack::detail::floordiv2(emin - digits), tag, "BlueScale: exp_ssml mismatch");
+    double_assert_case(q.exp_sbig == -mplapack::detail::ceildiv2(emax + digits - 1), tag, "BlueScale: exp_sbig mismatch");
+
+    double_assert_case(q.exp_tsml == -511, tag, "BlueScale: exp_tsml must be -511 for binary64");
+    double_assert_case(q.exp_tbig == 486, tag, "BlueScale: exp_tbig must be  486 for binary64");
+    double_assert_case(q.exp_ssml == 537, tag, "BlueScale: exp_ssml must be  537 for binary64");
+    double_assert_case(q.exp_sbig == -538, tag, "BlueScale: exp_sbig must be -538 for binary64");
+
+    double_assert_case(q.tsml == std::ldexp(1.0, static_cast<int>(q.exp_tsml)), tag, "BlueScale: tsml value mismatch");
+    double_assert_case(q.tbig == std::ldexp(1.0, static_cast<int>(q.exp_tbig)), tag, "BlueScale: tbig value mismatch");
+    double_assert_case(q.ssml == std::ldexp(1.0, static_cast<int>(q.exp_ssml)), tag, "BlueScale: ssml value mismatch");
+    double_assert_case(q.sbig == std::ldexp(1.0, static_cast<int>(q.exp_sbig)), tag, "BlueScale: sbig value mismatch");
+
+    double_assert_case(q.tsml > 0.0, tag, "BlueScale: tsml must be positive");
+    double_assert_case(q.tsml < 1.0, tag, "BlueScale: tsml must be < 1");
+    double_assert_case(q.tbig > 1.0, tag, "BlueScale: tbig must be > 1");
+    double_assert_case(q.ssml > q.tbig, tag, "BlueScale: ssml must be > tbig");
+    double_assert_case(q.sbig > 0.0, tag, "BlueScale: sbig must be positive");
+    double_assert_case(q.sbig < q.tsml, tag, "BlueScale: sbig must be < tsml");
+
+    const double prod_ts = q.tsml * q.ssml;
+    double_assert_case(std::isfinite(prod_ts) && prod_ts > 0.0, tag, "BlueScale: tsml*ssml is not a positive finite value");
+    const double prod_bs = q.tbig * q.sbig;
+    double_assert_case(std::isfinite(prod_bs) && prod_bs > 0.0, tag, "BlueScale: tbig*sbig is not a positive finite value");
+    const double tsml_sq = q.tsml * q.tsml;
+    double_assert_case(tsml_sq >= DBL_MIN, tag, "BlueScale: tsml^2 must be >= DBL_MIN");
+    const double tbig_sq = q.tbig * q.tbig;
+    double_assert_case(std::isfinite(tbig_sq) && tbig_sq <= DBL_MAX, tag, "BlueScale: tbig^2 overflowed");
+
+    if (print_values) {
+        char _spbuf[__MPLAPACK_BUFLEN__];
+        char _sphexbuf[__MPLAPACK_BUFLEN__];
+
+        dual_printf("BlueScale exp_tsml: %lld\n", (long long)q.exp_tsml);
+        dual_printf("BlueScale exp_tbig: %lld\n", (long long)q.exp_tbig);
+        dual_printf("BlueScale exp_ssml: %lld\n", (long long)q.exp_ssml);
+        dual_printf("BlueScale exp_sbig: %lld\n", (long long)q.exp_sbig);
+
+        sprintnum(_spbuf, q.tsml);
+        sprinthex_double(_sphexbuf, sizeof(_sphexbuf), q.tsml);
+        dual_printf("BlueScale tsml:     %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q.tbig);
+        sprinthex_double(_sphexbuf, sizeof(_sphexbuf), q.tbig);
+        dual_printf("BlueScale tbig:     %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q.ssml);
+        sprinthex_double(_sphexbuf, sizeof(_sphexbuf), q.ssml);
+        dual_printf("BlueScale ssml:     %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q.sbig);
+        sprinthex_double(_sphexbuf, sizeof(_sphexbuf), q.sbig);
+        dual_printf("BlueScale sbig:     %40s    %40s\n", _spbuf, _sphexbuf);
+    }
+}
+
 static void check_lamch_double_values(const char *tag, bool print_values) {
     const LamchExpectedDouble ex = compute_expected_double();
 
@@ -1515,17 +2064,48 @@ static void check_lamch_double_values(const char *tag, bool print_values) {
     check_cross_consistency_rmin_rmax_double(tag, gotE, gotU, gotO);
 
     if (print_values) {
-        char _spbuf[64];
-        snprintf(_spbuf, sizeof(_spbuf), "%.17e", gotE); dual_printf("Rlamch E: Epsilon                      %s\n", _spbuf);
-        snprintf(_spbuf, sizeof(_spbuf), "%.17e", gotS); dual_printf("Rlamch S: Safe minimum                 %s\n", _spbuf);
-        snprintf(_spbuf, sizeof(_spbuf), "%.17e", gotB); dual_printf("Rlamch B: Base                         %s\n", _spbuf);
-        snprintf(_spbuf, sizeof(_spbuf), "%.17e", gotP); dual_printf("Rlamch P: Precision                    %s\n", _spbuf);
-        snprintf(_spbuf, sizeof(_spbuf), "%.17e", gotN); dual_printf("Rlamch N: Number of digits in mantissa %s\n", _spbuf);
-        snprintf(_spbuf, sizeof(_spbuf), "%.17e", gotR); dual_printf("Rlamch R: Rounding mode                %s\n", _spbuf);
-        snprintf(_spbuf, sizeof(_spbuf), "%.17e", gotM); dual_printf("Rlamch M: Minimum exponent             %s\n", _spbuf);
-        snprintf(_spbuf, sizeof(_spbuf), "%.17e", gotU); dual_printf("Rlamch U: Underflow threshold          %s\n", _spbuf);
-        snprintf(_spbuf, sizeof(_spbuf), "%.17e", gotL); dual_printf("Rlamch L: Largest exponent             %s\n", _spbuf);
-        snprintf(_spbuf, sizeof(_spbuf), "%.17e", gotO); dual_printf("Rlamch O: Overflow threshold           %s\n", _spbuf);
+        char _spbuf[__MPLAPACK_BUFLEN__];
+        char _sphexbuf[__MPLAPACK_BUFLEN__];
+
+        sprintnum(_spbuf, gotE);
+        sprinthex_double(_sphexbuf, sizeof(_sphexbuf), gotE);
+        dual_printf("Rlamch E: Epsilon                      %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotS);
+        sprinthex_double(_sphexbuf, sizeof(_sphexbuf), gotS);
+        dual_printf("Rlamch S: Safe minimum                 %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotB);
+        sprinthex_double(_sphexbuf, sizeof(_sphexbuf), gotB);
+        dual_printf("Rlamch B: Base                         %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotP);
+        sprinthex_double(_sphexbuf, sizeof(_sphexbuf), gotP);
+        dual_printf("Rlamch P: Precision                    %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotN);
+        sprinthex_double(_sphexbuf, sizeof(_sphexbuf), gotN);
+        dual_printf("Rlamch N: Number of digits in mantissa %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotR);
+        sprinthex_double(_sphexbuf, sizeof(_sphexbuf), gotR);
+        dual_printf("Rlamch R: Rounding mode                %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotM);
+        sprinthex_double(_sphexbuf, sizeof(_sphexbuf), gotM);
+        dual_printf("Rlamch M: Minimum exponent             %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotU);
+        sprinthex_double(_sphexbuf, sizeof(_sphexbuf), gotU);
+        dual_printf("Rlamch U: Underflow threshold          %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotL);
+        sprinthex_double(_sphexbuf, sizeof(_sphexbuf), gotL);
+        dual_printf("Rlamch L: Largest exponent             %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotO);
+        sprinthex_double(_sphexbuf, sizeof(_sphexbuf), gotO);
+        dual_printf("Rlamch O: Overflow threshold           %40s    %40s\n", _spbuf, _sphexbuf);
     }
 }
 
@@ -1540,12 +2120,94 @@ void Rlamch_double_test() {
 
     const char *tag = "binary64";
     check_lamch_double_values(tag, print_values);
+    check_blue_scaling_double(tag, print_values);
 }
 
 #endif // ___MPLAPACK_BUILD_WITH_DOUBLE___
 
 #if defined ___MPLAPACK_BUILD_WITH_BINARY128___
 #include <cfenv> // std::fegetround, FE_TONEAREST
+
+static void check_blue_scaling_binary128(const char *tag, int emin, int emax, int p, bool print_values) {
+    using mplapack::arithmetic_int;
+    const mplapack_binary128_t zero = (mplapack_binary128_t)0.0;
+    const mplapack_binary128_t one = (mplapack_binary128_t)1.0;
+
+    auto fail = [&](const char *what) {
+        printf("*** Testing Mutils (binary128) BlueScale failed: %s: %s ***\n", tag, what);
+        exit(1);
+    };
+    auto assert_case = [&](bool cond, const char *what) {
+        if (!cond) {
+            char buf[256];
+            snprintf(buf, sizeof(buf), "%s: %s", tag, what);
+            fail(buf);
+        }
+    };
+
+    const auto q = mplapack::get_blue_scaling_params<mplapack_binary128_t>();
+
+    const arithmetic_int ai_emin = static_cast<arithmetic_int>(emin);
+    const arithmetic_int ai_emax = static_cast<arithmetic_int>(emax);
+    const arithmetic_int ai_digits = static_cast<arithmetic_int>(p);
+
+    assert_case(q.exp_tsml == mplapack::detail::ceildiv2(ai_emin - 1), "BlueScale: exp_tsml mismatch");
+    assert_case(q.exp_tbig == mplapack::detail::floordiv2(ai_emax - ai_digits + 1), "BlueScale: exp_tbig mismatch");
+    assert_case(q.exp_ssml == -mplapack::detail::floordiv2(ai_emin - ai_digits), "BlueScale: exp_ssml mismatch");
+    assert_case(q.exp_sbig == -mplapack::detail::ceildiv2(ai_emax + ai_digits - 1), "BlueScale: exp_sbig mismatch");
+
+    assert_case(q.exp_tsml == -8191LL, "BlueScale: exp_tsml must be -8191 for binary128");
+    assert_case(q.exp_tbig == 8136LL, "BlueScale: exp_tbig must be  8136 for binary128");
+    assert_case(q.exp_ssml == 8247LL, "BlueScale: exp_ssml must be  8247 for binary128");
+    assert_case(q.exp_sbig == -8248LL, "BlueScale: exp_sbig must be -8248 for binary128");
+
+    assert_case(q.tsml == ldexp(one, static_cast<int>(q.exp_tsml)), "BlueScale: tsml value mismatch");
+    assert_case(q.tbig == ldexp(one, static_cast<int>(q.exp_tbig)), "BlueScale: tbig value mismatch");
+    assert_case(q.ssml == ldexp(one, static_cast<int>(q.exp_ssml)), "BlueScale: ssml value mismatch");
+    assert_case(q.sbig == ldexp(one, static_cast<int>(q.exp_sbig)), "BlueScale: sbig value mismatch");
+
+    assert_case(q.tsml > zero, "BlueScale: tsml must be positive");
+    assert_case(q.tsml < one, "BlueScale: tsml must be < 1");
+    assert_case(q.tbig > one, "BlueScale: tbig must be > 1");
+    assert_case(q.ssml > q.tbig, "BlueScale: ssml must be > tbig");
+    assert_case(q.sbig > zero, "BlueScale: sbig must be positive");
+    assert_case(q.sbig < q.tsml, "BlueScale: sbig must be < tsml");
+
+    const mplapack_binary128_t prod_ts = q.tsml * q.ssml;
+    assert_case(__builtin_isfinite(prod_ts) && prod_ts > zero, "BlueScale: tsml*ssml must be a positive finite value");
+    const mplapack_binary128_t prod_bs = q.tbig * q.sbig;
+    assert_case(__builtin_isfinite(prod_bs) && prod_bs > zero, "BlueScale: tbig*sbig must be a positive finite value");
+    const mplapack_binary128_t tsml_sq = q.tsml * q.tsml;
+    assert_case(tsml_sq > zero, "BlueScale: tsml^2 underflowed to zero");
+    const mplapack_binary128_t tbig_sq = q.tbig * q.tbig;
+    assert_case(__builtin_isfinite(tbig_sq), "BlueScale: tbig^2 overflowed");
+
+    if (print_values) {
+        char _spbuf[__MPLAPACK_BUFLEN__];
+        char _sphexbuf[__MPLAPACK_BUFLEN__];
+
+        dual_printf("BlueScale exp_tsml: %lld\n", (long long)q.exp_tsml);
+        dual_printf("BlueScale exp_tbig: %lld\n", (long long)q.exp_tbig);
+        dual_printf("BlueScale exp_ssml: %lld\n", (long long)q.exp_ssml);
+        dual_printf("BlueScale exp_sbig: %lld\n", (long long)q.exp_sbig);
+
+        sprintnum(_spbuf, q.tsml);
+        sprinthex_binary128_fixed(_sphexbuf, sizeof(_sphexbuf), q.tsml);
+        dual_printf("BlueScale tsml:     %50s    %50s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q.tbig);
+        sprinthex_binary128_fixed(_sphexbuf, sizeof(_sphexbuf), q.tbig);
+        dual_printf("BlueScale tbig:     %50s    %50s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q.ssml);
+        sprinthex_binary128_fixed(_sphexbuf, sizeof(_sphexbuf), q.ssml);
+        dual_printf("BlueScale ssml:     %50s    %50s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q.sbig);
+        sprinthex_binary128_fixed(_sphexbuf, sizeof(_sphexbuf), q.sbig);
+        dual_printf("BlueScale sbig:     %50s    %50s\n", _spbuf, _sphexbuf);
+    }
+}
 
 void Rlamch_binary128_test() {
 #if defined VERBOSE_TEST
@@ -1704,22 +2366,137 @@ void Rlamch_binary128_test() {
 
     if (print_values) {
         char _spbuf[__MPLAPACK_BUFLEN__];
-        sprintnum(_spbuf, gotE); dual_printf("Rlamch E: Epsilon                      %s\n", _spbuf);
-        sprintnum(_spbuf, gotS); dual_printf("Rlamch S: Safe minimum                 %s\n", _spbuf);
-        sprintnum(_spbuf, gotB); dual_printf("Rlamch B: Base                         %s\n", _spbuf);
-        sprintnum(_spbuf, gotP); dual_printf("Rlamch P: Precision                    %s\n", _spbuf);
-        sprintnum(_spbuf, gotN); dual_printf("Rlamch N: Number of digits in mantissa %s\n", _spbuf);
-        sprintnum(_spbuf, gotR); dual_printf("Rlamch R: Rounding mode                %s\n", _spbuf);
-        sprintnum(_spbuf, gotM); dual_printf("Rlamch M: Minimum exponent             %s\n", _spbuf);
-        sprintnum(_spbuf, gotU); dual_printf("Rlamch U: Underflow threshold          %s\n", _spbuf);
-        sprintnum(_spbuf, gotL); dual_printf("Rlamch L: Largest exponent             %s\n", _spbuf);
-        sprintnum(_spbuf, gotO); dual_printf("Rlamch O: Overflow threshold           %s\n", _spbuf);
+        char _sphexbuf[__MPLAPACK_BUFLEN__];
+
+        sprintnum(_spbuf, gotE);
+        sprinthex_binary128_fixed(_sphexbuf, sizeof(_sphexbuf), gotE);
+        dual_printf("Rlamch E: Epsilon                      %50s    %50s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotS);
+        sprinthex_binary128_fixed(_sphexbuf, sizeof(_sphexbuf), gotS);
+        dual_printf("Rlamch S: Safe minimum                 %50s    %50s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotB);
+        sprinthex_binary128_fixed(_sphexbuf, sizeof(_sphexbuf), gotB);
+        dual_printf("Rlamch B: Base                         %50s    %50s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotP);
+        sprinthex_binary128_fixed(_sphexbuf, sizeof(_sphexbuf), gotP);
+        dual_printf("Rlamch P: Precision                    %50s    %50s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotN);
+        sprinthex_binary128_fixed(_sphexbuf, sizeof(_sphexbuf), gotN);
+        dual_printf("Rlamch N: Number of digits in mantissa %50s    %50s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotR);
+        sprinthex_binary128_fixed(_sphexbuf, sizeof(_sphexbuf), gotR);
+        dual_printf("Rlamch R: Rounding mode                %50s    %50s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotM);
+        sprinthex_binary128_fixed(_sphexbuf, sizeof(_sphexbuf), gotM);
+        dual_printf("Rlamch M: Minimum exponent             %50s    %50s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotU);
+        sprinthex_binary128_fixed(_sphexbuf, sizeof(_sphexbuf), gotU);
+        dual_printf("Rlamch U: Underflow threshold          %50s    %50s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotL);
+        sprinthex_binary128_fixed(_sphexbuf, sizeof(_sphexbuf), gotL);
+        dual_printf("Rlamch L: Largest exponent             %50s    %50s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotO);
+        sprinthex_binary128_fixed(_sphexbuf, sizeof(_sphexbuf), gotO);
+        dual_printf("Rlamch O: Overflow threshold           %50s    %50s\n", _spbuf, _sphexbuf);
     }
+
+    check_blue_scaling_binary128(tag, emin, emax, p, print_values);
 }
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_BINARY80___
 #include <cfenv> // std::fegetround, FE_TONEAREST
+#include <cmath> // scalbnl
+
+static void check_blue_scaling_binary80(const char *tag, int emin, int emax, int p, bool print_values) {
+    using mplapack::arithmetic_int;
+    const mplapack_binary80_t zero = (mplapack_binary80_t)0.0;
+    const mplapack_binary80_t one = (mplapack_binary80_t)1.0;
+
+    auto fail = [&](const char *what) {
+        printf("*** Testing Mutils (mplapack_binary80_t) BlueScale failed: %s: %s ***\n", tag, what);
+        exit(1);
+    };
+    auto assert_case = [&](bool cond, const char *what) {
+        if (!cond) {
+            char buf[256];
+            snprintf(buf, sizeof(buf), "%s: %s", tag, what);
+            fail(buf);
+        }
+    };
+
+    const auto q = mplapack::get_blue_scaling_params<mplapack_binary80_t>();
+
+    const arithmetic_int ai_emin = static_cast<arithmetic_int>(emin);
+    const arithmetic_int ai_emax = static_cast<arithmetic_int>(emax);
+    const arithmetic_int ai_digits = static_cast<arithmetic_int>(p);
+
+    assert_case(q.exp_tsml == mplapack::detail::ceildiv2(ai_emin - 1), "BlueScale: exp_tsml mismatch");
+    assert_case(q.exp_tbig == mplapack::detail::floordiv2(ai_emax - ai_digits + 1), "BlueScale: exp_tbig mismatch");
+    assert_case(q.exp_ssml == -mplapack::detail::floordiv2(ai_emin - ai_digits), "BlueScale: exp_ssml mismatch");
+    assert_case(q.exp_sbig == -mplapack::detail::ceildiv2(ai_emax + ai_digits - 1), "BlueScale: exp_sbig mismatch");
+
+    assert_case(q.exp_tsml == -8191LL, "BlueScale: exp_tsml must be -8191 for binary80");
+    assert_case(q.exp_tbig == 8160LL, "BlueScale: exp_tbig must be  8160 for binary80");
+    assert_case(q.exp_ssml == 8223LL, "BlueScale: exp_ssml must be  8223 for binary80");
+    assert_case(q.exp_sbig == -8224LL, "BlueScale: exp_sbig must be -8224 for binary80");
+
+    assert_case(q.tsml == scalbnl(one, static_cast<int>(q.exp_tsml)), "BlueScale: tsml value mismatch");
+    assert_case(q.tbig == scalbnl(one, static_cast<int>(q.exp_tbig)), "BlueScale: tbig value mismatch");
+    assert_case(q.ssml == scalbnl(one, static_cast<int>(q.exp_ssml)), "BlueScale: ssml value mismatch");
+    assert_case(q.sbig == scalbnl(one, static_cast<int>(q.exp_sbig)), "BlueScale: sbig value mismatch");
+
+    assert_case(q.tsml > zero, "BlueScale: tsml must be positive");
+    assert_case(q.tsml < one, "BlueScale: tsml must be < 1");
+    assert_case(q.tbig > one, "BlueScale: tbig must be > 1");
+    assert_case(q.ssml > q.tbig, "BlueScale: ssml must be > tbig");
+    assert_case(q.sbig > zero, "BlueScale: sbig must be positive");
+    assert_case(q.sbig < q.tsml, "BlueScale: sbig must be < tsml");
+
+    const mplapack_binary80_t prod_ts = q.tsml * q.ssml;
+    assert_case(__builtin_isfinite(prod_ts) && prod_ts > zero, "BlueScale: tsml*ssml must be a positive finite value");
+    const mplapack_binary80_t prod_bs = q.tbig * q.sbig;
+    assert_case(__builtin_isfinite(prod_bs) && prod_bs > zero, "BlueScale: tbig*sbig must be a positive finite value");
+    const mplapack_binary80_t tsml_sq = q.tsml * q.tsml;
+    assert_case(tsml_sq > zero, "BlueScale: tsml^2 underflowed to zero");
+    const mplapack_binary80_t tbig_sq = q.tbig * q.tbig;
+    assert_case(__builtin_isfinite(tbig_sq), "BlueScale: tbig^2 overflowed");
+
+    if (print_values) {
+        char _spbuf[__MPLAPACK_BUFLEN__];
+        char _sphexbuf[__MPLAPACK_BUFLEN__];
+
+        dual_printf("BlueScale exp_tsml: %lld\n", (long long)q.exp_tsml);
+        dual_printf("BlueScale exp_tbig: %lld\n", (long long)q.exp_tbig);
+        dual_printf("BlueScale exp_ssml: %lld\n", (long long)q.exp_ssml);
+        dual_printf("BlueScale exp_sbig: %lld\n", (long long)q.exp_sbig);
+
+        sprintnum(_spbuf, q.tsml);
+        sprinthex_binary80_fixed(_sphexbuf, sizeof(_sphexbuf), q.tsml);
+        dual_printf("BlueScale tsml:     %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q.tbig);
+        sprinthex_binary80_fixed(_sphexbuf, sizeof(_sphexbuf), q.tbig);
+        dual_printf("BlueScale tbig:     %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q.ssml);
+        sprinthex_binary80_fixed(_sphexbuf, sizeof(_sphexbuf), q.ssml);
+        dual_printf("BlueScale ssml:     %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q.sbig);
+        sprinthex_binary80_fixed(_sphexbuf, sizeof(_sphexbuf), q.sbig);
+        dual_printf("BlueScale sbig:     %40s    %40s\n", _spbuf, _sphexbuf);
+    }
+}
 
 void Rlamch_binary80_test() {
 #if defined VERBOSE_TEST
@@ -1903,17 +2680,49 @@ void Rlamch_binary80_test() {
 
     if (print_values) {
         char _spbuf[__MPLAPACK_BUFLEN__];
-        sprintnum(_spbuf, gotE); dual_printf("Rlamch E: Epsilon                      %s\n", _spbuf);
-        sprintnum(_spbuf, gotS); dual_printf("Rlamch S: Safe minimum                 %s\n", _spbuf);
-        sprintnum(_spbuf, gotB); dual_printf("Rlamch B: Base                         %s\n", _spbuf);
-        sprintnum(_spbuf, gotP); dual_printf("Rlamch P: Precision                    %s\n", _spbuf);
-        sprintnum(_spbuf, gotN); dual_printf("Rlamch N: Number of digits in mantissa %s\n", _spbuf);
-        sprintnum(_spbuf, gotR); dual_printf("Rlamch R: Rounding mode                %s\n", _spbuf);
-        sprintnum(_spbuf, gotM); dual_printf("Rlamch M: Minimum exponent             %s\n", _spbuf);
-        sprintnum(_spbuf, gotU); dual_printf("Rlamch U: Underflow threshold          %s\n", _spbuf);
-        sprintnum(_spbuf, gotL); dual_printf("Rlamch L: Largest exponent             %s\n", _spbuf);
-        sprintnum(_spbuf, gotO); dual_printf("Rlamch O: Overflow threshold           %s\n", _spbuf);
+        char _sphexbuf[__MPLAPACK_BUFLEN__];
+
+        sprintnum(_spbuf, gotE);
+        sprinthex_binary80_fixed(_sphexbuf, sizeof(_sphexbuf), gotE);
+        dual_printf("Rlamch E: Epsilon                      %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotS);
+        sprinthex_binary80_fixed(_sphexbuf, sizeof(_sphexbuf), gotS);
+        dual_printf("Rlamch S: Safe minimum                 %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotB);
+        sprinthex_binary80_fixed(_sphexbuf, sizeof(_sphexbuf), gotB);
+        dual_printf("Rlamch B: Base                         %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotP);
+        sprinthex_binary80_fixed(_sphexbuf, sizeof(_sphexbuf), gotP);
+        dual_printf("Rlamch P: Precision                    %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotN);
+        sprinthex_binary80_fixed(_sphexbuf, sizeof(_sphexbuf), gotN);
+        dual_printf("Rlamch N: Number of digits in mantissa %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotR);
+        sprinthex_binary80_fixed(_sphexbuf, sizeof(_sphexbuf), gotR);
+        dual_printf("Rlamch R: Rounding mode                %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotM);
+        sprinthex_binary80_fixed(_sphexbuf, sizeof(_sphexbuf), gotM);
+        dual_printf("Rlamch M: Minimum exponent             %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotU);
+        sprinthex_binary80_fixed(_sphexbuf, sizeof(_sphexbuf), gotU);
+        dual_printf("Rlamch U: Underflow threshold          %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotL);
+        sprinthex_binary80_fixed(_sphexbuf, sizeof(_sphexbuf), gotL);
+        dual_printf("Rlamch L: Largest exponent             %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotO);
+        sprinthex_binary80_fixed(_sphexbuf, sizeof(_sphexbuf), gotO);
+        dual_printf("Rlamch O: Overflow threshold           %40s    %40s\n", _spbuf, _sphexbuf);
     }
+    check_blue_scaling_binary80(tag, emin, emax, p, print_values);
 }
 #endif
 

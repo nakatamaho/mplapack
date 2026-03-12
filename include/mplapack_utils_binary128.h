@@ -31,6 +31,192 @@
 
 #include "mplapack_config.h"
 
+#if defined ___MPLAPACK_INTERNAL___
+#include <cstring>
+
+inline uint64_t load_u64_be(const unsigned char *p) { return (static_cast<uint64_t>(p[0]) << 56) | (static_cast<uint64_t>(p[1]) << 48) | (static_cast<uint64_t>(p[2]) << 40) | (static_cast<uint64_t>(p[3]) << 32) | (static_cast<uint64_t>(p[4]) << 24) | (static_cast<uint64_t>(p[5]) << 16) | (static_cast<uint64_t>(p[6]) << 8) | (static_cast<uint64_t>(p[7]) << 0); }
+inline uint64_t load_u64_le(const unsigned char *p) { return (static_cast<uint64_t>(p[7]) << 56) | (static_cast<uint64_t>(p[6]) << 48) | (static_cast<uint64_t>(p[5]) << 40) | (static_cast<uint64_t>(p[4]) << 32) | (static_cast<uint64_t>(p[3]) << 24) | (static_cast<uint64_t>(p[2]) << 16) | (static_cast<uint64_t>(p[1]) << 8) | (static_cast<uint64_t>(p[0]) << 0); }
+
+inline void sprinthex_binary128_bits_be(char *buf, size_t n, const unsigned char bytes[16]) {
+    if (n == 0) {
+        return;
+    }
+
+    const uint64_t hi = load_u64_be(bytes);
+    const uint64_t lo = load_u64_be(bytes + 8);
+
+    const bool negative = ((hi >> 63) & 1u) != 0;
+    const uint16_t exp_raw = static_cast<uint16_t>((hi >> 48) & 0x7fffu);
+    const uint64_t frac_hi = hi & 0x0000ffffffffffffULL;
+    const uint64_t frac_lo = lo;
+
+    const char *sign_str = negative ? "-" : "+";
+
+    if (exp_raw == 0x7fff) {
+        const bool frac_zero = (frac_hi == 0 && frac_lo == 0);
+        if (frac_zero) {
+            std::snprintf(buf, n, "%s@Inf@", sign_str);
+        } else {
+            std::snprintf(buf, n, "@NaN@");
+        }
+        return;
+    }
+
+    if (exp_raw == 0 && frac_hi == 0 && frac_lo == 0) {
+        std::snprintf(buf, n, "%s0x0.0000000000000000000000000000p+0000", sign_str);
+        return;
+    }
+
+    auto hex_digit = [](int v) -> char {
+        static const char table[] = "0123456789abcdef";
+        return table[v & 0xf];
+    };
+
+    if (exp_raw != 0) {
+        char frac_hex[29];
+        std::snprintf(frac_hex, sizeof(frac_hex), "%012llx%016llx", static_cast<unsigned long long>(frac_hi), static_cast<unsigned long long>(frac_lo));
+
+        const int exp_unbiased = static_cast<int>(exp_raw) - 16383;
+        std::snprintf(buf, n, "%s0x1.%sp%+05d", sign_str, frac_hex, exp_unbiased);
+        return;
+    }
+
+    std::string frac_bits;
+    frac_bits.reserve(112);
+
+    for (int i = 47; i >= 0; --i) {
+        frac_bits.push_back(((frac_hi >> i) & 1ULL) ? '1' : '0');
+    }
+    for (int i = 63; i >= 0; --i) {
+        frac_bits.push_back(((frac_lo >> i) & 1ULL) ? '1' : '0');
+    }
+
+    const size_t first_one = frac_bits.find('1');
+    if (first_one == std::string::npos) {
+        std::snprintf(buf, n, "%s0x0.0000000000000000000000000000p+00000", sign_str);
+        return;
+    }
+
+    const int exp_unbiased = -16382 - static_cast<int>(first_one) - 1;
+
+    std::string mant_bits = frac_bits.substr(first_one + 1);
+    if (mant_bits.size() < 112) {
+        mant_bits.append(112 - mant_bits.size(), '0');
+    } else if (mant_bits.size() > 112) {
+        mant_bits.resize(112);
+    }
+
+    char frac_hex[29];
+    for (int i = 0; i < 28; ++i) {
+        int v = 0;
+        for (int j = 0; j < 4; ++j) {
+            if (mant_bits[i * 4 + j] == '1') {
+                v |= (1 << (3 - j));
+            }
+        }
+        frac_hex[i] = hex_digit(v);
+    }
+    frac_hex[28] = '\0';
+
+    std::snprintf(buf, n, "%s0x1.%sp%+05d", sign_str, frac_hex, exp_unbiased);
+}
+
+inline void sprinthex_binary128_bits_le(char *buf, size_t n, const unsigned char bytes[16]) {
+    if (n == 0) {
+        return;
+    }
+
+    const uint64_t lo = load_u64_le(bytes);
+    const uint64_t hi = load_u64_le(bytes + 8);
+
+    const bool negative = ((hi >> 63) & 1u) != 0;
+    const uint16_t exp_raw = static_cast<uint16_t>((hi >> 48) & 0x7fffu);
+    const uint64_t frac_hi = hi & 0x0000ffffffffffffULL;
+    const uint64_t frac_lo = lo;
+
+    const char *sign_str = negative ? "-" : "+";
+
+    if (exp_raw == 0x7fff) {
+        const bool frac_zero = (frac_hi == 0 && frac_lo == 0);
+        if (frac_zero) {
+            std::snprintf(buf, n, "%s@Inf@", sign_str);
+        } else {
+            std::snprintf(buf, n, "@NaN@");
+        }
+        return;
+    }
+
+    if (exp_raw == 0 && frac_hi == 0 && frac_lo == 0) {
+        std::snprintf(buf, n, "%s0x0.0000000000000000000000000000p+0000", sign_str);
+        return;
+    }
+
+    auto hex_digit = [](int v) -> char {
+        static const char table[] = "0123456789abcdef";
+        return table[v & 0xf];
+    };
+
+    if (exp_raw != 0) {
+        char frac_hex[29];
+        std::snprintf(frac_hex, sizeof(frac_hex), "%012llx%016llx", static_cast<unsigned long long>(frac_hi), static_cast<unsigned long long>(frac_lo));
+
+        const int exp_unbiased = static_cast<int>(exp_raw) - 16383;
+        std::snprintf(buf, n, "%s0x1.%sp%+06d", sign_str, frac_hex, exp_unbiased);
+        return;
+    }
+
+    std::string frac_bits;
+    frac_bits.reserve(112);
+
+    for (int i = 47; i >= 0; --i) {
+        frac_bits.push_back(((frac_hi >> i) & 1ULL) ? '1' : '0');
+    }
+    for (int i = 63; i >= 0; --i) {
+        frac_bits.push_back(((frac_lo >> i) & 1ULL) ? '1' : '0');
+    }
+
+    const size_t first_one = frac_bits.find('1');
+    if (first_one == std::string::npos) {
+        std::snprintf(buf, n, "%s0x0.0000000000000000000000000000p+00000", sign_str);
+        return;
+    }
+
+    const int exp_unbiased = -16382 - static_cast<int>(first_one) - 1;
+
+    std::string mant_bits = frac_bits.substr(first_one + 1);
+    if (mant_bits.size() < 112) {
+        mant_bits.append(112 - mant_bits.size(), '0');
+    } else if (mant_bits.size() > 112) {
+        mant_bits.resize(112);
+    }
+
+    char frac_hex[29];
+    for (int i = 0; i < 28; ++i) {
+        int v = 0;
+        for (int j = 0; j < 4; ++j) {
+            if (mant_bits[i * 4 + j] == '1') {
+                v |= (1 << (3 - j));
+            }
+        }
+        frac_hex[i] = hex_digit(v);
+    }
+    frac_hex[28] = '\0';
+
+    std::snprintf(buf, n, "%s0x1.%sp%+06d", sign_str, frac_hex, exp_unbiased);
+}
+
+template <class T> inline void sprinthex_binary128_fixed(char *buf, size_t n, const T &x) {
+    static_assert(sizeof(T) == 16, "binary128 object must be 16 bytes");
+    unsigned char bytes[16];
+    std::memcpy(bytes, &x, 16);
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+    sprinthex_binary128_bits_le(buf, n, bytes);
+#else
+    sprinthex_binary128_bits_be(buf, n, bytes);
+#endif
+}
+#endif // ___MPLAPACK_INTERNAL___
+
 #if MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_QUADMATH
 #include <quadmath.h>
 #endif // MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_QUADMATH
@@ -112,6 +298,7 @@ inline void sprintnum_short(char *buf, std::complex<__float128> rtmp) {
     quadmath_snprintf(buf, __MPLAPACK_BUFLEN__, BINARY128_SHORT_FORMAT BINARY128_SHORT_FORMAT, width, rtmp.real(), rtmp.imag());
     return;
 }
+
 #endif //___MPLAPACK_INTERNAL___
 #elif MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_STRFROMF128
 #if defined ___MPLAPACK_INTERNAL___

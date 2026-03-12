@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2026
  *	Nakata, Maho
  * 	All rights reserved.
  *
@@ -29,6 +29,8 @@
 #ifndef _MPLAPACK_PRINT_DOUBLE_H_
 #define _MPLAPACK_PRINT_DOUBLE_H_
 
+#include <cstring>
+
 #if !defined __MPLAPACK_BUFLEN__
 #define __MPLAPACK_BUFLEN__ 1024
 #endif
@@ -52,5 +54,9 @@ inline void sprintnum(char *buf, __complex__ double ctmp) { snprintf(buf, __MPLA
 inline void sprintnum_short(char *buf, double rtmp) { snprintf(buf, __MPLAPACK_BUFLEN__, DOUBLE_SHORT_FORMAT, rtmp); }
 inline void sprintnum_short(char *buf, std::complex<double> ctmp) { snprintf(buf, __MPLAPACK_BUFLEN__, DOUBLE_SHORT_FORMAT DOUBLE_SHORT_FORMAT "i", ctmp.real(), ctmp.imag()); }
 inline void sprintnum_short(char *buf, __complex__ double ctmp) { snprintf(buf, __MPLAPACK_BUFLEN__, DOUBLE_SHORT_FORMAT DOUBLE_SHORT_FORMAT "i", __real__ ctmp, __imag__ ctmp); }
+
+#include <mplapack_hex_helpers.h>
+
+inline void sprinthex_double(char *buf, size_t n, double x) { format_hex_double_fixedexp(buf, n, x); }
 
 #endif
