@@ -29,36 +29,36 @@
 #pragma once
 
 inline void format_hex_double_fixedexp(char *buf, size_t n, double x) {
-  if (n == 0) {
+    if (n == 0) {
         return;
-  }
+    }
 
-if (std::isnan(x)) {
-std::snprintf(buf, n, "@NaN@");
+    if (std::isnan(x)) {
+        std::snprintf(buf, n, "@NaN@");
         return;
-}
-if (std::isinf(x)) {
-std::snprintf(buf, n, "%s@Inf@", std::signbit(x) ? "-" : "+");
+    }
+    if (std::isinf(x)) {
+        std::snprintf(buf, n, "%s@Inf@", std::signbit(x) ? "-" : "+");
         return;
-}
+    }
 
-  // %+.13a gives normalized hexadecimal floating-point for normal doubles:
+    // %+.13a gives normalized hexadecimal floating-point for normal doubles:
     //   +0x1.fffffffffffffp+1023
     // with exactly 13 hex digits after the point.
     char tmp[128];
-std::snprintf(tmp, sizeof(tmp), "%+.13a", x);
+    std::snprintf(tmp, sizeof(tmp), "%+.13a", x);
 
     // Find exponent marker.
     char *p = std::strchr(tmp, 'p');
-  if (p == nullptr) {
-    // Fallback: should not happen for valid %a output.
-  std::snprintf(buf, n, "%s", tmp);
+    if (p == nullptr) {
+        // Fallback: should not happen for valid %a output.
+        std::snprintf(buf, n, "%s", tmp);
         return;
-  }
+    }
 
     // Parse exponent and rewrite with fixed width like p+0000 / p-0105 / p+1023.
     long exp_val = std::strtol(p + 1, nullptr, 10);
     *p = '\0';
 
-std::snprintf(buf, n, "%sp%+05ld", tmp, exp_val);
+    std::snprintf(buf, n, "%sp%+05ld", tmp, exp_val);
 }
