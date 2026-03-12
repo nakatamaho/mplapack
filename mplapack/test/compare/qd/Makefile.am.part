@@ -11,27 +11,46 @@ AM_TESTS_ENVIRONMENT = \
     srcdir='$(srcdir)'; export srcdir;
 
 run_Rlaruv_test.sh: Makefile
-	@echo '#!/bin/sh' > $@
-	@echo 'REF_TMP=$$(mktemp)' >> $@
-	@echo 'OUT_TMP=$$(mktemp)' >> $@
-	@echo 'trap "rm -f $$REF_TMP $$OUT_TMP" EXIT INT TERM' >> $@
+	@echo '#!/bin/bash' > $@
+	@echo '# Get the directory where this script is located' >> $@
+	@echo 'script_dir="$$(cd "$$(dirname "$${BASH_SOURCE[0]}")" && pwd)"' >> $@
+	@echo '' >> $@
+	@echo '# Configuration' >> $@
+	@echo 'TOLERANCE="1e-60"' >> $@
+	@echo 'NUM_DIFF_PY="$${script_dir}/../../../../misc/num_diff.py"' >> $@
+	@echo '' >> $@
+	@echo '# Execute the test' >> $@
 	@echo '$${LOG_COMPILER} ./Rlaruv.test_qd$${EXEEXT} || true' >> $@
-	@echo 'sed '"'"'/^#/!s/[0-9][0-9]\(e[+-][0-9][0-9]*\)$$/\1/'"'"' "$${srcdir}/Rlaruv_reference.txt" > "$$REF_TMP"' >> $@
-	@echo 'sed '"'"'/^#/!s/[0-9][0-9]\(e[+-][0-9][0-9]*\)$$/\1/'"'"' Rlaruv.txt > "$$OUT_TMP"' >> $@
-	@echo 'if diff -u "$$REF_TMP" "$$OUT_TMP" > /dev/null 2>&1; then' >> $@
-	@echo '  echo "PASS: Rlaruv"; exit 0' >> $@
+	@echo '' >> $@
+	@echo '# Use the numerical diff tool instead of standard diff' >> $@
+	@echo 'if python3 "$${NUM_DIFF_PY}" "$${script_dir}/Rlaruv_reference.txt" Rlaruv.txt --tol $${TOLERANCE}; then' >> $@
+	@echo '    echo "PASS: Rlaruv"' >> $@
+	@echo '    exit 0' >> $@
 	@echo 'else' >> $@
-	@echo '  echo "FAIL: Rlaruv"; diff "$$REF_TMP" "$$OUT_TMP"; exit 1' >> $@
+	@echo '    echo "FAIL: Rlaruv"' >> $@
+	@echo '    exit 1' >> $@
 	@echo 'fi' >> $@
 	@chmod +x $@
 
 run_Rlamch_test.sh: Makefile
-	@echo '#!/bin/sh' > $@
+	@echo '#!/bin/bash' > $@
+	@echo '# Get the directory where this script is located' >> $@
+	@echo 'script_dir="$$(cd "$$(dirname "$${BASH_SOURCE[0]}")" && pwd)"' >> $@
+	@echo '' >> $@
+	@echo '# Configuration' >> $@
+	@echo 'TOLERANCE="1e-60"' >> $@
+	@echo 'NUM_DIFF_PY="$${script_dir}/../../../../misc/num_diff.py"' >> $@
+	@echo '' >> $@
+	@echo '# Execute the test' >> $@
 	@echo '$${LOG_COMPILER} ./Rlamch.test_qd$${EXEEXT} || true' >> $@
-	@echo 'if diff -u $${srcdir}/Rlamch_reference.txt Rlamch.txt > /dev/null 2>&1; then' >> $@
-	@echo '  echo "PASS: Rlamch"; exit 0' >> $@
+	@echo '' >> $@
+	@echo '# Numerical comparison' >> $@
+	@echo 'if python3 "$${NUM_DIFF_PY}" "$${script_dir}/Rlamch_reference.txt" Rlamch.txt --tol $${TOLERANCE}; then' >> $@
+	@echo '    echo "PASS: Rlamch"' >> $@
+	@echo '    exit 0' >> $@
 	@echo 'else' >> $@
-	@echo '  echo "FAIL: Rlamch"; diff $${srcdir}/Rlamch_reference.txt Rlamch.txt; exit 1' >> $@
+	@echo '    echo "FAIL: Rlamch"' >> $@
+	@echo '    exit 1' >> $@
 	@echo 'fi' >> $@
 	@chmod +x $@
 

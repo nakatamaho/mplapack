@@ -212,7 +212,7 @@ def collect_all_records(outdir: str, search_root: Path) -> List[TestRecord]:
 # Sorting
 # ---------------------------------------------------------------------------
 
-def sort_records(records: list[TestRecord]) -> List[TestRecord]:
+def sort_records(records: List[TestRecord]) -> List[TestRecord]:
     """Default sort: fail_rate descending, then category / precision / file / suite."""
     return sorted(
         records,
