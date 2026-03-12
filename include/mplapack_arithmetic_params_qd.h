@@ -62,8 +62,15 @@ namespace detail {
 
 // ---------------------------------------------------------------------------
 // ArithmeticParams<qd_real>
+// NOTE:
+// The QD library upstream changed eps to "slightly more conservative values
+// for eps." in NEWS (Changes for 2.2.4):
+// https://sources.debian.org/src/qd/2.3.7-2.1/NEWS/
 //
-// sfmin follows the same DLAMCH('S') logic as all other types:
+// For MPLAPACK Rlamch/compare stability, do not use qd_real::_eps here.
+// Use fixed canonical E/P literals instead.
+//
+// sfmin still follows DLAMCH('S'):
 //   sfmin = max(rmin, (1/rmax)*(1+eps))
 // ---------------------------------------------------------------------------
 template <> inline ArithmeticParams<qd_real> get_arithmetic_params<qd_real>() {
@@ -72,14 +79,17 @@ template <> inline ArithmeticParams<qd_real> get_arithmetic_params<qd_real>() {
     const qd_real one(1.0);
     const qd_real two(2.0);
 
-    p.eps = qd_real::_eps;
+    // Canonical QD epsilon for MPLAPACK Rlamch/compare output.
+    p.eps = qd_real(+0x1.fffffffffffffp-209, +0x0.0000000000000p+0000, +0x0.0000000000000p+0000, +0x0.0000000000000p+0000);
     p.base = two;
-    p.prec = qd_real::_eps * two;
+    // Canonical QD precision = epsilon * base, fixed explicitly to avoid
+    // dependence on upstream qd_real::_eps.
+    p.prec = qd_real(+0x1.fffffffffffffp-208, +0x0.0000000000000p+0000, +0x0.0000000000000p+0000, +0x0.0000000000000p+0000);
+
     p.t = qd_real(static_cast<double>(std::numeric_limits<qd_real>::digits));
     p.rnd = one; // QD uses IEEE double arithmetic internally; rounding occurs.
 
-    // emin: use the same method as the legacy RlamchM_qd — frexp of _min_normalized.
-    // This is computed at runtime to remain consistent if the QD library changes.
+    // emin: use the same method as the legacy RlamchM_qd -- frexp of _min_normalized.
     int emin_int = 0;
     (void)std::frexp(qd_real::_min_normalized, &emin_int);
     p.emin = qd_real(static_cast<double>(emin_int));

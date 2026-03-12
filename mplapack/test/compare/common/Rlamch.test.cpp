@@ -1098,15 +1098,15 @@ namespace {
 // -----------------------------------------------------------------------------
 // qd_real machine constants
 // -----------------------------------------------------------------------------
-// This test matches the implementation style used by Rlamch_qd:
-//   - E is taken from qd_real::_eps
-//   - U and O are taken from qd_real::_min_normalized / qd_real::_max
-//   - N is taken from std::numeric_limits<qd_real>::digits
-//   - S follows the Netlib-style "safe minimum" logic using U, O, and E
+// This test matches the current arithmetic_params-based implementation:
+// - E and P are fixed to MPLAPACK's canonical QD literals
+// - U and O are taken from qd_real::_min_normalized / qd_real::_max
+// - N is taken from std::numeric_limits<qd_real>::digits
+// - S follows the Netlib-style "safe minimum" logic using U, O, and E
 //
 // IMPORTANT:
-// qd_real is a quad-double type (sum of 4 doubles). Arithmetic does NOT round
-// to a fixed p-bit floating-point format, so classic half-ULP tie tests like
+// qd_real is a quad-double type (sum of 4 doubles). Arithmetic does not round
+// to a fixed p-bit floating-point format, so classic half-ULP tie tests such as
 // fl(1 + P/2) == 1 do not apply here.
 // -----------------------------------------------------------------------------
 
@@ -1161,8 +1161,8 @@ static LamchExpectedQD compute_expected_qd() {
 
     LamchExpectedQD ex{};
     ex.B = two;
-    ex.E = qd_real::_eps;
-    ex.P = ex.E * ex.B;
+    ex.E = qd_real(+0x1.fffffffffffffp-209, +0x0.0000000000000p+0000, +0x0.0000000000000p+0000, +0x0.0000000000000p+0000);
+    ex.P = qd_real(+0x1.fffffffffffffp-208, +0x0.0000000000000p+0000, +0x0.0000000000000p+0000, +0x0.0000000000000p+0000);
     ex.N = qd_real(static_cast<double>(QD_MANTISSA_BITS));
     ex.R = one;
 
@@ -1420,10 +1420,10 @@ namespace {
 // -----------------------------------------------------------------------------
 // dd_real machine constants
 // -----------------------------------------------------------------------------
-// This test matches the implementation style shown in RlamchE_dd/RlamchS_dd:
-//   - E is taken from dd_real::_eps
-//   - U and O are taken from dd_real::_min_normalized / dd_real::_max
-//   - N is taken from std::numeric_limits<dd_real>::digits
+// This test matches the current arithmetic_params-based implementation:
+// - E and P are fixed to MPLAPACK's canonical DD literals
+// - U and O are taken from dd_real::_min_normalized / dd_real::_max
+// - N is taken from std::numeric_limits<dd_real>::digits
 // - The exponent range matches IEEE-754 binary64 (double)
 //
 // IMPORTANT:
@@ -1493,8 +1493,8 @@ static LamchExpectedDD compute_expected_dd() {
 
     // Match Rlamch_dd implementation.
     ex.B = two;
-    ex.E = dd_real::_eps;
-    ex.P = ex.E * ex.B;
+    ex.E = dd_real(+0x1.fffffffffffffp-105, +0x0.0000000000000p+0000);
+    ex.P = dd_real(+0x1.fffffffffffffp-104, +0x0.0000000000000p+0000);
     ex.N = dd_real(static_cast<double>(DD_MANTISSA_BITS));
     ex.R = one;
 

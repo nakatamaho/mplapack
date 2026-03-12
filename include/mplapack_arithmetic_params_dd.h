@@ -62,8 +62,15 @@ namespace detail {
 
 // ---------------------------------------------------------------------------
 // ArithmeticParams<dd_real>
+// NOTE:
+// The QD library upstream changed eps to "slightly more conservative values
+// for eps." in NEWS (Changes for 2.2.4):
+// https://sources.debian.org/src/qd/2.3.7-2.1/NEWS/
 //
-// sfmin follows the same DLAMCH('S') logic as all other types:
+// For MPLAPACK Rlamch/compare stability, do not use dd_real::_eps here.
+// Use fixed canonical E/P literals instead.
+//
+// sfmin still follows DLAMCH('S'):
 //   sfmin = max(rmin, (1/rmax)*(1+eps))
 // ---------------------------------------------------------------------------
 template <> inline ArithmeticParams<dd_real> get_arithmetic_params<dd_real>() {
@@ -72,9 +79,13 @@ template <> inline ArithmeticParams<dd_real> get_arithmetic_params<dd_real>() {
     const dd_real one(1.0);
     const dd_real two(2.0);
 
-    p.eps = dd_real::_eps;
+    // Canonical DD epsilon for MPLAPACK Rlamch/compare output.
+    p.eps = dd_real(+0x1.fffffffffffffp-105, +0x0.0000000000000p+0000);
     p.base = two;
-    p.prec = dd_real::_eps * two;
+    // Canonical DD precision = epsilon * base, fixed explicitly to avoid
+    // dependence on upstream dd_real::_eps.
+    p.prec = dd_real(+0x1.fffffffffffffp-104, +0x0.0000000000000p+0000);
+
     p.t = dd_real(static_cast<double>(std::numeric_limits<dd_real>::digits));
     p.rnd = one; // DD uses IEEE double arithmetic internally; rounding occurs.
 
