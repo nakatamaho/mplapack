@@ -1429,6 +1429,50 @@ static void check_blue_scaling_qd(const char *tag, bool print_values) {
     qd_assert_case(to_double(tsml_sq) > 0.0, tag, "BlueScale: tsml^2 underflowed to zero");
     const qd_real tbig_sq = q.tbig * q.tbig;
     qd_assert_case(std::isfinite(to_double(tbig_sq)), tag, "BlueScale: tbig^2 overflowed");
+    // Boundary classification probes specialized for exact Blue constants.
+    // q.tsml and q.tbig are exact pure powers of two here, so their lower limbs are zero.
+    // Use a 1-double-step probe in the lowest qd slot instead of relative (1 +/- delta).
+    const double qd_low_up = std::nextafter(0.0, +std::numeric_limits<double>::infinity());
+    const double qd_low_dn = std::nextafter(0.0, -std::numeric_limits<double>::infinity());
+
+    const qd_real qd_probe_up(0.0, 0.0, 0.0, qd_low_up);
+    const qd_real qd_probe_dn(0.0, 0.0, 0.0, qd_low_dn);
+
+    const qd_real below_tsml = q.tsml + qd_probe_dn;
+    const qd_real at_tsml = q.tsml;
+    const qd_real above_tsml = q.tsml + qd_probe_up;
+
+    const qd_real below_tbig = q.tbig + qd_probe_dn;
+    const qd_real at_tbig = q.tbig;
+    const qd_real above_tbig = q.tbig + qd_probe_up;
+
+    const auto classify_blue = [&](const qd_real &x) -> int {
+        const qd_real ax = (x < zero) ? -x : x;
+        if (ax > q.tbig)
+            return +1; // big
+        if (ax < q.tsml)
+            return -1; // small
+        return 0;      // medium
+    };
+
+    qd_assert_case(classify_blue(below_tsml) == -1, tag, "BlueScale boundary: below_tsml must classify as small");
+    qd_assert_case(classify_blue(at_tsml) == 0, tag, "BlueScale boundary: tsml must classify as medium");
+    qd_assert_case(classify_blue(above_tsml) == 0, tag, "BlueScale boundary: above_tsml must classify as medium");
+
+    qd_assert_case(classify_blue(below_tbig) == 0, tag, "BlueScale boundary: below_tbig must classify as medium");
+    qd_assert_case(classify_blue(at_tbig) == 0, tag, "BlueScale boundary: tbig must classify as medium");
+    qd_assert_case(classify_blue(above_tbig) == +1, tag, "BlueScale boundary: above_tbig must classify as big");
+
+    qd_assert_case(classify_blue(-below_tsml) == -1, tag, "BlueScale boundary: negative below_tsml must classify as small");
+    qd_assert_case(classify_blue(-above_tbig) == +1, tag, "BlueScale boundary: negative above_tbig must classify as big");
+
+    qd_assert_case(classify_blue(qd_real(0.0)) == -1, tag, "BlueScale boundary: zero must classify as small");
+    qd_assert_case(classify_blue(qd_real(1.0)) == 0, tag, "BlueScale boundary: one must classify as medium");
+
+    const qd_real rescaled_small = below_tsml * q.ssml;
+    const qd_real rescaled_big = above_tbig * q.sbig;
+    qd_assert_case(classify_blue(rescaled_small) == 0, tag, "BlueScale boundary: below_tsml * ssml must classify as medium");
+    qd_assert_case(classify_blue(rescaled_big) == 0, tag, "BlueScale boundary: above_tbig * sbig must classify as medium");
 
     const qd_real delta = Rlamch_qd("P");
     check_blue_threshold_boundaries_qd(tag, q, delta);
@@ -1834,6 +1878,51 @@ static void check_blue_scaling_dd(const char *tag, bool print_values) {
     dd_assert_case(tsml_sq > zero, tag, "BlueScale: tsml^2 underflowed to zero");
     const dd_real tbig_sq = q.tbig * q.tbig;
     dd_assert_case(isfinite(tbig_sq), tag, "BlueScale: tbig^2 overflowed");
+
+    // Boundary classification probes specialized for exact Blue constants.
+    // q.tsml and q.tbig are exact pure powers of two here, so their lower limbs are zero.
+    // Use a 1-double-step probe in the lowest dd slot instead of relative (1 +/- delta).
+    const double dd_low_up = std::nextafter(0.0, +std::numeric_limits<double>::infinity());
+    const double dd_low_dn = std::nextafter(0.0, -std::numeric_limits<double>::infinity());
+
+    const dd_real dd_probe_up(0.0, dd_low_up);
+    const dd_real dd_probe_dn(0.0, dd_low_dn);
+
+    const dd_real below_tsml = q.tsml + dd_probe_dn;
+    const dd_real at_tsml = q.tsml;
+    const dd_real above_tsml = q.tsml + dd_probe_up;
+
+    const dd_real below_tbig = q.tbig + dd_probe_dn;
+    const dd_real at_tbig = q.tbig;
+    const dd_real above_tbig = q.tbig + dd_probe_up;
+
+    const auto classify_blue = [&](const dd_real &x) -> int {
+        const dd_real ax = (x < zero) ? -x : x;
+        if (ax > q.tbig)
+            return +1; // big
+        if (ax < q.tsml)
+            return -1; // small
+        return 0;      // medium
+    };
+
+    dd_assert_case(classify_blue(below_tsml) == -1, tag, "BlueScale boundary: below_tsml must classify as small");
+    dd_assert_case(classify_blue(at_tsml) == 0, tag, "BlueScale boundary: tsml must classify as medium");
+    dd_assert_case(classify_blue(above_tsml) == 0, tag, "BlueScale boundary: above_tsml must classify as medium");
+
+    dd_assert_case(classify_blue(below_tbig) == 0, tag, "BlueScale boundary: below_tbig must classify as medium");
+    dd_assert_case(classify_blue(at_tbig) == 0, tag, "BlueScale boundary: tbig must classify as medium");
+    dd_assert_case(classify_blue(above_tbig) == +1, tag, "BlueScale boundary: above_tbig must classify as big");
+
+    dd_assert_case(classify_blue(-below_tsml) == -1, tag, "BlueScale boundary: negative below_tsml must classify as small");
+    dd_assert_case(classify_blue(-above_tbig) == +1, tag, "BlueScale boundary: negative above_tbig must classify as big");
+
+    dd_assert_case(classify_blue(dd_real(0.0)) == -1, tag, "BlueScale boundary: zero must classify as small");
+    dd_assert_case(classify_blue(dd_real(1.0)) == 0, tag, "BlueScale boundary: one must classify as medium");
+
+    const dd_real rescaled_small = below_tsml * q.ssml;
+    const dd_real rescaled_big = above_tbig * q.sbig;
+    dd_assert_case(classify_blue(rescaled_small) == 0, tag, "BlueScale boundary: below_tsml * ssml must classify as medium");
+    dd_assert_case(classify_blue(rescaled_big) == 0, tag, "BlueScale boundary: above_tbig * sbig must classify as medium");
 
     const dd_real delta = Rlamch_dd("P");
     check_blue_threshold_boundaries_dd(tag, q, delta);
