@@ -486,9 +486,7 @@ static void check_lamch_mpfr_values(const char *tag, const MpfrEnvSnapshot &cfg,
     }
 }
 
-
-template <typename BlueQ>
-static int classify_blue_mpfr_value(const BlueQ &q, const REAL &x) {
+template <typename BlueQ> static int classify_blue_mpfr_value(const BlueQ &q, const REAL &x) {
     REAL ax = x;
     if (ax < REAL(0.0))
         ax = -ax;
@@ -499,8 +497,7 @@ static int classify_blue_mpfr_value(const BlueQ &q, const REAL &x) {
     return 0;
 }
 
-template <typename BlueQ>
-static void check_blue_threshold_boundaries_mpfr(const char *tag, const BlueQ &q, bool ordering_valid) {
+template <typename BlueQ> static void check_blue_threshold_boundaries_mpfr(const char *tag, const BlueQ &q, bool ordering_valid) {
     if (!ordering_valid)
         return;
 
@@ -883,9 +880,7 @@ static LamchExpectedGmp compute_expected_gmp(mp_bitcnt_t prec_bits, mp_bitcnt_t 
     return ex;
 }
 
-
-template <typename BlueQ>
-static int classify_blue_gmp_value(const BlueQ &q, const REAL &x) {
+template <typename BlueQ> static int classify_blue_gmp_value(const BlueQ &q, const REAL &x) {
     REAL ax = x;
     if (ax < REAL(0.0))
         ax = -ax;
@@ -896,8 +891,7 @@ static int classify_blue_gmp_value(const BlueQ &q, const REAL &x) {
     return 0;
 }
 
-template <typename BlueQ>
-static void check_blue_threshold_boundaries_gmp(const char *tag, const BlueQ &q, const REAL &delta, bool ordering_valid) {
+template <typename BlueQ> static void check_blue_threshold_boundaries_gmp(const char *tag, const BlueQ &q, const REAL &delta, bool ordering_valid) {
     if (!ordering_valid)
         return;
 
@@ -1356,9 +1350,7 @@ static void check_cross_consistency_rmin_rmax_qd(const char *tag, const qd_real 
     qd_assert_case(expO == l, tag, "frexp exponent of O inconsistent with L");
 }
 
-
-template <typename BlueQ>
-static int classify_blue_qd_value(const BlueQ &q, const qd_real &x) {
+template <typename BlueQ> static int classify_blue_qd_value(const BlueQ &q, const qd_real &x) {
     qd_real ax = x;
     if (ax < qd_real(0.0))
         ax = -ax;
@@ -1369,8 +1361,7 @@ static int classify_blue_qd_value(const BlueQ &q, const qd_real &x) {
     return 0;
 }
 
-template <typename BlueQ>
-static void check_blue_threshold_boundaries_qd(const char *tag, const BlueQ &q, const qd_real &delta) {
+template <typename BlueQ> static void check_blue_threshold_boundaries_qd(const char *tag, const BlueQ &q, const qd_real &delta) {
     const qd_real zero(0.0), one(1.0), minus_one(-1.0);
 
     const qd_real below_tsml = q.tsml * (one - delta);
@@ -1764,9 +1755,7 @@ static void check_cross_consistency_rmin_rmax_dd(const char *tag, const dd_real 
     dd_assert_case(expO == l, tag, "frexp exponent of O inconsistent with L");
 }
 
-
-template <typename BlueQ>
-static int classify_blue_dd_value(const BlueQ &q, const dd_real &x) {
+template <typename BlueQ> static int classify_blue_dd_value(const BlueQ &q, const dd_real &x) {
     dd_real ax = x;
     if (ax < dd_real(0.0))
         ax = -ax;
@@ -1777,8 +1766,7 @@ static int classify_blue_dd_value(const BlueQ &q, const dd_real &x) {
     return 0;
 }
 
-template <typename BlueQ>
-static void check_blue_threshold_boundaries_dd(const char *tag, const BlueQ &q, const dd_real &delta) {
+template <typename BlueQ> static void check_blue_threshold_boundaries_dd(const char *tag, const BlueQ &q, const dd_real &delta) {
     const dd_real zero(0.0), one(1.0), minus_one(-1.0);
 
     const dd_real below_tsml = q.tsml * (one - delta);
@@ -2164,9 +2152,7 @@ static void check_cross_consistency_rmin_rmax_double(const char *tag, double E, 
     double_assert_case(std::abs(log2O - 1024.0) < 1.0, tag, "log2(O) inconsistent with expected max exponent");
 }
 
-
-template <typename BlueQ>
-static int classify_blue_double_value(const BlueQ &q, double x) {
+template <typename BlueQ> static int classify_blue_double_value(const BlueQ &q, double x) {
     const double ax = std::abs(x);
     if (ax > q.tbig)
         return +1;
@@ -2175,8 +2161,7 @@ static int classify_blue_double_value(const BlueQ &q, double x) {
     return 0;
 }
 
-template <typename BlueQ>
-static void check_blue_threshold_boundaries_double(const char *tag, const BlueQ &q) {
+template <typename BlueQ> static void check_blue_threshold_boundaries_double(const char *tag, const BlueQ &q) {
     const double zero = 0.0;
     const double one = 1.0;
     const double below_tsml = std::nextafter(q.tsml, zero);
@@ -2376,9 +2361,7 @@ void Rlamch_double_test() {
 #if defined ___MPLAPACK_BUILD_WITH_BINARY128___
 #include <cfenv> // std::fegetround, FE_TONEAREST
 
-
-template <typename BlueQ>
-static int classify_blue_binary128_value(const BlueQ &q, mplapack_binary128_t x) {
+template <typename BlueQ> static int classify_blue_binary128_value(const BlueQ &q, mplapack_binary128_t x) {
     const mplapack_binary128_t zero = (mplapack_binary128_t)0.0;
     if (x < zero)
         x = -x;
@@ -2389,8 +2372,7 @@ static int classify_blue_binary128_value(const BlueQ &q, mplapack_binary128_t x)
     return 0;
 }
 
-template <typename BlueQ>
-static void check_blue_threshold_boundaries_binary128(const char *tag, const BlueQ &q) {
+template <typename BlueQ> static void check_blue_threshold_boundaries_binary128(const char *tag, const BlueQ &q) {
     const mplapack_binary128_t zero = (mplapack_binary128_t)0.0;
     const mplapack_binary128_t one = (mplapack_binary128_t)1.0;
     const mplapack_binary128_t below_tsml = nextafter(q.tsml, zero);
@@ -2721,9 +2703,7 @@ void Rlamch_binary128_test() {
 #include <cfenv> // std::fegetround, FE_TONEAREST
 #include <cmath> // scalbnl
 
-
-template <typename BlueQ>
-static int classify_blue_binary80_value(const BlueQ &q, mplapack_binary80_t x) {
+template <typename BlueQ> static int classify_blue_binary80_value(const BlueQ &q, mplapack_binary80_t x) {
     const mplapack_binary80_t zero = (mplapack_binary80_t)0.0;
     if (x < zero)
         x = -x;
@@ -2734,8 +2714,7 @@ static int classify_blue_binary80_value(const BlueQ &q, mplapack_binary80_t x) {
     return 0;
 }
 
-template <typename BlueQ>
-static void check_blue_threshold_boundaries_binary80(const char *tag, const BlueQ &q) {
+template <typename BlueQ> static void check_blue_threshold_boundaries_binary80(const char *tag, const BlueQ &q) {
     const mplapack_binary80_t zero = (mplapack_binary80_t)0.0;
     const mplapack_binary80_t one = (mplapack_binary80_t)1.0;
     const mplapack_binary80_t below_tsml = nextafter(q.tsml, zero);
