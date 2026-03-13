@@ -79,32 +79,34 @@ template <> inline ArithmeticParams<qd_real> get_arithmetic_params<qd_real>() {
     const qd_real one(1.0);
     const qd_real two(2.0);
 
-    // Canonical QD epsilon for MPLAPACK Rlamch/compare output.
-    p.eps = qd_real(+0x1.fffffffffffffp-209, +0x0.0000000000000p+0000, +0x0.0000000000000p+0000, +0x0.0000000000000p+0000);
+    // Canonical QD epsilon
+    p.eps = qd_real(+0x1.fffffffffffffp-209,
+                    +0x0.0000000000000p+0000,
+                    +0x0.0000000000000p+0000,
+                    +0x0.0000000000000p+0000);
+
     p.base = two;
-    // Canonical QD precision = epsilon * base, fixed explicitly to avoid
-    // dependence on upstream qd_real::_eps.
-    p.prec = qd_real(+0x1.fffffffffffffp-208, +0x0.0000000000000p+0000, +0x0.0000000000000p+0000, +0x0.0000000000000p+0000);
+    p.prec = p.eps * p.base;
 
-    p.t = qd_real(static_cast<double>(std::numeric_limits<qd_real>::digits));
-    p.rnd = one; // QD uses IEEE double arithmetic internally; rounding occurs.
+    p.t = static_cast<arithmetic_int>(std::numeric_limits<qd_real>::digits);
+    // QD uses IEEE double arithmetic internally; rounding occurs.
+    p.rnd = one;
 
-    // emin: use the same method as the legacy RlamchM_qd -- frexp of _min_normalized.
-    int emin_int = 0;
-    (void)std::frexp(qd_real::_min_normalized, &emin_int);
-    p.emin = qd_real(static_cast<double>(emin_int));
-
-    // emax follows the double exponent ceiling (qd exponent range == double).
-    p.emax = qd_real(static_cast<double>(std::numeric_limits<double>::max_exponent));
+    assert(std::numeric_limits<qd_real>::min_exponent == detail::emin_of(qd_real::_min_normalized));
+    p.emin = static_cast<arithmetic_int>(std::numeric_limits<qd_real>::min_exponent);
+    p.emax = static_cast<arithmetic_int>(std::numeric_limits<double>::max_exponent);
 
     p.rmin = qd_real::_min_normalized;
     p.rmax = qd_real::_max;
 
-    // sfmin: netlib DLAMCH('S') rule.
+    // Rlamch("S"): safe minimum following netlib DLAMCH('S')
     p.sfmin = p.rmin;
     const qd_real small = one / p.rmax;
     if (small >= p.sfmin)
         p.sfmin = small * (one + p.eps);
+
+    p.safmin = detail::compute_safmin<qd_real>(p.emin, p.emax);
+    p.safmax = detail::compute_safmax<qd_real>(p.emin, p.emax);
 
     return p;
 }
@@ -116,27 +118,7 @@ template <> inline ArithmeticParams<qd_real> get_arithmetic_params<qd_real>() {
 // helpers used for all other types.  ldexp is used for exact scaling.
 // ---------------------------------------------------------------------------
 template <> inline BlueScalingParams<qd_real> get_blue_scaling_params<qd_real>() {
-    BlueScalingParams<qd_real> q;
-
-    // Derive emin at runtime to stay consistent with get_arithmetic_params.
-    int emin_int = 0;
-    (void)std::frexp(qd_real::_min_normalized, &emin_int);
-
-    const arithmetic_int emin = static_cast<arithmetic_int>(emin_int);
-    const arithmetic_int emax = static_cast<arithmetic_int>(std::numeric_limits<double>::max_exponent);
-    const arithmetic_int digits = static_cast<arithmetic_int>(std::numeric_limits<qd_real>::digits);
-
-    q.exp_tsml = detail::ceildiv2(emin - 1);
-    q.exp_tbig = detail::floordiv2(emax - digits + 1);
-    q.exp_ssml = -detail::floordiv2(emin - digits);
-    q.exp_sbig = -detail::ceildiv2(emax + digits - 1);
-
-    q.tsml = detail::int_pow_base2<qd_real>(q.exp_tsml);
-    q.tbig = detail::int_pow_base2<qd_real>(q.exp_tbig);
-    q.ssml = detail::int_pow_base2<qd_real>(q.exp_ssml);
-    q.sbig = detail::int_pow_base2<qd_real>(q.exp_sbig);
-
-    return q;
+    return make_blue_scaling_params(get_arithmetic_params<qd_real>());
 }
 
 } // namespace mplapack

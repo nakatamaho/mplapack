@@ -79,31 +79,32 @@ template <> inline ArithmeticParams<dd_real> get_arithmetic_params<dd_real>() {
     const dd_real one(1.0);
     const dd_real two(2.0);
 
-    // Canonical DD epsilon for MPLAPACK Rlamch/compare output.
+    // Canonical DD epsilon for MPLAPACK
     p.eps = dd_real(+0x1.fffffffffffffp-105, +0x0.0000000000000p+0000);
     p.base = two;
-    // Canonical DD precision = epsilon * base, fixed explicitly to avoid
-    // dependence on upstream dd_real::_eps.
-    p.prec = dd_real(+0x1.fffffffffffffp-104, +0x0.0000000000000p+0000);
 
-    p.t = dd_real(static_cast<double>(std::numeric_limits<dd_real>::digits));
-    p.rnd = one; // DD uses IEEE double arithmetic internally; rounding occurs.
+    // PREC = EPS * BASE
+    p.prec = p.eps * p.base;
 
-    // emin: use frexp of _min_normalized, matching legacy RlamchM_dd.
-    int emin_int = 0;
-    (void)std::frexp(dd_real::_min_normalized, &emin_int);
-    p.emin = dd_real(static_cast<double>(emin_int));
+    p.t = static_cast<arithmetic_int>(std::numeric_limits<dd_real>::digits);
+    // DD uses IEEE double arithmetic internally; rounding occurs.
+    p.rnd = one;
 
-    p.emax = dd_real(static_cast<double>(std::numeric_limits<double>::max_exponent));
+    assert(std::numeric_limits<dd_real>::min_exponent == detail::emin_of(dd_real::_min_normalized));
+    p.emin = static_cast<arithmetic_int>(std::numeric_limits<dd_real>::min_exponent);
+    p.emax = static_cast<arithmetic_int>(std::numeric_limits<double>::max_exponent);
 
     p.rmin = dd_real::_min_normalized;
     p.rmax = dd_real::_max;
 
-    // sfmin: netlib DLAMCH('S') rule.
+    // Rlamch("S"): safe minimum following netlib DLAMCH('S')
     p.sfmin = p.rmin;
     const dd_real small = one / p.rmax;
     if (small >= p.sfmin)
         p.sfmin = small * (one + p.eps);
+
+    p.safmin = detail::compute_safmin<dd_real>(p.emin, p.emax);
+    p.safmax = detail::compute_safmax<dd_real>(p.emin, p.emax);
 
     return p;
 }
@@ -115,26 +116,7 @@ template <> inline ArithmeticParams<dd_real> get_arithmetic_params<dd_real>() {
 // get_arithmetic_params<dd_real>().
 // ---------------------------------------------------------------------------
 template <> inline BlueScalingParams<dd_real> get_blue_scaling_params<dd_real>() {
-    BlueScalingParams<dd_real> q;
-
-    int emin_int = 0;
-    (void)std::frexp(dd_real::_min_normalized, &emin_int);
-
-    const arithmetic_int emin = static_cast<arithmetic_int>(emin_int);
-    const arithmetic_int emax = static_cast<arithmetic_int>(std::numeric_limits<double>::max_exponent);
-    const arithmetic_int digits = static_cast<arithmetic_int>(std::numeric_limits<dd_real>::digits);
-
-    q.exp_tsml = detail::ceildiv2(emin - 1);
-    q.exp_tbig = detail::floordiv2(emax - digits + 1);
-    q.exp_ssml = -detail::floordiv2(emin - digits);
-    q.exp_sbig = -detail::ceildiv2(emax + digits - 1);
-
-    q.tsml = detail::int_pow_base2<dd_real>(q.exp_tsml);
-    q.tbig = detail::int_pow_base2<dd_real>(q.exp_tbig);
-    q.ssml = detail::int_pow_base2<dd_real>(q.exp_ssml);
-    q.sbig = detail::int_pow_base2<dd_real>(q.exp_sbig);
-
-    return q;
+    return make_blue_scaling_params(get_arithmetic_params<dd_real>());
 }
 
 } // namespace mplapack
