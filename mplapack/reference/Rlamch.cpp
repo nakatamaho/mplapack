@@ -60,33 +60,29 @@
 // a Rlamch_<type>(cmach) function that maps to the appropriate struct field.
 // =============================================================================
 
-// ---------------------------------------------------------------------------
-// Helper macro: expand to the character dispatch body for a given concrete
-// type T.  Assumes mplapack::get_arithmetic_params<T>() is available.
-// ---------------------------------------------------------------------------
-#define MPLAPACK_RLAMCH_DISPATCH(T)                                     \
-    do {                                                                 \
-        const auto p = mplapack::get_arithmetic_params<T>();            \
-        if (Mlsame(cmach, "E")) return p.eps;                           \
-        if (Mlsame(cmach, "S")) return p.sfmin;                         \
-        if (Mlsame(cmach, "B")) return p.base;                          \
-        if (Mlsame(cmach, "P")) return p.prec;                          \
-        if (Mlsame(cmach, "N")) return p.t;                             \
-        if (Mlsame(cmach, "R")) return p.rnd;                           \
-        if (Mlsame(cmach, "M")) return p.emin;                          \
-        if (Mlsame(cmach, "U")) return p.rmin;                          \
-        if (Mlsame(cmach, "L")) return p.emax;                          \
-        if (Mlsame(cmach, "O")) return p.rmax;                          \
-        Mxerbla("Rlamch", 1);                                           \
-        return T(0);                                                     \
-    } while (0)
+template <class T>
+inline T rlamch_dispatch_impl(const char *cmach) {
+    const auto p = mplapack::get_arithmetic_params<T>();
+    if (Mlsame(cmach, "E")) return p.eps;
+    if (Mlsame(cmach, "S")) return p.sfmin;
+    if (Mlsame(cmach, "B")) return p.base;
+    if (Mlsame(cmach, "P")) return p.prec;
+    if (Mlsame(cmach, "N")) return mplapack::detail::to_rlamch_real<T>(p.t);
+    if (Mlsame(cmach, "R")) return p.rnd;
+    if (Mlsame(cmach, "M")) return mplapack::detail::to_rlamch_real<T>(p.emin);
+    if (Mlsame(cmach, "U")) return p.rmin;
+    if (Mlsame(cmach, "L")) return mplapack::detail::to_rlamch_real<T>(p.emax);
+    if (Mlsame(cmach, "O")) return p.rmax;
+    Mxerbla("Rlamch", 1);
+    return mplapack::detail::to_rlamch_real<T>(0);
+}
 
 // ---------------------------------------------------------------------------
 // MPFR
 // ---------------------------------------------------------------------------
 #if defined(___MPLAPACK_BUILD_WITH_MPFR___)
 REAL Rlamch_mpfr(const char *cmach) {
-    MPLAPACK_RLAMCH_DISPATCH(REAL);
+    return rlamch_dispatch_impl<mpreal>(cmach);
 }
 #endif
 
@@ -95,7 +91,7 @@ REAL Rlamch_mpfr(const char *cmach) {
 // ---------------------------------------------------------------------------
 #if defined(___MPLAPACK_BUILD_WITH_GMP___)
 REAL Rlamch_gmp(const char *cmach) {
-    MPLAPACK_RLAMCH_DISPATCH(REAL);
+    return rlamch_dispatch_impl<mpf_class>(cmach);
 }
 #endif
 
@@ -104,7 +100,7 @@ REAL Rlamch_gmp(const char *cmach) {
 // ---------------------------------------------------------------------------
 #if defined(___MPLAPACK_BUILD_WITH_DOUBLE___)
 double Rlamch_double(const char *cmach) {
-    MPLAPACK_RLAMCH_DISPATCH(double);
+    return rlamch_dispatch_impl<double>(cmach);
 }
 #endif
 
@@ -113,7 +109,7 @@ double Rlamch_double(const char *cmach) {
 // ---------------------------------------------------------------------------
 #if defined(___MPLAPACK_BUILD_WITH_BINARY80___)
 mplapack_binary80_t Rlamch_binary80(const char *cmach) {
-    MPLAPACK_RLAMCH_DISPATCH(mplapack_binary80_t);
+    return rlamch_dispatch_impl<mplapack_binary80_t>(cmach);
 }
 #endif
 
@@ -122,44 +118,25 @@ mplapack_binary80_t Rlamch_binary80(const char *cmach) {
 // ---------------------------------------------------------------------------
 #if defined(___MPLAPACK_BUILD_WITH_BINARY128___)
 mplapack_binary128_t Rlamch_binary128(const char *cmach) {
-    MPLAPACK_RLAMCH_DISPATCH(mplapack_binary128_t);
+    return rlamch_dispatch_impl<mplapack_binary128_t>(cmach);
 }
 #endif
 
-#undef MPLAPACK_RLAMCH_DISPATCH
-
-// =============================================================================
-// QD and DD: migrated to the arithmetic_params layer.
-// =============================================================================
-
-// Re-define the dispatch macro here (it was #undef'd above after the first
-// group of types, so we re-define it for QD and DD which share the same body).
-#define MPLAPACK_RLAMCH_DISPATCH(T)                                     \
-    do {                                                                 \
-        const auto p = mplapack::get_arithmetic_params<T>();            \
-        if (Mlsame(cmach, "E")) return p.eps;                           \
-        if (Mlsame(cmach, "S")) return p.sfmin;                         \
-        if (Mlsame(cmach, "B")) return p.base;                          \
-        if (Mlsame(cmach, "P")) return p.prec;                          \
-        if (Mlsame(cmach, "N")) return p.t;                             \
-        if (Mlsame(cmach, "R")) return p.rnd;                           \
-        if (Mlsame(cmach, "M")) return p.emin;                          \
-        if (Mlsame(cmach, "U")) return p.rmin;                          \
-        if (Mlsame(cmach, "L")) return p.emax;                          \
-        if (Mlsame(cmach, "O")) return p.rmax;                          \
-        Mxerbla("Rlamch", 1);                                           \
-        return T(0);                                                     \
-    } while (0)
-
+// ---------------------------------------------------------------------------
+// QD
+// ---------------------------------------------------------------------------
 #if defined(___MPLAPACK_BUILD_WITH_QD___)
 qd_real Rlamch_qd(const char *cmach) {
-    MPLAPACK_RLAMCH_DISPATCH(qd_real);
+    return rlamch_dispatch_impl<qd_real>(cmach);
 }
 #endif
 
+// ---------------------------------------------------------------------------
+// DD
+// ---------------------------------------------------------------------------
 #if defined(___MPLAPACK_BUILD_WITH_DD___)
 dd_real Rlamch_dd(const char *cmach) {
-    MPLAPACK_RLAMCH_DISPATCH(dd_real);
+    return rlamch_dispatch_impl<dd_real>(cmach);
 }
 #endif
 

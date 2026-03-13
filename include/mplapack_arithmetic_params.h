@@ -103,7 +103,45 @@ namespace detail {
         }
         return REAL(1) / result;
     }
+    // NOTE:
+    // These helpers assume radix/base = 2 and compute exact powers of two
+    // from integer exponents without using std::pow.
+    template <class REAL>
+    inline REAL compute_safmin(arithmetic_int emin, arithmetic_int emax) {
+        const arithmetic_int exp_safmin = ((emin - arithmetic_int(1)) > (arithmetic_int(1) - emax))
+            ? (emin - arithmetic_int(1))
+            : (arithmetic_int(1) - emax);
+        return int_pow_base2<REAL>(exp_safmin);
+    }
 
+    template <class REAL>
+    inline REAL compute_safmax(arithmetic_int emin, arithmetic_int emax) {
+        const arithmetic_int exp_safmax = ((arithmetic_int(1) - emin) > (emax - arithmetic_int(1)))
+            ? (arithmetic_int(1) - emin)
+            : (emax - arithmetic_int(1));
+        return int_pow_base2<REAL>(exp_safmax);
+    }
+
+    // Default conversion path for small integer Rlamch metadata.
+    // This uses a double intermediate and is intended for backends where
+    // t/emin/emax are well within the exactly representable range of double.
+    template <class REAL> inline REAL to_rlamch_real_impl(arithmetic_int x, REAL *) { return REAL(static_cast<double>(x)); }
+
+#if defined(___MPLAPACK_BUILD_WITH_GMP___)
+    inline mpf_class to_rlamch_real_impl(arithmetic_int x, mpf_class *) {
+        const std::string s = std::to_string(x);
+        return mpf_class(s.c_str());
+    }
+#endif
+
+#if defined(___MPLAPACK_BUILD_WITH_MPFR___)
+    inline mpfr::mpreal to_rlamch_real_impl(arithmetic_int x, mpfr::mpreal *) {
+        const std::string s = std::to_string(x);
+        return mpfr::mpreal(s.c_str());
+    }
+#endif
+
+    template <class REAL> inline REAL to_rlamch_real(arithmetic_int x) { return to_rlamch_real_impl(x, static_cast<REAL *>(nullptr)); }
 } // namespace detail
 
 // ---------------------------------------------------------------------------
@@ -127,12 +165,16 @@ template <class REAL> struct ArithmeticParams {
     REAL sfmin; // safe minimum                 [Rlamch "S"]
     REAL base;  // radix (= 2)                  [Rlamch "B"]
     REAL prec;  // eps * base                   [Rlamch "P"]
-    REAL t;     // mantissa digit count         [Rlamch "N"]
     REAL rnd;   // rounding mode indicator      [Rlamch "R"]
-    REAL emin;  // minimum exponent             [Rlamch "M"]
     REAL rmin;  // underflow threshold          [Rlamch "U"]
-    REAL emax;  // largest exponent             [Rlamch "L"]
     REAL rmax;  // overflow threshold           [Rlamch "O"]
+
+    arithmetic_int t;    // mantissa digit count [Rlamch "N"]
+    arithmetic_int emin; // minimum exponent     [Rlamch "M"]
+    arithmetic_int emax; // largest exponent     [Rlamch "L"]
+
+    REAL safmin; // scaling constant, 2^max(emin-1, 1-emax)
+    REAL safmax; // scaling constant, 2^max(1-emin, emax-1)
 };
 
 // ---------------------------------------------------------------------------
@@ -155,11 +197,28 @@ template <class REAL> struct BlueScalingParams {
     arithmetic_int exp_ssml; // exponent for ssml
     arithmetic_int exp_sbig; // exponent for sbig
 
-    REAL tsml; // base^exp_tsml  (small-underflow threshold)
-    REAL tbig; // base^exp_tbig  (large-overflow threshold)
-    REAL ssml; // base^exp_ssml  (ssml^2 * x^2 safe near underflow)
-    REAL sbig; // base^exp_sbig  (sbig^2 * x^2 safe near overflow)
+    REAL tsml; // threshold below which values are classified as small
+    REAL tbig; // threshold above which values are classified as big
+    REAL ssml; // scaling factor applied to small values
+    REAL sbig; // scaling factor applied to big values
 };
+
+// Assumes ap.base == 2 and uses exact powers of two via int_pow_base2.
+template <class REAL>
+inline BlueScalingParams<REAL> make_blue_scaling_params(const ArithmeticParams<REAL> &ap) {
+    BlueScalingParams<REAL> q;
+
+    q.exp_tsml = detail::ceildiv2(ap.emin - arithmetic_int(1));
+    q.exp_tbig = detail::floordiv2(ap.emax - ap.t + arithmetic_int(1));
+    q.exp_ssml = -detail::floordiv2(ap.emin - ap.t);
+    q.exp_sbig = -detail::ceildiv2(ap.emax + ap.t - arithmetic_int(1));
+
+    q.tsml = detail::int_pow_base2<REAL>(q.exp_tsml);
+    q.tbig = detail::int_pow_base2<REAL>(q.exp_tbig);
+    q.ssml = detail::int_pow_base2<REAL>(q.exp_ssml);
+    q.sbig = detail::int_pow_base2<REAL>(q.exp_sbig);
+    return q;
+}
 
 // ---------------------------------------------------------------------------
 // Primary template declarations.
