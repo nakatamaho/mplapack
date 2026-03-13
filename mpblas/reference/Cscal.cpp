@@ -36,7 +36,8 @@
 #include <mpblas.h>
 
 void Cscal(INTEGER const n, COMPLEX const za, COMPLEX *zx, INTEGER const incx) {
-    if (n <= 0 || incx <= 0) {
+    const COMPLEX one = COMPLEX(1.0, 0.0);
+    if (n <= 0 || incx <= 0 || za == one) {
         return;
     }
     INTEGER i = 0;
