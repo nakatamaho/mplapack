@@ -127,36 +127,51 @@ namespace detail_b80 {
 // ---------------------------------------------------------------------------
 // ArithmeticParams<mplapack_binary80_t>
 //
-// digits = 64, emin = -16381, emax = 16384  (x87 80-bit extended precision)
+// Parameters follow the LAPACK Rlamch definition for the active binary80
+// backend configuration.
+//
+// Typical binary80 metadata:
+//   base   = 2
+//   digits = 64
+//   emin   = -16381
+//   emax   = 16384
 // ---------------------------------------------------------------------------
 template <> inline ArithmeticParams<mplapack_binary80_t> get_arithmetic_params<mplapack_binary80_t>() {
     using T = mplapack_binary80_t;
+
     ArithmeticParams<T> p;
 
-    const int kMantDig = detail_b80::mant_dig();
+    const arithmetic_int kMantDig = static_cast<arithmetic_int>(detail_b80::mant_dig());
+    const arithmetic_int kMinExp = static_cast<arithmetic_int>(detail_b80::min_exp());
+    const arithmetic_int kMaxExp = static_cast<arithmetic_int>(detail_b80::max_exp());
 
-    // eps = 2^(-kMantDig)  (unit roundoff, round-to-nearest)
-    T eps = (T)1.0L;
-    for (int i = 0; i < kMantDig; ++i)
-        eps /= (T)2.0L;
+    // Rlamch("E"): unit roundoff for round-to-nearest = 2^(-digits)
+    const T eps = detail::int_pow_base2<T>(-kMantDig);
 
     const T rmin = detail_b80::rmin_val();
     const T rmax = detail_b80::rmax_val();
 
     p.eps = eps;
-    p.base = (T)2.0L;
-    p.prec = eps * (T)2.0L;
-    p.t = (T)kMantDig;
-    p.rnd = (T)1.0L; // IEEE rounds
-    p.emin = (T)detail_b80::min_exp();
+    p.base = static_cast<T>(2.0L);
+    p.prec = eps * p.base;
+
+    p.t = kMantDig;
+    p.rnd = static_cast<T>(1.0L); // IEEE round-to-nearest
+
+    p.emin = kMinExp;
     p.rmin = rmin;
-    p.emax = (T)detail_b80::max_exp();
+    p.emax = kMaxExp;
     p.rmax = rmax;
 
+    // Rlamch("S"): safe minimum following netlib DLAMCH('S')
     p.sfmin = rmin;
-    const T small = (T)1.0L / rmax;
-    if (small >= p.sfmin)
-        p.sfmin = small * ((T)1.0L + eps);
+    const T small = static_cast<T>(1.0L) / rmax;
+    if (small >= p.sfmin) {
+        p.sfmin = small * (static_cast<T>(1.0L) + eps);
+    }
+
+    p.safmin = detail::compute_safmin<T>(p.emin, p.emax);
+    p.safmax = detail::compute_safmax<T>(p.emin, p.emax);
 
     return p;
 }
@@ -164,30 +179,17 @@ template <> inline ArithmeticParams<mplapack_binary80_t> get_arithmetic_params<m
 // ---------------------------------------------------------------------------
 // BlueScalingParams<mplapack_binary80_t>
 //
-// emin = -16381, emax = 16384, digits = 64
+// Reference exponents for the active binary80 backend configuration:
+//   emin = -16381, emax = 16384, digits = 64
 //   exp_tsml = ceil((-16381-1)/2)      = -8191
-//   exp_tbig = floor((16384-64+1)/2)   =  8160  (floor(16321/2))
-//   exp_ssml = -floor((-16381-64)/2)   =  8223  (-floor(-8222.5) = 8223)
-//   exp_sbig = -ceil((16384+64-1)/2)   = -8224  (-ceil(8223.5)   = -8224)
+//   exp_tbig = floor((16384-64+1)/2)   =  8160
+//   exp_ssml = -floor((-16381-64)/2)   =  8223
+//   exp_sbig = -ceil((16384+64-1)/2)   = -8224
+//
+// Values are derived via make_blue_scaling_params(get_arithmetic_params<T>()).
 // ---------------------------------------------------------------------------
 template <> inline BlueScalingParams<mplapack_binary80_t> get_blue_scaling_params<mplapack_binary80_t>() {
-    BlueScalingParams<mplapack_binary80_t> q;
-
-    const arithmetic_int emin = static_cast<arithmetic_int>(detail_b80::min_exp());
-    const arithmetic_int emax = static_cast<arithmetic_int>(detail_b80::max_exp());
-    const arithmetic_int digits = static_cast<arithmetic_int>(detail_b80::mant_dig());
-
-    q.exp_tsml = detail::ceildiv2(emin - 1);
-    q.exp_tbig = detail::floordiv2(emax - digits + 1);
-    q.exp_ssml = -detail::floordiv2(emin - digits);
-    q.exp_sbig = -detail::ceildiv2(emax + digits - 1);
-
-    q.tsml = detail::int_pow_base2<mplapack_binary80_t>(q.exp_tsml);
-    q.tbig = detail::int_pow_base2<mplapack_binary80_t>(q.exp_tbig);
-    q.ssml = detail::int_pow_base2<mplapack_binary80_t>(q.exp_ssml);
-    q.sbig = detail::int_pow_base2<mplapack_binary80_t>(q.exp_sbig);
-
-    return q;
+    return make_blue_scaling_params(get_arithmetic_params<mplapack_binary80_t>());
 }
 
 } // namespace mplapack
