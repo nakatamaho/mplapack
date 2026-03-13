@@ -60,41 +60,36 @@ template <> inline ArithmeticParams<mpf_class> get_arithmetic_params<mpf_class>(
     ArithmeticParams<mpf_class> p;
 
     const mpf_class one(1.0);
-    const mp_bitcnt_t nbits = mpf_get_prec(one.get_mpf_t());
-    const mp_bitcnt_t E = detail_gmp::safe_emax();
+    const arithmetic_int nbits = static_cast<arithmetic_int>(mpf_get_prec(one.get_mpf_t()));
+    const arithmetic_int E = static_cast<arithmetic_int>(detail_gmp::safe_emax());
 
-    // eps = 2^(-nbits)
-    p.eps.set_prec(nbits);
-    mpf_div_2exp(p.eps.get_mpf_t(), one.get_mpf_t(), nbits);
+    p.eps.set_prec(static_cast<mp_bitcnt_t>(nbits));
+    mpf_div_2exp(p.eps.get_mpf_t(), one.get_mpf_t(), static_cast<mp_bitcnt_t>(nbits));
 
     p.base = mpf_class(2.0);
     p.prec = p.eps * p.base;
-    p.t.set_prec(nbits);
-    mpf_set_ui(p.t.get_mpf_t(), nbits);
-    p.rnd = mpf_class(0.0); // GMP truncates
 
-    // emin = 1 - E, emax = E.
-    // Use mpf_set_ui for exact integer conversion — casting through double would
-    // round LONG_MAX/2 (which is 2^62-1, not a power of two) to 2^62.
-    p.emax.set_prec(nbits);
-    mpf_set_ui(p.emax.get_mpf_t(), E);
-    p.emin.set_prec(nbits);
-    mpf_sub(p.emin.get_mpf_t(), mpf_class(1.0).get_mpf_t(), p.emax.get_mpf_t());
+    p.t = nbits;
+    p.rnd = mpf_class(0.0);
 
-    // rmin = 2^(-E)
-    p.rmin.set_prec(nbits);
-    mpf_div_2exp(p.rmin.get_mpf_t(), one.get_mpf_t(), E);
+    p.emax = E;
+    p.emin = arithmetic_int(1) - E;
 
-    // rmax = (1 - eps) * 2^E
-    p.rmax.set_prec(nbits);
+    p.rmin.set_prec(static_cast<mp_bitcnt_t>(nbits));
+    mpf_div_2exp(p.rmin.get_mpf_t(), one.get_mpf_t(), static_cast<mp_bitcnt_t>(E));
+
+    p.rmax.set_prec(static_cast<mp_bitcnt_t>(nbits));
     const mpf_class mant = one - p.eps;
-    mpf_mul_2exp(p.rmax.get_mpf_t(), mant.get_mpf_t(), E);
+    mpf_mul_2exp(p.rmax.get_mpf_t(), mant.get_mpf_t(), static_cast<mp_bitcnt_t>(E));
 
-    // sfmin: netlib DLAMCH('S') logic
+    // Rlamch("S"): safe minimum following netlib DLAMCH('S')
     p.sfmin = p.rmin;
     const mpf_class small = one / p.rmax;
     if (small >= p.sfmin)
         p.sfmin = small * (one + p.eps);
+
+    p.safmin = detail::compute_safmin<mpf_class>(p.emin, p.emax);
+    p.safmax = detail::compute_safmax<mpf_class>(p.emin, p.emax);
 
     return p;
 }
@@ -107,29 +102,7 @@ template <> inline ArithmeticParams<mpf_class> get_arithmetic_params<mpf_class>(
 // std::pow with floating exponent).
 // ---------------------------------------------------------------------------
 template <> inline BlueScalingParams<mpf_class> get_blue_scaling_params<mpf_class>() {
-    BlueScalingParams<mpf_class> q;
-
-    const mpf_class one(1.0);
-    const arithmetic_int nbits = static_cast<arithmetic_int>(mpf_get_prec(one.get_mpf_t()));
-    const arithmetic_int E = static_cast<arithmetic_int>(detail_gmp::safe_emax());
-
-    // GMP emin/emax in LAPACK convention:
-    //   emin = 1 - E  =>  rmin = base^(emin-1) = 2^(-E)
-    //   emax = E
-    const arithmetic_int emin = arithmetic_int(1) - E;
-    const arithmetic_int emax = E;
-
-    q.exp_tsml = detail::ceildiv2(emin - 1);
-    q.exp_tbig = detail::floordiv2(emax - nbits + 1);
-    q.exp_ssml = -detail::floordiv2(emin - nbits);
-    q.exp_sbig = -detail::ceildiv2(emax + nbits - 1);
-
-    q.tsml = detail::int_pow_base2<mpf_class>(q.exp_tsml);
-    q.tbig = detail::int_pow_base2<mpf_class>(q.exp_tbig);
-    q.ssml = detail::int_pow_base2<mpf_class>(q.exp_ssml);
-    q.sbig = detail::int_pow_base2<mpf_class>(q.exp_sbig);
-
-    return q;
+    return make_blue_scaling_params(get_arithmetic_params<mpf_class>());
 }
 
 } // namespace mplapack
