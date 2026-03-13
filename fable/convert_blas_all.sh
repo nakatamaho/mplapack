@@ -101,4 +101,16 @@ parallel -j "${JOBS:-$(nproc)}" '
      bash "$FABLE_CONVERT" "{}"
  ' ::: "${files[@]}"
 
-patch < "${SCRIPT_DIR}/${LAPACK_VERSION}/patch-blas"
+
+case "${LAPACK_VERSION}" in
+    3.9.1)
+        patch < "${SCRIPT_DIR}/${LAPACK_VERSION}/patch-blas"
+        ;;
+    3.12.1)
+        patch < "${SCRIPT_DIR}/${LAPACK_VERSION}/blas/patch-Rrotmg.cpp"
+        ;;
+    *)
+        echo "Unsupported LAPACK_VERSION: ${LAPACK_VERSION}" >&2
+        exit 1
+        ;;
+esac
