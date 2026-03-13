@@ -47,30 +47,36 @@ template <> inline ArithmeticParams<mpfr::mpreal> get_arithmetic_params<mpfr::mp
     ArithmeticParams<REAL> p;
 
     const REAL one(1.0);
-    const mp_prec_t nbits = one.get_prec();
-    const mp_exp_t emin = one.get_emin();
-    const mp_exp_t emax = one.get_emax();
 
-    // eps = 2^(-nbits)  (unit roundoff for round-to-nearest)
-    p.eps = mul_2si(one, -static_cast<mp_exp_t>(nbits));
+    const arithmetic_int nbits = static_cast<arithmetic_int>(one.get_prec());
+    const arithmetic_int emin  = static_cast<arithmetic_int>(one.get_emin());
+    const arithmetic_int emax  = static_cast<arithmetic_int>(one.get_emax());
+
+    // eps = 2^(-nbits)
+    p.eps  = mul_2si(one, -static_cast<mp_exp_t>(nbits));
     p.base = REAL(2.0);
     p.prec = p.eps * p.base;
-    p.t = REAL(static_cast<double>(nbits));
+
+    p.t   = nbits;
     p.rnd = (mpfr_get_default_rounding_mode() == MPFR_RNDZ) ? REAL(0.0) : REAL(1.0);
-    p.emin = REAL(static_cast<double>(emin));
-    p.emax = REAL(static_cast<double>(emax));
+
+    p.emin = emin;
+    p.emax = emax;
 
     // rmin = 2^(emin-1)
-    p.rmin = mul_2si(one, emin - mp_exp_t(1));
+    p.rmin = mul_2si(one, emin - 1);
 
     // rmax = (1 - eps) * 2^emax
     p.rmax = mul_2si(one - p.eps, emax);
 
-    // sfmin: netlib DLAMCH('S') logic
+    // Rlamch("S"): safe minimum following netlib DLAMCH('S')
     p.sfmin = p.rmin;
     const REAL small = one / p.rmax;
     if (small >= p.sfmin)
         p.sfmin = small * (one + p.eps);
+
+    p.safmin = detail::compute_safmin<REAL>(p.emin, p.emax);
+    p.safmax = detail::compute_safmax<REAL>(p.emin, p.emax);
 
     return p;
 }
@@ -88,25 +94,7 @@ template <> inline ArithmeticParams<mpfr::mpreal> get_arithmetic_params<mpfr::mp
 // int_pow_base2<mpreal> uses mul_2si (exact, no floating exponent).
 // ---------------------------------------------------------------------------
 template <> inline BlueScalingParams<mpfr::mpreal> get_blue_scaling_params<mpfr::mpreal>() {
-    using REAL = mpfr::mpreal;
-    BlueScalingParams<REAL> q;
-
-    const REAL one(1.0);
-    const arithmetic_int nbits = static_cast<arithmetic_int>(one.get_prec());
-    const arithmetic_int emin = static_cast<arithmetic_int>(one.get_emin());
-    const arithmetic_int emax = static_cast<arithmetic_int>(one.get_emax());
-
-    q.exp_tsml = detail::ceildiv2(emin - 1);
-    q.exp_tbig = detail::floordiv2(emax - nbits + 1);
-    q.exp_ssml = -detail::floordiv2(emin - nbits);
-    q.exp_sbig = -detail::ceildiv2(emax + nbits - 1);
-
-    q.tsml = detail::int_pow_base2<REAL>(q.exp_tsml);
-    q.tbig = detail::int_pow_base2<REAL>(q.exp_tbig);
-    q.ssml = detail::int_pow_base2<REAL>(q.exp_ssml);
-    q.sbig = detail::int_pow_base2<REAL>(q.exp_sbig);
-
-    return q;
+    return make_blue_scaling_params(get_arithmetic_params<mpfr::mpreal>());
 }
 
 } // namespace mplapack
