@@ -158,11 +158,11 @@ template <> inline ArithmeticParams<mplapack_binary128_t> get_arithmetic_params<
     p.eps = eps;
     p.base = (T)2.0;
     p.prec = eps * (T)2.0;
-    p.t = (T)kMantDig;
+    p.t = static_cast<arithmetic_int>(kMantDig);
     p.rnd = (T)1.0; // IEEE rounds
-    p.emin = (T)detail_b128::min_exp();
+    p.emin = static_cast<arithmetic_int>(detail_b128::min_exp());
     p.rmin = rmin;
-    p.emax = (T)detail_b128::max_exp();
+    p.emax = static_cast<arithmetic_int>(detail_b128::max_exp());
     p.rmax = rmax;
 
     p.sfmin = rmin;
@@ -170,37 +170,31 @@ template <> inline ArithmeticParams<mplapack_binary128_t> get_arithmetic_params<
     if (small >= p.sfmin)
         p.sfmin = small * ((T)1.0 + eps);
 
+    p.safmin = detail::compute_safmin<T>(p.emin, p.emax);
+    p.safmax = detail::compute_safmax<T>(p.emin, p.emax);
+
     return p;
 }
 
 // ---------------------------------------------------------------------------
 // BlueScalingParams<mplapack_binary128_t>
 //
-// emin = -16381, emax = 16384, digits = 113
+// Reference exponents for IEEE binary128:
+//   emin = -16381, emax = 16384, digits = 113
 //   exp_tsml = ceil((-16381-1)/2)       = -8191
 //   exp_tbig = floor((16384-113+1)/2)   =  8136
 //   exp_ssml = -floor((-16381-113)/2)   =  8247
 //   exp_sbig = -ceil((16384+113-1)/2)   = -8248
+//
+// Values are derived via make_blue_scaling_params(get_arithmetic_params<T>()).
 // ---------------------------------------------------------------------------
 template <> inline BlueScalingParams<mplapack_binary128_t> get_blue_scaling_params<mplapack_binary128_t>() {
-    BlueScalingParams<mplapack_binary128_t> q;
-
-    const arithmetic_int emin = static_cast<arithmetic_int>(detail_b128::min_exp());
-    const arithmetic_int emax = static_cast<arithmetic_int>(detail_b128::max_exp());
-    const arithmetic_int digits = static_cast<arithmetic_int>(detail_b128::mant_dig());
-
-    q.exp_tsml = detail::ceildiv2(emin - 1);
-    q.exp_tbig = detail::floordiv2(emax - digits + 1);
-    q.exp_ssml = -detail::floordiv2(emin - digits);
-    q.exp_sbig = -detail::ceildiv2(emax + digits - 1);
-
-    q.tsml = detail::int_pow_base2<mplapack_binary128_t>(q.exp_tsml);
-    q.tbig = detail::int_pow_base2<mplapack_binary128_t>(q.exp_tbig);
-    q.ssml = detail::int_pow_base2<mplapack_binary128_t>(q.exp_ssml);
-    q.sbig = detail::int_pow_base2<mplapack_binary128_t>(q.exp_sbig);
-
-    return q;
+    return make_blue_scaling_params(get_arithmetic_params<mplapack_binary128_t>());
 }
 
 } // namespace mplapack
 #endif // MPLAPACK_ARITHMETIC_PARAMS_BINARY128_H
+
+
+
+
