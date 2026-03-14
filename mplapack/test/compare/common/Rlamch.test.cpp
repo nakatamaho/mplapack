@@ -2722,10 +2722,13 @@ template <typename BlueQ> static int classify_blue_binary128_value(const BlueQ &
 template <typename BlueQ> static void check_blue_threshold_boundaries_binary128(const char *tag, const BlueQ &q) {
     const mplapack_binary128_t zero = (mplapack_binary128_t)0.0;
     const mplapack_binary128_t one = (mplapack_binary128_t)1.0;
-    const mplapack_binary128_t below_tsml = nextafter(q.tsml, zero);
-    const mplapack_binary128_t above_tsml = nextafter(q.tsml, one);
-    const mplapack_binary128_t below_tbig = nextafter(q.tbig, zero);
-    const mplapack_binary128_t above_tbig = nextafter(q.tbig, std::numeric_limits<mplapack_binary128_t>::infinity());
+    const mplapack_binary128_t minus_one = (mplapack_binary128_t)-1.0;
+    const mplapack_binary128_t delta = Rlamch_binary128("P");
+
+    const mplapack_binary128_t below_tsml = q.tsml * (one - delta);
+    const mplapack_binary128_t above_tsml = q.tsml * (one + delta);
+    const mplapack_binary128_t below_tbig = q.tbig * (one - delta);
+    const mplapack_binary128_t above_tbig = q.tbig * (one + delta);
 
     auto assert_case = [&](bool cond, const char *what) {
         if (cond)
@@ -2736,27 +2739,27 @@ template <typename BlueQ> static void check_blue_threshold_boundaries_binary128(
         exit(1);
     };
 
-    assert_case(below_tsml < q.tsml, "BlueScale boundary: nextbelow(tsml) is not < tsml");
-    assert_case(above_tsml > q.tsml, "BlueScale boundary: nextabove(tsml) is not > tsml");
-    assert_case(below_tbig < q.tbig, "BlueScale boundary: nextbelow(tbig) is not < tbig");
-    assert_case(above_tbig > q.tbig, "BlueScale boundary: nextabove(tbig) is not > tbig");
+    assert_case(below_tsml < q.tsml, "BlueScale boundary: below-tsml probe is not < tsml");
+    assert_case(above_tsml > q.tsml, "BlueScale boundary: above-tsml probe is not > tsml");
+    assert_case(below_tbig < q.tbig, "BlueScale boundary: below-tbig probe is not < tbig");
+    assert_case(above_tbig > q.tbig, "BlueScale boundary: above-tbig probe is not > tbig");
 
-    assert_case(classify_blue_binary128_value(q, below_tsml) == -1, "BlueScale boundary: nextbelow(tsml) must classify as small");
+    assert_case(classify_blue_binary128_value(q, below_tsml) == -1, "BlueScale boundary: below-tsml probe must classify as small");
     assert_case(classify_blue_binary128_value(q, q.tsml) == 0, "BlueScale boundary: tsml must classify as medium");
-    assert_case(classify_blue_binary128_value(q, above_tsml) == 0, "BlueScale boundary: nextabove(tsml) must classify as medium");
-    assert_case(classify_blue_binary128_value(q, below_tbig) == 0, "BlueScale boundary: nextbelow(tbig) must classify as medium");
+    assert_case(classify_blue_binary128_value(q, above_tsml) == 0, "BlueScale boundary: above-tsml probe must classify as medium");
+    assert_case(classify_blue_binary128_value(q, below_tbig) == 0, "BlueScale boundary: below-tbig probe must classify as medium");
     assert_case(classify_blue_binary128_value(q, q.tbig) == 0, "BlueScale boundary: tbig must classify as medium");
-    assert_case(classify_blue_binary128_value(q, above_tbig) == +1, "BlueScale boundary: nextabove(tbig) must classify as big");
+    assert_case(classify_blue_binary128_value(q, above_tbig) == +1, "BlueScale boundary: above-tbig probe must classify as big");
 
-    assert_case(classify_blue_binary128_value(q, -below_tsml) == -1, "BlueScale boundary: -nextbelow(tsml) must classify as small");
-    assert_case(classify_blue_binary128_value(q, -above_tbig) == +1, "BlueScale boundary: -nextabove(tbig) must classify as big");
+    assert_case(classify_blue_binary128_value(q, minus_one * below_tsml) == -1, "BlueScale boundary: negative below-tsml probe must classify as small");
+    assert_case(classify_blue_binary128_value(q, minus_one * above_tbig) == +1, "BlueScale boundary: negative above-tbig probe must classify as big");
     assert_case(classify_blue_binary128_value(q, zero) == -1, "BlueScale boundary: 0 must classify as small");
     assert_case(classify_blue_binary128_value(q, one) == 0, "BlueScale boundary: 1 must classify as medium");
 
     const mplapack_binary128_t scaled_small = below_tsml * q.ssml;
     const mplapack_binary128_t scaled_big = above_tbig * q.sbig;
-    assert_case(classify_blue_binary128_value(q, scaled_small) == 0, "BlueScale boundary: nextbelow(tsml) * ssml must classify as medium");
-    assert_case(classify_blue_binary128_value(q, scaled_big) == 0, "BlueScale boundary: nextabove(tbig) * sbig must classify as medium");
+    assert_case(classify_blue_binary128_value(q, scaled_small) == 0, "BlueScale boundary: below-tsml probe * ssml must classify as medium");
+    assert_case(classify_blue_binary128_value(q, scaled_big) == 0, "BlueScale boundary: above-tbig probe * sbig must classify as medium");
 }
 
 static void check_blue_scaling_binary128(const char *tag, int emin, int emax, int p, bool print_values) {

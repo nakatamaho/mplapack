@@ -104,26 +104,29 @@ namespace detail {
         return REAL(1) / result;
     }
 
-    // NOTE:
-    // Select the internal underflow-side power-of-two scaling constant as
-    // 2^min(emin-1, 1-emax), i.e. from the more negative exponent-side candidate.
-    // This internal safmin is not the same as the actual underflow threshold
-    // returned by Rlamch("U").
+    // Compute the internal scaling constant for the underflow side.
+    // Matches the Fortran reference:
+    //   safmin = radix ** max(minexponent-1, 1-maxexponent)
+    // i.e. the larger (less negative) of the two exponent candidates is selected.
+    // Note: this value is used internally for Blue scaling and is NOT
+    // the underflow threshold returned by Rlamch("S").
     template <class REAL>
     inline REAL compute_safmin(arithmetic_int emin, arithmetic_int emax) {
         const arithmetic_int exp_from_emin = emin - arithmetic_int(1);
         const arithmetic_int exp_from_emax = arithmetic_int(1) - emax;
 
         const arithmetic_int exp_safmin =
-            (exp_from_emin < exp_from_emax) ? exp_from_emin : exp_from_emax;
+            (exp_from_emin > exp_from_emax) ? exp_from_emin : exp_from_emax;
 
         return int_pow_base2<REAL>(exp_safmin);
     }
 
-    // Follow the original Fortran exponent selection for the internal
-    // overflow-side power-of-two scaling constant.
-    // This internal safmax is not the same as the actual overflow
-    // threshold returned by Rlamch("O").
+    // Compute the internal scaling constant for the overflow side.
+    // Matches the Fortran reference:
+    //   safmax = radix ** max(1-minexponent, maxexponent-1)
+    // i.e. the larger of the two exponent candidates is selected.
+    // Note: this value is used internally for Blue scaling and is NOT
+    // the overflow threshold returned by Rlamch("O").
     template <class REAL>
     inline REAL compute_safmax(arithmetic_int emin, arithmetic_int emax) {
         const arithmetic_int exp_up_from_emin = arithmetic_int(1) - emin;
