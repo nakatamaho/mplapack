@@ -1428,6 +1428,76 @@ static void assert_equal_qd(const char *tag, const char *name, const qd_real &go
     exit(1);
 }
 
+static void check_arithmetic_params_qd(const char *tag, bool print_values) {
+    const auto p = mplapack::get_arithmetic_params<qd_real>();
+    const auto q = mplapack::get_blue_scaling_params<qd_real>();
+    const auto q2 = mplapack::make_blue_scaling_params(p);
+
+    assert_equal_qd(tag, "params.E", p.eps, Rlamch_qd("E"));
+    assert_equal_qd(tag, "params.S", p.sfmin, Rlamch_qd("S"));
+    assert_equal_qd(tag, "params.B", p.base, Rlamch_qd("B"));
+    assert_equal_qd(tag, "params.P", p.prec, Rlamch_qd("P"));
+    assert_equal_qd(tag, "params.R", p.rnd, Rlamch_qd("R"));
+    assert_equal_qd(tag, "params.U", p.rmin, Rlamch_qd("U"));
+    assert_equal_qd(tag, "params.O", p.rmax, Rlamch_qd("O"));
+
+    assert_equal_qd(tag, "params.N", mplapack::detail::to_rlamch_real<qd_real>(p.t), Rlamch_qd("N"));
+    assert_equal_qd(tag, "params.M", mplapack::detail::to_rlamch_real<qd_real>(p.emin), Rlamch_qd("M"));
+    assert_equal_qd(tag, "params.L", mplapack::detail::to_rlamch_real<qd_real>(p.emax), Rlamch_qd("L"));
+
+    assert_equal_qd(tag, "params.prec_consistency", p.prec, p.eps * p.base);
+    assert_equal_qd(tag, "params.safmin", p.safmin, mplapack::detail::compute_safmin<qd_real>(p.emin, p.emax));
+    assert_equal_qd(tag, "params.safmax", p.safmax, mplapack::detail::compute_safmax<qd_real>(p.emin, p.emax));
+
+    qd_assert_case(q.exp_tsml == q2.exp_tsml, tag, "ArithmeticParams->Blue builder mismatch: exp_tsml");
+    qd_assert_case(q.exp_tbig == q2.exp_tbig, tag, "ArithmeticParams->Blue builder mismatch: exp_tbig");
+    qd_assert_case(q.exp_ssml == q2.exp_ssml, tag, "ArithmeticParams->Blue builder mismatch: exp_ssml");
+    qd_assert_case(q.exp_sbig == q2.exp_sbig, tag, "ArithmeticParams->Blue builder mismatch: exp_sbig");
+
+    assert_equal_qd(tag, "ArithmeticParams->Blue tsml", q.tsml, q2.tsml);
+    assert_equal_qd(tag, "ArithmeticParams->Blue tbig", q.tbig, q2.tbig);
+    assert_equal_qd(tag, "ArithmeticParams->Blue ssml", q.ssml, q2.ssml);
+    assert_equal_qd(tag, "ArithmeticParams->Blue sbig", q.sbig, q2.sbig);
+
+    if (print_values) {
+        char _spbuf[__MPLAPACK_BUFLEN__];
+        char _sphexbuf[__MPLAPACK_BUFLEN__];
+
+        dual_printf("[params/%s] t=%lld emin=%lld emax=%lld\n",
+                    tag, (long long)p.t, (long long)p.emin, (long long)p.emax);
+
+        sprintnum(_spbuf, p.safmin);
+        sprinthex_qd(_sphexbuf, sizeof(_sphexbuf), p.safmin);
+        dual_printf("[params/%s] safmin %70s    %70s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, p.safmax);
+        sprinthex_qd(_sphexbuf, sizeof(_sphexbuf), p.safmax);
+        dual_printf("[params/%s] safmax %70s    %70s\n", tag, _spbuf, _sphexbuf);
+
+        dual_printf("[params/%s] builder exp_tsml=%lld exp_tbig=%lld exp_ssml=%lld exp_sbig=%lld\n",
+                    tag,
+                    (long long)q2.exp_tsml, (long long)q2.exp_tbig,
+                    (long long)q2.exp_ssml, (long long)q2.exp_sbig);
+
+        sprintnum(_spbuf, q2.tsml);
+        sprinthex_qd(_sphexbuf, sizeof(_sphexbuf), q2.tsml);
+        dual_printf("[params/%s] builder tsml   %70s    %70s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q2.tbig);
+        sprinthex_qd(_sphexbuf, sizeof(_sphexbuf), q2.tbig);
+        dual_printf("[params/%s] builder tbig   %70s    %70s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q2.ssml);
+        sprinthex_qd(_sphexbuf, sizeof(_sphexbuf), q2.ssml);
+        dual_printf("[params/%s] builder ssml   %70s    %70s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q2.sbig);
+        sprinthex_qd(_sphexbuf, sizeof(_sphexbuf), q2.sbig);
+        dual_printf("[params/%s] builder sbig   %70s    %70s\n", tag, _spbuf, _sphexbuf);
+    }
+}
+
+
 struct LamchExpectedQD {
     qd_real E;
     qd_real S;
@@ -1779,6 +1849,7 @@ void Rlamch_qd_test() {
 #endif
 
     const char *tag = "qd_real";
+    check_arithmetic_params_qd(tag, print_values);
     check_lamch_qd_values(tag, print_values);
     check_blue_scaling_qd(tag, print_values);
 }
@@ -1843,6 +1914,75 @@ static void assert_equal_dd(const char *tag, const char *name, const dd_real &go
     printnum(expected);
     printf("\n");
     exit(1);
+}
+
+static void check_arithmetic_params_dd(const char *tag, bool print_values) {
+    const auto p = mplapack::get_arithmetic_params<dd_real>();
+    const auto q = mplapack::get_blue_scaling_params<dd_real>();
+    const auto q2 = mplapack::make_blue_scaling_params(p);
+
+    assert_equal_dd(tag, "params.E", p.eps, Rlamch_dd("E"));
+    assert_equal_dd(tag, "params.S", p.sfmin, Rlamch_dd("S"));
+    assert_equal_dd(tag, "params.B", p.base, Rlamch_dd("B"));
+    assert_equal_dd(tag, "params.P", p.prec, Rlamch_dd("P"));
+    assert_equal_dd(tag, "params.R", p.rnd, Rlamch_dd("R"));
+    assert_equal_dd(tag, "params.U", p.rmin, Rlamch_dd("U"));
+    assert_equal_dd(tag, "params.O", p.rmax, Rlamch_dd("O"));
+
+    assert_equal_dd(tag, "params.N", mplapack::detail::to_rlamch_real<dd_real>(p.t), Rlamch_dd("N"));
+    assert_equal_dd(tag, "params.M", mplapack::detail::to_rlamch_real<dd_real>(p.emin), Rlamch_dd("M"));
+    assert_equal_dd(tag, "params.L", mplapack::detail::to_rlamch_real<dd_real>(p.emax), Rlamch_dd("L"));
+
+    assert_equal_dd(tag, "params.prec_consistency", p.prec, p.eps * p.base);
+    assert_equal_dd(tag, "params.safmin", p.safmin, mplapack::detail::compute_safmin<dd_real>(p.emin, p.emax));
+    assert_equal_dd(tag, "params.safmax", p.safmax, mplapack::detail::compute_safmax<dd_real>(p.emin, p.emax));
+
+    dd_assert_case(q.exp_tsml == q2.exp_tsml, tag, "ArithmeticParams->Blue builder mismatch: exp_tsml");
+    dd_assert_case(q.exp_tbig == q2.exp_tbig, tag, "ArithmeticParams->Blue builder mismatch: exp_tbig");
+    dd_assert_case(q.exp_ssml == q2.exp_ssml, tag, "ArithmeticParams->Blue builder mismatch: exp_ssml");
+    dd_assert_case(q.exp_sbig == q2.exp_sbig, tag, "ArithmeticParams->Blue builder mismatch: exp_sbig");
+
+    assert_equal_dd(tag, "ArithmeticParams->Blue tsml", q.tsml, q2.tsml);
+    assert_equal_dd(tag, "ArithmeticParams->Blue tbig", q.tbig, q2.tbig);
+    assert_equal_dd(tag, "ArithmeticParams->Blue ssml", q.ssml, q2.ssml);
+    assert_equal_dd(tag, "ArithmeticParams->Blue sbig", q.sbig, q2.sbig);
+
+    if (print_values) {
+        char _spbuf[__MPLAPACK_BUFLEN__];
+        char _sphexbuf[__MPLAPACK_BUFLEN__];
+
+        dual_printf("[params/%s] t=%lld emin=%lld emax=%lld\n",
+                    tag, (long long)p.t, (long long)p.emin, (long long)p.emax);
+
+        sprintnum(_spbuf, p.safmin);
+        sprinthex_dd(_sphexbuf, sizeof(_sphexbuf), p.safmin);
+        dual_printf("[params/%s] safmin %40s    %40s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, p.safmax);
+        sprinthex_dd(_sphexbuf, sizeof(_sphexbuf), p.safmax);
+        dual_printf("[params/%s] safmax %40s    %40s\n", tag, _spbuf, _sphexbuf);
+
+        dual_printf("[params/%s] builder exp_tsml=%lld exp_tbig=%lld exp_ssml=%lld exp_sbig=%lld\n",
+                    tag,
+                    (long long)q2.exp_tsml, (long long)q2.exp_tbig,
+                    (long long)q2.exp_ssml, (long long)q2.exp_sbig);
+
+        sprintnum(_spbuf, q2.tsml);
+        sprinthex_dd(_sphexbuf, sizeof(_sphexbuf), q2.tsml);
+        dual_printf("[params/%s] builder tsml   %40s    %40s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q2.tbig);
+        sprinthex_dd(_sphexbuf, sizeof(_sphexbuf), q2.tbig);
+        dual_printf("[params/%s] builder tbig   %40s    %40s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q2.ssml);
+        sprinthex_dd(_sphexbuf, sizeof(_sphexbuf), q2.ssml);
+        dual_printf("[params/%s] builder ssml   %40s    %40s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q2.sbig);
+        sprinthex_dd(_sphexbuf, sizeof(_sphexbuf), q2.sbig);
+        dual_printf("[params/%s] builder sbig   %40s    %40s\n", tag, _spbuf, _sphexbuf);
+    }
 }
 
 // Expected values structure
@@ -2232,6 +2372,7 @@ void Rlamch_dd_test() {
 #endif
 
     const char *tag = "dd_real";
+    check_arithmetic_params_dd(tag, print_values);
     check_lamch_dd_values(tag, print_values);
     check_blue_scaling_dd(tag, print_values);
 }

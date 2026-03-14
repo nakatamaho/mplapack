@@ -32,15 +32,19 @@
 //   _max) must be in scope via <qd/qd_real.h> (pulled in through <mpblas.h>).
 //
 // qd_real is a quad-double type (unevaluated sum of 4 IEEE binary64 values).
-// Its exponent range is bounded by the double exponent range.  All values are
+// Its exponent range is bounded by the double exponent range. All values are
 // derived from the QD library constants without any call to std::pow.
 //
 // Key parameters:
 //   digits = std::numeric_limits<qd_real>::digits  (= 209)
 //   emin   = frexp(qd_real::_min_normalized) exponent  (= -862, runtime)
+//            NOTE: differs from std::numeric_limits<double>::min_exponent (= -1021).
+//            qd_real::_min_normalized requires all four components to remain
+//            within the normalized double range, which raises the effective
+//            minimum exponent of the leading component.
 //   emax   = std::numeric_limits<double>::max_exponent (= 1024, compile-time)
 //
-// Blue scaling exponents (using ceildiv2/floordiv2 on arithmetic_int):
+// Blue scaling exponents:
 //   exp_tsml = ceil((-862-1)/2)         = -431
 //   exp_tbig = floor((1024-209+1)/2)    =  408
 //   exp_ssml = -floor((-862-209)/2)     =  536
@@ -92,8 +96,14 @@ template <> inline ArithmeticParams<qd_real> get_arithmetic_params<qd_real>() {
     // QD uses IEEE double arithmetic internally; rounding occurs.
     p.rnd = one;
 
-    assert(std::numeric_limits<qd_real>::min_exponent == detail::emin_of(qd_real::_min_normalized));
-    p.emin = static_cast<arithmetic_int>(std::numeric_limits<qd_real>::min_exponent);
+    int emin_int = 0;
+    (void)std::frexp(qd_real::_min_normalized, &emin_int);
+    // Do NOT assert against std::numeric_limits<qd_real>::min_exponent:
+    // the QD library does not fully specialize std::numeric_limits<qd_real>,
+    // and min_exponent may return 0 (the unspecialized default).
+    // Use the frexp-derived value, consistent with the effective exponent
+    // range of qd_real::_min_normalized.
+    p.emin = static_cast<arithmetic_int>(emin_int);
     p.emax = static_cast<arithmetic_int>(std::numeric_limits<double>::max_exponent);
 
     p.rmin = qd_real::_min_normalized;

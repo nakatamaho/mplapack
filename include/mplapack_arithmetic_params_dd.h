@@ -32,18 +32,22 @@
 //   _max) must be in scope via <qd/dd_real.h> (pulled in through <mpblas.h>).
 //
 // dd_real is a double-double type (unevaluated sum of 2 IEEE binary64 values).
-// Its exponent range is the same as IEEE binary64.  All values are derived
-// from the QD library dd_real constants without any call to std::pow.
+// Its exponent range is bounded by the double exponent range. All values are
+// derived from the QD library constants without any call to std::pow.
 //
 // Key parameters:
 //   digits = std::numeric_limits<dd_real>::digits  (= 104)
-//   emin   = frexp(dd_real::_min_normalized) exponent  (= -1021, runtime)
+//   emin   = frexp(dd_real::_min_normalized) exponent  (= -968, runtime)
+//            NOTE: differs from std::numeric_limits<double>::min_exponent (= -1021).
+//            dd_real::_min_normalized requires both components to remain
+//            within the normalized double range, which raises the effective
+//            minimum exponent of the leading component.
 //   emax   = std::numeric_limits<double>::max_exponent (= 1024, compile-time)
 //
-// Blue scaling exponents (using ceildiv2/floordiv2 on arithmetic_int):
-//   exp_tsml = ceil((-1021-1)/2)        = -511
+// Blue scaling exponents:
+//   exp_tsml = ceil((-968-1)/2)         = -484
 //   exp_tbig = floor((1024-104+1)/2)    =  460
-//   exp_ssml = -floor((-1021-104)/2)    =  563
+//   exp_ssml = -floor((-968-104)/2)     =  536
 //   exp_sbig = -ceil((1024+104-1)/2)    = -564
 
 #include <cmath>
@@ -90,8 +94,14 @@ template <> inline ArithmeticParams<dd_real> get_arithmetic_params<dd_real>() {
     // DD uses IEEE double arithmetic internally; rounding occurs.
     p.rnd = one;
 
-    assert(std::numeric_limits<dd_real>::min_exponent == detail::emin_of(dd_real::_min_normalized));
-    p.emin = static_cast<arithmetic_int>(std::numeric_limits<dd_real>::min_exponent);
+    int emin_int = 0;
+    (void)std::frexp(dd_real::_min_normalized, &emin_int);
+    // Do NOT assert against std::numeric_limits<dd_real>::min_exponent:
+    // the QD library does not fully specialize std::numeric_limits<dd_real>
+    // and min_exponent may return 0 (the unspecialized default).
+    // Use the frexp-derived value, consistent with the effective exponent
+    // range of dd_real::_min_normalized.
+    p.emin = static_cast<arithmetic_int>(emin_int);
     p.emax = static_cast<arithmetic_int>(std::numeric_limits<double>::max_exponent);
 
     p.rmin = dd_real::_min_normalized;
