@@ -3160,10 +3160,13 @@ template <typename BlueQ> static int classify_blue_binary80_value(const BlueQ &q
 template <typename BlueQ> static void check_blue_threshold_boundaries_binary80(const char *tag, const BlueQ &q) {
     const mplapack_binary80_t zero = (mplapack_binary80_t)0.0;
     const mplapack_binary80_t one = (mplapack_binary80_t)1.0;
-    const mplapack_binary80_t below_tsml = nextafter(q.tsml, zero);
-    const mplapack_binary80_t above_tsml = nextafter(q.tsml, one);
-    const mplapack_binary80_t below_tbig = nextafter(q.tbig, zero);
-    const mplapack_binary80_t above_tbig = nextafter(q.tbig, q.ssml);
+    const mplapack_binary80_t minus_one = (mplapack_binary80_t)-1.0;
+    const mplapack_binary80_t delta = Rlamch_binary80("P");
+
+    const mplapack_binary80_t below_tsml = q.tsml * (one - delta);
+    const mplapack_binary80_t above_tsml = q.tsml * (one + delta);
+    const mplapack_binary80_t below_tbig = q.tbig * (one - delta);
+    const mplapack_binary80_t above_tbig = q.tbig * (one + delta);
 
     auto assert_case = [&](bool cond, const char *what) {
         if (cond)
@@ -3174,27 +3177,27 @@ template <typename BlueQ> static void check_blue_threshold_boundaries_binary80(c
         exit(1);
     };
 
-    assert_case(below_tsml < q.tsml, "BlueScale boundary: nextbelow(tsml) is not < tsml");
-    assert_case(above_tsml > q.tsml, "BlueScale boundary: nextabove(tsml) is not > tsml");
-    assert_case(below_tbig < q.tbig, "BlueScale boundary: nextbelow(tbig) is not < tbig");
-    assert_case(above_tbig > q.tbig, "BlueScale boundary: nextabove(tbig) is not > tbig");
+    assert_case(below_tsml < q.tsml, "BlueScale boundary: below-tsml probe is not < tsml");
+    assert_case(above_tsml > q.tsml, "BlueScale boundary: above-tsml probe is not > tsml");
+    assert_case(below_tbig < q.tbig, "BlueScale boundary: below-tbig probe is not < tbig");
+    assert_case(above_tbig > q.tbig, "BlueScale boundary: above-tbig probe is not > tbig");
 
-    assert_case(classify_blue_binary80_value(q, below_tsml) == -1, "BlueScale boundary: nextbelow(tsml) must classify as small");
+    assert_case(classify_blue_binary80_value(q, below_tsml) == -1, "BlueScale boundary: below-tsml probe must classify as small");
     assert_case(classify_blue_binary80_value(q, q.tsml) == 0, "BlueScale boundary: tsml must classify as medium");
-    assert_case(classify_blue_binary80_value(q, above_tsml) == 0, "BlueScale boundary: nextabove(tsml) must classify as medium");
-    assert_case(classify_blue_binary80_value(q, below_tbig) == 0, "BlueScale boundary: nextbelow(tbig) must classify as medium");
+    assert_case(classify_blue_binary80_value(q, above_tsml) == 0, "BlueScale boundary: above-tsml probe must classify as medium");
+    assert_case(classify_blue_binary80_value(q, below_tbig) == 0, "BlueScale boundary: below-tbig probe must classify as medium");
     assert_case(classify_blue_binary80_value(q, q.tbig) == 0, "BlueScale boundary: tbig must classify as medium");
-    assert_case(classify_blue_binary80_value(q, above_tbig) == +1, "BlueScale boundary: nextabove(tbig) must classify as big");
+    assert_case(classify_blue_binary80_value(q, above_tbig) == +1, "BlueScale boundary: above-tbig probe must classify as big");
 
-    assert_case(classify_blue_binary80_value(q, -below_tsml) == -1, "BlueScale boundary: -nextbelow(tsml) must classify as small");
-    assert_case(classify_blue_binary80_value(q, -above_tbig) == +1, "BlueScale boundary: -nextabove(tbig) must classify as big");
+    assert_case(classify_blue_binary80_value(q, minus_one * below_tsml) == -1, "BlueScale boundary: negative below-tsml probe must classify as small");
+    assert_case(classify_blue_binary80_value(q, minus_one * above_tbig) == +1, "BlueScale boundary: negative above-tbig probe must classify as big");
     assert_case(classify_blue_binary80_value(q, zero) == -1, "BlueScale boundary: 0 must classify as small");
     assert_case(classify_blue_binary80_value(q, one) == 0, "BlueScale boundary: 1 must classify as medium");
 
     const mplapack_binary80_t scaled_small = below_tsml * q.ssml;
     const mplapack_binary80_t scaled_big = above_tbig * q.sbig;
-    assert_case(classify_blue_binary80_value(q, scaled_small) == 0, "BlueScale boundary: nextbelow(tsml) * ssml must classify as medium");
-    assert_case(classify_blue_binary80_value(q, scaled_big) == 0, "BlueScale boundary: nextabove(tbig) * sbig must classify as medium");
+    assert_case(classify_blue_binary80_value(q, scaled_small) == 0, "BlueScale boundary: below-tsml probe * ssml must classify as medium");
+    assert_case(classify_blue_binary80_value(q, scaled_big) == 0, "BlueScale boundary: above-tbig probe * sbig must classify as medium");
 }
 
 static void check_blue_scaling_binary80(const char *tag, int emin, int emax, int p, bool print_values) {
@@ -3239,6 +3242,10 @@ static void check_blue_scaling_binary80(const char *tag, int emin, int emax, int
     assert_case(q.tsml < one, "BlueScale: tsml must be < 1");
     assert_case(q.tbig > one, "BlueScale: tbig must be > 1");
     assert_case(q.ssml > q.tbig, "BlueScale: ssml must be > tbig");
+    assert_case(q.tsml < q.tbig, "BlueScale: tsml must be < tbig");
+    assert_case(q.exp_sbig < q.exp_tsml, "BlueScale: exp_sbig must be < exp_tsml");
+    assert_case(q.exp_tsml < q.exp_tbig, "BlueScale: exp_tsml must be < exp_tbig");
+    assert_case(q.exp_tbig < q.exp_ssml, "BlueScale: exp_tbig must be < exp_ssml");
     assert_case(q.sbig > zero, "BlueScale: sbig must be positive");
     assert_case(q.sbig < q.tsml, "BlueScale: sbig must be < tsml");
 
@@ -3280,20 +3287,108 @@ static void check_blue_scaling_binary80(const char *tag, int emin, int emax, int
     }
 }
 
+static void check_arithmetic_params_binary80(const char *tag, bool print_values) {
+    auto fail = [&](const char *what) {
+        printf("*** Testing Mutils (mplapack_binary80_t) failed: %s: %s ***\n", tag, what);
+        exit(1);
+    };
+
+    auto assert_case = [&](bool cond, const char *what) {
+        if (!cond) {
+            fail(what);
+        }
+    };
+
+    auto assert_equal = [&](const char *name, mplapack_binary80_t got, mplapack_binary80_t expected) {
+        if (got == expected)
+            return;
+
+        printf("*** Testing Mutils (mplapack_binary80_t) failed: %s mismatch in %s ***\n", tag, name);
+        printf("    got      = ");
+        printnum(got);
+        printf("\n");
+        printf("    expected = ");
+        printnum(expected);
+        printf("\n");
+        exit(1);
+    };
+
+    const auto p = mplapack::get_arithmetic_params<mplapack_binary80_t>();
+    const auto q = mplapack::get_blue_scaling_params<mplapack_binary80_t>();
+    const auto q2 = mplapack::make_blue_scaling_params(p);
+
+    assert_equal("params.E", p.eps, Rlamch_binary80("E"));
+    assert_equal("params.S", p.sfmin, Rlamch_binary80("S"));
+    assert_equal("params.B", p.base, Rlamch_binary80("B"));
+    assert_equal("params.P", p.prec, Rlamch_binary80("P"));
+    assert_equal("params.R", p.rnd, Rlamch_binary80("R"));
+    assert_equal("params.U", p.rmin, Rlamch_binary80("U"));
+    assert_equal("params.O", p.rmax, Rlamch_binary80("O"));
+
+    assert_equal("params.N", mplapack::detail::to_rlamch_real<mplapack_binary80_t>(p.t), Rlamch_binary80("N"));
+    assert_equal("params.M", mplapack::detail::to_rlamch_real<mplapack_binary80_t>(p.emin), Rlamch_binary80("M"));
+    assert_equal("params.L", mplapack::detail::to_rlamch_real<mplapack_binary80_t>(p.emax), Rlamch_binary80("L"));
+
+    assert_equal("params.prec_consistency", p.prec, p.eps * p.base);
+    assert_equal("params.safmin", p.safmin, mplapack::detail::compute_safmin<mplapack_binary80_t>(p.emin, p.emax));
+    assert_equal("params.safmax", p.safmax, mplapack::detail::compute_safmax<mplapack_binary80_t>(p.emin, p.emax));
+
+    assert_case(q.exp_tsml == q2.exp_tsml, "ArithmeticParams->Blue builder mismatch: exp_tsml");
+    assert_case(q.exp_tbig == q2.exp_tbig, "ArithmeticParams->Blue builder mismatch: exp_tbig");
+    assert_case(q.exp_ssml == q2.exp_ssml, "ArithmeticParams->Blue builder mismatch: exp_ssml");
+    assert_case(q.exp_sbig == q2.exp_sbig, "ArithmeticParams->Blue builder mismatch: exp_sbig");
+
+    assert_equal("ArithmeticParams->Blue tsml", q.tsml, q2.tsml);
+    assert_equal("ArithmeticParams->Blue tbig", q.tbig, q2.tbig);
+    assert_equal("ArithmeticParams->Blue ssml", q.ssml, q2.ssml);
+    assert_equal("ArithmeticParams->Blue sbig", q.sbig, q2.sbig);
+
+    if (print_values) {
+        char _spbuf[__MPLAPACK_BUFLEN__];
+        char _sphexbuf[__MPLAPACK_BUFLEN__];
+
+        dual_printf("[params/%s] t=%lld emin=%lld emax=%lld\n",
+                    tag, (long long)p.t, (long long)p.emin, (long long)p.emax);
+
+        sprintnum(_spbuf, p.safmin);
+        sprinthex_binary80_fixed(_sphexbuf, sizeof(_sphexbuf), p.safmin);
+        dual_printf("[params/%s] safmin %40s    %40s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, p.safmax);
+        sprinthex_binary80_fixed(_sphexbuf, sizeof(_sphexbuf), p.safmax);
+        dual_printf("[params/%s] safmax %40s    %40s\n", tag, _spbuf, _sphexbuf);
+
+        dual_printf("[params/%s] builder exp_tsml=%lld exp_tbig=%lld exp_ssml=%lld exp_sbig=%lld\n",
+                    tag,
+                    (long long)q2.exp_tsml, (long long)q2.exp_tbig,
+                    (long long)q2.exp_ssml, (long long)q2.exp_sbig);
+
+        sprintnum(_spbuf, q2.tsml);
+        sprinthex_binary80_fixed(_sphexbuf, sizeof(_sphexbuf), q2.tsml);
+        dual_printf("[params/%s] builder tsml   %40s    %40s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q2.tbig);
+        sprinthex_binary80_fixed(_sphexbuf, sizeof(_sphexbuf), q2.tbig);
+        dual_printf("[params/%s] builder tbig   %40s    %40s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q2.ssml);
+        sprinthex_binary80_fixed(_sphexbuf, sizeof(_sphexbuf), q2.ssml);
+        dual_printf("[params/%s] builder ssml   %40s    %40s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q2.sbig);
+        sprinthex_binary80_fixed(_sphexbuf, sizeof(_sphexbuf), q2.sbig);
+        dual_printf("[params/%s] builder sbig   %40s    %40s\n", tag, _spbuf, _sphexbuf);
+    }
+}
+
 void Rlamch_binary80_test() {
 #if defined VERBOSE_TEST
     const bool print_values = true;
 #else
     const bool print_values = false;
 #endif
-
-#if MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_LDBL80
-    const char *tag = "long double(binary80)";
-#elif MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_FLOAT64X
-    const char *tag = "_Float64x";
-#else
-#error "unknown binary80 type"
-#endif
+    const char *tag = "binary80";
+    check_arithmetic_params_binary80(tag, print_values);
 
     auto fail = [&](const char *what) {
         printf("*** Testing Mutils (mplapack_binary80_t) failed: %s ***\n", what);
