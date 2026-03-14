@@ -2706,6 +2706,7 @@ void Rlamch_double_test() {
 
 #if defined ___MPLAPACK_BUILD_WITH_BINARY128___
 #include <cfenv> // std::fegetround, FE_TONEAREST
+#include <limits>
 
 template <typename BlueQ> static int classify_blue_binary128_value(const BlueQ &q, mplapack_binary128_t x) {
     const mplapack_binary128_t zero = (mplapack_binary128_t)0.0;
@@ -2724,7 +2725,7 @@ template <typename BlueQ> static void check_blue_threshold_boundaries_binary128(
     const mplapack_binary128_t below_tsml = nextafter(q.tsml, zero);
     const mplapack_binary128_t above_tsml = nextafter(q.tsml, one);
     const mplapack_binary128_t below_tbig = nextafter(q.tbig, zero);
-    const mplapack_binary128_t above_tbig = nextafter(q.tbig, q.ssml);
+    const mplapack_binary128_t above_tbig = nextafter(q.tbig, std::numeric_limits<mplapack_binary128_t>::infinity());
 
     auto assert_case = [&](bool cond, const char *what) {
         if (cond)
@@ -2801,6 +2802,7 @@ static void check_blue_scaling_binary128(const char *tag, int emin, int emax, in
     assert_case(q.tbig > one, "BlueScale: tbig must be > 1");
     assert_case(q.ssml > q.tbig, "BlueScale: ssml must be > tbig");
     assert_case(q.sbig > zero, "BlueScale: sbig must be positive");
+    assert_case(q.tsml < q.tbig, "BlueScale: tsml must be < tbig");
     assert_case(q.sbig < q.tsml, "BlueScale: sbig must be < tsml");
 
     const mplapack_binary128_t prod_ts = q.tsml * q.ssml;
@@ -2841,6 +2843,100 @@ static void check_blue_scaling_binary128(const char *tag, int emin, int emax, in
     }
 }
 
+static void check_arithmetic_params_binary128(const char *tag, bool print_values) {
+    auto fail = [&](const char *what) {
+        printf("*** Testing Mutils (binary128) failed: %s: %s ***\n", tag, what);
+        exit(1);
+    };
+
+    auto assert_case = [&](bool cond, const char *what) {
+        if (!cond) {
+            fail(what);
+        }
+    };
+
+    auto assert_equal = [&](const char *name, mplapack_binary128_t got, mplapack_binary128_t expected) {
+        if (got == expected)
+            return;
+
+        printf("*** Testing Mutils (binary128) failed: %s mismatch in %s ***\n", tag, name);
+        printf("    got      = ");
+        printnum(got);
+        printf("\n");
+        printf("    expected = ");
+        printnum(expected);
+        printf("\n");
+        exit(1);
+    };
+
+    const auto p = mplapack::get_arithmetic_params<mplapack_binary128_t>();
+    const auto q = mplapack::get_blue_scaling_params<mplapack_binary128_t>();
+    const auto q2 = mplapack::make_blue_scaling_params(p);
+
+    assert_equal("params.E", p.eps, Rlamch_binary128("E"));
+    assert_equal("params.S", p.sfmin, Rlamch_binary128("S"));
+    assert_equal("params.B", p.base, Rlamch_binary128("B"));
+    assert_equal("params.P", p.prec, Rlamch_binary128("P"));
+    assert_equal("params.R", p.rnd, Rlamch_binary128("R"));
+    assert_equal("params.U", p.rmin, Rlamch_binary128("U"));
+    assert_equal("params.O", p.rmax, Rlamch_binary128("O"));
+
+    assert_equal("params.N", mplapack::detail::to_rlamch_real<mplapack_binary128_t>(p.t), Rlamch_binary128("N"));
+    assert_equal("params.M", mplapack::detail::to_rlamch_real<mplapack_binary128_t>(p.emin), Rlamch_binary128("M"));
+    assert_equal("params.L", mplapack::detail::to_rlamch_real<mplapack_binary128_t>(p.emax), Rlamch_binary128("L"));
+
+    assert_equal("params.prec_consistency", p.prec, p.eps * p.base);
+    assert_equal("params.safmin", p.safmin, mplapack::detail::compute_safmin<mplapack_binary128_t>(p.emin, p.emax));
+    assert_equal("params.safmax", p.safmax, mplapack::detail::compute_safmax<mplapack_binary128_t>(p.emin, p.emax));
+
+    assert_case(q.exp_tsml == q2.exp_tsml, "ArithmeticParams->Blue builder mismatch: exp_tsml");
+    assert_case(q.exp_tbig == q2.exp_tbig, "ArithmeticParams->Blue builder mismatch: exp_tbig");
+    assert_case(q.exp_ssml == q2.exp_ssml, "ArithmeticParams->Blue builder mismatch: exp_ssml");
+    assert_case(q.exp_sbig == q2.exp_sbig, "ArithmeticParams->Blue builder mismatch: exp_sbig");
+
+    assert_equal("ArithmeticParams->Blue tsml", q.tsml, q2.tsml);
+    assert_equal("ArithmeticParams->Blue tbig", q.tbig, q2.tbig);
+    assert_equal("ArithmeticParams->Blue ssml", q.ssml, q2.ssml);
+    assert_equal("ArithmeticParams->Blue sbig", q.sbig, q2.sbig);
+
+    if (print_values) {
+        char _spbuf[__MPLAPACK_BUFLEN__];
+        char _sphexbuf[__MPLAPACK_BUFLEN__];
+
+        dual_printf("[params/%s] t=%lld emin=%lld emax=%lld\n",
+                    tag, (long long)p.t, (long long)p.emin, (long long)p.emax);
+
+        sprintnum(_spbuf, p.safmin);
+        sprinthex_binary128_fixed(_sphexbuf, sizeof(_sphexbuf), p.safmin);
+        dual_printf("[params/%s] safmin %50s    %50s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, p.safmax);
+        sprinthex_binary128_fixed(_sphexbuf, sizeof(_sphexbuf), p.safmax);
+        dual_printf("[params/%s] safmax %50s    %50s\n", tag, _spbuf, _sphexbuf);
+
+        dual_printf("[params/%s] builder exp_tsml=%lld exp_tbig=%lld exp_ssml=%lld exp_sbig=%lld\n",
+                    tag,
+                    (long long)q2.exp_tsml, (long long)q2.exp_tbig,
+                    (long long)q2.exp_ssml, (long long)q2.exp_sbig);
+
+        sprintnum(_spbuf, q2.tsml);
+        sprinthex_binary128_fixed(_sphexbuf, sizeof(_sphexbuf), q2.tsml);
+        dual_printf("[params/%s] builder tsml   %50s    %50s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q2.tbig);
+        sprinthex_binary128_fixed(_sphexbuf, sizeof(_sphexbuf), q2.tbig);
+        dual_printf("[params/%s] builder tbig   %50s    %50s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q2.ssml);
+        sprinthex_binary128_fixed(_sphexbuf, sizeof(_sphexbuf), q2.ssml);
+        dual_printf("[params/%s] builder ssml   %50s    %50s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q2.sbig);
+        sprinthex_binary128_fixed(_sphexbuf, sizeof(_sphexbuf), q2.sbig);
+        dual_printf("[params/%s] builder sbig   %50s    %50s\n", tag, _spbuf, _sphexbuf);
+    }
+}
+
 void Rlamch_binary128_test() {
 #if defined VERBOSE_TEST
     const bool print_values = true;
@@ -2849,6 +2945,7 @@ void Rlamch_binary128_test() {
 #endif
 
     const char *tag = "binary128";
+    check_arithmetic_params_binary128(tag, print_values);
 
     auto fail = [&](const char *what) {
         printf("*** Testing Mutils (binary128) failed: %s ***\n", what);
