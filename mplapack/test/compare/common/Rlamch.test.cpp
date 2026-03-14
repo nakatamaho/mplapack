@@ -918,6 +918,97 @@ static void gmp_assert_equal_real(const char *tag, const char *name, const REAL 
     exit(1);
 }
 
+static void check_arithmetic_params_gmp(const char *tag, mp_bitcnt_t prec_bits, bool print_values) {
+    // p.sfmin corresponds to Rlamch("S") = safe minimum.
+    // p.rmin corresponds to Rlamch("U") = underflow threshold.
+    // p.safmin/p.safmax are internal finite scaling-side constants used by ArithmeticParams.
+
+    const auto p = mplapack::get_arithmetic_params<REAL>();
+    const auto q = mplapack::get_blue_scaling_params<REAL>();
+    const auto q2 = mplapack::make_blue_scaling_params(p);
+
+    gmp_assert_equal_real(tag, "params.E", p.eps, Rlamch_gmp("E"));
+    gmp_assert_equal_real(tag, "params.S", p.sfmin, Rlamch_gmp("S"));
+    gmp_assert_equal_real(tag, "params.B", p.base, Rlamch_gmp("B"));
+    gmp_assert_equal_real(tag, "params.P", p.prec, Rlamch_gmp("P"));
+    gmp_assert_equal_real(tag, "params.R", p.rnd, Rlamch_gmp("R"));
+    gmp_assert_equal_real(tag, "params.U", p.rmin, Rlamch_gmp("U"));
+    gmp_assert_equal_real(tag, "params.O", p.rmax, Rlamch_gmp("O"));
+
+    gmp_assert_equal_real(tag, "params.N", mplapack::detail::to_rlamch_real<REAL>(p.t), Rlamch_gmp("N"));
+    gmp_assert_equal_real(tag, "params.M", mplapack::detail::to_rlamch_real<REAL>(p.emin), Rlamch_gmp("M"));
+    gmp_assert_equal_real(tag, "params.L", mplapack::detail::to_rlamch_real<REAL>(p.emax), Rlamch_gmp("L"));
+
+    gmp_assert_case(p.t == static_cast<mplapack::arithmetic_int>(prec_bits), tag, "ArithmeticParams.t mismatch");
+    gmp_assert_equal_real(tag, "params.prec_consistency", p.prec, p.eps * p.base);
+    gmp_assert_equal_real(tag, "params.safmin", p.safmin, mplapack::detail::compute_safmin<REAL>(p.emin, p.emax));
+    gmp_assert_equal_real(tag, "params.safmax", p.safmax, mplapack::detail::compute_safmax<REAL>(p.emin, p.emax));
+
+    gmp_assert_case(p.sfmin >= p.rmin, tag, "safe minimum must be >= underflow threshold");
+    gmp_assert_case(p.base > REAL(1.0), tag, "base must be > 1");
+    gmp_assert_case(p.eps > REAL(0.0), tag, "epsilon must be positive");
+    gmp_assert_case(p.prec > REAL(0.0), tag, "precision must be positive");
+    gmp_assert_case(p.rmin > REAL(0.0), tag, "underflow threshold must be positive");
+    gmp_assert_case(p.rmax > REAL(1.0), tag, "overflow threshold must be > 1");
+    gmp_assert_case(p.emin < p.emax, tag, "minimum exponent must be less than maximum exponent");
+
+    gmp_assert_case(q.exp_tsml == q2.exp_tsml, tag, "ArithmeticParams->Blue builder mismatch: exp_tsml");
+    gmp_assert_case(q.exp_tbig == q2.exp_tbig, tag, "ArithmeticParams->Blue builder mismatch: exp_tbig");
+    gmp_assert_case(q.exp_ssml == q2.exp_ssml, tag, "ArithmeticParams->Blue builder mismatch: exp_ssml");
+    gmp_assert_case(q.exp_sbig == q2.exp_sbig, tag, "ArithmeticParams->Blue builder mismatch: exp_sbig");
+
+    gmp_assert_equal_real(tag, "ArithmeticParams->Blue tsml", q.tsml, q2.tsml);
+    gmp_assert_equal_real(tag, "ArithmeticParams->Blue tbig", q.tbig, q2.tbig);
+    gmp_assert_equal_real(tag, "ArithmeticParams->Blue ssml", q.ssml, q2.ssml);
+    gmp_assert_equal_real(tag, "ArithmeticParams->Blue sbig", q.sbig, q2.sbig);
+
+    gmp_assert_case(q.tsml > REAL(0.0), tag, "Blue tsml must be positive");
+    gmp_assert_case(q.tbig > REAL(1.0), tag, "Blue tbig must be > 1");
+    gmp_assert_case(q.ssml > REAL(1.0), tag, "Blue ssml must be > 1");
+    gmp_assert_case(q.sbig > REAL(0.0), tag, "Blue sbig must be positive");
+    gmp_assert_case(q.sbig < REAL(1.0), tag, "Blue sbig must be < 1");
+    gmp_assert_case(q.tsml < q.tbig, tag, "Blue thresholds must satisfy tsml < tbig");
+    gmp_assert_case(q.exp_tsml < q.exp_tbig, tag, "Blue exponents must satisfy exp_tsml < exp_tbig");
+    gmp_assert_case(q.exp_sbig < q.exp_ssml, tag, "Blue exponents must satisfy exp_sbig < exp_ssml");
+
+    if (print_values) {
+        char _spbuf[__MPLAPACK_BUFLEN__];
+        char _sphexbuf[__MPLAPACK_BUFLEN__];
+
+        dual_printf("[params/%s] t=%lld emin=%lld emax=%lld\n",
+                    tag, (long long)p.t, (long long)p.emin, (long long)p.emax);
+
+        sprintnum(_spbuf, p.safmin);
+        sprinthex_gmp_fixed(_sphexbuf, sizeof(_sphexbuf), p.safmin);
+        dual_printf("[params/%s] safmin %130s    %130s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, p.safmax);
+        sprinthex_gmp_fixed(_sphexbuf, sizeof(_sphexbuf), p.safmax);
+        dual_printf("[params/%s] safmax %130s    %130s\n", tag, _spbuf, _sphexbuf);
+
+        dual_printf("[params/%s] builder exp_tsml=%lld exp_tbig=%lld exp_ssml=%lld exp_sbig=%lld\n",
+                    tag,
+                    (long long)q2.exp_tsml, (long long)q2.exp_tbig,
+                    (long long)q2.exp_ssml, (long long)q2.exp_sbig);
+
+        sprintnum(_spbuf, q2.tsml);
+        sprinthex_gmp_fixed(_sphexbuf, sizeof(_sphexbuf), q2.tsml);
+        dual_printf("[params/%s] builder tsml   %130s    %130s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q2.tbig);
+        sprinthex_gmp_fixed(_sphexbuf, sizeof(_sphexbuf), q2.tbig);
+        dual_printf("[params/%s] builder tbig   %130s    %130s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q2.ssml);
+        sprinthex_gmp_fixed(_sphexbuf, sizeof(_sphexbuf), q2.ssml);
+        dual_printf("[params/%s] builder ssml   %130s    %130s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q2.sbig);
+        sprinthex_gmp_fixed(_sphexbuf, sizeof(_sphexbuf), q2.sbig);
+        dual_printf("[params/%s] builder sbig   %130s    %130s\n", tag, _spbuf, _sphexbuf);
+    }
+}
+
 struct LamchExpectedGmp {
     REAL E; // "E"
     REAL S; // "S"
@@ -1257,6 +1348,7 @@ void Rlamch_gmp_test() {
     const REAL prec_probe = 1.0;
     const mp_bitcnt_t prec_bits = mpf_get_prec(prec_probe.get_mpf_t());
 
+    check_arithmetic_params_gmp("current", prec_bits, print_values);
     check_lamch_gmp_values("current", prec_bits, print_values);
     // Additional precision cases requested: 4096, 128, 64 bits.
     // Note: mpf_set_default_prec() sets the default for newly created mpf values.
@@ -1275,6 +1367,7 @@ void Rlamch_gmp_test() {
         char tagbuf[64];
         snprintf(tagbuf, sizeof(tagbuf), "prec=%llu (eff=%llu)", (unsigned long long)req, (unsigned long long)eff);
 
+        check_arithmetic_params_gmp(tagbuf, eff, print_values);
         check_lamch_gmp_values(tagbuf, eff, print_values);
 
         mpf_set_default_prec(saved);
