@@ -2278,6 +2278,75 @@ static void assert_equal_double(const char *tag, const char *name, double got, d
     exit(1);
 }
 
+static void check_arithmetic_params_double(const char *tag, bool print_values) {
+    const auto p = mplapack::get_arithmetic_params<double>();
+    const auto q = mplapack::get_blue_scaling_params<double>();
+    const auto q2 = mplapack::make_blue_scaling_params(p);
+
+    assert_equal_double(tag, "params.E", p.eps, Rlamch_double("E"));
+    assert_equal_double(tag, "params.S", p.sfmin, Rlamch_double("S"));
+    assert_equal_double(tag, "params.B", p.base, Rlamch_double("B"));
+    assert_equal_double(tag, "params.P", p.prec, Rlamch_double("P"));
+    assert_equal_double(tag, "params.R", p.rnd, Rlamch_double("R"));
+    assert_equal_double(tag, "params.U", p.rmin, Rlamch_double("U"));
+    assert_equal_double(tag, "params.O", p.rmax, Rlamch_double("O"));
+
+    assert_equal_double(tag, "params.N", mplapack::detail::to_rlamch_real<double>(p.t), Rlamch_double("N"));
+    assert_equal_double(tag, "params.M", mplapack::detail::to_rlamch_real<double>(p.emin), Rlamch_double("M"));
+    assert_equal_double(tag, "params.L", mplapack::detail::to_rlamch_real<double>(p.emax), Rlamch_double("L"));
+
+    assert_equal_double(tag, "params.prec_consistency", p.prec, p.eps * p.base);
+    assert_equal_double(tag, "params.safmin", p.safmin, mplapack::detail::compute_safmin<double>(p.emin, p.emax));
+    assert_equal_double(tag, "params.safmax", p.safmax, mplapack::detail::compute_safmax<double>(p.emin, p.emax));
+
+    double_assert_case(q.exp_tsml == q2.exp_tsml, tag, "ArithmeticParams->Blue builder mismatch: exp_tsml");
+    double_assert_case(q.exp_tbig == q2.exp_tbig, tag, "ArithmeticParams->Blue builder mismatch: exp_tbig");
+    double_assert_case(q.exp_ssml == q2.exp_ssml, tag, "ArithmeticParams->Blue builder mismatch: exp_ssml");
+    double_assert_case(q.exp_sbig == q2.exp_sbig, tag, "ArithmeticParams->Blue builder mismatch: exp_sbig");
+
+    assert_equal_double(tag, "ArithmeticParams->Blue tsml", q.tsml, q2.tsml);
+    assert_equal_double(tag, "ArithmeticParams->Blue tbig", q.tbig, q2.tbig);
+    assert_equal_double(tag, "ArithmeticParams->Blue ssml", q.ssml, q2.ssml);
+    assert_equal_double(tag, "ArithmeticParams->Blue sbig", q.sbig, q2.sbig);
+
+    if (print_values) {
+        char _spbuf[__MPLAPACK_BUFLEN__];
+        char _sphexbuf[__MPLAPACK_BUFLEN__];
+
+        dual_printf("[params/%s] t=%lld emin=%lld emax=%lld\n",
+                    tag, (long long)p.t, (long long)p.emin, (long long)p.emax);
+
+        sprintnum(_spbuf, p.safmin);
+        sprinthex_double(_sphexbuf, sizeof(_sphexbuf), p.safmin);
+        dual_printf("[params/%s] safmin %40s    %40s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, p.safmax);
+        sprinthex_double(_sphexbuf, sizeof(_sphexbuf), p.safmax);
+        dual_printf("[params/%s] safmax %40s    %40s\n", tag, _spbuf, _sphexbuf);
+
+        dual_printf("[params/%s] builder exp_tsml=%lld exp_tbig=%lld exp_ssml=%lld exp_sbig=%lld\n",
+                    tag,
+                    (long long)q2.exp_tsml, (long long)q2.exp_tbig,
+                    (long long)q2.exp_ssml, (long long)q2.exp_sbig);
+
+        sprintnum(_spbuf, q2.tsml);
+        sprinthex_double(_sphexbuf, sizeof(_sphexbuf), q2.tsml);
+        dual_printf("[params/%s] builder tsml   %40s    %40s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q2.tbig);
+        sprinthex_double(_sphexbuf, sizeof(_sphexbuf), q2.tbig);
+        dual_printf("[params/%s] builder tbig   %40s    %40s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q2.ssml);
+        sprinthex_double(_sphexbuf, sizeof(_sphexbuf), q2.ssml);
+        dual_printf("[params/%s] builder ssml   %40s    %40s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q2.sbig);
+        sprinthex_double(_sphexbuf, sizeof(_sphexbuf), q2.sbig);
+        dual_printf("[params/%s] builder sbig   %40s    %40s\n", tag, _spbuf, _sphexbuf);
+    }
+}
+
 // Expected values structure
 struct LamchExpectedDouble {
     double E; // eps (unit roundoff)
@@ -2628,6 +2697,7 @@ void Rlamch_double_test() {
 #endif
 
     const char *tag = "binary64";
+    check_arithmetic_params_double(tag, print_values);
     check_lamch_double_values(tag, print_values);
     check_blue_scaling_double(tag, print_values);
 }

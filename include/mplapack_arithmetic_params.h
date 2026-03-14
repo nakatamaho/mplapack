@@ -103,30 +103,81 @@ namespace detail {
         }
         return REAL(1) / result;
     }
+
     // NOTE:
-    // These helpers assume radix/base = 2 and compute exact powers of two
-    // from integer exponents without using std::pow.
+    // Select the internal underflow-side power-of-two scaling constant as
+    // 2^min(emin-1, 1-emax), i.e. from the more negative exponent-side candidate.
+    // This internal safmin is not the same as the actual underflow threshold
+    // returned by Rlamch("U").
     template <class REAL>
     inline REAL compute_safmin(arithmetic_int emin, arithmetic_int emax) {
-        const arithmetic_int exp_safmin = ((emin - arithmetic_int(1)) > (arithmetic_int(1) - emax))
-            ? (emin - arithmetic_int(1))
-            : (arithmetic_int(1) - emax);
+        const arithmetic_int exp_from_emin = emin - arithmetic_int(1);
+        const arithmetic_int exp_from_emax = arithmetic_int(1) - emax;
+
+        const arithmetic_int exp_safmin =
+            (exp_from_emin < exp_from_emax) ? exp_from_emin : exp_from_emax;
+
         return int_pow_base2<REAL>(exp_safmin);
     }
 
-    // Prefer a finite overflow-side power-of-two scale over the raw
-    // max(1-emin, emax-1) exponent formula, which may exceed the
-    // representable exponent range in non-IEEE-like environments.
+    // Follow the original Fortran exponent selection for the internal
+    // overflow-side power-of-two scaling constant.
+    // This internal safmax is not the same as the actual overflow
+    // threshold returned by Rlamch("O").
     template <class REAL>
     inline REAL compute_safmax(arithmetic_int emin, arithmetic_int emax) {
         const arithmetic_int exp_up_from_emin = arithmetic_int(1) - emin;
         const arithmetic_int exp_down_from_emax = emax - arithmetic_int(1);
 
         const arithmetic_int exp_safmax =
-            (exp_up_from_emin < exp_down_from_emax) ? exp_up_from_emin : exp_down_from_emax;
-
+            (exp_up_from_emin > exp_down_from_emax) ? exp_up_from_emin : exp_down_from_emax;
         return int_pow_base2<REAL>(exp_safmax);
     }
+
+    // GMP-specific exact power-of-two helper using mpf_mul_2exp/mpf_div_2exp.
+#if defined(__GNU_MPXX_H__) || defined(__GMP_PLUSPLUS__)
+    inline mpf_class int_pow_base2_gmp(arithmetic_int exp) {
+        mpf_class x(1, mpf_get_default_prec());
+        if (exp >= 0) {
+            mpf_mul_2exp(x.get_mpf_t(), x.get_mpf_t(), static_cast<mp_bitcnt_t>(exp));
+        } else {
+            mpf_div_2exp(x.get_mpf_t(), x.get_mpf_t(), static_cast<mp_bitcnt_t>(-exp));
+        }
+        return x;
+    }
+
+    // GMP-specific implementation path for the internal underflow-side scaling
+    // constant.  Use the same exponent-side selection rule as the generic helper,
+    // but construct the exact power-of-two value with mpf_mul_2exp/mpf_div_2exp.
+    template <>
+    inline mpf_class compute_safmin<mpf_class>(arithmetic_int emin, arithmetic_int emax) {
+        const arithmetic_int exp_from_emin = emin - arithmetic_int(1);
+        const arithmetic_int exp_from_emax = arithmetic_int(1) - emax;
+
+        const arithmetic_int exp_safmin =
+            (exp_from_emin < exp_from_emax) ? exp_from_emin : exp_from_emax;
+
+        return int_pow_base2_gmp(exp_safmin);
+    }
+
+    // GMP special-case:
+    // mpf_get_emin()/mpf_get_emax() may describe a much wider exponent interval
+    // than the finite power-of-two scaling range we want for MPLAPACK's internal
+    // safe-scaling constants.  For the overflow-side helper, using the larger
+    // exponent distance can make the internal scaling constant unnecessarily
+    // aggressive, so for mpf_class we conservatively use the smaller exponent-side
+    // distance.
+    template <>
+    inline mpf_class compute_safmax<mpf_class>(arithmetic_int emin, arithmetic_int emax) {
+        const arithmetic_int exp_up_from_emin = arithmetic_int(1) - emin;
+        const arithmetic_int exp_down_from_emax = emax - arithmetic_int(1);
+
+        const arithmetic_int exp_safmax =
+            (exp_up_from_emin < exp_down_from_emax) ? exp_up_from_emin : exp_down_from_emax;
+
+        return int_pow_base2_gmp(exp_safmax);
+    }
+#endif // defined(__GNU_MPXX_H__) || defined(__GMP_PLUSPLUS__)
 
     // Default conversion path for small integer Rlamch metadata.
     // This uses a double intermediate and is intended for backends where
@@ -179,16 +230,8 @@ template <class REAL> struct ArithmeticParams {
     arithmetic_int emin; // minimum exponent     [Rlamch "M"]
     arithmetic_int emax; // largest exponent     [Rlamch "L"]
 
-    // Choose the underflow-side power-of-two scale conservatively from the
-    // smaller of the distance from 1.0 down to the minimum exponent and the
-    // finite overflow-side headroom. This keeps safmin as a finite scaling
-    // constant that remains representable even when a raw exponent formula
-    // would cross the usable range in non-IEEE-like environments.
-    REAL safmin;
-    // Choose a finite overflow-side scale conservatively from the two
-    // exponent-side candidates. This intentionally prefers representability
-    // over the raw 2^max(1-emin, emax-1) formula in non-IEEE-like environments.
-    REAL safmax;
+    REAL safmin; // internal underflow-side power-of-two scaling constant
+    REAL safmax; // internal overflow-side power-of-two scaling constant
 };
 
 // ---------------------------------------------------------------------------
