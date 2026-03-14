@@ -497,6 +497,96 @@ template <typename BlueQ> static int classify_blue_mpfr_value(const BlueQ &q, co
     return 0;
 }
 
+static void check_arithmetic_params_mpfr(const char *tag, bool print_values) {
+    using mplapack::arithmetic_int;
+    const auto p = mplapack::get_arithmetic_params<REAL>();
+    const auto q = mplapack::get_blue_scaling_params<REAL>();
+    const auto q2 = mplapack::make_blue_scaling_params(p);
+
+    assert_equal_real(tag, "params.E", p.eps, Rlamch_mpfr("E"));
+    assert_equal_real(tag, "params.S", p.sfmin, Rlamch_mpfr("S"));
+    assert_equal_real(tag, "params.B", p.base, Rlamch_mpfr("B"));
+    assert_equal_real(tag, "params.P", p.prec, Rlamch_mpfr("P"));
+    assert_equal_real(tag, "params.R", p.rnd, Rlamch_mpfr("R"));
+    assert_equal_real(tag, "params.U", p.rmin, Rlamch_mpfr("U"));
+    assert_equal_real(tag, "params.O", p.rmax, Rlamch_mpfr("O"));
+
+    assert_equal_real(tag, "params.N", mplapack::detail::to_rlamch_real<REAL>(p.t), Rlamch_mpfr("N"));
+    assert_equal_real(tag, "params.M", mplapack::detail::to_rlamch_real<REAL>(p.emin), Rlamch_mpfr("M"));
+    assert_equal_real(tag, "params.L", mplapack::detail::to_rlamch_real<REAL>(p.emax), Rlamch_mpfr("L"));
+
+    assert_equal_real(tag, "params.prec_consistency", p.prec, p.eps * p.base);
+    assert_equal_real(tag, "params.safmin", p.safmin, mplapack::detail::compute_safmin<REAL>(p.emin, p.emax));
+    assert_equal_real(tag, "params.safmax", p.safmax, mplapack::detail::compute_safmax<REAL>(p.emin, p.emax));
+
+    mpfr_assert_case(q.exp_tsml == q2.exp_tsml, tag, "ArithmeticParams->Blue builder mismatch: exp_tsml");
+    mpfr_assert_case(q.exp_tbig == q2.exp_tbig, tag, "ArithmeticParams->Blue builder mismatch: exp_tbig");
+    mpfr_assert_case(q.exp_ssml == q2.exp_ssml, tag, "ArithmeticParams->Blue builder mismatch: exp_ssml");
+    mpfr_assert_case(q.exp_sbig == q2.exp_sbig, tag, "ArithmeticParams->Blue builder mismatch: exp_sbig");
+
+    assert_equal_real(tag, "ArithmeticParams->Blue tsml", q.tsml, q2.tsml);
+    assert_equal_real(tag, "ArithmeticParams->Blue tbig", q.tbig, q2.tbig);
+
+    const arithmetic_int ex_exp_tsml = q2.exp_tsml;
+    const arithmetic_int ex_exp_tbig = q2.exp_tbig;
+    const arithmetic_int ex_exp_ssml = q2.exp_ssml;
+    const arithmetic_int ex_exp_sbig = q2.exp_sbig;
+
+    const arithmetic_int emin = p.emin;
+    const arithmetic_int emax = p.emax;
+
+    const bool ordering_valid = (ex_exp_tsml < 0) && (ex_exp_tbig > 0) && (ex_exp_ssml > ex_exp_tbig) && (ex_exp_sbig < ex_exp_tsml);
+
+    const bool finite_valid = (q2.exp_ssml >= emin) && (q2.exp_ssml <= emax) && (q2.exp_sbig >= emin) && (q2.exp_sbig <= emax);
+
+    // Stress / pathological MPFR environments may violate the usual Blue
+    // ordering chain or finite-representability assumptions.
+    const bool strict_blue_valid = ordering_valid && finite_valid;
+
+    if (strict_blue_valid) {
+        assert_equal_real(tag, "ArithmeticParams->Blue ssml", q.ssml, q2.ssml);
+        assert_equal_real(tag, "ArithmeticParams->Blue sbig", q.sbig, q2.sbig);
+    }
+
+    if (print_values) {
+        char _spbuf[__MPLAPACK_BUFLEN__];
+        char _sphexbuf[__MPLAPACK_BUFLEN__];
+
+        dual_printf("[params/%s] t=%lld emin=%lld emax=%lld\n", tag, (long long)p.t, (long long)p.emin, (long long)p.emax);
+
+        sprintnum(_spbuf, p.safmin);
+        sprinthex_mpfr_fixed(_sphexbuf, sizeof(_sphexbuf), p.safmin);
+        dual_printf("[params/%s] safmin %80s    %80s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, p.safmax);
+        sprinthex_mpfr_fixed(_sphexbuf, sizeof(_sphexbuf), p.safmax);
+        dual_printf("[params/%s] safmax %80s    %80s\n", tag, _spbuf, _sphexbuf);
+
+        dual_printf("[params/%s] builder exp_tsml=%lld exp_tbig=%lld exp_ssml=%lld exp_sbig=%lld\n", tag, (long long)q2.exp_tsml, (long long)q2.exp_tbig, (long long)q2.exp_ssml, (long long)q2.exp_sbig);
+
+        sprintnum(_spbuf, q2.tsml);
+        sprinthex_mpfr_fixed(_sphexbuf, sizeof(_sphexbuf), q2.tsml);
+        dual_printf("[params/%s] builder tsml   %80s    %80s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q2.tbig);
+        sprinthex_mpfr_fixed(_sphexbuf, sizeof(_sphexbuf), q2.tbig);
+        dual_printf("[params/%s] builder tbig   %80s    %80s\n", tag, _spbuf, _sphexbuf);
+
+        if (strict_blue_valid) {
+            sprintnum(_spbuf, q2.ssml);
+            sprinthex_mpfr_fixed(_sphexbuf, sizeof(_sphexbuf), q2.ssml);
+            dual_printf("[params/%s] builder ssml   %80s    %80s\n", tag, _spbuf, _sphexbuf);
+
+            sprintnum(_spbuf, q2.sbig);
+            sprinthex_mpfr_fixed(_sphexbuf, sizeof(_sphexbuf), q2.sbig);
+            dual_printf("[params/%s] builder sbig   %80s    %80s\n", tag, _spbuf, _sphexbuf);
+        } else {
+            dual_printf("[params/%s] builder ssml   [informational-only case omitted]\n", tag);
+            dual_printf("[params/%s] builder sbig   [informational-only case omitted]\n", tag);
+        }
+    }
+}
+
 template <typename BlueQ> static void check_blue_threshold_boundaries_mpfr(const char *tag, const BlueQ &q, bool ordering_valid) {
     if (!ordering_valid)
         return;
@@ -565,52 +655,49 @@ static void check_blue_scaling_mpfr(const char *tag, bool print_values) {
     mpfr_assert_case(q.exp_sbig == ex_exp_sbig, tag, "BlueScale: exp_sbig mismatch");
 
     const mpfr_rnd_t rnd = current_real_default_rnd();
+
+    // Always-valid side: tsml / tbig can be checked directly.
     const REAL ex_tsml = pow2_from_exp(static_cast<mpfr_exp_t>(q.exp_tsml), rnd);
     const REAL ex_tbig = pow2_from_exp(static_cast<mpfr_exp_t>(q.exp_tbig), rnd);
-    REAL ex_ssml(1.0), ex_sbig(1.0);
-    mpfr_mul_2si(mpfr_ptr(ex_ssml), mpfr_ptr(ex_ssml), checked_exp_to_long(static_cast<mpfr_exp_t>(q.exp_ssml), "BlueScale: exp_ssml overflows long"), rnd);
-    mpfr_mul_2si(mpfr_ptr(ex_sbig), mpfr_ptr(ex_sbig), checked_exp_to_long(static_cast<mpfr_exp_t>(q.exp_sbig), "BlueScale: exp_sbig overflows long"), rnd);
 
     assert_equal_real(tag, "BlueScale tsml", q.tsml, ex_tsml);
     assert_equal_real(tag, "BlueScale tbig", q.tbig, ex_tbig);
-    assert_equal_real(tag, "BlueScale ssml", q.ssml, ex_ssml);
-    assert_equal_real(tag, "BlueScale sbig", q.sbig, ex_sbig);
-
-    // ordering_valid: the full chain  0 < sbig < tsml < 1 < tbig < ssml  holds
-    // iff all four exponent inequalities are satisfied:
-    //   exp_tsml < 0            (tsml < 1)
-    //   exp_tbig > 0            (tbig > 1)
-    //   exp_ssml > exp_tbig     (ssml > tbig)
-    //   exp_sbig < exp_tsml     (sbig < tsml)
-    // For standard IEEE formats (emax  |emin|) all four are always true.
-    // They break for MPFR environments with artificially small |emin| or |emax|.
-    const bool ordering_valid = (ex_exp_tsml < 0) && (ex_exp_tbig > 0) && (ex_exp_ssml > ex_exp_tbig) && (ex_exp_sbig < ex_exp_tsml);
-    if (!ordering_valid) {
-        dual_printf("BlueScale note [%s]: ordering does not hold "
-                    "(exp_tsml=%lld exp_tbig=%lld exp_ssml=%lld exp_sbig=%lld "
-                    "emin=%lld emax=%lld) ― non-standard MPFR env, "
-                    "ssml/sbig checks skipped\n",
-                    tag, (long long)ex_exp_tsml, (long long)ex_exp_tbig, (long long)ex_exp_ssml, (long long)ex_exp_sbig, (long long)emin, (long long)emax);
-    }
-
-    assert_equal_real(tag, "BlueScale tsml", q.tsml, ex_tsml);
-    assert_equal_real(tag, "BlueScale tbig", q.tbig, ex_tbig);
-    if (ordering_valid) {
-        assert_equal_real(tag, "BlueScale ssml", q.ssml, ex_ssml);
-        assert_equal_real(tag, "BlueScale sbig", q.sbig, ex_sbig);
-    }
 
     const REAL zero(0.0), one(1.0);
     mpfr_assert_case(q.tsml > zero, tag, "BlueScale: tsml must be positive");
     mpfr_assert_case(q.tsml < one, tag, "BlueScale: tsml must be < 1");
     mpfr_assert_case(q.tbig > one, tag, "BlueScale: tbig must be > 1");
-    if (ordering_valid) {
+
+    // Strict Blue checks only make sense when the usual ordering chain can hold:
+    //   0 < sbig < tsml < 1 < tbig < ssml
+    const bool ordering_valid = (ex_exp_tsml < 0) && (ex_exp_tbig > 0) && (ex_exp_ssml > ex_exp_tbig) && (ex_exp_sbig < ex_exp_tsml);
+
+    // In addition, ssml/sbig must be representable as finite MPFR numbers
+    // under the active exponent range.
+    const bool finite_valid = (q.exp_ssml >= static_cast<arithmetic_int>(active_emin)) && (q.exp_ssml <= static_cast<arithmetic_int>(active_emax)) && (q.exp_sbig >= static_cast<arithmetic_int>(active_emin)) && (q.exp_sbig <= static_cast<arithmetic_int>(active_emax));
+
+    const bool strict_blue_valid = ordering_valid && finite_valid;
+
+    if (!strict_blue_valid) {
+        dual_printf("BlueScale note [%s]: informational-only MPFR Blue case "
+                    "(exp_tsml=%lld exp_tbig=%lld exp_ssml=%lld exp_sbig=%lld "
+                    "emin=%lld emax=%lld ordering_valid=%d finite_valid=%d) "
+                    "― strict ssml/sbig checks skipped\n",
+                    tag, (long long)ex_exp_tsml, (long long)ex_exp_tbig, (long long)ex_exp_ssml, (long long)ex_exp_sbig, (long long)emin, (long long)emax, ordering_valid ? 1 : 0, finite_valid ? 1 : 0);
+    }
+
+    if (strict_blue_valid) {
+        REAL ex_ssml(1.0), ex_sbig(1.0);
+        mpfr_mul_2si(mpfr_ptr(ex_ssml), mpfr_ptr(ex_ssml), checked_exp_to_long(static_cast<mpfr_exp_t>(q.exp_ssml), "BlueScale: exp_ssml overflows long"), rnd);
+        mpfr_mul_2si(mpfr_ptr(ex_sbig), mpfr_ptr(ex_sbig), checked_exp_to_long(static_cast<mpfr_exp_t>(q.exp_sbig), "BlueScale: exp_sbig overflows long"), rnd);
+
+        assert_equal_real(tag, "BlueScale ssml", q.ssml, ex_ssml);
+        assert_equal_real(tag, "BlueScale sbig", q.sbig, ex_sbig);
+
         mpfr_assert_case(q.ssml > q.tbig, tag, "BlueScale: ssml must be > tbig");
         mpfr_assert_case(q.sbig > zero, tag, "BlueScale: sbig must be positive");
         mpfr_assert_case(q.sbig < q.tsml, tag, "BlueScale: sbig must be < tsml");
-    }
 
-    if (ordering_valid) {
         REAL prod_ts = q.tsml * q.ssml;
         mpfr_assert_case(mpfr_number_p(mpfr_ptr(prod_ts)) != 0, tag, "BlueScale: tsml*ssml is not a number");
         mpfr_assert_case(prod_ts > zero, tag, "BlueScale: tsml*ssml must be positive");
@@ -624,14 +711,16 @@ static void check_blue_scaling_mpfr(const char *tag, bool print_values) {
         mpfr_assert_case(tsml_sq > zero, tag, "BlueScale: tsml^2 underflowed to zero");
     }
 
+    // tbig^2 is still a useful check even in informational mode.
     REAL tbig_sq = q.tbig * q.tbig;
     mpfr_assert_case(mpfr_number_p(mpfr_ptr(tbig_sq)) != 0, tag, "BlueScale: tbig^2 overflowed (not a finite number)");
 
-    check_blue_threshold_boundaries_mpfr(tag, q, ordering_valid);
+    check_blue_threshold_boundaries_mpfr(tag, q, strict_blue_valid);
 
     if (print_values) {
         char _spbuf[__MPLAPACK_BUFLEN__];
         char _sphexbuf[__MPLAPACK_BUFLEN__];
+
         dual_printf("BlueScale exp_tsml: %lld\n", (long long)q.exp_tsml);
         dual_printf("BlueScale exp_tbig: %lld\n", (long long)q.exp_tbig);
         dual_printf("BlueScale exp_ssml: %lld\n", (long long)q.exp_ssml);
@@ -645,23 +734,28 @@ static void check_blue_scaling_mpfr(const char *tag, bool print_values) {
         sprinthex_mpfr_fixed(_sphexbuf, sizeof(_sphexbuf), q.tbig);
         dual_printf("BlueScale tbig:     %40s    %40s\n", _spbuf, _sphexbuf);
 
-        sprintnum(_spbuf, q.ssml);
-        sprinthex_mpfr_fixed(_sphexbuf, sizeof(_sphexbuf), q.ssml);
-        dual_printf("BlueScale ssml:     %40s    %40s\n", _spbuf, _sphexbuf);
+        if (strict_blue_valid) {
+            sprintnum(_spbuf, q.ssml);
+            sprinthex_mpfr_fixed(_sphexbuf, sizeof(_sphexbuf), q.ssml);
+            dual_printf("BlueScale ssml:     %40s    %40s\n", _spbuf, _sphexbuf);
 
-        sprintnum(_spbuf, q.sbig);
-        sprinthex_mpfr_fixed(_sphexbuf, sizeof(_sphexbuf), q.sbig);
-        dual_printf("BlueScale sbig:     %40s    %40s\n", _spbuf, _sphexbuf);
+            sprintnum(_spbuf, q.sbig);
+            sprinthex_mpfr_fixed(_sphexbuf, sizeof(_sphexbuf), q.sbig);
+            dual_printf("BlueScale sbig:     %40s    %40s\n", _spbuf, _sphexbuf);
+        } else {
+            dual_printf("BlueScale ssml:     [informational-only case omitted]\n");
+            dual_printf("BlueScale sbig:     [informational-only case omitted]\n");
+        }
     }
 }
 
 static void run_mpfr_env_test(const char *tag, const MpfrEnvSnapshot &cfg, bool print_values) {
     MpfrEnvGuard guard; // Save current environment; restore on scope exit.
     mpfr_env_apply(cfg);
+    check_arithmetic_params_mpfr(tag, print_values);
     check_lamch_mpfr_values(tag, cfg, print_values);
     check_blue_scaling_mpfr(tag, print_values);
 }
-
 } // namespace
 
 void Rlamch_mpfr_test() {

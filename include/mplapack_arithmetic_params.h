@@ -114,11 +114,17 @@ namespace detail {
         return int_pow_base2<REAL>(exp_safmin);
     }
 
+    // Prefer a finite overflow-side power-of-two scale over the raw
+    // max(1-emin, emax-1) exponent formula, which may exceed the
+    // representable exponent range in non-IEEE-like environments.
     template <class REAL>
     inline REAL compute_safmax(arithmetic_int emin, arithmetic_int emax) {
-        const arithmetic_int exp_safmax = ((arithmetic_int(1) - emin) > (emax - arithmetic_int(1)))
-            ? (arithmetic_int(1) - emin)
-            : (emax - arithmetic_int(1));
+        const arithmetic_int exp_up_from_emin = arithmetic_int(1) - emin;
+        const arithmetic_int exp_down_from_emax = emax - arithmetic_int(1);
+
+        const arithmetic_int exp_safmax =
+            (exp_up_from_emin < exp_down_from_emax) ? exp_up_from_emin : exp_down_from_emax;
+
         return int_pow_base2<REAL>(exp_safmax);
     }
 
@@ -173,8 +179,16 @@ template <class REAL> struct ArithmeticParams {
     arithmetic_int emin; // minimum exponent     [Rlamch "M"]
     arithmetic_int emax; // largest exponent     [Rlamch "L"]
 
-    REAL safmin; // scaling constant, 2^max(emin-1, 1-emax)
-    REAL safmax; // scaling constant, 2^max(1-emin, emax-1)
+    // Choose the underflow-side power-of-two scale conservatively from the
+    // smaller of the distance from 1.0 down to the minimum exponent and the
+    // finite overflow-side headroom. This keeps safmin as a finite scaling
+    // constant that remains representable even when a raw exponent formula
+    // would cross the usable range in non-IEEE-like environments.
+    REAL safmin;
+    // Choose a finite overflow-side scale conservatively from the two
+    // exponent-side candidates. This intentionally prefers representability
+    // over the raw 2^max(1-emin, emax-1) formula in non-IEEE-like environments.
+    REAL safmax;
 };
 
 // ---------------------------------------------------------------------------

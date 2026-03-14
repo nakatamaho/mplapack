@@ -41,6 +41,10 @@ namespace detail {
 // The caller is responsible for applying the MPFR exponent clamping that
 // MPLAPACK normally applies before calling Rlamch (e.g., truncating the
 // exponent range to ±(prec * 64) to avoid bisection pathologies).
+//
+// Use a finite conservative overflow-side scale instead of the raw
+// 2^max(1-emin, emax-1) formula, which may overflow for non-IEEE-like
+// exponent ranges (e.g. MPFR/GMP stress environments).
 // ---------------------------------------------------------------------------
 template <> inline ArithmeticParams<mpfr::mpreal> get_arithmetic_params<mpfr::mpreal>() {
     using REAL = mpfr::mpreal;
@@ -49,15 +53,15 @@ template <> inline ArithmeticParams<mpfr::mpreal> get_arithmetic_params<mpfr::mp
     const REAL one(1.0);
 
     const arithmetic_int nbits = static_cast<arithmetic_int>(one.get_prec());
-    const arithmetic_int emin  = static_cast<arithmetic_int>(one.get_emin());
-    const arithmetic_int emax  = static_cast<arithmetic_int>(one.get_emax());
+    const arithmetic_int emin = static_cast<arithmetic_int>(one.get_emin());
+    const arithmetic_int emax = static_cast<arithmetic_int>(one.get_emax());
 
     // eps = 2^(-nbits)
-    p.eps  = mul_2si(one, -static_cast<mp_exp_t>(nbits));
+    p.eps = mul_2si(one, -static_cast<mp_exp_t>(nbits));
     p.base = REAL(2.0);
     p.prec = p.eps * p.base;
 
-    p.t   = nbits;
+    p.t = nbits;
     p.rnd = (mpfr_get_default_rounding_mode() == MPFR_RNDZ) ? REAL(0.0) : REAL(1.0);
 
     p.emin = emin;
