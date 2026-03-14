@@ -1880,7 +1880,6 @@ namespace {
 // -----------------------------------------------------------------------------
 
 constexpr int DD_MANTISSA_BITS = std::numeric_limits<dd_real>::digits;
-constexpr int DD_EMIN = std::numeric_limits<double>::min_exponent; // -1021
 constexpr int DD_EMAX = std::numeric_limits<double>::max_exponent; // 1024
 
 // Fail/assert utilities
