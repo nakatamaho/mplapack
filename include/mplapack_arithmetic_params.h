@@ -47,6 +47,7 @@
 // =============================================================================
 
 #include <cstdint>
+#include <cstdio>
 
 namespace mplapack {
 
@@ -182,6 +183,47 @@ namespace detail {
     }
 #endif // defined(__GNU_MPXX_H__) || defined(__GMP_PLUSPLUS__)
 
+    // Warn when exponent-range conditions required by the internal
+    // Blue scaling guards are violated. For the derived internal
+    // power-of-two guards, the intended ordering is safmin <= 1 <= safmax.
+    // This check is mainly relevant to runtime-configurable exponent ranges
+    // (for example, MPFR). Fixed-parameter backends normally keep emin/emax
+    // constant and should not hit this path in normal use.
+    inline void warn_if_invalid_blue_scaling_exp_range(arithmetic_int emin, arithmetic_int emax) {
+        const bool invalid_range = (emin >= emax);
+        const bool emin_above_one = (emin > 1);
+        const bool emax_below_one = (emax < 1);
+
+        if (!invalid_range && !emin_above_one && !emax_below_one)
+            return;
+
+        if (invalid_range) {
+            std::fprintf(stderr,
+			 "[mplapack WARNING] Blue scaling: invalid exponent range: emin=%jd, emax=%jd "
+                         "(expected emin < emax); cannot derive consistent internal Blue-scaling thresholds.\n",
+			 static_cast<std::intmax_t>(emin), static_cast<std::intmax_t>(emax));
+            return;
+        }
+
+        if (emin_above_one) {
+            std::fprintf(stderr,
+			 "[mplapack WARNING] Blue scaling: emin=%jd, emax=%jd: emin > 1 violates the expected "
+                         "internal Blue-scaling ordering safmin <= 1 <= safmax; the derived internal guards become "
+                         "safmin > 1.0 and safmax < 1.0.\n",
+                         static_cast<std::intmax_t>(emin), static_cast<std::intmax_t>(emax));
+
+        }
+
+        if (emax_below_one) {
+            std::fprintf(stderr,
+			 "[mplapack WARNING] Blue scaling: emin=%jd, emax=%jd: emax < 1 violates the expected "
+                         "internal Blue-scaling ordering safmin <= 1 <= safmax; the derived internal guards become "
+                         "safmin > 1.0 and safmax < 1.0.\n",
+                         static_cast<std::intmax_t>(emin), static_cast<std::intmax_t>(emax));
+
+        }
+    }
+
     // Default conversion path for small integer Rlamch metadata.
     // This uses a double intermediate and is intended for backends where
     // t/emin/emax are well within the exactly representable range of double.
@@ -266,6 +308,7 @@ template <class REAL> struct BlueScalingParams {
 // Assumes ap.base == 2 and uses exact powers of two via int_pow_base2.
 template <class REAL>
 inline BlueScalingParams<REAL> make_blue_scaling_params(const ArithmeticParams<REAL> &ap) {
+    detail::warn_if_invalid_blue_scaling_exp_range(ap.emin, ap.emax);
     BlueScalingParams<REAL> q;
 
     q.exp_tsml = detail::ceildiv2(ap.emin - arithmetic_int(1));
