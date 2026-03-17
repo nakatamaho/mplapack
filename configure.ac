@@ -1495,6 +1495,16 @@ CXXFLAGS="$save_CXXFLAGS"
 
 AC_SUBST([QD_EXTRA_CXXFLAGS], [$qd_extra_cxxflags])
 
+dnl DD backend requires the same FP-contraction suppression as the QD library.
+dnl For GCC/Clang: -ffp-contract=off (already probed in qd_extra_cxxflags).
+dnl For Intel icpx: -fp-model strict is already injected into global CXXFLAGS,
+dnl but we add it here explicitly for DD_CXXFLAGS consumers to be self-contained.
+DD_CXXFLAGS="$qd_extra_cxxflags"
+if test x"$is_intelcxx" = x"1"; then
+    DD_CXXFLAGS="$DD_CXXFLAGS -fp-model strict"
+fi
+AC_SUBST([DD_CXXFLAGS])
+
 AC_ARG_WITH(system-qd,
 AS_HELP_STRING([--with-system-qd=PREFIX],
 	    [ ="yes" if it is at the default location (/usr/local/lib), or alternative prefix path to qd library]
