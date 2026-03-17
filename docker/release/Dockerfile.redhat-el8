@@ -27,7 +27,7 @@ ENV FC="ccache gfortran"
 
 ENV MPLAPACK_REPO=https://github.com/nakatamaho/mplapack.git
 # Branch name or commit SHA. Example: release/2.1 or a full SHA.
-ENV MPLAPACK_REF="release/2.1"
+ENV MPLAPACK_REF="master"
 
 WORKDIR /work
 
@@ -51,9 +51,9 @@ CMD ["/bin/bash", "-lc", "\
     \
     ARCH=$(uname -m); \
     echo \"Detected architecture: $ARCH\"; \
-    COMMON_OPTS=\"--enable-gmp=yes --enable-mpfr=yes --enable-binary128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes --enable-benchmark=yes\"; \
+    COMMON_OPTS=\"--enable-gmp=yes --enable-mpfr=yes --enable-binary128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes\"; \
     if [ \"$ARCH\" = \"x86_64\" ] || [ \"$ARCH\" = \"i686\" ] || [ \"$ARCH\" = \"i386\" ]; then \
-        CONFIGURE_OPTS=\"$COMMON_OPTS --enable-binary80=yes\"; \
+        CONFIGURE_OPTS=\"$COMMON_OPTS --enable-benchmark=yes --enable-binary80=yes\"; \
     else \
         CONFIGURE_OPTS=\"$COMMON_OPTS\"; \
     fi; \
@@ -62,6 +62,9 @@ CMD ["/bin/bash", "-lc", "\
     ./configure $CONFIGURE_OPTS; \
     make -j\"$(nproc)\"; \
     make install; \
-    make dist; \
+    if [ \"$ARCH\" = \"x86_64\" ] || [ \"$ARCH\" = \"i686\" ] || [ \"$ARCH\" = \"i386\" ]; then \
+        echo '=== Running make check ==='; \
+        make check -j32; \
+    fi; \
     echo '=== ccache stats (after) ==='; ccache -s; \
 "]
