@@ -34,8 +34,8 @@ EXCLUDE_BASENAMES=(
   "${EXCLUDE_BASENAMES_MISC[@]}"
 )
 
-# Files to keep in mpblas/reference when cleaning old generated outputs
-KEEP_REFERENCE_FILES=(
+# Hand-maintained files to keep when cleaning old generated outputs.
+KEEP_HAND_WRITTEN_FILES=(
   Mxerbla.cpp
   Mlsame.cpp
   mplapackinit.cpp
@@ -86,10 +86,20 @@ find_args=(
   "${MPBLAS_REF}"
   -maxdepth 1
   -type f
-  "(" -name '*.cpp' -o -name '*.hpp' -o -name '*.h' ")"
+    "("
+      -name '*.cpp'  -o
+      -name '*.hpp'  -o
+      -name '*.h'    -o
+      -name '*.lo'   -o
+      -name '*.o'    -o
+      -name '*.orig' -o
+      -name '*.rej'  -o
+      -name '*~'     -o
+      -name '#*#'
+    ")"
 )
 
-for keep in "${KEEP_REFERENCE_FILES[@]}"; do
+for keep in "${KEEP_HAND_WRITTEN_FILES[@]}"; do
   find_args+=( ! -name "${keep}" )
 done
 

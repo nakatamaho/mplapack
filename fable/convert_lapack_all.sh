@@ -96,14 +96,17 @@ EXCLUDE_BASENAMES=(
   "${EXCLUDE_BASENAMES_MISC[@]}"
 )
 
-# Files to keep in mplapack/reference when cleaning old generated outputs
-KEEP_REFERENCE_FILES=(
+# Hand-maintained files to keep when cleaning old generated outputs.
+KEEP_HAND_WRITTEN_FILES=(
   Mmaxloc.cpp
   Mlsamen.cpp
   Mmaxval.cpp
   Mminval.cpp
+  Mxerbla.cpp
+  Mxlaenv.cpp
   Rlamch.cpp
   Rlaruv.cpp
+  iMlaenv.cpp
   iMladiag.cpp
   iMlaver.cpp
 )
@@ -148,20 +151,42 @@ done
 #    bash "$FABLE_CONVERT" "$src"
 #done
 
-MPLAPACK_REF="${ROOT}/mplapack/reference"
-
-find_args=(
-  "${MPLAPACK_REF}"
-  -maxdepth 1
-  -type f
-  "(" -name '*.cpp' -o -name '*.hpp' -o -name '*.h' ")"
+GENERATED_CLEAN_DIRS=(
+  "${ROOT}/mplapack/reference"
+  "${ROOT}/mplapack/test/lin/common"
+  "${ROOT}/mplapack/test/eig/common"
 )
 
-for keep in "${KEEP_REFERENCE_FILES[@]}"; do
-  find_args+=( ! -name "${keep}" )
-done
+# Keep the hand-maintained iMlaenv.cpp in common test outputs, but remove the
+# stale generated copy left in mplapack/reference from the previous output layout.
+rm -f "${ROOT}/mplapack/reference/iMlaenv.cpp"
 
-find "${find_args[@]}" -print -delete
+for target_dir in "${GENERATED_CLEAN_DIRS[@]}"; do
+  [ -d "${target_dir}" ] || continue
+
+  find_args=(
+    "${target_dir}"
+    -maxdepth 1
+    -type f
+    "("
+      -name '*.cpp'  -o
+      -name '*.hpp'  -o
+      -name '*.h'    -o
+      -name '*.lo'   -o
+      -name '*.o'    -o
+      -name '*.orig' -o
+      -name '*.rej'  -o
+      -name '*~'     -o
+      -name '#*#'
+    ")"
+  )
+
+  for keep in "${KEEP_HAND_WRITTEN_FILES[@]}"; do
+    find_args+=( ! -name "${keep}" )
+  done
+
+  find "${find_args[@]}" -print -delete
+done
 
 export FABLE_CONVERT
 parallel -j "${JOBS:-$(nproc)}" '
