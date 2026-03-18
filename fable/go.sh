@@ -274,6 +274,66 @@ for pass in $(seq 1 "${PASSES}"); do
   fi
 done
 
+# Apply manually maintained post-conversion fixes for routines that are
+# not yet handled correctly by cout.py or the post-conversion scripts.
 bash "${FABLE}/patch_lapack_${LAPACK_VERSION}.sh"
+
+# Regenerate explicit reference source lists in Makefile.am from the
+# current set of reference/*.cpp files.
+regen_makefile_sources() {
+  local makefile_am="$1"
+  local reference_dir="$2"
+  local variable_name="$3"
+
+  python3 - "$makefile_am" "$reference_dir" "$variable_name" <<'PY'
+from pathlib import Path
+import sys
+
+makefile_am = Path(sys.argv[1])
+reference_dir = Path(sys.argv[2])
+variable_name = sys.argv[3]
+
+cpp_files = sorted(path.name for path in reference_dir.glob("*.cpp"))
+if not cpp_files:
+    raise SystemExit(f"No .cpp files found in {reference_dir}")
+
+lines = makefile_am.read_text().splitlines(keepends=True)
+
+start = None
+prefix = f"{variable_name} = "
+for i, line in enumerate(lines):
+    if line.startswith(prefix):
+        start = i
+        break
+
+if start is None:
+    raise SystemExit(f"{variable_name} block not found in {makefile_am}")
+
+end = start + 1
+while end <= len(lines) and lines[end - 1].rstrip().endswith("\\"):
+    if end == len(lines):
+        raise SystemExit(f"Unterminated {variable_name} block in {makefile_am}")
+    end += 1
+
+replacement = []
+for i, name in enumerate(cpp_files):
+    current_prefix = prefix if i == 0 else "  "
+    current_suffix = " \\\n" if i != len(cpp_files) - 1 else "\n"
+    replacement.append(f"{current_prefix}{name}{current_suffix}")
+
+lines[start:end] = replacement
+makefile_am.write_text("".join(lines))
+PY
+}
+
+regen_makefile_sources \
+  "${ROOT}/mpblas/reference/Makefile.am" \
+  "${ROOT}/mpblas/reference" \
+  "MPBLAS_SOURCES"
+
+regen_makefile_sources \
+  "${ROOT}/mplapack/reference/Makefile.am" \
+  "${ROOT}/mplapack/reference" \
+  "MPLAPACK_SOURCES"
 
 echo "ALL DONE"
