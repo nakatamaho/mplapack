@@ -103,7 +103,7 @@ for keep in "${KEEP_HAND_WRITTEN_FILES[@]}"; do
   find_args+=( ! -name "${keep}" )
 done
 
-find "${find_args[@]}" -print -delete
+find "${find_args[@]}" -delete
 
 export FABLE_CONVERT
 parallel -j "${JOBS:-$(nproc)}" '

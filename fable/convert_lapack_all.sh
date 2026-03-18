@@ -106,6 +106,7 @@ KEEP_HAND_WRITTEN_FILES=(
   Mxlaenv.cpp
   Rlamch.cpp
   Rlaruv.cpp
+  Rlaran.cpp
   iMlaenv.cpp
   iMladiag.cpp
   iMlaver.cpp
@@ -153,8 +154,6 @@ done
 
 GENERATED_CLEAN_DIRS=(
   "${ROOT}/mplapack/reference"
-  "${ROOT}/mplapack/test/lin/common"
-  "${ROOT}/mplapack/test/eig/common"
 )
 
 # Keep the hand-maintained iMlaenv.cpp in common test outputs, but remove the
@@ -185,7 +184,7 @@ for target_dir in "${GENERATED_CLEAN_DIRS[@]}"; do
     find_args+=( ! -name "${keep}" )
   done
 
-  find "${find_args[@]}" -print -delete
+  find "${find_args[@]}" -delete
 done
 
 export FABLE_CONVERT

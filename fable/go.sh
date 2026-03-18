@@ -315,11 +315,10 @@ while end <= len(lines) and lines[end - 1].rstrip().endswith("\\"):
         raise SystemExit(f"Unterminated {variable_name} block in {makefile_am}")
     end += 1
 
-replacement = []
+replacement = [f"{variable_name} = \\\n"]
 for i, name in enumerate(cpp_files):
-    current_prefix = prefix if i == 0 else "  "
     current_suffix = " \\\n" if i != len(cpp_files) - 1 else "\n"
-    replacement.append(f"{current_prefix}{name}{current_suffix}")
+    replacement.append(f"{name}{current_suffix}")
 
 lines[start:end] = replacement
 makefile_am.write_text("".join(lines))
