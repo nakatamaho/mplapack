@@ -111,8 +111,6 @@ void Cchktr(bool *dotype, mplapackint const nn, mplapackint *nval, mplapackint c
 void Cchktsqr(mpreal const thresh, bool const tsterr, mplapackint const nm, mplapackint *mval, mplapackint const nn, mplapackint *nval, mplapackint const nnb, mplapackint *nbval, mplapackint const nout);
 void Cchktz(bool *dotype, mplapackint const nm, mplapackint *mval, mplapackint const nn, mplapackint *nval, mpreal const thresh, bool const tsterr, mpcomplex *a, mpcomplex *copya, mpreal *s, mpcomplex *tau, mpcomplex *work, mpreal *rwork, mplapackint const nout);
 void Cchkunhr_col(mpreal const thresh, bool const tsterr, mplapackint const nm, mplapackint *mval, mplapackint const nn, mplapackint *nval, mplapackint const nnb, mplapackint *nbval, mplapackint const nout);
-void Cdrvab(bool *dotype, mplapackint const nm, mplapackint *mval, mplapackint const nns, mplapackint *nsval, mpreal const thresh, mplapackint const, mpcomplex *a, mpcomplex *afac, mpcomplex *b, mpcomplex *x, mpcomplex *work, mpreal *rwork, mpcomplex *swork, mplapackint *iwork, mplapackint const nout);
-void Cdrvac(bool *dotype, mplapackint const nm, mplapackint *mval, mplapackint const nns, mplapackint *nsval, mpreal const thresh, mplapackint const, mpcomplex *a, mpcomplex *afac, mpcomplex *b, mpcomplex *x, mpcomplex *work, mpreal *rwork, mpcomplex *swork, mplapackint const nout);
 void Cdrvgb(bool *dotype, mplapackint const nn, mplapackint *nval, mplapackint const nrhs, mpreal const thresh, bool const tsterr, mpcomplex *a, mplapackint const la, mpcomplex *afb, mplapackint const lafb, mpcomplex *asav, mpcomplex *b, mpcomplex *bsav, mpcomplex *x, mpcomplex *xact, mpreal *s, mpcomplex *work, mpreal *rwork, mplapackint *iwork, mplapackint const nout);
 void Cdrvge(bool *dotype, mplapackint const nn, mplapackint *nval, mplapackint const nrhs, mpreal const thresh, bool const tsterr, mplapackint const nmax, mpcomplex *a, mpcomplex *afac, mpcomplex *asav, mpcomplex *b, mpcomplex *bsav, mpcomplex *x, mpcomplex *xact, mpreal *s, mpcomplex *work, mpreal *rwork, mplapackint *iwork, mplapackint const nout);
 void Cdrvgt(bool *dotype, mplapackint const nn, mplapackint *nval, mplapackint const nrhs, mpreal const thresh, bool const tsterr, mpcomplex *a, mpcomplex *af, mpcomplex *b, mpcomplex *x, mpcomplex *xact, mpcomplex *work, mpreal *rwork, mplapackint *iwork, mplapackint const nout);
@@ -138,9 +136,6 @@ void Cdrvsy_aa(bool *dotype, mplapackint const nn, mplapackint *nval, mplapackin
 void Cdrvsy_aa_2stage(bool *dotype, mplapackint const nn, mplapackint *nval, mplapackint const nrhs, mpreal const thresh, bool const tsterr, mplapackint const nmax, mpcomplex *a, mpcomplex *afac, mpcomplex *ainv, mpcomplex *b, mpcomplex *x, mpcomplex *xact, mpcomplex *work, mpreal *rwork, mplapackint *iwork, mplapackint const nout);
 void Cdrvsy_rk(bool *dotype, mplapackint const nn, mplapackint *nval, mplapackint const nrhs, mpreal const thresh, bool const tsterr, mplapackint const nmax, mpcomplex *a, mpcomplex *afac, mpcomplex *e, mpcomplex *ainv, mpcomplex *b, mpcomplex *x, mpcomplex *xact, mpcomplex *work, mpreal *rwork, mplapackint *iwork, mplapackint const nout);
 void Cdrvsy_rook(bool *dotype, mplapackint const nn, mplapackint *nval, mplapackint const nrhs, mpreal const thresh, bool const tsterr, mplapackint const nmax, mpcomplex *a, mpcomplex *afac, mpcomplex *ainv, mpcomplex *b, mpcomplex *x, mpcomplex *xact, mpcomplex *work, mpreal *rwork, mplapackint *iwork, mplapackint const nout);
-void Cebchvxx(mpreal const thresh, fem::str_cref path);
-void Cerrab(mplapackint const nunit);
-void Cerrac(mplapackint const nunit);
 void Cerrge(fem::str_cref path, mplapackint const nunit);
 void Cerrgt(fem::str_cref path, mplapackint const nunit);
 void Cerrhe(fem::str_cref path, mplapackint const nunit);
@@ -297,8 +292,6 @@ void Rchktp(bool *dotype, mplapackint const nn, mplapackint *nval, mplapackint c
 void Rchktr(bool *dotype, mplapackint const nn, mplapackint *nval, mplapackint const nnb, mplapackint *nbval, mplapackint const nns, mplapackint *nsval, mpreal const thresh, bool const tsterr, mplapackint const, mpreal *a, mpreal *ainv, mpreal *b, mpreal *x, mpreal *xact, mpreal *work, mpreal *rwork, mplapackint *iwork, mplapackint const nout);
 void Rchktsqr(mpreal const thresh, bool const tsterr, mplapackint const nm, mplapackint *mval, mplapackint const nn, mplapackint *nval, mplapackint const nnb, mplapackint *nbval, mplapackint const nout);
 void Rchktz(bool *dotype, mplapackint const nm, mplapackint *mval, mplapackint const nn, mplapackint *nval, mpreal const thresh, bool const tsterr, mpreal *a, mpreal *copya, mpreal *s, mpreal *tau, mpreal *work, mplapackint const nout);
-void Rdrvab(bool *dotype, mplapackint const nm, mplapackint *mval, mplapackint const nns, mplapackint *nsval, mpreal const thresh, mplapackint const, mpreal *a, mpreal *afac, mpreal *b, mpreal *x, mpreal *work, mpreal *rwork, mpreal *swork, mplapackint *iwork, mplapackint const nout);
-void Rdrvac(bool *dotype, mplapackint const nm, mplapackint *mval, mplapackint const nns, mplapackint *nsval, mpreal const thresh, mplapackint const, mpreal *a, mpreal *afac, mpreal *b, mpreal *x, mpreal *work, mpreal *rwork, mpreal *swork, mplapackint const nout);
 void Rdrvgb(bool *dotype, mplapackint const nn, mplapackint *nval, mplapackint const nrhs, mpreal const thresh, bool const tsterr, mpreal *a, mplapackint const la, mpreal *afb, mplapackint const lafb, mpreal *asav, mpreal *b, mpreal *bsav, mpreal *x, mpreal *xact, mpreal *s, mpreal *work, mpreal *rwork, mplapackint *iwork, mplapackint const nout);
 void Rdrvge(bool *dotype, mplapackint const nn, mplapackint *nval, mplapackint const nrhs, mpreal const thresh, bool const tsterr, mplapackint const nmax, mpreal *a, mpreal *afac, mpreal *asav, mpreal *b, mpreal *bsav, mpreal *x, mpreal *xact, mpreal *s, mpreal *work, mpreal *rwork, mplapackint *iwork, mplapackint const nout);
 void Rdrvgt(bool *dotype, mplapackint const nn, mplapackint *nval, mplapackint const nrhs, mpreal const thresh, bool const tsterr, mpreal *a, mpreal *af, mpreal *b, mpreal *x, mpreal *xact, mpreal *work, mpreal *rwork, mplapackint *iwork, mplapackint const nout);
@@ -318,9 +311,6 @@ void Rdrvsy_aa(bool *dotype, mplapackint const nn, mplapackint *nval, mplapackin
 void Rdrvsy_aa_2stage(bool *dotype, mplapackint const nn, mplapackint *nval, mplapackint const nrhs, mpreal const thresh, bool const tsterr, mplapackint const nmax, mpreal *a, mpreal *afac, mpreal *ainv, mpreal *b, mpreal *x, mpreal *xact, mpreal *work, mpreal *rwork, mplapackint *iwork, mplapackint const nout);
 void Rdrvsy_rk(bool *dotype, mplapackint const nn, mplapackint *nval, mplapackint const nrhs, mpreal const thresh, bool const tsterr, mplapackint const nmax, mpreal *a, mpreal *afac, mpreal *e, mpreal *ainv, mpreal *b, mpreal *x, mpreal *xact, mpreal *work, mpreal *rwork, mplapackint *iwork, mplapackint const nout);
 void Rdrvsy_rook(bool *dotype, mplapackint const nn, mplapackint *nval, mplapackint const nrhs, mpreal const thresh, bool const tsterr, mplapackint const nmax, mpreal *a, mpreal *afac, mpreal *ainv, mpreal *b, mpreal *x, mpreal *xact, mpreal *work, mpreal *rwork, mplapackint *iwork, mplapackint const nout);
-void Rebchvxx(mpreal const thresh, fem::str_cref path);
-void Rerrab(mplapackint const nunit);
-void Rerrac(mplapackint const nunit);
 void Rerrge(fem::str_cref path, mplapackint const nunit);
 void Rerrgt(fem::str_cref path, mplapackint const nunit);
 void Rerrlq(fem::str_cref path, mplapackint const nunit);
