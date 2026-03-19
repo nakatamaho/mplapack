@@ -110,6 +110,18 @@ KEEP_HAND_WRITTEN_FILES=(
   iMlaenv.cpp
   iMladiag.cpp
   iMlaver.cpp
+  iMlaver.cpp.in
+  Makefile
+  Makefile.am
+  Makefile.in
+  mplapack.h.in
+  mplapack_binary128.h.in
+  mplapack_binary80.h.in
+  mplapack_dd.h.in
+  mplapack_double.h.in
+  mplapack_gmp.h.in
+  mplapack_mpfr.h.in
+  mplapack_qd.h.in
 )
 
 # ------------------------------------------------------------
@@ -168,15 +180,7 @@ for target_dir in "${GENERATED_CLEAN_DIRS[@]}"; do
     -maxdepth 1
     -type f
     "("
-      -name '*.cpp'  -o
-      -name '*.hpp'  -o
-      -name '*.h'    -o
-      -name '*.lo'   -o
-      -name '*.o'    -o
-      -name '*.orig' -o
-      -name '*.rej'  -o
-      -name '*~'     -o
-      -name '#*#'
+      -name '*'
     ")"
   )
 
@@ -186,6 +190,9 @@ for target_dir in "${GENERATED_CLEAN_DIRS[@]}"; do
 
   find "${find_args[@]}" -delete
 done
+
+echo "MPLAPACK dir has been cleaned up"
+ls "${ROOT}/mplapack/reference"
 
 export FABLE_CONVERT
 parallel -j "${JOBS:-$(nproc)}" '

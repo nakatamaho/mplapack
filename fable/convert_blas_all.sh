@@ -39,6 +39,17 @@ KEEP_HAND_WRITTEN_FILES=(
   Mxerbla.cpp
   Mlsame.cpp
   mplapackinit.cpp
+  mpblas.h.in
+  mpblas_binary128.h.in
+  mpblas_binary80.h.in
+  mpblas_dd.h.in
+  mpblas_double.h.in
+  mpblas_gmp.h.in
+  mpblas_mpfr.h.in
+  mpblas_qd.h.in
+  Makefile.am
+  Makefile.in
+  Makefile
 )
 
 # ------------------------------------------------------------
@@ -87,15 +98,7 @@ find_args=(
   -maxdepth 1
   -type f
     "("
-      -name '*.cpp'  -o
-      -name '*.hpp'  -o
-      -name '*.h'    -o
-      -name '*.lo'   -o
-      -name '*.o'    -o
-      -name '*.orig' -o
-      -name '*.rej'  -o
-      -name '*~'     -o
-      -name '#*#'
+      -name '*'
     ")"
 )
 
@@ -104,6 +107,9 @@ for keep in "${KEEP_HAND_WRITTEN_FILES[@]}"; do
 done
 
 find "${find_args[@]}" -delete
+
+echo "MPBLAS dir has been cleaned up"
+ls "${MPBLAS_REF}"
 
 export FABLE_CONVERT
 parallel -j "${JOBS:-$(nproc)}" '

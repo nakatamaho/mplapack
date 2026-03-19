@@ -34,6 +34,33 @@ KEEP_HAND_WRITTEN_FILES=(
   Mxlaenv.cpp
   iMlaenv.cpp
   Rlaran.cpp
+  mplapack_eig.h.in
+  mplapack_eig_binary128.h.in
+  mplapack_eig_binary80.h.in
+  mplapack_eig_dd.h.in
+  mplapack_eig_double.h.in
+  mplapack_eig_gmp.h.in
+  mplapack_eig_mpfr.h.in
+  mplapack_eig_qd.h.in
+  mplapack_lin.h.in
+  mplapack_lin_binary128.h.in
+  mplapack_lin_binary80.h.in
+  mplapack_lin_dd.h.in
+  mplapack_lin_double.h.in
+  mplapack_lin_gmp.h.in
+  mplapack_lin_mpfr.h.in
+  mplapack_lin_qd.h.in
+  mplapack_matgen.h.in
+  mplapack_matgen_binary128.h.in
+  mplapack_matgen_binary80.h.in
+  mplapack_matgen_dd.h.in
+  mplapack_matgen_double.h.in
+  mplapack_matgen_gmp.h.in
+  mplapack_matgen_mpfr.h.in
+  mplapack_matgen_qd.h.in
+  Makefile.am
+  Makefile.in
+  Makefile
 )
 
 GENERATED_CLEAN_DIRS=(
@@ -50,15 +77,7 @@ for target_dir in "${GENERATED_CLEAN_DIRS[@]}"; do
     -maxdepth 1
     -type f
     "("
-      -name '*.cpp'  -o
-      -name '*.hpp'  -o
-      -name '*.h'    -o
-      -name '*.lo'   -o
-      -name '*.o'    -o
-      -name '*.orig' -o
-      -name '*.rej'  -o
-      -name '*~'     -o
-      -name '#*#'
+      -name '*'
     ")"
   )
 
@@ -68,6 +87,11 @@ for target_dir in "${GENERATED_CLEAN_DIRS[@]}"; do
 
   find "${find_args[@]}" -delete
 done
+
+echo "MPLAPACK testdirs have been cleaned up"
+ls "${ROOT}/mplapack/test/lin/common"
+ls "${ROOT}/mplapack/test/eig/common"
+ls "${ROOT}/mplapack/test/matgen"
 
 PASSES="${1:-2}"
 
