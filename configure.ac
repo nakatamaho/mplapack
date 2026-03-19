@@ -790,24 +790,27 @@ fi
 
 # on older gcc's abs(__float128) appears with gnu++17 extension
 dnl Check whether std::abs(__float128) exists.
+dnl Do not rely on __SIZEOF_FLOAT128__ here: on some Power targets it is not a
+dnl reliable proxy for whether C++ __float128 is actually usable, and the
+dnl compile test itself already answers the question.
 AC_LANG_PUSH([C++])
 AC_MSG_CHECKING([for std::abs(__float128)])
+if test "x$have___float128" = "xyes"; then
 AC_COMPILE_IFELSE(
   [AC_LANG_SOURCE([[
 #include <cmath>
 int main() {
-#if !defined(__SIZEOF_FLOAT128__)
-#error "__float128 is not available"
-#endif
-  __float128 x = 0;
-  auto y = std::abs(x);
-  (void)y;
+  auto p = static_cast<__float128 (*)(__float128)>(&std::abs);
+  (void)p;
   return 0;
 }
 ]])],
   [mplapack_have_std_abs_float128=yes],
   [mplapack_have_std_abs_float128=no]
 )
+else
+  mplapack_have_std_abs_float128=no
+fi
 AC_MSG_RESULT([$mplapack_have_std_abs_float128])
 AS_IF([test "x$mplapack_have_std_abs_float128" = "xyes"],
   [AC_DEFINE([MPLAPACK_HAVE_STD_ABS_FLOAT128],[1],
