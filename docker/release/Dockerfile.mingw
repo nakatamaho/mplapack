@@ -91,7 +91,7 @@ CMD ["/bin/bash", "-lc", "\
     make install; \
     if [ \"$ARCH\" = \"amd64\" ] || [ \"$ARCH\" = \"i386\" ]; then \
         echo '=== Running make check ==='; \
-        make check -j\"$(nproc)\"; \
+        LOG_COMPILER=wine make check -j\"$(nproc)\"; \
     fi; \
     echo '=== ccache stats (after) ==='; ccache -s || true; \
 "]
