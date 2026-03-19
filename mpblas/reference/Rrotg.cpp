@@ -28,40 +28,54 @@
 
 // Derived from BLAS routine DROTG.
 // Original BLAS authors:
-//   Univ. of Tennessee
-//   Univ. of California Berkeley
-//   Univ. of Colorado Denver
+//   Univ. of Tennessee,
+//   Univ. of California Berkeley,
+//   Univ. of Colorado Denver,
 //   NAG Ltd.
 
 #include <mpblas.h>
+#include <mplapack_arithmetic_params.h>
 
-void Rrotg(REAL &da, REAL &db, REAL &c, REAL &s) {
-    REAL scale = abs(da) + abs(db);
+void Rrotg(REAL &a, REAL &b, REAL &c, REAL &s) {
+    //
+    REAL anorm = abs(a);
+    REAL bnorm = abs(b);
+    const REAL zero = 0.0;
+    const REAL one = 1.0;
+    const auto &ap = mplapack::get_arithmetic_params<REAL>();
+    const REAL safmin = ap.safmin;
+    const REAL safmax = ap.safmax;
+    REAL scl = 0.0;
+    REAL sigma = 0.0;
     REAL r = 0.0;
     REAL z = 0.0;
-    REAL roe = 0.0;
-    if (scale == 0.0) {
-        c = 1.0;
-        s = 0.0;
-        r = 0.0;
-        z = 0.0;
+    if (bnorm == zero) {
+        c = one;
+        s = zero;
+        b = zero;
+    } else if (anorm == zero) {
+        c = zero;
+        s = one;
+        a = b;
+        b = one;
     } else {
-        roe = db;
-        if (abs(da) > abs(db)) {
-            roe = da;
+        scl = min(safmax, max(safmin, anorm, bnorm));
+        if (anorm > bnorm) {
+            sigma = sign(one, a);
+        } else {
+            sigma = sign(one, b);
         }
-        r = scale * sqrt(pow2((da / scale)) + pow2((db / scale)));
-        r = sign(1.0, roe) * r;
-        c = da / r;
-        s = db / r;
-        z = 1.0;
-        if (abs(da) > abs(db)) {
+        r = sigma * (scl * sqrt(pow2((a / scl)) + pow2((b / scl))));
+        c = a / r;
+        s = b / r;
+        if (anorm > bnorm) {
             z = s;
+        } else if (c != zero) {
+            z = one / c;
+        } else {
+            z = one;
         }
-        if (abs(db) >= abs(da) && c != 0.0) {
-            z = 1.0 / c;
-        }
+        a = r;
+        b = z;
     }
-    da = r;
-    db = z;
 }

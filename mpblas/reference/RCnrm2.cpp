@@ -28,57 +28,120 @@
 
 // Derived from BLAS routine DZNRM2.
 // Original BLAS authors:
-//   Univ. of Tennessee
-//   Univ. of California Berkeley
-//   Univ. of Colorado Denver
+//   Univ. of Tennessee,
+//   Univ. of California Berkeley,
+//   Univ. of Colorado Denver,
 //   NAG Ltd.
 
 #include <mpblas.h>
+#include <mplapack_arithmetic_params.h>
 
 REAL RCnrm2(INTEGER const n, COMPLEX *x, INTEGER const incx) {
     REAL return_value = 0.0;
+    // Quick return if possible
+    //
     const REAL zero = 0.0;
-    REAL norm = 0.0;
-    REAL scale = 0.0;
-    const REAL one = 1.0;
-    REAL ssq = 0.0;
-    INTEGER ix = 0;
-    REAL temp = 0.0;
-    if (n < 1 || incx < 1) {
-        norm = zero;
-    } else {
-        scale = zero;
-        ssq = one;
-        // The following loop is equivalent to this call to the LAPACK
-        // auxiliary routine:
-        // CALL Classq( N, X, INCX, SCALE, SSQ )
-        //
-        for (ix = 1; ix <= 1 + (n - 1) * incx; ix = ix + incx) {
-            if (x[ix - 1].real() != zero) {
-                temp = abs(x[ix - 1].real());
-                if (scale < temp) {
-                    ssq = one + ssq * pow2((scale / temp));
-                    scale = temp;
-                } else {
-                    ssq += pow2((temp / scale));
-                }
-            }
-            if (x[ix - 1].imag() != zero) {
-                temp = abs(x[ix - 1].imag());
-                if (scale < temp) {
-                    ssq = one + ssq * pow2((scale / temp));
-                    scale = temp;
-                } else {
-                    ssq += pow2((temp / scale));
-                }
-            }
-        }
-        norm = scale * sqrt(ssq);
+    return_value = zero;
+    if (n <= 0) {
+        return return_value;
     }
     //
-    return_value = norm;
+    const REAL one = 1.0;
+    REAL scl = one;
+    REAL sumsq = zero;
+    //
+    // Compute the sum of squares in 3 accumulators:
+    // abig -- sums of squares scaled down to avoid overflow
+    // asml -- sums of squares scaled up to avoid underflow
+    // amed -- sums of squares that do not require scaling
+    // The thresholds and multipliers are
+    // tbig -- values bigger than this are scaled down by sbig
+    // tsml -- values smaller than this are scaled up by ssml
+    //
+    bool notbig = true;
+    REAL asml = zero;
+    REAL amed = zero;
+    REAL abig = zero;
+    INTEGER ix = 1;
+    if (incx < 0) {
+        ix = 1 - (n - 1) * incx;
+    }
+    INTEGER i = 0;
+    REAL ax = 0.0;
+    const auto &ap = mplapack::get_arithmetic_params<REAL>();
+    const auto bp = mplapack::make_blue_scaling_params(ap);
+    const REAL tsml = bp.tsml;
+    const REAL tbig = bp.tbig;
+    const REAL ssml = bp.ssml;
+    const REAL sbig = bp.sbig;
+    for (i = 1; i <= n; i = i + 1) {
+        ax = abs(x[ix - 1].real());
+        if (ax > tbig) {
+            abig += pow2((ax * sbig));
+            notbig = false;
+        } else if (ax < tsml) {
+            if (notbig) {
+                asml += pow2((ax * ssml));
+            }
+        } else {
+            amed += pow2(ax);
+        }
+        ax = abs(x[ix - 1].imag());
+        if (ax > tbig) {
+            abig += pow2((ax * sbig));
+            notbig = false;
+        } else if (ax < tsml) {
+            if (notbig) {
+                asml += pow2((ax * ssml));
+            }
+        } else {
+            amed += pow2(ax);
+        }
+        ix += incx;
+    }
+    //
+    // Combine abig and amed or amed and asml if more than one
+    // accumulator was used.
+    //
+    const REAL maxn = ap.rmax;
+    REAL ymin = 0.0;
+    REAL ymax = 0.0;
+    if (abig > zero) {
+        //
+        // Combine abig and amed if abig > 0.
+        //
+        if ((amed > zero) || (amed > maxn) || (amed != amed)) {
+            abig += (amed * sbig) * sbig;
+        }
+        scl = one / sbig;
+        sumsq = abig;
+    } else if (asml > zero) {
+        //
+        // Combine amed and asml if asml > 0.
+        //
+        if ((amed > zero) || (amed > maxn) || (amed != amed)) {
+            amed = sqrt(amed);
+            asml = sqrt(asml) / ssml;
+            if (asml > amed) {
+                ymin = amed;
+                ymax = asml;
+            } else {
+                ymin = asml;
+                ymax = amed;
+            }
+            scl = one;
+            sumsq = pow2(ymax) * (one + pow2((ymin / ymax)));
+        } else {
+            scl = one / ssml;
+            sumsq = asml;
+        }
+    } else {
+        //
+        // Otherwise all values are mid-range
+        //
+        scl = one;
+        sumsq = amed;
+    }
+    return_value = scl * sqrt(sumsq);
     return return_value;
-    //
-    // End of RCnrm2.
-    //
 }

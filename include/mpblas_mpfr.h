@@ -54,6 +54,7 @@ void Caxpy(mplapackint const n, mpcomplex const za, mpcomplex *zx, mplapackint c
 void Ccopy(mplapackint const n, mpcomplex *zx, mplapackint const incx, mpcomplex *zy, mplapackint const incy);
 void Cgbmv(const char *trans, mplapackint const m, mplapackint const n, mplapackint const kl, mplapackint const ku, mpcomplex const alpha, mpcomplex *a, mplapackint const lda, mpcomplex *x, mplapackint const incx, mpcomplex const beta, mpcomplex *y, mplapackint const incy);
 void Cgemm(const char *transa, const char *transb, mplapackint const m, mplapackint const n, mplapackint const k, mpcomplex const alpha, mpcomplex *a, mplapackint const lda, mpcomplex *b, mplapackint const ldb, mpcomplex const beta, mpcomplex *c, mplapackint const ldc);
+void Cgemmtr(const char *uplo, const char *transa, const char *transb, mplapackint const n, mplapackint const k, mpcomplex const alpha, mpcomplex *a, mplapackint const lda, mpcomplex *b, mplapackint const ldb, mpcomplex const beta, mpcomplex *c, mplapackint const ldc);
 void Cgemv(const char *trans, mplapackint const m, mplapackint const n, mpcomplex const alpha, mpcomplex *a, mplapackint const lda, mpcomplex *x, mplapackint const incx, mpcomplex const beta, mpcomplex *y, mplapackint const incy);
 void Cgerc(mplapackint const m, mplapackint const n, mpcomplex const alpha, mpcomplex *x, mplapackint const incx, mpcomplex *y, mplapackint const incy, mpcomplex *a, mplapackint const lda);
 void Cgeru(mplapackint const m, mplapackint const n, mpcomplex const alpha, mpcomplex *x, mplapackint const incx, mpcomplex *y, mplapackint const incy, mpcomplex *a, mplapackint const lda);
@@ -67,7 +68,7 @@ void Cherk(const char *uplo, const char *trans, mplapackint const n, mplapackint
 void Chpmv(const char *uplo, mplapackint const n, mpcomplex const alpha, mpcomplex *ap, mpcomplex *x, mplapackint const incx, mpcomplex const beta, mpcomplex *y, mplapackint const incy);
 void Chpr(const char *uplo, mplapackint const n, mpreal const alpha, mpcomplex *x, mplapackint const incx, mpcomplex *ap);
 void Chpr2(const char *uplo, mplapackint const n, mpcomplex const alpha, mpcomplex *x, mplapackint const incx, mpcomplex *y, mplapackint const incy, mpcomplex *ap);
-void Crotg(mpcomplex &ca, mpcomplex const cb, mpreal &c, mpcomplex &s);
+void Crotg(mpcomplex &a, mpcomplex const b, mpreal &c, mpcomplex &s);
 void Cscal(mplapackint const n, mpcomplex const za, mpcomplex *zx, mplapackint const incx);
 void Cswap(mplapackint const n, mpcomplex *zx, mplapackint const incx, mpcomplex *zy, mplapackint const incy);
 void Csymm(const char *side, const char *uplo, mplapackint const m, mplapackint const n, mpcomplex const alpha, mpcomplex *a, mplapackint const lda, mpcomplex *b, mplapackint const ldb, mpcomplex const beta, mpcomplex *c, mplapackint const ldc);
@@ -86,10 +87,11 @@ void Raxpy(mplapackint const n, mpreal const da, mpreal *dx, mplapackint const i
 void Rcopy(mplapackint const n, mpreal *dx, mplapackint const incx, mpreal *dy, mplapackint const incy);
 void Rgbmv(const char *trans, mplapackint const m, mplapackint const n, mplapackint const kl, mplapackint const ku, mpreal const alpha, mpreal *a, mplapackint const lda, mpreal *x, mplapackint const incx, mpreal const beta, mpreal *y, mplapackint const incy);
 void Rgemm(const char *transa, const char *transb, mplapackint const m, mplapackint const n, mplapackint const k, mpreal const alpha, mpreal *a, mplapackint const lda, mpreal *b, mplapackint const ldb, mpreal const beta, mpreal *c, mplapackint const ldc);
+void Rgemmtr(const char *uplo, const char *transa, const char *transb, mplapackint const n, mplapackint const k, mpreal const alpha, mpreal *a, mplapackint const lda, mpreal *b, mplapackint const ldb, mpreal const beta, mpreal *c, mplapackint const ldc);
 void Rgemv(const char *trans, mplapackint const m, mplapackint const n, mpreal const alpha, mpreal *a, mplapackint const lda, mpreal *x, mplapackint const incx, mpreal const beta, mpreal *y, mplapackint const incy);
 void Rger(mplapackint const m, mplapackint const n, mpreal const alpha, mpreal *x, mplapackint const incx, mpreal *y, mplapackint const incy, mpreal *a, mplapackint const lda);
 void Rrot(mplapackint const n, mpreal *dx, mplapackint const incx, mpreal *dy, mplapackint const incy, mpreal const c, mpreal const s);
-void Rrotg(mpreal &da, mpreal &db, mpreal &c, mpreal &s);
+void Rrotg(mpreal &a, mpreal &b, mpreal &c, mpreal &s);
 void Rrotm(mplapackint const n, mpreal *dx, mplapackint const incx, mpreal *dy, mplapackint const incy, mpreal *dparam);
 void Rrotmg(mpreal &dd1, mpreal &dd2, mpreal &dx1, mpreal const dy1, mpreal *dparam);
 void Rsbmv(const char *uplo, mplapackint const n, mplapackint const k, mpreal const alpha, mpreal *a, mplapackint const lda, mpreal *x, mplapackint const incx, mpreal const beta, mpreal *y, mplapackint const incy);
