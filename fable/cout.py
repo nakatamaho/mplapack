@@ -8695,7 +8695,7 @@ def _postprocess_strip_float_suffix(lines):
     """Remove 'f' suffix from floating literals like 1.0f, 0.5f, 3.14e-1f."""
     # Match patterns like:
     #   1.0f, 0.5f, 3.14e-1f, 1.F, 1.e+0F, etc.
-    pat = re.compile(r'(\d+(?:\.\d*)?(?:[eE][+-]?\d+)?)[fF]\b')
+    pat = re.compile(r'(?<![A-Za-z_])(\d+(?:\.\d*)?(?:[eE][+-]?\d+)?)[fF]\b')
     out = []
     for line in lines:
         out.append(pat.sub(r'\1', line))
@@ -10171,7 +10171,7 @@ def _should_lower_free_to_fixed(src: str) -> bool:
 
 
 def _fix_fortran_intrinsic_kind_keyword_arguments(src: str) -> str:
-    """Drop F90 keyword arguments like KIND=... in intrinsic calls.
+    r"""Drop F90 keyword arguments like KIND=... in intrinsic calls.
 
     FABLE's legacy expression tokenizer does not accept keyword arguments
     inside calls, e.g.:
