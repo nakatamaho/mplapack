@@ -3246,6 +3246,7 @@ def rewrite_intrinsics(text: str) -> str:
 
         # complex constructor
         "fem::dcmplx": "COMPLEX",
+        "fem::cmplx": "COMPLEX",
 
         # sign / dsign -> common sign(a, b) helper
         # (C++ side must provide sign(a, b) implementation)
