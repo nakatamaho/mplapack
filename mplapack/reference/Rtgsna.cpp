@@ -286,8 +286,8 @@ void Rtgsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
                 c1 = two * (alphar * alphar + alphai * alphai + beta * beta);
                 c2 = four * beta * beta * alphai * alphai;
                 root1 = c1 + sqrt(c1 * c1 - 4.0 * c2);
-                root2 = c2 / root1;
                 root1 = root1 / two;
+                root2 = c2 / root1;
                 cond = min(sqrt(root1), sqrt(root2));
             }
             //

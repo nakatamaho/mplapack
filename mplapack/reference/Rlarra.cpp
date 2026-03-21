@@ -39,6 +39,7 @@
 void Rlarra(INTEGER const n, REAL *d, REAL *e, REAL *e2, REAL const spltol, REAL const tnrm, INTEGER &nsplit, INTEGER *isplit, INTEGER &info) {
     //
     info = 0;
+    nsplit = 1;
     //
     // Quick return if possible
     //
@@ -47,7 +48,6 @@ void Rlarra(INTEGER const n, REAL *d, REAL *e, REAL *e2, REAL const spltol, REAL
     }
     //
     // Compute splitting points
-    nsplit = 1;
     const REAL zero = 0.0;
     REAL tmp1 = 0.0;
     INTEGER i = 0;
