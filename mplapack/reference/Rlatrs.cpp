@@ -40,14 +40,16 @@ void Rlatrs(const char *uplo, const char *trans, const char *diag, const char *n
     bool upper = false;
     bool notran = false;
     bool nounit = false;
-    REAL smlnum = 0.0;
     const REAL one = 1.0;
+    REAL smlnum = 0.0;
     REAL bignum = 0.0;
     INTEGER j = 0;
     const REAL zero = 0.0;
     INTEGER imax = 0;
     REAL tmax = 0.0;
     REAL tscal = 0.0;
+    REAL work[1];
+    INTEGER i = 0;
     REAL xmax = 0.0;
     REAL xbnd = 0.0;
     INTEGER jfirst = 0;
@@ -58,7 +60,6 @@ void Rlatrs(const char *uplo, const char *trans, const char *diag, const char *n
     REAL xj = 0.0;
     REAL tjjs = 0.0;
     REAL rec = 0.0;
-    INTEGER i = 0;
     const REAL half = 0.5;
     REAL uscal = 0.0;
     REAL sumj = 0.0;
@@ -90,6 +91,7 @@ void Rlatrs(const char *uplo, const char *trans, const char *diag, const char *n
     //
     // Quick return if possible
     //
+    scale = one;
     if (n == 0) {
         return;
     }
@@ -98,7 +100,6 @@ void Rlatrs(const char *uplo, const char *trans, const char *diag, const char *n
     //
     smlnum = Rlamch("Safe minimum") / Rlamch("Precision");
     bignum = one / smlnum;
-    scale = one;
     //
     if (Mlsame(normin, "N")) {
         //
@@ -130,8 +131,63 @@ void Rlatrs(const char *uplo, const char *trans, const char *diag, const char *n
     if (tmax <= bignum) {
         tscal = one;
     } else {
-        tscal = one / (smlnum * tmax);
-        Rscal(n, tscal, cnorm, 1);
+        //
+        // Avoid NaN generation if entries in CNORM exceed the
+        // overflow threshold
+        //
+        if (tmax <= Rlamch("Overflow")) {
+            // Case 1: All entries in CNORM are valid floating-point numbers
+            tscal = one / (smlnum * tmax);
+            Rscal(n, tscal, cnorm, 1);
+        } else {
+            // Case 2: At least one column norm of A cannot be represented
+            // as floating-point number. Find the offdiagonal entry A( I, J )
+            // with the largest absolute value. If this entry is not +/- Infinity,
+            // use this value as TSCAL.
+            tmax = zero;
+            if (upper) {
+                //
+                // A is upper triangular.
+                //
+                for (j = 2; j <= n; j = j + 1) {
+                    tmax = max(Rlange("M", j - 1, 1, &a[(j - 1) * lda], 1, work), tmax);
+                }
+            } else {
+                //
+                // A is lower triangular.
+                //
+                for (j = 1; j <= n - 1; j = j + 1) {
+                    tmax = max(Rlange("M", n - j, 1, &a[((j + 1) - 1) + (j - 1) * lda], 1, work), tmax);
+                }
+            }
+            //
+            if (tmax <= Rlamch("Overflow")) {
+                tscal = one / (smlnum * tmax);
+                for (j = 1; j <= n; j = j + 1) {
+                    if (cnorm[j - 1] <= Rlamch("Overflow")) {
+                        cnorm[j - 1] = cnorm[j - 1] * tscal;
+                    } else {
+                        // Recompute the 1-norm without introducing Infinity
+                        // in the summation
+                        cnorm[j - 1] = zero;
+                        if (upper) {
+                            for (i = 1; i <= j - 1; i = i + 1) {
+                                cnorm[j - 1] += tscal * abs(a[(i - 1) + (j - 1) * lda]);
+                            }
+                        } else {
+                            for (i = j + 1; i <= n; i = i + 1) {
+                                cnorm[j - 1] += tscal * abs(a[(i - 1) + (j - 1) * lda]);
+                            }
+                        }
+                    }
+                }
+            } else {
+                // At least one entry of A is not a valid floating-point entry.
+                // Rely on TRSV to propagate Inf and NaN.
+                Rtrsv(uplo, trans, diag, n, a, lda, x, 1);
+                return;
+            }
+        }
     }
     //
     // Compute a bound on the computed solution vector to see if the
