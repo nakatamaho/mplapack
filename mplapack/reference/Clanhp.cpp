@@ -46,9 +46,8 @@ REAL Clanhp(const char *norm, const char *uplo, INTEGER const n, COMPLEX *ap, RE
     INTEGER i = 0;
     REAL sum = 0.0;
     REAL absa = 0.0;
-    REAL ssq[2];
+    REAL scale = 0.0;
     const REAL one = 1.0;
-    REAL colssq[2];
     if (n == 0) {
         value = zero;
     } else if (Mlsame(norm, "M")) {
@@ -132,48 +131,31 @@ REAL Clanhp(const char *norm, const char *uplo, INTEGER const n, COMPLEX *ap, RE
     } else if ((Mlsame(norm, "F")) || (Mlsame(norm, "E"))) {
         //
         // Find normF(A).
-        // SSQ(1) is scale
-        // SSQ(2) is sum-of-squares
-        // For better accuracy, sum each column separately.
         //
-        ssq[1 - 1] = zero;
-        ssq[2 - 1] = one;
-        //
-        // Sum off-diagonals
-        //
+        scale = zero;
+        sum = one;
         k = 2;
         if (Mlsame(uplo, "U")) {
             for (j = 2; j <= n; j = j + 1) {
-                colssq[1 - 1] = zero;
-                colssq[2 - 1] = one;
-                Classq(j - 1, &ap[k - 1], 1, colssq[1 - 1], colssq[2 - 1]);
-                Rcombssq(ssq, colssq);
+                Classq(j - 1, &ap[k - 1], 1, scale, sum);
                 k += j;
             }
         } else {
             for (j = 1; j <= n - 1; j = j + 1) {
-                colssq[1 - 1] = zero;
-                colssq[2 - 1] = one;
-                Classq(n - j, &ap[k - 1], 1, colssq[1 - 1], colssq[2 - 1]);
-                Rcombssq(ssq, colssq);
+                Classq(n - j, &ap[k - 1], 1, scale, sum);
                 k += n - j + 1;
             }
         }
-        ssq[2 - 1] = 2 * ssq[2 - 1];
-        //
-        // Sum diagonal
-        //
+        sum = 2 * sum;
         k = 1;
-        colssq[1 - 1] = zero;
-        colssq[2 - 1] = one;
         for (i = 1; i <= n; i = i + 1) {
             if (ap[k - 1].real() != zero) {
                 absa = abs(ap[k - 1].real());
-                if (colssq[1 - 1] < absa) {
-                    colssq[2 - 1] = one + colssq[2 - 1] * pow2((colssq[1 - 1] / absa));
-                    colssq[1 - 1] = absa;
+                if (scale < absa) {
+                    sum = one + sum * pow2((scale / absa));
+                    scale = absa;
                 } else {
-                    colssq[2 - 1] += pow2((absa / colssq[1 - 1]));
+                    sum += pow2((absa / scale));
                 }
             }
             if (Mlsame(uplo, "U")) {
@@ -182,8 +164,7 @@ REAL Clanhp(const char *norm, const char *uplo, INTEGER const n, COMPLEX *ap, RE
                 k += n - i + 1;
             }
         }
-        Rcombssq(ssq, colssq);
-        value = ssq[1 - 1] * sqrt(ssq[2 - 1]);
+        value = scale * sqrt(sum);
     }
     //
     return_value = value;

@@ -46,10 +46,9 @@ REAL Rlangb(const char *norm, INTEGER const n, INTEGER const kl, INTEGER const k
     REAL temp = 0.0;
     REAL sum = 0.0;
     INTEGER k = 0;
-    REAL ssq[2];
+    REAL scale = 0.0;
     const REAL one = 1.0;
     INTEGER l = 0;
-    REAL colssq[2];
     if (n == 0) {
         value = zero;
     } else if (Mlsame(norm, "M")) {
@@ -102,21 +101,15 @@ REAL Rlangb(const char *norm, INTEGER const n, INTEGER const kl, INTEGER const k
     } else if ((Mlsame(norm, "F")) || (Mlsame(norm, "E"))) {
         //
         // Find normF(A).
-        // SSQ(1) is scale
-        // SSQ(2) is sum-of-squares
-        // For better accuracy, sum each column separately.
         //
-        ssq[1 - 1] = zero;
-        ssq[2 - 1] = one;
+        scale = zero;
+        sum = one;
         for (j = 1; j <= n; j = j + 1) {
             l = max((INTEGER)1, j - ku);
             k = ku + 1 - j + l;
-            colssq[1 - 1] = zero;
-            colssq[2 - 1] = one;
-            Rlassq(min(n, j + kl) - l + 1, &ab[(k - 1) + (j - 1) * ldab], 1, colssq[1 - 1], colssq[2 - 1]);
-            Rcombssq(ssq, colssq);
+            Rlassq(min(n, j + kl) - l + 1, &ab[(k - 1) + (j - 1) * ldab], 1, scale, sum);
         }
-        value = ssq[1 - 1] * sqrt(ssq[2 - 1]);
+        value = scale * sqrt(sum);
     }
     //
     return_value = value;
