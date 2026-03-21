@@ -311,7 +311,7 @@ void Rorcsd2by1(const char *jobu1, const char *jobu2, const char *jobv1t, INTEGE
         //
         // Simultaneously diagonalize X11 and X21.
         //
-        Rbbcsd(jobv1t, "N", jobu1, jobu2, "T", m, q, p, theta, &work[iphi - 1], v1t, ldv1t, dum2, 1, u1, ldu1, u2, ldu2, &work[ib11d - 1], &work[ib11e - 1], &work[ib12d - 1], &work[ib12e - 1], &work[ib21d - 1], &work[ib21e - 1], &work[ib22d - 1], &work[ib22e - 1], &work[ibbcsd - 1], lbbcsd, childinfo);
+        Rbbcsd(jobv1t, "N", jobu1, jobu2, "T", m, q, p, theta, &work[iphi - 1], v1t, ldv1t, dum1, 1, u1, ldu1, u2, ldu2, &work[ib11d - 1], &work[ib11e - 1], &work[ib12d - 1], &work[ib12e - 1], &work[ib21d - 1], &work[ib21e - 1], &work[ib22d - 1], &work[ib22e - 1], &work[ibbcsd - 1], lbbcsd, childinfo);
         //
         // Permute rows and columns to place identity submatrices in
         // preferred positions
@@ -355,7 +355,7 @@ void Rorcsd2by1(const char *jobu1, const char *jobu2, const char *jobv1t, INTEGE
         //
         // Simultaneously diagonalize X11 and X21.
         //
-        Rbbcsd("N", jobv1t, jobu2, jobu1, "T", m, m - q, m - p, theta, &work[iphi - 1], dum2, 1, v1t, ldv1t, u2, ldu2, u1, ldu1, &work[ib11d - 1], &work[ib11e - 1], &work[ib12d - 1], &work[ib12e - 1], &work[ib21d - 1], &work[ib21e - 1], &work[ib22d - 1], &work[ib22e - 1], &work[ibbcsd - 1], lbbcsd, childinfo);
+        Rbbcsd("N", jobv1t, jobu2, jobu1, "T", m, m - q, m - p, theta, &work[iphi - 1], dum1, 1, v1t, ldv1t, u2, ldu2, u1, ldu1, &work[ib11d - 1], &work[ib11e - 1], &work[ib12d - 1], &work[ib12e - 1], &work[ib21d - 1], &work[ib21e - 1], &work[ib22d - 1], &work[ib22e - 1], &work[ibbcsd - 1], lbbcsd, childinfo);
         //
         // Permute rows and columns to place identity submatrices in
         // preferred positions
@@ -411,7 +411,7 @@ void Rorcsd2by1(const char *jobu1, const char *jobu2, const char *jobv1t, INTEGE
         //
         // Simultaneously diagonalize X11 and X21.
         //
-        Rbbcsd(jobu2, jobu1, "N", jobv1t, "N", m, m - p, m - q, theta, &work[iphi - 1], u2, ldu2, u1, ldu1, dum2, 1, v1t, ldv1t, &work[ib11d - 1], &work[ib11e - 1], &work[ib12d - 1], &work[ib12e - 1], &work[ib21d - 1], &work[ib21e - 1], &work[ib22d - 1], &work[ib22e - 1], &work[ibbcsd - 1], lbbcsd, childinfo);
+        Rbbcsd(jobu2, jobu1, "N", jobv1t, "N", m, m - p, m - q, theta, &work[iphi - 1], u2, ldu2, u1, ldu1, dum1, 1, v1t, ldv1t, &work[ib11d - 1], &work[ib11e - 1], &work[ib12d - 1], &work[ib12e - 1], &work[ib21d - 1], &work[ib21e - 1], &work[ib22d - 1], &work[ib22e - 1], &work[ibbcsd - 1], lbbcsd, childinfo);
         //
         // Permute rows and columns to place identity submatrices in
         // preferred positions

@@ -88,6 +88,7 @@ void Rlarrd(const char *range, const char *order, INTEGER const n, REAL const vl
     INTEGER itmp2 = 0;
     //
     info = 0;
+    m = 0;
     //
     // Quick return if possible
     //
@@ -130,15 +131,8 @@ void Rlarrd(const char *range, const char *order, INTEGER const n, REAL const vl
     }
     //
     // Initialize error flags
-    info = 0;
     ncnvrg = false;
     toofew = false;
-    //
-    // Quick return if possible
-    m = 0;
-    if (n == 0) {
-        return;
-    }
     //
     // Simplification:
     if (irange == indrng && il == 1 && iu == n) {
