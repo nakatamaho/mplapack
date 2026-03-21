@@ -87,6 +87,8 @@ iMparmq(INTEGER const ispec, const char *name, const char * /* opts */, INTEGER 
     INTEGER i = 0;
     const INTEGER k22min = 14;
     const INTEGER kacmin = 14;
+    const INTEGER icost = 17;
+    const INTEGER rcost = 10;
     if (ispec == inmin) {
         //
         // ===== Matrices of order smaller than NMIN get sent
@@ -170,6 +172,12 @@ iMparmq(INTEGER const ispec, const char *name, const char * /* opts */, INTEGER 
             }
         }
         //
+    } else if (ispec == icost) {
+        //
+        // === Relative cost of near-the-diagonal chase vs
+        // BLAS updates ===
+        //
+        return_value = rcost;
     } else {
         // ===== invalid value of ispec =====
         return_value = -1;
