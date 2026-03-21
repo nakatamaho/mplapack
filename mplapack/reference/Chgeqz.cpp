@@ -68,7 +68,6 @@ void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const
     INTEGER maxit = 0;
     INTEGER jiter = 0;
     bool ilazro = false;
-    REAL temp = 0.0;
     bool ilazr2 = false;
     INTEGER jch = 0;
     COMPLEX ctemp = 0.0;
@@ -83,6 +82,7 @@ void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const
     COMPLEX abi22 = 0.0;
     COMPLEX abi12 = 0.0;
     COMPLEX shift = 0.0;
+    REAL temp = 0.0;
     const REAL zero = 0.0;
     const REAL half = 0.5;
     REAL temp2 = 0.0;
@@ -280,7 +280,7 @@ void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const
             }
         }
         //
-        if (abs(t[(ilast - 1) + (ilast - 1) * ldt]) <= max(safmin, ulp * (abs(t[((ilast - 1) - 1) + (ilast - 1) * ldt]) + abs(t[((ilast - 1) - 1) + ((ilast - 1) - 1) * ldt])))) {
+        if (abs(t[(ilast - 1) + (ilast - 1) * ldt]) <= btol) {
             t[(ilast - 1) + (ilast - 1) * ldt] = czero;
             goto statement_50;
         }
@@ -304,11 +304,7 @@ void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const
             //
             // Test 2: for T(j,j)=0
             //
-            temp = abs(t[(j - 1) + ((j + 1) - 1) * ldt]);
-            if (j > ilo) {
-                temp += abs(t[((j - 1) - 1) + (j - 1) * ldt]);
-            }
-            if (abs(t[(j - 1) + (j - 1) * ldt]) < max(safmin, ulp * temp)) {
+            if (abs(t[(j - 1) + (j - 1) * ldt]) < btol) {
                 t[(j - 1) + (j - 1) * ldt] = czero;
                 //
                 // Test 1a: Check for 2 consecutive small subdiagonals in A
