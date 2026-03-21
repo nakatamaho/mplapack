@@ -10027,21 +10027,75 @@ def _fix_fortran_use_la_constants(src: str) -> str:
         #
         # Use standard LAPACK typed functions DLAMCH / SLAMCH with explicit
         # declarations, then let the C++ name-map rename them (e.g. dlamch -> Rlamch).
-        if wp_kind == "dp":
-            out.append("DOUBLE PRECISION zero, half, one, safmin, safmax\n")
-            out.append("PARAMETER (zero = 0.0D0)\n")
-            out.append("PARAMETER (half = 0.5D0)\n")
-            out.append("PARAMETER (one  = 1.0D0)\n")
-            # Use intrinsics to avoid external/specification functions in PARAMETER.
-            out.append("PARAMETER (safmin = one //UNHANDLED )\n")
-            out.append("PARAMETER (safmax = one //UNHANDLED)\n")
+        #
+        # All known LA_CONSTANTS constants.
+        # Each entry: (dp_value | None, sp_value | None).
+        # None means machine-dependent => emit //UNHANDLED so the C++ build
+        # fails loudly and the developer supplies the correct expression.
+        _KNOWN_CONSTS = {
+            # Basic arithmetic constants
+            "zero":   ("0.0D0",  "0.0E0"),
+            "half":   ("0.5D0",  "0.5E0"),
+            "one":    ("1.0D0",  "1.0E0"),
+            "two":    ("2.0D0",  "2.0E0"),
+            # Safe range parameters (machine-dependent)
+            "safmin": (None, None),
+            "safmax": (None, None),
+            # Blue's scaling constants (machine-dependent)
+            "tbig":   (None, None),
+            "tsml":   (None, None),
+            "sbig":   (None, None),
+            "ssml":   (None, None),
+            # Complex constants -- handled separately below
+            "czero":  None,   # sentinel: complex
+            "cone":   None,   # sentinel: complex
+        }
+
+        # Determine which constants to emit: only those actually imported,
+        # or all known ones if there was no ONLY clause.
+        if imported:
+            # Remove pseudo-imports (wp, dp, sp, la_isnan) that are not
+            # emittable constants.
+            needed = {c for c in imported
+                      if c in _KNOWN_CONSTS}
         else:
-            out.append("REAL zero, half, one, safmin, safmax\n")
-            out.append("PARAMETER (zero = 0.0E0)\n")
-            out.append("PARAMETER (half = 0.5E0)\n")
-            out.append("PARAMETER (one  = 1.0E0)\n")
-            out.append("PARAMETER (safmin = one //UNHANDLED)\n")
-            out.append("PARAMETER (safmax = one //UNHANDLED)\n")
+            # Bare 'USE LA_CONSTANTS' without ONLY -- emit everything.
+            needed = set(_KNOWN_CONSTS.keys())
+
+        # --- Real constants ---
+        real_consts = {c for c in needed
+                       if _KNOWN_CONSTS.get(c) is not None}
+        if real_consts:
+            base_type = "DOUBLE PRECISION" if wp_kind == "dp" else "REAL"
+            out.append(f"{base_type} {', '.join(sorted(real_consts))}\n")
+            idx = 0 if wp_kind == "dp" else 1
+            for c in sorted(real_consts):
+                val = _KNOWN_CONSTS[c][idx]
+                if val is not None:
+                    out.append(f"PARAMETER ({c} = {val})\n")
+                else:
+                    unhandled_val = "1.0D0" if wp_kind == "dp" else "1.0E0"
+                    out.append(
+                        f"PARAMETER ({c} = {unhandled_val} //UNHANDLED)\n")
+
+        # --- Complex constants ---
+        complex_consts = {c for c in needed
+                          if _KNOWN_CONSTS.get(c) is None and c in _KNOWN_CONSTS}
+        if complex_consts:
+            ctype = "DOUBLE COMPLEX" if wp_kind == "dp" else "COMPLEX"
+            out.append(f"{ctype} {', '.join(sorted(complex_consts))}\n")
+            _cvals = {
+                "czero": ("(0.0D0, 0.0D0)", "(0.0E0, 0.0E0)"),
+                "cone":  ("(1.0D0, 0.0D0)", "(1.0E0, 0.0E0)"),
+            }
+            idx = 0 if wp_kind == "dp" else 1
+            for c in sorted(complex_consts):
+                if c in _cvals:
+                    out.append(
+                        f"PARAMETER ({c} = {_cvals[c][idx]})\n")
+                else:
+                    out.append(
+                        f"PARAMETER ({c} = (0.0D0, 0.0D0) //UNHANDLED)\n")
 
     src2 = "".join(out)
     if not found:
