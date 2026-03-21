@@ -128,7 +128,6 @@ void Rlaqr3(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
     //
     safmin = Rlamch("SAFE MINIMUM");
     safmax = one / safmin;
-    Rlabad(safmin, safmax);
     ulp = Rlamch("PRECISION");
     smlnum = safmin * (castREAL(n) / ulp);
     //
@@ -357,13 +356,12 @@ statement_60:
             Rcopy(ns, v, ldv, work, 1);
             beta = work[1 - 1];
             Rlarfg(ns, beta, &work[2 - 1], 1, tau);
-            work[1 - 1] = one;
             //
             Rlaset("L", jw - 2, jw - 2, zero, zero, &t[(3 - 1)], ldt);
             //
-            Rlarf("L", ns, jw, work, 1, tau, t, ldt, &work[(jw + 1) - 1]);
-            Rlarf("R", ns, ns, work, 1, tau, t, ldt, &work[(jw + 1) - 1]);
-            Rlarf("R", jw, ns, work, 1, tau, v, ldv, &work[(jw + 1) - 1]);
+            Rlarf1f("L", ns, jw, work, 1, tau, t, ldt, &work[(jw + 1) - 1]);
+            Rlarf1f("R", ns, ns, work, 1, tau, t, ldt, &work[(jw + 1) - 1]);
+            Rlarf1f("R", jw, ns, work, 1, tau, v, ldv, &work[(jw + 1) - 1]);
             //
             Rgehrd(jw, 1, ns, t, ldt, work, &work[(jw + 1) - 1], lwork - jw, info);
         }
