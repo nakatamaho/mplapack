@@ -134,6 +134,8 @@ Cgebal.cpp \
 Cgebd2.cpp \
 Cgebrd.cpp \
 Cgecon.cpp \
+Cgedmd.cpp \
+Cgedmdq.cpp \
 Cgeequ.cpp \
 Cgeequb.cpp \
 Cgees.cpp \
@@ -151,6 +153,7 @@ Cgelqt3.cpp \
 Cgels.cpp \
 Cgelsd.cpp \
 Cgelss.cpp \
+Cgelst.cpp \
 Cgelsy.cpp \
 Cgemlq.cpp \
 Cgemlqt.cpp \
@@ -159,6 +162,7 @@ Cgemqrt.cpp \
 Cgeql2.cpp \
 Cgeqlf.cpp \
 Cgeqp3.cpp \
+Cgeqp3rk.cpp \
 Cgeqr.cpp \
 Cgeqr2.cpp \
 Cgeqr2p.cpp \
@@ -346,6 +350,8 @@ Claqhb.cpp \
 Claqhe.cpp \
 Claqhp.cpp \
 Claqp2.cpp \
+Claqp2rk.cpp \
+Claqp3rk.cpp \
 Claqps.cpp \
 Claqr0.cpp \
 Claqr1.cpp \
@@ -356,10 +362,16 @@ Claqr5.cpp \
 Claqsb.cpp \
 Claqsp.cpp \
 Claqsy.cpp \
+Claqz0.cpp \
+Claqz1.cpp \
+Claqz2.cpp \
+Claqz3.cpp \
 Clar1v.cpp \
 Clar2v.cpp \
 Clarcm.cpp \
 Clarf.cpp \
+Clarf1f.cpp \
+Clarf1l.cpp \
 Clarfb.cpp \
 Clarfb_gett.cpp \
 Clarfg.cpp \
@@ -392,6 +404,7 @@ Clatdf.cpp \
 Clatps.cpp \
 Clatrd.cpp \
 Clatrs.cpp \
+Clatrs3.cpp \
 Clatrz.cpp \
 Clatsqr.cpp \
 Claunhr_col_getrfnp.cpp \
@@ -440,6 +453,7 @@ Cpttrf.cpp \
 Cpttrs.cpp \
 Cptts2.cpp \
 Crot.cpp \
+Crscl.cpp \
 Cspcon.cpp \
 Cspmv.cpp \
 Cspr.cpp \
@@ -527,6 +541,7 @@ Ctrrfs.cpp \
 Ctrsen.cpp \
 Ctrsna.cpp \
 Ctrsyl.cpp \
+Ctrsyl3.cpp \
 Ctrti2.cpp \
 Ctrtri.cpp \
 Ctrtrs.cpp \
@@ -581,7 +596,6 @@ Rbbcsd.cpp \
 Rbdsdc.cpp \
 Rbdsqr.cpp \
 Rbdsvdx.cpp \
-Rcombssq.cpp \
 Rdisna.cpp \
 Rgbbrd.cpp \
 Rgbcon.cpp \
@@ -598,6 +612,8 @@ Rgebal.cpp \
 Rgebd2.cpp \
 Rgebrd.cpp \
 Rgecon.cpp \
+Rgedmd.cpp \
+Rgedmdq.cpp \
 Rgeequ.cpp \
 Rgeequb.cpp \
 Rgees.cpp \
@@ -615,6 +631,7 @@ Rgelqt3.cpp \
 Rgels.cpp \
 Rgelsd.cpp \
 Rgelss.cpp \
+Rgelst.cpp \
 Rgelsy.cpp \
 Rgemlq.cpp \
 Rgemlqt.cpp \
@@ -623,6 +640,7 @@ Rgemqrt.cpp \
 Rgeql2.cpp \
 Rgeqlf.cpp \
 Rgeqp3.cpp \
+Rgeqp3rk.cpp \
 Rgeqr.cpp \
 Rgeqr2.cpp \
 Rgeqr2p.cpp \
@@ -743,6 +761,8 @@ Rlapy3.cpp \
 Rlaqgb.cpp \
 Rlaqge.cpp \
 Rlaqp2.cpp \
+Rlaqp2rk.cpp \
+Rlaqp3rk.cpp \
 Rlaqps.cpp \
 Rlaqr0.cpp \
 Rlaqr1.cpp \
@@ -754,9 +774,16 @@ Rlaqsb.cpp \
 Rlaqsp.cpp \
 Rlaqsy.cpp \
 Rlaqtr.cpp \
+Rlaqz0.cpp \
+Rlaqz1.cpp \
+Rlaqz2.cpp \
+Rlaqz3.cpp \
+Rlaqz4.cpp \
 Rlar1v.cpp \
 Rlar2v.cpp \
 Rlarf.cpp \
+Rlarf1f.cpp \
+Rlarf1l.cpp \
 Rlarfb.cpp \
 Rlarfb_gett.cpp \
 Rlarfg.cpp \
@@ -765,6 +792,7 @@ Rlarft.cpp \
 Rlarfx.cpp \
 Rlarfy.cpp \
 Rlargv.cpp \
+Rlarmm.cpp \
 Rlarnv.cpp \
 Rlarra.cpp \
 Rlarrb.cpp \
@@ -823,6 +851,7 @@ Rlatdf.cpp \
 Rlatps.cpp \
 Rlatrd.cpp \
 Rlatrs.cpp \
+Rlatrs3.cpp \
 Rlatrz.cpp \
 Rlatsqr.cpp \
 Rlauu2.cpp \
@@ -1037,6 +1066,7 @@ Rtrrfs.cpp \
 Rtrsen.cpp \
 Rtrsna.cpp \
 Rtrsyl.cpp \
+Rtrsyl3.cpp \
 Rtrti2.cpp \
 Rtrtri.cpp \
 Rtrtrs.cpp \
@@ -1057,37 +1087,6 @@ iMlaver.cpp \
 iMlazlc.cpp \
 iMlazlr.cpp \
 iMparam2stage.cpp \
-iMparmq.cpp \
-Cgedmd.cpp \
-Cgedmdq.cpp \
-Cgelst.cpp \
-Cgeqp3rk.cpp \
-Claqp2rk.cpp \
-Claqp3rk.cpp \
-Claqz0.cpp \
-Claqz1.cpp \
-Claqz2.cpp \
-Claqz3.cpp \
-Clarf1f.cpp \
-Clarf1l.cpp \
-Clatrs3.cpp \
-Crscl.cpp \
-Ctrsyl3.cpp \
-Rgedmd.cpp \
-Rgedmdq.cpp \
-Rgelst.cpp \
-Rgeqp3rk.cpp \
-Rlaqp2rk.cpp \
-Rlaqp3rk.cpp \
-Rlaqz0.cpp \
-Rlaqz1.cpp \
-Rlaqz2.cpp \
-Rlaqz3.cpp \
-Rlaqz4.cpp \
-Rlarf1f.cpp \
-Rlarf1l.cpp \
-Rlarmm.cpp \
-Rlatrs3.cpp \
-Rtrsyl3.cpp
+iMparmq.cpp
 
 EXTRA_DIST = iMlaver.cpp.in
