@@ -487,7 +487,7 @@ void Cgedmd(const char *jobs, const char *jobz, const char *jobr, const char *jo
         }
         for (j = 1; j <= n; j = j + 1) {
             for (i = 1; i <= k; i = i + 1) {
-                w[(i - 1) + (j - 1) * ldw] = fem::cmplx(rwork[(n + i) - 1], zero) * w[(i - 1) + (j - 1) * ldw];
+                w[(i - 1) + (j - 1) * ldw] = COMPLEX(rwork[(n + i) - 1], zero) * w[(i - 1) + (j - 1) * ldw];
             }
         }
     }
