@@ -225,7 +225,6 @@ void Cgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
     sfmin = Rlamch("S");
     smlnum = sfmin / eps;
     bignum = one / smlnum;
-    Rlabad(smlnum, bignum);
     //
     // Scale A if max element outside range [SMLNUM,BIGNUM]
     //
@@ -370,7 +369,7 @@ void Cgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
                 Cgemm("C", "N", n, bl, n, cone, a, lda, &b[(i - 1) * ldb], ldb, czero, work, n);
                 Clacpy("G", n, bl, work, n, &b[(i - 1) * ldb], ldb);
             }
-        } else {
+        } else if (nrhs == 1) {
             Cgemv("C", n, n, cone, a, lda, b, 1, czero, work, 1);
             Ccopy(n, work, 1, b, 1);
         }
@@ -466,7 +465,7 @@ void Cgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
                 Cgemm("C", "N", m, bl, m, cone, &work[il - 1], ldwork, &b[(i - 1) * ldb], ldb, czero, &work[iwork - 1], m);
                 Clacpy("G", m, bl, &work[iwork - 1], m, &b[(i - 1) * ldb], ldb);
             }
-        } else {
+        } else if (nrhs == 1) {
             Cgemv("C", m, m, cone, &work[il - 1], ldwork, &b[0], 1, czero, &work[iwork - 1], 1);
             Ccopy(m, &work[iwork - 1], 1, &b[0], 1);
         }
@@ -551,7 +550,7 @@ void Cgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
                 Cgemm("C", "N", n, bl, m, cone, a, lda, &b[(i - 1) * ldb], ldb, czero, work, n);
                 Clacpy("F", n, bl, work, n, &b[(i - 1) * ldb], ldb);
             }
-        } else {
+        } else if (nrhs == 1) {
             Cgemv("C", m, n, cone, a, lda, b, 1, czero, work, 1);
             Ccopy(n, work, 1, b, 1);
         }
