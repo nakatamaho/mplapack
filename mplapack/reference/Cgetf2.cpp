@@ -67,7 +67,6 @@ void Cgetf2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, INT
     INTEGER jp = 0;
     const COMPLEX zero = COMPLEX(0.0, 0.0);
     const COMPLEX one = COMPLEX(1.0, 0.0);
-    INTEGER i = 0;
     for (j = 1; j <= min(m, n); j = j + 1) {
         //
         // Find pivot and test for singularity.
@@ -85,13 +84,7 @@ void Cgetf2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, INT
             // Compute elements J+1:M of J-th column.
             //
             if (j < m) {
-                if (abs(a[(j - 1) + (j - 1) * lda]) >= sfmin) {
-                    Cscal(m - j, one / a[(j - 1) + (j - 1) * lda], &a[((j + 1) - 1) + (j - 1) * lda], 1);
-                } else {
-                    for (i = 1; i <= m - j; i = i + 1) {
-                        a[((j + i) - 1) + (j - 1) * lda] = a[((j + i) - 1) + (j - 1) * lda] / a[(j - 1) + (j - 1) * lda];
-                    }
-                }
+                Crscl(m - j, a[(j - 1) + (j - 1) * lda], &a[((j + 1) - 1) + (j - 1) * lda], 1);
             }
             //
         } else if (info == 0) {
