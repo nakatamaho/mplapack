@@ -102,11 +102,11 @@ void Csytri2x(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
     INTEGER invd = nb + 2;
     //
     INTEGER k = 0;
+    const COMPLEX one = COMPLEX(1.0, 0.0);
     COMPLEX t = 0.0;
     COMPLEX ak = 0.0;
     COMPLEX akp1 = 0.0;
     COMPLEX akkp1 = 0.0;
-    const COMPLEX one = COMPLEX(1.0, 0.0);
     COMPLEX d = 0.0;
     INTEGER cut = 0;
     INTEGER nnb = 0;
