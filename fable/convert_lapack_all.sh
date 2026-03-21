@@ -107,6 +107,7 @@ KEEP_HAND_WRITTEN_FILES=(
   Rlamch.cpp
   Rlaruv.cpp
   Rlaran.cpp
+  Rroundup_lwork.cpp
   iMlaenv.cpp
   iMladiag.cpp
   iMlaver.cpp

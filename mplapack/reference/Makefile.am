@@ -936,6 +936,7 @@ Rptsvx.cpp \
 Rpttrf.cpp \
 Rpttrs.cpp \
 Rptts2.cpp \
+Rroundup_lwork.cpp \
 Rrscl.cpp \
 Rsb2st_kernels.cpp \
 Rsbev.cpp \

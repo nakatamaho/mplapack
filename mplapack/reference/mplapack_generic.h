@@ -51,6 +51,7 @@ REAL Rlantr(const char *norm, const char *uplo, const char *diag, INTEGER const 
 REAL Rlapy2(REAL const x, REAL const y);
 REAL Rlapy3(REAL const x, REAL const y, REAL const z);
 REAL Rlarmm(REAL const anorm, REAL const bnorm, REAL const cnorm);
+REAL Rroundup_lwork(INTEGER const lwork);
 bool Mlsamen(INTEGER n, const char *a, const char *b);
 bool Risnan(REAL const din);
 bool Rlaisnan(REAL const din1, REAL const din2);
