@@ -43,6 +43,7 @@ void Cstemr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
     bool indeig = false;
     bool lquery = false;
     bool zquery = false;
+    bool laeswap = false;
     INTEGER lwmin = 0;
     INTEGER liwmin = 0;
     const REAL zero = 0.0;
@@ -107,6 +108,7 @@ void Cstemr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
     //
     lquery = ((lwork == -1) || (liwork == -1));
     zquery = (nzc == -1);
+    laeswap = false;
     //
     // Rstemr needs WORK of size 6*N, IWORK of size 3*N.
     // In addition, Rlarre needs WORK of size 6*N, IWORK of size 5*N.
@@ -229,12 +231,26 @@ void Cstemr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
         } else if (wantz && (!zquery)) {
             Rlaev2(d[1 - 1], e[1 - 1], d[2 - 1], r1, r2, cs, sn);
         }
+        // D/S/LAE2 and D/S/LAEV2 outputs satisfy |R1| >= |R2|. However,
+        // the following code requires R1 >= R2. Hence, we correct
+        // the order of R1, R2, CS, SN if R1 < R2 before further processing.
+        if (r1 < r2) {
+            e[2 - 1] = r1;
+            r1 = r2;
+            r2 = e[2 - 1];
+            laeswap = true;
+        }
         if (alleig || (valeig && (r2 > wl) && (r2 <= wu)) || (indeig && (iil == 1))) {
             m++;
             w[m - 1] = r2;
             if (wantz && (!zquery)) {
-                z[(m - 1) * ldz] = -sn;
-                z[(2 - 1) + (m - 1) * ldz] = cs;
+                if (laeswap) {
+                    z[(m - 1) * ldz] = cs;
+                    z[(2 - 1) + (m - 1) * ldz] = sn;
+                } else {
+                    z[(m - 1) * ldz] = -sn;
+                    z[(2 - 1) + (m - 1) * ldz] = cs;
+                }
                 // Note: At most one of SN and CS can be zero.
                 if (sn != zero) {
                     if (cs != zero) {
@@ -254,8 +270,13 @@ void Cstemr(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
             m++;
             w[m - 1] = r1;
             if (wantz && (!zquery)) {
-                z[(m - 1) * ldz] = cs;
-                z[(2 - 1) + (m - 1) * ldz] = sn;
+                if (laeswap) {
+                    z[(m - 1) * ldz] = -sn;
+                    z[(2 - 1) + (m - 1) * ldz] = cs;
+                } else {
+                    z[(m - 1) * ldz] = cs;
+                    z[(2 - 1) + (m - 1) * ldz] = sn;
+                }
                 // Note: At most one of SN and CS can be zero.
                 if (sn != zero) {
                     if (cs != zero) {
