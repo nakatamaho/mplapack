@@ -5,8 +5,8 @@ USE_CCACHE=yes
 if [ x$USE_CCACHE = x"yes" ] ; then
 CXX="ccache g++" ; export CXX
 CC="ccache gcc" ; export CC
-FC="gfortran"; export FC
-F77="gfortran"; export F77
+FC="ccache gfortran"; export FC
+F77="ccache gfortran"; export F77
 ccache -M 60G
 else
 CXX="g++" ; export CXX
@@ -17,7 +17,6 @@ fi
 
 pushd mplapack/test/compare ; bash gen.Makefile.am.sh ; popd
 
-aclocal ; autoconf ; automake --add-missing
 autoreconf --force --install
 if [ `uname -m` = "x86_64" ]; then
 ./configure --prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-binary128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-binary80=yes --enable-test=yes --enable-benchmark=yes
