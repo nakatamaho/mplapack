@@ -36,15 +36,15 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlabad(REAL &small, REAL &large) {
+void Rlabad(REAL const /* small */, REAL const /* large */) {
     //
     // If it looks like we're on a Cray, take the square root of
     // SMALL and LARGE to avoid overflow and underflow problems.
     //
-    if (log10(large) > 2000.0) {
-        small = sqrt(small);
-        large = sqrt(large);
-    }
+    // IF( LOG10( LARGE ).GT.2000.D0 ) THEN
+    // SMALL = SQRT( SMALL )
+    // LARGE = SQRT( LARGE )
+    // END IF
     //
     // End of Rlabad
     //
