@@ -100,6 +100,8 @@ void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER cons
     REAL rtol = 0.0;
     //
     info = 0;
+    nsplit = 0;
+    m = 0;
     //
     // Quick return if possible
     //
@@ -116,8 +118,6 @@ void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER cons
     } else if (Mlsame(range, "I")) {
         irange = indrng;
     }
-    //
-    m = 0;
     //
     // Get machine constants
     safmin = Rlamch("S");
@@ -598,6 +598,6 @@ void Rlarre(const char *range, INTEGER const n, REAL &vl, REAL &vu, INTEGER cons
     statement_170:;
     }
     //
-    // end of Rlarre
+    // End of Rlarre
     //
 }
