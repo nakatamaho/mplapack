@@ -56,8 +56,6 @@ void Rgeqr2p(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL 
     INTEGER k = min(m, n);
     //
     INTEGER i = 0;
-    REAL aii = 0.0;
-    const REAL one = 1.0;
     for (i = 1; i <= k; i = i + 1) {
         //
         // Generate elementary reflector H(i) to annihilate A(i+1:m,i)
@@ -67,10 +65,7 @@ void Rgeqr2p(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL 
             //
             // Apply H(i) to A(i:m,i+1:n) from the left
             //
-            aii = a[(i - 1) + (i - 1) * lda];
-            a[(i - 1) + (i - 1) * lda] = one;
-            Rlarf("Left", m - i + 1, n - i, &a[(i - 1) + (i - 1) * lda], 1, tau[i - 1], &a[(i - 1) + ((i + 1) - 1) * lda], lda, work);
-            a[(i - 1) + (i - 1) * lda] = aii;
+            Rlarf1f("Left", m - i + 1, n - i, &a[(i - 1) + (i - 1) * lda], 1, tau[i - 1], &a[(i - 1) + ((i + 1) - 1) * lda], lda, work);
         }
     }
     //
