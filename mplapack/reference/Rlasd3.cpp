@@ -103,27 +103,6 @@ void Rlasd3(INTEGER const nl, INTEGER const nr, INTEGER const sqre, INTEGER cons
         return;
     }
     //
-    // Modify values DSIGMA(i) to make sure all DSIGMA(i)-DSIGMA(j) can
-    // be computed with high relative accuracy (barring over/underflow).
-    // This is a problem on machines without a guard digit in
-    // add/subtract (Cray XMP, Cray YMP, Cray C 90 and Cray 2).
-    // The following code replaces DSIGMA(I) by 2*DSIGMA(I)-DSIGMA(I),
-    // which on any of these machines zeros out the bottommost
-    // bit of DSIGMA(I) if it is 1; this makes the subsequent
-    // subtractions DSIGMA(I)-DSIGMA(J) unproblematic when cancellation
-    // occurs. On binary machines with a guard digit (almost all
-    // machines) it does not change DSIGMA(I) at all. On hexadecimal
-    // and decimal machines with a guard digit, it slightly
-    // changes the bottommost bits of DSIGMA(I). It does not account
-    // for hexadecimal or decimal machines without guard digits
-    // (we know of none). We use a subroutine call to compute
-    // 2*DSIGMA(I) to prevent optimizing compilers from eliminating
-    // this code.
-    //
-    for (i = 1; i <= k; i = i + 1) {
-        dsigma[i - 1] = Rlamc3(dsigma[i - 1], dsigma[i - 1]) - dsigma[i - 1];
-    }
-    //
     // Keep a copy of Z.
     //
     Rcopy(k, z, 1, q, 1);
