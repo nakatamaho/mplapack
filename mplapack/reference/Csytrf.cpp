@@ -69,7 +69,7 @@ void Csytrf(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
         // Determine the block size
         //
         nb = iMlaenv(1, "Csytrf", uplo, n, -1, -1, -1);
-        lwkopt = n * nb;
+        lwkopt = max((INTEGER)1, n * nb);
         work[1 - 1] = lwkopt;
     }
     //

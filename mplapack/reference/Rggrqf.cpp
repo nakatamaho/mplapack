@@ -45,7 +45,7 @@ void Rggrqf(INTEGER const m, INTEGER const p, INTEGER const n, REAL *a, INTEGER 
     INTEGER nb2 = iMlaenv(1, "Rgeqrf", " ", p, n, -1, -1);
     INTEGER nb3 = iMlaenv(1, "Rormrq", " ", m, n, p, -1);
     INTEGER nb = max(nb1, nb2, nb3);
-    INTEGER lwkopt = max(n, m, p) * nb;
+    INTEGER lwkopt = max((INTEGER)1, max(n, m, p) * nb);
     work[1 - 1] = lwkopt;
     bool lquery = (lwork == -1);
     if (m < 0) {

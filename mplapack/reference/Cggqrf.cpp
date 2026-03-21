@@ -45,7 +45,7 @@ void Cggqrf(INTEGER const n, INTEGER const m, INTEGER const p, COMPLEX *a, INTEG
     INTEGER nb2 = iMlaenv(1, "Cgerqf", " ", n, p, -1, -1);
     INTEGER nb3 = iMlaenv(1, "Cunmqr", " ", n, m, p, -1);
     INTEGER nb = max(nb1, nb2, nb3);
-    INTEGER lwkopt = max(n, m, p) * nb;
+    INTEGER lwkopt = max((INTEGER)1, max(n, m, p) * nb);
     work[1 - 1] = lwkopt;
     bool lquery = (lwork == -1);
     if (n < 0) {

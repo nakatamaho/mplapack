@@ -60,7 +60,7 @@ void Rsytrd(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL 
         // Determine the block size.
         //
         nb = iMlaenv(1, "Rsytrd", uplo, n, -1, -1, -1);
-        lwkopt = n * nb;
+        lwkopt = max((INTEGER)1, n * nb);
         work[1 - 1] = lwkopt;
     }
     //
