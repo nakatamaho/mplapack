@@ -149,8 +149,7 @@ void Cheequb(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, R
         // avg = s^T beta / n
         avg = 0.0;
         for (i = 1; i <= n; i = i + 1) {
-            avg += s[i - 1] * work[i - 1].real();
-            ;
+            avg += (s[i - 1] * work[i - 1]).real();
         }
         avg = avg / n;
         //
@@ -170,7 +169,7 @@ void Cheequb(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, R
             si = s[i - 1];
             c2 = (n - 1) * t;
             c1 = (n - 2) * (work[i - 1].real() - t * si);
-            c0 = -(t * si) * si + two * work[i - 1].real() * si - n * avg;
+            c0 = -(t * si) * si + 2 * work[i - 1].real() * si - n * avg;
             d = c1 * c1 - 4 * c0 * c2;
             //
             if (d <= 0) {
