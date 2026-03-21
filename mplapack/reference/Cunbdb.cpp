@@ -110,7 +110,6 @@ void Cunbdb(const char *trans, const char *signs, INTEGER const m, INTEGER const
     // Handle column-major and row-major separately
     //
     INTEGER i = 0;
-    const COMPLEX one = COMPLEX(1.0, 0.0);
     if (colmajor) {
         //
         // Reduce columns 1, ..., Q of X11, X12, X21, and X22
@@ -137,21 +136,19 @@ void Cunbdb(const char *trans, const char *signs, INTEGER const m, INTEGER const
             } else if (p == i) {
                 Clarfgp(p - i + 1, x11[(i - 1) + (i - 1) * ldx11], &x11[(i - 1) + (i - 1) * ldx11], 1, taup1[i - 1]);
             }
-            x11[(i - 1) + (i - 1) * ldx11] = one;
             if (m - p > i) {
                 Clarfgp(m - p - i + 1, x21[(i - 1) + (i - 1) * ldx21], &x21[((i + 1) - 1) + (i - 1) * ldx21], 1, taup2[i - 1]);
             } else if (m - p == i) {
                 Clarfgp(m - p - i + 1, x21[(i - 1) + (i - 1) * ldx21], &x21[(i - 1) + (i - 1) * ldx21], 1, taup2[i - 1]);
             }
-            x21[(i - 1) + (i - 1) * ldx21] = one;
             //
             if (q > i) {
-                Clarf("L", p - i + 1, q - i, &x11[(i - 1) + (i - 1) * ldx11], 1, conj(taup1[i - 1]), &x11[(i - 1) + ((i + 1) - 1) * ldx11], ldx11, work);
-                Clarf("L", m - p - i + 1, q - i, &x21[(i - 1) + (i - 1) * ldx21], 1, conj(taup2[i - 1]), &x21[(i - 1) + ((i + 1) - 1) * ldx21], ldx21, work);
+                Clarf1f("L", p - i + 1, q - i, &x11[(i - 1) + (i - 1) * ldx11], 1, conj(taup1[i - 1]), &x11[(i - 1) + ((i + 1) - 1) * ldx11], ldx11, work);
+                Clarf1f("L", m - p - i + 1, q - i, &x21[(i - 1) + (i - 1) * ldx21], 1, conj(taup2[i - 1]), &x21[(i - 1) + ((i + 1) - 1) * ldx21], ldx21, work);
             }
             if (m - q + 1 > i) {
-                Clarf("L", p - i + 1, m - q - i + 1, &x11[(i - 1) + (i - 1) * ldx11], 1, conj(taup1[i - 1]), &x12[(i - 1) + (i - 1) * ldx12], ldx12, work);
-                Clarf("L", m - p - i + 1, m - q - i + 1, &x21[(i - 1) + (i - 1) * ldx21], 1, conj(taup2[i - 1]), &x22[(i - 1) + (i - 1) * ldx22], ldx22, work);
+                Clarf1f("L", p - i + 1, m - q - i + 1, &x11[(i - 1) + (i - 1) * ldx11], 1, conj(taup1[i - 1]), &x12[(i - 1) + (i - 1) * ldx12], ldx12, work);
+                Clarf1f("L", m - p - i + 1, m - q - i + 1, &x21[(i - 1) + (i - 1) * ldx21], 1, conj(taup2[i - 1]), &x22[(i - 1) + (i - 1) * ldx22], ldx22, work);
             }
             //
             if (i < q) {
@@ -172,7 +169,6 @@ void Cunbdb(const char *trans, const char *signs, INTEGER const m, INTEGER const
                 } else {
                     Clarfgp(q - i, x11[(i - 1) + ((i + 1) - 1) * ldx11], &x11[(i - 1) + ((i + 2) - 1) * ldx11], ldx11, tauq1[i - 1]);
                 }
-                x11[(i - 1) + ((i + 1) - 1) * ldx11] = one;
             }
             if (m - q + 1 > i) {
                 Clacgv(m - q - i + 1, &x12[(i - 1) + (i - 1) * ldx12], ldx12);
@@ -182,17 +178,16 @@ void Cunbdb(const char *trans, const char *signs, INTEGER const m, INTEGER const
                     Clarfgp(m - q - i + 1, x12[(i - 1) + (i - 1) * ldx12], &x12[(i - 1) + ((i + 1) - 1) * ldx12], ldx12, tauq2[i - 1]);
                 }
             }
-            x12[(i - 1) + (i - 1) * ldx12] = one;
             //
             if (i < q) {
-                Clarf("R", p - i, q - i, &x11[(i - 1) + ((i + 1) - 1) * ldx11], ldx11, tauq1[i - 1], &x11[((i + 1) - 1) + ((i + 1) - 1) * ldx11], ldx11, work);
-                Clarf("R", m - p - i, q - i, &x11[(i - 1) + ((i + 1) - 1) * ldx11], ldx11, tauq1[i - 1], &x21[((i + 1) - 1) + ((i + 1) - 1) * ldx21], ldx21, work);
+                Clarf1f("R", p - i, q - i, &x11[(i - 1) + ((i + 1) - 1) * ldx11], ldx11, tauq1[i - 1], &x11[((i + 1) - 1) + ((i + 1) - 1) * ldx11], ldx11, work);
+                Clarf1f("R", m - p - i, q - i, &x11[(i - 1) + ((i + 1) - 1) * ldx11], ldx11, tauq1[i - 1], &x21[((i + 1) - 1) + ((i + 1) - 1) * ldx21], ldx21, work);
             }
             if (p > i) {
-                Clarf("R", p - i, m - q - i + 1, &x12[(i - 1) + (i - 1) * ldx12], ldx12, tauq2[i - 1], &x12[((i + 1) - 1) + (i - 1) * ldx12], ldx12, work);
+                Clarf1f("R", p - i, m - q - i + 1, &x12[(i - 1) + (i - 1) * ldx12], ldx12, tauq2[i - 1], &x12[((i + 1) - 1) + (i - 1) * ldx12], ldx12, work);
             }
             if (m - p > i) {
-                Clarf("R", m - p - i, m - q - i + 1, &x12[(i - 1) + (i - 1) * ldx12], ldx12, tauq2[i - 1], &x22[((i + 1) - 1) + (i - 1) * ldx22], ldx22, work);
+                Clarf1f("R", m - p - i, m - q - i + 1, &x12[(i - 1) + (i - 1) * ldx12], ldx12, tauq2[i - 1], &x22[((i + 1) - 1) + (i - 1) * ldx22], ldx22, work);
             }
             //
             if (i < q) {
@@ -213,13 +208,12 @@ void Cunbdb(const char *trans, const char *signs, INTEGER const m, INTEGER const
             } else {
                 Clarfgp(m - q - i + 1, x12[(i - 1) + (i - 1) * ldx12], &x12[(i - 1) + ((i + 1) - 1) * ldx12], ldx12, tauq2[i - 1]);
             }
-            x12[(i - 1) + (i - 1) * ldx12] = one;
             //
             if (p > i) {
-                Clarf("R", p - i, m - q - i + 1, &x12[(i - 1) + (i - 1) * ldx12], ldx12, tauq2[i - 1], &x12[((i + 1) - 1) + (i - 1) * ldx12], ldx12, work);
+                Clarf1f("R", p - i, m - q - i + 1, &x12[(i - 1) + (i - 1) * ldx12], ldx12, tauq2[i - 1], &x12[((i + 1) - 1) + (i - 1) * ldx12], ldx12, work);
             }
             if (m - p - q >= 1) {
-                Clarf("R", m - p - q, m - q - i + 1, &x12[(i - 1) + (i - 1) * ldx12], ldx12, tauq2[i - 1], &x22[((q + 1) - 1) + (i - 1) * ldx22], ldx22, work);
+                Clarf1f("R", m - p - q, m - q - i + 1, &x12[(i - 1) + (i - 1) * ldx12], ldx12, tauq2[i - 1], &x22[((q + 1) - 1) + (i - 1) * ldx22], ldx22, work);
             }
             //
             Clacgv(m - q - i + 1, &x12[(i - 1) + (i - 1) * ldx12], ldx12);
@@ -233,8 +227,7 @@ void Cunbdb(const char *trans, const char *signs, INTEGER const m, INTEGER const
             Cscal(m - p - q - i + 1, COMPLEX(z2 * z4, 0.0), &x22[((q + i) - 1) + ((p + i) - 1) * ldx22], ldx22);
             Clacgv(m - p - q - i + 1, &x22[((q + i) - 1) + ((p + i) - 1) * ldx22], ldx22);
             Clarfgp(m - p - q - i + 1, x22[((q + i) - 1) + ((p + i) - 1) * ldx22], &x22[((q + i) - 1) + ((p + i + 1) - 1) * ldx22], ldx22, tauq2[(p + i) - 1]);
-            x22[((q + i) - 1) + ((p + i) - 1) * ldx22] = one;
-            Clarf("R", m - p - q - i, m - p - q - i + 1, &x22[((q + i) - 1) + ((p + i) - 1) * ldx22], ldx22, tauq2[(p + i) - 1], &x22[((q + i + 1) - 1) + ((p + i) - 1) * ldx22], ldx22, work);
+            Clarf1f("R", m - p - q - i, m - p - q - i + 1, &x22[((q + i) - 1) + ((p + i) - 1) * ldx22], ldx22, tauq2[(p + i) - 1], &x22[((q + i + 1) - 1) + ((p + i) - 1) * ldx22], ldx22, work);
             //
             Clacgv(m - p - q - i + 1, &x22[((q + i) - 1) + ((p + i) - 1) * ldx22], ldx22);
             //
@@ -265,18 +258,16 @@ void Cunbdb(const char *trans, const char *signs, INTEGER const m, INTEGER const
             Clacgv(m - p - i + 1, &x21[(i - 1) + (i - 1) * ldx21], ldx21);
             //
             Clarfgp(p - i + 1, x11[(i - 1) + (i - 1) * ldx11], &x11[(i - 1) + ((i + 1) - 1) * ldx11], ldx11, taup1[i - 1]);
-            x11[(i - 1) + (i - 1) * ldx11] = one;
             if (i == m - p) {
                 Clarfgp(m - p - i + 1, x21[(i - 1) + (i - 1) * ldx21], &x21[(i - 1) + (i - 1) * ldx21], ldx21, taup2[i - 1]);
             } else {
                 Clarfgp(m - p - i + 1, x21[(i - 1) + (i - 1) * ldx21], &x21[(i - 1) + ((i + 1) - 1) * ldx21], ldx21, taup2[i - 1]);
             }
-            x21[(i - 1) + (i - 1) * ldx21] = one;
             //
-            Clarf("R", q - i, p - i + 1, &x11[(i - 1) + (i - 1) * ldx11], ldx11, taup1[i - 1], &x11[((i + 1) - 1) + (i - 1) * ldx11], ldx11, work);
-            Clarf("R", m - q - i + 1, p - i + 1, &x11[(i - 1) + (i - 1) * ldx11], ldx11, taup1[i - 1], &x12[(i - 1) + (i - 1) * ldx12], ldx12, work);
-            Clarf("R", q - i, m - p - i + 1, &x21[(i - 1) + (i - 1) * ldx21], ldx21, taup2[i - 1], &x21[((i + 1) - 1) + (i - 1) * ldx21], ldx21, work);
-            Clarf("R", m - q - i + 1, m - p - i + 1, &x21[(i - 1) + (i - 1) * ldx21], ldx21, taup2[i - 1], &x22[(i - 1) + (i - 1) * ldx22], ldx22, work);
+            Clarf1f("R", q - i, p - i + 1, &x11[(i - 1) + (i - 1) * ldx11], ldx11, taup1[i - 1], &x11[((i + 1) - 1) + (i - 1) * ldx11], ldx11, work);
+            Clarf1f("R", m - q - i + 1, p - i + 1, &x11[(i - 1) + (i - 1) * ldx11], ldx11, taup1[i - 1], &x12[(i - 1) + (i - 1) * ldx12], ldx12, work);
+            Clarf1f("R", q - i, m - p - i + 1, &x21[(i - 1) + (i - 1) * ldx21], ldx21, taup2[i - 1], &x21[((i + 1) - 1) + (i - 1) * ldx21], ldx21, work);
+            Clarf1f("R", m - q - i + 1, m - p - i + 1, &x21[(i - 1) + (i - 1) * ldx21], ldx21, taup2[i - 1], &x22[(i - 1) + (i - 1) * ldx22], ldx22, work);
             //
             Clacgv(p - i + 1, &x11[(i - 1) + (i - 1) * ldx11], ldx11);
             Clacgv(m - p - i + 1, &x21[(i - 1) + (i - 1) * ldx21], ldx21);
@@ -294,18 +285,17 @@ void Cunbdb(const char *trans, const char *signs, INTEGER const m, INTEGER const
             //
             if (i < q) {
                 Clarfgp(q - i, x11[((i + 1) - 1) + (i - 1) * ldx11], &x11[((i + 2) - 1) + (i - 1) * ldx11], 1, tauq1[i - 1]);
-                x11[((i + 1) - 1) + (i - 1) * ldx11] = one;
             }
             Clarfgp(m - q - i + 1, x12[(i - 1) + (i - 1) * ldx12], &x12[((i + 1) - 1) + (i - 1) * ldx12], 1, tauq2[i - 1]);
-            x12[(i - 1) + (i - 1) * ldx12] = one;
             //
             if (i < q) {
-                Clarf("L", q - i, p - i, &x11[((i + 1) - 1) + (i - 1) * ldx11], 1, conj(tauq1[i - 1]), &x11[((i + 1) - 1) + ((i + 1) - 1) * ldx11], ldx11, work);
-                Clarf("L", q - i, m - p - i, &x11[((i + 1) - 1) + (i - 1) * ldx11], 1, conj(tauq1[i - 1]), &x21[((i + 1) - 1) + ((i + 1) - 1) * ldx21], ldx21, work);
+                Clarf1f("L", q - i, p - i, &x11[((i + 1) - 1) + (i - 1) * ldx11], 1, conj(tauq1[i - 1]), &x11[((i + 1) - 1) + ((i + 1) - 1) * ldx11], ldx11, work);
+                Clarf1f("L", q - i, m - p - i, &x11[((i + 1) - 1) + (i - 1) * ldx11], 1, conj(tauq1[i - 1]), &x21[((i + 1) - 1) + ((i + 1) - 1) * ldx21], ldx21, work);
             }
-            Clarf("L", m - q - i + 1, p - i, &x12[(i - 1) + (i - 1) * ldx12], 1, conj(tauq2[i - 1]), &x12[(i - 1) + ((i + 1) - 1) * ldx12], ldx12, work);
+            Clarf1f("L", m - q - i + 1, p - i, &x12[(i - 1) + (i - 1) * ldx12], 1, conj(tauq2[i - 1]), &x12[(i - 1) + ((i + 1) - 1) * ldx12], ldx12, work);
+            //
             if (m - p > i) {
-                Clarf("L", m - q - i + 1, m - p - i, &x12[(i - 1) + (i - 1) * ldx12], 1, conj(tauq2[i - 1]), &x22[(i - 1) + ((i + 1) - 1) * ldx22], ldx22, work);
+                Clarf1f("L", m - q - i + 1, m - p - i, &x12[(i - 1) + (i - 1) * ldx12], 1, conj(tauq2[i - 1]), &x22[(i - 1) + ((i + 1) - 1) * ldx22], ldx22, work);
             }
             //
         }
@@ -316,13 +306,12 @@ void Cunbdb(const char *trans, const char *signs, INTEGER const m, INTEGER const
             //
             Cscal(m - q - i + 1, COMPLEX(-z1 * z4, 0.0), &x12[(i - 1) + (i - 1) * ldx12], 1);
             Clarfgp(m - q - i + 1, x12[(i - 1) + (i - 1) * ldx12], &x12[((i + 1) - 1) + (i - 1) * ldx12], 1, tauq2[i - 1]);
-            x12[(i - 1) + (i - 1) * ldx12] = one;
             //
             if (p > i) {
-                Clarf("L", m - q - i + 1, p - i, &x12[(i - 1) + (i - 1) * ldx12], 1, conj(tauq2[i - 1]), &x12[(i - 1) + ((i + 1) - 1) * ldx12], ldx12, work);
+                Clarf1f("L", m - q - i + 1, p - i, &x12[(i - 1) + (i - 1) * ldx12], 1, conj(tauq2[i - 1]), &x12[(i - 1) + ((i + 1) - 1) * ldx12], ldx12, work);
             }
             if (m - p - q >= 1) {
-                Clarf("L", m - q - i + 1, m - p - q, &x12[(i - 1) + (i - 1) * ldx12], 1, conj(tauq2[i - 1]), &x22[(i - 1) + ((q + 1) - 1) * ldx22], ldx22, work);
+                Clarf1f("L", m - q - i + 1, m - p - q, &x12[(i - 1) + (i - 1) * ldx12], 1, conj(tauq2[i - 1]), &x22[(i - 1) + ((q + 1) - 1) * ldx22], ldx22, work);
             }
             //
         }
@@ -333,10 +322,8 @@ void Cunbdb(const char *trans, const char *signs, INTEGER const m, INTEGER const
             //
             Cscal(m - p - q - i + 1, COMPLEX(z2 * z4, 0.0), &x22[((p + i) - 1) + ((q + i) - 1) * ldx22], 1);
             Clarfgp(m - p - q - i + 1, x22[((p + i) - 1) + ((q + i) - 1) * ldx22], &x22[((p + i + 1) - 1) + ((q + i) - 1) * ldx22], 1, tauq2[(p + i) - 1]);
-            x22[((p + i) - 1) + ((q + i) - 1) * ldx22] = one;
-            //
             if (m - p - q != i) {
-                Clarf("L", m - p - q - i + 1, m - p - q - i, &x22[((p + i) - 1) + ((q + i) - 1) * ldx22], 1, conj(tauq2[(p + i) - 1]), &x22[((p + i) - 1) + ((q + i + 1) - 1) * ldx22], ldx22, work);
+                Clarf1f("L", m - p - q - i + 1, m - p - q - i, &x22[((p + i) - 1) + ((q + i) - 1) * ldx22], 1, conj(tauq2[(p + i) - 1]), &x22[((p + i) - 1) + ((q + i + 1) - 1) * ldx22], ldx22, work);
             }
             //
         }

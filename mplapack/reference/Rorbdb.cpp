@@ -110,7 +110,6 @@ void Rorbdb(const char *trans, const char *signs, INTEGER const m, INTEGER const
     // Handle column-major and row-major separately
     //
     INTEGER i = 0;
-    const REAL one = 1.0;
     if (colmajor) {
         //
         // Reduce columns 1, ..., Q of X11, X12, X21, and X22
@@ -137,25 +136,23 @@ void Rorbdb(const char *trans, const char *signs, INTEGER const m, INTEGER const
             } else if (p == i) {
                 Rlarfgp(p - i + 1, x11[(i - 1) + (i - 1) * ldx11], &x11[(i - 1) + (i - 1) * ldx11], 1, taup1[i - 1]);
             }
-            x11[(i - 1) + (i - 1) * ldx11] = one;
             if (m - p > i) {
                 Rlarfgp(m - p - i + 1, x21[(i - 1) + (i - 1) * ldx21], &x21[((i + 1) - 1) + (i - 1) * ldx21], 1, taup2[i - 1]);
             } else if (m - p == i) {
                 Rlarfgp(m - p - i + 1, x21[(i - 1) + (i - 1) * ldx21], &x21[(i - 1) + (i - 1) * ldx21], 1, taup2[i - 1]);
             }
-            x21[(i - 1) + (i - 1) * ldx21] = one;
             //
             if (q > i) {
-                Rlarf("L", p - i + 1, q - i, &x11[(i - 1) + (i - 1) * ldx11], 1, taup1[i - 1], &x11[(i - 1) + ((i + 1) - 1) * ldx11], ldx11, work);
+                Rlarf1f("L", p - i + 1, q - i, &x11[(i - 1) + (i - 1) * ldx11], 1, taup1[i - 1], &x11[(i - 1) + ((i + 1) - 1) * ldx11], ldx11, work);
             }
             if (m - q + 1 > i) {
-                Rlarf("L", p - i + 1, m - q - i + 1, &x11[(i - 1) + (i - 1) * ldx11], 1, taup1[i - 1], &x12[(i - 1) + (i - 1) * ldx12], ldx12, work);
+                Rlarf1f("L", p - i + 1, m - q - i + 1, &x11[(i - 1) + (i - 1) * ldx11], 1, taup1[i - 1], &x12[(i - 1) + (i - 1) * ldx12], ldx12, work);
             }
             if (q > i) {
-                Rlarf("L", m - p - i + 1, q - i, &x21[(i - 1) + (i - 1) * ldx21], 1, taup2[i - 1], &x21[(i - 1) + ((i + 1) - 1) * ldx21], ldx21, work);
+                Rlarf1f("L", m - p - i + 1, q - i, &x21[(i - 1) + (i - 1) * ldx21], 1, taup2[i - 1], &x21[(i - 1) + ((i + 1) - 1) * ldx21], ldx21, work);
             }
             if (m - q + 1 > i) {
-                Rlarf("L", m - p - i + 1, m - q - i + 1, &x21[(i - 1) + (i - 1) * ldx21], 1, taup2[i - 1], &x22[(i - 1) + (i - 1) * ldx22], ldx22, work);
+                Rlarf1f("L", m - p - i + 1, m - q - i + 1, &x21[(i - 1) + (i - 1) * ldx21], 1, taup2[i - 1], &x22[(i - 1) + (i - 1) * ldx22], ldx22, work);
             }
             //
             if (i < q) {
@@ -175,7 +172,6 @@ void Rorbdb(const char *trans, const char *signs, INTEGER const m, INTEGER const
                 } else {
                     Rlarfgp(q - i, x11[(i - 1) + ((i + 1) - 1) * ldx11], &x11[(i - 1) + ((i + 2) - 1) * ldx11], ldx11, tauq1[i - 1]);
                 }
-                x11[(i - 1) + ((i + 1) - 1) * ldx11] = one;
             }
             if (q + i - 1 < m) {
                 if (m - q == i) {
@@ -184,17 +180,16 @@ void Rorbdb(const char *trans, const char *signs, INTEGER const m, INTEGER const
                     Rlarfgp(m - q - i + 1, x12[(i - 1) + (i - 1) * ldx12], &x12[(i - 1) + ((i + 1) - 1) * ldx12], ldx12, tauq2[i - 1]);
                 }
             }
-            x12[(i - 1) + (i - 1) * ldx12] = one;
             //
             if (i < q) {
-                Rlarf("R", p - i, q - i, &x11[(i - 1) + ((i + 1) - 1) * ldx11], ldx11, tauq1[i - 1], &x11[((i + 1) - 1) + ((i + 1) - 1) * ldx11], ldx11, work);
-                Rlarf("R", m - p - i, q - i, &x11[(i - 1) + ((i + 1) - 1) * ldx11], ldx11, tauq1[i - 1], &x21[((i + 1) - 1) + ((i + 1) - 1) * ldx21], ldx21, work);
+                Rlarf1f("R", p - i, q - i, &x11[(i - 1) + ((i + 1) - 1) * ldx11], ldx11, tauq1[i - 1], &x11[((i + 1) - 1) + ((i + 1) - 1) * ldx11], ldx11, work);
+                Rlarf1f("R", m - p - i, q - i, &x11[(i - 1) + ((i + 1) - 1) * ldx11], ldx11, tauq1[i - 1], &x21[((i + 1) - 1) + ((i + 1) - 1) * ldx21], ldx21, work);
             }
             if (p > i) {
-                Rlarf("R", p - i, m - q - i + 1, &x12[(i - 1) + (i - 1) * ldx12], ldx12, tauq2[i - 1], &x12[((i + 1) - 1) + (i - 1) * ldx12], ldx12, work);
+                Rlarf1f("R", p - i, m - q - i + 1, &x12[(i - 1) + (i - 1) * ldx12], ldx12, tauq2[i - 1], &x12[((i + 1) - 1) + (i - 1) * ldx12], ldx12, work);
             }
             if (m - p > i) {
-                Rlarf("R", m - p - i, m - q - i + 1, &x12[(i - 1) + (i - 1) * ldx12], ldx12, tauq2[i - 1], &x22[((i + 1) - 1) + (i - 1) * ldx22], ldx22, work);
+                Rlarf1f("R", m - p - i, m - q - i + 1, &x12[(i - 1) + (i - 1) * ldx12], ldx12, tauq2[i - 1], &x22[((i + 1) - 1) + (i - 1) * ldx22], ldx22, work);
             }
             //
         }
@@ -209,13 +204,12 @@ void Rorbdb(const char *trans, const char *signs, INTEGER const m, INTEGER const
             } else {
                 Rlarfgp(m - q - i + 1, x12[(i - 1) + (i - 1) * ldx12], &x12[(i - 1) + ((i + 1) - 1) * ldx12], ldx12, tauq2[i - 1]);
             }
-            x12[(i - 1) + (i - 1) * ldx12] = one;
             //
             if (p > i) {
-                Rlarf("R", p - i, m - q - i + 1, &x12[(i - 1) + (i - 1) * ldx12], ldx12, tauq2[i - 1], &x12[((i + 1) - 1) + (i - 1) * ldx12], ldx12, work);
+                Rlarf1f("R", p - i, m - q - i + 1, &x12[(i - 1) + (i - 1) * ldx12], ldx12, tauq2[i - 1], &x12[((i + 1) - 1) + (i - 1) * ldx12], ldx12, work);
             }
             if (m - p - q >= 1) {
-                Rlarf("R", m - p - q, m - q - i + 1, &x12[(i - 1) + (i - 1) * ldx12], ldx12, tauq2[i - 1], &x22[((q + 1) - 1) + (i - 1) * ldx22], ldx22, work);
+                Rlarf1f("R", m - p - q, m - q - i + 1, &x12[(i - 1) + (i - 1) * ldx12], ldx12, tauq2[i - 1], &x22[((q + 1) - 1) + (i - 1) * ldx22], ldx22, work);
             }
             //
         }
@@ -230,9 +224,8 @@ void Rorbdb(const char *trans, const char *signs, INTEGER const m, INTEGER const
             } else {
                 Rlarfgp(m - p - q - i + 1, x22[((q + i) - 1) + ((p + i) - 1) * ldx22], &x22[((q + i) - 1) + ((p + i + 1) - 1) * ldx22], ldx22, tauq2[(p + i) - 1]);
             }
-            x22[((q + i) - 1) + ((p + i) - 1) * ldx22] = one;
             if (i < m - p - q) {
-                Rlarf("R", m - p - q - i, m - p - q - i + 1, &x22[((q + i) - 1) + ((p + i) - 1) * ldx22], ldx22, tauq2[(p + i) - 1], &x22[((q + i + 1) - 1) + ((p + i) - 1) * ldx22], ldx22, work);
+                Rlarf1f("R", m - p - q - i, m - p - q - i + 1, &x22[((q + i) - 1) + ((p + i) - 1) * ldx22], ldx22, tauq2[(p + i) - 1], &x22[((q + i + 1) - 1) + ((p + i) - 1) * ldx22], ldx22, work);
             }
             //
         }
@@ -259,25 +252,23 @@ void Rorbdb(const char *trans, const char *signs, INTEGER const m, INTEGER const
             theta[i - 1] = atan2(Rnrm2(m - p - i + 1, &x21[(i - 1) + (i - 1) * ldx21], ldx21), Rnrm2(p - i + 1, &x11[(i - 1) + (i - 1) * ldx11], ldx11));
             //
             Rlarfgp(p - i + 1, x11[(i - 1) + (i - 1) * ldx11], &x11[(i - 1) + ((i + 1) - 1) * ldx11], ldx11, taup1[i - 1]);
-            x11[(i - 1) + (i - 1) * ldx11] = one;
             if (i == m - p) {
                 Rlarfgp(m - p - i + 1, x21[(i - 1) + (i - 1) * ldx21], &x21[(i - 1) + (i - 1) * ldx21], ldx21, taup2[i - 1]);
             } else {
                 Rlarfgp(m - p - i + 1, x21[(i - 1) + (i - 1) * ldx21], &x21[(i - 1) + ((i + 1) - 1) * ldx21], ldx21, taup2[i - 1]);
             }
-            x21[(i - 1) + (i - 1) * ldx21] = one;
             //
             if (q > i) {
-                Rlarf("R", q - i, p - i + 1, &x11[(i - 1) + (i - 1) * ldx11], ldx11, taup1[i - 1], &x11[((i + 1) - 1) + (i - 1) * ldx11], ldx11, work);
+                Rlarf1f("R", q - i, p - i + 1, &x11[(i - 1) + (i - 1) * ldx11], ldx11, taup1[i - 1], &x11[((i + 1) - 1) + (i - 1) * ldx11], ldx11, work);
             }
             if (m - q + 1 > i) {
-                Rlarf("R", m - q - i + 1, p - i + 1, &x11[(i - 1) + (i - 1) * ldx11], ldx11, taup1[i - 1], &x12[(i - 1) + (i - 1) * ldx12], ldx12, work);
+                Rlarf1f("R", m - q - i + 1, p - i + 1, &x11[(i - 1) + (i - 1) * ldx11], ldx11, taup1[i - 1], &x12[(i - 1) + (i - 1) * ldx12], ldx12, work);
             }
             if (q > i) {
-                Rlarf("R", q - i, m - p - i + 1, &x21[(i - 1) + (i - 1) * ldx21], ldx21, taup2[i - 1], &x21[((i + 1) - 1) + (i - 1) * ldx21], ldx21, work);
+                Rlarf1f("R", q - i, m - p - i + 1, &x21[(i - 1) + (i - 1) * ldx21], ldx21, taup2[i - 1], &x21[((i + 1) - 1) + (i - 1) * ldx21], ldx21, work);
             }
             if (m - q + 1 > i) {
-                Rlarf("R", m - q - i + 1, m - p - i + 1, &x21[(i - 1) + (i - 1) * ldx21], ldx21, taup2[i - 1], &x22[(i - 1) + (i - 1) * ldx22], ldx22, work);
+                Rlarf1f("R", m - q - i + 1, m - p - i + 1, &x21[(i - 1) + (i - 1) * ldx21], ldx21, taup2[i - 1], &x22[(i - 1) + (i - 1) * ldx22], ldx22, work);
             }
             //
             if (i < q) {
@@ -297,22 +288,20 @@ void Rorbdb(const char *trans, const char *signs, INTEGER const m, INTEGER const
                 } else {
                     Rlarfgp(q - i, x11[((i + 1) - 1) + (i - 1) * ldx11], &x11[((i + 2) - 1) + (i - 1) * ldx11], 1, tauq1[i - 1]);
                 }
-                x11[((i + 1) - 1) + (i - 1) * ldx11] = one;
             }
             if (m - q > i) {
                 Rlarfgp(m - q - i + 1, x12[(i - 1) + (i - 1) * ldx12], &x12[((i + 1) - 1) + (i - 1) * ldx12], 1, tauq2[i - 1]);
             } else {
                 Rlarfgp(m - q - i + 1, x12[(i - 1) + (i - 1) * ldx12], &x12[(i - 1) + (i - 1) * ldx12], 1, tauq2[i - 1]);
             }
-            x12[(i - 1) + (i - 1) * ldx12] = one;
             //
             if (i < q) {
-                Rlarf("L", q - i, p - i, &x11[((i + 1) - 1) + (i - 1) * ldx11], 1, tauq1[i - 1], &x11[((i + 1) - 1) + ((i + 1) - 1) * ldx11], ldx11, work);
-                Rlarf("L", q - i, m - p - i, &x11[((i + 1) - 1) + (i - 1) * ldx11], 1, tauq1[i - 1], &x21[((i + 1) - 1) + ((i + 1) - 1) * ldx21], ldx21, work);
+                Rlarf1f("L", q - i, p - i, &x11[((i + 1) - 1) + (i - 1) * ldx11], 1, tauq1[i - 1], &x11[((i + 1) - 1) + ((i + 1) - 1) * ldx11], ldx11, work);
+                Rlarf1f("L", q - i, m - p - i, &x11[((i + 1) - 1) + (i - 1) * ldx11], 1, tauq1[i - 1], &x21[((i + 1) - 1) + ((i + 1) - 1) * ldx21], ldx21, work);
             }
-            Rlarf("L", m - q - i + 1, p - i, &x12[(i - 1) + (i - 1) * ldx12], 1, tauq2[i - 1], &x12[(i - 1) + ((i + 1) - 1) * ldx12], ldx12, work);
+            Rlarf1f("L", m - q - i + 1, p - i, &x12[(i - 1) + (i - 1) * ldx12], 1, tauq2[i - 1], &x12[(i - 1) + ((i + 1) - 1) * ldx12], ldx12, work);
             if (m - p - i > 0) {
-                Rlarf("L", m - q - i + 1, m - p - i, &x12[(i - 1) + (i - 1) * ldx12], 1, tauq2[i - 1], &x22[(i - 1) + ((i + 1) - 1) * ldx22], ldx22, work);
+                Rlarf1f("L", m - q - i + 1, m - p - i, &x12[(i - 1) + (i - 1) * ldx12], 1, tauq2[i - 1], &x22[(i - 1) + ((i + 1) - 1) * ldx22], ldx22, work);
             }
             //
         }
@@ -323,13 +312,12 @@ void Rorbdb(const char *trans, const char *signs, INTEGER const m, INTEGER const
             //
             Rscal(m - q - i + 1, -z1 * z4, &x12[(i - 1) + (i - 1) * ldx12], 1);
             Rlarfgp(m - q - i + 1, x12[(i - 1) + (i - 1) * ldx12], &x12[((i + 1) - 1) + (i - 1) * ldx12], 1, tauq2[i - 1]);
-            x12[(i - 1) + (i - 1) * ldx12] = one;
             //
             if (p > i) {
-                Rlarf("L", m - q - i + 1, p - i, &x12[(i - 1) + (i - 1) * ldx12], 1, tauq2[i - 1], &x12[(i - 1) + ((i + 1) - 1) * ldx12], ldx12, work);
+                Rlarf1f("L", m - q - i + 1, p - i, &x12[(i - 1) + (i - 1) * ldx12], 1, tauq2[i - 1], &x12[(i - 1) + ((i + 1) - 1) * ldx12], ldx12, work);
             }
             if (m - p - q >= 1) {
-                Rlarf("L", m - q - i + 1, m - p - q, &x12[(i - 1) + (i - 1) * ldx12], 1, tauq2[i - 1], &x22[(i - 1) + ((q + 1) - 1) * ldx22], ldx22, work);
+                Rlarf1f("L", m - q - i + 1, m - p - q, &x12[(i - 1) + (i - 1) * ldx12], 1, tauq2[i - 1], &x22[(i - 1) + ((q + 1) - 1) * ldx22], ldx22, work);
             }
             //
         }
@@ -343,9 +331,8 @@ void Rorbdb(const char *trans, const char *signs, INTEGER const m, INTEGER const
                 Rlarfgp(m - p - q - i + 1, x22[((p + i) - 1) + ((q + i) - 1) * ldx22], &x22[((p + i) - 1) + ((q + i) - 1) * ldx22], 1, tauq2[(p + i) - 1]);
             } else {
                 Rlarfgp(m - p - q - i + 1, x22[((p + i) - 1) + ((q + i) - 1) * ldx22], &x22[((p + i + 1) - 1) + ((q + i) - 1) * ldx22], 1, tauq2[(p + i) - 1]);
-                Rlarf("L", m - p - q - i + 1, m - p - q - i, &x22[((p + i) - 1) + ((q + i) - 1) * ldx22], 1, tauq2[(p + i) - 1], &x22[((p + i) - 1) + ((q + i + 1) - 1) * ldx22], ldx22, work);
+                Rlarf1f("L", m - p - q - i + 1, m - p - q - i, &x22[((p + i) - 1) + ((q + i) - 1) * ldx22], 1, tauq2[(p + i) - 1], &x22[((p + i) - 1) + ((q + i + 1) - 1) * ldx22], ldx22, work);
             }
-            x22[((p + i) - 1) + ((q + i) - 1) * ldx22] = one;
             //
         }
         //
