@@ -37,6 +37,12 @@
 #include <mplapack.h>
 #include <mplapack_arithmetic_params.h>
 
+inline REAL abssq(COMPLEX ff) {
+    REAL temp;
+    temp = (ff.real() * ff.real()) + (ff.imag() * ff.imag());
+    return temp;
+}
+
 void Clartg(COMPLEX const f, COMPLEX const g, REAL &c, COMPLEX &s, COMPLEX &r) {
     COMPLEX t = 0.0;
     const auto &ap = mplapack::get_arithmetic_params<REAL>();

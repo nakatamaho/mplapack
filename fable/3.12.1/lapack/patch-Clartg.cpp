@@ -22,3 +22,21 @@
      REAL rtmax = 0.0;
      REAL g2 = 0.0;
      REAL d = 0.0;
+
+diff --git a/mplapack/reference/Clartg.cpp b/mplapack/reference/Clartg.cpp
+index bc25c968..3d2d8bad 100644
+--- a/mplapack/reference/Clartg.cpp
++++ b/mplapack/reference/Clartg.cpp
+@@ -37,6 +37,12 @@
+ #include <mplapack.h>
+ #include <mplapack_arithmetic_params.h>
+ 
++inline REAL abssq(COMPLEX ff) {
++    REAL temp;
++    temp = (ff.real() * ff.real()) + (ff.imag() * ff.imag());
++    return temp;
++}
++
+ void Clartg(COMPLEX const f, COMPLEX const g, REAL &c, COMPLEX &s, COMPLEX &r) {
+     COMPLEX t = 0.0;
+     const auto &ap = mplapack::get_arithmetic_params<REAL>();
