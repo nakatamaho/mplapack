@@ -177,7 +177,7 @@ void Rorhr_col(INTEGER const m, INTEGER const n, INTEGER const nb, REAL *a, INTE
         //
         jbtemp2 = jb - 2;
         for (j = jb; j <= jb + jnb - 2; j = j + 1) {
-            for (i = j - jbtemp2; i <= nb; i = i + 1) {
+            for (i = j - jbtemp2; i <= min(nb, n); i = i + 1) {
                 t[(i - 1) + (j - 1) * ldt] = zero;
             }
         }
