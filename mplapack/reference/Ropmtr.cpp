@@ -85,10 +85,10 @@ void Ropmtr(const char *side, const char *uplo, const char *trans, INTEGER const
     INTEGER ni = 0;
     INTEGER mi = 0;
     INTEGER i = 0;
-    REAL aii = 0.0;
-    const REAL one = 1.0;
     INTEGER jc = 0;
     INTEGER ic = 0;
+    REAL aii = 0.0;
+    const REAL one = 1.0;
     if (upper) {
         //
         // Q was determined by a call to Rsptrd with UPLO = 'U'
@@ -128,10 +128,7 @@ void Ropmtr(const char *side, const char *uplo, const char *trans, INTEGER const
             //
             // Apply H(i)
             //
-            aii = ap[ii - 1];
-            ap[ii - 1] = one;
-            Rlarf(side, mi, ni, &ap[(ii - i + 1) - 1], 1, tau[i - 1], c, ldc, work);
-            ap[ii - 1] = aii;
+            Rlarf1l(side, mi, ni, &ap[(ii - i + 1) - 1], 1, tau[i - 1], c, ldc, work);
             //
             if (forwrd) {
                 ii += i + 2;
