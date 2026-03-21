@@ -94,9 +94,9 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
     //
     info = 0;
     nb = iMlaenv(1, "Ctrevc", CHAR2(side, howmny), n, -1, -1, -1);
-    maxwrk = n + 2 * n * nb;
+    maxwrk = max((INTEGER)1, n + 2 * n * nb);
     work[1 - 1] = maxwrk;
-    rwork[1 - 1] = n;
+    rwork[1 - 1] = max((INTEGER)1, n);
     lquery = (lwork == -1 || lrwork == -1);
     if (!rightv && !leftv) {
         info = -1;
@@ -145,7 +145,6 @@ void Ctrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
     //
     unfl = Rlamch("Safe minimum");
     ovfl = one / unfl;
-    Rlabad(unfl, ovfl);
     ulp = Rlamch("Precision");
     smlnum = unfl * (n / ulp);
     //
