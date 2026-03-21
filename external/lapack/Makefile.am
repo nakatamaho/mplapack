@@ -29,7 +29,8 @@ PATCHES_3_9_1 = \
 	patch-iseed
 
 PATCHES_3_12_1 = \
-	patch-iseed
+	patch-iseed \
+	patch-xLAQP2RK.f
 
 work/$(PATCH_STAMP): work/$(EXTRACT_STAMP)
 	cd $(LAPACK_WORK_DIR) && patch -p0 < $(LAPACK_PATCH_DIR)/patch-print
@@ -43,7 +44,7 @@ endif
 	fi
 	@if test "x$(LAPACK_VERSION)" = "x3.12.1"; then \
 		$(foreach patch,$(PATCHES_3_12_1), \
-			cd $(LAPACK_WORK_DIR) && patch -p2 < $(LAPACK_PATCH_DIR)/$(patch) && ) \
+			cd $(LAPACK_WORK_DIR) && patch -p1 < $(LAPACK_PATCH_DIR)/$(patch) && ) \
 		cp $(abs_srcdir)/patches/print.c $(LAPACK_WORK_DIR)/BLAS/SRC; \
 	fi
 	touch $(abs_builddir)/work/$(PATCH_STAMP)
