@@ -103,6 +103,7 @@ MANUAL_MAPPINGS_CORE=(
   "ilaprec iMlaprec"
   "lsamen Mlsamen"
   "chkxer Chkxer"
+  "droundup_lwork Rroundup_lwork"
 )
 
 MANUAL_MAPPINGS_TESTING=(
