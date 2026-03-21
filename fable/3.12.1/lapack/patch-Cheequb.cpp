@@ -1,5 +1,5 @@
---- /home/docker/Cheequb.cpp~	2026-03-21 09:44:35.275807548 +0900
-+++ /home/docker/Cheequb.cpp	2026-03-21 09:45:39.972312718 +0900
+--- a/mplapack/reference/Cheequb.cpp	2026-03-21 15:33:59.095321281 +0900
++++ b/mplapack/reference/Cheequb.cpp	2026-03-21 15:35:44.754483866 +0900
 @@ -41,6 +41,7 @@
      bool up = false;
      const REAL zero = 0.0;
@@ -17,3 +17,21 @@
      //
      for (iter = 1; iter <= max_iter; iter = iter + 1) {
          scale = 0.0;
+@@ -148,7 +149,7 @@
+         // avg = s^T beta / n
+         avg = 0.0;
+         for (i = 1; i <= n; i = i + 1) {
+-            avg += (s[i - 1] * work[i - 1]).real();
++            avg += s[i - 1] * work[i - 1].real();
+         }
+         avg = avg / n;
+         //
+@@ -168,7 +169,7 @@
+             si = s[i - 1];
+             c2 = (n - 1) * t;
+             c1 = (n - 2) * (work[i - 1].real() - t * si);
+-            c0 = -(t * si) * si + 2 * work[i - 1].real() * si - n * avg;
++            c0 = -(t * si) * si + two * work[i - 1].real() * si - n * avg;
+             d = c1 * c1 - 4 * c0 * c2;
+             //
+             if (d <= 0) {
