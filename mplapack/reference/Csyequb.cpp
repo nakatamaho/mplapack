@@ -41,7 +41,7 @@ void Csyequb(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, R
     bool up = false;
     const REAL zero = 0.0;
     const REAL one = 1.0;
-    const REAL two = 1.0;
+    const REAL two = 2.0;
     INTEGER i = 0;
     INTEGER j = 0;
     REAL tol = 0.0;
