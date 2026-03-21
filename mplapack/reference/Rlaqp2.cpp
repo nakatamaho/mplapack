@@ -47,10 +47,9 @@ void Rlaqp2(INTEGER const m, INTEGER const n, INTEGER const offset, REAL *a, INT
     INTEGER offpi = 0;
     INTEGER pvt = 0;
     INTEGER itemp = 0;
-    REAL aii = 0.0;
-    const REAL one = 1.0;
     INTEGER j = 0;
     const REAL zero = 0.0;
+    const REAL one = 1.0;
     REAL temp = 0.0;
     REAL temp2 = 0.0;
     for (i = 1; i <= mn; i = i + 1) {
@@ -82,10 +81,7 @@ void Rlaqp2(INTEGER const m, INTEGER const n, INTEGER const offset, REAL *a, INT
             //
             // Apply H(i)**T to A(offset+i:m,i+1:n) from the left.
             //
-            aii = a[(offpi - 1) + (i - 1) * lda];
-            a[(offpi - 1) + (i - 1) * lda] = one;
-            Rlarf("Left", m - offpi + 1, n - i, &a[(offpi - 1) + (i - 1) * lda], 1, tau[i - 1], &a[(offpi - 1) + ((i + 1) - 1) * lda], lda, &work[1 - 1]);
-            a[(offpi - 1) + (i - 1) * lda] = aii;
+            Rlarf1f("Left", m - offpi + 1, n - i, &a[(offpi - 1) + (i - 1) * lda], 1, tau[i - 1], &a[(offpi - 1) + ((i + 1) - 1) * lda], lda, &work[1 - 1]);
         }
         //
         // Update partial column norms.

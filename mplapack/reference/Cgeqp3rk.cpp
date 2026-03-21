@@ -84,7 +84,7 @@ void Cgeqp3rk(INTEGER const m, INTEGER const n, INTEGER const nrhs, INTEGER cons
             // Minimal workspace size in case of using only unblocked
             // BLAS 2 code in Claqp2rk.
             // 1) Claqp2rk: N+NRHS-1 to use in WORK array that is used
-            // in Clarf1 subroutine inside Claqp2rk to apply an
+            // in Clarf1f subroutine inside Claqp2rk to apply an
             // elementary reflector from the left.
             // TOTAL_WORK_SIZE = 3*N + NRHS - 1
             //
@@ -100,7 +100,7 @@ void Cgeqp3rk(INTEGER const m, INTEGER const n, INTEGER const nrhs, INTEGER cons
             // 1) Cgeqp3rk, Claqp2rk, Claqp3rk: 2*N to store full and
             // partial column 2-norms.
             // 2) Claqp2rk: N+NRHS-1 to use in WORK array that is used
-            // in Clarf1 subroutine to apply an elementary reflector
+            // in Clarf1f subroutine to apply an elementary reflector
             // from the left.
             // 3) Claqp3rk: NB*(N+NRHS) to use in the work array F that
             // is used to apply a block reflector from

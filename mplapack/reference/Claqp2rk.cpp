@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Claqp2rk(INTEGER const m, INTEGER const n, INTEGER const nrhs, INTEGER const ioffset, INTEGER &kmax, REAL const abstol, REAL const reltol, INTEGER const kp1, REAL const maxc2nrm, COMPLEX *a, INTEGER const lda, INTEGER &k, REAL &maxc2nrmk, REAL &relmaxc2nrmk, INTEGER *jpiv, COMPLEX *tau, REAL *vn1, REAL *vn2, COMPLEX *work, INTEGER &info) {
+void Claqp2rk(INTEGER const m, INTEGER const n, INTEGER const nrhs, INTEGER const ioffset, INTEGER const kmax, REAL const abstol, REAL const reltol, INTEGER const kp1, REAL const maxc2nrm, COMPLEX *a, INTEGER const lda, INTEGER &k, REAL &maxc2nrmk, REAL &relmaxc2nrmk, INTEGER *jpiv, COMPLEX *tau, REAL *vn1, REAL *vn2, COMPLEX *work, INTEGER &info) {
     //
     // Initialize INFO
     //
@@ -52,7 +52,7 @@ void Claqp2rk(INTEGER const m, INTEGER const n, INTEGER const nrhs, INTEGER cons
     //
     INTEGER minmnfact = min(m - ioffset, n);
     INTEGER minmnupdt = min(m - ioffset, n + nrhs);
-    kmax = min(kmax, minmnfact);
+    INTEGER kbound = min(kmax, minmnfact);
     REAL tol3z = sqrt(Rlamch("Epsilon"));
     REAL hugeval = Rlamch("Overflow");
     //
@@ -69,7 +69,7 @@ void Claqp2rk(INTEGER const m, INTEGER const n, INTEGER const nrhs, INTEGER cons
     const REAL one = 1.0;
     REAL temp = 0.0;
     REAL temp2 = 0.0;
-    for (kk = 1; kk <= kmax; kk = kk + 1) {
+    for (kk = 1; kk <= kbound; kk = kk + 1) {
         //
         i = ioffset + kk;
         //
@@ -293,7 +293,7 @@ void Claqp2rk(INTEGER const m, INTEGER const n, INTEGER const nrhs, INTEGER cons
         // condition is satisfied, not only KK < N+NRHS )
         //
         if (kk < minmnupdt) {
-            Clarf1("Left", m - i + 1, n + nrhs - kk, a[(i - 1) + (kk - 1) * lda], 1, conj(tau[kk - 1]), a[(i - 1) + ((kk + 1) - 1) * lda], lda, work[1 - 1]);
+            Clarf1f("Left", m - i + 1, n + nrhs - kk, &a[(i - 1) + (kk - 1) * lda], 1, conj(tau[kk - 1]), &a[(i - 1) + ((kk + 1) - 1) * lda], lda, &work[1 - 1]);
         }
         //
         if (kk < minmnfact) {
@@ -344,7 +344,7 @@ void Claqp2rk(INTEGER const m, INTEGER const n, INTEGER const nrhs, INTEGER cons
     // i.e. no condition was triggered to exit the routine.
     // Set the number of factorized columns.
     //
-    k = kmax;
+    k = kbound;
     //
     // We reached the end of the loop, i.e. all KMAX columns were
     // factorized, we need to set MAXC2NRMK and RELMAXC2NRMK before

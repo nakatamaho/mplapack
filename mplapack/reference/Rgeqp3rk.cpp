@@ -86,7 +86,7 @@ void Rgeqp3rk(INTEGER const m, INTEGER const n, INTEGER const nrhs, INTEGER cons
             // 1) Rgeqp3rk and Rlaqp2rk: 2*N to store full and partial
             // column 2-norms.
             // 2) Rlaqp2rk: N+NRHS-1 to use in WORK array that is used
-            // in Rlarf1 subroutine inside Rlaqp2rk to apply an
+            // in Rlarf1f subroutine inside Rlaqp2rk to apply an
             // elementary reflector from the left.
             // TOTAL_WORK_SIZE = 3*N + NRHS - 1
             //
@@ -102,7 +102,7 @@ void Rgeqp3rk(INTEGER const m, INTEGER const n, INTEGER const nrhs, INTEGER cons
             // 1) Rgeqp3rk, Rlaqp2rk, Rlaqp3rk: 2*N to store full and
             // partial column 2-norms.
             // 2) Rlaqp2rk: N+NRHS-1 to use in WORK array that is used
-            // in Rlarf1 subroutine to apply an elementary reflector
+            // in Rlarf1f subroutine to apply an elementary reflector
             // from the left.
             // 3) Rlaqp3rk: NB*(N+NRHS) to use in the work array F that
             // is used to apply a block reflector from

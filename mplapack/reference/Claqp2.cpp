@@ -47,8 +47,6 @@ void Claqp2(INTEGER const m, INTEGER const n, INTEGER const offset, COMPLEX *a, 
     INTEGER offpi = 0;
     INTEGER pvt = 0;
     INTEGER itemp = 0;
-    COMPLEX aii = 0.0;
-    const COMPLEX cone = COMPLEX(1.0, 0.0);
     INTEGER j = 0;
     const REAL zero = 0.0;
     const REAL one = 1.0;
@@ -83,10 +81,7 @@ void Claqp2(INTEGER const m, INTEGER const n, INTEGER const offset, COMPLEX *a, 
             //
             // Apply H(i)**H to A(offset+i:m,i+1:n) from the left.
             //
-            aii = a[(offpi - 1) + (i - 1) * lda];
-            a[(offpi - 1) + (i - 1) * lda] = cone;
-            Clarf("Left", m - offpi + 1, n - i, &a[(offpi - 1) + (i - 1) * lda], 1, conj(tau[i - 1]), &a[(offpi - 1) + ((i + 1) - 1) * lda], lda, &work[1 - 1]);
-            a[(offpi - 1) + (i - 1) * lda] = aii;
+            Clarf1f("Left", m - offpi + 1, n - i, &a[(offpi - 1) + (i - 1) * lda], 1, conj(tau[i - 1]), &a[(offpi - 1) + ((i + 1) - 1) * lda], lda, &work[1 - 1]);
         }
         //
         // Update partial column norms.
