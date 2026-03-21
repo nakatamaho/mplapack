@@ -145,6 +145,9 @@ statement_10:
         } else {
             mul = ctoc / cfromc;
             done = true;
+            if (mul == one) {
+                return;
+            }
         }
     }
     //
