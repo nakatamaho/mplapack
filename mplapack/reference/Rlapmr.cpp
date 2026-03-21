@@ -118,6 +118,6 @@ void Rlapmr(bool const forwrd, INTEGER const m, INTEGER const n, REAL *x, INTEGE
         //
     }
     //
-    // End of Clapmt
+    // End of Rlapmr
     //
 }

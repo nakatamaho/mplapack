@@ -207,7 +207,7 @@ void Clahef_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
                 //
                 // Case(2)
                 // Equivalent to testing for
-                // ABS( REAL( W( IMAX,KW-1 ) ) ).GE.ALPHA*ROWMAX
+                // ABS( DBLE( W( IMAX,KW-1 ) ) ).GE.ALPHA*ROWMAX
                 // (used to handle NaN and Inf)
                 //
                 if (!(abs(w[(imax - 1) + ((kw - 1) - 1) * ldw].real()) < alpha * rowmax)) {
@@ -343,7 +343,7 @@ void Clahef_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
                 // A(1:k-1,k) := U(1:k-1,k) = W(1:k-1,kw)/D(k,k)
                 //
                 // (NOTE: No need to use for Hermitian matrix
-                // A( K, K ) = REAL( W( K, K) ) to separately copy diagonal
+                // A( K, K ) = DBLE( W( K, K) ) to separately copy diagonal
                 // element D(k,k) from W (potentially saves only one load))
                 Ccopy(k, &w[(kw - 1) * ldw], 1, &a[(k - 1) * lda], 1);
                 if (k > 1) {
@@ -665,7 +665,7 @@ void Clahef_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
                 //
                 // Case(2)
                 // Equivalent to testing for
-                // ABS( REAL( W( IMAX,K+1 ) ) ).GE.ALPHA*ROWMAX
+                // ABS( DBLE( W( IMAX,K+1 ) ) ).GE.ALPHA*ROWMAX
                 // (used to handle NaN and Inf)
                 //
                 if (!(abs(w[(imax - 1) + ((k + 1) - 1) * ldw].real()) < alpha * rowmax)) {
@@ -797,7 +797,7 @@ void Clahef_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
                 // A(k+1:N,k) := L(k+1:N,k) = W(k+1:N,k)/D(k,k)
                 //
                 // (NOTE: No need to use for Hermitian matrix
-                // A( K, K ) = REAL( W( K, K) ) to separately copy diagonal
+                // A( K, K ) = DBLE( W( K, K) ) to separately copy diagonal
                 // element D(k,k) from W (potentially saves only one load))
                 Ccopy(n - k + 1, &w[(k - 1) + (k - 1) * ldw], 1, &a[(k - 1) + (k - 1) * lda], 1);
                 if (k < n) {

@@ -201,7 +201,7 @@ void Chetf2_rk(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
                 //
                 // Case(2)
                 // Equivalent to testing for
-                // ABS( REAL( W( IMAX,KW-1 ) ) ).GE.ALPHA*ROWMAX
+                // ABS( DBLE( W( IMAX,KW-1 ) ) ).GE.ALPHA*ROWMAX
                 // (used to handle NaN and Inf)
                 //
                 if (!(abs(a[(imax - 1) + (imax - 1) * lda].real()) < alpha * rowmax)) {
@@ -265,7 +265,7 @@ void Chetf2_rk(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
                     a[(j - 1) + (k - 1) * lda] = conj(a[(p - 1) + (j - 1) * lda]);
                     a[(p - 1) + (j - 1) * lda] = t;
                 }
-                // (3) Swap and conjugate corner elements at row-col interserction
+                // (3) Swap and conjugate corner elements at row-col intersection
                 a[(p - 1) + (k - 1) * lda] = conj(a[(p - 1) + (k - 1) * lda]);
                 // (4) Swap diagonal elements at row-col intersection
                 r1 = a[(k - 1) + (k - 1) * lda].real();
@@ -295,7 +295,7 @@ void Chetf2_rk(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
                     a[(j - 1) + (kk - 1) * lda] = conj(a[(kp - 1) + (j - 1) * lda]);
                     a[(kp - 1) + (j - 1) * lda] = t;
                 }
-                // (3) Swap and conjugate corner elements at row-col interserction
+                // (3) Swap and conjugate corner elements at row-col intersection
                 a[(kp - 1) + (kk - 1) * lda] = conj(a[(kp - 1) + (kk - 1) * lda]);
                 // (4) Swap diagonal elements at row-col intersection
                 r1 = a[(kk - 1) + (kk - 1) * lda].real();
@@ -555,7 +555,7 @@ void Chetf2_rk(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
                 //
                 // Case(2)
                 // Equivalent to testing for
-                // ABS( REAL( W( IMAX,KW-1 ) ) ).GE.ALPHA*ROWMAX
+                // ABS( DBLE( W( IMAX,KW-1 ) ) ).GE.ALPHA*ROWMAX
                 // (used to handle NaN and Inf)
                 //
                 if (!(abs(a[(imax - 1) + (imax - 1) * lda].real()) < alpha * rowmax)) {
@@ -619,7 +619,7 @@ void Chetf2_rk(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
                     a[(j - 1) + (k - 1) * lda] = conj(a[(p - 1) + (j - 1) * lda]);
                     a[(p - 1) + (j - 1) * lda] = t;
                 }
-                // (3) Swap and conjugate corner elements at row-col interserction
+                // (3) Swap and conjugate corner elements at row-col intersection
                 a[(p - 1) + (k - 1) * lda] = conj(a[(p - 1) + (k - 1) * lda]);
                 // (4) Swap diagonal elements at row-col intersection
                 r1 = a[(k - 1) + (k - 1) * lda].real();
@@ -649,7 +649,7 @@ void Chetf2_rk(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
                     a[(j - 1) + (kk - 1) * lda] = conj(a[(kp - 1) + (j - 1) * lda]);
                     a[(kp - 1) + (j - 1) * lda] = t;
                 }
-                // (3) Swap and conjugate corner elements at row-col interserction
+                // (3) Swap and conjugate corner elements at row-col intersection
                 a[(kp - 1) + (kk - 1) * lda] = conj(a[(kp - 1) + (kk - 1) * lda]);
                 // (4) Swap diagonal elements at row-col intersection
                 r1 = a[(kk - 1) + (kk - 1) * lda].real();

@@ -126,7 +126,7 @@ void Rsyconvf(const char *uplo, const char *way, INTEGER const n, REAL *a, INTEG
                     }
                     //
                     // Convert IPIV
-                    // There is no interchnge of rows i and and IPIV(i),
+                    // There is no interchange of rows i and and IPIV(i),
                     // so this should be reflected in IPIV format for
                     // *SYTRF_RK ( or *SYTRF_BK)
                     //
@@ -264,7 +264,7 @@ void Rsyconvf(const char *uplo, const char *way, INTEGER const n, REAL *a, INTEG
                     }
                     //
                     // Convert IPIV
-                    // There is no interchnge of rows i and and IPIV(i),
+                    // There is no interchange of rows i and and IPIV(i),
                     // so this should be reflected in IPIV format for
                     // *SYTRF_RK ( or *SYTRF_BK)
                     //
@@ -327,7 +327,7 @@ void Rsyconvf(const char *uplo, const char *way, INTEGER const n, REAL *a, INTEG
             //
             // Revert VALUE
             // Assign subdiagonal entries of D from array E to
-            // subgiagonal entries of A.
+            // subdiagonal entries of A.
             //
             i = 1;
             while (i <= n - 1) {

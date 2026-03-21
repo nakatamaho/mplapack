@@ -70,7 +70,7 @@ void Clarfb_gett(const char *ident, INTEGER const m, INTEGER const n, INTEGER co
         if (lnotident) {
             //
             // col2_(2) Compute W2: = (V1**H) * W2 = (A1**H) * W2,
-            // V1 is not an identy matrix, but unit lower-triangular
+            // V1 is not an identity matrix, but unit lower-triangular
             // V1 stored in A1 (diagonal ones are not stored).
             //
             Ctrmm("L", "L", "C", "U", k, n - k, cone, a, lda, work, ldwork);

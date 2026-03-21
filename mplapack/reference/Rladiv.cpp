@@ -53,7 +53,7 @@ REAL Rladiv2(REAL const a, REAL const b, REAL const c, REAL const d, REAL const 
     //
     return return_value;
     //
-    // End of Rladiv12
+    // End of Rladiv2
     //
 }
 

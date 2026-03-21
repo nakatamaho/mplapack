@@ -121,7 +121,7 @@ void Claed7(INTEGER const n, INTEGER const cutpnt, INTEGER const qsiz, INTEGER c
             return;
         }
         //
-        // Prepare the INDXQ sorting premutation.
+        // Prepare the INDXQ sorting permutation.
         //
         n1 = k;
         n2 = n - k;

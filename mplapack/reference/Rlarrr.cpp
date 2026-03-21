@@ -128,6 +128,6 @@ statement_11:
     // of the eigenvector computation, the flip needs to be applied
     // to the computed eigenvectors (and the support)
     //
-    // END OF Rlarrr
+    // End of Rlarrr
     //
 }

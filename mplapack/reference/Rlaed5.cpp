@@ -94,6 +94,6 @@ void Rlaed5(INTEGER const i, REAL *d, REAL *z, REAL *delta, REAL const rho, REAL
         delta[2 - 1] = delta[2 - 1] / temp;
     }
     //
-    // End OF Rlaed5
+    // End of Rlaed5
     //
 }
