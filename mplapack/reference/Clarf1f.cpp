@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Clarf1(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, INTEGER const incv, COMPLEX const tau, COMPLEX *c, INTEGER const ldc, COMPLEX *work) {
+void Clarf1f(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, INTEGER const incv, COMPLEX const tau, COMPLEX *c, INTEGER const ldc, COMPLEX *work) {
     //
     bool applyleft = Mlsame(side, "L");
     INTEGER lastv = 1;
@@ -137,6 +137,6 @@ void Clarf1(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, INTE
         }
     }
     //
-    // End of Clarf1
+    // End of Clarf1f
     //
 }

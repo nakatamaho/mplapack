@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlarf1(const char *side, INTEGER const m, INTEGER const n, REAL *v, INTEGER const incv, REAL const tau, REAL *c, INTEGER const ldc, REAL *work) {
+void Rlarf1f(const char *side, INTEGER const m, INTEGER const n, REAL *v, INTEGER const incv, REAL const tau, REAL *c, INTEGER const ldc, REAL *work) {
     //
     bool applyleft = Mlsame(side, "L");
     INTEGER lastv = 1;
@@ -131,6 +131,6 @@ void Rlarf1(const char *side, INTEGER const m, INTEGER const n, REAL *v, INTEGER
         }
     }
     //
-    // End of Rlarf1
+    // End of Rlarf1f
     //
 }
