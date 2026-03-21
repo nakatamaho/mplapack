@@ -114,7 +114,7 @@ void Cunmrz(const char *side, const char *trans, INTEGER const m, INTEGER const 
     INTEGER nbmin = 2;
     INTEGER ldwork = nw;
     if (nb > 1 && nb < k) {
-        if (lwork < nw * nb + tsize) {
+        if (lwork < lwkopt) {
             nb = (lwork - tsize) / ldwork;
             nbmin = max((INTEGER)2, iMlaenv(2, "Cunmrq", CHAR2(side, trans), m, n, k, -1));
         }

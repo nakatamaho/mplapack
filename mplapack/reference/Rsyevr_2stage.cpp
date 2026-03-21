@@ -105,8 +105,14 @@ void Rsyevr_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
     ib = iMlaenv2stage(2, "Rsytrd_2stage", jobz, n, kd, -1, -1);
     lhtrd = iMlaenv2stage(3, "Rsytrd_2stage", jobz, n, kd, ib, -1);
     lwtrd = iMlaenv2stage(4, "Rsytrd_2stage", jobz, n, kd, ib, -1);
-    lwmin = max(26 * n, 5 * n + lhtrd + lwtrd);
-    liwmin = max((INTEGER)1, 10 * n);
+    //
+    if (n <= 1) {
+        lwmin = 1;
+        liwmin = 1;
+    } else {
+        lwmin = max(26 * n, 5 * n + lhtrd + lwtrd);
+        liwmin = 10 * n;
+    }
     //
     info = 0;
     if (!(Mlsame(jobz, "N"))) {
@@ -166,7 +172,7 @@ void Rsyevr_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
     }
     //
     if (n == 1) {
-        work[1 - 1] = 7.0;
+        work[1 - 1] = 1.0;
         if (alleig || indeig) {
             m = 1;
             w[1 - 1] = a[0];

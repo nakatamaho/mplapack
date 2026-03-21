@@ -83,7 +83,7 @@ void Cheevd_2stage(const char *jobz, const char *uplo, INTEGER const n, COMPLEX 
             }
         }
         work[1 - 1] = lwmin;
-        rwork[1 - 1] = lrwmin;
+        rwork[1 - 1] = castREAL(lrwmin);
         iwork[1 - 1] = liwmin;
         //
         if (lwork < lwmin && !lquery) {
@@ -186,7 +186,7 @@ void Cheevd_2stage(const char *jobz, const char *uplo, INTEGER const n, COMPLEX 
     }
     //
     work[1 - 1] = lwmin;
-    rwork[1 - 1] = lrwmin;
+    rwork[1 - 1] = castREAL(lrwmin);
     iwork[1 - 1] = liwmin;
     //
     // End of Cheevd_2stage

@@ -40,6 +40,7 @@ void Chetrf_aa(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
     INTEGER nb = 0;
     bool upper = false;
     bool lquery = false;
+    INTEGER lwkmin = 0;
     INTEGER lwkopt = 0;
     INTEGER j = 0;
     INTEGER j1 = 0;
@@ -62,18 +63,25 @@ void Chetrf_aa(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
     info = 0;
     upper = Mlsame(uplo, "U");
     lquery = (lwork == -1);
+    if (n <= 1) {
+        lwkmin = 1;
+        lwkopt = 1;
+    } else {
+        lwkmin = 2 * n;
+        lwkopt = (nb + 1) * n;
+    }
+    //
     if (!upper && !Mlsame(uplo, "L")) {
         info = -1;
     } else if (n < 0) {
         info = -2;
     } else if (lda < max((INTEGER)1, n)) {
         info = -4;
-    } else if (lwork < max((INTEGER)1, 2 * n) && !lquery) {
+    } else if (lwork < lwkmin && !lquery) {
         info = -7;
     }
     //
     if (info == 0) {
-        lwkopt = (nb + 1) * n;
         work[1 - 1] = lwkopt;
     }
     //
@@ -320,7 +328,8 @@ void Chetrf_aa(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
         goto statement_11;
     }
 //
-statement_20:;
+statement_20:
+    work[1 - 1] = lwkopt;
     //
     // End of Chetrf_aa
     //

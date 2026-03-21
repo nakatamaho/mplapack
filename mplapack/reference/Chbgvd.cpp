@@ -81,7 +81,7 @@ void Chbgvd(const char *jobz, const char *uplo, INTEGER const n, INTEGER const k
     //
     if (info == 0) {
         work[1 - 1] = lwmin;
-        rwork[1 - 1] = lrwmin;
+        rwork[1 - 1] = castREAL(lrwmin);
         iwork[1 - 1] = liwmin;
         //
         if (lwork < lwmin && !lquery) {
@@ -147,7 +147,7 @@ void Chbgvd(const char *jobz, const char *uplo, INTEGER const n, INTEGER const k
     }
     //
     work[1 - 1] = lwmin;
-    rwork[1 - 1] = lrwmin;
+    rwork[1 - 1] = castREAL(lrwmin);
     iwork[1 - 1] = liwmin;
     //
     // End of Chbgvd

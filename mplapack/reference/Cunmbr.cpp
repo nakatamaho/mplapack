@@ -52,13 +52,10 @@ void Cunmbr(const char *vect, const char *side, const char *trans, INTEGER const
     INTEGER nw = 0;
     if (left) {
         nq = m;
-        nw = n;
+        nw = max((INTEGER)1, n);
     } else {
         nq = n;
-        nw = m;
-    }
-    if (m == 0 || n == 0) {
-        nw = 0;
+        nw = max((INTEGER)1, m);
     }
     if (!applyq && !Mlsame(vect, "P")) {
         info = -1;
@@ -76,14 +73,14 @@ void Cunmbr(const char *vect, const char *side, const char *trans, INTEGER const
         info = -8;
     } else if (ldc < max((INTEGER)1, m)) {
         info = -11;
-    } else if (lwork < max((INTEGER)1, nw) && !lquery) {
+    } else if (lwork < nw && !lquery) {
         info = -13;
     }
     //
     INTEGER nb = 0;
     INTEGER lwkopt = 0;
     if (info == 0) {
-        if (nw > 0) {
+        if (m > 0 && n > 0) {
             if (applyq) {
                 if (left) {
                     nb = iMlaenv(1, "Cunmqr", CHAR2(side, trans), m - 1, n, m - 1, -1);
@@ -97,7 +94,7 @@ void Cunmbr(const char *vect, const char *side, const char *trans, INTEGER const
                     nb = iMlaenv(1, "Cunmlq", CHAR2(side, trans), m, n - 1, n - 1, -1);
                 }
             }
-            lwkopt = max((INTEGER)1, nw * nb);
+            lwkopt = nw * nb;
         } else {
             lwkopt = 1;
         }

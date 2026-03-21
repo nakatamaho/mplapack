@@ -51,10 +51,10 @@ void Rormhr(const char *side, const char *trans, INTEGER const m, INTEGER const 
     INTEGER nw = 0;
     if (left) {
         nq = m;
-        nw = n;
+        nw = max((INTEGER)1, n);
     } else {
         nq = n;
-        nw = m;
+        nw = max((INTEGER)1, m);
     }
     if (!left && !Mlsame(side, "R")) {
         info = -1;
@@ -72,7 +72,7 @@ void Rormhr(const char *side, const char *trans, INTEGER const m, INTEGER const 
         info = -8;
     } else if (ldc < max((INTEGER)1, m)) {
         info = -11;
-    } else if (lwork < max((INTEGER)1, nw) && !lquery) {
+    } else if (lwork < nw && !lquery) {
         info = -13;
     }
     //
@@ -84,7 +84,7 @@ void Rormhr(const char *side, const char *trans, INTEGER const m, INTEGER const 
         } else {
             nb = iMlaenv(1, "Rormqr", CHAR2(side, trans), m, nh, nh, -1);
         }
-        lwkopt = max((INTEGER)1, nw) * nb;
+        lwkopt = nw * nb;
         work[1 - 1] = lwkopt;
     }
     //

@@ -112,7 +112,7 @@ void Cstedc(const char *compz, INTEGER const n, REAL *d, REAL *e, COMPLEX *z, IN
             liwmin = 3 + 5 * n;
         }
         work[1 - 1] = lwmin;
-        rwork[1 - 1] = lrwmin;
+        rwork[1 - 1] = castREAL(lrwmin);
         iwork[1 - 1] = liwmin;
         //
         if (lwork < lwmin && !lquery) {
@@ -276,7 +276,7 @@ void Cstedc(const char *compz, INTEGER const n, REAL *d, REAL *e, COMPLEX *z, IN
 //
 statement_70:
     work[1 - 1] = lwmin;
-    rwork[1 - 1] = lrwmin;
+    rwork[1 - 1] = castREAL(lrwmin);
     iwork[1 - 1] = liwmin;
     //
     // End of Cstedc

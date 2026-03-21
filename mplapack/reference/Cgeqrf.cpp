@@ -40,10 +40,9 @@ void Cgeqrf(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
     //
     // Test the input arguments
     //
+    INTEGER k = min(m, n);
     info = 0;
     INTEGER nb = iMlaenv(1, "Cgeqrf", " ", m, n, -1, -1);
-    INTEGER lwkopt = n * nb;
-    work[1 - 1] = lwkopt;
     bool lquery = (lwork == -1);
     if (m < 0) {
         info = -1;
@@ -51,19 +50,27 @@ void Cgeqrf(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
         info = -2;
     } else if (lda < max((INTEGER)1, m)) {
         info = -4;
-    } else if (lwork < max((INTEGER)1, n) && !lquery) {
-        info = -7;
+    } else if (!lquery) {
+        if (lwork <= 0 || (m > 0 && lwork < max((INTEGER)1, n))) {
+            info = -7;
+        }
     }
+    INTEGER lwkopt = 0;
     if (info != 0) {
         Mxerbla("Cgeqrf", -info);
         return;
     } else if (lquery) {
+        if (k == 0) {
+            lwkopt = 1;
+        } else {
+            lwkopt = n * nb;
+        }
+        work[1 - 1] = lwkopt;
         return;
     }
     //
     // Quick return if possible
     //
-    INTEGER k = min(m, n);
     if (k == 0) {
         work[1 - 1] = 1.0;
         return;

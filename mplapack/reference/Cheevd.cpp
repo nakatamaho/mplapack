@@ -79,12 +79,12 @@ void Cheevd(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *a, INT
                 lrwmin = n;
                 liwmin = 1;
             }
-            lopt = max(lwmin, n + iMlaenv(1, "Chetrd", uplo, n, -1, -1, -1));
+            lopt = max(lwmin, n + n * iMlaenv(1, "Chetrd", uplo, n, -1, -1, -1));
             lropt = lrwmin;
             liopt = liwmin;
         }
         work[1 - 1] = lopt;
-        rwork[1 - 1] = lropt;
+        rwork[1 - 1] = castREAL(lropt);
         iwork[1 - 1] = liopt;
         //
         if (lwork < lwmin && !lquery) {
@@ -185,7 +185,7 @@ void Cheevd(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *a, INT
     }
     //
     work[1 - 1] = lopt;
-    rwork[1 - 1] = lropt;
+    rwork[1 - 1] = castREAL(lropt);
     iwork[1 - 1] = liopt;
     //
     // End of Cheevd

@@ -54,17 +54,22 @@ void Rgehrd(INTEGER const n, INTEGER const ilo, INTEGER const ihi, REAL *a, INTE
         info = -8;
     }
     //
+    INTEGER nh = ihi - ilo + 1;
+    INTEGER lwkopt = 0;
     const INTEGER nbmax = 64;
     INTEGER nb = 0;
     const INTEGER ldt = nbmax + 1;
     const INTEGER tsize = ldt * nbmax;
-    INTEGER lwkopt = 0;
     if (info == 0) {
         //
         // Compute the workspace requirements
         //
-        nb = min(nbmax, iMlaenv(1, "Rgehrd", " ", n, ilo, ihi, -1));
-        lwkopt = n * nb + tsize;
+        if (nh <= 1) {
+            lwkopt = 1;
+        } else {
+            nb = min(nbmax, iMlaenv(1, "Rgehrd", " ", n, ilo, ihi, -1));
+            lwkopt = n * nb + tsize;
+        }
         work[1 - 1] = lwkopt;
     }
     //
@@ -88,7 +93,6 @@ void Rgehrd(INTEGER const n, INTEGER const ilo, INTEGER const ihi, REAL *a, INTE
     //
     // Quick return if possible
     //
-    INTEGER nh = ihi - ilo + 1;
     if (nh <= 1) {
         work[1 - 1] = 1.0;
         return;
@@ -109,7 +113,7 @@ void Rgehrd(INTEGER const n, INTEGER const ilo, INTEGER const ihi, REAL *a, INTE
             //
             // Determine if workspace is large enough for blocked code
             //
-            if (lwork < n * nb + tsize) {
+            if (lwork < lwkopt) {
                 //
                 // Not enough workspace to use optimal NB:  determine the
                 // minimum value of NB, and reduce NB or force use of
@@ -179,6 +183,7 @@ void Rgehrd(INTEGER const n, INTEGER const ilo, INTEGER const ihi, REAL *a, INTE
     //
     INTEGER iinfo = 0;
     Rgehd2(n, i, ihi, a, lda, tau, work, iinfo);
+    //
     work[1 - 1] = lwkopt;
     //
     // End of Rgehrd

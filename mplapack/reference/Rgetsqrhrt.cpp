@@ -41,7 +41,7 @@ void Rgetsqrhrt(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER con
     // Test the input arguments
     //
     info = 0;
-    bool lquery = lwork == -1;
+    bool lquery = (lwork == -1);
     INTEGER nb1local = 0;
     INTEGER num_all_row_blocks = 0;
     INTEGER lwt = 0;
@@ -98,8 +98,9 @@ void Rgetsqrhrt(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER con
             lw2 = nb1local * max(nb1local, (n - nb1local));
             //
             lworkopt = max(lwt + lw1, max(lwt + n * n + lw2, lwt + n * n + n));
+            lworkopt = max((INTEGER)1, lworkopt);
             //
-            if ((lwork < max((INTEGER)1, lworkopt)) && (!lquery)) {
+            if (lwork < lworkopt && !lquery) {
                 info = -11;
             }
             //

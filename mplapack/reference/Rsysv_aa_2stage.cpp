@@ -44,6 +44,7 @@ void Rsysv_aa_2stage(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL
     bool upper = Mlsame(uplo, "U");
     bool wquery = (lwork == -1);
     bool tquery = (ltb == -1);
+    INTEGER lwkmin = max((INTEGER)1, n);
     if (!upper && !Mlsame(uplo, "L")) {
         info = -1;
     } else if (n < 0) {
@@ -52,18 +53,19 @@ void Rsysv_aa_2stage(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL
         info = -3;
     } else if (lda < max((INTEGER)1, n)) {
         info = -5;
-    } else if (ltb < (4 * n) && !tquery) {
+    } else if (ltb < max((INTEGER)1, 4 * n) && !tquery) {
         info = -7;
     } else if (ldb < max((INTEGER)1, n)) {
         info = -11;
-    } else if (lwork < n && !wquery) {
+    } else if (lwork < lwkmin && !wquery) {
         info = -13;
     }
     //
     INTEGER lwkopt = 0;
     if (info == 0) {
         Rsytrf_aa_2stage(uplo, n, a, lda, tb, -1, ipiv, ipiv2, work, -1, info);
-        lwkopt = castINTEGER(work[1 - 1]);
+        lwkopt = max(lwkmin, castINTEGER(work[1 - 1]));
+        work[1 - 1] = lwkopt;
     }
     //
     if (info != 0) {

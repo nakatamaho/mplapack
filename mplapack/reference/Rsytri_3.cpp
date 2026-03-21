@@ -46,8 +46,15 @@ void Rsytri_3(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REA
     //
     // Determine the block size
     //
-    INTEGER nb = max((INTEGER)1, iMlaenv(1, "Rsytri_3", uplo, n, -1, -1, -1));
-    INTEGER lwkopt = (n + nb + 1) * (nb + 3);
+    INTEGER lwkopt = 0;
+    INTEGER nb = 0;
+    if (n == 0) {
+        lwkopt = 1;
+    } else {
+        nb = max((INTEGER)1, iMlaenv(1, "Rsytri_3", uplo, n, -1, -1, -1));
+        lwkopt = (n + nb + 1) * (nb + 3);
+    }
+    work[1 - 1] = lwkopt;
     //
     if (!upper && !Mlsame(uplo, "L")) {
         info = -1;
@@ -63,7 +70,6 @@ void Rsytri_3(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REA
         Mxerbla("Rsytri_3", -info);
         return;
     } else if (lquery) {
-        work[1 - 1] = lwkopt;
         return;
     }
     //

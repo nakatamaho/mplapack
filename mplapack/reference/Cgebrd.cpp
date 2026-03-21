@@ -41,9 +41,20 @@ void Cgebrd(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REA
     // Test the input parameters
     //
     info = 0;
-    INTEGER nb = max((INTEGER)1, iMlaenv(1, "Cgebrd", " ", m, n, -1, -1));
-    INTEGER lwkopt = (m + n) * nb;
+    INTEGER minmn = min(m, n);
+    INTEGER lwkmin = 0;
+    INTEGER lwkopt = 0;
+    INTEGER nb = 0;
+    if (minmn == 0) {
+        lwkmin = 1;
+        lwkopt = 1;
+    } else {
+        lwkmin = max(m, n);
+        nb = max((INTEGER)1, iMlaenv(1, "Cgebrd", " ", m, n, -1, -1));
+        lwkopt = (m + n) * nb;
+    }
     work[1 - 1] = castREAL(lwkopt);
+    //
     bool lquery = (lwork == -1);
     if (m < 0) {
         info = -1;
@@ -51,7 +62,7 @@ void Cgebrd(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REA
         info = -2;
     } else if (lda < max((INTEGER)1, m)) {
         info = -4;
-    } else if (lwork < max((INTEGER)1, m, n) && !lquery) {
+    } else if (lwork < lwkmin && !lquery) {
         info = -10;
     }
     if (info < 0) {
@@ -63,7 +74,6 @@ void Cgebrd(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REA
     //
     // Quick return if possible
     //
-    INTEGER minmn = min(m, n);
     if (minmn == 0) {
         work[1 - 1] = 1.0;
         return;
@@ -84,7 +94,7 @@ void Cgebrd(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REA
         // Determine when to switch from blocked to unblocked code.
         //
         if (nx < minmn) {
-            ws = (m + n) * nb;
+            ws = lwkopt;
             if (lwork < ws) {
                 //
                 // Not enough work space for the optimal NB, consider using

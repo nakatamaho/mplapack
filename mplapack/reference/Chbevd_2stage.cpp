@@ -85,7 +85,7 @@ void Chbevd_2stage(const char *jobz, const char *uplo, INTEGER const n, INTEGER 
     //
     if (info == 0) {
         work[1 - 1] = lwmin;
-        rwork[1 - 1] = lrwmin;
+        rwork[1 - 1] = castREAL(lrwmin);
         iwork[1 - 1] = liwmin;
         //
         if (lwork < lwmin && !lquery) {
@@ -188,7 +188,7 @@ void Chbevd_2stage(const char *jobz, const char *uplo, INTEGER const n, INTEGER 
     }
     //
     work[1 - 1] = lwmin;
-    rwork[1 - 1] = lrwmin;
+    rwork[1 - 1] = castREAL(lrwmin);
     iwork[1 - 1] = liwmin;
     //
     // End of Chbevd_2stage

@@ -41,7 +41,6 @@ void Chetrd_hb2st(const char *stage1, const char *vect, const char *uplo, INTEGE
     // Determine the minimal workspace size required.
     // Test the input parameters
     //
-    INTEGER debug = 0;
     info = 0;
     bool afters1 = Mlsame(stage1, "Y");
     bool wantq = Mlsame(vect, "V");
@@ -51,8 +50,15 @@ void Chetrd_hb2st(const char *stage1, const char *vect, const char *uplo, INTEGE
     // Determine the block size, the workspace size and the hous size.
     //
     INTEGER ib = iMlaenv2stage(2, "Chetrd_hb2st", vect, n, kd, -1, -1);
-    INTEGER lhmin = iMlaenv2stage(3, "Chetrd_hb2st", vect, n, kd, ib, -1);
-    INTEGER lwmin = iMlaenv2stage(4, "Chetrd_hb2st", vect, n, kd, ib, -1);
+    INTEGER lhmin = 0;
+    INTEGER lwmin = 0;
+    if (n == 0 || kd <= 1) {
+        lhmin = 1;
+        lwmin = 1;
+    } else {
+        lhmin = iMlaenv2stage(3, "Chetrd_hb2st", vect, n, kd, ib, -1);
+        lwmin = iMlaenv2stage(4, "Chetrd_hb2st", vect, n, kd, ib, -1);
+    }
     //
     if (!afters1 && !Mlsame(stage1, "N")) {
         info = -1;
@@ -282,7 +288,7 @@ void Chetrd_hb2st(const char *stage1, const char *vect, const char *uplo, INTEGE
                         //
                         // Call the kernel
                         //
-                        Chb2st_kernels(uplo, wantq, ttype, stind, edind, sweepid, n, kd, ib, &work[inda - 1], lda, &hous[indv - 1], &hous[indtau - 1], ldv, &work[(indw + tid * kd) - 1]);
+                        Chb2st_kernels(uplo, wantq, ttype, stind, edind, sweepid, n, kd, ib, &work[inda - 1], lda, &hous[indv - 1], &hous[indtau - 1], ldv, &work[indw - 1]);
                         if (blklastind >= (n - 1)) {
                             stt++;
                             break;
@@ -313,7 +319,6 @@ void Chetrd_hb2st(const char *stage1, const char *vect, const char *uplo, INTEGE
         }
     }
     //
-    hous[1 - 1] = lhmin;
     work[1 - 1] = lwmin;
     //
     // End of Chetrd_hb2st

@@ -319,7 +319,8 @@ void Csytrf_aa(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
         goto statement_11;
     }
 //
-statement_20:;
+statement_20:
+    work[1 - 1] = lwkopt;
     //
     // End of Csytrf_aa
     //

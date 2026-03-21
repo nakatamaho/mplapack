@@ -52,10 +52,10 @@ void Rormbr(const char *vect, const char *side, const char *trans, INTEGER const
     INTEGER nw = 0;
     if (left) {
         nq = m;
-        nw = n;
+        nw = max((INTEGER)1, n);
     } else {
         nq = n;
-        nw = m;
+        nw = max((INTEGER)1, m);
     }
     if (!applyq && !Mlsame(vect, "P")) {
         info = -1;
@@ -73,7 +73,7 @@ void Rormbr(const char *vect, const char *side, const char *trans, INTEGER const
         info = -8;
     } else if (ldc < max((INTEGER)1, m)) {
         info = -11;
-    } else if (lwork < max((INTEGER)1, nw) && !lquery) {
+    } else if (lwork < nw && !lquery) {
         info = -13;
     }
     //
@@ -93,7 +93,7 @@ void Rormbr(const char *vect, const char *side, const char *trans, INTEGER const
                 nb = iMlaenv(1, "Rormlq", CHAR2(side, trans), m, n - 1, n - 1, -1);
             }
         }
-        lwkopt = max((INTEGER)1, nw) * nb;
+        lwkopt = nw * nb;
         work[1 - 1] = lwkopt;
     }
     //

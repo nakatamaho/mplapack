@@ -44,6 +44,7 @@ void Cggev3(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, I
     bool ilvr = false;
     bool ilv = false;
     bool lquery = false;
+    INTEGER lwkmin = 0;
     INTEGER ierr = 0;
     INTEGER lwkopt = 0;
     REAL eps = 0.0;
@@ -104,6 +105,7 @@ void Cggev3(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, I
     //
     info = 0;
     lquery = (lwork == -1);
+    lwkmin = max((INTEGER)1, 2 * n);
     if (ijobvl <= 0) {
         info = -1;
     } else if (ijobvr <= 0) {
@@ -118,7 +120,7 @@ void Cggev3(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, I
         info = -11;
     } else if (ldvr < 1 || (ilvr && ldvr < n)) {
         info = -13;
-    } else if (lwork < max((INTEGER)1, 2 * n) && !lquery) {
+    } else if (lwork < lwkmin && !lquery) {
         info = -15;
     }
     //
@@ -126,7 +128,7 @@ void Cggev3(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, I
     //
     if (info == 0) {
         Cgeqrf(n, n, b, ldb, work, work, -1, ierr);
-        lwkopt = max((INTEGER)1, n + castINTEGER(work[1 - 1].real()));
+        lwkopt = max(lwkmin, n + castINTEGER(work[1 - 1].real()));
         Cunmqr("L", "C", n, n, n, b, ldb, work, a, lda, work, -1, ierr);
         lwkopt = max(lwkopt, n + castINTEGER(work[1 - 1].real()));
         if (ilvl) {
@@ -136,15 +138,19 @@ void Cggev3(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, I
         if (ilv) {
             Cgghd3(jobvl, jobvr, n, 1, n, a, lda, b, ldb, vl, ldvl, vr, ldvr, work, -1, ierr);
             lwkopt = max(lwkopt, n + castINTEGER(work[1 - 1].real()));
-            Chgeqz("S", jobvl, jobvr, n, 1, n, a, lda, b, ldb, alpha, beta, vl, ldvl, vr, ldvr, work, -1, rwork, ierr);
+            Claqz0("S", jobvl, jobvr, n, 1, n, a, lda, b, ldb, alpha, beta, vl, ldvl, vr, ldvr, work, -1, rwork, 0, ierr);
             lwkopt = max(lwkopt, n + castINTEGER(work[1 - 1].real()));
         } else {
             Cgghd3(jobvl, jobvr, n, 1, n, a, lda, b, ldb, vl, ldvl, vr, ldvr, work, -1, ierr);
             lwkopt = max(lwkopt, n + castINTEGER(work[1 - 1].real()));
-            Chgeqz("E", jobvl, jobvr, n, 1, n, a, lda, b, ldb, alpha, beta, vl, ldvl, vr, ldvr, work, -1, rwork, ierr);
+            Claqz0("E", jobvl, jobvr, n, 1, n, a, lda, b, ldb, alpha, beta, vl, ldvl, vr, ldvr, work, -1, rwork, 0, ierr);
             lwkopt = max(lwkopt, n + castINTEGER(work[1 - 1].real()));
         }
-        work[1 - 1] = COMPLEX(lwkopt);
+        if (n == 0) {
+            work[1 - 1] = 1.0;
+        } else {
+            work[1 - 1] = COMPLEX(lwkopt);
+        }
     }
     //
     if (info != 0) {
@@ -165,7 +171,6 @@ void Cggev3(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, I
     eps = Rlamch("E") * Rlamch("B");
     smlnum = Rlamch("S");
     bignum = one / smlnum;
-    Rlabad(smlnum, bignum);
     smlnum = sqrt(smlnum) / eps;
     bignum = one / smlnum;
     //
@@ -258,7 +263,7 @@ void Cggev3(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, I
     } else {
         chtemp = 'E';
     }
-    Chgeqz(&chtemp, jobvl, jobvr, n, ilo, ihi, a, lda, b, ldb, alpha, beta, vl, ldvl, vr, ldvr, &work[iwrk - 1], lwork + 1 - iwrk, &rwork[irwrk - 1], ierr);
+    Claqz0(&chtemp, jobvl, jobvr, n, ilo, ihi, a, lda, b, ldb, alpha, beta, vl, ldvl, vr, ldvr, &work[iwrk - 1], lwork + 1 - iwrk, &rwork[irwrk - 1], 0, ierr);
     if (ierr != 0) {
         if (ierr > 0 && ierr <= n) {
             info = ierr;

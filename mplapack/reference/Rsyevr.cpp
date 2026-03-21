@@ -98,8 +98,13 @@ void Rsyevr(const char *jobz, const char *range, const char *uplo, INTEGER const
     //
     lquery = ((lwork == -1) || (liwork == -1));
     //
-    lwmin = max((INTEGER)1, 26 * n);
-    liwmin = max((INTEGER)1, 10 * n);
+    if (n <= 1) {
+        lwmin = 1;
+        liwmin = 1;
+    } else {
+        lwmin = 26 * n;
+        liwmin = 10 * n;
+    }
     //
     info = 0;
     if (!(wantz || Mlsame(jobz, "N"))) {
@@ -159,7 +164,7 @@ void Rsyevr(const char *jobz, const char *range, const char *uplo, INTEGER const
     }
     //
     if (n == 1) {
-        work[1 - 1] = 7.0;
+        work[1 - 1] = 1.0;
         if (alleig || indeig) {
             m = 1;
             w[1 - 1] = a[0];

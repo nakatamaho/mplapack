@@ -80,7 +80,7 @@ void Chegvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
     //
     if (info == 0) {
         work[1 - 1] = lopt;
-        rwork[1 - 1] = lropt;
+        rwork[1 - 1] = castREAL(lropt);
         iwork[1 - 1] = liopt;
         //
         if (lwork < lwmin && !lquery) {
@@ -117,9 +117,9 @@ void Chegvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
     //
     Chegst(itype, uplo, n, a, lda, b, ldb, info);
     Cheevd(jobz, uplo, n, a, lda, w, work, lwork, rwork, lrwork, iwork, liwork, info);
-    lopt = max(lopt, castINTEGER(work[1 - 1].real()));
-    lropt = max(lropt, castINTEGER(rwork[1 - 1]));
-    liopt = max(liopt, iwork[1 - 1]);
+    lopt = castINTEGER(castREAL(max(castREAL(lopt), work[1 - 1].real())));
+    lropt = castINTEGER(max(castREAL(lropt), castREAL(rwork[1 - 1])));
+    liopt = castINTEGER(max(castREAL(liopt), castREAL(iwork[1 - 1])));
     //
     char trans;
     const COMPLEX cone = COMPLEX(1.0, 0.0);
@@ -156,7 +156,7 @@ void Chegvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
     }
     //
     work[1 - 1] = lopt;
-    rwork[1 - 1] = lropt;
+    rwork[1 - 1] = castREAL(lropt);
     iwork[1 - 1] = liopt;
     //
     // End of Chegvd

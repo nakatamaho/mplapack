@@ -44,23 +44,32 @@ void Rlaswlq(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const n
     //
     bool lquery = (lwork == -1);
     //
+    INTEGER minmn = min(m, n);
+    INTEGER lwmin = 0;
+    if (minmn == 0) {
+        lwmin = 1;
+    } else {
+        lwmin = m * mb;
+    }
+    //
     if (m < 0) {
         info = -1;
     } else if (n < 0 || n < m) {
         info = -2;
     } else if (mb < 1 || (mb > m && m > 0)) {
         info = -3;
-    } else if (nb <= m) {
+    } else if (nb < 0) {
         info = -4;
     } else if (lda < max((INTEGER)1, m)) {
-        info = -5;
+        info = -6;
     } else if (ldt < mb) {
         info = -8;
-    } else if ((lwork < m * mb) && (!lquery)) {
+    } else if (lwork < lwmin && (!lquery)) {
         info = -10;
     }
+    //
     if (info == 0) {
-        work[1 - 1] = mb * m;
+        work[1 - 1] = lwmin;
     }
     //
     if (info != 0) {
@@ -72,7 +81,7 @@ void Rlaswlq(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const n
     //
     // Quick return if possible
     //
-    if (min(m, n) == 0) {
+    if (minmn == 0) {
         return;
     }
     //
@@ -106,7 +115,7 @@ void Rlaswlq(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const n
         Rtplqt(m, kk, 0, mb, &a[0], lda, &a[(ii - 1) * lda], lda, &t[((ctr * m + 1) - 1) * ldt], ldt, work, info);
     }
     //
-    work[1 - 1] = m * mb;
+    work[1 - 1] = lwmin;
     //
     // End of Rlaswlq
     //

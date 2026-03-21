@@ -42,8 +42,18 @@ void Cgeqrfp(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
     //
     info = 0;
     INTEGER nb = iMlaenv(1, "Cgeqrf", " ", m, n, -1, -1);
-    INTEGER lwkopt = n * nb;
+    INTEGER k = min(m, n);
+    INTEGER lwkmin = 0;
+    INTEGER lwkopt = 0;
+    if (k == 0) {
+        lwkmin = 1;
+        lwkopt = 1;
+    } else {
+        lwkmin = n;
+        lwkopt = n * nb;
+    }
     work[1 - 1] = lwkopt;
+    //
     bool lquery = (lwork == -1);
     if (m < 0) {
         info = -1;
@@ -51,7 +61,7 @@ void Cgeqrfp(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
         info = -2;
     } else if (lda < max((INTEGER)1, m)) {
         info = -4;
-    } else if (lwork < max((INTEGER)1, n) && !lquery) {
+    } else if (lwork < lwkmin && !lquery) {
         info = -7;
     }
     if (info != 0) {
@@ -63,7 +73,6 @@ void Cgeqrfp(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
     //
     // Quick return if possible
     //
-    INTEGER k = min(m, n);
     if (k == 0) {
         work[1 - 1] = 1.0;
         return;
@@ -71,7 +80,7 @@ void Cgeqrfp(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
     //
     INTEGER nbmin = 2;
     INTEGER nx = 0;
-    INTEGER iws = n;
+    INTEGER iws = lwkmin;
     INTEGER ldwork = 0;
     if (nb > 1 && nb < k) {
         //

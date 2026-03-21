@@ -45,7 +45,7 @@ void Rggqrf(INTEGER const n, INTEGER const m, INTEGER const p, REAL *a, INTEGER 
     INTEGER nb2 = iMlaenv(1, "Rgerqf", " ", n, p, -1, -1);
     INTEGER nb3 = iMlaenv(1, "Rormqr", " ", n, m, p, -1);
     INTEGER nb = max(nb1, nb2, nb3);
-    INTEGER lwkopt = max(n, m, p) * nb;
+    INTEGER lwkopt = max((INTEGER)1, max(n, m, p) * nb);
     work[1 - 1] = lwkopt;
     bool lquery = (lwork == -1);
     if (n < 0) {
@@ -81,6 +81,7 @@ void Rggqrf(INTEGER const n, INTEGER const m, INTEGER const p, REAL *a, INTEGER 
     // RQ factorization of N-by-P matrix B: B = T*Z.
     //
     Rgerqf(n, p, b, ldb, taub, work, lwork, info);
+    //
     work[1 - 1] = max(lopt, castINTEGER(work[1 - 1]));
     //
     // End of Rggqrf
