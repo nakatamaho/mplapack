@@ -39,12 +39,12 @@
 
 void Clartg(COMPLEX const f, COMPLEX const g, REAL &c, COMPLEX &s, COMPLEX &r) {
     COMPLEX t = 0.0;
-    const REAL one = 1.0;
     const auto &ap = mplapack::get_arithmetic_params<REAL>();
     const REAL safmin = ap.safmin;
     REAL rtmin = sqrt(safmin);
     //
-    REAL czero = 0.0;
+    const COMPLEX czero = COMPLEX(0.0, 0.0);
+    const REAL one = 1.0;
     const REAL zero = 0.0;
     REAL g1 = 0.0;
     const REAL safmax = ap.safmax;

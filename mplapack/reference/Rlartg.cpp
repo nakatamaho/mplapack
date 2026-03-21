@@ -38,7 +38,6 @@
 #include <mplapack_arithmetic_params.h>
 
 void Rlartg(REAL const f, REAL const g, REAL &c, REAL &s, REAL &r) {
-    const REAL one = 1.0;
     const auto &ap = mplapack::get_arithmetic_params<REAL>();
     const REAL safmin = ap.safmin;
     REAL rtmin = sqrt(safmin);
@@ -48,6 +47,7 @@ void Rlartg(REAL const f, REAL const g, REAL &c, REAL &s, REAL &r) {
     REAL f1 = abs(f);
     REAL g1 = abs(g);
     const REAL zero = 0.0;
+    const REAL one = 1.0;
     REAL d = 0.0;
     REAL u = 0.0;
     REAL fs = 0.0;
