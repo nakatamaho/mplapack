@@ -166,7 +166,6 @@ void Rtrsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
     eps = Rlamch("P");
     smlnum = Rlamch("S") / eps;
     bignum = one / smlnum;
-    Rlabad(smlnum, bignum);
     //
     ks = 0;
     pair = false;

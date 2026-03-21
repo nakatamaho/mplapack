@@ -187,7 +187,6 @@ void Cgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
     sfmin = Rlamch("S");
     smlnum = sfmin / eps;
     bignum = one / smlnum;
-    Rlabad(smlnum, bignum);
     //
     // Scale A if max entry outside range [SMLNUM,BIGNUM].
     //

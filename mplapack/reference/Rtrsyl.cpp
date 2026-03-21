@@ -109,7 +109,6 @@ void Rtrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
     eps = Rlamch("P");
     smlnum = Rlamch("S");
     bignum = one / smlnum;
-    Rlabad(smlnum, bignum);
     smlnum = smlnum * castREAL(m * n) / eps;
     bignum = one / smlnum;
     //

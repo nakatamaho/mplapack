@@ -79,7 +79,6 @@ void Ctrsyl(const char *trana, const char *tranb, INTEGER const isgn, INTEGER co
     REAL eps = Rlamch("P");
     REAL smlnum = Rlamch("S");
     REAL bignum = one / smlnum;
-    Rlabad(smlnum, bignum);
     smlnum = smlnum * castREAL(m * n) / eps;
     bignum = one / smlnum;
     REAL dum[1];
