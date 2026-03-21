@@ -17,6 +17,7 @@ RUN zypper --non-interactive install \
     gzip \
     awk \
     xz \
+    bsdtar \
     bzip2 \
     patch \
     && zypper clean --all
@@ -24,6 +25,12 @@ RUN zypper --non-interactive install \
 # Configure ccache (directory will be mounted at runtime)
 ENV CCACHE_DIR=/ccache
 ENV PATH="/usr/lib/ccache:/usr/lib64/ccache:${PATH}"
+# Work around tar extraction failures seen on aarch64 under QEMU/binfmt
+# by preferring bsdtar from libarchive over GNU tar.
+# /usr/local/bin typically precedes /usr/bin, so this shadows tar without
+# modifying existing build scripts.
+RUN test -x /usr/bin/bsdtar && \
+    ln -sf /usr/bin/bsdtar /usr/local/bin/tar || true
 ENV CC="ccache gcc"
 ENV CXX="ccache g++"
 ENV FC="ccache gfortran"

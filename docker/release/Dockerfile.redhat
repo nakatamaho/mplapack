@@ -29,14 +29,22 @@ RUN set -eux; \
     fi; \
     dnf -y install \
       bash git python3 \
-      ccache \
+      ccache libarchive \
       gcc gcc-c++ gcc-gfortran make \
       autoconf automake libtool \
       which findutils diffutils tar xz bzip2 patch \
+    && dnf -y install bsdtar || true \
     && dnf clean all
 
 # Configure ccache (directory will be mounted at runtime)
 ENV CCACHE_DIR=/ccache
+
+# Workaround: avoid GNU tar on aarch64 emulation (QEMU/binfmt) where
+# archive extraction may fail with EINVAL.
+# Use bsdtar from libarchive instead by shadowing tar in PATH.
+RUN test -x /usr/bin/bsdtar && \
+    ln -sf /usr/bin/bsdtar /usr/local/bin/tar
+
 # Fedora typically uses /usr/lib64/ccache; keep /usr/lib/ccache too for portability
 ENV PATH="/usr/lib64/ccache:/usr/lib/ccache:${PATH}"
 ENV CC="ccache gcc"
