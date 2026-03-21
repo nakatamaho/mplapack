@@ -40,7 +40,6 @@ void Rsyswapr(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INT
     //
     bool upper = Mlsame(uplo, "U");
     REAL tmp = 0.0;
-    INTEGER i = 0;
     if (upper) {
         //
         // UPPER
@@ -55,18 +54,12 @@ void Rsyswapr(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INT
         a[(i1 - 1) + (i1 - 1) * lda] = a[(i2 - 1) + (i2 - 1) * lda];
         a[(i2 - 1) + (i2 - 1) * lda] = tmp;
         //
-        for (i = 1; i <= i2 - i1 - 1; i = i + 1) {
-            tmp = a[(i1 - 1) + ((i1 + i) - 1) * lda];
-            a[(i1 - 1) + ((i1 + i) - 1) * lda] = a[((i1 + i) - 1) + (i2 - 1) * lda];
-            a[((i1 + i) - 1) + (i2 - 1) * lda] = tmp;
-        }
+        Rswap(i2 - i1 - 1, &a[(i1 - 1) + ((i1 + 1) - 1) * lda], lda, &a[((i1 + 1) - 1) + (i2 - 1) * lda], 1);
         //
         // third swap
         // - swap row I1 and I2 from I2+1 to N
-        for (i = i2 + 1; i <= n; i = i + 1) {
-            tmp = a[(i1 - 1) + (i - 1) * lda];
-            a[(i1 - 1) + (i - 1) * lda] = a[(i2 - 1) + (i - 1) * lda];
-            a[(i2 - 1) + (i - 1) * lda] = tmp;
+        if (i2 < n) {
+            Rswap(n - i2, &a[(i1 - 1) + ((i2 + 1) - 1) * lda], lda, &a[(i2 - 1) + ((i2 + 1) - 1) * lda], lda);
         }
         //
     } else {
@@ -83,18 +76,12 @@ void Rsyswapr(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INT
         a[(i1 - 1) + (i1 - 1) * lda] = a[(i2 - 1) + (i2 - 1) * lda];
         a[(i2 - 1) + (i2 - 1) * lda] = tmp;
         //
-        for (i = 1; i <= i2 - i1 - 1; i = i + 1) {
-            tmp = a[((i1 + i) - 1) + (i1 - 1) * lda];
-            a[((i1 + i) - 1) + (i1 - 1) * lda] = a[(i2 - 1) + ((i1 + i) - 1) * lda];
-            a[(i2 - 1) + ((i1 + i) - 1) * lda] = tmp;
-        }
+        Rswap(i2 - i1 - 1, &a[((i1 + 1) - 1) + (i1 - 1) * lda], 1, &a[(i2 - 1) + ((i1 + 1) - 1) * lda], lda);
         //
         // third swap
         // - swap col I1 and I2 from I2+1 to N
-        for (i = i2 + 1; i <= n; i = i + 1) {
-            tmp = a[(i - 1) + (i1 - 1) * lda];
-            a[(i - 1) + (i1 - 1) * lda] = a[(i - 1) + (i2 - 1) * lda];
-            a[(i - 1) + (i2 - 1) * lda] = tmp;
+        if (i2 < n) {
+            Rswap(n - i2, &a[((i2 + 1) - 1) + (i1 - 1) * lda], 1, &a[((i2 + 1) - 1) + (i2 - 1) * lda], 1);
         }
         //
     }
