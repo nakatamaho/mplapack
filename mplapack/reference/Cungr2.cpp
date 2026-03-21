@@ -87,8 +87,7 @@ void Cungr2(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, INTEG
         // Apply H(i)**H to A(1:m-k+i,1:n-k+i) from the right
         //
         Clacgv(n - m + ii - 1, &a[(ii - 1)], lda);
-        a[(ii - 1) + ((n - m + ii) - 1) * lda] = one;
-        Clarf("Right", ii - 1, n - m + ii, &a[(ii - 1)], lda, conj(tau[i - 1]), a, lda, work);
+        Clarf1l("Right", ii - 1, n - m + ii, &a[(ii - 1)], lda, conj(tau[i - 1]), a, lda, work);
         Cscal(n - m + ii - 1, -tau[i - 1], &a[(ii - 1)], lda);
         Clacgv(n - m + ii - 1, &a[(ii - 1)], lda);
         a[(ii - 1) + ((n - m + ii) - 1) * lda] = one - conj(tau[i - 1]);

@@ -87,8 +87,7 @@ void Cungl2(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, INTEG
         if (i < n) {
             Clacgv(n - i, &a[(i - 1) + ((i + 1) - 1) * lda], lda);
             if (i < m) {
-                a[(i - 1) + (i - 1) * lda] = one;
-                Clarf("Right", m - i, n - i + 1, &a[(i - 1) + (i - 1) * lda], lda, conj(tau[i - 1]), &a[((i + 1) - 1) + (i - 1) * lda], lda, work);
+                Clarf1f("Right", m - i, n - i + 1, &a[(i - 1) + (i - 1) * lda], lda, conj(tau[i - 1]), &a[((i + 1) - 1) + (i - 1) * lda], lda, work);
             }
             Cscal(n - i, -tau[i - 1], &a[(i - 1) + ((i + 1) - 1) * lda], lda);
             Clacgv(n - i, &a[(i - 1) + ((i + 1) - 1) * lda], lda);

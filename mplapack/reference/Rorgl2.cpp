@@ -86,8 +86,7 @@ void Rorgl2(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, INTEGER 
         //
         if (i < n) {
             if (i < m) {
-                a[(i - 1) + (i - 1) * lda] = one;
-                Rlarf("Right", m - i, n - i + 1, &a[(i - 1) + (i - 1) * lda], lda, tau[i - 1], &a[((i + 1) - 1) + (i - 1) * lda], lda, work);
+                Rlarf1f("Right", m - i, n - i + 1, &a[(i - 1) + (i - 1) * lda], lda, tau[i - 1], &a[((i + 1) - 1) + (i - 1) * lda], lda, work);
             }
             Rscal(n - i, -tau[i - 1], &a[(i - 1) + ((i + 1) - 1) * lda], lda);
         }

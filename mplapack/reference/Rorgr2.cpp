@@ -86,8 +86,8 @@ void Rorgr2(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, INTEGER 
         //
         // Apply H(i) to A(1:m-k+i,1:n-k+i) from the right
         //
-        a[(ii - 1) + ((n - m + ii) - 1) * lda] = one;
-        Rlarf("Right", ii - 1, n - m + ii, &a[(ii - 1)], lda, tau[i - 1], a, lda, work);
+        // A( II, N-M+II ) = ONE
+        Rlarf1l("Right", ii - 1, n - m + ii, &a[(ii - 1)], lda, tau[i - 1], a, lda, work);
         Rscal(n - m + ii - 1, -tau[i - 1], &a[(ii - 1)], lda);
         a[(ii - 1) + ((n - m + ii) - 1) * lda] = one - tau[i - 1];
         //
