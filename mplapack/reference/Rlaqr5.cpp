@@ -85,7 +85,6 @@ void Rlaqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
     REAL safmin = Rlamch("SAFE MINIMUM");
     const REAL one = 1.0;
     REAL safmax = one / safmin;
-    Rlabad(safmin, safmax);
     REAL ulp = Rlamch("PRECISION");
     REAL smlnum = safmin * (castREAL(n) / ulp);
     //
@@ -121,6 +120,8 @@ void Rlaqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
     bool bmp22 = false;
     INTEGER k = 0;
     REAL beta = 0.0;
+    REAL t1 = 0.0;
+    REAL t2 = 0.0;
     INTEGER j = 0;
     REAL refsum = 0.0;
     INTEGER jbot = 0;
@@ -134,6 +135,7 @@ void Rlaqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
     INTEGER kms = 0;
     INTEGER m = 0;
     REAL alpha = 0.0;
+    REAL t3 = 0.0;
     REAL vt[3];
     INTEGER i2 = 0;
     INTEGER i4 = 0;
@@ -209,10 +211,12 @@ void Rlaqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
                 // ==== Perform update from right within
                 // .    computational window. ====
                 //
+                t1 = v[(m22 - 1) * ldv];
+                t2 = t1 * v[(2 - 1) + (m22 - 1) * ldv];
                 for (j = jtop; j <= min(kbot, k + 3); j = j + 1) {
-                    refsum = v[(m22 - 1) * ldv] * (h[(j - 1) + ((k + 1) - 1) * ldh] + v[(2 - 1) + (m22 - 1) * ldv] * h[(j - 1) + ((k + 2) - 1) * ldh]);
-                    h[(j - 1) + ((k + 1) - 1) * ldh] = h[(j - 1) + ((k + 1) - 1) * ldh] - refsum;
-                    h[(j - 1) + ((k + 2) - 1) * ldh] = h[(j - 1) + ((k + 2) - 1) * ldh] - refsum * v[(2 - 1) + (m22 - 1) * ldv];
+                    refsum = h[(j - 1) + ((k + 1) - 1) * ldh] + v[(2 - 1) + (m22 - 1) * ldv] * h[(j - 1) + ((k + 2) - 1) * ldh];
+                    h[(j - 1) + ((k + 1) - 1) * ldh] = h[(j - 1) + ((k + 1) - 1) * ldh] - refsum * t1;
+                    h[(j - 1) + ((k + 2) - 1) * ldh] = h[(j - 1) + ((k + 2) - 1) * ldh] - refsum * t2;
                 }
                 //
                 // ==== Perform update from left within
@@ -225,10 +229,12 @@ void Rlaqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
                 } else {
                     jbot = kbot;
                 }
+                t1 = v[(m22 - 1) * ldv];
+                t2 = t1 * v[(2 - 1) + (m22 - 1) * ldv];
                 for (j = k + 1; j <= jbot; j = j + 1) {
-                    refsum = v[(m22 - 1) * ldv] * (h[((k + 1) - 1) + (j - 1) * ldh] + v[(2 - 1) + (m22 - 1) * ldv] * h[((k + 2) - 1) + (j - 1) * ldh]);
-                    h[((k + 1) - 1) + (j - 1) * ldh] = h[((k + 1) - 1) + (j - 1) * ldh] - refsum;
-                    h[((k + 2) - 1) + (j - 1) * ldh] = h[((k + 2) - 1) + (j - 1) * ldh] - refsum * v[(2 - 1) + (m22 - 1) * ldv];
+                    refsum = h[((k + 1) - 1) + (j - 1) * ldh] + v[(2 - 1) + (m22 - 1) * ldv] * h[((k + 2) - 1) + (j - 1) * ldh];
+                    h[((k + 1) - 1) + (j - 1) * ldh] = h[((k + 1) - 1) + (j - 1) * ldh] - refsum * t1;
+                    h[((k + 2) - 1) + (j - 1) * ldh] = h[((k + 2) - 1) + (j - 1) * ldh] - refsum * t2;
                 }
                 //
                 // ==== The following convergence test requires that
@@ -282,16 +288,20 @@ void Rlaqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
                 //
                 if (accum) {
                     kms = k - incol;
+                    t1 = v[(m22 - 1) * ldv];
+                    t2 = t1 * v[(2 - 1) + (m22 - 1) * ldv];
                     for (j = max((INTEGER)1, ktop - incol); j <= kdu; j = j + 1) {
-                        refsum = v[(m22 - 1) * ldv] * (u[(j - 1) + ((kms + 1) - 1) * ldu] + v[(2 - 1) + (m22 - 1) * ldv] * u[(j - 1) + ((kms + 2) - 1) * ldu]);
-                        u[(j - 1) + ((kms + 1) - 1) * ldu] = u[(j - 1) + ((kms + 1) - 1) * ldu] - refsum;
-                        u[(j - 1) + ((kms + 2) - 1) * ldu] = u[(j - 1) + ((kms + 2) - 1) * ldu] - refsum * v[(2 - 1) + (m22 - 1) * ldv];
+                        refsum = u[(j - 1) + ((kms + 1) - 1) * ldu] + v[(2 - 1) + (m22 - 1) * ldv] * u[(j - 1) + ((kms + 2) - 1) * ldu];
+                        u[(j - 1) + ((kms + 1) - 1) * ldu] = u[(j - 1) + ((kms + 1) - 1) * ldu] - refsum * t1;
+                        u[(j - 1) + ((kms + 2) - 1) * ldu] = u[(j - 1) + ((kms + 2) - 1) * ldu] - refsum * t2;
                     }
                 } else if (wantz) {
+                    t1 = v[(m22 - 1) * ldv];
+                    t2 = t1 * v[(2 - 1) + (m22 - 1) * ldv];
                     for (j = iloz; j <= ihiz; j = j + 1) {
-                        refsum = v[(m22 - 1) * ldv] * (z[(j - 1) + ((k + 1) - 1) * ldz] + v[(2 - 1) + (m22 - 1) * ldv] * z[(j - 1) + ((k + 2) - 1) * ldz]);
-                        z[(j - 1) + ((k + 1) - 1) * ldz] = z[(j - 1) + ((k + 1) - 1) * ldz] - refsum;
-                        z[(j - 1) + ((k + 2) - 1) * ldz] = z[(j - 1) + ((k + 2) - 1) * ldz] - refsum * v[(2 - 1) + (m22 - 1) * ldv];
+                        refsum = z[(j - 1) + ((k + 1) - 1) * ldz] + v[(2 - 1) + (m22 - 1) * ldv] * z[(j - 1) + ((k + 2) - 1) * ldz];
+                        z[(j - 1) + ((k + 1) - 1) * ldz] = z[(j - 1) + ((k + 1) - 1) * ldz] - refsum * t1;
+                        z[(j - 1) + ((k + 2) - 1) * ldz] = z[(j - 1) + ((k + 2) - 1) * ldz] - refsum * t2;
                     }
                 }
             }
@@ -310,10 +320,13 @@ void Rlaqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
                     // .    Mth bulge. Exploit fact that first two elements
                     // .    of row are actually zero. ====
                     //
-                    refsum = v[(m - 1) * ldv] * v[(3 - 1) + (m - 1) * ldv] * h[((k + 3) - 1) + ((k + 2) - 1) * ldh];
-                    h[((k + 3) - 1) + (k - 1) * ldh] = -refsum;
-                    h[((k + 3) - 1) + ((k + 1) - 1) * ldh] = -refsum * v[(2 - 1) + (m - 1) * ldv];
-                    h[((k + 3) - 1) + ((k + 2) - 1) * ldh] = h[((k + 3) - 1) + ((k + 2) - 1) * ldh] - refsum * v[(3 - 1) + (m - 1) * ldv];
+                    t1 = v[(m - 1) * ldv];
+                    t2 = t1 * v[(2 - 1) + (m - 1) * ldv];
+                    t3 = t1 * v[(3 - 1) + (m - 1) * ldv];
+                    refsum = v[(3 - 1) + (m - 1) * ldv] * h[((k + 3) - 1) + ((k + 2) - 1) * ldh];
+                    h[((k + 3) - 1) + (k - 1) * ldh] = -refsum * t1;
+                    h[((k + 3) - 1) + ((k + 1) - 1) * ldh] = -refsum * t2;
+                    h[((k + 3) - 1) + ((k + 2) - 1) * ldh] = h[((k + 3) - 1) + ((k + 2) - 1) * ldh] - refsum * t3;
                     //
                     // ==== Calculate reflection to move
                     // .    Mth bulge one step. ====
@@ -346,9 +359,12 @@ void Rlaqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
                         Rlaqr1(3, &h[((k + 1) - 1) + ((k + 1) - 1) * ldh], ldh, sr[(2 * m - 1) - 1], si[(2 * m - 1) - 1], sr[(2 * m) - 1], si[(2 * m) - 1], vt);
                         alpha = vt[1 - 1];
                         Rlarfg(3, alpha, &vt[2 - 1], 1, vt[1 - 1]);
-                        refsum = vt[1 - 1] * (h[((k + 1) - 1) + (k - 1) * ldh] + vt[2 - 1] * h[((k + 2) - 1) + (k - 1) * ldh]);
+                        t1 = vt[1 - 1];
+                        t2 = t1 * vt[2 - 1];
+                        t3 = t1 * vt[3 - 1];
+                        refsum = h[((k + 1) - 1) + (k - 1) * ldh] + vt[2 - 1] * h[((k + 2) - 1) + (k - 1) * ldh];
                         //
-                        if (abs(h[((k + 2) - 1) + (k - 1) * ldh] - refsum * vt[2 - 1]) + abs(refsum * vt[3 - 1]) > ulp * (abs(h[(k - 1) + (k - 1) * ldh]) + abs(h[((k + 1) - 1) + ((k + 1) - 1) * ldh]) + abs(h[((k + 2) - 1) + ((k + 2) - 1) * ldh]))) {
+                        if (abs(h[((k + 2) - 1) + (k - 1) * ldh] - refsum * t2) + abs(refsum * t3) > ulp * (abs(h[(k - 1) + (k - 1) * ldh]) + abs(h[((k + 1) - 1) + ((k + 1) - 1) * ldh]) + abs(h[((k + 2) - 1) + ((k + 2) - 1) * ldh]))) {
                             //
                             // ==== Starting a new bulge here would
                             // .    create non-negligible fill.  Use
@@ -364,7 +380,7 @@ void Rlaqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
                             // .    Replace the old reflector with
                             // .    the new one. ====
                             //
-                            h[((k + 1) - 1) + (k - 1) * ldh] = h[((k + 1) - 1) + (k - 1) * ldh] - refsum;
+                            h[((k + 1) - 1) + (k - 1) * ldh] = h[((k + 1) - 1) + (k - 1) * ldh] - refsum * t1;
                             h[((k + 2) - 1) + (k - 1) * ldh] = zero;
                             h[((k + 3) - 1) + (k - 1) * ldh] = zero;
                             v[(m - 1) * ldv] = vt[1 - 1];
@@ -380,20 +396,23 @@ void Rlaqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
                 // .     deflation check. We still delay most of the
                 // .     updates from the left for efficiency. ====
                 //
+                t1 = v[(m - 1) * ldv];
+                t2 = t1 * v[(2 - 1) + (m - 1) * ldv];
+                t3 = t1 * v[(3 - 1) + (m - 1) * ldv];
                 for (j = jtop; j <= min(kbot, k + 3); j = j + 1) {
-                    refsum = v[(m - 1) * ldv] * (h[(j - 1) + ((k + 1) - 1) * ldh] + v[(2 - 1) + (m - 1) * ldv] * h[(j - 1) + ((k + 2) - 1) * ldh] + v[(3 - 1) + (m - 1) * ldv] * h[(j - 1) + ((k + 3) - 1) * ldh]);
-                    h[(j - 1) + ((k + 1) - 1) * ldh] = h[(j - 1) + ((k + 1) - 1) * ldh] - refsum;
-                    h[(j - 1) + ((k + 2) - 1) * ldh] = h[(j - 1) + ((k + 2) - 1) * ldh] - refsum * v[(2 - 1) + (m - 1) * ldv];
-                    h[(j - 1) + ((k + 3) - 1) * ldh] = h[(j - 1) + ((k + 3) - 1) * ldh] - refsum * v[(3 - 1) + (m - 1) * ldv];
+                    refsum = h[(j - 1) + ((k + 1) - 1) * ldh] + v[(2 - 1) + (m - 1) * ldv] * h[(j - 1) + ((k + 2) - 1) * ldh] + v[(3 - 1) + (m - 1) * ldv] * h[(j - 1) + ((k + 3) - 1) * ldh];
+                    h[(j - 1) + ((k + 1) - 1) * ldh] = h[(j - 1) + ((k + 1) - 1) * ldh] - refsum * t1;
+                    h[(j - 1) + ((k + 2) - 1) * ldh] = h[(j - 1) + ((k + 2) - 1) * ldh] - refsum * t2;
+                    h[(j - 1) + ((k + 3) - 1) * ldh] = h[(j - 1) + ((k + 3) - 1) * ldh] - refsum * t3;
                 }
                 //
                 // ==== Perform update from left for subsequent
                 // .    column. ====
                 //
-                refsum = v[(m - 1) * ldv] * (h[((k + 1) - 1) + ((k + 1) - 1) * ldh] + v[(2 - 1) + (m - 1) * ldv] * h[((k + 2) - 1) + ((k + 1) - 1) * ldh] + v[(3 - 1) + (m - 1) * ldv] * h[((k + 3) - 1) + ((k + 1) - 1) * ldh]);
-                h[((k + 1) - 1) + ((k + 1) - 1) * ldh] = h[((k + 1) - 1) + ((k + 1) - 1) * ldh] - refsum;
-                h[((k + 2) - 1) + ((k + 1) - 1) * ldh] = h[((k + 2) - 1) + ((k + 1) - 1) * ldh] - refsum * v[(2 - 1) + (m - 1) * ldv];
-                h[((k + 3) - 1) + ((k + 1) - 1) * ldh] = h[((k + 3) - 1) + ((k + 1) - 1) * ldh] - refsum * v[(3 - 1) + (m - 1) * ldv];
+                refsum = h[((k + 1) - 1) + ((k + 1) - 1) * ldh] + v[(2 - 1) + (m - 1) * ldv] * h[((k + 2) - 1) + ((k + 1) - 1) * ldh] + v[(3 - 1) + (m - 1) * ldv] * h[((k + 3) - 1) + ((k + 1) - 1) * ldh];
+                h[((k + 1) - 1) + ((k + 1) - 1) * ldh] = h[((k + 1) - 1) + ((k + 1) - 1) * ldh] - refsum * t1;
+                h[((k + 2) - 1) + ((k + 1) - 1) * ldh] = h[((k + 2) - 1) + ((k + 1) - 1) * ldh] - refsum * t2;
+                h[((k + 3) - 1) + ((k + 1) - 1) * ldh] = h[((k + 3) - 1) + ((k + 1) - 1) * ldh] - refsum * t3;
                 //
                 // ==== The following convergence test requires that
                 // .    the tradition small-compared-to-nearby-diagonals
@@ -456,11 +475,14 @@ void Rlaqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
             //
             for (m = mbot; m >= mtop; m = m - 1) {
                 k = krcol + 2 * (m - 1);
+                t1 = v[(m - 1) * ldv];
+                t2 = t1 * v[(2 - 1) + (m - 1) * ldv];
+                t3 = t1 * v[(3 - 1) + (m - 1) * ldv];
                 for (j = max(ktop, krcol + 2 * m); j <= jbot; j = j + 1) {
-                    refsum = v[(m - 1) * ldv] * (h[((k + 1) - 1) + (j - 1) * ldh] + v[(2 - 1) + (m - 1) * ldv] * h[((k + 2) - 1) + (j - 1) * ldh] + v[(3 - 1) + (m - 1) * ldv] * h[((k + 3) - 1) + (j - 1) * ldh]);
-                    h[((k + 1) - 1) + (j - 1) * ldh] = h[((k + 1) - 1) + (j - 1) * ldh] - refsum;
-                    h[((k + 2) - 1) + (j - 1) * ldh] = h[((k + 2) - 1) + (j - 1) * ldh] - refsum * v[(2 - 1) + (m - 1) * ldv];
-                    h[((k + 3) - 1) + (j - 1) * ldh] = h[((k + 3) - 1) + (j - 1) * ldh] - refsum * v[(3 - 1) + (m - 1) * ldv];
+                    refsum = h[((k + 1) - 1) + (j - 1) * ldh] + v[(2 - 1) + (m - 1) * ldv] * h[((k + 2) - 1) + (j - 1) * ldh] + v[(3 - 1) + (m - 1) * ldv] * h[((k + 3) - 1) + (j - 1) * ldh];
+                    h[((k + 1) - 1) + (j - 1) * ldh] = h[((k + 1) - 1) + (j - 1) * ldh] - refsum * t1;
+                    h[((k + 2) - 1) + (j - 1) * ldh] = h[((k + 2) - 1) + (j - 1) * ldh] - refsum * t2;
+                    h[((k + 3) - 1) + (j - 1) * ldh] = h[((k + 3) - 1) + (j - 1) * ldh] - refsum * t3;
                 }
             }
             //
@@ -478,11 +500,14 @@ void Rlaqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
                     i2 = max((INTEGER)1, ktop - incol);
                     i2 = max(i2, kms - (krcol - incol) + 1);
                     i4 = min(kdu, krcol + 2 * (mbot - 1) - incol + 5);
+                    t1 = v[(m - 1) * ldv];
+                    t2 = t1 * v[(2 - 1) + (m - 1) * ldv];
+                    t3 = t1 * v[(3 - 1) + (m - 1) * ldv];
                     for (j = i2; j <= i4; j = j + 1) {
-                        refsum = v[(m - 1) * ldv] * (u[(j - 1) + ((kms + 1) - 1) * ldu] + v[(2 - 1) + (m - 1) * ldv] * u[(j - 1) + ((kms + 2) - 1) * ldu] + v[(3 - 1) + (m - 1) * ldv] * u[(j - 1) + ((kms + 3) - 1) * ldu]);
-                        u[(j - 1) + ((kms + 1) - 1) * ldu] = u[(j - 1) + ((kms + 1) - 1) * ldu] - refsum;
-                        u[(j - 1) + ((kms + 2) - 1) * ldu] = u[(j - 1) + ((kms + 2) - 1) * ldu] - refsum * v[(2 - 1) + (m - 1) * ldv];
-                        u[(j - 1) + ((kms + 3) - 1) * ldu] = u[(j - 1) + ((kms + 3) - 1) * ldu] - refsum * v[(3 - 1) + (m - 1) * ldv];
+                        refsum = u[(j - 1) + ((kms + 1) - 1) * ldu] + v[(2 - 1) + (m - 1) * ldv] * u[(j - 1) + ((kms + 2) - 1) * ldu] + v[(3 - 1) + (m - 1) * ldv] * u[(j - 1) + ((kms + 3) - 1) * ldu];
+                        u[(j - 1) + ((kms + 1) - 1) * ldu] = u[(j - 1) + ((kms + 1) - 1) * ldu] - refsum * t1;
+                        u[(j - 1) + ((kms + 2) - 1) * ldu] = u[(j - 1) + ((kms + 2) - 1) * ldu] - refsum * t2;
+                        u[(j - 1) + ((kms + 3) - 1) * ldu] = u[(j - 1) + ((kms + 3) - 1) * ldu] - refsum * t3;
                     }
                 }
             } else if (wantz) {
@@ -493,11 +518,14 @@ void Rlaqr5(bool const wantt, bool const wantz, INTEGER const kacc22, INTEGER co
                 //
                 for (m = mbot; m >= mtop; m = m - 1) {
                     k = krcol + 2 * (m - 1);
+                    t1 = v[(m - 1) * ldv];
+                    t2 = t1 * v[(2 - 1) + (m - 1) * ldv];
+                    t3 = t1 * v[(3 - 1) + (m - 1) * ldv];
                     for (j = iloz; j <= ihiz; j = j + 1) {
-                        refsum = v[(m - 1) * ldv] * (z[(j - 1) + ((k + 1) - 1) * ldz] + v[(2 - 1) + (m - 1) * ldv] * z[(j - 1) + ((k + 2) - 1) * ldz] + v[(3 - 1) + (m - 1) * ldv] * z[(j - 1) + ((k + 3) - 1) * ldz]);
-                        z[(j - 1) + ((k + 1) - 1) * ldz] = z[(j - 1) + ((k + 1) - 1) * ldz] - refsum;
-                        z[(j - 1) + ((k + 2) - 1) * ldz] = z[(j - 1) + ((k + 2) - 1) * ldz] - refsum * v[(2 - 1) + (m - 1) * ldv];
-                        z[(j - 1) + ((k + 3) - 1) * ldz] = z[(j - 1) + ((k + 3) - 1) * ldz] - refsum * v[(3 - 1) + (m - 1) * ldv];
+                        refsum = z[(j - 1) + ((k + 1) - 1) * ldz] + v[(2 - 1) + (m - 1) * ldv] * z[(j - 1) + ((k + 2) - 1) * ldz] + v[(3 - 1) + (m - 1) * ldv] * z[(j - 1) + ((k + 3) - 1) * ldz];
+                        z[(j - 1) + ((k + 1) - 1) * ldz] = z[(j - 1) + ((k + 1) - 1) * ldz] - refsum * t1;
+                        z[(j - 1) + ((k + 2) - 1) * ldz] = z[(j - 1) + ((k + 2) - 1) * ldz] - refsum * t2;
+                        z[(j - 1) + ((k + 3) - 1) * ldz] = z[(j - 1) + ((k + 3) - 1) * ldz] - refsum * t3;
                     }
                 }
             }
