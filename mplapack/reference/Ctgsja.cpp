@@ -67,6 +67,7 @@ void Ctgsja(const char *jobu, const char *jobv, const char *jobq, INTEGER const 
     REAL ssmin = 0.0;
     const REAL one = 1.0;
     REAL gamma = 0.0;
+    const REAL hugenum = Rlamch("O");
     REAL rwk = 0.0;
     //
     // Decode and test the input parameters
@@ -260,9 +261,9 @@ statement_50:
         //
         a1 = a[((k + i) - 1) + ((n - l + i) - 1) * lda].real();
         b1 = b[(i - 1) + ((n - l + i) - 1) * ldb].real();
+        gamma = b1 / a1;
         //
-        if (a1 != zero) {
-            gamma = b1 / a1;
+        if ((gamma <= hugenum) && (gamma >= -hugenum)) {
             //
             if (gamma < zero) {
                 CRscal(l - i + 1, -one, &b[(i - 1) + ((n - l + i) - 1) * ldb], ldb);
