@@ -68,8 +68,6 @@ void Clasyf_rk(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb,
     COMPLEX d22 = 0.0;
     COMPLEX t = 0.0;
     INTEGER j = 0;
-    INTEGER jb = 0;
-    INTEGER jj = 0;
     COMPLEX d21 = 0.0;
     //
     info = 0;
@@ -380,23 +378,7 @@ void Clasyf_rk(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb,
         //
         // A11 := A11 - U12*D*U12**T = A11 - U12*W**T
         //
-        // computing blocks of NB columns at a time
-        //
-        for (j = ((k - 1) / nb) * nb + 1; j >= 1; j = j - nb) {
-            jb = min(nb, k - j + 1);
-            //
-            // Update the upper triangle of the diagonal block
-            //
-            for (jj = j; jj <= j + jb - 1; jj = jj + 1) {
-                Cgemv("No transpose", jj - j + 1, n - k, -cone, &a[(j - 1) + ((k + 1) - 1) * lda], lda, &w[(jj - 1) + ((kw + 1) - 1) * ldw], ldw, cone, &a[(j - 1) + (jj - 1) * lda], 1);
-            }
-            //
-            // Update the rectangular superdiagonal block
-            //
-            if (j >= 2) {
-                Cgemm("No transpose", "Transpose", j - 1, jb, n - k, -cone, &a[((k + 1) - 1) * lda], lda, &w[(j - 1) + ((kw + 1) - 1) * ldw], ldw, cone, &a[(j - 1) * lda], lda);
-            }
-        }
+        Cgemmtr("Upper", "No transpose", "Transpose", k, n - k, -cone, &a[((k + 1) - 1) * lda], lda, &w[((kw + 1) - 1) * ldw], ldw, cone, &a[0], lda);
         //
         // Set KB to the number of columns factorized
         //
@@ -688,23 +670,7 @@ void Clasyf_rk(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb,
         //
         // A22 := A22 - L21*D*L21**T = A22 - L21*W**T
         //
-        // computing blocks of NB columns at a time
-        //
-        for (j = k; j <= n; j = j + nb) {
-            jb = min(nb, n - j + 1);
-            //
-            // Update the lower triangle of the diagonal block
-            //
-            for (jj = j; jj <= j + jb - 1; jj = jj + 1) {
-                Cgemv("No transpose", j + jb - jj, k - 1, -cone, &a[(jj - 1)], lda, &w[(jj - 1)], ldw, cone, &a[(jj - 1) + (jj - 1) * lda], 1);
-            }
-            //
-            // Update the rectangular subdiagonal block
-            //
-            if (j + jb <= n) {
-                Cgemm("No transpose", "Transpose", n - j - jb + 1, jb, k - 1, -cone, &a[((j + jb) - 1)], lda, &w[(j - 1)], ldw, cone, &a[((j + jb) - 1) + (j - 1) * lda], lda);
-            }
-        }
+        Cgemmtr("Lower", "No transpose", "Transpose", n - k + 1, k - 1, -cone, &a[(k - 1)], lda, &w[(k - 1)], ldw, cone, &a[(k - 1) + (k - 1) * lda], lda);
         //
         // Set KB to the number of columns factorized
         //

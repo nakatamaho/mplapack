@@ -61,7 +61,6 @@ void Clahef(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, CO
     COMPLEX d22 = 0.0;
     REAL t = 0.0;
     INTEGER j = 0;
-    INTEGER jb = 0;
     INTEGER jj = 0;
     INTEGER jp = 0;
     //
@@ -383,24 +382,9 @@ void Clahef(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, CO
         //
         // A11 := A11 - U12*D*U12**H = A11 - U12*W**H
         //
-        // computing blocks of NB columns at a time (note that conjg(W) is
-        // actually stored)
+        // (note that conjg(W) is actually stored)
         //
-        for (j = ((k - 1) / nb) * nb + 1; j >= 1; j = j - nb) {
-            jb = min(nb, k - j + 1);
-            //
-            // Update the upper triangle of the diagonal block
-            //
-            for (jj = j; jj <= j + jb - 1; jj = jj + 1) {
-                a[(jj - 1) + (jj - 1) * lda] = a[(jj - 1) + (jj - 1) * lda].real();
-                Cgemv("No transpose", jj - j + 1, n - k, -cone, &a[(j - 1) + ((k + 1) - 1) * lda], lda, &w[(jj - 1) + ((kw + 1) - 1) * ldw], ldw, cone, &a[(j - 1) + (jj - 1) * lda], 1);
-                a[(jj - 1) + (jj - 1) * lda] = a[(jj - 1) + (jj - 1) * lda].real();
-            }
-            //
-            // Update the rectangular superdiagonal block
-            //
-            Cgemm("No transpose", "Transpose", j - 1, jb, n - k, -cone, &a[((k + 1) - 1) * lda], lda, &w[(j - 1) + ((kw + 1) - 1) * ldw], ldw, cone, &a[(j - 1) * lda], lda);
-        }
+        Cgemmtr("Upper", "No transpose", "Transpose", k, n - k, -cone, &a[((k + 1) - 1) * lda], lda, &w[((kw + 1) - 1) * ldw], ldw, cone, &a[0], lda);
         //
         // Put U12 in standard form by partially undoing the interchanges
         // in columns k+1:n looping backwards from k+1 to n
@@ -738,26 +722,9 @@ void Clahef(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb, CO
         //
         // A22 := A22 - L21*D*L21**H = A22 - L21*W**H
         //
-        // computing blocks of NB columns at a time (note that conjg(W) is
-        // actually stored)
+        // (note that conjg(W) is actually stored)
         //
-        for (j = k; j <= n; j = j + nb) {
-            jb = min(nb, n - j + 1);
-            //
-            // Update the lower triangle of the diagonal block
-            //
-            for (jj = j; jj <= j + jb - 1; jj = jj + 1) {
-                a[(jj - 1) + (jj - 1) * lda] = a[(jj - 1) + (jj - 1) * lda].real();
-                Cgemv("No transpose", j + jb - jj, k - 1, -cone, &a[(jj - 1)], lda, &w[(jj - 1)], ldw, cone, &a[(jj - 1) + (jj - 1) * lda], 1);
-                a[(jj - 1) + (jj - 1) * lda] = a[(jj - 1) + (jj - 1) * lda].real();
-            }
-            //
-            // Update the rectangular subdiagonal block
-            //
-            if (j + jb <= n) {
-                Cgemm("No transpose", "Transpose", n - j - jb + 1, jb, k - 1, -cone, &a[((j + jb) - 1)], lda, &w[(j - 1)], ldw, cone, &a[((j + jb) - 1) + (j - 1) * lda], lda);
-            }
-        }
+        Cgemmtr("Lower", "No transpose", "Transpose", n - k + 1, k - 1, -cone, &a[(k - 1)], lda, &w[(k - 1)], ldw, cone, &a[(k - 1) + (k - 1) * lda], lda);
         //
         // Put L21 in standard form by partially undoing the interchanges
         // of rows in columns 1:k-1 looping backwards from k-1 to 1
