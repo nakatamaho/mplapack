@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlaed2(INTEGER &k, INTEGER const n, INTEGER const n1, REAL *d, REAL *q, INTEGER const ldq, INTEGER *indxq, REAL &rho, REAL *z, REAL *dlamda, REAL *w, REAL *q2, INTEGER *indx, INTEGER *indxc, INTEGER *indxp, INTEGER *coltyp, INTEGER &info) {
+void Rlaed2(INTEGER &k, INTEGER const n, INTEGER const n1, REAL *d, REAL *q, INTEGER const ldq, INTEGER *indxq, REAL &rho, REAL *z, REAL *dlambda, REAL *w, REAL *q2, INTEGER *indx, INTEGER *indxc, INTEGER *indxp, INTEGER *coltyp, INTEGER &info) {
     INTEGER n2 = 0;
     INTEGER n1p1 = 0;
     const REAL zero = 0.0;
@@ -112,9 +112,9 @@ void Rlaed2(INTEGER &k, INTEGER const n, INTEGER const n1, REAL *d, REAL *q, INT
     // re-integrate the deflated parts from the last pass
     //
     for (i = 1; i <= n; i = i + 1) {
-        dlamda[i - 1] = d[indxq[i - 1] - 1];
+        dlambda[i - 1] = d[indxq[i - 1] - 1];
     }
-    Rlamrg(n1, n2, dlamda, 1, 1, indxc);
+    Rlamrg(n1, n2, dlambda, 1, 1, indxc);
     for (i = 1; i <= n; i = i + 1) {
         indx[i - 1] = indxq[indxc[i - 1] - 1];
     }
@@ -136,11 +136,11 @@ void Rlaed2(INTEGER &k, INTEGER const n, INTEGER const n1, REAL *d, REAL *q, INT
         for (j = 1; j <= n; j = j + 1) {
             i = indx[j - 1];
             Rcopy(n, &q[(i - 1) * ldq], 1, &q2[iq2 - 1], 1);
-            dlamda[j - 1] = d[i - 1];
+            dlambda[j - 1] = d[i - 1];
             iq2 += n;
         }
         Rlacpy("A", n, n, q2, n, q, ldq);
-        Rcopy(n, dlamda, 1, d, 1);
+        Rcopy(n, dlambda, 1, d, 1);
         goto statement_190;
     }
     //
@@ -235,7 +235,7 @@ statement_80:
             pj = nj;
         } else {
             k++;
-            dlamda[k - 1] = d[pj - 1];
+            dlambda[k - 1] = d[pj - 1];
             w[k - 1] = z[pj - 1];
             indxp[k - 1] = pj;
             pj = nj;
@@ -247,7 +247,7 @@ statement_100:
     // Record the last eigenvalue.
     //
     k++;
-    dlamda[k - 1] = d[pj - 1];
+    dlambda[k - 1] = d[pj - 1];
     w[k - 1] = z[pj - 1];
     indxp[k - 1] = pj;
     //
@@ -284,9 +284,9 @@ statement_100:
         psm[ct - 1]++;
     }
     //
-    // Sort the eigenvalues and corresponding eigenvectors into DLAMDA
+    // Sort the eigenvalues and corresponding eigenvectors into DLAMBDA
     // and Q2 respectively.  The eigenvalues/vectors which were not
-    // deflated go into the first K slots of DLAMDA and Q2 respectively,
+    // deflated go into the first K slots of DLAMBDA and Q2 respectively,
     // while those which were deflated go into the last N - K slots.
     //
     i = 1;

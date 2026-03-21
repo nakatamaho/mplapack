@@ -36,7 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Claed8(INTEGER &k, INTEGER const n, INTEGER const qsiz, COMPLEX *q, INTEGER const ldq, REAL *d, REAL &rho, INTEGER const cutpnt, REAL *z, REAL *dlamda, COMPLEX *q2, INTEGER const ldq2, REAL *w, INTEGER *indxp, INTEGER *indx, INTEGER *indxq, INTEGER *perm, INTEGER &givptr, INTEGER *givcol, REAL *givnum, INTEGER &info) {
+void Claed8(INTEGER &k, INTEGER const n, INTEGER const qsiz, COMPLEX *q, INTEGER const ldq, REAL *d, REAL &rho, INTEGER const cutpnt, REAL *z, REAL *dlambda, COMPLEX *q2, INTEGER const ldq2, REAL *w, INTEGER *indxp, INTEGER *indx, INTEGER *indxq, INTEGER *perm, INTEGER &givptr, INTEGER *givcol, REAL *givnum, INTEGER &info) {
     INTEGER n1 = 0;
     INTEGER n2 = 0;
     INTEGER n1p1 = 0;
@@ -117,14 +117,14 @@ void Claed8(INTEGER &k, INTEGER const n, INTEGER const qsiz, COMPLEX *q, INTEGER
         indxq[i - 1] += cutpnt;
     }
     for (i = 1; i <= n; i = i + 1) {
-        dlamda[i - 1] = d[indxq[i - 1] - 1];
+        dlambda[i - 1] = d[indxq[i - 1] - 1];
         w[i - 1] = z[indxq[i - 1] - 1];
     }
     i = 1;
     j = cutpnt + 1;
-    Rlamrg(n1, n2, dlamda, 1, 1, indx);
+    Rlamrg(n1, n2, dlambda, 1, 1, indx);
     for (i = 1; i <= n; i = i + 1) {
-        d[i - 1] = dlamda[indx[i - 1] - 1];
+        d[i - 1] = dlambda[indx[i - 1] - 1];
         z[i - 1] = w[indx[i - 1] - 1];
     }
     //
@@ -234,7 +234,7 @@ statement_70:
         } else {
             k++;
             w[k - 1] = z[jlam - 1];
-            dlamda[k - 1] = d[jlam - 1];
+            dlambda[k - 1] = d[jlam - 1];
             indxp[k - 1] = jlam;
             jlam = j;
         }
@@ -246,19 +246,19 @@ statement_90:
     //
     k++;
     w[k - 1] = z[jlam - 1];
-    dlamda[k - 1] = d[jlam - 1];
+    dlambda[k - 1] = d[jlam - 1];
     indxp[k - 1] = jlam;
 //
 statement_100:
     //
-    // Sort the eigenvalues and corresponding eigenvectors into DLAMDA
+    // Sort the eigenvalues and corresponding eigenvectors into DLAMBDA
     // and Q2 respectively.  The eigenvalues/vectors which were not
-    // deflated go into the first K slots of DLAMDA and Q2 respectively,
+    // deflated go into the first K slots of DLAMBDA and Q2 respectively,
     // while those which were deflated go into the last N - K slots.
     //
     for (j = 1; j <= n; j = j + 1) {
         jp = indxp[j - 1];
-        dlamda[j - 1] = d[jp - 1];
+        dlambda[j - 1] = d[jp - 1];
         perm[j - 1] = indxq[indx[jp - 1] - 1];
         Ccopy(qsiz, &q[(perm[j - 1] - 1) * ldq], 1, &q2[(j - 1) * ldq2], 1);
     }
@@ -267,7 +267,7 @@ statement_100:
     // into the last N - K slots of D and Q respectively.
     //
     if (k < n) {
-        Rcopy(n - k, &dlamda[(k + 1) - 1], 1, &d[(k + 1) - 1], 1);
+        Rcopy(n - k, &dlambda[(k + 1) - 1], 1, &d[(k + 1) - 1], 1);
         Clacpy("A", qsiz, n - k, &q2[((k + 1) - 1) * ldq2], ldq2, &q[((k + 1) - 1) * ldq], ldq);
     }
     //

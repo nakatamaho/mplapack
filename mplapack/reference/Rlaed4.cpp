@@ -218,7 +218,10 @@ void Rlaed4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
         if (c == zero) {
             // ETA = B/A
             // ETA = RHO - TAU
-            eta = dltub - tau;
+            // ETA = DLTUB - TAU
+            //
+            // Update proposed by Li, Ren-Cang:
+            eta = -w / (dpsi + dphi);
         } else if (a >= zero) {
             eta = (a + sqrt(abs(a * a - four * b * c))) / (two * c);
         } else {
