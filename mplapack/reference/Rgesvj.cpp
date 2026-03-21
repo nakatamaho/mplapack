@@ -43,6 +43,9 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
     bool applv = false;
     bool upper = false;
     bool lower = false;
+    INTEGER minmn = 0;
+    INTEGER lwmin = 0;
+    bool lquery = false;
     const REAL one = 1.0;
     REAL ctol = 0.0;
     REAL epsln = 0.0;
@@ -112,6 +115,14 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
     upper = Mlsame(joba, "U");
     lower = Mlsame(joba, "L");
     //
+    minmn = min(m, n);
+    if (minmn == 0) {
+        lwmin = 1;
+    } else {
+        lwmin = max((INTEGER)6, m + n);
+    }
+    //
+    lquery = (lwork == -1);
     if (!(upper || lower || Mlsame(joba, "G"))) {
         info = -1;
     } else if (!(lsvec || uctol || Mlsame(jobu, "N"))) {
@@ -130,7 +141,7 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
         info = -11;
     } else if (uctol && (work[1 - 1] <= one)) {
         info = -12;
-    } else if (lwork < max(m + n, (INTEGER)6)) {
+    } else if (lwork < lwmin && (!lquery)) {
         info = -13;
     } else {
         info = 0;
@@ -140,11 +151,14 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
     if (info != 0) {
         Mxerbla("Rgesvj", -info);
         return;
+    } else if (lquery) {
+        work[1 - 1] = lwmin;
+        return;
     }
     //
     // #:) Quick return for void matrix
     //
-    if ((m == 0) || (n == 0)) {
+    if (minmn == 0) {
         return;
     }
     //
