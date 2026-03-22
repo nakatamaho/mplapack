@@ -44,7 +44,7 @@
 // double
 // -----------------------------------------------------------------------
 #if defined ___MPLAPACK_BUILD_WITH_DOUBLE___
-INTEGER Mexponent(REAL x) {
+INTEGER Mexponent(REAL const &x) {
     return std::ilogb(x) + 1;
 }
 #endif
@@ -55,12 +55,12 @@ INTEGER Mexponent(REAL x) {
 #if defined ___MPLAPACK_BUILD_WITH_BINARY80___
 #  if MPLAPACK_BINARY80_MATH_MODE == MPLAPACK_BINARY80_MATH_LDBL
 // long double == binary80 (x87 on x86/x86-64).
-INTEGER Mexponent(REAL x) {
+INTEGER Mexponent(REAL const &x) {
     return std::ilogbl(x) + 1;
 }
 #  elif MPLAPACK_BINARY80_MATH_MODE == MPLAPACK_BINARY80_MATH_F64X
 // _Float64x: cast to long double is exact when _Float64x == binary80.
-INTEGER Mexponent(REAL x) {
+INTEGER Mexponent(REAL const &x) {
     return std::ilogbl((long double)x) + 1;
 }
 #  else
@@ -74,13 +74,13 @@ INTEGER Mexponent(REAL x) {
 #if defined ___MPLAPACK_BUILD_WITH_BINARY128___
 #  if MPLAPACK_BINARY128_MATH_MODE == MPLAPACK_BINARY128_MATH_LDBL
 // long double == binary128 (SPARC, MIPS, some AArch64).
-INTEGER Mexponent(REAL x) {
+INTEGER Mexponent(REAL const &x) {
     return std::ilogbl(x) + 1;
 }
 #  elif MPLAPACK_BINARY128_MATH_MODE == MPLAPACK_BINARY128_MATH_F128
 // _Float128 (ISO C TS 18661-3, GCC 7+).
 // __builtin_ilogbf128 accepts _Float128 directly on GCC.
-INTEGER Mexponent(REAL x) {
+INTEGER Mexponent(REAL const &x) {
     return __builtin_ilogbf128((_Float128)x) + 1;
 }
 #  elif MPLAPACK_BINARY128_MATH_MODE == MPLAPACK_BINARY128_MATH_QUADMATH
@@ -88,7 +88,7 @@ INTEGER Mexponent(REAL x) {
 // _Float128 and __float128 are the same underlying type on GCC, so the
 // cast is a no-op.
 #    include <quadmath.h>
-INTEGER Mexponent(REAL x) {
+INTEGER Mexponent(REAL const &x) {
     return ilogbq((__float128)x) + 1;
 }
 #  else
@@ -100,7 +100,7 @@ INTEGER Mexponent(REAL x) {
 // DD (double-double)
 // -----------------------------------------------------------------------
 #if defined ___MPLAPACK_BUILD_WITH_DD___
-INTEGER Mexponent(REAL x) {
+INTEGER Mexponent(REAL const &x) {
     // x.x[0] is the dominant component; lower limbs are bounded by
     // ulp(x.x[0]) and can never alter the binade.
     return std::ilogb(x.x[0]) + 1;
@@ -111,7 +111,7 @@ INTEGER Mexponent(REAL x) {
 // QD (quad-double)
 // -----------------------------------------------------------------------
 #if defined ___MPLAPACK_BUILD_WITH_QD___
-INTEGER Mexponent(REAL x) {
+INTEGER Mexponent(REAL const &x) {
     // Same reasoning as DD.
     return std::ilogb(x.x[0]) + 1;
 }
@@ -121,10 +121,10 @@ INTEGER Mexponent(REAL x) {
 // MPFR (mpfr::mpreal)
 // -----------------------------------------------------------------------
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-INTEGER Mexponent(REAL x) {
+INTEGER Mexponent(REAL const &x) {
     // mpfr_get_exp returns e s.t. 0.5 <= |x| * 2^(-e) < 1:
     // exactly Fortran EXPONENT semantics.  No +1 needed.
-    return static_cast<INTEGER>(mpfr_get_exp(x.mpfr_srcptr()));
+    return static_cast<INTEGER>(mpfr_get_exp((mpfr_ptr)const_cast<REAL &>(x)));
 }
 #endif // ___MPLAPACK_BUILD_WITH_MPFR___
 
@@ -132,7 +132,7 @@ INTEGER Mexponent(REAL x) {
 // GMP (mpf_class)
 // -----------------------------------------------------------------------
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
-INTEGER Mexponent(REAL x) {
+INTEGER Mexponent(REAL const &x) {
     // mpf_get_d_2exp: sets exp s.t. x = d * 2^exp, 0.5 <= |d| < 1.
     // exp is the Fortran EXPONENT value directly.  No +1 needed.
     long exp;

@@ -119,7 +119,7 @@ bool Risnan(REAL const &x) {
 // -----------------------------------------------------------------------
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
 bool Risnan(REAL const &x) {
-    return mpfr_nan_p(x.mpfr_srcptr()) != 0;
+    return mpfr_nan_p((mpfr_ptr)const_cast<REAL &>(x)) != 0;
 }
 #endif // ___MPLAPACK_BUILD_WITH_MPFR___
 

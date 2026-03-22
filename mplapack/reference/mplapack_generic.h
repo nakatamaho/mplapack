@@ -1,5 +1,5 @@
 COMPLEX Cladiv(COMPLEX const x, COMPLEX const y);
-INTEGER Mexponent(REAL x);
+INTEGER Mexponent(REAL const &x);
 INTEGER Mmaxloc(REAL const *dx, INTEGER const start, INTEGER const end, INTEGER const incx);
 INTEGER Rlaneg(INTEGER const n, REAL *d, REAL *lld, REAL const sigma, REAL const, INTEGER const r);
 INTEGER iCmax1(INTEGER const n, COMPLEX *zx, INTEGER const incx);

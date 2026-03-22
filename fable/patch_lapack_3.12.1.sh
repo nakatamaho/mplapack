@@ -37,6 +37,9 @@ patch -p3 < "${PATCH_DIR}/patch-Cgesvj.cpp"
 patch -p3 < "${PATCH_DIR}/patch-Rgejsv.cpp"
 patch -p3 < "${PATCH_DIR}/patch-Rgesvj.cpp"
 
+patch -p3 < "${PATCH_DIR}/patch-Ctrsyl3.cpp"
+patch -p3 < "${PATCH_DIR}/patch-Rtrsyl3.cpp"
+
 patch -p3 < "${PATCH_DIR}/patch-Cbbcsd.cpp"
 patch -p3 < "${PATCH_DIR}/patch-Cggev.cpp"
 patch -p3 < "${PATCH_DIR}/patch-Cggev3.cpp"
