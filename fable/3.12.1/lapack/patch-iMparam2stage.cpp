@@ -129,15 +129,6 @@
      //
      INTEGER kd = 0;
      INTEGER ib = 0;
-@@ -188,7 +154,7 @@
-         //
-         // Will add the VECT OPTION HERE next release
-         vect = opts[0];
--        if (Mlsame(&vect, "N")) {
-+        if (Mlsame(vect, "N")) {
-             lhous = max((INTEGER)1, 4 * ni);
-         } else {
-             // This is not correct, it need to call the ALGO and the stage2
 @@ -217,26 +183,36 @@
          // + (KD+1)*N
          lwork = -1;

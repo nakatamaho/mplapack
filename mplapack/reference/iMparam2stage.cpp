@@ -154,7 +154,7 @@ INTEGER iMparam2stage(INTEGER const ispec, const char *name, const char *opts, I
         //
         // Will add the VECT OPTION HERE next release
         vect = opts[0];
-        if (Mlsame(vect, "N")) {
+        if (Mlsame(&vect, "N")) {
             lhous = max((INTEGER)1, 4 * ni);
         } else {
             // This is not correct, it need to call the ALGO and the stage2
