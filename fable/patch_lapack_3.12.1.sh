@@ -85,6 +85,6 @@ patch -p3 < "${PATCH_DIR}/patch-Rtfttp.cpp"
 patch -p3 < "${PATCH_DIR}/patch-Rtpttf.cpp"
 patch -p3 < "${PATCH_DIR}/patch-iMieeeck.cpp"
 patch -p3 < "${PATCH_DIR}/patch-iMlaenv.cpp"
-#patch -p3 < "${PATCH_DIR}/patch-iMparam2stage.cpp"
+patch -p3 < "${PATCH_DIR}/patch-iMparam2stage.cpp"
 patch -p3 < "${PATCH_DIR}/patch-iMparmq.cpp"
 
