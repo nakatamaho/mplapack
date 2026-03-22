@@ -102,3 +102,35 @@
      //
      switch (ispec) {
      case 1:
+
+diff --git a/mplapack/reference/iMlaenv.cpp b/mplapack/reference/iMlaenv.cpp
+index a5a10382..bf2aba4e 100644
+--- a/mplapack/reference/iMlaenv.cpp
++++ b/mplapack/reference/iMlaenv.cpp
+@@ -232,7 +232,7 @@ statement_50:
+             } else {
+                 nb = 64;
+             }
+-        } else if (subnam(4, 7) == "QP3RK") {
++        } else if (strncmp(subnam + 3, "QP3RK", 5) == 0) {
+             if (sname) {
+                 nb = 32;
+             } else {
+@@ -413,7 +413,7 @@ statement_60:
+             } else {
+                 nbmin = 2;
+             }
+-        } else if (subnam(4, 7) == "QP3RK") {
++        } else if (strncmp(subnam + 3, "QP3RK", 5) == 0) {
+             if (sname) {
+                 nbmin = 2;
+             } else {
+@@ -488,7 +488,7 @@ statement_70:
+             } else {
+                 nx = 128;
+             }
+-        } else if (subnam(4, 7) == "QP3RK") {
++        } else if (strncmp(subnam + 3, "QP3RK", 5) == 0) {
+             if (sname) {
+                 nx = 128;
+             } else {
