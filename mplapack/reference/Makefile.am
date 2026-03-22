@@ -729,7 +729,6 @@ Rlagv2.cpp \
 Rlahqr.cpp \
 Rlahr2.cpp \
 Rlaic1.cpp \
-Rlaisnan.cpp \
 Rlaln2.cpp \
 Rlals0.cpp \
 Rlalsa.cpp \

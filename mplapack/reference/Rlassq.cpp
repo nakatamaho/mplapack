@@ -39,7 +39,7 @@
 void Rlassq(INTEGER const n, REAL *x, INTEGER const incx, REAL &scale, REAL &sumsq) {
     // Quick return if possible
     //
-    if (Mla_isnan(scale) || Mla_isnan(sumsq)) {
+    if (Risnan(scale) || Risnan(sumsq)) {
         return;
     }
     const REAL zero = 0.0;
@@ -128,7 +128,7 @@ void Rlassq(INTEGER const n, REAL *x, INTEGER const incx, REAL &scale, REAL &sum
         //
         // Combine abig and amed if abig > 0.
         //
-        if (amed > zero || Mla_isnan(amed)) {
+        if (amed > zero || Risnan(amed)) {
             abig += (amed * sbig) * sbig;
         }
         scale = one / sbig;
@@ -137,7 +137,7 @@ void Rlassq(INTEGER const n, REAL *x, INTEGER const incx, REAL &scale, REAL &sum
         //
         // Combine amed and asml if asml > 0.
         //
-        if (amed > zero || Mla_isnan(amed)) {
+        if (amed > zero || Risnan(amed)) {
             amed = sqrt(amed);
             asml = sqrt(asml) / ssml;
             if (asml > amed) {

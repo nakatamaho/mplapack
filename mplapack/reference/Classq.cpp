@@ -40,7 +40,7 @@
 void Classq(INTEGER const n, COMPLEX *x, INTEGER const incx, REAL &scale, REAL &sumsq) {
     // Quick return if possible
     //
-    if (Mla_isnan(scale) || Mla_isnan(sumsq)) {
+    if (Risnan(scale) || Risnan(sumsq)) {
         return;
     }
     const REAL zero = 0.0;
@@ -142,7 +142,7 @@ void Classq(INTEGER const n, COMPLEX *x, INTEGER const incx, REAL &scale, REAL &
         //
         // Combine abig and amed if abig > 0.
         //
-        if (amed > zero || Mla_isnan(amed)) {
+        if (amed > zero || Risnan(amed)) {
             abig += (amed * sbig) * sbig;
         }
         scale = one / sbig;
@@ -151,7 +151,7 @@ void Classq(INTEGER const n, COMPLEX *x, INTEGER const incx, REAL &scale, REAL &
         //
         // Combine amed and asml if asml > 0.
         //
-        if (amed > zero || Mla_isnan(amed)) {
+        if (amed > zero || Risnan(amed)) {
             amed = sqrt(amed);
             asml = sqrt(asml) / ssml;
             if (asml > amed) {

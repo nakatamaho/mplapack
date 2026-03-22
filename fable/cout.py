@@ -1108,11 +1108,6 @@ def convert_token(vmap, leading, tok, had_str_concat=None, prev_operand_is_strin
         raw = vmap.get(tv, tv)
         # Case-insensitive lookup in MPLAPACK name map (routine and helper names).
         lname = raw.lower()
-        # Special-case LAPACK F90 helper (from LA_XISNAN module).
-        # We translate LA_ISNAN(x) into a C++ helper Mla_isnan(x).
-        # The caller must provide Mla_isnan for the active REAL type.
-        if lname == "la_isnan":
-            return "Mla_isnan"
         mapped = _MPLAPACK_NAME_MAP.get(lname)
         if mapped is not None:
             return mapped
