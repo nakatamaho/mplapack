@@ -98,6 +98,7 @@ EXCLUDE_BASENAMES=(
 
 # Hand-maintained files to keep when cleaning old generated outputs.
 KEEP_HAND_WRITTEN_FILES=(
+  Mexponent.cpp
   Mmaxloc.cpp
   Mlsamen.cpp
   Mmaxval.cpp

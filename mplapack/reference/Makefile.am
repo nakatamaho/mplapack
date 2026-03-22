@@ -587,6 +587,7 @@ Cunmrz.cpp \
 Cunmtr.cpp \
 Cupgtr.cpp \
 Cupmtr.cpp \
+Mexponent.cpp \
 Mlsamen.cpp \
 Mmaxloc.cpp \
 Mmaxval.cpp \

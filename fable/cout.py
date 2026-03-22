@@ -3257,6 +3257,8 @@ def rewrite_intrinsics(text: str) -> str:
         "fem::maxloc": "Mmaxloc",
         "fem::maxval": "Mmaxval",
         "fem::minval": "Mminval",
+
+        "fem::exponent": "Mexponent",
     }
 
     for src, dst in simple_map.items():

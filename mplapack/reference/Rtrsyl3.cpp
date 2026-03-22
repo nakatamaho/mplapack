@@ -316,14 +316,14 @@ void Rtrsyl3(const char *trana, const char *tranb, INTEGER const isgn, INTEGER c
                         buf = zero;
                     } else {
                         // Use second scaling factor to prevent flushing to zero.
-                        buf = buf * pow(2.0, exponent(scaloc));
+                        buf = buf * pow(2.0, Mexponent(scaloc));
                     }
                     for (jj = 1; jj <= nbb; jj = jj + 1) {
                         for (ll = 1; ll <= nba; ll = ll + 1) {
                             // Bound by BIGNUM to not introduce Inf. The value
                             // is irrelevant; corresponding entries of the
                             // solution will be flushed in consistency scaling.
-                            swork[(ll - 1) + (jj - 1) * ldswork] = min(bignum, swork[(ll - 1) + (jj - 1) * ldswork] / pow(2.0, exponent(scaloc)));
+                            swork[(ll - 1) + (jj - 1) * ldswork] = min(bignum, swork[(ll - 1) + (jj - 1) * ldswork] / pow(2.0, Mexponent(scaloc)));
                         }
                     }
                 }
@@ -348,14 +348,14 @@ void Rtrsyl3(const char *trana, const char *tranb, INTEGER const isgn, INTEGER c
                     scaloc = Rlarmm(anrm, xnrm, cnrm);
                     if (scaloc * scamin == zero) {
                         // Use second scaling factor to prevent flushing to zero.
-                        buf = buf * pow(2.0, exponent(scaloc));
+                        buf = buf * pow(2.0, Mexponent(scaloc));
                         for (jj = 1; jj <= nbb; jj = jj + 1) {
                             for (ll = 1; ll <= nba; ll = ll + 1) {
-                                swork[(ll - 1) + (jj - 1) * ldswork] = min(bignum, swork[(ll - 1) + (jj - 1) * ldswork] / pow(2.0, exponent(scaloc)));
+                                swork[(ll - 1) + (jj - 1) * ldswork] = min(bignum, swork[(ll - 1) + (jj - 1) * ldswork] / pow(2.0, Mexponent(scaloc)));
                             }
                         }
-                        scamin = scamin / pow(2.0, exponent(scaloc));
-                        scaloc = scaloc / pow(2.0, exponent(scaloc));
+                        scamin = scamin / pow(2.0, Mexponent(scaloc));
+                        scaloc = scaloc / pow(2.0, Mexponent(scaloc));
                     }
                     cnrm = cnrm * scaloc;
                     xnrm = xnrm * scaloc;
@@ -404,14 +404,14 @@ void Rtrsyl3(const char *trana, const char *tranb, INTEGER const isgn, INTEGER c
                     scaloc = Rlarmm(bnrm, xnrm, cnrm);
                     if (scaloc * scamin == zero) {
                         // Use second scaling factor to prevent flushing to zero.
-                        buf = buf * pow(2.0, exponent(scaloc));
+                        buf = buf * pow(2.0, Mexponent(scaloc));
                         for (jj = 1; jj <= nbb; jj = jj + 1) {
                             for (ll = 1; ll <= nba; ll = ll + 1) {
-                                swork[(ll - 1) + (jj - 1) * ldswork] = min(bignum, swork[(ll - 1) + (jj - 1) * ldswork] / pow(2.0, exponent(scaloc)));
+                                swork[(ll - 1) + (jj - 1) * ldswork] = min(bignum, swork[(ll - 1) + (jj - 1) * ldswork] / pow(2.0, Mexponent(scaloc)));
                             }
                         }
-                        scamin = scamin / pow(2.0, exponent(scaloc));
-                        scaloc = scaloc / pow(2.0, exponent(scaloc));
+                        scamin = scamin / pow(2.0, Mexponent(scaloc));
+                        scaloc = scaloc / pow(2.0, Mexponent(scaloc));
                     }
                     cnrm = cnrm * scaloc;
                     xnrm = xnrm * scaloc;
@@ -487,14 +487,14 @@ void Rtrsyl3(const char *trana, const char *tranb, INTEGER const isgn, INTEGER c
                         buf = zero;
                     } else {
                         // Use second scaling factor to prevent flushing to zero.
-                        buf = buf * pow(2.0, exponent(scaloc));
+                        buf = buf * pow(2.0, Mexponent(scaloc));
                     }
                     for (jj = 1; jj <= nbb; jj = jj + 1) {
                         for (ll = 1; ll <= nba; ll = ll + 1) {
                             // Bound by BIGNUM to not introduce Inf. The value
                             // is irrelevant; corresponding entries of the
                             // solution will be flushed in consistency scaling.
-                            swork[(ll - 1) + (jj - 1) * ldswork] = min(bignum, swork[(ll - 1) + (jj - 1) * ldswork] / pow(2.0, exponent(scaloc)));
+                            swork[(ll - 1) + (jj - 1) * ldswork] = min(bignum, swork[(ll - 1) + (jj - 1) * ldswork] / pow(2.0, Mexponent(scaloc)));
                         }
                     }
                 }
@@ -519,14 +519,14 @@ void Rtrsyl3(const char *trana, const char *tranb, INTEGER const isgn, INTEGER c
                     scaloc = Rlarmm(anrm, xnrm, cnrm);
                     if (scaloc * scamin == zero) {
                         // Use second scaling factor to prevent flushing to zero.
-                        buf = buf * pow(2.0, exponent(scaloc));
+                        buf = buf * pow(2.0, Mexponent(scaloc));
                         for (jj = 1; jj <= nbb; jj = jj + 1) {
                             for (ll = 1; ll <= nba; ll = ll + 1) {
-                                swork[(ll - 1) + (jj - 1) * ldswork] = min(bignum, swork[(ll - 1) + (jj - 1) * ldswork] / pow(2.0, exponent(scaloc)));
+                                swork[(ll - 1) + (jj - 1) * ldswork] = min(bignum, swork[(ll - 1) + (jj - 1) * ldswork] / pow(2.0, Mexponent(scaloc)));
                             }
                         }
-                        scamin = scamin / pow(2.0, exponent(scaloc));
-                        scaloc = scaloc / pow(2.0, exponent(scaloc));
+                        scamin = scamin / pow(2.0, Mexponent(scaloc));
+                        scaloc = scaloc / pow(2.0, Mexponent(scaloc));
                     }
                     cnrm = cnrm * scaloc;
                     xnrm = xnrm * scaloc;
@@ -574,14 +574,14 @@ void Rtrsyl3(const char *trana, const char *tranb, INTEGER const isgn, INTEGER c
                     scaloc = Rlarmm(bnrm, xnrm, cnrm);
                     if (scaloc * scamin == zero) {
                         // Use second scaling factor to prevent flushing to zero.
-                        buf = buf * pow(2.0, exponent(scaloc));
+                        buf = buf * pow(2.0, Mexponent(scaloc));
                         for (jj = 1; jj <= nbb; jj = jj + 1) {
                             for (ll = 1; ll <= nba; ll = ll + 1) {
-                                swork[(ll - 1) + (jj - 1) * ldswork] = min(bignum, swork[(ll - 1) + (jj - 1) * ldswork] / pow(2.0, exponent(scaloc)));
+                                swork[(ll - 1) + (jj - 1) * ldswork] = min(bignum, swork[(ll - 1) + (jj - 1) * ldswork] / pow(2.0, Mexponent(scaloc)));
                             }
                         }
-                        scamin = scamin / pow(2.0, exponent(scaloc));
-                        scaloc = scaloc / pow(2.0, exponent(scaloc));
+                        scamin = scamin / pow(2.0, Mexponent(scaloc));
+                        scaloc = scaloc / pow(2.0, Mexponent(scaloc));
                     }
                     cnrm = cnrm * scaloc;
                     xnrm = xnrm * scaloc;
@@ -658,14 +658,14 @@ void Rtrsyl3(const char *trana, const char *tranb, INTEGER const isgn, INTEGER c
                         buf = zero;
                     } else {
                         // Use second scaling factor to prevent flushing to zero.
-                        buf = buf * pow(2.0, exponent(scaloc));
+                        buf = buf * pow(2.0, Mexponent(scaloc));
                     }
                     for (jj = 1; jj <= nbb; jj = jj + 1) {
                         for (ll = 1; ll <= nba; ll = ll + 1) {
                             // Bound by BIGNUM to not introduce Inf. The value
                             // is irrelevant; corresponding entries of the
                             // solution will be flushed in consistency scaling.
-                            swork[(ll - 1) + (jj - 1) * ldswork] = min(bignum, swork[(ll - 1) + (jj - 1) * ldswork] / pow(2.0, exponent(scaloc)));
+                            swork[(ll - 1) + (jj - 1) * ldswork] = min(bignum, swork[(ll - 1) + (jj - 1) * ldswork] / pow(2.0, Mexponent(scaloc)));
                         }
                     }
                 }
@@ -689,14 +689,14 @@ void Rtrsyl3(const char *trana, const char *tranb, INTEGER const isgn, INTEGER c
                     scaloc = Rlarmm(anrm, xnrm, cnrm);
                     if (scaloc * scamin == zero) {
                         // Use second scaling factor to prevent flushing to zero.
-                        buf = buf * pow(2.0, exponent(scaloc));
+                        buf = buf * pow(2.0, Mexponent(scaloc));
                         for (jj = 1; jj <= nbb; jj = jj + 1) {
                             for (ll = 1; ll <= nba; ll = ll + 1) {
-                                swork[(ll - 1) + (jj - 1) * ldswork] = min(bignum, swork[(ll - 1) + (jj - 1) * ldswork] / pow(2.0, exponent(scaloc)));
+                                swork[(ll - 1) + (jj - 1) * ldswork] = min(bignum, swork[(ll - 1) + (jj - 1) * ldswork] / pow(2.0, Mexponent(scaloc)));
                             }
                         }
-                        scamin = scamin / pow(2.0, exponent(scaloc));
-                        scaloc = scaloc / pow(2.0, exponent(scaloc));
+                        scamin = scamin / pow(2.0, Mexponent(scaloc));
+                        scaloc = scaloc / pow(2.0, Mexponent(scaloc));
                     }
                     cnrm = cnrm * scaloc;
                     xnrm = xnrm * scaloc;
@@ -744,14 +744,14 @@ void Rtrsyl3(const char *trana, const char *tranb, INTEGER const isgn, INTEGER c
                     scaloc = Rlarmm(bnrm, xnrm, cnrm);
                     if (scaloc * scamin == zero) {
                         // Use second scaling factor to prevent flushing to zero.
-                        buf = buf * pow(2.0, exponent(scaloc));
+                        buf = buf * pow(2.0, Mexponent(scaloc));
                         for (jj = 1; jj <= nbb; jj = jj + 1) {
                             for (ll = 1; ll <= nba; ll = ll + 1) {
-                                swork[(ll - 1) + (jj - 1) * ldswork] = min(bignum, swork[(ll - 1) + (jj - 1) * ldswork] / pow(2.0, exponent(scaloc)));
+                                swork[(ll - 1) + (jj - 1) * ldswork] = min(bignum, swork[(ll - 1) + (jj - 1) * ldswork] / pow(2.0, Mexponent(scaloc)));
                             }
                         }
-                        scamin = scamin / pow(2.0, exponent(scaloc));
-                        scaloc = scaloc / pow(2.0, exponent(scaloc));
+                        scamin = scamin / pow(2.0, Mexponent(scaloc));
+                        scaloc = scaloc / pow(2.0, Mexponent(scaloc));
                     }
                     cnrm = cnrm * scaloc;
                     xnrm = xnrm * scaloc;
@@ -827,14 +827,14 @@ void Rtrsyl3(const char *trana, const char *tranb, INTEGER const isgn, INTEGER c
                         buf = zero;
                     } else {
                         // Use second scaling factor to prevent flushing to zero.
-                        buf = buf * pow(2.0, exponent(scaloc));
+                        buf = buf * pow(2.0, Mexponent(scaloc));
                     }
                     for (jj = 1; jj <= nbb; jj = jj + 1) {
                         for (ll = 1; ll <= nba; ll = ll + 1) {
                             // Bound by BIGNUM to not introduce Inf. The value
                             // is irrelevant; corresponding entries of the
                             // solution will be flushed in consistency scaling.
-                            swork[(ll - 1) + (jj - 1) * ldswork] = min(bignum, swork[(ll - 1) + (jj - 1) * ldswork] / pow(2.0, exponent(scaloc)));
+                            swork[(ll - 1) + (jj - 1) * ldswork] = min(bignum, swork[(ll - 1) + (jj - 1) * ldswork] / pow(2.0, Mexponent(scaloc)));
                         }
                     }
                 }
@@ -859,14 +859,14 @@ void Rtrsyl3(const char *trana, const char *tranb, INTEGER const isgn, INTEGER c
                     scaloc = Rlarmm(anrm, xnrm, cnrm);
                     if (scaloc * scamin == zero) {
                         // Use second scaling factor to prevent flushing to zero.
-                        buf = buf * pow(2.0, exponent(scaloc));
+                        buf = buf * pow(2.0, Mexponent(scaloc));
                         for (jj = 1; jj <= nbb; jj = jj + 1) {
                             for (ll = 1; ll <= nba; ll = ll + 1) {
-                                swork[(ll - 1) + (jj - 1) * ldswork] = min(bignum, swork[(ll - 1) + (jj - 1) * ldswork] / pow(2.0, exponent(scaloc)));
+                                swork[(ll - 1) + (jj - 1) * ldswork] = min(bignum, swork[(ll - 1) + (jj - 1) * ldswork] / pow(2.0, Mexponent(scaloc)));
                             }
                         }
-                        scamin = scamin / pow(2.0, exponent(scaloc));
-                        scaloc = scaloc / pow(2.0, exponent(scaloc));
+                        scamin = scamin / pow(2.0, Mexponent(scaloc));
+                        scaloc = scaloc / pow(2.0, Mexponent(scaloc));
                     }
                     cnrm = cnrm * scaloc;
                     xnrm = xnrm * scaloc;
@@ -915,14 +915,14 @@ void Rtrsyl3(const char *trana, const char *tranb, INTEGER const isgn, INTEGER c
                     scaloc = Rlarmm(bnrm, xnrm, cnrm);
                     if (scaloc * scamin == zero) {
                         // Use second scaling factor to prevent flushing to zero.
-                        buf = buf * pow(2.0, exponent(scaloc));
+                        buf = buf * pow(2.0, Mexponent(scaloc));
                         for (jj = 1; jj <= nbb; jj = jj + 1) {
                             for (ll = 1; ll <= nba; ll = ll + 1) {
-                                swork[(ll - 1) + (jj - 1) * ldswork] = min(bignum, swork[(ll - 1) + (jj - 1) * ldswork] / pow(2.0, exponent(scaloc)));
+                                swork[(ll - 1) + (jj - 1) * ldswork] = min(bignum, swork[(ll - 1) + (jj - 1) * ldswork] / pow(2.0, Mexponent(scaloc)));
                             }
                         }
-                        scamin = scamin / pow(2.0, exponent(scaloc));
-                        scaloc = scaloc / pow(2.0, exponent(scaloc));
+                        scamin = scamin / pow(2.0, Mexponent(scaloc));
+                        scaloc = scaloc / pow(2.0, Mexponent(scaloc));
                     }
                     cnrm = cnrm * scaloc;
                     xnrm = xnrm * scaloc;
