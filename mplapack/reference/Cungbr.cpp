@@ -79,7 +79,7 @@ void Cungbr(const char *vect, INTEGER const m, INTEGER const n, INTEGER const k,
                 }
             }
         }
-        lwkopt = castINTEGER(castREAL(work[1 - 1].real()));
+        lwkopt = castINTEGER(work[1 - 1].real());
         lwkopt = max(lwkopt, mn);
     }
     //

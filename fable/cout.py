@@ -3184,6 +3184,13 @@ def rewrite_intrinsics(text: str) -> str:
             # No COMPLEX variables involved: treat as a real/integer expression.
             return f"castINTEGER({arg_stripped})"
 
+        # If the expression already has .real()/.imag()/castREAL, it is
+        # already real-valued (e.g. from a prior DBLE expansion).  Wrapping
+        # it again through _real_cast_or_component would produce redundant
+        # castREAL(work[0].real()) — just castINTEGER directly.
+        if ".real()" in arg_stripped or ".imag()" in arg_stripped or "castREAL(" in arg_stripped:
+            return f"castINTEGER({arg_stripped})"
+
         # COMPLEX variables involved: map to a REAL-valued expression first,
         # then cast to INTEGER.
         real_expr = _real_cast_or_component(

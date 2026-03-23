@@ -62,7 +62,7 @@ void Csysv_rk(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a,
             lwkopt = 1;
         } else {
             Csytrf_rk(uplo, n, a, lda, e, ipiv, work, -1, info);
-            lwkopt = castINTEGER(castREAL(work[1 - 1].real()));
+            lwkopt = castINTEGER(work[1 - 1].real());
         }
         work[1 - 1] = lwkopt;
     }
