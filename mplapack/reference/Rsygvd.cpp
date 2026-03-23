@@ -74,7 +74,7 @@ void Rsygvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
     }
     //
     if (info == 0) {
-        work[1 - 1] = lopt;
+        work[1 - 1] = Rroundup_lwork(lopt);
         iwork[1 - 1] = liopt;
         //
         if (lwork < lwmin && !lquery) {
@@ -109,8 +109,8 @@ void Rsygvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
     //
     Rsygst(itype, uplo, n, a, lda, b, ldb, info);
     Rsyevd(jobz, uplo, n, a, lda, w, work, lwork, iwork, liwork, info);
-    lopt = castINTEGER(max(castREAL(lopt), castREAL(work[1 - 1])));
-    liopt = castINTEGER(max(castREAL(liopt), castREAL(iwork[1 - 1])));
+    lopt = max(lopt, castINTEGER(work[1 - 1]));
+    liopt = max(liopt, iwork[1 - 1]);
     //
     char trans;
     const REAL one = 1.0;
@@ -146,7 +146,7 @@ void Rsygvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
         }
     }
     //
-    work[1 - 1] = lopt;
+    work[1 - 1] = Rroundup_lwork(lopt);
     iwork[1 - 1] = liopt;
     //
     // End of Rsygvd

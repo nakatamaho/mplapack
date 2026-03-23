@@ -72,7 +72,7 @@ void Rspgvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
                 lwmin = 2 * n;
             }
         }
-        work[1 - 1] = lwmin;
+        work[1 - 1] = Rroundup_lwork(lwmin);
         iwork[1 - 1] = liwmin;
         if (lwork < lwmin && !lquery) {
             info = -11;
@@ -106,8 +106,8 @@ void Rspgvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
     //
     Rspgst(itype, uplo, n, ap, bp, info);
     Rspevd(jobz, uplo, n, ap, w, z, ldz, work, lwork, iwork, liwork, info);
-    lwmin = castINTEGER(max(castREAL(lwmin), castREAL(work[1 - 1])));
-    liwmin = castINTEGER(max(castREAL(liwmin), castREAL(iwork[1 - 1])));
+    lwmin = max(lwmin, castINTEGER(work[1 - 1]));
+    liwmin = max(liwmin, iwork[1 - 1]);
     //
     INTEGER neig = 0;
     char trans;
@@ -152,7 +152,7 @@ void Rspgvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
         }
     }
     //
-    work[1 - 1] = lwmin;
+    work[1 - 1] = Rroundup_lwork(lwmin);
     iwork[1 - 1] = liwmin;
     //
     // End of Rspgvd
