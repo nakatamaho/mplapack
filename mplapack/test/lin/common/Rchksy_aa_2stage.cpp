@@ -281,8 +281,8 @@ void Rchksy_aa_2stage(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER con
                     // block factorization, LWORK is the length of AINV.
                     //
                     srnamt = "Rsytrf_aa_2stage";
-                    lwork = min(n * nb, 3 * nmax * nmax);
-                    Rsytrf_aa_2stage(uplo.elems, n, afac, lda, ainv, (3 * nb + 1) * n, iwork, &iwork[(1 + n) - 1], work, lwork, info);
+                    lwork = min(max((INTEGER)1, n * nb), 3 * nmax * nmax);
+                    Rsytrf_aa_2stage(uplo.elems, n, afac, lda, ainv, max((INTEGER)1, (3 * nb + 1) * n), iwork, &iwork[(1 + n) - 1], work, lwork, info);
                     //
                     // Adjust the expected value of INFO to account for
                     // pivoting.
@@ -354,7 +354,6 @@ void Rchksy_aa_2stage(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER con
                         Rlacpy("Full", n, nrhs, b, lda, x, lda);
                         //
                         srnamt = "Rsytrs_aa_2stage";
-                        lwork = max((INTEGER)1, 3 * n - 2);
                         Rsytrs_aa_2stage(uplo.elems, n, nrhs, afac, lda, ainv, (3 * nb + 1) * n, iwork, &iwork[(1 + n) - 1], x, lda, info);
                         //
                         // Check error code from Rsytrs and handle error.

@@ -99,7 +99,7 @@ void Cdrvsy_aa_2stage(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER con
     // Test path
     //
     path(1, 1) = "Zomplex precision";
-    path(2, 3) = "H2";
+    path(2, 3) = "S2";
     //
     // Path to generate matrices
     //

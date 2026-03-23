@@ -285,8 +285,8 @@ void Cchkhe_aa_2stage(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER con
                     // block factorization, LWORK is the length of AINV.
                     //
                     srnamt = "Chetrf_aa_2stage";
-                    lwork = min(n * nb, 3 * nmax * nmax);
-                    Chetrf_aa_2stage(uplo.elems, n, afac, lda, ainv, (3 * nb + 1) * n, iwork, &iwork[(1 + n) - 1], work, lwork, info);
+                    lwork = min(max((INTEGER)1, n * nb), 3 * nmax * nmax);
+                    Chetrf_aa_2stage(uplo.elems, n, afac, lda, ainv, max((INTEGER)1, (3 * nb + 1) * n), iwork, &iwork[(1 + n) - 1], work, lwork, info);
                     //
                     // Adjust the expected value of INFO to account for
                     // pivoting.
@@ -407,6 +407,6 @@ void Cchkhe_aa_2stage(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER con
     //
     Alasum(path, nout, nfail, nrun, nerrs);
     //
-    // End of Cchksy_aa_2stage
+    // End of Cchkhe_aa_2stage
     //
 }
