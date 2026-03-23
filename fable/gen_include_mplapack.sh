@@ -34,6 +34,7 @@ for mplib in $MPLIBS; do
         sed -i -e "s/iMieeeck/iMieeeck_${mplib}/g" mplapack_${mplib}.h 
         sed -i -e "s/iMparam2stage/iMparam2stage_${mplib}/g" mplapack_${mplib}.h 
         sed -i -e "s/iMparmq/iMparmq_${mplib}/g" mplapack_${mplib}.h 
+        sed -i -e "s/\<Rroundup_lwork\>/Rroundup_lwork_${mplib}/g" mplapack_${mplib}.h
         printf "void mplapack_gmp_initialize(void);" >> mplapack_${mplib}.h
     fi
 
@@ -50,6 +51,7 @@ for mplib in $MPLIBS; do
         sed -i -e "s/iMieeeck/iMieeeck_${mplib}/g" mplapack_${mplib}.h 
         sed -i -e "s/iMparam2stage/iMparam2stage_${mplib}/g" mplapack_${mplib}.h 
         sed -i -e "s/iMparmq/iMparmq_${mplib}/g" mplapack_${mplib}.h 
+        sed -i -e "s/\<Rroundup_lwork\>/Rroundup_lwork_${mplib}/g" mplapack_${mplib}.h
         printf "void ___mplapack_mpfr_initialize(void);" >> mplapack_${mplib}.h
         printf "void mplapack_mpfr_finalize(void);" >> mplapack_${mplib}.h
     fi
@@ -67,6 +69,7 @@ for mplib in $MPLIBS; do
         sed -i -e "s/iMieeeck/iMieeeck_${mplib}/g" mplapack_${mplib}.h 
         sed -i -e "s/iMparam2stage/iMparam2stage_${mplib}/g" mplapack_${mplib}.h 
         sed -i -e "s/iMparmq/iMparmq_${mplib}/g" mplapack_${mplib}.h 
+        sed -i -e "s/\<Rroundup_lwork\>/Rroundup_lwork_${mplib}/g" mplapack_${mplib}.h
     fi
 
     if [ x"$mplib" = x"dd" ]; then
@@ -82,6 +85,7 @@ for mplib in $MPLIBS; do
         sed -i -e "s/iMieeeck/iMieeeck_${mplib}/g" mplapack_${mplib}.h 
         sed -i -e "s/iMparam2stage/iMparam2stage_${mplib}/g" mplapack_${mplib}.h 
         sed -i -e "s/iMparmq/iMparmq_${mplib}/g" mplapack_${mplib}.h 
+        sed -i -e "s/\<Rroundup_lwork\>/Rroundup_lwork_${mplib}/g" mplapack_${mplib}.h
     fi
 
     if [ x"$mplib" = x"qd" ]; then
@@ -97,6 +101,7 @@ for mplib in $MPLIBS; do
         sed -i -e "s/iMieeeck/iMieeeck_${mplib}/g" mplapack_${mplib}.h 
         sed -i -e "s/iMparam2stage/iMparam2stage_${mplib}/g" mplapack_${mplib}.h 
         sed -i -e "s/iMparmq/iMparmq_${mplib}/g" mplapack_${mplib}.h 
+        sed -i -e "s/\<Rroundup_lwork\>/Rroundup_lwork_${mplib}/g" mplapack_${mplib}.h
     fi
 
     if [ x"$mplib" = x"binary128" ]; then
@@ -112,6 +117,7 @@ for mplib in $MPLIBS; do
         sed -i -e "s/iMieeeck/iMieeeck_${mplib}/g" mplapack_${mplib}.h 
         sed -i -e "s/iMparam2stage/iMparam2stage_${mplib}/g" mplapack_${mplib}.h 
         sed -i -e "s/iMparmq/iMparmq_${mplib}/g" mplapack_${mplib}.h 
+        sed -i -e "s/\<Rroundup_lwork\>/Rroundup_lwork_${mplib}/g" mplapack_${mplib}.h
     fi
 
     if [ x"$mplib" = x"binary80" ]; then
@@ -127,6 +133,7 @@ for mplib in $MPLIBS; do
         sed -i -e "s/iMieeeck/iMieeeck_${mplib}/g" mplapack_${mplib}.h 
         sed -i -e "s/iMparam2stage/iMparam2stage_${mplib}/g" mplapack_${mplib}.h 
         sed -i -e "s/iMparmq/iMparmq_${mplib}/g" mplapack_${mplib}.h 
+        sed -i -e "s/\<Rroundup_lwork\>/Rroundup_lwork_${mplib}/g" mplapack_${mplib}.h
     fi
 
     clang-format-19 -style="{BasedOnStyle: llvm, IndentWidth: 4, ColumnLimit: 10000 }" mplapack_${mplib}.h | sort > l ; mv l mplapack_${mplib}.h 

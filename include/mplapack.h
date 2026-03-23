@@ -1,9 +1,7 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2026
  *	Nakata, Maho
  * 	All rights reserved.
- *
- * $Id: mplapack.h,v 1.28 2010/08/07 03:15:46 nakatamaho Exp $
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -41,6 +39,7 @@ typedef mpc_class COMPLEX;
 #define Mlsame Mlsame_gmp
 #define Mxerbla Mxerbla_gmp
 #define Rlamch Rlamch_gmp
+#define Rroundup_lwork Rroundup_lwork_gmp
 #define iMlaenv2stage iMlaenv2stage_gmp
 #define iMlaenv iMlaenv_gmp
 #define iMlaver iMlaver_gmp
@@ -59,6 +58,7 @@ typedef mpcomplex COMPLEX;
 #define Mlsame Mlsame_mpfr
 #define Mxerbla Mxerbla_mpfr
 #define Rlamch Rlamch_mpfr
+#define Rroundup_lwork Rroundup_lwork_mpfr
 #define iMlaenv2stage iMlaenv2stage_mpfr
 #define iMlaenv iMlaenv_mpfr
 #define iMlaver iMlaver_mpfr
@@ -77,6 +77,7 @@ typedef qd_complex COMPLEX;
 #define Mlsame Mlsame_qd
 #define Mxerbla Mxerbla_qd
 #define Rlamch Rlamch_qd
+#define Rroundup_lwork Rroundup_lwork_qd
 #define iMlaenv2stage iMlaenv2stage_qd
 #define iMlaenv iMlaenv_qd
 #define iMlaver iMlaver_qd
@@ -95,6 +96,7 @@ typedef dd_complex COMPLEX;
 #define Mlsame Mlsame_dd
 #define Mxerbla Mxerbla_dd
 #define Rlamch Rlamch_dd
+#define Rroundup_lwork Rroundup_lwork_dd
 #define iMlaenv2stage iMlaenv2stage_dd
 #define iMlaenv iMlaenv_dd
 #define iMlaver iMlaver_dd
@@ -113,6 +115,7 @@ typedef std::complex<double> COMPLEX;
 #define Mlsamen Mlsamen_double
 #define Mxerbla Mxerbla_double
 #define Rlamch Rlamch_double
+#define Rroundup_lwork Rroundup_lwork_double
 #define iMlaenv iMlaenv_double
 #define iMlaenv2stage iMlaenv2stage_double
 #define iMlaver iMlaver_double
@@ -131,6 +134,7 @@ typedef std::complex<mplapack_binary80_t> COMPLEX;
 #define Mlsamen Mlsamen_binary80
 #define Mxerbla Mxerbla_binary80
 #define Rlamch Rlamch_binary80
+#define Rroundup_lwork Rroundup_lwork_binary80
 #define iMlaver iMlaver_binary80
 #define iMlaenv iMlaenv_binary80
 #define iMlaenv2stage iMlaenv2stage_binary80
@@ -149,6 +153,7 @@ typedef std::complex<mplapack_binary128_t> COMPLEX;
 #define Mlsamen Mlsamen_binary128
 #define Mxerbla Mxerbla_binary128
 #define Rlamch Rlamch_binary128
+#define Rroundup_lwork Rroundup_lwork_binary128
 #define iMlaver iMlaver_binary128
 #define iMlaenv iMlaenv_binary128
 #define iMlaenv2stage iMlaenv2stage_binary128
