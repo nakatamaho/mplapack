@@ -66,19 +66,24 @@ void Rget02(fem::str_cref trans, INTEGER const m, INTEGER const n, INTEGER const
     // Exit with RESID = 1/EPS if ANORM = 0.
     //
     REAL eps = Rlamch("Epsilon");
-    REAL anorm = Rlange("1", m, n, a, lda, rwork);
+    REAL anorm = 0.0;
+    if (Mlsame(trans.elems(), "N")) {
+        anorm = Rlange("1", m, n, a, lda, rwork);
+    } else {
+        anorm = Rlange("I", m, n, a, lda, rwork);
+    }
     const REAL one = 1.0;
     if (anorm <= zero) {
         resid = one / eps;
         return;
     }
     //
-    // Compute  B - A*X  (or  B - A'*X ) and store in B.
+    // Compute B - op(A)*X and store in B.
     //
     Rgemm(trans.elems(), "No transpose", n1, nrhs, n2, -one, a, lda, x, ldx, one, b, ldb);
     //
     // Compute the maximum over the number of right hand sides of
-    // norm(B - A*X) / ( norm(A) * norm(X) * EPS ) .
+    // norm(B - op(A)*X) / ( norm(op(A)) * norm(X) * EPS ) .
     //
     resid = zero;
     INTEGER j = 0;
