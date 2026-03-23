@@ -99,7 +99,6 @@ REAL Rqrt14(fem::str_cref trans, INTEGER const m, INTEGER const n, INTEGER const
         if (xnrm != zero) {
             Rlascl("G", 0, 0, xnrm, one, m, nrhs, &work[(n * ldwork + 1) - 1], ldwork, info);
         }
-        anrm = Rlange("One-norm", m, n + nrhs, work, ldwork, rwork);
         //
         // Compute QR factorization of X
         //
