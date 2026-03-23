@@ -53,18 +53,18 @@ INTEGER Mexponent(REAL const &x) {
 // binary80
 // -----------------------------------------------------------------------
 #if defined ___MPLAPACK_BUILD_WITH_BINARY80___
-#  if MPLAPACK_BINARY80_MATH_MODE == MPLAPACK_BINARY80_MATH_LDBL
+#  if MPLAPACK_BINARY80_MATH == MPLAPACK_BINARY80_MATH_LDBL
 // long double == binary80 (x87 on x86/x86-64).
 INTEGER Mexponent(REAL const &x) {
     return std::ilogbl(x) + 1;
 }
-#  elif MPLAPACK_BINARY80_MATH_MODE == MPLAPACK_BINARY80_MATH_F64X
+#  elif MPLAPACK_BINARY80_MATH == MPLAPACK_BINARY80_MATH_F64X
 // _Float64x: cast to long double is exact when _Float64x == binary80.
 INTEGER Mexponent(REAL const &x) {
     return std::ilogbl((long double)x) + 1;
 }
 #  else
-#    error "Mexponent: unsupported MPLAPACK_BINARY80_MATH_MODE"
+#    error "Mexponent: unsupported MPLAPACK_BINARY80_MATH"
 #  endif
 #endif // ___MPLAPACK_BUILD_WITH_BINARY80___
 
@@ -72,18 +72,18 @@ INTEGER Mexponent(REAL const &x) {
 // binary128
 // -----------------------------------------------------------------------
 #if defined ___MPLAPACK_BUILD_WITH_BINARY128___
-#  if MPLAPACK_BINARY128_MATH_MODE == MPLAPACK_BINARY128_MATH_LDBL
+#  if MPLAPACK_BINARY128_MATH == MPLAPACK_BINARY128_MATH_LDBL
 // long double == binary128 (SPARC, MIPS, some AArch64).
 INTEGER Mexponent(REAL const &x) {
     return std::ilogbl(x) + 1;
 }
-#  elif MPLAPACK_BINARY128_MATH_MODE == MPLAPACK_BINARY128_MATH_F128
+#  elif MPLAPACK_BINARY128_MATH == MPLAPACK_BINARY128_MATH_F128
 // _Float128 (ISO C TS 18661-3, GCC 7+).
 // __builtin_ilogbf128 accepts _Float128 directly on GCC.
 INTEGER Mexponent(REAL const &x) {
     return __builtin_ilogbf128((_Float128)x) + 1;
 }
-#  elif MPLAPACK_BINARY128_MATH_MODE == MPLAPACK_BINARY128_MATH_QUADMATH
+#  elif MPLAPACK_BINARY128_MATH == MPLAPACK_BINARY128_MATH_QUADMATH
 // _Float128 backed by libquadmath.  ilogbq expects __float128, but
 // _Float128 and __float128 are the same underlying type on GCC, so the
 // cast is a no-op.
@@ -92,7 +92,7 @@ INTEGER Mexponent(REAL const &x) {
     return ilogbq((__float128)x) + 1;
 }
 #  else
-#    error "Mexponent: unsupported MPLAPACK_BINARY128_MATH_MODE"
+#    error "Mexponent: unsupported MPLAPACK_BINARY128_MATH"
 #  endif
 #endif // ___MPLAPACK_BUILD_WITH_BINARY128___
 

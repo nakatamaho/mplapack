@@ -54,17 +54,17 @@ bool Risnan(REAL const &x) {
 // binary80
 // -----------------------------------------------------------------------
 #if defined ___MPLAPACK_BUILD_WITH_BINARY80___
-#  if MPLAPACK_BINARY80_MATH_MODE == MPLAPACK_BINARY80_MATH_LDBL
+#  if MPLAPACK_BINARY80_MATH == MPLAPACK_BINARY80_MATH_LDBL
 bool Risnan(REAL const &x) {
     return std::isnan(x);
 }
-#  elif MPLAPACK_BINARY80_MATH_MODE == MPLAPACK_BINARY80_MATH_F64X
+#  elif MPLAPACK_BINARY80_MATH == MPLAPACK_BINARY80_MATH_F64X
 // _Float64x: cast to long double is exact when _Float64x == binary80.
 bool Risnan(REAL const &x) {
     return std::isnan((long double)x);
 }
 #  else
-#    error "Risnan: unsupported MPLAPACK_BINARY80_MATH_MODE"
+#    error "Risnan: unsupported MPLAPACK_BINARY80_MATH"
 #  endif
 #endif // ___MPLAPACK_BUILD_WITH_BINARY80___
 
@@ -72,23 +72,23 @@ bool Risnan(REAL const &x) {
 // binary128
 // -----------------------------------------------------------------------
 #if defined ___MPLAPACK_BUILD_WITH_BINARY128___
-#  if MPLAPACK_BINARY128_MATH_MODE == MPLAPACK_BINARY128_MATH_LDBL
+#  if MPLAPACK_BINARY128_MATH == MPLAPACK_BINARY128_MATH_LDBL
 // long double == binary128 (SPARC, MIPS, some AArch64).
 bool Risnan(REAL const &x) {
     return std::isnan(x);
 }
-#  elif MPLAPACK_BINARY128_MATH_MODE == MPLAPACK_BINARY128_MATH_F128
+#  elif MPLAPACK_BINARY128_MATH == MPLAPACK_BINARY128_MATH_F128
 // _Float128 (ISO C TS 18661-3, GCC 7+).
 bool Risnan(REAL const &x) {
     return __builtin_isnan((_Float128)x);
 }
-#  elif MPLAPACK_BINARY128_MATH_MODE == MPLAPACK_BINARY128_MATH_QUADMATH
+#  elif MPLAPACK_BINARY128_MATH == MPLAPACK_BINARY128_MATH_QUADMATH
 #    include <quadmath.h>
 bool Risnan(REAL const &x) {
     return isnanq((__float128)x);
 }
 #  else
-#    error "Risnan: unsupported MPLAPACK_BINARY128_MATH_MODE"
+#    error "Risnan: unsupported MPLAPACK_BINARY128_MATH"
 #  endif
 #endif // ___MPLAPACK_BUILD_WITH_BINARY128___
 
