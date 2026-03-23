@@ -1,80 +1,100 @@
---- Rchkaa.cpp_	2026-01-30 07:01:53.559480665 +0900
-+++ Rchkaa.cpp	2026-01-30 07:01:59.392463469 +0900
-@@ -42,10 +42,11 @@
- 
- #include <mplapack_matgen.h>
- #include <mplapack_lin.h>
-+
- #include <memory>
- 
--void program_dchkaa(int argc, char const *argv[]) {
--    common cmn(argc, argv);
-+void Rchkaa(void) {
-+    common cmn;
-     common_read read(cmn);
+diff --git a/mplapack/test/lin/common/Rchkaa.cpp b/mplapack/test/lin/common/Rchkaa.cpp
+index 8cb12ec6..e83607cb 100644
+--- a/mplapack/test/lin/common/Rchkaa.cpp
++++ b/mplapack/test/lin/common/Rchkaa.cpp
+@@ -51,8 +51,23 @@ void Rchkaa(void) {
      common_write write(cmn);
      static fem::str<10> intstr = "0123456789";
-@@ -56,10 +56,13 @@
+     static REAL threq = 2.0;
+-    REAL s1 = 0.0;
++    INTEGER allocatestatus = 0;
+     const INTEGER nmax = 132;
++    const INTEGER kdmax = nmax + (nmax + 1) / 4;
++    std::unique_ptr<REAL[]> a_storage;
++    REAL *a = nullptr;
++    const INTEGER maxrhs = 16;
++    std::unique_ptr<REAL[]> b_storage;
++    REAL *b = nullptr;
++    std::unique_ptr<REAL[]> work_storage;
++    REAL *work = nullptr;
++    std::unique_ptr<REAL[]> e_storage;
++    REAL *e = nullptr;
++    std::unique_ptr<REAL[]> s_storage;
++    REAL *s = nullptr;
++    std::unique_ptr<REAL[]> rwork_storage;
++    REAL *rwork = nullptr;
++    REAL s1 = 0.0;
      INTEGER lda = 0;
      bool fatal = false;
      const INTEGER nin = 5;
--    INTEGER vers_major = 0;
--    INTEGER vers_minor = 0;
--    INTEGER vers_patch = 0;
-     const INTEGER nout = 6;
-+    INTEGER mplapack_vers_major = 0;
-+    INTEGER mplapack_vers_minor = 0;
-+    INTEGER mplapack_vers_patch = 0;
-+    INTEGER lapack_vers_major = 0;
-+    INTEGER lapack_vers_minor = 0;
-+    INTEGER lapack_vers_patch = 0;
-     INTEGER nm = 0;
-     const INTEGER maxin = 12;
-     INTEGER mval[maxin];
-@@ -120,8 +123,9 @@
-     static const char *format_9997 = "(' Total time used = ',f12.2,' seconds',/)";
-     static const char *format_9996 = "(' Invalid input value: ',a4,'=',i6,'; must be >=',i6)";
-     static const char *format_9995 = "(' Invalid input value: ',a4,'=',i6,'; must be <=',i6)";
--    static const char *format_9994 = "(' Tests of the DOUBLE PRECISION LAPACK routines ',/,' LAPACK VERSION ',"
--                                     "i1,'.',i1,'.',i1,/,/,' The following parameter values will be used:')";
-+    static const char *format_9994 = "(' Tests of the Multiple precision version of LAPACK ',i1,'.',i1,'.',i1,/, "
-+                                     "' Based on the original LAPACK VERSION ',i1,'.',i1,'.',i1,/,/, "
-+                                     "' The following parameter values will be used:')";
-     static const char *format_9993 = "(4x,a4,':  ',10i6,/,11x,10i6)";
-     static const char *format_9992 = "(/,' Routines pass computational tests if test ratio is ','less than',"
-                                      "f8.2,/)";
-@@ -141,8 +145,8 @@
+@@ -71,7 +86,6 @@ void Rchkaa(void) {
+     INTEGER nval[maxin];
+     INTEGER nns = 0;
+     INTEGER nsval[maxin];
+-    const INTEGER maxrhs = 16;
+     INTEGER nnb = 0;
+     INTEGER nbval[maxin];
+     INTEGER nnb2 = 0;
+@@ -97,21 +111,10 @@ void Rchkaa(void) {
+     INTEGER nrhs = 0;
+     INTEGER ntypes = 0;
+     bool dotype[matmax];
+-    const INTEGER kdmax = nmax + (nmax + 1) / 4;
+-    auto a_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, ((kdmax + 1) * nmax) * 7));
+-    REAL *a = a_storage.get();
+-    auto b_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, (nmax * maxrhs) * 4));
+-    REAL *b = b_storage.get();
+-    auto work_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, nmax * (3 * nmax + maxrhs + 30)));
+-    REAL *work = work_storage.get();
+-    auto rwork_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, 5 * nmax + 2 * maxrhs));
+-    REAL *rwork = rwork_storage.get();
+     INTEGER iwork[25 * nmax];
+-    REAL s[2 * nmax];
+     INTEGER la = 0;
+     INTEGER lafac = 0;
+     INTEGER piv[nmax];
+-    REAL e[nmax];
+     REAL s2 = 0.0;
+     INTEGER ldaw = (kdmax + 1) * nmax;
+     INTEGER ldb = nmax * maxrhs;
+@@ -132,7 +135,6 @@ void Rchkaa(void) {
+     static const char *format_9989 = "(/,1x,a3,' routines were not tested')";
+     static const char *format_9988 = "(/,1x,a3,' driver routines were not tested')";
      //
-     // Report values of parameters.
-     //
--    ilaver(vers_major, vers_minor, vers_patch);
--    write(nout, format_9994), vers_major, vers_minor, vers_patch;
-+    iMlaver(mplapack_vers_major, mplapack_vers_minor, mplapack_vers_patch, lapack_vers_major, lapack_vers_minor, lapack_vers_patch);
-+    write(nout, format_9994), mplapack_vers_major, mplapack_vers_minor, mplapack_vers_patch, lapack_vers_major, lapack_vers_minor, lapack_vers_patch;
-     //
-     // Read the values of M
-     //
-@@ -442,7 +446,7 @@
-     //
-     // Check first character for correct precision.
-     //
--    if (!Mlsame(c1.elems, "Double precision")) {
-+    if (!Mlsame(c1.elems, "Double precision") && !Mlsame(c1.elems, "R")) {
-         write(nout, format_9990), path;
+-    //
+     s1 = dsecnd();
+     lda = nmax;
+     fatal = false;
+@@ -827,6 +829,32 @@ statement_130:
+             write(nout, format_9989), path;
+         }
          //
-     } else if (nmats <= 0) {
-@@ -939,7 +939,7 @@ statement_140:
-     cmn.io.close(nin);
-     s2 = dsecnd();
-     write(nout, format_9998);
--    write(nout, format_9997), s2 - s1;
-+    write(nout, format_9997), cast2double(s2 - s1);
-     //
-     // End of Rchkaa
-     //
-@@ -943,4 +947,4 @@
-     //
- }
- 
--int main(int argc, char const *argv[]) { return fem::main_with_catch(argc, argv, program_dchkaa); }
-+int main(int argc, char const *argv[]) { Rchkaa(); }
++    } else if (Mlsamen(2, c2.elems, "QK")) {
++        //
++        // QK: truncated QR factorization with pivoting
++        //
++        ntypes = 19;
++        Alareq(path, nmats, dotype, ntypes, nin, nout);
++        //
++        if (tstchk) {
++            Rchkqp3rk(dotype, nm, mval, nn, nval, nns, nsval, nnb, nbval, nxval, thresh, &a[0], &a[(2 - 1) * ldaw], &b[0], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], &b[(4 - 1) * ldb], work, iwork, nout);
++        } else {
++            write(nout, format_9989), path;
++        }
++        //
++    } else if (Mlsamen(2, c2.elems, "QK")) {
++        //
++        // QK: truncated QR factorization with pivoting
++        //
++        ntypes = 19;
++        Alareq(path, nmats, dotype, ntypes, nin, nout);
++        //
++        if (tstchk) {
++            Rchkqp3rk(dotype, nm, mval, nn, nval, nns, nsval, nnb, nbval, nxval, thresh, &a[0], &a[(2 - 1) * ldaw], &b[0], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], &b[(4 - 1) * ldb], work, iwork, nout);
++        } else {
++            write(nout, format_9989), path;
++        }
++        //
+     } else if (Mlsamen(2, c2.elems, "TZ")) {
+         //
+         // TZ:  Trapezoidal matrix
