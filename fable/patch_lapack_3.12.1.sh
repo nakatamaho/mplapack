@@ -14,22 +14,6 @@ echo "Post-processing mplapack/reference/iMlaenv.cpp with fix_iMlaenv.py"
 python3 "${FIX_IMLAENV}" iMlaenv.cpp
 python3 "${FIX_IMLAENV}" iMparmq.cpp
 
-#https://claude.ai/chat/ff991a40-a314-41e6-8699-d718148aec7e
-#https://claude.ai/chat/238930a7-ded0-4d54-bc32-362acb7ff57e
-patch -p3 < "${PATCH_DIR}/patch-Chbevx.cpp"
-patch -p3 < "${PATCH_DIR}/patch-Chbevx_2stage.cpp"
-patch -p3 < "${PATCH_DIR}/patch-Chbgvx.cpp"
-patch -p3 < "${PATCH_DIR}/patch-Cheevx.cpp"
-patch -p3 < "${PATCH_DIR}/patch-Cheevx_2stage.cpp"
-#patch -p3 < "${PATCH_DIR}/patch-Chpevx.cpp"
-patch -p3 < "${PATCH_DIR}/patch-Rsbevx.cpp"
-patch -p3 < "${PATCH_DIR}/patch-Rsbevx_2stage.cpp"
-#patch -p3 < "${PATCH_DIR}/patch-Rsbgvx.cpp"
-#patch -p3 < "${PATCH_DIR}/patch-Rspevx.cpp"
-#patch -p3 < "${PATCH_DIR}/patch-Rstevx.cpp"
-patch -p3 < "${PATCH_DIR}/patch-Rsyevx.cpp"
-patch -p3 < "${PATCH_DIR}/patch-Rsyevx_2stage.cpp"
-
 #https://claude.ai/chat/f3c3ff73-215d-44ed-9dae-8e75808e06d9
 #https://chatgpt.com/c/69929fe4-b980-83a7-8fd7-0988abca4785
 patch -p3 < "${PATCH_DIR}/patch-Cgejsv.cpp"
