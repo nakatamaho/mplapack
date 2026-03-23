@@ -92,12 +92,41 @@ void Cerrtsqr(fem::str_cref path, INTEGER const nunit) {
     Cgeqr(3, 2, a, 3, tau, 8, w, 0, info);
     Chkxer("Cgeqr", infot, nout, lerr, ok);
     //
+    // Clatsqr
+    //
+    INTEGER mb = 1;
+    INTEGER nb = 1;
+    srnamt = "Clatsqr";
+    infot = 1;
+    Clatsqr(-1, 0, mb, nb, a, 1, tau, 1, w, 1, info);
+    Chkxer("Clatsqr", infot, nout, lerr, ok);
+    infot = 2;
+    Clatsqr(1, 2, mb, nb, a, 1, tau, 1, w, 1, info);
+    Chkxer("Clatsqr", infot, nout, lerr, ok);
+    Clatsqr(0, -1, mb, nb, a, 1, tau, 1, w, 1, info);
+    Chkxer("Clatsqr", infot, nout, lerr, ok);
+    infot = 3;
+    Clatsqr(2, 1, -1, nb, a, 2, tau, 1, w, 1, info);
+    Chkxer("Clatsqr", infot, nout, lerr, ok);
+    infot = 4;
+    Clatsqr(2, 1, mb, 2, a, 2, tau, 1, w, 1, info);
+    Chkxer("Clatsqr", infot, nout, lerr, ok);
+    infot = 6;
+    Clatsqr(2, 1, mb, nb, a, 1, tau, 1, w, 1, info);
+    Chkxer("Clatsqr", infot, nout, lerr, ok);
+    infot = 8;
+    Clatsqr(2, 1, mb, nb, a, 2, tau, 0, w, 1, info);
+    Chkxer("Clatsqr", infot, nout, lerr, ok);
+    infot = 10;
+    Clatsqr(2, 1, mb, nb, a, 2, tau, 2, w, 0, info);
+    Chkxer("Clatsqr", infot, nout, lerr, ok);
+    //
     // Cgemqr
     //
     tau[1 - 1] = 1.0;
     tau[2 - 1] = 1.0;
     srnamt = "Cgemqr";
-    INTEGER nb = 1;
+    nb = 1;
     infot = 1;
     Cgemqr("/", "N", 0, 0, 0, a, 1, tau, 1, c, 1, w, 1, info);
     Chkxer("Cgemqr", infot, nout, lerr, ok);
@@ -151,6 +180,37 @@ void Cerrtsqr(fem::str_cref path, INTEGER const nunit) {
     Cgelq(2, 3, a, 3, tau, 8, w, 0, info);
     Chkxer("Cgelq", infot, nout, lerr, ok);
     //
+    // Claswlq
+    //
+    mb = 1;
+    nb = 1;
+    srnamt = "Claswlq";
+    infot = 1;
+    Claswlq(-1, 0, mb, nb, a, 1, tau, 1, w, 1, info);
+    Chkxer("Claswlq", infot, nout, lerr, ok);
+    infot = 2;
+    Claswlq(2, 1, mb, nb, a, 1, tau, 1, w, 1, info);
+    Chkxer("Claswlq", infot, nout, lerr, ok);
+    Claswlq(0, -1, mb, nb, a, 1, tau, 1, w, 1, info);
+    Chkxer("Claswlq", infot, nout, lerr, ok);
+    infot = 3;
+    Claswlq(1, 2, -1, nb, a, 1, tau, 1, w, 1, info);
+    Chkxer("Claswlq", infot, nout, lerr, ok);
+    Claswlq(1, 1, 2, nb, a, 1, tau, 1, w, 1, info);
+    Chkxer("Claswlq", infot, nout, lerr, ok);
+    infot = 4;
+    Claswlq(1, 2, mb, -1, a, 1, tau, 1, w, 1, info);
+    Chkxer("Claswlq", infot, nout, lerr, ok);
+    infot = 6;
+    Claswlq(1, 2, mb, nb, a, 0, tau, 1, w, 1, info);
+    Chkxer("Claswlq", infot, nout, lerr, ok);
+    infot = 8;
+    Claswlq(1, 2, mb, nb, a, 1, tau, 0, w, 1, info);
+    Chkxer("Claswlq", infot, nout, lerr, ok);
+    infot = 10;
+    Claswlq(1, 2, mb, nb, a, 1, tau, 1, w, 0, info);
+    Chkxer("Claswlq", infot, nout, lerr, ok);
+    //
     // Cgemlq
     //
     tau[1 - 1] = 1.0;
@@ -195,6 +255,6 @@ void Cerrtsqr(fem::str_cref path, INTEGER const nunit) {
     //
     Alaesm(path, ok, nout);
     //
-    // End of Rerrtsqr
+    // End of Cerrtsqr
     //
 }

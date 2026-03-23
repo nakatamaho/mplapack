@@ -60,6 +60,8 @@ void Rchktsqr(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *m
     //
     // Test the error exits
     //
+    Mxlaenv(1, 0);
+    Mxlaenv(2, 0);
     if (tsterr) {
         Rerrtsqr(path, nout);
     }
@@ -160,6 +162,6 @@ void Rchktsqr(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *m
     //
     Alasum(path, nout, nfail, nrun, nerrs);
     //
-    // End of Rchkqrt
+    // End of Rchktsqr
     //
 }
