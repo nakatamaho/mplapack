@@ -414,7 +414,7 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                     }
                                     //
                                     // +    TEST 2:
-                                    // Solve and compute residual for A * X = B.
+                                    // Solve and compute residual for op(A) * X = B.
                                     //
                                     srnamt = "Clarhs";
                                     Clarhs(path, xtype, " ", trans, n, n, kl, ku, nrhs, a, lda, xact, ldb, b, ldb, iseed, info);
@@ -431,7 +431,7 @@ void Cchkgb(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                     }
                                     //
                                     Clacpy("Full", n, nrhs, b, ldb, work, ldb);
-                                    Cgbt02(trans, m, n, kl, ku, nrhs, a, lda, x, ldb, work, ldb, result[2 - 1]);
+                                    Cgbt02(trans, m, n, kl, ku, nrhs, a, lda, x, ldb, work, ldb, rwork, result[2 - 1]);
                                     //
                                     // +    TEST 3:
                                     // Check solution from generated exact

@@ -438,7 +438,7 @@ void Rdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                         // solution.
                                         //
                                         Rlacpy("Full", n, nrhs, b, ldb, work, ldb);
-                                        Rgbt02("No transpose", n, n, kl, ku, nrhs, a, lda, x, ldb, work, ldb, result[2 - 1]);
+                                        Rgbt02("No transpose", n, n, kl, ku, nrhs, a, lda, x, ldb, work, ldb, rwork, result[2 - 1]);
                                         //
                                         // Check solution from generated exact
                                         // solution.
@@ -531,7 +531,7 @@ void Rdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                     // Compute residual of the computed solution.
                                     //
                                     Rlacpy("Full", n, nrhs, bsav, ldb, work, ldb);
-                                    Rgbt02(trans, n, n, kl, ku, nrhs, asav, lda, x, ldb, work, ldb, result[2 - 1]);
+                                    Rgbt02(trans, n, n, kl, ku, nrhs, asav, lda, x, ldb, work, ldb, &rwork[(2 * nrhs + 1) - 1], result[2 - 1]);
                                     //
                                     // Check solution from generated exact
                                     // solution.

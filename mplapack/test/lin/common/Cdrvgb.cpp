@@ -439,7 +439,7 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                         // solution.
                                         //
                                         Clacpy("Full", n, nrhs, b, ldb, work, ldb);
-                                        Cgbt02("No transpose", n, n, kl, ku, nrhs, a, lda, x, ldb, work, ldb, result[2 - 1]);
+                                        Cgbt02("No transpose", n, n, kl, ku, nrhs, a, lda, x, ldb, work, ldb, rwork, result[2 - 1]);
                                         //
                                         // Check solution from generated exact
                                         // solution.
@@ -531,7 +531,7 @@ void Cdrvgb(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, R
                                     // Compute residual of the computed solution.
                                     //
                                     Clacpy("Full", n, nrhs, bsav, ldb, work, ldb);
-                                    Cgbt02(trans, n, n, kl, ku, nrhs, asav, lda, x, ldb, work, ldb, result[2 - 1]);
+                                    Cgbt02(trans, n, n, kl, ku, nrhs, asav, lda, x, ldb, work, ldb, &rwork[(2 * nrhs + 1) - 1], result[2 - 1]);
                                     //
                                     // Check solution from generated exact
                                     // solution.
