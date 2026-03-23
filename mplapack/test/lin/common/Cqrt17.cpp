@@ -74,13 +74,12 @@ REAL Cqrt17(fem::str_cref trans, INTEGER const iresid, INTEGER const m, INTEGER 
     REAL rwork[1];
     REAL norma = Clange("One-norm", m, n, a, lda, rwork);
     REAL smlnum = Rlamch("Safe minimum") / Rlamch("Precision");
-    const REAL one = 1.0;
-    REAL bignum = one / smlnum;
     INTEGER iscl = 0;
     //
     // compute residual and scale it
     //
     Clacpy("All", nrows, nrhs, b, ldb, c, ldb);
+    const REAL one = 1.0;
     Cgemm(trans.elems(), "No transpose", nrows, nrhs, ncols, COMPLEX(-one), a, lda, x, ldx, COMPLEX(one), c, ldb);
     REAL normrs = Clange("Max", nrows, nrhs, c, ldb, rwork);
     INTEGER info = 0;
@@ -89,7 +88,7 @@ REAL Cqrt17(fem::str_cref trans, INTEGER const iresid, INTEGER const m, INTEGER 
         Clascl("General", 0, 0, normrs, one, nrows, nrhs, c, ldb, info);
     }
     //
-    // compute R'*A
+    // compute R**H * op(A)
     //
     Cgemm("Conjugate transpose", trans.elems(), nrhs, ncols, nrows, COMPLEX(one), c, ldb, a, lda, COMPLEX(zero), work, nrhs);
     //

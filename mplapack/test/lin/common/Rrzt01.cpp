@@ -77,7 +77,7 @@ REAL Rrzt01(INTEGER const m, INTEGER const n, REAL *a, REAL *af, INTEGER const l
     // R = R * P(1) * ... *P(m)
     //
     INTEGER info = 0;
-    Rormrz("Right", "No tranpose", m, n, m, n - m, af, lda, tau, work, m, &work[(m * n + 1) - 1], lwork - m * n, info);
+    Rormrz("Right", "No transpose", m, n, m, n - m, af, lda, tau, work, m, &work[(m * n + 1) - 1], lwork - m * n, info);
     //
     // R = R - A
     //
