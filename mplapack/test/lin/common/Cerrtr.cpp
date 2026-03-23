@@ -69,6 +69,7 @@ void Cerrtr(fem::str_cref path, INTEGER const nunit) {
     REAL rw[nmax];
     REAL rcond = 0.0;
     REAL scale = 0.0;
+    REAL scales[0];
     if (Mlsamen(2, c2.elems, "TR")) {
         //
         // Ctrtri
@@ -191,6 +192,37 @@ void Cerrtr(fem::str_cref path, INTEGER const nunit) {
         infot = 7;
         Clatrs("U", "N", "N", "N", 2, a, 1, x, scale, rw, info);
         Chkxer("Clatrs", infot, nout, lerr, ok);
+        //
+        // Clatrs3
+        //
+        srnamt = "Clatrs3";
+        infot = 1;
+        Clatrs3("/", "N", "N", "N", 0, 0, a, 1, x, 1, scales, rw, &rw[2 - 1], 1, info);
+        Chkxer("Clatrs3", infot, nout, lerr, ok);
+        infot = 2;
+        Clatrs3("U", "/", "N", "N", 0, 0, a, 1, x, 1, scales, rw, &rw[2 - 1], 1, info);
+        Chkxer("Clatrs3", infot, nout, lerr, ok);
+        infot = 3;
+        Clatrs3("U", "N", "/", "N", 0, 0, a, 1, x, 1, scales, rw, &rw[2 - 1], 1, info);
+        Chkxer("Clatrs3", infot, nout, lerr, ok);
+        infot = 4;
+        Clatrs3("U", "N", "N", "/", 0, 0, a, 1, x, 1, scales, rw, &rw[2 - 1], 1, info);
+        Chkxer("Clatrs3", infot, nout, lerr, ok);
+        infot = 5;
+        Clatrs3("U", "N", "N", "N", -1, 0, a, 1, x, 1, scales, rw, &rw[2 - 1], 1, info);
+        Chkxer("Clatrs3", infot, nout, lerr, ok);
+        infot = 6;
+        Clatrs3("U", "N", "N", "N", 0, -1, a, 1, x, 1, scales, rw, &rw[2 - 1], 1, info);
+        Chkxer("Clatrs3", infot, nout, lerr, ok);
+        infot = 8;
+        Clatrs3("U", "N", "N", "N", 2, 0, a, 1, x, 1, scales, rw, &rw[2 - 1], 1, info);
+        Chkxer("Clatrs3", infot, nout, lerr, ok);
+        infot = 10;
+        Clatrs3("U", "N", "N", "N", 2, 0, a, 2, x, 1, scales, rw, &rw[2 - 1], 1, info);
+        Chkxer("Clatrs3", infot, nout, lerr, ok);
+        infot = 14;
+        Clatrs3("U", "N", "N", "N", 1, 0, a, 1, x, 1, scales, rw, &rw[2 - 1], 0, info);
+        Chkxer("Clatrs3", infot, nout, lerr, ok);
         //
         // Test error exits for the packed triangular routines.
         //
