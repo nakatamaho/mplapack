@@ -134,3 +134,19 @@ index a5a10382..bf2aba4e 100644
              if (sname) {
                  nx = 128;
              } else {
+diff --git a/mplapack/reference/iMlaenv.cpp b/mplapack/reference/iMlaenv.cpp
+index bf2aba4e..b53206d6 100644
+--- a/mplapack/reference/iMlaenv.cpp
++++ b/mplapack/reference/iMlaenv.cpp
+@@ -347,9 +347,9 @@ statement_50:
+         } else if (strncmp(c3, "SYL", 3) == 0) {
+             // The upper bound is to prevent overly aggressive scaling.
+             if (sname) {
+-                nb = min(max((INTEGER)48, castINTEGER((min(n1, n2) * 16) / 100)), 240);
++                nb = min(max((INTEGER)48, INTEGER((min(n1, n2) * 16) / 100)), 240);
+             } else {
+-                nb = min(max((INTEGER)24, castINTEGER((min(n1, n2) * 8) / 100)), 80);
++                nb = min(max((INTEGER)24, INTEGER((min(n1, n2) * 8) / 100)), 80);
+             }
+         }
+     } else if (strncmp(c2, "LA", 2) == 0) {
