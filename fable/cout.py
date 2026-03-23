@@ -8346,6 +8346,149 @@ def _postprocess_complex_constant_assignments(lines):
     return out
 
 
+def _postprocess_not_relop_parens(lines):
+    """Fix C++ operator precedence for Fortran .NOT. with relational operators.
+
+    In Fortran, relational operators (.LE., .GE., .LT., .GT., .EQ., .NE.)
+    bind tighter than .NOT., so:
+        .NOT. tmax .LE. dlamch('Overflow')
+    means:
+        .NOT. (tmax .LE. dlamch('Overflow'))
+
+    FABLE converts this to:
+        !tmax <= Rlamch("Overflow")
+    which C++ parses as:
+        (!tmax) <= Rlamch("Overflow")
+    because C++ unary ! has higher precedence than <=.
+
+    This postprocess step rewrites:
+        !EXPR relop EXPR   ->   !(EXPR relop EXPR)
+    where the ! is a logical NOT (not part of !=) and the relop
+    (<=, >=, ==, !=, <, >) occurs at the same parenthesis depth.
+
+    Already-parenthesized forms like !(EXPR) are left unchanged.
+    """
+    out = []
+    for line in lines:
+        if '!' not in line:
+            out.append(line)
+            continue
+        stripped = line.lstrip()
+        if stripped.startswith('//'):
+            out.append(line)
+            continue
+        out.append(_fix_not_relop_in_line(line))
+    return out
+
+
+def _fix_not_relop_in_line(line):
+    """Scan *line* for bare ``!expr relop expr`` and insert parentheses."""
+    chars = list(line)
+    n = len(chars)
+    i = 0
+    while i < n:
+        ch = chars[i]
+
+        # --- skip string literals ----------------------------------------
+        if ch in ('"', "'"):
+            q = ch
+            i += 1
+            while i < n and chars[i] != q:
+                if chars[i] == '\\':
+                    i += 1          # skip escaped char
+                i += 1
+            i += 1                  # skip closing quote
+            continue
+
+        # --- skip // comment to end of line ------------------------------
+        if ch == '/' and i + 1 < n and chars[i + 1] == '/':
+            break
+
+        # --- look for logical-NOT  ! -------------------------------------
+        if ch == '!':
+            # Skip != (comparison operator, not logical NOT)
+            if i + 1 < n and chars[i + 1] == '=':
+                i += 2
+                continue
+            # Skip !( — already parenthesised
+            rest = ''.join(chars[i + 1:]).lstrip()
+            if rest.startswith('('):
+                i += 1
+                continue
+
+            # Candidate logical NOT at position i.
+            # Scan forward from i+1 to find a relational operator at
+            # paren-depth 0 (relative to the ! position).
+            j = i + 1
+            depth = 0
+            found_relop = False
+
+            while j < n:
+                c = chars[j]
+
+                # skip strings inside the expression
+                if c in ('"', "'"):
+                    q = c
+                    j += 1
+                    while j < n and chars[j] != q:
+                        if chars[j] == '\\':
+                            j += 1
+                        j += 1
+                    j += 1
+                    continue
+
+                if c == '(':
+                    depth += 1
+                    j += 1
+                    continue
+
+                if c == ')':
+                    if depth == 0:
+                        break       # back to enclosing scope
+                    depth -= 1
+                    j += 1
+                    continue
+
+                if depth == 0:
+                    # End of this sub-expression?
+                    if c == '&' and j + 1 < n and chars[j + 1] == '&':
+                        break
+                    if c == '|' and j + 1 < n and chars[j + 1] == '|':
+                        break
+                    if c == ';':
+                        break
+
+                    # Check for relational operator at depth 0.
+                    two = ''.join(chars[j:j + 2]) if j + 1 < n else ''
+                    one = c
+
+                    if two in ('<=', '>=', '==', '!='):
+                        found_relop = True
+                    elif one in ('<', '>'):
+                        # Make sure it is not the start of <= or >=
+                        if two not in ('<=', '>='):
+                            found_relop = True
+
+                j += 1
+
+            if found_relop:
+                # j is now the position of the terminator (), &&, ||, ;)
+                # or n (end of line).  Insert ')' before trailing whitespace
+                # and '(' right after the '!'.
+                ins = j
+                while ins > i + 1 and chars[ins - 1] in (' ', '\t'):
+                    ins -= 1
+                chars.insert(ins, ')')
+                chars.insert(i + 1, '(')
+                n += 2
+                i = ins + 2       # continue past the inserted ')'
+                continue
+
+        i += 1
+
+    return ''.join(chars)
+
+
 def _postprocess_intrinsic_aliases(lines):
     """Final cleanup for intrinsic helper names.
 
@@ -12029,6 +12172,9 @@ def process(
     result = _normalize_fortran_comment_prefix(result)
     result = _postprocess_complex_initializers(result)
     result = _postprocess_complex_constant_assignments(result)
+
+    # Fix .NOT. + relational operator precedence (!X <= Y -> !(X <= Y)).
+    result = _postprocess_not_relop_parens(result)
 
     # Final intrinsic cleanup (abs / pow2 aliases).
     result = _postprocess_intrinsic_aliases(result)

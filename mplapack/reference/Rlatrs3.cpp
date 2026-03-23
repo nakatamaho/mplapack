@@ -203,7 +203,7 @@ void Rlatrs3(const char *uplo, const char *trans, const char *diag, const char *
         }
     }
     //
-    if (!tmax <= Rlamch("Overflow")) {
+    if (!(tmax <= Rlamch("Overflow"))) {
         //
         // Some matrix entries have huge absolute value. At least one upper
         // bound norm( A(I1:I2-1, J1:J2-1), 'I') is not a valid floating-point
