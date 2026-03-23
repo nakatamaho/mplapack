@@ -75,4 +75,37 @@
  
 -int main(int argc, char const *argv[]) { return fem::main_with_catch(argc, argv, program_zchkaa); }
 +int main(int argc, char const *argv[]) { Cchkaa(); }
-diff --git a/mplapack/test/lin/common/Cchkaa.cpp b/mplapack/test/lin/common/Cchkaa.cpp
+
+--- Cchkaa.cpp
++++ Cchkaa.cpp
+@@ -48,8 +48,8 @@ void Cchkaa(void) {
+     common cmn;
+     common_read read(cmn);
+     common_write write(cmn);
+-    static fem::str<10> intstr = "0123456789";
+-    static REAL threq = 2.0;
++    fem::str<10> intstr = "0123456789";
++    REAL threq = 2.0;
+     REAL s1 = 0.0;
+     const INTEGER nmax = 132;
+     INTEGER lda = 0;
+@@ -967,6 +967,19 @@ statement_130:
+             write(nout, format_9989), path;
+         }
+         //
++    } else if (Mlsamen(2, c2.elems, "QK")) {
++        //
++        // QK: truncated QR factorization with pivoting
++        //
++        ntypes = 19;
++        Alareq(path, nmats, dotype, ntypes, nin, nout);
++        //
++        if (tstchk) {
++            Cchkqp3rk(dotype, nm, mval, nn, nval, nns, nsval, nnb, nbval, nxval, thresh, &a[0], &a[(2 - 1) * ldaw], &b[0], &b[(2 - 1) * ldb], &s[1 - 1], &b[(4 - 1) * ldb], work, rwork, iwork, nout);
++        } else {
++            write(nout, format_9989), path;
++        }
++        //
+     } else if (Mlsamen(2, c2.elems, "LS")) {
+         //
+         // LS:  Least squares drivers
