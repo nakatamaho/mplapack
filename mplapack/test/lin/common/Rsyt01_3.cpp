@@ -53,7 +53,7 @@ void Rsyt01_3(fem::str_cref uplo, INTEGER const n, REAL *a, INTEGER const lda, R
         return;
     }
     //
-    // a) Revert to multiplyers of L
+    // a) Revert to multipliers of L
     //
     INTEGER info = 0;
     Rsyconvf_rook(uplo.elems(), "R", n, afac, ldafac, e, ipiv, info);

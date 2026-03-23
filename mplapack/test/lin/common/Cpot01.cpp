@@ -74,7 +74,7 @@ void Cpot01(fem::str_cref uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
         }
     }
     //
-    // Compute the product U'*U, overwriting U.
+    // Compute the product U**H * U, overwriting U.
     //
     INTEGER k = 0;
     REAL tr = 0.0;
@@ -93,7 +93,7 @@ void Cpot01(fem::str_cref uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
             //
         }
         //
-        // Compute the product L*L', overwriting L.
+        // Compute the product L * L**H, overwriting L.
         //
     } else {
         for (k = n; k >= 1; k = k - 1) {
@@ -113,7 +113,7 @@ void Cpot01(fem::str_cref uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
         }
     }
     //
-    // Compute the difference  L*L' - A (or U'*U - A).
+    // Compute the difference L * L**H - A (or U**H * U - A).
     //
     INTEGER i = 0;
     if (Mlsame(uplo.elems(), "U")) {
@@ -132,7 +132,7 @@ void Cpot01(fem::str_cref uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
         }
     }
     //
-    // Compute norm( L*U - A ) / ( N * norm(A) * EPS )
+    // Compute norm(L*U - A) / ( N * norm(A) * EPS )
     //
     resid = Clanhe("1", uplo.elems(), n, afac, ldafac, rwork);
     //

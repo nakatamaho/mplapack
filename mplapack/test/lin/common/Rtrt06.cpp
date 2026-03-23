@@ -84,7 +84,6 @@ void Rtrt06(REAL const rcond, REAL const rcondc, fem::str_cref uplo, fem::str_cr
         //
         smlnum = Rlamch("Safe minimum");
         bignum = one / smlnum;
-        Rlabad(smlnum, bignum);
         anorm = Rlantr("M", uplo.elems(), diag.elems(), n, n, a, lda, work);
         //
         rat = rmax * (min(bignum / max(one, anorm), one / eps));

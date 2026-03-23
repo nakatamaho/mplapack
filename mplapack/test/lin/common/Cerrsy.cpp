@@ -87,7 +87,7 @@ void Cerrsy(fem::str_cref path, INTEGER const nunit) {
     if (Mlsamen(2, c2.elems, "SY")) {
         //
         // Test error exits of the routines that use factorization
-        // of a symmetric indefinite matrix with patrial
+        // of a symmetric indefinite matrix with partial
         // (Bunch-Kaufman) diagonal pivoting method.
         //
         // Csytrf
@@ -419,7 +419,7 @@ void Cerrsy(fem::str_cref path, INTEGER const nunit) {
     } else if (Mlsamen(2, c2.elems, "SP")) {
         //
         // Test error exits of the routines that use factorization
-        // of a symmetric indefinite packed matrix with patrial
+        // of a symmetric indefinite packed matrix with partial
         // (Bunch-Kaufman) pivoting.
         //
         // Csptrf

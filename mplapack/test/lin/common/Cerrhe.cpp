@@ -87,7 +87,7 @@ void Cerrhe(fem::str_cref path, INTEGER const nunit) {
     if (Mlsamen(2, c2.elems, "HE")) {
         //
         // Test error exits of the routines that use factorization
-        // of a Hermitian indefinite matrix with patrial
+        // of a Hermitian indefinite matrix with partial
         // (Bunch-Kaufman) diagonal pivoting method.
         //
         // Chetrf
@@ -514,7 +514,7 @@ void Cerrhe(fem::str_cref path, INTEGER const nunit) {
     } else if (Mlsamen(2, c2.elems, "HP")) {
         //
         // Test error exits of the routines that use factorization
-        // of a Hermitian indefinite packed matrix with patrial
+        // of a Hermitian indefinite packed matrix with partial
         // (Bunch-Kaufman) diagonal pivoting method.
         //
         // Chptrf

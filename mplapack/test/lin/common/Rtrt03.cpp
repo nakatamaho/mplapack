@@ -56,7 +56,6 @@ void Rtrt03(fem::str_cref uplo, fem::str_cref trans, fem::str_cref diag, INTEGER
     REAL smlnum = Rlamch("Safe minimum");
     const REAL one = 1.0;
     REAL bignum = one / smlnum;
-    Rlabad(smlnum, bignum);
     //
     // Compute the norm of the triangular matrix A using the column
     // norms already computed by Rlatrs.

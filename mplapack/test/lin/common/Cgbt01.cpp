@@ -126,7 +126,7 @@ void Cgbt01(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
         }
     }
     //
-    // Compute norm( L*U - A ) / ( N * norm(A) * EPS )
+    // Compute norm(L*U - A) / ( N * norm(A) * EPS )
     //
     if (anorm <= zero) {
         if (resid != zero) {

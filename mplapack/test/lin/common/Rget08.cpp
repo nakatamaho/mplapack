@@ -94,6 +94,6 @@ void Rget08(fem::str_cref trans, INTEGER const m, INTEGER const n, INTEGER const
         }
     }
     //
-    // End of Rget02
+    // End of Rget08
     //
 }

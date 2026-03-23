@@ -60,10 +60,10 @@ void Csyt01_aa(fem::str_cref uplo, INTEGER const n, COMPLEX *a, INTEGER const ld
     //
     // Initialize C to the tridiagonal matrix T.
     //
-    const COMPLEX czero = 0.0;
+    const COMPLEX czero = COMPLEX(0.0, 0.0);
     Claset("Full", n, n, czero, czero, c, ldc);
     Clacpy("F", 1, n, &afac[0], ldafac + 1, &c[0], ldc + 1);
-    const COMPLEX cone = 1.0;
+    const COMPLEX cone = COMPLEX(1.0, 0.0);
     if (n > 1) {
         if (Mlsame(uplo.elems(), "U")) {
             Clacpy("F", 1, n - 1, &afac[(2 - 1) * ldafac], ldafac + 1, &c[(2 - 1) * ldc], ldc + 1);
@@ -136,6 +136,6 @@ void Csyt01_aa(fem::str_cref uplo, INTEGER const n, COMPLEX *a, INTEGER const ld
         resid = ((resid / castREAL(n)) / anorm) / eps;
     }
     //
-    // End of Csyt01
+    // End of Csyt01_aa
     //
 }

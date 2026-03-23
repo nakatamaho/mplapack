@@ -55,6 +55,6 @@ void Chkxer(fem::str_cref srnamt, INTEGER const infot, INTEGER const nout, bool 
     }
     lerr = false;
     //
-    // End of Chkxer.
+    // End of Chkxer
     //
 }

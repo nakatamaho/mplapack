@@ -67,7 +67,6 @@ void Cqrt15(INTEGER const scale, INTEGER const rksel, INTEGER const m, INTEGER c
     //
     smlnum = Rlamch("Safe minimum");
     bignum = one / smlnum;
-    Rlabad(smlnum, bignum);
     eps = Rlamch("Epsilon");
     smlnum = (smlnum / eps) / eps;
     bignum = one / smlnum;
