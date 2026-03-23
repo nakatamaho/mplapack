@@ -132,31 +132,6 @@ void Cerrqr(fem::str_cref path, INTEGER const nunit) {
     Cgeqr2p(2, 1, a, 1, b, w, info);
     Chkxer("Cgeqr2p", infot, nout, lerr, ok);
     //
-    // Cgeqrs
-    //
-    srnamt = "Cgeqrs";
-    infot = 1;
-    Cgeqrs(-1, 0, 0, a, 1, x, b, 1, w, 1, info);
-    Chkxer("Cgeqrs", infot, nout, lerr, ok);
-    infot = 2;
-    Cgeqrs(0, -1, 0, a, 1, x, b, 1, w, 1, info);
-    Chkxer("Cgeqrs", infot, nout, lerr, ok);
-    infot = 2;
-    Cgeqrs(1, 2, 0, a, 2, x, b, 2, w, 1, info);
-    Chkxer("Cgeqrs", infot, nout, lerr, ok);
-    infot = 3;
-    Cgeqrs(0, 0, -1, a, 1, x, b, 1, w, 1, info);
-    Chkxer("Cgeqrs", infot, nout, lerr, ok);
-    infot = 5;
-    Cgeqrs(2, 1, 0, a, 1, x, b, 2, w, 1, info);
-    Chkxer("Cgeqrs", infot, nout, lerr, ok);
-    infot = 8;
-    Cgeqrs(2, 1, 0, a, 2, x, b, 1, w, 1, info);
-    Chkxer("Cgeqrs", infot, nout, lerr, ok);
-    infot = 10;
-    Cgeqrs(1, 1, 2, a, 1, x, b, 1, w, 1, info);
-    Chkxer("Cgeqrs", infot, nout, lerr, ok);
-    //
     // Cungqr
     //
     srnamt = "Cungqr";

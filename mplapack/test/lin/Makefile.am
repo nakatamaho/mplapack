@@ -203,6 +203,7 @@ common/Cchkps.cpp \
 common/Cchkpt.cpp \
 common/Cchkq3.cpp \
 common/Cchkql.cpp \
+common/Cchkqp3rk.cpp \
 common/Cchkqr.cpp \
 common/Cchkqrt.cpp \
 common/Cchkqrtp.cpp \
@@ -269,10 +270,8 @@ common/Cerrvx.cpp \
 common/Cgbt01.cpp \
 common/Cgbt02.cpp \
 common/Cgbt05.cpp \
-common/Cgelqs.cpp \
 common/Cgennd.cpp \
 common/Cgeqls.cpp \
-common/Cgeqrs.cpp \
 common/Cgerqs.cpp \
 common/Cget01.cpp \
 common/Cget02.cpp \
@@ -392,6 +391,7 @@ common/Rchkps.cpp \
 common/Rchkpt.cpp \
 common/Rchkq3.cpp \
 common/Rchkql.cpp \
+common/Rchkqp3rk.cpp \
 common/Rchkqr.cpp \
 common/Rchkqrt.cpp \
 common/Rchkqrtp.cpp \
@@ -450,10 +450,8 @@ common/Rerrvx.cpp \
 common/Rgbt01.cpp \
 common/Rgbt02.cpp \
 common/Rgbt05.cpp \
-common/Rgelqs.cpp \
 common/Rgennd.cpp \
 common/Rgeqls.cpp \
-common/Rgeqrs.cpp \
 common/Rgerqs.cpp \
 common/Rget01.cpp \
 common/Rget02.cpp \

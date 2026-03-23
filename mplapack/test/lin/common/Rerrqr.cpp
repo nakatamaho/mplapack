@@ -132,31 +132,6 @@ void Rerrqr(fem::str_cref path, INTEGER const nunit) {
     Rgeqr2p(2, 1, a, 1, b, w, info);
     Chkxer("Rgeqr2p", infot, nout, lerr, ok);
     //
-    // Rgeqrs
-    //
-    srnamt = "Rgeqrs";
-    infot = 1;
-    Rgeqrs(-1, 0, 0, a, 1, x, b, 1, w, 1, info);
-    Chkxer("Rgeqrs", infot, nout, lerr, ok);
-    infot = 2;
-    Rgeqrs(0, -1, 0, a, 1, x, b, 1, w, 1, info);
-    Chkxer("Rgeqrs", infot, nout, lerr, ok);
-    infot = 2;
-    Rgeqrs(1, 2, 0, a, 2, x, b, 2, w, 1, info);
-    Chkxer("Rgeqrs", infot, nout, lerr, ok);
-    infot = 3;
-    Rgeqrs(0, 0, -1, a, 1, x, b, 1, w, 1, info);
-    Chkxer("Rgeqrs", infot, nout, lerr, ok);
-    infot = 5;
-    Rgeqrs(2, 1, 0, a, 1, x, b, 2, w, 1, info);
-    Chkxer("Rgeqrs", infot, nout, lerr, ok);
-    infot = 8;
-    Rgeqrs(2, 1, 0, a, 2, x, b, 1, w, 1, info);
-    Chkxer("Rgeqrs", infot, nout, lerr, ok);
-    infot = 10;
-    Rgeqrs(1, 1, 2, a, 1, x, b, 1, w, 1, info);
-    Chkxer("Rgeqrs", infot, nout, lerr, ok);
-    //
     // Rorgqr
     //
     srnamt = "Rorgqr";
