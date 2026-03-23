@@ -91,8 +91,6 @@ patch  < "${PATCH_DIR}/patch-Rslect.cpp"
 
 cd "${REF_DIR}/eig"
 patch < "${PATCH_DIR}/patch-Cbb.in"
-#patch < "${PATCH_DIR}/patch-Ced.in"
-#patch < "${PATCH_DIR}/patch-Red.in"
 patch < "${PATCH_DIR}/patch-Rgg.in"
 patch < "${PATCH_DIR}/patch-csd.in"
 patch < "${PATCH_DIR}/patch-gsv.in"
