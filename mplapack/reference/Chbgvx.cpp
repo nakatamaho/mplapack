@@ -189,13 +189,19 @@ void Chbgvx(const char *jobz, const char *range, const char *uplo, INTEGER const
     }
     indisp = 1 + n;
     indiwk = indisp + n;
-    Rstebz(range, &order, n, vl, vu, il, iu, abstol, &rwork[indd - 1], &rwork[inde - 1], m, nsplit, w, &iwork[1 - 1], &iwork[indisp - 1], &rwork[indrwk - 1], &iwork[indiwk - 1], info);
-    if (info != 0) {
-        return;  // propagate INFO from Rstebz; IBLOCK may be invalid
+    Rstebz(range, &order, n, vl, vu, il, iu, abstol, &rwork[indd - 1], &rwork[inde - 1], m, nsplit, w, &iwork[1 - 1], &iwork[indisp - 1], &rwork[indrwk - 1], &iwork[indiwk - 1], iinfo);
+    if (iinfo != 0) {
+        info = 2 * n + iinfo;
+        if (iinfo != 1) {
+            goto statement_30;
+        }
     }
     //
     if (wantz) {
-        Cstein(n, &rwork[indd - 1], &rwork[inde - 1], m, w, &iwork[1 - 1], &iwork[indisp - 1], z, ldz, &rwork[indrwk - 1], &iwork[indiwk - 1], ifail, info);
+        Cstein(n, &rwork[indd - 1], &rwork[inde - 1], m, w, &iwork[1 - 1], &iwork[indisp - 1], z, ldz, &rwork[indrwk - 1], &iwork[indiwk - 1], ifail, iinfo);
+        if (iinfo != 0 && info == 0) {
+            info = iinfo;
+        }
         //
         // Apply unitary matrix used in reduction to tridiagonal
         // form to eigenvectors returned by Cstein.

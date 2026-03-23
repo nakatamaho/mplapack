@@ -185,10 +185,19 @@ void Rsbgvx(const char *jobz, const char *range, const char *uplo, INTEGER const
     }
     indisp = 1 + n;
     indiwo = indisp + n;
-    Rstebz(range, &order, n, vl, vu, il, iu, abstol, &work[indd - 1], &work[inde - 1], m, nsplit, w, &iwork[1 - 1], &iwork[indisp - 1], &work[indwrk - 1], &iwork[indiwo - 1], info);
+    Rstebz(range, &order, n, vl, vu, il, iu, abstol, &work[indd - 1], &work[inde - 1], m, nsplit, w, &iwork[1 - 1], &iwork[indisp - 1], &work[indwrk - 1], &iwork[indiwo - 1], iinfo);
+    if (iinfo != 0) {
+        info = 2 * n + iinfo;
+        if (iinfo != 1) {
+            goto statement_30;
+        }
+    }
     //
     if (wantz) {
-        Rstein(n, &work[indd - 1], &work[inde - 1], m, w, &iwork[1 - 1], &iwork[indisp - 1], z, ldz, &work[indwrk - 1], &iwork[indiwo - 1], ifail, info);
+        Rstein(n, &work[indd - 1], &work[inde - 1], m, w, &iwork[1 - 1], &iwork[indisp - 1], z, ldz, &work[indwrk - 1], &iwork[indiwo - 1], ifail, iinfo);
+        if (iinfo != 0 && info == 0) {
+            info = iinfo;
+        }
         //
         // Apply transformation matrix used in reduction to tridiagonal
         // form to eigenvectors returned by Rstein.

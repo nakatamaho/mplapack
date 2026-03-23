@@ -272,13 +272,19 @@ void Cheevx_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
     indibl = 1;
     indisp = indibl + n;
     indiwk = indisp + n;
-    Rstebz(range, &order, n, vll, vuu, il, iu, abstll, &rwork[indd - 1], &rwork[inde - 1], m, nsplit, w, &iwork[indibl - 1], &iwork[indisp - 1], &rwork[indrwk - 1], &iwork[indiwk - 1], info);
-    if (info != 0) {
-        return;  // propagate INFO from Rstebz; IBLOCK may be invalid
+    Rstebz(range, &order, n, vll, vuu, il, iu, abstll, &rwork[indd - 1], &rwork[inde - 1], m, nsplit, w, &iwork[indibl - 1], &iwork[indisp - 1], &rwork[indrwk - 1], &iwork[indiwk - 1], iinfo);
+    if (iinfo != 0) {
+        info = n + iinfo;
+        if (iinfo != 1) {
+            goto statement_40;
+        }
     }
     //
     if (wantz) {
-        Cstein(n, &rwork[indd - 1], &rwork[inde - 1], m, w, &iwork[indibl - 1], &iwork[indisp - 1], z, ldz, &rwork[indrwk - 1], &iwork[indiwk - 1], ifail, info);
+        Cstein(n, &rwork[indd - 1], &rwork[inde - 1], m, w, &iwork[indibl - 1], &iwork[indisp - 1], z, ldz, &rwork[indrwk - 1], &iwork[indiwk - 1], ifail, iinfo);
+        if (iinfo != 0 && info == 0) {
+            info = iinfo;
+        }
         //
         // Apply unitary matrix used in reduction to tridiagonal
         // form to eigenvectors returned by Cstein.

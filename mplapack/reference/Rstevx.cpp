@@ -61,6 +61,7 @@ void Rstevx(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
     INTEGER indisp = 0;
     INTEGER indiwo = 0;
     INTEGER nsplit = 0;
+    INTEGER iinfo = 0;
     INTEGER imax = 0;
     INTEGER j = 0;
     REAL tmp1 = 0.0;
@@ -205,10 +206,19 @@ void Rstevx(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
     indwrk = 1;
     indisp = 1 + n;
     indiwo = indisp + n;
-    Rstebz(range, &order, n, vll, vuu, il, iu, abstol, d, e, m, nsplit, w, &iwork[1 - 1], &iwork[indisp - 1], &work[indwrk - 1], &iwork[indiwo - 1], info);
+    Rstebz(range, &order, n, vll, vuu, il, iu, abstol, d, e, m, nsplit, w, &iwork[1 - 1], &iwork[indisp - 1], &work[indwrk - 1], &iwork[indiwo - 1], iinfo);
+    if (iinfo != 0) {
+        info = n + iinfo;
+        if (iinfo != 1) {
+            goto statement_20;
+        }
+    }
     //
     if (wantz) {
-        Rstein(n, d, e, m, w, &iwork[1 - 1], &iwork[indisp - 1], z, ldz, &work[indwrk - 1], &iwork[indiwo - 1], ifail, info);
+        Rstein(n, d, e, m, w, &iwork[1 - 1], &iwork[indisp - 1], z, ldz, &work[indwrk - 1], &iwork[indiwo - 1], ifail, iinfo);
+        if (iinfo != 0 && info == 0) {
+            info = iinfo;
+        }
     }
 //
 // If matrix was scaled, then rescale eigenvalues appropriately.
