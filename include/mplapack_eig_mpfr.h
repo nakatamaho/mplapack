@@ -138,6 +138,7 @@ void Csbmv(fem::str_cref uplo, mplapackint const n, mplapackint const k, mpcompl
 void Csgt01(mplapackint const itype, fem::str_cref uplo, mplapackint const n, mplapackint const m, mpcomplex *a, mplapackint const lda, mpcomplex *b, mplapackint const ldb, mpcomplex *z, mplapackint const ldz, mpreal *d, mpcomplex *work, mpreal *rwork, mpreal *result);
 void Cstt21(mplapackint const n, mplapackint const kband, mpreal *ad, mpreal *ae, mpreal *sd, mpreal *se, mpcomplex *u, mplapackint const ldu, mpcomplex *work, mpreal *rwork, mpreal *result);
 void Cstt22(mplapackint const n, mplapackint const m, mplapackint const kband, mpreal *ad, mpreal *ae, mpreal *sd, mpreal *se, mpcomplex *u, mplapackint const ldu, mpcomplex *work, mplapackint const ldwork, mpreal *rwork, mpreal *result);
+void Csyl01(mpreal const thresh, mplapackint *nfail, mpreal *rmax, mplapackint *ninfo, mplapackint &knt);
 void Cunt01(fem::str_cref rowcol, mplapackint const m, mplapackint const n, mpcomplex *u, mplapackint const ldu, mpcomplex *work, mplapackint const lwork, mpreal *rwork, mpreal &resid);
 void Cunt03(fem::str_cref rc, mplapackint const mu, mplapackint const mv, mplapackint const n, mplapackint const k, mpcomplex *u, mplapackint const ldu, mpcomplex *v, mplapackint const ldv, mpcomplex *work, mplapackint const lwork, mpreal *rwork, mpreal &result, mplapackint &info);
 void Mxerbla_mpfr(const char *srname, int info);
@@ -231,6 +232,7 @@ void Rstt21(mplapackint const n, mplapackint const kband, mpreal *ad, mpreal *ae
 void Rstt22(mplapackint const n, mplapackint const m, mplapackint const kband, mpreal *ad, mpreal *ae, mpreal *sd, mpreal *se, mpreal *u, mplapackint const ldu, mpreal *work, mplapackint const ldwork, mpreal *result);
 void Rsvdch(mplapackint const n, mpreal *s, mpreal *e, mpreal *svd, mpreal const tol, mplapackint &info);
 void Rsvdct(mplapackint const n, mpreal *s, mpreal *e, mpreal const shift, mplapackint &num);
+void Rsyl01(mpreal const thresh, mplapackint *nfail, mpreal *rmax, mplapackint *ninfo, mplapackint &knt);
 void Rsyt21(mplapackint const itype, fem::str_cref uplo, mplapackint const n, mplapackint const kband, mpreal *a, mplapackint const lda, mpreal *d, mpreal *e, mpreal *u, mplapackint const ldu, mpreal *v, mplapackint const ldv, mpreal *tau, mpreal *work, mpreal *result);
 void Rsyt22(mplapackint const itype, fem::str_cref uplo, mplapackint const n, mplapackint const m, mplapackint const kband, mpreal *a, mplapackint const lda, mpreal *d, mpreal *e, mpreal *u, mplapackint const ldu, mpreal *, mplapackint const ldv, mpreal *, mpreal *work, mpreal *result);
 #endif
