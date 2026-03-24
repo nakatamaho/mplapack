@@ -153,7 +153,6 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     //
     unfl = Rlamch("Safe minimum");
     ovfl = Rlamch("Overflow");
-    Rlabad(unfl, ovfl);
     ulp = Rlamch("Epsilon") * Rlamch("Base");
     ulpinv = one / ulp;
     rtunfl = sqrt(unfl);
@@ -195,7 +194,7 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             // Initialize RESULT
             //
-            for (j = 1; j <= 14; j = j + 1) {
+            for (j = 1; j <= 16; j = j + 1) {
                 result[j - 1] = zero;
             }
             //
@@ -695,6 +694,56 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 if (dumma[3 - 1] < ulpinv) {
                     result[14 - 1] = dumma[3 - 1] * aninv;
                 }
+            }
+            //
+            // Compute Left and Right Eigenvectors of A
+            //
+            // Compute a Right eigenvector matrix:
+            //
+            ntest = 15;
+            result[15 - 1] = ulpinv;
+            //
+            Rlacpy(" ", n, n, uz, ldu, evectr, ldu);
+            //
+            Rtrevc3("Right", "Back", select, n, t1, lda, dumma, ldu, evectr, ldu, n, in, work, nwork, iinfo);
+            if (iinfo != 0) {
+                write(nounit, format_9999), "Rtrevc3(R,B)", iinfo, n, jtype, ioldsd;
+                info = abs(iinfo);
+                goto statement_250;
+            }
+            //
+            // Test 15:  | AR - RW | / ( |A| |R| ulp )
+            //
+            // (from Schur decomposition)
+            //
+            Rget22("N", "N", "N", n, a, lda, evectr, ldu, wr1, wi1, work, &dumma[1 - 1]);
+            result[15 - 1] = dumma[1 - 1];
+            if (dumma[2 - 1] > thresh) {
+                write(nounit, format_9998), "Right", "Rtrevc3", dumma[2 - 1], n, jtype, ioldsd;
+            }
+            //
+            // Compute a Left eigenvector matrix:
+            //
+            ntest = 16;
+            result[16 - 1] = ulpinv;
+            //
+            Rlacpy(" ", n, n, uz, ldu, evectl, ldu);
+            //
+            Rtrevc3("Left", "Back", select, n, t1, lda, evectl, ldu, dumma, ldu, n, in, work, nwork, iinfo);
+            if (iinfo != 0) {
+                write(nounit, format_9999), "Rtrevc3(L,B)", iinfo, n, jtype, ioldsd;
+                info = abs(iinfo);
+                goto statement_250;
+            }
+            //
+            // Test 16:  | LA - WL | / ( |A| |L| ulp )
+            //
+            // (from Schur decomposition)
+            //
+            Rget22("Trans", "N", "Conj", n, a, lda, evectl, ldu, wr1, wi1, work, &dumma[3 - 1]);
+            result[16 - 1] = dumma[3 - 1];
+            if (dumma[4 - 1] > thresh) {
+                write(nounit, format_9998), "Left", "Rtrevc3", dumma[4 - 1], n, jtype, ioldsd;
             }
         //
         // End of Loop -- Check for RESULT(j) > THRESH

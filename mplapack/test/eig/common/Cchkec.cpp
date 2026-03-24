@@ -63,6 +63,12 @@ void Cchkec(REAL const thresh, bool const tsterr, INTEGER const nin, INTEGER con
                                      "' Safe minimum (SFMIN)             = ',d16.6,/)";
     static const char *format_9992 = "(' Routines pass computational tests if test ratio is ','less than',f8.2,"
                                      "/,/)";
+    static const char *format_9970 = "('Error in Ctrsyl: ',i8,' tests fail the threshold.',/,"
+                                     "'Maximum test ratio =',d12.3,' threshold =',d12.3)";
+    static const char *format_9971 = "('Error in Ctrsyl3: ',i8,' tests fail the threshold.',/,"
+                                     "'Maximum test ratio =',d12.3,' threshold =',d12.3)";
+    static const char *format_9972 = "('Ctrsyl and Ctrsyl3 compute an inconsistent scale ','factor in ',i8,"
+                                     "' tests.')";
     //
     fem::str<3> path = "Zomplex precision";
     path(2, 3) = "EC";
@@ -79,14 +85,31 @@ void Cchkec(REAL const thresh, bool const tsterr, INTEGER const nin, INTEGER con
     }
     //
     bool ok = true;
-    REAL rtrsyl = 0.0;
+    REAL rtrsyl[2];
     INTEGER ltrsyl = 0;
     INTEGER ntrsyl = 0;
     INTEGER ktrsyl = 0;
-    Cget35(rtrsyl, ltrsyl, ntrsyl, ktrsyl, nin);
-    if (rtrsyl > thresh) {
+    Cget35(rtrsyl[1 - 1], ltrsyl, ntrsyl, ktrsyl, nin);
+    if (rtrsyl[1 - 1] > thresh) {
         ok = false;
-        write(nout, format_9999), rtrsyl, ltrsyl, ntrsyl, ktrsyl;
+        write(nout, format_9999), rtrsyl[1 - 1], ltrsyl, ntrsyl, ktrsyl;
+    }
+    //
+    INTEGER ftrsyl[3];
+    INTEGER itrsyl[2];
+    INTEGER ktrsyl3 = 0;
+    Csyl01(thresh, ftrsyl, rtrsyl, itrsyl, ktrsyl3);
+    if (ftrsyl[1 - 1] > 0) {
+        ok = false;
+        write(nout, format_9970), ftrsyl[1 - 1], rtrsyl[1 - 1], thresh;
+    }
+    if (ftrsyl[2 - 1] > 0) {
+        ok = false;
+        write(nout, format_9971), ftrsyl[2 - 1], rtrsyl[2 - 1], thresh;
+    }
+    if (ftrsyl[3 - 1] > 0) {
+        ok = false;
+        write(nout, format_9972), ftrsyl[3 - 1];
     }
     //
     REAL rtrexc = 0.0;
@@ -119,7 +142,7 @@ void Cchkec(REAL const thresh, bool const tsterr, INTEGER const nin, INTEGER con
         write(nout, format_9996), rtrsen, ltrsen, ntrsen, ktrsen;
     }
     //
-    INTEGER ntests = ktrsyl + ktrexc + ktrsna + ktrsen;
+    INTEGER ntests = ktrsyl + ktrsyl3 + ktrexc + ktrsna + ktrsen;
     if (ok) {
         write(nout, format_9995), path, ntests;
     }

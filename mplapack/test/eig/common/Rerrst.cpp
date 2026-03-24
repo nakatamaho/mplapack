@@ -116,6 +116,20 @@ void Rerrst(fem::str_cref path, INTEGER const nunit) {
         Chkxer("Rsytrd", infot, nout, lerr, ok);
         nt += 4;
         //
+        // Rsytd2
+        //
+        srnamt = "Rsytd2";
+        infot = 1;
+        Rsytd2("/", 0, a, 1, d, e, tau, info);
+        Chkxer("Rsytd2", infot, nout, lerr, ok);
+        infot = 2;
+        Rsytd2("U", -1, a, 1, d, e, tau, info);
+        Chkxer("Rsytd2", infot, nout, lerr, ok);
+        infot = 4;
+        Rsytd2("U", 2, a, 1, d, e, tau, info);
+        Chkxer("Rsytd2", infot, nout, lerr, ok);
+        nt += 3;
+        //
         // Rsytrd_2stage
         //
         srnamt = "Rsytrd_2stage";
@@ -624,10 +638,10 @@ void Rerrst(fem::str_cref path, INTEGER const nunit) {
         Rsyevr("V", "I", "U", 1, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 0, iw, q, 26 * n, &iw[(2 * n + 1) - 1], 10 * n, info);
         Chkxer("Rsyevr", infot, nout, lerr, ok);
         infot = 18;
-        Rsyevr("V", "I", "U", 1, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 26 * n - 1, &iw[(2 * n + 1) - 1], 10 * n, info);
+        Rsyevr("V", "I", "U", 1, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 0, &iw[(2 * n + 1) - 1], 10 * n, info);
         Chkxer("Rsyevr", infot, nout, lerr, ok);
         infot = 20;
-        Rsyevr("V", "I", "U", 1, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 26 * n, &iw[(2 * n + 1) - 1], 10 * n - 1, info);
+        Rsyevr("V", "I", "U", 1, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 26 * n, &iw[(2 * n + 1) - 1], 0, info);
         Chkxer("Rsyevr", infot, nout, lerr, ok);
         nt += 11;
         //

@@ -73,8 +73,14 @@ void Rchkec(REAL const thresh, bool const tsterr, INTEGER const nin, INTEGER con
                                      "'minimum (SFMIN)             = ',d16.6,/)";
     static const char *format_9987 = "(' Routines pass computational tests if test ratio is les','s than',f8.2,"
                                      "/,/)";
-    static const char *format_9986 = "(' Error in Rtgexc: RMAX =',d12.3,/,' LMAX = ',i8,' N','INFO=',i8,"
+    static const char *format_9986 = "(' Error in Rtgexc: RMAX =',d12.3,/,' LMAX = ',i8,' N','INFO=',2i8,"
                                      "' KNT=',i8)";
+    static const char *format_9972 = "('Rtrsyl and Rtrsyl3 compute an inconsistent result ','factor in ',i8,"
+                                     "' tests.')";
+    static const char *format_9971 = "('Error in Rtrsyl3: ',i8,' tests fail the threshold.',/,"
+                                     "'Maximum test ratio =',d12.3,' threshold =',d12.3)";
+    static const char *format_9970 = "('Error in Rtrsyl: ',i8,' tests fail the threshold.',/,"
+                                     "'Maximum test ratio =',d12.3,' threshold =',d12.3)";
     //
     fem::str<3> path = "Double precision";
     path(2, 3) = "EC";
@@ -134,14 +140,31 @@ void Rchkec(REAL const thresh, bool const tsterr, INTEGER const nin, INTEGER con
         write(nout, format_9996), rlaexc, llaexc, nlaexc, klaexc;
     }
     //
-    REAL rtrsyl = 0.0;
+    REAL rtrsyl[2];
     INTEGER ltrsyl = 0;
     INTEGER ntrsyl = 0;
     INTEGER ktrsyl = 0;
-    Rget35(rtrsyl, ltrsyl, ntrsyl, ktrsyl);
-    if (rtrsyl > thresh) {
+    Rget35(rtrsyl[1 - 1], ltrsyl, ntrsyl, ktrsyl);
+    if (rtrsyl[1 - 1] > thresh) {
         ok = false;
-        write(nout, format_9995), rtrsyl, ltrsyl, ntrsyl, ktrsyl;
+        write(nout, format_9995), rtrsyl[1 - 1], ltrsyl, ntrsyl, ktrsyl;
+    }
+    //
+    INTEGER ftrsyl[3];
+    INTEGER itrsyl[2];
+    INTEGER ktrsyl3 = 0;
+    Rsyl01(thresh, ftrsyl, rtrsyl, itrsyl, ktrsyl3);
+    if (ftrsyl[1 - 1] > 0) {
+        ok = false;
+        write(nout, format_9970), ftrsyl[1 - 1], rtrsyl[1 - 1], thresh;
+    }
+    if (ftrsyl[2 - 1] > 0) {
+        ok = false;
+        write(nout, format_9971), ftrsyl[2 - 1], rtrsyl[2 - 1], thresh;
+    }
+    if (ftrsyl[3 - 1] > 0) {
+        ok = false;
+        write(nout, format_9972), ftrsyl[3 - 1];
     }
     //
     REAL rtrexc = 0.0;
@@ -186,7 +209,7 @@ void Rchkec(REAL const thresh, bool const tsterr, INTEGER const nin, INTEGER con
     //
     REAL rtgexc = 0.0;
     INTEGER ltgexc = 0;
-    INTEGER ntgexc[3]; //bug, fixed in lapack 3.12.1 correctly (dget40 is also correcte) to ninfo(2)
+    INTEGER ntgexc[2];
     INTEGER ktgexc = 0;
     Rget40(rtgexc, ltgexc, ntgexc, ktgexc, nin);
     if (rtgexc > thresh) {

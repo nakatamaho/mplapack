@@ -116,6 +116,20 @@ void Cerrst(fem::str_cref path, INTEGER const nunit) {
         Chkxer("Chetrd", infot, nout, lerr, ok);
         nt += 4;
         //
+        // Chetd2
+        //
+        srnamt = "Chetd2";
+        infot = 1;
+        Chetd2("/", 0, a, 1, d, e, tau, info);
+        Chkxer("Chetd2", infot, nout, lerr, ok);
+        infot = 2;
+        Chetd2("U", -1, a, 1, d, e, tau, info);
+        Chkxer("Chetd2", infot, nout, lerr, ok);
+        infot = 4;
+        Chetd2("U", 2, a, 1, d, e, tau, info);
+        Chkxer("Chetd2", infot, nout, lerr, ok);
+        nt += 3;
+        //
         // Chetrd_2stage
         //
         srnamt = "Chetrd_2stage";
@@ -615,13 +629,13 @@ void Cerrst(fem::str_cref path, INTEGER const nunit) {
         Cheevr("V", "I", "U", 1, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 0, iw, q, 2 * n, rw, 24 * n, &iw[(2 * n + 1) - 1], 10 * n, info);
         Chkxer("Cheevr", infot, nout, lerr, ok);
         infot = 18;
-        Cheevr("V", "I", "U", 1, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 2 * n - 1, rw, 24 * n, &iw[(2 * n + 1) - 1], 10 * n, info);
+        Cheevr("V", "I", "U", 1, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 0, rw, 24 * n, &iw[(2 * n + 1) - 1], 10 * n, info);
         Chkxer("Cheevr", infot, nout, lerr, ok);
         infot = 20;
-        Cheevr("V", "I", "U", 1, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 2 * n, rw, 24 * n - 1, &iw[(2 * n - 1) - 1], 10 * n, info);
+        Cheevr("V", "I", "U", 1, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 2 * n, rw, 0, &iw[(2 * n - 1) - 1], 10 * n, info);
         Chkxer("Cheevr", infot, nout, lerr, ok);
         infot = 22;
-        Cheevr("V", "I", "U", 1, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 2 * n, rw, 24 * n, iw, 10 * n - 1, info);
+        Cheevr("V", "I", "U", 1, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 2 * n, rw, 24 * n, iw, 0, info);
         Chkxer("Cheevr", infot, nout, lerr, ok);
         nt += 12;
         //
@@ -660,13 +674,13 @@ void Cerrst(fem::str_cref path, INTEGER const nunit) {
         Cheevr_2stage("N", "I", "U", 1, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 0, iw, q, 2 * n, rw, 24 * n, &iw[(2 * n + 1) - 1], 10 * n, info);
         Chkxer("Cheevr_2stage", infot, nout, lerr, ok);
         infot = 18;
-        Cheevr_2stage("N", "I", "U", 1, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 2 * n - 1, rw, 24 * n, &iw[(2 * n + 1) - 1], 10 * n, info);
+        Cheevr_2stage("N", "I", "U", 1, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 0, rw, 24 * n, &iw[(2 * n + 1) - 1], 10 * n, info);
         Chkxer("Cheevr_2stage", infot, nout, lerr, ok);
         infot = 20;
-        Cheevr_2stage("N", "I", "U", 1, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 26 * n, rw, 24 * n - 1, &iw[(2 * n - 1) - 1], 10 * n, info);
+        Cheevr_2stage("N", "I", "U", 1, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 26 * n, rw, 0, &iw[(2 * n - 1) - 1], 10 * n, info);
         Chkxer("Cheevr_2stage", infot, nout, lerr, ok);
         infot = 22;
-        Cheevr_2stage("N", "I", "U", 1, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 26 * n, rw, 24 * n, iw, 10 * n - 1, info);
+        Cheevr_2stage("N", "I", "U", 1, a, 1, 0.0, 0.0, 1, 1, 0.0, m, r, z, 1, iw, q, 26 * n, rw, 24 * n, iw, 0, info);
         Chkxer("Cheevr_2stage", infot, nout, lerr, ok);
         nt += 13;
         //

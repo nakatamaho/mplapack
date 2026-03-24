@@ -84,6 +84,14 @@ void Cerrgg(fem::str_cref path, INTEGER const nunit) {
     INTEGER nt = 0;
     INTEGER lwork = 1;
     //
+    // Call Mxlaenv to set the parameters used in CLAQZ0
+    //
+    Mxlaenv(12, 10);
+    Mxlaenv(13, 12);
+    Mxlaenv(14, 13);
+    Mxlaenv(15, 2);
+    Mxlaenv(17, 10);
+    //
     // Test error exits for the GG path.
     //
     COMPLEX q[nmax * nmax];

@@ -153,7 +153,6 @@ void Cchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     //
     unfl = Rlamch("Safe minimum");
     ovfl = Rlamch("Overflow");
-    Rlabad(unfl, ovfl);
     ulp = Rlamch("Epsilon") * Rlamch("Base");
     ulpinv = one / ulp;
     rtunfl = sqrt(unfl);
@@ -654,6 +653,56 @@ void Cchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 if (dumma[3 - 1] < ulpinv) {
                     result[14 - 1] = dumma[3 - 1] * aninv;
                 }
+            }
+            //
+            // Compute Left and Right Eigenvectors of A
+            //
+            // Compute a Right eigenvector matrix:
+            //
+            ntest = 15;
+            result[15 - 1] = ulpinv;
+            //
+            Clacpy(" ", n, n, uz, ldu, evectr, ldu);
+            //
+            Ctrevc3("Right", "Back", select, n, t1, lda, cdumma, ldu, evectr, ldu, n, in, work, nwork, rwork, n, iinfo);
+            if (iinfo != 0) {
+                write(nounit, format_9999), "Ctrevc3(R,B)", iinfo, n, jtype, ioldsd;
+                info = abs(iinfo);
+                goto statement_250;
+            }
+            //
+            // Test 15:  | AR - RW | / ( |A| |R| ulp )
+            //
+            // (from Schur decomposition)
+            //
+            Cget22("N", "N", "N", n, a, lda, evectr, ldu, w1, work, rwork, &dumma[1 - 1]);
+            result[15 - 1] = dumma[1 - 1];
+            if (dumma[2 - 1] > thresh) {
+                write(nounit, format_9998), "Right", "Ctrevc3", dumma[2 - 1], n, jtype, ioldsd;
+            }
+            //
+            // Compute a Left eigenvector matrix:
+            //
+            ntest = 16;
+            result[16 - 1] = ulpinv;
+            //
+            Clacpy(" ", n, n, uz, ldu, evectl, ldu);
+            //
+            Ctrevc3("Left", "Back", select, n, t1, lda, evectl, ldu, cdumma, ldu, n, in, work, nwork, rwork, n, iinfo);
+            if (iinfo != 0) {
+                write(nounit, format_9999), "Ctrevc3(L,B)", iinfo, n, jtype, ioldsd;
+                info = abs(iinfo);
+                goto statement_250;
+            }
+            //
+            // Test 16:  | LA - WL | / ( |A| |L| ulp )
+            //
+            // (from Schur decomposition)
+            //
+            Cget22("Conj", "N", "Conj", n, a, lda, evectl, ldu, w1, work, rwork, &dumma[3 - 1]);
+            result[16 - 1] = dumma[3 - 1];
+            if (dumma[4 - 1] > thresh) {
+                write(nounit, format_9998), "Left", "Ctrevc3", dumma[4 - 1], n, jtype, ioldsd;
             }
         //
         // End of Loop -- Check for RESULT(j) > THRESH

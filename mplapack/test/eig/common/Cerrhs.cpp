@@ -162,6 +162,29 @@ void Cerrhs(fem::str_cref path, INTEGER const nunit) {
         Chkxer("Cgehrd", infot, nout, lerr, ok);
         nt += 7;
         //
+        // Cgehd2
+        //
+        srnamt = "Cgehd2";
+        infot = 1;
+        Cgehd2(-1, 1, 1, a, 1, tau, w, info);
+        Chkxer("Cgehd2", infot, nout, lerr, ok);
+        infot = 2;
+        Cgehd2(0, 0, 0, a, 1, tau, w, info);
+        Chkxer("Cgehd2", infot, nout, lerr, ok);
+        infot = 2;
+        Cgehd2(0, 2, 0, a, 1, tau, w, info);
+        Chkxer("Cgehd2", infot, nout, lerr, ok);
+        infot = 3;
+        Cgehd2(1, 1, 0, a, 1, tau, w, info);
+        Chkxer("Cgehd2", infot, nout, lerr, ok);
+        infot = 3;
+        Cgehd2(0, 1, 1, a, 1, tau, w, info);
+        Chkxer("Cgehd2", infot, nout, lerr, ok);
+        infot = 5;
+        Cgehd2(2, 1, 1, a, 1, tau, w, info);
+        Chkxer("Cgehd2", infot, nout, lerr, ok);
+        nt += 6;
+        //
         // Cunghr
         //
         srnamt = "Cunghr";
@@ -327,6 +350,38 @@ void Cerrhs(fem::str_cref path, INTEGER const nunit) {
         Ctrevc("L", "A", sel, 2, a, 2, vl, 2, vr, 1, 1, m, w, rw, info);
         Chkxer("Ctrevc", infot, nout, lerr, ok);
         nt += 7;
+        //
+        // Ctrevc3
+        //
+        srnamt = "Ctrevc3";
+        infot = 1;
+        Ctrevc3("/", "A", sel, 0, a, 1, vl, 1, vr, 1, 0, m, w, lw, rw, 1, info);
+        Chkxer("Ctrevc3", infot, nout, lerr, ok);
+        infot = 2;
+        Ctrevc3("L", "/", sel, 0, a, 1, vl, 1, vr, 1, 0, m, w, lw, rw, 1, info);
+        Chkxer("Ctrevc3", infot, nout, lerr, ok);
+        infot = 4;
+        Ctrevc3("L", "A", sel, -1, a, 1, vl, 1, vr, 1, 0, m, w, lw, rw, 1, info);
+        Chkxer("Ctrevc3", infot, nout, lerr, ok);
+        infot = 6;
+        Ctrevc3("L", "A", sel, 2, a, 1, vl, 2, vr, 1, 4, m, w, lw, rw, 2, info);
+        Chkxer("Ctrevc3", infot, nout, lerr, ok);
+        infot = 8;
+        Ctrevc3("L", "A", sel, 2, a, 2, vl, 1, vr, 1, 4, m, w, lw, rw, 2, info);
+        Chkxer("Ctrevc3", infot, nout, lerr, ok);
+        infot = 10;
+        Ctrevc3("R", "A", sel, 2, a, 2, vl, 1, vr, 1, 4, m, w, lw, rw, 2, info);
+        Chkxer("Ctrevc3", infot, nout, lerr, ok);
+        infot = 11;
+        Ctrevc3("L", "A", sel, 2, a, 2, vl, 2, vr, 1, 1, m, w, lw, rw, 2, info);
+        Chkxer("Ctrevc3", infot, nout, lerr, ok);
+        infot = 14;
+        Ctrevc3("L", "A", sel, 2, a, 2, vl, 2, vr, 1, 2, m, w, 2, rw, 2, info);
+        Chkxer("Ctrevc3", infot, nout, lerr, ok);
+        infot = 16;
+        Ctrevc3("L", "A", sel, 2, a, 2, vl, 2, vr, 1, 2, m, w, lw, rw, 1, info);
+        Chkxer("Ctrevc3", infot, nout, lerr, ok);
+        nt += 9;
     }
     //
     // Print a summary line.

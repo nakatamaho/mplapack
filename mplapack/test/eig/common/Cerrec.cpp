@@ -108,6 +108,36 @@ void Cerrec(fem::str_cref path, INTEGER const nunit) {
     Chkxer("Ctrsyl", infot, nout, lerr, ok);
     nt += 8;
     //
+    // Test Ctrsyl3
+    //
+    srnamt = "Ctrsyl3";
+    infot = 1;
+    REAL swork[nmax];
+    Ctrsyl3("X", "N", 1, 0, 0, a, 1, b, 1, c, 1, scale, swork, nmax, info);
+    Chkxer("Ctrsyl3", infot, nout, lerr, ok);
+    infot = 2;
+    Ctrsyl3("N", "X", 1, 0, 0, a, 1, b, 1, c, 1, scale, swork, nmax, info);
+    Chkxer("Ctrsyl3", infot, nout, lerr, ok);
+    infot = 3;
+    Ctrsyl3("N", "N", 0, 0, 0, a, 1, b, 1, c, 1, scale, swork, nmax, info);
+    Chkxer("Ctrsyl3", infot, nout, lerr, ok);
+    infot = 4;
+    Ctrsyl3("N", "N", 1, -1, 0, a, 1, b, 1, c, 1, scale, swork, nmax, info);
+    Chkxer("Ctrsyl3", infot, nout, lerr, ok);
+    infot = 5;
+    Ctrsyl3("N", "N", 1, 0, -1, a, 1, b, 1, c, 1, scale, swork, nmax, info);
+    Chkxer("Ctrsyl3", infot, nout, lerr, ok);
+    infot = 7;
+    Ctrsyl3("N", "N", 1, 2, 0, a, 1, b, 1, c, 2, scale, swork, nmax, info);
+    Chkxer("Ctrsyl3", infot, nout, lerr, ok);
+    infot = 9;
+    Ctrsyl3("N", "N", 1, 0, 2, a, 1, b, 1, c, 1, scale, swork, nmax, info);
+    Chkxer("Ctrsyl3", infot, nout, lerr, ok);
+    infot = 11;
+    Ctrsyl3("N", "N", 1, 2, 0, a, 2, b, 1, c, 1, scale, swork, nmax, info);
+    Chkxer("Ctrsyl3", infot, nout, lerr, ok);
+    nt += 8;
+    //
     // Test Ctrexc
     //
     srnamt = "Ctrexc";
