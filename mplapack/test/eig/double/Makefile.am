@@ -1,6 +1,6 @@
 check_PROGRAMS = $(mplapack_double_test_PROGRAMS)
 
-mplapack_double_test_PROGRAMS = xeigtstR_double xeigtstC_double
+mplapack_double_test_PROGRAMS = xeigtstR_double xeigtstC_double xdmdeigtstR_double xdmdeigtstC_double
 mplapack_double_testdir = $(prefix)/lib/$(target)/mplapack/test/eig
 
 $(check_PROGRAMS): ../libeig_double.la ../libeig_override_double.la
@@ -22,6 +22,16 @@ xeigtstC_double_SOURCES  = ../common/Cchkee.cpp
 xeigtstC_double_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstC_double_LDFLAGS += -Wl,-rpath,$(libdir)
 xeigtstC_double_CXXFLAGS = $(cxxflags)
+
+xdmdeigtstR_double_SOURCES  = ../common/Rchkdmd.cpp
+xdmdeigtstR_double_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xdmdeigtstR_double_LDFLAGS += -Wl,-rpath,$(libdir)
+xdmdeigtstR_double_CXXFLAGS = $(cxxflags)
+
+xdmdeigtstC_double_SOURCES  = ../common/Cchkdmd.cpp
+xdmdeigtstC_double_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xdmdeigtstC_double_LDFLAGS += -Wl,-rpath,$(libdir)
+xdmdeigtstC_double_CXXFLAGS = $(cxxflags)
 
 
 install-data-hook:
@@ -57,10 +67,10 @@ OUTDIR_PATH = ../results/$(OUTDIR)/double
 # -----------------------------------------------------------------------------
 
 DOUBLE_REAL_TESTS = \
-	Rnep Rsep Rse2 Rsvd Rec Red Rgg Rgd Rsb Rsg Rbal Rbak Rgbal Rgbak Rbb Rglm Rgqr Rgsv Rcsd Rlse
+	Rnep Rsep Rse2 Rsvd Rec Red Rgg Rgd Rsb Rsg Rbal Rbak Rgbal Rgbak Rbb Rglm Rgqr Rgsv Rcsd Rlse Rdmd
 
 DOUBLE_COMPLEX_TESTS = \
-	Cnep Csep Cse2 Csvd Cec Ced Cgg Cgd Csb Csg Cbal Cbak Cgbal Cgbak Cbb Cglm Cgqr Cgsv Ccsd Clse
+	Cnep Csep Cse2 Csvd Cec Ced Cgg Cgd Csb Csg Cbal Cbak Cgbal Cgbak Cbb Cglm Cgqr Cgsv Ccsd Clse Cdmd
 
 DOUBLE_ALL_TESTS = $(DOUBLE_REAL_TESTS) $(DOUBLE_COMPLEX_TESTS)
 
@@ -556,4 +566,27 @@ $(OUTDIR_PATH)/Clse.out: $(srcdir)/../lse.in xeigtstC_double$(EXEEXT)
 	set -e; { \
 		echo "=== precision: $(DOUBLE_LABEL) ==="; \
 		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_double$(EXEEXT) < $(srcdir)/../lse.in; \
+	} > $@ 2>&1
+
+$(OUTDIR_PATH)/Rdmd.out: $(srcdir)/../Rdmd.in xdmdeigtstR_double$(EXEEXT)
+	@$(MKDIR_P) $(OUTDIR_PATH)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "DMD: Testing Dynamic Mode Decomposition routines [$(DOUBLE_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(DOUBLE_LABEL) ==="; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xdmdeigtstR_double$(EXEEXT) < $(srcdir)/../Rdmd.in; \
+	} > $@ 2>&1
+$(OUTDIR_PATH)/Cdmd.out: $(srcdir)/../Cdmd.in xdmdeigtstC_double$(EXEEXT)
+	@$(MKDIR_P) $(OUTDIR_PATH)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "DMD: Testing COMPLEX Dynamic Mode Decomposition routines [$(DOUBLE_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(DOUBLE_LABEL) ==="; \
+		$(DOUBLE_EXTRA_ENV) $$wrapper $(WINE) ./xdmdeigtstC_double$(EXEEXT) < $(srcdir)/../Cdmd.in; \
 	} > $@ 2>&1

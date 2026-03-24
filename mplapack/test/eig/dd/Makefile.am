@@ -1,6 +1,6 @@
 check_PROGRAMS = $(mplapack_dd_test_PROGRAMS)
 
-mplapack_dd_test_PROGRAMS = xeigtstR_dd xeigtstC_dd
+mplapack_dd_test_PROGRAMS = xeigtstR_dd xeigtstC_dd xdmdeigtstR_dd xdmdeigtstC_dd
 mplapack_dd_testdir = $(prefix)/lib/$(target)/mplapack/test/eig
 
 $(check_PROGRAMS): ../libeig_dd.la ../libeig_override_dd.la
@@ -23,6 +23,16 @@ xeigtstC_dd_SOURCES  = ../common/Cchkee.cpp
 xeigtstC_dd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstC_dd_LDFLAGS += -Wl,-rpath,$(libdir)
 xeigtstC_dd_CXXFLAGS = $(cxxflags) $(DD_CXXFLAGS)
+
+xdmdeigtstR_dd_SOURCES  = ../common/Rchkdmd.cpp
+xdmdeigtstR_dd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xdmdeigtstR_dd_LDFLAGS += -Wl,-rpath,$(libdir)
+xdmdeigtstR_dd_CXXFLAGS = $(cxxflags) $(DD_CXXFLAGS)
+
+xdmdeigtstC_dd_SOURCES  = ../common/Cchkdmd.cpp
+xdmdeigtstC_dd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xdmdeigtstC_dd_LDFLAGS += -Wl,-rpath,$(libdir)
+xdmdeigtstC_dd_CXXFLAGS = $(cxxflags) $(DD_CXXFLAGS)
 
 install-data-hook:
 if IS_MACOS
@@ -57,10 +67,10 @@ OUTDIR_PATH = ../results/$(OUTDIR)/dd
 # -----------------------------------------------------------------------------
 
 DD_REAL_TESTS = \
-	Rnep Rsep Rse2 Rsvd Rec Red Rgg Rgd Rsb Rsg Rbal Rbak Rgbal Rgbak Rbb Rglm Rgqr Rgsv Rcsd Rlse
+	Rnep Rsep Rse2 Rsvd Rec Red Rgg Rgd Rsb Rsg Rbal Rbak Rgbal Rgbak Rbb Rglm Rgqr Rgsv Rcsd Rlse Rdmd
 
 DD_COMPLEX_TESTS = \
-	Cnep Csep Cse2 Csvd Cec Ced Cgg Cgd Csb Csg Cbal Cbak Cgbal Cgbak Cbb Cglm Cgqr Cgsv Ccsd Clse
+	Cnep Csep Cse2 Csvd Cec Ced Cgg Cgd Csb Csg Cbal Cbak Cgbal Cgbak Cbb Cglm Cgqr Cgsv Ccsd Clse Cdmd
 
 DD_ALL_TESTS = $(DD_REAL_TESTS) $(DD_COMPLEX_TESTS)
 
@@ -555,4 +565,25 @@ $(OUTDIR_PATH)/Clse.out: $(srcdir)/../lse.in xeigtstC_dd$(EXEEXT)
 	echo "LSE: Testing Constrained Linear Least Squares routines"; \
 	set -e; { \
 		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_dd$(EXEEXT) < $(srcdir)/../lse.in; \
+	} > $@ 2>&1
+
+$(OUTDIR_PATH)/Rdmd.out: $(srcdir)/../Rdmd.in xdmdeigtstR_dd$(EXEEXT)
+	@$(MKDIR_P) $(OUTDIR_PATH)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "DMD: Testing Dynamic Mode Decomposition routines"; \
+	set -e; { \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xdmdeigtstR_dd$(EXEEXT) < $(srcdir)/../Rdmd.in; \
+	} > $@ 2>&1
+$(OUTDIR_PATH)/Cdmd.out: $(srcdir)/../Cdmd.in xdmdeigtstC_dd$(EXEEXT)
+	@$(MKDIR_P) $(OUTDIR_PATH)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "DMD: Testing COMPLEX Dynamic Mode Decomposition routines"; \
+	set -e; { \
+		$(DD_EXTRA_ENV) $$wrapper $(WINE) ./xdmdeigtstC_dd$(EXEEXT) < $(srcdir)/../Cdmd.in; \
 	} > $@ 2>&1

@@ -1,6 +1,6 @@
 check_PROGRAMS = $(mplapack_binary80_test_PROGRAMS)
 
-mplapack_binary80_test_PROGRAMS = xeigtstR_binary80 xeigtstC_binary80
+mplapack_binary80_test_PROGRAMS = xeigtstR_binary80 xeigtstC_binary80 xdmdeigtstR_binary80 xdmdeigtstC_binary80
 mplapack_binary80_testdir = $(prefix)/lib/$(target)/mplapack/test/eig
 
 $(check_PROGRAMS): ../libeig_binary80.la ../libeig_override_binary80.la
@@ -23,6 +23,16 @@ xeigtstC_binary80_SOURCES  = ../common/Cchkee.cpp
 xeigtstC_binary80_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstC_binary80_LDFLAGS += -Wl,-rpath,$(libdir)
 xeigtstC_binary80_CXXFLAGS = $(cxxflags)
+
+xdmdeigtstR_binary80_SOURCES  = ../common/Rchkdmd.cpp
+xdmdeigtstR_binary80_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xdmdeigtstR_binary80_LDFLAGS += -Wl,-rpath,$(libdir)
+xdmdeigtstR_binary80_CXXFLAGS = $(cxxflags)
+
+xdmdeigtstC_binary80_SOURCES  = ../common/Cchkdmd.cpp
+xdmdeigtstC_binary80_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xdmdeigtstC_binary80_LDFLAGS += -Wl,-rpath,$(libdir)
+xdmdeigtstC_binary80_CXXFLAGS = $(cxxflags)
 
 install-data-hook:
 if IS_MACOS
@@ -57,10 +67,10 @@ OUTDIR_PATH = ../results/$(OUTDIR)/binary80
 # -----------------------------------------------------------------------------
 
 FLOAT64X_REAL_TESTS = \
-	Rnep Rsep Rse2 Rsvd Rec Red Rgg Rgd Rsb Rsg Rbal Rbak Rgbal Rgbak Rbb Rglm Rgqr Rgsv Rcsd Rlse
+	Rnep Rsep Rse2 Rsvd Rec Red Rgg Rgd Rsb Rsg Rbal Rbak Rgbal Rgbak Rbb Rglm Rgqr Rgsv Rcsd Rlse Rdmd
 
 FLOAT64X_COMPLEX_TESTS = \
-	Cnep Csep Cse2 Csvd Cec Ced Cgg Cgd Csb Csg Cbal Cbak Cgbal Cgbak Cbb Cglm Cgqr Cgsv Ccsd Clse
+	Cnep Csep Cse2 Csvd Cec Ced Cgg Cgd Csb Csg Cbal Cbak Cgbal Cgbak Cbb Cglm Cgqr Cgsv Ccsd Clse Cdmd
 
 FLOAT64X_ALL_TESTS = $(FLOAT64X_REAL_TESTS) $(FLOAT64X_COMPLEX_TESTS)
 
@@ -594,4 +604,27 @@ $(OUTDIR_PATH)/Clse.out: $(srcdir)/../lse.in xeigtstC_binary80$(EXEEXT)
 	set -e; { \
 		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
 		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_binary80$(EXEEXT) < $(srcdir)/../lse.in; \
+	} > $@ 2>&1
+
+$(OUTDIR_PATH)/Rdmd.out: $(srcdir)/../Rdmd.in xdmdeigtstR_binary80$(EXEEXT)
+	@$(MKDIR_P) $(OUTDIR_PATH)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "DMD: Testing Dynamic Mode Decomposition routines [$(FLOAT64X_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xdmdeigtstR_binary80$(EXEEXT) < $(srcdir)/../Rdmd.in; \
+	} > $@ 2>&1
+$(OUTDIR_PATH)/Cdmd.out: $(srcdir)/../Cdmd.in xdmdeigtstC_binary80$(EXEEXT)
+	@$(MKDIR_P) $(OUTDIR_PATH)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "DMD: Testing COMPLEX Dynamic Mode Decomposition routines [$(FLOAT64X_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(FLOAT64X_LABEL) ==="; \
+		$(FLOAT64X_EXTRA_ENV) $$wrapper $(WINE) ./xdmdeigtstC_binary80$(EXEEXT) < $(srcdir)/../Cdmd.in; \
 	} > $@ 2>&1
