@@ -492,7 +492,9 @@ regen_testing_makefile_sources \
 
 sed -i \
   -e '/^[[:space:]]*common\/Cchkee\.cpp \\$/d' \
+  -e '/^[[:space:]]*common\/Cchkdmd\.cpp \\$/d' \
   -e '/^[[:space:]]*common\/Rchkee\.cpp \\$/d' \
+  -e '/^[[:space:]]*common\/Rchkdmd\.cpp \\$/d' \
   -e '/^[[:space:]]*common\/Mxerbla\.cpp \\$/d' \
   "${ROOT}/mplapack/test/eig/Makefile.am"
 
