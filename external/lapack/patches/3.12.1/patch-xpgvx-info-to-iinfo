@@ -1,0 +1,124 @@
+diff --git a/TESTING/EIG/cdrvsg2stg.f b/TESTING/EIG/cdrvsg2stg.f
+index f7d323247..77f3865e0 100644
+--- a/TESTING/EIG/cdrvsg2stg.f
++++ b/TESTING/EIG/cdrvsg2stg.f
+@@ -1009,7 +1009,7 @@ C     $                         LDZ, D, WORK, RWORK, RESULT( NTEST ) )
+ *
+                   CALL CHPGVX( IBTYPE, 'V', 'A', UPLO, N, AP, BP, VL,
+      $                         VU, IL, IU, ABSTOL, M, D, Z, LDZ, WORK,
+-     $                         RWORK, IWORK( N+1 ), IWORK, INFO )
++     $                         RWORK, IWORK( N+1 ), IWORK, IINFO )
+                   IF( IINFO.NE.0 ) THEN
+                      WRITE( NOUNIT, FMT = 9999 )'CHPGVX(V,A' // UPLO //
+      $                  ')', IINFO, N, JTYPE, IOLDSD
+@@ -1055,7 +1055,7 @@ C     $                         LDZ, D, WORK, RWORK, RESULT( NTEST ) )
+                   VU = ANORM
+                   CALL CHPGVX( IBTYPE, 'V', 'V', UPLO, N, AP, BP, VL,
+      $                         VU, IL, IU, ABSTOL, M, D, Z, LDZ, WORK,
+-     $                         RWORK, IWORK( N+1 ), IWORK, INFO )
++     $                         RWORK, IWORK( N+1 ), IWORK, IINFO )
+                   IF( IINFO.NE.0 ) THEN
+                      WRITE( NOUNIT, FMT = 9999 )'CHPGVX(V,V' // UPLO //
+      $                  ')', IINFO, N, JTYPE, IOLDSD
+@@ -1099,7 +1099,7 @@ C     $                         LDZ, D, WORK, RWORK, RESULT( NTEST ) )
+ *
+                   CALL CHPGVX( IBTYPE, 'V', 'I', UPLO, N, AP, BP, VL,
+      $                         VU, IL, IU, ABSTOL, M, D, Z, LDZ, WORK,
+-     $                         RWORK, IWORK( N+1 ), IWORK, INFO )
++     $                         RWORK, IWORK( N+1 ), IWORK, IINFO )
+                   IF( IINFO.NE.0 ) THEN
+                      WRITE( NOUNIT, FMT = 9999 )'CHPGVX(V,I' // UPLO //
+      $                  ')', IINFO, N, JTYPE, IOLDSD
+diff --git a/TESTING/EIG/ddrvsg2stg.f b/TESTING/EIG/ddrvsg2stg.f
+index 0fe31cab1..68ca74270 100644
+--- a/TESTING/EIG/ddrvsg2stg.f
++++ b/TESTING/EIG/ddrvsg2stg.f
+@@ -989,7 +989,7 @@ C     $                         LDZ, D, WORK, RESULT( NTEST ) )
+ *
+                   CALL DSPGVX( IBTYPE, 'V', 'A', UPLO, N, AP, BP, VL,
+      $                         VU, IL, IU, ABSTOL, M, D, Z, LDZ, WORK,
+-     $                         IWORK( N+1 ), IWORK, INFO )
++     $                         IWORK( N+1 ), IWORK, IINFO )
+                   IF( IINFO.NE.0 ) THEN
+                      WRITE( NOUNIT, FMT = 9999 )'DSPGVX(V,A' // UPLO //
+      $                  ')', IINFO, N, JTYPE, IOLDSD
+@@ -1035,7 +1035,7 @@ C     $                         LDZ, D, WORK, RESULT( NTEST ) )
+                   VU = ANORM
+                   CALL DSPGVX( IBTYPE, 'V', 'V', UPLO, N, AP, BP, VL,
+      $                         VU, IL, IU, ABSTOL, M, D, Z, LDZ, WORK,
+-     $                         IWORK( N+1 ), IWORK, INFO )
++     $                         IWORK( N+1 ), IWORK, IINFO )
+                   IF( IINFO.NE.0 ) THEN
+                      WRITE( NOUNIT, FMT = 9999 )'DSPGVX(V,V' // UPLO //
+      $                  ')', IINFO, N, JTYPE, IOLDSD
+@@ -1079,7 +1079,7 @@ C     $                         LDZ, D, WORK, RESULT( NTEST ) )
+ *
+                   CALL DSPGVX( IBTYPE, 'V', 'I', UPLO, N, AP, BP, VL,
+      $                         VU, IL, IU, ABSTOL, M, D, Z, LDZ, WORK,
+-     $                         IWORK( N+1 ), IWORK, INFO )
++     $                         IWORK( N+1 ), IWORK, IINFO )
+                   IF( IINFO.NE.0 ) THEN
+                      WRITE( NOUNIT, FMT = 9999 )'DSPGVX(V,I' // UPLO //
+      $                  ')', IINFO, N, JTYPE, IOLDSD
+diff --git a/TESTING/EIG/sdrvsg2stg.f b/TESTING/EIG/sdrvsg2stg.f
+index 38ed61628..5a5e9d8da 100644
+--- a/TESTING/EIG/sdrvsg2stg.f
++++ b/TESTING/EIG/sdrvsg2stg.f
+@@ -990,7 +990,7 @@ C     $                         LDZ, D, WORK, RESULT( NTEST ) )
+ *
+                   CALL SSPGVX( IBTYPE, 'V', 'A', UPLO, N, AP, BP, VL,
+      $                         VU, IL, IU, ABSTOL, M, D, Z, LDZ, WORK,
+-     $                         IWORK( N+1 ), IWORK, INFO )
++     $                         IWORK( N+1 ), IWORK, IINFO )
+                   IF( IINFO.NE.0 ) THEN
+                      WRITE( NOUNIT, FMT = 9999 )'SSPGVX(V,A' // UPLO //
+      $                  ')', IINFO, N, JTYPE, IOLDSD
+@@ -1036,7 +1036,7 @@ C     $                         LDZ, D, WORK, RESULT( NTEST ) )
+                   VU = ANORM
+                   CALL SSPGVX( IBTYPE, 'V', 'V', UPLO, N, AP, BP, VL,
+      $                         VU, IL, IU, ABSTOL, M, D, Z, LDZ, WORK,
+-     $                         IWORK( N+1 ), IWORK, INFO )
++     $                         IWORK( N+1 ), IWORK, IINFO )
+                   IF( IINFO.NE.0 ) THEN
+                      WRITE( NOUNIT, FMT = 9999 )'SSPGVX(V,V' // UPLO //
+      $                  ')', IINFO, N, JTYPE, IOLDSD
+@@ -1080,7 +1080,7 @@ C     $                         LDZ, D, WORK, RESULT( NTEST ) )
+ *
+                   CALL SSPGVX( IBTYPE, 'V', 'I', UPLO, N, AP, BP, VL,
+      $                         VU, IL, IU, ABSTOL, M, D, Z, LDZ, WORK,
+-     $                         IWORK( N+1 ), IWORK, INFO )
++     $                         IWORK( N+1 ), IWORK, IINFO )
+                   IF( IINFO.NE.0 ) THEN
+                      WRITE( NOUNIT, FMT = 9999 )'SSPGVX(V,I' // UPLO //
+      $                  ')', IINFO, N, JTYPE, IOLDSD
+diff --git a/TESTING/EIG/zdrvsg2stg.f b/TESTING/EIG/zdrvsg2stg.f
+index c5ef4ce70..19419409b 100644
+--- a/TESTING/EIG/zdrvsg2stg.f
++++ b/TESTING/EIG/zdrvsg2stg.f
+@@ -1009,7 +1009,7 @@ C     $                         LDZ, D, WORK, RWORK, RESULT( NTEST ) )
+ *
+                   CALL ZHPGVX( IBTYPE, 'V', 'A', UPLO, N, AP, BP, VL,
+      $                         VU, IL, IU, ABSTOL, M, D, Z, LDZ, WORK,
+-     $                         RWORK, IWORK( N+1 ), IWORK, INFO )
++     $                         RWORK, IWORK( N+1 ), IWORK, IINFO )
+                   IF( IINFO.NE.0 ) THEN
+                      WRITE( NOUNIT, FMT = 9999 )'ZHPGVX(V,A' // UPLO //
+      $                  ')', IINFO, N, JTYPE, IOLDSD
+@@ -1055,7 +1055,7 @@ C     $                         LDZ, D, WORK, RWORK, RESULT( NTEST ) )
+                   VU = ANORM
+                   CALL ZHPGVX( IBTYPE, 'V', 'V', UPLO, N, AP, BP, VL,
+      $                         VU, IL, IU, ABSTOL, M, D, Z, LDZ, WORK,
+-     $                         RWORK, IWORK( N+1 ), IWORK, INFO )
++     $                         RWORK, IWORK( N+1 ), IWORK, IINFO )
+                   IF( IINFO.NE.0 ) THEN
+                      WRITE( NOUNIT, FMT = 9999 )'ZHPGVX(V,V' // UPLO //
+      $                  ')', IINFO, N, JTYPE, IOLDSD
+@@ -1099,7 +1099,7 @@ C     $                         LDZ, D, WORK, RWORK, RESULT( NTEST ) )
+ *
+                   CALL ZHPGVX( IBTYPE, 'V', 'I', UPLO, N, AP, BP, VL,
+      $                         VU, IL, IU, ABSTOL, M, D, Z, LDZ, WORK,
+-     $                         RWORK, IWORK( N+1 ), IWORK, INFO )
++     $                         RWORK, IWORK( N+1 ), IWORK, IINFO )
+                   IF( IINFO.NE.0 ) THEN
+                      WRITE( NOUNIT, FMT = 9999 )'ZHPGVX(V,I' // UPLO //
+      $                  ')', IINFO, N, JTYPE, IOLDSD

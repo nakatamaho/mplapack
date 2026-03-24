@@ -34,7 +34,8 @@ PATCHES_3_12_1 = \
 	patch-xxxGVD.f \
 	patch-stebz-error-propagation \
 	patch-redundant-dble-real \
-	patch-trsyl3-ldswork-overwrite
+	patch-trsyl3-ldswork-overwrite \
+	patch-xpgvx-info-to-iinfo
 
 work/$(PATCH_STAMP): work/$(EXTRACT_STAMP)
 	cd $(LAPACK_WORK_DIR) && patch -p0 < $(LAPACK_PATCH_DIR)/patch-print
