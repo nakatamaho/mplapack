@@ -73,8 +73,6 @@ void Rget40(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
     REAL z[ldt * ldt];
     const INTEGER lwork = 100 + 4 * ldt + 16;
     REAL work[lwork];
-    INTEGER info1 = 0;
-    INTEGER info2 = 0;
     REAL result[4];
     //
     eps = Rlamch("P");
@@ -83,7 +81,6 @@ void Rget40(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
     knt = 0;
     ninfo[1 - 1] = 0;
     ninfo[2 - 1] = 0;
-    ninfo[3 - 1] = 0;
 //
 // Read input data until N=0
 //
@@ -127,7 +124,7 @@ statement_10:
     //
     Rlaset("Full", n, n, zero, one, q, ldt);
     Rlaset("Full", n, n, zero, one, z, ldt);
-    Rtgexc(false, false, n, t1, ldt, s1, ldt, q, ldt, z, ldt, ifst1, ilst1, work, lwork, info1);
+    Rtgexc(false, false, n, t1, ldt, s1, ldt, q, ldt, z, ldt, ifst1, ilst1, work, lwork, ninfo[1 - 1]);
     for (i = 1; i <= n; i = i + 1) {
         for (j = 1; j <= n; j = j + 1) {
             if (i == j && q[(i - 1) + (j - 1) * ldt] != one) {
@@ -149,7 +146,7 @@ statement_10:
     //
     Rlaset("Full", n, n, zero, one, q, ldt);
     Rlaset("Full", n, n, zero, one, z, ldt);
-    Rtgexc(true, true, n, t2, ldt, s2, ldt, q, ldt, z, ldt, ifst2, ilst2, work, lwork, info2);
+    Rtgexc(true, true, n, t2, ldt, s2, ldt, q, ldt, z, ldt, ifst2, ilst2, work, lwork, ninfo[2 - 1]);
     //
     // Compare T1 with T2 and S1 with S2
     //
@@ -169,7 +166,7 @@ statement_10:
     if (ilst1 != ilst2) {
         res += one / eps;
     }
-    if (info1 != info2) {
+    if (ninfo[1 - 1] != ninfo[2 - 1]) {
         res += one / eps;
     }
     //

@@ -77,7 +77,7 @@ void Cget52(bool const left, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
     REAL betmax = safmax / max(one, anorm);
     //
     // Compute error matrix.
-    // Column i = ( b(i) A - a(i) B ) E(i) / max( |a(i) B| |b(i) A| )
+    // Column i = ( b(i) A - a(i) B ) E(i) / max( |a(i) B|, |b(i) A| )
     //
     INTEGER jvec = 0;
     COMPLEX alphai = 0.0;
@@ -105,7 +105,7 @@ void Cget52(bool const left, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
             bcoeff = conj(bcoeff);
         }
         Cgemv(trans.elems, n, n, acoeff, a, lda, &e[(jvec - 1) * lde], 1, czero, &work[(n * (jvec - 1) + 1) - 1], 1);
-        Cgemv(trans.elems, n, n, -bcoeff, b, lda, &e[(jvec - 1) * lde], 1, cone, &work[(n * (jvec - 1) + 1) - 1], 1);
+        Cgemv(trans.elems, n, n, -bcoeff, b, ldb, &e[(jvec - 1) * lde], 1, cone, &work[(n * (jvec - 1) + 1) - 1], 1);
     }
     //
     REAL errnrm = Clange("One", n, n, work, n, rwork) / enorm;
@@ -124,7 +124,7 @@ void Cget52(bool const left, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
         for (j = 1; j <= n; j = j + 1) {
             temp1 = max(temp1, cabs1(e[(j - 1) + (jvec - 1) * lde]));
         }
-        enrmer = max(enrmer, temp1 - one);
+        enrmer = max(enrmer, abs(temp1 - one));
     }
     //
     // Compute RESULT(2) : the normalization error in E.
