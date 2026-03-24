@@ -97,7 +97,7 @@ void Cchkhb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
     REAL temp3 = 0.0;
     REAL temp4 = 0.0;
     //
-    static const char *format_9999 = "(' Cchkhbstg: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
+    static const char *format_9999 = "(' Cchkhb2stg: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
                                      "', ISEED=(',3(i5,','),i5,')')";
     static const char *format_9998 = "(/,1x,a3,' -- Complex Hermitian Banded Tridiagonal Reduction Routines')";
     static const char *format_9997 = "(' Matrix types (see DCHK23 for details): ')";
@@ -176,7 +176,7 @@ void Cchkhb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
     }
     //
     if (info != 0) {
-        Mxerbla("Cchkhbstg", -info);
+        Mxerbla("Cchkhb2stg", -info);
         return;
     }
     //
@@ -570,6 +570,6 @@ void Cchkhb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
     //
     Rlasum("ZHB", nounit, nerrs, ntestt);
     //
-    // End of Cchkhbstg
+    // End of Cchkhb2stg
     //
 }

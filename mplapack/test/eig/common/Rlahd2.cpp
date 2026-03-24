@@ -277,8 +277,8 @@ void Rlahd2(INTEGER const iounit, fem::str_cref path) {
                                      "' 2: norm( I - Q'' Q )   / ( m ulp )',/,"
                                      "' 3: norm( I - PT PT'' )   / ( n ulp )',/,"
                                      "' 4: norm( Y - Q'' C )   / ( norm(Y) max(m,nrhs) ulp )')";
-    static const char *format_9968 = "(/,' Tests performed:  See sdrvst.f')";
-    static const char *format_9967 = "(/,' Tests performed:  See cdrvst.f')";
+    static const char *format_9968 = "(/,' Tests performed:  See ddrvst.f')";
+    static const char *format_9967 = "(/,' Tests performed:  See zdrvst.f')";
     //
     if (iounit <= 0) {
         return;
