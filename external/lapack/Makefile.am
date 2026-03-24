@@ -32,7 +32,8 @@ PATCHES_3_12_1 = \
 	patch-iseed \
 	patch-xLAQP2RK.f \
 	patch-xxxGVD.f \
-	patch-stebz-error-propagation
+	patch-stebz-error-propagation \
+	patch-redundant-dble-real
 
 work/$(PATCH_STAMP): work/$(EXTRACT_STAMP)
 	cd $(LAPACK_WORK_DIR) && patch -p0 < $(LAPACK_PATCH_DIR)/patch-print
