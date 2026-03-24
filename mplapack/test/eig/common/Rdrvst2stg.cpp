@@ -1081,7 +1081,7 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         result[ntest - 1] = ulpinv;
                         result[(ntest + 1) - 1] = ulpinv;
                         result[(ntest + 2) - 1] = ulpinv;
-                        goto statement_1720;
+                        goto statement_700;
                     }
                 }
                 //
@@ -1102,13 +1102,13 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         return;
                     } else {
                         result[ntest - 1] = ulpinv;
-                        goto statement_1720;
+                        goto statement_700;
                     }
                 }
                 //
                 if (m3 == 0 && n > 0) {
                     result[ntest - 1] = ulpinv;
-                    goto statement_1720;
+                    goto statement_700;
                 }
                 //
                 // Do test 36 (or +54)
@@ -1126,7 +1126,6 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
                 // 5)      Call Rspev and Rspevx.
                 //
-            statement_1720:
                 Rlacpy(" ", n, n, v, ldu, a, lda);
                 //
                 // Load array WORK with the upper or lower triangular
