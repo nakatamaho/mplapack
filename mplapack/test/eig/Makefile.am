@@ -261,6 +261,7 @@ common/Csgt01.cpp \
 common/Cslect.cpp \
 common/Cstt21.cpp \
 common/Cstt22.cpp \
+common/Csyl01.cpp \
 common/Cunt01.cpp \
 common/Cunt03.cpp \
 common/Mxlaenv.cpp \
@@ -356,6 +357,7 @@ common/Rstt22.cpp \
 common/Rsvdch.cpp \
 common/Rsvdct.cpp \
 common/Rsxt1.cpp \
+common/Rsyl01.cpp \
 common/Rsyt21.cpp \
 common/Rsyt22.cpp \
 common/iMlaenv.cpp
