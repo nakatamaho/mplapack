@@ -53,7 +53,7 @@ void Cbdt01(INTEGER const m, INTEGER const n, INTEGER const kd, COMPLEX *a, INTE
         return;
     }
     //
-    // Compute A - Q * B * P' one column at a time.
+    // Compute A - Q * B * P**H one column at a time.
     //
     resid = zero;
     INTEGER j = 0;
@@ -128,7 +128,7 @@ void Cbdt01(INTEGER const m, INTEGER const n, INTEGER const kd, COMPLEX *a, INTE
         }
     }
     //
-    // Compute norm(A - Q * B * P') / ( n * norm(A) * EPS )
+    // Compute norm(A - Q * B * P**H) / ( n * norm(A) * EPS )
     //
     REAL anorm = Clange("1", m, n, a, lda, rwork);
     REAL eps = Rlamch("Precision");
