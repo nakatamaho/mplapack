@@ -100,7 +100,6 @@ void Cget37(REAL *rmax, INTEGER *lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
     eps = Rlamch("P");
     smlnum = Rlamch("S") / eps;
     bignum = one / smlnum;
-    Rlabad(smlnum, bignum);
     //
     // EPSIN = 2**(-24) = precision to which input data computed
     //

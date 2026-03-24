@@ -58,7 +58,6 @@ void Chst01(INTEGER const n, INTEGER const /* ilo */, INTEGER const /* ihi */, C
     REAL eps = Rlamch("Precision");
     const REAL one = 1.0;
     REAL ovfl = one / unfl;
-    Rlabad(unfl, ovfl);
     REAL smlnum = unfl * n / eps;
     //
     // Test 1:  Compute norm( A - Q*H*Q' ) / ( norm(A) * N * EPS )

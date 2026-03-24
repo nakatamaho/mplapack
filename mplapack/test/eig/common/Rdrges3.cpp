@@ -209,7 +209,6 @@ void Rdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
     ulp = Rlamch("Epsilon") * Rlamch("Base");
     safmin = safmin / ulp;
     safmax = one / safmin;
-    Rlabad(safmin, safmax);
     ulpinv = one / ulp;
     //
     // The values RMAGN(2:3) depend on N, see below.
@@ -404,6 +403,14 @@ void Rdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                     sort = "S";
                     rsub = 5;
                 }
+                //
+                // Call Mxlaenv to set the parameters used in Rlaqz0
+                //
+                Mxlaenv(12, 10);
+                Mxlaenv(13, 12);
+                Mxlaenv(14, 13);
+                Mxlaenv(15, 2);
+                Mxlaenv(17, 10);
                 //
                 // Call Rgges3 to compute H, T, Q, Z, alpha, and beta.
                 //

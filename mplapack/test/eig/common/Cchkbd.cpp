@@ -164,7 +164,6 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
     ntest = 0;
     unfl = Rlamch("Safe minimum");
     ovfl = Rlamch("Overflow");
-    Rlabad(unfl, ovfl);
     ulp = Rlamch("Precision");
     ulpinv = one / ulp;
     log2ui = castINTEGER(log(ulpinv) / log(two));

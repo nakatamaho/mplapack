@@ -91,7 +91,6 @@ void Cget35(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt, INTEGER con
     eps = Rlamch("P");
     smlnum = Rlamch("S") / eps;
     bignum = one / smlnum;
-    Rlabad(smlnum, bignum);
     //
     // Set up test case parameters
     //
