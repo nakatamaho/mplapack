@@ -37,7 +37,7 @@
 #include <mplapack.h>
 #include <memory>
 
-void Ctrsyl3(const char *trana, const char *tranb, INTEGER const isgn, INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX *c, INTEGER const ldc, REAL &scale, REAL *swork, INTEGER &ldswork, INTEGER &info) {
+void Ctrsyl3(const char *trana, const char *tranb, INTEGER const isgn, INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX *c, INTEGER const ldc, REAL &scale, REAL *swork, INTEGER const ldswork, INTEGER &info) {
     //
     // Decode and Test input parameters
     //
@@ -58,7 +58,6 @@ void Ctrsyl3(const char *trana, const char *tranb, INTEGER const isgn, INTEGER c
     info = 0;
     bool lquery = (ldswork == -1);
     if (lquery) {
-        ldswork = 2;
         swork[0] = max(nba, nbb);
         swork[(2 - 1)] = 2 * nbb + nba;
     }

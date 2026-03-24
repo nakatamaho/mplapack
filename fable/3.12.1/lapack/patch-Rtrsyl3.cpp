@@ -1,12 +1,9 @@
-diff --git a/mplapack/reference/Rtrsyl3.cpp b/mplapack/reference/Rtrsyl3.cpp
-index e8d9ca25..a5df9f29 100644
---- a/mplapack/reference/Rtrsyl3.cpp
-+++ b/mplapack/reference/Rtrsyl3.cpp
-@@ -38,24 +38,6 @@
- #include <memory>
+--- a/mplapack/reference/Rtrsyl3.cpp	2026-03-24 14:04:41.848673245 +0900
++++ b/mplapack/reference/Rtrsyl3.cpp	2026-03-24 14:02:11.028565416 +0900
+@@ -39,24 +39,6 @@
  
- void Rtrsyl3(const char *trana, const char *tranb, INTEGER const isgn, INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *c, INTEGER const ldc, REAL &scale, INTEGER *iwork, INTEGER const liwork, REAL *swork, INTEGER &ldswork, INTEGER &info) {
--    //
+ void Rtrsyl3(const char *trana, const char *tranb, INTEGER const isgn, INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *c, INTEGER const ldc, REAL &scale, INTEGER *iwork, INTEGER const liwork, REAL *swork, INTEGER const ldswork, INTEGER &info) {
+     //
 -    // .. Scalar Arguments ..
 -    // ..
 -    // .. Array Arguments ..
@@ -24,10 +21,11 @@ index e8d9ca25..a5df9f29 100644
 -    // .. Intrinsic Functions ..
 -    // ..
 -    // .. Executable Statements ..
-     //
+-    //
      // Decode and Test input parameters
      //
-@@ -111,6 +93,7 @@ void Rtrsyl3(const char *trana, const char *tranb, INTEGER const isgn, INTEGER c
+     bool notrna = Mlsame(trana, "N");
+@@ -110,6 +92,7 @@
      // Quick return if possible
      //
      const REAL one = 1.0;
@@ -35,7 +33,7 @@ index e8d9ca25..a5df9f29 100644
      scale = one;
      if (m == 0 || n == 0) {
          return;
-@@ -316,14 +299,14 @@ void Rtrsyl3(const char *trana, const char *tranb, INTEGER const isgn, INTEGER c
+@@ -315,14 +298,14 @@
                          buf = zero;
                      } else {
                          // Use second scaling factor to prevent flushing to zero.
@@ -52,7 +50,7 @@ index e8d9ca25..a5df9f29 100644
                          }
                      }
                  }
-@@ -348,14 +331,14 @@ void Rtrsyl3(const char *trana, const char *tranb, INTEGER const isgn, INTEGER c
+@@ -347,14 +330,14 @@
                      scaloc = Rlarmm(anrm, xnrm, cnrm);
                      if (scaloc * scamin == zero) {
                          // Use second scaling factor to prevent flushing to zero.
@@ -71,7 +69,7 @@ index e8d9ca25..a5df9f29 100644
                      }
                      cnrm = cnrm * scaloc;
                      xnrm = xnrm * scaloc;
-@@ -404,14 +387,14 @@ void Rtrsyl3(const char *trana, const char *tranb, INTEGER const isgn, INTEGER c
+@@ -403,14 +386,14 @@
                      scaloc = Rlarmm(bnrm, xnrm, cnrm);
                      if (scaloc * scamin == zero) {
                          // Use second scaling factor to prevent flushing to zero.
@@ -90,7 +88,7 @@ index e8d9ca25..a5df9f29 100644
                      }
                      cnrm = cnrm * scaloc;
                      xnrm = xnrm * scaloc;
-@@ -487,14 +470,14 @@ void Rtrsyl3(const char *trana, const char *tranb, INTEGER const isgn, INTEGER c
+@@ -486,14 +469,14 @@
                          buf = zero;
                      } else {
                          // Use second scaling factor to prevent flushing to zero.
@@ -107,7 +105,7 @@ index e8d9ca25..a5df9f29 100644
                          }
                      }
                  }
-@@ -519,14 +502,14 @@ void Rtrsyl3(const char *trana, const char *tranb, INTEGER const isgn, INTEGER c
+@@ -518,14 +501,14 @@
                      scaloc = Rlarmm(anrm, xnrm, cnrm);
                      if (scaloc * scamin == zero) {
                          // Use second scaling factor to prevent flushing to zero.
@@ -126,7 +124,7 @@ index e8d9ca25..a5df9f29 100644
                      }
                      cnrm = cnrm * scaloc;
                      xnrm = xnrm * scaloc;
-@@ -574,14 +557,14 @@ void Rtrsyl3(const char *trana, const char *tranb, INTEGER const isgn, INTEGER c
+@@ -573,14 +556,14 @@
                      scaloc = Rlarmm(bnrm, xnrm, cnrm);
                      if (scaloc * scamin == zero) {
                          // Use second scaling factor to prevent flushing to zero.
@@ -145,7 +143,7 @@ index e8d9ca25..a5df9f29 100644
                      }
                      cnrm = cnrm * scaloc;
                      xnrm = xnrm * scaloc;
-@@ -658,14 +641,14 @@ void Rtrsyl3(const char *trana, const char *tranb, INTEGER const isgn, INTEGER c
+@@ -657,14 +640,14 @@
                          buf = zero;
                      } else {
                          // Use second scaling factor to prevent flushing to zero.
@@ -162,7 +160,7 @@ index e8d9ca25..a5df9f29 100644
                          }
                      }
                  }
-@@ -689,14 +672,14 @@ void Rtrsyl3(const char *trana, const char *tranb, INTEGER const isgn, INTEGER c
+@@ -688,14 +671,14 @@
                      scaloc = Rlarmm(anrm, xnrm, cnrm);
                      if (scaloc * scamin == zero) {
                          // Use second scaling factor to prevent flushing to zero.
@@ -181,7 +179,7 @@ index e8d9ca25..a5df9f29 100644
                      }
                      cnrm = cnrm * scaloc;
                      xnrm = xnrm * scaloc;
-@@ -744,14 +727,14 @@ void Rtrsyl3(const char *trana, const char *tranb, INTEGER const isgn, INTEGER c
+@@ -743,14 +726,14 @@
                      scaloc = Rlarmm(bnrm, xnrm, cnrm);
                      if (scaloc * scamin == zero) {
                          // Use second scaling factor to prevent flushing to zero.
@@ -200,7 +198,7 @@ index e8d9ca25..a5df9f29 100644
                      }
                      cnrm = cnrm * scaloc;
                      xnrm = xnrm * scaloc;
-@@ -827,14 +810,14 @@ void Rtrsyl3(const char *trana, const char *tranb, INTEGER const isgn, INTEGER c
+@@ -826,14 +809,14 @@
                          buf = zero;
                      } else {
                          // Use second scaling factor to prevent flushing to zero.
@@ -217,7 +215,7 @@ index e8d9ca25..a5df9f29 100644
                          }
                      }
                  }
-@@ -859,14 +842,14 @@ void Rtrsyl3(const char *trana, const char *tranb, INTEGER const isgn, INTEGER c
+@@ -858,14 +841,14 @@
                      scaloc = Rlarmm(anrm, xnrm, cnrm);
                      if (scaloc * scamin == zero) {
                          // Use second scaling factor to prevent flushing to zero.
@@ -236,7 +234,7 @@ index e8d9ca25..a5df9f29 100644
                      }
                      cnrm = cnrm * scaloc;
                      xnrm = xnrm * scaloc;
-@@ -915,14 +898,14 @@ void Rtrsyl3(const char *trana, const char *tranb, INTEGER const isgn, INTEGER c
+@@ -914,14 +897,14 @@
                      scaloc = Rlarmm(bnrm, xnrm, cnrm);
                      if (scaloc * scamin == zero) {
                          // Use second scaling factor to prevent flushing to zero.

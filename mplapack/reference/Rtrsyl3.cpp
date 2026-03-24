@@ -37,7 +37,7 @@
 #include <mplapack.h>
 #include <memory>
 
-void Rtrsyl3(const char *trana, const char *tranb, INTEGER const isgn, INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *c, INTEGER const ldc, REAL &scale, INTEGER *iwork, INTEGER const liwork, REAL *swork, INTEGER &ldswork, INTEGER &info) {
+void Rtrsyl3(const char *trana, const char *tranb, INTEGER const isgn, INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *c, INTEGER const ldc, REAL &scale, INTEGER *iwork, INTEGER const liwork, REAL *swork, INTEGER const ldswork, INTEGER &info) {
     //
     // Decode and Test input parameters
     //
@@ -59,7 +59,6 @@ void Rtrsyl3(const char *trana, const char *tranb, INTEGER const isgn, INTEGER c
     bool lquery = (liwork == -1 || ldswork == -1);
     iwork[1 - 1] = nba + nbb + 2;
     if (lquery) {
-        ldswork = 2;
         swork[0] = max(nba, nbb);
         swork[(2 - 1)] = 2 * nbb + nba;
     }
