@@ -9,12 +9,3 @@
  4                               Number of parameter values
  1   1   2   2                   Values of NB (blocksize)
  40  40  2   2                   Values of NBMIN (minimum blocksize)
-@@ -10,7 +10,7 @@
- 40  40  2   2                   Values of NBCOL (minimum col. dimension)
- 20.0                            Threshold value
- T                               Put T to test the LAPACK routines
--F                               Put T to test the driver routines
-+T                               Put T to test the driver routines
- T                               Put T to test the error exits
- 1                               Code to interpret the seed
- DGG  26
