@@ -268,11 +268,11 @@ void program_dmd_test(int argc, char const *argv[]) {
         //
         // Set the dimensions of the problem ...
         write(6, star), "M = ";
-        read(6, star), m;
+        read(5, star), m;
         write(6, star), m;
         // ... and the number of snapshots.
         write(6, star), "N = ";
-        read(6, star), n;
+        read(5, star), n;
         write(6, star), n;
         //
         // ... Test the dimensions
@@ -662,7 +662,7 @@ void program_dmd_test(int argc, char const *argv[]) {
                                                     nfail_svdiff++;
                                                     for (j = 1; j <= 3; j = j + 1) {
                                                         write(6, star), j, singvx[j - 1], singvqx[j - 1];
-                                                        read(6, star);
+                                                        read(5, star);
                                                     }
                                                     //
                                                 }
@@ -832,7 +832,6 @@ void program_dmd_test(int argc, char const *argv[]) {
     //
     write(6, star);
     write(6, star), "Test completed.";
-    FEM_STOP(0);
 }
 
 int main(int argc, char const *argv[]) { return fem::main_with_catch(argc, argv, program_dmd_test); }

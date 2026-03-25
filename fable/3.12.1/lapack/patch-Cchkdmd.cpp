@@ -104,3 +104,36 @@
                                                  Cgemm("N", "N", m, n + 1, min(m, n + 1), -zone, zf, ldf, zy, ldy, zone, zf1, ldf);
                                                  tmp_fqr = Clange("F", m, n + 1, zf1, ldf, work) / Clange("F", m, n + 1, zf0, ldf, work);
                                                  if (tmp_fqr > tol2) {
+--- Cchkdmd.cpp~	2026-03-25 13:28:22.787294063 +0900
++++ Cchkdmd.cpp	2026-03-25 13:29:08.516270861 +0900
+@@ -268,11 +268,11 @@
+         //
+         // Set the dimensions of the problem ...
+         write(6, star), "M = ";
+-        read(6, star), m;
++        read(5, star), m;
+         write(6, star), m;
+         // ... and the number of snapshots.
+         write(6, star), "N = ";
+-        read(6, star), n;
++        read(5, star), n;
+         write(6, star), n;
+         //
+         // ... Test the dimensions
+@@ -662,7 +662,7 @@
+                                                     nfail_svdiff++;
+                                                     for (j = 1; j <= 3; j = j + 1) {
+                                                         write(6, star), j, singvx[j - 1], singvqx[j - 1];
+-                                                        read(6, star);
++                                                        read(5, star);
+                                                     }
+                                                     //
+                                                 }
+@@ -832,7 +832,6 @@
+     //
+     write(6, star);
+     write(6, star), "Test completed.";
+-    FEM_STOP(0);
+ }
+ 
+ int main(int argc, char const *argv[]) { return fem::main_with_catch(argc, argv, program_dmd_test); }
