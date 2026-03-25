@@ -241,6 +241,12 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
                 Mxerbla("Rgesvj", -info);
                 return;
             }
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+            if (aaqq == zero) {
+                sva[p - 1] = zero;
+                continue;
+            }
+#endif
             aaqq = sqrt(aaqq);
             if ((aapp < (big / aaqq)) && noscale) {
                 sva[p - 1] = aapp * aaqq;
@@ -266,6 +272,12 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
                 Mxerbla("Rgesvj", -info);
                 return;
             }
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+            if (aaqq == zero) {
+                sva[p - 1] = zero;
+                continue;
+            }
+#endif
             aaqq = sqrt(aaqq);
             if ((aapp < (big / aaqq)) && noscale) {
                 sva[p - 1] = aapp * aaqq;
@@ -291,6 +303,12 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
                 Mxerbla("Rgesvj", -info);
                 return;
             }
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+            if (aaqq == zero) {
+                sva[p - 1] = zero;
+                continue;
+            }
+#endif
             aaqq = sqrt(aaqq);
             if ((aapp < (big / aaqq)) && noscale) {
                 sva[p - 1] = aapp * aaqq;

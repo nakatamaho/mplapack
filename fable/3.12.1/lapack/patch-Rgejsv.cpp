@@ -12,3 +12,20 @@
      // BIG   = ONE / SFMIN
      //
      // Initialize SVA(1:N) = diag( ||A e_i||_2 )_1^N
+diff --git a/mplapack/reference/Rgejsv.cpp b/mplapack/reference/Rgejsv.cpp
+index 81b4edf5..f624c8b6 100644
+--- a/mplapack/reference/Rgejsv.cpp
++++ b/mplapack/reference/Rgejsv.cpp
+@@ -186,6 +186,12 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
+             Mxerbla("Rgejsv", -info);
+             return;
+         }
++#if defined ___MPLAPACK_BUILD_WITH_GMP___
++        if (aaqq == zero) {
++            sva[p - 1] = zero;
++            continue;
++        }
++#endif
+         aaqq = sqrt(aaqq);
+         if ((aapp < (big / aaqq)) && noscal) {
+             sva[p - 1] = aapp * aaqq;

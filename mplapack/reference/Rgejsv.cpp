@@ -186,6 +186,12 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
             Mxerbla("Rgejsv", -info);
             return;
         }
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+        if (aaqq == zero) {
+            sva[p - 1] = zero;
+            continue;
+        }
+#endif
         aaqq = sqrt(aaqq);
         if ((aapp < (big / aaqq)) && noscal) {
             sva[p - 1] = aapp * aaqq;
