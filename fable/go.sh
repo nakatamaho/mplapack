@@ -325,6 +325,104 @@ makefile_am.write_text("".join(lines))
 PY
 }
 
+regen_optimized_makefile_sources() {
+  local optimized_dir="$1"
+  local reference_dir="$2"
+
+  for subdir in "${optimized_dir}"/*/; do
+    [ -f "${subdir}/Makefile.am" ] || continue
+    echo "Processing ${subdir}Makefile.am ..."
+
+    python3 - "${subdir}/Makefile.am" "${reference_dir}" "${subdir}" <<'PY'
+import re
+import sys
+from pathlib import Path
+
+makefile_am = Path(sys.argv[1])
+reference_dir = Path(sys.argv[2])
+subdir = Path(sys.argv[3])
+
+# --- Read Makefile.am ---
+text = makefile_am.read_text()
+lines = text.splitlines(keepends=True)
+
+# --- Find *_SOURCES block ---
+start = end = None
+var = None
+for i, line in enumerate(lines):
+    m = re.match(r'^(\S+_SOURCES)\s*=', line)
+    if m:
+        var = m.group(1)
+        start = i
+        end = i + 1
+        while end < len(lines) and lines[end - 1].rstrip().endswith('\\'):
+            end += 1
+        break
+if start is None:
+    raise SystemExit(f"No *_SOURCES block found in {makefile_am}")
+
+block_lines = lines[start:end]
+
+# --- Separate local lines from reference lines ---
+local_parts = []
+for idx, line in enumerate(block_lines):
+    if idx == 0:
+        # First line: strip "<var> = " prefix, keep any sources on it
+        after_eq = re.sub(r'^\S+_SOURCES\s*=\s*', '', line)
+        if '../../reference/' not in after_eq:
+            content = after_eq.strip().rstrip('\\').strip()
+            if content:
+                local_parts.append(after_eq)
+        continue
+    if '../../reference/' in line:
+        continue  # auto-generated ― will be replaced
+    content = line.rstrip('\n').rstrip().rstrip('\\').strip()
+    if content:
+        local_parts.append(line)
+
+# --- Determine which reference files to include ---
+all_ref_cpps = sorted(p.name for p in reference_dir.glob('*.cpp'))
+if not all_ref_cpps:
+    raise SystemExit(f"No .cpp files in {reference_dir}")
+
+# Collect basenames of all local .cpp files (including openmp/ etc.)
+local_names = set()
+for p in subdir.glob('*.cpp'):
+    local_names.add(p.name)
+for p in subdir.glob('*/*.cpp'):
+    local_names.add(p.name)
+
+needed_refs = [name for name in all_ref_cpps if name not in local_names]
+
+# --- Rebuild the SOURCES block ---
+result = []
+has_local = any(p.strip().rstrip('\\').strip() for p in local_parts)
+has_refs = len(needed_refs) > 0
+
+if has_local or has_refs:
+    result.append(f'{var} = \\\n')
+    for part in local_parts:
+        t = part.rstrip('\n').rstrip()
+        if not t.endswith('\\'):
+            t += ' \\'
+        result.append(t + '\n')
+    for i, name in enumerate(needed_refs):
+        is_last = (i == len(needed_refs) - 1)
+        suffix = ' \\' if not is_last else ''
+        result.append(f'../../reference/{name}{suffix}\n')
+else:
+    result.append(f'{var} =\n')
+
+lines[start:end] = result
+makefile_am.write_text(''.join(lines))
+
+n_local = len(local_names)
+n_ref = len(needed_refs)
+print(f"  Updated: {n_local} local .cpp, {n_ref} from reference")
+PY
+  done
+}
+
 regen_makefile_sources \
   "${ROOT}/mpblas/reference/Makefile.am" \
   "${ROOT}/mpblas/reference" \
@@ -334,5 +432,9 @@ regen_makefile_sources \
   "${ROOT}/mplapack/reference/Makefile.am" \
   "${ROOT}/mplapack/reference" \
   "MPLAPACK_SOURCES"
+
+regen_optimized_makefile_sources \
+  "${ROOT}/mpblas/optimized" \
+  "${ROOT}/mpblas/reference"
 
 echo "ALL DONE"
