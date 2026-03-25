@@ -386,7 +386,7 @@ void Clatrs3(const char *uplo, const char *trans, const char *diag, const char *
                 }
             }
             //
-            for (i = ifirst; i <= ilast; i = i + iinc) {
+            for (i = ifirst; iinc > 0 ? i <= ilast : i >= ilast; i = i + iinc) {
                 // I1: row index of the first column in X( I, K )
                 // I2: row index of the first column in X( I+1, K )
                 // so the I2 - I1 is the row count of the block X( I, K )
