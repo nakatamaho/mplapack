@@ -274,7 +274,6 @@ void Chseqr(const char *job, const char *compz, mplapackint const n, mplapackint
 void Clabrd(mplapackint const m, mplapackint const n, mplapackint const nb, mpc_class *a, mplapackint const lda, mpf_class *d, mpf_class *e, mpc_class *tauq, mpc_class *taup, mpc_class *x, mplapackint const ldx, mpc_class *y, mplapackint const ldy);
 void Clacgv(mplapackint const n, mpc_class *x, mplapackint const incx);
 void Clacn2(mplapackint const n, mpc_class *v, mpc_class *x, mpf_class &est, mplapackint &kase, mplapackint *isave);
-void Clacon(mplapackint const n, mpc_class *v, mpc_class *x, mpf_class &est, mplapackint &kase);
 void Clacp2(const char *uplo, mplapackint const m, mplapackint const n, mpf_class *a, mplapackint const lda, mpc_class *b, mplapackint const ldb);
 void Clacpy(const char *uplo, mplapackint const m, mplapackint const n, mpc_class *a, mplapackint const lda, mpc_class *b, mplapackint const ldb);
 void Clacrm(mplapackint const m, mplapackint const n, mpc_class *a, mplapackint const lda, mpf_class *b, mplapackint const ldb, mpc_class *c, mplapackint const ldc, mpf_class *rwork);
@@ -652,7 +651,6 @@ void Rhseqr(const char *job, const char *compz, mplapackint const n, mplapackint
 void Rlabad(mpf_class const, mpf_class const);
 void Rlabrd(mplapackint const m, mplapackint const n, mplapackint const nb, mpf_class *a, mplapackint const lda, mpf_class *d, mpf_class *e, mpf_class *tauq, mpf_class *taup, mpf_class *x, mplapackint const ldx, mpf_class *y, mplapackint const ldy);
 void Rlacn2(mplapackint const n, mpf_class *v, mpf_class *x, mplapackint *isgn, mpf_class &est, mplapackint &kase, mplapackint *isave);
-void Rlacon(mplapackint const n, mpf_class *v, mpf_class *x, mplapackint *isgn, mpf_class &est, mplapackint &kase);
 void Rlacpy(const char *uplo, mplapackint const m, mplapackint const n, mpf_class *a, mplapackint const lda, mpf_class *b, mplapackint const ldb);
 void Rladiv(mpf_class const a, mpf_class const b, mpf_class const c, mpf_class const d, mpf_class &p, mpf_class &q);
 void Rladiv1(mpf_class &a, mpf_class const b, mpf_class const c, mpf_class const d, mpf_class &p, mpf_class &q);

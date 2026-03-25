@@ -278,7 +278,6 @@ void Chseqr(const char *job, const char *compz, mplapackint const n, mplapackint
 void Clabrd(mplapackint const m, mplapackint const n, mplapackint const nb, mpcomplex *a, mplapackint const lda, mpreal *d, mpreal *e, mpcomplex *tauq, mpcomplex *taup, mpcomplex *x, mplapackint const ldx, mpcomplex *y, mplapackint const ldy);
 void Clacgv(mplapackint const n, mpcomplex *x, mplapackint const incx);
 void Clacn2(mplapackint const n, mpcomplex *v, mpcomplex *x, mpreal &est, mplapackint &kase, mplapackint *isave);
-void Clacon(mplapackint const n, mpcomplex *v, mpcomplex *x, mpreal &est, mplapackint &kase);
 void Clacp2(const char *uplo, mplapackint const m, mplapackint const n, mpreal *a, mplapackint const lda, mpcomplex *b, mplapackint const ldb);
 void Clacpy(const char *uplo, mplapackint const m, mplapackint const n, mpcomplex *a, mplapackint const lda, mpcomplex *b, mplapackint const ldb);
 void Clacrm(mplapackint const m, mplapackint const n, mpcomplex *a, mplapackint const lda, mpreal *b, mplapackint const ldb, mpcomplex *c, mplapackint const ldc, mpreal *rwork);
@@ -656,7 +655,6 @@ void Rhseqr(const char *job, const char *compz, mplapackint const n, mplapackint
 void Rlabad(mpreal const, mpreal const);
 void Rlabrd(mplapackint const m, mplapackint const n, mplapackint const nb, mpreal *a, mplapackint const lda, mpreal *d, mpreal *e, mpreal *tauq, mpreal *taup, mpreal *x, mplapackint const ldx, mpreal *y, mplapackint const ldy);
 void Rlacn2(mplapackint const n, mpreal *v, mpreal *x, mplapackint *isgn, mpreal &est, mplapackint &kase, mplapackint *isave);
-void Rlacon(mplapackint const n, mpreal *v, mpreal *x, mplapackint *isgn, mpreal &est, mplapackint &kase);
 void Rlacpy(const char *uplo, mplapackint const m, mplapackint const n, mpreal *a, mplapackint const lda, mpreal *b, mplapackint const ldb);
 void Rladiv(mpreal const a, mpreal const b, mpreal const c, mpreal const d, mpreal &p, mpreal &q);
 void Rladiv1(mpreal &a, mpreal const b, mpreal const c, mpreal const d, mpreal &p, mpreal &q);

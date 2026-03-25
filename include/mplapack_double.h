@@ -272,7 +272,6 @@ void Chseqr(const char *job, const char *compz, mplapackint const n, mplapackint
 void Clabrd(mplapackint const m, mplapackint const n, mplapackint const nb, std::complex<double> *a, mplapackint const lda, double *d, double *e, std::complex<double> *tauq, std::complex<double> *taup, std::complex<double> *x, mplapackint const ldx, std::complex<double> *y, mplapackint const ldy);
 void Clacgv(mplapackint const n, std::complex<double> *x, mplapackint const incx);
 void Clacn2(mplapackint const n, std::complex<double> *v, std::complex<double> *x, double &est, mplapackint &kase, mplapackint *isave);
-void Clacon(mplapackint const n, std::complex<double> *v, std::complex<double> *x, double &est, mplapackint &kase);
 void Clacp2(const char *uplo, mplapackint const m, mplapackint const n, double *a, mplapackint const lda, std::complex<double> *b, mplapackint const ldb);
 void Clacpy(const char *uplo, mplapackint const m, mplapackint const n, std::complex<double> *a, mplapackint const lda, std::complex<double> *b, mplapackint const ldb);
 void Clacrm(mplapackint const m, mplapackint const n, std::complex<double> *a, mplapackint const lda, double *b, mplapackint const ldb, std::complex<double> *c, mplapackint const ldc, double *rwork);
@@ -650,7 +649,6 @@ void Rhseqr(const char *job, const char *compz, mplapackint const n, mplapackint
 void Rlabad(double const, double const);
 void Rlabrd(mplapackint const m, mplapackint const n, mplapackint const nb, double *a, mplapackint const lda, double *d, double *e, double *tauq, double *taup, double *x, mplapackint const ldx, double *y, mplapackint const ldy);
 void Rlacn2(mplapackint const n, double *v, double *x, mplapackint *isgn, double &est, mplapackint &kase, mplapackint *isave);
-void Rlacon(mplapackint const n, double *v, double *x, mplapackint *isgn, double &est, mplapackint &kase);
 void Rlacpy(const char *uplo, mplapackint const m, mplapackint const n, double *a, mplapackint const lda, double *b, mplapackint const ldb);
 void Rladiv(double const a, double const b, double const c, double const d, double &p, double &q);
 void Rladiv1(double &a, double const b, double const c, double const d, double &p, double &q);

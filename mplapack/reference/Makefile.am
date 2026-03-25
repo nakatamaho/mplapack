@@ -300,7 +300,6 @@ Chseqr.cpp \
 Clabrd.cpp \
 Clacgv.cpp \
 Clacn2.cpp \
-Clacon.cpp \
 Clacp2.cpp \
 Clacpy.cpp \
 Clacrm.cpp \
@@ -701,7 +700,6 @@ Risnan.cpp \
 Rlabad.cpp \
 Rlabrd.cpp \
 Rlacn2.cpp \
-Rlacon.cpp \
 Rlacpy.cpp \
 Rladiv.cpp \
 Rlae2.cpp \

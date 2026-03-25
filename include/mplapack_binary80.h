@@ -272,7 +272,6 @@ void Chseqr(const char *job, const char *compz, mplapackint const n, mplapackint
 void Clabrd(mplapackint const m, mplapackint const n, mplapackint const nb, std::complex<mplapack_binary80_t> *a, mplapackint const lda, mplapack_binary80_t *d, mplapack_binary80_t *e, std::complex<mplapack_binary80_t> *tauq, std::complex<mplapack_binary80_t> *taup, std::complex<mplapack_binary80_t> *x, mplapackint const ldx, std::complex<mplapack_binary80_t> *y, mplapackint const ldy);
 void Clacgv(mplapackint const n, std::complex<mplapack_binary80_t> *x, mplapackint const incx);
 void Clacn2(mplapackint const n, std::complex<mplapack_binary80_t> *v, std::complex<mplapack_binary80_t> *x, mplapack_binary80_t &est, mplapackint &kase, mplapackint *isave);
-void Clacon(mplapackint const n, std::complex<mplapack_binary80_t> *v, std::complex<mplapack_binary80_t> *x, mplapack_binary80_t &est, mplapackint &kase);
 void Clacp2(const char *uplo, mplapackint const m, mplapackint const n, mplapack_binary80_t *a, mplapackint const lda, std::complex<mplapack_binary80_t> *b, mplapackint const ldb);
 void Clacpy(const char *uplo, mplapackint const m, mplapackint const n, std::complex<mplapack_binary80_t> *a, mplapackint const lda, std::complex<mplapack_binary80_t> *b, mplapackint const ldb);
 void Clacrm(mplapackint const m, mplapackint const n, std::complex<mplapack_binary80_t> *a, mplapackint const lda, mplapack_binary80_t *b, mplapackint const ldb, std::complex<mplapack_binary80_t> *c, mplapackint const ldc, mplapack_binary80_t *rwork);
@@ -650,7 +649,6 @@ void Rhseqr(const char *job, const char *compz, mplapackint const n, mplapackint
 void Rlabad(mplapack_binary80_t const, mplapack_binary80_t const);
 void Rlabrd(mplapackint const m, mplapackint const n, mplapackint const nb, mplapack_binary80_t *a, mplapackint const lda, mplapack_binary80_t *d, mplapack_binary80_t *e, mplapack_binary80_t *tauq, mplapack_binary80_t *taup, mplapack_binary80_t *x, mplapackint const ldx, mplapack_binary80_t *y, mplapackint const ldy);
 void Rlacn2(mplapackint const n, mplapack_binary80_t *v, mplapack_binary80_t *x, mplapackint *isgn, mplapack_binary80_t &est, mplapackint &kase, mplapackint *isave);
-void Rlacon(mplapackint const n, mplapack_binary80_t *v, mplapack_binary80_t *x, mplapackint *isgn, mplapack_binary80_t &est, mplapackint &kase);
 void Rlacpy(const char *uplo, mplapackint const m, mplapackint const n, mplapack_binary80_t *a, mplapackint const lda, mplapack_binary80_t *b, mplapackint const ldb);
 void Rladiv(mplapack_binary80_t const a, mplapack_binary80_t const b, mplapack_binary80_t const c, mplapack_binary80_t const d, mplapack_binary80_t &p, mplapack_binary80_t &q);
 void Rladiv1(mplapack_binary80_t &a, mplapack_binary80_t const b, mplapack_binary80_t const c, mplapack_binary80_t const d, mplapack_binary80_t &p, mplapack_binary80_t &q);

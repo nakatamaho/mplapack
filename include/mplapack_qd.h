@@ -274,7 +274,6 @@ void Chseqr(const char *job, const char *compz, mplapackint const n, mplapackint
 void Clabrd(mplapackint const m, mplapackint const n, mplapackint const nb, qd_complex *a, mplapackint const lda, qd_real *d, qd_real *e, qd_complex *tauq, qd_complex *taup, qd_complex *x, mplapackint const ldx, qd_complex *y, mplapackint const ldy);
 void Clacgv(mplapackint const n, qd_complex *x, mplapackint const incx);
 void Clacn2(mplapackint const n, qd_complex *v, qd_complex *x, qd_real &est, mplapackint &kase, mplapackint *isave);
-void Clacon(mplapackint const n, qd_complex *v, qd_complex *x, qd_real &est, mplapackint &kase);
 void Clacp2(const char *uplo, mplapackint const m, mplapackint const n, qd_real *a, mplapackint const lda, qd_complex *b, mplapackint const ldb);
 void Clacpy(const char *uplo, mplapackint const m, mplapackint const n, qd_complex *a, mplapackint const lda, qd_complex *b, mplapackint const ldb);
 void Clacrm(mplapackint const m, mplapackint const n, qd_complex *a, mplapackint const lda, qd_real *b, mplapackint const ldb, qd_complex *c, mplapackint const ldc, qd_real *rwork);
@@ -652,7 +651,6 @@ void Rhseqr(const char *job, const char *compz, mplapackint const n, mplapackint
 void Rlabad(qd_real const, qd_real const);
 void Rlabrd(mplapackint const m, mplapackint const n, mplapackint const nb, qd_real *a, mplapackint const lda, qd_real *d, qd_real *e, qd_real *tauq, qd_real *taup, qd_real *x, mplapackint const ldx, qd_real *y, mplapackint const ldy);
 void Rlacn2(mplapackint const n, qd_real *v, qd_real *x, mplapackint *isgn, qd_real &est, mplapackint &kase, mplapackint *isave);
-void Rlacon(mplapackint const n, qd_real *v, qd_real *x, mplapackint *isgn, qd_real &est, mplapackint &kase);
 void Rlacpy(const char *uplo, mplapackint const m, mplapackint const n, qd_real *a, mplapackint const lda, qd_real *b, mplapackint const ldb);
 void Rladiv(qd_real const a, qd_real const b, qd_real const c, qd_real const d, qd_real &p, qd_real &q);
 void Rladiv1(qd_real &a, qd_real const b, qd_real const c, qd_real const d, qd_real &p, qd_real &q);

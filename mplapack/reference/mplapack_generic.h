@@ -239,7 +239,6 @@ void Chseqr(const char *job, const char *compz, INTEGER const n, INTEGER const i
 void Clabrd(INTEGER const m, INTEGER const n, INTEGER const nb, COMPLEX *a, INTEGER const lda, REAL *d, REAL *e, COMPLEX *tauq, COMPLEX *taup, COMPLEX *x, INTEGER const ldx, COMPLEX *y, INTEGER const ldy);
 void Clacgv(INTEGER const n, COMPLEX *x, INTEGER const incx);
 void Clacn2(INTEGER const n, COMPLEX *v, COMPLEX *x, REAL &est, INTEGER &kase, INTEGER *isave);
-void Clacon(INTEGER const n, COMPLEX *v, COMPLEX *x, REAL &est, INTEGER &kase);
 void Clacp2(const char *uplo, INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb);
 void Clacpy(const char *uplo, INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb);
 void Clacrm(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL *b, INTEGER const ldb, COMPLEX *c, INTEGER const ldc, REAL *rwork);
@@ -617,7 +616,6 @@ void Rhseqr(const char *job, const char *compz, INTEGER const n, INTEGER const i
 void Rlabad(REAL const, REAL const);
 void Rlabrd(INTEGER const m, INTEGER const n, INTEGER const nb, REAL *a, INTEGER const lda, REAL *d, REAL *e, REAL *tauq, REAL *taup, REAL *x, INTEGER const ldx, REAL *y, INTEGER const ldy);
 void Rlacn2(INTEGER const n, REAL *v, REAL *x, INTEGER *isgn, REAL &est, INTEGER &kase, INTEGER *isave);
-void Rlacon(INTEGER const n, REAL *v, REAL *x, INTEGER *isgn, REAL &est, INTEGER &kase);
 void Rlacpy(const char *uplo, INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb);
 void Rladiv(REAL const a, REAL const b, REAL const c, REAL const d, REAL &p, REAL &q);
 void Rladiv1(REAL &a, REAL const b, REAL const c, REAL const d, REAL &p, REAL &q);
