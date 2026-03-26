@@ -36,7 +36,8 @@ PATCHES_3_12_1 = \
 	patch-redundant-dble-real \
 	patch-trsyl3-ldswork-overwrite \
 	patch-xpgvx-info-to-iinfo \
-	patch-fix-testparameters
+	patch-fix-testparameters \
+	patch-xERRTSQR.f
 
 work/$(PATCH_STAMP): work/$(EXTRACT_STAMP)
 	cd $(LAPACK_WORK_DIR) && patch -p0 < $(LAPACK_PATCH_DIR)/patch-print

@@ -57,13 +57,11 @@ void Rerrtsqr(fem::str_cref path, INTEGER const nunit) {
     INTEGER i = 0;
     REAL a[nmax * nmax];
     REAL c[nmax * nmax];
-    REAL t[nmax * nmax];
     REAL w[nmax];
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
             a[(i - 1) + (j - 1) * nmax] = 1.0 / castREAL(i + j);
             c[(i - 1) + (j - 1) * nmax] = 1.0 / castREAL(i + j);
-            t[(i - 1) + (j - 1) * nmax] = 1.0 / castREAL(i + j);
         }
         w[j - 1] = 0.0;
     }
@@ -75,7 +73,7 @@ void Rerrtsqr(fem::str_cref path, INTEGER const nunit) {
     //
     srnamt = "Rgeqr";
     infot = 1;
-    REAL tau[nmax * 2];
+    REAL tau[5];
     INTEGER info = 0;
     Rgeqr(-1, 0, a, 1, tau, 1, w, 1, info);
     Chkxer("Rgeqr", infot, nout, lerr, ok);
@@ -123,10 +121,9 @@ void Rerrtsqr(fem::str_cref path, INTEGER const nunit) {
     //
     // Rgemqr
     //
-    tau[1 - 1] = 1.0;
-    tau[2 - 1] = 1.0;
-    tau[3 - 1] = 1.0;
-    tau[4 - 1] = 1.0;
+    for (i = 1; i <= 5; i = i + 1) {
+        tau[i - 1] = 1.0;
+    }
     srnamt = "Rgemqr";
     nb = 1;
     infot = 1;
@@ -215,8 +212,9 @@ void Rerrtsqr(fem::str_cref path, INTEGER const nunit) {
     //
     // Rgemlq
     //
-    tau[1 - 1] = 1.0;
-    tau[2 - 1] = 1.0;
+    for (i = 1; i <= 5; i = i + 1) {
+        tau[i - 1] = 1.0;
+    }
     srnamt = "Rgemlq";
     nb = 1;
     infot = 1;
