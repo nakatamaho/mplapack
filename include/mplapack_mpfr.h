@@ -38,6 +38,7 @@
 using namespace mpfr;
 
 bool Mlsamen_mpfr(mplapackint n, const char *a, const char *b);
+bool Risinf(mpreal const &x);
 bool Risnan(mpreal const &x);
 mpcomplex Cladiv(mpcomplex const x, mpcomplex const y);
 mplapackint Mexponent(mpreal const &x);

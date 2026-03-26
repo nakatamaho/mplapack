@@ -34,6 +34,7 @@
 #include "qd_complex.h"
 
 bool Mlsamen_qd(mplapackint n, const char *a, const char *b);
+bool Risinf(qd_real const &x);
 bool Risnan(qd_real const &x);
 mplapackint Mexponent(qd_real const &x);
 mplapackint Mmaxloc(qd_real const *dx, mplapackint const start, mplapackint const end, mplapackint const incx);

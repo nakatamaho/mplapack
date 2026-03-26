@@ -696,6 +696,7 @@ Rgtts2.cpp \
 Rhgeqz.cpp \
 Rhsein.cpp \
 Rhseqr.cpp \
+Risinf.cpp \
 Risnan.cpp \
 Rlabad.cpp \
 Rlabrd.cpp \

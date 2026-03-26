@@ -32,6 +32,7 @@
 #include "mplapack_config.h"
 
 bool Mlsamen_binary80(mplapackint n, const char *a, const char *b);
+bool Risinf(mplapack_binary80_t const &x);
 bool Risnan(mplapack_binary80_t const &x);
 mplapack_binary80_t Clangb(const char *norm, mplapackint const n, mplapackint const kl, mplapackint const ku, std::complex<mplapack_binary80_t> *ab, mplapackint const ldab, mplapack_binary80_t *work);
 mplapack_binary80_t Clange(const char *norm, mplapackint const m, mplapackint const n, std::complex<mplapack_binary80_t> *a, mplapackint const lda, mplapack_binary80_t *work);

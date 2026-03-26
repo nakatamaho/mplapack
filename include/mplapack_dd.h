@@ -34,6 +34,7 @@
 #include "dd_complex.h"
 
 bool Mlsamen_dd(mplapackint n, const char *a, const char *b);
+bool Risinf(dd_real const &x);
 bool Risnan(dd_real const &x);
 dd_complex Cladiv(dd_complex const x, dd_complex const y);
 dd_real Clangb(const char *norm, mplapackint const n, mplapackint const kl, mplapackint const ku, dd_complex *ab, mplapackint const ldab, dd_real *work);

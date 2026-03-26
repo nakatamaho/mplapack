@@ -110,6 +110,7 @@ KEEP_HAND_WRITTEN_FILES=(
   Mminval.cpp
   Mxerbla.cpp
   Mxlaenv.cpp
+  Risinf.cpp
   Risnan.cpp
   Rlamch.cpp
   Rlaruv.cpp

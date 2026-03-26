@@ -34,6 +34,7 @@
 #include "mpc_class.h"
 
 bool Mlsamen_gmp(mplapackint n, const char *a, const char *b);
+bool Risinf(mpf_class const &x);
 bool Risnan(mpf_class const &x);
 mpc_class Cladiv(mpc_class const x, mpc_class const y);
 mpf_class Clangb(const char *norm, mplapackint const n, mplapackint const kl, mplapackint const ku, mpc_class *ab, mplapackint const ldab, mpf_class *work);
