@@ -36,3 +36,24 @@
      //
      fem::str<2> c2 = path(2, 3);
      //
+--- Rlatb4.cpp	2026-03-26 18:16:03.465348200 +0900
++++ Rlatb4.cpp	2026-03-26 17:59:18.957020593 +0900
+@@ -55,6 +55,18 @@
+     REAL badc1 = sqrt(badc2);
+     REAL small = Rlamch("Safe minimum");
+     REAL large = one / small;
++    // Historical DLABAD-style range reduction for very wide exponent ranges.
++    //
++    // Current LAPACK DLABAD is a no-op, but its former logic reduced SMALL and
++    // LARGE by square roots when LOG10(LARGE) > 2000. That condition is false
++    // for ordinary IEEE binary32/binary64 and true for wide-range formats such
++    // as binary80/binary128. Apply the same policy here so that standard
++    // backends keep LAPACK's original test scaling while wide-range backends
++    // avoid excessively extreme near-underflow/near-overflow matrices.
++    if (log10(large) > 2000.0) {
++        small = sqrt(small);
++        large = sqrt(large);
++    }
+     small = shrink * (small / eps);
+     large = one / small;
+     //
