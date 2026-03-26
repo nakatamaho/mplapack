@@ -496,6 +496,7 @@ sed -i \
   -e '/^[[:space:]]*common\/Rchkee\.cpp \\$/d' \
   -e '/^[[:space:]]*common\/Rchkdmd\.cpp \\$/d' \
   -e '/^[[:space:]]*common\/Mxerbla\.cpp \\$/d' \
+  -e '/^[[:space:]]*common\/Mxlaenv\.cpp \\$/d' \
   "${ROOT}/mplapack/test/eig/Makefile.am"
 
 regen_testing_makefile_sources \
@@ -510,6 +511,7 @@ sed -i \
   -e '/^[[:space:]]*common\/Rchkaa\.cpp \\$/d' \
   -e '/^[[:space:]]*common\/Rchkrfp\.cpp \\$/d' \
   -e '/^[[:space:]]*common\/Mxerbla\.cpp \\$/d' \
+  -e '/^[[:space:]]*common\/Mxlaenv\.cpp \\$/d' \
   "${ROOT}/mplapack/test/lin/Makefile.am"
 
 regen_testing_makefile_sources \
