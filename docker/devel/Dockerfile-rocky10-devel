@@ -37,37 +37,42 @@ RUN set -eux; \
     . /etc/os-release; \
     dnf -y install dnf-plugins-core; \
     if [ "${ID}" = "fedora" ]; then \
-        # Fedora: CRB/EPEL are not applicable \
         dnf -y makecache; \
     else \
-        # RHEL/Rocky/Alma: enable CRB (if present) and EPEL (best-effort) \
         if dnf -q repolist all | grep -qiE '(^|[[:space:]])crb([[:space:]]|$)'; then \
-            if command -v dnf5 >/dev/null 2>&1; then \
-                # DNF5 style \
-                dnf5 -y install dnf5-plugins || true; \
-                dnf5 config-manager setopt crb.enabled=1 2>/dev/null || true; \
-            else \
-                # DNF4 style (matches your log output) \
-                dnf config-manager --set-enabled crb 2>/dev/null || \
-                dnf config-manager --enable crb 2>/dev/null || true; \
-            fi; \
+            dnf config-manager --set-enabled crb 2>/dev/null || \
+            dnf config-manager --enable crb 2>/dev/null || true; \
         fi; \
-        dnf -y install epel-release || true; \
+        if dnf -q list available epel-release >/dev/null 2>&1; then \
+            dnf -y install epel-release; \
+        else \
+            echo "Warning: epel-release is not available on this image/architecture; continuing without EPEL." >&2; \
+        fi; \
         dnf -y makecache; \
-    fi; \
+    fi
+RUN set -eux; \
     dnf -y install \
-      bash git python3 \
-      ccache libarchive \
-      gcc-toolset-15 gcc-toolset-15-gcc-c++ gcc-toolset-15-gcc-gfortran make \
-      autoconf automake libtool \
-      sudo openssh-clients \
-      which findutils diffutils tar xz bzip2 patch \
-      mg emacs-nox \
-    && dnf -y install bsdtar || true \
-    && dnf clean all
-
-ENV PATH=/opt/rh/gcc-toolset-15/root/usr/bin:$PATH
-ENV LD_LIBRARY_PATH=/opt/rh/gcc-toolset-15/root/usr/lib64:$LD_LIBRARY_PATH
+        bash git python3 \
+        libarchive \
+        gcc gcc-c++ gfortran make \
+        autoconf automake libtool \
+        which findutils diffutils tar xz bzip2 patch \
+        sudo openssh-clients \
+        emacs-nox; \
+    if dnf -q list available mg >/dev/null 2>&1; then \
+        dnf -y install mg; \
+    else \
+        echo "Warning: mg is not available on this image/architecture; continuing without mg." >&2; \
+    fi; \
+    if dnf -q list available ccache >/dev/null 2>&1; then \
+        dnf -y install ccache; \
+    fi; \
+    if dnf -q list available bsdtar >/dev/null 2>&1; then \
+        dnf -y install bsdtar; \
+    fi; \
+    mkdir -p /etc/sudoers.d; \
+    chmod 0750 /etc/sudoers.d; \
+    dnf clean all
 
 # Repository URLs - can be overridden to use forks
 ARG MPLAPACK_REPO=https://github.com/nakatamaho/mplapack.git
@@ -97,7 +102,7 @@ RUN set -eux; \
     fi; \
     usermod -aG wheel "${DOCKER_USER}"; \
     echo "${DOCKER_USER} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/"${DOCKER_USER}"; \
-    chmod 440 /etc/sudoers.d/"${DOCKER_USER}"
+    chmod 0440 /etc/sudoers.d/"${DOCKER_USER}"
 
 ARG WORK=/home/${DOCKER_USER}
 
