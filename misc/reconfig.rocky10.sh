@@ -83,13 +83,28 @@ fi
 pushd mplapack/test/compare ; bash gen.Makefile.am.sh ; popd
 
 autoreconf --force --install
-
 arch="$(uname -m)"
+enable_benchmark="${ENABLE_BENCHMARK:-yes}"
+configure_opts="--prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-binary128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes"
+
 case "$arch" in
     x86_64|i386|i486|i586|i686)
-        ./configure --prefix="$HOME/MPLAPACK" --enable-gmp=yes --enable-mpfr=yes --enable-binary128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-binary80=yes --enable-test=yes --enable-benchmark=yes
+        configure_opts="$configure_opts --enable-binary80=yes"
         ;;
     *)
-        ./configure --prefix="$HOME/MPLAPACK" --enable-gmp=yes --enable-mpfr=yes --enable-binary128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes --enable-benchmark=yes
         ;;
 esac
+
+case "$enable_benchmark" in
+    yes)
+        configure_opts="$configure_opts --enable-benchmark=yes"
+        ;;
+    no)
+        ;;
+    *)
+        echo "Error: ENABLE_BENCHMARK must be yes or no, got: $enable_benchmark" >&2
+        exit 1
+        ;;
+esac
+
+./configure $configure_opts

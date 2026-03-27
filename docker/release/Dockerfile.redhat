@@ -55,24 +55,25 @@ WORKDIR /work
 
 CMD ["/bin/bash", "-lc", "\
     set -euxo pipefail; \
-    # Fresh checkout every run \
     rm -rf /work/mplapack; \
     git clone --depth 1 --branch \"$MPLAPACK_REF\" \"$MPLAPACK_REPO\" /work/mplapack || { \
-        # If MPLAPACK_REF is a commit SHA, clone then checkout \
         git clone \"$MPLAPACK_REPO\" /work/mplapack; \
         cd /work/mplapack; \
         git checkout \"$MPLAPACK_REF\"; \
     }; \
-    cd /work/mplapack; \
+    cd /work/mplapack/; \
     git log -1; \
-    bash -x misc/reconfig.rocky10.sh; \
-    echo '=== ccache stats (before) ==='; ccache -s; \
-    \
+    ARCH=$(uname -m); \
+    if [ \"$ARCH\" = \"x86_64\" ] || [ \"$ARCH\" = \"i686\" ] || [ \"$ARCH\" = \"i386\" ]; then \
+        ENABLE_BENCHMARK=yes bash -x misc/reconfig.rocky10.sh; \
+    else \
+        ENABLE_BENCHMARK=no bash -x misc/reconfig.rocky10.sh; \
+    fi; \
+    cd /work/mplapack/; \
     make -j\"$(nproc)\"; \
     make install; \
     if [ \"$ARCH\" = \"x86_64\" ] || [ \"$ARCH\" = \"i686\" ] || [ \"$ARCH\" = \"i386\" ]; then \
         echo '=== Running make check ==='; \
         make check -j32; \
     fi; \
-    echo '=== ccache stats (after) ==='; ccache -s; \
 "]
