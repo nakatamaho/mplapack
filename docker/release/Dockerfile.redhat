@@ -31,7 +31,7 @@ RUN set -eux; \
       bash git python3 \
       ccache libarchive \
       gcc gcc-c++ gcc-gfortran make \
-      autoconf automake libtool \
+      autoconf automake libtool cmake \
       which findutils diffutils tar xz bzip2 patch \
     && dnf -y install bsdtar || true \
     && dnf clean all
