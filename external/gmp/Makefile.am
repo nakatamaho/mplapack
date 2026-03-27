@@ -37,8 +37,10 @@ if IS_MACOS
 	cd $(abs_builddir)/work/install/gmp-$(GMPVERSION)  && patch -p0 < $(abs_srcdir)/patches/gmp-6.3.0_libtool-2.4.7.patch
 endif
 #https://github.com/compiler-explorer/gcc-cross-builder/blob/main/build/patches/crosstool-ng/0001-gcc-15-fix.patch
-	cd $(abs_builddir)/work/internal/gmp-$(GMPVERSION) && patch -p0 < $(abs_srcdir)/patches/gcc-15.patch
-	cd $(abs_builddir)/work/install/gmp-$(GMPVERSION)  && patch -p0 < $(abs_srcdir)/patches/gcc-15.patch
+	if test "@GMP_NEEDS_GCC15_PATCH@" = yes; then \
+		cd $(abs_builddir)/work/internal/gmp-$(GMPVERSION) && patch -p0 < $(abs_srcdir)/patches/gcc-15.patch && \
+		cd $(abs_builddir)/work/install/gmp-$(GMPVERSION)  && patch -p0 < $(abs_srcdir)/patches/gcc-15.patch; \
+	fi
 	touch $(abs_builddir)/work/$(PATCH_STAMP)
 
 

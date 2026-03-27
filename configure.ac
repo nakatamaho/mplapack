@@ -1654,6 +1654,33 @@ if test "x$CC_VERSION" = "x"; then
 fi
 AC_MSG_RESULT([$CC_VERSION])
 
+AC_MSG_CHECKING([whether GMP needs gcc-15.patch])
+GCC_MAJOR=0
+GMP_NEEDS_GCC15_PATCH=no
+case "$CC_VERSION" in
+  *clang*|*Clang*)
+    ;;
+  *)
+    if test "x$GCC" = xyes; then
+      GCC_VERSION_FOR_PATCH=`$CC -dumpfullversion -dumpversion 2>/dev/null`
+      if test "x$GCC_VERSION_FOR_PATCH" = "x"; then
+        GCC_VERSION_FOR_PATCH=`$CC -dumpversion 2>/dev/null`
+      fi
+      GCC_MAJOR=${GCC_VERSION_FOR_PATCH%%.*}
+      case "$GCC_MAJOR" in
+        ''|*[!0-9]*)
+          GCC_MAJOR=0
+         ;;
+      esac
+      if test "$GCC_MAJOR" -ge 15; then
+       GMP_NEEDS_GCC15_PATCH=yes
+      fi
+    fi
+    ;;
+esac
+AC_MSG_RESULT([$GMP_NEEDS_GCC15_PATCH (gcc major=$GCC_MAJOR)])
+AC_SUBST([GMP_NEEDS_GCC15_PATCH])
+
 AC_MSG_NOTICE([C++ compiler:      $CXX])
 
 AC_MSG_CHECKING([C++ compiler version])
