@@ -5,6 +5,9 @@
 ARG BASE=fedora:39
 FROM ${BASE}
 
+ARG CCACHE_VERSION=4.13.2
+ENV CCACHE_URL=https://github.com/ccache/ccache/releases/download/v${CCACHE_VERSION}/ccache-${CCACHE_VERSION}.tar.gz
+
 RUN set -eux; \
     . /etc/os-release; \
     dnf -y install dnf-plugins-core; \
@@ -32,7 +35,30 @@ RUN set -eux; \
     if dnf -q list available ccache >/dev/null 2>&1; then \
         dnf -y install ccache; \
     fi; \
+    if ! command -v ccache >/dev/null 2>&1; then \
+        build_root=/tmp/ccache-build; \
+        tarball="${build_root}/ccache-${CCACHE_VERSION}.tar.gz"; \
+        src_root="${build_root}/src"; \
+        build_dir="${build_root}/build"; \
+        rm -rf "${build_root}"; \
+        mkdir -p "${src_root}" "${build_dir}"; \
+        python3 -c 'import sys, urllib.request; urllib.request.urlretrieve(sys.argv[1], sys.argv[2])' \
+            "${CCACHE_URL}" "${tarball}"; \
+        tar -xzf "${tarball}" -C "${src_root}"; \
+        cd "${build_dir}"; \
+        cmake -D CMAKE_BUILD_TYPE=Release \
+              -D CMAKE_INSTALL_PREFIX=/usr \
+              -D CMAKE_INSTALL_BINDIR=bin \
+              "${src_root}/ccache-${CCACHE_VERSION}"; \
+        make -j"$(getconf _NPROCESSORS_ONLN 2>/dev/null || echo 4)"; \
+        make install; \
+        cd /; \
+        rm -rf "${build_root}"; \
+    fi; \
+    command -v ccache >/dev/null 2>&1; \
+    if dnf -q list available bsdtar >/dev/null 2>&1; then \
         dnf -y install bsdtar; \
+    fi; \
     dnf clean all
 
 # Configure ccache (directory will be mounted at runtime)
@@ -41,11 +67,10 @@ ENV CCACHE_DIR=/ccache
 # Workaround: avoid GNU tar on aarch64 emulation (QEMU/binfmt) where
 # archive extraction may fail with EINVAL.
 # Use bsdtar from libarchive instead by shadowing tar in PATH.
-RUN test -x /usr/bin/bsdtar && \
-    ln -sf /usr/bin/bsdtar /usr/local/bin/tar
+RUN if [ -x /usr/bin/bsdtar ]; then \
+        ln -sf /usr/bin/bsdtar /usr/local/bin/tar; \
+    fi
 
-# Fedora typically uses /usr/lib64/ccache; keep /usr/lib/ccache too for portability
-ENV PATH="/usr/lib64/ccache:/usr/lib/ccache:${PATH}"
 
 ENV MPLAPACK_REPO=https://github.com/nakatamaho/mplapack.git
 # Branch name or commit SHA. Example: release/2.1 or a full SHA.
