@@ -42,6 +42,12 @@ inline REAL abssq(COMPLEX ff) {
     return temp;
 }
 
+inline REAL cabsmax(COMPLEX z) {
+    REAL temp;
+    temp = max(abs(z.real()), abs(z.imag()));
+    return temp;
+}
+
 void Clargv(INTEGER const n, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER const incy, REAL *c, INTEGER const incc) {
     COMPLEX ff = 0.0;
     REAL safmin = 0.0;
@@ -90,7 +96,7 @@ void Clargv(INTEGER const n, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER
         //
         // Use identical algorithm as in Clartg
         //
-        scale = max(cabs1(f), cabs1(g));
+        scale = max(cabsmax(f), cabsmax(g));
         fs = f;
         gs = g;
         count = 0;
@@ -148,7 +154,7 @@ void Clargv(INTEGER const n, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER
             cs = f2s / g2s;
             // Make sure abs(FF) = 1
             // Do complex/real division explicitly with 2 real divisions
-            if (cabs1(f) > one) {
+            if (cabsmax(f) > one) {
                 d = Rlapy2(f.real(), f.imag());
                 ff = COMPLEX(f.real() / d, f.imag() / d);
             } else {

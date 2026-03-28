@@ -37,7 +37,9 @@ PATCHES_3_12_1 = \
 	patch-trsyl3-ldswork-overwrite \
 	patch-xpgvx-info-to-iinfo \
 	patch-fix-testparameters \
-	patch-xERRTSQR.f
+	patch-xERRTSQR.f \
+	patch-cabs1_unification \
+	patch-cabsmax
 
 work/$(PATCH_STAMP): work/$(EXTRACT_STAMP)
 	cd $(LAPACK_WORK_DIR) && patch -p0 < $(LAPACK_PATCH_DIR)/patch-print
