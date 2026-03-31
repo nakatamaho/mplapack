@@ -107,6 +107,7 @@ external/dlfcn-win32/download/dlfcn-win32-1.4.2.tar.gz \
 external/gmp/Makefile.am \
 external/gmp/Makefile.in \
 external/gmp/download/gmp-6.3.0.tar.xz \
+external/gmp/patches/gcc-15.patch \
 external/gmp/patches/gmp-6.3.0_libtool-2.4.7.patch \
 external/lapack/Makefile.am \
 external/lapack/Makefile.in \
