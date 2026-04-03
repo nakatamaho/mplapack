@@ -139,7 +139,7 @@ external/mpfr/Makefile.in \
 external/mpfr/download/mpfr-4.2.2.tar.bz2 \
 external/openblas/Makefile.am \
 external/openblas/Makefile.in \
-external/openblas/download/OpenBLAS-0.3.30.tar.gz \
+external/openblas/download/OpenBLAS-0.3.32.tar.gz \
 external/openblas/patches/patch-mingw \
 external/qd/Makefile.am \
 external/qd/Makefile.in \
