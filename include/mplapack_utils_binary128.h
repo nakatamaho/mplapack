@@ -526,7 +526,7 @@ static inline long double cabs1(const std::complex<long double> &z) { return fab
 // implementation of sign transfer function.
 inline mplapack_binary128_t sign(mplapack_binary128_t a, mplapack_binary128_t b) {
     mplapack_binary128_t mtmp;
-    mtmp = std::abs(a);
+    mtmp = abs(a);
     if (b < 0.0) {
         mtmp = -mtmp;
     }
