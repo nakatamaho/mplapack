@@ -210,6 +210,7 @@ misc/buildtest_tier2_arm64_ubuntu.sh \
 misc/cpu_os_detection.sh \
 misc/cudalt.py \
 misc/fix_dylib_macOS.sh \
+misc/num_diff.py \
 misc/reconfig.develop.sh \
 misc/reconfig.macOS.sh \
 misc/reconfig.ubuntu24.04.mingw64.sh \
