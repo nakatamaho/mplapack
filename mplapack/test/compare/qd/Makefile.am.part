@@ -17,7 +17,7 @@ run_Rlaruv_test.sh: Makefile
 	@echo '' >> $@
 	@echo '# Configuration' >> $@
 	@echo 'TOLERANCE="1e-60"' >> $@
-	@echo 'NUM_DIFF_PY="$${script_dir}/../../../../misc/num_diff.py"' >> $@
+	@echo 'NUM_DIFF_PY="$(top_srcdir)/misc/num_diff.py"' >> $@
 	@echo '' >> $@
 	@echo '# Execute the test' >> $@
 	@echo '$${LOG_COMPILER} ./Rlaruv.test_qd$${EXEEXT} || true' >> $@
@@ -39,7 +39,7 @@ run_Rlamch_test.sh: Makefile
 	@echo '' >> $@
 	@echo '# Configuration' >> $@
 	@echo 'TOLERANCE="1e-60"' >> $@
-	@echo 'NUM_DIFF_PY="$${script_dir}/../../../../misc/num_diff.py"' >> $@
+	@echo 'NUM_DIFF_PY="$(top_srcdir)/misc/num_diff.py"' >> $@
 	@echo '' >> $@
 	@echo '# Execute the test' >> $@
 	@echo '$${LOG_COMPILER} ./Rlamch.test_qd$${EXEEXT} || true' >> $@
