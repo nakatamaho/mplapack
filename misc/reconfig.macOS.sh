@@ -3,14 +3,14 @@
 USE_CCACHE=yes
 
 if [ x$USE_CCACHE = x"yes" ] ; then
-CXX="ccache g++-mp-14" ; export CXX
-CC="ccache gcc-mp-14" ; export CC
-FC="gfortran-mp-14"; export FC
+CXX="ccache g++-mp-15" ; export CXX
+CC="ccache gcc-mp-15" ; export CC
+FC="gfortran-mp-15"; export FC
 ccache -M 60G
 else
-CXX="g++-mp-14" ; export CXX
-CC="gcc-mp-14" ; export CC
-FC="gfortran-mp-14"; export FC
+CXX="g++-mp-15" ; export CXX
+CC="gcc-mp-15" ; export CC
+FC="gfortran-mp-15"; export FC
 fi
 
 pushd mplapack/test/compare ; bash gen.Makefile.am.sh ; popd
