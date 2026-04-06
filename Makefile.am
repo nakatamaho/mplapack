@@ -270,3 +270,6 @@ mplapack/test/lin/Rtest_rfp.in
 
 uninstall-hook:
 	-rm -f $(DESTDIR)$(infodir)/dir
+
+distclean-local:
+	rm -f $(top_builddir)/external/openblas/Makefile

@@ -2181,12 +2181,12 @@ external/mpfr/Makefile
 external/mpc/Makefile
 external/qd/Makefile
 external/lapack/Makefile
-external/openblas/Makefile
 external/dlfcn-win32/Makefile
 ])
 
 if test x$enable_benchmark != xno; then
 AC_CONFIG_FILES([
+external/openblas/Makefile
 benchmark/Makefile
 ])
 fi
