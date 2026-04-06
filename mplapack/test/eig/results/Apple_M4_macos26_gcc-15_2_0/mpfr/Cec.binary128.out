@@ -1,0 +1,18 @@
+=== MPFR profile: binary128 (prec=113 emin=-16381 emax=16384) ===
+ Tests of the Nonsymmetric eigenproblem condition estimation routines
+ Ctrsyl, Ctrexc, Ctrsna, Ctrsen
+
+ Relative machine precision (EPS) = +1.9259299443872359e-34
+ Safe minimum (SFMIN)             = +3.3621031431120935e-4932
+
+ Routines pass computational tests if test ratio is less than+2.0000000000000000e+01
+
+
+ ZEC routines passed the tests of the error exits ( 33 tests done)
+
+ All tests for ZEC routines passed the threshold (   5966 tests run)
+
+
+ End of tests
+ Total time used =         1.87 seconds
+
