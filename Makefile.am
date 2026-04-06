@@ -141,6 +141,7 @@ external/openblas/Makefile.am \
 external/openblas/Makefile.in \
 external/openblas/download/OpenBLAS-0.3.32.tar.gz \
 external/openblas/patches/patch-mingw \
+external/openblas/patches/patch-mingw-laed3 \
 external/qd/Makefile.am \
 external/qd/Makefile.in \
 external/qd/download/qd-2.3.24.tar.gz \
