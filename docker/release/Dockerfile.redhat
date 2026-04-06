@@ -5,43 +5,72 @@
 ARG BASE=fedora:39
 FROM ${BASE}
 
+ARG CCACHE_VERSION=4.13.2
+ENV CCACHE_URL=https://github.com/ccache/ccache/releases/download/v${CCACHE_VERSION}/ccache-${CCACHE_VERSION}.tar.gz
+
 RUN set -eux; \
     . /etc/os-release; \
     dnf -y install dnf-plugins-core; \
     if [ "${ID}" = "fedora" ]; then \
-        # Fedora: CRB/EPEL are not applicable \
         dnf -y makecache; \
     else \
-        # RHEL/Rocky/Alma: enable CRB (if present) and EPEL (best-effort) \
         if dnf -q repolist all | grep -qiE '(^|[[:space:]])crb([[:space:]]|$)'; then \
-            if command -v dnf5 >/dev/null 2>&1; then \
-                # DNF5 style \
-                dnf5 -y install dnf5-plugins || true; \
-                dnf5 config-manager setopt crb.enabled=1 2>/dev/null || true; \
-            else \
-                # DNF4 style (matches your log output) \
-                dnf config-manager --set-enabled crb 2>/dev/null || \
-                dnf config-manager --enable crb 2>/dev/null || true; \
-            fi; \
+            dnf config-manager --set-enabled crb 2>/dev/null || \
+            dnf config-manager --enable crb 2>/dev/null || true; \
         fi; \
-        dnf -y install epel-release || true; \
+        if dnf -q list available epel-release >/dev/null 2>&1; then \
+            dnf -y install epel-release; \
+        else \
+            echo "Warning: epel-release is not available on this image/architecture; continuing without EPEL." >&2; \
+        fi; \
         dnf -y makecache; \
-    fi; \
+    fi
+RUN set -eux; \
     dnf -y install \
-      bash git python3 \
-      ccache \
-      gcc gcc-c++ gcc-gfortran make \
-      autoconf automake libtool \
-      which findutils diffutils tar xz bzip2 patch \
-    && dnf clean all
+        bash git python3 \
+        libarchive \
+        gcc gcc-c++ gfortran make \
+        autoconf automake libtool cmake \
+        which findutils diffutils tar xz bzip2 patch; \
+    if dnf -q list available ccache >/dev/null 2>&1; then \
+        dnf -y install ccache; \
+    fi; \
+    if ! command -v ccache >/dev/null 2>&1; then \
+        build_root=/tmp/ccache-build; \
+        tarball="${build_root}/ccache-${CCACHE_VERSION}.tar.gz"; \
+        src_root="${build_root}/src"; \
+        build_dir="${build_root}/build"; \
+        rm -rf "${build_root}"; \
+        mkdir -p "${src_root}" "${build_dir}"; \
+        python3 -c 'import sys, urllib.request; urllib.request.urlretrieve(sys.argv[1], sys.argv[2])' \
+            "${CCACHE_URL}" "${tarball}"; \
+        tar -xzf "${tarball}" -C "${src_root}"; \
+        cd "${build_dir}"; \
+        cmake -D CMAKE_BUILD_TYPE=Release \
+              -D CMAKE_INSTALL_PREFIX=/usr \
+              -D CMAKE_INSTALL_BINDIR=bin \
+              "${src_root}/ccache-${CCACHE_VERSION}"; \
+        make -j"$(getconf _NPROCESSORS_ONLN 2>/dev/null || echo 4)"; \
+        make install; \
+        cd /; \
+        rm -rf "${build_root}"; \
+    fi; \
+    command -v ccache >/dev/null 2>&1; \
+    if dnf -q list available bsdtar >/dev/null 2>&1; then \
+        dnf -y install bsdtar; \
+    fi; \
+    dnf clean all
 
 # Configure ccache (directory will be mounted at runtime)
 ENV CCACHE_DIR=/ccache
-# Fedora typically uses /usr/lib64/ccache; keep /usr/lib/ccache too for portability
-ENV PATH="/usr/lib64/ccache:/usr/lib/ccache:${PATH}"
-ENV CC="ccache gcc"
-ENV CXX="ccache g++"
-ENV FC="ccache gfortran"
+
+# Workaround: avoid GNU tar on aarch64 emulation (QEMU/binfmt) where
+# archive extraction may fail with EINVAL.
+# Use bsdtar from libarchive instead by shadowing tar in PATH.
+RUN if [ -x /usr/bin/bsdtar ]; then \
+        ln -sf /usr/bin/bsdtar /usr/local/bin/tar; \
+    fi
+
 
 ENV MPLAPACK_REPO=https://github.com/nakatamaho/mplapack.git
 # Branch name or commit SHA. Example: release/2.1 or a full SHA.
@@ -51,39 +80,25 @@ WORKDIR /work
 
 CMD ["/bin/bash", "-lc", "\
     set -euxo pipefail; \
-    echo '=== ccache stats (before) ==='; ccache -s; \
-    \
-    # Fresh checkout every run \
     rm -rf /work/mplapack; \
     git clone --depth 1 --branch \"$MPLAPACK_REF\" \"$MPLAPACK_REPO\" /work/mplapack || { \
-        # If MPLAPACK_REF is a commit SHA, clone then checkout \
         git clone \"$MPLAPACK_REPO\" /work/mplapack; \
         cd /work/mplapack; \
         git checkout \"$MPLAPACK_REF\"; \
     }; \
-    cd /work/mplapack; \
+    cd /work/mplapack/; \
     git log -1; \
-    \
-    # Autotools prep \
-    cd mplapack/test/compare; bash gen.Makefile.am.sh; cd /work/mplapack; \
-    autoreconf --force --install; \
-    \
     ARCH=$(uname -m); \
-    echo \"Detected architecture: $ARCH\"; \
-    COMMON_OPTS=\"--enable-gmp=yes --enable-mpfr=yes --enable-binary128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes\"; \
     if [ \"$ARCH\" = \"x86_64\" ] || [ \"$ARCH\" = \"i686\" ] || [ \"$ARCH\" = \"i386\" ]; then \
-        CONFIGURE_OPTS=\"$COMMON_OPTS --enable-benchmark=yes --enable-binary80=yes\"; \
+        ENABLE_BENCHMARK=yes bash -x misc/reconfig.rocky10.sh; \
     else \
-        CONFIGURE_OPTS=\"$COMMON_OPTS\"; \
+        ENABLE_BENCHMARK=no bash -x misc/reconfig.rocky10.sh; \
     fi; \
-    echo \"Configure options: $CONFIGURE_OPTS\"; \
-    \
-    ./configure $CONFIGURE_OPTS; \
+    cd /work/mplapack/; \
     make -j\"$(nproc)\"; \
     make install; \
     if [ \"$ARCH\" = \"x86_64\" ] || [ \"$ARCH\" = \"i686\" ] || [ \"$ARCH\" = \"i386\" ]; then \
         echo '=== Running make check ==='; \
         make check -j32; \
     fi; \
-    echo '=== ccache stats (after) ==='; ccache -s; \
 "]

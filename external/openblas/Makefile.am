@@ -1,4 +1,4 @@
-OPENBLASVERSION=0.3.30
+OPENBLASVERSION=0.3.32
 MAKEFLAGS =
 
 EXTRACT_STAMP=.openblas_extract_done
@@ -21,7 +21,7 @@ work/$(EXTRACT_STAMP):
 
 work/$(PATCH_STAMP): work/$(EXTRACT_STAMP)
 if IS_MINGW
-	cd $(abs_builddir)/work/install/OpenBLAS-$(OPENBLASVERSION) ; #patch -p0 < $(abs_srcdir)/patches/patch-mingw
+	cd $(abs_builddir)/work/install/OpenBLAS-$(OPENBLASVERSION) ; patch -p1 < $(abs_srcdir)/patches/patch-mingw-laed3
 endif
 	touch $(abs_builddir)/work/$(PATCH_STAMP)
 

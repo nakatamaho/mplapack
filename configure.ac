@@ -3,8 +3,13 @@ dnl Configure for MPLAPACK
 dnl
 
 m4_define([MPLAPACK_VER_MAJOR], [2])
+<<<<<<< HEAD
 m4_define([MPLAPACK_VER_MINOR], [2])
 m4_define([MPLAPACK_VER_PATCH], [0])
+=======
+m4_define([MPLAPACK_VER_MINOR], [1])
+m4_define([MPLAPACK_VER_PATCH], [1])
+>>>>>>> origin/master
 m4_define([MPLAPACK_VERSION], [MPLAPACK_VER_MAJOR.MPLAPACK_VER_MINOR.MPLAPACK_VER_PATCH])
 AC_INIT(mplapack, [MPLAPACK_VERSION])
 
@@ -790,24 +795,27 @@ fi
 
 # on older gcc's abs(__float128) appears with gnu++17 extension
 dnl Check whether std::abs(__float128) exists.
+dnl Do not rely on __SIZEOF_FLOAT128__ here: on some Power targets it is not a
+dnl reliable proxy for whether C++ __float128 is actually usable, and the
+dnl compile test itself already answers the question.
 AC_LANG_PUSH([C++])
 AC_MSG_CHECKING([for std::abs(__float128)])
+if test "x$have___float128" = "xyes"; then
 AC_COMPILE_IFELSE(
   [AC_LANG_SOURCE([[
 #include <cmath>
 int main() {
-#if !defined(__SIZEOF_FLOAT128__)
-#error "__float128 is not available"
-#endif
-  __float128 x = 0;
-  auto y = std::abs(x);
-  (void)y;
+  auto p = static_cast<__float128 (*)(__float128)>(&std::abs);
+  (void)p;
   return 0;
 }
 ]])],
   [mplapack_have_std_abs_float128=yes],
   [mplapack_have_std_abs_float128=no]
 )
+else
+  mplapack_have_std_abs_float128=no
+fi
 AC_MSG_RESULT([$mplapack_have_std_abs_float128])
 AS_IF([test "x$mplapack_have_std_abs_float128" = "xyes"],
   [AC_DEFINE([MPLAPACK_HAVE_STD_ABS_FLOAT128],[1],
@@ -903,8 +911,6 @@ dnl Aliases with MPLAPACK_BINARY128_MODE_ prefix (used in Makefile.am)
 AM_CONDITIONAL(MPLAPACK_BINARY128_MODE_QUADMATH, test "$mplapack_binary128_mode" = "3")
 AM_CONDITIONAL(MPLAPACK_BINARY128_MODE_FLOAT128, test "$mplapack_binary128_mode" = "2")
 AM_CONDITIONAL(MPLAPACK_BINARY128_MODE_LDBL,     test "$mplapack_binary128_mode" = "1")
-
-CXXFLAGS="$SAVE_CXXFLAGS"
 
 dnl =========================================================================
 dnl MPLAPACK 2.1.0 - Binary80 Support Detection
@@ -1651,6 +1657,33 @@ if test "x$CC_VERSION" = "x"; then
 fi
 AC_MSG_RESULT([$CC_VERSION])
 
+AC_MSG_CHECKING([whether GMP needs gcc-15.patch])
+GCC_MAJOR=0
+GMP_NEEDS_GCC15_PATCH=no
+case "$CC_VERSION" in
+  *clang*|*Clang*)
+    ;;
+  *)
+    if test "x$GCC" = xyes; then
+      GCC_VERSION_FOR_PATCH=`$CC -dumpfullversion -dumpversion 2>/dev/null`
+      if test "x$GCC_VERSION_FOR_PATCH" = "x"; then
+        GCC_VERSION_FOR_PATCH=`$CC -dumpversion 2>/dev/null`
+      fi
+      GCC_MAJOR=${GCC_VERSION_FOR_PATCH%%.*}
+      case "$GCC_MAJOR" in
+        ''|*[!0-9]*)
+          GCC_MAJOR=0
+         ;;
+      esac
+      if test "$GCC_MAJOR" -ge 15; then
+       GMP_NEEDS_GCC15_PATCH=yes
+      fi
+    fi
+    ;;
+esac
+AC_MSG_RESULT([$GMP_NEEDS_GCC15_PATCH (gcc major=$GCC_MAJOR)])
+AC_SUBST([GMP_NEEDS_GCC15_PATCH])
+
 AC_MSG_NOTICE([C++ compiler:      $CXX])
 
 AC_MSG_CHECKING([C++ compiler version])
@@ -2151,12 +2184,12 @@ external/mpfr/Makefile
 external/mpc/Makefile
 external/qd/Makefile
 external/lapack/Makefile
-external/openblas/Makefile
 external/dlfcn-win32/Makefile
 ])
 
 if test x$enable_benchmark != xno; then
 AC_CONFIG_FILES([
+external/openblas/Makefile
 benchmark/Makefile
 ])
 fi

@@ -107,6 +107,7 @@ external/dlfcn-win32/download/dlfcn-win32-1.4.2.tar.gz \
 external/gmp/Makefile.am \
 external/gmp/Makefile.in \
 external/gmp/download/gmp-6.3.0.tar.xz \
+external/gmp/patches/gcc-15.patch \
 external/gmp/patches/gmp-6.3.0_libtool-2.4.7.patch \
 external/lapack/Makefile.am \
 external/lapack/Makefile.in \
@@ -138,8 +139,9 @@ external/mpfr/Makefile.in \
 external/mpfr/download/mpfr-4.2.2.tar.bz2 \
 external/openblas/Makefile.am \
 external/openblas/Makefile.in \
-external/openblas/download/OpenBLAS-0.3.30.tar.gz \
+external/openblas/download/OpenBLAS-0.3.32.tar.gz \
 external/openblas/patches/patch-mingw \
+external/openblas/patches/patch-mingw-laed3 \
 external/qd/Makefile.am \
 external/qd/Makefile.in \
 external/qd/download/qd-2.3.24.tar.gz \
@@ -205,12 +207,23 @@ misc/add_ldlibpath.sh \
 misc/buildtest_tier1_amd64_macOS.sh \
 misc/buildtest_tier1_amd64_mingw64.sh \
 misc/buildtest_tier1_amd64_ubuntu.sh \
+misc/buildtest_tier1_arm64_macOS.sh \
+misc/buildtest_tier2_amd64_ubuntu_intel.sh \
 misc/buildtest_tier2_arm64_ubuntu.sh \
+misc/buildtest_tier2_i386_debian.sh \
 misc/cpu_os_detection.sh \
 misc/cudalt.py \
 misc/fix_dylib_macOS.sh \
+misc/num_diff.py \
+misc/reconfig.bullseye.sh \
 misc/reconfig.develop.sh \
 misc/reconfig.macOS.sh \
+misc/reconfig.rocky10.sh \
+misc/reconfig.ubuntu22.04.intel.sh \
+misc/reconfig.ubuntu22.04.mingw64.sh \
+misc/reconfig.ubuntu22.04.nvidia.sh \
+misc/reconfig.ubuntu22.04.sh \
+misc/reconfig.ubuntu24.04.intel.sh \
 misc/reconfig.ubuntu24.04.mingw64.sh \
 misc/reconfig.ubuntu24.04.nvidia.sh \
 misc/reconfig.ubuntu24.04.sh \
@@ -258,3 +271,6 @@ mplapack/test/lin/Rtest_rfp.in
 
 uninstall-hook:
 	-rm -f $(DESTDIR)$(infodir)/dir
+
+distclean-local:
+	rm -f $(top_builddir)/external/openblas/Makefile

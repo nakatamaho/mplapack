@@ -216,7 +216,7 @@ find "${WORKDIR}" -mindepth 1 -maxdepth 1 -exec rm -rf -- {} +
 
 log "WORKDIR: ${WORKDIR}"
 
-git clone --depth 1 --branch release/2.1 git@github.com:nakatamaho/mplapack.git "${WORKDIR}"
+git clone --depth 1 git@github.com:nakatamaho/mplapack.git "${WORKDIR}"
 cd "${WORKDIR}"
 git --no-pager log -1 | tee "${LOG_DIR}/git_log.log" | tee -a "${LOG_DIR}/summary.log"
 

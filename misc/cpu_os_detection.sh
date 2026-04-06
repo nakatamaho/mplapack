@@ -36,6 +36,14 @@ dir_safe_token() {
 }
 
 detect_cpu_raw() {
+    # Allow caller to override CPU identification entirely.
+    # Useful inside containers where the virtualization layer hides CPU details.
+    # Usage: CPU_MODEL_OVERRIDE="Apple M4" bash cpu_os_detection.sh
+    if [ -n "${CPU_MODEL_OVERRIDE:-}" ]; then
+        printf '%s\n' "$CPU_MODEL_OVERRIDE"
+        return
+    fi
+
     os_s=$(uname -s 2>/dev/null || echo "")
 
     raw=""
@@ -45,6 +53,31 @@ detect_cpu_raw() {
             if have_cmd lscpu; then
                 raw=$(LC_ALL=C lscpu 2>/dev/null |
                     awk -F: '/Model name/ {sub(/^[ \t]+/, "", $2); print $2; exit}')
+            fi
+
+            # Apple Silicon inside Linux containers (Podman/Docker on macOS):
+            # lscpu reports Vendor ID "Apple" but Model name "-" or empty.
+            # The virtualization layer (Apple VZ/QEMU) hides real CPU part codes,
+            # so /proc/cpuinfo CPU part is unreliable (often 0x000).
+            # Best-effort: infer generation from ISA extension flags.
+            if [ -z "$raw" ] || [ "$raw" = "-" ]; then
+                vendor=$(LC_ALL=C lscpu 2>/dev/null |
+                    awk -F: '/Vendor ID/ {sub(/^[ \t]+/, "", $2); print $2; exit}')
+                if [ "$vendor" = "Apple" ] && [ "$(uname -m 2>/dev/null)" = "aarch64" ]; then
+                    flags=$(LC_ALL=C lscpu 2>/dev/null |
+                        awk '/^[[:space:]]*Flags:/ || /^[[:space:]]*flags:/ {
+                            sub(/^[^:]+:/, ""); print; exit}')
+                    has_bf16=0; has_afp=0
+                    echo "$flags" | grep -qw "bf16" && has_bf16=1
+                    echo "$flags" | grep -qw "afp"  && has_afp=1
+                    if   [ "$has_bf16" = "1" ] && [ "$has_afp" = "1" ]; then
+                        raw="Apple M3 or M4"   # cannot distinguish inside container
+                    elif [ "$has_bf16" = "1" ]; then
+                        raw="Apple M2"
+                    else
+                        raw="Apple M1"
+                    fi
+                fi
             fi
 
             if [ -z "$raw" ] && [ -r /proc/cpuinfo ]; then
