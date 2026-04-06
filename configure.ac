@@ -907,8 +907,6 @@ AM_CONDITIONAL(MPLAPACK_BINARY128_MODE_QUADMATH, test "$mplapack_binary128_mode"
 AM_CONDITIONAL(MPLAPACK_BINARY128_MODE_FLOAT128, test "$mplapack_binary128_mode" = "2")
 AM_CONDITIONAL(MPLAPACK_BINARY128_MODE_LDBL,     test "$mplapack_binary128_mode" = "1")
 
-CXXFLAGS="$SAVE_CXXFLAGS"
-
 dnl =========================================================================
 dnl MPLAPACK 2.1.0 - Binary80 Support Detection
 dnl =========================================================================
