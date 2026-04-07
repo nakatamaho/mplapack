@@ -28,6 +28,7 @@ CONFIG_FLAGS=(
   "--enable-double=no"
   "--enable-test=yes"
   "--enable-benchmark=no"
+  "--enable-optimization=no"
 )
 
 arch="$(uname -m)"
