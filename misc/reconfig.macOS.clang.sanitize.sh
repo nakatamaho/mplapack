@@ -39,6 +39,7 @@ ASAN_LDFLAGS="-fsanitize=address,undefined"
 FORTRAN_DEBUG_FLAGS="-O1 -g -fno-omit-frame-pointer"
 
 # Run configure with exported environment variables
+ac_cv_fc_libs="" \
 CFLAGS="${ASAN_CFLAGS}" \
 CXXFLAGS="${ASAN_CXXFLAGS}" \
 LDFLAGS="${ASAN_LDFLAGS}" \
