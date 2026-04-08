@@ -27,9 +27,7 @@
 #
 # Run with SSH agent (maintainers):
 #   eval $(ssh-agent); ssh-add ~/.ssh/id_ed25519
-#   docker run --privileged --gpus all \
-#     -v "$SSH_AUTH_SOCK":/ssh-agent -e SSH_AUTH_SOCK=/ssh-agent \
-#     -it --rm mplapack:devel-suse /bin/bash
+#   docker run --privileged --gpus all -v "$SSH_AUTH_SOCK":/ssh-agent -e SSH_AUTH_SOCK=/ssh-agent -it --rm mplapack:devel-suse /bin/bash
 # =============================================================================
 
 ARG BASE=opensuse/leap:16.0
@@ -79,14 +77,13 @@ RUN zypper --non-interactive install \
         bsdtar \
         bzip2 \
         patch \
+        emacs-nox \
     && zypper clean --all
 
 # ---------------------------------------------------------------------------
 # Build-tool environment
 # ---------------------------------------------------------------------------
 # ccache — directory is expected to be bind-mounted at runtime.
-ENV CCACHE_DIR=/ccache
-ENV PATH="/usr/lib/ccache:/usr/lib64/ccache:${PATH}"
 ENV CC="ccache gcc"
 ENV CXX="ccache g++"
 ENV FC="ccache gfortran"
