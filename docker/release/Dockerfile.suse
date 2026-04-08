@@ -20,6 +20,7 @@ RUN zypper --non-interactive install \
     bsdtar \
     bzip2 \
     patch \
+    diff \
     && zypper clean --all
 
 # Configure ccache (directory will be mounted at runtime)
