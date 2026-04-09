@@ -56,6 +56,9 @@ safe_rmdir() {
     # Confirm target starts with $HOME to prevent accidental wide deletion
     case "${target}" in
         "${HOME}/"*)
+            # make distcheck leaves read-only files in extracted tarball trees;
+            # restore write permission before removal so rm -rf succeeds.
+            chmod -R u+rwX "${target}" 2>/dev/null || true
             rm -rf "${target}"
             ;;
         *)
@@ -207,6 +210,9 @@ fi
 
 # Always release the lock on exit.
 cleanup_lock() {
+    # make distcheck intentionally makes extracted tree read-only;
+    # restore write bits so the directory can be removed on any exit path.
+    chmod -R u+rwX "${WORKDIR}" 2>/dev/null || true
     rm -rf "${LOCKDIR}"
 }
 trap cleanup_lock EXIT INT TERM HUP
