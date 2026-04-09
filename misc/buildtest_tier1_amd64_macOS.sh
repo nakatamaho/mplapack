@@ -169,6 +169,9 @@ if [ -L "${WORKDIR}" ]; then
     exit 1
 fi
 
+# Ensure WORKDIR exists before realpath resolution (first-run case: directory not yet created).
+mkdir -p "${WORKDIR}"
+
 # Realpath guard: ensure resolved WORKDIR matches resolved expected path.
 EXPECTED_WORKDIR="${HOME}/tmp/mplapack"
 WORKDIR_REAL="$(realpath_safe "${WORKDIR}")" || { echo "ERROR: Failed to resolve realpath: ${WORKDIR}" >&2; exit 1; }
