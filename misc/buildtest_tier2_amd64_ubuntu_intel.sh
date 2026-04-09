@@ -120,7 +120,9 @@ git clone --depth 1 git@github.com:nakatamaho/mplapack.git "${WORKDIR}"
 cd "${WORKDIR}"
 git --no-pager log -1 | tee "${LOG_DIR}/git_log.log" | tee -a "${LOG_DIR}/summary.log"
 
+set +u
 source /opt/intel/oneapi/setvars.sh
+set -u
 run_step "reconfig"       bash misc/reconfig.ubuntu24.04.intel.sh
 run_step "make"           make -j32
 run_step "make_install"   make install
