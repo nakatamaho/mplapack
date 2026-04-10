@@ -15,12 +15,12 @@ mplibs = -L$(GMP_LIBDIR) -lgmpxx -lgmp -lm
 cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(LAPACK_INCLUDEDIR) -I$(GMP_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_GMP___ -D___MPLAPACK_INTERNAL___ -I$(top_srcdir)/fable
 
 xeigtstR_gmp_SOURCES  = ../common/Rchkee.cpp
-xeigtstR_gmp_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xeigtstR_gmp_LDFLAGS  = $(libdepends) $(mplibs) #-L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstR_gmp_LDFLAGS += -Wl,-rpath,$(libdir)
 xeigtstR_gmp_CXXFLAGS = $(cxxflags)
 
 xeigtstC_gmp_SOURCES  = ../common/Cchkee.cpp
-xeigtstC_gmp_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xeigtstC_gmp_LDFLAGS  = $(libdepends) $(mplibs) #-L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstC_gmp_LDFLAGS += -Wl,-rpath,$(libdir)
 xeigtstC_gmp_CXXFLAGS = $(cxxflags)
 

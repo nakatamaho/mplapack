@@ -15,12 +15,12 @@ mplibs = -L$(QD_LIBDIR) -lqd -lm
 cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(LAPACK_INCLUDEDIR) -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_QD___ @qd_extra_cxxflags@ -D___MPLAPACK_INTERNAL___ -I$(top_srcdir)/fable
 
 xeigtstR_qd_SOURCES  = ../common/Rchkee.cpp
-xeigtstR_qd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xeigtstR_qd_LDFLAGS  = $(libdepends) $(mplibs) #-L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstR_qd_LDFLAGS += -Wl,-rpath,$(libdir)
 xeigtstR_qd_CXXFLAGS = $(cxxflags)
 
 xeigtstC_qd_SOURCES  = ../common/Cchkee.cpp
-xeigtstC_qd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xeigtstC_qd_LDFLAGS  = $(libdepends) $(mplibs) #-L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstC_qd_LDFLAGS += -Wl,-rpath,$(libdir)
 xeigtstC_qd_CXXFLAGS = $(cxxflags)
 

@@ -8,6 +8,14 @@ BSD-style license, supplemental to the original LAPACK license.
 
 # News
 
+* 2026-04-09  MPLAPACK 2.1.1 released. Patch release: GCC 15 support
+  (`external/gmp` C23 fix, `{C,R}drgvx` IPA-modref workaround), arm64
+  promoted to **Tier 1** (Ubuntu arm64 and macOS Apple Silicon),
+  musl/Alpine ARM64 build fix, MinGW `laed3` build fix, binary128
+  `std::abs(__float128)` ambiguity fix on aarch64-apple-darwin, and a
+  latent DD miscompilation fix (propagating `-ffp-contract=off` to all
+  DD build targets). OpenBLAS bumped to 0.3.32. ABI/source compatible
+  with 2.1.0.
 * 2026-03-05  MPLAPACK 2.1.0 released. C++17 now required.
   binary128/binary80 naming unified, MPFR emin/emax auto-adjustment,
   extended build matrix. LAPACK 3.9.1 Fortran sources are now mechanically
@@ -55,21 +63,26 @@ BSD-style license, supplemental to the original LAPACK license.
 | Clang/LLVM | ❌ Not supported | ✅ Supported |
 
 > **Clang users:** `binary128` is not supported. Use GCC for `binary128`.
+> **GCC 15:** supported as of 2.1.1. On musl-based distros (e.g. Alpine),
+> the binary128 backend stays on `__float128 + libquadmath` because musl does
+> not ship `strfromf128`/`strfromf64x`.
 
 # Supported Platforms
 
 | Tier | Guarantee | Platforms |
 |---|---|---|
-| **Tier 1** | `make distcheck` + full test suite | macOS Intel Sonoma (amd64), Windows / MinGW-w64 (amd64), Ubuntu 22.04 (amd64), Ubuntu 24.04 (amd64) |
-| **Tier 2** | Build only | Debian 12/13 (amd64, arm64, i386, ppc64le, s390x, riscv64), Alpine Linux 3.19 (amd64, arm64), Rocky Linux 8/9 (amd64), Ubuntu 22.04/24.04 (arm64) |
+| **Tier 1** | `make distcheck` + full test suite | macOS Sonoma (amd64), macOS (arm64, Apple Silicon), Windows / MinGW-w64 (amd64), Ubuntu 22.04 (amd64), Ubuntu 24.04 (amd64), Ubuntu 24.04 (arm64) |
+| **Tier 2** | Build only | Debian 12/13 (amd64, arm64, i386, ppc64le, s390x, riscv64, mips64le), Alpine Linux 3.19–3.23 (amd64, arm64, riscv64), Rocky Linux 8/9/10 (amd64), Fedora 42/43, openSUSE Leap 15.6/16.0, openSUSE Tumbleweed |
 | **Tier 3** | Patches accepted; no CI coverage | Other platforms |
 
 Tier 1/2 build scripts are in `misc/`:
 ```
 misc/buildtest_tier1_amd64_macOS.sh
+misc/buildtest_tier1_arm64_macOS.sh
 misc/buildtest_tier1_amd64_mingw64.sh
 misc/buildtest_tier1_amd64_ubuntu.sh
-misc/buildtest_tier2_arm64_ubuntu.sh
+misc/buildtest_tier1_arm64_ubuntu.sh
+misc/buildtest_tier2_amd64_ubuntu_intel.sh
 misc/buildtest_tier2_i386_debian.sh
 ```
 
@@ -77,7 +90,7 @@ misc/buildtest_tier2_i386_debian.sh
 
 ## Prerequisites
 
-* GCC / G++ / GFortran (C++17 is required)
+* GCC / G++ / GFortran (C++17 is required; **GCC 15 supported as of 2.1.1**)
 * Standard autotools: `autoconf`, `automake`, `libtool`
 * `wget` or `curl` (to fetch the tarball)
 
@@ -88,9 +101,9 @@ built automatically. No separate installation of these libraries is required.
 
 ```sh
 mkdir -p $HOME/tmp && cd $HOME/tmp
-wget https://github.com/nakatamaho/mplapack/releases/download/v2.1.0/mplapack-2.1.0.tar.xz
-tar xvf mplapack-2.1.0.tar.xz
-cd mplapack-2.1.0
+wget https://github.com/nakatamaho/mplapack/releases/download/v2.1.1/mplapack-2.1.1.tar.xz
+tar xvf mplapack-2.1.1.tar.xz
+cd mplapack-2.1.1
 export CXX=g++ CC=gcc FC=gfortran
 ./configure \
     --prefix=$HOME/MPLAPACK \
@@ -122,28 +135,29 @@ To also enable `binary80` (Intel/AMD x86 only), add `--enable-binary80=yes`:
     --enable-benchmark=yes
 ```
 
-## macOS (Intel; using MacPorts)
+## macOS (Intel or Apple Silicon; using MacPorts)
 
 FSF GCC is required. The default Apple Clang does not support `binary128`.
+On Apple Silicon (arm64), omit `--enable-binary80=yes` (binary80 is x86-only).
 
 ```sh
-sudo port install gcc14 coreutils git gsed
+sudo port install gcc15 coreutils git gsed
 mkdir -p $HOME/tmp && cd $HOME/tmp
-wget https://github.com/nakatamaho/mplapack/releases/download/v2.1.0/mplapack-2.1.0.tar.xz
-tar xvf mplapack-2.1.0.tar.xz
-cd mplapack-2.1.0
-export CXX=g++-mp-14 CC=gcc-mp-14 FC=gfortran-mp-14
+wget https://github.com/nakatamaho/mplapack/releases/download/v2.1.1/mplapack-2.1.1.tar.xz
+tar xvf mplapack-2.1.1.tar.xz
+cd mplapack-2.1.1
+export CXX=g++-mp-15 CC=gcc-mp-15 FC=gfortran-mp-15
 ./configure \
     --prefix=$HOME/MPLAPACK \
     --enable-gmp=yes \
     --enable-mpfr=yes \
     --enable-binary128=yes \
-    --enable-binary80=yes \
     --enable-qd=yes \
     --enable-dd=yes \
     --enable-double=yes \
     --enable-test=yes \
     --enable-benchmark=yes
+# On Intel macs, additionally pass --enable-binary80=yes
 make -j$(sysctl -n hw.logicalcpu)
 make install
 ```
@@ -153,9 +167,9 @@ make install
 ```sh
 sudo apt-get install gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64 gfortran-mingw-w64-x86-64
 mkdir -p $HOME/tmp && cd $HOME/tmp
-wget https://github.com/nakatamaho/mplapack/releases/download/v2.1.0/mplapack-2.1.0.tar.xz
-tar xvf mplapack-2.1.0.tar.xz
-cd mplapack-2.1.0
+wget https://github.com/nakatamaho/mplapack/releases/download/v2.1.1/mplapack-2.1.1.tar.xz
+tar xvf mplapack-2.1.1.tar.xz
+cd mplapack-2.1.1
 export CXX=x86_64-w64-mingw32-g++
 export CC=x86_64-w64-mingw32-gcc
 export FC=x86_64-w64-mingw32-gfortran
@@ -240,6 +254,48 @@ bash fable/go_testing.sh  # test programs (EIG/LIN/MATGEN)
 
 # MPLAPACK Release Process
 
+## MPLAPACK 2.1.1 Release Process
+
+2.1.1 is a patch release. No API/ABI changes vs. 2.1.0. Highlights:
+
+- **GCC 15 support.** `external/gmp` patched for the C23 default
+  (`void g(){}` → properly typed prototype); patch is gated on
+  `GCC >= 15` at configure time. `{C,R}drgvx` test drivers carry an
+  `__attribute__((optimize("O1")))` workaround for a g++-15 IPA-modref
+  miscompilation.
+- **arm64 promoted to Tier 1**: Ubuntu arm64 and macOS Apple Silicon.
+- **musl/Alpine ARM64** build fix (`M_PIl` fallback).
+- **MinGW** `lapack/laed3` build fix (`LAMC3` prototype, `max` macro guard).
+- **binary128** `sign()` ambiguity on aarch64-apple-darwin / MacPorts GCC 15
+  fixed (unqualified `abs()`).
+- **DD miscompilation hardening**: `-ffp-contract=off` (and `-fp-model strict`
+  for `icpx`) is now propagated to *all* DD build targets — reference and
+  optimized BLAS/LAPACK, tests, and benchmarks. CUDA DD targets are
+  intentionally excluded (`nvcc` rejects the flag).
+- **`configure` fix**: a stale `CXXFLAGS="$SAVE_CXXFLAGS"` line was
+  silently clearing user-supplied `CXXFLAGS` (e.g. `-fsanitize=address`).
+- **`std::abs(__float128)` probe** tightened to require an exact-overload
+  match instead of trusting `__SIZEOF_FLOAT128__`.
+- **dd/qd test comparisons** switched from `diff` to `misc/num_diff.py`
+  (relative tolerance `1e-30` for dd, `1e-60` for qd) to absorb 1-bit
+  FMA-induced rounding noise.
+- **`make distcheck`** fixes: `external/openblas/Makefile` moved into the
+  benchmark-conditional `AC_CONFIG_FILES` block; dd/qd test scripts use
+  `${srcdir}` for VPATH builds; missing `misc/` scripts added to `EXTRA_DIST`.
+- **OpenBLAS** updated to 0.3.32 (also fixes the macOS arm64 build).
+- **`configure` build summary**: now reports compiler commands and versions,
+  target CPU and integer model, OpenMP runtime, enabled backends,
+  binary128/binary80 type / I/O / math / literal-suffix / interop, and
+  `std::abs(__float128)` availability.
+- **Release build matrix** broadened across 77 (OS, arch, toolchain)
+  configurations: Alpine 3.19–3.23, Debian 11–13, Ubuntu 18.04–24.04,
+  Rocky 8–10, Fedora 42/43, openSUSE Leap 15/16, openSUSE Tumbleweed,
+  on x86_64, i386/i686, aarch64, ppc64le, s390x, riscv64, mips64le,
+  plus Intel oneAPI (`icpx` 2025.3.2) and MinGW-w64 cross targets.
+- **Enterprise lifecycle note**: Rocky 8/9, openSUSE Leap 15, and
+  Ubuntu 18/20/22 stay on the `libquadmath` path for their full support
+  window — `libquadmath` support cannot be dropped yet.
+
 ## MPLAPACK 2.1.0 Release Process
 
 ### Tier-S Representative Gate Matrix (Release Blockers)
@@ -249,19 +305,20 @@ Tier 1 platforms run the full pipeline including `make distcheck`. Tier 2 platfo
 | # | Tier | OS | Arch | Compiler | binary80 | binary128 | Required tasks | Date |
 |---:|:---:|:---|:---|:---|:---:|:---:|:---|:---|
 | 1 | 1 | macOS Intel Sonoma | amd64 | GCC (MacPorts) | ✅ | ✅ | `make distcheck` + examples | - |
-| 2 | 1 | Windows | amd64 | GCC (MinGW-w64) | ✅ | ✅ | `make distcheck` + examples | - |
-| 3 | 1 | Ubuntu 22.04 | amd64 | GCC | ✅ | ✅ | `make distcheck` + examples | - |
-| 4 | 1 | Ubuntu 24.04 | amd64 | GCC | ✅ | ✅ | `make distcheck` + examples | - |
-| 5 | 2 | Ubuntu 24.04 | arm64 | GCC | N/A | ✅ | build only | - |
-| 6 | 2 | Debian 12 | i386 | GCC | ✅ | N/A | build only | - |
-| 7 | 2 | Rocky 8/9 | amd64 | GCC | ✅ | ✅ | build only | - |
-| 8 | 2 | Alpine 3.19 | amd64, arm64 | GCC | ✅ | ✅ | build only | - |
-| 9 | 2 | Debian 12 | ppc64le, s390x, riscv64 | GCC | N/A | ✅ | build only | - |
-| 10 | 2 | Debian 13 | amd64 | GCC | ✅ | ✅ | build only | - |
+| 2 | 1 | macOS Apple Silicon | arm64 | GCC (MacPorts) | N/A | ✅ | `make distcheck` + examples | 2.1.1 |
+| 3 | 1 | Windows | amd64 | GCC (MinGW-w64) | ✅ | ✅ | `make distcheck` + examples | - |
+| 4 | 1 | Ubuntu 22.04 | amd64 | GCC | ✅ | ✅ | `make distcheck` + examples | - |
+| 5 | 1 | Ubuntu 24.04 | amd64 | GCC | ✅ | ✅ | `make distcheck` + examples | - |
+| 6 | 1 | Ubuntu 24.04 | arm64 | GCC | N/A | ✅ | `make distcheck` + examples | 2.1.1 |
+| 7 | 2 | Debian 12 | i386 | GCC | ✅ | N/A | build only | - |
+| 8 | 2 | Rocky 8/9/10 | amd64 | GCC | ✅ | ✅ | build only | - |
+| 9 | 2 | Alpine 3.19–3.23 | amd64, arm64, riscv64 | GCC | ✅ (x86) | ✅ | build only | - |
+| 10 | 2 | Debian 12/13 | ppc64le, s390x, riscv64, mips64le | GCC | N/A | ✅ | build only | - |
+| 11 | 2 | Debian 13 | amd64 | GCC | ✅ | ✅ | build only | - |
 
 ### Tier Policy
 
-> **Tier 1 (release blockers):** `make distcheck` must pass on all four Tier 1 platforms.
+> **Tier 1 (release blockers):** `make distcheck` must pass on all Tier 1 platforms.
 > **Tier 2 (build guarantee):** build only; not release-blocking.
 > **Tier 3 (patches accepted):** no CI coverage.
 
@@ -269,15 +326,15 @@ Tier 1 platforms run the full pipeline including `make distcheck`. Tier 2 platfo
 
 | Tier | Architectures | Expectation |
 |:---:|:---|:---|
-| 1 | amd64 (macOS, Windows, Ubuntu) | `make distcheck` + examples |
-| 2 | arm64, i386, ppc64le, s390x, riscv64 | build only |
+| 1 | amd64 (macOS, Windows, Ubuntu); arm64 (macOS, Ubuntu) | `make distcheck` + examples |
+| 2 | i386, ppc64le, s390x, riscv64, mips64le | build only |
 | 3 | others | build-only best-effort |
 
 #### Compiler Tiers
 
 | Tier | Compilers | Expectation |
 |:---:|:---|:---|
-| 1 | GCC (native), GCC (MinGW-w64) | Must be green |
+| 1 | GCC 11–15 (native), GCC (MinGW-w64) | Must be green |
 | 2 | Clang | Build only; binary128 N/A |
 | — | Intel oneAPI | binary128 and binary80 broken (2024+); oneAPI 2023 worked but no longer readily available; https://github.com/nakatamaho/mplapack/issues/77 |
 
@@ -315,6 +372,9 @@ Tier 1 platforms run the full pipeline including `make distcheck`. Tier 2 platfo
 
 # History
 
+* 2026-04-09  MPLAPACK 2.1.1 released. GCC 15 support, arm64 promoted to Tier 1
+  (Ubuntu arm64, macOS Apple Silicon), DD `-ffp-contract=off` propagation fix,
+  binary128 / MinGW / musl build fixes, OpenBLAS 0.3.32. ABI compatible with 2.1.0.
 * 2026-03-05  MPLAPACK 2.1.0 released. binary128/binary80 naming unified, MPFR emin/emax
   auto-adjustment, extended build matrix (Alpine, Rocky, Debian i386, CUDA 13.1.1).
   LAPACK 3.9.1 Fortran sources mechanically converted to idiomatic C++ via Fable and

@@ -1,7 +1,7 @@
 # Dockerfile.suse
 # GCC build for openSUSE (branch: requires autoreconf)
 # Build happens at runtime with ccache mounted from host
-ARG BASE=opensuse/leap:15.5
+ARG BASE=opensuse/leap:16
 FROM ${BASE}
 
 RUN zypper --non-interactive install \
@@ -20,6 +20,7 @@ RUN zypper --non-interactive install \
     bsdtar \
     bzip2 \
     patch \
+    diff \
     && zypper clean --all
 
 # Configure ccache (directory will be mounted at runtime)

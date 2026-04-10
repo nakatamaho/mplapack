@@ -37,12 +37,12 @@ mplibs = -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpc -lmpfr -lgmpxx -
 cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(LAPACK_INCLUDEDIR) -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___ -D___MPLAPACK_INTERNAL___ -I$(top_srcdir)/fable
 
 xeigtstR_mpfr_SOURCES  = ../common/Rchkee.cpp
-xeigtstR_mpfr_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xeigtstR_mpfr_LDFLAGS  = $(libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstR_mpfr_LDFLAGS += -Wl,-rpath,$(libdir)
 xeigtstR_mpfr_CXXFLAGS = $(cxxflags)
 
 xeigtstC_mpfr_SOURCES  = ../common/Cchkee.cpp
-xeigtstC_mpfr_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xeigtstC_mpfr_LDFLAGS  = $(libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstC_mpfr_LDFLAGS += -Wl,-rpath,$(libdir)
 xeigtstC_mpfr_CXXFLAGS = $(cxxflags)
 
