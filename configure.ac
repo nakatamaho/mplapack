@@ -3,13 +3,8 @@ dnl Configure for MPLAPACK
 dnl
 
 m4_define([MPLAPACK_VER_MAJOR], [2])
-<<<<<<< HEAD
 m4_define([MPLAPACK_VER_MINOR], [2])
 m4_define([MPLAPACK_VER_PATCH], [0])
-=======
-m4_define([MPLAPACK_VER_MINOR], [1])
-m4_define([MPLAPACK_VER_PATCH], [1])
->>>>>>> origin/master
 m4_define([MPLAPACK_VERSION], [MPLAPACK_VER_MAJOR.MPLAPACK_VER_MINOR.MPLAPACK_VER_PATCH])
 AC_INIT(mplapack, [MPLAPACK_VERSION])
 
