@@ -61,4 +61,5 @@ patch -p3 < "${PATCH_DIR}/patch-iMieeeck.cpp"
 patch -p3 < "${PATCH_DIR}/patch-iMlaenv.cpp"
 patch -p3 < "${PATCH_DIR}/patch-iMparam2stage.cpp"
 patch -p3 < "${PATCH_DIR}/patch-iMparmq.cpp"
-
+patch -p3 < "${PATCH_DIR}/patch-Cunbdb3.cpp"
+patch -p3 < "${PATCH_DIR}/patch-Rorbdb3.cpp"
