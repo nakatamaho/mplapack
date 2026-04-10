@@ -55,6 +55,7 @@ void Rlatb4(fem::str_cref path, INTEGER const imat, INTEGER const m, INTEGER con
     REAL badc1 = sqrt(badc2);
     REAL small = Rlamch("Safe minimum");
     REAL large = one / small;
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
     // Historical DLABAD-style range reduction for very wide exponent ranges.
     //
     // Current LAPACK DLABAD is a no-op, but its former logic reduced SMALL and
@@ -67,6 +68,7 @@ void Rlatb4(fem::str_cref path, INTEGER const imat, INTEGER const m, INTEGER con
         small = sqrt(small);
         large = sqrt(large);
     }
+#endif
     small = shrink * (small / eps);
     large = one / small;
     //

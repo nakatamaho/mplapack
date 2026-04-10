@@ -1,6 +1,6 @@
---- Rlatb4.cpp_	2026-03-23 17:33:50.421604561 +0900
-+++ Rlatb4.cpp	2026-03-23 17:33:57.295751242 +0900
-@@ -44,28 +44,19 @@
+--- Rlatb4.cpp	2026-04-10 17:38:16.783649501 +0900
++++ /home/docker/Rlatb4.cpp	2026-04-10 17:37:00.109473350 +0900
+@@ -44,28 +44,33 @@
  #include <mplapack_lin.h>
  
  void Rlatb4(fem::str_cref path, INTEGER const imat, INTEGER const m, INTEGER const n, fem::str_ref type, INTEGER &kl, INTEGER &ku, REAL &anorm, INTEGER &mode, REAL &cndnum, fem::str_ref dist) {
@@ -25,23 +25,12 @@
 -        large = one / small;
 -        small = shrink * (small / eps);
 -        large = one / small;
--    }
 +    REAL eps = Rlamch("Precision");
 +    REAL badc2 = tenth / eps;
 +    REAL badc1 = sqrt(badc2);
 +    REAL small = Rlamch("Safe minimum");
 +    REAL large = one / small;
-+    small = shrink * (small / eps);
-+    large = one / small;
-     //
-     fem::str<2> c2 = path(2, 3);
-     //
---- Rlatb4.cpp	2026-03-26 18:16:03.465348200 +0900
-+++ Rlatb4.cpp	2026-03-26 17:59:18.957020593 +0900
-@@ -55,6 +55,18 @@
-     REAL badc1 = sqrt(badc2);
-     REAL small = Rlamch("Safe minimum");
-     REAL large = one / small;
++#if defined ___MPLAPACK_BUILD_WITH_GMP___
 +    // Historical DLABAD-style range reduction for very wide exponent ranges.
 +    //
 +    // Current LAPACK DLABAD is a no-op, but its former logic reduced SMALL and
@@ -53,7 +42,10 @@
 +    if (log10(large) > 2000.0) {
 +        small = sqrt(small);
 +        large = sqrt(large);
-+    }
-     small = shrink * (small / eps);
-     large = one / small;
+     }
++#endif
++    small = shrink * (small / eps);
++    large = one / small;
+     //
+     fem::str<2> c2 = path(2, 3);
      //
