@@ -89,6 +89,7 @@ patch  < "${PATCH_DIR}/patch-Rlatb9.cpp"
 patch  < "${PATCH_DIR}/patch-Rlctsx.cpp"
 patch  < "${PATCH_DIR}/patch-Rslect.cpp"
 patch  < "${PATCH_DIR}/patch-Rdrgvx.cpp"
+patch  < "${PATCH_DIR}/patch-Cdrgvx.cpp"
 
 cd "${REF_DIR}/eig"
 patch < "${PATCH_DIR}/patch-Cbb.in"
