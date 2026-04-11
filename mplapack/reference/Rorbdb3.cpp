@@ -91,7 +91,7 @@ void Rorbdb3(INTEGER const m, INTEGER const p, INTEGER const q, REAL *x11, INTEG
     for (i = 1; i <= m - p; i = i + 1) {
         //
         if (i > 1) {
-            Rrot(q - i + 1, &x11[((i - 1) - 1) + (i - 1) * ldx11], ldx11, &x21[(i - 1) + (i - 1) * ldx21], ldx21, c, s);
+            Rrot(q - i + 1, &x11[((i - 1) - 1) + (i - 1) * ldx11], ldx11, &x21[(i - 1) + (i - 1) * ldx21], ldx11, c, s);
         }
         //
         Rlarfgp(q - i + 1, x21[(i - 1) + (i - 1) * ldx21], &x21[(i - 1) + ((i + 1) - 1) * ldx21], ldx21, tauq1[i - 1]);
