@@ -1,5 +1,5 @@
---- BLAS/TESTING/Makefile	2021-03-26 03:25:15.000000000 +0900
-+++ BLAS/TESTING/Makefile	2021-04-09 15:14:58.539778998 +0900
+--- a/BLAS/TESTING/Makefile	2021-03-26 03:25:15.000000000 +0900
++++ b/BLAS/TESTING/Makefile	2021-04-09 15:14:58.539778998 +0900
 @@ -37,18 +37,18 @@
  
  .PHONY: run
@@ -32,8 +32,8 @@
  .PHONY: clean cleanobj cleanexe cleantest
  clean: cleanobj cleanexe cleantest
 
---- INSTALL/Makefile	2021-03-26 03:25:15.000000000 +0900
-+++ INSTALL/Makefile	2021-04-09 15:14:58.537778998 +0900
+--- a/INSTALL/Makefile	2021-03-26 03:25:15.000000000 +0900
++++ b/INSTALL/Makefile	2021-04-09 15:14:58.537778998 +0900
 @@ -29,13 +29,13 @@
  
  .PHONY: run
@@ -56,8 +56,8 @@
  .PHONY: clean cleanobj cleanexe cleantest
  clean: cleanobj cleanexe cleantest
 
---- TESTING/Makefile	2021-03-26 03:25:15.000000000 +0900
-+++ TESTING/Makefile	2021-04-09 15:18:19.366034766 +0900
+--- a/TESTING/Makefile	2021-03-26 03:25:15.000000000 +0900
++++ b/TESTING/Makefile	2021-04-09 15:18:19.366034766 +0900
 @@ -158,61 +158,61 @@
  
  stest.out: stest.in LIN/xlintsts

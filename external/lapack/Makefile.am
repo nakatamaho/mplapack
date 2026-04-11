@@ -1,4 +1,6 @@
-LAPACK_VERSION ?= 3.12.1
+LAPACK_VERSION    := $(or $(LAPACK_VERSION),3.12.1)
+LAPACK_GIT_URL    := $(or $(LAPACK_GIT_URL),https://github.com/Reference-LAPACK/lapack.git)
+LAPACK_GIT_REF    := $(or $(LAPACK_GIT_REF),master)
 MAKEFLAGS =
 
 EXTRACT_STAMP=.lapack_extract_$(LAPACK_VERSION)_done
@@ -10,13 +12,26 @@ CHECK_STAMP=.lapack_check_$(LAPACK_VERSION)_done
 
 all: extract config build check install_internal
 
+LAPACK_SOURCE_DIR = lapack-$(LAPACK_VERSION)
+
 work/$(EXTRACT_STAMP):
 	rm -rf work ; mkdir -p work/internal
-	cd $(abs_builddir)/work/internal; tar xvfz $(abs_srcdir)/download/lapack-$(LAPACK_VERSION).tar.gz
+	@if test "x$(LAPACK_VERSION)" = "xcurrent"; then \
+		git clone "$(LAPACK_GIT_URL)" "$(abs_builddir)/work/internal/$(LAPACK_SOURCE_DIR)" && \
+		cd "$(abs_builddir)/work/internal/$(LAPACK_SOURCE_DIR)" && \
+		git checkout "$(LAPACK_GIT_REF)" && \
+		git rev-parse HEAD > .lapack_git_head; \
+	else \
+		cd "$(abs_builddir)/work/internal" && \
+		tar xvfz "$(abs_srcdir)/download/lapack-$(LAPACK_VERSION).tar.gz"; \
+	fi
 	touch $(abs_builddir)/work/$(EXTRACT_STAMP)
 
-LAPACK_WORK_DIR = $(abs_builddir)/work/internal/lapack-$(LAPACK_VERSION)
+LAPACK_WORK_DIR = $(abs_builddir)/work/internal/$(LAPACK_SOURCE_DIR)
 LAPACK_PATCH_DIR = $(abs_srcdir)/patches/$(LAPACK_VERSION)
+LAPACK_VERSION_KEY = $(subst .,_,$(LAPACK_VERSION))
+
+PATCHES_current =
 
 PATCHES_3_9_1 = \
 	patch-zchkhe_aa_2stage.f \
@@ -41,20 +56,22 @@ PATCHES_3_12_1 = \
 	patch-cabs1_unification \
 	patch-cabsmax
 
+LAPACK_PATCHES = $(PATCHES_$(LAPACK_VERSION_KEY))
+
 work/$(PATCH_STAMP): work/$(EXTRACT_STAMP)
-	cd $(LAPACK_WORK_DIR) && patch -p0 < $(LAPACK_PATCH_DIR)/patch-print
-if IS_MINGW
-	cd $(LAPACK_WORK_DIR) && patch -p0 < $(LAPACK_PATCH_DIR)/patch-mingw
-endif
-	@if test "x$(LAPACK_VERSION)" = "x3.9.1"; then \
-		$(foreach patch,$(PATCHES_3_9_1), \
-			cd $(LAPACK_WORK_DIR) && patch -p0 < $(LAPACK_PATCH_DIR)/$(patch) && ) \
-		cp $(abs_srcdir)/patches/print.c $(LAPACK_WORK_DIR)/BLAS/SRC; \
+	@if test -f "$(LAPACK_PATCH_DIR)/patch-print"; then \
+		cd "$(LAPACK_WORK_DIR)" && patch -p1 < "$(LAPACK_PATCH_DIR)/patch-print" && \
+		cp "$(abs_srcdir)/patches/print.c" "$(LAPACK_WORK_DIR)/BLAS/SRC"; \
 	fi
-	@if test "x$(LAPACK_VERSION)" = "x3.12.1"; then \
-		$(foreach patch,$(PATCHES_3_12_1), \
-			cd $(LAPACK_WORK_DIR) && patch -p1 < $(LAPACK_PATCH_DIR)/$(patch) && ) \
-		cp $(abs_srcdir)/patches/print.c $(LAPACK_WORK_DIR)/BLAS/SRC; \
+if IS_MINGW
+	@if test -f "$(LAPACK_PATCH_DIR)/patch-mingw"; then \
+		cd "$(LAPACK_WORK_DIR)" && patch -p1 < "$(LAPACK_PATCH_DIR)/patch-mingw"; \
+	fi
+endif
+	@if test -n "$(LAPACK_PATCHES)"; then \
+		$(foreach patch,$(LAPACK_PATCHES), \
+			cd "$(LAPACK_WORK_DIR)" && patch -p1 < "$(LAPACK_PATCH_DIR)/$(patch)" && ) \
+		:; \
 	fi
 	touch $(abs_builddir)/work/$(PATCH_STAMP)
 
@@ -125,4 +142,3 @@ clean-local:
 	rm -rf work
 distclean-local:
 	rm -rf work
-
