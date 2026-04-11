@@ -88,7 +88,7 @@ patch  < "${PATCH_DIR}/patch-Cdrgvx.cpp"
 
 cd "${REF_DIR}/eig"
 patch < "${PATCH_DIR}/patch-Rgg.in"
-patch < "${PATCH_DIR}/patch-csd.in"
+#patch < "${PATCH_DIR}/patch-csd.in"
 patch < "${PATCH_DIR}/patch-gsv.in"
 patch < "${PATCH_DIR}/patch-nep.in"
 patch < "${PATCH_DIR}/patch-se2.in"
