@@ -1,12 +1,12 @@
 SUBDIRS = external mpblas mplapack
 if ENABLE_BENCHMARK
-SUBDIRS += benchmark 
+SUBDIRS += benchmark
 endif
 if !DISABLE_EXAMPLES
 SUBDIRS += examples
 endif
 
-ACLOCAL_AMFLAGS= -I m4
+ACLOCAL_AMFLAGS = -I m4
 
 mplapack_includedir = $(includedir)/mplapack
 mplapack_include_HEADERS = \
@@ -20,7 +20,7 @@ mplapack_include_HEADERS += \
     include/mpblas_dd.h \
     include/mplapack_arithmetic_params_dd.h \
     include/mplapack_dd.h \
-    include/mplapack_utils_dd.h 
+    include/mplapack_utils_dd.h
 endif
 
 if ENABLE_GMP
@@ -83,7 +83,52 @@ if ENABLE_BINARY128
 nodist_mplapack_include_HEADERS += include/mplapack_utils_binary128.h
 endif
 
-noinst_HEADERS = include/mplapack_arithmetic_params.h include/mplapack_debug.h include/mplapack_utils.h include/mpblas.h include/mplapack.h include/mplapack_generic.h include/mplapack_benchmark.h include/mplapack_benchmark_binary128.h include/mplapack_benchmark_dd.h include/mplapack_benchmark_double.h include/mplapack_benchmark_gmp.h include/mplapack_benchmark_mpfr.h include/mplapack_benchmark_qd.h include/mplapack_compare_debug.h include/mplapack_print_double.h include/mplapack_print.h include/mplapack_matgen.h include/mplapack_matgen_binary128.h include/mplapack_matgen_binary80.h include/mplapack_matgen_dd.h include/mplapack_matgen_double.h include/mplapack_matgen_gmp.h include/mplapack_matgen_mpfr.h include/mplapack_matgen_qd.h include/mplapack_lin.h include/mplapack_lin_binary128.h include/mplapack_lin_binary80.h include/mplapack_lin_dd.h include/mplapack_lin_double.h include/mplapack_lin_gmp.h include/mplapack_lin_mpfr.h include/mplapack_lin_qd.h include/mplapack_eig.h include/mplapack_eig_binary128.h include/mplapack_eig_binary80.h include/mplapack_eig_dd.h include/mplapack_eig_double.h include/mplapack_eig_gmp.h include/mplapack_eig_mpfr.h include/mplapack_eig_qd.h include/mplapack_common_sslct.h include/mplapack_common_mn.h include/mplapack_benchmark.h include/mplapack_benchmark_binary128.h include/mplapack_benchmark_binary80.h include/mplapack_benchmark_dd.h include/mplapack_benchmark_double.h include/mplapack_benchmark_gmp.h include/mplapack_benchmark_mpfr.h include/mplapack_benchmark_qd.h
+# Internal headers used by tests/benchmarks; keep them in dist tarballs.
+noinst_HEADERS = \
+    include/mplapack_arithmetic_params.h \
+    include/mplapack_debug.h \
+    include/mplapack_utils.h \
+    include/mpblas.h \
+    include/mplapack.h \
+    include/mplapack_generic.h \
+    include/mplapack_compare_debug.h \
+    include/mplapack_print_double.h \
+    include/mplapack_hex_helpers.h \
+    include/mplapack_print.h \
+    include/mplapack_common_sslct.h \
+    include/mplapack_common_mn.h \
+    include/mplapack_benchmark.h \
+    include/mplapack_benchmark_binary128.h \
+    include/mplapack_benchmark_binary80.h \
+    include/mplapack_benchmark_dd.h \
+    include/mplapack_benchmark_double.h \
+    include/mplapack_benchmark_gmp.h \
+    include/mplapack_benchmark_mpfr.h \
+    include/mplapack_benchmark_qd.h \
+    include/mplapack_matgen.h \
+    include/mplapack_matgen_binary128.h \
+    include/mplapack_matgen_binary80.h \
+    include/mplapack_matgen_dd.h \
+    include/mplapack_matgen_double.h \
+    include/mplapack_matgen_gmp.h \
+    include/mplapack_matgen_mpfr.h \
+    include/mplapack_matgen_qd.h \
+    include/mplapack_lin.h \
+    include/mplapack_lin_binary128.h \
+    include/mplapack_lin_binary80.h \
+    include/mplapack_lin_dd.h \
+    include/mplapack_lin_double.h \
+    include/mplapack_lin_gmp.h \
+    include/mplapack_lin_mpfr.h \
+    include/mplapack_lin_qd.h \
+    include/mplapack_eig.h \
+    include/mplapack_eig_binary128.h \
+    include/mplapack_eig_binary80.h \
+    include/mplapack_eig_dd.h \
+    include/mplapack_eig_double.h \
+    include/mplapack_eig_gmp.h \
+    include/mplapack_eig_mpfr.h \
+    include/mplapack_eig_qd.h
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = mplapack.pc
