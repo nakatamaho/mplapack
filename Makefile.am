@@ -296,6 +296,7 @@ mpfrc++/org/mpreal.cpp mpfrc++/org/mpreal.h \
 mplapack/test/eig/Cbak.in \
 mplapack/test/eig/Cbal.in \
 mplapack/test/eig/Cbb.in \
+mplapack/test/eig/Cdmd.in \
 mplapack/test/eig/Cec.in \
 mplapack/test/eig/Ced.in \
 mplapack/test/eig/Cgbak.in \
@@ -307,6 +308,7 @@ mplapack/test/eig/Csg.in \
 mplapack/test/eig/Rbak.in \
 mplapack/test/eig/Rbal.in \
 mplapack/test/eig/Rbb.in \
+mplapack/test/eig/Rdmd.in \
 mplapack/test/eig/Rec.in \
 mplapack/test/eig/Red.in \
 mplapack/test/eig/Rgbak.in \
