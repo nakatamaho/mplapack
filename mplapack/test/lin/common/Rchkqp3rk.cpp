@@ -101,20 +101,20 @@ void Rchkqp3rk(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, 
     INTEGER nb = 0;
     INTEGER nx = 0;
     INTEGER kmax = 0;
+    const INTEGER ntests = 5;
+    REAL result[ntests];
     REAL abstol = 0.0;
     REAL reltol = 0.0;
     INTEGER lw = 0;
     INTEGER kfact = 0;
     REAL maxc2nrmk = 0.0;
     REAL relmaxc2nrmk = 0.0;
-    const INTEGER ntests = 5;
-    REAL result[ntests];
-    INTEGER t = 0;
     REAL dtemp = 0.0;
     const REAL bignum = 1e38;
     INTEGER lwork_mqr = 0;
     const REAL one = 1.0;
     REAL rdummy[1];
+    INTEGER t = 0;
     for (im = 1; im <= nm; im = im + 1) {
         //
         // Do for each value of M in MVAL.
@@ -419,6 +419,9 @@ void Rchkqp3rk(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, 
                             Rlacpy("All", m, nrhs, copyb, lda, &a[(lda * n + 1) - 1], lda);
                             Rlacpy("All", m, nrhs, copyb, lda, b, lda);
                             icopy(n, &iwork[1 - 1], 1, &iwork[(n + 1) - 1], 1);
+                            for (i = 1; i <= ntests; i = i + 1) {
+                                result[i - 1] = zero;
+                            }
                             //
                             abstol = -1.0;
                             reltol = -1.0;
@@ -456,15 +459,6 @@ void Rchkqp3rk(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, 
                                 //
                                 result[1 - 1] = Rqrt12(m, n, a, lda, s, work, lwork);
                                 //
-                                for (t = 1; t <= 1; t = t + 1) {
-                                    if (result[t - 1] >= thresh) {
-                                        if (nfail == 0 && nerrs == 0) {
-                                            Alahd(nout, path);
-                                        }
-                                        write(nout, format_9999), "Rgeqp3rk", m, n, nrhs, kmax, abstol, reltol, nb, nx, imat, t, result[t - 1];
-                                        nfail++;
-                                    }
-                                }
                                 nrun++;
                                 //
                                 // End test 1
@@ -487,18 +481,6 @@ void Rchkqp3rk(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, 
                             //
                             result[3 - 1] = Rqrt11(m, kfact, a, lda, tau, work, lwork);
                             //
-                            // Print information about the tests that did not pass
-                            // the threshold.
-                            //
-                            for (t = 2; t <= 3; t = t + 1) {
-                                if (result[t - 1] >= thresh) {
-                                    if (nfail == 0 && nerrs == 0) {
-                                        Alahd(nout, path);
-                                    }
-                                    write(nout, format_9999), "Rgeqp3rk", m, n, nrhs, kmax, abstol, reltol, nb, nx, imat, t, result[t - 1];
-                                    nfail++;
-                                }
-                            }
                             nrun += 2;
                             //
                             // Compute test 4:
@@ -517,7 +499,7 @@ void Rchkqp3rk(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, 
                                 //
                                 for (j = 1; j <= kfact - 1; j = j + 1) {
                                     //
-                                    dtemp = ((abs(a[((j - 1) * m + j) - 1]) - abs(a[((j)*m + j + 1) - 1])) / abs(a[1 - 1]));
+                                    dtemp = ((abs(a[((j - 1) * lda + j) - 1]) - abs(a[((j)*lda + j + 1) - 1])) / abs(a[1 - 1]));
                                     //
                                     if (dtemp < zero) {
                                         result[4 - 1] = bignum;
@@ -525,18 +507,6 @@ void Rchkqp3rk(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, 
                                     //
                                 }
                                 //
-                                // Print information about the tests that did not
-                                // pass the threshold.
-                                //
-                                for (t = 4; t <= 4; t = t + 1) {
-                                    if (result[t - 1] >= thresh) {
-                                        if (nfail == 0 && nerrs == 0) {
-                                            Alahd(nout, path);
-                                        }
-                                        write(nout, format_9999), "Rgeqp3rk", m, n, nrhs, kmax, abstol, reltol, nb, nx, imat, t, result[t - 1];
-                                        nfail++;
-                                    }
-                                }
                                 nrun++;
                                 //
                                 // End test 4.
@@ -568,22 +538,23 @@ void Rchkqp3rk(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, 
                                 //
                                 result[5 - 1] = abs(Rlange("One-norm", m, nrhs, b, lda, rdummy) / (castREAL(m) * Rlamch("Epsilon")));
                                 //
-                                // Print information about the tests that did not pass
-                                // the threshold.
-                                //
-                                for (t = 5; t <= 5; t = t + 1) {
-                                    if (result[t - 1] >= thresh) {
-                                        if (nfail == 0 && nerrs == 0) {
-                                            Alahd(nout, path);
-                                        }
-                                        write(nout, format_9999), "Rgeqp3rk", m, n, nrhs, kmax, abstol, reltol, nb, nx, imat, t, result[t - 1];
-                                        nfail++;
-                                    }
-                                }
                                 nrun++;
                                 //
                                 // End compute test 5.
                                 //
+                            }
+                            //
+                            // Print information about the tests that did not
+                            // pass the threshold.
+                            //
+                            for (t = 1; t <= ntests; t = t + 1) {
+                                if (result[t - 1] >= thresh) {
+                                    if (nfail == 0 && nerrs == 0) {
+                                        Alahd(nout, path);
+                                    }
+                                    write(nout, format_9999), "Rgeqp3rk", m, n, nrhs, kmax, abstol, reltol, nb, nx, imat, t, result[t - 1];
+                                    nfail++;
+                                }
                             }
                             //
                             // END DO KMAX = 1, MIN(M,N)+1
