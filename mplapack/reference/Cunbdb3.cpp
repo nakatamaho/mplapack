@@ -91,7 +91,7 @@ void Cunbdb3(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x11, IN
     for (i = 1; i <= m - p; i = i + 1) {
         //
         if (i > 1) {
-            CRrot(q - i + 1, &x11[((i - 1) - 1) + (i - 1) * ldx11], ldx11, &x21[(i - 1) + (i - 1) * ldx21], ldx21, c, s);
+            CRrot(q - i + 1, &x11[((i - 1) - 1) + (i - 1) * ldx11], ldx11, &x21[(i - 1) + (i - 1) * ldx21], ldx11, c, s);
         }
         //
         Clarfgp(q - i + 1, x21[(i - 1) + (i - 1) * ldx21], &x21[(i - 1) + ((i + 1) - 1) * ldx21], ldx21, tauq1[i - 1]);
