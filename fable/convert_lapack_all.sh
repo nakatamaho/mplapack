@@ -21,7 +21,7 @@ EXCLUDE_BASENAMES_MANUAL=( )
 
 # Basenames that are not needed on the C++ side
 EXCLUDE_BASENAMES_UNUSED=( la_constants dsgesv zcgesv dsposv zcposv dla_gerfsx_extended dla_gbrfsx_extended dla_porfsx_extended dla_syrfsx_extended zla_gerfsx_extended zla_gbrfsx_extended zla_porfsx_extended zla_syrfsx_extended zla_herfsx_extended lsamen ilaslr ilaslc ilaclc ilaclr iladiag icmax1 xerbla xerbla_array zgbrfsx zgbsvxx zgerfsx zherfsx zporfsx zsyrfsx dgerfsx dgbrfsx dporfsx dsyrfsx zgesvxx zhesvxx zposvxx zsysvxx dgbsvxx dgesvxx dposvxx dsysvxx zla_gbrcond_c zla_gbrcond_x zla_gbrpvgrw zla_gercond_c zla_gercond_x zla_gerpvgrw zla_hercond_c zla_hercond_x zla_herpvgrw zla_porcond_c zla_porcond_x zla_porpvgrw zla_syrcond_c zla_syrcond_x zla_syrpvgrw zla_gbamv zla_geamv zla_heamv zla_lin_berr zla_syamv zla_wwaddw dla_gbrcond dla_gbrpvgrw dla_gercond dla_gerpvgrw dla_porcond dla_porpvgrw dla_syrcond dla_syrpvgrw dla_gbamv dla_geamv dla_lin_berr dla_syamv dla_wwaddw zlag2c zlat2c dlag2s dlat2s zlag2z zlat2c disnan dlaisnan \
-dlacon zlacon
+dlacon zlacon dlabad
 )
 # lsamen is not used?
 # ilaslr is only used in slarf.
@@ -112,6 +112,7 @@ KEEP_HAND_WRITTEN_FILES=(
   Mxlaenv.cpp
   Risinf.cpp
   Risnan.cpp
+  Rlabad.cpp
   Rlamch.cpp
   Rlaruv.cpp
   Rlaran.cpp
