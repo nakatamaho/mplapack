@@ -614,7 +614,7 @@ void Rgtts2(INTEGER const itrans, INTEGER const n, INTEGER const nrhs, REAL *dl,
 void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const n, INTEGER const ilo, INTEGER const ihi, REAL *h, INTEGER const ldh, REAL *t, INTEGER const ldt, REAL *alphar, REAL *alphai, REAL *beta, REAL *q, INTEGER const ldq, REAL *z, INTEGER const ldz, REAL *work, INTEGER const lwork, INTEGER &info);
 void Rhsein(const char *side, const char *eigsrc, const char *initv, bool *select, INTEGER const n, REAL *h, INTEGER const ldh, REAL *wr, REAL *wi, REAL *vl, INTEGER const ldvl, REAL *vr, INTEGER const ldvr, INTEGER const mm, INTEGER &m, REAL *work, INTEGER *ifaill, INTEGER *ifailr, INTEGER &info);
 void Rhseqr(const char *job, const char *compz, INTEGER const n, INTEGER const ilo, INTEGER const ihi, REAL *h, INTEGER const ldh, REAL *wr, REAL *wi, REAL *z, INTEGER const ldz, REAL *work, INTEGER const lwork, INTEGER &info);
-void Rlabad(REAL const, REAL const);
+void Rlabad(REAL &small, REAL &large);
 void Rlabrd(INTEGER const m, INTEGER const n, INTEGER const nb, REAL *a, INTEGER const lda, REAL *d, REAL *e, REAL *tauq, REAL *taup, REAL *x, INTEGER const ldx, REAL *y, INTEGER const ldy);
 void Rlacn2(INTEGER const n, REAL *v, REAL *x, INTEGER *isgn, REAL &est, INTEGER &kase, INTEGER *isave);
 void Rlacpy(const char *uplo, INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb);

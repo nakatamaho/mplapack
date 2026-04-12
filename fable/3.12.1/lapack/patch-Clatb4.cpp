@@ -1,6 +1,6 @@
---- Clatb4.cpp	2026-04-10 17:21:05.241080156 +0900
-+++ Clatb4.cpp	2026-04-10 17:18:34.622574037 +0900
-@@ -44,28 +44,33 @@
+--- Clatb4.cpp	2026-04-12 18:23:40.864400031 +0900
++++ Clatb4.cpp	2026-04-12 18:27:00.805898246 +0900
+@@ -44,28 +44,24 @@
  #include <mplapack_lin.h>
  
  void Clatb4(fem::str_cref path, INTEGER const imat, INTEGER const m, INTEGER const n, fem::str_ref type, INTEGER &kl, INTEGER &ku, REAL &anorm, INTEGER &mode, REAL &cndnum, fem::str_ref dist) {
@@ -25,25 +25,17 @@
 -        large = one / small;
 -        small = shrink * (small / eps);
 -        large = one / small;
+-    }
 +    REAL eps = Rlamch("Precision");
 +    REAL badc2 = tenth / eps;
 +    REAL badc1 = sqrt(badc2);
 +    REAL small = Rlamch("Safe minimum");
 +    REAL large = one / small;
-+#if defined ___MPLAPACK_BUILD_WITH_BINARY128___ ||  defined ___MPLAPACK_BUILD_WITH_BINARY80___
-+    // Historical DLABAD-style range reduction for very wide exponent ranges.
 +    //
-+    // Current LAPACK DLABAD is a no-op, but its former logic reduced SMALL and
-+    // LARGE by square roots when LOG10(LARGE) > 2000. That condition is false
-+    // for ordinary IEEE binary32/binary64 and true for wide-range formats such
-+    // as binary80/binary128. Apply the same policy here so that standard
-+    // backends keep LAPACK's original test scaling while wide-range backends
-+    // avoid excessively extreme near-underflow/near-overflow matrices.
-+    if (log10(large) > 2000.0) {
-+        small = sqrt(small);
-+        large = sqrt(large);
-     }
++#if defined ___MPLAPACK_BUILD_WITH_BINARY128___ ||  defined ___MPLAPACK_BUILD_WITH_BINARY80___
++    Rlabad(small, large);
 +#endif
++    //
 +    small = shrink * (small / eps);
 +    large = one / small;
      //
