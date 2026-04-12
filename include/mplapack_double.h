@@ -647,7 +647,7 @@ void Rgtts2(mplapackint const itrans, mplapackint const n, mplapackint const nrh
 void Rhgeqz(const char *job, const char *compq, const char *compz, mplapackint const n, mplapackint const ilo, mplapackint const ihi, double *h, mplapackint const ldh, double *t, mplapackint const ldt, double *alphar, double *alphai, double *beta, double *q, mplapackint const ldq, double *z, mplapackint const ldz, double *work, mplapackint const lwork, mplapackint &info);
 void Rhsein(const char *side, const char *eigsrc, const char *initv, bool *select, mplapackint const n, double *h, mplapackint const ldh, double *wr, double *wi, double *vl, mplapackint const ldvl, double *vr, mplapackint const ldvr, mplapackint const mm, mplapackint &m, double *work, mplapackint *ifaill, mplapackint *ifailr, mplapackint &info);
 void Rhseqr(const char *job, const char *compz, mplapackint const n, mplapackint const ilo, mplapackint const ihi, double *h, mplapackint const ldh, double *wr, double *wi, double *z, mplapackint const ldz, double *work, mplapackint const lwork, mplapackint &info);
-void Rlabad(double const, double const);
+void Rlabad(double &small, double &large);
 void Rlabrd(mplapackint const m, mplapackint const n, mplapackint const nb, double *a, mplapackint const lda, double *d, double *e, double *tauq, double *taup, double *x, mplapackint const ldx, double *y, mplapackint const ldy);
 void Rlacn2(mplapackint const n, double *v, double *x, mplapackint *isgn, double &est, mplapackint &kase, mplapackint *isave);
 void Rlacpy(const char *uplo, mplapackint const m, mplapackint const n, double *a, mplapackint const lda, double *b, mplapackint const ldb);
