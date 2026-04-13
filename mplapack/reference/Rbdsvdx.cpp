@@ -122,7 +122,11 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
     const REAL ten = 10.0;
     const REAL hndrd = 100.0;
     const REAL meigth = -0.125;
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+    REAL tol = max(ten, min(hndrd, one / sqrt(sqrt(sqrt(eps))))) * eps;
+#else
     REAL tol = max(ten, min(hndrd, pow(eps, meigth))) * eps;
+#endif
     //
     // Compute approximate maximum, minimum singular values.
     //
