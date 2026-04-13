@@ -94,15 +94,20 @@ void Clatrs(const char *uplo, const char *trans, const char *diag, const char *n
     //
     // Quick return if possible
     //
-    scale = one;
     if (n == 0) {
         return;
     }
     //
     // Determine machine dependent parameters to control overflow.
     //
-    smlnum = Rlamch("Safe minimum") / Rlamch("Precision");
+    smlnum = Rlamch("Safe minimum");
     bignum = one / smlnum;
+#if defined ___MPLAPACK_BUILD_WITH_BINARY128___ ||  defined ___MPLAPACK_BUILD_WITH_BINARY80___
+    Rlabad(smlnum, bignum);
+#endif
+    smlnum = smlnum / Rlamch("Precision");
+    bignum = one / smlnum;
+    scale = one;
     //
     if (Mlsame(normin, "N")) {
         //
