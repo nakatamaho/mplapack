@@ -248,5 +248,5 @@ SW: M=    1, N=    1, MB=    3, NB=   20 test( 5)=+7.6059854564732432e+01
  All tests for ZHH routines passed the threshold (  15900 tests run)
 
  End of tests
- Total time used =        29.60 seconds
+ Total time used =        33.64 seconds
 
