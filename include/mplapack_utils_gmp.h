@@ -198,6 +198,18 @@ inline void sprinthex_gmp_fixed(char *buf, size_t n, const mpf_class &x) { sprin
 
 #endif
 
+inline mpf_class abs(mpf_class a) {
+    mpf_class r;
+    mpf_abs(r.get_mpf_t(), a.get_mpf_t());
+    return r;
+}
+
+inline mpf_class sqrt(mpf_class a) {
+    mpf_class r;
+    mpf_sqrt(r.get_mpf_t(), a.get_mpf_t());
+    return r;
+}
+
 inline mpf_class pow2(mpf_class a) {
     mpf_class mtmp = a * a;
     return mtmp;
