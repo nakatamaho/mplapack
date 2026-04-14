@@ -94,6 +94,7 @@ void Cunbdb3(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x11, IN
             CRrot(q - i + 1, &x11[((i - 1) - 1) + (i - 1) * ldx11], ldx11, &x21[(i - 1) + (i - 1) * ldx21], ldx11, c, s);
         }
         //
+        Clacgv(q - i + 1, &x21[(i - 1) + (i - 1) * ldx21], ldx21);
         Clarfgp(q - i + 1, x21[(i - 1) + (i - 1) * ldx21], &x21[(i - 1) + ((i + 1) - 1) * ldx21], ldx21, tauq1[i - 1]);
         s = x21[(i - 1) + (i - 1) * ldx21].real();
         Clarf1f("R", p - i + 1, q - i + 1, &x21[(i - 1) + (i - 1) * ldx21], ldx21, tauq1[i - 1], &x11[(i - 1) + (i - 1) * ldx11], ldx11, &work[ilarf - 1]);

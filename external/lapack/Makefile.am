@@ -51,6 +51,7 @@ PATCHES_3_12_1 = \
 	patch-redundant-dble-real \
 	patch-trsyl3-ldswork-overwrite \
 	patch-xpgvx-info-to-iinfo \
+	patch-zunbdb3-conjugate-x21 \
 	patch-fix-testparameters \
 	patch-xERRTSQR.f \
 	patch-cabs1_unification \
