@@ -1,0 +1,352 @@
+ Tests of the Hermitian Eigenvalue Problem routines
+ Tests of the Multiple precision version of LAPACK 2.2.0
+ Based on the original LAPACK VERSION 3.12.1
+
+The following parameter values will be used:
+
+ The following parameter values will be used:
+    M:         0     1     2     3     5    20
+    N:         0     1     2     3     5    20
+    NB:        1     3     3     3    10
+    NBMIN:     2     2     2     2     2
+    NX:        1     0     5     9     1
+ 
+ Relative machine underflow is taken to be2.00416836000897277799610805134985e-292
+ Relative machine overflow  is taken to be1.79769313486231580793728971405329e+308
+ Relative machine precision is taken to be4.93038065763132323644109090613580e-32
+
+ Routines pass computational tests if test ratio is less than5.00000000000000000000000000000000e+01
+
+ 
+ ZST routines passed the tests of the error exits (179 tests done)
+
+
+ SE2:  NB =   1, NBMIN =   2, NX =   1
+
+ All tests for ZST passed the threshold (  3120 tests run)
+
+ ZST -- Complex Hermitian eigenvalue problem
+ Matrix types (see xDRVST for details): 
+
+ Special Matrices:
+  1=Zero matrix.                          5=Diagonal: clustered entries.
+  2=Identity matrix.                      6=Diagonal: large, evenly spaced.
+  3=Diagonal: evenly spaced entries.      7=Diagonal: small, evenly spaced.
+  4=Diagonal: geometr. spaced entries.
+ Dense Hermitian Matrices:
+  8=Evenly spaced eigenvals.             12=Small, evenly spaced eigenvals.
+  9=Geometrically spaced eigenvals.      13=Matrix with random O(1) entries.
+ 10=Clustered eigenvalues.               14=Matrix with large random entries.
+ 11=Large, evenly spaced eigenvals.      15=Matrix with small random entries.
+
+ Tests performed:  See zdrvst.f
+ Matrix order=    3, type=11, seed=29209,7398,5996,65111, result  28 is6.94794282607747520233523775722759e+13
+ Matrix order=    3, type=11, seed=29209,7398,5996,65111, result  29 is3.64689981078943766233262864026527e+13
+ Matrix order=    3, type=11, seed=29209,7398,5996,65111, result  30 is5.74370079385648281166646796172359e+13
+ Matrix order=    3, type=11, seed=29209,7398,5996,65111, result  31 is3.50272464861599825554866521147255e+13
+ Matrix order=    3, type=11, seed=29209,7398,5996,65111, result  32 is2.21507053475769712092223088567534e+13
+ Matrix order=    3, type=11, seed=29209,7398,5996,65111, result  33 is7.47702415330881887445502851814542e+13
+ Matrix order=    3, type=11, seed=29209,7398,5996,65111, result  34 is3.50272464861593918271282556224735e+13
+ Matrix order=    3, type=11, seed=29209,7398,5996,65111, result  35 is2.21507053475769503758889755234180e+13
+ Matrix order=    3, type=11, seed=29209,7398,5996,65111, result  36 is7.47702415330860078776861902852495e+13
+ Matrix order=    3, type=11, seed=29209,7398,5996,65111, result  82 is6.94794282607747364046702321107660e+13
+ Matrix order=    3, type=11, seed=29209,7398,5996,65111, result  83 is3.64689981078943766233262864026527e+13
+ Matrix order=    3, type=11, seed=29209,7398,5996,65111, result  84 is5.74370079385638906166646796169811e+13
+ Matrix order=    3, type=11, seed=29209,7398,5996,65111, result  85 is3.50272464861599861789682651598326e+13
+ Matrix order=    3, type=11, seed=29209,7398,5996,65111, result  86 is2.21507053475769712092223088567534e+13
+ Matrix order=    3, type=11, seed=29209,7398,5996,65111, result  87 is7.47702415330881034554095295048453e+13
+ Matrix order=    3, type=11, seed=29209,7398,5996,65111, result  88 is3.50272464861594345228947940276436e+13
+ Matrix order=    3, type=11, seed=29209,7398,5996,65111, result  89 is2.21507053475769607925556421900855e+13
+ Matrix order=    3, type=11, seed=29209,7398,5996,65111, result  90 is7.47702415330860078776861902852502e+13
+ Matrix order=    3, type=14, seed=51745,54290,27678,41389, result  28 is4.49708625535557484713318299505812e+13
+ Matrix order=    3, type=14, seed=51745,54290,27678,41389, result  29 is3.88337021593268509318621064869206e+13
+ Matrix order=    3, type=14, seed=51745,54290,27678,41389, result  30 is7.26093701705260617163515922561510e+13
+ Matrix order=    3, type=14, seed=51745,54290,27678,41389, result  31 is3.43969731884177313312672806781849e+13
+ Matrix order=    3, type=14, seed=51745,54290,27678,41389, result  32 is4.40097194478794475943937171662640e+13
+ Matrix order=    3, type=14, seed=51745,54290,27678,41389, result  33 is1.45218740341050730327808786654258e+14
+ Matrix order=    3, type=14, seed=51745,54290,27678,41389, result  34 is3.43969731884173565681294997204827e+13
+ Matrix order=    3, type=14, seed=51745,54290,27678,41389, result  35 is4.40097194478794319693937171662644e+13
+ Matrix order=    3, type=14, seed=51745,54290,27678,41389, result  36 is1.45218740341051984122213744726496e+14
+ Matrix order=    3, type=14, seed=51745,54290,27678,41389, result  82 is4.49708625535557547317324609422611e+13
+ Matrix order=    3, type=14, seed=51745,54290,27678,41389, result  83 is3.88337021593268509318621064869206e+13
+ Matrix order=    3, type=14, seed=51745,54290,27678,41389, result  84 is7.26093701705260617163515922561510e+13
+ Matrix order=    3, type=14, seed=51745,54290,27678,41389, result  85 is3.43969731884177072086919341844799e+13
+ Matrix order=    3, type=14, seed=51745,54290,27678,41389, result  86 is4.40097194478794475943937171662640e+13
+ Matrix order=    3, type=14, seed=51745,54290,27678,41389, result  87 is1.45218740341050730327808786654258e+14
+ Matrix order=    3, type=14, seed=51745,54290,27678,41389, result  88 is3.43969731884173384052482551043519e+13
+ Matrix order=    3, type=14, seed=51745,54290,27678,41389, result  89 is4.40097194478794319693937171662644e+13
+ Matrix order=    3, type=14, seed=51745,54290,27678,41389, result  90 is1.45218740341051705501234865154888e+14
+ Matrix order=    5, type=14, seed=53645,8450,63843,33826, result  28 is4.82972706021462056782845629409741e+13
+ Matrix order=    5, type=14, seed=53645,8450,63843,33826, result  29 is3.38902269380331654683935374299115e+13
+ Matrix order=    5, type=14, seed=53645,8450,63843,33826, result  30 is7.41446712785529778233028146380619e+13
+ Matrix order=    5, type=14, seed=53645,8450,63843,33826, result  31 is2.69057925291034688031293867363400e+13
+ Matrix order=    5, type=14, seed=53645,8450,63843,33826, result  32 is1.03844882238746386529097925094422e+13
+ Matrix order=    5, type=14, seed=53645,8450,63843,33826, result  33 is3.35101652348041422622795268015665e+13
+ Matrix order=    5, type=14, seed=53645,8450,63843,33826, result  34 is2.69057925291037354593631308877703e+13
+ Matrix order=    5, type=14, seed=53645,8450,63843,33826, result  35 is1.03844882238747511529097925094546e+13
+ Matrix order=    5, type=14, seed=53645,8450,63843,33826, result  36 is3.35101652348046193201481865259825e+13
+ Matrix order=    5, type=14, seed=53645,8450,63843,33826, result  82 is4.82972706021461915529208513931481e+13
+ Matrix order=    5, type=14, seed=53645,8450,63843,33826, result  83 is3.38902269380331654683935374299115e+13
+ Matrix order=    5, type=14, seed=53645,8450,63843,33826, result  84 is7.41446712785529778233028146380619e+13
+ Matrix order=    5, type=14, seed=53645,8450,63843,33826, result  85 is2.69057925291034688031293867363400e+13
+ Matrix order=    5, type=14, seed=53645,8450,63843,33826, result  86 is1.03844882238746386529097925094422e+13
+ Matrix order=    5, type=14, seed=53645,8450,63843,33826, result  87 is3.35101652348041422622795268015665e+13
+ Matrix order=    5, type=14, seed=53645,8450,63843,33826, result  88 is2.69057925291037354593631308877703e+13
+ Matrix order=    5, type=14, seed=53645,8450,63843,33826, result  89 is1.03844882238747511529097925094546e+13
+ Matrix order=    5, type=14, seed=53645,8450,63843,33826, result  90 is3.35101652348046193201481865259825e+13
+ Matrix order=   20, type=14, seed=39635,26629,24452,16504, result  28 is8.95827547230930601929400241020454e+13
+ Matrix order=   20, type=14, seed=39635,26629,24452,16504, result  29 is2.63146515879295639966320735133827e+14
+ Matrix order=   20, type=14, seed=39635,26629,24452,16504, result  30 is4.37912246911951663744197575666477e+14
+ Matrix order=   20, type=14, seed=39635,26629,24452,16504, result  31 is1.47020347569273218380266472194757e+13
+ Matrix order=   20, type=14, seed=39635,26629,24452,16504, result  32 is5.43508895863243073926799880941324e+13
+ Matrix order=   20, type=14, seed=39635,26629,24452,16504, result  33 is6.77820089259488262280816833342777e+13
+ Matrix order=   20, type=14, seed=39635,26629,24452,16504, result  34 is1.47020347569272807638612460078438e+13
+ Matrix order=   20, type=14, seed=39635,26629,24452,16504, result  35 is5.43508895863243054189832392148076e+13
+ Matrix order=   20, type=14, seed=39635,26629,24452,16504, result  36 is6.77820089259485017428647575135567e+13
+ Matrix order=   20, type=14, seed=39635,26629,24452,16504, result  82 is8.95827547230930582195841312499784e+13
+ Matrix order=   20, type=14, seed=39635,26629,24452,16504, result  83 is2.63146515879295639966320735133827e+14
+ Matrix order=   20, type=14, seed=39635,26629,24452,16504, result  84 is4.37912246911952053126457886651307e+14
+ Matrix order=   20, type=14, seed=39635,26629,24452,16504, result  85 is1.47020347569273164750773641339362e+13
+ Matrix order=   20, type=14, seed=39635,26629,24452,16504, result  86 is5.43508895863243073926799880941324e+13
+ Matrix order=   20, type=14, seed=39635,26629,24452,16504, result  87 is6.77820089259486315369515278418446e+13
+ Matrix order=   20, type=14, seed=39635,26629,24452,16504, result  88 is1.47020347569272934169319974594791e+13
+ Matrix order=   20, type=14, seed=39635,26629,24452,16504, result  89 is5.43508895863242953519137555495044e+13
+ Matrix order=   20, type=14, seed=39635,26629,24452,16504, result  90 is6.77820089259485017428647575135567e+13
+ ZST drivers:     72 out of  11016 tests failed to pass the threshold
+
+
+ SE2:  NB =   3, NBMIN =   2, NX =   0
+
+ All tests for ZST passed the threshold (  3120 tests run)
+
+ ZST -- Complex Hermitian eigenvalue problem
+ Matrix types (see xDRVST for details): 
+
+ Special Matrices:
+  1=Zero matrix.                          5=Diagonal: clustered entries.
+  2=Identity matrix.                      6=Diagonal: large, evenly spaced.
+  3=Diagonal: evenly spaced entries.      7=Diagonal: small, evenly spaced.
+  4=Diagonal: geometr. spaced entries.
+ Dense Hermitian Matrices:
+  8=Evenly spaced eigenvals.             12=Small, evenly spaced eigenvals.
+  9=Geometrically spaced eigenvals.      13=Matrix with random O(1) entries.
+ 10=Clustered eigenvalues.               14=Matrix with large random entries.
+ 11=Large, evenly spaced eigenvals.      15=Matrix with small random entries.
+
+ Tests performed:  See zdrvst.f
+ Matrix order=   20, type=14, seed=11928,9083,49962,57698, result  28 is6.61993003278519349427142470077656e+13
+ Matrix order=   20, type=14, seed=11928,9083,49962,57698, result  29 is2.45431186357924377845404687450985e+14
+ Matrix order=   20, type=14, seed=11928,9083,49962,57698, result  30 is3.99894455809966608009163594527067e+14
+ Matrix order=   20, type=14, seed=11928,9083,49962,57698, result  31 is3.59454215597160663956188919505506e+13
+ Matrix order=   20, type=14, seed=11928,9083,49962,57698, result  32 is5.21244367480230383252460942869085e+13
+ Matrix order=   20, type=14, seed=11928,9083,49962,57698, result  33 is7.99788911619931436582040649845788e+14
+ Matrix order=   20, type=14, seed=11928,9083,49962,57698, result  34 is3.59454215597160530063255244822061e+13
+ Matrix order=   20, type=14, seed=11928,9083,49962,57698, result  35 is5.21244367480230292696927164156968e+13
+ Matrix order=   20, type=14, seed=11928,9083,49962,57698, result  36 is7.99788911619932966860694337903793e+14
+ Matrix order=   20, type=14, seed=11928,9083,49962,57698, result  82 is6.61993003278519353996392787079935e+13
+ Matrix order=   20, type=14, seed=11928,9083,49962,57698, result  83 is2.45431186357924377845404687450985e+14
+ Matrix order=   20, type=14, seed=11928,9083,49962,57698, result  84 is3.99894455809966735532384735198608e+14
+ Matrix order=   20, type=14, seed=11928,9083,49962,57698, result  85 is3.59454215597160828482084573253464e+13
+ Matrix order=   20, type=14, seed=11928,9083,49962,57698, result  86 is5.21244367480230383252460942869085e+13
+ Matrix order=   20, type=14, seed=11928,9083,49962,57698, result  87 is7.99788911619932201721367493874787e+14
+ Matrix order=   20, type=14, seed=11928,9083,49962,57698, result  88 is3.59454215597160130143404410362338e+13
+ Matrix order=   20, type=14, seed=11928,9083,49962,57698, result  89 is5.21244367480230379489775987510077e+13
+ Matrix order=   20, type=14, seed=11928,9083,49962,57698, result  90 is7.99788911619932966860694337903793e+14
+ ZST drivers:     18 out of  11016 tests failed to pass the threshold
+
+
+ SE2:  NB =   3, NBMIN =   2, NX =   5
+
+ All tests for ZST passed the threshold (  3120 tests run)
+
+ ZST -- Complex Hermitian eigenvalue problem
+ Matrix types (see xDRVST for details): 
+
+ Special Matrices:
+  1=Zero matrix.                          5=Diagonal: clustered entries.
+  2=Identity matrix.                      6=Diagonal: large, evenly spaced.
+  3=Diagonal: evenly spaced entries.      7=Diagonal: small, evenly spaced.
+  4=Diagonal: geometr. spaced entries.
+ Dense Hermitian Matrices:
+  8=Evenly spaced eigenvals.             12=Small, evenly spaced eigenvals.
+  9=Geometrically spaced eigenvals.      13=Matrix with random O(1) entries.
+ 10=Clustered eigenvalues.               14=Matrix with large random entries.
+ 11=Large, evenly spaced eigenvals.      15=Matrix with small random entries.
+
+ Tests performed:  See zdrvst.f
+ Matrix order=   20, type=14, seed=63102,27174,42026,4730, result  28 is9.01956880943595246510552690135352e+13
+ Matrix order=   20, type=14, seed=63102,27174,42026,4730, result  29 is2.52303785697957047180506688850747e+14
+ Matrix order=   20, type=14, seed=63102,27174,42026,4730, result  30 is2.89106279083683685902242374769871e+14
+ Matrix order=   20, type=14, seed=63102,27174,42026,4730, result  31 is2.07283077620667306615829298467800e+13
+ Matrix order=   20, type=14, seed=63102,27174,42026,4730, result  32 is1.12605004157605181703150066024084e+14
+ Matrix order=   20, type=14, seed=63102,27174,42026,4730, result  33 is3.93639935356247234846187147238627e+14
+ Matrix order=   20, type=14, seed=63102,27174,42026,4730, result  34 is2.07283077620667367172414407174638e+13
+ Matrix order=   20, type=14, seed=63102,27174,42026,4730, result  35 is1.12605004157605186797834151980459e+14
+ Matrix order=   20, type=14, seed=63102,27174,42026,4730, result  36 is3.93639935356249605338573855200335e+14
+ Matrix order=   20, type=14, seed=63102,27174,42026,4730, result  82 is9.01956880943595265687853374697831e+13
+ Matrix order=   20, type=14, seed=63102,27174,42026,4730, result  83 is2.52303785697957047180506688850747e+14
+ Matrix order=   20, type=14, seed=63102,27174,42026,4730, result  84 is2.89106279083683685902242374769871e+14
+ Matrix order=   20, type=14, seed=63102,27174,42026,4730, result  85 is2.07283077620667281382019218435875e+13
+ Matrix order=   20, type=14, seed=63102,27174,42026,4730, result  86 is1.12605004157605181703150066024084e+14
+ Matrix order=   20, type=14, seed=63102,27174,42026,4730, result  87 is3.93639935356248489812744816159532e+14
+ Matrix order=   20, type=14, seed=63102,27174,42026,4730, result  88 is2.07283077620667388014246196797902e+13
+ Matrix order=   20, type=14, seed=63102,27174,42026,4730, result  89 is1.12605004157605186338861138743787e+14
+ Matrix order=   20, type=14, seed=63102,27174,42026,4730, result  90 is3.93639935356247932049830296639128e+14
+ Matrix order=   20, type=17, seed=18175,24475,64100,43775, result  28 is1.17480191235217534004968446695981e+13
+ Matrix order=   20, type=17, seed=18175,24475,64100,43775, result  29 is1.08107772272113774185484782569926e+13
+ Matrix order=   20, type=17, seed=18175,24475,64100,43775, result  30 is8.54629201299922112207254200045388e+13
+ Matrix order=   20, type=17, seed=18175,24475,64100,43775, result  31 is3.21623372978354337127066919874230e+11
+ Matrix order=   20, type=17, seed=18175,24475,64100,43775, result  32 is8.50979398527148306768641285075490e+10
+ Matrix order=   20, type=17, seed=18175,24475,64100,43775, result  33 is2.63248399887546950284580497884040e+12
+ Matrix order=   20, type=17, seed=18175,24475,64100,43775, result  34 is3.21623372978357110726072107846245e+11
+ Matrix order=   20, type=17, seed=18175,24475,64100,43775, result  35 is8.50979398527813185156086143479634e+10
+ Matrix order=   20, type=17, seed=18175,24475,64100,43775, result  36 is2.63248399887718825284580497933192e+12
+ Matrix order=   20, type=17, seed=18175,24475,64100,43775, result  82 is1.17480191235217510982810155438391e+13
+ Matrix order=   20, type=17, seed=18175,24475,64100,43775, result  83 is1.08107772272113774185484782569926e+13
+ Matrix order=   20, type=17, seed=18175,24475,64100,43775, result  84 is8.54629201299922112207254200045388e+13
+ Matrix order=   20, type=17, seed=18175,24475,64100,43775, result  85 is3.21623372978365613098711510769832e+11
+ Matrix order=   20, type=17, seed=18175,24475,64100,43775, result  86 is8.50979398527148306768641285075490e+10
+ Matrix order=   20, type=17, seed=18175,24475,64100,43775, result  87 is2.63248399887359450284580497830416e+12
+ Matrix order=   20, type=17, seed=18175,24475,64100,43775, result  88 is3.21623372978274136472376007030096e+11
+ Matrix order=   20, type=17, seed=18175,24475,64100,43775, result  89 is8.50979398527441387083341062073297e+10
+ Matrix order=   20, type=17, seed=18175,24475,64100,43775, result  90 is2.63248399887515700284580497875101e+12
+ ZST drivers:     36 out of  11016 tests failed to pass the threshold
+
+
+ SE2:  NB =   3, NBMIN =   2, NX =   9
+
+ All tests for ZST passed the threshold (  3120 tests run)
+
+ ZST -- Complex Hermitian eigenvalue problem
+ Matrix types (see xDRVST for details): 
+
+ Special Matrices:
+  1=Zero matrix.                          5=Diagonal: clustered entries.
+  2=Identity matrix.                      6=Diagonal: large, evenly spaced.
+  3=Diagonal: evenly spaced entries.      7=Diagonal: small, evenly spaced.
+  4=Diagonal: geometr. spaced entries.
+ Dense Hermitian Matrices:
+  8=Evenly spaced eigenvals.             12=Small, evenly spaced eigenvals.
+  9=Geometrically spaced eigenvals.      13=Matrix with random O(1) entries.
+ 10=Clustered eigenvalues.               14=Matrix with large random entries.
+ 11=Large, evenly spaced eigenvals.      15=Matrix with small random entries.
+
+ Tests performed:  See zdrvst.f
+ Matrix order=    5, type=14, seed=52906,61111,6608,62926, result  28 is2.70705892247195913982459393399031e+13
+ Matrix order=    5, type=14, seed=52906,61111,6608,62926, result  29 is3.49904397318703052705833607385944e+13
+ Matrix order=    5, type=14, seed=52906,61111,6608,62926, result  30 is5.25694131016534998727192680839568e+13
+ Matrix order=    5, type=14, seed=52906,61111,6608,62926, result  31 is5.58835902179935817857784233419971e+12
+ Matrix order=    5, type=14, seed=52906,61111,6608,62926, result  32 is1.79701374177966418178484575328668e+13
+ Matrix order=    5, type=14, seed=52906,61111,6608,62926, result  33 is2.90896326771126211659127834305782e+13
+ Matrix order=    5, type=14, seed=52906,61111,6608,62926, result  34 is5.58835902179927769130992307888286e+12
+ Matrix order=    5, type=14, seed=52906,61111,6608,62926, result  35 is1.79701374177966181923098209036146e+13
+ Matrix order=    5, type=14, seed=52906,61111,6608,62926, result  36 is2.90896326771133943206497623035593e+13
+ Matrix order=    5, type=14, seed=52906,61111,6608,62926, result  82 is2.70705892247196024360411791758460e+13
+ Matrix order=    5, type=14, seed=52906,61111,6608,62926, result  83 is3.49904397318703052705833607385944e+13
+ Matrix order=    5, type=14, seed=52906,61111,6608,62926, result  84 is5.25694131016534998727192680839568e+13
+ Matrix order=    5, type=14, seed=52906,61111,6608,62926, result  85 is5.58835902179935413156825114530913e+12
+ Matrix order=    5, type=14, seed=52906,61111,6608,62926, result  86 is1.79701374177966418178484575328668e+13
+ Matrix order=    5, type=14, seed=52906,61111,6608,62926, result  87 is2.90896326771126211659127834305782e+13
+ Matrix order=    5, type=14, seed=52906,61111,6608,62926, result  88 is5.58835902179916604163410129775115e+12
+ Matrix order=    5, type=14, seed=52906,61111,6608,62926, result  89 is1.79701374177967067651467726985014e+13
+ Matrix order=    5, type=14, seed=52906,61111,6608,62926, result  90 is2.90896326771133943206497623035593e+13
+ Matrix order=   20, type=14, seed=7873,8447,59056,49523, result  28 is1.12026392730827124252945236779170e+14
+ Matrix order=   20, type=14, seed=7873,8447,59056,49523, result  29 is3.04302259282713288595606110680327e+14
+ Matrix order=   20, type=14, seed=7873,8447,59056,49523, result  30 is4.76098301856655601402543459890473e+14
+ Matrix order=   20, type=14, seed=7873,8447,59056,49523, result  31 is2.81166382185579390902724054330930e+13
+ Matrix order=   20, type=14, seed=7873,8447,59056,49523, result  32 is1.13239291476395278652468406829053e+14
+ Matrix order=   20, type=14, seed=7873,8447,59056,49523, result  33 is3.26254675552165706750382815849738e+14
+ Matrix order=   20, type=14, seed=7873,8447,59056,49523, result  34 is2.81166382185579389128919585517496e+13
+ Matrix order=   20, type=14, seed=7873,8447,59056,49523, result  35 is1.13239291476395300663501879414163e+14
+ Matrix order=   20, type=14, seed=7873,8447,59056,49523, result  36 is3.26254675552164923760777694467346e+14
+ Matrix order=   20, type=14, seed=7873,8447,59056,49523, result  82 is1.12026392730827124513558015768524e+14
+ Matrix order=   20, type=14, seed=7873,8447,59056,49523, result  83 is3.04302259282713288595606110680327e+14
+ Matrix order=   20, type=14, seed=7873,8447,59056,49523, result  84 is4.76098301856655329058332982887916e+14
+ Matrix order=   20, type=14, seed=7873,8447,59056,49523, result  85 is2.81166382185579420008154256458265e+13
+ Matrix order=   20, type=14, seed=7873,8447,59056,49523, result  86 is1.13239291476395278652468406829053e+14
+ Matrix order=   20, type=14, seed=7873,8447,59056,49523, result  87 is3.26254675552165808879461744725704e+14
+ Matrix order=   20, type=14, seed=7873,8447,59056,49523, result  88 is2.81166382185579607112465048245145e+13
+ Matrix order=   20, type=14, seed=7873,8447,59056,49523, result  89 is1.13239291476395277310740867006902e+14
+ Matrix order=   20, type=14, seed=7873,8447,59056,49523, result  90 is3.26254675552164957803804004092669e+14
+ ZST drivers:     36 out of  11016 tests failed to pass the threshold
+
+
+ SE2:  NB =  10, NBMIN =   2, NX =   1
+
+ All tests for ZST passed the threshold (  3120 tests run)
+
+ ZST -- Complex Hermitian eigenvalue problem
+ Matrix types (see xDRVST for details): 
+
+ Special Matrices:
+  1=Zero matrix.                          5=Diagonal: clustered entries.
+  2=Identity matrix.                      6=Diagonal: large, evenly spaced.
+  3=Diagonal: evenly spaced entries.      7=Diagonal: small, evenly spaced.
+  4=Diagonal: geometr. spaced entries.
+ Dense Hermitian Matrices:
+  8=Evenly spaced eigenvals.             12=Small, evenly spaced eigenvals.
+  9=Geometrically spaced eigenvals.      13=Matrix with random O(1) entries.
+ 10=Clustered eigenvalues.               14=Matrix with large random entries.
+ 11=Large, evenly spaced eigenvals.      15=Matrix with small random entries.
+
+ Tests performed:  See zdrvst.f
+ Matrix order=    5, type=14, seed=64633,60555,43698,60361, result  28 is1.36495542936449826242940212407563e+12
+ Matrix order=    5, type=14, seed=64633,60555,43698,60361, result  29 is1.40394483641562605851894072216134e+12
+ Matrix order=    5, type=14, seed=64633,60555,43698,60361, result  30 is2.81372550975817080991472180996111e+12
+ Matrix order=    5, type=14, seed=64633,60555,43698,60361, result  31 is7.64110852239734669383295317752475e+11
+ Matrix order=    5, type=14, seed=64633,60555,43698,60361, result  32 is1.25208897684155086942723574951149e+12
+ Matrix order=    5, type=14, seed=64633,60555,43698,60361, result  33 is5.62745101951409200761263548669930e+12
+ Matrix order=    5, type=14, seed=64633,60555,43698,60361, result  34 is7.64110852239553238489597443243675e+11
+ Matrix order=    5, type=14, seed=64633,60555,43698,60361, result  35 is1.25208897684163745231034401465215e+12
+ Matrix order=    5, type=14, seed=64633,60555,43698,60361, result  36 is5.62745101951451381002786651613830e+12
+ Matrix order=    5, type=14, seed=64633,60555,43698,60361, result  82 is1.36495542936450107780508515116578e+12
+ Matrix order=    5, type=14, seed=64633,60555,43698,60361, result  83 is1.40394483641562605851894072216134e+12
+ Matrix order=    5, type=14, seed=64633,60555,43698,60361, result  84 is2.81372550975817080991472180996103e+12
+ Matrix order=    5, type=14, seed=64633,60555,43698,60361, result  85 is7.64110852239716273135910005401942e+11
+ Matrix order=    5, type=14, seed=64633,60555,43698,60361, result  86 is1.25208897684155086942723574951149e+12
+ Matrix order=    5, type=14, seed=64633,60555,43698,60361, result  87 is5.62745101951409200761263548669930e+12
+ Matrix order=    5, type=14, seed=64633,60555,43698,60361, result  88 is7.64110852239556560196346159821621e+11
+ Matrix order=    5, type=14, seed=64633,60555,43698,60361, result  89 is1.25208897684163246941051639306127e+12
+ Matrix order=    5, type=14, seed=64633,60555,43698,60361, result  90 is5.62745101951535741485832857501631e+12
+ Matrix order=   20, type=11, seed=7971,22788,60708,4349, result  28 is1.63449675432856736213254294894646e+13
+ Matrix order=   20, type=11, seed=7971,22788,60708,4349, result  29 is4.42253640417336853643581239295485e+13
+ Matrix order=   20, type=11, seed=7971,22788,60708,4349, result  30 is6.29536001387474390727823378592705e+13
+ Matrix order=   20, type=11, seed=7971,22788,60708,4349, result  31 is8.85649487002926864511598852745846e+12
+ Matrix order=   20, type=11, seed=7971,22788,60708,4349, result  32 is4.46046418029399344739981424007247e+12
+ Matrix order=   20, type=11, seed=7971,22788,60708,4349, result  33 is4.81863227584768881636298581129613e+13
+ Matrix order=   20, type=11, seed=7971,22788,60708,4349, result  34 is8.85649487002929550757538129814639e+12
+ Matrix order=   20, type=11, seed=7971,22788,60708,4349, result  35 is4.46046418029399865817564185947204e+12
+ Matrix order=   20, type=11, seed=7971,22788,60708,4349, result  36 is4.81863227584778256636298581132171e+13
+ Matrix order=   20, type=11, seed=7971,22788,60708,4349, result  82 is1.63449675432856729207210133491035e+13
+ Matrix order=   20, type=11, seed=7971,22788,60708,4349, result  83 is4.42253640417336853643581239295485e+13
+ Matrix order=   20, type=11, seed=7971,22788,60708,4349, result  84 is6.29536001387474390727823378592705e+13
+ Matrix order=   20, type=11, seed=7971,22788,60708,4349, result  85 is8.85649487002926392827548354578079e+12
+ Matrix order=   20, type=11, seed=7971,22788,60708,4349, result  86 is4.46046418029399344739981424007247e+12
+ Matrix order=   20, type=11, seed=7971,22788,60708,4349, result  87 is4.81863227584768881636298581129613e+13
+ Matrix order=   20, type=11, seed=7971,22788,60708,4349, result  88 is8.85649487002919290905208170826557e+12
+ Matrix order=   20, type=11, seed=7971,22788,60708,4349, result  89 is4.46046418029400132504060817447655e+12
+ Matrix order=   20, type=11, seed=7971,22788,60708,4349, result  90 is4.81863227584778256636298581132171e+13
+ Matrix order=   20, type=14, seed=15764,32298,26675,22730, result  28 is8.73557121655161534010656702232278e+13
+ Matrix order=   20, type=14, seed=15764,32298,26675,22730, result  29 is2.67355475144841138000429068820198e+14
+ Matrix order=   20, type=14, seed=15764,32298,26675,22730, result  30 is5.34559406047793632628270578606350e+14
+ Matrix order=   20, type=14, seed=15764,32298,26675,22730, result  31 is2.21410992301288652284719683282515e+13
+ Matrix order=   20, type=14, seed=15764,32298,26675,22730, result  32 is1.01760414821829328774073551685909e+14
+ Matrix order=   20, type=14, seed=15764,32298,26675,22730, result  33 is2.71991312404072665431871937438278e+14
+ Matrix order=   20, type=14, seed=15764,32298,26675,22730, result  34 is2.21410992301288487884807019500226e+13
+ Matrix order=   20, type=14, seed=15764,32298,26675,22730, result  35 is1.01760414821829347797269647530621e+14
+ Matrix order=   20, type=14, seed=15764,32298,26675,22730, result  36 is2.71991312404073265950619423886917e+14
+ Matrix order=   20, type=14, seed=15764,32298,26675,22730, result  82 is8.73557121655161544207702775270293e+13
+ Matrix order=   20, type=14, seed=15764,32298,26675,22730, result  83 is2.67355475144841138000429068820198e+14
+ Matrix order=   20, type=14, seed=15764,32298,26675,22730, result  84 is5.34559406047793632628270578606350e+14
+ Matrix order=   20, type=14, seed=15764,32298,26675,22730, result  85 is2.21410992301288644558865863792858e+13
+ Matrix order=   20, type=14, seed=15764,32298,26675,22730, result  86 is1.01760414821829328774073551685909e+14
+ Matrix order=   20, type=14, seed=15764,32298,26675,22730, result  87 is2.71991312404072425224372942858823e+14
+ Matrix order=   20, type=14, seed=15764,32298,26675,22730, result  88 is2.21410992301288486672455404854463e+13
+ Matrix order=   20, type=14, seed=15764,32298,26675,22730, result  89 is1.01760414821829332981597737270622e+14
+ Matrix order=   20, type=14, seed=15764,32298,26675,22730, result  90 is2.71991312404073265950619423886917e+14
+ ZST drivers:     54 out of  11016 tests failed to pass the threshold
+
+
+ End of tests
+ Total time used =         9.40 seconds
+

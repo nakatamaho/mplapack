@@ -1,0 +1,351 @@
+=== MPFR profile: binary64 (prec=53 emin=-1021 emax=1024) ===
+
+ Tests of the Generalized Nonsymmetric Eigenvalue Problem Driver Cggev
+ Tests of the Multiple precision version of LAPACK 2.2.0
+ Based on the original LAPACK VERSION 3.12.1
+
+The following parameter values will be used:
+
+ The following parameter values will be used:
+    M:         2     6     8    10    12    20
+    N:         2     6     8    10    12    20
+    NB:        1
+    NBMIN:     1
+    NX:        1
+    NS:        2
+    MAXB:      1
+ 
+ Relative machine underflow is taken to be+2.2250738585072014e-308
+ Relative machine overflow  is taken to be+1.7976931348623157e+308
+ Relative machine precision is taken to be+1.1102230246251565e-16
+
+ Routines pass computational tests if test ratio is less than+1.0000000000000000e+01
+
+ 
+ ZGV routines passed the tests of the error exits (106 tests done)
+
+ All tests for ZGV drivers  passed the threshold (   1092 tests run)
+
+ All tests for ZGV drivers  passed the threshold (   1092 tests run)
+
+ -----------------------------------------------------------------------
+
+ Tests of the Generalized Nonsymmetric Eigenvalue Problem Driver Cgges
+ Tests of the Multiple precision version of LAPACK 2.2.0
+ Based on the original LAPACK VERSION 3.12.1
+
+The following parameter values will be used:
+
+ The following parameter values will be used:
+    M:         2     6    10    12    20
+    N:         2     6    10    12    20
+    NB:        1
+    NBMIN:     1
+    NX:        1
+    NS:        2
+    MAXB:      1
+ 
+ Relative machine underflow is taken to be+2.2250738585072014e-308
+ Relative machine overflow  is taken to be+1.7976931348623157e+308
+ Relative machine precision is taken to be+1.1102230246251565e-16
+
+ Routines pass computational tests if test ratio is less than+1.0000000000000000e+01
+
+ 
+ ZGS routines passed the tests of the error exits (106 tests done)
+
+ ZGS -- Complex Generalized Schur from problem driver
+ Matrix types (see Cdrges for details): 
+ Special Matrices:                       (J'=transposed Jordan block)
+   1=(0,0)  2=(I,0)  3=(0,I)  4=(I,I)  5=(J',J')  6=(diag(J',I), diag(I,J'))
+ Diagonal Matrices:  ( D=diag(0,1,2,...) )
+   7=(D,I)   9=(large*D, small*I)  11=(large*I, small*D)  13=(large*D, large*I)
+   8=(I,D)  10=(small*D, large*I)  12=(small*I, large*D)  14=(small*D, small*I)
+  15=(D, reversed D)
+ Matrices Rotated by Random Unitary Matrices U, V:
+  16=Transposed Jordan Blocks             19=geometric alpha, beta=0,1
+  17=arithm. alpha&beta                   20=arithmetic alpha, beta=0,1
+  18=clustered alpha, beta=0,1            21=random alpha, beta=0,1
+ Large & Small Matrices:
+  22=(large, small)   23=(small,large)    24=(small,small)    25=(large,large)
+  26=random O(1) matrices.
+
+ Tests performed:  (S is Schur, T is triangular, Q and Z are unitary,
+                   l and r are the appropriate left and right
+                   eigenvectors, resp., a is alpha, b is beta, and
+                   ' means transpose.)
+ Without ordering: 
+  1 = | A - Q S Z' | / ( |A| n ulp )      2 = | B - Q T Z' | / ( |B| n ulp )
+  3 = | I - QQ' | / ( n ulp )             4 = | I - ZZ' | / ( n ulp )
+  5 = A is in Schur form S
+  6 = difference between (alpha,beta) and diagonals of (S,T)
+ With ordering: 
+  7 = | (A,B) - Q (S,T) Z' | / ( |(A,B)| n ulp )
+  8 = | I - QQ' | / ( n ulp )             9 = | I - ZZ' | / ( n ulp )
+ 10 = A is in Schur form S
+ 11 = difference between (alpha,beta) and diagonals of (S,T)
+ 12 = SDIM is the correct number of selected eigenvalues
+
+
+ Tests performed:  (S is Schur, T is triangular, Q and Z are ',
+                   l and r are the appropriate left and right
+                   eigenvectors, resp., a is alpha, b is beta, and
+
+ Matrix order=    6, type=22, seed=57897,45113,8320,7328, result  1 is+4.9348549469654211e+13
+ Matrix order=    6, type=22, seed=57897,45113,8320,7328, result  2 is+8.1048574090657984e+13
+ Matrix order=    6, type=22, seed=57897,45113,8320,7328, result  4 is+1.2110420505375252e+14
+ Matrix order=    6, type=22, seed=57897,45113,8320,7328, result  7 is+2.4674274734827152e+13
+ Matrix order=    6, type=22, seed=57897,45113,8320,7328, result  9 is+1.2110420505375255e+14
+ Matrix order=    6, type=24, seed=25922,47026,55942,22206, result  1 is+4.2587870805151555e+13
+ Matrix order=    6, type=24, seed=25922,47026,55942,22206, result  2 is+3.4581462695744941e+13
+ Matrix order=    6, type=24, seed=25922,47026,55942,22206, result  3 is+3.5663043256012598e+12
+ Matrix order=    6, type=24, seed=25922,47026,55942,22206, result  4 is+4.2416659789192195e+13
+ Matrix order=    6, type=24, seed=25922,47026,55942,22206, result  7 is+2.1293935402575746e+13
+ Matrix order=    6, type=24, seed=25922,47026,55942,22206, result  8 is+3.5663043256011328e+12
+ Matrix order=    6, type=24, seed=25922,47026,55942,22206, result  9 is+4.2416659789192156e+13
+ Matrix order=   10, type=22, seed=7869,4711,62233,8195, result  1 is+9.2770108366179062e+13
+ Matrix order=   10, type=22, seed=7869,4711,62233,8195, result  2 is+9.7677475785317469e+13
+ Matrix order=   10, type=22, seed=7869,4711,62233,8195, result  4 is+1.6250843950632594e+14
+ Matrix order=   10, type=22, seed=7869,4711,62233,8195, result  7 is+4.6385054183089547e+13
+ Matrix order=   10, type=22, seed=7869,4711,62233,8195, result  9 is+1.6250843950632581e+14
+ Matrix order=   10, type=23, seed=52438,48243,55102,63445, result  1 is+6.5202386615316235e+11
+ Matrix order=   10, type=23, seed=52438,48243,55102,63445, result  2 is+5.5764492034109888e+11
+ Matrix order=   10, type=23, seed=52438,48243,55102,63445, result  3 is+1.3276535324728718e+12
+ Matrix order=   10, type=23, seed=52438,48243,55102,63445, result  7 is+2.7882246017051599e+11
+ Matrix order=   10, type=23, seed=52438,48243,55102,63445, result  8 is+1.3276535324726047e+12
+ Matrix order=   10, type=24, seed=59276,12874,44903,17997, result  1 is+8.9972474253170957e+12
+ Matrix order=   10, type=24, seed=59276,12874,44903,17997, result  2 is+1.2153559650588803e+13
+ Matrix order=   10, type=24, seed=59276,12874,44903,17997, result  4 is+2.6695238863336312e+13
+ Matrix order=   10, type=24, seed=59276,12874,44903,17997, result  7 is+4.4986237126585430e+12
+ Matrix order=   10, type=24, seed=59276,12874,44903,17997, result  9 is+2.6695238863336129e+13
+ Matrix order=   12, type=22, seed=32415,35909,45485,32910, result  1 is+2.6942861711744160e+13
+ Matrix order=   12, type=22, seed=32415,35909,45485,32910, result  2 is+3.7854589678191008e+13
+ Matrix order=   12, type=22, seed=32415,35909,45485,32910, result  4 is+8.2752888991835875e+13
+ Matrix order=   12, type=22, seed=32415,35909,45485,32910, result  7 is+1.3471430855872068e+13
+ Matrix order=   12, type=22, seed=32415,35909,45485,32910, result  9 is+8.2752888991835844e+13
+ Matrix order=   12, type=24, seed=30923,45364,42232,54060, result  1 is+7.9866004828974834e+12
+ Matrix order=   12, type=24, seed=30923,45364,42232,54060, result  2 is+1.1033693927321533e+13
+ Matrix order=   12, type=24, seed=30923,45364,42232,54060, result  3 is+3.9203992759432930e+13
+ Matrix order=   12, type=24, seed=30923,45364,42232,54060, result  4 is+4.6604237644677412e+12
+ Matrix order=   12, type=24, seed=30923,45364,42232,54060, result  7 is+3.9933002414487739e+12
+ Matrix order=   12, type=24, seed=30923,45364,42232,54060, result  8 is+3.9203992759432945e+13
+ Matrix order=   12, type=24, seed=30923,45364,42232,54060, result  9 is+4.6604237644677510e+12
+ Matrix order=   20, type=22, seed=7430,22411,37719,20799, result  1 is+3.1362692564434512e+13
+ Matrix order=   20, type=22, seed=7430,22411,37719,20799, result  2 is+3.2819737811625551e+13
+ Matrix order=   20, type=22, seed=7430,22411,37719,20799, result  4 is+5.3790410044483578e+13
+ Matrix order=   20, type=22, seed=7430,22411,37719,20799, result  7 is+1.5681346282217250e+13
+ Matrix order=   20, type=22, seed=7430,22411,37719,20799, result  9 is+5.3790410044483672e+13
+ Matrix order=   20, type=22, seed=7430,22411,37719,20799, result 11 is+1.4198796595449704e+16
+ Matrix order=   20, type=23, seed=36690,51370,48868,48835, result  1 is+1.7736174305179343e+09
+ Matrix order=   20, type=23, seed=36690,51370,48868,48835, result  2 is+1.1081326225185897e+09
+ Matrix order=   20, type=23, seed=36690,51370,48868,48835, result  3 is+8.1769601321984253e+09
+ Matrix order=   20, type=23, seed=36690,51370,48868,48835, result  7 is+5.5406631123614156e+08
+ Matrix order=   20, type=23, seed=36690,51370,48868,48835, result  8 is+8.1769601321755753e+09
+ Matrix order=   20, type=24, seed=12767,26424,3979,21571, result  1 is+1.8953656867749492e+12
+ Matrix order=   20, type=24, seed=12767,26424,3979,21571, result  2 is+1.9552179222102954e+12
+ Matrix order=   20, type=24, seed=12767,26424,3979,21571, result  4 is+2.9883595507875518e+12
+ Matrix order=   20, type=24, seed=12767,26424,3979,21571, result  7 is+9.4768284338749731e+11
+ Matrix order=   20, type=24, seed=12767,26424,3979,21571, result  9 is+2.9883595507876162e+12
+ ZGS drivers:     55 out of   1560 tests failed to pass the threshold
+
+ ZGS -- Complex Generalized Schur from problem driver
+ Matrix types (see Cdrges3 for details): 
+ Special Matrices:                       (J'=transposed Jordan block)
+   1=(0,0)  2=(I,0)  3=(0,I)  4=(I,I)  5=(J',J')  6=(diag(J',I), diag(I,J'))
+ Diagonal Matrices:  ( D=diag(0,1,2,...) )
+   7=(D,I)   9=(large*D, small*I)  11=(large*I, small*D)  13=(large*D, large*I)
+   8=(I,D)  10=(small*D, large*I)  12=(small*I, large*D)  14=(small*D, small*I)
+  15=(D, reversed D)
+ Matrices Rotated by Random Unitary Matrices U, V:
+  16=Transposed Jordan Blocks             19=geometric alpha, beta=0,1
+  17=arithm. alpha&beta                   20=arithmetic alpha, beta=0,1
+  18=clustered alpha, beta=0,1            21=random alpha, beta=0,1
+ Large & Small Matrices:
+  22=(large, small)   23=(small,large)    24=(small,small)    25=(large,large)
+  26=random O(1) matrices.
+
+ Tests performed:  (S is Schur, T is triangular, Q and Z are unitary,
+                   l and r are the appropriate left and right
+                   eigenvectors, resp., a is alpha, b is beta, and
+                   ' means transpose.)
+ Without ordering: 
+  1 = | A - Q S Z' | / ( |A| n ulp )      2 = | B - Q T Z' | / ( |B| n ulp )
+  3 = | I - QQ' | / ( n ulp )             4 = | I - ZZ' | / ( n ulp )
+  5 = A is in Schur form S
+  6 = difference between (alpha,beta) and diagonals of (S,T)
+ With ordering: 
+  7 = | (A,B) - Q (S,T) Z' | / ( |(A,B)| n ulp )
+  8 = | I - QQ' | / ( n ulp )             9 = | I - ZZ' | / ( n ulp )
+ 10 = A is in Schur form S
+ 11 = difference between (alpha,beta) and diagonals of (S,T)
+ 12 = SDIM is the correct number of selected eigenvalues
+
+
+ Tests performed:  (S is Schur, T is triangular, Q and Z are ',
+                   l and r are the appropriate left and right
+                   eigenvectors, resp., a is alpha, b is beta, and
+
+ Matrix order=    6, type=22, seed=6120,50322,23126,30815, result  1 is+7.7705497441079203e+13
+ Matrix order=    6, type=22, seed=6120,50322,23126,30815, result  2 is+8.2130400188401047e+13
+ Matrix order=    6, type=22, seed=6120,50322,23126,30815, result  4 is+1.3323250026540525e+14
+ Matrix order=    6, type=22, seed=6120,50322,23126,30815, result  7 is+3.8852748720539719e+13
+ Matrix order=    6, type=22, seed=6120,50322,23126,30815, result  9 is+1.3323250026540488e+14
+ Matrix order=    6, type=22, seed=6120,50322,23126,30815, result 11 is+1.4356074863252378e+16
+ Matrix order=   10, type=22, seed=62174,41794,16241,55345, result  1 is+2.3842428612410693e+12
+ Matrix order=   10, type=22, seed=62174,41794,16241,55345, result  2 is+2.8387044922572227e+12
+ Matrix order=   10, type=22, seed=62174,41794,16241,55345, result  4 is+6.8707745949843213e+12
+ Matrix order=   10, type=22, seed=62174,41794,16241,55345, result  7 is+1.1921214306205122e+12
+ Matrix order=   10, type=22, seed=62174,41794,16241,55345, result  9 is+6.8707745949843848e+12
+ Matrix order=   10, type=23, seed=41236,48386,8661,27110, result  1 is+2.1108047181982950e+11
+ Matrix order=   10, type=23, seed=41236,48386,8661,27110, result  2 is+5.5814883726287927e+11
+ Matrix order=   10, type=23, seed=41236,48386,8661,27110, result  3 is+3.2294401690699023e+12
+ Matrix order=   10, type=23, seed=41236,48386,8661,27110, result  7 is+2.7907441863144641e+11
+ Matrix order=   10, type=23, seed=41236,48386,8661,27110, result  8 is+3.2294401690698940e+12
+ Matrix order=   10, type=23, seed=41236,48386,8661,27110, result 11 is+1.3723883214111438e+16
+ Matrix order=   10, type=24, seed=56236,65438,3331,12386, result  1 is+7.8720166024837031e+12
+ Matrix order=   10, type=24, seed=56236,65438,3331,12386, result  2 is+8.6563431747712734e+12
+ Matrix order=   10, type=24, seed=56236,65438,3331,12386, result  3 is+4.7486001125506420e+09
+ Matrix order=   10, type=24, seed=56236,65438,3331,12386, result  4 is+1.8960666817837453e+13
+ Matrix order=   10, type=24, seed=56236,65438,3331,12386, result  7 is+3.9360083012418579e+12
+ Matrix order=   10, type=24, seed=56236,65438,3331,12386, result  8 is+4.7486001125511646e+09
+ Matrix order=   10, type=24, seed=56236,65438,3331,12386, result  9 is+1.8960666817837391e+13
+ Matrix order=   12, type=22, seed=41326,50777,58311,26771, result  1 is+2.3431418812273188e+12
+ Matrix order=   12, type=22, seed=41326,50777,58311,26771, result  2 is+2.5061556272628745e+12
+ Matrix order=   12, type=22, seed=41326,50777,58311,26771, result  4 is+5.8788140092941025e+12
+ Matrix order=   12, type=22, seed=41326,50777,58311,26771, result  7 is+1.1715709406136001e+12
+ Matrix order=   12, type=22, seed=41326,50777,58311,26771, result  9 is+5.8788140092939834e+12
+ Matrix order=   12, type=24, seed=39887,38809,19872,31556, result  1 is+3.0928924227568934e+13
+ Matrix order=   12, type=24, seed=39887,38809,19872,31556, result  2 is+3.6254400885454602e+13
+ Matrix order=   12, type=24, seed=39887,38809,19872,31556, result  3 is+3.7134097958566079e+09
+ Matrix order=   12, type=24, seed=39887,38809,19872,31556, result  4 is+6.3991229844850250e+13
+ Matrix order=   12, type=24, seed=39887,38809,19872,31556, result  7 is+1.5464462113784463e+13
+ Matrix order=   12, type=24, seed=39887,38809,19872,31556, result  8 is+3.7134097959626026e+09
+ Matrix order=   12, type=24, seed=39887,38809,19872,31556, result  9 is+6.3991229844850273e+13
+ Matrix order=   20, type=22, seed=2686,32105,6670,54021, result  1 is+7.5292154444375513e+11
+ Matrix order=   20, type=22, seed=2686,32105,6670,54021, result  2 is+6.2854962600237500e+11
+ Matrix order=   20, type=22, seed=2686,32105,6670,54021, result  4 is+2.3731837375859546e+12
+ Matrix order=   20, type=22, seed=2686,32105,6670,54021, result  7 is+3.7646077222191010e+11
+ Matrix order=   20, type=22, seed=2686,32105,6670,54021, result  9 is+2.3731837375860386e+12
+ Matrix order=   20, type=24, seed=22337,1583,1367,62873, result  1 is+4.2515914328308999e+12
+ Matrix order=   20, type=24, seed=22337,1583,1367,62873, result  2 is+5.4676280596649766e+12
+ Matrix order=   20, type=24, seed=22337,1583,1367,62873, result  3 is+2.7681853857919031e+11
+ Matrix order=   20, type=24, seed=22337,1583,1367,62873, result  4 is+1.0552466718344186e+13
+ Matrix order=   20, type=24, seed=22337,1583,1367,62873, result  7 is+2.1257957164153977e+12
+ Matrix order=   20, type=24, seed=22337,1583,1367,62873, result  8 is+2.7681853857914301e+11
+ Matrix order=   20, type=24, seed=22337,1583,1367,62873, result  9 is+1.0552466718344184e+13
+ ZGS drivers:     48 out of   1560 tests failed to pass the threshold
+
+ -----------------------------------------------------------------------
+
+ Tests of the Generalized Nonsymmetric Eigenvalue Problem Expert Driver Cggesx
+ Tests of the Multiple precision version of LAPACK 2.2.0
+ Based on the original LAPACK VERSION 3.12.1
+
+The following parameter values will be used:
+
+ The following parameter values will be used:
+    N:         2
+    NB:        1
+    NBMIN:     1
+    NX:        1
+    NS:        2
+    MAXB:      1
+ 
+ Relative machine underflow is taken to be+2.2250738585072014e-308
+ Relative machine overflow  is taken to be+1.7976931348623157e+308
+ Relative machine precision is taken to be+1.1102230246251565e-16
+
+ Routines pass computational tests if test ratio is less than+1.0000000000000000e+01
+
+ 
+ ZGX routines passed the tests of the error exits (106 tests done)
+
+ All tests for ZGX drivers  passed the threshold (    150 tests run)
+
+ -----------------------------------------------------------------------
+
+ Tests of the Generalized Nonsymmetric Eigenvalue Problem Expert Driver Cggevx
+ Tests of the Multiple precision version of LAPACK 2.2.0
+ Based on the original LAPACK VERSION 3.12.1
+
+The following parameter values will be used:
+
+ The following parameter values will be used:
+    N:         6
+    NB:        1
+    NBMIN:     1
+    NX:        1
+    NS:        2
+    MAXB:      1
+ 
+ Relative machine underflow is taken to be+2.2250738585072014e-308
+ Relative machine overflow  is taken to be+1.7976931348623157e+308
+ Relative machine precision is taken to be+1.1102230246251565e-16
+
+ Routines pass computational tests if test ratio is less than+1.0000000000000000e+01
+
+ 
+ ZXV routines passed the tests of the error exits (106 tests done)
+
+ All tests for ZXV drivers  passed the threshold (   5000 tests run)
+
+ -----------------------------------------------------------------------
+
+ Tests of the Generalized Nonsymmetric Eigenvalue Problem Expert Driver Cggesx
+ Tests of the Multiple precision version of LAPACK 2.2.0
+ Based on the original LAPACK VERSION 3.12.1
+
+The following parameter values will be used:
+
+ The following parameter values will be used:
+    N:         0
+    NB:        1
+    NBMIN:     1
+    NX:        1
+    NS:        2
+    MAXB:      1
+ 
+ Relative machine underflow is taken to be+2.2250738585072014e-308
+ Relative machine overflow  is taken to be+1.7976931348623157e+308
+ Relative machine precision is taken to be+1.1102230246251565e-16
+
+ Routines pass computational tests if test ratio is less than+1.0000000000000000e+01
+
+ 
+ ZGX routines passed the tests of the error exits (106 tests done)
+
+ All tests for ZGX drivers  passed the threshold (     20 tests run)
+
+ -----------------------------------------------------------------------
+
+ Tests of the Generalized Nonsymmetric Eigenvalue Problem Expert Driver Cggevx
+ Tests of the Multiple precision version of LAPACK 2.2.0
+ Based on the original LAPACK VERSION 3.12.1
+
+The following parameter values will be used:
+
+ The following parameter values will be used:
+    N:         0
+    NB:        1
+    NBMIN:     1
+    NX:        1
+    NS:        2
+    MAXB:      1
+ 
+ Relative machine underflow is taken to be+2.2250738585072014e-308
+ Relative machine overflow  is taken to be+1.7976931348623157e+308
+ Relative machine precision is taken to be+1.1102230246251565e-16
+
+ Routines pass computational tests if test ratio is less than+1.0000000000000000e+01
+
+ 
+ ZXV routines passed the tests of the error exits (106 tests done)
+
+ All tests for ZXV drivers  passed the threshold (      8 tests run)
+
+ -----------------------------------------------------------------------
+
+
+ End of tests
+ Total time used =        90.22 seconds
+

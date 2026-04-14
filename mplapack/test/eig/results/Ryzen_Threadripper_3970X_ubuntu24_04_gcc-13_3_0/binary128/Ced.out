@@ -1,0 +1,161 @@
+=== precision: binary128 ===
+
+ Tests of the Nonsymmetric Eigenvalue Problem Driver
+    Cgees (Schur form)
+ Tests of the Multiple precision version of LAPACK 2.2.0
+ Based on the original LAPACK VERSION 3.12.1
+
+The following parameter values will be used:
+
+ The following parameter values will be used:
+    M:         0     1     2     3     5    10    20
+    N:         0     1     2     3     5    10    20
+    NB:        3
+    NBMIN:     3
+    NX:        1
+    INMIN:       11
+    INWIN:      4
+    INIBL:      8
+    ISHFTS:      2
+    IACC22:      0
+ 
+ Relative machine underflow is taken to be+3.3621031431120935e-4932
+ Relative machine overflow  is taken to be+1.1897314953572318e+4932
+ Relative machine precision is taken to be+9.6296497219361793e-35
+
+ Routines pass computational tests if test ratio is less than+2.0000000000000000e+01
+
+ 
+ Cgees passed the tests of the error exits (  6 tests done)
+
+ All tests for ZES passed the threshold (  3822 tests run)
+
+ -----------------------------------------------------------------------
+
+ Tests of the Nonsymmetric Eigenvalue Problem Driver
+    Cgeev (eigenvalues and eigevectors)
+ Tests of the Multiple precision version of LAPACK 2.2.0
+ Based on the original LAPACK VERSION 3.12.1
+
+The following parameter values will be used:
+
+ The following parameter values will be used:
+    M:         0     1     2     3     5    10    20
+    N:         0     1     2     3     5    10    20
+    NB:        3
+    NBMIN:     3
+    NX:        1
+    INMIN:       11
+    INWIN:      4
+    INIBL:      8
+    ISHFTS:      2
+    IACC22:      0
+ 
+ Relative machine underflow is taken to be+3.3621031431120935e-4932
+ Relative machine overflow  is taken to be+1.1897314953572318e+4932
+ Relative machine precision is taken to be+9.6296497219361793e-35
+
+ Routines pass computational tests if test ratio is less than+2.0000000000000000e+01
+
+ 
+ Cgeev passed the tests of the error exits (  7 tests done)
+
+ ZEV -- Complex Eigenvalue-Eigenvector Decomposition Driver
+ Matrix types (see Cdrvev for details): 
+
+ Special Matrices:
+  1=Zero matrix.                          5=Diagonal: geometr. spaced entries.
+  2=Identity matrix.                      6=Diagonal: clustered entries.
+  3=Transposed Jordan block.              7=Diagonal: large, evenly spaced.
+  4=Diagonal: evenly spaced entries.      8=Diagonal: small, evenly spaced.
+ Dense, Non-Symmetric Matrices:
+  9=Well-cond., evenly spaced eigenvals. 14=Ill-cond., geomet. spaced eigenals.
+ 10=Well-cond., geom. spaced eigenvals.  15=Ill-conditioned, clustered e.vals.
+ 11=Well-conditioned, clustered e.vals.  16=Ill-cond., random complex 
+ 19=Matrix with random O(1) entries.     21=Matrix with small random entries.
+ 20=Matrix with large random entries.   
+
+ Tests performed with test threshold =+2.0000000000000000e+01
+
+ 1 = | A VR - VR W | / ( n |A| ulp ) 
+ 2 = | conj-trans(A) VL - VL conj-trans(W) | / ( n |A| ulp ) 
+ 3 = | |VR(i)| - 1 | / ulp 
+ 4 = | |VL(i)| - 1 | / ulp 
+ 5 = 0 if W same no matter if VR or VL computed, 1/ulp otherwise
+ 6 = 0 if VR same no matter if VL computed,  1/ulp otherwise
+ 7 = 0 if VL same no matter if VR computed,  1/ulp otherwise
+
+ N=   20, IWK= 1, seed=43014,49364,28111, 806, type 20, test( 7)=+5.1922968585348276e+33
+ N=   20, IWK= 2, seed=43014,49364,28111, 806, type 20, test( 7)=+5.1922968585348276e+33
+ ZEV:    2 out of  1094 tests failed to pass the threshold
+
+ -----------------------------------------------------------------------
+
+ Tests of the Nonsymmetric Eigenvalue Problem Expert Driver
+    Cgeesx (Schur form and condition numbers)
+ Tests of the Multiple precision version of LAPACK 2.2.0
+ Based on the original LAPACK VERSION 3.12.1
+
+The following parameter values will be used:
+
+ The following parameter values will be used:
+    M:         0     1     2     3     5    10    20
+    N:         0     1     2     3     5    10    20
+    NB:        3
+    NBMIN:     3
+    NX:        1
+    INMIN:       11
+    INWIN:      4
+    INIBL:      8
+    ISHFTS:      2
+    IACC22:      0
+ 
+ Relative machine underflow is taken to be+3.3621031431120935e-4932
+ Relative machine overflow  is taken to be+1.1897314953572318e+4932
+ Relative machine precision is taken to be+9.6296497219361793e-35
+
+ Routines pass computational tests if test ratio is less than+2.0000000000000000e+01
+
+ 
+ Cgeesx passed the tests of the error exits (  7 tests done)
+
+ All tests for ZSX passed the threshold (  3994 tests run)
+
+ -----------------------------------------------------------------------
+
+ Tests of the Nonsymmetric Eigenvalue Problem Expert Driver
+    Cgeevx (eigenvalues, eigenvectors and condition numbers)
+ Tests of the Multiple precision version of LAPACK 2.2.0
+ Based on the original LAPACK VERSION 3.12.1
+
+The following parameter values will be used:
+
+ The following parameter values will be used:
+    M:         0     1     2     3     5    10
+    N:         0     1     2     3     5    10
+    NB:        3
+    NBMIN:     3
+    NX:        1
+    INMIN:       11
+    INWIN:      4
+    INIBL:      8
+    ISHFTS:      2
+    IACC22:      0
+ 
+ Relative machine underflow is taken to be+3.3621031431120935e-4932
+ Relative machine overflow  is taken to be+1.1897314953572318e+4932
+ Relative machine precision is taken to be+9.6296497219361793e-35
+
+ Routines pass computational tests if test ratio is less than+2.0000000000000000e+01
+
+ 
+ Cgeevx passed the tests of the error exits ( 10 tests done)
+
+ All tests for ZVX passed the threshold (  5172 tests run)
+
+ -----------------------------------------------------------------------
+
+
+ End of tests
+ Total time used =        46.73 seconds
+

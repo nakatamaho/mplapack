@@ -1,0 +1,258 @@
+=== precision: binary128 ===
+
+ Tests of the Generalized Nonsymmetric Eigenvalue Problem Driver Cggev
+ Tests of the Multiple precision version of LAPACK 2.2.0
+ Based on the original LAPACK VERSION 3.12.1
+
+The following parameter values will be used:
+
+ The following parameter values will be used:
+    M:         2     6     8    10    12    20
+    N:         2     6     8    10    12    20
+    NB:        1
+    NBMIN:     1
+    NX:        1
+    NS:        2
+    MAXB:      1
+ 
+ Relative machine underflow is taken to be+3.3621031431120935e-4932
+ Relative machine overflow  is taken to be+1.1897314953572318e+4932
+ Relative machine precision is taken to be+9.6296497219361793e-35
+
+ Routines pass computational tests if test ratio is less than+1.0000000000000000e+01
+
+ 
+ ZGV routines passed the tests of the error exits (106 tests done)
+
+ All tests for ZGV drivers  passed the threshold (   1092 tests run)
+
+ All tests for ZGV drivers  passed the threshold (   1092 tests run)
+
+ -----------------------------------------------------------------------
+
+ Tests of the Generalized Nonsymmetric Eigenvalue Problem Driver Cgges
+ Tests of the Multiple precision version of LAPACK 2.2.0
+ Based on the original LAPACK VERSION 3.12.1
+
+The following parameter values will be used:
+
+ The following parameter values will be used:
+    M:         2     6    10    12    20
+    N:         2     6    10    12    20
+    NB:        1
+    NBMIN:     1
+    NX:        1
+    NS:        2
+    MAXB:      1
+ 
+ Relative machine underflow is taken to be+3.3621031431120935e-4932
+ Relative machine overflow  is taken to be+1.1897314953572318e+4932
+ Relative machine precision is taken to be+9.6296497219361793e-35
+
+ Routines pass computational tests if test ratio is less than+1.0000000000000000e+01
+
+ 
+ ZGS routines passed the tests of the error exits (106 tests done)
+
+ ZGS -- Complex Generalized Schur from problem driver
+ Matrix types (see Cdrges for details): 
+ Special Matrices:                       (J'=transposed Jordan block)
+   1=(0,0)  2=(I,0)  3=(0,I)  4=(I,I)  5=(J',J')  6=(diag(J',I), diag(I,J'))
+ Diagonal Matrices:  ( D=diag(0,1,2,...) )
+   7=(D,I)   9=(large*D, small*I)  11=(large*I, small*D)  13=(large*D, large*I)
+   8=(I,D)  10=(small*D, large*I)  12=(small*I, large*D)  14=(small*D, small*I)
+  15=(D, reversed D)
+ Matrices Rotated by Random Unitary Matrices U, V:
+  16=Transposed Jordan Blocks             19=geometric alpha, beta=0,1
+  17=arithm. alpha&beta                   20=arithmetic alpha, beta=0,1
+  18=clustered alpha, beta=0,1            21=random alpha, beta=0,1
+ Large & Small Matrices:
+  22=(large, small)   23=(small,large)    24=(small,small)    25=(large,large)
+  26=random O(1) matrices.
+
+ Tests performed:  (S is Schur, T is triangular, Q and Z are unitary,
+                   l and r are the appropriate left and right
+                   eigenvectors, resp., a is alpha, b is beta, and
+                   ' means transpose.)
+ Without ordering: 
+  1 = | A - Q S Z' | / ( |A| n ulp )      2 = | B - Q T Z' | / ( |B| n ulp )
+  3 = | I - QQ' | / ( n ulp )             4 = | I - ZZ' | / ( n ulp )
+  5 = A is in Schur form S
+  6 = difference between (alpha,beta) and diagonals of (S,T)
+ With ordering: 
+  7 = | (A,B) - Q (S,T) Z' | / ( |(A,B)| n ulp )
+  8 = | I - QQ' | / ( n ulp )             9 = | I - ZZ' | / ( n ulp )
+ 10 = A is in Schur form S
+ 11 = difference between (alpha,beta) and diagonals of (S,T)
+ 12 = SDIM is the correct number of selected eigenvalues
+
+
+ Tests performed:  (S is Schur, T is triangular, Q and Z are ',
+                   l and r are the appropriate left and right
+                   eigenvectors, resp., a is alpha, b is beta, and
+
+ Matrix order=   10, type=14, seed=2468,32362,60476,1113, result 11 is+1.6562894423717104e+34
+ Matrix order=   12, type=13, seed=64351,12556,4164,50596, result 11 is+1.4338388200186994e+34
+ Matrix order=   12, type=14, seed=30840,18176,7768,5119, result 11 is+1.5560257556891071e+34
+ Matrix order=   20, type=13, seed=36230,65108,62674,16592, result 11 is+1.3789982864907683e+34
+ Matrix order=   20, type=14, seed=18087,20018,24091,52507, result 11 is+1.4981001633708351e+34
+ ZGS drivers:      5 out of   1560 tests failed to pass the threshold
+
+ ZGS -- Complex Generalized Schur from problem driver
+ Matrix types (see Cdrges3 for details): 
+ Special Matrices:                       (J'=transposed Jordan block)
+   1=(0,0)  2=(I,0)  3=(0,I)  4=(I,I)  5=(J',J')  6=(diag(J',I), diag(I,J'))
+ Diagonal Matrices:  ( D=diag(0,1,2,...) )
+   7=(D,I)   9=(large*D, small*I)  11=(large*I, small*D)  13=(large*D, large*I)
+   8=(I,D)  10=(small*D, large*I)  12=(small*I, large*D)  14=(small*D, small*I)
+  15=(D, reversed D)
+ Matrices Rotated by Random Unitary Matrices U, V:
+  16=Transposed Jordan Blocks             19=geometric alpha, beta=0,1
+  17=arithm. alpha&beta                   20=arithmetic alpha, beta=0,1
+  18=clustered alpha, beta=0,1            21=random alpha, beta=0,1
+ Large & Small Matrices:
+  22=(large, small)   23=(small,large)    24=(small,small)    25=(large,large)
+  26=random O(1) matrices.
+
+ Tests performed:  (S is Schur, T is triangular, Q and Z are unitary,
+                   l and r are the appropriate left and right
+                   eigenvectors, resp., a is alpha, b is beta, and
+                   ' means transpose.)
+ Without ordering: 
+  1 = | A - Q S Z' | / ( |A| n ulp )      2 = | B - Q T Z' | / ( |B| n ulp )
+  3 = | I - QQ' | / ( n ulp )             4 = | I - ZZ' | / ( n ulp )
+  5 = A is in Schur form S
+  6 = difference between (alpha,beta) and diagonals of (S,T)
+ With ordering: 
+  7 = | (A,B) - Q (S,T) Z' | / ( |(A,B)| n ulp )
+  8 = | I - QQ' | / ( n ulp )             9 = | I - ZZ' | / ( n ulp )
+ 10 = A is in Schur form S
+ 11 = difference between (alpha,beta) and diagonals of (S,T)
+ 12 = SDIM is the correct number of selected eigenvalues
+
+
+ Tests performed:  (S is Schur, T is triangular, Q and Z are ',
+                   l and r are the appropriate left and right
+                   eigenvectors, resp., a is alpha, b is beta, and
+
+ Matrix order=    6, type=13, seed=51961,30874,30294,15006, result 11 is+1.5219952845264746e+34
+ Matrix order=    6, type=14, seed=20257,4555,28519,6317, result 11 is+1.1678938288847242e+34
+ Matrix order=   12, type=14, seed=37450,12782,38681,40983, result 11 is+1.5405528373058985e+34
+ Matrix order=   20, type=13, seed=53410,52532,40766,65483, result 11 is+1.5263090509318076e+34
+ Matrix order=   20, type=14, seed=57820,11664,1500,11817, result 11 is+1.5461136008803196e+34
+ ZGS drivers:      5 out of   1560 tests failed to pass the threshold
+
+ -----------------------------------------------------------------------
+
+ Tests of the Generalized Nonsymmetric Eigenvalue Problem Expert Driver Cggesx
+ Tests of the Multiple precision version of LAPACK 2.2.0
+ Based on the original LAPACK VERSION 3.12.1
+
+The following parameter values will be used:
+
+ The following parameter values will be used:
+    N:         2
+    NB:        1
+    NBMIN:     1
+    NX:        1
+    NS:        2
+    MAXB:      1
+ 
+ Relative machine underflow is taken to be+3.3621031431120935e-4932
+ Relative machine overflow  is taken to be+1.1897314953572318e+4932
+ Relative machine precision is taken to be+9.6296497219361793e-35
+
+ Routines pass computational tests if test ratio is less than+1.0000000000000000e+01
+
+ 
+ ZGX routines passed the tests of the error exits (106 tests done)
+
+ All tests for ZGX drivers  passed the threshold (    150 tests run)
+
+ -----------------------------------------------------------------------
+
+ Tests of the Generalized Nonsymmetric Eigenvalue Problem Expert Driver Cggevx
+ Tests of the Multiple precision version of LAPACK 2.2.0
+ Based on the original LAPACK VERSION 3.12.1
+
+The following parameter values will be used:
+
+ The following parameter values will be used:
+    N:         6
+    NB:        1
+    NBMIN:     1
+    NX:        1
+    NS:        2
+    MAXB:      1
+ 
+ Relative machine underflow is taken to be+3.3621031431120935e-4932
+ Relative machine overflow  is taken to be+1.1897314953572318e+4932
+ Relative machine precision is taken to be+9.6296497219361793e-35
+
+ Routines pass computational tests if test ratio is less than+1.0000000000000000e+01
+
+ 
+ ZXV routines passed the tests of the error exits (106 tests done)
+
+ All tests for ZXV drivers  passed the threshold (   5000 tests run)
+
+ -----------------------------------------------------------------------
+
+ Tests of the Generalized Nonsymmetric Eigenvalue Problem Expert Driver Cggesx
+ Tests of the Multiple precision version of LAPACK 2.2.0
+ Based on the original LAPACK VERSION 3.12.1
+
+The following parameter values will be used:
+
+ The following parameter values will be used:
+    N:         0
+    NB:        1
+    NBMIN:     1
+    NX:        1
+    NS:        2
+    MAXB:      1
+ 
+ Relative machine underflow is taken to be+3.3621031431120935e-4932
+ Relative machine overflow  is taken to be+1.1897314953572318e+4932
+ Relative machine precision is taken to be+9.6296497219361793e-35
+
+ Routines pass computational tests if test ratio is less than+1.0000000000000000e+01
+
+ 
+ ZGX routines passed the tests of the error exits (106 tests done)
+
+ All tests for ZGX drivers  passed the threshold (     20 tests run)
+
+ -----------------------------------------------------------------------
+
+ Tests of the Generalized Nonsymmetric Eigenvalue Problem Expert Driver Cggevx
+ Tests of the Multiple precision version of LAPACK 2.2.0
+ Based on the original LAPACK VERSION 3.12.1
+
+The following parameter values will be used:
+
+ The following parameter values will be used:
+    N:         0
+    NB:        1
+    NBMIN:     1
+    NX:        1
+    NS:        2
+    MAXB:      1
+ 
+ Relative machine underflow is taken to be+3.3621031431120935e-4932
+ Relative machine overflow  is taken to be+1.1897314953572318e+4932
+ Relative machine precision is taken to be+9.6296497219361793e-35
+
+ Routines pass computational tests if test ratio is less than+1.0000000000000000e+01
+
+ 
+ ZXV routines passed the tests of the error exits (106 tests done)
+
+ All tests for ZXV drivers  passed the threshold (      8 tests run)
+
+ -----------------------------------------------------------------------
+
+
+ End of tests
+ Total time used =        20.68 seconds
+

@@ -1,0 +1,20 @@
+=== precision: qd ===
+ Tests of the Nonsymmetric eigenproblem condition estimation routines
+ Rlaln2, Rlasy2, Rlanv2, Rlaexc, DTRSYL, Rtrexc, Rtrsna, Rtrsen, Rlaqtr, Rtgexc
+
+ Relative machine precision (EPS) = 4.8617306858290164189457653486129329763141430817884386279852245780e-63
+ Safe minimum (SFMIN)             = 1.6259745436952323153369025467109371916500580246095533056887340829e-260
+
+ Routines pass computational tests if test ratio is less than2.0000000000000000000000000000000000000000000000000000000000000000e+01
+
+
+ DEC routines passed the tests of the error exits ( 43 tests done)
+ Error in Rlasy2: RMAX =4.6004670618253344930864278243270038516678634303114197694343735287e+09
+ LMAX =    32374 NINFO=   56196 KNT=  135000
+ Error in Rlaexc: RMAX =2.0568806966515077810533423111502944535661795085520413342564352003e+62
+ LMAX =     6393 NINFO=      80       0 KNT=   42258
+
+
+ End of tests
+ Total time used =       569.12 seconds
+
