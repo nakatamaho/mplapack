@@ -790,7 +790,9 @@ def break_line_if_necessary(callback, line, max_len=80, min_len=70):
 
     # Do not break lines that contain slice markers.
     # These must stay on a single physical line for pattern matching.
-    if "__SLICE2D__" in line or "__SLICE__" in line:
+    if ("__FABLE_UNHANDLED_SLICE" in line
+            or "__SLICE2D__" in line
+            or "__SLICE__" in line):
         cb_finalize(line)
         return
 
@@ -3376,7 +3378,24 @@ def _convert_parentheses_postfix(conv_info, prev_tok, tok, had_str_concat):
                         return True
             return False
 
+        def _split_top_level_token_groups(tokens, sep):
+            """Split a token list at top-level separator tokens."""
+            if sep == "," and all(
+                    hasattr(t, "is_seq") and t.is_seq() for t in tokens):
+                return [list(t.value) for t in tokens]
+            groups = []
+            current = []
+            for t in tokens:
+                if hasattr(t, 'is_op_with') and t.is_op_with(value=sep):
+                    groups.append(current)
+                    current = []
+                else:
+                    current.append(t)
+            groups.append(current)
+            return groups
+
         is_array_slice = _contains_colon_op(tok.value)
+        arg_token_groups = _split_top_level_token_groups(tok.value, ",")
 
         # Convert indices inside parentheses to C++ array indexing
         idx_str = convert_tokens(
@@ -3415,6 +3434,37 @@ def _convert_parentheses_postfix(conv_info, prev_tok, tok, had_str_concat):
                 end_expr = parts[1].strip()
                 step_expr = parts[2].strip()
                 return f'[__SLICE__({start_expr}, {end_expr}, {step_expr})]'
+
+            if len(arg_token_groups) == 2:
+                slice_dims = [
+                    i for i, group in enumerate(arg_token_groups)
+                    if _contains_colon_op(group)
+                ]
+                if len(slice_dims) == 1:
+                    slice_dim = slice_dims[0]
+                    slice_token_groups = _split_top_level_token_groups(
+                        arg_token_groups[slice_dim], ":")
+                    if len(slice_token_groups) == 2:
+                        if slice_dim == 0:
+                            start_expr = parts[0].strip()
+                            end_expr = parts[1].strip()
+                            fixed_expr = parts[2].strip()
+                        else:
+                            fixed_expr = parts[0].strip()
+                            start_expr = parts[1].strip()
+                            end_expr = parts[2].strip()
+                        default_ldname = 'ld' + prev_tok.value.lower()
+                        if fdecl is not None:
+                            ldexpr0 = get_leading_dimension_expr(
+                                conv_info, fdecl, default=default_ldname)
+                        else:
+                            ldexpr0 = str(int(data_dims_ints[0])) if (
+                                data_dims_ints and len(data_dims_ints) >= 1) else "1"
+                        ldexpr = _maybe_use_ld_variable(
+                            conv_info, ldexpr0, default_ldname)
+                        if slice_dim == 0:
+                            return f'[__SLICE2D__({start_expr}, {end_expr}, {fixed_expr}, {ldexpr})]'
+                        return f'[__FABLE_UNHANDLED_SLICE2D_COL__({fixed_expr}, {start_expr}, {end_expr}, {ldexpr})]'
 
             # 2D slice on first dimension: [__SLICE2D__(start, end, col, ldname)]
             start_expr = parts[0].strip()
@@ -9401,6 +9451,13 @@ def _postprocess_slice_assignment(lines):
     )
 
     def rewrite_line(line: str) -> str:
+        if "__FABLE_UNHANDLED_SLICE2D_COL__" in line:
+            leading_ws = line[:len(line) - len(line.lstrip())]
+            return (
+                f"{leading_ws}// FABLE_UNHANDLED_SLICE_ASSIGN: {line.strip()}\n"
+                f"{leading_ws}FABLE_UNHANDLED_SLICE_ASSIGN();"
+            )
+
         # --------------------------------------------------------------
         # 0) Pseudo-slice shorthand:  A(i1, i2) = zero;  or  A(i1,i2,j1,j2) = zero;
         # --------------------------------------------------------------
