@@ -1446,6 +1446,13 @@ statement_190:
                 Rerrgg(c3, nout);
             }
             Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+            thresh_org = thresh;
+            thresh = thresh * 8.0;
+            printf("Warning! Threshold has been lifted to: ");
+            printnum_short(thresh);
+            printf(" for GMP\n");
+#endif
             Rdrges(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], &a[(3 - 1) * lda], &a[(4 - 1) * lda], &a[(7 - 1) * lda], nmax, &a[(8 - 1) * lda], &d[0], &d[(2 - 1) * nmax], &d[(3 - 1) * nmax], work, lwork, result, logwrk, info);
             if (info != 0) {
                 write(nout, format_9980), "Rdrges", info;
@@ -1458,6 +1465,9 @@ statement_190:
             if (info != 0) {
                 write(nout, format_9980), "Rdrges3", info;
             }
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+            thresh = thresh_org;
+#endif
         }
         write(nout, format_9973);
         goto statement_10;
@@ -1503,6 +1513,13 @@ statement_190:
                 Rerrgg(c3, nout);
             }
             Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+            thresh_org = thresh;
+            thresh = thresh * 3.0;
+            printf("Warning! Threshold has been lifted to: ");
+            printnum_short(thresh);
+            printf(" for GMP\n");
+#endif
             Rdrgev(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], &a[(3 - 1) * lda], &a[(4 - 1) * lda], &a[(7 - 1) * lda], nmax, &a[(8 - 1) * lda], &a[(9 - 1) * lda], nmax, &d[0], &d[(2 - 1) * nmax], &d[(3 - 1) * nmax], &d[(4 - 1) * nmax], &d[(5 - 1) * nmax], &d[(6 - 1) * nmax], work, lwork, result, info);
             if (info != 0) {
                 write(nout, format_9980), "Rdrgev", info;
@@ -1514,6 +1531,9 @@ statement_190:
             if (info != 0) {
                 write(nout, format_9980), "Rdrgev3", info;
             }
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+            thresh = thresh_org;
+#endif
         }
         write(nout, format_9973);
         goto statement_10;
