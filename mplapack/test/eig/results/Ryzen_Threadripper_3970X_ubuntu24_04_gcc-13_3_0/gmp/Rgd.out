@@ -23,6 +23,7 @@ The following parameter values will be used:
 
  
  DGS routines passed the tests of the error exits (108 tests done)
+Warning! Threshold has been lifted to: +8.0000000000000000e+01 for GMP
  Rdrges: Rgges returned INFO=    15.
          N=    12, JTYPE=    17, ISEED=(17551,43028,8153,7824,
 
@@ -67,76 +68,7 @@ The following parameter values will be used:
  DGS drivers:      1 out of   1555 tests failed to pass the threshold
  *** Error code from Rdrges =   15
 
- DGS -- Real Generalized Schur form driver
- Matrix types (see Rdrges3 for details): 
- Special Matrices:                       (J'=transposed Jordan block)
-   1=(0,0)  2=(I,0)  3=(0,I)  4=(I,I)  5=(J',J')  6=(diag(J',I), diag(I,J'))
- Diagonal Matrices:  ( D=diag(0,1,2,...) )
-   7=(D,I)   9=(large*D, small*I)  11=(large*I, small*D)  13=(large*D, large*I)
-   8=(I,D)  10=(small*D, large*I)  12=(small*I, large*D)  14=(small*D, small*I)
-  15=(D, reversed D)
- Matrices Rotated by Random Orthogonal Matrices U, V:
-  16=Transposed Jordan Blocks             19=geometric alpha, beta=0,1
-  17=arithm. alpha&beta                   20=arithmetic alpha, beta=0,1
-  18=clustered alpha, beta=0,1            21=random alpha, beta=0,1
- Large & Small Matrices:
-  22=(large, small)   23=(small,large)    24=(small,small)    25=(large,large)
-  26=random O(1) matrices.
-
- Tests performed:  (S is Schur, T is triangular, Q and Z are orthogonal,
-                   l and r are the appropriate left and right
-                   eigenvectors, resp., a is alpha, b is beta, and
-                   ' means transpose.)
- Without ordering: 
-  1 = | A - Q S Z' | / ( |A| n ulp )      2 = | B - Q T Z' | / ( |B| n ulp )
-  3 = | I - QQ' | / ( n ulp )             4 = | I - ZZ' | / ( n ulp )
-  5 = A is in Schur form S
-  6 = difference between (alpha,beta) and diagonals of (S,T)
- With ordering: 
-  7 = | (A,B) - Q (S,T) Z' | / ( |(A,B)| n ulp )  
-  8 = | I - QQ' | / ( n ulp )            9 = | I - ZZ' | / ( n ulp )
- 10 = A is in Schur form S
- 11 = difference between (alpha,beta) and diagonals of (S,T)
- 12 = SDIM is the correct number of selected eigenvalues
-
-
- Tests performed:  (S is Schur, T is triangular, Q and Z are ',
-                   l and r are the appropriate left and right
-                   eigenvectors, resp., a is alpha, b is beta, and
-
- Matrix order=   12, type=23, seed=38077,53117,3066,56155, result  4 is+1.3084817186292700e+01
- Matrix order=   12, type=23, seed=38077,53117,3066,56155, result  9 is+1.3084817186292700e+01
- Matrix order=   12, type=26, seed=64645,64543,32746,25017, result  4 is+1.9848368776995298e+01
- Matrix order=   12, type=26, seed=64645,64543,32746,25017, result  9 is+2.0353009646392937e+01
- Matrix order=   20, type=18, seed=17625,19256,11844,64813, result  4 is+1.3385504665331601e+01
- Matrix order=   20, type=18, seed=17625,19256,11844,64813, result  9 is+1.3594817595495405e+01
- Matrix order=   20, type=19, seed=11150,44522,60612,39974, result  1 is+1.4813287107847734e+01
- Matrix order=   20, type=19, seed=11150,44522,60612,39974, result  2 is+1.4704331526558818e+01
- Matrix order=   20, type=19, seed=11150,44522,60612,39974, result  3 is+1.5536565981348030e+01
- Matrix order=   20, type=19, seed=11150,44522,60612,39974, result  4 is+4.0828386524256105e+01
- Matrix order=   20, type=19, seed=11150,44522,60612,39974, result  8 is+1.5695530825035812e+01
- Matrix order=   20, type=19, seed=11150,44522,60612,39974, result  9 is+4.1670411856905733e+01
- Matrix order=   20, type=21, seed=28707,10238,31470,6756, result  4 is+1.0117127984499115e+01
- Matrix order=   20, type=21, seed=28707,10238,31470,6756, result  9 is+1.0241409411414758e+01
- Matrix order=   20, type=22, seed=61444,64008,8629,54659, result  3 is+1.0400490339497792e+01
- Matrix order=   20, type=22, seed=61444,64008,8629,54659, result  4 is+2.0046274503052452e+01
- Matrix order=   20, type=22, seed=61444,64008,8629,54659, result  8 is+1.0400490339497792e+01
- Matrix order=   20, type=22, seed=61444,64008,8629,54659, result  9 is+2.0046274503052452e+01
- Matrix order=   20, type=23, seed=19896,36166,50067,48992, result  1 is+1.8560045284154393e+01
- Matrix order=   20, type=23, seed=19896,36166,50067,48992, result  4 is+5.9560444630838486e+01
- Matrix order=   20, type=23, seed=19896,36166,50067,48992, result  9 is+5.9560444630838486e+01
- Matrix order=   20, type=24, seed=17449,13583,10969,37379, result  4 is+1.4615779524396481e+01
- Matrix order=   20, type=24, seed=17449,13583,10969,37379, result  9 is+1.4717135296117975e+01
- Matrix order=   20, type=25, seed=43107,38050,47566,31256, result  3 is+1.2657320955074714e+01
- Matrix order=   20, type=25, seed=43107,38050,47566,31256, result  4 is+2.4528184773543399e+01
- Matrix order=   20, type=25, seed=43107,38050,47566,31256, result  8 is+1.2807448057949813e+01
- Matrix order=   20, type=25, seed=43107,38050,47566,31256, result  9 is+2.4405744125736654e+01
- Matrix order=   20, type=26, seed=31873,12850,21941,4861, result  1 is+1.1849055638813985e+01
- Matrix order=   20, type=26, seed=31873,12850,21941,4861, result  3 is+1.7979844047741102e+01
- Matrix order=   20, type=26, seed=31873,12850,21941,4861, result  4 is+2.8415273156289929e+01
- Matrix order=   20, type=26, seed=31873,12850,21941,4861, result  8 is+1.8472101194380478e+01
- Matrix order=   20, type=26, seed=31873,12850,21941,4861, result  9 is+2.8911012190317347e+01
- DGS drivers:     32 out of   1560 tests failed to pass the threshold
+ All tests for DGS drivers  passed the threshold (   1560 tests run)
 
  -----------------------------------------------------------------------
 
@@ -163,44 +95,11 @@ The following parameter values will be used:
 
  
  DGV routines passed the tests of the error exits (108 tests done)
+Warning! Threshold has been lifted to: +3.0000000000000000e+01 for GMP
 
  All tests for DGV drivers  passed the threshold (   1092 tests run)
 
- DGV -- Real Generalized eigenvalue problem driver
- Matrix types (see Rdrgev3 for details): 
- Special Matrices:                       (J'=transposed Jordan block)
-   1=(0,0)  2=(I,0)  3=(0,I)  4=(I,I)  5=(J',J')  6=(diag(J',I), diag(I,J'))
- Diagonal Matrices:  ( D=diag(0,1,2,...) )
-   7=(D,I)   9=(large*D, small*I)  11=(large*I, small*D)  13=(large*D, large*I)
-   8=(I,D)  10=(small*D, large*I)  12=(small*I, large*D)  14=(small*D, small*I)
-  15=(D, reversed D)
- Matrices Rotated by Random Orthogonal Matrices U, V:
-  16=Transposed Jordan Blocks             19=geometric alpha, beta=0,1
-  17=arithm. alpha&beta                   20=arithmetic alpha, beta=0,1
-  18=clustered alpha, beta=0,1            21=random alpha, beta=0,1
- Large & Small Matrices:
-  22=(large, small)   23=(small,large)    24=(small,small)    25=(large,large)
-  26=random O(1) matrices.
-
- Tests performed:    
- 1 = max | ( b A - a B )'*l | / const.,
- 2 = | |VR(i)| - 1 | / ulp,
- 3 = max | ( b A - a B )*r | / const.
- 4 = | |VL(i)| - 1 | / ulp,
- 5 = 0 if W same no matter if r or l computed,
- 6 = 0 if l same no matter if l computed,
- 7 = 0 if r same no matter if r computed,
-
- Matrix order=    6, type=18, seed=56617,64428,26357,55268, result  3 is+1.0066240744474666e+01
- Matrix order=   15, type=22, seed=52437,6423,41971,15299, result  1 is+1.2022925032026352e+01
- Matrix order=   15, type=26, seed=21071,13356,50400,50966, result  1 is+1.7485247655603701e+01
- Matrix order=   20, type=21, seed=6430,55899,8821,61998, result  1 is+1.0616846347047726e+01
- Matrix order=   20, type=22, seed=23206,17812,10739,16344, result  1 is+1.3528074398518254e+01
- Matrix order=   20, type=23, seed=30955,36894, 293, 279, result  1 is+1.8724081685232809e+01
- Matrix order=   20, type=25, seed=12253,20149, 866,42022, result  3 is+1.4537797734686616e+01
- Matrix order=   20, type=26, seed=38151,39953,57766,64083, result  1 is+1.8945588375912765e+01
- Matrix order=   20, type=26, seed=38151,39953,57766,64083, result  3 is+1.9300730764586612e+01
- DGV drivers:      9 out of   1092 tests failed to pass the threshold
+ All tests for DGV drivers  passed the threshold (   1092 tests run)
 
  -----------------------------------------------------------------------
 
@@ -314,5 +213,5 @@ The following parameter values will be used:
 
 
  End of tests
- Total time used =        52.94 seconds
+ Total time used =       170.39 seconds
 

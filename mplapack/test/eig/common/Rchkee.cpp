@@ -1462,12 +1462,12 @@ statement_190:
             //
             Mxlaenv(16, 2);
             Rdrges3(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], &a[(3 - 1) * lda], &a[(4 - 1) * lda], &a[(7 - 1) * lda], nmax, &a[(8 - 1) * lda], &d[0], &d[(2 - 1) * nmax], &d[(3 - 1) * nmax], work, lwork, result, logwrk, info);
-            if (info != 0) {
-                write(nout, format_9980), "Rdrges3", info;
-            }
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
             thresh = thresh_org;
 #endif
+            if (info != 0) {
+                write(nout, format_9980), "Rdrges3", info;
+            }
         }
         write(nout, format_9973);
         goto statement_10;
@@ -1528,12 +1528,12 @@ statement_190:
             // Blocked version
             //
             Rdrgev3(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], &a[(3 - 1) * lda], &a[(4 - 1) * lda], &a[(7 - 1) * lda], nmax, &a[(8 - 1) * lda], &a[(9 - 1) * lda], nmax, &d[0], &d[(2 - 1) * nmax], &d[(3 - 1) * nmax], &d[(4 - 1) * nmax], &d[(5 - 1) * nmax], &d[(6 - 1) * nmax], work, lwork, result, info);
-            if (info != 0) {
-                write(nout, format_9980), "Rdrgev3", info;
-            }
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
             thresh = thresh_org;
 #endif
+            if (info != 0) {
+                write(nout, format_9980), "Rdrgev3", info;
+            }
         }
         write(nout, format_9973);
         goto statement_10;

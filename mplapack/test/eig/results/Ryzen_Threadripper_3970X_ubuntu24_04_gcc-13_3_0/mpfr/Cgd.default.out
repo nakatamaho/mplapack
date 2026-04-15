@@ -137,90 +137,7 @@ The following parameter values will be used:
  Matrix order=   20, type=24, seed=12767,26424,3979,21571, result  9 is+2.1534458807193345e+151
  ZGS drivers:     44 out of   1560 tests failed to pass the threshold
 
- ZGS -- Complex Generalized Schur from problem driver
- Matrix types (see Cdrges3 for details): 
- Special Matrices:                       (J'=transposed Jordan block)
-   1=(0,0)  2=(I,0)  3=(0,I)  4=(I,I)  5=(J',J')  6=(diag(J',I), diag(I,J'))
- Diagonal Matrices:  ( D=diag(0,1,2,...) )
-   7=(D,I)   9=(large*D, small*I)  11=(large*I, small*D)  13=(large*D, large*I)
-   8=(I,D)  10=(small*D, large*I)  12=(small*I, large*D)  14=(small*D, small*I)
-  15=(D, reversed D)
- Matrices Rotated by Random Unitary Matrices U, V:
-  16=Transposed Jordan Blocks             19=geometric alpha, beta=0,1
-  17=arithm. alpha&beta                   20=arithmetic alpha, beta=0,1
-  18=clustered alpha, beta=0,1            21=random alpha, beta=0,1
- Large & Small Matrices:
-  22=(large, small)   23=(small,large)    24=(small,small)    25=(large,large)
-  26=random O(1) matrices.
-
- Tests performed:  (S is Schur, T is triangular, Q and Z are unitary,
-                   l and r are the appropriate left and right
-                   eigenvectors, resp., a is alpha, b is beta, and
-                   ' means transpose.)
- Without ordering: 
-  1 = | A - Q S Z' | / ( |A| n ulp )      2 = | B - Q T Z' | / ( |B| n ulp )
-  3 = | I - QQ' | / ( n ulp )             4 = | I - ZZ' | / ( n ulp )
-  5 = A is in Schur form S
-  6 = difference between (alpha,beta) and diagonals of (S,T)
- With ordering: 
-  7 = | (A,B) - Q (S,T) Z' | / ( |(A,B)| n ulp )
-  8 = | I - QQ' | / ( n ulp )             9 = | I - ZZ' | / ( n ulp )
- 10 = A is in Schur form S
- 11 = difference between (alpha,beta) and diagonals of (S,T)
- 12 = SDIM is the correct number of selected eigenvalues
-
-
- Tests performed:  (S is Schur, T is triangular, Q and Z are ',
-                   l and r are the appropriate left and right
-                   eigenvectors, resp., a is alpha, b is beta, and
-
- Matrix order=    6, type=22, seed=6120,50322,23126,30815, result  1 is+4.0204027964171608e+151
- Matrix order=    6, type=22, seed=6120,50322,23126,30815, result  2 is+5.1856060392113178e+151
- Matrix order=    6, type=22, seed=6120,50322,23126,30815, result  4 is+7.7025053982800183e+151
- Matrix order=    6, type=22, seed=6120,50322,23126,30815, result  7 is+2.0102013982085804e+151
- Matrix order=    6, type=22, seed=6120,50322,23126,30815, result  9 is+7.7025053982800183e+151
- Matrix order=    6, type=23, seed=29074,53173,60061,33738, result 11 is+1.9073159416828245e+154
- Matrix order=    6, type=24, seed=53411,33120,2047,31249, result  1 is+3.4353424991446232e+151
- Matrix order=    6, type=24, seed=53411,33120,2047,31249, result  2 is+4.2896985609381217e+151
- Matrix order=    6, type=24, seed=53411,33120,2047,31249, result  4 is+6.4135330195921842e+151
- Matrix order=    6, type=24, seed=53411,33120,2047,31249, result  7 is+1.7176712495723116e+151
- Matrix order=    6, type=24, seed=53411,33120,2047,31249, result  9 is+6.4135330195921842e+151
- Matrix order=   10, type=22, seed=62174,41794,16241,55345, result  1 is+4.0361144353556846e+151
- Matrix order=   10, type=22, seed=62174,41794,16241,55345, result  2 is+4.4324181231882564e+151
- Matrix order=   10, type=22, seed=62174,41794,16241,55345, result  4 is+7.3758912853652500e+151
- Matrix order=   10, type=22, seed=62174,41794,16241,55345, result  7 is+2.0180572176778423e+151
- Matrix order=   10, type=22, seed=62174,41794,16241,55345, result  9 is+7.3758912853652500e+151
- Matrix order=   10, type=22, seed=62174,41794,16241,55345, result 11 is+1.4756958342210221e+154
- Matrix order=   10, type=24, seed=56236,65438,3331,12386, result  1 is+7.7592253941339157e+150
- Matrix order=   10, type=24, seed=56236,65438,3331,12386, result  2 is+7.0143054169140332e+150
- Matrix order=   10, type=24, seed=56236,65438,3331,12386, result  3 is+8.6797693028246562e+150
- Matrix order=   10, type=24, seed=56236,65438,3331,12386, result  4 is+1.9310904604567537e+151
- Matrix order=   10, type=24, seed=56236,65438,3331,12386, result  7 is+3.8796126970669578e+150
- Matrix order=   10, type=24, seed=56236,65438,3331,12386, result  8 is+8.6797693028246562e+150
- Matrix order=   10, type=24, seed=56236,65438,3331,12386, result  9 is+1.9310904604567537e+151
- Matrix order=   12, type=22, seed=41326,50777,58311,26771, result  1 is+4.5557219398310577e+151
- Matrix order=   12, type=22, seed=41326,50777,58311,26771, result  2 is+3.2612549369040843e+151
- Matrix order=   12, type=22, seed=41326,50777,58311,26771, result  4 is+7.8851588572954396e+151
- Matrix order=   12, type=22, seed=41326,50777,58311,26771, result  7 is+2.2778609699155289e+151
- Matrix order=   12, type=22, seed=41326,50777,58311,26771, result  9 is+7.8851588572954396e+151
- Matrix order=   12, type=24, seed=39887,38809,19872,31556, result  1 is+9.5033701402994994e+150
- Matrix order=   12, type=24, seed=39887,38809,19872,31556, result  2 is+8.5648244474349062e+150
- Matrix order=   12, type=24, seed=39887,38809,19872,31556, result  4 is+2.0549208649151586e+151
- Matrix order=   12, type=24, seed=39887,38809,19872,31556, result  7 is+4.7516850701497497e+150
- Matrix order=   12, type=24, seed=39887,38809,19872,31556, result  9 is+2.0549208649151586e+151
- Matrix order=   12, type=24, seed=39887,38809,19872,31556, result 11 is+2.5233429334478359e+154
- Matrix order=   20, type=22, seed=2686,32105,6670,54021, result  1 is+1.3642040918859496e+151
- Matrix order=   20, type=22, seed=2686,32105,6670,54021, result  2 is+1.4000094951457407e+151
- Matrix order=   20, type=22, seed=2686,32105,6670,54021, result  4 is+2.8558723667362614e+151
- Matrix order=   20, type=22, seed=2686,32105,6670,54021, result  7 is+6.8210204594297482e+150
- Matrix order=   20, type=22, seed=2686,32105,6670,54021, result  9 is+2.8558723667362614e+151
- Matrix order=   20, type=24, seed=22337,1583,1367,62873, result  1 is+6.2233796739616253e+148
- Matrix order=   20, type=24, seed=22337,1583,1367,62873, result  2 is+5.7811152339712481e+148
- Matrix order=   20, type=24, seed=22337,1583,1367,62873, result  4 is+1.2534848345134090e+149
- Matrix order=   20, type=24, seed=22337,1583,1367,62873, result  7 is+3.1116898369808127e+148
- Matrix order=   20, type=24, seed=22337,1583,1367,62873, result  9 is+1.2534848345134090e+149
- Matrix order=   20, type=24, seed=22337,1583,1367,62873, result 11 is+2.2618181777842445e+154
- ZGS drivers:     46 out of   1560 tests failed to pass the threshold
+ All tests for ZGS drivers  passed the threshold (   1560 tests run)
 
  -----------------------------------------------------------------------
 
@@ -334,5 +251,5 @@ The following parameter values will be used:
 
 
  End of tests
- Total time used =       145.76 seconds
+ Total time used =       345.91 seconds
 

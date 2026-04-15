@@ -261,3 +261,54 @@
  
 -int main(int argc, char const *argv[]) { return fem::main_with_catch(argc, argv, program_dchkee); }
 +int main(int argc, char const *argv[]) { Rchkee(); }
+
+--- Rchkee.cpp	2026-04-15 12:35:35.415203639 +0900
++++ Rchkee.cpp	2026-04-15 12:38:43.327273659 +0900
+@@ -1386,6 +1386,13 @@
+                 Rerrgg(c3, nout);
+             }
+             Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
++#if defined ___MPLAPACK_BUILD_WITH_GMP___
++            thresh_org = thresh;
++            thresh = thresh * 8.0;
++            printf("Warning! Threshold has been lifted to: ");
++            printnum_short(thresh);
++            printf(" for GMP\n");
++#endif
+             Rdrges(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], &a[(3 - 1) * lda], &a[(4 - 1) * lda], &a[(7 - 1) * lda], nmax, &a[(8 - 1) * lda], &d[0], &d[(2 - 1) * nmax], &d[(3 - 1) * nmax], work, lwork, result, logwrk, info);
+             if (info != 0) {
+                 write(nout, format_9980), "Rdrges", info;
+@@ -1395,6 +1402,9 @@
+             //
+             Mxlaenv(16, 2);
+             Rdrges3(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], &a[(3 - 1) * lda], &a[(4 - 1) * lda], &a[(7 - 1) * lda], nmax, &a[(8 - 1) * lda], &d[0], &d[(2 - 1) * nmax], &d[(3 - 1) * nmax], work, lwork, result, logwrk, info);
++#if defined ___MPLAPACK_BUILD_WITH_GMP___
++            thresh = thresh_org;
++#endif
+             if (info != 0) {
+                 write(nout, format_9980), "Rdrges3", info;
+             }
+@@ -1443,6 +1453,13 @@
+                 Rerrgg(c3, nout);
+             }
+             Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
++#if defined ___MPLAPACK_BUILD_WITH_GMP___
++            thresh_org = thresh;
++            thresh = thresh * 3.0;
++            printf("Warning! Threshold has been lifted to: ");
++            printnum_short(thresh);
++            printf(" for GMP\n");
++#endif
+             Rdrgev(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], &a[(3 - 1) * lda], &a[(4 - 1) * lda], &a[(7 - 1) * lda], nmax, &a[(8 - 1) * lda], &a[(9 - 1) * lda], nmax, &d[0], &d[(2 - 1) * nmax], &d[(3 - 1) * nmax], &d[(4 - 1) * nmax], &d[(5 - 1) * nmax], &d[(6 - 1) * nmax], work, lwork, result, info);
+             if (info != 0) {
+                 write(nout, format_9980), "Rdrgev", info;
+@@ -1451,6 +1468,9 @@
+             // Blocked version
+             //
+             Rdrgev3(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], &a[(3 - 1) * lda], &a[(4 - 1) * lda], &a[(7 - 1) * lda], nmax, &a[(8 - 1) * lda], &a[(9 - 1) * lda], nmax, &d[0], &d[(2 - 1) * nmax], &d[(3 - 1) * nmax], &d[(4 - 1) * nmax], &d[(5 - 1) * nmax], &d[(6 - 1) * nmax], work, lwork, result, info);
++#if defined ___MPLAPACK_BUILD_WITH_GMP___
++            thresh = thresh_org;
++#endif
+             if (info != 0) {
+                 write(nout, format_9980), "Rdrgev3", info;
+             }
