@@ -52,8 +52,8 @@ Warning! Threshold has been lifted to: +1.5000000000000000e+01 for GMP
  6 = 0 if l same no matter if l computed,
  7 = 0 if r same no matter if r computed,
 
- Matrix order=   20, type=26, seed=28133,3366, 341,18281, result  1 is+2.2297451236092642e+01
- Matrix order=   20, type=26, seed=28133,3366, 341,18281, result  3 is+1.8107730733589324e+01
+ Matrix order=   20, type=26, seed=28133,3366, 341,18281, result  1 is+3.0472332448425111e+01
+ Matrix order=   20, type=26, seed=28133,3366, 341,18281, result  3 is+1.9880315696527497e+01
  ZGV drivers:      2 out of   1092 tests failed to pass the threshold
 
  -----------------------------------------------------------------------
@@ -199,5 +199,5 @@ The following parameter values will be used:
 
 
  End of tests
- Total time used =       276.14 seconds
+ Total time used =       435.29 seconds
 

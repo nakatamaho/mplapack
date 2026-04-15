@@ -54,84 +54,7 @@ The following parameter values will be used:
  
  ZGS routines passed the tests of the error exits (106 tests done)
 
- ZGS -- Complex Generalized Schur from problem driver
- Matrix types (see Cdrges for details): 
- Special Matrices:                       (J'=transposed Jordan block)
-   1=(0,0)  2=(I,0)  3=(0,I)  4=(I,I)  5=(J',J')  6=(diag(J',I), diag(I,J'))
- Diagonal Matrices:  ( D=diag(0,1,2,...) )
-   7=(D,I)   9=(large*D, small*I)  11=(large*I, small*D)  13=(large*D, large*I)
-   8=(I,D)  10=(small*D, large*I)  12=(small*I, large*D)  14=(small*D, small*I)
-  15=(D, reversed D)
- Matrices Rotated by Random Unitary Matrices U, V:
-  16=Transposed Jordan Blocks             19=geometric alpha, beta=0,1
-  17=arithm. alpha&beta                   20=arithmetic alpha, beta=0,1
-  18=clustered alpha, beta=0,1            21=random alpha, beta=0,1
- Large & Small Matrices:
-  22=(large, small)   23=(small,large)    24=(small,small)    25=(large,large)
-  26=random O(1) matrices.
-
- Tests performed:  (S is Schur, T is triangular, Q and Z are unitary,
-                   l and r are the appropriate left and right
-                   eigenvectors, resp., a is alpha, b is beta, and
-                   ' means transpose.)
- Without ordering: 
-  1 = | A - Q S Z' | / ( |A| n ulp )      2 = | B - Q T Z' | / ( |B| n ulp )
-  3 = | I - QQ' | / ( n ulp )             4 = | I - ZZ' | / ( n ulp )
-  5 = A is in Schur form S
-  6 = difference between (alpha,beta) and diagonals of (S,T)
- With ordering: 
-  7 = | (A,B) - Q (S,T) Z' | / ( |(A,B)| n ulp )
-  8 = | I - QQ' | / ( n ulp )             9 = | I - ZZ' | / ( n ulp )
- 10 = A is in Schur form S
- 11 = difference between (alpha,beta) and diagonals of (S,T)
- 12 = SDIM is the correct number of selected eigenvalues
-
-
- Tests performed:  (S is Schur, T is triangular, Q and Z are ',
-                   l and r are the appropriate left and right
-                   eigenvectors, resp., a is alpha, b is beta, and
-
- Matrix order=    6, type=24, seed=25922,47026,55942,22206, result  1 is+2.0741714613492756e+31
- Matrix order=    6, type=24, seed=25922,47026,55942,22206, result  2 is+3.2453731751058916e+31
- Matrix order=    6, type=24, seed=25922,47026,55942,22206, result  4 is+4.8724716379610881e+31
- Matrix order=    6, type=24, seed=25922,47026,55942,22206, result  7 is+1.1932389148435016e+31
- Matrix order=    6, type=24, seed=25922,47026,55942,22206, result  9 is+4.8724716379610881e+31
- Matrix order=   10, type=22, seed=7869,4711,62233,8195, result  1 is+5.1617880358030600e+30
- Matrix order=   10, type=22, seed=7869,4711,62233,8195, result  2 is+3.5194044302900764e+30
- Matrix order=   10, type=22, seed=7869,4711,62233,8195, result  4 is+1.1071449961712329e+31
- Matrix order=   10, type=22, seed=7869,4711,62233,8195, result  7 is+2.5808940179015300e+30
- Matrix order=   10, type=22, seed=7869,4711,62233,8195, result  9 is+1.1071449961712329e+31
- Matrix order=   10, type=22, seed=7869,4711,62233,8195, result 11 is+1.6373824644084925e+34
- Matrix order=   10, type=24, seed=59276,12874,44903,17997, result  1 is+8.8164282685476212e+30
- Matrix order=   10, type=24, seed=59276,12874,44903,17997, result  2 is+6.8848469869648296e+30
- Matrix order=   10, type=24, seed=59276,12874,44903,17997, result  4 is+1.4561469107350216e+31
- Matrix order=   10, type=24, seed=59276,12874,44903,17997, result  7 is+4.4082141342738106e+30
- Matrix order=   10, type=24, seed=59276,12874,44903,17997, result  9 is+1.4561469107350216e+31
- Matrix order=   10, type=24, seed=59276,12874,44903,17997, result 11 is+1.4126583181596417e+34
- Matrix order=   12, type=22, seed=32415,35909,45485,32910, result  1 is+8.3045145890639030e+30
- Matrix order=   12, type=22, seed=32415,35909,45485,32910, result  2 is+1.0810993307858293e+31
- Matrix order=   12, type=22, seed=32415,35909,45485,32910, result  4 is+2.3768277063833611e+31
- Matrix order=   12, type=22, seed=32415,35909,45485,32910, result  7 is+4.1522572945319515e+30
- Matrix order=   12, type=22, seed=32415,35909,45485,32910, result  9 is+2.3768277063833611e+31
- Matrix order=   12, type=24, seed=30923,45364,42232,54060, result  1 is+6.8941356205449461e+30
- Matrix order=   12, type=24, seed=30923,45364,42232,54060, result  2 is+7.8353301704058733e+30
- Matrix order=   12, type=24, seed=30923,45364,42232,54060, result  4 is+1.7768803878836703e+31
- Matrix order=   12, type=24, seed=30923,45364,42232,54060, result  7 is+3.4470678102724731e+30
- Matrix order=   12, type=24, seed=30923,45364,42232,54060, result  9 is+1.7768803878836703e+31
- Matrix order=   12, type=24, seed=30923,45364,42232,54060, result 11 is+1.7006103323142628e+34
- Matrix order=   20, type=22, seed=7430,22411,37719,20799, result  1 is+1.9687414850454245e+30
- Matrix order=   20, type=22, seed=7430,22411,37719,20799, result  2 is+2.4248042393369616e+30
- Matrix order=   20, type=22, seed=7430,22411,37719,20799, result  4 is+2.5085072228607875e+30
- Matrix order=   20, type=22, seed=7430,22411,37719,20799, result  7 is+9.8437074252271227e+29
- Matrix order=   20, type=22, seed=7430,22411,37719,20799, result  9 is+2.5085072228607875e+30
- Matrix order=   20, type=24, seed=12767,26424,3979,21571, result  1 is+3.6795715575568754e+29
- Matrix order=   20, type=24, seed=12767,26424,3979,21571, result  2 is+3.3077011019698865e+29
- Matrix order=   20, type=24, seed=12767,26424,3979,21571, result  3 is+5.4824431684027031e+06
- Matrix order=   20, type=24, seed=12767,26424,3979,21571, result  4 is+7.7826361618672629e+29
- Matrix order=   20, type=24, seed=12767,26424,3979,21571, result  7 is+1.8397857787784377e+29
- Matrix order=   20, type=24, seed=12767,26424,3979,21571, result  8 is+5.4824430935723185e+06
- Matrix order=   20, type=24, seed=12767,26424,3979,21571, result  9 is+7.7826361618672629e+29
- ZGS drivers:     40 out of   1560 tests failed to pass the threshold
+ All tests for ZGS drivers  passed the threshold (   1560 tests run)
 
  All tests for ZGS drivers  passed the threshold (   1560 tests run)
 
@@ -247,5 +170,5 @@ The following parameter values will be used:
 
 
  End of tests
- Total time used =       266.51 seconds
+ Total time used =       421.12 seconds
 

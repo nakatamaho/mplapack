@@ -24,69 +24,14 @@ The following parameter values will be used:
 
  ZBB:  NRHS =   1
 
- ZBB -- Complex Band reduc. to bidiagonal form
- Matrix types (see xCHKBB for details):
- Diagonal matrices:
-   1: Zero                             5: Clustered entries
-   2: Identity                         6: Large, evenly spaced entries
-   3: Evenly spaced entries            7: Small, evenly spaced entries
-   4: Geometrically spaced entries
- General matrices:
-   8: Evenly spaced sing. vals.       12: Small, evenly spaced sing vals
-   9: Geometrically spaced sing vals  13: Random, O(1) entries
-  10: Clustered sing. vals.           14: Random, scaled near overflow
-  11: Large, evenly spaced sing vals  15: Random, scaled near underflow
-
- Test ratios:  (B: upper bidiagonal, Q and P: unitary   
-                C: m x nrhs, PT = P', Y = Q' C)
- 1: norm( A - Q B PT ) / ( norm(A) max(m,n) ulp )
- 2: norm( I - Q' Q )   / ( m ulp )
- 3: norm( I - PT PT' )   / ( n ulp )
- 4: norm( Y - Q' C )   / ( norm(Y) max(m,nrhs) ulp )
- M =   2 N=   3, K=  2, seed=13996,35764,22944,10358, type 12, test( 1)=+2.9923770101758252e+150
- M =   2 N=   3, K=  2, seed=13996,35764,22944,10358, type 12, test( 3)=+3.5491144067063227e+150
- M =   3 N=   2, K=  1, seed=59868,55631,54056,10915, type 12, test( 2)=+6.5986666095602090e+151
- M =   3 N=   2, K=  1, seed=59868,55631,54056,10915, type 12, test( 4)=+5.4682881614350612e+151
- M =   3 N=   2, K=  2, seed=65438,23733,53295,47290, type 12, test( 2)=+1.5092509278111830e+151
- M =   3 N=   2, K=  2, seed=65438,23733,53295,47290, type 12, test( 4)=+1.5156581990522783e+151
- M =  10 N=  16, K=  1, seed=31997,6963,57765,1846, type 12, test( 1)=+1.8832706454002636e+143
- M =  10 N=  16, K=  1, seed=31997,6963,57765,1846, type 12, test( 3)=+2.2292736847663017e+144
- M =  10 N=  16, K=  3, seed=23582,13542,7206,63928, type 12, test( 3)=+8.2894929045641220e+151
- ZBB:    9 out of  3000 tests failed to pass the threshold
+ All tests for ZBB passed the threshold (  3000 tests run)
 
 
  ZBB:  NRHS =   2
 
- ZBB -- Complex Band reduc. to bidiagonal form
- Matrix types (see xCHKBB for details):
- Diagonal matrices:
-   1: Zero                             5: Clustered entries
-   2: Identity                         6: Large, evenly spaced entries
-   3: Evenly spaced entries            7: Small, evenly spaced entries
-   4: Geometrically spaced entries
- General matrices:
-   8: Evenly spaced sing. vals.       12: Small, evenly spaced sing vals
-   9: Geometrically spaced sing vals  13: Random, O(1) entries
-  10: Clustered sing. vals.           14: Random, scaled near overflow
-  11: Large, evenly spaced sing vals  15: Random, scaled near underflow
-
- Test ratios:  (B: upper bidiagonal, Q and P: unitary   
-                C: m x nrhs, PT = P', Y = Q' C)
- 1: norm( A - Q B PT ) / ( norm(A) max(m,n) ulp )
- 2: norm( I - Q' Q )   / ( m ulp )
- 3: norm( I - PT PT' )   / ( n ulp )
- 4: norm( Y - Q' C )   / ( norm(Y) max(m,nrhs) ulp )
- M =   3 N=   2, K=  2, seed=11877,13900,7202,39579, type 12, test( 2)=+6.0012161144762601e+151
- M =   3 N=   2, K=  2, seed=11877,13900,7202,39579, type 12, test( 4)=+6.2653911220051851e+151
- M =  10 N=  16, K=  1, seed=43817,39128, 529,15364, type 12, test( 1)=+2.0436226828258329e+147
- M =  10 N=  16, K=  1, seed=43817,39128, 529,15364, type 12, test( 3)=+1.9555798975658145e+148
- M =  10 N=  16, K=  3, seed=47913,25905,46151,55159, type 12, test( 1)=+1.7921360594177332e+147
- M =  10 N=  16, K=  3, seed=47913,25905,46151,55159, type 12, test( 3)=+8.3771371131594759e+150
- M =  16 N=  10, K=  2, seed=2672,11170,30395,24446, type 12, test( 2)=+1.8036508906968451e+151
- M =  16 N=  10, K=  2, seed=2672,11170,30395,24446, type 12, test( 4)=+4.8577590156617050e+150
- ZBB:    8 out of  3000 tests failed to pass the threshold
+ All tests for ZBB passed the threshold (  3000 tests run)
 
 
  End of tests
- Total time used =        38.73 seconds
+ Total time used =       221.97 seconds
 

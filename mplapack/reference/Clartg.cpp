@@ -108,7 +108,16 @@ void Clartg(COMPLEX const f, COMPLEX const g, REAL &c, COMPLEX &s, COMPLEX &r) {
         f1 = max(abs(f.real()), abs(f.imag()));
         g1 = max(abs(g.real()), abs(g.imag()));
         rtmax = sqrt(safmax / 4);
-        if (f1 > rtmin && f1 < rtmax && g1 > rtmin && g1 < rtmax) {
+        REAL fsmall = min(abs(f.real()), abs(f.imag()));
+        REAL gsmall = min(abs(g.real()), abs(g.imag()));
+        REAL split_tol = sqrt(ap.eps);
+        bool use_unscaled = f1 > rtmin && f1 < rtmax && g1 > rtmin && g1 < rtmax;
+        if (use_unscaled && (f1 < one || g1 < one)) {
+            bool f_has_split = fsmall != zero && fsmall / f1 > split_tol;
+            bool g_has_split = gsmall != zero && gsmall / g1 > split_tol;
+            use_unscaled = !(f_has_split || g_has_split);
+        }
+        if (use_unscaled) {
             //
             // Use unscaled algorithm
             //
@@ -123,7 +132,7 @@ void Clartg(COMPLEX const f, COMPLEX const g, REAL &c, COMPLEX &s, COMPLEX &r) {
                 rtmax = rtmax * 2;
                 if (f2 > rtmin && h2 < rtmax) {
                     // safmin <= sqrt( f2*h2 ) <= safmax
-                    s = conj(g) * (f / sqrt(f2 * h2));
+                    s = (f / sqrt(f2)) * (conj(g) / sqrt(h2));
                 } else {
                     s = conj(g) * (r / h2);
                 }
@@ -179,7 +188,7 @@ void Clartg(COMPLEX const f, COMPLEX const g, REAL &c, COMPLEX &s, COMPLEX &r) {
                 rtmax = rtmax * 2;
                 if (f2 > rtmin && h2 < rtmax) {
                     // safmin <= sqrt( f2*h2 ) <= safmax
-                    s = conj(gs) * (fs / sqrt(f2 * h2));
+                    s = (fs / sqrt(f2)) * (conj(gs) / sqrt(h2));
                 } else {
                     s = conj(gs) * (r / h2);
                 }

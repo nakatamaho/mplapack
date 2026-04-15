@@ -24,74 +24,14 @@ The following parameter values will be used:
 
  ZBB:  NRHS =   1
 
- ZBB -- Complex Band reduc. to bidiagonal form
- Matrix types (see xCHKBB for details):
- Diagonal matrices:
-   1: Zero                             5: Clustered entries
-   2: Identity                         6: Large, evenly spaced entries
-   3: Evenly spaced entries            7: Small, evenly spaced entries
-   4: Geometrically spaced entries
- General matrices:
-   8: Evenly spaced sing. vals.       12: Small, evenly spaced sing vals
-   9: Geometrically spaced sing vals  13: Random, O(1) entries
-  10: Clustered sing. vals.           14: Random, scaled near overflow
-  11: Large, evenly spaced sing vals  15: Random, scaled near underflow
-
- Test ratios:  (B: upper bidiagonal, Q and P: unitary   
-                C: m x nrhs, PT = P', Y = Q' C)
- 1: norm( A - Q B PT ) / ( norm(A) max(m,n) ulp )
- 2: norm( I - Q' Q )   / ( m ulp )
- 3: norm( I - PT PT' )   / ( n ulp )
- 4: norm( Y - Q' C )   / ( norm(Y) max(m,nrhs) ulp )
- M =   2 N=   3, K=  1, seed=36971,21412,51673,52959, type 12, test( 1)=+2.2281513729401632e+31
- M =   2 N=   3, K=  1, seed=36971,21412,51673,52959, type 12, test( 3)=+5.8497640077468903e+31
- M =   2 N=   3, K=  2, seed=13996,35764,22944,10358, type 12, test( 1)=+6.8814873933452000e+31
- M =   2 N=   3, K=  2, seed=13996,35764,22944,10358, type 12, test( 3)=+7.2714209229389666e+31
- M =   3 N=   2, K=  2, seed=65438,23733,53295,47290, type 12, test( 2)=+1.8389384707310848e+31
- M =   3 N=   2, K=  2, seed=65438,23733,53295,47290, type 12, test( 4)=+1.7070742127514645e+31
- M =  10 N=  16, K=  2, seed=28155,57049,60920,5985, type 12, test( 3)=+3.4363101472204726e+31
- M =  10 N=  16, K=  3, seed=23582,13542,7206,63928, type 12, test( 3)=+1.8837098256242108e+30
- ZBB:    8 out of  3000 tests failed to pass the threshold
+ All tests for ZBB passed the threshold (  3000 tests run)
 
 
  ZBB:  NRHS =   2
 
- ZBB -- Complex Band reduc. to bidiagonal form
- Matrix types (see xCHKBB for details):
- Diagonal matrices:
-   1: Zero                             5: Clustered entries
-   2: Identity                         6: Large, evenly spaced entries
-   3: Evenly spaced entries            7: Small, evenly spaced entries
-   4: Geometrically spaced entries
- General matrices:
-   8: Evenly spaced sing. vals.       12: Small, evenly spaced sing vals
-   9: Geometrically spaced sing vals  13: Random, O(1) entries
-  10: Clustered sing. vals.           14: Random, scaled near overflow
-  11: Large, evenly spaced sing vals  15: Random, scaled near underflow
-
- Test ratios:  (B: upper bidiagonal, Q and P: unitary   
-                C: m x nrhs, PT = P', Y = Q' C)
- 1: norm( A - Q B PT ) / ( norm(A) max(m,n) ulp )
- 2: norm( I - Q' Q )   / ( m ulp )
- 3: norm( I - PT PT' )   / ( n ulp )
- 4: norm( Y - Q' C )   / ( norm(Y) max(m,nrhs) ulp )
- M =   2 N=   3, K=  1, seed=4101,31080,7571,31405, type 12, test( 1)=+1.3077202141827028e+30
- M =   2 N=   3, K=  1, seed=4101,31080,7571,31405, type 12, test( 3)=+1.3006223266568805e+30
- M =   2 N=   3, K=  2, seed=11342,23159,31579,50754, type 12, test( 1)=+4.4444705365401144e+30
- M =   2 N=   3, K=  2, seed=11342,23159,31579,50754, type 12, test( 3)=+4.5316112994319797e+30
- M =   3 N=   2, K=  1, seed=30027,36069,55853,52100, type 12, test( 2)=+1.5799771362854786e+32
- M =   3 N=   2, K=  1, seed=30027,36069,55853,52100, type 12, test( 4)=+1.3770849735698280e+32
- M =   3 N=   2, K=  2, seed=11877,13900,7202,39579, type 12, test( 2)=+1.6231673758836940e+31
- M =   3 N=   2, K=  2, seed=11877,13900,7202,39579, type 12, test( 4)=+2.1682454757334501e+31
- M =  10 N=  16, K=  1, seed=43817,39128, 529,15364, type 12, test( 1)=+9.0402199149228183e+27
- M =  10 N=  16, K=  1, seed=43817,39128, 529,15364, type 12, test( 3)=+4.2960812380424345e+28
- M =  10 N=  16, K=  2, seed=58131,3654,27170,32219, type 12, test( 1)=+4.8256695657755518e+28
- M =  10 N=  16, K=  2, seed=58131,3654,27170,32219, type 12, test( 3)=+5.3621765379850415e+29
- M =  10 N=  16, K=  3, seed=47913,25905,46151,55159, type 12, test( 1)=+5.5128552923676023e+25
- M =  10 N=  16, K=  3, seed=47913,25905,46151,55159, type 12, test( 3)=+4.0926099897208351e+29
- ZBB:   14 out of  3000 tests failed to pass the threshold
+ All tests for ZBB passed the threshold (  3000 tests run)
 
 
  End of tests
- Total time used =        38.23 seconds
+ Total time used =       206.07 seconds
 
