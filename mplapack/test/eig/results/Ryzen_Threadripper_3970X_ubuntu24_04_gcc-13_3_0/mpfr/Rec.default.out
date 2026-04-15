@@ -9,10 +9,10 @@
 
 
  DEC routines passed the tests of the error exits ( 43 tests done)
- Error in Rtrsen: RMAX =+2.0293750000000000e+01+1.5244789072508109e+00+1.5246776751732150e+00
- LMAX =       70      68      68 NINFO=       0       0       0 KNT=      78
+
+ All tests for DEC routines passed the threshold ( 501261 tests run)
 
 
  End of tests
- Total time used =      1361.86 seconds
+ Total time used =      1363.96 seconds
 
