@@ -512,6 +512,9 @@ inline std::complex<long double> cos(const std::complex<long double> a) { return
 inline std::complex<long double> exp(const std::complex<long double> &a) { return std::exp(a); }
 inline std::complex<long double> log(const std::complex<long double> &a) { return std::log(a); }
 inline long nint(long double a) { return (long)floorl(a + 0.5); }
+#ifndef M_PIl
+#define M_PIl 3.141592653589793238462643383279502884L
+#endif
 inline long double pi(long double dummy) { return M_PIl; }
 static inline long double cabs1(const std::complex<long double> &z) { return fabsl(z.real()) + fabsl(z.imag()); }
 
@@ -523,7 +526,7 @@ static inline long double cabs1(const std::complex<long double> &z) { return fab
 // implementation of sign transfer function.
 inline mplapack_binary128_t sign(mplapack_binary128_t a, mplapack_binary128_t b) {
     mplapack_binary128_t mtmp;
-    mtmp = std::abs(a);
+    mtmp = abs(a);
     if (b < 0.0) {
         mtmp = -mtmp;
     }

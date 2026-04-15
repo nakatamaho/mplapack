@@ -21,7 +21,7 @@ import re
 import sys
 from collections import defaultdict
 from pathlib import Path
-from typing import NamedTuple
+from typing import NamedTuple, List, Dict, Tuple
 
 # ---------------------------------------------------------------------------
 # Data model
@@ -120,7 +120,7 @@ def _infer_category(search_root: Path) -> str:
 # Parser
 # ---------------------------------------------------------------------------
 
-def parse_out_file(out_path: Path, category: str, search_root: Path) -> list[TestRecord]:
+def parse_out_file(out_path: Path, category: str, search_root: Path) -> List[TestRecord]:
     """
     Parse a single .out file and return zero or more TestRecord entries.
     Returns one UNKNOWN record if no recognizable result lines are found.
@@ -134,7 +134,7 @@ def parse_out_file(out_path: Path, category: str, search_root: Path) -> list[Tes
         print(f"[WARNING] Cannot read {out_path}: {exc}", file=sys.stderr)
         return [TestRecord(category, precision, rel_file, "READ_ERROR", 0, 0, "UNKNOWN")]
 
-    records: list[TestRecord] = []
+    records: List[TestRecord] = []
 
     # Collect PASS matches
     for m in RE_PASS.finditer(text):
@@ -160,7 +160,7 @@ def parse_out_file(out_path: Path, category: str, search_root: Path) -> list[Tes
     return records
 
 
-def collect_all_records(outdir: str, search_root: Path) -> list[TestRecord]:
+def collect_all_records(outdir: str, search_root: Path) -> List[TestRecord]:
     """
     Walk all backend subdirectories and parse every *.out file.
 
@@ -170,7 +170,7 @@ def collect_all_records(outdir: str, search_root: Path) -> list[TestRecord]:
     Old layout (fallback):
         <search_root>/<backend>/<outdir>/*.out
     """
-    all_records: list[TestRecord] = []
+    all_records: List[TestRecord] = []
     category = _infer_category(search_root)
 
     found_any = False
@@ -212,7 +212,7 @@ def collect_all_records(outdir: str, search_root: Path) -> list[TestRecord]:
 # Sorting
 # ---------------------------------------------------------------------------
 
-def sort_records(records: list[TestRecord]) -> list[TestRecord]:
+def sort_records(records: List[TestRecord]) -> List[TestRecord]:
     """Default sort: fail_rate descending, then category / precision / file / suite."""
     return sorted(
         records,
@@ -224,12 +224,12 @@ def sort_records(records: list[TestRecord]) -> list[TestRecord]:
 # Summary statistics
 # ---------------------------------------------------------------------------
 
-def build_summary(records: list[TestRecord]) -> dict:
+def build_summary(records: List[TestRecord]) -> Dict:
     """
     Aggregate statistics grouped by (category, precision).
     Returns an ordered dict keyed by (category, precision).
     """
-    groups: dict[tuple, dict] = defaultdict(
+    groups: Dict[Tuple[str, str], Dict] = defaultdict(
         lambda: {"total_tests": 0, "total_failed": 0, "files_with_fail": set(), "file_count": set()}
     )
 
@@ -266,9 +266,9 @@ DETAIL_HEADERS = ["category", "precision", "file", "suite",
                   "failed", "total", "fail_rate", "status"]
 
 
-def format_text(records: list[TestRecord], summary: dict) -> str:
+def format_text(records: List[TestRecord], summary: Dict) -> str:
     """Plain-text fixed-width table with dynamic column widths."""
-    lines: list[str] = []
+    lines: List[str] = []
 
     # Dynamic widths
     prec_w  = max((len(r.precision) for r in records), default=10)
@@ -326,7 +326,7 @@ def format_text(records: list[TestRecord], summary: dict) -> str:
     return "\n".join(lines)
 
 
-def format_csv(records: list[TestRecord], summary: dict) -> str:
+def format_csv(records: List[TestRecord], summary: Dict) -> str:
     buf    = io.StringIO()
     writer = csv.writer(buf)
 
@@ -351,7 +351,7 @@ def format_csv(records: list[TestRecord], summary: dict) -> str:
     return buf.getvalue()
 
 
-def format_json(records: list[TestRecord], summary: dict) -> str:
+def format_json(records: List[TestRecord], summary: Dict) -> str:
     detail = [
         {
             "category":  r.category,

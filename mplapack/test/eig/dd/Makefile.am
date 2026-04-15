@@ -17,12 +17,12 @@ cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(LAPACK_INCLUDEDIR) -I$
 xeigtstR_dd_SOURCES  = ../common/Rchkee.cpp
 xeigtstR_dd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstR_dd_LDFLAGS += -Wl,-rpath,$(libdir)
-xeigtstR_dd_CXXFLAGS = $(cxxflags)
+xeigtstR_dd_CXXFLAGS = $(cxxflags) $(DD_CXXFLAGS)
 
 xeigtstC_dd_SOURCES  = ../common/Cchkee.cpp
 xeigtstC_dd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstC_dd_LDFLAGS += -Wl,-rpath,$(libdir)
-xeigtstC_dd_CXXFLAGS = $(cxxflags)
+xeigtstC_dd_CXXFLAGS = $(cxxflags) $(DD_CXXFLAGS)
 
 install-data-hook:
 if IS_MACOS

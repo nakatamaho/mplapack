@@ -44,22 +44,22 @@ OUTDIR_PATH = ../results/$(OUTDIR)/mpfr
 
 
 xlintstR_mpfr_SOURCES  = ../common/Rchkaa.cpp
-xlintstR_mpfr_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstR_mpfr_LDFLAGS  = $(libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstR_mpfr_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstR_mpfr_CXXFLAGS = $(cxxflags) 
 
 xlintstC_mpfr_SOURCES  = ../common/Cchkaa.cpp
-xlintstC_mpfr_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstC_mpfr_LDFLAGS  = $(libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstC_mpfr_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstC_mpfr_CXXFLAGS = $(cxxflags)
 
 xlintstrfR_mpfr_SOURCES  = ../common/Rchkrfp.cpp
-xlintstrfR_mpfr_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstrfR_mpfr_LDFLAGS  = $(libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfR_mpfr_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstrfR_mpfr_CXXFLAGS = $(cxxflags)
 
 xlintstrfC_mpfr_SOURCES  = ../common/Cchkrfp.cpp
-xlintstrfC_mpfr_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstrfC_mpfr_LDFLAGS  = $(libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfC_mpfr_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstrfC_mpfr_CXXFLAGS = $(cxxflags)
 

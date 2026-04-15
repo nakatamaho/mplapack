@@ -4,7 +4,7 @@ dnl
 
 m4_define([MPLAPACK_VER_MAJOR], [2])
 m4_define([MPLAPACK_VER_MINOR], [1])
-m4_define([MPLAPACK_VER_PATCH], [0])
+m4_define([MPLAPACK_VER_PATCH], [1])
 m4_define([MPLAPACK_VERSION], [MPLAPACK_VER_MAJOR.MPLAPACK_VER_MINOR.MPLAPACK_VER_PATCH])
 AC_INIT(mplapack, [MPLAPACK_VERSION])
 
@@ -790,24 +790,27 @@ fi
 
 # on older gcc's abs(__float128) appears with gnu++17 extension
 dnl Check whether std::abs(__float128) exists.
+dnl Do not rely on __SIZEOF_FLOAT128__ here: on some Power targets it is not a
+dnl reliable proxy for whether C++ __float128 is actually usable, and the
+dnl compile test itself already answers the question.
 AC_LANG_PUSH([C++])
 AC_MSG_CHECKING([for std::abs(__float128)])
+if test "x$have___float128" = "xyes"; then
 AC_COMPILE_IFELSE(
   [AC_LANG_SOURCE([[
 #include <cmath>
 int main() {
-#if !defined(__SIZEOF_FLOAT128__)
-#error "__float128 is not available"
-#endif
-  __float128 x = 0;
-  auto y = std::abs(x);
-  (void)y;
+  auto p = static_cast<__float128 (*)(__float128)>(&std::abs);
+  (void)p;
   return 0;
 }
 ]])],
   [mplapack_have_std_abs_float128=yes],
   [mplapack_have_std_abs_float128=no]
 )
+else
+  mplapack_have_std_abs_float128=no
+fi
 AC_MSG_RESULT([$mplapack_have_std_abs_float128])
 AS_IF([test "x$mplapack_have_std_abs_float128" = "xyes"],
   [AC_DEFINE([MPLAPACK_HAVE_STD_ABS_FLOAT128],[1],
@@ -903,8 +906,6 @@ dnl Aliases with MPLAPACK_BINARY128_MODE_ prefix (used in Makefile.am)
 AM_CONDITIONAL(MPLAPACK_BINARY128_MODE_QUADMATH, test "$mplapack_binary128_mode" = "3")
 AM_CONDITIONAL(MPLAPACK_BINARY128_MODE_FLOAT128, test "$mplapack_binary128_mode" = "2")
 AM_CONDITIONAL(MPLAPACK_BINARY128_MODE_LDBL,     test "$mplapack_binary128_mode" = "1")
-
-CXXFLAGS="$SAVE_CXXFLAGS"
 
 dnl =========================================================================
 dnl MPLAPACK 2.1.0 - Binary80 Support Detection
@@ -1495,6 +1496,16 @@ CXXFLAGS="$save_CXXFLAGS"
 
 AC_SUBST([QD_EXTRA_CXXFLAGS], [$qd_extra_cxxflags])
 
+dnl DD backend requires the same FP-contraction suppression as the QD library.
+dnl For GCC/Clang: -ffp-contract=off (already probed in qd_extra_cxxflags).
+dnl For Intel icpx: -fp-model strict is already injected into global CXXFLAGS,
+dnl but we add it here explicitly for DD_CXXFLAGS consumers to be self-contained.
+DD_CXXFLAGS="$qd_extra_cxxflags"
+if test x"$is_intelcxx" = x"1"; then
+    DD_CXXFLAGS="$DD_CXXFLAGS -fp-model strict"
+fi
+AC_SUBST([DD_CXXFLAGS])
+
 AC_ARG_WITH(system-qd,
 AS_HELP_STRING([--with-system-qd=PREFIX],
 	    [ ="yes" if it is at the default location (/usr/local/lib), or alternative prefix path to qd library]
@@ -1583,6 +1594,13 @@ if test x$enable_benchmark = x"yes"; then
     fi
 fi
 
+dnl =========================================================
+dnl Additional size probes for summary
+dnl =========================================================
+
+AC_CHECK_SIZEOF([int])
+AC_CHECK_SIZEOF([void *])
+
 dnl print status...start
 if test x$enable_gmp = x"yes"; then
 AC_MSG_RESULT([Enable GMP version])
@@ -1618,44 +1636,349 @@ else
 AC_MSG_RESULT([Disable double version])
 fi
 
-if test x$enable_binary128 = x"yes"; then
-    AC_MSG_RESULT([Binary128 support: enabled])
-    case "$mplapack_binary128_mode" in
-        1) AC_MSG_RESULT([  Type: long double]) ;;
-        2) AC_MSG_RESULT([  Type: _Float128]) ;;
-        3) AC_MSG_RESULT([  Type: __float128]) ;;
-    esac
-    case "$mplapack_binary128_io" in
-        1) AC_MSG_RESULT([  I/O:  snprintf %Lg]) ;;
-        2) AC_MSG_RESULT([  I/O:  strfromf128]) ;;
-        3) AC_MSG_RESULT([  I/O:  quadmath_snprintf]) ;;
-    esac
-    case "$mplapack_binary128_math" in
-        1) AC_MSG_RESULT([  Math: sqrtl, expl, ...]) ;;
-        2) AC_MSG_RESULT([  Math: sqrtf128, expf128, ...]) ;;
-        3) AC_MSG_RESULT([  Math: sqrtq, expq, ...]) ;;
-    esac
-else
-    AC_MSG_RESULT([Binary128 support: disabled])
+dnl =========================================================
+dnl Human readable configuration summary
+dnl =========================================================
+
+AC_MSG_NOTICE([])
+AC_MSG_NOTICE([MPLAPACK configuration summary])
+AC_MSG_NOTICE([------------------------------])
+AC_MSG_NOTICE([C compiler:        $CC])
+
+AC_MSG_CHECKING([C compiler version])
+CC_VERSION=`$CC --version 2>/dev/null | head -n 1`
+if test "x$CC_VERSION" = "x"; then
+  CC_VERSION=`$CC -v 2>&1 | head -n 1`
+fi
+AC_MSG_RESULT([$CC_VERSION])
+
+AC_MSG_CHECKING([whether GMP needs gcc-15.patch])
+GCC_MAJOR=0
+GMP_NEEDS_GCC15_PATCH=no
+case "$CC_VERSION" in
+  *clang*|*Clang*)
+    ;;
+  *)
+    if test "x$GCC" = xyes; then
+      GCC_VERSION_FOR_PATCH=`$CC -dumpfullversion -dumpversion 2>/dev/null`
+      if test "x$GCC_VERSION_FOR_PATCH" = "x"; then
+        GCC_VERSION_FOR_PATCH=`$CC -dumpversion 2>/dev/null`
+      fi
+      GCC_MAJOR=${GCC_VERSION_FOR_PATCH%%.*}
+      case "$GCC_MAJOR" in
+        ''|*[!0-9]*)
+          GCC_MAJOR=0
+         ;;
+      esac
+      if test "$GCC_MAJOR" -ge 15; then
+       GMP_NEEDS_GCC15_PATCH=yes
+      fi
+    fi
+    ;;
+esac
+AC_MSG_RESULT([$GMP_NEEDS_GCC15_PATCH (gcc major=$GCC_MAJOR)])
+AC_SUBST([GMP_NEEDS_GCC15_PATCH])
+
+AC_MSG_NOTICE([C++ compiler:      $CXX])
+
+AC_MSG_CHECKING([C++ compiler version])
+CXX_VERSION=`$CXX --version 2>/dev/null | head -n 1`
+if test "x$CXX_VERSION" = "x"; then
+  CXX_VERSION=`$CXX -v 2>&1 | head -n 1`
+fi
+AC_MSG_RESULT([$CXX_VERSION])
+
+CC_TARGET=`$CC -dumpmachine 2>/dev/null`
+CPU_ARCH=`uname -m 2>/dev/null || echo unknown`
+
+AC_MSG_NOTICE([target:            $CC_TARGET])
+AC_MSG_NOTICE([CPU:               $CPU_ARCH])
+AC_MSG_NOTICE([])
+
+INTEGER_MODEL="unknown"
+if test "$ac_cv_sizeof_void_p" = "8" && test "$ac_cv_sizeof_long" = "8"; then
+  INTEGER_MODEL="LP64"
+elif test "$ac_cv_sizeof_void_p" = "4" && test "$ac_cv_sizeof_long" = "4"; then
+  INTEGER_MODEL="ILP32"
+elif test "$ac_cv_sizeof_void_p" = "8" && test "$ac_cv_sizeof_long" = "4"; then
+  INTEGER_MODEL="LLP64"
 fi
 
-if test x$enable_binary80 = x"yes"; then
-    AC_MSG_RESULT([Binary80 support: enabled])
-    case "$mplapack_binary80_mode" in
-        1) AC_MSG_RESULT([  Type: long double (binary80)]) ;;
-        2) AC_MSG_RESULT([  Type: _Float64x (binary80)]) ;;
-    esac
-    case "$mplapack_binary80_io" in
-        1) AC_MSG_RESULT([  I/O:  snprintf %Lg]) ;;
-        2) AC_MSG_RESULT([  I/O:  strfromf64x]) ;;
-    esac
-    case "$mplapack_binary80_math" in
-        1) AC_MSG_RESULT([  Math: sqrtl, expl, ...]) ;;
-        2) AC_MSG_RESULT([  Math: sqrtf64x, expf64x, ...]) ;;
-    esac
-else
-    AC_MSG_RESULT([Binary80 support: disabled])
+AC_MSG_NOTICE([Integer model:     $INTEGER_MODEL])
+AC_MSG_NOTICE([  mplapackint:     long])
+AC_MSG_NOTICE([  sizeof(int):     $ac_cv_sizeof_int])
+AC_MSG_NOTICE([  sizeof(long):    $ac_cv_sizeof_long])
+AC_MSG_NOTICE([  sizeof(void *):  $ac_cv_sizeof_void_p])
+AC_MSG_NOTICE([])
+
+AC_MSG_NOTICE([CFLAGS:            $CFLAGS])
+AC_MSG_NOTICE([CXXFLAGS:          $CXXFLAGS])
+AC_MSG_NOTICE([])
+
+OPENMP_STATUS="disabled"
+OPENMP_RUNTIME="none"
+if test "x$OPENMP_CXXFLAGS" != "x"; then
+  OPENMP_STATUS="enabled"
 fi
+
+case " $CXX $CC $OPENMP_CXXFLAGS " in
+  *" icpx "*|*" icx "*|*" -qopenmp "*)
+    OPENMP_RUNTIME="Intel OpenMP (inferred)"
+    ;;
+  *" clang "*|*" clang++ "*)
+    OPENMP_RUNTIME="LLVM OpenMP (inferred)"
+    ;;
+  *" gcc "*|*" g++ "*|*" -fopenmp "*)
+    OPENMP_RUNTIME="GNU OpenMP / libgomp (inferred)"
+    ;;
+  *)
+    if test "x$OPENMP_STATUS" = "xenabled"; then
+      OPENMP_RUNTIME="unknown"
+    fi
+    ;;
+esac
+
+AC_MSG_NOTICE([OpenMP:            $OPENMP_STATUS])
+if test "x$OPENMP_STATUS" = "xenabled"; then
+  AC_MSG_NOTICE([  C++ flags:      $OPENMP_CXXFLAGS])
+  AC_MSG_NOTICE([  Runtime:        $OPENMP_RUNTIME])
+fi
+AC_MSG_NOTICE([])
+
+if test x$enable_gmp = x"yes"; then
+  AC_MSG_NOTICE([GMP backend:      enabled])
+else
+  AC_MSG_NOTICE([GMP backend:      disabled])
+fi
+
+if test x$enable_dd = x"yes"; then
+  AC_MSG_NOTICE([DD backend:       enabled])
+else
+  AC_MSG_NOTICE([DD backend:       disabled])
+fi
+
+if test x$enable_cuda = x"yes"; then
+  AC_MSG_NOTICE([CUDA backend:     enabled])
+  AC_MSG_NOTICE([  Toolkit home:   $CUDATOOLKITHOME])
+else
+  AC_MSG_NOTICE([CUDA backend:     disabled])
+fi
+
+if test x$enable_qd = x"yes"; then
+  AC_MSG_NOTICE([QD backend:       enabled])
+else
+  AC_MSG_NOTICE([QD backend:       disabled])
+fi
+
+if test x$enable_mpfr = x"yes"; then
+  AC_MSG_NOTICE([MPFR backend:     enabled])
+else
+  AC_MSG_NOTICE([MPFR backend:     disabled])
+fi
+
+if test x$enable_double = x"yes"; then
+  AC_MSG_NOTICE([Double backend:   enabled])
+else
+  AC_MSG_NOTICE([Double backend:   disabled])
+fi
+
+AC_MSG_NOTICE([])
+
+dnl -------------------------
+dnl Binary128 human summary
+dnl -------------------------
+if test x$enable_binary128 = x"yes"; then
+    BINARY128_SUPPORT="enabled"
+else
+    BINARY128_SUPPORT="disabled"
+fi
+
+BINARY128_TYPE="unavailable"
+case "$mplapack_binary128_mode" in
+    1) BINARY128_TYPE="long double (binary128)" ;;
+    2) BINARY128_TYPE="_Float128" ;;
+    3) BINARY128_TYPE="__float128" ;;
+esac
+
+BINARY128_IO="unavailable"
+case "$mplapack_binary128_io" in
+    1) BINARY128_IO="snprintf %Lg" ;;
+    2) BINARY128_IO="strfromf128" ;;
+    3) BINARY128_IO="quadmath_snprintf" ;;
+esac
+
+BINARY128_MATH="unavailable"
+case "$mplapack_binary128_math" in
+    1) BINARY128_MATH="sqrtl, expl, logl, sinl, cosl" ;;
+    2) BINARY128_MATH="sqrtf128, expf128, logf128, sinf128, cosf128" ;;
+    3) BINARY128_MATH="sqrtq, expq, logq, sinq, cosq" ;;
+esac
+
+BINARY128_LITERAL="unavailable"
+if test "x$have_suffix_F128" = "xyes"; then
+    BINARY128_LITERAL="F128"
+elif test "x$have_suffix_Q" = "xyes"; then
+    BINARY128_LITERAL="Q"
+elif test "x$have_suffix_L_binary128" = "xyes"; then
+    BINARY128_LITERAL="L"
+fi
+
+FLOAT128_INTEROP_STD_GNU="not tested"
+if test "x$have__Float128" = "xyes" && test "x$have___float128" = "xyes"; then
+    if test "x$float128_types_same" = "xyes"; then
+        FLOAT128_INTEROP_STD_GNU="identical"
+    elif test "x$float128_implicit_gnu_to_std" = "xyes" && test "x$float128_implicit_std_to_gnu" = "xyes"; then
+        FLOAT128_INTEROP_STD_GNU="implicit conversion both ways"
+    elif test "x$float128_implicit_gnu_to_std" = "xyes"; then
+        FLOAT128_INTEROP_STD_GNU="implicit conversion (__float128 -> _Float128 only)"
+    elif test "x$float128_implicit_std_to_gnu" = "xyes"; then
+        FLOAT128_INTEROP_STD_GNU="implicit conversion (_Float128 -> __float128 only)"
+    else
+        FLOAT128_INTEROP_STD_GNU="incompatible"
+    fi
+fi
+
+FLOAT128_INTEROP_STD_LDBL="not tested"
+if test "x$have__Float128" = "xyes"; then
+    if test "x$_Float128_is_longdouble" = "xyes"; then
+        FLOAT128_INTEROP_STD_LDBL="identical"
+    elif test "x$longdouble_is_binary128" = "xyes"; then
+        FLOAT128_INTEROP_STD_LDBL="same format, distinct types"
+    else
+        FLOAT128_INTEROP_STD_LDBL="incompatible"
+    fi
+fi
+
+FLOAT128_INTEROP_GNU_LDBL="not tested"
+if test "x$have___float128" = "xyes"; then
+    if test "x$longdouble_is_binary128" = "xyes"; then
+        FLOAT128_INTEROP_GNU_LDBL="same format, distinct types"
+    else
+        FLOAT128_INTEROP_GNU_LDBL="incompatible"
+    fi
+fi
+
+AC_MSG_NOTICE([Binary128 support: $BINARY128_SUPPORT])
+if test "x$BINARY128_SUPPORT" = "xenabled"; then
+    AC_MSG_NOTICE([  Type:           $BINARY128_TYPE])
+    AC_MSG_NOTICE([  I/O:            $BINARY128_IO])
+    AC_MSG_NOTICE([  Math:           $BINARY128_MATH])
+    AC_MSG_NOTICE([  Literal:        $BINARY128_LITERAL])
+    if test "x$mplapack_have_std_abs_float128" = "xyes"; then
+        AC_MSG_NOTICE([  std::abs:       yes (__float128)])
+    else
+        AC_MSG_NOTICE([  std::abs:       no (__float128)])
+    fi
+    AC_MSG_NOTICE([  Interop:])
+    AC_MSG_NOTICE([    _Float128  <-> __float128 : $FLOAT128_INTEROP_STD_GNU])
+    AC_MSG_NOTICE([    _Float128  <-> long double: $FLOAT128_INTEROP_STD_LDBL])
+    AC_MSG_NOTICE([    __float128 <-> long double: $FLOAT128_INTEROP_GNU_LDBL])
+fi
+AC_MSG_NOTICE([])
+
+dnl -------------------------
+dnl Binary80 human summary
+dnl -------------------------
+if test x$enable_binary80 = x"yes"; then
+    BINARY80_SUPPORT="enabled"
+else
+    BINARY80_SUPPORT="disabled"
+fi
+
+BINARY80_TYPE="unavailable"
+case "$mplapack_binary80_mode" in
+    1) BINARY80_TYPE="long double (binary80)" ;;
+    2) BINARY80_TYPE="_Float64x (binary80)" ;;
+esac
+
+BINARY80_IO="unavailable"
+case "$mplapack_binary80_io" in
+    1) BINARY80_IO="snprintf %Lg" ;;
+    2) BINARY80_IO="strfromf64x" ;;
+esac
+
+BINARY80_MATH="unavailable"
+case "$mplapack_binary80_math" in
+    1) BINARY80_MATH="sqrtl, expl, logl, sinl, cosl" ;;
+    2) BINARY80_MATH="sqrtf64x, expf64x, logf64x, sinf64x, cosf64x" ;;
+esac
+
+BINARY80_LITERAL="unavailable"
+if test "x$have_suffix_f64x" = "xyes"; then
+    BINARY80_LITERAL="f64x"
+elif test "x$have_suffix_L_binary80" = "xyes"; then
+    BINARY80_LITERAL="L"
+fi
+
+FLOAT80_INTEROP_STD_GNU="not tested"
+if test "x$have__Float64x" = "xyes" && test "x$have___float80" = "xyes"; then
+    if test "x$float80_types_same" = "xyes"; then
+        FLOAT80_INTEROP_STD_GNU="identical"
+    elif test "x$float80_implicit_gnu_to_std" = "xyes" && test "x$float80_implicit_std_to_gnu" = "xyes"; then
+        FLOAT80_INTEROP_STD_GNU="implicit conversion both ways"
+    elif test "x$float80_implicit_gnu_to_std" = "xyes"; then
+        FLOAT80_INTEROP_STD_GNU="implicit conversion (__float80 -> _Float64x only)"
+    elif test "x$float80_implicit_std_to_gnu" = "xyes"; then
+        FLOAT80_INTEROP_STD_GNU="implicit conversion (_Float64x -> __float80 only)"
+    else
+        FLOAT80_INTEROP_STD_GNU="incompatible"
+    fi
+fi
+
+FLOAT80_INTEROP_STD_LDBL="not tested"
+if test "x$have__Float64x" = "xyes"; then
+    if test "x$_Float64x_is_longdouble" = "xyes"; then
+        FLOAT80_INTEROP_STD_LDBL="identical"
+    elif test "x$_Float64x_is_binary80" = "xyes" && test "x$longdouble_is_binary80" = "xyes"; then
+        FLOAT80_INTEROP_STD_LDBL="same format, distinct types"
+    else
+        FLOAT80_INTEROP_STD_LDBL="incompatible"
+    fi
+fi
+
+FLOAT80_INTEROP_GNU_LDBL="not tested"
+if test "x$have___float80" = "xyes"; then
+    if test "x$longdouble_is_binary80" = "xyes"; then
+        FLOAT80_INTEROP_GNU_LDBL="same format, distinct types"
+    else
+        FLOAT80_INTEROP_GNU_LDBL="incompatible"
+    fi
+fi
+
+AC_MSG_NOTICE([Binary80 support:  $BINARY80_SUPPORT])
+if test "x$BINARY80_SUPPORT" = "xenabled"; then
+    AC_MSG_NOTICE([  Type:           $BINARY80_TYPE])
+    AC_MSG_NOTICE([  I/O:            $BINARY80_IO])
+    AC_MSG_NOTICE([  Math:           $BINARY80_MATH])
+    AC_MSG_NOTICE([  Literal:        $BINARY80_LITERAL])
+    AC_MSG_NOTICE([  Interop:])
+    AC_MSG_NOTICE([    _Float64x <-> __float80   : $FLOAT80_INTEROP_STD_GNU])
+    AC_MSG_NOTICE([    _Float64x <-> long double : $FLOAT80_INTEROP_STD_LDBL])
+    AC_MSG_NOTICE([    __float80 <-> long double : $FLOAT80_INTEROP_GNU_LDBL])
+fi
+AC_MSG_NOTICE([])
+
+if test x$enable_benchmark = x"yes"; then
+    AC_MSG_NOTICE([Benchmark:         enabled])
+    AC_MSG_NOTICE([Internal OpenBLAS: enabled])
+else
+    AC_MSG_NOTICE([Benchmark:         disabled])
+    AC_MSG_NOTICE([Internal OpenBLAS: disabled])
+fi
+
+if test x$enable_test = x"yes"; then
+    AC_MSG_NOTICE([Tests:             enabled])
+else
+    AC_MSG_NOTICE([Tests:             disabled])
+fi
+
+if test x$enable_test = x"yes" || test x$enable_benchmark = x"yes"; then
+    AC_MSG_NOTICE([Internal LAPACK:   enabled])
+else
+    AC_MSG_NOTICE([Internal LAPACK:   disabled])
+fi
+
+AC_MSG_NOTICE([])
 
 if test x$enable_benchmark = x"yes"; then
 AC_MSG_RESULT([Enable benchmark])
@@ -1671,7 +1994,7 @@ else
 AC_MSG_RESULT([Disable test])
 fi
 
-if test x$enable_test = x"yes" || test x$enable_bench = x"yes" ; then
+if test x$enable_test = x"yes" || test x$enable_benchmark = x"yes" ; then
 AC_MSG_RESULT([Build internal LAPACK])
 AC_SUBST(LAPACK_DIR, [lapack])
 LAPACK_INCLUDEDIR=$highest_abs_top_builddir/external/i/LAPACK/include/
@@ -1856,12 +2179,12 @@ external/mpfr/Makefile
 external/mpc/Makefile
 external/qd/Makefile
 external/lapack/Makefile
-external/openblas/Makefile
 external/dlfcn-win32/Makefile
 ])
 
 if test x$enable_benchmark != xno; then
 AC_CONFIG_FILES([
+external/openblas/Makefile
 benchmark/Makefile
 ])
 fi

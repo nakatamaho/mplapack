@@ -10,7 +10,8 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 CONF_FILE="${CONF_FILE:-$SCRIPT_DIR/build-matrix.conf}"
 LOGDIR="${LOGDIR:-$SCRIPT_DIR/logs/$(date +%Y%m%d_%H%M%S)}"
-DOCKER_DIR="$SCRIPT_DIR/docker"
+SUCCESS_DIR="${SUCCESS_DIR:-$SCRIPT_DIR/success}"
+DOCKER_DIR="$SCRIPT_DIR/../docker/release"
 TARBALL="${TARBALL:-}"
 PHASE="${PHASE:-all}"
 FILTER_NAME="${FILTER_NAME:-}"
@@ -23,6 +24,7 @@ HOST_WORK_DIR="${HOST_WORK_DIR:-$PROJECT_ROOT}"
 HOST_CCACHE_DIR="${HOST_CCACHE_DIR:-/work/ccache}"
 
 mkdir -p "$LOGDIR"
+mkdir -p "$SUCCESS_DIR"
 mkdir -p "$HOST_CCACHE_DIR"
 
 # Initialize buildx builder if not exists
@@ -75,6 +77,32 @@ make_image_tag() {
     local tag="${IMAGE_PREFIX}:${name}-${arch}-${src}-${br}-${sha}-${stamp}"
     if [[ -n "$extra" ]]; then tag="${tag}-${extra}"; fi
     echo "$tag"
+}
+
+make_success_stamp() {
+    # Usage: make_success_stamp <name> <arch> <source_type>
+    local name_raw="$1" arch_raw="$2" source_type_raw="$3"
+    local name arch src
+    name="$(sanitize_token "$name_raw")"
+    arch="$(sanitize_token "$arch_raw")"
+    src="$(sanitize_token "$source_type_raw")"
+    echo "$SUCCESS_DIR/${name}_${arch}_${src}.ok"
+}
+
+abspath() {
+    # Print an absolute path without relying on GNU-specific realpath/readlink options.
+    local path="$1"
+    if [[ -d "$path" ]]; then
+        (
+            cd "$path"
+            pwd
+        )
+    else
+        local dir base
+        dir="$(dirname "$path")"
+        base="$(basename "$path")"
+        (cd "$dir" && printf '%s/%s\n' "$(pwd)" "$base")
+    fi
 }
 
 setup_ccache() {
@@ -294,10 +322,24 @@ build_one() {
 
     local arch_short=${arch##*/}
     local tag="$(make_image_tag "$name" "$arch_short" "$source_type")"
-    local logprefix="$LOGDIR/${name}_${arch_short}"
+    local logprefix="$LOGDIR/${name}_${arch_short}_${source_type}"
+    local logfile="${logprefix}_build.log"
+    local stamp
+    stamp="$(make_success_stamp "$name" "$arch" "$source_type")"
     local start=$(date +%s)
     local gpu_flag=""
 
+    if [[ -L "$stamp" && ! -e "$stamp" ]]; then
+        log "Removing broken success link: $stamp"
+        rm -f "$stamp"
+    fi
+
+    if [[ -L "$stamp" && -e "$stamp" ]]; then
+        log "  (Already passed; skipping $name / ${arch_short} / $source_type)"
+        log "  (Success log: $(readlink "$stamp"))"
+        echo "$name,$arch_short,$base,test,SKIPPED,0,$source_type"
+        return 0
+    fi
 
 # Cross-architecture support (qemu/binfmt)
 if [[ -n "${HOST_PLATFORM:-}" && "$arch" != "$HOST_PLATFORM" ]]; then
@@ -392,12 +434,11 @@ fi
     # /work is tmpfs so a second docker run would lose all build artifacts.
     # The Dockerfile CMD does the build; TEST_CMD env var triggers tests at the end.
     if ! docker run "${docker_run_args[@]}" \
-        "$tag" \
-        > "${logprefix}_build.log" 2>&1; then
+        "$tag" > "$logfile" 2>&1; then
 
         local elapsed=$(($(date +%s) - start))
         # Inspect the log to distinguish build vs test failure
-        if grep -q '=== Running tests ===' "${logprefix}_build.log" 2>/dev/null; then
+        if grep -q '=== Running tests ===' "$logfile" 2>/dev/null; then
             echo "$name,$arch_short,$base,test,FAILED,$elapsed,$source_type"
         else
             echo "$name,$arch_short,$base,build,FAILED,$elapsed,$source_type"
@@ -406,6 +447,7 @@ fi
     fi
 
     local elapsed=$(($(date +%s) - start))
+    ln -sfn "$(abspath "$logfile")" "$stamp"
     echo "$name,$arch_short,$base,test,OK,$elapsed,$source_type"
 }
 
@@ -457,6 +499,7 @@ show_summary() {
     echo "" >&2
     echo "Total: $total | Passed: $passed | Failed: $failed | Skipped: $skipped" >&2
     echo "Logs:   $LOGDIR/" >&2
+    echo "Passes: $SUCCESS_DIR/" >&2
     echo "ccache: $HOST_CCACHE_DIR" >&2
 
     [[ $failed -eq 0 ]] || exit 1
@@ -464,6 +507,11 @@ show_summary() {
 
 # Main entry point
 case "${1:-}" in
+    clean-success)
+        rm -rf "$SUCCESS_DIR"
+        mkdir -p "$SUCCESS_DIR"
+        log "Cleaned success links: $SUCCESS_DIR"
+        ;;
     dist)
         make_dist
         ;;

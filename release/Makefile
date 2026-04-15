@@ -7,10 +7,11 @@ CONF_FILE ?= $(SCRIPT_DIR)/build-matrix.conf
 LOGDIR ?= $(SCRIPT_DIR)/logs/$(shell date +%Y%m%d_%H%M%S)
 HOST_WORK_DIR ?= $(PROJECT_ROOT)
 HOST_CCACHE_DIR ?= /work/ccache
+SUCCESS_DIR ?= $(SCRIPT_DIR)/success
 
-export CONF_FILE LOGDIR PROJECT_ROOT HOST_WORK_DIR HOST_CCACHE_DIR
+export CONF_FILE LOGDIR PROJECT_ROOT HOST_WORK_DIR HOST_CCACHE_DIR SUCCESS_DIR
 
-.PHONY: all branch tarball dist clean list help
+.PHONY: all branch tarball dist clean clean-all clean-success list help
 .PHONY: intel mingw cuda ubuntu debian fedora rocky suse alpine
 .PHONY: amd64 arm64 ppc64le i386 s390x mips64le
 .PHONY: branch-ubuntu branch-debian branch-amd64 branch-cuda branch-rocky branch-suse
@@ -145,7 +146,49 @@ list:
 		awk -F'|' '{printf "%-25s %-45s %-40s %s\n", $$1, $$2, $$3, $$6}'
 
 clean:
-	rm -rf logs/
+	@mkdir -p logs/ $(SUCCESS_DIR)
+	@tmp="$$(mktemp)"; \
+	trap 'rm -f "$$tmp"' EXIT; \
+	find "$(SUCCESS_DIR)" -maxdepth 1 -type l -name '*.ok' | while IFS= read -r link; do \
+		target="$$(readlink -f "$$link" 2>/dev/null || true)"; \
+		if [ -n "$$target" ] && [ -e "$$target" ]; then \
+			dir="$$(dirname "$$target")"; \
+			case "$$dir" in \
+				"$(abspath $(SCRIPT_DIR)/logs)"/*) printf '%s\n' "$$dir" ;; \
+			esac; \
+		fi; \
+	done | sort -u > "$$tmp"; \
+	if [ -s "$$tmp" ]; then \
+		echo "Preserving successful log directories:"; \
+		sed 's#^#  #g' "$$tmp"; \
+		find logs -mindepth 1 -maxdepth 1 -type d | while IFS= read -r d; do \
+			rd="$$(readlink -f "$$d" 2>/dev/null || true)"; \
+			if grep -Fxq "$$rd" "$$tmp"; then \
+				echo "KEEP $$d"; \
+			else \
+				echo "RM   $$d"; \
+				rm -rf "$$d"; \
+			fi; \
+		done; \
+	else \
+		echo "No protected success logs; removing logs/"; \
+		rm -rf logs/; \
+		mkdir -p logs/; \
+	fi
+	@# Stop and remove any running containers using our labeled images first.
+	@# "docker rmi -f" cannot remove images used by *running* containers even with -f.
+	-docker ps -q  --filter label=org.mplapack.project=mplapack --filter label=org.mplapack.purpose=mplapack-qa | xargs -r docker stop
+	-docker ps -aq --filter label=org.mplapack.project=mplapack --filter label=org.mplapack.purpose=mplapack-qa | xargs -r docker rm -f
+	-docker images -q --filter label=org.mplapack.project=mplapack --filter label=org.mplapack.purpose=mplapack-qa | xargs -r docker rmi -f
+
+
+clean-success:
+	@rm -rf $(SUCCESS_DIR)
+	@mkdir -p $(SUCCESS_DIR)
+
+clean-all:
+	@rm -rf logs/ $(SUCCESS_DIR)
+	@mkdir -p logs/ $(SUCCESS_DIR)
 	@# Stop and remove any running containers using our labeled images first.
 	@# "docker rmi -f" cannot remove images used by *running* containers even with -f.
 	-docker ps -q  --filter label=org.mplapack.project=mplapack --filter label=org.mplapack.purpose=mplapack-qa | xargs -r docker stop
@@ -201,7 +244,9 @@ help:
 	@echo ""
 	@echo "Utilities:"
 	@echo "  make list        - show build matrix"
-	@echo "  make clean       - remove logs and images"
+	@echo "  make clean       - remove unprotected logs and images"
+	@echo "  make clean-success - remove success stamps only"
+	@echo "  make clean-all   - remove all logs, success stamps, and images"
 	@echo ""
 	@echo "Architecture notes:"
 	@echo "  - i386/s390x/mips64le: Debian only (QEMU, very slow)"

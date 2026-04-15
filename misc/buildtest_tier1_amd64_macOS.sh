@@ -56,6 +56,9 @@ safe_rmdir() {
     # Confirm target starts with $HOME to prevent accidental wide deletion
     case "${target}" in
         "${HOME}/"*)
+            # make distcheck leaves read-only files in extracted tarball trees;
+            # restore write permission before removal so rm -rf succeeds.
+            chmod -R u+rwX "${target}" 2>/dev/null || true
             rm -rf "${target}"
             ;;
         *)
@@ -169,6 +172,9 @@ if [ -L "${WORKDIR}" ]; then
     exit 1
 fi
 
+# Ensure WORKDIR exists before realpath resolution (first-run case: directory not yet created).
+mkdir -p "${WORKDIR}"
+
 # Realpath guard: ensure resolved WORKDIR matches resolved expected path.
 EXPECTED_WORKDIR="${HOME}/tmp/mplapack"
 WORKDIR_REAL="$(realpath_safe "${WORKDIR}")" || { echo "ERROR: Failed to resolve realpath: ${WORKDIR}" >&2; exit 1; }
@@ -204,6 +210,9 @@ fi
 
 # Always release the lock on exit.
 cleanup_lock() {
+    # make distcheck intentionally makes extracted tree read-only;
+    # restore write bits so the directory can be removed on any exit path.
+    chmod -R u+rwX "${WORKDIR}" 2>/dev/null || true
     rm -rf "${LOCKDIR}"
 }
 trap cleanup_lock EXIT INT TERM HUP
@@ -216,7 +225,7 @@ find "${WORKDIR}" -mindepth 1 -maxdepth 1 -exec rm -rf -- {} +
 
 log "WORKDIR: ${WORKDIR}"
 
-git clone --depth 1 --branch release/2.1 git@github.com:nakatamaho/mplapack.git "${WORKDIR}"
+git clone --depth 1 git@github.com:nakatamaho/mplapack.git "${WORKDIR}"
 cd "${WORKDIR}"
 git --no-pager log -1 | tee "${LOG_DIR}/git_log.log" | tee -a "${LOG_DIR}/summary.log"
 

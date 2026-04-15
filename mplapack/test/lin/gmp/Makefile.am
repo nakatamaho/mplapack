@@ -15,22 +15,22 @@ mplibs = -L$(GMP_LIBDIR) -lgmpxx -lgmp -lm
 cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_GMP___ -D___MPLAPACK_INTERNAL___ -I$(top_srcdir)/fable
 
 xlintstR_gmp_SOURCES  = ../common/Rchkaa.cpp
-xlintstR_gmp_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstR_gmp_LDFLAGS  = $(libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstR_gmp_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstR_gmp_CXXFLAGS = $(cxxflags) 
 
 xlintstC_gmp_SOURCES  = ../common/Cchkaa.cpp
-xlintstC_gmp_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstC_gmp_LDFLAGS  = $(libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstC_gmp_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstC_gmp_CXXFLAGS = $(cxxflags)
 
 xlintstrfR_gmp_SOURCES  = ../common/Rchkrfp.cpp
-xlintstrfR_gmp_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstrfR_gmp_LDFLAGS  = $(libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfR_gmp_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstrfR_gmp_CXXFLAGS = $(cxxflags)
 
 xlintstrfC_gmp_SOURCES  = ../common/Cchkrfp.cpp
-xlintstrfC_gmp_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstrfC_gmp_LDFLAGS  = $(libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfC_gmp_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstrfC_gmp_CXXFLAGS = $(cxxflags)
 

@@ -1,0 +1,163 @@
+# * How to build (for public users - read-only access)
+#  podman build -f Dockerfile-ubuntu24.04-arm64-devel-podman -t mplapack:devel2404 .
+#
+# * How to build (for maintainers with SSH key - read-write access)
+#  podman build -f Dockerfile-ubuntu24.04-arm64-devel-podman \
+#    --build-arg DOCKER_UID="$(id -u)" --build-arg DOCKER_GID="$(id -g)" \
+#    --build-arg USE_SSH=true --build-arg SSH_KEY_NAME="${SSH_KEY_NAME:-id_ed25519}" \
+#    --secret id=ssh_key,src="$HOME/.ssh/${SSH_KEY_NAME:-id_ed25519}" \
+#    -t mplapack:devel2404 .
+#
+# * How to build with custom repository (for users with forks)
+#  podman build -f Dockerfile-ubuntu24.04-arm64-devel-podman \
+#    --build-arg DOCKER_UID=$(id -u) --build-arg DOCKER_GID=$(id -g) \
+#    --build-arg MPLAPACK_REPO=https://github.com/username/mplapack.git \
+#    -t mplapack:devel2404 .
+#
+# * How to build with custom repository using SSH
+#  SSH_KEY_NAME=id_ed25519 podman build -f Dockerfile-ubuntu24.04-arm64-devel-podman \
+#    --build-arg DOCKER_UID=$(id -u) --build-arg DOCKER_GID=$(id -g) \
+#    --build-arg USE_SSH=true --build-arg SSH_KEY_NAME=${SSH_KEY_NAME} \
+#    --build-arg MPLAPACK_REPO=https://github.com/<username>/mplapack.git \
+#    --secret id=ssh_key,src=$HOME/.ssh/${SSH_KEY_NAME} \
+#    -t mplapack:devel2404 .
+#
+# * How to run (rootless Podman - no --privileged needed for normal use)
+#  podman run -it --rm mplapack:devel2404 /bin/bash
+#
+# * How to run with perf support (requires host-side sysctl, then --cap-add)
+#  sudo sysctl -w kernel.perf_event_paranoid=-1
+#  podman run --cap-add SYS_ADMIN --cap-add PERFMON -it --rm mplapack:devel2404 /bin/bash
+#
+# * How to run with SSH key for git operations (maintainers only)
+#  eval $(ssh-agent); ssh-add ~/.ssh/id_ed25519
+#  podman run -v $SSH_AUTH_SOCK:/ssh-agent:z -e SSH_AUTH_SOCK=/ssh-agent -it --rm mplapack:devel2404 /bin/bash
+#
+# Note: When using rootless Podman, pass --userns=keep-id to map your host UID/GID
+#  into the container as the 'docker' user, e.g.:
+#  podman run --userns=keep-id -it --rm mplapack:devel2404 /bin/bash
+
+FROM ubuntu:24.04
+
+# git setting
+ARG GIT_EMAIL="maho.nakata@gmail.com"
+ARG GIT_NAME="NAKATA Maho"
+LABEL maintainer="maho.nakata@gmail.com"
+
+# Build argument to choose between HTTPS (public) and SSH (maintainer)
+ARG USE_SSH=false
+ARG SSH_KEY_NAME
+
+# Repository URLs - can be overridden to use forks
+ARG MPLAPACK_REPO=https://github.com/nakatamaho/mplapack.git
+
+# Validate required arguments for SSH mode
+RUN if [ "$USE_SSH" = "true" ] && [ -z "$SSH_KEY_NAME" ]; then \
+      echo "========================================"; \
+      echo "ERROR: Maintainer mode requires SSH_KEY_NAME"; \
+      echo "Usage: --build-arg SSH_KEY_NAME=id_ed25519"; \
+      echo "========================================"; \
+      exit 1; \
+    fi
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+# set your timezone
+ENV TZ=Asia/Tokyo
+
+RUN apt-get -y update && apt-get -y upgrade && \
+    apt-get install -y --no-install-recommends \
+        sudo tzdata \
+        locales fonts-noto-cjk \
+        build-essential python3 python3-pip gcc g++ gfortran \
+        autotools-dev automake libtool libtool-bin universal-ctags gnuplot \
+        # Use linux-tools-generic / linux-headers-generic instead of uname -r variants:
+        # at image build time the kernel version seen by uname is the host kernel, which
+        # will likely differ from the kernel seen at run time inside the container.
+        gdb valgrind linux-tools-generic google-perftools linux-headers-generic \
+        git wget gpg ccache time parallel bc \
+        pkg-config clangd python3-autopep8 clang-format-19 unifdef octave \
+        ng-common ng-cjk emacs-nox ripgrep pipx && \
+    echo "${TZ}" > /etc/timezone && \
+    rm /etc/localtime && \
+    ln -s /usr/share/zoneinfo/Asia/Tokyo /etc/localtime && \
+    dpkg-reconfigure -f noninteractive tzdata && \
+    sed -i 's/# ja_JP.UTF-8 UTF-8/ja_JP.UTF-8 UTF-8/' /etc/locale.gen && \
+    locale-gen ja_JP.UTF-8 && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+ENV LANG=ja_JP.UTF-8
+ENV LANGUAGE=ja_JP:ja
+ENV LC_ALL=ja_JP.UTF-8
+
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 1
+
+# create non-root user without password and allow passwordless sudo
+ARG DOCKER_UID=2000
+ARG DOCKER_GID=2000
+ARG DOCKER_USER=docker
+
+RUN set -eux; \
+    existing="$(getent passwd ${DOCKER_UID} | cut -d: -f1 || true)"; \
+    if [ -n "$existing" ]; then \
+        usermod -l "${DOCKER_USER}" -d "/home/${DOCKER_USER}" -m "$existing"; \
+        groupmod -n "${DOCKER_USER}" "$(id -gn ${DOCKER_UID})" 2>/dev/null || true; \
+    else \
+        groupadd -g "${DOCKER_GID}" "${DOCKER_USER}" 2>/dev/null || true; \
+        useradd -u "${DOCKER_UID}" -g "${DOCKER_GID}" -m -s /bin/bash "${DOCKER_USER}"; \
+    fi; \
+    usermod -aG sudo "${DOCKER_USER}"; \
+    echo "${DOCKER_USER} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/"${DOCKER_USER}"; \
+    chmod 440 /etc/sudoers.d/"${DOCKER_USER}"
+
+ARG WORK=/home/${DOCKER_USER}
+
+USER ${DOCKER_USER}
+
+RUN printf '[user]\n\temail = %s\n\tname = %s\n' "${GIT_EMAIL}" "${GIT_NAME}" \
+    > /home/${DOCKER_USER}/.gitconfig
+
+RUN echo -e "\n\
+        PROGRAM HELLO\n\
+        PRINT *, 'HELLO, WORLD!'\n\
+        END PROGRAM\n\
+" >> ${WORK}/sample.f
+
+RUN echo "cd /home/$DOCKER_USER" >> ${WORK}/.bashrc
+
+### Git clone strategy: HTTPS (default) or SSH (with --build-arg USE_SSH=true) ###
+
+# Prepare SSH environment if using SSH mode
+RUN if [ "$USE_SSH" = "true" ]; then \
+        mkdir -p /home/${DOCKER_USER}/.ssh && \
+        chmod 0700 /home/${DOCKER_USER}/.ssh && \
+        ssh-keyscan -T 10 github.com > /home/${DOCKER_USER}/.ssh/known_hosts; \
+    fi
+
+# Clone repositories - HTTPS mode (default, public access)
+RUN if [ "$USE_SSH" != "true" ]; then \
+        echo "=== Cloning via HTTPS (public read-only mode) ===" && \
+        echo "Repository: ${MPLAPACK_REPO}" && \
+        cd ${WORK} && git clone ${MPLAPACK_REPO} && \
+        cd ${WORK}/mplapack && git log -1; \
+    fi
+
+# Clone repositories - SSH mode (maintainer access, requires --secret)
+RUN --mount=type=secret,id=ssh_key,uid=${DOCKER_UID} \
+    if [ "$USE_SSH" = "true" ]; then \
+        echo "=== Cloning via SSH (maintainer mode) ===" && \
+        SSH_REPO=$(echo "${MPLAPACK_REPO}" | sed 's|https://github.com/|git@github.com:|') && \
+        echo "Repository: ${SSH_REPO}" && \
+        mkdir -p /home/${DOCKER_USER}/.ssh && \
+        cp /run/secrets/ssh_key /home/${DOCKER_USER}/.ssh/${SSH_KEY_NAME} && \
+        chmod 600 /home/${DOCKER_USER}/.ssh/${SSH_KEY_NAME} && \
+        eval "$(ssh-agent -s)" && \
+        ssh-add /home/${DOCKER_USER}/.ssh/${SSH_KEY_NAME} && \
+        cd ${WORK} && git clone ${SSH_REPO} && \
+        cd ${WORK}/mplapack && git log -1 && \
+        rm -f /home/${DOCKER_USER}/.ssh/${SSH_KEY_NAME}; \
+    fi
+
+RUN cd ${WORK}/mplapack && bash misc/reconfig.ubuntu24.04.sh
+RUN cd ${WORK}/mplapack && make -j"$(nproc)"
+RUN cd ${WORK}/mplapack && make install

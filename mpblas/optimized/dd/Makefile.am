@@ -1,6 +1,7 @@
 lib_LTLIBRARIES = libmpblas_dd_opt.la 
 
 libmpblas_dd_opt_la_CPPFLAGS = -I. -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) $(OPENMP_CXXFLAGS) -D___MPLAPACK_BUILD_WITH_DD___
+libmpblas_dd_opt_la_CXXFLAGS = $(DD_CXXFLAGS)
 libmpblas_dd_opt_la_SOURCES = \
 Rcopy.cpp Rcopy_ref.cpp openmp/Rcopy_omp.cpp \
 Rdot.cpp  Rdot_ref.cpp  openmp/Rdot_omp.cpp \

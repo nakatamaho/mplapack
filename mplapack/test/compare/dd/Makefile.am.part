@@ -12,21 +12,23 @@ AM_TESTS_ENVIRONMENT = \
 
 run_Rlaruv_test.sh: Makefile
 	@echo '#!/bin/sh' > $@
+	@echo 'NUM_DIFF_PY="$(top_srcdir)/misc/num_diff.py"' >> $@
 	@echo '$${LOG_COMPILER} ./Rlaruv.test_dd$${EXEEXT} || true' >> $@
-	@echo 'if diff -u $${srcdir}/Rlaruv_reference.txt Rlaruv.txt > /dev/null 2>&1; then' >> $@
+	@echo 'if python3 "$${NUM_DIFF_PY}" "$${srcdir}/Rlaruv_reference.txt" Rlaruv.txt --tol 1e-30; then' >> $@
 	@echo '  echo "PASS: Rlaruv"; exit 0' >> $@
 	@echo 'else' >> $@
-	@echo '  echo "FAIL: Rlaruv"; diff $${srcdir}/Rlaruv_reference.txt Rlaruv.txt; exit 1' >> $@
+	@echo '  echo "FAIL: Rlaruv"; exit 1' >> $@
 	@echo 'fi' >> $@
 	@chmod +x $@
 
 run_Rlamch_test.sh: Makefile
 	@echo '#!/bin/sh' > $@
+	@echo 'NUM_DIFF_PY="$(top_srcdir)/misc/num_diff.py"' >> $@
 	@echo '$${LOG_COMPILER} ./Rlamch.test_dd$${EXEEXT} || true' >> $@
-	@echo 'if diff -u $${srcdir}/Rlamch_reference.txt Rlamch.txt > /dev/null 2>&1; then' >> $@
+	@echo 'if python3 "$${NUM_DIFF_PY}" "$${srcdir}/Rlamch_reference.txt" Rlamch.txt --tol 1e-30; then' >> $@
 	@echo '  echo "PASS: Rlamch"; exit 0' >> $@
 	@echo 'else' >> $@
-	@echo '  echo "FAIL: Rlamch"; diff $${srcdir}/Rlamch_reference.txt Rlamch.txt; exit 1' >> $@
+	@echo '  echo "FAIL: Rlamch"; exit 1' >> $@
 	@echo 'fi' >> $@
 	@chmod +x $@
 
@@ -50,7 +52,7 @@ mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(QD_LIBDIR) -lmpc -lmpfr -lgmpxx -lgm
 refblas=-L$(top_builddir)/external/i/LAPACK/lib -lblas $(FCLIBS)
 reflapack=-L$(top_builddir)/external/i/LAPACK/lib -llapack $(FCLIBS)
 
-test_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(QD_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_DD___ -D___MPLAPACK_INTERNAL___
+test_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(QD_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_DD___ -D___MPLAPACK_INTERNAL___ $(DD_CXXFLAGS)
 AM_FFLAGS = -x f77-cpp-input -g
 
 test_srcdepends = ../../../../mpblas/test/common/xerbla.cpp ../../../../mpblas/test/common/mplapack.test.cpp

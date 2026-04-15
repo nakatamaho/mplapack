@@ -70,6 +70,7 @@ if ENABLE_DD
 libmplapack_dd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_DD___
 libmplapack_dd_la_SOURCES = $(MPLAPACK_SOURCES)
 libmplapack_dd_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO) -Wl,-rpath,$(libdir)
+libmplapack_dd_la_CXXFLAGS = $(DD_CXXFLAGS)
 if IS_MACOS
 libmplapack_dd_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif

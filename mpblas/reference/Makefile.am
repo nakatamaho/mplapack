@@ -84,6 +84,7 @@ if ENABLE_DD
 libmpblas_dd_la_CPPFLAGS = -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_DD___
 libmpblas_dd_la_SOURCES = $(MPBLAS_SOURCES)
 libmpblas_dd_la_LDFLAGS = $(MPLAPACK_LT_LDFLAGS) $(MPLAPACK_RPATH_LDFLAGS)
+libmpblas_dd_la_CXXFLAGS  = $(DD_CXXFLAGS)
 if IS_MACOS
 libmpblas_dd_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
