@@ -1511,7 +1511,8 @@ statement_190:
             }
             Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
-            thresh = thresh * 1.5;
+            thresh_org = thresh;
+            thresh = thresh * 4.0;
             printf("Warning! Threshold has been lifted to: ");
             printnum_short(thresh);
             printf(" for GMP\n");
