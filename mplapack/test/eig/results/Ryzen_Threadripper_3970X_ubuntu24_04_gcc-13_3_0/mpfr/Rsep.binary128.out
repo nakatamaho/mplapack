@@ -25,6 +25,7 @@ The following parameter values will be used:
  SEP:  NB =   1, NBMIN =   2, NX =   1
 
  All tests for DST passed the threshold (  4440 tests run)
+Warning! Threshold has been lifted to: +8.0000000000000000e+01 for SEP drivers
 
  All tests for DST drivers  passed the threshold (  13464 tests run)
 
@@ -32,6 +33,7 @@ The following parameter values will be used:
  SEP:  NB =   3, NBMIN =   2, NX =   0
 
  All tests for DST passed the threshold (  4440 tests run)
+Warning! Threshold has been lifted to: +8.0000000000000000e+01 for SEP drivers
 
  All tests for DST drivers  passed the threshold (  13464 tests run)
 
@@ -39,6 +41,7 @@ The following parameter values will be used:
  SEP:  NB =   3, NBMIN =   2, NX =   5
 
  All tests for DST passed the threshold (  4440 tests run)
+Warning! Threshold has been lifted to: +8.0000000000000000e+01 for SEP drivers
 
  All tests for DST drivers  passed the threshold (  13464 tests run)
 
@@ -46,6 +49,7 @@ The following parameter values will be used:
  SEP:  NB =   3, NBMIN =   2, NX =   9
 
  All tests for DST passed the threshold (  4440 tests run)
+Warning! Threshold has been lifted to: +8.0000000000000000e+01 for SEP drivers
 
  All tests for DST drivers  passed the threshold (  13464 tests run)
 
@@ -53,10 +57,11 @@ The following parameter values will be used:
  SEP:  NB =  10, NBMIN =   2, NX =   1
 
  All tests for DST passed the threshold (  4440 tests run)
+Warning! Threshold has been lifted to: +8.0000000000000000e+01 for SEP drivers
 
  All tests for DST drivers  passed the threshold (  13464 tests run)
 
 
  End of tests
- Total time used =        82.76 seconds
+ Total time used =        82.66 seconds
 
