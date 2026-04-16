@@ -1,6 +1,6 @@
 --- Rlatb4.cpp	2026-04-12 18:36:09.436508234 +0900
 +++ Rlatb4.cpp	2026-04-12 18:38:07.935585129 +0900
-@@ -44,28 +44,23 @@
+@@ -44,28 +44,30 @@
  #include <mplapack_lin.h>
  
  void Rlatb4(fem::str_cref path, INTEGER const imat, INTEGER const m, INTEGER const n, fem::str_ref type, INTEGER &kl, INTEGER &ku, REAL &anorm, INTEGER &mode, REAL &cndnum, fem::str_ref dist) {
@@ -28,6 +28,13 @@
 -    }
 +    REAL eps = Rlamch("Precision");
 +    REAL badc2 = tenth / eps;
++#if defined ___MPLAPACK_BUILD_WITH_DD___ || defined ___MPLAPACK_BUILD_WITH_BINARY128___ || defined ___MPLAPACK_BUILD_WITH_MPFR___
++    const REAL badc2_cap = 1.0e24;
++    badc2 = min(badc2, badc2_cap);
++#elif defined ___MPLAPACK_BUILD_WITH_QD___ || defined ___MPLAPACK_BUILD_WITH_GMP___
++    const REAL badc2_cap = 1.0e30;
++    badc2 = min(badc2, badc2_cap);
++#endif
 +    REAL badc1 = sqrt(badc2);
 +    REAL small = Rlamch("Safe minimum");
 +    REAL large = one / small;

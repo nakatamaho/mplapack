@@ -30,28 +30,7 @@
  
  ZGB drivers passed the tests of the error exits
 
- ZGB drivers:  General band matrices
- Matrix types:
-    1. Random, CNDNUM = 2              5. Random, CNDNUM = sqrt(0.1/EPS)
-    2. First column zero               6. Random, CNDNUM = 0.1/EPS
-    3. Last column zero                7. Scaled near underflow
-    4. Last n/2 columns zero           8. Scaled near overflow
- Test ratios:
-    1: norm( L * U - A )  / ( N * norm(A) * EPS )
-    2: norm( B - A * X )  / ( norm(A) * norm(X) * EPS )
-    3: norm( X - XACT )   / ( norm(XACT) * CNDNUM * EPS )
-    4: norm( X - XACT )   / ( norm(XACT) * (error bound) )
-    5: (backward error)   / EPS
-    6: RCOND * CNDNUM - 1.0
-    7: abs( WORK(1) - RPVGRW ) / ( max( WORK(1), RPVGRW ) * EPS )
- Messages:
- Cgbsvx( 'E','T',   50,   12,   12,...), type 6, test(5)=+3.8231153099654701e+07
- Cgbsvx( 'E','C',   50,   12,   12,...), type 6, test(5)=+8.3692626474471893e+07
- Cgbsvx( 'F','T',   50,   12,   12,...), EQUED='R', type 6, test(5)=+6.7559256959240569e+07
- Cgbsvx( 'F','C',   50,   12,   12,...), EQUED='R', type 6, test(5)=+3.7990279942125966e+07
- Cgbsvx( 'F','T',   50,   12,   12,...), EQUED='B', type 6, test(5)=+3.8231153099654701e+07
- Cgbsvx( 'F','C',   50,   12,   12,...), EQUED='B', type 6, test(5)=+8.3692626474471893e+07
- ZGB drivers:      6 out of  36567 tests failed to pass the threshold
+ All tests for ZGB drivers  passed the threshold (  36567 tests run)
  
  ZGT routines passed the tests of the error exits
 
@@ -260,5 +239,5 @@
  All tests for ZHH routines passed the threshold (  15900 tests run)
 
  End of tests
- Total time used =       599.81 seconds
+ Total time used =       561.96 seconds
 
