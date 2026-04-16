@@ -1474,6 +1474,12 @@ statement_190:
             printf("Warning! Threshold has been lifted to: ");
             printnum_short(thresh);
             printf(" for GMP\n");
+#elif defined ___MPLAPACK_BUILD_WITH_DD___
+            thresh_org = thresh;
+            thresh = thresh * 2.0;
+            printf("Warning! Threshold has been lifted to: ");
+            printnum_short(thresh);
+            printf(" for DD\n");
 #endif
             Rdrges(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], &a[(3 - 1) * lda], &a[(4 - 1) * lda], &a[(7 - 1) * lda], nmax, &a[(8 - 1) * lda], &d[0], &d[(2 - 1) * nmax], &d[(3 - 1) * nmax], work, lwork, result, logwrk, info);
             if (info != 0) {
@@ -1484,7 +1490,7 @@ statement_190:
             //
             Mxlaenv(16, 2);
             Rdrges3(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], &a[(3 - 1) * lda], &a[(4 - 1) * lda], &a[(7 - 1) * lda], nmax, &a[(8 - 1) * lda], &d[0], &d[(2 - 1) * nmax], &d[(3 - 1) * nmax], work, lwork, result, logwrk, info);
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
+#if defined ___MPLAPACK_BUILD_WITH_GMP___ || defined ___MPLAPACK_BUILD_WITH_DD___
             thresh = thresh_org;
 #endif
             if (info != 0) {
