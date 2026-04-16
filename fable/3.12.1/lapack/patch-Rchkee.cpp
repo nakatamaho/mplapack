@@ -121,7 +121,7 @@
 +            write(nout, format_9961), c3, nbval[i - 1], nbmin[i - 1], nxval[i - 1], max((INTEGER)11, inmin[i - 1]), inwin[i - 1], inibl[i - 1], ishfts[i - 1], iacc22[i - 1];
 +#if defined ___MPLAPACK_BUILD_WITH_GMP___
 +            thresh_org = thresh;
-+            thresh = thresh * 3.0;
++            thresh = thresh * 10.0;
 +            printf("Warning! Threshold has been lifted to: ");
 +            printnum_short(thresh);
 +            printf(" for GMP\n");
@@ -240,7 +240,7 @@
              }
 +#if defined ___MPLAPACK_BUILD_WITH_GMP___
 +            thresh_org = thresh;
-+            thresh = thresh * 3.0;
++            thresh = thresh * 6.0;
 +            printf("Warning! Threshold has been lifted to: ");
 +            printnum_short(thresh);
 +            printf(" for GMP\n");
