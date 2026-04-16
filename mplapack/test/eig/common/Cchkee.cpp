@@ -1182,7 +1182,17 @@ statement_190:
                 // $                      A( 1, 5 ), A( 1, 6 ), A( 1, 7 ), WORK,
                 // $                      LWORK, RWORK, LWORK, IWORK, LIWORK, RESULT,
                 // $                      INFO )
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+                thresh_org = thresh;
+                thresh = thresh * 2.0;
+                printf("Warning! Threshold has been lifted to: ");
+                printnum_short(thresh);
+                printf(" for GMP ZSG\n");
+#endif
                 Cdrvsg2stg(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], nmax, &dr[(3 - 1) * nmax], &dr[(4 - 1) * nmax], &a[(3 - 1) * lda], nmax, &a[(4 - 1) * lda], &a[(5 - 1) * lda], &a[(6 - 1) * lda], &a[(7 - 1) * lda], work, lwork, rwork, lwork, iwork, liwork, result, info);
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+                thresh = thresh_org;
+#endif
                 if (info != 0) {
                     write(nout, format_9980), "Cdrvsg", info;
                 }

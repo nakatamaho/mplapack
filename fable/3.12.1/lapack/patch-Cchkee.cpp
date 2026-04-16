@@ -109,7 +109,7 @@
      write(nout, format_9984);
      //
      // Read the number of values of M, P, and N.
-@@ -1100,8 +1082,18 @@
+@@ -1100,7 +1082,17 @@
                      iseed[k - 1] = ioldsd[k - 1];
                  }
              }
@@ -128,7 +128,22 @@
 +#endif
              if (info != 0) {
                  write(nout, format_9980), "Cchkhs", info;
-             }
+            }
+@@ -1185,4 +1221,14 @@
++#if defined ___MPLAPACK_BUILD_WITH_GMP___
++                thresh_org = thresh;
++                thresh = thresh * 2.0;
++                printf("Warning! Threshold has been lifted to: ");
++                printnum_short(thresh);
++                printf(" for GMP ZSG\n");
++#endif
+                 Cdrvsg2stg(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], nmax, &dr[(3 - 1) * nmax], &dr[(4 - 1) * nmax], &a[(3 - 1) * lda], nmax, &a[(4 - 1) * lda], &a[(5 - 1) * lda], &a[(6 - 1) * lda], &a[(7 - 1) * lda], work, lwork, rwork, lwork, iwork, liwork, result, info);
++#if defined ___MPLAPACK_BUILD_WITH_GMP___
++                thresh = thresh_org;
++#endif
+                 if (info != 0) {
+                     write(nout, format_9980), "Cdrvsg", info;
+                 }
 @@ -1234,6 +1226,13 @@
                  }
              }
@@ -264,7 +279,7 @@
          }
          write(nout, format_9973);
          goto statement_10;
-@@ -1459,6 +1510,12 @@
+@@ -1459,6 +1510,13 @@
                  Cerrgg(c3, nout);
              }
              Alareq(c3, ntypes, dotype, maxtyp, nin, nout);

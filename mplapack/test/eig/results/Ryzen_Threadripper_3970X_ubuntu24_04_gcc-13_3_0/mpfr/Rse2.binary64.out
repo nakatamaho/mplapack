@@ -25,6 +25,7 @@ The following parameter values will be used:
  SE2:  NB =   1, NBMIN =   2, NX =   1
 
  All tests for DST passed the threshold (  4440 tests run)
+Warning! Threshold has been lifted to: +3.0000000000000000e+03 for MPFR SE2 drivers
 
  All tests for DST drivers  passed the threshold (  13464 tests run)
 
@@ -32,6 +33,7 @@ The following parameter values will be used:
  SE2:  NB =   3, NBMIN =   2, NX =   0
 
  All tests for DST passed the threshold (  4440 tests run)
+Warning! Threshold has been lifted to: +3.0000000000000000e+03 for MPFR SE2 drivers
 
  All tests for DST drivers  passed the threshold (  13464 tests run)
 
@@ -39,6 +41,7 @@ The following parameter values will be used:
  SE2:  NB =   3, NBMIN =   2, NX =   5
 
  All tests for DST passed the threshold (  4440 tests run)
+Warning! Threshold has been lifted to: +3.0000000000000000e+03 for MPFR SE2 drivers
 
  All tests for DST drivers  passed the threshold (  13464 tests run)
 
@@ -46,6 +49,7 @@ The following parameter values will be used:
  SE2:  NB =   3, NBMIN =   2, NX =   9
 
  All tests for DST passed the threshold (  4440 tests run)
+Warning! Threshold has been lifted to: +3.0000000000000000e+03 for MPFR SE2 drivers
 
  All tests for DST drivers  passed the threshold (  13464 tests run)
 
@@ -53,10 +57,11 @@ The following parameter values will be used:
  SE2:  NB =  10, NBMIN =   2, NX =   1
 
  All tests for DST passed the threshold (  4440 tests run)
+Warning! Threshold has been lifted to: +3.0000000000000000e+03 for MPFR SE2 drivers
 
  All tests for DST drivers  passed the threshold (  13464 tests run)
 
 
  End of tests
- Total time used =        50.41 seconds
+ Total time used =        50.65 seconds
 

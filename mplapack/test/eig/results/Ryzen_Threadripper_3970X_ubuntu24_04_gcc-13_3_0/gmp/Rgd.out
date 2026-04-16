@@ -24,49 +24,8 @@ The following parameter values will be used:
  
  DGS routines passed the tests of the error exits (108 tests done)
 Warning! Threshold has been lifted to: +8.0000000000000000e+01 for GMP
- Rdrges: Rgges returned INFO=    15.
-         N=    12, JTYPE=    17, ISEED=(17551,43028,8153,7824,
 
- DGS -- Real Generalized Schur form driver
- Matrix types (see Rdrges for details): 
- Special Matrices:                       (J'=transposed Jordan block)
-   1=(0,0)  2=(I,0)  3=(0,I)  4=(I,I)  5=(J',J')  6=(diag(J',I), diag(I,J'))
- Diagonal Matrices:  ( D=diag(0,1,2,...) )
-   7=(D,I)   9=(large*D, small*I)  11=(large*I, small*D)  13=(large*D, large*I)
-   8=(I,D)  10=(small*D, large*I)  12=(small*I, large*D)  14=(small*D, small*I)
-  15=(D, reversed D)
- Matrices Rotated by Random Orthogonal Matrices U, V:
-  16=Transposed Jordan Blocks             19=geometric alpha, beta=0,1
-  17=arithm. alpha&beta                   20=arithmetic alpha, beta=0,1
-  18=clustered alpha, beta=0,1            21=random alpha, beta=0,1
- Large & Small Matrices:
-  22=(large, small)   23=(small,large)    24=(small,small)    25=(large,large)
-  26=random O(1) matrices.
-
- Tests performed:  (S is Schur, T is triangular, Q and Z are orthogonal,
-                   l and r are the appropriate left and right
-                   eigenvectors, resp., a is alpha, b is beta, and
-                   ' means transpose.)
- Without ordering: 
-  1 = | A - Q S Z' | / ( |A| n ulp )      2 = | B - Q T Z' | / ( |B| n ulp )
-  3 = | I - QQ' | / ( n ulp )             4 = | I - ZZ' | / ( n ulp )
-  5 = A is in Schur form S
-  6 = difference between (alpha,beta) and diagonals of (S,T)
- With ordering: 
-  7 = | (A,B) - Q (S,T) Z' | / ( |(A,B)| n ulp )  
-  8 = | I - QQ' | / ( n ulp )            9 = | I - ZZ' | / ( n ulp )
- 10 = A is in Schur form S
- 11 = difference between (alpha,beta) and diagonals of (S,T)
- 12 = SDIM is the correct number of selected eigenvalues
-
-
- Tests performed:  (S is Schur, T is triangular, Q and Z are ',
-                   l and r are the appropriate left and right
-                   eigenvectors, resp., a is alpha, b is beta, and
-
- Matrix order=   12, type=17, seed=17551,43028,8153,7824, result  7 is+6.7039039649712985e+153
- DGS drivers:      1 out of   1555 tests failed to pass the threshold
- *** Error code from Rdrges =   15
+ All tests for DGS drivers  passed the threshold (   1560 tests run)
 
  All tests for DGS drivers  passed the threshold (   1560 tests run)
 
@@ -213,5 +172,5 @@ The following parameter values will be used:
 
 
  End of tests
- Total time used =       170.39 seconds
+ Total time used =        55.22 seconds
 

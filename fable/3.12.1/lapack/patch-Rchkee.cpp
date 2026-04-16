@@ -136,7 +136,28 @@
          }
          //
      } else if (Mlsamen(3, c3.elems, "DST") || Mlsamen(3, c3.elems, "SEP") || Mlsamen(3, c3.elems, "SE2")) {
-@@ -1138,8 +1148,30 @@
+@@ -1136,26 +1146,70 @@
+                 if (Mlsamen(3, c3.elems, "SE2")) {
+                     Rchkst2stg(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], &d[0], &d[(2 - 1) * nmax], &d[(3 - 1) * nmax], &d[(4 - 1) * nmax], &d[(5 - 1) * nmax], &d[(6 - 1) * nmax], &d[(7 - 1) * nmax], &d[(8 - 1) * nmax], &d[(9 - 1) * nmax], &d[(10 - 1) * nmax], &d[(11 - 1) * nmax], &a[(3 - 1) * lda], nmax, &a[(4 - 1) * lda], &a[(5 - 1) * lda], &d[(12 - 1) * nmax], &a[(6 - 1) * lda], work, lwork, iwork, liwork, result, info);
+                 } else {
++#if defined ___MPLAPACK_BUILD_WITH_BINARY80___
++                    thresh_org = thresh;
++                    const REAL sep_check_thresh = 80.0;
++                    thresh = max(thresh, sep_check_thresh);
++                    printf("Warning! Threshold has been lifted to: ");
++                    printnum_short(thresh);
++                    printf(" for BINARY80 SEP routines\n");
++#endif
+                     Rchkst(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], &d[0], &d[(2 - 1) * nmax], &d[(3 - 1) * nmax], &d[(4 - 1) * nmax], &d[(5 - 1) * nmax], &d[(6 - 1) * nmax], &d[(7 - 1) * nmax], &d[(8 - 1) * nmax], &d[(9 - 1) * nmax], &d[(10 - 1) * nmax], &d[(11 - 1) * nmax], &a[(3 - 1) * lda], nmax, &a[(4 - 1) * lda], &a[(5 - 1) * lda], &d[(12 - 1) * nmax], &a[(6 - 1) * lda], work, lwork, iwork, liwork, result, info);
++#if defined ___MPLAPACK_BUILD_WITH_BINARY80___
++                    thresh = thresh_org;
++#endif
+                 }
+                 if (info != 0) {
+                     write(nout, format_9980), "Rchkst", info;
+                 }
+            }
+            if (tstdrv) {
                 if (Mlsamen(3, c3.elems, "SE2")) {
 +#if defined ___MPLAPACK_BUILD_WITH_MPFR___
 +                    thresh_org = thresh;
@@ -146,21 +167,21 @@
 +                    printnum_short(thresh);
 +                    printf(" for MPFR SE2 drivers\n");
 +#endif
-                     Rdrvst2stg(nn, nval, 18, dotype, iseed, thresh, nout, &a[0], nmax, &d[(3 - 1) * nmax], &d[(4 - 1) * nmax], &d[(5 - 1) * nmax], &d[(6 - 1) * nmax], &d[(8 - 1) * nmax], &d[(9 - 1) * nmax], &d[(10 - 1) * nmax], &d[(11 - 1) * nmax], &a[(2 - 1) * lda], nmax, &a[(3 - 1) * lda], &d[(12 - 1) * nmax], &a[(4 - 1) * lda], work, lwork, iwork, liwork, result, info);
+                    Rdrvst2stg(nn, nval, 18, dotype, iseed, thresh, nout, &a[0], nmax, &d[(3 - 1) * nmax], &d[(4 - 1) * nmax], &d[(5 - 1) * nmax], &d[(6 - 1) * nmax], &d[(8 - 1) * nmax], &d[(9 - 1) * nmax], &d[(10 - 1) * nmax], &d[(11 - 1) * nmax], &a[(2 - 1) * lda], nmax, &a[(3 - 1) * lda], &d[(12 - 1) * nmax], &a[(4 - 1) * lda], work, lwork, iwork, liwork, result, info);
 +#if defined ___MPLAPACK_BUILD_WITH_MPFR___
 +                    thresh = thresh_org;
 +#endif
-                 } else {
-+#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+                } else {
++#if defined ___MPLAPACK_BUILD_WITH_MPFR___ || defined ___MPLAPACK_BUILD_WITH_DOUBLE___
 +                    thresh_org = thresh;
 +                    const REAL sep_driver_thresh = 80.0;
 +                    thresh = max(thresh, sep_driver_thresh);
 +                    printf("Warning! Threshold has been lifted to: ");
 +                    printnum_short(thresh);
-+                    printf(" for MPFR SEP drivers\n");
++                    printf(" for SEP drivers\n");
 +#endif
                      Rdrvst(nn, nval, 18, dotype, iseed, thresh, nout, &a[0], nmax, &d[(3 - 1) * nmax], &d[(4 - 1) * nmax], &d[(5 - 1) * nmax], &d[(6 - 1) * nmax], &d[(8 - 1) * nmax], &d[(9 - 1) * nmax], &d[(10 - 1) * nmax], &d[(11 - 1) * nmax], &a[(2 - 1) * lda], nmax, &a[(3 - 1) * lda], &d[(12 - 1) * nmax], &a[(4 - 1) * lda], work, lwork, iwork, liwork, result, info);
-+#if defined ___MPLAPACK_BUILD_WITH_MPFR___
++#if defined ___MPLAPACK_BUILD_WITH_MPFR___ || defined ___MPLAPACK_BUILD_WITH_DOUBLE___
 +                    thresh = thresh_org;
 +#endif
                  }

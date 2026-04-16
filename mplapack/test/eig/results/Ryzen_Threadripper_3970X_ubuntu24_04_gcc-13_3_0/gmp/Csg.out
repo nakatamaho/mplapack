@@ -21,92 +21,23 @@ The following parameter values will be used:
 
 
  ZSG:  NB =   1, NBMIN =   2, NX =   1
+Warning! Threshold has been lifted to: +4.0000000000000000e+01 for GMP ZSG
 
- ZSG -- Complex Hermitian Generalized eigenvalue problem
- Matrix types (see xDRVSG for details): 
-
- Special Matrices:
-  1=Zero matrix.                          5=Diagonal: clustered entries.
-  2=Identity matrix.                      6=Diagonal: large, evenly spaced.
-  3=Diagonal: evenly spaced entries.      7=Diagonal: small, evenly spaced.
-  4=Diagonal: geometr. spaced entries.
- Dense or Banded Hermitian Matrices: 
-  8=Evenly spaced eigenvals.          15=Matrix with small random entries.
-  9=Geometrically spaced eigenvals.   16=Evenly spaced eigenvals, KA=1, KB=1.
- 10=Clustered eigenvalues.            17=Evenly spaced eigenvals, KA=2, KB=1.
- 11=Large, evenly spaced eigenvals.   18=Evenly spaced eigenvals, KA=2, KB=2.
- 12=Small, evenly spaced eigenvals.   19=Evenly spaced eigenvals, KA=3, KB=1.
- 13=Matrix with random O(1) entries.  20=Evenly spaced eigenvals, KA=3, KB=2.
- 14=Matrix with large random entries. 21=Evenly spaced eigenvals, KA=3, KB=3.
-
- Tests performed:   
-( For each pair (A,B), where A is of the given type 
- and B is a random well-conditioned matrix. D is 
- diagonal, and Z is unitary. )
- 1 = Chegv, with ITYPE=1 and UPLO='U':  | A Z - B Z D | / ( |A| |Z| n ulp )     
- 2 = Chpgv, with ITYPE=1 and UPLO='U':  | A Z - B Z D | / ( |A| |Z| n ulp )     
- 3 = Chbgv, with ITYPE=1 and UPLO='U':  | A Z - B Z D | / ( |A| |Z| n ulp )     
- 4 = Chegv, with ITYPE=1 and UPLO='L':  | A Z - B Z D | / ( |A| |Z| n ulp )     
- 5 = Chpgv, with ITYPE=1 and UPLO='L':  | A Z - B Z D | / ( |A| |Z| n ulp )     
- 6 = Chbgv, with ITYPE=1 and UPLO='L':  | A Z - B Z D | / ( |A| |Z| n ulp )     
- 7 = Chegv, with ITYPE=2 and UPLO='U':  | A B Z - Z D | / ( |A| |Z| n ulp )     
- 8 = Chpgv, with ITYPE=2 and UPLO='U':  | A B Z - Z D | / ( |A| |Z| n ulp )     
- 9 = Chpgv, with ITYPE=2 and UPLO='L':  | A B Z - Z D | / ( |A| |Z| n ulp )     
-10 = Chpgv, with ITYPE=2 and UPLO='L':  | A B Z - Z D | / ( |A| |Z| n ulp )     
-11 = Chegv, with ITYPE=3 and UPLO='U':  | B A Z - Z D | / ( |A| |Z| n ulp )     
-12 = Chpgv, with ITYPE=3 and UPLO='U':  | B A Z - Z D | / ( |A| |Z| n ulp )     
-13 = Chegv, with ITYPE=3 and UPLO='L':  | B A Z - Z D | / ( |A| |Z| n ulp )     
-14 = Chpgv, with ITYPE=3 and UPLO='L':  | B A Z - Z D | / ( |A| |Z| n ulp )     
- Matrix order=   16, type=15, seed=30371,3679,50657,42853, result  18 is+2.4020099010384723e+01
- ZSG:    1 out of 11172 tests failed to pass the threshold
+ All tests for ZSG passed the threshold ( 11172 tests run)
 
 
  ZSG:  NB =   3, NBMIN =   2, NX =   1
+Warning! Threshold has been lifted to: +4.0000000000000000e+01 for GMP ZSG
 
- ZSG -- Complex Hermitian Generalized eigenvalue problem
- Matrix types (see xDRVSG for details): 
-
- Special Matrices:
-  1=Zero matrix.                          5=Diagonal: clustered entries.
-  2=Identity matrix.                      6=Diagonal: large, evenly spaced.
-  3=Diagonal: evenly spaced entries.      7=Diagonal: small, evenly spaced.
-  4=Diagonal: geometr. spaced entries.
- Dense or Banded Hermitian Matrices: 
-  8=Evenly spaced eigenvals.          15=Matrix with small random entries.
-  9=Geometrically spaced eigenvals.   16=Evenly spaced eigenvals, KA=1, KB=1.
- 10=Clustered eigenvalues.            17=Evenly spaced eigenvals, KA=2, KB=1.
- 11=Large, evenly spaced eigenvals.   18=Evenly spaced eigenvals, KA=2, KB=2.
- 12=Small, evenly spaced eigenvals.   19=Evenly spaced eigenvals, KA=3, KB=1.
- 13=Matrix with random O(1) entries.  20=Evenly spaced eigenvals, KA=3, KB=2.
- 14=Matrix with large random entries. 21=Evenly spaced eigenvals, KA=3, KB=3.
-
- Tests performed:   
-( For each pair (A,B), where A is of the given type 
- and B is a random well-conditioned matrix. D is 
- diagonal, and Z is unitary. )
- 1 = Chegv, with ITYPE=1 and UPLO='U':  | A Z - B Z D | / ( |A| |Z| n ulp )     
- 2 = Chpgv, with ITYPE=1 and UPLO='U':  | A Z - B Z D | / ( |A| |Z| n ulp )     
- 3 = Chbgv, with ITYPE=1 and UPLO='U':  | A Z - B Z D | / ( |A| |Z| n ulp )     
- 4 = Chegv, with ITYPE=1 and UPLO='L':  | A Z - B Z D | / ( |A| |Z| n ulp )     
- 5 = Chpgv, with ITYPE=1 and UPLO='L':  | A Z - B Z D | / ( |A| |Z| n ulp )     
- 6 = Chbgv, with ITYPE=1 and UPLO='L':  | A Z - B Z D | / ( |A| |Z| n ulp )     
- 7 = Chegv, with ITYPE=2 and UPLO='U':  | A B Z - Z D | / ( |A| |Z| n ulp )     
- 8 = Chpgv, with ITYPE=2 and UPLO='U':  | A B Z - Z D | / ( |A| |Z| n ulp )     
- 9 = Chpgv, with ITYPE=2 and UPLO='L':  | A B Z - Z D | / ( |A| |Z| n ulp )     
-10 = Chpgv, with ITYPE=2 and UPLO='L':  | A B Z - Z D | / ( |A| |Z| n ulp )     
-11 = Chegv, with ITYPE=3 and UPLO='U':  | B A Z - Z D | / ( |A| |Z| n ulp )     
-12 = Chpgv, with ITYPE=3 and UPLO='U':  | B A Z - Z D | / ( |A| |Z| n ulp )     
-13 = Chegv, with ITYPE=3 and UPLO='L':  | B A Z - Z D | / ( |A| |Z| n ulp )     
-14 = Chpgv, with ITYPE=3 and UPLO='L':  | B A Z - Z D | / ( |A| |Z| n ulp )     
- Matrix order=   16, type=15, seed=7461,45888, 991,33540, result  67 is+2.4130361854337125e+01
- ZSG:    1 out of 11172 tests failed to pass the threshold
+ All tests for ZSG passed the threshold ( 11172 tests run)
 
 
  ZSG:  NB =  20, NBMIN =   2, NX =   1
+Warning! Threshold has been lifted to: +4.0000000000000000e+01 for GMP ZSG
 
  All tests for ZSG passed the threshold ( 11172 tests run)
 
 
  End of tests
- Total time used =       180.53 seconds
+ Total time used =       179.50 seconds
 
