@@ -17,7 +17,9 @@ python3 "${FIX_IMLAENV}" iMparmq.cpp
 #https://claude.ai/chat/f3c3ff73-215d-44ed-9dae-8e75808e06d9
 #https://chatgpt.com/c/69929fe4-b980-83a7-8fd7-0988abca4785
 patch -p3 < "${PATCH_DIR}/patch-Cgejsv.cpp"
+patch -p3 < "${PATCH_DIR}/patch-Cgeev.cpp"
 patch -p3 < "${PATCH_DIR}/patch-Cgesvj.cpp"
+patch -p3 < "${PATCH_DIR}/patch-Cgges.cpp"
 patch -p3 < "${PATCH_DIR}/patch-Cgges3.cpp"
 patch -p3 < "${PATCH_DIR}/patch-Rgejsv.cpp"
 patch -p3 < "${PATCH_DIR}/patch-Rgesvj.cpp"
