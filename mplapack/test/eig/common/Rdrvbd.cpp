@@ -572,6 +572,11 @@ void Rdrvbd(INTEGER const nsizes, INTEGER *mm, INTEGER *nn, INTEGER const ntypes
                     Rlacpy("F", m, n, asav, lda, usav, lda);
                     srnamt = "Rgesvj";
                     Rgesvj("G", "U", "V", m, n, usav, lda, ssav, 0, a, ldvt, work, lwork, info);
+                    if (work[1 - 1] != one) {
+                        for (i = 1; i <= mnmin; i = i + 1) {
+                            ssav[i - 1] = work[1 - 1] * ssav[i - 1];
+                        }
+                    }
                     //
                     // Rgesvj returns V not VT
                     //

@@ -9,3 +9,15 @@
          //
          if (nsizes != 1) {
              mtypes = min(maxtyp, ntypes);
+@@ -321,7 +321,11 @@
+                 //
+                 // Bidiagonal, random entries
+                 //
++#if defined ___MPLAPACK_BUILD_WITH_DD___ || defined ___MPLAPACK_BUILD_WITH_QD___
++                temp1 = -half * log(ulp);
++#else
+                 temp1 = -two * log(ulp);
++#endif
+                 for (j = 1; j <= mnmin; j = j + 1) {
+                     bd[j - 1] = exp(temp1 * Rlarnd(2, iseed));
+                     if (j < mnmin) {

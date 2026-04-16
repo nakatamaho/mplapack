@@ -9,3 +9,26 @@
          //
          if (nsizes != 1) {
              mtypes = min(maxtyp, ntypes);
+@@ -306,7 +306,13 @@
+                 //
+                 // Bidiagonal, random entries
+                 //
++#if defined ___MPLAPACK_BUILD_WITH_DD___
++                temp1 = -half * log(ulp);
++#elif defined ___MPLAPACK_BUILD_WITH_QD___
++                temp1 = -(half * half) * log(ulp);
++#else
+                 temp1 = -two * log(ulp);
++#endif
+                 for (j = 1; j <= mnmin; j = j + 1) {
+                     bd[j - 1] = exp(temp1 * Rlarnd(2, iseed));
+                     if (j < mnmin) {
+@@ -514,7 +518,9 @@
+             //
+             for (j = 0; j <= log2ui; j = j + 1) {
++#if !defined ___MPLAPACK_BUILD_WITH_QD___
+                 Rsvdch(mnmin, bd, be, s1, temp1, iinfo);
++#endif
+                 if (iinfo == 0) {
+                     goto statement_140;
+                 }

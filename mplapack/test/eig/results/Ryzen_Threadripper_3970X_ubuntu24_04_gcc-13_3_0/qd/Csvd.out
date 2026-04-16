@@ -33,336 +33,39 @@ The following parameter values will be used:
 
  SVD:  NB =   1, NBMIN =   2, NX =   1, NRHS =   2
 
- ZBD -- Complex Singular Value Decomposition
- Matrix types (see xCHKBD for details):
- Diagonal matrices:
-   1: Zero                             5: Clustered entries
-   2: Identity                         6: Large, evenly spaced entries
-   3: Evenly spaced entries            7: Small, evenly spaced entries
-   4: Geometrically spaced entries
- General matrices:
-   8: Evenly spaced sing. vals.       12: Small, evenly spaced sing vals
-   9: Geometrically spaced sing vals  13: Random, O(1) entries
-  10: Clustered sing. vals.           14: Random, scaled near overflow
-  11: Large, evenly spaced sing vals  15: Random, scaled near underflow
-
- Test ratios:  (B: bidiagonal, S: diagonal, Q, P, U, and V: unitary   
-                X: m x nrhs, Y = Q' X, and Z = U' Y)
-   1: norm( A - Q B P' ) / ( norm(A) max(m,n) ulp )
-   2: norm( I - Q' Q )   / ( m ulp )
-   3: norm( I - P' P )   / ( n ulp )
-   4: norm( B - U S V' ) / ( norm(B) min(m,n) ulp )
-   5: norm( Y - U Z )    / ( norm(Z) max(min(m,n),k) ulp )
-   6: norm( I - U' U )   / ( min(m,n) ulp )
-   7: norm( I - V' V )   / ( min(m,n) ulp )
-   8: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
-   9: norm( S - S1 )     / ( norm(S) ulp ), where S1 is computed
-                                            without computing U and V'
-  10: Sturm sequence test (0 if sing. vals of B within THRESH of S)
-  11: norm( A - (QU) S (V' P') ) / ( norm(A) max(m,n) ulp )
-  12: norm( X - (QU) Z )         / ( |X| max(M,k) ulp )
-  13: norm( I - (QU)'(QU) )      / ( M ulp )
-  14: norm( I - (V' P') (P V) )  / ( N ulp )
-  15: norm( B - U S V' ) / ( norm(B) min(m,n) ulp )
-  16: norm( I - U' U )   / ( min(m,n) ulp )
-  17: norm( I - V' V )   / ( min(m,n) ulp )
-  18: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
-  19: norm( S - S1 )     / ( norm(S) ulp ), where S1 is computed
-                                            without computing U and V'
-  20: norm( B - U S V' )  / ( norm(B) min(m,n) ulp )  DBDSVX(V,A)
-  21: norm( I - U' U )    / ( min(m,n) ulp )
-  22: norm( I - V' V )    / ( min(m,n) ulp )
-  23: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
-  24: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
-                                             without computing U and V'
-  25: norm( S - U' B V ) / ( norm(B) n ulp )  DBDSVX(V,I)
-  26: norm( I - U' U )    / ( min(m,n) ulp )
-  27: norm( I - V' V )    / ( min(m,n) ulp )
-  28: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
-  29: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
-                                             without computing U and V'
-  30: norm( S - U' B V ) / ( norm(B) n ulp )  DBDSVX(V,V)
-  31: norm( I - U' U )    / ( min(m,n) ulp )
-  32: norm( I - V' V )    / ( min(m,n) ulp )
-  33: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
-  34: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
-                                             without computing U and V'
- M=   10, N=   10, type 16, seed=2125,58537,25303,59606, test(10)=3.2138760885179805510839241846823252050444059875655856706027519687e+62
- M=   30, N=   30, type 16, seed=5435,28029,34710,1168, test(10)=8.0346902212949513777098104617058130126110149689139641765068799218e+61
- M=   30, N=   40, type 16, seed=9218,38512,22315,62178, test(10)=8.0346902212949513777098104617058130126110149689139641765068799218e+61
- M=   40, N=   30, type 16, seed=43459,61185,41228,18356, test(10)=8.1129638414606681695789005144063999999999999999999999999999999211e+33
- M=   40, N=   40, type 16, seed=12268,15005,50887,3717, test(10)=8.0346902212949513777098104617058130126110149689139641765068799218e+61
- ZBD:      5 out of   4085 tests failed to pass the threshold
+ All tests for ZBD routines passed the threshold (   4085 tests run)
 
  All tests for ZBD drivers  passed the threshold (  14340 tests run)
 
 
  SVD:  NB =   3, NBMIN =   2, NX =   0, NRHS =   0
 
- ZBD -- Complex Singular Value Decomposition
- Matrix types (see xCHKBD for details):
- Diagonal matrices:
-   1: Zero                             5: Clustered entries
-   2: Identity                         6: Large, evenly spaced entries
-   3: Evenly spaced entries            7: Small, evenly spaced entries
-   4: Geometrically spaced entries
- General matrices:
-   8: Evenly spaced sing. vals.       12: Small, evenly spaced sing vals
-   9: Geometrically spaced sing vals  13: Random, O(1) entries
-  10: Clustered sing. vals.           14: Random, scaled near overflow
-  11: Large, evenly spaced sing vals  15: Random, scaled near underflow
-
- Test ratios:  (B: bidiagonal, S: diagonal, Q, P, U, and V: unitary   
-                X: m x nrhs, Y = Q' X, and Z = U' Y)
-   1: norm( A - Q B P' ) / ( norm(A) max(m,n) ulp )
-   2: norm( I - Q' Q )   / ( m ulp )
-   3: norm( I - P' P )   / ( n ulp )
-   4: norm( B - U S V' ) / ( norm(B) min(m,n) ulp )
-   5: norm( Y - U Z )    / ( norm(Z) max(min(m,n),k) ulp )
-   6: norm( I - U' U )   / ( min(m,n) ulp )
-   7: norm( I - V' V )   / ( min(m,n) ulp )
-   8: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
-   9: norm( S - S1 )     / ( norm(S) ulp ), where S1 is computed
-                                            without computing U and V'
-  10: Sturm sequence test (0 if sing. vals of B within THRESH of S)
-  11: norm( A - (QU) S (V' P') ) / ( norm(A) max(m,n) ulp )
-  12: norm( X - (QU) Z )         / ( |X| max(M,k) ulp )
-  13: norm( I - (QU)'(QU) )      / ( M ulp )
-  14: norm( I - (V' P') (P V) )  / ( N ulp )
-  15: norm( B - U S V' ) / ( norm(B) min(m,n) ulp )
-  16: norm( I - U' U )   / ( min(m,n) ulp )
-  17: norm( I - V' V )   / ( min(m,n) ulp )
-  18: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
-  19: norm( S - S1 )     / ( norm(S) ulp ), where S1 is computed
-                                            without computing U and V'
-  20: norm( B - U S V' )  / ( norm(B) min(m,n) ulp )  DBDSVX(V,A)
-  21: norm( I - U' U )    / ( min(m,n) ulp )
-  22: norm( I - V' V )    / ( min(m,n) ulp )
-  23: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
-  24: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
-                                             without computing U and V'
-  25: norm( S - U' B V ) / ( norm(B) n ulp )  DBDSVX(V,I)
-  26: norm( I - U' U )    / ( min(m,n) ulp )
-  27: norm( I - V' V )    / ( min(m,n) ulp )
-  28: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
-  29: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
-                                             without computing U and V'
-  30: norm( S - U' B V ) / ( norm(B) n ulp )  DBDSVX(V,V)
-  31: norm( I - U' U )    / ( min(m,n) ulp )
-  32: norm( I - V' V )    / ( min(m,n) ulp )
-  33: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
-  34: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
-                                             without computing U and V'
- M=   10, N=   16, type 16, seed=21889,34622,24828,50008, test(10)=3.2138760885179805510839241846823252050444059875655856706027519687e+62
- M=   30, N=   30, type 16, seed=21782,23324,15646, 149, test(10)=8.0346902212949513777098104617058130126110149689139641765068799218e+61
- M=   30, N=   40, type 16, seed=25251,60102,23523,29169, test(10)=8.0346902212949513777098104617058130126110149689139641765068799218e+61
- M=   40, N=   30, type 16, seed=10739,7732,3511,24956, test(10)=8.0346902212949513777098104617058130126110149689139641765068799218e+61
- M=   40, N=   40, type 16, seed=46988,54205,35594,61238, test(10)=8.0346902212949513777098104617058130126110149689139641765068799218e+61
- ZBD:      5 out of   4085 tests failed to pass the threshold
+ All tests for ZBD routines passed the threshold (   4085 tests run)
 
  All tests for ZBD drivers  passed the threshold (  14340 tests run)
 
 
  SVD:  NB =   3, NBMIN =   2, NX =   5, NRHS =   2
 
- ZBD -- Complex Singular Value Decomposition
- Matrix types (see xCHKBD for details):
- Diagonal matrices:
-   1: Zero                             5: Clustered entries
-   2: Identity                         6: Large, evenly spaced entries
-   3: Evenly spaced entries            7: Small, evenly spaced entries
-   4: Geometrically spaced entries
- General matrices:
-   8: Evenly spaced sing. vals.       12: Small, evenly spaced sing vals
-   9: Geometrically spaced sing vals  13: Random, O(1) entries
-  10: Clustered sing. vals.           14: Random, scaled near overflow
-  11: Large, evenly spaced sing vals  15: Random, scaled near underflow
-
- Test ratios:  (B: bidiagonal, S: diagonal, Q, P, U, and V: unitary   
-                X: m x nrhs, Y = Q' X, and Z = U' Y)
-   1: norm( A - Q B P' ) / ( norm(A) max(m,n) ulp )
-   2: norm( I - Q' Q )   / ( m ulp )
-   3: norm( I - P' P )   / ( n ulp )
-   4: norm( B - U S V' ) / ( norm(B) min(m,n) ulp )
-   5: norm( Y - U Z )    / ( norm(Z) max(min(m,n),k) ulp )
-   6: norm( I - U' U )   / ( min(m,n) ulp )
-   7: norm( I - V' V )   / ( min(m,n) ulp )
-   8: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
-   9: norm( S - S1 )     / ( norm(S) ulp ), where S1 is computed
-                                            without computing U and V'
-  10: Sturm sequence test (0 if sing. vals of B within THRESH of S)
-  11: norm( A - (QU) S (V' P') ) / ( norm(A) max(m,n) ulp )
-  12: norm( X - (QU) Z )         / ( |X| max(M,k) ulp )
-  13: norm( I - (QU)'(QU) )      / ( M ulp )
-  14: norm( I - (V' P') (P V) )  / ( N ulp )
-  15: norm( B - U S V' ) / ( norm(B) min(m,n) ulp )
-  16: norm( I - U' U )   / ( min(m,n) ulp )
-  17: norm( I - V' V )   / ( min(m,n) ulp )
-  18: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
-  19: norm( S - S1 )     / ( norm(S) ulp ), where S1 is computed
-                                            without computing U and V'
-  20: norm( B - U S V' )  / ( norm(B) min(m,n) ulp )  DBDSVX(V,A)
-  21: norm( I - U' U )    / ( min(m,n) ulp )
-  22: norm( I - V' V )    / ( min(m,n) ulp )
-  23: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
-  24: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
-                                             without computing U and V'
-  25: norm( S - U' B V ) / ( norm(B) n ulp )  DBDSVX(V,I)
-  26: norm( I - U' U )    / ( min(m,n) ulp )
-  27: norm( I - V' V )    / ( min(m,n) ulp )
-  28: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
-  29: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
-                                             without computing U and V'
-  30: norm( S - U' B V ) / ( norm(B) n ulp )  DBDSVX(V,V)
-  31: norm( I - U' U )    / ( min(m,n) ulp )
-  32: norm( I - V' V )    / ( min(m,n) ulp )
-  33: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
-  34: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
-                                             without computing U and V'
- M=   16, N=   10, type 16, seed=19399,57523,60622,50385, test(10)=3.2138760885179805510839241846823252050444059875655856706027519687e+62
- M=   16, N=   16, type 16, seed=47437,19823,53135,23115, test(10)=3.2138760885179805510839241846823252050444059875655856706027519687e+62
- M=   30, N=   30, type 16, seed=23786,13122,55779,29881, test(10)=8.0346902212949513777098104617058130126110149689139641765068799218e+61
- M=   30, N=   40, type 16, seed=11477,35453,45487,28738, test(10)=8.0346902212949513777098104617058130126110149689139641765068799218e+61
- M=   40, N=   30, type 16, seed=57016,13674,37243,41182, test(10)=8.0346902212949513777098104617058130126110149689139641765068799218e+61
- M=   40, N=   40, type 16, seed=  74,46228,36617,34178, test(10)=8.0346902212949513777098104617058130126110149689139641765068799218e+61
- ZBD:      6 out of   4085 tests failed to pass the threshold
+ All tests for ZBD routines passed the threshold (   4085 tests run)
 
  All tests for ZBD drivers  passed the threshold (  14340 tests run)
 
 
  SVD:  NB =   3, NBMIN =   2, NX =   9, NRHS =   2
 
- ZBD -- Complex Singular Value Decomposition
- Matrix types (see xCHKBD for details):
- Diagonal matrices:
-   1: Zero                             5: Clustered entries
-   2: Identity                         6: Large, evenly spaced entries
-   3: Evenly spaced entries            7: Small, evenly spaced entries
-   4: Geometrically spaced entries
- General matrices:
-   8: Evenly spaced sing. vals.       12: Small, evenly spaced sing vals
-   9: Geometrically spaced sing vals  13: Random, O(1) entries
-  10: Clustered sing. vals.           14: Random, scaled near overflow
-  11: Large, evenly spaced sing vals  15: Random, scaled near underflow
-
- Test ratios:  (B: bidiagonal, S: diagonal, Q, P, U, and V: unitary   
-                X: m x nrhs, Y = Q' X, and Z = U' Y)
-   1: norm( A - Q B P' ) / ( norm(A) max(m,n) ulp )
-   2: norm( I - Q' Q )   / ( m ulp )
-   3: norm( I - P' P )   / ( n ulp )
-   4: norm( B - U S V' ) / ( norm(B) min(m,n) ulp )
-   5: norm( Y - U Z )    / ( norm(Z) max(min(m,n),k) ulp )
-   6: norm( I - U' U )   / ( min(m,n) ulp )
-   7: norm( I - V' V )   / ( min(m,n) ulp )
-   8: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
-   9: norm( S - S1 )     / ( norm(S) ulp ), where S1 is computed
-                                            without computing U and V'
-  10: Sturm sequence test (0 if sing. vals of B within THRESH of S)
-  11: norm( A - (QU) S (V' P') ) / ( norm(A) max(m,n) ulp )
-  12: norm( X - (QU) Z )         / ( |X| max(M,k) ulp )
-  13: norm( I - (QU)'(QU) )      / ( M ulp )
-  14: norm( I - (V' P') (P V) )  / ( N ulp )
-  15: norm( B - U S V' ) / ( norm(B) min(m,n) ulp )
-  16: norm( I - U' U )   / ( min(m,n) ulp )
-  17: norm( I - V' V )   / ( min(m,n) ulp )
-  18: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
-  19: norm( S - S1 )     / ( norm(S) ulp ), where S1 is computed
-                                            without computing U and V'
-  20: norm( B - U S V' )  / ( norm(B) min(m,n) ulp )  DBDSVX(V,A)
-  21: norm( I - U' U )    / ( min(m,n) ulp )
-  22: norm( I - V' V )    / ( min(m,n) ulp )
-  23: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
-  24: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
-                                             without computing U and V'
-  25: norm( S - U' B V ) / ( norm(B) n ulp )  DBDSVX(V,I)
-  26: norm( I - U' U )    / ( min(m,n) ulp )
-  27: norm( I - V' V )    / ( min(m,n) ulp )
-  28: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
-  29: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
-                                             without computing U and V'
-  30: norm( S - U' B V ) / ( norm(B) n ulp )  DBDSVX(V,V)
-  31: norm( I - U' U )    / ( min(m,n) ulp )
-  32: norm( I - V' V )    / ( min(m,n) ulp )
-  33: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
-  34: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
-                                             without computing U and V'
- M=   10, N=   16, type 16, seed=13222,19004,16536,2872, test(10)=3.2138760885179805510839241846823252050444059875655856706027519687e+62
- M=   16, N=   10, type 16, seed=63948,40516,7112,33409, test(10)=3.2138760885179805510839241846823252050444059875655856706027519687e+62
- M=   30, N=   30, type 16, seed=3991,9115,7446,54362, test(10)=8.0346902212949513777098104617058130126110149689139641765068799218e+61
- M=   30, N=   40, type 16, seed=9370,51061,38070,24821, test(10)=8.0346902212949513777098104617058130126110149689139641765068799218e+61
- M=   40, N=   30, type 16, seed=27022,39519,19805,12148, test(10)=8.0346902212949513777098104617058130126110149689139641765068799218e+61
- M=   40, N=   40, type 16, seed=23511,54856,23753,58148, test(10)=4.1538374868278621028243970633760767999999999999999999999999999596e+36
- ZBD:      6 out of   4085 tests failed to pass the threshold
+ All tests for ZBD routines passed the threshold (   4085 tests run)
 
  All tests for ZBD drivers  passed the threshold (  14340 tests run)
 
 
  SVD:  NB =  20, NBMIN =   2, NX =   1, NRHS =   2
 
- ZBD -- Complex Singular Value Decomposition
- Matrix types (see xCHKBD for details):
- Diagonal matrices:
-   1: Zero                             5: Clustered entries
-   2: Identity                         6: Large, evenly spaced entries
-   3: Evenly spaced entries            7: Small, evenly spaced entries
-   4: Geometrically spaced entries
- General matrices:
-   8: Evenly spaced sing. vals.       12: Small, evenly spaced sing vals
-   9: Geometrically spaced sing vals  13: Random, O(1) entries
-  10: Clustered sing. vals.           14: Random, scaled near overflow
-  11: Large, evenly spaced sing vals  15: Random, scaled near underflow
-
- Test ratios:  (B: bidiagonal, S: diagonal, Q, P, U, and V: unitary   
-                X: m x nrhs, Y = Q' X, and Z = U' Y)
-   1: norm( A - Q B P' ) / ( norm(A) max(m,n) ulp )
-   2: norm( I - Q' Q )   / ( m ulp )
-   3: norm( I - P' P )   / ( n ulp )
-   4: norm( B - U S V' ) / ( norm(B) min(m,n) ulp )
-   5: norm( Y - U Z )    / ( norm(Z) max(min(m,n),k) ulp )
-   6: norm( I - U' U )   / ( min(m,n) ulp )
-   7: norm( I - V' V )   / ( min(m,n) ulp )
-   8: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
-   9: norm( S - S1 )     / ( norm(S) ulp ), where S1 is computed
-                                            without computing U and V'
-  10: Sturm sequence test (0 if sing. vals of B within THRESH of S)
-  11: norm( A - (QU) S (V' P') ) / ( norm(A) max(m,n) ulp )
-  12: norm( X - (QU) Z )         / ( |X| max(M,k) ulp )
-  13: norm( I - (QU)'(QU) )      / ( M ulp )
-  14: norm( I - (V' P') (P V) )  / ( N ulp )
-  15: norm( B - U S V' ) / ( norm(B) min(m,n) ulp )
-  16: norm( I - U' U )   / ( min(m,n) ulp )
-  17: norm( I - V' V )   / ( min(m,n) ulp )
-  18: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
-  19: norm( S - S1 )     / ( norm(S) ulp ), where S1 is computed
-                                            without computing U and V'
-  20: norm( B - U S V' )  / ( norm(B) min(m,n) ulp )  DBDSVX(V,A)
-  21: norm( I - U' U )    / ( min(m,n) ulp )
-  22: norm( I - V' V )    / ( min(m,n) ulp )
-  23: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
-  24: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
-                                             without computing U and V'
-  25: norm( S - U' B V ) / ( norm(B) n ulp )  DBDSVX(V,I)
-  26: norm( I - U' U )    / ( min(m,n) ulp )
-  27: norm( I - V' V )    / ( min(m,n) ulp )
-  28: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
-  29: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
-                                             without computing U and V'
-  30: norm( S - U' B V ) / ( norm(B) n ulp )  DBDSVX(V,V)
-  31: norm( I - U' U )    / ( min(m,n) ulp )
-  32: norm( I - V' V )    / ( min(m,n) ulp )
-  33: Test ordering of S  (0 if nondecreasing, 1/ulp  otherwise)
-  34: norm( S - S1 )      / ( norm(S) ulp ), where S1 is computed
-                                             without computing U and V'
- M=   10, N=   16, type 16, seed=56246,30576,13415,15014, test(10)=3.2138760885179805510839241846823252050444059875655856706027519687e+62
- M=   16, N=   16, type 16, seed=9299,46439,43217,53317, test( 9)=1.9495232169507259745973565705972827647521892930693405962953832423e+22
- M=   30, N=   40, type 16, seed=43553,49789,63638,50879, test(10)=8.0346902212949513777098104617058130126110149689139641765068799218e+61
- M=   40, N=   30, type 16, seed=62151,8263,44534,53471, test(10)=1.0485759999999999999999999999999999999999999999999999999999999898e+08
- M=   40, N=   40, type 16, seed=12368,11352,59624,60620, test(10)=8.0346902212949513777098104617058130126110149689139641765068799218e+61
- ZBD:      5 out of   4085 tests failed to pass the threshold
+ All tests for ZBD routines passed the threshold (   4085 tests run)
 
  All tests for ZBD drivers  passed the threshold (  14340 tests run)
 
 
  End of tests
- Total time used =      2537.95 seconds
+ Total time used =      2544.09 seconds
 
