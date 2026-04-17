@@ -345,15 +345,15 @@ statement_10:
         Mxlaenv(16, 2);
         tsterr = true;
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
-            thresh_org = thresh;
-            thresh = thresh * 2.0;
-            printf("Warning! Threshold has been lifted to: ");
-            printnum_short(thresh);
-            printf(" for GMP\n");
+        thresh_org = thresh;
+        thresh = thresh * 2.0;
+        printf("Warning! Threshold has been lifted to: ");
+        printnum_short(thresh);
+        printf(" for GMP\n");
 #endif
         Rchkec(thresh, tsterr, nin, nout);
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
-            thresh = thresh_org;
+        thresh = thresh_org;
 #endif
         goto statement_10;
     } else {

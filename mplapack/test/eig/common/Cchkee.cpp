@@ -1176,12 +1176,6 @@ statement_190:
             }
             write(nout, format_9997), c3, nbval[i - 1], nbmin[i - 1], nxval[i - 1];
             if (tstchk) {
-                // CALL Cdrvsg( NN, NVAL, MAXTYP, DOTYPE, ISEED, THRESH,
-                // $                      NOUT, A( 1, 1 ), NMAX, A( 1, 2 ), NMAX,
-                // $                      DR( 1, 3 ), A( 1, 3 ), NMAX, A( 1, 4 ),
-                // $                      A( 1, 5 ), A( 1, 6 ), A( 1, 7 ), WORK,
-                // $                      LWORK, RWORK, LWORK, IWORK, LIWORK, RESULT,
-                // $                      INFO )
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
                 thresh_org = thresh;
                 thresh = thresh * 2.0;

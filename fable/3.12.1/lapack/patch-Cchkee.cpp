@@ -1,5 +1,5 @@
---- Cchkee.cpp	2026-02-17 19:46:40.127204043 +0900
-+++ Cchkee.cpp	2026-02-17 19:40:45.260876385 +0900
+--- Cchkee.cpp	2026-04-17 08:45:45.670154673 +0900
++++ Cchkee.cpp	2026-04-17 08:49:15.025292195 +0900
 @@ -44,13 +44,12 @@
  #include <mplapack_eig.h>
  #include <memory>
@@ -109,7 +109,7 @@
      write(nout, format_9984);
      //
      // Read the number of values of M, P, and N.
-@@ -1100,7 +1082,17 @@
+@@ -1100,8 +1082,18 @@
                      iseed[k - 1] = ioldsd[k - 1];
                  }
              }
@@ -128,8 +128,17 @@
 +#endif
              if (info != 0) {
                  write(nout, format_9980), "Cchkhs", info;
-            }
-@@ -1185,4 +1221,14 @@
+             }
+@@ -1184,13 +1176,17 @@
+             }
+             write(nout, format_9997), c3, nbval[i - 1], nbmin[i - 1], nxval[i - 1];
+             if (tstchk) {
+-                // CALL Cdrvsg( NN, NVAL, MAXTYP, DOTYPE, ISEED, THRESH,
+-                // $                      NOUT, A( 1, 1 ), NMAX, A( 1, 2 ), NMAX,
+-                // $                      DR( 1, 3 ), A( 1, 3 ), NMAX, A( 1, 4 ),
+-                // $                      A( 1, 5 ), A( 1, 6 ), A( 1, 7 ), WORK,
+-                // $                      LWORK, RWORK, LWORK, IWORK, LIWORK, RESULT,
+-                // $                      INFO )
 +#if defined ___MPLAPACK_BUILD_WITH_GMP___
 +                thresh_org = thresh;
 +                thresh = thresh * 2.0;
@@ -144,7 +153,7 @@
                  if (info != 0) {
                      write(nout, format_9980), "Cdrvsg", info;
                  }
-@@ -1234,6 +1226,13 @@
+@@ -1234,6 +1230,13 @@
                  }
              }
              write(nout, format_9995), c3, nbval[i - 1], nbmin[i - 1], nxval[i - 1], nrhs;
@@ -158,7 +167,7 @@
              if (tstchk) {
                  Cchkbd(nn, mval, nval, maxtyp, dotype, nrhs, iseed, thresh, &a[0], nmax, &dr[0], &dr[(2 - 1) * nmax], &dr[(3 - 1) * nmax], &dr[(4 - 1) * nmax], &a[(2 - 1) * lda], nmax, &a[(3 - 1) * lda], &a[(4 - 1) * lda], &a[(5 - 1) * lda], nmax, &a[(6 - 1) * lda], nmax, &a[(7 - 1) * lda], &a[(8 - 1) * lda], work, lwork, rwork, nout, info);
                  if (info != 0) {
-@@ -1243,6 +1242,9 @@
+@@ -1243,6 +1246,9 @@
              if (tstdrv) {
                  Cdrvbd(nn, mval, nval, maxtyp, dotype, iseed, thresh, &a[0], nmax, &a[(2 - 1) * lda], nmax, &a[(3 - 1) * lda], nmax, &a[(4 - 1) * lda], &a[(5 - 1) * lda], &a[(6 - 1) * lda], &dr[0], &dr[(2 - 1) * nmax], &dr[(3 - 1) * nmax], work, lwork, rwork, iwork, nout, info);
              }
@@ -168,7 +177,7 @@
          }
          //
      } else if (Mlsamen(3, c3.elems, "ZEV")) {
-@@ -1260,11 +1262,21 @@
+@@ -1260,11 +1266,21 @@
              if (tsterr) {
                  Cerred(c3, nout);
              }
@@ -190,7 +199,7 @@
          }
          write(nout, format_9973);
          goto statement_10;
-@@ -1284,11 +1296,21 @@
+@@ -1284,11 +1300,21 @@
              if (tsterr) {
                  Cerred(c3, nout);
              }
@@ -212,7 +221,7 @@
          }
          write(nout, format_9973);
          goto statement_10;
-@@ -1308,11 +1330,21 @@
+@@ -1308,11 +1334,21 @@
              if (tsterr) {
                  Cerred(c3, nout);
              }
@@ -234,7 +243,7 @@
          }
          write(nout, format_9973);
          goto statement_10;
-@@ -1332,11 +1364,21 @@
+@@ -1332,11 +1368,21 @@
              if (tsterr) {
                  Cerred(c3, nout);
              }
@@ -256,7 +265,7 @@
          }
          write(nout, format_9973);
          goto statement_10;
-@@ -1401,6 +1443,12 @@
+@@ -1401,6 +1447,12 @@
                  Cerrgg(c3, nout);
              }
              Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
@@ -269,7 +278,7 @@
              Cdrges(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], &a[(3 - 1) * lda], &a[(4 - 1) * lda], &a[(7 - 1) * lda], nmax, &a[(8 - 1) * lda], &dc[0], &dc[(2 - 1) * nmax], work, lwork, rwork, result, logwrk, info);
              //
              if (info != 0) {
-@@ -1414,6 +1462,9 @@
+@@ -1414,6 +1466,9 @@
              if (info != 0) {
                  write(nout, format_9980), "Cdrges3", info;
              }
@@ -279,7 +288,7 @@
          }
          write(nout, format_9973);
          goto statement_10;
-@@ -1459,6 +1510,13 @@
+@@ -1459,6 +1514,13 @@
                  Cerrgg(c3, nout);
              }
              Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
@@ -293,7 +302,7 @@
              Cdrgev(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], &a[(3 - 1) * lda], &a[(4 - 1) * lda], &a[(7 - 1) * lda], nmax, &a[(8 - 1) * lda], &a[(9 - 1) * lda], nmax, &dc[0], &dc[(2 - 1) * nmax], &dc[(3 - 1) * nmax], &dc[(4 - 1) * nmax], work, lwork, rwork, result, info);
              if (info != 0) {
                  write(nout, format_9980), "Cdrgev", info;
-@@ -1471,6 +1528,9 @@
+@@ -1471,6 +1533,9 @@
              if (info != 0) {
                  write(nout, format_9980), "Cdrgev3", info;
              }
@@ -303,7 +312,7 @@
          }
          write(nout, format_9973);
          goto statement_10;
-@@ -1630,10 +1690,10 @@
+@@ -1630,10 +1695,10 @@
  statement_380:
      write(nout, format_9994);
      s2 = dsecnd();

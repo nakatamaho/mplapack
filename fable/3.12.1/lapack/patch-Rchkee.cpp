@@ -1,5 +1,5 @@
---- Rchkee.cpp	2026-02-17 19:46:39.912200751 +0900
-+++ Rchkee.cpp	2026-02-17 19:40:43.001843328 +0900
+--- Rchkee.cpp	2026-04-17 08:40:33.635938446 +0900
++++ Rchkee.cpp	2026-04-17 09:06:58.536089306 +0900
 @@ -44,13 +44,12 @@
  #include <mplapack_eig.h>
  #include <memory>
@@ -91,15 +91,15 @@
          Mxlaenv(16, 2);
          tsterr = true;
 +#if defined ___MPLAPACK_BUILD_WITH_GMP___
-+            thresh_org = thresh;
-+            thresh = thresh * 2.0;
-+            printf("Warning! Threshold has been lifted to: ");
-+            printnum_short(thresh);
-+            printf(" for GMP\n");
++        thresh_org = thresh;
++        thresh = thresh * 2.0;
++        printf("Warning! Threshold has been lifted to: ");
++        printnum_short(thresh);
++        printf(" for GMP\n");
 +#endif
          Rchkec(thresh, tsterr, nin, nout);
 +#if defined ___MPLAPACK_BUILD_WITH_GMP___
-+            thresh = thresh_org;
++        thresh = thresh_org;
 +#endif
          goto statement_10;
      } else {
@@ -136,7 +136,7 @@
          }
          //
      } else if (Mlsamen(3, c3.elems, "DST") || Mlsamen(3, c3.elems, "SEP") || Mlsamen(3, c3.elems, "SE2")) {
-@@ -1136,26 +1146,70 @@
+@@ -1126,7 +1136,18 @@
                  if (Mlsamen(3, c3.elems, "SE2")) {
                      Rchkst2stg(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], &d[0], &d[(2 - 1) * nmax], &d[(3 - 1) * nmax], &d[(4 - 1) * nmax], &d[(5 - 1) * nmax], &d[(6 - 1) * nmax], &d[(7 - 1) * nmax], &d[(8 - 1) * nmax], &d[(9 - 1) * nmax], &d[(10 - 1) * nmax], &d[(11 - 1) * nmax], &a[(3 - 1) * lda], nmax, &a[(4 - 1) * lda], &a[(5 - 1) * lda], &d[(12 - 1) * nmax], &a[(6 - 1) * lda], work, lwork, iwork, liwork, result, info);
                  } else {
@@ -155,10 +155,10 @@
                  }
                  if (info != 0) {
                      write(nout, format_9980), "Rchkst", info;
-                 }
-            }
-            if (tstdrv) {
-                if (Mlsamen(3, c3.elems, "SE2")) {
+@@ -1134,9 +1155,31 @@
+             }
+             if (tstdrv) {
+                 if (Mlsamen(3, c3.elems, "SE2")) {
 +#if defined ___MPLAPACK_BUILD_WITH_MPFR___
 +                    thresh_org = thresh;
 +                    const REAL se2_driver_thresh = 3000.0;
@@ -167,11 +167,11 @@
 +                    printnum_short(thresh);
 +                    printf(" for MPFR SE2 drivers\n");
 +#endif
-                    Rdrvst2stg(nn, nval, 18, dotype, iseed, thresh, nout, &a[0], nmax, &d[(3 - 1) * nmax], &d[(4 - 1) * nmax], &d[(5 - 1) * nmax], &d[(6 - 1) * nmax], &d[(8 - 1) * nmax], &d[(9 - 1) * nmax], &d[(10 - 1) * nmax], &d[(11 - 1) * nmax], &a[(2 - 1) * lda], nmax, &a[(3 - 1) * lda], &d[(12 - 1) * nmax], &a[(4 - 1) * lda], work, lwork, iwork, liwork, result, info);
+                     Rdrvst2stg(nn, nval, 18, dotype, iseed, thresh, nout, &a[0], nmax, &d[(3 - 1) * nmax], &d[(4 - 1) * nmax], &d[(5 - 1) * nmax], &d[(6 - 1) * nmax], &d[(8 - 1) * nmax], &d[(9 - 1) * nmax], &d[(10 - 1) * nmax], &d[(11 - 1) * nmax], &a[(2 - 1) * lda], nmax, &a[(3 - 1) * lda], &d[(12 - 1) * nmax], &a[(4 - 1) * lda], work, lwork, iwork, liwork, result, info);
 +#if defined ___MPLAPACK_BUILD_WITH_MPFR___
 +                    thresh = thresh_org;
 +#endif
-                } else {
+                 } else {
 +#if defined ___MPLAPACK_BUILD_WITH_MPFR___ || defined ___MPLAPACK_BUILD_WITH_DOUBLE___
 +                    thresh_org = thresh;
 +                    const REAL sep_driver_thresh = 80.0;
@@ -187,7 +187,7 @@
                  }
                  if (info != 0) {
                      write(nout, format_9980), "Rdrvst", info;
-@@ -1219,6 +1229,13 @@
+@@ -1219,6 +1262,13 @@
                  }
              }
              write(nout, format_9995), c3, nbval[i - 1], nbmin[i - 1], nxval[i - 1], nrhs;
@@ -201,7 +201,7 @@
              if (tstchk) {
                  Rchkbd(nn, mval, nval, maxtyp, dotype, nrhs, iseed, thresh, &a[0], nmax, &d[0], &d[(2 - 1) * nmax], &d[(3 - 1) * nmax], &d[(4 - 1) * nmax], &a[(2 - 1) * lda], nmax, &a[(3 - 1) * lda], &a[(4 - 1) * lda], &a[(5 - 1) * lda], nmax, &a[(6 - 1) * lda], nmax, &a[(7 - 1) * lda], &a[(8 - 1) * lda], work, lwork, iwork, nout, info);
                  if (info != 0) {
-@@ -1228,6 +1245,9 @@
+@@ -1228,6 +1278,9 @@
              if (tstdrv) {
                  Rdrvbd(nn, mval, nval, maxtyp, dotype, iseed, thresh, &a[0], nmax, &a[(2 - 1) * lda], nmax, &a[(3 - 1) * lda], nmax, &a[(4 - 1) * lda], &a[(5 - 1) * lda], &a[(6 - 1) * lda], &d[0], &d[(2 - 1) * nmax], &d[(3 - 1) * nmax], work, lwork, iwork, nout, info);
              }
@@ -211,7 +211,7 @@
          }
          //
      } else if (Mlsamen(3, c3.elems, "DEV")) {
-@@ -1245,11 +1265,21 @@
+@@ -1245,11 +1298,21 @@
              if (tsterr) {
                  Rerred(c3, nout);
              }
@@ -233,7 +233,7 @@
          }
          write(nout, format_9973);
          goto statement_10;
-@@ -1269,11 +1299,21 @@
+@@ -1269,11 +1332,21 @@
              if (tsterr) {
                  Rerred(c3, nout);
              }
@@ -255,7 +255,7 @@
          }
          write(nout, format_9973);
          goto statement_10;
-@@ -1293,11 +1333,21 @@
+@@ -1293,11 +1366,21 @@
              if (tsterr) {
                  Rerred(c3, nout);
              }
@@ -277,7 +277,7 @@
          }
          write(nout, format_9973);
          goto statement_10;
-@@ -1317,11 +1367,21 @@
+@@ -1317,11 +1400,21 @@
              if (tsterr) {
                  Rerred(c3, nout);
              }
@@ -299,23 +299,7 @@
          }
          write(nout, format_9973);
          goto statement_10;
-@@ -1613,10 +1673,10 @@
- statement_380:
-     write(nout, format_9994);
-     s2 = dsecnd();
--    write(nout, format_9993), s2 - s1;
-+    write(nout, format_9993), cast2double(s2 - s1);
-     //
-     // End of Rchkee
-     //
- }
- 
--int main(int argc, char const *argv[]) { return fem::main_with_catch(argc, argv, program_dchkee); }
-+int main(int argc, char const *argv[]) { Rchkee(); }
-
---- Rchkee.cpp	2026-04-15 12:35:35.415203639 +0900
-+++ Rchkee.cpp	2026-04-15 12:38:43.327273659 +0900
-@@ -1386,6 +1386,13 @@
+@@ -1386,6 +1479,19 @@
                  Rerrgg(c3, nout);
              }
              Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
@@ -335,7 +319,7 @@
              Rdrges(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], &a[(3 - 1) * lda], &a[(4 - 1) * lda], &a[(7 - 1) * lda], nmax, &a[(8 - 1) * lda], &d[0], &d[(2 - 1) * nmax], &d[(3 - 1) * nmax], work, lwork, result, logwrk, info);
              if (info != 0) {
                  write(nout, format_9980), "Rdrges", info;
-@@ -1395,6 +1402,9 @@
+@@ -1395,6 +1501,9 @@
              //
              Mxlaenv(16, 2);
              Rdrges3(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], &a[(3 - 1) * lda], &a[(4 - 1) * lda], &a[(7 - 1) * lda], nmax, &a[(8 - 1) * lda], &d[0], &d[(2 - 1) * nmax], &d[(3 - 1) * nmax], work, lwork, result, logwrk, info);
@@ -345,7 +329,7 @@
              if (info != 0) {
                  write(nout, format_9980), "Rdrges3", info;
              }
-@@ -1443,6 +1453,13 @@
+@@ -1443,6 +1552,13 @@
                  Rerrgg(c3, nout);
              }
              Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
@@ -359,7 +343,7 @@
              Rdrgev(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], &a[(3 - 1) * lda], &a[(4 - 1) * lda], &a[(7 - 1) * lda], nmax, &a[(8 - 1) * lda], &a[(9 - 1) * lda], nmax, &d[0], &d[(2 - 1) * nmax], &d[(3 - 1) * nmax], &d[(4 - 1) * nmax], &d[(5 - 1) * nmax], &d[(6 - 1) * nmax], work, lwork, result, info);
              if (info != 0) {
                  write(nout, format_9980), "Rdrgev", info;
-@@ -1451,6 +1468,9 @@
+@@ -1451,6 +1567,9 @@
              // Blocked version
              //
              Rdrgev3(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], &a[(3 - 1) * lda], &a[(4 - 1) * lda], &a[(7 - 1) * lda], nmax, &a[(8 - 1) * lda], &a[(9 - 1) * lda], nmax, &d[0], &d[(2 - 1) * nmax], &d[(3 - 1) * nmax], &d[(4 - 1) * nmax], &d[(5 - 1) * nmax], &d[(6 - 1) * nmax], work, lwork, result, info);
@@ -369,3 +353,16 @@
              if (info != 0) {
                  write(nout, format_9980), "Rdrgev3", info;
              }
+@@ -1613,10 +1732,10 @@
+ statement_380:
+     write(nout, format_9994);
+     s2 = dsecnd();
+-    write(nout, format_9993), s2 - s1;
++    write(nout, format_9993), cast2double(s2 - s1);
+     //
+     // End of Rchkee
+     //
+ }
+ 
+-int main(int argc, char const *argv[]) { return fem::main_with_catch(argc, argv, program_dchkee); }
++int main(int argc, char const *argv[]) { Rchkee(); }
