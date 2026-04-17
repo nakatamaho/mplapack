@@ -232,21 +232,12 @@
  
  ZTS routines passed the tests of the error exits
 
- ZTS:  TS factorization for tall-skinny or short-wide matrices
- Test ratios:
-    1: norm( R - Q'*A ) / ( (M+N) * norm(A) * EPS )
-    2: norm( I - Q'*Q ) / ( (M+N) * EPS )
-    3: norm( Q*C - Q*C ) / ( (M+N) * norm(C) * EPS )
-    4: norm( Q'*C - Q'*C ) / ( (M+N) * norm(C) * EPS )
-    5: norm( C*Q - C*Q ) / ( (M+N) * norm(C) * EPS )
-    6: norm( C*Q' - C*Q' ) / ( (M+N) * norm(C) * EPS )
-SW: M=    1, N=    1, MB=    3, NB=   20 test( 5)=+7.6059854564732432e+01
- ZTS:      1 out of  10800 tests failed to pass the threshold
+ All tests for ZTS routines passed the threshold (  10800 tests run)
  
  ZHH routines passed the tests of the error exits
 
  All tests for ZHH routines passed the threshold (  15900 tests run)
 
  End of tests
- Total time used =        33.64 seconds
+ Total time used =        29.85 seconds
 
