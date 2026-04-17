@@ -1,5 +1,5 @@
---- a/mplapack/reference/iMparam2stage.cpp	2026-03-22 09:50:39.050528618 +0900
-+++ b/mplapack/reference/iMparam2stage.cpp	2026-03-22 09:55:04.929591834 +0900
+--- a/mplapack/reference/iMparam2stage.cpp
++++ b/mplapack/reference/iMparam2stage.cpp
 @@ -36,8 +36,12 @@
  #include <mpblas.h>
  #include <mplapack.h>

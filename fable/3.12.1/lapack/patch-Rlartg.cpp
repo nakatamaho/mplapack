@@ -1,5 +1,5 @@
---- a/mplapack/reference/Rlartg.cpp	2026-03-21 11:40:59.011631125 +0900
-+++ b/mplapack/reference/Rlartg.cpp	2026-03-21 11:42:55.598977126 +0900
+--- a/mplapack/reference/Rlartg.cpp
++++ b/mplapack/reference/Rlartg.cpp
 @@ -35,11 +35,13 @@
  
  #include <mpblas.h>

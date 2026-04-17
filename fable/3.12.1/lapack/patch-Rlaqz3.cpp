@@ -1,7 +1,6 @@
-diff --git a/mplapack/reference/Rlaqz3.cpp b/mplapack/reference/Rlaqz3.cpp
 --- a/mplapack/reference/Rlaqz3.cpp
 +++ b/mplapack/reference/Rlaqz3.cpp
-@@ -210,8 +210,10 @@ void Rlaqz3(bool const ilschur, bool const ilq, bool const ilz, INTEGER const n,
+@@ -210,8 +210,10 @@
      INTEGER istopm = 0;
      if (kwtop != ilo && s != zero) {
          // Reflect spike back, this will create optimally packed bulges

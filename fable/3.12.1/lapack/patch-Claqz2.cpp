@@ -1,7 +1,6 @@
-diff --git a/mplapack/reference/Claqz2.cpp b/mplapack/reference/Claqz2.cpp
 --- a/mplapack/reference/Claqz2.cpp
 +++ b/mplapack/reference/Claqz2.cpp
-@@ -168,8 +168,10 @@ void Claqz2(bool const ilschur, bool const ilq, bool const ilz, INTEGER const n,
+@@ -168,8 +168,10 @@
      INTEGER istopm = 0;
      if (kwtop != ilo && s != czero) {
          // Reflect spike back, this will create optimally packed bulges

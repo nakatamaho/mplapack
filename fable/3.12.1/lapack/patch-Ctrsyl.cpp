@@ -1,6 +1,6 @@
 --- a/mplapack/reference/Ctrsyl.cpp
 +++ b/mplapack/reference/Ctrsyl.cpp
-@@ -84,7 +84,7 @@
+@@ -83,7 +83,7 @@
      bignum = one / smlnum;
      REAL dum[1];
      REAL smin = max(smlnum, eps * Clange("M", m, m, a, lda, dum), eps * Clange("M", n, n, b, ldb, dum));

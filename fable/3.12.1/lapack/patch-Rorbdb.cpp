@@ -1,5 +1,3 @@
-diff --git a/mplapack/reference/Rorbdb.cpp b/mplapack/reference/Rorbdb.cpp
-index aead7009..727cb2a8 100644
 --- a/mplapack/reference/Rorbdb.cpp
 +++ b/mplapack/reference/Rorbdb.cpp
 @@ -37,6 +37,10 @@

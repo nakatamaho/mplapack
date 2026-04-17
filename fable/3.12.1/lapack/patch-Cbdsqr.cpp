@@ -1,13 +1,15 @@
-diff --git a/mplapack/reference/Cbdsqr.cpp b/mplapack/reference/Cbdsqr.cpp
-index afc1779af..40be7bc43 100644
 --- a/mplapack/reference/Cbdsqr.cpp
 +++ b/mplapack/reference/Cbdsqr.cpp
-@@ -36,2 +36,4 @@
+@@ -35,6 +35,8 @@
+ 
  #include <mpblas.h>
  #include <mplapack.h>
 +#include <mplapack_arithmetic_params.h>
 +#include <mplapack_arithmetic_params_double.h>
-@@ -59,7 +59,11 @@ void Cbdsqr(const char *uplo, INTEGER const n, INTEGER const ncvt, INTEGER const
+ 
+ void Cbdsqr(const char *uplo, INTEGER const n, INTEGER const ncvt, INTEGER const nru, INTEGER const ncc, REAL *d, REAL *e, COMPLEX *vt, INTEGER const ldvt, COMPLEX *u, INTEGER const ldu, COMPLEX *c, INTEGER const ldc, REAL *rwork, INTEGER &info) {
+     bool lower = false;
+@@ -59,7 +61,11 @@
      REAL smin = 0.0;
      REAL sminoa = 0.0;
      REAL mu = 0.0;
@@ -20,7 +22,7 @@ index afc1779af..40be7bc43 100644
      REAL thresh = 0.0;
      INTEGER maxitdivn = 0;
      INTEGER iterdivn = 0;
-@@ -148,6 +152,16 @@ void Cbdsqr(const char *uplo, INTEGER const n, INTEGER const ncvt, INTEGER const
+@@ -148,6 +154,16 @@
      //
      eps = Rlamch("Epsilon");
      unfl = Rlamch("Safe minimum");
@@ -37,7 +39,7 @@ index afc1779af..40be7bc43 100644
      //
      // If matrix lower bidiagonal, rotate to be upper bidiagonal
      // by applying Givens rotations on the left
-@@ -176,7 +176,11 @@ void Cbdsqr(const char *uplo, INTEGER const n, INTEGER const ncvt, INTEGER const
+@@ -176,7 +192,11 @@
      // (By setting TOL to be negative, algorithm will compute
      // singular values to absolute accuracy ABS(TOL)*norm(input matrix))
      //

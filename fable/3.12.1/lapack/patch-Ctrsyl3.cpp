@@ -1,5 +1,5 @@
---- a/mplapack/reference/Ctrsyl3.cpp	2026-03-24 14:05:18.649432543 +0900
-+++ b/mplapack/reference/Ctrsyl3.cpp	2026-03-24 14:02:11.028565416 +0900
+--- a/mplapack/reference/Ctrsyl3.cpp
++++ b/mplapack/reference/Ctrsyl3.cpp
 @@ -39,24 +39,6 @@
  
  void Ctrsyl3(const char *trana, const char *tranb, INTEGER const isgn, INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX *c, INTEGER const ldc, REAL &scale, REAL *swork, INTEGER const ldswork, INTEGER &info) {

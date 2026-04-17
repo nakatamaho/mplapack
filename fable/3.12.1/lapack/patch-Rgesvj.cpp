@@ -1,6 +1,6 @@
 --- a/mplapack/reference/Rgesvj.cpp
 +++ b/mplapack/reference/Rgesvj.cpp
-@@ -174,7 +174,11 @@
+@@ -188,7 +188,11 @@
      sfmin = Rlamch("SafeMinimum");
      rootsfmin = sqrt(sfmin);
      small = sfmin / epsln;
@@ -12,11 +12,7 @@
      // BIG         = ONE    / SFMIN
      rootbig = one / rootsfmin;
      large = big / sqrt(castREAL(m * n));
-diff --git a/mplapack/reference/Rgesvj.cpp b/mplapack/reference/Rgesvj.cpp
-index 7415c975..967768f2 100644
---- a/mplapack/reference/Rgesvj.cpp
-+++ b/mplapack/reference/Rgesvj.cpp
-@@ -241,6 +241,12 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const
+@@ -237,6 +241,12 @@
                  Mxerbla("Rgesvj", -info);
                  return;
              }
@@ -29,7 +25,7 @@ index 7415c975..967768f2 100644
              aaqq = sqrt(aaqq);
              if ((aapp < (big / aaqq)) && noscale) {
                  sva[p - 1] = aapp * aaqq;
-@@ -266,6 +272,12 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const
+@@ -262,6 +272,12 @@
                  Mxerbla("Rgesvj", -info);
                  return;
              }
@@ -42,7 +38,7 @@ index 7415c975..967768f2 100644
              aaqq = sqrt(aaqq);
              if ((aapp < (big / aaqq)) && noscale) {
                  sva[p - 1] = aapp * aaqq;
-@@ -291,6 +303,12 @@ void Rgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const
+@@ -287,6 +303,12 @@
                  Mxerbla("Rgesvj", -info);
                  return;
              }

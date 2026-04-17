@@ -1,29 +1,6 @@
 --- a/mplapack/reference/Cbbcsd.cpp
 +++ b/mplapack/reference/Cbbcsd.cpp
-@@ -126,7 +126,8 @@
-     //
-     INTEGER i = 0;
-     const REAL zero = 0.0;
--    const REAL piover2 = 1.5707963267948966192313216916397514421;
-+    const REAL two = 2.0;
-+    const REAL piover2 = pi(zero) / two;
-     for (i = 1; i <= q; i = i + 1) {
-         if (theta[i - 1] < thresh) {
-             theta[i - 1] = zero;
-@@ -269,7 +270,7 @@
-                 }
-             } else {
-                 nu = sigma21;
--                mu = sqrt(1.0 - pow2(nu));
-+                mu = sqrt(one - pow2(nu));
-                 if (nu < thresh) {
-                     mu = one;
-                     nu = zero;
-diff --git a/mplapack/reference/Cbbcsd.cpp b/mplapack/reference/Cbbcsd.cpp
-index 846b6fa20..e4f86b648 100644
---- a/mplapack/reference/Cbbcsd.cpp
-+++ b/mplapack/reference/Cbbcsd.cpp
-@@ -117,7 +117,11 @@ void Cbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
+@@ -117,7 +117,11 @@
      const REAL ten = 10.0;
      const REAL hundred = 100.0;
      const REAL meighth = -0.125;
@@ -35,3 +12,22 @@ index 846b6fa20..e4f86b648 100644
      REAL tol = tolmul * eps;
      const INTEGER maxitr = 6;
      REAL thresh = max(tol, maxitr * q * q * unfl);
+@@ -126,7 +130,8 @@
+     //
+     INTEGER i = 0;
+     const REAL zero = 0.0;
+-    const REAL piover2 = 1.5707963267948966192313216916397514421;
++    const REAL two = 2.0;
++    const REAL piover2 = pi(zero) / two;
+     for (i = 1; i <= q; i = i + 1) {
+         if (theta[i - 1] < thresh) {
+             theta[i - 1] = zero;
+@@ -269,7 +274,7 @@
+                 }
+             } else {
+                 nu = sigma21;
+-                mu = sqrt(1.0 - pow2(nu));
++                mu = sqrt(one - pow2(nu));
+                 if (nu < thresh) {
+                     mu = one;
+                     nu = zero;

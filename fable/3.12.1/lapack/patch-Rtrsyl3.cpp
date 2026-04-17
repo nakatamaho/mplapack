@@ -1,5 +1,5 @@
---- a/mplapack/reference/Rtrsyl3.cpp	2026-03-24 14:04:41.848673245 +0900
-+++ b/mplapack/reference/Rtrsyl3.cpp	2026-03-24 14:02:11.028565416 +0900
+--- a/mplapack/reference/Rtrsyl3.cpp
++++ b/mplapack/reference/Rtrsyl3.cpp
 @@ -39,24 +39,6 @@
  
  void Rtrsyl3(const char *trana, const char *tranb, INTEGER const isgn, INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *c, INTEGER const ldc, REAL &scale, INTEGER *iwork, INTEGER const liwork, REAL *swork, INTEGER const ldswork, INTEGER &info) {

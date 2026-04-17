@@ -1,5 +1,5 @@
---- a/mplapack/reference/Claic1.cpp_	2026-03-21 09:56:28.397613659 +0900
-+++ b/mplapack/reference/Claic1.cpp	2026-03-21 10:02:07.463578068 +0900
+--- a/mplapack/reference/Claic1.cpp
++++ b/mplapack/reference/Claic1.cpp
 @@ -77,7 +77,7 @@
              } else {
                  s = alpha / s1;

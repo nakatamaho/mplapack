@@ -1,8 +1,6 @@
-diff --git a/mplapack/reference/Cgges.cpp b/mplapack/reference/Cgges.cpp
-index 000000000..000000000 100644
 --- a/mplapack/reference/Cgges.cpp
 +++ b/mplapack/reference/Cgges.cpp
-@@ -164,6 +164,9 @@ void Cgges(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selc
+@@ -164,6 +164,9 @@
      eps = Rlamch("P");
      smlnum = Rlamch("S");
      bignum = one / smlnum;

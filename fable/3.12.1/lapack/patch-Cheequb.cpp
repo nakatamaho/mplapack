@@ -1,5 +1,5 @@
---- a/mplapack/reference/Cheequb.cpp	2026-03-21 15:33:59.095321281 +0900
-+++ b/mplapack/reference/Cheequb.cpp	2026-03-21 15:35:44.754483866 +0900
+--- a/mplapack/reference/Cheequb.cpp
++++ b/mplapack/reference/Cheequb.cpp
 @@ -41,6 +41,7 @@
      bool up = false;
      const REAL zero = 0.0;

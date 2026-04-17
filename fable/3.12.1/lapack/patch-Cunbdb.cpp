@@ -1,5 +1,3 @@
-diff --git a/mplapack/reference/Cunbdb.cpp b/mplapack/reference/Cunbdb.cpp
-index cf6dc511..266462c5 100644
 --- a/mplapack/reference/Cunbdb.cpp
 +++ b/mplapack/reference/Cunbdb.cpp
 @@ -37,6 +37,10 @@

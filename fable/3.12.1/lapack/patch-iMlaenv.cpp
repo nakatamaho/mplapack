@@ -24,7 +24,7 @@
      char c2[2];
      char c3[3];
      char c4[2];
-@@ -101,63 +105,24 @@
+@@ -103,63 +106,24 @@
      // Convert NAME to upper case if the first character is lower case.
      //
      return_value = 1;
@@ -102,12 +102,7 @@
      //
      switch (ispec) {
      case 1:
-
-diff --git a/mplapack/reference/iMlaenv.cpp b/mplapack/reference/iMlaenv.cpp
-index a5a10382..bf2aba4e 100644
---- a/mplapack/reference/iMlaenv.cpp
-+++ b/mplapack/reference/iMlaenv.cpp
-@@ -232,7 +232,7 @@ statement_50:
+@@ -268,7 +232,7 @@
              } else {
                  nb = 64;
              }
@@ -116,29 +111,7 @@ index a5a10382..bf2aba4e 100644
              if (sname) {
                  nb = 32;
              } else {
-@@ -413,7 +413,7 @@ statement_60:
-             } else {
-                 nbmin = 2;
-             }
--        } else if (subnam(4, 7) == "QP3RK") {
-+        } else if (strncmp(subnam + 3, "QP3RK", 5) == 0) {
-             if (sname) {
-                 nbmin = 2;
-             } else {
-@@ -488,7 +488,7 @@ statement_70:
-             } else {
-                 nx = 128;
-             }
--        } else if (subnam(4, 7) == "QP3RK") {
-+        } else if (strncmp(subnam + 3, "QP3RK", 5) == 0) {
-             if (sname) {
-                 nx = 128;
-             } else {
-diff --git a/mplapack/reference/iMlaenv.cpp b/mplapack/reference/iMlaenv.cpp
-index bf2aba4e..b53206d6 100644
---- a/mplapack/reference/iMlaenv.cpp
-+++ b/mplapack/reference/iMlaenv.cpp
-@@ -347,9 +347,9 @@ statement_50:
+@@ -383,9 +347,9 @@
          } else if (strncmp(c3, "SYL", 3) == 0) {
              // The upper bound is to prevent overly aggressive scaling.
              if (sname) {
@@ -150,3 +123,21 @@ index bf2aba4e..b53206d6 100644
              }
          }
      } else if (strncmp(c2, "LA", 2) == 0) {
+@@ -449,7 +413,7 @@
+             } else {
+                 nbmin = 2;
+             }
+-        } else if (subnam(4, 7) == "QP3RK") {
++        } else if (strncmp(subnam + 3, "QP3RK", 5) == 0) {
+             if (sname) {
+                 nbmin = 2;
+             } else {
+@@ -524,7 +488,7 @@
+             } else {
+                 nx = 128;
+             }
+-        } else if (subnam(4, 7) == "QP3RK") {
++        } else if (strncmp(subnam + 3, "QP3RK", 5) == 0) {
+             if (sname) {
+                 nx = 128;
+             } else {

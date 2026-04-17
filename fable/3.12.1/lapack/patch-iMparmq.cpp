@@ -27,7 +27,7 @@
      INTEGER ic = 0;
      INTEGER iz = 0;
      INTEGER i = 0;
-@@ -127,47 +131,19 @@
+@@ -129,47 +133,19 @@
          // Convert NAME to upper case if the first character is lower case.
          //
          return_value = 0;

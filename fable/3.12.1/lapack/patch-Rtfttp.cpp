@@ -1,5 +1,5 @@
---- a/mplapack/reference/Rtfttp.cpp~	2026-02-05 08:12:25.027541118 +0900
-+++ b/mplapack/reference/Rtfttp.cpp	2026-02-05 08:22:01.347466902 +0900
+--- a/mplapack/reference/Rtfttp.cpp
++++ b/mplapack/reference/Rtfttp.cpp
 @@ -33,6 +33,10 @@
  //   Univ. of Colorado Denver
  //   NAG Ltd.

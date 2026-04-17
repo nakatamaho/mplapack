@@ -1,5 +1,5 @@
---- a/mplapack/reference/Csyequb.cpp	2026-03-21 20:57:22.388026116 +0900
-+++ b/mplapack/reference/Csyequb.cpp	2026-03-21 21:00:29.411247723 +0900
+--- a/mplapack/reference/Csyequb.cpp
++++ b/mplapack/reference/Csyequb.cpp
 @@ -41,6 +41,7 @@
      bool up = false;
      const REAL zero = 0.0;

@@ -1,5 +1,5 @@
---- a/mplapack/reference/Ctpttf.cpp~	2026-02-05 08:13:17.412401988 +0900
-+++ b/mplapack/reference/Ctpttf.cpp	2026-02-05 08:18:09.038366746 +0900
+--- a/mplapack/reference/Ctpttf.cpp
++++ b/mplapack/reference/Ctpttf.cpp
 @@ -33,6 +33,10 @@
  //   Univ. of Colorado Denver
  //   NAG Ltd.

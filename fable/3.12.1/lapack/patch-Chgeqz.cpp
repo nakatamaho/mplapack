@@ -1,5 +1,3 @@
-diff --git a/mplapack/reference/Chgeqz.cpp b/mplapack/reference/Chgeqz.cpp
-index 1041c9572..0bd5f2890 100644
 --- a/mplapack/reference/Chgeqz.cpp
 +++ b/mplapack/reference/Chgeqz.cpp
 @@ -35,6 +35,8 @@
@@ -11,7 +9,7 @@ index 1041c9572..0bd5f2890 100644
  
  void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const n, INTEGER const ilo, INTEGER const ihi, COMPLEX *h, INTEGER const ldh, COMPLEX *t, INTEGER const ldt, COMPLEX *alpha, COMPLEX *beta, COMPLEX *q, INTEGER const ldq, COMPLEX *z, INTEGER const ldz, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER &info) {
      COMPLEX x = 0.0;
-@@ -65,8 +67,13 @@ void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const
+@@ -65,8 +67,13 @@
      INTEGER ilastm = 0;
      INTEGER iiter = 0;
      COMPLEX eshift = 0.0;
@@ -25,7 +23,7 @@ index 1041c9572..0bd5f2890 100644
      bool ilazro = false;
      bool ilazr2 = false;
      INTEGER jch = 0;
-@@ -191,7 +198,9 @@ void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const
+@@ -191,7 +198,9 @@
      //
      in = ihi + 1 - ilo;
      safmin = Rlamch("S");
@@ -36,7 +34,7 @@ index 1041c9572..0bd5f2890 100644
      anorm = Clanhs("F", in, &h[(ilo - 1) + (ilo - 1) * ldh], ldh, rwork);
      bnorm = Clanhs("F", in, &t[(ilo - 1) + (ilo - 1) * ldt], ldt, rwork);
      atol = max(safmin, ulp * anorm);
-@@ -253,7 +262,16 @@ void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const
+@@ -253,7 +262,16 @@
      }
      iiter = 0;
      eshift = czero;

@@ -1,6 +1,6 @@
 --- a/mplapack/reference/Rlarrd.cpp
 +++ b/mplapack/reference/Rlarrd.cpp
-@@ -201,6 +201,10 @@
+@@ -195,6 +195,10 @@
          // IL through IU. The initial interval [GL,GU] from the global
          // Gerschgorin bounds GL and GU is refined by Rlaebz.
          itmax = castINTEGER((log(tnorm + pivmin) - log(pivmin)) / log(two)) + 2;
@@ -11,4 +11,3 @@
          work[(n + 1) - 1] = gl;
          work[(n + 2) - 1] = gl;
          work[(n + 3) - 1] = gu;
-

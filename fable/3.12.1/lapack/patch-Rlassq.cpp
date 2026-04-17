@@ -1,5 +1,3 @@
-diff --git a/mplapack/reference/Rlassq.cpp b/mplapack/reference/Rlassq.cpp
-index 8a85240d..cbf8bac4 100644
 --- a/mplapack/reference/Rlassq.cpp
 +++ b/mplapack/reference/Rlassq.cpp
 @@ -35,6 +35,7 @@
@@ -10,7 +8,7 @@ index 8a85240d..cbf8bac4 100644
  
  void Rlassq(INTEGER const n, REAL *x, INTEGER const incx, REAL &scale, REAL &sumsq) {
      // Quick return if possible
-@@ -73,10 +74,12 @@ void Rlassq(INTEGER const n, REAL *x, INTEGER const incx, REAL &scale, REAL &sum
+@@ -73,10 +74,12 @@
      }
      INTEGER i = 0;
      REAL ax = 0.0;

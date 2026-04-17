@@ -1,5 +1,3 @@
-diff --git a/mplapack/reference/Rlaqz2.cpp b/mplapack/reference/Rlaqz2.cpp
-index 055a1af0..9650e00c 100644
 --- a/mplapack/reference/Rlaqz2.cpp
 +++ b/mplapack/reference/Rlaqz2.cpp
 @@ -35,15 +35,6 @@
@@ -18,7 +16,7 @@ index 055a1af0..9650e00c 100644
      REAL h[2 * 3];
      REAL c1 = 0.0;
      REAL s1 = 0.0;
-@@ -53,7 +44,13 @@ void Rlaqz2(bool const ilq, bool const ilz, INTEGER const k, INTEGER const istar
+@@ -53,7 +44,13 @@
      REAL s2 = 0.0;
      if (k + 2 == ihi) {
          // Shift is located on the edge of the matrix, remove it
@@ -33,7 +31,7 @@ index 055a1af0..9650e00c 100644
          // Make H upper triangular
          Rlartg(h[0], h[(2 - 1)], c1, s1, temp);
          h[(2 - 1)] = zero;
-@@ -97,7 +94,13 @@ void Rlaqz2(bool const ilq, bool const ilz, INTEGER const k, INTEGER const istar
+@@ -97,7 +94,13 @@
          //
          // Normal operation, move bulge down
          //

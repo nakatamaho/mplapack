@@ -1,10 +1,16 @@
---- a/mplapack/reference/Clartg.cpp	2026-03-21 11:38:06.661888232 +0900
-+++ b/mplapack/reference/Clartg.cpp	2026-03-21 11:42:48.544846415 +0900
-@@ -35,17 +35,19 @@
+--- a/mplapack/reference/Clartg.cpp
++++ b/mplapack/reference/Clartg.cpp
+@@ -35,17 +35,25 @@
  
  #include <mpblas.h>
  #include <mplapack.h>
 +#include <mplapack_arithmetic_params.h>
++
++inline REAL abssq(COMPLEX ff) {
++    REAL temp;
++    temp = (ff.real() * ff.real()) + (ff.imag() * ff.imag());
++    return temp;
++}
  
  void Clartg(COMPLEX const f, COMPLEX const g, REAL &c, COMPLEX &s, COMPLEX &r) {
      COMPLEX t = 0.0;
@@ -22,30 +28,7 @@
      REAL rtmax = 0.0;
      REAL g2 = 0.0;
      REAL d = 0.0;
-
-diff --git a/mplapack/reference/Clartg.cpp b/mplapack/reference/Clartg.cpp
-index bc25c968..3d2d8bad 100644
---- a/mplapack/reference/Clartg.cpp
-+++ b/mplapack/reference/Clartg.cpp
-@@ -37,6 +37,12 @@
- #include <mplapack.h>
- #include <mplapack_arithmetic_params.h>
- 
-+inline REAL abssq(COMPLEX ff) {
-+    REAL temp;
-+    temp = (ff.real() * ff.real()) + (ff.imag() * ff.imag());
-+    return temp;
-+}
-+
- void Clartg(COMPLEX const f, COMPLEX const g, REAL &c, COMPLEX &s, COMPLEX &r) {
-     COMPLEX t = 0.0;
-     const auto &ap = mplapack::get_arithmetic_params<REAL>();
-
-diff --git a/mplapack/reference/Clartg.cpp b/mplapack/reference/Clartg.cpp
-index 3d2d8bad..ce94f6c 100644
---- a/mplapack/reference/Clartg.cpp
-+++ b/mplapack/reference/Clartg.cpp
-@@ -108,7 +108,16 @@ void Clartg(COMPLEX const f, COMPLEX const g, REAL &c, COMPLEX &s, COMPLEX &r) {
+@@ -100,7 +108,16 @@
          f1 = max(abs(f.real()), abs(f.imag()));
          g1 = max(abs(g.real()), abs(g.imag()));
          rtmax = sqrt(safmax / 4);
@@ -63,7 +46,7 @@ index 3d2d8bad..ce94f6c 100644
              //
              // Use unscaled algorithm
              //
-@@ -123,7 +132,7 @@ void Clartg(COMPLEX const f, COMPLEX const g, REAL &c, COMPLEX &s, COMPLEX &r) {
+@@ -115,7 +132,7 @@
                  rtmax = rtmax * 2;
                  if (f2 > rtmin && h2 < rtmax) {
                      // safmin <= sqrt( f2*h2 ) <= safmax
@@ -72,7 +55,7 @@ index 3d2d8bad..ce94f6c 100644
                  } else {
                      s = conj(g) * (r / h2);
                  }
-@@ -179,7 +188,7 @@ void Clartg(COMPLEX const f, COMPLEX const g, REAL &c, COMPLEX &s, COMPLEX &r) {
+@@ -171,7 +188,7 @@
                  rtmax = rtmax * 2;
                  if (f2 > rtmin && h2 < rtmax) {
                      // safmin <= sqrt( f2*h2 ) <= safmax

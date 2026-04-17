@@ -12,11 +12,7 @@
      // BIG   = ONE / SFMIN
      //
      // Initialize SVA(1:N) = diag( ||A e_i||_2 )_1^N
-diff --git a/mplapack/reference/Rgejsv.cpp b/mplapack/reference/Rgejsv.cpp
-index 81b4edf5..f624c8b6 100644
---- a/mplapack/reference/Rgejsv.cpp
-+++ b/mplapack/reference/Rgejsv.cpp
-@@ -186,6 +186,12 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
+@@ -182,6 +186,12 @@
              Mxerbla("Rgejsv", -info);
              return;
          }

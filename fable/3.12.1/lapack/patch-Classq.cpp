@@ -1,5 +1,5 @@
---- a/mplapack/reference/Classq.cpp	2026-03-21 13:25:50.964425357 +0900
-+++ b/mplapack/reference/Classq.cpp	2026-03-21 13:26:50.830400717 +0900
+--- a/mplapack/reference/Classq.cpp
++++ b/mplapack/reference/Classq.cpp
 @@ -35,6 +35,7 @@
  
  #include <mpblas.h>
