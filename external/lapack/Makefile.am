@@ -81,7 +81,11 @@ work/$(CONFIGURE_STAMP): work/$(PATCH_STAMP)
 	echo "CC = $(CC)"           >> $(abs_builddir)/work/internal/lapack-$(LAPACK_VERSION)/make.inc
 	echo "CFLAGS = $(CFLAGS)"   >> $(abs_builddir)/work/internal/lapack-$(LAPACK_VERSION)/make.inc
 	echo "FC = $(FC)"           >> $(abs_builddir)/work/internal/lapack-$(LAPACK_VERSION)/make.inc
+if IS_INTELCC
+	echo "FFLAGS = $(FCFLAGS) -recursive -fp-model strict -assume protect-parens" >> $(abs_builddir)/work/internal/lapack-$(LAPACK_VERSION)/make.inc
+else
 	echo "FFLAGS = $(FCFLAGS)" >> $(abs_builddir)/work/internal/lapack-$(LAPACK_VERSION)/make.inc
+endif
 	echo "FFLAGS_DRV = \$$(FFLAGS)" >> $(abs_builddir)/work/internal/lapack-$(LAPACK_VERSION)/make.inc
 	echo "FFLAGS_NOOPT = -O0" >> $(abs_builddir)/work/internal/lapack-$(LAPACK_VERSION)/make.inc
 if IS_MINGW
