@@ -25,7 +25,7 @@ are consequences of that migration, not independent features.
   `Claqz0–4 / Rlaqz0–4`, `Risinf`, `Rroundup_lwork`, and companion tests.
 - **Removed:** `Clacon/Rlacon` (deprecated reverse-communication; replaced
   by `Clacn2/Rlacn2`), `Cgelqs/Rgelqs/Cgeqrs/Rgeqrs` (replaced by `xGELS`),
-  Cray-target guard-digit workarounds.
+  Cray-era guard-digit workarounds in D&C routines (see §3 for scope).
 - **Rewrites of note:** `Rlartg/Clartg` (LAPACK 3.12.1 algorithm,
   `abssq` helper, arithmetic_params-driven scaling), `xLASSQ` and
   dependent norm routines, `xLARFT` (recursive structure), `xGEBAL`
@@ -102,7 +102,19 @@ are consequences of that migration, not independent features.
   patches (`patch-Clacon.cpp`, `patch-Rlacon.cpp`), and declarations
   removed.
 - `Cgelqs/Rgelqs`, `Cgeqrs/Rgeqrs` — removed in favor of `xGELS`.
-- Cray-target guard-digit workarounds — removed.
+- Cray-era guard-digit workarounds in D&C routines — removed, following
+  LAPACK 3.12.1. Specifically, the `Rlamc3(x, x) - x` idiom used to zero
+  the lowest bit of eigenvalue/singular-value arrays in `Rlaed3`, `Rlaed9`,
+  `Rlasd3`, `Rlasd8` (defensive against machines without an add/subtract
+  guard digit, i.e. Cray XMP/YMP/C90/Cray 2). All MPLAPACK backends have
+  correct guard-digit behavior, so `2x - x = x` holds exactly and the loop
+  is pure overhead. Note: this is **unrelated to the `Rlabad` policy in
+  §8** — guard-digit correctness is about single-operation precision,
+  whereas `Rlabad` is about exponent range; upstream removed both under an
+  IEEE-hardware assumption, but only the guard-digit removal transfers to
+  multi-precision backends. The `Rlamc3` calls retained in `Rlasd8`'s
+  secular-equation j-loop serve a different purpose (enforcing
+  `(x+y)+z` evaluation order against compiler reassociation) and are kept.
 - Pre-conversion local patches that 3.12.1 obsoletes (`patch-Rdrvst2stg`,
   `patch-Cunbdb3.cpp` original workaround, several *.gvd post-conversion
   patches).

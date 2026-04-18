@@ -1,6 +1,6 @@
 # Multi-Precision Backend Failure Patterns Exposed During LAPACK 3.12.1 Migration
 
-Companion note to `CHANGES.md`. The MPLAPACK 2.1.0 → 2.2.0 re-base onto
+Companion note to `CHANGES.2.2.0.md`. The MPLAPACK 2.1.0 → 2.2.0 re-base onto
 LAPACK 3.12.1 surfaced a recurring set of failure patterns that are not
 visible at IEEE binary64 precision. Each pattern is backend-specific,
 structural (not a one-off bug), and likely to recur in any future LAPACK sync.
@@ -150,7 +150,7 @@ keeping in mind for any future LAPACK sync:
 For completeness, failure modes deliberately excluded from the above:
 
 - **Test threshold relaxations** — these are test-harness tolerance
-  adjustments, not backend-specific failure patterns. See `CHANGES.md`
+  adjustments, not backend-specific failure patterns. See `CHANGES.2.2.0.md`
   §5 for the list.
 - **Upstream LAPACK 3.12.1 bugs** (e.g. `Cuncsd2by1` M=55,P=40,Q=20) —
   these fail identically at double precision and are not multi-precision
