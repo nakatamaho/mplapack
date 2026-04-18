@@ -1,9 +1,9 @@
-# MPLAPACK 2.2.0 — Changes since 2.1.0
+# MPLAPACK 2.2.0 — Changes since 2.1.1
 
 Release date: 2026-04 (tag: v2.2.0, topic branch: `topic/lapack-3.12.1`)
 
-This release re-bases MPLAPACK onto LAPACK 3.12.1 (previously 3.9.1) and
-consolidates multi-precision arithmetic handling into a single
+This release re-bases MPLAPACK 2.1.1 onto LAPACK 3.12.1 (previously 3.9.1)
+and consolidates multi-precision arithmetic handling into a single
 `arithmetic_params` layer. 281 commits, roughly spanning 2026-01 through
 2026-04-17.
 
@@ -396,7 +396,14 @@ Tracked and merged back where accepted:
   and their declarations removed from `mplapack_lin_*` headers.
 - **BLAS/LAPACK cleanup step** extended to remove generated and
   temporary files.
-- **`Rlaran`** now delegates to `Rlaruv(iseed, 1, &x)`.
+- **Random-number generation normalized across precision classes.**
+  `Rlaran` now delegates to `Rlaruv(iseed, 1, &x)`, and the random stream
+  is kept independent of the selected arithmetic precision wherever
+  possible. This makes generated test matrices reproducible across double,
+  binary80, binary128, DD, QD, MPFR, and GMP. Known exceptions are GMP
+  32-bit vs. 64-bit builds, whose underlying integer representation can
+  differ, and the double backend, whose stream is intentionally MPLAPACK's
+  normalized stream rather than bit-for-bit LAPACK reference output.
 
 ---
 
@@ -419,7 +426,7 @@ Tracked and merged back where accepted:
 
 ## 12. Compatibility notes
 
-- Users linking against MPLAPACK 2.1.0 will need to rebuild. Header
+- Users linking against MPLAPACK 2.1.1 will need to rebuild. Header
   layout has changed: `mplapack_arithmetic_params.h` is new; several
   declarations moved between `mplapack_generic.h` and per-backend
   headers (in particular `Rroundup_lwork`, `Cgemmtr/Rgemmtr`,

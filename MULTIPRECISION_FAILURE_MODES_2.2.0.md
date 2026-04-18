@@ -1,6 +1,6 @@
 # Multi-Precision Backend Failure Patterns Exposed During LAPACK 3.12.1 Migration
 
-Companion note to `CHANGES.2.2.0.md`. The MPLAPACK 2.1.0 → 2.2.0 re-base onto
+Companion note to `CHANGES.2.2.0.md`. The MPLAPACK 2.1.1 → 2.2.0 re-base onto
 LAPACK 3.12.1 surfaced a recurring set of failure patterns that are not
 visible at IEEE binary64 precision. Each pattern is backend-specific,
 structural (not a one-off bug), and likely to recur in any future LAPACK sync.
