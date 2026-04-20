@@ -76,11 +76,21 @@ RE_MPFR_VARIANT = re.compile(r"^.+\.(default|binary64|binary128)\.out$", re.IGNO
 # Path helpers
 # ---------------------------------------------------------------------------
 
+def normalize_outdir(outdir: str) -> str:
+    """Accept either OUTDIR or results/OUTDIR for the new results layout."""
+    parts = Path(outdir).parts
+    if parts and parts[0] == "results":
+        return str(Path(*parts[1:])) if len(parts) > 1 else ""
+    return outdir
+
+
 def detect_precision(out_path: Path, search_root: Path) -> str:
     """
     Derive a single precision label from an .out file path.
 
     New layout:  <search_root>/results/<outdir>/<backend>/<file>.out
+                 where <outdir> may itself contain subdirectories
+                 (e.g. 2.2.0/Core_i5-8500B_macos15_gcc-15_2_0)
     Old layout:  <search_root>/<backend>/<outdir>/<file>.out
     For mpfr the variant is embedded in the filename suffix.
     """
@@ -89,10 +99,11 @@ def detect_precision(out_path: Path, search_root: Path) -> str:
     except ValueError:
         return "unknown"
 
-    # New layout: results / <outdir> / <backend> / <file>.out  -> parts[2]
+    # New layout: results / <outdir...> / <backend> / <file>.out
+    # Use the file's parent directory so <outdir> can contain slashes.
     # Old layout: <backend> / <outdir> / <file>.out            -> parts[0]
     if len(rel.parts) >= 3 and rel.parts[0] == "results":
-        backend = rel.parts[2]
+        backend = out_path.parent.name
     else:
         backend = rel.parts[0] if rel.parts else "unknown"
 
@@ -166,6 +177,7 @@ def collect_all_records(outdir: str, search_root: Path) -> List[TestRecord]:
 
     New layout (preferred):
         <search_root>/results/<outdir>/<backend>/*.out
+        where <outdir> may contain subdirectories
 
     Old layout (fallback):
         <search_root>/<backend>/<outdir>/*.out
@@ -391,6 +403,8 @@ def build_parser() -> argparse.ArgumentParser:
         metavar="OUTDIR",
         help=(
             "Output subdirectory name (e.g. Ryzen_Threadripper_3970X_gcc_14_2_0_ubuntu22_04). "
+            "May include a version prefix such as 2.2.0/Core_i5-8500B_macos15_gcc-15_2_0. "
+            "A leading results/ prefix is accepted and ignored. "
             "The script first tries SEARCH_ROOT/results/OUTDIR/<backend>/*.out (new layout), "
             "then falls back to SEARCH_ROOT/<backend>/OUTDIR/*.out (old layout)."
         ),
@@ -428,6 +442,7 @@ def build_parser() -> argparse.ArgumentParser:
 def main() -> int:
     parser = build_parser()
     args   = parser.parse_args()
+    outdir = normalize_outdir(args.outdir)
 
     search_root = Path(args.search_root).expanduser().resolve()
     if not search_root.is_dir():
@@ -435,12 +450,12 @@ def main() -> int:
               file=sys.stderr)
         return 1
 
-    records = collect_all_records(args.outdir, search_root)
+    records = collect_all_records(outdir, search_root)
 
     if not records:
         print(
             f"[WARNING] No records extracted. "
-            f"Check that <backend>/{args.outdir}/*.out files exist under {search_root}.",
+            f"Check that <backend>/{outdir}/*.out files exist under {search_root}.",
             file=sys.stderr,
         )
         return 0
@@ -477,6 +492,8 @@ if __name__ == "__main__":
 # BASIC USAGE  (run from within an eig/ or lin/ results-containing directory)
 #   python summarize_mplapack_tests.py <OUTDIR>
 #   python summarize_mplapack_tests.py Ryzen_Threadripper_3970X_gcc_14_2_0_ubuntu22_04
+#   python summarize_mplapack_tests.py results/Ryzen_Threadripper_3970X_gcc_14_2_0_ubuntu22_04
+#   python summarize_mplapack_tests.py 2.2.0/Core_i5-8500B_macos15_gcc-15_2_0
 #
 # WITH EXPLICIT SEARCH ROOT
 #   python summarize_mplapack_tests.py <OUTDIR> /path/to/eig
