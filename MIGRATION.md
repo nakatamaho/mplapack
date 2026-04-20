@@ -51,52 +51,35 @@ export FC=gfortran-mp-14
 
 ---
 
-## 2. MPFR Exponent Range Now Auto-Adjusted with Precision
+## 2. MPFR Exponent Range Is Explicitly Configured
 
 **Impact:** Users who set `MPLAPACK_MPFR_PRECISION` via environment variable, or who rely
 on specific MPFR exponent range (emin/emax) values at runtime.
 
 ### What changed
 
-When `MPLAPACK_MPFR_PRECISION` is set, MPLAPACK now automatically adjusts `emin`/`emax`
-proportionally to the requested precision:
+`MPLAPACK_MPFR_PRECISION` changes the MPFR working precision, but no longer
+auto-adjusts the global MPFR exponent range.  By default, MPLAPACK leaves
+MPFR's current `emin`/`emax` unchanged.
 
-```
-emax =  prec * 64   (clamped to mpfr_get_emax_max())
-emin = -prec * 64   (clamped to mpfr_get_emin_min())
-```
-
-This adjustment is applied only when no explicit exponent range is given via environment
-variables. If `MPLAPACK_MPFR_EMIN` / `MPLAPACK_MPFR_EMAX` are set explicitly, they take
-precedence and no automatic adjustment is made.
-
-In 2.0.x, the exponent range was not adjusted when precision changed, which could cause
-underflow or overflow in high-precision computations where the default MPFR exponent range
-was too narrow for the requested precision.
+If `MPLAPACK_MPFR_EMIN` / `MPLAPACK_MPFR_EMAX` are set explicitly, MPLAPACK
+applies those values during initialization.  The binary64 and binary128 MPFR
+emulation test profiles use this mechanism.
 
 ### Who needs to act
 
-- Users who set `MPLAPACK_MPFR_PRECISION` and relied on the old (fixed) emin/emax.
+- Users who set `MPLAPACK_MPFR_PRECISION` and need an IEEE-like exponent range.
 - Users whose code assumes specific emin/emax values after initialization.
 
 ### Migration
 
-If you need to preserve the old fixed exponent range regardless of precision, set
-`MPLAPACK_MPFR_EMIN` and `MPLAPACK_MPFR_EMAX` explicitly to prevent auto-adjustment:
-
-```sh
-# Disable auto-adjustment by pinning the exponent range explicitly
-export MPLAPACK_MPFR_PRECISION=256
-export MPLAPACK_MPFR_EMIN=-1073741823    # mpfr_get_emin_min() on most platforms
-export MPLAPACK_MPFR_EMAX=1073741823     # mpfr_get_emax_max() on most platforms
-```
-
-If you want the new auto-adjusted range (recommended), simply set precision and let
-MPLAPACK compute emin/emax automatically:
+If you need a specific exponent range, set `MPLAPACK_MPFR_EMIN` and
+`MPLAPACK_MPFR_EMAX` explicitly:
 
 ```sh
 export MPLAPACK_MPFR_PRECISION=256
-# emin/emax will be set to ±16384 (= ±256*64) automatically
+export MPLAPACK_MPFR_EMIN=-16381
+export MPLAPACK_MPFR_EMAX=16384
 ```
 
 To inspect the effective exponent range at runtime:
