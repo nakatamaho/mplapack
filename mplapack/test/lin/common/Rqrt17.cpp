@@ -74,13 +74,12 @@ REAL Rqrt17(fem::str_cref trans, INTEGER const iresid, INTEGER const m, INTEGER 
     REAL rwork[1];
     REAL norma = Rlange("One-norm", m, n, a, lda, rwork);
     REAL smlnum = Rlamch("Safe minimum") / Rlamch("Precision");
-    const REAL one = 1.0;
-    REAL bignum = one / smlnum;
     INTEGER iscl = 0;
     //
     // compute residual and scale it
     //
     Rlacpy("All", nrows, nrhs, b, ldb, c, ldb);
+    const REAL one = 1.0;
     Rgemm(trans.elems(), "No transpose", nrows, nrhs, ncols, -one, a, lda, x, ldx, one, c, ldb);
     REAL normrs = Rlange("Max", nrows, nrhs, c, ldb, rwork);
     INTEGER info = 0;
@@ -89,7 +88,7 @@ REAL Rqrt17(fem::str_cref trans, INTEGER const iresid, INTEGER const m, INTEGER 
         Rlascl("General", 0, 0, normrs, one, nrows, nrhs, c, ldb, info);
     }
     //
-    // compute R'*A
+    // compute R**T * op(A)
     //
     Rgemm("Transpose", trans.elems(), nrhs, ncols, nrows, one, c, ldb, a, lda, zero, work, nrhs);
     //

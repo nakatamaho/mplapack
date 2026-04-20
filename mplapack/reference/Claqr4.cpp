@@ -331,7 +331,7 @@ void Claqr4(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
                     //
                     // ==== Got NS/2 or fewer shifts? Use Clahqr
                     // .    on a trailing principal submatrix to
-                    // .    get more. (Since NS.LE.NSMAX.LE.(N+6)/9,
+                    // .    get more. (Since NS.LE.NSMAX.LE.(N-3)/6,
                     // .    there is enough space below the subdiagonal
                     // .    to fit an NS-by-NS scratch array.) ====
                     //

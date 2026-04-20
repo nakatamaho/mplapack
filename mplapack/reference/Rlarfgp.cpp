@@ -38,6 +38,7 @@
 
 void Rlarfgp(INTEGER const n, REAL &alpha, REAL *x, INTEGER const incx, REAL &tau) {
     const REAL zero = 0.0;
+    REAL eps = 0.0;
     REAL xnorm = 0.0;
     const REAL two = 2.0;
     INTEGER j = 0;
@@ -53,11 +54,12 @@ void Rlarfgp(INTEGER const n, REAL &alpha, REAL *x, INTEGER const incx, REAL &ta
         return;
     }
     //
+    eps = Rlamch("Precision");
     xnorm = Rnrm2(n - 1, x, incx);
     //
-    if (xnorm == zero) {
+    if (xnorm <= eps * abs(alpha)) {
         //
-        // H  =  [+/-1, 0; I], sign chosen so ALPHA >= 0
+        // H  =  [+/-1, 0; I], sign chosen so ALPHA >= 0.
         //
         if (alpha >= zero) {
             // When TAU.eq.ZERO, the vector is special-cased to be

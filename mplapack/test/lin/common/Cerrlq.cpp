@@ -103,31 +103,6 @@ void Cerrlq(fem::str_cref path, INTEGER const nunit) {
     Cgelq2(2, 1, a, 1, b, w, info);
     Chkxer("Cgelq2", infot, nout, lerr, ok);
     //
-    // Cgelqs
-    //
-    srnamt = "Cgelqs";
-    infot = 1;
-    Cgelqs(-1, 0, 0, a, 1, x, b, 1, w, 1, info);
-    Chkxer("Cgelqs", infot, nout, lerr, ok);
-    infot = 2;
-    Cgelqs(0, -1, 0, a, 1, x, b, 1, w, 1, info);
-    Chkxer("Cgelqs", infot, nout, lerr, ok);
-    infot = 2;
-    Cgelqs(2, 1, 0, a, 2, x, b, 1, w, 1, info);
-    Chkxer("Cgelqs", infot, nout, lerr, ok);
-    infot = 3;
-    Cgelqs(0, 0, -1, a, 1, x, b, 1, w, 1, info);
-    Chkxer("Cgelqs", infot, nout, lerr, ok);
-    infot = 5;
-    Cgelqs(2, 2, 0, a, 1, x, b, 2, w, 1, info);
-    Chkxer("Cgelqs", infot, nout, lerr, ok);
-    infot = 8;
-    Cgelqs(1, 2, 0, a, 1, x, b, 1, w, 1, info);
-    Chkxer("Cgelqs", infot, nout, lerr, ok);
-    infot = 10;
-    Cgelqs(1, 1, 2, a, 1, x, b, 1, w, 1, info);
-    Chkxer("Cgelqs", infot, nout, lerr, ok);
-    //
     // Cunglq
     //
     srnamt = "Cunglq";

@@ -655,7 +655,6 @@ void Mutils_test_csqrt() {
     }
 }
 
-
 void Mutils_test_highcond() {
     for (int n = 2; n < MAXSIZE; n++) {
         REAL_REF *A_ref = new REAL_REF[n * n];
@@ -688,7 +687,7 @@ void Mutils_test() {
     Mutils_test_ccos();
     Mutils_test_cexp();
     Mutils_test_csqrt();
-    //  Mutils_test_highcond();
+    // Mutils_test_highcond();
 }
 
 int main(int argc, char *argv[]) {

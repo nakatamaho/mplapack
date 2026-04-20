@@ -44,24 +44,34 @@ void Rlatsqr(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const n
     //
     bool lquery = (lwork == -1);
     //
+    INTEGER minmn = min(m, n);
+    INTEGER lwmin = 0;
+    if (minmn == 0) {
+        lwmin = 1;
+    } else {
+        lwmin = n * nb;
+    }
+    //
     if (m < 0) {
         info = -1;
     } else if (n < 0 || m < n) {
         info = -2;
-    } else if (mb <= n) {
+    } else if (mb < 1) {
         info = -3;
     } else if (nb < 1 || (nb > n && n > 0)) {
         info = -4;
     } else if (lda < max((INTEGER)1, m)) {
-        info = -5;
+        info = -6;
     } else if (ldt < nb) {
         info = -8;
-    } else if (lwork < (n * nb) && (!lquery)) {
+    } else if (lwork < lwmin && (!lquery)) {
         info = -10;
     }
+    //
     if (info == 0) {
-        work[1 - 1] = nb * n;
+        work[1 - 1] = lwmin;
     }
+    //
     if (info != 0) {
         Mxerbla("Rlatsqr", -info);
         return;
@@ -71,7 +81,7 @@ void Rlatsqr(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const n
     //
     // Quick return if possible
     //
-    if (min(m, n) == 0) {
+    if (minmn == 0) {
         return;
     }
     //
@@ -105,7 +115,7 @@ void Rlatsqr(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const n
         Rtpqrt(kk, n, 0, nb, &a[0], lda, &a[(ii - 1)], lda, &t[((ctr * n + 1) - 1) * ldt], ldt, work, info);
     }
     //
-    work[1 - 1] = n * nb;
+    work[1 - 1] = lwmin;
     //
     // End of Rlatsqr
     //

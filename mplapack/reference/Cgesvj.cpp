@@ -43,6 +43,9 @@ void Cgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
     bool applv = false;
     bool upper = false;
     bool lower = false;
+    INTEGER minmn = 0;
+    INTEGER lwmin = 0;
+    INTEGER lrwmin = 0;
     bool lquery = false;
     const REAL one = 1.0;
     REAL ctol = 0.0;
@@ -115,6 +118,15 @@ void Cgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
     upper = Mlsame(joba, "U");
     lower = Mlsame(joba, "L");
     //
+    minmn = min(m, n);
+    if (minmn == 0) {
+        lwmin = 1;
+        lrwmin = 1;
+    } else {
+        lwmin = m + n;
+        lrwmin = max((INTEGER)6, n);
+    }
+    //
     lquery = (lwork == -1) || (lrwork == -1);
     if (!(upper || lower || Mlsame(joba, "G"))) {
         info = -1;
@@ -134,9 +146,9 @@ void Cgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
         info = -11;
     } else if (uctol && (rwork[1 - 1] <= one)) {
         info = -12;
-    } else if ((lwork < (m + n)) && (!lquery)) {
+    } else if (lwork < lwmin && (!lquery)) {
         info = -13;
-    } else if ((lrwork < max(n, (INTEGER)6)) && (!lquery)) {
+    } else if (lrwork < lrwmin && (!lquery)) {
         info = -15;
     } else {
         info = 0;
@@ -147,14 +159,14 @@ void Cgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
         Mxerbla("Cgesvj", -info);
         return;
     } else if (lquery) {
-        cwork[1 - 1] = m + n;
-        rwork[1 - 1] = max(n, (INTEGER)6);
+        cwork[1 - 1] = lwmin;
+        rwork[1 - 1] = castREAL(lrwmin);
         return;
     }
     //
     // #:) Quick return for void matrix
     //
-    if ((m == 0) || (n == 0)) {
+    if (minmn == 0) {
         return;
     }
     //
@@ -237,6 +249,12 @@ void Cgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
                 Mxerbla("Cgesvj", -info);
                 return;
             }
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+            if (aaqq == zero) {
+                sva[p - 1] = zero;
+                continue;
+            }
+#endif
             aaqq = sqrt(aaqq);
             if ((aapp < (big / aaqq)) && noscale) {
                 sva[p - 1] = aapp * aaqq;
@@ -262,6 +280,12 @@ void Cgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
                 Mxerbla("Cgesvj", -info);
                 return;
             }
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+            if (aaqq == zero) {
+                sva[p - 1] = zero;
+                continue;
+            }
+#endif
             aaqq = sqrt(aaqq);
             if ((aapp < (big / aaqq)) && noscale) {
                 sva[p - 1] = aapp * aaqq;
@@ -287,6 +311,12 @@ void Cgesvj(const char *joba, const char *jobu, const char *jobv, INTEGER const 
                 Mxerbla("Cgesvj", -info);
                 return;
             }
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+            if (aaqq == zero) {
+                sva[p - 1] = zero;
+                continue;
+            }
+#endif
             aaqq = sqrt(aaqq);
             if ((aapp < (big / aaqq)) && noscale) {
                 sva[p - 1] = aapp * aaqq;

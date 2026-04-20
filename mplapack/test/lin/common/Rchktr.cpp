@@ -43,13 +43,14 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, INTEGER const /* nmax */, REAL *a, REAL *ainv, REAL *b, REAL *x, REAL *xact, REAL *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
+void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nns, INTEGER *nsval, REAL const thresh, bool const tsterr, INTEGER const nmax, REAL *a, REAL *ainv, REAL *b, REAL *x, REAL *xact, REAL *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
     common cmn;
     common_write write(cmn);
     static INTEGER iseedy[4] = {1988, 1989, 1990, 1991};
     static fem::str<1> uplos[2] = {"U", "L"};
     static fem::str<1> transs[3] = {"N", "T", "C"};
     fem::str<3> path;
+    REAL bignum = 0.0;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -74,7 +75,7 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     const REAL one = 1.0;
     REAL rcondi = 0.0;
     REAL rcondo = 0.0;
-    const INTEGER ntests = 9;
+    const INTEGER ntests = 10;
     REAL result[ntests];
     INTEGER irhs = 0;
     INTEGER nrhs = 0;
@@ -88,11 +89,13 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     REAL rcond = 0.0;
     const INTEGER ntypes = 18;
     REAL scale = 0.0;
+    REAL scale3[2];
+    REAL res = 0.0;
     //
     static const char *format_9999 = "(' UPLO=''',a1,''', DIAG=''',a1,''', N=',i5,', NB=',i4,', type ',i2,"
                                      "', test(',i2,')= ',g12.5)";
     static const char *format_9998 = "(' UPLO=''',a1,''', TRANS=''',a1,''', DIAG=''',a1,''', N=',i5,', NB=',i4,"
-                                     "', type ',i2,',      test(',i2,')= ',g12.5)";
+                                     "', type ',i2,', test(',i2,')= ',g12.5)";
     static const char *format_9997 = "(' NORM=''',a1,''', UPLO =''',a1,''', N=',i5,',',11x,' type ',i2,"
                                      "', test(',i2,')=',g12.5)";
     static const char *format_9996 = "(1x,a,'( ''',a1,''', ''',a1,''', ''',a1,''', ''',a1,''',',i5,"
@@ -102,6 +105,7 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
     //
     path(1, 1) = "Double precision";
     path(2, 3) = "TR";
+    bignum = Rlamch("Overflow") / Rlamch("Precision");
     nrun = 0;
     nfail = 0;
     nerrs = 0;
@@ -378,6 +382,25 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                     //
                     Rtrt03(uplo, trans, diag, n, 1, a, lda, scale, rwork, one, &b[(n + 1) - 1], lda, x, lda, work, result[9 - 1]);
                     //
+                    // +    TEST 10
+                    // Solve op(A)*X = B
+                    //
+                    srnamt = "Rlatrs3";
+                    Rcopy(n, x, 1, b, 1);
+                    Rcopy(n, x, 1, &b[(n + 1) - 1], 1);
+                    Rscal(n, bignum, &b[(n + 1) - 1], 1);
+                    Rlatrs3(uplo.elems, trans.elems, diag.elems, "N", n, 2, a, lda, b, max((INTEGER)1, n), scale3, rwork, work, nmax, info);
+                    //
+                    // Check error code from Rlatrs3.
+                    //
+                    if (info != 0) {
+                        Alaerh(path, "Rlatrs3", info, 0, uplo + trans + diag + "N", n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    }
+                    Rtrt03(uplo, trans, diag, n, 1, a, lda, scale3[1 - 1], rwork, one, &b[1 - 1], lda, x, lda, work, result[10 - 1]);
+                    Rscal(n, bignum, x, 1);
+                    Rtrt03(uplo, trans, diag, n, 1, a, lda, scale3[2 - 1], rwork, one, &b[(n + 1) - 1], lda, x, lda, work, res);
+                    result[10 - 1] = max(result[10 - 1], res);
+                    //
                     // Print information about the tests that did not pass
                     // the threshold.
                     //
@@ -395,7 +418,14 @@ void Rchktr(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nnb, IN
                         write(nout, format_9996), "Rlatrs", uplo, trans, diag, "Y", n, imat, 9, result[9 - 1];
                         nfail++;
                     }
-                    nrun += 2;
+                    if (result[10 - 1] >= thresh) {
+                        if (nfail == 0 && nerrs == 0) {
+                            Alahd(nout, path);
+                        }
+                        write(nout, format_9996), "Rlatrs3", uplo, trans, diag, "N", n, imat, 10, result[10 - 1];
+                        nfail++;
+                    }
+                    nrun += 3;
                 }
             }
         statement_110:;

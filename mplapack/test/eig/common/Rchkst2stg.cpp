@@ -200,7 +200,6 @@ void Rchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
     //
     unfl = Rlamch("Safe minimum");
     ovfl = one / unfl;
-    Rlabad(unfl, ovfl);
     ulp = Rlamch("Epsilon") * Rlamch("Base");
     ulpinv = one / ulp;
     log2ui = castINTEGER(log(ulpinv) / log(two));
@@ -1330,7 +1329,7 @@ void Rchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     }
                 }
                 //
-                // Do Test 34
+                // Do Test 37
                 //
                 temp1 = zero;
                 temp2 = zero;
@@ -1378,6 +1377,7 @@ void Rchkst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
     // Summary
     //
     Rlasum("DST", nounit, nerrs, ntestt);
+    //
     // End of Rchkst2stg
     //
 }

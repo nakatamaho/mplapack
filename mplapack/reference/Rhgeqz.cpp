@@ -35,6 +35,8 @@
 
 #include <mpblas.h>
 #include <mplapack.h>
+#include <mplapack_arithmetic_params.h>
+#include <mplapack_arithmetic_params_double.h>
 
 void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const n, INTEGER const ilo, INTEGER const ihi, REAL *h, INTEGER const ldh, REAL *t, INTEGER const ldt, REAL *alphar, REAL *alphai, REAL *beta, REAL *q, INTEGER const ldq, REAL *z, INTEGER const ldz, REAL *work, INTEGER const lwork, INTEGER &info) {
     bool ilschr = false;
@@ -63,11 +65,16 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
     INTEGER ilastm = 0;
     INTEGER iiter = 0;
     REAL eshift = 0.0;
+    const INTEGER maxit_base = 30;
     INTEGER maxit = 0;
+    const INTEGER maxit_cap = 1000;
     INTEGER jiter = 0;
+    REAL eps = 0.0;
+    REAL eps_ref = 0.0;
+    REAL scale_ratio = 0.0;
     bool ilazro = false;
-    REAL temp = 0.0;
     bool ilazr2 = false;
+    REAL temp = 0.0;
     REAL temp2 = 0.0;
     REAL tempr = 0.0;
     INTEGER jch = 0;
@@ -135,6 +142,8 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
     REAL u12l = 0.0;
     REAL v[3];
     REAL tau = 0.0;
+    REAL t2 = 0.0;
+    REAL t3 = 0.0;
     bool ilpivt = false;
     REAL u1 = 0.0;
     REAL u2 = 0.0;
@@ -238,7 +247,9 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
     in = ihi + 1 - ilo;
     safmin = Rlamch("S");
     safmax = one / safmin;
-    ulp = Rlamch("E") * Rlamch("B");
+    eps = Rlamch("E");
+    ulp = eps * Rlamch("B");
+    eps_ref = mplapack::get_arithmetic_params<double>().eps;
     anorm = Rlanhs("F", in, &h[(ilo - 1) + (ilo - 1) * ldh], ldh, work);
     bnorm = Rlanhs("F", in, &t[(ilo - 1) + (ilo - 1) * ldt], ldt, work);
     atol = max(safmin, ulp * anorm);
@@ -301,7 +312,16 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
     }
     iiter = 0;
     eshift = zero;
-    maxit = 30 * (ihi - ilo + 1);
+    // maxit is tuned for double precision. For high-precision backends,
+    // scale the QZ sweep limit with log(1/eps).
+    maxit = maxit_base * in;
+    scale_ratio = log(eps) / log(eps_ref);
+    if (scale_ratio >= one) {
+        maxit = iceil(castREAL(maxit_base * in) * scale_ratio);
+    }
+    if (maxit > maxit_cap) {
+        maxit = maxit_cap;
+    }
     //
     for (jiter = 1; jiter <= maxit; jiter = jiter + 1) {
         //
@@ -323,7 +343,7 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
             }
         }
         //
-        if (abs(t[(ilast - 1) + (ilast - 1) * ldt]) <= max(safmin, ulp * (abs(t[((ilast - 1) - 1) + (ilast - 1) * ldt]) + abs(t[((ilast - 1) - 1) + ((ilast - 1) - 1) * ldt])))) {
+        if (abs(t[(ilast - 1) + (ilast - 1) * ldt]) <= btol) {
             t[(ilast - 1) + (ilast - 1) * ldt] = zero;
             goto statement_70;
         }
@@ -347,11 +367,7 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
             //
             // Test 2: for T(j,j)=0
             //
-            temp = abs(t[(j - 1) + ((j + 1) - 1) * ldt]);
-            if (j > ilo) {
-                temp += abs(t[((j - 1) - 1) + (j - 1) * ldt]);
-            }
-            if (abs(t[(j - 1) + (j - 1) * ldt]) < max(safmin, ulp * temp)) {
+            if (abs(t[(j - 1) + (j - 1) * ldt]) < btol) {
                 t[(j - 1) + (j - 1) * ldt] = zero;
                 //
                 // Test 1a: Check for 2 consecutive small subdiagonals in A
@@ -893,22 +909,24 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
                     h[((j + 2) - 1) + ((j - 1) - 1) * ldh] = zero;
                 }
                 //
+                t2 = tau * v[2 - 1];
+                t3 = tau * v[3 - 1];
                 for (jc = j; jc <= ilastm; jc = jc + 1) {
-                    temp = tau * (h[(j - 1) + (jc - 1) * ldh] + v[2 - 1] * h[((j + 1) - 1) + (jc - 1) * ldh] + v[3 - 1] * h[((j + 2) - 1) + (jc - 1) * ldh]);
-                    h[(j - 1) + (jc - 1) * ldh] = h[(j - 1) + (jc - 1) * ldh] - temp;
-                    h[((j + 1) - 1) + (jc - 1) * ldh] = h[((j + 1) - 1) + (jc - 1) * ldh] - temp * v[2 - 1];
-                    h[((j + 2) - 1) + (jc - 1) * ldh] = h[((j + 2) - 1) + (jc - 1) * ldh] - temp * v[3 - 1];
-                    temp2 = tau * (t[(j - 1) + (jc - 1) * ldt] + v[2 - 1] * t[((j + 1) - 1) + (jc - 1) * ldt] + v[3 - 1] * t[((j + 2) - 1) + (jc - 1) * ldt]);
-                    t[(j - 1) + (jc - 1) * ldt] = t[(j - 1) + (jc - 1) * ldt] - temp2;
-                    t[((j + 1) - 1) + (jc - 1) * ldt] = t[((j + 1) - 1) + (jc - 1) * ldt] - temp2 * v[2 - 1];
-                    t[((j + 2) - 1) + (jc - 1) * ldt] = t[((j + 2) - 1) + (jc - 1) * ldt] - temp2 * v[3 - 1];
+                    temp = h[(j - 1) + (jc - 1) * ldh] + v[2 - 1] * h[((j + 1) - 1) + (jc - 1) * ldh] + v[3 - 1] * h[((j + 2) - 1) + (jc - 1) * ldh];
+                    h[(j - 1) + (jc - 1) * ldh] = h[(j - 1) + (jc - 1) * ldh] - temp * tau;
+                    h[((j + 1) - 1) + (jc - 1) * ldh] = h[((j + 1) - 1) + (jc - 1) * ldh] - temp * t2;
+                    h[((j + 2) - 1) + (jc - 1) * ldh] = h[((j + 2) - 1) + (jc - 1) * ldh] - temp * t3;
+                    temp2 = t[(j - 1) + (jc - 1) * ldt] + v[2 - 1] * t[((j + 1) - 1) + (jc - 1) * ldt] + v[3 - 1] * t[((j + 2) - 1) + (jc - 1) * ldt];
+                    t[(j - 1) + (jc - 1) * ldt] = t[(j - 1) + (jc - 1) * ldt] - temp2 * tau;
+                    t[((j + 1) - 1) + (jc - 1) * ldt] = t[((j + 1) - 1) + (jc - 1) * ldt] - temp2 * t2;
+                    t[((j + 2) - 1) + (jc - 1) * ldt] = t[((j + 2) - 1) + (jc - 1) * ldt] - temp2 * t3;
                 }
                 if (ilq) {
                     for (jr = 1; jr <= n; jr = jr + 1) {
-                        temp = tau * (q[(jr - 1) + (j - 1) * ldq] + v[2 - 1] * q[(jr - 1) + ((j + 1) - 1) * ldq] + v[3 - 1] * q[(jr - 1) + ((j + 2) - 1) * ldq]);
-                        q[(jr - 1) + (j - 1) * ldq] = q[(jr - 1) + (j - 1) * ldq] - temp;
-                        q[(jr - 1) + ((j + 1) - 1) * ldq] = q[(jr - 1) + ((j + 1) - 1) * ldq] - temp * v[2 - 1];
-                        q[(jr - 1) + ((j + 2) - 1) * ldq] = q[(jr - 1) + ((j + 2) - 1) * ldq] - temp * v[3 - 1];
+                        temp = q[(jr - 1) + (j - 1) * ldq] + v[2 - 1] * q[(jr - 1) + ((j + 1) - 1) * ldq] + v[3 - 1] * q[(jr - 1) + ((j + 2) - 1) * ldq];
+                        q[(jr - 1) + (j - 1) * ldq] = q[(jr - 1) + (j - 1) * ldq] - temp * tau;
+                        q[(jr - 1) + ((j + 1) - 1) * ldq] = q[(jr - 1) + ((j + 1) - 1) * ldq] - temp * t2;
+                        q[(jr - 1) + ((j + 2) - 1) * ldq] = q[(jr - 1) + ((j + 2) - 1) * ldq] - temp * t3;
                     }
                 }
                 //
@@ -998,24 +1016,26 @@ void Rhgeqz(const char *job, const char *compq, const char *compz, INTEGER const
                 //
                 // Apply transformations from the right.
                 //
+                t2 = tau * v[2 - 1];
+                t3 = tau * v[3 - 1];
                 for (jr = ifrstm; jr <= min(j + 3, ilast); jr = jr + 1) {
-                    temp = tau * (h[(jr - 1) + (j - 1) * ldh] + v[2 - 1] * h[(jr - 1) + ((j + 1) - 1) * ldh] + v[3 - 1] * h[(jr - 1) + ((j + 2) - 1) * ldh]);
-                    h[(jr - 1) + (j - 1) * ldh] = h[(jr - 1) + (j - 1) * ldh] - temp;
-                    h[(jr - 1) + ((j + 1) - 1) * ldh] = h[(jr - 1) + ((j + 1) - 1) * ldh] - temp * v[2 - 1];
-                    h[(jr - 1) + ((j + 2) - 1) * ldh] = h[(jr - 1) + ((j + 2) - 1) * ldh] - temp * v[3 - 1];
+                    temp = h[(jr - 1) + (j - 1) * ldh] + v[2 - 1] * h[(jr - 1) + ((j + 1) - 1) * ldh] + v[3 - 1] * h[(jr - 1) + ((j + 2) - 1) * ldh];
+                    h[(jr - 1) + (j - 1) * ldh] = h[(jr - 1) + (j - 1) * ldh] - temp * tau;
+                    h[(jr - 1) + ((j + 1) - 1) * ldh] = h[(jr - 1) + ((j + 1) - 1) * ldh] - temp * t2;
+                    h[(jr - 1) + ((j + 2) - 1) * ldh] = h[(jr - 1) + ((j + 2) - 1) * ldh] - temp * t3;
                 }
                 for (jr = ifrstm; jr <= j + 2; jr = jr + 1) {
-                    temp = tau * (t[(jr - 1) + (j - 1) * ldt] + v[2 - 1] * t[(jr - 1) + ((j + 1) - 1) * ldt] + v[3 - 1] * t[(jr - 1) + ((j + 2) - 1) * ldt]);
-                    t[(jr - 1) + (j - 1) * ldt] = t[(jr - 1) + (j - 1) * ldt] - temp;
-                    t[(jr - 1) + ((j + 1) - 1) * ldt] = t[(jr - 1) + ((j + 1) - 1) * ldt] - temp * v[2 - 1];
-                    t[(jr - 1) + ((j + 2) - 1) * ldt] = t[(jr - 1) + ((j + 2) - 1) * ldt] - temp * v[3 - 1];
+                    temp = t[(jr - 1) + (j - 1) * ldt] + v[2 - 1] * t[(jr - 1) + ((j + 1) - 1) * ldt] + v[3 - 1] * t[(jr - 1) + ((j + 2) - 1) * ldt];
+                    t[(jr - 1) + (j - 1) * ldt] = t[(jr - 1) + (j - 1) * ldt] - temp * tau;
+                    t[(jr - 1) + ((j + 1) - 1) * ldt] = t[(jr - 1) + ((j + 1) - 1) * ldt] - temp * t2;
+                    t[(jr - 1) + ((j + 2) - 1) * ldt] = t[(jr - 1) + ((j + 2) - 1) * ldt] - temp * t3;
                 }
                 if (ilz) {
                     for (jr = 1; jr <= n; jr = jr + 1) {
-                        temp = tau * (z[(jr - 1) + (j - 1) * ldz] + v[2 - 1] * z[(jr - 1) + ((j + 1) - 1) * ldz] + v[3 - 1] * z[(jr - 1) + ((j + 2) - 1) * ldz]);
-                        z[(jr - 1) + (j - 1) * ldz] = z[(jr - 1) + (j - 1) * ldz] - temp;
-                        z[(jr - 1) + ((j + 1) - 1) * ldz] = z[(jr - 1) + ((j + 1) - 1) * ldz] - temp * v[2 - 1];
-                        z[(jr - 1) + ((j + 2) - 1) * ldz] = z[(jr - 1) + ((j + 2) - 1) * ldz] - temp * v[3 - 1];
+                        temp = z[(jr - 1) + (j - 1) * ldz] + v[2 - 1] * z[(jr - 1) + ((j + 1) - 1) * ldz] + v[3 - 1] * z[(jr - 1) + ((j + 2) - 1) * ldz];
+                        z[(jr - 1) + (j - 1) * ldz] = z[(jr - 1) + (j - 1) * ldz] - temp * tau;
+                        z[(jr - 1) + ((j + 1) - 1) * ldz] = z[(jr - 1) + ((j + 1) - 1) * ldz] - temp * t2;
+                        z[(jr - 1) + ((j + 2) - 1) * ldz] = z[(jr - 1) + ((j + 2) - 1) * ldz] - temp * t3;
                     }
                 }
                 t[((j + 1) - 1) + (j - 1) * ldt] = zero;

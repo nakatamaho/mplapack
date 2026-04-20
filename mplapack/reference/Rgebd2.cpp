@@ -54,7 +54,6 @@ void Rgebd2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
     }
     //
     INTEGER i = 0;
-    const REAL one = 1.0;
     const REAL zero = 0.0;
     if (m >= n) {
         //
@@ -66,14 +65,12 @@ void Rgebd2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
             //
             Rlarfg(m - i + 1, a[(i - 1) + (i - 1) * lda], &a[(min(i + 1, m) - 1) + (i - 1) * lda], 1, tauq[i - 1]);
             d[i - 1] = a[(i - 1) + (i - 1) * lda];
-            a[(i - 1) + (i - 1) * lda] = one;
             //
             // Apply H(i) to A(i:m,i+1:n) from the left
             //
             if (i < n) {
-                Rlarf("Left", m - i + 1, n - i, &a[(i - 1) + (i - 1) * lda], 1, tauq[i - 1], &a[(i - 1) + ((i + 1) - 1) * lda], lda, work);
+                Rlarf1f("Left", m - i + 1, n - i, &a[(i - 1) + (i - 1) * lda], 1, tauq[i - 1], &a[(i - 1) + ((i + 1) - 1) * lda], lda, work);
             }
-            a[(i - 1) + (i - 1) * lda] = d[i - 1];
             //
             if (i < n) {
                 //
@@ -82,12 +79,10 @@ void Rgebd2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
                 //
                 Rlarfg(n - i, a[(i - 1) + ((i + 1) - 1) * lda], &a[(i - 1) + (min(i + 2, n) - 1) * lda], lda, taup[i - 1]);
                 e[i - 1] = a[(i - 1) + ((i + 1) - 1) * lda];
-                a[(i - 1) + ((i + 1) - 1) * lda] = one;
                 //
                 // Apply G(i) to A(i+1:m,i+1:n) from the right
                 //
-                Rlarf("Right", m - i, n - i, &a[(i - 1) + ((i + 1) - 1) * lda], lda, taup[i - 1], &a[((i + 1) - 1) + ((i + 1) - 1) * lda], lda, work);
-                a[(i - 1) + ((i + 1) - 1) * lda] = e[i - 1];
+                Rlarf1f("Right", m - i, n - i, &a[(i - 1) + ((i + 1) - 1) * lda], lda, taup[i - 1], &a[((i + 1) - 1) + ((i + 1) - 1) * lda], lda, work);
             } else {
                 taup[i - 1] = zero;
             }
@@ -102,14 +97,12 @@ void Rgebd2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
             //
             Rlarfg(n - i + 1, a[(i - 1) + (i - 1) * lda], &a[(i - 1) + (min(i + 1, n) - 1) * lda], lda, taup[i - 1]);
             d[i - 1] = a[(i - 1) + (i - 1) * lda];
-            a[(i - 1) + (i - 1) * lda] = one;
             //
             // Apply G(i) to A(i+1:m,i:n) from the right
             //
             if (i < m) {
-                Rlarf("Right", m - i, n - i + 1, &a[(i - 1) + (i - 1) * lda], lda, taup[i - 1], &a[((i + 1) - 1) + (i - 1) * lda], lda, work);
+                Rlarf1f("Right", m - i, n - i + 1, &a[(i - 1) + (i - 1) * lda], lda, taup[i - 1], &a[((i + 1) - 1) + (i - 1) * lda], lda, work);
             }
-            a[(i - 1) + (i - 1) * lda] = d[i - 1];
             //
             if (i < m) {
                 //
@@ -118,12 +111,10 @@ void Rgebd2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
                 //
                 Rlarfg(m - i, a[((i + 1) - 1) + (i - 1) * lda], &a[(min(i + 2, m) - 1) + (i - 1) * lda], 1, tauq[i - 1]);
                 e[i - 1] = a[((i + 1) - 1) + (i - 1) * lda];
-                a[((i + 1) - 1) + (i - 1) * lda] = one;
                 //
                 // Apply H(i) to A(i+1:m,i+1:n) from the left
                 //
-                Rlarf("Left", m - i, n - i, &a[((i + 1) - 1) + (i - 1) * lda], 1, tauq[i - 1], &a[((i + 1) - 1) + ((i + 1) - 1) * lda], lda, work);
-                a[((i + 1) - 1) + (i - 1) * lda] = e[i - 1];
+                Rlarf1f("Left", m - i, n - i, &a[((i + 1) - 1) + (i - 1) * lda], 1, tauq[i - 1], &a[((i + 1) - 1) + ((i + 1) - 1) * lda], lda, work);
             } else {
                 tauq[i - 1] = zero;
             }

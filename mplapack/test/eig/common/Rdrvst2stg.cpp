@@ -162,7 +162,6 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
     //
     unfl = Rlamch("Safe minimum");
     ovfl = Rlamch("Overflow");
-    Rlabad(unfl, ovfl);
     ulp = Rlamch("Epsilon") * Rlamch("Base");
     ulpinv = one / ulp;
     rtunfl = sqrt(unfl);
@@ -2191,9 +2190,9 @@ void Rdrvst2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
                 result[ntest - 1] = (temp1 + temp2) / max(unfl, temp3 * ulp);
                 //
-            statement_1720:
                 Rlacpy(" ", n, n, v, ldu, a, lda);
-                //
+            //
+            statement_1720:;
             }
             //
             // End of Loop -- Check for RESULT(j) > THRESH

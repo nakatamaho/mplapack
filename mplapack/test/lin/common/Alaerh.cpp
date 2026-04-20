@@ -300,6 +300,11 @@ void Alaerh(fem::str_cref path, fem::str_cref subnam, INTEGER const info, INTEGE
     //
     static const char *format_9949 = "(' ==> Doing only the condition estimate for this case')";
     //
+    // SUBNAM, INFO, M, N, NB, IMAT
+    //
+    static const char *format_9930 = "(' *** Error code from ',a,'=',i5,/,' ==> M =',i5,', N =',i5,', NX =',i5,"
+                                     "', NB =',i4,', type ',i2)";
+    //
     if (info == 0) {
         return;
     }
@@ -770,6 +775,16 @@ void Alaerh(fem::str_cref path, fem::str_cref subnam, INTEGER const info, INTEGE
         //
         if (Mlsamen(3, c3.elems, "QRS")) {
             write(nout, format_9974), subnam(1, fem::len_trim(subnam)), info, m, n, kl, n5, imat;
+        } else if (Mlsamen(5, subnam(2, 6).elems(), "LATMS")) {
+            write(nout, format_9978), subnam(1, fem::len_trim(subnam)), info, m, n, imat;
+        }
+        //
+    } else if (Mlsamen(2, p2.elems, "QK")) {
+        //
+        // xQK:  truncated QR factorization with pivoting
+        //
+        if (Mlsamen(7, subnam(2, 8).elems(), "GEQP3RK")) {
+            write(nout, format_9930), subnam(1, fem::len_trim(subnam)), info, m, n, kl, n5, imat;
         } else if (Mlsamen(5, subnam(2, 6).elems(), "LATMS")) {
             write(nout, format_9978), subnam(1, fem::len_trim(subnam)), info, m, n, imat;
         }

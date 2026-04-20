@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2010
+ * Copyright (c) 2008-2026
  *	Nakata, Maho
  * 	All rights reserved.
  *
@@ -93,6 +93,130 @@ inline void sprintnum_short(char *buf, mpcomplex ctmp) {
     mpfr_snprintf(buf, __MPLAPACK_BUFLEN__, MPFR_SHORT_FORMAT MPFR_SHORT_FORMAT "i", mpfr_ptr(cre), mpfr_ptr(cim));
     return;
 }
+
+inline void sprinthex_mpfr_fixed_raw(char *buf, size_t n, mpfr_ptr x) {
+    if (n == 0) {
+        return;
+    }
+
+    if (mpfr_nan_p(x)) {
+        std::snprintf(buf, n, "@NaN@");
+        return;
+    }
+    if (mpfr_inf_p(x)) {
+        std::snprintf(buf, n, "%s@Inf@", mpfr_sgn(x) < 0 ? "-" : "+");
+        return;
+    }
+
+    const mpfr_prec_t prec = mpfr_get_prec(x);
+    const size_t frac_hex_digits = static_cast<size_t>((prec - 1 + 3) / 4);
+
+    if (mpfr_zero_p(x)) {
+        std::string frac(frac_hex_digits, '0');
+        std::snprintf(buf, n, "%s0x0.%sp+0000", mpfr_sgn(x) < 0 ? "-" : "+", frac.c_str());
+        return;
+    }
+
+    mpfr_exp_t exp16 = 0;
+    char *mant_raw = mpfr_get_str(nullptr, &exp16, 16, 0, x, MPFR_RNDN);
+    if (mant_raw == nullptr) {
+        std::snprintf(buf, n, "<mpfr_get_str failed>");
+        return;
+    }
+
+    const bool negative = (mant_raw[0] == '-');
+    const char *digits = negative ? mant_raw + 1 : mant_raw;
+    if (digits[0] == '\0') {
+        mpfr_free_str(mant_raw);
+        std::snprintf(buf, n, "<empty mantissa>");
+        return;
+    }
+
+    auto hex_value = [](char c) -> int {
+        if (c >= '0' && c <= '9') {
+            return c - '0';
+        }
+        if (c >= 'a' && c <= 'f') {
+            return 10 + (c - 'a');
+        }
+        if (c >= 'A' && c <= 'F') {
+            return 10 + (c - 'A');
+        }
+        return 0;
+    };
+
+    auto hex_char = [](int v) -> char {
+        static const char table[] = "0123456789abcdef";
+        return table[v & 0xf];
+    };
+
+    std::string all_digits(digits);
+    const int first_nibble = hex_value(all_digits[0]);
+
+    int lead_shift = 0;
+    if (first_nibble >= 8) {
+        lead_shift = 3;
+    } else if (first_nibble >= 4) {
+        lead_shift = 2;
+    } else if (first_nibble >= 2) {
+        lead_shift = 1;
+    } else {
+        lead_shift = 0;
+    }
+
+    const long exp2 = static_cast<long>(4 * (exp16 - 1) + lead_shift);
+
+    std::string bitstream;
+    bitstream.reserve(all_digits.size() * 4 + 4);
+    for (size_t i = 0; i < all_digits.size(); ++i) {
+        const int v = hex_value(all_digits[i]);
+        bitstream.push_back((v & 8) ? '1' : '0');
+        bitstream.push_back((v & 4) ? '1' : '0');
+        bitstream.push_back((v & 2) ? '1' : '0');
+        bitstream.push_back((v & 1) ? '1' : '0');
+    }
+
+    const size_t first_one_pos = bitstream.find('1');
+    if (first_one_pos == std::string::npos) {
+        mpfr_free_str(mant_raw);
+        std::string frac(frac_hex_digits, '0');
+        std::snprintf(buf, n, "%s0x0.%sp+0000", negative ? "-" : "+", frac.c_str());
+        return;
+    }
+
+    std::string frac_bits = bitstream.substr(first_one_pos + 1);
+    const size_t needed_bits = frac_hex_digits * 4;
+    if (frac_bits.size() < needed_bits) {
+        frac_bits.append(needed_bits - frac_bits.size(), '0');
+    } else if (frac_bits.size() > needed_bits) {
+        frac_bits.resize(needed_bits);
+    }
+
+    std::string frac;
+    frac.reserve(frac_hex_digits);
+    for (size_t i = 0; i < needed_bits; i += 4) {
+        int v = 0;
+        if (frac_bits[i + 0] == '1')
+            v |= 8;
+        if (frac_bits[i + 1] == '1')
+            v |= 4;
+        if (frac_bits[i + 2] == '1')
+            v |= 2;
+        if (frac_bits[i + 3] == '1')
+            v |= 1;
+        frac.push_back(hex_char(v));
+    }
+
+    std::snprintf(buf, n, "%s0x1.%sp%+05ld", negative ? "-" : "+", frac.c_str(), exp2);
+
+    mpfr_free_str(mant_raw);
+}
+
+inline void sprinthex_mpfr_fixed(char *buf, size_t n, const mpfr::mpreal &x) {
+    mpfr_ptr px = const_cast<mpfr::mpreal &>(x);
+    sprinthex_mpfr_fixed_raw(buf, n, px);
+}
+
 #endif
 
 inline mpreal pow2(mpreal a) {

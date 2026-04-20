@@ -790,7 +790,9 @@ def break_line_if_necessary(callback, line, max_len=80, min_len=70):
 
     # Do not break lines that contain slice markers.
     # These must stay on a single physical line for pattern matching.
-    if "__SLICE2D__" in line or "__SLICE__" in line:
+    if ("__FABLE_UNHANDLED_SLICE" in line
+            or "__SLICE2D__" in line
+            or "__SLICE__" in line):
         cb_finalize(line)
         return
 
@@ -1108,11 +1110,6 @@ def convert_token(vmap, leading, tok, had_str_concat=None, prev_operand_is_strin
         raw = vmap.get(tv, tv)
         # Case-insensitive lookup in MPLAPACK name map (routine and helper names).
         lname = raw.lower()
-        # Special-case LAPACK F90 helper (from LA_XISNAN module).
-        # We translate LA_ISNAN(x) into a C++ helper Mla_isnan(x).
-        # The caller must provide Mla_isnan for the active REAL type.
-        if lname == "la_isnan":
-            return "Mla_isnan"
         mapped = _MPLAPACK_NAME_MAP.get(lname)
         if mapped is not None:
             return mapped
@@ -3189,6 +3186,13 @@ def rewrite_intrinsics(text: str) -> str:
             # No COMPLEX variables involved: treat as a real/integer expression.
             return f"castINTEGER({arg_stripped})"
 
+        # If the expression already has .real()/.imag()/castREAL, it is
+        # already real-valued (e.g. from a prior DBLE expansion).  Wrapping
+        # it again through _real_cast_or_component would produce redundant
+        # castREAL(work[0].real()) — just castINTEGER directly.
+        if ".real()" in arg_stripped or ".imag()" in arg_stripped or "castREAL(" in arg_stripped:
+            return f"castINTEGER({arg_stripped})"
+
         # COMPLEX variables involved: map to a REAL-valued expression first,
         # then cast to INTEGER.
         real_expr = _real_cast_or_component(
@@ -3246,6 +3250,7 @@ def rewrite_intrinsics(text: str) -> str:
 
         # complex constructor
         "fem::dcmplx": "COMPLEX",
+        "fem::cmplx": "COMPLEX",
 
         # sign / dsign -> common sign(a, b) helper
         # (C++ side must provide sign(a, b) implementation)
@@ -3256,6 +3261,8 @@ def rewrite_intrinsics(text: str) -> str:
         "fem::maxloc": "Mmaxloc",
         "fem::maxval": "Mmaxval",
         "fem::minval": "Mminval",
+
+        "fem::exponent": "Mexponent",
     }
 
     for src, dst in simple_map.items():
@@ -3371,7 +3378,24 @@ def _convert_parentheses_postfix(conv_info, prev_tok, tok, had_str_concat):
                         return True
             return False
 
+        def _split_top_level_token_groups(tokens, sep):
+            """Split a token list at top-level separator tokens."""
+            if sep == "," and all(
+                    hasattr(t, "is_seq") and t.is_seq() for t in tokens):
+                return [list(t.value) for t in tokens]
+            groups = []
+            current = []
+            for t in tokens:
+                if hasattr(t, 'is_op_with') and t.is_op_with(value=sep):
+                    groups.append(current)
+                    current = []
+                else:
+                    current.append(t)
+            groups.append(current)
+            return groups
+
         is_array_slice = _contains_colon_op(tok.value)
+        arg_token_groups = _split_top_level_token_groups(tok.value, ",")
 
         # Convert indices inside parentheses to C++ array indexing
         idx_str = convert_tokens(
@@ -3410,6 +3434,37 @@ def _convert_parentheses_postfix(conv_info, prev_tok, tok, had_str_concat):
                 end_expr = parts[1].strip()
                 step_expr = parts[2].strip()
                 return f'[__SLICE__({start_expr}, {end_expr}, {step_expr})]'
+
+            if len(arg_token_groups) == 2:
+                slice_dims = [
+                    i for i, group in enumerate(arg_token_groups)
+                    if _contains_colon_op(group)
+                ]
+                if len(slice_dims) == 1:
+                    slice_dim = slice_dims[0]
+                    slice_token_groups = _split_top_level_token_groups(
+                        arg_token_groups[slice_dim], ":")
+                    if len(slice_token_groups) == 2:
+                        if slice_dim == 0:
+                            start_expr = parts[0].strip()
+                            end_expr = parts[1].strip()
+                            fixed_expr = parts[2].strip()
+                        else:
+                            fixed_expr = parts[0].strip()
+                            start_expr = parts[1].strip()
+                            end_expr = parts[2].strip()
+                        default_ldname = 'ld' + prev_tok.value.lower()
+                        if fdecl is not None:
+                            ldexpr0 = get_leading_dimension_expr(
+                                conv_info, fdecl, default=default_ldname)
+                        else:
+                            ldexpr0 = str(int(data_dims_ints[0])) if (
+                                data_dims_ints and len(data_dims_ints) >= 1) else "1"
+                        ldexpr = _maybe_use_ld_variable(
+                            conv_info, ldexpr0, default_ldname)
+                        if slice_dim == 0:
+                            return f'[__SLICE2D__({start_expr}, {end_expr}, {fixed_expr}, {ldexpr})]'
+                        return f'[__FABLE_UNHANDLED_SLICE2D_COL__({fixed_expr}, {start_expr}, {end_expr}, {ldexpr})]'
 
             # 2D slice on first dimension: [__SLICE2D__(start, end, col, ldname)]
             start_expr = parts[0].strip()
@@ -8341,6 +8396,149 @@ def _postprocess_complex_constant_assignments(lines):
     return out
 
 
+def _postprocess_not_relop_parens(lines):
+    """Fix C++ operator precedence for Fortran .NOT. with relational operators.
+
+    In Fortran, relational operators (.LE., .GE., .LT., .GT., .EQ., .NE.)
+    bind tighter than .NOT., so:
+        .NOT. tmax .LE. dlamch('Overflow')
+    means:
+        .NOT. (tmax .LE. dlamch('Overflow'))
+
+    FABLE converts this to:
+        !tmax <= Rlamch("Overflow")
+    which C++ parses as:
+        (!tmax) <= Rlamch("Overflow")
+    because C++ unary ! has higher precedence than <=.
+
+    This postprocess step rewrites:
+        !EXPR relop EXPR   ->   !(EXPR relop EXPR)
+    where the ! is a logical NOT (not part of !=) and the relop
+    (<=, >=, ==, !=, <, >) occurs at the same parenthesis depth.
+
+    Already-parenthesized forms like !(EXPR) are left unchanged.
+    """
+    out = []
+    for line in lines:
+        if '!' not in line:
+            out.append(line)
+            continue
+        stripped = line.lstrip()
+        if stripped.startswith('//'):
+            out.append(line)
+            continue
+        out.append(_fix_not_relop_in_line(line))
+    return out
+
+
+def _fix_not_relop_in_line(line):
+    """Scan *line* for bare ``!expr relop expr`` and insert parentheses."""
+    chars = list(line)
+    n = len(chars)
+    i = 0
+    while i < n:
+        ch = chars[i]
+
+        # --- skip string literals ----------------------------------------
+        if ch in ('"', "'"):
+            q = ch
+            i += 1
+            while i < n and chars[i] != q:
+                if chars[i] == '\\':
+                    i += 1          # skip escaped char
+                i += 1
+            i += 1                  # skip closing quote
+            continue
+
+        # --- skip // comment to end of line ------------------------------
+        if ch == '/' and i + 1 < n and chars[i + 1] == '/':
+            break
+
+        # --- look for logical-NOT  ! -------------------------------------
+        if ch == '!':
+            # Skip != (comparison operator, not logical NOT)
+            if i + 1 < n and chars[i + 1] == '=':
+                i += 2
+                continue
+            # Skip !( — already parenthesised
+            rest = ''.join(chars[i + 1:]).lstrip()
+            if rest.startswith('('):
+                i += 1
+                continue
+
+            # Candidate logical NOT at position i.
+            # Scan forward from i+1 to find a relational operator at
+            # paren-depth 0 (relative to the ! position).
+            j = i + 1
+            depth = 0
+            found_relop = False
+
+            while j < n:
+                c = chars[j]
+
+                # skip strings inside the expression
+                if c in ('"', "'"):
+                    q = c
+                    j += 1
+                    while j < n and chars[j] != q:
+                        if chars[j] == '\\':
+                            j += 1
+                        j += 1
+                    j += 1
+                    continue
+
+                if c == '(':
+                    depth += 1
+                    j += 1
+                    continue
+
+                if c == ')':
+                    if depth == 0:
+                        break       # back to enclosing scope
+                    depth -= 1
+                    j += 1
+                    continue
+
+                if depth == 0:
+                    # End of this sub-expression?
+                    if c == '&' and j + 1 < n and chars[j + 1] == '&':
+                        break
+                    if c == '|' and j + 1 < n and chars[j + 1] == '|':
+                        break
+                    if c == ';':
+                        break
+
+                    # Check for relational operator at depth 0.
+                    two = ''.join(chars[j:j + 2]) if j + 1 < n else ''
+                    one = c
+
+                    if two in ('<=', '>=', '==', '!='):
+                        found_relop = True
+                    elif one in ('<', '>'):
+                        # Make sure it is not the start of <= or >=
+                        if two not in ('<=', '>='):
+                            found_relop = True
+
+                j += 1
+
+            if found_relop:
+                # j is now the position of the terminator (), &&, ||, ;)
+                # or n (end of line).  Insert ')' before trailing whitespace
+                # and '(' right after the '!'.
+                ins = j
+                while ins > i + 1 and chars[ins - 1] in (' ', '\t'):
+                    ins -= 1
+                chars.insert(ins, ')')
+                chars.insert(i + 1, '(')
+                n += 2
+                i = ins + 2       # continue past the inserted ')'
+                continue
+
+        i += 1
+
+    return ''.join(chars)
+
+
 def _postprocess_intrinsic_aliases(lines):
     """Final cleanup for intrinsic helper names.
 
@@ -8695,7 +8893,7 @@ def _postprocess_strip_float_suffix(lines):
     """Remove 'f' suffix from floating literals like 1.0f, 0.5f, 3.14e-1f."""
     # Match patterns like:
     #   1.0f, 0.5f, 3.14e-1f, 1.F, 1.e+0F, etc.
-    pat = re.compile(r'(\d+(?:\.\d*)?(?:[eE][+-]?\d+)?)[fF]\b')
+    pat = re.compile(r'(?<![A-Za-z_])(\d+(?:\.\d*)?(?:[eE][+-]?\d+)?)[fF]\b')
     out = []
     for line in lines:
         out.append(pat.sub(r'\1', line))
@@ -9253,6 +9451,13 @@ def _postprocess_slice_assignment(lines):
     )
 
     def rewrite_line(line: str) -> str:
+        if "__FABLE_UNHANDLED_SLICE2D_COL__" in line:
+            leading_ws = line[:len(line) - len(line.lstrip())]
+            return (
+                f"{leading_ws}// FABLE_UNHANDLED_SLICE_ASSIGN: {line.strip()}\n"
+                f"{leading_ws}FABLE_UNHANDLED_SLICE_ASSIGN();"
+            )
+
         # --------------------------------------------------------------
         # 0) Pseudo-slice shorthand:  A(i1, i2) = zero;  or  A(i1,i2,j1,j2) = zero;
         # --------------------------------------------------------------
@@ -10026,21 +10231,75 @@ def _fix_fortran_use_la_constants(src: str) -> str:
         #
         # Use standard LAPACK typed functions DLAMCH / SLAMCH with explicit
         # declarations, then let the C++ name-map rename them (e.g. dlamch -> Rlamch).
-        if wp_kind == "dp":
-            out.append("DOUBLE PRECISION zero, half, one, safmin, safmax\n")
-            out.append("PARAMETER (zero = 0.0D0)\n")
-            out.append("PARAMETER (half = 0.5D0)\n")
-            out.append("PARAMETER (one  = 1.0D0)\n")
-            # Use intrinsics to avoid external/specification functions in PARAMETER.
-            out.append("PARAMETER (safmin = one //UNHANDLED )\n")
-            out.append("PARAMETER (safmax = one //UNHANDLED)\n")
+        #
+        # All known LA_CONSTANTS constants.
+        # Each entry: (dp_value | None, sp_value | None).
+        # None means machine-dependent => emit //UNHANDLED so the C++ build
+        # fails loudly and the developer supplies the correct expression.
+        _KNOWN_CONSTS = {
+            # Basic arithmetic constants
+            "zero":   ("0.0D0",  "0.0E0"),
+            "half":   ("0.5D0",  "0.5E0"),
+            "one":    ("1.0D0",  "1.0E0"),
+            "two":    ("2.0D0",  "2.0E0"),
+            # Safe range parameters (machine-dependent)
+            "safmin": (None, None),
+            "safmax": (None, None),
+            # Blue's scaling constants (machine-dependent)
+            "tbig":   (None, None),
+            "tsml":   (None, None),
+            "sbig":   (None, None),
+            "ssml":   (None, None),
+            # Complex constants -- handled separately below
+            "czero":  None,   # sentinel: complex
+            "cone":   None,   # sentinel: complex
+        }
+
+        # Determine which constants to emit: only those actually imported,
+        # or all known ones if there was no ONLY clause.
+        if imported:
+            # Remove pseudo-imports (wp, dp, sp, la_isnan) that are not
+            # emittable constants.
+            needed = {c for c in imported
+                      if c in _KNOWN_CONSTS}
         else:
-            out.append("REAL zero, half, one, safmin, safmax\n")
-            out.append("PARAMETER (zero = 0.0E0)\n")
-            out.append("PARAMETER (half = 0.5E0)\n")
-            out.append("PARAMETER (one  = 1.0E0)\n")
-            out.append("PARAMETER (safmin = one //UNHANDLED)\n")
-            out.append("PARAMETER (safmax = one //UNHANDLED)\n")
+            # Bare 'USE LA_CONSTANTS' without ONLY -- emit everything.
+            needed = set(_KNOWN_CONSTS.keys())
+
+        # --- Real constants ---
+        real_consts = {c for c in needed
+                       if _KNOWN_CONSTS.get(c) is not None}
+        if real_consts:
+            base_type = "DOUBLE PRECISION" if wp_kind == "dp" else "REAL"
+            out.append(f"{base_type} {', '.join(sorted(real_consts))}\n")
+            idx = 0 if wp_kind == "dp" else 1
+            for c in sorted(real_consts):
+                val = _KNOWN_CONSTS[c][idx]
+                if val is not None:
+                    out.append(f"PARAMETER ({c} = {val})\n")
+                else:
+                    unhandled_val = "1.0D0" if wp_kind == "dp" else "1.0E0"
+                    out.append(
+                        f"PARAMETER ({c} = {unhandled_val} //UNHANDLED)\n")
+
+        # --- Complex constants ---
+        complex_consts = {c for c in needed
+                          if _KNOWN_CONSTS.get(c) is None and c in _KNOWN_CONSTS}
+        if complex_consts:
+            ctype = "DOUBLE COMPLEX" if wp_kind == "dp" else "COMPLEX"
+            out.append(f"{ctype} {', '.join(sorted(complex_consts))}\n")
+            _cvals = {
+                "czero": ("(0.0D0, 0.0D0)", "(0.0E0, 0.0E0)"),
+                "cone":  ("(1.0D0, 0.0D0)", "(1.0E0, 0.0E0)"),
+            }
+            idx = 0 if wp_kind == "dp" else 1
+            for c in sorted(complex_consts):
+                if c in _cvals:
+                    out.append(
+                        f"PARAMETER ({c} = {_cvals[c][idx]})\n")
+                else:
+                    out.append(
+                        f"PARAMETER ({c} = (0.0D0, 0.0D0) //UNHANDLED)\n")
 
     src2 = "".join(out)
     if not found:
@@ -10171,7 +10430,7 @@ def _should_lower_free_to_fixed(src: str) -> bool:
 
 
 def _fix_fortran_intrinsic_kind_keyword_arguments(src: str) -> str:
-    """Drop F90 keyword arguments like KIND=... in intrinsic calls.
+    r"""Drop F90 keyword arguments like KIND=... in intrinsic calls.
 
     FABLE's legacy expression tokenizer does not accept keyword arguments
     inside calls, e.g.:
@@ -10293,6 +10552,7 @@ def _preprocess_fortran_fixed_form(src: str) -> typing.Tuple[str, str]:
     new_src = _fix_fortran_iso_fortran_env_real64(
         new_src)  # harmless even if not present
     new_src = _fix_fortran_intrinsic_kind_keyword_arguments(new_src)
+    new_src = _fix_fortran_kind_wp_inline(new_src)
     new_src = _fix_fortran_f90_decl_syntax(new_src)
     new_src = _fix_fortran_select_case_to_if(new_src)
     new_src = _fix_fortran_end_statements(new_src)
@@ -10311,17 +10571,19 @@ def _preprocess_fortran_free_form(src: str) -> typing.Tuple[str, str]:
     new_src = _fix_fortran_use_la_xisnan(new_src)
     new_src = _drop_fortran_intrinsic_statements(
         new_src, source_form="free")  # drop unconditionally
+    new_src = _fix_fortran_iso_fortran_env_real64(new_src)
     new_src = _fix_fortran_intrinsic_kind_keyword_arguments(new_src)
+    new_src = _fix_fortran_kind_wp_inline(new_src)
     lower_to_fixed = _should_lower_free_to_fixed(new_src)
 
     if lower_to_fixed:
         # Lowering pipeline: free-form -> fixed-form
-        new_src = _fix_fortran_iso_fortran_env_real64(new_src)
-        new_src = _fix_fortran_f90_decl_syntax(new_src)
+        new_src = _fix_fortran_f90_decl_syntax(new_src, source_form="free")
         new_src = _fix_fortran_select_case_to_if(new_src)
         new_src = _fix_fortran_free_form_ampersand_continuations(new_src)
         new_src = _normalize_free_form_to_fixed_form_layout(new_src)
         new_src = _fix_fortran_end_statements(new_src)
+        new_src = _split_long_fixed_form_lines(new_src)
         return new_src, "fixed"
 
     # If we keep it free-form, do only safe transforms and emit ".f90"
@@ -10350,7 +10612,7 @@ def _split_top_level_commas(s: str):
     return items
 
 
-def _fix_fortran_f90_decl_syntax(src: str) -> str:
+def _fix_fortran_f90_decl_syntax(src: str, source_form: str = "fixed") -> str:
     """
     Rewrite a subset of Fortran 90 declaration syntax into a form that fable's
     fixed-form reader accepts.
@@ -10415,22 +10677,53 @@ def _fix_fortran_f90_decl_syntax(src: str) -> str:
 
     def gather_fixed_statement(lines, i: int):
         """
-        Gather a full fixed-form statement starting at line i, consuming continuation
-        lines (col 6 continuation). Returns:
+        Gather a full statement starting at line i, consuming continuation
+        lines.  Handles BOTH:
+          - Fixed-form continuation (col 6 non-blank)
+          - Free-form continuation (trailing '&')
+        Uses lstrip() so both free-form and fixed-form inputs work.
+        Returns:
           (stmt_text, first_inline_comment, first_eol, j_next)
         where j_next is the first line index after the statement.
         """
         raw0, eol0 = split_eol(lines[i])
         code0, cmt0 = split_inline_comment(raw0)
-        stmt = code_field_fixed_form(code0).rstrip()
+        stmt = code0.lstrip().rstrip()
+
+        # Free-form trailing '&'
+        trailing_amp = stmt.endswith("&")
+        if trailing_amp:
+            stmt = stmt[:-1].rstrip()
 
         j = i + 1
         while j < len(lines):
             rawj, _ = split_eol(lines[j])
-            if not is_fixed_form_continuation(rawj):
+
+            if is_full_line_comment(rawj):
+                if trailing_amp:
+                    j += 1
+                    continue
                 break
+
+            is_fixed_cont = (source_form != "free"
+                             and is_fixed_form_continuation(rawj))
+            is_free_cont = trailing_amp
+
+            if not is_fixed_cont and not is_free_cont:
+                break
+
             codej, _ = split_inline_comment(rawj)
-            part = code_field_fixed_form(codej).strip()
+            if is_fixed_cont:
+                part = code_field_fixed_form(codej).strip()
+            else:
+                part = codej.lstrip().rstrip()
+                if part.startswith("&"):
+                    part = part[1:].lstrip()
+
+            trailing_amp = part.endswith("&")
+            if trailing_amp:
+                part = part[:-1].rstrip()
+
             if part:
                 stmt += " " + part
             j += 1
@@ -10736,18 +11029,31 @@ def _fix_fortran_f90_decl_syntax(src: str) -> str:
                 dim = dim_attr_norm
 
             if is_allocatable:
-                # Do NOT substitute the allocation shape into the declaration.
-                # The ALLOCATE(...) size expressions can depend on runtime values
-                # (e.g. LWORK) and must be handled at the ALLOCATE statement site.
-                # Keep a parsable explicit-shape placeholder of the correct rank.
-                if dim is None:
+                # ALLOCATABLE arrays need placeholder dimensions so the F77
+                # parser recognises them as arrays (not scalars).  Without
+                # dims, uses like IWORK(M+1) would raise "Conflicting
+                # declaration" because the parser recorded a scalar.
+                #
+                # The RAII path (CALL FABLE_ALLOCATE → unique_ptr) handles
+                # C++ declarations separately.  When FABLE_ALLOCATE is
+                # processed during C++ emission it:
+                #   1) emits unique_ptr + raw-pointer declarations
+                #   2) registers the variable in conv_info.vmap
+                # so the normal declare_identifier path is skipped for these
+                # variables (they are already in vmap).
+                #
+                # Determine rank from DIMENSION attribute or allocate_shapes.
+                if dim is not None:
+                    # dim came from DIMENSION(:,:) normalised to "1, 1"
+                    nd = len(_split_top_level_commas(dim))
+                else:
                     shape = allocate_shapes.get(name.lower())
                     if shape:
                         dims = [d.strip() for d in _split_top_level_commas(shape) if d.strip()]
                         nd = max(1, len(dims))
-                        dim = ", ".join(["1"] * nd)
                     else:
-                        dim = "1"
+                        nd = 1
+                dim = ", ".join(["1"] * nd)
 
             if dim:
                 declarators.append(f"{name}({dim})")
@@ -11018,6 +11324,203 @@ def _normalize_free_form_to_fixed_form_layout(src: str) -> str:
     return "".join(out)
 
 
+def _split_long_fixed_form_lines(src: str) -> str:
+    """Split fixed-form lines that exceed 72 columns into continuation lines.
+
+    CRITICAL: inline comments (everything from '!' outside strings to EOL)
+    must NOT be split into continuation lines — the remainder would become
+    code.  We strip inline comments first, then split only the code part.
+    """
+    MAX_COL = 72
+    CONT_PREFIX = "     &"
+
+    def split_eol(line: str):
+        if line.endswith("\r\n"):
+            return line[:-2], "\r\n"
+        if line.endswith("\n"):
+            return line[:-1], "\n"
+        if line.endswith("\r"):
+            return line[:-1], "\r"
+        return line, ""
+
+    def find_inline_comment(raw: str) -> int:
+        """Return index of '!' outside string literals, or -1."""
+        in_str = False
+        quote_ch = None
+        idx = 0
+        while idx < len(raw):
+            ch = raw[idx]
+            if in_str:
+                if ch == quote_ch:
+                    if idx + 1 < len(raw) and raw[idx + 1] == quote_ch:
+                        idx += 2
+                        continue
+                    in_str = False
+                    quote_ch = None
+            else:
+                if ch in ("'", '"'):
+                    in_str = True
+                    quote_ch = ch
+                elif ch == '!':
+                    return idx
+            idx += 1
+        return -1
+
+    out = []
+    for line in src.splitlines(True):
+        raw, eol = split_eol(line)
+
+        if len(raw) <= MAX_COL or raw.strip() == "":
+            out.append(raw + eol)
+            continue
+        if raw and raw[0] in ("c", "C", "*", "!"):
+            out.append(raw + eol)
+            continue
+
+        # Strip inline comment before splitting — comment text must never
+        # become code on a continuation line.
+        bang = find_inline_comment(raw)
+        if bang >= 0:
+            code_part = raw[:bang].rstrip()
+            if len(code_part) <= MAX_COL:
+                out.append(code_part + eol)
+                continue
+            raw = code_part
+
+        remaining = raw
+        while len(remaining) > MAX_COL:
+            cut = MAX_COL
+            if (cut < len(remaining)
+                    and remaining[cut - 1] in ("'", '"')
+                    and remaining[cut] == remaining[cut - 1]):
+                cut -= 1
+            out.append(remaining[:cut] + eol)
+            remaining = CONT_PREFIX + remaining[cut:]
+        out.append(remaining + eol)
+
+    return "".join(out)
+
+
+def _fix_fortran_kind_wp_inline(src: str) -> str:
+    """Resolve inline 'integer, parameter :: wp = kind(1.d0)' to F77 equivalents.
+
+    Handles the LAPACK 3.12.1 BLAS pattern where wp is defined inline
+    (not via USE LA_CONSTANTS or USE iso_fortran_env).
+    """
+    import re
+
+    def split_eol(line):
+        if line.endswith("\r\n"):
+            return line[:-2], "\r\n"
+        if line.endswith("\n"):
+            return line[:-1], "\n"
+        if line.endswith("\r"):
+            return line[:-1], "\r"
+        return line, ""
+
+    WP_KIND_RE = re.compile(
+        r'^\s*integer\s*,\s*parameter\s*::\s*wp\s*=\s*kind\s*\('
+        r'[^)]*\)\s*$',
+        flags=re.IGNORECASE,
+    )
+    KIND_ARG_RE = re.compile(
+        r'kind\s*\(\s*([^)]+)\s*\)',
+        flags=re.IGNORECASE,
+    )
+
+    lines = src.splitlines(True)
+    out = []
+    wp_kind = None
+
+    for line in lines:
+        raw, eol = split_eol(line)
+        if WP_KIND_RE.match(raw):
+            m = KIND_ARG_RE.search(raw)
+            if m:
+                arg = m.group(1).strip().lower()
+                wp_kind = "dp" if "d" in arg else "sp"
+            else:
+                wp_kind = "dp"
+            out.append("! [fable] " + raw.lstrip() + eol)
+            continue
+        out.append(raw + eol)
+
+    if wp_kind is None:
+        return src
+
+    src2 = "".join(out)
+
+    if wp_kind == "dp":
+        f77_real = "DOUBLE PRECISION"
+        f77_complex = "DOUBLE COMPLEX"
+        conv_func = "dble"
+    else:
+        f77_real = "REAL"
+        f77_complex = "COMPLEX"
+        conv_func = "real"
+
+    src2 = re.sub(r'\breal\s*\(\s*kind\s*=\s*wp\s*\)',
+                  f77_real, src2, flags=re.IGNORECASE)
+    src2 = re.sub(r'\breal\s*\(\s*wp\s*\)',
+                  f77_real, src2, flags=re.IGNORECASE)
+    src2 = re.sub(r'\bcomplex\s*\(\s*kind\s*=\s*wp\s*\)',
+                  f77_complex, src2, flags=re.IGNORECASE)
+    src2 = re.sub(r'\bcomplex\s*\(\s*wp\s*\)',
+                  f77_complex, src2, flags=re.IGNORECASE)
+
+    def _rewrite_real_conv(src_text):
+        CALL_RE = re.compile(r'\breal\s*\(', flags=re.IGNORECASE)
+        result = []
+        pos = 0
+        while pos < len(src_text):
+            m = CALL_RE.search(src_text, pos)
+            if not m:
+                result.append(src_text[pos:])
+                break
+            result.append(src_text[pos:m.start()])
+            paren_start = m.end() - 1
+            depth = 0
+            end = paren_start
+            for k in range(paren_start, len(src_text)):
+                if src_text[k] == '(':
+                    depth += 1
+                elif src_text[k] == ')':
+                    depth -= 1
+                    if depth == 0:
+                        end = k
+                        break
+            inner = src_text[paren_start + 1:end]
+            args = _split_top_level_commas(inner)
+            if (len(args) == 2
+                    and args[-1].strip().lower() == 'wp'):
+                result.append(f"{conv_func}({args[0].strip()})")
+            else:
+                result.append(src_text[m.start():end + 1])
+            pos = end + 1
+        return "".join(result)
+
+    src2 = _rewrite_real_conv(src2)
+
+    if wp_kind == "dp":
+        def _wp_lit(m):
+            num = m.group("num")
+            num = re.sub(r'[eE]([+\-]?\d+)', r'D\1', num)
+            return num if ("D" in num or "d" in num) else (num + "D0")
+    else:
+        def _wp_lit(m):
+            num = m.group("num")
+            num = re.sub(r'[dD]([+\-]?\d+)', r'E\1', num)
+            return num if ("E" in num or "e" in num) else (num + "E0")
+
+    WP_LIT_RE = re.compile(
+        r'(?P<num>(?:\d+\.\d*|\d*\.\d+|\d+)(?:[eEdD][+\-]?\d+)?)\s*_wp\b',
+        flags=re.IGNORECASE,
+    )
+    src2 = WP_LIT_RE.sub(_wp_lit, src2)
+
+    return src2
+
+
 def _fix_fortran_iso_fortran_env_real64(src: str) -> str:
     """Make some F90 'iso_fortran_env real64' constructs digestible for FABLE.
 
@@ -11046,7 +11549,7 @@ def _fix_fortran_iso_fortran_env_real64(src: str) -> str:
         return line, ""
 
     USE_REAL64_RE = re.compile(
-        r'^\s*use\s*,\s*intrinsic\s*::\s*iso_fortran_env\s*,\s*only\s*:\s*real64\s*$',
+        r'^\s*use\s*(?:,\s*intrinsic\s*::)?\s*iso_fortran_env\s*,\s*only\s*:\s*real64\s*$',
         flags=re.IGNORECASE,
     )
     WP_REAL64_RE = re.compile(
@@ -11175,8 +11678,29 @@ def _fix_fortran_free_form_ampersand_continuations(src: str) -> str:
             out.append(raw + eol)
             continue
 
-        # Strip trailing '&' only in the code part (before inline '!' comment)
-        bang = raw.find("!")
+        # Strip trailing '&' only in the code part (before inline '!' comment).
+        # The '!' must be outside string literals to be a comment starter.
+        bang = -1
+        in_str = False
+        quote_ch = None
+        idx = 0
+        while idx < len(raw):
+            ch = raw[idx]
+            if in_str:
+                if ch == quote_ch:
+                    if idx + 1 < len(raw) and raw[idx + 1] == quote_ch:
+                        idx += 2  # skip doubled quote
+                        continue
+                    in_str = False
+                    quote_ch = None
+            else:
+                if ch in ("'", '"'):
+                    in_str = True
+                    quote_ch = ch
+                elif ch == '!':
+                    bang = idx
+                    break
+            idx += 1
         if bang >= 0:
             code = raw[:bang]
             comment = raw[bang:]
@@ -11705,6 +12229,9 @@ def process(
     result = _normalize_fortran_comment_prefix(result)
     result = _postprocess_complex_initializers(result)
     result = _postprocess_complex_constant_assignments(result)
+
+    # Fix .NOT. + relational operator precedence (!X <= Y -> !(X <= Y)).
+    result = _postprocess_not_relop_parens(result)
 
     # Final intrinsic cleanup (abs / pow2 aliases).
     result = _postprocess_intrinsic_aliases(result)

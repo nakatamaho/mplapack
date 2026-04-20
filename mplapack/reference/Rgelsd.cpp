@@ -101,7 +101,7 @@ void Rgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
     nlvl = max(castINTEGER(log(castREAL(minmn) / castREAL(smlsiz + 1)) / log(two)) + 1, (INTEGER)0);
     //
     if (info == 0) {
-        maxwrk = 0;
+        maxwrk = 1;
         liwork = 3 * minmn * nlvl + 11 * minmn;
         mm = m;
         if (m >= n && m >= mnthr) {
@@ -184,7 +184,6 @@ void Rgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
     sfmin = Rlamch("S");
     smlnum = sfmin / eps;
     bignum = one / smlnum;
-    Rlabad(smlnum, bignum);
     //
     // Scale A if max entry outside range [SMLNUM,BIGNUM].
     //

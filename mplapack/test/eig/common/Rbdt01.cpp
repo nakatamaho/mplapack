@@ -53,7 +53,7 @@ void Rbdt01(INTEGER const m, INTEGER const n, INTEGER const kd, REAL *a, INTEGER
         return;
     }
     //
-    // Compute A - Q * B * P' one column at a time.
+    // Compute A - Q * B * P**T one column at a time.
     //
     resid = zero;
     INTEGER j = 0;
@@ -128,7 +128,7 @@ void Rbdt01(INTEGER const m, INTEGER const n, INTEGER const kd, REAL *a, INTEGER
         }
     }
     //
-    // Compute norm(A - Q * B * P') / ( n * norm(A) * EPS )
+    // Compute norm(A - Q * B * P**T) / ( n * norm(A) * EPS )
     //
     REAL anorm = Rlange("1", m, n, a, lda, work);
     REAL eps = Rlamch("Precision");

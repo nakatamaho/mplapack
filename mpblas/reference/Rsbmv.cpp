@@ -204,6 +204,6 @@ void Rsbmv(const char *uplo, INTEGER const n, INTEGER const k, REAL const alpha,
         }
     }
     //
-    // End of Rsbmv .
+    // End of Rsbmv
     //
 }

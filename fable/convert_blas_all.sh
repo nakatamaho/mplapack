@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+ROOT="$(cd -- "${SCRIPT_DIR}/.." && pwd)"
+LAPACK_VERSION="${LAPACK_VERSION:-3.12.1}"
+
 # Path to the FABLE Fortran->C++ converter
-FABLE_CONVERT="$HOME/mplapack/fable/convert_blas.sh"
+FABLE_CONVERT="${SCRIPT_DIR}/convert_blas.sh"
 
 # Enable nullglob to avoid literal "*.f*" when no files exist
 shopt -s nullglob
@@ -30,13 +34,31 @@ EXCLUDE_BASENAMES=(
   "${EXCLUDE_BASENAMES_MISC[@]}"
 )
 
+# Hand-maintained files to keep when cleaning old generated outputs.
+KEEP_HAND_WRITTEN_FILES=(
+  Mxerbla.cpp
+  Mlsame.cpp
+  mplapackinit.cpp
+  mpblas.h.in
+  mpblas_binary128.h.in
+  mpblas_binary80.h.in
+  mpblas_dd.h.in
+  mpblas_double.h.in
+  mpblas_gmp.h.in
+  mpblas_mpfr.h.in
+  mpblas_qd.h.in
+  Makefile.am
+  Makefile.in
+  Makefile
+)
+
 # ------------------------------------------------------------
 # Collect all Fortran files (*.f, *.f90) except those in exceptions
 # ------------------------------------------------------------
 
 files=()
 
-for src in *.f*; do
+for src in *.f *.f90 *.F; do
     base="${src##*/}"       # e.g., zgemv.f
     stem="${base%%.*}"      # e.g., zgemv
 
@@ -69,12 +91,46 @@ done
 # Convert each selected Fortran file using convert_blas.sh
 # (convert_blas.sh / cout.py decide the .cpp name and do all postprocessing)
 # ------------------------------------------------------------
+MPBLAS_REF="${ROOT}/mpblas/reference"
 
-FABLE_CONVERT="$HOME/mplapack/fable/convert_blas.sh"
+find_args=(
+  "${MPBLAS_REF}"
+  -maxdepth 1
+  -type f
+    "("
+      -name '*'
+    ")"
+)
+
+for keep in "${KEEP_HAND_WRITTEN_FILES[@]}"; do
+  find_args+=( ! -name "${keep}" )
+done
+
+find "${find_args[@]}" -delete
+
+echo "MPBLAS dir has been cleaned up"
+ls "${MPBLAS_REF}"
+
 export FABLE_CONVERT
 parallel -j "${JOBS:-$(nproc)}" '
      echo "Converting {}"
      bash "$FABLE_CONVERT" "{}"
  ' ::: "${files[@]}"
 
-patch < "$HOME/mplapack/fable/3.9.1/patch-blas"
+
+case "${LAPACK_VERSION}" in
+    3.9.1)
+        patch < "${SCRIPT_DIR}/${LAPACK_VERSION}/patch-blas"
+        ;;
+    3.12.1)
+        patch < "${SCRIPT_DIR}/${LAPACK_VERSION}/blas/patch-Crotg.cpp"
+        patch < "${SCRIPT_DIR}/${LAPACK_VERSION}/blas/patch-RCnrm2.cpp"
+        patch < "${SCRIPT_DIR}/${LAPACK_VERSION}/blas/patch-Rnrm2.cpp"
+        patch < "${SCRIPT_DIR}/${LAPACK_VERSION}/blas/patch-Rrotg.cpp"
+        patch < "${SCRIPT_DIR}/${LAPACK_VERSION}/blas/patch-Rrotmg.cpp"
+        ;;
+    *)
+        echo "Unsupported LAPACK_VERSION: ${LAPACK_VERSION}" >&2
+        exit 1
+        ;;
+esac

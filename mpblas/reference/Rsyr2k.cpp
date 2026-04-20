@@ -204,6 +204,6 @@ void Rsyr2k(const char *uplo, const char *trans, INTEGER const n, INTEGER const 
         }
     }
     //
-    // End of Rsyr2k.
+    // End of Rsyr2k
     //
 }

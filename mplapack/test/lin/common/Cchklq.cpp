@@ -194,7 +194,7 @@ void Cchklq(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             Clqt03(m, n, k, af, ac, al, aq, lda, tau, work, lwork, rwork, &result[3 - 1]);
                             nt += 4;
                             //
-                            // If M>=N and K=N, call Cgelqs to solve a system
+                            // If M<=N and K=M, call Cgels to solve a system
                             // with NRHS right hand sides and compute the
                             // residual.
                             //
@@ -207,13 +207,19 @@ void Cchklq(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                 Clarhs(path, "New", "Full", "No transpose", m, n, 0, 0, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                                 //
                                 Clacpy("Full", m, nrhs, b, lda, x, lda);
-                                srnamt = "Cgelqs";
-                                Cgelqs(m, n, nrhs, af, lda, tau, x, lda, work, lwork, info);
                                 //
-                                // Check error code from Cgelqs.
+                                // Reset AF to the original matrix. Cgels
+                                // factors the matrix before solving the system.
+                                //
+                                Clacpy("Full", m, n, a, lda, af, lda);
+                                //
+                                srnamt = "Cgels";
+                                Cgels("No transpose", m, n, nrhs, af, lda, x, lda, work, lwork, info);
+                                //
+                                // Check error code from Cgels.
                                 //
                                 if (info != 0) {
-                                    Alaerh(path, "Cgelqs", info, 0, " ", m, n, nrhs, -1, nb, imat, nfail, nerrs, nout);
+                                    Alaerh(path, "Cgels", info, 0, "N", m, n, nrhs, -1, nb, imat, nfail, nerrs, nout);
                                 }
                                 //
                                 Cget02("No transpose", m, n, nrhs, a, lda, x, lda, b, lda, rwork, result[7 - 1]);

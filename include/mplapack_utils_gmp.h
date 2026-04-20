@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2026
  *	Nakata, Maho
  * 	All rights reserved.
  *
@@ -80,7 +80,135 @@ inline void sprintnum_short(char *buf, mpc_class ctmp) {
     gmp_snprintf(buf, __MPLAPACK_BUFLEN__, GMP_SHORT_FORMAT GMP_SHORT_FORMAT "i", ctmp.real().get_mpf_t(), ctmp.imag().get_mpf_t());
     return;
 }
+
+inline void sprinthex_gmp_fixed_raw(char *buf, size_t n, mpf_srcptr x) {
+    if (n == 0) {
+        return;
+    }
+
+    if (mpf_sgn(x) == 0) {
+        const mp_bitcnt_t prec = mpf_get_prec(x);
+        const size_t frac_hex_digits = static_cast<size_t>((prec - 1 + 3) / 4);
+        std::string frac(frac_hex_digits, '0');
+        std::snprintf(buf, n, "+0x0.%sp+0000", frac.c_str());
+        return;
+    }
+
+    const bool negative = (mpf_sgn(x) < 0);
+    const mp_bitcnt_t prec = mpf_get_prec(x);
+    const size_t frac_hex_digits = static_cast<size_t>((prec - 1 + 3) / 4);
+
+    mp_exp_t exp16 = 0;
+    char *mant_raw = mpf_get_str(nullptr, &exp16, 16, 0, x);
+    if (mant_raw == nullptr) {
+        std::snprintf(buf, n, "<mpf_get_str failed>");
+        return;
+    }
+
+    const char *digits = mant_raw;
+    if (digits[0] == '-') {
+        digits++;
+    }
+
+    if (digits[0] == '\0') {
+        void (*freefunc)(void *, size_t);
+        mp_get_memory_functions(nullptr, nullptr, &freefunc);
+        freefunc(mant_raw, std::strlen(mant_raw) + 1);
+
+        std::string frac(frac_hex_digits, '0');
+        std::snprintf(buf, n, "%s0x0.%sp+0000", negative ? "-" : "+", frac.c_str());
+        return;
+    }
+
+    auto hex_value = [](char c) -> int {
+        if (c >= '0' && c <= '9') {
+            return c - '0';
+        }
+        if (c >= 'a' && c <= 'f') {
+            return 10 + (c - 'a');
+        }
+        if (c >= 'A' && c <= 'F') {
+            return 10 + (c - 'A');
+        }
+        return 0;
+    };
+
+    auto hex_char = [](int v) -> char {
+        static const char table[] = "0123456789abcdef";
+        return table[v & 0xf];
+    };
+
+    std::string bitstream;
+    bitstream.reserve(std::strlen(digits) * 4);
+    for (size_t i = 0; digits[i] != '\0'; ++i) {
+        const int v = hex_value(digits[i]);
+        bitstream.push_back((v & 8) ? '1' : '0');
+        bitstream.push_back((v & 4) ? '1' : '0');
+        bitstream.push_back((v & 2) ? '1' : '0');
+        bitstream.push_back((v & 1) ? '1' : '0');
+    }
+
+    const size_t first_one_pos = bitstream.find('1');
+    if (first_one_pos == std::string::npos) {
+        void (*freefunc)(void *, size_t);
+        mp_get_memory_functions(nullptr, nullptr, &freefunc);
+        freefunc(mant_raw, std::strlen(mant_raw) + 1);
+
+        std::string frac(frac_hex_digits, '0');
+        std::snprintf(buf, n, "%s0x0.%sp+0000", negative ? "-" : "+", frac.c_str());
+        return;
+    }
+
+    // mpf_get_str gives value = 0.<digits> * 16^exp16
+    // Binary exponent of the leading 1 is therefore:
+    //   exp2 = 4*exp16 - (first_one_pos + 1)
+    const long exp2 = static_cast<long>(4 * exp16 - static_cast<mp_exp_t>(first_one_pos + 1));
+
+    std::string frac_bits = bitstream.substr(first_one_pos + 1);
+    const size_t needed_bits = frac_hex_digits * 4;
+    if (frac_bits.size() < needed_bits) {
+        frac_bits.append(needed_bits - frac_bits.size(), '0');
+    } else if (frac_bits.size() > needed_bits) {
+        frac_bits.resize(needed_bits);
+    }
+
+    std::string frac;
+    frac.reserve(frac_hex_digits);
+    for (size_t i = 0; i < needed_bits; i += 4) {
+        int v = 0;
+        if (frac_bits[i + 0] == '1')
+            v |= 8;
+        if (frac_bits[i + 1] == '1')
+            v |= 4;
+        if (frac_bits[i + 2] == '1')
+            v |= 2;
+        if (frac_bits[i + 3] == '1')
+            v |= 1;
+        frac.push_back(hex_char(v));
+    }
+
+    std::snprintf(buf, n, "%s0x1.%sp%+05ld", negative ? "-" : "+", frac.c_str(), exp2);
+
+    void (*freefunc)(void *, size_t);
+    mp_get_memory_functions(nullptr, nullptr, &freefunc);
+    freefunc(mant_raw, std::strlen(mant_raw) + 1);
+}
+
+inline void sprinthex_gmp_fixed(char *buf, size_t n, const mpf_class &x) { sprinthex_gmp_fixed_raw(buf, n, x.get_mpf_t()); }
+
 #endif
+
+inline mpf_class abs(mpf_class a) {
+    mpf_class r;
+    mpf_abs(r.get_mpf_t(), a.get_mpf_t());
+    return r;
+}
+
+inline mpf_class sqrt(mpf_class a) {
+    mpf_class r;
+    mpf_sqrt(r.get_mpf_t(), a.get_mpf_t());
+    return r;
+}
 
 inline mpf_class pow2(mpf_class a) {
     mpf_class mtmp = a * a;

@@ -107,13 +107,43 @@ void Rerrec(fem::str_cref path, INTEGER const nunit) {
     Chkxer("Rtrsyl", infot, nout, lerr, ok);
     nt += 8;
     //
+    // Test Rtrsyl3
+    //
+    srnamt = "Rtrsyl3";
+    infot = 1;
+    INTEGER iwork[nmax];
+    REAL work[nmax];
+    Rtrsyl3("X", "N", 1, 0, 0, a, 1, b, 1, c, 1, scale, iwork, nmax, work, nmax, info);
+    Chkxer("Rtrsyl3", infot, nout, lerr, ok);
+    infot = 2;
+    Rtrsyl3("N", "X", 1, 0, 0, a, 1, b, 1, c, 1, scale, iwork, nmax, work, nmax, info);
+    Chkxer("Rtrsyl3", infot, nout, lerr, ok);
+    infot = 3;
+    Rtrsyl3("N", "N", 0, 0, 0, a, 1, b, 1, c, 1, scale, iwork, nmax, work, nmax, info);
+    Chkxer("Rtrsyl3", infot, nout, lerr, ok);
+    infot = 4;
+    Rtrsyl3("N", "N", 1, -1, 0, a, 1, b, 1, c, 1, scale, iwork, nmax, work, nmax, info);
+    Chkxer("Rtrsyl3", infot, nout, lerr, ok);
+    infot = 5;
+    Rtrsyl3("N", "N", 1, 0, -1, a, 1, b, 1, c, 1, scale, iwork, nmax, work, nmax, info);
+    Chkxer("Rtrsyl3", infot, nout, lerr, ok);
+    infot = 7;
+    Rtrsyl3("N", "N", 1, 2, 0, a, 1, b, 1, c, 2, scale, iwork, nmax, work, nmax, info);
+    Chkxer("Rtrsyl3", infot, nout, lerr, ok);
+    infot = 9;
+    Rtrsyl3("N", "N", 1, 0, 2, a, 1, b, 1, c, 1, scale, iwork, nmax, work, nmax, info);
+    Chkxer("Rtrsyl3", infot, nout, lerr, ok);
+    infot = 11;
+    Rtrsyl3("N", "N", 1, 2, 0, a, 2, b, 1, c, 1, scale, iwork, nmax, work, nmax, info);
+    Chkxer("Rtrsyl3", infot, nout, lerr, ok);
+    nt += 8;
+    //
     // Test Rtrexc
     //
     srnamt = "Rtrexc";
     INTEGER ifst = 1;
     INTEGER ilst = 1;
     infot = 1;
-    REAL work[nmax];
     Rtrexc("X", 1, a, 1, b, 1, ifst, ilst, work, info);
     Chkxer("Rtrexc", infot, nout, lerr, ok);
     infot = 2;
@@ -153,7 +183,6 @@ void Rerrec(fem::str_cref path, INTEGER const nunit) {
     REAL s[nmax];
     REAL sep[nmax];
     INTEGER m = 0;
-    INTEGER iwork[nmax];
     Rtrsna("X", "A", sel, 0, a, 1, b, 1, c, 1, s, sep, 1, m, work, 1, iwork, info);
     Chkxer("Rtrsna", infot, nout, lerr, ok);
     infot = 2;

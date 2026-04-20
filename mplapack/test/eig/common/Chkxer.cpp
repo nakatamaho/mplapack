@@ -47,7 +47,7 @@ void Chkxer(fem::str_cref srnamt, INTEGER const infot, INTEGER const nout, bool 
     common cmn;
     common_write write(cmn);
     //
-    static const char *format_9999 = "(' *** Illegal value of parameter number ',i2,' not detected by ',a6,"
+    static const char *format_9999 = "(' *** Illegal value of parameter number ',i2,' not detected by ',a,"
                                      "' ***')";
     if (!lerr) {
         write(nout, format_9999), infot, srnamt(1, fem::len_trim(srnamt));
@@ -55,6 +55,6 @@ void Chkxer(fem::str_cref srnamt, INTEGER const infot, INTEGER const nout, bool 
     }
     lerr = false;
     //
-    // End of Chkxer.
+    // End of Chkxer
     //
 }

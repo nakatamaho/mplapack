@@ -134,6 +134,6 @@ void Rsyt01_aa(fem::str_cref uplo, INTEGER const n, REAL *a, INTEGER const lda, 
         resid = ((resid / castREAL(n)) / anorm) / eps;
     }
     //
-    // End of Rsyt01
+    // End of Rsyt01_aa
     //
 }

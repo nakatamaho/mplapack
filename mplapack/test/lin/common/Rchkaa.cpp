@@ -49,10 +49,11 @@ void Rchkaa(void) {
     common cmn;
     common_read read(cmn);
     common_write write(cmn);
-    static fem::str<10> intstr = "0123456789";
-    static REAL threq = 2.0;
-    REAL s1 = 0.0;
+    fem::str<10> intstr = "0123456789";
+    REAL threq = 2.0;
     const INTEGER nmax = 132;
+    const INTEGER kdmax = nmax + (nmax + 1) / 4;
+    REAL s1 = 0.0;
     INTEGER lda = 0;
     bool fatal = false;
     const INTEGER nin = 5;
@@ -65,13 +66,13 @@ void Rchkaa(void) {
     INTEGER lapack_vers_patch = 0;
     INTEGER nm = 0;
     const INTEGER maxin = 12;
+    const INTEGER maxrhs = 16;
     INTEGER mval[maxin];
     INTEGER i = 0;
     INTEGER nn = 0;
     INTEGER nval[maxin];
     INTEGER nns = 0;
     INTEGER nsval[maxin];
-    const INTEGER maxrhs = 16;
     INTEGER nnb = 0;
     INTEGER nbval[maxin];
     INTEGER nnb2 = 0;
@@ -97,7 +98,6 @@ void Rchkaa(void) {
     INTEGER nrhs = 0;
     INTEGER ntypes = 0;
     bool dotype[matmax];
-    const INTEGER kdmax = nmax + (nmax + 1) / 4;
     auto a_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, ((kdmax + 1) * nmax) * 7));
     REAL *a = a_storage.get();
     auto b_storage = std::make_unique<REAL[]>(std::max<INTEGER>(1, (nmax * maxrhs) * 4));
@@ -131,7 +131,6 @@ void Rchkaa(void) {
     static const char *format_9990 = "(/,1x,a3,':  Unrecognized path name')";
     static const char *format_9989 = "(/,1x,a3,' routines were not tested')";
     static const char *format_9988 = "(/,1x,a3,' driver routines were not tested')";
-    //
     //
     s1 = dsecnd();
     lda = nmax;
@@ -823,6 +822,32 @@ statement_130:
         //
         if (tstchk) {
             Rchkq3(dotype, nm, mval, nn, nval, nnb, nbval, nxval, thresh, &a[0], &a[(2 - 1) * ldaw], &b[0], &b[(3 - 1) * ldb], work, iwork, nout);
+        } else {
+            write(nout, format_9989), path;
+        }
+        //
+    } else if (Mlsamen(2, c2.elems, "QK")) {
+        //
+        // QK: truncated QR factorization with pivoting
+        //
+        ntypes = 19;
+        Alareq(path, nmats, dotype, ntypes, nin, nout);
+        //
+        if (tstchk) {
+            Rchkqp3rk(dotype, nm, mval, nn, nval, nns, nsval, nnb, nbval, nxval, thresh, &a[0], &a[(2 - 1) * ldaw], &b[0], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], &b[(4 - 1) * ldb], work, iwork, nout);
+        } else {
+            write(nout, format_9989), path;
+        }
+        //
+    } else if (Mlsamen(2, c2.elems, "QK")) {
+        //
+        // QK: truncated QR factorization with pivoting
+        //
+        ntypes = 19;
+        Alareq(path, nmats, dotype, ntypes, nin, nout);
+        //
+        if (tstchk) {
+            Rchkqp3rk(dotype, nm, mval, nn, nval, nns, nsval, nnb, nbval, nxval, thresh, &a[0], &a[(2 - 1) * ldaw], &b[0], &b[(2 - 1) * ldb], &b[(3 - 1) * ldb], &b[(4 - 1) * ldb], work, iwork, nout);
         } else {
             write(nout, format_9989), path;
         }

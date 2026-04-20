@@ -237,6 +237,6 @@ void Rtbmv(const char *uplo, const char *trans, const char *diag, INTEGER const 
         }
     }
     //
-    // End of Rtbmv .
+    // End of Rtbmv
     //
 }

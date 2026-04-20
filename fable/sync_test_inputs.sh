@@ -21,10 +21,13 @@ Options:
 USAGE
 }
 
-script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
+root_dir="$(cd -- "${script_dir}/.." && pwd -P)"
 
-src_dir="${HOME}/mplapack/external/lapack/work/internal/lapack-3.9.1/TESTING"
-dest_root="${HOME}/mplapack/mplapack"
+lapack_version="${LAPACK_VERSION:-3.12.1}"
+
+src_dir="${root_dir}/external/lapack/work/internal/lapack-${lapack_version}/TESTING"
+dest_root="${root_dir}/mplapack"
 dry_run=0
 
 while [[ $# -gt 0 ]]; do

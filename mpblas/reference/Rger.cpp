@@ -106,6 +106,6 @@ void Rger(INTEGER const m, INTEGER const n, REAL const alpha, REAL *x, INTEGER c
         }
     }
     //
-    // End of Rger  .
+    // End of Rger
     //
 }

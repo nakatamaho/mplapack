@@ -44,7 +44,6 @@ void Cgesc2(INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *rhs, INTEGE
     REAL smlnum = Rlamch("S") / eps;
     const REAL one = 1.0;
     REAL bignum = one / smlnum;
-    Rlabad(smlnum, bignum);
     //
     // Apply permutations IPIV to RHS
     //

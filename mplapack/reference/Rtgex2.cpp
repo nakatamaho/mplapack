@@ -63,7 +63,7 @@ void Rtgex2(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
     REAL ddum = 0.0;
     const bool wands = true;
     REAL scale = 0.0;
-    INTEGER iwork[ldst];
+    INTEGER iwork[ldst + 2];
     INTEGER idum = 0;
     INTEGER linfo = 0;
     INTEGER i = 0;

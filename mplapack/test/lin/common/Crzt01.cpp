@@ -77,7 +77,7 @@ REAL Crzt01(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, INTEGER c
     // R = R * P(1) * ... *P(m)
     //
     INTEGER info = 0;
-    Cunmrz("Right", "No tranpose", m, n, m, n - m, af, lda, tau, work, m, &work[(m * n + 1) - 1], lwork - m * n, info);
+    Cunmrz("Right", "No transpose", m, n, m, n - m, af, lda, tau, work, m, &work[(m * n + 1) - 1], lwork - m * n, info);
     //
     // R = R - A
     //

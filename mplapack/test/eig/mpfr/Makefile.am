@@ -1,6 +1,6 @@
 check_PROGRAMS = $(mplapack_mpfr_test_PROGRAMS)
 
-mplapack_mpfr_test_PROGRAMS = xeigtstR_mpfr xeigtstC_mpfr
+mplapack_mpfr_test_PROGRAMS = xeigtstR_mpfr xeigtstC_mpfr xdmdeigtstR_mpfr xdmdeigtstC_mpfr
 mplapack_mpfr_testdir = $(prefix)/lib/$(target)/mplapack/test/eig
 
 # -----------------------------------------------------------------------------
@@ -46,6 +46,16 @@ xeigtstC_mpfr_LDFLAGS  = $(libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke 
 xeigtstC_mpfr_LDFLAGS += -Wl,-rpath,$(libdir)
 xeigtstC_mpfr_CXXFLAGS = $(cxxflags)
 
+xdmdeigtstR_mpfr_SOURCES  = ../common/Rchkdmd.cpp
+xdmdeigtstR_mpfr_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xdmdeigtstR_mpfr_LDFLAGS += -Wl,-rpath,$(libdir)
+xdmdeigtstR_mpfr_CXXFLAGS = $(cxxflags)
+
+xdmdeigtstC_mpfr_SOURCES  = ../common/Cchkdmd.cpp
+xdmdeigtstC_mpfr_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xdmdeigtstC_mpfr_LDFLAGS += -Wl,-rpath,$(libdir)
+xdmdeigtstC_mpfr_CXXFLAGS = $(cxxflags)
+
 install-data-hook:
 if IS_MACOS
 	bash $(top_srcdir)/misc/fix_dylib_macOS.sh $(mplapack_mpfr_testdir) $(prefix)
@@ -79,10 +89,10 @@ OUTDIR_PATH = ../results/$(OUTDIR)/mpfr
 # -----------------------------------------------------------------------------
 
 MPFR_REAL_TESTS = \
-	Rnep Rsep Rse2 Rsvd Rec Red Rgg Rgd Rsb Rsg Rbal Rbak Rgbal Rgbak Rbb Rglm Rgqr Rgsv Rcsd Rlse
+	Rnep Rsep Rse2 Rsvd Rec Red Rgg Rgd Rsb Rsg Rbal Rbak Rgbal Rgbak Rbb Rglm Rgqr Rgsv Rcsd Rlse Rdmd
 
 MPFR_COMPLEX_TESTS = \
-	Cnep Csep Cse2 Csvd Cec Ced Cgg Cgd Csb Csg Cbal Cbak Cgbal Cgbak Cbb Cglm Cgqr Cgsv Ccsd Clse
+	Cnep Csep Cse2 Csvd Cec Ced Cgg Cgd Csb Csg Cbal Cbak Cgbal Cgbak Cbb Cglm Cgqr Cgsv Ccsd Clse Cdmd
 
 MPFR_ALL_TESTS = $(MPFR_REAL_TESTS) $(MPFR_COMPLEX_TESTS)
 
@@ -628,4 +638,28 @@ $(OUTDIR_PATH)/Clse.%.out: $(srcdir)/../lse.in xeigtstC_mpfr$(EXEEXT)
 	set -e; { \
 		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
 		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_mpfr$(EXEEXT) < $(srcdir)/../lse.in; \
+	} > $@ 2>&1
+
+$(OUTDIR_PATH)/Rdmd.%.out: $(srcdir)/../Rdmd.in xdmdeigtstR_mpfr$(EXEEXT)
+	@$(MKDIR_P) $(OUTDIR_PATH)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "DMD: Testing Dynamic Mode Decomposition routines [$(MPFR_PROFILE_LABEL_$*)]"; \
+	set -e; { \
+		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xdmdeigtstR_mpfr$(EXEEXT) < $(srcdir)/../Rdmd.in; \
+	} > $@ 2>&1
+
+$(OUTDIR_PATH)/Cdmd.%.out: $(srcdir)/../Cdmd.in xdmdeigtstC_mpfr$(EXEEXT)
+	@$(MKDIR_P) $(OUTDIR_PATH)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "DMD: Testing COMPLEX Dynamic Mode Decomposition routines [$(MPFR_PROFILE_LABEL_$*)]"; \
+	set -e; { \
+		echo "=== MPFR profile: $(MPFR_PROFILE_LABEL_$*) ==="; \
+		$(MPFR_ENV_$*) $(MPFR_EXTRA_ENV) $$wrapper $(WINE) ./xdmdeigtstC_mpfr$(EXEEXT) < $(srcdir)/../Cdmd.in; \
 	} > $@ 2>&1

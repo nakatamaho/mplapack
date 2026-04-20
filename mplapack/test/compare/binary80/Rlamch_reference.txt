@@ -1,12 +1,28 @@
 *** Testing Rlamch start ***
-Rlamch E: Epsilon                      +5.421010862427522170037e-20
-Rlamch S: Safe minimum                 +3.362103143112093506263e-4932
-Rlamch B: Base                         +2.000000000000000000000e+00
-Rlamch P: Precision                    +1.084202172485504434007e-19
-Rlamch N: Number of digits in mantissa +6.400000000000000000000e+01
-Rlamch R: Rounding mode                +1.000000000000000000000e+00
-Rlamch M: Minimum exponent             -1.638100000000000000000e+04
-Rlamch U: Underflow threshold          +3.362103143112093506263e-4932
-Rlamch L: Largest exponent             +1.638400000000000000000e+04
-Rlamch O: Overflow threshold           +1.189731495357231765021e+4932
+[params/binary80] t=64 emin=-16381 emax=16384
+[params/binary80] safmin           +3.362103143112093506263e-4932                +0x1.0000000000000000p-16382
+[params/binary80] safmax           +5.948657476786158825429e+4931                +0x1.0000000000000000p+16383
+[params/binary80] builder exp_tsml=-8191 exp_tbig=8160 exp_ssml=8223 exp_sbig=-8224
+[params/binary80] builder tsml             +1.833603867554847165621e-2466                +0x1.0000000000000000p-08191
+[params/binary80] builder tbig             +2.539595904805268928090e+2456                +0x1.0000000000000000p+08160
+[params/binary80] builder ssml             +2.342363785329182059832e+2475                +0x1.0000000000000000p+08223
+[params/binary80] builder sbig             +2.134595843445098918888e-2476                +0x1.0000000000000000p-08224
+Rlamch E: Epsilon                                  +5.421010862427522170037e-20                +0x1.0000000000000000p-00064
+Rlamch S: Safe minimum                           +3.362103143112093506263e-4932                +0x1.0000000000000000p-16382
+Rlamch B: Base                                     +2.000000000000000000000e+00                +0x1.0000000000000000p+00001
+Rlamch P: Precision                                +1.084202172485504434007e-19                +0x1.0000000000000000p-00063
+Rlamch N: Number of digits in mantissa             +6.400000000000000000000e+01                +0x1.0000000000000000p+00006
+Rlamch R: Rounding mode                            +1.000000000000000000000e+00                +0x1.0000000000000000p+00000
+Rlamch M: Minimum exponent                         -1.638100000000000000000e+04                -0x1.ffe8000000000000p+00013
+Rlamch U: Underflow threshold                    +3.362103143112093506263e-4932                +0x1.0000000000000000p-16382
+Rlamch L: Largest exponent                         +1.638400000000000000000e+04                +0x1.0000000000000000p+00014
+Rlamch O: Overflow threshold                     +1.189731495357231765021e+4932                +0x1.fffffffffffffffep+16383
+BlueScale exp_tsml: -8191
+BlueScale exp_tbig: 8160
+BlueScale exp_ssml: 8223
+BlueScale exp_sbig: -8224
+BlueScale tsml:               +1.833603867554847165621e-2466                +0x1.0000000000000000p-08191
+BlueScale tbig:               +2.539595904805268928090e+2456                +0x1.0000000000000000p+08160
+BlueScale ssml:               +2.342363785329182059832e+2475                +0x1.0000000000000000p+08223
+BlueScale sbig:               +2.134595843445098918888e-2476                +0x1.0000000000000000p-08224
 *** Testing Rlamch successful ***

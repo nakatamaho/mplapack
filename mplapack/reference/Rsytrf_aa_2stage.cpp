@@ -50,9 +50,9 @@ void Rsytrf_aa_2stage(const char *uplo, INTEGER const n, REAL *a, INTEGER const 
         info = -2;
     } else if (lda < max((INTEGER)1, n)) {
         info = -4;
-    } else if (ltb < 4 * n && !tquery) {
+    } else if (ltb < max((INTEGER)1, 4 * n) && !tquery) {
         info = -6;
-    } else if (lwork < n && !wquery) {
+    } else if (lwork < max((INTEGER)1, n) && !wquery) {
         info = -10;
     }
     //
@@ -66,10 +66,10 @@ void Rsytrf_aa_2stage(const char *uplo, INTEGER const n, REAL *a, INTEGER const 
     INTEGER nb = iMlaenv(1, "Rsytrf_aa_2stage", uplo, n, -1, -1, -1);
     if (info == 0) {
         if (tquery) {
-            tb[1 - 1] = (3 * nb + 1) * n;
+            tb[1 - 1] = max((INTEGER)1, (3 * nb + 1) * n);
         }
         if (wquery) {
-            work[1 - 1] = n * nb;
+            work[1 - 1] = max((INTEGER)1, n * nb);
         }
     }
     if (tquery || wquery) {

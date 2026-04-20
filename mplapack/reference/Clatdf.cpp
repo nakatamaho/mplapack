@@ -66,7 +66,7 @@ void Clatdf(INTEGER const ijob, INTEGER const n, COMPLEX *z, INTEGER const ldz, 
             bm = rhs[j - 1] - cone;
             splus = one;
             //
-            // Lockahead for L- part RHS(1:N-1) = +-1
+            // Look-ahead for L- part RHS(1:N-1) = +-1
             // SPLUS and SMIN computed more efficiently than in BSOLVE[1].
             //
             splus += Cdotc(n - j, &z[((j + 1) - 1) + (j - 1) * ldz], 1, &z[((j + 1) - 1) + (j - 1) * ldz], 1).real();

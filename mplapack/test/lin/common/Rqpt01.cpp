@@ -68,13 +68,26 @@ REAL Rqpt01(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, REAL *af
     INTEGER j = 0;
     INTEGER i = 0;
     for (j = 1; j <= k; j = j + 1) {
+        //
+        // Copy the upper triangular part of the factor R stored
+        // in AF(1:K,1:K) into the work array WORK.
+        //
         for (i = 1; i <= min(j, m); i = i + 1) {
             work[((j - 1) * m + i) - 1] = af[(i - 1) + (j - 1) * lda];
         }
+        //
+        // Zero out the elements below the diagonal in the work array.
+        //
         for (i = j + 1; i <= m; i = i + 1) {
             work[((j - 1) * m + i) - 1] = zero;
         }
     }
+    //
+    // Copy columns (K+1,N) from AF into the work array WORK.
+    // AF(1:K,K+1:N) contains the rectangular block of the upper trapezoidal
+    // factor R, AF(K+1:M,K+1:N) contains the partially updated residual
+    // matrix of R.
+    //
     for (j = k + 1; j <= n; j = j + 1) {
         Rcopy(m, &af[(j - 1) * lda], 1, &work[((j - 1) * m + 1) - 1], 1);
     }
@@ -85,7 +98,7 @@ REAL Rqpt01(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, REAL *af
     const REAL one = 1.0;
     for (j = 1; j <= n; j = j + 1) {
         //
-        // Compare i-th column of QR and jpvt(i)-th column of A
+        // Compare J-th column of QR and JPVT(J)-th column of A.
         //
         Raxpy(m, -one, &a[(jpvt[j - 1] - 1) * lda], 1, &work[((j - 1) * m + 1) - 1], 1);
     }

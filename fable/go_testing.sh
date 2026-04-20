@@ -2,7 +2,7 @@
 # go_testing.sh: multi-pass Fortran->C++ conversion for LAPACK TESTING sources.
 #
 # Scope:
-#   - Convert LAPACK 3.9.1 TESTING/{EIG,LIN,MATGEN} Fortran sources to C++.
+#   - Convert LAPACK TESTING/{EIG,LIN,MATGEN} Fortran sources to C++.
 #   - Generate include headers using:
 #       * gen_include_mplapack_eig.sh
 #       * gen_include_mplapack_lin.sh
@@ -12,6 +12,9 @@
 set -euo pipefail
 shopt -s nullglob
 
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+ROOT="${ROOT:-$(cd -- "${SCRIPT_DIR}/.." && pwd)}"
+
 # ------------------------------------------------------------
 # Exception lists: sources that should NOT be converted in TESTING pass
 # ------------------------------------------------------------
@@ -19,19 +22,86 @@ shopt -s nullglob
 # We skip single precision real/complex families: s* and c*.
 EXCLUDE_PREFIXES=( s c )
 # Exclude specific files by name (case-insensitive).
-EXCLUDE_FILES=( dlaran xerbla ilaenv xlaenv )
+EXCLUDE_FILES=( dlaran xerbla ilaenv xlaenv zchkab dchkab zdrvab zdrvac zdrvgbx zdrvgex zdrvhex zdrvpox zdrvsyx zebchvxx zerrab zerrac zdrvgbx zdrvgex zdrvhex zdrvpox zerrgex zerrhex zerrpox zerrsyx zerrvxx ddrvab ddrvac ddrvgbx ddrvgex ddrvpox ddrvsyx debchvxx derrab derrac derrgex derrpox derrsyx derrvxx )
 
 # Force-include specific utility routines even if they match excluded prefixes.
 # Example: chkxer is required by many LAPACK tests but starts with "c".
 FORCE_INCLUDE_STEMS=( chkxer )
 
+# Hand-maintained files to keep when cleaning old generated outputs.
+KEEP_HAND_WRITTEN_FILES=(
+  Mxerbla.cpp
+  Mxlaenv.cpp
+  iMlaenv.cpp
+  Rlaran.cpp
+  mplapack_eig.h.in
+  mplapack_eig_binary128.h.in
+  mplapack_eig_binary80.h.in
+  mplapack_eig_dd.h.in
+  mplapack_eig_double.h.in
+  mplapack_eig_gmp.h.in
+  mplapack_eig_mpfr.h.in
+  mplapack_eig_qd.h.in
+  mplapack_lin.h.in
+  mplapack_lin_binary128.h.in
+  mplapack_lin_binary80.h.in
+  mplapack_lin_dd.h.in
+  mplapack_lin_double.h.in
+  mplapack_lin_gmp.h.in
+  mplapack_lin_mpfr.h.in
+  mplapack_lin_qd.h.in
+  mplapack_matgen.h.in
+  mplapack_matgen_binary128.h.in
+  mplapack_matgen_binary80.h.in
+  mplapack_matgen_dd.h.in
+  mplapack_matgen_double.h.in
+  mplapack_matgen_gmp.h.in
+  mplapack_matgen_mpfr.h.in
+  mplapack_matgen_qd.h.in
+  Makefile.am
+  Makefile.in
+  Makefile
+)
+
+GENERATED_CLEAN_DIRS=(
+  "${ROOT}/mplapack/test/lin/common"
+  "${ROOT}/mplapack/test/eig/common"
+  "${ROOT}/mplapack/test/matgen"
+)
+
+for target_dir in "${GENERATED_CLEAN_DIRS[@]}"; do
+  [ -d "${target_dir}" ] || continue
+
+  find_args=(
+    "${target_dir}"
+    -maxdepth 1
+    -type f
+    "("
+      -name '*'
+    ")"
+  )
+
+  for keep in "${KEEP_HAND_WRITTEN_FILES[@]}"; do
+    find_args+=( ! -name "${keep}" )
+  done
+
+  find "${find_args[@]}" -delete
+done
+
+echo "MPLAPACK testdirs have been cleaned up"
+ls "${ROOT}/mplapack/test/lin/common"
+ls "${ROOT}/mplapack/test/eig/common"
+ls "${ROOT}/mplapack/test/matgen"
+
 PASSES="${1:-2}"
 
-ROOT="${ROOT:-/home/docker/mplapack}"
+# Default LAPACK version
+LAPACK_VERSION="${LAPACK_VERSION:-3.12.1}"
+
 export PYTHONPATH="${ROOT}:${PYTHONPATH:-}"
 
 FABLE="${ROOT}/fable"
-LAPACK_ROOT="${ROOT}/external/lapack/work/internal/lapack-3.9.1"
+LAPACK_ROOT="${ROOT}/external/lapack/work/internal/lapack-${LAPACK_VERSION}"
 TESTING_ROOT="${LAPACK_ROOT}/TESTING"
 
 EIG_SRC="${TESTING_ROOT}/EIG"
@@ -352,11 +422,102 @@ for pass in $(seq 1 "${PASSES}"); do
   fi
 done
 
-python3 ~/mplapack/fable/rename_routine_literals.py --in-place --map ~/mplapack/fable/mplapack_name_map.txt --map ~/mplapack/fable/mplapack_testing_name_map.txt ~/mplapack/mplapack/test/eig
-python3 ~/mplapack/fable/rename_routine_literals.py --in-place --map ~/mplapack/fable/mplapack_name_map.txt --map ~/mplapack/fable/mplapack_testing_name_map.txt ~/mplapack/mplapack/test/lin
-python3 ~/mplapack/fable/rename_routine_literals.py --in-place --map ~/mplapack/fable/mplapack_name_map.txt --map ~/mplapack/fable/mplapack_testing_name_map.txt ~/mplapack/mplapack/test/matgen
+python3 "${FABLE}/rename_routine_literals.py" --in-place --map "${FABLE}/mplapack_name_map.txt" --map "${FABLE}/mplapack_testing_name_map.txt" "${ROOT}/mplapack/test/eig"
+python3 "${FABLE}/rename_routine_literals.py" --in-place --map "${FABLE}/mplapack_name_map.txt" --map "${FABLE}/mplapack_testing_name_map.txt" "${ROOT}/mplapack/test/lin"
+python3 "${FABLE}/rename_routine_literals.py" --in-place --map "${FABLE}/mplapack_name_map.txt" --map "${FABLE}/mplapack_testing_name_map.txt" "${ROOT}/mplapack/test/matgen"
 
 bash "${FABLE}/sync_test_inputs.sh"
-bash "${FABLE}/patch_lapack_test.sh"
+bash "${FABLE}/patch_lapack_test_${LAPACK_VERSION}.sh"
+
+# Regenerate explicit testing source lists in Makefile.am from the
+# current set of *.cpp files in the corresponding source directory.
+regen_testing_makefile_sources() {
+  local makefile_am="$1"
+  local source_dir="$2"
+  local variable_name="$3"
+  local path_prefix="$4"
+
+  python3 - "$makefile_am" "$source_dir" "$variable_name" "$path_prefix" <<'PY'
+from pathlib import Path
+import sys
+
+makefile_am = Path(sys.argv[1])
+source_dir = Path(sys.argv[2])
+variable_name = sys.argv[3]
+path_prefix = sys.argv[4]
+
+cpp_files = sorted(path.name for path in source_dir.glob("*.cpp"))
+if not cpp_files:
+    raise SystemExit(f"No .cpp files found in {source_dir}")
+
+lines = makefile_am.read_text().splitlines(keepends=True)
+
+start = None
+prefix = f"{variable_name} = "
+for i, line in enumerate(lines):
+    if line.startswith(prefix):
+        start = i
+        break
+
+if start is None:
+    raise SystemExit(f"{variable_name} block not found in {makefile_am}")
+
+end = start + 1
+while end <= len(lines) and lines[end - 1].rstrip().endswith("\\"):
+    if end == len(lines):
+        raise SystemExit(f"Unterminated {variable_name} block in {makefile_am}")
+    end += 1
+
+replacement = [f"{variable_name} = \\\n"]
+for i, name in enumerate(cpp_files):
+    item = f"{path_prefix}{name}"
+    current_suffix = " \\\n" if i != len(cpp_files) - 1 else "\n"
+    replacement.append(f"{item}{current_suffix}")
+
+new_lines = lines[:]
+new_lines[start:end] = replacement
+
+old_text = "".join(lines)
+new_text = "".join(new_lines)
+if new_text != old_text:
+    makefile_am.write_text(new_text)
+PY
+}
+
+regen_testing_makefile_sources \
+  "${ROOT}/mplapack/test/eig/Makefile.am" \
+  "${ROOT}/mplapack/test/eig/common" \
+  "EIG_SOURCES" \
+  "common/"
+
+sed -i \
+  -e '/^[[:space:]]*common\/Cchkee\.cpp \\$/d' \
+  -e '/^[[:space:]]*common\/Cchkdmd\.cpp \\$/d' \
+  -e '/^[[:space:]]*common\/Rchkee\.cpp \\$/d' \
+  -e '/^[[:space:]]*common\/Rchkdmd\.cpp \\$/d' \
+  -e '/^[[:space:]]*common\/Mxerbla\.cpp \\$/d' \
+  -e '/^[[:space:]]*common\/Mxlaenv\.cpp \\$/d' \
+  "${ROOT}/mplapack/test/eig/Makefile.am"
+
+regen_testing_makefile_sources \
+  "${ROOT}/mplapack/test/lin/Makefile.am" \
+  "${ROOT}/mplapack/test/lin/common" \
+  "LIN_SOURCES" \
+  "common/"
+
+sed -i \
+  -e '/^[[:space:]]*common\/Cchkaa\.cpp \\$/d' \
+  -e '/^[[:space:]]*common\/Cchkrfp\.cpp \\$/d' \
+  -e '/^[[:space:]]*common\/Rchkaa\.cpp \\$/d' \
+  -e '/^[[:space:]]*common\/Rchkrfp\.cpp \\$/d' \
+  -e '/^[[:space:]]*common\/Mxerbla\.cpp \\$/d' \
+  -e '/^[[:space:]]*common\/Mxlaenv\.cpp \\$/d' \
+  "${ROOT}/mplapack/test/lin/Makefile.am"
+
+regen_testing_makefile_sources \
+  "${ROOT}/mplapack/test/matgen/Makefile.am" \
+  "${ROOT}/mplapack/test/matgen" \
+  "MATGEN_SOURCES" \
+  ""
 
 echo "ALL DONE"

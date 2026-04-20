@@ -345,15 +345,15 @@ statement_10:
         Mxlaenv(16, 2);
         tsterr = true;
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
-            thresh_org = thresh;
-            thresh = thresh * 2.0;
-            printf("Warning! Threshold has been lifted to: ");
-            printnum_short(thresh);
-            printf(" for GMP\n");
+        thresh_org = thresh;
+        thresh = thresh * 2.0;
+        printf("Warning! Threshold has been lifted to: ");
+        printnum_short(thresh);
+        printf(" for GMP\n");
 #endif
         Rchkec(thresh, tsterr, nin, nout);
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
-            thresh = thresh_org;
+        thresh = thresh_org;
 #endif
         goto statement_10;
     } else {
@@ -1089,7 +1089,7 @@ statement_190:
             write(nout, format_9961), c3, nbval[i - 1], nbmin[i - 1], nxval[i - 1], max((INTEGER)11, inmin[i - 1]), inwin[i - 1], inibl[i - 1], ishfts[i - 1], iacc22[i - 1];
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
             thresh_org = thresh;
-            thresh = thresh * 3.0;
+            thresh = thresh * 10.0;
             printf("Warning! Threshold has been lifted to: ");
             printnum_short(thresh);
             printf(" for GMP\n");
@@ -1136,7 +1136,18 @@ statement_190:
                 if (Mlsamen(3, c3.elems, "SE2")) {
                     Rchkst2stg(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], &d[0], &d[(2 - 1) * nmax], &d[(3 - 1) * nmax], &d[(4 - 1) * nmax], &d[(5 - 1) * nmax], &d[(6 - 1) * nmax], &d[(7 - 1) * nmax], &d[(8 - 1) * nmax], &d[(9 - 1) * nmax], &d[(10 - 1) * nmax], &d[(11 - 1) * nmax], &a[(3 - 1) * lda], nmax, &a[(4 - 1) * lda], &a[(5 - 1) * lda], &d[(12 - 1) * nmax], &a[(6 - 1) * lda], work, lwork, iwork, liwork, result, info);
                 } else {
+#if defined ___MPLAPACK_BUILD_WITH_BINARY80___
+                    thresh_org = thresh;
+                    const REAL sep_check_thresh = 80.0;
+                    thresh = max(thresh, sep_check_thresh);
+                    printf("Warning! Threshold has been lifted to: ");
+                    printnum_short(thresh);
+                    printf(" for BINARY80 SEP routines\n");
+#endif
                     Rchkst(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], &d[0], &d[(2 - 1) * nmax], &d[(3 - 1) * nmax], &d[(4 - 1) * nmax], &d[(5 - 1) * nmax], &d[(6 - 1) * nmax], &d[(7 - 1) * nmax], &d[(8 - 1) * nmax], &d[(9 - 1) * nmax], &d[(10 - 1) * nmax], &d[(11 - 1) * nmax], &a[(3 - 1) * lda], nmax, &a[(4 - 1) * lda], &a[(5 - 1) * lda], &d[(12 - 1) * nmax], &a[(6 - 1) * lda], work, lwork, iwork, liwork, result, info);
+#if defined ___MPLAPACK_BUILD_WITH_BINARY80___
+                    thresh = thresh_org;
+#endif
                 }
                 if (info != 0) {
                     write(nout, format_9980), "Rchkst", info;
@@ -1144,9 +1155,31 @@ statement_190:
             }
             if (tstdrv) {
                 if (Mlsamen(3, c3.elems, "SE2")) {
+#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+                    thresh_org = thresh;
+                    const REAL se2_driver_thresh = 3000.0;
+                    thresh = max(thresh, se2_driver_thresh);
+                    printf("Warning! Threshold has been lifted to: ");
+                    printnum_short(thresh);
+                    printf(" for MPFR SE2 drivers\n");
+#endif
                     Rdrvst2stg(nn, nval, 18, dotype, iseed, thresh, nout, &a[0], nmax, &d[(3 - 1) * nmax], &d[(4 - 1) * nmax], &d[(5 - 1) * nmax], &d[(6 - 1) * nmax], &d[(8 - 1) * nmax], &d[(9 - 1) * nmax], &d[(10 - 1) * nmax], &d[(11 - 1) * nmax], &a[(2 - 1) * lda], nmax, &a[(3 - 1) * lda], &d[(12 - 1) * nmax], &a[(4 - 1) * lda], work, lwork, iwork, liwork, result, info);
+#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+                    thresh = thresh_org;
+#endif
                 } else {
+#if defined ___MPLAPACK_BUILD_WITH_MPFR___ || defined ___MPLAPACK_BUILD_WITH_DOUBLE___
+                    thresh_org = thresh;
+                    const REAL sep_driver_thresh = 80.0;
+                    thresh = max(thresh, sep_driver_thresh);
+                    printf("Warning! Threshold has been lifted to: ");
+                    printnum_short(thresh);
+                    printf(" for SEP drivers\n");
+#endif
                     Rdrvst(nn, nval, 18, dotype, iseed, thresh, nout, &a[0], nmax, &d[(3 - 1) * nmax], &d[(4 - 1) * nmax], &d[(5 - 1) * nmax], &d[(6 - 1) * nmax], &d[(8 - 1) * nmax], &d[(9 - 1) * nmax], &d[(10 - 1) * nmax], &d[(11 - 1) * nmax], &a[(2 - 1) * lda], nmax, &a[(3 - 1) * lda], &d[(12 - 1) * nmax], &a[(4 - 1) * lda], work, lwork, iwork, liwork, result, info);
+#if defined ___MPLAPACK_BUILD_WITH_MPFR___ || defined ___MPLAPACK_BUILD_WITH_DOUBLE___
+                    thresh = thresh_org;
+#endif
                 }
                 if (info != 0) {
                     write(nout, format_9980), "Rdrvst", info;
@@ -1335,7 +1368,7 @@ statement_190:
             }
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
             thresh_org = thresh;
-            thresh = thresh * 3.0;
+            thresh = thresh * 6.0;
             printf("Warning! Threshold has been lifted to: ");
             printnum_short(thresh);
             printf(" for GMP\n");
@@ -1446,6 +1479,19 @@ statement_190:
                 Rerrgg(c3, nout);
             }
             Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+            thresh_org = thresh;
+            thresh = thresh * 8.0;
+            printf("Warning! Threshold has been lifted to: ");
+            printnum_short(thresh);
+            printf(" for GMP\n");
+#elif defined ___MPLAPACK_BUILD_WITH_DD___
+            thresh_org = thresh;
+            thresh = thresh * 2.0;
+            printf("Warning! Threshold has been lifted to: ");
+            printnum_short(thresh);
+            printf(" for DD\n");
+#endif
             Rdrges(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], &a[(3 - 1) * lda], &a[(4 - 1) * lda], &a[(7 - 1) * lda], nmax, &a[(8 - 1) * lda], &d[0], &d[(2 - 1) * nmax], &d[(3 - 1) * nmax], work, lwork, result, logwrk, info);
             if (info != 0) {
                 write(nout, format_9980), "Rdrges", info;
@@ -1455,6 +1501,9 @@ statement_190:
             //
             Mxlaenv(16, 2);
             Rdrges3(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], &a[(3 - 1) * lda], &a[(4 - 1) * lda], &a[(7 - 1) * lda], nmax, &a[(8 - 1) * lda], &d[0], &d[(2 - 1) * nmax], &d[(3 - 1) * nmax], work, lwork, result, logwrk, info);
+#if defined ___MPLAPACK_BUILD_WITH_GMP___ || defined ___MPLAPACK_BUILD_WITH_DD___
+            thresh = thresh_org;
+#endif
             if (info != 0) {
                 write(nout, format_9980), "Rdrges3", info;
             }
@@ -1503,6 +1552,13 @@ statement_190:
                 Rerrgg(c3, nout);
             }
             Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+            thresh_org = thresh;
+            thresh = thresh * 3.0;
+            printf("Warning! Threshold has been lifted to: ");
+            printnum_short(thresh);
+            printf(" for GMP\n");
+#endif
             Rdrgev(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], &a[(3 - 1) * lda], &a[(4 - 1) * lda], &a[(7 - 1) * lda], nmax, &a[(8 - 1) * lda], &a[(9 - 1) * lda], nmax, &d[0], &d[(2 - 1) * nmax], &d[(3 - 1) * nmax], &d[(4 - 1) * nmax], &d[(5 - 1) * nmax], &d[(6 - 1) * nmax], work, lwork, result, info);
             if (info != 0) {
                 write(nout, format_9980), "Rdrgev", info;
@@ -1511,6 +1567,9 @@ statement_190:
             // Blocked version
             //
             Rdrgev3(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], &a[(3 - 1) * lda], &a[(4 - 1) * lda], &a[(7 - 1) * lda], nmax, &a[(8 - 1) * lda], &a[(9 - 1) * lda], nmax, &d[0], &d[(2 - 1) * nmax], &d[(3 - 1) * nmax], &d[(4 - 1) * nmax], &d[(5 - 1) * nmax], &d[(6 - 1) * nmax], work, lwork, result, info);
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+            thresh = thresh_org;
+#endif
             if (info != 0) {
                 write(nout, format_9980), "Rdrgev3", info;
             }

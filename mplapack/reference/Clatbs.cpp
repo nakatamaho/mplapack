@@ -43,8 +43,8 @@ void Clatbs(const char *uplo, const char *trans, const char *diag, const char *n
     bool upper = false;
     bool notran = false;
     bool nounit = false;
-    REAL smlnum = 0.0;
     const REAL one = 1.0;
+    REAL smlnum = 0.0;
     REAL bignum = 0.0;
     INTEGER j = 0;
     INTEGER jlen = 0;
@@ -98,18 +98,15 @@ void Clatbs(const char *uplo, const char *trans, const char *diag, const char *n
     //
     // Quick return if possible
     //
+    scale = one;
     if (n == 0) {
         return;
     }
     //
     // Determine machine dependent parameters to control overflow.
     //
-    smlnum = Rlamch("Safe minimum");
+    smlnum = Rlamch("Safe minimum") / Rlamch("Precision");
     bignum = one / smlnum;
-    Rlabad(smlnum, bignum);
-    smlnum = smlnum / Rlamch("Precision");
-    bignum = one / smlnum;
-    scale = one;
     //
     if (Mlsame(normin, "N")) {
         //

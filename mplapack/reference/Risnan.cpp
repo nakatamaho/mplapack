@@ -26,18 +26,111 @@
  *
  */
 
-// Derived from LAPACK routine DISNAN.
-// Original LAPACK authors:
-//   Univ. of Tennessee
-//   Univ. of California Berkeley
-//   Univ. of Colorado Denver
-//   NAG Ltd.
+// Risnan: NaN predicate for all MPLAPACK backends.
+//
+// Replaces the Fortran DISNAN / DLAISNAN / LA_XISNAN trio.
+// In Fortran LAPACK, DISNAN calls DLAISNAN(x, x) where DLAISNAN lives
+// in a separate translation unit solely to prevent the compiler from
+// optimizing  x /= x  into .FALSE.   In C++ this trick is unnecessary:
+// IEEE 754 comparison semantics are guaranteed unless -ffast-math is
+// used, and even then a separate TU would not reliably help against LTO.
+// We simply call the appropriate isnan facility for each backend.
 
 #include <mpblas.h>
 #include <mplapack.h>
 
-bool Risnan(REAL const din) {
-    bool return_value = false;
-    return_value = Rlaisnan(din, din);
-    return return_value;
+#include <cmath>
+
+// -----------------------------------------------------------------------
+// double
+// -----------------------------------------------------------------------
+#if defined ___MPLAPACK_BUILD_WITH_DOUBLE___
+bool Risnan(REAL const &x) {
+    return std::isnan(x);
 }
+#endif
+
+// -----------------------------------------------------------------------
+// binary80
+// -----------------------------------------------------------------------
+#if defined ___MPLAPACK_BUILD_WITH_BINARY80___
+#  if MPLAPACK_BINARY80_MATH == MPLAPACK_BINARY80_MATH_LDBL
+bool Risnan(REAL const &x) {
+    return std::isnan(x);
+}
+#  elif MPLAPACK_BINARY80_MATH == MPLAPACK_BINARY80_MATH_F64X
+// _Float64x: cast to long double is exact when _Float64x == binary80.
+bool Risnan(REAL const &x) {
+    return std::isnan((long double)x);
+}
+#  else
+#    error "Risnan: unsupported MPLAPACK_BINARY80_MATH"
+#  endif
+#endif // ___MPLAPACK_BUILD_WITH_BINARY80___
+
+// -----------------------------------------------------------------------
+// binary128
+// -----------------------------------------------------------------------
+#if defined ___MPLAPACK_BUILD_WITH_BINARY128___
+#  if MPLAPACK_BINARY128_MATH == MPLAPACK_BINARY128_MATH_LDBL
+// long double == binary128 (SPARC, MIPS, some AArch64).
+bool Risnan(REAL const &x) {
+    return std::isnan(x);
+}
+#  elif MPLAPACK_BINARY128_MATH == MPLAPACK_BINARY128_MATH_F128
+// _Float128 (ISO C TS 18661-3, GCC 7+).
+bool Risnan(REAL const &x) {
+    return __builtin_isnan((_Float128)x);
+}
+#  elif MPLAPACK_BINARY128_MATH == MPLAPACK_BINARY128_MATH_QUADMATH
+#    include <quadmath.h>
+bool Risnan(REAL const &x) {
+    return isnanq((__float128)x);
+}
+#  else
+#    error "Risnan: unsupported MPLAPACK_BINARY128_MATH"
+#  endif
+#endif // ___MPLAPACK_BUILD_WITH_BINARY128___
+
+// -----------------------------------------------------------------------
+// DD (double-double)
+// -----------------------------------------------------------------------
+#if defined ___MPLAPACK_BUILD_WITH_DD___
+bool Risnan(REAL const &x) {
+    // If the high component is NaN the entire dd_real is NaN.
+    // The low limb is bounded by ulp(x.x[0]) and cannot independently
+    // be NaN while the high limb is finite.
+    return std::isnan(x.x[0]);
+}
+#endif // ___MPLAPACK_BUILD_WITH_DD___
+
+// -----------------------------------------------------------------------
+// QD (quad-double)
+// -----------------------------------------------------------------------
+#if defined ___MPLAPACK_BUILD_WITH_QD___
+bool Risnan(REAL const &x) {
+    // Same reasoning as DD.
+    return std::isnan(x.x[0]);
+}
+#endif // ___MPLAPACK_BUILD_WITH_QD___
+
+// -----------------------------------------------------------------------
+// MPFR (mpfr::mpreal)
+// -----------------------------------------------------------------------
+#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+bool Risnan(REAL const &x) {
+    return mpfr_nan_p((mpfr_ptr)const_cast<REAL &>(x)) != 0;
+}
+#endif // ___MPLAPACK_BUILD_WITH_MPFR___
+
+// -----------------------------------------------------------------------
+// GMP (mpf_class)
+// -----------------------------------------------------------------------
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+bool Risnan(REAL const &x) {
+    // GMP mpf does not support NaN or Inf; all mpf values are finite.
+    // Always return false.
+    (void)x;
+    return false;
+}
+#endif // ___MPLAPACK_BUILD_WITH_GMP___

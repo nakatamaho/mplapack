@@ -1,6 +1,6 @@
 check_PROGRAMS = $(mplapack_binary128_test_PROGRAMS)
 
-mplapack_binary128_test_PROGRAMS = xeigtstR_binary128 xeigtstC_binary128
+mplapack_binary128_test_PROGRAMS = xeigtstR_binary128 xeigtstC_binary128 xdmdeigtstR_binary128 xdmdeigtstC_binary128
 mplapack_binary128_testdir = $(prefix)/lib/$(target)/mplapack/test/eig
 
 $(check_PROGRAMS): ../libeig_binary128.la ../libeig_override_binary128.la
@@ -27,6 +27,16 @@ xeigtstC_binary128_SOURCES  = ../common/Cchkee.cpp
 xeigtstC_binary128_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstC_binary128_LDFLAGS += -Wl,-rpath,$(libdir)
 xeigtstC_binary128_CXXFLAGS = $(cxxflags)
+
+xdmdeigtstR_binary128_SOURCES  = ../common/Rchkdmd.cpp
+xdmdeigtstR_binary128_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xdmdeigtstR_binary128_LDFLAGS += -Wl,-rpath,$(libdir)
+xdmdeigtstR_binary128_CXXFLAGS = $(cxxflags)
+
+xdmdeigtstC_binary128_SOURCES  = ../common/Cchkdmd.cpp
+xdmdeigtstC_binary128_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xdmdeigtstC_binary128_LDFLAGS += -Wl,-rpath,$(libdir)
+xdmdeigtstC_binary128_CXXFLAGS = $(cxxflags)
 
 install-data-hook:
 if IS_MACOS
@@ -61,10 +71,10 @@ OUTDIR_PATH = ../results/$(OUTDIR)/binary128
 # -----------------------------------------------------------------------------
 
 FLOAT128_REAL_TESTS = \
-	Rnep Rsep Rse2 Rsvd Rec Red Rgg Rgd Rsb Rsg Rbal Rbak Rgbal Rgbak Rbb Rglm Rgqr Rgsv Rcsd Rlse
+	Rnep Rsep Rse2 Rsvd Rec Red Rgg Rgd Rsb Rsg Rbal Rbak Rgbal Rgbak Rbb Rglm Rgqr Rgsv Rcsd Rlse Rdmd
 
 FLOAT128_COMPLEX_TESTS = \
-	Cnep Csep Cse2 Csvd Cec Ced Cgg Cgd Csb Csg Cbal Cbak Cgbal Cgbak Cbb Cglm Cgqr Cgsv Ccsd Clse
+	Cnep Csep Cse2 Csvd Cec Ced Cgg Cgd Csb Csg Cbal Cbak Cgbal Cgbak Cbb Cglm Cgqr Cgsv Ccsd Clse Cdmd
 
 FLOAT128_ALL_TESTS = $(FLOAT128_REAL_TESTS) $(FLOAT128_COMPLEX_TESTS)
 
@@ -599,4 +609,27 @@ $(OUTDIR_PATH)/Clse.out: $(srcdir)/../lse.in xeigtstC_binary128$(EXEEXT)
 	set -e; { \
 		echo "=== precision: $(FLOAT128_LABEL) ==="; \
 		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_binary128$(EXEEXT) < $(srcdir)/../lse.in; \
+	} > $@ 2>&1
+
+$(OUTDIR_PATH)/Rdmd.out: $(srcdir)/../Rdmd.in xdmdeigtstR_binary128$(EXEEXT)
+	@$(MKDIR_P) $(OUTDIR_PATH)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "DMD: Testing Dynamic Mode Decomposition routines [$(FLOAT128_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(FLOAT128_LABEL) ==="; \
+		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xdmdeigtstR_binary128$(EXEEXT) < $(srcdir)/../Rdmd.in; \
+	} > $@ 2>&1
+$(OUTDIR_PATH)/Cdmd.out: $(srcdir)/../Cdmd.in xdmdeigtstC_binary128$(EXEEXT)
+	@$(MKDIR_P) $(OUTDIR_PATH)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "DMD: Testing COMPLEX Dynamic Mode Decomposition routines [$(FLOAT128_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(FLOAT128_LABEL) ==="; \
+		$(FLOAT128_EXTRA_ENV) $$wrapper $(WINE) ./xdmdeigtstC_binary128$(EXEEXT) < $(srcdir)/../Cdmd.in; \
 	} > $@ 2>&1

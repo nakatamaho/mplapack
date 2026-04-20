@@ -44,7 +44,12 @@ void Chetrd_he2hb(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *
     info = 0;
     bool upper = Mlsame(uplo, "U");
     bool lquery = (lwork == -1);
-    INTEGER lwmin = iMlaenv2stage(4, "Chetrd_he2hb", "", n, kd, -1, -1);
+    INTEGER lwmin = 0;
+    if (n <= kd + 1) {
+        lwmin = 1;
+    } else {
+        lwmin = iMlaenv2stage(4, "Chetrd_he2hb", "", n, kd, -1, -1);
+    }
     //
     if (!upper && !Mlsame(uplo, "L")) {
         info = -1;

@@ -38,14 +38,15 @@
 
 void Clarfgp(INTEGER const n, COMPLEX &alpha, COMPLEX *x, INTEGER const incx, COMPLEX &tau) {
     const REAL zero = 0.0;
+    REAL eps = 0.0;
     REAL xnorm = 0.0;
     REAL alphr = 0.0;
     REAL alphi = 0.0;
     const REAL two = 2.0;
     INTEGER j = 0;
-    const REAL one = 1.0;
     REAL beta = 0.0;
     REAL smlnum = 0.0;
+    const REAL one = 1.0;
     REAL bignum = 0.0;
     INTEGER knt = 0;
     COMPLEX savealpha = 0.0;
@@ -55,37 +56,28 @@ void Clarfgp(INTEGER const n, COMPLEX &alpha, COMPLEX *x, INTEGER const incx, CO
         return;
     }
     //
+    eps = Rlamch("Precision");
     xnorm = RCnrm2(n - 1, x, incx);
     alphr = alpha.real();
     alphi = alpha.imag();
     //
-    if (xnorm == zero) {
+    if (xnorm <= eps * abs(alpha) && alphi == zero) {
         //
         // H  =  [1-alpha/abs(alpha) 0; 0 I], sign chosen so ALPHA >= 0.
         //
-        if (alphi == zero) {
-            if (alphr >= zero) {
-                // When TAU.eq.ZERO, the vector is special-cased to be
-                // all zeros in the application routines.  We do not need
-                // to clear it.
-                tau = zero;
-            } else {
-                // However, the application routines rely on explicit
-                // zero checks when TAU.ne.ZERO, and we must clear X.
-                tau = two;
-                for (j = 1; j <= n - 1; j = j + 1) {
-                    x[(1 + (j - 1) * incx) - 1] = zero;
-                }
-                alpha = -alpha;
-            }
+        if (alphr >= zero) {
+            // When TAU.eq.ZERO, the vector is special-cased to be
+            // all zeros in the application routines.  We do not need
+            // to clear it.
+            tau = zero;
         } else {
-            // Only "reflecting" the diagonal entry to be real and non-negative.
-            xnorm = Rlapy2(alphr, alphi);
-            tau = COMPLEX(one - alphr / xnorm, -alphi / xnorm);
+            // However, the application routines rely on explicit
+            // zero checks when TAU.ne.ZERO, and we must clear X.
+            tau = two;
             for (j = 1; j <= n - 1; j = j + 1) {
                 x[(1 + (j - 1) * incx) - 1] = zero;
             }
-            alpha = xnorm;
+            alpha = -alpha;
         }
     } else {
         //
@@ -148,7 +140,7 @@ void Clarfgp(INTEGER const n, COMPLEX &alpha, COMPLEX *x, INTEGER const incx, CO
                     for (j = 1; j <= n - 1; j = j + 1) {
                         x[(1 + (j - 1) * incx) - 1] = zero;
                     }
-                    beta = (-savealpha).real();
+                    beta = -savealpha.real();
                 }
             } else {
                 xnorm = Rlapy2(alphr, alphi);

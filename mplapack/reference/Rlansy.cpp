@@ -45,9 +45,8 @@ REAL Rlansy(const char *norm, const char *uplo, INTEGER const n, REAL *a, INTEGE
     INTEGER i = 0;
     REAL sum = 0.0;
     REAL absa = 0.0;
-    REAL ssq[2];
+    REAL scale = 0.0;
     const REAL one = 1.0;
-    REAL colssq[2];
     if (n == 0) {
         value = zero;
     } else if (Mlsame(norm, "M")) {
@@ -114,39 +113,21 @@ REAL Rlansy(const char *norm, const char *uplo, INTEGER const n, REAL *a, INTEGE
     } else if ((Mlsame(norm, "F")) || (Mlsame(norm, "E"))) {
         //
         // Find normF(A).
-        // SSQ(1) is scale
-        // SSQ(2) is sum-of-squares
-        // For better accuracy, sum each column separately.
         //
-        ssq[1 - 1] = zero;
-        ssq[2 - 1] = one;
-        //
-        // Sum off-diagonals
-        //
+        scale = zero;
+        sum = one;
         if (Mlsame(uplo, "U")) {
             for (j = 2; j <= n; j = j + 1) {
-                colssq[1 - 1] = zero;
-                colssq[2 - 1] = one;
-                Rlassq(j - 1, &a[(j - 1) * lda], 1, colssq[1 - 1], colssq[2 - 1]);
-                Rcombssq(ssq, colssq);
+                Rlassq(j - 1, &a[(j - 1) * lda], 1, scale, sum);
             }
         } else {
             for (j = 1; j <= n - 1; j = j + 1) {
-                colssq[1 - 1] = zero;
-                colssq[2 - 1] = one;
-                Rlassq(n - j, &a[((j + 1) - 1) + (j - 1) * lda], 1, colssq[1 - 1], colssq[2 - 1]);
-                Rcombssq(ssq, colssq);
+                Rlassq(n - j, &a[((j + 1) - 1) + (j - 1) * lda], 1, scale, sum);
             }
         }
-        ssq[2 - 1] = 2 * ssq[2 - 1];
-        //
-        // Sum diagonal
-        //
-        colssq[1 - 1] = zero;
-        colssq[2 - 1] = one;
-        Rlassq(n, a, lda + 1, colssq[1 - 1], colssq[2 - 1]);
-        Rcombssq(ssq, colssq);
-        value = ssq[1 - 1] * sqrt(ssq[2 - 1]);
+        sum = 2 * sum;
+        Rlassq(n, a, lda + 1, scale, sum);
+        value = scale * sqrt(sum);
     }
     //
     return_value = value;

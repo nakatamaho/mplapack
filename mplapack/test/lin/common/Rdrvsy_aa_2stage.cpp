@@ -269,8 +269,8 @@ void Rdrvsy_aa_2stage(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER con
                         // Factor the matrix and solve the system using Rsysv_aa.
                         //
                         srnamt = "Rsysv_aa_2stage";
-                        lwork = min(n * nb, 3 * nmax * nmax);
-                        Rsysv_aa_2stage(uplo.elems, n, nrhs, afac, lda, ainv, (3 * nb + 1) * n, iwork, &iwork[(1 + n) - 1], x, lda, work, lwork, info);
+                        lwork = min(max((INTEGER)1, n * nb), 3 * nmax * nmax);
+                        Rsysv_aa_2stage(uplo.elems, n, nrhs, afac, lda, ainv, max((INTEGER)1, (3 * nb + 1) * n), iwork, &iwork[(1 + n) - 1], x, lda, work, lwork, info);
                         //
                         // Adjust the expected value of INFO to account for
                         // pivoting.

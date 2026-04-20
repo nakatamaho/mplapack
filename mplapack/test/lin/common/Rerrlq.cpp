@@ -103,31 +103,6 @@ void Rerrlq(fem::str_cref path, INTEGER const nunit) {
     Rgelq2(2, 1, a, 1, b, w, info);
     Chkxer("Rgelq2", infot, nout, lerr, ok);
     //
-    // Rgelqs
-    //
-    srnamt = "Rgelqs";
-    infot = 1;
-    Rgelqs(-1, 0, 0, a, 1, x, b, 1, w, 1, info);
-    Chkxer("Rgelqs", infot, nout, lerr, ok);
-    infot = 2;
-    Rgelqs(0, -1, 0, a, 1, x, b, 1, w, 1, info);
-    Chkxer("Rgelqs", infot, nout, lerr, ok);
-    infot = 2;
-    Rgelqs(2, 1, 0, a, 2, x, b, 1, w, 1, info);
-    Chkxer("Rgelqs", infot, nout, lerr, ok);
-    infot = 3;
-    Rgelqs(0, 0, -1, a, 1, x, b, 1, w, 1, info);
-    Chkxer("Rgelqs", infot, nout, lerr, ok);
-    infot = 5;
-    Rgelqs(2, 2, 0, a, 1, x, b, 2, w, 1, info);
-    Chkxer("Rgelqs", infot, nout, lerr, ok);
-    infot = 8;
-    Rgelqs(1, 2, 0, a, 1, x, b, 1, w, 1, info);
-    Chkxer("Rgelqs", infot, nout, lerr, ok);
-    infot = 10;
-    Rgelqs(1, 1, 2, a, 1, x, b, 1, w, 1, info);
-    Chkxer("Rgelqs", infot, nout, lerr, ok);
-    //
     // Rorglq
     //
     srnamt = "Rorglq";

@@ -207,7 +207,7 @@ void Rget22(fem::str_cref transa, fem::str_cref transe, fem::str_cref transw, IN
         result[1 - 1] = (errnrm / anorm) / ulp;
     } else {
         if (anorm < one) {
-            result[1 - 1] = (min(errnrm, anorm) / anorm) / ulp;
+            result[1 - 1] = one / ulp;
         } else {
             result[1 - 1] = min(errnrm / anorm, one) / ulp;
         }

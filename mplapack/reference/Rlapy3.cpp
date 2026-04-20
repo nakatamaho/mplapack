@@ -39,12 +39,13 @@
 REAL Rlapy3(REAL const x, REAL const y, REAL const z) {
     REAL return_value = 0.0;
     //
+    REAL hugeval = Rlamch("Overflow");
     REAL xabs = abs(x);
     REAL yabs = abs(y);
     REAL zabs = abs(z);
     REAL w = max(xabs, yabs, zabs);
     const REAL zero = 0.0;
-    if (w == zero) {
+    if (w == zero || w > hugeval) {
         // W can be zero for max(0,nan,0)
         // adding all three entries together will make sure
         // NaN will not disappear.

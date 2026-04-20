@@ -63,8 +63,10 @@ void Cgerqf(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
         }
         work[1 - 1] = lwkopt;
         //
-        if (lwork < max((INTEGER)1, m) && !lquery) {
-            info = -7;
+        if (!lquery) {
+            if (lwork <= 0 || (n > 0 && lwork < max((INTEGER)1, m))) {
+                info = -7;
+            }
         }
     }
     //

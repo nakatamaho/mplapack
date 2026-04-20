@@ -66,7 +66,6 @@ void Alahd(INTEGER const iounit, fem::str_cref path) {
     static const char *format_9989 = "(/,1x,a3,':  Triangular packed matrices')";
     static const char *format_9988 = "(/,1x,a3,':  Triangular band matrices')";
     static const char *format_9987 = "(/,1x,a3,':  ',a2,' factorization of general matrices')";
-    static const char *format_9986 = "(/,1x,a3,':  QR factorization with column pivoting')";
     static const char *format_9985 = "(/,1x,a3,':  RQ factorization of trapezoidal matrix')";
     static const char *format_9984 = "(/,1x,a3,':  Least squares driver routines')";
     static const char *format_9983 = "(/,1x,a3,':  LU factorization variants')";
@@ -78,8 +77,9 @@ void Alahd(INTEGER const iounit, fem::str_cref path) {
     static const char *format_8002 = "(/,1x,a3,':  LQT factorization for general matrices')";
     static const char *format_8003 = "(/,1x,a3,':  LQT factorization for ','triangular-pentagonal matrices')";
     static const char *format_8004 = "(/,1x,a3,':  TS factorization for ','tall-skinny or short-wide matrices')";
-    static const char *format_8005 = "(/,1x,a3,':  Householder recostruction from TSQR',"
+    static const char *format_8005 = "(/,1x,a3,':  Householder reconstruction from TSQR',"
                                      "' factorization output ',/,' for tall-skinny matrices.')";
+    static const char *format_8006 = "(/,1x,a3,':  truncated QR factorization',' with column pivoting')";
     //
     // GE matrix types
     //
@@ -185,6 +185,30 @@ void Alahd(INTEGER const iounit, fem::str_cref path) {
                                      "'5. Last n/2 columns fixed',/,4x,'3. Geometric distribution',10x,"
                                      "'6. Every second column fixed')";
     //
+    // QK matrix types
+    //
+    static const char *format_9871 = "(4x,' 1. Zero matrix',/,4x,' 2. Random, Diagonal, CNDNUM = 2',/,4x,"
+                                     "' 3. Random, Upper triangular, CNDNUM = 2',/,4x,"
+                                     "' 4. Random, Lower triangular, CNDNUM = 2',/,4x,"
+                                     "' 5. Random, First column is zero, CNDNUM = 2',/,4x,"
+                                     "' 6. Random, Last MINMN column is zero, CNDNUM = 2',/,4x,"
+                                     "' 7. Random, Last N column is zero, CNDNUM = 2',/,4x,"
+                                     "' 8. Random, Middle column in MINMN is zero,',' CNDNUM = 2',/,4x,"
+                                     "' 9. Random, First half of MINMN columns are zero,',' CNDNUM = 2',/,4x,"
+                                     "'10. Random, Last columns are zero starting from',"
+                                     "' MINMN/2+1, CNDNUM = 2',/,4x,"
+                                     "'11. Random, Half MINMN columns in the middle are',"
+                                     "' zero starting from MINMN/2-(MINMN/2)/2+1,',' CNDNUM = 2',/,4x,"
+                                     "'12. Random, Odd columns are ZERO, CNDNUM = 2',/,4x,"
+                                     "'13. Random, Even columns are ZERO, CNDNUM = 2',/,4x,"
+                                     "'14. Random, CNDNUM = 2',/,4x,'15. Random, CNDNUM = sqrt(0.1/EPS)',/,4x,"
+                                     "'16. Random, CNDNUM = 0.1/EPS',/,4x,'17. Random, CNDNUM = 0.1/EPS,',"
+                                     "' one small singular value S(N)=1/CNDNUM',/,4x,"
+                                     "'18. Random, CNDNUM = 2, scaled near underflow,',"
+                                     "' NORM = SMALL = SAFMIN',/,4x,"
+                                     "'19. Random, CNDNUM = 2, scaled near overflow,',"
+                                     "' NORM = LARGE = 1.0/( 0.25 * ( SAFMIN / EPS ) )')";
+    //
     // TZ matrix types
     //
     static const char *format_9968 = "(' Matrix types (2-3 have condition 1/EPS):',/,4x,'1. Zero matrix',/,4x,"
@@ -265,8 +289,8 @@ void Alahd(INTEGER const iounit, fem::str_cref path) {
     static const char *format_9942 = "(3x,i2,': norm( Q''*C - Q''*C )/ ','( ',a1,' * norm(C) * EPS )')";
     static const char *format_9941 = "(3x,i2,': norm( C*Q'' - C*Q'' )/ ','( ',a1,' * norm(C) * EPS )')";
     static const char *format_9940 = "(3x,i2,': norm(svd(A) - svd(R)) / ','( M * norm(svd(R)) * EPS )')";
-    static const char *format_9939 = "(3x,i2,': norm( A*P - Q*R )     / ( M * norm(A) * EPS )')";
-    static const char *format_9938 = "(3x,i2,': norm( I - Q''*Q )      / ( M * EPS )')";
+    static const char *format_9939 = "(3x,i2,': norm( A*P - Q*R ) / ( M * norm(A) * EPS )')";
+    static const char *format_9938 = "(3x,i2,': norm( I - Q''*Q ) / ( M * EPS )')";
     static const char *format_9937 = "(3x,i2,': norm( A - R*Q )       / ( M * norm(A) * EPS )')";
     static const char *format_9935 = "(3x,i2,': norm( B - A * X )   / ',"
                                      "'( max(M,N) * norm(A) * norm(X) * EPS )')";
@@ -279,9 +303,10 @@ void Alahd(INTEGER const iounit, fem::str_cref path) {
                                      "'if TRANS=''N'' and M.GE.N or TRANS=''T'' and M.LT.N, ','otherwise',/,7x,"
                                      "'check if X is in the row space of A or A'' ','(overdetermined case)')";
     static const char *format_9929 = "(' Test ratios (1-3: ',a1,'TZRZF):')";
-    static const char *format_9920 = "(3x,' 7-10: same as 3-6',3x,' 11-14: same as 3-6')";
-    static const char *format_9921 = "(' Test ratios:',/,'    (1-2: ',a1,'GELS, 3-6: ',a1,'GELSY, 7-10: ',a1,"
-                                     "'GELSS, 11-14: ',a1,'GELSD, 15-16: ',a1,'GETSLS)')";
+    static const char *format_9919 = "(3x,' 3-4: same as 1-2',3x,' 5-6: same as 1-2')";
+    static const char *format_9920 = "(3x,' 11-14: same as 7-10',3x,' 15-18: same as 7-10')";
+    static const char *format_9921 = "(' Test ratios:',/,'    (1-2: ',a1,'GELS, 3-4: ',a1,'GELST, 5-6: ',a1,"
+                                     "'GETSLS, 7-10: ',a1,'GELSY, 11-14: ',a1,'GETSS, 15-18: ',a1,'GELSD)')";
     static const char *format_9928 = "(7x,'where ALPHA = ( 1 + SQRT( 17 ) ) / 8')";
     static const char *format_9927 = "(3x,i2,': ABS( Largest element in L )',/,12x,"
                                      "' - ( 1 / ( 1 - ALPHA ) ) + THRESH')";
@@ -324,6 +349,14 @@ void Alahd(INTEGER const iounit, fem::str_cref path) {
     static const char *format_8053 = "(3x,i2,': norm( Q''*C - Q''*C ) / ( M * norm(C) * EPS )')";
     static const char *format_8054 = "(3x,i2,': norm( C*Q - C*Q ) / ( M * norm(C) * EPS )')";
     static const char *format_8055 = "(3x,i2,': norm( C*Q'' - C*Q'' ) / ( M * norm(C) * EPS )')";
+    //
+    static const char *format_8060 = "(3x,i2,': 2-norm(svd(A) - svd(R)) / ',"
+                                     "'( max(M,N) * 2-norm(svd(R)) * EPS )')";
+    static const char *format_8061 = "(3x,i2,': 1-norm( A*P - Q*R ) / ( max(M,N) * 1-norm(A)',' * EPS )')";
+    static const char *format_8062 = "(3x,i2,': 1-norm( I - Q''*Q ) / ( M * EPS )')";
+    static const char *format_8063 = "(3x,i2,': Returns 1.0D+100, if abs(R(K+1,K+1))',"
+                                     "' > abs(R(K,K)), where K=1:KFACT-1')";
+    static const char *format_8064 = "(3x,i2,': 1-norm(Q**T * B - Q**T * B ) / ( M * EPS )')";
     //
     if (iounit <= 0) {
         return;
@@ -781,12 +814,26 @@ void Alahd(INTEGER const iounit, fem::str_cref path) {
         //
         // QR decomposition with column pivoting
         //
-        write(iounit, format_9986), path;
+        write(iounit, format_8006), path;
         write(iounit, format_9969);
         write(iounit, "(' Test ratios:')");
         write(iounit, format_9940), 1;
         write(iounit, format_9939), 2;
         write(iounit, format_9938), 3;
+        write(iounit, "(' Messages:')");
+        //
+    } else if (Mlsamen(2, p2.elems, "QK")) {
+        //
+        // truncated QR decomposition with column pivoting
+        //
+        write(iounit, format_8006), path;
+        write(iounit, format_9871);
+        write(iounit, "(' Test ratios:')");
+        write(iounit, format_8060), 1;
+        write(iounit, format_8061), 2;
+        write(iounit, format_8062), 3;
+        write(iounit, format_8063), 4;
+        write(iounit, format_8064), 5;
         write(iounit, "(' Messages:')");
         //
     } else if (Mlsamen(2, p2.elems, "TZ")) {
@@ -805,17 +852,18 @@ void Alahd(INTEGER const iounit, fem::str_cref path) {
     } else if (Mlsamen(2, p2.elems, "LS")) {
         //
         // LS:  Least Squares driver routines for
-        // LS, LSD, LSS, LSX and LSY.
+        // LS, LST, TSLS, LSD, LSS, LSX and LSY.
         //
         write(iounit, format_9984), path;
         write(iounit, format_9967);
-        write(iounit, format_9921), c1, c1, c1, c1;
+        write(iounit, format_9921), c1, c1, c1, c1, c1, c1;
         write(iounit, format_9935), 1;
         write(iounit, format_9931), 2;
-        write(iounit, format_9933), 3;
-        write(iounit, format_9935), 4;
-        write(iounit, format_9934), 5;
-        write(iounit, format_9932), 6;
+        write(iounit, format_9919);
+        write(iounit, format_9933), 7;
+        write(iounit, format_9935), 8;
+        write(iounit, format_9934), 9;
+        write(iounit, format_9932), 10;
         write(iounit, format_9920);
         write(iounit, "(' Messages:')");
         //

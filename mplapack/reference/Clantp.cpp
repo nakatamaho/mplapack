@@ -47,8 +47,7 @@ REAL Clantp(const char *norm, const char *uplo, const char *diag, INTEGER const 
     INTEGER i = 0;
     REAL sum = 0.0;
     bool udiag = false;
-    REAL ssq[2];
-    REAL colssq[2];
+    REAL scale = 0.0;
     if (n == 0) {
         value = zero;
     } else if (Mlsame(norm, "M")) {
@@ -209,60 +208,45 @@ REAL Clantp(const char *norm, const char *uplo, const char *diag, INTEGER const 
     } else if ((Mlsame(norm, "F")) || (Mlsame(norm, "E"))) {
         //
         // Find normF(A).
-        // SSQ(1) is scale
-        // SSQ(2) is sum-of-squares
-        // For better accuracy, sum each column separately.
         //
         if (Mlsame(uplo, "U")) {
             if (Mlsame(diag, "U")) {
-                ssq[1 - 1] = one;
-                ssq[2 - 1] = n;
+                scale = one;
+                sum = n;
                 k = 2;
                 for (j = 2; j <= n; j = j + 1) {
-                    colssq[1 - 1] = zero;
-                    colssq[2 - 1] = one;
-                    Classq(j - 1, &ap[k - 1], 1, colssq[1 - 1], colssq[2 - 1]);
-                    Rcombssq(ssq, colssq);
+                    Classq(j - 1, &ap[k - 1], 1, scale, sum);
                     k += j;
                 }
             } else {
-                ssq[1 - 1] = zero;
-                ssq[2 - 1] = one;
+                scale = zero;
+                sum = one;
                 k = 1;
                 for (j = 1; j <= n; j = j + 1) {
-                    colssq[1 - 1] = zero;
-                    colssq[2 - 1] = one;
-                    Classq(j, &ap[k - 1], 1, colssq[1 - 1], colssq[2 - 1]);
-                    Rcombssq(ssq, colssq);
+                    Classq(j, &ap[k - 1], 1, scale, sum);
                     k += j;
                 }
             }
         } else {
             if (Mlsame(diag, "U")) {
-                ssq[1 - 1] = one;
-                ssq[2 - 1] = n;
+                scale = one;
+                sum = n;
                 k = 2;
                 for (j = 1; j <= n - 1; j = j + 1) {
-                    colssq[1 - 1] = zero;
-                    colssq[2 - 1] = one;
-                    Classq(n - j, &ap[k - 1], 1, colssq[1 - 1], colssq[2 - 1]);
-                    Rcombssq(ssq, colssq);
+                    Classq(n - j, &ap[k - 1], 1, scale, sum);
                     k += n - j + 1;
                 }
             } else {
-                ssq[1 - 1] = zero;
-                ssq[2 - 1] = one;
+                scale = zero;
+                sum = one;
                 k = 1;
                 for (j = 1; j <= n; j = j + 1) {
-                    colssq[1 - 1] = zero;
-                    colssq[2 - 1] = one;
-                    Classq(n - j + 1, &ap[k - 1], 1, colssq[1 - 1], colssq[2 - 1]);
-                    Rcombssq(ssq, colssq);
+                    Classq(n - j + 1, &ap[k - 1], 1, scale, sum);
                     k += n - j + 1;
                 }
             }
         }
-        value = ssq[1 - 1] * sqrt(ssq[2 - 1]);
+        value = scale * sqrt(sum);
     }
     //
     return_value = value;

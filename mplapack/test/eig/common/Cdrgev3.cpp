@@ -193,7 +193,6 @@ void Cdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
     safmin = Rlamch("Safe minimum");
     safmin = safmin / ulp;
     safmax = one / safmin;
-    Rlabad(safmin, safmax);
     ulpinv = one / ulp;
     //
     // The values RMAGN(2:3) depend on N, see below.
@@ -368,6 +367,14 @@ void Cdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
             for (i = 1; i <= 7; i = i + 1) {
                 result[i - 1] = -one;
             }
+            //
+            // Call Mxlaenv to set the parameters used in Claqz0
+            //
+            Mxlaenv(12, 10);
+            Mxlaenv(13, 12);
+            Mxlaenv(14, 13);
+            Mxlaenv(15, 2);
+            Mxlaenv(17, 10);
             //
             // Call Cggev3 to compute eigenvalues and eigenvectors.
             //

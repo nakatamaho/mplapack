@@ -70,7 +70,6 @@ void Rqrt13(INTEGER const scale, INTEGER const m, INTEGER const n, REAL *a, INTE
         norma = Rlange("Max", m, n, a, lda, dummy);
         smlnum = Rlamch("Safe minimum");
         bignum = one / smlnum;
-        Rlabad(smlnum, bignum);
         smlnum = smlnum / Rlamch("Epsilon");
         bignum = one / smlnum;
         //

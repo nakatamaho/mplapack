@@ -67,7 +67,7 @@ void Rorgbr(const char *vect, INTEGER const m, INTEGER const n, INTEGER const k,
                 Rorgqr(m, n, k, a, lda, tau, work, -1, iinfo);
             } else {
                 if (m > 1) {
-                    Rorgqr(m - 1, m - 1, m - 1, &a[(2 - 1) + (2 - 1) * lda], lda, tau, work, -1, iinfo);
+                    Rorgqr(m - 1, m - 1, m - 1, a, lda, tau, work, -1, iinfo);
                 }
             }
         } else {
@@ -75,7 +75,7 @@ void Rorgbr(const char *vect, INTEGER const m, INTEGER const n, INTEGER const k,
                 Rorglq(m, n, k, a, lda, tau, work, -1, iinfo);
             } else {
                 if (n > 1) {
-                    Rorglq(n - 1, n - 1, n - 1, &a[(2 - 1) + (2 - 1) * lda], lda, tau, work, -1, iinfo);
+                    Rorglq(n - 1, n - 1, n - 1, a, lda, tau, work, -1, iinfo);
                 }
             }
         }

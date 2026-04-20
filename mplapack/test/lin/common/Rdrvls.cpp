@@ -80,6 +80,7 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     REAL wq[1];
     INTEGER info = 0;
     INTEGER lwork_Rgels = 0;
+    INTEGER lwork_Rgelst = 0;
     INTEGER lwork_Rgetsls = 0;
     INTEGER iwq[1];
     INTEGER crank = 0;
@@ -99,7 +100,7 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     INTEGER ncols = 0;
     INTEGER ldwork = 0;
     const REAL one = 1.0;
-    const INTEGER ntests = 16;
+    const INTEGER ntests = 18;
     REAL result[ntests];
     INTEGER k = 0;
     INTEGER imb = 0;
@@ -179,7 +180,8 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     liwork = 1;
     //
     // Iterate through all test cases and compute necessary workspace
-    // sizes for ?GELS, ?GETSLS, ?GELSY, ?GELSS and ?GELSD routines.
+    // sizes for ?GELS, ?GELST, ?GETSLS, ?GELSY, ?GELSS and ?GELSD
+    // routines.
     //
     for (im = 1; im <= nm; im = im + 1) {
         m = mval[im - 1];
@@ -205,6 +207,9 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                     // Compute workspace needed for Rgels
                                     Rgels(trans.elems, m, n, nrhs, a, lda, b, ldb, wq, -1, info);
                                     lwork_Rgels = castINTEGER(wq[1 - 1]);
+                                    // Compute workspace needed for Rgelst
+                                    Rgelst(trans.elems, m, n, nrhs, a, lda, b, ldb, wq, -1, info);
+                                    lwork_Rgelst = castINTEGER(wq[1 - 1]);
                                     // Compute workspace needed for Rgetsls
                                     Rgetsls(trans.elems, m, n, nrhs, a, lda, b, ldb, wq, -1, info);
                                     lwork_Rgetsls = castINTEGER(wq[1 - 1]);
@@ -222,7 +227,7 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             // Compute LIWORK workspace needed for Rgelsy and Rgelsd
                             liwork = max(liwork, n, iwq[1 - 1]);
                             // Compute LWORK workspace needed for all functions
-                            lwork = max(lwork, lwork_Rgels, lwork_Rgetsls, lwork_Rgelsy, lwork_Rgelss, lwork_Rgelsd);
+                            lwork = max(lwork, lwork_Rgels, lwork_Rgelst, lwork_Rgetsls, lwork_Rgelsy, lwork_Rgelss, lwork_Rgelsd);
                         }
                     }
                 }
@@ -256,18 +261,23 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                         if (!dotype[itype - 1]) {
                             goto statement_110;
                         }
-                        //
+                        // =====================================================
+                        // Begin test Rgels
+                        // =====================================================
                         if (irank == 1) {
-                            //
-                            // Test Rgels
                             //
                             // Generate a matrix of scaling type ISCALE
                             //
                             Rqrt13(iscale, m, n, copya, lda, norma, iseed);
+                            //
+                            // Loop for testing different block sizes.
+                            //
                             for (inb = 1; inb <= nnb; inb = inb + 1) {
                                 nb = nbval[inb - 1];
                                 Mxlaenv(1, nb);
                                 Mxlaenv(3, nxval[inb - 1]);
+                                //
+                                // Loop for testing non-transposed and transposed.
                                 //
                                 for (itran = 1; itran <= 2; itran = itran + 1) {
                                     if (itran == 1) {
@@ -302,17 +312,24 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                         Alaerh(path, "Rgels", info, 0, trans, m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
                                     }
                                     //
-                                    // Check correctness of results
+                                    // Test 1: Check correctness of results
+                                    // for Rgels, compute the residual:
+                                    // RESID = norm(B - A*X) /
+                                    // / ( max(m,n) * norm(A) * norm(X) * EPS )
                                     //
-                                    ldwork = max((INTEGER)1, nrows);
                                     if (nrows > 0 && nrhs > 0) {
                                         Rlacpy("Full", nrows, nrhs, copyb, ldb, c, ldb);
                                     }
                                     Rqrt16(trans, m, n, nrhs, copya, lda, b, ldb, c, ldb, work, result[1 - 1]);
                                     //
+                                    // Test 2: Check correctness of results
+                                    // for Rgels.
+                                    //
                                     if ((itran == 1 && m >= n) || (itran == 2 && m < n)) {
                                         //
-                                        // Solving LS system
+                                        // Solving LS system, compute:
+                                        // r = norm((B- A*X)**T * A) /
+                                        // / (norm(A)*norm(B)*max(M,N,NRHS)*EPS)
                                         //
                                         result[2 - 1] = Rqrt17(trans, 1, m, n, nrhs, copya, lda, b, ldb, copyb, ldb, c, work, lwork);
                                     } else {
@@ -337,18 +354,129 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                     nrun += 2;
                                 }
                             }
-                            //
-                            // Test Rgetsls
+                        }
+                        // =====================================================
+                        // End test Rgels
+                        // =====================================================
+                        // =====================================================
+                        // Begin test Rgelst
+                        // =====================================================
+                        if (irank == 1) {
                             //
                             // Generate a matrix of scaling type ISCALE
                             //
                             Rqrt13(iscale, m, n, copya, lda, norma, iseed);
+                            //
+                            // Loop for testing different block sizes.
+                            //
                             for (inb = 1; inb <= nnb; inb = inb + 1) {
-                                mb = nbval[inb - 1];
+                                nb = nbval[inb - 1];
+                                Mxlaenv(1, nb);
+                                //
+                                // Loop for testing non-transposed and transposed.
+                                //
+                                for (itran = 1; itran <= 2; itran = itran + 1) {
+                                    if (itran == 1) {
+                                        trans = "N";
+                                        nrows = m;
+                                        ncols = n;
+                                    } else {
+                                        trans = "T";
+                                        nrows = n;
+                                        ncols = m;
+                                    }
+                                    ldwork = max((INTEGER)1, ncols);
+                                    //
+                                    // Set up a consistent rhs
+                                    //
+                                    if (ncols > 0) {
+                                        Rlarnv(2, iseed, ncols * nrhs, work);
+                                        Rscal(ncols * nrhs, one / castREAL(ncols), work, 1);
+                                    }
+                                    Rgemm(trans.elems, "No transpose", nrows, nrhs, ncols, one, copya, lda, work, ldwork, zero, b, ldb);
+                                    Rlacpy("Full", nrows, nrhs, b, ldb, copyb, ldb);
+                                    //
+                                    // Solve LS or overdetermined system
+                                    //
+                                    if (m > 0 && n > 0) {
+                                        Rlacpy("Full", m, n, copya, lda, a, lda);
+                                        Rlacpy("Full", nrows, nrhs, copyb, ldb, b, ldb);
+                                    }
+                                    srnamt = "Rgelst";
+                                    Rgelst(trans.elems, m, n, nrhs, a, lda, b, ldb, work, lwork, info);
+                                    if (info != 0) {
+                                        Alaerh(path, "Rgelst", info, 0, trans, m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
+                                    }
+                                    //
+                                    // Test 3: Check correctness of results
+                                    // for Rgelst, compute the residual:
+                                    // RESID = norm(B - A*X) /
+                                    // / ( max(m,n) * norm(A) * norm(X) * EPS )
+                                    //
+                                    if (nrows > 0 && nrhs > 0) {
+                                        Rlacpy("Full", nrows, nrhs, copyb, ldb, c, ldb);
+                                    }
+                                    Rqrt16(trans, m, n, nrhs, copya, lda, b, ldb, c, ldb, work, result[3 - 1]);
+                                    //
+                                    // Test 4: Check correctness of results
+                                    // for Rgelst.
+                                    //
+                                    if ((itran == 1 && m >= n) || (itran == 2 && m < n)) {
+                                        //
+                                        // Solving LS system, compute:
+                                        // r = norm((B- A*X)**T * A) /
+                                        // / (norm(A)*norm(B)*max(M,N,NRHS)*EPS)
+                                        //
+                                        result[4 - 1] = Rqrt17(trans, 1, m, n, nrhs, copya, lda, b, ldb, copyb, ldb, c, work, lwork);
+                                    } else {
+                                        //
+                                        // Solving overdetermined system
+                                        //
+                                        result[4 - 1] = Rqrt14(trans, m, n, nrhs, copya, lda, b, ldb, work, lwork);
+                                    }
+                                    //
+                                    // Print information about the tests that
+                                    // did not pass the threshold.
+                                    //
+                                    for (k = 3; k <= 4; k = k + 1) {
+                                        if (result[k - 1] >= thresh) {
+                                            if (nfail == 0 && nerrs == 0) {
+                                                Alahd(nout, path);
+                                            }
+                                            write(nout, format_9999), trans, m, n, nrhs, nb, itype, k, result[k - 1];
+                                            nfail++;
+                                        }
+                                    }
+                                    nrun += 2;
+                                }
+                            }
+                        }
+                        // =====================================================
+                        // End test Rgelst
+                        // =====================================================
+                        // =====================================================
+                        // Begin test Rgetsls
+                        // =====================================================
+                        if (irank == 1) {
+                            //
+                            // Generate a matrix of scaling type ISCALE
+                            //
+                            Rqrt13(iscale, m, n, copya, lda, norma, iseed);
+                            //
+                            // Loop for testing different block sizes MB.
+                            //
+                            for (imb = 1; imb <= nnb; imb = imb + 1) {
+                                mb = nbval[imb - 1];
                                 Mxlaenv(1, mb);
-                                for (imb = 1; imb <= nnb; imb = imb + 1) {
-                                    nb = nbval[imb - 1];
+                                //
+                                // Loop for testing different block sizes NB.
+                                //
+                                for (inb = 1; inb <= nnb; inb = inb + 1) {
+                                    nb = nbval[inb - 1];
                                     Mxlaenv(2, nb);
+                                    //
+                                    // Loop for testing non-transposed
+                                    // and transposed.
                                     //
                                     for (itran = 1; itran <= 2; itran = itran + 1) {
                                         if (itran == 1) {
@@ -383,30 +511,37 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                             Alaerh(path, "Rgetsls", info, 0, trans, m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
                                         }
                                         //
-                                        // Check correctness of results
+                                        // Test 5: Check correctness of results
+                                        // for Rgetsls, compute the residual:
+                                        // RESID = norm(B - A*X) /
+                                        // / ( max(m,n) * norm(A) * norm(X) * EPS )
                                         //
-                                        ldwork = max((INTEGER)1, nrows);
                                         if (nrows > 0 && nrhs > 0) {
                                             Rlacpy("Full", nrows, nrhs, copyb, ldb, c, ldb);
                                         }
-                                        Rqrt16(trans, m, n, nrhs, copya, lda, b, ldb, c, ldb, work, result[15 - 1]);
+                                        Rqrt16(trans, m, n, nrhs, copya, lda, b, ldb, c, ldb, work, result[5 - 1]);
+                                        //
+                                        // Test 6: Check correctness of results
+                                        // for Rgetsls.
                                         //
                                         if ((itran == 1 && m >= n) || (itran == 2 && m < n)) {
                                             //
-                                            // Solving LS system
+                                            // Solving LS system, compute:
+                                            // r = norm((B- A*X)**T * A) /
+                                            // / (norm(A)*norm(B)*max(M,N,NRHS)*EPS)
                                             //
-                                            result[16 - 1] = Rqrt17(trans, 1, m, n, nrhs, copya, lda, b, ldb, copyb, ldb, c, work, lwork);
+                                            result[6 - 1] = Rqrt17(trans, 1, m, n, nrhs, copya, lda, b, ldb, copyb, ldb, c, work, lwork);
                                         } else {
                                             //
                                             // Solving overdetermined system
                                             //
-                                            result[16 - 1] = Rqrt14(trans, m, n, nrhs, copya, lda, b, ldb, work, lwork);
+                                            result[6 - 1] = Rqrt14(trans, m, n, nrhs, copya, lda, b, ldb, work, lwork);
                                         }
                                         //
                                         // Print information about the tests that
                                         // did not pass the threshold.
                                         //
-                                        for (k = 15; k <= 16; k = k + 1) {
+                                        for (k = 5; k <= 6; k = k + 1) {
                                             if (result[k - 1] >= thresh) {
                                                 if (nfail == 0 && nerrs == 0) {
                                                     Alahd(nout, path);
@@ -420,6 +555,9 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                 }
                             }
                         }
+                        // =====================================================
+                        // End test Rgetsls
+                        // =====================================================
                         //
                         // Generate a matrix of scaling type ISCALE and rank
                         // type IRANK.
@@ -459,32 +597,32 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                 Alaerh(path, "Rgelsy", info, 0, " ", m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
                             }
                             //
-                            // Test 3:  Compute relative error in svd
+                            // Test 7:  Compute relative error in svd
                             // workspace: M*N + 4*MIN(M,N) + MAX(M,N)
                             //
-                            result[3 - 1] = Rqrt12(crank, crank, a, lda, copys, work, lwork);
+                            result[7 - 1] = Rqrt12(crank, crank, a, lda, copys, work, lwork);
                             //
-                            // Test 4:  Compute error in solution
+                            // Test 8:  Compute error in solution
                             // workspace:  M*NRHS + M
                             //
                             Rlacpy("Full", m, nrhs, copyb, ldb, work, ldwork);
-                            Rqrt16("No transpose", m, n, nrhs, copya, lda, b, ldb, work, ldwork, &work[(m * nrhs + 1) - 1], result[4 - 1]);
+                            Rqrt16("No transpose", m, n, nrhs, copya, lda, b, ldb, work, ldwork, &work[(m * nrhs + 1) - 1], result[8 - 1]);
                             //
-                            // Test 5:  Check norm of r'*A
+                            // Test 9:  Check norm of r'*A
                             // workspace: NRHS*(M+N)
                             //
-                            result[5 - 1] = zero;
+                            result[9 - 1] = zero;
                             if (m > crank) {
-                                result[5 - 1] = Rqrt17("No transpose", 1, m, n, nrhs, copya, lda, b, ldb, copyb, ldb, c, work, lwork);
+                                result[9 - 1] = Rqrt17("No transpose", 1, m, n, nrhs, copya, lda, b, ldb, copyb, ldb, c, work, lwork);
                             }
                             //
-                            // Test 6:  Check if x is in the rowspace of A
+                            // Test 10:  Check if x is in the rowspace of A
                             // workspace: (M+NRHS)*(N+2)
                             //
-                            result[6 - 1] = zero;
+                            result[10 - 1] = zero;
                             //
                             if (n > crank) {
-                                result[6 - 1] = Rqrt14("No transpose", m, n, nrhs, copya, lda, b, ldb, work, lwork);
+                                result[10 - 1] = Rqrt14("No transpose", m, n, nrhs, copya, lda, b, ldb, work, lwork);
                             }
                             //
                             // Test Rgelss
@@ -503,55 +641,6 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             //
                             // workspace used: 3*min(m,n) +
                             // max(2*min(m,n),nrhs,max(m,n))
-                            //
-                            // Test 7:  Compute relative error in svd
-                            //
-                            if (rank > 0) {
-                                Raxpy(mnmin, -one, copys, 1, s, 1);
-                                result[7 - 1] = Rasum(mnmin, s, 1) / Rasum(mnmin, copys, 1) / (eps * castREAL(mnmin));
-                            } else {
-                                result[7 - 1] = zero;
-                            }
-                            //
-                            // Test 8:  Compute error in solution
-                            //
-                            Rlacpy("Full", m, nrhs, copyb, ldb, work, ldwork);
-                            Rqrt16("No transpose", m, n, nrhs, copya, lda, b, ldb, work, ldwork, &work[(m * nrhs + 1) - 1], result[8 - 1]);
-                            //
-                            // Test 9:  Check norm of r'*A
-                            //
-                            result[9 - 1] = zero;
-                            if (m > crank) {
-                                result[9 - 1] = Rqrt17("No transpose", 1, m, n, nrhs, copya, lda, b, ldb, copyb, ldb, c, work, lwork);
-                            }
-                            //
-                            // Test 10:  Check if x is in the rowspace of A
-                            //
-                            result[10 - 1] = zero;
-                            if (n > crank) {
-                                result[10 - 1] = Rqrt14("No transpose", m, n, nrhs, copya, lda, b, ldb, work, lwork);
-                            }
-                            //
-                            // Test Rgelsd
-                            //
-                            // Rgelsd:  Compute the minimum-norm solution X
-                            // to min( norm( A * X - B ) ) using a
-                            // divide and conquer SVD.
-                            //
-                            // Initialize vector IWORK.
-                            //
-                            for (j = 1; j <= n; j = j + 1) {
-                                iwork[j - 1] = 0;
-                            }
-                            //
-                            Rlacpy("Full", m, n, copya, lda, a, lda);
-                            Rlacpy("Full", m, nrhs, copyb, ldb, b, ldb);
-                            //
-                            srnamt = "Rgelsd";
-                            Rgelsd(m, n, nrhs, a, lda, b, ldb, s, rcond, crank, work, lwork, iwork, info);
-                            if (info != 0) {
-                                Alaerh(path, "Rgelsd", info, 0, " ", m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
-                            }
                             //
                             // Test 11:  Compute relative error in svd
                             //
@@ -581,10 +670,59 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                 result[14 - 1] = Rqrt14("No transpose", m, n, nrhs, copya, lda, b, ldb, work, lwork);
                             }
                             //
+                            // Test Rgelsd
+                            //
+                            // Rgelsd:  Compute the minimum-norm solution X
+                            // to min( norm( A * X - B ) ) using a
+                            // divide and conquer SVD.
+                            //
+                            // Initialize vector IWORK.
+                            //
+                            for (j = 1; j <= n; j = j + 1) {
+                                iwork[j - 1] = 0;
+                            }
+                            //
+                            Rlacpy("Full", m, n, copya, lda, a, lda);
+                            Rlacpy("Full", m, nrhs, copyb, ldb, b, ldb);
+                            //
+                            srnamt = "Rgelsd";
+                            Rgelsd(m, n, nrhs, a, lda, b, ldb, s, rcond, crank, work, lwork, iwork, info);
+                            if (info != 0) {
+                                Alaerh(path, "Rgelsd", info, 0, " ", m, n, nrhs, -1, nb, itype, nfail, nerrs, nout);
+                            }
+                            //
+                            // Test 15:  Compute relative error in svd
+                            //
+                            if (rank > 0) {
+                                Raxpy(mnmin, -one, copys, 1, s, 1);
+                                result[15 - 1] = Rasum(mnmin, s, 1) / Rasum(mnmin, copys, 1) / (eps * castREAL(mnmin));
+                            } else {
+                                result[15 - 1] = zero;
+                            }
+                            //
+                            // Test 16:  Compute error in solution
+                            //
+                            Rlacpy("Full", m, nrhs, copyb, ldb, work, ldwork);
+                            Rqrt16("No transpose", m, n, nrhs, copya, lda, b, ldb, work, ldwork, &work[(m * nrhs + 1) - 1], result[16 - 1]);
+                            //
+                            // Test 17:  Check norm of r'*A
+                            //
+                            result[17 - 1] = zero;
+                            if (m > crank) {
+                                result[17 - 1] = Rqrt17("No transpose", 1, m, n, nrhs, copya, lda, b, ldb, copyb, ldb, c, work, lwork);
+                            }
+                            //
+                            // Test 18:  Check if x is in the rowspace of A
+                            //
+                            result[18 - 1] = zero;
+                            if (n > crank) {
+                                result[18 - 1] = Rqrt14("No transpose", m, n, nrhs, copya, lda, b, ldb, work, lwork);
+                            }
+                            //
                             // Print information about the tests that did not
                             // pass the threshold.
                             //
-                            for (k = 3; k <= 14; k = k + 1) {
+                            for (k = 7; k <= 18; k = k + 1) {
                                 if (result[k - 1] >= thresh) {
                                     if (nfail == 0 && nerrs == 0) {
                                         Alahd(nout, path);
@@ -596,6 +734,7 @@ void Rdrvls(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             nrun += 12;
                             //
                         }
+                    //
                     statement_110:;
                     }
                 }

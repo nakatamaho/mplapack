@@ -28,91 +28,51 @@
 
 // Derived from LAPACK routine DLARTG.
 // Original LAPACK authors:
-//   Univ. of Tennessee
-//   Univ. of California Berkeley
-//   Univ. of Colorado Denver
+//   Univ. of Tennessee,
+//   Univ. of California Berkeley,
+//   Univ. of Colorado Denver,
 //   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
+#include <mplapack_arithmetic_params.h>
 
-void Rlartg(REAL const f, REAL const g, REAL &cs, REAL &sn, REAL &r) {
-    REAL safmin = 0.0;
-    REAL eps = 0.0;
-    const REAL two = 2.0;
-    REAL safmn2 = 0.0;
-    const REAL one = 1.0;
-    REAL safmx2 = 0.0;
-    const REAL zero = 0.0;
-    REAL f1 = 0.0;
-    REAL g1 = 0.0;
-    REAL scale = 0.0;
-    INTEGER count = 0;
-    INTEGER i = 0;
+void Rlartg(REAL const f, REAL const g, REAL &c, REAL &s, REAL &r) {
+    const auto &ap = mplapack::get_arithmetic_params<REAL>();
+    const REAL safmin = ap.safmin;
+    REAL rtmin = sqrt(safmin);
+    const REAL safmax = ap.safmax;
+    REAL rtmax = sqrt(safmax / 2);
     //
-    // IF( FIRST ) THEN
-    safmin = Rlamch("S");
-    eps = Rlamch("E");
-    safmn2 = pow(Rlamch("B"), castINTEGER(log(safmin / eps) / log(Rlamch("B")) / two));
-    safmx2 = one / safmn2;
-    // FIRST = .FALSE.
-    // END IF
+    REAL f1 = abs(f);
+    REAL g1 = abs(g);
+    const REAL zero = 0.0;
+    const REAL one = 1.0;
+    REAL d = 0.0;
+    REAL u = 0.0;
+    REAL fs = 0.0;
+    REAL gs = 0.0;
     if (g == zero) {
-        cs = one;
-        sn = zero;
+        c = one;
+        s = zero;
         r = f;
     } else if (f == zero) {
-        cs = zero;
-        sn = one;
-        r = g;
+        c = zero;
+        s = sign(one, g);
+        r = g1;
+    } else if (f1 > rtmin && f1 < rtmax && g1 > rtmin && g1 < rtmax) {
+        d = sqrt(f * f + g * g);
+        c = f1 / d;
+        r = sign(d, f);
+        s = g / r;
     } else {
-        f1 = f;
-        g1 = g;
-        scale = max(abs(f1), abs(g1));
-        if (scale >= safmx2) {
-            count = 0;
-        statement_10:
-            count++;
-            f1 = f1 * safmn2;
-            g1 = g1 * safmn2;
-            scale = max(abs(f1), abs(g1));
-            if (scale >= safmx2 && count < 20) {
-                goto statement_10;
-            }
-            r = sqrt(pow2(f1) + pow2(g1));
-            cs = f1 / r;
-            sn = g1 / r;
-            for (i = 1; i <= count; i = i + 1) {
-                r = r * safmx2;
-            }
-        } else if (scale <= safmn2) {
-            count = 0;
-        statement_30:
-            count++;
-            f1 = f1 * safmx2;
-            g1 = g1 * safmx2;
-            scale = max(abs(f1), abs(g1));
-            if (scale <= safmn2) {
-                goto statement_30;
-            }
-            r = sqrt(pow2(f1) + pow2(g1));
-            cs = f1 / r;
-            sn = g1 / r;
-            for (i = 1; i <= count; i = i + 1) {
-                r = r * safmn2;
-            }
-        } else {
-            r = sqrt(pow2(f1) + pow2(g1));
-            cs = f1 / r;
-            sn = g1 / r;
-        }
-        if (abs(f) > abs(g) && cs < zero) {
-            cs = -cs;
-            sn = -sn;
-            r = -r;
-        }
+        u = min(safmax, max(safmin, f1, g1));
+        fs = f / u;
+        gs = g / u;
+        d = sqrt(fs * fs + gs * gs);
+        c = abs(fs) / d;
+        r = sign(d, f);
+        s = gs / r;
+        r = r * u;
     }
-    //
-    // End of Rlartg
-    //
 }

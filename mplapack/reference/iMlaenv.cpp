@@ -90,6 +90,8 @@ iMlaenv(INTEGER const ispec, const char *name, const char *opts, INTEGER const n
         goto statement_160;
     case 16:
         goto statement_160;
+    case 17:
+        goto statement_160;
     default:
         break;
     }
@@ -230,6 +232,12 @@ statement_50:
             } else {
                 nb = 64;
             }
+        } else if (strncmp(subnam + 3, "QP3RK", 5) == 0) {
+            if (sname) {
+                nb = 32;
+            } else {
+                nb = 32;
+            }
         }
     } else if (strncmp(c2, "PO", 2) == 0) {
         if (strncmp(c3, "TRF", 3) == 0) {
@@ -336,6 +344,13 @@ statement_50:
             } else {
                 nb = 64;
             }
+        } else if (strncmp(c3, "SYL", 3) == 0) {
+            // The upper bound is to prevent overly aggressive scaling.
+            if (sname) {
+                nb = min(max((INTEGER)48, INTEGER((min(n1, n2) * 16) / 100)), 240);
+            } else {
+                nb = min(max((INTEGER)24, INTEGER((min(n1, n2) * 8) / 100)), 80);
+            }
         }
     } else if (strncmp(c2, "LA", 2) == 0) {
         if (strncmp(c3, "UUM", 3) == 0) {
@@ -343,6 +358,12 @@ statement_50:
                 nb = 64;
             } else {
                 nb = 64;
+            }
+        } else if (strncmp(c3, "TRS", 3) == 0) {
+            if (sname) {
+                nb = 32;
+            } else {
+                nb = 32;
             }
         }
     } else if (sname && strncmp(c2, "ST", 2) == 0) {
@@ -392,7 +413,14 @@ statement_60:
             } else {
                 nbmin = 2;
             }
+        } else if (strncmp(subnam + 3, "QP3RK", 5) == 0) {
+            if (sname) {
+                nbmin = 2;
+            } else {
+                nbmin = 2;
+            }
         }
+        //
     } else if (strncmp(c2, "SY", 2) == 0) {
         if (strncmp(c3, "TRF", 3) == 0) {
             if (sname) {
@@ -455,6 +483,12 @@ statement_70:
                 nx = 128;
             }
         } else if (strncmp(c3, "BRD", 3) == 0) {
+            if (sname) {
+                nx = 128;
+            } else {
+                nx = 128;
+            }
+        } else if (strncmp(subnam + 3, "QP3RK", 5) == 0) {
             if (sname) {
                 nx = 128;
             } else {
@@ -558,7 +592,7 @@ statement_150:
 //
 statement_160:
     //
-    // 12 <= ISPEC <= 16: xHSEQR or related subroutines.
+    // 12 <= ISPEC <= 17: xHSEQR or related subroutines.
     //
     return_value = iMparmq(ispec, name, opts, n1, n2, n3, n4);
     return return_value;

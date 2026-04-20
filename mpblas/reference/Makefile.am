@@ -28,18 +28,85 @@ if ENABLE_BINARY128
 lib_LTLIBRARIES += libmpblas_binary128.la
 endif
 
-MPBLAS_SOURCES = Caxpy.cpp Ccopy.cpp Cdotc.cpp Cdotu.cpp Cgbmv.cpp \
-Cgemm.cpp Cgemv.cpp Cgerc.cpp Cgeru.cpp Chbmv.cpp Chemm.cpp Chemv.cpp \
-Cher.cpp Cher2.cpp Cher2k.cpp Cherk.cpp Chpmv.cpp Chpr.cpp Chpr2.cpp \
-Crotg.cpp Cscal.cpp CRrot.cpp CRscal.cpp Cswap.cpp Csymm.cpp Csyr2k.cpp \
-Csyrk.cpp Ctbmv.cpp Ctbsv.cpp Ctpmv.cpp Ctpsv.cpp Ctrmm.cpp Ctrmv.cpp \
-Ctrsm.cpp Ctrsv.cpp RCabs1.cpp RCasum.cpp RCnrm2.cpp Rasum.cpp Raxpy.cpp\
-Rcopy.cpp Rdot.cpp Rgbmv.cpp Rgemm.cpp Rgemv.cpp Rger.cpp Rnrm2.cpp Rrot.cpp\
-Rrotg.cpp Rrotm.cpp Rrotmg.cpp Rsbmv.cpp Rscal.cpp Rspmv.cpp \
-Rspr.cpp Rspr2.cpp Rswap.cpp Rsymm.cpp Rsymv.cpp Rsyr.cpp Rsyr2.cpp \
-Rsyr2k.cpp Rsyrk.cpp Rtbmv.cpp Rtbsv.cpp Rtpmv.cpp Rtpsv.cpp Rtrmm.cpp \
-Rtrmv.cpp Rtrsm.cpp Rtrsv.cpp iCamax.cpp iRamax.cpp \
-Mlsame.cpp Mxerbla.cpp mplapackinit.cpp
+MPBLAS_SOURCES = \
+CRrot.cpp \
+CRscal.cpp \
+Caxpy.cpp \
+Ccopy.cpp \
+Cdotc.cpp \
+Cdotu.cpp \
+Cgbmv.cpp \
+Cgemm.cpp \
+Cgemmtr.cpp \
+Cgemv.cpp \
+Cgerc.cpp \
+Cgeru.cpp \
+Chbmv.cpp \
+Chemm.cpp \
+Chemv.cpp \
+Cher.cpp \
+Cher2.cpp \
+Cher2k.cpp \
+Cherk.cpp \
+Chpmv.cpp \
+Chpr.cpp \
+Chpr2.cpp \
+Crotg.cpp \
+Cscal.cpp \
+Cswap.cpp \
+Csymm.cpp \
+Csyr2k.cpp \
+Csyrk.cpp \
+Ctbmv.cpp \
+Ctbsv.cpp \
+Ctpmv.cpp \
+Ctpsv.cpp \
+Ctrmm.cpp \
+Ctrmv.cpp \
+Ctrsm.cpp \
+Ctrsv.cpp \
+Mlsame.cpp \
+Mxerbla.cpp \
+RCabs1.cpp \
+RCasum.cpp \
+RCnrm2.cpp \
+Rasum.cpp \
+Raxpy.cpp \
+Rcopy.cpp \
+Rdot.cpp \
+Rgbmv.cpp \
+Rgemm.cpp \
+Rgemmtr.cpp \
+Rgemv.cpp \
+Rger.cpp \
+Rnrm2.cpp \
+Rrot.cpp \
+Rrotg.cpp \
+Rrotm.cpp \
+Rrotmg.cpp \
+Rsbmv.cpp \
+Rscal.cpp \
+Rspmv.cpp \
+Rspr.cpp \
+Rspr2.cpp \
+Rswap.cpp \
+Rsymm.cpp \
+Rsymv.cpp \
+Rsyr.cpp \
+Rsyr2.cpp \
+Rsyr2k.cpp \
+Rsyrk.cpp \
+Rtbmv.cpp \
+Rtbsv.cpp \
+Rtpmv.cpp \
+Rtpsv.cpp \
+Rtrmm.cpp \
+Rtrmv.cpp \
+Rtrsm.cpp \
+Rtrsv.cpp \
+iCamax.cpp \
+iRamax.cpp \
+mplapackinit.cpp
 
 MPLAPACK_LT_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 MPLAPACK_RPATH_LDFLAGS = -Wl,-rpath,$(libdir)

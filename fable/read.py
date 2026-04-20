@@ -761,6 +761,80 @@ def load_includes(global_line_index_generator, stripped_source_lines):
     return result
 
 
+def _split_overlong_fixed_form_lines(lines):
+    """Split lines exceeding 72 columns into continuation lines.
+
+    source_line.__init__ extracts text[6:72], silently discarding
+    anything beyond column 72.  If a string literal straddles the
+    boundary, its closing quote is lost and the parser raises
+    "Missing terminating ' character".
+
+    CRITICAL: inline comments (everything from '!' outside strings to EOL)
+    must NOT be split into continuation lines — the remainder would become
+    code.  We strip inline comments first, then split only the code part.
+    """
+    MAX_COL = 72
+
+    def find_inline_comment(raw):
+        """Return index of '!' outside string literals, or -1."""
+        in_str = False
+        quote_ch = None
+        idx = 0
+        while idx < len(raw):
+            ch = raw[idx]
+            if in_str:
+                if ch == quote_ch:
+                    if idx + 1 < len(raw) and raw[idx + 1] == quote_ch:
+                        idx += 2
+                        continue
+                    in_str = False
+                    quote_ch = None
+            else:
+                if ch in ("'", '"'):
+                    in_str = True
+                    quote_ch = ch
+                elif ch == '!':
+                    return idx
+            idx += 1
+        return -1
+
+    out = []
+    for line in lines:
+        if len(line) <= MAX_COL:
+            out.append(line)
+            continue
+        if line and line[0] in ("c", "C", "*", "!"):
+            out.append(line)
+            continue
+        if line.strip() == "":
+            out.append(line)
+            continue
+
+        # Strip inline comment before splitting — comment text must never
+        # become code on a continuation line.
+        bang = find_inline_comment(line)
+        if bang >= 0:
+            code_part = line[:bang].rstrip()
+            if len(code_part) <= MAX_COL:
+                out.append(code_part)
+                continue
+            line = code_part
+
+        remaining = line
+        while len(remaining) > MAX_COL:
+            cut = MAX_COL
+            if (cut < len(remaining)
+                    and remaining[cut - 1] in ("'", '"')
+                    and remaining[cut] == remaining[cut - 1]):
+                cut -= 1
+            out.append(remaining[:cut])
+            remainder = remaining[cut:]
+            remaining = " " * 5 + "1" + remainder
+        out.append(remaining)
+
+    return out
+
+
 def load(global_line_index_generator, file_name, skip_load_includes=False):
     source_lines = []
     with open(file_name) as f:
@@ -769,6 +843,11 @@ def load(global_line_index_generator, file_name, skip_load_includes=False):
     # This must happen before constructing source_line objects.
     lines = _rewrite_free_form_to_fixed_form_lines(
         file_name=file_name, lines=lines)
+    # Ensure no line exceeds the fixed-form 72-column limit.
+    # source_line.__init__ extracts text[6:72]; content beyond column 72 is
+    # silently discarded, which can cut string literals and cause
+    # "Missing terminating ' character" errors.
+    lines = _split_overlong_fixed_form_lines(lines)
     for i_line, line in enumerate(lines):
         source_lines.append(source_line(
             global_line_index_generator=global_line_index_generator,

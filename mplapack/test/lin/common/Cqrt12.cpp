@@ -81,7 +81,6 @@ REAL Cqrt12(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REA
     REAL smlnum = Rlamch("S") / Rlamch("P");
     const REAL one = 1.0;
     REAL bignum = one / smlnum;
-    Rlabad(smlnum, bignum);
     //
     // Scale work if max entry outside range [SMLNUM,BIGNUM]
     //
@@ -130,6 +129,7 @@ REAL Cqrt12(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REA
     //
     Raxpy(mn, -one, s, 1, &rwork[1 - 1], 1);
     return_value = Rasum(mn, &rwork[1 - 1], 1) / (Rlamch("Epsilon") * castREAL(max(m, n)));
+    //
     if (nrmsvl != zero) {
         return_value = return_value / nrmsvl;
     }

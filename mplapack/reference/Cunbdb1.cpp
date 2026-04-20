@@ -87,7 +87,6 @@ void Cunbdb1(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x11, IN
     INTEGER i = 0;
     REAL c = 0.0;
     REAL s = 0.0;
-    const COMPLEX one = COMPLEX(1.0, 0.0);
     INTEGER childinfo = 0;
     for (i = 1; i <= q; i = i + 1) {
         //
@@ -96,19 +95,18 @@ void Cunbdb1(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x11, IN
         theta[i - 1] = atan2(x21[(i - 1) + (i - 1) * ldx21].real(), x11[(i - 1) + (i - 1) * ldx11].real());
         c = cos(theta[i - 1]);
         s = sin(theta[i - 1]);
-        x11[(i - 1) + (i - 1) * ldx11] = one;
-        x21[(i - 1) + (i - 1) * ldx21] = one;
-        Clarf("L", p - i + 1, q - i, &x11[(i - 1) + (i - 1) * ldx11], 1, conj(taup1[i - 1]), &x11[(i - 1) + ((i + 1) - 1) * ldx11], ldx11, &work[ilarf - 1]);
-        Clarf("L", m - p - i + 1, q - i, &x21[(i - 1) + (i - 1) * ldx21], 1, conj(taup2[i - 1]), &x21[(i - 1) + ((i + 1) - 1) * ldx21], ldx21, &work[ilarf - 1]);
+        c = cos(theta[i - 1]);
+        s = sin(theta[i - 1]);
+        Clarf1f("L", p - i + 1, q - i, &x11[(i - 1) + (i - 1) * ldx11], 1, conj(taup1[i - 1]), &x11[(i - 1) + ((i + 1) - 1) * ldx11], ldx11, &work[ilarf - 1]);
+        Clarf1f("L", m - p - i + 1, q - i, &x21[(i - 1) + (i - 1) * ldx21], 1, conj(taup2[i - 1]), &x21[(i - 1) + ((i + 1) - 1) * ldx21], ldx21, &work[ilarf - 1]);
         //
         if (i < q) {
             CRrot(q - i, &x11[(i - 1) + ((i + 1) - 1) * ldx11], ldx11, &x21[(i - 1) + ((i + 1) - 1) * ldx21], ldx21, c, s);
             Clacgv(q - i, &x21[(i - 1) + ((i + 1) - 1) * ldx21], ldx21);
             Clarfgp(q - i, x21[(i - 1) + ((i + 1) - 1) * ldx21], &x21[(i - 1) + ((i + 2) - 1) * ldx21], ldx21, tauq1[i - 1]);
             s = x21[(i - 1) + ((i + 1) - 1) * ldx21].real();
-            x21[(i - 1) + ((i + 1) - 1) * ldx21] = one;
-            Clarf("R", p - i, q - i, &x21[(i - 1) + ((i + 1) - 1) * ldx21], ldx21, tauq1[i - 1], &x11[((i + 1) - 1) + ((i + 1) - 1) * ldx11], ldx11, &work[ilarf - 1]);
-            Clarf("R", m - p - i, q - i, &x21[(i - 1) + ((i + 1) - 1) * ldx21], ldx21, tauq1[i - 1], &x21[((i + 1) - 1) + ((i + 1) - 1) * ldx21], ldx21, &work[ilarf - 1]);
+            Clarf1f("R", p - i, q - i, &x21[(i - 1) + ((i + 1) - 1) * ldx21], ldx21, tauq1[i - 1], &x11[((i + 1) - 1) + ((i + 1) - 1) * ldx11], ldx11, &work[ilarf - 1]);
+            Clarf1f("R", m - p - i, q - i, &x21[(i - 1) + ((i + 1) - 1) * ldx21], ldx21, tauq1[i - 1], &x21[((i + 1) - 1) + ((i + 1) - 1) * ldx21], ldx21, &work[ilarf - 1]);
             Clacgv(q - i, &x21[(i - 1) + ((i + 1) - 1) * ldx21], ldx21);
             c = sqrt(pow2(RCnrm2(p - i, &x11[((i + 1) - 1) + ((i + 1) - 1) * ldx11], 1)) + pow2(RCnrm2(m - p - i, &x21[((i + 1) - 1) + ((i + 1) - 1) * ldx21], 1)));
             phi[i - 1] = atan2(s, c);

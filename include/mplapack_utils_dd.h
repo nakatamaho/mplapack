@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2026
  *	Nakata, Maho
  * 	All rights reserved.
  *
@@ -110,6 +110,22 @@ inline void sprintnum_short(char *buf, dd_complex rtmp) {
     strcat(buf, buf2);
     strcat(buf, "i");
 }
+
+#include <mplapack_hex_helpers.h>
+
+inline void sprinthex_dd(char *buf, size_t n, const dd_real &x) {
+    // 128 is safe here because our format_hex_double_fixedexp now uses a 64-byte source
+    char hi_buf[128];
+    char lo_buf[128];
+
+    format_hex_double_fixedexp(hi_buf, sizeof(hi_buf), x.x[0]);
+    format_hex_double_fixedexp(lo_buf, sizeof(lo_buf), x.x[1]);
+
+    // Ensure the output buffer 'buf' is large enough for "[hi lo]"
+    // If n is at least 260, this will never truncate.
+    snprintf(buf, n, "[%s %s]", hi_buf, lo_buf);
+}
+
 #endif
 
 inline dd_real pow2(dd_real a) {

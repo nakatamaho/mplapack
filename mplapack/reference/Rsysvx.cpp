@@ -43,6 +43,7 @@ void Rsysvx(const char *fact, const char *uplo, INTEGER const n, INTEGER const n
     info = 0;
     bool nofact = Mlsame(fact, "N");
     bool lquery = (lwork == -1);
+    INTEGER lwkmin = max((INTEGER)1, 3 * n);
     if (!nofact && !Mlsame(fact, "F")) {
         info = -1;
     } else if (!Mlsame(uplo, "U") && !Mlsame(uplo, "L")) {
@@ -59,14 +60,14 @@ void Rsysvx(const char *fact, const char *uplo, INTEGER const n, INTEGER const n
         info = -11;
     } else if (ldx < max((INTEGER)1, n)) {
         info = -13;
-    } else if (lwork < max((INTEGER)1, 3 * n) && !lquery) {
+    } else if (lwork < lwkmin && !lquery) {
         info = -18;
     }
     //
     INTEGER lwkopt = 0;
     INTEGER nb = 0;
     if (info == 0) {
-        lwkopt = max((INTEGER)1, 3 * n);
+        lwkopt = lwkmin;
         if (nofact) {
             nb = iMlaenv(1, "Rsytrf", uplo, n, -1, -1, -1);
             lwkopt = max(lwkopt, n * nb);

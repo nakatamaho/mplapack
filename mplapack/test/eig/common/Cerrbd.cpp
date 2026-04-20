@@ -100,6 +100,20 @@ void Cerrbd(fem::str_cref path, INTEGER const nunit) {
         Chkxer("Cgebrd", infot, nout, lerr, ok);
         nt += 4;
         //
+        // Cgebd2
+        //
+        srnamt = "Cgebd2";
+        infot = 1;
+        Cgebd2(-1, 0, a, 1, d, e, tq, tp, w, info);
+        Chkxer("Cgebd2", infot, nout, lerr, ok);
+        infot = 2;
+        Cgebd2(0, -1, a, 1, d, e, tq, tp, w, info);
+        Chkxer("Cgebd2", infot, nout, lerr, ok);
+        infot = 4;
+        Cgebd2(2, 1, a, 1, d, e, tq, tp, w, info);
+        Chkxer("Cgebd2", infot, nout, lerr, ok);
+        nt += 3;
+        //
         // Cungbr
         //
         srnamt = "Cungbr";

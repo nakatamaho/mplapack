@@ -99,6 +99,6 @@ void Rsgt01(INTEGER const itype, fem::str_cref uplo, INTEGER const n, INTEGER co
         result[1 - 1] = (Rlange("1", n, m, z, ldz, work) / anorm) / (n * ulp);
     }
     //
-    // End of Rdgt01
+    // End of Rsgt01
     //
 }

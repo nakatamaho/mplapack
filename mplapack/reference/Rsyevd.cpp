@@ -73,7 +73,7 @@ void Rsyevd(const char *jobz, const char *uplo, INTEGER const n, REAL *a, INTEGE
                 liwmin = 1;
                 lwmin = 2 * n + 1;
             }
-            lopt = max(lwmin, 2 * n + iMlaenv(1, "Rsytrd", uplo, n, -1, -1, -1));
+            lopt = max(lwmin, 2 * n + n * iMlaenv(1, "Rsytrd", uplo, n, -1, -1, -1));
             liopt = liwmin;
         }
         work[1 - 1] = lopt;

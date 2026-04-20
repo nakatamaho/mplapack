@@ -36,7 +36,8 @@
 #include <mpblas.h>
 
 void CRscal(INTEGER const n, REAL const da, COMPLEX *zx, INTEGER const incx) {
-    if (n <= 0 || incx <= 0) {
+    const REAL one = 1.0;
+    if (n <= 0 || incx <= 0 || da == one) {
         return;
     }
     INTEGER i = 0;
@@ -46,7 +47,7 @@ void CRscal(INTEGER const n, REAL const da, COMPLEX *zx, INTEGER const incx) {
         // code for increment equal to 1
         //
         for (i = 1; i <= n; i = i + 1) {
-            zx[i - 1] = COMPLEX(da, 0.0) * zx[i - 1];
+            zx[i - 1] = COMPLEX(da * zx[i - 1].real(), da * zx[i - 1].imag());
         }
     } else {
         //
@@ -54,7 +55,10 @@ void CRscal(INTEGER const n, REAL const da, COMPLEX *zx, INTEGER const incx) {
         //
         nincx = n * incx;
         for (i = 1; i <= nincx; i = i + incx) {
-            zx[i - 1] = COMPLEX(da, 0.0) * zx[i - 1];
+            zx[i - 1] = COMPLEX(da * zx[i - 1].real(), da * zx[i - 1].imag());
         }
     }
+    //
+    // End of CRscal
+    //
 }

@@ -199,6 +199,6 @@ void Chpmv(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *ap, 
         }
     }
     //
-    // End of Chpmv .
+    // End of Chpmv
     //
 }

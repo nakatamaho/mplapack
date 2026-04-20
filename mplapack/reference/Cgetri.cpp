@@ -42,7 +42,7 @@ void Cgetri(INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, COMPL
     //
     info = 0;
     INTEGER nb = iMlaenv(1, "Cgetri", " ", n, -1, -1, -1);
-    INTEGER lwkopt = n * nb;
+    INTEGER lwkopt = max((INTEGER)1, n * nb);
     work[1 - 1] = lwkopt;
     bool lquery = (lwork == -1);
     if (n < 0) {

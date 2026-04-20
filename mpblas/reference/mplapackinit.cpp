@@ -186,7 +186,10 @@ void mplapack_initialize_mpfr(void) {
     // to require an infeasible number of iterations.
     if (!env_exp_set) {
         mpfr_exp_t default_emax = static_cast<mpfr_exp_t>(mpreal::default_prec) * 64;
-        mpfr_exp_t default_emin = -default_emax;
+        // Start from an IEEE-like asymmetric exponent range: emin = 3 - emax.
+        // This keeps LAPACK scaling formulas (e.g. Blue-style scaling)
+        // aligned with the intended IEEE-style emin/emax relationship.
+        mpfr_exp_t default_emin = -default_emax + 3;
 
         // Clamp to MPFR's allowable range.
         const mpfr_exp_t emin_min = mpfr_get_emin_min();

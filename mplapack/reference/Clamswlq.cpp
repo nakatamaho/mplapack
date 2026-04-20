@@ -40,7 +40,8 @@ void Clamswlq(const char *side, const char *trans, INTEGER const m, INTEGER cons
     //
     // Test the input arguments
     //
-    bool lquery = lwork < 0;
+    info = 0;
+    bool lquery = (lwork == -1);
     bool notran = Mlsame(trans, "N");
     bool tran = Mlsame(trans, "C");
     bool left = Mlsame(side, "L");
@@ -52,39 +53,49 @@ void Clamswlq(const char *side, const char *trans, INTEGER const m, INTEGER cons
         lw = m * mb;
     }
     //
-    info = 0;
+    INTEGER minmnk = min(m, n, k);
+    INTEGER lwmin = 0;
+    if (minmnk == 0) {
+        lwmin = 1;
+    } else {
+        lwmin = max((INTEGER)1, lw);
+    }
+    //
     if (!left && !right) {
         info = -1;
     } else if (!tran && !notran) {
         info = -2;
-    } else if (m < 0) {
+    } else if (k < 0) {
+        info = -5;
+    } else if (m < k) {
         info = -3;
     } else if (n < 0) {
         info = -4;
-    } else if (k < 0) {
-        info = -5;
+    } else if (k < mb || mb < 1) {
+        info = -6;
     } else if (lda < max((INTEGER)1, k)) {
         info = -9;
     } else if (ldt < max((INTEGER)1, mb)) {
         info = -11;
     } else if (ldc < max((INTEGER)1, m)) {
         info = -13;
-    } else if ((lwork < max((INTEGER)1, lw)) && (!lquery)) {
+    } else if (lwork < lwmin && (!lquery)) {
         info = -15;
     }
     //
+    if (info == 0) {
+        work[1 - 1] = lwmin;
+    }
     if (info != 0) {
         Mxerbla("Clamswlq", -info);
-        work[1 - 1] = lw;
         return;
     } else if (lquery) {
-        work[1 - 1] = lw;
         return;
     }
     //
     // Quick return if possible
     //
-    if (min(m, n, k) == 0) {
+    if (minmnk == 0) {
         return;
     }
     //
@@ -202,7 +213,7 @@ void Clamswlq(const char *side, const char *trans, INTEGER const m, INTEGER cons
         //
     }
     //
-    work[1 - 1] = lw;
+    work[1 - 1] = lwmin;
     //
     // End of Clamswlq
     //

@@ -110,8 +110,8 @@ void Chet21(INTEGER const itype, fem::str_cref uplo, INTEGER const n, INTEGER co
         }
         //
         if (n > 1 && kband == 1) {
-            for (j = 2; j <= n - 1; j = j + 1) {
-                Cher2(cuplo.elems, n, -COMPLEX(e[j - 1]), &u[(j - 1) * ldu], 1, &u[((j - 1) - 1) * ldu], 1, work, n);
+            for (j = 1; j <= n - 1; j = j + 1) {
+                Cher2(cuplo.elems, n, -COMPLEX(e[j - 1]), &u[(j - 1) * ldu], 1, &u[((j + 1) - 1) * ldu], 1, work, n);
             }
         }
         wnorm = Clanhe("1", cuplo.elems, n, work, n, rwork);

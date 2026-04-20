@@ -178,6 +178,6 @@ void Chpr2(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *x, I
         }
     }
     //
-    // End of Chpr2 .
+    // End of Chpr2
     //
 }

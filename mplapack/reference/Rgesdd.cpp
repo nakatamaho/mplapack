@@ -340,7 +340,7 @@ void Rgesdd(const char *jobz, INTEGER const m, INTEGER const n, REAL *a, INTEGER
         }
         //
         maxwrk = max(maxwrk, minwrk);
-        work[1 - 1] = maxwrk;
+        work[1 - 1] = Rroundup_lwork(maxwrk);
         //
         if (lwork < minwrk && !lquery) {
             info = -12;
@@ -1197,7 +1197,7 @@ void Rgesdd(const char *jobz, INTEGER const m, INTEGER const n, REAL *a, INTEGER
     //
     // Return optimal workspace in WORK(1)
     //
-    work[1 - 1] = maxwrk;
+    work[1 - 1] = Rroundup_lwork(maxwrk);
     //
     // End of Rgesdd
     //

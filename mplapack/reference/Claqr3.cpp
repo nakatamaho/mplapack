@@ -98,7 +98,6 @@ void Claqr3(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
     REAL safmin = Rlamch("SAFE MINIMUM");
     const REAL rone = 1.0;
     REAL safmax = rone / safmin;
-    Rlabad(safmin, safmax);
     REAL ulp = Rlamch("PRECISION");
     REAL smlnum = safmin * (castREAL(n) / ulp);
     //
@@ -214,7 +213,6 @@ void Claqr3(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
         sh[(kwtop + i - 1) - 1] = t[(i - 1) + (i - 1) * ldt];
     }
     //
-    COMPLEX beta = 0.0;
     COMPLEX tau = 0.0;
     INTEGER ltop = 0;
     INTEGER krow = 0;
@@ -229,15 +227,13 @@ void Claqr3(bool const wantt, bool const wantz, INTEGER const n, INTEGER const k
             for (i = 1; i <= ns; i = i + 1) {
                 work[i - 1] = conj(work[i - 1]);
             }
-            beta = work[1 - 1];
-            Clarfg(ns, beta, &work[2 - 1], 1, tau);
-            work[1 - 1] = one;
+            Clarfg(ns, work[1 - 1], &work[2 - 1], 1, tau);
             //
             Claset("L", jw - 2, jw - 2, zero, zero, &t[(3 - 1)], ldt);
             //
-            Clarf("L", ns, jw, work, 1, conj(tau), t, ldt, &work[(jw + 1) - 1]);
-            Clarf("R", ns, ns, work, 1, tau, t, ldt, &work[(jw + 1) - 1]);
-            Clarf("R", jw, ns, work, 1, tau, v, ldv, &work[(jw + 1) - 1]);
+            Clarf1f("L", ns, jw, work, 1, conj(tau), t, ldt, &work[(jw + 1) - 1]);
+            Clarf1f("R", ns, ns, work, 1, tau, t, ldt, &work[(jw + 1) - 1]);
+            Clarf1f("R", jw, ns, work, 1, tau, v, ldv, &work[(jw + 1) - 1]);
             //
             Cgehrd(jw, 1, ns, t, ldt, work, &work[(jw + 1) - 1], lwork - jw, info);
         }

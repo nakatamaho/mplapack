@@ -118,6 +118,6 @@ void Clapmr(bool const forwrd, INTEGER const m, INTEGER const n, COMPLEX *x, INT
         //
     }
     //
-    // End of Clapmt
+    // End of Clapmr
     //
 }

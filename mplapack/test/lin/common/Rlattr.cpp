@@ -54,7 +54,6 @@ void Rlattr(INTEGER const imat, fem::str_cref uplo, fem::str_cref trans, fem::st
     const REAL half = 0.5;
     const REAL quarter = 0.25;
     REAL bignum = (one - ulp) / smlnum;
-    Rlabad(smlnum, bignum);
     if ((imat >= 7 && imat <= 10) || imat == 18) {
         diag = "U";
     } else {
@@ -68,7 +67,7 @@ void Rlattr(INTEGER const imat, fem::str_cref uplo, fem::str_cref trans, fem::st
         return;
     }
     //
-    // Call Rlatb4 to set parameters for SLATMS.
+    // Call Rlatb4 to set parameters for Rlatms.
     //
     bool upper = Mlsame(uplo.elems(), "U");
     fem::str<1> type;

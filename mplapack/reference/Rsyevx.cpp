@@ -44,8 +44,8 @@ void Rsyevx(const char *jobz, const char *range, const char *uplo, INTEGER const
     bool indeig = false;
     bool lquery = false;
     INTEGER lwkmin = 0;
-    INTEGER nb = 0;
     INTEGER lwkopt = 0;
+    INTEGER nb = 0;
     const REAL one = 1.0;
     REAL safmin = 0.0;
     REAL eps = 0.0;
@@ -124,14 +124,14 @@ void Rsyevx(const char *jobz, const char *range, const char *uplo, INTEGER const
     if (info == 0) {
         if (n <= 1) {
             lwkmin = 1;
-            work[1 - 1] = lwkmin;
+            lwkopt = 1;
         } else {
             lwkmin = 8 * n;
             nb = iMlaenv(1, "Rsytrd", uplo, n, -1, -1, -1);
             nb = max(nb, iMlaenv(1, "Rormtr", uplo, n, -1, -1, -1));
             lwkopt = max(lwkmin, (nb + 3) * n);
-            work[1 - 1] = lwkopt;
         }
+        work[1 - 1] = lwkopt;
         //
         if (lwork < lwkmin && !lquery) {
             info = -17;
@@ -265,13 +265,19 @@ void Rsyevx(const char *jobz, const char *range, const char *uplo, INTEGER const
     indibl = 1;
     indisp = indibl + n;
     indiwo = indisp + n;
-    Rstebz(range, &order, n, vll, vuu, il, iu, abstll, &work[indd - 1], &work[inde - 1], m, nsplit, w, &iwork[indibl - 1], &iwork[indisp - 1], &work[indwrk - 1], &iwork[indiwo - 1], info);
-    if (info != 0) {
-        return;  // propagate INFO from Rstebz; IBLOCK may be invalid
+    Rstebz(range, &order, n, vll, vuu, il, iu, abstll, &work[indd - 1], &work[inde - 1], m, nsplit, w, &iwork[indibl - 1], &iwork[indisp - 1], &work[indwrk - 1], &iwork[indiwo - 1], iinfo);
+    if (iinfo != 0) {
+        info = n + iinfo;
+        if (iinfo != 1) {
+            goto statement_40;
+        }
     }
     //
     if (wantz) {
-        Rstein(n, &work[indd - 1], &work[inde - 1], m, w, &iwork[indibl - 1], &iwork[indisp - 1], z, ldz, &work[indwrk - 1], &iwork[indiwo - 1], ifail, info);
+        Rstein(n, &work[indd - 1], &work[inde - 1], m, w, &iwork[indibl - 1], &iwork[indisp - 1], z, ldz, &work[indwrk - 1], &iwork[indiwo - 1], ifail, iinfo);
+        if (iinfo != 0 && info == 0) {
+            info = iinfo;
+        }
         //
         // Apply orthogonal matrix used in reduction to tridiagonal
         // form to eigenvectors returned by Rstein.

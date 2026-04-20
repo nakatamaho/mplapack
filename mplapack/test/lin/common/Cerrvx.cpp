@@ -531,6 +531,9 @@ void Cerrvx(fem::str_cref path, INTEGER const nunit) {
         infot = 3;
         Chesv_rook("U", 0, -1, a, 1, ip, b, 1, w, 1, info);
         Chkxer("Chesv_rook", infot, nout, lerr, ok);
+        infot = 5;
+        Chesv_rook("U", 2, 0, a, 1, ip, b, 2, w, 1, info);
+        Chkxer("Chesv_rook", infot, nout, lerr, ok);
         infot = 8;
         Chesv_rook("U", 2, 0, a, 2, ip, b, 1, w, 1, info);
         Chkxer("Chesv_rook", infot, nout, lerr, ok);
@@ -578,7 +581,7 @@ void Cerrvx(fem::str_cref path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2.elems, "HA")) {
         //
-        // Chesv_aa
+        // ZHESV_AASEN
         //
         srnamt = "Chesv_aa";
         infot = 1;
@@ -590,8 +593,14 @@ void Cerrvx(fem::str_cref path, INTEGER const nunit) {
         infot = 3;
         Chesv_aa("U", 0, -1, a, 1, ip, b, 1, w, 1, info);
         Chkxer("Chesv_aa", infot, nout, lerr, ok);
+        infot = 5;
+        Chesv_aa("U", 2, 0, a, 1, ip, b, 2, w, 1, info);
+        Chkxer("Chesv_aa", infot, nout, lerr, ok);
         infot = 8;
         Chesv_aa("U", 2, 0, a, 2, ip, b, 1, w, 1, info);
+        Chkxer("Chesv_aa", infot, nout, lerr, ok);
+        infot = 10;
+        Chesv_aa("U", 3, 1, a, 3, ip, b, 3, w, 6, info);
         Chkxer("Chesv_aa", infot, nout, lerr, ok);
         //
     } else if (Mlsamen(2, c2.elems, "H2")) {
@@ -611,12 +620,39 @@ void Cerrvx(fem::str_cref path, INTEGER const nunit) {
         infot = 5;
         Chesv_aa_2stage("U", 2, 1, a, 1, a, 1, ip, ip, b, 1, w, 1, info);
         Chkxer("Chesv_aa_2stage", infot, nout, lerr, ok);
-        infot = 11;
-        Chesv_aa_2stage("U", 2, 1, a, 2, a, 8, ip, ip, b, 1, w, 1, info);
-        Chkxer("Chesv_aa_2stage", infot, nout, lerr, ok);
         infot = 7;
         Chesv_aa_2stage("U", 2, 1, a, 2, a, 1, ip, ip, b, 2, w, 1, info);
         Chkxer("Chesv_aa_2stage", infot, nout, lerr, ok);
+        infot = 11;
+        Chesv_aa_2stage("U", 2, 1, a, 2, a, 8, ip, ip, b, 1, w, 1, info);
+        Chkxer("Chesv_aa_2stage", infot, nout, lerr, ok);
+        infot = 13;
+        Chesv_aa_2stage("U", 2, 1, a, 2, a, 8, ip, ip, b, 2, w, 1, info);
+        Chkxer("Chesv_aa_2stage", infot, nout, lerr, ok);
+        //
+    } else if (Mlsamen(2, c2.elems, "SA")) {
+        //
+        // ZSYSV_AASEN
+        //
+        srnamt = "Csysv_aa";
+        infot = 1;
+        Csysv_aa("/", 0, 0, a, 1, ip, b, 1, w, 1, info);
+        Chkxer("Csysv_aa", infot, nout, lerr, ok);
+        infot = 2;
+        Csysv_aa("U", -1, 0, a, 1, ip, b, 1, w, 1, info);
+        Chkxer("Csysv_aa", infot, nout, lerr, ok);
+        infot = 3;
+        Csysv_aa("U", 0, -1, a, 1, ip, b, 1, w, 1, info);
+        Chkxer("Csysv_aa", infot, nout, lerr, ok);
+        infot = 5;
+        Csysv_aa("U", 2, 0, a, 1, ip, b, 2, w, 1, info);
+        Chkxer("Csysv_aa", infot, nout, lerr, ok);
+        infot = 8;
+        Csysv_aa("U", 2, 0, a, 2, ip, b, 1, w, 1, info);
+        Chkxer("Csysv_aa", infot, nout, lerr, ok);
+        infot = 10;
+        Csysv_aa("U", 3, 1, a, 3, ip, b, 3, w, 6, info);
+        Chkxer("Csysv_aa", infot, nout, lerr, ok);
         //
     } else if (Mlsamen(2, c2.elems, "S2")) {
         //
@@ -635,13 +671,16 @@ void Cerrvx(fem::str_cref path, INTEGER const nunit) {
         infot = 5;
         Csysv_aa_2stage("U", 2, 1, a, 1, a, 1, ip, ip, b, 1, w, 1, info);
         Chkxer("Csysv_aa_2stage", infot, nout, lerr, ok);
-        infot = 11;
-        Csysv_aa_2stage("U", 2, 1, a, 2, a, 8, ip, ip, b, 1, w, 1, info);
-        Chkxer("Csysv_aa_2stage", infot, nout, lerr, ok);
         infot = 7;
         Csysv_aa_2stage("U", 2, 1, a, 2, a, 1, ip, ip, b, 2, w, 1, info);
         Chkxer("Csysv_aa_2stage", infot, nout, lerr, ok);
-        // *
+        infot = 11;
+        Csysv_aa_2stage("U", 2, 1, a, 2, a, 8, ip, ip, b, 1, w, 1, info);
+        Chkxer("Csysv_aa_2stage", infot, nout, lerr, ok);
+        infot = 13;
+        Csysv_aa_2stage("U", 2, 1, a, 2, a, 8, ip, ip, b, 2, w, 1, info);
+        Chkxer("Csysv_aa_2stage", infot, nout, lerr, ok);
+        //
     } else if (Mlsamen(2, c2.elems, "HP")) {
         //
         // Chpsv
@@ -695,6 +734,9 @@ void Cerrvx(fem::str_cref path, INTEGER const nunit) {
         Chkxer("Csysv", infot, nout, lerr, ok);
         infot = 3;
         Csysv("U", 0, -1, a, 1, ip, b, 1, w, 1, info);
+        Chkxer("Csysv", infot, nout, lerr, ok);
+        infot = 5;
+        Csysv("U", 2, 0, a, 1, ip, b, 2, w, 1, info);
         Chkxer("Csysv", infot, nout, lerr, ok);
         infot = 8;
         Csysv("U", 2, 0, a, 2, ip, b, 1, w, 1, info);
@@ -750,6 +792,9 @@ void Cerrvx(fem::str_cref path, INTEGER const nunit) {
         Chkxer("Csysv_rook", infot, nout, lerr, ok);
         infot = 3;
         Csysv_rook("U", 0, -1, a, 1, ip, b, 1, w, 1, info);
+        Chkxer("Csysv_rook", infot, nout, lerr, ok);
+        infot = 5;
+        Csysv_rook("U", 2, 0, a, 1, ip, b, 2, w, 1, info);
         Chkxer("Csysv_rook", infot, nout, lerr, ok);
         infot = 8;
         Csysv_rook("U", 2, 0, a, 2, ip, b, 1, w, 1, info);

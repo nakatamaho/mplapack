@@ -255,6 +255,6 @@ void Rtrmm(const char *side, const char *uplo, const char *transa, const char *d
         }
     }
     //
-    // End of Rtrmm .
+    // End of Rtrmm
     //
 }

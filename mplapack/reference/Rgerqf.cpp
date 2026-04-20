@@ -63,8 +63,10 @@ void Rgerqf(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
         }
         work[1 - 1] = lwkopt;
         //
-        if (lwork < max((INTEGER)1, m) && !lquery) {
-            info = -7;
+        if (!lquery) {
+            if (lwork <= 0 || (n > 0 && lwork < max((INTEGER)1, m))) {
+                info = -7;
+            }
         }
     }
     //

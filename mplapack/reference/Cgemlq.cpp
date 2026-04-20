@@ -40,7 +40,7 @@ void Cgemlq(const char *side, const char *trans, INTEGER const m, INTEGER const 
     //
     // Test the input arguments
     //
-    bool lquery = lwork == -1;
+    bool lquery = (lwork == -1);
     bool notran = Mlsame(trans, "N");
     bool tran = Mlsame(trans, "C");
     bool left = Mlsame(side, "L");
@@ -56,6 +56,14 @@ void Cgemlq(const char *side, const char *trans, INTEGER const m, INTEGER const 
     } else {
         lw = m * mb;
         mn = n;
+    }
+    //
+    INTEGER minmnk = min(m, n, k);
+    INTEGER lwmin = 0;
+    if (minmnk == 0) {
+        lwmin = 1;
+    } else {
+        lwmin = max((INTEGER)1, lw);
     }
     //
     INTEGER nblcks = 0;
@@ -86,7 +94,7 @@ void Cgemlq(const char *side, const char *trans, INTEGER const m, INTEGER const 
         info = -9;
     } else if (ldc < max((INTEGER)1, m)) {
         info = -11;
-    } else if ((lwork < max((INTEGER)1, lw)) && (!lquery)) {
+    } else if ((lwork < lwmin) && (!lquery)) {
         info = -13;
     }
     //
@@ -103,7 +111,7 @@ void Cgemlq(const char *side, const char *trans, INTEGER const m, INTEGER const 
     //
     // Quick return if possible
     //
-    if (min(m, n, k) == 0) {
+    if (minmnk == 0) {
         return;
     }
     //

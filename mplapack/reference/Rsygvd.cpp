@@ -74,7 +74,7 @@ void Rsygvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
     }
     //
     if (info == 0) {
-        work[1 - 1] = lopt;
+        work[1 - 1] = Rroundup_lwork(lopt);
         iwork[1 - 1] = liopt;
         //
         if (lwork < lwmin && !lquery) {
@@ -146,7 +146,7 @@ void Rsygvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
         }
     }
     //
-    work[1 - 1] = lopt;
+    work[1 - 1] = Rroundup_lwork(lopt);
     iwork[1 - 1] = liopt;
     //
     // End of Rsygvd

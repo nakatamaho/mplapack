@@ -56,22 +56,17 @@ void Cgerq2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
     INTEGER k = min(m, n);
     //
     INTEGER i = 0;
-    COMPLEX alpha = 0.0;
-    const COMPLEX one = COMPLEX(1.0, 0.0);
     for (i = k; i >= 1; i = i - 1) {
         //
         // Generate elementary reflector H(i) to annihilate
         // A(m-k+i,1:n-k+i-1)
         //
         Clacgv(n - k + i, &a[((m - k + i) - 1)], lda);
-        alpha = a[((m - k + i) - 1) + ((n - k + i) - 1) * lda];
-        Clarfg(n - k + i, alpha, &a[((m - k + i) - 1)], lda, tau[i - 1]);
+        Clarfg(n - k + i, a[((m - k + i) - 1) + ((n - k + i) - 1) * lda], &a[((m - k + i) - 1)], lda, tau[i - 1]);
         //
         // Apply H(i) to A(1:m-k+i-1,1:n-k+i) from the right
         //
-        a[((m - k + i) - 1) + ((n - k + i) - 1) * lda] = one;
-        Clarf("Right", m - k + i - 1, n - k + i, &a[((m - k + i) - 1)], lda, tau[i - 1], a, lda, work);
-        a[((m - k + i) - 1) + ((n - k + i) - 1) * lda] = alpha;
+        Clarf1l("Right", m - k + i - 1, n - k + i, &a[((m - k + i) - 1)], lda, tau[i - 1], a, lda, work);
         Clacgv(n - k + i - 1, &a[((m - k + i) - 1)], lda);
     }
     //

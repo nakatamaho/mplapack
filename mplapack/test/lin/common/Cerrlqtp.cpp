@@ -167,6 +167,6 @@ void Cerrlqtp(fem::str_cref path, INTEGER const nunit) {
     //
     Alaesm(path, ok, nout);
     //
-    // End of Cerrlqt
+    // End of Cerrlqtp
     //
 }

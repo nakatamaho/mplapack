@@ -46,19 +46,19 @@ using fem::common;
 void Rdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER (&iseed)[4], REAL const thresh, INTEGER const nounit, REAL *a, INTEGER const lda, REAL *b, REAL *s, REAL *t, REAL *q, INTEGER const ldq, REAL *z, REAL *qe, INTEGER const ldqe, REAL *alphar, REAL *alphai, REAL *beta, REAL *alphr1, REAL *alphi1, REAL *beta1, REAL *work, INTEGER const lwork, REAL *result, INTEGER &info) {
     common cmn;
     common_write write(cmn);
-    static INTEGER kclass[26] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3};
+    static INTEGER kclass[27] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 4};
     static INTEGER kz1[6] = {0, 1, 2, 1, 3, 3};
     static INTEGER kz2[6] = {0, 0, 1, 2, 1, 1};
     static INTEGER kadd[6] = {0, 0, 0, 0, 3, 2};
-    static INTEGER katype[26] = {0, 1, 0, 1, 2, 3, 4, 1, 4, 4, 1, 1, 4, 4, 4, 2, 4, 5, 8, 7, 9, 4, 4, 4, 4, 0};
-    static INTEGER kbtype[26] = {0, 0, 1, 1, 2, -3, 1, 4, 1, 1, 4, 4, 1, 1, -4, 2, -4, 8, 8, 8, 8, 8, 8, 8, 8, 0};
-    static INTEGER kazero[26] = {1, 1, 1, 1, 1, 1, 2, 1, 2, 2, 1, 1, 2, 2, 3, 1, 3, 5, 5, 5, 5, 3, 3, 3, 3, 1};
-    static INTEGER kbzero[26] = {1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 2, 1, 1, 4, 1, 4, 6, 6, 6, 6, 4, 4, 4, 4, 1};
-    static INTEGER kamagn[26] = {1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 2, 3, 2, 3, 1, 1, 1, 1, 1, 1, 1, 2, 3, 3, 2, 1};
-    static INTEGER kbmagn[26] = {1, 1, 1, 1, 1, 1, 1, 1, 3, 2, 3, 2, 2, 3, 1, 1, 1, 1, 1, 1, 1, 3, 2, 3, 2, 1};
-    static INTEGER ktrian[26] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-    static INTEGER iasign[26] = {0, 0, 0, 0, 0, 0, 2, 0, 2, 2, 0, 0, 2, 2, 2, 0, 2, 0, 0, 0, 2, 2, 2, 2, 2, 0};
-    static INTEGER ibsign[26] = {0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2, 2, 0, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    static INTEGER katype[27] = {0, 1, 0, 1, 2, 3, 4, 1, 4, 4, 1, 1, 4, 4, 4, 2, 4, 5, 8, 7, 9, 4, 4, 4, 4, 0, 0};
+    static INTEGER kbtype[27] = {0, 0, 1, 1, 2, -3, 1, 4, 1, 1, 4, 4, 1, 1, -4, 2, -4, 8, 8, 8, 8, 8, 8, 8, 8, 0, 0};
+    static INTEGER kazero[27] = {1, 1, 1, 1, 1, 1, 2, 1, 2, 2, 1, 1, 2, 2, 3, 1, 3, 5, 5, 5, 5, 3, 3, 3, 3, 1, 1};
+    static INTEGER kbzero[27] = {1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 2, 1, 1, 4, 1, 4, 6, 6, 6, 6, 4, 4, 4, 4, 1, 1};
+    static INTEGER kamagn[27] = {1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 2, 3, 2, 3, 1, 1, 1, 1, 1, 1, 1, 2, 3, 3, 2, 1, 3};
+    static INTEGER kbmagn[27] = {1, 1, 1, 1, 1, 1, 1, 1, 3, 2, 3, 2, 2, 3, 1, 1, 1, 1, 1, 1, 1, 3, 2, 3, 2, 1, 3};
+    static INTEGER ktrian[27] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+    static INTEGER iasign[27] = {0, 0, 0, 0, 0, 0, 2, 0, 2, 2, 0, 0, 2, 2, 2, 0, 2, 0, 0, 0, 2, 2, 2, 2, 2, 0, 0};
+    static INTEGER ibsign[27] = {0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2, 2, 0, 0, 2, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     bool badnn = false;
     INTEGER nmax = 0;
     INTEGER j = 0;
@@ -77,7 +77,7 @@ void Rdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
     INTEGER jsize = 0;
     INTEGER n = 0;
     INTEGER n1 = 0;
-    const INTEGER maxtyp = 26;
+    const INTEGER maxtyp = 27;
     INTEGER mtypes = 0;
     INTEGER jtype = 0;
     INTEGER ioldsd[4];
@@ -189,7 +189,6 @@ void Rdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
     ulp = Rlamch("Epsilon") * Rlamch("Base");
     safmin = safmin / ulp;
     safmax = one / safmin;
-    Rlabad(safmin, safmax);
     ulpinv = one / ulp;
     //
     // The values RMAGN(2:3) depend on N, see below.
@@ -232,7 +231,8 @@ void Rdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
             // Description of control parameters:
             //
             // KZLASS: =1 means w/o rotation, =2 means w/ rotation,
-            // =3 means random.
+            // =3 means random, =4 means random generalized
+            // upper Hessenberg.
             // KATYPE: the "type" to be passed to Rlatm4 for computing A.
             // KAZERO: the pattern of zeros on the diagonal for A:
             // =1: ( xxx ), =2: (0, xxx ) =3: ( 0, 0, xxx, 0 ),
@@ -339,7 +339,7 @@ void Rdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                         goto statement_90;
                     }
                 }
-            } else {
+            } else if (kclass[jtype - 1] == 3) {
                 //
                 // Random matrices
                 //
@@ -349,6 +349,30 @@ void Rdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                         b[(jr - 1) + (jc - 1) * lda] = rmagn[kbmagn[jtype - 1]] * Rlarnd(2, iseed);
                     }
                 }
+            } else {
+                //
+                // Random upper Hessenberg pencil with singular B
+                //
+                for (jc = 1; jc <= n; jc = jc + 1) {
+                    for (jr = 1; jr <= min(jc + 1, n); jr = jr + 1) {
+                        a[(jr - 1) + (jc - 1) * lda] = rmagn[kamagn[jtype - 1]] * Rlarnd(2, iseed);
+                    }
+                    for (jr = jc + 2; jr <= n; jr = jr + 1) {
+                        a[(jr - 1) + (jc - 1) * lda] = zero;
+                    }
+                }
+                for (jc = 1; jc <= n; jc = jc + 1) {
+                    for (jr = 1; jr <= jc; jr = jr + 1) {
+                        b[(jr - 1) + (jc - 1) * lda] = rmagn[kamagn[jtype - 1]] * Rlarnd(2, iseed);
+                    }
+                    for (jr = jc + 1; jr <= n; jr = jr + 1) {
+                        b[(jr - 1) + (jc - 1) * lda] = zero;
+                    }
+                }
+                for (jc = 1; jc <= n; jc = jc + 4) {
+                    b[(jc - 1) + (jc - 1) * lda] = zero;
+                }
+                //
             }
         //
         statement_90:
@@ -364,6 +388,14 @@ void Rdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
             for (i = 1; i <= 7; i = i + 1) {
                 result[i - 1] = -one;
             }
+            //
+            // Call Mxlaenv to set the parameters used in Rlaqz0
+            //
+            Mxlaenv(12, 10);
+            Mxlaenv(13, 12);
+            Mxlaenv(14, 13);
+            Mxlaenv(15, 2);
+            Mxlaenv(17, 10);
             //
             // Call Rggev3 to compute eigenvalues and eigenvectors.
             //
@@ -404,7 +436,13 @@ void Rdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
             }
             //
             for (j = 1; j <= n; j = j + 1) {
+#if defined ___MPLAPACK_BUILD_WITH_MPFR___ || defined ___MPLAPACK_BUILD_WITH_GMP___
+                REAL scale = max(safmin, abs(alphar[j - 1]) + abs(alphai[j - 1]) + abs(beta[j - 1]), abs(alphr1[j - 1]) + abs(alphi1[j - 1]) + abs(beta1[j - 1]));
+                REAL diff = abs(alphar[j - 1] - alphr1[j - 1]) + abs(alphai[j - 1] - alphi1[j - 1]) + abs(beta[j - 1] - beta1[j - 1]);
+                if (diff > 100.0 * ulp * scale) {
+#else
                 if (alphar[j - 1] != alphr1[j - 1] || alphai[j - 1] != alphi1[j - 1] || beta[j - 1] != beta1[j - 1]) {
+#endif
                     result[5 - 1] = ulpinv;
                 }
             }
@@ -423,7 +461,13 @@ void Rdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
             }
             //
             for (j = 1; j <= n; j = j + 1) {
+#if defined ___MPLAPACK_BUILD_WITH_MPFR___ || defined ___MPLAPACK_BUILD_WITH_GMP___
+                REAL scale = max(safmin, abs(alphar[j - 1]) + abs(alphai[j - 1]) + abs(beta[j - 1]), abs(alphr1[j - 1]) + abs(alphi1[j - 1]) + abs(beta1[j - 1]));
+                REAL diff = abs(alphar[j - 1] - alphr1[j - 1]) + abs(alphai[j - 1] - alphi1[j - 1]) + abs(beta[j - 1] - beta1[j - 1]);
+                if (diff > 100.0 * ulp * scale) {
+#else
                 if (alphar[j - 1] != alphr1[j - 1] || alphai[j - 1] != alphi1[j - 1] || beta[j - 1] != beta1[j - 1]) {
+#endif
                     result[6 - 1] = ulpinv;
                 }
             }
@@ -450,7 +494,13 @@ void Rdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
             }
             //
             for (j = 1; j <= n; j = j + 1) {
+#if defined ___MPLAPACK_BUILD_WITH_MPFR___ || defined ___MPLAPACK_BUILD_WITH_GMP___
+                REAL scale = max(safmin, abs(alphar[j - 1]) + abs(alphai[j - 1]) + abs(beta[j - 1]), abs(alphr1[j - 1]) + abs(alphi1[j - 1]) + abs(beta1[j - 1]));
+                REAL diff = abs(alphar[j - 1] - alphr1[j - 1]) + abs(alphai[j - 1] - alphi1[j - 1]) + abs(beta[j - 1] - beta1[j - 1]);
+                if (diff > 100.0 * ulp * scale) {
+#else
                 if (alphar[j - 1] != alphr1[j - 1] || alphai[j - 1] != alphi1[j - 1] || beta[j - 1] != beta1[j - 1]) {
+#endif
                     result[7 - 1] = ulpinv;
                 }
             }

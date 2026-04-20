@@ -39,6 +39,9 @@
 void Rlarrc(const char *jobt, INTEGER const n, REAL const vl, REAL const vu, REAL *d, REAL *e, REAL const /* pivmin */, INTEGER &eigcnt, INTEGER &lcnt, INTEGER &rcnt, INTEGER &info) {
     //
     info = 0;
+    lcnt = 0;
+    rcnt = 0;
+    eigcnt = 0;
     //
     // Quick return if possible
     //
@@ -46,9 +49,6 @@ void Rlarrc(const char *jobt, INTEGER const n, REAL const vl, REAL const vu, REA
         return;
     }
     //
-    lcnt = 0;
-    rcnt = 0;
-    eigcnt = 0;
     bool matt = Mlsame(jobt, "T");
     //
     REAL lpivot = 0.0;
@@ -120,6 +120,6 @@ void Rlarrc(const char *jobt, INTEGER const n, REAL const vl, REAL const vu, REA
     }
     eigcnt = rcnt - lcnt;
     //
-    // end of Rlarrc
+    // End of Rlarrc
     //
 }

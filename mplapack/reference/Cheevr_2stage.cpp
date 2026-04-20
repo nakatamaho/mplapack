@@ -110,9 +110,16 @@ void Cheevr_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
     ib = iMlaenv2stage(2, "Chetrd_2stage", jobz, n, kd, -1, -1);
     lhtrd = iMlaenv2stage(3, "Chetrd_2stage", jobz, n, kd, ib, -1);
     lwtrd = iMlaenv2stage(4, "Chetrd_2stage", jobz, n, kd, ib, -1);
-    lwmin = n + lhtrd + lwtrd;
-    lrwmin = max((INTEGER)1, 24 * n);
-    liwmin = max((INTEGER)1, 10 * n);
+    //
+    if (n <= 1) {
+        lwmin = 1;
+        lrwmin = 1;
+        liwmin = 1;
+    } else {
+        lwmin = n + lhtrd + lwtrd;
+        lrwmin = 24 * n;
+        liwmin = 10 * n;
+    }
     //
     info = 0;
     if (!(Mlsame(jobz, "N"))) {
@@ -146,7 +153,7 @@ void Cheevr_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
     //
     if (info == 0) {
         work[1 - 1] = lwmin;
-        rwork[1 - 1] = lrwmin;
+        rwork[1 - 1] = castREAL(lrwmin);
         iwork[1 - 1] = liwmin;
         //
         if (lwork < lwmin && !lquery) {
@@ -174,7 +181,7 @@ void Cheevr_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
     }
     //
     if (n == 1) {
-        work[1 - 1] = 2.0;
+        work[1 - 1] = 1.0;
         if (alleig || indeig) {
             m = 1;
             w[1 - 1] = a[0].real();
@@ -387,7 +394,7 @@ statement_30:
     // Set WORK(1) to optimal workspace size.
     //
     work[1 - 1] = lwmin;
-    rwork[1 - 1] = lrwmin;
+    rwork[1 - 1] = castREAL(lrwmin);
     iwork[1 - 1] = liwmin;
     //
     // End of Cheevr_2stage

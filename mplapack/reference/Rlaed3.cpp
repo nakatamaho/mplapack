@@ -36,10 +36,10 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlaed3(INTEGER const k, INTEGER const n, INTEGER const n1, REAL *d, REAL *q, INTEGER const ldq, REAL const rho, REAL *dlamda, REAL *q2, INTEGER *indx, INTEGER *ctot, REAL *w, REAL *s, INTEGER &info) {
-    INTEGER i = 0;
+void Rlaed3(INTEGER const k, INTEGER const n, INTEGER const n1, REAL *d, REAL *q, INTEGER const ldq, REAL const rho, REAL *dlambda, REAL *q2, INTEGER *indx, INTEGER *ctot, REAL *w, REAL *s, INTEGER &info) {
     INTEGER j = 0;
     INTEGER ii = 0;
+    INTEGER i = 0;
     REAL temp = 0.0;
     INTEGER n2 = 0;
     INTEGER n12 = 0;
@@ -70,29 +70,8 @@ void Rlaed3(INTEGER const k, INTEGER const n, INTEGER const n1, REAL *d, REAL *q
         return;
     }
     //
-    // Modify values DLAMDA(i) to make sure all DLAMDA(i)-DLAMDA(j) can
-    // be computed with high relative accuracy (barring over/underflow).
-    // This is a problem on machines without a guard digit in
-    // add/subtract (Cray XMP, Cray YMP, Cray C 90 and Cray 2).
-    // The following code replaces DLAMDA(I) by 2*DLAMDA(I)-DLAMDA(I),
-    // which on any of these machines zeros out the bottommost
-    // bit of DLAMDA(I) if it is 1; this makes the subsequent
-    // subtractions DLAMDA(I)-DLAMDA(J) unproblematic when cancellation
-    // occurs. On binary machines with a guard digit (almost all
-    // machines) it does not change DLAMDA(I) at all. On hexadecimal
-    // and decimal machines with a guard digit, it slightly
-    // changes the bottommost bits of DLAMDA(I). It does not account
-    // for hexadecimal or decimal machines without guard digits
-    // (we know of none). We use a subroutine call to compute
-    // 2*DLAMBDA(I) to prevent optimizing compilers from eliminating
-    // this code.
-    //
-    for (i = 1; i <= k; i = i + 1) {
-        dlamda[i - 1] = Rlamc3(dlamda[i - 1], dlamda[i - 1]) - dlamda[i - 1];
-    }
-    //
     for (j = 1; j <= k; j = j + 1) {
-        Rlaed4(k, j, dlamda, w, &q[(j - 1) * ldq], rho, d[j - 1], info);
+        Rlaed4(k, j, dlambda, w, &q[(j - 1) * ldq], rho, d[j - 1], info);
         //
         // If the zero finder fails, the computation is terminated.
         //
@@ -125,10 +104,10 @@ void Rlaed3(INTEGER const k, INTEGER const n, INTEGER const n1, REAL *d, REAL *q
     Rcopy(k, q, ldq + 1, w, 1);
     for (j = 1; j <= k; j = j + 1) {
         for (i = 1; i <= j - 1; i = i + 1) {
-            w[i - 1] = w[i - 1] * (q[(i - 1) + (j - 1) * ldq] / (dlamda[i - 1] - dlamda[j - 1]));
+            w[i - 1] = w[i - 1] * (q[(i - 1) + (j - 1) * ldq] / (dlambda[i - 1] - dlambda[j - 1]));
         }
         for (i = j + 1; i <= k; i = i + 1) {
-            w[i - 1] = w[i - 1] * (q[(i - 1) + (j - 1) * ldq] / (dlamda[i - 1] - dlamda[j - 1]));
+            w[i - 1] = w[i - 1] * (q[(i - 1) + (j - 1) * ldq] / (dlambda[i - 1] - dlambda[j - 1]));
         }
     }
     for (i = 1; i <= k; i = i + 1) {

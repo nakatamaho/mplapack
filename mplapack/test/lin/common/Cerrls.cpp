@@ -91,9 +91,65 @@ void Cerrls(fem::str_cref path, INTEGER const nunit) {
         infot = 8;
         Cgels("N", 2, 0, 0, a, 2, b, 1, w, 2, info);
         Chkxer("Cgels", infot, nout, lerr, ok);
+        infot = 8;
+        Cgels("N", 0, 2, 0, a, 1, b, 1, w, 2, info);
+        Chkxer("Cgels", infot, nout, lerr, ok);
         infot = 10;
         Cgels("N", 1, 1, 0, a, 1, b, 1, w, 1, info);
         Chkxer("Cgels", infot, nout, lerr, ok);
+        //
+        // Cgelst
+        //
+        srnamt = "Cgelst";
+        infot = 1;
+        Cgelst("/", 0, 0, 0, a, 1, b, 1, w, 1, info);
+        Chkxer("Cgelst", infot, nout, lerr, ok);
+        infot = 2;
+        Cgelst("N", -1, 0, 0, a, 1, b, 1, w, 1, info);
+        Chkxer("Cgelst", infot, nout, lerr, ok);
+        infot = 3;
+        Cgelst("N", 0, -1, 0, a, 1, b, 1, w, 1, info);
+        Chkxer("Cgelst", infot, nout, lerr, ok);
+        infot = 4;
+        Cgelst("N", 0, 0, -1, a, 1, b, 1, w, 1, info);
+        Chkxer("Cgelst", infot, nout, lerr, ok);
+        infot = 6;
+        Cgelst("N", 2, 0, 0, a, 1, b, 2, w, 2, info);
+        Chkxer("Cgelst", infot, nout, lerr, ok);
+        infot = 8;
+        Cgelst("N", 2, 0, 0, a, 2, b, 1, w, 2, info);
+        Chkxer("Cgelst", infot, nout, lerr, ok);
+        infot = 8;
+        Cgelst("N", 0, 2, 0, a, 1, b, 1, w, 2, info);
+        Chkxer("Cgelst", infot, nout, lerr, ok);
+        infot = 10;
+        Cgelst("N", 1, 1, 0, a, 1, b, 1, w, 1, info);
+        Chkxer("Cgelst", infot, nout, lerr, ok);
+        //
+        // Cgetsls
+        //
+        srnamt = "Cgetsls";
+        infot = 1;
+        Cgetsls("/", 0, 0, 0, a, 1, b, 1, w, 1, info);
+        Chkxer("Cgetsls", infot, nout, lerr, ok);
+        infot = 2;
+        Cgetsls("N", -1, 0, 0, a, 1, b, 1, w, 1, info);
+        Chkxer("Cgetsls", infot, nout, lerr, ok);
+        infot = 3;
+        Cgetsls("N", 0, -1, 0, a, 1, b, 1, w, 1, info);
+        Chkxer("Cgetsls", infot, nout, lerr, ok);
+        infot = 4;
+        Cgetsls("N", 0, 0, -1, a, 1, b, 1, w, 1, info);
+        Chkxer("Cgetsls", infot, nout, lerr, ok);
+        infot = 6;
+        Cgetsls("N", 2, 0, 0, a, 1, b, 2, w, 2, info);
+        Chkxer("Cgetsls", infot, nout, lerr, ok);
+        infot = 8;
+        Cgetsls("N", 2, 0, 0, a, 2, b, 1, w, 2, info);
+        Chkxer("Cgetsls", infot, nout, lerr, ok);
+        infot = 8;
+        Cgetsls("N", 0, 2, 0, a, 1, b, 1, w, 2, info);
+        Chkxer("Cgetsls", infot, nout, lerr, ok);
         //
         // Cgelss
         //

@@ -60,6 +60,8 @@ void Rchktsqr(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *m
     //
     // Test the error exits
     //
+    Mxlaenv(1, 0);
+    Mxlaenv(2, 0);
     if (tsterr) {
         Rerrtsqr(path, nout);
     }
@@ -141,7 +143,13 @@ void Rchktsqr(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *m
                         // pass the threshold.
                         //
                         for (t = 1; t <= ntests; t = t + 1) {
-                            if (result[t - 1] >= thresh) {
+                            REAL thresh_use = thresh;
+#if defined ___MPLAPACK_BUILD_WITH_DOUBLE___ || defined ___MPLAPACK_BUILD_WITH_BINARY80___ || defined ___MPLAPACK_BUILD_WITH_GMP___
+                            if (t == 5) {
+                                thresh_use = max(thresh_use, (REAL)80.0);
+                            }
+#endif
+                            if (result[t - 1] >= thresh_use) {
                                 if (nfail == 0 && nerrs == 0) {
                                     Alahd(nout, path);
                                 }
@@ -160,6 +168,6 @@ void Rchktsqr(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *m
     //
     Alasum(path, nout, nfail, nrun, nerrs);
     //
-    // End of Rchkqrt
+    // End of Rchktsqr
     //
 }

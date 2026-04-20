@@ -35,6 +35,8 @@
 
 #include <mpblas.h>
 #include <mplapack.h>
+#include <mplapack_arithmetic_params.h>
+#include <mplapack_arithmetic_params_double.h>
 
 void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const n, INTEGER const ilo, INTEGER const ihi, COMPLEX *h, INTEGER const ldh, COMPLEX *t, INTEGER const ldt, COMPLEX *alpha, COMPLEX *beta, COMPLEX *q, INTEGER const ldq, COMPLEX *z, INTEGER const ldz, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER &info) {
     COMPLEX x = 0.0;
@@ -65,10 +67,14 @@ void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const
     INTEGER ilastm = 0;
     INTEGER iiter = 0;
     COMPLEX eshift = 0.0;
+    const INTEGER maxit_base = 30;
     INTEGER maxit = 0;
+    const INTEGER maxit_cap = 1000;
     INTEGER jiter = 0;
+    REAL eps = 0.0;
+    REAL eps_ref = 0.0;
+    REAL scale_ratio = 0.0;
     bool ilazro = false;
-    REAL temp = 0.0;
     bool ilazr2 = false;
     INTEGER jch = 0;
     COMPLEX ctemp = 0.0;
@@ -83,6 +89,7 @@ void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const
     COMPLEX abi22 = 0.0;
     COMPLEX abi12 = 0.0;
     COMPLEX shift = 0.0;
+    REAL temp = 0.0;
     const REAL zero = 0.0;
     const REAL half = 0.5;
     REAL temp2 = 0.0;
@@ -191,7 +198,9 @@ void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const
     //
     in = ihi + 1 - ilo;
     safmin = Rlamch("S");
-    ulp = Rlamch("E") * Rlamch("B");
+    eps = Rlamch("E");
+    ulp = eps * Rlamch("B");
+    eps_ref = mplapack::get_arithmetic_params<double>().eps;
     anorm = Clanhs("F", in, &h[(ilo - 1) + (ilo - 1) * ldh], ldh, rwork);
     bnorm = Clanhs("F", in, &t[(ilo - 1) + (ilo - 1) * ldt], ldt, rwork);
     atol = max(safmin, ulp * anorm);
@@ -253,7 +262,16 @@ void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const
     }
     iiter = 0;
     eshift = czero;
-    maxit = 30 * (ihi - ilo + 1);
+    // maxit is tuned for double precision. For high-precision backends,
+    // scale the QZ sweep limit with log(1/eps).
+    maxit = maxit_base * in;
+    scale_ratio = log(eps) / log(eps_ref);
+    if (scale_ratio >= one) {
+        maxit = iceil(castREAL(maxit_base * in) * scale_ratio);
+    }
+    if (maxit > maxit_cap) {
+        maxit = maxit_cap;
+    }
     //
     for (jiter = 1; jiter <= maxit; jiter = jiter + 1) {
         //
@@ -280,7 +298,7 @@ void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const
             }
         }
         //
-        if (abs(t[(ilast - 1) + (ilast - 1) * ldt]) <= max(safmin, ulp * (abs(t[((ilast - 1) - 1) + (ilast - 1) * ldt]) + abs(t[((ilast - 1) - 1) + ((ilast - 1) - 1) * ldt])))) {
+        if (abs(t[(ilast - 1) + (ilast - 1) * ldt]) <= btol) {
             t[(ilast - 1) + (ilast - 1) * ldt] = czero;
             goto statement_50;
         }
@@ -304,11 +322,7 @@ void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const
             //
             // Test 2: for T(j,j)=0
             //
-            temp = abs(t[(j - 1) + ((j + 1) - 1) * ldt]);
-            if (j > ilo) {
-                temp += abs(t[((j - 1) - 1) + (j - 1) * ldt]);
-            }
-            if (abs(t[(j - 1) + (j - 1) * ldt]) < max(safmin, ulp * temp)) {
+            if (abs(t[(j - 1) + (j - 1) * ldt]) < btol) {
                 t[(j - 1) + (j - 1) * ldt] = czero;
                 //
                 // Test 1a: Check for 2 consecutive small subdiagonals in A

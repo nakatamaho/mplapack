@@ -580,7 +580,7 @@ void Rerrvx(fem::str_cref path, INTEGER const nunit) {
         //
     } else if (Mlsamen(2, c2.elems, "SA")) {
         //
-        // Rsysv_aa
+        // DSYSV_AASEN
         //
         srnamt = "Rsysv_aa";
         infot = 1;
@@ -592,8 +592,14 @@ void Rerrvx(fem::str_cref path, INTEGER const nunit) {
         infot = 3;
         Rsysv_aa("U", 0, -1, a, 1, ip, b, 1, w, 1, info);
         Chkxer("Rsysv_aa", infot, nout, lerr, ok);
+        infot = 5;
+        Rsysv_aa("U", 2, 0, a, 1, ip, b, 2, w, 1, info);
+        Chkxer("Rsysv_aa", infot, nout, lerr, ok);
         infot = 8;
         Rsysv_aa("U", 2, 0, a, 2, ip, b, 1, w, 1, info);
+        Chkxer("Rsysv_aa", infot, nout, lerr, ok);
+        infot = 10;
+        Rsysv_aa("U", 3, 1, a, 3, ip, b, 3, w, 6, info);
         Chkxer("Rsysv_aa", infot, nout, lerr, ok);
         //
     } else if (Mlsamen(2, c2.elems, "S2")) {
@@ -613,11 +619,14 @@ void Rerrvx(fem::str_cref path, INTEGER const nunit) {
         infot = 5;
         Rsysv_aa_2stage("U", 2, 1, a, 1, a, 1, ip, ip, b, 1, w, 1, info);
         Chkxer("Rsysv_aa_2stage", infot, nout, lerr, ok);
+        infot = 7;
+        Rsysv_aa_2stage("U", 2, 1, a, 2, a, 1, ip, ip, b, 2, w, 1, info);
+        Chkxer("Rsysv_aa_2stage", infot, nout, lerr, ok);
         infot = 11;
         Rsysv_aa_2stage("U", 2, 1, a, 2, a, 8, ip, ip, b, 1, w, 1, info);
         Chkxer("Rsysv_aa_2stage", infot, nout, lerr, ok);
-        infot = 7;
-        Rsysv_aa_2stage("U", 2, 1, a, 2, a, 1, ip, ip, b, 2, w, 1, info);
+        infot = 13;
+        Rsysv_aa_2stage("U", 2, 1, a, 2, a, 8, ip, ip, b, 2, w, 1, info);
         Chkxer("Rsysv_aa_2stage", infot, nout, lerr, ok);
         //
     } else if (Mlsamen(2, c2.elems, "SP")) {

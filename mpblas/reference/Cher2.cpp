@@ -171,6 +171,6 @@ void Cher2(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *x, I
         }
     }
     //
-    // End of Cher2 .
+    // End of Cher2
     //
 }

@@ -43,10 +43,14 @@ void Rsytri2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTE
     info = 0;
     bool upper = Mlsame(uplo, "U");
     bool lquery = (lwork == -1);
+    //
     // Get blocksize
+    //
     INTEGER nbmax = iMlaenv(1, "Rsytri2", uplo, n, -1, -1, -1);
     INTEGER minsize = 0;
-    if (nbmax >= n) {
+    if (n == 0) {
+        minsize = 1;
+    } else if (nbmax >= n) {
         minsize = n;
     } else {
         minsize = (n + nbmax + 1) * (nbmax + 3);
@@ -62,8 +66,6 @@ void Rsytri2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTE
         info = -7;
     }
     //
-    // Quick return if possible
-    //
     if (info != 0) {
         Mxerbla("Rsytri2", -info);
         return;
@@ -71,6 +73,9 @@ void Rsytri2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTE
         work[1 - 1] = minsize;
         return;
     }
+    //
+    // Quick return if possible
+    //
     if (n == 0) {
         return;
     }

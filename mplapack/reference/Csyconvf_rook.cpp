@@ -318,7 +318,7 @@ void Csyconvf_rook(const char *uplo, const char *way, INTEGER const n, COMPLEX *
             //
             // Revert VALUE
             // Assign subdiagonal entries of D from array E to
-            // subgiagonal entries of A.
+            // subdiagonal entries of A.
             //
             i = 1;
             while (i <= n - 1) {

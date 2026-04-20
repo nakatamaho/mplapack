@@ -178,6 +178,19 @@ void Rdrvrf3(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                                         //
                                         srnamt = "Rgeqrf";
                                         Rgeqrf(na, na, a, lda, tau, d_work_dgeqrf, lda, info);
+                                        //
+                                        // Forcing main diagonal of test matrix to
+                                        // be unit makes it ill-conditioned for
+                                        // some test cases
+                                        //
+                                        if (Mlsame(diag.elems, "U")) {
+                                            for (j = 1; j <= na; j = j + 1) {
+                                                for (i = 1; i <= j; i = i + 1) {
+                                                    a[(i - 1) + (j - 1) * lda] = a[(i - 1) + (j - 1) * lda] / (2.0 * a[(j - 1) + (j - 1) * lda]);
+                                                }
+                                            }
+                                        }
+                                        //
                                     } else {
                                         //
                                         // The case IUPLO.EQ.2 is when SIDE.EQ.'L'
@@ -185,6 +198,19 @@ void Rdrvrf3(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                                         //
                                         srnamt = "Rgelqf";
                                         Rgelqf(na, na, a, lda, tau, d_work_dgeqrf, lda, info);
+                                        //
+                                        // Forcing main diagonal of test matrix to
+                                        // be unit makes it ill-conditioned for
+                                        // some test cases
+                                        //
+                                        if (Mlsame(diag.elems, "U")) {
+                                            for (i = 1; i <= na; i = i + 1) {
+                                                for (j = 1; j <= i; j = j + 1) {
+                                                    a[(i - 1) + (j - 1) * lda] = a[(i - 1) + (j - 1) * lda] / (2.0 * a[(i - 1) + (i - 1) * lda]);
+                                                }
+                                            }
+                                        }
+                                        //
                                     }
                                     //
                                     // Store a copy of A in RFP format (in ARF).

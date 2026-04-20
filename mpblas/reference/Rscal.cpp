@@ -36,7 +36,8 @@
 #include <mpblas.h>
 
 void Rscal(INTEGER const n, REAL const da, REAL *dx, INTEGER const incx) {
-    if (n <= 0 || incx <= 0) {
+    const REAL one = 1.0;
+    if (n <= 0 || incx <= 0 || da == one) {
         return;
     }
     INTEGER m = 0;
@@ -75,4 +76,7 @@ void Rscal(INTEGER const n, REAL const da, REAL *dx, INTEGER const incx) {
             dx[i - 1] = da * dx[i - 1];
         }
     }
+    //
+    // End of Rscal
+    //
 }

@@ -76,4 +76,7 @@ REAL Rasum(INTEGER const n, REAL *dx, INTEGER const incx) {
     }
     return_value = dtemp;
     return return_value;
+    //
+    // End of Rasum
+    //
 }

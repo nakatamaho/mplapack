@@ -63,7 +63,7 @@ void Rpot01(fem::str_cref uplo, INTEGER const n, REAL *a, INTEGER const lda, REA
         return;
     }
     //
-    // Compute the product U'*U, overwriting U.
+    // Compute the product U**T * U, overwriting U.
     //
     INTEGER k = 0;
     REAL t = 0.0;
@@ -81,7 +81,7 @@ void Rpot01(fem::str_cref uplo, INTEGER const n, REAL *a, INTEGER const lda, REA
             //
         }
         //
-        // Compute the product L*L', overwriting L.
+        // Compute the product L * L**T, overwriting L.
         //
     } else {
         for (k = n; k >= 1; k = k - 1) {
@@ -101,7 +101,7 @@ void Rpot01(fem::str_cref uplo, INTEGER const n, REAL *a, INTEGER const lda, REA
         }
     }
     //
-    // Compute the difference  L*L' - A (or U'*U - A).
+    // Compute the difference L * L**T - A (or U**T * U - A).
     //
     INTEGER j = 0;
     INTEGER i = 0;
@@ -119,7 +119,7 @@ void Rpot01(fem::str_cref uplo, INTEGER const n, REAL *a, INTEGER const lda, REA
         }
     }
     //
-    // Compute norm( L*U - A ) / ( N * norm(A) * EPS )
+    // Compute norm(L*U - A) / ( N * norm(A) * EPS )
     //
     resid = Rlansy("1", uplo.elems(), n, afac, ldafac, rwork);
     //

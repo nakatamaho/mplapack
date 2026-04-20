@@ -53,7 +53,7 @@ void Ctpt02(fem::str_cref uplo, fem::str_cref trans, fem::str_cref diag, INTEGER
         return;
     }
     //
-    // Compute the 1-norm of A or A**H.
+    // Compute the 1-norm of op(A).
     //
     REAL anorm = 0.0;
     if (Mlsame(trans.elems(), "N")) {
@@ -72,7 +72,7 @@ void Ctpt02(fem::str_cref uplo, fem::str_cref trans, fem::str_cref diag, INTEGER
     }
     //
     // Compute the maximum over the number of right hand sides of
-    // norm(op(A)*x - b) / ( norm(op(A)) * norm(x) * EPS ).
+    // norm(op(A)*X - B) / ( norm(op(A)) * norm(X) * EPS ).
     //
     resid = zero;
     INTEGER j = 0;

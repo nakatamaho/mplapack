@@ -43,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Rgbt02(fem::str_cref trans, INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *x, INTEGER const ldx, REAL *b, INTEGER const ldb, REAL &resid) {
+void Rgbt02(fem::str_cref trans, INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *x, INTEGER const ldx, REAL *b, INTEGER const ldb, REAL *rwork, REAL &resid) {
     //
     // Quick return if N = 0 pr NRHS = 0
     //
@@ -56,15 +56,46 @@ void Rgbt02(fem::str_cref trans, INTEGER const m, INTEGER const n, INTEGER const
     // Exit with RESID = 1/EPS if ANORM = 0.
     //
     REAL eps = Rlamch("Epsilon");
-    INTEGER kd = ku + 1;
     REAL anorm = zero;
+    INTEGER kd = 0;
     INTEGER j = 0;
     INTEGER i1 = 0;
     INTEGER i2 = 0;
-    for (j = 1; j <= n; j = j + 1) {
-        i1 = max(kd + 1 - j, (INTEGER)1);
-        i2 = min(kd + m - j, kl + kd);
-        anorm = max(anorm, Rasum(i2 - i1 + 1, &a[(i1 - 1) + (j - 1) * lda], 1));
+    REAL temp = 0.0;
+    if (Mlsame(trans.elems(), "N")) {
+        //
+        // Find norm1(A).
+        //
+        kd = ku + 1;
+        for (j = 1; j <= n; j = j + 1) {
+            i1 = max(kd + 1 - j, (INTEGER)1);
+            i2 = min(kd + m - j, kl + kd);
+            if (i2 >= i1) {
+                temp = Rasum(i2 - i1 + 1, &a[(i1 - 1) + (j - 1) * lda], 1);
+                if (anorm < temp || Risnan(temp)) {
+                    anorm = temp;
+                }
+            }
+        }
+    } else {
+        //
+        // Find normI(A).
+        //
+        for (i1 = 1; i1 <= m; i1 = i1 + 1) {
+            rwork[i1 - 1] = zero;
+        }
+        for (j = 1; j <= n; j = j + 1) {
+            kd = ku + 1 - j;
+            for (i1 = max((INTEGER)1, j - ku); i1 <= min(m, j + kl); i1 = i1 + 1) {
+                rwork[i1 - 1] += abs(a[((kd + i1) - 1) + (j - 1) * lda]);
+            }
+        }
+        for (i1 = 1; i1 <= m; i1 = i1 + 1) {
+            temp = rwork[i1 - 1];
+            if (anorm < temp || Risnan(temp)) {
+                anorm = temp;
+            }
+        }
     }
     const REAL one = 1.0;
     if (anorm <= zero) {
@@ -79,14 +110,14 @@ void Rgbt02(fem::str_cref trans, INTEGER const m, INTEGER const n, INTEGER const
         n1 = m;
     }
     //
-    // Compute  B - A*X (or  B - A'*X )
+    // Compute B - op(A)*X
     //
     for (j = 1; j <= nrhs; j = j + 1) {
         Rgbmv(trans.elems(), m, n, kl, ku, -one, a, lda, &x[(j - 1) * ldx], 1, one, &b[(j - 1) * ldb], 1);
     }
     //
     // Compute the maximum over the number of right hand sides of
-    // norm(B - A*X) / ( norm(A) * norm(X) * EPS ).
+    // norm(B - op(A)*X) / ( norm(op(A)) * norm(X) * EPS ).
     //
     resid = zero;
     REAL bnorm = 0.0;

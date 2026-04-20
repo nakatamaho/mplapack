@@ -77,8 +77,8 @@ void Chpgvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
             }
         }
         //
-        work[1 - 1] = lwmin;
-        rwork[1 - 1] = lrwmin;
+        work[1 - 1] = Rroundup_lwork(lwmin);
+        rwork[1 - 1] = Rroundup_lwork(lrwmin);
         iwork[1 - 1] = liwmin;
         if (lwork < lwmin && !lquery) {
             info = -11;
@@ -161,8 +161,8 @@ void Chpgvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
         }
     }
     //
-    work[1 - 1] = lwmin;
-    rwork[1 - 1] = lrwmin;
+    work[1 - 1] = Rroundup_lwork(lwmin);
+    rwork[1 - 1] = Rroundup_lwork(lrwmin);
     iwork[1 - 1] = liwmin;
     //
     // End of Chpgvd

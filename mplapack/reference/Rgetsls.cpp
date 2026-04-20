@@ -37,11 +37,11 @@
 #include <mplapack.h>
 
 void Rgetsls(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *work, INTEGER const lwork, INTEGER &info) {
-    INTEGER minmn = 0;
     INTEGER maxmn = 0;
-    INTEGER mnk = 0;
     bool tran = false;
     bool lquery = false;
+    INTEGER wsizem = 0;
+    INTEGER wsizeo = 0;
     REAL tq[5];
     REAL workq[1];
     INTEGER info2 = 0;
@@ -49,8 +49,6 @@ void Rgetsls(const char *trans, INTEGER const m, INTEGER const n, INTEGER const 
     INTEGER lwo = 0;
     INTEGER tszm = 0;
     INTEGER lwm = 0;
-    INTEGER wsizeo = 0;
-    INTEGER wsizem = 0;
     INTEGER lw1 = 0;
     INTEGER lw2 = 0;
     const REAL zero = 0.0;
@@ -69,9 +67,7 @@ void Rgetsls(const char *trans, INTEGER const m, INTEGER const n, INTEGER const 
     // Test the input arguments.
     //
     info = 0;
-    minmn = min(m, n);
     maxmn = max(m, n);
-    mnk = max(minmn, nrhs);
     tran = Mlsame(trans, "T");
     //
     lquery = (lwork == -1 || lwork == -2);
@@ -91,9 +87,12 @@ void Rgetsls(const char *trans, INTEGER const m, INTEGER const n, INTEGER const 
     //
     if (info == 0) {
         //
-        // Determine the block size and minimum LWORK
+        // Determine the optimum and minimum LWORK
         //
-        if (m >= n) {
+        if (min(m, n, nrhs) == 0) {
+            wsizem = 1;
+            wsizeo = 1;
+        } else if (m >= n) {
             Rgeqr(m, n, a, lda, tq, -1, workq, -1, info2);
             tszo = castINTEGER(tq[1 - 1]);
             lwo = castINTEGER(workq[1 - 1]);
@@ -125,17 +124,15 @@ void Rgetsls(const char *trans, INTEGER const m, INTEGER const n, INTEGER const 
             info = -10;
         }
         //
+        work[1 - 1] = castREAL(wsizeo);
+        //
     }
     //
     if (info != 0) {
         Mxerbla("Rgetsls", -info);
-        work[1 - 1] = castREAL(wsizeo);
         return;
     }
     if (lquery) {
-        if (lwork == -1) {
-            work[1 - 1] = castREAL(wsizeo);
-        }
         if (lwork == -2) {
             work[1 - 1] = castREAL(wsizem);
         }
@@ -160,7 +157,6 @@ void Rgetsls(const char *trans, INTEGER const m, INTEGER const n, INTEGER const 
     //
     smlnum = Rlamch("S") / Rlamch("P");
     bignum = one / smlnum;
-    Rlabad(smlnum, bignum);
     //
     // Scale A, B if max element outside range [SMLNUM,BIGNUM]
     //

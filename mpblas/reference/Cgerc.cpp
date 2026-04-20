@@ -106,6 +106,6 @@ void Cgerc(INTEGER const m, INTEGER const n, COMPLEX const alpha, COMPLEX *x, IN
         }
     }
     //
-    // End of Cgerc .
+    // End of Cgerc
     //
 }

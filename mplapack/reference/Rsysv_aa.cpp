@@ -42,6 +42,7 @@ void Rsysv_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, IN
     //
     info = 0;
     bool lquery = (lwork == -1);
+    INTEGER lwkmin = max((INTEGER)1, 2 * n, 3 * n - 2);
     if (!Mlsame(uplo, "U") && !Mlsame(uplo, "L")) {
         info = -1;
     } else if (n < 0) {
@@ -52,7 +53,7 @@ void Rsysv_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, IN
         info = -5;
     } else if (ldb < max((INTEGER)1, n)) {
         info = -8;
-    } else if (lwork < max(2 * n, 3 * n - 2) && !lquery) {
+    } else if (lwork < lwkmin && !lquery) {
         info = -10;
     }
     //
@@ -64,7 +65,7 @@ void Rsysv_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, IN
         lwkopt_sytrf = castINTEGER(work[1 - 1]);
         Rsytrs_aa(uplo, n, nrhs, a, lda, ipiv, b, ldb, work, -1, info);
         lwkopt_sytrs = castINTEGER(work[1 - 1]);
-        lwkopt = max(lwkopt_sytrf, lwkopt_sytrs);
+        lwkopt = max(lwkmin, lwkopt_sytrf, lwkopt_sytrs);
         work[1 - 1] = lwkopt;
     }
     //

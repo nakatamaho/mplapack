@@ -95,11 +95,11 @@ void Rchksb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
     REAL temp3 = 0.0;
     REAL temp4 = 0.0;
     //
-    static const char *format_9999 = "(' Rchksbstg: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
+    static const char *format_9999 = "(' Rchksb2stg: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
                                      "', ISEED=(',3(i5,','),i5,')')";
     //
     static const char *format_9998 = "(/,1x,a3,' -- Real Symmetric Banded Tridiagonal Reduction Routines')";
-    static const char *format_9997 = "(' Matrix types (see Rchksbstg for details): ')";
+    static const char *format_9997 = "(' Matrix types (see Rchksb2stg for details): ')";
     //
     static const char *format_9996 = "(/,' Special Matrices:',/,'  1=Zero matrix.                        ',"
                                      "'  5=Diagonal: clustered entries.',/,"
@@ -175,7 +175,7 @@ void Rchksb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
     }
     //
     if (info != 0) {
-        Mxerbla("Rchksbstg", -info);
+        Mxerbla("Rchksb2stg", -info);
         return;
     }
     //
@@ -569,6 +569,6 @@ void Rchksb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
     //
     Rlasum("DSB", nounit, nerrs, ntestt);
     //
-    // End of Rchksbstg
+    // End of Rchksb2stg
     //
 }

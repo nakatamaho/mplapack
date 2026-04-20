@@ -40,43 +40,54 @@ void Clamtsqr(const char *side, const char *trans, INTEGER const m, INTEGER cons
     //
     // Test the input arguments
     //
-    bool lquery = lwork < 0;
+    info = 0;
+    bool lquery = (lwork == -1);
     bool notran = Mlsame(trans, "N");
     bool tran = Mlsame(trans, "C");
     bool left = Mlsame(side, "L");
     bool right = Mlsame(side, "R");
     INTEGER lw = 0;
+    INTEGER q = 0;
     if (left) {
         lw = n * nb;
+        q = m;
     } else {
         lw = m * nb;
+        q = n;
     }
     //
-    info = 0;
+    INTEGER minmnk = min(m, n, k);
+    INTEGER lwmin = 0;
+    if (minmnk == 0) {
+        lwmin = 1;
+    } else {
+        lwmin = max((INTEGER)1, lw);
+    }
+    //
     if (!left && !right) {
         info = -1;
     } else if (!tran && !notran) {
         info = -2;
-    } else if (m < 0) {
+    } else if (m < k) {
         info = -3;
     } else if (n < 0) {
         info = -4;
     } else if (k < 0) {
         info = -5;
-    } else if (lda < max((INTEGER)1, k)) {
+    } else if (k < nb || nb < 1) {
+        info = -7;
+    } else if (lda < max((INTEGER)1, q)) {
         info = -9;
     } else if (ldt < max((INTEGER)1, nb)) {
         info = -11;
     } else if (ldc < max((INTEGER)1, m)) {
         info = -13;
-    } else if ((lwork < max((INTEGER)1, lw)) && (!lquery)) {
+    } else if (lwork < lwmin && (!lquery)) {
         info = -15;
     }
     //
-    // Determine the block size if it is tall skinny or short and wide
-    //
     if (info == 0) {
-        work[1 - 1] = lw;
+        work[1 - 1] = lwmin;
     }
     //
     if (info != 0) {
@@ -88,9 +99,11 @@ void Clamtsqr(const char *side, const char *trans, INTEGER const m, INTEGER cons
     //
     // Quick return if possible
     //
-    if (min(m, n, k) == 0) {
+    if (minmnk == 0) {
         return;
     }
+    //
+    // Determine the block size if it is tall skinny or short and wide
     //
     if ((mb <= k) || (mb >= max(m, n, k))) {
         Cgemqrt(side, trans, m, n, k, nb, a, lda, t, ldt, c, ldc, work, info);
@@ -205,7 +218,7 @@ void Clamtsqr(const char *side, const char *trans, INTEGER const m, INTEGER cons
         //
     }
     //
-    work[1 - 1] = lw;
+    work[1 - 1] = lwmin;
     //
     // End of Clamtsqr
     //

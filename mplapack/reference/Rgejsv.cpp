@@ -186,6 +186,12 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
             Mxerbla("Rgejsv", -info);
             return;
         }
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+        if (aaqq == zero) {
+            sva[p - 1] = zero;
+            continue;
+        }
+#endif
         aaqq = sqrt(aaqq);
         if ((aapp < (big / aaqq)) && noscal) {
             sva[p - 1] = aapp * aaqq;
@@ -955,7 +961,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                     if (condr2 >= cond_ok) {
                         // .. save the Householder vectors used for Q3
                         // (this overwrites the copy of R2, as it will not be
-                        // needed in this branch, but it does not overwritte the
+                        // needed in this branch, but it does not overwrite the
                         // Huseholder vectors of Q2.).
                         Rlacpy("U", nr, nr, v, ldv, &work[(2 * n + 1) - 1], n);
                         // .. and the rest of the information on Q3 is in
@@ -978,7 +984,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                 }
                 //
                 // Second preconditioning finished; continue with Jacobi SVD
-                // The input matrix is lower trinagular.
+                // The input matrix is lower triangular.
                 //
                 // Recover the right singular vectors as solution of a well
                 // conditioned triangular matrix equation.
@@ -1020,7 +1026,7 @@ void Rgejsv(const char *joba, const char *jobu, const char *jobv, const char *jo
                     // :)           .. the input matrix A is very likely a relative of
                     // the Kahan matrix :)
                     // The matrix R2 is inverted. The solution of the matrix equation
-                    // is Q3^T*V3 = the product of the Jacobi rotations (appplied to
+                    // is Q3^T*V3 = the product of the Jacobi rotations (applied to
                     // the lower triangular L3 from the LQ factorization of
                     // R2=L3*Q3), pre-multiplied with the transposed Q3.
                     Rgesvj("L", "U", "N", nr, nr, v, ldv, sva, nr, u, ldu, &work[(2 * n + n * nr + nr + 1) - 1], lwork - 2 * n - n * nr - nr, info);

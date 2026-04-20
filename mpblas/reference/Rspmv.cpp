@@ -199,6 +199,6 @@ void Rspmv(const char *uplo, INTEGER const n, REAL const alpha, REAL *ap, REAL *
         }
     }
     //
-    // End of Rspmv .
+    // End of Rspmv
     //
 }

@@ -150,7 +150,6 @@ void Cheequb(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, R
         avg = 0.0;
         for (i = 1; i <= n; i = i + 1) {
             avg += s[i - 1] * work[i - 1].real();
-            ;
         }
         avg = avg / n;
         //

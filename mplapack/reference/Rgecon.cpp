@@ -37,6 +37,7 @@
 #include <mplapack.h>
 
 void Rgecon(const char *norm, INTEGER const n, REAL *a, INTEGER const lda, REAL const anorm, REAL &rcond, REAL *work, INTEGER *iwork, INTEGER &info) {
+    REAL hugeval = 0.0;
     bool onenrm = false;
     const REAL zero = 0.0;
     const REAL one = 1.0;
@@ -50,6 +51,8 @@ void Rgecon(const char *norm, INTEGER const n, REAL *a, INTEGER const lda, REAL 
     REAL su = 0.0;
     REAL scale = 0.0;
     INTEGER ix = 0;
+    //
+    hugeval = Rlamch("Overflow");
     //
     // Test the input parameters.
     //
@@ -76,6 +79,13 @@ void Rgecon(const char *norm, INTEGER const n, REAL *a, INTEGER const lda, REAL 
         rcond = one;
         return;
     } else if (anorm == zero) {
+        return;
+    } else if (Risnan(anorm)) {
+        rcond = anorm;
+        info = -5;
+        return;
+    } else if (anorm > hugeval) {
+        info = -5;
         return;
     }
     //
@@ -132,6 +142,15 @@ statement_10:
     //
     if (ainvnm != zero) {
         rcond = (one / ainvnm) / anorm;
+    } else {
+        info = 1;
+        return;
+    }
+    //
+    // Check for NaNs and Infs
+    //
+    if (Risnan(rcond) || rcond > hugeval) {
+        info = 1;
     }
 //
 statement_20:;

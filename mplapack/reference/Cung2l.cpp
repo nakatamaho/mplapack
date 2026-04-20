@@ -82,7 +82,7 @@ void Cung2l(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, INTEG
         // Apply H(i) to A(1:m-k+i,1:n-k+i) from the left
         //
         a[((m - n + ii) - 1) + (ii - 1) * lda] = one;
-        Clarf("Left", m - n + ii, ii - 1, &a[(ii - 1) * lda], 1, tau[i - 1], a, lda, work);
+        Clarf1l("Left", m - n + ii, ii - 1, &a[(ii - 1) * lda], 1, tau[i - 1], a, lda, work);
         Cscal(m - n + ii - 1, -tau[i - 1], &a[(ii - 1) * lda], 1);
         a[((m - n + ii) - 1) + (ii - 1) * lda] = one - tau[i - 1];
         //

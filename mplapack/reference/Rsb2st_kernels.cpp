@@ -189,6 +189,6 @@ void Rsb2st_kernels(const char *uplo, bool const wantz, INTEGER const ttype, INT
         }
     }
     //
-    // END OF Rsb2st_kernels
+    // End of Rsb2st_kernels
     //
 }

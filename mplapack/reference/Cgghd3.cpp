@@ -42,7 +42,13 @@ void Cgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
     //
     info = 0;
     INTEGER nb = iMlaenv(1, "Cgghd3", " ", n, ilo, ihi, -1);
-    INTEGER lwkopt = max(6 * n * nb, (INTEGER)1);
+    INTEGER nh = ihi - ilo + 1;
+    INTEGER lwkopt = 0;
+    if (nh <= 1) {
+        lwkopt = 1;
+    } else {
+        lwkopt = 6 * n * nb;
+    }
     work[1 - 1] = COMPLEX(lwkopt);
     bool initq = Mlsame(compq, "I");
     bool wantq = initq || Mlsame(compq, "V");
@@ -97,7 +103,6 @@ void Cgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
     //
     // Quick return if possible
     //
-    INTEGER nh = ihi - ilo + 1;
     if (nh <= 1) {
         work[1 - 1] = cone;
         return;
@@ -610,6 +615,7 @@ void Cgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
     if (jcol < ihi) {
         Cgghrd(&compq2, &compz2, n, jcol, ihi, a, lda, b, ldb, q, ldq, z, ldz, ierr);
     }
+    //
     work[1 - 1] = COMPLEX(lwkopt);
     //
     // End of Cgghd3

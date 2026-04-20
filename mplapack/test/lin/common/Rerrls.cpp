@@ -90,9 +90,65 @@ void Rerrls(fem::str_cref path, INTEGER const nunit) {
         infot = 8;
         Rgels("N", 2, 0, 0, a, 2, b, 1, w, 2, info);
         Chkxer("Rgels", infot, nout, lerr, ok);
+        infot = 8;
+        Rgels("N", 0, 2, 0, a, 1, b, 1, w, 2, info);
+        Chkxer("Rgels", infot, nout, lerr, ok);
         infot = 10;
         Rgels("N", 1, 1, 0, a, 1, b, 1, w, 1, info);
         Chkxer("Rgels", infot, nout, lerr, ok);
+        //
+        // Rgelst
+        //
+        srnamt = "Rgelst";
+        infot = 1;
+        Rgelst("/", 0, 0, 0, a, 1, b, 1, w, 1, info);
+        Chkxer("Rgelst", infot, nout, lerr, ok);
+        infot = 2;
+        Rgelst("N", -1, 0, 0, a, 1, b, 1, w, 1, info);
+        Chkxer("Rgelst", infot, nout, lerr, ok);
+        infot = 3;
+        Rgelst("N", 0, -1, 0, a, 1, b, 1, w, 1, info);
+        Chkxer("Rgelst", infot, nout, lerr, ok);
+        infot = 4;
+        Rgelst("N", 0, 0, -1, a, 1, b, 1, w, 1, info);
+        Chkxer("Rgelst", infot, nout, lerr, ok);
+        infot = 6;
+        Rgelst("N", 2, 0, 0, a, 1, b, 2, w, 2, info);
+        Chkxer("Rgelst", infot, nout, lerr, ok);
+        infot = 8;
+        Rgelst("N", 2, 0, 0, a, 2, b, 1, w, 2, info);
+        Chkxer("Rgelst", infot, nout, lerr, ok);
+        infot = 8;
+        Rgelst("N", 0, 2, 0, a, 1, b, 1, w, 2, info);
+        Chkxer("Rgelst", infot, nout, lerr, ok);
+        infot = 10;
+        Rgelst("N", 1, 1, 0, a, 1, b, 1, w, 1, info);
+        Chkxer("Rgelst", infot, nout, lerr, ok);
+        //
+        // Rgetsls
+        //
+        srnamt = "Rgetsls";
+        infot = 1;
+        Rgetsls("/", 0, 0, 0, a, 1, b, 1, w, 1, info);
+        Chkxer("Rgetsls", infot, nout, lerr, ok);
+        infot = 2;
+        Rgetsls("N", -1, 0, 0, a, 1, b, 1, w, 1, info);
+        Chkxer("Rgetsls", infot, nout, lerr, ok);
+        infot = 3;
+        Rgetsls("N", 0, -1, 0, a, 1, b, 1, w, 1, info);
+        Chkxer("Rgetsls", infot, nout, lerr, ok);
+        infot = 4;
+        Rgetsls("N", 0, 0, -1, a, 1, b, 1, w, 1, info);
+        Chkxer("Rgetsls", infot, nout, lerr, ok);
+        infot = 6;
+        Rgetsls("N", 2, 0, 0, a, 1, b, 2, w, 2, info);
+        Chkxer("Rgetsls", infot, nout, lerr, ok);
+        infot = 8;
+        Rgetsls("N", 2, 0, 0, a, 2, b, 1, w, 2, info);
+        Chkxer("Rgetsls", infot, nout, lerr, ok);
+        infot = 8;
+        Rgetsls("N", 0, 2, 0, a, 1, b, 1, w, 2, info);
+        Chkxer("Rgetsls", infot, nout, lerr, ok);
         //
         // Rgelss
         //

@@ -156,9 +156,13 @@ void Rlanv2(REAL &a, REAL &b, REAL &c, REAL &d, REAL &rt1r, REAL &rt1i, REAL &rt
             // Compute [ A  B ] = [ CS  SN ] [ AA  BB ]
             // [ C  D ]   [-SN  CS ] [ CC  DD ]
             //
+            // Note: Some of the multiplications are wrapped in parentheses to
+            // prevent compilers from using FMA instructions. See
+            // https://github.com/Reference-LAPACK/lapack/issues/1031.
+            //
             a = aa * cs + cc * sn;
-            b = bb * cs + dd * sn;
-            c = -aa * sn + cc * cs;
+            b = (bb * cs) + (dd * sn);
+            c = -(aa * sn) + (cc * cs);
             d = -bb * sn + dd * cs;
             //
             temp = half * (a + d);

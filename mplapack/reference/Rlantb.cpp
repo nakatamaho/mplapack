@@ -47,8 +47,7 @@ REAL Rlantb(const char *norm, const char *uplo, const char *diag, INTEGER const 
     REAL sum = 0.0;
     bool udiag = false;
     INTEGER l = 0;
-    REAL ssq[2];
-    REAL colssq[2];
+    REAL scale = 0.0;
     if (n == 0) {
         value = zero;
     } else if (Mlsame(norm, "M")) {
@@ -198,56 +197,41 @@ REAL Rlantb(const char *norm, const char *uplo, const char *diag, INTEGER const 
     } else if ((Mlsame(norm, "F")) || (Mlsame(norm, "E"))) {
         //
         // Find normF(A).
-        // SSQ(1) is scale
-        // SSQ(2) is sum-of-squares
-        // For better accuracy, sum each column separately.
         //
         if (Mlsame(uplo, "U")) {
             if (Mlsame(diag, "U")) {
-                ssq[1 - 1] = one;
-                ssq[2 - 1] = n;
+                scale = one;
+                sum = n;
                 if (k > 0) {
                     for (j = 2; j <= n; j = j + 1) {
-                        colssq[1 - 1] = zero;
-                        colssq[2 - 1] = one;
-                        Rlassq(min(j - 1, k), &ab[(max(k + 2 - j, (INTEGER)1) - 1) + (j - 1) * ldab], 1, colssq[1 - 1], colssq[2 - 1]);
-                        Rcombssq(ssq, colssq);
+                        Rlassq(min(j - 1, k), &ab[(max(k + 2 - j, (INTEGER)1) - 1) + (j - 1) * ldab], 1, scale, sum);
                     }
                 }
             } else {
-                ssq[1 - 1] = zero;
-                ssq[2 - 1] = one;
+                scale = zero;
+                sum = one;
                 for (j = 1; j <= n; j = j + 1) {
-                    colssq[1 - 1] = zero;
-                    colssq[2 - 1] = one;
-                    Rlassq(min(j, k + 1), &ab[(max(k + 2 - j, (INTEGER)1) - 1) + (j - 1) * ldab], 1, colssq[1 - 1], colssq[2 - 1]);
-                    Rcombssq(ssq, colssq);
+                    Rlassq(min(j, k + 1), &ab[(max(k + 2 - j, (INTEGER)1) - 1) + (j - 1) * ldab], 1, scale, sum);
                 }
             }
         } else {
             if (Mlsame(diag, "U")) {
-                ssq[1 - 1] = one;
-                ssq[2 - 1] = n;
+                scale = one;
+                sum = n;
                 if (k > 0) {
                     for (j = 1; j <= n - 1; j = j + 1) {
-                        colssq[1 - 1] = zero;
-                        colssq[2 - 1] = one;
-                        Rlassq(min(n - j, k), &ab[(2 - 1) + (j - 1) * ldab], 1, colssq[1 - 1], colssq[2 - 1]);
-                        Rcombssq(ssq, colssq);
+                        Rlassq(min(n - j, k), &ab[(2 - 1) + (j - 1) * ldab], 1, scale, sum);
                     }
                 }
             } else {
-                ssq[1 - 1] = zero;
-                ssq[2 - 1] = one;
+                scale = zero;
+                sum = one;
                 for (j = 1; j <= n; j = j + 1) {
-                    colssq[1 - 1] = zero;
-                    colssq[2 - 1] = one;
-                    Rlassq(min(n - j + 1, k + 1), &ab[(j - 1) * ldab], 1, colssq[1 - 1], colssq[2 - 1]);
-                    Rcombssq(ssq, colssq);
+                    Rlassq(min(n - j + 1, k + 1), &ab[(j - 1) * ldab], 1, scale, sum);
                 }
             }
         }
-        value = ssq[1 - 1] * sqrt(ssq[2 - 1]);
+        value = scale * sqrt(sum);
     }
     //
     return_value = value;

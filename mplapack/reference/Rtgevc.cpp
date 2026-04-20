@@ -233,7 +233,6 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
     //
     safmin = Rlamch("Safe minimum");
     big = one / safmin;
-    Rlabad(safmin, big);
     ulp = Rlamch("Epsilon") * Rlamch("Base");
     small = safmin * n / ulp;
     big = one / small;

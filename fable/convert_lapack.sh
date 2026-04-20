@@ -539,58 +539,95 @@ def _rewrite_lwork_typed(line: str) -> str:
 lines = [_rewrite_lwork_typed(line) for line in lines]
 
 # ---------------------------------------------------------------------------
-# Fix broken DO loop translation:
+# Fix only conservative, obvious broken Fortran DO translations:
+#
 #   for (i = i1; i <= i2; i = i + i3)
-# should be
-#   for (i = i1; i3 > 0 ? i <= i2 : i >= i2; i = i + i3)
-#
-# Also fix:
 #   for (j = jfirst; j <= jlast; j = j + jinc)
-# -> for (j = jfirst; jinc > 0 ? j <= jlast : j >= jlast; j = j + jinc)
-#
 #   for (i = i1; i <= i2; i = i + inc)
-# -> for (i = i1; inc > 0 ? i <= i2 : i >= i2; i = i + inc)
+#   for (i = ifirst; i <= ilast; i = i + iinc)
+#
+# but do not rewrite every variable-step loop such as:
+#
+#   for (krow = iloz; krow <= ihiz; krow = krow + nv)
+#
+# because that causes unnecessary churn in handwritten or already-correct code.
 # ---------------------------------------------------------------------------
 
-FOR_I_I1_I2_I3_RE = re.compile(
-    r'\bfor\s*\(\s*i\s*=\s*i1\s*;\s*i\s*<=\s*i2\s*;\s*i\s*=\s*i\s*\+\s*i3\s*\)'
+FOR_VARIABLE_STEP_RE = re.compile(
+    r'\bfor\s*\(\s*'
+    r'(?P<idx>[A-Za-z_]\w*)\s*=\s*(?P<first>[A-Za-z_]\w*)\s*;\s*'
+    r'(?P=idx)\s*<=\s*(?P<last>[A-Za-z_]\w*)\s*;\s*'
+    r'(?P=idx)\s*=\s*(?P=idx)\s*\+\s*(?P<step>[A-Za-z_]\w*)\s*'
+    r'\)'
 )
 
-FOR_J_JFIRST_JLAST_JINC_RE = re.compile(
-    r'\bfor\s*\(\s*j\s*=\s*jfirst\s*;\s*j\s*<=\s*jlast\s*;\s*j\s*=\s*j\s*\+\s*jinc\s*\)'
+LIKELY_FORTRAN_DO_BOUND_RE = re.compile(
+    r'^(?:'
+    r'[ijklmn][12]|'
+    r'[ijklmn]first|[ijklmn]last|'
+    r'ifirst|ilast|jfirst|jlast|kfirst|klast|'
+    r'lfirst|llast|mfirst|mlast|nfirst|nlast'
+    r')$'
 )
 
-FOR_I_I1_I2_INC_RE = re.compile(
-    r'\bfor\s*\(\s*i\s*=\s*i1\s*;\s*i\s*<=\s*i2\s*;\s*i\s*=\s*i\s*\+\s*inc\s*\)'
+LIKELY_FORTRAN_DO_STEP_RE = re.compile(
+    r'^(?:'
+    r'inc|'
+    r'i3|j3|k3|l3|m3|n3|'
+    r'iinc|jinc|kinc|linc|minc|ninc|'
+    r'istep|jstep|kstep|lstep|mstep|nstep'
+    r')$'
 )
 
 
-def _fix_do_i1_i2_i3(line: str) -> str:
-    # Do not touch C++ line comments
+def _should_fix_translated_do(first: str, last: str, step: str) -> bool:
+    return (
+        LIKELY_FORTRAN_DO_BOUND_RE.match(first) is not None
+        and LIKELY_FORTRAN_DO_BOUND_RE.match(last) is not None
+        and LIKELY_FORTRAN_DO_STEP_RE.match(step) is not None
+    )
+
+
+def _fix_translated_do_loop(line: str) -> str:
+    # Do not touch C++ line comments.
     idx = line.find("//")
     if idx >= 0:
         code, comment = line[:idx], line[idx:]
     else:
         code, comment = line, ""
 
-    code = FOR_I_I1_I2_I3_RE.sub(
-        'for (i = i1; i3 > 0 ? i <= i2 : i >= i2; i = i + i3)',
-        code,
-    )
-    code = FOR_J_JFIRST_JLAST_JINC_RE.sub(
-        'for (j = jfirst; jinc > 0 ? j <= jlast : j >= jlast; j = j + jinc)',
-        code,
-    )
-    code = FOR_I_I1_I2_INC_RE.sub(
-        'for (i = i1; inc > 0 ? i <= i2 : i >= i2; i = i + inc)',
-        code,
-    )
+    def _repl(m: re.Match) -> str:
+        idx_name = m.group("idx")
+        first = m.group("first")
+        last = m.group("last")
+        step = m.group("step")
+
+        if not _should_fix_translated_do(first, last, step):
+            return m.group(0)
+
+        return (
+            "for ({} = {}; {} > 0 ? {} <= {} : {} >= {}; {} = {} + {})".format(
+                idx_name,
+                first,
+                step,
+                idx_name,
+                last,
+                idx_name,
+                last,
+                idx_name,
+                idx_name,
+                step,
+            )
+        )
+
+    code = FOR_VARIABLE_STEP_RE.sub(_repl, code)
     return code + comment
 
 
-lines = [_fix_do_i1_i2_i3(line) for line in lines]
+lines = [_fix_translated_do_loop(line) for line in lines]
 
 path.write_text("".join(lines))
+
 EOF
 
 # Trim Fortran-style right-padded routine names in Mxerbla("NAME ", ...).

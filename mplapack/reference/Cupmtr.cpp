@@ -86,8 +86,6 @@ void Cupmtr(const char *side, const char *uplo, const char *trans, INTEGER const
     INTEGER mi = 0;
     INTEGER i = 0;
     COMPLEX taui = 0.0;
-    COMPLEX aii = 0.0;
-    const COMPLEX one = COMPLEX(1.0, 0.0);
     INTEGER jc = 0;
     INTEGER ic = 0;
     if (upper) {
@@ -134,10 +132,7 @@ void Cupmtr(const char *side, const char *uplo, const char *trans, INTEGER const
             } else {
                 taui = conj(tau[i - 1]);
             }
-            aii = ap[ii - 1];
-            ap[ii - 1] = one;
-            Clarf(side, mi, ni, &ap[(ii - i + 1) - 1], 1, taui, c, ldc, work);
-            ap[ii - 1] = aii;
+            Clarf1l(side, mi, ni, &ap[(ii - i + 1) - 1], 1, taui, c, ldc, work);
             //
             if (forwrd) {
                 ii += i + 2;
@@ -172,8 +167,6 @@ void Cupmtr(const char *side, const char *uplo, const char *trans, INTEGER const
         }
         //
         for (i = i1; i3 > 0 ? i <= i2 : i >= i2; i = i + i3) {
-            aii = ap[ii - 1];
-            ap[ii - 1] = one;
             if (left) {
                 //
                 // H(i) or H(i)**H is applied to C(i+1:m,1:n)
@@ -195,8 +188,7 @@ void Cupmtr(const char *side, const char *uplo, const char *trans, INTEGER const
             } else {
                 taui = conj(tau[i - 1]);
             }
-            Clarf(side, mi, ni, &ap[ii - 1], 1, taui, &c[(ic - 1) + (jc - 1) * ldc], ldc, work);
-            ap[ii - 1] = aii;
+            Clarf1f(side, mi, ni, &ap[ii - 1], 1, taui, &c[(ic - 1) + (jc - 1) * ldc], ldc, work);
             //
             if (forwrd) {
                 ii += nq - i + 1;

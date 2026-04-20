@@ -87,7 +87,6 @@ void Rorbdb1(INTEGER const m, INTEGER const p, INTEGER const q, REAL *x11, INTEG
     INTEGER i = 0;
     REAL c = 0.0;
     REAL s = 0.0;
-    const REAL one = 1.0;
     INTEGER childinfo = 0;
     for (i = 1; i <= q; i = i + 1) {
         //
@@ -96,18 +95,15 @@ void Rorbdb1(INTEGER const m, INTEGER const p, INTEGER const q, REAL *x11, INTEG
         theta[i - 1] = atan2(x21[(i - 1) + (i - 1) * ldx21], x11[(i - 1) + (i - 1) * ldx11]);
         c = cos(theta[i - 1]);
         s = sin(theta[i - 1]);
-        x11[(i - 1) + (i - 1) * ldx11] = one;
-        x21[(i - 1) + (i - 1) * ldx21] = one;
-        Rlarf("L", p - i + 1, q - i, &x11[(i - 1) + (i - 1) * ldx11], 1, taup1[i - 1], &x11[(i - 1) + ((i + 1) - 1) * ldx11], ldx11, &work[ilarf - 1]);
-        Rlarf("L", m - p - i + 1, q - i, &x21[(i - 1) + (i - 1) * ldx21], 1, taup2[i - 1], &x21[(i - 1) + ((i + 1) - 1) * ldx21], ldx21, &work[ilarf - 1]);
+        Rlarf1f("L", p - i + 1, q - i, &x11[(i - 1) + (i - 1) * ldx11], 1, taup1[i - 1], &x11[(i - 1) + ((i + 1) - 1) * ldx11], ldx11, &work[ilarf - 1]);
+        Rlarf1f("L", m - p - i + 1, q - i, &x21[(i - 1) + (i - 1) * ldx21], 1, taup2[i - 1], &x21[(i - 1) + ((i + 1) - 1) * ldx21], ldx21, &work[ilarf - 1]);
         //
         if (i < q) {
             Rrot(q - i, &x11[(i - 1) + ((i + 1) - 1) * ldx11], ldx11, &x21[(i - 1) + ((i + 1) - 1) * ldx21], ldx21, c, s);
             Rlarfgp(q - i, x21[(i - 1) + ((i + 1) - 1) * ldx21], &x21[(i - 1) + ((i + 2) - 1) * ldx21], ldx21, tauq1[i - 1]);
             s = x21[(i - 1) + ((i + 1) - 1) * ldx21];
-            x21[(i - 1) + ((i + 1) - 1) * ldx21] = one;
-            Rlarf("R", p - i, q - i, &x21[(i - 1) + ((i + 1) - 1) * ldx21], ldx21, tauq1[i - 1], &x11[((i + 1) - 1) + ((i + 1) - 1) * ldx11], ldx11, &work[ilarf - 1]);
-            Rlarf("R", m - p - i, q - i, &x21[(i - 1) + ((i + 1) - 1) * ldx21], ldx21, tauq1[i - 1], &x21[((i + 1) - 1) + ((i + 1) - 1) * ldx21], ldx21, &work[ilarf - 1]);
+            Rlarf1f("R", p - i, q - i, &x21[(i - 1) + ((i + 1) - 1) * ldx21], ldx21, tauq1[i - 1], &x11[((i + 1) - 1) + ((i + 1) - 1) * ldx11], ldx11, &work[ilarf - 1]);
+            Rlarf1f("R", m - p - i, q - i, &x21[(i - 1) + ((i + 1) - 1) * ldx21], ldx21, tauq1[i - 1], &x21[((i + 1) - 1) + ((i + 1) - 1) * ldx21], ldx21, &work[ilarf - 1]);
             c = sqrt(pow2(Rnrm2(p - i, &x11[((i + 1) - 1) + ((i + 1) - 1) * ldx11], 1)) + pow2(Rnrm2(m - p - i, &x21[((i + 1) - 1) + ((i + 1) - 1) * ldx21], 1)));
             phi[i - 1] = atan2(s, c);
             Rorbdb5(p - i, m - p - i, q - i - 1, &x11[((i + 1) - 1) + ((i + 1) - 1) * ldx11], 1, &x21[((i + 1) - 1) + ((i + 1) - 1) * ldx21], 1, &x11[((i + 1) - 1) + ((i + 2) - 1) * ldx11], ldx11, &x21[((i + 1) - 1) + ((i + 2) - 1) * ldx21], ldx21, &work[iorbdb5 - 1], lorbdb5, childinfo);

@@ -83,6 +83,7 @@ system
 tan
 tanh
 transfer
+exponent
 """.splitlines())
 
 extra_set_lower = set("""\

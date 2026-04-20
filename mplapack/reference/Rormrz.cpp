@@ -72,7 +72,7 @@ void Rormrz(const char *side, const char *trans, INTEGER const m, INTEGER const 
         info = -8;
     } else if (ldc < max((INTEGER)1, m)) {
         info = -11;
-    } else if (lwork < max((INTEGER)1, nw) && !lquery) {
+    } else if (lwork < nw && !lquery) {
         info = -13;
     }
     //
@@ -111,7 +111,7 @@ void Rormrz(const char *side, const char *trans, INTEGER const m, INTEGER const 
     INTEGER nbmin = 2;
     INTEGER ldwork = nw;
     if (nb > 1 && nb < k) {
-        if (lwork < nw * nb + tsize) {
+        if (lwork < lwkopt) {
             nb = (lwork - tsize) / ldwork;
             nbmin = max((INTEGER)2, iMlaenv(2, "Rormrq", CHAR2(side, trans), m, n, k, -1));
         }

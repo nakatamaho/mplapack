@@ -101,8 +101,6 @@ void Cunmr2(const char *side, const char *trans, INTEGER const m, INTEGER const 
     //
     INTEGER i = 0;
     COMPLEX taui = 0.0;
-    COMPLEX aii = 0.0;
-    const COMPLEX one = COMPLEX(1.0, 0.0);
     for (i = i1; i3 > 0 ? i <= i2 : i >= i2; i = i + i3) {
         if (left) {
             //
@@ -124,10 +122,7 @@ void Cunmr2(const char *side, const char *trans, INTEGER const m, INTEGER const 
             taui = tau[i - 1];
         }
         Clacgv(nq - k + i - 1, &a[(i - 1)], lda);
-        aii = a[(i - 1) + ((nq - k + i) - 1) * lda];
-        a[(i - 1) + ((nq - k + i) - 1) * lda] = one;
-        Clarf(side, mi, ni, &a[(i - 1)], lda, taui, c, ldc, work);
-        a[(i - 1) + ((nq - k + i) - 1) * lda] = aii;
+        Clarf1l(side, mi, ni, &a[(i - 1)], lda, taui, c, ldc, work);
         Clacgv(nq - k + i - 1, &a[(i - 1)], lda);
     }
     //

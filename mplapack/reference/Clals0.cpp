@@ -130,6 +130,11 @@ void Clals0(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER co
                     if ((z[i - 1] == zero) || (poles[(i - 1) + (2 - 1) * ldgnum] == zero)) {
                         rwork[i - 1] = zero;
                     } else {
+                        //
+                        // Use calls to the subroutine Rlamc3 to enforce the
+                        // parentheses (x+y)+z. The goal is to prevent
+                        // optimizing compilers from doing x+(y+z).
+                        //
                         rwork[i - 1] = poles[(i - 1) + (2 - 1) * ldgnum] * z[i - 1] / (Rlamc3(poles[(i - 1) + (2 - 1) * ldgnum], dsigj) - diflj) / (poles[(i - 1) + (2 - 1) * ldgnum] + dj);
                     }
                 }
@@ -198,6 +203,11 @@ void Clals0(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER co
                     if (z[j - 1] == zero) {
                         rwork[i - 1] = zero;
                     } else {
+                        //
+                        // Use calls to the subroutine Rlamc3 to enforce the
+                        // parentheses (x+y)+z. The goal is to prevent
+                        // optimizing compilers from doing x+(y+z).
+                        //
                         rwork[i - 1] = z[j - 1] / (Rlamc3(dsigj, -poles[((i + 1) - 1) + (2 - 1) * ldgnum]) - difr[(i - 1)]) / (dsigj + poles[(i - 1)]) / difr[(i - 1) + (2 - 1) * ldgnum];
                     }
                 }

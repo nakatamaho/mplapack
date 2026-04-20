@@ -57,13 +57,11 @@ void Rerrtsqr(fem::str_cref path, INTEGER const nunit) {
     INTEGER i = 0;
     REAL a[nmax * nmax];
     REAL c[nmax * nmax];
-    REAL t[nmax * nmax];
     REAL w[nmax];
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
             a[(i - 1) + (j - 1) * nmax] = 1.0 / castREAL(i + j);
             c[(i - 1) + (j - 1) * nmax] = 1.0 / castREAL(i + j);
-            t[(i - 1) + (j - 1) * nmax] = 1.0 / castREAL(i + j);
         }
         w[j - 1] = 0.0;
     }
@@ -75,7 +73,7 @@ void Rerrtsqr(fem::str_cref path, INTEGER const nunit) {
     //
     srnamt = "Rgeqr";
     infot = 1;
-    REAL tau[nmax * 2];
+    REAL tau[5];
     INTEGER info = 0;
     Rgeqr(-1, 0, a, 1, tau, 1, w, 1, info);
     Chkxer("Rgeqr", infot, nout, lerr, ok);
@@ -92,14 +90,42 @@ void Rerrtsqr(fem::str_cref path, INTEGER const nunit) {
     Rgeqr(3, 2, a, 3, tau, 7, w, 0, info);
     Chkxer("Rgeqr", infot, nout, lerr, ok);
     //
+    // Rlatsqr
+    //
+    INTEGER mb = 1;
+    INTEGER nb = 1;
+    srnamt = "Rlatsqr";
+    infot = 1;
+    Rlatsqr(-1, 0, mb, nb, a, 1, tau, 1, w, 1, info);
+    Chkxer("Rlatsqr", infot, nout, lerr, ok);
+    infot = 2;
+    Rlatsqr(1, 2, mb, nb, a, 1, tau, 1, w, 1, info);
+    Chkxer("Rlatsqr", infot, nout, lerr, ok);
+    Rlatsqr(0, -1, mb, nb, a, 1, tau, 1, w, 1, info);
+    Chkxer("Rlatsqr", infot, nout, lerr, ok);
+    infot = 3;
+    Rlatsqr(2, 1, -1, nb, a, 2, tau, 1, w, 1, info);
+    Chkxer("Rlatsqr", infot, nout, lerr, ok);
+    infot = 4;
+    Rlatsqr(2, 1, mb, 2, a, 2, tau, 1, w, 1, info);
+    Chkxer("Rlatsqr", infot, nout, lerr, ok);
+    infot = 6;
+    Rlatsqr(2, 1, mb, nb, a, 1, tau, 1, w, 1, info);
+    Chkxer("Rlatsqr", infot, nout, lerr, ok);
+    infot = 8;
+    Rlatsqr(2, 1, mb, nb, a, 2, tau, 0, w, 1, info);
+    Chkxer("Rlatsqr", infot, nout, lerr, ok);
+    infot = 10;
+    Rlatsqr(2, 1, mb, nb, a, 2, tau, 2, w, 0, info);
+    Chkxer("Rlatsqr", infot, nout, lerr, ok);
+    //
     // Rgemqr
     //
-    tau[1 - 1] = 1.0;
-    tau[2 - 1] = 1.0;
-    tau[3 - 1] = 1.0;
-    tau[4 - 1] = 1.0;
+    for (i = 1; i <= 5; i = i + 1) {
+        tau[i - 1] = 1.0;
+    }
     srnamt = "Rgemqr";
-    INTEGER nb = 1;
+    nb = 1;
     infot = 1;
     Rgemqr("/", "N", 0, 0, 0, a, 1, tau, 1, c, 1, w, 1, info);
     Chkxer("Rgemqr", infot, nout, lerr, ok);
@@ -153,10 +179,42 @@ void Rerrtsqr(fem::str_cref path, INTEGER const nunit) {
     Rgelq(2, 3, a, 3, tau, 7, w, 0, info);
     Chkxer("Rgelq", infot, nout, lerr, ok);
     //
+    // Rlaswlq
+    //
+    mb = 1;
+    nb = 1;
+    srnamt = "Rlaswlq";
+    infot = 1;
+    Rlaswlq(-1, 0, mb, nb, a, 1, tau, 1, w, 1, info);
+    Chkxer("Rlaswlq", infot, nout, lerr, ok);
+    infot = 2;
+    Rlaswlq(2, 1, mb, nb, a, 1, tau, 1, w, 1, info);
+    Chkxer("Rlaswlq", infot, nout, lerr, ok);
+    Rlaswlq(0, -1, mb, nb, a, 1, tau, 1, w, 1, info);
+    Chkxer("Rlaswlq", infot, nout, lerr, ok);
+    infot = 3;
+    Rlaswlq(1, 2, -1, nb, a, 1, tau, 1, w, 1, info);
+    Chkxer("Rlaswlq", infot, nout, lerr, ok);
+    Rlaswlq(1, 1, 2, nb, a, 1, tau, 1, w, 1, info);
+    Chkxer("Rlaswlq", infot, nout, lerr, ok);
+    infot = 4;
+    Rlaswlq(1, 2, mb, -1, a, 1, tau, 1, w, 1, info);
+    Chkxer("Rlaswlq", infot, nout, lerr, ok);
+    infot = 6;
+    Rlaswlq(1, 2, mb, nb, a, 0, tau, 1, w, 1, info);
+    Chkxer("Rlaswlq", infot, nout, lerr, ok);
+    infot = 8;
+    Rlaswlq(1, 2, mb, nb, a, 1, tau, 0, w, 1, info);
+    Chkxer("Rlaswlq", infot, nout, lerr, ok);
+    infot = 10;
+    Rlaswlq(1, 2, mb, nb, a, 1, tau, 1, w, 0, info);
+    Chkxer("Rlaswlq", infot, nout, lerr, ok);
+    //
     // Rgemlq
     //
-    tau[1 - 1] = 1.0;
-    tau[2 - 1] = 1.0;
+    for (i = 1; i <= 5; i = i + 1) {
+        tau[i - 1] = 1.0;
+    }
     srnamt = "Rgemlq";
     nb = 1;
     infot = 1;

@@ -39,4 +39,7 @@ REAL RCabs1(COMPLEX const z) {
     REAL return_value = 0.0;
     return_value = abs(z.real()) + abs(z.imag());
     return return_value;
+    //
+    // End of RCabs1
+    //
 }

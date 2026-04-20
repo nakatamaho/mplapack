@@ -139,7 +139,7 @@ void Clarrv(INTEGER const n, REAL const vl, REAL const /* vu */, REAL *d, REAL *
     //
     // Quick return if possible
     //
-    if (n <= 0) {
+    if ((n <= 0) || (m <= 0)) {
         return;
     }
     //

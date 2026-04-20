@@ -91,7 +91,7 @@ libeig_mpfr_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_src
 libeig_mpfr_la_SOURCES = $(EIG_SOURCES)
 libeig_mpfr_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 libeig_override_mpfr_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___ -I$(top_srcdir)/fable
-libeig_override_mpfr_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp
+libeig_override_mpfr_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp common/Mxlaenv.cpp
 libeig_override_mpfr_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 if IS_MACOS
 libeig_mpfr_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
@@ -104,7 +104,7 @@ libeig_gmp_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcd
 libeig_gmp_la_SOURCES = $(EIG_SOURCES)
 libeig_gmp_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 libeig_override_gmp_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(top_srcdir)/fable -D___MPLAPACK_BUILD_WITH_GMP___
-libeig_override_gmp_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp
+libeig_override_gmp_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp common/Mxlaenv.cpp
 libeig_override_gmp_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 if IS_MACOS
 libeig_gmp_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
@@ -117,7 +117,7 @@ libeig_qd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdi
 libeig_qd_la_SOURCES = $(EIG_SOURCES)
 libeig_qd_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 libeig_override_qd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_QD___ @qd_extra_cxxflags@
-libeig_override_qd_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp
+libeig_override_qd_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp common/Mxlaenv.cpp
 libeig_override_qd_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 if IS_MACOS
 libeig_qd_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
@@ -130,7 +130,7 @@ libeig_dd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdi
 libeig_dd_la_SOURCES = $(EIG_SOURCES)
 libeig_dd_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 libeig_override_dd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_DD___ @qd_extra_cxxflags@
-libeig_override_dd_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp
+libeig_override_dd_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp common/Mxlaenv.cpp
 libeig_override_dd_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 if IS_MACOS
 libeig_dd_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
@@ -143,7 +143,7 @@ libeig_double_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_s
 libeig_double_la_SOURCES = $(EIG_SOURCES)
 libeig_double_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 libeig_override_double_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -D___MPLAPACK_BUILD_WITH_DOUBLE___
-libeig_override_double_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp
+libeig_override_double_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp common/Mxlaenv.cpp
 libeig_override_double_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 if IS_MACOS
 libeig_double_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
@@ -156,7 +156,7 @@ libeig_binary80_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top
 libeig_binary80_la_SOURCES = $(EIG_SOURCES)
 libeig_binary80_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 libeig_override_binary80_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -D___MPLAPACK_BUILD_WITH_BINARY80___
-libeig_override_binary80_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp
+libeig_override_binary80_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp common/Mxlaenv.cpp
 libeig_override_binary80_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 if IS_MACOS
 libeig_binary80_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
@@ -169,7 +169,7 @@ libeig_binary128_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(to
 libeig_binary128_la_SOURCES = $(EIG_SOURCES)
 libeig_binary128_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 libeig_override_binary128_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -D___MPLAPACK_BUILD_WITH_BINARY128___
-libeig_override_binary128_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp
+libeig_override_binary128_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp common/Mxlaenv.cpp
 libeig_override_binary128_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 if IS_MACOS
 libeig_binary128_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
@@ -178,187 +178,188 @@ endif
 endif
 
 EIG_SOURCES = \
-common/Cslect.cpp \
-common/Rslect.cpp \
-common/Rlctsx.cpp \
-common/Rlasum.cpp \
-common/Rlctes.cpp \
+common/Alahdg.cpp \
+common/Alareq.cpp \
+common/Alarqg.cpp \
 common/Alasmg.cpp \
 common/Alasum.cpp \
 common/Alasvm.cpp \
-common/Rlarfy.cpp \
-common/Clarfy.cpp \
-common/Clctes.cpp \
-common/Rsxt1.cpp \
-common/Clctsx.cpp \
-common/Rget10.cpp \
-common/Cget10.cpp \
-common/Rlsets.cpp \
-common/Clsets.cpp \
-common/Rbdt02.cpp \
-common/Cbdt02.cpp \
-common/Rbdt05.cpp \
-common/Rget02.cpp \
-common/Cget02.cpp \
-common/Cbdt05.cpp \
-common/Rglmts.cpp \
-common/Rhst01.cpp \
-common/Cglmts.cpp \
-common/Chst01.cpp \
-common/Rstect.cpp \
-common/Rsgt01.cpp \
-common/Rget54.cpp \
-common/Rsyt22.cpp \
-common/Csgt01.cpp \
-common/Cget54.cpp \
-common/Rsvdct.cpp \
-common/Chet22.cpp \
-common/Rstt21.cpp \
-common/Rlafts.cpp \
-common/Cstt21.cpp \
-common/Rort01.cpp \
-common/Rsvdch.cpp \
-common/Cunt01.cpp \
-common/Rbdt04.cpp \
-common/Cchkec.cpp \
-common/Rstech.cpp \
-common/Rort03.cpp \
-common/Rget51.cpp \
-common/Cget51.cpp \
-common/Rstt22.cpp \
-common/Rsbt21.cpp \
-common/Cstt22.cpp \
-common/Chbt21.cpp \
-common/Cget52.cpp \
-common/Rbdt03.cpp \
-common/Cbdt03.cpp \
-common/Rget53.cpp \
-common/Cunt03.cpp \
-common/Rckgsv.cpp \
-common/Cget22.cpp \
-common/Rgqrts.cpp \
-common/Rgrqts.cpp \
-common/Cckgsv.cpp \
-common/Rbdt01.cpp \
-common/Cgqrts.cpp \
-common/Cgrqts.cpp \
 common/Cbdt01.cpp \
-common/Rckglm.cpp \
-common/Cckglm.cpp \
-common/Rlatb9.cpp \
-common/Rckcsd.cpp \
-common/Cckcsd.cpp \
-common/Rcklse.cpp \
-common/Ccklse.cpp \
-common/Rchkec.cpp \
-common/Rgsvts3.cpp \
-common/Csbmv.cpp \
-common/Rlarhs.cpp \
-common/Cgsvts3.cpp \
-common/Rget22.cpp \
-common/Rget52.cpp \
-common/Rget33.cpp \
-common/Rsyt21.cpp \
-common/Chet21.cpp \
-common/Rspt21.cpp \
-common/Clarhs.cpp \
-common/Cerrec.cpp \
-common/Chpt21.cpp \
-common/Cerrbd.cpp \
-common/Rerrec.cpp \
-common/Cckgqr.cpp \
-common/Rckgqr.cpp \
-common/Clatm4.cpp \
-common/Alahdg.cpp \
-common/Rlatm4.cpp \
-common/Rerrbd.cpp \
-common/Rcsdts.cpp \
-common/Rget39.cpp \
-common/Ccsdts.cpp \
-common/Cerrhs.cpp \
-common/Rerrhs.cpp \
-common/Rchkbb.cpp \
+common/Cbdt02.cpp \
+common/Cbdt03.cpp \
+common/Cbdt05.cpp \
 common/Cchkbb.cpp \
-common/Rget32.cpp \
-common/Rget34.cpp \
-common/Cget23.cpp \
-common/Cerred.cpp \
-common/Rget23.cpp \
-common/Rerred.cpp \
-common/Rchksb.cpp \
-common/Cchkhb.cpp \
-common/Rget31.cpp \
-common/Cget24.cpp \
 common/Cchkbd.cpp \
-common/Cdrves.cpp \
-common/Cdrvev.cpp \
-common/Rdrvev.cpp \
-common/Rchksb2stg.cpp \
-common/Rget24.cpp \
+common/Cchkbk.cpp \
+common/Cchkbl.cpp \
+common/Cchkec.cpp \
+common/Cchkgg.cpp \
+common/Cchkgk.cpp \
+common/Cchkgl.cpp \
+common/Cchkhb.cpp \
 common/Cchkhb2stg.cpp \
-common/Rdrgev.cpp \
-common/Rdrgev3.cpp \
-common/Cdrgev.cpp \
-common/Cdrgev3.cpp \
-common/Rdrves.cpp \
-common/Rlahd2.cpp \
+common/Cchkhs.cpp \
+common/Cchkst.cpp \
+common/Cchkst2stg.cpp \
+common/Cckcsd.cpp \
+common/Cckglm.cpp \
+common/Cckgqr.cpp \
+common/Cckgsv.cpp \
+common/Ccklse.cpp \
+common/Ccsdts.cpp \
 common/Cdrges.cpp \
 common/Cdrges3.cpp \
-common/Cchkhs.cpp \
-common/Rchkhs.cpp \
-common/Rdrges.cpp \
-common/Rdrges3.cpp \
-common/Rchkgg.cpp \
-common/Cchkgg.cpp \
-common/Rdrvbd.cpp \
-common/Rchkbd.cpp \
-common/Rdrvsg.cpp \
+common/Cdrgev.cpp \
+common/Cdrgev3.cpp \
+common/Cdrgsx.cpp \
+common/Cdrgvx.cpp \
 common/Cdrvbd.cpp \
+common/Cdrves.cpp \
+common/Cdrvev.cpp \
 common/Cdrvsg.cpp \
-common/Cerrgg.cpp \
-common/Cerrst.cpp \
-common/Rerrgg.cpp \
-common/Rerrst.cpp \
-common/Rdrvsg2stg.cpp \
 common/Cdrvsg2stg.cpp \
-common/Rchkst.cpp \
-common/Cchkst.cpp \
-common/Rchkst2stg.cpp \
-common/Cchkst2stg.cpp \
 common/Cdrvst.cpp \
 common/Cdrvst2stg.cpp \
+common/Cdrvsx.cpp \
+common/Cdrvvx.cpp \
+common/Cerrbd.cpp \
+common/Cerrec.cpp \
+common/Cerred.cpp \
+common/Cerrgg.cpp \
+common/Cerrhs.cpp \
+common/Cerrst.cpp \
+common/Cget02.cpp \
+common/Cget10.cpp \
+common/Cget22.cpp \
+common/Cget23.cpp \
+common/Cget24.cpp \
+common/Cget35.cpp \
+common/Cget36.cpp \
+common/Cget37.cpp \
+common/Cget38.cpp \
+common/Cget51.cpp \
+common/Cget52.cpp \
+common/Cget54.cpp \
+common/Cglmts.cpp \
+common/Cgqrts.cpp \
+common/Cgrqts.cpp \
+common/Cgsvts3.cpp \
+common/Chbt21.cpp \
+common/Chet21.cpp \
+common/Chet22.cpp \
+common/Chkxer.cpp \
+common/Chpt21.cpp \
+common/Chst01.cpp \
+common/Clarfy.cpp \
+common/Clarhs.cpp \
+common/Clatm4.cpp \
+common/Clctes.cpp \
+common/Clctsx.cpp \
+common/Clsets.cpp \
+common/Csbmv.cpp \
+common/Csgt01.cpp \
+common/Cslect.cpp \
+common/Cstt21.cpp \
+common/Cstt22.cpp \
+common/Csyl01.cpp \
+common/Cunt01.cpp \
+common/Cunt03.cpp \
+common/Rbdt01.cpp \
+common/Rbdt02.cpp \
+common/Rbdt03.cpp \
+common/Rbdt04.cpp \
+common/Rbdt05.cpp \
+common/Rchkbb.cpp \
+common/Rchkbd.cpp \
+common/Rchkbk.cpp \
+common/Rchkbl.cpp \
+common/Rchkec.cpp \
+common/Rchkgg.cpp \
+common/Rchkgk.cpp \
+common/Rchkgl.cpp \
+common/Rchkhs.cpp \
+common/Rchksb.cpp \
+common/Rchksb2stg.cpp \
+common/Rchkst.cpp \
+common/Rchkst2stg.cpp \
+common/Rckcsd.cpp \
+common/Rckglm.cpp \
+common/Rckgqr.cpp \
+common/Rckgsv.cpp \
+common/Rcklse.cpp \
+common/Rcsdts.cpp \
+common/Rdrges.cpp \
+common/Rdrges3.cpp \
+common/Rdrgev.cpp \
+common/Rdrgev3.cpp \
+common/Rdrgsx.cpp \
+common/Rdrgvx.cpp \
+common/Rdrvbd.cpp \
+common/Rdrves.cpp \
+common/Rdrvev.cpp \
+common/Rdrvsg.cpp \
+common/Rdrvsg2stg.cpp \
 common/Rdrvst.cpp \
 common/Rdrvst2stg.cpp \
-common/Cchkbk.cpp \
-common/Rchkbk.cpp \
-common/Cget36.cpp \
-common/Rchkgl.cpp \
-common/Cchkgl.cpp \
-common/Rget36.cpp \
-common/Rchkgk.cpp \
-common/Cchkgk.cpp \
-common/Cget35.cpp \
-common/Rget35.cpp \
-common/Rget38.cpp \
-common/Cget38.cpp \
-common/Cget37.cpp \
-common/Rget37.cpp \
-common/Cdrgvx.cpp \
-common/Rget40.cpp \
-common/Rdrgvx.cpp \
-common/Rchkbl.cpp \
-common/Cchkbl.cpp \
-common/Rdrvvx.cpp \
-common/Cdrvvx.cpp \
-common/Cdrvsx.cpp \
 common/Rdrvsx.cpp \
-common/Cdrgsx.cpp \
-common/Rdrgsx.cpp \
-common/Alareq.cpp \
-common/Alarqg.cpp \
-common/iMlaenv.cpp \
-common/Chkxer.cpp \
-common/Mxlaenv.cpp
+common/Rdrvvx.cpp \
+common/Rerrbd.cpp \
+common/Rerrec.cpp \
+common/Rerred.cpp \
+common/Rerrgg.cpp \
+common/Rerrhs.cpp \
+common/Rerrst.cpp \
+common/Rget02.cpp \
+common/Rget10.cpp \
+common/Rget22.cpp \
+common/Rget23.cpp \
+common/Rget24.cpp \
+common/Rget31.cpp \
+common/Rget32.cpp \
+common/Rget33.cpp \
+common/Rget34.cpp \
+common/Rget35.cpp \
+common/Rget36.cpp \
+common/Rget37.cpp \
+common/Rget38.cpp \
+common/Rget39.cpp \
+common/Rget40.cpp \
+common/Rget51.cpp \
+common/Rget52.cpp \
+common/Rget53.cpp \
+common/Rget54.cpp \
+common/Rglmts.cpp \
+common/Rgqrts.cpp \
+common/Rgrqts.cpp \
+common/Rgsvts3.cpp \
+common/Rhst01.cpp \
+common/Rlafts.cpp \
+common/Rlahd2.cpp \
+common/Rlarfy.cpp \
+common/Rlarhs.cpp \
+common/Rlasum.cpp \
+common/Rlatb9.cpp \
+common/Rlatm4.cpp \
+common/Rlctes.cpp \
+common/Rlctsx.cpp \
+common/Rlsets.cpp \
+common/Rort01.cpp \
+common/Rort03.cpp \
+common/Rsbt21.cpp \
+common/Rsgt01.cpp \
+common/Rslect.cpp \
+common/Rspt21.cpp \
+common/Rstech.cpp \
+common/Rstect.cpp \
+common/Rstt21.cpp \
+common/Rstt22.cpp \
+common/Rsvdch.cpp \
+common/Rsvdct.cpp \
+common/Rsxt1.cpp \
+common/Rsyl01.cpp \
+common/Rsyt21.cpp \
+common/Rsyt22.cpp \
+common/iMlaenv.cpp
 
 install-data-hook:
 if IS_MACOS

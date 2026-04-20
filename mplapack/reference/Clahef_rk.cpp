@@ -68,8 +68,6 @@ void Clahef_rk(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb,
     COMPLEX d11 = 0.0;
     COMPLEX d22 = 0.0;
     INTEGER j = 0;
-    INTEGER jb = 0;
-    INTEGER jj = 0;
     //
     info = 0;
     //
@@ -217,7 +215,7 @@ void Clahef_rk(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb,
                 //
                 // Case(2)
                 // Equivalent to testing for
-                // ABS( REAL( W( IMAX,KW-1 ) ) ).GE.ALPHA*ROWMAX
+                // ABS( DBLE( W( IMAX,KW-1 ) ) ).GE.ALPHA*ROWMAX
                 // (used to handle NaN and Inf)
                 //
                 if (!(abs(w[(imax - 1) + ((kw - 1) - 1) * ldw].real()) < alpha * rowmax)) {
@@ -353,7 +351,7 @@ void Clahef_rk(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb,
                 // A(1:k-1,k) := U(1:k-1,k) = W(1:k-1,kw)/D(k,k)
                 //
                 // (NOTE: No need to use for Hermitian matrix
-                // A( K, K ) = REAL( W( K, K) ) to separately copy diagonal
+                // A( K, K ) = DBLE( W( K, K) ) to separately copy diagonal
                 // element D(k,k) from W (potentially saves only one load))
                 Ccopy(k, &w[(kw - 1) * ldw], 1, &a[(k - 1) * lda], 1);
                 if (k > 1) {
@@ -504,26 +502,9 @@ void Clahef_rk(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb,
         //
         // A11 := A11 - U12*D*U12**H = A11 - U12*W**H
         //
-        // computing blocks of NB columns at a time (note that conjg(W) is
-        // actually stored)
+        // (note that conjg(W) is actually stored)
         //
-        for (j = ((k - 1) / nb) * nb + 1; j >= 1; j = j - nb) {
-            jb = min(nb, k - j + 1);
-            //
-            // Update the upper triangle of the diagonal block
-            //
-            for (jj = j; jj <= j + jb - 1; jj = jj + 1) {
-                a[(jj - 1) + (jj - 1) * lda] = a[(jj - 1) + (jj - 1) * lda].real();
-                Cgemv("No transpose", jj - j + 1, n - k, -cone, &a[(j - 1) + ((k + 1) - 1) * lda], lda, &w[(jj - 1) + ((kw + 1) - 1) * ldw], ldw, cone, &a[(j - 1) + (jj - 1) * lda], 1);
-                a[(jj - 1) + (jj - 1) * lda] = a[(jj - 1) + (jj - 1) * lda].real();
-            }
-            //
-            // Update the rectangular superdiagonal block
-            //
-            if (j >= 2) {
-                Cgemm("No transpose", "Transpose", j - 1, jb, n - k, -cone, &a[((k + 1) - 1) * lda], lda, &w[(j - 1) + ((kw + 1) - 1) * ldw], ldw, cone, &a[(j - 1) * lda], lda);
-            }
-        }
+        Cgemmtr("Upper", "No transpose", "Transpose", k, n - k, -cone, &a[((k + 1) - 1) * lda], lda, &w[((kw + 1) - 1) * ldw], ldw, cone, &a[0], lda);
         //
         // Set KB to the number of columns factorized
         //
@@ -662,7 +643,7 @@ void Clahef_rk(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb,
                 //
                 // Case(2)
                 // Equivalent to testing for
-                // ABS( REAL( W( IMAX,K+1 ) ) ).GE.ALPHA*ROWMAX
+                // ABS( DBLE( W( IMAX,K+1 ) ) ).GE.ALPHA*ROWMAX
                 // (used to handle NaN and Inf)
                 //
                 if (!(abs(w[(imax - 1) + ((k + 1) - 1) * ldw].real()) < alpha * rowmax)) {
@@ -794,7 +775,7 @@ void Clahef_rk(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb,
                 // A(k+1:N,k) := L(k+1:N,k) = W(k+1:N,k)/D(k,k)
                 //
                 // (NOTE: No need to use for Hermitian matrix
-                // A( K, K ) = REAL( W( K, K) ) to separately copy diagonal
+                // A( K, K ) = DBLE( W( K, K) ) to separately copy diagonal
                 // element D(k,k) from W (potentially saves only one load))
                 Ccopy(n - k + 1, &w[(k - 1) + (k - 1) * ldw], 1, &a[(k - 1) + (k - 1) * lda], 1);
                 if (k < n) {
@@ -945,26 +926,9 @@ void Clahef_rk(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &kb,
         //
         // A22 := A22 - L21*D*L21**H = A22 - L21*W**H
         //
-        // computing blocks of NB columns at a time (note that conjg(W) is
-        // actually stored)
+        // (note that conjg(W) is actually stored)
         //
-        for (j = k; j <= n; j = j + nb) {
-            jb = min(nb, n - j + 1);
-            //
-            // Update the lower triangle of the diagonal block
-            //
-            for (jj = j; jj <= j + jb - 1; jj = jj + 1) {
-                a[(jj - 1) + (jj - 1) * lda] = a[(jj - 1) + (jj - 1) * lda].real();
-                Cgemv("No transpose", j + jb - jj, k - 1, -cone, &a[(jj - 1)], lda, &w[(jj - 1)], ldw, cone, &a[(jj - 1) + (jj - 1) * lda], 1);
-                a[(jj - 1) + (jj - 1) * lda] = a[(jj - 1) + (jj - 1) * lda].real();
-            }
-            //
-            // Update the rectangular subdiagonal block
-            //
-            if (j + jb <= n) {
-                Cgemm("No transpose", "Transpose", n - j - jb + 1, jb, k - 1, -cone, &a[((j + jb) - 1)], lda, &w[(j - 1)], ldw, cone, &a[((j + jb) - 1) + (j - 1) * lda], lda);
-            }
-        }
+        Cgemmtr("Lower", "No transpose", "Transpose", n - k + 1, k - 1, -cone, &a[(k - 1)], lda, &w[(k - 1)], ldw, cone, &a[(k - 1) + (k - 1) * lda], lda);
         //
         // Set KB to the number of columns factorized
         //

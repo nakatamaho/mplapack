@@ -365,7 +365,7 @@ void Cgesdd(const char *jobz, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
         maxwrk = max(maxwrk, minwrk);
     }
     if (info == 0) {
-        work[1 - 1] = maxwrk;
+        work[1 - 1] = Rroundup_lwork(maxwrk);
         if (lwork < minwrk && !lquery) {
             info = -12;
         }
@@ -1796,7 +1796,7 @@ void Cgesdd(const char *jobz, INTEGER const m, INTEGER const n, COMPLEX *a, INTE
     //
     // Return optimal workspace in WORK(1)
     //
-    work[1 - 1] = maxwrk;
+    work[1 - 1] = Rroundup_lwork(maxwrk);
     //
     // End of Cgesdd
     //

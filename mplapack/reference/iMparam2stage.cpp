@@ -36,6 +36,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 
+#include <ctype.h>
 #include <string.h>
 
 #define SUBNAM_LEN 128
@@ -53,11 +54,8 @@ INTEGER iMparam2stage(INTEGER const ispec, const char *name, const char *opts, I
     // Get the number of threads
     //
     INTEGER nthreads = 1;
-    // WRITE(*,*) 'IPARAM VOICI NTHREADS ISPEC ',NTHREADS, ISPEC
     //
     char subnam[SUBNAM_LEN];
-    INTEGER ic = 0;
-    INTEGER iz = 0;
     INTEGER i = 0;
     INTEGER name_len = 16;
     char prec;
@@ -66,10 +64,13 @@ INTEGER iMparam2stage(INTEGER const ispec, const char *name, const char *opts, I
     bool rprec = false;
     bool cprec = false;
 
+    memset(subnam, 0, SUBNAM_LEN);
     strncpy(subnam, name, name_len);
-    for (int i = 0; i < name_len; i++) {
-        subnam[i] = toupper(subnam[i]);
+    subnam[name_len] = '\0';
+    for (i = 0; i < name_len; i++) {
+        subnam[i] = toupper((unsigned char)subnam[i]);
     }
+
     if (ispec != 19) {
         //
         // Convert NAME to upper case if the first character is lower case.
@@ -88,8 +89,8 @@ INTEGER iMparam2stage(INTEGER const ispec, const char *name, const char *opts, I
         stag[3] = subnam[10];
         stag[4] = subnam[11];
         stag[5] = '\0';
-        rprec = prec == 'R';
-        cprec = prec == 'C';
+        rprec = (prec == 'R');
+        cprec = (prec == 'C');
         //
         // Invalid value for PRECISION
         //
@@ -98,8 +99,6 @@ INTEGER iMparam2stage(INTEGER const ispec, const char *name, const char *opts, I
             return return_value;
         }
     }
-    // WRITE(*,*),'RPREC,CPREC ',RPREC,CPREC,
-    // $           '   ALGO ',ALGO,'    STAGE ',STAG
     //
     INTEGER kd = 0;
     INTEGER ib = 0;
@@ -155,7 +154,7 @@ INTEGER iMparam2stage(INTEGER const ispec, const char *name, const char *opts, I
         //
         // Will add the VECT OPTION HERE next release
         vect = opts[0];
-        if (vect == 'N') {
+        if (Mlsame(&vect, "N")) {
             lhous = max((INTEGER)1, 4 * ni);
         } else {
             // This is not correct, it need to call the ALGO and the stage2
@@ -184,35 +183,36 @@ INTEGER iMparam2stage(INTEGER const ispec, const char *name, const char *opts, I
         // + (KD+1)*N
         lwork = -1;
         subnam[0] = prec;
-        subnam[(2 - 1)] = 'G';
-        subnam[(3 - 1)] = 'E';
-        subnam[(4 - 1)] = 'Q';
-        subnam[(5 - 1)] = 'R';
-        subnam[(6 - 1)] = 'F';
-
+        subnam[1] = 'G';
+        subnam[2] = 'E';
+        subnam[3] = 'Q';
+        subnam[4] = 'R';
+        subnam[5] = 'F';
+        subnam[6] = '\0';
         qroptnb = iMlaenv(1, subnam, " ", ni, nbi, -1, -1);
-        subnam[(2 - 1)] = 'G';
-        subnam[(3 - 1)] = 'E';
-        subnam[(4 - 1)] = 'L';
-        subnam[(5 - 1)] = 'Q';
-        subnam[(6 - 1)] = 'F';
+        subnam[1] = 'G';
+        subnam[2] = 'E';
+        subnam[3] = 'L';
+        subnam[4] = 'Q';
+        subnam[5] = 'F';
+        subnam[6] = '\0';
         lqoptnb = iMlaenv(1, subnam, " ", nbi, ni, -1, -1);
         // Could be QR or LQ for TRD and the max for BRD
         factoptnb = max(qroptnb, lqoptnb);
-        if (strncmp(algo, "TRD", 3)) {
-            if (strncmp(stag, "2STAG", 5)) {
+        if (strncmp(algo, "TRD", 3) == 0) {
+            if (strncmp(stag, "2STAG", 5) == 0) {
                 lwork = ni * nbi + ni * max(nbi + 1, factoptnb) + max((INTEGER)2 * nbi * nbi, nbi * nthreads) + (nbi + 1) * ni;
-            } else if ((strncmp(stag, "HE2HB", 5)) || (strncmp(stag, "SY2SB", 5))) {
+            } else if ((strncmp(stag, "HE2HB", 5) == 0) || (strncmp(stag, "SY2SB", 5) == 0)) {
                 lwork = ni * nbi + ni * max(nbi, factoptnb) + 2 * nbi * nbi;
-            } else if ((strncmp(stag, "HB2ST", 5)) || (strncmp(stag, "SB2ST", 5))) {
+            } else if ((strncmp(stag, "HB2ST", 5) == 0) || (strncmp(stag, "SB2ST", 5) == 0)) {
                 lwork = (2 * nbi + 1) * ni + nbi * nthreads;
             }
-        } else if (strncmp(algo, "BRD", 3)) {
-            if (strncmp(stag, "2STAG", 5)) {
+        } else if (strncmp(algo, "BRD", 3) == 0) {
+            if (strncmp(stag, "2STAG", 5) == 0) {
                 lwork = 2 * ni * nbi + ni * max(nbi + 1, factoptnb) + max((INTEGER)2 * nbi * nbi, nbi * nthreads) + (nbi + 1) * ni;
-            } else if (strncmp(stag, "GE2GB", 5)) {
+            } else if (strncmp(stag, "GE2GB", 5) == 0) {
                 lwork = ni * nbi + ni * max(nbi, factoptnb) + 2 * nbi * nbi;
-            } else if (strncmp(stag, "GB2BD", 5)) {
+            } else if (strncmp(stag, "GB2BD", 5) == 0) {
                 lwork = (3 * nbi + 1) * ni + nbi * nthreads;
             }
         }

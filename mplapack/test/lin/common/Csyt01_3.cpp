@@ -53,7 +53,7 @@ void Csyt01_3(fem::str_cref uplo, INTEGER const n, COMPLEX *a, INTEGER const lda
         return;
     }
     //
-    // a) Revert to multiplyers of L
+    // a) Revert to multipliers of L
     //
     INTEGER info = 0;
     Csyconvf_rook(uplo.elems(), "R", n, afac, ldafac, e, ipiv, info);

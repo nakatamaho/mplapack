@@ -88,4 +88,7 @@ REAL Rdot(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const
     }
     return_value = dtemp;
     return return_value;
+    //
+    // End of Rdot
+    //
 }

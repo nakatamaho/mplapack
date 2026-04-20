@@ -1,0 +1,100 @@
+diff --git a/TESTING/cbb.in b/TESTING/cbb.in
+index 2aad1aaf2..a4e4dd269 100644
+--- a/TESTING/cbb.in
++++ b/TESTING/cbb.in
+@@ -7,6 +7,6 @@ CBB:  Data file for testing banded Singular Value Decomposition routines
+ 2                                 Number of values of NRHS
+ 1 2                               Values of NRHS
+ 20.0                              Threshold value
+-F                                 Put T to test the error exits
++T                                 Put T to test the error exits
+ 1                                 Code to interpret the seed
+ CBB 15
+diff --git a/TESTING/cgg.in b/TESTING/cgg.in
+index da524e92c..790feedaa 100644
+--- a/TESTING/cgg.in
++++ b/TESTING/cgg.in
+@@ -10,7 +10,7 @@ CGG:  Data file for testing Nonsymmetric Eigenvalue Problem routines
+ 40  40  2   2                   Values of NBCOL (minimum col. dimension)
+ 20.0                            Threshold value
+ T                               Put T to test the LAPACK routines
+-F                               Put T to test the driver routines
++T                               Put T to test the driver routines
+ T                               Put T to test the error exits
+ 1                               Code to interpret the seed
+ CGG  26
+diff --git a/TESTING/dbb.in b/TESTING/dbb.in
+index 3303274ee..a329ffac6 100644
+--- a/TESTING/dbb.in
++++ b/TESTING/dbb.in
+@@ -7,6 +7,6 @@ DBB:  Data file for testing banded Singular Value Decomposition routines
+ 2                                 Number of values of NRHS
+ 1 2                               Values of NRHS
+ 20.0                              Threshold value
+-F                                 Put T to test the error exits
++T                                 Put T to test the error exits
+ 1                                 Code to interpret the seed
+ DBB 15
+diff --git a/TESTING/dgg.in b/TESTING/dgg.in
+index 073cf5b80..fcc44c0b4 100644
+--- a/TESTING/dgg.in
++++ b/TESTING/dgg.in
+@@ -10,7 +10,7 @@ DGG:  Data file for testing Nonsymmetric Eigenvalue Problem routines
+ 40  40  2   2                   Values of NBCOL (minimum col. dimension)
+ 20.0                            Threshold value
+ T                               Put T to test the LAPACK routines
+-F                               Put T to test the driver routines
++T                               Put T to test the driver routines
+ T                               Put T to test the error exits
+ 1                               Code to interpret the seed
+ DGG  26
+diff --git a/TESTING/sbb.in b/TESTING/sbb.in
+index 0f1ee51f6..570d37ad1 100644
+--- a/TESTING/sbb.in
++++ b/TESTING/sbb.in
+@@ -7,6 +7,6 @@ SBB:  Data file for testing banded Singular Value Decomposition routines
+ 2                                 Number of values of NRHS
+ 1 2                               Values of NRHS
+ 20.0                              Threshold value
+-F                                 Put T to test the error exits
++T                                 Put T to test the error exits
+ 1                                 Code to interpret the seed
+ SBB 15
+diff --git a/TESTING/sgg.in b/TESTING/sgg.in
+index f6478a28c..162ba3eff 100644
+--- a/TESTING/sgg.in
++++ b/TESTING/sgg.in
+@@ -10,7 +10,7 @@ SGG:  Data file for testing Nonsymmetric Eigenvalue Problem routines
+ 40  40  2   2                   Values of NBCOL (minimum col. dimension)
+ 20.0                            Threshold value
+ T                               Put T to test the LAPACK routines
+-F                               Put T to test the driver routines
++T                               Put T to test the driver routines
+ T                               Put T to test the error exits
+ 1                               Code to interpret the seed
+ SGG  26
+diff --git a/TESTING/zbb.in b/TESTING/zbb.in
+index 51e54e998..73c5ac8fa 100644
+--- a/TESTING/zbb.in
++++ b/TESTING/zbb.in
+@@ -7,6 +7,6 @@ ZBB:  Data file for testing banded Singular Value Decomposition routines
+ 2                                 Number of values of NRHS
+ 1 2                               Values of NRHS
+ 20.0                              Threshold value
+-F                                 Put T to test the error exits
++T                                 Put T to test the error exits
+ 1                                 Code to interpret the seed
+ ZBB 15
+diff --git a/TESTING/zgg.in b/TESTING/zgg.in
+index 23cc875ed..802e5ddf6 100644
+--- a/TESTING/zgg.in
++++ b/TESTING/zgg.in
+@@ -10,7 +10,7 @@ ZGG:  Data file for testing Nonsymmetric Eigenvalue Problem routines
+ 40  40  2   2                   Values of NBCOL (minimum col. dimension)
+ 20.0                            Threshold value
+ T                               Put T to test the LAPACK routines
+-F                               Put T to test the driver routines
++T                               Put T to test the driver routines
+ T                               Put T to test the error exits
+ 1                               Code to interpret the seed
+ ZGG  26

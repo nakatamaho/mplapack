@@ -79,8 +79,8 @@ void Chegvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
     }
     //
     if (info == 0) {
-        work[1 - 1] = lopt;
-        rwork[1 - 1] = lropt;
+        work[1 - 1] = Rroundup_lwork(lopt);
+        rwork[1 - 1] = Rroundup_lwork(lropt);
         iwork[1 - 1] = liopt;
         //
         if (lwork < lwmin && !lquery) {
@@ -155,8 +155,8 @@ void Chegvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
         }
     }
     //
-    work[1 - 1] = lopt;
-    rwork[1 - 1] = lropt;
+    work[1 - 1] = Rroundup_lwork(lopt);
+    rwork[1 - 1] = Rroundup_lwork(lropt);
     iwork[1 - 1] = liopt;
     //
     // End of Chegvd

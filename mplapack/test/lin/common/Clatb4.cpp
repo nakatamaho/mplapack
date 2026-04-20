@@ -44,6 +44,7 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Clatb4(fem::str_cref path, INTEGER const imat, INTEGER const m, INTEGER const n, fem::str_ref type, INTEGER &kl, INTEGER &ku, REAL &anorm, INTEGER &mode, REAL &cndnum, fem::str_ref dist) {
+    //
     // Set some constants for use in the subroutine.
     //
     const REAL tenth = 0.1;
@@ -51,14 +52,21 @@ void Clatb4(fem::str_cref path, INTEGER const imat, INTEGER const m, INTEGER con
     const REAL shrink = 0.25;
     REAL eps = Rlamch("Precision");
     REAL badc2 = tenth / eps;
+#if defined ___MPLAPACK_BUILD_WITH_DD___ || defined ___MPLAPACK_BUILD_WITH_BINARY128___ || defined ___MPLAPACK_BUILD_WITH_MPFR___
+    const REAL badc2_cap = 1.0e24;
+    badc2 = min(badc2, badc2_cap);
+#elif defined ___MPLAPACK_BUILD_WITH_QD___ || defined ___MPLAPACK_BUILD_WITH_GMP___
+    const REAL badc2_cap = 1.0e30;
+    badc2 = min(badc2, badc2_cap);
+#endif
     REAL badc1 = sqrt(badc2);
     REAL small = Rlamch("Safe minimum");
     REAL large = one / small;
     //
-    // If it looks like we're on a Cray, take the square root of
-    // SMALL and LARGE to avoid overflow and underflow problems.
-    //
+#if defined ___MPLAPACK_BUILD_WITH_BINARY128___ ||  defined ___MPLAPACK_BUILD_WITH_BINARY80___
     Rlabad(small, large);
+#endif
+    //
     small = shrink * (small / eps);
     large = one / small;
     //
@@ -112,6 +120,110 @@ void Clatb4(fem::str_cref path, INTEGER const imat, INTEGER const m, INTEGER con
             anorm = large;
         } else {
             anorm = one;
+        }
+        //
+    } else if (Mlsamen(2, c2.elems, "QK")) {
+        //
+        // xQK: truncated QR with pivoting.
+        // Set parameters to generate a general
+        // M x N matrix.
+        //
+        // Set TYPE, the type of matrix to be generated.  'N' is nonsymmetric.
+        //
+        type = "N";
+        //
+        // Set DIST, the type of distribution for the random
+        // number generator. 'S' is
+        //
+        dist = "S";
+        //
+        // Set the lower and upper bandwidths.
+        //
+        if (imat == 2) {
+            //
+            // 2. Random, Diagonal, CNDNUM = 2
+            //
+            kl = 0;
+            ku = 0;
+            cndnum = two;
+            anorm = one;
+            mode = 3;
+        } else if (imat == 3) {
+            //
+            // 3. Random, Upper triangular,  CNDNUM = 2
+            //
+            kl = 0;
+            ku = max(n - 1, (INTEGER)0);
+            cndnum = two;
+            anorm = one;
+            mode = 3;
+        } else if (imat == 4) {
+            //
+            // 4. Random, Lower triangular,  CNDNUM = 2
+            //
+            kl = max(m - 1, (INTEGER)0);
+            ku = 0;
+            cndnum = two;
+            anorm = one;
+            mode = 3;
+        } else {
+            //
+            // 5.-19. Rectangular matrix
+            //
+            kl = max(m - 1, (INTEGER)0);
+            ku = max(n - 1, (INTEGER)0);
+            //
+            if (imat >= 5 && imat <= 14) {
+                //
+                // 5.-14. Random, CNDNUM = 2.
+                //
+                cndnum = two;
+                anorm = one;
+                mode = 3;
+                //
+            } else if (imat == 15) {
+                //
+                // 15. Random, CNDNUM = sqrt(0.1/EPS)
+                //
+                cndnum = badc1;
+                anorm = one;
+                mode = 3;
+                //
+            } else if (imat == 16) {
+                //
+                // 16. Random, CNDNUM = 0.1/EPS
+                //
+                cndnum = badc2;
+                anorm = one;
+                mode = 3;
+                //
+            } else if (imat == 17) {
+                //
+                // 17. Random, CNDNUM = 0.1/EPS,
+                // one small singular value S(N)=1/CNDNUM
+                //
+                cndnum = badc2;
+                anorm = one;
+                mode = 2;
+                //
+            } else if (imat == 18) {
+                //
+                // 18. Random, scaled near underflow
+                //
+                cndnum = two;
+                anorm = small;
+                mode = 3;
+                //
+            } else if (imat == 19) {
+                //
+                // 19. Random, scaled near overflow
+                //
+                cndnum = two;
+                anorm = large;
+                mode = 3;
+                //
+            }
+            //
         }
         //
     } else if (Mlsamen(2, c2.elems, "GE")) {
@@ -396,17 +508,18 @@ void Clatb4(fem::str_cref path, INTEGER const imat, INTEGER const m, INTEGER con
         //
         // Set the norm and condition number.
         //
-        if (imat == 2 || imat == 8) {
+        mat = abs(imat);
+        if (mat == 2 || mat == 8) {
             cndnum = badc1;
-        } else if (imat == 3 || imat == 9) {
+        } else if (mat == 3 || mat == 9) {
             cndnum = badc2;
         } else {
             cndnum = two;
         }
         //
-        if (imat == 4) {
+        if (mat == 4) {
             anorm = small;
-        } else if (imat == 5) {
+        } else if (mat == 5) {
             anorm = large;
         } else {
             anorm = one;

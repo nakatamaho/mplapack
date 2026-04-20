@@ -43,8 +43,8 @@ void Clatrs(const char *uplo, const char *trans, const char *diag, const char *n
     bool upper = false;
     bool notran = false;
     bool nounit = false;
-    REAL smlnum = 0.0;
     const REAL one = 1.0;
+    REAL smlnum = 0.0;
     REAL bignum = 0.0;
     INTEGER j = 0;
     const REAL zero = 0.0;
@@ -52,6 +52,8 @@ void Clatrs(const char *uplo, const char *trans, const char *diag, const char *n
     REAL tmax = 0.0;
     const REAL half = 0.5;
     REAL tscal = 0.0;
+    INTEGER i = 0;
+    const REAL two = 2.0;
     REAL xmax = 0.0;
     REAL xbnd = 0.0;
     INTEGER jfirst = 0;
@@ -61,9 +63,7 @@ void Clatrs(const char *uplo, const char *trans, const char *diag, const char *n
     COMPLEX tjjs = 0.0;
     REAL tjj = 0.0;
     REAL xj = 0.0;
-    const REAL two = 2.0;
     REAL rec = 0.0;
-    INTEGER i = 0;
     COMPLEX uscal = 0.0;
     COMPLEX csumj = 0.0;
     //
@@ -102,7 +102,9 @@ void Clatrs(const char *uplo, const char *trans, const char *diag, const char *n
     //
     smlnum = Rlamch("Safe minimum");
     bignum = one / smlnum;
+#if defined ___MPLAPACK_BUILD_WITH_BINARY128___ ||  defined ___MPLAPACK_BUILD_WITH_BINARY80___
     Rlabad(smlnum, bignum);
+#endif
     smlnum = smlnum / Rlamch("Precision");
     bignum = one / smlnum;
     scale = one;
@@ -137,8 +139,70 @@ void Clatrs(const char *uplo, const char *trans, const char *diag, const char *n
     if (tmax <= bignum * half) {
         tscal = one;
     } else {
-        tscal = half / (smlnum * tmax);
-        Rscal(n, tscal, cnorm, 1);
+        //
+        // Avoid NaN generation if entries in CNORM exceed the
+        // overflow threshold
+        //
+        if (tmax <= Rlamch("Overflow")) {
+            // Case 1: All entries in CNORM are valid floating-point numbers
+            tscal = half / (smlnum * tmax);
+            Rscal(n, tscal, cnorm, 1);
+        } else {
+            // Case 2: At least one column norm of A cannot be
+            // represented as a floating-point number. Find the
+            // maximum offdiagonal absolute value
+            // max( |Re(A(I,J))|, |Im(A(I,J)| ). If this entry is
+            // not +/- Infinity, use this value as TSCAL.
+            tmax = zero;
+            if (upper) {
+                //
+                // A is upper triangular.
+                //
+                for (j = 2; j <= n; j = j + 1) {
+                    for (i = 1; i <= j - 1; i = i + 1) {
+                        tmax = max(tmax, abs(a[(i - 1) + (j - 1) * lda].real()), abs(a[(i - 1) + (j - 1) * lda].imag()));
+                    }
+                }
+            } else {
+                //
+                // A is lower triangular.
+                //
+                for (j = 1; j <= n - 1; j = j + 1) {
+                    for (i = j + 1; i <= n; i = i + 1) {
+                        tmax = max(tmax, abs(a[(i - 1) + (j - 1) * lda].real()), abs(a[(i - 1) + (j - 1) * lda].imag()));
+                    }
+                }
+            }
+            //
+            if (tmax <= Rlamch("Overflow")) {
+                tscal = one / (smlnum * tmax);
+                for (j = 1; j <= n; j = j + 1) {
+                    if (cnorm[j - 1] <= Rlamch("Overflow")) {
+                        cnorm[j - 1] = cnorm[j - 1] * tscal;
+                    } else {
+                        // Recompute the 1-norm of each column without
+                        // introducing Infinity in the summation.
+                        tscal = two * tscal;
+                        cnorm[j - 1] = zero;
+                        if (upper) {
+                            for (i = 1; i <= j - 1; i = i + 1) {
+                                cnorm[j - 1] += tscal * cabs2(a[(i - 1) + (j - 1) * lda]);
+                            }
+                        } else {
+                            for (i = j + 1; i <= n; i = i + 1) {
+                                cnorm[j - 1] += tscal * cabs2(a[(i - 1) + (j - 1) * lda]);
+                            }
+                        }
+                        tscal = tscal * half;
+                    }
+                }
+            } else {
+                // At least one entry of A is not a valid floating-point
+                // entry. Rely on TRSV to propagate Inf and NaN.
+                Ctrsv(uplo, trans, diag, n, a, lda, x, 1);
+                return;
+            }
+        }
     }
     //
     // Compute a bound on the computed solution vector to see if the

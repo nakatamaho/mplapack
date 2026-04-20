@@ -186,7 +186,6 @@ void Cggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
     eps = Rlamch("P");
     smlnum = Rlamch("S");
     bignum = one / smlnum;
-    Rlabad(smlnum, bignum);
     smlnum = sqrt(smlnum) / eps;
     bignum = one / smlnum;
     //
@@ -337,8 +336,8 @@ void Cggevx(const char *balanc, const char *jobvl, const char *jobvr, const char
         //
         if (!wantsn) {
             //
-            // compute eigenvectors (Rtgevc) and estimate condition
-            // numbers (Rtgsna). Note that the definition of the condition
+            // compute eigenvectors (Ctgevc) and estimate condition
+            // numbers (Ctgsna). Note that the definition of the condition
             // number is not invariant under transformation (u,v) to
             // (Q*u, Z*v), where (u,v) are eigenvectors of the generalized
             // Schur form (S,T), Q and Z are orthogonal matrices. In order

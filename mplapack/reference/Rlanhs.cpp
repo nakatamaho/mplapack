@@ -44,9 +44,8 @@ REAL Rlanhs(const char *norm, INTEGER const n, REAL *a, INTEGER const lda, REAL 
     INTEGER j = 0;
     INTEGER i = 0;
     REAL sum = 0.0;
-    REAL ssq[2];
+    REAL scale = 0.0;
     const REAL one = 1.0;
-    REAL colssq[2];
     if (n == 0) {
         value = zero;
     } else if (Mlsame(norm, "M")) {
@@ -98,19 +97,13 @@ REAL Rlanhs(const char *norm, INTEGER const n, REAL *a, INTEGER const lda, REAL 
     } else if ((Mlsame(norm, "F")) || (Mlsame(norm, "E"))) {
         //
         // Find normF(A).
-        // SSQ(1) is scale
-        // SSQ(2) is sum-of-squares
-        // For better accuracy, sum each column separately.
         //
-        ssq[1 - 1] = zero;
-        ssq[2 - 1] = one;
+        scale = zero;
+        sum = one;
         for (j = 1; j <= n; j = j + 1) {
-            colssq[1 - 1] = zero;
-            colssq[2 - 1] = one;
-            Rlassq(min(n, j + 1), &a[(j - 1) * lda], 1, colssq[1 - 1], colssq[2 - 1]);
-            Rcombssq(ssq, colssq);
+            Rlassq(min(n, j + 1), &a[(j - 1) * lda], 1, scale, sum);
         }
-        value = ssq[1 - 1] * sqrt(ssq[2 - 1]);
+        value = scale * sqrt(sum);
     }
     //
     return_value = value;

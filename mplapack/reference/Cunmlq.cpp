@@ -51,10 +51,10 @@ void Cunmlq(const char *side, const char *trans, INTEGER const m, INTEGER const 
     INTEGER nw = 0;
     if (left) {
         nq = m;
-        nw = n;
+        nw = max((INTEGER)1, n);
     } else {
         nq = n;
-        nw = m;
+        nw = max((INTEGER)1, m);
     }
     if (!left && !Mlsame(side, "R")) {
         info = -1;
@@ -70,7 +70,7 @@ void Cunmlq(const char *side, const char *trans, INTEGER const m, INTEGER const 
         info = -7;
     } else if (ldc < max((INTEGER)1, m)) {
         info = -10;
-    } else if (lwork < max((INTEGER)1, nw) && !lquery) {
+    } else if (lwork < nw && !lquery) {
         info = -12;
     }
     //
@@ -84,7 +84,7 @@ void Cunmlq(const char *side, const char *trans, INTEGER const m, INTEGER const 
         // Compute the workspace requirements
         //
         nb = min(nbmax, iMlaenv(1, "Cunmlq", CHAR2(side, trans), m, n, k, -1));
-        lwkopt = max((INTEGER)1, nw) * nb + tsize;
+        lwkopt = nw * nb + tsize;
         work[1 - 1] = lwkopt;
     }
     //
@@ -105,7 +105,7 @@ void Cunmlq(const char *side, const char *trans, INTEGER const m, INTEGER const 
     INTEGER nbmin = 2;
     INTEGER ldwork = nw;
     if (nb > 1 && nb < k) {
-        if (lwork < nw * nb + tsize) {
+        if (lwork < lwkopt) {
             nb = (lwork - tsize) / ldwork;
             nbmin = max((INTEGER)2, iMlaenv(2, "Cunmlq", CHAR2(side, trans), m, n, k, -1));
         }

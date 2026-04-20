@@ -1,6 +1,6 @@
 check_PROGRAMS = $(mplapack_qd_test_PROGRAMS)
 
-mplapack_qd_test_PROGRAMS = xeigtstR_qd xeigtstC_qd
+mplapack_qd_test_PROGRAMS = xeigtstR_qd xeigtstC_qd xdmdeigtstR_qd xdmdeigtstC_qd
 mplapack_qd_testdir = $(prefix)/lib/$(target)/mplapack/test/eig
 
 $(check_PROGRAMS): ../libeig_qd.la ../libeig_override_qd.la
@@ -23,6 +23,16 @@ xeigtstC_qd_SOURCES  = ../common/Cchkee.cpp
 xeigtstC_qd_LDFLAGS  = $(libdepends) $(mplibs) #-L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstC_qd_LDFLAGS += -Wl,-rpath,$(libdir)
 xeigtstC_qd_CXXFLAGS = $(cxxflags)
+
+xdmdeigtstR_qd_SOURCES  = ../common/Rchkdmd.cpp
+xdmdeigtstR_qd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xdmdeigtstR_qd_LDFLAGS += -Wl,-rpath,$(libdir)
+xdmdeigtstR_qd_CXXFLAGS = $(cxxflags)
+
+xdmdeigtstC_qd_SOURCES  = ../common/Cchkdmd.cpp
+xdmdeigtstC_qd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xdmdeigtstC_qd_LDFLAGS += -Wl,-rpath,$(libdir)
+xdmdeigtstC_qd_CXXFLAGS = $(cxxflags)
 
 install-data-hook:
 if IS_MACOS
@@ -57,10 +67,10 @@ OUTDIR_PATH = ../results/$(OUTDIR)/qd
 # -----------------------------------------------------------------------------
 
 QD_REAL_TESTS = \
-	Rnep Rsep Rse2 Rsvd Rec Red Rgg Rgd Rsb Rsg Rbal Rbak Rgbal Rgbak Rbb Rglm Rgqr Rgsv Rcsd Rlse
+	Rnep Rsep Rse2 Rsvd Rec Red Rgg Rgd Rsb Rsg Rbal Rbak Rgbal Rgbak Rbb Rglm Rgqr Rgsv Rcsd Rlse Rdmd
 
 QD_COMPLEX_TESTS = \
-	Cnep Csep Cse2 Csvd Cec Ced Cgg Cgd Csb Csg Cbal Cbak Cgbal Cgbak Cbb Cglm Cgqr Cgsv Ccsd Clse
+	Cnep Csep Cse2 Csvd Cec Ced Cgg Cgd Csb Csg Cbal Cbak Cgbal Cgbak Cbb Cglm Cgqr Cgsv Ccsd Clse Cdmd
 
 QD_ALL_TESTS = $(QD_REAL_TESTS) $(QD_COMPLEX_TESTS)
 
@@ -556,4 +566,27 @@ $(OUTDIR_PATH)/Clse.out: $(srcdir)/../lse.in xeigtstC_qd$(EXEEXT)
 	set -e; { \
 		echo "=== precision: $(QD_LABEL) ==="; \
 		$(QD_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_qd$(EXEEXT) < $(srcdir)/../lse.in; \
+	} > $@ 2>&1
+
+$(OUTDIR_PATH)/Rdmd.out: $(srcdir)/../Rdmd.in xdmdeigtstR_qd$(EXEEXT)
+	@$(MKDIR_P) $(OUTDIR_PATH)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "DMD: Testing Dynamic Mode Decomposition routines [$(QD_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(QD_LABEL) ==="; \
+		$(QD_EXTRA_ENV) $$wrapper $(WINE) ./xdmdeigtstR_qd$(EXEEXT) < $(srcdir)/../Rdmd.in; \
+	} > $@ 2>&1
+$(OUTDIR_PATH)/Cdmd.out: $(srcdir)/../Cdmd.in xdmdeigtstC_qd$(EXEEXT)
+	@$(MKDIR_P) $(OUTDIR_PATH)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "DMD: Testing COMPLEX Dynamic Mode Decomposition routines [$(QD_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(QD_LABEL) ==="; \
+		$(QD_EXTRA_ENV) $$wrapper $(WINE) ./xdmdeigtstC_qd$(EXEEXT) < $(srcdir)/../Cdmd.in; \
 	} > $@ 2>&1

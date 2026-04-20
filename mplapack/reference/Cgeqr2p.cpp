@@ -56,8 +56,6 @@ void Cgeqr2p(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
     INTEGER k = min(m, n);
     //
     INTEGER i = 0;
-    COMPLEX alpha = 0.0;
-    const COMPLEX one = COMPLEX(1.0, 0.0);
     for (i = 1; i <= k; i = i + 1) {
         //
         // Generate elementary reflector H(i) to annihilate A(i+1:m,i)
@@ -67,10 +65,7 @@ void Cgeqr2p(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
             //
             // Apply H(i)**H to A(i:m,i+1:n) from the left
             //
-            alpha = a[(i - 1) + (i - 1) * lda];
-            a[(i - 1) + (i - 1) * lda] = one;
-            Clarf("Left", m - i + 1, n - i, &a[(i - 1) + (i - 1) * lda], 1, conj(tau[i - 1]), &a[(i - 1) + ((i + 1) - 1) * lda], lda, work);
-            a[(i - 1) + (i - 1) * lda] = alpha;
+            Clarf1f("Left", m - i + 1, n - i, &a[(i - 1) + (i - 1) * lda], 1, conj(tau[i - 1]), &a[(i - 1) + ((i + 1) - 1) * lda], lda, work);
         }
     }
     //

@@ -32,72 +32,18 @@
 //   Univ. of California Berkeley
 //   Univ. of Colorado Denver
 //   NAG Ltd.
+//
+// Implementation note:
+//   All RNG logic (iseed handling, deterministic/non-deterministic mode,
+//   backend-specific generation) is centralised in Rlaruv.  Rlaran simply
+//   delegates to Rlaruv(iseed, 1, &x) so that the two routines are always
+//   consistent and code is not duplicated.
 
 #include <mpblas.h>
 #include <mplapack.h>
-#include <random>
-
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
-extern gmp_randstate_t ___random_mplapack_mpfr_state;
-#endif
-
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
-extern gmp_randstate_t ___random_mplapack_gmp_state;
-extern gmp_randclass ___random_mplapack_gmp;
-#endif
 
 REAL Rlaran(INTEGER (&iseed)[4]) {
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
-    mpreal x = urandom(___random_mplapack_mpfr_state);
-#endif
-
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
-    mpf_class x;
-    x = ___random_mplapack_gmp.get_f();
-#endif
-
-#if defined ___MPLAPACK_BUILD_WITH_DD___
-    dd_real x;
-    std::random_device rd;
-    std::mt19937_64 mt(rd());
-    std::uniform_real_distribution<double> dist(0.0, 1.0);
-    x = dist(mt);
-    x = x + dist(mt) * 0x1p-53;
-#endif
-
-#if defined ___MPLAPACK_BUILD_WITH_QD___
-    qd_real x;
-    std::random_device rd;
-    std::mt19937_64 mt(rd());
-    std::uniform_real_distribution<double> dist(0.0, 1.0);
-    x = dist(mt);
-    x = x + dist(mt) * 0x1p-53;
-    x = x + dist(mt) * 0x1p-106;
-    x = x + dist(mt) * 0x1p-159;
-#endif
-
-#if defined ___MPLAPACK_BUILD_WITH_BINARY128___
-    mplapack_binary128_t x;
-    std::random_device rd;
-    std::mt19937_64 mt(rd());
-    std::uniform_real_distribution<double> dist(0.0, 1.0);
-    x = dist(mt) + dist(mt) * 0x1p-53 + dist(mt) * 0x1p-106;
-#endif
-
-#if defined ___MPLAPACK_BUILD_WITH_BINARY80___
-    mplapack_binary80_t x;
-    std::random_device rd;
-    std::mt19937_64 mt(rd());
-    std::uniform_real_distribution<double> dist(0, 1.0);
-    x = dist(mt) + dist(mt) * 0x1p-64;
-#endif
-
-#if defined ___MPLAPACK_BUILD_WITH_DOUBLE___
-    double x;
-    std::random_device rd;
-    std::mt19937_64 mt(rd());
-    std::uniform_real_distribution<double> dist(0.0, 1.0);
-    x = dist(mt);
-#endif
+    REAL x;
+    Rlaruv(iseed, 1, &x);
     return x;
 }

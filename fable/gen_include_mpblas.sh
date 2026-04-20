@@ -15,7 +15,7 @@ done
 ctags -x --c++-kinds=pf --language-force=c++ --_xformat='%{typeref} %{name} %{signature};' Mxerbla.cpp |  tr ':' ' ' | sed -e 's/^typename //' > Mxerbla.hpp
 ctags -x --c++-kinds=pf --language-force=c++ --_xformat='%{typeref} %{name} %{signature};' Mlsame.cpp |  tr ':' ' ' | sed -e 's/^typename //' > Mlsame.hpp
 
-cat *hpp > header_all
+cat *hpp | grep -v abssq > header_all
 rm *hpp
 
 MPLIBS="gmp mpfr binary128 dd qd double binary80"

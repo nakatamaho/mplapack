@@ -43,6 +43,7 @@ void Rggev3(const char *jobvl, const char *jobvr, INTEGER const n, REAL *a, INTE
     bool ilvr = false;
     bool ilv = false;
     bool lquery = false;
+    INTEGER lwkmin = 0;
     INTEGER ierr = 0;
     INTEGER lwkopt = 0;
     REAL eps = 0.0;
@@ -100,6 +101,7 @@ void Rggev3(const char *jobvl, const char *jobvr, INTEGER const n, REAL *a, INTE
     //
     info = 0;
     lquery = (lwork == -1);
+    lwkmin = max((INTEGER)1, 8 * n);
     if (ijobvl <= 0) {
         info = -1;
     } else if (ijobvr <= 0) {
@@ -114,7 +116,7 @@ void Rggev3(const char *jobvl, const char *jobvr, INTEGER const n, REAL *a, INTE
         info = -12;
     } else if (ldvr < 1 || (ilvr && ldvr < n)) {
         info = -14;
-    } else if (lwork < max((INTEGER)1, 8 * n) && !lquery) {
+    } else if (lwork < lwkmin && !lquery) {
         info = -16;
     }
     //
@@ -122,7 +124,7 @@ void Rggev3(const char *jobvl, const char *jobvr, INTEGER const n, REAL *a, INTE
     //
     if (info == 0) {
         Rgeqrf(n, n, b, ldb, work, work, -1, ierr);
-        lwkopt = max((INTEGER)1, 8 * n, 3 * n + castINTEGER(work[1 - 1]));
+        lwkopt = max(lwkmin, 3 * n + castINTEGER(work[1 - 1]));
         Rormqr("L", "T", n, n, n, b, ldb, work, a, lda, work, -1, ierr);
         lwkopt = max(lwkopt, 3 * n + castINTEGER(work[1 - 1]));
         if (ilvl) {
@@ -132,16 +134,19 @@ void Rggev3(const char *jobvl, const char *jobvr, INTEGER const n, REAL *a, INTE
         if (ilv) {
             Rgghd3(jobvl, jobvr, n, 1, n, a, lda, b, ldb, vl, ldvl, vr, ldvr, work, -1, ierr);
             lwkopt = max(lwkopt, 3 * n + castINTEGER(work[1 - 1]));
-            Rhgeqz("S", jobvl, jobvr, n, 1, n, a, lda, b, ldb, alphar, alphai, beta, vl, ldvl, vr, ldvr, work, -1, ierr);
+            Rlaqz0("S", jobvl, jobvr, n, 1, n, a, lda, b, ldb, alphar, alphai, beta, vl, ldvl, vr, ldvr, work, -1, 0, ierr);
             lwkopt = max(lwkopt, 2 * n + castINTEGER(work[1 - 1]));
         } else {
             Rgghd3("N", "N", n, 1, n, a, lda, b, ldb, vl, ldvl, vr, ldvr, work, -1, ierr);
             lwkopt = max(lwkopt, 3 * n + castINTEGER(work[1 - 1]));
-            Rhgeqz("E", jobvl, jobvr, n, 1, n, a, lda, b, ldb, alphar, alphai, beta, vl, ldvl, vr, ldvr, work, -1, ierr);
+            Rlaqz0("E", jobvl, jobvr, n, 1, n, a, lda, b, ldb, alphar, alphai, beta, vl, ldvl, vr, ldvr, work, -1, 0, ierr);
             lwkopt = max(lwkopt, 2 * n + castINTEGER(work[1 - 1]));
         }
-        //
-        work[1 - 1] = lwkopt;
+        if (n == 0) {
+            work[1 - 1] = 1.0;
+        } else {
+            work[1 - 1] = lwkopt;
+        }
     }
     //
     if (info != 0) {
@@ -162,7 +167,6 @@ void Rggev3(const char *jobvl, const char *jobvr, INTEGER const n, REAL *a, INTE
     eps = Rlamch("P");
     smlnum = Rlamch("S");
     bignum = one / smlnum;
-    Rlabad(smlnum, bignum);
     smlnum = sqrt(smlnum) / eps;
     bignum = one / smlnum;
     //
@@ -255,7 +259,7 @@ void Rggev3(const char *jobvl, const char *jobvr, INTEGER const n, REAL *a, INTE
     } else {
         chtemp = 'E';
     }
-    Rhgeqz(&chtemp, jobvl, jobvr, n, ilo, ihi, a, lda, b, ldb, alphar, alphai, beta, vl, ldvl, vr, ldvr, &work[iwrk - 1], lwork + 1 - iwrk, ierr);
+    Rlaqz0(&chtemp, jobvl, jobvr, n, ilo, ihi, a, lda, b, ldb, alphar, alphai, beta, vl, ldvl, vr, ldvr, &work[iwrk - 1], lwork + 1 - iwrk, 0, ierr);
     if (ierr != 0) {
         if (ierr > 0 && ierr <= n) {
             info = ierr;

@@ -84,6 +84,14 @@ void Rerrgg(fem::str_cref path, INTEGER const nunit) {
     INTEGER nt = 0;
     INTEGER lwork = 1;
     //
+    // Call Mxlaenv to set the parameters used in CLAQZ0
+    //
+    Mxlaenv(12, 10);
+    Mxlaenv(13, 12);
+    Mxlaenv(14, 13);
+    Mxlaenv(15, 2);
+    Mxlaenv(17, 10);
+    //
     // Test error exits for the GG path.
     //
     REAL q[nmax * nmax];
@@ -673,6 +681,11 @@ void Rerrgg(fem::str_cref path, INTEGER const nunit) {
         //
         // Rggev3
         //
+        Mxlaenv(12, 20);
+        Mxlaenv(13, 4);
+        Mxlaenv(14, 13);
+        Mxlaenv(15, 2);
+        Mxlaenv(17, 10);
         srnamt = "Rggev3";
         infot = 1;
         Rggev3("/", "N", 1, a, 1, b, 1, r1, r2, r3, q, 1, u, 1, w, 1, info);

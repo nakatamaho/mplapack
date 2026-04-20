@@ -1,5 +1,5 @@
---- TESTING/EIG/ddrvst2stg.f_	2026-01-23 12:05:47.429719592 +0900
-+++ TESTING/EIG/ddrvst2stg.f	2026-01-23 12:06:03.643106479 +0900
+--- a/TESTING/EIG/ddrvst2stg.f_	2026-01-23 12:05:47.429719592 +0900
++++ b/TESTING/EIG/ddrvst2stg.f	2026-01-23 12:06:03.643106479 +0900
 @@ -776,10 +776,10 @@
              IF( JTYPE.LE.7 ) THEN
                 NTEST = 1

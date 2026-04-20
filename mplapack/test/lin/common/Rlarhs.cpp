@@ -105,7 +105,7 @@ void Rlarhs(fem::str_cref path, fem::str_cref xtype, fem::str_cref uplo, fem::st
         }
     }
     //
-    // Multiply X by op( A ) using an appropriate
+    // Multiply X by op(A) using an appropriate
     // matrix multiply routine.
     //
     const REAL one = 1.0;

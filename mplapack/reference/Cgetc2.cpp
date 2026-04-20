@@ -52,7 +52,6 @@ void Cgetc2(INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, INTEG
     REAL smlnum = Rlamch("S") / eps;
     const REAL one = 1.0;
     REAL bignum = one / smlnum;
-    Rlabad(smlnum, bignum);
     //
     // Handle the case N=1 by itself
     //
@@ -72,8 +71,8 @@ void Cgetc2(INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, INTEG
     //
     INTEGER i = 0;
     REAL xmax = 0.0;
-    INTEGER ip = 0;
     INTEGER jp = 0;
+    INTEGER ip = 0;
     INTEGER ipv = 0;
     INTEGER jpv = 0;
     REAL smin = 0.0;
@@ -83,8 +82,8 @@ void Cgetc2(INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, INTEG
         // Find max element in matrix A
         //
         xmax = zero;
-        for (ip = i; ip <= n; ip = ip + 1) {
-            for (jp = i; jp <= n; jp = jp + 1) {
+        for (jp = i; jp <= n; jp = jp + 1) {
+            for (ip = i; ip <= n; ip = ip + 1) {
                 if (abs(a[(ip - 1) + (jp - 1) * lda]) >= xmax) {
                     xmax = abs(a[(ip - 1) + (jp - 1) * lda]);
                     ipv = ip;

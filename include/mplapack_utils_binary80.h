@@ -34,6 +34,241 @@
 
 #if defined ___MPLAPACK_INTERNAL___
 
+#include <cstring>
+inline uint16_t load_u16_be(const unsigned char *p) { return (static_cast<uint16_t>(p[0]) << 8) | (static_cast<uint16_t>(p[1]) << 0); }
+inline uint16_t load_u16_le(const unsigned char *p) { return (static_cast<uint16_t>(p[1]) << 8) | (static_cast<uint16_t>(p[0]) << 0); }
+inline uint64_t load_u64_be(const unsigned char *p) { return (static_cast<uint64_t>(p[0]) << 56) | (static_cast<uint64_t>(p[1]) << 48) | (static_cast<uint64_t>(p[2]) << 40) | (static_cast<uint64_t>(p[3]) << 32) | (static_cast<uint64_t>(p[4]) << 24) | (static_cast<uint64_t>(p[5]) << 16) | (static_cast<uint64_t>(p[6]) << 8) | (static_cast<uint64_t>(p[7]) << 0); }
+inline uint64_t load_u64_le(const unsigned char *p) { return (static_cast<uint64_t>(p[7]) << 56) | (static_cast<uint64_t>(p[6]) << 48) | (static_cast<uint64_t>(p[5]) << 40) | (static_cast<uint64_t>(p[4]) << 32) | (static_cast<uint64_t>(p[3]) << 24) | (static_cast<uint64_t>(p[2]) << 16) | (static_cast<uint64_t>(p[1]) << 8) | (static_cast<uint64_t>(p[0]) << 0); }
+
+inline void sprinthex_binary80_bits_le(char *buf, size_t n, const unsigned char bytes[10]) {
+    if (n == 0) {
+        return;
+    }
+
+    // x87 little-endian memory layout:
+    // bytes[0..7]  = significand, little-endian
+    // bytes[8..9]  = sign/exponent, little-endian
+    const uint64_t signif = load_u64_le(bytes + 0);
+    const uint16_t se = load_u16_le(bytes + 8);
+
+    const bool negative = ((se >> 15) & 1u) != 0;
+    const uint16_t exp_raw = static_cast<uint16_t>(se & 0x7fffu);
+
+    const bool int_bit = ((signif >> 63) & 1u) != 0;
+    const uint64_t frac63 = (signif & 0x7fffffffffffffffULL);
+
+    const char *sign_str = negative ? "-" : "+";
+
+    // Zero
+    if (exp_raw == 0 && !int_bit && frac63 == 0) {
+        std::snprintf(buf, n, "%s0x0.0000000000000000p+0000", sign_str);
+        return;
+    }
+
+    // Inf / NaN / unsupported pseudo forms
+    if (exp_raw == 0x7fff) {
+        if (int_bit && frac63 == 0) {
+            std::snprintf(buf, n, "%s@Inf@", sign_str);
+        } else {
+            std::snprintf(buf, n, "@NaN@");
+        }
+        return;
+    }
+
+    auto hex_digit = [](int v) -> char {
+        static const char table[] = "0123456789abcdef";
+        return table[v & 0xf];
+    };
+
+    // Normal numbers in x87 extended have explicit integer bit = 1.
+    if (exp_raw != 0 && int_bit) {
+        // Fraction is 63 bits, so fixed hex fraction uses 16 digits = 64 bits,
+        // with the last low bit padded by 0.
+        char frac_hex[17];
+        for (int i = 0; i < 16; ++i) {
+            int v = 0;
+            for (int j = 0; j < 4; ++j) {
+                const int bit_index = i * 4 + j; // 0..63 over displayed fraction bits
+                int bit = 0;
+                if (bit_index < 63) {
+                    const int src_bit = 62 - bit_index;
+                    bit = static_cast<int>((frac63 >> src_bit) & 1ULL);
+                } else {
+                    bit = 0; // pad
+                }
+                if (bit) {
+                    v |= (1 << (3 - j));
+                }
+            }
+            frac_hex[i] = hex_digit(v);
+        }
+        frac_hex[16] = '\0';
+
+        const int exp_unbiased = static_cast<int>(exp_raw) - 16383;
+        std::snprintf(buf, n, "%s0x1.%sp%+06d", sign_str, frac_hex, exp_unbiased);
+        return;
+    }
+
+    // Subnormal / pseudo-denormal / unnormal:
+    // normalize from raw bitstream of integer-bit + fraction bits (64 bits total).
+    {
+        std::string sig_bits;
+        sig_bits.reserve(64);
+
+        sig_bits.push_back(int_bit ? '1' : '0');
+        for (int i = 62; i >= 0; --i) {
+            sig_bits.push_back(((frac63 >> i) & 1ULL) ? '1' : '0');
+        }
+
+        const size_t first_one = sig_bits.find('1');
+        if (first_one == std::string::npos) {
+            std::snprintf(buf, n, "%s0x0.0000000000000000p+0000", sign_str);
+            return;
+        }
+
+        // For subnormals in 80-bit extended, exponent is 1-bias for leading bit search.
+        // Then shift according to first_one.
+        const int exp_unbiased = -16382 - static_cast<int>(first_one);
+
+        std::string mant_bits = sig_bits.substr(first_one + 1);
+        if (mant_bits.size() < 64) {
+            mant_bits.append(64 - mant_bits.size(), '0');
+        } else if (mant_bits.size() > 64) {
+            mant_bits.resize(64);
+        }
+
+        char frac_hex[17];
+        for (int i = 0; i < 16; ++i) {
+            int v = 0;
+            for (int j = 0; j < 4; ++j) {
+                if (mant_bits[i * 4 + j] == '1') {
+                    v |= (1 << (3 - j));
+                }
+            }
+            frac_hex[i] = hex_digit(v);
+        }
+        frac_hex[16] = '\0';
+
+        std::snprintf(buf, n, "%s0x1.%sp%+06d", sign_str, frac_hex, exp_unbiased);
+    }
+}
+
+inline void sprinthex_binary80_bits_be(char *buf, size_t n, const unsigned char bytes[10]) {
+    if (n == 0) {
+        return;
+    }
+
+    // Big-endian variant:
+    // bytes[0..1] = sign/exponent, big-endian
+    // bytes[2..9] = significand, big-endian
+    const uint16_t se = load_u16_be(bytes + 0);
+    const uint64_t signif = load_u64_be(bytes + 2);
+
+    const bool negative = ((se >> 15) & 1u) != 0;
+    const uint16_t exp_raw = static_cast<uint16_t>(se & 0x7fffu);
+
+    const bool int_bit = ((signif >> 63) & 1u) != 0;
+    const uint64_t frac63 = (signif & 0x7fffffffffffffffULL);
+
+    const char *sign_str = negative ? "-" : "+";
+
+    if (exp_raw == 0 && !int_bit && frac63 == 0) {
+        std::snprintf(buf, n, "%s0x0.0000000000000000p+0000", sign_str);
+        return;
+    }
+
+    if (exp_raw == 0x7fff) {
+        if (int_bit && frac63 == 0) {
+            std::snprintf(buf, n, "%s@Inf@", sign_str);
+        } else {
+            std::snprintf(buf, n, "@NaN@");
+        }
+        return;
+    }
+
+    auto hex_digit = [](int v) -> char {
+        static const char table[] = "0123456789abcdef";
+        return table[v & 0xf];
+    };
+
+    if (exp_raw != 0 && int_bit) {
+        char frac_hex[17];
+        for (int i = 0; i < 16; ++i) {
+            int v = 0;
+            for (int j = 0; j < 4; ++j) {
+                const int bit_index = i * 4 + j;
+                int bit = 0;
+                if (bit_index < 63) {
+                    const int src_bit = 62 - bit_index;
+                    bit = static_cast<int>((frac63 >> src_bit) & 1ULL);
+                } else {
+                    bit = 0;
+                }
+                if (bit) {
+                    v |= (1 << (3 - j));
+                }
+            }
+            frac_hex[i] = hex_digit(v);
+        }
+        frac_hex[16] = '\0';
+
+        const int exp_unbiased = static_cast<int>(exp_raw) - 16383;
+        std::snprintf(buf, n, "%s0x1.%sp%+06d", sign_str, frac_hex, exp_unbiased);
+        return;
+    }
+
+    std::string sig_bits;
+    sig_bits.reserve(64);
+
+    sig_bits.push_back(int_bit ? '1' : '0');
+    for (int i = 62; i >= 0; --i) {
+        sig_bits.push_back(((frac63 >> i) & 1ULL) ? '1' : '0');
+    }
+
+    const size_t first_one = sig_bits.find('1');
+    if (first_one == std::string::npos) {
+        std::snprintf(buf, n, "%s0x0.0000000000000000p+0000", sign_str);
+        return;
+    }
+
+    const int exp_unbiased = -16382 - static_cast<int>(first_one);
+
+    std::string mant_bits = sig_bits.substr(first_one + 1);
+    if (mant_bits.size() < 64) {
+        mant_bits.append(64 - mant_bits.size(), '0');
+    } else if (mant_bits.size() > 64) {
+        mant_bits.resize(64);
+    }
+
+    char frac_hex[17];
+    for (int i = 0; i < 16; ++i) {
+        int v = 0;
+        for (int j = 0; j < 4; ++j) {
+            if (mant_bits[i * 4 + j] == '1') {
+                v |= (1 << (3 - j));
+            }
+        }
+        frac_hex[i] = hex_digit(v);
+    }
+    frac_hex[16] = '\0';
+
+    std::snprintf(buf, n, "%s0x1.%sp%+06d", sign_str, frac_hex, exp_unbiased);
+}
+
+template <class T> inline void sprinthex_binary80_fixed(char *buf, size_t n, const T &x) {
+    static_assert(sizeof(T) >= 10, "binary80 object must be at least 10 bytes");
+    unsigned char bytes[sizeof(T)];
+    ::memcpy(bytes, &x, sizeof(T));
+
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+    // On common x86/x86_64 ABIs, the first 10 bytes contain the x87 payload.
+    sprinthex_binary80_bits_le(buf, n, bytes);
+#else
+    // Conservative big-endian assumption: first 10 bytes are the x87 payload.
+    sprinthex_binary80_bits_be(buf, n, bytes);
+#endif
+}
+
 #if MPLAPACK_BINARY80_IO == MPLAPACK_BINARY80_IO_SNPRINTF_LDBL
 
 #define LDBL_FORMAT "%+25.21Le"
@@ -274,9 +509,7 @@ inline mplapackint castINTEGER_binary80(long double a) {
     mplapackint i = a;
     return i;
 }
-inline long double pi([[maybe_unused]] long double dummy) {
-    return 0xc.90fdaa22168c235p-2L;
-}
+inline long double pi([[maybe_unused]] long double dummy) { return 0xc.90fdaa22168c235p-2L; }
 #elif MPLAPACK_BINARY80_MATH == MPLAPACK_BINARY80_MATH_F64X
 #pragma once
 #include <cmath>

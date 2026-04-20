@@ -41,10 +41,10 @@ void Cgeqrt2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
     // Test the input arguments
     //
     info = 0;
-    if (m < 0) {
-        info = -1;
-    } else if (n < 0) {
+    if (n < 0) {
         info = -2;
+    } else if (m < n) {
+        info = -1;
     } else if (lda < max((INTEGER)1, m)) {
         info = -4;
     } else if (ldt < max((INTEGER)1, n)) {

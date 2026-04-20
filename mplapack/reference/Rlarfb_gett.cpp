@@ -70,7 +70,7 @@ void Rlarfb_gett(const char *ident, INTEGER const m, INTEGER const n, INTEGER co
         if (lnotident) {
             //
             // col2_(2) Compute W2: = (V1**T) * W2 = (A1**T) * W2,
-            // V1 is not an identy matrix, but unit lower-triangular
+            // V1 is not an identity matrix, but unit lower-triangular
             // V1 stored in A1 (diagonal ones are not stored).
             //
             Rtrmm("L", "L", "T", "U", k, n - k, one, a, lda, work, ldwork);

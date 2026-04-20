@@ -69,7 +69,7 @@ void Chetrf(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
         // Determine the block size
         //
         nb = iMlaenv(1, "Chetrf", uplo, n, -1, -1, -1);
-        lwkopt = n * nb;
+        lwkopt = max((INTEGER)1, n * nb);
         work[1 - 1] = lwkopt;
     }
     //
@@ -192,6 +192,7 @@ void Chetrf(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
     }
 //
 statement_40:
+    //
     work[1 - 1] = lwkopt;
     //
     // End of Chetrf

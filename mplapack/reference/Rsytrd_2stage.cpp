@@ -49,10 +49,15 @@ void Rsytrd_2stage(const char *vect, const char *uplo, INTEGER const n, REAL *a,
     //
     INTEGER kd = iMlaenv2stage(1, "Rsytrd_2stage", vect, n, -1, -1, -1);
     INTEGER ib = iMlaenv2stage(2, "Rsytrd_2stage", vect, n, kd, -1, -1);
-    INTEGER lhmin = iMlaenv2stage(3, "Rsytrd_2stage", vect, n, kd, ib, -1);
-    INTEGER lwmin = iMlaenv2stage(4, "Rsytrd_2stage", vect, n, kd, ib, -1);
-    // WRITE(*,*),'Rsytrd_2stage N KD UPLO LHMIN LWMIN ',N, KD, UPLO,
-    // $            LHMIN, LWMIN
+    INTEGER lhmin = 0;
+    INTEGER lwmin = 0;
+    if (n == 0) {
+        lhmin = 1;
+        lwmin = 1;
+    } else {
+        lhmin = iMlaenv2stage(3, "Rsytrd_2stage", vect, n, kd, ib, -1);
+        lwmin = iMlaenv2stage(4, "Rsytrd_2stage", vect, n, kd, ib, -1);
+    }
     //
     if (!Mlsame(vect, "N")) {
         info = -1;
@@ -104,7 +109,6 @@ void Rsytrd_2stage(const char *vect, const char *uplo, INTEGER const n, REAL *a,
         return;
     }
     //
-    hous2[1 - 1] = lhmin;
     work[1 - 1] = lwmin;
     //
     // End of Rsytrd_2stage

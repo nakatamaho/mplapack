@@ -203,7 +203,7 @@ void Rchkqr(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                             Rqrt03(m, n, k, af, ac, ar, aq, lda, tau, work, lwork, rwork, &result[3 - 1]);
                             nt += 4;
                             //
-                            // If M>=N and K=N, call Rgeqrs to solve a system
+                            // If M>=N and K=N, call Rgels to solve a system
                             // with NRHS right hand sides and compute the
                             // residual.
                             //
@@ -216,13 +216,19 @@ void Rchkqr(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                                 Rlarhs(path, "New", "Full", "No transpose", m, n, 0, 0, nrhs, a, lda, xact, lda, b, lda, iseed, info);
                                 //
                                 Rlacpy("Full", m, nrhs, b, lda, x, lda);
-                                srnamt = "Rgeqrs";
-                                Rgeqrs(m, n, nrhs, af, lda, tau, x, lda, work, lwork, info);
                                 //
-                                // Check error code from Rgeqrs.
+                                // Reset AF. Rgels overwrites the matrix with
+                                // its factorization.
+                                //
+                                Rlacpy("Full", m, n, a, lda, af, lda);
+                                //
+                                srnamt = "Rgels";
+                                Rgels("No transpose", m, n, nrhs, af, lda, x, lda, work, lwork, info);
+                                //
+                                // Check error code from Rgels.
                                 //
                                 if (info != 0) {
-                                    Alaerh(path, "Rgeqrs", info, 0, " ", m, n, nrhs, -1, nb, imat, nfail, nerrs, nout);
+                                    Alaerh(path, "Rgels", info, 0, "N", m, n, nrhs, -1, nb, imat, nfail, nerrs, nout);
                                 }
                                 //
                                 Rget02("No transpose", m, n, nrhs, a, lda, x, lda, b, lda, rwork, result[7 - 1]);

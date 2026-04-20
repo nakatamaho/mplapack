@@ -233,7 +233,6 @@ void Rgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
     sfmin = Rlamch("S");
     smlnum = sfmin / eps;
     bignum = one / smlnum;
-    Rlabad(smlnum, bignum);
     //
     // Scale A if max element outside range [SMLNUM,BIGNUM]
     //
@@ -371,7 +370,7 @@ void Rgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
                 Rgemm("T", "N", n, bl, n, one, a, lda, &b[(i - 1) * ldb], ldb, zero, work, n);
                 Rlacpy("G", n, bl, work, n, &b[(i - 1) * ldb], ldb);
             }
-        } else {
+        } else if (nrhs == 1) {
             Rgemv("T", n, n, one, a, lda, b, 1, zero, work, 1);
             Rcopy(n, work, 1, b, 1);
         }
@@ -459,7 +458,7 @@ void Rgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
                 Rgemm("T", "N", m, bl, m, one, &work[il - 1], ldwork, &b[(i - 1) * ldb], ldb, zero, &work[iwork - 1], m);
                 Rlacpy("G", m, bl, &work[iwork - 1], m, &b[(i - 1) * ldb], ldb);
             }
-        } else {
+        } else if (nrhs == 1) {
             Rgemv("T", m, m, one, &work[il - 1], ldwork, &b[0], 1, zero, &work[iwork - 1], 1);
             Rcopy(m, &work[iwork - 1], 1, &b[0], 1);
         }
@@ -538,7 +537,7 @@ void Rgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
                 Rgemm("T", "N", n, bl, m, one, a, lda, &b[(i - 1) * ldb], ldb, zero, work, n);
                 Rlacpy("F", n, bl, work, n, &b[(i - 1) * ldb], ldb);
             }
-        } else {
+        } else if (nrhs == 1) {
             Rgemv("T", m, n, one, a, lda, b, 1, zero, work, 1);
             Rcopy(n, work, 1, b, 1);
         }

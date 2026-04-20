@@ -55,7 +55,7 @@ void Cbdt02(INTEGER const m, INTEGER const n, COMPLEX *b, INTEGER const ldb, COM
     REAL realmn = castREAL(max(m, n));
     REAL eps = Rlamch("Precision");
     //
-    // Compute norm( B - U * C )
+    // Compute norm(B - U * C)
     //
     INTEGER j = 0;
     const REAL one = 1.0;

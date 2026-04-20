@@ -76,7 +76,7 @@ void Rget52(bool const left, INTEGER const n, REAL *a, INTEGER const lda, REAL *
     REAL betmax = safmax / max(one, anorm);
     //
     // Compute error matrix.
-    // Column i = ( b(i) A - a(i) B ) E(i) / max( |a(i) B| |b(i) A| )
+    // Column i = ( b(i) A - a(i) B ) E(i) / max( |a(i) B|, |b(i) A| )
     //
     bool ilcplx = false;
     INTEGER jvec = 0;
@@ -113,7 +113,7 @@ void Rget52(bool const left, INTEGER const n, REAL *a, INTEGER const lda, REAL *
                 acoef = scale * sbeta;
                 bcoefr = scale * salfr;
                 Rgemv(trans.elems, n, n, acoef, a, lda, &e[(jvec - 1) * lde], 1, zero, &work[(n * (jvec - 1) + 1) - 1], 1);
-                Rgemv(trans.elems, n, n, -bcoefr, b, lda, &e[(jvec - 1) * lde], 1, one, &work[(n * (jvec - 1) + 1) - 1], 1);
+                Rgemv(trans.elems, n, n, -bcoefr, b, ldb, &e[(jvec - 1) * lde], 1, one, &work[(n * (jvec - 1) + 1) - 1], 1);
             } else {
                 //
                 // Complex conjugate pair
@@ -139,12 +139,12 @@ void Rget52(bool const left, INTEGER const n, REAL *a, INTEGER const lda, REAL *
                 }
                 //
                 Rgemv(trans.elems, n, n, acoef, a, lda, &e[(jvec - 1) * lde], 1, zero, &work[(n * (jvec - 1) + 1) - 1], 1);
-                Rgemv(trans.elems, n, n, -bcoefr, b, lda, &e[(jvec - 1) * lde], 1, one, &work[(n * (jvec - 1) + 1) - 1], 1);
-                Rgemv(trans.elems, n, n, bcoefi, b, lda, &e[((jvec + 1) - 1) * lde], 1, one, &work[(n * (jvec - 1) + 1) - 1], 1);
+                Rgemv(trans.elems, n, n, -bcoefr, b, ldb, &e[(jvec - 1) * lde], 1, one, &work[(n * (jvec - 1) + 1) - 1], 1);
+                Rgemv(trans.elems, n, n, bcoefi, b, ldb, &e[((jvec + 1) - 1) * lde], 1, one, &work[(n * (jvec - 1) + 1) - 1], 1);
                 //
                 Rgemv(trans.elems, n, n, acoef, a, lda, &e[((jvec + 1) - 1) * lde], 1, zero, &work[(n * jvec + 1) - 1], 1);
-                Rgemv(trans.elems, n, n, -bcoefi, b, lda, &e[(jvec - 1) * lde], 1, one, &work[(n * jvec + 1) - 1], 1);
-                Rgemv(trans.elems, n, n, -bcoefr, b, lda, &e[((jvec + 1) - 1) * lde], 1, one, &work[(n * jvec + 1) - 1], 1);
+                Rgemv(trans.elems, n, n, -bcoefi, b, ldb, &e[(jvec - 1) * lde], 1, one, &work[(n * jvec + 1) - 1], 1);
+                Rgemv(trans.elems, n, n, -bcoefr, b, ldb, &e[((jvec + 1) - 1) * lde], 1, one, &work[(n * jvec + 1) - 1], 1);
             }
         }
     }
@@ -170,13 +170,13 @@ void Rget52(bool const left, INTEGER const n, REAL *a, INTEGER const lda, REAL *
                 for (j = 1; j <= n; j = j + 1) {
                     temp1 = max(temp1, abs(e[(j - 1) + (jvec - 1) * lde]));
                 }
-                enrmer = max(enrmer, temp1 - one);
+                enrmer = max(enrmer, abs(temp1 - one));
             } else {
                 ilcplx = true;
                 for (j = 1; j <= n; j = j + 1) {
                     temp1 = max(temp1, abs(e[(j - 1) + (jvec - 1) * lde]) + abs(e[(j - 1) + ((jvec + 1) - 1) * lde]));
                 }
-                enrmer = max(enrmer, temp1 - one);
+                enrmer = max(enrmer, abs(temp1 - one));
             }
         }
     }

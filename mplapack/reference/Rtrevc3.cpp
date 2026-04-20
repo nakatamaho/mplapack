@@ -96,7 +96,7 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
     //
     info = 0;
     nb = iMlaenv(1, "Rtrevc", CHAR2(side, howmny), n, -1, -1, -1);
-    maxwrk = n + 2 * n * nb;
+    maxwrk = max((INTEGER)1, n + 2 * n * nb);
     work[1 - 1] = maxwrk;
     lquery = (lwork == -1);
     if (!rightv && !leftv) {
@@ -182,7 +182,6 @@ void Rtrevc3(const char *side, const char *howmny, bool *select, INTEGER const n
     //
     unfl = Rlamch("Safe minimum");
     ovfl = one / unfl;
-    Rlabad(unfl, ovfl);
     ulp = Rlamch("Precision");
     smlnum = unfl * (n / ulp);
     bignum = (one - ulp) / smlnum;

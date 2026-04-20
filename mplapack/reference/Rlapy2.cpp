@@ -47,6 +47,7 @@ REAL Rlapy2(REAL const x, REAL const y) {
     if (y_is_nan) {
         return_value = y;
     }
+    REAL hugeval = Rlamch("Overflow");
     //
     REAL xabs = 0.0;
     REAL yabs = 0.0;
@@ -59,7 +60,7 @@ REAL Rlapy2(REAL const x, REAL const y) {
         yabs = abs(y);
         w = max(xabs, yabs);
         z = min(xabs, yabs);
-        if (z == zero) {
+        if (z == zero || w > hugeval) {
             return_value = w;
         } else {
             return_value = w * sqrt(one + pow2((z / w)));

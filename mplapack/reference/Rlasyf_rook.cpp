@@ -65,9 +65,8 @@ void Rlasyf_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
     REAL d22 = 0.0;
     REAL t = 0.0;
     INTEGER j = 0;
-    INTEGER jb = 0;
-    INTEGER jj = 0;
     INTEGER jp1 = 0;
+    INTEGER jj = 0;
     INTEGER jp2 = 0;
     REAL d21 = 0.0;
     //
@@ -354,23 +353,7 @@ void Rlasyf_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
         //
         // A11 := A11 - U12*D*U12**T = A11 - U12*W**T
         //
-        // computing blocks of NB columns at a time
-        //
-        for (j = ((k - 1) / nb) * nb + 1; j >= 1; j = j - nb) {
-            jb = min(nb, k - j + 1);
-            //
-            // Update the upper triangle of the diagonal block
-            //
-            for (jj = j; jj <= j + jb - 1; jj = jj + 1) {
-                Rgemv("No transpose", jj - j + 1, n - k, -one, &a[(j - 1) + ((k + 1) - 1) * lda], lda, &w[(jj - 1) + ((kw + 1) - 1) * ldw], ldw, one, &a[(j - 1) + (jj - 1) * lda], 1);
-            }
-            //
-            // Update the rectangular superdiagonal block
-            //
-            if (j >= 2) {
-                Rgemm("No transpose", "Transpose", j - 1, jb, n - k, -one, &a[((k + 1) - 1) * lda], lda, &w[(j - 1) + ((kw + 1) - 1) * ldw], ldw, one, &a[(j - 1) * lda], lda);
-            }
-        }
+        Rgemmtr("Upper", "No transpose", "Transpose", k, n - k, -one, &a[((k + 1) - 1) * lda], lda, &w[((kw + 1) - 1) * ldw], ldw, one, &a[0], lda);
         //
         // Put U12 in standard form by partially undoing the interchanges
         // in columns k+1:n
@@ -667,23 +650,7 @@ void Rlasyf_rook(const char *uplo, INTEGER const n, INTEGER const nb, INTEGER &k
         //
         // A22 := A22 - L21*D*L21**T = A22 - L21*W**T
         //
-        // computing blocks of NB columns at a time
-        //
-        for (j = k; j <= n; j = j + nb) {
-            jb = min(nb, n - j + 1);
-            //
-            // Update the lower triangle of the diagonal block
-            //
-            for (jj = j; jj <= j + jb - 1; jj = jj + 1) {
-                Rgemv("No transpose", j + jb - jj, k - 1, -one, &a[(jj - 1)], lda, &w[(jj - 1)], ldw, one, &a[(jj - 1) + (jj - 1) * lda], 1);
-            }
-            //
-            // Update the rectangular subdiagonal block
-            //
-            if (j + jb <= n) {
-                Rgemm("No transpose", "Transpose", n - j - jb + 1, jb, k - 1, -one, &a[((j + jb) - 1)], lda, &w[(j - 1)], ldw, one, &a[((j + jb) - 1) + (j - 1) * lda], lda);
-            }
-        }
+        Rgemmtr("Lower", "No transpose", "Transpose", n - k + 1, k - 1, -one, &a[(k - 1)], lda, &w[(k - 1)], ldw, one, &a[(k - 1) + (k - 1) * lda], lda);
         //
         // Put L21 in standard form by partially undoing the interchanges
         // in columns 1:k-1

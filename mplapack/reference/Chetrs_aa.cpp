@@ -41,6 +41,13 @@ void Chetrs_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a
     info = 0;
     bool upper = Mlsame(uplo, "U");
     bool lquery = (lwork == -1);
+    INTEGER lwkmin = 0;
+    if (min(n, nrhs) == 0) {
+        lwkmin = 1;
+    } else {
+        lwkmin = 3 * n - 2;
+    }
+    //
     if (!upper && !Mlsame(uplo, "L")) {
         info = -1;
     } else if (n < 0) {
@@ -51,22 +58,20 @@ void Chetrs_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a
         info = -5;
     } else if (ldb < max((INTEGER)1, n)) {
         info = -8;
-    } else if (lwork < max((INTEGER)1, 3 * n - 2) && !lquery) {
+    } else if (lwork < lwkmin && !lquery) {
         info = -10;
     }
-    INTEGER lwkopt = 0;
     if (info != 0) {
         Mxerbla("Chetrs_aa", -info);
         return;
     } else if (lquery) {
-        lwkopt = (3 * n - 2);
-        work[1 - 1] = lwkopt;
+        work[1 - 1] = lwkmin;
         return;
     }
     //
     // Quick return if possible
     //
-    if (n == 0 || nrhs == 0) {
+    if (min(n, nrhs) == 0) {
         return;
     }
     //

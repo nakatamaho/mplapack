@@ -275,6 +275,6 @@ void Ctpsv(const char *uplo, const char *trans, const char *diag, INTEGER const 
         }
     }
     //
-    // End of Ctpsv .
+    // End of Ctpsv
     //
 }

@@ -100,8 +100,6 @@ void Rorm2l(const char *side, const char *trans, INTEGER const m, INTEGER const 
     }
     //
     INTEGER i = 0;
-    REAL aii = 0.0;
-    const REAL one = 1.0;
     for (i = i1; i3 > 0 ? i <= i2 : i >= i2; i = i + i3) {
         if (left) {
             //
@@ -117,10 +115,7 @@ void Rorm2l(const char *side, const char *trans, INTEGER const m, INTEGER const 
         //
         // Apply H(i)
         //
-        aii = a[((nq - k + i) - 1) + (i - 1) * lda];
-        a[((nq - k + i) - 1) + (i - 1) * lda] = one;
-        Rlarf(side, mi, ni, &a[(i - 1) * lda], 1, tau[i - 1], c, ldc, work);
-        a[((nq - k + i) - 1) + (i - 1) * lda] = aii;
+        Rlarf1l(side, mi, ni, &a[(i - 1) * lda], 1, tau[i - 1], c, ldc, work);
     }
     //
     // End of Rorm2l

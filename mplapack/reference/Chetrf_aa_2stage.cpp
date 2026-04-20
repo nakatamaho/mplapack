@@ -50,9 +50,9 @@ void Chetrf_aa_2stage(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER con
         info = -2;
     } else if (lda < max((INTEGER)1, n)) {
         info = -4;
-    } else if (ltb < 4 * n && !tquery) {
+    } else if (ltb < max((INTEGER)1, 4 * n) && !tquery) {
         info = -6;
-    } else if (lwork < n && !wquery) {
+    } else if (lwork < max((INTEGER)1, n) && !wquery) {
         info = -10;
     }
     //
@@ -66,10 +66,10 @@ void Chetrf_aa_2stage(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER con
     INTEGER nb = iMlaenv(1, "Chetrf_aa_2stage", uplo, n, -1, -1, -1);
     if (info == 0) {
         if (tquery) {
-            tb[1 - 1] = (3 * nb + 1) * n;
+            tb[1 - 1] = max((INTEGER)1, (3 * nb + 1) * n);
         }
         if (wquery) {
-            work[1 - 1] = n * nb;
+            work[1 - 1] = max((INTEGER)1, n * nb);
         }
     }
     if (tquery || wquery) {
@@ -197,7 +197,7 @@ void Chetrf_aa_2stage(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER con
                 // Factorize panel
                 //
                 Cgetrf(n - (j + 1) * nb, nb, work, n, &ipiv[((j + 1) * nb + 1) - 1], iinfo);
-                // IF (IINFO.NE.0 .AND. INFO.EQ.0) THEN
+                // IF( IINFO.NE.0 .AND. INFO.EQ.0 ) THEN
                 // INFO = IINFO+(J+1)*NB
                 // END IF
                 //
@@ -339,7 +339,7 @@ void Chetrf_aa_2stage(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER con
                 // Factorize panel
                 //
                 Cgetrf(n - (j + 1) * nb, nb, &a[(((j + 1) * nb + 1) - 1) + ((j * nb + 1) - 1) * lda], lda, &ipiv[((j + 1) * nb + 1) - 1], iinfo);
-                // IF (IINFO.NE.0 .AND. INFO.EQ.0) THEN
+                // IF( IINFO.NE.0 .AND. INFO.EQ.0 ) THEN
                 // INFO = IINFO+(J+1)*NB
                 // END IF
                 //

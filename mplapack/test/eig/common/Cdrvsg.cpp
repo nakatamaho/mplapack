@@ -151,7 +151,6 @@ void Cdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     //
     unfl = Rlamch("Safe minimum");
     ovfl = Rlamch("Overflow");
-    Rlabad(unfl, ovfl);
     ulp = Rlamch("Epsilon") * Rlamch("Base");
     ulpinv = one / ulp;
     rtunfl = sqrt(unfl);
@@ -334,8 +333,8 @@ void Cdrvsg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 il = 1;
                 iu = n;
             } else {
-                il = (INTEGER)1 + castINTEGER((n - 1) * Rlarnd(1, iseed2));
-                iu = (INTEGER)1 + castINTEGER((n - 1) * Rlarnd(1, iseed2));
+                il = 1 + castINTEGER((n - 1) * Rlarnd(1, iseed2));
+                iu = 1 + castINTEGER((n - 1) * Rlarnd(1, iseed2));
                 if (il > iu) {
                     itemp = il;
                     il = iu;

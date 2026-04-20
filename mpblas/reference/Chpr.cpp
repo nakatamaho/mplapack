@@ -154,6 +154,6 @@ void Chpr(const char *uplo, INTEGER const n, REAL const alpha, COMPLEX *x, INTEG
         }
     }
     //
-    // End of Chpr  .
+    // End of Chpr
     //
 }

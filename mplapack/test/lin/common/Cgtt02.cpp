@@ -54,7 +54,7 @@ void Cgtt02(fem::str_cref trans, INTEGER const n, INTEGER const nrhs, COMPLEX *d
     }
     //
     // Compute the maximum over the number of right hand sides of
-    // norm(B - op(A)*X) / ( norm(A) * norm(X) * EPS ).
+    // norm(B - op(A)*X) / ( norm(op(A)) * norm(X) * EPS ).
     //
     REAL anorm = 0.0;
     if (Mlsame(trans.elems(), "N")) {
@@ -72,7 +72,7 @@ void Cgtt02(fem::str_cref trans, INTEGER const n, INTEGER const nrhs, COMPLEX *d
         return;
     }
     //
-    // Compute B - op(A)*X.
+    // Compute B - op(A)*X and store in B.
     //
     Clagtm(trans.elems(), n, nrhs, -one, dl, d, du, x, ldx, one, b, ldb);
     //

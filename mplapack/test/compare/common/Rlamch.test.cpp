@@ -32,6 +32,7 @@
 #include <mpblas.h>
 #include <mplapack.h>
 #include <mplapack_compare_debug.h>
+#include <mplapack_arithmetic_params.h>
 #include <blas.h>
 #include <lapack.h>
 
@@ -441,25 +442,320 @@ static void check_lamch_mpfr_values(const char *tag, const MpfrEnvSnapshot &cfg,
 
     if (print_values) {
         char _spbuf[__MPLAPACK_BUFLEN__];
-        sprintnum(_spbuf, gotE); dual_printf("Rlamch E: Epsilon                      %s\n", _spbuf);
-        sprintnum(_spbuf, gotS); dual_printf("Rlamch S: Safe minimum                 %s\n", _spbuf);
-        sprintnum(_spbuf, gotB); dual_printf("Rlamch B: Base                         %s\n", _spbuf);
-        sprintnum(_spbuf, gotP); dual_printf("Rlamch P: Precision                    %s\n", _spbuf);
-        sprintnum(_spbuf, gotN); dual_printf("Rlamch N: Number of digits in mantissa %s\n", _spbuf);
-        sprintnum(_spbuf, gotR); dual_printf("Rlamch R: Rounding mode                %s\n", _spbuf);
-        sprintnum(_spbuf, gotM); dual_printf("Rlamch M: Minimum exponent             %s\n", _spbuf);
-        sprintnum(_spbuf, gotU); dual_printf("Rlamch U: Underflow threshold          %s\n", _spbuf);
-        sprintnum(_spbuf, gotL); dual_printf("Rlamch L: Largest exponent             %s\n", _spbuf);
-        sprintnum(_spbuf, gotO); dual_printf("Rlamch O: Overflow threshold           %s\n", _spbuf);
+        char _sphexbuf[__MPLAPACK_BUFLEN__];
+
+        sprintnum(_spbuf, gotE);
+        sprinthex_mpfr_fixed(_sphexbuf, sizeof(_sphexbuf), gotE);
+        dual_printf("Rlamch E: Epsilon                      %80s    %80s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotS);
+        sprinthex_mpfr_fixed(_sphexbuf, sizeof(_sphexbuf), gotS);
+        dual_printf("Rlamch S: Safe minimum                 %80s    %80s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotB);
+        sprinthex_mpfr_fixed(_sphexbuf, sizeof(_sphexbuf), gotB);
+        dual_printf("Rlamch B: Base                         %80s    %80s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotP);
+        sprinthex_mpfr_fixed(_sphexbuf, sizeof(_sphexbuf), gotP);
+        dual_printf("Rlamch P: Precision                    %80s    %80s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotN);
+        sprinthex_mpfr_fixed(_sphexbuf, sizeof(_sphexbuf), gotN);
+        dual_printf("Rlamch N: Number of digits in mantissa %80s    %80s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotR);
+        sprinthex_mpfr_fixed(_sphexbuf, sizeof(_sphexbuf), gotR);
+        dual_printf("Rlamch R: Rounding mode                %80s    %80s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotM);
+        sprinthex_mpfr_fixed(_sphexbuf, sizeof(_sphexbuf), gotM);
+        dual_printf("Rlamch M: Minimum exponent             %80s    %80s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotU);
+        sprinthex_mpfr_fixed(_sphexbuf, sizeof(_sphexbuf), gotU);
+        dual_printf("Rlamch U: Underflow threshold          %80s    %80s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotL);
+        sprinthex_mpfr_fixed(_sphexbuf, sizeof(_sphexbuf), gotL);
+        dual_printf("Rlamch L: Largest exponent             %80s    %80s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotO);
+        sprinthex_mpfr_fixed(_sphexbuf, sizeof(_sphexbuf), gotO);
+        dual_printf("Rlamch O: Overflow threshold           %80s    %80s\n", _spbuf, _sphexbuf);
+    }
+}
+
+template <typename BlueQ> static int classify_blue_mpfr_value(const BlueQ &q, const REAL &x) {
+    REAL ax = x;
+    if (ax < REAL(0.0))
+        ax = -ax;
+    if (ax > q.tbig)
+        return +1;
+    if (ax < q.tsml)
+        return -1;
+    return 0;
+}
+
+static void check_arithmetic_params_mpfr(const char *tag, bool print_values) {
+    using mplapack::arithmetic_int;
+    const auto p = mplapack::get_arithmetic_params<REAL>();
+    const auto q = mplapack::get_blue_scaling_params<REAL>();
+    const auto q2 = mplapack::make_blue_scaling_params(p);
+
+    assert_equal_real(tag, "params.E", p.eps, Rlamch_mpfr("E"));
+    assert_equal_real(tag, "params.S", p.sfmin, Rlamch_mpfr("S"));
+    assert_equal_real(tag, "params.B", p.base, Rlamch_mpfr("B"));
+    assert_equal_real(tag, "params.P", p.prec, Rlamch_mpfr("P"));
+    assert_equal_real(tag, "params.R", p.rnd, Rlamch_mpfr("R"));
+    assert_equal_real(tag, "params.U", p.rmin, Rlamch_mpfr("U"));
+    assert_equal_real(tag, "params.O", p.rmax, Rlamch_mpfr("O"));
+
+    assert_equal_real(tag, "params.N", mplapack::detail::to_rlamch_real<REAL>(p.t), Rlamch_mpfr("N"));
+    assert_equal_real(tag, "params.M", mplapack::detail::to_rlamch_real<REAL>(p.emin), Rlamch_mpfr("M"));
+    assert_equal_real(tag, "params.L", mplapack::detail::to_rlamch_real<REAL>(p.emax), Rlamch_mpfr("L"));
+
+    assert_equal_real(tag, "params.prec_consistency", p.prec, p.eps * p.base);
+    assert_equal_real(tag, "params.safmin", p.safmin, mplapack::detail::compute_safmin<REAL>(p.emin, p.emax));
+    assert_equal_real(tag, "params.safmax", p.safmax, mplapack::detail::compute_safmax<REAL>(p.emin, p.emax));
+
+    mpfr_assert_case(q.exp_tsml == q2.exp_tsml, tag, "ArithmeticParams->Blue builder mismatch: exp_tsml");
+    mpfr_assert_case(q.exp_tbig == q2.exp_tbig, tag, "ArithmeticParams->Blue builder mismatch: exp_tbig");
+    mpfr_assert_case(q.exp_ssml == q2.exp_ssml, tag, "ArithmeticParams->Blue builder mismatch: exp_ssml");
+    mpfr_assert_case(q.exp_sbig == q2.exp_sbig, tag, "ArithmeticParams->Blue builder mismatch: exp_sbig");
+
+    assert_equal_real(tag, "ArithmeticParams->Blue tsml", q.tsml, q2.tsml);
+    assert_equal_real(tag, "ArithmeticParams->Blue tbig", q.tbig, q2.tbig);
+
+    const arithmetic_int ex_exp_tsml = q2.exp_tsml;
+    const arithmetic_int ex_exp_tbig = q2.exp_tbig;
+    const arithmetic_int ex_exp_ssml = q2.exp_ssml;
+    const arithmetic_int ex_exp_sbig = q2.exp_sbig;
+
+    const arithmetic_int emin = p.emin;
+    const arithmetic_int emax = p.emax;
+
+    const bool ordering_valid = (ex_exp_tsml < 0) && (ex_exp_tbig > 0) && (ex_exp_ssml > ex_exp_tbig) && (ex_exp_sbig < ex_exp_tsml);
+
+    const bool finite_valid = (q2.exp_ssml >= emin) && (q2.exp_ssml <= emax) && (q2.exp_sbig >= emin) && (q2.exp_sbig <= emax);
+
+    // Stress / pathological MPFR environments may violate the usual Blue
+    // ordering chain or finite-representability assumptions.
+    const bool strict_blue_valid = ordering_valid && finite_valid;
+
+    if (strict_blue_valid) {
+        assert_equal_real(tag, "ArithmeticParams->Blue ssml", q.ssml, q2.ssml);
+        assert_equal_real(tag, "ArithmeticParams->Blue sbig", q.sbig, q2.sbig);
+    }
+
+    if (print_values) {
+        char _spbuf[__MPLAPACK_BUFLEN__];
+        char _sphexbuf[__MPLAPACK_BUFLEN__];
+
+        dual_printf("[params/%s] t=%lld emin=%lld emax=%lld\n", tag, (long long)p.t, (long long)p.emin, (long long)p.emax);
+
+        sprintnum(_spbuf, p.safmin);
+        sprinthex_mpfr_fixed(_sphexbuf, sizeof(_sphexbuf), p.safmin);
+        dual_printf("[params/%s] safmin %80s    %80s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, p.safmax);
+        sprinthex_mpfr_fixed(_sphexbuf, sizeof(_sphexbuf), p.safmax);
+        dual_printf("[params/%s] safmax %80s    %80s\n", tag, _spbuf, _sphexbuf);
+
+        dual_printf("[params/%s] builder exp_tsml=%lld exp_tbig=%lld exp_ssml=%lld exp_sbig=%lld\n", tag, (long long)q2.exp_tsml, (long long)q2.exp_tbig, (long long)q2.exp_ssml, (long long)q2.exp_sbig);
+
+        sprintnum(_spbuf, q2.tsml);
+        sprinthex_mpfr_fixed(_sphexbuf, sizeof(_sphexbuf), q2.tsml);
+        dual_printf("[params/%s] builder tsml   %80s    %80s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q2.tbig);
+        sprinthex_mpfr_fixed(_sphexbuf, sizeof(_sphexbuf), q2.tbig);
+        dual_printf("[params/%s] builder tbig   %80s    %80s\n", tag, _spbuf, _sphexbuf);
+
+        if (strict_blue_valid) {
+            sprintnum(_spbuf, q2.ssml);
+            sprinthex_mpfr_fixed(_sphexbuf, sizeof(_sphexbuf), q2.ssml);
+            dual_printf("[params/%s] builder ssml   %80s    %80s\n", tag, _spbuf, _sphexbuf);
+
+            sprintnum(_spbuf, q2.sbig);
+            sprinthex_mpfr_fixed(_sphexbuf, sizeof(_sphexbuf), q2.sbig);
+            dual_printf("[params/%s] builder sbig   %80s    %80s\n", tag, _spbuf, _sphexbuf);
+        } else {
+            dual_printf("[params/%s] builder ssml   [informational-only case omitted]\n", tag);
+            dual_printf("[params/%s] builder sbig   [informational-only case omitted]\n", tag);
+        }
+    }
+}
+
+template <typename BlueQ> static void check_blue_threshold_boundaries_mpfr(const char *tag, const BlueQ &q, bool ordering_valid) {
+    if (!ordering_valid)
+        return;
+
+    const REAL zero(0.0), one(1.0);
+
+    REAL below_tsml = q.tsml;
+    REAL above_tsml = q.tsml;
+    REAL below_tbig = q.tbig;
+    REAL above_tbig = q.tbig;
+    mpfr_nextbelow(mpfr_ptr(below_tsml));
+    mpfr_nextabove(mpfr_ptr(above_tsml));
+    mpfr_nextbelow(mpfr_ptr(below_tbig));
+    mpfr_nextabove(mpfr_ptr(above_tbig));
+
+    mpfr_assert_case(below_tsml < q.tsml, tag, "BlueScale boundary: nextbelow(tsml) is not < tsml");
+    mpfr_assert_case(above_tsml > q.tsml, tag, "BlueScale boundary: nextabove(tsml) is not > tsml");
+    mpfr_assert_case(below_tbig < q.tbig, tag, "BlueScale boundary: nextbelow(tbig) is not < tbig");
+    mpfr_assert_case(above_tbig > q.tbig, tag, "BlueScale boundary: nextabove(tbig) is not > tbig");
+
+    mpfr_assert_case(classify_blue_mpfr_value(q, below_tsml) == -1, tag, "BlueScale boundary: nextbelow(tsml) must classify as small");
+    mpfr_assert_case(classify_blue_mpfr_value(q, q.tsml) == 0, tag, "BlueScale boundary: tsml must classify as medium");
+    mpfr_assert_case(classify_blue_mpfr_value(q, above_tsml) == 0, tag, "BlueScale boundary: nextabove(tsml) must classify as medium");
+    mpfr_assert_case(classify_blue_mpfr_value(q, below_tbig) == 0, tag, "BlueScale boundary: nextbelow(tbig) must classify as medium");
+    mpfr_assert_case(classify_blue_mpfr_value(q, q.tbig) == 0, tag, "BlueScale boundary: tbig must classify as medium");
+    mpfr_assert_case(classify_blue_mpfr_value(q, above_tbig) == +1, tag, "BlueScale boundary: nextabove(tbig) must classify as big");
+
+    mpfr_assert_case(classify_blue_mpfr_value(q, REAL(-1.0) * below_tsml) == -1, tag, "BlueScale boundary: -nextbelow(tsml) must classify as small");
+    mpfr_assert_case(classify_blue_mpfr_value(q, REAL(-1.0) * above_tbig) == +1, tag, "BlueScale boundary: -nextabove(tbig) must classify as big");
+    mpfr_assert_case(classify_blue_mpfr_value(q, zero) == -1, tag, "BlueScale boundary: 0 must classify as small");
+    mpfr_assert_case(classify_blue_mpfr_value(q, one) == 0, tag, "BlueScale boundary: 1 must classify as medium");
+
+    REAL scaled_small = below_tsml * q.ssml;
+    REAL scaled_big = above_tbig * q.sbig;
+    mpfr_assert_case(mpfr_number_p(mpfr_ptr(scaled_small)) != 0, tag, "BlueScale boundary: scaled nextbelow(tsml) is not finite");
+    mpfr_assert_case(mpfr_number_p(mpfr_ptr(scaled_big)) != 0, tag, "BlueScale boundary: scaled nextabove(tbig) is not finite");
+    mpfr_assert_case(classify_blue_mpfr_value(q, scaled_small) == 0, tag, "BlueScale boundary: nextbelow(tsml) * ssml must classify as medium");
+    mpfr_assert_case(classify_blue_mpfr_value(q, scaled_big) == 0, tag, "BlueScale boundary: nextabove(tbig) * sbig must classify as medium");
+}
+
+// ---------------------------------------------------------------------------
+// Blue scaling parameter check for MPFR.
+// Must be called with the target MPFR environment already active.
+// ---------------------------------------------------------------------------
+static void check_blue_scaling_mpfr(const char *tag, bool print_values) {
+    using mplapack::arithmetic_int;
+
+    const auto q = mplapack::get_blue_scaling_params<REAL>();
+
+    const mpfr_prec_t real_prec = current_real_default_prec();
+    const mpfr_exp_t active_emin = mpfr_get_emin();
+    const mpfr_exp_t active_emax = mpfr_get_emax();
+
+    const arithmetic_int digits = static_cast<arithmetic_int>(real_prec);
+    const arithmetic_int emin = static_cast<arithmetic_int>(active_emin);
+    const arithmetic_int emax = static_cast<arithmetic_int>(active_emax);
+
+    const arithmetic_int ex_exp_tsml = mplapack::detail::ceildiv2(emin - 1);
+    const arithmetic_int ex_exp_tbig = mplapack::detail::floordiv2(emax - digits + 1);
+    const arithmetic_int ex_exp_ssml = -mplapack::detail::floordiv2(emin - digits);
+    const arithmetic_int ex_exp_sbig = -mplapack::detail::ceildiv2(emax + digits - 1);
+
+    mpfr_assert_case(q.exp_tsml == ex_exp_tsml, tag, "BlueScale: exp_tsml mismatch");
+    mpfr_assert_case(q.exp_tbig == ex_exp_tbig, tag, "BlueScale: exp_tbig mismatch");
+    mpfr_assert_case(q.exp_ssml == ex_exp_ssml, tag, "BlueScale: exp_ssml mismatch");
+    mpfr_assert_case(q.exp_sbig == ex_exp_sbig, tag, "BlueScale: exp_sbig mismatch");
+
+    const mpfr_rnd_t rnd = current_real_default_rnd();
+
+    // Always-valid side: tsml / tbig can be checked directly.
+    const REAL ex_tsml = pow2_from_exp(static_cast<mpfr_exp_t>(q.exp_tsml), rnd);
+    const REAL ex_tbig = pow2_from_exp(static_cast<mpfr_exp_t>(q.exp_tbig), rnd);
+
+    assert_equal_real(tag, "BlueScale tsml", q.tsml, ex_tsml);
+    assert_equal_real(tag, "BlueScale tbig", q.tbig, ex_tbig);
+
+    const REAL zero(0.0), one(1.0);
+    mpfr_assert_case(q.tsml > zero, tag, "BlueScale: tsml must be positive");
+    mpfr_assert_case(q.tsml < one, tag, "BlueScale: tsml must be < 1");
+    mpfr_assert_case(q.tbig > one, tag, "BlueScale: tbig must be > 1");
+
+    // Strict Blue checks only make sense when the usual ordering chain can hold:
+    //   0 < sbig < tsml < 1 < tbig < ssml
+    const bool ordering_valid = (ex_exp_tsml < 0) && (ex_exp_tbig > 0) && (ex_exp_ssml > ex_exp_tbig) && (ex_exp_sbig < ex_exp_tsml);
+
+    // In addition, ssml/sbig must be representable as finite MPFR numbers
+    // under the active exponent range.
+    const bool finite_valid = (q.exp_ssml >= static_cast<arithmetic_int>(active_emin)) && (q.exp_ssml <= static_cast<arithmetic_int>(active_emax)) && (q.exp_sbig >= static_cast<arithmetic_int>(active_emin)) && (q.exp_sbig <= static_cast<arithmetic_int>(active_emax));
+
+    const bool strict_blue_valid = ordering_valid && finite_valid;
+
+    if (!strict_blue_valid) {
+        dual_printf("BlueScale note [%s]: informational-only MPFR Blue case "
+                    "(exp_tsml=%lld exp_tbig=%lld exp_ssml=%lld exp_sbig=%lld "
+                    "emin=%lld emax=%lld ordering_valid=%d finite_valid=%d) "
+                    "― strict ssml/sbig checks skipped\n",
+                    tag, (long long)ex_exp_tsml, (long long)ex_exp_tbig, (long long)ex_exp_ssml, (long long)ex_exp_sbig, (long long)emin, (long long)emax, ordering_valid ? 1 : 0, finite_valid ? 1 : 0);
+    }
+
+    if (strict_blue_valid) {
+        REAL ex_ssml(1.0), ex_sbig(1.0);
+        mpfr_mul_2si(mpfr_ptr(ex_ssml), mpfr_ptr(ex_ssml), checked_exp_to_long(static_cast<mpfr_exp_t>(q.exp_ssml), "BlueScale: exp_ssml overflows long"), rnd);
+        mpfr_mul_2si(mpfr_ptr(ex_sbig), mpfr_ptr(ex_sbig), checked_exp_to_long(static_cast<mpfr_exp_t>(q.exp_sbig), "BlueScale: exp_sbig overflows long"), rnd);
+
+        assert_equal_real(tag, "BlueScale ssml", q.ssml, ex_ssml);
+        assert_equal_real(tag, "BlueScale sbig", q.sbig, ex_sbig);
+
+        mpfr_assert_case(q.ssml > q.tbig, tag, "BlueScale: ssml must be > tbig");
+        mpfr_assert_case(q.sbig > zero, tag, "BlueScale: sbig must be positive");
+        mpfr_assert_case(q.sbig < q.tsml, tag, "BlueScale: sbig must be < tsml");
+
+        REAL prod_ts = q.tsml * q.ssml;
+        mpfr_assert_case(mpfr_number_p(mpfr_ptr(prod_ts)) != 0, tag, "BlueScale: tsml*ssml is not a number");
+        mpfr_assert_case(prod_ts > zero, tag, "BlueScale: tsml*ssml must be positive");
+
+        REAL prod_bs = q.tbig * q.sbig;
+        mpfr_assert_case(mpfr_number_p(mpfr_ptr(prod_bs)) != 0, tag, "BlueScale: tbig*sbig is not a number");
+        mpfr_assert_case(prod_bs > zero, tag, "BlueScale: tbig*sbig must be positive");
+
+        REAL tsml_sq = q.tsml * q.tsml;
+        mpfr_assert_case(mpfr_number_p(mpfr_ptr(tsml_sq)) != 0, tag, "BlueScale: tsml^2 is not a number");
+        mpfr_assert_case(tsml_sq > zero, tag, "BlueScale: tsml^2 underflowed to zero");
+    }
+
+    // tbig^2 is still a useful check even in informational mode.
+    REAL tbig_sq = q.tbig * q.tbig;
+    mpfr_assert_case(mpfr_number_p(mpfr_ptr(tbig_sq)) != 0, tag, "BlueScale: tbig^2 overflowed (not a finite number)");
+
+    check_blue_threshold_boundaries_mpfr(tag, q, strict_blue_valid);
+
+    if (print_values) {
+        char _spbuf[__MPLAPACK_BUFLEN__];
+        char _sphexbuf[__MPLAPACK_BUFLEN__];
+
+        dual_printf("BlueScale exp_tsml: %lld\n", (long long)q.exp_tsml);
+        dual_printf("BlueScale exp_tbig: %lld\n", (long long)q.exp_tbig);
+        dual_printf("BlueScale exp_ssml: %lld\n", (long long)q.exp_ssml);
+        dual_printf("BlueScale exp_sbig: %lld\n", (long long)q.exp_sbig);
+
+        sprintnum(_spbuf, q.tsml);
+        sprinthex_mpfr_fixed(_sphexbuf, sizeof(_sphexbuf), q.tsml);
+        dual_printf("BlueScale tsml:     %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q.tbig);
+        sprinthex_mpfr_fixed(_sphexbuf, sizeof(_sphexbuf), q.tbig);
+        dual_printf("BlueScale tbig:     %40s    %40s\n", _spbuf, _sphexbuf);
+
+        if (strict_blue_valid) {
+            sprintnum(_spbuf, q.ssml);
+            sprinthex_mpfr_fixed(_sphexbuf, sizeof(_sphexbuf), q.ssml);
+            dual_printf("BlueScale ssml:     %40s    %40s\n", _spbuf, _sphexbuf);
+
+            sprintnum(_spbuf, q.sbig);
+            sprinthex_mpfr_fixed(_sphexbuf, sizeof(_sphexbuf), q.sbig);
+            dual_printf("BlueScale sbig:     %40s    %40s\n", _spbuf, _sphexbuf);
+        } else {
+            dual_printf("BlueScale ssml:     [informational-only case omitted]\n");
+            dual_printf("BlueScale sbig:     [informational-only case omitted]\n");
+        }
     }
 }
 
 static void run_mpfr_env_test(const char *tag, const MpfrEnvSnapshot &cfg, bool print_values) {
     MpfrEnvGuard guard; // Save current environment; restore on scope exit.
     mpfr_env_apply(cfg);
+    check_arithmetic_params_mpfr(tag, print_values);
     check_lamch_mpfr_values(tag, cfg, print_values);
+    check_blue_scaling_mpfr(tag, print_values);
 }
-
 } // namespace
 
 void Rlamch_mpfr_test() {
@@ -489,6 +785,7 @@ void Rlamch_mpfr_test() {
     // "current" starts from the captured process-wide settings.
     static const MpfrEnvCase env_cases[] = {
         {"current", true, 0, 0, 0},
+        {"binary512", false, (mpfr_prec_t)513, (mpfr_exp_t)-65533, (mpfr_exp_t)65536},
 
         // Emulations: IEEE-like formats.
         {"binary64", false, (mpfr_prec_t)53, (mpfr_exp_t)-1021, (mpfr_exp_t)1024},
@@ -621,6 +918,97 @@ static void gmp_assert_equal_real(const char *tag, const char *name, const REAL 
     exit(1);
 }
 
+static void check_arithmetic_params_gmp(const char *tag, mp_bitcnt_t prec_bits, bool print_values) {
+    // p.sfmin corresponds to Rlamch("S") = safe minimum.
+    // p.rmin corresponds to Rlamch("U") = underflow threshold.
+    // p.safmin/p.safmax are internal finite scaling-side constants used by ArithmeticParams.
+
+    const auto p = mplapack::get_arithmetic_params<REAL>();
+    const auto q = mplapack::get_blue_scaling_params<REAL>();
+    const auto q2 = mplapack::make_blue_scaling_params(p);
+
+    gmp_assert_equal_real(tag, "params.E", p.eps, Rlamch_gmp("E"));
+    gmp_assert_equal_real(tag, "params.S", p.sfmin, Rlamch_gmp("S"));
+    gmp_assert_equal_real(tag, "params.B", p.base, Rlamch_gmp("B"));
+    gmp_assert_equal_real(tag, "params.P", p.prec, Rlamch_gmp("P"));
+    gmp_assert_equal_real(tag, "params.R", p.rnd, Rlamch_gmp("R"));
+    gmp_assert_equal_real(tag, "params.U", p.rmin, Rlamch_gmp("U"));
+    gmp_assert_equal_real(tag, "params.O", p.rmax, Rlamch_gmp("O"));
+
+    gmp_assert_equal_real(tag, "params.N", mplapack::detail::to_rlamch_real<REAL>(p.t), Rlamch_gmp("N"));
+    gmp_assert_equal_real(tag, "params.M", mplapack::detail::to_rlamch_real<REAL>(p.emin), Rlamch_gmp("M"));
+    gmp_assert_equal_real(tag, "params.L", mplapack::detail::to_rlamch_real<REAL>(p.emax), Rlamch_gmp("L"));
+
+    gmp_assert_case(p.t == static_cast<mplapack::arithmetic_int>(prec_bits), tag, "ArithmeticParams.t mismatch");
+    gmp_assert_equal_real(tag, "params.prec_consistency", p.prec, p.eps * p.base);
+    gmp_assert_equal_real(tag, "params.safmin", p.safmin, mplapack::detail::compute_safmin<REAL>(p.emin, p.emax));
+    gmp_assert_equal_real(tag, "params.safmax", p.safmax, mplapack::detail::compute_safmax<REAL>(p.emin, p.emax));
+
+    gmp_assert_case(p.sfmin >= p.rmin, tag, "safe minimum must be >= underflow threshold");
+    gmp_assert_case(p.base > REAL(1.0), tag, "base must be > 1");
+    gmp_assert_case(p.eps > REAL(0.0), tag, "epsilon must be positive");
+    gmp_assert_case(p.prec > REAL(0.0), tag, "precision must be positive");
+    gmp_assert_case(p.rmin > REAL(0.0), tag, "underflow threshold must be positive");
+    gmp_assert_case(p.rmax > REAL(1.0), tag, "overflow threshold must be > 1");
+    gmp_assert_case(p.emin < p.emax, tag, "minimum exponent must be less than maximum exponent");
+
+    gmp_assert_case(q.exp_tsml == q2.exp_tsml, tag, "ArithmeticParams->Blue builder mismatch: exp_tsml");
+    gmp_assert_case(q.exp_tbig == q2.exp_tbig, tag, "ArithmeticParams->Blue builder mismatch: exp_tbig");
+    gmp_assert_case(q.exp_ssml == q2.exp_ssml, tag, "ArithmeticParams->Blue builder mismatch: exp_ssml");
+    gmp_assert_case(q.exp_sbig == q2.exp_sbig, tag, "ArithmeticParams->Blue builder mismatch: exp_sbig");
+
+    gmp_assert_equal_real(tag, "ArithmeticParams->Blue tsml", q.tsml, q2.tsml);
+    gmp_assert_equal_real(tag, "ArithmeticParams->Blue tbig", q.tbig, q2.tbig);
+    gmp_assert_equal_real(tag, "ArithmeticParams->Blue ssml", q.ssml, q2.ssml);
+    gmp_assert_equal_real(tag, "ArithmeticParams->Blue sbig", q.sbig, q2.sbig);
+
+    gmp_assert_case(q.tsml > REAL(0.0), tag, "Blue tsml must be positive");
+    gmp_assert_case(q.tbig > REAL(1.0), tag, "Blue tbig must be > 1");
+    gmp_assert_case(q.ssml > REAL(1.0), tag, "Blue ssml must be > 1");
+    gmp_assert_case(q.sbig > REAL(0.0), tag, "Blue sbig must be positive");
+    gmp_assert_case(q.sbig < REAL(1.0), tag, "Blue sbig must be < 1");
+    gmp_assert_case(q.tsml < q.tbig, tag, "Blue thresholds must satisfy tsml < tbig");
+    gmp_assert_case(q.exp_tsml < q.exp_tbig, tag, "Blue exponents must satisfy exp_tsml < exp_tbig");
+    gmp_assert_case(q.exp_sbig < q.exp_ssml, tag, "Blue exponents must satisfy exp_sbig < exp_ssml");
+
+    if (print_values) {
+        char _spbuf[__MPLAPACK_BUFLEN__];
+        char _sphexbuf[__MPLAPACK_BUFLEN__];
+
+        dual_printf("[params/%s] t=%lld emin=%lld emax=%lld\n",
+                    tag, (long long)p.t, (long long)p.emin, (long long)p.emax);
+
+        sprintnum(_spbuf, p.safmin);
+        sprinthex_gmp_fixed(_sphexbuf, sizeof(_sphexbuf), p.safmin);
+        dual_printf("[params/%s] safmin %130s    %130s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, p.safmax);
+        sprinthex_gmp_fixed(_sphexbuf, sizeof(_sphexbuf), p.safmax);
+        dual_printf("[params/%s] safmax %130s    %130s\n", tag, _spbuf, _sphexbuf);
+
+        dual_printf("[params/%s] builder exp_tsml=%lld exp_tbig=%lld exp_ssml=%lld exp_sbig=%lld\n",
+                    tag,
+                    (long long)q2.exp_tsml, (long long)q2.exp_tbig,
+                    (long long)q2.exp_ssml, (long long)q2.exp_sbig);
+
+        sprintnum(_spbuf, q2.tsml);
+        sprinthex_gmp_fixed(_sphexbuf, sizeof(_sphexbuf), q2.tsml);
+        dual_printf("[params/%s] builder tsml   %130s    %130s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q2.tbig);
+        sprinthex_gmp_fixed(_sphexbuf, sizeof(_sphexbuf), q2.tbig);
+        dual_printf("[params/%s] builder tbig   %130s    %130s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q2.ssml);
+        sprinthex_gmp_fixed(_sphexbuf, sizeof(_sphexbuf), q2.ssml);
+        dual_printf("[params/%s] builder ssml   %130s    %130s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q2.sbig);
+        sprinthex_gmp_fixed(_sphexbuf, sizeof(_sphexbuf), q2.sbig);
+        dual_printf("[params/%s] builder sbig   %130s    %130s\n", tag, _spbuf, _sphexbuf);
+    }
+}
+
 struct LamchExpectedGmp {
     REAL E; // "E"
     REAL S; // "S"
@@ -675,6 +1063,159 @@ static LamchExpectedGmp compute_expected_gmp(mp_bitcnt_t prec_bits, mp_bitcnt_t 
     ex.S = (candidate >= ex.U) ? candidate : ex.U;
 
     return ex;
+}
+
+template <typename BlueQ> static int classify_blue_gmp_value(const BlueQ &q, const REAL &x) {
+    REAL ax = x;
+    if (ax < REAL(0.0))
+        ax = -ax;
+    if (ax > q.tbig)
+        return +1;
+    if (ax < q.tsml)
+        return -1;
+    return 0;
+}
+
+template <typename BlueQ> static void check_blue_threshold_boundaries_gmp(const char *tag, const BlueQ &q, const REAL &delta, bool ordering_valid) {
+    if (!ordering_valid)
+        return;
+
+    const REAL zero(0.0), one(1.0), minus_one(-1.0);
+
+    const REAL below_tsml = q.tsml * (one - delta);
+    const REAL above_tsml = q.tsml * (one + delta);
+    const REAL below_tbig = q.tbig * (one - delta);
+    const REAL above_tbig = q.tbig * (one + delta);
+
+    gmp_assert_case(below_tsml < q.tsml, tag, "BlueScale boundary: below-tsml probe is not < tsml");
+    gmp_assert_case(above_tsml > q.tsml, tag, "BlueScale boundary: above-tsml probe is not > tsml");
+    gmp_assert_case(below_tbig < q.tbig, tag, "BlueScale boundary: below-tbig probe is not < tbig");
+    gmp_assert_case(above_tbig > q.tbig, tag, "BlueScale boundary: above-tbig probe is not > tbig");
+
+    gmp_assert_case(classify_blue_gmp_value(q, below_tsml) == -1, tag, "BlueScale boundary: below-tsml probe must classify as small");
+    gmp_assert_case(classify_blue_gmp_value(q, q.tsml) == 0, tag, "BlueScale boundary: tsml must classify as medium");
+    gmp_assert_case(classify_blue_gmp_value(q, above_tsml) == 0, tag, "BlueScale boundary: above-tsml probe must classify as medium");
+    gmp_assert_case(classify_blue_gmp_value(q, below_tbig) == 0, tag, "BlueScale boundary: below-tbig probe must classify as medium");
+    gmp_assert_case(classify_blue_gmp_value(q, q.tbig) == 0, tag, "BlueScale boundary: tbig must classify as medium");
+    gmp_assert_case(classify_blue_gmp_value(q, above_tbig) == +1, tag, "BlueScale boundary: above-tbig probe must classify as big");
+
+    gmp_assert_case(classify_blue_gmp_value(q, minus_one * below_tsml) == -1, tag, "BlueScale boundary: negative below-tsml probe must classify as small");
+    gmp_assert_case(classify_blue_gmp_value(q, minus_one * above_tbig) == +1, tag, "BlueScale boundary: negative above-tbig probe must classify as big");
+    gmp_assert_case(classify_blue_gmp_value(q, zero) == -1, tag, "BlueScale boundary: 0 must classify as small");
+    gmp_assert_case(classify_blue_gmp_value(q, one) == 0, tag, "BlueScale boundary: 1 must classify as medium");
+
+    const REAL scaled_small = below_tsml * q.ssml;
+    const REAL scaled_big = above_tbig * q.sbig;
+    gmp_assert_case(classify_blue_gmp_value(q, scaled_small) == 0, tag, "BlueScale boundary: below-tsml probe * ssml must classify as medium");
+    gmp_assert_case(classify_blue_gmp_value(q, scaled_big) == 0, tag, "BlueScale boundary: above-tbig probe * sbig must classify as medium");
+}
+
+static void check_blue_scaling_gmp(const char *tag, mp_bitcnt_t prec_bits, bool print_values) {
+    using mplapack::arithmetic_int;
+
+    const auto q = mplapack::get_blue_scaling_params<REAL>();
+
+    const mp_bitcnt_t Eexp = get_max_safe_exponent();
+    const arithmetic_int emin = static_cast<arithmetic_int>(1) - static_cast<arithmetic_int>(Eexp);
+    const arithmetic_int emax = static_cast<arithmetic_int>(Eexp);
+    const arithmetic_int digits = static_cast<arithmetic_int>(prec_bits);
+
+    const arithmetic_int ex_exp_tsml = mplapack::detail::ceildiv2(emin - 1);
+    const arithmetic_int ex_exp_tbig = mplapack::detail::floordiv2(emax - digits + 1);
+    const arithmetic_int ex_exp_ssml = -mplapack::detail::floordiv2(emin - digits);
+    const arithmetic_int ex_exp_sbig = -mplapack::detail::ceildiv2(emax + digits - 1);
+
+    gmp_assert_case(q.exp_tsml == ex_exp_tsml, tag, "BlueScale: exp_tsml mismatch");
+    gmp_assert_case(q.exp_tbig == ex_exp_tbig, tag, "BlueScale: exp_tbig mismatch");
+    gmp_assert_case(q.exp_ssml == ex_exp_ssml, tag, "BlueScale: exp_ssml mismatch");
+    gmp_assert_case(q.exp_sbig == ex_exp_sbig, tag, "BlueScale: exp_sbig mismatch");
+
+    const REAL one(1.0), zero(0.0);
+    REAL ex_tsml(1.0), ex_tbig(1.0), ex_ssml(1.0), ex_sbig(1.0);
+    if (q.exp_tsml >= 0)
+        mpf_mul_2exp(ex_tsml.get_mpf_t(), ex_tsml.get_mpf_t(), static_cast<mp_bitcnt_t>(q.exp_tsml));
+    else
+        mpf_div_2exp(ex_tsml.get_mpf_t(), ex_tsml.get_mpf_t(), static_cast<mp_bitcnt_t>(-q.exp_tsml));
+    if (q.exp_tbig >= 0)
+        mpf_mul_2exp(ex_tbig.get_mpf_t(), ex_tbig.get_mpf_t(), static_cast<mp_bitcnt_t>(q.exp_tbig));
+    else
+        mpf_div_2exp(ex_tbig.get_mpf_t(), ex_tbig.get_mpf_t(), static_cast<mp_bitcnt_t>(-q.exp_tbig));
+    if (q.exp_ssml >= 0)
+        mpf_mul_2exp(ex_ssml.get_mpf_t(), ex_ssml.get_mpf_t(), static_cast<mp_bitcnt_t>(q.exp_ssml));
+    else
+        mpf_div_2exp(ex_ssml.get_mpf_t(), ex_ssml.get_mpf_t(), static_cast<mp_bitcnt_t>(-q.exp_ssml));
+    if (q.exp_sbig >= 0)
+        mpf_mul_2exp(ex_sbig.get_mpf_t(), ex_sbig.get_mpf_t(), static_cast<mp_bitcnt_t>(q.exp_sbig));
+    else
+        mpf_div_2exp(ex_sbig.get_mpf_t(), ex_sbig.get_mpf_t(), static_cast<mp_bitcnt_t>(-q.exp_sbig));
+
+    gmp_assert_equal_real(tag, "BlueScale tsml", q.tsml, ex_tsml);
+    gmp_assert_equal_real(tag, "BlueScale tbig", q.tbig, ex_tbig);
+    gmp_assert_equal_real(tag, "BlueScale ssml", q.ssml, ex_ssml);
+    gmp_assert_equal_real(tag, "BlueScale sbig", q.sbig, ex_sbig);
+
+    const bool ordering_valid = (ex_exp_tsml < 0) && (ex_exp_tbig > 0) && (ex_exp_ssml > ex_exp_tbig) && (ex_exp_sbig < ex_exp_tsml);
+    if (!ordering_valid) {
+        dual_printf("BlueScale note [%s]: ordering does not hold "
+                    "(exp_tsml=%lld exp_tbig=%lld exp_ssml=%lld exp_sbig=%lld "
+                    "emin=%lld emax=%lld) ― non-standard GMP env, "
+                    "ssml/sbig checks skipped\n",
+                    tag, (long long)ex_exp_tsml, (long long)ex_exp_tbig, (long long)ex_exp_ssml, (long long)ex_exp_sbig, (long long)emin, (long long)emax);
+    }
+
+    gmp_assert_equal_real(tag, "BlueScale tsml", q.tsml, ex_tsml);
+    gmp_assert_equal_real(tag, "BlueScale tbig", q.tbig, ex_tbig);
+    if (ordering_valid) {
+        gmp_assert_equal_real(tag, "BlueScale ssml", q.ssml, ex_ssml);
+        gmp_assert_equal_real(tag, "BlueScale sbig", q.sbig, ex_sbig);
+    }
+
+    gmp_assert_case(q.tsml > zero, tag, "BlueScale: tsml must be positive");
+    gmp_assert_case(q.tsml < one, tag, "BlueScale: tsml must be < 1");
+    gmp_assert_case(q.tbig > one, tag, "BlueScale: tbig must be > 1");
+    if (ordering_valid) {
+        gmp_assert_case(q.ssml > q.tbig, tag, "BlueScale: ssml must be > tbig");
+        gmp_assert_case(q.sbig > zero, tag, "BlueScale: sbig must be positive");
+        gmp_assert_case(q.sbig < q.tsml, tag, "BlueScale: sbig must be < tsml");
+    }
+
+    if (ordering_valid) {
+        const REAL prod_ts = q.tsml * q.ssml;
+        gmp_assert_case(prod_ts > zero, tag, "BlueScale: tsml*ssml must be positive");
+        const REAL prod_bs = q.tbig * q.sbig;
+        gmp_assert_case(prod_bs > zero, tag, "BlueScale: tbig*sbig must be positive");
+        const REAL tsml_sq = q.tsml * q.tsml;
+        gmp_assert_case(tsml_sq > zero, tag, "BlueScale: tsml^2 underflowed to zero");
+    }
+
+    const REAL delta = Rlamch_gmp("P");
+    check_blue_threshold_boundaries_gmp(tag, q, delta, ordering_valid);
+
+    if (print_values) {
+        char _spbuf[__MPLAPACK_BUFLEN__];
+        char _sphexbuf[__MPLAPACK_BUFLEN__];
+
+        dual_printf("BlueScale exp_tsml: %lld\n", (long long)q.exp_tsml);
+        dual_printf("BlueScale exp_tbig: %lld\n", (long long)q.exp_tbig);
+        dual_printf("BlueScale exp_ssml: %lld\n", (long long)q.exp_ssml);
+        dual_printf("BlueScale exp_sbig: %lld\n", (long long)q.exp_sbig);
+
+        sprintnum(_spbuf, q.tsml);
+        sprinthex_gmp_fixed(_sphexbuf, sizeof(_sphexbuf), q.tsml);
+        dual_printf("BlueScale tsml:     %130s    %130s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q.tbig);
+        sprinthex_gmp_fixed(_sphexbuf, sizeof(_sphexbuf), q.tbig);
+        dual_printf("BlueScale tbig:     %130s    %130s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q.ssml);
+        sprinthex_gmp_fixed(_sphexbuf, sizeof(_sphexbuf), q.ssml);
+        dual_printf("BlueScale ssml:     %130s    %130s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q.sbig);
+        sprinthex_gmp_fixed(_sphexbuf, sizeof(_sphexbuf), q.sbig);
+        dual_printf("BlueScale sbig:     %130s    %130s\n", _spbuf, _sphexbuf);
+    }
 }
 
 static void check_lamch_gmp_values(const char *tag, mp_bitcnt_t prec_bits, bool print_values) {
@@ -750,17 +1291,50 @@ static void check_lamch_gmp_values(const char *tag, mp_bitcnt_t prec_bits, bool 
 
     if (print_values) {
         char _spbuf[__MPLAPACK_BUFLEN__];
-        sprintnum(_spbuf, gotE); dual_printf("Rlamch E: Epsilon                      %s\n", _spbuf);
-        sprintnum(_spbuf, gotS); dual_printf("Rlamch S: Safe minimum                 %s\n", _spbuf);
-        sprintnum(_spbuf, gotB); dual_printf("Rlamch B: Base                         %s\n", _spbuf);
-        sprintnum(_spbuf, gotP); dual_printf("Rlamch P: Precision                    %s\n", _spbuf);
-        sprintnum(_spbuf, gotN); dual_printf("Rlamch N: Number of digits in mantissa %s\n", _spbuf);
-        sprintnum(_spbuf, gotR); dual_printf("Rlamch R: Rounding mode                %s\n", _spbuf);
-        sprintnum(_spbuf, gotM); dual_printf("Rlamch M: Minimum exponent             %s\n", _spbuf);
-        sprintnum(_spbuf, gotU); dual_printf("Rlamch U: Underflow threshold          %s\n", _spbuf);
-        sprintnum(_spbuf, gotL); dual_printf("Rlamch L: Largest exponent             %s\n", _spbuf);
-        sprintnum(_spbuf, gotO); dual_printf("Rlamch O: Overflow threshold           %s\n", _spbuf);
+        char _sphexbuf[__MPLAPACK_BUFLEN__];
+
+        sprintnum(_spbuf, gotE);
+        sprinthex_gmp_fixed(_sphexbuf, sizeof(_sphexbuf), gotE);
+        dual_printf("Rlamch E: Epsilon                      %130s    %130s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotS);
+        sprinthex_gmp_fixed(_sphexbuf, sizeof(_sphexbuf), gotS);
+        dual_printf("Rlamch S: Safe minimum                 %130s    %130s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotB);
+        sprinthex_gmp_fixed(_sphexbuf, sizeof(_sphexbuf), gotB);
+        dual_printf("Rlamch B: Base                         %130s    %130s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotP);
+        sprinthex_gmp_fixed(_sphexbuf, sizeof(_sphexbuf), gotP);
+        dual_printf("Rlamch P: Precision                    %130s    %130s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotN);
+        sprinthex_gmp_fixed(_sphexbuf, sizeof(_sphexbuf), gotN);
+        dual_printf("Rlamch N: Number of digits in mantissa %130s    %130s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotR);
+        sprinthex_gmp_fixed(_sphexbuf, sizeof(_sphexbuf), gotR);
+        dual_printf("Rlamch R: Rounding mode                %130s    %130s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotM);
+        sprinthex_gmp_fixed(_sphexbuf, sizeof(_sphexbuf), gotM);
+        dual_printf("Rlamch M: Minimum exponent             %130s    %130s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotU);
+        sprinthex_gmp_fixed(_sphexbuf, sizeof(_sphexbuf), gotU);
+        dual_printf("Rlamch U: Underflow threshold          %130s    %130s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotL);
+        sprinthex_gmp_fixed(_sphexbuf, sizeof(_sphexbuf), gotL);
+        dual_printf("Rlamch L: Largest exponent             %130s    %130s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotO);
+        sprinthex_gmp_fixed(_sphexbuf, sizeof(_sphexbuf), gotO);
+        dual_printf("Rlamch O: Overflow threshold           %130s    %130s\n", _spbuf, _sphexbuf);
     }
+
+    check_blue_scaling_gmp(tag, prec_bits, print_values);
 }
 
 void Rlamch_gmp_test() {
@@ -774,6 +1348,7 @@ void Rlamch_gmp_test() {
     const REAL prec_probe = 1.0;
     const mp_bitcnt_t prec_bits = mpf_get_prec(prec_probe.get_mpf_t());
 
+    check_arithmetic_params_gmp("current", prec_bits, print_values);
     check_lamch_gmp_values("current", prec_bits, print_values);
     // Additional precision cases requested: 4096, 128, 64 bits.
     // Note: mpf_set_default_prec() sets the default for newly created mpf values.
@@ -792,6 +1367,7 @@ void Rlamch_gmp_test() {
         char tagbuf[64];
         snprintf(tagbuf, sizeof(tagbuf), "prec=%llu (eff=%llu)", (unsigned long long)req, (unsigned long long)eff);
 
+        check_arithmetic_params_gmp(tagbuf, eff, print_values);
         check_lamch_gmp_values(tagbuf, eff, print_values);
 
         mpf_set_default_prec(saved);
@@ -810,15 +1386,15 @@ namespace {
 // -----------------------------------------------------------------------------
 // qd_real machine constants
 // -----------------------------------------------------------------------------
-// This test matches the implementation style used by Rlamch_qd:
-//   - E is taken from qd_real::_eps
-//   - U and O are taken from qd_real::_min_normalized / qd_real::_max
-//   - N is taken from std::numeric_limits<qd_real>::digits
-//   - S follows the Netlib-style "safe minimum" logic using U, O, and E
+// This test matches the current arithmetic_params-based implementation:
+// - E and P are fixed to MPLAPACK's canonical QD literals
+// - U and O are taken from qd_real::_min_normalized / qd_real::_max
+// - N is taken from std::numeric_limits<qd_real>::digits
+// - S follows the Netlib-style "safe minimum" logic using U, O, and E
 //
 // IMPORTANT:
-// qd_real is a quad-double type (sum of 4 doubles). Arithmetic does NOT round
-// to a fixed p-bit floating-point format, so classic half-ULP tie tests like
+// qd_real is a quad-double type (sum of 4 doubles). Arithmetic does not round
+// to a fixed p-bit floating-point format, so classic half-ULP tie tests such as
 // fl(1 + P/2) == 1 do not apply here.
 // -----------------------------------------------------------------------------
 
@@ -852,6 +1428,76 @@ static void assert_equal_qd(const char *tag, const char *name, const qd_real &go
     exit(1);
 }
 
+static void check_arithmetic_params_qd(const char *tag, bool print_values) {
+    const auto p = mplapack::get_arithmetic_params<qd_real>();
+    const auto q = mplapack::get_blue_scaling_params<qd_real>();
+    const auto q2 = mplapack::make_blue_scaling_params(p);
+
+    assert_equal_qd(tag, "params.E", p.eps, Rlamch_qd("E"));
+    assert_equal_qd(tag, "params.S", p.sfmin, Rlamch_qd("S"));
+    assert_equal_qd(tag, "params.B", p.base, Rlamch_qd("B"));
+    assert_equal_qd(tag, "params.P", p.prec, Rlamch_qd("P"));
+    assert_equal_qd(tag, "params.R", p.rnd, Rlamch_qd("R"));
+    assert_equal_qd(tag, "params.U", p.rmin, Rlamch_qd("U"));
+    assert_equal_qd(tag, "params.O", p.rmax, Rlamch_qd("O"));
+
+    assert_equal_qd(tag, "params.N", mplapack::detail::to_rlamch_real<qd_real>(p.t), Rlamch_qd("N"));
+    assert_equal_qd(tag, "params.M", mplapack::detail::to_rlamch_real<qd_real>(p.emin), Rlamch_qd("M"));
+    assert_equal_qd(tag, "params.L", mplapack::detail::to_rlamch_real<qd_real>(p.emax), Rlamch_qd("L"));
+
+    assert_equal_qd(tag, "params.prec_consistency", p.prec, p.eps * p.base);
+    assert_equal_qd(tag, "params.safmin", p.safmin, mplapack::detail::compute_safmin<qd_real>(p.emin, p.emax));
+    assert_equal_qd(tag, "params.safmax", p.safmax, mplapack::detail::compute_safmax<qd_real>(p.emin, p.emax));
+
+    qd_assert_case(q.exp_tsml == q2.exp_tsml, tag, "ArithmeticParams->Blue builder mismatch: exp_tsml");
+    qd_assert_case(q.exp_tbig == q2.exp_tbig, tag, "ArithmeticParams->Blue builder mismatch: exp_tbig");
+    qd_assert_case(q.exp_ssml == q2.exp_ssml, tag, "ArithmeticParams->Blue builder mismatch: exp_ssml");
+    qd_assert_case(q.exp_sbig == q2.exp_sbig, tag, "ArithmeticParams->Blue builder mismatch: exp_sbig");
+
+    assert_equal_qd(tag, "ArithmeticParams->Blue tsml", q.tsml, q2.tsml);
+    assert_equal_qd(tag, "ArithmeticParams->Blue tbig", q.tbig, q2.tbig);
+    assert_equal_qd(tag, "ArithmeticParams->Blue ssml", q.ssml, q2.ssml);
+    assert_equal_qd(tag, "ArithmeticParams->Blue sbig", q.sbig, q2.sbig);
+
+    if (print_values) {
+        char _spbuf[__MPLAPACK_BUFLEN__];
+        char _sphexbuf[__MPLAPACK_BUFLEN__];
+
+        dual_printf("[params/%s] t=%lld emin=%lld emax=%lld\n",
+                    tag, (long long)p.t, (long long)p.emin, (long long)p.emax);
+
+        sprintnum(_spbuf, p.safmin);
+        sprinthex_qd(_sphexbuf, sizeof(_sphexbuf), p.safmin);
+        dual_printf("[params/%s] safmin %70s    %70s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, p.safmax);
+        sprinthex_qd(_sphexbuf, sizeof(_sphexbuf), p.safmax);
+        dual_printf("[params/%s] safmax %70s    %70s\n", tag, _spbuf, _sphexbuf);
+
+        dual_printf("[params/%s] builder exp_tsml=%lld exp_tbig=%lld exp_ssml=%lld exp_sbig=%lld\n",
+                    tag,
+                    (long long)q2.exp_tsml, (long long)q2.exp_tbig,
+                    (long long)q2.exp_ssml, (long long)q2.exp_sbig);
+
+        sprintnum(_spbuf, q2.tsml);
+        sprinthex_qd(_sphexbuf, sizeof(_sphexbuf), q2.tsml);
+        dual_printf("[params/%s] builder tsml   %70s    %70s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q2.tbig);
+        sprinthex_qd(_sphexbuf, sizeof(_sphexbuf), q2.tbig);
+        dual_printf("[params/%s] builder tbig   %70s    %70s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q2.ssml);
+        sprinthex_qd(_sphexbuf, sizeof(_sphexbuf), q2.ssml);
+        dual_printf("[params/%s] builder ssml   %70s    %70s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q2.sbig);
+        sprinthex_qd(_sphexbuf, sizeof(_sphexbuf), q2.sbig);
+        dual_printf("[params/%s] builder sbig   %70s    %70s\n", tag, _spbuf, _sphexbuf);
+    }
+}
+
+
 struct LamchExpectedQD {
     qd_real E;
     qd_real S;
@@ -873,8 +1519,8 @@ static LamchExpectedQD compute_expected_qd() {
 
     LamchExpectedQD ex{};
     ex.B = two;
-    ex.E = qd_real::_eps;
-    ex.P = ex.E * ex.B;
+    ex.E = qd_real(+0x1.fffffffffffffp-209, +0x0.0000000000000p+0000, +0x0.0000000000000p+0000, +0x0.0000000000000p+0000);
+    ex.P = qd_real(+0x1.fffffffffffffp-208, +0x0.0000000000000p+0000, +0x0.0000000000000p+0000, +0x0.0000000000000p+0000);
     ex.N = qd_real(static_cast<double>(QD_MANTISSA_BITS));
     ex.R = one;
 
@@ -961,6 +1607,160 @@ static void check_cross_consistency_rmin_rmax_qd(const char *tag, const qd_real 
     qd_assert_case(expO == l, tag, "frexp exponent of O inconsistent with L");
 }
 
+template <typename BlueQ> static int classify_blue_qd_value(const BlueQ &q, const qd_real &x) {
+    qd_real ax = x;
+    if (ax < qd_real(0.0))
+        ax = -ax;
+    if (ax > q.tbig)
+        return +1;
+    if (ax < q.tsml)
+        return -1;
+    return 0;
+}
+
+template <typename BlueQ> static void check_blue_threshold_boundaries_qd(const char *tag, const BlueQ &q, const qd_real &delta) {
+    const qd_real zero(0.0), one(1.0), minus_one(-1.0);
+
+    const qd_real below_tsml = q.tsml * (one - delta);
+    const qd_real above_tsml = q.tsml * (one + delta);
+    const qd_real below_tbig = q.tbig * (one - delta);
+    const qd_real above_tbig = q.tbig * (one + delta);
+
+    qd_assert_case(below_tsml < q.tsml, tag, "BlueScale boundary: below-tsml probe is not < tsml");
+    qd_assert_case(above_tsml > q.tsml, tag, "BlueScale boundary: above-tsml probe is not > tsml");
+    qd_assert_case(below_tbig < q.tbig, tag, "BlueScale boundary: below-tbig probe is not < tbig");
+    qd_assert_case(above_tbig > q.tbig, tag, "BlueScale boundary: above-tbig probe is not > tbig");
+
+    qd_assert_case(classify_blue_qd_value(q, below_tsml) == -1, tag, "BlueScale boundary: below-tsml probe must classify as small");
+    qd_assert_case(classify_blue_qd_value(q, q.tsml) == 0, tag, "BlueScale boundary: tsml must classify as medium");
+    qd_assert_case(classify_blue_qd_value(q, above_tsml) == 0, tag, "BlueScale boundary: above-tsml probe must classify as medium");
+    qd_assert_case(classify_blue_qd_value(q, below_tbig) == 0, tag, "BlueScale boundary: below-tbig probe must classify as medium");
+    qd_assert_case(classify_blue_qd_value(q, q.tbig) == 0, tag, "BlueScale boundary: tbig must classify as medium");
+    qd_assert_case(classify_blue_qd_value(q, above_tbig) == +1, tag, "BlueScale boundary: above-tbig probe must classify as big");
+
+    qd_assert_case(classify_blue_qd_value(q, minus_one * below_tsml) == -1, tag, "BlueScale boundary: negative below-tsml probe must classify as small");
+    qd_assert_case(classify_blue_qd_value(q, minus_one * above_tbig) == +1, tag, "BlueScale boundary: negative above-tbig probe must classify as big");
+    qd_assert_case(classify_blue_qd_value(q, zero) == -1, tag, "BlueScale boundary: 0 must classify as small");
+    qd_assert_case(classify_blue_qd_value(q, one) == 0, tag, "BlueScale boundary: 1 must classify as medium");
+
+    const qd_real scaled_small = below_tsml * q.ssml;
+    const qd_real scaled_big = above_tbig * q.sbig;
+    qd_assert_case(classify_blue_qd_value(q, scaled_small) == 0, tag, "BlueScale boundary: below-tsml probe * ssml must classify as medium");
+    qd_assert_case(classify_blue_qd_value(q, scaled_big) == 0, tag, "BlueScale boundary: above-tbig probe * sbig must classify as medium");
+}
+
+static void check_blue_scaling_qd(const char *tag, bool print_values) {
+    using mplapack::arithmetic_int;
+
+    const auto q = mplapack::get_blue_scaling_params<qd_real>();
+
+    int emin_int = 0;
+    (void)std::frexp(qd_real::_min_normalized, &emin_int);
+    const arithmetic_int emin = static_cast<arithmetic_int>(emin_int);
+    const arithmetic_int emax = static_cast<arithmetic_int>(std::numeric_limits<double>::max_exponent);
+    const arithmetic_int digits = static_cast<arithmetic_int>(std::numeric_limits<qd_real>::digits);
+
+    qd_assert_case(q.exp_tsml == mplapack::detail::ceildiv2(emin - 1), tag, "BlueScale: exp_tsml mismatch");
+    qd_assert_case(q.exp_tbig == mplapack::detail::floordiv2(emax - digits + 1), tag, "BlueScale: exp_tbig mismatch");
+    qd_assert_case(q.exp_ssml == -mplapack::detail::floordiv2(emin - digits), tag, "BlueScale: exp_ssml mismatch");
+    qd_assert_case(q.exp_sbig == -mplapack::detail::ceildiv2(emax + digits - 1), tag, "BlueScale: exp_sbig mismatch");
+
+    assert_equal_qd(tag, "BlueScale tsml", q.tsml, ::ldexp(qd_real(1.0), static_cast<int>(q.exp_tsml)));
+    assert_equal_qd(tag, "BlueScale tbig", q.tbig, ::ldexp(qd_real(1.0), static_cast<int>(q.exp_tbig)));
+    assert_equal_qd(tag, "BlueScale ssml", q.ssml, ::ldexp(qd_real(1.0), static_cast<int>(q.exp_ssml)));
+    assert_equal_qd(tag, "BlueScale sbig", q.sbig, ::ldexp(qd_real(1.0), static_cast<int>(q.exp_sbig)));
+
+    const qd_real zero(0.0), one(1.0);
+    qd_assert_case(q.tsml > zero, tag, "BlueScale: tsml must be positive");
+    qd_assert_case(q.tsml < one, tag, "BlueScale: tsml must be < 1");
+    qd_assert_case(q.tbig > one, tag, "BlueScale: tbig must be > 1");
+    qd_assert_case(q.ssml > q.tbig, tag, "BlueScale: ssml must be > tbig");
+    qd_assert_case(q.sbig > zero, tag, "BlueScale: sbig must be positive");
+    qd_assert_case(q.sbig < q.tsml, tag, "BlueScale: sbig must be < tsml");
+
+    const qd_real prod_ts = q.tsml * q.ssml;
+    qd_assert_case(std::isfinite(to_double(prod_ts)) && to_double(prod_ts) > 0.0, tag, "BlueScale: tsml*ssml is not a positive finite value");
+    const qd_real prod_bs = q.tbig * q.sbig;
+    qd_assert_case(std::isfinite(to_double(prod_bs)) && to_double(prod_bs) > 0.0, tag, "BlueScale: tbig*sbig is not a positive finite value");
+    const qd_real tsml_sq = q.tsml * q.tsml;
+    qd_assert_case(to_double(tsml_sq) > 0.0, tag, "BlueScale: tsml^2 underflowed to zero");
+    const qd_real tbig_sq = q.tbig * q.tbig;
+    qd_assert_case(std::isfinite(to_double(tbig_sq)), tag, "BlueScale: tbig^2 overflowed");
+    // Boundary classification probes specialized for exact Blue constants.
+    // q.tsml and q.tbig are exact pure powers of two here, so their lower limbs are zero.
+    // Use a 1-double-step probe in the lowest qd slot instead of relative (1 +/- delta).
+    const double qd_low_up = std::nextafter(0.0, +std::numeric_limits<double>::infinity());
+    const double qd_low_dn = std::nextafter(0.0, -std::numeric_limits<double>::infinity());
+
+    const qd_real qd_probe_up(0.0, 0.0, 0.0, qd_low_up);
+    const qd_real qd_probe_dn(0.0, 0.0, 0.0, qd_low_dn);
+
+    const qd_real below_tsml = q.tsml + qd_probe_dn;
+    const qd_real at_tsml = q.tsml;
+    const qd_real above_tsml = q.tsml + qd_probe_up;
+
+    const qd_real below_tbig = q.tbig + qd_probe_dn;
+    const qd_real at_tbig = q.tbig;
+    const qd_real above_tbig = q.tbig + qd_probe_up;
+
+    const auto classify_blue = [&](const qd_real &x) -> int {
+        const qd_real ax = (x < zero) ? -x : x;
+        if (ax > q.tbig)
+            return +1; // big
+        if (ax < q.tsml)
+            return -1; // small
+        return 0;      // medium
+    };
+
+    qd_assert_case(classify_blue(below_tsml) == -1, tag, "BlueScale boundary: below_tsml must classify as small");
+    qd_assert_case(classify_blue(at_tsml) == 0, tag, "BlueScale boundary: tsml must classify as medium");
+    qd_assert_case(classify_blue(above_tsml) == 0, tag, "BlueScale boundary: above_tsml must classify as medium");
+
+    qd_assert_case(classify_blue(below_tbig) == 0, tag, "BlueScale boundary: below_tbig must classify as medium");
+    qd_assert_case(classify_blue(at_tbig) == 0, tag, "BlueScale boundary: tbig must classify as medium");
+    qd_assert_case(classify_blue(above_tbig) == +1, tag, "BlueScale boundary: above_tbig must classify as big");
+
+    qd_assert_case(classify_blue(-below_tsml) == -1, tag, "BlueScale boundary: negative below_tsml must classify as small");
+    qd_assert_case(classify_blue(-above_tbig) == +1, tag, "BlueScale boundary: negative above_tbig must classify as big");
+
+    qd_assert_case(classify_blue(qd_real(0.0)) == -1, tag, "BlueScale boundary: zero must classify as small");
+    qd_assert_case(classify_blue(qd_real(1.0)) == 0, tag, "BlueScale boundary: one must classify as medium");
+
+    const qd_real rescaled_small = below_tsml * q.ssml;
+    const qd_real rescaled_big = above_tbig * q.sbig;
+    qd_assert_case(classify_blue(rescaled_small) == 0, tag, "BlueScale boundary: below_tsml * ssml must classify as medium");
+    qd_assert_case(classify_blue(rescaled_big) == 0, tag, "BlueScale boundary: above_tbig * sbig must classify as medium");
+
+    const qd_real delta = Rlamch_qd("P");
+    check_blue_threshold_boundaries_qd(tag, q, delta);
+
+    if (print_values) {
+        char _spbuf[__MPLAPACK_BUFLEN__];
+        char _sphexbuf[__MPLAPACK_BUFLEN__];
+
+        dual_printf("BlueScale exp_tsml: %lld\n", (long long)q.exp_tsml);
+        dual_printf("BlueScale exp_tbig: %lld\n", (long long)q.exp_tbig);
+        dual_printf("BlueScale exp_ssml: %lld\n", (long long)q.exp_ssml);
+        dual_printf("BlueScale exp_sbig: %lld\n", (long long)q.exp_sbig);
+
+        sprintnum(_spbuf, q.tsml);
+        sprinthex_qd(_sphexbuf, sizeof(_sphexbuf), q.tsml);
+        dual_printf("BlueScale tsml:     %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q.tbig);
+        sprinthex_qd(_sphexbuf, sizeof(_sphexbuf), q.tbig);
+        dual_printf("BlueScale tbig:     %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q.ssml);
+        sprinthex_qd(_sphexbuf, sizeof(_sphexbuf), q.ssml);
+        dual_printf("BlueScale ssml:     %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q.sbig);
+        sprinthex_qd(_sphexbuf, sizeof(_sphexbuf), q.sbig);
+        dual_printf("BlueScale sbig:     %40s    %40s\n", _spbuf, _sphexbuf);
+    }
+}
+
 static void check_lamch_qd_values(const char *tag, bool print_values) {
     const LamchExpectedQD ex = compute_expected_qd();
 
@@ -995,16 +1795,47 @@ static void check_lamch_qd_values(const char *tag, bool print_values) {
 
     if (print_values) {
         char _spbuf[__MPLAPACK_BUFLEN__];
-        sprintnum(_spbuf, gotE); dual_printf("Rlamch E: Epsilon                      %s\n", _spbuf);
-        sprintnum(_spbuf, gotS); dual_printf("Rlamch S: Safe minimum                 %s\n", _spbuf);
-        sprintnum(_spbuf, gotB); dual_printf("Rlamch B: Base                         %s\n", _spbuf);
-        sprintnum(_spbuf, gotP); dual_printf("Rlamch P: Precision                    %s\n", _spbuf);
-        sprintnum(_spbuf, gotN); dual_printf("Rlamch N: Number of digits in mantissa %s\n", _spbuf);
-        sprintnum(_spbuf, gotR); dual_printf("Rlamch R: Rounding mode                %s\n", _spbuf);
-        sprintnum(_spbuf, gotM); dual_printf("Rlamch M: Minimum exponent             %s\n", _spbuf);
-        sprintnum(_spbuf, gotU); dual_printf("Rlamch U: Underflow threshold          %s\n", _spbuf);
-        sprintnum(_spbuf, gotL); dual_printf("Rlamch L: Largest exponent             %s\n", _spbuf);
-        sprintnum(_spbuf, gotO); dual_printf("Rlamch O: Overflow threshold           %s\n", _spbuf);
+        char _sphexbuf[__MPLAPACK_BUFLEN__];
+
+        sprintnum(_spbuf, gotE);
+        sprinthex_qd(_sphexbuf, sizeof(_sphexbuf), gotE);
+        dual_printf("Rlamch E: Epsilon                      %70s    %70s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotS);
+        sprinthex_qd(_sphexbuf, sizeof(_sphexbuf), gotS);
+        dual_printf("Rlamch S: Safe minimum                 %70s    %70s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotB);
+        sprinthex_qd(_sphexbuf, sizeof(_sphexbuf), gotB);
+        dual_printf("Rlamch B: Base                         %70s    %70s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotP);
+        sprinthex_qd(_sphexbuf, sizeof(_sphexbuf), gotP);
+        dual_printf("Rlamch P: Precision                    %70s    %70s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotN);
+        sprinthex_qd(_sphexbuf, sizeof(_sphexbuf), gotN);
+        dual_printf("Rlamch N: Number of digits in mantissa %70s    %70s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotR);
+        sprinthex_qd(_sphexbuf, sizeof(_sphexbuf), gotR);
+        dual_printf("Rlamch R: Rounding mode                %70s    %70s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotM);
+        sprinthex_qd(_sphexbuf, sizeof(_sphexbuf), gotM);
+        dual_printf("Rlamch M: Minimum exponent             %70s    %70s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotU);
+        sprinthex_qd(_sphexbuf, sizeof(_sphexbuf), gotU);
+        dual_printf("Rlamch U: Underflow threshold          %70s    %70s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotL);
+        sprinthex_qd(_sphexbuf, sizeof(_sphexbuf), gotL);
+        dual_printf("Rlamch L: Largest exponent             %70s    %70s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotO);
+        sprinthex_qd(_sphexbuf, sizeof(_sphexbuf), gotO);
+        dual_printf("Rlamch O: Overflow threshold           %70s    %70s\n", _spbuf, _sphexbuf);
     }
 }
 
@@ -1018,7 +1849,9 @@ void Rlamch_qd_test() {
 #endif
 
     const char *tag = "qd_real";
+    check_arithmetic_params_qd(tag, print_values);
     check_lamch_qd_values(tag, print_values);
+    check_blue_scaling_qd(tag, print_values);
 }
 
 #endif // ___MPLAPACK_BUILD_WITH_QD___
@@ -1035,10 +1868,10 @@ namespace {
 // -----------------------------------------------------------------------------
 // dd_real machine constants
 // -----------------------------------------------------------------------------
-// This test matches the implementation style shown in RlamchE_dd/RlamchS_dd:
-//   - E is taken from dd_real::_eps
-//   - U and O are taken from dd_real::_min_normalized / dd_real::_max
-//   - N is taken from std::numeric_limits<dd_real>::digits
+// This test matches the current arithmetic_params-based implementation:
+// - E and P are fixed to MPLAPACK's canonical DD literals
+// - U and O are taken from dd_real::_min_normalized / dd_real::_max
+// - N is taken from std::numeric_limits<dd_real>::digits
 // - The exponent range matches IEEE-754 binary64 (double)
 //
 // IMPORTANT:
@@ -1047,7 +1880,6 @@ namespace {
 // -----------------------------------------------------------------------------
 
 constexpr int DD_MANTISSA_BITS = std::numeric_limits<dd_real>::digits;
-constexpr int DD_EMIN = std::numeric_limits<double>::min_exponent; // -1021
 constexpr int DD_EMAX = std::numeric_limits<double>::max_exponent; // 1024
 
 // Fail/assert utilities
@@ -1083,6 +1915,75 @@ static void assert_equal_dd(const char *tag, const char *name, const dd_real &go
     exit(1);
 }
 
+static void check_arithmetic_params_dd(const char *tag, bool print_values) {
+    const auto p = mplapack::get_arithmetic_params<dd_real>();
+    const auto q = mplapack::get_blue_scaling_params<dd_real>();
+    const auto q2 = mplapack::make_blue_scaling_params(p);
+
+    assert_equal_dd(tag, "params.E", p.eps, Rlamch_dd("E"));
+    assert_equal_dd(tag, "params.S", p.sfmin, Rlamch_dd("S"));
+    assert_equal_dd(tag, "params.B", p.base, Rlamch_dd("B"));
+    assert_equal_dd(tag, "params.P", p.prec, Rlamch_dd("P"));
+    assert_equal_dd(tag, "params.R", p.rnd, Rlamch_dd("R"));
+    assert_equal_dd(tag, "params.U", p.rmin, Rlamch_dd("U"));
+    assert_equal_dd(tag, "params.O", p.rmax, Rlamch_dd("O"));
+
+    assert_equal_dd(tag, "params.N", mplapack::detail::to_rlamch_real<dd_real>(p.t), Rlamch_dd("N"));
+    assert_equal_dd(tag, "params.M", mplapack::detail::to_rlamch_real<dd_real>(p.emin), Rlamch_dd("M"));
+    assert_equal_dd(tag, "params.L", mplapack::detail::to_rlamch_real<dd_real>(p.emax), Rlamch_dd("L"));
+
+    assert_equal_dd(tag, "params.prec_consistency", p.prec, p.eps * p.base);
+    assert_equal_dd(tag, "params.safmin", p.safmin, mplapack::detail::compute_safmin<dd_real>(p.emin, p.emax));
+    assert_equal_dd(tag, "params.safmax", p.safmax, mplapack::detail::compute_safmax<dd_real>(p.emin, p.emax));
+
+    dd_assert_case(q.exp_tsml == q2.exp_tsml, tag, "ArithmeticParams->Blue builder mismatch: exp_tsml");
+    dd_assert_case(q.exp_tbig == q2.exp_tbig, tag, "ArithmeticParams->Blue builder mismatch: exp_tbig");
+    dd_assert_case(q.exp_ssml == q2.exp_ssml, tag, "ArithmeticParams->Blue builder mismatch: exp_ssml");
+    dd_assert_case(q.exp_sbig == q2.exp_sbig, tag, "ArithmeticParams->Blue builder mismatch: exp_sbig");
+
+    assert_equal_dd(tag, "ArithmeticParams->Blue tsml", q.tsml, q2.tsml);
+    assert_equal_dd(tag, "ArithmeticParams->Blue tbig", q.tbig, q2.tbig);
+    assert_equal_dd(tag, "ArithmeticParams->Blue ssml", q.ssml, q2.ssml);
+    assert_equal_dd(tag, "ArithmeticParams->Blue sbig", q.sbig, q2.sbig);
+
+    if (print_values) {
+        char _spbuf[__MPLAPACK_BUFLEN__];
+        char _sphexbuf[__MPLAPACK_BUFLEN__];
+
+        dual_printf("[params/%s] t=%lld emin=%lld emax=%lld\n",
+                    tag, (long long)p.t, (long long)p.emin, (long long)p.emax);
+
+        sprintnum(_spbuf, p.safmin);
+        sprinthex_dd(_sphexbuf, sizeof(_sphexbuf), p.safmin);
+        dual_printf("[params/%s] safmin %40s    %40s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, p.safmax);
+        sprinthex_dd(_sphexbuf, sizeof(_sphexbuf), p.safmax);
+        dual_printf("[params/%s] safmax %40s    %40s\n", tag, _spbuf, _sphexbuf);
+
+        dual_printf("[params/%s] builder exp_tsml=%lld exp_tbig=%lld exp_ssml=%lld exp_sbig=%lld\n",
+                    tag,
+                    (long long)q2.exp_tsml, (long long)q2.exp_tbig,
+                    (long long)q2.exp_ssml, (long long)q2.exp_sbig);
+
+        sprintnum(_spbuf, q2.tsml);
+        sprinthex_dd(_sphexbuf, sizeof(_sphexbuf), q2.tsml);
+        dual_printf("[params/%s] builder tsml   %40s    %40s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q2.tbig);
+        sprinthex_dd(_sphexbuf, sizeof(_sphexbuf), q2.tbig);
+        dual_printf("[params/%s] builder tbig   %40s    %40s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q2.ssml);
+        sprinthex_dd(_sphexbuf, sizeof(_sphexbuf), q2.ssml);
+        dual_printf("[params/%s] builder ssml   %40s    %40s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q2.sbig);
+        sprinthex_dd(_sphexbuf, sizeof(_sphexbuf), q2.sbig);
+        dual_printf("[params/%s] builder sbig   %40s    %40s\n", tag, _spbuf, _sphexbuf);
+    }
+}
+
 // Expected values structure
 struct LamchExpectedDD {
     dd_real E; // eps (unit roundoff)
@@ -1108,8 +2009,8 @@ static LamchExpectedDD compute_expected_dd() {
 
     // Match Rlamch_dd implementation.
     ex.B = two;
-    ex.E = dd_real::_eps;
-    ex.P = ex.E * ex.B;
+    ex.E = dd_real(+0x1.fffffffffffffp-105, +0x0.0000000000000p+0000);
+    ex.P = dd_real(+0x1.fffffffffffffp-104, +0x0.0000000000000p+0000);
     ex.N = dd_real(static_cast<double>(DD_MANTISSA_BITS));
     ex.R = one;
 
@@ -1224,6 +2125,161 @@ static void check_cross_consistency_rmin_rmax_dd(const char *tag, const dd_real 
     dd_assert_case(expO == l, tag, "frexp exponent of O inconsistent with L");
 }
 
+template <typename BlueQ> static int classify_blue_dd_value(const BlueQ &q, const dd_real &x) {
+    dd_real ax = x;
+    if (ax < dd_real(0.0))
+        ax = -ax;
+    if (ax > q.tbig)
+        return +1;
+    if (ax < q.tsml)
+        return -1;
+    return 0;
+}
+
+template <typename BlueQ> static void check_blue_threshold_boundaries_dd(const char *tag, const BlueQ &q, const dd_real &delta) {
+    const dd_real zero(0.0), one(1.0), minus_one(-1.0);
+
+    const dd_real below_tsml = q.tsml * (one - delta);
+    const dd_real above_tsml = q.tsml * (one + delta);
+    const dd_real below_tbig = q.tbig * (one - delta);
+    const dd_real above_tbig = q.tbig * (one + delta);
+
+    dd_assert_case(below_tsml < q.tsml, tag, "BlueScale boundary: below-tsml probe is not < tsml");
+    dd_assert_case(above_tsml > q.tsml, tag, "BlueScale boundary: above-tsml probe is not > tsml");
+    dd_assert_case(below_tbig < q.tbig, tag, "BlueScale boundary: below-tbig probe is not < tbig");
+    dd_assert_case(above_tbig > q.tbig, tag, "BlueScale boundary: above-tbig probe is not > tbig");
+
+    dd_assert_case(classify_blue_dd_value(q, below_tsml) == -1, tag, "BlueScale boundary: below-tsml probe must classify as small");
+    dd_assert_case(classify_blue_dd_value(q, q.tsml) == 0, tag, "BlueScale boundary: tsml must classify as medium");
+    dd_assert_case(classify_blue_dd_value(q, above_tsml) == 0, tag, "BlueScale boundary: above-tsml probe must classify as medium");
+    dd_assert_case(classify_blue_dd_value(q, below_tbig) == 0, tag, "BlueScale boundary: below-tbig probe must classify as medium");
+    dd_assert_case(classify_blue_dd_value(q, q.tbig) == 0, tag, "BlueScale boundary: tbig must classify as medium");
+    dd_assert_case(classify_blue_dd_value(q, above_tbig) == +1, tag, "BlueScale boundary: above-tbig probe must classify as big");
+
+    dd_assert_case(classify_blue_dd_value(q, minus_one * below_tsml) == -1, tag, "BlueScale boundary: negative below-tsml probe must classify as small");
+    dd_assert_case(classify_blue_dd_value(q, minus_one * above_tbig) == +1, tag, "BlueScale boundary: negative above-tbig probe must classify as big");
+    dd_assert_case(classify_blue_dd_value(q, zero) == -1, tag, "BlueScale boundary: 0 must classify as small");
+    dd_assert_case(classify_blue_dd_value(q, one) == 0, tag, "BlueScale boundary: 1 must classify as medium");
+
+    const dd_real scaled_small = below_tsml * q.ssml;
+    const dd_real scaled_big = above_tbig * q.sbig;
+    dd_assert_case(classify_blue_dd_value(q, scaled_small) == 0, tag, "BlueScale boundary: below-tsml probe * ssml must classify as medium");
+    dd_assert_case(classify_blue_dd_value(q, scaled_big) == 0, tag, "BlueScale boundary: above-tbig probe * sbig must classify as medium");
+}
+
+static void check_blue_scaling_dd(const char *tag, bool print_values) {
+    using mplapack::arithmetic_int;
+
+    const auto q = mplapack::get_blue_scaling_params<dd_real>();
+
+    int emin_int = 0;
+    (void)std::frexp(dd_real::_min_normalized, &emin_int);
+    const arithmetic_int emin = static_cast<arithmetic_int>(emin_int);
+    const arithmetic_int emax = static_cast<arithmetic_int>(std::numeric_limits<double>::max_exponent);
+    const arithmetic_int digits = static_cast<arithmetic_int>(std::numeric_limits<dd_real>::digits);
+
+    dd_assert_case(q.exp_tsml == mplapack::detail::ceildiv2(emin - 1), tag, "BlueScale: exp_tsml mismatch");
+    dd_assert_case(q.exp_tbig == mplapack::detail::floordiv2(emax - digits + 1), tag, "BlueScale: exp_tbig mismatch");
+    dd_assert_case(q.exp_ssml == -mplapack::detail::floordiv2(emin - digits), tag, "BlueScale: exp_ssml mismatch");
+    dd_assert_case(q.exp_sbig == -mplapack::detail::ceildiv2(emax + digits - 1), tag, "BlueScale: exp_sbig mismatch");
+
+    assert_equal_dd(tag, "BlueScale tsml", q.tsml, ::ldexp(dd_real(1.0), static_cast<int>(q.exp_tsml)));
+    assert_equal_dd(tag, "BlueScale tbig", q.tbig, ::ldexp(dd_real(1.0), static_cast<int>(q.exp_tbig)));
+    assert_equal_dd(tag, "BlueScale ssml", q.ssml, ::ldexp(dd_real(1.0), static_cast<int>(q.exp_ssml)));
+    assert_equal_dd(tag, "BlueScale sbig", q.sbig, ::ldexp(dd_real(1.0), static_cast<int>(q.exp_sbig)));
+
+    const dd_real zero(0.0), one(1.0);
+    dd_assert_case(q.tsml > zero, tag, "BlueScale: tsml must be positive");
+    dd_assert_case(q.tsml < one, tag, "BlueScale: tsml must be < 1");
+    dd_assert_case(q.tbig > one, tag, "BlueScale: tbig must be > 1");
+    dd_assert_case(q.ssml > q.tbig, tag, "BlueScale: ssml must be > tbig");
+    dd_assert_case(q.sbig > zero, tag, "BlueScale: sbig must be positive");
+    dd_assert_case(q.sbig < q.tsml, tag, "BlueScale: sbig must be < tsml");
+
+    const dd_real prod_ts = q.tsml * q.ssml;
+    dd_assert_case(isfinite(prod_ts) && prod_ts > zero, tag, "BlueScale: tsml*ssml is not a positive finite value");
+    const dd_real prod_bs = q.tbig * q.sbig;
+    dd_assert_case(isfinite(prod_bs) && prod_bs > zero, tag, "BlueScale: tbig*sbig is not a positive finite value");
+    const dd_real tsml_sq = q.tsml * q.tsml;
+    dd_assert_case(tsml_sq > zero, tag, "BlueScale: tsml^2 underflowed to zero");
+    const dd_real tbig_sq = q.tbig * q.tbig;
+    dd_assert_case(isfinite(tbig_sq), tag, "BlueScale: tbig^2 overflowed");
+
+    // Boundary classification probes specialized for exact Blue constants.
+    // q.tsml and q.tbig are exact pure powers of two here, so their lower limbs are zero.
+    // Use a 1-double-step probe in the lowest dd slot instead of relative (1 +/- delta).
+    const double dd_low_up = std::nextafter(0.0, +std::numeric_limits<double>::infinity());
+    const double dd_low_dn = std::nextafter(0.0, -std::numeric_limits<double>::infinity());
+
+    const dd_real dd_probe_up(0.0, dd_low_up);
+    const dd_real dd_probe_dn(0.0, dd_low_dn);
+
+    const dd_real below_tsml = q.tsml + dd_probe_dn;
+    const dd_real at_tsml = q.tsml;
+    const dd_real above_tsml = q.tsml + dd_probe_up;
+
+    const dd_real below_tbig = q.tbig + dd_probe_dn;
+    const dd_real at_tbig = q.tbig;
+    const dd_real above_tbig = q.tbig + dd_probe_up;
+
+    const auto classify_blue = [&](const dd_real &x) -> int {
+        const dd_real ax = (x < zero) ? -x : x;
+        if (ax > q.tbig)
+            return +1; // big
+        if (ax < q.tsml)
+            return -1; // small
+        return 0;      // medium
+    };
+
+    dd_assert_case(classify_blue(below_tsml) == -1, tag, "BlueScale boundary: below_tsml must classify as small");
+    dd_assert_case(classify_blue(at_tsml) == 0, tag, "BlueScale boundary: tsml must classify as medium");
+    dd_assert_case(classify_blue(above_tsml) == 0, tag, "BlueScale boundary: above_tsml must classify as medium");
+
+    dd_assert_case(classify_blue(below_tbig) == 0, tag, "BlueScale boundary: below_tbig must classify as medium");
+    dd_assert_case(classify_blue(at_tbig) == 0, tag, "BlueScale boundary: tbig must classify as medium");
+    dd_assert_case(classify_blue(above_tbig) == +1, tag, "BlueScale boundary: above_tbig must classify as big");
+
+    dd_assert_case(classify_blue(-below_tsml) == -1, tag, "BlueScale boundary: negative below_tsml must classify as small");
+    dd_assert_case(classify_blue(-above_tbig) == +1, tag, "BlueScale boundary: negative above_tbig must classify as big");
+
+    dd_assert_case(classify_blue(dd_real(0.0)) == -1, tag, "BlueScale boundary: zero must classify as small");
+    dd_assert_case(classify_blue(dd_real(1.0)) == 0, tag, "BlueScale boundary: one must classify as medium");
+
+    const dd_real rescaled_small = below_tsml * q.ssml;
+    const dd_real rescaled_big = above_tbig * q.sbig;
+    dd_assert_case(classify_blue(rescaled_small) == 0, tag, "BlueScale boundary: below_tsml * ssml must classify as medium");
+    dd_assert_case(classify_blue(rescaled_big) == 0, tag, "BlueScale boundary: above_tbig * sbig must classify as medium");
+
+    const dd_real delta = Rlamch_dd("P");
+    check_blue_threshold_boundaries_dd(tag, q, delta);
+
+    if (print_values) {
+        char _spbuf[__MPLAPACK_BUFLEN__];
+        char _sphexbuf[__MPLAPACK_BUFLEN__];
+
+        dual_printf("BlueScale exp_tsml: %lld\n", (long long)q.exp_tsml);
+        dual_printf("BlueScale exp_tbig: %lld\n", (long long)q.exp_tbig);
+        dual_printf("BlueScale exp_ssml: %lld\n", (long long)q.exp_ssml);
+        dual_printf("BlueScale exp_sbig: %lld\n", (long long)q.exp_sbig);
+
+        sprintnum(_spbuf, q.tsml);
+        sprinthex_dd(_sphexbuf, sizeof(_sphexbuf), q.tsml);
+        dual_printf("BlueScale tsml:     %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q.tbig);
+        sprinthex_dd(_sphexbuf, sizeof(_sphexbuf), q.tbig);
+        dual_printf("BlueScale tbig:     %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q.ssml);
+        sprinthex_dd(_sphexbuf, sizeof(_sphexbuf), q.ssml);
+        dual_printf("BlueScale ssml:     %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q.sbig);
+        sprinthex_dd(_sphexbuf, sizeof(_sphexbuf), q.sbig);
+        dual_printf("BlueScale sbig:     %40s    %40s\n", _spbuf, _sphexbuf);
+    }
+}
+
 static void check_lamch_dd_values(const char *tag, bool print_values) {
     const LamchExpectedDD ex = compute_expected_dd();
 
@@ -1261,16 +2317,47 @@ static void check_lamch_dd_values(const char *tag, bool print_values) {
 
     if (print_values) {
         char _spbuf[__MPLAPACK_BUFLEN__];
-        sprintnum(_spbuf, gotE); dual_printf("Rlamch E: Epsilon                      %s\n", _spbuf);
-        sprintnum(_spbuf, gotS); dual_printf("Rlamch S: Safe minimum                 %s\n", _spbuf);
-        sprintnum(_spbuf, gotB); dual_printf("Rlamch B: Base                         %s\n", _spbuf);
-        sprintnum(_spbuf, gotP); dual_printf("Rlamch P: Precision                    %s\n", _spbuf);
-        sprintnum(_spbuf, gotN); dual_printf("Rlamch N: Number of digits in mantissa %s\n", _spbuf);
-        sprintnum(_spbuf, gotR); dual_printf("Rlamch R: Rounding mode                %s\n", _spbuf);
-        sprintnum(_spbuf, gotM); dual_printf("Rlamch M: Minimum exponent             %s\n", _spbuf);
-        sprintnum(_spbuf, gotU); dual_printf("Rlamch U: Underflow threshold          %s\n", _spbuf);
-        sprintnum(_spbuf, gotL); dual_printf("Rlamch L: Largest exponent             %s\n", _spbuf);
-        sprintnum(_spbuf, gotO); dual_printf("Rlamch O: Overflow threshold           %s\n", _spbuf);
+        char _sphexbuf[__MPLAPACK_BUFLEN__];
+
+        sprintnum(_spbuf, gotE);
+        sprinthex_dd(_sphexbuf, sizeof(_sphexbuf), gotE);
+        dual_printf("Rlamch E: Epsilon                      %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotS);
+        sprinthex_dd(_sphexbuf, sizeof(_sphexbuf), gotS);
+        dual_printf("Rlamch S: Safe minimum                 %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotB);
+        sprinthex_dd(_sphexbuf, sizeof(_sphexbuf), gotB);
+        dual_printf("Rlamch B: Base                         %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotP);
+        sprinthex_dd(_sphexbuf, sizeof(_sphexbuf), gotP);
+        dual_printf("Rlamch P: Precision                    %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotN);
+        sprinthex_dd(_sphexbuf, sizeof(_sphexbuf), gotN);
+        dual_printf("Rlamch N: Number of digits in mantissa %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotR);
+        sprinthex_dd(_sphexbuf, sizeof(_sphexbuf), gotR);
+        dual_printf("Rlamch R: Rounding mode                %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotM);
+        sprinthex_dd(_sphexbuf, sizeof(_sphexbuf), gotM);
+        dual_printf("Rlamch M: Minimum exponent             %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotU);
+        sprinthex_dd(_sphexbuf, sizeof(_sphexbuf), gotU);
+        dual_printf("Rlamch U: Underflow threshold          %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotL);
+        sprinthex_dd(_sphexbuf, sizeof(_sphexbuf), gotL);
+        dual_printf("Rlamch L: Largest exponent             %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotO);
+        sprinthex_dd(_sphexbuf, sizeof(_sphexbuf), gotO);
+        dual_printf("Rlamch O: Overflow threshold           %40s    %40s\n", _spbuf, _sphexbuf);
     }
 }
 
@@ -1284,7 +2371,9 @@ void Rlamch_dd_test() {
 #endif
 
     const char *tag = "dd_real";
+    check_arithmetic_params_dd(tag, print_values);
     check_lamch_dd_values(tag, print_values);
+    check_blue_scaling_dd(tag, print_values);
 }
 
 #endif // ___MPLAPACK_BUILD_WITH_DD___
@@ -1327,6 +2416,75 @@ static void assert_equal_double(const char *tag, const char *name, double got, d
     printnum(expected);
     printf("\n");
     exit(1);
+}
+
+static void check_arithmetic_params_double(const char *tag, bool print_values) {
+    const auto p = mplapack::get_arithmetic_params<double>();
+    const auto q = mplapack::get_blue_scaling_params<double>();
+    const auto q2 = mplapack::make_blue_scaling_params(p);
+
+    assert_equal_double(tag, "params.E", p.eps, Rlamch_double("E"));
+    assert_equal_double(tag, "params.S", p.sfmin, Rlamch_double("S"));
+    assert_equal_double(tag, "params.B", p.base, Rlamch_double("B"));
+    assert_equal_double(tag, "params.P", p.prec, Rlamch_double("P"));
+    assert_equal_double(tag, "params.R", p.rnd, Rlamch_double("R"));
+    assert_equal_double(tag, "params.U", p.rmin, Rlamch_double("U"));
+    assert_equal_double(tag, "params.O", p.rmax, Rlamch_double("O"));
+
+    assert_equal_double(tag, "params.N", mplapack::detail::to_rlamch_real<double>(p.t), Rlamch_double("N"));
+    assert_equal_double(tag, "params.M", mplapack::detail::to_rlamch_real<double>(p.emin), Rlamch_double("M"));
+    assert_equal_double(tag, "params.L", mplapack::detail::to_rlamch_real<double>(p.emax), Rlamch_double("L"));
+
+    assert_equal_double(tag, "params.prec_consistency", p.prec, p.eps * p.base);
+    assert_equal_double(tag, "params.safmin", p.safmin, mplapack::detail::compute_safmin<double>(p.emin, p.emax));
+    assert_equal_double(tag, "params.safmax", p.safmax, mplapack::detail::compute_safmax<double>(p.emin, p.emax));
+
+    double_assert_case(q.exp_tsml == q2.exp_tsml, tag, "ArithmeticParams->Blue builder mismatch: exp_tsml");
+    double_assert_case(q.exp_tbig == q2.exp_tbig, tag, "ArithmeticParams->Blue builder mismatch: exp_tbig");
+    double_assert_case(q.exp_ssml == q2.exp_ssml, tag, "ArithmeticParams->Blue builder mismatch: exp_ssml");
+    double_assert_case(q.exp_sbig == q2.exp_sbig, tag, "ArithmeticParams->Blue builder mismatch: exp_sbig");
+
+    assert_equal_double(tag, "ArithmeticParams->Blue tsml", q.tsml, q2.tsml);
+    assert_equal_double(tag, "ArithmeticParams->Blue tbig", q.tbig, q2.tbig);
+    assert_equal_double(tag, "ArithmeticParams->Blue ssml", q.ssml, q2.ssml);
+    assert_equal_double(tag, "ArithmeticParams->Blue sbig", q.sbig, q2.sbig);
+
+    if (print_values) {
+        char _spbuf[__MPLAPACK_BUFLEN__];
+        char _sphexbuf[__MPLAPACK_BUFLEN__];
+
+        dual_printf("[params/%s] t=%lld emin=%lld emax=%lld\n",
+                    tag, (long long)p.t, (long long)p.emin, (long long)p.emax);
+
+        sprintnum(_spbuf, p.safmin);
+        sprinthex_double(_sphexbuf, sizeof(_sphexbuf), p.safmin);
+        dual_printf("[params/%s] safmin %40s    %40s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, p.safmax);
+        sprinthex_double(_sphexbuf, sizeof(_sphexbuf), p.safmax);
+        dual_printf("[params/%s] safmax %40s    %40s\n", tag, _spbuf, _sphexbuf);
+
+        dual_printf("[params/%s] builder exp_tsml=%lld exp_tbig=%lld exp_ssml=%lld exp_sbig=%lld\n",
+                    tag,
+                    (long long)q2.exp_tsml, (long long)q2.exp_tbig,
+                    (long long)q2.exp_ssml, (long long)q2.exp_sbig);
+
+        sprintnum(_spbuf, q2.tsml);
+        sprinthex_double(_sphexbuf, sizeof(_sphexbuf), q2.tsml);
+        dual_printf("[params/%s] builder tsml   %40s    %40s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q2.tbig);
+        sprinthex_double(_sphexbuf, sizeof(_sphexbuf), q2.tbig);
+        dual_printf("[params/%s] builder tbig   %40s    %40s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q2.ssml);
+        sprinthex_double(_sphexbuf, sizeof(_sphexbuf), q2.ssml);
+        dual_printf("[params/%s] builder ssml   %40s    %40s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q2.sbig);
+        sprinthex_double(_sphexbuf, sizeof(_sphexbuf), q2.sbig);
+        dual_printf("[params/%s] builder sbig   %40s    %40s\n", tag, _spbuf, _sphexbuf);
+    }
 }
 
 // Expected values structure
@@ -1479,6 +2637,115 @@ static void check_cross_consistency_rmin_rmax_double(const char *tag, double E, 
     double_assert_case(std::abs(log2O - 1024.0) < 1.0, tag, "log2(O) inconsistent with expected max exponent");
 }
 
+template <typename BlueQ> static int classify_blue_double_value(const BlueQ &q, double x) {
+    const double ax = std::abs(x);
+    if (ax > q.tbig)
+        return +1;
+    if (ax < q.tsml)
+        return -1;
+    return 0;
+}
+
+template <typename BlueQ> static void check_blue_threshold_boundaries_double(const char *tag, const BlueQ &q) {
+    const double zero = 0.0;
+    const double one = 1.0;
+    const double below_tsml = std::nextafter(q.tsml, zero);
+    const double above_tsml = std::nextafter(q.tsml, one);
+    const double below_tbig = std::nextafter(q.tbig, zero);
+    const double above_tbig = std::nextafter(q.tbig, std::numeric_limits<double>::infinity());
+
+    double_assert_case(below_tsml < q.tsml, tag, "BlueScale boundary: nextbelow(tsml) is not < tsml");
+    double_assert_case(above_tsml > q.tsml, tag, "BlueScale boundary: nextabove(tsml) is not > tsml");
+    double_assert_case(below_tbig < q.tbig, tag, "BlueScale boundary: nextbelow(tbig) is not < tbig");
+    double_assert_case(above_tbig > q.tbig, tag, "BlueScale boundary: nextabove(tbig) is not > tbig");
+
+    double_assert_case(classify_blue_double_value(q, below_tsml) == -1, tag, "BlueScale boundary: nextbelow(tsml) must classify as small");
+    double_assert_case(classify_blue_double_value(q, q.tsml) == 0, tag, "BlueScale boundary: tsml must classify as medium");
+    double_assert_case(classify_blue_double_value(q, above_tsml) == 0, tag, "BlueScale boundary: nextabove(tsml) must classify as medium");
+    double_assert_case(classify_blue_double_value(q, below_tbig) == 0, tag, "BlueScale boundary: nextbelow(tbig) must classify as medium");
+    double_assert_case(classify_blue_double_value(q, q.tbig) == 0, tag, "BlueScale boundary: tbig must classify as medium");
+    double_assert_case(classify_blue_double_value(q, above_tbig) == +1, tag, "BlueScale boundary: nextabove(tbig) must classify as big");
+
+    double_assert_case(classify_blue_double_value(q, -below_tsml) == -1, tag, "BlueScale boundary: -nextbelow(tsml) must classify as small");
+    double_assert_case(classify_blue_double_value(q, -above_tbig) == +1, tag, "BlueScale boundary: -nextabove(tbig) must classify as big");
+    double_assert_case(classify_blue_double_value(q, zero) == -1, tag, "BlueScale boundary: 0 must classify as small");
+    double_assert_case(classify_blue_double_value(q, one) == 0, tag, "BlueScale boundary: 1 must classify as medium");
+
+    const double scaled_small = below_tsml * q.ssml;
+    const double scaled_big = above_tbig * q.sbig;
+    double_assert_case(classify_blue_double_value(q, scaled_small) == 0, tag, "BlueScale boundary: nextbelow(tsml) * ssml must classify as medium");
+    double_assert_case(classify_blue_double_value(q, scaled_big) == 0, tag, "BlueScale boundary: nextabove(tbig) * sbig must classify as medium");
+}
+
+static void check_blue_scaling_double(const char *tag, bool print_values) {
+    using mplapack::arithmetic_int;
+
+    const auto q = mplapack::get_blue_scaling_params<double>();
+
+    constexpr arithmetic_int emin = static_cast<arithmetic_int>(DBL_MIN_EXP);
+    constexpr arithmetic_int emax = static_cast<arithmetic_int>(DBL_MAX_EXP);
+    constexpr arithmetic_int digits = static_cast<arithmetic_int>(DBL_MANT_DIG);
+
+    double_assert_case(q.exp_tsml == mplapack::detail::ceildiv2(emin - 1), tag, "BlueScale: exp_tsml mismatch");
+    double_assert_case(q.exp_tbig == mplapack::detail::floordiv2(emax - digits + 1), tag, "BlueScale: exp_tbig mismatch");
+    double_assert_case(q.exp_ssml == -mplapack::detail::floordiv2(emin - digits), tag, "BlueScale: exp_ssml mismatch");
+    double_assert_case(q.exp_sbig == -mplapack::detail::ceildiv2(emax + digits - 1), tag, "BlueScale: exp_sbig mismatch");
+
+    double_assert_case(q.exp_tsml == -511, tag, "BlueScale: exp_tsml must be -511 for binary64");
+    double_assert_case(q.exp_tbig == 486, tag, "BlueScale: exp_tbig must be  486 for binary64");
+    double_assert_case(q.exp_ssml == 537, tag, "BlueScale: exp_ssml must be  537 for binary64");
+    double_assert_case(q.exp_sbig == -538, tag, "BlueScale: exp_sbig must be -538 for binary64");
+
+    double_assert_case(q.tsml == std::ldexp(1.0, static_cast<int>(q.exp_tsml)), tag, "BlueScale: tsml value mismatch");
+    double_assert_case(q.tbig == std::ldexp(1.0, static_cast<int>(q.exp_tbig)), tag, "BlueScale: tbig value mismatch");
+    double_assert_case(q.ssml == std::ldexp(1.0, static_cast<int>(q.exp_ssml)), tag, "BlueScale: ssml value mismatch");
+    double_assert_case(q.sbig == std::ldexp(1.0, static_cast<int>(q.exp_sbig)), tag, "BlueScale: sbig value mismatch");
+
+    double_assert_case(q.tsml > 0.0, tag, "BlueScale: tsml must be positive");
+    double_assert_case(q.tsml < 1.0, tag, "BlueScale: tsml must be < 1");
+    double_assert_case(q.tbig > 1.0, tag, "BlueScale: tbig must be > 1");
+    double_assert_case(q.ssml > q.tbig, tag, "BlueScale: ssml must be > tbig");
+    double_assert_case(q.sbig > 0.0, tag, "BlueScale: sbig must be positive");
+    double_assert_case(q.sbig < q.tsml, tag, "BlueScale: sbig must be < tsml");
+
+    const double prod_ts = q.tsml * q.ssml;
+    double_assert_case(std::isfinite(prod_ts) && prod_ts > 0.0, tag, "BlueScale: tsml*ssml is not a positive finite value");
+    const double prod_bs = q.tbig * q.sbig;
+    double_assert_case(std::isfinite(prod_bs) && prod_bs > 0.0, tag, "BlueScale: tbig*sbig is not a positive finite value");
+    const double tsml_sq = q.tsml * q.tsml;
+    double_assert_case(tsml_sq >= DBL_MIN, tag, "BlueScale: tsml^2 must be >= DBL_MIN");
+    const double tbig_sq = q.tbig * q.tbig;
+    double_assert_case(std::isfinite(tbig_sq) && tbig_sq <= DBL_MAX, tag, "BlueScale: tbig^2 overflowed");
+
+    check_blue_threshold_boundaries_double(tag, q);
+
+    if (print_values) {
+        char _spbuf[__MPLAPACK_BUFLEN__];
+        char _sphexbuf[__MPLAPACK_BUFLEN__];
+
+        dual_printf("BlueScale exp_tsml: %lld\n", (long long)q.exp_tsml);
+        dual_printf("BlueScale exp_tbig: %lld\n", (long long)q.exp_tbig);
+        dual_printf("BlueScale exp_ssml: %lld\n", (long long)q.exp_ssml);
+        dual_printf("BlueScale exp_sbig: %lld\n", (long long)q.exp_sbig);
+
+        sprintnum(_spbuf, q.tsml);
+        sprinthex_double(_sphexbuf, sizeof(_sphexbuf), q.tsml);
+        dual_printf("BlueScale tsml:     %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q.tbig);
+        sprinthex_double(_sphexbuf, sizeof(_sphexbuf), q.tbig);
+        dual_printf("BlueScale tbig:     %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q.ssml);
+        sprinthex_double(_sphexbuf, sizeof(_sphexbuf), q.ssml);
+        dual_printf("BlueScale ssml:     %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q.sbig);
+        sprinthex_double(_sphexbuf, sizeof(_sphexbuf), q.sbig);
+        dual_printf("BlueScale sbig:     %40s    %40s\n", _spbuf, _sphexbuf);
+    }
+}
+
 static void check_lamch_double_values(const char *tag, bool print_values) {
     const LamchExpectedDouble ex = compute_expected_double();
 
@@ -1515,17 +2782,48 @@ static void check_lamch_double_values(const char *tag, bool print_values) {
     check_cross_consistency_rmin_rmax_double(tag, gotE, gotU, gotO);
 
     if (print_values) {
-        char _spbuf[64];
-        snprintf(_spbuf, sizeof(_spbuf), "%.17e", gotE); dual_printf("Rlamch E: Epsilon                      %s\n", _spbuf);
-        snprintf(_spbuf, sizeof(_spbuf), "%.17e", gotS); dual_printf("Rlamch S: Safe minimum                 %s\n", _spbuf);
-        snprintf(_spbuf, sizeof(_spbuf), "%.17e", gotB); dual_printf("Rlamch B: Base                         %s\n", _spbuf);
-        snprintf(_spbuf, sizeof(_spbuf), "%.17e", gotP); dual_printf("Rlamch P: Precision                    %s\n", _spbuf);
-        snprintf(_spbuf, sizeof(_spbuf), "%.17e", gotN); dual_printf("Rlamch N: Number of digits in mantissa %s\n", _spbuf);
-        snprintf(_spbuf, sizeof(_spbuf), "%.17e", gotR); dual_printf("Rlamch R: Rounding mode                %s\n", _spbuf);
-        snprintf(_spbuf, sizeof(_spbuf), "%.17e", gotM); dual_printf("Rlamch M: Minimum exponent             %s\n", _spbuf);
-        snprintf(_spbuf, sizeof(_spbuf), "%.17e", gotU); dual_printf("Rlamch U: Underflow threshold          %s\n", _spbuf);
-        snprintf(_spbuf, sizeof(_spbuf), "%.17e", gotL); dual_printf("Rlamch L: Largest exponent             %s\n", _spbuf);
-        snprintf(_spbuf, sizeof(_spbuf), "%.17e", gotO); dual_printf("Rlamch O: Overflow threshold           %s\n", _spbuf);
+        char _spbuf[__MPLAPACK_BUFLEN__];
+        char _sphexbuf[__MPLAPACK_BUFLEN__];
+
+        sprintnum(_spbuf, gotE);
+        sprinthex_double(_sphexbuf, sizeof(_sphexbuf), gotE);
+        dual_printf("Rlamch E: Epsilon                      %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotS);
+        sprinthex_double(_sphexbuf, sizeof(_sphexbuf), gotS);
+        dual_printf("Rlamch S: Safe minimum                 %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotB);
+        sprinthex_double(_sphexbuf, sizeof(_sphexbuf), gotB);
+        dual_printf("Rlamch B: Base                         %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotP);
+        sprinthex_double(_sphexbuf, sizeof(_sphexbuf), gotP);
+        dual_printf("Rlamch P: Precision                    %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotN);
+        sprinthex_double(_sphexbuf, sizeof(_sphexbuf), gotN);
+        dual_printf("Rlamch N: Number of digits in mantissa %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotR);
+        sprinthex_double(_sphexbuf, sizeof(_sphexbuf), gotR);
+        dual_printf("Rlamch R: Rounding mode                %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotM);
+        sprinthex_double(_sphexbuf, sizeof(_sphexbuf), gotM);
+        dual_printf("Rlamch M: Minimum exponent             %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotU);
+        sprinthex_double(_sphexbuf, sizeof(_sphexbuf), gotU);
+        dual_printf("Rlamch U: Underflow threshold          %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotL);
+        sprinthex_double(_sphexbuf, sizeof(_sphexbuf), gotL);
+        dual_printf("Rlamch L: Largest exponent             %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotO);
+        sprinthex_double(_sphexbuf, sizeof(_sphexbuf), gotO);
+        dual_printf("Rlamch O: Overflow threshold           %40s    %40s\n", _spbuf, _sphexbuf);
     }
 }
 
@@ -1539,13 +2837,248 @@ void Rlamch_double_test() {
 #endif
 
     const char *tag = "binary64";
+    check_arithmetic_params_double(tag, print_values);
     check_lamch_double_values(tag, print_values);
+    check_blue_scaling_double(tag, print_values);
 }
 
 #endif // ___MPLAPACK_BUILD_WITH_DOUBLE___
 
 #if defined ___MPLAPACK_BUILD_WITH_BINARY128___
 #include <cfenv> // std::fegetround, FE_TONEAREST
+#include <limits>
+
+template <typename BlueQ> static int classify_blue_binary128_value(const BlueQ &q, mplapack_binary128_t x) {
+    const mplapack_binary128_t zero = (mplapack_binary128_t)0.0;
+    if (x < zero)
+        x = -x;
+    if (x > q.tbig)
+        return +1;
+    if (x < q.tsml)
+        return -1;
+    return 0;
+}
+
+template <typename BlueQ> static void check_blue_threshold_boundaries_binary128(const char *tag, const BlueQ &q) {
+    const mplapack_binary128_t zero = (mplapack_binary128_t)0.0;
+    const mplapack_binary128_t one = (mplapack_binary128_t)1.0;
+    const mplapack_binary128_t minus_one = (mplapack_binary128_t)-1.0;
+    const mplapack_binary128_t delta = Rlamch_binary128("P");
+
+    const mplapack_binary128_t below_tsml = q.tsml * (one - delta);
+    const mplapack_binary128_t above_tsml = q.tsml * (one + delta);
+    const mplapack_binary128_t below_tbig = q.tbig * (one - delta);
+    const mplapack_binary128_t above_tbig = q.tbig * (one + delta);
+
+    auto assert_case = [&](bool cond, const char *what) {
+        if (cond)
+            return;
+        char buf[256];
+        snprintf(buf, sizeof(buf), "%s: %s", tag, what);
+        printf("*** Testing Mutils (binary128) BlueScale failed: %s ***\n", buf);
+        exit(1);
+    };
+
+    assert_case(below_tsml < q.tsml, "BlueScale boundary: below-tsml probe is not < tsml");
+    assert_case(above_tsml > q.tsml, "BlueScale boundary: above-tsml probe is not > tsml");
+    assert_case(below_tbig < q.tbig, "BlueScale boundary: below-tbig probe is not < tbig");
+    assert_case(above_tbig > q.tbig, "BlueScale boundary: above-tbig probe is not > tbig");
+
+    assert_case(classify_blue_binary128_value(q, below_tsml) == -1, "BlueScale boundary: below-tsml probe must classify as small");
+    assert_case(classify_blue_binary128_value(q, q.tsml) == 0, "BlueScale boundary: tsml must classify as medium");
+    assert_case(classify_blue_binary128_value(q, above_tsml) == 0, "BlueScale boundary: above-tsml probe must classify as medium");
+    assert_case(classify_blue_binary128_value(q, below_tbig) == 0, "BlueScale boundary: below-tbig probe must classify as medium");
+    assert_case(classify_blue_binary128_value(q, q.tbig) == 0, "BlueScale boundary: tbig must classify as medium");
+    assert_case(classify_blue_binary128_value(q, above_tbig) == +1, "BlueScale boundary: above-tbig probe must classify as big");
+
+    assert_case(classify_blue_binary128_value(q, minus_one * below_tsml) == -1, "BlueScale boundary: negative below-tsml probe must classify as small");
+    assert_case(classify_blue_binary128_value(q, minus_one * above_tbig) == +1, "BlueScale boundary: negative above-tbig probe must classify as big");
+    assert_case(classify_blue_binary128_value(q, zero) == -1, "BlueScale boundary: 0 must classify as small");
+    assert_case(classify_blue_binary128_value(q, one) == 0, "BlueScale boundary: 1 must classify as medium");
+
+    const mplapack_binary128_t scaled_small = below_tsml * q.ssml;
+    const mplapack_binary128_t scaled_big = above_tbig * q.sbig;
+    assert_case(classify_blue_binary128_value(q, scaled_small) == 0, "BlueScale boundary: below-tsml probe * ssml must classify as medium");
+    assert_case(classify_blue_binary128_value(q, scaled_big) == 0, "BlueScale boundary: above-tbig probe * sbig must classify as medium");
+}
+
+static void check_blue_scaling_binary128(const char *tag, int emin, int emax, int p, bool print_values) {
+    using mplapack::arithmetic_int;
+    const mplapack_binary128_t zero = (mplapack_binary128_t)0.0;
+    const mplapack_binary128_t one = (mplapack_binary128_t)1.0;
+
+    auto fail = [&](const char *what) {
+        printf("*** Testing Mutils (binary128) BlueScale failed: %s: %s ***\n", tag, what);
+        exit(1);
+    };
+    auto assert_case = [&](bool cond, const char *what) {
+        if (!cond) {
+            char buf[256];
+            snprintf(buf, sizeof(buf), "%s: %s", tag, what);
+            fail(buf);
+        }
+    };
+
+    const auto q = mplapack::get_blue_scaling_params<mplapack_binary128_t>();
+
+    const arithmetic_int ai_emin = static_cast<arithmetic_int>(emin);
+    const arithmetic_int ai_emax = static_cast<arithmetic_int>(emax);
+    const arithmetic_int ai_digits = static_cast<arithmetic_int>(p);
+
+    assert_case(q.exp_tsml == mplapack::detail::ceildiv2(ai_emin - 1), "BlueScale: exp_tsml mismatch");
+    assert_case(q.exp_tbig == mplapack::detail::floordiv2(ai_emax - ai_digits + 1), "BlueScale: exp_tbig mismatch");
+    assert_case(q.exp_ssml == -mplapack::detail::floordiv2(ai_emin - ai_digits), "BlueScale: exp_ssml mismatch");
+    assert_case(q.exp_sbig == -mplapack::detail::ceildiv2(ai_emax + ai_digits - 1), "BlueScale: exp_sbig mismatch");
+
+    assert_case(q.exp_tsml == -8191LL, "BlueScale: exp_tsml must be -8191 for binary128");
+    assert_case(q.exp_tbig == 8136LL, "BlueScale: exp_tbig must be  8136 for binary128");
+    assert_case(q.exp_ssml == 8247LL, "BlueScale: exp_ssml must be  8247 for binary128");
+    assert_case(q.exp_sbig == -8248LL, "BlueScale: exp_sbig must be -8248 for binary128");
+
+    assert_case(q.tsml == ldexp(one, static_cast<int>(q.exp_tsml)), "BlueScale: tsml value mismatch");
+    assert_case(q.tbig == ldexp(one, static_cast<int>(q.exp_tbig)), "BlueScale: tbig value mismatch");
+    assert_case(q.ssml == ldexp(one, static_cast<int>(q.exp_ssml)), "BlueScale: ssml value mismatch");
+    assert_case(q.sbig == ldexp(one, static_cast<int>(q.exp_sbig)), "BlueScale: sbig value mismatch");
+
+    assert_case(q.tsml > zero, "BlueScale: tsml must be positive");
+    assert_case(q.tsml < one, "BlueScale: tsml must be < 1");
+    assert_case(q.tbig > one, "BlueScale: tbig must be > 1");
+    assert_case(q.ssml > q.tbig, "BlueScale: ssml must be > tbig");
+    assert_case(q.sbig > zero, "BlueScale: sbig must be positive");
+    assert_case(q.tsml < q.tbig, "BlueScale: tsml must be < tbig");
+    assert_case(q.sbig < q.tsml, "BlueScale: sbig must be < tsml");
+
+    const mplapack_binary128_t prod_ts = q.tsml * q.ssml;
+    assert_case(__builtin_isfinite(prod_ts) && prod_ts > zero, "BlueScale: tsml*ssml must be a positive finite value");
+    const mplapack_binary128_t prod_bs = q.tbig * q.sbig;
+    assert_case(__builtin_isfinite(prod_bs) && prod_bs > zero, "BlueScale: tbig*sbig must be a positive finite value");
+    const mplapack_binary128_t tsml_sq = q.tsml * q.tsml;
+    assert_case(tsml_sq > zero, "BlueScale: tsml^2 underflowed to zero");
+    const mplapack_binary128_t tbig_sq = q.tbig * q.tbig;
+    assert_case(__builtin_isfinite(tbig_sq), "BlueScale: tbig^2 overflowed");
+
+    check_blue_threshold_boundaries_binary128(tag, q);
+
+    if (print_values) {
+        char _spbuf[__MPLAPACK_BUFLEN__];
+        char _sphexbuf[__MPLAPACK_BUFLEN__];
+
+        dual_printf("BlueScale exp_tsml: %lld\n", (long long)q.exp_tsml);
+        dual_printf("BlueScale exp_tbig: %lld\n", (long long)q.exp_tbig);
+        dual_printf("BlueScale exp_ssml: %lld\n", (long long)q.exp_ssml);
+        dual_printf("BlueScale exp_sbig: %lld\n", (long long)q.exp_sbig);
+
+        sprintnum(_spbuf, q.tsml);
+        sprinthex_binary128_fixed(_sphexbuf, sizeof(_sphexbuf), q.tsml);
+        dual_printf("BlueScale tsml:     %50s    %50s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q.tbig);
+        sprinthex_binary128_fixed(_sphexbuf, sizeof(_sphexbuf), q.tbig);
+        dual_printf("BlueScale tbig:     %50s    %50s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q.ssml);
+        sprinthex_binary128_fixed(_sphexbuf, sizeof(_sphexbuf), q.ssml);
+        dual_printf("BlueScale ssml:     %50s    %50s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q.sbig);
+        sprinthex_binary128_fixed(_sphexbuf, sizeof(_sphexbuf), q.sbig);
+        dual_printf("BlueScale sbig:     %50s    %50s\n", _spbuf, _sphexbuf);
+    }
+}
+
+static void check_arithmetic_params_binary128(const char *tag, bool print_values) {
+    auto fail = [&](const char *what) {
+        printf("*** Testing Mutils (binary128) failed: %s: %s ***\n", tag, what);
+        exit(1);
+    };
+
+    auto assert_case = [&](bool cond, const char *what) {
+        if (!cond) {
+            fail(what);
+        }
+    };
+
+    auto assert_equal = [&](const char *name, mplapack_binary128_t got, mplapack_binary128_t expected) {
+        if (got == expected)
+            return;
+
+        printf("*** Testing Mutils (binary128) failed: %s mismatch in %s ***\n", tag, name);
+        printf("    got      = ");
+        printnum(got);
+        printf("\n");
+        printf("    expected = ");
+        printnum(expected);
+        printf("\n");
+        exit(1);
+    };
+
+    const auto p = mplapack::get_arithmetic_params<mplapack_binary128_t>();
+    const auto q = mplapack::get_blue_scaling_params<mplapack_binary128_t>();
+    const auto q2 = mplapack::make_blue_scaling_params(p);
+
+    assert_equal("params.E", p.eps, Rlamch_binary128("E"));
+    assert_equal("params.S", p.sfmin, Rlamch_binary128("S"));
+    assert_equal("params.B", p.base, Rlamch_binary128("B"));
+    assert_equal("params.P", p.prec, Rlamch_binary128("P"));
+    assert_equal("params.R", p.rnd, Rlamch_binary128("R"));
+    assert_equal("params.U", p.rmin, Rlamch_binary128("U"));
+    assert_equal("params.O", p.rmax, Rlamch_binary128("O"));
+
+    assert_equal("params.N", mplapack::detail::to_rlamch_real<mplapack_binary128_t>(p.t), Rlamch_binary128("N"));
+    assert_equal("params.M", mplapack::detail::to_rlamch_real<mplapack_binary128_t>(p.emin), Rlamch_binary128("M"));
+    assert_equal("params.L", mplapack::detail::to_rlamch_real<mplapack_binary128_t>(p.emax), Rlamch_binary128("L"));
+
+    assert_equal("params.prec_consistency", p.prec, p.eps * p.base);
+    assert_equal("params.safmin", p.safmin, mplapack::detail::compute_safmin<mplapack_binary128_t>(p.emin, p.emax));
+    assert_equal("params.safmax", p.safmax, mplapack::detail::compute_safmax<mplapack_binary128_t>(p.emin, p.emax));
+
+    assert_case(q.exp_tsml == q2.exp_tsml, "ArithmeticParams->Blue builder mismatch: exp_tsml");
+    assert_case(q.exp_tbig == q2.exp_tbig, "ArithmeticParams->Blue builder mismatch: exp_tbig");
+    assert_case(q.exp_ssml == q2.exp_ssml, "ArithmeticParams->Blue builder mismatch: exp_ssml");
+    assert_case(q.exp_sbig == q2.exp_sbig, "ArithmeticParams->Blue builder mismatch: exp_sbig");
+
+    assert_equal("ArithmeticParams->Blue tsml", q.tsml, q2.tsml);
+    assert_equal("ArithmeticParams->Blue tbig", q.tbig, q2.tbig);
+    assert_equal("ArithmeticParams->Blue ssml", q.ssml, q2.ssml);
+    assert_equal("ArithmeticParams->Blue sbig", q.sbig, q2.sbig);
+
+    if (print_values) {
+        char _spbuf[__MPLAPACK_BUFLEN__];
+        char _sphexbuf[__MPLAPACK_BUFLEN__];
+
+        dual_printf("[params/%s] t=%lld emin=%lld emax=%lld\n",
+                    tag, (long long)p.t, (long long)p.emin, (long long)p.emax);
+
+        sprintnum(_spbuf, p.safmin);
+        sprinthex_binary128_fixed(_sphexbuf, sizeof(_sphexbuf), p.safmin);
+        dual_printf("[params/%s] safmin %50s    %50s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, p.safmax);
+        sprinthex_binary128_fixed(_sphexbuf, sizeof(_sphexbuf), p.safmax);
+        dual_printf("[params/%s] safmax %50s    %50s\n", tag, _spbuf, _sphexbuf);
+
+        dual_printf("[params/%s] builder exp_tsml=%lld exp_tbig=%lld exp_ssml=%lld exp_sbig=%lld\n",
+                    tag,
+                    (long long)q2.exp_tsml, (long long)q2.exp_tbig,
+                    (long long)q2.exp_ssml, (long long)q2.exp_sbig);
+
+        sprintnum(_spbuf, q2.tsml);
+        sprinthex_binary128_fixed(_sphexbuf, sizeof(_sphexbuf), q2.tsml);
+        dual_printf("[params/%s] builder tsml   %50s    %50s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q2.tbig);
+        sprinthex_binary128_fixed(_sphexbuf, sizeof(_sphexbuf), q2.tbig);
+        dual_printf("[params/%s] builder tbig   %50s    %50s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q2.ssml);
+        sprinthex_binary128_fixed(_sphexbuf, sizeof(_sphexbuf), q2.ssml);
+        dual_printf("[params/%s] builder ssml   %50s    %50s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q2.sbig);
+        sprinthex_binary128_fixed(_sphexbuf, sizeof(_sphexbuf), q2.sbig);
+        dual_printf("[params/%s] builder sbig   %50s    %50s\n", tag, _spbuf, _sphexbuf);
+    }
+}
 
 void Rlamch_binary128_test() {
 #if defined VERBOSE_TEST
@@ -1555,6 +3088,7 @@ void Rlamch_binary128_test() {
 #endif
 
     const char *tag = "binary128";
+    check_arithmetic_params_binary128(tag, print_values);
 
     auto fail = [&](const char *what) {
         printf("*** Testing Mutils (binary128) failed: %s ***\n", what);
@@ -1704,22 +3238,291 @@ void Rlamch_binary128_test() {
 
     if (print_values) {
         char _spbuf[__MPLAPACK_BUFLEN__];
-        sprintnum(_spbuf, gotE); dual_printf("Rlamch E: Epsilon                      %s\n", _spbuf);
-        sprintnum(_spbuf, gotS); dual_printf("Rlamch S: Safe minimum                 %s\n", _spbuf);
-        sprintnum(_spbuf, gotB); dual_printf("Rlamch B: Base                         %s\n", _spbuf);
-        sprintnum(_spbuf, gotP); dual_printf("Rlamch P: Precision                    %s\n", _spbuf);
-        sprintnum(_spbuf, gotN); dual_printf("Rlamch N: Number of digits in mantissa %s\n", _spbuf);
-        sprintnum(_spbuf, gotR); dual_printf("Rlamch R: Rounding mode                %s\n", _spbuf);
-        sprintnum(_spbuf, gotM); dual_printf("Rlamch M: Minimum exponent             %s\n", _spbuf);
-        sprintnum(_spbuf, gotU); dual_printf("Rlamch U: Underflow threshold          %s\n", _spbuf);
-        sprintnum(_spbuf, gotL); dual_printf("Rlamch L: Largest exponent             %s\n", _spbuf);
-        sprintnum(_spbuf, gotO); dual_printf("Rlamch O: Overflow threshold           %s\n", _spbuf);
+        char _sphexbuf[__MPLAPACK_BUFLEN__];
+
+        sprintnum(_spbuf, gotE);
+        sprinthex_binary128_fixed(_sphexbuf, sizeof(_sphexbuf), gotE);
+        dual_printf("Rlamch E: Epsilon                      %50s    %50s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotS);
+        sprinthex_binary128_fixed(_sphexbuf, sizeof(_sphexbuf), gotS);
+        dual_printf("Rlamch S: Safe minimum                 %50s    %50s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotB);
+        sprinthex_binary128_fixed(_sphexbuf, sizeof(_sphexbuf), gotB);
+        dual_printf("Rlamch B: Base                         %50s    %50s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotP);
+        sprinthex_binary128_fixed(_sphexbuf, sizeof(_sphexbuf), gotP);
+        dual_printf("Rlamch P: Precision                    %50s    %50s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotN);
+        sprinthex_binary128_fixed(_sphexbuf, sizeof(_sphexbuf), gotN);
+        dual_printf("Rlamch N: Number of digits in mantissa %50s    %50s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotR);
+        sprinthex_binary128_fixed(_sphexbuf, sizeof(_sphexbuf), gotR);
+        dual_printf("Rlamch R: Rounding mode                %50s    %50s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotM);
+        sprinthex_binary128_fixed(_sphexbuf, sizeof(_sphexbuf), gotM);
+        dual_printf("Rlamch M: Minimum exponent             %50s    %50s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotU);
+        sprinthex_binary128_fixed(_sphexbuf, sizeof(_sphexbuf), gotU);
+        dual_printf("Rlamch U: Underflow threshold          %50s    %50s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotL);
+        sprinthex_binary128_fixed(_sphexbuf, sizeof(_sphexbuf), gotL);
+        dual_printf("Rlamch L: Largest exponent             %50s    %50s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotO);
+        sprinthex_binary128_fixed(_sphexbuf, sizeof(_sphexbuf), gotO);
+        dual_printf("Rlamch O: Overflow threshold           %50s    %50s\n", _spbuf, _sphexbuf);
     }
+
+    check_blue_scaling_binary128(tag, emin, emax, p, print_values);
 }
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_BINARY80___
 #include <cfenv> // std::fegetround, FE_TONEAREST
+#include <cmath> // scalbnl
+
+template <typename BlueQ> static int classify_blue_binary80_value(const BlueQ &q, mplapack_binary80_t x) {
+    const mplapack_binary80_t zero = (mplapack_binary80_t)0.0;
+    if (x < zero)
+        x = -x;
+    if (x > q.tbig)
+        return +1;
+    if (x < q.tsml)
+        return -1;
+    return 0;
+}
+
+template <typename BlueQ> static void check_blue_threshold_boundaries_binary80(const char *tag, const BlueQ &q) {
+    const mplapack_binary80_t zero = (mplapack_binary80_t)0.0;
+    const mplapack_binary80_t one = (mplapack_binary80_t)1.0;
+    const mplapack_binary80_t minus_one = (mplapack_binary80_t)-1.0;
+    const mplapack_binary80_t delta = Rlamch_binary80("P");
+
+    const mplapack_binary80_t below_tsml = q.tsml * (one - delta);
+    const mplapack_binary80_t above_tsml = q.tsml * (one + delta);
+    const mplapack_binary80_t below_tbig = q.tbig * (one - delta);
+    const mplapack_binary80_t above_tbig = q.tbig * (one + delta);
+
+    auto assert_case = [&](bool cond, const char *what) {
+        if (cond)
+            return;
+        char buf[256];
+        snprintf(buf, sizeof(buf), "%s: %s", tag, what);
+        printf("*** Testing Mutils (mplapack_binary80_t) BlueScale failed: %s ***\n", buf);
+        exit(1);
+    };
+
+    assert_case(below_tsml < q.tsml, "BlueScale boundary: below-tsml probe is not < tsml");
+    assert_case(above_tsml > q.tsml, "BlueScale boundary: above-tsml probe is not > tsml");
+    assert_case(below_tbig < q.tbig, "BlueScale boundary: below-tbig probe is not < tbig");
+    assert_case(above_tbig > q.tbig, "BlueScale boundary: above-tbig probe is not > tbig");
+
+    assert_case(classify_blue_binary80_value(q, below_tsml) == -1, "BlueScale boundary: below-tsml probe must classify as small");
+    assert_case(classify_blue_binary80_value(q, q.tsml) == 0, "BlueScale boundary: tsml must classify as medium");
+    assert_case(classify_blue_binary80_value(q, above_tsml) == 0, "BlueScale boundary: above-tsml probe must classify as medium");
+    assert_case(classify_blue_binary80_value(q, below_tbig) == 0, "BlueScale boundary: below-tbig probe must classify as medium");
+    assert_case(classify_blue_binary80_value(q, q.tbig) == 0, "BlueScale boundary: tbig must classify as medium");
+    assert_case(classify_blue_binary80_value(q, above_tbig) == +1, "BlueScale boundary: above-tbig probe must classify as big");
+
+    assert_case(classify_blue_binary80_value(q, minus_one * below_tsml) == -1, "BlueScale boundary: negative below-tsml probe must classify as small");
+    assert_case(classify_blue_binary80_value(q, minus_one * above_tbig) == +1, "BlueScale boundary: negative above-tbig probe must classify as big");
+    assert_case(classify_blue_binary80_value(q, zero) == -1, "BlueScale boundary: 0 must classify as small");
+    assert_case(classify_blue_binary80_value(q, one) == 0, "BlueScale boundary: 1 must classify as medium");
+
+    const mplapack_binary80_t scaled_small = below_tsml * q.ssml;
+    const mplapack_binary80_t scaled_big = above_tbig * q.sbig;
+    assert_case(classify_blue_binary80_value(q, scaled_small) == 0, "BlueScale boundary: below-tsml probe * ssml must classify as medium");
+    assert_case(classify_blue_binary80_value(q, scaled_big) == 0, "BlueScale boundary: above-tbig probe * sbig must classify as medium");
+}
+
+static void check_blue_scaling_binary80(const char *tag, int emin, int emax, int p, bool print_values) {
+    using mplapack::arithmetic_int;
+    const mplapack_binary80_t zero = (mplapack_binary80_t)0.0;
+    const mplapack_binary80_t one = (mplapack_binary80_t)1.0;
+
+    auto fail = [&](const char *what) {
+        printf("*** Testing Mutils (mplapack_binary80_t) BlueScale failed: %s: %s ***\n", tag, what);
+        exit(1);
+    };
+    auto assert_case = [&](bool cond, const char *what) {
+        if (!cond) {
+            char buf[256];
+            snprintf(buf, sizeof(buf), "%s: %s", tag, what);
+            fail(buf);
+        }
+    };
+
+    const auto q = mplapack::get_blue_scaling_params<mplapack_binary80_t>();
+
+    const arithmetic_int ai_emin = static_cast<arithmetic_int>(emin);
+    const arithmetic_int ai_emax = static_cast<arithmetic_int>(emax);
+    const arithmetic_int ai_digits = static_cast<arithmetic_int>(p);
+
+    assert_case(q.exp_tsml == mplapack::detail::ceildiv2(ai_emin - 1), "BlueScale: exp_tsml mismatch");
+    assert_case(q.exp_tbig == mplapack::detail::floordiv2(ai_emax - ai_digits + 1), "BlueScale: exp_tbig mismatch");
+    assert_case(q.exp_ssml == -mplapack::detail::floordiv2(ai_emin - ai_digits), "BlueScale: exp_ssml mismatch");
+    assert_case(q.exp_sbig == -mplapack::detail::ceildiv2(ai_emax + ai_digits - 1), "BlueScale: exp_sbig mismatch");
+
+    assert_case(q.exp_tsml == -8191LL, "BlueScale: exp_tsml must be -8191 for binary80");
+    assert_case(q.exp_tbig == 8160LL, "BlueScale: exp_tbig must be  8160 for binary80");
+    assert_case(q.exp_ssml == 8223LL, "BlueScale: exp_ssml must be  8223 for binary80");
+    assert_case(q.exp_sbig == -8224LL, "BlueScale: exp_sbig must be -8224 for binary80");
+
+    assert_case(q.tsml == scalbnl(one, static_cast<int>(q.exp_tsml)), "BlueScale: tsml value mismatch");
+    assert_case(q.tbig == scalbnl(one, static_cast<int>(q.exp_tbig)), "BlueScale: tbig value mismatch");
+    assert_case(q.ssml == scalbnl(one, static_cast<int>(q.exp_ssml)), "BlueScale: ssml value mismatch");
+    assert_case(q.sbig == scalbnl(one, static_cast<int>(q.exp_sbig)), "BlueScale: sbig value mismatch");
+
+    assert_case(q.tsml > zero, "BlueScale: tsml must be positive");
+    assert_case(q.tsml < one, "BlueScale: tsml must be < 1");
+    assert_case(q.tbig > one, "BlueScale: tbig must be > 1");
+    assert_case(q.ssml > q.tbig, "BlueScale: ssml must be > tbig");
+    assert_case(q.tsml < q.tbig, "BlueScale: tsml must be < tbig");
+    assert_case(q.exp_sbig < q.exp_tsml, "BlueScale: exp_sbig must be < exp_tsml");
+    assert_case(q.exp_tsml < q.exp_tbig, "BlueScale: exp_tsml must be < exp_tbig");
+    assert_case(q.exp_tbig < q.exp_ssml, "BlueScale: exp_tbig must be < exp_ssml");
+    assert_case(q.sbig > zero, "BlueScale: sbig must be positive");
+    assert_case(q.sbig < q.tsml, "BlueScale: sbig must be < tsml");
+
+    const mplapack_binary80_t prod_ts = q.tsml * q.ssml;
+    assert_case(__builtin_isfinite(prod_ts) && prod_ts > zero, "BlueScale: tsml*ssml must be a positive finite value");
+    const mplapack_binary80_t prod_bs = q.tbig * q.sbig;
+    assert_case(__builtin_isfinite(prod_bs) && prod_bs > zero, "BlueScale: tbig*sbig must be a positive finite value");
+    const mplapack_binary80_t tsml_sq = q.tsml * q.tsml;
+    assert_case(tsml_sq > zero, "BlueScale: tsml^2 underflowed to zero");
+    const mplapack_binary80_t tbig_sq = q.tbig * q.tbig;
+    assert_case(__builtin_isfinite(tbig_sq), "BlueScale: tbig^2 overflowed");
+
+    check_blue_threshold_boundaries_binary80(tag, q);
+
+    if (print_values) {
+        char _spbuf[__MPLAPACK_BUFLEN__];
+        char _sphexbuf[__MPLAPACK_BUFLEN__];
+
+        dual_printf("BlueScale exp_tsml: %lld\n", (long long)q.exp_tsml);
+        dual_printf("BlueScale exp_tbig: %lld\n", (long long)q.exp_tbig);
+        dual_printf("BlueScale exp_ssml: %lld\n", (long long)q.exp_ssml);
+        dual_printf("BlueScale exp_sbig: %lld\n", (long long)q.exp_sbig);
+
+        sprintnum(_spbuf, q.tsml);
+        sprinthex_binary80_fixed(_sphexbuf, sizeof(_sphexbuf), q.tsml);
+        dual_printf("BlueScale tsml:     %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q.tbig);
+        sprinthex_binary80_fixed(_sphexbuf, sizeof(_sphexbuf), q.tbig);
+        dual_printf("BlueScale tbig:     %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q.ssml);
+        sprinthex_binary80_fixed(_sphexbuf, sizeof(_sphexbuf), q.ssml);
+        dual_printf("BlueScale ssml:     %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q.sbig);
+        sprinthex_binary80_fixed(_sphexbuf, sizeof(_sphexbuf), q.sbig);
+        dual_printf("BlueScale sbig:     %40s    %40s\n", _spbuf, _sphexbuf);
+    }
+}
+
+static void check_arithmetic_params_binary80(const char *tag, bool print_values) {
+    auto fail = [&](const char *what) {
+        printf("*** Testing Mutils (mplapack_binary80_t) failed: %s: %s ***\n", tag, what);
+        exit(1);
+    };
+
+    auto assert_case = [&](bool cond, const char *what) {
+        if (!cond) {
+            fail(what);
+        }
+    };
+
+    auto assert_equal = [&](const char *name, mplapack_binary80_t got, mplapack_binary80_t expected) {
+        if (got == expected)
+            return;
+
+        printf("*** Testing Mutils (mplapack_binary80_t) failed: %s mismatch in %s ***\n", tag, name);
+        printf("    got      = ");
+        printnum(got);
+        printf("\n");
+        printf("    expected = ");
+        printnum(expected);
+        printf("\n");
+        exit(1);
+    };
+
+    const auto p = mplapack::get_arithmetic_params<mplapack_binary80_t>();
+    const auto q = mplapack::get_blue_scaling_params<mplapack_binary80_t>();
+    const auto q2 = mplapack::make_blue_scaling_params(p);
+
+    assert_equal("params.E", p.eps, Rlamch_binary80("E"));
+    assert_equal("params.S", p.sfmin, Rlamch_binary80("S"));
+    assert_equal("params.B", p.base, Rlamch_binary80("B"));
+    assert_equal("params.P", p.prec, Rlamch_binary80("P"));
+    assert_equal("params.R", p.rnd, Rlamch_binary80("R"));
+    assert_equal("params.U", p.rmin, Rlamch_binary80("U"));
+    assert_equal("params.O", p.rmax, Rlamch_binary80("O"));
+
+    assert_equal("params.N", mplapack::detail::to_rlamch_real<mplapack_binary80_t>(p.t), Rlamch_binary80("N"));
+    assert_equal("params.M", mplapack::detail::to_rlamch_real<mplapack_binary80_t>(p.emin), Rlamch_binary80("M"));
+    assert_equal("params.L", mplapack::detail::to_rlamch_real<mplapack_binary80_t>(p.emax), Rlamch_binary80("L"));
+
+    assert_equal("params.prec_consistency", p.prec, p.eps * p.base);
+    assert_equal("params.safmin", p.safmin, mplapack::detail::compute_safmin<mplapack_binary80_t>(p.emin, p.emax));
+    assert_equal("params.safmax", p.safmax, mplapack::detail::compute_safmax<mplapack_binary80_t>(p.emin, p.emax));
+
+    assert_case(q.exp_tsml == q2.exp_tsml, "ArithmeticParams->Blue builder mismatch: exp_tsml");
+    assert_case(q.exp_tbig == q2.exp_tbig, "ArithmeticParams->Blue builder mismatch: exp_tbig");
+    assert_case(q.exp_ssml == q2.exp_ssml, "ArithmeticParams->Blue builder mismatch: exp_ssml");
+    assert_case(q.exp_sbig == q2.exp_sbig, "ArithmeticParams->Blue builder mismatch: exp_sbig");
+
+    assert_equal("ArithmeticParams->Blue tsml", q.tsml, q2.tsml);
+    assert_equal("ArithmeticParams->Blue tbig", q.tbig, q2.tbig);
+    assert_equal("ArithmeticParams->Blue ssml", q.ssml, q2.ssml);
+    assert_equal("ArithmeticParams->Blue sbig", q.sbig, q2.sbig);
+
+    if (print_values) {
+        char _spbuf[__MPLAPACK_BUFLEN__];
+        char _sphexbuf[__MPLAPACK_BUFLEN__];
+
+        dual_printf("[params/%s] t=%lld emin=%lld emax=%lld\n",
+                    tag, (long long)p.t, (long long)p.emin, (long long)p.emax);
+
+        sprintnum(_spbuf, p.safmin);
+        sprinthex_binary80_fixed(_sphexbuf, sizeof(_sphexbuf), p.safmin);
+        dual_printf("[params/%s] safmin %40s    %40s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, p.safmax);
+        sprinthex_binary80_fixed(_sphexbuf, sizeof(_sphexbuf), p.safmax);
+        dual_printf("[params/%s] safmax %40s    %40s\n", tag, _spbuf, _sphexbuf);
+
+        dual_printf("[params/%s] builder exp_tsml=%lld exp_tbig=%lld exp_ssml=%lld exp_sbig=%lld\n",
+                    tag,
+                    (long long)q2.exp_tsml, (long long)q2.exp_tbig,
+                    (long long)q2.exp_ssml, (long long)q2.exp_sbig);
+
+        sprintnum(_spbuf, q2.tsml);
+        sprinthex_binary80_fixed(_sphexbuf, sizeof(_sphexbuf), q2.tsml);
+        dual_printf("[params/%s] builder tsml   %40s    %40s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q2.tbig);
+        sprinthex_binary80_fixed(_sphexbuf, sizeof(_sphexbuf), q2.tbig);
+        dual_printf("[params/%s] builder tbig   %40s    %40s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q2.ssml);
+        sprinthex_binary80_fixed(_sphexbuf, sizeof(_sphexbuf), q2.ssml);
+        dual_printf("[params/%s] builder ssml   %40s    %40s\n", tag, _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, q2.sbig);
+        sprinthex_binary80_fixed(_sphexbuf, sizeof(_sphexbuf), q2.sbig);
+        dual_printf("[params/%s] builder sbig   %40s    %40s\n", tag, _spbuf, _sphexbuf);
+    }
+}
 
 void Rlamch_binary80_test() {
 #if defined VERBOSE_TEST
@@ -1727,14 +3530,8 @@ void Rlamch_binary80_test() {
 #else
     const bool print_values = false;
 #endif
-
-#if MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_LDBL80
-    const char *tag = "long double(binary80)";
-#elif MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_FLOAT64X
-    const char *tag = "_Float64x";
-#else
-#error "unknown binary80 type"
-#endif
+    const char *tag = "binary80";
+    check_arithmetic_params_binary80(tag, print_values);
 
     auto fail = [&](const char *what) {
         printf("*** Testing Mutils (mplapack_binary80_t) failed: %s ***\n", what);
@@ -1903,17 +3700,49 @@ void Rlamch_binary80_test() {
 
     if (print_values) {
         char _spbuf[__MPLAPACK_BUFLEN__];
-        sprintnum(_spbuf, gotE); dual_printf("Rlamch E: Epsilon                      %s\n", _spbuf);
-        sprintnum(_spbuf, gotS); dual_printf("Rlamch S: Safe minimum                 %s\n", _spbuf);
-        sprintnum(_spbuf, gotB); dual_printf("Rlamch B: Base                         %s\n", _spbuf);
-        sprintnum(_spbuf, gotP); dual_printf("Rlamch P: Precision                    %s\n", _spbuf);
-        sprintnum(_spbuf, gotN); dual_printf("Rlamch N: Number of digits in mantissa %s\n", _spbuf);
-        sprintnum(_spbuf, gotR); dual_printf("Rlamch R: Rounding mode                %s\n", _spbuf);
-        sprintnum(_spbuf, gotM); dual_printf("Rlamch M: Minimum exponent             %s\n", _spbuf);
-        sprintnum(_spbuf, gotU); dual_printf("Rlamch U: Underflow threshold          %s\n", _spbuf);
-        sprintnum(_spbuf, gotL); dual_printf("Rlamch L: Largest exponent             %s\n", _spbuf);
-        sprintnum(_spbuf, gotO); dual_printf("Rlamch O: Overflow threshold           %s\n", _spbuf);
+        char _sphexbuf[__MPLAPACK_BUFLEN__];
+
+        sprintnum(_spbuf, gotE);
+        sprinthex_binary80_fixed(_sphexbuf, sizeof(_sphexbuf), gotE);
+        dual_printf("Rlamch E: Epsilon                      %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotS);
+        sprinthex_binary80_fixed(_sphexbuf, sizeof(_sphexbuf), gotS);
+        dual_printf("Rlamch S: Safe minimum                 %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotB);
+        sprinthex_binary80_fixed(_sphexbuf, sizeof(_sphexbuf), gotB);
+        dual_printf("Rlamch B: Base                         %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotP);
+        sprinthex_binary80_fixed(_sphexbuf, sizeof(_sphexbuf), gotP);
+        dual_printf("Rlamch P: Precision                    %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotN);
+        sprinthex_binary80_fixed(_sphexbuf, sizeof(_sphexbuf), gotN);
+        dual_printf("Rlamch N: Number of digits in mantissa %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotR);
+        sprinthex_binary80_fixed(_sphexbuf, sizeof(_sphexbuf), gotR);
+        dual_printf("Rlamch R: Rounding mode                %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotM);
+        sprinthex_binary80_fixed(_sphexbuf, sizeof(_sphexbuf), gotM);
+        dual_printf("Rlamch M: Minimum exponent             %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotU);
+        sprinthex_binary80_fixed(_sphexbuf, sizeof(_sphexbuf), gotU);
+        dual_printf("Rlamch U: Underflow threshold          %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotL);
+        sprinthex_binary80_fixed(_sphexbuf, sizeof(_sphexbuf), gotL);
+        dual_printf("Rlamch L: Largest exponent             %40s    %40s\n", _spbuf, _sphexbuf);
+
+        sprintnum(_spbuf, gotO);
+        sprinthex_binary80_fixed(_sphexbuf, sizeof(_sphexbuf), gotO);
+        dual_printf("Rlamch O: Overflow threshold           %40s    %40s\n", _spbuf, _sphexbuf);
     }
+    check_blue_scaling_binary80(tag, emin, emax, p, print_values);
 }
 #endif
 

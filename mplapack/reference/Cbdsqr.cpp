@@ -35,6 +35,8 @@
 
 #include <mpblas.h>
 #include <mplapack.h>
+#include <mplapack_arithmetic_params.h>
+#include <mplapack_arithmetic_params_double.h>
 
 void Cbdsqr(const char *uplo, INTEGER const n, INTEGER const ncvt, INTEGER const nru, INTEGER const ncc, REAL *d, REAL *e, COMPLEX *vt, INTEGER const ldvt, COMPLEX *u, INTEGER const ldu, COMPLEX *c, INTEGER const ldc, REAL *rwork, INTEGER &info) {
     bool lower = false;
@@ -56,17 +58,21 @@ void Cbdsqr(const char *uplo, INTEGER const n, INTEGER const ncvt, INTEGER const
     REAL tol = 0.0;
     const REAL zero = 0.0;
     REAL smax = 0.0;
-    REAL sminl = 0.0;
+    REAL smin = 0.0;
     REAL sminoa = 0.0;
     REAL mu = 0.0;
-    const INTEGER maxitr = 6;
+    const INTEGER maxitr_base = 6;
+    INTEGER maxitr = maxitr_base;
+    const INTEGER maxitr_cap = 1000;
+    REAL eps_ref = 0.0;
+    REAL scale_ratio = 0.0;
     REAL thresh = 0.0;
-    INTEGER maxit = 0;
+    INTEGER maxitdivn = 0;
+    INTEGER iterdivn = 0;
     INTEGER iter = 0;
     INTEGER oldll = 0;
     INTEGER oldm = 0;
     INTEGER m = 0;
-    REAL smin = 0.0;
     INTEGER lll = 0;
     INTEGER ll = 0;
     REAL abss = 0.0;
@@ -148,6 +154,16 @@ void Cbdsqr(const char *uplo, INTEGER const n, INTEGER const ncvt, INTEGER const
     //
     eps = Rlamch("Epsilon");
     unfl = Rlamch("Safe minimum");
+    eps_ref = mplapack::get_arithmetic_params<double>().eps;
+    // maxitr is tuned for double precision. For high-precision backends,
+    // scale the zero-shift QR sweep limit with log(1/eps).
+    scale_ratio = log(eps) / log(eps_ref);
+    if (scale_ratio >= one) {
+        maxitr = iceil(castREAL(maxitr_base) * scale_ratio);
+    }
+    if (maxitr > maxitr_cap) {
+        maxitr = maxitr_cap;
+    }
     //
     // If matrix lower bidiagonal, rotate to be upper bidiagonal
     // by applying Givens rotations on the left
@@ -176,7 +192,11 @@ void Cbdsqr(const char *uplo, INTEGER const n, INTEGER const ncvt, INTEGER const
     // (By setting TOL to be negative, algorithm will compute
     // singular values to absolute accuracy ABS(TOL)*norm(input matrix))
     //
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+    tolmul = max(ten, min(hndrd, one / sqrt(sqrt(sqrt(eps)))));
+#else
     tolmul = max(ten, min(hndrd, pow(eps, meigth)));
+#endif
     tol = tolmul * eps;
     //
     // Compute approximate maximum, minimum singular values
@@ -188,7 +208,7 @@ void Cbdsqr(const char *uplo, INTEGER const n, INTEGER const ncvt, INTEGER const
     for (i = 1; i <= n - 1; i = i + 1) {
         smax = max(smax, abs(e[i - 1]));
     }
-    sminl = zero;
+    smin = zero;
     if (tol >= zero) {
         //
         // Relative accuracy desired
@@ -207,20 +227,21 @@ void Cbdsqr(const char *uplo, INTEGER const n, INTEGER const ncvt, INTEGER const
         }
     statement_50:
         sminoa = sminoa / sqrt(castREAL(n));
-        thresh = max(tol * sminoa, maxitr * n * n * unfl);
+        thresh = max(tol * sminoa, maxitr * (n * (n * unfl)));
     } else {
         //
         // Absolute accuracy desired
         //
-        thresh = max(abs(tol) * smax, maxitr * n * n * unfl);
+        thresh = max(abs(tol) * smax, maxitr * (n * (n * unfl)));
     }
     //
     // Prepare for main iteration loop for the singular values
     // (MAXIT is the maximum number of passes through the inner
     // loop permitted before nonconvergence signalled.)
     //
-    maxit = maxitr * n * n;
-    iter = 0;
+    maxitdivn = maxitr * n;
+    iterdivn = 0;
+    iter = -1;
     oldll = -1;
     oldm = -1;
     //
@@ -237,8 +258,12 @@ statement_60:
     if (m <= 1) {
         goto statement_160;
     }
-    if (iter > maxit) {
-        goto statement_200;
+    if (iter >= n) {
+        iter = iter - n;
+        iterdivn++;
+        if (iterdivn >= maxitdivn) {
+            goto statement_200;
+        }
     }
     //
     // Find diagonal block of matrix to work on
@@ -247,7 +272,6 @@ statement_60:
         d[m - 1] = zero;
     }
     smax = abs(d[m - 1]);
-    smin = smax;
     for (lll = 1; lll <= m - 1; lll = lll + 1) {
         ll = m - lll;
         abss = abs(d[ll - 1]);
@@ -258,7 +282,6 @@ statement_60:
         if (abse <= thresh) {
             goto statement_80;
         }
-        smin = min(smin, abss);
         smax = max(smax, abss, abse);
     }
     ll = 0;
@@ -339,14 +362,14 @@ statement_90:
             // apply convergence criterion forward
             //
             mu = abs(d[ll - 1]);
-            sminl = mu;
+            smin = mu;
             for (lll = ll; lll <= m - 1; lll = lll + 1) {
                 if (abs(e[lll - 1]) <= tol * mu) {
                     e[lll - 1] = zero;
                     goto statement_60;
                 }
                 mu = abs(d[(lll + 1) - 1]) * (mu / (mu + abs(e[lll - 1])));
-                sminl = min(sminl, mu);
+                smin = min(smin, mu);
             }
         }
         //
@@ -366,14 +389,14 @@ statement_90:
             // apply convergence criterion backward
             //
             mu = abs(d[m - 1]);
-            sminl = mu;
+            smin = mu;
             for (lll = m - 1; lll >= ll; lll = lll - 1) {
                 if (abs(e[lll - 1]) <= tol * mu) {
                     e[lll - 1] = zero;
                     goto statement_60;
                 }
                 mu = abs(d[lll - 1]) * (mu / (mu + abs(e[lll - 1])));
-                sminl = min(sminl, mu);
+                smin = min(smin, mu);
             }
         }
     }
@@ -383,7 +406,7 @@ statement_90:
     // Compute shift.  First, test if shifting would ruin relative
     // accuracy, and if so set the shift to zero.
     //
-    if (tol >= zero && n * tol * (sminl / smax) <= max(eps, hndrth * tol)) {
+    if (tol >= zero && n * tol * (smin / smax) <= max(eps, hndrth * tol)) {
         //
         // Use a zero shift to avoid loss of relative accuracy
         //
@@ -608,6 +631,12 @@ statement_90:
 //
 statement_160:
     for (i = 1; i <= n; i = i + 1) {
+        if (d[i - 1] == zero) {
+            //
+            // Avoid -ZERO
+            //
+            d[i - 1] = zero;
+        }
         if (d[i - 1] < zero) {
             d[i - 1] = -d[i - 1];
             //

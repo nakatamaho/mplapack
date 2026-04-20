@@ -40,8 +40,8 @@ void Rlatbs(const char *uplo, const char *trans, const char *diag, const char *n
     bool upper = false;
     bool notran = false;
     bool nounit = false;
-    REAL smlnum = 0.0;
     const REAL one = 1.0;
+    REAL smlnum = 0.0;
     REAL bignum = 0.0;
     INTEGER j = 0;
     INTEGER jlen = 0;
@@ -94,6 +94,7 @@ void Rlatbs(const char *uplo, const char *trans, const char *diag, const char *n
     //
     // Quick return if possible
     //
+    scale = one;
     if (n == 0) {
         return;
     }
@@ -102,7 +103,6 @@ void Rlatbs(const char *uplo, const char *trans, const char *diag, const char *n
     //
     smlnum = Rlamch("Safe minimum") / Rlamch("Precision");
     bignum = one / smlnum;
-    scale = one;
     //
     if (Mlsame(normin, "N")) {
         //

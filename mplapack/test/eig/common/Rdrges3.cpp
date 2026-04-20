@@ -209,7 +209,6 @@ void Rdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
     ulp = Rlamch("Epsilon") * Rlamch("Base");
     safmin = safmin / ulp;
     safmax = one / safmin;
-    Rlabad(safmin, safmax);
     ulpinv = one / ulp;
     //
     // The values RMAGN(2:3) depend on N, see below.
@@ -405,6 +404,14 @@ void Rdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                     rsub = 5;
                 }
                 //
+                // Call Mxlaenv to set the parameters used in Rlaqz0
+                //
+                Mxlaenv(12, 10);
+                Mxlaenv(13, 12);
+                Mxlaenv(14, 13);
+                Mxlaenv(15, 2);
+                Mxlaenv(17, 10);
+                //
                 // Call Rgges3 to compute H, T, Q, Z, alpha, and beta.
                 //
                 Rlacpy("Full", n, n, a, lda, s, lda);
@@ -412,7 +419,7 @@ void Rdrges3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
                 ntest = 1 + rsub + isort;
                 result[(1 + rsub + isort) - 1] = ulpinv;
                 Rgges3("V", "V", sort.elems, Rlctes, n, s, lda, t, lda, sdim, alphar, alphai, beta, q, ldq, z, ldq, work, lwork, bwork, iinfo);
-                if (iinfo != 0 && iinfo != n + 2) {
+                if (iinfo != 0 && iinfo != n + 2 && iinfo != n + 3) {
                     result[(1 + rsub + isort) - 1] = ulpinv;
                     write(nounit, format_9999), "Rgges3", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);

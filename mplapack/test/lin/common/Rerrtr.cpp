@@ -67,6 +67,7 @@ void Rerrtr(fem::str_cref path, INTEGER const nunit) {
     INTEGER iw[nmax];
     REAL rcond = 0.0;
     REAL scale = 0.0;
+    REAL scales[0];
     if (Mlsamen(2, c2.elems, "TR")) {
         //
         // Test error exits for the general triangular routines.
@@ -196,6 +197,37 @@ void Rerrtr(fem::str_cref path, INTEGER const nunit) {
         infot = 7;
         Rlatrs("U", "N", "N", "N", 2, a, 1, x, scale, w, info);
         Chkxer("Rlatrs", infot, nout, lerr, ok);
+        //
+        // Rlatrs3
+        //
+        srnamt = "Rlatrs3";
+        infot = 1;
+        Rlatrs3("/", "N", "N", "N", 0, 0, a, 1, x, 1, scales, w, &w[2 - 1], 1, info);
+        Chkxer("Rlatrs3", infot, nout, lerr, ok);
+        infot = 2;
+        Rlatrs3("U", "/", "N", "N", 0, 0, a, 1, x, 1, scales, w, &w[2 - 1], 1, info);
+        Chkxer("Rlatrs3", infot, nout, lerr, ok);
+        infot = 3;
+        Rlatrs3("U", "N", "/", "N", 0, 0, a, 1, x, 1, scales, w, &w[2 - 1], 1, info);
+        Chkxer("Rlatrs3", infot, nout, lerr, ok);
+        infot = 4;
+        Rlatrs3("U", "N", "N", "/", 0, 0, a, 1, x, 1, scales, w, &w[2 - 1], 1, info);
+        Chkxer("Rlatrs3", infot, nout, lerr, ok);
+        infot = 5;
+        Rlatrs3("U", "N", "N", "N", -1, 0, a, 1, x, 1, scales, w, &w[2 - 1], 1, info);
+        Chkxer("Rlatrs3", infot, nout, lerr, ok);
+        infot = 6;
+        Rlatrs3("U", "N", "N", "N", 0, -1, a, 1, x, 1, scales, w, &w[2 - 1], 1, info);
+        Chkxer("Rlatrs3", infot, nout, lerr, ok);
+        infot = 8;
+        Rlatrs3("U", "N", "N", "N", 2, 0, a, 1, x, 1, scales, w, &w[2 - 1], 1, info);
+        Chkxer("Rlatrs3", infot, nout, lerr, ok);
+        infot = 10;
+        Rlatrs3("U", "N", "N", "N", 2, 0, a, 2, x, 1, scales, w, &w[2 - 1], 1, info);
+        Chkxer("Rlatrs3", infot, nout, lerr, ok);
+        infot = 14;
+        Rlatrs3("U", "N", "N", "N", 1, 0, a, 1, x, 1, scales, w, &w[2 - 1], 0, info);
+        Chkxer("Rlatrs3", infot, nout, lerr, ok);
         //
     } else if (Mlsamen(2, c2.elems, "TP")) {
         //

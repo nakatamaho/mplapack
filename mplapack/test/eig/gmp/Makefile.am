@@ -1,6 +1,6 @@
 check_PROGRAMS = $(mplapack_gmp_test_PROGRAMS)
 
-mplapack_gmp_test_PROGRAMS = xeigtstR_gmp xeigtstC_gmp
+mplapack_gmp_test_PROGRAMS = xeigtstR_gmp xeigtstC_gmp xdmdeigtstR_gmp xdmdeigtstC_gmp
 mplapack_gmp_testdir = $(prefix)/lib/$(target)/mplapack/test/eig
 
 $(check_PROGRAMS): ../libeig_gmp.la ../libeig_override_gmp.la
@@ -23,6 +23,16 @@ xeigtstC_gmp_SOURCES  = ../common/Cchkee.cpp
 xeigtstC_gmp_LDFLAGS  = $(libdepends) $(mplibs) #-L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstC_gmp_LDFLAGS += -Wl,-rpath,$(libdir)
 xeigtstC_gmp_CXXFLAGS = $(cxxflags)
+
+xdmdeigtstR_gmp_SOURCES  = ../common/Rchkdmd.cpp
+xdmdeigtstR_gmp_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xdmdeigtstR_gmp_LDFLAGS += -Wl,-rpath,$(libdir)
+xdmdeigtstR_gmp_CXXFLAGS = $(cxxflags)
+
+xdmdeigtstC_gmp_SOURCES  = ../common/Cchkdmd.cpp
+xdmdeigtstC_gmp_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xdmdeigtstC_gmp_LDFLAGS += -Wl,-rpath,$(libdir)
+xdmdeigtstC_gmp_CXXFLAGS = $(cxxflags)
 
 install-data-hook:
 if IS_MACOS
@@ -57,10 +67,10 @@ OUTDIR_PATH = ../results/$(OUTDIR)/gmp
 # -----------------------------------------------------------------------------
 
 GMP_REAL_TESTS = \
-	Rnep Rsep Rse2 Rsvd Rec Red Rgg Rgd Rsb Rsg Rbal Rbak Rgbal Rgbak Rbb Rglm Rgqr Rgsv Rlse
+	Rnep Rsep Rse2 Rsvd Rec Red Rgg Rgd Rsb Rsg Rbal Rbak Rgbal Rgbak Rbb Rglm Rgqr Rgsv Rlse Rdmd
 
 GMP_COMPLEX_TESTS = \
-	Cnep Csep Cse2 Csvd Cec Ced Cgg Cgd Csb Csg Cbal Cbak Cgbal Cgbak Cbb Cglm Cgqr Cgsv Clse
+	Cnep Csep Cse2 Csvd Cec Ced Cgg Cgd Csb Csg Cbal Cbak Cgbal Cgbak Cbb Cglm Cgqr Cgsv Clse Cdmd
 
 GMP_ALL_TESTS = $(GMP_REAL_TESTS) $(GMP_COMPLEX_TESTS)
 
@@ -534,4 +544,27 @@ $(OUTDIR_PATH)/Clse.out: $(srcdir)/../lse.in xeigtstC_gmp$(EXEEXT)
 	set -e; { \
 		echo "=== precision: $(GMP_LABEL) ==="; \
 		$(GMP_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_gmp$(EXEEXT) < $(srcdir)/../lse.in; \
+	} > $@ 2>&1
+
+$(OUTDIR_PATH)/Rdmd.out: $(srcdir)/../Rdmd.in xdmdeigtstR_gmp$(EXEEXT)
+	@$(MKDIR_P) $(OUTDIR_PATH)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "DMD: Testing Dynamic Mode Decomposition routines [$(GMP_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(GMP_LABEL) ==="; \
+		$(GMP_EXTRA_ENV) $$wrapper $(WINE) ./xdmdeigtstR_gmp$(EXEEXT) < $(srcdir)/../Rdmd.in; \
+	} > $@ 2>&1
+$(OUTDIR_PATH)/Cdmd.out: $(srcdir)/../Cdmd.in xdmdeigtstC_gmp$(EXEEXT)
+	@$(MKDIR_P) $(OUTDIR_PATH)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "DMD: Testing COMPLEX Dynamic Mode Decomposition routines [$(GMP_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(GMP_LABEL) ==="; \
+		$(GMP_EXTRA_ENV) $$wrapper $(WINE) ./xdmdeigtstC_gmp$(EXEEXT) < $(srcdir)/../Cdmd.in; \
 	} > $@ 2>&1

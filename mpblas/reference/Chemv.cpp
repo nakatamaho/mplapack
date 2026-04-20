@@ -192,6 +192,6 @@ void Chemv(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *a, I
         }
     }
     //
-    // End of Chemv .
+    // End of Chemv
     //
 }

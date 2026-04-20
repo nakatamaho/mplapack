@@ -1,12 +1,12 @@
 SUBDIRS = external mpblas mplapack
 if ENABLE_BENCHMARK
-SUBDIRS += benchmark 
+SUBDIRS += benchmark
 endif
 if !DISABLE_EXAMPLES
 SUBDIRS += examples
 endif
 
-ACLOCAL_AMFLAGS= -I m4
+ACLOCAL_AMFLAGS = -I m4
 
 mplapack_includedir = $(includedir)/mplapack
 mplapack_include_HEADERS = \
@@ -18,13 +18,15 @@ if ENABLE_DD
 mplapack_include_HEADERS += \
     include/dd_complex.h \
     include/mpblas_dd.h \
+    include/mplapack_arithmetic_params_dd.h \
     include/mplapack_dd.h \
-    include/mplapack_utils_dd.h 
+    include/mplapack_utils_dd.h
 endif
 
 if ENABLE_GMP
 mplapack_include_HEADERS += \
     include/mpblas_gmp.h \
+    include/mplapack_arithmetic_params_gmp.h \
     include/mplapack_gmp.h \
     include/mplapack_utils_gmp.h \
     include/mpc_class.h
@@ -33,6 +35,7 @@ endif
 if ENABLE_QD
 mplapack_include_HEADERS += \
     include/mpblas_qd.h \
+    include/mplapack_arithmetic_params_qd.h \
     include/mplapack_qd.h \
     include/mplapack_utils_qd.h \
     include/qd_complex.h
@@ -41,6 +44,7 @@ endif
 if ENABLE_MPFR
 mplapack_include_HEADERS += \
     include/mpblas_mpfr.h \
+    include/mplapack_arithmetic_params_mpfr.h \
     include/mplapack_mpfr.h \
     include/mplapack_utils_mpfr.h \
     mpfrc++/mpcomplex.h \
@@ -50,6 +54,7 @@ endif
 if ENABLE_DOUBLE
 mplapack_include_HEADERS += \
     include/mpblas_double.h \
+    include/mplapack_arithmetic_params_double.h \
     include/mplapack_utils_double.h \
     include/mplapack_double.h
 endif
@@ -57,6 +62,7 @@ endif
 if ENABLE_BINARY80
 mplapack_include_HEADERS += \
     include/mpblas_binary80.h \
+    include/mplapack_arithmetic_params_binary80.h \
     include/mplapack_binary80.h \
     include/mplapack_utils_binary80.h
 endif
@@ -64,6 +70,7 @@ endif
 if ENABLE_BINARY128
 mplapack_include_HEADERS += \
     include/mpblas_binary128.h \
+    include/mplapack_arithmetic_params_binary128.h \
     include/mplapack_binary128.h \
     include/mplapack_utils_binary128.h
 endif
@@ -76,7 +83,52 @@ if ENABLE_BINARY128
 nodist_mplapack_include_HEADERS += include/mplapack_utils_binary128.h
 endif
 
-noinst_HEADERS = include/mplapack_debug.h include/mplapack_utils.h include/mpblas.h include/mplapack.h include/mplapack_generic.h include/mplapack_benchmark.h include/mplapack_benchmark_binary128.h include/mplapack_benchmark_dd.h include/mplapack_benchmark_double.h include/mplapack_benchmark_gmp.h include/mplapack_benchmark_mpfr.h include/mplapack_benchmark_qd.h include/mplapack_compare_debug.h include/mplapack_print_double.h include/mplapack_print.h include/mplapack_matgen.h include/mplapack_matgen_binary128.h include/mplapack_matgen_binary80.h include/mplapack_matgen_dd.h include/mplapack_matgen_double.h include/mplapack_matgen_gmp.h include/mplapack_matgen_mpfr.h include/mplapack_matgen_qd.h include/mplapack_lin.h include/mplapack_lin_binary128.h include/mplapack_lin_binary80.h include/mplapack_lin_dd.h include/mplapack_lin_double.h include/mplapack_lin_gmp.h include/mplapack_lin_mpfr.h include/mplapack_lin_qd.h include/mplapack_eig.h include/mplapack_eig_binary128.h include/mplapack_eig_binary80.h include/mplapack_eig_dd.h include/mplapack_eig_double.h include/mplapack_eig_gmp.h include/mplapack_eig_mpfr.h include/mplapack_eig_qd.h include/mplapack_common_sslct.h include/mplapack_common_mn.h include/mplapack_benchmark.h include/mplapack_benchmark_binary128.h include/mplapack_benchmark_binary80.h include/mplapack_benchmark_dd.h include/mplapack_benchmark_double.h include/mplapack_benchmark_gmp.h include/mplapack_benchmark_mpfr.h include/mplapack_benchmark_qd.h
+# Internal headers used by tests/benchmarks; keep them in dist tarballs.
+noinst_HEADERS = \
+    include/mplapack_arithmetic_params.h \
+    include/mplapack_debug.h \
+    include/mplapack_utils.h \
+    include/mpblas.h \
+    include/mplapack.h \
+    include/mplapack_generic.h \
+    include/mplapack_compare_debug.h \
+    include/mplapack_print_double.h \
+    include/mplapack_hex_helpers.h \
+    include/mplapack_print.h \
+    include/mplapack_common_sslct.h \
+    include/mplapack_common_mn.h \
+    include/mplapack_benchmark.h \
+    include/mplapack_benchmark_binary128.h \
+    include/mplapack_benchmark_binary80.h \
+    include/mplapack_benchmark_dd.h \
+    include/mplapack_benchmark_double.h \
+    include/mplapack_benchmark_gmp.h \
+    include/mplapack_benchmark_mpfr.h \
+    include/mplapack_benchmark_qd.h \
+    include/mplapack_matgen.h \
+    include/mplapack_matgen_binary128.h \
+    include/mplapack_matgen_binary80.h \
+    include/mplapack_matgen_dd.h \
+    include/mplapack_matgen_double.h \
+    include/mplapack_matgen_gmp.h \
+    include/mplapack_matgen_mpfr.h \
+    include/mplapack_matgen_qd.h \
+    include/mplapack_lin.h \
+    include/mplapack_lin_binary128.h \
+    include/mplapack_lin_binary80.h \
+    include/mplapack_lin_dd.h \
+    include/mplapack_lin_double.h \
+    include/mplapack_lin_gmp.h \
+    include/mplapack_lin_mpfr.h \
+    include/mplapack_lin_qd.h \
+    include/mplapack_eig.h \
+    include/mplapack_eig_binary128.h \
+    include/mplapack_eig_binary80.h \
+    include/mplapack_eig_dd.h \
+    include/mplapack_eig_double.h \
+    include/mplapack_eig_gmp.h \
+    include/mplapack_eig_mpfr.h \
+    include/mplapack_eig_qd.h
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = mplapack.pc
@@ -113,11 +165,20 @@ external/lapack/Makefile.am \
 external/lapack/Makefile.in \
 external/lapack/download/lapack-3.12.1.tar.gz \
 external/lapack/download/lapack-3.9.1.tar.gz \
-external/lapack/patches/3.12.1/patch-BLAS \
-external/lapack/patches/3.12.1/patch-LAPACK \
-external/lapack/patches/3.12.1/patch-mic \
+external/lapack/patches/3.12.1/patch-cabs1_unification \
+external/lapack/patches/3.12.1/patch-cabsmax \
+external/lapack/patches/3.12.1/patch-fix-testparameters \
+external/lapack/patches/3.12.1/patch-iseed \
 external/lapack/patches/3.12.1/patch-mingw \
 external/lapack/patches/3.12.1/patch-print \
+external/lapack/patches/3.12.1/patch-redundant-dble-real \
+external/lapack/patches/3.12.1/patch-stebz-error-propagation \
+external/lapack/patches/3.12.1/patch-trsyl3-ldswork-overwrite \
+external/lapack/patches/3.12.1/patch-xERRTSQR.f \
+external/lapack/patches/3.12.1/patch-xLAQP2RK.f \
+external/lapack/patches/3.12.1/patch-xpgvx-info-to-iinfo \
+external/lapack/patches/3.12.1/patch-zunbdb3-conjugate-x21 \
+external/lapack/patches/3.12.1/patch-xxxGVD.f \
 external/lapack/patches/3.9.1/patch-ddrvst.f \
 external/lapack/patches/3.9.1/patch-ddrvst2stg.f \
 external/lapack/patches/3.9.1/patch-dlatm4.f \
@@ -236,6 +297,7 @@ mpfrc++/org/mpreal.cpp mpfrc++/org/mpreal.h \
 mplapack/test/eig/Cbak.in \
 mplapack/test/eig/Cbal.in \
 mplapack/test/eig/Cbb.in \
+mplapack/test/eig/Cdmd.in \
 mplapack/test/eig/Cec.in \
 mplapack/test/eig/Ced.in \
 mplapack/test/eig/Cgbak.in \
@@ -247,6 +309,7 @@ mplapack/test/eig/Csg.in \
 mplapack/test/eig/Rbak.in \
 mplapack/test/eig/Rbal.in \
 mplapack/test/eig/Rbb.in \
+mplapack/test/eig/Rdmd.in \
 mplapack/test/eig/Rec.in \
 mplapack/test/eig/Red.in \
 mplapack/test/eig/Rgbak.in \

@@ -192,6 +192,6 @@ void Rsymv(const char *uplo, INTEGER const n, REAL const alpha, REAL *a, INTEGER
         }
     }
     //
-    // End of Rsymv .
+    // End of Rsymv
     //
 }

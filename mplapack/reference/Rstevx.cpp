@@ -58,10 +58,10 @@ void Rstevx(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
     INTEGER indwrk = 0;
     INTEGER i = 0;
     char order;
-    INTEGER indibl = 0;
     INTEGER indisp = 0;
     INTEGER indiwo = 0;
     INTEGER nsplit = 0;
+    INTEGER iinfo = 0;
     INTEGER imax = 0;
     INTEGER j = 0;
     REAL tmp1 = 0.0;
@@ -204,16 +204,21 @@ void Rstevx(const char *jobz, const char *range, INTEGER const n, REAL *d, REAL 
         order = 'E';
     }
     indwrk = 1;
-    indibl = 1;
-    indisp = indibl + n;
+    indisp = 1 + n;
     indiwo = indisp + n;
-    Rstebz(range, &order, n, vll, vuu, il, iu, abstol, d, e, m, nsplit, w, &iwork[indibl - 1], &iwork[indisp - 1], &work[indwrk - 1], &iwork[indiwo - 1], info);
-    if (info != 0) {
-        return;  // propagate INFO from Rstebz; IBLOCK may be invalid
+    Rstebz(range, &order, n, vll, vuu, il, iu, abstol, d, e, m, nsplit, w, &iwork[1 - 1], &iwork[indisp - 1], &work[indwrk - 1], &iwork[indiwo - 1], iinfo);
+    if (iinfo != 0) {
+        info = n + iinfo;
+        if (iinfo != 1) {
+            goto statement_20;
+        }
     }
     //
     if (wantz) {
-        Rstein(n, d, e, m, w, &iwork[indibl - 1], &iwork[indisp - 1], z, ldz, &work[indwrk - 1], &iwork[indiwo - 1], ifail, info);
+        Rstein(n, d, e, m, w, &iwork[1 - 1], &iwork[indisp - 1], z, ldz, &work[indwrk - 1], &iwork[indiwo - 1], ifail, iinfo);
+        if (iinfo != 0 && info == 0) {
+            info = iinfo;
+        }
     }
 //
 // If matrix was scaled, then rescale eigenvalues appropriately.
@@ -243,11 +248,11 @@ statement_20:
             }
             //
             if (i != 0) {
-                itmp1 = iwork[(indibl + i - 1) - 1];
+                itmp1 = iwork[(1 + i - 1) - 1];
                 w[i - 1] = w[j - 1];
-                iwork[(indibl + i - 1) - 1] = iwork[(indibl + j - 1) - 1];
+                iwork[(1 + i - 1) - 1] = iwork[(1 + j - 1) - 1];
                 w[j - 1] = tmp1;
-                iwork[(indibl + j - 1) - 1] = itmp1;
+                iwork[(1 + j - 1) - 1] = itmp1;
                 Rswap(n, &z[(i - 1) * ldz], 1, &z[(j - 1) * ldz], 1);
                 if (info != 0) {
                     itmp1 = ifail[i - 1];
