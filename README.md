@@ -8,15 +8,19 @@ BSD-style license, supplemental to the original LAPACK license.
 
 # News
 
-* 2026-04-21  MPLAPACK 2.2.0-rc1 released. First release candidate for
-  the 2.2 series: rebased from LAPACK 3.9.1 to 3.12.1, added new
+* 2026-04-21  MPLAPACK 2.2.0-rc1 released. Available from
+  <https://github.com/nakatamaho/mplapack/releases>. First release
+  candidate for the 2.2 series: rebased from LAPACK 3.9.1 to 3.12.1, added new
   BLAS/LAPACK routines including `Cgemmtr/Rgemmtr`, `Cgedmd/Rgedmd`,
   `Cgedmdq/Rgedmdq`, `Cgelst/Rgelst`, `Clatrs3/Rlatrs3`,
   `Cgeqp3rk/Rgeqp3rk`, `Cunhr_col/Rorhr_col`,
   `Cungtsqr_row/Rorgtsqr_row`, and `Claqz0-4/Rlaqz0-4`, and improved
   robustness across binary80, binary128, DD, QD, GMP, and MPFR. Tier1
   validation is complete; tier2 build and test checks are still in
-  progress. See [CHANGES.2.2.0.md](CHANGES.2.2.0.md).
+  progress. See [CHANGES.2.2.0.md](CHANGES.2.2.0.md). Differences from
+  binary64 behavior and other multiprecision-specific failure modes are
+  summarized in
+  [MULTIPRECISION_FAILURE_MODES_2.2.0.md](MULTIPRECISION_FAILURE_MODES_2.2.0.md).
 * 2026-04-09  MPLAPACK 2.1.1 released. Patch release: GCC 15 support
   (`external/gmp` C23 fix, `{C,R}drgvx` IPA-modref workaround), arm64
   promoted to **Tier 1** (Ubuntu arm64 and macOS Apple Silicon),
