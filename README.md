@@ -8,6 +8,15 @@ BSD-style license, supplemental to the original LAPACK license.
 
 # News
 
+* 2026-04-21  MPLAPACK 2.2.0-rc1 released. First release candidate for
+  the 2.2 series: rebased from LAPACK 3.9.1 to 3.12.1, added new
+  BLAS/LAPACK routines including `Cgemmtr/Rgemmtr`, `Cgedmd/Rgedmd`,
+  `Cgedmdq/Rgedmdq`, `Cgelst/Rgelst`, `Clatrs3/Rlatrs3`,
+  `Cgeqp3rk/Rgeqp3rk`, `Cunhr_col/Rorhr_col`,
+  `Cungtsqr_row/Rorgtsqr_row`, and `Claqz0-4/Rlaqz0-4`, and improved
+  robustness across binary80, binary128, DD, QD, GMP, and MPFR. Tier1
+  validation is complete; tier2 build and test checks are still in
+  progress. See [CHANGES.2.2.0.md](CHANGES.2.2.0.md).
 * 2026-04-09  MPLAPACK 2.1.1 released. Patch release: GCC 15 support
   (`external/gmp` C23 fix, `{C,R}drgvx` IPA-modref workaround), arm64
   promoted to **Tier 1** (Ubuntu arm64 and macOS Apple Silicon),
@@ -20,7 +29,7 @@ BSD-style license, supplemental to the original LAPACK license.
   binary128/binary80 naming unified, MPFR emin/emax auto-adjustment,
   extended build matrix. LAPACK 3.9.1 Fortran sources are now mechanically
   converted to idiomatic C++ via Fable and bundled in the release tarball.
-  See [CHANGES.md](CHANGES.md) and [MIGRATION.md](MIGRATION.md).
+  See [CHANGES.2.1.0.md](CHANGES.2.1.0.md) and [MIGRATION.md](MIGRATION.md).
 * 2022-09-12  MPLAPACK 2.0.1 released, featuring CUDA versions of Rgemm (dd) and Rsyrk (dd)
   for Volta and Ampere architectures (~450 GFlops on V100), and Windows DLLs for MinGW-w64.
 * 2022-07-26  MPLAPACK 2.0.0 released. All routines (except mixed-precision) functional and
