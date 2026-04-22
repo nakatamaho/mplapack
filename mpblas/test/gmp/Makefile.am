@@ -91,6 +91,7 @@ test_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -
 test_srcdepends = ../common/xerbla.cpp ../common/mplapack.test.cpp ../common/Mxerbla.override.cpp
 gmp_only_mplibs=-L$(GMP_LIBDIR) -lgmp
 gmp_only_test_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_GMP___ -D___MPLAPACK_INTERNAL___
+gmp_vs_mpfr_test_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_GMP___ -D___MPLAPACK_BUILD_WITH_MPFR___ -D___MPLAPACK_INTERNAL___
 
 if IS_MACOS
 mplibs+=-Wl,-flat_namespace,-undefined,dynamic_lookup
@@ -121,6 +122,16 @@ complex_test_gmp_LDFLAGS=$(libdepends) $(mplibs) $(refblas)
 transcendents_gmp_test_SOURCES=../common/transcendents_gmp.test.cpp
 transcendents_gmp_test_CXXFLAGS=$(gmp_only_test_cxxflags)
 transcendents_gmp_test_LDFLAGS=-L$(top_builddir)/mpblas/reference -lmpblas_gmp $(gmp_only_mplibs)
+
+if ENABLE_MPFR
+mpblas_gmp_test_PROGRAMS += transcendents_gmp_vs_mpfr.test
+TESTS += transcendents_gmp_vs_mpfr.test
+transcendents_gmp_vs_mpfr_test_SOURCES=../common/transcendents_gmp_vs_mpfr.test.cpp
+transcendents_gmp_vs_mpfr_test_CXXFLAGS=$(gmp_vs_mpfr_test_cxxflags)
+transcendents_gmp_vs_mpfr_test_LDFLAGS=-L$(top_builddir)/mpblas/reference -lmpblas_gmp $(mplibs)
+else
+EXTRA_DIST = ../common/transcendents_gmp_vs_mpfr.test.cpp
+endif
 
 iCamax_test_gmp_opt_SOURCES=../common/iCamax.test.cpp $(test_srcdepends)
 iCamax_test_gmp_opt_CXXFLAGS=$(test_cxxflags)
