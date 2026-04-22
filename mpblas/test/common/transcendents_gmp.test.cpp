@@ -43,6 +43,7 @@
 using mplapack_gmp_transcendents::pi;
 using mplapack_gmp_transcendents::log_two;
 using mplapack_gmp_transcendents::compute_log1p;
+using mplapack_gmp_transcendents::compute_log;
 using mplapack_gmp_transcendents::div;
 using mplapack_gmp_transcendents::make_ui;
 using mplapack_gmp_transcendents::set_prec_copy;
@@ -277,8 +278,93 @@ static void test_log1p_near_zero() {
     std::printf("log1p near-zero seam check passed\n");
 }
 
+static void test_log_reference_literal() {
+    const mp_bitcnt_t target_precision = 256;
+    const mp_bitcnt_t literal_precision = 768;
+
+    // Wolfram Alpha:
+    // https://www.wolframalpha.com/input?i=N%5BLog%5B25%5D%2C+200%5D
+    // Query: N[Log[25], 200]
+    // Retrieval date: 2026-04-22
+    // Cross-checked locally with Python Decimal.ln() at 260 digits.
+    const char *log_literal =
+        "3.21887582486820074920151866645237527905120270853703544382529578294835797541531552"
+        "926026775618635922159993260604343112579944801045864935239926723323492741145510435";
+
+    const mpf_class reference_hi = parse_decimal_literal(log_literal, literal_precision);
+    mpf_class reference(0, target_precision);
+    mpf_set(reference.get_mpf_t(), reference_hi.get_mpf_t());
+
+    const mpf_class x = make_ui(25, target_precision);
+    const mpf_class value = compute_log(x, target_precision);
+    const mpf_class diff = abs(value - reference);
+    const mpf_class ulp = ulp_for_value(reference, target_precision);
+
+    if (diff > ulp) {
+        std::printf("log literal test failed\n");
+        std::printf("diff = ");
+        printnum(diff);
+        std::printf("\nulp  = ");
+        printnum(ulp);
+        std::printf("\n");
+        std::exit(1);
+    }
+    std::printf("log 256-bit literal check passed\n");
+}
+
+static void test_log_precision_doubling_pair(mp_bitcnt_t low_precision, mp_bitcnt_t high_precision) {
+    const mpf_class x = make_ui(25, high_precision);
+    const mpf_class low_x = set_prec_copy(x, low_precision);
+    const mpf_class low_value = compute_log(low_x, low_precision);
+    const mpf_class high_value = compute_log(x, high_precision);
+    mpf_class rounded_high(0, low_precision);
+    mpf_set(rounded_high.get_mpf_t(), high_value.get_mpf_t());
+
+    const mpf_class diff = abs(low_value - rounded_high);
+    const mpf_class ulp = ulp_for_value(rounded_high, low_precision);
+
+    if (diff > ulp) {
+        std::printf("log precision-doubling test failed for %lu -> %lu bits\n",
+            static_cast<unsigned long>(low_precision),
+            static_cast<unsigned long>(high_precision));
+        std::printf("diff = ");
+        printnum(diff);
+        std::printf("\nulp  = ");
+        printnum(ulp);
+        std::printf("\n");
+        std::exit(1);
+    }
+    std::printf("log %lu-bit self-check passed (vs rounded %lu-bit value)\n",
+        static_cast<unsigned long>(low_precision),
+        static_cast<unsigned long>(high_precision));
+}
+
+static void test_log_near_one_branch() {
+    const mp_bitcnt_t precision = 256;
+    mpf_class x = make_ui(1, precision);
+    mpf_class delta = make_ui(1, precision);
+    mpf_div_2exp(delta.get_mpf_t(), delta.get_mpf_t(), 80);
+    x = mplapack_gmp_transcendents::add(x, delta, precision);
+
+    const mpf_class value = compute_log(x, precision);
+    const mpf_class reference = compute_log1p(delta, precision);
+    const mpf_class diff = abs(value - reference);
+    const mpf_class ulp = ulp_for_value(reference, precision);
+
+    if (diff > ulp) {
+        std::printf("log near-one branch test failed\n");
+        std::printf("diff = ");
+        printnum(diff);
+        std::printf("\nulp  = ");
+        printnum(ulp);
+        std::printf("\n");
+        std::exit(1);
+    }
+    std::printf("log near-one branch check passed\n");
+}
+
 int main() {
-    std::printf("*** Testing GMP transcendents step0/3 start ***\n");
+    std::printf("*** Testing GMP transcendents step0/4 start ***\n");
     test_pi_reference_literal();
     test_pi_precision_doubling_pair(128, 256);
     test_pi_precision_doubling_pair(512, 1024);
@@ -295,6 +381,12 @@ int main() {
     test_log1p_precision_doubling_pair(1024, 4096);
     test_log1p_precision_doubling_pair(2048, 4096);
     test_log1p_near_zero();
-    std::printf("*** Testing GMP transcendents step0/3 successful ***\n");
+    test_log_reference_literal();
+    test_log_precision_doubling_pair(128, 256);
+    test_log_precision_doubling_pair(512, 1024);
+    test_log_precision_doubling_pair(1024, 4096);
+    test_log_precision_doubling_pair(2048, 4096);
+    test_log_near_one_branch();
+    std::printf("*** Testing GMP transcendents step0/4 successful ***\n");
     return 0;
 }

@@ -43,6 +43,19 @@ inline precision_type normalize_target_precision(precision_type target_precision
     return std::max<precision_type>(target_precision, 32);
 }
 
+inline unsigned long ceil_log2_precision(precision_type value) {
+    if (value <= 1) {
+        return 0;
+    }
+    unsigned long result = 0;
+    precision_type power = 1;
+    while (power < value) {
+        power <<= 1;
+        result++;
+    }
+    return result;
+}
+
 inline precision_type guard_bits_for_pi(precision_type) {
     //
     // Faithful rounding needs roughly 1 ulp at the target precision.
@@ -386,6 +399,97 @@ inline mpf_class compute_log1p(const mpf_class &x_input, precision_type target_p
         result = log1p_atanh_series(x, work);
     }
     return set_prec_copy(result, target);
+}
+
+inline precision_type guard_bits_for_log(precision_type) {
+    return 96;
+}
+
+inline precision_type log_cancellation_bits(const mpf_class &x_input, precision_type target_precision) {
+    const precision_type target = normalize_target_precision(target_precision);
+    const precision_type probe_precision = target + 32;
+    const mpf_class one = make_ui(1, probe_precision);
+    const mpf_class x = set_prec_copy(x_input, probe_precision);
+    const mpf_class delta = abs(sub(x, one, probe_precision));
+
+    if (delta == make_ui(0, probe_precision)) {
+        return target;
+    }
+
+    mp_exp_t delta_exponent = 0;
+    mpf_get_d_2exp(&delta_exponent, delta.get_mpf_t());
+    const long numerator_bits = static_cast<long>(ceil_log2_precision(target)) + 1;
+    const long estimate = numerator_bits - delta_exponent + 2;
+    return estimate > 0 ? static_cast<precision_type>(estimate) : 0;
+}
+
+inline precision_type working_precision_for_log(const mpf_class &x_input, precision_type target_precision) {
+    return normalize_target_precision(target_precision) + guard_bits_for_log(target_precision) + log_cancellation_bits(x_input, target_precision);
+}
+
+inline mpf_class mul_signed_exp(const mpf_class &value, mp_exp_t multiplier, precision_type precision) {
+    if (multiplier == 0) {
+        return make_ui(0, precision);
+    }
+    const unsigned long magnitude_ui = static_cast<unsigned long>(multiplier > 0 ? multiplier : -multiplier);
+    const mpf_class magnitude = mul_ui(value, magnitude_ui, precision);
+    if (multiplier < 0) {
+        return sub(make_ui(0, precision), magnitude, precision);
+    }
+    return magnitude;
+}
+
+inline mpf_class compute_log(const mpf_class &x_input, precision_type target_precision) {
+    const precision_type target = normalize_target_precision(target_precision);
+    const precision_type work = working_precision_for_log(x_input, target);
+    const mpf_class x = set_prec_copy(x_input, work);
+    const mpf_class zero = make_ui(0, work);
+    const mpf_class one = make_ui(1, work);
+    const mpf_class two = make_ui(2, work);
+
+    if (x == zero) {
+        throw std::domain_error("log(x) pole at x = 0");
+    }
+    if (x < zero) {
+        throw std::domain_error("log(x) is undefined for x < 0");
+    }
+    if (x == one) {
+        return make_ui(0, target);
+    }
+
+    const mpf_class delta = sub(x, one, work);
+    mpf_class near_one_threshold = make_ui(1, work);
+    mpf_div_2exp(near_one_threshold.get_mpf_t(), near_one_threshold.get_mpf_t(), 1);
+    if (abs(delta) < near_one_threshold) {
+        return set_prec_copy(compute_log1p(delta, work), target);
+    }
+
+    //
+    // Variable-scale AGM reduction:
+    //   choose m so that s = x * 2^m > 2^(p/2 + safety)
+    //   then evaluate on b = 4 / s
+    //   evaluate
+    //     log(x) ~= pi / (2 * AGM(1, 4 / (x * 2^m))) - m * log(2)
+    //
+    // The near-1 branch stays on log1p() to avoid cancellation.
+    //
+    mp_exp_t x_exponent = 0;
+    mpf_get_d_2exp(&x_exponent, x.get_mpf_t());
+    const mp_exp_t desired_exponent = static_cast<mp_exp_t>(work / 2 + 16);
+    const mp_exp_t exponent = desired_exponent - x_exponent + 1;
+
+    mpf_class s = set_prec_copy(x, work);
+    if (exponent >= 0) {
+        mpf_mul_2exp(s.get_mpf_t(), s.get_mpf_t(), static_cast<mp_bitcnt_t>(exponent));
+    } else {
+        mpf_div_2exp(s.get_mpf_t(), s.get_mpf_t(), static_cast<mp_bitcnt_t>(-exponent));
+    }
+
+    const mpf_class b = div(make_ui(4, work), s, work);
+    const mpf_class agm_value = agm_converged(one, b, work);
+    const mpf_class leading = div(pi(work), mul(two, agm_value, work), work);
+    const mpf_class correction = mul_signed_exp(log_two(work), exponent, work);
+    return set_prec_copy(sub(leading, correction, work), target);
 }
 
 } // namespace mplapack_gmp_transcendents
