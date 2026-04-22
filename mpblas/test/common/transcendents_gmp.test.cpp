@@ -46,6 +46,9 @@ using mplapack_gmp_transcendents::compute_log1p;
 using mplapack_gmp_transcendents::compute_log;
 using mplapack_gmp_transcendents::compute_exp;
 using mplapack_gmp_transcendents::compute_expm1;
+using mplapack_gmp_transcendents::compute_sin;
+using mplapack_gmp_transcendents::compute_cos;
+using mplapack_gmp_transcendents::compute_sincos;
 using mplapack_gmp_transcendents::div;
 using mplapack_gmp_transcendents::make_ui;
 using mplapack_gmp_transcendents::quo_rem;
@@ -590,8 +593,159 @@ static void test_quo_rem_rounding() {
     std::printf("quo_rem round-to-nearest-even checks passed\n");
 }
 
+static void test_sin_reference_literal() {
+    const mp_bitcnt_t target_precision = 256;
+    const mp_bitcnt_t literal_precision = 768;
+
+    // Wolfram Alpha:
+    // https://www.wolframalpha.com/input?i=N%5BSin%5B1%5D%2C+200%5D
+    // Query: N[Sin[1], 200]
+    // Retrieval date: 2026-04-22
+    // Cross-checked locally with Python Decimal Taylor summation at 260 digits.
+    const char *sin_literal =
+        "0.84147098480789650665250232163029899962256306079837106567275170999191040439123966"
+        "894863974354305269585434903790792067429325911892099189888119341032772921240948079";
+
+    const mpf_class reference_hi = parse_decimal_literal(sin_literal, literal_precision);
+    mpf_class reference(0, target_precision);
+    mpf_set(reference.get_mpf_t(), reference_hi.get_mpf_t());
+
+    const mpf_class x = make_ui(1, target_precision);
+    const mpf_class value = compute_sin(x, target_precision);
+    const mpf_class diff = abs(value - reference);
+    const mpf_class ulp = ulp_for_value(reference, target_precision);
+
+    if (diff > ulp) {
+        std::printf("sin literal test failed\n");
+        std::printf("value = ");
+        printnum(value);
+        std::printf("\nreference = ");
+        printnum(reference);
+        std::printf("\n");
+        std::printf("diff = ");
+        printnum(diff);
+        std::printf("\nulp  = ");
+        printnum(ulp);
+        std::printf("\n");
+        std::exit(1);
+    }
+    std::printf("sin 256-bit literal check passed\n");
+}
+
+static void test_cos_reference_literal() {
+    const mp_bitcnt_t target_precision = 256;
+    const mp_bitcnt_t literal_precision = 768;
+
+    // Wolfram Alpha:
+    // https://www.wolframalpha.com/input?i=N%5BCos%5B1%5D%2C+200%5D
+    // Query: N[Cos[1], 200]
+    // Retrieval date: 2026-04-22
+    // Cross-checked locally with Python Decimal Taylor summation at 260 digits.
+    const char *cos_literal =
+        "0.54030230586813971740093660744297660373231042061792222767009725538110039477447176"
+        "451795185608718308934357173116003008909786063376002166345640651226541731858471797";
+
+    const mpf_class reference_hi = parse_decimal_literal(cos_literal, literal_precision);
+    mpf_class reference(0, target_precision);
+    mpf_set(reference.get_mpf_t(), reference_hi.get_mpf_t());
+
+    const mpf_class x = make_ui(1, target_precision);
+    const mpf_class value = compute_cos(x, target_precision);
+    const mpf_class diff = abs(value - reference);
+    const mpf_class ulp = ulp_for_value(reference, target_precision);
+
+    if (diff > ulp) {
+        std::printf("cos literal test failed\n");
+        std::printf("value = ");
+        printnum(value);
+        std::printf("\nreference = ");
+        printnum(reference);
+        std::printf("\n");
+        std::printf("diff = ");
+        printnum(diff);
+        std::printf("\nulp  = ");
+        printnum(ulp);
+        std::printf("\n");
+        std::exit(1);
+    }
+    std::printf("cos 256-bit literal check passed\n");
+}
+
+static void test_sin_precision_doubling_pair(mp_bitcnt_t low_precision, mp_bitcnt_t high_precision) {
+    const mpf_class x = make_ui(1, high_precision);
+    const mpf_class low_x = set_prec_copy(x, low_precision);
+    const mpf_class low_value = compute_sin(low_x, low_precision);
+    const mpf_class high_value = compute_sin(x, high_precision);
+    mpf_class rounded_high(0, low_precision);
+    mpf_set(rounded_high.get_mpf_t(), high_value.get_mpf_t());
+
+    const mpf_class diff = abs(low_value - rounded_high);
+    const mpf_class ulp = ulp_for_value(rounded_high, low_precision);
+    if (diff > ulp) {
+        std::printf("sin precision-doubling test failed for %lu -> %lu bits\n",
+            static_cast<unsigned long>(low_precision),
+            static_cast<unsigned long>(high_precision));
+        std::exit(1);
+    }
+    std::printf("sin %lu-bit self-check passed (vs rounded %lu-bit value)\n",
+        static_cast<unsigned long>(low_precision),
+        static_cast<unsigned long>(high_precision));
+}
+
+static void test_cos_precision_doubling_pair(mp_bitcnt_t low_precision, mp_bitcnt_t high_precision) {
+    const mpf_class x = make_ui(1, high_precision);
+    const mpf_class low_x = set_prec_copy(x, low_precision);
+    const mpf_class low_value = compute_cos(low_x, low_precision);
+    const mpf_class high_value = compute_cos(x, high_precision);
+    mpf_class rounded_high(0, low_precision);
+    mpf_set(rounded_high.get_mpf_t(), high_value.get_mpf_t());
+
+    const mpf_class diff = abs(low_value - rounded_high);
+    const mpf_class ulp = ulp_for_value(rounded_high, low_precision);
+    if (diff > ulp) {
+        std::printf("cos precision-doubling test failed for %lu -> %lu bits\n",
+            static_cast<unsigned long>(low_precision),
+            static_cast<unsigned long>(high_precision));
+        std::exit(1);
+    }
+    std::printf("cos %lu-bit self-check passed (vs rounded %lu-bit value)\n",
+        static_cast<unsigned long>(low_precision),
+        static_cast<unsigned long>(high_precision));
+}
+
+static void test_sincos_identity() {
+    const mp_bitcnt_t precision = 256;
+    const mpf_class x = div(make_ui(7, precision), make_ui(10, precision), precision);
+    const auto values = compute_sincos(x, precision);
+    const mpf_class sum = mplapack_gmp_transcendents::add(sqr(values.sin_value, precision), sqr(values.cos_value, precision), precision);
+    const mpf_class diff = abs(sum - make_ui(1, precision));
+    const mpf_class ulp = ulp_for_value(make_ui(1, precision), precision);
+    if (diff > ulp) {
+        std::printf("sincos identity test failed\n");
+        std::exit(1);
+    }
+    std::printf("sincos identity check passed\n");
+}
+
+static void test_sincos_reduction_seam() {
+    const mp_bitcnt_t precision = 256;
+    mpf_class x = pi(precision);
+    mpf_div_2exp(x.get_mpf_t(), x.get_mpf_t(), 1);
+    mpf_class delta = make_ui(1, precision);
+    mpf_div_2exp(delta.get_mpf_t(), delta.get_mpf_t(), 80);
+    x = mplapack_gmp_transcendents::sub(x, delta, precision);
+
+    const auto values = compute_sincos(x, precision);
+    const mpf_class sin_diff = abs(values.sin_value - make_ui(1, precision));
+    if (sin_diff > delta) {
+        std::printf("sincos reduction seam test failed\n");
+        std::exit(1);
+    }
+    std::printf("sincos reduction seam check passed\n");
+}
+
 int main() {
-    std::printf("*** Testing GMP transcendents step0/6+quo_rem start ***\n");
+    std::printf("*** Testing GMP transcendents step0/7 start ***\n");
     test_pi_reference_literal();
     test_pi_precision_doubling_pair(128, 256);
     test_pi_precision_doubling_pair(512, 1024);
@@ -627,6 +781,16 @@ int main() {
     test_expm1_precision_doubling_pair(2048, 4096);
     test_expm1_near_zero();
     test_quo_rem_rounding();
-    std::printf("*** Testing GMP transcendents step0/6+quo_rem successful ***\n");
+    test_sin_reference_literal();
+    test_cos_reference_literal();
+    test_sin_precision_doubling_pair(128, 256);
+    test_sin_precision_doubling_pair(512, 1024);
+    test_sin_precision_doubling_pair(1024, 4096);
+    test_cos_precision_doubling_pair(128, 256);
+    test_cos_precision_doubling_pair(512, 1024);
+    test_cos_precision_doubling_pair(1024, 4096);
+    test_sincos_identity();
+    test_sincos_reduction_seam();
+    std::printf("*** Testing GMP transcendents step0/7 successful ***\n");
     return 0;
 }
