@@ -49,6 +49,7 @@ using mplapack_gmp_transcendents::compute_expm1;
 using mplapack_gmp_transcendents::compute_sin;
 using mplapack_gmp_transcendents::compute_cos;
 using mplapack_gmp_transcendents::compute_sincos;
+using mplapack_gmp_transcendents::compute_atan;
 using mplapack_gmp_transcendents::div;
 using mplapack_gmp_transcendents::make_ui;
 using mplapack_gmp_transcendents::quo_rem;
@@ -744,8 +745,80 @@ static void test_sincos_reduction_seam() {
     std::printf("sincos reduction seam check passed\n");
 }
 
+static void test_atan_reference_literal() {
+    const mp_bitcnt_t target_precision = 256;
+    const mp_bitcnt_t literal_precision = 768;
+
+    // Wolfram Alpha:
+    // https://www.wolframalpha.com/input?i=N%5BArcTan%5B1%5D%2C+200%5D
+    // Query: N[ArcTan[1], 200]
+    // Retrieval date: 2026-04-22
+    const char *atan_literal =
+        "0.78539816339744830961566084581987572104929234984377645524373614807695410157155224"
+        "965700870633552926699553702162832057666177346115238764555793133985203212027936257";
+
+    const mpf_class reference_hi = parse_decimal_literal(atan_literal, literal_precision);
+    mpf_class reference(0, target_precision);
+    mpf_set(reference.get_mpf_t(), reference_hi.get_mpf_t());
+
+    const mpf_class x = make_ui(1, target_precision);
+    const mpf_class value = compute_atan(x, target_precision);
+    const mpf_class diff = abs(value - reference);
+    const mpf_class ulp = ulp_for_value(reference, target_precision);
+
+    if (diff > ulp) {
+        std::printf("atan literal test failed\n");
+        std::printf("value = ");
+        printnum(value);
+        std::printf("\nreference = ");
+        printnum(reference);
+        std::printf("\ndiff = ");
+        printnum(diff);
+        std::printf("\nulp  = ");
+        printnum(ulp);
+        std::printf("\n");
+        std::exit(1);
+    }
+    std::printf("atan 256-bit literal check passed\n");
+}
+
+static void test_atan_precision_doubling_pair(mp_bitcnt_t low_precision, mp_bitcnt_t high_precision) {
+    const mpf_class x = make_ui(1, high_precision);
+    const mpf_class low_x = set_prec_copy(x, low_precision);
+    const mpf_class low_value = compute_atan(low_x, low_precision);
+    const mpf_class high_value = compute_atan(x, high_precision);
+    mpf_class rounded_high(0, low_precision);
+    mpf_set(rounded_high.get_mpf_t(), high_value.get_mpf_t());
+
+    const mpf_class diff = abs(low_value - rounded_high);
+    const mpf_class ulp = ulp_for_value(rounded_high, low_precision);
+    if (diff > ulp) {
+        std::printf("atan precision-doubling test failed for %lu -> %lu bits\n",
+            static_cast<unsigned long>(low_precision),
+            static_cast<unsigned long>(high_precision));
+        std::exit(1);
+    }
+    std::printf("atan %lu-bit self-check passed (vs rounded %lu-bit value)\n",
+        static_cast<unsigned long>(low_precision),
+        static_cast<unsigned long>(high_precision));
+}
+
+static void test_atan_odd_symmetry() {
+    const mp_bitcnt_t precision = 256;
+    const mpf_class x = parse_decimal_literal("0.7", precision);
+    const mpf_class value = compute_atan(x, precision);
+    const mpf_class neg_value = compute_atan(parse_decimal_literal("-0.7", precision), precision);
+    const mpf_class diff = abs(mplapack_gmp_transcendents::add(value, neg_value, precision));
+    const mpf_class ulp = ulp_for_value(value, precision);
+    if (diff > ulp) {
+        std::printf("atan odd symmetry test failed\n");
+        std::exit(1);
+    }
+    std::printf("atan odd symmetry check passed\n");
+}
+
 int main() {
-    std::printf("*** Testing GMP transcendents step0/7 start ***\n");
+    std::printf("*** Testing GMP transcendents step0/8 start ***\n");
     test_pi_reference_literal();
     test_pi_precision_doubling_pair(128, 256);
     test_pi_precision_doubling_pair(512, 1024);
@@ -791,6 +864,11 @@ int main() {
     test_cos_precision_doubling_pair(1024, 4096);
     test_sincos_identity();
     test_sincos_reduction_seam();
-    std::printf("*** Testing GMP transcendents step0/7 successful ***\n");
+    test_atan_reference_literal();
+    test_atan_precision_doubling_pair(128, 256);
+    test_atan_precision_doubling_pair(512, 1024);
+    test_atan_precision_doubling_pair(1024, 4096);
+    test_atan_odd_symmetry();
+    std::printf("*** Testing GMP transcendents step0/8 successful ***\n");
     return 0;
 }

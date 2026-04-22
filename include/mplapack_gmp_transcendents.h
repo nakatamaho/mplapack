@@ -812,6 +812,70 @@ inline mpf_class compute_cos(const mpf_class &x_input, precision_type target_pre
     return compute_sincos(x_input, target_precision).cos_value;
 }
 
+inline precision_type guard_bits_for_atan(precision_type) {
+    return 96;
+}
+
+inline precision_type working_precision_for_atan(precision_type target_precision) {
+    return normalize_target_precision(target_precision) + guard_bits_for_atan(target_precision);
+}
+
+inline mpf_class atan_taylor_small(const mpf_class &x, precision_type precision) {
+    mpf_class epsilon = make_ui(1, precision);
+    mpf_div_2exp(epsilon.get_mpf_t(), epsilon.get_mpf_t(), precision);
+
+    const mpf_class x2 = sqr(x, precision);
+    mpf_class sum = set_prec_copy(x, precision);
+    mpf_class power = set_prec_copy(x, precision);
+
+    for (unsigned long k = 1;; ++k) {
+        power = mul(power, x2, precision);
+        mpf_class contribution = div(power, make_ui(2ul * k + 1ul, precision), precision);
+        if ((k & 1ul) == 1ul) {
+            contribution = sub(make_ui(0, precision), contribution, precision);
+        }
+        sum = add(sum, contribution, precision);
+        if (abs(contribution) < epsilon) {
+            break;
+        }
+    }
+    return sum;
+}
+
+inline mpf_class compute_atan(const mpf_class &x_input, precision_type target_precision) {
+    const precision_type target = normalize_target_precision(target_precision);
+    const precision_type work = working_precision_for_atan(target);
+    const mpf_class x = set_prec_copy(x_input, work);
+    const mpf_class zero = make_ui(0, work);
+    const mpf_class one = make_ui(1, work);
+
+    if (x == zero) {
+        return make_ui(0, target);
+    }
+
+    const bool negate = x < zero;
+    const mpf_class ax = negate ? sub(zero, x, work) : x;
+
+    mpf_class y = set_prec_copy(ax, work);
+    unsigned long reductions = 0;
+    const mpf_class threshold = div(one, make_ui(2, work), work);
+    while (y > threshold) {
+        const mpf_class sqrt_term = sqrt_prec(add(one, sqr(y, work), work), work);
+        y = div(y, add(one, sqrt_term, work), work);
+        reductions++;
+    }
+
+    mpf_class result = atan_taylor_small(y, work);
+    for (unsigned long i = 0; i < reductions; ++i) {
+        result = mul_ui(result, 2ul, work);
+    }
+
+    if (negate) {
+        result = sub(zero, result, work);
+    }
+    return set_prec_copy(result, target);
+}
+
 } // namespace mplapack_gmp_transcendents
 
 #endif
