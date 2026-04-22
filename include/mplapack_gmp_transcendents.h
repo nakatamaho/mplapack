@@ -922,6 +922,81 @@ inline mpf_class compute_atan2(const mpf_class &y_input, const mpf_class &x_inpu
     return set_prec_copy(result, target);
 }
 
+inline precision_type guard_bits_for_pow(precision_type) {
+    return 96;
+}
+
+inline precision_type working_precision_for_pow(precision_type target_precision) {
+    return normalize_target_precision(target_precision) + guard_bits_for_pow(target_precision);
+}
+
+inline bool mpf_is_exact_integer(const mpf_class &x, mpz_class &integer_value) {
+    mpz_set_f(integer_value.get_mpz_t(), x.get_mpf_t());
+    mpf_class rounded(0, x.get_prec());
+    mpf_set_z(rounded.get_mpf_t(), integer_value.get_mpz_t());
+    return rounded == x;
+}
+
+inline mpf_class pow_integer_unsigned(const mpf_class &base_input, const mpz_class &exponent, precision_type precision) {
+    mpf_class result = make_ui(1, precision);
+    mpf_class base = set_prec_copy(base_input, precision);
+    mpz_class e = exponent;
+
+    while (e > 0) {
+        if (mpz_odd_p(e.get_mpz_t())) {
+            result = mul(result, base, precision);
+        }
+        e >>= 1;
+        if (e > 0) {
+            base = sqr(base, precision);
+        }
+    }
+    return result;
+}
+
+inline mpf_class compute_pow(const mpf_class &x_input, const mpf_class &y_input, precision_type target_precision) {
+    const precision_type target = normalize_target_precision(target_precision);
+    const precision_type work = working_precision_for_pow(target);
+    const mpf_class x = set_prec_copy(x_input, work);
+    const mpf_class y = set_prec_copy(y_input, work);
+    const mpf_class zero = make_ui(0, work);
+    const mpf_class one = make_ui(1, work);
+
+    if (y == zero) {
+        if (x == zero) {
+            throw std::domain_error("pow(0, 0) is undefined");
+        }
+        return make_ui(1, target);
+    }
+
+    if (x == zero) {
+        if (y > zero) {
+            return make_ui(0, target);
+        }
+        throw std::domain_error("pow(0, y) is undefined for y <= 0");
+    }
+
+    mpz_class integer_exponent;
+    if (mpf_is_exact_integer(y, integer_exponent)) {
+        const bool negative_exponent = integer_exponent < 0;
+        if (negative_exponent) {
+            integer_exponent = -integer_exponent;
+        }
+        mpf_class magnitude = pow_integer_unsigned(x, integer_exponent, work);
+        if (negative_exponent) {
+            magnitude = div(one, magnitude, work);
+        }
+        return set_prec_copy(magnitude, target);
+    }
+
+    if (x < zero) {
+        throw std::domain_error("pow(x, y) is undefined for x < 0 and non-integer y");
+    }
+
+    const mpf_class exponent_product = mul(y, compute_log(x, work), work);
+    return set_prec_copy(compute_exp(exponent_product, work), target);
+}
+
 } // namespace mplapack_gmp_transcendents
 
 #endif

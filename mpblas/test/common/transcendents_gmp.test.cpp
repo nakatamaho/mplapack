@@ -51,6 +51,7 @@ using mplapack_gmp_transcendents::compute_cos;
 using mplapack_gmp_transcendents::compute_sincos;
 using mplapack_gmp_transcendents::compute_atan;
 using mplapack_gmp_transcendents::compute_atan2;
+using mplapack_gmp_transcendents::compute_pow;
 using mplapack_gmp_transcendents::div;
 using mplapack_gmp_transcendents::make_ui;
 using mplapack_gmp_transcendents::quo_rem;
@@ -887,8 +888,93 @@ static void test_atan2_axis_convention() {
     std::printf("atan2 axis convention check passed\n");
 }
 
+static void test_pow_reference_literal() {
+    const mp_bitcnt_t target_precision = 256;
+    const mp_bitcnt_t literal_precision = 768;
+
+    // Wolfram Alpha:
+    // https://www.wolframalpha.com/input?i=N%5B2%5E%281%2F2%29%2C+200%5D
+    // Query: N[2^(1/2), 200]
+    // Retrieval date: 2026-04-22
+    const char *pow_literal =
+        "1.41421356237309504880168872420969807856967187537694807317667973799073247846210703"
+        "885038753432764157273501384623091229702492483605585073721264412149709993583141322";
+
+    const mpf_class reference_hi = parse_decimal_literal(pow_literal, literal_precision);
+    mpf_class reference(0, target_precision);
+    mpf_set(reference.get_mpf_t(), reference_hi.get_mpf_t());
+
+    const mpf_class x = make_ui(2, target_precision);
+    const mpf_class y = div(make_ui(1, target_precision), make_ui(2, target_precision), target_precision);
+    const mpf_class value = compute_pow(x, y, target_precision);
+    const mpf_class diff = abs(value - reference);
+    const mpf_class ulp = ulp_for_value(reference, target_precision);
+    if (diff > ulp) {
+        std::printf("pow literal test failed\n");
+        std::printf("value = ");
+        printnum(value);
+        std::printf("\nreference = ");
+        printnum(reference);
+        std::printf("\ndiff = ");
+        printnum(diff);
+        std::printf("\nulp  = ");
+        printnum(ulp);
+        std::printf("\n");
+        std::exit(1);
+    }
+    std::printf("pow 256-bit literal check passed\n");
+}
+
+static void test_pow_integer_exact() {
+    const mp_bitcnt_t precision = 256;
+    const mpf_class x = make_ui(2, precision);
+    const mpf_class y = make_ui(10, precision);
+    const mpf_class value = compute_pow(x, y, precision);
+    const mpf_class expected = make_ui(1024, precision);
+    if (value != expected) {
+        std::printf("pow integer exact test failed\n");
+        std::exit(1);
+    }
+    std::printf("pow integer exact check passed\n");
+}
+
+static void test_pow_negative_integer_exponent() {
+    const mp_bitcnt_t precision = 256;
+    const mpf_class x = parse_decimal_literal("-2", precision);
+    const mpf_class y = make_ui(3, precision);
+    const mpf_class value = compute_pow(x, y, precision);
+    const mpf_class expected = parse_decimal_literal("-8", precision);
+    if (value != expected) {
+        std::printf("pow negative-base integer exponent test failed\n");
+        std::exit(1);
+    }
+    std::printf("pow negative-base integer exponent check passed\n");
+}
+
+static void test_pow_precision_doubling_pair(mp_bitcnt_t low_precision, mp_bitcnt_t high_precision) {
+    const mpf_class x = make_ui(2, high_precision);
+    const mpf_class y = div(make_ui(1, high_precision), make_ui(2, high_precision), high_precision);
+    const mpf_class low_x = set_prec_copy(x, low_precision);
+    const mpf_class low_y = set_prec_copy(y, low_precision);
+    const mpf_class low_value = compute_pow(low_x, low_y, low_precision);
+    const mpf_class high_value = compute_pow(x, y, high_precision);
+    mpf_class rounded_high(0, low_precision);
+    mpf_set(rounded_high.get_mpf_t(), high_value.get_mpf_t());
+    const mpf_class diff = abs(low_value - rounded_high);
+    const mpf_class ulp = ulp_for_value(rounded_high, low_precision);
+    if (diff > ulp) {
+        std::printf("pow precision-doubling test failed for %lu -> %lu bits\n",
+            static_cast<unsigned long>(low_precision),
+            static_cast<unsigned long>(high_precision));
+        std::exit(1);
+    }
+    std::printf("pow %lu-bit self-check passed (vs rounded %lu-bit value)\n",
+        static_cast<unsigned long>(low_precision),
+        static_cast<unsigned long>(high_precision));
+}
+
 int main() {
-    std::printf("*** Testing GMP transcendents step0/9 start ***\n");
+    std::printf("*** Testing GMP transcendents step0/10 start ***\n");
     test_pi_reference_literal();
     test_pi_precision_doubling_pair(128, 256);
     test_pi_precision_doubling_pair(512, 1024);
@@ -941,6 +1027,12 @@ int main() {
     test_atan_odd_symmetry();
     test_atan2_reference_literal();
     test_atan2_axis_convention();
-    std::printf("*** Testing GMP transcendents step0/9 successful ***\n");
+    test_pow_reference_literal();
+    test_pow_integer_exact();
+    test_pow_negative_integer_exponent();
+    test_pow_precision_doubling_pair(128, 256);
+    test_pow_precision_doubling_pair(512, 1024);
+    test_pow_precision_doubling_pair(1024, 4096);
+    std::printf("*** Testing GMP transcendents step0/10 successful ***\n");
     return 0;
 }
