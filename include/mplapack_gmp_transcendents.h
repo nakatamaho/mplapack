@@ -492,6 +492,73 @@ inline mpf_class compute_log(const mpf_class &x_input, precision_type target_pre
     return set_prec_copy(sub(leading, correction, work), target);
 }
 
+inline precision_type guard_bits_for_exp(precision_type) {
+    return 96;
+}
+
+inline precision_type working_precision_for_exp(precision_type target_precision) {
+    return normalize_target_precision(target_precision) + guard_bits_for_exp(target_precision);
+}
+
+inline mp_exp_t round_to_nearest_mp_exp(const mpf_class &value, precision_type precision) {
+    const mpf_class zero = make_ui(0, precision);
+    mpf_class half = make_ui(1, precision);
+    mpf_div_2exp(half.get_mpf_t(), half.get_mpf_t(), 1);
+    mpf_class adjusted = set_prec_copy(value, precision);
+    if (adjusted >= zero) {
+        adjusted = add(adjusted, half, precision);
+    } else {
+        adjusted = sub(adjusted, half, precision);
+    }
+
+    mpz_class rounded_integer;
+    mpz_set_f(rounded_integer.get_mpz_t(), adjusted.get_mpf_t());
+    if (!rounded_integer.fits_slong_p()) {
+        throw std::overflow_error("exp(x) scaling exponent is too large");
+    }
+    return static_cast<mp_exp_t>(rounded_integer.get_si());
+}
+
+inline mpf_class exp_taylor_reduced(const mpf_class &x, precision_type precision) {
+    mpf_class epsilon = make_ui(1, precision);
+    mpf_div_2exp(epsilon.get_mpf_t(), epsilon.get_mpf_t(), precision);
+
+    mpf_class sum = make_ui(1, precision);
+    mpf_class term = make_ui(1, precision);
+    for (unsigned long n = 1;; ++n) {
+        term = div(mul(term, x, precision), make_ui(n, precision), precision);
+        sum = add(sum, term, precision);
+        if (abs(term) < epsilon) {
+            break;
+        }
+    }
+    return sum;
+}
+
+inline mpf_class compute_exp(const mpf_class &x_input, precision_type target_precision) {
+    const precision_type target = normalize_target_precision(target_precision);
+    const precision_type work = working_precision_for_exp(target);
+    const mpf_class x = set_prec_copy(x_input, work);
+    const mpf_class zero = make_ui(0, work);
+
+    if (x == zero) {
+        return make_ui(1, target);
+    }
+
+    const mpf_class log2_value = log_two(work);
+    const mpf_class quotient = div(x, log2_value, work);
+    const mp_exp_t k = round_to_nearest_mp_exp(quotient, work);
+    const mpf_class reduced = sub(x, mul_signed_exp(log2_value, k, work), work);
+
+    mpf_class result = exp_taylor_reduced(reduced, work);
+    if (k >= 0) {
+        mpf_mul_2exp(result.get_mpf_t(), result.get_mpf_t(), static_cast<mp_bitcnt_t>(k));
+    } else {
+        mpf_div_2exp(result.get_mpf_t(), result.get_mpf_t(), static_cast<mp_bitcnt_t>(-k));
+    }
+    return set_prec_copy(result, target);
+}
+
 } // namespace mplapack_gmp_transcendents
 
 #endif
