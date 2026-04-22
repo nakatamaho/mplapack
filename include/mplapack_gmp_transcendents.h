@@ -380,7 +380,7 @@ inline mpf_class log_two(precision_type target_precision) {
 }
 
 inline precision_type guard_bits_for_log1p(precision_type) {
-    return 96;
+    return 160;
 }
 
 inline precision_type working_precision_for_log1p(precision_type target_precision) {
@@ -526,7 +526,7 @@ inline mpf_class compute_log(const mpf_class &x_input, precision_type target_pre
     mpf_class near_one_threshold = make_ui(1, work);
     mpf_div_2exp(near_one_threshold.get_mpf_t(), near_one_threshold.get_mpf_t(), 1);
     if (abs(delta) < near_one_threshold) {
-        return set_prec_copy(compute_log1p(delta, work), target);
+        return compute_log1p(delta, target);
     }
 
     //

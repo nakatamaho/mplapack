@@ -84,6 +84,16 @@ void require_ulp(const char *label, const mpf_class &gmp_value, mpfr_t mpfr_valu
     }
 }
 
+mpf_class make_fraction(unsigned long numer, unsigned long denom, mp_bitcnt_t precision) {
+    return div(make_ui(numer, precision), make_ui(denom, precision), precision);
+}
+
+mpf_class make_power_of_two_negative(mp_bitcnt_t exponent, mp_bitcnt_t precision) {
+    mpf_class value = make_ui(1, precision);
+    mpf_div_2exp(value.get_mpf_t(), value.get_mpf_t(), exponent);
+    return value;
+}
+
 void test_pi_vs_mpfr(const std::vector<mp_bitcnt_t> &precisions) {
     for (auto p : precisions) {
         mpfr_holder ref(p);
@@ -104,110 +114,257 @@ void test_log2_vs_mpfr(const std::vector<mp_bitcnt_t> &precisions) {
 
 void test_log1p_vs_mpfr(const std::vector<mp_bitcnt_t> &precisions) {
     for (auto p : precisions) {
-        mpfr_holder x(p);
-        mpfr_holder ref(p);
-        mpfr_set_ui(x.value, 1, MPFR_RNDN);
-        mpfr_div_ui(x.value, x.value, 10, MPFR_RNDN);
-        mpfr_log1p(ref.value, x.value, MPFR_RNDN);
-        const mpf_class gx = div(make_ui(1, p), make_ui(10, p), p);
-        require_ulp("log1p_vs_mpfr", compute_log1p(gx, p), ref.value, p);
+        {
+            mpfr_holder x(p);
+            mpfr_holder ref(p);
+            mpfr_set_ui(x.value, 1, MPFR_RNDN);
+            mpfr_div_ui(x.value, x.value, 10, MPFR_RNDN);
+            mpfr_log1p(ref.value, x.value, MPFR_RNDN);
+            require_ulp("log1p_vs_mpfr_pos_tenth", compute_log1p(make_fraction(1, 10, p), p), ref.value, p);
+        }
+        {
+            mpfr_holder x(p);
+            mpfr_holder ref(p);
+            mpfr_set_si(x.value, -1, MPFR_RNDN);
+            mpfr_div_ui(x.value, x.value, 10, MPFR_RNDN);
+            mpfr_log1p(ref.value, x.value, MPFR_RNDN);
+            require_ulp("log1p_vs_mpfr_neg_tenth", compute_log1p(-make_fraction(1, 10, p), p), ref.value, p);
+        }
+        {
+            mpfr_holder x(p);
+            mpfr_holder ref(p);
+            mpfr_set_ui_2exp(x.value, 1, -static_cast<mpfr_exp_t>(p / 2), MPFR_RNDN);
+            mpfr_log1p(ref.value, x.value, MPFR_RNDN);
+            require_ulp("log1p_vs_mpfr_small", compute_log1p(make_power_of_two_negative(p / 2, p), p), ref.value, p);
+        }
     }
     std::printf("log1p vs mpfr checks passed\n");
 }
 
 void test_log_vs_mpfr(const std::vector<mp_bitcnt_t> &precisions) {
     for (auto p : precisions) {
-        mpfr_holder x(p);
-        mpfr_holder ref(p);
-        mpfr_set_ui(x.value, 25, MPFR_RNDN);
-        mpfr_log(ref.value, x.value, MPFR_RNDN);
-        require_ulp("log_vs_mpfr", compute_log(make_ui(25, p), p), ref.value, p);
+        {
+            mpfr_holder x(p);
+            mpfr_holder ref(p);
+            mpfr_set_ui(x.value, 25, MPFR_RNDN);
+            mpfr_log(ref.value, x.value, MPFR_RNDN);
+            require_ulp("log_vs_mpfr_25", compute_log(make_ui(25, p), p), ref.value, p);
+        }
+        {
+            mpfr_holder x(p);
+            mpfr_holder ref(p);
+            mpfr_set_ui(x.value, 11, MPFR_RNDN);
+            mpfr_div_ui(x.value, x.value, 10, MPFR_RNDN);
+            mpfr_log(ref.value, x.value, MPFR_RNDN);
+            require_ulp("log_vs_mpfr_near_one", compute_log(make_fraction(11, 10, p), p), ref.value, p, 4.0);
+        }
+        {
+            mpfr_holder x(p);
+            mpfr_holder ref(p);
+            mpfr_set_ui(x.value, 3, MPFR_RNDN);
+            mpfr_div_ui(x.value, x.value, 4, MPFR_RNDN);
+            mpfr_log(ref.value, x.value, MPFR_RNDN);
+            require_ulp("log_vs_mpfr_three_quarters", compute_log(make_fraction(3, 4, p), p), ref.value, p);
+        }
     }
     std::printf("log vs mpfr checks passed\n");
 }
 
 void test_exp_vs_mpfr(const std::vector<mp_bitcnt_t> &precisions) {
     for (auto p : precisions) {
-        mpfr_holder x(p);
-        mpfr_holder ref(p);
-        mpfr_set_ui(x.value, 1, MPFR_RNDN);
-        mpfr_exp(ref.value, x.value, MPFR_RNDN);
-        require_ulp("exp_vs_mpfr", compute_exp(make_ui(1, p), p), ref.value, p);
+        {
+            mpfr_holder x(p);
+            mpfr_holder ref(p);
+            mpfr_set_ui(x.value, 1, MPFR_RNDN);
+            mpfr_exp(ref.value, x.value, MPFR_RNDN);
+            require_ulp("exp_vs_mpfr_one", compute_exp(make_ui(1, p), p), ref.value, p);
+        }
+        {
+            mpfr_holder x(p);
+            mpfr_holder ref(p);
+            mpfr_set_si(x.value, -1, MPFR_RNDN);
+            mpfr_exp(ref.value, x.value, MPFR_RNDN);
+            require_ulp("exp_vs_mpfr_minus_one", compute_exp(-make_ui(1, p), p), ref.value, p);
+        }
+        {
+            mpfr_holder x(p);
+            mpfr_holder ref(p);
+            mpfr_set_ui(x.value, 10, MPFR_RNDN);
+            mpfr_exp(ref.value, x.value, MPFR_RNDN);
+            require_ulp("exp_vs_mpfr_ten", compute_exp(make_ui(10, p), p), ref.value, p);
+        }
     }
     std::printf("exp vs mpfr checks passed\n");
 }
 
 void test_expm1_vs_mpfr(const std::vector<mp_bitcnt_t> &precisions) {
     for (auto p : precisions) {
-        mpfr_holder x(p);
-        mpfr_holder ref(p);
-        mpfr_set_ui(x.value, 1, MPFR_RNDN);
-        mpfr_div_ui(x.value, x.value, 10, MPFR_RNDN);
-        mpfr_expm1(ref.value, x.value, MPFR_RNDN);
-        const mpf_class gx = div(make_ui(1, p), make_ui(10, p), p);
-        require_ulp("expm1_vs_mpfr", compute_expm1(gx, p), ref.value, p);
+        {
+            mpfr_holder x(p);
+            mpfr_holder ref(p);
+            mpfr_set_ui(x.value, 1, MPFR_RNDN);
+            mpfr_div_ui(x.value, x.value, 10, MPFR_RNDN);
+            mpfr_expm1(ref.value, x.value, MPFR_RNDN);
+            require_ulp("expm1_vs_mpfr_pos_tenth", compute_expm1(make_fraction(1, 10, p), p), ref.value, p);
+        }
+        {
+            mpfr_holder x(p);
+            mpfr_holder ref(p);
+            mpfr_set_si(x.value, -1, MPFR_RNDN);
+            mpfr_div_ui(x.value, x.value, 10, MPFR_RNDN);
+            mpfr_expm1(ref.value, x.value, MPFR_RNDN);
+            require_ulp("expm1_vs_mpfr_neg_tenth", compute_expm1(-make_fraction(1, 10, p), p), ref.value, p);
+        }
+        {
+            mpfr_holder x(p);
+            mpfr_holder ref(p);
+            mpfr_set_ui_2exp(x.value, 1, -static_cast<mpfr_exp_t>(p / 2), MPFR_RNDN);
+            mpfr_expm1(ref.value, x.value, MPFR_RNDN);
+            require_ulp("expm1_vs_mpfr_small", compute_expm1(make_power_of_two_negative(p / 2, p), p), ref.value, p);
+        }
     }
     std::printf("expm1 vs mpfr checks passed\n");
 }
 
 void test_sin_vs_mpfr(const std::vector<mp_bitcnt_t> &precisions) {
     for (auto p : precisions) {
-        mpfr_holder x(p);
-        mpfr_holder ref(p);
-        mpfr_set_ui(x.value, 1, MPFR_RNDN);
-        mpfr_sin(ref.value, x.value, MPFR_RNDN);
-        require_ulp("sin_vs_mpfr", compute_sin(make_ui(1, p), p), ref.value, p);
+        {
+            mpfr_holder x(p);
+            mpfr_holder ref(p);
+            mpfr_set_ui(x.value, 1, MPFR_RNDN);
+            mpfr_sin(ref.value, x.value, MPFR_RNDN);
+            require_ulp("sin_vs_mpfr_one", compute_sin(make_ui(1, p), p), ref.value, p);
+        }
+        {
+            mpfr_holder x(p);
+            mpfr_holder ref(p);
+            const mpf_class gx = div(pi(p), make_ui(6, p), p);
+            set_from_mpf(x.value, gx);
+            mpfr_sin(ref.value, x.value, MPFR_RNDN);
+            require_ulp("sin_vs_mpfr_pi_over_six", compute_sin(gx, p), ref.value, p, 2.0);
+        }
+        {
+            mpfr_holder x(p);
+            mpfr_holder ref(p);
+            mpfr_set_ui(x.value, 100, MPFR_RNDN);
+            mpfr_sin(ref.value, x.value, MPFR_RNDN);
+            require_ulp("sin_vs_mpfr_hundred", compute_sin(make_ui(100, p), p), ref.value, p);
+        }
     }
     std::printf("sin vs mpfr checks passed\n");
 }
 
 void test_cos_vs_mpfr(const std::vector<mp_bitcnt_t> &precisions) {
     for (auto p : precisions) {
-        mpfr_holder x(p);
-        mpfr_holder ref(p);
-        mpfr_set_ui(x.value, 1, MPFR_RNDN);
-        mpfr_cos(ref.value, x.value, MPFR_RNDN);
-        require_ulp("cos_vs_mpfr", compute_cos(make_ui(1, p), p), ref.value, p);
+        {
+            mpfr_holder x(p);
+            mpfr_holder ref(p);
+            mpfr_set_ui(x.value, 1, MPFR_RNDN);
+            mpfr_cos(ref.value, x.value, MPFR_RNDN);
+            require_ulp("cos_vs_mpfr_one", compute_cos(make_ui(1, p), p), ref.value, p);
+        }
+        {
+            mpfr_holder x(p);
+            mpfr_holder ref(p);
+            const mpf_class gx = div(pi(p), make_ui(3, p), p);
+            set_from_mpf(x.value, gx);
+            mpfr_cos(ref.value, x.value, MPFR_RNDN);
+            require_ulp("cos_vs_mpfr_pi_over_three", compute_cos(gx, p), ref.value, p, 2.0);
+        }
+        {
+            mpfr_holder x(p);
+            mpfr_holder ref(p);
+            mpfr_set_ui(x.value, 100, MPFR_RNDN);
+            mpfr_cos(ref.value, x.value, MPFR_RNDN);
+            require_ulp("cos_vs_mpfr_hundred", compute_cos(make_ui(100, p), p), ref.value, p);
+        }
     }
     std::printf("cos vs mpfr checks passed\n");
 }
 
 void test_atan_vs_mpfr(const std::vector<mp_bitcnt_t> &precisions) {
     for (auto p : precisions) {
-        mpfr_holder x(p);
-        mpfr_holder ref(p);
-        mpfr_set_ui(x.value, 1, MPFR_RNDN);
-        mpfr_atan(ref.value, x.value, MPFR_RNDN);
-        require_ulp("atan_vs_mpfr", compute_atan(make_ui(1, p), p), ref.value, p);
+        {
+            mpfr_holder x(p);
+            mpfr_holder ref(p);
+            mpfr_set_ui(x.value, 1, MPFR_RNDN);
+            mpfr_atan(ref.value, x.value, MPFR_RNDN);
+            require_ulp("atan_vs_mpfr_one", compute_atan(make_ui(1, p), p), ref.value, p);
+        }
+        {
+            mpfr_holder x(p);
+            mpfr_holder ref(p);
+            mpfr_set_ui(x.value, 10, MPFR_RNDN);
+            mpfr_atan(ref.value, x.value, MPFR_RNDN);
+            require_ulp("atan_vs_mpfr_ten", compute_atan(make_ui(10, p), p), ref.value, p);
+        }
+        {
+            mpfr_holder x(p);
+            mpfr_holder ref(p);
+            mpfr_set_ui(x.value, 1, MPFR_RNDN);
+            mpfr_div_ui(x.value, x.value, 10, MPFR_RNDN);
+            mpfr_atan(ref.value, x.value, MPFR_RNDN);
+            require_ulp("atan_vs_mpfr_tenth", compute_atan(make_fraction(1, 10, p), p), ref.value, p);
+        }
     }
     std::printf("atan vs mpfr checks passed\n");
 }
 
 void test_atan2_vs_mpfr(const std::vector<mp_bitcnt_t> &precisions) {
     for (auto p : precisions) {
-        mpfr_holder y(p);
-        mpfr_holder x(p);
-        mpfr_holder ref(p);
-        mpfr_set_ui(y.value, 1, MPFR_RNDN);
-        mpfr_set_ui(x.value, 1, MPFR_RNDN);
-        mpfr_atan2(ref.value, y.value, x.value, MPFR_RNDN);
-        require_ulp("atan2_vs_mpfr", compute_atan2(make_ui(1, p), make_ui(1, p), p), ref.value, p);
+        {
+            mpfr_holder y(p);
+            mpfr_holder x(p);
+            mpfr_holder ref(p);
+            mpfr_set_ui(y.value, 1, MPFR_RNDN);
+            mpfr_set_ui(x.value, 1, MPFR_RNDN);
+            mpfr_atan2(ref.value, y.value, x.value, MPFR_RNDN);
+            require_ulp("atan2_vs_mpfr_q1", compute_atan2(make_ui(1, p), make_ui(1, p), p), ref.value, p);
+        }
+        {
+            mpfr_holder y(p);
+            mpfr_holder x(p);
+            mpfr_holder ref(p);
+            mpfr_set_ui(y.value, 1, MPFR_RNDN);
+            mpfr_set_si(x.value, -1, MPFR_RNDN);
+            mpfr_atan2(ref.value, y.value, x.value, MPFR_RNDN);
+            require_ulp("atan2_vs_mpfr_q2", compute_atan2(make_ui(1, p), -make_ui(1, p), p), ref.value, p);
+        }
+        {
+            mpfr_holder y(p);
+            mpfr_holder x(p);
+            mpfr_holder ref(p);
+            mpfr_set_si(y.value, -1, MPFR_RNDN);
+            mpfr_set_ui(x.value, 1, MPFR_RNDN);
+            mpfr_atan2(ref.value, y.value, x.value, MPFR_RNDN);
+            require_ulp("atan2_vs_mpfr_q4", compute_atan2(-make_ui(1, p), make_ui(1, p), p), ref.value, p);
+        }
     }
     std::printf("atan2 vs mpfr checks passed\n");
 }
 
 void test_pow_vs_mpfr(const std::vector<mp_bitcnt_t> &precisions) {
     for (auto p : precisions) {
-        mpfr_holder x(p);
-        mpfr_holder y(p);
-        mpfr_holder ref(p);
-        mpfr_set_ui(x.value, 2, MPFR_RNDN);
-        mpfr_set_ui(y.value, 1, MPFR_RNDN);
-        mpfr_div_ui(y.value, y.value, 2, MPFR_RNDN);
-        mpfr_pow(ref.value, x.value, y.value, MPFR_RNDN);
-        const mpf_class gx = make_ui(2, p);
-        const mpf_class gy = div(make_ui(1, p), make_ui(2, p), p);
-        require_ulp("pow_vs_mpfr", compute_pow(gx, gy, p), ref.value, p);
+        {
+            mpfr_holder x(p);
+            mpfr_holder y(p);
+            mpfr_holder ref(p);
+            mpfr_set_ui(x.value, 2, MPFR_RNDN);
+            mpfr_set_ui(y.value, 1, MPFR_RNDN);
+            mpfr_div_ui(y.value, y.value, 2, MPFR_RNDN);
+            mpfr_pow(ref.value, x.value, y.value, MPFR_RNDN);
+            require_ulp("pow_vs_mpfr_sqrt2", compute_pow(make_ui(2, p), make_fraction(1, 2, p), p), ref.value, p);
+        }
+        {
+            mpfr_holder x(p);
+            mpfr_holder y(p);
+            mpfr_holder ref(p);
+            mpfr_set_ui(x.value, 3, MPFR_RNDN);
+            mpfr_set_ui(y.value, 5, MPFR_RNDN);
+            mpfr_div_ui(y.value, y.value, 4, MPFR_RNDN);
+            mpfr_pow(ref.value, x.value, y.value, MPFR_RNDN);
+            require_ulp("pow_vs_mpfr_three_five_fourths", compute_pow(make_ui(3, p), make_fraction(5, 4, p), p), ref.value, p);
+        }
     }
     std::printf("pow vs mpfr checks passed\n");
 }
