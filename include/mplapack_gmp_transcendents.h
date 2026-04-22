@@ -31,6 +31,7 @@
 
 #include <algorithm>
 #include <mutex>
+#include <stdexcept>
 
 #include "gmpxx.h"
 
@@ -298,6 +299,93 @@ inline mpf_class log_two(precision_type target_precision) {
         cache.initialized = true;
     }
     return set_prec_copy(cache.cached_value, target);
+}
+
+inline precision_type guard_bits_for_log1p(precision_type) {
+    return 96;
+}
+
+inline precision_type working_precision_for_log1p(precision_type target_precision) {
+    return normalize_target_precision(target_precision) + guard_bits_for_log1p(target_precision);
+}
+
+inline mpf_class log1p_taylor_small(const mpf_class &x, precision_type precision) {
+    mpf_class epsilon = make_ui(1, precision);
+    mpf_div_2exp(epsilon.get_mpf_t(), epsilon.get_mpf_t(), precision);
+
+    mpf_class sum = set_prec_copy(x, precision);
+    mpf_class power = set_prec_copy(x, precision);
+
+    for (unsigned long k = 2;; ++k) {
+        power = mul(power, x, precision);
+        mpf_class term = div(power, make_ui(k, precision), precision);
+        if ((k & 1ul) == 0ul) {
+            term = sub(make_ui(0, precision), term, precision);
+        }
+        sum = add(sum, term, precision);
+        if (abs(term) < epsilon) {
+            break;
+        }
+    }
+    return sum;
+}
+
+inline mpf_class log1p_atanh_series(const mpf_class &x, precision_type precision) {
+    //
+    // log(1 + x) = 2 * atanh(x / (2 + x))
+    //            = 2 * sum_{k>=0} y^(2k+1)/(2k+1),  y = x / (2 + x)
+    //
+    // This avoids the cancellation that breaks a direct log(x) path near 1.
+    //
+    mpf_class epsilon = make_ui(1, precision);
+    mpf_div_2exp(epsilon.get_mpf_t(), epsilon.get_mpf_t(), precision);
+
+    const mpf_class two = make_ui(2, precision);
+    const mpf_class y = div(x, add(two, x, precision), precision);
+    const mpf_class y2 = sqr(y, precision);
+
+    mpf_class sum = set_prec_copy(y, precision);
+    mpf_class term = set_prec_copy(y, precision);
+
+    for (unsigned long k = 1;; ++k) {
+        term = mul(term, y2, precision);
+        const unsigned long denominator_ui = 2ul * k + 1ul;
+        const mpf_class contribution = div(term, make_ui(denominator_ui, precision), precision);
+        sum = add(sum, contribution, precision);
+        if (abs(contribution) < epsilon) {
+            break;
+        }
+    }
+    return mul_ui(sum, 2ul, precision);
+}
+
+inline mpf_class compute_log1p(const mpf_class &x_input, precision_type target_precision) {
+    const precision_type target = normalize_target_precision(target_precision);
+    const precision_type work = working_precision_for_log1p(target);
+    const mpf_class x = set_prec_copy(x_input, work);
+    const mpf_class one = make_ui(1, work);
+    const mpf_class one_plus_x = add(one, x, work);
+
+    if (one_plus_x == make_ui(0, work)) {
+        throw std::domain_error("log1p(x) pole at x = -1");
+    }
+    if (one_plus_x < make_ui(0, work)) {
+        throw std::domain_error("log1p(x) is undefined for x < -1");
+    }
+    if (x == make_ui(0, work)) {
+        return make_ui(0, target);
+    }
+
+    mpf_class small_threshold = make_ui(1, work);
+    mpf_div_2exp(small_threshold.get_mpf_t(), small_threshold.get_mpf_t(), work / 2);
+
+    mpf_class result = make_ui(0, work);
+    if (abs(x) <= small_threshold) {
+        result = log1p_taylor_small(x, work);
+    } else {
+        result = log1p_atanh_series(x, work);
+    }
+    return set_prec_copy(result, target);
 }
 
 } // namespace mplapack_gmp_transcendents
