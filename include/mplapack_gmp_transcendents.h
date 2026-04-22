@@ -876,6 +876,52 @@ inline mpf_class compute_atan(const mpf_class &x_input, precision_type target_pr
     return set_prec_copy(result, target);
 }
 
+inline mpf_class compute_atan2(const mpf_class &y_input, const mpf_class &x_input, precision_type target_precision) {
+    const precision_type target = normalize_target_precision(target_precision);
+    const precision_type work = working_precision_for_atan(target);
+    const mpf_class y = set_prec_copy(y_input, work);
+    const mpf_class x = set_prec_copy(x_input, work);
+    const mpf_class zero = make_ui(0, work);
+
+    // GMP mpf_class does not expose signed zero. Adopt a simple fallback
+    // convention:
+    //   atan2(0, x>0) = 0
+    //   atan2(0, x<0) = pi
+    //   atan2(y>0, 0) = pi/2
+    //   atan2(y<0, 0) = -pi/2
+    //   atan2(0, 0)   = 0
+    if (y == zero) {
+        if (x > zero) {
+            return make_ui(0, target);
+        }
+        if (x < zero) {
+            return set_prec_copy(pi(target + 2), target);
+        }
+        return make_ui(0, target);
+    }
+
+    if (x == zero) {
+        mpf_class pio2 = pi(target + 2);
+        mpf_div_2exp(pio2.get_mpf_t(), pio2.get_mpf_t(), 1);
+        if (y > zero) {
+            return set_prec_copy(pio2, target);
+        }
+        return set_prec_copy(sub(make_ui(0, target + 2), pio2, target + 2), target);
+    }
+
+    const mpf_class ratio = div(y, x, work);
+    mpf_class result = compute_atan(ratio, work);
+    const mpf_class pi_value = pi(work);
+    if (x < zero) {
+        if (y > zero) {
+            result = add(result, pi_value, work);
+        } else {
+            result = sub(result, pi_value, work);
+        }
+    }
+    return set_prec_copy(result, target);
+}
+
 } // namespace mplapack_gmp_transcendents
 
 #endif

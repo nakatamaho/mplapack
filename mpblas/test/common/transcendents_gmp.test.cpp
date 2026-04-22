@@ -50,6 +50,7 @@ using mplapack_gmp_transcendents::compute_sin;
 using mplapack_gmp_transcendents::compute_cos;
 using mplapack_gmp_transcendents::compute_sincos;
 using mplapack_gmp_transcendents::compute_atan;
+using mplapack_gmp_transcendents::compute_atan2;
 using mplapack_gmp_transcendents::div;
 using mplapack_gmp_transcendents::make_ui;
 using mplapack_gmp_transcendents::quo_rem;
@@ -817,8 +818,77 @@ static void test_atan_odd_symmetry() {
     std::printf("atan odd symmetry check passed\n");
 }
 
+static void test_atan2_reference_literal() {
+    const mp_bitcnt_t target_precision = 256;
+    const mp_bitcnt_t literal_precision = 768;
+
+    // Wolfram Alpha:
+    // https://www.wolframalpha.com/input?i=N%5BArcTan%5B1%2C+1%5D%2C+200%5D
+    // Query: N[ArcTan[1, 1], 200]
+    // Retrieval date: 2026-04-22
+    const char *atan2_literal =
+        "0.78539816339744830961566084581987572104929234984377645524373614807695410157155224"
+        "965700870633552926699553702162832057666177346115238764555793133985203212027936257";
+
+    const mpf_class reference_hi = parse_decimal_literal(atan2_literal, literal_precision);
+    mpf_class reference(0, target_precision);
+    mpf_set(reference.get_mpf_t(), reference_hi.get_mpf_t());
+
+    const mpf_class one = make_ui(1, target_precision);
+    const mpf_class value = compute_atan2(one, one, target_precision);
+    const mpf_class diff = abs(value - reference);
+    const mpf_class ulp = ulp_for_value(reference, target_precision);
+    if (diff > ulp) {
+        std::printf("atan2 literal test failed\n");
+        std::printf("value = ");
+        printnum(value);
+        std::printf("\nreference = ");
+        printnum(reference);
+        std::printf("\ndiff = ");
+        printnum(diff);
+        std::printf("\nulp  = ");
+        printnum(ulp);
+        std::printf("\n");
+        std::exit(1);
+    }
+    std::printf("atan2 256-bit literal check passed\n");
+}
+
+static void test_atan2_axis_convention() {
+    const mp_bitcnt_t precision = 256;
+    const mpf_class zero = make_ui(0, precision);
+    const mpf_class one = make_ui(1, precision);
+    const mpf_class minus_one = parse_decimal_literal("-1", precision);
+    mpf_class pio2 = pi(precision);
+    mpf_div_2exp(pio2.get_mpf_t(), pio2.get_mpf_t(), 1);
+    const mpf_class pi_value = pi(precision);
+    const mpf_class ulp = ulp_for_value(pi_value, precision);
+
+    if (abs(compute_atan2(zero, one, precision) - zero) > ulp) {
+        std::printf("atan2 axis convention test failed: atan2(0,+1)\n");
+        std::exit(1);
+    }
+    if (abs(compute_atan2(zero, minus_one, precision) - pi_value) > ulp) {
+        std::printf("atan2 axis convention test failed: atan2(0,-1)\n");
+        std::exit(1);
+    }
+    if (abs(compute_atan2(one, zero, precision) - pio2) > ulp) {
+        std::printf("atan2 axis convention test failed: atan2(+1,0)\n");
+        std::exit(1);
+    }
+    if (abs(compute_atan2(minus_one, zero, precision) + pio2) > ulp) {
+        std::printf("atan2 axis convention test failed: atan2(-1,0)\n");
+        std::exit(1);
+    }
+    if (abs(compute_atan2(zero, zero, precision) - zero) > ulp) {
+        std::printf("atan2 axis convention test failed: atan2(0,0)\n");
+        std::exit(1);
+    }
+    std::printf("atan2 axis convention check passed\n");
+}
+
 int main() {
-    std::printf("*** Testing GMP transcendents step0/8 start ***\n");
+    std::printf("*** Testing GMP transcendents step0/9 start ***\n");
     test_pi_reference_literal();
     test_pi_precision_doubling_pair(128, 256);
     test_pi_precision_doubling_pair(512, 1024);
@@ -869,6 +939,8 @@ int main() {
     test_atan_precision_doubling_pair(512, 1024);
     test_atan_precision_doubling_pair(1024, 4096);
     test_atan_odd_symmetry();
-    std::printf("*** Testing GMP transcendents step0/8 successful ***\n");
+    test_atan2_reference_literal();
+    test_atan2_axis_convention();
+    std::printf("*** Testing GMP transcendents step0/9 successful ***\n");
     return 0;
 }
