@@ -48,6 +48,7 @@ using mplapack_gmp_transcendents::compute_exp;
 using mplapack_gmp_transcendents::compute_expm1;
 using mplapack_gmp_transcendents::div;
 using mplapack_gmp_transcendents::make_ui;
+using mplapack_gmp_transcendents::quo_rem;
 using mplapack_gmp_transcendents::set_prec_copy;
 using mplapack_gmp_transcendents::sqr;
 
@@ -527,8 +528,70 @@ static void test_expm1_near_zero() {
     std::printf("expm1 near-zero seam check passed\n");
 }
 
+static void test_quo_rem_rounding() {
+    const mp_bitcnt_t precision = 256;
+    const mpf_class one = make_ui(1, precision);
+    const mpf_class ten = make_ui(10, precision);
+
+    {
+        const mpf_class x = div(make_ui(17, precision), ten, precision);
+        const auto qr = quo_rem(x, one, precision);
+        if (qr.quotient != 2 || abs(qr.remainder - parse_decimal_literal("-0.3", precision)) > ulp_for_value(one, precision)) {
+            std::printf("quo_rem positive nearest test failed\n");
+            std::exit(1);
+        }
+    }
+    {
+        const mpf_class x = parse_decimal_literal("-1.7", precision);
+        const auto qr = quo_rem(x, one, precision);
+        if (qr.quotient != -2 || abs(qr.remainder - parse_decimal_literal("0.3", precision)) > ulp_for_value(one, precision)) {
+            std::printf("quo_rem negative nearest test failed\n");
+            std::exit(1);
+        }
+    }
+    {
+        const auto qr = quo_rem(div(make_ui(5, precision), make_ui(2, precision), precision), one, precision);
+        if (qr.quotient != 2 || abs(qr.remainder - parse_decimal_literal("0.5", precision)) > ulp_for_value(one, precision)) {
+            std::printf("quo_rem positive tie-even test failed\n");
+            std::exit(1);
+        }
+    }
+    {
+        const auto qr = quo_rem(div(make_ui(3, precision), make_ui(2, precision), precision), one, precision);
+        if (qr.quotient != 2 || abs(qr.remainder - parse_decimal_literal("-0.5", precision)) > ulp_for_value(one, precision)) {
+            std::printf("quo_rem positive tie-up-to-even test failed\n");
+            std::exit(1);
+        }
+    }
+    {
+        const auto qr = quo_rem(parse_decimal_literal("-2.5", precision), one, precision);
+        if (qr.quotient != -2 || abs(qr.remainder - parse_decimal_literal("-0.5", precision)) > ulp_for_value(one, precision)) {
+            std::printf("quo_rem negative tie-even test failed\n");
+            std::exit(1);
+        }
+    }
+    {
+        const auto qr = quo_rem(parse_decimal_literal("-1.5", precision), one, precision);
+        if (qr.quotient != -2 || abs(qr.remainder - parse_decimal_literal("0.5", precision)) > ulp_for_value(one, precision)) {
+            std::printf("quo_rem negative tie-down-to-even test failed\n");
+            std::exit(1);
+        }
+    }
+    {
+        const mpf_class x = parse_decimal_literal("7.25", precision);
+        const mpf_class y = parse_decimal_literal("0.7", precision);
+        const auto qr = quo_rem(x, y, precision);
+        const mpf_class half_y = div(abs(y), make_ui(2, precision), precision);
+        if (abs(qr.remainder) > half_y) {
+            std::printf("quo_rem remainder bound test failed\n");
+            std::exit(1);
+        }
+    }
+    std::printf("quo_rem round-to-nearest-even checks passed\n");
+}
+
 int main() {
-    std::printf("*** Testing GMP transcendents step0/6 start ***\n");
+    std::printf("*** Testing GMP transcendents step0/6+quo_rem start ***\n");
     test_pi_reference_literal();
     test_pi_precision_doubling_pair(128, 256);
     test_pi_precision_doubling_pair(512, 1024);
@@ -563,6 +626,7 @@ int main() {
     test_expm1_precision_doubling_pair(1024, 4096);
     test_expm1_precision_doubling_pair(2048, 4096);
     test_expm1_near_zero();
-    std::printf("*** Testing GMP transcendents step0/6 successful ***\n");
+    test_quo_rem_rounding();
+    std::printf("*** Testing GMP transcendents step0/6+quo_rem successful ***\n");
     return 0;
 }

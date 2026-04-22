@@ -116,6 +116,11 @@ inline mpf_class mul_ui(const mpf_class &a, unsigned long value, precision_type 
     return result;
 }
 
+struct quo_rem_result {
+    mpz_class quotient;
+    mpf_class remainder = make_ui(0, 32);
+};
+
 inline mpf_class sqrt_prec(const mpf_class &a, precision_type precision) {
     mpf_class result(0, precision);
     mpf_sqrt(result.get_mpf_t(), a.get_mpf_t());
@@ -134,6 +139,46 @@ inline mpf_class inv_sqrt_ui(unsigned long value, precision_type precision) {
     mpf_sqrt(denominator.get_mpf_t(), denominator.get_mpf_t());
     mpf_class result(0, precision);
     mpf_ui_div(result.get_mpf_t(), 1ul, denominator.get_mpf_t());
+    return result;
+}
+
+inline quo_rem_result quo_rem(const mpf_class &x_input, const mpf_class &y_input, precision_type target_precision) {
+    const precision_type target = normalize_target_precision(target_precision);
+    const precision_type work = target + 64;
+    const mpf_class x = set_prec_copy(x_input, work);
+    const mpf_class y = set_prec_copy(y_input, work);
+    if (y == make_ui(0, work)) {
+        throw std::domain_error("quo_rem division by zero");
+    }
+
+    const mpf_class q = div(x, y, work);
+    mpz_class k = 0;
+    mpz_set_f(k.get_mpz_t(), q.get_mpf_t());
+
+    const mpf_class integer_part(k, work);
+    const mpf_class frac = sub(q, integer_part, work);
+    const mpf_class half = div(make_ui(1, work), make_ui(2, work), work);
+    const mpf_class neg_half = sub(make_ui(0, work), half, work);
+
+    const int frac_vs_half = mpf_cmp(frac.get_mpf_t(), half.get_mpf_t());
+    const int frac_vs_neg_half = mpf_cmp(frac.get_mpf_t(), neg_half.get_mpf_t());
+    if (frac_vs_half > 0) {
+        k += 1;
+    } else if (frac_vs_half == 0) {
+        if (mpz_odd_p(k.get_mpz_t())) {
+            k += 1;
+        }
+    } else if (frac_vs_neg_half < 0) {
+        k -= 1;
+    } else if (frac_vs_neg_half == 0) {
+        if (mpz_odd_p(k.get_mpz_t())) {
+            k -= 1;
+        }
+    }
+
+    quo_rem_result result;
+    result.quotient = k;
+    result.remainder = sub(x, mul(y, mpf_class(k, work), work), target);
     return result;
 }
 
