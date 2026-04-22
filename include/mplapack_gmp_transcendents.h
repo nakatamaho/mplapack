@@ -197,6 +197,109 @@ inline mpf_class pi(precision_type target_precision) {
     return set_prec_copy(cache.cached_value, target);
 }
 
+inline precision_type guard_bits_for_log_two(precision_type) {
+    return 128;
+}
+
+inline precision_type working_precision_for_log_two(precision_type target_precision) {
+    return normalize_target_precision(target_precision) + guard_bits_for_log_two(target_precision);
+}
+
+inline mpf_class theta_series_threshold(precision_type precision) {
+    mpf_class threshold = make_ui(1, precision);
+    mpf_div_2exp(threshold.get_mpf_t(), threshold.get_mpf_t(), precision);
+    return threshold;
+}
+
+inline mpf_class agm_converged(const mpf_class &a_initial, const mpf_class &b_initial, precision_type precision) {
+    mpf_class a = set_prec_copy(a_initial, precision);
+    mpf_class b = set_prec_copy(b_initial, precision);
+    mpf_class epsilon = make_ui(1, precision);
+    mpf_div_2exp(epsilon.get_mpf_t(), epsilon.get_mpf_t(), precision);
+
+    while (true) {
+        const mpf_class a_next = average(a, b, precision);
+        const mpf_class b_next = sqrt_prec(mul(a, b, precision), precision);
+        if (abs(sub(a_next, b_next, precision)) < epsilon) {
+            return average(a_next, b_next, precision);
+        }
+        a = a_next;
+        b = b_next;
+    }
+}
+
+inline mpf_class theta3_from_power_of_two_q(mp_bitcnt_t q_exponent, precision_type precision) {
+    const mpf_class threshold = theta_series_threshold(precision);
+    mpf_class sum = make_ui(1, precision);
+    mpf_class term = make_ui(1, precision);
+    mpf_div_2exp(term.get_mpf_t(), term.get_mpf_t(), q_exponent);
+
+    for (unsigned long k = 1;; ++k) {
+        const mpf_class contribution = mul_ui(term, 2ul, precision);
+        if (contribution < threshold) {
+            break;
+        }
+        sum = add(sum, contribution, precision);
+        mpf_div_2exp(term.get_mpf_t(), term.get_mpf_t(), q_exponent * (2ul * k + 1ul));
+    }
+    return sum;
+}
+
+inline mpf_class theta2_from_power_of_two_q(mp_bitcnt_t q_exponent, precision_type precision) {
+    const mpf_class threshold = theta_series_threshold(precision);
+    mpf_class q = make_ui(1, precision);
+    mpf_div_2exp(q.get_mpf_t(), q.get_mpf_t(), q_exponent);
+    mpf_class term = sqrt_prec(sqrt_prec(q, precision), precision);
+    mpf_class sum = make_ui(0, precision);
+
+    for (unsigned long k = 0;; ++k) {
+        const mpf_class contribution = mul_ui(term, 2ul, precision);
+        if (contribution < threshold) {
+            break;
+        }
+        sum = add(sum, contribution, precision);
+        mpf_div_2exp(term.get_mpf_t(), term.get_mpf_t(), q_exponent * (2ul * k + 2ul));
+    }
+    return sum;
+}
+
+inline mpf_class compute_log_two_theta_agm(precision_type target_precision) {
+    const precision_type target = normalize_target_precision(target_precision);
+    const precision_type work = working_precision_for_log_two(target);
+    const mp_bitcnt_t q_exponent = (work / 2) - 2;
+
+    const mpf_class theta2 = theta2_from_power_of_two_q(q_exponent, work);
+    const mpf_class theta3 = theta3_from_power_of_two_q(q_exponent, work);
+    const mpf_class agm_value = agm_converged(sqr(theta2, work), sqr(theta3, work), work);
+    const mpf_class q_scale = make_ui(static_cast<unsigned long>(q_exponent), work);
+    const mpf_class denominator = mul(q_scale, agm_value, work);
+    return set_prec_copy(div(pi(work), denominator, work), target);
+}
+
+struct log_two_cache_state {
+    std::mutex mutex;
+    precision_type cached_precision = 0;
+    mpf_class cached_value = make_ui(0, 32);
+    bool initialized = false;
+};
+
+inline log_two_cache_state &log_two_cache() {
+    static log_two_cache_state cache;
+    return cache;
+}
+
+inline mpf_class log_two(precision_type target_precision) {
+    const precision_type target = normalize_target_precision(target_precision);
+    log_two_cache_state &cache = log_two_cache();
+    std::lock_guard<std::mutex> lock(cache.mutex);
+    if (!cache.initialized || cache.cached_precision < target) {
+        cache.cached_value = compute_log_two_theta_agm(target);
+        cache.cached_precision = target;
+        cache.initialized = true;
+    }
+    return set_prec_copy(cache.cached_value, target);
+}
+
 } // namespace mplapack_gmp_transcendents
 
 #endif
