@@ -28,6 +28,7 @@ mplapack_include_HEADERS += \
     include/mpblas_gmp.h \
     include/mplapack_arithmetic_params_gmp.h \
     include/mplapack_gmp.h \
+    include/mplapack_gmp_transcendents.h \
     include/mplapack_utils_gmp.h \
     include/mpc_class.h
 endif

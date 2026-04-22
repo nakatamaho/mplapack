@@ -31,6 +31,7 @@
 #ifndef _MUTILS_GMP_H_
 #define _MUTILS_GMP_H_
 
+#include "mplapack_gmp_transcendents.h"
 #include "mpc_class.h"
 
 #if defined ___MPLAPACK_INTERNAL___
@@ -269,26 +270,8 @@ inline mplapackint nint(mpf_class a) {
 
 inline double cast2double(mpf_class a) { return a.get_d(); }
 
-// every transcendental function and constant for GMP is in double precision.
 inline mpf_class atan2(mpf_class a, mpf_class b) {
-    double dtemp1, dtemp2;
-    mpf_class mtemp3;
-    if (abs(a) > abs(b)) {
-        mtemp3 = b / a;
-        dtemp1 = 1.0;
-        dtemp2 = mtemp3.get_d();
-    }
-    if (abs(a) < abs(b)) {
-        mtemp3 = a / b;
-        dtemp1 = mtemp3.get_d();
-        dtemp2 = 1.0;
-    }
-    if (abs(a) == abs(b)) {
-        dtemp1 = 1.0;
-        dtemp2 = 1.0;
-    }
-    mtemp3 = mpf_class(atan2(dtemp1, dtemp2));
-    return mtemp3;
+    return mplapack_gmp_transcendents::compute_atan2(a, b, std::max(a.get_prec(), b.get_prec()));
 }
 
 inline mpc_class sin(mpc_class a) {
@@ -305,33 +288,17 @@ inline mpc_class sin(mpc_class a) {
 }
 
 inline mpf_class log2(mpf_class x) {
-    double d;
-    double ln2_app;
-    signed long int exp;
-
-    d = mpf_get_d_2exp(&exp, x.get_mpf_t());
-    ln2_app = (double)exp + log10(d) / log10(2);
-    return ln2_app;
+    const mp_bitcnt_t precision = x.get_prec();
+    return mplapack_gmp_transcendents::div(mplapack_gmp_transcendents::compute_log(x, precision), mplapack_gmp_transcendents::log_two(precision), precision);
 }
 
 inline mpf_class log(mpf_class x) {
-    double d;
-    double ln_app;
-    signed long int exp;
-
-    d = mpf_get_d_2exp(&exp, x.get_mpf_t());
-    ln_app = (double)exp * log(2.0) + log(d);
-    return ln_app;
+    return mplapack_gmp_transcendents::compute_log(x, x.get_prec());
 }
 
 inline mpf_class log10(mpf_class x) {
-    double d;
-    double ln10_app;
-    signed long int exp;
-
-    d = mpf_get_d_2exp(&exp, x.get_mpf_t());
-    ln10_app = (double)exp * log10(2.0) + log10(d);
-    return ln10_app;
+    const mp_bitcnt_t precision = x.get_prec();
+    return mplapack_gmp_transcendents::div(mplapack_gmp_transcendents::compute_log(x, precision), mplapack_gmp_transcendents::compute_log(mpf_class(10, precision), precision), precision);
 }
 
 inline mpf_class pow(mpf_class x, mplapackint y) {
@@ -346,34 +313,23 @@ inline mpf_class pow(mpf_class x, mplapackint y) {
 }
 
 inline mpf_class pow(mpf_class x, mpf_class y) {
-    mpf_class mtemp1, mtemp2;
-    mtemp1 = y * log(x);
-    mtemp2 = exp(mtemp1.get_d());
-    return mtemp2;
+    return mplapack_gmp_transcendents::compute_pow(x, y, std::max(x.get_prec(), y.get_prec()));
 }
 
 inline mpf_class cos(mpf_class x) {
-    mpf_class mtemp1;
-    mtemp1 = cos(x.get_d());
-    return mtemp1;
+    return mplapack_gmp_transcendents::compute_cos(x, x.get_prec());
 }
 
 inline mpf_class sin(mpf_class x) {
-    mpf_class mtemp1;
-    mtemp1 = sin(x.get_d());
-    return mtemp1;
+    return mplapack_gmp_transcendents::compute_sin(x, x.get_prec());
 }
 
 inline mpf_class exp(mpf_class x) {
-    mpf_class mtemp1;
-    mtemp1 = exp(x.get_d());
-    return mtemp1;
+    return mplapack_gmp_transcendents::compute_exp(x, x.get_prec());
 }
 
 inline mpf_class pi(mpf_class dummy) {
-    mpf_class mtemp1;
-    mtemp1 = M_PI; // returns pi in double(!)
-    return mtemp1;
+    return mplapack_gmp_transcendents::pi(dummy.get_prec());
 }
 
 inline mpc_class exp(mpc_class x) {
