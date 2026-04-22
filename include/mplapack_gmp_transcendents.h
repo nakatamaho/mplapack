@@ -559,6 +559,51 @@ inline mpf_class compute_exp(const mpf_class &x_input, precision_type target_pre
     return set_prec_copy(result, target);
 }
 
+inline precision_type guard_bits_for_expm1(precision_type) {
+    return 96;
+}
+
+inline precision_type working_precision_for_expm1(precision_type target_precision) {
+    return normalize_target_precision(target_precision) + guard_bits_for_expm1(target_precision);
+}
+
+inline mpf_class expm1_taylor_small(const mpf_class &x, precision_type precision) {
+    mpf_class epsilon = make_ui(1, precision);
+    mpf_div_2exp(epsilon.get_mpf_t(), epsilon.get_mpf_t(), precision);
+
+    mpf_class sum = set_prec_copy(x, precision);
+    mpf_class term = set_prec_copy(x, precision);
+    for (unsigned long n = 2;; ++n) {
+        term = div(mul(term, x, precision), make_ui(n, precision), precision);
+        sum = add(sum, term, precision);
+        if (abs(term) < epsilon) {
+            break;
+        }
+    }
+    return sum;
+}
+
+inline mpf_class compute_expm1(const mpf_class &x_input, precision_type target_precision) {
+    const precision_type target = normalize_target_precision(target_precision);
+    const precision_type work = working_precision_for_expm1(target);
+    const mpf_class x = set_prec_copy(x_input, work);
+
+    if (x == make_ui(0, work)) {
+        return make_ui(0, target);
+    }
+
+    mpf_class small_threshold = make_ui(1, work);
+    mpf_div_2exp(small_threshold.get_mpf_t(), small_threshold.get_mpf_t(), work / 2);
+
+    mpf_class result = make_ui(0, work);
+    if (abs(x) <= small_threshold) {
+        result = expm1_taylor_small(x, work);
+    } else {
+        result = sub(compute_exp(x, work), make_ui(1, work), work);
+    }
+    return set_prec_copy(result, target);
+}
+
 } // namespace mplapack_gmp_transcendents
 
 #endif
