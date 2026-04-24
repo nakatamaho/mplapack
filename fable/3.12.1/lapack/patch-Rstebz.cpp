@@ -11,6 +11,34 @@
          if (abstol <= zero) {
              atoli = ulp * tnorm;
          } else {
+@@ -320,6 +324,19 @@
+             //
+             // Special Case -- IN=1
+             //
++#if defined ___MPLAPACK_BUILD_WITH_GMP___
++            if (irange == 1 || wl >= d[ibegin - 1]) {
++                nwl++;
++            }
++            if (irange == 1 || wu >= d[ibegin - 1]) {
++                nwu++;
++            }
++            if (irange == 1 || (wl < d[ibegin - 1] && wu >= d[ibegin - 1])) {
++                m++;
++                w[m - 1] = d[ibegin - 1];
++                iblock[m - 1] = jb;
++            }
++#else
+             if (irange == 1 || wl >= d[ibegin - 1] - pivmin) {
+                 nwl++;
+             }
+@@ -331,6 +348,7 @@
+                 w[m - 1] = d[ibegin - 1];
+                 iblock[m - 1] = jb;
+             }
++#endif
+         } else {
+             //
+             // General Case -- IN > 1
 @@ -385,6 +389,10 @@
              // Compute Eigenvalues
              //
