@@ -1,0 +1,281 @@
+# * How to build (for public users - read-only access)
+#  docker build -f Dockerfile-ubuntu26.04-devel -t mplapack:devel2604 .
+#
+# * How to build (for maintainers with SSH key - read-write access)
+# DOCKER_BUILDKIT=1 docker build -f Dockerfile-ubuntu26.04-devel --build-arg DOCKER_UID="$(id -u)" --build-arg DOCKER_GID="$(id -g)" --build-arg USE_SSH=true --build-arg SSH_KEY_NAME="${SSH_KEY_NAME:-id_ed25519}" --secret id=ssh_key,src="$HOME/.ssh/${SSH_KEY_NAME:-id_ed25519}" -t mplapack:devel2604 .
+#
+# * How to build with custom repository (for users with forks)
+# DOCKER_BUILDKIT=1 docker build -f Dockerfile-ubuntu26.04-devel --build-arg DOCKER_UID=$(id -u) --build-arg DOCKER_GID=$(id -g) --build-arg MPLAPACK_REPO=https://github.com/username/mplapack.git -t mplapack:devel2604 .
+#
+# * How to build with custom repository using SSH
+# SSH_KEY_NAME=id_ed25519 DOCKER_BUILDKIT=1 docker build -f Dockerfile-ubuntu26.04-devel --build-arg DOCKER_UID=$(id -u) --build-arg DOCKER_GID=$(id -g) --build-arg USE_SSH=true --build-arg SSH_KEY_NAME=${SSH_KEY_NAME} --build-arg MPLAPACK_REPO=https://github.com/<username>/mplapack.git --secret id=ssh_key,src=$HOME/.ssh/${SSH_KEY_NAME} -t mplapack:devel2604 .
+#
+# * How to run
+#  sudo sh -c 'echo -1 >/proc/sys/kernel/perf_event_paranoid' # to run perf
+#  or
+#  sudo sysctl -w kernel.perf_event_paranoid=-1 # to run perf
+#  docker run --privileged --gpus all -it --rm mplapack:devel2604 /bin/bash
+#
+# * How to run with SSH key for git operations (maintainers only)
+#  eval $(ssh-agent); ssh-add ~/.ssh/id_ed25519; docker run --privileged --gpus all -v $SSH_AUTH_SOCK:/ssh-agent -e SSH_AUTH_SOCK=/ssh-agent -it --rm mplapack:devel2604 /bin/bash
+#
+# * How to run with LLM coding assistant (requires docker-compose-llm.yml running)
+#  eval $(ssh-agent); ssh-add ~/.ssh/id_ed25519; docker run --privileged --gpus all -v $SSH_AUTH_SOCK:/ssh-agent -e SSH_AUTH_SOCK=/ssh-agent -it --rm --network mplapack-llm_llm-net -e OPENAI_API_BASE=http://172.31.0.10:8080/v1 -e NO_COLOR=1 mplapack:devel2604 /bin/bash
+#  Then inside: aider  (or)  emacs src/Rlasq2.cpp  then C-c a a
+#
+# https://hub.docker.com/r/nvidia/cuda/tags
+# FROM nvidia/cuda:13.2.1-devel-ubuntu26.04
+ARG BASE=ubuntu:26.04
+FROM ${BASE}
+
+#git setting
+ARG GIT_EMAIL="maho.nakata@gmail.com"
+ARG GIT_NAME="NAKATA Maho"
+LABEL maintainer="maho.nakata@gmail.com"
+
+# Build argument to choose between HTTPS (public) and SSH (maintainer)
+ARG DOCKER_UID
+ARG DOCKER_GID
+ARG USE_SSH=false
+ARG SSH_KEY_NAME
+
+# Repository URLs - can be overridden to use forks
+ARG MPLAPACK_REPO=https://github.com/nakatamaho/mplapack.git
+
+# Validate required arguments for SSH mode
+RUN if [ "$USE_SSH" = "true" ] && [ -z "$SSH_KEY_NAME" ]; then \
+      echo "========================================"; \
+      echo "ERROR: Maintainer mode requires SSH_KEY_NAME"; \
+      echo "Usage: --build-arg SSH_KEY_NAME=id_ed25519"; \
+      echo "========================================"; \
+      exit 1; \
+    fi
+
+ARG DEBIAN_FRONTEND=noninteractive
+RUN apt -y update
+RUN apt -y upgrade
+RUN apt install -y sudo
+RUN apt install -y tzdata
+# set your timezone
+ENV TZ=Asia/Tokyo
+RUN echo "${TZ}" > /etc/timezone \
+  && rm /etc/localtime \
+  && ln -s /usr/share/zoneinfo/Asia/Tokyo /etc/localtime \
+  && dpkg-reconfigure -f noninteractive tzdata
+
+### Japanese locale ###
+RUN apt install -y locales fonts-noto-cjk && \
+    sed -i 's/# ja_JP.UTF-8 UTF-8/ja_JP.UTF-8 UTF-8/' /etc/locale.gen && \
+    locale-gen ja_JP.UTF-8
+ENV LANG=ja_JP.UTF-8
+ENV LANGUAGE=ja_JP:ja
+ENV LC_ALL=ja_JP.UTF-8
+
+RUN apt install -y build-essential python3 python3-pip gcc g++ gfortran
+RUN apt install -y autotools-dev automake libtool libtool-bin universal-ctags gnuplot
+RUN apt install -y gdb valgrind #linux-tools-`uname -r` google-perftools linux-headers-`uname -r`
+RUN apt install -y git wget gpg ccache time parallel bc
+RUN apt install -y pkg-config clangd python3-autopep8 clang-format unifdef octave
+RUN apt install -y ng-common ng-cjk emacs-nox ripgrep pipx
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 1
+
+### intel one api start ###
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    wget \
+    gnupg
+RUN wget -qO- https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB \
+    | gpg --dearmor -o /usr/share/keyrings/oneapi-archive-keyring.gpg
+RUN echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main" \
+    > /etc/apt/sources.list.d/oneAPI.list
+RUN apt-get update
+# too big
+#RUN apt install -y intel-basekit
+#RUN apt install -y intel-hpckit
+# sufficient
+RUN apt-get install -y --no-install-recommends \
+  intel-oneapi-compiler-dpcpp-cpp intel-oneapi-compiler-fortran \
+  intel-oneapi-mkl intel-oneapi-mpi intel-oneapi-mpi-devel \
+  && rm -rf /var/lib/apt/lists/*
+### intel one api end ###
+
+### mingw + wine start ###
+RUN apt-get update -y \
+    && apt-get install -y --no-install-recommends \
+        mingw-w64 \
+        gfortran-mingw-w64 \
+        gdb-mingw-w64 \
+        wine64 \
+    && rm -rf /var/lib/apt/lists/
+### mingw + wine end ###
+
+# create non-root user without password and allow passwordless sudo
+ARG DOCKER_UID=2000
+ARG DOCKER_GID=2000
+ARG DOCKER_USER=docker
+
+RUN set -eux; \
+    existing="$(getent passwd ${DOCKER_UID} | cut -d: -f1 || true)"; \
+    if [ -n "$existing" ]; then \
+        usermod -l "${DOCKER_USER}" -d "/home/${DOCKER_USER}" -m "$existing"; \
+        groupmod -n "${DOCKER_USER}" "$(id -gn ${DOCKER_UID})" 2>/dev/null || true; \
+    else \
+        groupadd -g "${DOCKER_GID}" "${DOCKER_USER}" 2>/dev/null || true; \
+        useradd -u "${DOCKER_UID}" -g "${DOCKER_GID}" -m -s /bin/bash "${DOCKER_USER}"; \
+    fi; \
+    usermod -aG sudo "${DOCKER_USER}"; \
+    echo "${DOCKER_USER} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/"${DOCKER_USER}"; \
+    chmod 440 /etc/sudoers.d/"${DOCKER_USER}"
+
+ARG WORK=/home/${DOCKER_USER}
+
+USER ${DOCKER_USER}
+
+RUN echo "\n\
+[user]\n\
+        email = ${GIT_EMAIL}\n\
+        name = ${GIT_NAME}\n\
+" > /home/$DOCKER_USER/.gitconfig
+
+RUN echo -e "\n\
+        PROGRAM HELLO\n\
+        PRINT *, 'HELLO, WORLD!'\n\
+        END PROGRAM\n\
+" >> ${WORK}/sample.f
+
+RUN cd ${WORK} && echo "cd /home/$DOCKER_USER" >> .bashrc
+
+## intel one api and wine settings start ###
+RUN cd ${WORK} && echo "#source /opt/intel/oneapi/setvars.sh" >> .bashrc
+RUN cd ${WORK} && GCC_VER=$(x86_64-w64-mingw32-gcc -dumpversion | cut -d- -f1) && \
+    echo "export WINEPATH=\"/usr/x86_64-w64-mingw32/lib/;/usr/lib/gcc/x86_64-w64-mingw32/${GCC_VER}-win32/;/usr/lib/gcc/x86_64-w64-mingw32/${GCC_VER}-posix;/home/$DOCKER_USER/MPLAPACK_MINGW/bin\"" >> .bashrc
+RUN cd ${WORK} && echo "export PATH=\"\$PATH:/opt/wine-stable/bin\"" >> .bashrc
+RUN cd ${WORK} && echo "export WINEDEBUG=\"-all\"" >> .bashrc
+## intel one api and wine settings end ###
+
+### aider + PATH ###
+RUN echo "export PATH=\"\$HOME/.local/bin:\$PATH\"" >> ${WORK}/.bashrc
+ENV PATH="/home/${DOCKER_USER}/.local/bin:$PATH"
+RUN wget -qO- https://astral.sh/uv/install.sh | sh \
+    && uv tool install --force --python python3.12 --with pip aider-chat@latest
+
+### aider.el + Emacs init (after mplapack build to not break cache) ###
+RUN mkdir -p ${WORK}/.emacs.d/lisp && \
+    git clone https://github.com/tninja/aider.el.git ${WORK}/.emacs.d/lisp/aider.el
+
+RUN emacs --batch \
+    --eval "(require 'package)" \
+    --eval "(add-to-list 'package-archives '(\"melpa\" . \"https://melpa.org/packages/\") t)" \
+    --eval "(add-to-list 'package-archives '(\"gnu\" . \"https://elpa.gnu.org/packages/\") t)" \
+    --eval "(package-initialize)" \
+    --eval "(package-refresh-contents)" \
+    --eval "(dolist (pkg '(magit markdown-mode s dash spinner transient with-editor async)) (unless (package-installed-p pkg) (package-install pkg)))" \
+    2>&1 | tail -10
+
+RUN cat > ${WORK}/.emacs.d/init.el << 'INITEOF'
+;; ── Path: pipx/aider ─────────────────────────────────────────────────────────
+(add-to-list 'exec-path (expand-file-name "~/.local/bin"))
+(setenv "PATH" (concat (expand-file-name "~/.local/bin") ":" (getenv "PATH")))
+
+;; ── Japanese support ─────────────────────────────────────────────────────────
+(set-language-environment "Japanese")
+(prefer-coding-system 'utf-8)
+(set-default-coding-systems 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+(setenv "LANG" "ja_JP.UTF-8")
+(setenv "LC_ALL" "ja_JP.UTF-8")
+
+;; ── Disable ALL colors and syntax highlighting ───────────────────────────────
+(global-font-lock-mode -1)
+(setq font-lock-global-modes nil)
+(setq-default font-lock-mode nil)
+;; Strip ANSI escape codes from aider/comint output
+(setq ansi-color-for-comint-mode 'filter)
+(add-hook 'comint-output-filter-functions 'ansi-color-process-output)
+;; Force no-color for all subprocesses
+(setenv "NO_COLOR" "1")
+(setenv "TERM" "dumb")
+
+;; ── aider ────────────────────────────────────────────────────────────────────
+(add-to-list 'load-path (expand-file-name "~/.emacs.d/lisp/aider.el"))
+(require 'aider)
+
+(setq aider-args '("--model" "openai/Qwen3.5-35B-A3B"
+                   "--openai-api-base" "http://172.31.0.10:8080/v1"
+                   "--openai-api-key" "dummy"
+                   "--no-check-update"
+                   "--no-show-model-warnings"
+                   "--no-show-release-notes"
+                   "--no-fancy-input"
+                   "--no-pretty"
+                   "--map-tokens" "1024"
+                   "--max-chat-history-tokens" "4096"
+                   "--edit-format" "diff"
+                   "--auto-commits"
+                   "--no-auto-lint"))
+
+(setenv "OPENAI_API_KEY" "dummy")
+(setenv "OPENAI_API_BASE" "http://172.31.0.10:8080/v1")
+
+;; ── Key bindings ─────────────────────────────────────────────────────────────
+(global-set-key (kbd "C-c a a") 'aider-run-aider)
+(global-set-key (kbd "C-c a f") 'aider-add-current-file)
+(global-set-key (kbd "C-c a q") 'aider-ask)
+(global-set-key (kbd "C-c a c") 'aider-code-change)
+(global-set-key (kbd "C-c a d") 'aider-diff)
+(global-set-key (kbd "C-c a u") 'aider-undo-last-change)
+INITEOF
+
+### Git clone strategy: HTTPS (default) or SSH (with --build-arg USE_SSH=true) ###
+
+# Prepare SSH environment if using SSH mode
+RUN if [ "$USE_SSH" = "true" ]; then \
+        mkdir -p /home/$DOCKER_USER/.ssh && \
+        chmod 0700 /home/$DOCKER_USER/.ssh && \
+        ssh-keyscan github.com > /home/$DOCKER_USER/.ssh/known_hosts; \
+    fi
+
+# Clone repositories - HTTPS mode (default, public access)
+RUN if [ "$USE_SSH" != "true" ]; then \
+        echo "=== Cloning via HTTPS (public read-only mode) ===" && \
+        echo "Repository: ${MPLAPACK_REPO}" && \
+        cd ${WORK} && git clone ${MPLAPACK_REPO} && \
+        cd ${WORK}/mplapack && git log -1; \
+    fi
+
+# Clone repositories - SSH mode (maintainer access, requires --secret)
+RUN --mount=type=secret,id=ssh_key,uid=${DOCKER_UID} \
+    if [ "$USE_SSH" = "true" ]; then \
+        echo "=== Cloning via SSH (maintainer mode) ===" && \
+        SSH_REPO=$(echo "${MPLAPACK_REPO}" | sed 's|https://github.com/|git@github.com:|') && \
+        echo "Repository: ${SSH_REPO}" && \
+        mkdir -p /home/$DOCKER_USER/.ssh && \
+        cp /run/secrets/ssh_key /home/$DOCKER_USER/.ssh/${SSH_KEY_NAME} && \
+        chmod 600 /home/$DOCKER_USER/.ssh/${SSH_KEY_NAME} && \
+        eval "$(ssh-agent -s)" && \
+        ssh-add /home/$DOCKER_USER/.ssh/${SSH_KEY_NAME} && \
+        cd ${WORK} && git clone ${SSH_REPO} && \
+        cd ${WORK}/mplapack && git log -1 && \
+        rm -f /home/$DOCKER_USER/.ssh/${SSH_KEY_NAME}; \
+    fi
+
+RUN cd ${WORK}/mplapack && bash -x misc/reconfig.ubuntu26.04.sh
+RUN cd ${WORK}/mplapack && make clean
+RUN cd ${WORK}/mplapack && make -j"$(nproc)"
+RUN cd ${WORK}/mplapack && make install
+
+#RUN cd ${WORK}/mplapack && bash -x misc/reconfig.ubuntu26.04.nvidia.sh
+#RUN cd ${WORK}/mplapack && make clean
+#RUN cd ${WORK}/mplapack && make -j"$(nproc)"
+#RUN cd ${WORK}/mplapack && make install
+
+RUN bash -i -c "cd ${WORK}/mplapack && bash -x misc/reconfig.ubuntu26.04.mingw64.sh"
+RUN bash -i -c "cd ${WORK}/mplapack && make clean"
+RUN bash -i -c "cd ${WORK}/mplapack && make -j\"\$(nproc)\""
+RUN bash -i -c "cd ${WORK}/mplapack && make install"
+
+RUN cd ${WORK}/mplapack && bash -x misc/reconfig.ubuntu26.04.intel.sh
+RUN cd ${WORK}/mplapack && make clean
+RUN bash -c "cd ${WORK}/mplapack && source /opt/intel/oneapi/setvars.sh && make -j$(nproc)"
+RUN bash -c "cd ${WORK}/mplapack && source /opt/intel/oneapi/setvars.sh && make install"
