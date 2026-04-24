@@ -320,6 +320,19 @@ void Rstebz(const char *range, const char *order, INTEGER const n, REAL const vl
             //
             // Special Case -- IN=1
             //
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+            if (irange == 1 || wl >= d[ibegin - 1]) {
+                nwl++;
+            }
+            if (irange == 1 || wu >= d[ibegin - 1]) {
+                nwu++;
+            }
+            if (irange == 1 || (wl < d[ibegin - 1] && wu >= d[ibegin - 1])) {
+                m++;
+                w[m - 1] = d[ibegin - 1];
+                iblock[m - 1] = jb;
+            }
+#else
             if (irange == 1 || wl >= d[ibegin - 1] - pivmin) {
                 nwl++;
             }
@@ -331,6 +344,7 @@ void Rstebz(const char *range, const char *order, INTEGER const n, REAL const vl
                 w[m - 1] = d[ibegin - 1];
                 iblock[m - 1] = jb;
             }
+#endif
         } else {
             //
             // General Case -- IN > 1
