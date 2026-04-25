@@ -4,10 +4,10 @@
 #     :cleanup Makefile so that we pass correct compilation flags. 
 
 .cu.o:
-	$(NVCC) $(HOPPER_FLAGS) -o $@ -c $< $(CUDA_CFLAGS)
+	$(NVCC) $(NVCC_GLIBC_FEATURE_FLAGS) $(HOPPER_FLAGS) -o $@ -c $< $(CUDA_CFLAGS)
 
 .cu.lo:
-	$(top_srcdir)/misc/cudalt.py $@ $(NVCC) --compiler-options=\"$(CFLAGS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \" $(AMPERE_FLAGS) $(HOPPER_FLAGS) -c $<
+	$(top_srcdir)/misc/cudalt.py $@ $(NVCC) $(NVCC_GLIBC_FEATURE_FLAGS) --compiler-options=\"$(CFLAGS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) \" $(AMPERE_FLAGS) $(HOPPER_FLAGS) -c $<
 
 lib_LTLIBRARIES = libmpblas_dd_cuda.la
 
@@ -41,7 +41,7 @@ Rsyrk_TU_p.cu
 
 AMPERE_FLAGS = -gencode arch=compute_80,code=sm_80 -m64 -O3 --ptxas-options=-v
 HOPPER_FLAGS = -gencode arch=compute_90,code=sm_90 -m64 -O3 --ptxas-options=-v
+NVCC_GLIBC_FEATURE_FLAGS = -U_GNU_SOURCE
 
 libmpblas_dd_cuda_la_SOURCES = Rgemm.cu Rgemm_cuda.cu Rgemm_fermi.cu Rgemm_tesla.cu \
 				Rsyrk.cu Rsyrk_cuda.cu
-
