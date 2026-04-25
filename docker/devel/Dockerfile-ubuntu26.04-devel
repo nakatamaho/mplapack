@@ -23,8 +23,6 @@
 #  eval $(ssh-agent); ssh-add ~/.ssh/id_ed25519; docker run --privileged --gpus all -v $SSH_AUTH_SOCK:/ssh-agent -e SSH_AUTH_SOCK=/ssh-agent -it --rm --network mplapack-llm_llm-net -e OPENAI_API_BASE=http://172.31.0.10:8080/v1 -e NO_COLOR=1 mplapack:devel2604 /bin/bash
 #  Then inside: aider  (or)  emacs src/Rlasq2.cpp  then C-c a a
 #
-# https://hub.docker.com/r/nvidia/cuda/tags
-# FROM nvidia/cuda:13.2.1-devel-ubuntu26.04
 ARG BASE=ubuntu:26.04
 FROM ${BASE}
 
@@ -77,6 +75,7 @@ RUN apt install -y gdb valgrind #linux-tools-`uname -r` google-perftools linux-h
 RUN apt install -y git wget gpg ccache time parallel bc
 RUN apt install -y pkg-config clangd python3-autopep8 clang-format unifdef octave
 RUN apt install -y ng-common ng-cjk emacs-nox ripgrep pipx
+RUN apt install -y cuda-toolkit
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 1
 
 ### intel one api start ###
@@ -100,12 +99,17 @@ RUN apt-get install -y --no-install-recommends \
 ### intel one api end ###
 
 ### mingw + wine start ###
+RUN dpkg --add-architecture i386 \
+    && mkdir -pm755 /etc/apt/keyrings \
+    && wget -O - https://dl.winehq.org/wine-builds/winehq.key | gpg --dearmor -o /etc/apt/keyrings/winehq-archive.key - \
+    && wget -NP /etc/apt/sources.list.d/ https://dl.winehq.org/wine-builds/ubuntu/dists/resolute/winehq-resolute.sources
 RUN apt-get update -y \
     && apt-get install -y --no-install-recommends \
         mingw-w64 \
         gfortran-mingw-w64 \
         gdb-mingw-w64 \
-        wine64 \
+    && apt-get install -y --install-recommends \
+        winehq-stable \
     && rm -rf /var/lib/apt/lists/
 ### mingw + wine end ###
 
@@ -265,10 +269,10 @@ RUN cd ${WORK}/mplapack && make clean
 RUN cd ${WORK}/mplapack && make -j"$(nproc)"
 RUN cd ${WORK}/mplapack && make install
 
-#RUN cd ${WORK}/mplapack && bash -x misc/reconfig.ubuntu26.04.nvidia.sh
-#RUN cd ${WORK}/mplapack && make clean
-#RUN cd ${WORK}/mplapack && make -j"$(nproc)"
-#RUN cd ${WORK}/mplapack && make install
+RUN cd ${WORK}/mplapack && bash -x misc/reconfig.ubuntu26.04.nvidia.sh
+RUN cd ${WORK}/mplapack && make clean
+RUN cd ${WORK}/mplapack && make -j"$(nproc)"
+RUN cd ${WORK}/mplapack && make install
 
 RUN bash -i -c "cd ${WORK}/mplapack && bash -x misc/reconfig.ubuntu26.04.mingw64.sh"
 RUN bash -i -c "cd ${WORK}/mplapack && make clean"
