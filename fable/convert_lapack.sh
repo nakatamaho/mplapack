@@ -12,6 +12,7 @@ mode="${2:-}"
 
 # Directory of this script (used to find headers and name maps)
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+. "${script_dir}/clang_format_common.sh"
 core_name_map="${script_dir}/mplapack_name_map.txt"
 testing_name_map="${script_dir}/mplapack_testing_name_map.txt"
 
@@ -184,18 +185,7 @@ python3 "${script_dir}/strip_boilerplate_comments.py" --inplace "$tmp_cpp"
 python3 "${script_dir}/add_attribution.py" --inplace "$tmp_cpp" "$src"
 
 # Format with clang-format (C++ indentation and style)
-clang-format-19 -i -style '{
-    BasedOnStyle: llvm,
-    IndentWidth: 4,
-    ColumnLimit: 10000,
-    SortIncludes: false,
-    AlignEscapedNewlines: LeftWithLastLine,
-    SpaceBeforeRangeBasedForLoopColon: false,
-    PointerAlignment: Right,
-    NamespaceIndentation: Inner,
-    AlwaysBreakTemplateDeclarations: No,
-    BreakBeforeConceptDeclarations: Never,
-  }' "$tmp_cpp"
+fable_clang_format_inplace "$tmp_cpp"
 
 # Simplify trivial (1 - 1) index arithmetic in the formatted C++ file
 python3 - "$tmp_cpp" << 'EOF'

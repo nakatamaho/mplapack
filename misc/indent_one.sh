@@ -5,20 +5,9 @@ if [ $# -lt 1 ]; then
     exit 1
 fi
 
+. "$(dirname "$0")/clang_format_common.sh"
+
 for file in "$@"; do
     echo "Formatting: $file"
-    clang-format-19 -i -style '{
-        BasedOnStyle: llvm,
-        IndentWidth: 4,
-        ColumnLimit: 10000,
-        SortIncludes: false,
-        AlignEscapedNewlines: LeftWithLastLine,
-        SpaceBeforeRangeBasedForLoopColon: false,
-        PointerAlignment: Right,
-        NamespaceIndentation: Inner,
-        AlwaysBreakTemplateDeclarations: No,
-        BreakBeforeConceptDeclarations: Never,
-        ReflowComments: true,
-        SpacesInLineCommentPrefix: { Minimum: 1, Maximum: 1 },
-    }' "$file"
+    run_clang_format "$file"
 done

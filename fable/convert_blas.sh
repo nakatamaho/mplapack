@@ -10,6 +10,7 @@ src="$1"
 
 # Directory of this script (used to find mplapack/mpblas/reference/mpblas.h.in and mplapack_name_map.txt)
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+. "${script_dir}/clang_format_common.sh"
 header="${script_dir}/../mpblas/reference/mpblas.h.in"
 name_map="${script_dir}/mplapack_name_map.txt"
 
@@ -113,18 +114,7 @@ if text2 != text:
 EOF_MXERBLA
 
 # Format with clang-format (C++ indentation and style)
-clang-format-19 -i -style '{
-    BasedOnStyle: llvm,
-    IndentWidth: 4,
-    ColumnLimit: 10000,
-    SortIncludes: false,
-    AlignEscapedNewlines: LeftWithLastLine,
-    SpaceBeforeRangeBasedForLoopColon: false,
-    PointerAlignment: Right,
-    NamespaceIndentation: Inner,
-    AlwaysBreakTemplateDeclarations: No,
-    BreakBeforeConceptDeclarations: Never,
-  }' "$tmp_cpp"
+fable_clang_format_inplace "$tmp_cpp"
 
 # Overwrite the generated C++ file with the formatted version
 cp "$tmp_cpp" "$cpp_generated"

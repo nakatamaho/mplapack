@@ -1,4 +1,7 @@
 #!/bin/bash
+fable_script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+. "${fable_script_dir}/clang_format_common.sh"
+
 if [ `uname` = "Linux" ]; then
     SED=sed
 else
@@ -84,7 +87,7 @@ for mplib in $MPLIBS; do
         sed -i -e "s/Mxerbla/Mxerbla_${mplib}/g" mpblas_${mplib}.h
     fi
 
-    clang-format-19 -style="{BasedOnStyle: llvm, IndentWidth: 4, ColumnLimit: 10000 }" mpblas_${mplib}.h | sort > l ; mv l mpblas_${mplib}.h 
+    fable_clang_format_stdout mpblas_${mplib}.h | LC_ALL=C sort > l ; mv l mpblas_${mplib}.h 
     cat ~/mplapack/mpblas/reference/mpblas_${mplib}.h.in mpblas_${mplib}.h > ~/mplapack/include/mpblas_${mplib}.h
     rm mpblas_${mplib}.h
     echo "#endif" >> ~/mplapack/include/mpblas_${mplib}.h
@@ -93,16 +96,5 @@ done
 mv header_all mpblas_generic.h
 
 for f in mpblas_generic.h; do
-clang-format-19 -i -style '{
-    BasedOnStyle: llvm,
-    IndentWidth: 4,
-    ColumnLimit: 10000,
-    SortIncludes: false,
-    AlignEscapedNewlines: LeftWithLastLine,
-    SpaceBeforeRangeBasedForLoopColon: false,
-    PointerAlignment: Right,
-    NamespaceIndentation: Inner,
-    AlwaysBreakTemplateDeclarations: No,
-    BreakBeforeConceptDeclarations: Never,
-  }' "$f"
+fable_clang_format_inplace "$f"
 done

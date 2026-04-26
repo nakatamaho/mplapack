@@ -1,4 +1,6 @@
 #!/bin/bash
+fable_script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+. "${fable_script_dir}/clang_format_common.sh"
 
 cd ~/mplapack/mplapack/reference
 
@@ -15,7 +17,7 @@ done
 
 printf "REAL Rlamch(const char *cmach);\nREAL Rlamc3(REAL a, REAL b);\n" > Rlamch.hpp
 
-cat *hpp | sort | grep -v iseed_is_all_minus_one | grep -v rlaruv_print_nondet_banner_once | grep -v fixed_point | grep -v Mxerbla | grep -v abs1 | grep -v abs2 | grep -v ___mplapack_ | grep -v nondeterministic | grep -v advance_iseed | grep -v iseed_to_seed64 | grep -v abssq | grep -v ___random_mplapack_gmp > header_all
+cat *hpp | LC_ALL=C sort | grep -v iseed_is_all_minus_one | grep -v rlaruv_print_nondet_banner_once | grep -v fixed_point | grep -v Mxerbla | grep -v abs1 | grep -v abs2 | grep -v ___mplapack_ | grep -v nondeterministic | grep -v advance_iseed | grep -v iseed_to_seed64 | grep -v abssq | grep -v ___random_mplapack_gmp > header_all
 
 rm *hpp
 
@@ -136,7 +138,7 @@ for mplib in $MPLIBS; do
         sed -i -e "s/\<Rroundup_lwork\>/Rroundup_lwork_${mplib}/g" mplapack_${mplib}.h
     fi
 
-    clang-format-19 -style="{BasedOnStyle: llvm, IndentWidth: 4, ColumnLimit: 10000 }" mplapack_${mplib}.h | sort > l ; mv l mplapack_${mplib}.h 
+    fable_clang_format_stdout mplapack_${mplib}.h | LC_ALL=C sort > l ; mv l mplapack_${mplib}.h 
     cat ~/mplapack/mplapack/reference/mplapack_${mplib}.h.in mplapack_${mplib}.h > ~/mplapack/include/mplapack_${mplib}.h
     rm mplapack_${mplib}.h
     echo "#endif" >> ~/mplapack/include/mplapack_${mplib}.h
@@ -146,16 +148,5 @@ done
 mv header_all ~/mplapack/mplapack/reference/mplapack_generic.h
 
 for f in mplapack_generic.h; do
-clang-format-19 -i -style '{
-    BasedOnStyle: llvm,
-    IndentWidth: 4,
-    ColumnLimit: 10000,
-    SortIncludes: false,
-    AlignEscapedNewlines: LeftWithLastLine,
-    SpaceBeforeRangeBasedForLoopColon: false,
-    PointerAlignment: Right,
-    NamespaceIndentation: Inner,
-    AlwaysBreakTemplateDeclarations: No,
-    BreakBeforeConceptDeclarations: Never,
-  }' "$f"
+fable_clang_format_inplace "$f"
 done

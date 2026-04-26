@@ -1,4 +1,6 @@
 #!/bin/bash
+fable_script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+. "${fable_script_dir}/clang_format_common.sh"
 
 cd ~/mplapack/mplapack/test/eig/common
 
@@ -24,7 +26,7 @@ awk '1' ./*.hpp \
   | grep -vF 'common(int argc, const char *argv[]);' \
   | grep -vF 'program_' \
   | grep -v main \
-  | sort -u > header_all
+  | LC_ALL=C sort -u > header_all
 
 rm ./*.hpp
 
@@ -135,7 +137,7 @@ for mplib in $MPLIBS; do
         sed -i -e "s/iMparmq/iMparmq_${mplib}/g" mplapack_eig_${mplib}.h 
     fi
 
-    clang-format-19 -style="{BasedOnStyle: llvm, IndentWidth: 4, ColumnLimit: 10000 }" mplapack_eig_${mplib}.h | sort > l ; mv l mplapack_eig_${mplib}.h 
+    fable_clang_format_stdout mplapack_eig_${mplib}.h | LC_ALL=C sort > l ; mv l mplapack_eig_${mplib}.h 
     cat ~/mplapack/mplapack/test/eig/common/mplapack_eig_${mplib}.h.in mplapack_eig_${mplib}.h > ~/mplapack/include/mplapack_eig_${mplib}.h
     rm mplapack_eig_${mplib}.h
     echo "#endif" >> ~/mplapack/include/mplapack_eig_${mplib}.h
@@ -146,16 +148,5 @@ done
 mv header_all mplapack_eig_generic.h
 
 for f in mplapack_eig_generic.h; do
-clang-format-19 -i -style '{
-    BasedOnStyle: llvm,
-    IndentWidth: 4,
-    ColumnLimit: 10000,
-    SortIncludes: false,
-    AlignEscapedNewlines: LeftWithLastLine,
-    SpaceBeforeRangeBasedForLoopColon: false,
-    PointerAlignment: Right,
-    NamespaceIndentation: Inner,
-    AlwaysBreakTemplateDeclarations: No,
-    BreakBeforeConceptDeclarations: Never,
-  }' "$f"
+fable_clang_format_inplace "$f"
 done
