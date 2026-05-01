@@ -922,6 +922,45 @@ inline mpf_class compute_atan2(const mpf_class &y_input, const mpf_class &x_inpu
     return set_prec_copy(result, target);
 }
 
+inline mpf_class e(precision_type target_precision) {
+    const precision_type target = normalize_target_precision(target_precision);
+    const precision_type work = working_precision_for_exp(target) + 8;
+    return set_prec_copy(compute_exp(make_ui(1, work), work), target);
+}
+
+inline mpf_class log_ten(precision_type target_precision) {
+    const precision_type target = normalize_target_precision(target_precision);
+    const precision_type work = target + guard_bits_for_log(target) + 8;
+    return set_prec_copy(compute_log(make_ui(10, work), work), target);
+}
+
+inline mpf_class inv_log_two(precision_type target_precision) {
+    const precision_type target = normalize_target_precision(target_precision);
+    const precision_type work = working_precision_for_log_two(target) + 8;
+    return set_prec_copy(div(make_ui(1, work), log_two(work), work), target);
+}
+
+inline mpf_class pi_over_two(precision_type target_precision) {
+    const precision_type target = normalize_target_precision(target_precision);
+    mpf_class result = pi(target + 8);
+    mpf_div_2exp(result.get_mpf_t(), result.get_mpf_t(), 1);
+    return set_prec_copy(result, target);
+}
+
+inline mpf_class pi_over_four(precision_type target_precision) {
+    const precision_type target = normalize_target_precision(target_precision);
+    mpf_class result = pi(target + 8);
+    mpf_div_2exp(result.get_mpf_t(), result.get_mpf_t(), 2);
+    return set_prec_copy(result, target);
+}
+
+inline mpf_class two_pi(precision_type target_precision) {
+    const precision_type target = normalize_target_precision(target_precision);
+    mpf_class result = pi(target + 8);
+    mpf_mul_2exp(result.get_mpf_t(), result.get_mpf_t(), 1);
+    return set_prec_copy(result, target);
+}
+
 inline precision_type guard_bits_for_pow(precision_type) {
     return 96;
 }

@@ -1002,9 +1002,9 @@ inline mpcomplex::mpcomplex(const mpc_class &a, mp_prec_t pr, mp_prec_t pi, mpc_
     mpc_set_f_f(mpc, a.real().get_mpf_t(), a.imag().get_mpf_t(), mode);
 }
 
-inline const mpcomplex operator-(const mpcomplex &a, const mpc_class &b) { return mpcomplex(b) -= a; }
+inline const mpcomplex operator-(const mpcomplex &a, const mpc_class &b) { return -(mpcomplex(b) -= a); }
 
-inline const mpcomplex operator-(const mpc_class &a, const mpcomplex &b) { return -(mpcomplex(a) -= b); }
+inline const mpcomplex operator-(const mpc_class &a, const mpcomplex &b) { return mpcomplex(a) -= b; }
 
 inline mpc_class cast2mpc_class(const mpcomplex &b) {
     // mpcomplex -> mpfr, mpfr -> mpf, mpf -> mpc_class
@@ -1026,7 +1026,7 @@ inline mpc_class cast2mpc_class(const mpcomplex &b) {
     mpfr_set(tmpim2, (mpfr_ptr)aim, MPC_RND_IM(mpcomplex::default_rnd));
 
     mpf_init2(tmpre, pr);
-    mpf_init2(tmpim, pr);
+    mpf_init2(tmpim, pi);
     mpfr_get_f(tmpre, tmpre2, MPC_RND_RE(mpcomplex::default_rnd));
     mpfr_get_f(tmpim, tmpim2, MPC_RND_IM(mpcomplex::default_rnd));
 
@@ -1091,9 +1091,9 @@ inline qd_complex cast2qd_complex(const mpcomplex &b) {
     q.imag().x[3] = p[3].imag();
     return q;
 }
-inline const mpcomplex operator-(const mpcomplex &a, const qd_complex &b) { return mpcomplex(b) -= a; }
+inline const mpcomplex operator-(const mpcomplex &a, const qd_complex &b) { return -(mpcomplex(b) -= a); }
 
-inline const mpcomplex operator-(const qd_complex &a, const mpcomplex &b) { return -(mpcomplex(a) -= b); }
+inline const mpcomplex operator-(const qd_complex &a, const mpcomplex &b) { return mpcomplex(a) -= b; }
 
 inline mpcomplex &mpcomplex::operator=(const qd_complex &a) {
     mpcomplex tmp(a);
@@ -1137,8 +1137,8 @@ inline dd_complex cast2dd_complex(const mpcomplex &b) {
     return q;
 }
 
-inline const mpcomplex operator-(const mpcomplex &a, const dd_complex &b) { return mpcomplex(b) -= a; }
-inline const mpcomplex operator-(const dd_complex &a, const mpcomplex &b) { return -(mpcomplex(a) -= b); }
+inline const mpcomplex operator-(const mpcomplex &a, const dd_complex &b) { return -(mpcomplex(b) -= a); }
+inline const mpcomplex operator-(const dd_complex &a, const mpcomplex &b) { return mpcomplex(a) -= b; }
 
 inline mpcomplex &mpcomplex::operator=(const dd_complex &a) {
     mpcomplex tmp(a);
@@ -1245,9 +1245,9 @@ inline mpcomplex::mpcomplex(const std::complex<mplapack_binary80_t> &a, mp_prec_
     mpfr_clear(mp_real);
 }
 
-inline const mpcomplex operator-(const mpcomplex &a, const std::complex<mplapack_binary80_t> &b) { return mpcomplex(b) -= a; }
+inline const mpcomplex operator-(const mpcomplex &a, const std::complex<mplapack_binary80_t> &b) { return -(mpcomplex(b) -= a); }
 
-inline const mpcomplex operator-(const std::complex<mplapack_binary80_t> &a, const mpcomplex &b) { return -(mpcomplex(a) -= b); }
+inline const mpcomplex operator-(const std::complex<mplapack_binary80_t> &a, const mpcomplex &b) { return mpcomplex(a) -= b; }
 
 inline mpcomplex &mpcomplex::operator=(const std::complex<mplapack_binary80_t> &a) {
     mpcomplex tmp(a);

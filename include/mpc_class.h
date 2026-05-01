@@ -58,6 +58,7 @@ Complex class declare for the GMP.
 
 #include "gmpxx.h"
 #include <complex>
+#include <utility>
 
 class mpc_class {
   private:
@@ -89,11 +90,13 @@ class mpc_class {
     friend bool operator==(const mpc_class &a, const mpf_class &b);
     friend bool operator==(const mpf_class &a, const mpc_class &b);
     friend bool operator==(const mpc_class &a, const double &b);
+    friend bool operator==(const double &a, const mpc_class &b);
 
     friend bool operator!=(const mpc_class &a, const mpc_class &b);
     friend bool operator!=(const mpc_class &a, const mpf_class &b);
     friend bool operator!=(const mpf_class &a, const mpc_class &b);
     friend bool operator!=(const mpc_class &a, const double &b);
+    friend bool operator!=(const double &a, const mpc_class &b);
 
     // subsututtion
     // difficult to implement; mpc_class& operator=(const mpc_class& b);
@@ -143,6 +146,13 @@ const mpc_class operator/(const mpc_class &a, const mpf_class &b);
 const mpc_class operator/(const mpf_class &a, const mpc_class &b);
 const mpc_class operator/(const mpc_class &a, std::complex<double> b);
 const mpc_class operator/(std::complex<double> a, const mpc_class &b);
+mpf_class real(const mpc_class &a);
+mpf_class imag(const mpc_class &a);
+mpf_class norm(const mpc_class &a);
+mpf_class abs(const mpc_class &a);
+mpc_class sqrt(mpc_class z);
+mpc_class conj(const mpc_class &a);
+void swap(mpc_class &a, mpc_class &b);
 
 // constructor
 inline mpc_class::mpc_class() {
@@ -220,6 +230,8 @@ inline bool operator==(const mpc_class &a, const double &b) {
         return false;
 }
 
+inline bool operator==(const double &a, const mpc_class &b) { return b == a; }
+
 inline bool operator!=(const mpc_class &a, const mpc_class &b) {
     if ((a.re != b.re) || (a.im != b.im)) {
         return true;
@@ -242,11 +254,13 @@ inline bool operator!=(const mpc_class &a, const mpf_class &b) {
 }
 
 inline bool operator!=(const mpc_class &a, const double &b) {
-    if ((a.re != b) || (a.im == 0.0)) {
+    if ((a.re != b) || (a.im != 0.0)) {
         return true;
     } else
         return false;
 }
+
+inline bool operator!=(const double &a, const mpc_class &b) { return b != a; }
 
 inline mpc_class &mpc_class::operator=(const std::complex<double> b) {
     re = b.real();
@@ -297,6 +311,14 @@ inline const mpc_class operator+(const mpf_class &a, const mpc_class &b) {
     return tmp;
 }
 
+inline const mpc_class operator+(const mpc_class &a, std::complex<double> b) {
+    return a + mpc_class(b);
+}
+
+inline const mpc_class operator+(std::complex<double> a, const mpc_class &b) {
+    return mpc_class(a) + b;
+}
+
 inline mpc_class &mpc_class::operator-=(const mpc_class &b) {
     re -= b.re;
     im -= b.im;
@@ -328,6 +350,14 @@ inline const mpc_class operator-(const mpc_class &a, const mpf_class &b) {
 inline const mpc_class operator-(const mpf_class &a, const mpc_class &b) {
     mpc_class tmp(a);
     return tmp -= b;
+}
+
+inline const mpc_class operator-(const mpc_class &a, std::complex<double> b) {
+    return a - mpc_class(b);
+}
+
+inline const mpc_class operator-(std::complex<double> a, const mpc_class &b) {
+    return mpc_class(a) - b;
 }
 
 // not so bad as overflow might not occur with GMP; exponet range is extraordinarly large.
@@ -366,6 +396,14 @@ inline const mpc_class operator*(const mpc_class &a, const mpf_class &b) {
     return tmp;
 }
 
+inline const mpc_class operator*(const mpc_class &a, std::complex<double> b) {
+    return a * mpc_class(b);
+}
+
+inline const mpc_class operator*(std::complex<double> a, const mpc_class &b) {
+    return mpc_class(a) * b;
+}
+
 inline mpc_class &mpc_class::operator/=(const mpc_class &b) {
     mpc_class tmp(*this);
     mpf_class abr, abi, ratio, den;
@@ -396,8 +434,8 @@ inline mpc_class &mpc_class::operator/=(const mpc_class &b) {
 
 inline mpc_class &mpc_class::operator/=(const mpf_class &b) {
     mpc_class tmp(*this);
-    re = (tmp.re * b);
-    im = (tmp.im * b);
+    re = (tmp.re / b);
+    im = (tmp.im / b);
     return (*this);
 }
 
@@ -422,7 +460,22 @@ inline const mpc_class operator/(const mpf_class &a, const mpc_class &b) {
     return tmp;
 }
 
-inline mpf_class abs(mpc_class ctemp) {
+inline const mpc_class operator/(const mpc_class &a, std::complex<double> b) {
+    return a / mpc_class(b);
+}
+
+inline const mpc_class operator/(std::complex<double> a, const mpc_class &b) {
+    return mpc_class(a) / b;
+}
+
+inline mpf_class real(const mpc_class &a) { return a.real(); }
+
+inline mpf_class imag(const mpc_class &a) { return a.imag(); }
+
+inline mpf_class norm(const mpc_class &a) { return a.real() * a.real() + a.imag() * a.imag(); }
+
+inline mpf_class abs(const mpc_class &a) {
+    mpc_class ctemp(a);
     mpf_class temp;
     if (ctemp.real() < 0)
         ctemp.real() = -ctemp.real();
@@ -461,12 +514,18 @@ inline mpc_class sqrt(mpc_class z) {
     return r;
 }
 
-inline mpc_class conj(mpc_class ctmp) {
+inline mpc_class conj(const mpc_class &ctmp) {
     mpc_class ctmp2;
 
     ctmp2.real(ctmp.real());
     ctmp2.imag(-ctmp.imag());
     return ctmp2;
+}
+
+inline void swap(mpc_class &a, mpc_class &b) {
+    using std::swap;
+    swap(a.real(), b.real());
+    swap(a.imag(), b.imag());
 }
 
 #endif
