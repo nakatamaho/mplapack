@@ -1,3 +1,4 @@
+#define ___MPLAPACK_MPLAPACK_INIT___
 #include "mpreal.h"
 #include <iostream>
 
@@ -5,15 +6,29 @@ using namespace mpfr;
 using namespace std;
 
 int main(int argc, char *argv[]) {
-    mp_rnd_t RND = mpreal::get_default_rnd();
-    mpreal::set_default_rnd(RND);
-    mpreal::set_default_prec(256);
+    mp_rnd_t RND = mpreal::default_rnd;
+    mpreal::default_rnd = RND;
+    mpreal::default_prec = 256;
+    mpreal source = "0.1";
+    source.set_prec(128);
+    mpreal::default_prec = 64;
+    mpreal copied(source);
+    if (copied.get_prec() != source.get_prec()) {
+        cout << "copy constructor precision test failed" << endl;
+        return 1;
+    }
+    if (copied != source) {
+        cout << "copy constructor value test failed" << endl;
+        return 1;
+    }
+
+    mpreal::default_prec = 256;
     mpreal a = "0.1";
     a.set_prec(8);
 
     mpreal b = "0.1";
     a.set_prec(128);
-    mpreal::set_default_prec(256);
+    mpreal::default_prec = 256;
     mpreal d = "0.2";
 
     mpreal c = a + b;
