@@ -44,6 +44,34 @@ static void __attribute__((destructor))  mplapack_test_fpu_fini(void) { fpu_fix_
 
 #define MAX_ITER 10
 
+void mpc_ptr_conversion_test() {
+    printf("mpcomplex <=> mpc_ptr conversion test \n");
+
+    int flag = 0;
+    mpcomplex z(mpreal(1.25), mpreal(-2.5));
+    mpc_t raw;
+    mpc_init2(raw, mpcomplex::default_real_prec);
+
+    mpc_set(raw, z, mpcomplex::default_rnd);
+    if (abs(mpcomplex(raw) - z) > mpreal(EPSILON)) {
+        flag = 1;
+    }
+
+    mpc_add(raw, raw, z, mpcomplex::default_rnd);
+    mpc_set(z, raw, mpcomplex::default_rnd);
+    if (abs(z - mpcomplex(mpreal(2.5), mpreal(-5.0))) > mpreal(EPSILON)) {
+        flag = 1;
+    }
+
+    mpc_clear(raw);
+    if (flag) {
+        printf("mpcomplex <=> mpc_ptr conversion test failed\n");
+        exit(1);
+    } else {
+        printf("mpcomplex <=> mpc_ptr conversion test passed\n");
+    }
+}
+
 void mpc_subst_test1() {
     printf("Complex <= Real test \n");
     REAL_REF diff;
@@ -925,6 +953,7 @@ int main(int argc, char *argv[]) {
     mpcomplex::default_real_prec = ___MPLAPACK_MPFR_DEFAULT_PRECISION___;
     mpcomplex::default_imag_prec = ___MPLAPACK_MPFR_DEFAULT_PRECISION___;
 
+    mpc_ptr_conversion_test();
     mpc_subst_test1();
     mpc_abs_test();
     mpc_add_test1();

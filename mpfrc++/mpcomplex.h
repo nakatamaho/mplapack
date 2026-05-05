@@ -206,6 +206,8 @@ class mpcomplex {
     friend const mpcomplex atanh(const mpcomplex &a, mpc_rnd_t mode);
 
     // Type Conversion operators
+    inline operator mpc_ptr() { return mpc; }
+    inline operator mpc_srcptr() const { return mpc; }
     operator std::complex<double>() const;
     operator std::complex<long double>() const;
     operator std::string() const;
