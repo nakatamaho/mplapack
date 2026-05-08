@@ -5,7 +5,7 @@ SCRIPT_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 PROJECT_ROOT := $(abspath $(SCRIPT_DIR)/..)
 CONF_FILE ?= $(SCRIPT_DIR)/build-matrix.conf
 LOGDIR ?= $(SCRIPT_DIR)/logs/$(shell date +%Y%m%d_%H%M%S)
-HOST_WORK_DIR ?= $(PROJECT_ROOT)
+HOST_WORK_DIR ?= /work/mplapack-work
 HOST_CCACHE_DIR ?= /work/ccache
 SUCCESS_DIR ?= $(SCRIPT_DIR)/success
 

@@ -18,14 +18,23 @@ FILTER_NAME="${FILTER_NAME:-}"
 FILTER_ARCH="${FILTER_ARCH:-}"
 USE_GPU="${USE_GPU:-auto}"
 CCACHE_MAXSIZE="${CCACHE_MAXSIZE:-200G}"
+WORK_MOUNT_MODE="${WORK_MOUNT_MODE:-bind}"  # bind|tmpfs
 
 # Host directories
-HOST_WORK_DIR="${HOST_WORK_DIR:-$PROJECT_ROOT}"
+HOST_WORK_DIR="${HOST_WORK_DIR:-/work/mplapack-work}"
 HOST_CCACHE_DIR="${HOST_CCACHE_DIR:-/work/ccache}"
 
 mkdir -p "$LOGDIR"
 mkdir -p "$SUCCESS_DIR"
 mkdir -p "$HOST_CCACHE_DIR"
+if [[ "$WORK_MOUNT_MODE" == "bind" ]]; then
+    mkdir -p "$HOST_WORK_DIR"
+fi
+
+if [[ "$WORK_MOUNT_MODE" != "bind" && "$WORK_MOUNT_MODE" != "tmpfs" ]]; then
+    echo "ERROR: WORK_MOUNT_MODE must be 'bind' or 'tmpfs'." >&2
+    exit 1
+fi
 
 # Initialize buildx builder if not exists
 docker buildx inspect mplapack-builder >/dev/null 2>&1 || \
@@ -361,10 +370,9 @@ fi
         fi
     fi
 
-    # Prepare work directory
-    # NOTE: /work must NOT be bind-mounted from the host.
-    # Keep /work inside the container (tmpfs) and mount only /ccache from the host.
-    # If a tarball is used, mount it to /input (read-only) instead of /work.
+    # Prepare input directory.
+    # If a tarball is used, mount it to /input (read-only) instead of copying
+    # it into /work before the container starts.
     local input_mount=""
 
     # For tarball tests, create temp directory with tarball
@@ -379,18 +387,24 @@ fi
         input_mount="$tmpdir"
     fi
 
-    # Common docker run arguments: /work is container-local; only /ccache is bind-mounted.
-    # - /work is tmpfs to enforce clean builds and avoid leaking host state.
+    # Common docker run arguments.
+    # - Default: bind-mount /work from the host so large release builds do not
+    #   exhaust tmpfs during heavy MinGW linking.
+    # - Optional: set WORK_MOUNT_MODE=tmpfs for small, fully memory-backed builds.
     # - For tarball mode, the tarball directory is mounted to /input:ro.
     local -a docker_run_args
     docker_run_args=(
         --rm
         --platform "$arch"
-        --tmpfs /work:rw,exec
         -v "$HOST_CCACHE_DIR:/ccache:rw"
         -e CCACHE_DIR=/ccache
         -e CCACHE_MAXSIZE="$CCACHE_MAXSIZE"
     )
+    if [[ "$WORK_MOUNT_MODE" == "bind" ]]; then
+        docker_run_args+=( -v "$HOST_WORK_DIR:/work:rw" )
+    else
+        docker_run_args+=( --tmpfs /work:rw,exec )
+    fi
 
     # Personality note: linux/386 on x86_64 host is handled by
     # entrypoint.sh inside the Dockerfile (auto-detects and wraps with linux32).
