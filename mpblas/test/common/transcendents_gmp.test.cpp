@@ -53,6 +53,7 @@ using mplapack_gmp_transcendents::compute_atan;
 using mplapack_gmp_transcendents::compute_atan2;
 using mplapack_gmp_transcendents::compute_pow;
 using mplapack_gmp_transcendents::div;
+using mplapack_gmp_transcendents::div_ui;
 using mplapack_gmp_transcendents::make_ui;
 using mplapack_gmp_transcendents::quo_rem;
 using mplapack_gmp_transcendents::set_prec_copy;
@@ -810,6 +811,56 @@ static void test_sincos_large_argument_reduction() {
     std::printf("sincos large-argument reduction check passed\n");
 }
 
+static void check_sincos_taylor_denominator_step(const char *name, unsigned long den1, unsigned long den2) {
+    const mp_bitcnt_t precision = 512;
+    const mp_bitcnt_t reference_precision = 1024;
+
+    const mpf_class numerator = div(make_ui(7, precision), make_ui(13, precision), precision);
+    mpf_class split = div_ui(numerator, den1, precision);
+    split = div_ui(split, den2, precision);
+
+    const mpz_class exact_denominator = mpz_class(den1) * mpz_class(den2);
+    mpf_class denominator(0, reference_precision);
+    mpf_set_z(denominator.get_mpf_t(), exact_denominator.get_mpz_t());
+    const mpf_class numerator_hi = set_prec_copy(numerator, reference_precision);
+    const mpf_class reference_hi = div(numerator_hi, denominator, reference_precision);
+    const mpf_class reference = set_prec_copy(reference_hi, precision);
+
+    const mpf_class diff = abs(split - reference);
+    mpf_class bound = ulp_for_value(reference, precision);
+    mpf_mul_2exp(bound.get_mpf_t(), bound.get_mpf_t(), 4);
+    if (diff > bound) {
+        std::printf("sincos Taylor denominator split test failed for %s\n", name);
+        std::printf("diff = ");
+        printnum(diff);
+        std::printf("\nbound = ");
+        printnum(bound);
+        std::printf("\n");
+        std::exit(1);
+    }
+
+    if (sizeof(unsigned long) == 4) {
+        const unsigned long wrapped_denominator = den1 * den2;
+        const mpf_class wrapped = div(numerator, make_ui(wrapped_denominator, precision), precision);
+        mpf_class wrapped_gap_bound = bound;
+        mpf_mul_2exp(wrapped_gap_bound.get_mpf_t(), wrapped_gap_bound.get_mpf_t(), 12);
+        if (abs(wrapped - reference) <= wrapped_gap_bound) {
+            std::printf("sincos Taylor denominator overflow guard did not exercise %s\n", name);
+            std::exit(1);
+        }
+    }
+}
+
+static void test_sincos_taylor_no_denominator_overflow() {
+    const unsigned long sin_k = 32768ul;
+    check_sincos_taylor_denominator_step("sin", 2ul * sin_k, 2ul * sin_k + 1ul);
+
+    const unsigned long cos_k = 32769ul;
+    check_sincos_taylor_denominator_step("cos", 2ul * cos_k - 1ul, 2ul * cos_k);
+
+    std::printf("sincos Taylor denominator overflow check passed\n");
+}
+
 static void test_atan_reference_literal() {
     const mp_bitcnt_t target_precision = 256;
     const mp_bitcnt_t literal_precision = 768;
@@ -1085,6 +1136,7 @@ int main() {
     test_sincos_identity();
     test_sincos_reduction_seam();
     test_sincos_large_argument_reduction();
+    test_sincos_taylor_no_denominator_overflow();
     test_atan_reference_literal();
     test_atan_precision_doubling_pair(128, 256);
     test_atan_precision_doubling_pair(512, 1024);
