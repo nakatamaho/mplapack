@@ -116,6 +116,13 @@ inline mpf_class mul_ui(const mpf_class &a, unsigned long value, precision_type 
     return result;
 }
 
+inline mp_bitcnt_t mp_exp_magnitude(mp_exp_t value) {
+    if (value >= 0) {
+        return static_cast<mp_bitcnt_t>(value);
+    }
+    return static_cast<mp_bitcnt_t>(-(value + 1)) + 1;
+}
+
 struct quo_rem_result {
     mpz_class quotient;
     mpf_class remainder = make_ui(0, 32);
@@ -126,13 +133,15 @@ struct sincos_result {
     mpf_class cos_value = make_ui(1, 32);
 };
 
+struct trig_constants_result {
+    mpf_class pi_over_two_value = make_ui(0, 32);
+};
 
 struct trig_constant_cache_state {
     std::mutex mutex;
     precision_type cached_precision = 0;
     mpf_class pi_value = make_ui(0, 32);
     mpf_class pi_over_two_value = make_ui(0, 32);
-    mpf_class two_over_pi_value = make_ui(0, 32);
     bool initialized = false;
 };
 
@@ -496,7 +505,7 @@ inline mpf_class mul_signed_exp(const mpf_class &value, mp_exp_t multiplier, pre
     if (multiplier == 0) {
         return make_ui(0, precision);
     }
-    const unsigned long magnitude_ui = static_cast<unsigned long>(multiplier > 0 ? multiplier : -multiplier);
+    const unsigned long magnitude_ui = static_cast<unsigned long>(mp_exp_magnitude(multiplier));
     const mpf_class magnitude = mul_ui(value, magnitude_ui, precision);
     if (multiplier < 0) {
         return sub(make_ui(0, precision), magnitude, precision);
@@ -547,7 +556,7 @@ inline mpf_class compute_log(const mpf_class &x_input, precision_type target_pre
     if (exponent >= 0) {
         mpf_mul_2exp(s.get_mpf_t(), s.get_mpf_t(), static_cast<mp_bitcnt_t>(exponent));
     } else {
-        mpf_div_2exp(s.get_mpf_t(), s.get_mpf_t(), static_cast<mp_bitcnt_t>(-exponent));
+        mpf_div_2exp(s.get_mpf_t(), s.get_mpf_t(), mp_exp_magnitude(exponent));
     }
 
     const mpf_class b = div(make_ui(4, work), s, work);
@@ -619,7 +628,7 @@ inline mpf_class compute_exp(const mpf_class &x_input, precision_type target_pre
     if (k >= 0) {
         mpf_mul_2exp(result.get_mpf_t(), result.get_mpf_t(), static_cast<mp_bitcnt_t>(k));
     } else {
-        mpf_div_2exp(result.get_mpf_t(), result.get_mpf_t(), static_cast<mp_bitcnt_t>(-k));
+        mpf_div_2exp(result.get_mpf_t(), result.get_mpf_t(), mp_exp_magnitude(k));
     }
     return set_prec_copy(result, target);
 }
@@ -681,6 +690,25 @@ inline precision_type trig_constant_precision(precision_type target_precision) {
     return (2 * normalize_target_precision(target_precision)) + 64;
 }
 
+inline precision_type trig_argument_exponent_bits(const mpf_class &x_input) {
+    if (x_input == make_ui(0, x_input.get_prec())) {
+        return 0;
+    }
+    mp_exp_t exponent = 0;
+    mpf_get_d_2exp(&exponent, x_input.get_mpf_t());
+    if (exponent <= 0) {
+        return 0;
+    }
+    return static_cast<precision_type>(exponent);
+}
+
+inline precision_type trig_constant_precision_for_argument(const mpf_class &x_input, precision_type target_precision) {
+    const precision_type target = normalize_target_precision(target_precision);
+    const precision_type fixed_budget = trig_constant_precision(target);
+    const precision_type argument_budget = target + trig_argument_exponent_bits(x_input) + 64;
+    return std::max(fixed_budget, argument_budget);
+}
+
 inline sincos_result sincos_taylor_small(const mpf_class &x, precision_type precision) {
     mpf_class epsilon = make_ui(1, precision);
     mpf_div_2exp(epsilon.get_mpf_t(), epsilon.get_mpf_t(), precision);
@@ -713,32 +741,23 @@ inline sincos_result sincos_taylor_small(const mpf_class &x, precision_type prec
     return result;
 }
 
-inline void ensure_trig_constants(precision_type target_precision) {
-    const precision_type cache_precision = trig_constant_precision(target_precision);
-    trig_constant_cache_state &cache = trig_constant_cache();
-    std::lock_guard<std::mutex> lock(cache.mutex);
+inline void refresh_trig_constants_locked(trig_constant_cache_state &cache, precision_type cache_precision) {
     if (!cache.initialized || cache.cached_precision < cache_precision) {
         cache.pi_value = compute_pi_gauss_legendre(cache_precision);
         cache.pi_over_two_value = set_prec_copy(cache.pi_value, cache_precision);
         mpf_div_2exp(cache.pi_over_two_value.get_mpf_t(), cache.pi_over_two_value.get_mpf_t(), 1);
-        cache.two_over_pi_value = div(make_ui(2, cache_precision), cache.pi_value, cache_precision);
         cache.cached_precision = cache_precision;
         cache.initialized = true;
     }
 }
 
-inline mpf_class trig_pi_over_two(precision_type target_precision) {
-    ensure_trig_constants(target_precision);
+inline trig_constants_result trig_constants(precision_type cache_precision) {
     trig_constant_cache_state &cache = trig_constant_cache();
     std::lock_guard<std::mutex> lock(cache.mutex);
-    return set_prec_copy(cache.pi_over_two_value, trig_constant_precision(target_precision));
-}
-
-inline mpf_class trig_two_over_pi(precision_type target_precision) {
-    ensure_trig_constants(target_precision);
-    trig_constant_cache_state &cache = trig_constant_cache();
-    std::lock_guard<std::mutex> lock(cache.mutex);
-    return set_prec_copy(cache.two_over_pi_value, trig_constant_precision(target_precision));
+    refresh_trig_constants_locked(cache, cache_precision);
+    trig_constants_result result;
+    result.pi_over_two_value = set_prec_copy(cache.pi_over_two_value, cache_precision);
+    return result;
 }
 
 inline sincos_result compute_sincos(const mpf_class &x_input, precision_type target_precision) {
@@ -746,36 +765,14 @@ inline sincos_result compute_sincos(const mpf_class &x_input, precision_type tar
     const precision_type work = working_precision_for_trig(target);
     const mpf_class x = set_prec_copy(x_input, work);
     const mpf_class zero = make_ui(0, work);
-    const precision_type const_precision = trig_constant_precision(target);
-    const mpf_class pio2 = set_prec_copy(trig_pi_over_two(target), const_precision);
-    const mpf_class two_over_pi = set_prec_copy(trig_two_over_pi(target), const_precision);
+    const precision_type const_precision = trig_constant_precision_for_argument(x_input, target);
+    const trig_constants_result constants = trig_constants(const_precision);
+    const mpf_class pio2 = constants.pi_over_two_value;
 
     const mpf_class scaled_x = set_prec_copy(x_input, const_precision);
-    const mpf_class q = mul(scaled_x, two_over_pi, const_precision);
-    mpz_class k = 0;
-    mpz_set_f(k.get_mpz_t(), q.get_mpf_t());
-    const mpf_class integer_part(k, const_precision);
-    const mpf_class frac = sub(q, integer_part, const_precision);
-    const mpf_class half = div(make_ui(1, const_precision), make_ui(2, const_precision), const_precision);
-    const mpf_class neg_half = sub(make_ui(0, const_precision), half, const_precision);
-    const int frac_vs_half = mpf_cmp(frac.get_mpf_t(), half.get_mpf_t());
-    const int frac_vs_neg_half = mpf_cmp(frac.get_mpf_t(), neg_half.get_mpf_t());
-    if (frac_vs_half > 0) {
-        k += 1;
-    } else if (frac_vs_half == 0) {
-        if (mpz_odd_p(k.get_mpz_t())) {
-            k += 1;
-        }
-    } else if (frac_vs_neg_half < 0) {
-        k -= 1;
-    } else if (frac_vs_neg_half == 0) {
-        if (mpz_odd_p(k.get_mpz_t())) {
-            k -= 1;
-        }
-    }
-
-    const mpf_class remainder_hi = sub(scaled_x, mul(pio2, mpf_class(k, const_precision), const_precision), const_precision);
-    const mpf_class reduced_argument = set_prec_copy(remainder_hi, work);
+    const quo_rem_result reduction = quo_rem(scaled_x, pio2, const_precision);
+    const mpz_class k = reduction.quotient;
+    const mpf_class reduced_argument = set_prec_copy(reduction.remainder, work);
     const sincos_result base = sincos_taylor_small(reduced_argument, work);
 
     const unsigned long quadrant = mpz_fdiv_ui(k.get_mpz_t(), 4ul);
@@ -866,8 +863,8 @@ inline mpf_class compute_atan(const mpf_class &x_input, precision_type target_pr
     }
 
     mpf_class result = atan_taylor_small(y, work);
-    for (unsigned long i = 0; i < reductions; ++i) {
-        result = mul_ui(result, 2ul, work);
+    if (reductions != 0) {
+        mpf_mul_2exp(result.get_mpf_t(), result.get_mpf_t(), static_cast<mp_bitcnt_t>(reductions));
     }
 
     if (negate) {

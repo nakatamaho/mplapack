@@ -372,6 +372,45 @@ static void test_log_near_one_branch() {
     std::printf("log near-one branch check passed\n");
 }
 
+static void test_log_extreme_exponents() {
+    const mp_bitcnt_t precision = 256;
+    const mp_bitcnt_t work = 512;
+    const mp_bitcnt_t shift = 600;
+
+    mpf_class x = make_ui(1, work);
+    mpf_mul_2exp(x.get_mpf_t(), x.get_mpf_t(), shift);
+
+    mpf_class expected = log_two(work);
+    mpf_mul_ui(expected.get_mpf_t(), expected.get_mpf_t(), static_cast<unsigned long>(shift));
+    mpf_class rounded_expected(0, precision);
+    mpf_set(rounded_expected.get_mpf_t(), expected.get_mpf_t());
+
+    mpf_class value = compute_log(x, precision);
+    mpf_class bound = ulp_for_value(rounded_expected, precision);
+    mpf_mul_ui(bound.get_mpf_t(), bound.get_mpf_t(), 4ul);
+    if (abs(value - rounded_expected) > bound) {
+        std::printf("log extreme positive exponent test failed\n");
+        std::exit(1);
+    }
+
+    x = make_ui(1, work);
+    mpf_div_2exp(x.get_mpf_t(), x.get_mpf_t(), shift);
+    expected = log_two(work);
+    mpf_mul_ui(expected.get_mpf_t(), expected.get_mpf_t(), static_cast<unsigned long>(shift));
+    expected = mplapack_gmp_transcendents::sub(make_ui(0, work), expected, work);
+    mpf_set(rounded_expected.get_mpf_t(), expected.get_mpf_t());
+
+    value = compute_log(x, precision);
+    bound = ulp_for_value(rounded_expected, precision);
+    mpf_mul_ui(bound.get_mpf_t(), bound.get_mpf_t(), 4ul);
+    if (abs(value - rounded_expected) > bound) {
+        std::printf("log extreme negative exponent test failed\n");
+        std::exit(1);
+    }
+
+    std::printf("log extreme exponent checks passed\n");
+}
+
 static void test_exp_reference_literal() {
     const mp_bitcnt_t target_precision = 256;
     const mp_bitcnt_t literal_precision = 768;
@@ -747,6 +786,30 @@ static void test_sincos_reduction_seam() {
     std::printf("sincos reduction seam check passed\n");
 }
 
+static void test_sincos_large_argument_reduction() {
+    const mp_bitcnt_t precision = 256;
+    const mp_bitcnt_t source_precision = 1536;
+    const mp_bitcnt_t shift = 600;
+
+    mpf_class x = pi(source_precision);
+    mpf_mul_2exp(x.get_mpf_t(), x.get_mpf_t(), shift);
+
+    const auto values = compute_sincos(x, precision);
+    mpf_class bound = make_ui(1, precision);
+    mpf_div_2exp(bound.get_mpf_t(), bound.get_mpf_t(), 180);
+
+    if (abs(values.sin_value) > bound || abs(values.cos_value - make_ui(1, precision)) > bound) {
+        std::printf("sincos large-argument reduction test failed\n");
+        std::printf("sin = ");
+        printnum(values.sin_value);
+        std::printf("\ncos = ");
+        printnum(values.cos_value);
+        std::printf("\n");
+        std::exit(1);
+    }
+    std::printf("sincos large-argument reduction check passed\n");
+}
+
 static void test_atan_reference_literal() {
     const mp_bitcnt_t target_precision = 256;
     const mp_bitcnt_t literal_precision = 768;
@@ -997,6 +1060,7 @@ int main() {
     test_log_precision_doubling_pair(1024, 4096);
     test_log_precision_doubling_pair(2048, 4096);
     test_log_near_one_branch();
+    test_log_extreme_exponents();
     test_exp_reference_literal();
     test_exp_precision_doubling_pair(128, 256);
     test_exp_precision_doubling_pair(512, 1024);
@@ -1020,6 +1084,7 @@ int main() {
     test_cos_precision_doubling_pair(1024, 4096);
     test_sincos_identity();
     test_sincos_reduction_seam();
+    test_sincos_large_argument_reduction();
     test_atan_reference_literal();
     test_atan_precision_doubling_pair(128, 256);
     test_atan_precision_doubling_pair(512, 1024);
