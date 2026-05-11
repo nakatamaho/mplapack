@@ -110,6 +110,12 @@ inline mpf_class div(const mpf_class &a, const mpf_class &b, precision_type prec
     return result;
 }
 
+inline mpf_class div_ui(const mpf_class &a, unsigned long value, precision_type precision) {
+    mpf_class result(0, precision);
+    mpf_div_ui(result.get_mpf_t(), a.get_mpf_t(), value);
+    return result;
+}
+
 inline mpf_class mul_ui(const mpf_class &a, unsigned long value, precision_type precision) {
     mpf_class result(0, precision);
     mpf_mul_ui(result.get_mpf_t(), a.get_mpf_t(), value);
@@ -724,13 +730,17 @@ inline sincos_result sincos_taylor_small(const mpf_class &x, precision_type prec
     for (unsigned long k = 1;; ++k) {
         const unsigned long sin_den1 = 2ul * k;
         const unsigned long sin_den2 = 2ul * k + 1ul;
-        sin_term = div(mul(sin_term, x2, precision), make_ui(sin_den1 * sin_den2, precision), precision);
+        sin_term = mul(sin_term, x2, precision);
+        sin_term = div_ui(sin_term, sin_den1, precision);
+        sin_term = div_ui(sin_term, sin_den2, precision);
         sin_term = sub(make_ui(0, precision), sin_term, precision);
         result.sin_value = add(result.sin_value, sin_term, precision);
 
         const unsigned long cos_den1 = 2ul * k - 1ul;
         const unsigned long cos_den2 = 2ul * k;
-        cos_term = div(mul(cos_term, x2, precision), make_ui(cos_den1 * cos_den2, precision), precision);
+        cos_term = mul(cos_term, x2, precision);
+        cos_term = div_ui(cos_term, cos_den1, precision);
+        cos_term = div_ui(cos_term, cos_den2, precision);
         cos_term = sub(make_ui(0, precision), cos_term, precision);
         result.cos_value = add(result.cos_value, cos_term, precision);
 
