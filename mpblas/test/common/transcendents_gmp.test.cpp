@@ -633,6 +633,34 @@ static void test_quo_rem_rounding() {
             std::exit(1);
         }
     }
+    {
+        const mp_bitcnt_t target_precision = 160;
+        const mp_bitcnt_t source_precision = 1024;
+        const mp_bitcnt_t shift = 600;
+
+        mpf_class x = make_ui(1, source_precision);
+        mpf_mul_2exp(x.get_mpf_t(), x.get_mpf_t(), shift);
+        const mpf_class expected_remainder = div(make_ui(1, source_precision), make_ui(3, source_precision), source_precision);
+        x = mplapack_gmp_transcendents::add(x, expected_remainder, source_precision);
+
+        const auto qr = quo_rem(x, make_ui(1, source_precision), target_precision);
+        mpz_class expected_quotient = 1;
+        mpz_mul_2exp(expected_quotient.get_mpz_t(), expected_quotient.get_mpz_t(), shift);
+
+        const mpf_class rounded_expected = set_prec_copy(expected_remainder, target_precision);
+        const mpf_class diff = abs(qr.remainder - rounded_expected);
+        mpf_class bound = ulp_for_value(rounded_expected, target_precision);
+        mpf_mul_2exp(bound.get_mpf_t(), bound.get_mpf_t(), 4);
+        if (qr.quotient != expected_quotient || diff > bound) {
+            std::printf("quo_rem large cancellation test failed\n");
+            std::printf("diff = ");
+            printnum(diff);
+            std::printf("\nbound = ");
+            printnum(bound);
+            std::printf("\n");
+            std::exit(1);
+        }
+    }
     std::printf("quo_rem round-to-nearest-even checks passed\n");
 }
 

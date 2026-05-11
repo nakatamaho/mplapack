@@ -94,6 +94,12 @@ inline mpf_class sub(const mpf_class &a, const mpf_class &b, precision_type prec
     return result;
 }
 
+inline mpf_class negate(const mpf_class &a, precision_type precision) {
+    mpf_class result(0, precision);
+    mpf_neg(result.get_mpf_t(), a.get_mpf_t());
+    return result;
+}
+
 inline mpf_class mul(const mpf_class &a, const mpf_class &b, precision_type precision) {
     mpf_class result(0, precision);
     mpf_mul(result.get_mpf_t(), a.get_mpf_t(), b.get_mpf_t());
@@ -110,6 +116,7 @@ inline mpf_class div(const mpf_class &a, const mpf_class &b, precision_type prec
     return result;
 }
 
+// Precondition: value != 0.
 inline mpf_class div_ui(const mpf_class &a, unsigned long value, precision_type precision) {
     mpf_class result(0, precision);
     mpf_div_ui(result.get_mpf_t(), a.get_mpf_t(), value);
@@ -127,6 +134,15 @@ inline mp_bitcnt_t mp_exp_magnitude(mp_exp_t value) {
         return static_cast<mp_bitcnt_t>(value);
     }
     return static_cast<mp_bitcnt_t>(-(value + 1)) + 1;
+}
+
+inline precision_type positive_exponent_bits(const mpf_class &value) {
+    if (mpf_sgn(value.get_mpf_t()) == 0) {
+        return 0;
+    }
+    mp_exp_t exponent = 0;
+    mpf_get_d_2exp(&exponent, value.get_mpf_t());
+    return exponent > 0 ? static_cast<precision_type>(exponent) : 0;
 }
 
 struct quo_rem_result {
@@ -177,12 +193,19 @@ inline trig_constant_cache_state &trig_constant_cache() {
     return cache;
 }
 
+// Computes the nearest-integer quotient k and remainder r such that
+// x_input = k * y_input + r, with ties rounded to even k.
+//
+// Work precision policy: target + exponent_bits(x_input) + 64. This protects
+// the final subtraction x - k*y from cancellation when |x_input| is large.
+// The input value itself must already carry enough precision for its magnitude;
+// quo_rem cannot recover bits that were not present in x_input or y_input.
 inline quo_rem_result quo_rem(const mpf_class &x_input, const mpf_class &y_input, precision_type target_precision) {
     const precision_type target = normalize_target_precision(target_precision);
-    const precision_type work = target + 64;
+    const precision_type work = target + positive_exponent_bits(x_input) + 64;
     const mpf_class x = set_prec_copy(x_input, work);
     const mpf_class y = set_prec_copy(y_input, work);
-    if (y == make_ui(0, work)) {
+    if (mpf_sgn(y.get_mpf_t()) == 0) {
         throw std::domain_error("quo_rem division by zero");
     }
 
@@ -192,8 +215,8 @@ inline quo_rem_result quo_rem(const mpf_class &x_input, const mpf_class &y_input
 
     const mpf_class integer_part(k, work);
     const mpf_class frac = sub(q, integer_part, work);
-    const mpf_class half = div(make_ui(1, work), make_ui(2, work), work);
-    const mpf_class neg_half = sub(make_ui(0, work), half, work);
+    const mpf_class half = div_ui(make_ui(1, work), 2ul, work);
+    const mpf_class neg_half = negate(half, work);
 
     const int frac_vs_half = mpf_cmp(frac.get_mpf_t(), half.get_mpf_t());
     const int frac_vs_neg_half = mpf_cmp(frac.get_mpf_t(), neg_half.get_mpf_t());
@@ -370,6 +393,14 @@ inline mpf_class compute_log_two_theta_agm(precision_type target_precision) {
     return set_prec_copy(div(pi(work), denominator, work), target);
 }
 
+// Cache dependency note:
+// log_two() computes a cache miss while holding log_two_cache.mutex, and the
+// miss path calls pi(work). This is safe only while pi_cache remains a leaf:
+// compute_pi_gauss_legendre() must not call log_two() or trig_constants().
+// trig_constants() also avoids pi_cache and computes its pi value directly, so
+// there is no current cache-lock cycle. If these dependencies change, replace
+// the miss path with an in-progress/condition-variable scheme rather than
+// adding a reverse cache call under an existing lock.
 struct log_two_cache_state {
     std::mutex mutex;
     precision_type cached_precision = 0;
@@ -411,9 +442,9 @@ inline mpf_class log1p_taylor_small(const mpf_class &x, precision_type precision
 
     for (unsigned long k = 2;; ++k) {
         power = mul(power, x, precision);
-        mpf_class term = div(power, make_ui(k, precision), precision);
+        mpf_class term = div_ui(power, k, precision);
         if ((k & 1ul) == 0ul) {
-            term = sub(make_ui(0, precision), term, precision);
+            term = negate(term, precision);
         }
         sum = add(sum, term, precision);
         if (abs(term) < epsilon) {
@@ -443,7 +474,7 @@ inline mpf_class log1p_atanh_series(const mpf_class &x, precision_type precision
     for (unsigned long k = 1;; ++k) {
         term = mul(term, y2, precision);
         const unsigned long denominator_ui = 2ul * k + 1ul;
-        const mpf_class contribution = div(term, make_ui(denominator_ui, precision), precision);
+        const mpf_class contribution = div_ui(term, denominator_ui, precision);
         sum = add(sum, contribution, precision);
         if (abs(contribution) < epsilon) {
             break;
@@ -514,7 +545,7 @@ inline mpf_class mul_signed_exp(const mpf_class &value, mp_exp_t multiplier, pre
     const unsigned long magnitude_ui = static_cast<unsigned long>(mp_exp_magnitude(multiplier));
     const mpf_class magnitude = mul_ui(value, magnitude_ui, precision);
     if (multiplier < 0) {
-        return sub(make_ui(0, precision), magnitude, precision);
+        return negate(magnitude, precision);
     }
     return magnitude;
 }
@@ -606,7 +637,7 @@ inline mpf_class exp_taylor_reduced(const mpf_class &x, precision_type precision
     mpf_class sum = make_ui(1, precision);
     mpf_class term = make_ui(1, precision);
     for (unsigned long n = 1;; ++n) {
-        term = div(mul(term, x, precision), make_ui(n, precision), precision);
+        term = div_ui(mul(term, x, precision), n, precision);
         sum = add(sum, term, precision);
         if (abs(term) < epsilon) {
             break;
@@ -654,7 +685,7 @@ inline mpf_class expm1_taylor_small(const mpf_class &x, precision_type precision
     mpf_class sum = set_prec_copy(x, precision);
     mpf_class term = set_prec_copy(x, precision);
     for (unsigned long n = 2;; ++n) {
-        term = div(mul(term, x, precision), make_ui(n, precision), precision);
+        term = div_ui(mul(term, x, precision), n, precision);
         sum = add(sum, term, precision);
         if (abs(term) < epsilon) {
             break;
@@ -697,15 +728,7 @@ inline precision_type trig_constant_precision(precision_type target_precision) {
 }
 
 inline precision_type trig_argument_exponent_bits(const mpf_class &x_input) {
-    if (x_input == make_ui(0, x_input.get_prec())) {
-        return 0;
-    }
-    mp_exp_t exponent = 0;
-    mpf_get_d_2exp(&exponent, x_input.get_mpf_t());
-    if (exponent <= 0) {
-        return 0;
-    }
-    return static_cast<precision_type>(exponent);
+    return positive_exponent_bits(x_input);
 }
 
 inline precision_type trig_constant_precision_for_argument(const mpf_class &x_input, precision_type target_precision) {
@@ -733,7 +756,7 @@ inline sincos_result sincos_taylor_small(const mpf_class &x, precision_type prec
         sin_term = mul(sin_term, x2, precision);
         sin_term = div_ui(sin_term, sin_den1, precision);
         sin_term = div_ui(sin_term, sin_den2, precision);
-        sin_term = sub(make_ui(0, precision), sin_term, precision);
+        sin_term = negate(sin_term, precision);
         result.sin_value = add(result.sin_value, sin_term, precision);
 
         const unsigned long cos_den1 = 2ul * k - 1ul;
@@ -741,7 +764,7 @@ inline sincos_result sincos_taylor_small(const mpf_class &x, precision_type prec
         cos_term = mul(cos_term, x2, precision);
         cos_term = div_ui(cos_term, cos_den1, precision);
         cos_term = div_ui(cos_term, cos_den2, precision);
-        cos_term = sub(make_ui(0, precision), cos_term, precision);
+        cos_term = negate(cos_term, precision);
         result.cos_value = add(result.cos_value, cos_term, precision);
 
         if (abs(sin_term) < epsilon && abs(cos_term) < epsilon) {
@@ -773,13 +796,12 @@ inline trig_constants_result trig_constants(precision_type cache_precision) {
 inline sincos_result compute_sincos(const mpf_class &x_input, precision_type target_precision) {
     const precision_type target = normalize_target_precision(target_precision);
     const precision_type work = working_precision_for_trig(target);
-    const mpf_class zero = make_ui(0, work);
-    const precision_type const_precision = trig_constant_precision_for_argument(x_input, target);
+    const precision_type const_precision = trig_constant_precision_for_argument(x_input, work);
     const trig_constants_result constants = trig_constants(const_precision);
     const mpf_class pio2 = constants.pi_over_two_value;
 
     const mpf_class scaled_x = set_prec_copy(x_input, const_precision);
-    const quo_rem_result reduction = quo_rem(scaled_x, pio2, const_precision);
+    const quo_rem_result reduction = quo_rem(scaled_x, pio2, work);
     const mpz_class k = reduction.quotient;
     const mpf_class reduced_argument = set_prec_copy(reduction.remainder, work);
     const sincos_result base = sincos_taylor_small(reduced_argument, work);
@@ -793,14 +815,14 @@ inline sincos_result compute_sincos(const mpf_class &x_input, precision_type tar
         break;
     case 1:
         result.sin_value = set_prec_copy(base.cos_value, work);
-        result.cos_value = set_prec_copy(sub(zero, base.sin_value, work), work);
+        result.cos_value = set_prec_copy(negate(base.sin_value, work), work);
         break;
     case 2:
-        result.sin_value = set_prec_copy(sub(zero, base.sin_value, work), work);
-        result.cos_value = set_prec_copy(sub(zero, base.cos_value, work), work);
+        result.sin_value = set_prec_copy(negate(base.sin_value, work), work);
+        result.cos_value = set_prec_copy(negate(base.cos_value, work), work);
         break;
     default:
-        result.sin_value = set_prec_copy(sub(zero, base.cos_value, work), work);
+        result.sin_value = set_prec_copy(negate(base.cos_value, work), work);
         result.cos_value = set_prec_copy(base.sin_value, work);
         break;
     }
@@ -836,9 +858,9 @@ inline mpf_class atan_taylor_small(const mpf_class &x, precision_type precision)
 
     for (unsigned long k = 1;; ++k) {
         power = mul(power, x2, precision);
-        mpf_class contribution = div(power, make_ui(2ul * k + 1ul, precision), precision);
+        mpf_class contribution = div_ui(power, 2ul * k + 1ul, precision);
         if ((k & 1ul) == 1ul) {
-            contribution = sub(make_ui(0, precision), contribution, precision);
+            contribution = negate(contribution, precision);
         }
         sum = add(sum, contribution, precision);
         if (abs(contribution) < epsilon) {
@@ -859,12 +881,12 @@ inline mpf_class compute_atan(const mpf_class &x_input, precision_type target_pr
         return make_ui(0, target);
     }
 
-    const bool negate = x < zero;
-    const mpf_class ax = negate ? sub(zero, x, work) : x;
+    const bool negative = x < zero;
+    const mpf_class ax = negative ? negate(x, work) : x;
 
     mpf_class y = set_prec_copy(ax, work);
     unsigned long reductions = 0;
-    const mpf_class threshold = div(one, make_ui(2, work), work);
+    const mpf_class threshold = div_ui(one, 2ul, work);
     while (y > threshold) {
         const mpf_class sqrt_term = sqrt_prec(add(one, sqr(y, work), work), work);
         y = div(y, add(one, sqrt_term, work), work);
@@ -876,8 +898,8 @@ inline mpf_class compute_atan(const mpf_class &x_input, precision_type target_pr
         mpf_mul_2exp(result.get_mpf_t(), result.get_mpf_t(), static_cast<mp_bitcnt_t>(reductions));
     }
 
-    if (negate) {
-        result = sub(zero, result, work);
+    if (negative) {
+        result = negate(result, work);
     }
     return set_prec_copy(result, target);
 }
@@ -912,7 +934,7 @@ inline mpf_class compute_atan2(const mpf_class &y_input, const mpf_class &x_inpu
         if (y > zero) {
             return set_prec_copy(pio2, target);
         }
-        return set_prec_copy(sub(make_ui(0, target + 2), pio2, target + 2), target);
+        return set_prec_copy(negate(pio2, target + 2), target);
     }
 
     const mpf_class ratio = div(y, x, work);
