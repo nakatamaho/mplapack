@@ -381,12 +381,12 @@ inline mpcomplex::mpcomplex(const mpcomplex &a) {
 
 inline mpcomplex::mpcomplex(const std::complex<double> &a, mp_prec_t pr, mp_prec_t pi, mpc_rnd_t mode) {
     mpc_init3(mpc, pr, pi);
-    mpc_set_d_d(mpc, a.real(), a.imag(), default_rnd);
+    mpc_set_d_d(mpc, a.real(), a.imag(), mode);
 }
 
 inline mpcomplex::mpcomplex(const std::complex<long double> &a, mp_prec_t pr, mp_prec_t pi, mpc_rnd_t mode) {
     mpc_init3(mpc, pr, pi);
-    mpc_set_ld_ld(mpc, a.real(), a.imag(), default_rnd);
+    mpc_set_ld_ld(mpc, a.real(), a.imag(), mode);
 }
 
 inline mpcomplex::mpcomplex(const mpreal &a, const mpreal &b) {
@@ -399,8 +399,8 @@ inline mpcomplex::mpcomplex(const mpreal &a, const mpreal &b) {
 }
 
 inline mpcomplex::mpcomplex(const double &a, const double &b, mp_prec_t pr, mp_prec_t pi, mpc_rnd_t mode) {
-    mpc_init3(mpc, default_real_prec, default_imag_prec);
-    mpc_set_d_d(mpc, a, b, default_rnd);
+    mpc_init3(mpc, pr, pi);
+    mpc_set_d_d(mpc, a, b, mode);
 }
 
 inline mpcomplex::mpcomplex(const mpreal &a, const double &b) {
@@ -419,7 +419,7 @@ inline mpcomplex::mpcomplex(const char *s, const char *t, mp_prec_t pr, mp_prec_
     mpfr_set_str(a, s, default_base, MPC_RND_RE(mode));
     mpfr_set_str(b, t, default_base, MPC_RND_IM(mode));
     mpc_init3(mpc, pr, pi);
-    mpc_set_fr_fr(mpc, a, b, default_rnd);
+    mpc_set_fr_fr(mpc, a, b, mode);
     mpfr_clear(a);
     mpfr_clear(b);
 }
@@ -447,7 +447,7 @@ inline mpcomplex::mpcomplex(const mpf_t a) {
 
 inline mpcomplex::mpcomplex(const double a, mp_prec_t pr, mp_prec_t pi, mpc_rnd_t mode) {
     mpc_init3(mpc, pr, pi);
-    mpc_set_d(mpc, a, default_rnd);
+    mpc_set_d(mpc, a, mode);
 }
 
 inline mpcomplex::~mpcomplex() { mpc_clear(mpc); }

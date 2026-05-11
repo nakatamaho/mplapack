@@ -72,6 +72,49 @@ void mpc_ptr_conversion_test() {
     }
 }
 
+static int mpcomplex_precision_mismatch(const mpcomplex &z, mp_prec_t expected_re, mp_prec_t expected_im) {
+    return z.get_prec_re() != expected_re || z.get_prec_im() != expected_im;
+}
+
+void mpc_constructor_precision_test() {
+    printf("mpcomplex constructor precision test \n");
+
+    int flag = 0;
+    const mpc_rnd_t mode = mpcomplex::default_rnd;
+
+    const mpcomplex from_pair(1.0, 2.0, 101, 137, mode);
+    if (mpcomplex_precision_mismatch(from_pair, 101, 137)) {
+        flag = 1;
+    }
+
+    const mpcomplex from_double(1.0, 103, 139, mode);
+    if (mpcomplex_precision_mismatch(from_double, 103, 139)) {
+        flag = 1;
+    }
+
+    const mpcomplex from_std(std::complex<double>(1.0, 2.0), 107, 149, mode);
+    if (mpcomplex_precision_mismatch(from_std, 107, 149)) {
+        flag = 1;
+    }
+
+    const mpcomplex from_ld(std::complex<long double>(1.0L, 2.0L), 109, 151, mode);
+    if (mpcomplex_precision_mismatch(from_ld, 109, 151)) {
+        flag = 1;
+    }
+
+    const mpcomplex from_strs("1.0", "2.0", 113, 157, mode);
+    if (mpcomplex_precision_mismatch(from_strs, 113, 157)) {
+        flag = 1;
+    }
+
+    if (flag) {
+        printf("mpcomplex constructor precision test failed\n");
+        exit(1);
+    } else {
+        printf("mpcomplex constructor precision test passed\n");
+    }
+}
+
 void mpc_subst_test1() {
     printf("Complex <= Real test \n");
     REAL_REF diff;
@@ -954,6 +997,7 @@ int main(int argc, char *argv[]) {
     mpcomplex::default_imag_prec = ___MPLAPACK_MPFR_DEFAULT_PRECISION___;
 
     mpc_ptr_conversion_test();
+    mpc_constructor_precision_test();
     mpc_subst_test1();
     mpc_abs_test();
     mpc_add_test1();
