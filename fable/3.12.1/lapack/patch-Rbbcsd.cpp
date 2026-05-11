@@ -1,17 +1,5 @@
 --- a/mplapack/reference/Rbbcsd.cpp
 +++ b/mplapack/reference/Rbbcsd.cpp
-@@ -117,7 +117,11 @@
-     const REAL ten = 10.0;
-     const REAL hundred = 100.0;
-     const REAL meighth = -0.125;
-+#if defined ___MPLAPACK_BUILD_WITH_GMP___
-+    REAL tolmul = max(ten, min(hundred, REAL(1) / sqrt(sqrt(sqrt(eps)))));
-+#else
-     REAL tolmul = max(ten, min(hundred, pow(eps, meighth)));
-+#endif
-     REAL tol = tolmul * eps;
-     const INTEGER maxitr = 6;
-     REAL thresh = max(tol, maxitr * q * q * unfl);
 @@ -126,7 +130,7 @@
      //
      INTEGER i = 0;

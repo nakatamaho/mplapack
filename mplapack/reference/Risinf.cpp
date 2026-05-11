@@ -30,8 +30,7 @@
 //
 // Companion to Risnan. Returns true if x is +Inf or -Inf.
 // IEEE 754 isinf semantics are used for hardware types.
-// For multi-component types (DD, QD), only the high limb is checked:
-// the low limb is bounded by ulp(high) and cannot independently be Inf.
+// For multi-component types (DD, QD), use the QD library predicates.
 // For GMP (mpf_class), Inf is not representable; always returns false.
 
 #include <mpblas.h>
@@ -83,10 +82,7 @@ bool Risinf(REAL const &x) { return isinfq((__float128)x); }
 // -----------------------------------------------------------------------
 #if defined ___MPLAPACK_BUILD_WITH_DD___
 bool Risinf(REAL const &x) {
-    // If the high component is Inf the entire dd_real is Inf.
-    // The low limb is bounded by ulp(x.x[0]) and cannot independently
-    // be Inf while the high limb is finite.
-    return std::isinf(x.x[0]);
+    return x.isinf();
 }
 #endif // ___MPLAPACK_BUILD_WITH_DD___
 
@@ -95,8 +91,7 @@ bool Risinf(REAL const &x) {
 // -----------------------------------------------------------------------
 #if defined ___MPLAPACK_BUILD_WITH_QD___
 bool Risinf(REAL const &x) {
-    // Same reasoning as DD.
-    return std::isinf(x.x[0]);
+    return x.isinf();
 }
 #endif // ___MPLAPACK_BUILD_WITH_QD___
 
@@ -104,7 +99,9 @@ bool Risinf(REAL const &x) {
 // MPFR (mpfr::mpreal)
 // -----------------------------------------------------------------------
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-bool Risinf(REAL const &x) { return mpfr_inf_p((mpfr_ptr) const_cast<REAL &>(x)) != 0; }
+bool Risinf(REAL const &x) {
+    return mpfr_inf_p((mpfr_ptr)const_cast<REAL &>(x)) != 0;
+}
 #endif // ___MPLAPACK_BUILD_WITH_MPFR___
 
 // -----------------------------------------------------------------------

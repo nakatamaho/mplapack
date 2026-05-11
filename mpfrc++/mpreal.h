@@ -1909,7 +1909,6 @@ inline mpreal::mpreal() {
 
 inline mpreal::mpreal(const mpreal &u) {
     mpfr_init2(mp, u.get_prec());
-    mpfr_set_prec(mp, default_prec);
     mpfr_set(mp, u.mp, default_rnd);
 }
 

@@ -642,7 +642,7 @@
 #define SYMBOL_GCC_RHGEQZ "_Z6RhgeqzPKcS0_S0_lllPglS1_lS1_S1_S1_S1_lS1_lS1_lRl"
 #define SYMBOL_GCC_RHSEIN "_Z6RhseinPKcS0_S0_PblPglS2_S2_S2_lS2_llRlS2_PlS4_S3_"
 #define SYMBOL_GCC_RHSEQR "_Z6RhseqrPKcS0_lllPglS1_S1_S1_lS1_lRl"
-#define SYMBOL_GCC_RISNAN "_Z6Risnang"
+#define SYMBOL_GCC_RISNAN "_Z6RisnanRKDF128_"
 #define SYMBOL_GCC_RLABAD "_Z6RlabadRgS_"
 #define SYMBOL_GCC_RLABRD "_Z6RlabrdlllPglS_S_S_S_S_lS_l"
 #define SYMBOL_GCC_RLACN2 "_Z6Rlacn2lPgS_PlRgRlS0_"

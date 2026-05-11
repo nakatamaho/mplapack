@@ -97,10 +97,7 @@ bool Risnan(REAL const &x) {
 // -----------------------------------------------------------------------
 #if defined ___MPLAPACK_BUILD_WITH_DD___
 bool Risnan(REAL const &x) {
-    // If the high component is NaN the entire dd_real is NaN.
-    // The low limb is bounded by ulp(x.x[0]) and cannot independently
-    // be NaN while the high limb is finite.
-    return std::isnan(x.x[0]);
+    return x.isnan();
 }
 #endif // ___MPLAPACK_BUILD_WITH_DD___
 
@@ -109,8 +106,7 @@ bool Risnan(REAL const &x) {
 // -----------------------------------------------------------------------
 #if defined ___MPLAPACK_BUILD_WITH_QD___
 bool Risnan(REAL const &x) {
-    // Same reasoning as DD.
-    return std::isnan(x.x[0]);
+    return x.isnan();
 }
 #endif // ___MPLAPACK_BUILD_WITH_QD___
 

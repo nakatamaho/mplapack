@@ -38,24 +38,6 @@
 
 #include <mplapack_matgen.h>
 
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
-static void Rlatmt_random_unit_circle(INTEGER (&iseed)[4], REAL &c, REAL &s) {
-    const REAL zero = 0.0;
-    const REAL one = 1.0;
-    const REAL two = 2.0;
-    REAL u = 0.0;
-    REAL v = 0.0;
-    REAL r = 0.0;
-    do {
-        u = two * Rlarnd(1, iseed) - one;
-        v = two * Rlarnd(1, iseed) - one;
-        r = u * u + v * v;
-    } while (r <= zero || r > one);
-    c = (u * u - v * v) / r;
-    s = two * u * v / r;
-}
-#endif
-
 void Rlatmt(INTEGER const m, INTEGER const n, fem::str_cref dist, INTEGER (&iseed)[4], fem::str_cref sym, REAL *d, INTEGER const mode, REAL const cond, REAL const dmax, INTEGER const rank, INTEGER const kl, INTEGER const ku, fem::str_cref pack, REAL *a, INTEGER const lda, REAL *work, INTEGER &info) {
     //
     // 1)      Decode and Test the input parameters.
@@ -345,13 +327,9 @@ void Rlatmt(INTEGER const m, INTEGER const n, fem::str_cref dist, INTEGER (&isee
                     //
                     for (jr = 1; jr <= min(m + jku, n) + jkl - 1; jr = jr + 1) {
                         extra = zero;
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
-                        Rlatmt_random_unit_circle(iseed, c, s);
-#else
                         angle = twopi * Rlarnd(1, iseed);
                         c = cos(angle);
                         s = sin(angle);
-#endif
                         icol = max((INTEGER)1, jr - jkl);
                         if (jr < m) {
                             il = min(n, jr + jku) + 1 - icol;
@@ -391,13 +369,9 @@ void Rlatmt(INTEGER const m, INTEGER const n, fem::str_cref dist, INTEGER (&isee
                     //
                     for (jc = 1; jc <= min(n + jkl, m) + jku - 1; jc = jc + 1) {
                         extra = zero;
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
-                        Rlatmt_random_unit_circle(iseed, c, s);
-#else
                         angle = twopi * Rlarnd(1, iseed);
                         c = cos(angle);
                         s = sin(angle);
-#endif
                         irow = max((INTEGER)1, jc - jku);
                         if (jc < n) {
                             il = min(m, jc + jkl) + 1 - irow;
@@ -445,13 +419,9 @@ void Rlatmt(INTEGER const m, INTEGER const n, fem::str_cref dist, INTEGER (&isee
                     iendch = min(m, n + jkl) - 1;
                     for (jc = min(m + jku, n) - 1; jc >= 1 - jkl; jc = jc - 1) {
                         extra = zero;
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
-                        Rlatmt_random_unit_circle(iseed, c, s);
-#else
                         angle = twopi * Rlarnd(1, iseed);
                         c = cos(angle);
                         s = sin(angle);
-#endif
                         irow = max((INTEGER)1, jc - jku + 1);
                         if (jc > 0) {
                             il = min(m, jc + jkl + 1) + 1 - irow;
@@ -493,13 +463,9 @@ void Rlatmt(INTEGER const m, INTEGER const n, fem::str_cref dist, INTEGER (&isee
                     iendch = min(n, m + jku) - 1;
                     for (jr = min(n + jkl, m) - 1; jr >= 1 - jku; jr = jr - 1) {
                         extra = zero;
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
-                        Rlatmt_random_unit_circle(iseed, c, s);
-#else
                         angle = twopi * Rlarnd(1, iseed);
                         c = cos(angle);
                         s = sin(angle);
-#endif
                         icol = max((INTEGER)1, jr - jkl + 1);
                         if (jr > 0) {
                             il = min(n, jr + jku + 1) + 1 - icol;
@@ -556,13 +522,9 @@ void Rlatmt(INTEGER const m, INTEGER const n, fem::str_cref dist, INTEGER (&isee
                         il = min(jc + 1, k + 2);
                         extra = zero;
                         temp = a[((jc - iskew * (jc + 1) + ioffg) - 1) + ((jc + 1) - 1) * lda];
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
-                        Rlatmt_random_unit_circle(iseed, c, s);
-#else
                         angle = twopi * Rlarnd(1, iseed);
                         c = cos(angle);
                         s = sin(angle);
-#endif
                         Rlarot(false, jc > k, true, il, c, s, &a[((irow - iskew * jc + ioffg) - 1) + (jc - 1) * lda], ilda, extra, temp);
                         Rlarot(true, true, false, min(k, n - jc) + 1, c, s, &a[(((1 - iskew) * jc + ioffg) - 1) + (jc - 1) * lda], ilda, temp, dummy);
                         //
@@ -624,14 +586,9 @@ void Rlatmt(INTEGER const m, INTEGER const n, fem::str_cref dist, INTEGER (&isee
                         il = min(n + 1 - jc, k + 2);
                         extra = zero;
                         temp = a[((1 + (1 - iskew) * jc + ioffg) - 1) + (jc - 1) * lda];
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
-                        Rlatmt_random_unit_circle(iseed, c, s);
-                        s = -s;
-#else
                         angle = twopi * Rlarnd(1, iseed);
                         c = cos(angle);
                         s = -sin(angle);
-#endif
                         Rlarot(false, true, n - jc > k, il, c, s, &a[(((1 - iskew) * jc + ioffg) - 1) + (jc - 1) * lda], ilda, temp, extra);
                         icol = max((INTEGER)1, jc - k + 1);
                         Rlarot(true, false, true, jc + 2 - icol, c, s, &a[((jc - iskew * icol + ioffg) - 1) + (icol - 1) * lda], ilda, dummy, temp);

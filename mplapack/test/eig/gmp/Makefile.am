@@ -67,10 +67,9 @@ OUTDIR_PATH = ../results/$(OUTDIR)/gmp
 # -----------------------------------------------------------------------------
 
 GMP_REAL_TESTS = \
-	Rnep Rsep Rse2 Rsvd Rec Red Rgg Rgd Rsb Rsg Rbal Rbak Rgbal Rgbak Rbb Rglm Rgqr Rgsv Rlse Rdmd
-
+	Rnep Rsep Rse2 Rsvd Rec Red Rgg Rgd Rsb Rsg Rbal Rbak Rgbal Rgbak Rbb Rglm Rgqr Rgsv Rcsd Rlse Rdmd
 GMP_COMPLEX_TESTS = \
-	Cnep Csep Cse2 Csvd Cec Ced Cgg Cgd Csb Csg Cbal Cbak Cgbal Cgbak Cbb Cglm Cgqr Cgsv Clse Cdmd
+	Cnep Csep Cse2 Csvd Cec Ced Cgg Cgd Csb Csg Cbal Cbak Cgbal Cgbak Cbb Cglm Cgqr Cgsv Ccsd Clse Cdmd
 
 GMP_ALL_TESTS = $(GMP_REAL_TESTS) $(GMP_COMPLEX_TESTS)
 
@@ -325,6 +324,17 @@ $(OUTDIR_PATH)/Rgsv.out: $(srcdir)/../gsv.in xeigtstR_gmp$(EXEEXT)
 		echo "=== precision: $(GMP_LABEL) ==="; \
 		$(GMP_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_gmp$(EXEEXT) < $(srcdir)/../gsv.in; \
 	} > $@ 2>&1
+$(OUTDIR_PATH)/Rcsd.out: $(srcdir)/../csd.in xeigtstR_gmp$(EXEEXT)
+	@$(MKDIR_P) $(OUTDIR_PATH)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "CSD: Testing CS Decomposition routines [$(GMP_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(GMP_LABEL) ==="; \
+		$(GMP_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstR_gmp$(EXEEXT) < $(srcdir)/../csd.in; \
+	} > $@ 2>&1
 $(OUTDIR_PATH)/Rlse.out: $(srcdir)/../lse.in xeigtstR_gmp$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)
 	@wrapper=""; \
@@ -533,6 +543,17 @@ $(OUTDIR_PATH)/Cgsv.out: $(srcdir)/../gsv.in xeigtstC_gmp$(EXEEXT)
 	set -e; { \
 		echo "=== precision: $(GMP_LABEL) ==="; \
 		$(GMP_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_gmp$(EXEEXT) < $(srcdir)/../gsv.in; \
+	} > $@ 2>&1
+$(OUTDIR_PATH)/Ccsd.out: $(srcdir)/../csd.in xeigtstC_gmp$(EXEEXT)
+	@$(MKDIR_P) $(OUTDIR_PATH)
+	@wrapper=""; \
+	if test -n "$(VALGRIND)"; then \
+		wrapper="$(LIBTOOL) --mode=execute valgrind $(VALGRIND_FLAGS)"; \
+	fi; \
+	echo "CSD: Testing CS Decomposition routines [$(GMP_LABEL)]"; \
+	set -e; { \
+		echo "=== precision: $(GMP_LABEL) ==="; \
+		$(GMP_EXTRA_ENV) $$wrapper $(WINE) ./xeigtstC_gmp$(EXEEXT) < $(srcdir)/../csd.in; \
 	} > $@ 2>&1
 $(OUTDIR_PATH)/Clse.out: $(srcdir)/../lse.in xeigtstC_gmp$(EXEEXT)
 	@$(MKDIR_P) $(OUTDIR_PATH)

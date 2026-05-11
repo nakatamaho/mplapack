@@ -31,6 +31,7 @@
 #ifndef _MUTILS_GMP_H_
 #define _MUTILS_GMP_H_
 
+#include "mplapack_gmp_transcendents.h"
 #include "mpc_class.h"
 
 #if defined ___MPLAPACK_INTERNAL___
@@ -269,69 +270,26 @@ inline mplapackint nint(mpf_class a) {
 
 inline double cast2double(mpf_class a) { return a.get_d(); }
 
-// every transcendental function and constant for GMP is in double precision.
 inline mpf_class atan2(mpf_class a, mpf_class b) {
-    double dtemp1, dtemp2;
-    mpf_class mtemp3;
-    if (abs(a) > abs(b)) {
-        mtemp3 = b / a;
-        dtemp1 = 1.0;
-        dtemp2 = mtemp3.get_d();
-    }
-    if (abs(a) < abs(b)) {
-        mtemp3 = a / b;
-        dtemp1 = mtemp3.get_d();
-        dtemp2 = 1.0;
-    }
-    if (abs(a) == abs(b)) {
-        dtemp1 = 1.0;
-        dtemp2 = 1.0;
-    }
-    mtemp3 = mpf_class(atan2(dtemp1, dtemp2));
-    return mtemp3;
-}
-
-inline mpc_class sin(mpc_class a) {
-    double dtemp1, dtemp2;
-    mpf_class mtemp1, mtemp2;
-    mtemp1 = a.real();
-    mtemp2 = a.imag();
-    dtemp1 = mtemp1.get_d();
-    dtemp2 = mtemp2.get_d();
-    mtemp1 = sin(dtemp1) * cosh(dtemp2);
-    mtemp2 = cos(dtemp1) * sinh(dtemp2);
-    mpc_class b = mpc_class(mtemp1, mtemp2);
-    return b;
+    return mplapack_gmp_transcendents::compute_atan2(a, b, std::max(a.get_prec(), b.get_prec()));
 }
 
 inline mpf_class log2(mpf_class x) {
-    double d;
-    double ln2_app;
-    signed long int exp;
+    const mp_bitcnt_t precision = x.get_prec();
+    return mplapack_gmp_transcendents::div(mplapack_gmp_transcendents::compute_log(x, precision), mplapack_gmp_transcendents::log_two(precision), precision);
+}
 
-    d = mpf_get_d_2exp(&exp, x.get_mpf_t());
-    ln2_app = (double)exp + log10(d) / log10(2);
-    return ln2_app;
+inline mpf_class log1p(mpf_class x) {
+    return mplapack_gmp_transcendents::compute_log1p(x, x.get_prec());
 }
 
 inline mpf_class log(mpf_class x) {
-    double d;
-    double ln_app;
-    signed long int exp;
-
-    d = mpf_get_d_2exp(&exp, x.get_mpf_t());
-    ln_app = (double)exp * log(2.0) + log(d);
-    return ln_app;
+    return mplapack_gmp_transcendents::compute_log(x, x.get_prec());
 }
 
 inline mpf_class log10(mpf_class x) {
-    double d;
-    double ln10_app;
-    signed long int exp;
-
-    d = mpf_get_d_2exp(&exp, x.get_mpf_t());
-    ln10_app = (double)exp * log10(2.0) + log10(d);
-    return ln10_app;
+    const mp_bitcnt_t precision = x.get_prec();
+    return mplapack_gmp_transcendents::div(mplapack_gmp_transcendents::compute_log(x, precision), mplapack_gmp_transcendents::log_ten(precision), precision);
 }
 
 inline mpf_class pow(mpf_class x, mplapackint y) {
@@ -346,34 +304,169 @@ inline mpf_class pow(mpf_class x, mplapackint y) {
 }
 
 inline mpf_class pow(mpf_class x, mpf_class y) {
-    mpf_class mtemp1, mtemp2;
-    mtemp1 = y * log(x);
-    mtemp2 = exp(mtemp1.get_d());
-    return mtemp2;
+    return mplapack_gmp_transcendents::compute_pow(x, y, std::max(x.get_prec(), y.get_prec()));
 }
 
 inline mpf_class cos(mpf_class x) {
-    mpf_class mtemp1;
-    mtemp1 = cos(x.get_d());
-    return mtemp1;
+    return mplapack_gmp_transcendents::compute_cos(x, x.get_prec());
 }
 
 inline mpf_class sin(mpf_class x) {
-    mpf_class mtemp1;
-    mtemp1 = sin(x.get_d());
-    return mtemp1;
+    return mplapack_gmp_transcendents::compute_sin(x, x.get_prec());
 }
 
 inline mpf_class exp(mpf_class x) {
-    mpf_class mtemp1;
-    mtemp1 = exp(x.get_d());
-    return mtemp1;
+    return mplapack_gmp_transcendents::compute_exp(x, x.get_prec());
+}
+
+inline mpf_class exp2(mpf_class x) {
+    const mp_bitcnt_t precision = x.get_prec();
+    const mp_bitcnt_t work = precision + mplapack_gmp_transcendents::guard_bits_for_exp(precision) + 8;
+    const mpf_class x_work = mplapack_gmp_transcendents::set_prec_copy(x, work);
+    return mplapack_gmp_transcendents::set_prec_copy(mplapack_gmp_transcendents::compute_exp(mplapack_gmp_transcendents::mul(x_work, mplapack_gmp_transcendents::log_two(work), work), work), precision);
+}
+
+inline mpf_class exp10(mpf_class x) {
+    const mp_bitcnt_t precision = x.get_prec();
+    const mp_bitcnt_t work = precision + mplapack_gmp_transcendents::guard_bits_for_exp(precision) + 8;
+    const mpf_class x_work = mplapack_gmp_transcendents::set_prec_copy(x, work);
+    return mplapack_gmp_transcendents::set_prec_copy(mplapack_gmp_transcendents::compute_exp(mplapack_gmp_transcendents::mul(x_work, mplapack_gmp_transcendents::log_ten(work), work), work), precision);
+}
+
+inline mpf_class expm1(mpf_class x) {
+    return mplapack_gmp_transcendents::compute_expm1(x, x.get_prec());
+}
+
+inline mpf_class tan(mpf_class x) {
+    const mp_bitcnt_t precision = x.get_prec();
+    const mp_bitcnt_t work = precision + mplapack_gmp_transcendents::guard_bits_for_trig(precision) + 8;
+    const mpf_class x_work = mplapack_gmp_transcendents::set_prec_copy(x, work);
+    return mplapack_gmp_transcendents::set_prec_copy(mplapack_gmp_transcendents::div(mplapack_gmp_transcendents::compute_sin(x_work, work), mplapack_gmp_transcendents::compute_cos(x_work, work), work), precision);
+}
+
+inline mpf_class asin(mpf_class x) {
+    const mp_bitcnt_t precision = x.get_prec();
+    const mp_bitcnt_t work = precision + mplapack_gmp_transcendents::guard_bits_for_trig(precision) + 8;
+    const mpf_class x_work = mplapack_gmp_transcendents::set_prec_copy(x, work);
+    const mpf_class zero = mplapack_gmp_transcendents::make_ui(0, work);
+    const mpf_class one = mplapack_gmp_transcendents::make_ui(1, work);
+    if (x_work < -one || x_work > one) {
+        throw std::domain_error("asin(x) is undefined for |x| > 1");
+    }
+    mpf_class radicand = mplapack_gmp_transcendents::sub(one, mplapack_gmp_transcendents::sqr(x_work, work), work);
+    if (radicand < zero) {
+        radicand = zero;
+    }
+    return mplapack_gmp_transcendents::set_prec_copy(mplapack_gmp_transcendents::compute_atan2(x_work, mplapack_gmp_transcendents::sqrt_prec(radicand, work), work), precision);
+}
+
+inline mpf_class acos(mpf_class x) {
+    const mp_bitcnt_t precision = x.get_prec();
+    const mp_bitcnt_t work = precision + mplapack_gmp_transcendents::guard_bits_for_trig(precision) + 8;
+    const mpf_class x_work = mplapack_gmp_transcendents::set_prec_copy(x, work);
+    const mpf_class zero = mplapack_gmp_transcendents::make_ui(0, work);
+    const mpf_class one = mplapack_gmp_transcendents::make_ui(1, work);
+    if (x_work < -one || x_work > one) {
+        throw std::domain_error("acos(x) is undefined for |x| > 1");
+    }
+    mpf_class radicand = mplapack_gmp_transcendents::sub(one, mplapack_gmp_transcendents::sqr(x_work, work), work);
+    if (radicand < zero) {
+        radicand = zero;
+    }
+    return mplapack_gmp_transcendents::set_prec_copy(mplapack_gmp_transcendents::compute_atan2(mplapack_gmp_transcendents::sqrt_prec(radicand, work), x_work, work), precision);
+}
+
+inline mpf_class atan(mpf_class x) {
+    return mplapack_gmp_transcendents::compute_atan(x, x.get_prec());
+}
+
+inline mpf_class sinh(mpf_class x) {
+    const mp_bitcnt_t precision = x.get_prec();
+    const mp_bitcnt_t work = precision + mplapack_gmp_transcendents::guard_bits_for_exp(precision) + 8;
+    const mpf_class x_work = mplapack_gmp_transcendents::set_prec_copy(x, work);
+    const mpf_class exp_x = mplapack_gmp_transcendents::compute_exp(x_work, work);
+    const mpf_class exp_neg_x = mplapack_gmp_transcendents::compute_exp(mplapack_gmp_transcendents::sub(mplapack_gmp_transcendents::make_ui(0, work), x_work, work), work);
+    mpf_class result = mplapack_gmp_transcendents::sub(exp_x, exp_neg_x, work);
+    mpf_div_2exp(result.get_mpf_t(), result.get_mpf_t(), 1);
+    return mplapack_gmp_transcendents::set_prec_copy(result, precision);
+}
+
+inline mpf_class cosh(mpf_class x) {
+    const mp_bitcnt_t precision = x.get_prec();
+    const mp_bitcnt_t work = precision + mplapack_gmp_transcendents::guard_bits_for_exp(precision) + 8;
+    const mpf_class x_work = mplapack_gmp_transcendents::set_prec_copy(x, work);
+    const mpf_class exp_x = mplapack_gmp_transcendents::compute_exp(x_work, work);
+    const mpf_class exp_neg_x = mplapack_gmp_transcendents::compute_exp(mplapack_gmp_transcendents::sub(mplapack_gmp_transcendents::make_ui(0, work), x_work, work), work);
+    mpf_class result = mplapack_gmp_transcendents::add(exp_x, exp_neg_x, work);
+    mpf_div_2exp(result.get_mpf_t(), result.get_mpf_t(), 1);
+    return mplapack_gmp_transcendents::set_prec_copy(result, precision);
+}
+
+inline mpf_class tanh(mpf_class x) {
+    const mp_bitcnt_t precision = x.get_prec();
+    const mp_bitcnt_t work = precision + mplapack_gmp_transcendents::guard_bits_for_exp(precision) + 8;
+    const mpf_class x_work = mplapack_gmp_transcendents::set_prec_copy(x, work);
+    return mplapack_gmp_transcendents::set_prec_copy(mplapack_gmp_transcendents::div(sinh(x_work), cosh(x_work), work), precision);
+}
+
+inline mpf_class asinh(mpf_class x) {
+    const mp_bitcnt_t precision = x.get_prec();
+    const mp_bitcnt_t work = precision + mplapack_gmp_transcendents::guard_bits_for_log(precision) + 8;
+    const mpf_class x_work = mplapack_gmp_transcendents::set_prec_copy(x, work);
+    const mpf_class one = mplapack_gmp_transcendents::make_ui(1, work);
+    return mplapack_gmp_transcendents::set_prec_copy(mplapack_gmp_transcendents::compute_log(mplapack_gmp_transcendents::add(x_work, mplapack_gmp_transcendents::sqrt_prec(mplapack_gmp_transcendents::add(mplapack_gmp_transcendents::sqr(x_work, work), one, work), work), work), work), precision);
+}
+
+inline mpf_class acosh(mpf_class x) {
+    const mp_bitcnt_t precision = x.get_prec();
+    const mp_bitcnt_t work = precision + mplapack_gmp_transcendents::guard_bits_for_log(precision) + 8;
+    const mpf_class x_work = mplapack_gmp_transcendents::set_prec_copy(x, work);
+    const mpf_class one = mplapack_gmp_transcendents::make_ui(1, work);
+    if (x_work < one) {
+        throw std::domain_error("acosh(x) is undefined for x < 1");
+    }
+    return mplapack_gmp_transcendents::set_prec_copy(mplapack_gmp_transcendents::compute_log(mplapack_gmp_transcendents::add(x_work, mplapack_gmp_transcendents::sqrt_prec(mplapack_gmp_transcendents::sub(mplapack_gmp_transcendents::sqr(x_work, work), one, work), work), work), work), precision);
+}
+
+inline mpf_class atanh(mpf_class x) {
+    const mp_bitcnt_t precision = x.get_prec();
+    const mp_bitcnt_t work = precision + mplapack_gmp_transcendents::guard_bits_for_log1p(precision) + 8;
+    const mpf_class x_work = mplapack_gmp_transcendents::set_prec_copy(x, work);
+    const mpf_class one = mplapack_gmp_transcendents::make_ui(1, work);
+    if (x_work <= -one || x_work >= one) {
+        throw std::domain_error("atanh(x) is undefined for |x| >= 1");
+    }
+    mpf_class result = mplapack_gmp_transcendents::compute_log1p(mplapack_gmp_transcendents::div(mplapack_gmp_transcendents::mul_ui(x_work, 2ul, work), mplapack_gmp_transcendents::sub(one, x_work, work), work), work);
+    mpf_div_2exp(result.get_mpf_t(), result.get_mpf_t(), 1);
+    return mplapack_gmp_transcendents::set_prec_copy(result, precision);
 }
 
 inline mpf_class pi(mpf_class dummy) {
-    mpf_class mtemp1;
-    mtemp1 = M_PI; // returns pi in double(!)
-    return mtemp1;
+    return mplapack_gmp_transcendents::pi(dummy.get_prec());
+}
+
+inline mpf_class e(mpf_class dummy) {
+    return mplapack_gmp_transcendents::e(dummy.get_prec());
+}
+
+inline mpf_class log_ten(mpf_class dummy) {
+    return mplapack_gmp_transcendents::log_ten(dummy.get_prec());
+}
+
+inline mpf_class inv_log_two(mpf_class dummy) {
+    return mplapack_gmp_transcendents::inv_log_two(dummy.get_prec());
+}
+
+inline mpf_class pi_over_two(mpf_class dummy) {
+    return mplapack_gmp_transcendents::pi_over_two(dummy.get_prec());
+}
+
+inline mpf_class pi_over_four(mpf_class dummy) {
+    return mplapack_gmp_transcendents::pi_over_four(dummy.get_prec());
+}
+
+inline mpf_class two_pi(mpf_class dummy) {
+    return mplapack_gmp_transcendents::two_pi(dummy.get_prec());
 }
 
 inline mpc_class exp(mpc_class x) {
@@ -387,6 +480,111 @@ inline mpc_class exp(mpc_class x) {
     ans.real(ex * c);
     ans.imag(ex * s);
     return ans;
+}
+
+inline mpc_class sin(mpc_class z) {
+    const mpf_class x = z.real();
+    const mpf_class y = z.imag();
+    return mpc_class(sin(x) * cosh(y), cos(x) * sinh(y));
+}
+
+inline mpc_class cos(mpc_class z) {
+    const mpf_class x = z.real();
+    const mpf_class y = z.imag();
+    return mpc_class(cos(x) * cosh(y), -sin(x) * sinh(y));
+}
+
+inline mpc_class tan(mpc_class z) {
+    return sin(z) / cos(z);
+}
+
+inline mpc_class sinh(mpc_class z) {
+    const mpf_class x = z.real();
+    const mpf_class y = z.imag();
+    return mpc_class(sinh(x) * cos(y), cosh(x) * sin(y));
+}
+
+inline mpc_class cosh(mpc_class z) {
+    const mpf_class x = z.real();
+    const mpf_class y = z.imag();
+    return mpc_class(cosh(x) * cos(y), sinh(x) * sin(y));
+}
+
+inline mpc_class tanh(mpc_class z) {
+    return sinh(z) / cosh(z);
+}
+
+inline mpf_class arg(mpc_class z) {
+    return atan2(z.imag(), z.real());
+}
+
+inline mpc_class log(mpc_class z) {
+    return mpc_class(log(abs(z)), arg(z));
+}
+
+inline mpc_class polar(mpf_class rho, mpf_class theta) {
+    return mpc_class(rho * cos(theta), rho * sin(theta));
+}
+
+inline mpc_class pow(mpc_class x, mplapackint y) {
+    if (y == 0) {
+        return mpc_class(mpf_class(1.0));
+    }
+
+    const bool reciprocal = y < 0;
+    mpc_class base = x;
+    mpc_class result(mpf_class(1.0));
+    mplapackint exponent = reciprocal ? -y : y;
+    while (exponent > 0) {
+        if ((exponent % 2) != 0) {
+            result *= base;
+        }
+        exponent /= 2;
+        if (exponent > 0) {
+            base = base * base;
+        }
+    }
+    return reciprocal ? mpc_class(mpf_class(1.0)) / result : result;
+}
+
+inline mpc_class pow(mpc_class x, mpc_class y) {
+    return exp(y * log(x));
+}
+
+inline mpc_class pow(mpc_class x, mpf_class y) {
+    return exp(y * log(x));
+}
+
+inline mpc_class pow(mpf_class x, mpc_class y) {
+    return exp(y * log(mpc_class(x)));
+}
+
+inline mpc_class asin(mpc_class z) {
+    const mpc_class i(mpf_class(0.0), mpf_class(1.0));
+    return -i * log(i * z + sqrt(mpc_class(mpf_class(1.0)) - z * z));
+}
+
+inline mpc_class acos(mpc_class z) {
+    return mpc_class(pi_over_two(z.real())) - asin(z);
+}
+
+inline mpc_class atan(mpc_class z) {
+    const mpc_class i(mpf_class(0.0), mpf_class(1.0));
+    const mpc_class one(mpf_class(1.0));
+    return (i * mpf_class(0.5)) * (log(one - i * z) - log(one + i * z));
+}
+
+inline mpc_class asinh(mpc_class z) {
+    return log(z + sqrt(z * z + mpc_class(mpf_class(1.0))));
+}
+
+inline mpc_class acosh(mpc_class z) {
+    return log(z + sqrt(z + mpc_class(mpf_class(1.0))) * sqrt(z - mpc_class(mpf_class(1.0))));
+}
+
+inline mpc_class atanh(mpc_class z) {
+    const mpc_class one(mpf_class(1.0));
+    return mpf_class(0.5) * (log(one + z) - log(one - z));
 }
 
 static inline mpf_class cabs1(const mpc_class &z) { return abs(z.real()) + abs(z.imag()); }
