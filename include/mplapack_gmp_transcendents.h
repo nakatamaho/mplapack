@@ -763,7 +763,6 @@ inline trig_constants_result trig_constants(precision_type cache_precision) {
 inline sincos_result compute_sincos(const mpf_class &x_input, precision_type target_precision) {
     const precision_type target = normalize_target_precision(target_precision);
     const precision_type work = working_precision_for_trig(target);
-    const mpf_class x = set_prec_copy(x_input, work);
     const mpf_class zero = make_ui(0, work);
     const precision_type const_precision = trig_constant_precision_for_argument(x_input, target);
     const trig_constants_result constants = trig_constants(const_precision);
