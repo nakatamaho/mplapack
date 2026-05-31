@@ -1,4 +1,4 @@
-MPCVERSION=1.3.1
+MPCVERSION=1.4.1
 MAKEFLAGS =
 
 #GMPINCLUDEDIR=$(abs_builddir)/../i/GMP/include/
@@ -22,8 +22,8 @@ all: extract config build check install_internal
 
 work/$(EXTRACT_STAMP):
 	rm -rf work ; mkdir -p work/internal  ; mkdir -p work/install
-	cd $(abs_builddir)/work/internal; tar xvfz $(abs_srcdir)/download/mpc-$(MPCVERSION).tar.gz
-	cd $(abs_builddir)/work/install; tar xvfz $(abs_srcdir)/download/mpc-$(MPCVERSION).tar.gz
+	cd $(abs_builddir)/work/internal; tar xvfJ $(abs_srcdir)/download/mpc-$(MPCVERSION).tar.xz
+	cd $(abs_builddir)/work/install; tar xvfJ $(abs_srcdir)/download/mpc-$(MPCVERSION).tar.xz
 	touch $(abs_builddir)/work/$(EXTRACT_STAMP)
 
 work/$(PATCH_STAMP): work/$(EXTRACT_STAMP)
