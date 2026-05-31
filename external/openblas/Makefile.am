@@ -1,4 +1,5 @@
 OPENBLASVERSION=0.3.32
+OPENBLAS_DISTFILE=openblas/download/OpenBLAS-$(OPENBLASVERSION).tar.gz
 MAKEFLAGS =
 
 EXTRACT_STAMP=.openblas_extract_done
@@ -14,7 +15,26 @@ _FC=echo $$(echo "${FC}" | awk '{print $$NF}' )
 
 all: extract build check install_internal
 
+.PHONY: verify-distfile
+verify-distfile:
+	@distfile="$(OPENBLAS_DISTFILE)"; \
+	cd "$(abs_srcdir)/.." && \
+	entry=`awk -v f="$$distfile" '$$2 == f { print $$0 }' distfiles.sha256`; \
+	if test -z "$$entry"; then \
+		echo "error: no SHA256 checksum recorded for $$distfile" >&2; \
+		exit 1; \
+	fi; \
+	if command -v sha256sum >/dev/null 2>&1; then \
+		printf '%s\n' "$$entry" | sha256sum -c -; \
+	elif command -v shasum >/dev/null 2>&1; then \
+		printf '%s\n' "$$entry" | shasum -a 256 -c -; \
+	else \
+		echo "error: no SHA256 checksum tool found (sha256sum or shasum)" >&2; \
+		exit 1; \
+	fi
+
 work/$(EXTRACT_STAMP):
+	@$(MAKE) verify-distfile OPENBLASVERSION="$(OPENBLASVERSION)" OPENBLAS_DISTFILE="$(OPENBLAS_DISTFILE)"
 	rm -rf work ; mkdir -p work/install
 	cd $(abs_builddir)/work/install; tar xvfz $(abs_srcdir)/download/OpenBLAS-$(OPENBLASVERSION).tar.gz
 	touch $(abs_builddir)/work/$(EXTRACT_STAMP)

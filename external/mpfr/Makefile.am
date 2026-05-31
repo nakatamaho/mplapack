@@ -1,4 +1,5 @@
 MPFRVERSION=4.2.2
+MPFR_DISTFILE=mpfr/download/mpfr-$(MPFRVERSION).tar.bz2
 MAKEFLAGS =
 
 #GMPINCLUDEDIR=$(abs_builddir)/../i/GMP/include/
@@ -17,7 +18,26 @@ CHECK_STAMP=.mpfr_check_done
 
 all: extract config build check install_internal
 
+.PHONY: verify-distfile
+verify-distfile:
+	@distfile="$(MPFR_DISTFILE)"; \
+	cd "$(abs_srcdir)/.." && \
+	entry=`awk -v f="$$distfile" '$$2 == f { print $$0 }' distfiles.sha256`; \
+	if test -z "$$entry"; then \
+		echo "error: no SHA256 checksum recorded for $$distfile" >&2; \
+		exit 1; \
+	fi; \
+	if command -v sha256sum >/dev/null 2>&1; then \
+		printf '%s\n' "$$entry" | sha256sum -c -; \
+	elif command -v shasum >/dev/null 2>&1; then \
+		printf '%s\n' "$$entry" | shasum -a 256 -c -; \
+	else \
+		echo "error: no SHA256 checksum tool found (sha256sum or shasum)" >&2; \
+		exit 1; \
+	fi
+
 work/$(EXTRACT_STAMP):
+	@$(MAKE) verify-distfile MPFRVERSION="$(MPFRVERSION)" MPFR_DISTFILE="$(MPFR_DISTFILE)"
 	rm -rf work ; mkdir -p work/internal  ; mkdir -p work/install
 	cd $(abs_builddir)/work/internal; tar xvfj $(abs_srcdir)/download/mpfr-$(MPFRVERSION).tar.bz2
 	cd $(abs_builddir)/work/install; tar xvfj $(abs_srcdir)/download/mpfr-$(MPFRVERSION).tar.bz2

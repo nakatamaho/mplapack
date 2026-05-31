@@ -1,0 +1,14 @@
+f7248a8baeb79d9bcd5f702cc08a777431708758e70d1730b59674c5e795e88a  dlfcn-win32/download/dlfcn-win32-1.3.1.tar.gz
+f61a874bc9163ab488accb364fd681d109870c86e8071f4710cbcdcbaf9f2565  dlfcn-win32/download/dlfcn-win32-1.4.2.tar.gz
+eae9326beb4158c386e39a356818031bd28f3124cf915f8c5b1dc4c7a36b4d7c  gmp/download/gmp-6.2.1.tar.bz2
+a3c2b80201b89e68616f4ad30bc66aee4927c3ce50e33929ca819d5c43538898  gmp/download/gmp-6.3.0.tar.xz
+d0085d2caf997ff39299c05d4bacb6f3d27001d25a4cc613d48c1f352b73e7e0  lapack/download/lapack-3.9.1.tar.gz
+2ca6407a001a474d4d4d35f3a61550156050c48016d949f0da0529c0aa052422  lapack/download/lapack-3.12.1.tar.gz
+ab642492f5cf882b74aa0cb730cd410a81edcdbec895183ce930e706c1c759b8  mpc/download/mpc-1.3.1.tar.gz
+91204cd32f164bd3b7c992d4a6a8ce6519511aadab30f78b6982d0bf8d73e931  mpc/download/mpc-1.4.1.tar.xz
+75af77904037442fcd3061a4fee2394194716c542e96989dcfac2445c842daf1  mpfr/download/allpatches
+feced2d430dd5a97805fa289fed3fc8ff2b094c02d05287fd6133e7f1f0ec926  mpfr/download/mpfr-4.1.0.tar.bz2
+9ad62c7dc910303cd384ff8f1f4767a655124980bb6d8650fe62c815a231bb7b  mpfr/download/mpfr-4.2.2.tar.bz2
+f8a1138e01fddca9e4c29f9684fd570ba39dedc9ca76055e1425d5d4b1a4a766  openblas/download/OpenBLAS-0.3.32.tar.gz
+b3eaf41ce413ec08f348ee73e606bd3ff9203e411c377c3c0467f89acf69ee26  qd/download/qd-2.3.23.tar.gz
+e15c1aa4564da7c25006483005779c9e8fa729c05117c068931a70209d093c6a  qd/download/qd-2.3.24.tar.gz

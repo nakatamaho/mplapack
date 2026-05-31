@@ -1,4 +1,5 @@
 GMPVERSION=6.3.0
+GMP_DISTFILE=gmp/download/gmp-$(GMPVERSION).tar.xz
 MAKEFLAGS =
 
 if IS_MACOS
@@ -24,7 +25,26 @@ INSTALL_INTERNAL_STAMP=.gmp_install_internal_done
 
 all: extract config build check install_internal
 
+.PHONY: verify-distfile
+verify-distfile:
+	@distfile="$(GMP_DISTFILE)"; \
+	cd "$(abs_srcdir)/.." && \
+	entry=`awk -v f="$$distfile" '$$2 == f { print $$0 }' distfiles.sha256`; \
+	if test -z "$$entry"; then \
+		echo "error: no SHA256 checksum recorded for $$distfile" >&2; \
+		exit 1; \
+	fi; \
+	if command -v sha256sum >/dev/null 2>&1; then \
+		printf '%s\n' "$$entry" | sha256sum -c -; \
+	elif command -v shasum >/dev/null 2>&1; then \
+		printf '%s\n' "$$entry" | shasum -a 256 -c -; \
+	else \
+		echo "error: no SHA256 checksum tool found (sha256sum or shasum)" >&2; \
+		exit 1; \
+	fi
+
 work/$(EXTRACT_STAMP):
+	@$(MAKE) verify-distfile GMPVERSION="$(GMPVERSION)" GMP_DISTFILE="$(GMP_DISTFILE)"
 	rm -rf work ; mkdir -p work/internal ; mkdir -p work/install
 	cd $(abs_builddir)/work/internal; tar xvfJ $(abs_srcdir)/download/gmp-$(GMPVERSION).tar.xz
 	cd $(abs_builddir)/work/install; tar xvfJ $(abs_srcdir)/download/gmp-$(GMPVERSION).tar.xz

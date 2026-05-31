@@ -1,6 +1,7 @@
 LAPACK_VERSION    := $(or $(LAPACK_VERSION),3.12.1)
 LAPACK_GIT_URL    := $(or $(LAPACK_GIT_URL),https://github.com/Reference-LAPACK/lapack.git)
 LAPACK_GIT_REF    := $(or $(LAPACK_GIT_REF),master)
+LAPACK_DISTFILE   := lapack/download/lapack-$(LAPACK_VERSION).tar.gz
 MAKEFLAGS =
 
 EXTRACT_STAMP=.lapack_extract_$(LAPACK_VERSION)_done
@@ -14,7 +15,30 @@ all: extract config build check install_internal
 
 LAPACK_SOURCE_DIR = lapack-$(LAPACK_VERSION)
 
+.PHONY: verify-distfile
+verify-distfile:
+	@if test "x$(LAPACK_VERSION)" = "xcurrent"; then \
+		echo "Skipping SHA256 check for LAPACK current git checkout"; \
+	else \
+		distfile="$(LAPACK_DISTFILE)"; \
+		cd "$(abs_srcdir)/.." && \
+		entry=`awk -v f="$$distfile" '$$2 == f { print $$0 }' distfiles.sha256`; \
+		if test -z "$$entry"; then \
+			echo "error: no SHA256 checksum recorded for $$distfile" >&2; \
+			exit 1; \
+		fi; \
+		if command -v sha256sum >/dev/null 2>&1; then \
+			printf '%s\n' "$$entry" | sha256sum -c -; \
+		elif command -v shasum >/dev/null 2>&1; then \
+			printf '%s\n' "$$entry" | shasum -a 256 -c -; \
+		else \
+			echo "error: no SHA256 checksum tool found (sha256sum or shasum)" >&2; \
+			exit 1; \
+		fi; \
+	fi
+
 work/$(EXTRACT_STAMP):
+	@$(MAKE) verify-distfile LAPACK_VERSION="$(LAPACK_VERSION)" LAPACK_DISTFILE="$(LAPACK_DISTFILE)"
 	rm -rf work ; mkdir -p work/internal
 	@if test "x$(LAPACK_VERSION)" = "xcurrent"; then \
 		git clone "$(LAPACK_GIT_URL)" "$(abs_builddir)/work/internal/$(LAPACK_SOURCE_DIR)" && \

@@ -1,4 +1,5 @@
 DLFCN_WIN32VERSION=1.4.2
+DLFCN_WIN32_DISTFILE=dlfcn-win32/download/dlfcn-win32-$(DLFCN_WIN32VERSION).tar.gz
 MAKEFLAGS =
 
 EXTRACT_STAMP=.dlfcn-win32_extract_done
@@ -10,7 +11,26 @@ CHECK_STAMP=.dlfcn-win32_check_done
 
 all: extract patch config build check install
 
+.PHONY: verify-distfile
+verify-distfile:
+	@distfile="$(DLFCN_WIN32_DISTFILE)"; \
+	cd "$(abs_srcdir)/.." && \
+	entry=`awk -v f="$$distfile" '$$2 == f { print $$0 }' distfiles.sha256`; \
+	if test -z "$$entry"; then \
+		echo "error: no SHA256 checksum recorded for $$distfile" >&2; \
+		exit 1; \
+	fi; \
+	if command -v sha256sum >/dev/null 2>&1; then \
+		printf '%s\n' "$$entry" | sha256sum -c -; \
+	elif command -v shasum >/dev/null 2>&1; then \
+		printf '%s\n' "$$entry" | shasum -a 256 -c -; \
+	else \
+		echo "error: no SHA256 checksum tool found (sha256sum or shasum)" >&2; \
+		exit 1; \
+	fi
+
 work/$(EXTRACT_STAMP):
+	@$(MAKE) verify-distfile DLFCN_WIN32VERSION="$(DLFCN_WIN32VERSION)" DLFCN_WIN32_DISTFILE="$(DLFCN_WIN32_DISTFILE)"
 	rm -rf work ; mkdir -p work/install
 	cd $(abs_builddir)/work/install; tar xvfz $(abs_srcdir)/download/dlfcn-win32-$(DLFCN_WIN32VERSION).tar.gz
 	touch $(abs_builddir)/work/$(EXTRACT_STAMP)
