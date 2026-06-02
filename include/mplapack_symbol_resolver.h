@@ -95,9 +95,17 @@
 #endif
 #elif defined(__APPLE__)
 #include <dlfcn.h>
+#if defined(__cplusplus) && defined(__GNUC__) && !defined(__clang__) && !defined(_Static_assert)
+#define MPLAPACK_RESTORE_STATIC_ASSERT_FOR_MACOS26_SDK 1
+#define _Static_assert static_assert
+#endif
 #include <mach-o/dyld.h>
 #include <mach-o/loader.h>
 #include <mach-o/nlist.h>
+#if defined(MPLAPACK_RESTORE_STATIC_ASSERT_FOR_MACOS26_SDK)
+#undef _Static_assert
+#undef MPLAPACK_RESTORE_STATIC_ASSERT_FOR_MACOS26_SDK
+#endif
 #else
 #include <dlfcn.h>
 #include <elf.h>
