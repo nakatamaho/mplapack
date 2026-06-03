@@ -273,10 +273,11 @@ fable/tbxx/pretty_type_name.hpp \
 fable/tbxx/time_accu.hpp \
 include/mplapack_symbol_resolver.h \
 misc/add_ldlibpath.sh \
-misc/buildtest_tier1_amd64_macOS.sh \
+release/buildtest_tier1_amd64_macOS.sh \
 misc/buildtest_tier1_amd64_mingw64.sh \
 misc/buildtest_tier1_amd64_ubuntu.sh \
-misc/buildtest_tier1_arm64_macOS.sh \
+release/buildtest_tier1_arm64_macOS.sh \
+release/run-remote-macos.sh \
 misc/buildtest_tier1_arm64_ubuntu.sh \
 misc/buildtest_tier2_amd64_ubuntu_intel.sh \
 misc/buildtest_tier2_i386_debian.sh \

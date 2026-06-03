@@ -80,7 +80,9 @@ make cuda
 
 # By architecture
 make amd64
+make amd64-macos  # SSH to macOS amd64 host and run Tier 1 buildtest
 make arm64
+make arm64-macos  # SSH to macOS arm64 host and run Tier 1 buildtest
 make ppc64le
 make i386
 make s390x

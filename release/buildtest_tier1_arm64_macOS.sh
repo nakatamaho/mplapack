@@ -1,10 +1,11 @@
 #!/bin/bash
 set -euo pipefail
+export PATH="/opt/local/bin:/opt/local/sbin:${PATH}"
 
 # ---------------------------------------------------------------------------
 # Logging setup
 # ---------------------------------------------------------------------------
-LOG_DIR="${HOME}/mplapack_build_logs/$(LANG=C date +%Y%m%d_%H%M%S)_$$_tier1_amd64_macOS"
+LOG_DIR="${HOME}/mplapack_build_logs/$(LANG=C date +%Y%m%d_%H%M%S)_$$_tier1_arm64_macOS"
 mkdir -p "${LOG_DIR}"
 
 log() {
@@ -144,20 +145,20 @@ realpath_safe() {
 }
 
 # Use a fixed WORKDIR to improve ccache hit rate (avoid per-run path variability).
-BASE_TMP_DIR="${HOME}/tmp"
-WORKDIR="${BASE_TMP_DIR}/mplapack"
+WORKDIR="${MPLAPACK_REMOTE_WORKDIR:-${HOME}/tmp/mplapack}"
+case "${WORKDIR}" in
+    "~/"*) WORKDIR="${HOME}/${WORKDIR#~/}" ;;
+esac
+BASE_TMP_DIR="$(dirname "${WORKDIR}")"
 
 # Prevent concurrent runs from clobbering each other.
 # Use an atomic mkdir lock to avoid relying on flock(1) availability.
 LOCKDIR="${WORKDIR}.lock"
-
-mkdir -p "${BASE_TMP_DIR}"
-
-# Safety guard: refuse to operate if WORKDIR is not exactly what we expect.
+# Safety guard: refuse to operate outside HOME.
 case "${WORKDIR}" in
-    "${HOME}/tmp/mplapack") ;;
+    "${HOME}/"*) ;;
     *)
-        echo "ERROR: Refusing to use unexpected WORKDIR: ${WORKDIR}" >&2
+        echo "ERROR: Refusing to use WORKDIR outside HOME: ${WORKDIR}" >&2
         exit 1
         ;;
 esac
@@ -176,7 +177,7 @@ fi
 mkdir -p "${WORKDIR}"
 
 # Realpath guard: ensure resolved WORKDIR matches resolved expected path.
-EXPECTED_WORKDIR="${HOME}/tmp/mplapack"
+EXPECTED_WORKDIR="${WORKDIR}"
 WORKDIR_REAL="$(realpath_safe "${WORKDIR}")" || { echo "ERROR: Failed to resolve realpath: ${WORKDIR}" >&2; exit 1; }
 EXPECTED_REAL="$(realpath_safe "${EXPECTED_WORKDIR}")" || { echo "ERROR: Failed to resolve realpath: ${EXPECTED_WORKDIR}" >&2; exit 1; }
 if [ "${WORKDIR_REAL}" != "${EXPECTED_REAL}" ]; then

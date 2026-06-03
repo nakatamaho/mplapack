@@ -87,10 +87,10 @@ BSD-style license, supplemental to the original LAPACK license.
 | **Tier 2** | Build only | Debian 12/13 (amd64, arm64, i386, ppc64le, s390x, riscv64, mips64le), Alpine Linux 3.19–3.23 (amd64, arm64, riscv64), Rocky Linux 8/9/10 (amd64), Fedora 42/43, openSUSE Leap 15.6/16.0, openSUSE Tumbleweed |
 | **Tier 3** | Patches accepted; no CI coverage | Other platforms |
 
-Tier 1/2 build scripts are in `misc/`:
+Tier 1/2 build scripts are in `misc/` and `release/`:
 ```
-misc/buildtest_tier1_amd64_macOS.sh
-misc/buildtest_tier1_arm64_macOS.sh
+release/buildtest_tier1_amd64_macOS.sh
+release/buildtest_tier1_arm64_macOS.sh
 misc/buildtest_tier1_amd64_mingw64.sh
 misc/buildtest_tier1_amd64_ubuntu.sh
 misc/buildtest_tier1_arm64_ubuntu.sh

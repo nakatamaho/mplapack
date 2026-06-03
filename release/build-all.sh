@@ -479,6 +479,9 @@ run_matrix() {
         # Set defaults
         source_type="${source_type:-branch}"
         test_cmd="${test_cmd:-make check -j}"
+        # Remote targets are launched by explicit Makefile targets, not Docker matrix runs.
+        [[ "$source_type" == remote-* ]] && continue
+
 
         # Apply phase filter
         [[ "$PHASE" != "all" && "$source_type" != "$PHASE" ]] && continue
