@@ -89,6 +89,62 @@ log_env() {
 }
 
 # ---------------------------------------------------------------------------
+# Test result collection
+# ---------------------------------------------------------------------------
+get_mplapack_version() {
+    local major minor patch
+    major="$(sed -n 's/^m4_define(\[MPLAPACK_VER_MAJOR\], \[\([^]]*\)\])/\1/p' configure.ac | tr -d '[:space:]')"
+    minor="$(sed -n 's/^m4_define(\[MPLAPACK_VER_MINOR\], \[\([^]]*\)\])/\1/p' configure.ac | tr -d '[:space:]')"
+    patch="$(sed -n 's/^m4_define(\[MPLAPACK_VER_PATCH\], \[\([^]]*\)\])/\1/p' configure.ac | tr -d '[:space:]')"
+    if [ -n "${major}" ] && [ -n "${minor}" ] && [ -n "${patch}" ]; then
+        printf '%s.%s.%s\n' "${major}" "${minor}" "${patch}"
+    fi
+}
+
+collect_test_results() {
+    local version="${MPLAPACK_RESULTS_VERSION:-}"
+    local local_root="${MPLAPACK_RESULTS_ROOT:-${HOME}/mplapack}"
+    local suite src_dir dst_dir copied
+
+    if [ -z "${version}" ]; then
+        version="$(get_mplapack_version)"
+    fi
+    if [ -z "${version}" ]; then
+        log "ERROR: Failed to determine MPLAPACK results version."
+        exit 1
+    fi
+
+    case "${local_root}" in
+        "${HOME}"|"${HOME}/"*) ;;
+        *)
+            log "ERROR: Refusing MPLAPACK_RESULTS_ROOT outside HOME: ${local_root}"
+            exit 1
+            ;;
+    esac
+
+    for suite in lin eig; do
+        dst_dir="${local_root}/mplapack/test/${suite}/results/${version}"
+        mkdir -p "${dst_dir}"
+        copied=0
+
+        while IFS= read -r src_dir; do
+            [ -d "${src_dir}" ] || continue
+            if command -v rsync >/dev/null 2>&1; then
+                rsync -a "${src_dir}/" "${dst_dir}/"
+            else
+                cp -a "${src_dir}/." "${dst_dir}/"
+            fi
+            copied=$((copied + 1))
+            log "Collected ${suite} results: ${src_dir} -> ${dst_dir}"
+        done < <(find "${WORKDIR}" -type d -path "*/mplapack/test/${suite}/results" -print)
+
+        if [ "${copied}" -eq 0 ]; then
+            log "No ${suite} results found under ${WORKDIR}"
+        fi
+    done
+}
+
+# ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
 PREFIX_DIR="${HOME}/MPLAPACK"
@@ -118,7 +174,6 @@ log "DISTCHECK_CONFIGURE_FLAGS: ${DISTCHECK_CONFIGURE_FLAGS}"
 # Main
 # ---------------------------------------------------------------------------
 log_env
-safe_rmdir "${PREFIX_DIR}"
 
 # Create a unique per-run WORKDIR under $HOME/tmp.
 # Include a timestamp so the directory is identifiable when kept for debugging.
@@ -185,9 +240,9 @@ if [ "${WORKDIR_REAL}" != "${EXPECTED_REAL}" ]; then
     exit 1
 fi
 
-# Acquire lock (with stale-lock detection).
+# Acquire lock. If another buildtest is running, stop it and take over.
 if mkdir "${LOCKDIR}" 2>/dev/null; then
-    printf '%s\n' "$$" > "${LOCKDIR}/pid"
+    printf "%s\n" "$$" > "${LOCKDIR}/pid"
 else
     if [ -f "${LOCKDIR}/pid" ]; then
         old_pid="$(cat "${LOCKDIR}/pid" 2>/dev/null || true)"
@@ -195,18 +250,30 @@ else
         old_pid=""
     fi
 
-    if [ -n "${old_pid}" ] && kill -0 "${old_pid}" 2>/dev/null; then
-        echo "ERROR: Another buildtest instance is running (lock: ${LOCKDIR}, pid: ${old_pid})" >&2
-        exit 1
+    if [ -n "${old_pid}" ] && [ "${old_pid}" != "$$" ] && kill -0 "${old_pid}" 2>/dev/null; then
+        log "Another buildtest instance is running (lock: ${LOCKDIR}, pid: ${old_pid}); stopping it."
+        kill "${old_pid}" 2>/dev/null || true
+        for _wait_i in $(seq 1 60); do
+            if ! kill -0 "${old_pid}" 2>/dev/null; then
+                break
+            fi
+            sleep 1
+        done
+        if kill -0 "${old_pid}" 2>/dev/null; then
+            log "Previous buildtest pid ${old_pid} did not stop after 60s; killing it."
+            kill -KILL "${old_pid}" 2>/dev/null || true
+            sleep 1
+        fi
+    else
+        log "WARNING: Stale lock detected; removing it: ${LOCKDIR}"
     fi
 
-    echo "WARNING: Stale lock detected; removing it: ${LOCKDIR}" >&2
     rm -rf "${LOCKDIR}"
     if ! mkdir "${LOCKDIR}" 2>/dev/null; then
         echo "ERROR: Failed to acquire lock after removing stale lock: ${LOCKDIR}" >&2
         exit 1
     fi
-    printf '%s\n' "$$" > "${LOCKDIR}/pid"
+    printf "%s\n" "$$" > "${LOCKDIR}/pid"
 fi
 
 # Always release the lock on exit.
@@ -218,6 +285,7 @@ cleanup_lock() {
 }
 trap cleanup_lock EXIT INT TERM HUP
 
+safe_rmdir "${PREFIX_DIR}"
 mkdir -p "${WORKDIR}"
 # make distcheck leaves read-only files in the extracted tarball tree;
 # restore write permission before removal so rm -rf succeeds on rerun.
@@ -245,6 +313,7 @@ safe_rmdir "${PREFIX_DIR}"
 run_step "autoreconf"     autoreconf -fi
 run_step "make_distcheck" env CC="ccache gcc" CXX="ccache g++" FC="ccache gfortran" \
                           make distcheck MAKEFLAGS="-j4" DISTCHECK_CONFIGURE_FLAGS="${DISTCHECK_CONFIGURE_FLAGS}"
+run_step "collect_test_results" collect_test_results
 
 log ""
 log "=== ALL STEPS COMPLETED SUCCESSFULLY ==="
