@@ -103,8 +103,9 @@ get_mplapack_version() {
 
 collect_test_results() {
     local version="${MPLAPACK_RESULTS_VERSION:-}"
+    local staging_root="${MPLAPACK_TEST_RESULTS_STAGING:-}"
     local local_root="${MPLAPACK_RESULTS_ROOT:-${HOME}/mplapack}"
-    local suite src_dir dst_dir copied
+    local suite src_base src_dir dst_dir outdir copied
 
     if [ -z "${version}" ]; then
         version="$(get_mplapack_version)"
@@ -112,6 +113,10 @@ collect_test_results() {
     if [ -z "${version}" ]; then
         log "ERROR: Failed to determine MPLAPACK results version."
         exit 1
+    fi
+
+    if [ -z "${staging_root}" ]; then
+        staging_root="${WORKDIR}.distcheck-results/${version}"
     fi
 
     case "${local_root}" in
@@ -123,23 +128,28 @@ collect_test_results() {
     esac
 
     for suite in lin eig; do
+        src_base="${staging_root}/${suite}/results"
         dst_dir="${local_root}/mplapack/test/${suite}/results/${version}"
         mkdir -p "${dst_dir}"
         copied=0
 
-        while IFS= read -r src_dir; do
-            [ -d "${src_dir}" ] || continue
-            if command -v rsync >/dev/null 2>&1; then
-                rsync -a "${src_dir}/" "${dst_dir}/"
-            else
-                cp -a "${src_dir}/." "${dst_dir}/"
-            fi
-            copied=$((copied + 1))
-            log "Collected ${suite} results: ${src_dir} -> ${dst_dir}"
-        done < <(find "${WORKDIR}" -type d -path "*/mplapack/test/${suite}/results" -print)
+        if [ -d "${src_base}" ]; then
+            while IFS= read -r src_dir; do
+                [ -d "${src_dir}" ] || continue
+                outdir="$(basename "${src_dir}")"
+                if command -v rsync >/dev/null 2>&1; then
+                    rsync -a "${src_dir}/" "${dst_dir}/${outdir}/"
+                else
+                    mkdir -p "${dst_dir}/${outdir}"
+                    cp -a "${src_dir}/." "${dst_dir}/${outdir}/"
+                fi
+                copied=$((copied + 1))
+                log "Collected ${suite} results: ${src_dir} -> ${dst_dir}/${outdir}"
+            done < <(find "${src_base}" -mindepth 1 -maxdepth 1 -type d -print)
+        fi
 
         if [ "${copied}" -eq 0 ]; then
-            log "No ${suite} results found under ${WORKDIR}"
+            log "No ${suite} results found under ${src_base}"
         fi
     done
 }
@@ -296,6 +306,19 @@ log "WORKDIR: ${WORKDIR}"
 git clone --depth 1 git@github.com:nakatamaho/mplapack.git "${WORKDIR}"
 cd "${WORKDIR}"
 git --no-pager log -1 | tee "${LOG_DIR}/git_log.log" | tee -a "${LOG_DIR}/summary.log"
+
+RESULTS_VERSION="$(get_mplapack_version)"
+if [ -z "${RESULTS_VERSION}" ]; then
+    log "ERROR: Failed to determine MPLAPACK results version."
+    exit 1
+fi
+DISTCHECK_RESULTS_STAGING="${WORKDIR}.distcheck-results/${RESULTS_VERSION}"
+safe_rmdir "${WORKDIR}.distcheck-results"
+mkdir -p "${DISTCHECK_RESULTS_STAGING}"
+export MPLAPACK_RESULTS_VERSION="${RESULTS_VERSION}"
+export MPLAPACK_TEST_RESULTS_STAGING="${DISTCHECK_RESULTS_STAGING}"
+log "MPLAPACK_RESULTS_VERSION: ${MPLAPACK_RESULTS_VERSION}"
+log "MPLAPACK_TEST_RESULTS_STAGING: ${MPLAPACK_TEST_RESULTS_STAGING}"
 
 run_step "reconfig"       bash misc/reconfig.macOS.sh
 run_step "make"           make -j4

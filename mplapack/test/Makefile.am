@@ -39,3 +39,18 @@ endif
 check-local:
 	python3 $(top_srcdir)/misc/summarize_mplapack_tests.py $(OUTDIR) eig
 	python3 $(top_srcdir)/misc/summarize_mplapack_tests.py $(OUTDIR) lin
+	@if test -n "$${MPLAPACK_TEST_RESULTS_STAGING:-}"; then \
+		for suite in eig lin; do \
+			src="$$suite/results/$(OUTDIR)"; \
+			dst="$${MPLAPACK_TEST_RESULTS_STAGING}/$$suite/results/$(OUTDIR)"; \
+			if test -d "$$src"; then \
+				mkdir -p "$$dst"; \
+				if command -v rsync >/dev/null 2>&1; then \
+					rsync -a "$$src/" "$$dst/"; \
+				else \
+					cp -a "$$src/." "$$dst/"; \
+				fi; \
+				echo "Staged $$suite test results: $$src -> $$dst"; \
+			fi; \
+		done; \
+	fi

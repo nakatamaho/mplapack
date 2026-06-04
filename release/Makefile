@@ -14,7 +14,7 @@ export CONF_FILE LOGDIR PROJECT_ROOT HOST_WORK_DIR HOST_CCACHE_DIR SUCCESS_DIR
 
 .PHONY: all branch tarball dist clean clean-all clean-success list help
 .PHONY: intel mingw cuda ubuntu debian fedora rocky suse alpine
-.PHONY: amd64 arm64 arm64-macos ppc64le i386 s390x mips64le
+.PHONY: amd64 amd64-macos arm64 arm64-macos ppc64le i386 s390x mips64le
 .PHONY: branch-ubuntu branch-debian branch-amd64 branch-cuda branch-rocky branch-suse
 .PHONY: tarball-ubuntu tarball-debian tarball-amd64 tarball-cuda tarball-rocky tarball-suse
 .PHONY: ccache-stats ccache-clear

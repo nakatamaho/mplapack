@@ -41,6 +41,54 @@ logfile="$LOGDIR/${matrix_name}_${arch}_remote-macos.log"
 resultfile="$LOGDIR/results_${matrix_name}.csv"
 stamp="$SUCCESS_DIR/${matrix_name}_${arch}_remote-macos.ok"
 
+copy_tree_contents() {
+    local src="$1"
+    local dst="$2"
+    mkdir -p "$dst"
+    if command -v rsync >/dev/null 2>&1; then
+        rsync -a "$src/" "$dst/"
+    else
+        cp -a "$src/." "$dst/"
+    fi
+}
+
+collect_remote_test_results() {
+    local remote_root="${target_dir}.distcheck-results"
+    local local_stage="$LOGDIR/${matrix_name}_distcheck-results"
+    local version_dir version suite src dst copied
+
+    if ! "$MACOS_REMOTE_SSH" "$host" "test -d '$remote_root'" >/dev/null 2>&1; then
+        echo "No remote distcheck results found: $host:$remote_root" >&2
+        return 0
+    fi
+
+    rm -rf "$local_stage"
+    mkdir -p "$local_stage"
+    if command -v rsync >/dev/null 2>&1 && rsync -a "$host:$remote_root/" "$local_stage/"; then
+        :
+    else
+        "$MACOS_REMOTE_SSH" "$host" "cd '$remote_root' && tar -cf - ." | tar -C "$local_stage" -xf -
+    fi
+
+    copied=0
+    for version_dir in "$local_stage"/*; do
+        [[ -d "$version_dir" ]] || continue
+        version="$(basename "$version_dir")"
+        for suite in lin eig; do
+            src="$version_dir/$suite/results"
+            [[ -d "$src" ]] || continue
+            dst="$PROJECT_ROOT/mplapack/test/$suite/results/$version"
+            copy_tree_contents "$src" "$dst"
+            copied=$((copied + 1))
+            echo "Collected remote $suite results: $host:$remote_root/$version/$suite/results -> $dst" >&2
+        done
+    done
+
+    if [[ "$copied" -eq 0 ]]; then
+        echo "No staged lin/eig results found under $host:$remote_root" >&2
+    fi
+}
+
 echo "name,arch,base,stage,result,elapsed,source_type" > "$resultfile"
 
 if [[ -L "$stamp" && ! -e "$stamp" ]]; then
@@ -64,6 +112,7 @@ set -e
 
 elapsed=$(($(date +%s) - start))
 if [[ "$rc" -eq 0 ]]; then
+    collect_remote_test_results
     ln -sfn "$logfile" "$stamp"
     echo "$matrix_name,$arch,$host,test,OK,$elapsed,$source_type" | tee -a "$resultfile"
 else
