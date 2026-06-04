@@ -76,15 +76,15 @@ typedef mplapacklogical (*LFP)();
 #endif /* MPLAPACK_CONFIG_H */
 ])
 
-AC_DEFUN([MPLAPACK_STRIP_G_FLAG], [
+AC_DEFUN([MPLAPACK_STRIP_FLAG], [
     AS_VAR_PUSHDEF([mplapack_flags_var], [$1])
-    mplapack_strip_g_result=""
-    for mplapack_strip_g_arg in $mplapack_flags_var; do
-        AS_CASE([$mplapack_strip_g_arg],
-            [-g], [],
-            [mplapack_strip_g_result="$mplapack_strip_g_result${mplapack_strip_g_result:+ }$mplapack_strip_g_arg"])
+    mplapack_strip_flag_result=""
+    for mplapack_strip_flag_arg in $mplapack_flags_var; do
+        AS_CASE([$mplapack_strip_flag_arg],
+            [$2], [],
+            [mplapack_strip_flag_result="$mplapack_strip_flag_result${mplapack_strip_flag_result:+ }$mplapack_strip_flag_arg"])
     done
-    mplapack_flags_var="$mplapack_strip_g_result"
+    mplapack_flags_var="$mplapack_strip_flag_result"
     AS_VAR_POPDEF([mplapack_flags_var])
 ])
 
@@ -1716,6 +1716,46 @@ elif test "$ac_cv_sizeof_void_p" = "8" && test "$ac_cv_sizeof_long" = "4"; then
   INTEGER_MODEL="LLP64"
 fi
 
+if test x"$enable_optimization" = x"no" && test x"$enable_debug" = x"yes" ; then
+    CFLAGS="-O0 -g"
+    CXXFLAGS="-O0 -g"
+    FCFLAGS="-O0 -g"
+fi
+
+if test x"$enable_optimization" = x"yes" && test x"$enable_debug" != x"yes" ; then
+    dnl Autoconf defaults CXXFLAGS to "-g -O2" when it is not set by the
+    dnl user.  Release builds are large enough that keeping -g is too costly.
+    dnl Also normalize exact -O2 so it appears once in the configure summary.
+    MPLAPACK_STRIP_FLAG([CFLAGS], [-g])
+    MPLAPACK_STRIP_FLAG([CXXFLAGS], [-g])
+    MPLAPACK_STRIP_FLAG([FCFLAGS], [-g])
+    MPLAPACK_STRIP_FLAG([CFLAGS], [-O2])
+    MPLAPACK_STRIP_FLAG([CXXFLAGS], [-O2])
+    MPLAPACK_STRIP_FLAG([FCFLAGS], [-O2])
+
+    case $target in
+        powerpc*-*-*)
+            CFLAGS="$CFLAGS -O2"
+            CXXFLAGS="$CXXFLAGS -O2"
+            FCFLAGS="$FCFLAGS -O2"
+        ;;
+        *)
+            if test x"$is_intelcc" = x"1"; then
+                CFLAGS="$CFLAGS -O2" # -xHost and -march-native break build drastically
+            else
+                CFLAGS="$CFLAGS -O2"
+                FCFLAGS="$FCFLAGS -O2"
+            fi
+
+            if test x"$is_intelcxx" = x"1"; then
+                CXXFLAGS="$CXXFLAGS -O2" # -xHost and -march-native break build drastically
+            else
+                CXXFLAGS="$CXXFLAGS -O2"
+            fi
+        ;;
+    esac
+fi
+
 AC_MSG_NOTICE([Integer model:     $INTEGER_MODEL])
 AC_MSG_NOTICE([  mplapackint:     long])
 AC_MSG_NOTICE([  sizeof(int):     $ac_cv_sizeof_int])
@@ -2043,43 +2083,6 @@ if test x"$enable_test" = x"yes"; then
     fi
     
     AC_LANG_POP([Fortran])
-fi
-
-if test x"$enable_optimization" = x"no" && test x"$enable_debug" = x"yes" ; then
-    CFLAGS="-O0 -g"
-    CXXFLAGS="-O0 -g"
-    FCFLAGS="-O0 -g"
-fi
-
-if test x"$enable_optimization" = x"yes" && test x"$enable_debug" != x"yes" ; then
-    dnl Autoconf defaults CFLAGS/CXXFLAGS/FCFLAGS to "-g -O2" when they are
-    dnl not set by the user.  Release builds are large enough that keeping -g
-    dnl is too costly, so drop the exact debug flag before adding optimization.
-    MPLAPACK_STRIP_G_FLAG([CFLAGS])
-    MPLAPACK_STRIP_G_FLAG([CXXFLAGS])
-    MPLAPACK_STRIP_G_FLAG([FCFLAGS])
-
-    case $target in
-        powerpc*-*-*)
-            CFLAGS="$CFLAGS -O2"
-            CXXFLAGS="$CXXFLAGS -O2"
-            FCFLAGS="$FCFLAGS -O2"
-        ;;
-        *)
-            if test x"$is_intelcc" = x"1"; then
-                CFLAGS="$CFLAGS -O2" # -xHost and -march-native break build drastically
-            else
-                CFLAGS="$CFLAGS -O2"
-                FCFLAGS="$FCFLAGS -O2"
-            fi
-            
-            if test x"$is_intelcxx" = x"1"; then
-                CXXFLAGS="$CXXFLAGS -O2" # -xHost and -march-native break build drastically
-            else
-                CXXFLAGS="$CXXFLAGS -O2"
-            fi
-        ;;
-    esac
 fi
 
 if test x"$is_intelcc" = x"1"; then
