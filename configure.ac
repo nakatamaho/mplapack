@@ -76,6 +76,18 @@ typedef mplapacklogical (*LFP)();
 #endif /* MPLAPACK_CONFIG_H */
 ])
 
+AC_DEFUN([MPLAPACK_STRIP_G_FLAG], [
+    AS_VAR_PUSHDEF([mplapack_flags_var], [$1])
+    mplapack_strip_g_result=""
+    for mplapack_strip_g_arg in $mplapack_flags_var; do
+        AS_CASE([$mplapack_strip_g_arg],
+            [-g], [],
+            [mplapack_strip_g_result="$mplapack_strip_g_result${mplapack_strip_g_result:+ }$mplapack_strip_g_arg"])
+    done
+    mplapack_flags_var="$mplapack_strip_g_result"
+    AS_VAR_POPDEF([mplapack_flags_var])
+])
+
 AC_CONFIG_HEADERS([include/mplapack_config.h])
 AC_CONFIG_FILES([ Makefile mplapack.pc ])
 AC_CONFIG_FILES([packaging/PKGBUILD packaging/mplapack.spec])
@@ -2040,6 +2052,13 @@ if test x"$enable_optimization" = x"no" && test x"$enable_debug" = x"yes" ; then
 fi
 
 if test x"$enable_optimization" = x"yes" && test x"$enable_debug" != x"yes" ; then
+    dnl Autoconf defaults CFLAGS/CXXFLAGS/FCFLAGS to "-g -O2" when they are
+    dnl not set by the user.  Release builds are large enough that keeping -g
+    dnl is too costly, so drop the exact debug flag before adding optimization.
+    MPLAPACK_STRIP_G_FLAG([CFLAGS])
+    MPLAPACK_STRIP_G_FLAG([CXXFLAGS])
+    MPLAPACK_STRIP_G_FLAG([FCFLAGS])
+
     case $target in
         powerpc*-*-*)
             CFLAGS="$CFLAGS -O2"
