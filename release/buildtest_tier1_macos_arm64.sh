@@ -5,7 +5,7 @@ export PATH="/opt/local/bin:/opt/local/sbin:${PATH}"
 # ---------------------------------------------------------------------------
 # Logging setup
 # ---------------------------------------------------------------------------
-LOG_DIR="${HOME}/mplapack_build_logs/$(LANG=C date +%Y%m%d_%H%M%S)_$$_tier1_arm64_macOS"
+LOG_DIR="${HOME}/mplapack_build_logs/$(LANG=C date +%Y%m%d_%H%M%S)_$$_tier1_macos_arm64"
 mkdir -p "${LOG_DIR}"
 
 log() {

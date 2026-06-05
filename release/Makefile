@@ -9,14 +9,16 @@ HOST_WORK_DIR ?= /work/mplapack-work
 HOST_CCACHE_DIR ?= /work/ccache
 SUCCESS_DIR ?= $(SCRIPT_DIR)/success
 MACOS_REMOTE_SSH ?= ssh
+REMOTE_LINUX_SSH ?= ssh
 
 export CONF_FILE LOGDIR PROJECT_ROOT HOST_WORK_DIR HOST_CCACHE_DIR SUCCESS_DIR
 
 .PHONY: all branch tarball dist clean clean-all clean-success list help
 .PHONY: intel mingw cuda ubuntu debian fedora rocky suse alpine
-.PHONY: amd64 amd64-macos arm64 arm64-macos ppc64le i386 s390x mips64le
+.PHONY: amd64 arm64 ppc64le i386 s390x mips64le
 .PHONY: branch-ubuntu branch-debian branch-amd64 branch-cuda branch-rocky branch-suse
 .PHONY: tarball-ubuntu tarball-debian tarball-amd64 tarball-cuda tarball-rocky tarball-suse
+.PHONY: tier1 tier1-macos tier1-linux tier1-macos-arm64 tier1-macos-amd64 tier1-ubuntu-arm64
 .PHONY: ccache-stats ccache-clear
 
 # === Main Targets ===
@@ -71,14 +73,23 @@ alpine:
 amd64:
 	@FILTER_ARCH=amd64 ./build-all.sh branch
 
-amd64-macos:
-	@MACOS_REMOTE_SSH=$(MACOS_REMOTE_SSH) ./run-remote-macos.sh amd64-macos
-
 arm64:
 	@FILTER_ARCH=arm64 ./build-all.sh branch
 
-arm64-macos:
-	@MACOS_REMOTE_SSH=$(MACOS_REMOTE_SSH) ./run-remote-macos.sh arm64-macos
+tier1: tier1-macos tier1-linux
+
+tier1-macos: tier1-macos-arm64 tier1-macos-amd64
+
+tier1-linux: tier1-ubuntu-arm64
+
+tier1-macos-arm64:
+	@MACOS_REMOTE_SSH=$(MACOS_REMOTE_SSH) ./run-remote-macos.sh tier1-macos-arm64
+
+tier1-macos-amd64:
+	@MACOS_REMOTE_SSH=$(MACOS_REMOTE_SSH) ./run-remote-macos.sh tier1-macos-amd64
+
+tier1-ubuntu-arm64:
+	@REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-linux-docker.sh tier1-ubuntu-arm64
 
 i386:
 	@FILTER_ARCH=386 ./build-all.sh branch
@@ -227,10 +238,14 @@ help:
 	@echo ""
 	@echo "Arch filters:"
 	@echo "  make amd64       - x86_64"
-	@echo "  make amd64-macos - run Tier 1 macOS amd64 test via SSH"
+	@echo "  make tier1              - run all Tier 1 remote tests"
+	@echo "  make tier1-macos        - run Tier 1 macOS remote tests"
+	@echo "  make tier1-linux        - run Tier 1 Linux remote tests"
+	@echo "  make tier1-macos-amd64  - run Tier 1 macOS amd64 test via SSH"
+	@echo "  make tier1-macos-arm64  - run Tier 1 macOS arm64 test via SSH"
+	@echo "  make tier1-ubuntu-arm64 - run Tier 1 Ubuntu arm64 test via SSH/Docker"
 	@echo "  make arm64       - aarch64"
-	@echo "  make arm64-macos - run Tier 1 macOS arm64 test via SSH"
-	@echo "  make ppc64le     - PowerPC 64-bit LE"
+		@echo "  make ppc64le     - PowerPC 64-bit LE"
 	@echo "  make i386        - x86 32-bit"
 	@echo "  make s390x       - IBM Z mainframe"
 	@echo "  make mips64le    - MIPS 64-bit LE"

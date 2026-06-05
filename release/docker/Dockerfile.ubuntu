@@ -24,7 +24,7 @@ ENV CXX="ccache g++"
 ENV FC="ccache gfortran"
 ENV MPLAPACK_REPO=https://github.com/nakatamaho/mplapack.git
 # Branch name or commit SHA. Example: release/2.1 or a full SHA.
-ENV MPLAPACK_REF="release/2.1"
+ENV MPLAPACK_REF="master"
 WORKDIR /work
 CMD ["/bin/bash", "-lc", "\
     set -euxo pipefail; \
@@ -55,12 +55,14 @@ CMD ["/bin/bash", "-lc", "\
     fi; \
     echo \"Configure options: $CONFIGURE_OPTS\"; \
     \
+    RESULTS_VERSION=$(sed -n 's/^m4_define(\[MPLAPACK_VER_MAJOR\], \[\([^]]*\)\])/\1/p' configure.ac | tr -d '[:space:]').$(sed -n 's/^m4_define(\[MPLAPACK_VER_MINOR\], \[\([^]]*\)\])/\1/p' configure.ac | tr -d '[:space:]').$(sed -n 's/^m4_define(\[MPLAPACK_VER_PATCH\], \[\([^]]*\)\])/\1/p' configure.ac | tr -d '[:space:]'); \
+    : \"${MPLAPACK_TEST_RESULTS_BASE:=/results}\"; \
+    export MPLAPACK_TEST_RESULTS_STAGING=\"$MPLAPACK_TEST_RESULTS_BASE/$RESULTS_VERSION\"; \
+    rm -rf \"$MPLAPACK_TEST_RESULTS_STAGING\"; \
+    mkdir -p \"$MPLAPACK_TEST_RESULTS_STAGING\"; \
+    echo \"MPLAPACK_TEST_RESULTS_STAGING=$MPLAPACK_TEST_RESULTS_STAGING\"; \
     ./configure $CONFIGURE_OPTS; \
-    make -j\"$(nproc)\"; \
-    make install; \
-    if [ \"$ARCH\" = \"amd64\" ] || [ \"$ARCH\" = \"i386\" ]; then \
-        echo '=== Running make check ==='; \
-        make check -j32; \
-    fi; \
-    echo '=== ccache stats (after) ==='; ccache -s; \
+    echo '=== Running make distcheck ==='; \
+    make distcheck MAKEFLAGS=\"-j$(nproc)\" DISTCHECK_CONFIGURE_FLAGS=\"$CONFIGURE_OPTS\"; \
+    echo '=== ccache stats (after) ==='; ccache -s || true; \
 "]
