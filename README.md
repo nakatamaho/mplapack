@@ -89,8 +89,9 @@ BSD-style license, supplemental to the original LAPACK license.
 
 Tier 1/2 build scripts are in `misc/` and `release/`:
 ```
-release/buildtest_tier1_amd64_macOS.sh
-release/buildtest_tier1_arm64_macOS.sh
+release/buildtest_tier1_macos_amd64.sh
+release/buildtest_tier1_macos_arm64.sh
+release/buildtest_tier1_ubuntu_arm64.sh
 misc/buildtest_tier1_amd64_mingw64.sh
 misc/buildtest_tier1_amd64_ubuntu.sh
 misc/buildtest_tier1_arm64_ubuntu.sh

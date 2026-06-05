@@ -26,43 +26,6 @@ ENV MPLAPACK_REPO=https://github.com/nakatamaho/mplapack.git
 # Branch name or commit SHA. Example: release/2.1 or a full SHA.
 ENV MPLAPACK_REF="master"
 WORKDIR /work
-CMD ["/bin/bash", "-lc", "\
-    set -euxo pipefail; \
-    echo '=== ccache stats (before) ==='; ccache -s; \
-    \
-    # Fresh checkout every run \
-    rm -rf /work/mplapack; \
-    git clone --depth 1 --branch \"$MPLAPACK_REF\" \"$MPLAPACK_REPO\" /work/mplapack || { \
-        # If MPLAPACK_REF is a commit SHA, clone then checkout \
-        git clone \"$MPLAPACK_REPO\" /work/mplapack; \
-        cd /work/mplapack; \
-        git checkout \"$MPLAPACK_REF\"; \
-    }; \
-    cd /work/mplapack; \
-    git log -1; \
-    \
-    # Autotools prep \
-    cd mplapack/test/compare; bash gen.Makefile.am.sh; cd /work/mplapack; \
-    autoreconf --force --install; \
-    \
-    ARCH=$(dpkg --print-architecture); \
-    echo \"Detected architecture: $ARCH\"; \
-    COMMON_OPTS=\"--enable-gmp=yes --enable-mpfr=yes --enable-binary128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes\"; \
-    if [ \"$ARCH\" = \"amd64\" ] || [ \"$ARCH\" = \"i386\" ]; then \
-        CONFIGURE_OPTS=\"$COMMON_OPTS --enable-benchmark=yes --enable-binary80=yes\"; \
-    else \
-        CONFIGURE_OPTS=\"$COMMON_OPTS\"; \
-    fi; \
-    echo \"Configure options: $CONFIGURE_OPTS\"; \
-    \
-    RESULTS_VERSION=$(sed -n 's/^m4_define(\[MPLAPACK_VER_MAJOR\], \[\([^]]*\)\])/\1/p' configure.ac | tr -d '[:space:]').$(sed -n 's/^m4_define(\[MPLAPACK_VER_MINOR\], \[\([^]]*\)\])/\1/p' configure.ac | tr -d '[:space:]').$(sed -n 's/^m4_define(\[MPLAPACK_VER_PATCH\], \[\([^]]*\)\])/\1/p' configure.ac | tr -d '[:space:]'); \
-    : \"${MPLAPACK_TEST_RESULTS_BASE:=/results}\"; \
-    export MPLAPACK_TEST_RESULTS_STAGING=\"$MPLAPACK_TEST_RESULTS_BASE/$RESULTS_VERSION\"; \
-    rm -rf \"$MPLAPACK_TEST_RESULTS_STAGING\"; \
-    mkdir -p \"$MPLAPACK_TEST_RESULTS_STAGING\"; \
-    echo \"MPLAPACK_TEST_RESULTS_STAGING=$MPLAPACK_TEST_RESULTS_STAGING\"; \
-    ./configure $CONFIGURE_OPTS; \
-    echo '=== Running make distcheck ==='; \
-    make distcheck MAKEFLAGS=\"-j$(nproc)\" DISTCHECK_CONFIGURE_FLAGS=\"$CONFIGURE_OPTS\"; \
-    echo '=== ccache stats (after) ==='; ccache -s || true; \
-"]
+COPY run-ubuntu-distcheck.sh /run-ubuntu-distcheck.sh
+RUN chmod +x /run-ubuntu-distcheck.sh
+CMD ["/run-ubuntu-distcheck.sh"]
