@@ -19,8 +19,15 @@ if [[ -z "$row" ]]; then
     exit 1
 fi
 
-IFS='|' read -r matrix_name host target_dir script_rel remote_cmd source_type <<< "$row"
+IFS='|' read -r matrix_name host target_dir script_rel remote_cmd source_type matrix_ubuntu_version matrix_docker_base <<< "$row"
 remote_cmd="${remote_cmd:-bash}"
+matrix_ubuntu_version="${matrix_ubuntu_version:-}"
+matrix_docker_base="${matrix_docker_base:-}"
+remote_ubuntu_version="${MPLAPACK_UBUNTU_VERSION:-$matrix_ubuntu_version}"
+remote_docker_base="${MPLAPACK_DOCKER_BASE:-$matrix_docker_base}"
+if [[ -z "$remote_docker_base" && -n "$remote_ubuntu_version" ]]; then
+    remote_docker_base="ubuntu:$remote_ubuntu_version"
+fi
 
 if [[ "$source_type" != "remote-linux-docker" ]]; then
     echo "ERROR: $name is source_type=$source_type, expected remote-linux-docker" >&2
@@ -38,9 +45,11 @@ if [[ ! -f "$script_path" ]]; then
 fi
 
 arch="${matrix_name%%-*}"
-logfile="$LOGDIR/${matrix_name}_${arch}_remote-linux-docker.log"
+docker_label="${remote_docker_base:-ubuntu:${remote_ubuntu_version:-default}}"
+docker_label="$(printf '%s' "$docker_label" | sed 's/[^A-Za-z0-9._+-]/_/g')"
+logfile="$LOGDIR/${matrix_name}_${docker_label}_${arch}_remote-linux-docker.log"
 resultfile="$LOGDIR/results_${matrix_name}.csv"
-stamp="$SUCCESS_DIR/${matrix_name}_${arch}_remote-linux-docker.ok"
+stamp="$SUCCESS_DIR/${matrix_name}_${docker_label}_${arch}_remote-linux-docker.ok"
 
 copy_tree_contents() {
     local src="$1"
@@ -98,13 +107,15 @@ fi
 if [[ -L "$stamp" && -e "$stamp" ]]; then
     echo "Already passed; skipping $matrix_name" >&2
     echo "Success log: $(readlink "$stamp")" >&2
-    echo "$matrix_name,$arch,$host,test,SKIPPED,0,$source_type" | tee -a "$resultfile"
+    echo "$matrix_name,$arch,${remote_docker_base:-$host},test,SKIPPED,0,$source_type" | tee -a "$resultfile"
     exit 0
 fi
 
 start="$(date +%s)"
 echo "Running $script_rel on $host:$target_dir" >&2
 echo "MPLAPACK_REF: $MPLAPACK_REF" >&2
+echo "MPLAPACK_UBUNTU_VERSION: ${remote_ubuntu_version:-<default>}" >&2
+echo "MPLAPACK_DOCKER_BASE: ${remote_docker_base:-<default>}" >&2
 echo "Log: $logfile" >&2
 
 context_tar="$LOGDIR/${matrix_name}_context.tar.gz"
@@ -114,7 +125,7 @@ tar -C "$PROJECT_ROOT" -czf "$context_tar" release/docker
 set +e
 {
     "$REMOTE_SSH" "$host" "mkdir -p '$(dirname "$target_dir")' && cat > '$remote_context_tar'" < "$context_tar" && \
-    "$REMOTE_SSH" "$host" "MPLAPACK_REMOTE_WORKDIR='$target_dir' MPLAPACK_CONTEXT_TARBALL='$remote_context_tar' MPLAPACK_REF='$MPLAPACK_REF' $remote_cmd -s" < "$script_path"
+    "$REMOTE_SSH" "$host" "MPLAPACK_REMOTE_WORKDIR='$target_dir' MPLAPACK_CONTEXT_TARBALL='$remote_context_tar' MPLAPACK_REF='$MPLAPACK_REF' MPLAPACK_UBUNTU_VERSION='$remote_ubuntu_version' MPLAPACK_DOCKER_BASE='$remote_docker_base' $remote_cmd -s" < "$script_path"
 } > "$logfile" 2>&1
 rc=$?
 set -e
@@ -123,8 +134,8 @@ elapsed=$(($(date +%s) - start))
 if [[ "$rc" -eq 0 ]]; then
     collect_remote_test_results
     ln -sfn "$logfile" "$stamp"
-    echo "$matrix_name,$arch,$host,test,OK,$elapsed,$source_type" | tee -a "$resultfile"
+    echo "$matrix_name,$arch,${remote_docker_base:-$host},test,OK,$elapsed,$source_type" | tee -a "$resultfile"
 else
-    echo "$matrix_name,$arch,$host,test,FAILED,$elapsed,$source_type" | tee -a "$resultfile"
+    echo "$matrix_name,$arch,${remote_docker_base:-$host},test,FAILED,$elapsed,$source_type" | tee -a "$resultfile"
     exit "$rc"
 fi

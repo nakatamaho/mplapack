@@ -23,10 +23,16 @@ safe_rmdir() {
 
 : "${MPLAPACK_REMOTE_WORKDIR:=${HOME}/tmp/mplapack-ubuntu-arm64}"
 : "${MPLAPACK_REF:=master}"
-: "${MPLAPACK_DOCKER_BASE:=ubuntu:24.04}"
+: "${MPLAPACK_UBUNTU_VERSION:=24.04}"
+: "${MPLAPACK_DOCKER_BASE:=ubuntu:${MPLAPACK_UBUNTU_VERSION}}"
 : "${MPLAPACK_DOCKERFILE:=release/docker/Dockerfile.ubuntu}"
 : "${MPLAPACK_IMAGE_TAG:=mplapack-tier1-ubuntu-arm64:latest}"
-: "${MPLAPACK_CCACHE_DIR:=${HOME}/tmp/mplapack-ccache}"
+: "${MPLAPACK_CCACHE_DIR:=/Users/maho/.ccache}"
+: "${MPLAPACK_CCACHE_MAXSIZE:=80G}"
+: "${MPLAPACK_COLIMA_CPUS:=$(sysctl -n hw.ncpu 2>/dev/null || echo 10)}"
+: "${MPLAPACK_COLIMA_MEMORY_GB:=$(( $(sysctl -n hw.memsize 2>/dev/null || echo 34359738368) / 1024 / 1024 / 1024 / 2 ))}"
+: "${MPLAPACK_COLIMA_DISK_GB:=100}"
+: "${MPLAPACK_CPU_MODEL_OVERRIDE:=$(sysctl -n machdep.cpu.brand_string 2>/dev/null || true)}"
 : "${MPLAPACK_RESULTS_DIR:=${MPLAPACK_REMOTE_WORKDIR}.distcheck-results}"
 : "${MPLAPACK_CONTEXT_TARBALL:=${MPLAPACK_REMOTE_WORKDIR}.context.tar.gz}"
 
@@ -76,6 +82,32 @@ cleanup() {
 }
 trap cleanup EXIT INT TERM HUP
 
+if command -v colima >/dev/null 2>&1; then
+    colima_status=""
+    colima_cpus=""
+    colima_memory=""
+    colima_disk=""
+    if colima list 2>/dev/null | awk '$1 == "default" { found=1 } END { exit found ? 0 : 1 }'; then
+        colima_status="$(colima list | awk '$1 == "default" { print $2; exit }')"
+        colima_cpus="$(colima list | awk '$1 == "default" { print $4; exit }')"
+        colima_memory="$(colima list | awk '$1 == "default" { print $5; exit }')"
+        colima_disk="$(colima list | awk '$1 == "default" { print $6; exit }')"
+    fi
+
+    desired_memory="${MPLAPACK_COLIMA_MEMORY_GB}GiB"
+    desired_disk="${MPLAPACK_COLIMA_DISK_GB}GiB"
+    if [ "${colima_status}" != "Running" ] || \
+        [ "${colima_cpus}" != "${MPLAPACK_COLIMA_CPUS}" ] || \
+        [ "${colima_memory}" != "${desired_memory}" ] || \
+        [ "${colima_disk}" != "${desired_disk}" ]; then
+        log "Configuring Colima: cpu=${MPLAPACK_COLIMA_CPUS}, memory=${MPLAPACK_COLIMA_MEMORY_GB}GiB, disk=${MPLAPACK_COLIMA_DISK_GB}GiB"
+        if [ "${colima_status}" = "Running" ]; then
+            colima stop
+        fi
+        colima start --cpu "${MPLAPACK_COLIMA_CPUS}" --memory "${MPLAPACK_COLIMA_MEMORY_GB}" --disk "${MPLAPACK_COLIMA_DISK_GB}"
+    fi
+fi
+
 if ! command -v docker >/dev/null 2>&1; then
     log "ERROR: docker command not found. PATH=${PATH}"
     exit 1
@@ -87,10 +119,14 @@ mkdir -p "${CONTEXT_DIR}" "${RESULTS_DIR}" "${CCACHE_DIR_HOST}"
 
 log "WORKDIR: ${WORKDIR}"
 log "MPLAPACK_REF: ${MPLAPACK_REF}"
+log "MPLAPACK_UBUNTU_VERSION: ${MPLAPACK_UBUNTU_VERSION}"
 log "MPLAPACK_DOCKER_BASE: ${MPLAPACK_DOCKER_BASE}"
 log "MPLAPACK_DOCKERFILE: ${MPLAPACK_DOCKERFILE}"
 log "MPLAPACK_IMAGE_TAG: ${MPLAPACK_IMAGE_TAG}"
 log "MPLAPACK_RESULTS_DIR: ${RESULTS_DIR}"
+log "MPLAPACK_CCACHE_DIR: ${CCACHE_DIR_HOST}"
+log "MPLAPACK_CCACHE_MAXSIZE: ${MPLAPACK_CCACHE_MAXSIZE}"
+log "MPLAPACK_CPU_MODEL_OVERRIDE: ${MPLAPACK_CPU_MODEL_OVERRIDE}"
 
 if [ ! -f "${MPLAPACK_CONTEXT_TARBALL}" ]; then
     log "ERROR: context tarball not found: ${MPLAPACK_CONTEXT_TARBALL}"
@@ -111,8 +147,15 @@ docker build \
     "${CONTEXT_DIR}/release/docker"
 
 docker run --rm \
+    -v "${CCACHE_DIR_HOST}:/ccache:rw" \
+    "${MPLAPACK_IMAGE_TAG}" \
+    ccache -M "${MPLAPACK_CCACHE_MAXSIZE}"
+
+docker run --rm \
     -e MPLAPACK_REF="${MPLAPACK_REF}" \
     -e MPLAPACK_TEST_RESULTS_BASE=/results \
+    -e CCACHE_MAXSIZE="${MPLAPACK_CCACHE_MAXSIZE}" \
+    -e CPU_MODEL_OVERRIDE="${MPLAPACK_CPU_MODEL_OVERRIDE}" \
     -v "${CCACHE_DIR_HOST}:/ccache:rw" \
     -v "${RESULTS_DIR}:/results:rw" \
     "${MPLAPACK_IMAGE_TAG}"
