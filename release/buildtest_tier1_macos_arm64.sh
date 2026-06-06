@@ -45,6 +45,28 @@ run_step() {
     fi
 }
 
+get_make_jobs() {
+    if [ -n "${MPLAPACK_MAKE_JOBS:-}" ]; then
+        printf '%s\n' "${MPLAPACK_MAKE_JOBS}"
+        return
+    fi
+    if command -v sysctl >/dev/null 2>&1; then
+        jobs="$(sysctl -n hw.physicalcpu 2>/dev/null || true)"
+        if [ -n "${jobs}" ] && [ "${jobs}" -gt 0 ] 2>/dev/null; then
+            printf '%s\n' "${jobs}"
+            return
+        fi
+    fi
+    if command -v getconf >/dev/null 2>&1; then
+        jobs="$(getconf _NPROCESSORS_ONLN 2>/dev/null || true)"
+        if [ -n "${jobs}" ] && [ "${jobs}" -gt 0 ] 2>/dev/null; then
+            printf '%s\n' "${jobs}"
+            return
+        fi
+    fi
+    printf '4\n'
+}
+
 # ---------------------------------------------------------------------------
 # Safe directory / prefix removal
 # ---------------------------------------------------------------------------
@@ -179,6 +201,18 @@ esac
 export DISTCHECK_CONFIGURE_FLAGS
 log "ARCH: ${ARCH}"
 log "DISTCHECK_CONFIGURE_FLAGS: ${DISTCHECK_CONFIGURE_FLAGS}"
+MAKE_JOBS="$(get_make_jobs)"
+log "MAKE_JOBS: ${MAKE_JOBS}"
+
+: "${MPLAPACK_CCACHE_DIR:=/Users/maho/.ccache}"
+: "${MPLAPACK_CCACHE_MAXSIZE:=80G}"
+export CCACHE_DIR="${MPLAPACK_CCACHE_DIR}"
+mkdir -p "${CCACHE_DIR}"
+if command -v ccache >/dev/null 2>&1; then
+    ccache -M "${MPLAPACK_CCACHE_MAXSIZE}"
+fi
+log "CCACHE_DIR: ${CCACHE_DIR}"
+log "MPLAPACK_CCACHE_MAXSIZE: ${MPLAPACK_CCACHE_MAXSIZE}"
 
 # ---------------------------------------------------------------------------
 # Main
@@ -322,7 +356,7 @@ log "MPLAPACK_RESULTS_VERSION: ${MPLAPACK_RESULTS_VERSION}"
 log "MPLAPACK_TEST_RESULTS_STAGING: ${MPLAPACK_TEST_RESULTS_STAGING}"
 
 run_step "reconfig"       bash misc/reconfig.macOS.sh
-run_step "make"           make -j4
+run_step "make"           make -j"${MAKE_JOBS}"
 run_step "make_install"   make install
 
 # Copy config.log (records actual configure invocation and detected settings)
@@ -335,7 +369,7 @@ grep "^  \$ \./configure" "${LOG_DIR}/config.log" 2>/dev/null \
 safe_rmdir "${PREFIX_DIR}"
 run_step "autoreconf"     autoreconf -fi
 run_step "make_distcheck" env CC="ccache gcc" CXX="ccache g++" FC="ccache gfortran" \
-                          make distcheck MAKEFLAGS="-j4" DISTCHECK_CONFIGURE_FLAGS="${DISTCHECK_CONFIGURE_FLAGS}"
+                          make distcheck MAKEFLAGS="-j${MAKE_JOBS}" DISTCHECK_CONFIGURE_FLAGS="${DISTCHECK_CONFIGURE_FLAGS}"
 run_step "collect_test_results" collect_test_results
 
 log ""

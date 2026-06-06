@@ -21,19 +21,19 @@ safe_rmdir() {
     esac
 }
 
-: "${MPLAPACK_REMOTE_WORKDIR:=${HOME}/tmp/mplapack-ubuntu-arm64}"
+: "${MPLAPACK_REMOTE_WORKDIR:=${HOME}/tmp/mplapack-ubuntu-inteloneapi-amd64}"
 : "${MPLAPACK_REF:=master}"
 : "${MPLAPACK_UBUNTU_VERSION:=24.04}"
 : "${MPLAPACK_DOCKER_BASE:=ubuntu:${MPLAPACK_UBUNTU_VERSION}}"
-: "${MPLAPACK_DOCKERFILE:=release/docker/Dockerfile.ubuntu}"
-: "${MPLAPACK_DOCKER_CONTEXT:=release/docker}"
-: "${MPLAPACK_IMAGE_TAG:=mplapack-tier1-ubuntu-arm64:latest}"
-: "${MPLAPACK_CCACHE_DIR:=/Users/maho/.ccache}"
-: "${MPLAPACK_CCACHE_MAXSIZE:=80G}"
+: "${MPLAPACK_DOCKERFILE:=docker/release/Dockerfile.intel}"
+: "${MPLAPACK_DOCKER_CONTEXT:=docker/release}"
+: "${MPLAPACK_IMAGE_TAG:=mplapack-tier2-ubuntu-inteloneapi-amd64:latest}"
+: "${MPLAPACK_CCACHE_DIR:=/home/maho/.ccache}"
+: "${MPLAPACK_CCACHE_MAXSIZE:=200G}"
 : "${MPLAPACK_COLIMA_CPUS:=$(sysctl -n hw.ncpu 2>/dev/null || echo 10)}"
 : "${MPLAPACK_COLIMA_MEMORY_GB:=$(( $(sysctl -n hw.memsize 2>/dev/null || echo 34359738368) / 1024 / 1024 / 1024 / 2 ))}"
 : "${MPLAPACK_COLIMA_DISK_GB:=100}"
-: "${MPLAPACK_CPU_MODEL_OVERRIDE:=$(sysctl -n machdep.cpu.brand_string 2>/dev/null || true)}"
+: "${MPLAPACK_CPU_MODEL_OVERRIDE:=$(if command -v sysctl >/dev/null 2>&1; then sysctl -n machdep.cpu.brand_string 2>/dev/null || true; fi; if command -v lscpu >/dev/null 2>&1; then lscpu | awk -F: '/Model name/ {sub(/^[ \t]+/, "", $2); print $2; exit}'; fi)}"
 : "${MPLAPACK_RESULTS_DIR:=${MPLAPACK_REMOTE_WORKDIR}.distcheck-results}"
 : "${MPLAPACK_CONTEXT_TARBALL:=${MPLAPACK_REMOTE_WORKDIR}.context.tar.gz}"
 
@@ -59,7 +59,7 @@ else
     old_pid=""
     [ -f "${LOCKDIR}/pid" ] && old_pid="$(cat "${LOCKDIR}/pid" 2>/dev/null || true)"
     if [ -n "${old_pid}" ] && [ "${old_pid}" != "$$" ] && kill -0 "${old_pid}" 2>/dev/null; then
-        log "Another tier1-ubuntu-arm64 buildtest is running (pid: ${old_pid}); stopping it."
+        log "Another tier2-ubuntu-inteloneapi-amd64 buildtest is running (pid: ${old_pid}); stopping it."
         kill "${old_pid}" 2>/dev/null || true
         for _wait_i in $(seq 1 60); do
             kill -0 "${old_pid}" 2>/dev/null || break

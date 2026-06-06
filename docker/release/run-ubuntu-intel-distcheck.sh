@@ -32,6 +32,10 @@ git clone --depth 1 --branch "$MPLAPACK_REF" "$MPLAPACK_REPO" /work/mplapack || 
 cd /work/mplapack
 git log -1
 
+set +u
+source /opt/intel/oneapi/setvars.sh
+set -u
+
 cd mplapack/test/compare
 bash gen.Makefile.am.sh
 cd /work/mplapack
@@ -54,8 +58,9 @@ rm -rf "$MPLAPACK_TEST_RESULTS_STAGING"
 mkdir -p "$MPLAPACK_TEST_RESULTS_STAGING"
 echo "MPLAPACK_TEST_RESULTS_STAGING=$MPLAPACK_TEST_RESULTS_STAGING"
 
-./configure $CONFIGURE_OPTS
-echo '=== Running make distcheck ==='
+bash misc/reconfig.ubuntu24.04.intel.sh
+make -j"${MAKE_JOBS}"
+make install
 make distcheck MAKEFLAGS="-j${MAKE_JOBS}" DISTCHECK_CONFIGURE_FLAGS="$CONFIGURE_OPTS"
 
 echo '=== ccache stats (after) ==='

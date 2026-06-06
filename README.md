@@ -87,16 +87,27 @@ BSD-style license, supplemental to the original LAPACK license.
 | **Tier 2** | Build only | Debian 12/13 (amd64, arm64, i386, ppc64le, s390x, riscv64, mips64le), Alpine Linux 3.19–3.23 (amd64, arm64, riscv64), Rocky Linux 8/9/10 (amd64), Fedora 42/43, openSUSE Leap 15.6/16.0, openSUSE Tumbleweed |
 | **Tier 3** | Patches accepted; no CI coverage | Other platforms |
 
-Tier 1/2 build scripts are in `misc/` and `release/`:
+Release test targets are run from `release/`:
+
+| Tier | Make target | OS | CPU | Host | Backend |
+|---|---|---|---|---|---|
+| Tier 1 | `tier1-macos-arm64` | macOS 26 | arm64 | `172.27.109.40` | SSH |
+| Tier 1 | `tier1-macos-amd64` | macOS 15 | amd64 | `172.27.109.97` | SSH |
+| Tier 1 | `tier1-ubuntu-arm64` | Ubuntu 24.04 | arm64 | `172.27.109.40` | Docker/Colima |
+| Tier 1 | `tier1-ubuntu-amd64` | Ubuntu 24.04 | amd64 | `172.27.109.80` | Docker |
+| Tier 1 | `tier1-mingw64-amd64` | Windows | amd64 | `172.27.109.80` | Docker + MinGW64/Wine |
+| Tier 2 | `tier2-ubuntu-inteloneapi-amd64` | Ubuntu 24.04 | amd64 | `172.27.109.80` | Docker + Intel oneAPI |
+| Tier 2 | `tier2-debian-i386` | Debian 12 | i386 | `172.27.109.80` | Docker |
+
+Tier 1/2 release build scripts are in `release/`:
 ```
 release/buildtest_tier1_macos_amd64.sh
 release/buildtest_tier1_macos_arm64.sh
+release/buildtest_tier1_mingw64_amd64.sh
+release/buildtest_tier1_ubuntu_amd64.sh
 release/buildtest_tier1_ubuntu_arm64.sh
-misc/buildtest_tier1_amd64_mingw64.sh
-misc/buildtest_tier1_amd64_ubuntu.sh
-misc/buildtest_tier1_arm64_ubuntu.sh
-misc/buildtest_tier2_amd64_ubuntu_intel.sh
-misc/buildtest_tier2_i386_debian.sh
+release/buildtest_tier2_ubuntu_inteloneapi_amd64.sh
+release/buildtest_tier2_debian_i386.sh
 ```
 
 # How to Build and Install

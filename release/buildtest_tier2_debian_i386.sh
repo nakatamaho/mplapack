@@ -21,19 +21,20 @@ safe_rmdir() {
     esac
 }
 
-: "${MPLAPACK_REMOTE_WORKDIR:=${HOME}/tmp/mplapack-ubuntu-arm64}"
+: "${MPLAPACK_REMOTE_WORKDIR:=${HOME}/tmp/mplapack-debian-i386}"
 : "${MPLAPACK_REF:=master}"
-: "${MPLAPACK_UBUNTU_VERSION:=24.04}"
-: "${MPLAPACK_DOCKER_BASE:=ubuntu:${MPLAPACK_UBUNTU_VERSION}}"
+: "${MPLAPACK_DEBIAN_VERSION:=12}"
+: "${MPLAPACK_DOCKER_BASE:=debian:${MPLAPACK_DEBIAN_VERSION}}"
 : "${MPLAPACK_DOCKERFILE:=release/docker/Dockerfile.ubuntu}"
 : "${MPLAPACK_DOCKER_CONTEXT:=release/docker}"
-: "${MPLAPACK_IMAGE_TAG:=mplapack-tier1-ubuntu-arm64:latest}"
-: "${MPLAPACK_CCACHE_DIR:=/Users/maho/.ccache}"
-: "${MPLAPACK_CCACHE_MAXSIZE:=80G}"
+: "${MPLAPACK_DOCKER_PLATFORM:=linux/386}"
+: "${MPLAPACK_IMAGE_TAG:=mplapack-tier2-debian-i386:latest}"
+: "${MPLAPACK_CCACHE_DIR:=/home/maho/.ccache}"
+: "${MPLAPACK_CCACHE_MAXSIZE:=200G}"
 : "${MPLAPACK_COLIMA_CPUS:=$(sysctl -n hw.ncpu 2>/dev/null || echo 10)}"
 : "${MPLAPACK_COLIMA_MEMORY_GB:=$(( $(sysctl -n hw.memsize 2>/dev/null || echo 34359738368) / 1024 / 1024 / 1024 / 2 ))}"
 : "${MPLAPACK_COLIMA_DISK_GB:=100}"
-: "${MPLAPACK_CPU_MODEL_OVERRIDE:=$(sysctl -n machdep.cpu.brand_string 2>/dev/null || true)}"
+: "${MPLAPACK_CPU_MODEL_OVERRIDE:=$(if command -v lscpu >/dev/null 2>&1; then lscpu | awk -F: '/Model name/ {sub(/^[ \t]+/, "", $2); print $2; exit}'; fi)}"
 : "${MPLAPACK_RESULTS_DIR:=${MPLAPACK_REMOTE_WORKDIR}.distcheck-results}"
 : "${MPLAPACK_CONTEXT_TARBALL:=${MPLAPACK_REMOTE_WORKDIR}.context.tar.gz}"
 
@@ -59,7 +60,7 @@ else
     old_pid=""
     [ -f "${LOCKDIR}/pid" ] && old_pid="$(cat "${LOCKDIR}/pid" 2>/dev/null || true)"
     if [ -n "${old_pid}" ] && [ "${old_pid}" != "$$" ] && kill -0 "${old_pid}" 2>/dev/null; then
-        log "Another tier1-ubuntu-arm64 buildtest is running (pid: ${old_pid}); stopping it."
+        log "Another tier2-debian-i386 buildtest is running (pid: ${old_pid}); stopping it."
         kill "${old_pid}" 2>/dev/null || true
         for _wait_i in $(seq 1 60); do
             kill -0 "${old_pid}" 2>/dev/null || break
@@ -120,10 +121,11 @@ mkdir -p "${CONTEXT_DIR}" "${RESULTS_DIR}" "${CCACHE_DIR_HOST}"
 
 log "WORKDIR: ${WORKDIR}"
 log "MPLAPACK_REF: ${MPLAPACK_REF}"
-log "MPLAPACK_UBUNTU_VERSION: ${MPLAPACK_UBUNTU_VERSION}"
+log "MPLAPACK_DEBIAN_VERSION: ${MPLAPACK_DEBIAN_VERSION}"
 log "MPLAPACK_DOCKER_BASE: ${MPLAPACK_DOCKER_BASE}"
 log "MPLAPACK_DOCKERFILE: ${MPLAPACK_DOCKERFILE}"
 log "MPLAPACK_DOCKER_CONTEXT: ${MPLAPACK_DOCKER_CONTEXT}"
+log "MPLAPACK_DOCKER_PLATFORM: ${MPLAPACK_DOCKER_PLATFORM}"
 log "MPLAPACK_IMAGE_TAG: ${MPLAPACK_IMAGE_TAG}"
 log "MPLAPACK_RESULTS_DIR: ${RESULTS_DIR}"
 log "MPLAPACK_CCACHE_DIR: ${CCACHE_DIR_HOST}"
@@ -143,17 +145,20 @@ if [ ! -f "${CONTEXT_DIR}/${MPLAPACK_DOCKERFILE}" ]; then
 fi
 
 docker build \
+    --platform "${MPLAPACK_DOCKER_PLATFORM}" \
     --build-arg BASE="${MPLAPACK_DOCKER_BASE}" \
     -t "${MPLAPACK_IMAGE_TAG}" \
     -f "${CONTEXT_DIR}/${MPLAPACK_DOCKERFILE}" \
     "${CONTEXT_DIR}/${MPLAPACK_DOCKER_CONTEXT}"
 
 docker run --rm \
+    --platform "${MPLAPACK_DOCKER_PLATFORM}" \
     -v "${CCACHE_DIR_HOST}:/ccache:rw" \
     "${MPLAPACK_IMAGE_TAG}" \
     ccache -M "${MPLAPACK_CCACHE_MAXSIZE}"
 
 docker run --rm \
+    --platform "${MPLAPACK_DOCKER_PLATFORM}" \
     -e MPLAPACK_REF="${MPLAPACK_REF}" \
     -e MPLAPACK_TEST_RESULTS_BASE=/results \
     -e CCACHE_MAXSIZE="${MPLAPACK_CCACHE_MAXSIZE}" \

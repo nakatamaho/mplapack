@@ -44,12 +44,40 @@ if [[ ! -f "$script_path" ]]; then
     exit 1
 fi
 
-arch="${matrix_name%%-*}"
+tier="${matrix_name%%-*}"
+arch="${matrix_name##*-}"
 docker_label="${remote_docker_base:-ubuntu:${remote_ubuntu_version:-default}}"
-docker_label="$(printf '%s' "$docker_label" | sed 's/[^A-Za-z0-9._+-]/_/g')"
-logfile="$LOGDIR/${matrix_name}_${docker_label}_${arch}_remote-linux-docker.log"
-resultfile="$LOGDIR/results_${matrix_name}.csv"
-stamp="$SUCCESS_DIR/${matrix_name}_${docker_label}_${arch}_remote-linux-docker.ok"
+os_label="$(printf '%s' "$docker_label" | awk -F: '{name=$1; version=$2; sub(/^.*\//, "", name); gsub(/[^A-Za-z0-9]+/, "_", name); gsub(/[^A-Za-z0-9]+/, "_", version); print name version}')"
+if [[ -z "$os_label" ]]; then
+    os_label="linux_unknown"
+fi
+if [[ "$matrix_name" == *mingw* ]]; then
+    os_label="windows"
+fi
+stamp_prefix="$SUCCESS_DIR/${tier}-${os_label}-${arch}-"
+stamp_suffix="-linux-docker.ok"
+logfile="$LOGDIR/${tier}-${os_label}-${arch}-linux-docker.log"
+resultfile="$LOGDIR/results_${tier}-${os_label}-${arch}.csv"
+stamp=""
+COLLECTED_RESULTS_STAGE=""
+
+detect_compiler_label_from_results() {
+    local stage="$1"
+    local outdir base compiler
+
+    if [[ -d "$stage" ]]; then
+        outdir="$(find "$stage" -path '*/results/*' -type d -mindepth 4 -maxdepth 5 | head -n 1 || true)"
+        if [[ -n "$outdir" ]]; then
+            base="$(basename "$outdir")"
+            compiler="$(printf '%s' "$base" | sed -n 's/^.*_\([A-Za-z][A-Za-z0-9+.-]*-[0-9][A-Za-z0-9_.-]*\)$/\1/p')"
+            if [[ -n "$compiler" ]]; then
+                printf '%s' "$compiler" | sed 's/-//; s/[^A-Za-z0-9_+.-]/_/g'
+                return 0
+            fi
+        fi
+    fi
+    printf 'compiler_unknown'
+}
 
 copy_tree_contents() {
     local src="$1"
@@ -66,6 +94,7 @@ collect_remote_test_results() {
     local remote_root="${target_dir}.distcheck-results"
     local local_stage="$LOGDIR/${matrix_name}_distcheck-results"
     local version_dir version suite src dst copied
+    COLLECTED_RESULTS_STAGE="$local_stage"
 
     if ! "$REMOTE_SSH" "$host" "test -d '$remote_root'" >/dev/null 2>&1; then
         echo "No remote distcheck results found: $host:$remote_root" >&2
@@ -101,12 +130,14 @@ collect_remote_test_results() {
 
 echo "name,arch,base,stage,result,elapsed,source_type" > "$resultfile"
 
-if [[ -L "$stamp" && ! -e "$stamp" ]]; then
-    rm -f "$stamp"
+existing_stamp="$(find "$SUCCESS_DIR" -maxdepth 1 -type l -name "$(basename "$stamp_prefix")*${stamp_suffix}" | head -n 1 || true)"
+if [[ -n "$existing_stamp" && ! -e "$existing_stamp" ]]; then
+    rm -f "$existing_stamp"
+    existing_stamp=""
 fi
-if [[ -L "$stamp" && -e "$stamp" ]]; then
+if [[ -n "$existing_stamp" && -e "$existing_stamp" ]]; then
     echo "Already passed; skipping $matrix_name" >&2
-    echo "Success log: $(readlink "$stamp")" >&2
+    echo "Success log: $(readlink "$existing_stamp")" >&2
     echo "$matrix_name,$arch,${remote_docker_base:-$host},test,SKIPPED,0,$source_type" | tee -a "$resultfile"
     exit 0
 fi
@@ -118,9 +149,10 @@ echo "MPLAPACK_UBUNTU_VERSION: ${remote_ubuntu_version:-<default>}" >&2
 echo "MPLAPACK_DOCKER_BASE: ${remote_docker_base:-<default>}" >&2
 echo "Log: $logfile" >&2
 
-context_tar="$LOGDIR/${matrix_name}_context.tar.gz"
-remote_context_tar="${target_dir}.context.tar.gz"
-tar -C "$PROJECT_ROOT" -czf "$context_tar" release/docker
+context_name="${tier}-${os_label}-${arch}"
+context_tar="$LOGDIR/${context_name}_context.tar.gz"
+remote_context_tar="$(dirname "$target_dir")/${context_name}.context.tar.gz"
+tar -C "$PROJECT_ROOT" -czf "$context_tar" release/docker docker/release
 
 set +e
 {
@@ -133,6 +165,13 @@ set -e
 elapsed=$(($(date +%s) - start))
 if [[ "$rc" -eq 0 ]]; then
     collect_remote_test_results
+    compiler_label="$(detect_compiler_label_from_results "$COLLECTED_RESULTS_STAGE")"
+    final_logfile="$LOGDIR/${tier}-${os_label}-${arch}-${compiler_label}-linux-docker.log"
+    if [[ "$final_logfile" != "$logfile" ]]; then
+        mv "$logfile" "$final_logfile"
+        logfile="$final_logfile"
+    fi
+    stamp="${stamp_prefix}${compiler_label}${stamp_suffix}"
     ln -sfn "$logfile" "$stamp"
     echo "$matrix_name,$arch,${remote_docker_base:-$host},test,OK,$elapsed,$source_type" | tee -a "$resultfile"
 else

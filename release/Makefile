@@ -1,7 +1,7 @@
 # Makefile
 # MPLAPACK Release Engineering
 
-SCRIPT_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+SCRIPT_DIR := $(patsubst %/,%,$(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
 PROJECT_ROOT := $(abspath $(SCRIPT_DIR)/..)
 CONF_FILE ?= $(SCRIPT_DIR)/build-matrix.conf
 LOGDIR ?= $(SCRIPT_DIR)/logs/$(shell date +%Y%m%d_%H%M%S)
@@ -18,7 +18,7 @@ export CONF_FILE LOGDIR PROJECT_ROOT HOST_WORK_DIR HOST_CCACHE_DIR SUCCESS_DIR
 .PHONY: amd64 arm64 ppc64le i386 s390x mips64le
 .PHONY: branch-ubuntu branch-debian branch-amd64 branch-cuda branch-rocky branch-suse
 .PHONY: tarball-ubuntu tarball-debian tarball-amd64 tarball-cuda tarball-rocky tarball-suse
-.PHONY: tier1 tier1-macos tier1-linux tier1-macos-arm64 tier1-macos-amd64 tier1-ubuntu-arm64
+.PHONY: tier1 tier1-macos tier1-linux tier2 tier1-macos-arm64 tier1-macos-amd64 tier1-ubuntu-arm64 tier1-ubuntu-amd64 tier1-mingw64-amd64 tier2-ubuntu-inteloneapi-amd64 tier2-debian-i386
 .PHONY: ccache-stats ccache-clear
 
 # === Main Targets ===
@@ -80,7 +80,9 @@ tier1: tier1-macos tier1-linux
 
 tier1-macos: tier1-macos-arm64 tier1-macos-amd64
 
-tier1-linux: tier1-ubuntu-arm64
+tier1-linux: tier1-ubuntu-arm64 tier1-ubuntu-amd64 tier1-mingw64-amd64
+
+tier2: tier2-ubuntu-inteloneapi-amd64 tier2-debian-i386
 
 tier1-macos-arm64:
 	@MACOS_REMOTE_SSH=$(MACOS_REMOTE_SSH) ./run-remote-macos.sh tier1-macos-arm64
@@ -90,6 +92,18 @@ tier1-macos-amd64:
 
 tier1-ubuntu-arm64:
 	@REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-linux-docker.sh tier1-ubuntu-arm64
+
+tier1-ubuntu-amd64:
+	@REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-linux-docker.sh tier1-ubuntu-amd64
+
+tier2-ubuntu-inteloneapi-amd64:
+	@REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-linux-docker.sh tier2-ubuntu-inteloneapi-amd64
+
+tier1-mingw64-amd64:
+	@REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-linux-docker.sh tier1-mingw64-amd64
+
+tier2-debian-i386:
+	@REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-linux-docker.sh tier2-debian-i386
 
 i386:
 	@FILTER_ARCH=386 ./build-all.sh branch

@@ -1,6 +1,13 @@
 #!/bin/bash
 set -euxo pipefail
 
+echo '=== toolchain ==='
+command -v x86_64-w64-mingw32-gcc-posix
+command -v x86_64-w64-mingw32-g++-posix
+command -v x86_64-w64-mingw32-gfortran-posix
+x86_64-w64-mingw32-gcc-posix -dumpmachine
+x86_64-w64-mingw32-g++-posix -dumpversion
+
 get_make_jobs() {
     if [ -n "${MPLAPACK_MAKE_JOBS:-}" ]; then
         printf '%s\n' "${MPLAPACK_MAKE_JOBS}"
@@ -38,8 +45,27 @@ cd /work/mplapack
 autoreconf --force --install
 
 ARCH=$(dpkg --print-architecture)
+BUILD_TRIPLE=$(gcc -dumpmachine)
 echo "Detected architecture: $ARCH"
-COMMON_OPTS="--enable-gmp=yes --enable-mpfr=yes --enable-binary128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes"
+echo "Detected build triple: $BUILD_TRIPLE"
+
+echo '=== Preparing Wine runtime ==='
+GCC_VER=$(x86_64-w64-mingw32-gcc-posix -dumpversion | cut -d- -f1)
+export WINEPATH="/usr/x86_64-w64-mingw32/lib/;/usr/lib/gcc/x86_64-w64-mingw32/${GCC_VER}-posix/;/usr/local/bin"
+echo "WINEPATH=$WINEPATH"
+echo '=== Enabling Wine dot files ==='
+before=$(stat -c '%Y' "$HOME/.wine/user.reg" 2>/dev/null || echo 0)
+wine reg add 'HKEY_CURRENT_USER\Software\Wine' /v ShowDotFiles /d Y /f >/dev/null
+if [ -f "$HOME/.wine/user.reg" ]; then
+    while [ "$(stat -c '%Y' "$HOME/.wine/user.reg")" = "$before" ]; do sleep 1; done
+fi
+echo '=== Checking winepath ==='
+command -v winepath
+WP_TEST=$(winepath -w /work 2>/dev/null || true)
+test -n "$WP_TEST"
+echo "winepath(/work)=$WP_TEST"
+
+COMMON_OPTS="--host=x86_64-w64-mingw32 --build=$BUILD_TRIPLE --enable-gmp=yes --enable-mpfr=yes --enable-binary128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes"
 if [ "$ARCH" = "amd64" ] || [ "$ARCH" = "i386" ]; then
     CONFIGURE_OPTS="$COMMON_OPTS --enable-benchmark=yes --enable-binary80=yes"
 else
@@ -55,8 +81,12 @@ mkdir -p "$MPLAPACK_TEST_RESULTS_STAGING"
 echo "MPLAPACK_TEST_RESULTS_STAGING=$MPLAPACK_TEST_RESULTS_STAGING"
 
 ./configure $CONFIGURE_OPTS
+make -j"${MAKE_JOBS}"
+make install
+
 echo '=== Running make distcheck ==='
-make distcheck MAKEFLAGS="-j${MAKE_JOBS}" DISTCHECK_CONFIGURE_FLAGS="$CONFIGURE_OPTS"
+env CC="ccache x86_64-w64-mingw32-gcc-posix" CXX="ccache x86_64-w64-mingw32-g++-posix" FC="ccache x86_64-w64-mingw32-gfortran-posix" \
+    make distcheck LOG_COMPILER=wine MAKEFLAGS="-j${MAKE_JOBS}" DISTCHECK_CONFIGURE_FLAGS="$CONFIGURE_OPTS"
 
 echo '=== ccache stats (after) ==='
 ccache -s || true

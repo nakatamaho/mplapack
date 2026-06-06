@@ -42,44 +42,6 @@ ENV MPLAPACK_REPO=https://github.com/nakatamaho/mplapack.git
 ENV MPLAPACK_REF="master"
 
 WORKDIR /work
-# TEST_CMD is passed via docker run -e; if set, tests run after the build.
-ENV TEST_CMD=""
-CMD ["/bin/bash", "-lc", "\
-    set -euxo pipefail; \
-    echo '=== ccache stats (before) ==='; ccache -s; \
-    \
-    # Fresh checkout every run \
-    rm -rf /work/mplapack; \
-    git clone --depth 1 --branch \"$MPLAPACK_REF\" \"$MPLAPACK_REPO\" /work/mplapack || { \
-        # If MPLAPACK_REF is a commit SHA, clone then checkout \
-        git clone \"$MPLAPACK_REPO\" /work/mplapack; \
-        cd /work/mplapack; \
-        git checkout \"$MPLAPACK_REF\"; \
-    }; \
-    cd /work/mplapack; \
-    git log -1; \
-    \
-    # Autotools prep \
-    set +u; source /opt/intel/oneapi/setvars.sh; set -u; \
-    cd mplapack/test/compare; bash gen.Makefile.am.sh; cd /work/mplapack; \
-    autoreconf --force --install; \
-    \
-    ARCH=$(dpkg --print-architecture); \
-    echo \"Detected architecture: $ARCH\"; \
-    COMMON_OPTS=\"--enable-gmp=yes --enable-mpfr=yes --enable-binary128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes\"; \
-    if [ \"$ARCH\" = \"amd64\" ] || [ \"$ARCH\" = \"i386\" ]; then \
-        CONFIGURE_OPTS=\"$COMMON_OPTS --enable-benchmark=yes --enable-binary80=yes\"; \
-    else \
-        CONFIGURE_OPTS=\"$COMMON_OPTS\"; \
-    fi; \
-    echo \"Configure options: $CONFIGURE_OPTS\"; \
-    \
-    ./configure $CONFIGURE_OPTS; \
-    make -j\"$(nproc)\"; \
-    make install; \
-    if [ \"$ARCH\" = \"amd64\" ] || [ \"$ARCH\" = \"i386\" ]; then \
-        echo '=== Running make check ==='; \
-        make check -j32; \
-    fi; \
-    echo '=== ccache stats (after) ==='; ccache -s; \
-"]
+COPY run-ubuntu-intel-distcheck.sh /run-ubuntu-intel-distcheck.sh
+RUN chmod +x /run-ubuntu-intel-distcheck.sh
+CMD ["/run-ubuntu-intel-distcheck.sh"]
