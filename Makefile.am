@@ -290,6 +290,7 @@ release/docker/entrypoint.sh \
 release/docker/run-ubuntu-distcheck.sh \
 release/run-remote-linux-docker.sh \
 release/run-remote-macos.sh \
+release/clean-remote-workdirs.sh \
 misc/cpu_os_detection.sh \
 misc/cudalt.py \
 misc/fix_dylib_macOS.sh \

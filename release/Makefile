@@ -13,7 +13,7 @@ REMOTE_LINUX_SSH ?= ssh
 
 export CONF_FILE LOGDIR PROJECT_ROOT HOST_WORK_DIR HOST_CCACHE_DIR SUCCESS_DIR
 
-.PHONY: all branch tarball dist clean clean-all clean-success list help
+.PHONY: all branch tarball dist clean clean-remote clean-all clean-success list help
 .PHONY: intel mingw cuda ubuntu debian fedora rocky suse alpine
 .PHONY: amd64 arm64 ppc64le i386 s390x mips64le
 .PHONY: branch-ubuntu branch-debian branch-amd64 branch-cuda branch-rocky branch-suse
@@ -177,7 +177,7 @@ list:
 	@grep -v '^#' $(CONF_FILE) | grep -v '^$$' | \
 		awk -F'|' '{printf "%-25s %-45s %-40s %s\n", $$1, $$2, $$3, $$6}'
 
-clean:
+clean: clean-remote
 	@mkdir -p logs/ $(SUCCESS_DIR)
 	@tmp="$$(mktemp)"; \
 	trap 'rm -f "$$tmp"' EXIT; \
@@ -213,6 +213,9 @@ clean:
 	-docker ps -aq --filter label=org.mplapack.project=mplapack --filter label=org.mplapack.purpose=mplapack-qa | xargs -r docker rm -f
 	-docker images -q --filter label=org.mplapack.project=mplapack --filter label=org.mplapack.purpose=mplapack-qa | xargs -r docker rmi -f
 
+
+clean-remote:
+	@CONF_FILE=$(CONF_FILE) MACOS_REMOTE_SSH=$(MACOS_REMOTE_SSH) REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./clean-remote-workdirs.sh
 
 clean-success:
 	@rm -rf $(SUCCESS_DIR)

@@ -19,15 +19,11 @@ if [[ -z "$row" ]]; then
     exit 1
 fi
 
-IFS='|' read -r matrix_name host target_dir script_rel remote_cmd source_type matrix_distro_version matrix_docker_base <<< "$row"
+IFS='|' read -r matrix_name host target_dir script_rel remote_cmd source_type matrix_docker_base <<< "$row"
 remote_cmd="${remote_cmd:-bash}"
-matrix_distro_version="${matrix_distro_version:-}"
 matrix_docker_base="${matrix_docker_base:-}"
-remote_distro_version="${MPLAPACK_DISTRO_VERSION:-$matrix_distro_version}"
 remote_docker_base="${MPLAPACK_DOCKER_BASE:-$matrix_docker_base}"
-if [[ -z "$remote_docker_base" && -n "$remote_distro_version" ]]; then
-    remote_docker_base="ubuntu:$remote_distro_version"
-fi
+remote_distro_version="${MPLAPACK_DISTRO_VERSION:-}"
 if [[ -z "$remote_distro_version" && "$remote_docker_base" == *:* ]]; then
     remote_distro_version="${remote_docker_base##*:}"
 fi
