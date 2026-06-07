@@ -285,6 +285,8 @@ docker/release/Dockerfile.mingw \
 docker/release/run-ubuntu-intel-distcheck.sh \
 docker/release/run-ubuntu-mingw64-distcheck.sh \
 release/docker/Dockerfile.ubuntu \
+release/docker/Dockerfile.debian-i386 \
+release/docker/entrypoint.sh \
 release/docker/run-ubuntu-distcheck.sh \
 release/run-remote-linux-docker.sh \
 release/run-remote-macos.sh \
