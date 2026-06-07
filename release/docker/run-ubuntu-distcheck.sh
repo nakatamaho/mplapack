@@ -24,12 +24,18 @@ echo '=== ccache stats (before) ==='
 ccache -s || true
 
 rm -rf /work/mplapack
-git clone --depth 1 --branch "$MPLAPACK_REF" "$MPLAPACK_REPO" /work/mplapack || {
-    git clone "$MPLAPACK_REPO" /work/mplapack
+if [ -f "$MPLAPACK_REPO" ]; then
+    git clone --no-checkout "$MPLAPACK_REPO" /work/mplapack
     cd /work/mplapack
     git checkout "$MPLAPACK_REF"
-}
-cd /work/mplapack
+else
+    git clone --depth 1 --branch "$MPLAPACK_REF" "$MPLAPACK_REPO" /work/mplapack || {
+        git clone "$MPLAPACK_REPO" /work/mplapack
+        cd /work/mplapack
+        git checkout "$MPLAPACK_REF"
+    }
+    cd /work/mplapack
+fi
 git log -1
 
 cd mplapack/test/compare

@@ -54,12 +54,25 @@ fi
 if [[ "$matrix_name" == *mingw* ]]; then
     os_label="windows"
 fi
-stamp_prefix="$SUCCESS_DIR/${tier}-${os_label}-${arch}-"
+name_middle="${matrix_name#${tier}-}"
+name_middle="${name_middle%-${arch}}"
+flavor=""
+if [[ "$name_middle" == *-* ]]; then
+    flavor="${name_middle#*-}"
+elif [[ "$os_label" == "windows" ]]; then
+    flavor="$name_middle"
+fi
+name_prefix="${tier}-${os_label}${flavor:+-${flavor}}-${arch}"
+stamp_prefix="$SUCCESS_DIR/${name_prefix}-"
 stamp_suffix="-linux-docker.ok"
-logfile="$LOGDIR/${tier}-${os_label}-${arch}-linux-docker.log"
-resultfile="$LOGDIR/results_${tier}-${os_label}-${arch}.csv"
+logfile="$LOGDIR/${name_prefix}-linux-docker.log"
+resultfile="$LOGDIR/results_${name_prefix}.csv"
 stamp=""
 COLLECTED_RESULTS_STAGE=""
+
+cleanup_stale_success_links() {
+    find "$SUCCESS_DIR" -maxdepth 1 -xtype l -name '*.ok' -exec rm -f {} +
+}
 
 detect_compiler_label_from_results() {
     local stage="$1"
@@ -129,6 +142,7 @@ collect_remote_test_results() {
 }
 
 echo "name,arch,base,stage,result,elapsed,source_type" > "$resultfile"
+cleanup_stale_success_links
 
 existing_stamp="$(find "$SUCCESS_DIR" -maxdepth 1 -type l -name "$(basename "$stamp_prefix")*${stamp_suffix}" | head -n 1 || true)"
 if [[ -n "$existing_stamp" && ! -e "$existing_stamp" ]]; then
@@ -149,10 +163,17 @@ echo "MPLAPACK_UBUNTU_VERSION: ${remote_ubuntu_version:-<default>}" >&2
 echo "MPLAPACK_DOCKER_BASE: ${remote_docker_base:-<default>}" >&2
 echo "Log: $logfile" >&2
 
-context_name="${tier}-${os_label}-${arch}"
+context_name="${name_prefix}"
 context_tar="$LOGDIR/${context_name}_context.tar.gz"
+source_bundle="$LOGDIR/${context_name}_source.bundle"
 remote_context_tar="$(dirname "$target_dir")/${context_name}.context.tar.gz"
-tar -C "$PROJECT_ROOT" -czf "$context_tar" release/docker docker/release
+bundle_ref="refs/heads/mplapack-buildtest-${context_name}"
+git -C "$PROJECT_ROOT" update-ref "$bundle_ref" "$MPLAPACK_REF"
+git -C "$PROJECT_ROOT" bundle create "$source_bundle" "$bundle_ref"
+git -C "$PROJECT_ROOT" update-ref -d "$bundle_ref"
+tar -czf "$context_tar" \
+    -C "$PROJECT_ROOT" release/docker docker/release \
+    -C "$LOGDIR" "$(basename "$source_bundle")"
 
 set +e
 {
@@ -166,7 +187,12 @@ elapsed=$(($(date +%s) - start))
 if [[ "$rc" -eq 0 ]]; then
     collect_remote_test_results
     compiler_label="$(detect_compiler_label_from_results "$COLLECTED_RESULTS_STAGE")"
-    final_logfile="$LOGDIR/${tier}-${os_label}-${arch}-${compiler_label}-linux-docker.log"
+    if [[ "$compiler_label" == "compiler_unknown" ]]; then
+        echo "ERROR: compiler label could not be determined from collected results; refusing to create success stamp." >&2
+        echo "$matrix_name,$arch,${remote_docker_base:-${host:-}},test,FAILED,$elapsed,$source_type" | tee -a "$resultfile"
+        exit 1
+    fi
+    final_logfile="$LOGDIR/${name_prefix}-${compiler_label}-linux-docker.log"
     if [[ "$final_logfile" != "$logfile" ]]; then
         mv "$logfile" "$final_logfile"
         logfile="$final_logfile"

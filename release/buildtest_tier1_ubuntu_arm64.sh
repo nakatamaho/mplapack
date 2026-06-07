@@ -142,6 +142,11 @@ if [ ! -f "${CONTEXT_DIR}/${MPLAPACK_DOCKERFILE}" ]; then
     exit 1
 fi
 
+SOURCE_BUNDLE="$(find "${CONTEXT_DIR}" -maxdepth 1 -type f -name '*_source.bundle' | head -n 1 || true)"
+if [ -n "${SOURCE_BUNDLE}" ]; then
+    log "MPLAPACK_SOURCE_BUNDLE: ${SOURCE_BUNDLE}"
+fi
+
 docker build \
     --build-arg BASE="${MPLAPACK_DOCKER_BASE}" \
     -t "${MPLAPACK_IMAGE_TAG}" \
@@ -153,11 +158,17 @@ docker run --rm \
     "${MPLAPACK_IMAGE_TAG}" \
     ccache -M "${MPLAPACK_CCACHE_MAXSIZE}"
 
+docker_source_args=()
+if [ -n "${SOURCE_BUNDLE}" ]; then
+    docker_source_args=(-e MPLAPACK_REPO=/source.bundle -v "${SOURCE_BUNDLE}:/source.bundle:ro")
+fi
+
 docker run --rm \
     -e MPLAPACK_REF="${MPLAPACK_REF}" \
     -e MPLAPACK_TEST_RESULTS_BASE=/results \
     -e CCACHE_MAXSIZE="${MPLAPACK_CCACHE_MAXSIZE}" \
     -e CPU_MODEL_OVERRIDE="${MPLAPACK_CPU_MODEL_OVERRIDE}" \
+    "${docker_source_args[@]}" \
     -v "${CCACHE_DIR_HOST}:/ccache:rw" \
     -v "${RESULTS_DIR}:/results:rw" \
     "${MPLAPACK_IMAGE_TAG}"

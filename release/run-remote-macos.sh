@@ -51,6 +51,10 @@ resultfile="$LOGDIR/results_${tier}-${os_label}-${arch}.csv"
 stamp=""
 COLLECTED_RESULTS_STAGE=""
 
+cleanup_stale_success_links() {
+    find "$SUCCESS_DIR" -maxdepth 1 -xtype l -name '*.ok' -exec rm -f {} +
+}
+
 detect_compiler_label_from_results() {
     local stage="$1"
     local outdir base compiler
@@ -119,6 +123,7 @@ collect_remote_test_results() {
 }
 
 echo "name,arch,base,stage,result,elapsed,source_type" > "$resultfile"
+cleanup_stale_success_links
 
 existing_stamp="$(find "$SUCCESS_DIR" -maxdepth 1 -type l -name "$(basename "$stamp_prefix")*${stamp_suffix}" | head -n 1 || true)"
 if [[ -n "$existing_stamp" && ! -e "$existing_stamp" ]]; then
@@ -145,6 +150,11 @@ elapsed=$(($(date +%s) - start))
 if [[ "$rc" -eq 0 ]]; then
     collect_remote_test_results
     compiler_label="$(detect_compiler_label_from_results "$COLLECTED_RESULTS_STAGE")"
+    if [[ "$compiler_label" == "compiler_unknown" ]]; then
+        echo "ERROR: compiler label could not be determined from collected results; refusing to create success stamp." >&2
+        echo "$matrix_name,$arch,${remote_docker_base:-${host:-}},test,FAILED,$elapsed,$source_type" | tee -a "$resultfile"
+        exit 1
+    fi
     final_logfile="$LOGDIR/${tier}-${os_label}-${arch}-${compiler_label}-macos.log"
     if [[ "$final_logfile" != "$logfile" ]]; then
         mv "$logfile" "$final_logfile"
