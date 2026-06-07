@@ -19,14 +19,17 @@ if [[ -z "$row" ]]; then
     exit 1
 fi
 
-IFS='|' read -r matrix_name host target_dir script_rel remote_cmd source_type matrix_ubuntu_version matrix_docker_base <<< "$row"
+IFS='|' read -r matrix_name host target_dir script_rel remote_cmd source_type matrix_distro_version matrix_docker_base <<< "$row"
 remote_cmd="${remote_cmd:-bash}"
-matrix_ubuntu_version="${matrix_ubuntu_version:-}"
+matrix_distro_version="${matrix_distro_version:-}"
 matrix_docker_base="${matrix_docker_base:-}"
-remote_ubuntu_version="${MPLAPACK_UBUNTU_VERSION:-$matrix_ubuntu_version}"
+remote_distro_version="${MPLAPACK_DISTRO_VERSION:-$matrix_distro_version}"
 remote_docker_base="${MPLAPACK_DOCKER_BASE:-$matrix_docker_base}"
-if [[ -z "$remote_docker_base" && -n "$remote_ubuntu_version" ]]; then
-    remote_docker_base="ubuntu:$remote_ubuntu_version"
+if [[ -z "$remote_docker_base" && -n "$remote_distro_version" ]]; then
+    remote_docker_base="ubuntu:$remote_distro_version"
+fi
+if [[ -z "$remote_distro_version" && "$remote_docker_base" == *:* ]]; then
+    remote_distro_version="${remote_docker_base##*:}"
 fi
 
 if [[ "$source_type" != "remote-linux-docker" ]]; then
@@ -46,7 +49,7 @@ fi
 
 tier="${matrix_name%%-*}"
 arch="${matrix_name##*-}"
-docker_label="${remote_docker_base:-ubuntu:${remote_ubuntu_version:-default}}"
+docker_label="${remote_docker_base:-ubuntu:${remote_distro_version:-default}}"
 os_label="$(printf '%s' "$docker_label" | awk -F: '{name=$1; version=$2; sub(/^.*\//, "", name); gsub(/[^A-Za-z0-9]+/, "_", name); gsub(/[^A-Za-z0-9]+/, "_", version); print name version}')"
 if [[ -z "$os_label" ]]; then
     os_label="linux_unknown"
@@ -159,7 +162,7 @@ fi
 start="$(date +%s)"
 echo "Running $script_rel on $host:$target_dir" >&2
 echo "MPLAPACK_REF: $MPLAPACK_REF" >&2
-echo "MPLAPACK_UBUNTU_VERSION: ${remote_ubuntu_version:-<default>}" >&2
+echo "MPLAPACK_DISTRO_VERSION: ${remote_distro_version:-<default>}" >&2
 echo "MPLAPACK_DOCKER_BASE: ${remote_docker_base:-<default>}" >&2
 echo "Log: $logfile" >&2
 
@@ -178,7 +181,7 @@ tar -czf "$context_tar" \
 set +e
 {
     "$REMOTE_SSH" "$host" "mkdir -p '$(dirname "$target_dir")' && cat > '$remote_context_tar'" < "$context_tar" && \
-    "$REMOTE_SSH" "$host" "MPLAPACK_REMOTE_WORKDIR='$target_dir' MPLAPACK_CONTEXT_TARBALL='$remote_context_tar' MPLAPACK_REF='$MPLAPACK_REF' MPLAPACK_UBUNTU_VERSION='$remote_ubuntu_version' MPLAPACK_DOCKER_BASE='$remote_docker_base' $remote_cmd -s" < "$script_path"
+    "$REMOTE_SSH" "$host" "MPLAPACK_REMOTE_WORKDIR='$target_dir' MPLAPACK_CONTEXT_TARBALL='$remote_context_tar' MPLAPACK_REF='$MPLAPACK_REF' MPLAPACK_DISTRO_VERSION='$remote_distro_version' MPLAPACK_DOCKER_BASE='$remote_docker_base' $remote_cmd -s" < "$script_path"
 } > "$logfile" 2>&1
 rc=$?
 set -e
