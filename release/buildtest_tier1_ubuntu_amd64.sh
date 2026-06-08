@@ -17,6 +17,7 @@ log_ccache_stats() {
     log "=== CCACHE STATS (${label}) ==="
     docker run --rm \
         "${docker_platform_args[@]}" \
+        "${DOCKER_RUN_ARGS[@]}" \
         -v "${CCACHE_DIR_HOST}:/ccache:rw" \
         "${MPLAPACK_IMAGE_TAG}" \
         ccache -s || true
@@ -62,6 +63,7 @@ esac
 : "${MPLAPACK_IMAGE_TAG:=mplapack-tier1-ubuntu-amd64:latest}"
 : "${MPLAPACK_CCACHE_DIR:=/home/maho/.ccache}"
 : "${MPLAPACK_CCACHE_MAXSIZE:=200G}"
+: "${MPLAPACK_DOCKER_RUN_RUNTIME:=runc}"
 : "${MPLAPACK_CPU_MODEL_OVERRIDE:=$(if command -v lscpu >/dev/null 2>&1; then lscpu | awk -F: '/Model name/ {sub(/^[ \t]+/, "", $2); print $2; exit}'; fi)}"
 : "${MPLAPACK_RESULTS_DIR:=${MPLAPACK_REMOTE_WORKDIR}.distcheck-results}"
 : "${MPLAPACK_CONTEXT_TARBALL:=${MPLAPACK_REMOTE_WORKDIR}.context.tar.gz}"
@@ -71,6 +73,10 @@ LOCKDIR="${WORKDIR}.lock"
 CONTEXT_DIR="${WORKDIR}/context"
 RESULTS_DIR="${MPLAPACK_RESULTS_DIR}"
 CCACHE_DIR_HOST="${MPLAPACK_CCACHE_DIR}"
+DOCKER_RUN_ARGS=()
+if [ -n "${MPLAPACK_DOCKER_RUN_RUNTIME}" ]; then
+    DOCKER_RUN_ARGS=(--runtime "${MPLAPACK_DOCKER_RUN_RUNTIME}")
+fi
 
 case "${WORKDIR}" in
     "${HOME}/"*) ;;
@@ -132,6 +138,7 @@ log "MPLAPACK_IMAGE_TAG: ${MPLAPACK_IMAGE_TAG}"
 log "MPLAPACK_RESULTS_DIR: ${RESULTS_DIR}"
 log "MPLAPACK_CCACHE_DIR: ${CCACHE_DIR_HOST}"
 log "MPLAPACK_CCACHE_MAXSIZE: ${MPLAPACK_CCACHE_MAXSIZE}"
+log "MPLAPACK_DOCKER_RUN_RUNTIME: ${MPLAPACK_DOCKER_RUN_RUNTIME}"
 log "MPLAPACK_CPU_MODEL_OVERRIDE: ${MPLAPACK_CPU_MODEL_OVERRIDE}"
 
 if [ ! -f "${MPLAPACK_CONTEXT_TARBALL}" ]; then
@@ -158,6 +165,7 @@ docker build \
     "${CONTEXT_DIR}/${MPLAPACK_DOCKER_CONTEXT}"
 
 docker run --rm \
+    "${DOCKER_RUN_ARGS[@]}" \
     -v "${CCACHE_DIR_HOST}:/ccache:rw" \
     "${MPLAPACK_IMAGE_TAG}" \
     ccache -M "${MPLAPACK_CCACHE_MAXSIZE}"
@@ -170,6 +178,7 @@ if [ -n "${SOURCE_BUNDLE}" ]; then
 fi
 
 docker run --rm \
+    "${DOCKER_RUN_ARGS[@]}" \
     -e MPLAPACK_REF="${MPLAPACK_REF}" \
     -e MPLAPACK_DISTRO_VERSION="${MPLAPACK_DISTRO_VERSION}" \
     -e MPLAPACK_TEST_RESULTS_BASE=/results \
