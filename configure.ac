@@ -93,6 +93,19 @@ AC_CONFIG_FILES([ Makefile mplapack.pc ])
 AC_CONFIG_FILES([packaging/PKGBUILD packaging/mplapack.spec])
 
 AC_CANONICAL_TARGET
+
+dnl Determine the C++ compiler, then drop any -std=* that arrived through the
+dnl environment (CXX or CXXFLAGS) before selecting the required standard.
+dnl AX_CXX_COMPILE_STDCXX only *appends* -std=gnu++17 to CXX; it does not remove
+dnl a pre-existing -std.  A stale -std=gnu++11 (exported in CXX, or in CXXFLAGS
+dnl where it lands after CXX on the command line) would therefore survive and,
+dnl being last, override gnu++17 -- breaking the C++14/17 features the
+dnl mplapack_utils_*.h headers rely on (std::enable_if_t, std::is_same_v,
+dnl variadic fold expressions).  Strip first so exactly one -std=gnu++17 is in
+dnl effect and cannot be overridden.
+AC_PROG_CXX
+MPLAPACK_STRIP_FLAG([CXX], [-std=*])
+MPLAPACK_STRIP_FLAG([CXXFLAGS], [-std=*])
 AX_CXX_COMPILE_STDCXX([17], [ext], [mandatory])
 
 : ${CFLAGS=""}
@@ -117,7 +130,7 @@ AM_CONDITIONAL(IS_INTELCC, test x$is_intelcc = x1)
 if test x"$is_intelcc" = x"1"; then
     AC_MSG_RESULT([Intel compiler (icx/icpx) detected])
 fi
-AC_PROG_CXX
+dnl AC_PROG_CXX already run above (before the -std sanitisation).
 IS_INTELCXX=0
 AC_COMPILE_IFELSE([
     AC_LANG_SOURCE([[
