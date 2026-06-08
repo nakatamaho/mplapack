@@ -72,8 +72,15 @@ Disable the backends you do not need (each backend compiles ~1000 sources).
 
 ## Tests
 
-`-DMPLAPACK_BUILD_TESTS=ON` builds the LAPACK-derived `lin`/`eig` test drivers
-per backend and registers them with CTest (each fed its `.in` dataset on stdin):
+`-DMPLAPACK_BUILD_TESTS=ON` builds two suites and registers them with CTest:
+
+- **`mplapack/test`** — the LAPACK-derived `lin`/`eig` drivers per backend, each
+  fed its `.in` dataset on stdin.
+- **`mpblas/test`** — one program per BLAS routine per backend, comparing against
+  a reference Fortran BLAS. This suite needs the **MPFR backend** (its random/
+  comparison support always uses MPFR) and a reference BLAS located via
+  `find_package(BLAS)` (e.g. reference BLAS, OpenBLAS or FlexiBLAS); it is
+  skipped if either is missing.
 
 ```sh
 cmake -S . -B build -DMPLAPACK_BUILD_TESTS=ON
@@ -85,5 +92,6 @@ ctest --test-dir build
 
 Not ported: the bundled third-party builds (GMP/MPFR/MPC/QD/OpenBLAS), the
 CUDA-optimized kernels (`*/optimized/*/cuda`), the `_opt` optimized-library
-variants, the Fable Fortran-to-C++ regeneration pipeline, and the
+variants, the Fable Fortran-to-C++ regeneration pipeline, the
+`mplapack/test/compare` reference-comparison tests, and the
 reference-BLAS/OpenBLAS comparison benchmarks.
