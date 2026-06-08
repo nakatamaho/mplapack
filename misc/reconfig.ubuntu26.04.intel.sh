@@ -9,7 +9,7 @@ CXX="ccache icpx" ; export CXX
 CC="ccache icx" ; export CC
 FC="ifx"; export FC
 F77="ifx"; export F77
-ccache -M 80G
+"$(cd "$(dirname "$0")" && pwd)/ccache_set_min_maxsize.sh" 80G
 else
 CXX="icpx" ; export CXX
 CC="icx" ; export CC

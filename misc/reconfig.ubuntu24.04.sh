@@ -6,7 +6,7 @@ if [ x"$USE_CCACHE" = x"yes" ] ; then
 CXX="ccache g++" ; export CXX
 CC="ccache gcc" ; export CC
 FC="gfortran"; export FC
-ccache -M 80G
+"$(cd "$(dirname "$0")" && pwd)/ccache_set_min_maxsize.sh" 80G
 else
 CXX="g++" ; export CXX
 CC="gcc" ; export CC

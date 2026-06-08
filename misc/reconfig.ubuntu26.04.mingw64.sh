@@ -9,7 +9,7 @@ FC="x86_64-w64-mingw32-gfortran"; export FC
 NM="x86_64-w64-mingw32-nm" ; export NM
 RANLIB="x86_64-w64-mingw32-ranlib" ; export RANLIB
 AR="x86_64-w64-mingw32-ar" ; export AR
-ccache -M 80G
+"$(cd "$(dirname "$0")" && pwd)/ccache_set_min_maxsize.sh" 80G
 else
 CXX="x86_64-w64-mingw32-g++" ; export CXX
 CC="x86_64-w64-mingw32-gcc" ; export CC
