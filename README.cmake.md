@@ -95,7 +95,7 @@ ctest --test-dir build
 
 ## Scope vs. the autotools build
 
-Not ported: the bundled third-party builds (GMP/MPFR/MPC/QD/OpenBLAS), the
-CUDA-optimized kernels (`*/optimized/*/cuda`), the `_opt` optimized-library
-variants, the Fable Fortran-to-C++ regeneration pipeline, and the
-reference-BLAS/OpenBLAS comparison benchmarks.
+Not ported (intentionally): the bundled third-party builds
+(GMP/MPFR/MPC/QD/OpenBLAS — replaced by `find_package`), the CUDA-optimized
+kernels (`*/optimized/*/cuda`), the `_opt` optimized-library variants, and the
+Fable Fortran-to-C++ regeneration pipeline.
