@@ -6,17 +6,23 @@ log() {
     echo "$*"
 }
 
+docker_run() {
+    if [ -n "${MPLAPACK_DOCKER_PLATFORM:-}" ] && [ -n "${MPLAPACK_DOCKER_RUN_RUNTIME:-}" ]; then
+        docker run --platform "${MPLAPACK_DOCKER_PLATFORM}" --runtime "${MPLAPACK_DOCKER_RUN_RUNTIME}" "$@"
+    elif [ -n "${MPLAPACK_DOCKER_PLATFORM:-}" ]; then
+        docker run --platform "${MPLAPACK_DOCKER_PLATFORM}" "$@"
+    elif [ -n "${MPLAPACK_DOCKER_RUN_RUNTIME:-}" ]; then
+        docker run --runtime "${MPLAPACK_DOCKER_RUN_RUNTIME}" "$@"
+    else
+        docker run "$@"
+    fi
+}
+
 log_ccache_stats() {
     local label="$1"
-    local docker_platform_args=()
-
-    if [ -n "${MPLAPACK_DOCKER_PLATFORM:-}" ]; then
-        docker_platform_args=(--platform "${MPLAPACK_DOCKER_PLATFORM}")
-    fi
 
     log "=== CCACHE STATS (${label}) ==="
-    docker run --rm \
-        "${docker_platform_args[@]}" \
+    docker_run --rm \
         -v "${CCACHE_DIR_HOST}:/ccache:rw" \
         "${MPLAPACK_IMAGE_TAG}" \
         ccache -s || true
@@ -173,29 +179,34 @@ docker build \
     -f "${CONTEXT_DIR}/${MPLAPACK_DOCKERFILE}" \
     "${CONTEXT_DIR}/${MPLAPACK_DOCKER_CONTEXT}"
 
-docker run --rm \
-    --platform "${MPLAPACK_DOCKER_PLATFORM}" \
+docker_run --rm \
     -v "${CCACHE_DIR_HOST}:/ccache:rw" \
     "${MPLAPACK_IMAGE_TAG}" \
     ccache -M "${MPLAPACK_CCACHE_MAXSIZE}"
 
 log_ccache_stats "START"
 
-docker_source_args=()
 if [ -n "${SOURCE_BUNDLE}" ]; then
-    docker_source_args=(-e MPLAPACK_REPO=/source.bundle -v "${SOURCE_BUNDLE}:/source.bundle:ro")
+    docker_run --rm \
+        -e MPLAPACK_REF="${MPLAPACK_REF}" \
+        -e MPLAPACK_TEST_RESULTS_BASE=/results \
+        -e CCACHE_MAXSIZE="${MPLAPACK_CCACHE_MAXSIZE}" \
+        -e CPU_MODEL_OVERRIDE="${MPLAPACK_CPU_MODEL_OVERRIDE}" \
+        -e MPLAPACK_REPO=/source.bundle \
+        -v "${SOURCE_BUNDLE}:/source.bundle:ro" \
+        -v "${CCACHE_DIR_HOST}:/ccache:rw" \
+        -v "${RESULTS_DIR}:/results:rw" \
+        "${MPLAPACK_IMAGE_TAG}"
+else
+    docker_run --rm \
+        -e MPLAPACK_REF="${MPLAPACK_REF}" \
+        -e MPLAPACK_TEST_RESULTS_BASE=/results \
+        -e CCACHE_MAXSIZE="${MPLAPACK_CCACHE_MAXSIZE}" \
+        -e CPU_MODEL_OVERRIDE="${MPLAPACK_CPU_MODEL_OVERRIDE}" \
+        -v "${CCACHE_DIR_HOST}:/ccache:rw" \
+        -v "${RESULTS_DIR}:/results:rw" \
+        "${MPLAPACK_IMAGE_TAG}"
 fi
-
-docker run --rm \
-    --platform "${MPLAPACK_DOCKER_PLATFORM}" \
-    -e MPLAPACK_REF="${MPLAPACK_REF}" \
-    -e MPLAPACK_TEST_RESULTS_BASE=/results \
-    -e CCACHE_MAXSIZE="${MPLAPACK_CCACHE_MAXSIZE}" \
-    -e CPU_MODEL_OVERRIDE="${MPLAPACK_CPU_MODEL_OVERRIDE}" \
-    "${docker_source_args[@]}" \
-    -v "${CCACHE_DIR_HOST}:/ccache:rw" \
-    -v "${RESULTS_DIR}:/results:rw" \
-    "${MPLAPACK_IMAGE_TAG}"
 
 log_ccache_stats "END"
 
