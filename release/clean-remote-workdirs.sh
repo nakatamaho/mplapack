@@ -88,10 +88,16 @@ clean_one() {
     fi
 
     echo "Cleaning $name on $host:$target_dir" >&2
-    "$ssh_cmd" "$host" "bash -s" -- "$target_dir" "$context_tar" <<'REMOTE_CLEAN'
+    remote_workdir_q="$(printf '%q' "$target_dir")"
+    remote_context_tar_q="$(printf '%q' "$context_tar")"
+    remote_source_type_q="$(printf '%q' "$source_type")"
+    remote_docker_base_q="$(printf '%q' "$docker_base")"
+    "$ssh_cmd" "$host" "MPLAPACK_CLEAN_WORKDIR=$remote_workdir_q MPLAPACK_CLEAN_CONTEXT_TAR=$remote_context_tar_q MPLAPACK_CLEAN_SOURCE_TYPE=$remote_source_type_q MPLAPACK_CLEAN_DOCKER_BASE=$remote_docker_base_q bash -s" <<'REMOTE_CLEAN'
 set -eu
-workdir="$1"
-context_tar="$2"
+workdir="${MPLAPACK_CLEAN_WORKDIR:?}"
+context_tar="${MPLAPACK_CLEAN_CONTEXT_TAR:?}"
+source_type="${MPLAPACK_CLEAN_SOURCE_TYPE:?}"
+docker_base="${MPLAPACK_CLEAN_DOCKER_BASE:-}"
 lockdir="${workdir}.lock"
 results_dir="${workdir}.distcheck-results"
 legacy_context_tar="${workdir}.context.tar.gz"
@@ -122,8 +128,53 @@ if [ -f "${lockdir}/pid" ]; then
     fi
 fi
 
+cleanup_with_docker() {
+    parent_dir="$(dirname "$workdir")"
+    work_base="$(basename "$workdir")"
+    context_base="$(basename "$context_tar")"
+    context_parent="$(dirname "$context_tar")"
+    image="${docker_base:-ubuntu:24.04}"
+    docker_platform=""
+
+    if ! command -v docker >/dev/null 2>&1; then
+        return 1
+    fi
+    if [ "$context_parent" != "$parent_dir" ]; then
+        return 1
+    fi
+    case "$(uname -m 2>/dev/null || true)" in
+        x86_64|amd64) docker_platform="linux/amd64" ;;
+        aarch64|arm64) docker_platform="linux/arm64" ;;
+        i386|i686) docker_platform="linux/386" ;;
+    esac
+
+    echo "Retrying cleanup via Docker root helper: $image" >&2
+    if [ -n "$docker_platform" ]; then
+        docker run --rm \
+            --platform "$docker_platform" \
+            -v "${parent_dir}:/cleanup:rw" \
+            "$image" \
+            sh -c 'chmod -R u+rwX "/cleanup/$1" "/cleanup/$2" 2>/dev/null || true; rm -rf -- "/cleanup/$1" "/cleanup/$1.lock" "/cleanup/$2" "/cleanup/$3" "/cleanup/$4"' \
+            sh "$work_base" "${work_base}.distcheck-results" "${work_base}.context.tar.gz" "$context_base"
+    else
+        docker run --rm \
+            -v "${parent_dir}:/cleanup:rw" \
+            "$image" \
+            sh -c 'chmod -R u+rwX "/cleanup/$1" "/cleanup/$2" 2>/dev/null || true; rm -rf -- "/cleanup/$1" "/cleanup/$1.lock" "/cleanup/$2" "/cleanup/$3" "/cleanup/$4"' \
+            sh "$work_base" "${work_base}.distcheck-results" "${work_base}.context.tar.gz" "$context_base"
+    fi
+}
+
 chmod -R u+rwX "$workdir" "$results_dir" 2>/dev/null || true
-rm -rf -- "$workdir" "$lockdir" "$results_dir" "$legacy_context_tar" "$context_tar"
+if ! rm -rf -- "$workdir" "$lockdir" "$results_dir" "$legacy_context_tar" "$context_tar" 2>/dev/null; then
+    if [ "$source_type" = "remote-linux-docker" ]; then
+        echo "Regular cleanup could not remove every file; using Docker root helper." >&2
+        cleanup_with_docker
+    else
+        echo "ERROR: failed to remove remote workdir: $workdir" >&2
+        exit 1
+    fi
+fi
 REMOTE_CLEAN
 }
 
