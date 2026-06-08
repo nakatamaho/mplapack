@@ -1,10 +1,24 @@
 #CTBSV, CTPSV might have bugs or intrinsically inaccurate
 #Rnrm2 should be checked more
 check_PROGRAMS = $(mpblas_qd_test_PROGRAMS) 
-TESTS = arithmetic.test_qd complex.test_qd
+mpblas_qd_smoke_TESTS = arithmetic.test_qd complex.test_qd
+mpblas_qd_smoke_WRAPPERS = $(mpblas_qd_smoke_TESTS:%=run_%.sh)
+mpblas_qd_test_WRAPPERS = $(mpblas_qd_test_PROGRAMS:%=run_%.sh)
+TESTS = $(mpblas_qd_smoke_WRAPPERS)
+TEST_EXTENSIONS = .sh
+SH_LOG_COMPILER = $(SHELL)
+AM_TESTS_ENVIRONMENT = \
+	LOG_COMPILER='$(LOG_COMPILER)'; export LOG_COMPILER; \
+	EXEEXT='$(EXEEXT)'; export EXEEXT;
+CLEANFILES = $(mpblas_qd_smoke_WRAPPERS) $(mpblas_qd_test_WRAPPERS)
 .PHONY: check-all
-check-all: $(check_PROGRAMS)
-	$(MAKE) $(AM_MAKEFLAGS) check TESTS="$(mpblas_qd_test_PROGRAMS)"
+check-all: $(check_PROGRAMS) $(mpblas_qd_test_WRAPPERS)
+	$(MAKE) $(AM_MAKEFLAGS) check TESTS="$(mpblas_qd_test_WRAPPERS)"
+
+run_%.sh: Makefile
+	$(AM_V_GEN)printf '%s\n' '#!/bin/sh' > $@
+	$(AM_V_at)printf '%s\n' '$${LOG_COMPILER} ./$*$${EXEEXT}' >> $@
+	$(AM_V_at)chmod +x $@
 mpblas_qd_test_PROGRAMS = \
 arithmetic.test_qd \
 complex.test_qd \

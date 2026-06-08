@@ -1,10 +1,24 @@
 #CTBSV, CTPSV might have bugs or intrinsically inaccurate
 #Rnrm2 should be checked more
 check_PROGRAMS = $(mpblas_gmp_test_PROGRAMS) 
-TESTS = arithmetic.test_gmp complex.test_gmp transcendents_gmp.test
+mpblas_gmp_smoke_TESTS = arithmetic.test_gmp complex.test_gmp transcendents_gmp.test
+mpblas_gmp_smoke_WRAPPERS = $(mpblas_gmp_smoke_TESTS:%=run_%.sh)
+mpblas_gmp_test_WRAPPERS = $(mpblas_gmp_test_PROGRAMS:%=run_%.sh)
+TESTS = $(mpblas_gmp_smoke_WRAPPERS)
+TEST_EXTENSIONS = .sh
+SH_LOG_COMPILER = $(SHELL)
+AM_TESTS_ENVIRONMENT = \
+	LOG_COMPILER='$(LOG_COMPILER)'; export LOG_COMPILER; \
+	EXEEXT='$(EXEEXT)'; export EXEEXT;
+CLEANFILES = $(mpblas_gmp_smoke_WRAPPERS) $(mpblas_gmp_test_WRAPPERS)
 .PHONY: check-all
-check-all: $(check_PROGRAMS)
-	$(MAKE) $(AM_MAKEFLAGS) check TESTS="$(mpblas_gmp_test_PROGRAMS)"
+check-all: $(check_PROGRAMS) $(mpblas_gmp_test_WRAPPERS)
+	$(MAKE) $(AM_MAKEFLAGS) check TESTS="$(mpblas_gmp_test_WRAPPERS)"
+
+run_%.sh: Makefile
+	$(AM_V_GEN)printf '%s\n' '#!/bin/sh' > $@
+	$(AM_V_at)printf '%s\n' '$${LOG_COMPILER} ./$*$${EXEEXT}' >> $@
+	$(AM_V_at)chmod +x $@
 mpblas_gmp_test_PROGRAMS = \
 arithmetic.test_gmp \
 complex.test_gmp \
@@ -125,7 +139,7 @@ transcendents_gmp_test_LDFLAGS=-L$(top_builddir)/mpblas/reference -lmpblas_gmp $
 
 if ENABLE_MPFR
 mpblas_gmp_test_PROGRAMS += transcendents_gmp_vs_mpfr.test
-TESTS += transcendents_gmp_vs_mpfr.test
+mpblas_gmp_smoke_TESTS += transcendents_gmp_vs_mpfr.test
 transcendents_gmp_vs_mpfr_test_SOURCES=../common/transcendents_gmp_vs_mpfr.test.cpp
 transcendents_gmp_vs_mpfr_test_CXXFLAGS=$(gmp_vs_mpfr_test_cxxflags)
 transcendents_gmp_vs_mpfr_test_LDFLAGS=-L$(top_builddir)/mpblas/reference -lmpblas_gmp $(mplibs)
