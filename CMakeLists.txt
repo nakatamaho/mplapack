@@ -30,6 +30,16 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
 endif()
 
+# Build everything (libraries, tests, examples, benchmarks) at gnu++17, matching
+# the autotools build's single -std=gnu++17.  This is the default standard for
+# targets in this project's scope; it does NOT leak to a parent project that
+# pulls mplapack in via add_subdirectory/FetchContent (such a consumer instead
+# inherits the C++17 *floor* exported as a PUBLIC compile feature on the
+# backend targets).  Extensions stay on for the __float80/__float128 backends.
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS ON)
+
 # ABI (libtool -version-info 1:0:0) — independent of the package version.
 set(MPLAPACK_LIB_VERSION   "1.0.0")
 set(MPLAPACK_LIB_SOVERSION "1")
