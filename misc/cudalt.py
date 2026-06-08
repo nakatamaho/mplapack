@@ -56,14 +56,9 @@ rv = os.system(command)
 if rv != 0:
     sys.exit(1)
 
-# get libtool version
-fd = os.popen("libtool --version")
-libtool_version = fd.readline()
-# this loop supresses the broken pipe errors
-# you get by not reading all the data
-for dog in fd.readlines():
-    noop = 1;
-fd.close()
+# Distcheck build trees may not have a system libtool command in PATH.
+# Write the standard GNU libtool object header directly.
+libtool_version = "libtool (GNU libtool)"
 
 # generate the .lo file
 f = open(lo_filepath, "w")
