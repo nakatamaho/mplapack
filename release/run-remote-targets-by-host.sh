@@ -83,7 +83,8 @@ run_host_targets() {
     while IFS= read -r target; do
         [[ -n "$target" ]] || continue
         echo "=== Running remote target on $host: $target ===" >&2
-        run_target "$target"
+        # Keep ssh in child scripts from consuming the remaining target list.
+        run_target "$target" </dev/null
         echo "=== Finished remote target on $host: $target ===" >&2
     done < "$target_file"
 }
