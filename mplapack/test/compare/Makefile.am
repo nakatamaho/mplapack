@@ -30,6 +30,20 @@ endif
 
 CHECK_SUBDIRS = $(SUBDIRS)
 
+# The per-backend Makefile.am files are committed (generated once via
+# gen.Makefile.am.sh from the *.part templates).  Ship the generator and its
+# templates so the test programs can be regenerated from a dist tarball after
+# new *.test.cpp cases are added under common/.
+EXTRA_DIST = \
+	gen.Makefile.am.sh \
+	gmp/Makefile.am.part \
+	mpfr/Makefile.am.part \
+	qd/Makefile.am.part \
+	dd/Makefile.am.part \
+	double/Makefile.am.part \
+	binary80/Makefile.am.part \
+	binary128/Makefile.am.part
+
 .PHONY: check-recursive $(CHECK_SUBDIRS:%=check-subdir-%)
 
 check-recursive: $(CHECK_SUBDIRS:%=check-subdir-%)
