@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 # libtoolish hack: compile a .cu file like libtool does
 import sys
 import os
