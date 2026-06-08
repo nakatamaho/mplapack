@@ -47,10 +47,10 @@ linux_context_name() {
     name_middle="${matrix_name#${tier}-}"
     name_middle="${name_middle%-${arch}}"
     flavor=""
-    if [[ "$name_middle" == *-* ]]; then
-        flavor="${name_middle#*-}"
-    elif [[ "$os_label" == "windows" ]]; then
+    if [[ "$os_label" == "windows" ]]; then
         flavor="$name_middle"
+    elif [[ "$name_middle" == *-* ]]; then
+        flavor="${name_middle#*-}"
     fi
     printf '%s-%s%s-%s' "$tier" "$os_label" "${flavor:+-$flavor}" "$arch"
 }

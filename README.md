@@ -93,11 +93,15 @@ Release test targets are run from `release/`:
 |---|---|---|---|---|---|
 | Tier 1 | `tier1-macos-arm64` | macOS 26 | arm64 | `172.27.109.40` | SSH |
 | Tier 1 | `tier1-macos-amd64` | macOS 15 | amd64 | `172.27.109.97` | SSH |
-| Tier 1 | `tier1-ubuntu-arm64` | Ubuntu 24.04 | arm64 | `172.27.109.40` | Docker/Colima |
-| Tier 1 | `tier1-ubuntu-amd64` | Ubuntu 24.04 | amd64 | `172.27.109.80` | Docker |
-| Tier 1 | `tier1-mingw64-amd64` | Windows | amd64 | `172.27.109.80` | Docker + MinGW64/Wine |
-| Tier 2 | `tier2-ubuntu-inteloneapi-amd64` | Ubuntu 24.04 | amd64 | `172.27.109.80` | Docker + Intel oneAPI |
-| Tier 2 | `tier2-debian-i386` | Debian 12 | i386 | `172.27.109.80` | Docker |
+| Tier 1 | `tier1-ubuntu2404-arm64` | Ubuntu 24.04 | arm64 | `172.27.109.40` | Docker/Colima |
+| Tier 1 | `tier1-ubuntu2604-arm64` | Ubuntu 26.04 | arm64 | `172.27.109.40` | Docker/Colima |
+| Tier 1 | `tier1-ubuntu2404-amd64` | Ubuntu 24.04 | amd64 | `172.27.109.80` | Docker |
+| Tier 1 | `tier1-ubuntu2604-amd64` | Ubuntu 26.04 | amd64 | `172.27.109.80` | Docker |
+| Tier 1 | `tier1-ubuntu2404-mingw64-amd64` | Windows via Ubuntu 24.04 | amd64 | `172.27.109.80` | Docker + MinGW64/Wine |
+| Tier 1 | `tier1-ubuntu2604-mingw64-amd64` | Windows via Ubuntu 26.04 | amd64 | `172.27.109.80` | Docker + MinGW64/Wine |
+| Tier 2 | `tier2-ubuntu2404-inteloneapi-amd64` | Ubuntu 24.04 | amd64 | `172.27.109.80` | Docker + Intel oneAPI |
+| Tier 2 | `tier2-ubuntu2604-inteloneapi-amd64` | Ubuntu 26.04 | amd64 | `172.27.109.80` | Docker + Intel oneAPI |
+| Tier 2 | `tier2-debian12-i386` | Debian 12 | i386 | `172.27.109.80` | Docker |
 
 Tier 1/2 release build scripts are in `release/`:
 ```

@@ -88,7 +88,8 @@ make tier1-macos
 make tier1-linux
 make tier1-macos-amd64   # SSH to macOS amd64 host and run Tier 1 buildtest
 make tier1-macos-arm64   # SSH to macOS arm64 host and run Tier 1 buildtest
-make tier1-ubuntu-arm64  # SSH to arm64 host and run Ubuntu arm64 Docker distcheck
+make tier1-ubuntu2404-arm64  # SSH to arm64 host and run Ubuntu 24.04 arm64 Docker distcheck
+make tier1-ubuntu2604-arm64  # SSH to arm64 host and run Ubuntu 26.04 arm64 Docker distcheck
 make ppc64le
 make i386
 make s390x
