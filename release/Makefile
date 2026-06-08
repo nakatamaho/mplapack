@@ -13,6 +13,15 @@ REMOTE_LINUX_SSH ?= ssh
 
 export CONF_FILE LOGDIR PROJECT_ROOT HOST_WORK_DIR HOST_CCACHE_DIR SUCCESS_DIR
 
+TIER1_TARGETS := tier1-macos-arm64 tier1-macos-amd64 tier1-ubuntu-arm64 tier1-ubuntu-amd64 tier1-mingw64-amd64
+TIER1_MACOS_TARGETS := tier1-macos-arm64 tier1-macos-amd64
+TIER1_LINUX_TARGETS := tier1-ubuntu-arm64 tier1-ubuntu-amd64 tier1-mingw64-amd64
+TIER2_TARGETS := tier2-ubuntu-inteloneapi-amd64 tier2-debian-i386
+TIER12_TARGETS := $(TIER1_TARGETS) $(TIER2_TARGETS)
+TIER12_REQUESTED := $(and $(filter tier1,$(MAKECMDGOALS)),$(filter tier2,$(MAKECMDGOALS)))
+FIRST_TIER12_GOAL := $(firstword $(filter tier1 tier2,$(MAKECMDGOALS)))
+RUN_REMOTE_TARGETS = CONF_FILE=$(CONF_FILE) LOGDIR=$(LOGDIR) PROJECT_ROOT=$(PROJECT_ROOT) SUCCESS_DIR=$(SUCCESS_DIR) MACOS_REMOTE_SSH=$(MACOS_REMOTE_SSH) REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-targets-by-host.sh
+
 .PHONY: all branch tarball dist clean clean-remote clean-all clean-success list help
 .PHONY: intel mingw cuda ubuntu debian fedora rocky suse alpine
 .PHONY: amd64 arm64 ppc64le i386 s390x mips64le
@@ -76,13 +85,29 @@ amd64:
 arm64:
 	@FILTER_ARCH=arm64 ./build-all.sh branch
 
-tier1: tier1-macos tier1-linux
+ifeq ($(TIER12_REQUESTED),)
+tier1:
+	@$(RUN_REMOTE_TARGETS) $(TIER1_TARGETS)
 
-tier1-macos: tier1-macos-arm64 tier1-macos-amd64
+tier2:
+	@$(RUN_REMOTE_TARGETS) $(TIER2_TARGETS)
+else
+tier1:
+	@if [ "$(FIRST_TIER12_GOAL)" = "tier1" ]; then \
+		$(RUN_REMOTE_TARGETS) $(TIER12_TARGETS); \
+	fi
 
-tier1-linux: tier1-ubuntu-arm64 tier1-ubuntu-amd64 tier1-mingw64-amd64
+tier2:
+	@if [ "$(FIRST_TIER12_GOAL)" = "tier2" ]; then \
+		$(RUN_REMOTE_TARGETS) $(TIER12_TARGETS); \
+	fi
+endif
 
-tier2: tier2-ubuntu-inteloneapi-amd64 tier2-debian-i386
+tier1-macos:
+	@$(RUN_REMOTE_TARGETS) $(TIER1_MACOS_TARGETS)
+
+tier1-linux:
+	@$(RUN_REMOTE_TARGETS) $(TIER1_LINUX_TARGETS)
 
 tier1-macos-arm64:
 	@MACOS_REMOTE_SSH=$(MACOS_REMOTE_SSH) ./run-remote-macos.sh tier1-macos-arm64
