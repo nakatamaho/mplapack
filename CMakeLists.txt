@@ -206,6 +206,13 @@ if(MPLAPACK_BUILD_EXAMPLES)
 endif()
 if(MPLAPACK_BUILD_TESTS)
   enable_testing()
+  # Shared by both test directories: the override libraries/objects rely on the
+  # linker keeping the first (overriding) definition of duplicated symbols.
+  include(CheckLinkerFlag)
+  check_linker_flag(CXX "-Wl,--allow-multiple-definition" MPLAPACK_LD_ALLOW_MULTIDEF)
+  # The mpblas correctness tests compare against a reference Fortran BLAS.
+  find_package(BLAS)
+  add_subdirectory(mpblas/test)
   add_subdirectory(mplapack/test)
 endif()
 if(MPLAPACK_BUILD_BENCHMARKS)

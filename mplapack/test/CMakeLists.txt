@@ -23,9 +23,7 @@ set(_override_files Mxerbla iMlaenv Mxlaenv)
 set(_lin_mains      Rchkaa Cchkaa Rchkrfp Cchkrfp)
 set(_eig_mains      Rchkee Cchkee Rchkdmd Cchkdmd)
 
-# Does the linker accept --allow-multiple-definition?
-include(CheckLinkerFlag)
-check_linker_flag(CXX "-Wl,--allow-multiple-definition" MPLAPACK_LD_ALLOW_MULTIDEF)
+# MPLAPACK_LD_ALLOW_MULTIDEF is probed once by the top-level CMakeLists.
 
 # matgen / lin-library / eig-library source lists (shared across backends).
 file(GLOB _matgen_srcs CONFIGURE_DEPENDS "${_matgen_dir}/*.cpp")
