@@ -19,6 +19,7 @@ using mplapack_gmp_transcendents::compute_log1p;
 using mplapack_gmp_transcendents::compute_pow;
 using mplapack_gmp_transcendents::compute_sin;
 using mplapack_gmp_transcendents::div;
+using mplapack_gmp_transcendents::guard_bits_for_expm1;
 using mplapack_gmp_transcendents::log_two;
 using mplapack_gmp_transcendents::make_ui;
 using mplapack_gmp_transcendents::pi;
@@ -221,6 +222,17 @@ void test_expm1_vs_mpfr(const std::vector<mp_bitcnt_t> &precisions) {
             mpfr_set_ui_2exp(x.value, 1, -static_cast<mpfr_exp_t>(p / 2), MPFR_RNDN);
             mpfr_expm1(ref.value, x.value, MPFR_RNDN);
             require_ulp("expm1_vs_mpfr_small", compute_expm1(make_power_of_two_negative(p / 2, p), p), ref.value, p);
+        }
+        {
+            const mp_bitcnt_t old_work = p + guard_bits_for_expm1(p);
+            mpfr_holder x(p);
+            mpfr_holder ref(p);
+            mpfr_set_ui_2exp(x.value, 3, -static_cast<mpfr_exp_t>(old_work / 2), MPFR_RNDN);
+            mpfr_expm1(ref.value, x.value, MPFR_RNDN);
+
+            mpf_class gx = make_ui(3, p);
+            mpf_div_2exp(gx.get_mpf_t(), gx.get_mpf_t(), old_work / 2);
+            require_ulp("expm1_vs_mpfr_cancellation_boundary", compute_expm1(gx, p), ref.value, p);
         }
     }
     std::printf("expm1 vs mpfr checks passed\n");

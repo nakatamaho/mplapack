@@ -53,6 +53,7 @@ using mplapack_gmp_transcendents::compute_atan;
 using mplapack_gmp_transcendents::compute_atan2;
 using mplapack_gmp_transcendents::compute_pow;
 using mplapack_gmp_transcendents::div;
+using mplapack_gmp_transcendents::guard_bits_for_expm1;
 using mplapack_gmp_transcendents::div_ui;
 using mplapack_gmp_transcendents::make_ui;
 using mplapack_gmp_transcendents::quo_rem;
@@ -572,6 +573,32 @@ static void test_expm1_near_zero() {
         std::exit(1);
     }
     std::printf("expm1 near-zero seam check passed\n");
+}
+
+static void test_expm1_cancellation_boundary() {
+    const mp_bitcnt_t target_precision = 200;
+    const mp_bitcnt_t high_precision = 1024;
+    const mp_bitcnt_t old_work = target_precision + guard_bits_for_expm1(target_precision);
+
+    mpf_class x_hi = make_ui(3, high_precision);
+    mpf_div_2exp(x_hi.get_mpf_t(), x_hi.get_mpf_t(), old_work / 2);
+
+    const mpf_class value = compute_expm1(set_prec_copy(x_hi, target_precision), target_precision);
+    const mpf_class reference_hi = compute_expm1(x_hi, high_precision);
+    const mpf_class reference = set_prec_copy(reference_hi, target_precision);
+    const mpf_class diff = abs(value - reference);
+    const mpf_class ulp = ulp_for_value(reference, target_precision);
+
+    if (diff > ulp) {
+        std::printf("expm1 cancellation-boundary test failed\n");
+        std::printf("diff = ");
+        printnum(diff);
+        std::printf("\nulp  = ");
+        printnum(ulp);
+        std::printf("\n");
+        std::exit(1);
+    }
+    std::printf("expm1 cancellation-boundary check passed\n");
 }
 
 static void test_quo_rem_rounding() {
@@ -1152,6 +1179,7 @@ int main() {
     test_expm1_precision_doubling_pair(1024, 4096);
     test_expm1_precision_doubling_pair(2048, 4096);
     test_expm1_near_zero();
+    test_expm1_cancellation_boundary();
     test_quo_rem_rounding();
     test_sin_reference_literal();
     test_cos_reference_literal();

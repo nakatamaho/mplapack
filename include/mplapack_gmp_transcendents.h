@@ -50,6 +50,13 @@ inline precision_type normalize_target_precision(precision_type target_precision
     return std::max<precision_type>(target_precision, minimum_target_precision);
 }
 
+inline precision_type checked_precision_add(precision_type lhs, precision_type rhs, const char *message) {
+    if (rhs > std::numeric_limits<precision_type>::max() - lhs) {
+        throw std::overflow_error(message);
+    }
+    return lhs + rhs;
+}
+
 inline unsigned long ceil_log2_precision(precision_type value) {
     if (value <= 1) {
         return 0;
@@ -382,7 +389,7 @@ inline precision_type positive_exponent_bits(const mpf_class &value) {
     }
     mp_exp_t exponent = 0;
     mpf_get_d_2exp(&exponent, value.get_mpf_t());
-    return exponent > 0 ? static_cast<precision_type>(exponent) : 0;
+    return exponent > 0 ? checked_mp_exp_magnitude(exponent) : 0;
 }
 
 struct quo_rem_result {
@@ -548,9 +555,9 @@ inline const char *pi_decimal_literal() {
 }
 
 inline bool has_hardcoded_pi(precision_type target_precision) {
-    constexpr precision_type decimal_digits = 1000;
-    constexpr precision_type fractional_digits = decimal_digits - 1;
-    constexpr precision_type conservative_bits = (fractional_digits * 332) / 100;
+    // Keep a wider margin below the 999 available fractional decimal digits.
+    constexpr precision_type conservative_fractional_digits = 990;
+    constexpr precision_type conservative_bits = (conservative_fractional_digits * 332) / 100;
     return target_precision <= conservative_bits;
 }
 
@@ -608,9 +615,9 @@ inline const char *log_two_decimal_literal() {
 }
 
 inline bool has_hardcoded_log_two(precision_type target_precision) {
-    constexpr precision_type decimal_digits = 1000;
-    constexpr precision_type fractional_digits = decimal_digits - 1;
-    constexpr precision_type conservative_bits = (fractional_digits * 332) / 100;
+    // Keep a wider margin below the 999 available fractional decimal digits.
+    constexpr precision_type conservative_fractional_digits = 990;
+    constexpr precision_type conservative_bits = (conservative_fractional_digits * 332) / 100;
     return target_precision <= conservative_bits;
 }
 
@@ -931,7 +938,13 @@ inline precision_type guard_bits_for_exp(precision_type) {
 }
 
 inline precision_type working_precision_for_exp(precision_type target_precision) {
-    return normalize_target_precision(target_precision) + guard_bits_for_exp(target_precision);
+    const precision_type target = normalize_target_precision(target_precision);
+    return checked_precision_add(target, guard_bits_for_exp(target), "exp(x) working precision exceeds mp_bitcnt_t");
+}
+
+inline precision_type working_precision_for_exp_argument(const mpf_class &x_input, precision_type target_precision) {
+    const precision_type work = working_precision_for_exp(target_precision);
+    return checked_precision_add(work, positive_exponent_bits(x_input), "exp(x) working precision exceeds mp_bitcnt_t");
 }
 
 inline mp_exp_t round_to_nearest_mp_exp(const mpf_class &value, precision_type precision) {
@@ -989,7 +1002,7 @@ inline mpf_class exp_taylor_reduced(const mpf_class &x, precision_type precision
 
 inline mpf_class compute_exp(const mpf_class &x_input, precision_type target_precision) {
     const precision_type target = normalize_target_precision(target_precision);
-    const precision_type work = working_precision_for_exp(target);
+    const precision_type work = working_precision_for_exp_argument(x_input, target);
     const mpf_class x = set_prec_copy(x_input, work);
     const mpf_class zero = make_ui(0, work);
 
@@ -1017,7 +1030,8 @@ inline precision_type guard_bits_for_expm1(precision_type) {
 }
 
 inline precision_type working_precision_for_expm1(precision_type target_precision) {
-    return normalize_target_precision(target_precision) + guard_bits_for_expm1(target_precision);
+    const precision_type target = normalize_target_precision(target_precision);
+    return checked_precision_add(target, guard_bits_for_expm1(target), "expm1(x) working precision exceeds mp_bitcnt_t");
 }
 
 inline mpf_class expm1_taylor_small(const mpf_class &x, precision_type precision) {
@@ -1048,11 +1062,10 @@ inline mpf_class compute_expm1(const mpf_class &x_input, precision_type target_p
         return make_ui(0, target);
     }
 
-    mpf_class small_threshold = make_ui(1, work);
-    mpf_div_2exp(small_threshold.get_mpf_t(), small_threshold.get_mpf_t(), work / 2);
-
     mpf_class result = make_ui(0, work);
-    if (abs(x) <= small_threshold) {
+    // exp(x)-1 loses significant bits while exp(x) is close to 1, so keep
+    // the cancellation band on the Taylor path.
+    if (abs_prec(x, work) <= make_ui(1, work)) {
         result = expm1_taylor_small(x, work);
     } else {
         result = sub(compute_exp(x, work), make_ui(1, work), work);
@@ -1357,7 +1370,7 @@ inline mpf_class compute_atan2(const mpf_class &y_input, const mpf_class &x_inpu
 
 inline mpf_class e(precision_type target_precision) {
     const precision_type target = normalize_target_precision(target_precision);
-    const precision_type work = working_precision_for_exp(target) + 8;
+    const precision_type work = checked_precision_add(working_precision_for_exp(target), 8, "e() working precision exceeds mp_bitcnt_t");
     return set_prec_copy(compute_exp(make_ui(1, work), work), target);
 }
 
@@ -1419,7 +1432,8 @@ inline precision_type guard_bits_for_pow(precision_type) {
 }
 
 inline precision_type working_precision_for_pow(precision_type target_precision) {
-    return normalize_target_precision(target_precision) + guard_bits_for_pow(target_precision);
+    const precision_type target = normalize_target_precision(target_precision);
+    return checked_precision_add(target, guard_bits_for_pow(target), "pow(x, y) working precision exceeds mp_bitcnt_t");
 }
 
 inline bool mpf_is_exact_integer(const mpf_class &x, mpz_class &integer_value) {
@@ -1456,6 +1470,8 @@ inline mpf_class compute_pow(const mpf_class &x_input, const mpf_class &y_input,
     const mpf_class zero = make_ui(0, work);
     const mpf_class one = make_ui(1, work);
 
+    // MPF has no Inf/NaN payloads. Ambiguous or out-of-domain cases are
+    // reported as exceptions rather than mirrored from C/IEEE pow semantics.
     if (y == zero) {
         if (x == zero) {
             throw std::domain_error("pow(0, 0) is undefined");
@@ -1487,8 +1503,19 @@ inline mpf_class compute_pow(const mpf_class &x_input, const mpf_class &y_input,
         throw std::domain_error("pow(x, y) is undefined for x < 0 and non-integer y");
     }
 
-    const mpf_class exponent_product = mul(y, compute_log(x, work), work);
-    return set_prec_copy(compute_exp(exponent_product, work), target);
+    const mpf_class preliminary_log_x = compute_log(x, work);
+    const mpf_class preliminary_exponent_product = mul(y, preliminary_log_x, work);
+    const precision_type refined_work = checked_precision_add(
+        work, positive_exponent_bits(preliminary_exponent_product), "pow(x, y) working precision exceeds mp_bitcnt_t");
+
+    if (refined_work > work) {
+        const mpf_class refined_x = set_prec_copy(x_input, refined_work);
+        const mpf_class refined_y = set_prec_copy(y_input, refined_work);
+        const mpf_class exponent_product = mul(refined_y, compute_log(refined_x, refined_work), refined_work);
+        return set_prec_copy(compute_exp(exponent_product, refined_work), target);
+    }
+
+    return set_prec_copy(compute_exp(preliminary_exponent_product, work), target);
 }
 
 } // namespace mplapack_gmp_transcendents
