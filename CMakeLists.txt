@@ -97,9 +97,12 @@ configure_file(
   @ONLY)
 
 # Include directories shared by every backend target (BUILD interface).
+# The build dir comes first so the CMake-generated mplapack_config.h always
+# wins over any stale in-source copy left behind by an autotools configure
+# (which writes include/mplapack_config.h into the source tree).
 set(MPLAPACK_INCLUDE_BUILD_DIRS
-  "${CMAKE_CURRENT_SOURCE_DIR}/include"
-  "${CMAKE_CURRENT_BINARY_DIR}/include")
+  "${CMAKE_CURRENT_BINARY_DIR}/include"
+  "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 # -----------------------------------------------------------------------------
 # Source lists (shared by all backends)

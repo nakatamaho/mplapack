@@ -42,8 +42,13 @@ endforeach()
 
 # Helper: apply the common test compile settings to a target.
 function(_mplapack_test_setup tgt backend internal)
-  target_link_libraries(${tgt} PUBLIC mplapack::mplapack_${backend})
-  target_include_directories(${tgt} PUBLIC "${_fable_dir}")
+  # PRIVATE: these are static archives; they only need the backend's headers,
+  # the ___MPLAPACK_BUILD_WITH_<backend>___ macro and the fable headers to
+  # compile.  We deliberately do NOT propagate the backend link to consumers --
+  # the driver executables link the backend explicitly inside a LINK_GROUP so
+  # that ordering/override resolution is under our control.
+  target_link_libraries(${tgt} PRIVATE mplapack::mplapack_${backend})
+  target_include_directories(${tgt} PRIVATE "${_fable_dir}")
   if(internal)
     target_compile_definitions(${tgt} PRIVATE ___MPLAPACK_INTERNAL___)
   endif()
@@ -119,17 +124,29 @@ foreach(_b ${_backends})
     list(GET _parts 2 _inputs_var)
 
     add_executable(${_exe} "${_main}")
+    target_compile_definitions(${_exe} PRIVATE ___MPLAPACK_INTERNAL___)
+    target_include_directories(${_exe} PRIVATE "${_fable_dir}")
     if(_exe MATCHES "^xeig|^xdmd")
       set(_kind eig)
     else()
       set(_kind lin)
     endif()
-    # override first so its symbols win the multiple-definition resolution.
+    # The override lib provides the test versions of Mxerbla, iMlaenv and
+    # Mxlaenv (and defines srnamt/infot) that must REPLACE the real ones in the
+    # backend libraries -- e.g. the error-exit tests rely on the override
+    # Mxerbla recording the error instead of printing and aborting.  Linking the
+    # override archive with --whole-archive forces all its objects in first, so
+    # its definitions win over the duplicates in mpblas/mplapack (kept first by
+    # --allow-multiple-definition).  The remaining static archives have circular
+    # dependencies, so wrap them in a RESCAN group (--start-group/--end-group).
     target_link_libraries(${_exe} PRIVATE
-      ${_kind}_override_${_b} ${_kind}_${_b} matgen_${_b} mplapack::mplapack_${_b})
-    _mplapack_test_setup(${_exe} ${_b} TRUE)
+      "$<LINK_LIBRARY:WHOLE_ARCHIVE,${_kind}_override_${_b}>"
+      "$<LINK_GROUP:RESCAN,${_kind}_${_b},matgen_${_b},mplapack_${_b},mpblas_${_b}>")
     if(MPLAPACK_LD_ALLOW_MULTIDEF)
       target_link_options(${_exe} PRIVATE "-Wl,--allow-multiple-definition")
+    endif()
+    if(TARGET OpenMP::OpenMP_CXX)
+      target_link_libraries(${_exe} PRIVATE OpenMP::OpenMP_CXX)
     endif()
 
     if(_kind STREQUAL lin)
