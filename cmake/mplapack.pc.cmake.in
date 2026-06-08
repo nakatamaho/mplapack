@@ -1,0 +1,10 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+exec_prefix=${prefix}
+libdir=${prefix}/@CMAKE_INSTALL_LIBDIR@
+includedir=${prefix}/@CMAKE_INSTALL_INCLUDEDIR@/mplapack
+
+Name: mplapack_@PC_BACKEND@
+Description: @PROJECT_DESCRIPTION@ (@PC_BACKEND@ backend)
+Version: @PROJECT_VERSION@
+Libs: -L${libdir} -lmplapack_@PC_BACKEND@ -lmpblas_@PC_BACKEND@
+Cflags: -I${includedir}
