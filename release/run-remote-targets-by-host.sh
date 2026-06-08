@@ -19,8 +19,10 @@ if [[ ! -f "$CONF_FILE" ]]; then
 fi
 
 declare -A host_seen=()
-declare -A host_targets=()
+declare -A host_target_files=()
 host_order=()
+tmpdir="$(mktemp -d)"
+trap 'rm -rf "$tmpdir"' EXIT
 
 matrix_row() {
     local target="$1"
@@ -48,8 +50,10 @@ for target in "$@"; do
     if [[ -z "${host_seen[$host]:-}" ]]; then
         host_seen[$host]=1
         host_order+=("$host")
+        host_target_files[$host]="$tmpdir/host_${#host_order[@]}.targets"
+        : > "${host_target_files[$host]}"
     fi
-    host_targets[$host]+="${target}"$'\n'
+    printf '%s\n' "$target" >> "${host_target_files[$host]}"
 done
 
 run_target() {
@@ -72,13 +76,16 @@ run_target() {
 
 run_host_targets() {
     local host="$1"
-    local target
+    local target target_file
 
+    target_file="${host_target_files[$host]}"
     echo "=== Running remote targets on $host ===" >&2
     while IFS= read -r target; do
         [[ -n "$target" ]] || continue
+        echo "=== Running remote target on $host: $target ===" >&2
         run_target "$target"
-    done <<< "${host_targets[$host]}"
+        echo "=== Finished remote target on $host: $target ===" >&2
+    done < "$target_file"
 }
 
 pids=()
