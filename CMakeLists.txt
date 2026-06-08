@@ -210,10 +210,14 @@ if(MPLAPACK_BUILD_TESTS)
   # linker keeping the first (overriding) definition of duplicated symbols.
   include(CheckLinkerFlag)
   check_linker_flag(CXX "-Wl,--allow-multiple-definition" MPLAPACK_LD_ALLOW_MULTIDEF)
-  # The mpblas correctness tests compare against a reference Fortran BLAS.
+  # The mpblas/mplapack correctness tests compare against a reference Fortran
+  # BLAS/LAPACK and need its Fortran runtime.
   find_package(BLAS)
+  find_package(LAPACK)
+  find_library(MPLAPACK_GFORTRAN_LIBRARY NAMES gfortran)
   add_subdirectory(mpblas/test)
   add_subdirectory(mplapack/test)
+  add_subdirectory(mplapack/test/compare)
 endif()
 if(MPLAPACK_BUILD_BENCHMARKS)
   add_subdirectory(benchmark)

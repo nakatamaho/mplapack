@@ -32,8 +32,8 @@ set(_support
   "${_common}/mplapack.test.cpp"
   "${_common}/Mxerbla.override.cpp")
 
-# The Fortran runtime that the reference BLAS needs (FCLIBS in autotools).
-find_library(MPLAPACK_GFORTRAN_LIBRARY NAMES gfortran)
+# MPLAPACK_GFORTRAN_LIBRARY (the Fortran runtime the reference BLAS needs) is
+# located once by the top-level CMakeLists.
 
 # Every routine in common/ gets a program per enabled backend.
 file(GLOB _mpblas_tests CONFIGURE_DEPENDS "${_common}/*.test.cpp")
