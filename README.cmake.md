@@ -81,6 +81,11 @@ Disable the backends you do not need (each backend compiles ~1000 sources).
   comparison support always uses MPFR) and a reference BLAS located via
   `find_package(BLAS)` (e.g. reference BLAS, OpenBLAS or FlexiBLAS); it is
   skipped if either is missing.
+- **`mplapack/test/compare`** — one program per MPLAPACK routine per backend,
+  comparing against the reference Fortran LAPACK (`find_package(LAPACK)`); same
+  MPFR/BLAS requirements as above. A few cases are numerically borderline against
+  the double-precision reference and may report a mismatch (a property of the
+  tests themselves, not the build).
 
 ```sh
 cmake -S . -B build -DMPLAPACK_BUILD_TESTS=ON
@@ -92,6 +97,5 @@ ctest --test-dir build
 
 Not ported: the bundled third-party builds (GMP/MPFR/MPC/QD/OpenBLAS), the
 CUDA-optimized kernels (`*/optimized/*/cuda`), the `_opt` optimized-library
-variants, the Fable Fortran-to-C++ regeneration pipeline, the
-`mplapack/test/compare` reference-comparison tests, and the
+variants, the Fable Fortran-to-C++ regeneration pipeline, and the
 reference-BLAS/OpenBLAS comparison benchmarks.
