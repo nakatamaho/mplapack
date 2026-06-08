@@ -12,6 +12,18 @@ log() {
     echo "$*" | tee -a "${LOG_DIR}/summary.log"
 }
 
+log_ccache_stats() {
+    local label="$1"
+
+    log "=== CCACHE STATS (${label}) ==="
+    if command -v ccache >/dev/null 2>&1; then
+        ccache -s 2>&1 | tee -a "${LOG_DIR}/summary.log"
+    else
+        log "ccache command not found"
+    fi
+    log "=== END CCACHE STATS (${label}) ==="
+}
+
 # ERR trap: fires on any uncaught error outside run_step, prints line/command
 trap 'echo "[ERR trap] line ${LINENO}: ${BASH_COMMAND}" \
       | tee -a "${LOG_DIR}/summary.log"; exit 1' ERR
@@ -213,6 +225,7 @@ if command -v ccache >/dev/null 2>&1; then
 fi
 log "CCACHE_DIR: ${CCACHE_DIR}"
 log "MPLAPACK_CCACHE_MAXSIZE: ${MPLAPACK_CCACHE_MAXSIZE}"
+log_ccache_stats "START"
 
 # ---------------------------------------------------------------------------
 # Main
@@ -371,6 +384,8 @@ run_step "autoreconf"     autoreconf -fi
 run_step "make_distcheck" env CC="ccache gcc" CXX="ccache g++" FC="ccache gfortran" \
                           make distcheck MAKEFLAGS="-j${MAKE_JOBS}" DISTCHECK_CONFIGURE_FLAGS="${DISTCHECK_CONFIGURE_FLAGS}"
 run_step "collect_test_results" collect_test_results
+
+log_ccache_stats "END"
 
 log ""
 log "=== ALL STEPS COMPLETED SUCCESSFULLY ==="

@@ -6,6 +6,23 @@ log() {
     echo "$*"
 }
 
+log_ccache_stats() {
+    local label="$1"
+    local docker_platform_args=()
+
+    if [ -n "${MPLAPACK_DOCKER_PLATFORM:-}" ]; then
+        docker_platform_args=(--platform "${MPLAPACK_DOCKER_PLATFORM}")
+    fi
+
+    log "=== CCACHE STATS (${label}) ==="
+    docker run --rm \
+        "${docker_platform_args[@]}" \
+        -v "${CCACHE_DIR_HOST}:/ccache:rw" \
+        "${MPLAPACK_IMAGE_TAG}" \
+        ccache -s || true
+    log "=== END CCACHE STATS (${label}) ==="
+}
+
 safe_rmdir() {
     local target="$1"
     if [ -z "${HOME:-}" ] || [ "${HOME}" = "/" ]; then
@@ -158,6 +175,8 @@ docker run --rm \
     "${MPLAPACK_IMAGE_TAG}" \
     ccache -M "${MPLAPACK_CCACHE_MAXSIZE}"
 
+log_ccache_stats "START"
+
 docker_source_args=()
 if [ -n "${SOURCE_BUNDLE}" ]; then
     docker_source_args=(-e MPLAPACK_REPO=/source.bundle -v "${SOURCE_BUNDLE}:/source.bundle:ro")
@@ -172,5 +191,7 @@ docker run --rm \
     -v "${CCACHE_DIR_HOST}:/ccache:rw" \
     -v "${RESULTS_DIR}:/results:rw" \
     "${MPLAPACK_IMAGE_TAG}"
+
+log_ccache_stats "END"
 
 log "=== ALL STEPS COMPLETED SUCCESSFULLY ==="
