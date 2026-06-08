@@ -223,3 +223,11 @@ endif()
 # Install + export
 # -----------------------------------------------------------------------------
 include(cmake/MplapackInstall.cmake)
+
+# -----------------------------------------------------------------------------
+# Packaging (source tarball; the `make dist` equivalent) — only when this is the
+# top-level project, so a parent FetchContent build does not inherit our CPack.
+# -----------------------------------------------------------------------------
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+  include(cmake/MplapackPackage.cmake)
+endif()
