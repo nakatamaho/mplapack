@@ -21,10 +21,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     cuda-toolkit \
     && rm -rf /var/lib/apt/lists/*
 
-RUN nvcc --version
+RUN cuda_nvcc="$(find /usr/local -path '*/bin/nvcc' -type f | sort -V | tail -n 1)" \
+    && test -n "${cuda_nvcc}" \
+    && ln -sfn "$(dirname "$(dirname "${cuda_nvcc}")")" /usr/local/cuda \
+    && /usr/local/cuda/bin/nvcc --version
 
 ENV CCACHE_DIR=/ccache
-ENV PATH="/usr/lib/ccache:${PATH}"
+ENV CUDA_HOME=/usr/local/cuda
+ENV PATH="/usr/lib/ccache:${CUDA_HOME}/bin:${PATH}"
 ENV CC="ccache gcc"
 ENV CXX="ccache g++"
 ENV FC="ccache gfortran"
