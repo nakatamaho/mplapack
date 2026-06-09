@@ -119,13 +119,21 @@ release/buildtest_tier2_debian_i386.sh
 ## Prerequisites
 
 * GCC / G++ / GFortran (C++17 is required; **GCC 15 supported as of 2.1.1**)
-* Standard autotools: `autoconf`, `automake`, `libtool`
-* `wget` or `curl` (to fetch the tarball)
+* `wget` or `curl` for release tarball builds, or `git` for Git checkout builds
+* Standard autotools (`autoconf`, `automake`, `libtool`) are required only when building from a Git checkout
+* `ccache` is recommended. The `misc/reconfig.*.sh` helper scripts use it by default.
 
 All third-party libraries (GMP, MPFR, MPC, QD, OpenBLAS, dlfcn-win32) are bundled and
 built automatically. No separate installation of these libraries is required.
 
+Release tarballs already include generated autotools files, so `autoreconf` is not needed.
+Git checkout builds must run one of the `misc/reconfig.*.sh` scripts before `make`; these
+scripts generate local build files, run `autoreconf`, and execute `./configure` with the
+usual MPLAPACK options.
+
 ## Linux (amd64 / arm64)
+
+### Release tarball
 
 ```sh
 mkdir -p $HOME/tmp && cd $HOME/tmp
@@ -147,7 +155,23 @@ make -j$(nproc)
 make install
 ```
 
-To also enable `binary80` (Intel/AMD x86 only), add `--enable-binary80=yes`:
+### Git checkout
+
+```sh
+mkdir -p $HOME/tmp && cd $HOME/tmp
+git clone https://github.com/nakatamaho/mplapack.git
+cd mplapack
+bash misc/reconfig.ubuntu24.04.sh
+make -j$(nproc)
+make install
+```
+
+For Ubuntu 22.04 or 26.04, use `misc/reconfig.ubuntu22.04.sh` or
+`misc/reconfig.ubuntu26.04.sh` instead. The Linux reconfig scripts enable
+`binary80` automatically on Intel/AMD x86 and omit it on non-x86 CPUs.
+
+To also enable `binary80` manually in a tarball build (Intel/AMD x86 only), add
+`--enable-binary80=yes`:
 
 ```sh
 ./configure \
@@ -167,6 +191,8 @@ To also enable `binary80` (Intel/AMD x86 only), add `--enable-binary80=yes`:
 
 FSF GCC is required. The default Apple Clang does not support `binary128`.
 On Apple Silicon (arm64), omit `--enable-binary80=yes` (binary80 is x86-only).
+
+### Release tarball
 
 ```sh
 sudo port install gcc15 coreutils git gsed
@@ -190,7 +216,21 @@ make -j$(sysctl -n hw.logicalcpu)
 make install
 ```
 
+### Git checkout
+
+```sh
+sudo port install gcc15 coreutils git gsed ccache autoconf automake libtool
+mkdir -p $HOME/tmp && cd $HOME/tmp
+git clone https://github.com/nakatamaho/mplapack.git
+cd mplapack
+bash misc/reconfig.macOS.sh
+make -j$(sysctl -n hw.logicalcpu)
+make install
+```
+
 ## Windows (MinGW-w64 cross-compile on Ubuntu)
+
+### Release tarball
 
 ```sh
 sudo apt-get install gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64 gfortran-mingw-w64-x86-64
@@ -212,6 +252,19 @@ export FC=x86_64-w64-mingw32-gfortran
     --enable-dd=yes \
     --enable-double=yes \
     --enable-test=yes
+make -j$(nproc)
+make install
+```
+
+### Git checkout
+
+```sh
+sudo apt-get install git autoconf automake libtool ccache \
+    gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64 gfortran-mingw-w64-x86-64
+mkdir -p $HOME/tmp && cd $HOME/tmp
+git clone https://github.com/nakatamaho/mplapack.git
+cd mplapack
+bash misc/reconfig.ubuntu24.04.mingw64.sh
 make -j$(nproc)
 make install
 ```
