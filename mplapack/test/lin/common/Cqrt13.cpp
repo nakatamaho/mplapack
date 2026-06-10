@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZQRT13.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,13 +43,13 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Cqrt13(INTEGER const scale, INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL &norma, INTEGER *iseed) {
+void Cqrt13(INTEGER const scale, INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL &norma, INTEGER (&iseed)[4]) {
     //
     if (m <= 0 || n <= 0) {
         return;
     }
     //
-    //     benign matrix
+    // benign matrix
     //
     INTEGER j = 0;
     for (j = 1; j <= n; j = j + 1) {
@@ -52,7 +59,7 @@ void Cqrt13(INTEGER const scale, INTEGER const m, INTEGER const n, COMPLEX *a, I
         }
     }
     //
-    //     scaled versions
+    // scaled versions
     //
     REAL dummy[1];
     REAL smlnum = 0.0;
@@ -63,17 +70,20 @@ void Cqrt13(INTEGER const scale, INTEGER const m, INTEGER const n, COMPLEX *a, I
         norma = Clange("Max", m, n, a, lda, dummy);
         smlnum = Rlamch("Safe minimum");
         bignum = one / smlnum;
+#if defined ___MPLAPACK_BUILD_WITH_BINARY80___ || defined ___MPLAPACK_BUILD_WITH_BINARY128___
+        Rlabad(smlnum, bignum);
+#endif
         smlnum = smlnum / Rlamch("Epsilon");
         bignum = one / smlnum;
         //
         if (scale == 2) {
             //
-            //           matrix scaled up
+            // matrix scaled up
             //
             Clascl("General", 0, 0, norma, bignum, m, n, a, lda, info);
         } else if (scale == 3) {
             //
-            //           matrix scaled down
+            // matrix scaled down
             //
             Clascl("General", 0, 0, norma, smlnum, m, n, a, lda, info);
         }
@@ -81,6 +91,6 @@ void Cqrt13(INTEGER const scale, INTEGER const m, INTEGER const n, COMPLEX *a, I
     //
     norma = Clange("One-norm", m, n, a, lda, dummy);
     //
-    //     End of Cqrt13
+    // End of Cqrt13
     //
 }

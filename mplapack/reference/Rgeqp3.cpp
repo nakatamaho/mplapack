@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DGEQP3.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -51,7 +58,8 @@ void Rgeqp3(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEGE
     INTEGER jb = 0;
     INTEGER fjb = 0;
     //
-    //     Test input arguments
+    // Test input arguments
+    // ====================
     //
     info = 0;
     lquery = (lwork == -1);
@@ -87,7 +95,7 @@ void Rgeqp3(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEGE
         return;
     }
     //
-    //     Move initial columns up front.
+    // Move initial columns up front.
     //
     nfxd = 1;
     for (j = 1; j <= n; j = j + 1) {
@@ -106,11 +114,11 @@ void Rgeqp3(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEGE
     }
     nfxd = nfxd - 1;
     //
-    //     Factorize fixed columns
-    //  =======================
+    // Factorize fixed columns
+    // =======================
     //
-    //     Compute the QR factorization of fixed columns and update
-    //     remaining columns.
+    // Compute the QR factorization of fixed columns and update
+    // remaining columns.
     //
     if (nfxd > 0) {
         na = min(m, nfxd);
@@ -125,8 +133,8 @@ void Rgeqp3(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEGE
         }
     }
     //
-    //     Factorize free columns
-    //  ======================
+    // Factorize free columns
+    // ======================
     //
     if (nfxd < minmn) {
         //
@@ -134,7 +142,7 @@ void Rgeqp3(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEGE
         sn = n - nfxd;
         sminmn = minmn - nfxd;
         //
-        //        Determine the block size.
+        // Determine the block size.
         //
         nb = iMlaenv(inb, "Rgeqrf", " ", sm, sn, -1, -1);
         nbmin = 2;
@@ -142,20 +150,20 @@ void Rgeqp3(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEGE
         //
         if ((nb > 1) && (nb < sminmn)) {
             //
-            //           Determine when to cross over from blocked to unblocked code.
+            // Determine when to cross over from blocked to unblocked code.
             //
             nx = max((INTEGER)0, iMlaenv(ixover, "Rgeqrf", " ", sm, sn, -1, -1));
             //
             if (nx < sminmn) {
                 //
-                //              Determine if workspace is large enough for blocked code.
+                // Determine if workspace is large enough for blocked code.
                 //
                 minws = 2 * sn + (sn + 1) * nb;
                 iws = max(iws, minws);
                 if (lwork < minws) {
                     //
-                    //                 Not enough workspace to use optimal NB: Reduce NB and
-                    //                 determine the minimum value of NB.
+                    // Not enough workspace to use optimal NB: Reduce NB and
+                    // determine the minimum value of NB.
                     //
                     nb = (lwork - 2 * sn) / (sn + 1);
                     nbmin = max((INTEGER)2, iMlaenv(inbmin, "Rgeqrf", " ", sm, sn, -1, -1));
@@ -164,8 +172,8 @@ void Rgeqp3(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEGE
             }
         }
         //
-        //        Initialize partial column norms. The first N elements of work
-        //        store the exact column norms.
+        // Initialize partial column norms. The first N elements of work
+        // store the exact column norms.
         //
         for (j = nfxd + 1; j <= n; j = j + 1) {
             work[j - 1] = Rnrm2(sm, &a[((nfxd + 1) - 1) + (j - 1) * lda], 1);
@@ -174,18 +182,18 @@ void Rgeqp3(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEGE
         //
         if ((nb >= nbmin) && (nb < sminmn) && (nx < sminmn)) {
             //
-            //           Use blocked code initially.
+            // Use blocked code initially.
             //
             j = nfxd + 1;
             //
-            //           Compute factorization: while loop.
+            // Compute factorization: while loop.
             //
             topbmn = minmn - nx;
         statement_30:
             if (j <= topbmn) {
                 jb = min(nb, topbmn - j + 1);
                 //
-                //              Factorize JB columns among columns J:N.
+                // Factorize JB columns among columns J:N.
                 //
                 Rlaqps(m, n - j + 1, j - 1, jb, fjb, &a[(j - 1) * lda], lda, &jpvt[j - 1], &tau[j - 1], &work[j - 1], &work[(n + j) - 1], &work[(2 * n + 1) - 1], &work[(2 * n + jb + 1) - 1], n - j + 1);
                 //
@@ -196,7 +204,7 @@ void Rgeqp3(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEGE
             j = nfxd + 1;
         }
         //
-        //        Use unblocked code to factor the last or only block.
+        // Use unblocked code to factor the last or only block.
         //
         if (j <= minmn) {
             Rlaqp2(m, n - j + 1, j - 1, &a[(j - 1) * lda], lda, &jpvt[j - 1], &tau[j - 1], &work[j - 1], &work[(n + j) - 1], &work[(2 * n + 1) - 1]);
@@ -206,6 +214,6 @@ void Rgeqp3(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEGE
     //
     work[1 - 1] = iws;
     //
-    //     End of Rgeqp3
+    // End of Rgeqp3
     //
 }

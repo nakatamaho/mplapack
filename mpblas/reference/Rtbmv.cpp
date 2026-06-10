@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,33 +26,18 @@
  *
  */
 
+// Derived from BLAS routine DTBMV.
+// Original BLAS authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 
 void Rtbmv(const char *uplo, const char *trans, const char *diag, INTEGER const n, INTEGER const k, REAL *a, INTEGER const lda, REAL *x, INTEGER const incx) {
     //
-    //  -- Reference BLAS level2 routine --
-    //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     INTEGER info = 0;
     if (!Mlsame(uplo, "U") && !Mlsame(uplo, "L")) {
@@ -71,11 +56,11 @@ void Rtbmv(const char *uplo, const char *trans, const char *diag, INTEGER const 
         info = 9;
     }
     if (info != 0) {
-        Mxerbla("Rtbmv ", info);
+        Mxerbla("Rtbmv", info);
         return;
     }
     //
-    //     Quick return if possible.
+    // Quick return if possible.
     //
     if (n == 0) {
         return;
@@ -83,8 +68,8 @@ void Rtbmv(const char *uplo, const char *trans, const char *diag, INTEGER const 
     //
     bool nounit = Mlsame(diag, "N");
     //
-    //     Set up the start point in X if the increment is not unity. This
-    //     will be  ( N - 1 )*INCX   too small for descending loops.
+    // Set up the start point in X if the increment is not unity. This
+    // will be  ( N - 1 )*INCX   too small for descending loops.
     //
     INTEGER kx = 0;
     if (incx <= 0) {
@@ -93,8 +78,8 @@ void Rtbmv(const char *uplo, const char *trans, const char *diag, INTEGER const 
         kx = 1;
     }
     //
-    //     Start the operations. In this version the elements of A are
-    //     accessed sequentially with one pass through A.
+    // Start the operations. In this version the elements of A are
+    // accessed sequentially with one pass through A.
     //
     INTEGER kplus1 = 0;
     INTEGER j = 0;
@@ -106,7 +91,7 @@ void Rtbmv(const char *uplo, const char *trans, const char *diag, INTEGER const 
     INTEGER ix = 0;
     if (Mlsame(trans, "N")) {
         //
-        //         Form  x := A*x.
+        // Form  x := A*x.
         //
         if (Mlsame(uplo, "U")) {
             kplus1 = k + 1;
@@ -183,7 +168,7 @@ void Rtbmv(const char *uplo, const char *trans, const char *diag, INTEGER const 
         }
     } else {
         //
-        //        Form  x := A**T*x.
+        // Form  x := A**T*x.
         //
         if (Mlsame(uplo, "U")) {
             kplus1 = k + 1;
@@ -252,6 +237,6 @@ void Rtbmv(const char *uplo, const char *trans, const char *diag, INTEGER const 
         }
     }
     //
-    //     End of Rtbmv .
+    // End of Rtbmv
     //
 }

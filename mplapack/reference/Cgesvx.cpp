@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,33 +26,17 @@
  *
  */
 
+// Derived from LAPACK routine ZGESVX.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Cgesvx(const char *fact, const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *af, INTEGER const ldaf, INTEGER *ipiv, char *equed, REAL *r, REAL *c, COMPLEX *b, INTEGER const ldb, COMPLEX *x, INTEGER const ldx, REAL &rcond, REAL *ferr, REAL *berr, COMPLEX *work, REAL *rwork, INTEGER &info) {
-    //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     info = 0;
     bool nofact = Mlsame(fact, "N");
@@ -74,7 +58,7 @@ void Cgesvx(const char *fact, const char *trans, INTEGER const n, INTEGER const 
         bignum = one / smlnum;
     }
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     REAL rcmin = 0.0;
     const REAL zero = 0.0;
@@ -145,12 +129,12 @@ void Cgesvx(const char *fact, const char *trans, INTEGER const n, INTEGER const 
     INTEGER infequ = 0;
     if (equil) {
         //
-        //        Compute row and column scalings to equilibrate the matrix A.
+        // Compute row and column scalings to equilibrate the matrix A.
         //
         Cgeequ(n, n, a, lda, r, c, rowcnd, colcnd, amax, infequ);
         if (infequ == 0) {
             //
-            //           Equilibrate the matrix.
+            // Equilibrate the matrix.
             //
             Claqge(n, n, a, lda, r, c, rowcnd, colcnd, amax, equed);
             rowequ = Mlsame(equed, "R") || Mlsame(equed, "B");
@@ -158,7 +142,7 @@ void Cgesvx(const char *fact, const char *trans, INTEGER const n, INTEGER const 
         }
     }
     //
-    //     Scale the right hand side.
+    // Scale the right hand side.
     //
     INTEGER i = 0;
     if (notran) {
@@ -180,17 +164,17 @@ void Cgesvx(const char *fact, const char *trans, INTEGER const n, INTEGER const 
     REAL rpvgrw = 0.0;
     if (nofact || equil) {
         //
-        //        Compute the LU factorization of A.
+        // Compute the LU factorization of A.
         //
         Clacpy("Full", n, n, a, lda, af, ldaf);
         Cgetrf(n, n, af, ldaf, ipiv, info);
         //
-        //        Return if INFO is non-zero.
+        // Return if INFO is non-zero.
         //
         if (info > 0) {
             //
-            //           Compute the reciprocal pivot growth factor of the
-            //           leading rank-deficient INFO columns of A.
+            // Compute the reciprocal pivot growth factor of the
+            // leading rank-deficient INFO columns of A.
             //
             rpvgrw = Clantr("M", "U", "N", info, info, af, ldaf, rwork);
             if (rpvgrw == zero) {
@@ -204,8 +188,8 @@ void Cgesvx(const char *fact, const char *trans, INTEGER const n, INTEGER const 
         }
     }
     //
-    //     Compute the norm of the matrix A and the
-    //     reciprocal pivot growth factor RPVGRW.
+    // Compute the norm of the matrix A and the
+    // reciprocal pivot growth factor RPVGRW.
     //
     char norm;
     if (notran) {
@@ -221,22 +205,22 @@ void Cgesvx(const char *fact, const char *trans, INTEGER const n, INTEGER const 
         rpvgrw = Clange("M", n, n, a, lda, rwork) / rpvgrw;
     }
     //
-    //     Compute the reciprocal of the condition number of A.
+    // Compute the reciprocal of the condition number of A.
     //
     Cgecon(&norm, n, af, ldaf, anorm, rcond, work, rwork, info);
     //
-    //     Compute the solution matrix X.
+    // Compute the solution matrix X.
     //
     Clacpy("Full", n, nrhs, b, ldb, x, ldx);
     Cgetrs(trans, n, nrhs, af, ldaf, ipiv, x, ldx, info);
     //
-    //     Use iterative refinement to improve the computed solution and
-    //     compute error bounds and backward error estimates for it.
+    // Use iterative refinement to improve the computed solution and
+    // compute error bounds and backward error estimates for it.
     //
     Cgerfs(trans, n, nrhs, a, lda, af, ldaf, ipiv, b, ldb, x, ldx, ferr, berr, work, rwork, info);
     //
-    //     Transform the solution matrix X to a solution of the original
-    //     system.
+    // Transform the solution matrix X to a solution of the original
+    // system.
     //
     if (notran) {
         if (colequ) {
@@ -260,7 +244,7 @@ void Cgesvx(const char *fact, const char *trans, INTEGER const n, INTEGER const 
         }
     }
     //
-    //     Set INFO = N+1 if the matrix is singular to working precision.
+    // Set INFO = N+1 if the matrix is singular to working precision.
     //
     if (rcond < Rlamch("Epsilon")) {
         info = n + 1;
@@ -268,6 +252,6 @@ void Cgesvx(const char *fact, const char *trans, INTEGER const n, INTEGER const 
     //
     rwork[1 - 1] = rpvgrw;
     //
-    //     End of Cgesvx
+    // End of Cgesvx
     //
 }

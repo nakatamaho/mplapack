@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,27 +26,35 @@
  *
  */
 
+// Derived from LAPACK routine DLAPY3.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 REAL Rlapy3(REAL const x, REAL const y, REAL const z) {
     REAL return_value = 0.0;
     //
+    REAL hugeval = Rlamch("Overflow");
     REAL xabs = abs(x);
     REAL yabs = abs(y);
     REAL zabs = abs(z);
-    REAL w = max({xabs, yabs, zabs});
+    REAL w = max(xabs, yabs, zabs);
     const REAL zero = 0.0;
-    if (w == zero) {
-        //     W can be zero for max(0,nan,0)
-        //     adding all three entries together will make sure
-        //     NaN will not disappear.
+    if (w == zero || w > hugeval) {
+        // W can be zero for max(0,nan,0)
+        // adding all three entries together will make sure
+        // NaN will not disappear.
         return_value = xabs + yabs + zabs;
     } else {
         return_value = w * sqrt(pow2((xabs / w)) + pow2((yabs / w)) + pow2((zabs / w)));
     }
     return return_value;
     //
-    //     End of Rlapy3
+    // End of Rlapy3
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,35 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZGGGLM.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Cggglm(INTEGER const n, INTEGER const m, INTEGER const p, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX *d, COMPLEX *x, COMPLEX *y, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  ===================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters
+    // Test the input parameters
     //
     info = 0;
     INTEGER np = min(n, p);
@@ -71,7 +55,7 @@ void Cggglm(INTEGER const n, INTEGER const m, INTEGER const p, COMPLEX *a, INTEG
         info = -7;
     }
     //
-    //     Calculate workspace
+    // Calculate workspace
     //
     INTEGER lwkmin = 0;
     INTEGER lwkopt = 0;
@@ -89,7 +73,7 @@ void Cggglm(INTEGER const n, INTEGER const m, INTEGER const p, COMPLEX *a, INTEG
             nb2 = iMlaenv(1, "Cgerqf", " ", n, m, -1, -1);
             nb3 = iMlaenv(1, "Cunmqr", " ", n, m, p, -1);
             nb4 = iMlaenv(1, "Cunmrq", " ", n, m, p, -1);
-            nb = max({nb1, nb2, nb3, nb4});
+            nb = max(nb1, nb2, nb3, nb4);
             lwkmin = m + n + p;
             lwkopt = m + np + max(n, p) * nb;
         }
@@ -107,7 +91,7 @@ void Cggglm(INTEGER const n, INTEGER const m, INTEGER const p, COMPLEX *a, INTEG
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     INTEGER i = 0;
     const COMPLEX czero = COMPLEX(0.0, 0.0);
@@ -121,25 +105,25 @@ void Cggglm(INTEGER const n, INTEGER const m, INTEGER const p, COMPLEX *a, INTEG
         return;
     }
     //
-    //     Compute the GQR factorization of matrices A and B:
+    // Compute the GQR factorization of matrices A and B:
     //
-    //          Q**H*A = ( R11 ) M,    Q**H*B*Z**H = ( T11   T12 ) M
-    //                   (  0  ) N-M                 (  0    T22 ) N-M
-    //                      M                         M+P-N  N-M
+    // Q**H*A = ( R11 ) M,    Q**H*B*Z**H = ( T11   T12 ) M
+    // (  0  ) N-M                 (  0    T22 ) N-M
+    // M                         M+P-N  N-M
     //
-    //     where R11 and T22 are upper triangular, and Q and Z are
-    //     unitary.
+    // where R11 and T22 are upper triangular, and Q and Z are
+    // unitary.
     //
     Cggqrf(n, m, p, a, lda, work, b, ldb, &work[(m + 1) - 1], &work[(m + np + 1) - 1], lwork - m - np, info);
     INTEGER lopt = castINTEGER(work[(m + np + 1) - 1].real());
     //
-    //     Update left-hand-side vector d = Q**H*d = ( d1 ) M
-    //                                               ( d2 ) N-M
+    // Update left-hand-side vector d = Q**H*d = ( d1 ) M
+    // ( d2 ) N-M
     //
     Cunmqr("Left", "Conjugate transpose", n, 1, m, a, lda, work, d, max((INTEGER)1, n), &work[(m + np + 1) - 1], lwork - m - np, info);
     lopt = max(lopt, castINTEGER(work[(m + np + 1) - 1].real()));
     //
-    //     Solve T22*y2 = d2 for y2
+    // Solve T22*y2 = d2 for y2
     //
     if (n > m) {
         Ctrtrs("Upper", "No transpose", "Non unit", n - m, 1, &b[((m + 1) - 1) + ((m + p - n + 1) - 1) * ldb], ldb, &d[(m + 1) - 1], n - m, info);
@@ -152,18 +136,18 @@ void Cggglm(INTEGER const n, INTEGER const m, INTEGER const p, COMPLEX *a, INTEG
         Ccopy(n - m, &d[(m + 1) - 1], 1, &y[(m + p - n + 1) - 1], 1);
     }
     //
-    //     Set y1 = 0
+    // Set y1 = 0
     //
     for (i = 1; i <= m + p - n; i = i + 1) {
         y[i - 1] = czero;
     }
     //
-    //     Update d1 = d1 - T12*y2
+    // Update d1 = d1 - T12*y2
     //
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     Cgemv("No transpose", m, n - m, -cone, &b[((m + p - n + 1) - 1) * ldb], ldb, &y[(m + p - n + 1) - 1], 1, cone, d, 1);
     //
-    //     Solve triangular system: R11*x = d1
+    // Solve triangular system: R11*x = d1
     //
     if (m > 0) {
         Ctrtrs("Upper", "No Transpose", "Non unit", m, 1, a, lda, d, m, info);
@@ -173,16 +157,16 @@ void Cggglm(INTEGER const n, INTEGER const m, INTEGER const p, COMPLEX *a, INTEG
             return;
         }
         //
-        //        Copy D to X
+        // Copy D to X
         //
         Ccopy(m, d, 1, x, 1);
     }
     //
-    //     Backward transformation y = Z**H *y
+    // Backward transformation y = Z**H *y
     //
     Cunmrq("Left", "Conjugate transpose", p, 1, np, &b[(max((INTEGER)1, n - p + 1) - 1)], ldb, &work[(m + 1) - 1], y, max((INTEGER)1, p), &work[(m + np + 1) - 1], lwork - m - np, info);
     work[1 - 1] = m + np + max(lopt, castINTEGER(work[(m + np + 1) - 1].real()));
     //
-    //     End of Cggglm
+    // End of Cggglm
     //
 }

@@ -1,0 +1,17 @@
+ Tests of the Nonsymmetric eigenproblem condition estimation routines
+ Ctrsyl, Ctrexc, Ctrsna, Ctrsen
+
+ Relative machine precision (EPS) = 9.86076131526263990429563028969155e-32
+ Safe minimum (SFMIN)             = 2.00416836000897277799610805134985e-292
+
+ Routines pass computational tests if test ratio is less than2.00000000000000000000000000000000e+01
+
+
+ ZEC routines passed the tests of the error exits ( 33 tests done)
+
+ All tests for ZEC routines passed the threshold (   5966 tests run)
+
+
+ End of tests
+ Total time used =         0.36 seconds
+

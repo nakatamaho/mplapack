@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,26 +26,17 @@
  *
  */
 
+// Derived from BLAS routine DZASUM.
+// Original BLAS authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 
 REAL RCasum(INTEGER const n, COMPLEX *zx, INTEGER const incx) {
     REAL return_value = 0.0;
-    //
-    //  -- Reference BLAS level1 routine --
-    //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
     return_value = 0.0;
     REAL stemp = 0.0;
     if (n <= 0 || incx <= 0) {
@@ -55,14 +46,14 @@ REAL RCasum(INTEGER const n, COMPLEX *zx, INTEGER const incx) {
     INTEGER nincx = 0;
     if (incx == 1) {
         //
-        //        code for increment equal to 1
+        // code for increment equal to 1
         //
         for (i = 1; i <= n; i = i + 1) {
             stemp += RCabs1(zx[i - 1]);
         }
     } else {
         //
-        //        code for increment not equal to 1
+        // code for increment not equal to 1
         //
         nincx = n * incx;
         for (i = 1; i <= nincx; i = i + incx) {
@@ -71,4 +62,7 @@ REAL RCasum(INTEGER const n, COMPLEX *zx, INTEGER const incx) {
     }
     return_value = stemp;
     return return_value;
+    //
+    // End of RCasum
+    //
 }

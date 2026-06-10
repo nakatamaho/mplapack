@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,34 +26,22 @@
  *
  */
 
+// Derived from BLAS routine DROTMG.
+// Original BLAS authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 
 void Rrotmg(REAL &dd1, REAL &dd2, REAL &dx1, REAL const dy1, REAL *dparam) {
-    //
-    //  -- Reference BLAS level1 routine --
-    //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //
-    REAL zero = 0.0;
-    REAL one = 1.0;
-    REAL two = 2.0;
     REAL gam = 4096.0;
-    REAL gamsq = 16777216;
-    REAL rgamsq = 5.9604645e-8;
-    //     ..
-    //
+    REAL gamsq = 16777216.0;
+    REAL one = 1.0;
+    REAL rgamsq = 0x1p-24;
+    REAL two = 2.0;
+    REAL zero = 0.0;
     REAL dflag = 0.0;
     REAL dh11 = 0.0;
     REAL dh12 = 0.0;
@@ -66,7 +54,7 @@ void Rrotmg(REAL &dd1, REAL &dd2, REAL &dx1, REAL const dy1, REAL *dparam) {
     REAL du = 0.0;
     REAL dtemp = 0.0;
     if (dd1 < zero) {
-        //        GO ZERO-H-D-AND-DX1..
+        // GO ZERO-H-D-AND-DX1..
         dflag = -one;
         dh11 = zero;
         dh12 = zero;
@@ -77,14 +65,14 @@ void Rrotmg(REAL &dd1, REAL &dd2, REAL &dx1, REAL const dy1, REAL *dparam) {
         dd2 = zero;
         dx1 = zero;
     } else {
-        //        CASE-DD1-NONNEGATIVE
+        // CASE-DD1-NONNEGATIVE
         dp2 = dd2 * dy1;
         if (dp2 == zero) {
             dflag = -two;
             dparam[1 - 1] = dflag;
             return;
         }
-        //        REGULAR-CASE..
+        // REGULAR-CASE..
         dp1 = dd1 * dx1;
         dq2 = dp2 * dy1;
         dq1 = dp1 * dx1;
@@ -101,9 +89,9 @@ void Rrotmg(REAL &dd1, REAL &dd2, REAL &dx1, REAL const dy1, REAL *dparam) {
                 dd2 = dd2 / du;
                 dx1 = dx1 * du;
             } else {
-                //            This code path if here for safety. We do not expect this
-                //            condition to ever hold except in edge cases with rounding
-                //            errors. See DOI: 10.1145/355841.355847
+                // This code path if here for safety. We do not expect this
+                // condition to ever hold except in edge cases with rounding
+                // errors. See DOI: 10.1145/355841.355847
                 dflag = -one;
                 dh11 = zero;
                 dh12 = zero;
@@ -117,7 +105,7 @@ void Rrotmg(REAL &dd1, REAL &dd2, REAL &dx1, REAL const dy1, REAL *dparam) {
         } else {
             //
             if (dq2 < zero) {
-                //              GO ZERO-H-D-AND-DX1..
+                // GO ZERO-H-D-AND-DX1..
                 dflag = -one;
                 dh11 = zero;
                 dh12 = zero;
@@ -139,7 +127,7 @@ void Rrotmg(REAL &dd1, REAL &dd2, REAL &dx1, REAL const dy1, REAL *dparam) {
             }
         }
         //
-        //     PROCEDURE..SCALE-CHECK
+        // PROCEDURE..SCALE-CHECK
         if (dd1 != zero) {
             while ((dd1 <= rgamsq) || (dd1 >= gamsq)) {
                 if (dflag == zero) {
@@ -204,4 +192,7 @@ void Rrotmg(REAL &dd1, REAL &dd2, REAL &dx1, REAL const dy1, REAL *dparam) {
     }
     //
     dparam[1 - 1] = dflag;
+    //
+    // End of Rrotmg
+    //
 }

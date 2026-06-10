@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DLASCL.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -48,30 +55,7 @@ void Rlascl(const char *type, INTEGER const kl, INTEGER const ku, REAL const cfr
     INTEGER k1 = 0;
     INTEGER k2 = 0;
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     //
@@ -120,13 +104,13 @@ void Rlascl(const char *type, INTEGER const kl, INTEGER const ku, REAL const cfr
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0 || m == 0) {
         return;
     }
     //
-    //     Get machine parameters
+    // Get machine parameters
     //
     smlnum = Rlamch("S");
     bignum = one / smlnum;
@@ -137,16 +121,16 @@ void Rlascl(const char *type, INTEGER const kl, INTEGER const ku, REAL const cfr
 statement_10:
     cfrom1 = cfromc * smlnum;
     if (cfrom1 == cfromc) {
-        //        CFROMC is an inf.  Multiply by a correctly signed zero for
-        //        finite CTOC, or a NaN if CTOC is infinite.
+        // CFROMC is an inf.  Multiply by a correctly signed zero for
+        // finite CTOC, or a NaN if CTOC is infinite.
         mul = ctoc / cfromc;
         done = true;
         cto1 = ctoc;
     } else {
         cto1 = ctoc / bignum;
         if (cto1 == ctoc) {
-            //           CTOC is either 0 or an inf.  In both cases, CTOC itself
-            //           serves as the correct multiplication factor.
+            // CTOC is either 0 or an inf.  In both cases, CTOC itself
+            // serves as the correct multiplication factor.
             mul = ctoc;
             done = true;
             cfromc = one;
@@ -161,12 +145,15 @@ statement_10:
         } else {
             mul = ctoc / cfromc;
             done = true;
+            if (mul == one) {
+                return;
+            }
         }
     }
     //
     if (itype == 0) {
         //
-        //        Full matrix
+        // Full matrix
         //
         for (j = 1; j <= n; j = j + 1) {
             for (i = 1; i <= m; i = i + 1) {
@@ -176,7 +163,7 @@ statement_10:
         //
     } else if (itype == 1) {
         //
-        //        Lower triangular matrix
+        // Lower triangular matrix
         //
         for (j = 1; j <= n; j = j + 1) {
             for (i = j; i <= m; i = i + 1) {
@@ -186,7 +173,7 @@ statement_10:
         //
     } else if (itype == 2) {
         //
-        //        Upper triangular matrix
+        // Upper triangular matrix
         //
         for (j = 1; j <= n; j = j + 1) {
             for (i = 1; i <= min(j, m); i = i + 1) {
@@ -196,7 +183,7 @@ statement_10:
         //
     } else if (itype == 3) {
         //
-        //        Upper Hessenberg matrix
+        // Upper Hessenberg matrix
         //
         for (j = 1; j <= n; j = j + 1) {
             for (i = 1; i <= min(j + 1, m); i = i + 1) {
@@ -206,7 +193,7 @@ statement_10:
         //
     } else if (itype == 4) {
         //
-        //        Lower half of a symmetric band matrix
+        // Lower half of a symmetric band matrix
         //
         k3 = kl + 1;
         k4 = n + 1;
@@ -218,7 +205,7 @@ statement_10:
         //
     } else if (itype == 5) {
         //
-        //        Upper half of a symmetric band matrix
+        // Upper half of a symmetric band matrix
         //
         k1 = ku + 2;
         k3 = ku + 1;
@@ -230,7 +217,7 @@ statement_10:
         //
     } else if (itype == 6) {
         //
-        //        Band matrix
+        // Band matrix
         //
         k1 = kl + ku + 2;
         k2 = kl + 1;
@@ -248,6 +235,6 @@ statement_10:
         goto statement_10;
     }
     //
-    //     End of Rlascl
+    // End of Rlascl
     //
 }

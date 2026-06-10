@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,26 +26,39 @@
  *
  */
 
+// Derived from LAPACK routine ZHETRD_HB2ST.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Chetrd_hb2st(const char *stage1, const char *vect, const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, INTEGER const ldab, REAL *d, REAL *e, COMPLEX *hous, INTEGER const lhous, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //     Determine the minimal workspace size required.
-    //     Test the input parameters
+    // Determine the minimal workspace size required.
+    // Test the input parameters
     //
-    INTEGER debug = 0;
     info = 0;
     bool afters1 = Mlsame(stage1, "Y");
     bool wantq = Mlsame(vect, "V");
     bool upper = Mlsame(uplo, "U");
     bool lquery = (lwork == -1) || (lhous == -1);
     //
-    //     Determine the block size, the workspace size and the hous size.
+    // Determine the block size, the workspace size and the hous size.
     //
     INTEGER ib = iMlaenv2stage(2, "Chetrd_hb2st", vect, n, kd, -1, -1);
-    INTEGER lhmin = iMlaenv2stage(3, "Chetrd_hb2st", vect, n, kd, ib, -1);
-    INTEGER lwmin = iMlaenv2stage(4, "Chetrd_hb2st", vect, n, kd, ib, -1);
+    INTEGER lhmin = 0;
+    INTEGER lwmin = 0;
+    if (n == 0 || kd <= 1) {
+        lhmin = 1;
+        lwmin = 1;
+    } else {
+        lhmin = iMlaenv2stage(3, "Chetrd_hb2st", vect, n, kd, ib, -1);
+        lwmin = iMlaenv2stage(4, "Chetrd_hb2st", vect, n, kd, ib, -1);
+    }
     //
     if (!afters1 && !Mlsame(stage1, "N")) {
         info = -1;
@@ -77,15 +90,15 @@ void Chetrd_hb2st(const char *stage1, const char *vect, const char *uplo, INTEGE
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
-        hous[1 - 1] = 1;
-        work[1 - 1] = 1;
+        hous[1 - 1] = 1.0;
+        work[1 - 1] = 1.0;
         return;
     }
     //
-    //     Determine pointer position
+    // Determine pointer position
     //
     INTEGER ldv = kd + ib;
     INTEGER sizetau = 2 * n;
@@ -122,11 +135,11 @@ void Chetrd_hb2st(const char *stage1, const char *vect, const char *uplo, INTEGE
         //
     }
     //
-    //     Case KD=0:
-    //     The matrix is diagonal. We just copy it (convert to "real" for
-    //     complex because D is REAL and the imaginary part should be 0)
-    //     and store it in D. A sequential code here is better or
-    //     in a parallel environment it might need two cores for D and E
+    // Case KD=0:
+    // The matrix is diagonal. We just copy it (convert to "real" for
+    // complex because D is double and the imaginary part should be 0)
+    // and store it in D. A sequential code here is better or
+    // in a parallel environment it might need two cores for D and E
     //
     INTEGER i = 0;
     const REAL rzero = 0.0;
@@ -138,20 +151,20 @@ void Chetrd_hb2st(const char *stage1, const char *vect, const char *uplo, INTEGE
             e[i - 1] = rzero;
         }
         //
-        hous[1 - 1] = 1;
-        work[1 - 1] = 1;
+        hous[1 - 1] = 1.0;
+        work[1 - 1] = 1.0;
         return;
     }
     //
-    //     Case KD=1:
-    //     The matrix is already Tridiagonal. We have to make diagonal
-    //     and offdiagonal elements real, and store them in D and E.
-    //     For that, for real precision just copy the diag and offdiag
-    //     to D and E while for the COMPLEX case the bulge chasing is
-    //     performed to convert the hermetian tridiagonal to symmetric
-    //     tridiagonal. A simpler conversion formula might be used, but then
-    //     updating the Q matrix will be required and based if Q is generated
-    //     or not this might complicate the story.
+    // Case KD=1:
+    // The matrix is already Tridiagonal. We have to make diagonal
+    // and offdiagonal elements real, and store them in D and E.
+    // For that, for real precision just copy the diag and offdiag
+    // to D and E while for the COMPLEX case the bulge chasing is
+    // performed to convert the hermetian tridiagonal to symmetric
+    // tridiagonal. A simpler conversion formula might be used, but then
+    // updating the Q matrix will be required and based if Q is generated
+    // or not this might complicate the story.
     //
     COMPLEX tmp = 0.0;
     REAL abstmp = 0.0;
@@ -161,7 +174,7 @@ void Chetrd_hb2st(const char *stage1, const char *vect, const char *uplo, INTEGE
             d[i - 1] = ab[(abdpos - 1) + (i - 1) * ldab].real();
         }
         //
-        //         make off-diagonal elements real and copy them to E
+        // make off-diagonal elements real and copy them to E
         //
         if (upper) {
             for (i = 1; i <= n - 1; i = i + 1) {
@@ -177,9 +190,9 @@ void Chetrd_hb2st(const char *stage1, const char *vect, const char *uplo, INTEGE
                 if (i < n - 1) {
                     ab[(abofdpos - 1) + ((i + 2) - 1) * ldab] = ab[(abofdpos - 1) + ((i + 2) - 1) * ldab] * tmp;
                 }
-                //                  IF( WANTZ ) THEN
-                //                     CALL Cscal( N, DCONJG( TMP ), Q( 1, I+1 ), 1 )
-                //                  END IF
+                // IF( WANTZ ) THEN
+                // CALL Cscal( N, DCONJG( TMP ), Q( 1, I+1 ), 1 )
+                // END IF
             }
         } else {
             for (i = 1; i <= n - 1; i = i + 1) {
@@ -195,32 +208,34 @@ void Chetrd_hb2st(const char *stage1, const char *vect, const char *uplo, INTEGE
                 if (i < n - 1) {
                     ab[(abofdpos - 1) + ((i + 1) - 1) * ldab] = ab[(abofdpos - 1) + ((i + 1) - 1) * ldab] * tmp;
                 }
-                //                 IF( WANTQ ) THEN
-                //                    CALL Cscal( N, TMP, Q( 1, I+1 ), 1 )
-                //                 END IF
+                // IF( WANTQ ) THEN
+                // CALL Cscal( N, TMP, Q( 1, I+1 ), 1 )
+                // END IF
             }
         }
         //
-        hous[1 - 1] = 1;
-        work[1 - 1] = 1;
+        hous[1 - 1] = 1.0;
+        work[1 - 1] = 1.0;
         return;
     }
     //
-    //     Main code start here.
-    //     Reduce the hermitian band of A to a tridiagonal matrix.
+    // Main code start here.
+    // Reduce the hermitian band of A to a tridiagonal matrix.
     //
     INTEGER thgrsiz = n;
     INTEGER grsiz = 1;
     INTEGER shift = 3;
-    INTEGER nbtiles = ceil(double(n) / double(kd));
-    INTEGER stepercol = ceil(double(shift) / double(grsiz));
-    INTEGER thgrnb = ceil(double(n - 1) / double(thgrsiz));
+    INTEGER nbtiles = iceil(castREAL(n) / castREAL(kd));
+    INTEGER stepercol = iceil(castREAL(shift) / castREAL(grsiz));
+    INTEGER thgrnb = iceil(castREAL(n - 1) / castREAL(thgrsiz));
     //
     Clacpy("A", kd + 1, n, ab, ldab, &work[apos - 1], lda);
     const COMPLEX zero = COMPLEX(0.0, 0.0);
     Claset("A", kd, n, zero, zero, &work[awpos - 1], lda);
     //
-    //     main bulge chasing loop
+    // openMP parallelisation start here
+    //
+    // main bulge chasing loop
     //
     INTEGER thgrid = 0;
     INTEGER stt = 0;
@@ -271,9 +286,9 @@ void Chetrd_hb2st(const char *stage1, const char *vect, const char *uplo, INTEGE
                             }
                         }
                         //
-                        //                         Call the kernel
+                        // Call the kernel
                         //
-                        Chb2st_kernels(uplo, wantq, ttype, stind, edind, sweepid, n, kd, ib, &work[inda - 1], lda, &hous[indv - 1], &hous[indtau - 1], ldv, &work[(indw + tid * kd) - 1]);
+                        Chb2st_kernels(uplo, wantq, ttype, stind, edind, sweepid, n, kd, ib, &work[inda - 1], lda, &hous[indv - 1], &hous[indtau - 1], ldv, &work[indw - 1]);
                         if (blklastind >= (n - 1)) {
                             stt++;
                             break;
@@ -284,15 +299,15 @@ void Chetrd_hb2st(const char *stage1, const char *vect, const char *uplo, INTEGE
         }
     }
     //
-    //     Copy the diagonal from A to D. Note that D is REAL thus only
-    //     the Real part is needed, the imaginary part should be zero.
+    // Copy the diagonal from A to D. Note that D is REAL thus only
+    // the Real part is needed, the imaginary part should be zero.
     //
     for (i = 1; i <= n; i = i + 1) {
         d[i - 1] = work[(dpos + (i - 1) * lda) - 1].real();
     }
     //
-    //     Copy the off diagonal from A to E. Note that E is REAL thus only
-    //     the Real part is needed, the imaginary part should be zero.
+    // Copy the off diagonal from A to E. Note that E is REAL thus only
+    // the Real part is needed, the imaginary part should be zero.
     //
     if (upper) {
         for (i = 1; i <= n - 1; i = i + 1) {
@@ -304,9 +319,8 @@ void Chetrd_hb2st(const char *stage1, const char *vect, const char *uplo, INTEGE
         }
     }
     //
-    hous[1 - 1] = lhmin;
     work[1 - 1] = lwmin;
     //
-    //     End of Chetrd_hb2st
+    // End of Chetrd_hb2st
     //
 }

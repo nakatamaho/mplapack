@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DTGSNA.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -60,9 +67,9 @@ void Rtgsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
     REAL dummy[1];
     REAL alphai = 0.0;
     REAL alprqt = 0.0;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     REAL c1 = 0.0;
-    const REAL four = 4.0e+0;
+    const REAL four = 4.0;
     REAL c2 = 0.0;
     REAL root1 = 0.0;
     REAL root2 = 0.0;
@@ -76,7 +83,7 @@ void Rtgsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
     const INTEGER difdri = 3;
     REAL scale = 0.0;
     //
-    //     Decode and test the input parameters
+    // Decode and test the input parameters
     //
     wantbh = Mlsame(job, "B");
     wants = Mlsame(job, "E") || wantbh;
@@ -103,8 +110,8 @@ void Rtgsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
         info = -12;
     } else {
         //
-        //        Set M to the number of eigenpairs for which condition numbers
-        //        are required, and test MM.
+        // Set M to the number of eigenpairs for which condition numbers
+        // are required, and test MM.
         //
         if (somcon) {
             m = 0;
@@ -158,13 +165,13 @@ void Rtgsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
     }
     //
-    //     Get machine constants
+    // Get machine constants
     //
     eps = Rlamch("P");
     smlnum = Rlamch("S") / eps;
@@ -173,7 +180,7 @@ void Rtgsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
     //
     for (k = 1; k <= n; k = k + 1) {
         //
-        //        Determine whether A(k,k) begins a 1-by-1 or 2-by-2 block.
+        // Determine whether A(k,k) begins a 1-by-1 or 2-by-2 block.
         //
         if (pair) {
             pair = false;
@@ -184,8 +191,8 @@ void Rtgsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
             }
         }
         //
-        //        Determine whether condition numbers are required for the k-th
-        //        eigenpair.
+        // Determine whether condition numbers are required for the k-th
+        // eigenpair.
         //
         if (somcon) {
             if (pair) {
@@ -203,12 +210,12 @@ void Rtgsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
         //
         if (wants) {
             //
-            //           Compute the reciprocal condition number of the k-th
-            //           eigenvalue.
+            // Compute the reciprocal condition number of the k-th
+            // eigenvalue.
             //
             if (pair) {
                 //
-                //              Complex eigenvalue pair.
+                // Complex eigenvalue pair.
                 //
                 rnrm = Rlapy2(Rnrm2(n, &vr[(ks - 1) * ldvr], 1), Rnrm2(n, &vr[((ks + 1) - 1) * ldvr], 1));
                 lnrm = Rlapy2(Rnrm2(n, &vl[(ks - 1) * ldvl], 1), Rnrm2(n, &vl[((ks + 1) - 1) * ldvl], 1));
@@ -236,7 +243,7 @@ void Rtgsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
                 //
             } else {
                 //
-                //              Real eigenvalue.
+                // Real eigenvalue.
                 //
                 rnrm = Rnrm2(n, &vr[(ks - 1) * ldvr], 1);
                 lnrm = Rnrm2(n, &vl[(ks - 1) * ldvl], 1);
@@ -255,16 +262,16 @@ void Rtgsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
         //
         if (wantdf) {
             if (n == 1) {
-                dif[ks - 1] = Rlapy2(a[(1 - 1)], b[(1 - 1)]);
+                dif[ks - 1] = Rlapy2(a[0], b[0]);
                 goto statement_20;
             }
             //
-            //           Estimate the reciprocal condition number of the k-th
-            //           eigenvectors.
+            // Estimate the reciprocal condition number of the k-th
+            // eigenvectors.
             if (pair) {
                 //
-                //              Copy the  2-by 2 pencil beginning at (A(k,k), B(k, k)).
-                //              Compute the eigenvalue(s) at position K.
+                // Copy the  2-by 2 pencil beginning at (A(k,k), B(k, k)).
+                // Compute the eigenvalue(s) at position K.
                 //
                 work[1 - 1] = a[(k - 1) + (k - 1) * lda];
                 work[2 - 1] = a[((k + 1) - 1) + (k - 1) * lda];
@@ -279,13 +286,13 @@ void Rtgsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
                 c1 = two * (alphar * alphar + alphai * alphai + beta * beta);
                 c2 = four * beta * beta * alphai * alphai;
                 root1 = c1 + sqrt(c1 * c1 - 4.0 * c2);
-                root2 = c2 / root1;
                 root1 = root1 / two;
+                root2 = c2 / root1;
                 cond = min(sqrt(root1), sqrt(root2));
             }
             //
-            //           Copy the matrix (A, B) to the array WORK and swap the
-            //           diagonal block beginning at A(k,k) to the (1,1) position.
+            // Copy the matrix (A, B) to the array WORK and swap the
+            // diagonal block beginning at A(k,k) to the (1,1) position.
             //
             Rlacpy("Full", n, n, a, lda, work, n);
             Rlacpy("Full", n, n, b, ldb, &work[(n * n + 1) - 1], n);
@@ -296,16 +303,16 @@ void Rtgsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
             //
             if (ierr > 0) {
                 //
-                //              Ill-conditioned problem - swap rejected.
+                // Ill-conditioned problem - swap rejected.
                 //
                 dif[ks - 1] = zero;
             } else {
                 //
-                //              Reordering successful, solve generalized Sylvester
-                //              equation for R and L,
-                //                         A22 * R - L * A11 = A12
-                //                         B22 * R - L * B11 = B12,
-                //              and compute estimate of Difl((A11,B11), (A22, B22)).
+                // Reordering successful, solve generalized Sylvester
+                // equation for R and L,
+                // A22 * R - L * A11 = A12
+                // B22 * R - L * B11 = B12,
+                // and compute estimate of Difl((A11,B11), (A22, B22)).
                 //
                 n1 = 1;
                 if (work[2 - 1] != zero) {
@@ -320,7 +327,7 @@ void Rtgsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
                     Rtgsyl("N", difdri, n2, n1, &work[(n * n1 + n1 + 1) - 1], n, work, n, &work[(n1 + 1) - 1], n, &work[(n * n1 + n1 + i) - 1], n, &work[i - 1], n, &work[(n1 + i) - 1], n, scale, dif[ks - 1], &work[(iz + 1) - 1], lwork - 2 * n * n, iwork, ierr);
                     //
                     if (pair) {
-                        dif[ks - 1] = min(REAL(max(one, alprqt) * dif[ks - 1]), cond);
+                        dif[ks - 1] = min(max(one, alprqt) * dif[ks - 1], cond);
                     }
                 }
             }
@@ -336,6 +343,6 @@ void Rtgsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
     }
     work[1 - 1] = lwmin;
     //
-    //     End of Rtgsna
+    // End of Rtgsna
     //
 }

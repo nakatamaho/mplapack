@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DQLT03.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,50 +43,13 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-#include <mplapack_debug.h>
-
 void Rqlt03(INTEGER const m, INTEGER const n, INTEGER const k, REAL *af, REAL *c, REAL *cc, REAL *q, INTEGER const lda, REAL *tau, REAL *work, INTEGER const lwork, REAL *rwork, REAL *result) {
+    static INTEGER iseed[4] = {1988, 1989, 1990, 1991};
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    INTEGER ldaf = lda;
-    INTEGER ldc = lda;
-    INTEGER ldcc = lda;
-    INTEGER ldq = lda;
-    INTEGER iseed[] = {1988, 1989, 1990, 1991};
     REAL eps = Rlamch("Epsilon");
     INTEGER minmn = min(m, n);
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     const REAL zero = 0.0;
     if (minmn == 0) {
@@ -90,48 +60,48 @@ void Rqlt03(INTEGER const m, INTEGER const n, INTEGER const k, REAL *af, REAL *c
         return;
     }
     //
-    //     Copy the last k columns of the factorization to the array Q
+    // Copy the last k columns of the factorization to the array Q
     //
-    const REAL rogue = -1.0e+10;
+    const REAL rogue = -10000000000.0;
     Rlaset("Full", m, m, rogue, rogue, q, lda);
     if (k > 0 && m > k) {
-        Rlacpy("Full", m - k, k, &af[((n - k + 1) - 1) * ldaf], lda, &q[((m - k + 1) - 1) * ldq], lda);
+        Rlacpy("Full", m - k, k, &af[((n - k + 1) - 1) * lda], lda, &q[((m - k + 1) - 1) * lda], lda);
     }
     if (k > 1) {
-        Rlacpy("Upper", k - 1, k - 1, &af[((m - k + 1) - 1) + ((n - k + 2) - 1) * ldaf], lda, &q[((m - k + 1) - 1) + ((m - k + 2) - 1) * ldq], lda);
+        Rlacpy("Upper", k - 1, k - 1, &af[((m - k + 1) - 1) + ((n - k + 2) - 1) * lda], lda, &q[((m - k + 1) - 1) + ((m - k + 2) - 1) * lda], lda);
     }
     //
-    //     Generate the m-by-m matrix Q
+    // Generate the m-by-m matrix Q
     //
+    srnamt = "Rorgql";
     INTEGER info = 0;
-    strncpy(srnamt, "'Rorgql", srnamt_len);
     Rorgql(m, m, k, q, lda, &tau[(minmn - k + 1) - 1], work, lwork, info);
     //
     INTEGER iside = 0;
-    char side;
+    fem::str<1> side;
     INTEGER mc = 0;
     INTEGER nc = 0;
     INTEGER j = 0;
     REAL cnorm = 0.0;
     const REAL one = 1.0;
     INTEGER itrans = 0;
-    char trans;
+    fem::str<1> trans;
     REAL resid = 0.0;
     for (iside = 1; iside <= 2; iside = iside + 1) {
         if (iside == 1) {
-            side = 'L';
+            side = "L";
             mc = m;
             nc = n;
         } else {
-            side = 'R';
+            side = "R";
             mc = n;
             nc = m;
         }
         //
-        //        Generate MC by NC matrix C
+        // Generate MC by NC matrix C
         //
         for (j = 1; j <= nc; j = j + 1) {
-            Rlarnv(2, iseed, mc, &c[(j - 1) * ldc]);
+            Rlarnv(2, iseed, mc, &c[(j - 1) * lda]);
         }
         cnorm = Rlange("1", mc, nc, c, lda, rwork);
         if (cnorm == 0.0) {
@@ -140,30 +110,31 @@ void Rqlt03(INTEGER const m, INTEGER const n, INTEGER const k, REAL *af, REAL *c
         //
         for (itrans = 1; itrans <= 2; itrans = itrans + 1) {
             if (itrans == 1) {
-                trans = 'N';
+                trans = "N";
             } else {
-                trans = 'T';
+                trans = "T";
             }
             //
-            //           Copy C
+            // Copy C
             //
             Rlacpy("Full", mc, nc, c, lda, cc, lda);
             //
-            //           Apply Q or Q' to C
+            // Apply Q or Q' to C
             //
+            srnamt = "Rormql";
             if (k > 0) {
-                Rormql(&side, &trans, mc, nc, k, &af[((n - k + 1) - 1) * ldaf], lda, &tau[(minmn - k + 1) - 1], cc, lda, work, lwork, info);
+                Rormql(side.elems, trans.elems, mc, nc, k, &af[((n - k + 1) - 1) * lda], lda, &tau[(minmn - k + 1) - 1], cc, lda, work, lwork, info);
             }
             //
-            //           Form explicit product and subtract
+            // Form explicit product and subtract
             //
-            if (Mlsame(&side, "L")) {
-                Rgemm(&trans, "No transpose", mc, nc, mc, -one, q, lda, c, lda, one, cc, lda);
+            if (Mlsame(side.elems, "L")) {
+                Rgemm(trans.elems, "No transpose", mc, nc, mc, -one, q, lda, c, lda, one, cc, lda);
             } else {
-                Rgemm("No transpose", &trans, mc, nc, nc, -one, c, lda, q, lda, one, cc, lda);
+                Rgemm("No transpose", trans.elems, mc, nc, nc, -one, c, lda, q, lda, one, cc, lda);
             }
             //
-            //           Compute error in the difference
+            // Compute error in the difference
             //
             resid = Rlange("1", mc, nc, cc, lda, rwork);
             result[((iside - 1) * 2 + itrans) - 1] = resid / (castREAL(max((INTEGER)1, m)) * cnorm * eps);
@@ -171,6 +142,6 @@ void Rqlt03(INTEGER const m, INTEGER const n, INTEGER const k, REAL *af, REAL *c
         }
     }
     //
-    //     End of Rqlt03
+    // End of Rqlt03
     //
 }

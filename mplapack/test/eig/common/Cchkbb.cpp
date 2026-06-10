@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZCHKBB.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,16 +43,12 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-void Cchkbb(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nwdths, INTEGER *kk, INTEGER const ntypes, bool *dotype, INTEGER const nrhs, INTEGER *iseed, REAL const thresh, INTEGER const nounit, COMPLEX *a, INTEGER const lda, COMPLEX *ab, INTEGER const ldab, REAL *bd, REAL *be, COMPLEX *q, INTEGER const ldq, COMPLEX *p, INTEGER const ldp, COMPLEX *c, INTEGER const ldc, COMPLEX *cc, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL *result, INTEGER &info) {
+void Cchkbb(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nwdths, INTEGER *kk, INTEGER const ntypes, bool *dotype, INTEGER const nrhs, INTEGER (&iseed)[4], REAL const thresh, INTEGER const nounit, COMPLEX *a, INTEGER const lda, COMPLEX *ab, INTEGER const ldab, REAL *bd, REAL *be, COMPLEX *q, INTEGER const ldq, COMPLEX *p, INTEGER const ldp, COMPLEX *c, INTEGER const ldc, COMPLEX *cc, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL *result, INTEGER &info) {
     common cmn;
     common_write write(cmn);
-    char buf[1024];
-    const INTEGER maxtyp = 15;
-    INTEGER ktype[15] = {1, 2, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, 9, 9, 9};
-    INTEGER kmagn[15] = {1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 2, 3, 1, 2, 3};
-    INTEGER kmode[15] = {0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 4, 4, 0, 0, 0};
+    static INTEGER ktype[15] = {1, 2, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, 9, 9, 9};
+    static INTEGER kmagn[15] = {1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 2, 3, 1, 2, 3};
+    static INTEGER kmode[15] = {0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 4, 4, 0, 0, 0};
     INTEGER ntestt = 0;
     bool badmm = false;
     bool badnn = false;
@@ -73,6 +76,7 @@ void Cchkbb(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nw
     INTEGER k = 0;
     INTEGER kl = 0;
     INTEGER ku = 0;
+    const INTEGER maxtyp = 15;
     INTEGER mtypes = 0;
     INTEGER jtype = 0;
     INTEGER ntest = 0;
@@ -89,15 +93,18 @@ void Cchkbb(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nw
     const REAL zero = 0.0;
     INTEGER i = 0;
     INTEGER jr = 0;
+    //
     static const char *format_9999 = "(' Cchkbb: ',a,' returned INFO=',i5,'.',/,9x,'M=',i5,' N=',i5,' K=',i5,"
                                      "', JTYPE=',i5,', ISEED=(',3(i5,','),i5,')')";
+    static const char *format_9998 = "(' M =',i4,' N=',i4,', K=',i3,', seed=',4(i4,','),' type ',i2,', test(',"
+                                     "i2,')=',g10.3)";
     //
-    //     Check for errors
+    // Check for errors
     //
     ntestt = 0;
     info = 0;
     //
-    //     Important constants
+    // Important constants
     //
     badmm = false;
     badnn = false;
@@ -113,7 +120,7 @@ void Cchkbb(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nw
         if (nval[j - 1] < 0) {
             badnn = true;
         }
-        mnmax = max({mnmax, min(mval[j - 1], nval[j - 1])});
+        mnmax = max(mnmax, min(mval[j - 1], nval[j - 1]));
     }
     //
     badnnb = false;
@@ -125,7 +132,7 @@ void Cchkbb(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nw
         }
     }
     //
-    //     Check for errors
+    // Check for errors
     //
     if (nsizes < 0) {
         info = -1;
@@ -160,13 +167,13 @@ void Cchkbb(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nw
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (nsizes == 0 || ntypes == 0 || nwdths == 0) {
         return;
     }
     //
-    //     More Important constants
+    // More Important constants
     //
     unfl = Rlamch("Safe minimum");
     ovfl = one / unfl;
@@ -175,7 +182,7 @@ void Cchkbb(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nw
     rtunfl = sqrt(unfl);
     rtovfl = sqrt(ovfl);
     //
-    //     Loop over sizes, widths, types
+    // Loop over sizes, widths, types
     //
     nerrs = 0;
     nmats = 0;
@@ -184,15 +191,15 @@ void Cchkbb(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nw
         m = mval[jsize - 1];
         n = nval[jsize - 1];
         mnmin = min(m, n);
-        amninv = one / castREAL(max({(INTEGER)1, m, n}));
+        amninv = one / castREAL(max((INTEGER)1, m, n));
         //
         for (jwidth = 1; jwidth <= nwdths; jwidth = jwidth + 1) {
             k = kk[jwidth - 1];
             if (k >= m && k >= n) {
                 goto statement_150;
             }
-            kl = max({(INTEGER)0, min(m - 1, k)});
-            ku = max({(INTEGER)0, min(n - 1, k)});
+            kl = max((INTEGER)0, min(m - 1, k));
+            ku = max((INTEGER)0, min(n - 1, k));
             //
             if (nsizes != 1) {
                 mtypes = min(maxtyp, ntypes);
@@ -211,20 +218,20 @@ void Cchkbb(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nw
                     ioldsd[j - 1] = iseed[j - 1];
                 }
                 //
-                //              Compute "A".
+                // Compute "A".
                 //
-                //              Control parameters:
+                // Control parameters:
                 //
-                //                  KMAGN  KMODE        KTYPE
-                //              =1  O(1)   clustered 1  zero
-                //              =2  large  clustered 2  identity
-                //              =3  small  exponential  (none)
-                //              =4         arithmetic   diagonal, (w/ singular values)
-                //              =5         random log   (none)
-                //              =6         random       nonhermitian, w/ singular values
-                //              =7                      (none)
-                //              =8                      (none)
-                //              =9                      random nonhermitian
+                // KMAGN  KMODE        KTYPE
+                // =1  O(1)   clustered 1  zero
+                // =2  large  clustered 2  identity
+                // =3  small  exponential  (none)
+                // =4         arithmetic   diagonal, (w/ singular values)
+                // =5         random log(none)
+                // =6         random       nonhermitian, w/ singular values
+                // =7                      (none)
+                // =8                      (none)
+                // =9                      random nonhermitian
                 //
                 if (mtypes > maxtyp) {
                     goto statement_90;
@@ -233,7 +240,7 @@ void Cchkbb(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nw
                 itype = ktype[jtype - 1];
                 imode = kmode[jtype - 1];
                 //
-                //              Compute norm
+                // Compute norm
                 //
                 switch (kmagn[jtype - 1]) {
                 case 1:
@@ -265,16 +272,16 @@ void Cchkbb(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nw
                 iinfo = 0;
                 cond = ulpinv;
                 //
-                //              Special Matrices -- Identity & Jordan block
+                // Special Matrices -- Identity & Jordan block
                 //
-                //                 Zero
+                // Zero
                 //
                 if (itype == 1) {
                     iinfo = 0;
                     //
                 } else if (itype == 2) {
                     //
-                    //                 Identity
+                    // Identity
                     //
                     for (jcol = 1; jcol <= n; jcol = jcol + 1) {
                         a[(jcol - 1) + (jcol - 1) * lda] = anorm;
@@ -282,19 +289,19 @@ void Cchkbb(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nw
                     //
                 } else if (itype == 4) {
                     //
-                    //                 Diagonal Matrix, singular values specified
+                    // Diagonal Matrix, singular values specified
                     //
                     Clatms(m, n, "S", iseed, "N", rwork, imode, cond, anorm, 0, 0, "N", a, lda, work, iinfo);
                     //
                 } else if (itype == 6) {
                     //
-                    //                 Nonhermitian, singular values specified
+                    // Nonhermitian, singular values specified
                     //
                     Clatms(m, n, "S", iseed, "N", rwork, imode, cond, anorm, kl, ku, "N", a, lda, work, iinfo);
                     //
                 } else if (itype == 9) {
                     //
-                    //                 Nonhermitian, random entries
+                    // Nonhermitian, random entries
                     //
                     Clatmr(m, n, "S", iseed, "N", work, 6, one, cone, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, kl, ku, zero, anorm, "N", a, lda, idumma, iinfo);
                     //
@@ -303,19 +310,19 @@ void Cchkbb(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nw
                     iinfo = 1;
                 }
                 //
-                //              Generate Right-Hand Side
+                // Generate Right-Hand Side
                 //
                 Clatmr(m, nrhs, "S", iseed, "N", work, 6, one, cone, "T", "N", &work[(m + 1) - 1], 1, one, &work[(2 * m + 1) - 1], 1, one, "N", idumma, m, nrhs, zero, one, "NO", c, ldc, idumma, iinfo);
                 //
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Generator", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9999), "Generator", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     return;
                 }
             //
             statement_90:
                 //
-                //              Copy A to band storage.
+                // Copy A to band storage.
                 //
                 for (j = 1; j <= n; j = j + 1) {
                     for (i = max((INTEGER)1, j - ku); i <= min(m, j + kl); i = i + 1) {
@@ -323,16 +330,16 @@ void Cchkbb(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nw
                     }
                 }
                 //
-                //              Copy C
+                // Copy C
                 //
                 Clacpy("Full", m, nrhs, c, ldc, cc, ldc);
                 //
-                //              Call Cgbbrd to compute B, Q and P, and to update C.
+                // Call Cgbbrd to compute B, Q and P, and to update C.
                 //
                 Cgbbrd("B", m, n, nrhs, kl, ku, ab, ldab, bd, be, q, ldq, p, ldp, cc, ldc, work, rwork, iinfo);
                 //
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Cgbbrd", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9999), "Cgbbrd", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -342,23 +349,23 @@ void Cchkbb(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nw
                     }
                 }
                 //
-                //              Test 1:  Check the decomposition A := Q * B * P'
-                //                   2:  Check the orthogonality of Q
-                //                   3:  Check the orthogonality of P
-                //                   4:  Check the computation of Q' * C
+                // Test 1:  Check the decomposition A := Q * B * P'
+                // 2:  Check the orthogonality of Q
+                // 3:  Check the orthogonality of P
+                // 4:  Check the computation of Q' * C
                 //
                 Cbdt01(m, n, -1, a, lda, q, ldq, bd, be, p, ldp, work, rwork, result[1 - 1]);
                 Cunt01("Columns", m, m, q, ldq, work, lwork, rwork, result[2 - 1]);
                 Cunt01("Rows", n, n, p, ldp, work, lwork, rwork, result[3 - 1]);
                 Cbdt02(m, nrhs, c, ldc, cc, ldc, q, ldq, work, rwork, result[4 - 1]);
                 //
-                //              End of Loop -- Check for RESULT(j) > THRESH
+                // End of Loop -- Check for RESULT(j) > THRESH
                 //
                 ntest = 4;
             statement_120:
                 ntestt += ntest;
                 //
-                //              Print out tests which fail.
+                // Print out tests which fail.
                 //
                 for (jr = 1; jr <= ntest; jr = jr + 1) {
                     if (result[jr - 1] >= thresh) {
@@ -366,10 +373,7 @@ void Cchkbb(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nw
                             Rlahd2(nounit, "ZBB");
                         }
                         nerrs++;
-                        sprintnum_short(buf, result[jr - 1]);
-                        write(nounit, "(' M =',i4,' N=',i4,', K=',i3,', seed=',4(i4,','),' type ',i2,"
-                                      "', test(',i2,')=',a)"),
-                            m, n, k, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3], jtype, jr, buf;
+                        write(nounit, format_9998), m, n, k, ioldsd, jtype, jr, result[jr - 1];
                     }
                 }
             //
@@ -379,10 +383,10 @@ void Cchkbb(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nw
         }
     }
     //
-    //     Summary
+    // Summary
     //
     Rlasum("ZBB", nounit, nerrs, ntestt);
     //
-    //     End of Cchkbb
+    // End of Cchkbb
     //
 }

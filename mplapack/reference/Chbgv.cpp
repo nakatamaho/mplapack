@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZHBGV.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Chbgv(const char *jobz, const char *uplo, INTEGER const n, INTEGER const ka, INTEGER const kb, COMPLEX *ab, INTEGER const ldab, COMPLEX *bb, INTEGER const ldbb, REAL *w, COMPLEX *z, INTEGER const ldz, COMPLEX *work, REAL *rwork, INTEGER &info) {
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     bool wantz = Mlsame(jobz, "V");
     bool upper = Mlsame(uplo, "U");
@@ -59,13 +66,13 @@ void Chbgv(const char *jobz, const char *uplo, INTEGER const n, INTEGER const ka
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
     }
     //
-    //     Form a split Cholesky factorization of B.
+    // Form a split Cholesky factorization of B.
     //
     Cpbstf(uplo, n, kb, bb, ldbb, info);
     if (info != 0) {
@@ -73,14 +80,14 @@ void Chbgv(const char *jobz, const char *uplo, INTEGER const n, INTEGER const ka
         return;
     }
     //
-    //     Transform problem to standard eigenvalue problem.
+    // Transform problem to standard eigenvalue problem.
     //
     INTEGER inde = 1;
     INTEGER indwrk = inde + n;
     INTEGER iinfo = 0;
     Chbgst(jobz, uplo, n, ka, kb, ab, ldab, bb, ldbb, z, ldz, work, &rwork[indwrk - 1], iinfo);
     //
-    //     Reduce to tridiagonal form.
+    // Reduce to tridiagonal form.
     //
     char vect;
     if (wantz) {
@@ -90,7 +97,7 @@ void Chbgv(const char *jobz, const char *uplo, INTEGER const n, INTEGER const ka
     }
     Chbtrd(&vect, uplo, n, ka, ab, ldab, w, &rwork[inde - 1], z, ldz, work, iinfo);
     //
-    //     For eigenvalues only, call Rsterf.  For eigenvectors, call Csteqr.
+    // For eigenvalues only, call Rsterf.  For eigenvectors, call Csteqr.
     //
     if (!wantz) {
         Rsterf(n, w, &rwork[inde - 1], info);
@@ -98,6 +105,6 @@ void Chbgv(const char *jobz, const char *uplo, INTEGER const n, INTEGER const ka
         Csteqr(jobz, n, w, &rwork[inde - 1], z, ldz, &rwork[indwrk - 1], info);
     }
     //
-    //     End of Chbgv
+    // End of Chbgv
     //
 }

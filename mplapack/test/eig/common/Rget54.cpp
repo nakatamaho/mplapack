@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DGET54.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,34 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
 void Rget54(INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *s, INTEGER const lds, REAL *t, INTEGER const ldt, REAL *u, INTEGER const ldu, REAL *v, INTEGER const ldv, REAL *work, REAL &result) {
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     const REAL zero = 0.0;
     result = zero;
@@ -71,19 +51,19 @@ void Rget54(INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const 
         return;
     }
     //
-    //     Constants
+    // Constants
     //
     REAL unfl = Rlamch("Safe minimum");
     REAL ulp = Rlamch("Epsilon") * Rlamch("Base");
     //
-    //     compute the norm of (A,B)
+    // compute the norm of (A,B)
     //
     Rlacpy("Full", n, n, a, lda, work, n);
     Rlacpy("Full", n, n, b, ldb, &work[(n * n + 1) - 1], n);
     REAL dum[1];
-    REAL abnorm = max({Rlange("1", n, 2 * n, work, n, dum), unfl});
+    REAL abnorm = max(Rlange("1", n, 2 * n, work, n, dum), unfl);
     //
-    //     Compute W1 = A - U*S*V', and put in the array WORK(1:N*N)
+    // Compute W1 = A - U*S*V', and put in the array WORK(1:N*N)
     //
     Rlacpy(" ", n, n, a, lda, work, n);
     const REAL one = 1.0;
@@ -91,14 +71,14 @@ void Rget54(INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const 
     //
     Rgemm("N", "C", n, n, n, -one, &work[(n * n + 1) - 1], n, v, ldv, one, work, n);
     //
-    //     Compute W2 = B - U*T*V', and put in the workarray W(N*N+1:2*N*N)
+    // Compute W2 = B - U*T*V', and put in the workarray W(N*N+1:2*N*N)
     //
     Rlacpy(" ", n, n, b, ldb, &work[(n * n + 1) - 1], n);
     Rgemm("N", "N", n, n, n, one, u, ldu, t, ldt, zero, &work[(2 * n * n + 1) - 1], n);
     //
     Rgemm("N", "C", n, n, n, -one, &work[(2 * n * n + 1) - 1], n, v, ldv, one, &work[(n * n + 1) - 1], n);
     //
-    //     Compute norm(W)/ ( ulp*norm((A,B)) )
+    // Compute norm(W)/ ( ulp*norm((A,B)) )
     //
     REAL wnorm = Rlange("1", n, 2 * n, work, n, dum);
     //
@@ -106,12 +86,12 @@ void Rget54(INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const 
         result = (wnorm / abnorm) / (2 * n * ulp);
     } else {
         if (abnorm < one) {
-            result = (min(wnorm, REAL((castREAL(2 * n) * abnorm) / abnorm))) / (castREAL(2 * n) * ulp);
+            result = (min(wnorm, 2 * n * abnorm) / abnorm) / (2 * n * ulp);
         } else {
-            result = min(REAL(wnorm / abnorm), castREAL(2 * n)) / (castREAL(2 * n) * ulp);
+            result = min(wnorm / abnorm, castREAL(2 * n)) / (2 * n * ulp);
         }
     }
     //
-    //     End of Rget54
+    // End of Rget54
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZERRPS.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -35,24 +42,25 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack_debug.h>
 
-void Cerrps(const char *path, INTEGER const nunit) {
+void Cerrps(fem::str_cref path, INTEGER const nunit) {
+    common cmn;
+    common_write write(cmn);
     //
     nout = nunit;
+    write(nout, star);
     //
-    //     Set the variables to innocuous values.
+    // Set the variables to innocuous values.
     //
     INTEGER j = 0;
     const INTEGER nmax = 4;
     INTEGER i = 0;
     COMPLEX a[nmax * nmax];
-    INTEGER lda = nmax;
     INTEGER piv[nmax];
     REAL rwork[2 * nmax];
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
-            a[(i - 1) + (j - 1) * lda] = 1.0 / castREAL(i + j);
+            a[(i - 1) + (j - 1) * nmax] = 1.0 / castREAL(i + j);
             //
         }
         piv[j - 1] = j;
@@ -62,41 +70,41 @@ void Cerrps(const char *path, INTEGER const nunit) {
     }
     ok = true;
     //
-    //        Test error exits of the routines that use the Cholesky
-    //        decomposition of an Hermitian positive semidefinite matrix.
+    // Test error exits of the routines that use the Cholesky
+    // decomposition of an Hermitian positive semidefinite matrix.
     //
-    //        Cpstrf
+    // Cpstrf
     //
-    strncpy(srnamt, "Cpstrf", srnamt_len);
+    srnamt = "Cpstrf";
     infot = 1;
     INTEGER rank = 0;
     INTEGER info = 0;
     Cpstrf("/", 0, a, 1, piv, rank, -1.0, rwork, info);
-    chkxer("Cpstrf", infot, nout, lerr, ok);
+    Chkxer("Cpstrf", infot, nout, lerr, ok);
     infot = 2;
     Cpstrf("U", -1, a, 1, piv, rank, -1.0, rwork, info);
-    chkxer("Cpstrf", infot, nout, lerr, ok);
+    Chkxer("Cpstrf", infot, nout, lerr, ok);
     infot = 4;
     Cpstrf("U", 2, a, 1, piv, rank, -1.0, rwork, info);
-    chkxer("Cpstrf", infot, nout, lerr, ok);
+    Chkxer("Cpstrf", infot, nout, lerr, ok);
     //
-    //        Cpstf2
+    // Cpstf2
     //
-    strncpy(srnamt, "Cpstf2", srnamt_len);
+    srnamt = "Cpstf2";
     infot = 1;
     Cpstf2("/", 0, a, 1, piv, rank, -1.0, rwork, info);
-    chkxer("Cpstf2", infot, nout, lerr, ok);
+    Chkxer("Cpstf2", infot, nout, lerr, ok);
     infot = 2;
     Cpstf2("U", -1, a, 1, piv, rank, -1.0, rwork, info);
-    chkxer("Cpstf2", infot, nout, lerr, ok);
+    Chkxer("Cpstf2", infot, nout, lerr, ok);
     infot = 4;
     Cpstf2("U", 2, a, 1, piv, rank, -1.0, rwork, info);
-    chkxer("Cpstf2", infot, nout, lerr, ok);
+    Chkxer("Cpstf2", infot, nout, lerr, ok);
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     Alaesm(path, ok, nout);
     //
-    //     End of Cerrps
+    // End of Cerrps
     //
 }

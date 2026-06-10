@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZQPT01.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -42,14 +49,14 @@ REAL Cqpt01(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, COMPL
     const REAL zero = 0.0;
     return_value = zero;
     //
-    //     Test if there is enough workspace
+    // Test if there is enough workspace
     //
     if (lwork < m * n + n) {
         Mxerbla("Cqpt01", 10);
         return return_value;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (m <= 0 || n <= 0) {
         return return_value;
@@ -60,17 +67,16 @@ REAL Cqpt01(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, COMPL
     //
     INTEGER j = 0;
     INTEGER i = 0;
-    INTEGER ldaf = lda;
     for (j = 1; j <= k; j = j + 1) {
         for (i = 1; i <= min(j, m); i = i + 1) {
-            work[((j - 1) * m + i) - 1] = af[(i - 1) + (j - 1) * ldaf];
+            work[((j - 1) * m + i) - 1] = af[(i - 1) + (j - 1) * lda];
         }
         for (i = j + 1; i <= m; i = i + 1) {
             work[((j - 1) * m + i) - 1] = zero;
         }
     }
     for (j = k + 1; j <= n; j = j + 1) {
-        Ccopy(m, &af[(j - 1) * ldaf], 1, &work[((j - 1) * m + 1) - 1], 1);
+        Ccopy(m, &af[(j - 1) * lda], 1, &work[((j - 1) * m + 1) - 1], 1);
     }
     //
     INTEGER info = 0;
@@ -79,7 +85,7 @@ REAL Cqpt01(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, COMPL
     const REAL one = 1.0;
     for (j = 1; j <= n; j = j + 1) {
         //
-        //        Compare i-th column of QR and jpvt(i)-th column of A
+        // Compare i-th column of QR and jpvt(i)-th column of A
         //
         Caxpy(m, COMPLEX(-one), &a[(jpvt[j - 1] - 1) * lda], 1, &work[((j - 1) * m + 1) - 1], 1);
     }
@@ -91,6 +97,6 @@ REAL Cqpt01(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, COMPL
     //
     return return_value;
     //
-    //     End of Cqpt01
+    // End of Cqpt01
     //
 }

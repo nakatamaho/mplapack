@@ -1,18 +1,21 @@
 lib_LTLIBRARIES = libmpblas_dd_opt.la 
 
 libmpblas_dd_opt_la_CPPFLAGS = -I. -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) $(OPENMP_CXXFLAGS) -D___MPLAPACK_BUILD_WITH_DD___
+libmpblas_dd_opt_la_CXXFLAGS = $(DD_CXXFLAGS)
 libmpblas_dd_opt_la_SOURCES = \
 Rcopy.cpp Rcopy_ref.cpp openmp/Rcopy_omp.cpp \
 Rdot.cpp  Rdot_ref.cpp  openmp/Rdot_omp.cpp \
 Rgemm.cpp Rgemm_ref.cpp openmp/Rgemm_NN_omp.cpp openmp/Rgemm_NT_omp.cpp openmp/Rgemm_TN_omp.cpp openmp/Rgemm_TT_omp.cpp \
 Raxpy.cpp Raxpy_ref.cpp openmp/Raxpy_omp.cpp \
-../../reference/Rgemv.cpp \
+../../reference/CRrot.cpp \
+../../reference/CRscal.cpp \
 ../../reference/Caxpy.cpp \
 ../../reference/Ccopy.cpp \
 ../../reference/Cdotc.cpp \
 ../../reference/Cdotu.cpp \
 ../../reference/Cgbmv.cpp \
 ../../reference/Cgemm.cpp \
+../../reference/Cgemmtr.cpp \
 ../../reference/Cgemv.cpp \
 ../../reference/Cgerc.cpp \
 ../../reference/Cgeru.cpp \
@@ -28,8 +31,6 @@ Raxpy.cpp Raxpy_ref.cpp openmp/Raxpy_omp.cpp \
 ../../reference/Chpr2.cpp \
 ../../reference/Crotg.cpp \
 ../../reference/Cscal.cpp \
-../../reference/CRrot.cpp \
-../../reference/CRscal.cpp \
 ../../reference/Cswap.cpp \
 ../../reference/Csymm.cpp \
 ../../reference/Csyr2k.cpp \
@@ -42,11 +43,15 @@ Raxpy.cpp Raxpy_ref.cpp openmp/Raxpy_omp.cpp \
 ../../reference/Ctrmv.cpp \
 ../../reference/Ctrsm.cpp \
 ../../reference/Ctrsv.cpp \
+../../reference/Mlsame.cpp \
+../../reference/Mxerbla.cpp \
 ../../reference/RCabs1.cpp \
 ../../reference/RCasum.cpp \
 ../../reference/RCnrm2.cpp \
 ../../reference/Rasum.cpp \
 ../../reference/Rgbmv.cpp \
+../../reference/Rgemmtr.cpp \
+../../reference/Rgemv.cpp \
 ../../reference/Rger.cpp \
 ../../reference/Rnrm2.cpp \
 ../../reference/Rrot.cpp \
@@ -73,13 +78,11 @@ Raxpy.cpp Raxpy_ref.cpp openmp/Raxpy_omp.cpp \
 ../../reference/Rtrmv.cpp \
 ../../reference/Rtrsm.cpp \
 ../../reference/Rtrsv.cpp \
-../../reference/Mlsame.cpp \
-../../reference/Mxerbla.cpp \
-../../reference/iCamax.cpp  \
+../../reference/iCamax.cpp \
 ../../reference/iRamax.cpp \
 ../../reference/mplapackinit.cpp
 
-libmpblas_dd_opt_la_LDFLAGS = -Wl,-rpath,$(libdir)
+libmpblas_dd_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO) -Wl,-rpath,$(libdir)
 if IS_MACOS
 libmpblas_dd_opt_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif

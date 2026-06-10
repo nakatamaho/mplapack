@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DGLMTS.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,58 +43,30 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
 void Rglmts(INTEGER const n, INTEGER const m, INTEGER const p, REAL *a, REAL *af, INTEGER const lda, REAL *b, REAL *bf, INTEGER const ldb, REAL *d, REAL *df, REAL *x, REAL *u, REAL *work, INTEGER const lwork, REAL *rwork, REAL &result) {
-    INTEGER ldaf = lda;
-    INTEGER ldbf = ldb;
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //
-    //  ====================================================================
-    //
-    //     ..
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     REAL eps = Rlamch("Epsilon");
     REAL unfl = Rlamch("Safe minimum");
-    REAL anorm = max({Rlange("1", n, m, a, lda, rwork), unfl});
-    REAL bnorm = max({Rlange("1", n, p, b, ldb, rwork), unfl});
+    REAL anorm = max(Rlange("1", n, m, a, lda, rwork), unfl);
+    REAL bnorm = max(Rlange("1", n, p, b, ldb, rwork), unfl);
     //
-    //     Copy the matrices A and B to the arrays AF and BF,
-    //     and the vector D the array DF.
+    // Copy the matrices A and B to the arrays AF and BF,
+    // and the vector D the array DF.
     //
     Rlacpy("Full", n, m, a, lda, af, lda);
     Rlacpy("Full", n, p, b, ldb, bf, ldb);
     Rcopy(n, d, 1, df, 1);
     //
-    //     Solve GLM problem
+    // Solve GLM problem
     //
     INTEGER info = 0;
     Rggglm(n, m, p, af, lda, bf, ldb, df, x, u, work, lwork, info);
     //
-    //     Test the residual for the solution of LSE
+    // Test the residual for the solution of LSE
     //
-    //                       norm( d - A*x - B*u )
-    //       RESULT = -----------------------------------------
-    //                (norm(A)+norm(B))*(norm(x)+norm(u))*EPS
+    // norm( d - A*x - B*u )
+    // RESULT = -----------------------------------------
+    // (norm(A)+norm(B))*(norm(x)+norm(u))*EPS
     //
     Rcopy(n, d, 1, df, 1);
     const REAL one = 1.0;
@@ -106,6 +85,6 @@ void Rglmts(INTEGER const n, INTEGER const m, INTEGER const p, REAL *a, REAL *af
         result = ((dnorm / ynorm) / xnorm) / eps;
     }
     //
-    //     End of Rglmts
+    // End of Rglmts
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,25 +26,36 @@
  *
  */
 
+// Derived from LAPACK routine ALAESM.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
-#include <mplapack_lin.h>
-#include <mplapack.h>
 
-void Alaesm(const char *path, bool const ok, INTEGER const nout) {
+#include <mplapack_matgen.h>
+#include <mplapack_lin.h>
+
+void Alaesm(fem::str_cref path, bool const ok, INTEGER const nout) {
     common cmn;
     common_write write(cmn);
-    char _path[4];
-    strncpy(_path, path, 3);
-    _path[3] = '\0';
+    //
+    static const char *format_9999 = "(1x,a3,' routines passed the tests of the error exits')";
+    static const char *format_9998 = "(' *** ',a3,' routines failed the tests of the error ','exits ***')";
+    //
     if (ok) {
-        write(nout, "(1x,a3,' routines passed the tests of the error exits')"), _path;
+        write(nout, format_9999), path;
     } else {
-        write(nout, "(' *** ',a3,' routines failed the tests of the error ','exits ***')"), _path;
+        write(nout, format_9998), path;
     }
     //
-    //     End of Alaesm
+    // End of Alaesm
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DGELSS.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -68,32 +75,7 @@ void Rgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
     INTEGER ldwork = 0;
     INTEGER il = 0;
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     minmn = min(m, n);
@@ -111,12 +93,12 @@ void Rgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
         info = -7;
     }
     //
-    //     Compute workspace
-    //      (Note: Comments in the code beginning "Workspace:" describe the
-    //       minimal amount of workspace needed at that point in the code,
-    //       as well as the preferred amount for good performance.
-    //       NB refers to the optimal block size for the immediately
-    //       following subroutine, as returned by iMlaenv.)
+    // Compute workspace
+    // (Note: Comments in the code beginning "Workspace:" describe the
+    // minimal amount of workspace needed at that point in the code,
+    // as well as the preferred amount for good performance.
+    // NB refers to the optimal block size for the immediately
+    // following subroutine, as returned by iMlaenv.)
     //
     if (info == 0) {
         minwrk = 1;
@@ -126,13 +108,13 @@ void Rgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
             mnthr = iMlaenv(6, "Rgelss", " ", m, n, nrhs, -1);
             if (m >= n && m >= mnthr) {
                 //
-                //              Path 1a - overdetermined, with many more rows than
-                //                        columns
+                // Path 1a - overdetermined, with many more rows than
+                // columns
                 //
-                //              Compute space needed for Rgeqrf
+                // Compute space needed for Rgeqrf
                 Rgeqrf(m, n, a, lda, &dum[1 - 1], &dum[1 - 1], -1, info);
                 lwork_Rgeqrf = castINTEGER(dum[1 - 1]);
-                //              Compute space needed for Rormqr
+                // Compute space needed for Rormqr
                 Rormqr("L", "T", m, nrhs, n, a, lda, &dum[1 - 1], b, ldb, &dum[1 - 1], -1, info);
                 lwork_Rormqr = castINTEGER(dum[1 - 1]);
                 mm = n;
@@ -141,56 +123,56 @@ void Rgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
             }
             if (m >= n) {
                 //
-                //              Path 1 - overdetermined or exactly determined
+                // Path 1 - overdetermined or exactly determined
                 //
-                //              Compute workspace needed for Rbdsqr
+                // Compute workspace needed for Rbdsqr
                 //
                 bdspac = max((INTEGER)1, 5 * n);
-                //              Compute space needed for Rgebrd
+                // Compute space needed for Rgebrd
                 Rgebrd(mm, n, a, lda, s, &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], -1, info);
                 lwork_Rgebrd = castINTEGER(dum[1 - 1]);
-                //              Compute space needed for Rormbr
+                // Compute space needed for Rormbr
                 Rormbr("Q", "L", "T", mm, nrhs, n, a, lda, &dum[1 - 1], b, ldb, &dum[1 - 1], -1, info);
                 lwork_Rormbr = castINTEGER(dum[1 - 1]);
-                //              Compute space needed for Rorgbr
+                // Compute space needed for Rorgbr
                 Rorgbr("P", n, n, n, a, lda, &dum[1 - 1], &dum[1 - 1], -1, info);
                 lwork_Rorgbr = castINTEGER(dum[1 - 1]);
-                //              Compute total workspace needed
+                // Compute total workspace needed
                 maxwrk = max(maxwrk, 3 * n + lwork_Rgebrd);
                 maxwrk = max(maxwrk, 3 * n + lwork_Rormbr);
                 maxwrk = max(maxwrk, 3 * n + lwork_Rorgbr);
                 maxwrk = max(maxwrk, bdspac);
                 maxwrk = max(maxwrk, n * nrhs);
-                minwrk = max({3 * n + mm, 3 * n + nrhs, bdspac});
+                minwrk = max(3 * n + mm, 3 * n + nrhs, bdspac);
                 maxwrk = max(minwrk, maxwrk);
             }
             if (n > m) {
                 //
-                //              Compute workspace needed for Rbdsqr
+                // Compute workspace needed for Rbdsqr
                 //
                 bdspac = max((INTEGER)1, 5 * m);
-                minwrk = max({3 * m + nrhs, 3 * m + n, bdspac});
+                minwrk = max(3 * m + nrhs, 3 * m + n, bdspac);
                 if (n >= mnthr) {
                     //
-                    //                 Path 2a - underdetermined, with many more columns
-                    //                 than rows
+                    // Path 2a - underdetermined, with many more columns
+                    // than rows
                     //
-                    //                 Compute space needed for Rgelqf
+                    // Compute space needed for Rgelqf
                     Rgelqf(m, n, a, lda, &dum[1 - 1], &dum[1 - 1], -1, info);
                     lwork_Rgelqf = castINTEGER(dum[1 - 1]);
-                    //                 Compute space needed for Rgebrd
+                    // Compute space needed for Rgebrd
                     Rgebrd(m, m, a, lda, s, &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], -1, info);
                     lwork_Rgebrd = castINTEGER(dum[1 - 1]);
-                    //                 Compute space needed for Rormbr
+                    // Compute space needed for Rormbr
                     Rormbr("Q", "L", "T", m, nrhs, n, a, lda, &dum[1 - 1], b, ldb, &dum[1 - 1], -1, info);
                     lwork_Rormbr = castINTEGER(dum[1 - 1]);
-                    //                 Compute space needed for Rorgbr
+                    // Compute space needed for Rorgbr
                     Rorgbr("P", m, m, m, a, lda, &dum[1 - 1], &dum[1 - 1], -1, info);
                     lwork_Rorgbr = castINTEGER(dum[1 - 1]);
-                    //                 Compute space needed for Rormlq
+                    // Compute space needed for Rormlq
                     Rormlq("L", "T", n, nrhs, m, a, lda, &dum[1 - 1], b, ldb, &dum[1 - 1], -1, info);
                     lwork_Rormlq = castINTEGER(dum[1 - 1]);
-                    //                 Compute total workspace needed
+                    // Compute total workspace needed
                     maxwrk = m + lwork_Rgelqf;
                     maxwrk = max(maxwrk, m * m + 4 * m + lwork_Rgebrd);
                     maxwrk = max(maxwrk, m * m + 4 * m + lwork_Rormbr);
@@ -204,15 +186,15 @@ void Rgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
                     maxwrk = max(maxwrk, m + lwork_Rormlq);
                 } else {
                     //
-                    //                 Path 2 - underdetermined
+                    // Path 2 - underdetermined
                     //
-                    //                 Compute space needed for Rgebrd
+                    // Compute space needed for Rgebrd
                     Rgebrd(m, n, a, lda, s, &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], &dum[1 - 1], -1, info);
                     lwork_Rgebrd = castINTEGER(dum[1 - 1]);
-                    //                 Compute space needed for Rormbr
+                    // Compute space needed for Rormbr
                     Rormbr("Q", "L", "T", m, nrhs, m, a, lda, &dum[1 - 1], b, ldb, &dum[1 - 1], -1, info);
                     lwork_Rormbr = castINTEGER(dum[1 - 1]);
-                    //                 Compute space needed for Rorgbr
+                    // Compute space needed for Rorgbr
                     Rorgbr("P", m, n, m, a, lda, &dum[1 - 1], &dum[1 - 1], -1, info);
                     lwork_Rorgbr = castINTEGER(dum[1 - 1]);
                     maxwrk = 3 * m + lwork_Rgebrd;
@@ -238,39 +220,39 @@ void Rgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (m == 0 || n == 0) {
         rank = 0;
         return;
     }
     //
-    //     Get machine parameters
+    // Get machine parameters
     //
     eps = Rlamch("P");
     sfmin = Rlamch("S");
     smlnum = sfmin / eps;
     bignum = one / smlnum;
     //
-    //     Scale A if max element outside range [SMLNUM,BIGNUM]
+    // Scale A if max element outside range [SMLNUM,BIGNUM]
     //
     anrm = Rlange("M", m, n, a, lda, work);
     iascl = 0;
     if (anrm > zero && anrm < smlnum) {
         //
-        //        Scale matrix norm up to SMLNUM
+        // Scale matrix norm up to SMLNUM
         //
         Rlascl("G", 0, 0, anrm, smlnum, m, n, a, lda, info);
         iascl = 1;
     } else if (anrm > bignum) {
         //
-        //        Scale matrix norm down to BIGNUM
+        // Scale matrix norm down to BIGNUM
         //
         Rlascl("G", 0, 0, anrm, bignum, m, n, a, lda, info);
         iascl = 2;
     } else if (anrm == zero) {
         //
-        //        Matrix all zero. Return zero solution.
+        // Matrix all zero. Return zero solution.
         //
         Rlaset("F", max(m, n), nrhs, zero, zero, b, ldb);
         Rlaset("F", minmn, 1, zero, zero, s, minmn);
@@ -278,50 +260,50 @@ void Rgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
         goto statement_70;
     }
     //
-    //     Scale B if max element outside range [SMLNUM,BIGNUM]
+    // Scale B if max element outside range [SMLNUM,BIGNUM]
     //
     bnrm = Rlange("M", m, nrhs, b, ldb, work);
     ibscl = 0;
     if (bnrm > zero && bnrm < smlnum) {
         //
-        //        Scale matrix norm up to SMLNUM
+        // Scale matrix norm up to SMLNUM
         //
         Rlascl("G", 0, 0, bnrm, smlnum, m, nrhs, b, ldb, info);
         ibscl = 1;
     } else if (bnrm > bignum) {
         //
-        //        Scale matrix norm down to BIGNUM
+        // Scale matrix norm down to BIGNUM
         //
         Rlascl("G", 0, 0, bnrm, bignum, m, nrhs, b, ldb, info);
         ibscl = 2;
     }
     //
-    //     Overdetermined case
+    // Overdetermined case
     //
     if (m >= n) {
         //
-        //        Path 1 - overdetermined or exactly determined
+        // Path 1 - overdetermined or exactly determined
         //
         mm = m;
         if (m >= mnthr) {
             //
-            //           Path 1a - overdetermined, with many more rows than columns
+            // Path 1a - overdetermined, with many more rows than columns
             //
             mm = n;
             itau = 1;
             iwork = itau + n;
             //
-            //           Compute A=Q*R
-            //           (Workspace: need 2*N, prefer N+N*NB)
+            // Compute A=Q*R
+            // (Workspace: need 2*N, prefer N+N*NB)
             //
             Rgeqrf(m, n, a, lda, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, info);
             //
-            //           Multiply B by transpose(Q)
-            //           (Workspace: need N+NRHS, prefer N+NRHS*NB)
+            // Multiply B by transpose(Q)
+            // (Workspace: need N+NRHS, prefer N+NRHS*NB)
             //
             Rormqr("L", "T", m, nrhs, n, a, lda, &work[itau - 1], b, ldb, &work[iwork - 1], lwork - iwork + 1, info);
             //
-            //           Zero out below R
+            // Zero out below R
             //
             if (n > 1) {
                 Rlaset("L", n - 1, n - 1, zero, zero, &a[(2 - 1)], lda);
@@ -333,37 +315,37 @@ void Rgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
         itaup = itauq + n;
         iwork = itaup + n;
         //
-        //        Bidiagonalize R in A
-        //        (Workspace: need 3*N+MM, prefer 3*N+(MM+N)*NB)
+        // Bidiagonalize R in A
+        // (Workspace: need 3*N+MM, prefer 3*N+(MM+N)*NB)
         //
         Rgebrd(mm, n, a, lda, s, &work[ie - 1], &work[itauq - 1], &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, info);
         //
-        //        Multiply B by transpose of left bidiagonalizing vectors of R
-        //        (Workspace: need 3*N+NRHS, prefer 3*N+NRHS*NB)
+        // Multiply B by transpose of left bidiagonalizing vectors of R
+        // (Workspace: need 3*N+NRHS, prefer 3*N+NRHS*NB)
         //
         Rormbr("Q", "L", "T", mm, nrhs, n, a, lda, &work[itauq - 1], b, ldb, &work[iwork - 1], lwork - iwork + 1, info);
         //
-        //        Generate right bidiagonalizing vectors of R in A
-        //        (Workspace: need 4*N-1, prefer 3*N+(N-1)*NB)
+        // Generate right bidiagonalizing vectors of R in A
+        // (Workspace: need 4*N-1, prefer 3*N+(N-1)*NB)
         //
         Rorgbr("P", n, n, n, a, lda, &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, info);
         iwork = ie + n;
         //
-        //        Perform bidiagonal QR iteration
-        //          multiply B by transpose of left singular vectors
-        //          compute right singular vectors in A
-        //        (Workspace: need BDSPAC)
+        // Perform bidiagonal QR iteration
+        // multiply B by transpose of left singular vectors
+        // compute right singular vectors in A
+        // (Workspace: need BDSPAC)
         //
         Rbdsqr("U", n, n, 0, nrhs, s, &work[ie - 1], a, lda, dum, 1, b, ldb, &work[iwork - 1], info);
         if (info != 0) {
             goto statement_70;
         }
         //
-        //        Multiply B by reciprocals of singular values
+        // Multiply B by reciprocals of singular values
         //
-        thr = max(REAL(rcond * s[1 - 1]), sfmin);
+        thr = max(rcond * s[1 - 1], sfmin);
         if (rcond < zero) {
-            thr = max(REAL(eps * s[1 - 1]), sfmin);
+            thr = max(eps * s[1 - 1], sfmin);
         }
         rank = 0;
         for (i = 1; i <= n; i = i + 1) {
@@ -375,8 +357,8 @@ void Rgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
             }
         }
         //
-        //        Multiply B by right singular vectors
-        //        (Workspace: need N, prefer N*NRHS)
+        // Multiply B by right singular vectors
+        // (Workspace: need N, prefer N*NRHS)
         //
         if (lwork >= ldb * nrhs && nrhs > 1) {
             Rgemm("T", "N", n, nrhs, n, one, a, lda, b, ldb, zero, work, ldb);
@@ -388,30 +370,30 @@ void Rgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
                 Rgemm("T", "N", n, bl, n, one, a, lda, &b[(i - 1) * ldb], ldb, zero, work, n);
                 Rlacpy("G", n, bl, work, n, &b[(i - 1) * ldb], ldb);
             }
-        } else {
+        } else if (nrhs == 1) {
             Rgemv("T", n, n, one, a, lda, b, 1, zero, work, 1);
             Rcopy(n, work, 1, b, 1);
         }
         //
-    } else if (n >= mnthr && lwork >= 4 * m + m * m + max({m, 2 * m - 4, nrhs, n - 3 * m})) {
+    } else if (n >= mnthr && lwork >= 4 * m + m * m + max(m, 2 * m - 4, nrhs, n - 3 * m)) {
         //
-        //        Path 2a - underdetermined, with many more columns than rows
-        //        and sufficient workspace for an efficient algorithm
+        // Path 2a - underdetermined, with many more columns than rows
+        // and sufficient workspace for an efficient algorithm
         //
         ldwork = m;
-        if (lwork >= max({4 * m + m * lda + max({m, 2 * m - 4, nrhs, n - 3 * m}), m * lda + m + m * nrhs})) {
+        if (lwork >= max(4 * m + m * lda + max(m, 2 * m - 4, nrhs, n - 3 * m), m * lda + m + m * nrhs)) {
             ldwork = lda;
         }
         itau = 1;
         iwork = m + 1;
         //
-        //        Compute A=L*Q
-        //        (Workspace: need 2*M, prefer M+M*NB)
+        // Compute A=L*Q
+        // (Workspace: need 2*M, prefer M+M*NB)
         //
         Rgelqf(m, n, a, lda, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, info);
         il = iwork;
         //
-        //        Copy L to WORK(IL), zeroing out above it
+        // Copy L to WORK(IL), zeroing out above it
         //
         Rlacpy("L", m, m, a, lda, &work[il - 1], ldwork);
         Rlaset("U", m - 1, m - 1, zero, zero, &work[(il + ldwork) - 1], ldwork);
@@ -420,37 +402,37 @@ void Rgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
         itaup = itauq + m;
         iwork = itaup + m;
         //
-        //        Bidiagonalize L in WORK(IL)
-        //        (Workspace: need M*M+5*M, prefer M*M+4*M+2*M*NB)
+        // Bidiagonalize L in WORK(IL)
+        // (Workspace: need M*M+5*M, prefer M*M+4*M+2*M*NB)
         //
         Rgebrd(m, m, &work[il - 1], ldwork, s, &work[ie - 1], &work[itauq - 1], &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, info);
         //
-        //        Multiply B by transpose of left bidiagonalizing vectors of L
-        //        (Workspace: need M*M+4*M+NRHS, prefer M*M+4*M+NRHS*NB)
+        // Multiply B by transpose of left bidiagonalizing vectors of L
+        // (Workspace: need M*M+4*M+NRHS, prefer M*M+4*M+NRHS*NB)
         //
         Rormbr("Q", "L", "T", m, nrhs, m, &work[il - 1], ldwork, &work[itauq - 1], b, ldb, &work[iwork - 1], lwork - iwork + 1, info);
         //
-        //        Generate right bidiagonalizing vectors of R in WORK(IL)
-        //        (Workspace: need M*M+5*M-1, prefer M*M+4*M+(M-1)*NB)
+        // Generate right bidiagonalizing vectors of R in WORK(IL)
+        // (Workspace: need M*M+5*M-1, prefer M*M+4*M+(M-1)*NB)
         //
         Rorgbr("P", m, m, m, &work[il - 1], ldwork, &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, info);
         iwork = ie + m;
         //
-        //        Perform bidiagonal QR iteration,
-        //           computing right singular vectors of L in WORK(IL) and
-        //           multiplying B by transpose of left singular vectors
-        //        (Workspace: need M*M+M+BDSPAC)
+        // Perform bidiagonal QR iteration,
+        // computing right singular vectors of L in WORK(IL) and
+        // multiplying B by transpose of left singular vectors
+        // (Workspace: need M*M+M+BDSPAC)
         //
         Rbdsqr("U", m, m, 0, nrhs, s, &work[ie - 1], &work[il - 1], ldwork, a, lda, b, ldb, &work[iwork - 1], info);
         if (info != 0) {
             goto statement_70;
         }
         //
-        //        Multiply B by reciprocals of singular values
+        // Multiply B by reciprocals of singular values
         //
-        thr = max(REAL(rcond * s[1 - 1]), sfmin);
+        thr = max(rcond * s[1 - 1], sfmin);
         if (rcond < zero) {
-            thr = max(REAL(eps * s[1 - 1]), sfmin);
+            thr = max(eps * s[1 - 1], sfmin);
         }
         rank = 0;
         for (i = 1; i <= m; i = i + 1) {
@@ -463,8 +445,8 @@ void Rgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
         }
         iwork = ie;
         //
-        //        Multiply B by right singular vectors of L in WORK(IL)
-        //        (Workspace: need M*M+2*M, prefer M*M+M+M*NRHS)
+        // Multiply B by right singular vectors of L in WORK(IL)
+        // (Workspace: need M*M+2*M, prefer M*M+M+M*NRHS)
         //
         if (lwork >= ldb * nrhs + iwork - 1 && nrhs > 1) {
             Rgemm("T", "N", m, nrhs, m, one, &work[il - 1], ldwork, b, ldb, zero, &work[iwork - 1], ldb);
@@ -476,61 +458,61 @@ void Rgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
                 Rgemm("T", "N", m, bl, m, one, &work[il - 1], ldwork, &b[(i - 1) * ldb], ldb, zero, &work[iwork - 1], m);
                 Rlacpy("G", m, bl, &work[iwork - 1], m, &b[(i - 1) * ldb], ldb);
             }
-        } else {
-            Rgemv("T", m, m, one, &work[il - 1], ldwork, &b[(1 - 1)], 1, zero, &work[iwork - 1], 1);
-            Rcopy(m, &work[iwork - 1], 1, &b[(1 - 1)], 1);
+        } else if (nrhs == 1) {
+            Rgemv("T", m, m, one, &work[il - 1], ldwork, &b[0], 1, zero, &work[iwork - 1], 1);
+            Rcopy(m, &work[iwork - 1], 1, &b[0], 1);
         }
         //
-        //        Zero out below first M rows of B
+        // Zero out below first M rows of B
         //
         Rlaset("F", n - m, nrhs, zero, zero, &b[((m + 1) - 1)], ldb);
         iwork = itau + m;
         //
-        //        Multiply transpose(Q) by B
-        //        (Workspace: need M+NRHS, prefer M+NRHS*NB)
+        // Multiply transpose(Q) by B
+        // (Workspace: need M+NRHS, prefer M+NRHS*NB)
         //
         Rormlq("L", "T", n, nrhs, m, a, lda, &work[itau - 1], b, ldb, &work[iwork - 1], lwork - iwork + 1, info);
         //
     } else {
         //
-        //        Path 2 - remaining underdetermined cases
+        // Path 2 - remaining underdetermined cases
         //
         ie = 1;
         itauq = ie + m;
         itaup = itauq + m;
         iwork = itaup + m;
         //
-        //        Bidiagonalize A
-        //        (Workspace: need 3*M+N, prefer 3*M+(M+N)*NB)
+        // Bidiagonalize A
+        // (Workspace: need 3*M+N, prefer 3*M+(M+N)*NB)
         //
         Rgebrd(m, n, a, lda, s, &work[ie - 1], &work[itauq - 1], &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, info);
         //
-        //        Multiply B by transpose of left bidiagonalizing vectors
-        //        (Workspace: need 3*M+NRHS, prefer 3*M+NRHS*NB)
+        // Multiply B by transpose of left bidiagonalizing vectors
+        // (Workspace: need 3*M+NRHS, prefer 3*M+NRHS*NB)
         //
         Rormbr("Q", "L", "T", m, nrhs, n, a, lda, &work[itauq - 1], b, ldb, &work[iwork - 1], lwork - iwork + 1, info);
         //
-        //        Generate right bidiagonalizing vectors in A
-        //        (Workspace: need 4*M, prefer 3*M+M*NB)
+        // Generate right bidiagonalizing vectors in A
+        // (Workspace: need 4*M, prefer 3*M+M*NB)
         //
         Rorgbr("P", m, n, m, a, lda, &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, info);
         iwork = ie + m;
         //
-        //        Perform bidiagonal QR iteration,
-        //           computing right singular vectors of A in A and
-        //           multiplying B by transpose of left singular vectors
-        //        (Workspace: need BDSPAC)
+        // Perform bidiagonal QR iteration,
+        // computing right singular vectors of A in A and
+        // multiplying B by transpose of left singular vectors
+        // (Workspace: need BDSPAC)
         //
         Rbdsqr("L", m, n, 0, nrhs, s, &work[ie - 1], a, lda, dum, 1, b, ldb, &work[iwork - 1], info);
         if (info != 0) {
             goto statement_70;
         }
         //
-        //        Multiply B by reciprocals of singular values
+        // Multiply B by reciprocals of singular values
         //
-        thr = max(REAL(rcond * s[1 - 1]), sfmin);
+        thr = max(rcond * s[1 - 1], sfmin);
         if (rcond < zero) {
-            thr = max(REAL(eps * s[1 - 1]), sfmin);
+            thr = max(eps * s[1 - 1], sfmin);
         }
         rank = 0;
         for (i = 1; i <= m; i = i + 1) {
@@ -542,8 +524,8 @@ void Rgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
             }
         }
         //
-        //        Multiply B by right singular vectors of A
-        //        (Workspace: need N, prefer N*NRHS)
+        // Multiply B by right singular vectors of A
+        // (Workspace: need N, prefer N*NRHS)
         //
         if (lwork >= ldb * nrhs && nrhs > 1) {
             Rgemm("T", "N", n, nrhs, m, one, a, lda, b, ldb, zero, work, ldb);
@@ -555,13 +537,13 @@ void Rgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
                 Rgemm("T", "N", n, bl, m, one, a, lda, &b[(i - 1) * ldb], ldb, zero, work, n);
                 Rlacpy("F", n, bl, work, n, &b[(i - 1) * ldb], ldb);
             }
-        } else {
+        } else if (nrhs == 1) {
             Rgemv("T", m, n, one, a, lda, b, 1, zero, work, 1);
             Rcopy(n, work, 1, b, 1);
         }
     }
     //
-    //     Undo scaling
+    // Undo scaling
     //
     if (iascl == 1) {
         Rlascl("G", 0, 0, anrm, smlnum, n, nrhs, b, ldb, info);
@@ -579,6 +561,6 @@ void Rgelss(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
 statement_70:
     work[1 - 1] = maxwrk;
     //
-    //     End of Rgelss
+    // End of Rgelss
     //
 }

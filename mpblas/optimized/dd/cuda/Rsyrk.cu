@@ -73,8 +73,8 @@ void Is_cuda_Rgemm_error(cudaError_t rc, const char *mes, mplapackint n, mplapac
     /* not an error */
 }
 
-#define fetch_x_A(A,i) A[i]
-#define fetch_x_B(B,i) B[i]
+#define fetch_x_A(XX,i) XX[i]
+#define fetch_x_B(XX,i) XX[i]
 
 #include <Rsyrk_NU_0.cu>
 #include <Rsyrk_NU_p.cu>

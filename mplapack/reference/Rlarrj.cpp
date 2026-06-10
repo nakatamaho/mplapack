@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DLARRJ.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -56,32 +63,30 @@ void Rlarrj(INTEGER const n, REAL *d, REAL *e2, INTEGER const ifirst, INTEGER co
     INTEGER olnint = 0;
     INTEGER p = 0;
     INTEGER next = 0;
-    const REAL half = 0.5e0;
+    const REAL half = 0.5;
     //
     info = 0;
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n <= 0) {
         return;
     }
     //
-    maxitr = castINTEGER((log(spdiam + pivmin) - log(pivmin)) / log(two)) + (INTEGER)2;
-    if (maxitr >= 1024)
-        maxitr = 1024; // XXX maxitr can be too large for MPFR (=10^8)
+    maxitr = castINTEGER((log(spdiam + pivmin) - log(pivmin)) / log(two)) + 2;
     //
-    //     Initialize unconverged intervals in [ WORK(2*I-1), WORK(2*I) ].
-    //     The Sturm Count, Count( WORK(2*I-1) ) is arranged to be I-1, while
-    //     Count( WORK(2*I) ) is stored in IWORK( 2*I ). The integer IWORK( 2*I-1 )
-    //     for an unconverged interval is set to the index of the next unconverged
-    //     interval, and is -1 or 0 for a converged interval. Thus a linked
-    //     list of unconverged intervals is set up.
+    // Initialize unconverged intervals in [ WORK(2*I-1), WORK(2*I) ].
+    // The Sturm Count, Count( WORK(2*I-1) ) is arranged to be I-1, while
+    // Count( WORK(2*I) ) is stored in IWORK( 2*I ). The integer IWORK( 2*I-1 )
+    // for an unconverged interval is set to the index of the next unconverged
+    // interval, and is -1 or 0 for a converged interval. Thus a linked
+    // list of unconverged intervals is set up.
     //
     i1 = ifirst;
     i2 = ilast;
-    //     The number of unconverged intervals
+    // The number of unconverged intervals
     nint = 0;
-    //     The last unconverged interval found
+    // The last unconverged interval found
     prev = 0;
     for (i = i1; i <= i2; i = i + 1) {
         k = 2 * i;
@@ -92,14 +97,14 @@ void Rlarrj(INTEGER const n, REAL *d, REAL *e2, INTEGER const ifirst, INTEGER co
         width = right - mid;
         tmp = max(abs(left), abs(right));
         //
-        //        The following test prevents the test of converged intervals
+        // The following test prevents the test of converged intervals
         if (width < rtol * tmp) {
-            //           This interval has already converged and does not need refinement.
-            //           (Note that the gaps might change through refining the
-            //            eigenvalues, however, they can only get bigger.)
-            //           Remove it from the list.
+            // This interval has already converged and does not need refinement.
+            // (Note that the gaps might change through refining the
+            // eigenvalues, however, they can only get bigger.)
+            // Remove it from the list.
             iwork[(k - 1) - 1] = -1;
-            //           Make sure that I1 always points to the first unconverged interval
+            // Make sure that I1 always points to the first unconverged interval
             if ((i == i1) && (i < i2)) {
                 i1 = i + 1;
             }
@@ -107,11 +112,11 @@ void Rlarrj(INTEGER const n, REAL *d, REAL *e2, INTEGER const ifirst, INTEGER co
                 iwork[(2 * prev - 1) - 1] = i + 1;
             }
         } else {
-            //           unconverged interval found
+            // unconverged interval found
             prev = i;
-            //           Make sure that [LEFT,RIGHT] contains the desired eigenvalue
+            // Make sure that [LEFT,RIGHT] contains the desired eigenvalue
             //
-            //           Do while( CNT(LEFT).GT.I-1 )
+            // Do while( CNT(LEFT).GT.I-1 )
             //
             fac = one;
         statement_20:
@@ -133,7 +138,7 @@ void Rlarrj(INTEGER const n, REAL *d, REAL *e2, INTEGER const ifirst, INTEGER co
                 goto statement_20;
             }
             //
-            //           Do while( CNT(RIGHT).LT.I )
+            // Do while( CNT(RIGHT).LT.I )
             //
             fac = one;
         statement_50:
@@ -164,8 +169,8 @@ void Rlarrj(INTEGER const n, REAL *d, REAL *e2, INTEGER const ifirst, INTEGER co
     //
     savi1 = i1;
     //
-    //     Do while( NINT.GT.0 ), i.e. there are still unconverged intervals
-    //     and while (ITER.LT.MAXITR)
+    // Do while( NINT.GT.0 ), i.e. there are still unconverged intervals
+    // and while (ITER.LT.MAXITR)
     //
     iter = 0;
 statement_80:
@@ -181,19 +186,19 @@ statement_80:
         right = work[k - 1];
         mid = half * (left + right);
         //
-        //        semiwidth of interval
+        // semiwidth of interval
         width = right - mid;
         tmp = max(abs(left), abs(right));
         //
         if ((width < rtol * tmp) || (iter == maxitr)) {
-            //           reduce number of unconverged intervals
+            // reduce number of unconverged intervals
             nint = nint - 1;
-            //           Mark interval as converged.
+            // Mark interval as converged.
             iwork[(k - 1) - 1] = 0;
             if (i1 == i) {
                 i1 = next;
             } else {
-                //              Prev holds the last unconverged interval previously examined
+                // Prev holds the last unconverged interval previously examined
                 if (prev >= i1) {
                     iwork[(2 * prev - 1) - 1] = next;
                 }
@@ -203,7 +208,7 @@ statement_80:
         }
         prev = i;
         //
-        //        Perform one bisection step
+        // Perform one bisection step
         //
         cnt = 0;
         s = mid;
@@ -227,24 +232,24 @@ statement_80:
     statement_100:;
     }
     iter++;
-    //     do another loop if there are still unconverged intervals
-    //     However, in the last iteration, all intervals are accepted
-    //     since this is the best we can do.
+    // do another loop if there are still unconverged intervals
+    // However, in the last iteration, all intervals are accepted
+    // since this is the best we can do.
     if ((nint > 0) && (iter <= maxitr)) {
         goto statement_80;
     }
     //
-    //     At this point, all the intervals have converged
+    // At this point, all the intervals have converged
     for (i = savi1; i <= ilast; i = i + 1) {
         k = 2 * i;
         ii = i - offset;
-        //        All intervals marked by '0' have been refined.
+        // All intervals marked by '0' have been refined.
         if (iwork[(k - 1) - 1] == 0) {
             w[ii - 1] = half * (work[(k - 1) - 1] + work[k - 1]);
             werr[ii - 1] = work[k - 1] - w[ii - 1];
         }
     }
     //
-    //     End of Rlarrj
+    // End of Rlarrj
     //
 }

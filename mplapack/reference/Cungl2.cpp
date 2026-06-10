@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,33 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZUNGL2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Cungl2(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, INTEGER const lda, COMPLEX *tau, COMPLEX *work, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     if (m < 0) {
@@ -69,7 +55,7 @@ void Cungl2(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, INTEG
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (m <= 0) {
         return;
@@ -81,7 +67,7 @@ void Cungl2(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, INTEG
     const COMPLEX one = COMPLEX(1.0, 0.0);
     if (k < m) {
         //
-        //        Initialise rows k+1:m to rows of the unit matrix
+        // Initialise rows k+1:m to rows of the unit matrix
         //
         for (j = 1; j <= n; j = j + 1) {
             for (l = k + 1; l <= m; l = l + 1) {
@@ -96,26 +82,25 @@ void Cungl2(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, INTEG
     INTEGER i = 0;
     for (i = k; i >= 1; i = i - 1) {
         //
-        //        Apply H(i)**H to A(i:m,i:n) from the right
+        // Apply H(i)**H to A(i:m,i:n) from the right
         //
         if (i < n) {
             Clacgv(n - i, &a[(i - 1) + ((i + 1) - 1) * lda], lda);
             if (i < m) {
-                a[(i - 1) + (i - 1) * lda] = one;
-                Clarf("Right", m - i, n - i + 1, &a[(i - 1) + (i - 1) * lda], lda, conj(tau[i - 1]), &a[((i + 1) - 1) + (i - 1) * lda], lda, work);
+                Clarf1f("Right", m - i, n - i + 1, &a[(i - 1) + (i - 1) * lda], lda, conj(tau[i - 1]), &a[((i + 1) - 1) + (i - 1) * lda], lda, work);
             }
             Cscal(n - i, -tau[i - 1], &a[(i - 1) + ((i + 1) - 1) * lda], lda);
             Clacgv(n - i, &a[(i - 1) + ((i + 1) - 1) * lda], lda);
         }
         a[(i - 1) + (i - 1) * lda] = one - conj(tau[i - 1]);
         //
-        //        Set A(i,1:i-1) to zero
+        // Set A(i,1:i-1) to zero
         //
         for (l = 1; l <= i - 1; l = l + 1) {
             a[(i - 1) + (l - 1) * lda] = zero;
         }
     }
     //
-    //     End of Cungl2
+    // End of Cungl2
     //
 }

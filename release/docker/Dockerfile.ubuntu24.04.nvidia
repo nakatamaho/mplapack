@@ -1,0 +1,36 @@
+# Dockerfile.ubuntu24.04.nvidia
+# Ubuntu 24.04 CUDA GCC distcheck environment.
+ARG BASE=nvidia/cuda:13.3.0-devel-ubuntu24.04
+FROM ${BASE}
+
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    gfortran \
+    autoconf \
+    automake \
+    libtool \
+    ccache \
+    python3 \
+    git \
+    ca-certificates \
+    pkg-config \
+    xz-utils \
+    bzip2 \
+    patch \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN nvcc --version
+
+ENV CCACHE_DIR=/ccache
+ENV PATH="/usr/lib/ccache:${PATH}"
+ENV CC="ccache gcc"
+ENV CXX="ccache g++"
+ENV FC="ccache gfortran"
+ENV MPLAPACK_REPO=https://github.com/nakatamaho/mplapack.git
+ENV MPLAPACK_REF="master"
+
+WORKDIR /work
+COPY run-ubuntu-nvidia-distcheck.sh /run-ubuntu-nvidia-distcheck.sh
+RUN chmod +x /run-ubuntu-nvidia-distcheck.sh
+CMD ["/run-ubuntu-nvidia-distcheck.sh"]

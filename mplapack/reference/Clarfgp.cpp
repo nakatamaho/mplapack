@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,19 +26,27 @@
  *
  */
 
+// Derived from LAPACK routine ZLARFGP.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Clarfgp(INTEGER const n, COMPLEX &alpha, COMPLEX *x, INTEGER const incx, COMPLEX &tau) {
     const REAL zero = 0.0;
+    REAL eps = 0.0;
     REAL xnorm = 0.0;
     REAL alphr = 0.0;
     REAL alphi = 0.0;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     INTEGER j = 0;
-    const REAL one = 1.0;
     REAL beta = 0.0;
     REAL smlnum = 0.0;
+    const REAL one = 1.0;
     REAL bignum = 0.0;
     INTEGER knt = 0;
     COMPLEX savealpha = 0.0;
@@ -48,41 +56,32 @@ void Clarfgp(INTEGER const n, COMPLEX &alpha, COMPLEX *x, INTEGER const incx, CO
         return;
     }
     //
+    eps = Rlamch("Precision");
     xnorm = RCnrm2(n - 1, x, incx);
     alphr = alpha.real();
     alphi = alpha.imag();
     //
-    if (xnorm == zero) {
+    if (xnorm <= eps * abs(alpha) && alphi == zero) {
         //
-        //        H  =  [1-alpha/abs(alpha) 0; 0 I], sign chosen so ALPHA >= 0.
+        // H  =  [1-alpha/abs(alpha) 0; 0 I], sign chosen so ALPHA >= 0.
         //
-        if (alphi == zero) {
-            if (alphr >= zero) {
-                //              When TAU.eq.ZERO, the vector is special-cased to be
-                //              all zeros in the application routines.  We do not need
-                //              to clear it.
-                tau = zero;
-            } else {
-                //              However, the application routines rely on explicit
-                //              zero checks when TAU.ne.ZERO, and we must clear X.
-                tau = two;
-                for (j = 1; j <= n - 1; j = j + 1) {
-                    x[(1 + (j - 1) * incx) - 1] = zero;
-                }
-                alpha = -alpha;
-            }
+        if (alphr >= zero) {
+            // When TAU.eq.ZERO, the vector is special-cased to be
+            // all zeros in the application routines.  We do not need
+            // to clear it.
+            tau = zero;
         } else {
-            //           Only "reflecting" the diagonal entry to be real and non-negative.
-            xnorm = Rlapy2(alphr, alphi);
-            tau = COMPLEX(one - alphr / xnorm, -alphi / xnorm);
+            // However, the application routines rely on explicit
+            // zero checks when TAU.ne.ZERO, and we must clear X.
+            tau = two;
             for (j = 1; j <= n - 1; j = j + 1) {
                 x[(1 + (j - 1) * incx) - 1] = zero;
             }
-            alpha = xnorm;
+            alpha = -alpha;
         }
     } else {
         //
-        //        general case
+        // general case
         //
         beta = sign(Rlapy3(alphr, alphi, xnorm), alphr);
         smlnum = Rlamch("S") / Rlamch("E");
@@ -91,7 +90,7 @@ void Clarfgp(INTEGER const n, COMPLEX &alpha, COMPLEX *x, INTEGER const incx, CO
         knt = 0;
         if (abs(beta) < smlnum) {
         //
-        //           XNORM, BETA may be inaccurate; scale X and recompute them
+        // XNORM, BETA may be inaccurate; scale X and recompute them
         //
         statement_10:
             knt++;
@@ -103,7 +102,7 @@ void Clarfgp(INTEGER const n, COMPLEX &alpha, COMPLEX *x, INTEGER const incx, CO
                 goto statement_10;
             }
             //
-            //           New BETA is at most 1, at least SMLNUM
+            // New BETA is at most 1, at least SMLNUM
             //
             xnorm = RCnrm2(n - 1, x, incx);
             alpha = COMPLEX(alphr, alphi);
@@ -124,12 +123,12 @@ void Clarfgp(INTEGER const n, COMPLEX &alpha, COMPLEX *x, INTEGER const incx, CO
         //
         if (abs(tau) <= smlnum) {
             //
-            //           In the case where the computed TAU ends up being a denormalized number,
-            //           it loses relative accuracy. This is a BIG problem. Solution: flush TAU
-            //           to ZERO (or TWO or whatever makes a nonnegative real number for BETA).
+            // In the case where the computed TAU ends up being a denormalized number,
+            // it loses relative accuracy. This is a BIG problem. Solution: flush TAU
+            // to ZERO (or TWO or whatever makes a nonnegative real number for BETA).
             //
-            //           (Bug report provided by Pat Quillen from MathWorks on Jul 29, 2009.)
-            //           (Thanks Pat. Thanks MathWorks.)
+            // (Bug report provided by Pat Quillen from MathWorks on Jul 29, 2009.)
+            // (Thanks Pat. Thanks MathWorks.)
             //
             alphr = savealpha.real();
             alphi = savealpha.imag();
@@ -141,7 +140,7 @@ void Clarfgp(INTEGER const n, COMPLEX &alpha, COMPLEX *x, INTEGER const incx, CO
                     for (j = 1; j <= n - 1; j = j + 1) {
                         x[(1 + (j - 1) * incx) - 1] = zero;
                     }
-                    beta = beta - savealpha.real();
+                    beta = -savealpha.real();
                 }
             } else {
                 xnorm = Rlapy2(alphr, alphi);
@@ -154,13 +153,13 @@ void Clarfgp(INTEGER const n, COMPLEX &alpha, COMPLEX *x, INTEGER const incx, CO
             //
         } else {
             //
-            //           This is the general case.
+            // This is the general case.
             //
             Cscal(n - 1, alpha, x, incx);
             //
         }
         //
-        //        If BETA is subnormal, it may lose relative accuracy
+        // If BETA is subnormal, it may lose relative accuracy
         //
         for (j = 1; j <= knt; j = j + 1) {
             beta = beta * smlnum;
@@ -168,6 +167,6 @@ void Clarfgp(INTEGER const n, COMPLEX &alpha, COMPLEX *x, INTEGER const incx, CO
         alpha = beta;
     }
     //
-    //     End of Clarfgp
+    // End of Clarfgp
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,19 +26,20 @@
  *
  */
 
+// Derived from LAPACK routine DLCTSX.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
-
-#include <fem.hpp> // Fortran EMulation library of fable module
-using namespace fem::major_types;
-using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#define __MPLAPACK_COMMON_MN__
 #include <mplapack_common_mn.h>
-
 #include <mplapack_debug.h>
 
 bool Rlctsx(REAL const /* ar */, REAL const /* ai */, REAL const /* beta */) {
@@ -68,14 +69,14 @@ bool Rlctsx(REAL const /* ar */, REAL const /* ai */, REAL const /* beta */) {
         }
     }
     //
-    //       IF( AR/BETA.GT.0.0 )THEN
-    //          Rlctsx = .TRUE.
-    //       ELSE
-    //          Rlctsx = .FALSE.
-    //       END IF
+    // IF( AR/BETA.GT.0.0 )THEN
+    // Rlctsx = .TRUE.
+    // ELSE
+    // Rlctsx = .FALSE.
+    // END IF
     //
     return return_value;
     //
-    //     End of Rlctsx
+    // End of Rlctsx
     //
 }

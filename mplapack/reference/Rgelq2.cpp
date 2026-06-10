@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DGELQ2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rgelq2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *tau, REAL *work, INTEGER &info) {
     //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     if (m < 0) {
@@ -49,24 +56,19 @@ void Rgelq2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
     INTEGER k = min(m, n);
     //
     INTEGER i = 0;
-    REAL aii = 0.0;
-    const REAL one = 1.0;
     for (i = 1; i <= k; i = i + 1) {
         //
-        //        Generate elementary reflector H(i) to annihilate A(i,i+1:n)
+        // Generate elementary reflector H(i) to annihilate A(i,i+1:n)
         //
         Rlarfg(n - i + 1, a[(i - 1) + (i - 1) * lda], &a[(i - 1) + (min(i + 1, n) - 1) * lda], lda, tau[i - 1]);
         if (i < m) {
             //
-            //           Apply H(i) to A(i+1:m,i:n) from the right
+            // Apply H(i) to A(i+1:m,i:n) from the right
             //
-            aii = a[(i - 1) + (i - 1) * lda];
-            a[(i - 1) + (i - 1) * lda] = one;
-            Rlarf("Right", m - i, n - i + 1, &a[(i - 1) + (i - 1) * lda], lda, tau[i - 1], &a[((i + 1) - 1) + (i - 1) * lda], lda, work);
-            a[(i - 1) + (i - 1) * lda] = aii;
+            Rlarf1f("Right", m - i, n - i + 1, &a[(i - 1) + (i - 1) * lda], lda, tau[i - 1], &a[((i + 1) - 1) + (i - 1) * lda], lda, work);
         }
     }
     //
-    //     End of Rgelq2
+    // End of Rgelq2
     //
 }

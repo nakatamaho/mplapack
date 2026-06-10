@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DTGSJA.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -58,9 +65,10 @@ void Rtgsja(const char *jobu, const char *jobv, const char *jobq, INTEGER const 
     REAL error = 0.0;
     REAL ssmin = 0.0;
     REAL gamma = 0.0;
+    const REAL hugenum = Rlamch("O");
     REAL rwk = 0.0;
     //
-    //     Decode and test the input parameters
+    // Decode and test the input parameters
     //
     initu = Mlsame(jobu, "I");
     wantu = initu || Mlsame(jobu, "U");
@@ -100,7 +108,7 @@ void Rtgsja(const char *jobu, const char *jobv, const char *jobq, INTEGER const 
         return;
     }
     //
-    //     Initialize U, V and Q, if necessary
+    // Initialize U, V and Q, if necessary
     //
     if (initu) {
         Rlaset("Full", m, m, zero, one, u, ldu);
@@ -112,7 +120,7 @@ void Rtgsja(const char *jobu, const char *jobv, const char *jobq, INTEGER const 
         Rlaset("Full", n, n, zero, one, q, ldq);
     }
     //
-    //     Loop until convergence
+    // Loop until convergence
     //
     upper = false;
     for (kcycle = 1; kcycle <= maxit; kcycle = kcycle + 1) {
@@ -149,18 +157,18 @@ void Rtgsja(const char *jobu, const char *jobv, const char *jobq, INTEGER const 
                 //
                 Rlags2(upper, a1, a2, a3, b1, b2, b3, csu, snu, csv, snv, csq, snq);
                 //
-                //              Update (K+I)-th and (K+J)-th rows of matrix A: U**T *A
+                // Update (K+I)-th and (K+J)-th rows of matrix A: U**T *A
                 //
                 if (k + j <= m) {
                     Rrot(l, &a[((k + j) - 1) + ((n - l + 1) - 1) * lda], lda, &a[((k + i) - 1) + ((n - l + 1) - 1) * lda], lda, csu, snu);
                 }
                 //
-                //              Update I-th and J-th rows of matrix B: V**T *B
+                // Update I-th and J-th rows of matrix B: V**T *B
                 //
                 Rrot(l, &b[(j - 1) + ((n - l + 1) - 1) * ldb], ldb, &b[(i - 1) + ((n - l + 1) - 1) * ldb], ldb, csv, snv);
                 //
-                //              Update (N-L+I)-th and (N-L+J)-th columns of matrices
-                //              A and B: A*Q and B*Q
+                // Update (N-L+I)-th and (N-L+J)-th columns of matrices
+                // A and B: A*Q and B*Q
                 //
                 Rrot(min(k + l, m), &a[((n - l + j) - 1) * lda], 1, &a[((n - l + i) - 1) * lda], 1, csq, snq);
                 //
@@ -178,7 +186,7 @@ void Rtgsja(const char *jobu, const char *jobv, const char *jobq, INTEGER const 
                     b[(j - 1) + ((n - l + i) - 1) * ldb] = zero;
                 }
                 //
-                //              Update orthogonal matrices U, V, Q, if desired.
+                // Update orthogonal matrices U, V, Q, if desired.
                 //
                 if (wantu && k + j <= m) {
                     Rrot(m, &u[((k + j) - 1) * ldu], 1, &u[((k + i) - 1) * ldu], 1, csu, snu);
@@ -197,11 +205,11 @@ void Rtgsja(const char *jobu, const char *jobv, const char *jobq, INTEGER const 
         //
         if (!upper) {
             //
-            //           The matrices A13 and B13 were lower triangular at the start
-            //           of the cycle, and are now upper triangular.
+            // The matrices A13 and B13 were lower triangular at the start
+            // of the cycle, and are now upper triangular.
             //
-            //           Convergence test: test the parallelism of the corresponding
-            //           rows of A and B.
+            // Convergence test: test the parallelism of the corresponding
+            // rows of A and B.
             //
             error = zero;
             for (i = 1; i <= min(l, m - k); i = i + 1) {
@@ -216,20 +224,20 @@ void Rtgsja(const char *jobu, const char *jobv, const char *jobq, INTEGER const 
             }
         }
         //
-        //        End of cycle loop
+        // End of Cycle loop
         //
     }
     //
-    //     The algorithm has not converged after MAXIT cycles.
+    // The algorithm has not converged after MAXIT cycles.
     //
     info = 1;
     goto statement_100;
 //
 statement_50:
     //
-    //     If ERROR <= MIN(TOLA,TOLB), then the algorithm has converged.
-    //     Compute the generalized singular value pairs (ALPHA, BETA), and
-    //     set the triangular matrix R to array A.
+    // If ERROR <= MIN(TOLA,TOLB), then the algorithm has converged.
+    // Compute the generalized singular value pairs (ALPHA, BETA), and
+    // set the triangular matrix R to array A.
     //
     for (i = 1; i <= k; i = i + 1) {
         alpha[i - 1] = one;
@@ -240,11 +248,11 @@ statement_50:
         //
         a1 = a[((k + i) - 1) + ((n - l + i) - 1) * lda];
         b1 = b[(i - 1) + ((n - l + i) - 1) * ldb];
+        gamma = b1 / a1;
         //
-        if (a1 != zero) {
-            gamma = b1 / a1;
+        if ((gamma <= hugenum) && (gamma >= -hugenum)) {
             //
-            //           change sign if necessary
+            // change sign if necessary
             //
             if (gamma < zero) {
                 Rscal(l - i + 1, -one, &b[(i - 1) + ((n - l + i) - 1) * ldb], ldb);
@@ -272,7 +280,7 @@ statement_50:
         //
     }
     //
-    //     Post-assignment
+    // Post-assignment
     //
     for (i = m + 1; i <= k + l; i = i + 1) {
         alpha[i - 1] = zero;
@@ -289,6 +297,6 @@ statement_50:
 statement_100:
     ncycle = kcycle;
     //
-    //     End of Rtgsja
+    // End of Rtgsja
     //
 }

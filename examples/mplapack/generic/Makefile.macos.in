@@ -1,6 +1,6 @@
 # public domain
 
-CXX=g++-mp-10
+CXX=g++-mp-14
 MPLAPACKDIR=%%MPLAPACKDIR%%
 CXXFLAGS= -I$(MPLAPACKDIR)/include -I$(MPLAPACKDIR)/include/mplapack -I$(MPLAPACKDIR)/include/qd
 OPTFLAGS= -O2
@@ -9,14 +9,14 @@ MPFRLIBS= -lmplapack_mpfr -lmpblas_mpfr -lmpfr -lmpc -lgmp
 GMPLIBS=-lmplapack_gmp -lmpblas_gmp -lgmpxx -lgmp
 QDLIBS=-lmplapack_qd -lmpblas_qd -lqd
 DDLIBS=-lmplapack_dd -lmpblas_dd -lqd
-_FLOAT64xLIBS=-lmplapack__Float64x -lmpblas__Float64x
-_FLOAT128LIBS=-lmplapack__Float128 -lmpblas__Float128%%LIBQUADMATH%%
+BINARY80LIBS=-lmplapack_binary80 -lmpblas_binary80
+BINARY128LIBS=-lmplapack_binary128 -lmpblas_binary128%%LIBQUADMATH%%
 DOUBLELIBS=-lmplapack_double -lmpblas_double
 BLAS=
 LAPACK=
 FLIBS=-framework vecLib
 
-programs=%%ROUTINE%%_mpfr %%ROUTINE%%_gmp %%ROUTINE%%_qd %%ROUTINE%%_dd %%ROUTINE%%__Float64x %%ROUTINE%%__Float128 %%ROUTINE%%_double
+programs=%%ROUTINE%%_mpfr %%ROUTINE%%_gmp %%ROUTINE%%_qd %%ROUTINE%%_dd %%ROUTINE%%_binary80 %%ROUTINE%%_binary128 %%ROUTINE%%_double
 
 all: $(programs)
 
@@ -35,11 +35,11 @@ all: $(programs)
 %%ROUTINE%%_dd: %%ROUTINE%%_dd.o
 	$(CXX) -o %%ROUTINE%%_dd %%ROUTINE%%_dd.o $(LIBFLAGS) $(DDLIBS)
 
-%%ROUTINE%%__Float64x: %%ROUTINE%%__Float64x.o
-	$(CXX) -o %%ROUTINE%%__Float64x %%ROUTINE%%__Float64x.o $(LIBFLAGS) $(_FLOAT64xLIBS)
+%%ROUTINE%%_binary80: %%ROUTINE%%_binary80.o
+	$(CXX) -o %%ROUTINE%%_binary80 %%ROUTINE%%_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
 
-%%ROUTINE%%__Float128: %%ROUTINE%%__Float128.o
-	$(CXX) -o %%ROUTINE%%__Float128 %%ROUTINE%%__Float128.o $(LIBFLAGS) $(_FLOAT128LIBS)
+%%ROUTINE%%_binary128: %%ROUTINE%%_binary128.o
+	$(CXX) -o %%ROUTINE%%_binary128 %%ROUTINE%%_binary128.o $(LIBFLAGS) $(BINARY128LIBS)
 
 %%ROUTINE%%_double: %%ROUTINE%%_double.o
 	$(CXX) -o %%ROUTINE%%_double %%ROUTINE%%_double.o $(LIBFLAGS) $(DOUBLELIBS)

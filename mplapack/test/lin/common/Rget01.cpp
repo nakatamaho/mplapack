@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,39 +26,26 @@
  *
  */
 
+// Derived from LAPACK routine DGET01.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Rget01(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *afac, INTEGER const ldafac, INTEGER *ipiv, REAL *rwork, REAL &resid) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Quick exit if M = 0 or N = 0.
+    // Quick exit if M = 0 or N = 0.
     //
     const REAL zero = 0.0;
     if (m <= 0 || n <= 0) {
@@ -66,14 +53,14 @@ void Rget01(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
         return;
     }
     //
-    //     Determine EPS and the norm of A.
+    // Determine EPS and the norm of A.
     //
     REAL eps = Rlamch("Epsilon");
     REAL anorm = Rlange("1", m, n, a, lda, rwork);
     //
-    //     Compute the product L*U and overwrite AFAC with the result.
-    //     A column at a time of the product is obtained, starting with
-    //     column N.
+    // Compute the product L*U and overwrite AFAC with the result.
+    // A column at a time of the product is obtained, starting with
+    // column N.
     //
     INTEGER k = 0;
     REAL t = 0.0;
@@ -83,7 +70,7 @@ void Rget01(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
             Rtrmv("Lower", "No transpose", "Unit", m, afac, ldafac, &afac[(k - 1) * ldafac], 1);
         } else {
             //
-            //           Compute elements (K+1:M,K)
+            // Compute elements (K+1:M,K)
             //
             t = afac[(k - 1) + (k - 1) * ldafac];
             if (k + 1 <= m) {
@@ -91,18 +78,18 @@ void Rget01(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
                 Rgemv("No transpose", m - k, k - 1, one, &afac[((k + 1) - 1)], ldafac, &afac[(k - 1) * ldafac], 1, one, &afac[((k + 1) - 1) + (k - 1) * ldafac], 1);
             }
             //
-            //           Compute the (K,K) element
+            // Compute the (K,K) element
             //
             afac[(k - 1) + (k - 1) * ldafac] = t + Rdot(k - 1, &afac[(k - 1)], ldafac, &afac[(k - 1) * ldafac], 1);
             //
-            //           Compute elements (1:K-1,K)
+            // Compute elements (1:K-1,K)
             //
             Rtrmv("Lower", "No transpose", "Unit", k - 1, afac, ldafac, &afac[(k - 1) * ldafac], 1);
         }
     }
     Rlaswp(n, afac, ldafac, 1, min(m, n), ipiv, -1);
     //
-    //     Compute the difference  L*U - A  and store in AFAC.
+    // Compute the difference  L*U - A  and store in AFAC.
     //
     INTEGER j = 0;
     INTEGER i = 0;
@@ -112,7 +99,7 @@ void Rget01(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
         }
     }
     //
-    //     Compute norm( L*U - A ) / ( N * norm(A) * EPS )
+    // Compute norm( L*U - A ) / ( N * norm(A) * EPS )
     //
     resid = Rlange("1", m, n, afac, ldafac, rwork);
     //
@@ -124,6 +111,6 @@ void Rget01(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
         resid = ((resid / castREAL(n)) / anorm) / eps;
     }
     //
-    //     End of Rget01
+    // End of Rget01
     //
 }

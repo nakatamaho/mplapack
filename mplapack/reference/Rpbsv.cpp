@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DPBSV.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rpbsv(const char *uplo, INTEGER const n, INTEGER const kd, INTEGER const nrhs, REAL *ab, INTEGER const ldab, REAL *b, INTEGER const ldb, INTEGER &info) {
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     if (!Mlsame(uplo, "U") && !Mlsame(uplo, "L")) {
@@ -52,17 +59,17 @@ void Rpbsv(const char *uplo, INTEGER const n, INTEGER const kd, INTEGER const nr
         return;
     }
     //
-    //     Compute the Cholesky factorization A = U**T*U or A = L*L**T.
+    // Compute the Cholesky factorization A = U**T*U or A = L*L**T.
     //
     Rpbtrf(uplo, n, kd, ab, ldab, info);
     if (info == 0) {
         //
-        //        Solve the system A*X = B, overwriting B with X.
+        // Solve the system A*X = B, overwriting B with X.
         //
         Rpbtrs(uplo, n, kd, nrhs, ab, ldab, b, ldb, info);
         //
     }
     //
-    //     End of Rpbsv
+    // End of Rpbsv
     //
 }

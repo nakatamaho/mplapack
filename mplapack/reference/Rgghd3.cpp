@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,39 +26,29 @@
  *
  */
 
+// Derived from LAPACK routine DGGHD3.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const ilo, INTEGER const ihi, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *q, INTEGER const ldq, REAL *z, INTEGER const ldz, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    // =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Decode and test the input parameters.
+    // Decode and test the input parameters.
     //
     info = 0;
     INTEGER nb = iMlaenv(1, "Rgghd3", " ", n, ilo, ihi, -1);
-    INTEGER lwkopt = max(6 * n * nb, (INTEGER)1);
+    INTEGER nh = ihi - ilo + 1;
+    INTEGER lwkopt = 0;
+    if (nh <= 1) {
+        lwkopt = 1;
+    } else {
+        lwkopt = 6 * n * nb;
+    }
     work[1 - 1] = castREAL(lwkopt);
     bool initq = Mlsame(compq, "I");
     bool wantq = initq || Mlsame(compq, "V");
@@ -94,7 +84,7 @@ void Rgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
         return;
     }
     //
-    //     Initialize Q and Z if desired.
+    // Initialize Q and Z if desired.
     //
     const REAL zero = 0.0;
     const REAL one = 1.0;
@@ -105,38 +95,37 @@ void Rgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
         Rlaset("All", n, n, zero, one, z, ldz);
     }
     //
-    //     Zero out lower triangle of B.
+    // Zero out lower triangle of B.
     //
     if (n > 1) {
         Rlaset("Lower", n - 1, n - 1, zero, zero, &b[(2 - 1)], ldb);
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
-    INTEGER nh = ihi - ilo + 1;
     if (nh <= 1) {
         work[1 - 1] = one;
         return;
     }
     //
-    //     Determine the blocksize.
+    // Determine the blocksize.
     //
     INTEGER nbmin = iMlaenv(2, "Rgghd3", " ", n, ilo, ihi, -1);
     INTEGER nx = 0;
     if (nb > 1 && nb < nh) {
         //
-        //        Determine when to use unblocked instead of blocked code.
+        // Determine when to use unblocked instead of blocked code.
         //
         nx = max(nb, iMlaenv(3, "Rgghd3", " ", n, ilo, ihi, -1));
         if (nx < nh) {
             //
-            //           Determine if workspace is large enough for blocked code.
+            // Determine if workspace is large enough for blocked code.
             //
             if (lwork < lwkopt) {
                 //
-                //              Not enough workspace to use optimal NB:  determine the
-                //              minimum value of NB, and reduce NB or force use of
-                //              unblocked code.
+                // Not enough workspace to use optimal NB:  determine the
+                // minimum value of NB, and reduce NB or force use of
+                // unblocked code.
                 //
                 nbmin = max((INTEGER)2, iMlaenv(2, "Rgghd3", " ", n, ilo, ihi, -1));
                 if (lwork >= 6 * n * nbmin) {
@@ -180,24 +169,24 @@ void Rgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
     INTEGER topq = 0;
     if (nb < nbmin || nb >= nh) {
         //
-        //        Use unblocked code below
+        // Use unblocked code below
         //
         jcol = ilo;
         //
     } else {
         //
-        //        Use blocked code
+        // Use blocked code
         //
         kacc22 = iMlaenv(16, "Rgghd3", " ", n, ilo, ihi, -1);
         blk22 = kacc22 == 2;
         for (jcol = ilo; jcol <= ihi - 2; jcol = jcol + nb) {
             nnb = min(nb, ihi - jcol - 1);
             //
-            //           Initialize small orthogonal factors that will hold the
-            //           accumulated Givens rotations in workspace.
-            //           N2NB   denotes the number of 2*NNB-by-2*NNB factors
-            //           NBLST  denotes the (possibly smaller) order of the last
-            //                  factor.
+            // Initialize small orthogonal factors that will hold the
+            // accumulated Givens rotations in workspace.
+            // N2NB   denotes the number of 2*NNB-by-2*NNB factors
+            // NBLST  denotes the (possibly smaller) order of the last
+            // factor.
             //
             n2nb = (ihi - jcol - 1) / nnb - 1;
             nblst = ihi - jcol - n2nb * nnb;
@@ -208,12 +197,12 @@ void Rgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                 pw += 4 * nnb * nnb;
             }
             //
-            //           Reduce columns JCOL:JCOL+NNB-1 of A to Hessenberg form.
+            // Reduce columns JCOL:JCOL+NNB-1 of A to Hessenberg form.
             //
             for (j = jcol; j <= jcol + nnb - 1; j = j + 1) {
                 //
-                //              Reduce Jth column of A. Store cosines and sines in Jth
-                //              column of A and B, respectively.
+                // Reduce Jth column of A. Store cosines and sines in Jth
+                // column of A and B, respectively.
                 //
                 for (i = ihi; i >= j + 2; i = i - 1) {
                     temp = a[((i - 1) - 1) + (j - 1) * lda];
@@ -222,7 +211,7 @@ void Rgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                     b[(i - 1) + (j - 1) * ldb] = s;
                 }
                 //
-                //              Accumulate Givens rotations into workspace array.
+                // Accumulate Givens rotations into workspace array.
                 //
                 ppw = (nblst + 1) * (nblst - 2) - j + jcol + 1;
                 len = 2 + j - jcol;
@@ -258,8 +247,8 @@ void Rgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                     ppwo += 4 * nnb * nnb;
                 }
                 //
-                //              TOP denotes the number of top rows in A and B that will
-                //              not be updated during the next steps.
+                // TOP denotes the number of top rows in A and B that will
+                // not be updated during the next steps.
                 //
                 if (jcol <= 2) {
                     top = 0;
@@ -267,12 +256,12 @@ void Rgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                     top = jcol;
                 }
                 //
-                //              Propagate transformations through B and replace stored
-                //              left sines/cosines by right sines/cosines.
+                // Propagate transformations through B and replace stored
+                // left sines/cosines by right sines/cosines.
                 //
                 for (jj = n; jj >= j + 1; jj = jj - 1) {
                     //
-                    //                 Update JJth column of B.
+                    // Update JJth column of B.
                     //
                     for (i = min(jj + 1, ihi); i >= j + 2; i = i - 1) {
                         c = a[(i - 1) + (j - 1) * lda];
@@ -282,7 +271,7 @@ void Rgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                         b[((i - 1) - 1) + (jj - 1) * ldb] = s * temp + c * b[((i - 1) - 1) + (jj - 1) * ldb];
                     }
                     //
-                    //                 Annihilate B( JJ+1, JJ ).
+                    // Annihilate B( JJ+1, JJ ).
                     //
                     if (jj < ihi) {
                         temp = b[((jj + 1) - 1) + ((jj + 1) - 1) * ldb];
@@ -294,12 +283,12 @@ void Rgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                     }
                 }
                 //
-                //              Update A by transformations from right.
-                //              Explicit loop unrolling provides better performance
-                //              compared to Rlasr.
-                //               CALL Rlasr( 'Right', 'Variable', 'Backward', IHI-TOP,
-                //     $                     IHI-J, A( J+2, J ), B( J+2, J ),
-                //     $                     A( TOP+1, J+1 ), LDA )
+                // Update A by transformations from right.
+                // Explicit loop unrolling provides better performance
+                // compared to Rlasr.
+                // CALL Rlasr( 'Right', 'Variable', 'Backward', IHI-TOP,
+                // $                     IHI-J, A( J+2, J ), B( J+2, J ),
+                // $                     A( TOP+1, J+1 ), LDA )
                 //
                 jj = mod(ihi - j - 1, 3);
                 for (i = ihi - j - 3; i >= jj + 1; i = i - 3) {
@@ -330,20 +319,20 @@ void Rgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                     }
                 }
                 //
-                //              Update (J+1)th column of A by transformations from left.
+                // Update (J+1)th column of A by transformations from left.
                 //
                 if (j < jcol + nnb - 1) {
                     len = 1 + j - jcol;
                     //
-                    //                 Multiply with the trailing accumulated orthogonal
-                    //                 matrix, which takes the form
+                    // Multiply with the trailing accumulated orthogonal
+                    // matrix, which takes the form
                     //
-                    //                        [  U11  U12  ]
-                    //                    U = [            ],
-                    //                        [  U21  U22  ]
+                    // [  U11  U12  ]
+                    // U = [            ],
+                    // [  U21  U22  ]
                     //
-                    //                 where U21 is a LEN-by-LEN matrix and U12 is lower
-                    //                 triangular.
+                    // where U21 is a LEN-by-LEN matrix and U12 is lower
+                    // triangular.
                     //
                     jrow = ihi - nblst + 1;
                     Rgemv("Transpose", nblst, len, one, work, nblst, &a[(jrow - 1) + ((j + 1) - 1) * lda], 1, zero, &work[pw - 1], 1);
@@ -360,18 +349,18 @@ void Rgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                         ppw++;
                     }
                     //
-                    //                 Multiply with the other accumulated orthogonal
-                    //                 matrices, which take the form
+                    // Multiply with the other accumulated orthogonal
+                    // matrices, which take the form
                     //
-                    //                        [  U11  U12   0  ]
-                    //                        [                ]
-                    //                    U = [  U21  U22   0  ],
-                    //                        [                ]
-                    //                        [   0    0    I  ]
+                    // [  U11  U12   0  ]
+                    // [                ]
+                    // U = [  U21  U22   0  ],
+                    // [                ]
+                    // [   0    0    I  ]
                     //
-                    //                 where I denotes the (NNB-LEN)-by-(NNB-LEN) identity
-                    //                 matrix, U21 is a LEN-by-LEN upper triangular matrix
-                    //                 and U12 is an NNB-by-NNB lower triangular matrix.
+                    // where I denotes the (NNB-LEN)-by-(NNB-LEN) identity
+                    // matrix, U21 is a LEN-by-LEN upper triangular matrix
+                    // and U12 is an NNB-by-NNB lower triangular matrix.
                     //
                     ppwo = 1 + nblst * nblst;
                     j0 = jrow - nnb;
@@ -400,7 +389,7 @@ void Rgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                 }
             }
             //
-            //           Apply accumulated orthogonal matrices to A.
+            // Apply accumulated orthogonal matrices to A.
             //
             cola = n - jcol - nnb + 1;
             j = ihi - nblst + 1;
@@ -411,19 +400,19 @@ void Rgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
             for (j = j0; j >= jcol + 1; j = j - nnb) {
                 if (blk22) {
                     //
-                    //                 Exploit the structure of
+                    // Exploit the structure of
                     //
-                    //                        [  U11  U12  ]
-                    //                    U = [            ]
-                    //                        [  U21  U22  ],
+                    // [  U11  U12  ]
+                    // U = [            ]
+                    // [  U21  U22  ],
                     //
-                    //                 where all blocks are NNB-by-NNB, U21 is upper
-                    //                 triangular and U12 is lower triangular.
+                    // where all blocks are NNB-by-NNB, U21 is upper
+                    // triangular and U12 is lower triangular.
                     //
                     Rorm22("Left", "Transpose", 2 * nnb, cola, nnb, nnb, &work[ppwo - 1], 2 * nnb, &a[(j - 1) + ((jcol + nnb) - 1) * lda], lda, &work[pw - 1], lwork - pw + 1, ierr);
                 } else {
                     //
-                    //                 Ignore the structure of U.
+                    // Ignore the structure of U.
                     //
                     Rgemm("Transpose", "No Transpose", 2 * nnb, cola, 2 * nnb, one, &work[ppwo - 1], 2 * nnb, &a[(j - 1) + ((jcol + nnb) - 1) * lda], lda, zero, &work[pw - 1], 2 * nnb);
                     Rlacpy("All", 2 * nnb, cola, &work[pw - 1], 2 * nnb, &a[(j - 1) + ((jcol + nnb) - 1) * lda], lda);
@@ -431,7 +420,7 @@ void Rgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                 ppwo += 4 * nnb * nnb;
             }
             //
-            //           Apply accumulated orthogonal matrices to Q.
+            // Apply accumulated orthogonal matrices to Q.
             //
             if (wantq) {
                 j = ihi - nblst + 1;
@@ -453,12 +442,12 @@ void Rgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                     }
                     if (blk22) {
                         //
-                        //                    Exploit the structure of U.
+                        // Exploit the structure of U.
                         //
                         Rorm22("Right", "No Transpose", nh, 2 * nnb, nnb, nnb, &work[ppwo - 1], 2 * nnb, &q[(topq - 1) + (j - 1) * ldq], ldq, &work[pw - 1], lwork - pw + 1, ierr);
                     } else {
                         //
-                        //                    Ignore the structure of U.
+                        // Ignore the structure of U.
                         //
                         Rgemm("No Transpose", "No Transpose", nh, 2 * nnb, 2 * nnb, one, &q[(topq - 1) + (j - 1) * ldq], ldq, &work[ppwo - 1], 2 * nnb, zero, &work[pw - 1], nh);
                         Rlacpy("All", nh, 2 * nnb, &work[pw - 1], nh, &q[(topq - 1) + (j - 1) * ldq], ldq);
@@ -467,12 +456,12 @@ void Rgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                 }
             }
             //
-            //           Accumulate right Givens rotations if required.
+            // Accumulate right Givens rotations if required.
             //
             if (wantz || top > 0) {
                 //
-                //              Initialize small orthogonal factors that will hold the
-                //              accumulated Givens rotations in workspace.
+                // Initialize small orthogonal factors that will hold the
+                // accumulated Givens rotations in workspace.
                 //
                 Rlaset("All", nblst, nblst, zero, one, work, nblst);
                 pw = nblst * nblst + 1;
@@ -481,7 +470,7 @@ void Rgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                     pw += 4 * nnb * nnb;
                 }
                 //
-                //              Accumulate Givens rotations into workspace array.
+                // Accumulate Givens rotations into workspace array.
                 //
                 for (j = jcol; j <= jcol + nnb - 1; j = j + 1) {
                     ppw = (nblst + 1) * (nblst - 2) - j + jcol + 1;
@@ -528,7 +517,7 @@ void Rgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                 Rlaset("Lower", ihi - jcol - 1, nnb, zero, zero, &b[((jcol + 2) - 1) + (jcol - 1) * ldb], ldb);
             }
             //
-            //           Apply accumulated orthogonal matrices to A and B.
+            // Apply accumulated orthogonal matrices to A and B.
             //
             if (top > 0) {
                 j = ihi - nblst + 1;
@@ -539,12 +528,12 @@ void Rgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                 for (j = j0; j >= jcol + 1; j = j - nnb) {
                     if (blk22) {
                         //
-                        //                    Exploit the structure of U.
+                        // Exploit the structure of U.
                         //
                         Rorm22("Right", "No Transpose", top, 2 * nnb, nnb, nnb, &work[ppwo - 1], 2 * nnb, &a[(j - 1) * lda], lda, &work[pw - 1], lwork - pw + 1, ierr);
                     } else {
                         //
-                        //                    Ignore the structure of U.
+                        // Ignore the structure of U.
                         //
                         Rgemm("No Transpose", "No Transpose", top, 2 * nnb, 2 * nnb, one, &a[(j - 1) * lda], lda, &work[ppwo - 1], 2 * nnb, zero, &work[pw - 1], top);
                         Rlacpy("All", top, 2 * nnb, &work[pw - 1], top, &a[(j - 1) * lda], lda);
@@ -560,12 +549,12 @@ void Rgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                 for (j = j0; j >= jcol + 1; j = j - nnb) {
                     if (blk22) {
                         //
-                        //                    Exploit the structure of U.
+                        // Exploit the structure of U.
                         //
                         Rorm22("Right", "No Transpose", top, 2 * nnb, nnb, nnb, &work[ppwo - 1], 2 * nnb, &b[(j - 1) * ldb], ldb, &work[pw - 1], lwork - pw + 1, ierr);
                     } else {
                         //
-                        //                    Ignore the structure of U.
+                        // Ignore the structure of U.
                         //
                         Rgemm("No Transpose", "No Transpose", top, 2 * nnb, 2 * nnb, one, &b[(j - 1) * ldb], ldb, &work[ppwo - 1], 2 * nnb, zero, &work[pw - 1], top);
                         Rlacpy("All", top, 2 * nnb, &work[pw - 1], top, &b[(j - 1) * ldb], ldb);
@@ -574,7 +563,7 @@ void Rgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                 }
             }
             //
-            //           Apply accumulated orthogonal matrices to Z.
+            // Apply accumulated orthogonal matrices to Z.
             //
             if (wantz) {
                 j = ihi - nblst + 1;
@@ -596,12 +585,12 @@ void Rgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                     }
                     if (blk22) {
                         //
-                        //                    Exploit the structure of U.
+                        // Exploit the structure of U.
                         //
                         Rorm22("Right", "No Transpose", nh, 2 * nnb, nnb, nnb, &work[ppwo - 1], 2 * nnb, &z[(topq - 1) + (j - 1) * ldz], ldz, &work[pw - 1], lwork - pw + 1, ierr);
                     } else {
                         //
-                        //                    Ignore the structure of U.
+                        // Ignore the structure of U.
                         //
                         Rgemm("No Transpose", "No Transpose", nh, 2 * nnb, 2 * nnb, one, &z[(topq - 1) + (j - 1) * ldz], ldz, &work[ppwo - 1], 2 * nnb, zero, &work[pw - 1], nh);
                         Rlacpy("All", nh, 2 * nnb, &work[pw - 1], nh, &z[(topq - 1) + (j - 1) * ldz], ldz);
@@ -612,8 +601,8 @@ void Rgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
         }
     }
     //
-    //     Use unblocked code to reduce the rest of the matrix
-    //     Avoid re-initialization of modified Q and Z.
+    // Use unblocked code to reduce the rest of the matrix
+    // Avoid re-initialization of modified Q and Z.
     //
     char compq2 = *compq;
     char compz2 = *compz;
@@ -629,8 +618,9 @@ void Rgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
     if (jcol < ihi) {
         Rgghrd(&compq2, &compz2, n, jcol, ihi, a, lda, b, ldb, q, ldq, z, ldz, ierr);
     }
+    //
     work[1 - 1] = castREAL(lwkopt);
     //
-    //     End of Rgghd3
+    // End of Rgghd3
     //
 }

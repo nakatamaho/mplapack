@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,17 +26,35 @@
  *
  */
 
+// Derived from LAPACK routine ZGEBRD.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Cgebrd(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL *d, REAL *e, COMPLEX *tauq, COMPLEX *taup, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //     Test the input parameters
+    // Test the input parameters
     //
     info = 0;
-    INTEGER nb = max((INTEGER)1, iMlaenv(1, "Cgebrd", " ", m, n, -1, -1));
-    INTEGER lwkopt = (m + n) * nb;
+    INTEGER minmn = min(m, n);
+    INTEGER lwkmin = 0;
+    INTEGER lwkopt = 0;
+    INTEGER nb = 0;
+    if (minmn == 0) {
+        lwkmin = 1;
+        lwkopt = 1;
+    } else {
+        lwkmin = max(m, n);
+        nb = max((INTEGER)1, iMlaenv(1, "Cgebrd", " ", m, n, -1, -1));
+        lwkopt = (m + n) * nb;
+    }
     work[1 - 1] = castREAL(lwkopt);
+    //
     bool lquery = (lwork == -1);
     if (m < 0) {
         info = -1;
@@ -44,7 +62,7 @@ void Cgebrd(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REA
         info = -2;
     } else if (lda < max((INTEGER)1, m)) {
         info = -4;
-    } else if (lwork < max({(INTEGER)1, m, n}) && !lquery) {
+    } else if (lwork < lwkmin && !lquery) {
         info = -10;
     }
     if (info < 0) {
@@ -54,11 +72,10 @@ void Cgebrd(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REA
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
-    INTEGER minmn = min(m, n);
     if (minmn == 0) {
-        work[1 - 1] = 1;
+        work[1 - 1] = 1.0;
         return;
     }
     //
@@ -70,18 +87,18 @@ void Cgebrd(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REA
     INTEGER nbmin = 0;
     if (nb > 1 && nb < minmn) {
         //
-        //        Set the crossover point NX.
+        // Set the crossover point NX.
         //
         nx = max(nb, iMlaenv(3, "Cgebrd", " ", m, n, -1, -1));
         //
-        //        Determine when to switch from blocked to unblocked code.
+        // Determine when to switch from blocked to unblocked code.
         //
         if (nx < minmn) {
-            ws = (m + n) * nb;
+            ws = lwkopt;
             if (lwork < ws) {
                 //
-                //              Not enough work space for the optimal NB, consider using
-                //              a smaller block size.
+                // Not enough work space for the optimal NB, consider using
+                // a smaller block size.
                 //
                 nbmin = iMlaenv(2, "Cgebrd", " ", m, n, -1, -1);
                 if (lwork >= (m + n) * nbmin) {
@@ -101,19 +118,19 @@ void Cgebrd(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REA
     INTEGER j = 0;
     for (i = 1; i <= minmn - nx; i = i + nb) {
         //
-        //        Reduce rows and columns i:i+ib-1 to bidiagonal form and return
-        //        the matrices X and Y which are needed to update the unreduced
-        //        part of the matrix
+        // Reduce rows and columns i:i+ib-1 to bidiagonal form and return
+        // the matrices X and Y which are needed to update the unreduced
+        // part of the matrix
         //
         Clabrd(m - i + 1, n - i + 1, nb, &a[(i - 1) + (i - 1) * lda], lda, &d[i - 1], &e[i - 1], &tauq[i - 1], &taup[i - 1], work, ldwrkx, &work[(ldwrkx * nb + 1) - 1], ldwrky);
         //
-        //        Update the trailing submatrix A(i+ib:m,i+ib:n), using
-        //        an update of the form  A := A - V*Y**H - X*U**H
+        // Update the trailing submatrix A(i+ib:m,i+ib:n), using
+        // an update of the form  A := A - V*Y**H - X*U**H
         //
         Cgemm("No transpose", "Conjugate transpose", m - i - nb + 1, n - i - nb + 1, nb, -one, &a[((i + nb) - 1) + (i - 1) * lda], lda, &work[(ldwrkx * nb + nb + 1) - 1], ldwrky, one, &a[((i + nb) - 1) + ((i + nb) - 1) * lda], lda);
         Cgemm("No transpose", "No transpose", m - i - nb + 1, n - i - nb + 1, nb, -one, &work[(nb + 1) - 1], ldwrkx, &a[(i - 1) + ((i + nb) - 1) * lda], lda, one, &a[((i + nb) - 1) + ((i + nb) - 1) * lda], lda);
         //
-        //        Copy diagonal and off-diagonal elements of B back into A
+        // Copy diagonal and off-diagonal elements of B back into A
         //
         if (m >= n) {
             for (j = i; j <= i + nb - 1; j = j + 1) {
@@ -128,12 +145,12 @@ void Cgebrd(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REA
         }
     }
     //
-    //     Use unblocked code to reduce the remainder of the matrix
+    // Use unblocked code to reduce the remainder of the matrix
     //
     INTEGER iinfo = 0;
     Cgebd2(m - i + 1, n - i + 1, &a[(i - 1) + (i - 1) * lda], lda, &d[i - 1], &e[i - 1], &tauq[i - 1], &taup[i - 1], work, iinfo);
     work[1 - 1] = ws;
     //
-    //     End of Cgebrd
+    // End of Cgebrd
     //
 }

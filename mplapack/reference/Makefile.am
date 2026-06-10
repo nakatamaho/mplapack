@@ -20,21 +20,22 @@ if ENABLE_DOUBLE
 lib_LTLIBRARIES += libmplapack_double.la
 endif
 
-if ENABLE__FLOAT64X
-lib_LTLIBRARIES += libmplapack__Float64x.la
+if ENABLE_BINARY80
+lib_LTLIBRARIES += libmplapack_binary80.la
 endif
 
-if ENABLE__FLOAT128
-lib_LTLIBRARIES += libmplapack__Float128.la
+if ENABLE_BINARY128
+lib_LTLIBRARIES += libmplapack_binary128.la
 endif
 
 if ENABLE_GMP
 libmplapack_gmp_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_GMP___
 libmplapack_gmp_la_SOURCES = $(MPLAPACK_SOURCES)
+libmplapack_gmp_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 if IS_MACOS
-libmplapack_gmp_la_LDFLAGS = -Wl,-rpath,$(libdir) -Wl,-flat_namespace,-undefined,dynamic_lookup
+libmplapack_gmp_la_LDFLAGS += -Wl,-rpath,$(libdir) -Wl,-flat_namespace,-undefined,dynamic_lookup
 else
-libmplapack_gmp_la_LDFLAGS = -Wl,-rpath=$(libdir)
+libmplapack_gmp_la_LDFLAGS += -Wl,-rpath=$(libdir)
 endif
 if IS_MINGW
 libmplapack_gmp_la_LDFLAGS += -no-undefined -L$(GMP_LIBDIR) -lgmp -L$(top_builddir)/mpblas/reference -lmpblas_gmp
@@ -44,7 +45,7 @@ endif
 if ENABLE_MPFR
 libmplapack_mpfr_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR)  -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___
 libmplapack_mpfr_la_SOURCES = $(MPLAPACK_SOURCES)
-libmplapack_mpfr_la_LDFLAGS = -Wl,-rpath,$(libdir)
+libmplapack_mpfr_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO) -Wl,-rpath,$(libdir)
 if IS_MACOS
 libmplapack_mpfr_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
@@ -56,7 +57,7 @@ endif
 if ENABLE_QD
 libmplapack_qd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_QD___
 libmplapack_qd_la_SOURCES = $(MPLAPACK_SOURCES)
-libmplapack_qd_la_LDFLAGS = -Wl,-rpath,$(libdir)
+libmplapack_qd_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO) -Wl,-rpath,$(libdir)
 if IS_MACOS
 libmplapack_qd_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
@@ -68,7 +69,8 @@ endif
 if ENABLE_DD
 libmplapack_dd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_DD___
 libmplapack_dd_la_SOURCES = $(MPLAPACK_SOURCES)
-libmplapack_dd_la_LDFLAGS = -Wl,-rpath,$(libdir)
+libmplapack_dd_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO) -Wl,-rpath,$(libdir)
+libmplapack_dd_la_CXXFLAGS = $(DD_CXXFLAGS)
 if IS_MACOS
 libmplapack_dd_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
@@ -80,7 +82,7 @@ endif
 if ENABLE_DOUBLE
 libmplapack_double_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_DOUBLE___
 libmplapack_double_la_SOURCES = $(MPLAPACK_SOURCES)
-libmplapack_double_la_LDFLAGS = -Wl,-rpath,$(libdir)
+libmplapack_double_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO) -Wl,-rpath,$(libdir)
 if IS_MACOS
 libmplapack_double_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
@@ -89,46 +91,34 @@ libmplapack_double_la_LDFLAGS += -no-undefined -L$(top_builddir)/mpblas/referenc
 endif
 endif
 
-if ENABLE__FLOAT64X
-libmplapack__Float64x_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH__FLOAT64X___
-libmplapack__Float64x_la_SOURCES = $(MPLAPACK_SOURCES)
-libmplapack__Float64x_la_LDFLAGS = -Wl,-rpath,$(libdir)
+if ENABLE_BINARY80
+libmplapack_binary80_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_BINARY80___
+libmplapack_binary80_la_SOURCES = $(MPLAPACK_SOURCES)
+libmplapack_binary80_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO) -Wl,-rpath,$(libdir)
 if IS_MACOS
-libmplapack__Float64x_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
+libmplapack_binary80_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 if IS_MINGW
-libmplapack__Float64x_la_LDFLAGS += -no-undefined -L$(top_builddir)/mpblas/reference -lmpblas__Float64x
+libmplapack_binary80_la_LDFLAGS += -no-undefined -L$(top_builddir)/mpblas/reference -lmpblas_binary80
 endif
 endif
 
-if ENABLE__FLOAT128
-libmplapack__Float128_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH__FLOAT128___
-libmplapack__Float128_la_SOURCES = $(MPLAPACK_SOURCES)
-libmplapack__Float128_la_LDFLAGS = -Wl,-rpath,$(libdir)
+if ENABLE_BINARY128
+libmplapack_binary128_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_BINARY128___
+libmplapack_binary128_la_SOURCES = $(MPLAPACK_SOURCES)
+libmplapack_binary128_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO) -Wl,-rpath,$(libdir)
 if IS_MACOS
-libmplapack__Float128_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
+libmplapack_binary128_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 if IS_MINGW
-libmplapack__Float128_la_LDFLAGS += -no-undefined -L$(top_builddir)/mpblas/reference -lmpblas__Float128 -lquadmath
+libmplapack_binary128_la_LDFLAGS += -no-undefined -L$(top_builddir)/mpblas/reference -lmpblas_binary128 -lquadmath
 endif
 endif
 
 MPLAPACK_SOURCES = \
-Cgtsvx.cpp \
-Chesv_aa.cpp \
-Chesv_aa_2stage.cpp \
-Chesv_rk.cpp \
-Cpptri.cpp \
-Csysv.cpp \
-Csysv_aa_2stage.cpp \
-Csysv_rk.cpp \
-Csysv_rook.cpp \
-Rgtsvx.cpp \
-Cgtcon.cpp \
-Cgttrf.cpp \
+CRrscl.cpp \
 Cbbcsd.cpp \
 Cbdsqr.cpp \
-Cdrscl.cpp \
 Cgbbrd.cpp \
 Cgbcon.cpp \
 Cgbequ.cpp \
@@ -144,6 +134,8 @@ Cgebal.cpp \
 Cgebd2.cpp \
 Cgebrd.cpp \
 Cgecon.cpp \
+Cgedmd.cpp \
+Cgedmdq.cpp \
 Cgeequ.cpp \
 Cgeequb.cpp \
 Cgees.cpp \
@@ -161,6 +153,7 @@ Cgelqt3.cpp \
 Cgels.cpp \
 Cgelsd.cpp \
 Cgelss.cpp \
+Cgelst.cpp \
 Cgelsy.cpp \
 Cgemlq.cpp \
 Cgemlqt.cpp \
@@ -169,6 +162,7 @@ Cgemqrt.cpp \
 Cgeql2.cpp \
 Cgeqlf.cpp \
 Cgeqp3.cpp \
+Cgeqp3rk.cpp \
 Cgeqr.cpp \
 Cgeqr2.cpp \
 Cgeqr2p.cpp \
@@ -214,8 +208,11 @@ Cggsvd3.cpp \
 Cggsvp3.cpp \
 Cgsvj0.cpp \
 Cgsvj1.cpp \
+Cgtcon.cpp \
 Cgtrfs.cpp \
 Cgtsv.cpp \
+Cgtsvx.cpp \
+Cgttrf.cpp \
 Cgttrs.cpp \
 Cgtts2.cpp \
 Chb2st_kernels.cpp \
@@ -250,6 +247,9 @@ Chegvd.cpp \
 Chegvx.cpp \
 Cherfs.cpp \
 Chesv.cpp \
+Chesv_aa.cpp \
+Chesv_aa_2stage.cpp \
+Chesv_rk.cpp \
 Chesv_rook.cpp \
 Chesvx.cpp \
 Cheswapr.cpp \
@@ -300,7 +300,6 @@ Chseqr.cpp \
 Clabrd.cpp \
 Clacgv.cpp \
 Clacn2.cpp \
-Clacon.cpp \
 Clacp2.cpp \
 Clacpy.cpp \
 Clacrm.cpp \
@@ -350,6 +349,8 @@ Claqhb.cpp \
 Claqhe.cpp \
 Claqhp.cpp \
 Claqp2.cpp \
+Claqp2rk.cpp \
+Claqp3rk.cpp \
 Claqps.cpp \
 Claqr0.cpp \
 Claqr1.cpp \
@@ -360,10 +361,16 @@ Claqr5.cpp \
 Claqsb.cpp \
 Claqsp.cpp \
 Claqsy.cpp \
+Claqz0.cpp \
+Claqz1.cpp \
+Claqz2.cpp \
+Claqz3.cpp \
 Clar1v.cpp \
 Clar2v.cpp \
 Clarcm.cpp \
 Clarf.cpp \
+Clarf1f.cpp \
+Clarf1l.cpp \
 Clarfb.cpp \
 Clarfb_gett.cpp \
 Clarfg.cpp \
@@ -396,6 +403,7 @@ Clatdf.cpp \
 Clatps.cpp \
 Clatrd.cpp \
 Clatrs.cpp \
+Clatrs3.cpp \
 Clatrz.cpp \
 Clatsqr.cpp \
 Claunhr_col_getrfnp.cpp \
@@ -431,6 +439,7 @@ Cpprfs.cpp \
 Cppsv.cpp \
 Cppsvx.cpp \
 Cpptrf.cpp \
+Cpptri.cpp \
 Cpptrs.cpp \
 Cpstf2.cpp \
 Cpstrf.cpp \
@@ -443,6 +452,7 @@ Cpttrf.cpp \
 Cpttrs.cpp \
 Cptts2.cpp \
 Crot.cpp \
+Crscl.cpp \
 Cspcon.cpp \
 Cspmv.cpp \
 Cspr.cpp \
@@ -453,6 +463,7 @@ Csptrf.cpp \
 Csptri.cpp \
 Csptrs.cpp \
 Cstedc.cpp \
+Cstegr.cpp \
 Cstein.cpp \
 Cstemr.cpp \
 Csteqr.cpp \
@@ -466,7 +477,11 @@ Csyequb.cpp \
 Csymv.cpp \
 Csyr.cpp \
 Csyrfs.cpp \
+Csysv.cpp \
 Csysv_aa.cpp \
+Csysv_aa_2stage.cpp \
+Csysv_rk.cpp \
+Csysv_rook.cpp \
 Csysvx.cpp \
 Csyswapr.cpp \
 Csytf2.cpp \
@@ -525,6 +540,7 @@ Ctrrfs.cpp \
 Ctrsen.cpp \
 Ctrsna.cpp \
 Ctrsyl.cpp \
+Ctrsyl3.cpp \
 Ctrti2.cpp \
 Ctrtri.cpp \
 Ctrtrs.cpp \
@@ -570,15 +586,16 @@ Cunmrz.cpp \
 Cunmtr.cpp \
 Cupgtr.cpp \
 Cupmtr.cpp \
+Mexponent.cpp \
 Mlsamen.cpp \
 Mmaxloc.cpp \
 Mmaxval.cpp \
+Mminval.cpp \
 RCsum1.cpp \
 Rbbcsd.cpp \
 Rbdsdc.cpp \
 Rbdsqr.cpp \
 Rbdsvdx.cpp \
-Rcombssq.cpp \
 Rdisna.cpp \
 Rgbbrd.cpp \
 Rgbcon.cpp \
@@ -595,6 +612,8 @@ Rgebal.cpp \
 Rgebd2.cpp \
 Rgebrd.cpp \
 Rgecon.cpp \
+Rgedmd.cpp \
+Rgedmdq.cpp \
 Rgeequ.cpp \
 Rgeequb.cpp \
 Rgees.cpp \
@@ -612,6 +631,7 @@ Rgelqt3.cpp \
 Rgels.cpp \
 Rgelsd.cpp \
 Rgelss.cpp \
+Rgelst.cpp \
 Rgelsy.cpp \
 Rgemlq.cpp \
 Rgemlqt.cpp \
@@ -620,6 +640,7 @@ Rgemqrt.cpp \
 Rgeql2.cpp \
 Rgeqlf.cpp \
 Rgeqp3.cpp \
+Rgeqp3rk.cpp \
 Rgeqr.cpp \
 Rgeqr2.cpp \
 Rgeqr2p.cpp \
@@ -668,17 +689,18 @@ Rgsvj1.cpp \
 Rgtcon.cpp \
 Rgtrfs.cpp \
 Rgtsv.cpp \
+Rgtsvx.cpp \
 Rgttrf.cpp \
 Rgttrs.cpp \
 Rgtts2.cpp \
 Rhgeqz.cpp \
 Rhsein.cpp \
 Rhseqr.cpp \
+Risinf.cpp \
 Risnan.cpp \
 Rlabad.cpp \
 Rlabrd.cpp \
 Rlacn2.cpp \
-Rlacon.cpp \
 Rlacpy.cpp \
 Rladiv.cpp \
 Rlae2.cpp \
@@ -706,7 +728,6 @@ Rlagv2.cpp \
 Rlahqr.cpp \
 Rlahr2.cpp \
 Rlaic1.cpp \
-Rlaisnan.cpp \
 Rlaln2.cpp \
 Rlals0.cpp \
 Rlalsa.cpp \
@@ -739,6 +760,8 @@ Rlapy3.cpp \
 Rlaqgb.cpp \
 Rlaqge.cpp \
 Rlaqp2.cpp \
+Rlaqp2rk.cpp \
+Rlaqp3rk.cpp \
 Rlaqps.cpp \
 Rlaqr0.cpp \
 Rlaqr1.cpp \
@@ -750,9 +773,16 @@ Rlaqsb.cpp \
 Rlaqsp.cpp \
 Rlaqsy.cpp \
 Rlaqtr.cpp \
+Rlaqz0.cpp \
+Rlaqz1.cpp \
+Rlaqz2.cpp \
+Rlaqz3.cpp \
+Rlaqz4.cpp \
 Rlar1v.cpp \
 Rlar2v.cpp \
 Rlarf.cpp \
+Rlarf1f.cpp \
+Rlarf1l.cpp \
 Rlarfb.cpp \
 Rlarfb_gett.cpp \
 Rlarfg.cpp \
@@ -761,6 +791,7 @@ Rlarft.cpp \
 Rlarfx.cpp \
 Rlarfy.cpp \
 Rlargv.cpp \
+Rlarmm.cpp \
 Rlarnv.cpp \
 Rlarra.cpp \
 Rlarrb.cpp \
@@ -819,6 +850,7 @@ Rlatdf.cpp \
 Rlatps.cpp \
 Rlatrd.cpp \
 Rlatrs.cpp \
+Rlatrs3.cpp \
 Rlatrz.cpp \
 Rlatsqr.cpp \
 Rlauu2.cpp \
@@ -903,6 +935,7 @@ Rptsvx.cpp \
 Rpttrf.cpp \
 Rpttrs.cpp \
 Rptts2.cpp \
+Rroundup_lwork.cpp \
 Rrscl.cpp \
 Rsb2st_kernels.cpp \
 Rsbev.cpp \
@@ -934,6 +967,7 @@ Rsptri.cpp \
 Rsptrs.cpp \
 Rstebz.cpp \
 Rstedc.cpp \
+Rstegr.cpp \
 Rstein.cpp \
 Rstemr.cpp \
 Rsteqr.cpp \
@@ -1032,6 +1066,7 @@ Rtrrfs.cpp \
 Rtrsen.cpp \
 Rtrsna.cpp \
 Rtrsyl.cpp \
+Rtrsyl3.cpp \
 Rtrti2.cpp \
 Rtrtri.cpp \
 Rtrtrs.cpp \
@@ -1051,7 +1086,7 @@ iMlauplo.cpp \
 iMlaver.cpp \
 iMlazlc.cpp \
 iMlazlr.cpp \
-iMparmq.cpp \
-iMparam2stage.cpp
+iMparam2stage.cpp \
+iMparmq.cpp
 
 EXTRA_DIST = iMlaver.cpp.in

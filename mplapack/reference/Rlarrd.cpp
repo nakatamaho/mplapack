@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DLARRD.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -81,14 +88,15 @@ void Rlarrd(const char *range, const char *order, INTEGER const n, REAL const vl
     INTEGER itmp2 = 0;
     //
     info = 0;
+    m = 0;
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n <= 0) {
         return;
     }
     //
-    //     Decode RANGE
+    // Decode RANGE
     //
     if (Mlsame(range, "A")) {
         irange = allrng;
@@ -100,7 +108,7 @@ void Rlarrd(const char *range, const char *order, INTEGER const n, REAL const vl
         irange = 0;
     }
     //
-    //     Check for Errors
+    // Check for Errors
     //
     if (irange <= 0) {
         info = -1;
@@ -122,33 +130,26 @@ void Rlarrd(const char *range, const char *order, INTEGER const n, REAL const vl
         return;
     }
     //
-    //     Initialize error flags
-    info = 0;
+    // Initialize error flags
     ncnvrg = false;
     toofew = false;
     //
-    //     Quick return if possible
-    m = 0;
-    if (n == 0) {
-        return;
-    }
-    //
-    //     Simplification:
+    // Simplification:
     if (irange == indrng && il == 1 && iu == n) {
         irange = 1;
     }
     //
-    //     Get machine constants
+    // Get machine constants
     eps = Rlamch("P");
     uflow = Rlamch("U");
     //
-    //     Special Case when N=1
-    //     Treat case of 1x1 matrix for quick return
+    // Special Case when N=1
+    // Treat case of 1x1 matrix for quick return
     if (n == 1) {
         if ((irange == allrng) || ((irange == valrng) && (d[1 - 1] > vl) && (d[1 - 1] <= vu)) || ((irange == indrng) && (il == 1) && (iu == 1))) {
             m = 1;
             w[1 - 1] = d[1 - 1];
-            //           The computation error of the eigenvalue is zero
+            // The computation error of the eigenvalue is zero
             werr[1 - 1] = zero;
             iblock[1 - 1] = 1;
             indexw[1 - 1] = 1;
@@ -156,46 +157,48 @@ void Rlarrd(const char *range, const char *order, INTEGER const n, REAL const vl
         return;
     }
     //
-    //     NB is the minimum vector length for vector bisection, or 0
-    //     if only scalar is to be done.
+    // NB is the minimum vector length for vector bisection, or 0
+    // if only scalar is to be done.
     nb = iMlaenv(1, "Rstebz", " ", n, -1, -1, -1);
     if (nb <= 1) {
         nb = 0;
     }
     //
-    //     Find global spectral radius
+    // Find global spectral radius
     gl = d[1 - 1];
     gu = d[1 - 1];
     for (i = 1; i <= n; i = i + 1) {
         gl = min(gl, gers[(2 * i - 1) - 1]);
         gu = max(gu, gers[(2 * i) - 1]);
     }
-    //     Compute global Gerschgorin bounds and spectral diameter
+    // Compute global Gerschgorin bounds and spectral diameter
     tnorm = max(abs(gl), abs(gu));
     gl = gl - fudge * tnorm * eps * n - fudge * two * pivmin;
     gu += fudge * tnorm * eps * n + fudge * two * pivmin;
-    //     [JAN/28/2009] remove the line below since SPDIAM variable not use
-    //     SPDIAM = GU - GL
-    //     Input arguments for Rlaebz:
-    //     The relative tolerance.  An interval (a,b] lies within
-    //     "relative tolerance" if  b-a < RELTOL*max(|a|,|b|),
+    // [JAN/28/2009] remove the line below since SPDIAM variable not use
+    // SPDIAM = GU - GL
+    // Input arguments for Rlaebz:
+    // The relative tolerance.  An interval (a,b] lies within
+    // "relative tolerance" if  b-a < RELTOL*max(|a|,|b|),
     rtoli = reltol;
-    //     Set the absolute tolerance for interval convergence to zero to force
-    //     interval convergence based on relative size of the interval.
-    //     This is dangerous because intervals might not converge when RELTOL is
-    //     small. But at least a very small number should be selected so that for
-    //     strongly graded matrices, the code can get relatively accurate
-    //     eigenvalues.
+    // Set the absolute tolerance for interval convergence to zero to force
+    // interval convergence based on relative size of the interval.
+    // This is dangerous because intervals might not converge when RELTOL is
+    // small. But at least a very small number should be selected so that for
+    // strongly graded matrices, the code can get relatively accurate
+    // eigenvalues.
     atoli = fudge * two * uflow + fudge * two * pivmin;
     //
     if (irange == indrng) {
         //
-        //        RANGE='I': Compute an interval containing eigenvalues
-        //        IL through IU. The initial interval [GL,GU] from the global
-        //        Gerschgorin bounds GL and GU is refined by Rlaebz.
+        // RANGE='I': Compute an interval containing eigenvalues
+        // IL through IU. The initial interval [GL,GU] from the global
+        // Gerschgorin bounds GL and GU is refined by Rlaebz.
         itmax = castINTEGER((log(tnorm + pivmin) - log(pivmin)) / log(two)) + 2;
-        if (itmax >= 1024)
-            itmax = 1024; // XXX itmax can be too large for MPFR (=10^8)
+#if defined ___MPLAPACK_BUILD_WITH_MPFR___ || defined ___MPLAPACK_BUILD_WITH_GMP___
+        if (itmax >= 100000)
+            itmax = 100000; // XXX itmax can be too large for MPFR/GMP (=10^8)
+#endif
         work[(n + 1) - 1] = gl;
         work[(n + 2) - 1] = gl;
         work[(n + 3) - 1] = gu;
@@ -214,7 +217,7 @@ void Rlarrd(const char *range, const char *order, INTEGER const n, REAL const vl
             info = iinfo;
             return;
         }
-        //        On exit, output intervals may not be ordered by ascending negcount
+        // On exit, output intervals may not be ordered by ascending negcount
         if (iwork[6 - 1] == iu) {
             wl = work[(n + 1) - 1];
             wlu = work[(n + 3) - 1];
@@ -230,8 +233,8 @@ void Rlarrd(const char *range, const char *order, INTEGER const n, REAL const vl
             wul = work[(n + 1) - 1];
             nwu = iwork[3 - 1];
         }
-        //        On exit, the interval [WL, WLU] contains a value with negcount NWL,
-        //        and [WUL, WU] contains a value with negcount NWU.
+        // On exit, the interval [WL, WLU] contains a value with negcount NWL,
+        // and [WUL, WU] contains a value with negcount NWU.
         if (nwl < 0 || nwl >= n || nwu < 1 || nwu > n) {
             info = 4;
             return;
@@ -246,9 +249,9 @@ void Rlarrd(const char *range, const char *order, INTEGER const n, REAL const vl
         wu = gu;
     }
     //
-    //     Find Eigenvalues -- Loop Over blocks and recompute NWL and NWU.
-    //     NWL accumulates the number of eigenvalues .le. WL,
-    //     NWU accumulates the number of eigenvalues .le. WU
+    // Find Eigenvalues -- Loop Over blocks and recompute NWL and NWU.
+    // NWL accumulates the number of eigenvalues .le. WL,
+    // NWU accumulates the number of eigenvalues .le. WU
     m = 0;
     iend = 0;
     info = 0;
@@ -262,7 +265,7 @@ void Rlarrd(const char *range, const char *order, INTEGER const n, REAL const vl
         in = iend - ioff;
         //
         if (in == 1) {
-            //           1x1 block
+            // 1x1 block
             if (wl >= d[ibegin - 1] - pivmin) {
                 nwl++;
             }
@@ -273,62 +276,62 @@ void Rlarrd(const char *range, const char *order, INTEGER const n, REAL const vl
                 m++;
                 w[m - 1] = d[ibegin - 1];
                 werr[m - 1] = zero;
-                //              The gap for a single block doesn't matter for the later
-                //              algorithm and is assigned an arbitrary large value
+                // The gap for a single block doesn't matter for the later
+                // algorithm and is assigned an arbitrary large value
                 iblock[m - 1] = jblk;
                 indexw[m - 1] = 1;
             }
             //
-            //        Disabled 2x2 case because of a failure on the following matrix
-            //        RANGE = 'I', IL = IU = 4
-            //          Original Tridiagonal, d = [
-            //           -0.150102010615740E+00
-            //           -0.849897989384260E+00
-            //           -0.128208148052635E-15
-            //            0.128257718286320E-15
-            //          ];
-            //          e = [
-            //           -0.357171383266986E+00
-            //           -0.180411241501588E-15
-            //           -0.175152352710251E-15
-            //          ];
+            // Disabled 2x2 case because of a failure on the following matrix
+            // RANGE = 'I', IL = IU = 4
+            // Original Tridiagonal, d = [
+            // -0.150102010615740E+00
+            // -0.849897989384260E+00
+            // -0.128208148052635E-15
+            // 0.128257718286320E-15
+            // ];
+            // e = [
+            // -0.357171383266986E+00
+            // -0.180411241501588E-15
+            // -0.175152352710251E-15
+            // ];
             //
-            //         ELSE IF( IN.EQ.2 ) THEN
-            //*           2x2 block
-            //            DISC = SQRT( (HALF*(D(IBEGIN)-D(IEND)))**2 + E(IBEGIN)**2 )
-            //            TMP1 = HALF*(D(IBEGIN)+D(IEND))
-            //            L1 = TMP1 - DISC
-            //            IF( WL.GE. L1-PIVMIN )
-            //     $         NWL = NWL + 1
-            //            IF( WU.GE. L1-PIVMIN )
-            //     $         NWU = NWU + 1
-            //            IF( IRANGE.EQ.ALLRNG .OR. ( WL.LT.L1-PIVMIN .AND. WU.GE.
-            //     $          L1-PIVMIN ) ) THEN
-            //               M = M + 1
-            //               W( M ) = L1
-            //*              The uncertainty of eigenvalues of a 2x2 matrix is very small
-            //               WERR( M ) = EPS * ABS( W( M ) ) * TWO
-            //               IBLOCK( M ) = JBLK
-            //               INDEXW( M ) = 1
-            //            ENDIF
-            //            L2 = TMP1 + DISC
-            //            IF( WL.GE. L2-PIVMIN )
-            //     $         NWL = NWL + 1
-            //            IF( WU.GE. L2-PIVMIN )
-            //     $         NWU = NWU + 1
-            //            IF( IRANGE.EQ.ALLRNG .OR. ( WL.LT.L2-PIVMIN .AND. WU.GE.
-            //     $          L2-PIVMIN ) ) THEN
-            //               M = M + 1
-            //               W( M ) = L2
-            //*              The uncertainty of eigenvalues of a 2x2 matrix is very small
-            //               WERR( M ) = EPS * ABS( W( M ) ) * TWO
-            //               IBLOCK( M ) = JBLK
-            //               INDEXW( M ) = 2
-            //            ENDIF
+            // ELSE IF( IN.EQ.2 ) THEN
+            // *           2x2 block
+            // DISC = SQRT( (HALF*(D(IBEGIN)-D(IEND)))**2 + E(IBEGIN)**2 )
+            // TMP1 = HALF*(D(IBEGIN)+D(IEND))
+            // L1 = TMP1 - DISC
+            // IF( WL.GE. L1-PIVMIN )
+            // $         NWL = NWL + 1
+            // IF( WU.GE. L1-PIVMIN )
+            // $         NWU = NWU + 1
+            // IF( IRANGE.EQ.ALLRNG .OR. ( WL.LT.L1-PIVMIN .AND. WU.GE.
+            // $          L1-PIVMIN ) ) THEN
+            // M = M + 1
+            // W( M ) = L1
+            // *              The uncertainty of eigenvalues of a 2x2 matrix is very small
+            // WERR( M ) = EPS * ABS( W( M ) ) * TWO
+            // IBLOCK( M ) = JBLK
+            // INDEXW( M ) = 1
+            // ENDIF
+            // L2 = TMP1 + DISC
+            // IF( WL.GE. L2-PIVMIN )
+            // $         NWL = NWL + 1
+            // IF( WU.GE. L2-PIVMIN )
+            // $         NWU = NWU + 1
+            // IF( IRANGE.EQ.ALLRNG .OR. ( WL.LT.L2-PIVMIN .AND. WU.GE.
+            // $          L2-PIVMIN ) ) THEN
+            // M = M + 1
+            // W( M ) = L2
+            // *              The uncertainty of eigenvalues of a 2x2 matrix is very small
+            // WERR( M ) = EPS * ABS( W( M ) ) * TWO
+            // IBLOCK( M ) = JBLK
+            // INDEXW( M ) = 2
+            // ENDIF
         } else {
-            //           General Case - block of size IN >= 2
-            //           Compute local Gerschgorin interval and use it as the initial
-            //           interval for Rlaebz
+            // General Case - block of size IN >= 2
+            // Compute local Gerschgorin interval and use it as the initial
+            // interval for Rlaebz
             gu = d[ibegin - 1];
             gl = d[ibegin - 1];
             tmp1 = zero;
@@ -337,23 +340,23 @@ void Rlarrd(const char *range, const char *order, INTEGER const n, REAL const vl
                 gl = min(gl, gers[(2 * j - 1) - 1]);
                 gu = max(gu, gers[(2 * j) - 1]);
             }
-            //           [JAN/28/2009]
-            //           change SPDIAM by TNORM in lines 2 and 3 thereafter
-            //           line 1: remove computation of SPDIAM (not useful anymore)
-            //           SPDIAM = GU - GL
-            //           GL = GL - FUDGE*SPDIAM*EPS*IN - FUDGE*PIVMIN
-            //           GU = GU + FUDGE*SPDIAM*EPS*IN + FUDGE*PIVMIN
+            // [JAN/28/2009]
+            // change SPDIAM by TNORM in lines 2 and 3 thereafter
+            // line 1: remove computation of SPDIAM (not useful anymore)
+            // SPDIAM = GU - GL
+            // GL = GL - FUDGE*SPDIAM*EPS*IN - FUDGE*PIVMIN
+            // GU = GU + FUDGE*SPDIAM*EPS*IN + FUDGE*PIVMIN
             gl = gl - fudge * tnorm * eps * in - fudge * pivmin;
             gu += fudge * tnorm * eps * in + fudge * pivmin;
             //
             if (irange > 1) {
                 if (gu < wl) {
-                    //                 the local block contains none of the wanted eigenvalues
+                    // the local block contains none of the wanted eigenvalues
                     nwl += in;
                     nwu += in;
                     goto statement_70;
                 }
-                //              refine search interval if possible, only range (WL,WU] matters
+                // refine search interval if possible, only range (WL,WU] matters
                 gl = max(gl, wl);
                 gu = min(gu, wu);
                 if (gl >= gu) {
@@ -361,7 +364,7 @@ void Rlarrd(const char *range, const char *order, INTEGER const n, REAL const vl
                 }
             }
             //
-            //           Find negcount of initial interval boundaries GL and GU
+            // Find negcount of initial interval boundaries GL and GU
             work[(n + 1) - 1] = gl;
             work[(n + in + 1) - 1] = gu;
             Rlaebz(1, 0, in, in, 1, nb, atoli, rtoli, pivmin, &d[ibegin - 1], &e[ibegin - 1], &e2[ibegin - 1], idumma, &work[(n + 1) - 1], &work[(n + 2 * in + 1) - 1], im, iwork, &w[(m + 1) - 1], &iblock[(m + 1) - 1], iinfo);
@@ -374,7 +377,7 @@ void Rlarrd(const char *range, const char *order, INTEGER const n, REAL const vl
             nwu += iwork[(in + 1) - 1];
             iwoff = m - iwork[1 - 1];
             //
-            //           Compute Eigenvalues
+            // Compute Eigenvalues
             itmax = castINTEGER((log(gu - gl + pivmin) - log(pivmin)) / log(two)) + 2;
             Rlaebz(2, itmax, in, in, 1, nb, atoli, rtoli, pivmin, &d[ibegin - 1], &e[ibegin - 1], &e2[ibegin - 1], idumma, &work[(n + 1) - 1], &work[(n + 2 * in + 1) - 1], iout, iwork, &w[(m + 1) - 1], &iblock[(m + 1) - 1], iinfo);
             if (iinfo != 0) {
@@ -382,16 +385,16 @@ void Rlarrd(const char *range, const char *order, INTEGER const n, REAL const vl
                 return;
             }
             //
-            //           Copy eigenvalues into W and IBLOCK
-            //           Use -JBLK for block number for unconverged eigenvalues.
-            //           Loop over the number of output intervals from Rlaebz
+            // Copy eigenvalues into W and IBLOCK
+            // Use -JBLK for block number for unconverged eigenvalues.
+            // Loop over the number of output intervals from Rlaebz
             for (j = 1; j <= iout; j = j + 1) {
-                //              eigenvalue approximation is middle point of interval
+                // eigenvalue approximation is middle point of interval
                 tmp1 = half * (work[(j + n) - 1] + work[(j + in + n) - 1]);
-                //              semi length of error interval
+                // semi length of error interval
                 tmp2 = half * abs(work[(j + n) - 1] - work[(j + in + n) - 1]);
                 if (j > iout - iinfo) {
-                    //                 Flag non-convergence.
+                    // Flag non-convergence.
                     ncnvrg = true;
                     ib = -jblk;
                 } else {
@@ -410,8 +413,8 @@ void Rlarrd(const char *range, const char *order, INTEGER const n, REAL const vl
     statement_70:;
     }
     //
-    //     If RANGE='I', then (WL,WU) contains eigenvalues NWL+1,...,NWU
-    //     If NWL+1 < IL or NWU > IU, discard extra eigenvalues.
+    // If RANGE='I', then (WL,WU) contains eigenvalues NWL+1,...,NWU
+    // If NWL+1 < IL or NWU > IU, discard extra eigenvalues.
     if (irange == indrng) {
         idiscl = il - 1 - nwl;
         idiscu = nwu - iu;
@@ -419,8 +422,8 @@ void Rlarrd(const char *range, const char *order, INTEGER const n, REAL const vl
         if (idiscl > 0) {
             im = 0;
             for (je = 1; je <= m; je = je + 1) {
-                //              Remove some of the smallest eigenvalues from the left so that
-                //              at the end IDISCL =0. Move all eigenvalues up to the left.
+                // Remove some of the smallest eigenvalues from the left so that
+                // at the end IDISCL =0. Move all eigenvalues up to the left.
                 if (w[je - 1] <= wlu && idiscl > 0) {
                     idiscl = idiscl - 1;
                 } else {
@@ -434,8 +437,8 @@ void Rlarrd(const char *range, const char *order, INTEGER const n, REAL const vl
             m = im;
         }
         if (idiscu > 0) {
-            //           Remove some of the largest eigenvalues from the right so that
-            //           at the end IDISCU =0. Move all eigenvalues up to the left.
+            // Remove some of the largest eigenvalues from the right so that
+            // at the end IDISCU =0. Move all eigenvalues up to the left.
             im = m + 1;
             for (je = m; je >= 1; je = je - 1) {
                 if (w[je - 1] >= wul && idiscu > 0) {
@@ -460,12 +463,12 @@ void Rlarrd(const char *range, const char *order, INTEGER const n, REAL const vl
         }
         //
         if (idiscl > 0 || idiscu > 0) {
-            //           Code to deal with effects of bad arithmetic. (If N(w) is
-            //           monotone non-decreasing, this should never happen.)
-            //           Some low eigenvalues to be discarded are not in (WL,WLU],
-            //           or high eigenvalues to be discarded are not in (WUL,WU]
-            //           so just kill off the smallest IDISCL/largest IDISCU
-            //           eigenvalues, by marking the corresponding IBLOCK = 0
+            // Code to deal with effects of bad arithmetic. (If N(w) is
+            // monotone non-decreasing, this should never happen.)
+            // Some low eigenvalues to be discarded are not in (WL,WLU],
+            // or high eigenvalues to be discarded are not in (WUL,WU]
+            // so just kill off the smallest IDISCL/largest IDISCU
+            // eigenvalues, by marking the corresponding IBLOCK = 0
             if (idiscl > 0) {
                 wkill = wu;
                 for (jdisc = 1; jdisc <= idiscl; jdisc = jdisc + 1) {
@@ -492,7 +495,7 @@ void Rlarrd(const char *range, const char *order, INTEGER const n, REAL const vl
                     iblock[iw - 1] = 0;
                 }
             }
-            //           Now erase all eigenvalues with IBLOCK set to zero
+            // Now erase all eigenvalues with IBLOCK set to zero
             im = 0;
             for (je = 1; je <= m; je = je + 1) {
                 if (iblock[je - 1] != 0) {
@@ -514,9 +517,9 @@ void Rlarrd(const char *range, const char *order, INTEGER const n, REAL const vl
         toofew = true;
     }
     //
-    //     If ORDER='B', do nothing the eigenvalues are already sorted by
-    //        block.
-    //     If ORDER='E', sort the eigenvalues from smallest to largest
+    // If ORDER='B', do nothing the eigenvalues are already sorted by
+    // block.
+    // If ORDER='E', sort the eigenvalues from smallest to largest
     //
     if (Mlsame(order, "E") && nsplit > 1) {
         for (je = 1; je <= m - 1; je = je + 1) {
@@ -552,6 +555,6 @@ void Rlarrd(const char *range, const char *order, INTEGER const n, REAL const vl
         info += 2;
     }
     //
-    //     End of Rlarrd
+    // End of Rlarrd
     //
 }

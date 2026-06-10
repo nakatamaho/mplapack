@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,33 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZHPGVD.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Chpgvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER const n, COMPLEX *ap, COMPLEX *bp, REAL *w, COMPLEX *z, INTEGER const ldz, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER const lrwork, INTEGER *iwork, INTEGER const liwork, INTEGER &info) {
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     bool wantz = Mlsame(jobz, "V");
     bool upper = Mlsame(uplo, "U");
@@ -82,7 +68,7 @@ void Chpgvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
         } else {
             if (wantz) {
                 lwmin = 2 * n;
-                lrwmin = 1 + 5 * n + 2 * n * n;
+                lrwmin = 1 + 5 * n + 2 * pow2(n);
                 liwmin = 3 + 5 * n;
             } else {
                 lwmin = n;
@@ -91,8 +77,8 @@ void Chpgvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
             }
         }
         //
-        work[1 - 1] = lwmin;
-        rwork[1 - 1] = lrwmin;
+        work[1 - 1] = Rroundup_lwork(lwmin);
+        rwork[1 - 1] = Rroundup_lwork(lrwmin);
         iwork[1 - 1] = liwmin;
         if (lwork < lwmin && !lquery) {
             info = -11;
@@ -110,13 +96,13 @@ void Chpgvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
     }
     //
-    //     Form a Cholesky factorization of B.
+    // Form a Cholesky factorization of B.
     //
     Cpptrf(uplo, n, bp, info);
     if (info != 0) {
@@ -124,7 +110,7 @@ void Chpgvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
         return;
     }
     //
-    //     Transform problem to standard eigenvalue problem and solve.
+    // Transform problem to standard eigenvalue problem and solve.
     //
     Chpgst(itype, uplo, n, ap, bp, info);
     Chpevd(jobz, uplo, n, ap, w, z, ldz, work, lwork, rwork, lrwork, iwork, liwork, info);
@@ -137,7 +123,7 @@ void Chpgvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
     INTEGER j = 0;
     if (wantz) {
         //
-        //        Backtransform eigenvectors to the original problem.
+        // Backtransform eigenvectors to the original problem.
         //
         neig = n;
         if (info > 0) {
@@ -145,8 +131,8 @@ void Chpgvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
         }
         if (itype == 1 || itype == 2) {
             //
-            //           For A*x=(lambda)*B*x and A*B*x=(lambda)*x;
-            //           backtransform eigenvectors: x = inv(L)**H *y or inv(U)*y
+            // For A*x=(lambda)*B*x and A*B*x=(lambda)*x;
+            // backtransform eigenvectors: x = inv(L)**H *y or inv(U)*y
             //
             if (upper) {
                 trans = 'N';
@@ -160,8 +146,8 @@ void Chpgvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
             //
         } else if (itype == 3) {
             //
-            //           For B*A*x=(lambda)*x;
-            //           backtransform eigenvectors: x = L*y or U**H *y
+            // For B*A*x=(lambda)*x;
+            // backtransform eigenvectors: x = L*y or U**H *y
             //
             if (upper) {
                 trans = 'C';
@@ -175,10 +161,10 @@ void Chpgvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
         }
     }
     //
-    work[1 - 1] = lwmin;
-    rwork[1 - 1] = lrwmin;
+    work[1 - 1] = Rroundup_lwork(lwmin);
+    rwork[1 - 1] = Rroundup_lwork(lrwmin);
     iwork[1 - 1] = liwmin;
     //
-    //     End of Chpgvd
+    // End of Chpgvd
     //
 }

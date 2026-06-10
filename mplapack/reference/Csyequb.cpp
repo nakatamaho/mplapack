@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,16 +26,22 @@
  *
  */
 
+// Derived from LAPACK routine ZSYEQUB.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
-
-inline REAL abs1(COMPLEX zdum) { return abs(zdum.real()) + abs(zdum.imag()); }
 
 void Csyequb(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL *s, REAL &scond, REAL &amax, COMPLEX *work, INTEGER &info) {
     COMPLEX zdum = 0.0;
     bool up = false;
     const REAL zero = 0.0;
     const REAL one = 1.0;
+    const REAL two = 2.0;
     INTEGER i = 0;
     INTEGER j = 0;
     REAL tol = 0.0;
@@ -58,34 +64,7 @@ void Csyequb(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, R
     REAL smax = 0.0;
     REAL base = 0.0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Statement Functions ..
-    //     ..
-    //     .. Statement Function Definitions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     if (!(Mlsame(uplo, "U") || Mlsame(uplo, "L"))) {
@@ -103,7 +82,7 @@ void Csyequb(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, R
     up = Mlsame(uplo, "U");
     amax = zero;
     //
-    //     Quick return if possible.
+    // Quick return if possible.
     //
     if (n == 0) {
         scond = one;
@@ -118,21 +97,21 @@ void Csyequb(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, R
     if (up) {
         for (j = 1; j <= n; j = j + 1) {
             for (i = 1; i <= j - 1; i = i + 1) {
-                s[i - 1] = max(s[i - 1], abs1(a[(i - 1) + (j - 1) * lda]));
-                s[j - 1] = max(s[j - 1], abs1(a[(i - 1) + (j - 1) * lda]));
-                amax = max(amax, abs1(a[(i - 1) + (j - 1) * lda]));
+                s[i - 1] = max(s[i - 1], cabs1(a[(i - 1) + (j - 1) * lda]));
+                s[j - 1] = max(s[j - 1], cabs1(a[(i - 1) + (j - 1) * lda]));
+                amax = max(amax, cabs1(a[(i - 1) + (j - 1) * lda]));
             }
-            s[j - 1] = max(s[j - 1], abs1(a[(j - 1) + (j - 1) * lda]));
-            amax = max(amax, abs1(a[(j - 1) + (j - 1) * lda]));
+            s[j - 1] = max(s[j - 1], cabs1(a[(j - 1) + (j - 1) * lda]));
+            amax = max(amax, cabs1(a[(j - 1) + (j - 1) * lda]));
         }
     } else {
         for (j = 1; j <= n; j = j + 1) {
-            s[j - 1] = max(s[j - 1], abs1(a[(j - 1) + (j - 1) * lda]));
-            amax = max(amax, abs1(a[(j - 1) + (j - 1) * lda]));
+            s[j - 1] = max(s[j - 1], cabs1(a[(j - 1) + (j - 1) * lda]));
+            amax = max(amax, cabs1(a[(j - 1) + (j - 1) * lda]));
             for (i = j + 1; i <= n; i = i + 1) {
-                s[i - 1] = max(s[i - 1], abs1(a[(i - 1) + (j - 1) * lda]));
-                s[j - 1] = max(s[j - 1], abs1(a[(i - 1) + (j - 1) * lda]));
-                amax = max(amax, abs1(a[(i - 1) + (j - 1) * lda]));
+                s[i - 1] = max(s[i - 1], cabs1(a[(i - 1) + (j - 1) * lda]));
+                s[j - 1] = max(s[j - 1], cabs1(a[(i - 1) + (j - 1) * lda]));
+                amax = max(amax, cabs1(a[(i - 1) + (j - 1) * lda]));
             }
         }
     }
@@ -140,34 +119,34 @@ void Csyequb(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, R
         s[j - 1] = 1.0 / s[j - 1];
     }
     //
-    tol = one / sqrt(castREAL(2 * n));
+    tol = one / sqrt(two * n);
     //
     for (iter = 1; iter <= max_iter; iter = iter + 1) {
         scale = 0.0;
         sumsq = 0.0;
-        //        beta = |A|s
+        // beta = |A|s
         for (i = 1; i <= n; i = i + 1) {
             work[i - 1] = zero;
         }
         if (up) {
             for (j = 1; j <= n; j = j + 1) {
                 for (i = 1; i <= j - 1; i = i + 1) {
-                    work[i - 1] += abs1(a[(i - 1) + (j - 1) * lda]) * s[j - 1];
-                    work[j - 1] += abs1(a[(i - 1) + (j - 1) * lda]) * s[i - 1];
+                    work[i - 1] += cabs1(a[(i - 1) + (j - 1) * lda]) * s[j - 1];
+                    work[j - 1] += cabs1(a[(i - 1) + (j - 1) * lda]) * s[i - 1];
                 }
-                work[j - 1] += abs1(a[(j - 1) + (j - 1) * lda]) * s[j - 1];
+                work[j - 1] += cabs1(a[(j - 1) + (j - 1) * lda]) * s[j - 1];
             }
         } else {
             for (j = 1; j <= n; j = j + 1) {
-                work[j - 1] += abs1(a[(j - 1) + (j - 1) * lda]) * s[j - 1];
+                work[j - 1] += cabs1(a[(j - 1) + (j - 1) * lda]) * s[j - 1];
                 for (i = j + 1; i <= n; i = i + 1) {
-                    work[i - 1] += abs1(a[(i - 1) + (j - 1) * lda]) * s[j - 1];
-                    work[j - 1] += abs1(a[(i - 1) + (j - 1) * lda]) * s[i - 1];
+                    work[i - 1] += cabs1(a[(i - 1) + (j - 1) * lda]) * s[j - 1];
+                    work[j - 1] += cabs1(a[(i - 1) + (j - 1) * lda]) * s[i - 1];
                 }
             }
         }
         //
-        //        avg = s^T beta / n
+        // avg = s^T beta / n
         avg = 0.0;
         for (i = 1; i <= n; i = i + 1) {
             avg += s[i - 1] * work[i - 1].real();
@@ -186,11 +165,11 @@ void Csyequb(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, R
         }
         //
         for (i = 1; i <= n; i = i + 1) {
-            t = abs1(a[(i - 1) + (i - 1) * lda]);
+            t = cabs1(a[(i - 1) + (i - 1) * lda]);
             si = s[i - 1];
             c2 = castREAL(n - 1) * t;
             c1 = castREAL(n - 2) * (work[i - 1].real() - t * si);
-            c0 = -(t * si) * si + 2.0 * work[i - 1].real() * si - n * avg;
+            c0 = -(t * si) * si + two * work[i - 1].real() * si - castREAL(n) * avg;
             d = c1 * c1 - 4 * c0 * c2;
             //
             if (d <= 0) {
@@ -203,29 +182,29 @@ void Csyequb(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, R
             u = zero;
             if (up) {
                 for (j = 1; j <= i; j = j + 1) {
-                    t = abs1(a[(j - 1) + (i - 1) * lda]);
+                    t = cabs1(a[(j - 1) + (i - 1) * lda]);
                     u += s[j - 1] * t;
                     work[j - 1] += d * t;
                 }
                 for (j = i + 1; j <= n; j = j + 1) {
-                    t = abs1(a[(i - 1) + (j - 1) * lda]);
+                    t = cabs1(a[(i - 1) + (j - 1) * lda]);
                     u += s[j - 1] * t;
                     work[j - 1] += d * t;
                 }
             } else {
                 for (j = 1; j <= i; j = j + 1) {
-                    t = abs1(a[(i - 1) + (j - 1) * lda]);
+                    t = cabs1(a[(i - 1) + (j - 1) * lda]);
                     u += s[j - 1] * t;
                     work[j - 1] += d * t;
                 }
                 for (j = i + 1; j <= n; j = j + 1) {
-                    t = abs1(a[(j - 1) + (i - 1) * lda]);
+                    t = cabs1(a[(j - 1) + (i - 1) * lda]);
                     u += s[j - 1] * t;
                     work[j - 1] += d * t;
                 }
             }
             //
-            avg += (u + work[i - 1].real()) * d / n;
+            avg += (u + work[i - 1].real()) * d / castREAL(n);
             s[i - 1] = si;
         }
     }
@@ -240,7 +219,7 @@ statement_999:
     base = Rlamch("B");
     u = one / log(base);
     for (i = 1; i <= n; i = i + 1) {
-        s[i - 1] = pow(base, REAL(u * log(s[i - 1] * t)));
+        s[i - 1] = pow(base, castINTEGER(u * log(s[i - 1] * t)));
         smin = min(smin, s[i - 1]);
         smax = max(smax, s[i - 1]);
     }

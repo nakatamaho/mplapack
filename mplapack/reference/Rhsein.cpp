@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DHSEIN.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -56,30 +63,7 @@ void Rhsein(const char *side, const char *eigsrc, const char *initv, bool *selec
     INTEGER ksi = 0;
     INTEGER iinfo = 0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Decode and test the input parameters.
+    // Decode and test the input parameters.
     //
     bothv = Mlsame(side, "B");
     rightv = Mlsame(side, "R") || bothv;
@@ -89,8 +73,8 @@ void Rhsein(const char *side, const char *eigsrc, const char *initv, bool *selec
     //
     noinit = Mlsame(initv, "N");
     //
-    //     Set M to the number of columns required to store the selected
-    //     eigenvectors, and standardize the array SELECT.
+    // Set M to the number of columns required to store the selected
+    // eigenvectors, and standardize the array SELECT.
     //
     m = 0;
     pair = false;
@@ -136,13 +120,13 @@ void Rhsein(const char *side, const char *eigsrc, const char *initv, bool *selec
         return;
     }
     //
-    //     Quick return if possible.
+    // Quick return if possible.
     //
     if (n == 0) {
         return;
     }
     //
-    //     Set machine-dependent constants.
+    // Set machine-dependent constants.
     //
     unfl = Rlamch("Safe minimum");
     ulp = Rlamch("Precision");
@@ -163,20 +147,20 @@ void Rhsein(const char *side, const char *eigsrc, const char *initv, bool *selec
     for (k = 1; k <= n; k = k + 1) {
         if (select[k - 1]) {
             //
-            //           Compute eigenvector(s) corresponding to W(K).
+            // Compute eigenvector(s) corresponding to W(K).
             //
             if (fromqr) {
                 //
-                //              If affiliation of eigenvalues is known, check whether
-                //              the matrix splits.
+                // If affiliation of eigenvalues is known, check whether
+                // the matrix splits.
                 //
-                //              Determine KL and KR such that 1 <= KL <= K <= KR <= N
-                //              and H(KL,KL-1) and H(KR+1,KR) are zero (or KL = 1 or
-                //              KR = N).
+                // Determine KL and KR such that 1 <= KL <= K <= KR <= N
+                // and H(KL,KL-1) and H(KR+1,KR) are zero (or KL = 1 or
+                // KR = N).
                 //
-                //              Then inverse iteration can be performed with the
-                //              submatrix H(KL:N,KL:N) for a left eigenvector, and with
-                //              the submatrix H(1:KR,1:KR) for a right eigenvector.
+                // Then inverse iteration can be performed with the
+                // submatrix H(KL:N,KL:N) for a left eigenvector, and with
+                // the submatrix H(1:KR,1:KR) for a right eigenvector.
                 //
                 for (i = k; i >= kl + 1; i = i - 1) {
                     if (h[(i - 1) + ((i - 1) - 1) * ldh] == zero) {
@@ -199,8 +183,8 @@ void Rhsein(const char *side, const char *eigsrc, const char *initv, bool *selec
             if (kl != kln) {
                 kln = kl;
                 //
-                //              Compute infinity-norm of submatrix H(KL:KR,KL:KR) if it
-                //              has not ben computed before.
+                // Compute infinity-norm of submatrix H(KL:KR,KL:KR) if it
+                // has not ben computed before.
                 //
                 hnorm = Rlanhs("I", kr - kl + 1, &h[(kl - 1) + (kl - 1) * ldh], ldh, work);
                 if (Risnan(hnorm)) {
@@ -213,9 +197,9 @@ void Rhsein(const char *side, const char *eigsrc, const char *initv, bool *selec
                 }
             }
             //
-            //           Perturb eigenvalue if it is close to any previous
-            //           selected eigenvalues affiliated to the submatrix
-            //           H(KL:KR,KL:KR). Close roots are modified by EPS3.
+            // Perturb eigenvalue if it is close to any previous
+            // selected eigenvalues affiliated to the submatrix
+            // H(KL:KR,KL:KR). Close roots are modified by EPS3.
             //
             wkr = wr[k - 1];
             wki = wi[k - 1];
@@ -236,7 +220,7 @@ void Rhsein(const char *side, const char *eigsrc, const char *initv, bool *selec
             }
             if (leftv) {
                 //
-                //              Compute left eigenvector.
+                // Compute left eigenvector.
                 //
                 Rlaein(false, noinit, n - kl + 1, &h[(kl - 1) + (kl - 1) * ldh], ldh, wkr, wki, &vl[(kl - 1) + (ksr - 1) * ldvl], &vl[(kl - 1) + (ksi - 1) * ldvl], work, ldwork, &work[(n * n + n + 1) - 1], eps3, smlnum, bignum, iinfo);
                 if (iinfo > 0) {
@@ -262,7 +246,7 @@ void Rhsein(const char *side, const char *eigsrc, const char *initv, bool *selec
             }
             if (rightv) {
                 //
-                //              Compute right eigenvector.
+                // Compute right eigenvector.
                 //
                 Rlaein(true, noinit, kr, h, ldh, wkr, wki, &vr[(ksr - 1) * ldvr], &vr[(ksi - 1) * ldvr], work, ldwork, &work[(n * n + n + 1) - 1], eps3, smlnum, bignum, iinfo);
                 if (iinfo > 0) {
@@ -295,6 +279,6 @@ void Rhsein(const char *side, const char *eigsrc, const char *initv, bool *selec
         }
     }
     //
-    //     End of Rhsein
+    // End of Rhsein
     //
 }

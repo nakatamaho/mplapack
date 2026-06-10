@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DERRGT.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,42 +43,13 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-#include <mplapack_debug.h>
-
-void Rerrgt(const char *path, INTEGER const nunit) {
+void Rerrgt(fem::str_cref path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
     //
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     nout = nunit;
-    char c2[2];
-    c2[0] = path[1];
-    c2[1] = path[2];
+    write(nout, star);
+    fem::str<2> c2 = path(2, 3);
     const INTEGER nmax = 2;
     REAL d[nmax];
     d[1 - 1] = 1.0;
@@ -80,11 +58,11 @@ void Rerrgt(const char *path, INTEGER const nunit) {
     df[1 - 1] = 1.0;
     df[2 - 1] = 2.0;
     REAL e[nmax];
-    e[1 - 1] = 3.e0;
-    e[2 - 1] = 4.e0;
+    e[1 - 1] = 3.0;
+    e[2 - 1] = 4.0;
     REAL ef[nmax];
-    ef[1 - 1] = 3.e0;
-    ef[2 - 1] = 4.e0;
+    ef[1 - 1] = 3.0;
+    ef[2 - 1] = 4.0;
     REAL anorm = 1.0;
     ok = true;
     //
@@ -100,121 +78,121 @@ void Rerrgt(const char *path, INTEGER const nunit) {
     REAL w[nmax];
     INTEGER iw[nmax];
     REAL rcond = 0.0;
-    if (Mlsamen(2, c2, "GT")) {
+    if (Mlsamen(2, c2.elems, "GT")) {
         //
-        //        Test error exits for the general tridiagonal routines.
+        // Test error exits for the general tridiagonal routines.
         //
-        //        Rgttrf
+        // Rgttrf
         //
-        strncpy(srnamt, "Rgttrf", srnamt_len);
+        srnamt = "Rgttrf";
         infot = 1;
         Rgttrf(-1, c, d, e, f, ip, info);
-        chkxer("Rgttrf", infot, nout, lerr, ok);
+        Chkxer("Rgttrf", infot, nout, lerr, ok);
         //
-        //        Rgttrs
+        // Rgttrs
         //
-        strncpy(srnamt, "Rgttrs", srnamt_len);
+        srnamt = "Rgttrs";
         infot = 1;
         Rgttrs("/", 0, 0, c, d, e, f, ip, x, 1, info);
-        chkxer("Rgttrs", infot, nout, lerr, ok);
+        Chkxer("Rgttrs", infot, nout, lerr, ok);
         infot = 2;
         Rgttrs("N", -1, 0, c, d, e, f, ip, x, 1, info);
-        chkxer("Rgttrs", infot, nout, lerr, ok);
+        Chkxer("Rgttrs", infot, nout, lerr, ok);
         infot = 3;
         Rgttrs("N", 0, -1, c, d, e, f, ip, x, 1, info);
-        chkxer("Rgttrs", infot, nout, lerr, ok);
+        Chkxer("Rgttrs", infot, nout, lerr, ok);
         infot = 10;
         Rgttrs("N", 2, 1, c, d, e, f, ip, x, 1, info);
-        chkxer("Rgttrs", infot, nout, lerr, ok);
+        Chkxer("Rgttrs", infot, nout, lerr, ok);
         //
-        //        Rgtrfs
+        // Rgtrfs
         //
-        strncpy(srnamt, "Rgtrfs", srnamt_len);
+        srnamt = "Rgtrfs";
         infot = 1;
         Rgtrfs("/", 0, 0, c, d, e, cf, df, ef, f, ip, b, 1, x, 1, r1, r2, w, iw, info);
-        chkxer("Rgtrfs", infot, nout, lerr, ok);
+        Chkxer("Rgtrfs", infot, nout, lerr, ok);
         infot = 2;
         Rgtrfs("N", -1, 0, c, d, e, cf, df, ef, f, ip, b, 1, x, 1, r1, r2, w, iw, info);
-        chkxer("Rgtrfs", infot, nout, lerr, ok);
+        Chkxer("Rgtrfs", infot, nout, lerr, ok);
         infot = 3;
         Rgtrfs("N", 0, -1, c, d, e, cf, df, ef, f, ip, b, 1, x, 1, r1, r2, w, iw, info);
-        chkxer("Rgtrfs", infot, nout, lerr, ok);
+        Chkxer("Rgtrfs", infot, nout, lerr, ok);
         infot = 13;
         Rgtrfs("N", 2, 1, c, d, e, cf, df, ef, f, ip, b, 1, x, 2, r1, r2, w, iw, info);
-        chkxer("Rgtrfs", infot, nout, lerr, ok);
+        Chkxer("Rgtrfs", infot, nout, lerr, ok);
         infot = 15;
         Rgtrfs("N", 2, 1, c, d, e, cf, df, ef, f, ip, b, 2, x, 1, r1, r2, w, iw, info);
-        chkxer("Rgtrfs", infot, nout, lerr, ok);
+        Chkxer("Rgtrfs", infot, nout, lerr, ok);
         //
-        //        Rgtcon
+        // Rgtcon
         //
-        strncpy(srnamt, "Rgtcon", srnamt_len);
+        srnamt = "Rgtcon";
         infot = 1;
         Rgtcon("/", 0, c, d, e, f, ip, anorm, rcond, w, iw, info);
-        chkxer("Rgtcon", infot, nout, lerr, ok);
+        Chkxer("Rgtcon", infot, nout, lerr, ok);
         infot = 2;
         Rgtcon("I", -1, c, d, e, f, ip, anorm, rcond, w, iw, info);
-        chkxer("Rgtcon", infot, nout, lerr, ok);
+        Chkxer("Rgtcon", infot, nout, lerr, ok);
         infot = 8;
         Rgtcon("I", 0, c, d, e, f, ip, -anorm, rcond, w, iw, info);
-        chkxer("Rgtcon", infot, nout, lerr, ok);
+        Chkxer("Rgtcon", infot, nout, lerr, ok);
         //
-    } else if (Mlsamen(2, c2, "PT")) {
+    } else if (Mlsamen(2, c2.elems, "PT")) {
         //
-        //        Test error exits for the positive definite tridiagonal
-        //        routines.
+        // Test error exits for the positive definite tridiagonal
+        // routines.
         //
-        //        Rpttrf
+        // Rpttrf
         //
-        strncpy(srnamt, "Rpttrf", srnamt_len);
+        srnamt = "Rpttrf";
         infot = 1;
         Rpttrf(-1, d, e, info);
-        chkxer("Rpttrf", infot, nout, lerr, ok);
+        Chkxer("Rpttrf", infot, nout, lerr, ok);
         //
-        //        Rpttrs
+        // Rpttrs
         //
-        strncpy(srnamt, "Rpttrs", srnamt_len);
+        srnamt = "Rpttrs";
         infot = 1;
         Rpttrs(-1, 0, d, e, x, 1, info);
-        chkxer("Rpttrs", infot, nout, lerr, ok);
+        Chkxer("Rpttrs", infot, nout, lerr, ok);
         infot = 2;
         Rpttrs(0, -1, d, e, x, 1, info);
-        chkxer("Rpttrs", infot, nout, lerr, ok);
+        Chkxer("Rpttrs", infot, nout, lerr, ok);
         infot = 6;
         Rpttrs(2, 1, d, e, x, 1, info);
-        chkxer("Rpttrs", infot, nout, lerr, ok);
+        Chkxer("Rpttrs", infot, nout, lerr, ok);
         //
-        //        Rptrfs
+        // Rptrfs
         //
-        strncpy(srnamt, "Rptrfs", srnamt_len);
+        srnamt = "Rptrfs";
         infot = 1;
         Rptrfs(-1, 0, d, e, df, ef, b, 1, x, 1, r1, r2, w, info);
-        chkxer("Rptrfs", infot, nout, lerr, ok);
+        Chkxer("Rptrfs", infot, nout, lerr, ok);
         infot = 2;
         Rptrfs(0, -1, d, e, df, ef, b, 1, x, 1, r1, r2, w, info);
-        chkxer("Rptrfs", infot, nout, lerr, ok);
+        Chkxer("Rptrfs", infot, nout, lerr, ok);
         infot = 8;
         Rptrfs(2, 1, d, e, df, ef, b, 1, x, 2, r1, r2, w, info);
-        chkxer("Rptrfs", infot, nout, lerr, ok);
+        Chkxer("Rptrfs", infot, nout, lerr, ok);
         infot = 10;
         Rptrfs(2, 1, d, e, df, ef, b, 2, x, 1, r1, r2, w, info);
-        chkxer("Rptrfs", infot, nout, lerr, ok);
+        Chkxer("Rptrfs", infot, nout, lerr, ok);
         //
-        //        Rptcon
+        // Rptcon
         //
-        strncpy(srnamt, "Rptcon", srnamt_len);
+        srnamt = "Rptcon";
         infot = 1;
         Rptcon(-1, d, e, anorm, rcond, w, info);
-        chkxer("Rptcon", infot, nout, lerr, ok);
+        Chkxer("Rptcon", infot, nout, lerr, ok);
         infot = 4;
         Rptcon(0, d, e, -anorm, rcond, w, info);
-        chkxer("Rptcon", infot, nout, lerr, ok);
+        Chkxer("Rptcon", infot, nout, lerr, ok);
     }
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     Alaesm(path, ok, nout);
     //
-    //     End of Rerrgt
+    // End of Rerrgt
     //
 }

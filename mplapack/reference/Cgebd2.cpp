@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZGEBD2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Cgebd2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL *d, REAL *e, COMPLEX *tauq, COMPLEX *taup, COMPLEX *work, INTEGER &info) {
     //
-    //     Test the input parameters
+    // Test the input parameters
     //
     info = 0;
     if (m < 0) {
@@ -48,42 +55,39 @@ void Cgebd2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REA
     //
     INTEGER i = 0;
     COMPLEX alpha = 0.0;
-    const COMPLEX one = COMPLEX(1.0, 0.0);
     const COMPLEX zero = COMPLEX(0.0, 0.0);
     if (m >= n) {
         //
-        //        Reduce to upper bidiagonal form
+        // Reduce to upper bidiagonal form
         //
         for (i = 1; i <= n; i = i + 1) {
             //
-            //           Generate elementary reflector H(i) to annihilate A(i+1:m,i)
+            // Generate elementary reflector H(i) to annihilate A(i+1:m,i)
             //
             alpha = a[(i - 1) + (i - 1) * lda];
             Clarfg(m - i + 1, alpha, &a[(min(i + 1, m) - 1) + (i - 1) * lda], 1, tauq[i - 1]);
             d[i - 1] = alpha.real();
-            a[(i - 1) + (i - 1) * lda] = one;
             //
-            //           Apply H(i)**H to A(i:m,i+1:n) from the left
+            // Apply H(i)**H to A(i:m,i+1:n) from the left
             //
             if (i < n) {
-                Clarf("Left", m - i + 1, n - i, &a[(i - 1) + (i - 1) * lda], 1, conj(tauq[i - 1]), &a[(i - 1) + ((i + 1) - 1) * lda], lda, work);
+                Clarf1f("Left", m - i + 1, n - i, &a[(i - 1) + (i - 1) * lda], 1, conj(tauq[i - 1]), &a[(i - 1) + ((i + 1) - 1) * lda], lda, work);
             }
             a[(i - 1) + (i - 1) * lda] = d[i - 1];
             //
             if (i < n) {
                 //
-                //              Generate elementary reflector G(i) to annihilate
-                //              A(i,i+2:n)
+                // Generate elementary reflector G(i) to annihilate
+                // A(i,i+2:n)
                 //
                 Clacgv(n - i, &a[(i - 1) + ((i + 1) - 1) * lda], lda);
                 alpha = a[(i - 1) + ((i + 1) - 1) * lda];
                 Clarfg(n - i, alpha, &a[(i - 1) + (min(i + 2, n) - 1) * lda], lda, taup[i - 1]);
                 e[i - 1] = alpha.real();
-                a[(i - 1) + ((i + 1) - 1) * lda] = one;
                 //
-                //              Apply G(i) to A(i+1:m,i+1:n) from the right
+                // Apply G(i) to A(i+1:m,i+1:n) from the right
                 //
-                Clarf("Right", m - i, n - i, &a[(i - 1) + ((i + 1) - 1) * lda], lda, taup[i - 1], &a[((i + 1) - 1) + ((i + 1) - 1) * lda], lda, work);
+                Clarf1f("Right", m - i, n - i, &a[(i - 1) + ((i + 1) - 1) * lda], lda, taup[i - 1], &a[((i + 1) - 1) + ((i + 1) - 1) * lda], lda, work);
                 Clacgv(n - i, &a[(i - 1) + ((i + 1) - 1) * lda], lda);
                 a[(i - 1) + ((i + 1) - 1) * lda] = e[i - 1];
             } else {
@@ -92,39 +96,37 @@ void Cgebd2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REA
         }
     } else {
         //
-        //        Reduce to lower bidiagonal form
+        // Reduce to lower bidiagonal form
         //
         for (i = 1; i <= m; i = i + 1) {
             //
-            //           Generate elementary reflector G(i) to annihilate A(i,i+1:n)
+            // Generate elementary reflector G(i) to annihilate A(i,i+1:n)
             //
             Clacgv(n - i + 1, &a[(i - 1) + (i - 1) * lda], lda);
             alpha = a[(i - 1) + (i - 1) * lda];
             Clarfg(n - i + 1, alpha, &a[(i - 1) + (min(i + 1, n) - 1) * lda], lda, taup[i - 1]);
             d[i - 1] = alpha.real();
-            a[(i - 1) + (i - 1) * lda] = one;
             //
-            //           Apply G(i) to A(i+1:m,i:n) from the right
+            // Apply G(i) to A(i+1:m,i:n) from the right
             //
             if (i < m) {
-                Clarf("Right", m - i, n - i + 1, &a[(i - 1) + (i - 1) * lda], lda, taup[i - 1], &a[((i + 1) - 1) + (i - 1) * lda], lda, work);
+                Clarf1f("Right", m - i, n - i + 1, &a[(i - 1) + (i - 1) * lda], lda, taup[i - 1], &a[((i + 1) - 1) + (i - 1) * lda], lda, work);
             }
             Clacgv(n - i + 1, &a[(i - 1) + (i - 1) * lda], lda);
             a[(i - 1) + (i - 1) * lda] = d[i - 1];
             //
             if (i < m) {
                 //
-                //              Generate elementary reflector H(i) to annihilate
-                //              A(i+2:m,i)
+                // Generate elementary reflector H(i) to annihilate
+                // A(i+2:m,i)
                 //
                 alpha = a[((i + 1) - 1) + (i - 1) * lda];
                 Clarfg(m - i, alpha, &a[(min(i + 2, m) - 1) + (i - 1) * lda], 1, tauq[i - 1]);
                 e[i - 1] = alpha.real();
-                a[((i + 1) - 1) + (i - 1) * lda] = one;
                 //
-                //              Apply H(i)**H to A(i+1:m,i+1:n) from the left
+                // Apply H(i)**H to A(i+1:m,i+1:n) from the left
                 //
-                Clarf("Left", m - i, n - i, &a[((i + 1) - 1) + (i - 1) * lda], 1, conj(tauq[i - 1]), &a[((i + 1) - 1) + ((i + 1) - 1) * lda], lda, work);
+                Clarf1f("Left", m - i, n - i, &a[((i + 1) - 1) + (i - 1) * lda], 1, conj(tauq[i - 1]), &a[((i + 1) - 1) + ((i + 1) - 1) * lda], lda, work);
                 a[((i + 1) - 1) + (i - 1) * lda] = e[i - 1];
             } else {
                 tauq[i - 1] = zero;
@@ -132,6 +134,6 @@ void Cgebd2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REA
         }
     }
     //
-    //     End of Cgebd2
+    // End of Cgebd2
     //
 }

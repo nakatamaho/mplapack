@@ -1,0 +1,28 @@
+*** Testing Rlamch start ***
+[params/binary64] t=53 emin=-1021 emax=1024
+[params/binary64] safmin                 +2.2250738585072014e-308                    +0x1.0000000000000p-1022
+[params/binary64] safmax                 +8.9884656743115795e+307                    +0x1.0000000000000p+1023
+[params/binary64] builder exp_tsml=-511 exp_tbig=486 exp_ssml=537 exp_sbig=-538
+[params/binary64] builder tsml                   +1.4916681462400413e-154                    +0x1.0000000000000p-0511
+[params/binary64] builder tbig                   +1.9979190722022350e+146                    +0x1.0000000000000p+0486
+[params/binary64] builder ssml                   +4.4989137945431964e+161                    +0x1.0000000000000p+0537
+[params/binary64] builder sbig                   +1.1113793747425387e-162                    +0x1.0000000000000p-0538
+Rlamch E: Epsilon                                       +1.1102230246251565e-16                    +0x1.0000000000000p-0053
+Rlamch S: Safe minimum                                 +2.2250738585072014e-308                    +0x1.0000000000000p-1022
+Rlamch B: Base                                          +2.0000000000000000e+00                    +0x1.0000000000000p+0001
+Rlamch P: Precision                                     +2.2204460492503131e-16                    +0x1.0000000000000p-0052
+Rlamch N: Number of digits in mantissa                  +5.3000000000000000e+01                    +0x1.a800000000000p+0005
+Rlamch R: Rounding mode                                 +1.0000000000000000e+00                    +0x1.0000000000000p+0000
+Rlamch M: Minimum exponent                              -1.0210000000000000e+03                    -0x1.fe80000000000p+0009
+Rlamch U: Underflow threshold                          +2.2250738585072014e-308                    +0x1.0000000000000p-1022
+Rlamch L: Largest exponent                              +1.0240000000000000e+03                    +0x1.0000000000000p+0010
+Rlamch O: Overflow threshold                           +1.7976931348623157e+308                    +0x1.fffffffffffffp+1023
+BlueScale exp_tsml: -511
+BlueScale exp_tbig: 486
+BlueScale exp_ssml: 537
+BlueScale exp_sbig: -538
+BlueScale tsml:                     +1.4916681462400413e-154                    +0x1.0000000000000p-0511
+BlueScale tbig:                     +1.9979190722022350e+146                    +0x1.0000000000000p+0486
+BlueScale ssml:                     +4.4989137945431964e+161                    +0x1.0000000000000p+0537
+BlueScale sbig:                     +1.1113793747425387e-162                    +0x1.0000000000000p-0538
+*** Testing Rlamch successful ***

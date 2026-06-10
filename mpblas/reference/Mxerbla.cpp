@@ -1,9 +1,7 @@
 /*
- * Copyright (c) 2008-2010
+ * Copyright (c) 2008-2025
  *	Nakata, Maho
  * 	All rights reserved.
- *
- * $Id: Mxerbla.cpp,v 1.7 2010/08/07 05:50:10 nakatamaho Exp $
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions

@@ -1,12 +1,13 @@
 #!/bin/bash
 
 if [ $# -lt 1 ]; then
-    echo "specify filename"
-    exit
+    echo "Usage: $0 file1.cpp [file2.cpp ...]"
+    exit 1
 fi
-_file=$1
-clang-format -style="{BasedOnStyle: llvm, IndentWidth: 4, ColumnLimit: 10000, SortIncludes: false}" $_file > ${_file}__ ; mv ${_file}__ ${_file}
 
+. "$(dirname "$0")/clang_format_common.sh"
 
-
-
+for file in "$@"; do
+    echo "Formatting: $file"
+    run_clang_format "$file"
+done

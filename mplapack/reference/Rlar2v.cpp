@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,25 +26,17 @@
  *
  */
 
+// Derived from LAPACK routine DLAR2V.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rlar2v(INTEGER const n, REAL *x, REAL *y, REAL *z, INTEGER const incx, REAL *c, REAL *s, INTEGER const incc) {
-    //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Executable Statements ..
     //
     INTEGER ix = 1;
     INTEGER ic = 1;
@@ -79,6 +71,6 @@ void Rlar2v(INTEGER const n, REAL *x, REAL *y, REAL *z, INTEGER const incx, REAL
         ic += incc;
     }
     //
-    //     End of Rlar2v
+    // End of Rlar2v
     //
 }

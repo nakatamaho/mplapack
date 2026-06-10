@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZPTT05.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -35,8 +42,6 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-
-inline REAL abs1(COMPLEX zdum) { return abs(zdum.real()) + abs(zdum.imag()); }
 
 void Cptt05(INTEGER const n, INTEGER const nrhs, REAL *d, COMPLEX *e, COMPLEX *b, INTEGER const ldb, COMPLEX *x, INTEGER const ldx, COMPLEX *xact, INTEGER const ldxact, REAL *ferr, REAL *berr, REAL *reslts) {
     COMPLEX zdum = 0.0;
@@ -56,32 +61,7 @@ void Cptt05(INTEGER const n, INTEGER const nrhs, REAL *d, COMPLEX *e, COMPLEX *b
     REAL axbi = 0.0;
     REAL tmp = 0.0;
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Statement Functions ..
-    //     ..
-    //     .. Statement Function definitions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Quick exit if N = 0 or NRHS = 0.
+    // Quick exit if N = 0 or NRHS = 0.
     //
     if (n <= 0 || nrhs <= 0) {
         reslts[1 - 1] = zero;
@@ -94,17 +74,17 @@ void Cptt05(INTEGER const n, INTEGER const nrhs, REAL *d, COMPLEX *e, COMPLEX *b
     ovfl = one / unfl;
     nz = 4;
     //
-    //     Test 1:  Compute the maximum of
-    //        norm(X - XACT) / ( norm(X) * FERR )
-    //     over all the vectors X and XACT using the infinity-norm.
+    // Test 1:  Compute the maximum of
+    // norm(X - XACT) / ( norm(X) * FERR )
+    // over all the vectors X and XACT using the infinity-norm.
     //
     errbnd = zero;
     for (j = 1; j <= nrhs; j = j + 1) {
         imax = iCamax(n, &x[(j - 1) * ldx], 1);
-        xnorm = max(abs1(x[(imax - 1) + (j - 1) * ldx]), unfl);
+        xnorm = max(cabs1(x[(imax - 1) + (j - 1) * ldx]), unfl);
         diff = zero;
         for (i = 1; i <= n; i = i + 1) {
-            diff = max(diff, abs1(x[(i - 1) + (j - 1) * ldx] - xact[(i - 1) + (j - 1) * ldxact]));
+            diff = max(diff, cabs1(x[(i - 1) + (j - 1) * ldx] - xact[(i - 1) + (j - 1) * ldxact]));
         }
         //
         if (xnorm > one) {
@@ -118,7 +98,7 @@ void Cptt05(INTEGER const n, INTEGER const nrhs, REAL *d, COMPLEX *e, COMPLEX *b
     //
     statement_20:
         if (diff / xnorm <= ferr[j - 1]) {
-            errbnd = max(errbnd, REAL((diff / xnorm) / ferr[j - 1]));
+            errbnd = max(errbnd, (diff / xnorm) / ferr[j - 1]);
         } else {
             errbnd = one / eps;
         }
@@ -126,22 +106,22 @@ void Cptt05(INTEGER const n, INTEGER const nrhs, REAL *d, COMPLEX *e, COMPLEX *b
     }
     reslts[1 - 1] = errbnd;
     //
-    //     Test 2:  Compute the maximum of BERR / ( NZ*EPS + (*) ), where
-    //     (*) = NZ*UNFL / (min_i (abs(A)*abs(X) +abs(b))_i )
+    // Test 2:  Compute the maximum of BERR / ( NZ*EPS + (*) ), where
+    // (*) = NZ*UNFL / (min_i (abs(A)*abs(X) +abs(b))_i )
     //
     for (k = 1; k <= nrhs; k = k + 1) {
         if (n == 1) {
-            axbi = abs1(b[(k - 1) * ldb]) + abs1(d[1 - 1] * x[(k - 1) * ldx]);
+            axbi = cabs1(b[(k - 1) * ldb]) + cabs1(d[1 - 1] * x[(k - 1) * ldx]);
         } else {
-            axbi = abs1(b[(k - 1) * ldb]) + abs1(d[1 - 1] * x[(k - 1) * ldx]) + abs1(e[1 - 1]) * abs1(x[(2 - 1) + (k - 1) * ldx]);
+            axbi = cabs1(b[(k - 1) * ldb]) + cabs1(d[1 - 1] * x[(k - 1) * ldx]) + cabs1(e[1 - 1]) * cabs1(x[(2 - 1) + (k - 1) * ldx]);
             for (i = 2; i <= n - 1; i = i + 1) {
-                tmp = abs1(b[(i - 1) + (k - 1) * ldb]) + abs1(e[(i - 1) - 1]) * abs1(x[((i - 1) - 1) + (k - 1) * ldx]) + abs1(d[i - 1] * x[(i - 1) + (k - 1) * ldx]) + abs1(e[i - 1]) * abs1(x[((i + 1) - 1) + (k - 1) * ldx]);
+                tmp = cabs1(b[(i - 1) + (k - 1) * ldb]) + cabs1(e[(i - 1) - 1]) * cabs1(x[((i - 1) - 1) + (k - 1) * ldx]) + cabs1(d[i - 1] * x[(i - 1) + (k - 1) * ldx]) + cabs1(e[i - 1]) * cabs1(x[((i + 1) - 1) + (k - 1) * ldx]);
                 axbi = min(axbi, tmp);
             }
-            tmp = abs1(b[(n - 1) + (k - 1) * ldb]) + abs1(e[(n - 1) - 1]) * abs1(x[((n - 1) - 1) + (k - 1) * ldx]) + abs1(d[n - 1] * x[(n - 1) + (k - 1) * ldx]);
+            tmp = cabs1(b[(n - 1) + (k - 1) * ldb]) + cabs1(e[(n - 1) - 1]) * cabs1(x[((n - 1) - 1) + (k - 1) * ldx]) + cabs1(d[n - 1] * x[(n - 1) + (k - 1) * ldx]);
             axbi = min(axbi, tmp);
         }
-        tmp = berr[k - 1] / (nz * eps + nz * unfl / max(axbi, REAL(nz * unfl)));
+        tmp = berr[k - 1] / (nz * eps + nz * unfl / max(axbi, nz * unfl));
         if (k == 1) {
             reslts[2 - 1] = tmp;
         } else {
@@ -149,6 +129,6 @@ void Cptt05(INTEGER const n, INTEGER const nrhs, REAL *d, COMPLEX *e, COMPLEX *b
         }
     }
     //
-    //     End of Cptt05
+    // End of Cptt05
     //
 }

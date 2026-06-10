@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,33 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZPPTRS.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Cpptrs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *ap, COMPLEX *b, INTEGER const ldb, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     bool upper = Mlsame(uplo, "U");
@@ -70,7 +56,7 @@ void Cpptrs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *ap, 
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0 || nrhs == 0) {
         return;
@@ -79,34 +65,34 @@ void Cpptrs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *ap, 
     INTEGER i = 0;
     if (upper) {
         //
-        //        Solve A*X = B where A = U**H * U.
+        // Solve A*X = B where A = U**H * U.
         //
         for (i = 1; i <= nrhs; i = i + 1) {
             //
-            //           Solve U**H *X = B, overwriting B with X.
+            // Solve U**H *X = B, overwriting B with X.
             //
             Ctpsv("Upper", "Conjugate transpose", "Non-unit", n, ap, &b[(i - 1) * ldb], 1);
             //
-            //           Solve U*X = B, overwriting B with X.
+            // Solve U*X = B, overwriting B with X.
             //
             Ctpsv("Upper", "No transpose", "Non-unit", n, ap, &b[(i - 1) * ldb], 1);
         }
     } else {
         //
-        //        Solve A*X = B where A = L * L**H.
+        // Solve A*X = B where A = L * L**H.
         //
         for (i = 1; i <= nrhs; i = i + 1) {
             //
-            //           Solve L*Y = B, overwriting B with X.
+            // Solve L*Y = B, overwriting B with X.
             //
             Ctpsv("Lower", "No transpose", "Non-unit", n, ap, &b[(i - 1) * ldb], 1);
             //
-            //           Solve L**H *X = Y, overwriting B with X.
+            // Solve L**H *X = Y, overwriting B with X.
             //
             Ctpsv("Lower", "Conjugate transpose", "Non-unit", n, ap, &b[(i - 1) * ldb], 1);
         }
     }
     //
-    //     End of Cpptrs
+    // End of Cpptrs
     //
 }

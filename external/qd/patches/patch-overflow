@@ -1,5 +1,5 @@
---- src/dd_real.cpp	2018-10-31 01:05:03.000000000 +0900
-+++ src/dd_real.cpp	2021-12-12 16:19:53.521240571 +0900
+--- src/dd_real.cpp	2025-03-01 15:35:04.000000000 +0900
++++ src/dd_real.cpp	2025-11-14 10:30:44.629244535 +0900
 @@ -63,6 +63,13 @@
      return dd_real::_nan;
    }
@@ -14,9 +14,8 @@
    double x = 1.0 / std::sqrt(a.x[0]);
    double ax = a.x[0] * x;
    return dd_real::add(ax, (a - dd_real::sqr(ax)).x[0] * (x * 0.5));
-
---- tests/huge.cpp	2018-10-31 01:04:57.000000000 +0900
-+++ tests/huge.cpp	2021-12-12 17:10:24.302058714 +0900
+--- tests/huge.cpp	2025-03-01 15:35:04.000000000 +0900
++++ tests/huge.cpp	2025-11-14 10:30:44.629244535 +0900
 @@ -121,6 +121,23 @@
      }
    }
@@ -41,9 +40,8 @@
    /* If no flag, test both double-double and quad-double. */
    if (!flag_test_dd && !flag_test_qd) {
      flag_test_dd = true;
-
---- include/qd/dd_inline.h	2022-07-23 22:16:21.226170730 +0900
-+++ include/qd/dd_inline.h	2022-07-23 22:19:35.021260754 +0900
+--- include/qd/dd_inline.h	2025-03-01 15:35:04.000000000 +0900
++++ include/qd/dd_inline.h	2025-11-14 10:30:44.630244514 +0900
 @@ -284,12 +284,20 @@
    double s, e;
    dd_real r;
@@ -110,8 +108,8 @@
    return r;
  }
  
---- src/qd_real.cpp	2022-07-23 23:39:56.695243715 +0900
-+++ src/qd_real.cpp	2022-07-23 23:40:04.291354335 +0900
+--- src/qd_real.cpp	2025-03-01 15:35:04.000000000 +0900
++++ src/qd_real.cpp	2025-11-14 10:30:44.631244491 +0900
 @@ -143,11 +143,21 @@
    double q0, q1, q2, q3;
    qd_real r;
@@ -149,7 +147,7 @@
    return qd_real(q0, q1, q2, q3);
  }
  
-@@ -672,8 +688,19 @@
+@@ -671,8 +687,19 @@
    qd_real r;
    qd_real qd_b(b);
  
@@ -171,7 +169,7 @@
  
    q1 = r[0] / b._hi();
    r -= (q1 * qd_b);
-@@ -687,6 +714,12 @@
+@@ -686,6 +713,12 @@
    q4 = r[0] / b._hi();
  
    ::renorm(q0, q1, q2, q3, q4);
@@ -184,7 +182,7 @@
    return qd_real(q0, q1, q2, q3);
  }
  
-@@ -717,8 +750,19 @@
+@@ -716,8 +749,19 @@
  
    qd_real r;
  
@@ -206,7 +204,7 @@
  
    q1 = r[0] / b[0];
    r -= (b * q1);
-@@ -732,7 +776,12 @@
+@@ -731,7 +775,12 @@
    double q4 = r[0] / b[0];
  
    ::renorm(q0, q1, q2, q3, q4);
@@ -220,23 +218,32 @@
    return qd_real(q0, q1, q2, q3);
  }
  
-@@ -758,6 +807,19 @@
-     return qd_real::_nan;
-   }
+@@ -761,6 +810,16 @@
  
-+  if (a.x[0] > 0x1p+969) { //0x1p+(1022-53)
-+      qd_real b = a.x[0] * 0.25 + a.x[1] * 0.25 + a.x[2] * 0.25 + a.x[3] * 0.25;
-+      qd_real r = (1.0 / std::sqrt(b[0]));
-+      qd_real h = mul_pwr2(b, 0.5);
+   eps = std::numeric_limits<qd_real>::epsilon();
+ 
++  // Handle large values to avoid overflow in std::sqrt(a[0])
++  qd_real scaled_a = a;
++  int scale_count = 0;
 +
-+      r += ((0.5 - h * sqr(r)) * r);
-+      r += ((0.5 - h * sqr(r)) * r);
-+      r += ((0.5 - h * sqr(r)) * r);
-+
-+      r = r * b * 2.0;
-+      return r;
++  // Scale down if necessary: sqrt(a) = 2^k * sqrt(a / 4^k)
++  while (scaled_a.x[0] > 0x1p+512) {  // 2^512
++    scaled_a = mul_pwr2(scaled_a, 0.25);  // divide by 4
++    scale_count++;
 +  }
 +
-   qd_real r = (1.0 / std::sqrt(a[0]));
-   qd_real h = mul_pwr2(a, 0.5);
+   qd_real x = std::sqrt(a[0]);
+   qd_real y;
  
+@@ -775,6 +834,11 @@
+       }
+   }
+ 
++  // Scale back up
++    for (int j = 0; j < scale_count; j++) {
++    x = mul_pwr2(x, 2.0);  // multiply by 2
++    }
++
+   flag = 1; // failed to converge
+   return x;
+ }

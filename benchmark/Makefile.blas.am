@@ -1,0 +1,84 @@
+bench_PROGRAMS += \
+daxpy_ref      dcopy_ref      ddot_ref       dgemm_ref      dsyrk_ref      dgemv_ref      \
+daxpy_openblas dcopy_openblas ddot_openblas  dgemm_openblas dsyrk_openblas dgemv_openblas \
+dpotf2_ref     dpotrf_ref     dgetrf_ref     \
+dpotf2_openblas dpotrf_openblas dgetrf_openblas
+
+cxxflags            = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include
+blas_ref_libdepends   = -L$(top_builddir)/external/i/LAPACK/lib -lblas $(FCLIBS)
+lapack_ref_libdepends = -L$(top_builddir)/external/i/LAPACK/lib -llapack -lblas $(FCLIBS)
+opt_libdepends        = $(top_builddir)/external/i/OPENBLAS/lib/libopenblas.a $(FCLIBS)
+
+# double-precision BLAS reference / OpenBLAS
+daxpy_ref_SOURCES=       daxpy.cpp
+daxpy_ref_CXXFLAGS=      $(cxxflags)
+daxpy_ref_LDFLAGS=       $(blas_ref_libdepends)
+
+daxpy_openblas_SOURCES=  daxpy.cpp
+daxpy_openblas_CXXFLAGS= $(cxxflags)
+daxpy_openblas_LDFLAGS=  $(opt_libdepends)
+
+dcopy_ref_SOURCES=       dcopy.cpp
+dcopy_ref_CXXFLAGS=      $(cxxflags)
+dcopy_ref_LDFLAGS=       $(blas_ref_libdepends)
+
+dcopy_openblas_SOURCES=  dcopy.cpp
+dcopy_openblas_CXXFLAGS= $(cxxflags)
+dcopy_openblas_LDFLAGS=  $(opt_libdepends)
+
+ddot_ref_SOURCES=        ddot.cpp
+ddot_ref_CXXFLAGS=       $(cxxflags)
+ddot_ref_LDFLAGS=        $(blas_ref_libdepends)
+
+ddot_openblas_SOURCES=   ddot.cpp
+ddot_openblas_CXXFLAGS=  $(cxxflags)
+ddot_openblas_LDFLAGS=   $(opt_libdepends)
+
+dgemm_ref_SOURCES=       dgemm.cpp
+dgemm_ref_CXXFLAGS=      $(cxxflags)
+dgemm_ref_LDFLAGS=       $(blas_ref_libdepends)
+
+dgemm_openblas_SOURCES=  dgemm.cpp
+dgemm_openblas_CXXFLAGS= $(cxxflags)
+dgemm_openblas_LDFLAGS=  $(opt_libdepends)
+
+dsyrk_ref_SOURCES=       dsyrk.cpp
+dsyrk_ref_CXXFLAGS=      $(cxxflags)
+dsyrk_ref_LDFLAGS=       $(blas_ref_libdepends)
+
+dsyrk_openblas_SOURCES=  dsyrk.cpp
+dsyrk_openblas_CXXFLAGS= $(cxxflags)
+dsyrk_openblas_LDFLAGS=  $(opt_libdepends)
+
+dgemv_ref_SOURCES=       dgemv.cpp
+dgemv_ref_CXXFLAGS=      $(cxxflags)
+dgemv_ref_LDFLAGS=       $(blas_ref_libdepends)
+
+dgemv_openblas_SOURCES=  dgemv.cpp
+dgemv_openblas_CXXFLAGS= $(cxxflags)
+dgemv_openblas_LDFLAGS=  $(opt_libdepends)
+
+# double-precision LAPACK reference / OpenBLAS
+dpotf2_ref_SOURCES=        dpotf2.cpp
+dpotf2_ref_CXXFLAGS=       $(cxxflags)
+dpotf2_ref_LDFLAGS=        $(lapack_ref_libdepends)
+
+dpotf2_openblas_SOURCES=   dpotf2.cpp
+dpotf2_openblas_CXXFLAGS=  $(cxxflags)
+dpotf2_openblas_LDFLAGS=   $(opt_libdepends)
+
+dpotrf_ref_SOURCES=        dpotrf.cpp
+dpotrf_ref_CXXFLAGS=       $(cxxflags)
+dpotrf_ref_LDFLAGS=        $(lapack_ref_libdepends)
+
+dpotrf_openblas_SOURCES=   dpotrf.cpp
+dpotrf_openblas_CXXFLAGS=  $(cxxflags)
+dpotrf_openblas_LDFLAGS=   $(opt_libdepends)
+
+dgetrf_ref_SOURCES=        dgetrf.cpp
+dgetrf_ref_CXXFLAGS=       $(cxxflags)
+dgetrf_ref_LDFLAGS=        $(lapack_ref_libdepends)
+
+dgetrf_openblas_SOURCES=   dgetrf.cpp
+dgetrf_openblas_CXXFLAGS=  $(cxxflags)
+dgetrf_openblas_LDFLAGS=   $(opt_libdepends)

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DERRQRTP.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,41 +43,14 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-#include <mplapack_debug.h>
-
-void Rerrqrtp(const char *path, INTEGER const nunit) {
+void Rerrqrtp(fem::str_cref path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
     //
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     nout = nunit;
     write(nout, star);
-    //     Set the variables to innocuous values.
+    //
+    // Set the variables to innocuous values.
     //
     INTEGER j = 0;
     const INTEGER nmax = 2;
@@ -78,120 +58,117 @@ void Rerrqrtp(const char *path, INTEGER const nunit) {
     REAL a[nmax * nmax];
     REAL c[nmax * nmax];
     REAL t[nmax * nmax];
-    INTEGER lda = nmax;
-    INTEGER ldc = nmax;
-    INTEGER ldt = nmax;
     REAL w[nmax];
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
-            a[(i - 1) + (j - 1) * lda] = 1.0 / castREAL(i + j);
-            c[(i - 1) + (j - 1) * ldc] = 1.0 / castREAL(i + j);
-            t[(i - 1) + (j - 1) * ldt] = 1.0 / castREAL(i + j);
+            a[(i - 1) + (j - 1) * nmax] = 1.0 / castREAL(i + j);
+            c[(i - 1) + (j - 1) * nmax] = 1.0 / castREAL(i + j);
+            t[(i - 1) + (j - 1) * nmax] = 1.0 / castREAL(i + j);
         }
-        w[j - 1] = 0.0f;
+        w[j - 1] = 0.0;
     }
     ok = true;
     //
-    //     Error exits for TPQRT factorization
+    // Error exits for TPQRT factorization
     //
-    //     Rtpqrt
+    // Rtpqrt
     //
+    srnamt = "Rtpqrt";
     infot = 1;
     REAL b[nmax * nmax];
     INTEGER info = 0;
-    strncpy(srnamt, "Rtpqrt", srnamt_len);
     Rtpqrt(-1, 1, 0, 1, a, 1, b, 1, t, 1, w, info);
-    chkxer("Rtpqrt", infot, nout, lerr, ok);
+    Chkxer("Rtpqrt", infot, nout, lerr, ok);
     infot = 2;
     Rtpqrt(1, -1, 0, 1, a, 1, b, 1, t, 1, w, info);
-    chkxer("Rtpqrt", infot, nout, lerr, ok);
+    Chkxer("Rtpqrt", infot, nout, lerr, ok);
     infot = 3;
     Rtpqrt(0, 1, -1, 1, a, 1, b, 1, t, 1, w, info);
-    chkxer("Rtpqrt", infot, nout, lerr, ok);
+    Chkxer("Rtpqrt", infot, nout, lerr, ok);
     infot = 3;
     Rtpqrt(0, 1, 1, 1, a, 1, b, 1, t, 1, w, info);
-    chkxer("Rtpqrt", infot, nout, lerr, ok);
+    Chkxer("Rtpqrt", infot, nout, lerr, ok);
     infot = 4;
     Rtpqrt(0, 1, 0, 0, a, 1, b, 1, t, 1, w, info);
-    chkxer("Rtpqrt", infot, nout, lerr, ok);
+    Chkxer("Rtpqrt", infot, nout, lerr, ok);
     infot = 4;
     Rtpqrt(0, 1, 0, 2, a, 1, b, 1, t, 1, w, info);
-    chkxer("Rtpqrt", infot, nout, lerr, ok);
+    Chkxer("Rtpqrt", infot, nout, lerr, ok);
     infot = 6;
     Rtpqrt(1, 2, 0, 2, a, 1, b, 1, t, 1, w, info);
-    chkxer("Rtpqrt", infot, nout, lerr, ok);
+    Chkxer("Rtpqrt", infot, nout, lerr, ok);
     infot = 8;
     Rtpqrt(2, 1, 0, 1, a, 1, b, 1, t, 1, w, info);
-    chkxer("Rtpqrt", infot, nout, lerr, ok);
+    Chkxer("Rtpqrt", infot, nout, lerr, ok);
     infot = 10;
     Rtpqrt(2, 2, 1, 2, a, 2, b, 2, t, 1, w, info);
-    chkxer("Rtpqrt", infot, nout, lerr, ok);
+    Chkxer("Rtpqrt", infot, nout, lerr, ok);
     //
-    //     Rtpqrt2
+    // Rtpqrt2
     //
+    srnamt = "Rtpqrt2";
     infot = 1;
-    strncpy(srnamt, "Rtpqrt2", srnamt_len);
     Rtpqrt2(-1, 0, 0, a, 1, b, 1, t, 1, info);
-    chkxer("Rtpqrt2", infot, nout, lerr, ok);
+    Chkxer("Rtpqrt2", infot, nout, lerr, ok);
     infot = 2;
     Rtpqrt2(0, -1, 0, a, 1, b, 1, t, 1, info);
-    chkxer("Rtpqrt2", infot, nout, lerr, ok);
+    Chkxer("Rtpqrt2", infot, nout, lerr, ok);
     infot = 3;
     Rtpqrt2(0, 0, -1, a, 1, b, 1, t, 1, info);
-    chkxer("Rtpqrt2", infot, nout, lerr, ok);
+    Chkxer("Rtpqrt2", infot, nout, lerr, ok);
     infot = 5;
     Rtpqrt2(2, 2, 0, a, 1, b, 2, t, 2, info);
-    chkxer("Rtpqrt2", infot, nout, lerr, ok);
+    Chkxer("Rtpqrt2", infot, nout, lerr, ok);
     infot = 7;
     Rtpqrt2(2, 2, 0, a, 2, b, 1, t, 2, info);
-    chkxer("Rtpqrt2", infot, nout, lerr, ok);
+    Chkxer("Rtpqrt2", infot, nout, lerr, ok);
     infot = 9;
     Rtpqrt2(2, 2, 0, a, 2, b, 2, t, 1, info);
-    chkxer("Rtpqrt2", infot, nout, lerr, ok);
+    Chkxer("Rtpqrt2", infot, nout, lerr, ok);
     //
-    //     Rtpmqrt
+    // Rtpmqrt
     //
+    srnamt = "Rtpmqrt";
     infot = 1;
-    strncpy(srnamt, "Rtpmqrt", srnamt_len);
     Rtpmqrt("/", "N", 0, 0, 0, 0, 1, a, 1, t, 1, b, 1, c, 1, w, info);
-    chkxer("Rtpmqrt", infot, nout, lerr, ok);
+    Chkxer("Rtpmqrt", infot, nout, lerr, ok);
     infot = 2;
     Rtpmqrt("L", "/", 0, 0, 0, 0, 1, a, 1, t, 1, b, 1, c, 1, w, info);
-    chkxer("Rtpmqrt", infot, nout, lerr, ok);
+    Chkxer("Rtpmqrt", infot, nout, lerr, ok);
     infot = 3;
     Rtpmqrt("L", "N", -1, 0, 0, 0, 1, a, 1, t, 1, b, 1, c, 1, w, info);
-    chkxer("Rtpmqrt", infot, nout, lerr, ok);
+    Chkxer("Rtpmqrt", infot, nout, lerr, ok);
     infot = 4;
     Rtpmqrt("L", "N", 0, -1, 0, 0, 1, a, 1, t, 1, b, 1, c, 1, w, info);
-    chkxer("Rtpmqrt", infot, nout, lerr, ok);
+    Chkxer("Rtpmqrt", infot, nout, lerr, ok);
     infot = 5;
     Rtpmqrt("L", "N", 0, 0, -1, 0, 1, a, 1, t, 1, b, 1, c, 1, w, info);
     infot = 6;
     Rtpmqrt("L", "N", 0, 0, 0, -1, 1, a, 1, t, 1, b, 1, c, 1, w, info);
-    chkxer("Rtpmqrt", infot, nout, lerr, ok);
+    Chkxer("Rtpmqrt", infot, nout, lerr, ok);
     infot = 7;
     Rtpmqrt("L", "N", 0, 0, 0, 0, 0, a, 1, t, 1, b, 1, c, 1, w, info);
-    chkxer("Rtpmqrt", infot, nout, lerr, ok);
+    Chkxer("Rtpmqrt", infot, nout, lerr, ok);
     infot = 9;
     Rtpmqrt("R", "N", 1, 2, 1, 1, 1, a, 1, t, 1, b, 1, c, 1, w, info);
-    chkxer("Rtpmqrt", infot, nout, lerr, ok);
+    Chkxer("Rtpmqrt", infot, nout, lerr, ok);
     infot = 9;
     Rtpmqrt("L", "N", 2, 1, 1, 1, 1, a, 1, t, 1, b, 1, c, 1, w, info);
-    chkxer("Rtpmqrt", infot, nout, lerr, ok);
+    Chkxer("Rtpmqrt", infot, nout, lerr, ok);
     infot = 11;
     Rtpmqrt("R", "N", 1, 1, 1, 1, 1, a, 1, t, 0, b, 1, c, 1, w, info);
-    chkxer("Rtpmqrt", infot, nout, lerr, ok);
+    Chkxer("Rtpmqrt", infot, nout, lerr, ok);
     infot = 13;
     Rtpmqrt("L", "N", 1, 1, 1, 1, 1, a, 1, t, 1, b, 0, c, 1, w, info);
-    chkxer("Rtpmqrt", infot, nout, lerr, ok);
+    Chkxer("Rtpmqrt", infot, nout, lerr, ok);
     infot = 15;
     Rtpmqrt("L", "N", 1, 1, 1, 1, 1, a, 1, t, 1, b, 1, c, 0, w, info);
-    chkxer("Rtpmqrt", infot, nout, lerr, ok);
+    Chkxer("Rtpmqrt", infot, nout, lerr, ok);
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     Alaesm(path, ok, nout);
     //
-    //     End of Rerrqrt
+    // End of Rerrqrtp
     //
 }

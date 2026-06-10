@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DSPEV.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rspev(const char *jobz, const char *uplo, INTEGER const n, REAL *ap, REAL *w, REAL *z, INTEGER const ldz, REAL *work, INTEGER &info) {
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     bool wantz = Mlsame(jobz, "V");
     //
@@ -51,7 +58,7 @@ void Rspev(const char *jobz, const char *uplo, INTEGER const n, REAL *ap, REAL *
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
@@ -61,12 +68,12 @@ void Rspev(const char *jobz, const char *uplo, INTEGER const n, REAL *ap, REAL *
     if (n == 1) {
         w[1 - 1] = ap[1 - 1];
         if (wantz) {
-            z[(1 - 1)] = one;
+            z[0] = one;
         }
         return;
     }
     //
-    //     Get machine constants.
+    // Get machine constants.
     //
     REAL safmin = Rlamch("Safe minimum");
     REAL eps = Rlamch("Precision");
@@ -75,7 +82,7 @@ void Rspev(const char *jobz, const char *uplo, INTEGER const n, REAL *ap, REAL *
     REAL rmin = sqrt(smlnum);
     REAL rmax = sqrt(bignum);
     //
-    //     Scale matrix to allowable range, if necessary.
+    // Scale matrix to allowable range, if necessary.
     //
     REAL anrm = Rlansp("M", uplo, n, ap, work);
     INTEGER iscale = 0;
@@ -92,15 +99,15 @@ void Rspev(const char *jobz, const char *uplo, INTEGER const n, REAL *ap, REAL *
         Rscal((n * (n + 1)) / 2, sigma, ap, 1);
     }
     //
-    //     Call Rsptrd to reduce symmetric packed matrix to tridiagonal form.
+    // Call Rsptrd to reduce symmetric packed matrix to tridiagonal form.
     //
     INTEGER inde = 1;
     INTEGER indtau = inde + n;
     INTEGER iinfo = 0;
     Rsptrd(uplo, n, ap, w, &work[inde - 1], &work[indtau - 1], iinfo);
     //
-    //     For eigenvalues only, call Rsterf.  For eigenvectors, first call
-    //     Ropgtr to generate the orthogonal matrix, then call Rsteqr.
+    // For eigenvalues only, call Rsterf.  For eigenvectors, first call
+    // Ropgtr to generate the orthogonal matrix, then call Rsteqr.
     //
     INTEGER indwrk = 0;
     if (!wantz) {
@@ -111,7 +118,7 @@ void Rspev(const char *jobz, const char *uplo, INTEGER const n, REAL *ap, REAL *
         Rsteqr(jobz, n, w, &work[inde - 1], z, ldz, &work[indtau - 1], info);
     }
     //
-    //     If matrix was scaled, then rescale eigenvalues appropriately.
+    // If matrix was scaled, then rescale eigenvalues appropriately.
     //
     INTEGER imax = 0;
     if (iscale == 1) {
@@ -123,6 +130,6 @@ void Rspev(const char *jobz, const char *uplo, INTEGER const n, REAL *ap, REAL *
         Rscal(imax, one / sigma, w, 1);
     }
     //
-    //     End of Rspev
+    // End of Rspev
     //
 }

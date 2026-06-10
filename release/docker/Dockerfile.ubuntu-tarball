@@ -1,0 +1,32 @@
+# Dockerfile.debian-tarball
+# GCC build for Debian/Ubuntu (tarball: no autoreconf needed)
+
+ARG BASE=ubuntu:22.04
+FROM ${BASE}
+
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    gfortran \
+    && rm -rf /var/lib/apt/lists/*
+
+# Extract tarball
+COPY mplapack-*.tar.gz /tmp/
+WORKDIR /tmp
+RUN tar xzf mplapack-*.tar.gz && rm mplapack-*.tar.gz
+
+WORKDIR /tmp/mplapack-*
+
+# Detect architecture and set configure options
+RUN ARCH=$(dpkg --print-architecture) && \
+    echo "Detected architecture: $ARCH" && \
+    COMMON_OPTS="--enable-gmp=yes --enable-mpfr=yes --enable-binary128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes --enable-benchmark=yes" && \
+    if [ "$ARCH" = "amd64" ] || [ "$ARCH" = "i386" ]; then \
+        CONFIGURE_OPTS="$COMMON_OPTS --enable-binary80=yes"; \
+    else \
+        CONFIGURE_OPTS="$COMMON_OPTS"; \
+    fi && \
+    echo "Configure options: $CONFIGURE_OPTS" && \
+    ./configure $CONFIGURE_OPTS && \
+    make -j$(nproc)
+
+CMD ["make", "check"]

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DGGSVP3.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rggsvp3(const char *jobu, const char *jobv, const char *jobq, INTEGER const m, INTEGER const p, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL const tola, REAL const tolb, INTEGER &k, INTEGER &l, REAL *u, INTEGER const ldu, REAL *v, INTEGER const ldv, REAL *q, INTEGER const ldq, INTEGER *iwork, REAL *tau, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //     Test the input parameters
+    // Test the input parameters
     //
     bool wantu = Mlsame(jobu, "U");
     bool wantv = Mlsame(jobv, "V");
@@ -40,7 +47,7 @@ void Rggsvp3(const char *jobu, const char *jobv, const char *jobq, INTEGER const
     bool lquery = (lwork == -1);
     INTEGER lwkopt = 1;
     //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     if (!(wantu || Mlsame(jobu, "N"))) {
@@ -69,7 +76,7 @@ void Rggsvp3(const char *jobu, const char *jobv, const char *jobq, INTEGER const
         info = -24;
     }
     //
-    //     Compute workspace
+    // Compute workspace
     //
     if (info == 0) {
         Rgeqp3(p, n, b, ldb, iwork, tau, work, -1, info);
@@ -96,8 +103,8 @@ void Rggsvp3(const char *jobu, const char *jobv, const char *jobq, INTEGER const
         return;
     }
     //
-    //     QR with column pivoting of B: B*P = V*( S11 S12 )
-    //                                           (  0   0  )
+    // QR with column pivoting of B: B*P = V*( S11 S12 )
+    // (  0   0  )
     //
     INTEGER i = 0;
     for (i = 1; i <= n; i = i + 1) {
@@ -105,11 +112,11 @@ void Rggsvp3(const char *jobu, const char *jobv, const char *jobq, INTEGER const
     }
     Rgeqp3(p, n, b, ldb, iwork, tau, work, lwork, info);
     //
-    //     Update A := A*P
+    // Update A := A*P
     //
     Rlapmt(forwrd, m, n, a, lda, iwork);
     //
-    //     Determine the effective rank of matrix B.
+    // Determine the effective rank of matrix B.
     //
     l = 0;
     for (i = 1; i <= min(p, n); i = i + 1) {
@@ -121,7 +128,7 @@ void Rggsvp3(const char *jobu, const char *jobv, const char *jobq, INTEGER const
     const REAL zero = 0.0;
     if (wantv) {
         //
-        //        Copy the details of V, and form V.
+        // Copy the details of V, and form V.
         //
         Rlaset("Full", p, p, zero, zero, v, ldv);
         if (p > 1) {
@@ -130,7 +137,7 @@ void Rggsvp3(const char *jobu, const char *jobv, const char *jobq, INTEGER const
         Rorg2r(p, p, min(p, n), v, ldv, tau, work, info);
     }
     //
-    //     Clean up B
+    // Clean up B
     //
     INTEGER j = 0;
     for (j = 1; j <= l - 1; j = j + 1) {
@@ -145,7 +152,7 @@ void Rggsvp3(const char *jobu, const char *jobv, const char *jobq, INTEGER const
     const REAL one = 1.0;
     if (wantq) {
         //
-        //        Set Q = I and Update Q := Q*P
+        // Set Q = I and Update Q := Q*P
         //
         Rlaset("Full", n, n, zero, one, q, ldq);
         Rlapmt(forwrd, n, n, q, ldq, iwork);
@@ -153,22 +160,22 @@ void Rggsvp3(const char *jobu, const char *jobv, const char *jobq, INTEGER const
     //
     if (p >= l && n != l) {
         //
-        //        RQ factorization of (S11 S12): ( S11 S12 ) = ( 0 S12 )*Z
+        // RQ factorization of (S11 S12): ( S11 S12 ) = ( 0 S12 )*Z
         //
         Rgerq2(l, n, b, ldb, tau, work, info);
         //
-        //        Update A := A*Z**T
+        // Update A := A*Z**T
         //
         Rormr2("Right", "Transpose", m, n, l, b, ldb, tau, a, lda, work, info);
         //
         if (wantq) {
             //
-            //           Update Q := Q*Z**T
+            // Update Q := Q*Z**T
             //
             Rormr2("Right", "Transpose", n, n, l, b, ldb, tau, q, ldq, work, info);
         }
         //
-        //        Clean up B
+        // Clean up B
         //
         Rlaset("Full", l, n - l, zero, zero, b, ldb);
         for (j = n - l + 1; j <= n; j = j + 1) {
@@ -179,20 +186,20 @@ void Rggsvp3(const char *jobu, const char *jobv, const char *jobq, INTEGER const
         //
     }
     //
-    //     Let              N-L     L
-    //                A = ( A11    A12 ) M,
+    // Let              N-L     L
+    // A = ( A11    A12 ) M,
     //
-    //     then the following does the complete QR decomposition of A11:
+    // then the following does the complete QR decomposition of A11:
     //
-    //              A11 = U*(  0  T12 )*P1**T
-    //                      (  0   0  )
+    // A11 = U*(  0  T12 )*P1**T
+    // (  0   0  )
     //
     for (i = 1; i <= n - l; i = i + 1) {
         iwork[i - 1] = 0;
     }
     Rgeqp3(m, n - l, a, lda, iwork, tau, work, lwork, info);
     //
-    //     Determine the effective rank of A11
+    // Determine the effective rank of A11
     //
     k = 0;
     for (i = 1; i <= min(m, n - l); i = i + 1) {
@@ -201,13 +208,13 @@ void Rggsvp3(const char *jobu, const char *jobv, const char *jobq, INTEGER const
         }
     }
     //
-    //     Update A12 := U**T*A12, where A12 = A( 1:M, N-L+1:N )
+    // Update A12 := U**T*A12, where A12 = A( 1:M, N-L+1:N )
     //
     Rorm2r("Left", "Transpose", m, l, min(m, n - l), a, lda, tau, &a[((n - l + 1) - 1) * lda], lda, work, info);
     //
     if (wantu) {
         //
-        //        Copy the details of U, and form U
+        // Copy the details of U, and form U
         //
         Rlaset("Full", m, m, zero, zero, u, ldu);
         if (m > 1) {
@@ -218,13 +225,13 @@ void Rggsvp3(const char *jobu, const char *jobv, const char *jobq, INTEGER const
     //
     if (wantq) {
         //
-        //        Update Q( 1:N, 1:N-L )  = Q( 1:N, 1:N-L )*P1
+        // Update Q( 1:N, 1:N-L )  = Q( 1:N, 1:N-L )*P1
         //
         Rlapmt(forwrd, n, n - l, q, ldq, iwork);
     }
     //
-    //     Clean up A: set the strictly lower triangular part of
-    //     A(1:K, 1:K) = 0, and A( K+1:M, 1:N-L ) = 0.
+    // Clean up A: set the strictly lower triangular part of
+    // A(1:K, 1:K) = 0, and A( K+1:M, 1:N-L ) = 0.
     //
     for (j = 1; j <= k - 1; j = j + 1) {
         for (i = j + 1; i <= k; i = i + 1) {
@@ -237,18 +244,18 @@ void Rggsvp3(const char *jobu, const char *jobv, const char *jobq, INTEGER const
     //
     if (n - l > k) {
         //
-        //        RQ factorization of ( T11 T12 ) = ( 0 T12 )*Z1
+        // RQ factorization of ( T11 T12 ) = ( 0 T12 )*Z1
         //
         Rgerq2(k, n - l, a, lda, tau, work, info);
         //
         if (wantq) {
             //
-            //           Update Q( 1:N,1:N-L ) = Q( 1:N,1:N-L )*Z1**T
+            // Update Q( 1:N,1:N-L ) = Q( 1:N,1:N-L )*Z1**T
             //
             Rormr2("Right", "Transpose", n, n - l, k, a, lda, tau, q, ldq, work, info);
         }
         //
-        //        Clean up A
+        // Clean up A
         //
         Rlaset("Full", k, n - l - k, zero, zero, a, lda);
         for (j = n - l - k + 1; j <= n - l; j = j + 1) {
@@ -261,18 +268,18 @@ void Rggsvp3(const char *jobu, const char *jobv, const char *jobq, INTEGER const
     //
     if (m > k) {
         //
-        //        QR factorization of A( K+1:M,N-L+1:N )
+        // QR factorization of A( K+1:M,N-L+1:N )
         //
         Rgeqr2(m - k, l, &a[((k + 1) - 1) + ((n - l + 1) - 1) * lda], lda, tau, work, info);
         //
         if (wantu) {
             //
-            //           Update U(:,K+1:M) := U(:,K+1:M)*U1
+            // Update U(:,K+1:M) := U(:,K+1:M)*U1
             //
             Rorm2r("Right", "No transpose", m, m - k, min(m - k, l), &a[((k + 1) - 1) + ((n - l + 1) - 1) * lda], lda, tau, &u[((k + 1) - 1) * ldu], ldu, work, info);
         }
         //
-        //        Clean up
+        // Clean up
         //
         for (j = n - l + 1; j <= n; j = j + 1) {
             for (i = j - n + k + l + 1; i <= m; i = i + 1) {
@@ -284,6 +291,6 @@ void Rggsvp3(const char *jobu, const char *jobv, const char *jobq, INTEGER const
     //
     work[1 - 1] = castREAL(lwkopt);
     //
-    //     End of Rggsvp3
+    // End of Rggsvp3
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZGET38.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -35,31 +42,16 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
-
-#include <mplapack_debug.h>
-
-#include <iostream>
-#include <sstream>
-#include <string>
-#include <vector>
-#include <regex>
-
-using namespace std;
-using std::regex;
-using std::regex_replace;
+#include <memory>
 
 void Cget38(REAL *rmax, INTEGER *lmax, INTEGER *ninfo, INTEGER &knt, INTEGER const nin) {
     common cmn;
     common_read read(cmn);
-    common_write write(cmn);
-    double dtmp;
-    double dtmp_r, dtmp_i;
-    char buf[1024];
     REAL eps = 0.0;
     REAL smlnum = 0.0;
     const REAL one = 1.0;
     REAL bignum = 0.0;
-    const REAL epsin = 5.9605e-8;
+    const REAL epsin = 0.000000059605;
     const REAL zero = 0.0;
     REAL val[3];
     INTEGER n = 0;
@@ -69,7 +61,6 @@ void Cget38(REAL *rmax, INTEGER *lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
     INTEGER iselec[ldt];
     INTEGER i = 0;
     COMPLEX tmp[ldt * ldt];
-    INTEGER ldtmp = ldt;
     INTEGER j = 0;
     REAL sin = 0.0;
     REAL sepin = 0.0;
@@ -80,7 +71,8 @@ void Cget38(REAL *rmax, INTEGER *lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
     REAL vmul = 0.0;
     COMPLEX tsav[ldt * ldt];
     const INTEGER lwork = 2 * ldt * (10 + ldt);
-    COMPLEX work[lwork];
+    auto work_storage = std::make_unique<COMPLEX[]>(std::max<INTEGER>(1, lwork));
+    COMPLEX *work = work_storage.get();
     INTEGER info = 0;
     COMPLEX q[ldt * ldt];
     const COMPLEX czero = COMPLEX(0.0, 0.0);
@@ -93,8 +85,6 @@ void Cget38(REAL *rmax, INTEGER *lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
     INTEGER itmp = 0;
     COMPLEX qsav[ldt * ldt];
     COMPLEX tsav1[ldt * ldt];
-    INTEGER ldqsav = ldt;
-    INTEGER ldtsav1 = ldt;
     COMPLEX wtmp[ldt];
     INTEGER m = 0;
     REAL s = 0.0;
@@ -103,21 +93,18 @@ void Cget38(REAL *rmax, INTEGER *lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
     REAL stmp = 0.0;
     REAL result[2];
     REAL vmax = 0.0;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     REAL v = 0.0;
     REAL tol = 0.0;
     REAL tolin = 0.0;
     COMPLEX ttmp[ldt * ldt];
     COMPLEX qtmp[ldt * ldt];
-    INTEGER ldttmp = ldt;
-    INTEGER ldq = ldt;
-    INTEGER ldqtmp = ldt;
     //
     eps = Rlamch("P");
     smlnum = Rlamch("S") / eps;
     bignum = one / smlnum;
     //
-    //     EPSIN = 2**(-24) = precision to which input data computed
+    // EPSIN = 2**(-24) = precision to which input data computed
     //
     eps = max(eps, epsin);
     rmax[1 - 1] = zero;
@@ -133,68 +120,36 @@ void Cget38(REAL *rmax, INTEGER *lmax, INTEGER *ninfo, INTEGER &knt, INTEGER con
     val[1 - 1] = sqrt(smlnum);
     val[2 - 1] = one;
     val[3 - 1] = sqrt(sqrt(bignum));
-    //
-    //     Read input data until N=0.  Assume input eigenvalues are sorted
-    //     lexicographically (increasing by real part, then decreasing by
-    //     imaginary part)
-    //
-    string str;
-    istringstream iss;
+//
+// Read input data until N=0.  Assume input eigenvalues are sorted
+// lexicographically (increasing by real part, then decreasing by
+// imaginary part)
+//
 statement_10:
-    getline(cin, str);
-    iss.clear();
-    iss.str(str);
-    iss >> n;
-    iss >> ndim;
-    iss >> isrt;
-    // printf("n = %d\n", (int)n);
-    // printf("ndim = %d\n", (int)ndim);
-    // printf("isrt = %d\n", (int)isrt);
+    read(nin, star), n, ndim, isrt;
     if (n == 0) {
         return;
     }
-    getline(cin, str);
-    iss.clear();
-    iss.str(str);
-    for (i = 1; i <= ndim; i = i + 1) {
-        iss >> itmp;
-        iselec[i - 1] = itmp;
-    }
-    for (i = 1; i <= n; i = i + 1) {
-        getline(cin, str);
-        iss.clear();
-        string ___r = regex_replace(str, regex(","), " ");
-        string __r = regex_replace(___r, regex("\\)"), " ");
-        string _r = regex_replace(__r, regex("\\("), " ");
-        str = regex_replace(_r, regex("D"), "e");
-        iss.str(str);
-        for (j = 1; j <= n; j = j + 1) {
-            iss >> dtmp_r;
-            iss >> dtmp_i;
-            tmp[(i - 1) + (j - 1) * ldtmp] = COMPLEX(dtmp_r, dtmp_i);
+    {
+        read_loop rloop(cmn, nin, star);
+        for (i = 1; i <= ndim; i = i + 1) {
+            rloop, iselec[i - 1];
         }
     }
-    // printf("tmp ="); printmat(n, n, tmp, ldtmp); printf("\n");
-    getline(cin, str);
-    {
-        string ___r = regex_replace(str, regex(","), " ");
-        string __r = regex_replace(___r, regex("\\)"), " ");
-        string _r = regex_replace(__r, regex("\\("), " ");
-        str = regex_replace(_r, regex("D"), "e");
+    for (i = 1; i <= n; i = i + 1) {
+        {
+            read_loop rloop(cmn, nin, star);
+            for (j = 1; j <= n; j = j + 1) {
+                rloop, tmp[(i - 1) + (j - 1) * ldt];
+            }
+        }
     }
-    iss.clear();
-    iss.str(str);
-    iss >> dtmp;
-    sin = dtmp;
-    iss >> dtmp;
-    sepin = dtmp;
+    read(nin, star), sin, sepin;
     //
-    // printf("sin ="); printnum(sin); printf("\n");
-    // printf("sepin ="); printnum(sepin); printf("\n");
     tnrm = Clange("M", n, n, tmp, ldt, rwork);
     for (iscl = 1; iscl <= 3; iscl = iscl + 1) {
         //
-        //        Scale input matrix
+        // Scale input matrix
         //
         knt++;
         Clacpy("F", n, n, tmp, ldt, t, ldt);
@@ -207,7 +162,7 @@ statement_10:
         }
         Clacpy("F", n, n, t, ldt, tsav, ldt);
         //
-        //        Compute Schur form
+        // Compute Schur form
         //
         Cgehrd(n, 1, n, t, ldt, &work[1 - 1], &work[(n + 1) - 1], lwork - n, info);
         if (info != 0) {
@@ -216,12 +171,12 @@ statement_10:
             goto statement_200;
         }
         //
-        //        Generate unitary matrix
+        // Generate unitary matrix
         //
         Clacpy("L", n, n, t, ldt, q, ldt);
         Cunghr(n, 1, n, q, ldt, &work[1 - 1], &work[(n + 1) - 1], lwork - n, info);
         //
-        //        Compute Schur form
+        // Compute Schur form
         //
         for (j = 1; j <= n - 2; j = j + 1) {
             for (i = j + 2; i <= n; i = i + 1) {
@@ -235,7 +190,7 @@ statement_10:
             goto statement_200;
         }
         //
-        //        Sort, select eigenvalues
+        // Sort, select eigenvalues
         //
         for (i = 1; i <= n; i = i + 1) {
             ipnt[i - 1] = i;
@@ -266,10 +221,10 @@ statement_10:
             ipnt[kmin - 1] = itmp;
         }
         for (i = 1; i <= ndim; i = i + 1) {
-            select[ipnt[iselec[i - 1] - 1] - 1] = true;
+            select[(ipnt[iselec[i - 1] - 1]) - 1] = true;
         }
         //
-        //        Compute condition numbers
+        // Compute condition numbers
         //
         Clacpy("F", n, n, q, ldt, qsav, ldt);
         Clacpy("F", n, n, t, ldt, tsav1, ldt);
@@ -282,7 +237,7 @@ statement_10:
         septmp = sep / vmul;
         stmp = s;
         //
-        //        Compute residuals
+        // Compute residuals
         //
         Chst01(n, 1, n, tsav, ldt, t, ldt, q, ldt, work, lwork, rwork, result);
         vmax = max(result[1 - 1], result[2 - 1]);
@@ -293,10 +248,10 @@ statement_10:
             }
         }
         //
-        //        Compare condition number for eigenvalue cluster
-        //        taking its condition number into account
+        // Compare condition number for eigenvalue cluster
+        // taking its condition number into account
         //
-        v = max(REAL(two * castREAL(n) * eps * tnrm), smlnum);
+        v = max(two * castREAL(n) * eps * tnrm, smlnum);
         if (tnrm == zero) {
             v = one;
         }
@@ -310,8 +265,8 @@ statement_10:
         } else {
             tolin = v / sepin;
         }
-        tol = max(tol, REAL(smlnum / eps));
-        tolin = max(tolin, REAL(smlnum / eps));
+        tol = max(tol, smlnum / eps);
+        tolin = max(tolin, smlnum / eps);
         if (eps * (sin - tolin) > stmp + tol) {
             vmax = one / eps;
         } else if (sin - tolin > stmp + tol) {
@@ -330,8 +285,8 @@ statement_10:
             }
         }
         //
-        //        Compare condition numbers for invariant subspace
-        //        taking its condition number into account
+        // Compare condition numbers for invariant subspace
+        // taking its condition number into account
         //
         if (v > septmp * stmp) {
             tol = septmp;
@@ -343,8 +298,8 @@ statement_10:
         } else {
             tolin = v / sin;
         }
-        tol = max(tol, REAL(smlnum / eps));
-        tolin = max(tolin, REAL(smlnum / eps));
+        tol = max(tol, smlnum / eps);
+        tolin = max(tolin, smlnum / eps);
         if (eps * (sepin - tolin) > septmp + tol) {
             vmax = one / eps;
         } else if (sepin - tolin > septmp + tol) {
@@ -363,8 +318,8 @@ statement_10:
             }
         }
         //
-        //        Compare condition number for eigenvalue cluster
-        //        without taking its condition number into account
+        // Compare condition number for eigenvalue cluster
+        // without taking its condition number into account
         //
         if (sin <= castREAL(2 * n) * eps && stmp <= castREAL(2 * n) * eps) {
             vmax = one;
@@ -386,8 +341,8 @@ statement_10:
             }
         }
         //
-        //        Compare condition numbers for invariant subspace
-        //        without taking its condition number into account
+        // Compare condition numbers for invariant subspace
+        // without taking its condition number into account
         //
         if (sepin <= v && septmp <= v) {
             vmax = one;
@@ -409,8 +364,8 @@ statement_10:
             }
         }
         //
-        //        Compute eigenvalue condition number only and compare
-        //        Update Q
+        // Compute eigenvalue condition number only and compare
+        // Update Q
         //
         vmax = zero;
         Clacpy("F", n, n, tsav1, ldt, ttmp, ldt);
@@ -431,17 +386,17 @@ statement_10:
         }
         for (i = 1; i <= n; i = i + 1) {
             for (j = 1; j <= n; j = j + 1) {
-                if (ttmp[(i - 1) + (j - 1) * ldttmp] != t[(i - 1) + (j - 1) * ldt]) {
+                if (ttmp[(i - 1) + (j - 1) * ldt] != t[(i - 1) + (j - 1) * ldt]) {
                     vmax = one / eps;
                 }
-                if (qtmp[(i - 1) + (j - 1) * ldqtmp] != q[(i - 1) + (j - 1) * ldq]) {
+                if (qtmp[(i - 1) + (j - 1) * ldt] != q[(i - 1) + (j - 1) * ldt]) {
                     vmax = one / eps;
                 }
             }
         }
         //
-        //        Compute invariant subspace condition number only and compare
-        //        Update Q
+        // Compute invariant subspace condition number only and compare
+        // Update Q
         //
         Clacpy("F", n, n, tsav1, ldt, ttmp, ldt);
         Clacpy("F", n, n, qsav, ldt, qtmp, ldt);
@@ -461,17 +416,17 @@ statement_10:
         }
         for (i = 1; i <= n; i = i + 1) {
             for (j = 1; j <= n; j = j + 1) {
-                if (ttmp[(i - 1) + (j - 1) * ldttmp] != t[(i - 1) + (j - 1) * ldt]) {
+                if (ttmp[(i - 1) + (j - 1) * ldt] != t[(i - 1) + (j - 1) * ldt]) {
                     vmax = one / eps;
                 }
-                if (qtmp[(i - 1) + (j - 1) * ldqtmp] != q[(i - 1) + (j - 1) * ldq]) {
+                if (qtmp[(i - 1) + (j - 1) * ldt] != q[(i - 1) + (j - 1) * ldt]) {
                     vmax = one / eps;
                 }
             }
         }
         //
-        //        Compute eigenvalue condition number only and compare
-        //        Do not update Q
+        // Compute eigenvalue condition number only and compare
+        // Do not update Q
         //
         Clacpy("F", n, n, tsav1, ldt, ttmp, ldt);
         Clacpy("F", n, n, qsav, ldt, qtmp, ldt);
@@ -491,17 +446,17 @@ statement_10:
         }
         for (i = 1; i <= n; i = i + 1) {
             for (j = 1; j <= n; j = j + 1) {
-                if (ttmp[(i - 1) + (j - 1) * ldttmp] != t[(i - 1) + (j - 1) * ldt]) {
+                if (ttmp[(i - 1) + (j - 1) * ldt] != t[(i - 1) + (j - 1) * ldt]) {
                     vmax = one / eps;
                 }
-                if (qtmp[(i - 1) + (j - 1) * ldqtmp] != qsav[(i - 1) + (j - 1) * ldqsav]) {
+                if (qtmp[(i - 1) + (j - 1) * ldt] != qsav[(i - 1) + (j - 1) * ldt]) {
                     vmax = one / eps;
                 }
             }
         }
         //
-        //        Compute invariant subspace condition number only and compare
-        //        Do not update Q
+        // Compute invariant subspace condition number only and compare
+        // Do not update Q
         //
         Clacpy("F", n, n, tsav1, ldt, ttmp, ldt);
         Clacpy("F", n, n, qsav, ldt, qtmp, ldt);
@@ -521,10 +476,10 @@ statement_10:
         }
         for (i = 1; i <= n; i = i + 1) {
             for (j = 1; j <= n; j = j + 1) {
-                if (ttmp[(i - 1) + (j - 1) * ldttmp] != t[(i - 1) + (j - 1) * ldt]) {
+                if (ttmp[(i - 1) + (j - 1) * ldt] != t[(i - 1) + (j - 1) * ldt]) {
                     vmax = one / eps;
                 }
-                if (qtmp[(i - 1) + (j - 1) * ldqtmp] != qsav[(i - 1) + (j - 1) * ldqsav]) {
+                if (qtmp[(i - 1) + (j - 1) * ldt] != qsav[(i - 1) + (j - 1) * ldt]) {
                     vmax = one / eps;
                 }
             }
@@ -539,6 +494,6 @@ statement_10:
     }
     goto statement_10;
     //
-    //     End of Cget38
+    // End of Cget38
     //
 }

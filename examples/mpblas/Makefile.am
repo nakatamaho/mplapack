@@ -50,65 +50,66 @@ Rgemm_gmp_opt_LDFLAGS = $(gmp_opt_libdepends)
 
 endif
 
-if ENABLE__FLOAT128
-mpblasexamples_PROGRAMS += Cgemm__Float128 Rgemm__Float128 Cgemm__Float128_opt Rgemm__Float128_opt
+if ENABLE_BINARY128
+mpblasexamples_PROGRAMS += Cgemm_binary128 Rgemm_binary128 Cgemm_binary128_opt Rgemm_binary128_opt
 
-_Float128_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include
-if WANT_QUADMATH
-_Float128_libdepends = -L$(top_builddir)/mpblas/reference -lmpblas__Float128 -lquadmath
-_Float128_opt_libdepends = -L$(top_builddir)/mpblas/optimized/_Float128 -lmpblas__Float128_opt -lquadmath
-else
-_Float128_libdepends = -L$(top_builddir)/mpblas/reference -lmpblas__Float128
-_Float128_opt_libdepends = -L$(top_builddir)/mpblas/optimized/_Float128 -lmpblas__Float128_opt
+binary128_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include
+binary128_libdepends = -L$(top_builddir)/mpblas/reference -lmpblas_binary128
+if MPLAPACK_BINARY128_MODE_QUADMATH
+binary128_libdepends += -lquadmath
+endif
+binary128_opt_libdepends = -L$(top_builddir)/mpblas/optimized/binary128 -lmpblas_binary128_opt
+if MPLAPACK_BINARY128_MODE_QUADMATH
+binary128_opt_libdepends += -lquadmath
 endif
 
-Cgemm__Float128_SOURCES = Cgemm__Float128.cpp
-Cgemm__Float128_CXXFLAGS = $(_Float128_cxxflags)
-Cgemm__Float128_LDFLAGS = $(_Float128_libdepends)
+Cgemm_binary128_SOURCES = Cgemm_binary128.cpp
+Cgemm_binary128_CXXFLAGS = $(binary128_cxxflags)
+Cgemm_binary128_LDFLAGS = $(binary128_libdepends)
 
-Rgemm__Float128_SOURCES = Rgemm__Float128.cpp
-Rgemm__Float128_CXXFLAGS = $(_Float128_cxxflags)
-Rgemm__Float128_LDFLAGS = $(_Float128_libdepends)
+Rgemm_binary128_SOURCES = Rgemm_binary128.cpp
+Rgemm_binary128_CXXFLAGS = $(binary128_cxxflags)
+Rgemm_binary128_LDFLAGS = $(binary128_libdepends)
 
-Cgemm__Float128_opt_SOURCES = Cgemm__Float128.cpp
-Cgemm__Float128_opt_CXXFLAGS = $(_Float128_cxxflags)
-Cgemm__Float128_opt_LDFLAGS = $(_Float128_opt_libdepends)
+Cgemm_binary128_opt_SOURCES = Cgemm_binary128.cpp
+Cgemm_binary128_opt_CXXFLAGS = $(binary128_cxxflags)
+Cgemm_binary128_opt_LDFLAGS = $(binary128_opt_libdepends)
 
-Rgemm__Float128_opt_SOURCES = Rgemm__Float128.cpp
-Rgemm__Float128_opt_CXXFLAGS = $(_Float128_cxxflags)
-Rgemm__Float128_opt_LDFLAGS = $(_Float128_opt_libdepends)
+Rgemm_binary128_opt_SOURCES = Rgemm_binary128.cpp
+Rgemm_binary128_opt_CXXFLAGS = $(binary128_cxxflags)
+Rgemm_binary128_opt_LDFLAGS = $(binary128_opt_libdepends)
 
 endif
 
-if ENABLE__FLOAT64X
-mpblasexamples_PROGRAMS += Cgemm__Float64x Rgemm__Float64x Cgemm__Float64x_opt Rgemm__Float64x_opt
+if ENABLE_BINARY80
+mpblasexamples_PROGRAMS += Cgemm_binary80 Rgemm_binary80 Cgemm_binary80_opt Rgemm_binary80_opt
 
-_Float64x_cxxflags = $(OPENMP_CXXFLAGS)
-_Float64x_libdepends = -L$(top_builddir)/mpblas/reference -lmpblas__Float64x
-_Float64x_opt_libdepends = -L$(top_builddir)/mpblas/optimized/_Float64x -lmpblas__Float64x_opt
+binary80_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include
+binary80_libdepends = -L$(top_builddir)/mpblas/reference -lmpblas_binary80
+binary80_opt_libdepends = -L$(top_builddir)/mpblas/optimized/binary80 -lmpblas_binary80_opt
 
-Cgemm__Float64x_SOURCES = Cgemm__Float64x.cpp
-Cgemm__Float64x_CXXFLAGS = $(_Float64x_cxxflags)
-Cgemm__Float64x_LDFLAGS = $(_Float64x_libdepends)
+Cgemm_binary80_SOURCES = Cgemm_binary80.cpp
+Cgemm_binary80_CXXFLAGS = $(binary80_cxxflags)
+Cgemm_binary80_LDFLAGS = $(binary80_libdepends)
 
-Rgemm__Float64x_SOURCES = Rgemm__Float64x.cpp
-Rgemm__Float64x_CXXFLAGS = $(_Float64x_cxxflags)
-Rgemm__Float64x_LDFLAGS = $(_Float64x_libdepends)
+Rgemm_binary80_SOURCES = Rgemm_binary80.cpp
+Rgemm_binary80_CXXFLAGS = $(binary80_cxxflags)
+Rgemm_binary80_LDFLAGS = $(binary80_libdepends)
 
-Cgemm__Float64x_opt_SOURCES = Cgemm__Float64x.cpp
-Cgemm__Float64x_opt_CXXFLAGS = $(_Float64x_cxxflags)
-Cgemm__Float64x_opt_LDFLAGS = $(_Float64x_opt_libdepends)
+Cgemm_binary80_opt_SOURCES = Cgemm_binary80.cpp
+Cgemm_binary80_opt_CXXFLAGS = $(binary80_cxxflags)
+Cgemm_binary80_opt_LDFLAGS = $(binary80_opt_libdepends)
 
-Rgemm__Float64x_opt_SOURCES = Rgemm__Float64x.cpp
-Rgemm__Float64x_opt_CXXFLAGS = $(_Float64x_cxxflags)
-Rgemm__Float64x_opt_LDFLAGS = $(_Float64x_opt_libdepends)
+Rgemm_binary80_opt_SOURCES = Rgemm_binary80.cpp
+Rgemm_binary80_opt_CXXFLAGS = $(binary80_cxxflags)
+Rgemm_binary80_opt_LDFLAGS = $(binary80_opt_libdepends)
 
 endif
 
 if ENABLE_DOUBLE
 mpblasexamples_PROGRAMS += Cgemm_double Rgemm_double Cgemm_double_opt Rgemm_double_opt
 
-double_cxxflags = $(OPENMP_CXXFLAGS)
+double_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include
 double_libdepends = -L$(top_builddir)/mpblas/reference -lmpblas_double
 double_opt_libdepends = -L$(top_builddir)/mpblas/optimized/double -lmpblas_double_opt
 
@@ -182,10 +183,61 @@ endif
 
 mpblasexamplesdir=$(prefix)/share/examples/mpblas/
 
-mpblasexamples_DATA = Cgemm_mpfr.cpp Cgemm_gmp.cpp Cgemm__Float128.cpp Cgemm__Float64x.cpp Cgemm_double.cpp Cgemm_dd.cpp Cgemm_qd.cpp Rgemm_mpfr.cpp Rgemm_gmp.cpp Rgemm__Float128.cpp Rgemm__Float64x.cpp Rgemm_double.cpp Rgemm_dd.cpp Rgemm_qd.cpp \
+mpblasexamples_DATA = Cgemm_mpfr.cpp Cgemm_gmp.cpp Cgemm_binary128.cpp Cgemm_binary80.cpp Cgemm_double.cpp Cgemm_dd.cpp Cgemm_qd.cpp Rgemm_mpfr.cpp Rgemm_gmp.cpp Rgemm_binary128.cpp Rgemm_binary80.cpp Rgemm_double.cpp Rgemm_dd.cpp Rgemm_qd.cpp \
 Makefile.freebsd Makefile.linux Makefile.linux_cuda Makefile.macos Makefile.mingw
 
 install-data-hook:
 if IS_MACOS
-	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mpblasexamplesdir) $(prefix)
+	bash $(top_srcdir)/misc/fix_dylib_macOS.sh $(mpblasexamplesdir) $(prefix)
 endif
+
+EXTRA_DIST = \
+	Makefile.freebsd.in \
+	Makefile.linux.in \
+	Makefile.linux_cuda.in \
+	Makefile.macos.in \
+	Makefile.mingw.in
+
+GENERATED_MAKEFILES = \
+	Makefile.freebsd \
+	Makefile.linux \
+	Makefile.linux_cuda \
+	Makefile.macos \
+	Makefile.mingw
+
+# Resolve %%LIBQUADMATH%% based on whether quadmath backend is selected.
+if MPLAPACK_BINARY128_MODE_QUADMATH
+LIBQUADMATH_SUBST = -lquadmath
+else
+LIBQUADMATH_SUBST =
+endif
+
+if MPLAPACK_BINARY128_MODE_QUADMATH
+MPLAPACK_SED_SUBST = \
+        -e 's|%%MPLAPACKDIR%%|$(prefix)|g' \
+        -e 's|%%LIBQUADMATH%%| -lquadmath|g'
+else
+MPLAPACK_SED_SUBST = \
+        -e 's|%%MPLAPACKDIR%%|$(prefix)|g' \
+        -e 's|%%LIBQUADMATH%%||g'
+endif
+
+Makefile.freebsd: Makefile.freebsd.in
+	sed $(MPLAPACK_SED_SUBST) $< > $@
+
+Makefile.linux: Makefile.linux.in
+	sed $(MPLAPACK_SED_SUBST) $< > $@
+
+Makefile.linux_cuda: Makefile.linux_cuda.in
+	sed $(MPLAPACK_SED_SUBST) $< > $@
+
+Makefile.macos: Makefile.macos.in
+	sed $(MPLAPACK_SED_SUBST) $< > $@
+
+Makefile.mingw: Makefile.mingw.in
+	sed $(MPLAPACK_SED_SUBST) $< > $@
+
+all-local: $(GENERATED_MAKEFILES)
+
+clean-local:
+	rm -f $(GENERATED_MAKEFILES)

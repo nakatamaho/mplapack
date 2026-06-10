@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,33 +26,17 @@
  *
  */
 
+// Derived from LAPACK routine ZSYTRS_3.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Csytrs_3(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *e, INTEGER *ipiv, COMPLEX *b, INTEGER const ldb, INTEGER &info) {
-    //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     info = 0;
     bool upper = Mlsame(uplo, "U");
@@ -72,7 +56,7 @@ void Csytrs_3(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a,
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0 || nrhs == 0) {
         return;
@@ -91,18 +75,18 @@ void Csytrs_3(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a,
     COMPLEX bk = 0.0;
     if (upper) {
         //
-        //        Begin Upper
+        // Begin Upper
         //
-        //        Solve A*X = B, where A = U*D*U**T.
+        // Solve A*X = B, where A = U*D*U**T.
         //
-        //        P**T * B
+        // P**T * B
         //
-        //        Interchange rows K and IPIV(K) of matrix B in the same order
-        //        that the formation order of IPIV(I) vector for Upper case.
+        // Interchange rows K and IPIV(K) of matrix B in the same order
+        // that the formation order of IPIV(I) vector for Upper case.
         //
-        //        (We can do the simple loop over IPIV with decrement -1,
-        //        since the ABS value of IPIV(I) represents the row index
-        //        of the interchange with row i in both 1x1 and 2x2 pivot cases)
+        // (We can do the simple loop over IPIV with decrement -1,
+        // since the ABS value of IPIV(I) represents the row index
+        // of the interchange with row i in both 1x1 and 2x2 pivot cases)
         //
         for (k = n; k >= 1; k = k - 1) {
             kp = abs(ipiv[k - 1]);
@@ -111,11 +95,11 @@ void Csytrs_3(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a,
             }
         }
         //
-        //        Compute (U \P**T * B) -> B    [ (U \P**T * B) ]
+        // Compute (U \P**T * B) -> B    [ (U \P**T * B) ]
         //
         Ctrsm("L", "U", "N", "U", n, nrhs, one, a, lda, b, ldb);
         //
-        //        Compute D \ B -> B   [ D \ (U \P**T * B) ]
+        // Compute D \ B -> B   [ D \ (U \P**T * B) ]
         //
         i = n;
         while (i >= 1) {
@@ -137,18 +121,18 @@ void Csytrs_3(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a,
             i = i - 1;
         }
         //
-        //        Compute (U**T \ B) -> B   [ U**T \ (D \ (U \P**T * B) ) ]
+        // Compute (U**T \ B) -> B   [ U**T \ (D \ (U \P**T * B) ) ]
         //
         Ctrsm("L", "U", "T", "U", n, nrhs, one, a, lda, b, ldb);
         //
-        //        P * B  [ P * (U**T \ (D \ (U \P**T * B) )) ]
+        // P * B  [ P * (U**T \ (D \ (U \P**T * B) )) ]
         //
-        //        Interchange rows K and IPIV(K) of matrix B in reverse order
-        //        from the formation order of IPIV(I) vector for Upper case.
+        // Interchange rows K and IPIV(K) of matrix B in reverse order
+        // from the formation order of IPIV(I) vector for Upper case.
         //
-        //        (We can do the simple loop over IPIV with increment 1,
-        //        since the ABS value of IPIV(I) represents the row index
-        //        of the interchange with row i in both 1x1 and 2x2 pivot cases)
+        // (We can do the simple loop over IPIV with increment 1,
+        // since the ABS value of IPIV(I) represents the row index
+        // of the interchange with row i in both 1x1 and 2x2 pivot cases)
         //
         for (k = 1; k <= n; k = k + 1) {
             kp = abs(ipiv[k - 1]);
@@ -159,17 +143,17 @@ void Csytrs_3(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a,
         //
     } else {
         //
-        //        Begin Lower
+        // Begin Lower
         //
-        //        Solve A*X = B, where A = L*D*L**T.
+        // Solve A*X = B, where A = L*D*L**T.
         //
-        //        P**T * B
-        //        Interchange rows K and IPIV(K) of matrix B in the same order
-        //        that the formation order of IPIV(I) vector for Lower case.
+        // P**T * B
+        // Interchange rows K and IPIV(K) of matrix B in the same order
+        // that the formation order of IPIV(I) vector for Lower case.
         //
-        //        (We can do the simple loop over IPIV with increment 1,
-        //        since the ABS value of IPIV(I) represents the row index
-        //        of the interchange with row i in both 1x1 and 2x2 pivot cases)
+        // (We can do the simple loop over IPIV with increment 1,
+        // since the ABS value of IPIV(I) represents the row index
+        // of the interchange with row i in both 1x1 and 2x2 pivot cases)
         //
         for (k = 1; k <= n; k = k + 1) {
             kp = abs(ipiv[k - 1]);
@@ -178,11 +162,11 @@ void Csytrs_3(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a,
             }
         }
         //
-        //        Compute (L \P**T * B) -> B    [ (L \P**T * B) ]
+        // Compute (L \P**T * B) -> B    [ (L \P**T * B) ]
         //
         Ctrsm("L", "L", "N", "U", n, nrhs, one, a, lda, b, ldb);
         //
-        //        Compute D \ B -> B   [ D \ (L \P**T * B) ]
+        // Compute D \ B -> B   [ D \ (L \P**T * B) ]
         //
         i = 1;
         while (i <= n) {
@@ -204,18 +188,18 @@ void Csytrs_3(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a,
             i++;
         }
         //
-        //        Compute (L**T \ B) -> B   [ L**T \ (D \ (L \P**T * B) ) ]
+        // Compute (L**T \ B) -> B   [ L**T \ (D \ (L \P**T * B) ) ]
         //
         Ctrsm("L", "L", "T", "U", n, nrhs, one, a, lda, b, ldb);
         //
-        //        P * B  [ P * (L**T \ (D \ (L \P**T * B) )) ]
+        // P * B  [ P * (L**T \ (D \ (L \P**T * B) )) ]
         //
-        //        Interchange rows K and IPIV(K) of matrix B in reverse order
-        //        from the formation order of IPIV(I) vector for Lower case.
+        // Interchange rows K and IPIV(K) of matrix B in reverse order
+        // from the formation order of IPIV(I) vector for Lower case.
         //
-        //        (We can do the simple loop over IPIV with decrement -1,
-        //        since the ABS value of IPIV(I) represents the row index
-        //        of the interchange with row i in both 1x1 and 2x2 pivot cases)
+        // (We can do the simple loop over IPIV with decrement -1,
+        // since the ABS value of IPIV(I) represents the row index
+        // of the interchange with row i in both 1x1 and 2x2 pivot cases)
         //
         for (k = n; k >= 1; k = k - 1) {
             kp = abs(ipiv[k - 1]);
@@ -224,10 +208,10 @@ void Csytrs_3(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a,
             }
         }
         //
-        //        END Lower
+        // END Lower
         //
     }
     //
-    //     End of Csytrs_3
+    // End of Csytrs_3
     //
 }

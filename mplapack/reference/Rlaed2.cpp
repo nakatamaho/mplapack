@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,10 +26,17 @@
  *
  */
 
+// Derived from LAPACK routine DLAED2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlaed2(INTEGER &k, INTEGER const n, INTEGER const n1, REAL *d, REAL *q, INTEGER const ldq, INTEGER *indxq, REAL &rho, REAL *z, REAL *dlamda, REAL *w, REAL *q2, INTEGER *indx, INTEGER *indxc, INTEGER *indxp, INTEGER *coltyp, INTEGER &info) {
+void Rlaed2(INTEGER &k, INTEGER const n, INTEGER const n1, REAL *d, REAL *q, INTEGER const ldq, INTEGER *indxq, REAL &rho, REAL *z, REAL *dlambda, REAL *w, REAL *q2, INTEGER *indx, INTEGER *indxc, INTEGER *indxp, INTEGER *coltyp, INTEGER &info) {
     INTEGER n2 = 0;
     INTEGER n1p1 = 0;
     const REAL zero = 0.0;
@@ -57,32 +64,7 @@ void Rlaed2(INTEGER &k, INTEGER const n, INTEGER const n1, REAL *d, REAL *q, INT
     INTEGER js = 0;
     INTEGER iq1 = 0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     //
@@ -98,7 +80,7 @@ void Rlaed2(INTEGER &k, INTEGER const n, INTEGER const n1, REAL *d, REAL *q, INT
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
@@ -111,42 +93,42 @@ void Rlaed2(INTEGER &k, INTEGER const n, INTEGER const n1, REAL *d, REAL *q, INT
         Rscal(n2, mone, &z[n1p1 - 1], 1);
     }
     //
-    //     Normalize z so that norm(z) = 1.  Since z is the concatenation of
-    //     two normalized vectors, norm2(z) = sqrt(2).
+    // Normalize z so that norm(z) = 1.  Since z is the concatenation of
+    // two normalized vectors, norm2(z) = sqrt(2).
     //
     t = one / sqrt(two);
     Rscal(n, t, z, 1);
     //
-    //     RHO = ABS( norm(z)**2 * RHO )
+    // RHO = ABS( norm(z)**2 * RHO )
     //
     rho = abs(two * rho);
     //
-    //     Sort the eigenvalues into increasing order
+    // Sort the eigenvalues into increasing order
     //
     for (i = n1p1; i <= n; i = i + 1) {
         indxq[i - 1] += n1;
     }
     //
-    //     re-integrate the deflated parts from the last pass
+    // re-integrate the deflated parts from the last pass
     //
     for (i = 1; i <= n; i = i + 1) {
-        dlamda[i - 1] = d[indxq[i - 1] - 1];
+        dlambda[i - 1] = d[indxq[i - 1] - 1];
     }
-    Rlamrg(n1, n2, dlamda, 1, 1, indxc);
+    Rlamrg(n1, n2, dlambda, 1, 1, indxc);
     for (i = 1; i <= n; i = i + 1) {
         indx[i - 1] = indxq[indxc[i - 1] - 1];
     }
     //
-    //     Calculate the allowable deflation tolerance
+    // Calculate the allowable deflation tolerance
     //
     imax = iRamax(n, z, 1);
     jmax = iRamax(n, d, 1);
     eps = Rlamch("Epsilon");
     tol = eight * eps * max(abs(d[jmax - 1]), abs(z[imax - 1]));
     //
-    //     If the rank-1 modifier is small enough, no more needs to be done
-    //     except to reorganize Q so that its columns correspond with the
-    //     elements in D.
+    // If the rank-1 modifier is small enough, no more needs to be done
+    // except to reorganize Q so that its columns correspond with the
+    // elements in D.
     //
     if (rho * abs(z[imax - 1]) <= tol) {
         k = 0;
@@ -154,19 +136,19 @@ void Rlaed2(INTEGER &k, INTEGER const n, INTEGER const n1, REAL *d, REAL *q, INT
         for (j = 1; j <= n; j = j + 1) {
             i = indx[j - 1];
             Rcopy(n, &q[(i - 1) * ldq], 1, &q2[iq2 - 1], 1);
-            dlamda[j - 1] = d[i - 1];
+            dlambda[j - 1] = d[i - 1];
             iq2 += n;
         }
         Rlacpy("A", n, n, q2, n, q, ldq);
-        Rcopy(n, dlamda, 1, d, 1);
+        Rcopy(n, dlambda, 1, d, 1);
         goto statement_190;
     }
     //
-    //     If there are multiple eigenvalues then the problem deflates.  Here
-    //     the number of equal eigenvalues are found.  As each equal
-    //     eigenvalue is found, an elementary reflector is computed to rotate
-    //     the corresponding eigensubspace so that the corresponding
-    //     components of Z are zero in this new basis.
+    // If there are multiple eigenvalues then the problem deflates.  Here
+    // the number of equal eigenvalues are found.  As each equal
+    // eigenvalue is found, an elementary reflector is computed to rotate
+    // the corresponding eigensubspace so that the corresponding
+    // components of Z are zero in this new basis.
     //
     for (i = 1; i <= n1; i = i + 1) {
         coltyp[i - 1] = 1;
@@ -181,7 +163,7 @@ void Rlaed2(INTEGER &k, INTEGER const n, INTEGER const n1, REAL *d, REAL *q, INT
         nj = indx[j - 1];
         if (rho * abs(z[nj - 1]) <= tol) {
             //
-            //           Deflate due to small z component.
+            // Deflate due to small z component.
             //
             k2 = k2 - 1;
             coltyp[nj - 1] = 4;
@@ -202,20 +184,20 @@ statement_80:
     }
     if (rho * abs(z[nj - 1]) <= tol) {
         //
-        //        Deflate due to small z component.
+        // Deflate due to small z component.
         //
         k2 = k2 - 1;
         coltyp[nj - 1] = 4;
         indxp[k2 - 1] = nj;
     } else {
         //
-        //        Check if eigenvalues are close enough to allow deflation.
+        // Check if eigenvalues are close enough to allow deflation.
         //
         s = z[pj - 1];
         c = z[nj - 1];
         //
-        //        Find sqrt(a**2+b**2) without overflow or
-        //        destructive underflow.
+        // Find sqrt(a**2+b**2) without overflow or
+        // destructive underflow.
         //
         tau = Rlapy2(c, s);
         t = d[nj - 1] - d[pj - 1];
@@ -223,7 +205,7 @@ statement_80:
         s = -s / tau;
         if (abs(t * c * s) <= tol) {
             //
-            //           Deflation is possible.
+            // Deflation is possible.
             //
             z[nj - 1] = tau;
             z[pj - 1] = zero;
@@ -239,7 +221,7 @@ statement_80:
             i = 1;
         statement_90:
             if (k2 + i <= n) {
-                if (d[pj - 1] < d[(indxp[(k2 + i) - 1]) - 1]) {
+                if (d[pj - 1] < d[indxp[(k2 + i) - 1] - 1]) {
                     indxp[(k2 + i - 1) - 1] = indxp[(k2 + i) - 1];
                     indxp[(k2 + i) - 1] = pj;
                     i++;
@@ -253,7 +235,7 @@ statement_80:
             pj = nj;
         } else {
             k++;
-            dlamda[k - 1] = d[pj - 1];
+            dlambda[k - 1] = d[pj - 1];
             w[k - 1] = z[pj - 1];
             indxp[k - 1] = pj;
             pj = nj;
@@ -262,17 +244,17 @@ statement_80:
     goto statement_80;
 statement_100:
     //
-    //     Record the last eigenvalue.
+    // Record the last eigenvalue.
     //
     k++;
-    dlamda[k - 1] = d[pj - 1];
+    dlambda[k - 1] = d[pj - 1];
     w[k - 1] = z[pj - 1];
     indxp[k - 1] = pj;
     //
-    //     Count up the total number of the various types of columns, then
-    //     form a permutation which positions the four column types into
-    //     four uniform groups (although one or more of these groups may be
-    //     empty).
+    // Count up the total number of the various types of columns, then
+    // form a permutation which positions the four column types into
+    // four uniform groups (although one or more of these groups may be
+    // empty).
     //
     for (j = 1; j <= 4; j = j + 1) {
         ctot[j - 1] = 0;
@@ -282,7 +264,7 @@ statement_100:
         ctot[ct - 1]++;
     }
     //
-    //     PSM(*) = Position in SubMatrix (of types 1 through 4)
+    // PSM(*) = Position in SubMatrix (of types 1 through 4)
     //
     psm[1 - 1] = 1;
     psm[2 - 1] = 1 + ctot[1 - 1];
@@ -290,9 +272,9 @@ statement_100:
     psm[4 - 1] = psm[3 - 1] + ctot[3 - 1];
     k = n - ctot[4 - 1];
     //
-    //     Fill out the INDXC array so that the permutation which it induces
-    //     will place all type-1 columns first, all type-2 columns next,
-    //     then all type-3's, and finally all type-4's.
+    // Fill out the INDXC array so that the permutation which it induces
+    // will place all type-1 columns first, all type-2 columns next,
+    // then all type-3's, and finally all type-4's.
     //
     for (j = 1; j <= n; j = j + 1) {
         js = indxp[j - 1];
@@ -302,10 +284,10 @@ statement_100:
         psm[ct - 1]++;
     }
     //
-    //     Sort the eigenvalues and corresponding eigenvectors into DLAMDA
-    //     and Q2 respectively.  The eigenvalues/vectors which were not
-    //     deflated go into the first K slots of DLAMDA and Q2 respectively,
-    //     while those which were deflated go into the last N - K slots.
+    // Sort the eigenvalues and corresponding eigenvectors into DLAMBDA
+    // and Q2 respectively.  The eigenvalues/vectors which were not
+    // deflated go into the first K slots of DLAMBDA and Q2 respectively,
+    // while those which were deflated go into the last N - K slots.
     //
     i = 1;
     iq1 = 1;
@@ -345,15 +327,15 @@ statement_100:
         i++;
     }
     //
-    //     The deflated eigenvalues and their corresponding vectors go back
-    //     into the last N - K slots of D and Q respectively.
+    // The deflated eigenvalues and their corresponding vectors go back
+    // into the last N - K slots of D and Q respectively.
     //
     if (k < n) {
         Rlacpy("A", n, ctot[4 - 1], &q2[iq1 - 1], n, &q[((k + 1) - 1) * ldq], ldq);
         Rcopy(n - k, &z[(k + 1) - 1], 1, &d[(k + 1) - 1], 1);
     }
     //
-    //     Copy CTOT into COLTYP for referencing in Rlaed3.
+    // Copy CTOT into COLTYP for referencing in Rlaed3.
     //
     for (j = 1; j <= 4; j = j + 1) {
         coltyp[j - 1] = ctot[j - 1];
@@ -361,6 +343,6 @@ statement_100:
 //
 statement_190:;
     //
-    //     End of Rlaed2
+    // End of Rlaed2
     //
 }

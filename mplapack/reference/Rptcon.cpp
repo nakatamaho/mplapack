@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,35 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DPTCON.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rptcon(INTEGER const n, REAL *d, REAL *e, REAL const anorm, REAL &rcond, REAL *work, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input arguments.
+    // Test the input arguments.
     //
     info = 0;
     const REAL zero = 0.0;
@@ -68,7 +52,7 @@ void Rptcon(INTEGER const n, REAL *d, REAL *e, REAL const anorm, REAL &rcond, RE
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     rcond = zero;
     const REAL one = 1.0;
@@ -79,7 +63,7 @@ void Rptcon(INTEGER const n, REAL *d, REAL *e, REAL const anorm, REAL &rcond, RE
         return;
     }
     //
-    //     Check that D(1:N) is positive.
+    // Check that D(1:N) is positive.
     //
     INTEGER i = 0;
     for (i = 1; i <= n; i = i + 1) {
@@ -88,38 +72,38 @@ void Rptcon(INTEGER const n, REAL *d, REAL *e, REAL const anorm, REAL &rcond, RE
         }
     }
     //
-    //     Solve M(A) * x = e, where M(A) = (m(i,j)) is given by
+    // Solve M(A) * x = e, where M(A) = (m(i,j)) is given by
     //
-    //        m(i,j) =  abs(A(i,j)), i = j,
-    //        m(i,j) = -abs(A(i,j)), i .ne. j,
+    // m(i,j) =  abs(A(i,j)), i = j,
+    // m(i,j) = -abs(A(i,j)), i .ne. j,
     //
-    //     and e = [ 1, 1, ..., 1 ]**T.  Note M(A) = M(L)*D*M(L)**T.
+    // and e = [ 1, 1, ..., 1 ]**T.  Note M(A) = M(L)*D*M(L)**T.
     //
-    //     Solve M(L) * x = e.
+    // Solve M(L) * x = e.
     //
     work[1 - 1] = one;
     for (i = 2; i <= n; i = i + 1) {
         work[i - 1] = one + work[(i - 1) - 1] * abs(e[(i - 1) - 1]);
     }
     //
-    //     Solve D * M(L)**T * x = b.
+    // Solve D * M(L)**T * x = b.
     //
     work[n - 1] = work[n - 1] / d[n - 1];
     for (i = n - 1; i >= 1; i = i - 1) {
         work[i - 1] = work[i - 1] / d[i - 1] + work[(i + 1) - 1] * abs(e[i - 1]);
     }
     //
-    //     Compute AINVNM = max(x(i)), 1<=i<=n.
+    // Compute AINVNM = max(x(i)), 1<=i<=n.
     //
     INTEGER ix = iRamax(n, work, 1);
     REAL ainvnm = abs(work[ix - 1]);
     //
-    //     Compute the reciprocal condition number.
+    // Compute the reciprocal condition number.
     //
     if (ainvnm != zero) {
         rcond = (one / ainvnm) / anorm;
     }
     //
-    //     End of Rptcon
+    // End of Rptcon
     //
 }

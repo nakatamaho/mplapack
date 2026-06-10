@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,41 +26,25 @@
  *
  */
 
+// Derived from LAPACK routine DORMR2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rormr2(const char *side, const char *trans, INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, INTEGER const lda, REAL *tau, REAL *c, INTEGER const ldc, REAL *work, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     bool left = Mlsame(side, "L");
     bool notran = Mlsame(trans, "N");
     //
-    //     NQ is the order of Q
+    // NQ is the order of Q
     //
     INTEGER nq = 0;
     if (left) {
@@ -88,7 +72,7 @@ void Rormr2(const char *side, const char *trans, INTEGER const m, INTEGER const 
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (m == 0 || n == 0 || k == 0) {
         return;
@@ -118,20 +102,20 @@ void Rormr2(const char *side, const char *trans, INTEGER const m, INTEGER const 
     INTEGER i = 0;
     REAL aii = 0.0;
     const REAL one = 1.0;
-    for (i = i1; i3 >= 0 ? i <= i2 : i >= i2; i = i + i3) {
+    for (i = i1; i3 > 0 ? i <= i2 : i >= i2; i = i + i3) {
         if (left) {
             //
-            //           H(i) is applied to C(1:m-k+i,1:n)
+            // H(i) is applied to C(1:m-k+i,1:n)
             //
             mi = m - k + i;
         } else {
             //
-            //           H(i) is applied to C(1:m,1:n-k+i)
+            // H(i) is applied to C(1:m,1:n-k+i)
             //
             ni = n - k + i;
         }
         //
-        //        Apply H(i)
+        // Apply H(i)
         //
         aii = a[(i - 1) + ((nq - k + i) - 1) * lda];
         a[(i - 1) + ((nq - k + i) - 1) * lda] = one;
@@ -139,6 +123,6 @@ void Rormr2(const char *side, const char *trans, INTEGER const m, INTEGER const 
         a[(i - 1) + ((nq - k + i) - 1) * lda] = aii;
     }
     //
-    //     End of Rormr2
+    // End of Rormr2
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DLAROT.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -33,7 +40,7 @@
 
 void Rlarot(bool const lrows, bool const lleft, bool const lright, INTEGER const nl, REAL const c, REAL const s, REAL *a, INTEGER const lda, REAL &xleft, REAL &xright) {
     //
-    //     Set up indices, arrays for ends
+    // Set up indices, arrays for ends
     //
     INTEGER iinc = 0;
     INTEGER inext = 0;
@@ -70,7 +77,7 @@ void Rlarot(bool const lrows, bool const lleft, bool const lright, INTEGER const
         yt[nt - 1] = a[iyt - 1];
     }
     //
-    //     Check for errors
+    // Check for errors
     //
     if (nl < nt) {
         Mxerbla("Rlarot", 4);
@@ -81,12 +88,12 @@ void Rlarot(bool const lrows, bool const lleft, bool const lright, INTEGER const
         return;
     }
     //
-    //     Rotate
+    // Rotate
     //
     Rrot(nl - nt, &a[ix - 1], iinc, &a[iy - 1], iinc, c, s);
     Rrot(nt, xt, 1, yt, 1, c, s);
     //
-    //     Stuff values back into XLEFT, XRIGHT, etc.
+    // Stuff values back into XLEFT, XRIGHT, etc.
     //
     if (lleft) {
         a[1 - 1] = xt[1 - 1];
@@ -98,6 +105,6 @@ void Rlarot(bool const lrows, bool const lleft, bool const lright, INTEGER const
         a[iyt - 1] = yt[nt - 1];
     }
     //
-    //     End of Rlarot
+    // End of Rlarot
     //
 }

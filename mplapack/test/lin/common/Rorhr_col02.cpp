@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DORHR_COL02.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -35,128 +42,142 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-
-#include <mplapack_debug.h>
+#include <memory>
 
 void Rorhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER const nb1, INTEGER const nb2, REAL *result) {
+    static INTEGER iseed[4] = {1988, 1989, 1990, 1991};
+    // TEST MATRICES WITH HALF OF MATRIX BEING ZEROS
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     .. Return values ..
-    //
-    //  =====================================================================
-    //
-    //     ..
-    //     .. Local allocatable arrays
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Data statements ..
-    //
-    //     TEST MATRICES WITH HALF OF MATRIX BEING ZEROS
-    //
-    INTEGER iseed[4] = {1988, 1989, 1990, 1991};
     bool testzeros = false;
     //
     REAL eps = Rlamch("Epsilon");
     INTEGER k = min(m, n);
-    INTEGER l = max({m, n, (INTEGER)1});
+    INTEGER l = max(m, n, (INTEGER)1);
     //
-    //     Dynamically allocate local arrays
+    // Dynamically allocate local arrays
     //
-    //     Put random numbers into A and copy to AF
+    std::unique_ptr<REAL[]> a_storage;
+    REAL *a = nullptr;
+    a_storage = std::make_unique<REAL[]>(max((INTEGER)1, m * n));
+    a = a_storage.get();
+    std::unique_ptr<REAL[]> af_storage;
+    REAL *af = nullptr;
+    af_storage = std::make_unique<REAL[]>(max((INTEGER)1, m * n));
+    af = af_storage.get();
+    std::unique_ptr<REAL[]> q_storage;
+    REAL *q = nullptr;
+    q_storage = std::make_unique<REAL[]>(max((INTEGER)1, l * l));
+    q = q_storage.get();
+    std::unique_ptr<REAL[]> r_storage;
+    REAL *r = nullptr;
+    r_storage = std::make_unique<REAL[]>(max((INTEGER)1, m * l));
+    r = r_storage.get();
+    std::unique_ptr<REAL[]> rwork_storage;
+    REAL *rwork = nullptr;
+    rwork_storage = std::make_unique<REAL[]>(max((INTEGER)1, l));
+    rwork = rwork_storage.get();
+    std::unique_ptr<REAL[]> c_storage;
+    REAL *c = nullptr;
+    c_storage = std::make_unique<REAL[]>(max((INTEGER)1, m * n));
+    c = c_storage.get();
+    std::unique_ptr<REAL[]> cf_storage;
+    REAL *cf = nullptr;
+    cf_storage = std::make_unique<REAL[]>(max((INTEGER)1, m * n));
+    cf = cf_storage.get();
+    std::unique_ptr<REAL[]> d_storage;
+    REAL *d = nullptr;
+    d_storage = std::make_unique<REAL[]>(max((INTEGER)1, n * m));
+    d = d_storage.get();
+    std::unique_ptr<REAL[]> df_storage;
+    REAL *df = nullptr;
+    df_storage = std::make_unique<REAL[]>(max((INTEGER)1, n * m));
+    df = df_storage.get();
+    //
+    // Put random numbers into A and copy to AF
     //
     INTEGER j = 0;
-    REAL *a = new REAL[m * n];
-    INTEGER lda = m;
     for (j = 1; j <= n; j = j + 1) {
-        Rlarnv(2, iseed, m, &a[(j - 1) * lda]);
+        Rlarnv(2, iseed, m, &a[(j - 1) * m]);
     }
     if (testzeros) {
         if (m >= 4) {
             for (j = 1; j <= n; j = j + 1) {
-                Rlarnv(2, iseed, m / 2, &a[((m / 4) - 1) + (j - 1) * lda]);
+                Rlarnv(2, iseed, m / 2, &a[((m / 4) - 1) + (j - 1) * m]);
             }
         }
     }
-    REAL *af = new REAL[m * n];
-    INTEGER ldaf = m;
     Rlacpy("Full", m, n, a, m, af, m);
     //
-    //     Number of row blocks in Rlatsqr
+    // Number of row blocks in Rlatsqr
     //
-    INTEGER nrb = max((INTEGER)1, castINTEGER(ceil(castREAL(m - n) / castREAL(mb1 - n))));
+    INTEGER nrb = max((INTEGER)1, iceil(castREAL(m - n) / castREAL(mb1 - n)));
     //
-    //     Begin determine LWORK for the array WORK and allocate memory.
+    std::unique_ptr<REAL[]> t1_storage;
+    REAL *t1 = nullptr;
+    t1_storage = std::make_unique<REAL[]>(max((INTEGER)1, nb1 * (n * nrb)));
+    t1 = t1_storage.get();
+    std::unique_ptr<REAL[]> t2_storage;
+    REAL *t2 = nullptr;
+    t2_storage = std::make_unique<REAL[]>(max((INTEGER)1, nb2 * n));
+    t2 = t2_storage.get();
+    std::unique_ptr<REAL[]> diag_storage;
+    REAL *diag = nullptr;
+    diag_storage = std::make_unique<REAL[]>(max((INTEGER)1, n));
+    diag = diag_storage.get();
     //
-    //     Rgemqrt requires NB2 to be bounded by N.
+    // Begin determine LWORK for the array WORK and allocate memory.
+    //
+    // Rgemqrt requires NB2 to be bounded by N.
     //
     INTEGER nb2_ub = min(nb2, n);
     //
-    REAL *t2 = new REAL[nb2 * n];
     REAL workquery[1];
     INTEGER info = 0;
     Rgetsqrhrt(m, n, mb1, nb1, nb2, af, m, t2, nb2, workquery, -1, info);
+    //
     INTEGER lwork = castINTEGER(workquery[1 - 1]);
     //
+    // In Rgemqrt, WORK is N*NB2_UB if SIDE = 'L',
+    // or  M*NB2_UB if SIDE = 'R'.
     //
-    //     In Rgemqrt, WORK is N*NB2_UB if SIDE = 'L',
-    //                or  M*NB2_UB if SIDE = 'R'.
+    lwork = max(lwork, nb2_ub * n, nb2_ub * m);
     //
-    lwork = max({lwork, nb2_ub * n, nb2_ub * m});
-    REAL *work = new REAL[lwork];
+    std::unique_ptr<REAL[]> work_storage;
+    REAL *work = nullptr;
+    work_storage = std::make_unique<REAL[]>(max((INTEGER)1, lwork));
+    work = work_storage.get();
     //
-    //     End allocate memory for WORK.
+    // End allocate memory for WORK.
     //
-    //     Begin Householder reconstruction routines
+    // Begin Householder reconstruction routines
     //
-    //     Factor the matrix A in the array AF.
+    // Factor the matrix A in the array AF.
     //
+    srnamt = "Rgetsqrhrt";
     Rgetsqrhrt(m, n, mb1, nb1, nb2, af, m, t2, nb2, work, lwork, info);
     //
-    //     End Householder reconstruction routines.
+    // End Householder reconstruction routines.
     //
-    //     Generate the m-by-m matrix Q
+    // Generate the m-by-m matrix Q
     //
     const REAL zero = 0.0;
     const REAL one = 1.0;
-    REAL *q = new REAL[l * l];
-    INTEGER ldq = l;
     Rlaset("Full", m, m, zero, one, q, m);
-    strncpy(srnamt, "Rgemqrt", srnamt_len);
+    //
+    srnamt = "Rgemqrt";
     Rgemqrt("L", "N", m, m, k, nb2_ub, af, m, t2, nb2, q, m, work, info);
     //
-    //     Copy R
+    // Copy R
     //
-    REAL *r = new REAL[m * l];
-    INTEGER ldr = m;
     Rlaset("Full", m, n, zero, zero, r, m);
     //
     Rlacpy("Upper", m, n, af, m, r, m);
     //
-    //     TEST 1
-    //     Compute |R - (Q**T)*A| / ( eps * m * |A| ) and store in RESULT(1)
+    // TEST 1
+    // Compute |R - (Q**T)*A| / ( eps * m * |A| ) and store in RESULT(1)
     //
     Rgemm("T", "N", m, n, m, -one, q, m, a, m, one, r, m);
     //
-    REAL *rwork = new REAL[l];
     REAL anorm = Rlange("1", m, n, a, m, rwork);
     REAL resid = Rlange("1", m, n, r, m, rwork);
     if (anorm > zero) {
@@ -165,32 +186,29 @@ void Rorhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
         result[1 - 1] = zero;
     }
     //
-    //     TEST 2
-    //     Compute |I - (Q**T)*Q| / ( eps * m ) and store in RESULT(2)
+    // TEST 2
+    // Compute |I - (Q**T)*Q| / ( eps * m ) and store in RESULT(2)
     //
     Rlaset("Full", m, m, zero, one, r, m);
     Rsyrk("U", "T", m, m, -one, q, m, one, r, m);
     resid = Rlansy("1", "Upper", m, r, m, rwork);
     result[2 - 1] = resid / (eps * max((INTEGER)1, m));
     //
-    //     Generate random m-by-n matrix C
+    // Generate random m-by-n matrix C
     //
-    REAL *c = new REAL[m * n];
-    INTEGER ldc = m;
     for (j = 1; j <= n; j = j + 1) {
-        Rlarnv(2, iseed, m, &c[(j - 1) * ldc]);
+        Rlarnv(2, iseed, m, &c[(j - 1) * m]);
     }
     REAL cnorm = Rlange("1", m, n, c, m, rwork);
-    REAL *cf = new REAL[m * n];
-    INTEGER ldcf = m;
     Rlacpy("Full", m, n, c, m, cf, m);
     //
-    //     Apply Q to C as Q*C = CF
+    // Apply Q to C as Q*C = CF
     //
+    srnamt = "Rgemqrt";
     Rgemqrt("L", "N", m, n, k, nb2_ub, af, m, t2, nb2, cf, m, work, info);
     //
-    //     TEST 3
-    //     Compute |CF - Q*C| / ( eps *  m * |C| )
+    // TEST 3
+    // Compute |CF - Q*C| / ( eps *  m * |C| )
     //
     Rgemm("N", "N", m, n, m, -one, q, m, c, m, one, cf, m);
     resid = Rlange("1", m, n, cf, m, rwork);
@@ -200,16 +218,17 @@ void Rorhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
         result[3 - 1] = zero;
     }
     //
-    //     Copy C into CF again
+    // Copy C into CF again
     //
     Rlacpy("Full", m, n, c, m, cf, m);
     //
-    //     Apply Q to C as (Q**T)*C = CF
+    // Apply Q to C as (Q**T)*C = CF
     //
+    srnamt = "Rgemqrt";
     Rgemqrt("L", "T", m, n, k, nb2_ub, af, m, t2, nb2, cf, m, work, info);
     //
-    //     TEST 4
-    //     Compute |CF - (Q**T)*C| / ( eps * m * |C|)
+    // TEST 4
+    // Compute |CF - (Q**T)*C| / ( eps * m * |C|)
     //
     Rgemm("T", "N", m, n, m, -one, q, m, c, m, one, cf, m);
     resid = Rlange("1", m, n, cf, m, rwork);
@@ -219,23 +238,21 @@ void Rorhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
         result[4 - 1] = zero;
     }
     //
-    //     Generate random n-by-m matrix D and a copy DF
+    // Generate random n-by-m matrix D and a copy DF
     //
-    REAL *d = new REAL[n * m];
-    INTEGER ldd = n;
     for (j = 1; j <= m; j = j + 1) {
-        Rlarnv(2, iseed, n, &d[(j - 1) * ldd]);
+        Rlarnv(2, iseed, n, &d[(j - 1) * n]);
     }
     REAL dnorm = Rlange("1", n, m, d, n, rwork);
-    REAL *df = new REAL[n * m];
     Rlacpy("Full", n, m, d, n, df, n);
     //
-    //     Apply Q to D as D*Q = DF
+    // Apply Q to D as D*Q = DF
     //
+    srnamt = "Rgemqrt";
     Rgemqrt("R", "N", n, m, k, nb2_ub, af, m, t2, nb2, df, n, work, info);
     //
-    //     TEST 5
-    //     Compute |DF - D*Q| / ( eps * m * |D| )
+    // TEST 5
+    // Compute |DF - D*Q| / ( eps * m * |D| )
     //
     Rgemm("N", "N", n, m, m, -one, d, n, q, m, one, df, n);
     resid = Rlange("1", n, m, df, n, rwork);
@@ -245,16 +262,17 @@ void Rorhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
         result[5 - 1] = zero;
     }
     //
-    //     Copy D into DF again
+    // Copy D into DF again
     //
     Rlacpy("Full", n, m, d, n, df, n);
     //
-    //     Apply Q to D as D*QT = DF
+    // Apply Q to D as D*QT = DF
     //
+    srnamt = "Rgemqrt";
     Rgemqrt("R", "T", n, m, k, nb2_ub, af, m, t2, nb2, df, n, work, info);
     //
-    //     TEST 6
-    //     Compute |DF - D*(Q**T)| / ( eps * m * |D| )
+    // TEST 6
+    // Compute |DF - D*(Q**T)| / ( eps * m * |D| )
     //
     Rgemm("N", "T", n, m, m, -one, d, n, q, m, one, df, n);
     resid = Rlange("1", n, m, df, n, rwork);
@@ -264,20 +282,8 @@ void Rorhr_col02(INTEGER const m, INTEGER const n, INTEGER const mb1, INTEGER co
         result[6 - 1] = zero;
     }
     //
-    //     Deallocate all arrays
+    // Deallocate all arrays
     //
-    delete[] a;
-    delete[] af;
-    delete[] q;
-    delete[] r;
-    delete[] rwork;
-    delete[] work;
-    delete[] t2;
-    delete[] c;
-    delete[] d;
-    delete[] cf;
-    delete[] df;
-    //
-    //     End of Rorhr_col02
+    // End of Rorhr_col02
     //
 }

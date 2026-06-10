@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DTSQR01.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -35,103 +42,99 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
+#include <memory>
 
-#include <mplapack_debug.h>
-
-void Rtsqr01(const char *tssw, INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const nb, REAL *result) {
+void Rtsqr01(fem::str_cref tssw, INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const nb, REAL *result) {
+    static INTEGER iseed[4] = {1988, 1989, 1990, 1991};
+    // TEST TALL SKINNY OR SHORT WIDE
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    bool ts = Mlsame(tssw.elems(), "TS");
     //
-    //     .. Scalar Arguments ..
-    //     .. Return values ..
-    //
-    //  =====================================================================
-    //
-    //     ..
-    //     .. Local allocatable arrays
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Data statements ..
-    //
-    //     TEST TALL SKINNY OR SHORT WIDE
-    //
-    INTEGER iseed[] = {1988, 1989, 1990, 1991};
-    bool ts = Mlsame(tssw, "TS");
-    //
-    //     TEST MATRICES WITH HALF OF MATRIX BEING ZEROS
+    // TEST MATRICES WITH HALF OF MATRIX BEING ZEROS
     //
     bool testzeros = false;
     //
     REAL eps = Rlamch("Epsilon");
     INTEGER k = min(m, n);
-    INTEGER l = max({m, n, (INTEGER)1});
+    INTEGER l = max(m, n, (INTEGER)1);
     INTEGER mnb = max(mb, nb);
     INTEGER lwork = max((INTEGER)3, l) * mnb;
     //
-    //     Dynamically allocate local arrays
+    // Dynamically allocate local arrays
     //
-    //     Put random numbers into A and copy to AF
+    std::unique_ptr<REAL[]> a_storage;
+    REAL *a = nullptr;
+    a_storage = std::make_unique<REAL[]>(max((INTEGER)1, m * n));
+    a = a_storage.get();
+    std::unique_ptr<REAL[]> af_storage;
+    REAL *af = nullptr;
+    af_storage = std::make_unique<REAL[]>(max((INTEGER)1, m * n));
+    af = af_storage.get();
+    std::unique_ptr<REAL[]> q_storage;
+    REAL *q = nullptr;
+    q_storage = std::make_unique<REAL[]>(max((INTEGER)1, l * l));
+    q = q_storage.get();
+    std::unique_ptr<REAL[]> r_storage;
+    REAL *r = nullptr;
+    r_storage = std::make_unique<REAL[]>(max((INTEGER)1, m * l));
+    r = r_storage.get();
+    std::unique_ptr<REAL[]> rwork_storage;
+    REAL *rwork = nullptr;
+    rwork_storage = std::make_unique<REAL[]>(max((INTEGER)1, l));
+    rwork = rwork_storage.get();
+    std::unique_ptr<REAL[]> c_storage;
+    REAL *c = nullptr;
+    c_storage = std::make_unique<REAL[]>(max((INTEGER)1, m * n));
+    c = c_storage.get();
+    std::unique_ptr<REAL[]> cf_storage;
+    REAL *cf = nullptr;
+    cf_storage = std::make_unique<REAL[]>(max((INTEGER)1, m * n));
+    cf = cf_storage.get();
+    std::unique_ptr<REAL[]> d_storage;
+    REAL *d = nullptr;
+    d_storage = std::make_unique<REAL[]>(max((INTEGER)1, n * m));
+    d = d_storage.get();
+    std::unique_ptr<REAL[]> df_storage;
+    REAL *df = nullptr;
+    df_storage = std::make_unique<REAL[]>(max((INTEGER)1, n * m));
+    df = df_storage.get();
+    std::unique_ptr<REAL[]> lq_storage;
+    REAL *lq = nullptr;
+    lq_storage = std::make_unique<REAL[]>(max((INTEGER)1, l * n));
+    lq = lq_storage.get();
+    //
+    // Put random numbers into A and copy to AF
     //
     INTEGER j = 0;
-    REAL *a = new REAL[m * n];
-    INTEGER lda = m;
     for (j = 1; j <= n; j = j + 1) {
-        Rlarnv(2, iseed, m, &a[(j - 1) * lda]);
+        Rlarnv(2, iseed, m, &a[(j - 1) * m]);
     }
     if (testzeros) {
         if (m >= 4) {
             for (j = 1; j <= n; j = j + 1) {
-                Rlarnv(2, iseed, m / 2, &a[((m / 4) - 1) + (j - 1) * lda]);
+                Rlarnv(2, iseed, m / 2, &a[((m / 4) - 1) + (j - 1) * m]);
             }
         }
     }
-    REAL *af = new REAL[m * n];
-    INTEGER ldaf = m;
     Rlacpy("Full", m, n, a, m, af, m);
     //
     REAL tquery[5];
     REAL workquery[1];
     INTEGER info = 0;
     INTEGER tsize = 0;
-    REAL *cf = new REAL[m * n];
-    INTEGER ldcf = m;
-    REAL *df = new REAL[n * m];
-    INTEGER lddf = n;
-    const REAL zero = 0.0f;
-    const REAL one = 1.0f;
-    REAL *q = new REAL[l * l];
-    INTEGER ldq = l;
-    REAL *r = new REAL[m * l];
-    INTEGER ldr = m;
-    REAL *rwork = new REAL[l];
+    std::unique_ptr<REAL[]> t_storage;
+    REAL *t = nullptr;
+    std::unique_ptr<REAL[]> work_storage;
+    REAL *work = nullptr;
+    const REAL zero = 0.0;
+    const REAL one = 1.0;
     REAL anorm = 0.0;
     REAL resid = 0.0;
-    REAL *c = new REAL[m * n];
-    INTEGER ldc = m;
     REAL cnorm = 0.0;
-    REAL *d = new REAL[n * m];
-    INTEGER ldd = n;
     REAL dnorm = 0.0;
-    REAL lq[l * n];
-    REAL *t;
-    REAL *work;
     if (ts) {
         //
-        //     Factor the matrix A in the array AF.
+        // Factor the matrix A in the array AF.
         //
         Rgeqr(m, n, af, m, tquery, -1, workquery, -1, info);
         tsize = castINTEGER(tquery[1 - 1]);
@@ -146,23 +149,25 @@ void Rtsqr01(const char *tssw, INTEGER const m, INTEGER const n, INTEGER const m
         lwork = max(lwork, castINTEGER(workquery[1 - 1]));
         Rgemqr("R", "T", n, m, k, af, m, tquery, tsize, df, n, workquery, -1, info);
         lwork = max(lwork, castINTEGER(workquery[1 - 1]));
-        t = new REAL[tsize];
-        work = new REAL[lwork];
-        strncpy(srnamt, "Rgeqr", srnamt_len);
+        t_storage = std::make_unique<REAL[]>(max((INTEGER)1, tsize));
+        t = t_storage.get();
+        work_storage = std::make_unique<REAL[]>(max((INTEGER)1, lwork));
+        work = work_storage.get();
+        srnamt = "Rgeqr";
         Rgeqr(m, n, af, m, t, tsize, work, lwork, info);
         //
-        //     Generate the m-by-m matrix Q
+        // Generate the m-by-m matrix Q
         //
         Rlaset("Full", m, m, zero, one, q, m);
-        strncpy(srnamt, "Rgemqr", srnamt_len);
+        srnamt = "Rgemqr";
         Rgemqr("L", "N", m, m, k, af, m, t, tsize, q, m, work, lwork, info);
         //
-        //     Copy R
+        // Copy R
         //
         Rlaset("Full", m, n, zero, zero, r, m);
         Rlacpy("Upper", m, n, af, m, r, m);
         //
-        //     Compute |R - Q'*A| / |A| and store in RESULT(1)
+        // Compute |R - Q'*A| / |A| and store in RESULT(1)
         //
         Rgemm("T", "N", m, n, m, -one, q, m, a, m, one, r, m);
         anorm = Rlange("1", m, n, a, m, rwork);
@@ -173,27 +178,27 @@ void Rtsqr01(const char *tssw, INTEGER const m, INTEGER const n, INTEGER const m
             result[1 - 1] = zero;
         }
         //
-        //     Compute |I - Q'*Q| and store in RESULT(2)
+        // Compute |I - Q'*Q| and store in RESULT(2)
         //
         Rlaset("Full", m, m, zero, one, r, m);
         Rsyrk("U", "C", m, m, -one, q, m, one, r, m);
         resid = Rlansy("1", "Upper", m, r, m, rwork);
         result[2 - 1] = resid / (eps * max((INTEGER)1, m));
         //
-        //     Generate random m-by-n matrix C and a copy CF
+        // Generate random m-by-n matrix C and a copy CF
         //
         for (j = 1; j <= n; j = j + 1) {
-            Rlarnv(2, iseed, m, &c[(j - 1) * ldc]);
+            Rlarnv(2, iseed, m, &c[(j - 1) * m]);
         }
         cnorm = Rlange("1", m, n, c, m, rwork);
         Rlacpy("Full", m, n, c, m, cf, m);
         //
-        //     Apply Q to C as Q*C
+        // Apply Q to C as Q*C
         //
-        strncpy(srnamt, "Rgemqr", srnamt_len);
+        srnamt = "Rgemqr";
         Rgemqr("L", "N", m, n, k, af, m, t, tsize, cf, m, work, lwork, info);
         //
-        //     Compute |Q*C - Q*C| / |C|
+        // Compute |Q*C - Q*C| / |C|
         //
         Rgemm("N", "N", m, n, m, -one, q, m, c, m, one, cf, m);
         resid = Rlange("1", m, n, cf, m, rwork);
@@ -203,16 +208,16 @@ void Rtsqr01(const char *tssw, INTEGER const m, INTEGER const n, INTEGER const m
             result[3 - 1] = zero;
         }
         //
-        //     Copy C into CF again
+        // Copy C into CF again
         //
         Rlacpy("Full", m, n, c, m, cf, m);
         //
-        //     Apply Q to C as QT*C
+        // Apply Q to C as QT*C
         //
-        strncpy(srnamt, "Rgemqr", srnamt_len);
+        srnamt = "Rgemqr";
         Rgemqr("L", "T", m, n, k, af, m, t, tsize, cf, m, work, lwork, info);
         //
-        //     Compute |QT*C - QT*C| / |C|
+        // Compute |QT*C - QT*C| / |C|
         //
         Rgemm("T", "N", m, n, m, -one, q, m, c, m, one, cf, m);
         resid = Rlange("1", m, n, cf, m, rwork);
@@ -222,20 +227,20 @@ void Rtsqr01(const char *tssw, INTEGER const m, INTEGER const n, INTEGER const m
             result[4 - 1] = zero;
         }
         //
-        //     Generate random n-by-m matrix D and a copy DF
+        // Generate random n-by-m matrix D and a copy DF
         //
         for (j = 1; j <= m; j = j + 1) {
-            Rlarnv(2, iseed, n, &d[(j - 1) * ldd]);
+            Rlarnv(2, iseed, n, &d[(j - 1) * n]);
         }
         dnorm = Rlange("1", n, m, d, n, rwork);
         Rlacpy("Full", n, m, d, n, df, n);
         //
-        //     Apply Q to D as D*Q
+        // Apply Q to D as D*Q
         //
-        strncpy(srnamt, "Rgemqr", srnamt_len);
+        srnamt = "Rgemqr";
         Rgemqr("R", "N", n, m, k, af, m, t, tsize, df, n, work, lwork, info);
         //
-        //     Compute |D*Q - D*Q| / |D|
+        // Compute |D*Q - D*Q| / |D|
         //
         Rgemm("N", "N", n, m, m, -one, d, n, q, m, one, df, n);
         resid = Rlange("1", n, m, df, n, rwork);
@@ -245,15 +250,15 @@ void Rtsqr01(const char *tssw, INTEGER const m, INTEGER const n, INTEGER const m
             result[5 - 1] = zero;
         }
         //
-        //     Copy D into DF again
+        // Copy D into DF again
         //
         Rlacpy("Full", n, m, d, n, df, n);
         //
-        //     Apply Q to D as D*QT
+        // Apply Q to D as D*QT
         //
         Rgemqr("R", "T", n, m, k, af, m, t, tsize, df, n, work, lwork, info);
         //
-        //     Compute |D*QT - D*QT| / |D|
+        // Compute |D*QT - D*QT| / |D|
         //
         Rgemm("N", "T", n, m, m, -one, d, n, q, m, one, df, n);
         resid = Rlange("1", n, m, df, n, rwork);
@@ -263,7 +268,7 @@ void Rtsqr01(const char *tssw, INTEGER const m, INTEGER const n, INTEGER const m
             result[6 - 1] = zero;
         }
         //
-        //     Short and wide
+        // Short and wide
         //
     } else {
         Rgelq(m, n, af, m, tquery, -1, workquery, -1, info);
@@ -279,23 +284,25 @@ void Rtsqr01(const char *tssw, INTEGER const m, INTEGER const n, INTEGER const m
         lwork = max(lwork, castINTEGER(workquery[1 - 1]));
         Rgemlq("R", "T", m, n, k, af, m, tquery, tsize, cf, m, workquery, -1, info);
         lwork = max(lwork, castINTEGER(workquery[1 - 1]));
-        t = new REAL[tsize];
-        work = new REAL[lwork];
-        strncpy(srnamt, "Rgelq", srnamt_len);
+        t_storage = std::make_unique<REAL[]>(max((INTEGER)1, tsize));
+        t = t_storage.get();
+        work_storage = std::make_unique<REAL[]>(max((INTEGER)1, lwork));
+        work = work_storage.get();
+        srnamt = "Rgelq";
         Rgelq(m, n, af, m, t, tsize, work, lwork, info);
         //
-        //     Generate the n-by-n matrix Q
+        // Generate the n-by-n matrix Q
         //
         Rlaset("Full", n, n, zero, one, q, n);
-        strncpy(srnamt, "Rgemlq", srnamt_len);
+        srnamt = "Rgemlq";
         Rgemlq("R", "N", n, n, k, af, m, t, tsize, q, n, work, lwork, info);
         //
-        //     Copy R
+        // Copy R
         //
         Rlaset("Full", m, n, zero, zero, lq, l);
         Rlacpy("Lower", m, n, af, m, lq, l);
         //
-        //     Compute |L - A*Q'| / |A| and store in RESULT(1)
+        // Compute |L - A*Q'| / |A| and store in RESULT(1)
         //
         Rgemm("N", "T", m, n, n, -one, a, m, q, n, one, lq, l);
         anorm = Rlange("1", m, n, a, m, rwork);
@@ -306,26 +313,26 @@ void Rtsqr01(const char *tssw, INTEGER const m, INTEGER const n, INTEGER const m
             result[1 - 1] = zero;
         }
         //
-        //     Compute |I - Q'*Q| and store in RESULT(2)
+        // Compute |I - Q'*Q| and store in RESULT(2)
         //
         Rlaset("Full", n, n, zero, one, lq, l);
         Rsyrk("U", "C", n, n, -one, q, n, one, lq, l);
         resid = Rlansy("1", "Upper", n, lq, l, rwork);
         result[2 - 1] = resid / (eps * max((INTEGER)1, n));
         //
-        //     Generate random m-by-n matrix C and a copy CF
+        // Generate random m-by-n matrix C and a copy CF
         //
         for (j = 1; j <= m; j = j + 1) {
-            Rlarnv(2, iseed, n, &d[(j - 1) * ldd]);
+            Rlarnv(2, iseed, n, &d[(j - 1) * n]);
         }
         dnorm = Rlange("1", n, m, d, n, rwork);
         Rlacpy("Full", n, m, d, n, df, n);
         //
-        //     Apply Q to C as Q*C
+        // Apply Q to C as Q*C
         //
         Rgemlq("L", "N", n, m, k, af, m, t, tsize, df, n, work, lwork, info);
         //
-        //     Compute |Q*D - Q*D| / |D|
+        // Compute |Q*D - Q*D| / |D|
         //
         Rgemm("N", "N", n, m, n, -one, q, n, d, n, one, df, n);
         resid = Rlange("1", n, m, df, n, rwork);
@@ -335,15 +342,15 @@ void Rtsqr01(const char *tssw, INTEGER const m, INTEGER const n, INTEGER const m
             result[3 - 1] = zero;
         }
         //
-        //     Copy D into DF again
+        // Copy D into DF again
         //
         Rlacpy("Full", n, m, d, n, df, n);
         //
-        //     Apply Q to D as QT*D
+        // Apply Q to D as QT*D
         //
         Rgemlq("L", "T", n, m, k, af, m, t, tsize, df, n, work, lwork, info);
         //
-        //     Compute |QT*D - QT*D| / |D|
+        // Compute |QT*D - QT*D| / |D|
         //
         Rgemm("T", "N", n, m, n, -one, q, n, d, n, one, df, n);
         resid = Rlange("1", n, m, df, n, rwork);
@@ -353,19 +360,19 @@ void Rtsqr01(const char *tssw, INTEGER const m, INTEGER const n, INTEGER const m
             result[4 - 1] = zero;
         }
         //
-        //     Generate random n-by-m matrix D and a copy DF
+        // Generate random n-by-m matrix D and a copy DF
         //
         for (j = 1; j <= n; j = j + 1) {
-            Rlarnv(2, iseed, m, &c[(j - 1) * ldc]);
+            Rlarnv(2, iseed, m, &c[(j - 1) * m]);
         }
         cnorm = Rlange("1", m, n, c, m, rwork);
         Rlacpy("Full", m, n, c, m, cf, m);
         //
-        //     Apply Q to C as C*Q
+        // Apply Q to C as C*Q
         //
         Rgemlq("R", "N", m, n, k, af, m, t, tsize, cf, m, work, lwork, info);
         //
-        //     Compute |C*Q - C*Q| / |C|
+        // Compute |C*Q - C*Q| / |C|
         //
         Rgemm("N", "N", m, n, n, -one, c, m, q, n, one, cf, m);
         resid = Rlange("1", n, m, df, n, rwork);
@@ -375,15 +382,15 @@ void Rtsqr01(const char *tssw, INTEGER const m, INTEGER const n, INTEGER const m
             result[5 - 1] = zero;
         }
         //
-        //     Copy C into CF again
+        // Copy C into CF again
         //
         Rlacpy("Full", m, n, c, m, cf, m);
         //
-        //     Apply Q to D as D*QT
+        // Apply Q to D as D*QT
         //
         Rgemlq("R", "T", m, n, k, af, m, t, tsize, cf, m, work, lwork, info);
         //
-        //     Compute |C*QT - C*QT| / |C|
+        // Compute |C*QT - C*QT| / |C|
         //
         Rgemm("N", "T", m, n, n, -one, c, m, q, n, one, cf, m);
         resid = Rlange("1", m, n, cf, m, rwork);
@@ -395,18 +402,6 @@ void Rtsqr01(const char *tssw, INTEGER const m, INTEGER const n, INTEGER const m
         //
     }
     //
-    //     Deallocate all arrays
-    //
-    delete[] a;
-    delete[] af;
-    delete[] q;
-    delete[] r;
-    delete[] rwork;
-    delete[] work;
-    delete[] t;
-    delete[] c;
-    delete[] d;
-    delete[] cf;
-    delete[] df;
+    // Deallocate all arrays
     //
 }

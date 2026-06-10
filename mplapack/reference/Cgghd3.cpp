@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,16 +26,29 @@
  *
  */
 
+// Derived from LAPACK routine ZGGHD3.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Cgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const ilo, INTEGER const ihi, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX *q, INTEGER const ldq, COMPLEX *z, INTEGER const ldz, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //     Decode and test the input parameters.
+    // Decode and test the input parameters.
     //
     info = 0;
     INTEGER nb = iMlaenv(1, "Cgghd3", " ", n, ilo, ihi, -1);
-    INTEGER lwkopt = max(6 * n * nb, (INTEGER)1);
+    INTEGER nh = ihi - ilo + 1;
+    INTEGER lwkopt = 0;
+    if (nh <= 1) {
+        lwkopt = 1;
+    } else {
+        lwkopt = 6 * n * nb;
+    }
     work[1 - 1] = COMPLEX(lwkopt);
     bool initq = Mlsame(compq, "I");
     bool wantq = initq || Mlsame(compq, "V");
@@ -71,7 +84,7 @@ void Cgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
         return;
     }
     //
-    //     Initialize Q and Z if desired.
+    // Initialize Q and Z if desired.
     //
     const COMPLEX czero = COMPLEX(0.0, 0.0);
     const COMPLEX cone = COMPLEX(1.0, 0.0);
@@ -82,40 +95,39 @@ void Cgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
         Claset("All", n, n, czero, cone, z, ldz);
     }
     //
-    //     Zero out lower triangle of B.
+    // Zero out lower triangle of B.
     //
     if (n > 1) {
         Claset("Lower", n - 1, n - 1, czero, czero, &b[(2 - 1)], ldb);
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
-    INTEGER nh = ihi - ilo + 1;
     if (nh <= 1) {
         work[1 - 1] = cone;
         return;
     }
     //
-    //     Determine the blocksize.
+    // Determine the blocksize.
     //
     INTEGER nbmin = iMlaenv(2, "Cgghd3", " ", n, ilo, ihi, -1);
     INTEGER nx = 0;
     if (nb > 1 && nb < nh) {
         //
-        //        Determine when to use unblocked instead of blocked code.
+        // Determine when to use unblocked instead of blocked code.
         //
-        nx = max({nb, iMlaenv(3, "Cgghd3", " ", n, ilo, ihi, -1)});
+        nx = max(nb, iMlaenv(3, "Cgghd3", " ", n, ilo, ihi, -1));
         if (nx < nh) {
             //
-            //           Determine if workspace is large enough for blocked code.
+            // Determine if workspace is large enough for blocked code.
             //
             if (lwork < lwkopt) {
                 //
-                //              Not enough workspace to use optimal NB:  determine the
-                //              minimum value of NB, and reduce NB or force use of
-                //              unblocked code.
+                // Not enough workspace to use optimal NB:  determine the
+                // minimum value of NB, and reduce NB or force use of
+                // unblocked code.
                 //
-                nbmin = max({(INTEGER)2, iMlaenv(2, "Cgghd3", " ", n, ilo, ihi, -1)});
+                nbmin = max((INTEGER)2, iMlaenv(2, "Cgghd3", " ", n, ilo, ihi, -1));
                 if (lwork >= 6 * n * nbmin) {
                     nb = lwork / (6 * n);
                 } else {
@@ -158,24 +170,24 @@ void Cgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
     INTEGER topq = 0;
     if (nb < nbmin || nb >= nh) {
         //
-        //        Use unblocked code below
+        // Use unblocked code below
         //
         jcol = ilo;
         //
     } else {
         //
-        //        Use blocked code
+        // Use blocked code
         //
         kacc22 = iMlaenv(16, "Cgghd3", " ", n, ilo, ihi, -1);
         blk22 = kacc22 == 2;
         for (jcol = ilo; jcol <= ihi - 2; jcol = jcol + nb) {
             nnb = min(nb, ihi - jcol - 1);
             //
-            //           Initialize small unitary factors that will hold the
-            //           accumulated Givens rotations in workspace.
-            //           N2NB   denotes the number of 2*NNB-by-2*NNB factors
-            //           NBLST  denotes the (possibly smaller) order of the last
-            //                  factor.
+            // Initialize small unitary factors that will hold the
+            // accumulated Givens rotations in workspace.
+            // N2NB   denotes the number of 2*NNB-by-2*NNB factors
+            // NBLST  denotes the (possibly smaller) order of the last
+            // factor.
             //
             n2nb = (ihi - jcol - 1) / nnb - 1;
             nblst = ihi - jcol - n2nb * nnb;
@@ -186,12 +198,12 @@ void Cgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                 pw += 4 * nnb * nnb;
             }
             //
-            //           Reduce columns JCOL:JCOL+NNB-1 of A to Hessenberg form.
+            // Reduce columns JCOL:JCOL+NNB-1 of A to Hessenberg form.
             //
             for (j = jcol; j <= jcol + nnb - 1; j = j + 1) {
                 //
-                //              Reduce Jth column of A. Store cosines and sines in Jth
-                //              column of A and B, respectively.
+                // Reduce Jth column of A. Store cosines and sines in Jth
+                // column of A and B, respectively.
                 //
                 for (i = ihi; i >= j + 2; i = i - 1) {
                     temp = a[((i - 1) - 1) + (j - 1) * lda];
@@ -200,7 +212,7 @@ void Cgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                     b[(i - 1) + (j - 1) * ldb] = s;
                 }
                 //
-                //              Accumulate Givens rotations into workspace array.
+                // Accumulate Givens rotations into workspace array.
                 //
                 ppw = (nblst + 1) * (nblst - 2) - j + jcol + 1;
                 len = 2 + j - jcol;
@@ -236,8 +248,8 @@ void Cgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                     ppwo += 4 * nnb * nnb;
                 }
                 //
-                //              TOP denotes the number of top rows in A and B that will
-                //              not be updated during the next steps.
+                // TOP denotes the number of top rows in A and B that will
+                // not be updated during the next steps.
                 //
                 if (jcol <= 2) {
                     top = 0;
@@ -245,12 +257,12 @@ void Cgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                     top = jcol;
                 }
                 //
-                //              Propagate transformations through B and replace stored
-                //              left sines/cosines by right sines/cosines.
+                // Propagate transformations through B and replace stored
+                // left sines/cosines by right sines/cosines.
                 //
                 for (jj = n; jj >= j + 1; jj = jj - 1) {
                     //
-                    //                 Update JJth column of B.
+                    // Update JJth column of B.
                     //
                     for (i = min(jj + 1, ihi); i >= j + 2; i = i - 1) {
                         ctemp = a[(i - 1) + (j - 1) * lda];
@@ -260,7 +272,7 @@ void Cgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                         b[((i - 1) - 1) + (jj - 1) * ldb] = s * temp + ctemp * b[((i - 1) - 1) + (jj - 1) * ldb];
                     }
                     //
-                    //                 Annihilate B( JJ+1, JJ ).
+                    // Annihilate B( JJ+1, JJ ).
                     //
                     if (jj < ihi) {
                         temp = b[((jj + 1) - 1) + ((jj + 1) - 1) * ldb];
@@ -272,7 +284,7 @@ void Cgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                     }
                 }
                 //
-                //              Update A by transformations from right.
+                // Update A by transformations from right.
                 //
                 jj = mod(ihi - j - 1, 3);
                 for (i = ihi - j - 3; i >= jj + 1; i = i - 3) {
@@ -304,20 +316,20 @@ void Cgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                     }
                 }
                 //
-                //              Update (J+1)th column of A by transformations from left.
+                // Update (J+1)th column of A by transformations from left.
                 //
                 if (j < jcol + nnb - 1) {
                     len = 1 + j - jcol;
                     //
-                    //                 Multiply with the trailing accumulated unitary
-                    //                 matrix, which takes the form
+                    // Multiply with the trailing accumulated unitary
+                    // matrix, which takes the form
                     //
-                    //                        [  U11  U12  ]
-                    //                    U = [            ],
-                    //                        [  U21  U22  ]
+                    // [  U11  U12  ]
+                    // U = [            ],
+                    // [  U21  U22  ]
                     //
-                    //                 where U21 is a LEN-by-LEN matrix and U12 is lower
-                    //                 triangular.
+                    // where U21 is a LEN-by-LEN matrix and U12 is lower
+                    // triangular.
                     //
                     jrow = ihi - nblst + 1;
                     Cgemv("Conjugate", nblst, len, cone, work, nblst, &a[(jrow - 1) + ((j + 1) - 1) * lda], 1, czero, &work[pw - 1], 1);
@@ -334,18 +346,18 @@ void Cgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                         ppw++;
                     }
                     //
-                    //                 Multiply with the other accumulated unitary
-                    //                 matrices, which take the form
+                    // Multiply with the other accumulated unitary
+                    // matrices, which take the form
                     //
-                    //                        [  U11  U12   0  ]
-                    //                        [                ]
-                    //                    U = [  U21  U22   0  ],
-                    //                        [                ]
-                    //                        [   0    0    I  ]
+                    // [  U11  U12   0  ]
+                    // [                ]
+                    // U = [  U21  U22   0  ],
+                    // [                ]
+                    // [   0    0    I  ]
                     //
-                    //                 where I denotes the (NNB-LEN)-by-(NNB-LEN) identity
-                    //                 matrix, U21 is a LEN-by-LEN upper triangular matrix
-                    //                 and U12 is an NNB-by-NNB lower triangular matrix.
+                    // where I denotes the (NNB-LEN)-by-(NNB-LEN) identity
+                    // matrix, U21 is a LEN-by-LEN upper triangular matrix
+                    // and U12 is an NNB-by-NNB lower triangular matrix.
                     //
                     ppwo = 1 + nblst * nblst;
                     j0 = jrow - nnb;
@@ -374,7 +386,7 @@ void Cgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                 }
             }
             //
-            //           Apply accumulated unitary matrices to A.
+            // Apply accumulated unitary matrices to A.
             //
             cola = n - jcol - nnb + 1;
             j = ihi - nblst + 1;
@@ -385,19 +397,19 @@ void Cgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
             for (j = j0; j >= jcol + 1; j = j - nnb) {
                 if (blk22) {
                     //
-                    //                 Exploit the structure of
+                    // Exploit the structure of
                     //
-                    //                        [  U11  U12  ]
-                    //                    U = [            ]
-                    //                        [  U21  U22  ],
+                    // [  U11  U12  ]
+                    // U = [            ]
+                    // [  U21  U22  ],
                     //
-                    //                 where all blocks are NNB-by-NNB, U21 is upper
-                    //                 triangular and U12 is lower triangular.
+                    // where all blocks are NNB-by-NNB, U21 is upper
+                    // triangular and U12 is lower triangular.
                     //
                     Cunm22("Left", "Conjugate", 2 * nnb, cola, nnb, nnb, &work[ppwo - 1], 2 * nnb, &a[(j - 1) + ((jcol + nnb) - 1) * lda], lda, &work[pw - 1], lwork - pw + 1, ierr);
                 } else {
                     //
-                    //                 Ignore the structure of U.
+                    // Ignore the structure of U.
                     //
                     Cgemm("Conjugate", "No Transpose", 2 * nnb, cola, 2 * nnb, cone, &work[ppwo - 1], 2 * nnb, &a[(j - 1) + ((jcol + nnb) - 1) * lda], lda, czero, &work[pw - 1], 2 * nnb);
                     Clacpy("All", 2 * nnb, cola, &work[pw - 1], 2 * nnb, &a[(j - 1) + ((jcol + nnb) - 1) * lda], lda);
@@ -405,7 +417,7 @@ void Cgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                 ppwo += 4 * nnb * nnb;
             }
             //
-            //           Apply accumulated unitary matrices to Q.
+            // Apply accumulated unitary matrices to Q.
             //
             if (wantq) {
                 j = ihi - nblst + 1;
@@ -427,12 +439,12 @@ void Cgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                     }
                     if (blk22) {
                         //
-                        //                    Exploit the structure of U.
+                        // Exploit the structure of U.
                         //
                         Cunm22("Right", "No Transpose", nh, 2 * nnb, nnb, nnb, &work[ppwo - 1], 2 * nnb, &q[(topq - 1) + (j - 1) * ldq], ldq, &work[pw - 1], lwork - pw + 1, ierr);
                     } else {
                         //
-                        //                    Ignore the structure of U.
+                        // Ignore the structure of U.
                         //
                         Cgemm("No Transpose", "No Transpose", nh, 2 * nnb, 2 * nnb, cone, &q[(topq - 1) + (j - 1) * ldq], ldq, &work[ppwo - 1], 2 * nnb, czero, &work[pw - 1], nh);
                         Clacpy("All", nh, 2 * nnb, &work[pw - 1], nh, &q[(topq - 1) + (j - 1) * ldq], ldq);
@@ -441,12 +453,12 @@ void Cgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                 }
             }
             //
-            //           Accumulate right Givens rotations if required.
+            // Accumulate right Givens rotations if required.
             //
             if (wantz || top > 0) {
                 //
-                //              Initialize small unitary factors that will hold the
-                //              accumulated Givens rotations in workspace.
+                // Initialize small unitary factors that will hold the
+                // accumulated Givens rotations in workspace.
                 //
                 Claset("All", nblst, nblst, czero, cone, work, nblst);
                 pw = nblst * nblst + 1;
@@ -455,7 +467,7 @@ void Cgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                     pw += 4 * nnb * nnb;
                 }
                 //
-                //              Accumulate Givens rotations into workspace array.
+                // Accumulate Givens rotations into workspace array.
                 //
                 for (j = jcol; j <= jcol + nnb - 1; j = j + 1) {
                     ppw = (nblst + 1) * (nblst - 2) - j + jcol + 1;
@@ -502,7 +514,7 @@ void Cgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                 Claset("Lower", ihi - jcol - 1, nnb, czero, czero, &b[((jcol + 2) - 1) + (jcol - 1) * ldb], ldb);
             }
             //
-            //           Apply accumulated unitary matrices to A and B.
+            // Apply accumulated unitary matrices to A and B.
             //
             if (top > 0) {
                 j = ihi - nblst + 1;
@@ -513,12 +525,12 @@ void Cgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                 for (j = j0; j >= jcol + 1; j = j - nnb) {
                     if (blk22) {
                         //
-                        //                    Exploit the structure of U.
+                        // Exploit the structure of U.
                         //
                         Cunm22("Right", "No Transpose", top, 2 * nnb, nnb, nnb, &work[ppwo - 1], 2 * nnb, &a[(j - 1) * lda], lda, &work[pw - 1], lwork - pw + 1, ierr);
                     } else {
                         //
-                        //                    Ignore the structure of U.
+                        // Ignore the structure of U.
                         //
                         Cgemm("No Transpose", "No Transpose", top, 2 * nnb, 2 * nnb, cone, &a[(j - 1) * lda], lda, &work[ppwo - 1], 2 * nnb, czero, &work[pw - 1], top);
                         Clacpy("All", top, 2 * nnb, &work[pw - 1], top, &a[(j - 1) * lda], lda);
@@ -534,12 +546,12 @@ void Cgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                 for (j = j0; j >= jcol + 1; j = j - nnb) {
                     if (blk22) {
                         //
-                        //                    Exploit the structure of U.
+                        // Exploit the structure of U.
                         //
                         Cunm22("Right", "No Transpose", top, 2 * nnb, nnb, nnb, &work[ppwo - 1], 2 * nnb, &b[(j - 1) * ldb], ldb, &work[pw - 1], lwork - pw + 1, ierr);
                     } else {
                         //
-                        //                    Ignore the structure of U.
+                        // Ignore the structure of U.
                         //
                         Cgemm("No Transpose", "No Transpose", top, 2 * nnb, 2 * nnb, cone, &b[(j - 1) * ldb], ldb, &work[ppwo - 1], 2 * nnb, czero, &work[pw - 1], top);
                         Clacpy("All", top, 2 * nnb, &work[pw - 1], top, &b[(j - 1) * ldb], ldb);
@@ -548,7 +560,7 @@ void Cgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                 }
             }
             //
-            //           Apply accumulated unitary matrices to Z.
+            // Apply accumulated unitary matrices to Z.
             //
             if (wantz) {
                 j = ihi - nblst + 1;
@@ -570,12 +582,12 @@ void Cgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
                     }
                     if (blk22) {
                         //
-                        //                    Exploit the structure of U.
+                        // Exploit the structure of U.
                         //
                         Cunm22("Right", "No Transpose", nh, 2 * nnb, nnb, nnb, &work[ppwo - 1], 2 * nnb, &z[(topq - 1) + (j - 1) * ldz], ldz, &work[pw - 1], lwork - pw + 1, ierr);
                     } else {
                         //
-                        //                    Ignore the structure of U.
+                        // Ignore the structure of U.
                         //
                         Cgemm("No Transpose", "No Transpose", nh, 2 * nnb, 2 * nnb, cone, &z[(topq - 1) + (j - 1) * ldz], ldz, &work[ppwo - 1], 2 * nnb, czero, &work[pw - 1], nh);
                         Clacpy("All", nh, 2 * nnb, &work[pw - 1], nh, &z[(topq - 1) + (j - 1) * ldz], ldz);
@@ -586,8 +598,8 @@ void Cgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
         }
     }
     //
-    //     Use unblocked code to reduce the rest of the matrix
-    //     Avoid re-initialization of modified Q and Z.
+    // Use unblocked code to reduce the rest of the matrix
+    // Avoid re-initialization of modified Q and Z.
     //
     char compq2 = *compq;
     char compz2 = *compz;
@@ -603,8 +615,9 @@ void Cgghd3(const char *compq, const char *compz, INTEGER const n, INTEGER const
     if (jcol < ihi) {
         Cgghrd(&compq2, &compz2, n, jcol, ihi, a, lda, b, ldb, q, ldq, z, ldz, ierr);
     }
+    //
     work[1 - 1] = COMPLEX(lwkopt);
     //
-    //     End of Cgghd3
+    // End of Cgghd3
     //
 }

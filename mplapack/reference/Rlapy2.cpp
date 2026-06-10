@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DLAPY2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -40,6 +47,7 @@ REAL Rlapy2(REAL const x, REAL const y) {
     if (y_is_nan) {
         return_value = y;
     }
+    REAL hugeval = Rlamch("Overflow");
     //
     REAL xabs = 0.0;
     REAL yabs = 0.0;
@@ -52,7 +60,7 @@ REAL Rlapy2(REAL const x, REAL const y) {
         yabs = abs(y);
         w = max(xabs, yabs);
         z = min(xabs, yabs);
-        if (z == zero) {
+        if (z == zero || w > hugeval) {
             return_value = w;
         } else {
             return_value = w * sqrt(one + pow2((z / w)));
@@ -60,6 +68,6 @@ REAL Rlapy2(REAL const x, REAL const y) {
     }
     return return_value;
     //
-    //     End of Rlapy2
+    // End of Rlapy2
     //
 }

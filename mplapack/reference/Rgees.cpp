@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DGEES.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -65,7 +72,7 @@ void Rgees(const char *jobvs, const char *sort, bool (*select)(REAL, REAL), INTE
     INTEGER ip = 0;
     bool cursl = false;
     //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     lquery = (lwork == -1);
@@ -83,15 +90,15 @@ void Rgees(const char *jobvs, const char *sort, bool (*select)(REAL, REAL), INTE
         info = -11;
     }
     //
-    //     Compute workspace
-    //      (Note: Comments in the code beginning "Workspace:" describe the
-    //       minimal amount of workspace needed at that point in the code,
-    //       as well as the preferred amount for good performance.
-    //       NB refers to the optimal block size for the immediately
-    //       following subroutine, as returned by iMlaenv.
-    //       HSWORK refers to the workspace preferred by Rhseqr, as
-    //       calculated below. HSWORK is computed assuming ILO=1 and IHI=N,
-    //       the worst case.)
+    // Compute workspace
+    // (Note: Comments in the code beginning "Workspace:" describe the
+    // minimal amount of workspace needed at that point in the code,
+    // as well as the preferred amount for good performance.
+    // NB refers to the optimal block size for the immediately
+    // following subroutine, as returned by iMlaenv.
+    // HSWORK refers to the workspace preferred by Rhseqr, as
+    // calculated below. HSWORK is computed assuming ILO=1 and IHI=N,
+    // the worst case.)
     //
     if (info == 0) {
         if (n == 0) {
@@ -125,14 +132,14 @@ void Rgees(const char *jobvs, const char *sort, bool (*select)(REAL, REAL), INTE
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         sdim = 0;
         return;
     }
     //
-    //     Get machine constants
+    // Get machine constants
     //
     eps = Rlamch("P");
     smlnum = Rlamch("S");
@@ -140,7 +147,7 @@ void Rgees(const char *jobvs, const char *sort, bool (*select)(REAL, REAL), INTE
     smlnum = sqrt(smlnum) / eps;
     bignum = one / smlnum;
     //
-    //     Scale A if max element outside range [SMLNUM,BIGNUM]
+    // Scale A if max element outside range [SMLNUM,BIGNUM]
     //
     anrm = Rlange("M", n, n, a, lda, dum);
     scalea = false;
@@ -155,14 +162,14 @@ void Rgees(const char *jobvs, const char *sort, bool (*select)(REAL, REAL), INTE
         Rlascl("G", 0, 0, anrm, cscale, n, n, a, lda, ierr);
     }
     //
-    //     Permute the matrix to make it more nearly triangular
-    //     (Workspace: need N)
+    // Permute the matrix to make it more nearly triangular
+    // (Workspace: need N)
     //
     ibal = 1;
     Rgebal("P", n, a, lda, ilo, ihi, &work[ibal - 1], ierr);
     //
-    //     Reduce to upper Hessenberg form
-    //     (Workspace: need 3*N, prefer 2*N+N*NB)
+    // Reduce to upper Hessenberg form
+    // (Workspace: need 3*N, prefer 2*N+N*NB)
     //
     itau = n + ibal;
     iwrk = n + itau;
@@ -170,20 +177,20 @@ void Rgees(const char *jobvs, const char *sort, bool (*select)(REAL, REAL), INTE
     //
     if (wantvs) {
         //
-        //        Copy Householder vectors to VS
+        // Copy Householder vectors to VS
         //
         Rlacpy("L", n, n, a, lda, vs, ldvs);
         //
-        //        Generate orthogonal matrix in VS
-        //        (Workspace: need 3*N-1, prefer 2*N+(N-1)*NB)
+        // Generate orthogonal matrix in VS
+        // (Workspace: need 3*N-1, prefer 2*N+(N-1)*NB)
         //
         Rorghr(n, ilo, ihi, vs, ldvs, &work[itau - 1], &work[iwrk - 1], lwork - iwrk + 1, ierr);
     }
     //
     sdim = 0;
     //
-    //     Perform QR iteration, accumulating Schur vectors in VS if desired
-    //     (Workspace: need N+1, prefer N+HSWORK (see comments) )
+    // Perform QR iteration, accumulating Schur vectors in VS if desired
+    // (Workspace: need N+1, prefer N+HSWORK (see comments) )
     //
     iwrk = itau;
     Rhseqr("S", jobvs, n, ilo, ihi, a, lda, wr, wi, vs, ldvs, &work[iwrk - 1], lwork - iwrk + 1, ieval);
@@ -191,7 +198,7 @@ void Rgees(const char *jobvs, const char *sort, bool (*select)(REAL, REAL), INTE
         info = ieval;
     }
     //
-    //     Sort eigenvalues if desired
+    // Sort eigenvalues if desired
     //
     if (wantst && info == 0) {
         if (scalea) {
@@ -202,8 +209,8 @@ void Rgees(const char *jobvs, const char *sort, bool (*select)(REAL, REAL), INTE
             bwork[i - 1] = select(wr[i - 1], wi[i - 1]);
         }
         //
-        //        Reorder eigenvalues and transform Schur vectors
-        //        (Workspace: none needed)
+        // Reorder eigenvalues and transform Schur vectors
+        // (Workspace: none needed)
         //
         Rtrsen("N", jobvs, bwork, n, a, lda, vs, ldvs, wr, wi, sdim, s, sep, &work[iwrk - 1], lwork - iwrk + 1, idum, 1, icond);
         if (icond > 0) {
@@ -213,23 +220,23 @@ void Rgees(const char *jobvs, const char *sort, bool (*select)(REAL, REAL), INTE
     //
     if (wantvs) {
         //
-        //        Undo balancing
-        //        (Workspace: need N)
+        // Undo balancing
+        // (Workspace: need N)
         //
         Rgebak("P", "R", n, ilo, ihi, &work[ibal - 1], n, vs, ldvs, ierr);
     }
     //
     if (scalea) {
         //
-        //        Undo scaling for the Schur form of A
+        // Undo scaling for the Schur form of A
         //
         Rlascl("H", 0, 0, cscale, anrm, n, n, a, lda, ierr);
         Rcopy(n, a, lda + 1, wr, 1);
         if (cscale == smlnum) {
             //
-            //           If scaling back towards underflow, adjust WI if an
-            //           offdiagonal element of a 2-by-2 block in the Schur form
-            //           underflows.
+            // If scaling back towards underflow, adjust WI if an
+            // offdiagonal element of a 2-by-2 block in the Schur form
+            // underflows.
             //
             if (ieval > 0) {
                 i1 = ieval + 1;
@@ -274,14 +281,14 @@ void Rgees(const char *jobvs, const char *sort, bool (*select)(REAL, REAL), INTE
             }
         }
         //
-        //        Undo scaling for the imaginary part of the eigenvalues
+        // Undo scaling for the imaginary part of the eigenvalues
         //
         Rlascl("G", 0, 0, cscale, anrm, n - ieval, 1, &wi[(ieval + 1) - 1], max(n - ieval, (INTEGER)1), ierr);
     }
     //
     if (wantst && info == 0) {
         //
-        //        Check if reordering successful
+        // Check if reordering successful
         //
         lastsl = true;
         lst2sl = true;
@@ -300,7 +307,7 @@ void Rgees(const char *jobvs, const char *sort, bool (*select)(REAL, REAL), INTE
             } else {
                 if (ip == 1) {
                     //
-                    //                 Last eigenvalue of conjugate pair
+                    // Last eigenvalue of conjugate pair
                     //
                     cursl = cursl || lastsl;
                     lastsl = cursl;
@@ -313,7 +320,7 @@ void Rgees(const char *jobvs, const char *sort, bool (*select)(REAL, REAL), INTE
                     }
                 } else {
                     //
-                    //                 First eigenvalue of conjugate pair
+                    // First eigenvalue of conjugate pair
                     //
                     ip = 1;
                 }
@@ -325,6 +332,6 @@ void Rgees(const char *jobvs, const char *sort, bool (*select)(REAL, REAL), INTE
     //
     work[1 - 1] = maxwrk;
     //
-    //     End of Rgees
+    // End of Rgees
     //
 }

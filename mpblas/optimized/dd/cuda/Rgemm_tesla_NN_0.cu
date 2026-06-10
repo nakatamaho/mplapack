@@ -59,7 +59,7 @@ __global__ void Rgemm_tesla_NN_0(dd_real * Adev, dd_real * Bdev, dd_real * Cdev,
 
     //load first data of A from global memory into register
     A_j = blockDim.y * 0 + threadIdx.y;
-    regA = fetch_x_A(A_i + A_j * lda);
+    regA = fetch_x_A(Adev, A_i + A_j * lda);
 
     //load first data of B from global memory into register
     iBb = 0;
@@ -67,11 +67,11 @@ __global__ void Rgemm_tesla_NN_0(dd_real * Adev, dd_real * Bdev, dd_real * Cdev,
 
     jBb = blockIdx.y * Gn + 0;
     B_j = blockDim.y * jBb + threadIdx.y;
-    regB0 = fetch_x_B(B_i + B_j * ldb);
+    regB0 = fetch_x_B(Bdev, B_i + B_j * ldb);
 
     jBb = blockIdx.y * Gn + 1;
     B_j = blockDim.y * jBb + threadIdx.y;
-    regB1 = fetch_x_B(B_i + B_j * ldb);
+    regB1 = fetch_x_B(Bdev, B_i + B_j * ldb);
 
     c_val0.x[0] = c_val0.x[1] = c_val1.x[0] = c_val1.x[1] = 0.0;
 
@@ -100,7 +100,7 @@ __global__ void Rgemm_tesla_NN_0(dd_real * Adev, dd_real * Bdev, dd_real * Cdev,
 	// load next data of A from global memory into register
 	jAb = i + 1;
 	A_j = blockDim.y * jAb + threadIdx.y;
-	regA = fetch_x_A(A_i + A_j * lda);
+	regA = fetch_x_A(Adev, A_i + A_j * lda);
 
 	// load next data of B from global memory into register
 	iBb = i + 1;
@@ -108,11 +108,11 @@ __global__ void Rgemm_tesla_NN_0(dd_real * Adev, dd_real * Bdev, dd_real * Cdev,
 
 	jBb = blockIdx.y * Gn + 0;
 	B_j = blockDim.y * jBb + threadIdx.y;
-	regB0 = fetch_x_B(B_i + B_j * ldb);
+	regB0 = fetch_x_B(Bdev, B_i + B_j * ldb);
 
 	jBb = blockIdx.y * Gn + 1;
 	B_j = blockDim.y * jBb + threadIdx.y;
-	regB1 = fetch_x_B(B_i + B_j * ldb);
+	regB1 = fetch_x_B(Bdev, B_i + B_j * ldb);
 
 	__syncthreads();
     }

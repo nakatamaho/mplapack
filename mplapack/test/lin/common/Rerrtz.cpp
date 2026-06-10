@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DERRTZ.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,22 +43,19 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-#include <mplapack_debug.h>
-
-void Rerrtz(const char *path, INTEGER const nunit) {
+void Rerrtz(fem::str_cref path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
     //
-    char c2[2];
-    c2[0] = path[1];
-    c2[1] = path[2];
+    nout = nunit;
+    write(nout, star);
+    fem::str<2> c2 = path(2, 3);
     const INTEGER nmax = 2;
     REAL a[nmax * nmax];
-    INTEGER lda = nmax;
-    a[(1 - 1) + (1 - 1) * lda] = 1.e+0;
-    a[(1 - 1) + (2 - 1) * lda] = 2.e+0;
-    a[(2 - 1) + (2 - 1) * lda] = 3.e+0;
-    a[(2 - 1)] = 4.e+0;
+    a[0] = 1.0;
+    a[(2 - 1) * nmax] = 2.0;
+    a[(2 - 1) + (2 - 1) * nmax] = 3.0;
+    a[(2 - 1)] = 4.0;
     REAL w[nmax];
     w[1 - 1] = 0.0;
     w[2 - 1] = 0.0;
@@ -59,35 +63,34 @@ void Rerrtz(const char *path, INTEGER const nunit) {
     //
     REAL tau[nmax];
     INTEGER info = 0;
-    if (Mlsamen(2, c2, "TZ")) {
+    if (Mlsamen(2, c2.elems, "TZ")) {
         //
-        //        Test error exits for the trapezoidal routines.
+        // Test error exits for the trapezoidal routines.
         //
-        //        Rtzrzf
+        // Rtzrzf
         //
-        strncpy(srnamt, "Rtzrzf", srnamt_len);
+        srnamt = "Rtzrzf";
         infot = 1;
-        strncpy(srnamt, "Rtzrzf", srnamt_len);
         Rtzrzf(-1, 0, a, 1, tau, w, 1, info);
-        chkxer("Rtzrzf", infot, nout, lerr, ok);
+        Chkxer("Rtzrzf", infot, nout, lerr, ok);
         infot = 2;
         Rtzrzf(1, 0, a, 1, tau, w, 1, info);
-        chkxer("Rtzrzf", infot, nout, lerr, ok);
+        Chkxer("Rtzrzf", infot, nout, lerr, ok);
         infot = 4;
         Rtzrzf(2, 2, a, 1, tau, w, 1, info);
-        chkxer("Rtzrzf", infot, nout, lerr, ok);
+        Chkxer("Rtzrzf", infot, nout, lerr, ok);
         infot = 7;
         Rtzrzf(2, 2, a, 2, tau, w, 0, info);
-        chkxer("Rtzrzf", infot, nout, lerr, ok);
+        Chkxer("Rtzrzf", infot, nout, lerr, ok);
         infot = 7;
         Rtzrzf(2, 3, a, 2, tau, w, 1, info);
-        chkxer("Rtzrzf", infot, nout, lerr, ok);
+        Chkxer("Rtzrzf", infot, nout, lerr, ok);
     }
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     Alaesm(path, ok, nout);
     //
-    //     End of Rerrtz
+    // End of Rerrtz
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZDRVRF2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -39,17 +46,24 @@ using fem::common;
 void Cdrvrf2(INTEGER const nout, INTEGER const nn, INTEGER *nval, COMPLEX *a, INTEGER const lda, COMPLEX *arf, COMPLEX *ap, COMPLEX *asav) {
     common cmn;
     common_write write(cmn);
-    char uplos[2] = {'U', 'L'};
-    char forms[2] = {'N', 'C'};
-    INTEGER iseedy[4] = {1988, 1989, 1990, 1991};
+    static INTEGER iseedy[4] = {1988, 1989, 1990, 1991};
+    static fem::str<1> uplos[2] = {"U", "L"};
+    static fem::str<1> forms[2] = {"N", "C"};
     //
-    //     Initialize constants and the random number seed.
+    static const char *format_9999 = "(1x,' *** Error(s) while testing the RFP conversion',' routines ***')";
+    static const char *format_9998 = "(1x,'     Error in RFP,conversion routines N=',i5,' UPLO=''',a1,"
+                                     "''', FORM =''',a1,'''')";
+    static const char *format_9997 = "(1x,'All tests for the RFP conversion routines passed (',i5,"
+                                     "' tests run)')";
+    static const char *format_9996 = "(1x,'RFP conversion routines:',i5,' out of ',i5,"
+                                     "' error message recorded')";
+    //
+    // Initialize constants and the random number seed.
     //
     INTEGER nrun = 0;
     INTEGER nerrs = 0;
     INTEGER info = 0;
     INTEGER i = 0;
-    INTEGER ldasav = lda;
     INTEGER iseed[4];
     for (i = 1; i <= 4; i = i + 1) {
         iseed[i - 1] = iseedy[i - 1];
@@ -58,10 +72,10 @@ void Cdrvrf2(INTEGER const nout, INTEGER const nn, INTEGER *nval, COMPLEX *a, IN
     INTEGER iin = 0;
     INTEGER n = 0;
     INTEGER iuplo = 0;
-    char uplo;
+    fem::str<1> uplo;
     bool lower = false;
     INTEGER iform = 0;
-    char cform;
+    fem::str<1> cform;
     INTEGER j = 0;
     bool ok1 = false;
     bool ok2 = false;
@@ -69,7 +83,7 @@ void Cdrvrf2(INTEGER const nout, INTEGER const nn, INTEGER *nval, COMPLEX *a, IN
         //
         n = nval[iin - 1];
         //
-        //        Do first for UPLO = 'U', then for UPLO = 'L'
+        // Do first for UPLO = 'U', then for UPLO = 'L'
         //
         for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
             //
@@ -79,7 +93,7 @@ void Cdrvrf2(INTEGER const nout, INTEGER const nn, INTEGER *nval, COMPLEX *a, IN
                 lower = false;
             }
             //
-            //           Do first for CFORM = 'N', then for CFORM = 'C'
+            // Do first for CFORM = 'N', then for CFORM = 'C'
             //
             for (iform = 1; iform <= 2; iform = iform + 1) {
                 //
@@ -93,17 +107,20 @@ void Cdrvrf2(INTEGER const nout, INTEGER const nn, INTEGER *nval, COMPLEX *a, IN
                     }
                 }
                 //
-                Ctrttf(&cform, &uplo, n, a, lda, arf, info);
+                srnamt = "Ctrttf";
+                Ctrttf(cform.elems, uplo.elems, n, a, lda, arf, info);
                 //
-                Ctfttp(&cform, &uplo, n, arf, ap, info);
+                srnamt = "Ctfttp";
+                Ctfttp(cform.elems, uplo.elems, n, arf, ap, info);
                 //
-                Ctpttr(&uplo, n, ap, asav, lda, info);
+                srnamt = "Ctpttr";
+                Ctpttr(uplo.elems, n, ap, asav, lda, info);
                 //
                 ok1 = true;
                 if (lower) {
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = j; i <= n; i = i + 1) {
-                            if (a[(i - 1) + (j - 1) * lda] != asav[(i - 1) + (j - 1) * ldasav]) {
+                            if (a[(i - 1) + (j - 1) * lda] != asav[(i - 1) + (j - 1) * lda]) {
                                 ok1 = false;
                             }
                         }
@@ -111,7 +128,7 @@ void Cdrvrf2(INTEGER const nout, INTEGER const nn, INTEGER *nval, COMPLEX *a, IN
                 } else {
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = 1; i <= j; i = i + 1) {
-                            if (a[(i - 1) + (j - 1) * lda] != asav[(i - 1) + (j - 1) * ldasav]) {
+                            if (a[(i - 1) + (j - 1) * lda] != asav[(i - 1) + (j - 1) * lda]) {
                                 ok1 = false;
                             }
                         }
@@ -120,17 +137,20 @@ void Cdrvrf2(INTEGER const nout, INTEGER const nn, INTEGER *nval, COMPLEX *a, IN
                 //
                 nrun++;
                 //
-                Ctrttp(&uplo, n, a, lda, ap, info);
+                srnamt = "Ctrttp";
+                Ctrttp(uplo.elems, n, a, lda, ap, info);
                 //
-                Ctpttf(&cform, &uplo, n, ap, arf, info);
+                srnamt = "Ctpttf";
+                Ctpttf(cform.elems, uplo.elems, n, ap, arf, info);
                 //
-                Ctfttr(&cform, &uplo, n, arf, asav, lda, info);
+                srnamt = "Ctfttr";
+                Ctfttr(cform.elems, uplo.elems, n, arf, asav, lda, info);
                 //
                 ok2 = true;
                 if (lower) {
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = j; i <= n; i = i + 1) {
-                            if (a[(i - 1) + (j - 1) * lda] != asav[(i - 1) + (j - 1) * ldasav]) {
+                            if (a[(i - 1) + (j - 1) * lda] != asav[(i - 1) + (j - 1) * lda]) {
                                 ok2 = false;
                             }
                         }
@@ -138,7 +158,7 @@ void Cdrvrf2(INTEGER const nout, INTEGER const nn, INTEGER *nval, COMPLEX *a, IN
                 } else {
                     for (j = 1; j <= n; j = j + 1) {
                         for (i = 1; i <= j; i = i + 1) {
-                            if (a[(i - 1) + (j - 1) * lda] != asav[(i - 1) + (j - 1) * ldasav]) {
+                            if (a[(i - 1) + (j - 1) * lda] != asav[(i - 1) + (j - 1) * lda]) {
                                 ok2 = false;
                             }
                         }
@@ -148,12 +168,9 @@ void Cdrvrf2(INTEGER const nout, INTEGER const nn, INTEGER *nval, COMPLEX *a, IN
                 if ((!ok1) || (!ok2)) {
                     if (nerrs == 0) {
                         write(nout, star);
-                        write(nout, "(1x,' *** Error(s) while testing the RFP conversion',"
-                                    "' routines ***')");
+                        write(nout, format_9999);
                     }
-                    write(nout, "(1x,'     Error in RFP,conversion routines N=',i5,' UPLO=''',a1,"
-                                "''', FORM =''',a1,'''')"),
-                        n, &uplo, &cform;
+                    write(nout, format_9998), n, uplo, cform;
                     nerrs++;
                 }
                 //
@@ -161,18 +178,14 @@ void Cdrvrf2(INTEGER const nout, INTEGER const nn, INTEGER *nval, COMPLEX *a, IN
         }
     }
     //
-    //     Print a summary of the results.
+    // Print a summary of the results.
     //
     if (nerrs == 0) {
-        write(nout, "(1x,'All tests for the RFP conversion routines passed (',i5,"
-                    "' tests run)')"),
-            nrun;
+        write(nout, format_9997), nrun;
     } else {
-        write(nout, "(1x,'RFP conversion routines:',i5,' out of ',i5,"
-                    "' error message recorded')"),
-            nerrs, nrun;
+        write(nout, format_9996), nerrs, nrun;
     }
     //
-    //     End of Cdrvrf2
+    // End of Cdrvrf2
     //
 }

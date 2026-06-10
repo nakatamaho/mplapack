@@ -1,0 +1,94 @@
+#!/bin/sh
+# go.Rdot.sh — benchmark runner for Rdot
+# %%CPU_OS_DETECTION_SH%% and %%CC_TAG%% are replaced:
+#   - at "make" time   : builddir paths
+#   - at "make install": installed paths
+# Never edit the installed copy; edit go.Rdot.sh.in instead.
+
+TIMEOUT=7200
+
+# ---------------------------------------------------------------------------
+# Self-location: works both in builddir and after install
+# ---------------------------------------------------------------------------
+SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
+
+# ---------------------------------------------------------------------------
+# Platform detection (one call for OUTDIR and MODELNAME)
+# Field 1: directory-safe CPU tag   (e.g. Ryzen_Threadripper_3970X)
+# Field 2: OS identifier            (e.g. ubuntu2204)
+# Field 3: human-readable CPU name  (e.g. AMD Ryzen Threadripper 3970X)
+# ---------------------------------------------------------------------------
+_DETECTION=$(sh "%%CPU_OS_DETECTION_SH%%")
+_CPU_NORM=$(printf '%s' "${_DETECTION}" | cut -d'|' -f1)
+_OS_ID=$(   printf '%s' "${_DETECTION}" | cut -d'|' -f2)
+MODELNAME=$( printf '%s' "${_DETECTION}" | cut -d'|' -f3)
+MODELNAME="${MODELNAME:-unknown}"
+
+CC_TAG="%%CC_TAG%%"
+OUTDIR="${_CPU_NORM}-${_OS_ID}-${CC_TAG}"
+OUTPATH="${SCRIPT_DIR}/results/${OUTDIR}"
+mkdir -p "${OUTPATH}"
+
+# ---------------------------------------------------------------------------
+# Library path prefix (macOS vs Linux)
+# ---------------------------------------------------------------------------
+if [ "$(uname)" = "Darwin" ]; then
+    LDPATHPREFIX="DYLD_LIBRARY_PATH=%%PREFIX%%/lib"
+    SED=gsed
+else
+    LDPATHPREFIX="LD_LIBRARY_PATH=%%PREFIX%%/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+    SED=sed
+fi
+
+# ---------------------------------------------------------------------------
+# Helper: run one binary, save log under OUTPATH
+# ---------------------------------------------------------------------------
+run_bench() {
+    _bin="${SCRIPT_DIR}/$1"; shift
+    _log="${OUTPATH}/log.$(basename "${_bin}")"
+    if [ ! -x "${_bin}" ]; then
+        echo "SKIP (not found): ${_bin}" >&2
+        return 0
+    fi
+    echo "RUN: ${_bin} $*"
+    env ${LDPATHPREFIX} timeout ${TIMEOUT} "${_bin}" "$@" > "${_log}" 2>&1
+}
+
+# ---------------------------------------------------------------------------
+# Double-precision reference benchmarks
+# ---------------------------------------------------------------------------
+run_bench ddot_ref      -STEP 50 -TOTALSTEPS 400 -LOOPS 3
+run_bench ddot_openblas -STEP 50 -TOTALSTEPS 400 -LOOPS 3
+
+# ---------------------------------------------------------------------------
+# MPLAPACK — IEEE-compatible backends
+# ---------------------------------------------------------------------------
+for _mplib in binary80 dd double binary128; do
+    run_bench Rdot.${_mplib}_opt -NOCHECK
+    run_bench Rdot.${_mplib}     -NOCHECK
+done
+
+# ---------------------------------------------------------------------------
+# MPLAPACK — arbitrary-precision backends
+# ---------------------------------------------------------------------------
+for _mplib in mpfr gmp qd; do
+    run_bench Rdot.${_mplib}_opt -NOCHECK
+    run_bench Rdot.${_mplib}     -NOCHECK
+done
+
+# ---------------------------------------------------------------------------
+# Generate gnuplot scripts from .plt.in, render PDFs
+# gnuplot runs from OUTPATH so "log.*" relative paths resolve correctly
+# ---------------------------------------------------------------------------
+
+    $SED -e "s/%%MODELNAME%%/${MODELNAME}/g" \
+        "${SCRIPT_DIR}/Rdot1.plt.in" > "${OUTPATH}/Rdot1.plt"
+    (cd "${OUTPATH}" && gnuplot "Rdot1.plt" > "Rdot1.pdf")
+    $SED -e "s/%%MODELNAME%%/${MODELNAME}/g" \
+        "${SCRIPT_DIR}/Rdot2.plt.in" > "${OUTPATH}/Rdot2.plt"
+    (cd "${OUTPATH}" && gnuplot "Rdot2.plt" > "Rdot2.pdf")
+    $SED -e "s/%%MODELNAME%%/${MODELNAME}/g" \
+        "${SCRIPT_DIR}/Rdot3.plt.in" > "${OUTPATH}/Rdot3.plt"
+    (cd "${OUTPATH}" && gnuplot "Rdot3.plt" > "Rdot3.pdf")
+
+echo "Done. Results: ${OUTPATH}"

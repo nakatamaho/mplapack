@@ -1,0 +1,68 @@
+# Dockerfile.cuda
+# CUDA-enabled build (branch: requires autoreconf)
+# Build happens at runtime with ccache mounted from host
+ARG BASE=nvidia/cuda:12.4.0-devel-ubuntu22.04
+FROM ${BASE}
+
+# Avoid interactive prompts
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    gfortran \
+    autoconf \
+    automake \
+    libtool \
+    ccache \
+    python3 \
+    git \
+    xz-utils \
+    bzip2 \
+    patch \
+    && rm -rf /var/lib/apt/lists/*
+
+# Verify CUDA installation
+RUN nvcc --version
+
+# Configure ccache (directory will be mounted at runtime)
+ENV CCACHE_DIR=/ccache
+ENV PATH="/usr/lib/ccache:${PATH}"
+ENV CC="ccache gcc"
+ENV CXX="ccache g++"
+ENV FC="ccache gfortran"
+
+ENV MPLAPACK_REPO=https://github.com/nakatamaho/mplapack.git
+# Branch name or commit SHA. Example: release/2.1 or a full SHA.
+ENV MPLAPACK_REF="release/2.1"
+
+WORKDIR /work
+
+CMD ["/bin/bash", "-lc", "\
+set -euxo pipefail; \
+echo '=== ccache stats (before) ==='; ccache -s; \
+\
+# Fresh checkout every run \
+rm -rf /work/mplapack; \
+git clone --depth 1 --branch \"$MPLAPACK_REF\" \"$MPLAPACK_REPO\" /work/mplapack || { \
+  # If MPLAPACK_REF is a commit SHA, clone then checkout \
+  git clone \"$MPLAPACK_REPO\" /work/mplapack; \
+  cd /work/mplapack; \
+  git checkout \"$MPLAPACK_REF\"; \
+}; \
+cd /work/mplapack; \
+git log -1; \
+\
+# Autotools prep \
+cd mplapack/test/compare; bash gen.Makefile.am.sh; cd /work/mplapack; \
+autoreconf --force --install; \
+\
+# CUDA builds are x86_64, so enable binary80 \
+CONFIGURE_OPTS=\"--enable-cuda --enable-gmp=yes --enable-mpfr=yes --enable-binary128=yes --enable-binary80=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes --enable-benchmark=yes\"; \
+echo \"Configure options: $CONFIGURE_OPTS\"; \
+\
+./configure $CONFIGURE_OPTS; \
+make -j\"$(nproc)\"; \
+make install; \
+make dist; \
+echo '=== ccache stats (after) ==='; ccache -s; \
+"]

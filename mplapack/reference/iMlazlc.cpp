@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,13 +26,21 @@
  *
  */
 
+// Derived from LAPACK routine ILAZLC.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 INTEGER
 iMlazlc(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda) {
     INTEGER return_value = 0;
-    //     Quick test for the common case where one corner is non-zero.
+    //
+    // Quick test for the common case where one corner is non-zero.
     const COMPLEX zero = COMPLEX(0.0, 0.0);
     INTEGER i = 0;
     if (n == 0) {
@@ -40,7 +48,7 @@ iMlazlc(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda) {
     } else if (a[(n - 1) * lda] != zero || a[(m - 1) + (n - 1) * lda] != zero) {
         return_value = n;
     } else {
-        //     Now scan each column from the end, returning with the first non-zero.
+        // Now scan each column from the end, returning with the first non-zero.
         for (return_value = n; return_value >= 1; return_value = return_value - 1) {
             for (i = 1; i <= m; i = i + 1) {
                 if (a[(i - 1) + (return_value - 1) * lda] != zero) {

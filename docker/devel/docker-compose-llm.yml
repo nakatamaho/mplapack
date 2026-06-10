@@ -1,0 +1,89 @@
+# docker-compose-llm.yml
+# Qwen3.5 LLM inference server for MPLAPACK development
+#
+# Usage:
+#   cp .env.llm.example .env.llm
+#   # edit .env.llm: set MODEL_DIR and MODEL_FILE
+#   docker compose -f docker-compose-llm.yml --env-file .env.llm up -d
+#   docker compose -f docker-compose-llm.yml logs -f | grep -m1 "server is listening"
+
+name: mplapack-llm
+
+networks:
+  llm-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.31.0.0/24
+
+services:
+  inference:
+    build:
+      context: .
+      dockerfile: Dockerfile.inference
+      args:
+        LLAMA_CPP_REF: ${LLAMA_CPP_REF:-HEAD}
+        CUDA_ARCH: ${CUDA_ARCH:-80}
+    image: llm-local-agent/inference:latest
+    container_name: llm-inference
+    restart: unless-stopped
+
+    networks:
+      llm-net:
+        ipv4_address: 172.31.0.10
+
+    ports:
+      - "8080:8080"   # OpenAI-compatible API: accessible from host and containers
+
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ["0"]
+              capabilities: [gpu]
+
+    volumes:
+      - ${MODEL_DIR:-./models}:/models:ro
+
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=0
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+
+    command: >
+      --model /models/${MODEL_FILE:-Qwen3.5-35B-A3B-Q8_0.gguf}
+      --host 0.0.0.0
+      --port 8080
+      -ngl 99
+      --ctx-size ${LLAMA_CTX_SIZE:-131072}
+      --batch-size 512
+      --ubatch-size 256
+      --n-predict -1
+      --threads 8
+      --flash-attn on
+      --cache-type-k q8_0
+      --cache-type-v q8_0
+      --temp ${LLM_TEMPERATURE:-0.4}
+      --top-p 0.95
+      --min-p 0.0
+      --repeat-penalty 1.0
+      --no-mmap
+      --no-webui
+
+    healthcheck:
+      test: ["CMD-SHELL", "exit 0"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 180s
+
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp:size=512m
+
+    logging:
+      driver: json-file
+      options:
+        max-size: "100m"
+        max-file: "3"

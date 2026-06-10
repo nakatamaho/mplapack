@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,35 +26,21 @@
  *
  */
 
+// Derived from LAPACK routine DLARGE.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlarge(INTEGER const n, REAL *a, INTEGER const lda, INTEGER *iseed, REAL *work, INTEGER &info) {
+#include <mplapack_matgen.h>
+
+void Rlarge(INTEGER const n, REAL *a, INTEGER const lda, INTEGER (&iseed)[4], REAL *work, INTEGER &info) {
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     if (n < 0) {
@@ -67,7 +53,7 @@ void Rlarge(INTEGER const n, REAL *a, INTEGER const lda, INTEGER *iseed, REAL *w
         return;
     }
     //
-    //     pre- and post-multiply A by random orthogonal matrix
+    // pre- and post-multiply A by random orthogonal matrix
     //
     INTEGER i = 0;
     REAL wn = 0.0;
@@ -78,7 +64,7 @@ void Rlarge(INTEGER const n, REAL *a, INTEGER const lda, INTEGER *iseed, REAL *w
     const REAL one = 1.0;
     for (i = n; i >= 1; i = i - 1) {
         //
-        //        generate random reflection
+        // generate random reflection
         //
         Rlarnv(3, iseed, n - i + 1, work);
         wn = Rnrm2(n - i + 1, work, 1);
@@ -92,17 +78,17 @@ void Rlarge(INTEGER const n, REAL *a, INTEGER const lda, INTEGER *iseed, REAL *w
             tau = wb / wa;
         }
         //
-        //        multiply A(i:n,1:n) by random reflection from the left
+        // multiply A(i:n,1:n) by random reflection from the left
         //
         Rgemv("Transpose", n - i + 1, n, one, &a[(i - 1)], lda, work, 1, zero, &work[(n + 1) - 1], 1);
         Rger(n - i + 1, n, -tau, work, 1, &work[(n + 1) - 1], 1, &a[(i - 1)], lda);
         //
-        //        multiply A(1:n,i:n) by random reflection from the right
+        // multiply A(1:n,i:n) by random reflection from the right
         //
         Rgemv("No transpose", n, n - i + 1, one, &a[(i - 1) * lda], lda, work, 1, zero, &work[(n + 1) - 1], 1);
         Rger(n, n - i + 1, -tau, &work[(n + 1) - 1], 1, work, 1, &a[(i - 1) * lda], lda);
     }
     //
-    //     End of Rlarge
+    // End of Rlarge
     //
 }

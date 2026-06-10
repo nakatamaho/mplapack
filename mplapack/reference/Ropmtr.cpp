@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,42 +26,26 @@
  *
  */
 
+// Derived from LAPACK routine DOPMTR.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Ropmtr(const char *side, const char *uplo, const char *trans, INTEGER const m, INTEGER const n, REAL *ap, REAL *tau, REAL *c, INTEGER const ldc, REAL *work, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     bool left = Mlsame(side, "L");
     bool notran = Mlsame(trans, "N");
     bool upper = Mlsame(uplo, "U");
     //
-    //     NQ is the order of Q
+    // NQ is the order of Q
     //
     INTEGER nq = 0;
     if (left) {
@@ -87,7 +71,7 @@ void Ropmtr(const char *side, const char *uplo, const char *trans, INTEGER const
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (m == 0 || n == 0) {
         return;
@@ -101,13 +85,13 @@ void Ropmtr(const char *side, const char *uplo, const char *trans, INTEGER const
     INTEGER ni = 0;
     INTEGER mi = 0;
     INTEGER i = 0;
-    REAL aii = 0.0;
-    const REAL one = 1.0;
     INTEGER jc = 0;
     INTEGER ic = 0;
+    REAL aii = 0.0;
+    const REAL one = 1.0;
     if (upper) {
         //
-        //        Q was determined by a call to Rsptrd with UPLO = 'U'
+        // Q was determined by a call to Rsptrd with UPLO = 'U'
         //
         forwrd = (left && notran) || (!left && !notran);
         //
@@ -129,25 +113,22 @@ void Ropmtr(const char *side, const char *uplo, const char *trans, INTEGER const
             mi = m;
         }
         //
-        for (i = i1; i3 >= 0 ? i <= i2 : i >= i2; i = i + i3) {
+        for (i = i1; i3 > 0 ? i <= i2 : i >= i2; i = i + i3) {
             if (left) {
                 //
-                //              H(i) is applied to C(1:i,1:n)
+                // H(i) is applied to C(1:i,1:n)
                 //
                 mi = i;
             } else {
                 //
-                //              H(i) is applied to C(1:m,1:i)
+                // H(i) is applied to C(1:m,1:i)
                 //
                 ni = i;
             }
             //
-            //           Apply H(i)
+            // Apply H(i)
             //
-            aii = ap[ii - 1];
-            ap[ii - 1] = one;
-            Rlarf(side, mi, ni, &ap[(ii - i + 1) - 1], 1, tau[i - 1], c, ldc, work);
-            ap[ii - 1] = aii;
+            Rlarf1l(side, mi, ni, &ap[(ii - i + 1) - 1], 1, tau[i - 1], c, ldc, work);
             //
             if (forwrd) {
                 ii += i + 2;
@@ -157,7 +138,7 @@ void Ropmtr(const char *side, const char *uplo, const char *trans, INTEGER const
         }
     } else {
         //
-        //        Q was determined by a call to Rsptrd with UPLO = 'L'.
+        // Q was determined by a call to Rsptrd with UPLO = 'L'.
         //
         forwrd = (left && !notran) || (!left && notran);
         //
@@ -181,24 +162,24 @@ void Ropmtr(const char *side, const char *uplo, const char *trans, INTEGER const
             ic = 1;
         }
         //
-        for (i = i1; i3 >= 0 ? i <= i2 : i >= i2; i = i + i3) {
+        for (i = i1; i3 > 0 ? i <= i2 : i >= i2; i = i + i3) {
             aii = ap[ii - 1];
             ap[ii - 1] = one;
             if (left) {
                 //
-                //              H(i) is applied to C(i+1:m,1:n)
+                // H(i) is applied to C(i+1:m,1:n)
                 //
                 mi = m - i;
                 ic = i + 1;
             } else {
                 //
-                //              H(i) is applied to C(1:m,i+1:n)
+                // H(i) is applied to C(1:m,i+1:n)
                 //
                 ni = n - i;
                 jc = i + 1;
             }
             //
-            //           Apply H(i)
+            // Apply H(i)
             //
             Rlarf(side, mi, ni, &ap[ii - 1], 1, tau[i - 1], &c[(ic - 1) + (jc - 1) * ldc], ldc, work);
             ap[ii - 1] = aii;
@@ -211,6 +192,6 @@ void Ropmtr(const char *side, const char *uplo, const char *trans, INTEGER const
         }
     }
     //
-    //     End of Ropmtr
+    // End of Ropmtr
     //
 }

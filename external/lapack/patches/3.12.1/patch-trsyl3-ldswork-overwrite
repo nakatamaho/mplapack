@@ -1,0 +1,48 @@
+diff --git a/SRC/ctrsyl3.f b/SRC/ctrsyl3.f
+index 5bf90f242..0538a36e4 100644
+--- a/SRC/ctrsyl3.f
++++ b/SRC/ctrsyl3.f
+@@ -229,7 +229,6 @@
+       INFO = 0
+       LQUERY = ( LDSWORK.EQ.-1 )
+       IF( LQUERY ) THEN
+-         LDSWORK = 2
+          SWORK(1,1) = REAL( MAX( NBA, NBB ) )
+          SWORK(2,1) = REAL( 2 * NBB + NBA )
+       END IF
+diff --git a/SRC/dtrsyl3.f b/SRC/dtrsyl3.f
+index 79fcf4a01..f0805e584 100644
+--- a/SRC/dtrsyl3.f
++++ b/SRC/dtrsyl3.f
+@@ -260,7 +260,6 @@
+       LQUERY = ( LIWORK.EQ.-1 .OR. LDSWORK.EQ.-1 )
+       IWORK( 1 ) = NBA + NBB + 2
+       IF( LQUERY ) THEN
+-         LDSWORK = 2
+          SWORK( 1, 1 ) = MAX( NBA, NBB )
+          SWORK( 2, 1 ) = 2 * NBB + NBA
+       END IF
+diff --git a/SRC/strsyl3.f b/SRC/strsyl3.f
+index 5f1d70dbb..4189adb78 100644
+--- a/SRC/strsyl3.f
++++ b/SRC/strsyl3.f
+@@ -259,7 +259,6 @@
+       LQUERY = ( LIWORK.EQ.-1 .OR. LDSWORK.EQ.-1 )
+       IWORK( 1 ) = NBA + NBB + 2
+       IF( LQUERY ) THEN
+-         LDSWORK = 2
+          SWORK( 1, 1 ) = REAL( MAX( NBA, NBB ) )
+          SWORK( 2, 1 ) = REAL( 2 * NBB + NBA )
+       END IF
+diff --git a/SRC/ztrsyl3.f b/SRC/ztrsyl3.f
+index 0a2fc99dc..648e4d1d6 100644
+--- a/SRC/ztrsyl3.f
++++ b/SRC/ztrsyl3.f
+@@ -230,7 +230,6 @@
+       INFO = 0
+       LQUERY = ( LDSWORK.EQ.-1 )
+       IF( LQUERY ) THEN
+-         LDSWORK = 2
+          SWORK(1,1) = MAX( NBA, NBB )
+          SWORK(2,1) = 2 * NBB + NBA
+       END IF

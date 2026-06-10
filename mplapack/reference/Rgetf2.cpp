@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,35 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DGETF2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rgetf2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEGER *ipiv, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     if (m < 0) {
@@ -69,13 +53,13 @@ void Rgetf2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEGE
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (m == 0 || n == 0) {
         return;
     }
     //
-    //     Compute machine safe minimum
+    // Compute machine safe minimum
     //
     REAL sfmin = Rlamch("S");
     //
@@ -86,19 +70,19 @@ void Rgetf2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEGE
     INTEGER i = 0;
     for (j = 1; j <= min(m, n); j = j + 1) {
         //
-        //        Find pivot and test for singularity.
+        // Find pivot and test for singularity.
         //
         jp = j - 1 + iRamax(m - j + 1, &a[(j - 1) + (j - 1) * lda], 1);
         ipiv[j - 1] = jp;
         if (a[(jp - 1) + (j - 1) * lda] != zero) {
             //
-            //           Apply the interchange to columns 1:N.
+            // Apply the interchange to columns 1:N.
             //
             if (jp != j) {
                 Rswap(n, &a[(j - 1)], lda, &a[(jp - 1)], lda);
             }
             //
-            //           Compute elements J+1:M of J-th column.
+            // Compute elements J+1:M of J-th column.
             //
             if (j < m) {
                 if (abs(a[(j - 1) + (j - 1) * lda]) >= sfmin) {
@@ -117,12 +101,12 @@ void Rgetf2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEGE
         //
         if (j < min(m, n)) {
             //
-            //           Update trailing submatrix.
+            // Update trailing submatrix.
             //
             Rger(m - j, n - j, -one, &a[((j + 1) - 1) + (j - 1) * lda], 1, &a[(j - 1) + ((j + 1) - 1) * lda], lda, &a[((j + 1) - 1) + ((j + 1) - 1) * lda], lda);
         }
     }
     //
-    //     End of Rgetf2
+    // End of Rgetf2
     //
 }

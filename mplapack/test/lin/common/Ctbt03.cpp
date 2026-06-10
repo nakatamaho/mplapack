@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZTBT03.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,32 +43,9 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Ctbt03(const char *uplo, const char *trans, const char *diag, INTEGER const n, INTEGER const kd, INTEGER const nrhs, COMPLEX *ab, INTEGER const ldab, REAL const scale, REAL *cnorm, REAL const tscal, COMPLEX *x, INTEGER const ldx, COMPLEX *b, INTEGER const ldb, COMPLEX *work, REAL &resid) {
+void Ctbt03(fem::str_cref uplo, fem::str_cref trans, fem::str_cref diag, INTEGER const n, INTEGER const kd, INTEGER const nrhs, COMPLEX *ab, INTEGER const ldab, REAL const scale, REAL *cnorm, REAL const tscal, COMPLEX *x, INTEGER const ldx, COMPLEX *b, INTEGER const ldb, COMPLEX *work, REAL &resid) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Quick exit if N = 0
+    // Quick exit if N = 0
     //
     const REAL zero = 0.0;
     if (n <= 0 || nrhs <= 0) {
@@ -71,29 +55,29 @@ void Ctbt03(const char *uplo, const char *trans, const char *diag, INTEGER const
     REAL eps = Rlamch("Epsilon");
     REAL smlnum = Rlamch("Safe minimum");
     //
-    //     Compute the norm of the triangular matrix A using the column
-    //     norms already computed by Clatbs.
+    // Compute the norm of the triangular matrix A using the column
+    // norms already computed by Clatbs.
     //
     REAL tnorm = zero;
     INTEGER j = 0;
-    if (Mlsame(diag, "N")) {
-        if (Mlsame(uplo, "U")) {
+    if (Mlsame(diag.elems(), "N")) {
+        if (Mlsame(uplo.elems(), "U")) {
             for (j = 1; j <= n; j = j + 1) {
-                tnorm = max(tnorm, REAL(tscal * abs(ab[((kd + 1) - 1) + (j - 1) * ldab]) + cnorm[j - 1]));
+                tnorm = max(tnorm, tscal * abs(ab[((kd + 1) - 1) + (j - 1) * ldab]) + cnorm[j - 1]);
             }
         } else {
             for (j = 1; j <= n; j = j + 1) {
-                tnorm = max(tnorm, REAL(tscal * abs(ab[(j - 1) * ldab]) + cnorm[j - 1]));
+                tnorm = max(tnorm, tscal * abs(ab[(j - 1) * ldab]) + cnorm[j - 1]);
             }
         }
     } else {
         for (j = 1; j <= n; j = j + 1) {
-            tnorm = max(tnorm, REAL(tscal + cnorm[j - 1]));
+            tnorm = max(tnorm, tscal + cnorm[j - 1]);
         }
     }
     //
-    //     Compute the maximum over the number of right hand sides of
-    //        norm(op(A)*x - s*b) / ( norm(op(A)) * norm(x) * EPS ).
+    // Compute the maximum over the number of right hand sides of
+    // norm(op(A)*x - s*b) / ( norm(op(A)) * norm(x) * EPS ).
     //
     resid = zero;
     INTEGER ix = 0;
@@ -107,7 +91,7 @@ void Ctbt03(const char *uplo, const char *trans, const char *diag, INTEGER const
         xnorm = max(one, abs(x[(ix - 1) + (j - 1) * ldx]));
         xscal = (one / xnorm) / castREAL(kd + 1);
         CRscal(n, xscal, work, 1);
-        Ctbmv(uplo, trans, diag, n, kd, ab, ldab, work, 1);
+        Ctbmv(uplo.elems(), trans.elems(), diag.elems(), n, kd, ab, ldab, work, 1);
         Caxpy(n, COMPLEX(-scale * xscal), &b[(j - 1) * ldb], 1, work, 1);
         ix = iCamax(n, work, 1);
         err = tscal * abs(work[ix - 1]);
@@ -134,6 +118,6 @@ void Ctbt03(const char *uplo, const char *trans, const char *diag, INTEGER const
         resid = max(resid, err);
     }
     //
-    //     End of Ctbt03
+    // End of Ctbt03
     //
 }

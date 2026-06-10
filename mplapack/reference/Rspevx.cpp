@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DSPEVX.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -57,7 +64,6 @@ void Rspevx(const char *jobz, const char *range, const char *uplo, INTEGER const
     INTEGER indee = 0;
     INTEGER i = 0;
     char order;
-    INTEGER indibl = 0;
     INTEGER indisp = 0;
     INTEGER indiwo = 0;
     INTEGER nsplit = 0;
@@ -67,7 +73,7 @@ void Rspevx(const char *jobz, const char *range, const char *uplo, INTEGER const
     INTEGER jj = 0;
     INTEGER itmp1 = 0;
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     wantz = Mlsame(jobz, "V");
     alleig = Mlsame(range, "A");
@@ -107,7 +113,7 @@ void Rspevx(const char *jobz, const char *range, const char *uplo, INTEGER const
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     m = 0;
     if (n == 0) {
@@ -125,21 +131,21 @@ void Rspevx(const char *jobz, const char *range, const char *uplo, INTEGER const
             }
         }
         if (wantz) {
-            z[(1 - 1)] = one;
+            z[0] = one;
         }
         return;
     }
     //
-    //     Get machine constants.
+    // Get machine constants.
     //
     safmin = Rlamch("Safe minimum");
     eps = Rlamch("Precision");
     smlnum = safmin / eps;
     bignum = one / smlnum;
     rmin = sqrt(smlnum);
-    rmax = min(REAL(sqrt(bignum)), REAL(one / sqrt(sqrt(safmin))));
+    rmax = min(sqrt(bignum), one / sqrt(sqrt(safmin)));
     //
-    //     Scale matrix to allowable range, if necessary.
+    // Scale matrix to allowable range, if necessary.
     //
     iscale = 0;
     abstll = abstol;
@@ -169,7 +175,7 @@ void Rspevx(const char *jobz, const char *range, const char *uplo, INTEGER const
         }
     }
     //
-    //     Call Rsptrd to reduce symmetric packed matrix to tridiagonal form.
+    // Call Rsptrd to reduce symmetric packed matrix to tridiagonal form.
     //
     indtau = 1;
     inde = indtau + n;
@@ -177,9 +183,9 @@ void Rspevx(const char *jobz, const char *range, const char *uplo, INTEGER const
     indwrk = indd + n;
     Rsptrd(uplo, n, ap, &work[indd - 1], &work[inde - 1], &work[indtau - 1], iinfo);
     //
-    //     If all eigenvalues are desired and ABSTOL is less than or equal
-    //     to zero, then call Rsterf or Ropgtr and SSTEQR.  If this fails
-    //     for some eigenvalue, then try Rstebz.
+    // If all eigenvalues are desired and ABSTOL is less than or equal
+    // to zero, then call Rsterf or Ropgtr and SSTEQR.  If this fails
+    // for some eigenvalue, then try Rstebz.
     //
     test = false;
     if (indeig) {
@@ -210,28 +216,36 @@ void Rspevx(const char *jobz, const char *range, const char *uplo, INTEGER const
         info = 0;
     }
     //
-    //     Otherwise, call Rstebz and, if eigenvectors are desired, Rstein.
+    // Otherwise, call Rstebz and, if eigenvectors are desired, SSTEIN.
     //
     if (wantz) {
         order = 'B';
     } else {
         order = 'E';
     }
-    indibl = 1;
-    indisp = indibl + n;
+    indisp = 1 + n;
     indiwo = indisp + n;
-    Rstebz(range, &order, n, vll, vuu, il, iu, abstll, &work[indd - 1], &work[inde - 1], m, nsplit, w, &iwork[indibl - 1], &iwork[indisp - 1], &work[indwrk - 1], &iwork[indiwo - 1], info);
+    Rstebz(range, &order, n, vll, vuu, il, iu, abstll, &work[indd - 1], &work[inde - 1], m, nsplit, w, &iwork[1 - 1], &iwork[indisp - 1], &work[indwrk - 1], &iwork[indiwo - 1], iinfo);
+    if (iinfo != 0) {
+        info = n + iinfo;
+        if (iinfo != 1) {
+            goto statement_20;
+        }
+    }
     //
     if (wantz) {
-        Rstein(n, &work[indd - 1], &work[inde - 1], m, w, &iwork[indibl - 1], &iwork[indisp - 1], z, ldz, &work[indwrk - 1], &iwork[indiwo - 1], ifail, info);
+        Rstein(n, &work[indd - 1], &work[inde - 1], m, w, &iwork[1 - 1], &iwork[indisp - 1], z, ldz, &work[indwrk - 1], &iwork[indiwo - 1], ifail, iinfo);
+        if (iinfo != 0 && info == 0) {
+            info = iinfo;
+        }
         //
-        //        Apply orthogonal matrix used in reduction to tridiagonal
-        //        form to eigenvectors returned by Rstein.
+        // Apply orthogonal matrix used in reduction to tridiagonal
+        // form to eigenvectors returned by Rstein.
         //
         Ropmtr("L", uplo, "N", n, m, ap, &work[indtau - 1], z, ldz, &work[indwrk - 1], iinfo);
     }
 //
-//     If matrix was scaled, then rescale eigenvalues appropriately.
+// If matrix was scaled, then rescale eigenvalues appropriately.
 //
 statement_20:
     if (iscale == 1) {
@@ -243,8 +257,8 @@ statement_20:
         Rscal(imax, one / sigma, w, 1);
     }
     //
-    //     If eigenvalues are not in order, then sort them, along with
-    //     eigenvectors.
+    // If eigenvalues are not in order, then sort them, along with
+    // eigenvectors.
     //
     if (wantz) {
         for (j = 1; j <= m - 1; j = j + 1) {
@@ -258,11 +272,11 @@ statement_20:
             }
             //
             if (i != 0) {
-                itmp1 = iwork[(indibl + i - 1) - 1];
+                itmp1 = iwork[(1 + i - 1) - 1];
                 w[i - 1] = w[j - 1];
-                iwork[(indibl + i - 1) - 1] = iwork[(indibl + j - 1) - 1];
+                iwork[(1 + i - 1) - 1] = iwork[(1 + j - 1) - 1];
                 w[j - 1] = tmp1;
-                iwork[(indibl + j - 1) - 1] = itmp1;
+                iwork[(1 + j - 1) - 1] = itmp1;
                 Rswap(n, &z[(i - 1) * ldz], 1, &z[(j - 1) * ldz], 1);
                 if (info != 0) {
                     itmp1 = ifail[i - 1];
@@ -273,6 +287,6 @@ statement_20:
         }
     }
     //
-    //     End of Rspevx
+    // End of Rspevx
     //
 }

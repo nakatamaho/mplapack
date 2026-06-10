@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,26 +26,17 @@
  *
  */
 
+// Derived from BLAS routine DDOT.
+// Original BLAS authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 
 REAL Rdot(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const incy) {
     REAL return_value = 0.0;
-    //
-    //  -- Reference BLAS level1 routine --
-    //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
     return_value = 0.0;
     REAL dtemp = 0.0;
     if (n <= 0) {
@@ -58,9 +49,9 @@ REAL Rdot(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const
     INTEGER iy = 0;
     if (incx == 1 && incy == 1) {
         //
-        //        code for both increments equal to 1
+        // code for both increments equal to 1
         //
-        //        clean-up loop
+        // clean-up loop
         //
         m = mod(n, 5);
         if (m != 0) {
@@ -78,8 +69,8 @@ REAL Rdot(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const
         }
     } else {
         //
-        //        code for unequal increments or equal increments
-        //          not equal to 1
+        // code for unequal increments or equal increments
+        // not equal to 1
         //
         ix = 1;
         iy = 1;
@@ -97,4 +88,7 @@ REAL Rdot(INTEGER const n, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const
     }
     return_value = dtemp;
     return return_value;
+    //
+    // End of Rdot
+    //
 }

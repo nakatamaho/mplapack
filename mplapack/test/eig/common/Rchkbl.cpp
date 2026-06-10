@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DCHKBL.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,24 +43,10 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-#include <iostream>
-#include <sstream>
-#include <string>
-#include <vector>
-#include <regex>
-
-using namespace std;
-using std::regex;
-using std::regex_replace;
-
 void Rchkbl(INTEGER const nin, INTEGER const nout) {
     common cmn;
     common_read read(cmn);
     common_write write(cmn);
-    double dtmp;
-    char buf[1024];
     INTEGER lmax[3];
     INTEGER ninfo = 0;
     INTEGER knt = 0;
@@ -70,7 +63,6 @@ void Rchkbl(INTEGER const nin, INTEGER const nout) {
     INTEGER iloin = 0;
     INTEGER ihiin = 0;
     REAL ain[lda * lda];
-    INTEGER ldain = lda;
     REAL scalin[lda];
     REAL dummy[1];
     REAL anorm = 0.0;
@@ -79,6 +71,13 @@ void Rchkbl(INTEGER const nin, INTEGER const nout) {
     REAL scale[lda];
     INTEGER info = 0;
     REAL temp = 0.0;
+    static const char *format_9999 = "(1x,'.. test output of Rgebal .. ')";
+    static const char *format_9998 = "(1x,'value of largest test error            = ',d12.3)";
+    static const char *format_9997 = "(1x,'example number where info is not zero  = ',i4)";
+    static const char *format_9996 = "(1x,'example number where ILO or IHI wrong  = ',i4)";
+    static const char *format_9995 = "(1x,'example number having largest error    = ',i4)";
+    static const char *format_9994 = "(1x,'number of examples where info is not 0 = ',i4)";
+    static const char *format_9993 = "(1x,'total number of examples tested        = ',i4)";
     //
     lmax[1 - 1] = 0;
     lmax[2 - 1] = 0;
@@ -88,112 +87,86 @@ void Rchkbl(INTEGER const nin, INTEGER const nout) {
     rmax = zero;
     vmax = zero;
     sfmin = Rlamch("S");
-    string str;
-    char line[1024];
-    istringstream iss;
+    meps = Rlamch("E");
+//
+statement_10:
     //
-    while (getline(cin, str)) {
-        stringstream ss(str);
-        ss >> n;
-        if (n == 0)
-            break;
-        // printf("n is %d\n", (int)n);
-        for (i = 1; i <= n; i = i + 1) {
-            getline(cin, str);
-            string _r = regex_replace(str, regex("D\\+"), "e+");
-            str = regex_replace(_r, regex("D\\-"), "e-");
-            iss.clear();
-            iss.str(str);
+    read(nin, star), n;
+    if (n == 0) {
+        goto statement_70;
+    }
+    for (i = 1; i <= n; i = i + 1) {
+        {
+            read_loop rloop(cmn, nin, star);
             for (j = 1; j <= n; j = j + 1) {
-                iss >> dtmp;
-                a[(i - 1) + (j - 1) * lda] = dtmp;
+                rloop, a[(i - 1) + (j - 1) * lda];
             }
         }
-        //  printf("a=");printmat(n,n,a,lda);printf("\n");
-        getline(cin, str);
-        getline(cin, str);
-        istringstream iss(str);
-        iss >> iloin;
-        iss >> ihiin;
-        // printf("iloin: %d ihiin: %d\n", (int)iloin, (int)ihiin);
-        for (i = 1; i <= n; i = i + 1) {
-            getline(cin, str);
-            string _r = regex_replace(str, regex("D\\+"), "e+");
-            str = regex_replace(_r, regex("D\\-"), "e-");
-            iss.clear();
-            iss.str(str);
-            for (j = 1; j <= n; j = j + 1) {
-                iss >> dtmp;
-                ain[(i - 1) + (j - 1) * ldain] = dtmp;
-            }
-        }
-        getline(cin, str);
-        getline(cin, str);
-
-        string _r = regex_replace(str, regex("D\\+"), "e+");
-        str = regex_replace(_r, regex("D\\-"), "e-");
-        iss.clear();
-        iss.str(str);
-        for (i = 1; i <= n; i = i + 1) {
-            iss >> dtmp;
-            scalin[i - 1] = dtmp;
-        }
-
-        getline(cin, str);
-        //
-        anorm = Rlange("M", n, n, a, lda, dummy);
-        knt++;
-
-        // printf("ain=");printmat(n,n,ain,ldain);printf("\n");
-        // printf("aorg=");printmat(n,n,a,lda);printf("\n");
-        Rgebal("B", n, a, lda, ilo, ihi, scale, info);
-        // printf("aout=");printmat(n,n,a,lda);printf("\n");
-        // printf("scale=");printvec(scale,n);printf("\n");
-        // printf("scalein=");printvec(scalin,n);printf("\n");
-        // printf("\n");
-        //
-        if (info != 0) {
-            ninfo++;
-            lmax[1 - 1] = knt;
-        }
-        //
-        if (ilo != iloin || ihi != ihiin) {
-            ninfo++;
-            lmax[2 - 1] = knt;
-        }
-        //
-        for (i = 1; i <= n; i = i + 1) {
-            for (j = 1; j <= n; j = j + 1) {
-                temp = max(a[(i - 1) + (j - 1) * lda], ain[(i - 1) + (j - 1) * ldain]);
-                temp = max(temp, sfmin);
-                vmax = max(vmax, REAL(abs(a[(i - 1) + (j - 1) * lda] - ain[(i - 1) + (j - 1) * ldain]) / temp));
-            }
-        }
-        //
-        for (i = 1; i <= n; i = i + 1) {
-            temp = max(scale[i - 1], scalin[i - 1]);
-            temp = max(temp, sfmin);
-            vmax = max(vmax, REAL(abs(scale[i - 1] - scalin[i - 1]) / temp));
-        }
-        //
-        if (vmax > rmax) {
-            lmax[3 - 1] = knt;
-            rmax = vmax;
-        }
-        //
     }
     //
-    write(nout, "(1x,'.. test output of Rgebal .. ')");
+    read(nin, star), iloin, ihiin;
+    for (i = 1; i <= n; i = i + 1) {
+        {
+            read_loop rloop(cmn, nin, star);
+            for (j = 1; j <= n; j = j + 1) {
+                rloop, ain[(i - 1) + (j - 1) * lda];
+            }
+        }
+    }
+    {
+        read_loop rloop(cmn, nin, star);
+        for (i = 1; i <= n; i = i + 1) {
+            rloop, scalin[i - 1];
+        }
+    }
     //
-    sprintnum_short(buf, rmax);
-    write(nout, "(1x,'value of largest test error            = ',a)"), buf;
-    write(nout, "(1x,'example number where info is not zero  = ',i4)"), lmax[1 - 1];
-    write(nout, "(1x,'example number where ILO or IHI wrong  = ',i4)"), lmax[2 - 1];
-    write(nout, "(1x,'example number having largest error    = ',i4)"), lmax[3 - 1];
-    write(nout, "(1x,'number of examples where info is not 0 = ',i4)"), ninfo;
-    write(nout, "(1x,'total number of examples tested        = ',i4)"), knt;
+    anorm = Rlange("M", n, n, a, lda, dummy);
+    knt++;
     //
-    //     End of Rchkbl
+    Rgebal("B", n, a, lda, ilo, ihi, scale, info);
     //
-    return;
+    if (info != 0) {
+        ninfo++;
+        lmax[1 - 1] = knt;
+    }
+    //
+    if (ilo != iloin || ihi != ihiin) {
+        ninfo++;
+        lmax[2 - 1] = knt;
+    }
+    //
+    for (i = 1; i <= n; i = i + 1) {
+        for (j = 1; j <= n; j = j + 1) {
+            temp = max(a[(i - 1) + (j - 1) * lda], ain[(i - 1) + (j - 1) * lda]);
+            temp = max(temp, sfmin);
+            vmax = max(vmax, abs(a[(i - 1) + (j - 1) * lda] - ain[(i - 1) + (j - 1) * lda]) / temp);
+        }
+    }
+    //
+    for (i = 1; i <= n; i = i + 1) {
+        temp = max(scale[i - 1], scalin[i - 1]);
+        temp = max(temp, sfmin);
+        vmax = max(vmax, abs(scale[i - 1] - scalin[i - 1]) / temp);
+    }
+    //
+    if (vmax > rmax) {
+        lmax[3 - 1] = knt;
+        rmax = vmax;
+    }
+    //
+    goto statement_10;
+//
+statement_70:
+    //
+    write(nout, format_9999);
+    //
+    write(nout, format_9998), rmax;
+    write(nout, format_9997), lmax[1 - 1];
+    write(nout, format_9996), lmax[2 - 1];
+    write(nout, format_9995), lmax[3 - 1];
+    write(nout, format_9994), ninfo;
+    write(nout, format_9993), knt;
+    //
+    // End of Rchkbl
+    //
 }

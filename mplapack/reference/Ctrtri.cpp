@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZTRTRI.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Ctrtri(const char *uplo, const char *diag, INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER &info) {
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     bool upper = Mlsame(uplo, "U");
@@ -50,13 +57,13 @@ void Ctrtri(const char *uplo, const char *diag, INTEGER const n, COMPLEX *a, INT
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
     }
     //
-    //     Check for singularity if non-unit.
+    // Check for singularity if non-unit.
     //
     const COMPLEX zero = COMPLEX(0.0, 0.0);
     if (nounit) {
@@ -68,64 +75,60 @@ void Ctrtri(const char *uplo, const char *diag, INTEGER const n, COMPLEX *a, INT
         info = 0;
     }
     //
-    //     Determine the block size for this environment.
+    // Determine the block size for this environment.
     //
-    char uplo_diag[3];
-    uplo_diag[0] = uplo[0];
-    uplo_diag[1] = diag[0];
-    uplo_diag[2] = '\0';
-    INTEGER nb = iMlaenv(1, "Ctrtri", uplo_diag, n, -1, -1, -1);
+    INTEGER nb = iMlaenv(1, "Ctrtri", CHAR2(uplo, diag), n, -1, -1, -1);
     INTEGER j = 0;
     INTEGER jb = 0;
     const COMPLEX one = COMPLEX(1.0, 0.0);
     INTEGER nn = 0;
     if (nb <= 1 || nb >= n) {
         //
-        //        Use unblocked code
+        // Use unblocked code
         //
         Ctrti2(uplo, diag, n, a, lda, info);
     } else {
         //
-        //        Use blocked code
+        // Use blocked code
         //
         if (upper) {
             //
-            //           Compute inverse of upper triangular matrix
+            // Compute inverse of upper triangular matrix
             //
             for (j = 1; j <= n; j = j + nb) {
                 jb = min(nb, n - j + 1);
                 //
-                //              Compute rows 1:j-1 of current block column
+                // Compute rows 1:j-1 of current block column
                 //
                 Ctrmm("Left", "Upper", "No transpose", diag, j - 1, jb, one, a, lda, &a[(j - 1) * lda], lda);
                 Ctrsm("Right", "Upper", "No transpose", diag, j - 1, jb, -one, &a[(j - 1) + (j - 1) * lda], lda, &a[(j - 1) * lda], lda);
                 //
-                //              Compute inverse of current diagonal block
+                // Compute inverse of current diagonal block
                 //
                 Ctrti2("Upper", diag, jb, &a[(j - 1) + (j - 1) * lda], lda, info);
             }
         } else {
             //
-            //           Compute inverse of lower triangular matrix
+            // Compute inverse of lower triangular matrix
             //
             nn = ((n - 1) / nb) * nb + 1;
             for (j = nn; j >= 1; j = j - nb) {
                 jb = min(nb, n - j + 1);
                 if (j + jb <= n) {
                     //
-                    //                 Compute rows j+jb:n of current block column
+                    // Compute rows j+jb:n of current block column
                     //
                     Ctrmm("Left", "Lower", "No transpose", diag, n - j - jb + 1, jb, one, &a[((j + jb) - 1) + ((j + jb) - 1) * lda], lda, &a[((j + jb) - 1) + (j - 1) * lda], lda);
                     Ctrsm("Right", "Lower", "No transpose", diag, n - j - jb + 1, jb, -one, &a[(j - 1) + (j - 1) * lda], lda, &a[((j + jb) - 1) + (j - 1) * lda], lda);
                 }
                 //
-                //              Compute inverse of current diagonal block
+                // Compute inverse of current diagonal block
                 //
                 Ctrti2("Lower", diag, jb, &a[(j - 1) + (j - 1) * lda], lda, info);
             }
         }
     }
     //
-    //     End of Ctrtri
+    // End of Ctrtri
     //
 }

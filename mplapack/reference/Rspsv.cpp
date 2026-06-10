@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DSPSV.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rspsv(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *ap, INTEGER *ipiv, REAL *b, INTEGER const ldb, INTEGER &info) {
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     if (!Mlsame(uplo, "U") && !Mlsame(uplo, "L")) {
@@ -48,17 +55,17 @@ void Rspsv(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *ap, INTE
         return;
     }
     //
-    //     Compute the factorization A = U*D*U**T or A = L*D*L**T.
+    // Compute the factorization A = U*D*U**T or A = L*D*L**T.
     //
     Rsptrf(uplo, n, ap, ipiv, info);
     if (info == 0) {
         //
-        //        Solve the system A*X = B, overwriting B with X.
+        // Solve the system A*X = B, overwriting B with X.
         //
         Rsptrs(uplo, n, nrhs, ap, ipiv, b, ldb, info);
         //
     }
     //
-    //     End of Rspsv
+    // End of Rspsv
     //
 }

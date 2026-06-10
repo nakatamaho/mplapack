@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZGEQP3.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -51,7 +58,8 @@ void Cgeqp3(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, INT
     INTEGER jb = 0;
     INTEGER fjb = 0;
     //
-    //     Test input arguments
+    // Test input arguments
+    // ====================
     //
     info = 0;
     lquery = (lwork == -1);
@@ -87,7 +95,7 @@ void Cgeqp3(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, INT
         return;
     }
     //
-    //     Move initial columns up front.
+    // Move initial columns up front.
     //
     nfxd = 1;
     for (j = 1; j <= n; j = j + 1) {
@@ -106,11 +114,11 @@ void Cgeqp3(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, INT
     }
     nfxd = nfxd - 1;
     //
-    //     Factorize fixed columns
-    //  =======================
+    // Factorize fixed columns
+    // =======================
     //
-    //     Compute the QR factorization of fixed columns and update
-    //     remaining columns.
+    // Compute the QR factorization of fixed columns and update
+    // remaining columns.
     //
     if (nfxd > 0) {
         na = min(m, nfxd);
@@ -126,8 +134,8 @@ void Cgeqp3(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, INT
         }
     }
     //
-    //     Factorize free columns
-    //  ======================
+    // Factorize free columns
+    // ======================
     //
     if (nfxd < minmn) {
         //
@@ -135,7 +143,7 @@ void Cgeqp3(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, INT
         sn = n - nfxd;
         sminmn = minmn - nfxd;
         //
-        //        Determine the block size.
+        // Determine the block size.
         //
         nb = iMlaenv(inb, "Cgeqrf", " ", sm, sn, -1, -1);
         nbmin = 2;
@@ -143,20 +151,20 @@ void Cgeqp3(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, INT
         //
         if ((nb > 1) && (nb < sminmn)) {
             //
-            //           Determine when to cross over from blocked to unblocked code.
+            // Determine when to cross over from blocked to unblocked code.
             //
             nx = max((INTEGER)0, iMlaenv(ixover, "Cgeqrf", " ", sm, sn, -1, -1));
             //
             if (nx < sminmn) {
                 //
-                //              Determine if workspace is large enough for blocked code.
+                // Determine if workspace is large enough for blocked code.
                 //
                 minws = (sn + 1) * nb;
                 iws = max(iws, minws);
                 if (lwork < minws) {
                     //
-                    //                 Not enough workspace to use optimal NB: Reduce NB and
-                    //                 determine the minimum value of NB.
+                    // Not enough workspace to use optimal NB: Reduce NB and
+                    // determine the minimum value of NB.
                     //
                     nb = lwork / (sn + 1);
                     nbmin = max((INTEGER)2, iMlaenv(inbmin, "Cgeqrf", " ", sm, sn, -1, -1));
@@ -165,8 +173,8 @@ void Cgeqp3(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, INT
             }
         }
         //
-        //        Initialize partial column norms. The first N elements of work
-        //        store the exact column norms.
+        // Initialize partial column norms. The first N elements of work
+        // store the exact column norms.
         //
         for (j = nfxd + 1; j <= n; j = j + 1) {
             rwork[j - 1] = RCnrm2(sm, &a[((nfxd + 1) - 1) + (j - 1) * lda], 1);
@@ -175,18 +183,18 @@ void Cgeqp3(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, INT
         //
         if ((nb >= nbmin) && (nb < sminmn) && (nx < sminmn)) {
             //
-            //           Use blocked code initially.
+            // Use blocked code initially.
             //
             j = nfxd + 1;
             //
-            //           Compute factorization: while loop.
+            // Compute factorization: while loop.
             //
             topbmn = minmn - nx;
         statement_30:
             if (j <= topbmn) {
                 jb = min(nb, topbmn - j + 1);
                 //
-                //              Factorize JB columns among columns J:N.
+                // Factorize JB columns among columns J:N.
                 //
                 Claqps(m, n - j + 1, j - 1, jb, fjb, &a[(j - 1) * lda], lda, &jpvt[j - 1], &tau[j - 1], &rwork[j - 1], &rwork[(n + j) - 1], &work[1 - 1], &work[(jb + 1) - 1], n - j + 1);
                 //
@@ -197,7 +205,7 @@ void Cgeqp3(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, INT
             j = nfxd + 1;
         }
         //
-        //        Use unblocked code to factor the last or only block.
+        // Use unblocked code to factor the last or only block.
         //
         if (j <= minmn) {
             Claqp2(m, n - j + 1, j - 1, &a[(j - 1) * lda], lda, &jpvt[j - 1], &tau[j - 1], &rwork[j - 1], &rwork[(n + j) - 1], &work[1 - 1]);
@@ -207,6 +215,6 @@ void Cgeqp3(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, INT
     //
     work[1 - 1] = COMPLEX(lwkopt);
     //
-    //     End of Cgeqp3
+    // End of Cgeqp3
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,33 +26,18 @@
  *
  */
 
+// Derived from BLAS routine DSYMV.
+// Original BLAS authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 
 void Rsymv(const char *uplo, INTEGER const n, REAL const alpha, REAL *a, INTEGER const lda, REAL *x, INTEGER const incx, REAL const beta, REAL *y, INTEGER const incy) {
     //
-    //  -- Reference BLAS level2 routine --
-    //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     INTEGER info = 0;
     if (!Mlsame(uplo, "U") && !Mlsame(uplo, "L")) {
@@ -67,11 +52,11 @@ void Rsymv(const char *uplo, INTEGER const n, REAL const alpha, REAL *a, INTEGER
         info = 10;
     }
     if (info != 0) {
-        Mxerbla("Rsymv ", info);
+        Mxerbla("Rsymv", info);
         return;
     }
     //
-    //     Quick return if possible.
+    // Quick return if possible.
     //
     const REAL zero = 0.0;
     const REAL one = 1.0;
@@ -79,7 +64,7 @@ void Rsymv(const char *uplo, INTEGER const n, REAL const alpha, REAL *a, INTEGER
         return;
     }
     //
-    //     Set up the start points in  X  and  Y.
+    // Set up the start points in  X  and  Y.
     //
     INTEGER kx = 0;
     if (incx > 0) {
@@ -94,11 +79,11 @@ void Rsymv(const char *uplo, INTEGER const n, REAL const alpha, REAL *a, INTEGER
         ky = 1 - (n - 1) * incy;
     }
     //
-    //     Start the operations. In this version the elements of A are
-    //     accessed sequentially with one pass through the triangular part
-    //     of A.
+    // Start the operations. In this version the elements of A are
+    // accessed sequentially with one pass through the triangular part
+    // of A.
     //
-    //     First form  y := beta*y.
+    // First form  y := beta*y.
     //
     INTEGER i = 0;
     INTEGER iy = 0;
@@ -139,7 +124,7 @@ void Rsymv(const char *uplo, INTEGER const n, REAL const alpha, REAL *a, INTEGER
     INTEGER ix = 0;
     if (Mlsame(uplo, "U")) {
         //
-        //        Form  y  when A is stored in upper triangle.
+        // Form  y  when A is stored in upper triangle.
         //
         if ((incx == 1) && (incy == 1)) {
             for (j = 1; j <= n; j = j + 1) {
@@ -172,7 +157,7 @@ void Rsymv(const char *uplo, INTEGER const n, REAL const alpha, REAL *a, INTEGER
         }
     } else {
         //
-        //        Form  y  when A is stored in lower triangle.
+        // Form  y  when A is stored in lower triangle.
         //
         if ((incx == 1) && (incy == 1)) {
             for (j = 1; j <= n; j = j + 1) {
@@ -207,6 +192,6 @@ void Rsymv(const char *uplo, INTEGER const n, REAL const alpha, REAL *a, INTEGER
         }
     }
     //
-    //     End of Rsymv .
+    // End of Rsymv
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DGEESX.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -68,34 +75,7 @@ void Rgeesx(const char *jobvs, const char *sort, bool (*select)(REAL, REAL), con
     INTEGER ip = 0;
     bool cursl = false;
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //     .. Function Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     wantvs = Mlsame(jobvs, "V");
@@ -120,19 +100,19 @@ void Rgeesx(const char *jobvs, const char *sort, bool (*select)(REAL, REAL), con
         info = -12;
     }
     //
-    //     Compute workspace
-    //      (Note: Comments in the code beginning "RWorkspace:" describe the
-    //       minimal amount of real workspace needed at that point in the
-    //       code, as well as the preferred amount for good performance.
-    //       IWorkspace refers to integer workspace.
-    //       NB refers to the optimal block size for the immediately
-    //       following subroutine, as returned by iMlaenv.
-    //       HSWORK refers to the workspace preferred by Rhseqr, as
-    //       calculated below. HSWORK is computed assuming ILO=1 and IHI=N,
-    //       the worst case.
-    //       If SENSE = 'E', 'V' or 'B', then the amount of workspace needed
-    //       depends on SDIM, which is computed by the routine Rtrsen later
-    //       in the code.)
+    // Compute workspace
+    // (Note: Comments in the code beginning "RWorkspace:" describe the
+    // minimal amount of real workspace needed at that point in the
+    // code, as well as the preferred amount for good performance.
+    // IWorkspace refers to integer workspace.
+    // NB refers to the optimal block size for the immediately
+    // following subroutine, as returned by iMlaenv.
+    // HSWORK refers to the workspace preferred by Rhseqr, as
+    // calculated below. HSWORK is computed assuming ILO=1 and IHI=N,
+    // the worst case.
+    // If SENSE = 'E', 'V' or 'B', then the amount of workspace needed
+    // depends on SDIM, which is computed by the routine Rtrsen later
+    // in the code.)
     //
     if (info == 0) {
         liwrk = 1;
@@ -177,14 +157,14 @@ void Rgeesx(const char *jobvs, const char *sort, bool (*select)(REAL, REAL), con
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         sdim = 0;
         return;
     }
     //
-    //     Get machine constants
+    // Get machine constants
     //
     eps = Rlamch("P");
     smlnum = Rlamch("S");
@@ -192,7 +172,7 @@ void Rgeesx(const char *jobvs, const char *sort, bool (*select)(REAL, REAL), con
     smlnum = sqrt(smlnum) / eps;
     bignum = one / smlnum;
     //
-    //     Scale A if max element outside range [SMLNUM,BIGNUM]
+    // Scale A if max element outside range [SMLNUM,BIGNUM]
     //
     anrm = Rlange("M", n, n, a, lda, dum);
     scalea = false;
@@ -207,14 +187,14 @@ void Rgeesx(const char *jobvs, const char *sort, bool (*select)(REAL, REAL), con
         Rlascl("G", 0, 0, anrm, cscale, n, n, a, lda, ierr);
     }
     //
-    //     Permute the matrix to make it more nearly triangular
-    //     (RWorkspace: need N)
+    // Permute the matrix to make it more nearly triangular
+    // (RWorkspace: need N)
     //
     ibal = 1;
     Rgebal("P", n, a, lda, ilo, ihi, &work[ibal - 1], ierr);
     //
-    //     Reduce to upper Hessenberg form
-    //     (RWorkspace: need 3*N, prefer 2*N+N*NB)
+    // Reduce to upper Hessenberg form
+    // (RWorkspace: need 3*N, prefer 2*N+N*NB)
     //
     itau = n + ibal;
     iwrk = n + itau;
@@ -222,20 +202,20 @@ void Rgeesx(const char *jobvs, const char *sort, bool (*select)(REAL, REAL), con
     //
     if (wantvs) {
         //
-        //        Copy Householder vectors to VS
+        // Copy Householder vectors to VS
         //
         Rlacpy("L", n, n, a, lda, vs, ldvs);
         //
-        //        Generate orthogonal matrix in VS
-        //        (RWorkspace: need 3*N-1, prefer 2*N+(N-1)*NB)
+        // Generate orthogonal matrix in VS
+        // (RWorkspace: need 3*N-1, prefer 2*N+(N-1)*NB)
         //
         Rorghr(n, ilo, ihi, vs, ldvs, &work[itau - 1], &work[iwrk - 1], lwork - iwrk + 1, ierr);
     }
     //
     sdim = 0;
     //
-    //     Perform QR iteration, accumulating Schur vectors in VS if desired
-    //     (RWorkspace: need N+1, prefer N+HSWORK (see comments) )
+    // Perform QR iteration, accumulating Schur vectors in VS if desired
+    // (RWorkspace: need N+1, prefer N+HSWORK (see comments) )
     //
     iwrk = itau;
     Rhseqr("S", jobvs, n, ilo, ihi, a, lda, wr, wi, vs, ldvs, &work[iwrk - 1], lwork - iwrk + 1, ieval);
@@ -243,7 +223,7 @@ void Rgeesx(const char *jobvs, const char *sort, bool (*select)(REAL, REAL), con
         info = ieval;
     }
     //
-    //     Sort eigenvalues if desired
+    // Sort eigenvalues if desired
     //
     if (wantst && info == 0) {
         if (scalea) {
@@ -254,12 +234,12 @@ void Rgeesx(const char *jobvs, const char *sort, bool (*select)(REAL, REAL), con
             bwork[i - 1] = select(wr[i - 1], wi[i - 1]);
         }
         //
-        //        Reorder eigenvalues, transform Schur vectors, and compute
-        //        reciprocal condition numbers
-        //        (RWorkspace: if SENSE is not 'N', need N+2*SDIM*(N-SDIM)
-        //                     otherwise, need N )
-        //        (IWorkspace: if SENSE is 'V' or 'B', need SDIM*(N-SDIM)
-        //                     otherwise, need 0 )
+        // Reorder eigenvalues, transform Schur vectors, and compute
+        // reciprocal condition numbers
+        // (RWorkspace: if SENSE is not 'N', need N+2*SDIM*(N-SDIM)
+        // otherwise, need N )
+        // (IWorkspace: if SENSE is 'V' or 'B', need SDIM*(N-SDIM)
+        // otherwise, need 0 )
         //
         Rtrsen(sense, jobvs, bwork, n, a, lda, vs, ldvs, wr, wi, sdim, rconde, rcondv, &work[iwrk - 1], lwork - iwrk + 1, iwork, liwork, icond);
         if (!wantsn) {
@@ -267,17 +247,17 @@ void Rgeesx(const char *jobvs, const char *sort, bool (*select)(REAL, REAL), con
         }
         if (icond == -15) {
             //
-            //           Not enough real workspace
+            // Not enough real workspace
             //
             info = -16;
         } else if (icond == -17) {
             //
-            //           Not enough integer workspace
+            // Not enough integer workspace
             //
             info = -18;
         } else if (icond > 0) {
             //
-            //           Rtrsen failed to reorder or to restore standard Schur form
+            // Rtrsen failed to reorder or to restore standard Schur form
             //
             info = icond + n;
         }
@@ -285,15 +265,15 @@ void Rgeesx(const char *jobvs, const char *sort, bool (*select)(REAL, REAL), con
     //
     if (wantvs) {
         //
-        //        Undo balancing
-        //        (RWorkspace: need N)
+        // Undo balancing
+        // (RWorkspace: need N)
         //
         Rgebak("P", "R", n, ilo, ihi, &work[ibal - 1], n, vs, ldvs, ierr);
     }
     //
     if (scalea) {
         //
-        //        Undo scaling for the Schur form of A
+        // Undo scaling for the Schur form of A
         //
         Rlascl("H", 0, 0, cscale, anrm, n, n, a, lda, ierr);
         Rcopy(n, a, lda + 1, wr, 1);
@@ -304,9 +284,9 @@ void Rgeesx(const char *jobvs, const char *sort, bool (*select)(REAL, REAL), con
         }
         if (cscale == smlnum) {
             //
-            //           If scaling back towards underflow, adjust WI if an
-            //           offdiagonal element of a 2-by-2 block in the Schur form
-            //           underflows.
+            // If scaling back towards underflow, adjust WI if an
+            // offdiagonal element of a 2-by-2 block in the Schur form
+            // underflows.
             //
             if (ieval > 0) {
                 i1 = ieval + 1;
@@ -355,7 +335,7 @@ void Rgeesx(const char *jobvs, const char *sort, bool (*select)(REAL, REAL), con
     //
     if (wantst && info == 0) {
         //
-        //        Check if reordering successful
+        // Check if reordering successful
         //
         lastsl = true;
         lst2sl = true;
@@ -374,7 +354,7 @@ void Rgeesx(const char *jobvs, const char *sort, bool (*select)(REAL, REAL), con
             } else {
                 if (ip == 1) {
                     //
-                    //                 Last eigenvalue of conjugate pair
+                    // Last eigenvalue of conjugate pair
                     //
                     cursl = cursl || lastsl;
                     lastsl = cursl;
@@ -387,7 +367,7 @@ void Rgeesx(const char *jobvs, const char *sort, bool (*select)(REAL, REAL), con
                     }
                 } else {
                     //
-                    //                 First eigenvalue of conjugate pair
+                    // First eigenvalue of conjugate pair
                     //
                     ip = 1;
                 }
@@ -404,6 +384,6 @@ void Rgeesx(const char *jobvs, const char *sort, bool (*select)(REAL, REAL), con
         iwork[1 - 1] = 1;
     }
     //
-    //     End of Rgeesx
+    // End of Rgeesx
     //
 }

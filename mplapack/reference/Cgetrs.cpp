@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,35 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZGETRS.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Cgetrs(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, COMPLEX *b, INTEGER const ldb, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     bool notran = Mlsame(trans, "N");
@@ -74,7 +58,7 @@ void Cgetrs(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *a, 
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0 || nrhs == 0) {
         return;
@@ -83,36 +67,36 @@ void Cgetrs(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *a, 
     const COMPLEX one = COMPLEX(1.0, 0.0);
     if (notran) {
         //
-        //        Solve A * X = B.
+        // Solve A * X = B.
         //
-        //        Apply row interchanges to the right hand sides.
+        // Apply row interchanges to the right hand sides.
         //
         Claswp(nrhs, b, ldb, 1, n, ipiv, 1);
         //
-        //        Solve L*X = B, overwriting B with X.
+        // Solve L*X = B, overwriting B with X.
         //
         Ctrsm("Left", "Lower", "No transpose", "Unit", n, nrhs, one, a, lda, b, ldb);
         //
-        //        Solve U*X = B, overwriting B with X.
+        // Solve U*X = B, overwriting B with X.
         //
         Ctrsm("Left", "Upper", "No transpose", "Non-unit", n, nrhs, one, a, lda, b, ldb);
     } else {
         //
-        //        Solve A**T * X = B  or A**H * X = B.
+        // Solve A**T * X = B  or A**H * X = B.
         //
-        //        Solve U**T *X = B or U**H *X = B, overwriting B with X.
+        // Solve U**T *X = B or U**H *X = B, overwriting B with X.
         //
         Ctrsm("Left", "Upper", trans, "Non-unit", n, nrhs, one, a, lda, b, ldb);
         //
-        //        Solve L**T *X = B, or L**H *X = B overwriting B with X.
+        // Solve L**T *X = B, or L**H *X = B overwriting B with X.
         //
         Ctrsm("Left", "Lower", trans, "Unit", n, nrhs, one, a, lda, b, ldb);
         //
-        //        Apply row interchanges to the solution vectors.
+        // Apply row interchanges to the solution vectors.
         //
         Claswp(nrhs, b, ldb, 1, n, ipiv, -1);
     }
     //
-    //     End of Cgetrs
+    // End of Cgetrs
     //
 }

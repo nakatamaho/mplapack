@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DPOT03.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,9 +43,9 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Rpot03(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL *ainv, INTEGER const ldainv, REAL *work, INTEGER const ldwork, REAL *rwork, REAL &rcond, REAL &resid) {
+void Rpot03(fem::str_cref uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL *ainv, INTEGER const ldainv, REAL *work, INTEGER const ldwork, REAL *rwork, REAL &rcond, REAL &resid) {
     //
-    //     Quick exit if N = 0.
+    // Quick exit if N = 0.
     //
     const REAL one = 1.0;
     const REAL zero = 0.0;
@@ -48,11 +55,11 @@ void Rpot03(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL 
         return;
     }
     //
-    //     Exit with RESID = 1/EPS if ANORM = 0 or AINVNM = 0.
+    // Exit with RESID = 1/EPS if ANORM = 0 or AINVNM = 0.
     //
     REAL eps = Rlamch("Epsilon");
-    REAL anorm = Rlansy("1", uplo, n, a, lda, rwork);
-    REAL ainvnm = Rlansy("1", uplo, n, ainv, ldainv, rwork);
+    REAL anorm = Rlansy("1", uplo.elems(), n, a, lda, rwork);
+    REAL ainvnm = Rlansy("1", uplo.elems(), n, ainv, ldainv, rwork);
     if (anorm <= zero || ainvnm <= zero) {
         rcond = zero;
         resid = one / eps;
@@ -60,12 +67,12 @@ void Rpot03(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL 
     }
     rcond = (one / anorm) / ainvnm;
     //
-    //     Expand AINV into a full matrix and call Rsymm to multiply
-    //     AINV on the left by A.
+    // Expand AINV into a full matrix and call Rsymm to multiply
+    // AINV on the left by A.
     //
     INTEGER j = 0;
     INTEGER i = 0;
-    if (Mlsame(uplo, "U")) {
+    if (Mlsame(uplo.elems(), "U")) {
         for (j = 1; j <= n; j = j + 1) {
             for (i = 1; i <= j - 1; i = i + 1) {
                 ainv[(j - 1) + (i - 1) * ldainv] = ainv[(i - 1) + (j - 1) * ldainv];
@@ -78,20 +85,20 @@ void Rpot03(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL 
             }
         }
     }
-    Rsymm("Left", uplo, n, n, -one, a, lda, ainv, ldainv, zero, work, ldwork);
+    Rsymm("Left", uplo.elems(), n, n, -one, a, lda, ainv, ldainv, zero, work, ldwork);
     //
-    //     Add the identity matrix to WORK .
+    // Add the identity matrix to WORK .
     //
     for (i = 1; i <= n; i = i + 1) {
         work[(i - 1) + (i - 1) * ldwork] += one;
     }
     //
-    //     Compute norm(I - A*AINV) / (N * norm(A) * norm(AINV) * EPS)
+    // Compute norm(I - A*AINV) / (N * norm(A) * norm(AINV) * EPS)
     //
     resid = Rlange("1", n, n, work, ldwork, rwork);
     //
     resid = ((resid * rcond) / eps) / castREAL(n);
     //
-    //     End of Rpot03
+    // End of Rpot03
     //
 }

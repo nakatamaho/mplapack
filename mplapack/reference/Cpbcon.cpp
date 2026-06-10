@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,10 +26,15 @@
  *
  */
 
+// Derived from LAPACK routine ZPBCON.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
-
-inline REAL abs1(COMPLEX zdum) { return abs(zdum.real()) + abs(zdum.imag()); }
 
 void Cpbcon(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, INTEGER const ldab, REAL const anorm, REAL &rcond, COMPLEX *work, REAL *rwork, INTEGER &info) {
     COMPLEX zdum = 0.0;
@@ -46,36 +51,7 @@ void Cpbcon(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, IN
     REAL scale = 0.0;
     INTEGER ix = 0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Statement Functions ..
-    //     ..
-    //     .. Statement Function definitions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     upper = Mlsame(uplo, "U");
@@ -95,7 +71,7 @@ void Cpbcon(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, IN
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     rcond = zero;
     if (n == 0) {
@@ -107,7 +83,7 @@ void Cpbcon(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, IN
     //
     smlnum = Rlamch("Safe minimum");
     //
-    //     Estimate the 1-norm of the inverse.
+    // Estimate the 1-norm of the inverse.
     //
     kase = 0;
     normin = 'N';
@@ -116,32 +92,32 @@ statement_10:
     if (kase != 0) {
         if (upper) {
             //
-            //           Multiply by inv(U**H).
+            // Multiply by inv(U**H).
             //
             Clatbs("Upper", "Conjugate transpose", "Non-unit", &normin, n, kd, ab, ldab, work, scalel, rwork, info);
             normin = 'Y';
             //
-            //           Multiply by inv(U).
+            // Multiply by inv(U).
             //
             Clatbs("Upper", "No transpose", "Non-unit", &normin, n, kd, ab, ldab, work, scaleu, rwork, info);
         } else {
             //
-            //           Multiply by inv(L).
+            // Multiply by inv(L).
             //
             Clatbs("Lower", "No transpose", "Non-unit", &normin, n, kd, ab, ldab, work, scalel, rwork, info);
             normin = 'Y';
             //
-            //           Multiply by inv(L**H).
+            // Multiply by inv(L**H).
             //
             Clatbs("Lower", "Conjugate transpose", "Non-unit", &normin, n, kd, ab, ldab, work, scaleu, rwork, info);
         }
         //
-        //        Multiply by 1/SCALE if doing so will not cause overflow.
+        // Multiply by 1/SCALE if doing so will not cause overflow.
         //
         scale = scalel * scaleu;
         if (scale != one) {
             ix = iCamax(n, work, 1);
-            if (scale < abs1(work[ix - 1]) * smlnum || scale == zero) {
+            if (scale < cabs1(work[ix - 1]) * smlnum || scale == zero) {
                 goto statement_20;
             }
             CRrscl(n, scale, work, 1);
@@ -149,7 +125,7 @@ statement_10:
         goto statement_10;
     }
     //
-    //     Compute the estimate of the reciprocal condition number.
+    // Compute the estimate of the reciprocal condition number.
     //
     if (ainvnm != zero) {
         rcond = (one / ainvnm) / anorm;
@@ -157,6 +133,6 @@ statement_10:
 //
 statement_20:;
     //
-    //     End of Cpbcon
+    // End of Cpbcon
     //
 }

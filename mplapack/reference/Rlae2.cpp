@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DLAE2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rlae2(REAL const a, REAL const b, REAL const c, REAL &rt1, REAL &rt2) {
     //
-    //     Compute the eigenvalues
+    // Compute the eigenvalues
     //
     REAL sm = a + c;
     REAL df = a - c;
@@ -56,36 +63,36 @@ void Rlae2(REAL const a, REAL const b, REAL const c, REAL &rt1, REAL &rt2) {
         rt = ab * sqrt(one + pow2((adf / ab)));
     } else {
         //
-        //        Includes case AB=ADF=0
+        // Includes case AB=ADF=0
         //
         rt = ab * sqrt(two);
     }
     const REAL zero = 0.0;
-    const REAL half = 0.5e0;
+    const REAL half = 0.5;
     if (sm < zero) {
         rt1 = half * (sm - rt);
         //
-        //        Order of execution important.
-        //        To get fully accurate smaller eigenvalue,
-        //        next line needs to be executed in higher precision.
+        // Order of execution important.
+        // To get fully accurate smaller eigenvalue,
+        // next line needs to be executed in higher precision.
         //
         rt2 = (acmx / rt1) * acmn - (b / rt1) * b;
     } else if (sm > zero) {
         rt1 = half * (sm + rt);
         //
-        //        Order of execution important.
-        //        To get fully accurate smaller eigenvalue,
-        //        next line needs to be executed in higher precision.
+        // Order of execution important.
+        // To get fully accurate smaller eigenvalue,
+        // next line needs to be executed in higher precision.
         //
         rt2 = (acmx / rt1) * acmn - (b / rt1) * b;
     } else {
         //
-        //        Includes case RT1 = RT2 = 0
+        // Includes case RT1 = RT2 = 0
         //
         rt1 = half * rt;
         rt2 = -half * rt;
     }
     //
-    //     End of Rlae2
+    // End of Rlae2
     //
 }

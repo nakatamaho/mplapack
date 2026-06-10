@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZHET22.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,9 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-void Chet22(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER const m, INTEGER const kband, COMPLEX *a, INTEGER const lda, REAL *d, REAL *e, COMPLEX *u, INTEGER const ldu, COMPLEX * /* v */, INTEGER const ldv, COMPLEX * /* tau */, COMPLEX *work, REAL *rwork, REAL *result) {
+void Chet22(INTEGER const itype, fem::str_cref uplo, INTEGER const n, INTEGER const m, INTEGER const kband, COMPLEX *a, INTEGER const lda, REAL *d, REAL *e, COMPLEX *u, INTEGER const ldu, COMPLEX * /* v */, INTEGER const ldv, COMPLEX * /* tau */, COMPLEX *work, REAL *rwork, REAL *result) {
     //
     const REAL zero = 0.0;
     result[1 - 1] = zero;
@@ -50,19 +55,19 @@ void Chet22(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
     REAL unfl = Rlamch("Safe minimum");
     REAL ulp = Rlamch("Precision");
     //
-    //     Do Test 1
+    // Do Test 1
     //
-    //     Norm of A:
+    // Norm of A:
     //
-    REAL anorm = max({Clanhe("1", uplo, n, a, lda, rwork), unfl});
+    REAL anorm = max(Clanhe("1", uplo.elems(), n, a, lda, rwork), unfl);
     //
-    //     Compute error matrix:
+    // Compute error matrix:
     //
-    //     ITYPE=1: error = U**H A U - S
+    // ITYPE=1: error = U**H A U - S
     //
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     const COMPLEX czero = COMPLEX(0.0, 0.0);
-    Chemm("L", uplo, n, m, cone, a, lda, u, ldu, czero, work, n);
+    Chemm("L", uplo.elems(), n, m, cone, a, lda, u, ldu, czero, work, n);
     INTEGER nn = n * n;
     INTEGER nnp1 = nn + 1;
     Cgemm("C", "N", m, m, n, cone, u, ldu, work, n, czero, &work[nnp1 - 1], n);
@@ -82,27 +87,27 @@ void Chet22(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
             work[jj2 - 1] = work[jj2 - 1] - e[(j - 1) - 1];
         }
     }
-    REAL wnorm = Clanhe("1", uplo, m, &work[nnp1 - 1], n, rwork);
+    REAL wnorm = Clanhe("1", uplo.elems(), m, &work[nnp1 - 1], n, rwork);
     //
     const REAL one = 1.0;
     if (anorm > wnorm) {
         result[1 - 1] = (wnorm / anorm) / (m * ulp);
     } else {
         if (anorm < one) {
-            result[1 - 1] = (min(wnorm, REAL(castREAL(m) * anorm)) / anorm) / (castREAL(m) * ulp);
+            result[1 - 1] = (min(wnorm, m * anorm) / anorm) / (m * ulp);
         } else {
-            result[1 - 1] = min(REAL(wnorm / anorm), castREAL(m)) / (castREAL(m) * ulp);
+            result[1 - 1] = min(wnorm / anorm, castREAL(m)) / (m * ulp);
         }
     }
     //
-    //     Do Test 2
+    // Do Test 2
     //
-    //     Compute  U**H U - I
+    // Compute  U**H U - I
     //
     if (itype == 1) {
         Cunt01("Columns", n, m, u, ldu, work, 2 * n * n, rwork, result[2 - 1]);
     }
     //
-    //     End of Chet22
+    // End of Chet22
     //
 }

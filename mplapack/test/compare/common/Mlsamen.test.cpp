@@ -36,8 +36,8 @@
 #endif
 
 void Mlsame_test() {
-    //  char a="A";
-    //  char b="A";
+    // char a="A";
+    // char b="A";
     int errorflag = FALSE;
 
     if (Mlsamen(2, "AB", "AB")) {

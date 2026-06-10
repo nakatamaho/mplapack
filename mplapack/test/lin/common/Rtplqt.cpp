@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DTPLQT.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -38,25 +45,7 @@ using fem::common;
 
 void Rtplqt(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const mb, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *t, INTEGER const ldt, REAL *work, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    // =====================================================================
-    //
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     if (m < 0) {
@@ -79,7 +68,7 @@ void Rtplqt(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const mb,
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (m == 0 || n == 0) {
         return;
@@ -92,7 +81,7 @@ void Rtplqt(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const mb,
     INTEGER iinfo = 0;
     for (i = 1; i <= m; i = i + mb) {
         //
-        //     Compute the QR factorization of the current block
+        // Compute the QR factorization of the current block
         //
         ib = min(m - i + 1, mb);
         nb = min(n - l + i + ib - 1, n);
@@ -104,13 +93,13 @@ void Rtplqt(INTEGER const m, INTEGER const n, INTEGER const l, INTEGER const mb,
         //
         Rtplqt2(ib, nb, lb, &a[(i - 1) + (i - 1) * lda], lda, &b[(i - 1)], ldb, &t[(i - 1) * ldt], ldt, iinfo);
         //
-        //     Update by applying H**T to B(I+IB:M,:) from the right
+        // Update by applying H**T to B(I+IB:M,:) from the right
         //
         if (i + ib <= m) {
             Rtprfb("R", "N", "F", "R", m - i - ib + 1, nb, ib, lb, &b[(i - 1)], ldb, &t[(i - 1) * ldt], ldt, &a[((i + ib) - 1) + (i - 1) * lda], lda, &b[((i + ib) - 1)], ldb, work, m - i - ib + 1);
         }
     }
     //
-    //     End of Rtplqt
+    // End of Rtplqt
     //
 }

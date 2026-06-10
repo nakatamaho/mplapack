@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,25 +26,16 @@
  *
  */
 
+// Derived from BLAS routine DAXPY.
+// Original BLAS authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 
 void Raxpy(INTEGER const n, REAL const da, REAL *dx, INTEGER const incx, REAL *dy, INTEGER const incy) {
-    //
-    //  -- Reference BLAS level1 routine --
-    //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
     if (n <= 0) {
         return;
     }
@@ -58,9 +49,9 @@ void Raxpy(INTEGER const n, REAL const da, REAL *dx, INTEGER const incx, REAL *d
     INTEGER iy = 0;
     if (incx == 1 && incy == 1) {
         //
-        //        code for both increments equal to 1
+        // code for both increments equal to 1
         //
-        //        clean-up loop
+        // clean-up loop
         //
         m = mod(n, 4);
         if (m != 0) {
@@ -80,8 +71,8 @@ void Raxpy(INTEGER const n, REAL const da, REAL *dx, INTEGER const incx, REAL *d
         }
     } else {
         //
-        //        code for unequal increments or equal increments
-        //          not equal to 1
+        // code for unequal increments or equal increments
+        // not equal to 1
         //
         ix = 1;
         iy = 1;
@@ -97,4 +88,7 @@ void Raxpy(INTEGER const n, REAL const da, REAL *dx, INTEGER const incx, REAL *d
             iy += incy;
         }
     }
+    //
+    // End of Raxpy
+    //
 }

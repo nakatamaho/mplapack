@@ -1,0 +1,35 @@
+diff --git a/mpblas/reference/Cherk.cpp b/mpblas/reference/Cherk.cpp
+index 131d0477..af32c226 100644
+--- a/mpblas/reference/Cherk.cpp
++++ b/mpblas/reference/Cherk.cpp
+@@ -183,7 +183,7 @@ void Cherk(const char *uplo, const char *trans, INTEGER const n, INTEGER const k
+                 }
+                 rtemp = zero;
+                 for (l = 1; l <= k; l = l + 1) {
+-                    rtemp += conj(a[(l - 1) + (j - 1) * lda]) * a[(l - 1) + (j - 1) * lda];
++                    rtemp += (conj(a[(l - 1) + (j - 1) * lda]) * a[(l - 1) + (j - 1) * lda]).real();
+                 }
+                 if (beta == zero) {
+                     c[(j - 1) + (j - 1) * ldc] = alpha * rtemp;
+@@ -195,7 +195,7 @@ void Cherk(const char *uplo, const char *trans, INTEGER const n, INTEGER const k
+             for (j = 1; j <= n; j = j + 1) {
+                 rtemp = zero;
+                 for (l = 1; l <= k; l = l + 1) {
+-                    rtemp += conj(a[(l - 1) + (j - 1) * lda]) * a[(l - 1) + (j - 1) * lda];
++                    rtemp += (conj(a[(l - 1) + (j - 1) * lda]) * a[(l - 1) + (j - 1) * lda]).real();
+                 }
+                 if (beta == zero) {
+                     c[(j - 1) + (j - 1) * ldc] = alpha * rtemp;
+diff --git a/mpblas/reference/Rrotmg.cpp b/mpblas/reference/Rrotmg.cpp
+index 7b500ffc..3ad9e90a 100644
+--- a/mpblas/reference/Rrotmg.cpp
++++ b/mpblas/reference/Rrotmg.cpp
+@@ -39,7 +39,7 @@
+     static REAL gam = 4096.0;
+     static REAL gamsq = 16777216.0;
+     static REAL one = 1.0;
+-    static REAL rgamsq = 0.000000059604645;
++    static REAL rgamsq = 0x1p-24;
+     static REAL two = 2.0;
+     static REAL zero = 0.0;
+     REAL dflag = 0.0;

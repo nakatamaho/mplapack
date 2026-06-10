@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZGET51.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,32 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
 void Cget51(INTEGER const itype, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX *u, INTEGER const ldu, COMPLEX *v, INTEGER const ldv, COMPLEX *work, REAL *rwork, REAL &result) {
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     const REAL zero = 0.0;
     result = zero;
@@ -69,12 +51,12 @@ void Cget51(INTEGER const itype, INTEGER const n, COMPLEX *a, INTEGER const lda,
         return;
     }
     //
-    //     Constants
+    // Constants
     //
     REAL unfl = Rlamch("Safe minimum");
     REAL ulp = Rlamch("Epsilon") * Rlamch("Base");
     //
-    //     Some Error Checks
+    // Some Error Checks
     //
     const REAL ten = 10.0;
     if (itype < 1 || itype > 3) {
@@ -92,22 +74,22 @@ void Cget51(INTEGER const itype, INTEGER const n, COMPLEX *a, INTEGER const lda,
     INTEGER jdiag = 0;
     if (itype <= 2) {
         //
-        //        Tests scaled by the norm(A)
+        // Tests scaled by the norm(A)
         //
-        anorm = max({Clange("1", n, n, a, lda, rwork), unfl});
+        anorm = max(Clange("1", n, n, a, lda, rwork), unfl);
         //
         if (itype == 1) {
             //
-            //           ITYPE=1: Compute W = A - U B V**H
+            // ITYPE=1: Compute W = A - U B V**H
             //
             Clacpy(" ", n, n, a, lda, work, n);
-            Cgemm("N", "N", n, n, n, cone, u, ldu, b, ldb, czero, &work[(n * n + 1) - 1], n);
+            Cgemm("N", "N", n, n, n, cone, u, ldu, b, ldb, czero, &work[(pow2(n) + 1) - 1], n);
             //
-            Cgemm("N", "C", n, n, n, -cone, &work[(n * n + 1) - 1], n, v, ldv, cone, work, n);
+            Cgemm("N", "C", n, n, n, -cone, &work[(pow2(n) + 1) - 1], n, v, ldv, cone, work, n);
             //
         } else {
             //
-            //           ITYPE=2: Compute W = A - B
+            // ITYPE=2: Compute W = A - B
             //
             Clacpy(" ", n, n, b, ldb, work, n);
             //
@@ -118,7 +100,7 @@ void Cget51(INTEGER const itype, INTEGER const n, COMPLEX *a, INTEGER const lda,
             }
         }
         //
-        //        Compute norm(W)/ ( ulp*norm(A) )
+        // Compute norm(W)/ ( ulp*norm(A) )
         //
         wnorm = Clange("1", n, n, work, n, rwork);
         //
@@ -126,17 +108,17 @@ void Cget51(INTEGER const itype, INTEGER const n, COMPLEX *a, INTEGER const lda,
             result = (wnorm / anorm) / (n * ulp);
         } else {
             if (anorm < one) {
-                result = (min(wnorm, REAL(castREAL(n) * anorm)) / anorm) / (castREAL(n) * ulp);
+                result = (min(wnorm, n * anorm) / anorm) / (n * ulp);
             } else {
-                result = min(REAL(wnorm / anorm), castREAL(n)) / (castREAL(n) * ulp);
+                result = min(wnorm / anorm, castREAL(n)) / (n * ulp);
             }
         }
         //
     } else {
         //
-        //        Tests not scaled by norm(A)
+        // Tests not scaled by norm(A)
         //
-        //        ITYPE=3: Compute  U U**H - I
+        // ITYPE=3: Compute  U U**H - I
         //
         Cgemm("N", "C", n, n, n, cone, u, ldu, u, ldu, czero, work, n);
         //
@@ -144,9 +126,9 @@ void Cget51(INTEGER const itype, INTEGER const n, COMPLEX *a, INTEGER const lda,
             work[((n + 1) * (jdiag - 1) + 1) - 1] = work[((n + 1) * (jdiag - 1) + 1) - 1] - cone;
         }
         //
-        result = min({Clange("1", n, n, work, n, rwork), castREAL(n)}) / (n * ulp);
+        result = min(Clange("1", n, n, work, n, rwork), castREAL(n)) / (n * ulp);
     }
     //
-    //     End of Cget51
+    // End of Cget51
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,36 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZHEEVD_2STAGE.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Cheevd_2stage(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL *w, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER const lrwork, INTEGER *iwork, INTEGER const liwork, INTEGER &info) {
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     bool wantz = Mlsame(jobz, "V");
     bool lower = Mlsame(uplo, "L");
@@ -91,7 +74,7 @@ void Cheevd_2stage(const char *jobz, const char *uplo, INTEGER const n, COMPLEX 
             lwtrd = iMlaenv2stage(4, "Chetrd_2stage", jobz, n, kd, ib, -1);
             if (wantz) {
                 lwmin = 2 * n + n * n;
-                lrwmin = 1 + 5 * n + 2 * n * n;
+                lrwmin = 1 + 5 * n + 2 * pow2(n);
                 liwmin = 3 + 5 * n;
             } else {
                 lwmin = n + 1 + lhtrd + lwtrd;
@@ -100,7 +83,7 @@ void Cheevd_2stage(const char *jobz, const char *uplo, INTEGER const n, COMPLEX 
             }
         }
         work[1 - 1] = lwmin;
-        rwork[1 - 1] = lrwmin;
+        rwork[1 - 1] = castREAL(lrwmin);
         iwork[1 - 1] = liwmin;
         //
         if (lwork < lwmin && !lquery) {
@@ -119,7 +102,7 @@ void Cheevd_2stage(const char *jobz, const char *uplo, INTEGER const n, COMPLEX 
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
@@ -127,14 +110,14 @@ void Cheevd_2stage(const char *jobz, const char *uplo, INTEGER const n, COMPLEX 
     //
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     if (n == 1) {
-        w[1 - 1] = a[(1 - 1)].real();
+        w[1 - 1] = a[0].real();
         if (wantz) {
-            a[(1 - 1)] = cone;
+            a[0] = cone;
         }
         return;
     }
     //
-    //     Get machine constants.
+    // Get machine constants.
     //
     REAL safmin = Rlamch("Safe minimum");
     REAL eps = Rlamch("Precision");
@@ -144,7 +127,7 @@ void Cheevd_2stage(const char *jobz, const char *uplo, INTEGER const n, COMPLEX 
     REAL rmin = sqrt(smlnum);
     REAL rmax = sqrt(bignum);
     //
-    //     Scale matrix to allowable range, if necessary.
+    // Scale matrix to allowable range, if necessary.
     //
     REAL anrm = Clanhe("M", uplo, n, a, lda, rwork);
     INTEGER iscale = 0;
@@ -161,7 +144,7 @@ void Cheevd_2stage(const char *jobz, const char *uplo, INTEGER const n, COMPLEX 
         Clascl(uplo, 0, 0, one, sigma, n, n, a, lda, info);
     }
     //
-    //     Call Chetrd_2stage to reduce Hermitian matrix to tridiagonal form.
+    // Call Chetrd_2stage to reduce Hermitian matrix to tridiagonal form.
     //
     INTEGER inde = 1;
     INTEGER indrwk = inde + n;
@@ -176,11 +159,11 @@ void Cheevd_2stage(const char *jobz, const char *uplo, INTEGER const n, COMPLEX 
     INTEGER iinfo = 0;
     Chetrd_2stage(jobz, uplo, n, a, lda, w, &rwork[inde - 1], &work[indtau - 1], &work[indhous - 1], lhtrd, &work[indwrk - 1], llwork, iinfo);
     //
-    //     For eigenvalues only, call Rsterf.  For eigenvectors, first call
-    //     Cstedc to generate the eigenvector matrix, WORK(INDWRK), of the
-    //     tridiagonal matrix, then call Cunmtr to multiply it to the
-    //     Householder transformations represented as Householder vectors in
-    //     A.
+    // For eigenvalues only, call Rsterf.  For eigenvectors, first call
+    // Cstedc to generate the eigenvector matrix, WORK(INDWRK), of the
+    // tridiagonal matrix, then call Cunmtr to multiply it to the
+    // Householder transformations represented as Householder vectors in
+    // A.
     //
     if (!wantz) {
         Rsterf(n, w, &rwork[inde - 1], info);
@@ -190,7 +173,7 @@ void Cheevd_2stage(const char *jobz, const char *uplo, INTEGER const n, COMPLEX 
         Clacpy("A", n, n, &work[indwrk - 1], n, a, lda);
     }
     //
-    //     If matrix was scaled, then rescale eigenvalues appropriately.
+    // If matrix was scaled, then rescale eigenvalues appropriately.
     //
     INTEGER imax = 0;
     if (iscale == 1) {
@@ -203,9 +186,9 @@ void Cheevd_2stage(const char *jobz, const char *uplo, INTEGER const n, COMPLEX 
     }
     //
     work[1 - 1] = lwmin;
-    rwork[1 - 1] = lrwmin;
+    rwork[1 - 1] = castREAL(lrwmin);
     iwork[1 - 1] = liwmin;
     //
-    //     End of Cheevd_2stage
+    // End of Cheevd_2stage
     //
 }

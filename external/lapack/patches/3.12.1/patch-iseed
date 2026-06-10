@@ -1,0 +1,86 @@
+https://github.com/Reference-LAPACK/lapack/pull/1197
+
+diff -ur a/TESTING/LIN/clatsp.f b/TESTING/LIN/clatsp.f
+--- a/TESTING/LIN/clatsp.f	2024-12-03 20:39:11.000000000 +0900
++++ b/TESTING/LIN/clatsp.f	2026-03-07 10:42:19.242684746 +0900
+@@ -15,7 +15,7 @@
+ *       INTEGER            N
+ *       ..
+ *       .. Array Arguments ..
+-*       INTEGER            ISEED( * )
++*       INTEGER            ISEED( 4 )
+ *       COMPLEX            X( * )
+ *       ..
+ *
+@@ -91,7 +91,7 @@
+       INTEGER            N
+ *     ..
+ *     .. Array Arguments ..
+-      INTEGER            ISEED( * )
++      INTEGER            ISEED( 4 )
+       COMPLEX            X( * )
+ *     ..
+ *
+diff -ur a/TESTING/LIN/clatsy.f b/TESTING/LIN/clatsy.f
+--- a/TESTING/LIN/clatsy.f	2024-12-03 20:39:11.000000000 +0900
++++ b/TESTING/LIN/clatsy.f	2026-03-07 10:42:19.243684766 +0900
+@@ -15,7 +15,7 @@
+ *       INTEGER            LDX, N
+ *       ..
+ *       .. Array Arguments ..
+-*       INTEGER            ISEED( * )
++*       INTEGER            ISEED( 4 )
+ *       COMPLEX            X( LDX, * )
+ *       ..
+ *
+@@ -96,7 +96,7 @@
+       INTEGER            LDX, N
+ *     ..
+ *     .. Array Arguments ..
+-      INTEGER            ISEED( * )
++      INTEGER            ISEED( 4 )
+       COMPLEX            X( LDX, * )
+ *     ..
+ *
+diff -ur a/TESTING/LIN/zlatsp.f b/TESTING/LIN/zlatsp.f
+--- a/TESTING/LIN/zlatsp.f	2024-12-03 20:39:11.000000000 +0900
++++ b/TESTING/LIN/zlatsp.f	2026-03-07 10:42:19.243684766 +0900
+@@ -15,7 +15,7 @@
+ *       INTEGER            N
+ *       ..
+ *       .. Array Arguments ..
+-*       INTEGER            ISEED( * )
++*       INTEGER            ISEED( 4 )
+ *       COMPLEX*16         X( * )
+ *       ..
+ *
+@@ -91,7 +91,7 @@
+       INTEGER            N
+ *     ..
+ *     .. Array Arguments ..
+-      INTEGER            ISEED( * )
++      INTEGER            ISEED( 4 )
+       COMPLEX*16         X( * )
+ *     ..
+ *
+diff -ur a/TESTING/LIN/zlatsy.f b/TESTING/LIN/zlatsy.f
+--- a/TESTING/LIN/zlatsy.f	2024-12-03 20:39:11.000000000 +0900
++++ b/TESTING/LIN/zlatsy.f	2026-03-07 10:42:19.242684746 +0900
+@@ -15,7 +15,7 @@
+ *       INTEGER            LDX, N
+ *       ..
+ *       .. Array Arguments ..
+-*       INTEGER            ISEED( * )
++*       INTEGER            ISEED( 4 )
+ *       COMPLEX*16         X( LDX, * )
+ *       ..
+ *
+@@ -96,7 +96,7 @@
+       INTEGER            LDX, N
+ *     ..
+ *     .. Array Arguments ..
+-      INTEGER            ISEED( * )
++      INTEGER            ISEED( 4 )
+       COMPLEX*16         X( LDX, * )
+ *     ..
+ *

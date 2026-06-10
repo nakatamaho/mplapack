@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DPBT05.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Rpbt05(const char *uplo, INTEGER const n, INTEGER const kd, INTEGER const nrhs, REAL *ab, INTEGER const ldab, REAL *b, INTEGER const ldb, REAL *x, INTEGER const ldx, REAL *xact, INTEGER const ldxact, REAL *ferr, REAL *berr, REAL *reslts) {
+void Rpbt05(fem::str_cref uplo, INTEGER const n, INTEGER const kd, INTEGER const nrhs, REAL *ab, INTEGER const ldab, REAL *b, INTEGER const ldb, REAL *x, INTEGER const ldx, REAL *xact, INTEGER const ldxact, REAL *ferr, REAL *berr, REAL *reslts) {
     const REAL zero = 0.0;
     REAL eps = 0.0;
     REAL unfl = 0.0;
@@ -54,28 +61,7 @@ void Rpbt05(const char *uplo, INTEGER const n, INTEGER const kd, INTEGER const n
     REAL tmp = 0.0;
     REAL axbi = 0.0;
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Quick exit if N = 0 or NRHS = 0.
+    // Quick exit if N = 0 or NRHS = 0.
     //
     if (n <= 0 || nrhs <= 0) {
         reslts[1 - 1] = zero;
@@ -86,20 +72,20 @@ void Rpbt05(const char *uplo, INTEGER const n, INTEGER const kd, INTEGER const n
     eps = Rlamch("Epsilon");
     unfl = Rlamch("Safe minimum");
     ovfl = one / unfl;
-    upper = Mlsame(uplo, "U");
+    upper = Mlsame(uplo.elems(), "U");
     nz = 2 * max(kd, n - 1) + 1;
     //
-    //     Test 1:  Compute the maximum of
-    //        norm(X - XACT) / ( norm(X) * FERR )
-    //     over all the vectors X and XACT using the infinity-norm.
+    // Test 1:  Compute the maximum of
+    // norm(X - XACT) / ( norm(X) * FERR )
+    // over all the vectors X and XACT using the infinity-norm.
     //
     errbnd = zero;
     for (j = 1; j <= nrhs; j = j + 1) {
         imax = iRamax(n, &x[(j - 1) * ldx], 1);
-        xnorm = max(REAL(abs(x[(imax - 1) + (j - 1) * ldx])), unfl);
+        xnorm = max(abs(x[(imax - 1) + (j - 1) * ldx]), unfl);
         diff = zero;
         for (i = 1; i <= n; i = i + 1) {
-            diff = max(diff, REAL(abs(x[(i - 1) + (j - 1) * ldx] - xact[(i - 1) + (j - 1) * ldxact])));
+            diff = max(diff, abs(x[(i - 1) + (j - 1) * ldx] - xact[(i - 1) + (j - 1) * ldxact]));
         }
         //
         if (xnorm > one) {
@@ -113,7 +99,7 @@ void Rpbt05(const char *uplo, INTEGER const n, INTEGER const kd, INTEGER const n
     //
     statement_20:
         if (diff / xnorm <= ferr[j - 1]) {
-            errbnd = max(errbnd, REAL((diff / xnorm) / ferr[j - 1]));
+            errbnd = max(errbnd, (diff / xnorm) / ferr[j - 1]);
         } else {
             errbnd = one / eps;
         }
@@ -121,8 +107,8 @@ void Rpbt05(const char *uplo, INTEGER const n, INTEGER const kd, INTEGER const n
     }
     reslts[1 - 1] = errbnd;
     //
-    //     Test 2:  Compute the maximum of BERR / ( NZ*EPS + (*) ), where
-    //     (*) = NZ*UNFL / (min_i (abs(A)*abs(X) +abs(b))_i )
+    // Test 2:  Compute the maximum of BERR / ( NZ*EPS + (*) ), where
+    // (*) = NZ*UNFL / (min_i (abs(A)*abs(X) +abs(b))_i )
     //
     for (k = 1; k <= nrhs; k = k + 1) {
         for (i = 1; i <= n; i = i + 1) {
@@ -148,7 +134,7 @@ void Rpbt05(const char *uplo, INTEGER const n, INTEGER const kd, INTEGER const n
                 axbi = min(axbi, tmp);
             }
         }
-        tmp = berr[k - 1] / (nz * eps + nz * unfl / max(axbi, REAL(nz * unfl)));
+        tmp = berr[k - 1] / (nz * eps + nz * unfl / max(axbi, nz * unfl));
         if (k == 1) {
             reslts[2 - 1] = tmp;
         } else {
@@ -156,6 +142,6 @@ void Rpbt05(const char *uplo, INTEGER const n, INTEGER const kd, INTEGER const n
         }
     }
     //
-    //     End of Rpbt05
+    // End of Rpbt05
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZGETC2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -33,50 +40,50 @@ void Cgetc2(INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, INTEG
     //
     info = 0;
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
     }
     //
-    //     Set constants to control overflow
+    // Set constants to control overflow
     //
     REAL eps = Rlamch("P");
     REAL smlnum = Rlamch("S") / eps;
     const REAL one = 1.0;
     REAL bignum = one / smlnum;
     //
-    //     Handle the case N=1 by itself
+    // Handle the case N=1 by itself
     //
     const REAL zero = 0.0;
     if (n == 1) {
         ipiv[1 - 1] = 1;
         jpiv[1 - 1] = 1;
-        if (abs(a[(1 - 1)]) < smlnum) {
+        if (abs(a[0]) < smlnum) {
             info = 1;
-            a[(1 - 1)] = COMPLEX(smlnum, zero);
+            a[0] = COMPLEX(smlnum, zero);
         }
         return;
     }
     //
-    //     Factorize A using complete pivoting.
-    //     Set pivots less than SMIN to SMIN
+    // Factorize A using complete pivoting.
+    // Set pivots less than SMIN to SMIN
     //
     INTEGER i = 0;
     REAL xmax = 0.0;
-    INTEGER ip = 0;
     INTEGER jp = 0;
+    INTEGER ip = 0;
     INTEGER ipv = 0;
     INTEGER jpv = 0;
     REAL smin = 0.0;
     INTEGER j = 0;
     for (i = 1; i <= n - 1; i = i + 1) {
         //
-        //        Find max element in matrix A
+        // Find max element in matrix A
         //
         xmax = zero;
-        for (ip = i; ip <= n; ip = ip + 1) {
-            for (jp = i; jp <= n; jp = jp + 1) {
+        for (jp = i; jp <= n; jp = jp + 1) {
+            for (ip = i; ip <= n; ip = ip + 1) {
                 if (abs(a[(ip - 1) + (jp - 1) * lda]) >= xmax) {
                     xmax = abs(a[(ip - 1) + (jp - 1) * lda]);
                     ipv = ip;
@@ -85,24 +92,24 @@ void Cgetc2(INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, INTEG
             }
         }
         if (i == 1) {
-            smin = max(REAL(eps * xmax), smlnum);
+            smin = max(eps * xmax, smlnum);
         }
         //
-        //        Swap rows
+        // Swap rows
         //
         if (ipv != i) {
             Cswap(n, &a[(ipv - 1)], lda, &a[(i - 1)], lda);
         }
         ipiv[i - 1] = ipv;
         //
-        //        Swap columns
+        // Swap columns
         //
         if (jpv != i) {
             Cswap(n, &a[(jpv - 1) * lda], 1, &a[(i - 1) * lda], 1);
         }
         jpiv[i - 1] = jpv;
         //
-        //        Check for singularity
+        // Check for singularity
         //
         if (abs(a[(i - 1) + (i - 1) * lda]) < smin) {
             info = i;
@@ -119,11 +126,11 @@ void Cgetc2(INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, INTEG
         a[(n - 1) + (n - 1) * lda] = COMPLEX(smin, zero);
     }
     //
-    //     Set last pivots to N
+    // Set last pivots to N
     //
     ipiv[n - 1] = n;
     jpiv[n - 1] = n;
     //
-    //     End of Cgetc2
+    // End of Cgetc2
     //
 }

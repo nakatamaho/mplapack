@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DERRPO.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,51 +43,21 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-#include <mplapack_debug.h>
-
-void Rerrpo(const char *path, INTEGER const nunit) {
+void Rerrpo(fem::str_cref path, INTEGER const nunit) {
+    common cmn;
+    common_write write(cmn);
     //
+    nout = nunit;
+    write(nout, star);
+    fem::str<2> c2 = path(2, 3);
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    char c2[2];
-    c2[0] = path[1];
-    c2[1] = path[2];
-    //
-    //     Set the variables to innocuous values.
+    // Set the variables to innocuous values.
     //
     INTEGER j = 0;
     const INTEGER nmax = 4;
     INTEGER i = 0;
     REAL a[nmax * nmax];
     REAL af[nmax * nmax];
-    INTEGER lda = nmax;
-    INTEGER ldaf = nmax;
     REAL b[nmax];
     REAL r1[nmax];
     REAL r2[nmax];
@@ -89,8 +66,8 @@ void Rerrpo(const char *path, INTEGER const nunit) {
     INTEGER iw[nmax];
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
-            a[(i - 1) + (j - 1) * lda] = 1.0 / castREAL(i + j);
-            af[(i - 1) + (j - 1) * ldaf] = 1.0 / castREAL(i + j);
+            a[(i - 1) + (j - 1) * nmax] = 1.0 / castREAL(i + j);
+            af[(i - 1) + (j - 1) * nmax] = 1.0 / castREAL(i + j);
         }
         b[j - 1] = 0.0;
         r1[j - 1] = 0.0;
@@ -104,321 +81,321 @@ void Rerrpo(const char *path, INTEGER const nunit) {
     INTEGER info = 0;
     REAL anrm = 0.0;
     REAL rcond = 0.0;
-    if (Mlsamen(2, c2, "PO")) {
+    if (Mlsamen(2, c2.elems, "PO")) {
         //
-        //        Test error exits of the routines that use the Cholesky
-        //        decomposition of a symmetric positive definite matrix.
+        // Test error exits of the routines that use the Cholesky
+        // decomposition of a symmetric positive definite matrix.
         //
-        //        Rpotrf
+        // Rpotrf
         //
-        strncpy(srnamt, "Rpotrf", srnamt_len);
+        srnamt = "Rpotrf";
         infot = 1;
         Rpotrf("/", 0, a, 1, info);
-        chkxer("Rpotrf", infot, nout, lerr, ok);
+        Chkxer("Rpotrf", infot, nout, lerr, ok);
         infot = 2;
         Rpotrf("U", -1, a, 1, info);
-        chkxer("Rpotrf", infot, nout, lerr, ok);
+        Chkxer("Rpotrf", infot, nout, lerr, ok);
         infot = 4;
         Rpotrf("U", 2, a, 1, info);
-        chkxer("Rpotrf", infot, nout, lerr, ok);
+        Chkxer("Rpotrf", infot, nout, lerr, ok);
         //
-        //        Rpotf2
+        // Rpotf2
         //
-        strncpy(srnamt, "Rpotf2", srnamt_len);
+        srnamt = "Rpotf2";
         infot = 1;
         Rpotf2("/", 0, a, 1, info);
-        chkxer("Rpotf2", infot, nout, lerr, ok);
+        Chkxer("Rpotf2", infot, nout, lerr, ok);
         infot = 2;
         Rpotf2("U", -1, a, 1, info);
-        chkxer("Rpotf2", infot, nout, lerr, ok);
+        Chkxer("Rpotf2", infot, nout, lerr, ok);
         infot = 4;
         Rpotf2("U", 2, a, 1, info);
-        chkxer("Rpotf2", infot, nout, lerr, ok);
+        Chkxer("Rpotf2", infot, nout, lerr, ok);
         //
-        //        Rpotri
+        // Rpotri
         //
-        strncpy(srnamt, "Rpotri", srnamt_len);
+        srnamt = "Rpotri";
         infot = 1;
         Rpotri("/", 0, a, 1, info);
-        chkxer("Rpotri", infot, nout, lerr, ok);
+        Chkxer("Rpotri", infot, nout, lerr, ok);
         infot = 2;
         Rpotri("U", -1, a, 1, info);
-        chkxer("Rpotri", infot, nout, lerr, ok);
+        Chkxer("Rpotri", infot, nout, lerr, ok);
         infot = 4;
         Rpotri("U", 2, a, 1, info);
-        chkxer("Rpotri", infot, nout, lerr, ok);
+        Chkxer("Rpotri", infot, nout, lerr, ok);
         //
-        //        Rpotrs
+        // Rpotrs
         //
-        strncpy(srnamt, "Rpotrs", srnamt_len);
+        srnamt = "Rpotrs";
         infot = 1;
         Rpotrs("/", 0, 0, a, 1, b, 1, info);
-        chkxer("Rpotrs", infot, nout, lerr, ok);
+        Chkxer("Rpotrs", infot, nout, lerr, ok);
         infot = 2;
         Rpotrs("U", -1, 0, a, 1, b, 1, info);
-        chkxer("Rpotrs", infot, nout, lerr, ok);
+        Chkxer("Rpotrs", infot, nout, lerr, ok);
         infot = 3;
         Rpotrs("U", 0, -1, a, 1, b, 1, info);
-        chkxer("Rpotrs", infot, nout, lerr, ok);
+        Chkxer("Rpotrs", infot, nout, lerr, ok);
         infot = 5;
         Rpotrs("U", 2, 1, a, 1, b, 2, info);
-        chkxer("Rpotrs", infot, nout, lerr, ok);
+        Chkxer("Rpotrs", infot, nout, lerr, ok);
         infot = 7;
         Rpotrs("U", 2, 1, a, 2, b, 1, info);
-        chkxer("Rpotrs", infot, nout, lerr, ok);
+        Chkxer("Rpotrs", infot, nout, lerr, ok);
         //
-        //        Rporfs
+        // Rporfs
         //
-        strncpy(srnamt, "Rporfs", srnamt_len);
+        srnamt = "Rporfs";
         infot = 1;
         Rporfs("/", 0, 0, a, 1, af, 1, b, 1, x, 1, r1, r2, w, iw, info);
-        chkxer("Rporfs", infot, nout, lerr, ok);
+        Chkxer("Rporfs", infot, nout, lerr, ok);
         infot = 2;
         Rporfs("U", -1, 0, a, 1, af, 1, b, 1, x, 1, r1, r2, w, iw, info);
-        chkxer("Rporfs", infot, nout, lerr, ok);
+        Chkxer("Rporfs", infot, nout, lerr, ok);
         infot = 3;
         Rporfs("U", 0, -1, a, 1, af, 1, b, 1, x, 1, r1, r2, w, iw, info);
-        chkxer("Rporfs", infot, nout, lerr, ok);
+        Chkxer("Rporfs", infot, nout, lerr, ok);
         infot = 5;
         Rporfs("U", 2, 1, a, 1, af, 2, b, 2, x, 2, r1, r2, w, iw, info);
-        chkxer("Rporfs", infot, nout, lerr, ok);
+        Chkxer("Rporfs", infot, nout, lerr, ok);
         infot = 7;
         Rporfs("U", 2, 1, a, 2, af, 1, b, 2, x, 2, r1, r2, w, iw, info);
-        chkxer("Rporfs", infot, nout, lerr, ok);
+        Chkxer("Rporfs", infot, nout, lerr, ok);
         infot = 9;
         Rporfs("U", 2, 1, a, 2, af, 2, b, 1, x, 2, r1, r2, w, iw, info);
-        chkxer("Rporfs", infot, nout, lerr, ok);
+        Chkxer("Rporfs", infot, nout, lerr, ok);
         infot = 11;
         Rporfs("U", 2, 1, a, 2, af, 2, b, 2, x, 1, r1, r2, w, iw, info);
-        chkxer("Rporfs", infot, nout, lerr, ok);
+        Chkxer("Rporfs", infot, nout, lerr, ok);
         //
-        //        Rpocon
+        // Rpocon
         //
-        strncpy(srnamt, "Rpocon", srnamt_len);
+        srnamt = "Rpocon";
         infot = 1;
         Rpocon("/", 0, a, 1, anrm, rcond, w, iw, info);
-        chkxer("Rpocon", infot, nout, lerr, ok);
+        Chkxer("Rpocon", infot, nout, lerr, ok);
         infot = 2;
         Rpocon("U", -1, a, 1, anrm, rcond, w, iw, info);
-        chkxer("Rpocon", infot, nout, lerr, ok);
+        Chkxer("Rpocon", infot, nout, lerr, ok);
         infot = 4;
         Rpocon("U", 2, a, 1, anrm, rcond, w, iw, info);
-        chkxer("Rpocon", infot, nout, lerr, ok);
+        Chkxer("Rpocon", infot, nout, lerr, ok);
         //
-        //        Rpoequ
+        // Rpoequ
         //
-        strncpy(srnamt, "Rpoequ", srnamt_len);
+        srnamt = "Rpoequ";
         infot = 1;
         Rpoequ(-1, a, 1, r1, rcond, anrm, info);
-        chkxer("Rpoequ", infot, nout, lerr, ok);
+        Chkxer("Rpoequ", infot, nout, lerr, ok);
         infot = 3;
         Rpoequ(2, a, 1, r1, rcond, anrm, info);
-        chkxer("Rpoequ", infot, nout, lerr, ok);
+        Chkxer("Rpoequ", infot, nout, lerr, ok);
         //
-    } else if (Mlsamen(2, c2, "PP")) {
+    } else if (Mlsamen(2, c2.elems, "PP")) {
         //
-        //        Test error exits of the routines that use the Cholesky
-        //        decomposition of a symmetric positive definite packed matrix.
+        // Test error exits of the routines that use the Cholesky
+        // decomposition of a symmetric positive definite packed matrix.
         //
-        //        Rpptrf
+        // Rpptrf
         //
-        strncpy(srnamt, "Rpptrf", srnamt_len);
+        srnamt = "Rpptrf";
         infot = 1;
         Rpptrf("/", 0, a, info);
-        chkxer("Rpptrf", infot, nout, lerr, ok);
+        Chkxer("Rpptrf", infot, nout, lerr, ok);
         infot = 2;
         Rpptrf("U", -1, a, info);
-        chkxer("Rpptrf", infot, nout, lerr, ok);
+        Chkxer("Rpptrf", infot, nout, lerr, ok);
         //
-        //        Rpptri
+        // Rpptri
         //
-        strncpy(srnamt, "Rpptri", srnamt_len);
+        srnamt = "Rpptri";
         infot = 1;
         Rpptri("/", 0, a, info);
-        chkxer("Rpptri", infot, nout, lerr, ok);
+        Chkxer("Rpptri", infot, nout, lerr, ok);
         infot = 2;
         Rpptri("U", -1, a, info);
-        chkxer("Rpptri", infot, nout, lerr, ok);
+        Chkxer("Rpptri", infot, nout, lerr, ok);
         //
-        //        Rpptrs
+        // Rpptrs
         //
-        strncpy(srnamt, "Rpptrs", srnamt_len);
+        srnamt = "Rpptrs";
         infot = 1;
         Rpptrs("/", 0, 0, a, b, 1, info);
-        chkxer("Rpptrs", infot, nout, lerr, ok);
+        Chkxer("Rpptrs", infot, nout, lerr, ok);
         infot = 2;
         Rpptrs("U", -1, 0, a, b, 1, info);
-        chkxer("Rpptrs", infot, nout, lerr, ok);
+        Chkxer("Rpptrs", infot, nout, lerr, ok);
         infot = 3;
         Rpptrs("U", 0, -1, a, b, 1, info);
-        chkxer("Rpptrs", infot, nout, lerr, ok);
+        Chkxer("Rpptrs", infot, nout, lerr, ok);
         infot = 6;
         Rpptrs("U", 2, 1, a, b, 1, info);
-        chkxer("Rpptrs", infot, nout, lerr, ok);
+        Chkxer("Rpptrs", infot, nout, lerr, ok);
         //
-        //        Rpprfs
+        // Rpprfs
         //
-        strncpy(srnamt, "Rpprfs", srnamt_len);
+        srnamt = "Rpprfs";
         infot = 1;
         Rpprfs("/", 0, 0, a, af, b, 1, x, 1, r1, r2, w, iw, info);
-        chkxer("Rpprfs", infot, nout, lerr, ok);
+        Chkxer("Rpprfs", infot, nout, lerr, ok);
         infot = 2;
         Rpprfs("U", -1, 0, a, af, b, 1, x, 1, r1, r2, w, iw, info);
-        chkxer("Rpprfs", infot, nout, lerr, ok);
+        Chkxer("Rpprfs", infot, nout, lerr, ok);
         infot = 3;
         Rpprfs("U", 0, -1, a, af, b, 1, x, 1, r1, r2, w, iw, info);
-        chkxer("Rpprfs", infot, nout, lerr, ok);
+        Chkxer("Rpprfs", infot, nout, lerr, ok);
         infot = 7;
         Rpprfs("U", 2, 1, a, af, b, 1, x, 2, r1, r2, w, iw, info);
-        chkxer("Rpprfs", infot, nout, lerr, ok);
+        Chkxer("Rpprfs", infot, nout, lerr, ok);
         infot = 9;
         Rpprfs("U", 2, 1, a, af, b, 2, x, 1, r1, r2, w, iw, info);
-        chkxer("Rpprfs", infot, nout, lerr, ok);
+        Chkxer("Rpprfs", infot, nout, lerr, ok);
         //
-        //        Rppcon
+        // Rppcon
         //
-        strncpy(srnamt, "Rppcon", srnamt_len);
+        srnamt = "Rppcon";
         infot = 1;
         Rppcon("/", 0, a, anrm, rcond, w, iw, info);
-        chkxer("Rppcon", infot, nout, lerr, ok);
+        Chkxer("Rppcon", infot, nout, lerr, ok);
         infot = 2;
         Rppcon("U", -1, a, anrm, rcond, w, iw, info);
-        chkxer("Rppcon", infot, nout, lerr, ok);
+        Chkxer("Rppcon", infot, nout, lerr, ok);
         //
-        //        Rppequ
+        // Rppequ
         //
-        strncpy(srnamt, "Rppequ", srnamt_len);
+        srnamt = "Rppequ";
         infot = 1;
         Rppequ("/", 0, a, r1, rcond, anrm, info);
-        chkxer("Rppequ", infot, nout, lerr, ok);
+        Chkxer("Rppequ", infot, nout, lerr, ok);
         infot = 2;
         Rppequ("U", -1, a, r1, rcond, anrm, info);
-        chkxer("Rppequ", infot, nout, lerr, ok);
+        Chkxer("Rppequ", infot, nout, lerr, ok);
         //
-    } else if (Mlsamen(2, c2, "PB")) {
+    } else if (Mlsamen(2, c2.elems, "PB")) {
         //
-        //        Test error exits of the routines that use the Cholesky
-        //        decomposition of a symmetric positive definite band matrix.
+        // Test error exits of the routines that use the Cholesky
+        // decomposition of a symmetric positive definite band matrix.
         //
-        //        Rpbtrf
+        // Rpbtrf
         //
-        strncpy(srnamt, "Rpbtrf", srnamt_len);
+        srnamt = "Rpbtrf";
         infot = 1;
         Rpbtrf("/", 0, 0, a, 1, info);
-        chkxer("Rpbtrf", infot, nout, lerr, ok);
+        Chkxer("Rpbtrf", infot, nout, lerr, ok);
         infot = 2;
         Rpbtrf("U", -1, 0, a, 1, info);
-        chkxer("Rpbtrf", infot, nout, lerr, ok);
+        Chkxer("Rpbtrf", infot, nout, lerr, ok);
         infot = 3;
         Rpbtrf("U", 1, -1, a, 1, info);
-        chkxer("Rpbtrf", infot, nout, lerr, ok);
+        Chkxer("Rpbtrf", infot, nout, lerr, ok);
         infot = 5;
         Rpbtrf("U", 2, 1, a, 1, info);
-        chkxer("Rpbtrf", infot, nout, lerr, ok);
+        Chkxer("Rpbtrf", infot, nout, lerr, ok);
         //
-        //        Rpbtf2
+        // Rpbtf2
         //
-        strncpy(srnamt, "Rpbtf2", srnamt_len);
+        srnamt = "Rpbtf2";
         infot = 1;
         Rpbtf2("/", 0, 0, a, 1, info);
-        chkxer("Rpbtf2", infot, nout, lerr, ok);
+        Chkxer("Rpbtf2", infot, nout, lerr, ok);
         infot = 2;
         Rpbtf2("U", -1, 0, a, 1, info);
-        chkxer("Rpbtf2", infot, nout, lerr, ok);
+        Chkxer("Rpbtf2", infot, nout, lerr, ok);
         infot = 3;
         Rpbtf2("U", 1, -1, a, 1, info);
-        chkxer("Rpbtf2", infot, nout, lerr, ok);
+        Chkxer("Rpbtf2", infot, nout, lerr, ok);
         infot = 5;
         Rpbtf2("U", 2, 1, a, 1, info);
-        chkxer("Rpbtf2", infot, nout, lerr, ok);
+        Chkxer("Rpbtf2", infot, nout, lerr, ok);
         //
-        //        Rpbtrs
+        // Rpbtrs
         //
-        strncpy(srnamt, "Rpbtrs", srnamt_len);
+        srnamt = "Rpbtrs";
         infot = 1;
         Rpbtrs("/", 0, 0, 0, a, 1, b, 1, info);
-        chkxer("Rpbtrs", infot, nout, lerr, ok);
+        Chkxer("Rpbtrs", infot, nout, lerr, ok);
         infot = 2;
         Rpbtrs("U", -1, 0, 0, a, 1, b, 1, info);
-        chkxer("Rpbtrs", infot, nout, lerr, ok);
+        Chkxer("Rpbtrs", infot, nout, lerr, ok);
         infot = 3;
         Rpbtrs("U", 1, -1, 0, a, 1, b, 1, info);
-        chkxer("Rpbtrs", infot, nout, lerr, ok);
+        Chkxer("Rpbtrs", infot, nout, lerr, ok);
         infot = 4;
         Rpbtrs("U", 0, 0, -1, a, 1, b, 1, info);
-        chkxer("Rpbtrs", infot, nout, lerr, ok);
+        Chkxer("Rpbtrs", infot, nout, lerr, ok);
         infot = 6;
         Rpbtrs("U", 2, 1, 1, a, 1, b, 1, info);
-        chkxer("Rpbtrs", infot, nout, lerr, ok);
+        Chkxer("Rpbtrs", infot, nout, lerr, ok);
         infot = 8;
         Rpbtrs("U", 2, 0, 1, a, 1, b, 1, info);
-        chkxer("Rpbtrs", infot, nout, lerr, ok);
+        Chkxer("Rpbtrs", infot, nout, lerr, ok);
         //
-        //        Rpbrfs
+        // Rpbrfs
         //
-        strncpy(srnamt, "Rpbrfs", srnamt_len);
+        srnamt = "Rpbrfs";
         infot = 1;
         Rpbrfs("/", 0, 0, 0, a, 1, af, 1, b, 1, x, 1, r1, r2, w, iw, info);
-        chkxer("Rpbrfs", infot, nout, lerr, ok);
+        Chkxer("Rpbrfs", infot, nout, lerr, ok);
         infot = 2;
         Rpbrfs("U", -1, 0, 0, a, 1, af, 1, b, 1, x, 1, r1, r2, w, iw, info);
-        chkxer("Rpbrfs", infot, nout, lerr, ok);
+        Chkxer("Rpbrfs", infot, nout, lerr, ok);
         infot = 3;
         Rpbrfs("U", 1, -1, 0, a, 1, af, 1, b, 1, x, 1, r1, r2, w, iw, info);
-        chkxer("Rpbrfs", infot, nout, lerr, ok);
+        Chkxer("Rpbrfs", infot, nout, lerr, ok);
         infot = 4;
         Rpbrfs("U", 0, 0, -1, a, 1, af, 1, b, 1, x, 1, r1, r2, w, iw, info);
-        chkxer("Rpbrfs", infot, nout, lerr, ok);
+        Chkxer("Rpbrfs", infot, nout, lerr, ok);
         infot = 6;
         Rpbrfs("U", 2, 1, 1, a, 1, af, 2, b, 2, x, 2, r1, r2, w, iw, info);
-        chkxer("Rpbrfs", infot, nout, lerr, ok);
+        Chkxer("Rpbrfs", infot, nout, lerr, ok);
         infot = 8;
         Rpbrfs("U", 2, 1, 1, a, 2, af, 1, b, 2, x, 2, r1, r2, w, iw, info);
-        chkxer("Rpbrfs", infot, nout, lerr, ok);
+        Chkxer("Rpbrfs", infot, nout, lerr, ok);
         infot = 10;
         Rpbrfs("U", 2, 0, 1, a, 1, af, 1, b, 1, x, 2, r1, r2, w, iw, info);
-        chkxer("Rpbrfs", infot, nout, lerr, ok);
+        Chkxer("Rpbrfs", infot, nout, lerr, ok);
         infot = 12;
         Rpbrfs("U", 2, 0, 1, a, 1, af, 1, b, 2, x, 1, r1, r2, w, iw, info);
-        chkxer("Rpbrfs", infot, nout, lerr, ok);
+        Chkxer("Rpbrfs", infot, nout, lerr, ok);
         //
-        //        Rpbcon
+        // Rpbcon
         //
-        strncpy(srnamt, "Rpbcon", srnamt_len);
+        srnamt = "Rpbcon";
         infot = 1;
         Rpbcon("/", 0, 0, a, 1, anrm, rcond, w, iw, info);
-        chkxer("Rpbcon", infot, nout, lerr, ok);
+        Chkxer("Rpbcon", infot, nout, lerr, ok);
         infot = 2;
         Rpbcon("U", -1, 0, a, 1, anrm, rcond, w, iw, info);
-        chkxer("Rpbcon", infot, nout, lerr, ok);
+        Chkxer("Rpbcon", infot, nout, lerr, ok);
         infot = 3;
         Rpbcon("U", 1, -1, a, 1, anrm, rcond, w, iw, info);
-        chkxer("Rpbcon", infot, nout, lerr, ok);
+        Chkxer("Rpbcon", infot, nout, lerr, ok);
         infot = 5;
         Rpbcon("U", 2, 1, a, 1, anrm, rcond, w, iw, info);
-        chkxer("Rpbcon", infot, nout, lerr, ok);
+        Chkxer("Rpbcon", infot, nout, lerr, ok);
         //
-        //        Rpbequ
+        // Rpbequ
         //
-        strncpy(srnamt, "Rpbequ", srnamt_len);
+        srnamt = "Rpbequ";
         infot = 1;
         Rpbequ("/", 0, 0, a, 1, r1, rcond, anrm, info);
-        chkxer("Rpbequ", infot, nout, lerr, ok);
+        Chkxer("Rpbequ", infot, nout, lerr, ok);
         infot = 2;
         Rpbequ("U", -1, 0, a, 1, r1, rcond, anrm, info);
-        chkxer("Rpbequ", infot, nout, lerr, ok);
+        Chkxer("Rpbequ", infot, nout, lerr, ok);
         infot = 3;
         Rpbequ("U", 1, -1, a, 1, r1, rcond, anrm, info);
-        chkxer("Rpbequ", infot, nout, lerr, ok);
+        Chkxer("Rpbequ", infot, nout, lerr, ok);
         infot = 5;
         Rpbequ("U", 2, 1, a, 1, r1, rcond, anrm, info);
-        chkxer("Rpbequ", infot, nout, lerr, ok);
+        Chkxer("Rpbequ", infot, nout, lerr, ok);
     }
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     Alaesm(path, ok, nout);
     //
-    //     End of Rerrpo
+    // End of Rerrpo
     //
 }

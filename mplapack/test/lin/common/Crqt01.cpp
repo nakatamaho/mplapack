@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZRQT01.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -38,33 +45,29 @@ using fem::common;
 
 void Crqt01(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, COMPLEX *q, COMPLEX *r, INTEGER const lda, COMPLEX *tau, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL *result) {
     //
-    //
-    //
     INTEGER minmn = min(m, n);
-    INTEGER ldaf = lda;
-    INTEGER ldq = lda;
-    INTEGER ldr = lda;
     REAL eps = Rlamch("Epsilon");
     //
-    //     Copy the matrix A to the array AF.
+    // Copy the matrix A to the array AF.
     //
     Clacpy("Full", m, n, a, lda, af, lda);
     //
-    //     Factorize the matrix A in the array AF.
+    // Factorize the matrix A in the array AF.
     //
+    srnamt = "Cgerqf";
     INTEGER info = 0;
     Cgerqf(m, n, af, lda, tau, work, lwork, info);
     //
-    //     Copy details of Q
+    // Copy details of Q
     //
-    const COMPLEX rogue = COMPLEX(-1.0e+10, -1.0e+10);
+    const COMPLEX rogue = COMPLEX(-10000000000.0, -10000000000.0);
     Claset("Full", n, n, rogue, rogue, q, lda);
     if (m <= n) {
         if (m > 0 && m < n) {
             Clacpy("Full", m, n - m, af, lda, &q[((n - m + 1) - 1)], lda);
         }
         if (m > 1) {
-            Clacpy("Lower", m - 1, m - 1, &af[(2 - 1) + ((n - m + 1) - 1) * ldaf], lda, &q[((n - m + 2) - 1) + ((n - m + 1) - 1) * ldq], lda);
+            Clacpy("Lower", m - 1, m - 1, &af[(2 - 1) + ((n - m + 1) - 1) * lda], lda, &q[((n - m + 2) - 1) + ((n - m + 1) - 1) * lda], lda);
         }
     } else {
         if (n > 1) {
@@ -72,17 +75,18 @@ void Crqt01(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, COMPLEX *
         }
     }
     //
-    //     Generate the n-by-n matrix Q
+    // Generate the n-by-n matrix Q
     //
+    srnamt = "Cungrq";
     Cungrq(n, n, minmn, q, lda, tau, work, lwork, info);
     //
-    //     Copy R
+    // Copy R
     //
     const REAL zero = 0.0;
     Claset("Full", m, n, COMPLEX(zero), COMPLEX(zero), r, lda);
     if (m <= n) {
         if (m > 0) {
-            Clacpy("Upper", m, m, &af[((n - m + 1) - 1) * ldaf], lda, &r[((n - m + 1) - 1) * ldr], lda);
+            Clacpy("Upper", m, m, &af[((n - m + 1) - 1) * lda], lda, &r[((n - m + 1) - 1) * lda], lda);
         }
     } else {
         if (m > n && n > 0) {
@@ -93,12 +97,12 @@ void Crqt01(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, COMPLEX *
         }
     }
     //
-    //     Compute R - A*Q'
+    // Compute R - A*Q'
     //
     const REAL one = 1.0;
     Cgemm("No transpose", "Conjugate transpose", m, n, n, COMPLEX(-one), a, lda, q, lda, COMPLEX(one), r, lda);
     //
-    //     Compute norm( R - Q'*A ) / ( N * norm(A) * EPS ) .
+    // Compute norm( R - Q'*A ) / ( N * norm(A) * EPS ) .
     //
     REAL anorm = Clange("1", m, n, a, lda, rwork);
     REAL resid = Clange("1", m, n, r, lda, rwork);
@@ -108,17 +112,17 @@ void Crqt01(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, COMPLEX *
         result[1 - 1] = zero;
     }
     //
-    //     Compute I - Q*Q'
+    // Compute I - Q*Q'
     //
     Claset("Full", n, n, COMPLEX(zero), COMPLEX(one), r, lda);
     Cherk("Upper", "No transpose", n, n, -one, q, lda, one, r, lda);
     //
-    //     Compute norm( I - Q*Q' ) / ( N * EPS ) .
+    // Compute norm( I - Q*Q' ) / ( N * EPS ) .
     //
     resid = Clansy("1", "Upper", n, r, lda, rwork);
     //
     result[2 - 1] = (resid / castREAL(max((INTEGER)1, n))) / eps;
     //
-    //     End of Crqt01
+    // End of Crqt01
     //
 }

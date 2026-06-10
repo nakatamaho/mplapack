@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZBBCSD.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Cbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char *jobv2t, const char *trans, INTEGER const m, INTEGER const p, INTEGER const q, REAL *theta, REAL *phi, COMPLEX *u1, INTEGER const ldu1, COMPLEX *u2, INTEGER const ldu2, COMPLEX *v1t, INTEGER const ldv1t, COMPLEX *v2t, INTEGER const ldv2t, REAL *b11d, REAL *b11e, REAL *b12d, REAL *b12e, REAL *b21d, REAL *b21e, REAL *b22d, REAL *b22e, REAL *rwork, INTEGER const lrwork, INTEGER &info) {
     //
-    //     Test input arguments
+    // Test input arguments
     //
     info = 0;
     bool lquery = lrwork == -1;
@@ -59,7 +66,7 @@ void Cbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         info = -18;
     }
     //
-    //     Quick return if Q = 0
+    // Quick return if Q = 0
     //
     INTEGER lrworkmin = 0;
     if (info == 0 && q == 0) {
@@ -68,7 +75,7 @@ void Cbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         return;
     }
     //
-    //     Compute workspace
+    // Compute workspace
     //
     INTEGER iu1cs = 0;
     INTEGER iu1sn = 0;
@@ -103,23 +110,24 @@ void Cbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         return;
     }
     //
-    //     Get machine constants
+    // Get machine constants
     //
     REAL eps = Rlamch("Epsilon");
     REAL unfl = Rlamch("Safe minimum");
     const REAL ten = 10.0;
     const REAL hundred = 100.0;
-    const REAL meighth = -0.125e0;
+    const REAL meighth = -0.125;
     REAL tolmul = max(ten, min(hundred, pow(eps, meighth)));
     REAL tol = tolmul * eps;
     const INTEGER maxitr = 6;
-    REAL thresh = max(tol, REAL(maxitr * q * q * unfl));
+    REAL thresh = max(tol, maxitr * q * q * unfl);
     //
-    //     Test for negligible sines or cosines
+    // Test for negligible sines or cosines
     //
     INTEGER i = 0;
     const REAL zero = 0.0;
-    const REAL piover2 = pi(zero) / 2.0;
+    const REAL two = 2.0;
+    const REAL piover2 = pi(zero) / two;
     for (i = 1; i <= q; i = i + 1) {
         if (theta[i - 1] < thresh) {
             theta[i - 1] = zero;
@@ -135,7 +143,7 @@ void Cbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         }
     }
     //
-    //     Initial deflation
+    // Initial deflation
     //
     INTEGER imax = q;
     while (imax > 1) {
@@ -154,12 +162,12 @@ void Cbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         }
     }
     //
-    //     Initialize iteration counter
+    // Initialize iteration counter
     //
     INTEGER maxit = maxitr * q * q;
     INTEGER iter = 0;
     //
-    //     Begin main iteration loop
+    // Begin main iteration loop
     //
     REAL thetamax = 0.0;
     REAL thetamin = 0.0;
@@ -186,7 +194,7 @@ void Cbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
     const COMPLEX negonecomplex = COMPLEX(-1.0, 0.0);
     while (imax > 1) {
         //
-        //        Compute the matrix entries
+        // Compute the matrix entries
         //
         b11d[imin - 1] = cos(theta[imin - 1]);
         b21d[imin - 1] = -sin(theta[imin - 1]);
@@ -203,7 +211,7 @@ void Cbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         b12d[imax - 1] = sin(theta[imax - 1]);
         b22d[imax - 1] = cos(theta[imax - 1]);
         //
-        //        Abort if not converging; otherwise, increment ITER
+        // Abort if not converging; otherwise, increment ITER
         //
         if (iter > maxit) {
             info = 0;
@@ -217,7 +225,7 @@ void Cbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         //
         iter += imax - imin;
         //
-        //        Compute shifts
+        // Compute shifts
         //
         thetamax = theta[imin - 1];
         thetamin = theta[imin - 1];
@@ -232,23 +240,23 @@ void Cbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         //
         if (thetamax > piover2 - thresh) {
             //
-            //           Zero on diagonals of B11 and B22; induce deflation with a
-            //           zero shift
+            // Zero on diagonals of B11 and B22; induce deflation with a
+            // zero shift
             //
             mu = zero;
             nu = one;
             //
         } else if (thetamin < thresh) {
             //
-            //           Zero on diagonals of B12 and B22; induce deflation with a
-            //           zero shift
+            // Zero on diagonals of B12 and B22; induce deflation with a
+            // zero shift
             //
             mu = one;
             nu = zero;
             //
         } else {
             //
-            //           Compute shifts for B11 and B21 and use the lesser
+            // Compute shifts for B11 and B21 and use the lesser
             //
             Rlas2(b11d[(imax - 1) - 1], b11e[(imax - 1) - 1], b11d[imax - 1], sigma11, dummy);
             Rlas2(b21d[(imax - 1) - 1], b21e[(imax - 1) - 1], b21d[imax - 1], sigma21, dummy);
@@ -262,7 +270,7 @@ void Cbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
                 }
             } else {
                 nu = sigma21;
-                mu = sqrt(one - nu * nu);
+                mu = sqrt(one - pow2(nu));
                 if (nu < thresh) {
                     mu = one;
                     nu = zero;
@@ -270,7 +278,7 @@ void Cbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
             }
         }
         //
-        //        Rotate to produce bulges in B11 and B21
+        // Rotate to produce bulges in B11 and B21
         //
         if (mu <= nu) {
             Rlartgs(b11d[imin - 1], b11e[imin - 1], mu, rwork[(iv1tcs + imin - 1) - 1], rwork[(iv1tsn + imin - 1) - 1]);
@@ -289,11 +297,11 @@ void Cbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         b21bulge = rwork[(iv1tsn + imin - 1) - 1] * b21d[(imin + 1) - 1];
         b21d[(imin + 1) - 1] = rwork[(iv1tcs + imin - 1) - 1] * b21d[(imin + 1) - 1];
         //
-        //        Compute THETA(IMIN)
+        // Compute THETA(IMIN)
         //
         theta[imin - 1] = atan2(sqrt(pow2(b21d[imin - 1]) + pow2(b21bulge)), sqrt(pow2(b11d[imin - 1]) + pow2(b11bulge)));
         //
-        //        Chase the bulges in B11(IMIN+1,IMIN) and B21(IMIN+1,IMIN)
+        // Chase the bulges in B11(IMIN+1,IMIN) and B21(IMIN+1,IMIN)
         //
         if (pow2(b11d[imin - 1]) + pow2(b11bulge) > pow2(thresh)) {
             Rlartgp(b11bulge, b11d[imin - 1], rwork[(iu1sn + imin - 1) - 1], rwork[(iu1cs + imin - 1) - 1], r);
@@ -337,13 +345,13 @@ void Cbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         b22bulge = rwork[(iu2sn + imin - 1) - 1] * b22d[(imin + 1) - 1];
         b22d[(imin + 1) - 1] = rwork[(iu2cs + imin - 1) - 1] * b22d[(imin + 1) - 1];
         //
-        //        Inner loop: chase bulges from B11(IMIN,IMIN+2),
-        //        B12(IMIN,IMIN+1), B21(IMIN,IMIN+2), and B22(IMIN,IMIN+1) to
-        //        bottom-right
+        // Inner loop: chase bulges from B11(IMIN,IMIN+2),
+        // B12(IMIN,IMIN+1), B21(IMIN,IMIN+2), and B22(IMIN,IMIN+1) to
+        // bottom-right
         //
         for (i = imin + 1; i <= imax - 1; i = i + 1) {
             //
-            //           Compute PHI(I-1)
+            // Compute PHI(I-1)
             //
             x1 = sin(theta[(i - 1) - 1]) * b11e[(i - 1) - 1] + cos(theta[(i - 1) - 1]) * b21e[(i - 1) - 1];
             x2 = sin(theta[(i - 1) - 1]) * b11bulge + cos(theta[(i - 1) - 1]) * b21bulge;
@@ -352,17 +360,17 @@ void Cbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
             //
             phi[(i - 1) - 1] = atan2(sqrt(pow2(x1) + pow2(x2)), sqrt(pow2(y1) + pow2(y2)));
             //
-            //           Determine if there are bulges to chase or if a new direct
-            //           summand has been reached
+            // Determine if there are bulges to chase or if a new direct
+            // summand has been reached
             //
             restart11 = pow2(b11e[(i - 1) - 1]) + pow2(b11bulge) <= pow2(thresh);
             restart21 = pow2(b21e[(i - 1) - 1]) + pow2(b21bulge) <= pow2(thresh);
             restart12 = pow2(b12d[(i - 1) - 1]) + pow2(b12bulge) <= pow2(thresh);
             restart22 = pow2(b22d[(i - 1) - 1]) + pow2(b22bulge) <= pow2(thresh);
             //
-            //           If possible, chase bulges from B11(I-1,I+1), B12(I-1,I),
-            //           B21(I-1,I+1), and B22(I-1,I). If necessary, restart bulge-
-            //           chasing by applying the original shift again.
+            // If possible, chase bulges from B11(I-1,I+1), B12(I-1,I),
+            // B21(I-1,I+1), and B22(I-1,I). If necessary, restart bulge-
+            // chasing by applying the original shift again.
             //
             if (!restart11 && !restart21) {
                 Rlartgp(x2, x1, rwork[(iv1tsn + i - 1) - 1], rwork[(iv1tcs + i - 1) - 1], r);
@@ -410,7 +418,7 @@ void Cbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
             b22bulge = rwork[(iv2tsn + i - 1 - 1) - 1] * b22e[i - 1];
             b22e[i - 1] = rwork[(iv2tcs + i - 1 - 1) - 1] * b22e[i - 1];
             //
-            //           Compute THETA(I)
+            // Compute THETA(I)
             //
             x1 = cos(phi[(i - 1) - 1]) * b11d[i - 1] + sin(phi[(i - 1) - 1]) * b12e[(i - 1) - 1];
             x2 = cos(phi[(i - 1) - 1]) * b11bulge + sin(phi[(i - 1) - 1]) * b12bulge;
@@ -419,17 +427,17 @@ void Cbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
             //
             theta[i - 1] = atan2(sqrt(pow2(y1) + pow2(y2)), sqrt(pow2(x1) + pow2(x2)));
             //
-            //           Determine if there are bulges to chase or if a new direct
-            //           summand has been reached
+            // Determine if there are bulges to chase or if a new direct
+            // summand has been reached
             //
             restart11 = pow2(b11d[i - 1]) + pow2(b11bulge) <= pow2(thresh);
             restart12 = pow2(b12e[(i - 1) - 1]) + pow2(b12bulge) <= pow2(thresh);
             restart21 = pow2(b21d[i - 1]) + pow2(b21bulge) <= pow2(thresh);
             restart22 = pow2(b22e[(i - 1) - 1]) + pow2(b22bulge) <= pow2(thresh);
             //
-            //           If possible, chase bulges from B11(I+1,I), B12(I+1,I-1),
-            //           B21(I+1,I), and B22(I+1,I-1). If necessary, restart bulge-
-            //           chasing by applying the original shift again.
+            // If possible, chase bulges from B11(I+1,I), B12(I+1,I-1),
+            // B21(I+1,I), and B22(I+1,I-1). If necessary, restart bulge-
+            // chasing by applying the original shift again.
             //
             if (!restart11 && !restart12) {
                 Rlartgp(x2, x1, rwork[(iu1sn + i - 1) - 1], rwork[(iu1cs + i - 1) - 1], r);
@@ -483,7 +491,7 @@ void Cbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
             //
         }
         //
-        //        Compute PHI(IMAX-1)
+        // Compute PHI(IMAX-1)
         //
         x1 = sin(theta[(imax - 1) - 1]) * b11e[(imax - 1) - 1] + cos(theta[(imax - 1) - 1]) * b21e[(imax - 1) - 1];
         y1 = sin(theta[(imax - 1) - 1]) * b12d[(imax - 1) - 1] + cos(theta[(imax - 1) - 1]) * b22d[(imax - 1) - 1];
@@ -491,7 +499,7 @@ void Cbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         //
         phi[(imax - 1) - 1] = atan2(abs(x1), sqrt(pow2(y1) + pow2(y2)));
         //
-        //        Chase bulges from B12(IMAX-1,IMAX) and B22(IMAX-1,IMAX)
+        // Chase bulges from B12(IMAX-1,IMAX) and B22(IMAX-1,IMAX)
         //
         restart12 = pow2(b12d[(imax - 1) - 1]) + pow2(b12bulge) <= pow2(thresh);
         restart22 = pow2(b22d[(imax - 1) - 1]) + pow2(b22bulge) <= pow2(thresh);
@@ -515,7 +523,7 @@ void Cbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         b22d[imax - 1] = rwork[(iv2tcs + imax - 1 - 1) - 1] * b22d[imax - 1] - rwork[(iv2tsn + imax - 1 - 1) - 1] * b22e[(imax - 1) - 1];
         b22e[(imax - 1) - 1] = temp;
         //
-        //        Update singular vectors
+        // Update singular vectors
         //
         if (wantu1) {
             if (colmajor) {
@@ -546,7 +554,7 @@ void Cbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
             }
         }
         //
-        //        Fix signs on B11(IMAX-1,IMAX) and B21(IMAX-1,IMAX)
+        // Fix signs on B11(IMAX-1,IMAX) and B21(IMAX-1,IMAX)
         //
         if (b11e[(imax - 1) - 1] + b21e[(imax - 1) - 1] > 0) {
             b11d[imax - 1] = -b11d[imax - 1];
@@ -560,15 +568,15 @@ void Cbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
             }
         }
         //
-        //        Compute THETA(IMAX)
+        // Compute THETA(IMAX)
         //
         x1 = cos(phi[(imax - 1) - 1]) * b11d[imax - 1] + sin(phi[(imax - 1) - 1]) * b12e[(imax - 1) - 1];
         y1 = cos(phi[(imax - 1) - 1]) * b21d[imax - 1] + sin(phi[(imax - 1) - 1]) * b22e[(imax - 1) - 1];
         //
         theta[imax - 1] = atan2(abs(y1), abs(x1));
         //
-        //        Fix signs on B11(IMAX,IMAX), B12(IMAX,IMAX-1), B21(IMAX,IMAX),
-        //        and B22(IMAX,IMAX-1)
+        // Fix signs on B11(IMAX,IMAX), B12(IMAX,IMAX-1), B21(IMAX,IMAX),
+        // and B22(IMAX,IMAX-1)
         //
         if (b11d[imax - 1] + b12e[(imax - 1) - 1] < 0) {
             b12d[imax - 1] = -b12d[imax - 1];
@@ -591,7 +599,7 @@ void Cbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
             }
         }
         //
-        //        Fix signs on B12(IMAX,IMAX) and B22(IMAX,IMAX)
+        // Fix signs on B12(IMAX,IMAX) and B22(IMAX,IMAX)
         //
         if (b12d[imax - 1] + b22d[imax - 1] < 0) {
             if (wantv2t) {
@@ -603,7 +611,7 @@ void Cbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
             }
         }
         //
-        //        Test for negligible sines or cosines
+        // Test for negligible sines or cosines
         //
         for (i = imin; i <= imax; i = i + 1) {
             if (theta[i - 1] < thresh) {
@@ -620,7 +628,7 @@ void Cbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
             }
         }
         //
-        //        Deflate
+        // Deflate
         //
         if (imax > 1) {
             while (phi[(imax - 1) - 1] == zero) {
@@ -642,11 +650,11 @@ void Cbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
             }
         }
         //
-        //        Repeat main iteration loop
+        // Repeat main iteration loop
         //
     }
     //
-    //     Postprocessing: order THETA from least to greatest
+    // Postprocessing: order THETA from least to greatest
     //
     INTEGER mini = 0;
     INTEGER j = 0;
@@ -695,6 +703,6 @@ void Cbbcsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         //
     }
     //
-    //     End of Cbbcsd
+    // End of Cbbcsd
     //
 }

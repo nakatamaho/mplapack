@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZUNBDB6.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Cunbdb6(INTEGER const m1, INTEGER const m2, INTEGER const n, COMPLEX *x1, INTEGER const incx1, COMPLEX *x2, INTEGER const incx2, COMPLEX *q1, INTEGER const ldq1, COMPLEX *q2, INTEGER const ldq2, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //     Test input arguments
+    // Test input arguments
     //
     info = 0;
     if (m1 < 0) {
@@ -57,18 +64,19 @@ void Cunbdb6(INTEGER const m1, INTEGER const m2, INTEGER const n, COMPLEX *x1, I
         return;
     }
     //
-    //     First, project X onto the orthogonal complement of Q's column
-    //     space
+    REAL eps = Rlamch("Precision");
+    //
+    // Compute the Euclidean norm of X
     //
     const REAL realzero = 0.0;
-    REAL scl1 = realzero;
-    const REAL realone = 1.0;
-    REAL ssq1 = realone;
-    Classq(m1, x1, incx1, scl1, ssq1);
-    REAL scl2 = realzero;
-    REAL ssq2 = realone;
-    Classq(m2, x2, incx2, scl2, ssq2);
-    REAL normsq1 = pow2(scl1) * ssq1 + pow2(scl2) * ssq2;
+    REAL scl = realzero;
+    REAL ssq = realzero;
+    Classq(m1, x1, incx1, scl, ssq);
+    Classq(m2, x2, incx2, scl, ssq);
+    REAL norm = scl * sqrt(ssq);
+    //
+    // First, project X onto the orthogonal complement of Q's column
+    // space
     //
     INTEGER i = 0;
     const COMPLEX zero = COMPLEX(0.0, 0.0);
@@ -87,28 +95,33 @@ void Cunbdb6(INTEGER const m1, INTEGER const m2, INTEGER const n, COMPLEX *x1, I
     Cgemv("N", m1, n, negone, q1, ldq1, work, 1, one, x1, incx1);
     Cgemv("N", m2, n, negone, q2, ldq2, work, 1, one, x2, incx2);
     //
-    scl1 = realzero;
-    ssq1 = realone;
-    Classq(m1, x1, incx1, scl1, ssq1);
-    scl2 = realzero;
-    ssq2 = realone;
-    Classq(m2, x2, incx2, scl2, ssq2);
-    REAL normsq2 = pow2(scl1) * ssq1 + pow2(scl2) * ssq2;
+    scl = realzero;
+    ssq = realzero;
+    Classq(m1, x1, incx1, scl, ssq);
+    Classq(m2, x2, incx2, scl, ssq);
+    REAL norm_new = scl * sqrt(ssq);
     //
-    //     If projection is sufficiently large in norm, then stop.
-    //     If projection is zero, then stop.
-    //     Otherwise, project again.
+    // If projection is sufficiently large in norm, then stop.
+    // If projection is zero, then stop.
+    // Otherwise, project again.
     //
-    const REAL alphasq = 0.01e0;
-    if (normsq2 >= alphasq * normsq1) {
+    const REAL alpha = 0.83;
+    if (norm_new >= alpha * norm) {
         return;
     }
     //
-    if (normsq2 == zero) {
+    INTEGER ix = 0;
+    if (norm_new <= n * eps * norm) {
+        for (ix = 1; ix <= 1 + (m1 - 1) * incx1; ix = ix + incx1) {
+            x1[ix - 1] = zero;
+        }
+        for (ix = 1; ix <= 1 + (m2 - 1) * incx2; ix = ix + incx2) {
+            x2[ix - 1] = zero;
+        }
         return;
     }
     //
-    normsq1 = normsq2;
+    norm = norm_new;
     //
     for (i = 1; i <= n; i = i + 1) {
         work[i - 1] = zero;
@@ -127,27 +140,25 @@ void Cunbdb6(INTEGER const m1, INTEGER const m2, INTEGER const n, COMPLEX *x1, I
     Cgemv("N", m1, n, negone, q1, ldq1, work, 1, one, x1, incx1);
     Cgemv("N", m2, n, negone, q2, ldq2, work, 1, one, x2, incx2);
     //
-    scl1 = realzero;
-    ssq1 = realone;
-    Classq(m1, x1, incx1, scl1, ssq1);
-    scl2 = realzero;
-    ssq2 = realone;
-    Classq(m1, x1, incx1, scl1, ssq1);
-    normsq2 = pow2(scl1) * ssq1 + pow2(scl2) * ssq2;
+    scl = realzero;
+    ssq = realzero;
+    Classq(m1, x1, incx1, scl, ssq);
+    Classq(m2, x2, incx2, scl, ssq);
+    norm_new = scl * sqrt(ssq);
     //
-    //     If second projection is sufficiently large in norm, then do
-    //     nothing more. Alternatively, if it shrunk significantly, then
-    //     truncate it to zero.
+    // If second projection is sufficiently large in norm, then do
+    // nothing more. Alternatively, if it shrunk significantly, then
+    // truncate it to zero.
     //
-    if (normsq2 < alphasq * normsq1) {
-        for (i = 1; i <= m1; i = i + 1) {
-            x1[i - 1] = zero;
+    if (norm_new < alpha * norm) {
+        for (ix = 1; ix <= 1 + (m1 - 1) * incx1; ix = ix + incx1) {
+            x1[ix - 1] = zero;
         }
-        for (i = 1; i <= m2; i = i + 1) {
-            x2[i - 1] = zero;
+        for (ix = 1; ix <= 1 + (m2 - 1) * incx2; ix = ix + incx2) {
+            x2[ix - 1] = zero;
         }
     }
     //
-    //     End of Cunbdb6
+    // End of Cunbdb6
     //
 }

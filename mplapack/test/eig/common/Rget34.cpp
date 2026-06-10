@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DGET34.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,43 +43,18 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
 void Rget34(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt) {
+    INTEGER ldt = 4;
+    INTEGER ldt1 = 4;
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Get machine parameters
+    // Get machine parameters
     //
     REAL eps = Rlamch("P");
     REAL smlnum = Rlamch("S") / eps;
     const REAL one = 1.0;
     REAL bignum = one / smlnum;
     //
-    //     Set up test case parameters
+    // Set up test case parameters
     //
     const REAL zero = 0.0;
     REAL val[9];
@@ -90,8 +72,7 @@ void Rget34(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt) {
     vm[1 - 1] = one;
     vm[2 - 1] = one + two * eps;
     REAL t[4 * 4];
-    INTEGER ldt = 4;
-    Rcopy(16, &val[4 - 1], 0, &t[(1 - 1)], 1);
+    Rcopy(16, &val[4 - 1], 0, &t[0], 1);
     //
     ninfo[1 - 1] = 0;
     ninfo[2 - 1] = 0;
@@ -99,7 +80,7 @@ void Rget34(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt) {
     lmax = 0;
     rmax = zero;
     //
-    //     Begin test loop
+    // Begin test loop
     //
     INTEGER ia = 0;
     INTEGER iam = 0;
@@ -107,9 +88,7 @@ void Rget34(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt) {
     INTEGER ic = 0;
     REAL tnrm = 0.0;
     REAL t1[4 * 4];
-    INTEGER ldt1 = 4;
     REAL q[4 * 4];
-    INTEGER ldq = 4;
     const INTEGER lwork = 32;
     REAL work[lwork];
     INTEGER info = 0;
@@ -119,11 +98,11 @@ void Rget34(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt) {
         for (iam = 1; iam <= 2; iam = iam + 1) {
             for (ib = 1; ib <= 9; ib = ib + 1) {
                 for (ic = 1; ic <= 9; ic = ic + 1) {
-                    t[(1 - 1)] = val[ia - 1] * vm[iam - 1];
+                    t[0] = val[ia - 1] * vm[iam - 1];
                     t[(2 - 1) + (2 - 1) * ldt] = val[ic - 1];
                     t[(2 - 1) * ldt] = val[ib - 1];
                     t[(2 - 1)] = zero;
-                    tnrm = max({abs(t[(1 - 1)]), abs(t[(2 - 1) + (2 - 1) * ldt]), abs(t[(2 - 1) * ldt])});
+                    tnrm = max(abs(t[0]), abs(t[(2 - 1) + (2 - 1) * ldt]), abs(t[(2 - 1) * ldt]));
                     Rcopy(16, t, 1, t1, 1);
                     Rcopy(16, &val[1 - 1], 0, q, 1);
                     Rcopy(4, &val[3 - 1], 0, q, 5);
@@ -136,10 +115,10 @@ void Rget34(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt) {
                     if (info != 0) {
                         res += one / eps;
                     }
-                    if (t[(1 - 1)] != t1[(2 - 1) + (2 - 1) * ldt1]) {
+                    if (t[0] != t1[(2 - 1) + (2 - 1) * ldt1]) {
                         res += one / eps;
                     }
-                    if (t[(2 - 1) + (2 - 1) * ldt] != t1[(1 - 1)]) {
+                    if (t[(2 - 1) + (2 - 1) * ldt] != t1[0]) {
                         res += one / eps;
                     }
                     if (t[(2 - 1)] != zero) {
@@ -166,7 +145,7 @@ void Rget34(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt) {
                     for (ic12 = 2; ic12 <= 5; ic12 = ic12 + 1) {
                         for (ic21 = 2; ic21 <= 4; ic21 = ic21 + 1) {
                             for (ic22 = -1; ic22 <= 1; ic22 = ic22 + 2) {
-                                t[(1 - 1)] = val[ia - 1] * vm[iam - 1];
+                                t[0] = val[ia - 1] * vm[iam - 1];
                                 t[(2 - 1) * ldt] = val[ib - 1];
                                 t[(3 - 1) * ldt] = -two * val[ib - 1];
                                 t[(2 - 1)] = zero;
@@ -175,7 +154,7 @@ void Rget34(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt) {
                                 t[(3 - 1)] = zero;
                                 t[(3 - 1) + (2 - 1) * ldt] = -val[ic21 - 1];
                                 t[(3 - 1) + (3 - 1) * ldt] = val[ic11 - 1] * castREAL(ic22);
-                                tnrm = max({abs(t[(1 - 1)]), abs(t[(2 - 1) * ldt]), abs(t[(3 - 1) * ldt]), abs(t[(2 - 1) + (2 - 1) * ldt]), abs(t[(2 - 1) + (3 - 1) * ldt]), abs(t[(3 - 1) + (2 - 1) * ldt]), abs(t[(3 - 1) + (3 - 1) * ldt])});
+                                tnrm = max(abs(t[0]), abs(t[(2 - 1) * ldt]), abs(t[(3 - 1) * ldt]), abs(t[(2 - 1) + (2 - 1) * ldt]), abs(t[(2 - 1) + (3 - 1) * ldt]), abs(t[(3 - 1) + (2 - 1) * ldt]), abs(t[(3 - 1) + (3 - 1) * ldt]));
                                 Rcopy(16, t, 1, t1, 1);
                                 Rcopy(16, &val[1 - 1], 0, q, 1);
                                 Rcopy(4, &val[3 - 1], 0, q, 5);
@@ -186,7 +165,7 @@ void Rget34(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt) {
                                 Rhst01(3, 1, 3, t1, 4, t, 4, q, 4, work, lwork, result);
                                 res = result[1 - 1] + result[2 - 1];
                                 if (info == 0) {
-                                    if (t1[(1 - 1)] != t[(3 - 1) + (3 - 1) * ldt]) {
+                                    if (t1[0] != t[(3 - 1) + (3 - 1) * ldt]) {
                                         res += one / eps;
                                     }
                                     if (t[(3 - 1)] != zero) {
@@ -195,7 +174,13 @@ void Rget34(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt) {
                                     if (t[(3 - 1) + (2 - 1) * ldt] != zero) {
                                         res += one / eps;
                                     }
-                                    if (t[(2 - 1)] != 0 && (t[(1 - 1)] != t[(2 - 1) + (2 - 1) * ldt] || sign(one, t[(2 - 1) * ldt]) == sign(one, t[(2 - 1)]))) {
+                                    bool diag12_mismatch = t[0] != t[(2 - 1) + (2 - 1) * ldt];
+#if defined ___MPLAPACK_BUILD_WITH_QD___
+                                    REAL diag12_diff = t[0] - t[(2 - 1) + (2 - 1) * ldt];
+                                    diag12_diff.renorm();
+                                    diag12_mismatch = !diag12_diff.is_zero();
+#endif
+                                    if (t[(2 - 1)] != 0 && (diag12_mismatch || sign(one, t[(2 - 1) * ldt]) == sign(one, t[(2 - 1)]))) {
                                         res += one / eps;
                                     }
                                 }
@@ -224,7 +209,7 @@ void Rget34(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt) {
                     for (icm = 1; icm <= 2; icm = icm + 1) {
                         for (ib = 1; ib <= 5; ib = ib + 1) {
                             for (ic = 1; ic <= 5; ic = ic + 1) {
-                                t[(1 - 1)] = val[ia11 - 1];
+                                t[0] = val[ia11 - 1];
                                 t[(2 - 1) * ldt] = val[ia12 - 1];
                                 t[(3 - 1) * ldt] = -two * val[ib - 1];
                                 t[(2 - 1)] = -val[ia21 - 1];
@@ -233,7 +218,7 @@ void Rget34(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt) {
                                 t[(3 - 1)] = zero;
                                 t[(3 - 1) + (2 - 1) * ldt] = zero;
                                 t[(3 - 1) + (3 - 1) * ldt] = val[ic - 1] * vm[icm - 1];
-                                tnrm = max({abs(t[(1 - 1)]), abs(t[(2 - 1) * ldt]), abs(t[(3 - 1) * ldt]), abs(t[(2 - 1) + (2 - 1) * ldt]), abs(t[(2 - 1) + (3 - 1) * ldt]), abs(t[(3 - 1) + (2 - 1) * ldt]), abs(t[(3 - 1) + (3 - 1) * ldt])});
+                                tnrm = max(abs(t[0]), abs(t[(2 - 1) * ldt]), abs(t[(3 - 1) * ldt]), abs(t[(2 - 1) + (2 - 1) * ldt]), abs(t[(2 - 1) + (3 - 1) * ldt]), abs(t[(3 - 1) + (2 - 1) * ldt]), abs(t[(3 - 1) + (3 - 1) * ldt]));
                                 Rcopy(16, t, 1, t1, 1);
                                 Rcopy(16, &val[1 - 1], 0, q, 1);
                                 Rcopy(4, &val[3 - 1], 0, q, 5);
@@ -244,7 +229,13 @@ void Rget34(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt) {
                                 Rhst01(3, 1, 3, t1, 4, t, 4, q, 4, work, lwork, result);
                                 res = result[1 - 1] + result[2 - 1];
                                 if (info == 0) {
-                                    if (t1[(3 - 1) + (3 - 1) * ldt1] != t[(1 - 1)]) {
+                                    bool diag11_mismatch = t1[(3 - 1) + (3 - 1) * ldt1] != t[0];
+#if defined ___MPLAPACK_BUILD_WITH_QD___
+                                    REAL diag11_diff = t1[(3 - 1) + (3 - 1) * ldt1] - t[0];
+                                    diag11_diff.renorm();
+                                    diag11_mismatch = !diag11_diff.is_zero();
+#endif
+                                    if (diag11_mismatch) {
                                         res += one / eps;
                                     }
                                     if (t[(2 - 1)] != zero) {
@@ -253,7 +244,13 @@ void Rget34(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt) {
                                     if (t[(3 - 1)] != zero) {
                                         res += one / eps;
                                     }
-                                    if (t[(3 - 1) + (2 - 1) * ldt] != 0 && (t[(2 - 1) + (2 - 1) * ldt] != t[(3 - 1) + (3 - 1) * ldt] || sign(one, t[(2 - 1) + (3 - 1) * ldt]) == sign(one, t[(3 - 1) + (2 - 1) * ldt]))) {
+                                    bool diag23_mismatch = t[(2 - 1) + (2 - 1) * ldt] != t[(3 - 1) + (3 - 1) * ldt];
+#if defined ___MPLAPACK_BUILD_WITH_QD___
+                                    REAL diag23_diff = t[(2 - 1) + (2 - 1) * ldt] - t[(3 - 1) + (3 - 1) * ldt];
+                                    diag23_diff.renorm();
+                                    diag23_mismatch = !diag23_diff.is_zero();
+#endif
+                                    if (t[(3 - 1) + (2 - 1) * ldt] != 0 && (diag23_mismatch || sign(one, t[(2 - 1) + (3 - 1) * ldt]) == sign(one, t[(3 - 1) + (2 - 1) * ldt]))) {
                                         res += one / eps;
                                     }
                                 }
@@ -270,7 +267,7 @@ void Rget34(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt) {
         }
     }
     //
-    const REAL half = 0.5e0;
+    const REAL half = 0.5;
     const REAL three = 3.0;
     INTEGER i = 0;
     INTEGER j = 0;
@@ -285,7 +282,7 @@ void Rget34(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt) {
                                     for (ic22 = -1; ic22 <= 1; ic22 = ic22 + 2) {
                                         for (icm = 5; icm <= 7; icm = icm + 1) {
                                             iam = 1;
-                                            t[(1 - 1)] = val[ia11 - 1] * vm[iam - 1];
+                                            t[0] = val[ia11 - 1] * vm[iam - 1];
                                             t[(2 - 1) * ldt] = val[ia12 - 1] * vm[iam - 1];
                                             t[(3 - 1) * ldt] = -two * val[ib - 1];
                                             t[(4 - 1) * ldt] = half * val[ib - 1];
@@ -304,7 +301,7 @@ void Rget34(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt) {
                                             tnrm = zero;
                                             for (i = 1; i <= 4; i = i + 1) {
                                                 for (j = 1; j <= 4; j = j + 1) {
-                                                    tnrm = max(tnrm, REAL(abs(t[(i - 1) + (j - 1) * ldt])));
+                                                    tnrm = max(tnrm, abs(t[(i - 1) + (j - 1) * ldt]));
                                                 }
                                             }
                                             Rcopy(16, t, 1, t1, 1);
@@ -329,7 +326,7 @@ void Rget34(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt) {
                                                 if (t[(4 - 1) + (2 - 1) * ldt] != zero) {
                                                     res += one / eps;
                                                 }
-                                                if (t[(2 - 1)] != 0 && (t[(1 - 1)] != t[(2 - 1) + (2 - 1) * ldt] || sign(one, t[(2 - 1) * ldt]) == sign(one, t[(2 - 1)]))) {
+                                                if (t[(2 - 1)] != 0 && (t[0] != t[(2 - 1) + (2 - 1) * ldt] || sign(one, t[(2 - 1) * ldt]) == sign(one, t[(2 - 1)]))) {
                                                     res += one / eps;
                                                 }
                                                 if (t[(4 - 1) + (3 - 1) * ldt] != 0 && (t[(3 - 1) + (3 - 1) * ldt] != t[(4 - 1) + (4 - 1) * ldt] || sign(one, t[(3 - 1) + (4 - 1) * ldt]) == sign(one, t[(4 - 1) + (3 - 1) * ldt]))) {
@@ -352,6 +349,6 @@ void Rget34(REAL &rmax, INTEGER &lmax, INTEGER *ninfo, INTEGER &knt) {
         }
     }
     //
-    //     End of Rget34
+    // End of Rget34
     //
 }

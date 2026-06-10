@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,73 +26,60 @@
  *
  */
 
+// Derived from LAPACK routine ZLARND.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
+
 #include <mplapack_matgen.h>
 
 COMPLEX
-Clarnd(INTEGER const idist, INTEGER *iseed) {
-    COMPLEX return_value = (0.0, 0.0);
+Clarnd(INTEGER const idist, INTEGER (&iseed)[4]) {
+    COMPLEX return_value = COMPLEX(0.0, 0.0);
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Generate a pair of real random numbers from a uniform (0,1)
-    //     distribution
+    // Generate a pair of real random numbers from a uniform (0,1)
+    // distribution
     //
     REAL t1 = Rlaran(iseed);
     REAL t2 = Rlaran(iseed);
     //
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     const REAL one = 1.0;
     const REAL zero = 0.0;
     const REAL twopi = two * pi(zero);
     if (idist == 1) {
         //
-        //        real and imaginary parts each uniform (0,1)
+        // real and imaginary parts each uniform (0,1)
         //
         return_value = COMPLEX(t1, t2);
     } else if (idist == 2) {
         //
-        //        real and imaginary parts each uniform (-1,1)
+        // real and imaginary parts each uniform (-1,1)
         //
         return_value = COMPLEX(two * t1 - one, two * t2 - one);
     } else if (idist == 3) {
         //
-        //        real and imaginary parts each normal (0,1)
+        // real and imaginary parts each normal (0,1)
         //
         return_value = sqrt(-two * log(t1)) * exp(COMPLEX(zero, twopi * t2));
     } else if (idist == 4) {
         //
-        //        uniform distribution on the unit disc abs(z) <= 1
+        // uniform distribution on the unit disc abs(z) <= 1
         //
         return_value = sqrt(t1) * exp(COMPLEX(zero, twopi * t2));
     } else if (idist == 5) {
         //
-        //        uniform distribution on the unit circle abs(z) = 1
+        // uniform distribution on the unit circle abs(z) = 1
         //
         return_value = exp(COMPLEX(zero, twopi * t2));
     }
     return return_value;
     //
-    //     End of Clarnd
+    // End of Clarnd
     //
 }

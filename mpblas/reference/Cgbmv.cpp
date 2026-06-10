@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,33 +26,18 @@
  *
  */
 
+// Derived from BLAS routine ZGBMV.
+// Original BLAS authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 
 void Cgbmv(const char *trans, INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx, COMPLEX const beta, COMPLEX *y, INTEGER const incy) {
     //
-    //  -- Reference BLAS level2 routine --
-    //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     INTEGER info = 0;
     if (!Mlsame(trans, "N") && !Mlsame(trans, "T") && !Mlsame(trans, "C")) {
@@ -73,11 +58,11 @@ void Cgbmv(const char *trans, INTEGER const m, INTEGER const n, INTEGER const kl
         info = 13;
     }
     if (info != 0) {
-        Mxerbla("Cgbmv ", info);
+        Mxerbla("Cgbmv", info);
         return;
     }
     //
-    //     Quick return if possible.
+    // Quick return if possible.
     //
     const COMPLEX zero = COMPLEX(0.0, 0.0);
     const COMPLEX one = COMPLEX(1.0, 0.0);
@@ -87,8 +72,8 @@ void Cgbmv(const char *trans, INTEGER const m, INTEGER const n, INTEGER const kl
     //
     bool noconj = Mlsame(trans, "T");
     //
-    //     Set  LENX  and  LENY, the lengths of the vectors x and y, and set
-    //     up the start points in  X  and  Y.
+    // Set  LENX  and  LENY, the lengths of the vectors x and y, and set
+    // up the start points in  X  and  Y.
     //
     INTEGER lenx = 0;
     INTEGER leny = 0;
@@ -112,10 +97,10 @@ void Cgbmv(const char *trans, INTEGER const m, INTEGER const n, INTEGER const kl
         ky = 1 - (leny - 1) * incy;
     }
     //
-    //     Start the operations. In this version the elements of A are
-    //     accessed sequentially with one pass through the band part of A.
+    // Start the operations. In this version the elements of A are
+    // accessed sequentially with one pass through the band part of A.
     //
-    //     First form  y := beta*y.
+    // First form  y := beta*y.
     //
     INTEGER i = 0;
     INTEGER iy = 0;
@@ -157,7 +142,7 @@ void Cgbmv(const char *trans, INTEGER const m, INTEGER const n, INTEGER const kl
     INTEGER ix = 0;
     if (Mlsame(trans, "N")) {
         //
-        //        Form  y := alpha*A*x + y.
+        // Form  y := alpha*A*x + y.
         //
         jx = kx;
         if (incy == 1) {
@@ -186,7 +171,7 @@ void Cgbmv(const char *trans, INTEGER const m, INTEGER const n, INTEGER const kl
         }
     } else {
         //
-        //        Form  y := alpha*A**T*x + y  or  y := alpha*A**H*x + y.
+        // Form  y := alpha*A**T*x + y  or  y := alpha*A**H*x + y.
         //
         jy = ky;
         if (incx == 1) {
@@ -230,6 +215,6 @@ void Cgbmv(const char *trans, INTEGER const m, INTEGER const n, INTEGER const kl
         }
     }
     //
-    //     End of Cgbmv .
+    // End of Cgbmv
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DPOT01.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,9 +43,9 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Rpot01(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL *afac, INTEGER const ldafac, REAL *rwork, REAL &resid) {
+void Rpot01(fem::str_cref uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL *afac, INTEGER const ldafac, REAL *rwork, REAL &resid) {
     //
-    //     Quick exit if N = 0.
+    // Quick exit if N = 0.
     //
     const REAL zero = 0.0;
     if (n <= 0) {
@@ -46,47 +53,47 @@ void Rpot01(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL 
         return;
     }
     //
-    //     Exit with RESID = 1/EPS if ANORM = 0.
+    // Exit with RESID = 1/EPS if ANORM = 0.
     //
     REAL eps = Rlamch("Epsilon");
-    REAL anorm = Rlansy("1", uplo, n, a, lda, rwork);
+    REAL anorm = Rlansy("1", uplo.elems(), n, a, lda, rwork);
     const REAL one = 1.0;
     if (anorm <= zero) {
         resid = one / eps;
         return;
     }
     //
-    //     Compute the product U'*U, overwriting U.
+    // Compute the product U**T * U, overwriting U.
     //
     INTEGER k = 0;
     REAL t = 0.0;
-    if (Mlsame(uplo, "U")) {
+    if (Mlsame(uplo.elems(), "U")) {
         for (k = n; k >= 1; k = k - 1) {
             //
-            //           Compute the (K,K) element of the result.
+            // Compute the (K,K) element of the result.
             //
             t = Rdot(k, &afac[(k - 1) * ldafac], 1, &afac[(k - 1) * ldafac], 1);
             afac[(k - 1) + (k - 1) * ldafac] = t;
             //
-            //           Compute the rest of column K.
+            // Compute the rest of column K.
             //
             Rtrmv("Upper", "Transpose", "Non-unit", k - 1, afac, ldafac, &afac[(k - 1) * ldafac], 1);
             //
         }
         //
-        //     Compute the product L*L', overwriting L.
+        // Compute the product L * L**T, overwriting L.
         //
     } else {
         for (k = n; k >= 1; k = k - 1) {
             //
-            //           Add a multiple of column K of the factor L to each of
-            //           columns K+1 through N.
+            // Add a multiple of column K of the factor L to each of
+            // columns K+1 through N.
             //
             if (k + 1 <= n) {
                 Rsyr("Lower", n - k, one, &afac[((k + 1) - 1) + (k - 1) * ldafac], 1, &afac[((k + 1) - 1) + ((k + 1) - 1) * ldafac], ldafac);
             }
             //
-            //           Scale column K by the diagonal element.
+            // Scale column K by the diagonal element.
             //
             t = afac[(k - 1) + (k - 1) * ldafac];
             Rscal(n - k + 1, t, &afac[(k - 1) + (k - 1) * ldafac], 1);
@@ -94,11 +101,11 @@ void Rpot01(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL 
         }
     }
     //
-    //     Compute the difference  L*L' - A (or U'*U - A).
+    // Compute the difference L * L**T - A (or U**T * U - A).
     //
     INTEGER j = 0;
     INTEGER i = 0;
-    if (Mlsame(uplo, "U")) {
+    if (Mlsame(uplo.elems(), "U")) {
         for (j = 1; j <= n; j = j + 1) {
             for (i = 1; i <= j; i = i + 1) {
                 afac[(i - 1) + (j - 1) * ldafac] = afac[(i - 1) + (j - 1) * ldafac] - a[(i - 1) + (j - 1) * lda];
@@ -112,12 +119,12 @@ void Rpot01(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL 
         }
     }
     //
-    //     Compute norm( L*U - A ) / ( N * norm(A) * EPS )
+    // Compute norm(L*U - A) / ( N * norm(A) * EPS )
     //
-    resid = Rlansy("1", uplo, n, afac, ldafac, rwork);
+    resid = Rlansy("1", uplo.elems(), n, afac, ldafac, rwork);
     //
     resid = ((resid / castREAL(n)) / anorm) / eps;
     //
-    //     End of Rpot01
+    // End of Rpot01
     //
 }

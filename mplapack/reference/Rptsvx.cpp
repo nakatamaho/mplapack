@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,35 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DPTSVX.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rptsvx(const char *fact, INTEGER const n, INTEGER const nrhs, REAL *d, REAL *e, REAL *df, REAL *ef, REAL *b, INTEGER const ldb, REAL *x, INTEGER const ldx, REAL &rcond, REAL *ferr, REAL *berr, REAL *work, INTEGER &info) {
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     bool nofact = Mlsame(fact, "N");
@@ -77,7 +61,7 @@ void Rptsvx(const char *fact, INTEGER const n, INTEGER const nrhs, REAL *d, REAL
     const REAL zero = 0.0;
     if (nofact) {
         //
-        //        Compute the L*D*L**T (or U**T*D*U) factorization of A.
+        // Compute the L*D*L**T (or U**T*D*U) factorization of A.
         //
         Rcopy(n, d, 1, df, 1);
         if (n > 1) {
@@ -85,7 +69,7 @@ void Rptsvx(const char *fact, INTEGER const n, INTEGER const nrhs, REAL *d, REAL
         }
         Rpttrf(n, df, ef, info);
         //
-        //        Return if INFO is non-zero.
+        // Return if INFO is non-zero.
         //
         if (info > 0) {
             rcond = zero;
@@ -93,30 +77,30 @@ void Rptsvx(const char *fact, INTEGER const n, INTEGER const nrhs, REAL *d, REAL
         }
     }
     //
-    //     Compute the norm of the matrix A.
+    // Compute the norm of the matrix A.
     //
     REAL anorm = Rlanst("1", n, d, e);
     //
-    //     Compute the reciprocal of the condition number of A.
+    // Compute the reciprocal of the condition number of A.
     //
     Rptcon(n, df, ef, anorm, rcond, work, info);
     //
-    //     Compute the solution vectors X.
+    // Compute the solution vectors X.
     //
     Rlacpy("Full", n, nrhs, b, ldb, x, ldx);
     Rpttrs(n, nrhs, df, ef, x, ldx, info);
     //
-    //     Use iterative refinement to improve the computed solutions and
-    //     compute error bounds and backward error estimates for them.
+    // Use iterative refinement to improve the computed solutions and
+    // compute error bounds and backward error estimates for them.
     //
     Rptrfs(n, nrhs, d, e, df, ef, b, ldb, x, ldx, ferr, berr, work, info);
     //
-    //     Set INFO = N+1 if the matrix is singular to working precision.
+    // Set INFO = N+1 if the matrix is singular to working precision.
     //
     if (rcond < Rlamch("Epsilon")) {
         info = n + 1;
     }
     //
-    //     End of Rptsvx
+    // End of Rptsvx
     //
 }

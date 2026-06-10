@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,33 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DORG2R.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rorg2r(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, INTEGER const lda, REAL *tau, REAL *work, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     if (m < 0) {
@@ -69,13 +55,13 @@ void Rorg2r(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, INTEGER 
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n <= 0) {
         return;
     }
     //
-    //     Initialise columns k+1:n to columns of the unit matrix
+    // Initialise columns k+1:n to columns of the unit matrix
     //
     INTEGER j = 0;
     INTEGER l = 0;
@@ -91,24 +77,23 @@ void Rorg2r(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, INTEGER 
     INTEGER i = 0;
     for (i = k; i >= 1; i = i - 1) {
         //
-        //        Apply H(i) to A(i:m,i:n) from the left
+        // Apply H(i) to A(i:m,i:n) from the left
         //
         if (i < n) {
-            a[(i - 1) + (i - 1) * lda] = one;
-            Rlarf("Left", m - i + 1, n - i, &a[(i - 1) + (i - 1) * lda], 1, tau[i - 1], &a[(i - 1) + ((i + 1) - 1) * lda], lda, work);
+            Rlarf1f("Left", m - i + 1, n - i, &a[(i - 1) + (i - 1) * lda], 1, tau[i - 1], &a[(i - 1) + ((i + 1) - 1) * lda], lda, work);
         }
         if (i < m) {
             Rscal(m - i, -tau[i - 1], &a[((i + 1) - 1) + (i - 1) * lda], 1);
         }
         a[(i - 1) + (i - 1) * lda] = one - tau[i - 1];
         //
-        //        Set A(1:i-1,i) to zero
+        // Set A(1:i-1,i) to zero
         //
         for (l = 1; l <= i - 1; l = l + 1) {
             a[(l - 1) + (i - 1) * lda] = zero;
         }
     }
     //
-    //     End of Rorg2r
+    // End of Rorg2r
     //
 }

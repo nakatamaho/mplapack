@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DLAQR0.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -66,25 +73,24 @@ void Rlaqr0(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
     INTEGER ns = 0;
     INTEGER i = 0;
     REAL ss = 0.0;
-    const REAL wilk1 = 0.75e0;
+    const REAL wilk1 = 0.75;
     REAL aa = 0.0;
     REAL bb = 0.0;
-    const REAL wilk2 = -0.4375e0;
+    const REAL wilk2 = -0.4375;
     REAL cc = 0.0;
     REAL dd = 0.0;
     REAL cs = 0.0;
     REAL sn = 0.0;
-    REAL zdum[1];
+    REAL zdum[1 * 1];
     INTEGER inf = 0;
     bool sorted = false;
     REAL swap = 0.0;
     INTEGER kdu = 0;
     INTEGER ku = 0;
     INTEGER kwh = 0;
-    //
     info = 0;
     //
-    //     ==== Quick return for N = 0: nothing to do. ====
+    // ==== Quick return for N = 0: nothing to do. ====
     //
     if (n == 0) {
         work[1 - 1] = one;
@@ -93,7 +99,7 @@ void Rlaqr0(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
     //
     if (n <= ntiny) {
         //
-        //        ==== Tiny matrices must use Rlahqr. ====
+        // ==== Tiny matrices must use Rlahqr. ====
         //
         lwkopt = 1;
         if (lwork != -1) {
@@ -101,14 +107,14 @@ void Rlaqr0(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
         }
     } else {
         //
-        //        ==== Use small bulge multi-shift QR with aggressive early
-        //        .    deflation on larger-than-tiny matrices. ====
+        // ==== Use small bulge multi-shift QR with aggressive early
+        // .    deflation on larger-than-tiny matrices. ====
         //
-        //        ==== Hope for the best. ====
+        // ==== Hope for the best. ====
         //
         info = 0;
         //
-        //        ==== Set up job flags for iMlaenv. ====
+        // ==== Set up job flags for iMlaenv. ====
         //
         if (wantt) {
             jbcmpz[0] = 'S';
@@ -121,93 +127,94 @@ void Rlaqr0(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
             jbcmpz[1] = 'N';
         }
         //
-        //        ==== NWR = recommended deflation window size.  At this
-        //        .    point,  N .GT. NTINY = 14, so there is enough
-        //        .    subdiagonal workspace for NWR.GE.2 as required.
-        //        .    (In fact, there is enough subdiagonal space for
-        //        .    NWR.GE.4.) ====
+        // ==== NWR = recommended deflation window size.  At this
+        // .    point,  N .GT. NTINY = 15, so there is enough
+        // .    subdiagonal workspace for NWR.GE.2 as required.
+        // .    (In fact, there is enough subdiagonal space for
+        // .    NWR.GE.4.) ====
         //
         nwr = iMlaenv(13, "Rlaqr0", jbcmpz, n, ilo, ihi, lwork);
         nwr = max((INTEGER)2, nwr);
-        nwr = min({ihi - ilo + 1, (n - 1) / 3, nwr});
+        nwr = min(ihi - ilo + 1, (n - 1) / 3, nwr);
         //
-        //        ==== NSR = recommended number of simultaneous shifts.
-        //        .    At this point N .GT. NTINY = 15, so there is at
-        //        .    enough subdiagonal workspace for NSR to be even
-        //        .    and greater than or equal to two as required. ====
+        // ==== NSR = recommended number of simultaneous shifts.
+        // .    At this point N .GT. NTINY = 15, so there is at
+        // .    enough subdiagonal workspace for NSR to be even
+        // .    and greater than or equal to two as required. ====
         //
         nsr = iMlaenv(15, "Rlaqr0", jbcmpz, n, ilo, ihi, lwork);
-        nsr = min({nsr, (n - 3) / 6, ihi - ilo});
+        nsr = min(nsr, (n - 3) / 6, ihi - ilo);
         nsr = max((INTEGER)2, nsr - mod(nsr, 2));
         //
-        //        ==== Estimate optimal workspace ====
+        // ==== Estimate optimal workspace ====
         //
-        //        ==== Workspace query call to Rlaqr3 ====
+        // ==== Workspace query call to Rlaqr3 ====
         //
         Rlaqr3(wantt, wantz, n, ilo, ihi, nwr + 1, h, ldh, iloz, ihiz, z, ldz, ls, ld, wr, wi, h, ldh, n, h, ldh, n, h, ldh, work, -1);
         //
-        //        ==== Optimal workspace = MAX(Rlaqr5, Rlaqr3) ====
+        // ==== Optimal workspace = MAX(Rlaqr5, Rlaqr3) ====
         //
         lwkopt = max(3 * nsr / 2, castINTEGER(work[1 - 1]));
         //
-        //        ==== Quick return in case of workspace query. ====
+        // ==== Quick return in case of workspace query. ====
         //
         if (lwork == -1) {
             work[1 - 1] = castREAL(lwkopt);
             return;
         }
         //
-        //        ==== Rlahqr/Rlaqr0 crossover point ====
+        // ==== Rlahqr/Rlaqr0 crossover point ====
         //
         nmin = iMlaenv(12, "Rlaqr0", jbcmpz, n, ilo, ihi, lwork);
         nmin = max(ntiny, nmin);
         //
-        //        ==== Nibble crossover point ====
+        // ==== Nibble crossover point ====
         //
         nibble = iMlaenv(14, "Rlaqr0", jbcmpz, n, ilo, ihi, lwork);
         nibble = max((INTEGER)0, nibble);
         //
-        //        ==== Accumulate reflections during ttswp?  Use block
-        //        .    2-by-2 structure during matrix-matrix multiply? ====
+        // ==== Accumulate reflections during ttswp?  Use block
+        // .    2-by-2 structure during matrix-matrix multiply? ====
         //
         kacc22 = iMlaenv(16, "Rlaqr0", jbcmpz, n, ilo, ihi, lwork);
         kacc22 = max((INTEGER)0, kacc22);
         kacc22 = min((INTEGER)2, kacc22);
         //
-        //        ==== NWMAX = the largest possible deflation window for
-        //        .    which there is sufficient workspace. ====
+        // ==== NWMAX = the largest possible deflation window for
+        // .    which there is sufficient workspace. ====
         //
         nwmax = min((n - 1) / 3, lwork / 2);
         nw = nwmax;
         //
-        //        ==== NSMAX = the Largest number of simultaneous shifts
-        //        .    for which there is sufficient workspace. ====
+        // ==== NSMAX = the Largest number of simultaneous shifts
+        // .    for which there is sufficient workspace. ====
         //
         nsmax = min((n - 3) / 6, 2 * lwork / 3);
         nsmax = nsmax - mod(nsmax, 2);
         //
-        //        ==== NDFL: an iteration count restarted at deflation. ====
+        // ==== NDFL: an iteration count restarted at deflation. ====
         //
         ndfl = 1;
         //
-        //        ==== ITMAX = iteration limit ====
+        // ==== ITMAX = iteration limit ====
         //
         itmax = max((INTEGER)30, 2 * kexsh) * max((INTEGER)10, (ihi - ilo + 1));
         //
-        //        ==== Last row and column in the active block ====
+        // ==== Last row and column in the active block ====
         //
         kbot = ihi;
         //
-        //        ==== Main Loop ====
+        // ==== Main Loop ====
         //
         for (it = 1; it <= itmax; it = it + 1) {
             //
-            //           ==== Done when KBOT falls below ILO ====
+            // ==== Done when KBOT falls below ILO ====
             //
-            if (kbot < ilo)
+            if (kbot < ilo) {
                 goto statement_90;
+            }
             //
-            //           ==== Locate active block ====
+            // ==== Locate active block ====
             //
             for (k = kbot; k >= ilo + 1; k = k - 1) {
                 if (h[(k - 1) + ((k - 1) - 1) * ldh] == zero) {
@@ -218,21 +225,21 @@ void Rlaqr0(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
         statement_20:
             ktop = k;
             //
-            //           ==== Select deflation window size:
-            //           .    Typical Case:
-            //           .      If possible and advisable, nibble the entire
-            //           .      active block.  If not, use size MIN(NWR,NWMAX)
-            //           .      or MIN(NWR+1,NWMAX) depending upon which has
-            //           .      the smaller corresponding subdiagonal entry
-            //           .      (a heuristic).
-            //           .
-            //           .    Exceptional Case:
-            //           .      If there have been no deflations in KEXNW or
-            //           .      more iterations, then vary the deflation window
-            //           .      size.   At first, because, larger windows are,
-            //           .      in general, more powerful than smaller ones,
-            //           .      rapidly increase the window to the maximum possible.
-            //           .      Then, gradually reduce the window size. ====
+            // ==== Select deflation window size:
+            // .    Typical Case:
+            // .      If possible and advisable, nibble the entire
+            // .      active block.  If not, use size MIN(NWR,NWMAX)
+            // .      or MIN(NWR+1,NWMAX) depending upon which has
+            // .      the smaller corresponding subdiagonal entry
+            // .      (a heuristic).
+            // .
+            // .    Exceptional Case:
+            // .      If there have been no deflations in KEXNW or
+            // .      more iterations, then vary the deflation window
+            // .      size.   At first, because, larger windows are,
+            // .      in general, more powerful than smaller ones,
+            // .      rapidly increase the window to the maximum possible.
+            // .      Then, gradually reduce the window size. ====
             //
             nh = kbot - ktop + 1;
             nwupbd = min(nh, nwmax);
@@ -261,16 +268,16 @@ void Rlaqr0(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
                 nw = nw - ndec;
             }
             //
-            //           ==== Aggressive early deflation:
-            //           .    split workspace under the subdiagonal into
-            //           .      - an nw-by-nw work array V in the lower
-            //           .        left-hand-corner,
-            //           .      - an NW-by-at-least-NW-but-more-is-better
-            //           .        (NW-by-NHO) horizontal work array along
-            //           .        the bottom edge,
-            //           .      - an at-least-NW-but-more-is-better (NHV-by-NW)
-            //           .        vertical work array along the left-hand-edge.
-            //           .        ====
+            // ==== Aggressive early deflation:
+            // .    split workspace under the subdiagonal into
+            // .      - an nw-by-nw work array V in the lower
+            // .        left-hand-corner,
+            // .      - an NW-by-at-least-NW-but-more-is-better
+            // .        (NW-by-NHO) horizontal work array along
+            // .        the bottom edge,
+            // .      - an at-least-NW-but-more-is-better (NHV-by-NW)
+            // .        vertical work array along the left-hand-edge.
+            // .        ====
             //
             kv = n - nw + 1;
             kt = nw + 1;
@@ -278,39 +285,39 @@ void Rlaqr0(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
             kwv = nw + 2;
             nve = (n - nw) - kwv + 1;
             //
-            //           ==== Aggressive early deflation ====
+            // ==== Aggressive early deflation ====
             //
             Rlaqr3(wantt, wantz, n, ktop, kbot, nw, h, ldh, iloz, ihiz, z, ldz, ls, ld, wr, wi, &h[(kv - 1)], ldh, nho, &h[(kv - 1) + (kt - 1) * ldh], ldh, nve, &h[(kwv - 1)], ldh, work, lwork);
             //
-            //           ==== Adjust KBOT accounting for new deflations. ====
+            // ==== Adjust KBOT accounting for new deflations. ====
             //
             kbot = kbot - ld;
             //
-            //           ==== KS points to the shifts. ====
+            // ==== KS points to the shifts. ====
             //
             ks = kbot - ls + 1;
             //
-            //           ==== Skip an expensive QR sweep if there is a (partly
-            //           .    heuristic) reason to expect that many eigenvalues
-            //           .    will deflate without it.  Here, the QR sweep is
-            //           .    skipped if many eigenvalues have just been deflated
-            //           .    or if the remaining active block is small.
+            // ==== Skip an expensive QR sweep if there is a (partly
+            // .    heuristic) reason to expect that many eigenvalues
+            // .    will deflate without it.  Here, the QR sweep is
+            // .    skipped if many eigenvalues have just been deflated
+            // .    or if the remaining active block is small.
             //
             if ((ld == 0) || ((100 * ld <= nw * nibble) && (kbot - ktop + 1 > min(nmin, nwmax)))) {
                 //
-                //              ==== NS = nominal number of simultaneous shifts.
-                //              .    This may be lowered (slightly) if Rlaqr3
-                //              .    did not provide that many shifts. ====
+                // ==== NS = nominal number of simultaneous shifts.
+                // .    This may be lowered (slightly) if Rlaqr3
+                // .    did not provide that many shifts. ====
                 //
-                ns = min({nsmax, nsr, max((INTEGER)2, kbot - ktop)});
+                ns = min(nsmax, nsr, max((INTEGER)2, kbot - ktop));
                 ns = ns - mod(ns, 2);
                 //
-                //              ==== If there have been no deflations
-                //              .    in a multiple of KEXSH iterations,
-                //              .    then try exceptional shifts.
-                //              .    Otherwise use shifts provided by
-                //              .    Rlaqr3 above or from the eigenvalues
-                //              .    of a trailing principal submatrix. ====
+                // ==== If there have been no deflations
+                // .    in a multiple of KEXSH iterations,
+                // .    then try exceptional shifts.
+                // .    Otherwise use shifts provided by
+                // .    Rlaqr3 above or from the eigenvalues
+                // .    of a trailing principal submatrix. ====
                 //
                 if (mod(ndfl, kexsh) == 0) {
                     ks = kbot - ns + 1;
@@ -330,11 +337,11 @@ void Rlaqr0(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
                     }
                 } else {
                     //
-                    //                 ==== Got NS/2 or fewer shifts? Use Rlaqr4 or
-                    //                 .    Rlahqr on a trailing principal submatrix to
-                    //                 .    get more. (Since NS.LE.NSMAX.LE.(N+6)/9,
-                    //                 .    there is enough space below the subdiagonal
-                    //                 .    to fit an NS-by-NS scratch array.) ====
+                    // ==== Got NS/2 or fewer shifts? Use Rlaqr4 or
+                    // .    Rlahqr on a trailing principal submatrix to
+                    // .    get more. (Since NS.LE.NSMAX.LE.(N-3)/6,
+                    // .    there is enough space below the subdiagonal
+                    // .    to fit an NS-by-NS scratch array.) ====
                     //
                     if (kbot - ks + 1 <= ns / 2) {
                         ks = kbot - ns + 1;
@@ -347,9 +354,9 @@ void Rlaqr0(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
                         }
                         ks += inf;
                         //
-                        //                    ==== In case of a rare QR failure use
-                        //                    .    eigenvalues of the trailing 2-by-2
-                        //                    .    principal submatrix.  ====
+                        // ==== In case of a rare QR failure use
+                        // .    eigenvalues of the trailing 2-by-2
+                        // .    principal submatrix.  ====
                         //
                         if (ks >= kbot) {
                             aa = h[((kbot - 1) - 1) + ((kbot - 1) - 1) * ldh];
@@ -363,9 +370,9 @@ void Rlaqr0(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
                     //
                     if (kbot - ks + 1 > ns) {
                         //
-                        //                    ==== Sort the shifts (Helps a little)
-                        //                    .    Bubble sort keeps complex conjugate
-                        //                    .    pairs together. ====
+                        // ==== Sort the shifts (Helps a little)
+                        // .    Bubble sort keeps complex conjugate
+                        // .    pairs together. ====
                         //
                         sorted = false;
                         for (k = kbot; k >= ks + 1; k = k - 1) {
@@ -390,11 +397,11 @@ void Rlaqr0(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
                     statement_60:;
                     }
                     //
-                    //                 ==== Shuffle shifts into pairs of real shifts
-                    //                 .    and pairs of complex conjugate shifts
-                    //                 .    assuming complex conjugate shifts are
-                    //                 .    already adjacent to one another. (Yes,
-                    //                 .    they are.)  ====
+                    // ==== Shuffle shifts into pairs of real shifts
+                    // .    and pairs of complex conjugate shifts
+                    // .    assuming complex conjugate shifts are
+                    // .    already adjacent to one another. (Yes,
+                    // .    they are.)  ====
                     //
                     for (i = kbot; i >= ks + 2; i = i - 2) {
                         if (wi[i - 1] != -wi[(i - 1) - 1]) {
@@ -412,8 +419,8 @@ void Rlaqr0(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
                     }
                 }
                 //
-                //              ==== If there are only two shifts and both are
-                //              .    real, then use only one.  ====
+                // ==== If there are only two shifts and both are
+                // .    real, then use only one.  ====
                 //
                 if (kbot - ks + 1 == 2) {
                     if (wi[kbot - 1] == zero) {
@@ -425,25 +432,25 @@ void Rlaqr0(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
                     }
                 }
                 //
-                //              ==== Use up to NS of the the smallest magnitude
-                //              .    shifts.  If there aren't NS shifts available,
-                //              .    then use them all, possibly dropping one to
-                //              .    make the number of shifts even. ====
+                // ==== Use up to NS of the the smallest magnitude
+                // .    shifts.  If there aren't NS shifts available,
+                // .    then use them all, possibly dropping one to
+                // .    make the number of shifts even. ====
                 //
                 ns = min(ns, kbot - ks + 1);
                 ns = ns - mod(ns, 2);
                 ks = kbot - ns + 1;
                 //
-                //              ==== Small-bulge multi-shift QR sweep:
-                //              .    split workspace under the subdiagonal into
-                //              .    - a KDU-by-KDU work array U in the lower
-                //              .      left-hand-corner,
-                //              .    - a KDU-by-at-least-KDU-but-more-is-better
-                //              .      (KDU-by-NHo) horizontal work array WH along
-                //              .      the bottom edge,
-                //              .    - and an at-least-KDU-but-more-is-better-by-KDU
-                //              .      (NVE-by-KDU) vertical work WV arrow along
-                //              .      the left-hand-edge. ====
+                // ==== Small-bulge multi-shift QR sweep:
+                // .    split workspace under the subdiagonal into
+                // .    - a KDU-by-KDU work array U in the lower
+                // .      left-hand-corner,
+                // .    - a KDU-by-at-least-KDU-but-more-is-better
+                // .      (KDU-by-NHo) horizontal work array WH along
+                // .      the bottom edge,
+                // .    - and an at-least-KDU-but-more-is-better-by-KDU
+                // .      (NVE-by-KDU) vertical work WV arrow along
+                // .      the left-hand-edge. ====
                 //
                 kdu = 2 * ns;
                 ku = n - kdu + 1;
@@ -452,12 +459,12 @@ void Rlaqr0(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
                 kwv = kdu + 4;
                 nve = n - kdu - kwv + 1;
                 //
-                //              ==== Small-bulge multi-shift QR sweep ====
+                // ==== Small-bulge multi-shift QR sweep ====
                 //
                 Rlaqr5(wantt, wantz, kacc22, n, ktop, kbot, ns, &wr[ks - 1], &wi[ks - 1], h, ldh, iloz, ihiz, z, ldz, work, 3, &h[(ku - 1)], ldh, nve, &h[(kwv - 1)], ldh, nho, &h[(ku - 1) + (kwh - 1) * ldh], ldh);
             }
             //
-            //           ==== Note progress (or the lack of it). ====
+            // ==== Note progress (or the lack of it). ====
             //
             if (ld > 0) {
                 ndfl = 1;
@@ -465,20 +472,20 @@ void Rlaqr0(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
                 ndfl++;
             }
             //
-            //           ==== End of main loop ====
+            // ==== End of main loop ====
         }
         //
-        //        ==== Iteration limit exceeded.  Set INFO to show where
-        //        .    the problem occurred and exit. ====
+        // ==== Iteration limit exceeded.  Set INFO to show where
+        // .    the problem occurred and exit. ====
         //
         info = kbot;
     statement_90:;
     }
     //
-    //     ==== return the optimal value of LWORK. ====
+    // ==== Return the optimal value of LWORK. ====
     //
     work[1 - 1] = castREAL(lwkopt);
     //
-    //     ==== End of Rlaqr0 ====
+    // ==== End of Rlaqr0 ====
     //
 }

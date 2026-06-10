@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,33 +26,18 @@
  *
  */
 
+// Derived from BLAS routine ZHPR.
+// Original BLAS authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 
 void Chpr(const char *uplo, INTEGER const n, REAL const alpha, COMPLEX *x, INTEGER const incx, COMPLEX *ap) {
     //
-    //  -- Reference BLAS level2 routine --
-    //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     INTEGER info = 0;
     if (!Mlsame(uplo, "U") && !Mlsame(uplo, "L")) {
@@ -63,18 +48,18 @@ void Chpr(const char *uplo, INTEGER const n, REAL const alpha, COMPLEX *x, INTEG
         info = 5;
     }
     if (info != 0) {
-        Mxerbla("Chpr  ", info);
+        Mxerbla("Chpr", info);
         return;
     }
     //
-    //     Quick return if possible.
+    // Quick return if possible.
     //
     const COMPLEX zero = COMPLEX(0.0, 0.0);
     if ((n == 0) || (alpha == zero.real())) {
         return;
     }
     //
-    //     Set the start point in X if the increment is not unity.
+    // Set the start point in X if the increment is not unity.
     //
     INTEGER kx = 0;
     if (incx <= 0) {
@@ -83,8 +68,8 @@ void Chpr(const char *uplo, INTEGER const n, REAL const alpha, COMPLEX *x, INTEG
         kx = 1;
     }
     //
-    //     Start the operations. In this version the elements of the array AP
-    //     are accessed sequentially with one pass through AP.
+    // Start the operations. In this version the elements of the array AP
+    // are accessed sequentially with one pass through AP.
     //
     INTEGER kk = 1;
     INTEGER j = 0;
@@ -95,7 +80,7 @@ void Chpr(const char *uplo, INTEGER const n, REAL const alpha, COMPLEX *x, INTEG
     INTEGER ix = 0;
     if (Mlsame(uplo, "U")) {
         //
-        //        Form  A  when upper triangle is stored in AP.
+        // Form  A  when upper triangle is stored in AP.
         //
         if (incx == 1) {
             for (j = 1; j <= n; j = j + 1) {
@@ -132,7 +117,7 @@ void Chpr(const char *uplo, INTEGER const n, REAL const alpha, COMPLEX *x, INTEG
         }
     } else {
         //
-        //        Form  A  when lower triangle is stored in AP.
+        // Form  A  when lower triangle is stored in AP.
         //
         if (incx == 1) {
             for (j = 1; j <= n; j = j + 1) {
@@ -169,6 +154,6 @@ void Chpr(const char *uplo, INTEGER const n, REAL const alpha, COMPLEX *x, INTEG
         }
     }
     //
-    //     End of Chpr  .
+    // End of Chpr
     //
 }

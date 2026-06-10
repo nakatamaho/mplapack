@@ -20,68 +20,75 @@ if ENABLE_DOUBLE
 lib_LTLIBRARIES += libmatgen_double.la
 endif
 
-if ENABLE__FLOAT64X
-lib_LTLIBRARIES += libmatgen__Float64x.la
+if ENABLE_BINARY80
+lib_LTLIBRARIES += libmatgen_binary80.la
 endif
 
-if ENABLE__FLOAT128
-lib_LTLIBRARIES += libmatgen__Float128.la
+if ENABLE_BINARY128
+lib_LTLIBRARIES += libmatgen_binary128.la
 endif
 
 
 if ENABLE_MPFR
-libmatgen_mpfr_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR)  -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___ -D___MPLAPACK_INTERNAL___
+libmatgen_mpfr_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR)  -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___ -D___MPLAPACK_INTERNAL___
 libmatgen_mpfr_la_SOURCES = $(MATGEN_SOURCES)
+libmatgen_mpfr_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 if IS_MACOS
-libmatgen_mpfr_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
+libmatgen_mpfr_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 endif
 
 if ENABLE_GMP
-libmatgen_gmp_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_GMP___ -D___MPLAPACK_INTERNAL___
+libmatgen_gmp_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(GMP_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_GMP___ -D___MPLAPACK_INTERNAL___
 libmatgen_gmp_la_SOURCES = $(MATGEN_SOURCES)
+libmatgen_gmp_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 if IS_MACOS
-libmatgen_gmp_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
+libmatgen_gmp_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 endif
 
 if ENABLE_QD
-libmatgen_qd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_QD___ -D___MPLAPACK_INTERNAL___
+libmatgen_qd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_QD___ @qd_extra_cxxflags@ -D___MPLAPACK_INTERNAL___
 libmatgen_qd_la_SOURCES = $(MATGEN_SOURCES)
+libmatgen_qd_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 if IS_MACOS
-libmatgen_qd_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
+libmatgen_qd_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 endif
 
 if ENABLE_DD
-libmatgen_dd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_DD___ -D___MPLAPACK_INTERNAL___
+libmatgen_dd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_DD___ @qd_extra_cxxflags@ -D___MPLAPACK_INTERNAL___
 libmatgen_dd_la_SOURCES = $(MATGEN_SOURCES)
+libmatgen_dd_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 if IS_MACOS
-libmatgen_dd_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
+libmatgen_dd_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 endif
 
 if ENABLE_DOUBLE
-libmatgen_double_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_DOUBLE___ -D___MPLAPACK_INTERNAL___
+libmatgen_double_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -D___MPLAPACK_BUILD_WITH_DOUBLE___ -D___MPLAPACK_INTERNAL___
 libmatgen_double_la_SOURCES = $(MATGEN_SOURCES)
+libmatgen_double_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 if IS_MACOS
-libmatgen_double_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
+libmatgen_double_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 endif
 
-if ENABLE__FLOAT64X
-libmatgen__Float64x_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH__FLOAT64X___ -D___MPLAPACK_INTERNAL___
-libmatgen__Float64x_la_SOURCES = $(MATGEN_SOURCES)
+if ENABLE_BINARY80
+libmatgen_binary80_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -D___MPLAPACK_BUILD_WITH_BINARY80___ -D___MPLAPACK_INTERNAL___
+libmatgen_binary80_la_SOURCES = $(MATGEN_SOURCES)
+libmatgen_binary80_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 if IS_MACOS
-libmatgen__Float64x_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
+libmatgen_binary80_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 endif
 
-if ENABLE__FLOAT128
-libmatgen__Float128_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH__FLOAT128___ -D___MPLAPACK_INTERNAL___
-libmatgen__Float128_la_SOURCES = $(MATGEN_SOURCES)
+if ENABLE_BINARY128
+libmatgen_binary128_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -D___MPLAPACK_BUILD_WITH_BINARY128___ -D___MPLAPACK_INTERNAL___
+libmatgen_binary128_la_SOURCES = $(MATGEN_SOURCES)
+libmatgen_binary128_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 if IS_MACOS
-libmatgen__Float128_la_LDFLAGS = -Wl,-flat_namespace,-undefined,dynamic_lookup
+libmatgen_binary128_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 endif
 

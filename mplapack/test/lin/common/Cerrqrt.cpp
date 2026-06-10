@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZERRQRT.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -35,127 +42,129 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack_debug.h>
 
-void Cerrqrt(const char *path, INTEGER const nunit) {
+void Cerrqrt(fem::str_cref path, INTEGER const nunit) {
+    common cmn;
+    common_write write(cmn);
     //
-    //     Set the variables to innocuous values.
+    nout = nunit;
+    write(nout, star);
+    //
+    // Set the variables to innocuous values.
     //
     INTEGER j = 0;
     const INTEGER nmax = 2;
     INTEGER i = 0;
+    const REAL one = 1.0;
     COMPLEX a[nmax * nmax];
     COMPLEX c[nmax * nmax];
     COMPLEX t[nmax * nmax];
-    INTEGER lda = nmax;
-    INTEGER ldc = nmax;
-    INTEGER ldt = nmax;
     COMPLEX w[nmax];
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
-            a[(i - 1) + (j - 1) * lda] = COMPLEX(1.0 / castREAL(i + j), 0.0);
-            c[(i - 1) + (j - 1) * ldc] = COMPLEX(1.0 / castREAL(i + j), 0.0);
-            t[(i - 1) + (j - 1) * ldt] = COMPLEX(1.0 / castREAL(i + j), 0.0);
+            a[(i - 1) + (j - 1) * nmax] = one / COMPLEX(castREAL(i + j), 0.0);
+            c[(i - 1) + (j - 1) * nmax] = one / COMPLEX(castREAL(i + j), 0.0);
+            t[(i - 1) + (j - 1) * nmax] = one / COMPLEX(castREAL(i + j), 0.0);
         }
         w[j - 1] = 0.0;
     }
     ok = true;
     //
-    //     Error exits for QRT factorization
+    // Error exits for QRT factorization
     //
-    //     Cgeqrt
+    // Cgeqrt
     //
-    strncpy(srnamt, "Cgeqrt", srnamt_len);
+    srnamt = "Cgeqrt";
     infot = 1;
     INTEGER info = 0;
     Cgeqrt(-1, 0, 1, a, 1, t, 1, w, info);
-    chkxer("Cgeqrt", infot, nout, lerr, ok);
+    Chkxer("Cgeqrt", infot, nout, lerr, ok);
     infot = 2;
     Cgeqrt(0, -1, 1, a, 1, t, 1, w, info);
-    chkxer("Cgeqrt", infot, nout, lerr, ok);
+    Chkxer("Cgeqrt", infot, nout, lerr, ok);
     infot = 3;
     Cgeqrt(0, 0, 0, a, 1, t, 1, w, info);
-    chkxer("Cgeqrt", infot, nout, lerr, ok);
+    Chkxer("Cgeqrt", infot, nout, lerr, ok);
     infot = 5;
     Cgeqrt(2, 1, 1, a, 1, t, 1, w, info);
-    chkxer("Cgeqrt", infot, nout, lerr, ok);
+    Chkxer("Cgeqrt", infot, nout, lerr, ok);
     infot = 7;
     Cgeqrt(2, 2, 2, a, 2, t, 1, w, info);
-    chkxer("Cgeqrt", infot, nout, lerr, ok);
+    Chkxer("Cgeqrt", infot, nout, lerr, ok);
     //
-    //     Cgeqrt2
+    // Cgeqrt2
     //
-    strncpy(srnamt, "Cgeqrt2", srnamt_len);
+    srnamt = "Cgeqrt2";
     infot = 1;
     Cgeqrt2(-1, 0, a, 1, t, 1, info);
-    chkxer("Cgeqrt2", infot, nout, lerr, ok);
+    Chkxer("Cgeqrt2", infot, nout, lerr, ok);
     infot = 2;
     Cgeqrt2(0, -1, a, 1, t, 1, info);
-    chkxer("Cgeqrt2", infot, nout, lerr, ok);
+    Chkxer("Cgeqrt2", infot, nout, lerr, ok);
     infot = 4;
     Cgeqrt2(2, 1, a, 1, t, 1, info);
-    chkxer("Cgeqrt2", infot, nout, lerr, ok);
+    Chkxer("Cgeqrt2", infot, nout, lerr, ok);
     infot = 6;
     Cgeqrt2(2, 2, a, 2, t, 1, info);
-    chkxer("Cgeqrt2", infot, nout, lerr, ok);
+    Chkxer("Cgeqrt2", infot, nout, lerr, ok);
     //
-    //     Cgeqrt3
+    // Cgeqrt3
     //
-    strncpy(srnamt, "Cgeqrt3", srnamt_len);
+    srnamt = "Cgeqrt3";
     infot = 1;
     Cgeqrt3(-1, 0, a, 1, t, 1, info);
-    chkxer("Cgeqrt3", infot, nout, lerr, ok);
+    Chkxer("Cgeqrt3", infot, nout, lerr, ok);
     infot = 2;
     Cgeqrt3(0, -1, a, 1, t, 1, info);
-    chkxer("Cgeqrt3", infot, nout, lerr, ok);
+    Chkxer("Cgeqrt3", infot, nout, lerr, ok);
     infot = 4;
     Cgeqrt3(2, 1, a, 1, t, 1, info);
-    chkxer("Cgeqrt3", infot, nout, lerr, ok);
+    Chkxer("Cgeqrt3", infot, nout, lerr, ok);
     infot = 6;
     Cgeqrt3(2, 2, a, 2, t, 1, info);
-    chkxer("Cgeqrt3", infot, nout, lerr, ok);
+    Chkxer("Cgeqrt3", infot, nout, lerr, ok);
     //
-    //     Cgemqrt
+    // Cgemqrt
     //
-    strncpy(srnamt, "Cgemqrt", srnamt_len);
+    srnamt = "Cgemqrt";
     infot = 1;
     Cgemqrt("/", "N", 0, 0, 0, 1, a, 1, t, 1, c, 1, w, info);
-    chkxer("Cgemqrt", infot, nout, lerr, ok);
+    Chkxer("Cgemqrt", infot, nout, lerr, ok);
     infot = 2;
     Cgemqrt("L", "/", 0, 0, 0, 1, a, 1, t, 1, c, 1, w, info);
-    chkxer("Cgemqrt", infot, nout, lerr, ok);
+    Chkxer("Cgemqrt", infot, nout, lerr, ok);
     infot = 3;
     Cgemqrt("L", "N", -1, 0, 0, 1, a, 1, t, 1, c, 1, w, info);
-    chkxer("Cgemqrt", infot, nout, lerr, ok);
+    Chkxer("Cgemqrt", infot, nout, lerr, ok);
     infot = 4;
     Cgemqrt("L", "N", 0, -1, 0, 1, a, 1, t, 1, c, 1, w, info);
-    chkxer("Cgemqrt", infot, nout, lerr, ok);
+    Chkxer("Cgemqrt", infot, nout, lerr, ok);
     infot = 5;
     Cgemqrt("L", "N", 0, 0, -1, 1, a, 1, t, 1, c, 1, w, info);
-    chkxer("Cgemqrt", infot, nout, lerr, ok);
+    Chkxer("Cgemqrt", infot, nout, lerr, ok);
     infot = 5;
     Cgemqrt("R", "N", 0, 0, -1, 1, a, 1, t, 1, c, 1, w, info);
-    chkxer("Cgemqrt", infot, nout, lerr, ok);
+    Chkxer("Cgemqrt", infot, nout, lerr, ok);
     infot = 6;
     Cgemqrt("L", "N", 0, 0, 0, 0, a, 1, t, 1, c, 1, w, info);
-    chkxer("Cgemqrt", infot, nout, lerr, ok);
+    Chkxer("Cgemqrt", infot, nout, lerr, ok);
     infot = 8;
     Cgemqrt("R", "N", 1, 2, 1, 1, a, 1, t, 1, c, 1, w, info);
-    chkxer("Cgemqrt", infot, nout, lerr, ok);
+    Chkxer("Cgemqrt", infot, nout, lerr, ok);
     infot = 8;
     Cgemqrt("L", "N", 2, 1, 1, 1, a, 1, t, 1, c, 1, w, info);
-    chkxer("Cgemqrt", infot, nout, lerr, ok);
+    Chkxer("Cgemqrt", infot, nout, lerr, ok);
     infot = 10;
     Cgemqrt("R", "N", 1, 1, 1, 1, a, 1, t, 0, c, 1, w, info);
-    chkxer("Cgemqrt", infot, nout, lerr, ok);
+    Chkxer("Cgemqrt", infot, nout, lerr, ok);
     infot = 12;
     Cgemqrt("L", "N", 1, 1, 1, 1, a, 1, t, 1, c, 0, w, info);
-    chkxer("Cgemqrt", infot, nout, lerr, ok);
+    Chkxer("Cgemqrt", infot, nout, lerr, ok);
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     Alaesm(path, ok, nout);
     //
-    //     End of Cerrqrt
+    // End of Cerrqrt
     //
 }

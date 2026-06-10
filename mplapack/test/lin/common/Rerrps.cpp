@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DERRPS.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,52 +43,24 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-#include <mplapack_debug.h>
-
-void Rerrps(const char *path, INTEGER const nunit) {
+void Rerrps(fem::str_cref path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
     //
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     nout = nunit;
+    write(nout, star);
     //
-    //     Set the variables to innocuous values.
+    // Set the variables to innocuous values.
     //
     INTEGER j = 0;
     const INTEGER nmax = 4;
     INTEGER i = 0;
     REAL a[nmax * nmax];
-    INTEGER lda = nmax;
     INTEGER piv[nmax];
     REAL work[2 * nmax];
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
-            a[(i - 1) + (j - 1) * lda] = 1.0 / castREAL(i + j);
+            a[(i - 1) + (j - 1) * nmax] = 1.0 / castREAL(i + j);
             //
         }
         piv[j - 1] = j;
@@ -91,41 +70,41 @@ void Rerrps(const char *path, INTEGER const nunit) {
     }
     ok = true;
     //
-    //        Test error exits of the routines that use the Cholesky
-    //        decomposition of a symmetric positive semidefinite matrix.
+    // Test error exits of the routines that use the Cholesky
+    // decomposition of a symmetric positive semidefinite matrix.
     //
-    //        Rpstrf
+    // Rpstrf
     //
-    strncpy(srnamt, "Rpstrf", srnamt_len);
+    srnamt = "Rpstrf";
     infot = 1;
     INTEGER rank = 0;
     INTEGER info = 0;
     Rpstrf("/", 0, a, 1, piv, rank, -1.0, work, info);
-    chkxer("Rpstrf", infot, nout, lerr, ok);
+    Chkxer("Rpstrf", infot, nout, lerr, ok);
     infot = 2;
     Rpstrf("U", -1, a, 1, piv, rank, -1.0, work, info);
-    chkxer("Rpstrf", infot, nout, lerr, ok);
+    Chkxer("Rpstrf", infot, nout, lerr, ok);
     infot = 4;
     Rpstrf("U", 2, a, 1, piv, rank, -1.0, work, info);
-    chkxer("Rpstrf", infot, nout, lerr, ok);
+    Chkxer("Rpstrf", infot, nout, lerr, ok);
     //
-    //        Rpstf2
+    // Rpstf2
     //
-    strncpy(srnamt, "Rpstf2", srnamt_len);
+    srnamt = "Rpstf2";
     infot = 1;
     Rpstf2("/", 0, a, 1, piv, rank, -1.0, work, info);
-    chkxer("Rpstf2", infot, nout, lerr, ok);
+    Chkxer("Rpstf2", infot, nout, lerr, ok);
     infot = 2;
     Rpstf2("U", -1, a, 1, piv, rank, -1.0, work, info);
-    chkxer("Rpstf2", infot, nout, lerr, ok);
+    Chkxer("Rpstf2", infot, nout, lerr, ok);
     infot = 4;
     Rpstf2("U", 2, a, 1, piv, rank, -1.0, work, info);
-    chkxer("Rpstf2", infot, nout, lerr, ok);
+    Chkxer("Rpstf2", infot, nout, lerr, ok);
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     Alaesm(path, ok, nout);
     //
-    //     End of Rerrps
+    // End of Rerrps
     //
 }

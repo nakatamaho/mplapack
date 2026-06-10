@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZSTEIN.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -47,15 +54,15 @@ void Cstein(INTEGER const n, REAL *d, REAL *e, INTEGER const m, REAL *w, INTEGER
     INTEGER blksiz = 0;
     INTEGER gpind = 0;
     REAL onenrm = 0.0;
-    const REAL odm3 = 1.0e-3;
+    const REAL odm3 = 0.001;
     REAL ortol = 0.0;
-    const REAL odm1 = 1.0e-1;
+    const REAL odm1 = 0.1;
     REAL dtpcrt = 0.0;
     INTEGER jblk = 0;
     REAL xj = 0.0;
     const REAL one = 1.0;
     REAL eps1 = 0.0;
-    const REAL ten = 1.0e+1;
+    const REAL ten = 10.0;
     REAL pertol = 0.0;
     REAL xjm = 0.0;
     REAL sep = 0.0;
@@ -73,7 +80,7 @@ void Cstein(INTEGER const n, REAL *d, REAL *e, INTEGER const m, REAL *w, INTEGER
     const INTEGER extra = 2;
     const COMPLEX czero = COMPLEX(0.0, 0.0);
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     for (i = 1; i <= m; i = i + 1) {
@@ -105,26 +112,26 @@ void Cstein(INTEGER const n, REAL *d, REAL *e, INTEGER const m, REAL *w, INTEGER
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0 || m == 0) {
         return;
     } else if (n == 1) {
-        z[(1 - 1)] = cone;
+        z[0] = cone;
         return;
     }
     //
-    //     Get machine constants.
+    // Get machine constants.
     //
     eps = Rlamch("Precision");
     //
-    //     Initialize seed for random number generator Rlarnv.
+    // Initialize seed for random number generator Rlarnv.
     //
     for (i = 1; i <= 4; i = i + 1) {
         iseed[i - 1] = 1;
     }
     //
-    //     Initialize pointers.
+    // Initialize pointers.
     //
     indrv1 = 0;
     indrv2 = indrv1 + n;
@@ -132,12 +139,12 @@ void Cstein(INTEGER const n, REAL *d, REAL *e, INTEGER const m, REAL *w, INTEGER
     indrv4 = indrv3 + n;
     indrv5 = indrv4 + n;
     //
-    //     Compute eigenvectors of matrix blocks.
+    // Compute eigenvectors of matrix blocks.
     //
     j1 = 1;
     for (nblk = 1; nblk <= iblock[m - 1]; nblk = nblk + 1) {
         //
-        //        Find starting and ending indices of block nblk.
+        // Find starting and ending indices of block nblk.
         //
         if (nblk == 1) {
             b1 = 1;
@@ -151,18 +158,18 @@ void Cstein(INTEGER const n, REAL *d, REAL *e, INTEGER const m, REAL *w, INTEGER
         }
         gpind = j1;
         //
-        //        Compute reorthogonalization criterion and stopping criterion.
+        // Compute reorthogonalization criterion and stopping criterion.
         //
         onenrm = abs(d[b1 - 1]) + abs(e[b1 - 1]);
-        onenrm = max(onenrm, REAL(abs(d[bn - 1]) + abs(e[(bn - 1) - 1])));
+        onenrm = max(onenrm, abs(d[bn - 1]) + abs(e[(bn - 1) - 1]));
         for (i = b1 + 1; i <= bn - 1; i = i + 1) {
-            onenrm = max(onenrm, REAL(abs(d[i - 1]) + abs(e[(i - 1) - 1]) + abs(e[i - 1])));
+            onenrm = max(onenrm, abs(d[i - 1]) + abs(e[(i - 1) - 1]) + abs(e[i - 1]));
         }
         ortol = odm3 * onenrm;
         //
         dtpcrt = sqrt(odm1 / blksiz);
     //
-    //        Loop through eigenvalues of block nblk.
+    // Loop through eigenvalues of block nblk.
     //
     statement_60:
         jblk = 0;
@@ -174,15 +181,15 @@ void Cstein(INTEGER const n, REAL *d, REAL *e, INTEGER const m, REAL *w, INTEGER
             jblk++;
             xj = w[j - 1];
             //
-            //           Skip all the work if the block size is one.
+            // Skip all the work if the block size is one.
             //
             if (blksiz == 1) {
                 work[(indrv1 + 1) - 1] = one;
                 goto statement_140;
             }
             //
-            //           If eigenvalues j and j-1 are too close, add a relatively
-            //           small perturbation.
+            // If eigenvalues j and j-1 are too close, add a relatively
+            // small perturbation.
             //
             if (jblk > 1) {
                 eps1 = abs(eps * xj);
@@ -196,22 +203,22 @@ void Cstein(INTEGER const n, REAL *d, REAL *e, INTEGER const m, REAL *w, INTEGER
             its = 0;
             nrmchk = 0;
             //
-            //           Get random starting vector.
+            // Get random starting vector.
             //
             Rlarnv(2, iseed, blksiz, &work[(indrv1 + 1) - 1]);
             //
-            //           Copy the matrix T so it won't be destroyed in factorization.
+            // Copy the matrix T so it won't be destroyed in factorization.
             //
             Rcopy(blksiz, &d[b1 - 1], 1, &work[(indrv4 + 1) - 1], 1);
             Rcopy(blksiz - 1, &e[b1 - 1], 1, &work[(indrv2 + 2) - 1], 1);
             Rcopy(blksiz - 1, &e[b1 - 1], 1, &work[(indrv3 + 1) - 1], 1);
             //
-            //           Compute LU factors with partial pivoting  ( PT = LU )
+            // Compute LU factors with partial pivoting  ( PT = LU )
             //
             tol = zero;
             Rlagtf(blksiz, &work[(indrv4 + 1) - 1], xj, &work[(indrv2 + 2) - 1], &work[(indrv3 + 1) - 1], tol, &work[(indrv5 + 1) - 1], iwork, iinfo);
         //
-        //           Update iteration count.
+        // Update iteration count.
         //
         statement_70:
             its++;
@@ -219,18 +226,18 @@ void Cstein(INTEGER const n, REAL *d, REAL *e, INTEGER const m, REAL *w, INTEGER
                 goto statement_120;
             }
             //
-            //           Normalize and scale the righthand side vector Pb.
+            // Normalize and scale the righthand side vector Pb.
             //
             jmax = iRamax(blksiz, &work[(indrv1 + 1) - 1], 1);
-            scl = blksiz * onenrm * max(eps, REAL(abs(work[(indrv4 + blksiz) - 1]))) / abs(work[(indrv1 + jmax) - 1]);
+            scl = blksiz * onenrm * max(eps, abs(work[(indrv4 + blksiz) - 1])) / abs(work[(indrv1 + jmax) - 1]);
             Rscal(blksiz, scl, &work[(indrv1 + 1) - 1], 1);
             //
-            //           Solve the system LU = Pb.
+            // Solve the system LU = Pb.
             //
             Rlagts(-1, blksiz, &work[(indrv4 + 1) - 1], &work[(indrv2 + 2) - 1], &work[(indrv3 + 1) - 1], &work[(indrv5 + 1) - 1], iwork, &work[(indrv1 + 1) - 1], tol, iinfo);
             //
-            //           Reorthogonalize by modified Gram-Schmidt if eigenvalues are
-            //           close enough.
+            // Reorthogonalize by modified Gram-Schmidt if eigenvalues are
+            // close enough.
             //
             if (jblk == 1) {
                 goto statement_110;
@@ -250,14 +257,14 @@ void Cstein(INTEGER const n, REAL *d, REAL *e, INTEGER const m, REAL *w, INTEGER
                 }
             }
         //
-        //           Check the infinity norm of the iterate.
+        // Check the infinity norm of the iterate.
         //
         statement_110:
             jmax = iRamax(blksiz, &work[(indrv1 + 1) - 1], 1);
             nrm = abs(work[(indrv1 + jmax) - 1]);
             //
-            //           Continue for additional iterations after norm reaches
-            //           stopping criterion.
+            // Continue for additional iterations after norm reaches
+            // stopping criterion.
             //
             if (nrm < dtpcrt) {
                 goto statement_70;
@@ -269,14 +276,14 @@ void Cstein(INTEGER const n, REAL *d, REAL *e, INTEGER const m, REAL *w, INTEGER
             //
             goto statement_130;
         //
-        //           If stopping criterion was not satisfied, update info and
-        //           store eigenvector number in array ifail.
+        // If stopping criterion was not satisfied, update info and
+        // store eigenvector number in array ifail.
         //
         statement_120:
             info++;
             ifail[info - 1] = j;
         //
-        //           Accept iterate as jth eigenvector.
+        // Accept iterate as jth eigenvector.
         //
         statement_130:
             scl = one / Rnrm2(blksiz, &work[(indrv1 + 1) - 1], 1);
@@ -293,8 +300,8 @@ void Cstein(INTEGER const n, REAL *d, REAL *e, INTEGER const m, REAL *w, INTEGER
                 z[((b1 + i - 1) - 1) + (j - 1) * ldz] = COMPLEX(work[(indrv1 + i) - 1], zero);
             }
             //
-            //           Save the shift to check eigenvalue spacing at next
-            //           iteration.
+            // Save the shift to check eigenvalue spacing at next
+            // iteration.
             //
             xjm = xj;
             //
@@ -302,6 +309,6 @@ void Cstein(INTEGER const n, REAL *d, REAL *e, INTEGER const m, REAL *w, INTEGER
     statement_180:;
     }
     //
-    //     End of Cstein
+    // End of Cstein
     //
 }

@@ -1,0 +1,105 @@
+bench_PROGRAMS += \
+Raxpy.binary128  Raxpy.binary128_opt  \
+Rcopy.binary128  Rcopy.binary128_opt  \
+Rdot.binary128   Rdot.binary128_opt   \
+Rgemm.binary128  Rgemm.binary128_opt  \
+Rgemv.binary128  Rgemv.binary128_opt  \
+Rsyrk.binary128  Rsyrk.binary128_opt  \
+Rpotrf.binary128 Rpotrf.binary128_opt \
+Rpotf2.binary128 Rpotf2.binary128_opt \
+Rgetrf.binary128 Rgetrf.binary128_opt
+
+binary128cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_BINARY128___
+binary128lapack_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_binary128
+
+if BINARY128_USE_QUADMATH
+binary128_libdepends    = $(binary128lapack_libdepends) -L$(top_builddir)/mpblas/reference             -lmpblas_binary128     -lquadmath $(DYLD)
+binary128opt_libdepends = $(binary128lapack_libdepends) -L$(top_builddir)/mpblas/optimized/binary128   -lmpblas_binary128_opt -lquadmath $(DYLD)
+else
+binary128_libdepends    = $(binary128lapack_libdepends) -L$(top_builddir)/mpblas/reference             -lmpblas_binary128     $(DYLD)
+binary128opt_libdepends = $(binary128lapack_libdepends) -L$(top_builddir)/mpblas/optimized/binary128   -lmpblas_binary128_opt $(DYLD)
+endif
+
+if IS_MINGW
+binary128cxxflags       += -I$(DLFCN_WIN32_INCLUDEDIR)
+binary128_libdepends    += -L$(DLFCN_WIN32_LIBDIR) -ldl
+binary128opt_libdepends += -L$(DLFCN_WIN32_LIBDIR) -ldl
+endif
+
+# BLAS benchmarks
+Raxpy_binary128_SOURCES=      Raxpy.cpp
+Raxpy_binary128_CXXFLAGS=     $(binary128cxxflags)
+Raxpy_binary128_LDFLAGS=      $(binary128_libdepends)
+
+Raxpy_binary128_opt_SOURCES=  Raxpy.cpp
+Raxpy_binary128_opt_CXXFLAGS= $(binary128cxxflags)
+Raxpy_binary128_opt_LDFLAGS=  $(binary128opt_libdepends)
+
+Rcopy_binary128_SOURCES=      Rcopy.cpp
+Rcopy_binary128_CXXFLAGS=     $(binary128cxxflags)
+Rcopy_binary128_LDFLAGS=      $(binary128_libdepends)
+
+Rcopy_binary128_opt_SOURCES=  Rcopy.cpp
+Rcopy_binary128_opt_CXXFLAGS= $(binary128cxxflags)
+Rcopy_binary128_opt_LDFLAGS=  $(binary128opt_libdepends)
+
+Rdot_binary128_SOURCES=       Rdot.cpp
+Rdot_binary128_CXXFLAGS=      $(binary128cxxflags)
+Rdot_binary128_LDFLAGS=       $(binary128_libdepends)
+
+Rdot_binary128_opt_SOURCES=   Rdot.cpp
+Rdot_binary128_opt_CXXFLAGS=  $(binary128cxxflags)
+Rdot_binary128_opt_LDFLAGS=   $(binary128opt_libdepends)
+
+Rgemm_binary128_SOURCES=      Rgemm.cpp
+Rgemm_binary128_CXXFLAGS=     $(binary128cxxflags)
+Rgemm_binary128_LDFLAGS=      $(binary128_libdepends)
+
+Rgemm_binary128_opt_SOURCES=  Rgemm.cpp
+Rgemm_binary128_opt_CXXFLAGS= $(binary128cxxflags)
+Rgemm_binary128_opt_LDFLAGS=  $(binary128opt_libdepends)
+
+Rgemv_binary128_SOURCES=      Rgemv.cpp
+Rgemv_binary128_CXXFLAGS=     $(binary128cxxflags)
+Rgemv_binary128_LDFLAGS=      $(binary128_libdepends)
+
+Rgemv_binary128_opt_SOURCES=  Rgemv.cpp
+Rgemv_binary128_opt_CXXFLAGS= $(binary128cxxflags)
+Rgemv_binary128_opt_LDFLAGS=  $(binary128opt_libdepends)
+
+Rsyrk_binary128_SOURCES=      Rsyrk.cpp
+Rsyrk_binary128_CXXFLAGS=     $(binary128cxxflags)
+Rsyrk_binary128_LDFLAGS=      $(binary128_libdepends)
+
+Rsyrk_binary128_opt_SOURCES=  Rsyrk.cpp
+Rsyrk_binary128_opt_CXXFLAGS= $(binary128cxxflags)
+Rsyrk_binary128_opt_LDFLAGS=  $(binary128opt_libdepends)
+
+# LAPACK benchmarks
+Rpotrf_binary128_SOURCES=      Rpotrf.cpp
+Rpotrf_binary128_CXXFLAGS=     $(binary128cxxflags)
+Rpotrf_binary128_LDFLAGS=      $(binary128_libdepends)
+
+Rpotrf_binary128_opt_SOURCES=  Rpotrf.cpp
+Rpotrf_binary128_opt_CXXFLAGS= $(binary128cxxflags)
+Rpotrf_binary128_opt_LDFLAGS=  $(binary128opt_libdepends)
+
+Rpotf2_binary128_SOURCES=      Rpotf2.cpp
+Rpotf2_binary128_CXXFLAGS=     $(binary128cxxflags)
+Rpotf2_binary128_LDFLAGS=      $(binary128_libdepends)
+
+Rpotf2_binary128_opt_SOURCES=  Rpotf2.cpp
+Rpotf2_binary128_opt_CXXFLAGS= $(binary128cxxflags)
+Rpotf2_binary128_opt_LDFLAGS=  $(binary128opt_libdepends)
+
+Rgetrf_binary128_SOURCES=      Rgetrf.cpp
+Rgetrf_binary128_CXXFLAGS=     $(binary128cxxflags)
+Rgetrf_binary128_LDFLAGS=      $(binary128_libdepends)
+
+Rgetrf_binary128_opt_SOURCES=  Rgetrf.cpp
+Rgetrf_binary128_opt_CXXFLAGS= $(binary128cxxflags)
+Rgetrf_binary128_opt_LDFLAGS=  $(binary128opt_libdepends)
+
+if ENABLE_OPENCL
+include Makefile.binary128_opencl.am
+endif

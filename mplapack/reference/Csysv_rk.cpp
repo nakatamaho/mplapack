@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZSYSV_RK.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Csysv_rk(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *e, INTEGER *ipiv, COMPLEX *b, INTEGER const ldb, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     bool lquery = (lwork == -1);
@@ -67,14 +74,14 @@ void Csysv_rk(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a,
         return;
     }
     //
-    //     Compute the factorization A = P*U*D*(U**T)*(P**T) or
-    //     A = P*U*D*(U**T)*(P**T).
+    // Compute the factorization A = P*U*D*(U**T)*(P**T) or
+    // A = P*U*D*(U**T)*(P**T).
     //
     Csytrf_rk(uplo, n, a, lda, e, ipiv, work, lwork, info);
     //
     if (info == 0) {
         //
-        //        Solve the system A*X = B with BLAS3 solver, overwriting B with X.
+        // Solve the system A*X = B with BLAS3 solver, overwriting B with X.
         //
         Csytrs_3(uplo, n, nrhs, a, lda, e, ipiv, b, ldb, info);
         //
@@ -82,6 +89,6 @@ void Csysv_rk(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a,
     //
     work[1 - 1] = lwkopt;
     //
-    //     End of Csysv_rk
+    // End of Csysv_rk
     //
 }

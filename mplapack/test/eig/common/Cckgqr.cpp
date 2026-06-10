@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZCKGQR.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,13 +43,10 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-void Cckgqr(INTEGER const nm, INTEGER *mval, INTEGER const np, INTEGER *pval, INTEGER const nn, INTEGER *nval, INTEGER const nmats, INTEGER *iseed, REAL const thresh, INTEGER const nmax, COMPLEX *a, COMPLEX *af, COMPLEX *aq, COMPLEX *ar, COMPLEX *taua, COMPLEX *b, COMPLEX *bf, COMPLEX *bz, COMPLEX *bt, COMPLEX *bwk, COMPLEX *taub, COMPLEX *work, REAL *rwork, INTEGER const nin, INTEGER const nout, INTEGER &info) {
+void Cckgqr(INTEGER const nm, INTEGER *mval, INTEGER const np, INTEGER *pval, INTEGER const nn, INTEGER *nval, INTEGER const nmats, INTEGER (&iseed)[4], REAL const thresh, INTEGER const nmax, COMPLEX *a, COMPLEX *af, COMPLEX *aq, COMPLEX *ar, COMPLEX *taua, COMPLEX *b, COMPLEX *bf, COMPLEX *bz, COMPLEX *bt, COMPLEX *bwk, COMPLEX *taub, COMPLEX *work, REAL *rwork, INTEGER const nin, INTEGER const nout, INTEGER &info) {
     common cmn;
     common_write write(cmn);
-    char path[4];
-    char buf[1024];
+    fem::str<3> path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     bool firstt = false;
@@ -58,7 +62,7 @@ void Cckgqr(INTEGER const nm, INTEGER *mval, INTEGER const np, INTEGER *pval, IN
     INTEGER in = 0;
     INTEGER n = 0;
     INTEGER imat = 0;
-    char type;
+    fem::str<1> type;
     INTEGER kla = 0;
     INTEGER kua = 0;
     INTEGER klb = 0;
@@ -69,44 +73,21 @@ void Cckgqr(INTEGER const nm, INTEGER *mval, INTEGER const np, INTEGER *pval, IN
     INTEGER modeb = 0;
     REAL cndnma = 0.0;
     REAL cndnmb = 0.0;
-    char dista;
-    char distb;
+    fem::str<1> dista;
+    fem::str<1> distb;
     INTEGER iinfo = 0;
     INTEGER nt = 0;
     const INTEGER ntests = 7;
     REAL result[ntests];
     INTEGER i = 0;
-    static const char *format_9999 = "(' ZLATMS in Cckgqr:    INFO = ',i5)";
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    static const char *format_9999 = "(' Clatms in Cckgqr:    INFO = ',i5)";
+    static const char *format_9998 = "(' M=',i4,' P=',i4,', N=',i4,', type ',i2,', test ',i2,', ratio=',g13.6)";
+    static const char *format_9997 = "(' N=',i4,' M=',i4,', P=',i4,', type ',i2,', test ',i2,', ratio=',g13.6)";
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
+    // Initialize constants.
     //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Initialize constants.
-    //
-    path[0] = 'G';
-    path[1] = 'Q';
-    path[2] = 'R';
-    path[3] = '\0';
+    path(1, 3) = "GQR";
     info = 0;
     nrun = 0;
     nfail = 0;
@@ -116,44 +97,44 @@ void Cckgqr(INTEGER const nm, INTEGER *mval, INTEGER const np, INTEGER *pval, IN
     ldb = nmax;
     lwork = nmax * nmax;
     //
-    //     Do for each value of M in MVAL.
+    // Do for each value of M in MVAL.
     //
     for (im = 1; im <= nm; im = im + 1) {
         m = mval[im - 1];
         //
-        //        Do for each value of P in PVAL.
+        // Do for each value of P in PVAL.
         //
         for (ip = 1; ip <= np; ip = ip + 1) {
             p = pval[ip - 1];
             //
-            //           Do for each value of N in NVAL.
+            // Do for each value of N in NVAL.
             //
             for (in = 1; in <= nn; in = in + 1) {
                 n = nval[in - 1];
                 //
                 for (imat = 1; imat <= ntypes; imat = imat + 1) {
                     //
-                    //                 Do the tests only if DOTYPE( IMAT ) is true.
+                    // Do the tests only if DOTYPE( IMAT ) is true.
                     //
                     if (!dotype[imat - 1]) {
                         goto statement_30;
                     }
                     //
-                    //                 Test Cggrqf
+                    // Test Cggrqf
                     //
-                    //                 Set up parameters with Rlatb9 and generate test
-                    //                 matrices A and B with ZLATMS.
+                    // Set up parameters with Rlatb9 and generate test
+                    // matrices A and B with Clatms.
                     //
-                    Rlatb9("GRQ", imat, m, p, n, &type, kla, kua, klb, kub, anorm, bnorm, modea, modeb, cndnma, cndnmb, &dista, &distb);
+                    Rlatb9("GRQ", imat, m, p, n, type, kla, kua, klb, kub, anorm, bnorm, modea, modeb, cndnma, cndnmb, dista, distb);
                     //
-                    Clatms(m, n, &dista, iseed, &type, rwork, modea, cndnma, anorm, kla, kua, "No packing", a, lda, work, iinfo);
+                    Clatms(m, n, dista, iseed, type, rwork, modea, cndnma, anorm, kla, kua, "No packing", a, lda, work, iinfo);
                     if (iinfo != 0) {
                         write(nout, format_9999), iinfo;
                         info = abs(iinfo);
                         goto statement_30;
                     }
                     //
-                    Clatms(p, n, &distb, iseed, &type, rwork, modeb, cndnmb, bnorm, klb, kub, "No packing", b, ldb, work, iinfo);
+                    Clatms(p, n, distb, iseed, type, rwork, modeb, cndnmb, bnorm, klb, kub, "No packing", b, ldb, work, iinfo);
                     if (iinfo != 0) {
                         write(nout, format_9999), iinfo;
                         info = abs(iinfo);
@@ -164,8 +145,8 @@ void Cckgqr(INTEGER const nm, INTEGER *mval, INTEGER const np, INTEGER *pval, IN
                     //
                     Cgrqts(m, p, n, a, af, aq, ar, lda, taua, b, bf, bz, bt, bwk, ldb, taub, work, lwork, rwork, result);
                     //
-                    //                 Print information about the tests that did not
-                    //                 pass the threshold.
+                    // Print information about the tests that did not
+                    // pass the threshold.
                     //
                     for (i = 1; i <= nt; i = i + 1) {
                         if (result[i - 1] >= thresh) {
@@ -173,30 +154,27 @@ void Cckgqr(INTEGER const nm, INTEGER *mval, INTEGER const np, INTEGER *pval, IN
                                 firstt = false;
                                 Alahdg(nout, "GRQ");
                             }
-                            sprintnum_short(buf, result[i - 1]);
-                            write(nout, "(' M=',i4,' P=',i4,', N=',i4,', type ',i2,', test ',i2,"
-                                        "', ratio=',a)"),
-                                m, p, n, imat, i, buf;
+                            write(nout, format_9998), m, p, n, imat, i, result[i - 1];
                             nfail++;
                         }
                     }
                     nrun += nt;
                     //
-                    //                 Test Cggqrf
+                    // Test Cggqrf
                     //
-                    //                 Set up parameters with Rlatb9 and generate test
-                    //                 matrices A and B with CLATMS.
+                    // Set up parameters with Rlatb9 and generate test
+                    // matrices A and B with Clatms.
                     //
-                    Rlatb9("GQR", imat, m, p, n, &type, kla, kua, klb, kub, anorm, bnorm, modea, modeb, cndnma, cndnmb, &dista, &distb);
+                    Rlatb9("GQR", imat, m, p, n, type, kla, kua, klb, kub, anorm, bnorm, modea, modeb, cndnma, cndnmb, dista, distb);
                     //
-                    Clatms(n, m, &dista, iseed, &type, rwork, modea, cndnma, anorm, kla, kua, "No packing", a, lda, work, iinfo);
+                    Clatms(n, m, dista, iseed, type, rwork, modea, cndnma, anorm, kla, kua, "No packing", a, lda, work, iinfo);
                     if (iinfo != 0) {
                         write(nout, format_9999), iinfo;
                         info = abs(iinfo);
                         goto statement_30;
                     }
                     //
-                    Clatms(n, p, &distb, iseed, &type, rwork, modea, cndnma, bnorm, klb, kub, "No packing", b, ldb, work, iinfo);
+                    Clatms(n, p, distb, iseed, type, rwork, modea, cndnma, bnorm, klb, kub, "No packing", b, ldb, work, iinfo);
                     if (iinfo != 0) {
                         write(nout, format_9999), iinfo;
                         info = abs(iinfo);
@@ -207,8 +185,8 @@ void Cckgqr(INTEGER const nm, INTEGER *mval, INTEGER const np, INTEGER *pval, IN
                     //
                     Cgqrts(n, m, p, a, af, aq, ar, lda, taua, b, bf, bz, bt, bwk, ldb, taub, work, lwork, rwork, result);
                     //
-                    //                 Print information about the tests that did not
-                    //                 pass the threshold.
+                    // Print information about the tests that did not
+                    // pass the threshold.
                     //
                     for (i = 1; i <= nt; i = i + 1) {
                         if (result[i - 1] >= thresh) {
@@ -216,10 +194,7 @@ void Cckgqr(INTEGER const nm, INTEGER *mval, INTEGER const np, INTEGER *pval, IN
                                 firstt = false;
                                 Alahdg(nout, path);
                             }
-                            sprintnum_short(buf, result[i - 1]);
-                            write(nout, "(' N=',i4,' M=',i4,', P=',i4,', type ',i2,', test ',i2,"
-                                        "', ratio=',a)"),
-                                n, m, p, imat, i, buf;
+                            write(nout, format_9997), n, m, p, imat, i, result[i - 1];
                             nfail++;
                         }
                     }
@@ -231,10 +206,10 @@ void Cckgqr(INTEGER const nm, INTEGER *mval, INTEGER const np, INTEGER *pval, IN
         }
     }
     //
-    //     Print a summary of the results.
+    // Print a summary of the results.
     //
     Alasum(path, nout, nfail, nrun, 0);
     //
-    //     End of Cckgqr
+    // End of Cckgqr
     //
 }

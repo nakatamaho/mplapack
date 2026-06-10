@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DLAED4.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -71,40 +78,15 @@ void Rlaed4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
     bool swtch = false;
     const REAL ten = 10.0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    // Since this routine is called in an inner loop, we do no argument
+    // checking.
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Since this routine is called in an inner loop, we do no argument
-    //     checking.
-    //
-    //     Quick return for N=1 and 2.
+    // Quick return for N=1 and 2.
     //
     info = 0;
     if (n == 1) {
         //
-        //         Presumably, I=1 upon entry
+        // Presumably, I=1 upon entry
         //
         dlam = d[1 - 1] + rho * z[1 - 1] * z[1 - 1];
         delta[1 - 1] = one;
@@ -115,26 +97,26 @@ void Rlaed4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
         return;
     }
     //
-    //     Compute machine epsilon
+    // Compute machine epsilon
     //
     eps = Rlamch("Epsilon");
     rhoinv = one / rho;
     //
-    //     The case I = N
+    // The case I = N
     //
     if (i == n) {
         //
-        //        Initialize some basic variables
+        // Initialize some basic variables
         //
         ii = n - 1;
         niter = 1;
         //
-        //        Calculate initial guess
+        // Calculate initial guess
         //
         midpt = rho / two;
         //
-        //        If ||Z||_2 is not one, then TEMP should be set to
-        //        RHO * ||Z||_2^2 / TWO
+        // If ||Z||_2 is not one, then TEMP should be set to
+        // RHO * ||Z||_2^2 / TWO
         //
         for (j = 1; j <= n; j = j + 1) {
             delta[j - 1] = (d[j - 1] - d[i - 1]) - midpt;
@@ -163,8 +145,8 @@ void Rlaed4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
                 }
             }
             //
-            //           It can be proved that
-            //               D(N)+RHO/2 <= LAMBDA(N) < D(N)+TAU <= D(N)+RHO
+            // It can be proved that
+            // D(N)+RHO/2 <= LAMBDA(N) < D(N)+TAU <= D(N)+RHO
             //
             dltlb = midpt;
             dltub = rho;
@@ -178,8 +160,8 @@ void Rlaed4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
                 tau = (a + sqrt(a * a + four * b * c)) / (two * c);
             }
             //
-            //           It can be proved that
-            //               D(N) < D(N)+TAU < LAMBDA(N) < D(N)+RHO/2
+            // It can be proved that
+            // D(N) < D(N)+TAU < LAMBDA(N) < D(N)+RHO/2
             //
             dltlb = zero;
             dltub = midpt;
@@ -189,7 +171,7 @@ void Rlaed4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
             delta[j - 1] = (d[j - 1] - d[i - 1]) - tau;
         }
         //
-        //        Evaluate PSI and the derivative DPSI
+        // Evaluate PSI and the derivative DPSI
         //
         dpsi = zero;
         psi = zero;
@@ -202,7 +184,7 @@ void Rlaed4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
         }
         erretm = abs(erretm);
         //
-        //        Evaluate PHI and the derivative DPHI
+        // Evaluate PHI and the derivative DPHI
         //
         temp = z[n - 1] / delta[n - 1];
         phi = z[n - 1] * temp;
@@ -211,7 +193,7 @@ void Rlaed4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
         //
         w = rhoinv + phi + psi;
         //
-        //        Test for convergence
+        // Test for convergence
         //
         if (abs(w) <= eps * erretm) {
             dlam = d[i - 1] + tau;
@@ -224,7 +206,7 @@ void Rlaed4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
             dltub = min(dltub, tau);
         }
         //
-        //        Calculate the new step
+        // Calculate the new step
         //
         niter++;
         c = w - delta[(n - 1) - 1] * dpsi - delta[n - 1] * dphi;
@@ -234,20 +216,23 @@ void Rlaed4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
             c = abs(c);
         }
         if (c == zero) {
-            //          ETA = B/A
-            //           ETA = RHO - TAU
-            eta = dltub - tau;
+            // ETA = B/A
+            // ETA = RHO - TAU
+            // ETA = DLTUB - TAU
+            //
+            // Update proposed by Li, Ren-Cang:
+            eta = -w / (dpsi + dphi);
         } else if (a >= zero) {
             eta = (a + sqrt(abs(a * a - four * b * c))) / (two * c);
         } else {
             eta = two * b / (a - sqrt(abs(a * a - four * b * c)));
         }
         //
-        //        Note, eta should be positive if w is negative, and
-        //        eta should be negative otherwise. However,
-        //        if for some reason caused by roundoff, eta*w > 0,
-        //        we simply use one Newton step instead. This way
-        //        will guarantee eta*w < 0.
+        // Note, eta should be positive if w is negative, and
+        // eta should be negative otherwise. However,
+        // if for some reason caused by roundoff, eta*w > 0,
+        // we simply use one Newton step instead. This way
+        // will guarantee eta*w < 0.
         //
         if (w * eta > zero) {
             eta = -w / (dpsi + dphi);
@@ -266,7 +251,7 @@ void Rlaed4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
         //
         tau += eta;
         //
-        //        Evaluate PSI and the derivative DPSI
+        // Evaluate PSI and the derivative DPSI
         //
         dpsi = zero;
         psi = zero;
@@ -279,7 +264,7 @@ void Rlaed4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
         }
         erretm = abs(erretm);
         //
-        //        Evaluate PHI and the derivative DPHI
+        // Evaluate PHI and the derivative DPHI
         //
         temp = z[n - 1] / delta[n - 1];
         phi = z[n - 1] * temp;
@@ -288,13 +273,13 @@ void Rlaed4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
         //
         w = rhoinv + phi + psi;
         //
-        //        Main loop to update the values of the array   DELTA
+        // Main loop to update the values of the array   DELTA
         //
         iter = niter + 1;
         //
         for (niter = iter; niter <= maxit; niter = niter + 1) {
             //
-            //           Test for convergence
+            // Test for convergence
             //
             if (abs(w) <= eps * erretm) {
                 dlam = d[i - 1] + tau;
@@ -307,7 +292,7 @@ void Rlaed4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
                 dltub = min(dltub, tau);
             }
             //
-            //           Calculate the new step
+            // Calculate the new step
             //
             c = w - delta[(n - 1) - 1] * dpsi - delta[n - 1] * dphi;
             a = (delta[(n - 1) - 1] + delta[n - 1]) * w - delta[(n - 1) - 1] * delta[n - 1] * (dpsi + dphi);
@@ -318,11 +303,11 @@ void Rlaed4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
                 eta = two * b / (a - sqrt(abs(a * a - four * b * c)));
             }
             //
-            //           Note, eta should be positive if w is negative, and
-            //           eta should be negative otherwise. However,
-            //           if for some reason caused by roundoff, eta*w > 0,
-            //           we simply use one Newton step instead. This way
-            //           will guarantee eta*w < 0.
+            // Note, eta should be positive if w is negative, and
+            // eta should be negative otherwise. However,
+            // if for some reason caused by roundoff, eta*w > 0,
+            // we simply use one Newton step instead. This way
+            // will guarantee eta*w < 0.
             //
             if (w * eta > zero) {
                 eta = -w / (dpsi + dphi);
@@ -341,7 +326,7 @@ void Rlaed4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
             //
             tau += eta;
             //
-            //           Evaluate PSI and the derivative DPSI
+            // Evaluate PSI and the derivative DPSI
             //
             dpsi = zero;
             psi = zero;
@@ -354,7 +339,7 @@ void Rlaed4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
             }
             erretm = abs(erretm);
             //
-            //           Evaluate PHI and the derivative DPHI
+            // Evaluate PHI and the derivative DPHI
             //
             temp = z[n - 1] / delta[n - 1];
             phi = z[n - 1] * temp;
@@ -364,22 +349,22 @@ void Rlaed4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
             w = rhoinv + phi + psi;
         }
         //
-        //        Return with INFO = 1, NITER = MAXIT and not converged
+        // Return with INFO = 1, NITER = MAXIT and not converged
         //
         info = 1;
         dlam = d[i - 1] + tau;
         goto statement_250;
         //
-        //        End for the case I = N
+        // End for the case I = N
         //
     } else {
         //
-        //        The case for I < N
+        // The case for I < N
         //
         niter = 1;
         ip1 = i + 1;
         //
-        //        Calculate initial guess
+        // Calculate initial guess
         //
         del = d[ip1 - 1] - d[i - 1];
         midpt = del / two;
@@ -401,9 +386,9 @@ void Rlaed4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
         //
         if (w > zero) {
             //
-            //           d(i)< the ith eigenvalue < (d(i)+d(i+1))/2
+            // d(i)< the ith eigenvalue < (d(i)+d(i+1))/2
             //
-            //           We choose d(i) as origin.
+            // We choose d(i) as origin.
             //
             orgati = true;
             a = c * del + z[i - 1] * z[i - 1] + z[ip1 - 1] * z[ip1 - 1];
@@ -417,9 +402,9 @@ void Rlaed4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
             dltub = midpt;
         } else {
             //
-            //           (d(i)+d(i+1))/2 <= the ith eigenvalue < d(i+1)
+            // (d(i)+d(i+1))/2 <= the ith eigenvalue < d(i+1)
             //
-            //           We choose d(i+1) as origin.
+            // We choose d(i+1) as origin.
             //
             orgati = false;
             a = c * del - z[i - 1] * z[i - 1] - z[ip1 - 1] * z[ip1 - 1];
@@ -450,7 +435,7 @@ void Rlaed4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
         iim1 = ii - 1;
         iip1 = ii + 1;
         //
-        //        Evaluate PSI and the derivative DPSI
+        // Evaluate PSI and the derivative DPSI
         //
         dpsi = zero;
         psi = zero;
@@ -463,7 +448,7 @@ void Rlaed4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
         }
         erretm = abs(erretm);
         //
-        //        Evaluate PHI and the derivative DPHI
+        // Evaluate PHI and the derivative DPHI
         //
         dphi = zero;
         phi = zero;
@@ -476,8 +461,8 @@ void Rlaed4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
         //
         w = rhoinv + phi + psi;
         //
-        //        W is the value of the secular function with
-        //        its ii-th element removed.
+        // W is the value of the secular function with
+        // its ii-th element removed.
         //
         swtch3 = false;
         if (orgati) {
@@ -499,7 +484,7 @@ void Rlaed4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
         w += temp;
         erretm = eight * (phi - psi) + erretm + two * rhoinv + three * abs(temp) + abs(tau) * dw;
         //
-        //        Test for convergence
+        // Test for convergence
         //
         if (abs(w) <= eps * erretm) {
             if (orgati) {
@@ -516,7 +501,7 @@ void Rlaed4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
             dltub = min(dltub, tau);
         }
         //
-        //        Calculate the new step
+        // Calculate the new step
         //
         niter++;
         if (!swtch3) {
@@ -543,7 +528,7 @@ void Rlaed4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
             }
         } else {
             //
-            //           Interpolation using THREE most relevant poles
+            // Interpolation using THREE most relevant poles
             //
             temp = rhoinv + psi + phi;
             if (orgati) {
@@ -566,11 +551,11 @@ void Rlaed4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
             }
         }
         //
-        //        Note, eta should be positive if w is negative, and
-        //        eta should be negative otherwise. However,
-        //        if for some reason caused by roundoff, eta*w > 0,
-        //        we simply use one Newton step instead. This way
-        //        will guarantee eta*w < 0.
+        // Note, eta should be positive if w is negative, and
+        // eta should be negative otherwise. However,
+        // if for some reason caused by roundoff, eta*w > 0,
+        // we simply use one Newton step instead. This way
+        // will guarantee eta*w < 0.
         //
         if (w * eta >= zero) {
             eta = -w / dw;
@@ -590,7 +575,7 @@ void Rlaed4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
             delta[j - 1] = delta[j - 1] - eta;
         }
         //
-        //        Evaluate PSI and the derivative DPSI
+        // Evaluate PSI and the derivative DPSI
         //
         dpsi = zero;
         psi = zero;
@@ -603,7 +588,7 @@ void Rlaed4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
         }
         erretm = abs(erretm);
         //
-        //        Evaluate PHI and the derivative DPHI
+        // Evaluate PHI and the derivative DPHI
         //
         dphi = zero;
         phi = zero;
@@ -633,13 +618,13 @@ void Rlaed4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
         //
         tau += eta;
         //
-        //        Main loop to update the values of the array   DELTA
+        // Main loop to update the values of the array   DELTA
         //
         iter = niter + 1;
         //
         for (niter = iter; niter <= maxit; niter = niter + 1) {
             //
-            //           Test for convergence
+            // Test for convergence
             //
             if (abs(w) <= eps * erretm) {
                 if (orgati) {
@@ -656,7 +641,7 @@ void Rlaed4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
                 dltub = min(dltub, tau);
             }
             //
-            //           Calculate the new step
+            // Calculate the new step
             //
             if (!swtch3) {
                 if (!swtch) {
@@ -696,7 +681,7 @@ void Rlaed4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
                 }
             } else {
                 //
-                //              Interpolation using THREE most relevant poles
+                // Interpolation using THREE most relevant poles
                 //
                 temp = rhoinv + psi + phi;
                 if (swtch) {
@@ -724,11 +709,11 @@ void Rlaed4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
                 }
             }
             //
-            //           Note, eta should be positive if w is negative, and
-            //           eta should be negative otherwise. However,
-            //           if for some reason caused by roundoff, eta*w > 0,
-            //           we simply use one Newton step instead. This way
-            //           will guarantee eta*w < 0.
+            // Note, eta should be positive if w is negative, and
+            // eta should be negative otherwise. However,
+            // if for some reason caused by roundoff, eta*w > 0,
+            // we simply use one Newton step instead. This way
+            // will guarantee eta*w < 0.
             //
             if (w * eta >= zero) {
                 eta = -w / dw;
@@ -749,7 +734,7 @@ void Rlaed4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
             tau += eta;
             prew = w;
             //
-            //           Evaluate PSI and the derivative DPSI
+            // Evaluate PSI and the derivative DPSI
             //
             dpsi = zero;
             psi = zero;
@@ -762,7 +747,7 @@ void Rlaed4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
             }
             erretm = abs(erretm);
             //
-            //           Evaluate PHI and the derivative DPHI
+            // Evaluate PHI and the derivative DPHI
             //
             dphi = zero;
             phi = zero;
@@ -784,7 +769,7 @@ void Rlaed4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
             //
         }
         //
-        //        Return with INFO = 1, NITER = MAXIT and not converged
+        // Return with INFO = 1, NITER = MAXIT and not converged
         //
         info = 1;
         if (orgati) {
@@ -797,6 +782,6 @@ void Rlaed4(INTEGER const n, INTEGER const i, REAL *d, REAL *z, REAL *delta, REA
 //
 statement_250:;
     //
-    //     End of Rlaed4
+    // End of Rlaed4
     //
 }

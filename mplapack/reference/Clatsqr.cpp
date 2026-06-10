@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,54 +26,50 @@
  *
  */
 
+// Derived from LAPACK routine ZLATSQR.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Clatsqr(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const nb, COMPLEX *a, INTEGER const lda, COMPLEX *t, INTEGER const ldt, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd. --
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. EXTERNAL FUNCTIONS ..
-    //     .. EXTERNAL SUBROUTINES ..
-    //     .. INTRINSIC FUNCTIONS ..
-    //     ..
-    //     .. EXECUTABLE STATEMENTS ..
-    //
-    //     TEST THE INPUT ARGUMENTS
+    // TEST THE INPUT ARGUMENTS
     //
     info = 0;
     //
     bool lquery = (lwork == -1);
     //
+    INTEGER minmn = min(m, n);
+    INTEGER lwmin = 0;
+    if (minmn == 0) {
+        lwmin = 1;
+    } else {
+        lwmin = n * nb;
+    }
+    //
     if (m < 0) {
         info = -1;
     } else if (n < 0 || m < n) {
         info = -2;
-    } else if (mb <= n) {
+    } else if (mb < 1) {
         info = -3;
     } else if (nb < 1 || (nb > n && n > 0)) {
         info = -4;
     } else if (lda < max((INTEGER)1, m)) {
-        info = -5;
+        info = -6;
     } else if (ldt < nb) {
         info = -8;
-    } else if (lwork < (n * nb) && (!lquery)) {
+    } else if (lwork < lwmin && (!lquery)) {
         info = -10;
     }
+    //
     if (info == 0) {
-        work[1 - 1] = nb * n;
+        work[1 - 1] = lwmin;
     }
     if (info != 0) {
         Mxerbla("Clatsqr", -info);
@@ -82,13 +78,13 @@ void Clatsqr(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const n
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
-    if (min(m, n) == 0) {
+    if (minmn == 0) {
         return;
     }
     //
-    //     The QR Decomposition
+    // The QR Decomposition
     //
     if ((mb <= n) || (mb >= m)) {
         Cgeqrt(m, n, nb, a, lda, t, ldt, work, info);
@@ -97,28 +93,28 @@ void Clatsqr(INTEGER const m, INTEGER const n, INTEGER const mb, INTEGER const n
     INTEGER kk = mod((m - n), (mb - n));
     INTEGER ii = m - kk + 1;
     //
-    //      Compute the QR factorization of the first block A(1:MB,1:N)
+    // Compute the QR factorization of the first block A(1:MB,1:N)
     //
-    Cgeqrt(mb, n, nb, &a[(1 - 1)], lda, t, ldt, work, info);
+    Cgeqrt(mb, n, nb, &a[0], lda, t, ldt, work, info);
     INTEGER ctr = 1;
     //
     INTEGER i = 0;
     for (i = mb + 1; i <= ii - mb + n; i = i + (mb - n)) {
         //
-        //      Compute the QR factorization of the current block A(I:I+MB-N,1:N)
+        // Compute the QR factorization of the current block A(I:I+MB-N,1:N)
         //
-        Ctpqrt(mb - n, n, 0, nb, &a[(1 - 1)], lda, &a[(i - 1)], lda, &t[((ctr * n + 1) - 1) * ldt], ldt, work, info);
+        Ctpqrt(mb - n, n, 0, nb, &a[0], lda, &a[(i - 1)], lda, &t[((ctr * n + 1) - 1) * ldt], ldt, work, info);
         ctr++;
     }
     //
-    //      Compute the QR factorization of the last block A(II:M,1:N)
+    // Compute the QR factorization of the last block A(II:M,1:N)
     //
     if (ii <= m) {
-        Ctpqrt(kk, n, 0, nb, &a[(1 - 1)], lda, &a[(ii - 1)], lda, &t[((ctr * n + 1) - 1) * ldt], ldt, work, info);
+        Ctpqrt(kk, n, 0, nb, &a[0], lda, &a[(ii - 1)], lda, &t[((ctr * n + 1) - 1) * ldt], ldt, work, info);
     }
     //
-    work[1 - 1] = n * nb;
+    work[1 - 1] = lwmin;
     //
-    //     End of Clatsqr
+    // End of Clatsqr
     //
 }

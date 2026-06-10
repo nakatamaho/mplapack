@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZERRBD.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -34,37 +41,35 @@ using namespace fem::major_types;
 using fem::common;
 
 #include <mplapack_matgen.h>
-#include <mplapack_lin.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-void Cerrbd(const char *path, INTEGER const nunit) {
+void Cerrbd(fem::str_cref path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
     //
-    ok = true;
-    nout = nunit;
-    char c2[2];
-    c2[0] = path[1];
-    c2[1] = path[2];
+    static const char *format_9999 = "(1x,a3,' routines passed the tests of the error exits (',i3,"
+                                     "' tests done)')";
+    static const char *format_9998 = "(' *** ',a3,' routines failed the tests of the error ','exits ***')";
     //
-    //     Set the variables to innocuous values.
+    nout = nunit;
+    write(nout, star);
+    fem::str<2> c2 = path(2, 3);
+    //
+    // Set the variables to innocuous values.
     //
     INTEGER j = 0;
     const INTEGER nmax = 4;
     INTEGER i = 0;
     COMPLEX a[nmax * nmax];
-    INTEGER lda = nmax;
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
-            a[(i - 1) + (j - 1) * lda] = 1.0 / castREAL(i + j);
+            a[(i - 1) + (j - 1) * nmax] = 1.0 / castREAL(i + j);
         }
     }
     ok = true;
     INTEGER nt = 0;
     //
-    //     Test error exits of the SVD routines.
+    // Test error exits of the SVD routines.
     //
     REAL d[nmax];
     REAL e[nmax];
@@ -76,144 +81,156 @@ void Cerrbd(const char *path, INTEGER const nunit) {
     COMPLEX u[nmax * nmax];
     COMPLEX v[nmax * nmax];
     REAL rw[4 * nmax];
-    if (Mlsamen(2, c2, "BD")) {
+    if (Mlsamen(2, c2.elems, "BD")) {
         //
-        //        Cgebrd
+        // Cgebrd
         //
-        strncpy(srnamt, "Cgebrd", srnamt_len);
+        srnamt = "Cgebrd";
         infot = 1;
         Cgebrd(-1, 0, a, 1, d, e, tq, tp, w, 1, info);
-        chkxer("Cgebrd", infot, nout, lerr, ok);
+        Chkxer("Cgebrd", infot, nout, lerr, ok);
         infot = 2;
         Cgebrd(0, -1, a, 1, d, e, tq, tp, w, 1, info);
-        chkxer("Cgebrd", infot, nout, lerr, ok);
+        Chkxer("Cgebrd", infot, nout, lerr, ok);
         infot = 4;
         Cgebrd(2, 1, a, 1, d, e, tq, tp, w, 2, info);
-        chkxer("Cgebrd", infot, nout, lerr, ok);
+        Chkxer("Cgebrd", infot, nout, lerr, ok);
         infot = 10;
         Cgebrd(2, 1, a, 2, d, e, tq, tp, w, 1, info);
-        chkxer("Cgebrd", infot, nout, lerr, ok);
+        Chkxer("Cgebrd", infot, nout, lerr, ok);
         nt += 4;
         //
-        //        Cungbr
+        // Cgebd2
         //
-        strncpy(srnamt, "Cungbr", srnamt_len);
+        srnamt = "Cgebd2";
+        infot = 1;
+        Cgebd2(-1, 0, a, 1, d, e, tq, tp, w, info);
+        Chkxer("Cgebd2", infot, nout, lerr, ok);
+        infot = 2;
+        Cgebd2(0, -1, a, 1, d, e, tq, tp, w, info);
+        Chkxer("Cgebd2", infot, nout, lerr, ok);
+        infot = 4;
+        Cgebd2(2, 1, a, 1, d, e, tq, tp, w, info);
+        Chkxer("Cgebd2", infot, nout, lerr, ok);
+        nt += 3;
+        //
+        // Cungbr
+        //
+        srnamt = "Cungbr";
         infot = 1;
         Cungbr("/", 0, 0, 0, a, 1, tq, w, 1, info);
-        chkxer("Cungbr", infot, nout, lerr, ok);
+        Chkxer("Cungbr", infot, nout, lerr, ok);
         infot = 2;
         Cungbr("Q", -1, 0, 0, a, 1, tq, w, 1, info);
-        chkxer("Cungbr", infot, nout, lerr, ok);
+        Chkxer("Cungbr", infot, nout, lerr, ok);
         infot = 3;
         Cungbr("Q", 0, -1, 0, a, 1, tq, w, 1, info);
-        chkxer("Cungbr", infot, nout, lerr, ok);
+        Chkxer("Cungbr", infot, nout, lerr, ok);
         infot = 3;
         Cungbr("Q", 0, 1, 0, a, 1, tq, w, 1, info);
-        chkxer("Cungbr", infot, nout, lerr, ok);
+        Chkxer("Cungbr", infot, nout, lerr, ok);
         infot = 3;
         Cungbr("Q", 1, 0, 1, a, 1, tq, w, 1, info);
-        chkxer("Cungbr", infot, nout, lerr, ok);
+        Chkxer("Cungbr", infot, nout, lerr, ok);
         infot = 3;
         Cungbr("P", 1, 0, 0, a, 1, tq, w, 1, info);
-        chkxer("Cungbr", infot, nout, lerr, ok);
+        Chkxer("Cungbr", infot, nout, lerr, ok);
         infot = 3;
         Cungbr("P", 0, 1, 1, a, 1, tq, w, 1, info);
-        chkxer("Cungbr", infot, nout, lerr, ok);
+        Chkxer("Cungbr", infot, nout, lerr, ok);
         infot = 4;
         Cungbr("Q", 0, 0, -1, a, 1, tq, w, 1, info);
-        chkxer("Cungbr", infot, nout, lerr, ok);
+        Chkxer("Cungbr", infot, nout, lerr, ok);
         infot = 6;
         Cungbr("Q", 2, 1, 1, a, 1, tq, w, 1, info);
-        chkxer("Cungbr", infot, nout, lerr, ok);
+        Chkxer("Cungbr", infot, nout, lerr, ok);
         infot = 9;
         Cungbr("Q", 2, 2, 1, a, 2, tq, w, 1, info);
-        chkxer("Cungbr", infot, nout, lerr, ok);
+        Chkxer("Cungbr", infot, nout, lerr, ok);
         nt += 10;
         //
-        //        Cunmbr
+        // Cunmbr
         //
-        strncpy(srnamt, "Cunmbr", srnamt_len);
+        srnamt = "Cunmbr";
         infot = 1;
         Cunmbr("/", "L", "T", 0, 0, 0, a, 1, tq, u, 1, w, 1, info);
-        chkxer("Cunmbr", infot, nout, lerr, ok);
+        Chkxer("Cunmbr", infot, nout, lerr, ok);
         infot = 2;
         Cunmbr("Q", "/", "T", 0, 0, 0, a, 1, tq, u, 1, w, 1, info);
-        chkxer("Cunmbr", infot, nout, lerr, ok);
+        Chkxer("Cunmbr", infot, nout, lerr, ok);
         infot = 3;
         Cunmbr("Q", "L", "/", 0, 0, 0, a, 1, tq, u, 1, w, 1, info);
-        chkxer("Cunmbr", infot, nout, lerr, ok);
+        Chkxer("Cunmbr", infot, nout, lerr, ok);
         infot = 4;
         Cunmbr("Q", "L", "C", -1, 0, 0, a, 1, tq, u, 1, w, 1, info);
-        chkxer("Cunmbr", infot, nout, lerr, ok);
+        Chkxer("Cunmbr", infot, nout, lerr, ok);
         infot = 5;
         Cunmbr("Q", "L", "C", 0, -1, 0, a, 1, tq, u, 1, w, 1, info);
-        chkxer("Cunmbr", infot, nout, lerr, ok);
+        Chkxer("Cunmbr", infot, nout, lerr, ok);
         infot = 6;
         Cunmbr("Q", "L", "C", 0, 0, -1, a, 1, tq, u, 1, w, 1, info);
-        chkxer("Cunmbr", infot, nout, lerr, ok);
+        Chkxer("Cunmbr", infot, nout, lerr, ok);
         infot = 8;
         Cunmbr("Q", "L", "C", 2, 0, 0, a, 1, tq, u, 2, w, 1, info);
-        chkxer("Cunmbr", infot, nout, lerr, ok);
+        Chkxer("Cunmbr", infot, nout, lerr, ok);
         infot = 8;
         Cunmbr("Q", "R", "C", 0, 2, 0, a, 1, tq, u, 1, w, 1, info);
-        chkxer("Cunmbr", infot, nout, lerr, ok);
+        Chkxer("Cunmbr", infot, nout, lerr, ok);
         infot = 8;
         Cunmbr("P", "L", "C", 2, 0, 2, a, 1, tq, u, 2, w, 1, info);
-        chkxer("Cunmbr", infot, nout, lerr, ok);
+        Chkxer("Cunmbr", infot, nout, lerr, ok);
         infot = 8;
         Cunmbr("P", "R", "C", 0, 2, 2, a, 1, tq, u, 1, w, 1, info);
-        chkxer("Cunmbr", infot, nout, lerr, ok);
+        Chkxer("Cunmbr", infot, nout, lerr, ok);
         infot = 11;
         Cunmbr("Q", "R", "C", 2, 0, 0, a, 1, tq, u, 1, w, 1, info);
-        chkxer("Cunmbr", infot, nout, lerr, ok);
+        Chkxer("Cunmbr", infot, nout, lerr, ok);
         infot = 13;
         Cunmbr("Q", "L", "C", 0, 2, 0, a, 1, tq, u, 1, w, 0, info);
-        chkxer("Cunmbr", infot, nout, lerr, ok);
+        Chkxer("Cunmbr", infot, nout, lerr, ok);
         infot = 13;
         Cunmbr("Q", "R", "C", 2, 0, 0, a, 1, tq, u, 2, w, 0, info);
-        chkxer("Cunmbr", infot, nout, lerr, ok);
+        Chkxer("Cunmbr", infot, nout, lerr, ok);
         nt += 13;
         //
-        //        Cbdsqr
+        // Cbdsqr
         //
-        strncpy(srnamt, "Cbdsqr", srnamt_len);
+        srnamt = "Cbdsqr";
         infot = 1;
         Cbdsqr("/", 0, 0, 0, 0, d, e, v, 1, u, 1, a, 1, rw, info);
-        chkxer("Cbdsqr", infot, nout, lerr, ok);
+        Chkxer("Cbdsqr", infot, nout, lerr, ok);
         infot = 2;
         Cbdsqr("U", -1, 0, 0, 0, d, e, v, 1, u, 1, a, 1, rw, info);
-        chkxer("Cbdsqr", infot, nout, lerr, ok);
+        Chkxer("Cbdsqr", infot, nout, lerr, ok);
         infot = 3;
         Cbdsqr("U", 0, -1, 0, 0, d, e, v, 1, u, 1, a, 1, rw, info);
-        chkxer("Cbdsqr", infot, nout, lerr, ok);
+        Chkxer("Cbdsqr", infot, nout, lerr, ok);
         infot = 4;
         Cbdsqr("U", 0, 0, -1, 0, d, e, v, 1, u, 1, a, 1, rw, info);
-        chkxer("Cbdsqr", infot, nout, lerr, ok);
+        Chkxer("Cbdsqr", infot, nout, lerr, ok);
         infot = 5;
         Cbdsqr("U", 0, 0, 0, -1, d, e, v, 1, u, 1, a, 1, rw, info);
-        chkxer("Cbdsqr", infot, nout, lerr, ok);
+        Chkxer("Cbdsqr", infot, nout, lerr, ok);
         infot = 9;
         Cbdsqr("U", 2, 1, 0, 0, d, e, v, 1, u, 1, a, 1, rw, info);
-        chkxer("Cbdsqr", infot, nout, lerr, ok);
+        Chkxer("Cbdsqr", infot, nout, lerr, ok);
         infot = 11;
         Cbdsqr("U", 0, 0, 2, 0, d, e, v, 1, u, 1, a, 1, rw, info);
-        chkxer("Cbdsqr", infot, nout, lerr, ok);
+        Chkxer("Cbdsqr", infot, nout, lerr, ok);
         infot = 13;
         Cbdsqr("U", 2, 0, 0, 1, d, e, v, 1, u, 1, a, 1, rw, info);
-        chkxer("Cbdsqr", infot, nout, lerr, ok);
+        Chkxer("Cbdsqr", infot, nout, lerr, ok);
         nt += 8;
     }
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     if (ok) {
-        write(nout, "(1x,a3,' routines passed the tests of the error exits (',i3,"
-                    "' tests done)')"),
-            path, nt;
+        write(nout, format_9999), path, nt;
     } else {
-        write(nout, "(' *** ',a3,' routines failed the tests of the error ','exits ***')"), path;
+        write(nout, format_9998), path;
     }
     //
-    //     End of Cerrbd
+    // End of Cerrbd
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DGESVX.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -51,7 +58,7 @@ void Rgesvx(const char *fact, const char *trans, INTEGER const n, INTEGER const 
         bignum = one / smlnum;
     }
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     REAL rcmin = 0.0;
     const REAL zero = 0.0;
@@ -122,12 +129,12 @@ void Rgesvx(const char *fact, const char *trans, INTEGER const n, INTEGER const 
     INTEGER infequ = 0;
     if (equil) {
         //
-        //        Compute row and column scalings to equilibrate the matrix A.
+        // Compute row and column scalings to equilibrate the matrix A.
         //
         Rgeequ(n, n, a, lda, r, c, rowcnd, colcnd, amax, infequ);
         if (infequ == 0) {
             //
-            //           Equilibrate the matrix.
+            // Equilibrate the matrix.
             //
             Rlaqge(n, n, a, lda, r, c, rowcnd, colcnd, amax, equed);
             rowequ = Mlsame(equed, "R") || Mlsame(equed, "B");
@@ -135,7 +142,7 @@ void Rgesvx(const char *fact, const char *trans, INTEGER const n, INTEGER const 
         }
     }
     //
-    //     Scale the right hand side.
+    // Scale the right hand side.
     //
     INTEGER i = 0;
     if (notran) {
@@ -157,17 +164,17 @@ void Rgesvx(const char *fact, const char *trans, INTEGER const n, INTEGER const 
     REAL rpvgrw = 0.0;
     if (nofact || equil) {
         //
-        //        Compute the LU factorization of A.
+        // Compute the LU factorization of A.
         //
         Rlacpy("Full", n, n, a, lda, af, ldaf);
         Rgetrf(n, n, af, ldaf, ipiv, info);
         //
-        //        Return if INFO is non-zero.
+        // Return if INFO is non-zero.
         //
         if (info > 0) {
             //
-            //           Compute the reciprocal pivot growth factor of the
-            //           leading rank-deficient INFO columns of A.
+            // Compute the reciprocal pivot growth factor of the
+            // leading rank-deficient INFO columns of A.
             //
             rpvgrw = Rlantr("M", "U", "N", info, info, af, ldaf, work);
             if (rpvgrw == zero) {
@@ -181,8 +188,8 @@ void Rgesvx(const char *fact, const char *trans, INTEGER const n, INTEGER const 
         }
     }
     //
-    //     Compute the norm of the matrix A and the
-    //     reciprocal pivot growth factor RPVGRW.
+    // Compute the norm of the matrix A and the
+    // reciprocal pivot growth factor RPVGRW.
     //
     char norm;
     if (notran) {
@@ -198,22 +205,22 @@ void Rgesvx(const char *fact, const char *trans, INTEGER const n, INTEGER const 
         rpvgrw = Rlange("M", n, n, a, lda, work) / rpvgrw;
     }
     //
-    //     Compute the reciprocal of the condition number of A.
+    // Compute the reciprocal of the condition number of A.
     //
     Rgecon(&norm, n, af, ldaf, anorm, rcond, work, iwork, info);
     //
-    //     Compute the solution matrix X.
+    // Compute the solution matrix X.
     //
     Rlacpy("Full", n, nrhs, b, ldb, x, ldx);
     Rgetrs(trans, n, nrhs, af, ldaf, ipiv, x, ldx, info);
     //
-    //     Use iterative refinement to improve the computed solution and
-    //     compute error bounds and backward error estimates for it.
+    // Use iterative refinement to improve the computed solution and
+    // compute error bounds and backward error estimates for it.
     //
     Rgerfs(trans, n, nrhs, a, lda, af, ldaf, ipiv, b, ldb, x, ldx, ferr, berr, work, iwork, info);
     //
-    //     Transform the solution matrix X to a solution of the original
-    //     system.
+    // Transform the solution matrix X to a solution of the original
+    // system.
     //
     if (notran) {
         if (colequ) {
@@ -239,12 +246,12 @@ void Rgesvx(const char *fact, const char *trans, INTEGER const n, INTEGER const 
     //
     work[1 - 1] = rpvgrw;
     //
-    //     Set INFO = N+1 if the matrix is singular to working precision.
+    // Set INFO = N+1 if the matrix is singular to working precision.
     //
     if (rcond < Rlamch("Epsilon")) {
         info = n + 1;
     }
     //
-    //     End of Rgesvx
+    // End of Rgesvx
     //
 }

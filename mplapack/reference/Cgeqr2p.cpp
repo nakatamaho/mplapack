@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,33 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZGEQR2P.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Cgeqr2p(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *tau, COMPLEX *work, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     if (m < 0) {
@@ -70,24 +56,19 @@ void Cgeqr2p(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
     INTEGER k = min(m, n);
     //
     INTEGER i = 0;
-    COMPLEX alpha = 0.0;
-    const COMPLEX one = COMPLEX(1.0, 0.0);
     for (i = 1; i <= k; i = i + 1) {
         //
-        //        Generate elementary reflector H(i) to annihilate A(i+1:m,i)
+        // Generate elementary reflector H(i) to annihilate A(i+1:m,i)
         //
         Clarfgp(m - i + 1, a[(i - 1) + (i - 1) * lda], &a[(min(i + 1, m) - 1) + (i - 1) * lda], 1, tau[i - 1]);
         if (i < n) {
             //
-            //           Apply H(i)**H to A(i:m,i+1:n) from the left
+            // Apply H(i)**H to A(i:m,i+1:n) from the left
             //
-            alpha = a[(i - 1) + (i - 1) * lda];
-            a[(i - 1) + (i - 1) * lda] = one;
-            Clarf("Left", m - i + 1, n - i, &a[(i - 1) + (i - 1) * lda], 1, conj(tau[i - 1]), &a[(i - 1) + ((i + 1) - 1) * lda], lda, work);
-            a[(i - 1) + (i - 1) * lda] = alpha;
+            Clarf1f("Left", m - i + 1, n - i, &a[(i - 1) + (i - 1) * lda], 1, conj(tau[i - 1]), &a[(i - 1) + ((i + 1) - 1) * lda], lda, work);
         }
     }
     //
-    //     End of Cgeqr2p
+    // End of Cgeqr2p
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,36 +26,24 @@
  *
  */
 
+// Derived from LAPACK routine ZLASET.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Claset(const char *uplo, INTEGER const m, INTEGER const n, COMPLEX const alpha, COMPLEX const beta, COMPLEX *a, INTEGER const lda) {
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     INTEGER j = 0;
     INTEGER i = 0;
     if (Mlsame(uplo, "U")) {
         //
-        //        Set the diagonal to BETA and the strictly upper triangular
-        //        part of the array to ALPHA.
+        // Set the diagonal to BETA and the strictly upper triangular
+        // part of the array to ALPHA.
         //
         for (j = 2; j <= n; j = j + 1) {
             for (i = 1; i <= min(j - 1, m); i = i + 1) {
@@ -68,8 +56,8 @@ void Claset(const char *uplo, INTEGER const m, INTEGER const n, COMPLEX const al
         //
     } else if (Mlsame(uplo, "L")) {
         //
-        //        Set the diagonal to BETA and the strictly lower triangular
-        //        part of the array to ALPHA.
+        // Set the diagonal to BETA and the strictly lower triangular
+        // part of the array to ALPHA.
         //
         for (j = 1; j <= min(m, n); j = j + 1) {
             for (i = j + 1; i <= m; i = i + 1) {
@@ -82,8 +70,8 @@ void Claset(const char *uplo, INTEGER const m, INTEGER const n, COMPLEX const al
         //
     } else {
         //
-        //        Set the array to BETA on the diagonal and ALPHA on the
-        //        offdiagonal.
+        // Set the array to BETA on the diagonal and ALPHA on the
+        // offdiagonal.
         //
         for (j = 1; j <= n; j = j + 1) {
             for (i = 1; i <= m; i = i + 1) {
@@ -95,6 +83,6 @@ void Claset(const char *uplo, INTEGER const m, INTEGER const n, COMPLEX const al
         }
     }
     //
-    //     End of Claset
+    // End of Claset
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,33 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DLAHR2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rlahr2(INTEGER const n, INTEGER const k, INTEGER const nb, REAL *a, INTEGER const lda, REAL *tau, REAL *t, INTEGER const ldt, REAL *y, INTEGER const ldy) {
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n <= 1) {
         return;
@@ -65,38 +51,38 @@ void Rlahr2(INTEGER const n, INTEGER const k, INTEGER const nb, REAL *a, INTEGER
     for (i = 1; i <= nb; i = i + 1) {
         if (i > 1) {
             //
-            //           Update A(K+1:N,I)
+            // Update A(K+1:N,I)
             //
-            //           Update I-th column of A - Y * V**T
+            // Update I-th column of A - Y * V**T
             //
             Rgemv("NO TRANSPOSE", n - k, i - 1, -one, &y[((k + 1) - 1)], ldy, &a[((k + i - 1) - 1)], lda, one, &a[((k + 1) - 1) + (i - 1) * lda], 1);
             //
-            //           Apply I - V * T**T * V**T to this column (call it b) from the
-            //           left, using the last column of T as workspace
+            // Apply I - V * T**T * V**T to this column (call it b) from the
+            // left, using the last column of T as workspace
             //
-            //           Let  V = ( V1 )   and   b = ( b1 )   (first I-1 rows)
-            //                    ( V2 )             ( b2 )
+            // Let  V = ( V1 )   and   b = ( b1 )   (first I-1 rows)
+            // ( V2 )             ( b2 )
             //
-            //           where V1 is unit lower triangular
+            // where V1 is unit lower triangular
             //
-            //           w := V1**T * b1
+            // w := V1**T * b1
             //
             Rcopy(i - 1, &a[((k + 1) - 1) + (i - 1) * lda], 1, &t[(nb - 1) * ldt], 1);
             Rtrmv("Lower", "Transpose", "UNIT", i - 1, &a[((k + 1) - 1)], lda, &t[(nb - 1) * ldt], 1);
             //
-            //           w := w + V2**T * b2
+            // w := w + V2**T * b2
             //
             Rgemv("Transpose", n - k - i + 1, i - 1, one, &a[((k + i) - 1)], lda, &a[((k + i) - 1) + (i - 1) * lda], 1, one, &t[(nb - 1) * ldt], 1);
             //
-            //           w := T**T * w
+            // w := T**T * w
             //
             Rtrmv("Upper", "Transpose", "NON-UNIT", i - 1, t, ldt, &t[(nb - 1) * ldt], 1);
             //
-            //           b2 := b2 - V2*w
+            // b2 := b2 - V2*w
             //
             Rgemv("NO TRANSPOSE", n - k - i + 1, i - 1, -one, &a[((k + i) - 1)], lda, &t[(nb - 1) * ldt], 1, one, &a[((k + i) - 1) + (i - 1) * lda], 1);
             //
-            //           b1 := b1 - V1*w
+            // b1 := b1 - V1*w
             //
             Rtrmv("Lower", "NO TRANSPOSE", "UNIT", i - 1, &a[((k + 1) - 1)], lda, &t[(nb - 1) * ldt], 1);
             Raxpy(i - 1, -one, &t[(nb - 1) * ldt], 1, &a[((k + 1) - 1) + (i - 1) * lda], 1);
@@ -104,21 +90,21 @@ void Rlahr2(INTEGER const n, INTEGER const k, INTEGER const nb, REAL *a, INTEGER
             a[((k + i - 1) - 1) + ((i - 1) - 1) * lda] = ei;
         }
         //
-        //        Generate the elementary reflector H(I) to annihilate
-        //        A(K+I+1:N,I)
+        // Generate the elementary reflector H(I) to annihilate
+        // A(K+I+1:N,I)
         //
         Rlarfg(n - k - i + 1, a[((k + i) - 1) + (i - 1) * lda], &a[(min(k + i + 1, n) - 1) + (i - 1) * lda], 1, tau[i - 1]);
         ei = a[((k + i) - 1) + (i - 1) * lda];
         a[((k + i) - 1) + (i - 1) * lda] = one;
         //
-        //        Compute  Y(K+1:N,I)
+        // Compute  Y(K+1:N,I)
         //
         Rgemv("NO TRANSPOSE", n - k, n - k - i + 1, one, &a[((k + 1) - 1) + ((i + 1) - 1) * lda], lda, &a[((k + i) - 1) + (i - 1) * lda], 1, zero, &y[((k + 1) - 1) + (i - 1) * ldy], 1);
         Rgemv("Transpose", n - k - i + 1, i - 1, one, &a[((k + i) - 1)], lda, &a[((k + i) - 1) + (i - 1) * lda], 1, zero, &t[(i - 1) * ldt], 1);
         Rgemv("NO TRANSPOSE", n - k, i - 1, -one, &y[((k + 1) - 1)], ldy, &t[(i - 1) * ldt], 1, one, &y[((k + 1) - 1) + (i - 1) * ldy], 1);
         Rscal(n - k, tau[i - 1], &y[((k + 1) - 1) + (i - 1) * ldy], 1);
         //
-        //        Compute T(1:I,I)
+        // Compute T(1:I,I)
         //
         Rscal(i - 1, -tau[i - 1], &t[(i - 1) * ldt], 1);
         Rtrmv("Upper", "No Transpose", "NON-UNIT", i - 1, t, ldt, &t[(i - 1) * ldt], 1);
@@ -127,7 +113,7 @@ void Rlahr2(INTEGER const n, INTEGER const k, INTEGER const nb, REAL *a, INTEGER
     }
     a[((k + nb) - 1) + (nb - 1) * lda] = ei;
     //
-    //     Compute Y(1:K,1:NB)
+    // Compute Y(1:K,1:NB)
     //
     Rlacpy("ALL", k, nb, &a[(2 - 1) * lda], lda, y, ldy);
     Rtrmm("RIGHT", "Lower", "NO TRANSPOSE", "UNIT", k, nb, one, &a[((k + 1) - 1)], lda, y, ldy);
@@ -136,6 +122,6 @@ void Rlahr2(INTEGER const n, INTEGER const k, INTEGER const nb, REAL *a, INTEGER
     }
     Rtrmm("RIGHT", "Upper", "NO TRANSPOSE", "NON-UNIT", k, nb, one, t, ldt, y, ldy);
     //
-    //     End of Rlahr2
+    // End of Rlahr2
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DSTT22.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,32 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
 void Rstt22(INTEGER const n, INTEGER const m, INTEGER const kband, REAL *ad, REAL *ae, REAL *sd, REAL *se, REAL *u, INTEGER const ldu, REAL *work, INTEGER const ldwork, REAL *result) {
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     const REAL zero = 0.0;
     result[1 - 1] = zero;
@@ -73,24 +55,24 @@ void Rstt22(INTEGER const n, INTEGER const m, INTEGER const kband, REAL *ad, REA
     REAL unfl = Rlamch("Safe minimum");
     REAL ulp = Rlamch("Epsilon");
     //
-    //     Do Test 1
+    // Do Test 1
     //
-    //     Compute the 1-norm of A.
+    // Compute the 1-norm of A.
     //
     REAL anorm = 0.0;
     INTEGER j = 0;
     if (n > 1) {
         anorm = abs(ad[1 - 1]) + abs(ae[1 - 1]);
         for (j = 2; j <= n - 1; j = j + 1) {
-            anorm = max(anorm, REAL(abs(ad[j - 1]) + abs(ae[j - 1]) + abs(ae[(j - 1) - 1])));
+            anorm = max(anorm, abs(ad[j - 1]) + abs(ae[j - 1]) + abs(ae[(j - 1) - 1]));
         }
-        anorm = max(anorm, REAL(abs(ad[n - 1]) + abs(ae[(n - 1) - 1])));
+        anorm = max(anorm, abs(ad[n - 1]) + abs(ae[(n - 1) - 1]));
     } else {
         anorm = abs(ad[1 - 1]);
     }
     anorm = max(anorm, unfl);
     //
-    //     Norm of U'AU - S
+    // Norm of U'AU - S
     //
     INTEGER i = 0;
     INTEGER k = 0;
@@ -127,15 +109,15 @@ void Rstt22(INTEGER const n, INTEGER const m, INTEGER const kband, REAL *ad, REA
         result[1 - 1] = (wnorm / anorm) / (m * ulp);
     } else {
         if (anorm < one) {
-            result[1 - 1] = (min(wnorm, REAL(castREAL(m) * anorm)) / anorm) / (castREAL(m) * ulp);
+            result[1 - 1] = (min(wnorm, m * anorm) / anorm) / (m * ulp);
         } else {
-            result[1 - 1] = min(REAL(wnorm / anorm), castREAL(m)) / (castREAL(m) * ulp);
+            result[1 - 1] = min(wnorm / anorm, castREAL(m)) / (m * ulp);
         }
     }
     //
-    //     Do Test 2
+    // Do Test 2
     //
-    //     Compute  U'U - I
+    // Compute  U'U - I
     //
     Rgemm("T", "N", m, m, n, one, u, ldu, u, ldu, zero, work, m);
     //
@@ -145,6 +127,6 @@ void Rstt22(INTEGER const n, INTEGER const m, INTEGER const kband, REAL *ad, REA
     //
     result[2 - 1] = min(castREAL(m), Rlange("1", m, m, work, m, &work[((m + 1) - 1) * ldwork])) / (m * ulp);
     //
-    //     End of Rstt22
+    // End of Rstt22
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,15 +26,23 @@
  *
  */
 
+// Derived from LAPACK routine DSYSV_AA.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rsysv_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, INTEGER *ipiv, REAL *b, INTEGER const ldb, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     bool lquery = (lwork == -1);
+    INTEGER lwkmin = max((INTEGER)1, 2 * n, 3 * n - 2);
     if (!Mlsame(uplo, "U") && !Mlsame(uplo, "L")) {
         info = -1;
     } else if (n < 0) {
@@ -45,7 +53,7 @@ void Rsysv_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, IN
         info = -5;
     } else if (ldb < max((INTEGER)1, n)) {
         info = -8;
-    } else if (lwork < max(2 * n, 3 * n - 2) && !lquery) {
+    } else if (lwork < lwkmin && !lquery) {
         info = -10;
     }
     //
@@ -57,7 +65,7 @@ void Rsysv_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, IN
         lwkopt_sytrf = castINTEGER(work[1 - 1]);
         Rsytrs_aa(uplo, n, nrhs, a, lda, ipiv, b, ldb, work, -1, info);
         lwkopt_sytrs = castINTEGER(work[1 - 1]);
-        lwkopt = max(lwkopt_sytrf, lwkopt_sytrs);
+        lwkopt = max(lwkmin, lwkopt_sytrf, lwkopt_sytrs);
         work[1 - 1] = lwkopt;
     }
     //
@@ -68,12 +76,12 @@ void Rsysv_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, IN
         return;
     }
     //
-    //     Compute the factorization A = U**T*T*U or A = L*T*L**T.
+    // Compute the factorization A = U**T*T*U or A = L*T*L**T.
     //
     Rsytrf_aa(uplo, n, a, lda, ipiv, work, lwork, info);
     if (info == 0) {
         //
-        //        Solve the system A*X = B, overwriting B with X.
+        // Solve the system A*X = B, overwriting B with X.
         //
         Rsytrs_aa(uplo, n, nrhs, a, lda, ipiv, b, ldb, work, lwork, info);
         //
@@ -81,6 +89,6 @@ void Rsysv_aa(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, IN
     //
     work[1 - 1] = lwkopt;
     //
-    //     End of Rsysv_aa
+    // End of Rsysv_aa
     //
 }

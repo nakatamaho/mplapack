@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,10 +26,17 @@
  *
  */
 
+// Derived from LAPACK routine ZGEEVX.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Cgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char *sense, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *w, COMPLEX *vl, INTEGER const ldvl, COMPLEX *vr, INTEGER const ldvr, INTEGER ilo, INTEGER ihi, REAL *scale, REAL &abnrm, REAL *rconde, REAL *rcondv, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER &info) {
+void Cgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char *sense, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *w, COMPLEX *vl, INTEGER const ldvl, COMPLEX *vr, INTEGER const ldvr, INTEGER &ilo, INTEGER &ihi, REAL *scale, REAL &abnrm, REAL *rconde, REAL *rcondv, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER &info) {
     bool lquery = false;
     bool wantvl = false;
     bool wantvr = false;
@@ -39,7 +46,7 @@ void Cgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
     bool wntsnb = false;
     INTEGER minwrk = 0;
     INTEGER maxwrk = 0;
-    bool select[4];
+    bool select[1];
     INTEGER nout = 0;
     INTEGER ierr = 0;
     INTEGER lwork_trevc = 0;
@@ -63,32 +70,7 @@ void Cgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
     INTEGER k = 0;
     COMPLEX tmp = 0.0;
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     lquery = (lwork == -1);
@@ -116,16 +98,16 @@ void Cgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
         info = -12;
     }
     //
-    //     Compute workspace
-    //      (Note: Comments in the code beginning "Workspace:" describe the
-    //       minimal amount of workspace needed at that point in the code,
-    //       as well as the preferred amount for good performance.
-    //       CWorkspace refers to complex workspace, and RWorkspace to real
-    //       workspace. NB refers to the optimal block size for the
-    //       immediately following subroutine, as returned by iMlaenv.
-    //       HSWORK refers to the workspace preferred by Chseqr, as
-    //       calculated below. HSWORK is computed assuming ILO=1 and IHI=N,
-    //       the worst case.)
+    // Compute workspace
+    // (Note: Comments in the code beginning "Workspace:" describe the
+    // minimal amount of workspace needed at that point in the code,
+    // as well as the preferred amount for good performance.
+    // CWorkspace refers to complex workspace, and RWorkspace to real
+    // workspace. NB refers to the optimal block size for the
+    // immediately following subroutine, as returned by iMlaenv.
+    // HSWORK refers to the workspace preferred by Chseqr, as
+    // calculated below. HSWORK is computed assuming ILO=1 and IHI=N,
+    // the worst case.)
     //
     if (info == 0) {
         if (n == 0) {
@@ -190,13 +172,13 @@ void Cgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
     }
     //
-    //     Get machine constants
+    // Get machine constants
     //
     eps = Rlamch("P");
     smlnum = Rlamch("S");
@@ -204,7 +186,7 @@ void Cgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
     smlnum = sqrt(smlnum) / eps;
     bignum = one / smlnum;
     //
-    //     Scale A if max element outside range [SMLNUM,BIGNUM]
+    // Scale A if max element outside range [SMLNUM,BIGNUM]
     //
     icond = 0;
     anrm = Clange("M", n, n, a, lda, dum);
@@ -220,7 +202,7 @@ void Cgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
         Clascl("G", 0, 0, anrm, cscale, n, n, a, lda, ierr);
     }
     //
-    //     Balance the matrix and compute ABNRM
+    // Balance the matrix and compute ABNRM
     //
     Cgebal(balanc, n, a, lda, ilo, ihi, scale, ierr);
     abnrm = Clange("1", n, n, a, lda, dum);
@@ -230,9 +212,9 @@ void Cgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
         abnrm = dum[1 - 1];
     }
     //
-    //     Reduce to upper Hessenberg form
-    //     (CWorkspace: need 2*N, prefer N+N*NB)
-    //     (RWorkspace: none)
+    // Reduce to upper Hessenberg form
+    // (CWorkspace: need 2*N, prefer N+N*NB)
+    // (RWorkspace: none)
     //
     itau = 1;
     iwrk = itau + n;
@@ -240,29 +222,29 @@ void Cgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
     //
     if (wantvl) {
         //
-        //        Want left eigenvectors
-        //        Copy Householder vectors to VL
+        // Want left eigenvectors
+        // Copy Householder vectors to VL
         //
         side = 'L';
         Clacpy("L", n, n, a, lda, vl, ldvl);
         //
-        //        Generate unitary matrix in VL
-        //        (CWorkspace: need 2*N-1, prefer N+(N-1)*NB)
-        //        (RWorkspace: none)
+        // Generate unitary matrix in VL
+        // (CWorkspace: need 2*N-1, prefer N+(N-1)*NB)
+        // (RWorkspace: none)
         //
         Cunghr(n, ilo, ihi, vl, ldvl, &work[itau - 1], &work[iwrk - 1], lwork - iwrk + 1, ierr);
         //
-        //        Perform QR iteration, accumulating Schur vectors in VL
-        //        (CWorkspace: need 1, prefer HSWORK (see comments) )
-        //        (RWorkspace: none)
+        // Perform QR iteration, accumulating Schur vectors in VL
+        // (CWorkspace: need 1, prefer HSWORK (see comments) )
+        // (RWorkspace: none)
         //
         iwrk = itau;
         Chseqr("S", "V", n, ilo, ihi, a, lda, w, vl, ldvl, &work[iwrk - 1], lwork - iwrk + 1, info);
         //
         if (wantvr) {
             //
-            //           Want left and right eigenvectors
-            //           Copy Schur vectors to VR
+            // Want left and right eigenvectors
+            // Copy Schur vectors to VR
             //
             side = 'B';
             Clacpy("F", n, n, vl, ldvl, vr, ldvr);
@@ -270,29 +252,29 @@ void Cgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
         //
     } else if (wantvr) {
         //
-        //        Want right eigenvectors
-        //        Copy Householder vectors to VR
+        // Want right eigenvectors
+        // Copy Householder vectors to VR
         //
         side = 'R';
         Clacpy("L", n, n, a, lda, vr, ldvr);
         //
-        //        Generate unitary matrix in VR
-        //        (CWorkspace: need 2*N-1, prefer N+(N-1)*NB)
-        //        (RWorkspace: none)
+        // Generate unitary matrix in VR
+        // (CWorkspace: need 2*N-1, prefer N+(N-1)*NB)
+        // (RWorkspace: none)
         //
         Cunghr(n, ilo, ihi, vr, ldvr, &work[itau - 1], &work[iwrk - 1], lwork - iwrk + 1, ierr);
         //
-        //        Perform QR iteration, accumulating Schur vectors in VR
-        //        (CWorkspace: need 1, prefer HSWORK (see comments) )
-        //        (RWorkspace: none)
+        // Perform QR iteration, accumulating Schur vectors in VR
+        // (CWorkspace: need 1, prefer HSWORK (see comments) )
+        // (RWorkspace: none)
         //
         iwrk = itau;
         Chseqr("S", "V", n, ilo, ihi, a, lda, w, vr, ldvr, &work[iwrk - 1], lwork - iwrk + 1, info);
         //
     } else {
         //
-        //        Compute eigenvalues only
-        //        If condition numbers desired, compute Schur form
+        // Compute eigenvalues only
+        // If condition numbers desired, compute Schur form
         //
         if (wntsnn) {
             job = 'E';
@@ -300,14 +282,14 @@ void Cgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
             job = 'S';
         }
         //
-        //        (CWorkspace: need 1, prefer HSWORK (see comments) )
-        //        (RWorkspace: none)
+        // (CWorkspace: need 1, prefer HSWORK (see comments) )
+        // (RWorkspace: none)
         //
         iwrk = itau;
         Chseqr(&job, "N", n, ilo, ihi, a, lda, w, vr, ldvr, &work[iwrk - 1], lwork - iwrk + 1, info);
     }
     //
-    //     If INFO .NE. 0 from Chseqr, then quit
+    // If INFO .NE. 0 from Chseqr, then quit
     //
     if (info != 0) {
         goto statement_50;
@@ -315,16 +297,16 @@ void Cgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
     //
     if (wantvl || wantvr) {
         //
-        //        Compute left and/or right eigenvectors
-        //        (CWorkspace: need 2*N, prefer N + 2*N*NB)
-        //        (RWorkspace: need N)
+        // Compute left and/or right eigenvectors
+        // (CWorkspace: need 2*N, prefer N + 2*N*NB)
+        // (RWorkspace: need N)
         //
         Ctrevc3(&side, "B", select, n, a, lda, vl, ldvl, vr, ldvr, n, nout, &work[iwrk - 1], lwork - iwrk + 1, rwork, n, ierr);
     }
     //
-    //     Compute condition numbers if desired
-    //     (CWorkspace: need N*N+2*N unless SENSE = 'E')
-    //     (RWorkspace: need 2*N unless SENSE = 'E')
+    // Compute condition numbers if desired
+    // (CWorkspace: need N*N+2*N unless SENSE = 'E')
+    // (RWorkspace: need 2*N unless SENSE = 'E')
     //
     if (!wntsnn) {
         Ctrsna(sense, "A", select, n, a, lda, vl, ldvl, vr, ldvr, rconde, rcondv, n, nout, &work[iwrk - 1], n, rwork, icond);
@@ -332,11 +314,11 @@ void Cgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
     //
     if (wantvl) {
         //
-        //        Undo balancing of left eigenvectors
+        // Undo balancing of left eigenvectors
         //
         Cgebak(balanc, "L", n, ilo, ihi, scale, n, vl, ldvl, ierr);
         //
-        //        Normalize left eigenvectors and make largest component real
+        // Normalize left eigenvectors and make largest component real
         //
         for (i = 1; i <= n; i = i + 1) {
             scl = one / RCnrm2(n, &vl[(i - 1) * ldvl], 1);
@@ -353,11 +335,11 @@ void Cgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
     //
     if (wantvr) {
         //
-        //        Undo balancing of right eigenvectors
+        // Undo balancing of right eigenvectors
         //
         Cgebak(balanc, "R", n, ilo, ihi, scale, n, vr, ldvr, ierr);
         //
-        //        Normalize right eigenvectors and make largest component real
+        // Normalize right eigenvectors and make largest component real
         //
         for (i = 1; i <= n; i = i + 1) {
             scl = one / RCnrm2(n, &vr[(i - 1) * ldvr], 1);
@@ -372,7 +354,7 @@ void Cgeevx(const char *balanc, const char *jobvl, const char *jobvr, const char
         }
     }
 //
-//     Undo scaling if necessary
+// Undo scaling if necessary
 //
 statement_50:
     if (scalea) {
@@ -388,6 +370,6 @@ statement_50:
     //
     work[1 - 1] = maxwrk;
     //
-    //     End of Cgeevx
+    // End of Cgeevx
     //
 }

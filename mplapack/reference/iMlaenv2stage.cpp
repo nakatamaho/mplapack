@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,10 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ILAENV2STAGE.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+//   Nick R. Papior
+
 #include <mpblas.h>
 #include <mplapack.h>
 
-INTEGER iMlaenv2stage(INTEGER const ispec, const char *name, const char *opts, INTEGER const n1, INTEGER const n2, INTEGER const n3, INTEGER const n4) {
+INTEGER
+iMlaenv2stage(INTEGER const ispec, const char *name, const char *opts, INTEGER const n1, INTEGER const n2, INTEGER const n3, INTEGER const n4) {
     INTEGER return_value = 0;
     INTEGER iispec = 0;
     //
@@ -48,19 +57,19 @@ INTEGER iMlaenv2stage(INTEGER const ispec, const char *name, const char *opts, I
         break;
     }
     //
-    //     Invalid value for ISPEC
+    // Invalid value for ISPEC
     //
     return_value = -1;
     return return_value;
 //
 statement_10:
     //
-    //     2stage eigenvalues and SVD or related subroutines.
+    // 2stage eigenvalues and SVD or related subroutines.
     //
     iispec = 16 + ispec;
     return_value = iMparam2stage(iispec, name, opts, n1, n2, n3, n4);
     return return_value;
     //
-    //     End of iMlaenv2stage
+    // End of iMlaenv2stage
     //
 }

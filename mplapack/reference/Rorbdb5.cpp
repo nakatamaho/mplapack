@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,35 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DORBDB5.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rorbdb5(INTEGER const m1, INTEGER const m2, INTEGER const n, REAL *x1, INTEGER const incx1, REAL *x2, INTEGER const incx2, REAL *q1, INTEGER const ldq1, REAL *q2, INTEGER const ldq2, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Function ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test input arguments
+    // Test input arguments
     //
     info = 0;
     if (m1 < 0) {
@@ -80,24 +64,42 @@ void Rorbdb5(INTEGER const m1, INTEGER const m2, INTEGER const n, REAL *x1, INTE
         return;
     }
     //
-    //     Project X onto the orthogonal complement of Q
+    REAL eps = Rlamch("Precision");
     //
+    // Project X onto the orthogonal complement of Q if X is nonzero
+    //
+    const REAL realzero = 0.0;
+    REAL scl = realzero;
+    REAL ssq = realzero;
+    Rlassq(m1, x1, incx1, scl, ssq);
+    Rlassq(m2, x2, incx2, scl, ssq);
+    REAL norm = scl * sqrt(ssq);
+    //
+    const REAL one = 1.0;
     INTEGER childinfo = 0;
-    Rorbdb6(m1, m2, n, x1, incx1, x2, incx2, q1, ldq1, q2, ldq2, work, lwork, childinfo);
-    //
-    //     If the projection is nonzero, then return
-    //
-    const REAL zero = 0.0;
-    if (Rnrm2(m1, x1, incx1) != zero || Rnrm2(m2, x2, incx2) != zero) {
-        return;
+    if (norm > n * eps) {
+        // Scale vector to unit norm to avoid problems in the caller code.
+        // Computing the reciprocal is undesirable but
+        // * xLASCL cannot be used because of the vector increments and
+        // * the round-off error has a negligible impact on
+        // orthogonalization.
+        Rscal(m1, one / norm, x1, incx1);
+        Rscal(m2, one / norm, x2, incx2);
+        Rorbdb6(m1, m2, n, x1, incx1, x2, incx2, q1, ldq1, q2, ldq2, work, lwork, childinfo);
+        //
+        // If the projection is nonzero, then return
+        //
+        if (Rnrm2(m1, x1, incx1) != realzero || Rnrm2(m2, x2, incx2) != realzero) {
+            return;
+        }
     }
     //
-    //     Project each standard basis vector e_1,...,e_M1 in turn, stopping
-    //     when a nonzero projection is found
+    // Project each standard basis vector e_1,...,e_M1 in turn, stopping
+    // when a nonzero projection is found
     //
     INTEGER i = 0;
     INTEGER j = 0;
-    const REAL one = 1.0;
+    const REAL zero = 0.0;
     for (i = 1; i <= m1; i = i + 1) {
         for (j = 1; j <= m1; j = j + 1) {
             x1[j - 1] = zero;
@@ -107,13 +109,13 @@ void Rorbdb5(INTEGER const m1, INTEGER const m2, INTEGER const n, REAL *x1, INTE
             x2[j - 1] = zero;
         }
         Rorbdb6(m1, m2, n, x1, incx1, x2, incx2, q1, ldq1, q2, ldq2, work, lwork, childinfo);
-        if (Rnrm2(m1, x1, incx1) != zero || Rnrm2(m2, x2, incx2) != zero) {
+        if (Rnrm2(m1, x1, incx1) != realzero || Rnrm2(m2, x2, incx2) != realzero) {
             return;
         }
     }
     //
-    //     Project each standard basis vector e_(M1+1),...,e_(M1+M2) in turn,
-    //     stopping when a nonzero projection is found
+    // Project each standard basis vector e_(M1+1),...,e_(M1+M2) in turn,
+    // stopping when a nonzero projection is found
     //
     for (i = 1; i <= m2; i = i + 1) {
         for (j = 1; j <= m1; j = j + 1) {
@@ -124,11 +126,11 @@ void Rorbdb5(INTEGER const m1, INTEGER const m2, INTEGER const n, REAL *x1, INTE
         }
         x2[i - 1] = one;
         Rorbdb6(m1, m2, n, x1, incx1, x2, incx2, q1, ldq1, q2, ldq2, work, lwork, childinfo);
-        if (Rnrm2(m1, x1, incx1) != zero || Rnrm2(m2, x2, incx2) != zero) {
+        if (Rnrm2(m1, x1, incx1) != realzero || Rnrm2(m2, x2, incx2) != realzero) {
             return;
         }
     }
     //
-    //     End of Rorbdb5
+    // End of Rorbdb5
     //
 }

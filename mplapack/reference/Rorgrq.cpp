@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,35 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DORGRQ.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rorgrq(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, INTEGER const lda, REAL *tau, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     bool lquery = (lwork == -1);
@@ -91,7 +75,7 @@ void Rorgrq(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, INTEGER 
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (m <= 0) {
         return;
@@ -103,19 +87,19 @@ void Rorgrq(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, INTEGER 
     INTEGER ldwork = 0;
     if (nb > 1 && nb < k) {
         //
-        //        Determine when to cross over from blocked to unblocked code.
+        // Determine when to cross over from blocked to unblocked code.
         //
         nx = max((INTEGER)0, iMlaenv(3, "Rorgrq", " ", m, n, k, -1));
         if (nx < k) {
             //
-            //           Determine if workspace is large enough for blocked code.
+            // Determine if workspace is large enough for blocked code.
             //
             ldwork = m;
             iws = ldwork * nb;
             if (lwork < iws) {
                 //
-                //              Not enough workspace to use optimal NB:  reduce NB and
-                //              determine the minimum value of NB.
+                // Not enough workspace to use optimal NB:  reduce NB and
+                // determine the minimum value of NB.
                 //
                 nb = lwork / ldwork;
                 nbmin = max((INTEGER)2, iMlaenv(2, "Rorgrq", " ", m, n, k, -1));
@@ -129,12 +113,12 @@ void Rorgrq(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, INTEGER 
     const REAL zero = 0.0;
     if (nb >= nbmin && nb < k && nx < k) {
         //
-        //        Use blocked code after the first block.
-        //        The last kk rows are handled by the block method.
+        // Use blocked code after the first block.
+        // The last kk rows are handled by the block method.
         //
         kk = min(k, ((k - nx + nb - 1) / nb) * nb);
         //
-        //        Set A(1:m-kk,n-kk+1:n) to zero.
+        // Set A(1:m-kk,n-kk+1:n) to zero.
         //
         for (j = n - kk + 1; j <= n; j = j + 1) {
             for (i = 1; i <= m - kk; i = i + 1) {
@@ -145,7 +129,7 @@ void Rorgrq(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, INTEGER 
         kk = 0;
     }
     //
-    //     Use unblocked code for the first or only block.
+    // Use unblocked code for the first or only block.
     //
     INTEGER iinfo = 0;
     Rorgr2(m - kk, n - kk, k - kk, a, lda, tau, work, iinfo);
@@ -155,28 +139,28 @@ void Rorgrq(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, INTEGER 
     INTEGER l = 0;
     if (kk > 0) {
         //
-        //        Use blocked code
+        // Use blocked code
         //
         for (i = k - kk + 1; i <= k; i = i + nb) {
             ib = min(nb, k - i + 1);
             ii = m - k + i;
             if (ii > 1) {
                 //
-                //              Form the triangular factor of the block reflector
-                //              H = H(i+ib-1) . . . H(i+1) H(i)
+                // Form the triangular factor of the block reflector
+                // H = H(i+ib-1) . . . H(i+1) H(i)
                 //
                 Rlarft("Backward", "Rowwise", n - k + i + ib - 1, ib, &a[(ii - 1)], lda, &tau[i - 1], work, ldwork);
                 //
-                //              Apply H**T to A(1:m-k+i-1,1:n-k+i+ib-1) from the right
+                // Apply H**T to A(1:m-k+i-1,1:n-k+i+ib-1) from the right
                 //
                 Rlarfb("Right", "Transpose", "Backward", "Rowwise", ii - 1, n - k + i + ib - 1, ib, &a[(ii - 1)], lda, work, ldwork, a, lda, &work[(ib + 1) - 1], ldwork);
             }
             //
-            //           Apply H**T to columns 1:n-k+i+ib-1 of current block
+            // Apply H**T to columns 1:n-k+i+ib-1 of current block
             //
             Rorgr2(ib, n - k + i + ib - 1, ib, &a[(ii - 1)], lda, &tau[i - 1], work, iinfo);
             //
-            //           Set columns n-k+i+ib:n of current block to zero
+            // Set columns n-k+i+ib:n of current block to zero
             //
             for (l = n - k + i + ib; l <= n; l = l + 1) {
                 for (j = ii; j <= ii + ib - 1; j = j + 1) {
@@ -188,6 +172,6 @@ void Rorgrq(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, INTEGER 
     //
     work[1 - 1] = iws;
     //
-    //     End of Rorgrq
+    // End of Rorgrq
     //
 }

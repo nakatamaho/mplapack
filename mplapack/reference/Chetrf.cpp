@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZHETRF.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -42,28 +49,7 @@ void Chetrf(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
     INTEGER iinfo = 0;
     INTEGER j = 0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     upper = Mlsame(uplo, "U");
@@ -80,10 +66,10 @@ void Chetrf(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
     //
     if (info == 0) {
         //
-        //        Determine the block size
+        // Determine the block size
         //
         nb = iMlaenv(1, "Chetrf", uplo, n, -1, -1, -1);
-        lwkopt = n * nb;
+        lwkopt = max((INTEGER)1, n * nb);
         work[1 - 1] = lwkopt;
     }
     //
@@ -111,16 +97,16 @@ void Chetrf(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
     //
     if (upper) {
         //
-        //        Factorize A as U*D*U**H using the upper triangle of A
+        // Factorize A as U*D*U**H using the upper triangle of A
         //
-        //        K is the main loop index, decreasing from N to 1 in steps of
-        //        KB, where KB is the number of columns factorized by Clahef;
-        //        KB is either NB or NB-1, or K for the last block
+        // K is the main loop index, decreasing from N to 1 in steps of
+        // KB, where KB is the number of columns factorized by Clahef;
+        // KB is either NB or NB-1, or K for the last block
         //
         k = n;
     statement_10:
         //
-        //        If K < 1, exit from loop
+        // If K < 1, exit from loop
         //
         if (k < 1) {
             goto statement_40;
@@ -128,41 +114,41 @@ void Chetrf(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
         //
         if (k > nb) {
             //
-            //           Factorize columns k-kb+1:k of A and use blocked code to
-            //           update columns 1:k-kb
+            // Factorize columns k-kb+1:k of A and use blocked code to
+            // update columns 1:k-kb
             //
             Clahef(uplo, k, nb, kb, a, lda, ipiv, work, n, iinfo);
         } else {
             //
-            //           Use unblocked code to factorize columns 1:k of A
+            // Use unblocked code to factorize columns 1:k of A
             //
             Chetf2(uplo, k, a, lda, ipiv, iinfo);
             kb = k;
         }
         //
-        //        Set INFO on the first occurrence of a zero pivot
+        // Set INFO on the first occurrence of a zero pivot
         //
         if (info == 0 && iinfo > 0) {
             info = iinfo;
         }
         //
-        //        Decrease K and return to the start of the main loop
+        // Decrease K and return to the start of the main loop
         //
         k = k - kb;
         goto statement_10;
         //
     } else {
         //
-        //        Factorize A as L*D*L**H using the lower triangle of A
+        // Factorize A as L*D*L**H using the lower triangle of A
         //
-        //        K is the main loop index, increasing from 1 to N in steps of
-        //        KB, where KB is the number of columns factorized by Clahef;
-        //        KB is either NB or NB-1, or N-K+1 for the last block
+        // K is the main loop index, increasing from 1 to N in steps of
+        // KB, where KB is the number of columns factorized by Clahef;
+        // KB is either NB or NB-1, or N-K+1 for the last block
         //
         k = 1;
     statement_20:
         //
-        //        If K > N, exit from loop
+        // If K > N, exit from loop
         //
         if (k > n) {
             goto statement_40;
@@ -170,25 +156,25 @@ void Chetrf(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
         //
         if (k <= n - nb) {
             //
-            //           Factorize columns k:k+kb-1 of A and use blocked code to
-            //           update columns k+kb:n
+            // Factorize columns k:k+kb-1 of A and use blocked code to
+            // update columns k+kb:n
             //
             Clahef(uplo, n - k + 1, nb, kb, &a[(k - 1) + (k - 1) * lda], lda, &ipiv[k - 1], work, n, iinfo);
         } else {
             //
-            //           Use unblocked code to factorize columns k:n of A
+            // Use unblocked code to factorize columns k:n of A
             //
             Chetf2(uplo, n - k + 1, &a[(k - 1) + (k - 1) * lda], lda, &ipiv[k - 1], iinfo);
             kb = n - k + 1;
         }
         //
-        //        Set INFO on the first occurrence of a zero pivot
+        // Set INFO on the first occurrence of a zero pivot
         //
         if (info == 0 && iinfo > 0) {
             info = iinfo + k - 1;
         }
         //
-        //        Adjust IPIV
+        // Adjust IPIV
         //
         for (j = k; j <= k + kb - 1; j = j + 1) {
             if (ipiv[j - 1] > 0) {
@@ -198,7 +184,7 @@ void Chetrf(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
             }
         }
         //
-        //        Increase K and return to the start of the main loop
+        // Increase K and return to the start of the main loop
         //
         k += kb;
         goto statement_20;
@@ -206,8 +192,9 @@ void Chetrf(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
     }
 //
 statement_40:
+    //
     work[1 - 1] = lwkopt;
     //
-    //     End of Chetrf
+    // End of Chetrf
     //
 }

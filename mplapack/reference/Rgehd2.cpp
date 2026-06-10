@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DGEHD2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rgehd2(INTEGER const n, INTEGER const ilo, INTEGER const ihi, REAL *a, INTEGER const lda, REAL *tau, REAL *work, INTEGER &info) {
     //
-    //     Test the input parameters
+    // Test the input parameters
     //
     info = 0;
     if (n < 0) {
@@ -49,27 +56,22 @@ void Rgehd2(INTEGER const n, INTEGER const ilo, INTEGER const ihi, REAL *a, INTE
     }
     //
     INTEGER i = 0;
-    REAL aii = 0.0;
-    const REAL one = 1.0;
     for (i = ilo; i <= ihi - 1; i = i + 1) {
         //
-        //        Compute elementary reflector H(i) to annihilate A(i+2:ihi,i)
+        // Compute elementary reflector H(i) to annihilate A(i+2:ihi,i)
         //
         Rlarfg(ihi - i, a[((i + 1) - 1) + (i - 1) * lda], &a[(min(i + 2, n) - 1) + (i - 1) * lda], 1, tau[i - 1]);
-        aii = a[((i + 1) - 1) + (i - 1) * lda];
-        a[((i + 1) - 1) + (i - 1) * lda] = one;
         //
-        //        Apply H(i) to A(1:ihi,i+1:ihi) from the right
+        // Apply H(i) to A(1:ihi,i+1:ihi) from the right
         //
-        Rlarf("Right", ihi, ihi - i, &a[((i + 1) - 1) + (i - 1) * lda], 1, tau[i - 1], &a[((i + 1) - 1) * lda], lda, work);
+        Rlarf1f("Right", ihi, ihi - i, &a[((i + 1) - 1) + (i - 1) * lda], 1, tau[i - 1], &a[((i + 1) - 1) * lda], lda, work);
         //
-        //        Apply H(i) to A(i+1:ihi,i+1:n) from the left
+        // Apply H(i) to A(i+1:ihi,i+1:n) from the left
         //
-        Rlarf("Left", ihi - i, n - i, &a[((i + 1) - 1) + (i - 1) * lda], 1, tau[i - 1], &a[((i + 1) - 1) + ((i + 1) - 1) * lda], lda, work);
+        Rlarf1f("Left", ihi - i, n - i, &a[((i + 1) - 1) + (i - 1) * lda], 1, tau[i - 1], &a[((i + 1) - 1) + ((i + 1) - 1) * lda], lda, work);
         //
-        a[((i + 1) - 1) + (i - 1) * lda] = aii;
     }
     //
-    //     End of Rgehd2
+    // End of Rgehd2
     //
 }

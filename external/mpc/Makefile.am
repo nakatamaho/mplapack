@@ -1,4 +1,5 @@
-MPCVERSION=1.2.1
+MPCVERSION=1.4.1
+MPC_DISTFILE=mpc/download/mpc-$(MPCVERSION).tar.xz
 MAKEFLAGS =
 
 #GMPINCLUDEDIR=$(abs_builddir)/../i/GMP/include/
@@ -20,10 +21,29 @@ CHECK_STAMP=.mpc_check_done
 
 all: extract config build check install_internal
 
+.PHONY: verify-distfile
+verify-distfile:
+	@distfile="$(MPC_DISTFILE)"; \
+	cd "$(abs_srcdir)/.." && \
+	entry=`awk -v f="$$distfile" '$$2 == f { print $$0 }' distfiles.sha256`; \
+	if test -z "$$entry"; then \
+		echo "error: no SHA256 checksum recorded for $$distfile" >&2; \
+		exit 1; \
+	fi; \
+	if command -v sha256sum >/dev/null 2>&1; then \
+		printf '%s\n' "$$entry" | sha256sum -c -; \
+	elif command -v shasum >/dev/null 2>&1; then \
+		printf '%s\n' "$$entry" | shasum -a 256 -c -; \
+	else \
+		echo "error: no SHA256 checksum tool found (sha256sum or shasum)" >&2; \
+		exit 1; \
+	fi
+
 work/$(EXTRACT_STAMP):
+	@$(MAKE) verify-distfile MPCVERSION="$(MPCVERSION)" MPC_DISTFILE="$(MPC_DISTFILE)"
 	rm -rf work ; mkdir -p work/internal  ; mkdir -p work/install
-	cd $(abs_builddir)/work/internal; tar xvfz ../../download/mpc-$(MPCVERSION).tar.gz
-	cd $(abs_builddir)/work/install; tar xvfz ../../download/mpc-$(MPCVERSION).tar.gz
+	cd $(abs_builddir)/work/internal; tar xvfJ $(abs_srcdir)/download/mpc-$(MPCVERSION).tar.xz
+	cd $(abs_builddir)/work/install; tar xvfJ $(abs_srcdir)/download/mpc-$(MPCVERSION).tar.xz
 	touch $(abs_builddir)/work/$(EXTRACT_STAMP)
 
 work/$(PATCH_STAMP): work/$(EXTRACT_STAMP)
@@ -40,22 +60,22 @@ endif
 	touch $(abs_builddir)/work/$(CONFIGURE_STAMP)
 
 work/$(BUILD_STAMP): work/$(CONFIGURE_STAMP)
-	cd $(abs_builddir)/work/internal/mpc-$(MPCVERSION) ; ${MAKE}
-	cd $(abs_builddir)/work/install/mpc-$(MPCVERSION) ; ${MAKE}
+	+cd $(abs_builddir)/work/internal/mpc-$(MPCVERSION) ; ${MAKE}
+	+cd $(abs_builddir)/work/install/mpc-$(MPCVERSION) ; ${MAKE}
 	touch $(abs_builddir)/work/$(BUILD_STAMP)
 
 work/$(CHECK_STAMP): work/$(BUILD_STAMP)
 if IS_MINGW
-	cd $(abs_builddir)/work/internal/mpc-$(MPCVERSION) ; ${MAKE} check LOG_COMPILER=wine64
-	cd $(abs_builddir)/work/install/mpc-$(MPCVERSION)  ; ${MAKE} check LOG_COMPILER=wine64
+	+cd $(abs_builddir)/work/internal/mpc-$(MPCVERSION) ; ${MAKE} check LOG_COMPILER=wine
+	+cd $(abs_builddir)/work/install/mpc-$(MPCVERSION)  ; ${MAKE} check LOG_COMPILER=wine
 else
-	cd $(abs_builddir)/work/internal/mpc-$(MPCVERSION) ; ${MAKE} check
-	cd $(abs_builddir)/work/install/mpc-$(MPCVERSION) ; ${MAKE} check
+	+cd $(abs_builddir)/work/internal/mpc-$(MPCVERSION) ; ${MAKE} check
+	+cd $(abs_builddir)/work/install/mpc-$(MPCVERSION) ; ${MAKE} check
 endif
 	touch $(abs_builddir)/work/$(CHECK_STAMP)
 
 work/$(INSTALL_INTERNAL_STAMP): work/$(CHECK_STAMP)
-	cd $(abs_builddir)/work/internal/mpc-$(MPCVERSION) ; ${MAKE} install
+	+cd $(abs_builddir)/work/internal/mpc-$(MPCVERSION) ; ${MAKE} install
 	touch $(abs_builddir)/work/$(INSTALL_INTERNAL_STAMP)
 
 work/$(INSTALL_STAMP): work/$(CHECK_STAMP)
@@ -75,7 +95,7 @@ if !SYSTEM_MPFR
 	install_name_tool -change $$ORG $$FIX $(abs_builddir)/work/install/mpc-$(MPCVERSION)/src/.libs/libmpc.dylib
 endif
 endif
-	cd $(abs_builddir)/work/install/mpc-$(MPCVERSION) ; ${MAKE} install
+	+cd $(abs_builddir)/work/install/mpc-$(MPCVERSION) ; ${MAKE} install
 	touch $(abs_builddir)/work/$(INSTALL_STAMP)
 
 extract: work/$(EXTRACT_STAMP)
@@ -92,10 +112,13 @@ install_internal: work/$(INSTALL_INTERNAL_STAMP)
 
 install: work/$(INSTALL_STAMP)
 
+uninstall:
+	-+cd $(abs_builddir)/work/install/mpc-$(MPCVERSION) ; ${MAKE} uninstall
+
 distdir:
 
-clean:
+clean-local:
 	rm -rf work
 
-distclean:
+distclean-local:
 	rm -rf work

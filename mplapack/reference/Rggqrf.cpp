@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,40 +26,26 @@
  *
  */
 
+// Derived from LAPACK routine DGGQRF.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rggqrf(INTEGER const n, INTEGER const m, INTEGER const p, REAL *a, INTEGER const lda, REAL *taua, REAL *b, INTEGER const ldb, REAL *taub, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters
+    // Test the input parameters
     //
     info = 0;
     INTEGER nb1 = iMlaenv(1, "Rgeqrf", " ", n, m, -1, -1);
     INTEGER nb2 = iMlaenv(1, "Rgerqf", " ", n, p, -1, -1);
     INTEGER nb3 = iMlaenv(1, "Rormqr", " ", n, m, p, -1);
-    INTEGER nb = max({nb1, nb2, nb3});
-    INTEGER lwkopt = max({n, m, p}) * nb;
+    INTEGER nb = max(nb1, nb2, nb3);
+    INTEGER lwkopt = max((INTEGER)1, max(n, m, p) * nb);
     work[1 - 1] = lwkopt;
     bool lquery = (lwork == -1);
     if (n < 0) {
@@ -72,7 +58,7 @@ void Rggqrf(INTEGER const n, INTEGER const m, INTEGER const p, REAL *a, INTEGER 
         info = -5;
     } else if (ldb < max((INTEGER)1, n)) {
         info = -8;
-    } else if (lwork < max({(INTEGER)1, n, m, p}) && !lquery) {
+    } else if (lwork < max((INTEGER)1, n, m, p) && !lquery) {
         info = -11;
     }
     if (info != 0) {
@@ -82,21 +68,22 @@ void Rggqrf(INTEGER const n, INTEGER const m, INTEGER const p, REAL *a, INTEGER 
         return;
     }
     //
-    //     QR factorization of N-by-M matrix A: A = Q*R
+    // QR factorization of N-by-M matrix A: A = Q*R
     //
     Rgeqrf(n, m, a, lda, taua, work, lwork, info);
     INTEGER lopt = castINTEGER(work[1 - 1]);
     //
-    //     Update B := Q**T*B.
+    // Update B := Q**T*B.
     //
     Rormqr("Left", "Transpose", n, p, min(n, m), a, lda, taua, b, ldb, work, lwork, info);
     lopt = max(lopt, castINTEGER(work[1 - 1]));
     //
-    //     RQ factorization of N-by-P matrix B: B = T*Z.
+    // RQ factorization of N-by-P matrix B: B = T*Z.
     //
     Rgerqf(n, p, b, ldb, taub, work, lwork, info);
+    //
     work[1 - 1] = max(lopt, castINTEGER(work[1 - 1]));
     //
-    //     End of Rggqrf
+    // End of Rggqrf
     //
 }

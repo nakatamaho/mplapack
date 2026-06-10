@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DTGSY2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -58,7 +65,7 @@ void Rtgsy2(const char *trans, INTEGER const ijob, INTEGER const m, INTEGER cons
     INTEGER ii = 0;
     INTEGER jj = 0;
     //
-    //     Decode and test input parameters
+    // Decode and test input parameters
     //
     info = 0;
     ierr = 0;
@@ -94,7 +101,7 @@ void Rtgsy2(const char *trans, INTEGER const ijob, INTEGER const m, INTEGER cons
         return;
     }
     //
-    //     Determine block structure of A
+    // Determine block structure of A
     //
     pq = 0;
     p = 0;
@@ -117,7 +124,7 @@ statement_10:
 statement_20:
     iwork[(p + 1) - 1] = m + 1;
     //
-    //     Determine block structure of B
+    // Determine block structure of B
     //
     q = p + 1;
     j = 1;
@@ -142,10 +149,10 @@ statement_40:
     //
     if (notran) {
         //
-        //        Solve (I, J) - subsystem
-        //           A(I, I) * R(I, J) - L(I, J) * B(J, J) = C(I, J)
-        //           D(I, I) * R(I, J) - L(I, J) * E(J, J) = F(I, J)
-        //        for I = P, P - 1, ..., 1; J = 1, 2, ..., Q
+        // Solve (I, J) - subsystem
+        // A(I, I) * R(I, J) - L(I, J) * B(J, J) = C(I, J)
+        // D(I, I) * R(I, J) - L(I, J) * E(J, J) = F(I, J)
+        // for I = P, P - 1, ..., 1; J = 1, 2, ..., Q
         //
         scale = one;
         scaloc = one;
@@ -164,19 +171,19 @@ statement_40:
                 //
                 if ((mb == 1) && (nb == 1)) {
                     //
-                    //                 Build a 2-by-2 system Z * x = RHS
+                    // Build a 2-by-2 system Z * x = RHS
                     //
-                    z[(1 - 1)] = a[(is - 1) + (is - 1) * lda];
+                    z[0] = a[(is - 1) + (is - 1) * lda];
                     z[(2 - 1)] = d[(is - 1) + (is - 1) * ldd];
                     z[(2 - 1) * ldz] = -b[(js - 1) + (js - 1) * ldb];
                     z[(2 - 1) + (2 - 1) * ldz] = -e[(js - 1) + (js - 1) * lde];
                     //
-                    //                 Set up right hand side(s)
+                    // Set up right hand side(s)
                     //
                     rhs[1 - 1] = c[(is - 1) + (js - 1) * ldc];
                     rhs[2 - 1] = f[(is - 1) + (js - 1) * ldf];
                     //
-                    //                 Solve Z * x = RHS
+                    // Solve Z * x = RHS
                     //
                     Rgetc2(zdim, z, ldz, ipiv, jpiv, ierr);
                     if (ierr > 0) {
@@ -196,13 +203,13 @@ statement_40:
                         Rlatdf(ijob, zdim, z, ldz, rhs, rdsum, rdscal, ipiv, jpiv);
                     }
                     //
-                    //                 Unpack solution vector(s)
+                    // Unpack solution vector(s)
                     //
                     c[(is - 1) + (js - 1) * ldc] = rhs[1 - 1];
                     f[(is - 1) + (js - 1) * ldf] = rhs[2 - 1];
                     //
-                    //                 Substitute R(I, J) and L(I, J) into remaining
-                    //                 equation.
+                    // Substitute R(I, J) and L(I, J) into remaining
+                    // equation.
                     //
                     if (i > 1) {
                         alpha = -rhs[1 - 1];
@@ -216,9 +223,9 @@ statement_40:
                     //
                 } else if ((mb == 1) && (nb == 2)) {
                     //
-                    //                 Build a 4-by-4 system Z * x = RHS
+                    // Build a 4-by-4 system Z * x = RHS
                     //
-                    z[(1 - 1)] = a[(is - 1) + (is - 1) * lda];
+                    z[0] = a[(is - 1) + (is - 1) * lda];
                     z[(2 - 1)] = zero;
                     z[(3 - 1)] = d[(is - 1) + (is - 1) * ldd];
                     z[(4 - 1)] = zero;
@@ -238,14 +245,14 @@ statement_40:
                     z[(3 - 1) + (4 - 1) * ldz] = zero;
                     z[(4 - 1) + (4 - 1) * ldz] = -e[(jsp1 - 1) + (jsp1 - 1) * lde];
                     //
-                    //                 Set up right hand side(s)
+                    // Set up right hand side(s)
                     //
                     rhs[1 - 1] = c[(is - 1) + (js - 1) * ldc];
                     rhs[2 - 1] = c[(is - 1) + (jsp1 - 1) * ldc];
                     rhs[3 - 1] = f[(is - 1) + (js - 1) * ldf];
                     rhs[4 - 1] = f[(is - 1) + (jsp1 - 1) * ldf];
                     //
-                    //                 Solve Z * x = RHS
+                    // Solve Z * x = RHS
                     //
                     Rgetc2(zdim, z, ldz, ipiv, jpiv, ierr);
                     if (ierr > 0) {
@@ -265,15 +272,15 @@ statement_40:
                         Rlatdf(ijob, zdim, z, ldz, rhs, rdsum, rdscal, ipiv, jpiv);
                     }
                     //
-                    //                 Unpack solution vector(s)
+                    // Unpack solution vector(s)
                     //
                     c[(is - 1) + (js - 1) * ldc] = rhs[1 - 1];
                     c[(is - 1) + (jsp1 - 1) * ldc] = rhs[2 - 1];
                     f[(is - 1) + (js - 1) * ldf] = rhs[3 - 1];
                     f[(is - 1) + (jsp1 - 1) * ldf] = rhs[4 - 1];
                     //
-                    //                 Substitute R(I, J) and L(I, J) into remaining
-                    //                 equation.
+                    // Substitute R(I, J) and L(I, J) into remaining
+                    // equation.
                     //
                     if (i > 1) {
                         Rger(is - 1, nb, -one, &a[(is - 1) * lda], 1, &rhs[1 - 1], 1, &c[(js - 1) * ldc], ldc);
@@ -288,9 +295,9 @@ statement_40:
                     //
                 } else if ((mb == 2) && (nb == 1)) {
                     //
-                    //                 Build a 4-by-4 system Z * x = RHS
+                    // Build a 4-by-4 system Z * x = RHS
                     //
-                    z[(1 - 1)] = a[(is - 1) + (is - 1) * lda];
+                    z[0] = a[(is - 1) + (is - 1) * lda];
                     z[(2 - 1)] = a[(isp1 - 1) + (is - 1) * lda];
                     z[(3 - 1)] = d[(is - 1) + (is - 1) * ldd];
                     z[(4 - 1)] = zero;
@@ -310,14 +317,14 @@ statement_40:
                     z[(3 - 1) + (4 - 1) * ldz] = zero;
                     z[(4 - 1) + (4 - 1) * ldz] = -e[(js - 1) + (js - 1) * lde];
                     //
-                    //                 Set up right hand side(s)
+                    // Set up right hand side(s)
                     //
                     rhs[1 - 1] = c[(is - 1) + (js - 1) * ldc];
                     rhs[2 - 1] = c[(isp1 - 1) + (js - 1) * ldc];
                     rhs[3 - 1] = f[(is - 1) + (js - 1) * ldf];
                     rhs[4 - 1] = f[(isp1 - 1) + (js - 1) * ldf];
                     //
-                    //                 Solve Z * x = RHS
+                    // Solve Z * x = RHS
                     //
                     Rgetc2(zdim, z, ldz, ipiv, jpiv, ierr);
                     if (ierr > 0) {
@@ -336,15 +343,15 @@ statement_40:
                         Rlatdf(ijob, zdim, z, ldz, rhs, rdsum, rdscal, ipiv, jpiv);
                     }
                     //
-                    //                 Unpack solution vector(s)
+                    // Unpack solution vector(s)
                     //
                     c[(is - 1) + (js - 1) * ldc] = rhs[1 - 1];
                     c[(isp1 - 1) + (js - 1) * ldc] = rhs[2 - 1];
                     f[(is - 1) + (js - 1) * ldf] = rhs[3 - 1];
                     f[(isp1 - 1) + (js - 1) * ldf] = rhs[4 - 1];
                     //
-                    //                 Substitute R(I, J) and L(I, J) into remaining
-                    //                 equation.
+                    // Substitute R(I, J) and L(I, J) into remaining
+                    // equation.
                     //
                     if (i > 1) {
                         Rgemv("N", is - 1, mb, -one, &a[(is - 1) * lda], lda, &rhs[1 - 1], 1, one, &c[(js - 1) * ldc], 1);
@@ -357,11 +364,11 @@ statement_40:
                     //
                 } else if ((mb == 2) && (nb == 2)) {
                     //
-                    //                 Build an 8-by-8 system Z * x = RHS
+                    // Build an 8-by-8 system Z * x = RHS
                     //
                     Rlaset("F", ldz, ldz, zero, zero, z, ldz);
                     //
-                    z[(1 - 1)] = a[(is - 1) + (is - 1) * lda];
+                    z[0] = a[(is - 1) + (is - 1) * lda];
                     z[(2 - 1)] = a[(isp1 - 1) + (is - 1) * lda];
                     z[(5 - 1)] = d[(is - 1) + (is - 1) * ldd];
                     //
@@ -397,7 +404,7 @@ statement_40:
                     z[(4 - 1) + (8 - 1) * ldz] = -b[(jsp1 - 1) + (jsp1 - 1) * ldb];
                     z[(8 - 1) + (8 - 1) * ldz] = -e[(jsp1 - 1) + (jsp1 - 1) * lde];
                     //
-                    //                 Set up right hand side(s)
+                    // Set up right hand side(s)
                     //
                     k = 1;
                     ii = mb * nb + 1;
@@ -408,7 +415,7 @@ statement_40:
                         ii += mb;
                     }
                     //
-                    //                 Solve Z * x = RHS
+                    // Solve Z * x = RHS
                     //
                     Rgetc2(zdim, z, ldz, ipiv, jpiv, ierr);
                     if (ierr > 0) {
@@ -427,7 +434,7 @@ statement_40:
                         Rlatdf(ijob, zdim, z, ldz, rhs, rdsum, rdscal, ipiv, jpiv);
                     }
                     //
-                    //                 Unpack solution vector(s)
+                    // Unpack solution vector(s)
                     //
                     k = 1;
                     ii = mb * nb + 1;
@@ -438,8 +445,8 @@ statement_40:
                         ii += mb;
                     }
                     //
-                    //                 Substitute R(I, J) and L(I, J) into remaining
-                    //                 equation.
+                    // Substitute R(I, J) and L(I, J) into remaining
+                    // equation.
                     //
                     if (i > 1) {
                         Rgemm("N", "N", is - 1, nb, mb, -one, &a[(is - 1) * lda], lda, &rhs[1 - 1], mb, one, &c[(js - 1) * ldc], ldc);
@@ -457,10 +464,10 @@ statement_40:
         }
     } else {
         //
-        //        Solve (I, J) - subsystem
-        //             A(I, I)**T * R(I, J) + D(I, I)**T * L(J, J)  =  C(I, J)
-        //             R(I, I)  * B(J, J) + L(I, J)  * E(J, J)  = -F(I, J)
-        //        for I = 1, 2, ..., P, J = Q, Q - 1, ..., 1
+        // Solve (I, J) - subsystem
+        // A(I, I)**T * R(I, J) + D(I, I)**T * L(J, J)  =  C(I, J)
+        // R(I, I)  * B(J, J) + L(I, J)  * E(J, J)  = -F(I, J)
+        // for I = 1, 2, ..., P, J = Q, Q - 1, ..., 1
         //
         scale = one;
         scaloc = one;
@@ -479,19 +486,19 @@ statement_40:
                 zdim = mb * nb * 2;
                 if ((mb == 1) && (nb == 1)) {
                     //
-                    //                 Build a 2-by-2 system Z**T * x = RHS
+                    // Build a 2-by-2 system Z**T * x = RHS
                     //
-                    z[(1 - 1)] = a[(is - 1) + (is - 1) * lda];
+                    z[0] = a[(is - 1) + (is - 1) * lda];
                     z[(2 - 1)] = -b[(js - 1) + (js - 1) * ldb];
                     z[(2 - 1) * ldz] = d[(is - 1) + (is - 1) * ldd];
                     z[(2 - 1) + (2 - 1) * ldz] = -e[(js - 1) + (js - 1) * lde];
                     //
-                    //                 Set up right hand side(s)
+                    // Set up right hand side(s)
                     //
                     rhs[1 - 1] = c[(is - 1) + (js - 1) * ldc];
                     rhs[2 - 1] = f[(is - 1) + (js - 1) * ldf];
                     //
-                    //                 Solve Z**T * x = RHS
+                    // Solve Z**T * x = RHS
                     //
                     Rgetc2(zdim, z, ldz, ipiv, jpiv, ierr);
                     if (ierr > 0) {
@@ -507,13 +514,13 @@ statement_40:
                         scale = scale * scaloc;
                     }
                     //
-                    //                 Unpack solution vector(s)
+                    // Unpack solution vector(s)
                     //
                     c[(is - 1) + (js - 1) * ldc] = rhs[1 - 1];
                     f[(is - 1) + (js - 1) * ldf] = rhs[2 - 1];
                     //
-                    //                 Substitute R(I, J) and L(I, J) into remaining
-                    //                 equation.
+                    // Substitute R(I, J) and L(I, J) into remaining
+                    // equation.
                     //
                     if (j > p + 2) {
                         alpha = rhs[1 - 1];
@@ -530,9 +537,9 @@ statement_40:
                     //
                 } else if ((mb == 1) && (nb == 2)) {
                     //
-                    //                 Build a 4-by-4 system Z**T * x = RHS
+                    // Build a 4-by-4 system Z**T * x = RHS
                     //
-                    z[(1 - 1)] = a[(is - 1) + (is - 1) * lda];
+                    z[0] = a[(is - 1) + (is - 1) * lda];
                     z[(2 - 1)] = zero;
                     z[(3 - 1)] = -b[(js - 1) + (js - 1) * ldb];
                     z[(4 - 1)] = -b[(jsp1 - 1) + (js - 1) * ldb];
@@ -552,14 +559,14 @@ statement_40:
                     z[(3 - 1) + (4 - 1) * ldz] = -e[(js - 1) + (jsp1 - 1) * lde];
                     z[(4 - 1) + (4 - 1) * ldz] = -e[(jsp1 - 1) + (jsp1 - 1) * lde];
                     //
-                    //                 Set up right hand side(s)
+                    // Set up right hand side(s)
                     //
                     rhs[1 - 1] = c[(is - 1) + (js - 1) * ldc];
                     rhs[2 - 1] = c[(is - 1) + (jsp1 - 1) * ldc];
                     rhs[3 - 1] = f[(is - 1) + (js - 1) * ldf];
                     rhs[4 - 1] = f[(is - 1) + (jsp1 - 1) * ldf];
                     //
-                    //                 Solve Z**T * x = RHS
+                    // Solve Z**T * x = RHS
                     //
                     Rgetc2(zdim, z, ldz, ipiv, jpiv, ierr);
                     if (ierr > 0) {
@@ -574,15 +581,15 @@ statement_40:
                         scale = scale * scaloc;
                     }
                     //
-                    //                 Unpack solution vector(s)
+                    // Unpack solution vector(s)
                     //
                     c[(is - 1) + (js - 1) * ldc] = rhs[1 - 1];
                     c[(is - 1) + (jsp1 - 1) * ldc] = rhs[2 - 1];
                     f[(is - 1) + (js - 1) * ldf] = rhs[3 - 1];
                     f[(is - 1) + (jsp1 - 1) * ldf] = rhs[4 - 1];
                     //
-                    //                 Substitute R(I, J) and L(I, J) into remaining
-                    //                 equation.
+                    // Substitute R(I, J) and L(I, J) into remaining
+                    // equation.
                     //
                     if (j > p + 2) {
                         Raxpy(js - 1, rhs[1 - 1], &b[(js - 1) * ldb], 1, &f[(is - 1)], ldf);
@@ -597,9 +604,9 @@ statement_40:
                     //
                 } else if ((mb == 2) && (nb == 1)) {
                     //
-                    //                 Build a 4-by-4 system Z**T * x = RHS
+                    // Build a 4-by-4 system Z**T * x = RHS
                     //
-                    z[(1 - 1)] = a[(is - 1) + (is - 1) * lda];
+                    z[0] = a[(is - 1) + (is - 1) * lda];
                     z[(2 - 1)] = a[(is - 1) + (isp1 - 1) * lda];
                     z[(3 - 1)] = -b[(js - 1) + (js - 1) * ldb];
                     z[(4 - 1)] = zero;
@@ -619,14 +626,14 @@ statement_40:
                     z[(3 - 1) + (4 - 1) * ldz] = zero;
                     z[(4 - 1) + (4 - 1) * ldz] = -e[(js - 1) + (js - 1) * lde];
                     //
-                    //                 Set up right hand side(s)
+                    // Set up right hand side(s)
                     //
                     rhs[1 - 1] = c[(is - 1) + (js - 1) * ldc];
                     rhs[2 - 1] = c[(isp1 - 1) + (js - 1) * ldc];
                     rhs[3 - 1] = f[(is - 1) + (js - 1) * ldf];
                     rhs[4 - 1] = f[(isp1 - 1) + (js - 1) * ldf];
                     //
-                    //                 Solve Z**T * x = RHS
+                    // Solve Z**T * x = RHS
                     //
                     Rgetc2(zdim, z, ldz, ipiv, jpiv, ierr);
                     if (ierr > 0) {
@@ -642,15 +649,15 @@ statement_40:
                         scale = scale * scaloc;
                     }
                     //
-                    //                 Unpack solution vector(s)
+                    // Unpack solution vector(s)
                     //
                     c[(is - 1) + (js - 1) * ldc] = rhs[1 - 1];
                     c[(isp1 - 1) + (js - 1) * ldc] = rhs[2 - 1];
                     f[(is - 1) + (js - 1) * ldf] = rhs[3 - 1];
                     f[(isp1 - 1) + (js - 1) * ldf] = rhs[4 - 1];
                     //
-                    //                 Substitute R(I, J) and L(I, J) into remaining
-                    //                 equation.
+                    // Substitute R(I, J) and L(I, J) into remaining
+                    // equation.
                     //
                     if (j > p + 2) {
                         Rger(mb, js - 1, one, &rhs[1 - 1], 1, &b[(js - 1) * ldb], 1, &f[(is - 1)], ldf);
@@ -663,11 +670,11 @@ statement_40:
                     //
                 } else if ((mb == 2) && (nb == 2)) {
                     //
-                    //                 Build an 8-by-8 system Z**T * x = RHS
+                    // Build an 8-by-8 system Z**T * x = RHS
                     //
                     Rlaset("F", ldz, ldz, zero, zero, z, ldz);
                     //
-                    z[(1 - 1)] = a[(is - 1) + (is - 1) * lda];
+                    z[0] = a[(is - 1) + (is - 1) * lda];
                     z[(2 - 1)] = a[(is - 1) + (isp1 - 1) * lda];
                     z[(5 - 1)] = -b[(js - 1) + (js - 1) * ldb];
                     z[(7 - 1)] = -b[(jsp1 - 1) + (js - 1) * ldb];
@@ -703,7 +710,7 @@ statement_40:
                     z[(6 - 1) + (8 - 1) * ldz] = -e[(js - 1) + (jsp1 - 1) * lde];
                     z[(8 - 1) + (8 - 1) * ldz] = -e[(jsp1 - 1) + (jsp1 - 1) * lde];
                     //
-                    //                 Set up right hand side(s)
+                    // Set up right hand side(s)
                     //
                     k = 1;
                     ii = mb * nb + 1;
@@ -714,7 +721,7 @@ statement_40:
                         ii += mb;
                     }
                     //
-                    //                 Solve Z**T * x = RHS
+                    // Solve Z**T * x = RHS
                     //
                     Rgetc2(zdim, z, ldz, ipiv, jpiv, ierr);
                     if (ierr > 0) {
@@ -730,7 +737,7 @@ statement_40:
                         scale = scale * scaloc;
                     }
                     //
-                    //                 Unpack solution vector(s)
+                    // Unpack solution vector(s)
                     //
                     k = 1;
                     ii = mb * nb + 1;
@@ -741,8 +748,8 @@ statement_40:
                         ii += mb;
                     }
                     //
-                    //                 Substitute R(I, J) and L(I, J) into remaining
-                    //                 equation.
+                    // Substitute R(I, J) and L(I, J) into remaining
+                    // equation.
                     //
                     if (j > p + 2) {
                         Rgemm("N", "T", mb, js - 1, nb, one, &c[(is - 1) + (js - 1) * ldc], ldc, &b[(js - 1) * ldb], ldb, one, &f[(is - 1)], ldf);
@@ -760,6 +767,6 @@ statement_40:
         //
     }
     //
-    //     End of Rtgsy2
+    // End of Rtgsy2
     //
 }

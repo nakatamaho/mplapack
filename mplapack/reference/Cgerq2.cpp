@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,33 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZGERQ2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Cgerq2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *tau, COMPLEX *work, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     if (m < 0) {
@@ -70,25 +56,20 @@ void Cgerq2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
     INTEGER k = min(m, n);
     //
     INTEGER i = 0;
-    COMPLEX alpha = 0.0;
-    const COMPLEX one = COMPLEX(1.0, 0.0);
     for (i = k; i >= 1; i = i - 1) {
         //
-        //        Generate elementary reflector H(i) to annihilate
-        //        A(m-k+i,1:n-k+i-1)
+        // Generate elementary reflector H(i) to annihilate
+        // A(m-k+i,1:n-k+i-1)
         //
         Clacgv(n - k + i, &a[((m - k + i) - 1)], lda);
-        alpha = a[((m - k + i) - 1) + ((n - k + i) - 1) * lda];
-        Clarfg(n - k + i, alpha, &a[((m - k + i) - 1)], lda, tau[i - 1]);
+        Clarfg(n - k + i, a[((m - k + i) - 1) + ((n - k + i) - 1) * lda], &a[((m - k + i) - 1)], lda, tau[i - 1]);
         //
-        //        Apply H(i) to A(1:m-k+i-1,1:n-k+i) from the right
+        // Apply H(i) to A(1:m-k+i-1,1:n-k+i) from the right
         //
-        a[((m - k + i) - 1) + ((n - k + i) - 1) * lda] = one;
-        Clarf("Right", m - k + i - 1, n - k + i, &a[((m - k + i) - 1)], lda, tau[i - 1], a, lda, work);
-        a[((m - k + i) - 1) + ((n - k + i) - 1) * lda] = alpha;
+        Clarf1l("Right", m - k + i - 1, n - k + i, &a[((m - k + i) - 1)], lda, tau[i - 1], a, lda, work);
         Clacgv(n - k + i - 1, &a[((m - k + i) - 1)], lda);
     }
     //
-    //     End of Cgerq2
+    // End of Cgerq2
     //
 }

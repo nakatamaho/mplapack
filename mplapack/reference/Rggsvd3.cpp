@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DGGSVD3.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rggsvd3(const char *jobu, const char *jobv, const char *jobq, INTEGER const m, INTEGER const n, INTEGER const p, INTEGER &k, INTEGER &l, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *alpha, REAL *beta, REAL *u, INTEGER const ldu, REAL *v, INTEGER const ldv, REAL *q, INTEGER const ldq, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER &info) {
     //
-    //     Decode and test the input parameters
+    // Decode and test the input parameters
     //
     bool wantu = Mlsame(jobu, "U");
     bool wantv = Mlsame(jobv, "V");
@@ -39,7 +46,7 @@ void Rggsvd3(const char *jobu, const char *jobv, const char *jobq, INTEGER const
     bool lquery = (lwork == -1);
     INTEGER lwkopt = 1;
     //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     if (!(wantu || Mlsame(jobu, "N"))) {
@@ -68,7 +75,7 @@ void Rggsvd3(const char *jobu, const char *jobv, const char *jobq, INTEGER const
         info = -24;
     }
     //
-    //     Compute workspace
+    // Compute workspace
     //
     REAL tola = 0.0;
     REAL tolb = 0.0;
@@ -88,30 +95,30 @@ void Rggsvd3(const char *jobu, const char *jobv, const char *jobq, INTEGER const
         return;
     }
     //
-    //     Compute the Frobenius norm of matrices A and B
+    // Compute the Frobenius norm of matrices A and B
     //
     REAL anorm = Rlange("1", m, n, a, lda, work);
     REAL bnorm = Rlange("1", p, n, b, ldb, work);
     //
-    //     Get machine precision and set up threshold for determining
-    //     the effective numerical rank of the matrices A and B.
+    // Get machine precision and set up threshold for determining
+    // the effective numerical rank of the matrices A and B.
     //
     REAL ulp = Rlamch("Precision");
     REAL unfl = Rlamch("Safe Minimum");
-    tola = castREAL(max(m, n)) * max(anorm, unfl) * ulp;
-    tolb = castREAL(max(p, n)) * max(bnorm, unfl) * ulp;
+    tola = max(m, n) * max(anorm, unfl) * ulp;
+    tolb = max(p, n) * max(bnorm, unfl) * ulp;
     //
-    //     Preprocessing
+    // Preprocessing
     //
     Rggsvp3(jobu, jobv, jobq, m, p, n, a, lda, b, ldb, tola, tolb, k, l, u, ldu, v, ldv, q, ldq, iwork, work, &work[(n + 1) - 1], lwork - n, info);
     //
-    //     Compute the GSVD of two upper "triangular" matrices
+    // Compute the GSVD of two upper "triangular" matrices
     //
     INTEGER ncycle = 0;
     Rtgsja(jobu, jobv, jobq, m, p, n, k, l, a, lda, b, ldb, tola, tolb, alpha, beta, u, ldu, v, ldv, q, ldq, work, ncycle, info);
     //
-    //     Sort the singular values and store the pivot indices in IWORK
-    //     Copy ALPHA to WORK, then sort ALPHA in WORK
+    // Sort the singular values and store the pivot indices in IWORK
+    // Copy ALPHA to WORK, then sort ALPHA in WORK
     //
     Rcopy(n, alpha, 1, work, 1);
     INTEGER ibnd = min(l, m - k);
@@ -122,7 +129,7 @@ void Rggsvd3(const char *jobu, const char *jobv, const char *jobq, INTEGER const
     REAL temp = 0.0;
     for (i = 1; i <= ibnd; i = i + 1) {
         //
-        //        Scan for largest ALPHA(K+I)
+        // Scan for largest ALPHA(K+I)
         //
         isub = i;
         smax = work[(k + i) - 1];
@@ -144,6 +151,6 @@ void Rggsvd3(const char *jobu, const char *jobv, const char *jobq, INTEGER const
     //
     work[1 - 1] = castREAL(lwkopt);
     //
-    //     End of Rggsvd3
+    // End of Rggsvd3
     //
 }

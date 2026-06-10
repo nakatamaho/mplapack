@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DLAS2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -62,9 +69,9 @@ void Rlas2(REAL const f, REAL const g, REAL const h, REAL &ssmin, REAL &ssmax) {
             au = fhmx / ga;
             if (au == zero) {
                 //
-                //              Avoid possible harmful underflow if exponent range
-                //              asymmetric (true SSMIN may not underflow even if
-                //              AU underflows)
+                // Avoid possible harmful underflow if exponent range
+                // asymmetric (true SSMIN may not underflow even if
+                // AU underflows)
                 //
                 ssmin = (fhmn * fhmx) / ga;
                 ssmax = ga;
@@ -79,6 +86,6 @@ void Rlas2(REAL const f, REAL const g, REAL const h, REAL &ssmin, REAL &ssmax) {
         }
     }
     //
-    //     End of Rlas2
+    // End of Rlas2
     //
 }

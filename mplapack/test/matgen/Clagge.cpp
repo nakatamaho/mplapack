@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,35 +26,21 @@
  *
  */
 
+// Derived from LAPACK routine ZLAGGE.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Clagge(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, REAL *d, COMPLEX *a, INTEGER const lda, INTEGER *iseed, COMPLEX *work, INTEGER &info) {
+#include <mplapack_matgen.h>
+
+void Clagge(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, REAL *d, COMPLEX *a, INTEGER const lda, INTEGER (&iseed)[4], COMPLEX *work, INTEGER &info) {
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     if (m < 0) {
@@ -73,7 +59,7 @@ void Clagge(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
         return;
     }
     //
-    //     initialize A to diagonal matrix
+    // initialize A to diagonal matrix
     //
     INTEGER j = 0;
     INTEGER i = 0;
@@ -87,13 +73,13 @@ void Clagge(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
         a[(i - 1) + (i - 1) * lda] = d[i - 1];
     }
     //
-    //     Quick exit if the user wants a diagonal matrix
+    // Quick exit if the user wants a diagonal matrix
     //
     if ((kl == 0) && (ku == 0)) {
         return;
     }
     //
-    //     pre- and post-multiply A by random unitary matrices
+    // pre- and post-multiply A by random unitary matrices
     //
     REAL wn = 0.0;
     COMPLEX wa = 0.0;
@@ -103,7 +89,7 @@ void Clagge(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
     for (i = min(m, n); i >= 1; i = i - 1) {
         if (i < m) {
             //
-            //           generate random reflection
+            // generate random reflection
             //
             Clarnv(3, iseed, m - i + 1, work);
             wn = RCnrm2(m - i + 1, work, 1);
@@ -117,14 +103,14 @@ void Clagge(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
                 tau = (wb / wa).real();
             }
             //
-            //           multiply A(i:m,i:n) by random reflection from the left
+            // multiply A(i:m,i:n) by random reflection from the left
             //
             Cgemv("Conjugate transpose", m - i + 1, n - i + 1, one, &a[(i - 1) + (i - 1) * lda], lda, work, 1, zero, &work[(m + 1) - 1], 1);
             Cgerc(m - i + 1, n - i + 1, -tau, work, 1, &work[(m + 1) - 1], 1, &a[(i - 1) + (i - 1) * lda], lda);
         }
         if (i < n) {
             //
-            //           generate random reflection
+            // generate random reflection
             //
             Clarnv(3, iseed, n - i + 1, work);
             wn = RCnrm2(n - i + 1, work, 1);
@@ -138,24 +124,24 @@ void Clagge(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
                 tau = (wb / wa).real();
             }
             //
-            //           multiply A(i:m,i:n) by random reflection from the right
+            // multiply A(i:m,i:n) by random reflection from the right
             //
             Cgemv("No transpose", m - i + 1, n - i + 1, one, &a[(i - 1) + (i - 1) * lda], lda, work, 1, zero, &work[(n + 1) - 1], 1);
             Cgerc(m - i + 1, n - i + 1, -tau, &work[(n + 1) - 1], 1, work, 1, &a[(i - 1) + (i - 1) * lda], lda);
         }
     }
     //
-    //     Reduce number of subdiagonals to KL and number of superdiagonals
-    //     to KU
+    // Reduce number of subdiagonals to KL and number of superdiagonals
+    // to KU
     //
     for (i = 1; i <= max(m - 1 - kl, n - 1 - ku); i = i + 1) {
         if (kl <= ku) {
             //
-            //           annihilate subdiagonal elements first (necessary if KL = 0)
+            // annihilate subdiagonal elements first (necessary if KL = 0)
             //
             if (i <= min(m - 1 - kl, n)) {
                 //
-                //              generate reflection to annihilate A(kl+i+1:m,i)
+                // generate reflection to annihilate A(kl+i+1:m,i)
                 //
                 wn = RCnrm2(m - kl - i + 1, &a[((kl + i) - 1) + (i - 1) * lda], 1);
                 wa = (wn / abs(a[((kl + i) - 1) + (i - 1) * lda])) * a[((kl + i) - 1) + (i - 1) * lda];
@@ -168,7 +154,7 @@ void Clagge(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
                     tau = (wb / wa).real();
                 }
                 //
-                //              apply reflection to A(kl+i:m,i+1:n) from the left
+                // apply reflection to A(kl+i:m,i+1:n) from the left
                 //
                 Cgemv("Conjugate transpose", m - kl - i + 1, n - i, one, &a[((kl + i) - 1) + ((i + 1) - 1) * lda], lda, &a[((kl + i) - 1) + (i - 1) * lda], 1, zero, work, 1);
                 Cgerc(m - kl - i + 1, n - i, -tau, &a[((kl + i) - 1) + (i - 1) * lda], 1, work, 1, &a[((kl + i) - 1) + ((i + 1) - 1) * lda], lda);
@@ -177,7 +163,7 @@ void Clagge(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
             //
             if (i <= min(n - 1 - ku, m)) {
                 //
-                //              generate reflection to annihilate A(i,ku+i+1:n)
+                // generate reflection to annihilate A(i,ku+i+1:n)
                 //
                 wn = RCnrm2(n - ku - i + 1, &a[(i - 1) + ((ku + i) - 1) * lda], lda);
                 wa = (wn / abs(a[(i - 1) + ((ku + i) - 1) * lda])) * a[(i - 1) + ((ku + i) - 1) * lda];
@@ -190,7 +176,7 @@ void Clagge(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
                     tau = (wb / wa).real();
                 }
                 //
-                //              apply reflection to A(i+1:m,ku+i:n) from the right
+                // apply reflection to A(i+1:m,ku+i:n) from the right
                 //
                 Clacgv(n - ku - i + 1, &a[(i - 1) + ((ku + i) - 1) * lda], lda);
                 Cgemv("No transpose", m - i, n - ku - i + 1, one, &a[((i + 1) - 1) + ((ku + i) - 1) * lda], lda, &a[(i - 1) + ((ku + i) - 1) * lda], lda, zero, work, 1);
@@ -199,12 +185,12 @@ void Clagge(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
             }
         } else {
             //
-            //           annihilate superdiagonal elements first (necessary if
-            //           KU = 0)
+            // annihilate superdiagonal elements first (necessary if
+            // KU = 0)
             //
             if (i <= min(n - 1 - ku, m)) {
                 //
-                //              generate reflection to annihilate A(i,ku+i+1:n)
+                // generate reflection to annihilate A(i,ku+i+1:n)
                 //
                 wn = RCnrm2(n - ku - i + 1, &a[(i - 1) + ((ku + i) - 1) * lda], lda);
                 wa = (wn / abs(a[(i - 1) + ((ku + i) - 1) * lda])) * a[(i - 1) + ((ku + i) - 1) * lda];
@@ -217,7 +203,7 @@ void Clagge(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
                     tau = (wb / wa).real();
                 }
                 //
-                //              apply reflection to A(i+1:m,ku+i:n) from the right
+                // apply reflection to A(i+1:m,ku+i:n) from the right
                 //
                 Clacgv(n - ku - i + 1, &a[(i - 1) + ((ku + i) - 1) * lda], lda);
                 Cgemv("No transpose", m - i, n - ku - i + 1, one, &a[((i + 1) - 1) + ((ku + i) - 1) * lda], lda, &a[(i - 1) + ((ku + i) - 1) * lda], lda, zero, work, 1);
@@ -227,7 +213,7 @@ void Clagge(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
             //
             if (i <= min(m - 1 - kl, n)) {
                 //
-                //              generate reflection to annihilate A(kl+i+1:m,i)
+                // generate reflection to annihilate A(kl+i+1:m,i)
                 //
                 wn = RCnrm2(m - kl - i + 1, &a[((kl + i) - 1) + (i - 1) * lda], 1);
                 wa = (wn / abs(a[((kl + i) - 1) + (i - 1) * lda])) * a[((kl + i) - 1) + (i - 1) * lda];
@@ -240,7 +226,7 @@ void Clagge(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
                     tau = (wb / wa).real();
                 }
                 //
-                //              apply reflection to A(kl+i:m,i+1:n) from the left
+                // apply reflection to A(kl+i:m,i+1:n) from the left
                 //
                 Cgemv("Conjugate transpose", m - kl - i + 1, n - i, one, &a[((kl + i) - 1) + ((i + 1) - 1) * lda], lda, &a[((kl + i) - 1) + (i - 1) * lda], 1, zero, work, 1);
                 Cgerc(m - kl - i + 1, n - i, -tau, &a[((kl + i) - 1) + (i - 1) * lda], 1, work, 1, &a[((kl + i) - 1) + ((i + 1) - 1) * lda], lda);
@@ -261,6 +247,6 @@ void Clagge(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
         }
     }
     //
-    //     End of Clagge
+    // End of Clagge
     //
 }

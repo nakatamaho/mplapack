@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ALASVM.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,36 +43,25 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-void Alasvm(const char *type, INTEGER const nout, INTEGER const nfail, INTEGER const nrun, INTEGER const nerrs) {
+void Alasvm(fem::str_cref type, INTEGER const nout, INTEGER const nfail, INTEGER const nrun, INTEGER const nerrs) {
     common cmn;
     common_write write(cmn);
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Executable Statements ..
+    static const char *format_9999 = "(1x,a3,' drivers: ',i6,' out of ',i6,"
+                                     "' tests failed to pass the threshold')";
+    static const char *format_9998 = "(/,1x,'All tests for ',a3,' drivers  passed the ','threshold ( ',i6,"
+                                     "' tests run)')";
+    static const char *format_9997 = "(14x,i6,' error messages recorded')";
     //
     if (nfail > 0) {
-        write(nout, "(1x,a3,' drivers: ',i6,' out of ',i6,"
-                    "' tests failed to pass the threshold')"),
-            type, nfail, nrun;
+        write(nout, format_9999), type, nfail, nrun;
     } else {
-        write(nout, "(/,1x,'All tests for ',a3,' drivers  passed the ','threshold ( ',i6,"
-                    "' tests run)')"),
-            type, nrun;
+        write(nout, format_9998), type, nrun;
     }
     if (nerrs > 0) {
-        write(nout, "(14x,i6,' error messages recorded')"), nerrs;
+        write(nout, format_9997), nerrs;
     }
     //
-    //     End of Alasvm
+    // End of Alasvm
     //
 }

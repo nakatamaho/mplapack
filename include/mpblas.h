@@ -60,7 +60,6 @@ typedef qd_complex COMPLEX;
 #define Mxerbla Mxerbla_qd
 #define castINTEGER castINTEGER_qd
 #define castREAL castREAL_qd
-#define nint __qd_nint
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_DD___
@@ -72,7 +71,6 @@ typedef dd_complex COMPLEX;
 #define Mxerbla Mxerbla_dd
 #define castINTEGER castINTEGER_dd
 #define castREAL castREAL_dd
-#define nint __dd_nint
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_DOUBLE___
@@ -86,32 +84,26 @@ typedef std::complex<double> COMPLEX;
 #define castREAL castREAL_double
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
-#include <mpblas__Float64x.h>
+#if defined ___MPLAPACK_BUILD_WITH_BINARY80___
+#include <mpblas_binary80.h>
 typedef mplapackint INTEGER;
-typedef _Float64x REAL;
-typedef std::complex<_Float64x> COMPLEX;
-#define Mlsame Mlsame__Float64x
-#define Mxerbla Mxerbla__Float64x
-#define castINTEGER castINTEGER__Float64x
-#define castREAL castREAL__Float64x
+typedef mplapack_binary80_t REAL;
+typedef std::complex<mplapack_binary80_t> COMPLEX;
+#define Mlsame Mlsame_binary80
+#define Mxerbla Mxerbla_binary80
+#define castINTEGER castINTEGER_binary80
+#define castREAL castREAL_binary80
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
-#include <mpblas__Float128.h>
+#if defined ___MPLAPACK_BUILD_WITH_BINARY128___
+#include <mpblas_binary128.h>
 typedef mplapackint INTEGER;
-typedef _Float128 REAL;
-typedef std::complex<_Float128> COMPLEX;
-#define Mlsame Mlsame__Float128
-#define Mxerbla Mxerbla__Float128
-#define castINTEGER castINTEGER__Float128
-#define castREAL castREAL__Float128
+typedef mplapack_binary128_t REAL;
+typedef std::complex<mplapack_binary128_t> COMPLEX;
+#define Mlsame Mlsame_binary128
+#define Mxerbla Mxerbla_binary128
+#define castINTEGER castINTEGER_binary128
+#define castREAL castREAL_binary128
 #endif
-
-#include <algorithm>
-using std::max;
-using std::min;
-
-inline INTEGER mod(INTEGER a, INTEGER b) { return a % b; }
 
 #endif

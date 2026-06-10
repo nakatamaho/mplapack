@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZDRGSX.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -35,44 +42,13 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
+
 #include <mplapack_common_mn.h>
 
-#include <mplapack_debug.h>
-
-#include <iostream>
-#include <sstream>
-#include <string>
-#include <vector>
-#include <regex>
-
-using namespace std;
-using std::regex;
-using std::regex_replace;
-
-inline REAL abs1(COMPLEX x) { return abs(x.real()) + abs(x.imag()); }
-
 void Cdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER const nin, INTEGER const nout, COMPLEX *a, INTEGER const lda, COMPLEX *b, COMPLEX *ai, COMPLEX *bi, COMPLEX *z, COMPLEX *q, COMPLEX *alpha, COMPLEX *beta, COMPLEX *c, INTEGER const ldc, REAL *s, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER *iwork, INTEGER const liwork, bool *bwork, INTEGER &info) {
-    INTEGER ldb = lda;
-    INTEGER ldai = lda;
-    INTEGER ldbi = lda;
-    INTEGER ldz = lda;
-    INTEGER ldq = lda;
     common cmn;
     common_read read(cmn);
     common_write write(cmn);
-    char buf0[1024];
-    char buf1[1024];
-    std::complex<double> ctmp;
-    double dtmp;
-    double dtmp1, dtmp2;
-    string str;
-    string _str;
-    string __str;
-    string ___str;
-    istringstream iss;
-    double dtmp_r;
-    double dtmp_i;
-    //
     COMPLEX x = 0.0;
     const REAL zero = 0.0;
     INTEGER minwrk = 0;
@@ -83,7 +59,7 @@ void Cdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
     REAL ulpinv = 0.0;
     REAL smlnum = 0.0;
     REAL bignum = 0.0;
-    const REAL ten = 1.0e+1;
+    const REAL ten = 10.0;
     REAL thrsh2 = 0.0;
     INTEGER ntestt = 0;
     INTEGER nerrs = 0;
@@ -93,7 +69,7 @@ void Cdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
     INTEGER qbb = 0;
     REAL weight = 0.0;
     const COMPLEX czero = COMPLEX(0.0, 0.0);
-    char sense;
+    fem::str<1> sense;
     INTEGER mm = 0;
     REAL pl[2];
     REAL difest[2];
@@ -110,6 +86,29 @@ void Cdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
     INTEGER i = 0;
     INTEGER nptknt = 0;
     REAL pltru = 0.0;
+    //
+    static const char *format_9999 = "(' Cdrgsx: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,')')";
+    //
+    static const char *format_9998 = "(' Cdrgsx: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', Input Example #',"
+                                     "i2,')')";
+    //
+    static const char *format_9997 = "(' Cdrgsx: S not in Schur form at eigenvalue ',i6,'.',/,9x,'N=',i6,"
+                                     "', JTYPE=',i6,')')";
+    //
+    static const char *format_9996 = "(/,1x,a3,' -- Complex Expert Generalized Schur form',' problem driver')";
+    //
+    static const char *format_9995 = "('Input Example')";
+    //
+    static const char *format_9994 = "(' Matrix types: ',/,"
+                                     "'  1:  A is a block diagonal matrix of Jordan blocks ',"
+                                     "'and B is the identity ',/,'      matrix, ',/,"
+                                     "'  2:  A and B are upper triangular matrices, ',/,"
+                                     "'  3:  A and B are as type 2, but each second diagonal ',"
+                                     "'block in A_11 and ',/,"
+                                     "'      each third diagonal block in A_22 are 2x2 blocks,',/,"
+                                     "'  4:  A and B are block diagonal matrices, ',/,"
+                                     "'  5:  (A,B) has potentially close or common ','eigenvalues.',/)";
+    //
     static const char *format_9993 = "(/,' Tests performed:  (S is Schur, T is triangular, ','Q and Z are ',a,"
                                      "',',/,19x,' a is alpha, b is beta, and ',a,' means ',a,'.)',/,"
                                      "'  1 = | A - Q S Z',a,' | / ( |A| n ulp )      2 = | B - Q T Z',a,"
@@ -123,11 +122,16 @@ void Cdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
                                      "'  9 = 1/ULP  if DIFEST <> 0 or DIFTRU > ULP*norm(A,B) ',"
                                      "'when reordering fails',/,' 10 = 1/ULP  if PLEST/PLTRU > THRESH or ',"
                                      "'PLTRU/PLEST > THRESH',/,'    ( Test 10 is only for input examples )',/)";
-    static const char *format_9996 = "(/,1x,a3,' -- Complex Expert Generalized Schur form',' problem driver')";
-    static const char *format_9997 = "(' Cdrgsx: S not in Schur form at eigenvalue ',i6,'.',/,9x,'N=',i6,"
-                                     "', JTYPE=',i6,')')";
+    static const char *format_9992 = "(' Matrix order=',i2,', type=',i2,', a=',d10.3,', order(A_11)=',i2,"
+                                     "', result ',i2,' is ',0p,f8.2)";
+    static const char *format_9991 = "(' Matrix order=',i2,', type=',i2,', a=',d10.3,', order(A_11)=',i2,"
+                                     "', result ',i2,' is ',0p,d10.3)";
+    static const char *format_9990 = "(' Input example #',i2,', matrix order=',i4,',',' result ',i2,' is',0p,"
+                                     "f8.2)";
+    static const char *format_9989 = "(' Input example #',i2,', matrix order=',i4,',',' result ',i2,' is',1p,"
+                                     "d10.3)";
     //
-    //     Check for errors
+    // Check for errors
     //
     info = 0;
     if (nsize < 0) {
@@ -146,26 +150,26 @@ void Cdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
         info = -21;
     }
     //
-    //     Compute workspace
-    //      (Note: Comments in the code beginning "Workspace:" describe the
-    //       minimal amount of workspace needed at that point in the code,
-    //       as well as the preferred amount for good performance.
-    //       NB refers to the optimal block size for the immediately
-    //       following subroutine, as returned by iMlaenv.)
+    // Compute workspace
+    // (Note: Comments in the code beginning "Workspace:" describe the
+    // minimal amount of workspace needed at that point in the code,
+    // as well as the preferred amount for good performance.
+    // NB refers to the optimal block size for the immediately
+    // following subroutine, as returned by iMlaenv.)
     //
     minwrk = 1;
     if (info == 0 && lwork >= 1) {
         minwrk = 3 * nsize * nsize / 2;
         //
-        //        workspace for cggesx
+        // workspace for cggesx
         //
         maxwrk = nsize * (1 + iMlaenv(1, "Cgeqrf", " ", nsize, 1, nsize, 0));
-        maxwrk = max({maxwrk, nsize * (1 + iMlaenv(1, "Cungqr", " ", nsize, 1, nsize, -1))});
+        maxwrk = max(maxwrk, nsize * (1 + iMlaenv(1, "Cungqr", " ", nsize, 1, nsize, -1)));
         //
-        //        workspace for Cgesvd
+        // workspace for zgesvd
         //
         bdspac = 3 * nsize * nsize / 2;
-        maxwrk = max({maxwrk, nsize * nsize * (1 + iMlaenv(1, "Cgebrd", " ", nsize * nsize / 2, nsize * nsize / 2, -1, -1))});
+        maxwrk = max(maxwrk, nsize * nsize * (1 + iMlaenv(1, "Cgebrd", " ", nsize * nsize / 2, nsize * nsize / 2, -1, -1)));
         maxwrk = max(maxwrk, bdspac);
         //
         maxwrk = max(maxwrk, minwrk);
@@ -182,7 +186,7 @@ void Cdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
         return;
     }
     //
-    //     Important constants
+    // Important constants
     //
     ulp = Rlamch("P");
     ulpinv = one / ulp;
@@ -192,16 +196,16 @@ void Cdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
     ntestt = 0;
     nerrs = 0;
     //
-    //     Go to the tests for read-in matrix pairs
+    // Go to the tests for read-in matrix pairs
     //
     ifunc = 0;
     if (nsize == 0) {
         goto statement_70;
     }
     //
-    //     Test the built-in matrix pairs.
-    //     Loop over different functions (IFUNC) of Cggesx, types (PRTYPE)
-    //     of test matrices, different size (M+N)
+    // Test the built-in matrix pairs.
+    // Loop over different functions (IFUNC) of Cggesx, types (PRTYPE)
+    // of test matrices, different size (M+N)
     //
     prtype = 0;
     qba = 3;
@@ -216,7 +220,7 @@ void Cdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
                     weight = one / weight;
                     mplusn = m + n;
                     //
-                    //                 Generate test matrices
+                    // Generate test matrices
                     //
                     fs = true;
                     k = 0;
@@ -224,44 +228,42 @@ void Cdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
                     Claset("Full", mplusn, mplusn, czero, czero, ai, lda);
                     Claset("Full", mplusn, mplusn, czero, czero, bi, lda);
                     //
-                    Clatm5(prtype, m, n, ai, lda, &ai[((m + 1) - 1) + ((m + 1) - 1) * ldai], lda, &ai[((m + 1) - 1) * ldai], lda, bi, lda, &bi[((m + 1) - 1) + ((m + 1) - 1) * ldbi], lda, &bi[((m + 1) - 1) * ldbi], lda, q, lda, z, lda, weight, qba, qbb);
+                    Clatm5(prtype, m, n, ai, lda, &ai[((m + 1) - 1) + ((m + 1) - 1) * lda], lda, &ai[((m + 1) - 1) * lda], lda, bi, lda, &bi[((m + 1) - 1) + ((m + 1) - 1) * lda], lda, &bi[((m + 1) - 1) * lda], lda, q, lda, z, lda, weight, qba, qbb);
                     //
-                    //                 Compute the Schur factorization and swapping the
-                    //                 m-by-m (1,1)-blocks with n-by-n (2,2)-blocks.
-                    //                 Swapping is accomplished via the function Clctsx
-                    //                 which is supplied below.
+                    // Compute the Schur factorization and swapping the
+                    // m-by-m (1,1)-blocks with n-by-n (2,2)-blocks.
+                    // Swapping is accomplished via the function Clctsx
+                    // which is supplied below.
                     //
                     if (ifunc == 0) {
-                        sense = 'N';
+                        sense = "N";
                     } else if (ifunc == 1) {
-                        sense = 'E';
+                        sense = "E";
                     } else if (ifunc == 2) {
-                        sense = 'V';
+                        sense = "V";
                     } else if (ifunc == 3) {
-                        sense = 'B';
+                        sense = "B";
                     }
                     //
                     Clacpy("Full", mplusn, mplusn, ai, lda, a, lda);
                     Clacpy("Full", mplusn, mplusn, bi, lda, b, lda);
                     //
-                    Cggesx("V", "V", "S", Clctsx, &sense, mplusn, ai, lda, bi, lda, mm, alpha, beta, q, lda, z, lda, pl, difest, work, lwork, rwork, iwork, liwork, bwork, linfo);
+                    Cggesx("V", "V", "S", Clctsx, sense.elems, mplusn, ai, lda, bi, lda, mm, alpha, beta, q, lda, z, lda, pl, difest, work, lwork, rwork, iwork, liwork, bwork, linfo);
                     //
                     if (linfo != 0 && linfo != mplusn + 2) {
                         result[1 - 1] = ulpinv;
-                        write(nout, "(' Cdrgsx: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,"
-                                    "', JTYPE=',i6,')')"),
-                            "Cggesx", linfo, mplusn, prtype;
+                        write(nout, format_9999), "Cggesx", linfo, mplusn, prtype;
                         info = linfo;
                         goto statement_30;
                     }
                     //
-                    //                 Compute the norm(A, B)
+                    // Compute the norm(A, B)
                     //
                     Clacpy("Full", mplusn, mplusn, ai, lda, work, mplusn);
                     Clacpy("Full", mplusn, mplusn, bi, lda, &work[(mplusn * mplusn + 1) - 1], mplusn);
                     abnrm = Clange("Fro", mplusn, 2 * mplusn, work, mplusn, rwork);
                     //
-                    //                 Do tests (1) to (4)
+                    // Do tests (1) to (4)
                     //
                     result[2 - 1] = zero;
                     Cget51(1, mplusn, a, lda, ai, lda, q, lda, z, lda, work, rwork, result[1 - 1]);
@@ -270,8 +272,8 @@ void Cdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
                     Cget51(3, mplusn, b, lda, bi, lda, z, lda, z, lda, work, rwork, result[4 - 1]);
                     ntest = 4;
                     //
-                    //                 Do tests (5) and (6): check Schur form of A and
-                    //                 compare eigenvalues with diagonals.
+                    // Do tests (5) and (6): check Schur form of A and
+                    // compare eigenvalues with diagonals.
                     //
                     temp1 = zero;
                     result[5 - 1] = zero;
@@ -279,15 +281,15 @@ void Cdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
                     //
                     for (j = 1; j <= mplusn; j = j + 1) {
                         ilabad = false;
-                        temp2 = (abs1(alpha[j - 1] - ai[(j - 1) + (j - 1) * ldai]) / max({smlnum, abs1(alpha[j - 1]), abs1(ai[(j - 1) + (j - 1) * ldai])}) + abs1(beta[j - 1] - bi[(j - 1) + (j - 1) * ldbi]) / max({smlnum, abs1(beta[j - 1]), abs1(bi[(j - 1) + (j - 1) * ldbi])})) / ulp;
+                        temp2 = (cabs1(alpha[j - 1] - ai[(j - 1) + (j - 1) * lda]) / max(smlnum, cabs1(alpha[j - 1]), cabs1(ai[(j - 1) + (j - 1) * lda])) + cabs1(beta[j - 1] - bi[(j - 1) + (j - 1) * lda]) / max(smlnum, cabs1(beta[j - 1]), cabs1(bi[(j - 1) + (j - 1) * lda]))) / ulp;
                         if (j < mplusn) {
-                            if (ai[((j + 1) - 1) + (j - 1) * ldai] != zero) {
+                            if (ai[((j + 1) - 1) + (j - 1) * lda] != zero) {
                                 ilabad = true;
                                 result[5 - 1] = ulpinv;
                             }
                         }
                         if (j > 1) {
-                            if (ai[(j - 1) + ((j - 1) - 1) * ldai] != zero) {
+                            if (ai[(j - 1) + ((j - 1) - 1) * lda] != zero) {
                                 ilabad = true;
                                 result[5 - 1] = ulpinv;
                             }
@@ -300,7 +302,7 @@ void Cdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
                     result[6 - 1] = temp1;
                     ntest += 2;
                     //
-                    //                 Test (7) (if sorting worked)
+                    // Test (7) (if sorting worked)
                     //
                     result[7 - 1] = zero;
                     if (linfo == mplusn + 3) {
@@ -310,17 +312,17 @@ void Cdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
                     }
                     ntest++;
                     //
-                    //                 Test (8): compare the estimated value DIF and its
-                    //                 value. first, compute the exact DIF.
+                    // Test (8): compare the estimated value DIF and its
+                    // value. first, compute the exact DIF.
                     //
                     result[8 - 1] = zero;
                     mn2 = mm * (mplusn - mm) * 2;
                     if (ifunc >= 2 && mn2 <= ncmax * ncmax) {
                         //
-                        //                    Note: for either following two cases, there are
-                        //                    almost same number of test cases fail the test.
+                        // Note: for either following two cases, there are
+                        // almost same number of test cases fail the test.
                         //
-                        Clakf2(mm, mplusn - mm, ai, lda, &ai[((mm + 1) - 1) + ((mm + 1) - 1) * ldai], bi, &bi[((mm + 1) - 1) + ((mm + 1) - 1) * ldbi], c, ldc);
+                        Clakf2(mm, mplusn - mm, ai, lda, &ai[((mm + 1) - 1) + ((mm + 1) - 1) * lda], bi, &bi[((mm + 1) - 1) + ((mm + 1) - 1) * lda], c, ldc);
                         //
                         Cgesvd("N", "N", mn2, mn2, c, ldc, s, work, 1, &work[2 - 1], 1, &work[3 - 1], lwork - 2, rwork, info);
                         diftru = s[mn2 - 1];
@@ -339,7 +341,7 @@ void Cdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
                         ntest++;
                     }
                     //
-                    //                 Test (9)
+                    // Test (9)
                     //
                     result[9 - 1] = zero;
                     if (linfo == (mplusn + 2)) {
@@ -357,31 +359,22 @@ void Cdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
                     //
                     ntestt += ntest;
                     //
-                    //                 Print out tests which fail.
+                    // Print out tests which fail.
                     //
                     for (j = 1; j <= 9; j = j + 1) {
                         if (result[j - 1] >= thresh) {
                             //
-                            //                       If this is the first test to fail,
-                            //                       print a header to the data file.
+                            // If this is the first test to fail,
+                            // print a header to the data file.
                             //
                             if (nerrs == 0) {
                                 write(nout, format_9996), "ZGX";
                                 //
-                                //                          Matrix types
+                                // Matrix types
                                 //
-                                write(nout, "(' Matrix types: ',/,"
-                                            "'  1:  A is a block diagonal matrix of Jordan blocks ',"
-                                            "'and B is the identity ',/,'      matrix, ',/,"
-                                            "'  2:  A and B are upper triangular matrices, ',/,"
-                                            "'  3:  A and B are as type 2, but each second diagonal ',"
-                                            "'block in A_11 and ',/,"
-                                            "'      each third diaongal block in A_22 are 2x2 blocks,',"
-                                            "/,'  4:  A and B are block diagonal matrices, ',/,"
-                                            "'  5:  (A,B) has potentially close or common ',"
-                                            "'eigenvalues.',/)");
+                                write(nout, format_9994);
                                 //
-                                //                          Tests performed
+                                // Tests performed
                                 //
                                 {
                                     write_loop wloop(cmn, nout, format_9993);
@@ -394,17 +387,9 @@ void Cdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
                             }
                             nerrs++;
                             if (result[j - 1] < 10000.0) {
-                                sprintnum_short(buf0, weight);
-                                sprintnum_short(buf1, result[j - 1]);
-                                write(nout, "(' Matrix order=',i2,', type=',i2,', a=',a,"
-                                            "', order(A_11)=',i2,', result ',i2,' is ',0p,a)"),
-                                    mplusn, prtype, buf0, m, j, buf1;
+                                write(nout, format_9992), mplusn, prtype, weight, m, j, result[j - 1];
                             } else {
-                                sprintnum_short(buf0, weight);
-                                sprintnum_short(buf1, result[j - 1]);
-                                write(nout, "(' Matrix order=',i2,', type=',i2,', a=',a,"
-                                            "', order(A_11)=',i2,', result ',i2,' is ',0p,a)"),
-                                    mplusn, prtype, buf0, m, j, buf1;
+                                write(nout, format_9991), mplusn, prtype, weight, m, j, result[j - 1];
                             }
                         }
                     }
@@ -419,239 +404,212 @@ void Cdrgsx(INTEGER const nsize, INTEGER const ncmax, REAL const thresh, INTEGER
 //
 statement_70:
     //
-    //     Read in data from file to check accuracy of condition estimation
-    //     Read input data until N=0
+    // Read in data from file to check accuracy of condition estimation
+    // Read input data until N=0
     //
     nptknt = 0;
-    //
-    while (1) {
-        getline(cin, str);
-        iss.clear();
-        iss.str(str);
-        iss >> mplusn;
-        if (mplusn == 0)
-            break;
-        getline(cin, str);
-        iss.clear();
-        iss.str(str);
-        iss >> n;
-        for (i = 1; i <= mplusn; i = i + 1) {
+//
+statement_80:
+    try {
+        read(nin, star), mplusn;
+    } catch (fem::read_end const &) {
+        goto statement_140;
+    }
+    if (mplusn == 0) {
+        goto statement_140;
+    }
+    try {
+        read(nin, star), n;
+    } catch (fem::read_end const &) {
+        goto statement_140;
+    }
+    for (i = 1; i <= mplusn; i = i + 1) {
+        {
+            read_loop rloop(cmn, nin, star);
             for (j = 1; j <= mplusn; j = j + 1) {
-                getline(cin, str);
-                ___str = regex_replace(str, regex(","), " ");
-                __str = regex_replace(___str, regex("\\)"), " ");
-                _str = regex_replace(__str, regex("\\("), " ");
-                str = regex_replace(_str, regex("D"), "e");
-                iss.clear();
-                iss.str(str);
-                iss >> dtmp_r;
-                iss >> dtmp_i;
-                ai[(i - 1) + (j - 1) * ldai] = COMPLEX(dtmp_r, dtmp_i);
+                rloop, ai[(i - 1) + (j - 1) * lda];
             }
-        }
-        //        printf("ai="); printmat(mplusn, mplusn, ai, ldai); printf("\n");
-        for (i = 1; i <= mplusn; i = i + 1) {
-            for (j = 1; j <= mplusn; j = j + 1) {
-                getline(cin, str);
-                ___str = regex_replace(str, regex(","), " ");
-                __str = regex_replace(___str, regex("\\)"), " ");
-                _str = regex_replace(__str, regex("\\("), " ");
-                str = regex_replace(_str, regex("D"), "e");
-                iss.clear();
-                iss.str(str);
-                iss >> dtmp_r;
-                iss >> dtmp_i;
-                bi[(i - 1) + (j - 1) * ldai] = COMPLEX(dtmp_r, dtmp_i);
-            }
-        }
-        //        printf("bi="); printmat(mplusn, mplusn, bi, ldbi); printf("\n");
-        getline(cin, str);
-        ___str = regex_replace(str, regex(","), " ");
-        __str = regex_replace(___str, regex("\\)"), " ");
-        _str = regex_replace(__str, regex("\\("), " ");
-        str = regex_replace(_str, regex("D"), "e");
-        iss.clear();
-        iss.str(str);
-        iss >> dtmp1;
-        iss >> dtmp2;
-        pltru = dtmp1;
-        diftru = dtmp2;
-        //        printf("pltru="); printnum(pltru); printf("\n");
-        //        printf("diftru="); printnum(diftru); printf("\n");
-        //
-        nptknt++;
-        fs = true;
-        k = 0;
-        m = mplusn - n;
-        //
-        Clacpy("Full", mplusn, mplusn, ai, lda, a, lda);
-        Clacpy("Full", mplusn, mplusn, bi, lda, b, lda);
-        //
-        //     Compute the Schur factorization while swapping the
-        //     m-by-m (1,1)-blocks with n-by-n (2,2)-blocks.
-        //
-        Cggesx("V", "V", "S", Clctsx, "B", mplusn, ai, lda, bi, lda, mm, alpha, beta, q, lda, z, lda, pl, difest, work, lwork, rwork, iwork, liwork, bwork, linfo);
-        //
-        if (linfo != 0 && linfo != mplusn + 2) {
-            result[1 - 1] = ulpinv;
-            write(nout, "(' Cdrgsx: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,"
-                        "', Input Example #',i2,')')"),
-                "Cggesx", linfo, mplusn, nptknt;
-            continue;
-        }
-        //
-        //     Compute the norm(A, B)
-        //        (should this be norm of (A,B) or (AI,BI)?)
-        //
-        Clacpy("Full", mplusn, mplusn, ai, lda, work, mplusn);
-        Clacpy("Full", mplusn, mplusn, bi, lda, &work[(mplusn * mplusn + 1) - 1], mplusn);
-        abnrm = Clange("Fro", mplusn, 2 * mplusn, work, mplusn, rwork);
-        //
-        //     Do tests (1) to (4)
-        //
-        Cget51(1, mplusn, a, lda, ai, lda, q, lda, z, lda, work, rwork, result[1 - 1]);
-        Cget51(1, mplusn, b, lda, bi, lda, q, lda, z, lda, work, rwork, result[2 - 1]);
-        Cget51(3, mplusn, b, lda, bi, lda, q, lda, q, lda, work, rwork, result[3 - 1]);
-        Cget51(3, mplusn, b, lda, bi, lda, z, lda, z, lda, work, rwork, result[4 - 1]);
-        //
-        //     Do tests (5) and (6): check Schur form of A and compare
-        //     eigenvalues with diagonals.
-        //
-        ntest = 6;
-        temp1 = zero;
-        result[5 - 1] = zero;
-        result[6 - 1] = zero;
-        //
-        for (j = 1; j <= mplusn; j = j + 1) {
-            ilabad = false;
-            temp2 = (abs1(alpha[j - 1] - ai[(j - 1) + (j - 1) * ldai]) / max({smlnum, abs1(alpha[j - 1]), abs1(ai[(j - 1) + (j - 1) * ldai])}) + abs1(beta[j - 1] - bi[(j - 1) + (j - 1) * ldbi]) / max({smlnum, abs1(beta[j - 1]), abs1(bi[(j - 1) + (j - 1) * ldbi])})) / ulp;
-            if (j < mplusn) {
-                if (ai[((j + 1) - 1) + (j - 1) * ldai] != zero) {
-                    ilabad = true;
-                    result[5 - 1] = ulpinv;
-                }
-            }
-            if (j > 1) {
-                if (ai[(j - 1) + ((j - 1) - 1) * ldai] != zero) {
-                    ilabad = true;
-                    result[5 - 1] = ulpinv;
-                }
-            }
-            temp1 = max(temp1, temp2);
-            if (ilabad) {
-                write(nout, format_9997), j, mplusn, nptknt;
-            }
-        }
-        result[6 - 1] = temp1;
-        //
-        //     Test (7) (if sorting worked)  <--------- need to be checked.
-        //
-        ntest = 7;
-        result[7 - 1] = zero;
-        if (linfo == mplusn + 3) {
-            result[7 - 1] = ulpinv;
-        }
-        //
-        //     Test (8): compare the estimated value of DIF and its true value.
-        //
-        ntest = 8;
-        result[8 - 1] = zero;
-        if (difest[2 - 1] == zero) {
-            if (diftru > abnrm * ulp) {
-                result[8 - 1] = ulpinv;
-            }
-        } else if (diftru == zero) {
-            if (difest[2 - 1] > abnrm * ulp) {
-                result[8 - 1] = ulpinv;
-            }
-        } else if ((diftru > thrsh2 * difest[2 - 1]) || (diftru * thrsh2 < difest[2 - 1])) {
-            result[8 - 1] = max(diftru / difest[2 - 1], difest[2 - 1] / diftru);
-        }
-        //
-        //     Test (9)
-        //
-        ntest = 9;
-        result[9 - 1] = zero;
-        if (linfo == (mplusn + 2)) {
-            if (diftru > abnrm * ulp) {
-                result[9 - 1] = ulpinv;
-            }
-            if ((ifunc > 1) && (difest[2 - 1] != zero)) {
-                result[9 - 1] = ulpinv;
-            }
-            if ((ifunc == 1) && (pl[1 - 1] != zero)) {
-                result[9 - 1] = ulpinv;
-            }
-        }
-        //
-        //     Test (10): compare the estimated value of PL and it true value.
-        //
-        ntest = 10;
-        result[10 - 1] = zero;
-        if (pl[1 - 1] == zero) {
-            if (pltru > abnrm * ulp) {
-                result[10 - 1] = ulpinv;
-            }
-        } else if (pltru == zero) {
-            if (pl[1 - 1] > abnrm * ulp) {
-                result[10 - 1] = ulpinv;
-            }
-        } else if ((pltru > thresh * pl[1 - 1]) || (pltru * thresh < pl[1 - 1])) {
-            result[10 - 1] = ulpinv;
-        }
-        //
-        ntestt += ntest;
-        //
-        //     Print out tests which fail.
-        //
-        for (j = 1; j <= ntest; j = j + 1) {
-            if (result[j - 1] >= thresh) {
-                //
-                //           If this is the first test to fail,
-                //           print a header to the data file.
-                //
-                if (nerrs == 0) {
-                    write(nout, format_9996), "ZGX";
-                    //
-                    //              Matrix types
-                    //
-                    write(nout, "('Input Example')");
-                    //
-                    //              Tests performed
-                    //
-                    {
-                        write_loop wloop(cmn, nout, format_9993);
-                        wloop, "unitary", "'", "transpose";
-                        for (i = 1; i <= 4; i = i + 1) {
-                            wloop, "'";
-                        }
-                    }
-                    //
-                }
-                nerrs++;
-                if (result[j - 1] < 10000.0) {
-                    sprintnum_short(buf0, result[j - 1]);
-                    write(nout, "(' Input example #',i2,', matrix order=',i4,',',' result ',i2,"
-                                "' is',0p,a)"),
-                        nptknt, mplusn, j, buf0;
-                } else {
-                    sprintnum_short(buf0, result[j - 1]);
-                    write(nout, "(' Input example #',i2,', matrix order=',i4,',',' result ',i2,"
-                                "' is',1p,a)"),
-                        nptknt, mplusn, j, buf0;
-                }
-            }
-            //
         }
     }
+    for (i = 1; i <= mplusn; i = i + 1) {
+        {
+            read_loop rloop(cmn, nin, star);
+            for (j = 1; j <= mplusn; j = j + 1) {
+                rloop, bi[(i - 1) + (j - 1) * lda];
+            }
+        }
+    }
+    read(nin, star), pltru, diftru;
+    //
+    nptknt++;
+    fs = true;
+    k = 0;
+    m = mplusn - n;
+    //
+    Clacpy("Full", mplusn, mplusn, ai, lda, a, lda);
+    Clacpy("Full", mplusn, mplusn, bi, lda, b, lda);
+    //
+    // Compute the Schur factorization while swapping the
+    // m-by-m (1,1)-blocks with n-by-n (2,2)-blocks.
+    //
+    Cggesx("V", "V", "S", Clctsx, "B", mplusn, ai, lda, bi, lda, mm, alpha, beta, q, lda, z, lda, pl, difest, work, lwork, rwork, iwork, liwork, bwork, linfo);
+    //
+    if (linfo != 0 && linfo != mplusn + 2) {
+        result[1 - 1] = ulpinv;
+        write(nout, format_9998), "Cggesx", linfo, mplusn, nptknt;
+        goto statement_130;
+    }
+    //
+    // Compute the norm(A, B)
+    // (should this be norm of (A,B) or (AI,BI)?)
+    //
+    Clacpy("Full", mplusn, mplusn, ai, lda, work, mplusn);
+    Clacpy("Full", mplusn, mplusn, bi, lda, &work[(mplusn * mplusn + 1) - 1], mplusn);
+    abnrm = Clange("Fro", mplusn, 2 * mplusn, work, mplusn, rwork);
+    //
+    // Do tests (1) to (4)
+    //
+    Cget51(1, mplusn, a, lda, ai, lda, q, lda, z, lda, work, rwork, result[1 - 1]);
+    Cget51(1, mplusn, b, lda, bi, lda, q, lda, z, lda, work, rwork, result[2 - 1]);
+    Cget51(3, mplusn, b, lda, bi, lda, q, lda, q, lda, work, rwork, result[3 - 1]);
+    Cget51(3, mplusn, b, lda, bi, lda, z, lda, z, lda, work, rwork, result[4 - 1]);
+    //
+    // Do tests (5) and (6): check Schur form of A and compare
+    // eigenvalues with diagonals.
+    //
+    ntest = 6;
+    temp1 = zero;
+    result[5 - 1] = zero;
+    result[6 - 1] = zero;
+    //
+    for (j = 1; j <= mplusn; j = j + 1) {
+        ilabad = false;
+        temp2 = (cabs1(alpha[j - 1] - ai[(j - 1) + (j - 1) * lda]) / max(smlnum, cabs1(alpha[j - 1]), cabs1(ai[(j - 1) + (j - 1) * lda])) + cabs1(beta[j - 1] - bi[(j - 1) + (j - 1) * lda]) / max(smlnum, cabs1(beta[j - 1]), cabs1(bi[(j - 1) + (j - 1) * lda]))) / ulp;
+        if (j < mplusn) {
+            if (ai[((j + 1) - 1) + (j - 1) * lda] != zero) {
+                ilabad = true;
+                result[5 - 1] = ulpinv;
+            }
+        }
+        if (j > 1) {
+            if (ai[(j - 1) + ((j - 1) - 1) * lda] != zero) {
+                ilabad = true;
+                result[5 - 1] = ulpinv;
+            }
+        }
+        temp1 = max(temp1, temp2);
+        if (ilabad) {
+            write(nout, format_9997), j, mplusn, nptknt;
+        }
+    }
+    result[6 - 1] = temp1;
+    //
+    // Test (7) (if sorting worked)  <--------- need to be checked.
+    //
+    ntest = 7;
+    result[7 - 1] = zero;
+    if (linfo == mplusn + 3) {
+        result[7 - 1] = ulpinv;
+    }
+    //
+    // Test (8): compare the estimated value of DIF and its true value.
+    //
+    ntest = 8;
+    result[8 - 1] = zero;
+    if (difest[2 - 1] == zero) {
+        if (diftru > abnrm * ulp) {
+            result[8 - 1] = ulpinv;
+        }
+    } else if (diftru == zero) {
+        if (difest[2 - 1] > abnrm * ulp) {
+            result[8 - 1] = ulpinv;
+        }
+    } else if ((diftru > thrsh2 * difest[2 - 1]) || (diftru * thrsh2 < difest[2 - 1])) {
+        result[8 - 1] = max(diftru / difest[2 - 1], difest[2 - 1] / diftru);
+    }
+    //
+    // Test (9)
+    //
+    ntest = 9;
+    result[9 - 1] = zero;
+    if (linfo == (mplusn + 2)) {
+        if (diftru > abnrm * ulp) {
+            result[9 - 1] = ulpinv;
+        }
+        if ((ifunc > 1) && (difest[2 - 1] != zero)) {
+            result[9 - 1] = ulpinv;
+        }
+        if ((ifunc == 1) && (pl[1 - 1] != zero)) {
+            result[9 - 1] = ulpinv;
+        }
+    }
+    //
+    // Test (10): compare the estimated value of PL and it true value.
+    //
+    ntest = 10;
+    result[10 - 1] = zero;
+    if (pl[1 - 1] == zero) {
+        if (pltru > abnrm * ulp) {
+            result[10 - 1] = ulpinv;
+        }
+    } else if (pltru == zero) {
+        if (pl[1 - 1] > abnrm * ulp) {
+            result[10 - 1] = ulpinv;
+        }
+    } else if ((pltru > thresh * pl[1 - 1]) || (pltru * thresh < pl[1 - 1])) {
+        result[10 - 1] = ulpinv;
+    }
+    //
+    ntestt += ntest;
+    //
+    // Print out tests which fail.
+    //
+    for (j = 1; j <= ntest; j = j + 1) {
+        if (result[j - 1] >= thresh) {
+            //
+            // If this is the first test to fail,
+            // print a header to the data file.
+            //
+            if (nerrs == 0) {
+                write(nout, format_9996), "ZGX";
+                //
+                // Matrix types
+                //
+                write(nout, format_9995);
+                //
+                // Tests performed
+                //
+                {
+                    write_loop wloop(cmn, nout, format_9993);
+                    wloop, "unitary", "'", "transpose";
+                    for (i = 1; i <= 4; i = i + 1) {
+                        wloop, "'";
+                    }
+                }
+                //
+            }
+            nerrs++;
+            if (result[j - 1] < 10000.0) {
+                write(nout, format_9990), nptknt, mplusn, j, result[j - 1];
+            } else {
+                write(nout, format_9989), nptknt, mplusn, j, result[j - 1];
+            }
+        }
+        //
+    }
+//
+statement_130:
+    goto statement_80;
+statement_140:
+//
 statement_150:
     //
-    //     Summary
+    // Summary
     //
     Alasvm("ZGX", nout, nerrs, ntestt, 0);
     //
     work[1 - 1] = maxwrk;
     //
-    //     End of Cdrgsx
+    // End of Cdrgsx
     //
 }

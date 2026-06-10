@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DLASDQ.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rlasdq(const char *uplo, INTEGER const sqre, INTEGER const n, INTEGER const ncvt, INTEGER const nru, INTEGER const ncc, REAL *d, REAL *e, REAL *vt, INTEGER const ldvt, REAL *u, INTEGER const ldu, REAL *c, INTEGER const ldc, REAL *work, INTEGER &info) {
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     INTEGER iuplo = 0;
@@ -68,14 +75,14 @@ void Rlasdq(const char *uplo, INTEGER const sqre, INTEGER const n, INTEGER const
         return;
     }
     //
-    //     ROTATE is true if any singular vectors desired, false otherwise
+    // ROTATE is true if any singular vectors desired, false otherwise
     //
     bool rotate = (ncvt > 0) || (nru > 0) || (ncc > 0);
     INTEGER np1 = n + 1;
     INTEGER sqre1 = sqre;
     //
-    //     If matrix non-square upper bidiagonal, rotate to be lower
-    //     bidiagonal.  The rotations are on the right.
+    // If matrix non-square upper bidiagonal, rotate to be lower
+    // bidiagonal.  The rotations are on the right.
     //
     INTEGER i = 0;
     REAL cs = 0.0;
@@ -103,15 +110,15 @@ void Rlasdq(const char *uplo, INTEGER const sqre, INTEGER const n, INTEGER const
         iuplo = 2;
         sqre1 = 0;
         //
-        //        Update singular vectors if desired.
+        // Update singular vectors if desired.
         //
         if (ncvt > 0) {
             Rlasr("L", "V", "F", np1, ncvt, &work[1 - 1], &work[np1 - 1], vt, ldvt);
         }
     }
     //
-    //     If matrix lower bidiagonal, rotate to be upper bidiagonal
-    //     by applying Givens rotations on the left.
+    // If matrix lower bidiagonal, rotate to be upper bidiagonal
+    // by applying Givens rotations on the left.
     //
     if (iuplo == 2) {
         for (i = 1; i <= n - 1; i = i + 1) {
@@ -125,8 +132,8 @@ void Rlasdq(const char *uplo, INTEGER const sqre, INTEGER const n, INTEGER const
             }
         }
         //
-        //        If matrix (N+1)-by-N lower bidiagonal, one additional
-        //        rotation is needed.
+        // If matrix (N+1)-by-N lower bidiagonal, one additional
+        // rotation is needed.
         //
         if (sqre1 == 1) {
             Rlartg(d[n - 1], e[n - 1], cs, sn, r);
@@ -137,7 +144,7 @@ void Rlasdq(const char *uplo, INTEGER const sqre, INTEGER const n, INTEGER const
             }
         }
         //
-        //        Update singular vectors if desired.
+        // Update singular vectors if desired.
         //
         if (nru > 0) {
             if (sqre1 == 0) {
@@ -155,20 +162,20 @@ void Rlasdq(const char *uplo, INTEGER const sqre, INTEGER const n, INTEGER const
         }
     }
     //
-    //     Call Rbdsqr to compute the SVD of the reduced real
-    //     N-by-N upper bidiagonal matrix.
+    // Call Rbdsqr to compute the SVD of the reduced real
+    // N-by-N upper bidiagonal matrix.
     //
     Rbdsqr("U", n, ncvt, nru, ncc, d, e, vt, ldvt, u, ldu, c, ldc, work, info);
     //
-    //     Sort the singular values into ascending order (insertion sort on
-    //     singular values, but only one transposition per singular vector)
+    // Sort the singular values into ascending order (insertion sort on
+    // singular values, but only one transposition per singular vector)
     //
     INTEGER isub = 0;
     REAL smin = 0.0;
     INTEGER j = 0;
     for (i = 1; i <= n; i = i + 1) {
         //
-        //        Scan for smallest D(I).
+        // Scan for smallest D(I).
         //
         isub = i;
         smin = d[i - 1];
@@ -180,7 +187,7 @@ void Rlasdq(const char *uplo, INTEGER const sqre, INTEGER const n, INTEGER const
         }
         if (isub != i) {
             //
-            //           Swap singular values and vectors.
+            // Swap singular values and vectors.
             //
             d[isub - 1] = d[i - 1];
             d[i - 1] = smin;
@@ -196,6 +203,6 @@ void Rlasdq(const char *uplo, INTEGER const sqre, INTEGER const n, INTEGER const
         }
     }
     //
-    //     End of Rlasdq
+    // End of Rlasdq
     //
 }

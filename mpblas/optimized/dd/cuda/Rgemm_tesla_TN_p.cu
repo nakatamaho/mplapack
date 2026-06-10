@@ -59,7 +59,7 @@ __global__ void Rgemm_tesla_TN_p(dd_real * Adev, dd_real * Bdev, dd_real * Cdev,
 
     //load first data of A from global memory into register
     A_j = blockDim.y * 0 + threadIdx.x; //exchange x for y for coalescing
-    regA = fetch_x_A(min(A_i, (int) (m - 1)) * lda + min(A_j, (int) (k - 1)));
+    regA = fetch_x_A(Adev, min(A_i, (int) (m - 1)) * lda + min(A_j, (int) (k - 1)));
 
     //load first data of B from global memory into register
     iBb = 0;
@@ -67,11 +67,11 @@ __global__ void Rgemm_tesla_TN_p(dd_real * Adev, dd_real * Bdev, dd_real * Cdev,
 
     jBb = blockIdx.y * Gn + 0;
     B_j = blockDim.y * jBb + threadIdx.y;
-    regB0 = fetch_x_B(min(B_i, (int) (k - 1)) + min(B_j, (int) (n - 1)) * ldb);
+    regB0 = fetch_x_B(Bdev, min(B_i, (int) (k - 1)) + min(B_j, (int) (n - 1)) * ldb);
 
     jBb = blockIdx.y * Gn + 1;
     B_j = blockDim.y * jBb + threadIdx.y;
-    regB1 = fetch_x_B(min(B_i, (int) (k - 1)) + min(B_j, (int) (n - 1)) * ldb);
+    regB1 = fetch_x_B(Bdev, min(B_i, (int) (k - 1)) + min(B_j, (int) (n - 1)) * ldb);
 
     // get initial Cdev data
     iCb = blockIdx.x;
@@ -114,7 +114,7 @@ __global__ void Rgemm_tesla_TN_p(dd_real * Adev, dd_real * Bdev, dd_real * Cdev,
 	// load next data of A from global memory into register
 	jAb = i + 1;
         A_j = blockDim.y * jAb + threadIdx.x; //exchange x for y for coalescing
-	regA = fetch_x_A(min(A_i, (int) (m - 1)) * lda + min(A_j, (int) (k - 1)));
+	regA = fetch_x_A(Adev, min(A_i, (int) (m - 1)) * lda + min(A_j, (int) (k - 1)));
 
 	// load next data of B from global memory into register
 	iBb = i + 1;
@@ -122,11 +122,11 @@ __global__ void Rgemm_tesla_TN_p(dd_real * Adev, dd_real * Bdev, dd_real * Cdev,
 
 	jBb = blockIdx.y * Gn + 0;
 	B_j = blockDim.y * jBb + threadIdx.y;
-	regB0 = fetch_x_B(min(B_i, (int) (k - 1)) + min(B_j, (int) (n - 1)) * ldb);
+	regB0 = fetch_x_B(Bdev, min(B_i, (int) (k - 1)) + min(B_j, (int) (n - 1)) * ldb);
 
 	jBb = blockIdx.y * Gn + 1;
 	B_j = blockDim.y * jBb + threadIdx.y;
-	regB1 = fetch_x_B(min(B_i, (int) (k - 1)) + min(B_j, (int) (n - 1)) * ldb);
+	regB1 = fetch_x_B(Bdev, min(B_i, (int) (k - 1)) + min(B_j, (int) (n - 1)) * ldb);
 
 	__syncthreads();
     }

@@ -1,0 +1,27 @@
+ Tests of Rsbtrd
+ (reduction of a symmetric band matrix to tridiagonal form)
+ Tests of the Multiple precision version of LAPACK 2.1.0
+ Based on the original LAPACK VERSION 3.9.1
+
+The following parameter values will be used:
+
+ The following parameter values will be used:
+    M:         5    20
+    N:         5    20
+    K:         0     1     2     5    16
+ 
+ Relative machine underflow is taken to be2.00416836000897277799610805134985e-292
+ Relative machine overflow  is taken to be1.79769313486231580793728971405329e+308
+ Relative machine precision is taken to be4.93038065763131995214781514484578e-32
+
+ Routines pass computational tests if test ratio is less than2.00000000000000000000000000000000e+01
+
+ 
+ DSB routines passed the tests of the error exits ( 75 tests done)
+
+ All tests for DSB passed the threshold (   810 tests run)
+
+
+ End of tests
+ Total time used =         0.12 seconds
+

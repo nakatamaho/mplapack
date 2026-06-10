@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZPBSTF.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -39,30 +46,7 @@ void Cpbstf(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, IN
     INTEGER km = 0;
     const REAL one = 1.0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     upper = Mlsame(uplo, "U");
@@ -80,7 +64,7 @@ void Cpbstf(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, IN
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
@@ -88,17 +72,17 @@ void Cpbstf(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, IN
     //
     kld = max((INTEGER)1, ldab - 1);
     //
-    //     Set the splitting point m.
+    // Set the splitting point m.
     //
     m = (n + kd) / 2;
     //
     if (upper) {
         //
-        //        Factorize A(m+1:n,m+1:n) as L**H*L, and update A(1:m,1:m).
+        // Factorize A(m+1:n,m+1:n) as L**H*L, and update A(1:m,1:m).
         //
         for (j = n; j >= m + 1; j = j - 1) {
             //
-            //           Compute s(j,j) and test for non-positive-definiteness.
+            // Compute s(j,j) and test for non-positive-definiteness.
             //
             ajj = ab[((kd + 1) - 1) + (j - 1) * ldab].real();
             if (ajj <= zero) {
@@ -109,18 +93,18 @@ void Cpbstf(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, IN
             ab[((kd + 1) - 1) + (j - 1) * ldab] = ajj;
             km = min(j - 1, kd);
             //
-            //           Compute elements j-km:j-1 of the j-th column and update the
-            //           the leading submatrix within the band.
+            // Compute elements j-km:j-1 of the j-th column and update the
+            // the leading submatrix within the band.
             //
             CRscal(km, one / ajj, &ab[((kd + 1 - km) - 1) + (j - 1) * ldab], 1);
             Cher("Upper", km, -one, &ab[((kd + 1 - km) - 1) + (j - 1) * ldab], 1, &ab[((kd + 1) - 1) + ((j - km) - 1) * ldab], kld);
         }
         //
-        //        Factorize the updated submatrix A(1:m,1:m) as U**H*U.
+        // Factorize the updated submatrix A(1:m,1:m) as U**H*U.
         //
         for (j = 1; j <= m; j = j + 1) {
             //
-            //           Compute s(j,j) and test for non-positive-definiteness.
+            // Compute s(j,j) and test for non-positive-definiteness.
             //
             ajj = ab[((kd + 1) - 1) + (j - 1) * ldab].real();
             if (ajj <= zero) {
@@ -131,8 +115,8 @@ void Cpbstf(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, IN
             ab[((kd + 1) - 1) + (j - 1) * ldab] = ajj;
             km = min(kd, m - j);
             //
-            //           Compute elements j+1:j+km of the j-th row and update the
-            //           trailing submatrix within the band.
+            // Compute elements j+1:j+km of the j-th row and update the
+            // trailing submatrix within the band.
             //
             if (km > 0) {
                 CRscal(km, one / ajj, &ab[(kd - 1) + ((j + 1) - 1) * ldab], kld);
@@ -143,11 +127,11 @@ void Cpbstf(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, IN
         }
     } else {
         //
-        //        Factorize A(m+1:n,m+1:n) as L**H*L, and update A(1:m,1:m).
+        // Factorize A(m+1:n,m+1:n) as L**H*L, and update A(1:m,1:m).
         //
         for (j = n; j >= m + 1; j = j - 1) {
             //
-            //           Compute s(j,j) and test for non-positive-definiteness.
+            // Compute s(j,j) and test for non-positive-definiteness.
             //
             ajj = ab[(j - 1) * ldab].real();
             if (ajj <= zero) {
@@ -158,8 +142,8 @@ void Cpbstf(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, IN
             ab[(j - 1) * ldab] = ajj;
             km = min(j - 1, kd);
             //
-            //           Compute elements j-km:j-1 of the j-th row and update the
-            //           trailing submatrix within the band.
+            // Compute elements j-km:j-1 of the j-th row and update the
+            // trailing submatrix within the band.
             //
             CRscal(km, one / ajj, &ab[((km + 1) - 1) + ((j - km) - 1) * ldab], kld);
             Clacgv(km, &ab[((km + 1) - 1) + ((j - km) - 1) * ldab], kld);
@@ -167,11 +151,11 @@ void Cpbstf(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, IN
             Clacgv(km, &ab[((km + 1) - 1) + ((j - km) - 1) * ldab], kld);
         }
         //
-        //        Factorize the updated submatrix A(1:m,1:m) as U**H*U.
+        // Factorize the updated submatrix A(1:m,1:m) as U**H*U.
         //
         for (j = 1; j <= m; j = j + 1) {
             //
-            //           Compute s(j,j) and test for non-positive-definiteness.
+            // Compute s(j,j) and test for non-positive-definiteness.
             //
             ajj = ab[(j - 1) * ldab].real();
             if (ajj <= zero) {
@@ -182,8 +166,8 @@ void Cpbstf(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, IN
             ab[(j - 1) * ldab] = ajj;
             km = min(kd, m - j);
             //
-            //           Compute elements j+1:j+km of the j-th column and update the
-            //           trailing submatrix within the band.
+            // Compute elements j+1:j+km of the j-th column and update the
+            // trailing submatrix within the band.
             //
             if (km > 0) {
                 CRscal(km, one / ajj, &ab[(2 - 1) + (j - 1) * ldab], 1);
@@ -196,6 +180,6 @@ void Cpbstf(const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, IN
 statement_50:
     info = j;
     //
-    //     End of Cpbstf
+    // End of Cpbstf
     //
 }

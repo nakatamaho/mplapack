@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,30 +26,17 @@
  *
  */
 
+// Derived from LAPACK routine ZSYCONV.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Csyconv(const char *uplo, const char *way, INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, COMPLEX *e, INTEGER &info) {
-    //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. External Functions ..
-    //
-    //     .. External Subroutines ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Executable Statements ..
     //
     info = 0;
     bool upper = Mlsame(uplo, "U");
@@ -69,7 +56,7 @@ void Csyconv(const char *uplo, const char *way, INTEGER const n, COMPLEX *a, INT
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
@@ -82,13 +69,13 @@ void Csyconv(const char *uplo, const char *way, INTEGER const n, COMPLEX *a, INT
     COMPLEX temp = 0.0;
     if (upper) {
         //
-        //        A is UPPER
+        // A is UPPER
         //
         if (convert) {
             //
-            //           Convert A (A is upper)
+            // Convert A (A is upper)
             //
-            //           Convert VALUE
+            // Convert VALUE
             //
             i = n;
             e[1 - 1] = zero;
@@ -104,7 +91,7 @@ void Csyconv(const char *uplo, const char *way, INTEGER const n, COMPLEX *a, INT
                 i = i - 1;
             }
             //
-            //           Convert PERMUTATIONS
+            // Convert PERMUTATIONS
             //
             i = n;
             while (i >= 1) {
@@ -133,9 +120,9 @@ void Csyconv(const char *uplo, const char *way, INTEGER const n, COMPLEX *a, INT
             //
         } else {
             //
-            //           Revert A (A is upper)
+            // Revert A (A is upper)
             //
-            //           Revert PERMUTATIONS
+            // Revert PERMUTATIONS
             //
             i = 1;
             while (i <= n) {
@@ -162,7 +149,7 @@ void Csyconv(const char *uplo, const char *way, INTEGER const n, COMPLEX *a, INT
                 i++;
             }
             //
-            //           Revert VALUE
+            // Revert VALUE
             //
             i = n;
             while (i > 1) {
@@ -176,13 +163,13 @@ void Csyconv(const char *uplo, const char *way, INTEGER const n, COMPLEX *a, INT
         //
     } else {
         //
-        //        A is LOWER
+        // A is LOWER
         //
         if (convert) {
             //
-            //           Convert A (A is lower)
+            // Convert A (A is lower)
             //
-            //           Convert VALUE
+            // Convert VALUE
             //
             i = 1;
             e[n - 1] = zero;
@@ -198,7 +185,7 @@ void Csyconv(const char *uplo, const char *way, INTEGER const n, COMPLEX *a, INT
                 i++;
             }
             //
-            //           Convert PERMUTATIONS
+            // Convert PERMUTATIONS
             //
             i = 1;
             while (i <= n) {
@@ -227,9 +214,9 @@ void Csyconv(const char *uplo, const char *way, INTEGER const n, COMPLEX *a, INT
             //
         } else {
             //
-            //           Revert A (A is lower)
+            // Revert A (A is lower)
             //
-            //           Revert PERMUTATIONS
+            // Revert PERMUTATIONS
             //
             i = n;
             while (i >= 1) {
@@ -256,7 +243,7 @@ void Csyconv(const char *uplo, const char *way, INTEGER const n, COMPLEX *a, INT
                 i = i - 1;
             }
             //
-            //           Revert VALUE
+            // Revert VALUE
             //
             i = 1;
             while (i <= n - 1) {
@@ -269,6 +256,6 @@ void Csyconv(const char *uplo, const char *way, INTEGER const n, COMPLEX *a, INT
         }
     }
     //
-    //     End of Csyconv
+    // End of Csyconv
     //
 }

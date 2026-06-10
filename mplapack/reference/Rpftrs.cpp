@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DPFTRS.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rpftrs(const char *transr, const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *a, REAL *b, INTEGER const ldb, INTEGER &info) {
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     bool normaltransr = Mlsame(transr, "N");
@@ -52,13 +59,13 @@ void Rpftrs(const char *transr, const char *uplo, INTEGER const n, INTEGER const
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0 || nrhs == 0) {
         return;
     }
     //
-    //     start execution: there are two triangular solves
+    // start execution: there are two triangular solves
     //
     const REAL one = 1.0;
     if (lower) {
@@ -69,6 +76,6 @@ void Rpftrs(const char *transr, const char *uplo, INTEGER const n, INTEGER const
         Rtfsm(transr, "L", uplo, "N", "N", n, nrhs, one, a, b, ldb);
     }
     //
-    //     End of Rpftrs
+    // End of Rpftrs
     //
 }

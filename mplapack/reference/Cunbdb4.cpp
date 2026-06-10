@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZUNBDB4.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Cunbdb4(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x11, INTEGER const ldx11, COMPLEX *x21, INTEGER const ldx21, REAL *theta, REAL *phi, COMPLEX *taup1, COMPLEX *taup2, COMPLEX *tauq1, COMPLEX *phantom, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //     Test input arguments
+    // Test input arguments
     //
     info = 0;
     bool lquery = lwork == -1;
@@ -48,7 +55,7 @@ void Cunbdb4(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x11, IN
         info = -7;
     }
     //
-    //     Compute workspace
+    // Compute workspace
     //
     INTEGER ilarf = 0;
     INTEGER llarf = 0;
@@ -58,13 +65,13 @@ void Cunbdb4(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x11, IN
     INTEGER lworkmin = 0;
     if (info == 0) {
         ilarf = 2;
-        llarf = max({q - 1, p - 1, m - p - 1});
+        llarf = max(q - 1, p - 1, m - p - 1);
         iorbdb5 = 2;
         lorbdb5 = q;
         lworkopt = ilarf + llarf - 1;
         lworkopt = max(lworkopt, iorbdb5 + lorbdb5 - 1);
         lworkmin = lworkopt;
-        work[1 - 1] = castREAL(lworkopt);
+        work[1 - 1] = lworkopt;
         if (lwork < lworkmin && !lquery) {
             info = -14;
         }
@@ -76,7 +83,7 @@ void Cunbdb4(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x11, IN
         return;
     }
     //
-    //     Reduce columns 1, ..., M-Q of X11 and X21
+    // Reduce columns 1, ..., M-Q of X11 and X21
     //
     INTEGER i = 0;
     INTEGER j = 0;
@@ -85,7 +92,6 @@ void Cunbdb4(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x11, IN
     const COMPLEX negone = COMPLEX(-1.0, 0.0);
     REAL c = 0.0;
     REAL s = 0.0;
-    const COMPLEX one = COMPLEX(1.0, 0.0);
     for (i = 1; i <= m - q; i = i + 1) {
         //
         if (i == 1) {
@@ -99,10 +105,8 @@ void Cunbdb4(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x11, IN
             theta[i - 1] = atan2(phantom[1 - 1].real(), phantom[(p + 1) - 1].real());
             c = cos(theta[i - 1]);
             s = sin(theta[i - 1]);
-            phantom[1 - 1] = one;
-            phantom[(p + 1) - 1] = one;
-            Clarf("L", p, q, &phantom[1 - 1], 1, conj(taup1[1 - 1]), x11, ldx11, &work[ilarf - 1]);
-            Clarf("L", m - p, q, &phantom[(p + 1) - 1], 1, conj(taup2[1 - 1]), x21, ldx21, &work[ilarf - 1]);
+            Clarf1f("L", p, q, &phantom[1 - 1], 1, conj(taup1[1 - 1]), x11, ldx11, &work[ilarf - 1]);
+            Clarf1f("L", m - p, q, &phantom[(p + 1) - 1], 1, conj(taup2[1 - 1]), x21, ldx21, &work[ilarf - 1]);
         } else {
             Cunbdb5(p - i + 1, m - p - i + 1, q - i + 1, &x11[(i - 1) + ((i - 1) - 1) * ldx11], 1, &x21[(i - 1) + ((i - 1) - 1) * ldx21], 1, &x11[(i - 1) + (i - 1) * ldx11], ldx11, &x21[(i - 1) + (i - 1) * ldx21], ldx21, &work[iorbdb5 - 1], lorbdb5, childinfo);
             Cscal(p - i + 1, negone, &x11[(i - 1) + ((i - 1) - 1) * ldx11], 1);
@@ -111,19 +115,16 @@ void Cunbdb4(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x11, IN
             theta[i - 1] = atan2(x11[(i - 1) + ((i - 1) - 1) * ldx11].real(), x21[(i - 1) + ((i - 1) - 1) * ldx21].real());
             c = cos(theta[i - 1]);
             s = sin(theta[i - 1]);
-            x11[(i - 1) + ((i - 1) - 1) * ldx11] = one;
-            x21[(i - 1) + ((i - 1) - 1) * ldx21] = one;
-            Clarf("L", p - i + 1, q - i + 1, &x11[(i - 1) + ((i - 1) - 1) * ldx11], 1, conj(taup1[i - 1]), &x11[(i - 1) + (i - 1) * ldx11], ldx11, &work[ilarf - 1]);
-            Clarf("L", m - p - i + 1, q - i + 1, &x21[(i - 1) + ((i - 1) - 1) * ldx21], 1, conj(taup2[i - 1]), &x21[(i - 1) + (i - 1) * ldx21], ldx21, &work[ilarf - 1]);
+            Clarf1f("L", p - i + 1, q - i + 1, &x11[(i - 1) + ((i - 1) - 1) * ldx11], 1, conj(taup1[i - 1]), &x11[(i - 1) + (i - 1) * ldx11], ldx11, &work[ilarf - 1]);
+            Clarf1f("L", m - p - i + 1, q - i + 1, &x21[(i - 1) + ((i - 1) - 1) * ldx21], 1, conj(taup2[i - 1]), &x21[(i - 1) + (i - 1) * ldx21], ldx21, &work[ilarf - 1]);
         }
         //
         CRrot(q - i + 1, &x11[(i - 1) + (i - 1) * ldx11], ldx11, &x21[(i - 1) + (i - 1) * ldx21], ldx21, s, -c);
         Clacgv(q - i + 1, &x21[(i - 1) + (i - 1) * ldx21], ldx21);
         Clarfgp(q - i + 1, x21[(i - 1) + (i - 1) * ldx21], &x21[(i - 1) + ((i + 1) - 1) * ldx21], ldx21, tauq1[i - 1]);
         c = x21[(i - 1) + (i - 1) * ldx21].real();
-        x21[(i - 1) + (i - 1) * ldx21] = one;
-        Clarf("R", p - i, q - i + 1, &x21[(i - 1) + (i - 1) * ldx21], ldx21, tauq1[i - 1], &x11[((i + 1) - 1) + (i - 1) * ldx11], ldx11, &work[ilarf - 1]);
-        Clarf("R", m - p - i, q - i + 1, &x21[(i - 1) + (i - 1) * ldx21], ldx21, tauq1[i - 1], &x21[((i + 1) - 1) + (i - 1) * ldx21], ldx21, &work[ilarf - 1]);
+        Clarf1f("R", p - i, q - i + 1, &x21[(i - 1) + (i - 1) * ldx21], ldx21, tauq1[i - 1], &x11[((i + 1) - 1) + (i - 1) * ldx11], ldx11, &work[ilarf - 1]);
+        Clarf1f("R", m - p - i, q - i + 1, &x21[(i - 1) + (i - 1) * ldx21], ldx21, tauq1[i - 1], &x21[((i + 1) - 1) + (i - 1) * ldx21], ldx21, &work[ilarf - 1]);
         Clacgv(q - i + 1, &x21[(i - 1) + (i - 1) * ldx21], ldx21);
         if (i < m - q) {
             s = sqrt(pow2(RCnrm2(p - i, &x11[((i + 1) - 1) + (i - 1) * ldx11], 1)) + pow2(RCnrm2(m - p - i, &x21[((i + 1) - 1) + (i - 1) * ldx21], 1)));
@@ -132,27 +133,25 @@ void Cunbdb4(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x11, IN
         //
     }
     //
-    //     Reduce the bottom-right portion of X11 to [ I 0 ]
+    // Reduce the bottom-right portion of X11 to [ I 0 ]
     //
     for (i = m - q + 1; i <= p; i = i + 1) {
         Clacgv(q - i + 1, &x11[(i - 1) + (i - 1) * ldx11], ldx11);
         Clarfgp(q - i + 1, x11[(i - 1) + (i - 1) * ldx11], &x11[(i - 1) + ((i + 1) - 1) * ldx11], ldx11, tauq1[i - 1]);
-        x11[(i - 1) + (i - 1) * ldx11] = one;
-        Clarf("R", p - i, q - i + 1, &x11[(i - 1) + (i - 1) * ldx11], ldx11, tauq1[i - 1], &x11[((i + 1) - 1) + (i - 1) * ldx11], ldx11, &work[ilarf - 1]);
-        Clarf("R", q - p, q - i + 1, &x11[(i - 1) + (i - 1) * ldx11], ldx11, tauq1[i - 1], &x21[((m - q + 1) - 1) + (i - 1) * ldx21], ldx21, &work[ilarf - 1]);
+        Clarf1f("R", p - i, q - i + 1, &x11[(i - 1) + (i - 1) * ldx11], ldx11, tauq1[i - 1], &x11[((i + 1) - 1) + (i - 1) * ldx11], ldx11, &work[ilarf - 1]);
+        Clarf1f("R", q - p, q - i + 1, &x11[(i - 1) + (i - 1) * ldx11], ldx11, tauq1[i - 1], &x21[((m - q + 1) - 1) + (i - 1) * ldx21], ldx21, &work[ilarf - 1]);
         Clacgv(q - i + 1, &x11[(i - 1) + (i - 1) * ldx11], ldx11);
     }
     //
-    //     Reduce the bottom-right portion of X21 to [ 0 I ]
+    // Reduce the bottom-right portion of X21 to [ 0 I ]
     //
     for (i = p + 1; i <= q; i = i + 1) {
         Clacgv(q - i + 1, &x21[((m - q + i - p) - 1) + (i - 1) * ldx21], ldx21);
         Clarfgp(q - i + 1, x21[((m - q + i - p) - 1) + (i - 1) * ldx21], &x21[((m - q + i - p) - 1) + ((i + 1) - 1) * ldx21], ldx21, tauq1[i - 1]);
-        x21[((m - q + i - p) - 1) + (i - 1) * ldx21] = one;
-        Clarf("R", q - i, q - i + 1, &x21[((m - q + i - p) - 1) + (i - 1) * ldx21], ldx21, tauq1[i - 1], &x21[((m - q + i - p + 1) - 1) + (i - 1) * ldx21], ldx21, &work[ilarf - 1]);
+        Clarf1f("R", q - i, q - i + 1, &x21[((m - q + i - p) - 1) + (i - 1) * ldx21], ldx21, tauq1[i - 1], &x21[((m - q + i - p + 1) - 1) + (i - 1) * ldx21], ldx21, &work[ilarf - 1]);
         Clacgv(q - i + 1, &x21[((m - q + i - p) - 1) + (i - 1) * ldx21], ldx21);
     }
     //
-    //     End of Cunbdb4
+    // End of Cunbdb4
     //
 }

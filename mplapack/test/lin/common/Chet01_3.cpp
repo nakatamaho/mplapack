@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZHET01_3.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,32 +43,9 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Chet01_3(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *afac, INTEGER const ldafac, COMPLEX *e, INTEGER *ipiv, COMPLEX *c, INTEGER const ldc, REAL *rwork, REAL &resid) {
+void Chet01_3(fem::str_cref uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *afac, INTEGER const ldafac, COMPLEX *e, INTEGER *ipiv, COMPLEX *c, INTEGER const ldc, REAL *rwork, REAL &resid) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Quick exit if N = 0.
+    // Quick exit if N = 0.
     //
     const REAL zero = 0.0;
     if (n <= 0) {
@@ -69,18 +53,18 @@ void Chet01_3(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
         return;
     }
     //
-    //     a) Revert to multiplyers of L
+    // a) Revert to multipliers of L
     //
     INTEGER info = 0;
-    Csyconvf_rook(uplo, "R", n, afac, ldafac, e, ipiv, info);
+    Csyconvf_rook(uplo.elems(), "R", n, afac, ldafac, e, ipiv, info);
     //
-    //     1) Determine EPS and the norm of A.
+    // 1) Determine EPS and the norm of A.
     //
     REAL eps = Rlamch("Epsilon");
-    REAL anorm = Clanhe("1", uplo, n, a, lda, rwork);
+    REAL anorm = Clanhe("1", uplo.elems(), n, a, lda, rwork);
     //
-    //     Check the imaginary parts of the diagonal elements and return with
-    //     an error code if any are nonzero.
+    // Check the imaginary parts of the diagonal elements and return with
+    // an error code if any are nonzero.
     //
     INTEGER j = 0;
     const REAL one = 1.0;
@@ -91,42 +75,42 @@ void Chet01_3(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
         }
     }
     //
-    //     2) Initialize C to the identity matrix.
+    // 2) Initialize C to the identity matrix.
     //
     const COMPLEX czero = COMPLEX(0.0, 0.0);
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     Claset("Full", n, n, czero, cone, c, ldc);
     //
-    //     3) Call Clavhe_rook to form the product D * U' (or D * L' ).
+    // 3) Call Clavhe_rook to form the product D * U' (or D * L' ).
     //
     Clavhe_rook(uplo, "Conjugate", "Non-unit", n, n, afac, ldafac, ipiv, c, ldc, info);
     //
-    //     4) Call Clavhe_RK again to multiply by U (or L ).
+    // 4) Call ZLAVHE_RK again to multiply by U (or L ).
     //
     Clavhe_rook(uplo, "No transpose", "Unit", n, n, afac, ldafac, ipiv, c, ldc, info);
     //
-    //     5) Compute the difference  C - A .
+    // 5) Compute the difference  C - A .
     //
     INTEGER i = 0;
-    if (Mlsame(uplo, "U")) {
+    if (Mlsame(uplo.elems(), "U")) {
         for (j = 1; j <= n; j = j + 1) {
             for (i = 1; i <= j - 1; i = i + 1) {
                 c[(i - 1) + (j - 1) * ldc] = c[(i - 1) + (j - 1) * ldc] - a[(i - 1) + (j - 1) * lda];
             }
-            c[(j - 1) + (j - 1) * ldc] = c[(j - 1) + (j - 1) * ldc] - (a[(j - 1) + (j - 1) * lda]).real();
+            c[(j - 1) + (j - 1) * ldc] = c[(j - 1) + (j - 1) * ldc] - a[(j - 1) + (j - 1) * lda].real();
         }
     } else {
         for (j = 1; j <= n; j = j + 1) {
-            c[(j - 1) + (j - 1) * ldc] = c[(j - 1) + (j - 1) * ldc] - (a[(j - 1) + (j - 1) * lda]).real();
+            c[(j - 1) + (j - 1) * ldc] = c[(j - 1) + (j - 1) * ldc] - a[(j - 1) + (j - 1) * lda].real();
             for (i = j + 1; i <= n; i = i + 1) {
                 c[(i - 1) + (j - 1) * ldc] = c[(i - 1) + (j - 1) * ldc] - a[(i - 1) + (j - 1) * lda];
             }
         }
     }
     //
-    //     6) Compute norm( C - A ) / ( N * norm(A) * EPS )
+    // 6) Compute norm( C - A ) / ( N * norm(A) * EPS )
     //
-    resid = Clanhe("1", uplo, n, c, ldc, rwork);
+    resid = Clanhe("1", uplo.elems(), n, c, ldc, rwork);
     //
     if (anorm <= zero) {
         if (resid != zero) {
@@ -136,10 +120,10 @@ void Chet01_3(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, 
         resid = ((resid / castREAL(n)) / anorm) / eps;
     }
     //
-    //     b) Convert to factor of L (or U)
+    // b) Convert to factor of L (or U)
     //
-    Csyconvf_rook(uplo, "C", n, afac, ldafac, e, ipiv, info);
+    Csyconvf_rook(uplo.elems(), "C", n, afac, ldafac, e, ipiv, info);
     //
-    //     End of Chet01_3
+    // End of Chet01_3
     //
 }

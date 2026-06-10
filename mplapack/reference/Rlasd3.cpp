@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DLASD3.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -46,7 +53,7 @@ void Rlasd3(INTEGER const nl, INTEGER const nr, INTEGER const sqre, INTEGER cons
     INTEGER ctemp = 0;
     INTEGER nrp1 = 0;
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     //
@@ -81,13 +88,13 @@ void Rlasd3(INTEGER const nl, INTEGER const nr, INTEGER const sqre, INTEGER cons
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (k == 1) {
         d[1 - 1] = abs(z[1 - 1]);
-        Rcopy(m, &vt2[(1 - 1)], ldvt2, &vt[(1 - 1)], ldvt);
+        Rcopy(m, &vt2[0], ldvt2, &vt[0], ldvt);
         if (z[1 - 1] > zero) {
-            Rcopy(n, &u2[(1 - 1)], 1, &u[(1 - 1)], 1);
+            Rcopy(n, &u2[0], 1, &u[0], 1);
         } else {
             for (i = 1; i <= n; i = i + 1) {
                 u[(i - 1)] = -u2[(i - 1)];
@@ -96,50 +103,29 @@ void Rlasd3(INTEGER const nl, INTEGER const nr, INTEGER const sqre, INTEGER cons
         return;
     }
     //
-    //     Modify values DSIGMA(i) to make sure all DSIGMA(i)-DSIGMA(j) can
-    //     be computed with high relative accuracy (barring over/underflow).
-    //     This is a problem on machines without a guard digit in
-    //     add/subtract (Cray XMP, Cray YMP, Cray C 90 and Cray 2).
-    //     The following code replaces DSIGMA(I) by 2*DSIGMA(I)-DSIGMA(I),
-    //     which on any of these machines zeros out the bottommost
-    //     bit of DSIGMA(I) if it is 1; this makes the subsequent
-    //     subtractions DSIGMA(I)-DSIGMA(J) unproblematic when cancellation
-    //     occurs. On binary machines with a guard digit (almost all
-    //     machines) it does not change DSIGMA(I) at all. On hexadecimal
-    //     and decimal machines with a guard digit, it slightly
-    //     changes the bottommost bits of DSIGMA(I). It does not account
-    //     for hexadecimal or decimal machines without guard digits
-    //     (we know of none). We use a subroutine call to compute
-    //     2*DSIGMA(I) to prevent optimizing compilers from eliminating
-    //     this code.
-    //
-    for (i = 1; i <= k; i = i + 1) {
-        dsigma[i - 1] = Rlamc3(dsigma[i - 1], dsigma[i - 1]) - dsigma[i - 1];
-    }
-    //
-    //     Keep a copy of Z.
+    // Keep a copy of Z.
     //
     Rcopy(k, z, 1, q, 1);
     //
-    //     Normalize Z.
+    // Normalize Z.
     //
     rho = Rnrm2(k, z, 1);
     Rlascl("G", 0, 0, rho, one, k, 1, z, k, info);
     rho = rho * rho;
     //
-    //     Find the new singular values.
+    // Find the new singular values.
     //
     for (j = 1; j <= k; j = j + 1) {
         Rlasd4(k, j, dsigma, z, &u[(j - 1) * ldu], rho, d[j - 1], &vt[(j - 1) * ldvt], info);
         //
-        //        If the zero finder fails, report the convergence failure.
+        // If the zero finder fails, report the convergence failure.
         //
         if (info != 0) {
             return;
         }
     }
     //
-    //     Compute updated Z.
+    // Compute updated Z.
     //
     for (i = 1; i <= k; i = i + 1) {
         z[i - 1] = u[(i - 1) + (k - 1) * ldu] * vt[(i - 1) + (k - 1) * ldvt];
@@ -152,8 +138,8 @@ void Rlasd3(INTEGER const nl, INTEGER const nr, INTEGER const sqre, INTEGER cons
         z[i - 1] = sign(sqrt(abs(z[i - 1])), q[(i - 1)]);
     }
     //
-    //     Compute left singular vectors of the modified diagonal matrix,
-    //     and store related information for the right singular vectors.
+    // Compute left singular vectors of the modified diagonal matrix,
+    // and store related information for the right singular vectors.
     //
     for (i = 1; i <= k; i = i + 1) {
         vt[(i - 1) * ldvt] = z[1 - 1] / u[(i - 1) * ldu] / vt[(i - 1) * ldvt];
@@ -162,7 +148,7 @@ void Rlasd3(INTEGER const nl, INTEGER const nr, INTEGER const sqre, INTEGER cons
             vt[(j - 1) + (i - 1) * ldvt] = z[j - 1] / u[(j - 1) + (i - 1) * ldu] / vt[(j - 1) + (i - 1) * ldvt];
             u[(j - 1) + (i - 1) * ldu] = dsigma[j - 1] * vt[(j - 1) + (i - 1) * ldvt];
         }
-        temp = Rnrm2(k, &u[(i - 1) * ldu], (INTEGER)1);
+        temp = Rnrm2(k, &u[(i - 1) * ldu], 1);
         q[(i - 1) * ldq] = u[(i - 1) * ldu] / temp;
         for (j = 2; j <= k; j = j + 1) {
             jc = idxc[j - 1];
@@ -170,30 +156,30 @@ void Rlasd3(INTEGER const nl, INTEGER const nr, INTEGER const sqre, INTEGER cons
         }
     }
     //
-    //     Update the left singular vector matrix.
+    // Update the left singular vector matrix.
     //
     if (k == 2) {
         Rgemm("N", "N", n, k, k, one, u2, ldu2, q, ldq, zero, u, ldu);
         goto statement_100;
     }
     if (ctot[1 - 1] > 0) {
-        Rgemm("N", "N", nl, k, ctot[1 - 1], one, &u2[(2 - 1) * ldu2], ldu2, &q[(2 - 1)], ldq, zero, &u[(1 - 1)], ldu);
+        Rgemm("N", "N", nl, k, ctot[1 - 1], one, &u2[(2 - 1) * ldu2], ldu2, &q[(2 - 1)], ldq, zero, &u[0], ldu);
         if (ctot[3 - 1] > 0) {
             ktemp = 2 + ctot[1 - 1] + ctot[2 - 1];
-            Rgemm("N", "N", nl, k, ctot[3 - 1], one, &u2[(ktemp - 1) * ldu2], ldu2, &q[(ktemp - 1)], ldq, one, &u[(1 - 1)], ldu);
+            Rgemm("N", "N", nl, k, ctot[3 - 1], one, &u2[(ktemp - 1) * ldu2], ldu2, &q[(ktemp - 1)], ldq, one, &u[0], ldu);
         }
     } else if (ctot[3 - 1] > 0) {
         ktemp = 2 + ctot[1 - 1] + ctot[2 - 1];
-        Rgemm("N", "N", nl, k, ctot[3 - 1], one, &u2[(ktemp - 1) * ldu2], ldu2, &q[(ktemp - 1)], ldq, zero, &u[(1 - 1)], ldu);
+        Rgemm("N", "N", nl, k, ctot[3 - 1], one, &u2[(ktemp - 1) * ldu2], ldu2, &q[(ktemp - 1)], ldq, zero, &u[0], ldu);
     } else {
         Rlacpy("F", nl, k, u2, ldu2, u, ldu);
     }
-    Rcopy(k, &q[(1 - 1)], ldq, &u[(nlp1 - 1)], ldu);
+    Rcopy(k, &q[0], ldq, &u[(nlp1 - 1)], ldu);
     ktemp = 2 + ctot[1 - 1];
     ctemp = ctot[2 - 1] + ctot[3 - 1];
     Rgemm("N", "N", nr, k, ctemp, one, &u2[(nlp2 - 1) + (ktemp - 1) * ldu2], ldu2, &q[(ktemp - 1)], ldq, zero, &u[(nlp2 - 1)], ldu);
 //
-//     Generate the right singular vectors.
+// Generate the right singular vectors.
 //
 statement_100:
     for (i = 1; i <= k; i = i + 1) {
@@ -205,17 +191,17 @@ statement_100:
         }
     }
     //
-    //     Update the right singular vector matrix.
+    // Update the right singular vector matrix.
     //
     if (k == 2) {
         Rgemm("N", "N", k, m, k, one, q, ldq, vt2, ldvt2, zero, vt, ldvt);
         return;
     }
     ktemp = 1 + ctot[1 - 1];
-    Rgemm("N", "N", k, nlp1, ktemp, one, &q[(1 - 1)], ldq, &vt2[(1 - 1)], ldvt2, zero, &vt[(1 - 1)], ldvt);
+    Rgemm("N", "N", k, nlp1, ktemp, one, &q[0], ldq, &vt2[0], ldvt2, zero, &vt[0], ldvt);
     ktemp = 2 + ctot[1 - 1] + ctot[2 - 1];
     if (ktemp <= ldvt2) {
-        Rgemm("N", "N", k, nlp1, ctot[3 - 1], one, &q[(ktemp - 1) * ldq], ldq, &vt2[(ktemp - 1)], ldvt2, one, &vt[(1 - 1)], ldvt);
+        Rgemm("N", "N", k, nlp1, ctot[3 - 1], one, &q[(ktemp - 1) * ldq], ldq, &vt2[(ktemp - 1)], ldvt2, one, &vt[0], ldvt);
     }
     //
     ktemp = ctot[1 - 1] + 1;
@@ -231,6 +217,6 @@ statement_100:
     ctemp = 1 + ctot[2 - 1] + ctot[3 - 1];
     Rgemm("N", "N", k, nrp1, ctemp, one, &q[(ktemp - 1) * ldq], ldq, &vt2[(ktemp - 1) + (nlp2 - 1) * ldvt2], ldvt2, zero, &vt[(nlp2 - 1) * ldvt], ldvt);
     //
-    //     End of Rlasd3
+    // End of Rlasd3
     //
 }

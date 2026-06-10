@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,25 +26,16 @@
  *
  */
 
+// Derived from BLAS routine ZAXPY.
+// Original BLAS authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 
 void Caxpy(INTEGER const n, COMPLEX const za, COMPLEX *zx, INTEGER const incx, COMPLEX *zy, INTEGER const incy) {
-    //
-    //  -- Reference BLAS level1 routine --
-    //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
     if (n <= 0) {
         return;
     }
@@ -56,15 +47,15 @@ void Caxpy(INTEGER const n, COMPLEX const za, COMPLEX *zx, INTEGER const incx, C
     INTEGER iy = 0;
     if (incx == 1 && incy == 1) {
         //
-        //        code for both increments equal to 1
+        // code for both increments equal to 1
         //
         for (i = 1; i <= n; i = i + 1) {
             zy[i - 1] += za * zx[i - 1];
         }
     } else {
         //
-        //        code for unequal increments or equal increments
-        //          not equal to 1
+        // code for unequal increments or equal increments
+        // not equal to 1
         //
         ix = 1;
         iy = 1;
@@ -80,5 +71,7 @@ void Caxpy(INTEGER const n, COMPLEX const za, COMPLEX *zx, INTEGER const incx, C
             iy += incy;
         }
     }
+    //
+    // End of Caxpy
     //
 }

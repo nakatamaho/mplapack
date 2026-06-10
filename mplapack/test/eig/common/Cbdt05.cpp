@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZBDT05.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,36 +43,9 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
 void Cbdt05(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL *s, INTEGER const ns, COMPLEX *u, INTEGER const ldu, COMPLEX *vt, INTEGER const ldvt, COMPLEX *work, REAL &resid) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    // ======================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Quick return if possible.
+    // Quick return if possible.
     //
     const REAL zero = 0.0;
     resid = zero;
@@ -77,20 +57,20 @@ void Cbdt05(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REA
     REAL dum[1];
     REAL anorm = Clange("M", m, n, a, lda, dum);
     //
-    //     Compute U' * A * V.
+    // Compute U' * A * V.
     //
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     const COMPLEX czero = COMPLEX(0.0, 0.0);
     Cgemm("N", "C", m, ns, n, cone, a, lda, vt, ldvt, czero, &work[(1 + ns * ns) - 1], m);
     Cgemm("C", "N", ns, ns, m, -cone, u, ldu, &work[(1 + ns * ns) - 1], m, czero, work, ns);
     //
-    //     norm(S - U' * B * V)
+    // norm(S - U' * B * V)
     //
     INTEGER j = 0;
     INTEGER i = 0;
     for (i = 1; i <= ns; i = i + 1) {
         work[(j + i) - 1] += COMPLEX(s[i - 1], zero);
-        resid = max({resid, RCasum(ns, &work[(j + 1) - 1], 1)});
+        resid = max(resid, RCasum(ns, &work[(j + 1) - 1], 1));
         j += ns;
     }
     //
@@ -104,13 +84,13 @@ void Cbdt05(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REA
             resid = (resid / anorm) / (castREAL(n) * eps);
         } else {
             if (anorm < one) {
-                resid = (min(resid, REAL((castREAL(n) * anorm) / anorm))) / (castREAL(n) * eps);
+                resid = (min(resid, castREAL(n) * anorm) / anorm) / (castREAL(n) * eps);
             } else {
-                resid = min(REAL(resid / anorm), castREAL(n)) / (castREAL(n) * eps);
+                resid = min(resid / anorm, castREAL(n)) / (castREAL(n) * eps);
             }
         }
     }
     //
-    //     End of Cbdt05
+    // End of Cbdt05
     //
 }

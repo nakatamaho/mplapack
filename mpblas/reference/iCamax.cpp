@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,27 +26,18 @@
  *
  */
 
+// Derived from BLAS routine IZAMAX.
+// Original BLAS authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 
 INTEGER
 iCamax(INTEGER const n, COMPLEX *zx, INTEGER const incx) {
     INTEGER return_value = 0;
-    //
-    //  -- Reference BLAS level1 routine --
-    //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
     return_value = 0;
     if (n < 1 || incx <= 0) {
         return return_value;
@@ -60,7 +51,7 @@ iCamax(INTEGER const n, COMPLEX *zx, INTEGER const incx) {
     INTEGER ix = 0;
     if (incx == 1) {
         //
-        //        code for increment equal to 1
+        // code for increment equal to 1
         //
         dmax = RCabs1(zx[1 - 1]);
         for (i = 2; i <= n; i = i + 1) {
@@ -71,7 +62,7 @@ iCamax(INTEGER const n, COMPLEX *zx, INTEGER const incx) {
         }
     } else {
         //
-        //        code for increment not equal to 1
+        // code for increment not equal to 1
         //
         ix = 1;
         dmax = RCabs1(zx[1 - 1]);
@@ -85,4 +76,7 @@ iCamax(INTEGER const n, COMPLEX *zx, INTEGER const incx) {
         }
     }
     return return_value;
+    //
+    // End of iCamax
+    //
 }

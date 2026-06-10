@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,35 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZGETF2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Cgetf2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     if (m < 0) {
@@ -69,13 +53,13 @@ void Cgetf2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, INT
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (m == 0 || n == 0) {
         return;
     }
     //
-    //     Compute machine safe minimum
+    // Compute machine safe minimum
     //
     REAL sfmin = Rlamch("S");
     //
@@ -83,31 +67,24 @@ void Cgetf2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, INT
     INTEGER jp = 0;
     const COMPLEX zero = COMPLEX(0.0, 0.0);
     const COMPLEX one = COMPLEX(1.0, 0.0);
-    INTEGER i = 0;
     for (j = 1; j <= min(m, n); j = j + 1) {
         //
-        //        Find pivot and test for singularity.
+        // Find pivot and test for singularity.
         //
         jp = j - 1 + iCamax(m - j + 1, &a[(j - 1) + (j - 1) * lda], 1);
         ipiv[j - 1] = jp;
         if (a[(jp - 1) + (j - 1) * lda] != zero) {
             //
-            //           Apply the interchange to columns 1:N.
+            // Apply the interchange to columns 1:N.
             //
             if (jp != j) {
                 Cswap(n, &a[(j - 1)], lda, &a[(jp - 1)], lda);
             }
             //
-            //           Compute elements J+1:M of J-th column.
+            // Compute elements J+1:M of J-th column.
             //
             if (j < m) {
-                if (abs(a[(j - 1) + (j - 1) * lda]) >= sfmin) {
-                    Cscal(m - j, one / a[(j - 1) + (j - 1) * lda], &a[((j + 1) - 1) + (j - 1) * lda], 1);
-                } else {
-                    for (i = 1; i <= m - j; i = i + 1) {
-                        a[((j + i) - 1) + (j - 1) * lda] = a[((j + i) - 1) + (j - 1) * lda] / a[(j - 1) + (j - 1) * lda];
-                    }
-                }
+                Crscl(m - j, a[(j - 1) + (j - 1) * lda], &a[((j + 1) - 1) + (j - 1) * lda], 1);
             }
             //
         } else if (info == 0) {
@@ -117,12 +94,12 @@ void Cgetf2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, INT
         //
         if (j < min(m, n)) {
             //
-            //           Update trailing submatrix.
+            // Update trailing submatrix.
             //
             Cgeru(m - j, n - j, -one, &a[((j + 1) - 1) + (j - 1) * lda], 1, &a[(j - 1) + ((j + 1) - 1) * lda], lda, &a[((j + 1) - 1) + ((j + 1) - 1) * lda], lda);
         }
     }
     //
-    //     End of Cgetf2
+    // End of Cgetf2
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DLATB4.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,45 +43,51 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Rlatb4(const char *path, INTEGER const imat, INTEGER const m, INTEGER const n, char *type, INTEGER &kl, INTEGER &ku, REAL &anorm, INTEGER &mode, REAL &cndnum, char *dist) {
-    REAL badc1;
-    REAL badc2;
-    REAL eps;
-    REAL large;
-    REAL small;
+void Rlatb4(fem::str_cref path, INTEGER const imat, INTEGER const m, INTEGER const n, fem::str_ref type, INTEGER &kl, INTEGER &ku, REAL &anorm, INTEGER &mode, REAL &cndnum, fem::str_ref dist) {
     //
-    const REAL tenth = 0.1e+0;
+    // Set some constants for use in the subroutine.
+    //
+    const REAL tenth = 0.1;
     const REAL one = 1.0;
-    const REAL shrink = 0.25e0;
-    eps = Rlamch("Precision");
-    badc2 = tenth / eps;
-    badc1 = sqrt(badc2);
-    small = Rlamch("Safe minimum");
-    large = one / small;
+    const REAL shrink = 0.25;
+    REAL eps = Rlamch("Precision");
+    REAL badc2 = tenth / eps;
+#if defined ___MPLAPACK_BUILD_WITH_DD___ || defined ___MPLAPACK_BUILD_WITH_BINARY128___ || defined ___MPLAPACK_BUILD_WITH_MPFR___
+    const REAL badc2_cap = 1.0e24;
+    badc2 = min(badc2, badc2_cap);
+#elif defined ___MPLAPACK_BUILD_WITH_QD___ || defined ___MPLAPACK_BUILD_WITH_GMP___
+    const REAL badc2_cap = 1.0e30;
+    badc2 = min(badc2, badc2_cap);
+#endif
+    REAL badc1 = sqrt(badc2);
+    REAL small = Rlamch("Safe minimum");
+    REAL large = one / small;
+    //
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+    Rlabad(small, large);
+#endif
     small = shrink * (small / eps);
     large = one / small;
     //
-    char c2[2];
-    c2[0] = path[1];
-    c2[1] = path[2];
+    fem::str<2> c2 = path(2, 3);
     //
-    //     Set some parameters we don't plan to change.
+    // Set some parameters we don't plan to change.
     //
-    *dist = 'S';
+    dist = "S";
     mode = 3;
     //
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     INTEGER mat = 0;
-    if (Mlsamen(2, c2, "QR") || Mlsamen(2, c2, "LQ") || Mlsamen(2, c2, "QL") || Mlsamen(2, c2, "RQ")) {
+    if (Mlsamen(2, c2.elems, "QR") || Mlsamen(2, c2.elems, "LQ") || Mlsamen(2, c2.elems, "QL") || Mlsamen(2, c2.elems, "RQ")) {
         //
-        //        xQR, xLQ, xQL, xRQ:  Set parameters to generate a general
-        //                             M x N matrix.
+        // xQR, xLQ, xQL, xRQ:  Set parameters to generate a general
+        // M x N matrix.
         //
-        //        Set TYPE, the type of matrix to be generated.
+        // Set TYPE, the type of matrix to be generated.
         //
-        *type = 'N';
+        type = "N";
         //
-        //        Set the lower and upper bandwidths.
+        // Set the lower and upper bandwidths.
         //
         if (imat == 1) {
             kl = 0;
@@ -90,7 +103,7 @@ void Rlatb4(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
             ku = max(n - 1, (INTEGER)0);
         }
         //
-        //        Set the condition number and norm.
+        // Set the condition number and norm.
         //
         if (imat == 5) {
             cndnum = badc1;
@@ -108,15 +121,119 @@ void Rlatb4(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
             anorm = one;
         }
         //
-    } else if (Mlsamen(2, c2, "GE")) {
+    } else if (Mlsamen(2, c2.elems, "QK")) {
         //
-        //        xGE:  Set parameters to generate a general M x N matrix.
+        // xQK: truncated QR with pivoting.
+        // Set parameters to generate a general
+        // M x N matrix.
         //
-        //        Set TYPE, the type of matrix to be generated.
+        // Set TYPE, the type of matrix to be generated.  'N' is nonsymmetric.
         //
-        *type = 'N';
+        type = "N";
         //
-        //        Set the lower and upper bandwidths.
+        // Set DIST, the type of distribution for the random
+        // number generator. 'S' is
+        //
+        dist = "S";
+        //
+        // Set the lower and upper bandwidths.
+        //
+        if (imat == 2) {
+            //
+            // 2. Random, Diagonal, CNDNUM = 2
+            //
+            kl = 0;
+            ku = 0;
+            cndnum = two;
+            anorm = one;
+            mode = 3;
+        } else if (imat == 3) {
+            //
+            // 3. Random, Upper triangular,  CNDNUM = 2
+            //
+            kl = 0;
+            ku = max(n - 1, (INTEGER)0);
+            cndnum = two;
+            anorm = one;
+            mode = 3;
+        } else if (imat == 4) {
+            //
+            // 4. Random, Lower triangular,  CNDNUM = 2
+            //
+            kl = max(m - 1, (INTEGER)0);
+            ku = 0;
+            cndnum = two;
+            anorm = one;
+            mode = 3;
+        } else {
+            //
+            // 5.-19. Rectangular matrix
+            //
+            kl = max(m - 1, (INTEGER)0);
+            ku = max(n - 1, (INTEGER)0);
+            //
+            if (imat >= 5 && imat <= 14) {
+                //
+                // 5.-14. Random, CNDNUM = 2.
+                //
+                cndnum = two;
+                anorm = one;
+                mode = 3;
+                //
+            } else if (imat == 15) {
+                //
+                // 15. Random, CNDNUM = sqrt(0.1/EPS)
+                //
+                cndnum = badc1;
+                anorm = one;
+                mode = 3;
+                //
+            } else if (imat == 16) {
+                //
+                // 16. Random, CNDNUM = 0.1/EPS
+                //
+                cndnum = badc2;
+                anorm = one;
+                mode = 3;
+                //
+            } else if (imat == 17) {
+                //
+                // 17. Random, CNDNUM = 0.1/EPS,
+                // one small singular value S(N)=1/CNDNUM
+                //
+                cndnum = badc2;
+                anorm = one;
+                mode = 2;
+                //
+            } else if (imat == 18) {
+                //
+                // 18. Random, scaled near underflow
+                //
+                cndnum = two;
+                anorm = small;
+                mode = 3;
+                //
+            } else if (imat == 19) {
+                //
+                // 19. Random, scaled near overflow
+                //
+                cndnum = two;
+                anorm = large;
+                mode = 3;
+                //
+            }
+            //
+        }
+        //
+    } else if (Mlsamen(2, c2.elems, "GE")) {
+        //
+        // xGE:  Set parameters to generate a general M x N matrix.
+        //
+        // Set TYPE, the type of matrix to be generated.
+        //
+        type = "N";
+        //
+        // Set the lower and upper bandwidths.
         //
         if (imat == 1) {
             kl = 0;
@@ -132,7 +249,7 @@ void Rlatb4(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
             ku = max(n - 1, (INTEGER)0);
         }
         //
-        //        Set the condition number and norm.
+        // Set the condition number and norm.
         //
         if (imat == 8) {
             cndnum = badc1;
@@ -150,30 +267,20 @@ void Rlatb4(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
             anorm = one;
         }
         //
-    } else if (Mlsamen(2, c2, "GB")) {
+    } else if (Mlsamen(2, c2.elems, "GB")) {
         //
-        //        xGB:  Set parameters to generate a general banded matrix.
+        // xGB:  Set parameters to generate a general banded matrix.
         //
-        //        Set TYPE, the type of matrix to be generated.
+        // Set TYPE, the type of matrix to be generated.
         //
-        *type = 'N';
+        type = "N";
         //
-        //        Set the condition number and norm.
+        // Set the condition number and norm.
         //
         if (imat == 5) {
             cndnum = badc1;
         } else if (imat == 6) {
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
-            cndnum = tenth * badc2 * 1e-16; // this is for MPFR, 512bit
-#elif defined ___MPLAPACK_BUILD_WITH__FLOAT128___
-            cndnum = tenth * badc2 * 1e-4;
-#elif defined ___MPLAPACK_BUILD_WITH_DD___
-            cndnum = tenth * badc2 * 1e-3;
-#elif defined ___MPLAPACK_BUILD_WITH_QD___
-            cndnum = tenth * badc2 * 1e-5;
-#else
             cndnum = tenth * badc2;
-#endif
         } else {
             cndnum = two;
         }
@@ -186,15 +293,15 @@ void Rlatb4(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
             anorm = one;
         }
         //
-    } else if (Mlsamen(2, c2, "GT")) {
+    } else if (Mlsamen(2, c2.elems, "GT")) {
         //
-        //        xGT:  Set parameters to generate a general tridiagonal matrix.
+        // xGT:  Set parameters to generate a general tridiagonal matrix.
         //
-        //        Set TYPE, the type of matrix to be generated.
+        // Set TYPE, the type of matrix to be generated.
         //
-        *type = 'N';
+        type = "N";
         //
-        //        Set the lower and upper bandwidths.
+        // Set the lower and upper bandwidths.
         //
         if (imat == 1) {
             kl = 0;
@@ -203,7 +310,7 @@ void Rlatb4(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
         }
         ku = kl;
         //
-        //        Set the condition number and norm.
+        // Set the condition number and norm.
         //
         if (imat == 3) {
             cndnum = badc1;
@@ -221,16 +328,16 @@ void Rlatb4(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
             anorm = one;
         }
         //
-    } else if (Mlsamen(2, c2, "PO") || Mlsamen(2, c2, "PP")) {
+    } else if (Mlsamen(2, c2.elems, "PO") || Mlsamen(2, c2.elems, "PP")) {
         //
-        //        xPO, xPP: Set parameters to generate a
-        //        symmetric positive definite matrix.
+        // xPO, xPP: Set parameters to generate a
+        // symmetric positive definite matrix.
         //
-        //        Set TYPE, the type of matrix to be generated.
+        // Set TYPE, the type of matrix to be generated.
         //
-        *type = c2[(1 - 1)];
+        type = c2(1, 1);
         //
-        //        Set the lower and upper bandwidths.
+        // Set the lower and upper bandwidths.
         //
         if (imat == 1) {
             kl = 0;
@@ -239,7 +346,7 @@ void Rlatb4(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
         }
         ku = kl;
         //
-        //        Set the condition number and norm.
+        // Set the condition number and norm.
         //
         if (imat == 6) {
             cndnum = badc1;
@@ -257,16 +364,16 @@ void Rlatb4(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
             anorm = one;
         }
         //
-    } else if (Mlsamen(2, c2, "SY") || Mlsamen(2, c2, "SP")) {
+    } else if (Mlsamen(2, c2.elems, "SY") || Mlsamen(2, c2.elems, "SP")) {
         //
-        //        xSY, xSP: Set parameters to generate a
-        //        symmetric matrix.
+        // xSY, xSP: Set parameters to generate a
+        // symmetric matrix.
         //
-        //        Set TYPE, the type of matrix to be generated.
+        // Set TYPE, the type of matrix to be generated.
         //
-        *type = c2[(1 - 1)];
+        type = c2(1, 1);
         //
-        //        Set the lower and upper bandwidths.
+        // Set the lower and upper bandwidths.
         //
         if (imat == 1) {
             kl = 0;
@@ -275,7 +382,7 @@ void Rlatb4(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
         }
         ku = kl;
         //
-        //        Set the condition number and norm.
+        // Set the condition number and norm.
         //
         if (imat == 7) {
             cndnum = badc1;
@@ -293,15 +400,15 @@ void Rlatb4(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
             anorm = one;
         }
         //
-    } else if (Mlsamen(2, c2, "PB")) {
+    } else if (Mlsamen(2, c2.elems, "PB")) {
         //
-        //        xPB:  Set parameters to generate a symmetric band matrix.
+        // xPB:  Set parameters to generate a symmetric band matrix.
         //
-        //        Set TYPE, the type of matrix to be generated.
+        // Set TYPE, the type of matrix to be generated.
         //
-        *type = 'P';
+        type = "P";
         //
-        //        Set the norm and condition number.
+        // Set the norm and condition number.
         //
         if (imat == 5) {
             cndnum = badc1;
@@ -319,12 +426,12 @@ void Rlatb4(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
             anorm = one;
         }
         //
-    } else if (Mlsamen(2, c2, "PT")) {
+    } else if (Mlsamen(2, c2.elems, "PT")) {
         //
-        //        xPT:  Set parameters to generate a symmetric positive definite
-        //        tridiagonal matrix.
+        // xPT:  Set parameters to generate a symmetric positive definite
+        // tridiagonal matrix.
         //
-        *type = 'P';
+        type = "P";
         if (imat == 1) {
             kl = 0;
         } else {
@@ -332,7 +439,7 @@ void Rlatb4(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
         }
         ku = kl;
         //
-        //        Set the condition number and norm.
+        // Set the condition number and norm.
         //
         if (imat == 3) {
             cndnum = badc1;
@@ -350,15 +457,15 @@ void Rlatb4(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
             anorm = one;
         }
         //
-    } else if (Mlsamen(2, c2, "TR") || Mlsamen(2, c2, "TP")) {
+    } else if (Mlsamen(2, c2.elems, "TR") || Mlsamen(2, c2.elems, "TP")) {
         //
-        //        xTR, xTP:  Set parameters to generate a triangular matrix
+        // xTR, xTP:  Set parameters to generate a triangular matrix
         //
-        //        Set TYPE, the type of matrix to be generated.
+        // Set TYPE, the type of matrix to be generated.
         //
-        *type = 'N';
+        type = "N";
         //
-        //        Set the lower and upper bandwidths.
+        // Set the lower and upper bandwidths.
         //
         mat = abs(imat);
         if (mat == 1 || mat == 7) {
@@ -372,7 +479,7 @@ void Rlatb4(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
             ku = max(n - 1, (INTEGER)0);
         }
         //
-        //        Set the condition number and norm.
+        // Set the condition number and norm.
         //
         if (mat == 3 || mat == 9) {
             cndnum = badc1;
@@ -392,27 +499,28 @@ void Rlatb4(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
             anorm = one;
         }
         //
-    } else if (Mlsamen(2, c2, "TB")) {
+    } else if (Mlsamen(2, c2.elems, "TB")) {
         //
-        //        xTB:  Set parameters to generate a triangular band matrix.
+        // xTB:  Set parameters to generate a triangular band matrix.
         //
-        //        Set TYPE, the type of matrix to be generated.
+        // Set TYPE, the type of matrix to be generated.
         //
-        *type = 'N';
+        type = "N";
         //
-        //        Set the norm and condition number.
+        // Set the norm and condition number.
         //
-        if (imat == 2 || imat == 8) {
+        mat = abs(imat);
+        if (mat == 2 || mat == 8) {
             cndnum = badc1;
-        } else if (imat == 3 || imat == 9) {
+        } else if (mat == 3 || mat == 9) {
             cndnum = badc2;
         } else {
             cndnum = two;
         }
         //
-        if (imat == 4) {
+        if (mat == 4) {
             anorm = small;
-        } else if (imat == 5) {
+        } else if (mat == 5) {
             anorm = large;
         } else {
             anorm = one;
@@ -422,6 +530,6 @@ void Rlatb4(const char *path, INTEGER const imat, INTEGER const m, INTEGER const
         cndnum = one;
     }
     //
-    //     End of Rlatb4
+    // End of Rlatb4
     //
 }

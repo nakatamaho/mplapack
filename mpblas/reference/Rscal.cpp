@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,26 +26,18 @@
  *
  */
 
+// Derived from BLAS routine DSCAL.
+// Original BLAS authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 
 void Rscal(INTEGER const n, REAL const da, REAL *dx, INTEGER const incx) {
-    //
-    //  -- Reference BLAS level1 routine --
-    //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    if (n <= 0 || incx <= 0) {
+    const REAL one = 1.0;
+    if (n <= 0 || incx <= 0 || da == one) {
         return;
     }
     INTEGER m = 0;
@@ -54,9 +46,9 @@ void Rscal(INTEGER const n, REAL const da, REAL *dx, INTEGER const incx) {
     INTEGER nincx = 0;
     if (incx == 1) {
         //
-        //        code for increment equal to 1
+        // code for increment equal to 1
         //
-        //        clean-up loop
+        // clean-up loop
         //
         m = mod(n, 5);
         if (m != 0) {
@@ -77,11 +69,14 @@ void Rscal(INTEGER const n, REAL const da, REAL *dx, INTEGER const incx) {
         }
     } else {
         //
-        //        code for increment not equal to 1
+        // code for increment not equal to 1
         //
         nincx = n * incx;
         for (i = 1; i <= nincx; i = i + incx) {
             dx[i - 1] = da * dx[i - 1];
         }
     }
+    //
+    // End of Rscal
+    //
 }

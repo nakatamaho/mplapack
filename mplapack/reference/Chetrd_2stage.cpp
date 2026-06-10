@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,45 +26,38 @@
  *
  */
 
+// Derived from LAPACK routine ZHETRD_2STAGE.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Chetrd_2stage(const char *vect, const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL *d, REAL *e, COMPLEX *tau, COMPLEX *hous2, INTEGER const lhous2, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters
+    // Test the input parameters
     //
     info = 0;
     bool wantq = Mlsame(vect, "V");
     bool upper = Mlsame(uplo, "U");
     bool lquery = (lwork == -1) || (lhous2 == -1);
     //
-    //     Determine the block size, the workspace size and the hous size.
+    // Determine the block size, the workspace size and the hous size.
     //
     INTEGER kd = iMlaenv2stage(1, "Chetrd_2stage", vect, n, -1, -1, -1);
     INTEGER ib = iMlaenv2stage(2, "Chetrd_2stage", vect, n, kd, -1, -1);
-    INTEGER lhmin = iMlaenv2stage(3, "Chetrd_2stage", vect, n, kd, ib, -1);
-    INTEGER lwmin = iMlaenv2stage(4, "Chetrd_2stage", vect, n, kd, ib, -1);
-    //      WRITE(*,*),'Chetrd_2stage N KD UPLO LHMIN LWMIN ',N, KD, UPLO,
-    //     $            LHMIN, LWMIN
+    INTEGER lhmin = 0;
+    INTEGER lwmin = 0;
+    if (n == 0) {
+        lhmin = 1;
+        lwmin = 1;
+    } else {
+        lhmin = iMlaenv2stage(3, "Chetrd_2stage", vect, n, kd, ib, -1);
+        lwmin = iMlaenv2stage(4, "Chetrd_2stage", vect, n, kd, ib, -1);
+    }
     //
     if (!Mlsame(vect, "N")) {
         info = -1;
@@ -92,14 +85,14 @@ void Chetrd_2stage(const char *vect, const char *uplo, INTEGER const n, COMPLEX 
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
-        work[1 - 1] = 1;
+        work[1 - 1] = 1.0;
         return;
     }
     //
-    //     Determine pointer position
+    // Determine pointer position
     //
     INTEGER ldab = kd + 1;
     INTEGER lwrk = lwork - ldab * n;
@@ -116,9 +109,8 @@ void Chetrd_2stage(const char *vect, const char *uplo, INTEGER const n, COMPLEX 
         return;
     }
     //
-    hous2[1 - 1] = lhmin;
     work[1 - 1] = lwmin;
     //
-    //     End of Chetrd_2stage
+    // End of Chetrd_2stage
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZSYTRF_AA.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -46,33 +53,11 @@ void Csytrf_aa(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
     INTEGER j3 = 0;
     INTEGER mj = 0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //     .. Parameters ..
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Determine the block size
+    // Determine the block size
     //
     nb = iMlaenv(1, "Csytrf_aa", uplo, n, -1, -1, -1);
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     upper = Mlsame(uplo, "U");
@@ -99,7 +84,7 @@ void Csytrf_aa(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
         return;
     }
     //
-    //     Quick return
+    // Quick return
     //
     if (n == 0) {
         return;
@@ -109,7 +94,7 @@ void Csytrf_aa(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
         return;
     }
     //
-    //     Adjust block size based on the workspace size
+    // Adjust block size based on the workspace size
     //
     if (lwork < ((1 + nb) * n)) {
         nb = (lwork - n) / n;
@@ -117,17 +102,17 @@ void Csytrf_aa(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
     //
     if (upper) {
         //
-        //        .....................................................
-        //        Factorize A as U**T*D*U using the upper triangle of A
-        //        .....................................................
+        // .....................................................
+        // Factorize A as U**T*D*U using the upper triangle of A
+        // .....................................................
         //
-        //        Copy first row A(1, 1:N) into H(1:n) (stored in WORK(1:N))
+        // Copy first row A(1, 1:N) into H(1:n) (stored in WORK(1:N))
         //
-        Ccopy(n, &a[(1 - 1)], lda, &work[1 - 1], 1);
+        Ccopy(n, &a[0], lda, &work[1 - 1], 1);
         //
-        //        J is the main loop index, increasing from 1 to N in steps of
-        //        JB, where JB is the number of columns factorized by Clasyf;
-        //        JB is either NB, or N-J+1 for the last block
+        // J is the main loop index, increasing from 1 to N in steps of
+        // JB, where JB is the number of columns factorized by Clasyf;
+        // JB is either NB, or N-J+1 for the last block
         //
         j = 0;
     statement_10:
@@ -135,22 +120,22 @@ void Csytrf_aa(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
             goto statement_20;
         }
         //
-        //        each step of the main loop
-        //         J is the last column of the previous panel
-        //         J1 is the first column of the current panel
-        //         K1 identifies if the previous column of the panel has been
-        //          explicitly stored, e.g., K1=1 for the first panel, and
-        //          K1=0 for the rest
+        // each step of the main loop
+        // J is the last column of the previous panel
+        // J1 is the first column of the current panel
+        // K1 identifies if the previous column of the panel has been
+        // explicitly stored, e.g., K1=1 for the first panel, and
+        // K1=0 for the rest
         //
         j1 = j + 1;
         jb = min(n - j1 + 1, nb);
         k1 = max((INTEGER)1, j) - j;
         //
-        //        Panel factorization
+        // Panel factorization
         //
         Clasyf_aa(uplo, 2 - k1, n - j, jb, &a[(max((INTEGER)1, j) - 1) + ((j + 1) - 1) * lda], lda, &ipiv[(j + 1) - 1], work, n, &work[(n * nb + 1) - 1]);
         //
-        //        Adjust IPIV and apply it back (J-th step picks (J+1)-th pivot)
+        // Adjust IPIV and apply it back (J-th step picks (J+1)-th pivot)
         //
         for (j2 = j + 2; j2 <= min(n, j + jb + 1); j2 = j2 + 1) {
             ipiv[j2 - 1] += j;
@@ -160,39 +145,39 @@ void Csytrf_aa(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
         }
         j += jb;
         //
-        //        Trailing submatrix update, where
-        //         the row A(J1-1, J2-1:N) stores U(J1, J2+1:N) and
-        //         WORK stores the current block of the auxiriarly matrix H
+        // Trailing submatrix update, where
+        // the row A(J1-1, J2-1:N) stores U(J1, J2+1:N) and
+        // WORK stores the current block of the auxiriarly matrix H
         //
         if (j < n) {
             //
-            //           If first panel and JB=1 (NB=1), then nothing to do
+            // If first panel and JB=1 (NB=1), then nothing to do
             //
             if (j1 > 1 || jb > 1) {
                 //
-                //              Merge rank-1 update with BLAS-3 update
+                // Merge rank-1 update with BLAS-3 update
                 //
                 alpha = a[(j - 1) + ((j + 1) - 1) * lda];
                 a[(j - 1) + ((j + 1) - 1) * lda] = one;
                 Ccopy(n - j, &a[((j - 1) - 1) + ((j + 1) - 1) * lda], lda, &work[((j + 1 - j1 + 1) + jb * n) - 1], 1);
                 Cscal(n - j, alpha, &work[((j + 1 - j1 + 1) + jb * n) - 1], 1);
                 //
-                //              K1 identifies if the previous column of the panel has been
-                //               explicitly stored, e.g., K1=1 and K2= 0 for the first panel,
-                //               while K1=0 and K2=1 for the rest
+                // K1 identifies if the previous column of the panel has been
+                // explicitly stored, e.g., K1=1 and K2= 0 for the first panel,
+                // while K1=0 and K2=1 for the rest
                 //
                 if (j1 > 1) {
                     //
-                    //                 Not first panel
+                    // Not first panel
                     //
                     k2 = 1;
                 } else {
                     //
-                    //                 First panel
+                    // First panel
                     //
                     k2 = 0;
                     //
-                    //                 First update skips the first column
+                    // First update skips the first column
                     //
                     jb = jb - 1;
                 }
@@ -200,7 +185,7 @@ void Csytrf_aa(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
                 for (j2 = j + 1; j2 <= n; j2 = j2 + nb) {
                     nj = min(nb, n - j2 + 1);
                     //
-                    //                 Update (J2, J2) diagonal block with Cgemv
+                    // Update (J2, J2) diagonal block with Cgemv
                     //
                     j3 = j2;
                     for (mj = nj - 1; mj >= 1; mj = mj - 1) {
@@ -208,35 +193,35 @@ void Csytrf_aa(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
                         j3++;
                     }
                     //
-                    //                 Update off-diagonal block of J2-th block row with Cgemm
+                    // Update off-diagonal block of J2-th block row with Cgemm
                     //
                     Cgemm("Transpose", "Transpose", nj, n - j3 + 1, jb + 1, -one, &a[((j1 - k2) - 1) + (j2 - 1) * lda], lda, &work[(j3 - j1 + 1 + k1 * n) - 1], n, one, &a[(j2 - 1) + (j3 - 1) * lda], lda);
                 }
                 //
-                //              Recover T( J, J+1 )
+                // Recover T( J, J+1 )
                 //
                 a[(j - 1) + ((j + 1) - 1) * lda] = alpha;
             }
             //
-            //           WORK(J+1, 1) stores H(J+1, 1)
+            // WORK(J+1, 1) stores H(J+1, 1)
             //
             Ccopy(n - j, &a[((j + 1) - 1) + ((j + 1) - 1) * lda], lda, &work[1 - 1], 1);
         }
         goto statement_10;
     } else {
         //
-        //        .....................................................
-        //        Factorize A as L*D*L**T using the lower triangle of A
-        //        .....................................................
+        // .....................................................
+        // Factorize A as L*D*L**T using the lower triangle of A
+        // .....................................................
         //
-        //        copy first column A(1:N, 1) into H(1:N, 1)
-        //         (stored in WORK(1:N))
+        // copy first column A(1:N, 1) into H(1:N, 1)
+        // (stored in WORK(1:N))
         //
-        Ccopy(n, &a[(1 - 1)], 1, &work[1 - 1], 1);
+        Ccopy(n, &a[0], 1, &work[1 - 1], 1);
         //
-        //        J is the main loop index, increasing from 1 to N in steps of
-        //        JB, where JB is the number of columns factorized by Clasyf;
-        //        JB is either NB, or N-J+1 for the last block
+        // J is the main loop index, increasing from 1 to N in steps of
+        // JB, where JB is the number of columns factorized by Clasyf;
+        // JB is either NB, or N-J+1 for the last block
         //
         j = 0;
     statement_11:
@@ -244,22 +229,22 @@ void Csytrf_aa(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
             goto statement_20;
         }
         //
-        //        each step of the main loop
-        //         J is the last column of the previous panel
-        //         J1 is the first column of the current panel
-        //         K1 identifies if the previous column of the panel has been
-        //          explicitly stored, e.g., K1=1 for the first panel, and
-        //          K1=0 for the rest
+        // each step of the main loop
+        // J is the last column of the previous panel
+        // J1 is the first column of the current panel
+        // K1 identifies if the previous column of the panel has been
+        // explicitly stored, e.g., K1=1 for the first panel, and
+        // K1=0 for the rest
         //
         j1 = j + 1;
         jb = min(n - j1 + 1, nb);
         k1 = max((INTEGER)1, j) - j;
         //
-        //        Panel factorization
+        // Panel factorization
         //
         Clasyf_aa(uplo, 2 - k1, n - j, jb, &a[((j + 1) - 1) + (max((INTEGER)1, j) - 1) * lda], lda, &ipiv[(j + 1) - 1], work, n, &work[(n * nb + 1) - 1]);
         //
-        //        Adjust IPIV and apply it back (J-th step picks (J+1)-th pivot)
+        // Adjust IPIV and apply it back (J-th step picks (J+1)-th pivot)
         //
         for (j2 = j + 2; j2 <= min(n, j + jb + 1); j2 = j2 + 1) {
             ipiv[j2 - 1] += j;
@@ -269,39 +254,39 @@ void Csytrf_aa(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
         }
         j += jb;
         //
-        //        Trailing submatrix update, where
-        //          A(J2+1, J1-1) stores L(J2+1, J1) and
-        //          WORK(J2+1, 1) stores H(J2+1, 1)
+        // Trailing submatrix update, where
+        // A(J2+1, J1-1) stores L(J2+1, J1) and
+        // WORK(J2+1, 1) stores H(J2+1, 1)
         //
         if (j < n) {
             //
-            //           if first panel and JB=1 (NB=1), then nothing to do
+            // if first panel and JB=1 (NB=1), then nothing to do
             //
             if (j1 > 1 || jb > 1) {
                 //
-                //              Merge rank-1 update with BLAS-3 update
+                // Merge rank-1 update with BLAS-3 update
                 //
                 alpha = a[((j + 1) - 1) + (j - 1) * lda];
                 a[((j + 1) - 1) + (j - 1) * lda] = one;
                 Ccopy(n - j, &a[((j + 1) - 1) + ((j - 1) - 1) * lda], 1, &work[((j + 1 - j1 + 1) + jb * n) - 1], 1);
                 Cscal(n - j, alpha, &work[((j + 1 - j1 + 1) + jb * n) - 1], 1);
                 //
-                //              K1 identifies if the previous column of the panel has been
-                //               explicitly stored, e.g., K1=1 and K2= 0 for the first panel,
-                //               while K1=0 and K2=1 for the rest
+                // K1 identifies if the previous column of the panel has been
+                // explicitly stored, e.g., K1=1 and K2= 0 for the first panel,
+                // while K1=0 and K2=1 for the rest
                 //
                 if (j1 > 1) {
                     //
-                    //                 Not first panel
+                    // Not first panel
                     //
                     k2 = 1;
                 } else {
                     //
-                    //                 First panel
+                    // First panel
                     //
                     k2 = 0;
                     //
-                    //                 First update skips the first column
+                    // First update skips the first column
                     //
                     jb = jb - 1;
                 }
@@ -309,7 +294,7 @@ void Csytrf_aa(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
                 for (j2 = j + 1; j2 <= n; j2 = j2 + nb) {
                     nj = min(nb, n - j2 + 1);
                     //
-                    //                 Update (J2, J2) diagonal block with Cgemv
+                    // Update (J2, J2) diagonal block with Cgemv
                     //
                     j3 = j2;
                     for (mj = nj - 1; mj >= 1; mj = mj - 1) {
@@ -317,25 +302,26 @@ void Csytrf_aa(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
                         j3++;
                     }
                     //
-                    //                 Update off-diagonal block in J2-th block column with Cgemm
+                    // Update off-diagonal block in J2-th block column with Cgemm
                     //
                     Cgemm("No transpose", "Transpose", n - j3 + 1, nj, jb + 1, -one, &work[(j3 - j1 + 1 + k1 * n) - 1], n, &a[(j2 - 1) + ((j1 - k2) - 1) * lda], lda, one, &a[(j3 - 1) + (j2 - 1) * lda], lda);
                 }
                 //
-                //              Recover T( J+1, J )
+                // Recover T( J+1, J )
                 //
                 a[((j + 1) - 1) + (j - 1) * lda] = alpha;
             }
             //
-            //           WORK(J+1, 1) stores H(J+1, 1)
+            // WORK(J+1, 1) stores H(J+1, 1)
             //
             Ccopy(n - j, &a[((j + 1) - 1) + ((j + 1) - 1) * lda], 1, &work[1 - 1], 1);
         }
         goto statement_11;
     }
 //
-statement_20:;
+statement_20:
+    work[1 - 1] = lwkopt;
     //
-    //     End of Csytrf_aa
+    // End of Csytrf_aa
     //
 }

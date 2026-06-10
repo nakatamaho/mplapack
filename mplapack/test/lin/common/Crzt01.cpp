@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZRZT01.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -39,31 +46,6 @@ using fem::common;
 REAL Crzt01(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, INTEGER const lda, COMPLEX *tau, COMPLEX *work, INTEGER const lwork) {
     REAL return_value = 0.0;
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     const REAL zero = 0.0;
     return_value = zero;
     //
@@ -72,7 +54,7 @@ REAL Crzt01(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, INTEGER c
         return return_value;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (m <= 0 || n <= 0) {
         return return_value;
@@ -81,24 +63,23 @@ REAL Crzt01(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, INTEGER c
     REAL rwork[1];
     REAL norma = Clange("One-norm", m, n, a, lda, rwork);
     //
-    //     Copy upper triangle R
+    // Copy upper triangle R
     //
     Claset("Full", m, n, COMPLEX(zero), COMPLEX(zero), work, m);
     INTEGER j = 0;
     INTEGER i = 0;
-    INTEGER ldaf = lda;
     for (j = 1; j <= m; j = j + 1) {
         for (i = 1; i <= j; i = i + 1) {
-            work[((j - 1) * m + i) - 1] = af[(i - 1) + (j - 1) * ldaf];
+            work[((j - 1) * m + i) - 1] = af[(i - 1) + (j - 1) * lda];
         }
     }
     //
-    //     R = R * P(1) * ... *P(m)
+    // R = R * P(1) * ... *P(m)
     //
     INTEGER info = 0;
-    Cunmrz("Right", "No tranpose", m, n, m, n - m, af, lda, tau, work, m, &work[(m * n + 1) - 1], lwork - m * n, info);
+    Cunmrz("Right", "No transpose", m, n, m, n - m, af, lda, tau, work, m, &work[(m * n + 1) - 1], lwork - m * n, info);
     //
-    //     R = R - A
+    // R = R - A
     //
     const REAL one = 1.0;
     for (i = 1; i <= n; i = i + 1) {
@@ -114,6 +95,6 @@ REAL Crzt01(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, INTEGER c
     //
     return return_value;
     //
-    //     End of Crzt01
+    // End of Crzt01
     //
 }

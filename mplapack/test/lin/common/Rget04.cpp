@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,16 +26,26 @@
  *
  */
 
+// Derived from LAPACK routine DGET04.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Rget04(INTEGER const n, INTEGER const nrhs, REAL *x, INTEGER const ldx, REAL *xact, INTEGER const ldxact, REAL const rcond, REAL &resid) {
     //
-    //     Quick exit if N = 0 or NRHS = 0.
+    // Quick exit if N = 0 or NRHS = 0.
     //
     const REAL zero = 0.0;
     if (n <= 0 || nrhs <= 0) {
@@ -43,7 +53,7 @@ void Rget04(INTEGER const n, INTEGER const nrhs, REAL *x, INTEGER const ldx, REA
         return;
     }
     //
-    //     Exit with RESID = 1/EPS if RCOND is invalid.
+    // Exit with RESID = 1/EPS if RCOND is invalid.
     //
     REAL eps = Rlamch("Epsilon");
     if (rcond < zero) {
@@ -51,9 +61,9 @@ void Rget04(INTEGER const n, INTEGER const nrhs, REAL *x, INTEGER const ldx, REA
         return;
     }
     //
-    //     Compute the maximum of
-    //        norm(X - XACT) / ( norm(XACT) * EPS )
-    //     over all the vectors X and XACT .
+    // Compute the maximum of
+    // norm(X - XACT) / ( norm(XACT) * EPS )
+    // over all the vectors X and XACT .
     //
     resid = zero;
     INTEGER j = 0;
@@ -66,20 +76,20 @@ void Rget04(INTEGER const n, INTEGER const nrhs, REAL *x, INTEGER const ldx, REA
         xnorm = abs(xact[(ix - 1) + (j - 1) * ldxact]);
         diffnm = zero;
         for (i = 1; i <= n; i = i + 1) {
-            diffnm = max(diffnm, REAL(abs(x[(i - 1) + (j - 1) * ldx] - xact[(i - 1) + (j - 1) * ldxact])));
+            diffnm = max(diffnm, abs(x[(i - 1) + (j - 1) * ldx] - xact[(i - 1) + (j - 1) * ldxact]));
         }
         if (xnorm <= zero) {
             if (diffnm > zero) {
                 resid = 1.0 / eps;
             }
         } else {
-            resid = max(resid, REAL((diffnm / xnorm) * rcond));
+            resid = max(resid, (diffnm / xnorm) * rcond);
         }
     }
     if (resid * eps < 1.0) {
         resid = resid / eps;
     }
     //
-    //     End of Rget04
+    // End of Rget04
     //
 }

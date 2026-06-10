@@ -39,10 +39,13 @@
 #if defined __APPLE__
 #define DYLIB_SUFFIX ".dylib"
 #elif defined _WIN32
-#define DYLIB_SUFFIX "-0.dll" //XXX
+#define DYLIB_SUFFIX "-0.dll" // XXX
 #else
 #define DYLIB_SUFFIX ".so"
 #endif
+
+using std::max;
+using std::min;
 
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
 #include <mplapack_benchmark_mpfr.h>
@@ -116,13 +119,13 @@ double randomnumber(double dummy) {
 }
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
-#include <mplapack_benchmark__Float64x.h>
-#define MPLAPACK_REF_LIB "libmplapack__Float64x"
-#define MPBLAS_REF_LIB "libmpblas__Float64x"
+#if defined ___MPLAPACK_BUILD_WITH_BINARY80___
+#include <mplapack_benchmark_binary80.h>
+#define MPLAPACK_REF_LIB "libmplapack_binary80"
+#define MPBLAS_REF_LIB "libmpblas_binary80"
 #define ___MPLAPACK_INITIALIZE___
-_Float64x randomnumber(_Float64x dummy) {
-    _Float64x mtmp;
+mplapack_binary80_t randomnumber(mplapack_binary80_t dummy) {
+    mplapack_binary80_t mtmp;
 #if defined _WIN32
     mtmp = ((double)rand() / (double)RAND_MAX);          // uniform random between [0,1] via rand
     mtmp += ((double)rand() / (double)RAND_MAX) * 1e-16; // uniform random between [0,1] via rand
@@ -135,13 +138,13 @@ _Float64x randomnumber(_Float64x dummy) {
 }
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
-#include <mplapack_benchmark__Float128.h>
-#define MPLAPACK_REF_LIB "libmplapack__Float128"
-#define MPBLAS_REF_LIB "libmpblas__Float128"
+#if defined ___MPLAPACK_BUILD_WITH_BINARY128___
+#include <mplapack_benchmark_binary128.h>
+#define MPLAPACK_REF_LIB "libmplapack_binary128"
+#define MPBLAS_REF_LIB "libmpblas_binary128"
 #define ___MPLAPACK_INITIALIZE___
-_Float128 randomnumber(_Float128 dummy) {
-    _Float128 mtmp;
+mplapack_binary128_t randomnumber(mplapack_binary128_t dummy) {
+    mplapack_binary128_t mtmp;
 #if defined _WIN32
     mtmp = ((double)rand() / (double)RAND_MAX);          // uniform random between [0,1] via rand
     mtmp += ((double)rand() / (double)RAND_MAX) * 1e-16; // uniform random between [0,1] via rand

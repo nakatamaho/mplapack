@@ -10,14 +10,14 @@ MPFRLIBS= -lmplapack_mpfr -lmpblas_mpfr -lmpfr -lmpc -lgmp
 GMPLIBS=-lmplapack_gmp -lmpblas_gmp -lgmpxx -lgmp
 QDLIBS=-lmplapack_qd -lmpblas_qd -lqd
 DDLIBS=-lmplapack_dd -lmpblas_dd -lqd
-_FLOAT64xLIBS=-lmplapack__Float64x -lmpblas__Float64x
-_FLOAT128LIBS=-lmplapack__Float128 -lmpblas__Float128%%LIBQUADMATH%%
+BINARY80LIBS=-lmplapack_binary80 -lmpblas_binary80
+BINARY128LIBS=-lmplapack_binary128 -lmpblas_binary128%%LIBQUADMATH%%
 DOUBLELIBS=-lmplapack_double -lmpblas_double
 BLAS=
 LAPACK=
 FLIBS=
 
-programs=Rgees_Grcar_mpfr Rgees_Grcar_gmp Rgees_Grcar_qd Rgees_Grcar_dd Rgees_Grcar__Float64x Rgees_Grcar__Float128 Rgees_Grcar_double
+programs=Rgees_Grcar_mpfr Rgees_Grcar_gmp Rgees_Grcar_qd Rgees_Grcar_dd Rgees_Grcar_binary80 Rgees_Grcar_binary128 Rgees_Grcar_double
 
 all: $(programs)
 
@@ -36,11 +36,11 @@ Rgees_Grcar_qd: Rgees_Grcar_qd.o
 Rgees_Grcar_dd: Rgees_Grcar_dd.o
 	$(CXX) -o Rgees_Grcar_dd Rgees_Grcar_dd.o $(LIBFLAGS) $(DDLIBS)
 
-Rgees_Grcar__Float64x: Rgees_Grcar__Float64x.o
-	$(CXX) -o Rgees_Grcar__Float64x Rgees_Grcar__Float64x.o $(LIBFLAGS) $(_FLOAT64xLIBS)
+Rgees_Grcar_binary80: Rgees_Grcar_binary80.o
+	$(CXX) -o Rgees_Grcar_binary80 Rgees_Grcar_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
 
-Rgees_Grcar__Float128: Rgees_Grcar__Float128.o
-	$(CXX) -o Rgees_Grcar__Float128 Rgees_Grcar__Float128.o $(LIBFLAGS) $(_FLOAT128LIBS)
+Rgees_Grcar_binary128: Rgees_Grcar_binary128.o
+	$(CXX) -o Rgees_Grcar_binary128 Rgees_Grcar_binary128.o $(LIBFLAGS) $(BINARY128LIBS)
 
 Rgees_Grcar_double: Rgees_Grcar_double.o
 	$(CXX) -o Rgees_Grcar_double Rgees_Grcar_double.o $(LIBFLAGS) $(DOUBLELIBS)

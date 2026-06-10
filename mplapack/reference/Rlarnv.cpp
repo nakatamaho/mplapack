@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,33 +26,17 @@
  *
  */
 
+// Derived from LAPACK routine DLARNV.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlarnv(INTEGER const idist, INTEGER *iseed, INTEGER const n, REAL *x) {
-    //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
+void Rlarnv(INTEGER const idist, INTEGER (&iseed)[4], INTEGER const n, REAL *x) {
     //
     INTEGER iv = 0;
     const INTEGER lv = 128;
@@ -60,9 +44,9 @@ void Rlarnv(INTEGER const idist, INTEGER *iseed, INTEGER const n, REAL *x) {
     INTEGER il2 = 0;
     REAL u[lv];
     INTEGER i = 0;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     const REAL one = 1.0;
-    const REAL twopi = 6.28318530717958647692528676655900576839e+0;
+    const REAL twopi = two * pi(one);
     for (iv = 1; iv <= n; iv = iv + lv / 2) {
         il = min(lv / 2, n - iv + 1);
         if (idist == 3) {
@@ -71,28 +55,28 @@ void Rlarnv(INTEGER const idist, INTEGER *iseed, INTEGER const n, REAL *x) {
             il2 = il;
         }
         //
-        //        Call Rlaruv to generate IL2 numbers from a uniform (0,1)
-        //        distribution (IL2 <= LV)
+        // Call Rlaruv to generate IL2 numbers from a uniform (0,1)
+        // distribution (IL2 <= LV)
         //
         Rlaruv(iseed, il2, u);
         //
         if (idist == 1) {
             //
-            //           Copy generated numbers
+            // Copy generated numbers
             //
             for (i = 1; i <= il; i = i + 1) {
                 x[(iv + i - 1) - 1] = u[i - 1];
             }
         } else if (idist == 2) {
             //
-            //           Convert generated numbers to uniform (-1,1) distribution
+            // Convert generated numbers to uniform (-1,1) distribution
             //
             for (i = 1; i <= il; i = i + 1) {
                 x[(iv + i - 1) - 1] = two * u[i - 1] - one;
             }
         } else if (idist == 3) {
             //
-            //           Convert generated numbers to normal (0,1) distribution
+            // Convert generated numbers to normal (0,1) distribution
             //
             for (i = 1; i <= il; i = i + 1) {
                 x[(iv + i - 1) - 1] = sqrt(-two * log(u[(2 * i - 1) - 1])) * cos(twopi * u[(2 * i) - 1]);
@@ -100,6 +84,6 @@ void Rlarnv(INTEGER const idist, INTEGER *iseed, INTEGER const n, REAL *x) {
         }
     }
     //
-    //     End of Rlarnv
+    // End of Rlarnv
     //
 }

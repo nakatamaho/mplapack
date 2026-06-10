@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,35 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZLALSD.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Clalsd(const char *uplo, INTEGER const smlsiz, INTEGER const n, INTEGER const nrhs, REAL *d, REAL *e, COMPLEX *b, INTEGER const ldb, REAL const rcond, INTEGER &rank, COMPLEX *work, REAL *rwork, INTEGER *iwork, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     //
@@ -72,7 +56,7 @@ void Clalsd(const char *uplo, INTEGER const smlsiz, INTEGER const n, INTEGER con
     //
     REAL eps = Rlamch("Epsilon");
     //
-    //     Set up the tolerance.
+    // Set up the tolerance.
     //
     const REAL zero = 0.0;
     const REAL one = 1.0;
@@ -85,7 +69,7 @@ void Clalsd(const char *uplo, INTEGER const smlsiz, INTEGER const n, INTEGER con
     //
     rank = 0;
     //
-    //     Quick return if possible.
+    // Quick return if possible.
     //
     const COMPLEX czero = COMPLEX(0.0, 0.0);
     if (n == 0) {
@@ -101,14 +85,14 @@ void Clalsd(const char *uplo, INTEGER const smlsiz, INTEGER const n, INTEGER con
         return;
     }
     //
-    //     Rotate the matrix if it is lower bidiagonal.
+    // Rotate the matrix if it is lower bidiagonal.
     //
     INTEGER i = 0;
     REAL cs = 0.0;
     REAL sn = 0.0;
     REAL r = 0.0;
     INTEGER j = 0;
-    if (uplo == "L") {
+    if (Mlsame(uplo, "L")) {
         for (i = 1; i <= n - 1; i = i + 1) {
             Rlartg(d[i - 1], e[i - 1], cs, sn, r);
             d[i - 1] = r;
@@ -132,7 +116,7 @@ void Clalsd(const char *uplo, INTEGER const smlsiz, INTEGER const n, INTEGER con
         }
     }
     //
-    //     Scale.
+    // Scale.
     //
     INTEGER nm1 = n - 1;
     REAL orgnrm = Rlanst("M", n, d, e);
@@ -144,8 +128,8 @@ void Clalsd(const char *uplo, INTEGER const smlsiz, INTEGER const n, INTEGER con
     Rlascl("G", 0, 0, orgnrm, one, n, 1, d, n, info);
     Rlascl("G", 0, 0, orgnrm, one, nm1, 1, e, nm1, info);
     //
-    //     If N is smaller than the minimum divide size SMLSIZ, then solve
-    //     the problem with another solver.
+    // If N is smaller than the minimum divide size SMLSIZ, then solve
+    // the problem with another solver.
     //
     INTEGER irwu = 0;
     INTEGER irwvt = 0;
@@ -172,9 +156,9 @@ void Clalsd(const char *uplo, INTEGER const smlsiz, INTEGER const n, INTEGER con
             return;
         }
         //
-        //        In the real version, B is passed to Rlasdq and multiplied
-        //        internally by Q**H. Here B is complex and that product is
-        //        computed below in two steps (real and imaginary parts).
+        // In the real version, B is passed to Rlasdq and multiplied
+        // internally by Q**H. Here B is complex and that product is
+        // computed below in two steps (real and imaginary parts).
         //
         j = irwb - 1;
         for (jcol = 1; jcol <= nrhs; jcol = jcol + 1) {
@@ -212,12 +196,12 @@ void Clalsd(const char *uplo, INTEGER const smlsiz, INTEGER const n, INTEGER con
             }
         }
         //
-        //        Since B is complex, the following call to Rgemm is performed
-        //        in two steps (real and imaginary parts). That is for V * B
-        //        (in the real version of the code V**H is stored in WORK).
+        // Since B is complex, the following call to Rgemm is performed
+        // in two steps (real and imaginary parts). That is for V * B
+        // (in the real version of the code V**H is stored in WORK).
         //
-        //        CALL Rgemm( 'T', 'N', N, NRHS, N, ONE, WORK, N, B, LDB, ZERO,
-        //    $               WORK( NWORK ), N )
+        // CALL Rgemm( 'T', 'N', N, NRHS, N, ONE, WORK, N, B, LDB, ZERO,
+        // $               WORK( NWORK ), N )
         //
         j = irwb - 1;
         for (jcol = 1; jcol <= nrhs; jcol = jcol + 1) {
@@ -245,7 +229,7 @@ void Clalsd(const char *uplo, INTEGER const smlsiz, INTEGER const n, INTEGER con
             }
         }
         //
-        //        Unscale.
+        // Unscale.
         //
         Rlascl("G", 0, 0, one, orgnrm, n, 1, d, n, info);
         Rlasrt("D", n, d, info);
@@ -254,7 +238,7 @@ void Clalsd(const char *uplo, INTEGER const smlsiz, INTEGER const n, INTEGER con
         return;
     }
     //
-    //     Book-keeping and setting up some constants.
+    // Book-keeping and setting up some constants.
     //
     const REAL two = 2.0;
     INTEGER nlvl = castINTEGER(log(castREAL(n) / castREAL(smlsiz + 1)) / log(two)) + 1;
@@ -304,26 +288,26 @@ void Clalsd(const char *uplo, INTEGER const smlsiz, INTEGER const n, INTEGER con
             nsub++;
             iwork[nsub - 1] = st;
             //
-            //           Subproblem found. First determine its size and then
-            //           apply divide and conquer on it.
+            // Subproblem found. First determine its size and then
+            // apply divide and conquer on it.
             //
             if (i < nm1) {
                 //
-                //              A subproblem with E(I) small for I < NM1.
+                // A subproblem with E(I) small for I < NM1.
                 //
                 nsize = i - st + 1;
                 iwork[(sizei + nsub - 1) - 1] = nsize;
             } else if (abs(e[i - 1]) >= eps) {
                 //
-                //              A subproblem with E(NM1) not too small but I = NM1.
+                // A subproblem with E(NM1) not too small but I = NM1.
                 //
                 nsize = n - st + 1;
                 iwork[(sizei + nsub - 1) - 1] = nsize;
             } else {
                 //
-                //              A subproblem with E(NM1) small. This implies an
-                //              1-by-1 subproblem at D(N), which is not solved
-                //              explicitly.
+                // A subproblem with E(NM1) small. This implies an
+                // 1-by-1 subproblem at D(N), which is not solved
+                // explicitly.
                 //
                 nsize = i - st + 1;
                 iwork[(sizei + nsub - 1) - 1] = nsize;
@@ -335,13 +319,13 @@ void Clalsd(const char *uplo, INTEGER const smlsiz, INTEGER const n, INTEGER con
             st1 = st - 1;
             if (nsize == 1) {
                 //
-                //              This is a 1-by-1 subproblem and is not solved
-                //              explicitly.
+                // This is a 1-by-1 subproblem and is not solved
+                // explicitly.
                 //
                 Ccopy(nrhs, &b[(st - 1)], ldb, &work[(bx + st1) - 1], n);
             } else if (nsize <= smlsiz) {
                 //
-                //              This is a small subproblem and is solved by Rlasdq.
+                // This is a small subproblem and is solved by Rlasdq.
                 //
                 Rlaset("A", nsize, nsize, zero, one, &rwork[(vt + st1) - 1], n);
                 Rlaset("A", nsize, nsize, zero, one, &rwork[(u + st1) - 1], n);
@@ -350,9 +334,9 @@ void Clalsd(const char *uplo, INTEGER const smlsiz, INTEGER const n, INTEGER con
                     return;
                 }
                 //
-                //              In the real version, B is passed to Rlasdq and multiplied
-                //              internally by Q**H. Here B is complex and that product is
-                //              computed below in two steps (real and imaginary parts).
+                // In the real version, B is passed to Rlasdq and multiplied
+                // internally by Q**H. Here B is complex and that product is
+                // computed below in two steps (real and imaginary parts).
                 //
                 j = irwb - 1;
                 for (jcol = 1; jcol <= nrhs; jcol = jcol + 1) {
@@ -383,7 +367,7 @@ void Clalsd(const char *uplo, INTEGER const smlsiz, INTEGER const n, INTEGER con
                 Clacpy("A", nsize, nrhs, &b[(st - 1)], ldb, &work[(bx + st1) - 1], n);
             } else {
                 //
-                //              A large problem. Solve it using divide and conquer.
+                // A large problem. Solve it using divide and conquer.
                 //
                 Rlasda(icmpq1, smlsiz, nsize, sqre, &d[st - 1], &e[st - 1], &rwork[(u + st1) - 1], n, &rwork[(vt + st1) - 1], &iwork[(k + st1) - 1], &rwork[(difl + st1) - 1], &rwork[(difr + st1) - 1], &rwork[(z + st1) - 1], &rwork[(poles + st1) - 1], &iwork[(givptr + st1) - 1], &iwork[(givcol + st1) - 1], n, &iwork[(perm + st1) - 1], &rwork[(givnum + st1) - 1], &rwork[(c + st1) - 1], &rwork[(s + st1) - 1], &rwork[nrwork - 1], &iwork[iwk - 1], info);
                 if (info != 0) {
@@ -399,14 +383,14 @@ void Clalsd(const char *uplo, INTEGER const smlsiz, INTEGER const n, INTEGER con
         }
     }
     //
-    //     Apply the singular values and treat the tiny ones as zero.
+    // Apply the singular values and treat the tiny ones as zero.
     //
     tol = rcnd * abs(d[iRamax(n, d, 1) - 1]);
     //
     for (i = 1; i <= n; i = i + 1) {
         //
-        //        Some of the elements in D can be negative because 1-by-1
-        //        subproblems were not solved explicitly.
+        // Some of the elements in D can be negative because 1-by-1
+        // subproblems were not solved explicitly.
         //
         if (abs(d[i - 1]) <= tol) {
             Claset("A", 1, nrhs, czero, czero, &work[(bx + i - 1) - 1], n);
@@ -417,7 +401,7 @@ void Clalsd(const char *uplo, INTEGER const smlsiz, INTEGER const n, INTEGER con
         d[i - 1] = abs(d[i - 1]);
     }
     //
-    //     Now apply back the right singular vectors.
+    // Now apply back the right singular vectors.
     //
     icmpq2 = 1;
     for (i = 1; i <= nsub; i = i + 1) {
@@ -429,12 +413,12 @@ void Clalsd(const char *uplo, INTEGER const smlsiz, INTEGER const n, INTEGER con
             Ccopy(nrhs, &work[bxst - 1], n, &b[(st - 1)], ldb);
         } else if (nsize <= smlsiz) {
             //
-            //           Since B and BX are complex, the following call to Rgemm
-            //           is performed in two steps (real and imaginary parts).
+            // Since B and BX are complex, the following call to Rgemm
+            // is performed in two steps (real and imaginary parts).
             //
-            //           CALL Rgemm( 'T', 'N', NSIZE, NRHS, NSIZE, ONE,
-            //    $                  RWORK( VT+ST1 ), N, RWORK( BXST ), N, ZERO,
-            //    $                  B( ST, 1 ), LDB )
+            // CALL Rgemm( 'T', 'N', NSIZE, NRHS, NSIZE, ONE,
+            // $                  RWORK( VT+ST1 ), N, RWORK( BXST ), N, ZERO,
+            // $                  B( ST, 1 ), LDB )
             //
             j = bxst - n - 1;
             jreal = irwb - 1;
@@ -473,12 +457,12 @@ void Clalsd(const char *uplo, INTEGER const smlsiz, INTEGER const n, INTEGER con
         }
     }
     //
-    //     Unscale and sort the singular values.
+    // Unscale and sort the singular values.
     //
     Rlascl("G", 0, 0, one, orgnrm, n, 1, d, n, info);
     Rlasrt("D", n, d, info);
     Clascl("G", 0, 0, orgnrm, one, n, nrhs, b, ldb, info);
     //
-    //     End of Clalsd
+    // End of Clalsd
     //
 }

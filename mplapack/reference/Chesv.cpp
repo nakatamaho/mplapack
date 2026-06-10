@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZHESV.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Chesv(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, COMPLEX *b, INTEGER const ldb, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     bool lquery = (lwork == -1);
@@ -68,22 +75,22 @@ void Chesv(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
         return;
     }
     //
-    //     Compute the factorization A = U*D*U**H or A = L*D*L**H.
+    // Compute the factorization A = U*D*U**H or A = L*D*L**H.
     //
     Chetrf(uplo, n, a, lda, ipiv, work, lwork, info);
     if (info == 0) {
         //
-        //        Solve the system A*X = B, overwriting B with X.
+        // Solve the system A*X = B, overwriting B with X.
         //
         if (lwork < n) {
             //
-            //        Solve with TRS ( Use Level BLAS 2)
+            // Solve with TRS ( Use Level BLAS 2)
             //
             Chetrs(uplo, n, nrhs, a, lda, ipiv, b, ldb, info);
             //
         } else {
             //
-            //        Solve with TRS2 ( Use Level BLAS 3)
+            // Solve with TRS2 ( Use Level BLAS 3)
             //
             Chetrs2(uplo, n, nrhs, a, lda, ipiv, b, ldb, work, info);
             //
@@ -93,6 +100,6 @@ void Chesv(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
     //
     work[1 - 1] = lwkopt;
     //
-    //     End of Chesv
+    // End of Chesv
     //
 }

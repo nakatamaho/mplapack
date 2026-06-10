@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZLAVSY_ROOK.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Clavsy_rook(const char *uplo, const char *trans, const char *diag, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, COMPLEX *b, INTEGER const ldb, INTEGER &info) {
+void Clavsy_rook(fem::str_cref uplo, fem::str_cref trans, fem::str_cref diag, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, COMPLEX *b, INTEGER const ldb, INTEGER &info) {
     bool nounit = false;
     INTEGER k = 0;
     const COMPLEX cone = COMPLEX(1.0, 0.0);
@@ -49,37 +56,14 @@ void Clavsy_rook(const char *uplo, const char *trans, const char *diag, INTEGER 
     COMPLEX t1 = 0.0;
     COMPLEX t2 = 0.0;
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
-    if (!Mlsame(uplo, "U") && !Mlsame(uplo, "L")) {
+    if (!Mlsame(uplo.elems(), "U") && !Mlsame(uplo.elems(), "L")) {
         info = -1;
-    } else if (!Mlsame(trans, "N") && !Mlsame(trans, "T")) {
+    } else if (!Mlsame(trans.elems(), "N") && !Mlsame(trans.elems(), "T")) {
         info = -2;
-    } else if (!Mlsame(diag, "U") && !Mlsame(diag, "N")) {
+    } else if (!Mlsame(diag.elems(), "U") && !Mlsame(diag.elems(), "N")) {
         info = -3;
     } else if (n < 0) {
         info = -4;
@@ -93,26 +77,26 @@ void Clavsy_rook(const char *uplo, const char *trans, const char *diag, INTEGER 
         return;
     }
     //
-    //     Quick return if possible.
+    // Quick return if possible.
     //
     if (n == 0) {
         return;
     }
     //
-    nounit = Mlsame(diag, "N");
-    //------------------------------------------
+    nounit = Mlsame(diag.elems(), "N");
+    // ------------------------------------------
     //
-    //     Compute  B := A * B  (No transpose)
+    // Compute  B := A * B  (No transpose)
     //
-    //------------------------------------------
-    if (Mlsame(trans, "N")) {
+    // ------------------------------------------
+    if (Mlsame(trans.elems(), "N")) {
         //
-        //        Compute  B := U*B
-        //        where U = P(m)*inv(U(m))* ... *P(1)*inv(U(1))
+        // Compute  B := U*B
+        // where U = P(m)*inv(U(m))* ... *P(1)*inv(U(1))
         //
-        if (Mlsame(uplo, "U")) {
+        if (Mlsame(uplo.elems(), "U")) {
             //
-            //        Loop forward applying the transformations.
+            // Loop forward applying the transformations.
             //
             k = 1;
         statement_10:
@@ -121,23 +105,23 @@ void Clavsy_rook(const char *uplo, const char *trans, const char *diag, INTEGER 
             }
             if (ipiv[k - 1] > 0) {
                 //
-                //              1 x 1 pivot block
+                // 1 x 1 pivot block
                 //
-                //              Multiply by the diagonal element if forming U * D.
+                // Multiply by the diagonal element if forming U * D.
                 //
                 if (nounit) {
                     Cscal(nrhs, a[(k - 1) + (k - 1) * lda], &b[(k - 1)], ldb);
                 }
                 //
-                //              Multiply by  P(K) * inv(U(K))  if K > 1.
+                // Multiply by  P(K) * inv(U(K))  if K > 1.
                 //
                 if (k > 1) {
                     //
-                    //                 Apply the transformation.
+                    // Apply the transformation.
                     //
-                    Cgeru(k - 1, nrhs, cone, &a[(k - 1) * lda], 1, &b[(k - 1)], ldb, &b[(1 - 1) + (1 - 1) * ldb], ldb);
+                    Cgeru(k - 1, nrhs, cone, &a[(k - 1) * lda], 1, &b[(k - 1)], ldb, &b[0], ldb);
                     //
-                    //                 Interchange if P(K) != I.
+                    // Interchange if P(K) != I.
                     //
                     kp = ipiv[k - 1];
                     if (kp != k) {
@@ -147,9 +131,9 @@ void Clavsy_rook(const char *uplo, const char *trans, const char *diag, INTEGER 
                 k++;
             } else {
                 //
-                //              2 x 2 pivot block
+                // 2 x 2 pivot block
                 //
-                //              Multiply by the diagonal block if forming U * D.
+                // Multiply by the diagonal block if forming U * D.
                 //
                 if (nounit) {
                     d11 = a[(k - 1) + (k - 1) * lda];
@@ -164,26 +148,26 @@ void Clavsy_rook(const char *uplo, const char *trans, const char *diag, INTEGER 
                     }
                 }
                 //
-                //              Multiply by  P(K) * inv(U(K))  if K > 1.
+                // Multiply by  P(K) * inv(U(K))  if K > 1.
                 //
                 if (k > 1) {
                     //
-                    //                 Apply the transformations.
+                    // Apply the transformations.
                     //
-                    Cgeru(k - 1, nrhs, cone, &a[(k - 1) * lda], 1, &b[(k - 1)], ldb, &b[(1 - 1) + (1 - 1) * ldb], ldb);
-                    Cgeru(k - 1, nrhs, cone, &a[((k + 1) - 1) * lda], 1, &b[((k + 1) - 1)], ldb, &b[(1 - 1) + (1 - 1) * ldb], ldb);
+                    Cgeru(k - 1, nrhs, cone, &a[(k - 1) * lda], 1, &b[(k - 1)], ldb, &b[0], ldb);
+                    Cgeru(k - 1, nrhs, cone, &a[((k + 1) - 1) * lda], 1, &b[((k + 1) - 1)], ldb, &b[0], ldb);
                     //
-                    //                 Interchange if a permutation was applied at the
-                    //                 K-th step of the factorization.
+                    // Interchange if a permutation was applied at the
+                    // K-th step of the factorization.
                     //
-                    //                 Swap the first of pair with IMAXth
+                    // Swap the first of pair with IMAXth
                     //
                     kp = abs(ipiv[k - 1]);
                     if (kp != k) {
                         Cswap(nrhs, &b[(k - 1)], ldb, &b[(kp - 1)], ldb);
                     }
                     //
-                    //                 NOW swap the first of pair with Pth
+                    // NOW swap the first of pair with Pth
                     //
                     kp = abs(ipiv[(k + 1) - 1]);
                     if (kp != k + 1) {
@@ -195,12 +179,12 @@ void Clavsy_rook(const char *uplo, const char *trans, const char *diag, INTEGER 
             goto statement_10;
         statement_30:;
             //
-            //        Compute  B := L*B
-            //        where L = P(1)*inv(L(1))* ... *P(m)*inv(L(m)) .
+            // Compute  B := L*B
+            // where L = P(1)*inv(L(1))* ... *P(m)*inv(L(m)) .
             //
         } else {
             //
-            //           Loop backward applying the transformations to B.
+            // Loop backward applying the transformations to B.
             //
             k = n;
         statement_40:
@@ -208,30 +192,30 @@ void Clavsy_rook(const char *uplo, const char *trans, const char *diag, INTEGER 
                 goto statement_60;
             }
             //
-            //           Test the pivot index.  If greater than zero, a 1 x 1
-            //           pivot was used, otherwise a 2 x 2 pivot was used.
+            // Test the pivot index.  If greater than zero, a 1 x 1
+            // pivot was used, otherwise a 2 x 2 pivot was used.
             //
             if (ipiv[k - 1] > 0) {
                 //
-                //              1 x 1 pivot block:
+                // 1 x 1 pivot block:
                 //
-                //              Multiply by the diagonal element if forming L * D.
+                // Multiply by the diagonal element if forming L * D.
                 //
                 if (nounit) {
                     Cscal(nrhs, a[(k - 1) + (k - 1) * lda], &b[(k - 1)], ldb);
                 }
                 //
-                //              Multiply by  P(K) * inv(L(K))  if K < N.
+                // Multiply by  P(K) * inv(L(K))  if K < N.
                 //
                 if (k != n) {
                     kp = ipiv[k - 1];
                     //
-                    //                 Apply the transformation.
+                    // Apply the transformation.
                     //
                     Cgeru(n - k, nrhs, cone, &a[((k + 1) - 1) + (k - 1) * lda], 1, &b[(k - 1)], ldb, &b[((k + 1) - 1)], ldb);
                     //
-                    //                 Interchange if a permutation was applied at the
-                    //                 K-th step of the factorization.
+                    // Interchange if a permutation was applied at the
+                    // K-th step of the factorization.
                     //
                     if (kp != k) {
                         Cswap(nrhs, &b[(k - 1)], ldb, &b[(kp - 1)], ldb);
@@ -241,9 +225,9 @@ void Clavsy_rook(const char *uplo, const char *trans, const char *diag, INTEGER 
                 //
             } else {
                 //
-                //              2 x 2 pivot block:
+                // 2 x 2 pivot block:
                 //
-                //              Multiply by the diagonal block if forming L * D.
+                // Multiply by the diagonal block if forming L * D.
                 //
                 if (nounit) {
                     d11 = a[((k - 1) - 1) + ((k - 1) - 1) * lda];
@@ -258,26 +242,26 @@ void Clavsy_rook(const char *uplo, const char *trans, const char *diag, INTEGER 
                     }
                 }
                 //
-                //              Multiply by  P(K) * inv(L(K))  if K < N.
+                // Multiply by  P(K) * inv(L(K))  if K < N.
                 //
                 if (k != n) {
                     //
-                    //                 Apply the transformation.
+                    // Apply the transformation.
                     //
                     Cgeru(n - k, nrhs, cone, &a[((k + 1) - 1) + (k - 1) * lda], 1, &b[(k - 1)], ldb, &b[((k + 1) - 1)], ldb);
                     Cgeru(n - k, nrhs, cone, &a[((k + 1) - 1) + ((k - 1) - 1) * lda], 1, &b[((k - 1) - 1)], ldb, &b[((k + 1) - 1)], ldb);
                     //
-                    //                 Interchange if a permutation was applied at the
-                    //                 K-th step of the factorization.
+                    // Interchange if a permutation was applied at the
+                    // K-th step of the factorization.
                     //
-                    //                 Swap the second of pair with IMAXth
+                    // Swap the second of pair with IMAXth
                     //
                     kp = abs(ipiv[k - 1]);
                     if (kp != k) {
                         Cswap(nrhs, &b[(k - 1)], ldb, &b[(kp - 1)], ldb);
                     }
                     //
-                    //                 NOW swap the first of pair with Pth
+                    // NOW swap the first of pair with Pth
                     //
                     kp = abs(ipiv[(k - 1) - 1]);
                     if (kp != k - 1) {
@@ -289,20 +273,20 @@ void Clavsy_rook(const char *uplo, const char *trans, const char *diag, INTEGER 
             goto statement_40;
         statement_60:;
         }
-        //----------------------------------------
+        // ----------------------------------------
         //
-        //     Compute  B := A' * B  (transpose)
+        // Compute  B := A' * B  (transpose)
         //
-        //----------------------------------------
-    } else if (Mlsame(trans, "T")) {
+        // ----------------------------------------
+    } else if (Mlsame(trans.elems(), "T")) {
         //
-        //        Form  B := U'*B
-        //        where U  = P(m)*inv(U(m))* ... *P(1)*inv(U(1))
-        //        and   U' = inv(U'(1))*P(1)* ... *inv(U'(m))*P(m)
+        // Form  B := U'*B
+        // where U  = P(m)*inv(U(m))* ... *P(1)*inv(U(1))
+        // and   U' = inv(U'(1))*P(1)* ... *inv(U'(m))*P(m)
         //
-        if (Mlsame(uplo, "U")) {
+        if (Mlsame(uplo.elems(), "U")) {
             //
-            //           Loop backward applying the transformations.
+            // Loop backward applying the transformations.
             //
             k = n;
         statement_70:
@@ -310,19 +294,19 @@ void Clavsy_rook(const char *uplo, const char *trans, const char *diag, INTEGER 
                 goto statement_90;
             }
             //
-            //           1 x 1 pivot block.
+            // 1 x 1 pivot block.
             //
             if (ipiv[k - 1] > 0) {
                 if (k > 1) {
                     //
-                    //                 Interchange if P(K) != I.
+                    // Interchange if P(K) != I.
                     //
                     kp = ipiv[k - 1];
                     if (kp != k) {
                         Cswap(nrhs, &b[(k - 1)], ldb, &b[(kp - 1)], ldb);
                     }
                     //
-                    //                 Apply the transformation
+                    // Apply the transformation
                     //
                     Cgemv("Transpose", k - 1, nrhs, cone, b, ldb, &a[(k - 1) * lda], 1, cone, &b[(k - 1)], ldb);
                 }
@@ -331,32 +315,32 @@ void Clavsy_rook(const char *uplo, const char *trans, const char *diag, INTEGER 
                 }
                 k = k - 1;
                 //
-                //           2 x 2 pivot block.
+                // 2 x 2 pivot block.
                 //
             } else {
                 if (k > 2) {
                     //
-                    //                 Swap the second of pair with Pth
+                    // Swap the second of pair with Pth
                     //
                     kp = abs(ipiv[k - 1]);
                     if (kp != k) {
                         Cswap(nrhs, &b[(k - 1)], ldb, &b[(kp - 1)], ldb);
                     }
                     //
-                    //                 Now swap the first of pair with IMAX(r)th
+                    // Now swap the first of pair with IMAX(r)th
                     //
                     kp = abs(ipiv[(k - 1) - 1]);
                     if (kp != k - 1) {
                         Cswap(nrhs, &b[((k - 1) - 1)], ldb, &b[(kp - 1)], ldb);
                     }
                     //
-                    //                 Apply the transformations
+                    // Apply the transformations
                     //
                     Cgemv("Transpose", k - 2, nrhs, cone, b, ldb, &a[(k - 1) * lda], 1, cone, &b[(k - 1)], ldb);
                     Cgemv("Transpose", k - 2, nrhs, cone, b, ldb, &a[((k - 1) - 1) * lda], 1, cone, &b[((k - 1) - 1)], ldb);
                 }
                 //
-                //              Multiply by the diagonal block if non-unit.
+                // Multiply by the diagonal block if non-unit.
                 //
                 if (nounit) {
                     d11 = a[((k - 1) - 1) + ((k - 1) - 1) * lda];
@@ -375,13 +359,13 @@ void Clavsy_rook(const char *uplo, const char *trans, const char *diag, INTEGER 
             goto statement_70;
         statement_90:;
             //
-            //        Form  B := L'*B
-            //        where L  = P(1)*inv(L(1))* ... *P(m)*inv(L(m))
-            //        and   L' = inv(L'(m))*P(m)* ... *inv(L'(1))*P(1)
+            // Form  B := L'*B
+            // where L  = P(1)*inv(L(1))* ... *P(m)*inv(L(m))
+            // and   L' = inv(L'(m))*P(m)* ... *inv(L'(1))*P(1)
             //
         } else {
             //
-            //           Loop forward applying the L-transformations.
+            // Loop forward applying the L-transformations.
             //
             k = 1;
         statement_100:
@@ -389,19 +373,19 @@ void Clavsy_rook(const char *uplo, const char *trans, const char *diag, INTEGER 
                 goto statement_120;
             }
             //
-            //           1 x 1 pivot block
+            // 1 x 1 pivot block
             //
             if (ipiv[k - 1] > 0) {
                 if (k < n) {
                     //
-                    //                 Interchange if P(K) != I.
+                    // Interchange if P(K) != I.
                     //
                     kp = ipiv[k - 1];
                     if (kp != k) {
                         Cswap(nrhs, &b[(k - 1)], ldb, &b[(kp - 1)], ldb);
                     }
                     //
-                    //                 Apply the transformation
+                    // Apply the transformation
                     //
                     Cgemv("Transpose", n - k, nrhs, cone, &b[((k + 1) - 1)], ldb, &a[((k + 1) - 1) + (k - 1) * lda], 1, cone, &b[(k - 1)], ldb);
                 }
@@ -410,32 +394,32 @@ void Clavsy_rook(const char *uplo, const char *trans, const char *diag, INTEGER 
                 }
                 k++;
                 //
-                //           2 x 2 pivot block.
+                // 2 x 2 pivot block.
                 //
             } else {
                 if (k < n - 1) {
                     //
-                    //                 Swap the first of pair with Pth
+                    // Swap the first of pair with Pth
                     //
                     kp = abs(ipiv[k - 1]);
                     if (kp != k) {
                         Cswap(nrhs, &b[(k - 1)], ldb, &b[(kp - 1)], ldb);
                     }
                     //
-                    //                 Now swap the second of pair with IMAX(r)th
+                    // Now swap the second of pair with IMAX(r)th
                     //
                     kp = abs(ipiv[(k + 1) - 1]);
                     if (kp != k + 1) {
                         Cswap(nrhs, &b[((k + 1) - 1)], ldb, &b[(kp - 1)], ldb);
                     }
                     //
-                    //                 Apply the transformation
+                    // Apply the transformation
                     //
                     Cgemv("Transpose", n - k - 1, nrhs, cone, &b[((k + 2) - 1)], ldb, &a[((k + 2) - 1) + ((k + 1) - 1) * lda], 1, cone, &b[((k + 1) - 1)], ldb);
                     Cgemv("Transpose", n - k - 1, nrhs, cone, &b[((k + 2) - 1)], ldb, &a[((k + 2) - 1) + (k - 1) * lda], 1, cone, &b[(k - 1)], ldb);
                 }
                 //
-                //              Multiply by the diagonal block if non-unit.
+                // Multiply by the diagonal block if non-unit.
                 //
                 if (nounit) {
                     d11 = a[(k - 1) + (k - 1) * lda];
@@ -456,6 +440,6 @@ void Clavsy_rook(const char *uplo, const char *trans, const char *diag, INTEGER 
         }
     }
     //
-    //     End of Clavsy_rook
+    // End of Clavsy_rook
     //
 }

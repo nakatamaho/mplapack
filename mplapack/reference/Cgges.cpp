@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZGGES.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -69,34 +76,7 @@ void Cgges(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selc
     bool lastsl = false;
     bool cursl = false;
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //     .. Function Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Decode the input arguments
+    // Decode the input arguments
     //
     if (Mlsame(jobvsl, "N")) {
         ijobvl = 1;
@@ -122,7 +102,7 @@ void Cgges(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selc
     //
     wantst = Mlsame(sort, "S");
     //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     lquery = (lwork == -1);
@@ -144,19 +124,19 @@ void Cgges(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selc
         info = -16;
     }
     //
-    //     Compute workspace
-    //      (Note: Comments in the code beginning "Workspace:" describe the
-    //       minimal amount of workspace needed at that point in the code,
-    //       as well as the preferred amount for good performance.
-    //       NB refers to the optimal block size for the immediately
-    //       following subroutine, as returned by iMlaenv.)
+    // Compute workspace
+    // (Note: Comments in the code beginning "Workspace:" describe the
+    // minimal amount of workspace needed at that point in the code,
+    // as well as the preferred amount for good performance.
+    // NB refers to the optimal block size for the immediately
+    // following subroutine, as returned by iMlaenv.)
     //
     if (info == 0) {
         lwkmin = max((INTEGER)1, 2 * n);
-        lwkopt = max({(INTEGER)1, n + n * iMlaenv(1, "Cgeqrf", " ", n, 1, n, 0)});
-        lwkopt = max({lwkopt, n + n * iMlaenv(1, "Cunmqr", " ", n, 1, n, -1)});
+        lwkopt = max((INTEGER)1, n + n * iMlaenv(1, "Cgeqrf", " ", n, 1, n, 0));
+        lwkopt = max(lwkopt, n + n * iMlaenv(1, "Cunmqr", " ", n, 1, n, -1));
         if (ilvsl) {
-            lwkopt = max({lwkopt, n + n * iMlaenv(1, "Cungqr", " ", n, 1, n, -1)});
+            lwkopt = max(lwkopt, n + n * iMlaenv(1, "Cungqr", " ", n, 1, n, -1));
         }
         work[1 - 1] = lwkopt;
         //
@@ -172,22 +152,25 @@ void Cgges(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selc
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         sdim = 0;
         return;
     }
     //
-    //     Get machine constants
+    // Get machine constants
     //
     eps = Rlamch("P");
     smlnum = Rlamch("S");
     bignum = one / smlnum;
+#if defined ___MPLAPACK_BUILD_WITH_BINARY80___ || defined ___MPLAPACK_BUILD_WITH_BINARY128___
+    Rlabad(smlnum, bignum);
+#endif
     smlnum = sqrt(smlnum) / eps;
     bignum = one / smlnum;
     //
-    //     Scale A if max element outside range [SMLNUM,BIGNUM]
+    // Scale A if max element outside range [SMLNUM,BIGNUM]
     //
     anrm = Clange("M", n, n, a, lda, rwork);
     ilascl = false;
@@ -203,7 +186,7 @@ void Cgges(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selc
         Clascl("G", 0, 0, anrm, anrmto, n, n, a, lda, ierr);
     }
     //
-    //     Scale B if max element outside range [SMLNUM,BIGNUM]
+    // Scale B if max element outside range [SMLNUM,BIGNUM]
     //
     bnrm = Clange("M", n, n, b, ldb, rwork);
     ilbscl = false;
@@ -219,16 +202,16 @@ void Cgges(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selc
         Clascl("G", 0, 0, bnrm, bnrmto, n, n, b, ldb, ierr);
     }
     //
-    //     Permute the matrix to make it more nearly triangular
-    //     (Real Workspace: need 6*N)
+    // Permute the matrix to make it more nearly triangular
+    // (Real Workspace: need 6*N)
     //
     ileft = 1;
     iright = n + 1;
     irwrk = iright + n;
     Cggbal("P", n, a, lda, b, ldb, ilo, ihi, &rwork[ileft - 1], &rwork[iright - 1], &rwork[irwrk - 1], ierr);
     //
-    //     Reduce B to triangular form (QR decomposition of B)
-    //     (Complex Workspace: need N, prefer N*NB)
+    // Reduce B to triangular form (QR decomposition of B)
+    // (Complex Workspace: need N, prefer N*NB)
     //
     irows = ihi + 1 - ilo;
     icols = n + 1 - ilo;
@@ -236,13 +219,13 @@ void Cgges(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selc
     iwrk = itau + irows;
     Cgeqrf(irows, icols, &b[(ilo - 1) + (ilo - 1) * ldb], ldb, &work[itau - 1], &work[iwrk - 1], lwork + 1 - iwrk, ierr);
     //
-    //     Apply the orthogonal transformation to matrix A
-    //     (Complex Workspace: need N, prefer N*NB)
+    // Apply the orthogonal transformation to matrix A
+    // (Complex Workspace: need N, prefer N*NB)
     //
     Cunmqr("L", "C", irows, icols, irows, &b[(ilo - 1) + (ilo - 1) * ldb], ldb, &work[itau - 1], &a[(ilo - 1) + (ilo - 1) * lda], lda, &work[iwrk - 1], lwork + 1 - iwrk, ierr);
     //
-    //     Initialize VSL
-    //     (Complex Workspace: need N, prefer N*NB)
+    // Initialize VSL
+    // (Complex Workspace: need N, prefer N*NB)
     //
     if (ilvsl) {
         Claset("Full", n, n, czero, cone, vsl, ldvsl);
@@ -252,22 +235,22 @@ void Cgges(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selc
         Cungqr(irows, irows, irows, &vsl[(ilo - 1) + (ilo - 1) * ldvsl], ldvsl, &work[itau - 1], &work[iwrk - 1], lwork + 1 - iwrk, ierr);
     }
     //
-    //     Initialize VSR
+    // Initialize VSR
     //
     if (ilvsr) {
         Claset("Full", n, n, czero, cone, vsr, ldvsr);
     }
     //
-    //     Reduce to generalized Hessenberg form
-    //     (Workspace: none needed)
+    // Reduce to generalized Hessenberg form
+    // (Workspace: none needed)
     //
     Cgghrd(jobvsl, jobvsr, n, ilo, ihi, a, lda, b, ldb, vsl, ldvsl, vsr, ldvsr, ierr);
     //
     sdim = 0;
     //
-    //     Perform QZ algorithm, computing Schur vectors if desired
-    //     (Complex Workspace: need N)
-    //     (Real Workspace: need N)
+    // Perform QZ algorithm, computing Schur vectors if desired
+    // (Complex Workspace: need N)
+    // (Real Workspace: need N)
     //
     iwrk = itau;
     Chgeqz("S", jobvsl, jobvsr, n, ilo, ihi, a, lda, b, ldb, alpha, beta, vsl, ldvsl, vsr, ldvsr, &work[iwrk - 1], lwork + 1 - iwrk, &rwork[irwrk - 1], ierr);
@@ -282,12 +265,12 @@ void Cgges(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selc
         goto statement_30;
     }
     //
-    //     Sort eigenvalues ALPHA/BETA if desired
-    //     (Workspace: none needed)
+    // Sort eigenvalues ALPHA/BETA if desired
+    // (Workspace: none needed)
     //
     if (wantst) {
         //
-        //        Undo scaling on eigenvalues before selecting
+        // Undo scaling on eigenvalues before selecting
         //
         if (ilascl) {
             Clascl("G", 0, 0, anrm, anrmto, n, 1, alpha, n, ierr);
@@ -296,7 +279,7 @@ void Cgges(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selc
             Clascl("G", 0, 0, bnrm, bnrmto, n, 1, beta, n, ierr);
         }
         //
-        //        Select eigenvalues
+        // Select eigenvalues
         //
         for (i = 1; i <= n; i = i + 1) {
             bwork[i - 1] = selctg(alpha[i - 1], beta[i - 1]);
@@ -309,8 +292,8 @@ void Cgges(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selc
         //
     }
     //
-    //     Apply back-permutation to VSL and VSR
-    //     (Workspace: none needed)
+    // Apply back-permutation to VSL and VSR
+    // (Workspace: none needed)
     //
     if (ilvsl) {
         Cggbak("P", "L", n, ilo, ihi, &rwork[ileft - 1], &rwork[iright - 1], n, vsl, ldvsl, ierr);
@@ -319,7 +302,7 @@ void Cgges(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selc
         Cggbak("P", "R", n, ilo, ihi, &rwork[ileft - 1], &rwork[iright - 1], n, vsr, ldvsr, ierr);
     }
     //
-    //     Undo scaling
+    // Undo scaling
     //
     if (ilascl) {
         Clascl("U", 0, 0, anrmto, anrm, n, n, a, lda, ierr);
@@ -333,7 +316,7 @@ void Cgges(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selc
     //
     if (wantst) {
         //
-        //        Check if reordering is correct
+        // Check if reordering is correct
         //
         lastsl = true;
         sdim = 0;
@@ -354,6 +337,6 @@ statement_30:
     //
     work[1 - 1] = lwkopt;
     //
-    //     End of Cgges
+    // End of Cgges
     //
 }

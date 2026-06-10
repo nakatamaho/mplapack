@@ -1,7 +1,7 @@
 # usage
 # cd /home/docker/mplapack/examples/mpblas/generic ; bash -x generate.sh
 FILES=`ls R*generic.cpp C*generic.cpp`
-MPLIBS="mpfr gmp _Float128 _Float64x double dd qd"
+MPLIBS="mpfr gmp binary128 binary80 double dd qd"
 if [ `uname` = "Darwin" ]; then
     SED=gsed
 else
@@ -13,6 +13,7 @@ $SED -e "s|%%ROUTINE%%|$_FILE|g" Makefile.freebsd.in > ../Makefile.freebsd.in
 $SED -e "s|%%ROUTINE%%|$_FILE|g" Makefile.macos.in   > ../Makefile.macos.in
 $SED -e "s|%%ROUTINE%%|$_FILE|g" Makefile.linux.in   > ../Makefile.linux.in
 $SED -e "s|%%ROUTINE%%|$_FILE|g" Makefile.mingw.in   > ../Makefile.mingw.in
+cp Makefile.linux_cuda.in ../Makefile.linux_cuda.in
 
 SOURCEFILES=""
 rm -f source_files
@@ -43,11 +44,11 @@ for _file in $FILES; do
         if [ x"$_mplib" = x"qd" ]; then
             $SED -i -e "s/REAL/qd_real/g" -e "s/COMPLEX/qd_complex/g" -e "s/INTEGER/mplapackint/g" -e "s/InTEGER/INTEGER_${_mplib}/g" -e "s/ReAL/REAL_${_mplib}/g" ../$resultfilename
         fi
-        if [ x"$_mplib" = x"_Float128" ]; then
-            $SED -i -e "s/REAL/_Float128/g" -e "s/COMPLEX/std::complex<_Float128>/g" -e "s/INTEGER/mplapackint/g" -e "s/InTEGER/INTEGER_${_mplib}/g" -e "s/ReAL/REAL_${_mplib}/g" ../$resultfilename
+        if [ x"$_mplib" = x"binary128" ]; then
+            $SED -i -e "s/REAL/mplapack_binary128_t/g" -e "s/COMPLEX/std::complex<mplapack_binary128_t>/g" -e "s/INTEGER/mplapackint/g" -e "s/InTEGER/INTEGER_${_mplib}/g" -e "s/ReAL/REAL_${_mplib}/g" ../$resultfilename
         fi
-        if [ x"$_mplib" = x"_Float64x" ]; then
-            $SED -i -e "s/REAL/_Float64x/g" -e "s/COMPLEX/std::complex<_Float64x>/g" -e "s/INTEGER/mplapackint/g" -e "s/InTEGER/INTEGER_${_mplib}/g" -e "s/ReAL/REAL_${_mplib}/g" ../$resultfilename
+        if [ x"$_mplib" = x"binary80" ]; then
+            $SED -i -e "s/REAL/mplapack_binary80_t/g" -e "s/COMPLEX/std::complex<mplapack_binary80_t>/g" -e "s/INTEGER/mplapackint/g" -e "s/InTEGER/INTEGER_${_mplib}/g" -e "s/ReAL/REAL_${_mplib}/g" ../$resultfilename
         fi
     done
 done
@@ -60,16 +61,25 @@ for _mplib in $MPLIBS; do
         echo ""               >> ../Makefile.am
         echo "if ENABLE_MPFR" >> ../Makefile.am
         executefilenames=`echo $FILES | $SED 's/\.cpp//g' | $SED "s/generic/${_mplib}/g"`
-        echo "mpblasexamples_PROGRAMS += $executefilenames" >> ../Makefile.am
+        executefilenames_opt=`echo $executefilenames | $SED "s/${_mplib}/${_mplib}_opt/g"`
+        echo "mpblasexamples_PROGRAMS += $executefilenames $executefilenames_opt" >> ../Makefile.am
         echo ""               >> ../Makefile.am
         echo "${_mplib}_cxxflags = \$(OPENMP_CXXFLAGS) -I\$(top_srcdir)/include -I\$(top_srcdir)/mpfrc++ -I\$(GMP_INCLUDEDIR) -I\$(MPFR_INCLUDEDIR) -I\$(MPC_INCLUDEDIR)" >> ../Makefile.am
         echo "${_mplib}_libdepends = -L\$(top_builddir)/mpblas/reference -lmpblas_${_mplib} -L\$(MPC_LIBDIR) -L\$(MPFR_LIBDIR) -L\$(GMP_LIBDIR) -lmpfr -lmpc -lgmp"  >> ../Makefile.am
+        echo "${_mplib}_opt_libdepends = -L\$(top_builddir)/mpblas/optimized/${_mplib} -lmpblas_${_mplib}_opt -L\$(MPC_LIBDIR) -L\$(MPFR_LIBDIR) -L\$(GMP_LIBDIR) -lmpfr -lmpc -lgmp"  >> ../Makefile.am
         echo ""               >> ../Makefile.am
         for _file in $FILES; do
             A=`echo $_file | $SED "s/generic\.cpp/${_mplib}/g"`
             echo "${A}_SOURCES = ${A}.cpp" >> ../Makefile.am
             echo "${A}_CXXFLAGS = \$(${_mplib}_cxxflags)" >> ../Makefile.am
             echo "${A}_LDFLAGS = \$(${_mplib}_libdepends)" >> ../Makefile.am
+            echo ""               >> ../Makefile.am
+        done
+        for _file in $FILES; do
+            A=`echo $_file | $SED "s/generic\.cpp/${_mplib}/g"`
+            echo "${A}_opt_SOURCES = ${A}.cpp" >> ../Makefile.am
+            echo "${A}_opt_CXXFLAGS = \$(${_mplib}_cxxflags)" >> ../Makefile.am
+            echo "${A}_opt_LDFLAGS = \$(${_mplib}_opt_libdepends)" >> ../Makefile.am
             echo ""               >> ../Makefile.am
         done
         echo "endif"             >> ../Makefile.am
@@ -79,10 +89,12 @@ for _mplib in $MPLIBS; do
         echo ""               >> ../Makefile.am
         echo "if ENABLE_GMP" >> ../Makefile.am
         executefilenames=`echo $FILES | $SED 's/\.cpp//g' | $SED "s/generic/${_mplib}/g"`
-        echo "mpblasexamples_PROGRAMS += $executefilenames" >> ../Makefile.am
+        executefilenames_opt=`echo $executefilenames | $SED "s/${_mplib}/${_mplib}_opt/g"`
+        echo "mpblasexamples_PROGRAMS += $executefilenames $executefilenames_opt" >> ../Makefile.am
         echo ""               >> ../Makefile.am
         echo "${_mplib}_cxxflags = \$(OPENMP_CXXFLAGS) -I\$(top_srcdir)/include -I\$(GMP_INCLUDEDIR)" >> ../Makefile.am
         echo "${_mplib}_libdepends = -L\$(top_builddir)/mpblas/reference -lmpblas_${_mplib} -L\$(GMP_LIBDIR) -lgmp"  >> ../Makefile.am
+        echo "${_mplib}_opt_libdepends = -L\$(top_builddir)/mpblas/optimized/${_mplib} -lmpblas_${_mplib}_opt -L\$(GMP_LIBDIR) -lgmp"  >> ../Makefile.am
         echo ""               >> ../Makefile.am
         for _file in $FILES; do
             A=`echo $_file | $SED "s/generic\.cpp/${_mplib}/g"`
@@ -91,20 +103,31 @@ for _mplib in $MPLIBS; do
             echo "${A}_LDFLAGS = \$(${_mplib}_libdepends)" >> ../Makefile.am
             echo ""               >> ../Makefile.am
         done
+        for _file in $FILES; do
+            A=`echo $_file | $SED "s/generic\.cpp/${_mplib}/g"`
+            echo "${A}_opt_SOURCES = ${A}.cpp" >> ../Makefile.am
+            echo "${A}_opt_CXXFLAGS = \$(${_mplib}_cxxflags)" >> ../Makefile.am
+            echo "${A}_opt_LDFLAGS = \$(${_mplib}_opt_libdepends)" >> ../Makefile.am
+            echo ""               >> ../Makefile.am
+        done
         echo "endif"             >> ../Makefile.am
     fi
 
-    if [ x"$_mplib" = x"_Float128" ]; then
+    if [ x"$_mplib" = x"binary128" ]; then
         echo ""               >> ../Makefile.am
-        echo "if ENABLE__FLOAT128" >> ../Makefile.am
-        executefilenames=`echo $FILES | $SED 's/\.cpp//g' | $SED "s/generic/${_mplib}/g"`
-        echo "mpblasexamples_PROGRAMS += $executefilenames" >> ../Makefile.am
+        echo "if ENABLE_BINARY128" >> ../Makefile.am
+        executefilenames=`echo $FILES | $SED 's/\.cpp//g' | $SED "s/generic/binary128/g"`
+        executefilenames_opt=`echo $executefilenames | $SED "s/binary128/binary128_opt/g"`
+        echo "mpblasexamples_PROGRAMS += $executefilenames $executefilenames_opt" >> ../Makefile.am
         echo ""               >> ../Makefile.am
         echo "${_mplib}_cxxflags = \$(OPENMP_CXXFLAGS) -I\$(top_srcdir)/include" >> ../Makefile.am
-        echo "if WANT_QUADMATH" >> ../Makefile.am
-        echo "${_mplib}_libdepends = -L\$(top_builddir)/mpblas/reference -lmpblas_${_mplib} -lquadmath"  >> ../Makefile.am
-        echo "else" >> ../Makefile.am
-        echo "${_mplib}_libdepends = -L\$(top_builddir)/mpblas/reference -lmpblas_${_mplib}"  >> ../Makefile.am   
+        echo "${_mplib}_libdepends = -L\$(top_builddir)/mpblas/reference -lmpblas_${_mplib}" >> ../Makefile.am
+        echo "if MPLAPACK_BINARY128_MODE_QUADMATH" >> ../Makefile.am
+        echo "${_mplib}_libdepends += -lquadmath" >> ../Makefile.am
+        echo "endif" >> ../Makefile.am
+        echo "${_mplib}_opt_libdepends = -L\$(top_builddir)/mpblas/optimized/${_mplib} -lmpblas_${_mplib}_opt" >> ../Makefile.am
+        echo "if MPLAPACK_BINARY128_MODE_QUADMATH" >> ../Makefile.am
+        echo "${_mplib}_opt_libdepends += -lquadmath" >> ../Makefile.am
         echo "endif" >> ../Makefile.am
         echo ""               >> ../Makefile.am
         for _file in $FILES; do
@@ -114,23 +137,39 @@ for _mplib in $MPLIBS; do
             echo "${A}_LDFLAGS = \$(${_mplib}_libdepends)" >> ../Makefile.am
             echo ""               >> ../Makefile.am
         done
+        for _file in $FILES; do
+            A=`echo $_file | $SED "s/generic\.cpp/${_mplib}/g"`
+            echo "${A}_opt_SOURCES = ${A}.cpp" >> ../Makefile.am
+            echo "${A}_opt_CXXFLAGS = \$(${_mplib}_cxxflags)" >> ../Makefile.am
+            echo "${A}_opt_LDFLAGS = \$(${_mplib}_opt_libdepends)" >> ../Makefile.am
+            echo ""               >> ../Makefile.am
+        done
         echo "endif"             >> ../Makefile.am
     fi
 
-    if [ x"$_mplib" = x"_Float64x" ]; then
+    if [ x"$_mplib" = x"binary80" ]; then
         echo ""               >> ../Makefile.am
-        echo "if ENABLE__FLOAT64X" >> ../Makefile.am
-        executefilenames=`echo $FILES | $SED 's/\.cpp//g' | $SED "s/generic/${_mplib}/g"`
-        echo "mpblasexamples_PROGRAMS += $executefilenames" >> ../Makefile.am
+        echo "if ENABLE_BINARY80" >> ../Makefile.am
+        executefilenames=`echo $FILES | $SED 's/\.cpp//g' | $SED "s/generic/binary80/g"`
+        executefilenames_opt=`echo $executefilenames | $SED "s/binary80/binary80_opt/g"`
+        echo "mpblasexamples_PROGRAMS += $executefilenames $executefilenames_opt" >> ../Makefile.am
         echo ""               >> ../Makefile.am
-        echo "${_mplib}_cxxflags = \$(OPENMP_CXXFLAGS)" >> ../Makefile.am
+        echo "${_mplib}_cxxflags = \$(OPENMP_CXXFLAGS) -I\$(top_srcdir)/include" >> ../Makefile.am
         echo "${_mplib}_libdepends = -L\$(top_builddir)/mpblas/reference -lmpblas_${_mplib}"  >> ../Makefile.am
+        echo "${_mplib}_opt_libdepends = -L\$(top_builddir)/mpblas/optimized/${_mplib} -lmpblas_${_mplib}_opt"  >> ../Makefile.am
         echo ""               >> ../Makefile.am
         for _file in $FILES; do
             A=`echo $_file | $SED "s/generic\.cpp/${_mplib}/g"`
             echo "${A}_SOURCES = ${A}.cpp" >> ../Makefile.am
             echo "${A}_CXXFLAGS = \$(${_mplib}_cxxflags)" >> ../Makefile.am
             echo "${A}_LDFLAGS = \$(${_mplib}_libdepends)" >> ../Makefile.am
+            echo ""               >> ../Makefile.am
+        done
+        for _file in $FILES; do
+            A=`echo $_file | $SED "s/generic\.cpp/${_mplib}/g"`
+            echo "${A}_opt_SOURCES = ${A}.cpp" >> ../Makefile.am
+            echo "${A}_opt_CXXFLAGS = \$(${_mplib}_cxxflags)" >> ../Makefile.am
+            echo "${A}_opt_LDFLAGS = \$(${_mplib}_opt_libdepends)" >> ../Makefile.am
             echo ""               >> ../Makefile.am
         done
         echo "endif"             >> ../Makefile.am
@@ -140,16 +179,25 @@ for _mplib in $MPLIBS; do
         echo ""               >> ../Makefile.am
         echo "if ENABLE_DOUBLE" >> ../Makefile.am
         executefilenames=`echo $FILES | $SED 's/\.cpp//g' | $SED "s/generic/${_mplib}/g"`
-        echo "mpblasexamples_PROGRAMS += $executefilenames" >> ../Makefile.am
+        executefilenames_opt=`echo $executefilenames | $SED "s/${_mplib}/${_mplib}_opt/g"`
+        echo "mpblasexamples_PROGRAMS += $executefilenames $executefilenames_opt" >> ../Makefile.am
         echo ""               >> ../Makefile.am
-        echo "${_mplib}_cxxflags = \$(OPENMP_CXXFLAGS)" >> ../Makefile.am
+        echo "${_mplib}_cxxflags = \$(OPENMP_CXXFLAGS) -I\$(top_srcdir)/include" >> ../Makefile.am
         echo "${_mplib}_libdepends = -L\$(top_builddir)/mpblas/reference -lmpblas_${_mplib}"  >> ../Makefile.am
+        echo "${_mplib}_opt_libdepends = -L\$(top_builddir)/mpblas/optimized/${_mplib} -lmpblas_${_mplib}_opt"  >> ../Makefile.am
         echo ""               >> ../Makefile.am
         for _file in $FILES; do
             A=`echo $_file | $SED "s/generic\.cpp/${_mplib}/g"`
             echo "${A}_SOURCES = ${A}.cpp" >> ../Makefile.am
             echo "${A}_CXXFLAGS = \$(${_mplib}_cxxflags)" >> ../Makefile.am
             echo "${A}_LDFLAGS = \$(${_mplib}_libdepends)" >> ../Makefile.am
+            echo ""               >> ../Makefile.am
+        done
+        for _file in $FILES; do
+            A=`echo $_file | $SED "s/generic\.cpp/${_mplib}/g"`
+            echo "${A}_opt_SOURCES = ${A}.cpp" >> ../Makefile.am
+            echo "${A}_opt_CXXFLAGS = \$(${_mplib}_cxxflags)" >> ../Makefile.am
+            echo "${A}_opt_LDFLAGS = \$(${_mplib}_opt_libdepends)" >> ../Makefile.am
             echo ""               >> ../Makefile.am
         done
         echo "endif"             >> ../Makefile.am
@@ -159,16 +207,25 @@ for _mplib in $MPLIBS; do
         echo ""               >> ../Makefile.am
         echo "if ENABLE_DD" >> ../Makefile.am
         executefilenames=`echo $FILES | $SED 's/\.cpp//g' | $SED "s/generic/${_mplib}/g"`
-        echo "mpblasexamples_PROGRAMS += $executefilenames" >> ../Makefile.am
+        executefilenames_opt=`echo $executefilenames | $SED "s/${_mplib}/${_mplib}_opt/g"`
+        echo "mpblasexamples_PROGRAMS += $executefilenames $executefilenames_opt" >> ../Makefile.am
         echo ""               >> ../Makefile.am
         echo "${_mplib}_cxxflags = \$(OPENMP_CXXFLAGS) -I\$(top_srcdir)/include -I\$(QD_INCLUDEDIR)" >> ../Makefile.am
-        echo "${_mplib}_libdepends = -L\$(top_builddir)/mpblas/reference -lmpblas_${_mplib} -L\$(QD_LIBDIR) -lqd"  >> ../Makefile.am   
+        echo "${_mplib}_libdepends = -L\$(top_builddir)/mpblas/reference -lmpblas_${_mplib} -L\$(QD_LIBDIR) -lqd"  >> ../Makefile.am
+        echo "${_mplib}_opt_libdepends = -L\$(top_builddir)/mpblas/optimized/${_mplib} -lmpblas_${_mplib}_opt -L\$(QD_LIBDIR) -lqd"  >> ../Makefile.am
         echo ""               >> ../Makefile.am
         for _file in $FILES; do
             A=`echo $_file | $SED "s/generic\.cpp/${_mplib}/g"`
             echo "${A}_SOURCES = ${A}.cpp" >> ../Makefile.am
             echo "${A}_CXXFLAGS = \$(${_mplib}_cxxflags)" >> ../Makefile.am
             echo "${A}_LDFLAGS = \$(${_mplib}_libdepends)" >> ../Makefile.am
+            echo ""               >> ../Makefile.am
+        done
+        for _file in $FILES; do
+            A=`echo $_file | $SED "s/generic\.cpp/${_mplib}/g"`
+            echo "${A}_opt_SOURCES = ${A}.cpp" >> ../Makefile.am
+            echo "${A}_opt_CXXFLAGS = \$(${_mplib}_cxxflags)" >> ../Makefile.am
+            echo "${A}_opt_LDFLAGS = \$(${_mplib}_opt_libdepends)" >> ../Makefile.am
             echo ""               >> ../Makefile.am
         done
         echo "endif"             >> ../Makefile.am
@@ -178,16 +235,25 @@ for _mplib in $MPLIBS; do
         echo ""               >> ../Makefile.am
         echo "if ENABLE_QD" >> ../Makefile.am
         executefilenames=`echo $FILES | $SED 's/\.cpp//g' | $SED "s/generic/${_mplib}/g"`
-        echo "mpblasexamples_PROGRAMS += $executefilenames" >> ../Makefile.am
+        executefilenames_opt=`echo $executefilenames | $SED "s/${_mplib}/${_mplib}_opt/g"`
+        echo "mpblasexamples_PROGRAMS += $executefilenames $executefilenames_opt" >> ../Makefile.am
         echo ""               >> ../Makefile.am
         echo "${_mplib}_cxxflags = \$(OPENMP_CXXFLAGS) -I\$(top_srcdir)/include -I\$(QD_INCLUDEDIR)" >> ../Makefile.am
-        echo "${_mplib}_libdepends = -L\$(top_builddir)/mpblas/reference -lmpblas_${_mplib} -L\$(QD_LIBDIR) -lqd"  >> ../Makefile.am   
+        echo "${_mplib}_libdepends = -L\$(top_builddir)/mpblas/reference -lmpblas_${_mplib} -L\$(QD_LIBDIR) -lqd"  >> ../Makefile.am
+        echo "${_mplib}_opt_libdepends = -L\$(top_builddir)/mpblas/optimized/${_mplib} -lmpblas_${_mplib}_opt -L\$(QD_LIBDIR) -lqd"  >> ../Makefile.am
         echo ""               >> ../Makefile.am
         for _file in $FILES; do
             A=`echo $_file | $SED "s/generic\.cpp/${_mplib}/g"`
             echo "${A}_SOURCES = ${A}.cpp" >> ../Makefile.am
             echo "${A}_CXXFLAGS = \$(${_mplib}_cxxflags)" >> ../Makefile.am
             echo "${A}_LDFLAGS = \$(${_mplib}_libdepends)" >> ../Makefile.am
+            echo ""               >> ../Makefile.am
+        done
+        for _file in $FILES; do
+            A=`echo $_file | $SED "s/generic\.cpp/${_mplib}/g"`
+            echo "${A}_opt_SOURCES = ${A}.cpp" >> ../Makefile.am
+            echo "${A}_opt_CXXFLAGS = \$(${_mplib}_cxxflags)" >> ../Makefile.am
+            echo "${A}_opt_LDFLAGS = \$(${_mplib}_opt_libdepends)" >> ../Makefile.am
             echo ""               >> ../Makefile.am
         done
         echo "endif"             >> ../Makefile.am
@@ -199,11 +265,65 @@ path=`pwd`
 echo "mpblasexamplesdir=\$(prefix)/share/examples/mpblas/"   >> ../Makefile.am
 echo ""               >> ../Makefile.am
 echo "mpblasexamples_DATA = $SOURCEFILES \\" >> ../Makefile.am
-echo "Makefile.freebsd Makefile.linux Makefile.macos Makefile.mingw" >> ../Makefile.am
+echo "Makefile.freebsd Makefile.linux Makefile.linux_cuda Makefile.macos Makefile.mingw" >> ../Makefile.am
 echo ""               >> ../Makefile.am
 cat >> ../Makefile.am << EOF
 install-data-hook:
 if IS_MACOS
-	bash \$(top_builddir)/misc/fix_dylib_macOS.sh \$(mpblasexamplesdir) \$(prefix)
+	bash \$(top_srcdir)/misc/fix_dylib_macOS.sh \$(mpblasexamplesdir) \$(prefix)
 endif
+EOF
+
+cat >> ../Makefile.am << 'EOF'
+
+EXTRA_DIST = \
+	Makefile.freebsd.in \
+	Makefile.linux.in \
+	Makefile.linux_cuda.in \
+	Makefile.macos.in \
+	Makefile.mingw.in
+
+GENERATED_MAKEFILES = \
+	Makefile.freebsd \
+	Makefile.linux \
+	Makefile.linux_cuda \
+	Makefile.macos \
+	Makefile.mingw
+
+# Resolve %%LIBQUADMATH%% based on whether quadmath backend is selected.
+if MPLAPACK_BINARY128_MODE_QUADMATH
+LIBQUADMATH_SUBST = -lquadmath
+else
+LIBQUADMATH_SUBST =
+endif
+
+if MPLAPACK_BINARY128_MODE_QUADMATH
+MPLAPACK_SED_SUBST = \
+        -e 's|%%MPLAPACKDIR%%|$(prefix)|g' \
+        -e 's|%%LIBQUADMATH%%| -lquadmath|g'
+else
+MPLAPACK_SED_SUBST = \
+        -e 's|%%MPLAPACKDIR%%|$(prefix)|g' \
+        -e 's|%%LIBQUADMATH%%||g'
+endif
+
+Makefile.freebsd: Makefile.freebsd.in
+	sed $(MPLAPACK_SED_SUBST) $< > $@
+
+Makefile.linux: Makefile.linux.in
+	sed $(MPLAPACK_SED_SUBST) $< > $@
+
+Makefile.linux_cuda: Makefile.linux_cuda.in
+	sed $(MPLAPACK_SED_SUBST) $< > $@
+
+Makefile.macos: Makefile.macos.in
+	sed $(MPLAPACK_SED_SUBST) $< > $@
+
+Makefile.mingw: Makefile.mingw.in
+	sed $(MPLAPACK_SED_SUBST) $< > $@
+
+all-local: $(GENERATED_MAKEFILES)
+
+clean-local:
+	rm -f $(GENERATED_MAKEFILES)
 EOF

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DDRVSG2STG.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,17 +43,12 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, INTEGER const nounit, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *d, REAL *d2, REAL *z, INTEGER const ldz, REAL *ab, REAL *bb, REAL *ap, REAL *bp, REAL *work, INTEGER const nwork, INTEGER *iwork, INTEGER const liwork, REAL *result, INTEGER &info) {
-    INTEGER ldab = lda;
-    INTEGER ldbb = ldb;
-    INTEGER maxtyp = 21;
+void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER (&iseed)[4], REAL const thresh, INTEGER const nounit, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *d, REAL *d2, REAL *z, INTEGER const ldz, REAL *ab, REAL *bb, REAL *ap, REAL *bp, REAL *work, INTEGER const nwork, INTEGER *iwork, INTEGER const liwork, REAL *result, INTEGER &info) {
     common cmn;
     common_write write(cmn);
-    INTEGER ktype[21] = {1, 2, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 8, 8, 8, 9, 9, 9, 9, 9, 9};
-    INTEGER kmagn[21] = {1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 2, 3, 1, 2, 3, 1, 1, 1, 1, 1, 1};
-    INTEGER kmode[21] = {0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 4, 4, 0, 0, 0, 4, 4, 4, 4, 4, 4};
+    static INTEGER ktype[21] = {1, 2, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 8, 8, 8, 9, 9, 9, 9, 9, 9};
+    static INTEGER kmagn[21] = {1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 2, 3, 1, 2, 3, 1, 1, 1, 1, 1, 1};
+    static INTEGER kmode[21] = {0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 4, 4, 0, 0, 0, 4, 4, 4, 4, 4, 4};
     INTEGER ntestt = 0;
     bool badnn = false;
     INTEGER nmax = 0;
@@ -65,6 +67,7 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
     INTEGER jsize = 0;
     INTEGER n = 0;
     REAL aninv = 0.0;
+    const INTEGER maxtyp = 21;
     INTEGER mtypes = 0;
     INTEGER ka9 = 0;
     INTEGER kb9 = 0;
@@ -87,7 +90,7 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
     INTEGER itemp = 0;
     INTEGER ibtype = 0;
     INTEGER ibuplo = 0;
-    char uplo;
+    fem::str<1> uplo;
     const REAL ten = 10.0;
     REAL temp1 = 0.0;
     REAL temp2 = 0.0;
@@ -95,10 +98,13 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
     REAL vu = 0.0;
     INTEGER m = 0;
     INTEGER ij = 0;
+    //
+    // End of Rdrvsg2stg
+    //
     static const char *format_9999 = "(' Rdrvsg2stg: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
                                      "', ISEED=(',3(i5,','),i5,')')";
     //
-    //     1)      Check for errors
+    // 1)      Check for errors
     //
     ntestt = 0;
     info = 0;
@@ -112,7 +118,7 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
         }
     }
     //
-    //     Check for errors
+    // Check for errors
     //
     if (nsizes < 0) {
         info = -1;
@@ -124,9 +130,9 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
         info = -9;
     } else if (ldz <= 1 || ldz < nmax) {
         info = -16;
-    } else if (2 * (max(nmax, (INTEGER)3) * max(nmax, (INTEGER)3)) > nwork) {
+    } else if (2 * pow2(max(nmax, (INTEGER)3)) > nwork) {
         info = -21;
-    } else if (2 * (max(nmax, (INTEGER)3) * max(nmax, (INTEGER)3)) > liwork) {
+    } else if (2 * pow2(max(nmax, (INTEGER)3)) > liwork) {
         info = -23;
     }
     //
@@ -135,13 +141,13 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (nsizes == 0 || ntypes == 0) {
         return;
     }
     //
-    //     More Important constants
+    // More Important constants
     //
     unfl = Rlamch("Safe minimum");
     ovfl = Rlamch("Overflow");
@@ -154,7 +160,7 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
         iseed2[i - 1] = iseed[i - 1];
     }
     //
-    //     Loop over sizes, types
+    // Loop over sizes, types
     //
     nerrs = 0;
     nmats = 0;
@@ -182,20 +188,20 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 ioldsd[j - 1] = iseed[j - 1];
             }
             //
-            //           2)      Compute "A"
+            // 2)      Compute "A"
             //
-            //                   Control parameters:
+            // Control parameters:
             //
-            //               KMAGN  KMODE        KTYPE
-            //           =1  O(1)   clustered 1  zero
-            //           =2  large  clustered 2  identity
-            //           =3  small  exponential  (none)
-            //           =4         arithmetic   diagonal, w/ eigenvalues
-            //           =5         random log   hermitian, w/ eigenvalues
-            //           =6         random       (none)
-            //           =7                      random diagonal
-            //           =8                      random hermitian
-            //           =9                      banded, w/ eigenvalues
+            // KMAGN  KMODE        KTYPE
+            // =1  O(1)   clustered 1  zero
+            // =2  large  clustered 2  identity
+            // =3  small  exponential  (none)
+            // =4         arithmetic   diagonal, w/ eigenvalues
+            // =5         random log   hermitian, w/ eigenvalues
+            // =6         random       (none)
+            // =7                      random diagonal
+            // =8                      random hermitian
+            // =9                      banded, w/ eigenvalues
             //
             if (mtypes > maxtyp) {
                 goto statement_90;
@@ -204,7 +210,7 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             itype = ktype[jtype - 1];
             imode = kmode[jtype - 1];
             //
-            //           Compute norm
+            // Compute norm
             //
             switch (kmagn[jtype - 1]) {
             case 1:
@@ -232,19 +238,13 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
         statement_70:
             //
             iinfo = 0;
-#ifdef ___MPLAPACK_BUILD_WITH_MPFR___
-            // There is exactly 0 eigenvalue for n=odd and Rlaebz.cpp cannot find
-            // 0 eigenvalue and fail to converge. Fix may Rlaebz.cpp help.
-            cond = ulpinv * 1e-3;
-#else
             cond = ulpinv;
-#endif
             //
-            //           Special Matrices -- Identity & Jordan block
+            // Special Matrices -- Identity & Jordan block
             //
             if (itype == 1) {
                 //
-                //              Zero
+                // Zero
                 //
                 ka = 0;
                 kb = 0;
@@ -252,7 +252,7 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
             } else if (itype == 2) {
                 //
-                //              Identity
+                // Identity
                 //
                 ka = 0;
                 kb = 0;
@@ -263,7 +263,7 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
             } else if (itype == 4) {
                 //
-                //              Diagonal Matrix, [Eigen]values Specified
+                // Diagonal Matrix, [Eigen]values Specified
                 //
                 ka = 0;
                 kb = 0;
@@ -271,7 +271,7 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
             } else if (itype == 5) {
                 //
-                //              symmetric, eigenvalues specified
+                // symmetric, eigenvalues specified
                 //
                 ka = max((INTEGER)0, n - 1);
                 kb = ka;
@@ -279,7 +279,7 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
             } else if (itype == 7) {
                 //
-                //              Diagonal, random eigenvalues
+                // Diagonal, random eigenvalues
                 //
                 ka = 0;
                 kb = 0;
@@ -287,7 +287,7 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
             } else if (itype == 8) {
                 //
-                //              symmetric, random eigenvalues
+                // symmetric, random eigenvalues
                 //
                 ka = max((INTEGER)0, n - 1);
                 kb = ka;
@@ -295,24 +295,24 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 //
             } else if (itype == 9) {
                 //
-                //              symmetric banded, eigenvalues specified
+                // symmetric banded, eigenvalues specified
                 //
-                //              The following values are used for the half-bandwidths:
+                // The following values are used for the half-bandwidths:
                 //
-                //                ka = 1   kb = 1
-                //                ka = 2   kb = 1
-                //                ka = 2   kb = 2
-                //                ka = 3   kb = 1
-                //                ka = 3   kb = 2
-                //                ka = 3   kb = 3
+                // ka = 1   kb = 1
+                // ka = 2   kb = 1
+                // ka = 2   kb = 2
+                // ka = 3   kb = 1
+                // ka = 3   kb = 2
+                // ka = 3   kb = 3
                 //
                 kb9++;
                 if (kb9 > ka9) {
                     ka9++;
                     kb9 = 1;
                 }
-                ka = max({(INTEGER)0, min(n - 1, ka9)});
-                kb = max({(INTEGER)0, min(n - 1, kb9)});
+                ka = max((INTEGER)0, min(n - 1, ka9));
+                kb = max((INTEGER)0, min(n - 1, kb9));
                 Rlatms(n, n, "S", iseed, "S", work, imode, cond, anorm, ka, ka, "N", a, lda, &work[(n + 1) - 1], iinfo);
                 //
             } else {
@@ -321,7 +321,7 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
             }
             //
             if (iinfo != 0) {
-                write(nounit, format_9999), "Generator", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Generator", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 return;
             }
@@ -342,44 +342,41 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
             }
             //
-            //           3) Call Rsygv, Rspgv, Rsbgv, SSYGVD, SSPGVD, SSBGVD,
-            //              Rsygvx, Rspgvx, and Rsbgvx, do tests.
+            // 3) Call Rsygv, Rspgv, Rsbgv, SSYGVD, SSPGVD, SSBGVD,
+            // Rsygvx, Rspgvx, and Rsbgvx, do tests.
             //
-            //           loop over the three generalized problems
-            //                 IBTYPE = 1: A*x = (lambda)*B*x
-            //                 IBTYPE = 2: A*B*x = (lambda)*x
-            //                 IBTYPE = 3: B*A*x = (lambda)*x
+            // loop over the three generalized problems
+            // IBTYPE = 1: A*x = (lambda)*B*x
+            // IBTYPE = 2: A*B*x = (lambda)*x
+            // IBTYPE = 3: B*A*x = (lambda)*x
             //
             for (ibtype = 1; ibtype <= 3; ibtype = ibtype + 1) {
                 //
-                //              loop over the setting UPLO
+                // loop over the setting UPLO
                 //
                 for (ibuplo = 1; ibuplo <= 2; ibuplo = ibuplo + 1) {
                     if (ibuplo == 1) {
-                        uplo = 'U';
+                        uplo = "U";
                     }
                     if (ibuplo == 2) {
-                        uplo = 'L';
+                        uplo = "L";
                     }
                     //
-                    //                 Generate random well-conditioned positive definite
-                    //                 matrix B, of bandwidth not greater than that of A.
+                    // Generate random well-conditioned positive definite
+                    // matrix B, of bandwidth not greater than that of A.
                     //
-                    Rlatms(n, n, "U", iseed, "P", work, 5, ten, one, kb, kb, &uplo, b, ldb, &work[(n + 1) - 1], iinfo);
+                    Rlatms(n, n, "U", iseed, "P", work, 5, ten, one, kb, kb, uplo, b, ldb, &work[(n + 1) - 1], iinfo);
                     //
-                    //                 Test Rsygv
+                    // Test Rsygv
                     //
                     ntest++;
                     //
                     Rlacpy(" ", n, n, a, lda, z, ldz);
-                    Rlacpy(&uplo, n, n, b, ldb, bb, ldb);
+                    Rlacpy(uplo.elems, n, n, b, ldb, bb, ldb);
                     //
-                    Rsygv(ibtype, "V", &uplo, n, z, ldz, bb, ldb, d, work, nwork, iinfo);
+                    Rsygv(ibtype, "V", uplo.elems, n, z, ldz, bb, ldb, d, work, nwork, iinfo);
                     if (iinfo != 0) {
-                        if (Mlsame(&uplo, "U"))
-                            write(nounit, format_9999), "Rsygv(V,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                        else
-                            write(nounit, format_9999), "Rsygv(V,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                        write(nounit, format_9999), "Rsygv(V," + uplo + ")", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -389,23 +386,20 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         }
                     }
                     //
-                    //                 Do Test
+                    // Do Test
                     //
-                    Rsgt01(ibtype, &uplo, n, n, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
+                    Rsgt01(ibtype, uplo, n, n, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
                     //
-                    //                 Test Rsygv_2stage
+                    // Test Rsygv_2stage
                     //
                     ntest++;
                     //
                     Rlacpy(" ", n, n, a, lda, z, ldz);
-                    Rlacpy(&uplo, n, n, b, ldb, bb, ldb);
+                    Rlacpy(uplo.elems, n, n, b, ldb, bb, ldb);
                     //
-                    Rsygv_2stage(ibtype, "N", &uplo, n, z, ldz, bb, ldb, d2, work, nwork, iinfo);
+                    Rsygv_2stage(ibtype, "N", uplo.elems, n, z, ldz, bb, ldb, d2, work, nwork, iinfo);
                     if (iinfo != 0) {
-                        if (Mlsame(&uplo, "U"))
-                            write(nounit, format_9999), "Rsygv_2stage(V,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                        else
-                            write(nounit, format_9999), "Rsygv_2stage(V,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                        write(nounit, format_9999), "Rsygv_2stage(V," + uplo + ")", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -415,38 +409,34 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         }
                     }
                     //
-                    //                 Do Test
+                    // Do Test
                     //
-                    //                  CALL Rsgt01( IBTYPE, UPLO, N, N, A, LDA, B, LDB, Z,
-                    //     $                         LDZ, D, WORK, RESULT( NTEST ) )
+                    // CALL Rsgt01( IBTYPE, UPLO, N, N, A, LDA, B, LDB, Z,
+                    // $                         LDZ, D, WORK, RESULT( NTEST ) )
                     //
-                    //                 Do Tests | D1 - D2 | / ( |D1| ulp )
-                    //                 D1 computed using the standard 1-stage reduction as reference
-                    //                 D2 computed using the 2-stage reduction
+                    // Do Tests | D1 - D2 | / ( |D1| ulp )
+                    // D1 computed using the standard 1-stage reduction as reference
+                    // D2 computed using the 2-stage reduction
                     //
                     temp1 = zero;
                     temp2 = zero;
                     for (j = 1; j <= n; j = j + 1) {
-                        temp1 = max({temp1, REAL(abs(d[j - 1])), REAL(abs(d2[j - 1]))});
-                        temp2 = max(temp2, REAL(abs(d[j - 1] - d2[j - 1])));
+                        temp1 = max(temp1, abs(d[j - 1]), abs(d2[j - 1]));
+                        temp2 = max(temp2, abs(d[j - 1] - d2[j - 1]));
                     }
                     //
-                    result[ntest - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
+                    result[ntest - 1] = temp2 / max(unfl, ulp * max(temp1, temp2));
                     //
-                    //                 Test Rsygvd
+                    // Test Rsygvd
                     //
                     ntest++;
                     //
                     Rlacpy(" ", n, n, a, lda, z, ldz);
-                    Rlacpy(&uplo, n, n, b, ldb, bb, ldb);
+                    Rlacpy(uplo.elems, n, n, b, ldb, bb, ldb);
                     //
-                    Rsygvd(ibtype, "V", &uplo, n, z, ldz, bb, ldb, d, work, nwork, iwork, liwork, iinfo);
+                    Rsygvd(ibtype, "V", uplo.elems, n, z, ldz, bb, ldb, d, work, nwork, iwork, liwork, iinfo);
                     if (iinfo != 0) {
-                        if (Mlsame(&uplo, "U"))
-                            write(nounit, format_9999), "Rsygvd(V,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                        else
-                            write(nounit, format_9999), "Rsygvd(V,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-
+                        write(nounit, format_9999), "Rsygvd(V," + uplo + ")", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -456,23 +446,20 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         }
                     }
                     //
-                    //                 Do Test
+                    // Do Test
                     //
-                    Rsgt01(ibtype, &uplo, n, n, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
+                    Rsgt01(ibtype, uplo, n, n, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
                     //
-                    //                 Test Rsygvx
+                    // Test Rsygvx
                     //
                     ntest++;
                     //
                     Rlacpy(" ", n, n, a, lda, ab, lda);
-                    Rlacpy(&uplo, n, n, b, ldb, bb, ldb);
+                    Rlacpy(uplo.elems, n, n, b, ldb, bb, ldb);
                     //
-                    Rsygvx(ibtype, "V", "A", &uplo, n, ab, lda, bb, ldb, vl, vu, il, iu, abstol, m, d, z, ldz, work, nwork, &iwork[(n + 1) - 1], iwork, iinfo);
+                    Rsygvx(ibtype, "V", "A", uplo.elems, n, ab, lda, bb, ldb, vl, vu, il, iu, abstol, m, d, z, ldz, work, nwork, &iwork[(n + 1) - 1], iwork, iinfo);
                     if (iinfo != 0) {
-                        if (Mlsame(&uplo, "U"))
-                            write(nounit, format_9999), "Rsygvx(V,A,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                        else
-                            write(nounit, format_9999), "Rsygvx(V,A,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                        write(nounit, format_9999), "Rsygvx(V,A" + uplo + ")", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -482,28 +469,25 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         }
                     }
                     //
-                    //                 Do Test
+                    // Do Test
                     //
-                    Rsgt01(ibtype, &uplo, n, n, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
+                    Rsgt01(ibtype, uplo, n, n, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
                     //
                     ntest++;
                     //
                     Rlacpy(" ", n, n, a, lda, ab, lda);
-                    Rlacpy(&uplo, n, n, b, ldb, bb, ldb);
+                    Rlacpy(uplo.elems, n, n, b, ldb, bb, ldb);
                     //
-                    //                 since we do not know the exact eigenvalues of this
-                    //                 eigenpair, we just set VL and VU as constants.
-                    //                 It is quite possible that there are no eigenvalues
-                    //                 in this interval.
+                    // since we do not know the exact eigenvalues of this
+                    // eigenpair, we just set VL and VU as constants.
+                    // It is quite possible that there are no eigenvalues
+                    // in this interval.
                     //
                     vl = zero;
                     vu = anorm;
-                    Rsygvx(ibtype, "V", "V", &uplo, n, ab, lda, bb, ldb, vl, vu, il, iu, abstol, m, d, z, ldz, work, nwork, &iwork[(n + 1) - 1], iwork, iinfo);
+                    Rsygvx(ibtype, "V", "V", uplo.elems, n, ab, lda, bb, ldb, vl, vu, il, iu, abstol, m, d, z, ldz, work, nwork, &iwork[(n + 1) - 1], iwork, iinfo);
                     if (iinfo != 0) {
-                        if (Mlsame(&uplo, "U"))
-                            write(nounit, format_9999), "Rsygvx(V,V,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                        else
-                            write(nounit, format_9999), "Rsygvx(V,V,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                        write(nounit, format_9999), "Rsygvx(V,V," + uplo + ")", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -513,21 +497,18 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         }
                     }
                     //
-                    //                 Do Test
+                    // Do Test
                     //
-                    Rsgt01(ibtype, &uplo, n, m, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
+                    Rsgt01(ibtype, uplo, n, m, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
                     //
                     ntest++;
                     //
                     Rlacpy(" ", n, n, a, lda, ab, lda);
-                    Rlacpy(&uplo, n, n, b, ldb, bb, ldb);
+                    Rlacpy(uplo.elems, n, n, b, ldb, bb, ldb);
                     //
-                    Rsygvx(ibtype, "V", "I", &uplo, n, ab, lda, bb, ldb, vl, vu, il, iu, abstol, m, d, z, ldz, work, nwork, &iwork[(n + 1) - 1], iwork, iinfo);
+                    Rsygvx(ibtype, "V", "I", uplo.elems, n, ab, lda, bb, ldb, vl, vu, il, iu, abstol, m, d, z, ldz, work, nwork, &iwork[(n + 1) - 1], iwork, iinfo);
                     if (iinfo != 0) {
-                        if (Mlsame(&uplo, "U"))
-                            write(nounit, format_9999), "Rsygvx(V,I,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                        else
-                            write(nounit, format_9999), "Rsygvx(V,I,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                        write(nounit, format_9999), "Rsygvx(V,I," + uplo + ")", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -537,19 +518,19 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         }
                     }
                     //
-                    //                 Do Test
+                    // Do Test
                     //
-                    Rsgt01(ibtype, &uplo, n, m, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
+                    Rsgt01(ibtype, uplo, n, m, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
                 //
                 statement_100:
                     //
-                    //                 Test Rspgv
+                    // Test Rspgv
                     //
                     ntest++;
                     //
-                    //                 Copy the matrices into packed storage.
+                    // Copy the matrices into packed storage.
                     //
-                    if (Mlsame(&uplo, "U")) {
+                    if (Mlsame(uplo.elems, "U")) {
                         ij = 1;
                         for (j = 1; j <= n; j = j + 1) {
                             for (i = 1; i <= j; i = i + 1) {
@@ -569,12 +550,9 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         }
                     }
                     //
-                    Rspgv(ibtype, "V", &uplo, n, ap, bp, d, z, ldz, work, iinfo);
+                    Rspgv(ibtype, "V", uplo.elems, n, ap, bp, d, z, ldz, work, iinfo);
                     if (iinfo != 0) {
-                        if (Mlsame(&uplo, "U"))
-                            write(nounit, format_9999), "Rspgv(V,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                        else
-                            write(nounit, format_9999), "Rspgv(V,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                        write(nounit, format_9999), "Rspgv(V," + uplo + ")", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -584,17 +562,17 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         }
                     }
                     //
-                    //                 Do Test
+                    // Do Test
                     //
-                    Rsgt01(ibtype, &uplo, n, n, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
+                    Rsgt01(ibtype, uplo, n, n, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
                     //
-                    //                 Test Rspgvd
+                    // Test Rspgvd
                     //
                     ntest++;
                     //
-                    //                 Copy the matrices into packed storage.
+                    // Copy the matrices into packed storage.
                     //
-                    if (Mlsame(&uplo, "U")) {
+                    if (Mlsame(uplo.elems, "U")) {
                         ij = 1;
                         for (j = 1; j <= n; j = j + 1) {
                             for (i = 1; i <= j; i = i + 1) {
@@ -614,12 +592,9 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         }
                     }
                     //
-                    Rspgvd(ibtype, "V", &uplo, n, ap, bp, d, z, ldz, work, nwork, iwork, liwork, iinfo);
+                    Rspgvd(ibtype, "V", uplo.elems, n, ap, bp, d, z, ldz, work, nwork, iwork, liwork, iinfo);
                     if (iinfo != 0) {
-                        if (Mlsame(&uplo, "U"))
-                            write(nounit, format_9999), "Rspgvd(V,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                        else
-                            write(nounit, format_9999), "Rspgvd(V,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                        write(nounit, format_9999), "Rspgvd(V," + uplo + ")", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -629,17 +604,17 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         }
                     }
                     //
-                    //                 Do Test
+                    // Do Test
                     //
-                    Rsgt01(ibtype, &uplo, n, n, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
+                    Rsgt01(ibtype, uplo, n, n, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
                     //
-                    //                 Test Rspgvx
+                    // Test Rspgvx
                     //
                     ntest++;
                     //
-                    //                 Copy the matrices into packed storage.
+                    // Copy the matrices into packed storage.
                     //
-                    if (Mlsame(&uplo, "U")) {
+                    if (Mlsame(uplo.elems, "U")) {
                         ij = 1;
                         for (j = 1; j <= n; j = j + 1) {
                             for (i = 1; i <= j; i = i + 1) {
@@ -659,12 +634,9 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         }
                     }
                     //
-                    Rspgvx(ibtype, "V", "A", &uplo, n, ap, bp, vl, vu, il, iu, abstol, m, d, z, ldz, work, &iwork[(n + 1) - 1], iwork, info);
+                    Rspgvx(ibtype, "V", "A", uplo.elems, n, ap, bp, vl, vu, il, iu, abstol, m, d, z, ldz, work, &iwork[(n + 1) - 1], iwork, iinfo);
                     if (iinfo != 0) {
-                        if (Mlsame(&uplo, "U"))
-                            write(nounit, format_9999), "Rspgvx(V,A,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                        else
-                            write(nounit, format_9999), "Rspgvx(V,A,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                        write(nounit, format_9999), "Rspgvx(V,A" + uplo + ")", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -674,15 +646,15 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         }
                     }
                     //
-                    //                 Do Test
+                    // Do Test
                     //
-                    Rsgt01(ibtype, &uplo, n, m, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
+                    Rsgt01(ibtype, uplo, n, m, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
                     //
                     ntest++;
                     //
-                    //                 Copy the matrices into packed storage.
+                    // Copy the matrices into packed storage.
                     //
-                    if (Mlsame(&uplo, "U")) {
+                    if (Mlsame(uplo.elems, "U")) {
                         ij = 1;
                         for (j = 1; j <= n; j = j + 1) {
                             for (i = 1; i <= j; i = i + 1) {
@@ -704,12 +676,9 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                     //
                     vl = zero;
                     vu = anorm;
-                    Rspgvx(ibtype, "V", "V", &uplo, n, ap, bp, vl, vu, il, iu, abstol, m, d, z, ldz, work, &iwork[(n + 1) - 1], iwork, info);
+                    Rspgvx(ibtype, "V", "V", uplo.elems, n, ap, bp, vl, vu, il, iu, abstol, m, d, z, ldz, work, &iwork[(n + 1) - 1], iwork, iinfo);
                     if (iinfo != 0) {
-                        if (Mlsame(&uplo, "U"))
-                            write(nounit, format_9999), "Rspgvx(V,V,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                        else
-                            write(nounit, format_9999), "Rspgvx(V,V,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                        write(nounit, format_9999), "Rspgvx(V,V" + uplo + ")", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -719,15 +688,15 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         }
                     }
                     //
-                    //                 Do Test
+                    // Do Test
                     //
-                    Rsgt01(ibtype, &uplo, n, m, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
+                    Rsgt01(ibtype, uplo, n, m, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
                     //
                     ntest++;
                     //
-                    //                 Copy the matrices into packed storage.
+                    // Copy the matrices into packed storage.
                     //
-                    if (Mlsame(&uplo, "U")) {
+                    if (Mlsame(uplo.elems, "U")) {
                         ij = 1;
                         for (j = 1; j <= n; j = j + 1) {
                             for (i = 1; i <= j; i = i + 1) {
@@ -747,12 +716,9 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         }
                     }
                     //
-                    Rspgvx(ibtype, "V", "I", &uplo, n, ap, bp, vl, vu, il, iu, abstol, m, d, z, ldz, work, &iwork[(n + 1) - 1], iwork, info);
+                    Rspgvx(ibtype, "V", "I", uplo.elems, n, ap, bp, vl, vu, il, iu, abstol, m, d, z, ldz, work, &iwork[(n + 1) - 1], iwork, iinfo);
                     if (iinfo != 0) {
-                        if (Mlsame(&uplo, "U"))
-                            write(nounit, format_9999), "Rspgvx(V,I,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                        else
-                            write(nounit, format_9999), "Rspgvx(V,I,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                        write(nounit, format_9999), "Rspgvx(V,I" + uplo + ")", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -762,46 +728,43 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                         }
                     }
                     //
-                    //                 Do Test
+                    // Do Test
                     //
-                    Rsgt01(ibtype, &uplo, n, m, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
+                    Rsgt01(ibtype, uplo, n, m, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
                 //
                 statement_310:
                     //
                     if (ibtype == 1) {
                         //
-                        //                    TEST Rsbgv
+                        // TEST Rsbgv
                         //
                         ntest++;
                         //
-                        //                    Copy the matrices into band storage.
+                        // Copy the matrices into band storage.
                         //
-                        if (Mlsame(&uplo, "U")) {
+                        if (Mlsame(uplo.elems, "U")) {
                             for (j = 1; j <= n; j = j + 1) {
                                 for (i = max((INTEGER)1, j - ka); i <= j; i = i + 1) {
-                                    ab[((ka + 1 + i - j) - 1) + (j - 1) * ldab] = a[(i - 1) + (j - 1) * lda];
+                                    ab[((ka + 1 + i - j) - 1) + (j - 1) * lda] = a[(i - 1) + (j - 1) * lda];
                                 }
                                 for (i = max((INTEGER)1, j - kb); i <= j; i = i + 1) {
-                                    bb[((kb + 1 + i - j) - 1) + (j - 1) * ldbb] = b[(i - 1) + (j - 1) * ldb];
+                                    bb[((kb + 1 + i - j) - 1) + (j - 1) * ldb] = b[(i - 1) + (j - 1) * ldb];
                                 }
                             }
                         } else {
                             for (j = 1; j <= n; j = j + 1) {
                                 for (i = j; i <= min(n, j + ka); i = i + 1) {
-                                    ab[((1 + i - j) - 1) + (j - 1) * ldab] = a[(i - 1) + (j - 1) * lda];
+                                    ab[((1 + i - j) - 1) + (j - 1) * lda] = a[(i - 1) + (j - 1) * lda];
                                 }
                                 for (i = j; i <= min(n, j + kb); i = i + 1) {
-                                    bb[((1 + i - j) - 1) + (j - 1) * ldbb] = b[(i - 1) + (j - 1) * ldb];
+                                    bb[((1 + i - j) - 1) + (j - 1) * ldb] = b[(i - 1) + (j - 1) * ldb];
                                 }
                             }
                         }
                         //
-                        Rsbgv("V", &uplo, n, ka, kb, ab, lda, bb, ldb, d, z, ldz, work, iinfo);
+                        Rsbgv("V", uplo.elems, n, ka, kb, ab, lda, bb, ldb, d, z, ldz, work, iinfo);
                         if (iinfo != 0) {
-                            if (Mlsame(&uplo, "U"))
-                                write(nounit, format_9999), "Rsbgv(V,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                            else
-                                write(nounit, format_9999), "Rsbgv(V,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                            write(nounit, format_9999), "Rsbgv(V," + uplo + ")", iinfo, n, jtype, ioldsd;
                             info = abs(iinfo);
                             if (iinfo < 0) {
                                 return;
@@ -811,42 +774,39 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                             }
                         }
                         //
-                        //                    Do Test
+                        // Do Test
                         //
-                        Rsgt01(ibtype, &uplo, n, n, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
+                        Rsgt01(ibtype, uplo, n, n, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
                         //
-                        //                    TEST Rsbgvd
+                        // TEST Rsbgvd
                         //
                         ntest++;
                         //
-                        //                    Copy the matrices into band storage.
+                        // Copy the matrices into band storage.
                         //
-                        if (Mlsame(&uplo, "U")) {
+                        if (Mlsame(uplo.elems, "U")) {
                             for (j = 1; j <= n; j = j + 1) {
                                 for (i = max((INTEGER)1, j - ka); i <= j; i = i + 1) {
-                                    ab[((ka + 1 + i - j) - 1) + (j - 1) * ldab] = a[(i - 1) + (j - 1) * lda];
+                                    ab[((ka + 1 + i - j) - 1) + (j - 1) * lda] = a[(i - 1) + (j - 1) * lda];
                                 }
                                 for (i = max((INTEGER)1, j - kb); i <= j; i = i + 1) {
-                                    bb[((kb + 1 + i - j) - 1) + (j - 1) * ldbb] = b[(i - 1) + (j - 1) * ldb];
+                                    bb[((kb + 1 + i - j) - 1) + (j - 1) * ldb] = b[(i - 1) + (j - 1) * ldb];
                                 }
                             }
                         } else {
                             for (j = 1; j <= n; j = j + 1) {
                                 for (i = j; i <= min(n, j + ka); i = i + 1) {
-                                    ab[((1 + i - j) - 1) + (j - 1) * ldab] = a[(i - 1) + (j - 1) * lda];
+                                    ab[((1 + i - j) - 1) + (j - 1) * lda] = a[(i - 1) + (j - 1) * lda];
                                 }
                                 for (i = j; i <= min(n, j + kb); i = i + 1) {
-                                    bb[((1 + i - j) - 1) + (j - 1) * ldbb] = b[(i - 1) + (j - 1) * ldb];
+                                    bb[((1 + i - j) - 1) + (j - 1) * ldb] = b[(i - 1) + (j - 1) * ldb];
                                 }
                             }
                         }
                         //
-                        Rsbgvd("V", &uplo, n, ka, kb, ab, lda, bb, ldb, d, z, ldz, work, nwork, iwork, liwork, iinfo);
+                        Rsbgvd("V", uplo.elems, n, ka, kb, ab, lda, bb, ldb, d, z, ldz, work, nwork, iwork, liwork, iinfo);
                         if (iinfo != 0) {
-                            if (Mlsame(&uplo, "U"))
-                                write(nounit, format_9999), "Rsbgvd(V,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                            else
-                                write(nounit, format_9999), "Rsbgvd(V,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                            write(nounit, format_9999), "Rsbgvd(V," + uplo + ")", iinfo, n, jtype, ioldsd;
                             info = abs(iinfo);
                             if (iinfo < 0) {
                                 return;
@@ -856,42 +816,39 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                             }
                         }
                         //
-                        //                    Do Test
+                        // Do Test
                         //
-                        Rsgt01(ibtype, &uplo, n, n, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
+                        Rsgt01(ibtype, uplo, n, n, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
                         //
-                        //                    Test Rsbgvx
+                        // Test Rsbgvx
                         //
                         ntest++;
                         //
-                        //                    Copy the matrices into band storage.
+                        // Copy the matrices into band storage.
                         //
-                        if (Mlsame(&uplo, "U")) {
+                        if (Mlsame(uplo.elems, "U")) {
                             for (j = 1; j <= n; j = j + 1) {
                                 for (i = max((INTEGER)1, j - ka); i <= j; i = i + 1) {
-                                    ab[((ka + 1 + i - j) - 1) + (j - 1) * ldab] = a[(i - 1) + (j - 1) * lda];
+                                    ab[((ka + 1 + i - j) - 1) + (j - 1) * lda] = a[(i - 1) + (j - 1) * lda];
                                 }
                                 for (i = max((INTEGER)1, j - kb); i <= j; i = i + 1) {
-                                    bb[((kb + 1 + i - j) - 1) + (j - 1) * ldbb] = b[(i - 1) + (j - 1) * ldb];
+                                    bb[((kb + 1 + i - j) - 1) + (j - 1) * ldb] = b[(i - 1) + (j - 1) * ldb];
                                 }
                             }
                         } else {
                             for (j = 1; j <= n; j = j + 1) {
                                 for (i = j; i <= min(n, j + ka); i = i + 1) {
-                                    ab[((1 + i - j) - 1) + (j - 1) * ldab] = a[(i - 1) + (j - 1) * lda];
+                                    ab[((1 + i - j) - 1) + (j - 1) * lda] = a[(i - 1) + (j - 1) * lda];
                                 }
                                 for (i = j; i <= min(n, j + kb); i = i + 1) {
-                                    bb[((1 + i - j) - 1) + (j - 1) * ldbb] = b[(i - 1) + (j - 1) * ldb];
+                                    bb[((1 + i - j) - 1) + (j - 1) * ldb] = b[(i - 1) + (j - 1) * ldb];
                                 }
                             }
                         }
                         //
-                        Rsbgvx("V", "A", &uplo, n, ka, kb, ab, lda, bb, ldb, bp, max((INTEGER)1, n), vl, vu, il, iu, abstol, m, d, z, ldz, work, &iwork[(n + 1) - 1], iwork, iinfo);
+                        Rsbgvx("V", "A", uplo.elems, n, ka, kb, ab, lda, bb, ldb, bp, max((INTEGER)1, n), vl, vu, il, iu, abstol, m, d, z, ldz, work, &iwork[(n + 1) - 1], iwork, iinfo);
                         if (iinfo != 0) {
-                            if (Mlsame(&uplo, "U"))
-                                write(nounit, format_9999), "Rsbgvx(V,A,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                            else
-                                write(nounit, format_9999), "Rsbgvx(V,A,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                            write(nounit, format_9999), "Rsbgvx(V,A" + uplo + ")", iinfo, n, jtype, ioldsd;
                             info = abs(iinfo);
                             if (iinfo < 0) {
                                 return;
@@ -901,42 +858,39 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                             }
                         }
                         //
-                        //                    Do Test
+                        // Do Test
                         //
-                        Rsgt01(ibtype, &uplo, n, m, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
+                        Rsgt01(ibtype, uplo, n, m, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
                         //
                         ntest++;
                         //
-                        //                    Copy the matrices into band storage.
+                        // Copy the matrices into band storage.
                         //
-                        if (Mlsame(&uplo, "U")) {
+                        if (Mlsame(uplo.elems, "U")) {
                             for (j = 1; j <= n; j = j + 1) {
                                 for (i = max((INTEGER)1, j - ka); i <= j; i = i + 1) {
-                                    ab[((ka + 1 + i - j) - 1) + (j - 1) * ldab] = a[(i - 1) + (j - 1) * lda];
+                                    ab[((ka + 1 + i - j) - 1) + (j - 1) * lda] = a[(i - 1) + (j - 1) * lda];
                                 }
                                 for (i = max((INTEGER)1, j - kb); i <= j; i = i + 1) {
-                                    bb[((kb + 1 + i - j) - 1) + (j - 1) * ldbb] = b[(i - 1) + (j - 1) * ldb];
+                                    bb[((kb + 1 + i - j) - 1) + (j - 1) * ldb] = b[(i - 1) + (j - 1) * ldb];
                                 }
                             }
                         } else {
                             for (j = 1; j <= n; j = j + 1) {
                                 for (i = j; i <= min(n, j + ka); i = i + 1) {
-                                    ab[((1 + i - j) - 1) + (j - 1) * ldab] = a[(i - 1) + (j - 1) * lda];
+                                    ab[((1 + i - j) - 1) + (j - 1) * lda] = a[(i - 1) + (j - 1) * lda];
                                 }
                                 for (i = j; i <= min(n, j + kb); i = i + 1) {
-                                    bb[((1 + i - j) - 1) + (j - 1) * ldbb] = b[(i - 1) + (j - 1) * ldb];
+                                    bb[((1 + i - j) - 1) + (j - 1) * ldb] = b[(i - 1) + (j - 1) * ldb];
                                 }
                             }
                         }
                         //
                         vl = zero;
                         vu = anorm;
-                        Rsbgvx("V", "V", &uplo, n, ka, kb, ab, lda, bb, ldb, bp, max((INTEGER)1, n), vl, vu, il, iu, abstol, m, d, z, ldz, work, &iwork[(n + 1) - 1], iwork, iinfo);
+                        Rsbgvx("V", "V", uplo.elems, n, ka, kb, ab, lda, bb, ldb, bp, max((INTEGER)1, n), vl, vu, il, iu, abstol, m, d, z, ldz, work, &iwork[(n + 1) - 1], iwork, iinfo);
                         if (iinfo != 0) {
-                            if (Mlsame(&uplo, "U"))
-                                write(nounit, format_9999), "Rsbgvx(V,V,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                            else
-                                write(nounit, format_9999), "Rsbgvx(V,V,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                            write(nounit, format_9999), "Rsbgvx(V,V" + uplo + ")", iinfo, n, jtype, ioldsd;
                             info = abs(iinfo);
                             if (iinfo < 0) {
                                 return;
@@ -946,40 +900,37 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                             }
                         }
                         //
-                        //                    Do Test
+                        // Do Test
                         //
-                        Rsgt01(ibtype, &uplo, n, m, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
+                        Rsgt01(ibtype, uplo, n, m, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
                         //
                         ntest++;
                         //
-                        //                    Copy the matrices into band storage.
+                        // Copy the matrices into band storage.
                         //
-                        if (Mlsame(&uplo, "U")) {
+                        if (Mlsame(uplo.elems, "U")) {
                             for (j = 1; j <= n; j = j + 1) {
                                 for (i = max((INTEGER)1, j - ka); i <= j; i = i + 1) {
-                                    ab[((ka + 1 + i - j) - 1) + (j - 1) * ldab] = a[(i - 1) + (j - 1) * lda];
+                                    ab[((ka + 1 + i - j) - 1) + (j - 1) * lda] = a[(i - 1) + (j - 1) * lda];
                                 }
                                 for (i = max((INTEGER)1, j - kb); i <= j; i = i + 1) {
-                                    bb[((kb + 1 + i - j) - 1) + (j - 1) * ldbb] = b[(i - 1) + (j - 1) * ldb];
+                                    bb[((kb + 1 + i - j) - 1) + (j - 1) * ldb] = b[(i - 1) + (j - 1) * ldb];
                                 }
                             }
                         } else {
                             for (j = 1; j <= n; j = j + 1) {
                                 for (i = j; i <= min(n, j + ka); i = i + 1) {
-                                    ab[((1 + i - j) - 1) + (j - 1) * ldab] = a[(i - 1) + (j - 1) * lda];
+                                    ab[((1 + i - j) - 1) + (j - 1) * lda] = a[(i - 1) + (j - 1) * lda];
                                 }
                                 for (i = j; i <= min(n, j + kb); i = i + 1) {
-                                    bb[((1 + i - j) - 1) + (j - 1) * ldbb] = b[(i - 1) + (j - 1) * ldb];
+                                    bb[((1 + i - j) - 1) + (j - 1) * ldb] = b[(i - 1) + (j - 1) * ldb];
                                 }
                             }
                         }
                         //
-                        Rsbgvx("V", "I", &uplo, n, ka, kb, ab, lda, bb, ldb, bp, max((INTEGER)1, n), vl, vu, il, iu, abstol, m, d, z, ldz, work, &iwork[(n + 1) - 1], iwork, iinfo);
+                        Rsbgvx("V", "I", uplo.elems, n, ka, kb, ab, lda, bb, ldb, bp, max((INTEGER)1, n), vl, vu, il, iu, abstol, m, d, z, ldz, work, &iwork[(n + 1) - 1], iwork, iinfo);
                         if (iinfo != 0) {
-                            if (Mlsame(&uplo, "U"))
-                                write(nounit, format_9999), "Rsbgvx(V,I,U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
-                            else
-                                write(nounit, format_9999), "Rsbgvx(V,I,L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                            write(nounit, format_9999), "Rsbgvx(V,I" + uplo + ")", iinfo, n, jtype, ioldsd;
                             info = abs(iinfo);
                             if (iinfo < 0) {
                                 return;
@@ -989,9 +940,9 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                             }
                         }
                         //
-                        //                    Do Test
+                        // Do Test
                         //
-                        Rsgt01(ibtype, &uplo, n, m, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
+                        Rsgt01(ibtype, uplo, n, m, a, lda, b, ldb, z, ldz, d, work, &result[ntest - 1]);
                         //
                     }
                 //
@@ -999,7 +950,7 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
                 }
             }
             //
-            //           End of Loop -- Check for RESULT(j) > THRESH
+            // End of Loop -- Check for RESULT(j) > THRESH
             //
             ntestt += ntest;
             Rlafts("DSG", n, n, jtype, ntest, result, ioldsd, thresh, nounit, nerrs);
@@ -1007,10 +958,8 @@ void Rdrvsg2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *d
         }
     }
     //
-    //     Summary
+    // Summary
     //
     Rlasum("DSG", nounit, nerrs, ntestt);
-    //
-    //     End of Rdrvsg2stg
     //
 }

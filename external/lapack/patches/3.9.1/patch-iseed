@@ -1,0 +1,22 @@
+--- a/TESTING/LIN/zlatsy.f~	2026-02-18 00:52:38.217426212 +0900
++++ b/TESTING/LIN/zlatsy.f	2026-02-18 00:55:27.203491197 +0900
+@@ -96,7 +96,7 @@
+       INTEGER            LDX, N
+ *     ..
+ *     .. Array Arguments ..
+-      INTEGER            ISEED( * )
++      INTEGER            ISEED( 4 )
+       COMPLEX*16         X( LDX, * )
+ *     ..
+ *
+--- a/TESTING/LIN/zlatsp.f~	2026-02-18 00:52:38.218426236 +0900
++++ b/TESTING/LIN/zlatsp.f	2026-02-18 00:56:52.980524822 +0900
+@@ -91,7 +91,7 @@
+       INTEGER            N
+ *     ..
+ *     .. Array Arguments ..
+-      INTEGER            ISEED( * )
++      INTEGER            ISEED( 4 )
+       COMPLEX*16         X( * )
+ *     ..
+ *

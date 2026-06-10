@@ -93,7 +93,7 @@ void Rgetf2_test() {
                     if (maxdiff < diff)
                         maxdiff = diff;
                     idiff = infnorm(ipiv_ref, ipiv, veclen(min(m, n), 1), 1);
-                    //          for(i=0;i<min(m,n);i++){ printf("%d %d\n",ipiv[i],ipivd[i]);}
+                    // for(i=0;i<min(m,n);i++){ printf("%d %d\n",ipiv[i],ipivd[i]);}
                     if (idiff > 0) {
                         printf("error pivoting %d!!\n", (int)idiff);
                         errorflag = TRUE;

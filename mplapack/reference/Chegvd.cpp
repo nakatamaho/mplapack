@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,35 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZHEGVD.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Chegvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, REAL *w, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER const lrwork, INTEGER *iwork, INTEGER const liwork, INTEGER &info) {
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     bool wantz = Mlsame(jobz, "V");
     bool upper = Mlsame(uplo, "U");
@@ -95,8 +79,8 @@ void Chegvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
     }
     //
     if (info == 0) {
-        work[1 - 1] = lopt;
-        rwork[1 - 1] = lropt;
+        work[1 - 1] = Rroundup_lwork(lopt);
+        rwork[1 - 1] = Rroundup_lwork(lropt);
         iwork[1 - 1] = liopt;
         //
         if (lwork < lwmin && !lquery) {
@@ -115,13 +99,13 @@ void Chegvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
     }
     //
-    //     Form a Cholesky factorization of B.
+    // Form a Cholesky factorization of B.
     //
     Cpotrf(uplo, n, b, ldb, info);
     if (info != 0) {
@@ -129,7 +113,7 @@ void Chegvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
         return;
     }
     //
-    //     Transform problem to standard eigenvalue problem and solve.
+    // Transform problem to standard eigenvalue problem and solve.
     //
     Chegst(itype, uplo, n, a, lda, b, ldb, info);
     Cheevd(jobz, uplo, n, a, lda, w, work, lwork, rwork, lrwork, iwork, liwork, info);
@@ -141,12 +125,12 @@ void Chegvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     if (wantz && info == 0) {
         //
-        //        Backtransform eigenvectors to the original problem.
+        // Backtransform eigenvectors to the original problem.
         //
         if (itype == 1 || itype == 2) {
             //
-            //           For A*x=(lambda)*B*x and A*B*x=(lambda)*x;
-            //           backtransform eigenvectors: x = inv(L)**H *y or inv(U)*y
+            // For A*x=(lambda)*B*x and A*B*x=(lambda)*x;
+            // backtransform eigenvectors: x = inv(L)**H *y or inv(U)*y
             //
             if (upper) {
                 trans = 'N';
@@ -158,8 +142,8 @@ void Chegvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
             //
         } else if (itype == 3) {
             //
-            //           For B*A*x=(lambda)*x;
-            //           backtransform eigenvectors: x = L*y or U**H *y
+            // For B*A*x=(lambda)*x;
+            // backtransform eigenvectors: x = L*y or U**H *y
             //
             if (upper) {
                 trans = 'C';
@@ -171,10 +155,10 @@ void Chegvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
         }
     }
     //
-    work[1 - 1] = lopt;
-    rwork[1 - 1] = lropt;
+    work[1 - 1] = Rroundup_lwork(lopt);
+    rwork[1 - 1] = Rroundup_lwork(lropt);
     iwork[1 - 1] = liopt;
     //
-    //     End of Chegvd
+    // End of Chegvd
     //
 }

@@ -101,7 +101,7 @@ template <class X> void printmatUH(int N, X *A, int LDA) {
             if (i <= j)
                 tmp = A[i + j * LDA];
             else
-	        tmp = conj(A[j + i * LDA]);
+                tmp = conj(A[j + i * LDA]);
             printnum_short(tmp);
             if (j < N - 1)
                 printf(", ");
@@ -121,7 +121,7 @@ template <class X> void printmatLH(int N, X *A, int LDA) {
         printf("[ ");
         for (int j = 0; j < N; j++) {
             if (i >= j)
-	        tmp = conj(A[i + j * LDA]);
+                tmp = conj(A[i + j * LDA]);
             else
                 tmp = A[j + i * LDA];
             printnum_short(tmp);

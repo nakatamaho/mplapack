@@ -9,14 +9,14 @@ MPFRLIBS= -lmplapack_mpfr -lmpblas_mpfr -lmpfr -lmpc -lgmp
 GMPLIBS=-lmplapack_gmp -lmpblas_gmp -lgmpxx -lgmp
 QDLIBS=-lmplapack_qd -lmpblas_qd -lqd
 DDLIBS=-lmplapack_dd -lmpblas_dd -lqd
-_FLOAT64xLIBS=-lmplapack__Float64x -lmpblas__Float64x
-_FLOAT128LIBS=-lmplapack__Float128 -lmpblas__Float128%%LIBQUADMATH%%
+BINARY80LIBS=-lmplapack_binary80 -lmpblas_binary80
+BINARY128LIBS=-lmplapack_binary128 -lmpblas_binary128%%LIBQUADMATH%%
 DOUBLELIBS=-lmplapack_double -lmpblas_double
 BLAS=
 LAPACK=
 FLIBS=
 
-programs=Rsyev_Frank_mpfr.exe Rsyev_Frank_gmp.exe Rsyev_Frank_qd.exe Rsyev_Frank_dd.exe Rsyev_Frank__Float64x.exe Rsyev_Frank__Float128.exe Rsyev_Frank_double.exe
+programs=Rsyev_Frank_mpfr.exe Rsyev_Frank_gmp.exe Rsyev_Frank_qd.exe Rsyev_Frank_dd.exe Rsyev_Frank_binary80.exe Rsyev_Frank_binary128.exe Rsyev_Frank_double.exe
 
 all: $(programs)
 
@@ -35,11 +35,11 @@ Rsyev_Frank_qd.exe: Rsyev_Frank_qd.o
 Rsyev_Frank_dd.exe: Rsyev_Frank_dd.o
 	$(CXX) -o Rsyev_Frank_dd.exe Rsyev_Frank_dd.o $(LIBFLAGS) $(DDLIBS)
 
-Rsyev_Frank__Float64x.exe: Rsyev_Frank__Float64x.o
-	$(CXX) -o Rsyev_Frank__Float64x Rsyev_Frank__Float64x.o $(LIBFLAGS) $(_FLOAT64xLIBS)
+Rsyev_Frank_binary80.exe: Rsyev_Frank_binary80.o
+	$(CXX) -o Rsyev_Frank_binary80 Rsyev_Frank_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
 
-Rsyev_Frank__Float128.exe: Rsyev_Frank__Float128.o
-	$(CXX) -o Rsyev_Frank__Float128 Rsyev_Frank__Float128.o $(LIBFLAGS) $(_FLOAT128LIBS)
+Rsyev_Frank_binary128.exe: Rsyev_Frank_binary128.o
+	$(CXX) -o Rsyev_Frank_binary128 Rsyev_Frank_binary128.o $(LIBFLAGS) $(BINARY128LIBS)
 
 Rsyev_Frank_double.exe: Rsyev_Frank_double.o
 	$(CXX) -o Rsyev_Frank_double Rsyev_Frank_double.o $(LIBFLAGS) $(DOUBLELIBS)

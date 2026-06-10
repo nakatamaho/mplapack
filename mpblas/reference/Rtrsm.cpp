@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,33 +26,18 @@
  *
  */
 
+// Derived from BLAS routine DTRSM.
+// Original BLAS authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 
 void Rtrsm(const char *side, const char *uplo, const char *transa, const char *diag, INTEGER const m, INTEGER const n, REAL const alpha, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb) {
     //
-    //  -- Reference BLAS level3 routine --
-    //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Parameters ..
-    //     ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     bool lside = Mlsame(side, "L");
     INTEGER nrowa = 0;
@@ -83,17 +68,17 @@ void Rtrsm(const char *side, const char *uplo, const char *transa, const char *d
         info = 11;
     }
     if (info != 0) {
-        Mxerbla("Rtrsm ", info);
+        Mxerbla("Rtrsm", info);
         return;
     }
     //
-    //     Quick return if possible.
+    // Quick return if possible.
     //
     if (m == 0 || n == 0) {
         return;
     }
     //
-    //     And when  alpha.eq.zero.
+    // And when  alpha.eq.zero.
     //
     const REAL zero = 0.0;
     INTEGER j = 0;
@@ -107,7 +92,7 @@ void Rtrsm(const char *side, const char *uplo, const char *transa, const char *d
         return;
     }
     //
-    //     Start the operations.
+    // Start the operations.
     //
     const REAL one = 1.0;
     INTEGER k = 0;
@@ -115,7 +100,7 @@ void Rtrsm(const char *side, const char *uplo, const char *transa, const char *d
     if (lside) {
         if (Mlsame(transa, "N")) {
             //
-            //           Form  B := alpha*inv( A )*B.
+            // Form  B := alpha*inv( A )*B.
             //
             if (upper) {
                 for (j = 1; j <= n; j = j + 1) {
@@ -156,7 +141,7 @@ void Rtrsm(const char *side, const char *uplo, const char *transa, const char *d
             }
         } else {
             //
-            //           Form  B := alpha*inv( A**T )*B.
+            // Form  B := alpha*inv( A**T )*B.
             //
             if (upper) {
                 for (j = 1; j <= n; j = j + 1) {
@@ -189,7 +174,7 @@ void Rtrsm(const char *side, const char *uplo, const char *transa, const char *d
     } else {
         if (Mlsame(transa, "N")) {
             //
-            //           Form  B := alpha*B*inv( A ).
+            // Form  B := alpha*B*inv( A ).
             //
             if (upper) {
                 for (j = 1; j <= n; j = j + 1) {
@@ -236,7 +221,7 @@ void Rtrsm(const char *side, const char *uplo, const char *transa, const char *d
             }
         } else {
             //
-            //           Form  B := alpha*B*inv( A**T ).
+            // Form  B := alpha*B*inv( A**T ).
             //
             if (upper) {
                 for (k = n; k >= 1; k = k - 1) {
@@ -286,6 +271,6 @@ void Rtrsm(const char *side, const char *uplo, const char *transa, const char *d
         }
     }
     //
-    //     End of Rtrsm .
+    // End of Rtrsm
     //
 }

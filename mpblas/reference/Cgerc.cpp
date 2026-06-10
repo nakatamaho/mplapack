@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,31 +26,18 @@
  *
  */
 
+// Derived from BLAS routine ZGERC.
+// Original BLAS authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 
 void Cgerc(INTEGER const m, INTEGER const n, COMPLEX const alpha, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER const incy, COMPLEX *a, INTEGER const lda) {
     //
-    //  -- Reference BLAS level2 routine --
-    //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     INTEGER info = 0;
     if (m < 0) {
@@ -65,19 +52,19 @@ void Cgerc(INTEGER const m, INTEGER const n, COMPLEX const alpha, COMPLEX *x, IN
         info = 9;
     }
     if (info != 0) {
-        Mxerbla("Cgerc ", info);
+        Mxerbla("Cgerc", info);
         return;
     }
     //
-    //     Quick return if possible.
+    // Quick return if possible.
     //
     const COMPLEX zero = COMPLEX(0.0, 0.0);
     if ((m == 0) || (n == 0) || (alpha == zero)) {
         return;
     }
     //
-    //     Start the operations. In this version the elements of A are
-    //     accessed sequentially with one pass through A.
+    // Start the operations. In this version the elements of A are
+    // accessed sequentially with one pass through A.
     //
     INTEGER jy = 0;
     if (incy > 0) {
@@ -119,6 +106,6 @@ void Cgerc(INTEGER const m, INTEGER const n, COMPLEX const alpha, COMPLEX *x, IN
         }
     }
     //
-    //     End of Cgerc .
+    // End of Cgerc
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZSBMV.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,37 +43,12 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-void Csbmv(const char *uplo, INTEGER const n, INTEGER const k, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx, COMPLEX const beta, COMPLEX *y, INTEGER const incy) {
+void Csbmv(fem::str_cref uplo, INTEGER const n, INTEGER const k, COMPLEX const alpha, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const incx, COMPLEX const beta, COMPLEX *y, INTEGER const incy) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     INTEGER info = 0;
-    if (!Mlsame(uplo, "U") && !Mlsame(uplo, "L")) {
+    if (!Mlsame(uplo.elems(), "U") && !Mlsame(uplo.elems(), "L")) {
         info = 1;
     } else if (n < 0) {
         info = 2;
@@ -80,11 +62,11 @@ void Csbmv(const char *uplo, INTEGER const n, INTEGER const k, COMPLEX const alp
         info = 11;
     }
     if (info != 0) {
-        Mxerbla("Csbmv ", info);
+        Mxerbla("Csbmv", info);
         return;
     }
     //
-    //     Quick return if possible.
+    // Quick return if possible.
     //
     const COMPLEX zero = COMPLEX(0.0, 0.0);
     const COMPLEX one = COMPLEX(1.0, 0.0);
@@ -92,7 +74,7 @@ void Csbmv(const char *uplo, INTEGER const n, INTEGER const k, COMPLEX const alp
         return;
     }
     //
-    //     Set up the start points in  X  and  Y.
+    // Set up the start points in  X  and  Y.
     //
     INTEGER kx = 0;
     if (incx > 0) {
@@ -107,10 +89,10 @@ void Csbmv(const char *uplo, INTEGER const n, INTEGER const k, COMPLEX const alp
         ky = 1 - (n - 1) * incy;
     }
     //
-    //     Start the operations. In this version the elements of the array A
-    //     are accessed sequentially with one pass through A.
+    // Start the operations. In this version the elements of the array A
+    // are accessed sequentially with one pass through A.
     //
-    //     First form  y := beta*y.
+    // First form  y := beta*y.
     //
     INTEGER i = 0;
     INTEGER iy = 0;
@@ -151,9 +133,9 @@ void Csbmv(const char *uplo, INTEGER const n, INTEGER const k, COMPLEX const alp
     INTEGER jx = 0;
     INTEGER jy = 0;
     INTEGER ix = 0;
-    if (Mlsame(uplo, "U")) {
+    if (Mlsame(uplo.elems(), "U")) {
         //
-        //        Form  y  when upper triangle of A is stored.
+        // Form  y  when upper triangle of A is stored.
         //
         kplus1 = k + 1;
         if ((incx == 1) && (incy == 1)) {
@@ -193,7 +175,7 @@ void Csbmv(const char *uplo, INTEGER const n, INTEGER const k, COMPLEX const alp
         }
     } else {
         //
-        //        Form  y  when lower triangle of A is stored.
+        // Form  y  when lower triangle of A is stored.
         //
         if ((incx == 1) && (incy == 1)) {
             for (j = 1; j <= n; j = j + 1) {
@@ -230,6 +212,6 @@ void Csbmv(const char *uplo, INTEGER const n, INTEGER const k, COMPLEX const alp
         }
     }
     //
-    //     End of Csbmv
+    // End of Csbmv
     //
 }

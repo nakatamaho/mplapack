@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,38 +26,20 @@
  *
  */
 
+// Derived from LAPACK routine ZLAQR1.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL cabs1(COMPLEX cdum) { return (abs(cdum.real()) + abs(cdum.imag())); }
-
 void Claqr1(INTEGER const n, COMPLEX *h, INTEGER const ldh, COMPLEX const s1, COMPLEX const s2, COMPLEX *v) {
-    //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  ================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Statement Functions ..
-    //     ..
-    //     .. Statement Function definitions ..
     COMPLEX cdum = 0.0;
-    //     ..
-    //     .. Executable Statements ..
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n != 2 && n != 3) {
         return;
@@ -69,17 +51,17 @@ void Claqr1(INTEGER const n, COMPLEX *h, INTEGER const ldh, COMPLEX const s1, CO
     COMPLEX h21s = 0.0;
     COMPLEX h31s = 0.0;
     if (n == 2) {
-        s = cabs1(h[(1 - 1)] - s2) + cabs1(h[(2 - 1)]);
+        s = cabs1(h[0] - s2) + cabs1(h[(2 - 1)]);
         if (s == rzero) {
             v[1 - 1] = zero;
             v[2 - 1] = zero;
         } else {
             h21s = h[(2 - 1)] / s;
-            v[1 - 1] = h21s * h[(2 - 1) * ldh] + (h[(1 - 1)] - s1) * ((h[(1 - 1)] - s2) / s);
-            v[2 - 1] = h21s * (h[(1 - 1)] + h[(2 - 1) + (2 - 1) * ldh] - s1 - s2);
+            v[1 - 1] = h21s * h[(2 - 1) * ldh] + (h[0] - s1) * ((h[0] - s2) / s);
+            v[2 - 1] = h21s * (h[0] + h[(2 - 1) + (2 - 1) * ldh] - s1 - s2);
         }
     } else {
-        s = cabs1(h[(1 - 1)] - s2) + cabs1(h[(2 - 1)]) + cabs1(h[(3 - 1)]);
+        s = cabs1(h[0] - s2) + cabs1(h[(2 - 1)]) + cabs1(h[(3 - 1)]);
         if (s == zero) {
             v[1 - 1] = zero;
             v[2 - 1] = zero;
@@ -87,9 +69,9 @@ void Claqr1(INTEGER const n, COMPLEX *h, INTEGER const ldh, COMPLEX const s1, CO
         } else {
             h21s = h[(2 - 1)] / s;
             h31s = h[(3 - 1)] / s;
-            v[1 - 1] = (h[(1 - 1)] - s1) * ((h[(1 - 1)] - s2) / s) + h[(2 - 1) * ldh] * h21s + h[(3 - 1) * ldh] * h31s;
-            v[2 - 1] = h21s * (h[(1 - 1)] + h[(2 - 1) + (2 - 1) * ldh] - s1 - s2) + h[(2 - 1) + (3 - 1) * ldh] * h31s;
-            v[3 - 1] = h31s * (h[(1 - 1)] + h[(3 - 1) + (3 - 1) * ldh] - s1 - s2) + h21s * h[(3 - 1) + (2 - 1) * ldh];
+            v[1 - 1] = (h[0] - s1) * ((h[0] - s2) / s) + h[(2 - 1) * ldh] * h21s + h[(3 - 1) * ldh] * h31s;
+            v[2 - 1] = h21s * (h[0] + h[(2 - 1) + (2 - 1) * ldh] - s1 - s2) + h[(2 - 1) + (3 - 1) * ldh] * h31s;
+            v[3 - 1] = h31s * (h[0] + h[(3 - 1) + (3 - 1) * ldh] - s1 - s2) + h21s * h[(3 - 1) + (2 - 1) * ldh];
         }
     }
 }

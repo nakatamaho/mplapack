@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DQRT13.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,13 +43,13 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Rqrt13(INTEGER const scale, INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL &norma, INTEGER *iseed) {
+void Rqrt13(INTEGER const scale, INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL &norma, INTEGER (&iseed)[4]) {
     //
     if (m <= 0 || n <= 0) {
         return;
     }
     //
-    //     benign matrix
+    // benign matrix
     //
     INTEGER j = 0;
     for (j = 1; j <= n; j = j + 1) {
@@ -52,7 +59,7 @@ void Rqrt13(INTEGER const scale, INTEGER const m, INTEGER const n, REAL *a, INTE
         }
     }
     //
-    //     scaled versions
+    // scaled versions
     //
     REAL dummy[1];
     REAL smlnum = 0.0;
@@ -68,12 +75,12 @@ void Rqrt13(INTEGER const scale, INTEGER const m, INTEGER const n, REAL *a, INTE
         //
         if (scale == 2) {
             //
-            //           matrix scaled up
+            // matrix scaled up
             //
             Rlascl("General", 0, 0, norma, bignum, m, n, a, lda, info);
         } else if (scale == 3) {
             //
-            //           matrix scaled down
+            // matrix scaled down
             //
             Rlascl("General", 0, 0, norma, smlnum, m, n, a, lda, info);
         }
@@ -81,6 +88,6 @@ void Rqrt13(INTEGER const scale, INTEGER const m, INTEGER const n, REAL *a, INTE
     //
     norma = Rlange("One-norm", m, n, a, lda, dummy);
     //
-    //     End of Rqrt13
+    // End of Rqrt13
     //
 }

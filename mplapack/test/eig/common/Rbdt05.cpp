@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DBDT05.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,34 +43,9 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
 void Rbdt05(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *s, INTEGER const ns, REAL *u, INTEGER const ldu, REAL *vt, INTEGER const ldvt, REAL *work, REAL &resid) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    // ======================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Quick return if possible.
+    // Quick return if possible.
     //
     const REAL zero = 0.0;
     resid = zero;
@@ -74,19 +56,19 @@ void Rbdt05(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
     REAL eps = Rlamch("Precision");
     REAL anorm = Rlange("M", m, n, a, lda, work);
     //
-    //     Compute U' * A * V.
+    // Compute U' * A * V.
     //
     const REAL one = 1.0;
     Rgemm("N", "T", m, ns, n, one, a, lda, vt, ldvt, zero, &work[(1 + ns * ns) - 1], m);
     Rgemm("T", "N", ns, ns, m, -one, u, ldu, &work[(1 + ns * ns) - 1], m, zero, work, ns);
     //
-    //     norm(S - U' * B * V)
+    // norm(S - U' * B * V)
     //
     INTEGER j = 0;
     INTEGER i = 0;
     for (i = 1; i <= ns; i = i + 1) {
         work[(j + i) - 1] += s[i - 1];
-        resid = max({resid, Rasum(ns, &work[(j + 1) - 1], 1)});
+        resid = max(resid, Rasum(ns, &work[(j + 1) - 1], 1));
         j += ns;
     }
     //
@@ -99,13 +81,13 @@ void Rbdt05(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
             resid = (resid / anorm) / (castREAL(n) * eps);
         } else {
             if (anorm < one) {
-                resid = (min(resid, REAL(castREAL(n) * anorm)) / anorm) / (castREAL(n) * eps);
+                resid = (min(resid, castREAL(n) * anorm) / anorm) / (castREAL(n) * eps);
             } else {
-                resid = min(REAL(resid / anorm), castREAL(n)) / (castREAL(n) * eps);
+                resid = min(resid / anorm, castREAL(n)) / (castREAL(n) * eps);
             }
         }
     }
     //
-    //     End of Rbdt05
+    // End of Rbdt05
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,36 +26,21 @@
  *
  */
 
+// Derived from LAPACK routine ZGEMLQ.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Cgemlq(const char *side, const char *trans, INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *a, INTEGER const lda, COMPLEX *t, INTEGER const tsize, COMPLEX *c, INTEGER const ldc, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    // Test the input arguments
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    // =====================================================================
-    //
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input arguments
-    //
-    bool lquery = lwork == -1;
+    bool lquery = (lwork == -1);
     bool notran = Mlsame(trans, "N");
     bool tran = Mlsame(trans, "C");
     bool left = Mlsame(side, "L");
@@ -71,6 +56,14 @@ void Cgemlq(const char *side, const char *trans, INTEGER const m, INTEGER const 
     } else {
         lw = m * mb;
         mn = n;
+    }
+    //
+    INTEGER minmnk = min(m, n, k);
+    INTEGER lwmin = 0;
+    if (minmnk == 0) {
+        lwmin = 1;
+    } else {
+        lwmin = max((INTEGER)1, lw);
     }
     //
     INTEGER nblcks = 0;
@@ -101,7 +94,7 @@ void Cgemlq(const char *side, const char *trans, INTEGER const m, INTEGER const 
         info = -9;
     } else if (ldc < max((INTEGER)1, m)) {
         info = -11;
-    } else if ((lwork < max((INTEGER)1, lw)) && (!lquery)) {
+    } else if ((lwork < lwmin) && (!lquery)) {
         info = -13;
     }
     //
@@ -116,13 +109,13 @@ void Cgemlq(const char *side, const char *trans, INTEGER const m, INTEGER const 
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
-    if (min({m, n, k}) == 0) {
+    if (minmnk == 0) {
         return;
     }
     //
-    if ((left && m <= k) || (right && n <= k) || (nb <= k) || (nb >= max({m, n, k}))) {
+    if ((left && m <= k) || (right && n <= k) || (nb <= k) || (nb >= max(m, n, k))) {
         Cgemlqt(side, trans, m, n, k, mb, a, lda, &t[6 - 1], mb, c, ldc, work, info);
     } else {
         Clamswlq(side, trans, m, n, k, mb, nb, a, lda, &t[6 - 1], mb, c, ldc, work, lwork, info);
@@ -130,6 +123,6 @@ void Cgemlq(const char *side, const char *trans, INTEGER const m, INTEGER const 
     //
     work[1 - 1] = lw;
     //
-    //     End of Cgemlq
+    // End of Cgemlq
     //
 }

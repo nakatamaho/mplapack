@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,49 +26,23 @@
  *
  */
 
+// Derived from LAPACK routine ZLATM3.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
+
 #include <mplapack_matgen.h>
 
 COMPLEX
-Clatm3(INTEGER const m, INTEGER const n, INTEGER const i, INTEGER const j, INTEGER &isub, INTEGER &jsub, INTEGER const kl, INTEGER const ku, INTEGER const idist, INTEGER *iseed, COMPLEX *d, INTEGER const igrade, COMPLEX *dl, COMPLEX *dr, INTEGER const ipvtng, INTEGER *iwork, REAL const sparse) {
-    COMPLEX return_value = (0.0, 0.0);
+Clatm3(INTEGER const m, INTEGER const n, INTEGER const i, INTEGER const j, INTEGER &isub, INTEGER &jsub, INTEGER const kl, INTEGER const ku, INTEGER const idist, INTEGER (&iseed)[4], COMPLEX *d, INTEGER const igrade, COMPLEX *dl, COMPLEX *dr, INTEGER const ipvtng, INTEGER *iwork, REAL const sparse) {
+    COMPLEX return_value = COMPLEX(0.0, 0.0);
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //
-    //     ..
-    //
-    //     .. Array Arguments ..
-    //
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //
-    //     ..
-    //
-    //     .. Local Scalars ..
-    //
-    //     ..
-    //
-    //     .. External Functions ..
-    //
-    //     ..
-    //
-    //     .. Intrinsic Functions ..
-    //
-    //     ..
-    //
-    //-----------------------------------------------------------------------
-    //
-    //     .. Executable Statements ..
-    //
-    //     Check for I and J in range
+    // Check for I and J in range
     //
     const COMPLEX czero = COMPLEX(0.0, 0.0);
     if (i < 1 || i > m || j < 1 || j > n) {
@@ -78,7 +52,7 @@ Clatm3(INTEGER const m, INTEGER const n, INTEGER const i, INTEGER const j, INTEG
         return return_value;
     }
     //
-    //     Compute subscripts depending on IPVTNG
+    // Compute subscripts depending on IPVTNG
     //
     if (ipvtng == 0) {
         isub = i;
@@ -94,14 +68,14 @@ Clatm3(INTEGER const m, INTEGER const n, INTEGER const i, INTEGER const j, INTEG
         jsub = iwork[j - 1];
     }
     //
-    //     Check for banding
+    // Check for banding
     //
     if (jsub > isub + ku || jsub < isub - kl) {
         return_value = czero;
         return return_value;
     }
     //
-    //     Check for sparsity
+    // Check for sparsity
     //
     const REAL zero = 0.0;
     if (sparse > zero) {
@@ -111,7 +85,7 @@ Clatm3(INTEGER const m, INTEGER const n, INTEGER const i, INTEGER const j, INTEG
         }
     }
     //
-    //     Compute entry and grade it according to IGRADE
+    // Compute entry and grade it according to IGRADE
     //
     COMPLEX ctemp = 0.0;
     if (i == j) {
@@ -135,6 +109,6 @@ Clatm3(INTEGER const m, INTEGER const n, INTEGER const i, INTEGER const j, INTEG
     return_value = ctemp;
     return return_value;
     //
-    //     End of Clatm3
+    // End of Clatm3
     //
 }

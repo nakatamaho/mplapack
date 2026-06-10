@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZHST01.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,11 +43,9 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
 void Chst01(INTEGER const n, INTEGER const /* ilo */, INTEGER const /* ihi */, COMPLEX *a, INTEGER const lda, COMPLEX *h, INTEGER const ldh, COMPLEX *q, INTEGER const ldq, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL *result) {
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     const REAL zero = 0.0;
     if (n <= 0) {
@@ -53,34 +58,34 @@ void Chst01(INTEGER const n, INTEGER const /* ilo */, INTEGER const /* ihi */, C
     REAL eps = Rlamch("Precision");
     const REAL one = 1.0;
     REAL ovfl = one / unfl;
-    REAL smlnum = unfl * castREAL(n) / eps;
+    REAL smlnum = unfl * n / eps;
     //
-    //     Test 1:  Compute norm( A - Q*H*Q' ) / ( norm(A) * N * EPS )
+    // Test 1:  Compute norm( A - Q*H*Q' ) / ( norm(A) * N * EPS )
     //
-    //     Copy A to WORK
+    // Copy A to WORK
     //
     INTEGER ldwork = max((INTEGER)1, n);
     Clacpy(" ", n, n, a, lda, work, ldwork);
     //
-    //     Compute Q*H
+    // Compute Q*H
     //
     Cgemm("No transpose", "No transpose", n, n, n, COMPLEX(one), q, ldq, h, ldh, COMPLEX(zero), &work[(ldwork * n + 1) - 1], ldwork);
     //
-    //     Compute A - Q*H*Q'
+    // Compute A - Q*H*Q'
     //
     Cgemm("No transpose", "Conjugate transpose", n, n, n, COMPLEX(-one), &work[(ldwork * n + 1) - 1], ldwork, q, ldq, COMPLEX(one), work, ldwork);
     //
     REAL anorm = max(Clange("1", n, n, a, lda, rwork), unfl);
     REAL wnorm = Clange("1", n, n, work, ldwork, rwork);
     //
-    //     Note that RESULT(1) cannot overflow and is bounded by 1/(N*EPS)
+    // Note that RESULT(1) cannot overflow and is bounded by 1/(N*EPS)
     //
-    result[1 - 1] = min(wnorm, anorm) / max(smlnum, REAL(anorm * eps)) / castREAL(n);
+    result[1 - 1] = min(wnorm, anorm) / max(smlnum, anorm * eps) / n;
     //
-    //     Test 2:  Compute norm( I - Q'*Q ) / ( N * EPS )
+    // Test 2:  Compute norm( I - Q'*Q ) / ( N * EPS )
     //
     Cunt01("Columns", n, n, q, ldq, work, lwork, rwork, result[2 - 1]);
     //
-    //     End of Chst01
+    // End of Chst01
     //
 }

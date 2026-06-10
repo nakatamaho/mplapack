@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DBDT04.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,34 +43,9 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-void Rbdt04(const char *uplo, INTEGER const n, REAL *d, REAL *e, REAL *s, INTEGER const ns, REAL *u, INTEGER const ldu, REAL *vt, INTEGER const ldvt, REAL *work, REAL &resid) {
+void Rbdt04(fem::str_cref uplo, INTEGER const n, REAL *d, REAL *e, REAL *s, INTEGER const ns, REAL *u, INTEGER const ldu, REAL *vt, INTEGER const ldvt, REAL *work, REAL &resid) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    // ======================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Quick return if possible.
+    // Quick return if possible.
     //
     const REAL zero = 0.0;
     resid = zero;
@@ -73,16 +55,16 @@ void Rbdt04(const char *uplo, INTEGER const n, REAL *d, REAL *e, REAL *s, INTEGE
     //
     REAL eps = Rlamch("Precision");
     //
-    //     Compute S - U' * B * V.
+    // Compute S - U' * B * V.
     //
     REAL bnorm = zero;
     //
     INTEGER k = 0;
     INTEGER i = 0;
     INTEGER j = 0;
-    if (Mlsame(uplo, "U")) {
+    if (Mlsame(uplo.elems(), "U")) {
         //
-        //        B is upper bidiagonal.
+        // B is upper bidiagonal.
         //
         k = 0;
         for (i = 1; i <= ns; i = i + 1) {
@@ -95,11 +77,11 @@ void Rbdt04(const char *uplo, INTEGER const n, REAL *d, REAL *e, REAL *s, INTEGE
         }
         bnorm = abs(d[1 - 1]);
         for (i = 2; i <= n; i = i + 1) {
-            bnorm = max(bnorm, REAL(abs(d[i - 1]) + abs(e[(i - 1) - 1])));
+            bnorm = max(bnorm, abs(d[i - 1]) + abs(e[(i - 1) - 1]));
         }
     } else {
         //
-        //        B is lower bidiagonal.
+        // B is lower bidiagonal.
         //
         k = 0;
         for (i = 1; i <= ns; i = i + 1) {
@@ -112,19 +94,19 @@ void Rbdt04(const char *uplo, INTEGER const n, REAL *d, REAL *e, REAL *s, INTEGE
         }
         bnorm = abs(d[n - 1]);
         for (i = 1; i <= n - 1; i = i + 1) {
-            bnorm = max(bnorm, REAL(abs(d[i - 1]) + abs(e[i - 1])));
+            bnorm = max(bnorm, abs(d[i - 1]) + abs(e[i - 1]));
         }
     }
     //
     const REAL one = 1.0;
     Rgemm("T", "N", ns, ns, n, -one, u, ldu, &work[1 - 1], n, zero, &work[(1 + n * ns) - 1], ns);
     //
-    //     norm(S - U' * B * V)
+    // norm(S - U' * B * V)
     //
     k = n * ns;
     for (i = 1; i <= ns; i = i + 1) {
         work[(k + i) - 1] += s[i - 1];
-        resid = max({resid, Rasum(ns, &work[(k + 1) - 1], 1)});
+        resid = max(resid, Rasum(ns, &work[(k + 1) - 1], 1));
         k += ns;
     }
     //
@@ -137,13 +119,13 @@ void Rbdt04(const char *uplo, INTEGER const n, REAL *d, REAL *e, REAL *s, INTEGE
             resid = (resid / bnorm) / (castREAL(n) * eps);
         } else {
             if (bnorm < one) {
-                resid = (min(resid, REAL(castREAL(n) * bnorm)) / bnorm) / (castREAL(n) * eps);
+                resid = (min(resid, castREAL(n) * bnorm) / bnorm) / (castREAL(n) * eps);
             } else {
-                resid = min(REAL(resid / bnorm), castREAL(n)) / (castREAL(n) * eps);
+                resid = min(resid / bnorm, castREAL(n)) / (castREAL(n) * eps);
             }
         }
     }
     //
-    //     End of Rbdt04
+    // End of Rbdt04
     //
 }

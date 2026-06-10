@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DLATTB.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,57 +43,55 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag, INTEGER *iseed, INTEGER const n, INTEGER const kd, REAL *ab, INTEGER const ldab, REAL *b, REAL *work, INTEGER &info) {
+void Rlattb(INTEGER const imat, fem::str_cref uplo, fem::str_cref trans, fem::str_ref diag, INTEGER (&iseed)[4], INTEGER const n, INTEGER const kd, REAL *ab, INTEGER const ldab, REAL *b, REAL *work, INTEGER &info) {
     //
-    char path[4] = {};
-    path[0] = 'R';
-    path[1] = 'T';
-    path[2] = 'B';
+    fem::str<3> path = "Double precision";
+    path(2, 3) = "TB";
     REAL unfl = Rlamch("Safe minimum");
     REAL ulp = Rlamch("Epsilon") * Rlamch("Base");
     REAL smlnum = unfl;
     const REAL one = 1.0;
     REAL bignum = (one - ulp) / smlnum;
     if ((imat >= 6 && imat <= 9) || imat == 17) {
-        *diag = 'U';
+        diag = "U";
     } else {
-        *diag = 'N';
+        diag = "N";
     }
     info = 0;
     //
-    //     Quick return if N.LE.0.
+    // Quick return if N.LE.0.
     //
     if (n <= 0) {
         return;
     }
     //
-    //     Call Rlatb4 to set parameters for SLATMS.
+    // Call Rlatb4 to set parameters for Rlatms.
     //
-    bool upper = Mlsame(uplo, "U");
-    char type;
+    bool upper = Mlsame(uplo.elems(), "U");
+    fem::str<1> type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist;
+    fem::str<1> dist;
     INTEGER ioff = 0;
-    char packit;
+    fem::str<1> packit;
     if (upper) {
-        Rlatb4(path, imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
+        Rlatb4(path, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
         ku = kd;
         ioff = 1 + max((INTEGER)0, kd - n + 1);
         kl = 0;
-        packit = 'Q';
+        packit = "Q";
     } else {
-        Rlatb4(path, -imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
+        Rlatb4(path, -imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
         kl = kd;
         ioff = 1;
         ku = 0;
-        packit = 'B';
+        packit = "B";
     }
     //
-    //     IMAT <= 5:  Non-unit triangular matrix
+    // IMAT <= 5:  Non-unit triangular matrix
     //
     INTEGER j = 0;
     INTEGER i = 0;
@@ -98,7 +103,7 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     REAL plus1 = 0.0;
     REAL plus2 = 0.0;
     REAL rexp = 0.0;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     INTEGER iy = 0;
     REAL bnorm = 0.0;
     REAL bscal = 0.0;
@@ -107,12 +112,12 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
     REAL texp = 0.0;
     REAL tleft = 0.0;
     if (imat <= 5) {
-        Rlatms(n, n, &dist, iseed, &type, b, mode, cndnum, anorm, kl, ku, &packit, &ab[(ioff - 1)], ldab, work, info);
+        Rlatms(n, n, dist, iseed, type, b, mode, cndnum, anorm, kl, ku, packit, &ab[(ioff - 1)], ldab, work, info);
         //
-        //     IMAT > 5:  Unit triangular matrix
-        //     The diagonal is deliberately set to something other than 1.
+        // IMAT > 5:  Unit triangular matrix
+        // The diagonal is deliberately set to something other than 1.
         //
-        //     IMAT = 6:  Matrix is the identity
+        // IMAT = 6:  Matrix is the identity
         //
     } else if (imat == 6) {
         if (upper) {
@@ -131,15 +136,15 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
             }
         }
         //
-        //     IMAT > 6:  Non-trivial unit triangular matrix
+        // IMAT > 6:  Non-trivial unit triangular matrix
         //
-        //     A unit triangular matrix T with condition CNDNUM is formed.
-        //     In this version, T only has bandwidth 2, the rest of it is zero.
+        // A unit triangular matrix T with condition CNDNUM is formed.
+        // In this version, T only has bandwidth 2, the rest of it is zero.
         //
     } else if (imat <= 9) {
         tnorm = sqrt(cndnum);
         //
-        //        Initialize AB to zero.
+        // Initialize AB to zero.
         //
         if (upper) {
             for (j = 1; j <= n; j = j + 1) {
@@ -157,12 +162,12 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
             }
         }
         //
-        //        Special case:  T is tridiagonal.  Set every other offdiagonal
-        //        so that the matrix has norm TNORM+1.
+        // Special case:  T is tridiagonal.  Set every other offdiagonal
+        // so that the matrix has norm TNORM+1.
         //
         if (kd == 1) {
             if (upper) {
-                ab[(1 - 1) + (2 - 1) * ldab] = sign(tnorm, Rlarnd(2, iseed));
+                ab[(2 - 1) * ldab] = sign(tnorm, Rlarnd(2, iseed));
                 lenj = (n - 3) / 2;
                 Rlarnv(2, iseed, lenj, work);
                 for (j = 1; j <= lenj; j = j + 1) {
@@ -178,21 +183,21 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
             }
         } else if (kd > 1) {
             //
-            //           Form a unit triangular matrix T with condition CNDNUM.  T is
-            //           given by
-            //                   | 1   +   *                      |
-            //                   |     1   +                      |
-            //               T = |         1   +   *              |
-            //                   |             1   +              |
-            //                   |                 1   +   *      |
-            //                   |                     1   +      |
-            //                   |                          . . . |
-            //        Each element marked with a '*' is formed by taking the product
-            //        of the adjacent elements marked with '+'.  The '*'s can be
-            //        chosen freely, and the '+'s are chosen so that the inverse of
-            //        T will have elements of the same magnitude as T.
+            // Form a unit triangular matrix T with condition CNDNUM.  T is
+            // given by
+            // | 1   +   *                      |
+            // |     1   +                      |
+            // T = |         1   +   *              |
+            // |             1   +              |
+            // |                 1   +   *      |
+            // |                     1   +      |
+            // |                          . . . |
+            // Each element marked with a '*' is formed by taking the product
+            // of the adjacent elements marked with '+'.  The '*'s can be
+            // chosen freely, and the '+'s are chosen so that the inverse of
+            // T will have elements of the same magnitude as T.
             //
-            //        The two offdiagonals of T are stored in WORK.
+            // The two offdiagonals of T are stored in WORK.
             //
             star1 = sign(tnorm, Rlarnd(2, iseed));
             sfac = sqrt(tnorm);
@@ -206,8 +211,8 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
                     work[(n + j + 1) - 1] = zero;
                     plus1 = star1 / plus2;
                     //
-                    //                 Generate a new *-value with norm between sqrt(TNORM)
-                    //                 and TNORM.
+                    // Generate a new *-value with norm between sqrt(TNORM)
+                    // and TNORM.
                     //
                     rexp = Rlarnd(2, iseed);
                     if (rexp < zero) {
@@ -218,7 +223,7 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
                 }
             }
             //
-            //           Copy the tridiagonal T to AB.
+            // Copy the tridiagonal T to AB.
             //
             if (upper) {
                 Rcopy(n - 1, work, 1, &ab[(kd - 1) + (2 - 1) * ldab], ldab);
@@ -229,15 +234,15 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
             }
         }
         //
-        //     IMAT > 9:  Pathological test cases.  These triangular matrices
-        //     are badly scaled or badly conditioned, so when used in solving a
-        //     triangular system they may cause overflow in the solution vector.
+        // IMAT > 9:  Pathological test cases.  These triangular matrices
+        // are badly scaled or badly conditioned, so when used in solving a
+        // triangular system they may cause overflow in the solution vector.
         //
     } else if (imat == 10) {
         //
-        //        Type 10:  Generate a triangular matrix with elements between
-        //        -1 and 1. Give the diagonal norm 2 to make it well-conditioned.
-        //        Make the right hand side large so that it requires scaling.
+        // Type 10:  Generate a triangular matrix with elements between
+        // -1 and 1. Give the diagonal norm 2 to make it well-conditioned.
+        // Make the right hand side large so that it requires scaling.
         //
         if (upper) {
             for (j = 1; j <= n; j = j + 1) {
@@ -255,7 +260,7 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
             }
         }
         //
-        //        Set the right hand side so that the largest value is BIGNUM.
+        // Set the right hand side so that the largest value is BIGNUM.
         //
         Rlarnv(2, iseed, n, b);
         iy = iRamax(n, b, 1);
@@ -265,9 +270,9 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
         //
     } else if (imat == 11) {
         //
-        //        Type 11:  Make the first diagonal element in the solve small to
-        //        cause immediate overflow when dividing by T(j,j).
-        //        In type 11, the offdiagonal elements are small (CNORM(j) < 1).
+        // Type 11:  Make the first diagonal element in the solve small to
+        // cause immediate overflow when dividing by T(j,j).
+        // In type 11, the offdiagonal elements are small (CNORM(j) < 1).
         //
         Rlarnv(2, iseed, n, b);
         tscal = one / castREAL(kd + 1);
@@ -288,14 +293,14 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
                 }
                 ab[(j - 1) * ldab] = sign(one, ab[(j - 1) * ldab]);
             }
-            ab[(1 - 1) + (1 - 1) * ldab] = smlnum * ab[(1 - 1) + (1 - 1) * ldab];
+            ab[0] = smlnum * ab[0];
         }
         //
     } else if (imat == 12) {
         //
-        //        Type 12:  Make the first diagonal element in the solve small to
-        //        cause immediate overflow when dividing by T(j,j).
-        //        In type 12, the offdiagonal elements are O(1) (CNORM(j) > 1).
+        // Type 12:  Make the first diagonal element in the solve small to
+        // cause immediate overflow when dividing by T(j,j).
+        // In type 12, the offdiagonal elements are O(1) (CNORM(j) > 1).
         //
         Rlarnv(2, iseed, n, b);
         if (upper) {
@@ -311,14 +316,14 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
                 Rlarnv(2, iseed, lenj, &ab[(j - 1) * ldab]);
                 ab[(j - 1) * ldab] = sign(one, ab[(j - 1) * ldab]);
             }
-            ab[(1 - 1) + (1 - 1) * ldab] = smlnum * ab[(1 - 1) + (1 - 1) * ldab];
+            ab[0] = smlnum * ab[0];
         }
         //
     } else if (imat == 13) {
         //
-        //        Type 13:  T is diagonal with small numbers on the diagonal to
-        //        make the growth factor underflow, but a small right hand side
-        //        chosen so that the solution does not overflow.
+        // Type 13:  T is diagonal with small numbers on the diagonal to
+        // make the growth factor underflow, but a small right hand side
+        // chosen so that the solution does not overflow.
         //
         if (upper) {
             jcount = 1;
@@ -354,7 +359,7 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
             }
         }
         //
-        //        Set the right hand side alternately zero and small.
+        // Set the right hand side alternately zero and small.
         //
         if (upper) {
             b[1 - 1] = zero;
@@ -372,9 +377,9 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
         //
     } else if (imat == 14) {
         //
-        //        Type 14:  Make the diagonal elements small to cause gradual
-        //        overflow when dividing by T(j,j).  To control the amount of
-        //        scaling needed, the matrix is bidiagonal.
+        // Type 14:  Make the diagonal elements small to cause gradual
+        // overflow when dividing by T(j,j).  To control the amount of
+        // scaling needed, the matrix is bidiagonal.
         //
         texp = one / castREAL(kd + 1);
         tscal = pow(smlnum, texp);
@@ -405,7 +410,7 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
         //
     } else if (imat == 15) {
         //
-        //        Type 15:  One zero diagonal element.
+        // Type 15:  One zero diagonal element.
         //
         iy = n / 2 + 1;
         if (upper) {
@@ -434,10 +439,10 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
         //
     } else if (imat == 16) {
         //
-        //        Type 16:  Make the offdiagonal elements large to cause overflow
-        //        when adding a column of T.  In the non-transposed case, the
-        //        matrix is constructed to cause overflow when adding a column in
-        //        every other step.
+        // Type 16:  Make the offdiagonal elements large to cause overflow
+        // when adding a column of T.  In the non-transposed case, the
+        // matrix is constructed to cause overflow when adding a column in
+        // every other step.
         //
         tscal = unfl / ulp;
         tscal = (one - ulp) / tscal;
@@ -461,7 +466,7 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
                         }
                         texp = texp * two;
                     }
-                    b[max(n, j - kd + 1) - 1] = (castREAL(kd + 2) / castREAL(kd + 3)) * tscal;
+                    b[max((INTEGER)1, j - kd + 1) - 1] = (castREAL(kd + 2) / castREAL(kd + 3)) * tscal;
                 }
             } else {
                 for (j = 1; j <= n; j = j + kd) {
@@ -490,9 +495,9 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
         //
     } else if (imat == 17) {
         //
-        //        Type 17:  Generate a unit triangular matrix with elements
-        //        between -1 and 1, and make the right hand side large so that it
-        //        requires scaling.
+        // Type 17:  Generate a unit triangular matrix with elements
+        // between -1 and 1, and make the right hand side large so that it
+        // requires scaling.
         //
         if (upper) {
             for (j = 1; j <= n; j = j + 1) {
@@ -510,7 +515,7 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
             }
         }
         //
-        //        Set the right hand side so that the largest value is BIGNUM.
+        // Set the right hand side so that the largest value is BIGNUM.
         //
         Rlarnv(2, iseed, n, b);
         iy = iRamax(n, b, 1);
@@ -520,9 +525,9 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
         //
     } else if (imat == 18) {
         //
-        //        Type 18:  Generate a triangular matrix with elements between
-        //        BIGNUM/KD and BIGNUM so that at least one of the column
-        //        norms will exceed BIGNUM.
+        // Type 18:  Generate a triangular matrix with elements between
+        // BIGNUM/KD and BIGNUM so that at least one of the column
+        // norms will exceed BIGNUM.
         //
         tleft = bignum / max(one, castREAL(kd));
         tscal = bignum * (castREAL(kd) / castREAL(kd + 1));
@@ -547,9 +552,9 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
         Rscal(n, two, b, 1);
     }
     //
-    //     Flip the matrix if the transpose will be used.
+    // Flip the matrix if the transpose will be used.
     //
-    if (!Mlsame(trans, "N")) {
+    if (!Mlsame(trans.elems(), "N")) {
         if (upper) {
             for (j = 1; j <= n / 2; j = j + 1) {
                 lenj = min(n - 2 * j + 1, kd + 1);
@@ -563,6 +568,6 @@ void Rlattb(INTEGER const imat, const char *uplo, const char *trans, char *diag,
         }
     }
     //
-    //     End of Rlattb
+    // End of Rlattb
     //
 }

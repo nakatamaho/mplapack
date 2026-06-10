@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,138 +26,193 @@
  *
  */
 
+// Derived from LAPACK routine ZLARTG.
+// Original LAPACK authors:
+//   Univ. of Tennessee,
+//   Univ. of California Berkeley,
+//   Univ. of Colorado Denver,
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
+#include <mplapack_arithmetic_params.h>
 
-inline REAL abs1(COMPLEX ff) { return max(abs(ff.real()), abs(ff.imag())); }
 inline REAL abssq(COMPLEX ff) {
     REAL temp;
     temp = (ff.real() * ff.real()) + (ff.imag() * ff.imag());
     return temp;
 }
 
-void Clartg(COMPLEX const f, COMPLEX const g, REAL &cs, COMPLEX &sn, COMPLEX &r) {
-    COMPLEX ff = 0.0;
-    REAL safmin = 0.0;
-    REAL eps = 0.0;
-    const REAL two = 2.0e+0;
-    REAL safmn2 = 0.0;
-    const REAL one = 1.0;
-    REAL safmx2 = 0.0;
-    REAL scale = 0.0;
-    COMPLEX fs = 0.0;
-    COMPLEX gs = 0.0;
-    INTEGER count = 0;
-    const COMPLEX czero = COMPLEX(0.0, 0.0);
-    REAL f2 = 0.0;
-    REAL g2 = 0.0;
-    const REAL zero = 0.0;
-    REAL d = 0.0;
-    REAL f2s = 0.0;
-    REAL g2s = 0.0;
-    REAL dr = 0.0;
-    REAL di = 0.0;
-    INTEGER i = 0;
+void Clartg(COMPLEX const f, COMPLEX const g, REAL &c, COMPLEX &s, COMPLEX &r) {
+    COMPLEX t = 0.0;
+    const auto &ap = mplapack::get_arithmetic_params<REAL>();
+    const REAL safmin = ap.safmin;
+    REAL rtmin = sqrt(safmin);
     //
-    safmin = Rlamch("S");
-    eps = Rlamch("E");
-    safmn2 = pow(Rlamch("B"), castINTEGER(log(safmin / eps) / log(Rlamch("B")) / two));
-    safmx2 = one / safmn2;
-    scale = max(abs1(f), abs1(g));
-    fs = f;
-    gs = g;
-    count = 0;
-    if (scale >= safmx2) {
-    statement_10:
-        count++;
-        fs = fs * safmn2;
-        gs = gs * safmn2;
-        scale = scale * safmn2;
-        if (scale >= safmx2 && count < 20) {
-            goto statement_10;
-        }
-    } else if (scale <= safmn2) {
-        if (g == czero || Risnan(abs(g))) {
-            cs = one;
-            sn = czero;
-            r = f;
-            return;
-        }
-    statement_20:
-        count = count - 1;
-        fs = fs * safmx2;
-        gs = gs * safmx2;
-        scale = scale * safmx2;
-        if (scale <= safmn2) {
-            goto statement_20;
-        }
-    }
-    f2 = abssq(fs);
-    g2 = abssq(gs);
-    if (f2 <= max(g2, one) * safmin) {
-        //
-        //        This is a rare case: F is very small.
-        //
-        if (f == czero) {
-            cs = zero;
-            r = Rlapy2(g.real(), g.imag());
-            //           Do complex/real division explicitly with two real divisions
-            d = Rlapy2(gs.real(), gs.imag());
-            sn = COMPLEX(gs.real() / d, -gs.imag() / d);
-            return;
-        }
-        f2s = Rlapy2(fs.real(), fs.imag());
-        //        G2 and G2S are accurate
-        //        G2 is at least SAFMIN, and G2S is at least SAFMN2
-        g2s = sqrt(g2);
-        //        Error in CS from underflow in F2S is at most
-        //        UNFL / SAFMN2 .lt. sqrt(UNFL*EPS) .lt. EPS
-        //        If MAX(G2,ONE)=G2, then F2 .lt. G2*SAFMIN,
-        //        and so CS .lt. sqrt(SAFMIN)
-        //        If MAX(G2,ONE)=ONE, then F2 .lt. SAFMIN
-        //        and so CS .lt. sqrt(SAFMIN)/SAFMN2 = sqrt(EPS)
-        //        Therefore, CS = F2S/G2S / sqrt( 1 + (F2S/G2S)**2 ) = F2S/G2S
-        cs = f2s / g2s;
-        //        Make sure abs(FF) = 1
-        //        Do complex/real division explicitly with 2 real divisions
-        if (abs1(f) > one) {
-            d = Rlapy2(f.real(), f.imag());
-            ff = COMPLEX(f.real() / d, f.imag() / d);
+    const COMPLEX czero = COMPLEX(0.0, 0.0);
+    const REAL one = 1.0;
+    const REAL zero = 0.0;
+    REAL g1 = 0.0;
+    const REAL safmax = ap.safmax;
+    REAL rtmax = 0.0;
+    REAL g2 = 0.0;
+    REAL d = 0.0;
+    REAL u = 0.0;
+    COMPLEX gs = 0.0;
+    REAL f1 = 0.0;
+    REAL f2 = 0.0;
+    REAL h2 = 0.0;
+    REAL v = 0.0;
+    REAL w = 0.0;
+    COMPLEX fs = 0.0;
+    if (g == czero) {
+        c = one;
+        s = czero;
+        r = f;
+    } else if (f == czero) {
+        c = zero;
+        if (g.real() == zero) {
+            r = abs(g.imag());
+            s = conj(g) / r;
+        } else if (g.imag() == zero) {
+            r = abs(g.real());
+            s = conj(g) / r;
         } else {
-            dr = safmx2 * f.real();
-            di = safmx2 * f.imag();
-            d = Rlapy2(dr, di);
-            ff = COMPLEX(dr / d, di / d);
-        }
-        sn = ff * COMPLEX(gs.real() / g2s, -gs.imag() / g2s);
-        r = cs * f + sn * g;
-    } else {
-        //
-        //        This is the most common case.
-        //        Neither F2 nor F2/G2 are less than SAFMIN
-        //        F2S cannot overflow, and it is accurate
-        //
-        f2s = sqrt(one + g2 / f2);
-        //        Do the F2S(real)*FS(complex) multiply with two real multiplies
-        r = COMPLEX(f2s * fs.real(), f2s * fs.imag());
-        cs = one / f2s;
-        d = f2 + g2;
-        //        Do complex/real division explicitly with two real divisions
-        sn = COMPLEX(r.real() / d, r.imag() / d);
-        sn = sn * conj(gs);
-        if (count != 0) {
-            if (count > 0) {
-                for (i = 1; i <= count; i = i + 1) {
-                    r = r * safmx2;
-                }
+            g1 = max(abs(g.real()), abs(g.imag()));
+            rtmax = sqrt(safmax / 2);
+            if (g1 > rtmin && g1 < rtmax) {
+                //
+                // Use unscaled algorithm
+                //
+                // The following two lines can be replaced by `d = abs( g )`.
+                // This algorithm do not use the intrinsic complex abs.
+                g2 = abssq(g);
+                d = sqrt(g2);
+                s = conj(g) / d;
+                r = d;
             } else {
-                for (i = 1; i <= -count; i = i + 1) {
-                    r = r * safmn2;
-                }
+                //
+                // Use scaled algorithm
+                //
+                u = min(safmax, max(safmin, g1));
+                gs = g / u;
+                // The following two lines can be replaced by `d = abs( gs )`.
+                // This algorithm do not use the intrinsic complex abs.
+                g2 = abssq(gs);
+                d = sqrt(g2);
+                s = conj(gs) / d;
+                r = d * u;
             }
         }
+    } else {
+        f1 = max(abs(f.real()), abs(f.imag()));
+        g1 = max(abs(g.real()), abs(g.imag()));
+        rtmax = sqrt(safmax / 4);
+        REAL fsmall = min(abs(f.real()), abs(f.imag()));
+        REAL gsmall = min(abs(g.real()), abs(g.imag()));
+        REAL split_tol = sqrt(ap.eps);
+        bool use_unscaled = f1 > rtmin && f1 < rtmax && g1 > rtmin && g1 < rtmax;
+        if (use_unscaled && (f1 < one || g1 < one)) {
+            bool f_has_split = fsmall != zero && fsmall / f1 > split_tol;
+            bool g_has_split = gsmall != zero && gsmall / g1 > split_tol;
+            use_unscaled = !(f_has_split || g_has_split);
+        }
+        if (use_unscaled) {
+            //
+            // Use unscaled algorithm
+            //
+            f2 = abssq(f);
+            g2 = abssq(g);
+            h2 = f2 + g2;
+            // safmin <= f2 <= h2 <= safmax
+            if (f2 >= h2 * safmin) {
+                // safmin <= f2/h2 <= 1, and h2/f2 is finite
+                c = sqrt(f2 / h2);
+                r = f / c;
+                rtmax = rtmax * 2;
+                if (f2 > rtmin && h2 < rtmax) {
+                    // safmin <= sqrt( f2*h2 ) <= safmax
+                    s = (f / sqrt(f2)) * (conj(g) / sqrt(h2));
+                } else {
+                    s = conj(g) * (r / h2);
+                }
+            } else {
+                // f2/h2 <= safmin may be subnormal, and h2/f2 may overflow.
+                // Moreover,
+                // safmin <= f2*f2 * safmax < f2 * h2 < h2*h2 * safmin <= safmax,
+                // sqrt(safmin) <= sqrt(f2 * h2) <= sqrt(safmax).
+                // Also,
+                // g2 >> f2, which means that h2 = g2.
+                d = sqrt(f2 * h2);
+                c = f2 / d;
+                if (c >= safmin) {
+                    r = f / c;
+                } else {
+                    // f2 / sqrt(f2 * h2) < safmin, then
+                    // sqrt(safmin) <= f2 * sqrt(safmax) <= h2 / sqrt(f2 * h2) <= h2 * (safmin / f2) <= h2 <= safmax
+                    r = f * (h2 / d);
+                }
+                s = conj(g) * (f / d);
+            }
+        } else {
+            //
+            // Use scaled algorithm
+            //
+            u = min(safmax, max(safmin, f1, g1));
+            gs = g / u;
+            g2 = abssq(gs);
+            if (f1 / u < rtmin) {
+                //
+                // f is not well-scaled when scaled by g1.
+                // Use a different scaling for f.
+                //
+                v = min(safmax, max(safmin, f1));
+                w = v / u;
+                fs = f / v;
+                f2 = abssq(fs);
+                h2 = f2 * pow2(w) + g2;
+            } else {
+                //
+                // Otherwise use the same scaling for f and g.
+                //
+                w = one;
+                fs = f / u;
+                f2 = abssq(fs);
+                h2 = f2 + g2;
+            }
+            // safmin <= f2 <= h2 <= safmax
+            if (f2 >= h2 * safmin) {
+                // safmin <= f2/h2 <= 1, and h2/f2 is finite
+                c = sqrt(f2 / h2);
+                r = fs / c;
+                rtmax = rtmax * 2;
+                if (f2 > rtmin && h2 < rtmax) {
+                    // safmin <= sqrt( f2*h2 ) <= safmax
+                    s = (fs / sqrt(f2)) * (conj(gs) / sqrt(h2));
+                } else {
+                    s = conj(gs) * (r / h2);
+                }
+            } else {
+                // f2/h2 <= safmin may be subnormal, and h2/f2 may overflow.
+                // Moreover,
+                // safmin <= f2*f2 * safmax < f2 * h2 < h2*h2 * safmin <= safmax,
+                // sqrt(safmin) <= sqrt(f2 * h2) <= sqrt(safmax).
+                // Also,
+                // g2 >> f2, which means that h2 = g2.
+                d = sqrt(f2 * h2);
+                c = f2 / d;
+                if (c >= safmin) {
+                    r = fs / c;
+                } else {
+                    // f2 / sqrt(f2 * h2) < safmin, then
+                    // sqrt(safmin) <= f2 * sqrt(safmax) <= h2 / sqrt(f2 * h2) <= h2 * (safmin / f2) <= h2 <= safmax
+                    r = fs * (h2 / d);
+                }
+                s = conj(gs) * (fs / d);
+            }
+            // Rescale c and r
+            c = c * w;
+            r = r * u;
+        }
     }
-    //
-    //     End of Clartg
-    //
 }

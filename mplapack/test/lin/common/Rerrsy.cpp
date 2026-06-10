@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DERRSY.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -35,51 +42,22 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack_debug.h>
 
-void Rerrsy(const char *path, INTEGER const nunit) {
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
+void Rerrsy(fem::str_cref path, INTEGER const nunit) {
+    common cmn;
+    common_write write(cmn);
     //
     nout = nunit;
-    char c2[2];
-    c2[0] = path[1];
-    c2[1] = path[2];
+    write(nout, star);
+    fem::str<2> c2 = path(2, 3);
     //
-    //     Set the variables to innocuous values.
+    // Set the variables to innocuous values.
     //
     INTEGER j = 0;
     const INTEGER nmax = 4;
     INTEGER i = 0;
     REAL a[nmax * nmax];
     REAL af[nmax * nmax];
-    INTEGER lda = nmax;
-    INTEGER ldaf = nmax;
     REAL b[nmax];
     REAL e[nmax];
     REAL r1[nmax];
@@ -90,8 +68,8 @@ void Rerrsy(const char *path, INTEGER const nunit) {
     INTEGER iw[nmax];
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
-            a[(i - 1) + (j - 1) * lda] = 1.0 / castREAL(i + j);
-            af[(i - 1) + (j - 1) * ldaf] = 1.0 / castREAL(i + j);
+            a[(i - 1) + (j - 1) * nmax] = 1.0 / castREAL(i + j);
+            af[(i - 1) + (j - 1) * nmax] = 1.0 / castREAL(i + j);
         }
         b[j - 1] = 0.0;
         e[j - 1] = 0.0;
@@ -107,511 +85,511 @@ void Rerrsy(const char *path, INTEGER const nunit) {
     ok = true;
     //
     INTEGER info = 0;
-    if (Mlsamen(2, c2, "SY")) {
+    if (Mlsamen(2, c2.elems, "SY")) {
         //
-        //        Test error exits of the routines that use factorization
-        //        of a symmetric indefinite matrix with patrial
-        //        (Bunch-Kaufman) pivoting.
+        // Test error exits of the routines that use factorization
+        // of a symmetric indefinite matrix with partial
+        // (Bunch-Kaufman) pivoting.
         //
-        //        Rsytrf
+        // Rsytrf
         //
-        strncpy(srnamt, "Rsytrf", srnamt_len);
+        srnamt = "Rsytrf";
         infot = 1;
         Rsytrf("/", 0, a, 1, ip, w, 1, info);
-        chkxer("Rsytrf", infot, nout, lerr, ok);
+        Chkxer("Rsytrf", infot, nout, lerr, ok);
         infot = 2;
         Rsytrf("U", -1, a, 1, ip, w, 1, info);
-        chkxer("Rsytrf", infot, nout, lerr, ok);
+        Chkxer("Rsytrf", infot, nout, lerr, ok);
         infot = 4;
         Rsytrf("U", 2, a, 1, ip, w, 4, info);
-        chkxer("Rsytrf", infot, nout, lerr, ok);
+        Chkxer("Rsytrf", infot, nout, lerr, ok);
         infot = 7;
         Rsytrf("U", 0, a, 1, ip, w, 0, info);
-        chkxer("Rsytrf", infot, nout, lerr, ok);
+        Chkxer("Rsytrf", infot, nout, lerr, ok);
         infot = 7;
         Rsytrf("U", 0, a, 1, ip, w, -2, info);
-        chkxer("Rsytrf", infot, nout, lerr, ok);
+        Chkxer("Rsytrf", infot, nout, lerr, ok);
         //
-        //        Rsytf2
+        // Rsytf2
         //
-        strncpy(srnamt, "Rsytf2", srnamt_len);
+        srnamt = "Rsytf2";
         infot = 1;
         Rsytf2("/", 0, a, 1, ip, info);
-        chkxer("Rsytf2", infot, nout, lerr, ok);
+        Chkxer("Rsytf2", infot, nout, lerr, ok);
         infot = 2;
         Rsytf2("U", -1, a, 1, ip, info);
-        chkxer("Rsytf2", infot, nout, lerr, ok);
+        Chkxer("Rsytf2", infot, nout, lerr, ok);
         infot = 4;
         Rsytf2("U", 2, a, 1, ip, info);
-        chkxer("Rsytf2", infot, nout, lerr, ok);
+        Chkxer("Rsytf2", infot, nout, lerr, ok);
         //
-        //        Rsytri
+        // Rsytri
         //
-        strncpy(srnamt, "Rsytri", srnamt_len);
+        srnamt = "Rsytri";
         infot = 1;
         Rsytri("/", 0, a, 1, ip, w, info);
-        chkxer("Rsytri", infot, nout, lerr, ok);
+        Chkxer("Rsytri", infot, nout, lerr, ok);
         infot = 2;
         Rsytri("U", -1, a, 1, ip, w, info);
-        chkxer("Rsytri", infot, nout, lerr, ok);
+        Chkxer("Rsytri", infot, nout, lerr, ok);
         infot = 4;
         Rsytri("U", 2, a, 1, ip, w, info);
-        chkxer("Rsytri", infot, nout, lerr, ok);
+        Chkxer("Rsytri", infot, nout, lerr, ok);
         //
-        //        Rsytri2
+        // Rsytri2
         //
-        strncpy(srnamt, "Rsytri2", srnamt_len);
+        srnamt = "Rsytri2";
         infot = 1;
         Rsytri2("/", 0, a, 1, ip, w, iw[1 - 1], info);
-        chkxer("Rsytri2", infot, nout, lerr, ok);
+        Chkxer("Rsytri2", infot, nout, lerr, ok);
         infot = 2;
         Rsytri2("U", -1, a, 1, ip, w, iw[1 - 1], info);
-        chkxer("Rsytri2", infot, nout, lerr, ok);
+        Chkxer("Rsytri2", infot, nout, lerr, ok);
         infot = 4;
         Rsytri2("U", 2, a, 1, ip, w, iw[1 - 1], info);
-        chkxer("Rsytri2", infot, nout, lerr, ok);
+        Chkxer("Rsytri2", infot, nout, lerr, ok);
         //
-        //        Rsytri2x
+        // Rsytri2x
         //
-        strncpy(srnamt, "Rsytri2x", srnamt_len);
+        srnamt = "Rsytri2x";
         infot = 1;
         Rsytri2x("/", 0, a, 1, ip, w, 1, info);
-        chkxer("Rsytri2x", infot, nout, lerr, ok);
+        Chkxer("Rsytri2x", infot, nout, lerr, ok);
         infot = 2;
         Rsytri2x("U", -1, a, 1, ip, w, 1, info);
-        chkxer("Rsytri2x", infot, nout, lerr, ok);
+        Chkxer("Rsytri2x", infot, nout, lerr, ok);
         infot = 4;
         Rsytri2x("U", 2, a, 1, ip, w, 1, info);
-        chkxer("Rsytri2x", infot, nout, lerr, ok);
+        Chkxer("Rsytri2x", infot, nout, lerr, ok);
         //
-        //        Rsytrs
+        // Rsytrs
         //
-        strncpy(srnamt, "Rsytrs", srnamt_len);
+        srnamt = "Rsytrs";
         infot = 1;
         Rsytrs("/", 0, 0, a, 1, ip, b, 1, info);
-        chkxer("Rsytrs", infot, nout, lerr, ok);
+        Chkxer("Rsytrs", infot, nout, lerr, ok);
         infot = 2;
         Rsytrs("U", -1, 0, a, 1, ip, b, 1, info);
-        chkxer("Rsytrs", infot, nout, lerr, ok);
+        Chkxer("Rsytrs", infot, nout, lerr, ok);
         infot = 3;
         Rsytrs("U", 0, -1, a, 1, ip, b, 1, info);
-        chkxer("Rsytrs", infot, nout, lerr, ok);
+        Chkxer("Rsytrs", infot, nout, lerr, ok);
         infot = 5;
         Rsytrs("U", 2, 1, a, 1, ip, b, 2, info);
-        chkxer("Rsytrs", infot, nout, lerr, ok);
+        Chkxer("Rsytrs", infot, nout, lerr, ok);
         infot = 8;
         Rsytrs("U", 2, 1, a, 2, ip, b, 1, info);
-        chkxer("Rsytrs", infot, nout, lerr, ok);
+        Chkxer("Rsytrs", infot, nout, lerr, ok);
         //
-        //        Rsyrfs
+        // Rsyrfs
         //
-        strncpy(srnamt, "Rsyrfs", srnamt_len);
+        srnamt = "Rsyrfs";
         infot = 1;
         Rsyrfs("/", 0, 0, a, 1, af, 1, ip, b, 1, x, 1, r1, r2, w, iw, info);
-        chkxer("Rsyrfs", infot, nout, lerr, ok);
+        Chkxer("Rsyrfs", infot, nout, lerr, ok);
         infot = 2;
         Rsyrfs("U", -1, 0, a, 1, af, 1, ip, b, 1, x, 1, r1, r2, w, iw, info);
-        chkxer("Rsyrfs", infot, nout, lerr, ok);
+        Chkxer("Rsyrfs", infot, nout, lerr, ok);
         infot = 3;
         Rsyrfs("U", 0, -1, a, 1, af, 1, ip, b, 1, x, 1, r1, r2, w, iw, info);
-        chkxer("Rsyrfs", infot, nout, lerr, ok);
+        Chkxer("Rsyrfs", infot, nout, lerr, ok);
         infot = 5;
         Rsyrfs("U", 2, 1, a, 1, af, 2, ip, b, 2, x, 2, r1, r2, w, iw, info);
-        chkxer("Rsyrfs", infot, nout, lerr, ok);
+        Chkxer("Rsyrfs", infot, nout, lerr, ok);
         infot = 7;
         Rsyrfs("U", 2, 1, a, 2, af, 1, ip, b, 2, x, 2, r1, r2, w, iw, info);
-        chkxer("Rsyrfs", infot, nout, lerr, ok);
+        Chkxer("Rsyrfs", infot, nout, lerr, ok);
         infot = 10;
         Rsyrfs("U", 2, 1, a, 2, af, 2, ip, b, 1, x, 2, r1, r2, w, iw, info);
-        chkxer("Rsyrfs", infot, nout, lerr, ok);
+        Chkxer("Rsyrfs", infot, nout, lerr, ok);
         infot = 12;
         Rsyrfs("U", 2, 1, a, 2, af, 2, ip, b, 2, x, 1, r1, r2, w, iw, info);
-        chkxer("Rsyrfs", infot, nout, lerr, ok);
+        Chkxer("Rsyrfs", infot, nout, lerr, ok);
         //
-        //        Rsycon
+        // Rsycon
         //
-        strncpy(srnamt, "Rsycon", srnamt_len);
+        srnamt = "Rsycon";
         infot = 1;
         Rsycon("/", 0, a, 1, ip, anrm, rcond, w, iw, info);
-        chkxer("Rsycon", infot, nout, lerr, ok);
+        Chkxer("Rsycon", infot, nout, lerr, ok);
         infot = 2;
         Rsycon("U", -1, a, 1, ip, anrm, rcond, w, iw, info);
-        chkxer("Rsycon", infot, nout, lerr, ok);
+        Chkxer("Rsycon", infot, nout, lerr, ok);
         infot = 4;
         Rsycon("U", 2, a, 1, ip, anrm, rcond, w, iw, info);
-        chkxer("Rsycon", infot, nout, lerr, ok);
+        Chkxer("Rsycon", infot, nout, lerr, ok);
         infot = 6;
         Rsycon("U", 1, a, 1, ip, -1.0, rcond, w, iw, info);
-        chkxer("Rsycon", infot, nout, lerr, ok);
+        Chkxer("Rsycon", infot, nout, lerr, ok);
         //
-    } else if (Mlsamen(2, c2, "SR")) {
+    } else if (Mlsamen(2, c2.elems, "SR")) {
         //
-        //        Test error exits of the routines that use factorization
-        //        of a symmetric indefinite matrix with rook
-        //        (bounded Bunch-Kaufman) pivoting.
+        // Test error exits of the routines that use factorization
+        // of a symmetric indefinite matrix with rook
+        // (bounded Bunch-Kaufman) pivoting.
         //
-        //        Rsytrf_rook
+        // Rsytrf_rook
         //
-        strncpy(srnamt, "Rsytrf_rook", srnamt_len);
+        srnamt = "Rsytrf_rook";
         infot = 1;
         Rsytrf_rook("/", 0, a, 1, ip, w, 1, info);
-        chkxer("Rsytrf_rook", infot, nout, lerr, ok);
+        Chkxer("Rsytrf_rook", infot, nout, lerr, ok);
         infot = 2;
         Rsytrf_rook("U", -1, a, 1, ip, w, 1, info);
-        chkxer("Rsytrf_rook", infot, nout, lerr, ok);
+        Chkxer("Rsytrf_rook", infot, nout, lerr, ok);
         infot = 4;
         Rsytrf_rook("U", 2, a, 1, ip, w, 4, info);
-        chkxer("Rsytrf_rook", infot, nout, lerr, ok);
+        Chkxer("Rsytrf_rook", infot, nout, lerr, ok);
         infot = 7;
         Rsytrf_rook("U", 0, a, 1, ip, w, 0, info);
-        chkxer("Rsytrf_rook", infot, nout, lerr, ok);
+        Chkxer("Rsytrf_rook", infot, nout, lerr, ok);
         infot = 7;
         Rsytrf_rook("U", 0, a, 1, ip, w, -2, info);
-        chkxer("Rsytrf_rook", infot, nout, lerr, ok);
+        Chkxer("Rsytrf_rook", infot, nout, lerr, ok);
         //
-        //        Rsytf2_rook
+        // Rsytf2_rook
         //
-        strncpy(srnamt, "Rsytf2_rook", srnamt_len);
+        srnamt = "Rsytf2_rook";
         infot = 1;
         Rsytf2_rook("/", 0, a, 1, ip, info);
-        chkxer("Rsytf2_rook", infot, nout, lerr, ok);
+        Chkxer("Rsytf2_rook", infot, nout, lerr, ok);
         infot = 2;
         Rsytf2_rook("U", -1, a, 1, ip, info);
-        chkxer("Rsytf2_rook", infot, nout, lerr, ok);
+        Chkxer("Rsytf2_rook", infot, nout, lerr, ok);
         infot = 4;
         Rsytf2_rook("U", 2, a, 1, ip, info);
-        chkxer("Rsytf2_rook", infot, nout, lerr, ok);
+        Chkxer("Rsytf2_rook", infot, nout, lerr, ok);
         //
-        //        Rsytri_rook
+        // Rsytri_rook
         //
-        strncpy(srnamt, "Rsytri_rook", srnamt_len);
+        srnamt = "Rsytri_rook";
         infot = 1;
         Rsytri_rook("/", 0, a, 1, ip, w, info);
-        chkxer("Rsytri_rook", infot, nout, lerr, ok);
+        Chkxer("Rsytri_rook", infot, nout, lerr, ok);
         infot = 2;
         Rsytri_rook("U", -1, a, 1, ip, w, info);
-        chkxer("Rsytri_rook", infot, nout, lerr, ok);
+        Chkxer("Rsytri_rook", infot, nout, lerr, ok);
         infot = 4;
         Rsytri_rook("U", 2, a, 1, ip, w, info);
-        chkxer("Rsytri_rook", infot, nout, lerr, ok);
+        Chkxer("Rsytri_rook", infot, nout, lerr, ok);
         //
-        //        Rsytrs_rook
+        // Rsytrs_rook
         //
-        strncpy(srnamt, "Rsytrs_rook", srnamt_len);
+        srnamt = "Rsytrs_rook";
         infot = 1;
         Rsytrs_rook("/", 0, 0, a, 1, ip, b, 1, info);
-        chkxer("Rsytrs_rook", infot, nout, lerr, ok);
+        Chkxer("Rsytrs_rook", infot, nout, lerr, ok);
         infot = 2;
         Rsytrs_rook("U", -1, 0, a, 1, ip, b, 1, info);
-        chkxer("Rsytrs_rook", infot, nout, lerr, ok);
+        Chkxer("Rsytrs_rook", infot, nout, lerr, ok);
         infot = 3;
         Rsytrs_rook("U", 0, -1, a, 1, ip, b, 1, info);
-        chkxer("Rsytrs_rook", infot, nout, lerr, ok);
+        Chkxer("Rsytrs_rook", infot, nout, lerr, ok);
         infot = 5;
         Rsytrs_rook("U", 2, 1, a, 1, ip, b, 2, info);
-        chkxer("Rsytrs_rook", infot, nout, lerr, ok);
+        Chkxer("Rsytrs_rook", infot, nout, lerr, ok);
         infot = 8;
         Rsytrs_rook("U", 2, 1, a, 2, ip, b, 1, info);
-        chkxer("Rsytrs_rook", infot, nout, lerr, ok);
+        Chkxer("Rsytrs_rook", infot, nout, lerr, ok);
         //
-        //        Rsycon_rook
+        // Rsycon_rook
         //
-        strncpy(srnamt, "Rsycon_rook", srnamt_len);
+        srnamt = "Rsycon_rook";
         infot = 1;
         Rsycon_rook("/", 0, a, 1, ip, anrm, rcond, w, iw, info);
-        chkxer("Rsycon_rook", infot, nout, lerr, ok);
+        Chkxer("Rsycon_rook", infot, nout, lerr, ok);
         infot = 2;
         Rsycon_rook("U", -1, a, 1, ip, anrm, rcond, w, iw, info);
-        chkxer("Rsycon_rook", infot, nout, lerr, ok);
+        Chkxer("Rsycon_rook", infot, nout, lerr, ok);
         infot = 4;
         Rsycon_rook("U", 2, a, 1, ip, anrm, rcond, w, iw, info);
-        chkxer("Rsycon_rook", infot, nout, lerr, ok);
+        Chkxer("Rsycon_rook", infot, nout, lerr, ok);
         infot = 6;
         Rsycon_rook("U", 1, a, 1, ip, -1.0, rcond, w, iw, info);
-        chkxer("Rsycon_rook", infot, nout, lerr, ok);
+        Chkxer("Rsycon_rook", infot, nout, lerr, ok);
         //
-    } else if (Mlsamen(2, c2, "SK")) {
+    } else if (Mlsamen(2, c2.elems, "SK")) {
         //
-        //        Test error exits of the routines that use factorization
-        //        of a symmetric indefinite matrix with rook
-        //        (bounded Bunch-Kaufman) pivoting with the new storage
-        //        format for factors L ( or U) and D.
+        // Test error exits of the routines that use factorization
+        // of a symmetric indefinite matrix with rook
+        // (bounded Bunch-Kaufman) pivoting with the new storage
+        // format for factors L ( or U) and D.
         //
-        //        L (or U) is stored in A, diagonal of D is stored on the
-        //        diagonal of A, subdiagonal of D is stored in a separate array E.
+        // L (or U) is stored in A, diagonal of D is stored on the
+        // diagonal of A, subdiagonal of D is stored in a separate array E.
         //
-        //        Rsytrf_rk
+        // Rsytrf_rk
         //
-        strncpy(srnamt, "Rsytrf_rk", srnamt_len);
+        srnamt = "Rsytrf_rk";
         infot = 1;
         Rsytrf_rk("/", 0, a, 1, e, ip, w, 1, info);
-        chkxer("Rsytrf_rk", infot, nout, lerr, ok);
+        Chkxer("Rsytrf_rk", infot, nout, lerr, ok);
         infot = 2;
         Rsytrf_rk("U", -1, a, 1, e, ip, w, 1, info);
-        chkxer("Rsytrf_rk", infot, nout, lerr, ok);
+        Chkxer("Rsytrf_rk", infot, nout, lerr, ok);
         infot = 4;
         Rsytrf_rk("U", 2, a, 1, e, ip, w, 1, info);
-        chkxer("Rsytrf_rk", infot, nout, lerr, ok);
+        Chkxer("Rsytrf_rk", infot, nout, lerr, ok);
         infot = 8;
         Rsytrf_rk("U", 0, a, 1, e, ip, w, 0, info);
-        chkxer("Rsytrf_rk", infot, nout, lerr, ok);
+        Chkxer("Rsytrf_rk", infot, nout, lerr, ok);
         infot = 8;
         Rsytrf_rk("U", 0, a, 1, e, ip, w, -2, info);
-        chkxer("Rsytrf_rk", infot, nout, lerr, ok);
+        Chkxer("Rsytrf_rk", infot, nout, lerr, ok);
         //
-        //        Rsytf2_rk
+        // Rsytf2_rk
         //
-        strncpy(srnamt, "Rsytf2_rk", srnamt_len);
+        srnamt = "Rsytf2_rk";
         infot = 1;
         Rsytf2_rk("/", 0, a, 1, e, ip, info);
-        chkxer("Rsytf2_rk", infot, nout, lerr, ok);
+        Chkxer("Rsytf2_rk", infot, nout, lerr, ok);
         infot = 2;
         Rsytf2_rk("U", -1, a, 1, e, ip, info);
-        chkxer("Rsytf2_rk", infot, nout, lerr, ok);
+        Chkxer("Rsytf2_rk", infot, nout, lerr, ok);
         infot = 4;
         Rsytf2_rk("U", 2, a, 1, e, ip, info);
-        chkxer("Rsytf2_rk", infot, nout, lerr, ok);
+        Chkxer("Rsytf2_rk", infot, nout, lerr, ok);
         //
-        //        Rsytri_3
+        // Rsytri_3
         //
-        strncpy(srnamt, "Rsytri_3", srnamt_len);
+        srnamt = "Rsytri_3";
         infot = 1;
         Rsytri_3("/", 0, a, 1, e, ip, w, 1, info);
-        chkxer("Rsytri_3", infot, nout, lerr, ok);
+        Chkxer("Rsytri_3", infot, nout, lerr, ok);
         infot = 2;
         Rsytri_3("U", -1, a, 1, e, ip, w, 1, info);
-        chkxer("Rsytri_3", infot, nout, lerr, ok);
+        Chkxer("Rsytri_3", infot, nout, lerr, ok);
         infot = 4;
         Rsytri_3("U", 2, a, 1, e, ip, w, 1, info);
-        chkxer("Rsytri_3", infot, nout, lerr, ok);
+        Chkxer("Rsytri_3", infot, nout, lerr, ok);
         infot = 8;
         Rsytri_3("U", 0, a, 1, e, ip, w, 0, info);
-        chkxer("Rsytri_3", infot, nout, lerr, ok);
+        Chkxer("Rsytri_3", infot, nout, lerr, ok);
         infot = 8;
         Rsytri_3("U", 0, a, 1, e, ip, w, -2, info);
-        chkxer("Rsytri_3", infot, nout, lerr, ok);
+        Chkxer("Rsytri_3", infot, nout, lerr, ok);
         //
-        //        Rsytri_3x
+        // Rsytri_3x
         //
-        strncpy(srnamt, "Rsytri_3x", srnamt_len);
+        srnamt = "Rsytri_3x";
         infot = 1;
         Rsytri_3x("/", 0, a, 1, e, ip, w, 1, info);
-        chkxer("Rsytri_3x", infot, nout, lerr, ok);
+        Chkxer("Rsytri_3x", infot, nout, lerr, ok);
         infot = 2;
         Rsytri_3x("U", -1, a, 1, e, ip, w, 1, info);
-        chkxer("Rsytri_3x", infot, nout, lerr, ok);
+        Chkxer("Rsytri_3x", infot, nout, lerr, ok);
         infot = 4;
         Rsytri_3x("U", 2, a, 1, e, ip, w, 1, info);
-        chkxer("Rsytri_3x", infot, nout, lerr, ok);
+        Chkxer("Rsytri_3x", infot, nout, lerr, ok);
         //
-        //        Rsytrs_3
+        // Rsytrs_3
         //
-        strncpy(srnamt, "Rsytrs_3", srnamt_len);
+        srnamt = "Rsytrs_3";
         infot = 1;
         Rsytrs_3("/", 0, 0, a, 1, e, ip, b, 1, info);
-        chkxer("Rsytrs_3", infot, nout, lerr, ok);
+        Chkxer("Rsytrs_3", infot, nout, lerr, ok);
         infot = 2;
         Rsytrs_3("U", -1, 0, a, 1, e, ip, b, 1, info);
-        chkxer("Rsytrs_3", infot, nout, lerr, ok);
+        Chkxer("Rsytrs_3", infot, nout, lerr, ok);
         infot = 3;
         Rsytrs_3("U", 0, -1, a, 1, e, ip, b, 1, info);
-        chkxer("Rsytrs_3", infot, nout, lerr, ok);
+        Chkxer("Rsytrs_3", infot, nout, lerr, ok);
         infot = 5;
         Rsytrs_3("U", 2, 1, a, 1, e, ip, b, 2, info);
-        chkxer("Rsytrs_3", infot, nout, lerr, ok);
+        Chkxer("Rsytrs_3", infot, nout, lerr, ok);
         infot = 9;
         Rsytrs_3("U", 2, 1, a, 2, e, ip, b, 1, info);
-        chkxer("Rsytrs_3", infot, nout, lerr, ok);
+        Chkxer("Rsytrs_3", infot, nout, lerr, ok);
         //
-        //        Rsycon_3
+        // Rsycon_3
         //
-        strncpy(srnamt, "Rsycon_3", srnamt_len);
+        srnamt = "Rsycon_3";
         infot = 1;
         Rsycon_3("/", 0, a, 1, e, ip, anrm, rcond, w, iw, info);
-        chkxer("Rsycon_3", infot, nout, lerr, ok);
+        Chkxer("Rsycon_3", infot, nout, lerr, ok);
         infot = 2;
         Rsycon_3("U", -1, a, 1, e, ip, anrm, rcond, w, iw, info);
-        chkxer("Rsycon_3", infot, nout, lerr, ok);
+        Chkxer("Rsycon_3", infot, nout, lerr, ok);
         infot = 4;
         Rsycon_3("U", 2, a, 1, e, ip, anrm, rcond, w, iw, info);
-        chkxer("Rsycon_3", infot, nout, lerr, ok);
+        Chkxer("Rsycon_3", infot, nout, lerr, ok);
         infot = 7;
         Rsycon_3("U", 1, a, 1, e, ip, -1.0, rcond, w, iw, info);
-        chkxer("Rsycon_3", infot, nout, lerr, ok);
+        Chkxer("Rsycon_3", infot, nout, lerr, ok);
         //
-    } else if (Mlsamen(2, c2, "SA")) {
+    } else if (Mlsamen(2, c2.elems, "SA")) {
         //
-        //        Test error exits of the routines that use factorization
-        //        of a symmetric indefinite matrix with Aasen's algorithm.
+        // Test error exits of the routines that use factorization
+        // of a symmetric indefinite matrix with Aasen's algorithm.
         //
-        //        Rsytrf_aa
+        // Rsytrf_aa
         //
-        strncpy(srnamt, "Rsytrf_aa", srnamt_len);
+        srnamt = "Rsytrf_aa";
         infot = 1;
         Rsytrf_aa("/", 0, a, 1, ip, w, 1, info);
-        chkxer("Rsytrf_aa", infot, nout, lerr, ok);
+        Chkxer("Rsytrf_aa", infot, nout, lerr, ok);
         infot = 2;
         Rsytrf_aa("U", -1, a, 1, ip, w, 1, info);
-        chkxer("Rsytrf_aa", infot, nout, lerr, ok);
+        Chkxer("Rsytrf_aa", infot, nout, lerr, ok);
         infot = 4;
         Rsytrf_aa("U", 2, a, 1, ip, w, 4, info);
-        chkxer("Rsytrf_aa", infot, nout, lerr, ok);
+        Chkxer("Rsytrf_aa", infot, nout, lerr, ok);
         infot = 7;
         Rsytrf_aa("U", 0, a, 1, ip, w, 0, info);
-        chkxer("Rsytrf_aa", infot, nout, lerr, ok);
+        Chkxer("Rsytrf_aa", infot, nout, lerr, ok);
         infot = 7;
         Rsytrf_aa("U", 0, a, 1, ip, w, -2, info);
-        chkxer("Rsytrf_aa", infot, nout, lerr, ok);
+        Chkxer("Rsytrf_aa", infot, nout, lerr, ok);
         //
-        //        Rsytrs_aa
+        // Rsytrs_aa
         //
-        strncpy(srnamt, "Rsytrs_aa", srnamt_len);
+        srnamt = "Rsytrs_aa";
         infot = 1;
         Rsytrs_aa("/", 0, 0, a, 1, ip, b, 1, w, 1, info);
-        chkxer("Rsytrs_aa", infot, nout, lerr, ok);
+        Chkxer("Rsytrs_aa", infot, nout, lerr, ok);
         infot = 2;
         Rsytrs_aa("U", -1, 0, a, 1, ip, b, 1, w, 1, info);
-        chkxer("Rsytrs_aa", infot, nout, lerr, ok);
+        Chkxer("Rsytrs_aa", infot, nout, lerr, ok);
         infot = 3;
         Rsytrs_aa("U", 0, -1, a, 1, ip, b, 1, w, 1, info);
-        chkxer("Rsytrs_aa", infot, nout, lerr, ok);
+        Chkxer("Rsytrs_aa", infot, nout, lerr, ok);
         infot = 5;
         Rsytrs_aa("U", 2, 1, a, 1, ip, b, 2, w, 1, info);
-        chkxer("Rsytrs_aa", infot, nout, lerr, ok);
+        Chkxer("Rsytrs_aa", infot, nout, lerr, ok);
         infot = 8;
         Rsytrs_aa("U", 2, 1, a, 2, ip, b, 1, w, 1, info);
-        chkxer("Rsytrs_aa", infot, nout, lerr, ok);
+        Chkxer("Rsytrs_aa", infot, nout, lerr, ok);
         infot = 10;
         Rsytrs_aa("U", 0, 1, a, 2, ip, b, 1, w, 0, info);
-        chkxer("Rsytrs_aa", infot, nout, lerr, ok);
+        Chkxer("Rsytrs_aa", infot, nout, lerr, ok);
         infot = 10;
         Rsytrs_aa("U", 0, 1, a, 2, ip, b, 1, w, -2, info);
-        chkxer("Rsytrs_aa", infot, nout, lerr, ok);
+        Chkxer("Rsytrs_aa", infot, nout, lerr, ok);
         //
-    } else if (Mlsamen(2, c2, "S2")) {
+    } else if (Mlsamen(2, c2.elems, "S2")) {
         //
-        //        Test error exits of the routines that use factorization
-        //        of a symmetric indefinite matrix with Aasen's algorithm.
+        // Test error exits of the routines that use factorization
+        // of a symmetric indefinite matrix with Aasen's algorithm.
         //
-        //        Rsytrf_aa_2stage
+        // Rsytrf_aa_2stage
         //
-        strncpy(srnamt, "Rsytrf_aa_2stage", srnamt_len);
+        srnamt = "Rsytrf_aa_2stage";
         infot = 1;
         Rsytrf_aa_2stage("/", 0, a, 1, a, 1, ip, ip, w, 1, info);
-        chkxer("Rsytrf_aa_2stage", infot, nout, lerr, ok);
+        Chkxer("Rsytrf_aa_2stage", infot, nout, lerr, ok);
         infot = 2;
         Rsytrf_aa_2stage("U", -1, a, 1, a, 1, ip, ip, w, 1, info);
-        chkxer("Rsytrf_aa_2stage", infot, nout, lerr, ok);
+        Chkxer("Rsytrf_aa_2stage", infot, nout, lerr, ok);
         infot = 4;
         Rsytrf_aa_2stage("U", 2, a, 1, a, 2, ip, ip, w, 1, info);
-        chkxer("Rsytrf_aa_2stage", infot, nout, lerr, ok);
+        Chkxer("Rsytrf_aa_2stage", infot, nout, lerr, ok);
         infot = 6;
         Rsytrf_aa_2stage("U", 2, a, 2, a, 1, ip, ip, w, 1, info);
-        chkxer("Rsytrf_aa_2stage", infot, nout, lerr, ok);
+        Chkxer("Rsytrf_aa_2stage", infot, nout, lerr, ok);
         infot = 10;
         Rsytrf_aa_2stage("U", 2, a, 2, a, 8, ip, ip, w, 0, info);
-        chkxer("Rsytrf_aa_2stage", infot, nout, lerr, ok);
+        Chkxer("Rsytrf_aa_2stage", infot, nout, lerr, ok);
         //
-        //        Rsytrs_aa_2stage
+        // Rsytrs_aa_2stage
         //
-        strncpy(srnamt, "Rsytrs_aa_2stage", srnamt_len);
+        srnamt = "Rsytrs_aa_2stage";
         infot = 1;
         Rsytrs_aa_2stage("/", 0, 0, a, 1, a, 1, ip, ip, b, 1, info);
-        chkxer("Rsytrs_aa_2stage", infot, nout, lerr, ok);
+        Chkxer("Rsytrs_aa_2stage", infot, nout, lerr, ok);
         infot = 2;
         Rsytrs_aa_2stage("U", -1, 0, a, 1, a, 1, ip, ip, b, 1, info);
-        chkxer("Rsytrs_aa_2stage", infot, nout, lerr, ok);
+        Chkxer("Rsytrs_aa_2stage", infot, nout, lerr, ok);
         infot = 3;
         Rsytrs_aa_2stage("U", 0, -1, a, 1, a, 1, ip, ip, b, 1, info);
-        chkxer("Rsytrs_aa_2stage", infot, nout, lerr, ok);
+        Chkxer("Rsytrs_aa_2stage", infot, nout, lerr, ok);
         infot = 5;
         Rsytrs_aa_2stage("U", 2, 1, a, 1, a, 1, ip, ip, b, 1, info);
-        chkxer("Rsytrs_aa_2stage", infot, nout, lerr, ok);
+        Chkxer("Rsytrs_aa_2stage", infot, nout, lerr, ok);
         infot = 7;
         Rsytrs_aa_2stage("U", 2, 1, a, 2, a, 1, ip, ip, b, 1, info);
-        chkxer("Rsytrs_aa_2stage", infot, nout, lerr, ok);
+        Chkxer("Rsytrs_aa_2stage", infot, nout, lerr, ok);
         infot = 11;
         Rsytrs_aa_2stage("U", 2, 1, a, 2, a, 8, ip, ip, b, 1, info);
-        chkxer("Rsytrs_aa_STAGE", infot, nout, lerr, ok);
-    } else if (Mlsamen(2, c2, "SP")) {
+        Chkxer("DSYTRS_AA_STAGE", infot, nout, lerr, ok);
+    } else if (Mlsamen(2, c2.elems, "SP")) {
         //
-        //        Test error exits of the routines that use factorization
-        //        of a symmetric indefinite packed matrix with patrial
-        //        (Bunch-Kaufman) pivoting.
+        // Test error exits of the routines that use factorization
+        // of a symmetric indefinite packed matrix with partial
+        // (Bunch-Kaufman) pivoting.
         //
-        //        Rsptrf
+        // Rsptrf
         //
-        strncpy(srnamt, "Rsptrf", srnamt_len);
+        srnamt = "Rsptrf";
         infot = 1;
         Rsptrf("/", 0, a, ip, info);
-        chkxer("Rsptrf", infot, nout, lerr, ok);
+        Chkxer("Rsptrf", infot, nout, lerr, ok);
         infot = 2;
         Rsptrf("U", -1, a, ip, info);
-        chkxer("Rsptrf", infot, nout, lerr, ok);
+        Chkxer("Rsptrf", infot, nout, lerr, ok);
         //
-        //        Rsptri
+        // Rsptri
         //
-        strncpy(srnamt, "Rsptri", srnamt_len);
+        srnamt = "Rsptri";
         infot = 1;
         Rsptri("/", 0, a, ip, w, info);
-        chkxer("Rsptri", infot, nout, lerr, ok);
+        Chkxer("Rsptri", infot, nout, lerr, ok);
         infot = 2;
         Rsptri("U", -1, a, ip, w, info);
-        chkxer("Rsptri", infot, nout, lerr, ok);
+        Chkxer("Rsptri", infot, nout, lerr, ok);
         //
-        //        Rsptrs
+        // Rsptrs
         //
-        strncpy(srnamt, "Rsptrs", srnamt_len);
+        srnamt = "Rsptrs";
         infot = 1;
         Rsptrs("/", 0, 0, a, ip, b, 1, info);
-        chkxer("Rsptrs", infot, nout, lerr, ok);
+        Chkxer("Rsptrs", infot, nout, lerr, ok);
         infot = 2;
         Rsptrs("U", -1, 0, a, ip, b, 1, info);
-        chkxer("Rsptrs", infot, nout, lerr, ok);
+        Chkxer("Rsptrs", infot, nout, lerr, ok);
         infot = 3;
         Rsptrs("U", 0, -1, a, ip, b, 1, info);
-        chkxer("Rsptrs", infot, nout, lerr, ok);
+        Chkxer("Rsptrs", infot, nout, lerr, ok);
         infot = 7;
         Rsptrs("U", 2, 1, a, ip, b, 1, info);
-        chkxer("Rsptrs", infot, nout, lerr, ok);
+        Chkxer("Rsptrs", infot, nout, lerr, ok);
         //
-        //        Rsprfs
+        // Rsprfs
         //
-        strncpy(srnamt, "Rsprfs", srnamt_len);
+        srnamt = "Rsprfs";
         infot = 1;
         Rsprfs("/", 0, 0, a, af, ip, b, 1, x, 1, r1, r2, w, iw, info);
-        chkxer("Rsprfs", infot, nout, lerr, ok);
+        Chkxer("Rsprfs", infot, nout, lerr, ok);
         infot = 2;
         Rsprfs("U", -1, 0, a, af, ip, b, 1, x, 1, r1, r2, w, iw, info);
-        chkxer("Rsprfs", infot, nout, lerr, ok);
+        Chkxer("Rsprfs", infot, nout, lerr, ok);
         infot = 3;
         Rsprfs("U", 0, -1, a, af, ip, b, 1, x, 1, r1, r2, w, iw, info);
-        chkxer("Rsprfs", infot, nout, lerr, ok);
+        Chkxer("Rsprfs", infot, nout, lerr, ok);
         infot = 8;
         Rsprfs("U", 2, 1, a, af, ip, b, 1, x, 2, r1, r2, w, iw, info);
-        chkxer("Rsprfs", infot, nout, lerr, ok);
+        Chkxer("Rsprfs", infot, nout, lerr, ok);
         infot = 10;
         Rsprfs("U", 2, 1, a, af, ip, b, 2, x, 1, r1, r2, w, iw, info);
-        chkxer("Rsprfs", infot, nout, lerr, ok);
+        Chkxer("Rsprfs", infot, nout, lerr, ok);
         //
-        //        Rspcon
+        // Rspcon
         //
+        srnamt = "Rspcon";
         infot = 1;
-        strncpy(srnamt, "Rspcon", srnamt_len);
         Rspcon("/", 0, a, ip, anrm, rcond, w, iw, info);
-        chkxer("Rspcon", infot, nout, lerr, ok);
+        Chkxer("Rspcon", infot, nout, lerr, ok);
         infot = 2;
         Rspcon("U", -1, a, ip, anrm, rcond, w, iw, info);
-        chkxer("Rspcon", infot, nout, lerr, ok);
+        Chkxer("Rspcon", infot, nout, lerr, ok);
         infot = 5;
         Rspcon("U", 1, a, ip, -1.0, rcond, w, iw, info);
-        chkxer("Rspcon", infot, nout, lerr, ok);
+        Chkxer("Rspcon", infot, nout, lerr, ok);
     }
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     Alaesm(path, ok, nout);
     //
-    //     End of Rerrsy
+    // End of Rerrsy
     //
 }

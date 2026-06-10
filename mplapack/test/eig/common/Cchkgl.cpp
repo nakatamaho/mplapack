@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZCHKGL.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,23 +43,10 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-#include <iostream>
-#include <sstream>
-#include <string>
-#include <vector>
-#include <regex>
-
-using namespace std;
-using std::regex;
-using std::regex_replace;
-
 void Cchkgl(INTEGER const nin, INTEGER const nout) {
     common cmn;
     common_read read(cmn);
     common_write write(cmn);
-    char buf[1024];
     INTEGER lmax[3];
     INTEGER ninfo = 0;
     INTEGER knt = 0;
@@ -70,8 +64,6 @@ void Cchkgl(INTEGER const nin, INTEGER const nout) {
     INTEGER ihiin = 0;
     COMPLEX ain[lda * lda];
     COMPLEX bin[ldb * ldb];
-    INTEGER ldain = lda;
-    INTEGER ldbin = ldb;
     REAL lsclin[lda];
     REAL rsclin[lda];
     const INTEGER lwork = 6 * lda;
@@ -84,6 +76,13 @@ void Cchkgl(INTEGER const nin, INTEGER const nout) {
     REAL rscale[lda];
     INTEGER info = 0;
     REAL vmax = 0.0;
+    static const char *format_9999 = "(' .. test output of Cggbal .. ')";
+    static const char *format_9998 = "(' ratio of largest test error              = ',d12.3)";
+    static const char *format_9997 = "(' example number where info is not zero    = ',i4)";
+    static const char *format_9996 = "(' example number where ILO or IHI is wrong = ',i4)";
+    static const char *format_9995 = "(' example number having largest error      = ',i4)";
+    static const char *format_9994 = "(' number of examples where info is not 0   = ',i4)";
+    static const char *format_9993 = "(' total number of examples tested          = ',i4)";
     //
     lmax[1 - 1] = 0;
     lmax[2 - 1] = 0;
@@ -91,168 +90,114 @@ void Cchkgl(INTEGER const nin, INTEGER const nout) {
     ninfo = 0;
     knt = 0;
     rmax = zero;
-    double dtmp;
-    std::complex<double> ctmp;
     //
     eps = Rlamch("Precision");
-    string str;
-    istringstream iss;
-    double dtmp_r;
-    double dtmp_i;
+//
+statement_10:
     //
-    while (getline(cin, str)) {
-        getline(cin, str);
-        stringstream ss(str);
-        ss >> n;
-        // printf("n is %d\n", (int)n);
-        if (n == 0)
-            break;
-        for (i = 1; i <= n; i = i + 1) {
-            getline(cin, str);
-            string ____r = regex_replace(str, regex(","), " ");
-            string ___r = regex_replace(____r, regex("\\)"), " ");
-            string __r = regex_replace(___r, regex("\\("), " ");
-            string _r = regex_replace(__r, regex("D\\+"), "e+");
-            str = regex_replace(_r, regex("D\\-"), "e-");
-            iss.clear();
-            iss.str(str);
-            // cout << str << "\n";
+    read(nin, star), n;
+    if (n == 0) {
+        goto statement_90;
+    }
+    for (i = 1; i <= n; i = i + 1) {
+        {
+            read_loop rloop(cmn, nin, star);
             for (j = 1; j <= n; j = j + 1) {
-                iss >> dtmp_r;
-                iss >> dtmp_i;
-                a[(i - 1) + (j - 1) * lda] = COMPLEX(dtmp_r, dtmp_i);
+                rloop, a[(i - 1) + (j - 1) * lda];
             }
         }
-        // printf("a="); printmat(n, n, a, lda); printf("\n");
-        getline(cin, str);
-        for (i = 1; i <= n; i = i + 1) {
-            getline(cin, str);
-            string ____r = regex_replace(str, regex(","), " ");
-            string ___r = regex_replace(____r, regex("\\)"), " ");
-            string __r = regex_replace(___r, regex("\\("), " ");
-            string _r = regex_replace(__r, regex("D\\+"), "e+");
-            str = regex_replace(_r, regex("D\\-"), "e-");
-            iss.clear();
-            iss.str(str);
-            for (j = 1; j <= n; j = j + 1) {
-                iss >> dtmp_r;
-                iss >> dtmp_i;
-                b[(i - 1) + (j - 1) * lda] = COMPLEX(dtmp_r, dtmp_i);
-            }
-        }
-        // printf("b="); printmat(n, n, b, lda); printf("\n");
-        //
-        getline(cin, str);
-        getline(cin, str);
-        istringstream iss(str);
-        iss >> iloin;
-        iss >> ihiin;
-        // printf("iloin is %d ihiin is %d\n", (int)iloin, (int)ihiin);
-        getline(cin, str);
-        for (i = 1; i <= n; i = i + 1) {
-            getline(cin, str);
-            string ____r = regex_replace(str, regex(","), " ");
-            string ___r = regex_replace(____r, regex("\\)"), " ");
-            string __r = regex_replace(___r, regex("\\("), " ");
-            string _r = regex_replace(__r, regex("D\\+"), "e+");
-            str = regex_replace(_r, regex("D\\-"), "e-");
-            iss.clear();
-            iss.str(str);
-            for (j = 1; j <= n; j = j + 1) {
-                iss >> dtmp_r;
-                iss >> dtmp_i;
-                ain[(i - 1) + (j - 1) * lda] = COMPLEX(dtmp_r, dtmp_i);
-            }
-        }
-        getline(cin, str);
-        for (i = 1; i <= n; i = i + 1) {
-            getline(cin, str);
-            string ____r = regex_replace(str, regex(","), " ");
-            string ___r = regex_replace(____r, regex("\\)"), " ");
-            string __r = regex_replace(___r, regex("\\("), " ");
-            string _r = regex_replace(__r, regex("D\\+"), "e+");
-            str = regex_replace(_r, regex("D\\-"), "e-");
-            iss.clear();
-            iss.str(str);
-            for (j = 1; j <= n; j = j + 1) {
-                iss >> dtmp_r;
-                iss >> dtmp_i;
-                bin[(i - 1) + (j - 1) * lda] = COMPLEX(dtmp_r, dtmp_i);
-            }
-        }
-        //
-        getline(cin, str);
-        getline(cin, str);
-        string _r = regex_replace(str, regex("D\\+"), "e+");
-        str = regex_replace(_r, regex("D\\-"), "e-");
-        iss.clear();
-        iss.str(str);
-        for (i = 1; i <= n; i = i + 1) {
-            iss >> dtmp;
-            lsclin[i - 1] = dtmp;
-        }
-        // printf("lsclin=");printvec(lsclin,n);printf("\n");
-        getline(cin, str);
-        getline(cin, str);
-        _r = regex_replace(str, regex("D\\+"), "e+");
-        str = regex_replace(_r, regex("D\\-"), "e-");
-        iss.clear();
-        iss.str(str);
-        for (i = 1; i <= n; i = i + 1) {
-            iss >> dtmp;
-            rsclin[i - 1] = dtmp;
-        }
-        // printf("rsclin=");printvec(rsclin,n);printf("\n");
-        //
-        anorm = Clange("M", n, n, a, lda, work);
-        bnorm = Clange("M", n, n, b, ldb, work);
-        //
-        knt++;
-        //
-        Cggbal("B", n, a, lda, b, ldb, ilo, ihi, lscale, rscale, work, info);
-        //
-        if (info != 0) {
-            ninfo++;
-            lmax[1 - 1] = knt;
-        }
-        //
-        if (ilo != iloin || ihi != ihiin) {
-            ninfo++;
-            lmax[2 - 1] = knt;
-        }
-        //
-        vmax = zero;
-        for (i = 1; i <= n; i = i + 1) {
-            for (j = 1; j <= n; j = j + 1) {
-                vmax = max(vmax, REAL(abs(a[(i - 1) + (j - 1) * lda] - ain[(i - 1) + (j - 1) * ldain])));
-                vmax = max(vmax, REAL(abs(b[(i - 1) + (j - 1) * ldb] - bin[(i - 1) + (j - 1) * ldbin])));
-            }
-        }
-        //
-        for (i = 1; i <= n; i = i + 1) {
-            vmax = max(vmax, REAL(abs(lscale[i - 1] - lsclin[i - 1])));
-            vmax = max(vmax, REAL(abs(rscale[i - 1] - rsclin[i - 1])));
-        }
-        //
-        vmax = vmax / (eps * max(anorm, bnorm));
-        //
-        if (vmax > rmax) {
-            lmax[3 - 1] = knt;
-            rmax = vmax;
-        }
-        //
     }
     //
-    write(nout, "(' .. test output of Cggbal .. ')");
+    for (i = 1; i <= n; i = i + 1) {
+        {
+            read_loop rloop(cmn, nin, star);
+            for (j = 1; j <= n; j = j + 1) {
+                rloop, b[(i - 1) + (j - 1) * ldb];
+            }
+        }
+    }
     //
-    sprintnum_short(buf, rmax);
-    write(nout, "(1x,'value of largest test error            = ',a)"), buf;
-    write(nout, "(' example number where info is not zero    = ',i4)"), lmax[1 - 1];
-    write(nout, "(' example number where ILO or IHI is wrong = ',i4)"), lmax[2 - 1];
-    write(nout, "(' example number having largest error      = ',i4)"), lmax[3 - 1];
-    write(nout, "(' number of examples where info is not 0   = ',i4)"), ninfo;
-    write(nout, "(' total number of examples tested          = ',i4)"), knt;
+    read(nin, star), iloin, ihiin;
+    for (i = 1; i <= n; i = i + 1) {
+        {
+            read_loop rloop(cmn, nin, star);
+            for (j = 1; j <= n; j = j + 1) {
+                rloop, ain[(i - 1) + (j - 1) * lda];
+            }
+        }
+    }
+    for (i = 1; i <= n; i = i + 1) {
+        {
+            read_loop rloop(cmn, nin, star);
+            for (j = 1; j <= n; j = j + 1) {
+                rloop, bin[(i - 1) + (j - 1) * ldb];
+            }
+        }
+    }
     //
-    //     End of Cchkgl
+    {
+        read_loop rloop(cmn, nin, star);
+        for (i = 1; i <= n; i = i + 1) {
+            rloop, lsclin[i - 1];
+        }
+    }
+    {
+        read_loop rloop(cmn, nin, star);
+        for (i = 1; i <= n; i = i + 1) {
+            rloop, rsclin[i - 1];
+        }
+    }
+    //
+    anorm = Clange("M", n, n, a, lda, work);
+    bnorm = Clange("M", n, n, b, ldb, work);
+    //
+    knt++;
+    //
+    Cggbal("B", n, a, lda, b, ldb, ilo, ihi, lscale, rscale, work, info);
+    //
+    if (info != 0) {
+        ninfo++;
+        lmax[1 - 1] = knt;
+    }
+    //
+    if (ilo != iloin || ihi != ihiin) {
+        ninfo++;
+        lmax[2 - 1] = knt;
+    }
+    //
+    vmax = zero;
+    for (i = 1; i <= n; i = i + 1) {
+        for (j = 1; j <= n; j = j + 1) {
+            vmax = max(vmax, abs(a[(i - 1) + (j - 1) * lda] - ain[(i - 1) + (j - 1) * lda]));
+            vmax = max(vmax, abs(b[(i - 1) + (j - 1) * ldb] - bin[(i - 1) + (j - 1) * ldb]));
+        }
+    }
+    //
+    for (i = 1; i <= n; i = i + 1) {
+        vmax = max(vmax, abs(lscale[i - 1] - lsclin[i - 1]));
+        vmax = max(vmax, abs(rscale[i - 1] - rsclin[i - 1]));
+    }
+    //
+    vmax = vmax / (eps * max(anorm, bnorm));
+    //
+    if (vmax > rmax) {
+        lmax[3 - 1] = knt;
+        rmax = vmax;
+    }
+    //
+    goto statement_10;
+//
+statement_90:
+    //
+    write(nout, format_9999);
+    //
+    write(nout, format_9998), rmax;
+    write(nout, format_9997), lmax[1 - 1];
+    write(nout, format_9996), lmax[2 - 1];
+    write(nout, format_9995), lmax[3 - 1];
+    write(nout, format_9994), ninfo;
+    write(nout, format_9993), knt;
+    //
+    // End of Cchkgl
     //
 }

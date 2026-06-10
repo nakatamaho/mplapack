@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZGET03.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,11 +43,9 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-#include <mplapack_debug.h>
-
 void Cget03(INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *ainv, INTEGER const ldainv, COMPLEX *work, INTEGER const ldwork, REAL *rwork, REAL &rcond, REAL &resid) {
     //
-    //     Quick exit if N = 0.
+    // Quick exit if N = 0.
     //
     const REAL one = 1.0;
     const REAL zero = 0.0;
@@ -50,7 +55,7 @@ void Cget03(INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *ainv, INTEG
         return;
     }
     //
-    //     Exit with RESID = 1/EPS if ANORM = 0 or AINVNM = 0.
+    // Exit with RESID = 1/EPS if ANORM = 0 or AINVNM = 0.
     //
     REAL eps = Rlamch("Epsilon");
     REAL anorm = Clange("1", n, n, a, lda, rwork);
@@ -62,7 +67,7 @@ void Cget03(INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *ainv, INTEG
     }
     rcond = (one / anorm) / ainvnm;
     //
-    //     Compute I - A * AINV
+    // Compute I - A * AINV
     //
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     const COMPLEX czero = COMPLEX(0.0, 0.0);
@@ -72,12 +77,12 @@ void Cget03(INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *ainv, INTEG
         work[(i - 1) + (i - 1) * ldwork] += cone;
     }
     //
-    //     Compute norm(I - AINV*A) / (N * norm(A) * norm(AINV) * EPS)
+    // Compute norm(I - AINV*A) / (N * norm(A) * norm(AINV) * EPS)
     //
     resid = Clange("1", n, n, work, ldwork, rwork);
     //
     resid = ((resid * rcond) / eps) / castREAL(n);
     //
-    //     End of Cget03
+    // End of Cget03
     //
 }

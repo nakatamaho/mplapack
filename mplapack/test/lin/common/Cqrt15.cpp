@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZQRT15.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,7 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Cqrt15(INTEGER const scale, INTEGER const rksel, INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, REAL *s, INTEGER &rank, REAL &norma, REAL &normb, INTEGER *iseed, COMPLEX *work, INTEGER const lwork) {
+void Cqrt15(INTEGER const scale, INTEGER const rksel, INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, REAL *s, INTEGER &rank, REAL &norma, REAL &normb, INTEGER (&iseed)[4], COMPLEX *work, INTEGER const lwork) {
     INTEGER mn = 0;
     REAL smlnum = 0.0;
     const REAL one = 1.0;
@@ -45,26 +52,29 @@ void Cqrt15(INTEGER const scale, INTEGER const rksel, INTEGER const m, INTEGER c
     INTEGER j = 0;
     const REAL zero = 0.0;
     REAL temp = 0.0;
-    const REAL svmin = 0.1e+0;
+    const REAL svmin = 0.1;
     const COMPLEX czero = COMPLEX(0.0, 0.0);
     const COMPLEX cone = COMPLEX(1.0, 0.0);
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     INTEGER info = 0;
     REAL dummy[1];
     //
     mn = min(m, n);
-    if (lwork < max({m + mn, mn * nrhs, 2 * n + m})) {
+    if (lwork < max(m + mn, mn * nrhs, 2 * n + m)) {
         Mxerbla("Cqrt15", 16);
         return;
     }
     //
     smlnum = Rlamch("Safe minimum");
     bignum = one / smlnum;
+#if defined ___MPLAPACK_BUILD_WITH_BINARY80___ || defined ___MPLAPACK_BUILD_WITH_BINARY128___
+    Rlabad(smlnum, bignum);
+#endif
     eps = Rlamch("Epsilon");
     smlnum = (smlnum / eps) / eps;
     bignum = one / smlnum;
     //
-    //     Determine rank and (unscaled) singular values
+    // Determine rank and (unscaled) singular values
     //
     if (rksel == 1) {
         rank = mn;
@@ -79,7 +89,7 @@ void Cqrt15(INTEGER const scale, INTEGER const rksel, INTEGER const m, INTEGER c
     //
     if (rank > 0) {
         //
-        //        Nontrivial case
+        // Nontrivial case
         //
         s[1 - 1] = one;
         for (j = 2; j <= rank; j = j + 1) {
@@ -93,23 +103,23 @@ void Cqrt15(INTEGER const scale, INTEGER const rksel, INTEGER const m, INTEGER c
         }
         Rlaord("Decreasing", rank, s, 1);
         //
-        //        Generate 'rank' columns of a random orthogonal matrix in A
+        // Generate 'rank' columns of a random orthogonal matrix in A
         //
         Clarnv(2, iseed, m, work);
         CRscal(m, one / RCnrm2(m, work, 1), work, 1);
         Claset("Full", m, rank, czero, cone, a, lda);
         Clarf("Left", m, rank, work, 1, COMPLEX(two), a, lda, &work[(m + 1) - 1]);
         //
-        //        workspace used: m+mn
+        // workspace used: m+mn
         //
-        //        Generate consistent rhs in the range space of A
+        // Generate consistent rhs in the range space of A
         //
         Clarnv(2, iseed, rank * nrhs, work);
         Cgemm("No transpose", "No transpose", m, nrhs, rank, cone, a, lda, work, rank, czero, b, ldb);
         //
-        //        work space used: <= mn *nrhs
+        // work space used: <= mn *nrhs
         //
-        //        generate (unscaled) matrix A
+        // generate (unscaled) matrix A
         //
         for (j = 1; j <= rank; j = j + 1) {
             CRscal(m, s[j - 1], &a[(j - 1) * lda], 1);
@@ -121,9 +131,9 @@ void Cqrt15(INTEGER const scale, INTEGER const rksel, INTEGER const m, INTEGER c
         //
     } else {
         //
-        //        work space used 2*n+m
+        // work space used 2*n+m
         //
-        //        Generate null matrix and rhs
+        // Generate null matrix and rhs
         //
         for (j = 1; j <= mn; j = j + 1) {
             s[j - 1] = zero;
@@ -133,21 +143,21 @@ void Cqrt15(INTEGER const scale, INTEGER const rksel, INTEGER const m, INTEGER c
         //
     }
     //
-    //     Scale the matrix
+    // Scale the matrix
     //
     if (scale != 1) {
         norma = Clange("Max", m, n, a, lda, dummy);
         if (norma != zero) {
             if (scale == 2) {
                 //
-                //              matrix scaled up
+                // matrix scaled up
                 //
                 Clascl("General", 0, 0, norma, bignum, m, n, a, lda, info);
                 Rlascl("General", 0, 0, norma, bignum, mn, 1, s, mn, info);
                 Clascl("General", 0, 0, norma, bignum, m, nrhs, b, ldb, info);
             } else if (scale == 3) {
                 //
-                //              matrix scaled down
+                // matrix scaled down
                 //
                 Clascl("General", 0, 0, norma, smlnum, m, n, a, lda, info);
                 Rlascl("General", 0, 0, norma, smlnum, mn, 1, s, mn, info);
@@ -162,6 +172,6 @@ void Cqrt15(INTEGER const scale, INTEGER const rksel, INTEGER const m, INTEGER c
     norma = Rasum(mn, s, 1);
     normb = Clange("One-norm", m, nrhs, b, ldb, dummy);
     //
-    //     End of Cqrt15
+    // End of Cqrt15
     //
 }

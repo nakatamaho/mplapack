@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,35 +26,21 @@
  *
  */
 
+// Derived from LAPACK routine DLAGSY.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Rlagsy(INTEGER const n, INTEGER const k, REAL *d, REAL *a, INTEGER const lda, INTEGER *iseed, REAL *work, INTEGER &info) {
+#include <mplapack_matgen.h>
+
+void Rlagsy(INTEGER const n, INTEGER const k, REAL *d, REAL *a, INTEGER const lda, INTEGER (&iseed)[4], REAL *work, INTEGER &info) {
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     if (n < 0) {
@@ -69,7 +55,7 @@ void Rlagsy(INTEGER const n, INTEGER const k, REAL *d, REAL *a, INTEGER const ld
         return;
     }
     //
-    //     initialize lower triangle of A to diagonal matrix
+    // initialize lower triangle of A to diagonal matrix
     //
     INTEGER j = 0;
     INTEGER i = 0;
@@ -83,18 +69,18 @@ void Rlagsy(INTEGER const n, INTEGER const k, REAL *d, REAL *a, INTEGER const ld
         a[(i - 1) + (i - 1) * lda] = d[i - 1];
     }
     //
-    //     Generate lower triangle of symmetric matrix
+    // Generate lower triangle of symmetric matrix
     //
     REAL wn = 0.0;
     REAL wa = 0.0;
     REAL tau = 0.0;
     REAL wb = 0.0;
     const REAL one = 1.0;
-    const REAL half = 0.5e+0;
+    const REAL half = 0.5;
     REAL alpha = 0.0;
     for (i = n - 1; i >= 1; i = i - 1) {
         //
-        //        generate random reflection
+        // generate random reflection
         //
         Rlarnv(3, iseed, n - i + 1, work);
         wn = Rnrm2(n - i + 1, work, 1);
@@ -108,28 +94,28 @@ void Rlagsy(INTEGER const n, INTEGER const k, REAL *d, REAL *a, INTEGER const ld
             tau = wb / wa;
         }
         //
-        //        apply random reflection to A(i:n,i:n) from the left
-        //        and the right
+        // apply random reflection to A(i:n,i:n) from the left
+        // and the right
         //
-        //        compute  y := tau * A * u
+        // compute  y := tau * A * u
         //
         Rsymv("Lower", n - i + 1, tau, &a[(i - 1) + (i - 1) * lda], lda, work, 1, zero, &work[(n + 1) - 1], 1);
         //
-        //        compute  v := y - 1/2 * tau * ( y, u ) * u
+        // compute  v := y - 1/2 * tau * ( y, u ) * u
         //
         alpha = -half * tau * Rdot(n - i + 1, &work[(n + 1) - 1], 1, work, 1);
         Raxpy(n - i + 1, alpha, work, 1, &work[(n + 1) - 1], 1);
         //
-        //        apply the transformation as a rank-2 update to A(i:n,i:n)
+        // apply the transformation as a rank-2 update to A(i:n,i:n)
         //
         Rsyr2("Lower", n - i + 1, -one, work, 1, &work[(n + 1) - 1], 1, &a[(i - 1) + (i - 1) * lda], lda);
     }
     //
-    //     Reduce number of subdiagonals to K
+    // Reduce number of subdiagonals to K
     //
     for (i = 1; i <= n - 1 - k; i = i + 1) {
         //
-        //        generate reflection to annihilate A(k+i+1:n,i)
+        // generate reflection to annihilate A(k+i+1:n,i)
         //
         wn = Rnrm2(n - k - i + 1, &a[((k + i) - 1) + (i - 1) * lda], 1);
         wa = sign(wn, a[((k + i) - 1) + (i - 1) * lda]);
@@ -142,23 +128,23 @@ void Rlagsy(INTEGER const n, INTEGER const k, REAL *d, REAL *a, INTEGER const ld
             tau = wb / wa;
         }
         //
-        //        apply reflection to A(k+i:n,i+1:k+i-1) from the left
+        // apply reflection to A(k+i:n,i+1:k+i-1) from the left
         //
         Rgemv("Transpose", n - k - i + 1, k - 1, one, &a[((k + i) - 1) + ((i + 1) - 1) * lda], lda, &a[((k + i) - 1) + (i - 1) * lda], 1, zero, work, 1);
         Rger(n - k - i + 1, k - 1, -tau, &a[((k + i) - 1) + (i - 1) * lda], 1, work, 1, &a[((k + i) - 1) + ((i + 1) - 1) * lda], lda);
         //
-        //        apply reflection to A(k+i:n,k+i:n) from the left and the right
+        // apply reflection to A(k+i:n,k+i:n) from the left and the right
         //
-        //        compute  y := tau * A * u
+        // compute  y := tau * A * u
         //
         Rsymv("Lower", n - k - i + 1, tau, &a[((k + i) - 1) + ((k + i) - 1) * lda], lda, &a[((k + i) - 1) + (i - 1) * lda], 1, zero, work, 1);
         //
-        //        compute  v := y - 1/2 * tau * ( y, u ) * u
+        // compute  v := y - 1/2 * tau * ( y, u ) * u
         //
         alpha = -half * tau * Rdot(n - k - i + 1, work, 1, &a[((k + i) - 1) + (i - 1) * lda], 1);
         Raxpy(n - k - i + 1, alpha, &a[((k + i) - 1) + (i - 1) * lda], 1, work, 1);
         //
-        //        apply symmetric rank-2 update to A(k+i:n,k+i:n)
+        // apply symmetric rank-2 update to A(k+i:n,k+i:n)
         //
         Rsyr2("Lower", n - k - i + 1, -one, &a[((k + i) - 1) + (i - 1) * lda], 1, work, 1, &a[((k + i) - 1) + ((k + i) - 1) * lda], lda);
         //
@@ -168,7 +154,7 @@ void Rlagsy(INTEGER const n, INTEGER const k, REAL *d, REAL *a, INTEGER const ld
         }
     }
     //
-    //     Store full symmetric matrix
+    // Store full symmetric matrix
     //
     for (j = 1; j <= n; j = j + 1) {
         for (i = j + 1; i <= n; i = i + 1) {
@@ -176,6 +162,6 @@ void Rlagsy(INTEGER const n, INTEGER const k, REAL *d, REAL *a, INTEGER const ld
         }
     }
     //
-    //     End of Rlagsy
+    // End of Rlagsy
     //
 }

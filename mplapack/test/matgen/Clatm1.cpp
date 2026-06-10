@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,51 +26,36 @@
  *
  */
 
+// Derived from LAPACK routine ZLATM1.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
+
 #include <mplapack_matgen.h>
 
-void Clatm1(INTEGER const mode, REAL const cond, INTEGER const irsign, INTEGER const idist, INTEGER *iseed, COMPLEX *d, INTEGER const n, INTEGER &info) {
+void Clatm1(INTEGER const mode, REAL const cond, INTEGER const irsign, INTEGER const idist, INTEGER (&iseed)[4], COMPLEX *d, INTEGER const n, INTEGER &info) {
     const REAL one = 1.0;
     INTEGER i = 0;
     REAL alpha = 0.0;
     REAL temp = 0.0;
     COMPLEX ctemp = 0.0;
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Decode and Test the input parameters. Initialize flags & seed.
+    // Decode and Test the input parameters. Initialize flags & seed.
     //
     info = 0;
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
     }
     //
-    //     Set INFO if an error
+    // Set INFO if an error
     //
     if (mode < -6 || mode > 6) {
         info = -1;
@@ -89,7 +74,7 @@ void Clatm1(INTEGER const mode, REAL const cond, INTEGER const irsign, INTEGER c
         return;
     }
     //
-    //     Compute D according to COND and MODE
+    // Compute D according to COND and MODE
     //
     if (mode != 0) {
         switch (abs(mode)) {
@@ -109,7 +94,7 @@ void Clatm1(INTEGER const mode, REAL const cond, INTEGER const irsign, INTEGER c
             break;
         }
     //
-    //        One large D value:
+    // One large D value:
     //
     statement_10:
         for (i = 1; i <= n; i = i + 1) {
@@ -118,7 +103,7 @@ void Clatm1(INTEGER const mode, REAL const cond, INTEGER const irsign, INTEGER c
         d[1 - 1] = one;
         goto statement_120;
     //
-    //        One small D value:
+    // One small D value:
     //
     statement_30:
         for (i = 1; i <= n; i = i + 1) {
@@ -127,19 +112,19 @@ void Clatm1(INTEGER const mode, REAL const cond, INTEGER const irsign, INTEGER c
         d[n - 1] = one / cond;
         goto statement_120;
     //
-    //        Exponentially distributed D values:
+    // Exponentially distributed D values:
     //
     statement_50:
         d[1 - 1] = one;
         if (n > 1) {
-            alpha = pow(cond, -one / castREAL(n - 1));
+            alpha = pow(cond, (-one / castREAL(n - 1)));
             for (i = 2; i <= n; i = i + 1) {
                 d[i - 1] = pow(alpha, (i - 1));
             }
         }
         goto statement_120;
     //
-    //        Arithmetically distributed D values:
+    // Arithmetically distributed D values:
     //
     statement_70:
         d[1 - 1] = one;
@@ -152,7 +137,7 @@ void Clatm1(INTEGER const mode, REAL const cond, INTEGER const irsign, INTEGER c
         }
         goto statement_120;
     //
-    //        Randomly distributed D values on ( 1/COND , 1):
+    // Randomly distributed D values on ( 1/COND , 1):
     //
     statement_90:
         alpha = log(one / cond);
@@ -161,15 +146,15 @@ void Clatm1(INTEGER const mode, REAL const cond, INTEGER const irsign, INTEGER c
         }
         goto statement_120;
     //
-    //        Randomly distributed D values from IDIST
+    // Randomly distributed D values from IDIST
     //
     statement_110:
         Clarnv(idist, iseed, n, d);
     //
     statement_120:
         //
-        //        If MODE neither -6 nor 0 nor 6, and IRSIGN = 1, assign
-        //        random signs to D
+        // If MODE neither -6 nor 0 nor 6, and IRSIGN = 1, assign
+        // random signs to D
         //
         if ((mode != -6 && mode != 0 && mode != 6) && irsign == 1) {
             for (i = 1; i <= n; i = i + 1) {
@@ -178,7 +163,7 @@ void Clatm1(INTEGER const mode, REAL const cond, INTEGER const irsign, INTEGER c
             }
         }
         //
-        //        Reverse if MODE < 0
+        // Reverse if MODE < 0
         //
         if (mode < 0) {
             for (i = 1; i <= n / 2; i = i + 1) {
@@ -190,6 +175,6 @@ void Clatm1(INTEGER const mode, REAL const cond, INTEGER const irsign, INTEGER c
         //
     }
     //
-    //     End of Clatm1
+    // End of Clatm1
     //
 }

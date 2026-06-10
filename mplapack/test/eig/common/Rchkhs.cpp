@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DCHKHS.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,27 +43,13 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, INTEGER const nounit, REAL *a, INTEGER const lda, REAL *h, REAL *t1, REAL *t2, REAL *u, INTEGER const ldu, REAL *z, REAL *uz, REAL *wr1, REAL *wi1, REAL *wr2, REAL *wi2, REAL *wr3, REAL *wi3, REAL *evectl, REAL *evectr, REAL *evecty, REAL *evectx, REAL *uu, REAL *tau, REAL *work, INTEGER const nwork, INTEGER *iwork, bool *select, REAL *result, INTEGER &info) {
-    INTEGER ldh = lda;
-    INTEGER ldt1 = lda;
-    INTEGER ldt2 = lda;
-    INTEGER ldz = ldu;
-    INTEGER lduz = ldu;
-    INTEGER ldevectl = ldu;
-    INTEGER ldevectr = ldu;
-    INTEGER ldevecty = ldu;
-    INTEGER ldevectx = ldu;
-    INTEGER lduu = ldu;
-    char buf[1024];
+void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER (&iseed)[4], REAL const thresh, INTEGER const nounit, REAL *a, INTEGER const lda, REAL *h, REAL *t1, REAL *t2, REAL *u, INTEGER const ldu, REAL *z, REAL *uz, REAL *wr1, REAL *wi1, REAL *wr2, REAL *wi2, REAL *wr3, REAL *wi3, REAL *evectl, REAL *evectr, REAL *evecty, REAL *evectx, REAL *uu, REAL *tau, REAL *work, INTEGER const nwork, INTEGER *iwork, bool *select, REAL *result, INTEGER &info) {
     common cmn;
     common_write write(cmn);
-    const INTEGER maxtyp = 21;
-    INTEGER ktype[21] = {1, 2, 3, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 9, 9, 9};
-    INTEGER kmagn[21] = {1, 1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 1, 2, 3};
-    INTEGER kmode[21] = {0, 0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 5, 4, 3, 1, 5, 5, 5, 4, 3, 1};
-    INTEGER kconds[21] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 0, 0, 0};
+    static INTEGER ktype[21] = {1, 2, 3, 4, 4, 4, 4, 4, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 9, 9, 9};
+    static INTEGER kmagn[21] = {1, 1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 1, 2, 3};
+    static INTEGER kmode[21] = {0, 0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 5, 4, 3, 1, 5, 5, 5, 4, 3, 1};
+    static INTEGER kconds[21] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 0, 0, 0};
     INTEGER ntestt = 0;
     bool badnn = false;
     INTEGER nmax = 0;
@@ -77,6 +70,7 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     INTEGER n = 0;
     INTEGER n1 = 0;
     REAL aninv = 0.0;
+    const INTEGER maxtyp = 21;
     INTEGER mtypes = 0;
     INTEGER jtype = 0;
     INTEGER ntest = 0;
@@ -88,7 +82,7 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     REAL cond = 0.0;
     INTEGER jcol = 0;
     REAL conds = 0.0;
-    char adumma[1];
+    fem::str<1> adumma[1];
     INTEGER idumma[1];
     INTEGER ilo = 0;
     INTEGER ihi = 0;
@@ -102,16 +96,17 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     INTEGER k = 0;
     bool match = false;
     INTEGER jj = 0;
+    //
+    static const char *format_9999 = "(' Rchkhs: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
+                                     "', ISEED=(',3(i5,','),i5,')')";
+    static const char *format_9998 = "(' Rchkhs: ',a,' Eigenvectors from ',a,' incorrectly ','normalized.',/,"
+                                     "' Bits of error=',0p,g10.3,',',9x,'N=',i6,', JTYPE=',i6,', ISEED=(',3(i5,"
+                                     "','),i5,')')";
     static const char *format_9997 = "(' Rchkhs: Selected ',a,' Eigenvectors from ',a,"
                                      "' do not match other eigenvectors ',9x,'N=',i6,', JTYPE=',i6,', ISEED=(',"
                                      "3(i5,','),i5,')')";
-    static const char *format_9998 = "(' Rchkhs: ',a,' Eigenvectors from ',a,' incorrectly ','normalized.',/,"
-                                     "' Bits of error=',0p,a,',',9x,'N=',i6,', JTYPE=',i6,', ISEED=(',3(i5,"
-                                     "','),i5,')')";
-    static const char *format_9999 = "(' Rchkhs: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
-                                     "', ISEED=(',3(i5,','),i5,')')";
     //
-    //     Check for errors
+    // Check for errors
     //
     ntestt = 0;
     info = 0;
@@ -125,7 +120,7 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         }
     }
     //
-    //     Check for errors
+    // Check for errors
     //
     if (nsizes < 0) {
         info = -1;
@@ -148,13 +143,13 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (nsizes == 0 || ntypes == 0) {
         return;
     }
     //
-    //     More important constants
+    // More important constants
     //
     unfl = Rlamch("Safe minimum");
     ovfl = Rlamch("Overflow");
@@ -165,7 +160,7 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     rtulp = sqrt(ulp);
     rtulpi = one / rtulp;
     //
-    //     Loop over sizes, types
+    // Loop over sizes, types
     //
     nerrs = 0;
     nmats = 0;
@@ -191,33 +186,33 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             nmats++;
             ntest = 0;
             //
-            //           Save ISEED in case of an error.
+            // Save ISEED in case of an error.
             //
             for (j = 1; j <= 4; j = j + 1) {
                 ioldsd[j - 1] = iseed[j - 1];
             }
             //
-            //           Initialize RESULT
+            // Initialize RESULT
             //
-            for (j = 1; j <= 14; j = j + 1) {
+            for (j = 1; j <= 16; j = j + 1) {
                 result[j - 1] = zero;
             }
             //
-            //           Compute "A"
+            // Compute "A"
             //
-            //           Control parameters:
+            // Control parameters:
             //
-            //           KMAGN  KCONDS  KMODE        KTYPE
-            //       =1  O(1)   1       clustered 1  zero
-            //       =2  large  large   clustered 2  identity
-            //       =3  small          exponential  Jordan
-            //       =4                 arithmetic   diagonal, (w/ eigenvalues)
-            //       =5                 random log   symmetric, w/ eigenvalues
-            //       =6                 random       general, w/ eigenvalues
-            //       =7                              random diagonal
-            //       =8                              random symmetric
-            //       =9                              random general
-            //       =10                             random triangular
+            // KMAGN  KCONDS  KMODE        KTYPE
+            // =1  O(1)   1       clustered 1  zero
+            // =2  large  large   clustered 2  identity
+            // =3  small          exponential  Jordan
+            // =4                 arithmetic   diagonal, (w/ eigenvalues)
+            // =5                 random log   symmetric, w/ eigenvalues
+            // =6                 random       general, w/ eigenvalues
+            // =7                              random diagonal
+            // =8                              random symmetric
+            // =9                              random general
+            // =10                             random triangular
             //
             if (mtypes > maxtyp) {
                 goto statement_100;
@@ -226,7 +221,7 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             itype = ktype[jtype - 1];
             imode = kmode[jtype - 1];
             //
-            //           Compute norm
+            // Compute norm
             //
             switch (kmagn[jtype - 1]) {
             case 1:
@@ -257,17 +252,17 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             iinfo = 0;
             cond = ulpinv;
             //
-            //           Special Matrices
+            // Special Matrices
             //
             if (itype == 1) {
                 //
-                //              Zero
+                // Zero
                 //
                 iinfo = 0;
                 //
             } else if (itype == 2) {
                 //
-                //              Identity
+                // Identity
                 //
                 for (jcol = 1; jcol <= n; jcol = jcol + 1) {
                     a[(jcol - 1) + (jcol - 1) * lda] = anorm;
@@ -275,7 +270,7 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
             } else if (itype == 3) {
                 //
-                //              Jordan Block
+                // Jordan Block
                 //
                 for (jcol = 1; jcol <= n; jcol = jcol + 1) {
                     a[(jcol - 1) + (jcol - 1) * lda] = anorm;
@@ -286,19 +281,19 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
             } else if (itype == 4) {
                 //
-                //              Diagonal Matrix, [Eigen]values Specified
+                // Diagonal Matrix, [Eigen]values Specified
                 //
                 Rlatms(n, n, "S", iseed, "S", work, imode, cond, anorm, 0, 0, "N", a, lda, &work[(n + 1) - 1], iinfo);
                 //
             } else if (itype == 5) {
                 //
-                //              Symmetric, eigenvalues specified
+                // Symmetric, eigenvalues specified
                 //
                 Rlatms(n, n, "S", iseed, "S", work, imode, cond, anorm, n, n, "N", a, lda, &work[(n + 1) - 1], iinfo);
                 //
             } else if (itype == 6) {
                 //
-                //              General, eigenvalues specified
+                // General, eigenvalues specified
                 //
                 if (kconds[jtype - 1] == 1) {
                     conds = one;
@@ -308,30 +303,30 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     conds = zero;
                 }
                 //
-                adumma[1 - 1] = ' ';
-                Rlatme(n, "S", iseed, work, imode, cond, one, adumma, "T", "T", "T", &work[(n + 1) - 1], 4, conds, n, n, anorm, a, lda, &work[(2 * n + 1) - 1], iinfo);
+                adumma[1 - 1] = " ";
+                Rlatme(n, "S", iseed, work, imode, cond, one, adumma[0].elems, "T", "T", "T", &work[(n + 1) - 1], 4, conds, n, n, anorm, a, lda, &work[(2 * n + 1) - 1], iinfo);
                 //
             } else if (itype == 7) {
                 //
-                //              Diagonal, random eigenvalues
+                // Diagonal, random eigenvalues
                 //
                 Rlatmr(n, n, "S", iseed, "S", work, 6, one, one, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, 0, 0, zero, anorm, "NO", a, lda, iwork, iinfo);
                 //
             } else if (itype == 8) {
                 //
-                //              Symmetric, random eigenvalues
+                // Symmetric, random eigenvalues
                 //
                 Rlatmr(n, n, "S", iseed, "S", work, 6, one, one, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, n, n, zero, anorm, "NO", a, lda, iwork, iinfo);
                 //
             } else if (itype == 9) {
                 //
-                //              General, random eigenvalues
+                // General, random eigenvalues
                 //
                 Rlatmr(n, n, "S", iseed, "N", work, 6, one, one, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, n, n, zero, anorm, "NO", a, lda, iwork, iinfo);
                 //
             } else if (itype == 10) {
                 //
-                //              Triangular, random eigenvalues
+                // Triangular, random eigenvalues
                 //
                 Rlatmr(n, n, "S", iseed, "N", work, 6, one, one, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, n, 0, zero, anorm, "NO", a, lda, iwork, iinfo);
                 //
@@ -341,14 +336,14 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             }
             //
             if (iinfo != 0) {
-                write(nounit, format_9999), "Generator", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Generator", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 return;
             }
         //
         statement_100:
             //
-            //           Call Rgehrd to compute H and U, do tests.
+            // Call Rgehrd to compute H and U, do tests.
             //
             Rlacpy(" ", n, n, a, lda, h, lda);
             //
@@ -361,17 +356,17 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             if (iinfo != 0) {
                 result[1 - 1] = ulpinv;
-                write(nounit, format_9999), "Rgehrd", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Rgehrd", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 goto statement_250;
             }
             //
             for (j = 1; j <= n - 1; j = j + 1) {
-                uu[((j + 1) - 1) + (j - 1) * lduu] = zero;
+                uu[((j + 1) - 1) + (j - 1) * ldu] = zero;
                 for (i = j + 2; i <= n; i = i + 1) {
-                    u[(i - 1) + (j - 1) * ldu] = h[(i - 1) + (j - 1) * ldh];
-                    uu[(i - 1) + (j - 1) * lduu] = h[(i - 1) + (j - 1) * ldh];
-                    h[(i - 1) + (j - 1) * ldh] = zero;
+                    u[(i - 1) + (j - 1) * ldu] = h[(i - 1) + (j - 1) * lda];
+                    uu[(i - 1) + (j - 1) * ldu] = h[(i - 1) + (j - 1) * lda];
+                    h[(i - 1) + (j - 1) * lda] = zero;
                 }
             }
             Rcopy(n - 1, work, 1, tau, 1);
@@ -380,9 +375,9 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Rhst01(n, ilo, ihi, a, lda, h, lda, u, ldu, work, nwork, &result[1 - 1]);
             //
-            //           Call Rhseqr to compute T1, T2 and Z, do tests.
+            // Call Rhseqr to compute T1, T2 and Z, do tests.
             //
-            //           Eigenvalues only (WR3,WI3)
+            // Eigenvalues only (WR3,WI3)
             //
             Rlacpy(" ", n, n, h, lda, t2, lda);
             ntest = 3;
@@ -390,75 +385,75 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Rhseqr("E", "N", n, ilo, ihi, t2, lda, wr3, wi3, uz, ldu, work, nwork, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Rhseqr(E)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Rhseqr(E)", iinfo, n, jtype, ioldsd;
                 if (iinfo <= n + 2) {
                     info = abs(iinfo);
                     goto statement_250;
                 }
             }
             //
-            //           Eigenvalues (WR2,WI2) and Full Schur Form (T2)
+            // Eigenvalues (WR2,WI2) and Full Schur Form (T2)
             //
             Rlacpy(" ", n, n, h, lda, t2, lda);
             //
             Rhseqr("S", "N", n, ilo, ihi, t2, lda, wr2, wi2, uz, ldu, work, nwork, iinfo);
             if (iinfo != 0 && iinfo <= n + 2) {
-                write(nounit, format_9999), "Rhseqr(S)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Rhseqr(S)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 goto statement_250;
             }
             //
-            //           Eigenvalues (WR1,WI1), Schur Form (T1), and Schur vectors
-            //           (UZ)
+            // Eigenvalues (WR1,WI1), Schur Form (T1), and Schur vectors
+            // (UZ)
             //
             Rlacpy(" ", n, n, h, lda, t1, lda);
             Rlacpy(" ", n, n, u, ldu, uz, ldu);
             //
             Rhseqr("S", "V", n, ilo, ihi, t1, lda, wr1, wi1, uz, ldu, work, nwork, iinfo);
             if (iinfo != 0 && iinfo <= n + 2) {
-                write(nounit, format_9999), "Rhseqr(V)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Rhseqr(V)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 goto statement_250;
             }
             //
-            //           Compute Z = U' UZ
+            // Compute Z = U' UZ
             //
             Rgemm("T", "N", n, n, n, one, u, ldu, uz, ldu, zero, z, ldu);
             ntest = 8;
             //
-            //           Do Tests 3: | H - Z T Z' | / ( |H| n ulp )
-            //                and 4: | I - Z Z' | / ( n ulp )
+            // Do Tests 3: | H - Z T Z' | / ( |H| n ulp )
+            // and 4: | I - Z Z' | / ( n ulp )
             //
             Rhst01(n, ilo, ihi, h, lda, t1, lda, z, ldu, work, nwork, &result[3 - 1]);
             //
-            //           Do Tests 5: | A - UZ T (UZ)' | / ( |A| n ulp )
-            //                and 6: | I - UZ (UZ)' | / ( n ulp )
+            // Do Tests 5: | A - UZ T (UZ)' | / ( |A| n ulp )
+            // and 6: | I - UZ (UZ)' | / ( n ulp )
             //
             Rhst01(n, ilo, ihi, a, lda, t1, lda, uz, ldu, work, nwork, &result[5 - 1]);
             //
-            //           Do Test 7: | T2 - T1 | / ( |T| n ulp )
+            // Do Test 7: | T2 - T1 | / ( |T| n ulp )
             //
             Rget10(n, n, t2, lda, t1, lda, work, result[7 - 1]);
             //
-            //           Do Test 8: | W2 - W1 | / ( max(|W1|,|W2|) ulp )
+            // Do Test 8: | W2 - W1 | / ( max(|W1|,|W2|) ulp )
             //
             temp1 = zero;
             temp2 = zero;
             for (j = 1; j <= n; j = j + 1) {
-                temp1 = max({temp1, REAL(abs(wr1[j - 1]) + abs(wi1[j - 1])), REAL(abs(wr2[j - 1]) + abs(wi2[j - 1]))});
-                temp2 = max(temp2, REAL(abs(wr1[j - 1] - wr2[j - 1]) + abs(wi1[j - 1] - wi2[j - 1])));
+                temp1 = max(temp1, abs(wr1[j - 1]) + abs(wi1[j - 1]), abs(wr2[j - 1]) + abs(wi2[j - 1]));
+                temp2 = max(temp2, abs(wr1[j - 1] - wr2[j - 1]) + abs(wi1[j - 1] - wi2[j - 1]));
             }
             //
-            result[8 - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
+            result[8 - 1] = temp2 / max(unfl, ulp * max(temp1, temp2));
             //
-            //           Compute the Left and Right Eigenvectors of T
+            // Compute the Left and Right Eigenvectors of T
             //
-            //           Compute the Right eigenvector Matrix:
+            // Compute the Right eigenvector Matrix:
             //
             ntest = 9;
             result[9 - 1] = ulpinv;
             //
-            //           Select last max(N/4,1) real, max(N/4,1) complex eigenvectors
+            // Select last max(N/4,1) real, max(N/4,1) complex eigenvectors
             //
             nselc = 0;
             nselr = 0;
@@ -489,26 +484,25 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Rtrevc("Right", "All", select, n, t1, lda, dumma, ldu, evectr, ldu, n, in, work, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Rtrevc(R,A)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Rtrevc(R,A)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 goto statement_250;
             }
             //
-            //           Test 9:  | TR - RW | / ( |T| |R| ulp )
+            // Test 9:  | TR - RW | / ( |T| |R| ulp )
             //
             Rget22("N", "N", "N", n, t1, lda, evectr, ldu, wr1, wi1, work, &dumma[1 - 1]);
             result[9 - 1] = dumma[1 - 1];
             if (dumma[2 - 1] > thresh) {
-                sprintnum_short(buf, dumma[2 - 1]);
-                write(nounit, format_9998), "Right", "Rtrevc", buf, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9998), "Right", "Rtrevc", dumma[2 - 1], n, jtype, ioldsd;
             }
             //
-            //           Compute selected right eigenvectors and confirm that
-            //           they agree with previous right eigenvectors
+            // Compute selected right eigenvectors and confirm that
+            // they agree with previous right eigenvectors
             //
             Rtrevc("Right", "Some", select, n, t1, lda, dumma, ldu, evectl, ldu, n, in, work, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Rtrevc(R,S)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Rtrevc(R,S)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 goto statement_250;
             }
@@ -518,7 +512,7 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             for (j = 1; j <= n; j = j + 1) {
                 if (select[j - 1] && wi1[j - 1] == zero) {
                     for (jj = 1; jj <= n; jj = jj + 1) {
-                        if (evectr[(jj - 1) + (j - 1) * ldevectr] != evectl[(jj - 1) + (k - 1) * ldevectl]) {
+                        if (evectr[(jj - 1) + (j - 1) * ldu] != evectl[(jj - 1) + (k - 1) * ldu]) {
                             match = false;
                             goto statement_180;
                         }
@@ -526,7 +520,7 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     k++;
                 } else if (select[j - 1] && wi1[j - 1] != zero) {
                     for (jj = 1; jj <= n; jj = jj + 1) {
-                        if (evectr[(jj - 1) + (j - 1) * ldevectr] != evectl[(jj - 1) + (k - 1) * ldevectl] || evectr[(jj - 1) + ((j + 1) - 1) * ldevectr] != evectl[(jj - 1) + ((k + 1) - 1) * ldevectl]) {
+                        if (evectr[(jj - 1) + (j - 1) * ldu] != evectl[(jj - 1) + (k - 1) * ldu] || evectr[(jj - 1) + ((j + 1) - 1) * ldu] != evectl[(jj - 1) + ((k + 1) - 1) * ldu]) {
                             match = false;
                             goto statement_180;
                         }
@@ -536,35 +530,34 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             }
         statement_180:
             if (!match) {
-                write(nounit, format_9997), "Right", "Rtrevc", n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9997), "Right", "Rtrevc", n, jtype, ioldsd;
             }
             //
-            //           Compute the Left eigenvector Matrix:
+            // Compute the Left eigenvector Matrix:
             //
             ntest = 10;
             result[10 - 1] = ulpinv;
             Rtrevc("Left", "All", select, n, t1, lda, evectl, ldu, dumma, ldu, n, in, work, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Rtrevc(L,A)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Rtrevc(L,A)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 goto statement_250;
             }
             //
-            //           Test 10:  | LT - WL | / ( |T| |L| ulp )
+            // Test 10:  | LT - WL | / ( |T| |L| ulp )
             //
             Rget22("Trans", "N", "Conj", n, t1, lda, evectl, ldu, wr1, wi1, work, &dumma[3 - 1]);
             result[10 - 1] = dumma[3 - 1];
             if (dumma[4 - 1] > thresh) {
-                sprintnum_short(buf, dumma[4 - 1]);
-                write(nounit, format_9998), "Left", "Rtrevc", buf, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9998), "Left", "Rtrevc", dumma[4 - 1], n, jtype, ioldsd;
             }
             //
-            //           Compute selected left eigenvectors and confirm that
-            //           they agree with previous left eigenvectors
+            // Compute selected left eigenvectors and confirm that
+            // they agree with previous left eigenvectors
             //
             Rtrevc("Left", "Some", select, n, t1, lda, evectr, ldu, dumma, ldu, n, in, work, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Rtrevc(L,S)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Rtrevc(L,S)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 goto statement_250;
             }
@@ -574,7 +567,7 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             for (j = 1; j <= n; j = j + 1) {
                 if (select[j - 1] && wi1[j - 1] == zero) {
                     for (jj = 1; jj <= n; jj = jj + 1) {
-                        if (evectl[(jj - 1) + (j - 1) * ldevectl] != evectr[(jj - 1) + (k - 1) * ldevectr]) {
+                        if (evectl[(jj - 1) + (j - 1) * ldu] != evectr[(jj - 1) + (k - 1) * ldu]) {
                             match = false;
                             goto statement_220;
                         }
@@ -582,7 +575,7 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     k++;
                 } else if (select[j - 1] && wi1[j - 1] != zero) {
                     for (jj = 1; jj <= n; jj = jj + 1) {
-                        if (evectl[(jj - 1) + (j - 1) * ldevectl] != evectr[(jj - 1) + (k - 1) * ldevectr] || evectl[(jj - 1) + ((j + 1) - 1) * ldevectl] != evectr[(jj - 1) + ((k + 1) - 1) * ldevectr]) {
+                        if (evectl[(jj - 1) + (j - 1) * ldu] != evectr[(jj - 1) + (k - 1) * ldu] || evectl[(jj - 1) + ((j + 1) - 1) * ldu] != evectr[(jj - 1) + ((k + 1) - 1) * ldu]) {
                             match = false;
                             goto statement_220;
                         }
@@ -592,10 +585,10 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             }
         statement_220:
             if (!match) {
-                write(nounit, format_9997), "Left", "Rtrevc", n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9997), "Left", "Rtrevc", n, jtype, ioldsd;
             }
             //
-            //           Call Rhsein for Right eigenvectors of H, do test 11
+            // Call Rhsein for Right eigenvectors of H, do test 11
             //
             ntest = 11;
             result[11 - 1] = ulpinv;
@@ -605,28 +598,27 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Rhsein("Right", "Qr", "Ninitv", select, n, h, lda, wr3, wi3, dumma, ldu, evectx, ldu, n1, in, work, iwork, iwork, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Rhsein(R)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Rhsein(R)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     goto statement_250;
                 }
             } else {
                 //
-                //              Test 11:  | HX - XW | / ( |H| |X| ulp )
+                // Test 11:  | HX - XW | / ( |H| |X| ulp )
                 //
-                //                        (from inverse iteration)
+                // (from inverse iteration)
                 //
                 Rget22("N", "N", "N", n, h, lda, evectx, ldu, wr3, wi3, work, &dumma[1 - 1]);
                 if (dumma[1 - 1] < ulpinv) {
                     result[11 - 1] = dumma[1 - 1] * aninv;
                 }
                 if (dumma[2 - 1] > thresh) {
-                    sprintnum_short(buf, dumma[2 - 1]);
-                    write(nounit, format_9998), "Right", "Rhsein", buf, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9998), "Right", "Rhsein", dumma[2 - 1], n, jtype, ioldsd;
                 }
             }
             //
-            //           Call Rhsein for Left eigenvectors of H, do test 12
+            // Call Rhsein for Left eigenvectors of H, do test 12
             //
             ntest = 12;
             result[12 - 1] = ulpinv;
@@ -636,44 +628,43 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Rhsein("Left", "Qr", "Ninitv", select, n, h, lda, wr3, wi3, evecty, ldu, dumma, ldu, n1, in, work, iwork, iwork, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Rhsein(L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Rhsein(L)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     goto statement_250;
                 }
             } else {
                 //
-                //              Test 12:  | YH - WY | / ( |H| |Y| ulp )
+                // Test 12:  | YH - WY | / ( |H| |Y| ulp )
                 //
-                //                        (from inverse iteration)
+                // (from inverse iteration)
                 //
                 Rget22("C", "N", "C", n, h, lda, evecty, ldu, wr3, wi3, work, &dumma[3 - 1]);
                 if (dumma[3 - 1] < ulpinv) {
                     result[12 - 1] = dumma[3 - 1] * aninv;
                 }
                 if (dumma[4 - 1] > thresh) {
-                    sprintnum_short(buf, dumma[4 - 1]);
-                    write(nounit, format_9998), "Left", "Rhsein", buf, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9998), "Left", "Rhsein", dumma[4 - 1], n, jtype, ioldsd;
                 }
             }
             //
-            //           Call Rormhr for Right eigenvectors of A, do test 13
+            // Call Rormhr for Right eigenvectors of A, do test 13
             //
             ntest = 13;
             result[13 - 1] = ulpinv;
             //
             Rormhr("Left", "No transpose", n, n, ilo, ihi, uu, ldu, tau, evectx, ldu, work, nwork, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Rormhr(R)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Rormhr(R)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     goto statement_250;
                 }
             } else {
                 //
-                //              Test 13:  | AX - XW | / ( |A| |X| ulp )
+                // Test 13:  | AX - XW | / ( |A| |X| ulp )
                 //
-                //                        (from inverse iteration)
+                // (from inverse iteration)
                 //
                 Rget22("N", "N", "N", n, a, lda, evectx, ldu, wr3, wi3, work, &dumma[1 - 1]);
                 if (dumma[1 - 1] < ulpinv) {
@@ -681,31 +672,81 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 }
             }
             //
-            //           Call Rormhr for Left eigenvectors of A, do test 14
+            // Call Rormhr for Left eigenvectors of A, do test 14
             //
             ntest = 14;
             result[14 - 1] = ulpinv;
             //
             Rormhr("Left", "No transpose", n, n, ilo, ihi, uu, ldu, tau, evecty, ldu, work, nwork, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Rormhr(L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Rormhr(L)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     goto statement_250;
                 }
             } else {
                 //
-                //              Test 14:  | YA - WY | / ( |A| |Y| ulp )
+                // Test 14:  | YA - WY | / ( |A| |Y| ulp )
                 //
-                //                        (from inverse iteration)
+                // (from inverse iteration)
                 //
                 Rget22("C", "N", "C", n, a, lda, evecty, ldu, wr3, wi3, work, &dumma[3 - 1]);
                 if (dumma[3 - 1] < ulpinv) {
                     result[14 - 1] = dumma[3 - 1] * aninv;
                 }
             }
+            //
+            // Compute Left and Right Eigenvectors of A
+            //
+            // Compute a Right eigenvector matrix:
+            //
+            ntest = 15;
+            result[15 - 1] = ulpinv;
+            //
+            Rlacpy(" ", n, n, uz, ldu, evectr, ldu);
+            //
+            Rtrevc3("Right", "Back", select, n, t1, lda, dumma, ldu, evectr, ldu, n, in, work, nwork, iinfo);
+            if (iinfo != 0) {
+                write(nounit, format_9999), "Rtrevc3(R,B)", iinfo, n, jtype, ioldsd;
+                info = abs(iinfo);
+                goto statement_250;
+            }
+            //
+            // Test 15:  | AR - RW | / ( |A| |R| ulp )
+            //
+            // (from Schur decomposition)
+            //
+            Rget22("N", "N", "N", n, a, lda, evectr, ldu, wr1, wi1, work, &dumma[1 - 1]);
+            result[15 - 1] = dumma[1 - 1];
+            if (dumma[2 - 1] > thresh) {
+                write(nounit, format_9998), "Right", "Rtrevc3", dumma[2 - 1], n, jtype, ioldsd;
+            }
+            //
+            // Compute a Left eigenvector matrix:
+            //
+            ntest = 16;
+            result[16 - 1] = ulpinv;
+            //
+            Rlacpy(" ", n, n, uz, ldu, evectl, ldu);
+            //
+            Rtrevc3("Left", "Back", select, n, t1, lda, evectl, ldu, dumma, ldu, n, in, work, nwork, iinfo);
+            if (iinfo != 0) {
+                write(nounit, format_9999), "Rtrevc3(L,B)", iinfo, n, jtype, ioldsd;
+                info = abs(iinfo);
+                goto statement_250;
+            }
+            //
+            // Test 16:  | LA - WL | / ( |A| |L| ulp )
+            //
+            // (from Schur decomposition)
+            //
+            Rget22("Trans", "N", "Conj", n, a, lda, evectl, ldu, wr1, wi1, work, &dumma[3 - 1]);
+            result[16 - 1] = dumma[3 - 1];
+            if (dumma[4 - 1] > thresh) {
+                write(nounit, format_9998), "Left", "Rtrevc3", dumma[4 - 1], n, jtype, ioldsd;
+            }
         //
-        //           End of Loop -- Check for RESULT(j) > THRESH
+        // End of Loop -- Check for RESULT(j) > THRESH
         //
         statement_250:
             //
@@ -717,10 +758,10 @@ void Rchkhs(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     statement_270:;
     }
     //
-    //     Summary
+    // Summary
     //
     Rlasum("DHS", nounit, nerrs, ntestt);
     //
-    //     End of Rchkhs
+    // End of Rchkhs
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ILAENV.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -43,27 +50,27 @@ INTEGER iMlaenv(INTEGER const ispec, const char *name, const char *opts, INTEGER
     //
     if (ispec >= 1 && ispec <= 5) {
         //
-        //        Return a value from the common block.
+        // Return a value from the common block.
         //
         return_value = iparms[ispec - 1];
         //
     } else if (ispec == 6) {
         //
-        //        Compute SVD crossover point.
+        // Compute SVD crossover point.
         //
         return_value = castINTEGER(castREAL(min(n1, n2)) * 1.6);
         //
     } else if (ispec >= 7 && ispec <= 9) {
         //
-        //        Return a value from the common block.
+        // Return a value from the common block.
         //
         return_value = iparms[ispec - 1];
         //
     } else if (ispec == 10) {
         //
-        //        IEEE NaN arithmetic can be trusted not to trap
+        // IEEE NaN arithmetic can be trusted not to trap
         //
-        //        iMlaenv = 0
+        // iMlaenv = 0
         return_value = 1;
         if (return_value == 1) {
             return_value = iMieeeck(1, 0.0f, 1.0f);
@@ -71,9 +78,9 @@ INTEGER iMlaenv(INTEGER const ispec, const char *name, const char *opts, INTEGER
         //
     } else if (ispec == 11) {
         //
-        //        Infinity arithmetic can be trusted not to trap
+        // Infinity arithmetic can be trusted not to trap
         //
-        //        iMlaenv = 0
+        // iMlaenv = 0
         return_value = 1;
         if (return_value == 1) {
             return_value = iMieeeck(0, 0.0f, 1.0f);
@@ -81,15 +88,15 @@ INTEGER iMlaenv(INTEGER const ispec, const char *name, const char *opts, INTEGER
         //
     } else if ((ispec >= 12) && (ispec <= 16)) {
         //
-        //     12 <= ISPEC <= 16: xHSEQR or one of its subroutines.
+        // 12 <= ISPEC <= 16: xHSEQR or one of its subroutines.
         //
         return_value = iparms[ispec - 1];
-        //         WRITE(*,*) 'ISPEC = ',ISPEC,' iMlaenv =',iMlaenv
-        //         iMlaenv = IPARMQ( ISPEC, NAME, OPTS, N1, N2, N3, N4 )
+        // WRITE(*,*) 'ISPEC = ',ISPEC,' iMlaenv =',iMlaenv
+        // iMlaenv = iMparmq( ISPEC, NAME, OPTS, N1, N2, N3, N4 )
         //
     } else if ((ispec >= 17) && (ispec <= 21)) {
         //
-        //     17 <= ISPEC <= 21: 2stage eigenvalues SVD routines.
+        // 17 <= ISPEC <= 21: 2stage eigenvalues SVD routines.
         //
         if (ispec == 17) {
             return_value = iparms[1 - 1];
@@ -99,14 +106,14 @@ INTEGER iMlaenv(INTEGER const ispec, const char *name, const char *opts, INTEGER
         //
     } else {
         //
-        //        Invalid value for ISPEC
+        // Invalid value for ISPEC
         //
         return_value = -1;
     }
     //
     return return_value;
     //
-    //     End of iMlaenv
+    // End of iMlaenv
     //
 }
 
@@ -116,7 +123,7 @@ INTEGER iMlaenv2stage(INTEGER const ispec, const char *name, const char *opts, I
     INTEGER iispec = 0;
     if ((ispec >= 1) && (ispec <= 5)) {
         //
-        //     1 <= ISPEC <= 5: 2stage eigenvalues SVD routines.
+        // 1 <= ISPEC <= 5: 2stage eigenvalues SVD routines.
         //
         if (ispec == 1) {
             return_value = iparms[1 - 1];
@@ -127,7 +134,7 @@ INTEGER iMlaenv2stage(INTEGER const ispec, const char *name, const char *opts, I
         //
     } else {
         //
-        //        Invalid value for ISPEC
+        // Invalid value for ISPEC
         //
         return_value = -1;
     }
@@ -138,6 +145,15 @@ INTEGER iMlaenv2stage(INTEGER const ispec, const char *name, const char *opts, I
 INTEGER iparmq(INTEGER const ispec, const char * /* name */, const char * /* opts */, INTEGER const /* n */, INTEGER const ilo, INTEGER const ihi, INTEGER const /* lwork */) {
     INTEGER return_value = 0;
     //
+    //
+    // ..
+    // .. Scalar Arguments ..
+    // ..
+    // .. Local Scalars ..
+    // ..
+    // .. Intrinsic Functions ..
+    // ..
+    // .. Executable Statements ..
     const INTEGER ishfts = 15;
     const INTEGER inwin = 13;
     const INTEGER iacc22 = 16;
@@ -146,7 +162,7 @@ INTEGER iparmq(INTEGER const ispec, const char * /* name */, const char * /* opt
     const REAL two = 2.0;
     if ((ispec == ishfts) || (ispec == inwin) || (ispec == iacc22)) {
         //
-        //        ==== Set the number simultaneous shifts ====
+        // ==== Set the number simultaneous shifts ====
         //
         nh = ihi - ilo + 1;
         ns = 2;
@@ -168,7 +184,7 @@ INTEGER iparmq(INTEGER const ispec, const char * /* name */, const char * /* opt
         if (nh >= 6000) {
             ns = 256;
         }
-        ns = max({(INTEGER)2, ns - mod(ns, 2)});
+        ns = max((INTEGER)2, ns - mod(ns, 2));
     }
     //
     const INTEGER inmin = 12;
@@ -180,29 +196,29 @@ INTEGER iparmq(INTEGER const ispec, const char * /* name */, const char * /* opt
     const INTEGER k22min = 14;
     if (ispec == inmin) {
         //
-        //        ===== Matrices of order smaller than NMIN get sent
-        //        .     to LAHQR, the classic REAL shift algorithm.
-        //        .     This must be at least 11. ====
+        // ===== Matrices of order smaller than NMIN get sent
+        // .     to LAHQR, the classic double shift algorithm.
+        // .     This must be at least 11. ====
         //
         return_value = nmin;
         //
     } else if (ispec == inibl) {
         //
-        //        ==== INIBL: skip a multi-shift qr iteration and
-        //        .    whenever aggressive early deflation finds
-        //        .    at least (NIBBLE*(window size)/100) deflations. ====
+        // ==== INIBL: skip a multi-shift qr iteration and
+        // .    whenever aggressive early deflation finds
+        // .    at least (NIBBLE*(window size)/100) deflations. ====
         //
         return_value = nibble;
         //
     } else if (ispec == ishfts) {
         //
-        //        ==== NSHFTS: The number of simultaneous shifts =====
+        // ==== NSHFTS: The number of simultaneous shifts =====
         //
         return_value = ns;
         //
     } else if (ispec == inwin) {
         //
-        //        ==== NW: deflation window size.  ====
+        // ==== NW: deflation window size.  ====
         //
         if (nh <= knwswp) {
             return_value = ns;
@@ -212,12 +228,12 @@ INTEGER iparmq(INTEGER const ispec, const char * /* name */, const char * /* opt
         //
     } else if (ispec == iacc22) {
         //
-        //        ==== IACC22: Whether to accumulate reflections
-        //        .     before updating the far-from-diagonal elements
-        //        .     and whether to use 2-by-2 block structure while
-        //        .     doing it.  A small amount of work could be saved
-        //        .     by making this choice dependent also upon the
-        //        .     NH=IHI-ILO+1.
+        // ==== IACC22: Whether to accumulate reflections
+        // .     before updating the far-from-diagonal elements
+        // .     and whether to use 2-by-2 block structure while
+        // .     doing it.  A small amount of work could be saved
+        // .     by making this choice dependent also upon the
+        // .     NH=IHI-ILO+1.
         //
         return_value = 0;
         if (ns >= kacmin) {
@@ -228,12 +244,12 @@ INTEGER iparmq(INTEGER const ispec, const char * /* name */, const char * /* opt
         }
         //
     } else {
-        //        ===== invalid value of ispec =====
+        // ===== invalid value of ispec =====
         return_value = -1;
         //
     }
     return return_value;
     //
-    //     ==== End of IPARMQ ====
+    // ==== End of iMparmq ====
     //
 }

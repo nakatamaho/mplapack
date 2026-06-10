@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DTGEX2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -46,7 +53,7 @@ void Rtgex2(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
     REAL dsum = 0.0;
     REAL dnorma = 0.0;
     REAL dnormb = 0.0;
-    const REAL twenty = 2.0e+01;
+    const REAL twenty = 20.0;
     REAL thresha = 0.0;
     REAL threshb = 0.0;
     REAL f = 0.0;
@@ -56,7 +63,7 @@ void Rtgex2(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
     REAL ddum = 0.0;
     const bool wands = true;
     REAL scale = 0.0;
-    INTEGER iwork[ldst];
+    INTEGER iwork[ldst + 2];
     INTEGER idum = 0;
     INTEGER linfo = 0;
     INTEGER i = 0;
@@ -71,46 +78,10 @@ void Rtgex2(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
     REAL ar[2];
     REAL ai[2];
     REAL be[2];
-    INTEGER ldir = ldst;
-    INTEGER ldircop = ldst;
-    INTEGER ldli = ldst;
-    INTEGER ldlicop = ldst;
-    INTEGER lds = ldst;
-    INTEGER ldscpy = ldst;
-    INTEGER ldt = ldst;
-    INTEGER ldtaul = ldst;
-    INTEGER ldtcpy = ldst;
-    //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //  Replaced various illegal calls to Rcopy by calls to Rlaset, or by DO
-    //  loops. Sven Hammarling, 1/5/02.
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     info = 0;
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n <= 1 || n1 <= 0 || n2 <= 0) {
         return;
@@ -119,23 +90,23 @@ void Rtgex2(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
         return;
     }
     m = n1 + n2;
-    if (lwork < max({(INTEGER)1, n * m, m * m * 2})) {
+    if (lwork < max((INTEGER)1, n * m, m * m * 2)) {
         info = -16;
-        work[1 - 1] = max({(INTEGER)1, n * m, m * m * 2});
+        work[1 - 1] = max((INTEGER)1, n * m, m * m * 2);
         return;
     }
     //
     weak = false;
     strong = false;
     //
-    //     Make a local copy of selected block
+    // Make a local copy of selected block
     //
     Rlaset("Full", ldst, ldst, zero, zero, li, ldst);
     Rlaset("Full", ldst, ldst, zero, zero, ir, ldst);
     Rlacpy("Full", m, m, &a[(j1 - 1) + (j1 - 1) * lda], lda, s, ldst);
     Rlacpy("Full", m, m, &b[(j1 - 1) + (j1 - 1) * ldb], ldb, t, ldst);
     //
-    //     Compute threshold for testing acceptance of swapping.
+    // Compute threshold for testing acceptance of swapping.
     //
     eps = Rlamch("P");
     smlnum = Rlamch("S") / eps;
@@ -150,45 +121,45 @@ void Rtgex2(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
     Rlassq(m * m, work, 1, dscale, dsum);
     dnormb = dscale * sqrt(dsum);
     //
-    //     THRES has been changed from
-    //        THRESH = MAX( TEN*EPS*SA, SMLNUM )
-    //     to
-    //        THRESH = MAX( TWENTY*EPS*SA, SMLNUM )
-    //     on 04/01/10.
-    //     "Bug" reported by Ondra Kamenik, confirmed by Julie Langou, fixed by
-    //     Jim Demmel and Guillaume Revy. See forum post 1783.
+    // THRES has been changed from
+    // THRESH = MAX( TEN*EPS*SA, SMLNUM )
+    // to
+    // THRESH = MAX( TWENTY*EPS*SA, SMLNUM )
+    // on 04/01/10.
+    // "Bug" reported by Ondra Kamenik, confirmed by Julie Langou, fixed by
+    // Jim Demmel and Guillaume Revy. See forum post 1783.
     //
-    thresha = max(REAL(twenty * eps * dnorma), smlnum);
-    threshb = max(REAL(twenty * eps * dnormb), smlnum);
+    thresha = max(twenty * eps * dnorma, smlnum);
+    threshb = max(twenty * eps * dnormb, smlnum);
     //
     if (m == 2) {
         //
-        //        CASE 1: Swap 1-by-1 and 1-by-1 blocks.
+        // CASE 1: Swap 1-by-1 and 1-by-1 blocks.
         //
-        //        Compute orthogonal QL and RQ that swap 1-by-1 and 1-by-1 blocks
-        //        using Givens rotations and perform the swap tentatively.
+        // Compute orthogonal QL and RQ that swap 1-by-1 and 1-by-1 blocks
+        // using Givens rotations and perform the swap tentatively.
         //
-        f = s[(2 - 1) + (2 - 1) * lds] * t[(1 - 1)] - t[(2 - 1) + (2 - 1) * ldt] * s[(1 - 1)];
-        g = s[(2 - 1) + (2 - 1) * lds] * t[(2 - 1) * ldt] - t[(2 - 1) + (2 - 1) * ldt] * s[(2 - 1) * lds];
-        sa = abs(s[(2 - 1) + (2 - 1) * lds]) * abs(t[(1 - 1)]);
-        sb = abs(s[(1 - 1)]) * abs(t[(2 - 1) + (2 - 1) * ldt]);
-        Rlartg(f, g, ir[(2 - 1) * ldir], ir[(1 - 1)], ddum);
-        ir[(2 - 1)] = -ir[(2 - 1) * ldir];
-        ir[(2 - 1) + (2 - 1) * ldir] = ir[(1 - 1)];
-        Rrot(2, &s[(1 - 1)], 1, &s[(2 - 1) * lds], 1, ir[(1 - 1)], ir[(2 - 1)]);
-        Rrot(2, &t[(1 - 1)], 1, &t[(2 - 1) * ldt], 1, ir[(1 - 1)], ir[(2 - 1)]);
+        f = s[(2 - 1) + (2 - 1) * ldst] * t[0] - t[(2 - 1) + (2 - 1) * ldst] * s[0];
+        g = s[(2 - 1) + (2 - 1) * ldst] * t[(2 - 1) * ldst] - t[(2 - 1) + (2 - 1) * ldst] * s[(2 - 1) * ldst];
+        sa = abs(s[(2 - 1) + (2 - 1) * ldst]) * abs(t[0]);
+        sb = abs(s[0]) * abs(t[(2 - 1) + (2 - 1) * ldst]);
+        Rlartg(f, g, ir[(2 - 1) * ldst], ir[0], ddum);
+        ir[(2 - 1)] = -ir[(2 - 1) * ldst];
+        ir[(2 - 1) + (2 - 1) * ldst] = ir[0];
+        Rrot(2, &s[0], 1, &s[(2 - 1) * ldst], 1, ir[0], ir[(2 - 1)]);
+        Rrot(2, &t[0], 1, &t[(2 - 1) * ldst], 1, ir[0], ir[(2 - 1)]);
         if (sa >= sb) {
-            Rlartg(s[(1 - 1)], s[(2 - 1)], li[(1 - 1)], li[(2 - 1)], ddum);
+            Rlartg(s[0], s[(2 - 1)], li[0], li[(2 - 1)], ddum);
         } else {
-            Rlartg(t[(1 - 1)], t[(2 - 1)], li[(1 - 1)], li[(2 - 1)], ddum);
+            Rlartg(t[0], t[(2 - 1)], li[0], li[(2 - 1)], ddum);
         }
-        Rrot(2, &s[(1 - 1)], ldst, &s[(2 - 1)], ldst, li[(1 - 1)], li[(2 - 1)]);
-        Rrot(2, &t[(1 - 1)], ldst, &t[(2 - 1)], ldst, li[(1 - 1)], li[(2 - 1)]);
-        li[(2 - 1) + (2 - 1) * ldli] = li[(1 - 1)];
-        li[(2 - 1) * ldli] = -li[(2 - 1)];
+        Rrot(2, &s[0], ldst, &s[(2 - 1)], ldst, li[0], li[(2 - 1)]);
+        Rrot(2, &t[0], ldst, &t[(2 - 1)], ldst, li[0], li[(2 - 1)]);
+        li[(2 - 1) + (2 - 1) * ldst] = li[0];
+        li[(2 - 1) * ldst] = -li[(2 - 1)];
         //
-        //        Weak stability test: |S21| <= O(EPS F-norm((A)))
-        //                           and  |T21| <= O(EPS F-norm((B)))
+        // Weak stability test: |S21| <= O(EPS F-norm((A)))
+        // and  |T21| <= O(EPS F-norm((B)))
         //
         weak = abs(s[(2 - 1)]) <= thresha && abs(t[(2 - 1)]) <= threshb;
         if (!weak) {
@@ -197,10 +168,10 @@ void Rtgex2(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
         //
         if (wands) {
             //
-            //           Strong stability test:
-            //               F-norm((A-QL**H*S*QR)) <= O(EPS*F-norm((A)))
-            //               and
-            //               F-norm((B-QL**H*T*QR)) <= O(EPS*F-norm((B)))
+            // Strong stability test:
+            // F-norm((A-QL**H*S*QR)) <= O(EPS*F-norm((A)))
+            // and
+            // F-norm((B-QL**H*T*QR)) <= O(EPS*F-norm((B)))
             //
             Rlacpy("Full", m, m, &a[(j1 - 1) + (j1 - 1) * lda], lda, &work[(m * m + 1) - 1], m);
             Rgemm("N", "N", m, m, m, one, li, ldst, s, ldst, zero, work, m);
@@ -223,60 +194,60 @@ void Rtgex2(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
             }
         }
         //
-        //        Update (A(J1:J1+M-1, M+J1:N), B(J1:J1+M-1, M+J1:N)) and
-        //               (A(1:J1-1, J1:J1+M), B(1:J1-1, J1:J1+M)).
+        // Update (A(J1:J1+M-1, M+J1:N), B(J1:J1+M-1, M+J1:N)) and
+        // (A(1:J1-1, J1:J1+M), B(1:J1-1, J1:J1+M)).
         //
-        Rrot(j1 + 1, &a[(j1 - 1) * lda], 1, &a[((j1 + 1) - 1) * lda], 1, ir[(1 - 1)], ir[(2 - 1)]);
-        Rrot(j1 + 1, &b[(j1 - 1) * ldb], 1, &b[((j1 + 1) - 1) * ldb], 1, ir[(1 - 1)], ir[(2 - 1)]);
-        Rrot(n - j1 + 1, &a[(j1 - 1) + (j1 - 1) * lda], lda, &a[((j1 + 1) - 1) + (j1 - 1) * lda], lda, li[(1 - 1)], li[(2 - 1)]);
-        Rrot(n - j1 + 1, &b[(j1 - 1) + (j1 - 1) * ldb], ldb, &b[((j1 + 1) - 1) + (j1 - 1) * ldb], ldb, li[(1 - 1)], li[(2 - 1)]);
+        Rrot(j1 + 1, &a[(j1 - 1) * lda], 1, &a[((j1 + 1) - 1) * lda], 1, ir[0], ir[(2 - 1)]);
+        Rrot(j1 + 1, &b[(j1 - 1) * ldb], 1, &b[((j1 + 1) - 1) * ldb], 1, ir[0], ir[(2 - 1)]);
+        Rrot(n - j1 + 1, &a[(j1 - 1) + (j1 - 1) * lda], lda, &a[((j1 + 1) - 1) + (j1 - 1) * lda], lda, li[0], li[(2 - 1)]);
+        Rrot(n - j1 + 1, &b[(j1 - 1) + (j1 - 1) * ldb], ldb, &b[((j1 + 1) - 1) + (j1 - 1) * ldb], ldb, li[0], li[(2 - 1)]);
         //
-        //        Set  N1-by-N2 (2,1) - blocks to ZERO.
+        // Set  N1-by-N2 (2,1) - blocks to ZERO.
         //
         a[((j1 + 1) - 1) + (j1 - 1) * lda] = zero;
         b[((j1 + 1) - 1) + (j1 - 1) * ldb] = zero;
         //
-        //        Accumulate transformations into Q and Z if requested.
+        // Accumulate transformations into Q and Z if requested.
         //
         if (wantz) {
-            Rrot(n, &z[(j1 - 1) * ldz], 1, &z[((j1 + 1) - 1) * ldz], 1, ir[(1 - 1)], ir[(2 - 1)]);
+            Rrot(n, &z[(j1 - 1) * ldz], 1, &z[((j1 + 1) - 1) * ldz], 1, ir[0], ir[(2 - 1)]);
         }
         if (wantq) {
-            Rrot(n, &q[(j1 - 1) * ldq], 1, &q[((j1 + 1) - 1) * ldq], 1, li[(1 - 1)], li[(2 - 1)]);
+            Rrot(n, &q[(j1 - 1) * ldq], 1, &q[((j1 + 1) - 1) * ldq], 1, li[0], li[(2 - 1)]);
         }
         //
-        //        Exit with INFO = 0 if swap was successfully performed.
+        // Exit with INFO = 0 if swap was successfully performed.
         //
         return;
         //
     } else {
         //
-        //        CASE 2: Swap 1-by-1 and 2-by-2 blocks, or 2-by-2
-        //                and 2-by-2 blocks.
+        // CASE 2: Swap 1-by-1 and 2-by-2 blocks, or 2-by-2
+        // and 2-by-2 blocks.
         //
-        //        Solve the generalized Sylvester equation
-        //                 S11 * R - L * S22 = SCALE * S12
-        //                 T11 * R - L * T22 = SCALE * T12
-        //        for R and L. Solutions in LI and IR.
+        // Solve the generalized Sylvester equation
+        // S11 * R - L * S22 = SCALE * S12
+        // T11 * R - L * T22 = SCALE * T12
+        // for R and L. Solutions in LI and IR.
         //
-        Rlacpy("Full", n1, n2, &t[((n1 + 1) - 1) * ldt], ldst, li, ldst);
-        Rlacpy("Full", n1, n2, &s[((n1 + 1) - 1) * lds], ldst, &ir[((n2 + 1) - 1) + ((n1 + 1) - 1) * ldir], ldst);
-        Rtgsy2("N", 0, n1, n2, s, ldst, &s[((n1 + 1) - 1) + ((n1 + 1) - 1) * lds], ldst, &ir[((n2 + 1) - 1) + ((n1 + 1) - 1) * ldir], ldst, t, ldst, &t[((n1 + 1) - 1) + ((n1 + 1) - 1) * ldt], ldst, li, ldst, scale, dsum, dscale, iwork, idum, linfo);
+        Rlacpy("Full", n1, n2, &t[((n1 + 1) - 1) * ldst], ldst, li, ldst);
+        Rlacpy("Full", n1, n2, &s[((n1 + 1) - 1) * ldst], ldst, &ir[((n2 + 1) - 1) + ((n1 + 1) - 1) * ldst], ldst);
+        Rtgsy2("N", 0, n1, n2, s, ldst, &s[((n1 + 1) - 1) + ((n1 + 1) - 1) * ldst], ldst, &ir[((n2 + 1) - 1) + ((n1 + 1) - 1) * ldst], ldst, t, ldst, &t[((n1 + 1) - 1) + ((n1 + 1) - 1) * ldst], ldst, li, ldst, scale, dsum, dscale, iwork, idum, linfo);
         if (linfo != 0) {
             goto statement_70;
         }
         //
-        //        Compute orthogonal matrix QL:
+        // Compute orthogonal matrix QL:
         //
-        //                    QL**T * LI = [ TL ]
-        //                                 [ 0  ]
-        //        where
-        //                    LI =  [      -L              ]
-        //                          [ SCALE * identity(N2) ]
+        // QL**T * LI = [ TL ]
+        // [ 0  ]
+        // where
+        // LI =  [      -L              ]
+        // [ SCALE * identity(N2) ]
         //
         for (i = 1; i <= n2; i = i + 1) {
-            Rscal(n1, -one, &li[(i - 1) * ldli], 1);
-            li[((n1 + i) - 1) + (i - 1) * ldli] = scale;
+            Rscal(n1, -one, &li[(i - 1) * ldst], 1);
+            li[((n1 + i) - 1) + (i - 1) * ldst] = scale;
         }
         Rgeqr2(m, n2, li, ldst, taul, work, linfo);
         if (linfo != 0) {
@@ -287,14 +258,14 @@ void Rtgex2(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
             goto statement_70;
         }
         //
-        //        Compute orthogonal matrix RQ:
+        // Compute orthogonal matrix RQ:
         //
-        //                    IR * RQ**T =   [ 0  TR],
+        // IR * RQ**T =   [ 0  TR],
         //
-        //         where IR = [ SCALE * identity(N1), R ]
+        // where IR = [ SCALE * identity(N1), R ]
         //
         for (i = 1; i <= n1; i = i + 1) {
-            ir[((n2 + i) - 1) + (i - 1) * ldir] = scale;
+            ir[((n2 + i) - 1) + (i - 1) * ldst] = scale;
         }
         Rgerq2(n1, m, &ir[((n2 + 1) - 1)], ldst, taur, work, linfo);
         if (linfo != 0) {
@@ -305,7 +276,7 @@ void Rtgex2(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
             goto statement_70;
         }
         //
-        //        Perform the swapping tentatively:
+        // Perform the swapping tentatively:
         //
         Rgemm("T", "N", m, m, m, one, li, ldst, s, ldst, zero, work, m);
         Rgemm("N", "T", m, m, m, one, work, m, ir, ldst, zero, s, ldst);
@@ -316,8 +287,8 @@ void Rtgex2(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
         Rlacpy("F", m, m, ir, ldst, ircop, ldst);
         Rlacpy("F", m, m, li, ldst, licop, ldst);
         //
-        //        Triangularize the B-part by an RQ factorization.
-        //        Apply transformation (from left) to A-part, giving S.
+        // Triangularize the B-part by an RQ factorization.
+        // Apply transformation (from left) to A-part, giving S.
         //
         Rgerq2(m, m, t, ldst, taur, work, linfo);
         if (linfo != 0) {
@@ -332,17 +303,17 @@ void Rtgex2(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
             goto statement_70;
         }
         //
-        //        Compute F-norm(S21) in BRQA21. (T21 is 0.)
+        // Compute F-norm(S21) in BRQA21. (T21 is 0.)
         //
         dscale = zero;
         dsum = one;
         for (i = 1; i <= n2; i = i + 1) {
-            Rlassq(n1, &s[((n2 + 1) - 1) + (i - 1) * lds], 1, dscale, dsum);
+            Rlassq(n1, &s[((n2 + 1) - 1) + (i - 1) * ldst], 1, dscale, dsum);
         }
         brqa21 = dscale * sqrt(dsum);
         //
-        //        Triangularize the B-part by a QR factorization.
-        //        Apply transformation (from right) to A-part, giving S.
+        // Triangularize the B-part by a QR factorization.
+        // Apply transformation (from right) to A-part, giving S.
         //
         Rgeqr2(m, m, tcpy, ldst, taul, work, linfo);
         if (linfo != 0) {
@@ -354,18 +325,18 @@ void Rtgex2(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
             goto statement_70;
         }
         //
-        //        Compute F-norm(S21) in BQRA21. (T21 is 0.)
+        // Compute F-norm(S21) in BQRA21. (T21 is 0.)
         //
         dscale = zero;
         dsum = one;
         for (i = 1; i <= n2; i = i + 1) {
-            Rlassq(n1, &scpy[((n2 + 1) - 1) + (i - 1) * ldscpy], 1, dscale, dsum);
+            Rlassq(n1, &scpy[((n2 + 1) - 1) + (i - 1) * ldst], 1, dscale, dsum);
         }
         bqra21 = dscale * sqrt(dsum);
         //
-        //        Decide which method to use.
-        //          Weak stability test:
-        //             F-norm(S21) <= O(EPS * F-norm((S)))
+        // Decide which method to use.
+        // Weak stability test:
+        // F-norm(S21) <= O(EPS * F-norm((S)))
         //
         if (bqra21 <= brqa21 && bqra21 <= thresha) {
             Rlacpy("F", m, m, scpy, ldst, s, ldst);
@@ -376,16 +347,16 @@ void Rtgex2(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
             goto statement_70;
         }
         //
-        //        Set lower triangle of B-part to zero
+        // Set lower triangle of B-part to zero
         //
         Rlaset("Lower", m - 1, m - 1, zero, zero, &t[(2 - 1)], ldst);
         //
         if (wands) {
             //
-            //           Strong stability test:
-            //               F-norm((A-QL**H*S*QR)) <= O(EPS*F-norm((A)))
-            //               and
-            //               F-norm((B-QL**H*T*QR)) <= O(EPS*F-norm((B)))
+            // Strong stability test:
+            // F-norm((A-QL**H*S*QR)) <= O(EPS*F-norm((A)))
+            // and
+            // F-norm((B-QL**H*T*QR)) <= O(EPS*F-norm((B)))
             //
             Rlacpy("Full", m, m, &a[(j1 - 1) + (j1 - 1) * lda], lda, &work[(m * m + 1) - 1], m);
             Rgemm("N", "N", m, m, m, one, li, ldst, s, ldst, zero, work, m);
@@ -409,39 +380,39 @@ void Rtgex2(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
             //
         }
         //
-        //        If the swap is accepted ("weakly" and "strongly"), apply the
-        //        transformations and set N1-by-N2 (2,1)-block to zero.
+        // If the swap is accepted ("weakly" and "strongly"), apply the
+        // transformations and set N1-by-N2 (2,1)-block to zero.
         //
         Rlaset("Full", n1, n2, zero, zero, &s[((n2 + 1) - 1)], ldst);
         //
-        //        copy back M-by-M diagonal block starting at index J1 of (A, B)
+        // copy back M-by-M diagonal block starting at index J1 of (A, B)
         //
         Rlacpy("F", m, m, s, ldst, &a[(j1 - 1) + (j1 - 1) * lda], lda);
         Rlacpy("F", m, m, t, ldst, &b[(j1 - 1) + (j1 - 1) * ldb], ldb);
         Rlaset("Full", ldst, ldst, zero, zero, t, ldst);
         //
-        //        Standardize existing 2-by-2 blocks.
+        // Standardize existing 2-by-2 blocks.
         //
         Rlaset("Full", m, m, zero, zero, work, m);
         work[1 - 1] = one;
-        t[(1 - 1)] = one;
+        t[0] = one;
         idum = lwork - m * m - 2;
         if (n2 > 1) {
-            Rlagv2(&a[(j1 - 1) + (j1 - 1) * lda], lda, &b[(j1 - 1) + (j1 - 1) * ldb], ldb, ar, ai, be, work[1 - 1], work[2 - 1], t[(1 - 1)], t[(2 - 1)]);
+            Rlagv2(&a[(j1 - 1) + (j1 - 1) * lda], lda, &b[(j1 - 1) + (j1 - 1) * ldb], ldb, ar, ai, be, work[1 - 1], work[2 - 1], t[0], t[(2 - 1)]);
             work[(m + 1) - 1] = -work[2 - 1];
             work[(m + 2) - 1] = work[1 - 1];
-            t[(n2 - 1) + (n2 - 1) * ldt] = t[(1 - 1)];
-            t[(2 - 1) * ldt] = -t[(2 - 1)];
+            t[(n2 - 1) + (n2 - 1) * ldst] = t[0];
+            t[(2 - 1) * ldst] = -t[(2 - 1)];
         }
         work[(m * m) - 1] = one;
-        t[(m - 1) + (m - 1) * ldt] = one;
+        t[(m - 1) + (m - 1) * ldst] = one;
         //
         if (n1 > 1) {
-            Rlagv2(&a[((j1 + n2) - 1) + ((j1 + n2) - 1) * lda], lda, &b[((j1 + n2) - 1) + ((j1 + n2) - 1) * ldb], ldb, taur, taul, &work[(m * m + 1) - 1], work[(n2 * m + n2 + 1) - 1], work[(n2 * m + n2 + 2) - 1], t[((n2 + 1) - 1) + ((n2 + 1) - 1) * ldt], t[(m - 1) + ((m - 1) - 1) * ldt]);
+            Rlagv2(&a[((j1 + n2) - 1) + ((j1 + n2) - 1) * lda], lda, &b[((j1 + n2) - 1) + ((j1 + n2) - 1) * ldb], ldb, taur, taul, &work[(m * m + 1) - 1], work[(n2 * m + n2 + 1) - 1], work[(n2 * m + n2 + 2) - 1], t[((n2 + 1) - 1) + ((n2 + 1) - 1) * ldst], t[(m - 1) + ((m - 1) - 1) * ldst]);
             work[(m * m) - 1] = work[(n2 * m + n2 + 1) - 1];
             work[(m * m - 1) - 1] = -work[(n2 * m + n2 + 2) - 1];
-            t[(m - 1) + (m - 1) * ldt] = t[((n2 + 1) - 1) + ((n2 + 1) - 1) * ldt];
-            t[((m - 1) - 1) + (m - 1) * ldt] = -t[(m - 1) + ((m - 1) - 1) * ldt];
+            t[(m - 1) + (m - 1) * ldst] = t[((n2 + 1) - 1) + ((n2 + 1) - 1) * ldst];
+            t[((m - 1) - 1) + (m - 1) * ldst] = -t[(m - 1) + ((m - 1) - 1) * ldst];
         }
         Rgemm("T", "N", n2, n1, n2, one, work, m, &a[(j1 - 1) + ((j1 + n2) - 1) * lda], lda, zero, &work[(m * m + 1) - 1], n2);
         Rlacpy("Full", n2, n1, &work[(m * m + 1) - 1], n2, &a[(j1 - 1) + ((j1 + n2) - 1) * lda], lda);
@@ -449,14 +420,14 @@ void Rtgex2(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
         Rlacpy("Full", n2, n1, &work[(m * m + 1) - 1], n2, &b[(j1 - 1) + ((j1 + n2) - 1) * ldb], ldb);
         Rgemm("N", "N", m, m, m, one, li, ldst, work, m, zero, &work[(m * m + 1) - 1], m);
         Rlacpy("Full", m, m, &work[(m * m + 1) - 1], m, li, ldst);
-        Rgemm("N", "N", n2, n1, n1, one, &a[(j1 - 1) + ((j1 + n2) - 1) * lda], lda, &t[((n2 + 1) - 1) + ((n2 + 1) - 1) * ldt], ldst, zero, work, n2);
+        Rgemm("N", "N", n2, n1, n1, one, &a[(j1 - 1) + ((j1 + n2) - 1) * lda], lda, &t[((n2 + 1) - 1) + ((n2 + 1) - 1) * ldst], ldst, zero, work, n2);
         Rlacpy("Full", n2, n1, work, n2, &a[(j1 - 1) + ((j1 + n2) - 1) * lda], lda);
-        Rgemm("N", "N", n2, n1, n1, one, &b[(j1 - 1) + ((j1 + n2) - 1) * ldb], ldb, &t[((n2 + 1) - 1) + ((n2 + 1) - 1) * ldt], ldst, zero, work, n2);
+        Rgemm("N", "N", n2, n1, n1, one, &b[(j1 - 1) + ((j1 + n2) - 1) * ldb], ldb, &t[((n2 + 1) - 1) + ((n2 + 1) - 1) * ldst], ldst, zero, work, n2);
         Rlacpy("Full", n2, n1, work, n2, &b[(j1 - 1) + ((j1 + n2) - 1) * ldb], ldb);
         Rgemm("T", "N", m, m, m, one, ir, ldst, t, ldst, zero, work, m);
         Rlacpy("Full", m, m, work, m, ir, ldst);
         //
-        //        Accumulate transformations into Q and Z if requested.
+        // Accumulate transformations into Q and Z if requested.
         //
         if (wantq) {
             Rgemm("N", "N", n, m, m, one, &q[(j1 - 1) * ldq], ldq, li, ldst, zero, work, n);
@@ -470,8 +441,8 @@ void Rtgex2(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
             //
         }
         //
-        //        Update (A(J1:J1+M-1, M+J1:N), B(J1:J1+M-1, M+J1:N)) and
-        //                (A(1:J1-1, J1:J1+M), B(1:J1-1, J1:J1+M)).
+        // Update (A(J1:J1+M-1, M+J1:N), B(J1:J1+M-1, M+J1:N)) and
+        // (A(1:J1-1, J1:J1+M), B(1:J1-1, J1:J1+M)).
         //
         i = j1 + m;
         if (i <= n) {
@@ -488,18 +459,18 @@ void Rtgex2(bool const wantq, bool const wantz, INTEGER const n, REAL *a, INTEGE
             Rlacpy("Full", i, m, work, i, &b[(j1 - 1) * ldb], ldb);
         }
         //
-        //        Exit with INFO = 0 if swap was successfully performed.
+        // Exit with INFO = 0 if swap was successfully performed.
         //
         return;
         //
     }
 //
-//     Exit with INFO = 1 if swap was rejected.
+// Exit with INFO = 1 if swap was rejected.
 //
 statement_70:
     //
     info = 1;
     //
-    //     End of Rtgex2
+    // End of Rtgex2
     //
 }

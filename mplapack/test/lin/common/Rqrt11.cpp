@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DQRT11.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -39,42 +46,17 @@ using fem::common;
 REAL Rqrt11(INTEGER const m, INTEGER const k, REAL *a, INTEGER const lda, REAL *tau, REAL *work, INTEGER const lwork) {
     REAL return_value = 0.0;
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     const REAL zero = 0.0;
     return_value = zero;
     //
-    //     Test for sufficient workspace
+    // Test for sufficient workspace
     //
     if (lwork < m * m + m) {
         Mxerbla("Rqrt11", 7);
         return return_value;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (m <= 0) {
         return return_value;
@@ -83,12 +65,12 @@ REAL Rqrt11(INTEGER const m, INTEGER const k, REAL *a, INTEGER const lda, REAL *
     const REAL one = 1.0;
     Rlaset("Full", m, m, zero, one, work, m);
     //
-    //     Form Q
+    // Form Q
     //
     INTEGER info = 0;
     Rorm2r("Left", "No transpose", m, m, k, a, lda, tau, work, m, &work[(m * m + 1) - 1], info);
     //
-    //     Form Q'*Q
+    // Form Q'*Q
     //
     Rorm2r("Left", "Transpose", m, m, k, a, lda, tau, work, m, &work[(m * m + 1) - 1], info);
     //
@@ -102,6 +84,6 @@ REAL Rqrt11(INTEGER const m, INTEGER const k, REAL *a, INTEGER const lda, REAL *
     //
     return return_value;
     //
-    //     End of Rqrt11
+    // End of Rqrt11
     //
 }

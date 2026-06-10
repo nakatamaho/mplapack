@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,33 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZLARFB_GETT.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Clarfb_gett(const char *ident, INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *t, INTEGER const ldt, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX *work, INTEGER const ldwork) {
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. EXTERNAL FUNCTIONS ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (m < 0 || n <= 0 || k == 0 || k > n) {
         return;
@@ -60,22 +46,22 @@ void Clarfb_gett(const char *ident, INTEGER const m, INTEGER const n, INTEGER co
     //
     bool lnotident = !Mlsame(ident, "I");
     //
-    //     ------------------------------------------------------------------
+    // ------------------------------------------------------------------
     //
-    //     First Step. Computation of the Column Block 2:
+    // First Step. Computation of the Column Block 2:
     //
-    //        ( A2 ) := H * ( A2 )
-    //        ( B2 )        ( B2 )
+    // ( A2 ) := H * ( A2 )
+    // ( B2 )        ( B2 )
     //
-    //     ------------------------------------------------------------------
+    // ------------------------------------------------------------------
     //
     INTEGER j = 0;
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     INTEGER i = 0;
     if (n > k) {
         //
-        //        col2_(1) Compute W2: = A2. Therefore, copy A2 = A(1:K, K+1:N)
-        //        into W2=WORK(1:K, 1:N-K) column-by-column.
+        // col2_(1) Compute W2: = A2. Therefore, copy A2 = A(1:K, K+1:N)
+        // into W2=WORK(1:K, 1:N-K) column-by-column.
         //
         for (j = 1; j <= n - k; j = j + 1) {
             Ccopy(k, &a[((k + j) - 1) * lda], 1, &work[(j - 1) * ldwork], 1);
@@ -83,27 +69,27 @@ void Clarfb_gett(const char *ident, INTEGER const m, INTEGER const n, INTEGER co
         //
         if (lnotident) {
             //
-            //           col2_(2) Compute W2: = (V1**H) * W2 = (A1**H) * W2,
-            //           V1 is not an identy matrix, but unit lower-triangular
-            //           V1 stored in A1 (diagonal ones are not stored).
+            // col2_(2) Compute W2: = (V1**H) * W2 = (A1**H) * W2,
+            // V1 is not an identity matrix, but unit lower-triangular
+            // V1 stored in A1 (diagonal ones are not stored).
             //
             Ctrmm("L", "L", "C", "U", k, n - k, cone, a, lda, work, ldwork);
         }
         //
-        //        col2_(3) Compute W2: = W2 + (V2**H) * B2 = W2 + (B1**H) * B2
-        //        V2 stored in B1.
+        // col2_(3) Compute W2: = W2 + (V2**H) * B2 = W2 + (B1**H) * B2
+        // V2 stored in B1.
         //
         if (m > 0) {
             Cgemm("C", "N", k, n - k, m, cone, b, ldb, &b[((k + 1) - 1) * ldb], ldb, cone, work, ldwork);
         }
         //
-        //        col2_(4) Compute W2: = T * W2,
-        //        T is upper-triangular.
+        // col2_(4) Compute W2: = T * W2,
+        // T is upper-triangular.
         //
         Ctrmm("L", "U", "N", "N", k, n - k, cone, t, ldt, work, ldwork);
         //
-        //        col2_(5) Compute B2: = B2 - V2 * W2 = B2 - B1 * W2,
-        //        V2 stored in B1.
+        // col2_(5) Compute B2: = B2 - V2 * W2 = B2 - B1 * W2,
+        // V2 stored in B1.
         //
         if (m > 0) {
             Cgemm("N", "N", m, n - k, k, -cone, b, ldb, work, ldwork, cone, &b[((k + 1) - 1) * ldb], ldb);
@@ -111,16 +97,16 @@ void Clarfb_gett(const char *ident, INTEGER const m, INTEGER const n, INTEGER co
         //
         if (lnotident) {
             //
-            //           col2_(6) Compute W2: = V1 * W2 = A1 * W2,
-            //           V1 is not an identity matrix, but unit lower-triangular,
-            //           V1 stored in A1 (diagonal ones are not stored).
+            // col2_(6) Compute W2: = V1 * W2 = A1 * W2,
+            // V1 is not an identity matrix, but unit lower-triangular,
+            // V1 stored in A1 (diagonal ones are not stored).
             //
             Ctrmm("L", "L", "N", "U", k, n - k, cone, a, lda, work, ldwork);
         }
         //
-        //        col2_(7) Compute A2: = A2 - W2 =
-        //                             = A(1:K, K+1:N-K) - WORK(1:K, 1:N-K),
-        //        column-by-column.
+        // col2_(7) Compute A2: = A2 - W2 =
+        // = A(1:K, K+1:N-K) - WORK(1:K, 1:N-K),
+        // column-by-column.
         //
         for (j = 1; j <= n - k; j = j + 1) {
             for (i = 1; i <= k; i = i + 1) {
@@ -130,24 +116,24 @@ void Clarfb_gett(const char *ident, INTEGER const m, INTEGER const n, INTEGER co
         //
     }
     //
-    //     ------------------------------------------------------------------
+    // ------------------------------------------------------------------
     //
-    //     Second Step. Computation of the Column Block 1:
+    // Second Step. Computation of the Column Block 1:
     //
-    //        ( A1 ) := H * ( A1 )
-    //        ( B1 )        (  0 )
+    // ( A1 ) := H * ( A1 )
+    // ( B1 )        (  0 )
     //
-    //     ------------------------------------------------------------------
+    // ------------------------------------------------------------------
     //
-    //     col1_(1) Compute W1: = A1. Copy the upper-triangular
-    //     A1 = A(1:K, 1:K) into the upper-triangular
-    //     W1 = WORK(1:K, 1:K) column-by-column.
+    // col1_(1) Compute W1: = A1. Copy the upper-triangular
+    // A1 = A(1:K, 1:K) into the upper-triangular
+    // W1 = WORK(1:K, 1:K) column-by-column.
     //
     for (j = 1; j <= k; j = j + 1) {
         Ccopy(j, &a[(j - 1) * lda], 1, &work[(j - 1) * ldwork], 1);
     }
     //
-    //     Set the subdiagonal elements of W1 to zero column-by-column.
+    // Set the subdiagonal elements of W1 to zero column-by-column.
     //
     const COMPLEX czero = COMPLEX(0.0, 0.0);
     for (j = 1; j <= k - 1; j = j + 1) {
@@ -158,22 +144,22 @@ void Clarfb_gett(const char *ident, INTEGER const m, INTEGER const n, INTEGER co
     //
     if (lnotident) {
         //
-        //        col1_(2) Compute W1: = (V1**H) * W1 = (A1**H) * W1,
-        //        V1 is not an identity matrix, but unit lower-triangular
-        //        V1 stored in A1 (diagonal ones are not stored),
-        //        W1 is upper-triangular with zeroes below the diagonal.
+        // col1_(2) Compute W1: = (V1**H) * W1 = (A1**H) * W1,
+        // V1 is not an identity matrix, but unit lower-triangular
+        // V1 stored in A1 (diagonal ones are not stored),
+        // W1 is upper-triangular with zeroes below the diagonal.
         //
         Ctrmm("L", "L", "C", "U", k, k, cone, a, lda, work, ldwork);
     }
     //
-    //     col1_(3) Compute W1: = T * W1,
-    //     T is upper-triangular,
-    //     W1 is upper-triangular with zeroes below the diagonal.
+    // col1_(3) Compute W1: = T * W1,
+    // T is upper-triangular,
+    // W1 is upper-triangular with zeroes below the diagonal.
     //
     Ctrmm("L", "U", "N", "N", k, k, cone, t, ldt, work, ldwork);
     //
-    //     col1_(4) Compute B1: = - V2 * W1 = - B1 * W1,
-    //     V2 = B1, W1 is upper-triangular with zeroes below the diagonal.
+    // col1_(4) Compute B1: = - V2 * W1 = - B1 * W1,
+    // V2 = B1, W1 is upper-triangular with zeroes below the diagonal.
     //
     if (m > 0) {
         Ctrmm("R", "U", "N", "N", m, k, -cone, work, ldwork, b, ldb);
@@ -181,21 +167,21 @@ void Clarfb_gett(const char *ident, INTEGER const m, INTEGER const n, INTEGER co
     //
     if (lnotident) {
         //
-        //        col1_(5) Compute W1: = V1 * W1 = A1 * W1,
-        //        V1 is not an identity matrix, but unit lower-triangular
-        //        V1 stored in A1 (diagonal ones are not stored),
-        //        W1 is upper-triangular on input with zeroes below the diagonal,
-        //        and square on output.
+        // col1_(5) Compute W1: = V1 * W1 = A1 * W1,
+        // V1 is not an identity matrix, but unit lower-triangular
+        // V1 stored in A1 (diagonal ones are not stored),
+        // W1 is upper-triangular on input with zeroes below the diagonal,
+        // and square on output.
         //
         Ctrmm("L", "L", "N", "U", k, k, cone, a, lda, work, ldwork);
         //
-        //        col1_(6) Compute A1: = A1 - W1 = A(1:K, 1:K) - WORK(1:K, 1:K)
-        //        column-by-column. A1 is upper-triangular on input.
-        //        If IDENT, A1 is square on output, and W1 is square,
-        //        if NOT IDENT, A1 is upper-triangular on output,
-        //        W1 is upper-triangular.
+        // col1_(6) Compute A1: = A1 - W1 = A(1:K, 1:K) - WORK(1:K, 1:K)
+        // column-by-column. A1 is upper-triangular on input.
+        // If IDENT, A1 is square on output, and W1 is square,
+        // if NOT IDENT, A1 is upper-triangular on output,
+        // W1 is upper-triangular.
         //
-        //        col1_(6)_a Compute elements of A1 below the diagonal.
+        // col1_(6)_a Compute elements of A1 below the diagonal.
         //
         for (j = 1; j <= k - 1; j = j + 1) {
             for (i = j + 1; i <= k; i = i + 1) {
@@ -205,7 +191,7 @@ void Clarfb_gett(const char *ident, INTEGER const m, INTEGER const n, INTEGER co
         //
     }
     //
-    //     col1_(6)_b Compute elements of A1 on and above the diagonal.
+    // col1_(6)_b Compute elements of A1 on and above the diagonal.
     //
     for (j = 1; j <= k; j = j + 1) {
         for (i = 1; i <= j; i = i + 1) {
@@ -213,6 +199,6 @@ void Clarfb_gett(const char *ident, INTEGER const m, INTEGER const n, INTEGER co
         }
     }
     //
-    //     End of Clarfb_gett
+    // End of Clarfb_gett
     //
 }

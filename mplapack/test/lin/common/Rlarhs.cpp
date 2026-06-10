@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,60 +26,44 @@
  *
  */
 
+// Derived from LAPACK routine DLARHS.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
-#include <mplapack_lin.h>
-#include <mplapack.h>
 
-void Rlarhs(const char *path, const char *xtype, const char *uplo, const char *trans, INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *x, INTEGER const ldx, REAL *b, INTEGER const ldb, INTEGER *iseed, INTEGER &info) {
+#include <mplapack_matgen.h>
+#include <mplapack_lin.h>
+
+void Rlarhs(fem::str_cref path, fem::str_cref xtype, fem::str_cref uplo, fem::str_cref trans, INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *x, INTEGER const ldx, REAL *b, INTEGER const ldb, INTEGER (&iseed)[4], INTEGER &info) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
-    char c1[1];
-    c1[0] = path[(1 - 1)];
-    char c2[2];
-    c2[0] = path[1];
-    c2[1] = path[2];
-    bool tran = Mlsame(trans, "T") || Mlsame(trans, "C");
+    fem::str<1> c1 = path(1, 1);
+    fem::str<2> c2 = path(2, 3);
+    bool tran = Mlsame(trans.elems(), "T") || Mlsame(trans.elems(), "C");
     bool notran = !tran;
-    bool gen = Mlsame(&path[1], "G");
-    bool qrs = Mlsame(&path[1], "Q") || Mlsame(&path[2], "Q");
-    bool sym = Mlsame(&path[1], "P") || Mlsame(&path[1], "S");
-    bool tri = Mlsame(&path[1], "T");
-    bool band = Mlsame(&path[2], "B");
-    if (!Mlsame(&c1[0], "R")) {
+    bool gen = Mlsame(path(2, 2).elems(), "G");
+    bool qrs = Mlsame(path(2, 2).elems(), "Q") || Mlsame(path(3, 3).elems(), "Q");
+    bool sym = Mlsame(path(2, 2).elems(), "P") || Mlsame(path(2, 2).elems(), "S");
+    bool tri = Mlsame(path(2, 2).elems(), "T");
+    bool band = Mlsame(path(3, 3).elems(), "B");
+    if (!Mlsame(c1.elems, "Double precision")) {
         info = -1;
-    } else if (!(Mlsame(xtype, "N") || Mlsame(xtype, "C"))) {
+    } else if (!(Mlsame(xtype.elems(), "N") || Mlsame(xtype.elems(), "C"))) {
         info = -2;
-    } else if ((sym || tri) && !(Mlsame(uplo, "U") || Mlsame(uplo, "L"))) {
+    } else if ((sym || tri) && !(Mlsame(uplo.elems(), "U") || Mlsame(uplo.elems(), "L"))) {
         info = -3;
-    } else if ((gen || qrs) && !(tran || Mlsame(trans, "N"))) {
+    } else if ((gen || qrs) && !(tran || Mlsame(trans.elems(), "N"))) {
         info = -4;
     } else if (m < 0) {
         info = -5;
@@ -103,7 +87,7 @@ void Rlarhs(const char *path, const char *xtype, const char *uplo, const char *t
         return;
     }
     //
-    //     Initialize X to NRHS random vectors unless XTYPE = 'C'.
+    // Initialize X to NRHS random vectors unless XTYPE = 'C'.
     //
     INTEGER nx = 0;
     INTEGER mb = 0;
@@ -115,104 +99,104 @@ void Rlarhs(const char *path, const char *xtype, const char *uplo, const char *t
         mb = m;
     }
     INTEGER j = 0;
-    if (!Mlsame(xtype, "C")) {
+    if (!Mlsame(xtype.elems(), "C")) {
         for (j = 1; j <= nrhs; j = j + 1) {
             Rlarnv(2, iseed, n, &x[(j - 1) * ldx]);
         }
     }
     //
-    //     Multiply X by op( A ) using an appropriate
-    //     matrix multiply routine.
+    // Multiply X by op(A) using an appropriate
+    // matrix multiply routine.
     //
     const REAL one = 1.0;
     const REAL zero = 0.0;
-    char diag;
-    if (Mlsamen(2, c2, "GE") || Mlsamen(2, c2, "QR") || Mlsamen(2, c2, "LQ") || Mlsamen(2, c2, "QL") || Mlsamen(2, c2, "RQ")) {
+    fem::str<1> diag;
+    if (Mlsamen(2, c2.elems, "GE") || Mlsamen(2, c2.elems, "QR") || Mlsamen(2, c2.elems, "LQ") || Mlsamen(2, c2.elems, "QL") || Mlsamen(2, c2.elems, "RQ")) {
         //
-        //        General matrix
+        // General matrix
         //
-        Rgemm(trans, "N", mb, nrhs, nx, one, a, lda, x, ldx, zero, b, ldb);
+        Rgemm(trans.elems(), "N", mb, nrhs, nx, one, a, lda, x, ldx, zero, b, ldb);
         //
-    } else if (Mlsamen(2, c2, "PO") || Mlsamen(2, c2, "SY")) {
+    } else if (Mlsamen(2, c2.elems, "PO") || Mlsamen(2, c2.elems, "SY")) {
         //
-        //        Symmetric matrix, 2-D storage
+        // Symmetric matrix, 2-D storage
         //
-        Rsymm("Left", uplo, n, nrhs, one, a, lda, x, ldx, zero, b, ldb);
+        Rsymm("Left", uplo.elems(), n, nrhs, one, a, lda, x, ldx, zero, b, ldb);
         //
-    } else if (Mlsamen(2, c2, "GB")) {
+    } else if (Mlsamen(2, c2.elems, "GB")) {
         //
-        //        General matrix, band storage
-        //
-        for (j = 1; j <= nrhs; j = j + 1) {
-            Rgbmv(trans, mb, nx, kl, ku, one, a, lda, &x[(j - 1) * ldx], 1, zero, &b[(j - 1) * ldb], 1);
-        }
-        //
-    } else if (Mlsamen(2, c2, "PB")) {
-        //
-        //        Symmetric matrix, band storage
+        // General matrix, band storage
         //
         for (j = 1; j <= nrhs; j = j + 1) {
-            Rsbmv(uplo, n, kl, one, a, lda, &x[(j - 1) * ldx], 1, zero, &b[(j - 1) * ldb], 1);
+            Rgbmv(trans.elems(), mb, nx, kl, ku, one, a, lda, &x[(j - 1) * ldx], 1, zero, &b[(j - 1) * ldb], 1);
         }
         //
-    } else if (Mlsamen(2, c2, "PP") || Mlsamen(2, c2, "SP")) {
+    } else if (Mlsamen(2, c2.elems, "PB")) {
         //
-        //        Symmetric matrix, packed storage
+        // Symmetric matrix, band storage
         //
         for (j = 1; j <= nrhs; j = j + 1) {
-            Rspmv(uplo, n, one, a, &x[(j - 1) * ldx], 1, zero, &b[(j - 1) * ldb], 1);
+            Rsbmv(uplo.elems(), n, kl, one, a, lda, &x[(j - 1) * ldx], 1, zero, &b[(j - 1) * ldb], 1);
         }
         //
-    } else if (Mlsamen(2, c2, "TR")) {
+    } else if (Mlsamen(2, c2.elems, "PP") || Mlsamen(2, c2.elems, "SP")) {
         //
-        //        Triangular matrix.  Note that for triangular matrices,
-        //           KU = 1 => non-unit triangular
-        //           KU = 2 => unit triangular
+        // Symmetric matrix, packed storage
+        //
+        for (j = 1; j <= nrhs; j = j + 1) {
+            Rspmv(uplo.elems(), n, one, a, &x[(j - 1) * ldx], 1, zero, &b[(j - 1) * ldb], 1);
+        }
+        //
+    } else if (Mlsamen(2, c2.elems, "TR")) {
+        //
+        // Triangular matrix.  Note that for triangular matrices,
+        // KU = 1 => non-unit triangular
+        // KU = 2 => unit triangular
         //
         Rlacpy("Full", n, nrhs, x, ldx, b, ldb);
         if (ku == 2) {
-            diag = 'U';
+            diag = "U";
         } else {
-            diag = 'N';
+            diag = "N";
         }
-        Rtrmm("Left", uplo, trans, &diag, n, nrhs, one, a, lda, b, ldb);
+        Rtrmm("Left", uplo.elems(), trans.elems(), diag.elems, n, nrhs, one, a, lda, b, ldb);
         //
-    } else if (Mlsamen(2, c2, "TP")) {
+    } else if (Mlsamen(2, c2.elems, "TP")) {
         //
-        //        Triangular matrix, packed storage
+        // Triangular matrix, packed storage
         //
         Rlacpy("Full", n, nrhs, x, ldx, b, ldb);
         if (ku == 2) {
-            diag = 'U';
+            diag = "U";
         } else {
-            diag = 'N';
+            diag = "N";
         }
         for (j = 1; j <= nrhs; j = j + 1) {
-            Rtpmv(uplo, trans, &diag, n, a, &b[(j - 1) * ldb], 1);
+            Rtpmv(uplo.elems(), trans.elems(), diag.elems, n, a, &b[(j - 1) * ldb], 1);
         }
         //
-    } else if (Mlsamen(2, c2, "TB")) {
+    } else if (Mlsamen(2, c2.elems, "TB")) {
         //
-        //        Triangular matrix, banded storage
+        // Triangular matrix, banded storage
         //
         Rlacpy("Full", n, nrhs, x, ldx, b, ldb);
         if (ku == 2) {
-            diag = 'U';
+            diag = "U";
         } else {
-            diag = 'N';
+            diag = "N";
         }
         for (j = 1; j <= nrhs; j = j + 1) {
-            Rtbmv(uplo, trans, &diag, n, kl, a, lda, &b[(j - 1) * ldb], 1);
+            Rtbmv(uplo.elems(), trans.elems(), diag.elems, n, kl, a, lda, &b[(j - 1) * ldb], 1);
         }
         //
     } else {
         //
-        //        If PATH is none of the above, return with an error code.
+        // If PATH is none of the above, return with an error code.
         //
         info = -1;
         Mxerbla("Rlarhs", -info);
     }
     //
-    //     End of Rlarhs
+    // End of Rlarhs
     //
 }

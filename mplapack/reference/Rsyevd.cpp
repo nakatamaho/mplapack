@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,36 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DSYEVD.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rsyevd(const char *jobz, const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL *w, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const liwork, INTEGER &info) {
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     bool wantz = Mlsame(jobz, "V");
     bool lower = Mlsame(uplo, "L");
@@ -85,12 +68,12 @@ void Rsyevd(const char *jobz, const char *uplo, INTEGER const n, REAL *a, INTEGE
         } else {
             if (wantz) {
                 liwmin = 3 + 5 * n;
-                lwmin = 1 + 6 * n + 2 * castINTEGER(pow2(castREAL(n)));
+                lwmin = 1 + 6 * n + 2 * pow2(n);
             } else {
                 liwmin = 1;
                 lwmin = 2 * n + 1;
             }
-            lopt = max(lwmin, 2 * n + iMlaenv(1, "Rsytrd", uplo, n, -1, -1, -1));
+            lopt = max(lwmin, 2 * n + n * iMlaenv(1, "Rsytrd", uplo, n, -1, -1, -1));
             liopt = liwmin;
         }
         work[1 - 1] = lopt;
@@ -110,7 +93,7 @@ void Rsyevd(const char *jobz, const char *uplo, INTEGER const n, REAL *a, INTEGE
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
@@ -118,14 +101,14 @@ void Rsyevd(const char *jobz, const char *uplo, INTEGER const n, REAL *a, INTEGE
     //
     const REAL one = 1.0;
     if (n == 1) {
-        w[1 - 1] = a[(1 - 1)];
+        w[1 - 1] = a[0];
         if (wantz) {
-            a[(1 - 1)] = one;
+            a[0] = one;
         }
         return;
     }
     //
-    //     Get machine constants.
+    // Get machine constants.
     //
     REAL safmin = Rlamch("Safe minimum");
     REAL eps = Rlamch("Precision");
@@ -134,7 +117,7 @@ void Rsyevd(const char *jobz, const char *uplo, INTEGER const n, REAL *a, INTEGE
     REAL rmin = sqrt(smlnum);
     REAL rmax = sqrt(bignum);
     //
-    //     Scale matrix to allowable range, if necessary.
+    // Scale matrix to allowable range, if necessary.
     //
     REAL anrm = Rlansy("M", uplo, n, a, lda, work);
     INTEGER iscale = 0;
@@ -151,7 +134,7 @@ void Rsyevd(const char *jobz, const char *uplo, INTEGER const n, REAL *a, INTEGE
         Rlascl(uplo, 0, 0, one, sigma, n, n, a, lda, info);
     }
     //
-    //     Call Rsytrd to reduce symmetric matrix to tridiagonal form.
+    // Call Rsytrd to reduce symmetric matrix to tridiagonal form.
     //
     INTEGER inde = 1;
     INTEGER indtau = inde + n;
@@ -163,10 +146,10 @@ void Rsyevd(const char *jobz, const char *uplo, INTEGER const n, REAL *a, INTEGE
     INTEGER iinfo = 0;
     Rsytrd(uplo, n, a, lda, w, &work[inde - 1], &work[indtau - 1], &work[indwrk - 1], llwork, iinfo);
     //
-    //     For eigenvalues only, call Rsterf.  For eigenvectors, first call
-    //     Rstedc to generate the eigenvector matrix, WORK(INDWRK), of the
-    //     tridiagonal matrix, then call Rormtr to multiply it by the
-    //     Householder transformations stored in A.
+    // For eigenvalues only, call Rsterf.  For eigenvectors, first call
+    // Rstedc to generate the eigenvector matrix, WORK(INDWRK), of the
+    // tridiagonal matrix, then call Rormtr to multiply it by the
+    // Householder transformations stored in A.
     //
     if (!wantz) {
         Rsterf(n, w, &work[inde - 1], info);
@@ -176,7 +159,7 @@ void Rsyevd(const char *jobz, const char *uplo, INTEGER const n, REAL *a, INTEGE
         Rlacpy("A", n, n, &work[indwrk - 1], n, a, lda);
     }
     //
-    //     If matrix was scaled, then rescale eigenvalues appropriately.
+    // If matrix was scaled, then rescale eigenvalues appropriately.
     //
     if (iscale == 1) {
         Rscal(n, one / sigma, w, 1);
@@ -185,6 +168,6 @@ void Rsyevd(const char *jobz, const char *uplo, INTEGER const n, REAL *a, INTEGE
     work[1 - 1] = lopt;
     iwork[1 - 1] = liopt;
     //
-    //     End of Rsyevd
+    // End of Rsyevd
     //
 }

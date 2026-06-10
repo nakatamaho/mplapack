@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DDRVRF1.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,17 +43,13 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-#include <mplapack_debug.h>
-
 void Rdrvrf1(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thresh, REAL *a, INTEGER const lda, REAL *arf, REAL *work) {
     common cmn;
     common_write write(cmn);
-    //
-    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
-    char forms[] = {'N', 'T'};
-    char norms[] = {'M', '1', 'I', 'F'};
-    char uplos[] = {'U', 'L'};
-    char buf[1024];
+    static INTEGER iseedy[4] = {1988, 1989, 1990, 1991};
+    static fem::str<1> uplos[2] = {"U", "L"};
+    static fem::str<1> forms[2] = {"N", "T"};
+    static fem::str<1> norms[4] = {"M", "1", "I", "F"};
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -62,18 +65,27 @@ void Rdrvrf1(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
     INTEGER iit = 0;
     INTEGER j = 0;
     INTEGER iuplo = 0;
-    char uplo;
+    fem::str<1> uplo;
     INTEGER iform = 0;
-    char cform;
+    fem::str<1> cform;
     INTEGER inorm = 0;
-    char norm;
+    fem::str<1> norm;
     REAL normarf = 0.0;
     REAL norma = 0.0;
     const INTEGER ntests = 1;
     REAL result[ntests];
-    static const char *format_9999 = "(1x,' *** Error(s) or Failure(s) while testing Rlansf         ***')";
     //
-    //     Initialize constants and the random number seed.
+    static const char *format_9999 = "(1x,' *** Error(s) or Failure(s) while testing Rlansf         ***')";
+    static const char *format_9998 = "(1x,'     Error in ',a6,' with UPLO=''',a1,''', FORM=''',a1,''', N=',i5)";
+    static const char *format_9997 = "(1x,'     Failure in ',a6,' N=',i5,' TYPE=',i5,' UPLO=''',a1,"
+                                     "''', FORM =''',a1,''', NORM=''',a1,''', test=',g12.5)";
+    static const char *format_9996 = "(1x,'All tests for ',a6,' auxiliary routine passed the ','threshold ( ',"
+                                     "i5,' tests run)')";
+    static const char *format_9995 = "(1x,a6,' auxiliary routine: ',i5,' out of ',i5,"
+                                     "' tests failed to pass the threshold')";
+    static const char *format_9994 = "(26x,i5,' error message recorded (',a6,')')";
+    //
+    // Initialize constants and the random number seed.
     //
     nrun = 0;
     nfail = 0;
@@ -86,22 +98,22 @@ void Rdrvrf1(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
     eps = Rlamch("Precision");
     small = Rlamch("Safe minimum");
     large = one / small;
-    small = small * castREAL(lda * lda);
-    large = large / castREAL(lda * lda);
+    small = small * lda * lda;
+    large = large / lda / lda;
     //
     for (iin = 1; iin <= nn; iin = iin + 1) {
         //
         n = nval[iin - 1];
         //
         for (iit = 1; iit <= 3; iit = iit + 1) {
-            //           Nothing to do for N=0
+            // Nothing to do for N=0
             if (n == 0) {
                 break;
             }
             //
-            //           IIT = 1 : random matrix
-            //           IIT = 2 : random matrix scaled near underflow
-            //           IIT = 3 : random matrix scaled near overflow
+            // IIT = 1 : random matrix
+            // IIT = 2 : random matrix scaled near underflow
+            // IIT = 3 : random matrix scaled near overflow
             //
             for (j = 1; j <= n; j = j + 1) {
                 for (i = 1; i <= n; i = i + 1) {
@@ -125,41 +137,40 @@ void Rdrvrf1(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                 }
             }
             //
-            //           Do first for UPLO = 'U', then for UPLO = 'L'
+            // Do first for UPLO = 'U', then for UPLO = 'L'
             //
             for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
                 //
                 uplo = uplos[iuplo - 1];
                 //
-                //              Do first for CFORM = 'N', then for CFORM = 'C'
+                // Do first for CFORM = 'N', then for CFORM = 'C'
                 //
                 for (iform = 1; iform <= 2; iform = iform + 1) {
                     //
                     cform = forms[iform - 1];
                     //
-                    Rtrttf(&cform, &uplo, n, a, lda, arf, info);
+                    srnamt = "Rtrttf";
+                    Rtrttf(cform.elems, uplo.elems, n, a, lda, arf, info);
                     //
-                    //                 Check error code from Rtrttf
+                    // Check error code from Rtrttf
                     //
                     if (info != 0) {
                         if (nfail == 0 && nerrs == 0) {
                             write(nout, star);
                             write(nout, format_9999);
                         }
-                        write(nout, "(1x,'     Error in ',a6,' with UPLO=''',a1,''', FORM=''',a1,"
-                                    "''', N=',i5)"),
-                            "Rtrttf", uplo, cform, n;
+                        write(nout, format_9998), srnamt, uplo, cform, n;
                         nerrs++;
                         goto statement_100;
                     }
                     //
                     for (inorm = 1; inorm <= 4; inorm = inorm + 1) {
                         //
-                        //                    Check all four norms: 'M', '1', 'I', 'F'
+                        // Check all four norms: 'M', '1', 'I', 'F'
                         //
                         norm = norms[inorm - 1];
-                        normarf = Rlansf(&norm, &cform, &uplo, n, arf, work);
-                        norma = Rlansy(&norm, &uplo, n, a, lda, work);
+                        normarf = Rlansf(norm.elems, cform.elems, uplo.elems, n, arf, work);
+                        norma = Rlansy(norm.elems, uplo.elems, n, a, lda, work);
                         //
                         result[1 - 1] = (norma - normarf) / norma / eps;
                         nrun++;
@@ -169,10 +180,7 @@ void Rdrvrf1(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                                 write(nout, star);
                                 write(nout, format_9999);
                             }
-                            sprintnum_short(buf, result[0]);
-                            write(nout, "(1x,'     Failure in ',a6,' N=',i5,' TYPE=',i5,' UPLO=''',a1,"
-                                        "''', FORM =''',a1,''', NORM=''',a1,''', test=',a)"),
-                                "Rlansf", n, iit, &uplo, &cform, &norm, buf;
+                            write(nout, format_9997), "Rlansf", n, iit, uplo, cform, norm, result[1 - 1];
                             nfail++;
                         }
                     }
@@ -182,21 +190,17 @@ void Rdrvrf1(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
         }
     }
     //
-    //     Print a summary of the results.
+    // Print a summary of the results.
     //
     if (nfail == 0) {
-        write(nout, "(1x,'All tests for ',a6,' auxiliary routine passed the ',"
-                    "'threshold ( ',i5,' tests run)')"),
-            "Rlansf", nrun;
+        write(nout, format_9996), "Rlansf", nrun;
     } else {
-        write(nout, "(1x,a6,' auxiliary routine: ',i5,' out of ',i5,"
-                    "' tests failed to pass the threshold')"),
-            "Rlansf", nfail, nrun;
+        write(nout, format_9995), "Rlansf", nfail, nrun;
     }
     if (nerrs != 0) {
-        write(nout, "(26x,i5,' error message recorded (',a6,')')"), nerrs, "Rlansf";
+        write(nout, format_9994), nerrs, "Rlansf";
     }
     //
-    //     End of Rdrvrf1
+    // End of Rdrvrf1
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DGELSD.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -60,7 +67,7 @@ void Rgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
     INTEGER ldwork = 0;
     INTEGER il = 0;
     //
-    //     Test the input arguments.
+    // Test the input arguments.
     //
     info = 0;
     minmn = min(m, n);
@@ -81,12 +88,12 @@ void Rgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
     //
     smlsiz = iMlaenv(9, "Rgelsd", " ", 0, 0, 0, 0);
     //
-    //     Compute workspace.
-    //     (Note: Comments in the code beginning "Workspace:" describe the
-    //     minimal amount of workspace needed at that point in the code,
-    //     as well as the preferred amount for good performance.
-    //     NB refers to the optimal block size for the immediately
-    //     following subroutine, as returned by iMlaenv.)
+    // Compute workspace.
+    // (Note: Comments in the code beginning "Workspace:" describe the
+    // minimal amount of workspace needed at that point in the code,
+    // as well as the preferred amount for good performance.
+    // NB refers to the optimal block size for the immediately
+    // following subroutine, as returned by iMlaenv.)
     //
     minwrk = 1;
     liwork = 1;
@@ -94,12 +101,12 @@ void Rgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
     nlvl = max(castINTEGER(log(castREAL(minmn) / castREAL(smlsiz + 1)) / log(two)) + 1, (INTEGER)0);
     //
     if (info == 0) {
-        maxwrk = 0;
+        maxwrk = 1;
         liwork = 3 * minmn * nlvl + 11 * minmn;
         mm = m;
         if (m >= n && m >= mnthr) {
             //
-            //           Path 1a - overdetermined, with many more rows than columns.
+            // Path 1a - overdetermined, with many more rows than columns.
             //
             mm = n;
             maxwrk = max(maxwrk, n + n * iMlaenv(1, "Rgeqrf", " ", m, n, -1, -1));
@@ -107,21 +114,21 @@ void Rgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
         }
         if (m >= n) {
             //
-            //           Path 1 - overdetermined or exactly determined.
+            // Path 1 - overdetermined or exactly determined.
             //
             maxwrk = max(maxwrk, 3 * n + (mm + n) * iMlaenv(1, "Rgebrd", " ", mm, n, -1, -1));
             maxwrk = max(maxwrk, 3 * n + nrhs * iMlaenv(1, "Rormbr", "QLT", mm, nrhs, n, -1));
             maxwrk = max(maxwrk, 3 * n + (n - 1) * iMlaenv(1, "Rormbr", "PLN", n, nrhs, n, -1));
-            wlalsd = 9 * n + 2 * n * smlsiz + 8 * n * nlvl + n * nrhs + (smlsiz + 1) * (smlsiz + 1);
+            wlalsd = 9 * n + 2 * n * smlsiz + 8 * n * nlvl + n * nrhs + pow2((smlsiz + 1));
             maxwrk = max(maxwrk, 3 * n + wlalsd);
-            minwrk = max({3 * n + mm, 3 * n + nrhs, 3 * n + wlalsd});
+            minwrk = max(3 * n + mm, 3 * n + nrhs, 3 * n + wlalsd);
         }
         if (n > m) {
-            wlalsd = 9 * m + 2 * m * smlsiz + 8 * m * nlvl + m * nrhs + (smlsiz + 1) * (smlsiz + 1);
+            wlalsd = 9 * m + 2 * m * smlsiz + 8 * m * nlvl + m * nrhs + pow2((smlsiz + 1));
             if (n >= mnthr) {
                 //
-                //              Path 2a - underdetermined, with many more columns
-                //              than rows.
+                // Path 2a - underdetermined, with many more columns
+                // than rows.
                 //
                 maxwrk = m + m * iMlaenv(1, "Rgelqf", " ", m, n, -1, -1);
                 maxwrk = max(maxwrk, m * m + 4 * m + 2 * m * iMlaenv(1, "Rgebrd", " ", m, m, -1, -1));
@@ -134,19 +141,19 @@ void Rgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
                 }
                 maxwrk = max(maxwrk, m + nrhs * iMlaenv(1, "Rormlq", "LT", n, nrhs, m, -1));
                 maxwrk = max(maxwrk, m * m + 4 * m + wlalsd);
-                //     XXX: Ensure the Path 2a case below is triggered.  The workspace
-                //     calculation should use queries for all routines eventually.
-                maxwrk = max(maxwrk, 4 * m + m * m + max({m, 2 * m - 4, nrhs, n - 3 * m}));
+                // XXX: Ensure the Path 2a case below is triggered.  The workspace
+                // calculation should use queries for all routines eventually.
+                maxwrk = max(maxwrk, 4 * m + m * m + max(m, 2 * m - 4, nrhs, n - 3 * m));
             } else {
                 //
-                //              Path 2 - remaining underdetermined cases.
+                // Path 2 - remaining underdetermined cases.
                 //
                 maxwrk = 3 * m + (n + m) * iMlaenv(1, "Rgebrd", " ", m, n, -1, -1);
                 maxwrk = max(maxwrk, 3 * m + nrhs * iMlaenv(1, "Rormbr", "QLT", m, nrhs, n, -1));
                 maxwrk = max(maxwrk, 3 * m + m * iMlaenv(1, "Rormbr", "PLN", n, nrhs, m, -1));
                 maxwrk = max(maxwrk, 3 * m + wlalsd);
             }
-            minwrk = max({3 * m + nrhs, 3 * m + m, 3 * m + wlalsd});
+            minwrk = max(3 * m + nrhs, 3 * m + m, 3 * m + wlalsd);
         }
         minwrk = min(minwrk, maxwrk);
         work[1 - 1] = maxwrk;
@@ -164,39 +171,39 @@ void Rgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
         goto statement_10;
     }
     //
-    //     Quick return if possible.
+    // Quick return if possible.
     //
     if (m == 0 || n == 0) {
         rank = 0;
         return;
     }
     //
-    //     Get machine parameters.
+    // Get machine parameters.
     //
     eps = Rlamch("P");
     sfmin = Rlamch("S");
     smlnum = sfmin / eps;
     bignum = one / smlnum;
     //
-    //     Scale A if max entry outside range [SMLNUM,BIGNUM].
+    // Scale A if max entry outside range [SMLNUM,BIGNUM].
     //
     anrm = Rlange("M", m, n, a, lda, work);
     iascl = 0;
     if (anrm > zero && anrm < smlnum) {
         //
-        //        Scale matrix norm up to SMLNUM.
+        // Scale matrix norm up to SMLNUM.
         //
         Rlascl("G", 0, 0, anrm, smlnum, m, n, a, lda, info);
         iascl = 1;
     } else if (anrm > bignum) {
         //
-        //        Scale matrix norm down to BIGNUM.
+        // Scale matrix norm down to BIGNUM.
         //
         Rlascl("G", 0, 0, anrm, bignum, m, n, a, lda, info);
         iascl = 2;
     } else if (anrm == zero) {
         //
-        //        Matrix all zero. Return zero solution.
+        // Matrix all zero. Return zero solution.
         //
         Rlaset("F", max(m, n), nrhs, zero, zero, b, ldb);
         Rlaset("F", minmn, 1, zero, zero, s, 1);
@@ -204,56 +211,56 @@ void Rgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
         goto statement_10;
     }
     //
-    //     Scale B if max entry outside range [SMLNUM,BIGNUM].
+    // Scale B if max entry outside range [SMLNUM,BIGNUM].
     //
     bnrm = Rlange("M", m, nrhs, b, ldb, work);
     ibscl = 0;
     if (bnrm > zero && bnrm < smlnum) {
         //
-        //        Scale matrix norm up to SMLNUM.
+        // Scale matrix norm up to SMLNUM.
         //
         Rlascl("G", 0, 0, bnrm, smlnum, m, nrhs, b, ldb, info);
         ibscl = 1;
     } else if (bnrm > bignum) {
         //
-        //        Scale matrix norm down to BIGNUM.
+        // Scale matrix norm down to BIGNUM.
         //
         Rlascl("G", 0, 0, bnrm, bignum, m, nrhs, b, ldb, info);
         ibscl = 2;
     }
     //
-    //     If M < N make sure certain entries of B are zero.
+    // If M < N make sure certain entries of B are zero.
     //
     if (m < n) {
         Rlaset("F", n - m, nrhs, zero, zero, &b[((m + 1) - 1)], ldb);
     }
     //
-    //     Overdetermined case.
+    // Overdetermined case.
     //
     if (m >= n) {
         //
-        //        Path 1 - overdetermined or exactly determined.
+        // Path 1 - overdetermined or exactly determined.
         //
         mm = m;
         if (m >= mnthr) {
             //
-            //           Path 1a - overdetermined, with many more rows than columns.
+            // Path 1a - overdetermined, with many more rows than columns.
             //
             mm = n;
             itau = 1;
             nwork = itau + n;
             //
-            //           Compute A=Q*R.
-            //           (Workspace: need 2*N, prefer N+N*NB)
+            // Compute A=Q*R.
+            // (Workspace: need 2*N, prefer N+N*NB)
             //
             Rgeqrf(m, n, a, lda, &work[itau - 1], &work[nwork - 1], lwork - nwork + 1, info);
             //
-            //           Multiply B by transpose(Q).
-            //           (Workspace: need N+NRHS, prefer N+NRHS*NB)
+            // Multiply B by transpose(Q).
+            // (Workspace: need N+NRHS, prefer N+NRHS*NB)
             //
             Rormqr("L", "T", m, nrhs, n, a, lda, &work[itau - 1], b, ldb, &work[nwork - 1], lwork - nwork + 1, info);
             //
-            //           Zero out below R.
+            // Zero out below R.
             //
             if (n > 1) {
                 Rlaset("L", n - 1, n - 1, zero, zero, &a[(2 - 1)], lda);
@@ -265,46 +272,46 @@ void Rgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
         itaup = itauq + n;
         nwork = itaup + n;
         //
-        //        Bidiagonalize R in A.
-        //        (Workspace: need 3*N+MM, prefer 3*N+(MM+N)*NB)
+        // Bidiagonalize R in A.
+        // (Workspace: need 3*N+MM, prefer 3*N+(MM+N)*NB)
         //
         Rgebrd(mm, n, a, lda, s, &work[ie - 1], &work[itauq - 1], &work[itaup - 1], &work[nwork - 1], lwork - nwork + 1, info);
         //
-        //        Multiply B by transpose of left bidiagonalizing vectors of R.
-        //        (Workspace: need 3*N+NRHS, prefer 3*N+NRHS*NB)
+        // Multiply B by transpose of left bidiagonalizing vectors of R.
+        // (Workspace: need 3*N+NRHS, prefer 3*N+NRHS*NB)
         //
         Rormbr("Q", "L", "T", mm, nrhs, n, a, lda, &work[itauq - 1], b, ldb, &work[nwork - 1], lwork - nwork + 1, info);
         //
-        //        Solve the bidiagonal least squares problem.
+        // Solve the bidiagonal least squares problem.
         //
         Rlalsd("U", smlsiz, n, nrhs, s, &work[ie - 1], b, ldb, rcond, rank, &work[nwork - 1], iwork, info);
         if (info != 0) {
             goto statement_10;
         }
         //
-        //        Multiply B by right bidiagonalizing vectors of R.
+        // Multiply B by right bidiagonalizing vectors of R.
         //
         Rormbr("P", "L", "N", n, nrhs, n, a, lda, &work[itaup - 1], b, ldb, &work[nwork - 1], lwork - nwork + 1, info);
         //
-    } else if (n >= mnthr && lwork >= 4 * m + m * m + max({m, 2 * m - 4, nrhs, n - 3 * m, wlalsd})) {
+    } else if (n >= mnthr && lwork >= 4 * m + m * m + max(m, 2 * m - 4, nrhs, n - 3 * m, wlalsd)) {
         //
-        //        Path 2a - underdetermined, with many more columns than rows
-        //        and sufficient workspace for an efficient algorithm.
+        // Path 2a - underdetermined, with many more columns than rows
+        // and sufficient workspace for an efficient algorithm.
         //
         ldwork = m;
-        if (lwork >= max({4 * m + m * lda + max({m, 2 * m - 4, nrhs, n - 3 * m}), m * lda + m + m * nrhs, 4 * m + m * lda + wlalsd})) {
+        if (lwork >= max(4 * m + m * lda + max(m, 2 * m - 4, nrhs, n - 3 * m), m * lda + m + m * nrhs, 4 * m + m * lda + wlalsd)) {
             ldwork = lda;
         }
         itau = 1;
         nwork = m + 1;
         //
-        //        Compute A=L*Q.
-        //        (Workspace: need 2*M, prefer M+M*NB)
+        // Compute A=L*Q.
+        // (Workspace: need 2*M, prefer M+M*NB)
         //
         Rgelqf(m, n, a, lda, &work[itau - 1], &work[nwork - 1], lwork - nwork + 1, info);
         il = nwork;
         //
-        //        Copy L to WORK(IL), zeroing out above its diagonal.
+        // Copy L to WORK(IL), zeroing out above its diagonal.
         //
         Rlacpy("L", m, m, a, lda, &work[il - 1], ldwork);
         Rlaset("U", m - 1, m - 1, zero, zero, &work[(il + ldwork) - 1], ldwork);
@@ -313,70 +320,70 @@ void Rgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
         itaup = itauq + m;
         nwork = itaup + m;
         //
-        //        Bidiagonalize L in WORK(IL).
-        //        (Workspace: need M*M+5*M, prefer M*M+4*M+2*M*NB)
+        // Bidiagonalize L in WORK(IL).
+        // (Workspace: need M*M+5*M, prefer M*M+4*M+2*M*NB)
         //
         Rgebrd(m, m, &work[il - 1], ldwork, s, &work[ie - 1], &work[itauq - 1], &work[itaup - 1], &work[nwork - 1], lwork - nwork + 1, info);
         //
-        //        Multiply B by transpose of left bidiagonalizing vectors of L.
-        //        (Workspace: need M*M+4*M+NRHS, prefer M*M+4*M+NRHS*NB)
+        // Multiply B by transpose of left bidiagonalizing vectors of L.
+        // (Workspace: need M*M+4*M+NRHS, prefer M*M+4*M+NRHS*NB)
         //
         Rormbr("Q", "L", "T", m, nrhs, m, &work[il - 1], ldwork, &work[itauq - 1], b, ldb, &work[nwork - 1], lwork - nwork + 1, info);
         //
-        //        Solve the bidiagonal least squares problem.
+        // Solve the bidiagonal least squares problem.
         //
         Rlalsd("U", smlsiz, m, nrhs, s, &work[ie - 1], b, ldb, rcond, rank, &work[nwork - 1], iwork, info);
         if (info != 0) {
             goto statement_10;
         }
         //
-        //        Multiply B by right bidiagonalizing vectors of L.
+        // Multiply B by right bidiagonalizing vectors of L.
         //
         Rormbr("P", "L", "N", m, nrhs, m, &work[il - 1], ldwork, &work[itaup - 1], b, ldb, &work[nwork - 1], lwork - nwork + 1, info);
         //
-        //        Zero out below first M rows of B.
+        // Zero out below first M rows of B.
         //
         Rlaset("F", n - m, nrhs, zero, zero, &b[((m + 1) - 1)], ldb);
         nwork = itau + m;
         //
-        //        Multiply transpose(Q) by B.
-        //        (Workspace: need M+NRHS, prefer M+NRHS*NB)
+        // Multiply transpose(Q) by B.
+        // (Workspace: need M+NRHS, prefer M+NRHS*NB)
         //
         Rormlq("L", "T", n, nrhs, m, a, lda, &work[itau - 1], b, ldb, &work[nwork - 1], lwork - nwork + 1, info);
         //
     } else {
         //
-        //        Path 2 - remaining underdetermined cases.
+        // Path 2 - remaining underdetermined cases.
         //
         ie = 1;
         itauq = ie + m;
         itaup = itauq + m;
         nwork = itaup + m;
         //
-        //        Bidiagonalize A.
-        //        (Workspace: need 3*M+N, prefer 3*M+(M+N)*NB)
+        // Bidiagonalize A.
+        // (Workspace: need 3*M+N, prefer 3*M+(M+N)*NB)
         //
         Rgebrd(m, n, a, lda, s, &work[ie - 1], &work[itauq - 1], &work[itaup - 1], &work[nwork - 1], lwork - nwork + 1, info);
         //
-        //        Multiply B by transpose of left bidiagonalizing vectors.
-        //        (Workspace: need 3*M+NRHS, prefer 3*M+NRHS*NB)
+        // Multiply B by transpose of left bidiagonalizing vectors.
+        // (Workspace: need 3*M+NRHS, prefer 3*M+NRHS*NB)
         //
         Rormbr("Q", "L", "T", m, nrhs, n, a, lda, &work[itauq - 1], b, ldb, &work[nwork - 1], lwork - nwork + 1, info);
         //
-        //        Solve the bidiagonal least squares problem.
+        // Solve the bidiagonal least squares problem.
         //
         Rlalsd("L", smlsiz, m, nrhs, s, &work[ie - 1], b, ldb, rcond, rank, &work[nwork - 1], iwork, info);
         if (info != 0) {
             goto statement_10;
         }
         //
-        //        Multiply B by right bidiagonalizing vectors of A.
+        // Multiply B by right bidiagonalizing vectors of A.
         //
         Rormbr("P", "L", "N", n, nrhs, m, a, lda, &work[itaup - 1], b, ldb, &work[nwork - 1], lwork - nwork + 1, info);
         //
     }
     //
-    //     Undo scaling.
+    // Undo scaling.
     //
     if (iascl == 1) {
         Rlascl("G", 0, 0, anrm, smlnum, n, nrhs, b, ldb, info);
@@ -395,6 +402,6 @@ statement_10:
     work[1 - 1] = maxwrk;
     iwork[1 - 1] = liwork;
     //
-    //     End of Rgelsd
+    // End of Rgelsd
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,35 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZTRTRS.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Ctrtrs(const char *uplo, const char *trans, const char *diag, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     bool nounit = Mlsame(diag, "N");
@@ -78,13 +62,13 @@ void Ctrtrs(const char *uplo, const char *trans, const char *diag, INTEGER const
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
     }
     //
-    //     Check for singularity.
+    // Check for singularity.
     //
     const COMPLEX zero = COMPLEX(0.0, 0.0);
     if (nounit) {
@@ -96,11 +80,11 @@ void Ctrtrs(const char *uplo, const char *trans, const char *diag, INTEGER const
     }
     info = 0;
     //
-    //     Solve A * x = b,  A**T * x = b,  or  A**H * x = b.
+    // Solve A * x = b,  A**T * x = b,  or  A**H * x = b.
     //
     const COMPLEX one = COMPLEX(1.0, 0.0);
     Ctrsm("Left", uplo, trans, diag, n, nrhs, one, a, lda, b, ldb);
     //
-    //     End of Ctrtrs
+    // End of Ctrtrs
     //
 }

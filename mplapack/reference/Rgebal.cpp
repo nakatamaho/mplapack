@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,36 +26,18 @@
  *
  */
 
+// Derived from LAPACK routine DGEBAL.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rgebal(const char *job, INTEGER const n, REAL *a, INTEGER const lda, INTEGER &ilo, INTEGER &ihi, REAL *scale, INTEGER &info) {
-    INTEGER k = 0;
-    INTEGER l = 0;
-    INTEGER i = 0;
-    const REAL one = 1.0;
-    INTEGER m = 0;
-    INTEGER j = 0;
-    INTEGER iexc = 0;
-    const REAL zero = 0.0;
-    REAL sfmin1 = 0.0;
-    REAL sfmax1 = 0.0;
-    const REAL sclfac = 2.0e+0;
-    REAL sfmin2 = 0.0;
-    REAL sfmax2 = 0.0;
-    bool noconv = false;
-    REAL c = 0.0;
-    REAL r = 0.0;
-    INTEGER ica = 0;
-    REAL ca = 0.0;
-    INTEGER ira = 0;
-    REAL ra = 0.0;
-    REAL g = 0.0;
-    REAL f = 0.0;
-    REAL s = 0.0;
-    const REAL factor = 0.95e+0;
-    //
-    //     Test the input parameters
+    // Test the input parameters
     //
     info = 0;
     if (!Mlsame(job, "N") && !Mlsame(job, "P") && !Mlsame(job, "S") && !Mlsame(job, "B")) {
@@ -70,210 +52,218 @@ void Rgebal(const char *job, INTEGER const n, REAL *a, INTEGER const lda, INTEGE
         return;
     }
     //
-    k = 1;
-    l = n;
+    // Quick returns.
     //
     if (n == 0) {
-        goto statement_210;
+        ilo = 1;
+        ihi = 0;
+        return;
     }
     //
+    INTEGER i = 0;
+    const REAL one = 1.0;
     if (Mlsame(job, "N")) {
         for (i = 1; i <= n; i = i + 1) {
             scale[i - 1] = one;
         }
-        goto statement_210;
+        ilo = 1;
+        ihi = n;
+        return;
     }
     //
-    if (Mlsame(job, "S")) {
-        goto statement_120;
-    }
+    // Permutation to isolate eigenvalues if possible.
     //
-    //     Permutation to isolate eigenvalues if possible
+    INTEGER k = 1;
+    INTEGER l = n;
     //
-    goto statement_50;
-//
-//     Row and column exchange.
-//
-statement_20:
-    scale[m - 1] = j;
-    if (j == m) {
-        goto statement_30;
-    }
-    //
-    Rswap(l, &a[(j - 1) * lda], 1, &a[(m - 1) * lda], 1);
-    Rswap(n - k + 1, &a[(j - 1) + (k - 1) * lda], lda, &a[(m - 1) + (k - 1) * lda], lda);
-//
-statement_30:
-    switch (iexc) {
-    case 1:
-        goto statement_40;
-    case 2:
-        goto statement_80;
-    default:
-        break;
-    }
-//
-//     Search for rows isolating an eigenvalue and push them down.
-//
-statement_40:
-    if (l == 1) {
-        goto statement_210;
-    }
-    l = l - 1;
-//
-statement_50:
-    for (j = l; j >= 1; j = j - 1) {
+    bool noconv = false;
+    bool canswap = false;
+    INTEGER j = 0;
+    const REAL zero = 0.0;
+    if (!Mlsame(job, "S")) {
         //
-        for (i = 1; i <= l; i = i + 1) {
-            if (i == j) {
-                goto statement_60;
+        // Row and column exchange.
+        //
+        noconv = true;
+        while (noconv) {
+            //
+            // Search for rows isolating an eigenvalue and push them down.
+            //
+            noconv = false;
+            for (i = l; i >= 1; i = i - 1) {
+                canswap = true;
+                for (j = 1; j <= l; j = j + 1) {
+                    if (i != j && a[(i - 1) + (j - 1) * lda] != zero) {
+                        canswap = false;
+                        break;
+                    }
+                }
+                //
+                if (canswap) {
+                    scale[l - 1] = i;
+                    if (i != l) {
+                        Rswap(l, &a[(i - 1) * lda], 1, &a[(l - 1) * lda], 1);
+                        Rswap(n - k + 1, &a[(i - 1) + (k - 1) * lda], lda, &a[(l - 1) + (k - 1) * lda], lda);
+                    }
+                    noconv = true;
+                    //
+                    if (l == 1) {
+                        ilo = 1;
+                        ihi = 1;
+                        return;
+                    }
+                    //
+                    l = l - 1;
+                }
             }
-            if (a[(j - 1) + (i - 1) * lda] != zero) {
-                goto statement_70;
-            }
-        statement_60:;
+            //
         }
         //
-        m = l;
-        iexc = 1;
-        goto statement_20;
-    statement_70:;
-    }
-    //
-    goto statement_90;
-//
-//     Search for columns isolating an eigenvalue and push them left.
-//
-statement_80:
-    k++;
-//
-statement_90:
-    for (j = k; j <= l; j = j + 1) {
-        //
-        for (i = k; i <= l; i = i + 1) {
-            if (i == j) {
-                goto statement_100;
+        noconv = true;
+        while (noconv) {
+            //
+            // Search for columns isolating an eigenvalue and push them left.
+            //
+            noconv = false;
+            for (j = k; j <= l; j = j + 1) {
+                canswap = true;
+                for (i = k; i <= l; i = i + 1) {
+                    if (i != j && a[(i - 1) + (j - 1) * lda] != zero) {
+                        canswap = false;
+                        break;
+                    }
+                }
+                //
+                if (canswap) {
+                    scale[k - 1] = j;
+                    if (j != k) {
+                        Rswap(l, &a[(j - 1) * lda], 1, &a[(k - 1) * lda], 1);
+                        Rswap(n - k + 1, &a[(j - 1) + (k - 1) * lda], lda, &a[(k - 1) + (k - 1) * lda], lda);
+                    }
+                    noconv = true;
+                    //
+                    k++;
+                }
             }
-            if (a[(i - 1) + (j - 1) * lda] != zero) {
-                goto statement_110;
-            }
-        statement_100:;
+            //
         }
         //
-        m = k;
-        iexc = 2;
-        goto statement_20;
-    statement_110:;
     }
-//
-statement_120:
+    //
+    // Initialize SCALE for non-permuted submatrix.
+    //
     for (i = k; i <= l; i = i + 1) {
         scale[i - 1] = one;
     }
     //
+    // If we only had to permute, we are done.
+    //
     if (Mlsame(job, "P")) {
-        goto statement_210;
+        ilo = k;
+        ihi = l;
+        return;
     }
     //
-    //     Balance the submatrix in rows K to L.
+    // Balance the submatrix in rows K to L.
     //
-    //     Iterative loop for norm reduction
+    // Iterative loop for norm reduction.
     //
-    sfmin1 = Rlamch("S") / Rlamch("P");
-    // uncomment the following to pass 13rd test of dbal.in.
-    // sfmin1 = 2.2250738585072014E-308 / 2.2204460492503131E-016; // (double)
-    sfmax1 = one / sfmin1;
-    sfmin2 = sfmin1 * sclfac;
-    sfmax2 = one / sfmin2;
-//
-statement_140:
-    noconv = false;
+    REAL sfmin1 = Rlamch("S") / Rlamch("P");
+    REAL sfmax1 = one / sfmin1;
+    const REAL sclfac = 2.0;
+    REAL sfmin2 = sfmin1 * sclfac;
+    REAL sfmax2 = one / sfmin2;
     //
-    for (i = k; i <= l; i = i + 1) {
+    noconv = true;
+    REAL c = 0.0;
+    REAL r = 0.0;
+    INTEGER ica = 0;
+    REAL ca = 0.0;
+    INTEGER ira = 0;
+    REAL ra = 0.0;
+    REAL g = 0.0;
+    REAL f = 0.0;
+    REAL s = 0.0;
+    const REAL factor = 0.95;
+    while (noconv) {
+        noconv = false;
         //
-        c = Rnrm2(l - k + 1, &a[(k - 1) + (i - 1) * lda], 1);
-        r = Rnrm2(l - k + 1, &a[(i - 1) + (k - 1) * lda], lda);
-        ica = iRamax(l, &a[(i - 1) * lda], 1);
-        ca = abs(a[(ica - 1) + (i - 1) * lda]);
-        ira = iRamax(n - k + 1, &a[(i - 1) + (k - 1) * lda], lda);
-        ra = abs(a[(i - 1) + ((ira + k - 1) - 1) * lda]);
-        //
-        //        Guard against zero C or R due to underflow.
-        //
-        if (c == zero || r == zero) {
-            goto statement_200;
-        }
-        g = r / sclfac;
-        f = one;
-        s = c + r;
-    statement_160:
-        if (c >= g || max({f, c, ca}) >= sfmax2 || min({r, g, ra}) <= sfmin2) {
-            goto statement_170;
-        }
-        if (Risnan(c + f + ca + r + g + ra)) {
+        for (i = k; i <= l; i = i + 1) {
             //
-            //           Exit if NaN to avoid infinite loop
+            c = Rnrm2(l - k + 1, &a[(k - 1) + (i - 1) * lda], 1);
+            r = Rnrm2(l - k + 1, &a[(i - 1) + (k - 1) * lda], lda);
+            ica = iRamax(l, &a[(i - 1) * lda], 1);
+            ca = abs(a[(ica - 1) + (i - 1) * lda]);
+            ira = iRamax(n - k + 1, &a[(i - 1) + (k - 1) * lda], lda);
+            ra = abs(a[(i - 1) + ((ira + k - 1) - 1) * lda]);
             //
-            info = -3;
-            Mxerbla("Rgebal", -info);
-            return;
-        }
-        f = f * sclfac;
-        c = c * sclfac;
-        ca = ca * sclfac;
-        r = r / sclfac;
-        g = g / sclfac;
-        ra = ra / sclfac;
-        goto statement_160;
-    //
-    statement_170:
-        g = c / sclfac;
-    statement_180:
-        if (g < r || max(r, ra) >= sfmax2 || min({f, c, g, ca}) <= sfmin2) {
-            goto statement_190;
-        }
-        f = f / sclfac;
-        c = c / sclfac;
-        g = g / sclfac;
-        ca = ca / sclfac;
-        r = r * sclfac;
-        ra = ra * sclfac;
-        goto statement_180;
-    //
-    //        Now balance.
-    //
-    statement_190:
-        if ((c + r) >= factor * s) {
-            goto statement_200;
-        }
-        if (f < one && scale[i - 1] < one) {
-            if (f * scale[i - 1] <= sfmin1) {
-                goto statement_200;
+            // Guard against zero C or R due to underflow.
+            //
+            if (c == zero || r == zero) {
+                continue;
             }
-        }
-        if (f > one && scale[i - 1] > one) {
-            if (scale[i - 1] >= sfmax1 / f) {
-                goto statement_200;
+            //
+            // Exit if NaN to avoid infinite loop
+            //
+            if (Risnan(c + ca + r + ra)) {
+                info = -3;
+                Mxerbla("Rgebal", -info);
+                return;
             }
+            //
+            g = r / sclfac;
+            f = one;
+            s = c + r;
+            //
+            while (c < g && max(f, c, ca) < sfmax2 && min(r, g, ra) > sfmin2) {
+                f = f * sclfac;
+                c = c * sclfac;
+                ca = ca * sclfac;
+                r = r / sclfac;
+                g = g / sclfac;
+                ra = ra / sclfac;
+            }
+            //
+            g = c / sclfac;
+            //
+            while (g >= r && max(r, ra) < sfmax2 && min(f, c, g, ca) > sfmin2) {
+                f = f / sclfac;
+                c = c / sclfac;
+                g = g / sclfac;
+                ca = ca / sclfac;
+                r = r * sclfac;
+                ra = ra * sclfac;
+            }
+            //
+            // Now balance.
+            //
+            if ((c + r) >= factor * s) {
+                continue;
+            }
+            if (f < one && scale[i - 1] < one) {
+                if (f * scale[i - 1] <= sfmin1) {
+                    continue;
+                }
+            }
+            if (f > one && scale[i - 1] > one) {
+                if (scale[i - 1] >= sfmax1 / f) {
+                    continue;
+                }
+            }
+            g = one / f;
+            scale[i - 1] = scale[i - 1] * f;
+            noconv = true;
+            //
+            Rscal(n - k + 1, g, &a[(i - 1) + (k - 1) * lda], lda);
+            Rscal(l, f, &a[(i - 1) * lda], 1);
+            //
         }
-        g = one / f;
-        scale[i - 1] = scale[i - 1] * f;
-        noconv = true;
         //
-        Rscal(n - k + 1, g, &a[(i - 1) + (k - 1) * lda], lda);
-        Rscal(l, f, &a[(i - 1) * lda], 1);
-    //
-    statement_200:;
     }
     //
-    if (noconv) {
-        goto statement_140;
-    }
-//
-statement_210:
     ilo = k;
     ihi = l;
     //
-    //     End of Rgebal
+    // End of Rgebal
     //
 }

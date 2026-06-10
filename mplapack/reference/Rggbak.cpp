@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DGGBAK.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -35,28 +42,7 @@ void Rggbak(const char *job, const char *side, INTEGER const n, INTEGER const il
     INTEGER i = 0;
     INTEGER k = 0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters
+    // Test the input parameters
     //
     rightv = Mlsame(side, "R");
     leftv = Mlsame(side, "L");
@@ -86,7 +72,7 @@ void Rggbak(const char *job, const char *side, INTEGER const n, INTEGER const il
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
@@ -102,11 +88,11 @@ void Rggbak(const char *job, const char *side, INTEGER const n, INTEGER const il
         goto statement_30;
     }
     //
-    //     Backward balance
+    // Backward balance
     //
     if (Mlsame(job, "S") || Mlsame(job, "B")) {
         //
-        //        Backward transformation on right eigenvectors
+        // Backward transformation on right eigenvectors
         //
         if (rightv) {
             for (i = ilo; i <= ihi; i = i + 1) {
@@ -114,7 +100,7 @@ void Rggbak(const char *job, const char *side, INTEGER const n, INTEGER const il
             }
         }
         //
-        //        Backward transformation on left eigenvectors
+        // Backward transformation on left eigenvectors
         //
         if (leftv) {
             for (i = ilo; i <= ihi; i = i + 1) {
@@ -123,12 +109,12 @@ void Rggbak(const char *job, const char *side, INTEGER const n, INTEGER const il
         }
     }
 //
-//     Backward permutation
+// Backward permutation
 //
 statement_30:
     if (Mlsame(job, "P") || Mlsame(job, "B")) {
         //
-        //        Backward permutation on right eigenvectors
+        // Backward permutation on right eigenvectors
         //
         if (rightv) {
             if (ilo == 1) {
@@ -158,7 +144,7 @@ statement_30:
             }
         }
     //
-    //        Backward permutation on left eigenvectors
+    // Backward permutation on left eigenvectors
     //
     statement_70:
         if (leftv) {
@@ -191,6 +177,6 @@ statement_30:
 //
 statement_110:;
     //
-    //     End of Rggbak
+    // End of Rggbak
     //
 }

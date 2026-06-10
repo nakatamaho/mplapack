@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZPPT01.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,32 +43,9 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Cppt01(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *afac, REAL *rwork, REAL &resid) {
+void Cppt01(fem::str_cref uplo, INTEGER const n, COMPLEX *a, COMPLEX *afac, REAL *rwork, REAL &resid) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Quick exit if N = 0
+    // Quick exit if N = 0
     //
     const REAL zero = 0.0;
     if (n <= 0) {
@@ -69,22 +53,22 @@ void Cppt01(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *afac, REAL *
         return;
     }
     //
-    //     Exit with RESID = 1/EPS if ANORM = 0.
+    // Exit with RESID = 1/EPS if ANORM = 0.
     //
     REAL eps = Rlamch("Epsilon");
-    REAL anorm = Clanhp("1", uplo, n, a, rwork);
+    REAL anorm = Clanhp("1", uplo.elems(), n, a, rwork);
     const REAL one = 1.0;
     if (anorm <= zero) {
         resid = one / eps;
         return;
     }
     //
-    //     Check the imaginary parts of the diagonal elements and return with
-    //     an error code if any are nonzero.
+    // Check the imaginary parts of the diagonal elements and return with
+    // an error code if any are nonzero.
     //
     INTEGER kc = 1;
     INTEGER k = 0;
-    if (Mlsame(uplo, "U")) {
+    if (Mlsame(uplo.elems(), "U")) {
         for (k = 1; k <= n; k = k + 1) {
             if (afac[kc - 1].imag() != zero) {
                 resid = one / eps;
@@ -102,21 +86,21 @@ void Cppt01(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *afac, REAL *
         }
     }
     //
-    //     Compute the product U'*U, overwriting U.
+    // Compute the product U'*U, overwriting U.
     //
     REAL tr = 0.0;
     INTEGER i = 0;
     COMPLEX tc = 0.0;
-    if (Mlsame(uplo, "U")) {
+    if (Mlsame(uplo.elems(), "U")) {
         kc = (n * (n - 1)) / 2 + 1;
         for (k = n; k >= 1; k = k - 1) {
             //
-            //           Compute the (K,K) element of the result.
+            // Compute the (K,K) element of the result.
             //
             tr = Cdotc(k, &afac[kc - 1], 1, &afac[kc - 1], 1).real();
             afac[(kc + k - 1) - 1] = tr;
             //
-            //           Compute the rest of column K.
+            // Compute the rest of column K.
             //
             if (k > 1) {
                 Ctpmv("Upper", "Conjugate", "Non-unit", k - 1, afac, &afac[kc - 1], 1);
@@ -124,7 +108,7 @@ void Cppt01(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *afac, REAL *
             }
         }
         //
-        //        Compute the difference  L*L' - A
+        // Compute the difference  L*L' - A
         //
         kc = 1;
         for (k = 1; k <= n; k = k + 1) {
@@ -135,20 +119,20 @@ void Cppt01(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *afac, REAL *
             kc += k;
         }
         //
-        //     Compute the product L*L', overwriting L.
+        // Compute the product L*L', overwriting L.
         //
     } else {
         kc = (n * (n + 1)) / 2;
         for (k = n; k >= 1; k = k - 1) {
             //
-            //           Add a multiple of column K of the factor L to each of
-            //           columns K+1 through N.
+            // Add a multiple of column K of the factor L to each of
+            // columns K+1 through N.
             //
             if (k < n) {
                 Chpr("Lower", n - k, one, &afac[(kc + 1) - 1], 1, &afac[(kc + n - k + 1) - 1]);
             }
             //
-            //           Scale column K by the diagonal element.
+            // Scale column K by the diagonal element.
             //
             tc = afac[kc - 1];
             Cscal(n - k + 1, tc, &afac[kc - 1], 1);
@@ -156,11 +140,11 @@ void Cppt01(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *afac, REAL *
             kc = kc - (n - k + 2);
         }
         //
-        //        Compute the difference  U'*U - A
+        // Compute the difference  U'*U - A
         //
         kc = 1;
         for (k = 1; k <= n; k = k + 1) {
-            afac[kc - 1] = afac[kc - 1] - (a[kc - 1]).real();
+            afac[kc - 1] = afac[kc - 1] - a[kc - 1].real();
             for (i = k + 1; i <= n; i = i + 1) {
                 afac[(kc + i - k) - 1] = afac[(kc + i - k) - 1] - a[(kc + i - k) - 1];
             }
@@ -168,12 +152,12 @@ void Cppt01(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *afac, REAL *
         }
     }
     //
-    //     Compute norm( L*U - A ) / ( N * norm(A) * EPS )
+    // Compute norm( L*U - A ) / ( N * norm(A) * EPS )
     //
-    resid = Clanhp("1", uplo, n, afac, rwork);
+    resid = Clanhp("1", uplo.elems(), n, afac, rwork);
     //
     resid = ((resid / castREAL(n)) / anorm) / eps;
     //
-    //     End of Cppt01
+    // End of Cppt01
     //
 }

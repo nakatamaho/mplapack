@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DPTT02.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -38,30 +45,7 @@ using fem::common;
 
 void Rptt02(INTEGER const n, INTEGER const nrhs, REAL *d, REAL *e, REAL *x, INTEGER const ldx, REAL *b, INTEGER const ldb, REAL &resid) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Quick return if possible
+    // Quick return if possible
     //
     const REAL zero = 0.0;
     if (n <= 0) {
@@ -69,11 +53,11 @@ void Rptt02(INTEGER const n, INTEGER const nrhs, REAL *d, REAL *e, REAL *x, INTE
         return;
     }
     //
-    //     Compute the 1-norm of the tridiagonal matrix A.
+    // Compute the 1-norm of the tridiagonal matrix A.
     //
     REAL anorm = Rlanst("1", n, d, e);
     //
-    //     Exit with RESID = 1/EPS if ANORM = 0.
+    // Exit with RESID = 1/EPS if ANORM = 0.
     //
     REAL eps = Rlamch("Epsilon");
     const REAL one = 1.0;
@@ -82,12 +66,12 @@ void Rptt02(INTEGER const n, INTEGER const nrhs, REAL *d, REAL *e, REAL *x, INTE
         return;
     }
     //
-    //     Compute B - A*X.
+    // Compute B - A*X.
     //
     Rlaptm(n, nrhs, -one, d, e, x, ldx, one, b, ldb);
     //
-    //     Compute the maximum over the number of right hand sides of
-    //        norm(B - A*X) / ( norm(A) * norm(X) * EPS ).
+    // Compute the maximum over the number of right hand sides of
+    // norm(B - A*X) / ( norm(A) * norm(X) * EPS ).
     //
     resid = zero;
     INTEGER j = 0;
@@ -99,10 +83,10 @@ void Rptt02(INTEGER const n, INTEGER const nrhs, REAL *d, REAL *e, REAL *x, INTE
         if (xnorm <= zero) {
             resid = one / eps;
         } else {
-            resid = max(resid, REAL(((bnorm / anorm) / xnorm) / eps));
+            resid = max(resid, ((bnorm / anorm) / xnorm) / eps);
         }
     }
     //
-    //     End of Rptt02
+    // End of Rptt02
     //
 }

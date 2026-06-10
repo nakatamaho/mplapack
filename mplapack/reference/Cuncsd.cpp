@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZUNCSD.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Cuncsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char *jobv2t, const char *trans, const char *signs, INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x11, INTEGER const ldx11, COMPLEX *x12, INTEGER const ldx12, COMPLEX *x21, INTEGER const ldx21, COMPLEX *x22, INTEGER const ldx22, REAL *theta, COMPLEX *u1, INTEGER const ldu1, COMPLEX *u2, INTEGER const ldu2, COMPLEX *v1t, INTEGER const ldv1t, COMPLEX *v2t, INTEGER const ldv2t, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER const lrwork, INTEGER *iwork, INTEGER &info) {
     //
-    //     Test input arguments
+    // Test input arguments
     //
     info = 0;
     bool wantu1 = Mlsame(jobu1, "Y");
@@ -74,7 +81,7 @@ void Cuncsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         info = -26;
     }
     //
-    //     Work with transpose if convenient
+    // Work with transpose if convenient
     //
     char transt;
     char signst;
@@ -93,8 +100,8 @@ void Cuncsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         return;
     }
     //
-    //     Work with permutation [ 0 I; I 0 ] * X * [ 0 I; I 0 ] if
-    //     convenient
+    // Work with permutation [ 0 I; I 0 ] * X * [ 0 I; I 0 ] if
+    // convenient
     //
     if (info == 0 && m - q < q) {
         if (defaultsigns) {
@@ -106,7 +113,7 @@ void Cuncsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         return;
     }
     //
-    //     Compute workspace
+    // Compute workspace
     //
     INTEGER iphi = 0;
     INTEGER ib11d = 0;
@@ -144,7 +151,7 @@ void Cuncsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
     INTEGER lbbcsdwork = 0;
     if (info == 0) {
         //
-        //        Real workspace
+        // Real workspace
         //
         iphi = 2;
         ib11d = iphi + max((INTEGER)1, q - 1);
@@ -163,7 +170,7 @@ void Cuncsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         lrworkmin = ibbcsd + lbbcsdworkmin - 1;
         rwork[1 - 1] = lrworkopt;
         //
-        //        Complex workspace
+        // Complex workspace
         //
         itaup1 = 2;
         itaup2 = itaup1 + max((INTEGER)1, p);
@@ -181,8 +188,8 @@ void Cuncsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         Cunbdb(trans, signs, m, p, q, x11, ldx11, x12, ldx12, x21, ldx21, x22, ldx22, theta, theta, u1, u2, v1t, v2t, work, -1, childinfo);
         lorbdbworkopt = castINTEGER(work[1 - 1].real());
         lorbdbworkmin = lorbdbworkopt;
-        lworkopt = max({iorgqr + lorgqrworkopt, iorglq + lorglqworkopt, iorbdb + lorbdbworkopt}) - 1;
-        lworkmin = max({iorgqr + lorgqrworkmin, iorglq + lorglqworkmin, iorbdb + lorbdbworkmin}) - 1;
+        lworkopt = max(iorgqr + lorgqrworkopt, iorglq + lorglqworkopt, iorbdb + lorbdbworkopt) - 1;
+        lworkmin = max(iorgqr + lorgqrworkmin, iorglq + lorglqworkmin, iorbdb + lorbdbworkmin) - 1;
         work[1 - 1] = max(lworkopt, lworkmin);
         //
         if (lwork < lworkmin && !(lquery || lrquery)) {
@@ -197,7 +204,7 @@ void Cuncsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         }
     }
     //
-    //     Abort if any illegal arguments
+    // Abort if any illegal arguments
     //
     if (info != 0) {
         Mxerbla("Cuncsd", -info);
@@ -206,11 +213,11 @@ void Cuncsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         return;
     }
     //
-    //     Transform to bidiagonal block form
+    // Transform to bidiagonal block form
     //
     Cunbdb(trans, signs, m, p, q, x11, ldx11, x12, ldx12, x21, ldx21, x22, ldx22, theta, &rwork[iphi - 1], &work[itaup1 - 1], &work[itaup2 - 1], &work[itauq1 - 1], &work[itauq2 - 1], &work[iorbdb - 1], lorbdbwork, childinfo);
     //
-    //     Accumulate Householder reflectors
+    // Accumulate Householder reflectors
     //
     const COMPLEX one = COMPLEX(1.0, 0.0);
     INTEGER j = 0;
@@ -228,7 +235,7 @@ void Cuncsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         }
         if (wantv1t && q > 0) {
             Clacpy("U", q - 1, q - 1, &x11[(2 - 1) * ldx11], ldx11, &v1t[(2 - 1) + (2 - 1) * ldv1t], ldv1t);
-            v1t[(1 - 1)] = one;
+            v1t[0] = one;
             for (j = 2; j <= q; j = j + 1) {
                 v1t[(j - 1) * ldv1t] = zero;
                 v1t[(j - 1)] = zero;
@@ -255,7 +262,7 @@ void Cuncsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         }
         if (wantv1t && q > 0) {
             Clacpy("L", q - 1, q - 1, &x11[(2 - 1)], ldx11, &v1t[(2 - 1) + (2 - 1) * ldv1t], ldv1t);
-            v1t[(1 - 1)] = one;
+            v1t[0] = one;
             for (j = 2; j <= q; j = j + 1) {
                 v1t[(j - 1) * ldv1t] = zero;
                 v1t[(j - 1)] = zero;
@@ -273,14 +280,14 @@ void Cuncsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         }
     }
     //
-    //     Compute the CSD of the matrix in bidiagonal-block form
+    // Compute the CSD of the matrix in bidiagonal-block form
     //
     Cbbcsd(jobu1, jobu2, jobv1t, jobv2t, trans, m, p, q, theta, &rwork[iphi - 1], u1, ldu1, u2, ldu2, v1t, ldv1t, v2t, ldv2t, &rwork[ib11d - 1], &rwork[ib11e - 1], &rwork[ib12d - 1], &rwork[ib12e - 1], &rwork[ib21d - 1], &rwork[ib21e - 1], &rwork[ib22d - 1], &rwork[ib22e - 1], &rwork[ibbcsd - 1], lbbcsdwork, info);
     //
-    //     Permute rows and columns to place identity submatrices in top-
-    //     left corner of (1,1)-block and/or bottom-right corner of (1,2)-
-    //     block and/or bottom-right corner of (2,1)-block and/or top-left
-    //     corner of (2,2)-block
+    // Permute rows and columns to place identity submatrices in top-
+    // left corner of (1,1)-block and/or bottom-right corner of (1,2)-
+    // block and/or bottom-right corner of (2,1)-block and/or top-left
+    // corner of (2,2)-block
     //
     INTEGER i = 0;
     if (q > 0 && wantu2) {
@@ -310,6 +317,6 @@ void Cuncsd(const char *jobu1, const char *jobu2, const char *jobv1t, const char
         }
     }
     //
-    //     End Cuncsd
+    // End Cuncsd
     //
 }

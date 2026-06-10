@@ -1,0 +1,461 @@
+ Tests of the Multiple precision version of LAPACK 2.0.1
+ Based on the original LAPACK VERSION 3.9.1
+
+ The following parameter values will be used:
+    M   :       0     1     2     3     5    10    50
+    N   :       0     1     2     3     5    10    50
+    NRHS:       1     2    15
+    NB  :       1     3     3     3    20
+    NX  :       1     0     5     9     1
+    RANK:      30    50    90
+
+ Routines pass computational tests if test ratio is less than3.00000000000000000000000000000000e+01
+
+ Relative machine underflow is taken to be2.00416836000897277799610805134985e-292
+ Relative machine overflow  is taken to be1.79769313486231580793728971405328e+308
+ Relative machine precision is taken to be4.93038065763131995214781514484568e-32
+ 
+ 
+ DGE routines passed the tests of the error exits
+
+ All tests for DGE routines passed the threshold (   3653 tests run)
+ 
+ DGE drivers passed the tests of the error exits
+
+ All tests for DGE drivers  passed the threshold (   5748 tests run)
+ 
+ DGB routines passed the tests of the error exits
+
+ All tests for DGB routines passed the threshold (  28938 tests run)
+ 
+ DGB drivers passed the tests of the error exits
+
+ DGB drivers:  General band matrices
+ Matrix types:
+    1. Random, CNDNUM = 2              5. Random, CNDNUM = sqrt(0.1/EPS)
+    2. First column zero               6. Random, CNDNUM = 0.1/EPS
+    3. Last column zero                7. Scaled near underflow
+    4. Last n/2 columns zero           8. Scaled near overflow
+ Test ratios:
+    1: norm( L * U - A )  / ( N * norm(A) * EPS )
+    2: norm( B - A * X )  / ( norm(A) * norm(X) * EPS )
+    3: norm( X - XACT )   / ( norm(XACT) * CNDNUM * EPS )
+    4: norm( X - XACT )   / ( norm(XACT) * (error bound) )
+    5: (backward error)   / EPS
+    6: RCOND * CNDNUM - 1.0
+    7: abs( WORK(1) - RPVGRW ) / ( max( WORK(1), RPVGRW ) * EPS )
+ Messages:
+ Rgbsvx( 'E','T',   50,   12,   12,...), type 6, test(5)=5.86342048182954290912084994653483e+02
+ Rgbsvx( 'E','C',   50,   12,   12,...), type 6, test(5)=5.86342048182954290912084994653483e+02
+ Rgbsvx( 'F','T',   50,   12,   12,...), EQUED='R', type 6, test(5)=1.26984766486706201345935235355878e+03
+ Rgbsvx( 'F','C',   50,   12,   12,...), EQUED='R', type 6, test(5)=1.26984766486706201345935235355878e+03
+ Rgbsvx( 'F','T',   50,   12,   12,...), EQUED='B', type 6, test(5)=5.86342048182954290912084994653483e+02
+ Rgbsvx( 'F','C',   50,   12,   12,...), EQUED='B', type 6, test(5)=5.86342048182954290912084994653483e+02
+ DGB drivers:      6 out of  36567 tests failed to pass the threshold
+ 
+ DGT routines passed the tests of the error exits
+
+ DGT:  General tridiagonal
+ Matrix types (1-6 have specified condition numbers):
+    1. Diagonal                        7. Random, unspecified CNDNUM
+    2. Random, CNDNUM = 2              8. First column zero
+    3. Random, CNDNUM = sqrt(0.1/EPS)  9. Last column zero
+    4. Random, CNDNUM = 0.1/EPS       10. Last n/2 columns zero
+    5. Scaled near underflow          11. Scaled near underflow
+    6. Scaled near overflow           12. Scaled near overflow
+ Test ratios:
+    1: norm( L * U - A )  / ( N * norm(A) * EPS )
+    2: norm( B - A * X )  / ( norm(A) * norm(X) * EPS )
+    3: norm( X - XACT )   / ( norm(XACT) * CNDNUM * EPS )
+    4: norm( X - XACT )   / ( norm(XACT) * CNDNUM * EPS ), refined
+    5: norm( X - XACT )   / ( norm(XACT) * (error bound) )
+    6: (backward error)   / EPS
+    7: RCOND * CNDNUM - 1.0
+ Messages:
+ TRANS='N', N =    2, NRHS=  1, type  2, test( 2) = 2.94790996050935610528150942158176e+14
+ TRANS='N', N =    2, NRHS=  1, type  2, test( 3) = 1.75382554921968935091536560454124e+14
+ TRANS='N', N =    2, NRHS=  2, type  2, test( 2) = 7.76870724491063703593409038346004e+13
+ TRANS='N', N =    2, NRHS=  2, type  2, test( 3) = 3.66266025497430065737535462686764e+13
+ TRANS='N', N =    2, NRHS= 15, type  2, test( 2) = 3.53152251853503480884514086564602e+14
+ TRANS='N', N =    2, NRHS= 15, type  2, test( 3) = 1.45311594193343987924261147946393e+14
+ TRANS='N', N =    2, NRHS=  1, type  3, test( 2) = 1.03667804412593544256547180344825e+15
+ TRANS='N', N =    2, NRHS=  2, type  3, test( 2) = 6.55151867281545063690514509359498e+14
+ TRANS='N', N =    2, NRHS= 15, type  3, test( 2) = 1.02406622119581434818709577712143e+15
+ TRANS='N', N =    2, NRHS=  1, type  4, test( 2) = 4.84264034550503957071309050677962e+14
+ TRANS='N', N =    2, NRHS=  1, type  4, test( 6) = 1.77312570143696033281692225465374e+11
+ TRANS='N', N =    2, NRHS=  2, type  4, test( 2) = 3.89011948243131551977373747891118e+14
+ TRANS='N', N =    2, NRHS=  2, type  4, test( 6) = 4.87955733147577344153248837785327e+10
+ TRANS='N', N =    2, NRHS= 15, type  4, test( 2) = 9.19906693199293945421414089686439e+14
+ TRANS='N', N =    2, NRHS= 15, type  4, test( 6) = 2.74646302267066315848568226469598e+11
+ TRANS='N', N =    2, NRHS=  1, type  5, test( 2) = 7.36666260279461830297117540176864e+13
+ TRANS='N', N =    2, NRHS=  1, type  5, test( 3) = 6.43314879207962826354715690475245e+13
+ TRANS='N', N =    2, NRHS=  2, type  5, test( 2) = 9.32422995995677860738669540472385e+13
+ TRANS='N', N =    2, NRHS=  2, type  5, test( 3) = 7.66844419468753384209909093273397e+13
+ TRANS='N', N =    2, NRHS= 15, type  5, test( 2) = 1.44226161999943104669601344215697e+14
+ TRANS='N', N =    2, NRHS= 15, type  5, test( 3) = 1.03539426138145765160572833687130e+14
+ TRANS='N', N =    2, NRHS=  1, type  6, test( 2) = 2.32691414253303710347617546942937e+14
+ TRANS='N', N =    2, NRHS=  1, type  6, test( 3) = 1.47270364903142651875131383212941e+14
+ TRANS='N', N =    2, NRHS=  2, type  6, test( 2) = 1.78324401201288477108447049250884e+14
+ TRANS='N', N =    2, NRHS=  2, type  6, test( 3) = 7.55833873202507115171173624832483e+13
+ TRANS='N', N =    2, NRHS= 15, type  6, test( 2) = 3.18477525036306104156057274166176e+14
+ TRANS='N', N =    2, NRHS= 15, type  6, test( 3) = 2.07298257596660600384133033005705e+14
+ TRANS='N', N =    2, NRHS=  1, type  7, test( 2) = 2.68048395451025800132273198343320e+14
+ TRANS='N', N =    2, NRHS=  1, type  7, test( 3) = 1.16895029398742829752340266170401e+14
+ TRANS='N', N =    2, NRHS=  2, type  7, test( 2) = 4.12744417229624671422264057575355e+14
+ TRANS='N', N =    2, NRHS=  2, type  7, test( 3) = 2.10312984393723071450665524819046e+14
+ TRANS='N', N =    2, NRHS= 15, type  7, test( 2) = 7.59356811661379713302552005765874e+14
+ TRANS='N', N =    2, NRHS= 15, type  7, test( 3) = 2.22226174538633667503611336633896e+14
+ TRANS='N', N =    2, NRHS=  1, type 11, test( 2) = 5.05045700455262985935538341185622e+12
+ TRANS='N', N =    2, NRHS=  1, type 11, test( 3) = 6.18596997633686272116238306811039e+12
+ TRANS='N', N =    2, NRHS=  2, type 11, test( 2) = 1.12266992218465778337654584321437e+12
+ TRANS='N', N =    2, NRHS=  2, type 11, test( 3) = 1.37802617790981970385068345173770e+12
+ TRANS='N', N =    2, NRHS= 15, type 11, test( 2) = 9.83214512060880626832833459292035e+12
+ TRANS='N', N =    2, NRHS= 15, type 11, test( 3) = 8.28308557119958981337763131553173e+12
+ TRANS='N', N =    2, NRHS=  1, type 12, test( 2) = 5.08951316233018159581500769930920e+14
+ TRANS='N', N =    2, NRHS=  1, type 12, test( 3) = 1.18489294609176858458049015077441e+14
+ TRANS='N', N =    2, NRHS=  2, type 12, test( 2) = 5.00946269167251021293605270639668e+14
+ TRANS='N', N =    2, NRHS=  2, type 12, test( 3) = 1.14476713423637836714284407192133e+14
+ TRANS='N', N =    2, NRHS= 15, type 12, test( 2) = 1.26699421852935167694138241010912e+15
+ TRANS='N', N =    2, NRHS= 15, type 12, test( 3) = 1.95422662844827477723902973266973e+14
+ TRANS='N', N =    3, NRHS=  1, type  2, test( 2) = 1.22013254251574366554127193395434e+13
+ TRANS='N', N =    3, NRHS=  1, type  2, test( 3) = 6.01009006650848733716668160406901e+12
+ TRANS='N', N =    3, NRHS=  2, type  2, test( 2) = 5.03368518375017597161500095624231e+13
+ TRANS='N', N =    3, NRHS=  2, type  2, test( 3) = 5.26435881861193987052724250635439e+13
+ TRANS='N', N =    3, NRHS= 15, type  2, test( 2) = 1.54145944521734436795708689733804e+14
+ TRANS='N', N =    3, NRHS= 15, type  2, test( 3) = 9.25197368819067967938619494538151e+13
+ TRANS='N', N =    3, NRHS=  1, type  3, test( 2) = 6.32020357757946610859911848831083e+06
+ TRANS='N', N =    3, NRHS=  2, type  3, test( 2) = 7.40575411765901127096024082819700e+06
+ TRANS='N', N =    3, NRHS= 15, type  3, test( 2) = 4.29066160372262528427093048312106e+07
+ TRANS='N', N =    3, NRHS=  1, type  4, test( 6) = 2.84907790222717883266300230504991e+10
+ TRANS='N', N =    3, NRHS=  2, type  4, test( 6) = 3.63051970836862239365714707669088e+09
+ TRANS='N', N =    3, NRHS= 15, type  4, test( 6) = 7.79116273062812040391660687178623e+10
+ TRANS='N', N =    3, NRHS=  1, type  5, test( 2) = 1.93884332513370223870322787392631e+14
+ TRANS='N', N =    3, NRHS=  1, type  5, test( 3) = 8.83684237235208731549326597216351e+13
+ TRANS='N', N =    3, NRHS=  2, type  5, test( 2) = 5.10306086330020741035705883939397e+14
+ TRANS='N', N =    3, NRHS=  2, type  5, test( 3) = 2.83039314837489607642245674021406e+14
+ TRANS='N', N =    3, NRHS= 15, type  5, test( 2) = 4.14469215142966989899746506054125e+14
+ TRANS='N', N =    3, NRHS= 15, type  5, test( 3) = 2.75971082533235055230230727612096e+14
+ TRANS='N', N =    3, NRHS=  1, type  6, test( 2) = 2.69810830676262743587744309231210e+14
+ TRANS='N', N =    3, NRHS=  1, type  6, test( 3) = 1.25625342216604938391751295920245e+14
+ TRANS='N', N =    3, NRHS=  2, type  6, test( 2) = 1.08648451411219963819330551210677e+14
+ TRANS='N', N =    3, NRHS=  2, type  6, test( 3) = 6.18245519894950485787573100516018e+13
+ TRANS='N', N =    3, NRHS= 15, type  6, test( 2) = 3.37028235744594399587382618950365e+14
+ TRANS='N', N =    3, NRHS= 15, type  6, test( 3) = 1.75640097792252254886586749414619e+14
+ TRANS='N', N =    3, NRHS=  1, type  7, test( 2) = 6.09898406646251854407903403334473e+12
+ TRANS='N', N =    3, NRHS=  1, type  7, test( 3) = 5.25705288101492906636241201465584e+12
+ TRANS='N', N =    3, NRHS=  2, type  7, test( 2) = 1.64690801484054367484449545261231e+13
+ TRANS='N', N =    3, NRHS=  2, type  7, test( 3) = 1.13711740675162518794897754173050e+13
+ TRANS='N', N =    3, NRHS= 15, type  7, test( 2) = 1.88797748972529466964522237183283e+13
+ TRANS='N', N =    3, NRHS= 15, type  7, test( 3) = 1.38292482503168350729989817997697e+13
+ TRANS='N', N =    3, NRHS=  1, type 11, test( 2) = 4.49989553890063860935017363912258e+14
+ TRANS='N', N =    3, NRHS=  1, type 11, test( 3) = 1.09868406434799749531020102371434e+14
+ TRANS='N', N =    3, NRHS=  2, type 11, test( 2) = 3.57745674128230017509913561112329e+13
+ TRANS='N', N =    3, NRHS=  2, type 11, test( 3) = 1.23537641349000599104705896288785e+13
+ TRANS='N', N =    3, NRHS= 15, type 11, test( 2) = 3.27546965957090802362014998882039e+14
+ TRANS='N', N =    3, NRHS= 15, type 11, test( 3) = 1.10431709184808067626083778829925e+14
+ TRANS='N', N =    3, NRHS=  1, type 12, test( 2) = 9.99566034889779291897678495703336e+12
+ TRANS='N', N =    3, NRHS=  1, type 12, test( 3) = 3.13539867800811437506018676261836e+11
+ TRANS='N', N =    3, NRHS=  2, type 12, test( 2) = 4.88198798083329521766660877436010e+13
+ TRANS='N', N =    3, NRHS=  2, type 12, test( 3) = 2.05507334416260352589452919181332e+12
+ TRANS='N', N =    3, NRHS= 15, type 12, test( 2) = 3.44201621289029232210534608546747e+14
+ TRANS='N', N =    3, NRHS= 15, type 12, test( 3) = 9.33338881484605653307739839851477e+12
+ TRANS='N', N =    5, NRHS=  1, type  2, test( 2) = 1.22814371934702973399092070963916e+14
+ TRANS='N', N =    5, NRHS=  1, type  2, test( 3) = 9.80445518302108034336843061152393e+13
+ TRANS='N', N =    5, NRHS=  2, type  2, test( 2) = 4.35674059047705852427891526485412e+13
+ TRANS='N', N =    5, NRHS=  2, type  2, test( 3) = 4.80921055865432953478932253132500e+13
+ TRANS='N', N =    5, NRHS= 15, type  2, test( 2) = 1.51378319935111687456220715866863e+14
+ TRANS='N', N =    5, NRHS= 15, type  2, test( 3) = 1.38950214284900131110041442011442e+14
+ TRANS='N', N =    5, NRHS=  1, type  3, test( 2) = 1.62148522342909751998553325960739e+03
+ TRANS='N', N =    5, NRHS=  2, type  3, test( 2) = 7.90189973551883413494695144339101e+02
+ TRANS='N', N =    5, NRHS= 15, type  3, test( 2) = 3.28691574231936158779618516183669e+03
+ TRANS='N', N =    5, NRHS=  1, type  4, test( 6) = 9.77093054087322063497831127649662e+08
+ TRANS='N', N =    5, NRHS=  2, type  4, test( 6) = 5.33954434155868088622833640477813e+10
+ TRANS='N', N =    5, NRHS= 15, type  4, test( 6) = 2.47861641724098836041203995961600e+10
+ TRANS='N', N =    5, NRHS=  1, type  5, test( 2) = 7.83467031076049839992644451136003e+11
+ TRANS='N', N =    5, NRHS=  1, type  5, test( 3) = 8.55806033127863802430754381337964e+11
+ TRANS='N', N =    5, NRHS=  2, type  5, test( 2) = 2.67968932383568073282867335942845e+13
+ TRANS='N', N =    5, NRHS=  2, type  5, test( 3) = 2.54226271659382378368260300197167e+13
+ TRANS='N', N =    5, NRHS= 15, type  5, test( 2) = 4.96790368384457832085527929614736e+13
+ TRANS='N', N =    5, NRHS= 15, type  5, test( 3) = 4.53655095611773878878936830238264e+13
+ TRANS='N', N =    5, NRHS=  1, type  6, test( 2) = 1.39359879777666117475816728908420e+11
+ TRANS='N', N =    5, NRHS=  1, type  6, test( 3) = 2.15900089584617146902033242469033e+11
+ TRANS='N', N =    5, NRHS=  2, type  6, test( 2) = 2.39602578887107940643133453035215e+12
+ TRANS='N', N =    5, NRHS=  2, type  6, test( 3) = 2.65420712807325675621259775918034e+12
+ TRANS='N', N =    5, NRHS= 15, type  6, test( 2) = 1.32920433953051577845164745773677e+13
+ TRANS='N', N =    5, NRHS= 15, type  6, test( 3) = 1.39761587656619229913640347829471e+13
+ TRANS='N', N =    5, NRHS=  1, type  7, test( 2) = 9.44853451568197009856191555880376e+13
+ TRANS='N', N =    5, NRHS=  1, type  7, test( 3) = 6.86432711072456165534711446251602e+13
+ TRANS='N', N =    5, NRHS=  2, type  7, test( 2) = 1.68355887632168449152173679874980e+13
+ TRANS='N', N =    5, NRHS=  2, type  7, test( 3) = 1.36780242576292751434162479048404e+13
+ TRANS='N', N =    5, NRHS= 15, type  7, test( 2) = 1.58949253010634063858526049195933e+14
+ TRANS='N', N =    5, NRHS= 15, type  7, test( 3) = 1.67452669193685528195563839387014e+14
+ TRANS='N', N =    5, NRHS=  1, type 11, test( 2) = 6.91928847390787193837604074111860e+13
+ TRANS='N', N =    5, NRHS=  1, type 11, test( 3) = 4.79720521903933724932973082376897e+13
+ TRANS='N', N =    5, NRHS=  2, type 11, test( 2) = 9.74072261496586314505594650392221e+13
+ TRANS='N', N =    5, NRHS=  2, type 11, test( 3) = 6.85723881051133535302907203282143e+13
+ TRANS='N', N =    5, NRHS= 15, type 11, test( 2) = 1.17666467545486679877896713006342e+14
+ TRANS='N', N =    5, NRHS= 15, type 11, test( 3) = 9.07912647635248024989126348980999e+13
+ TRANS='N', N =    5, NRHS=  1, type 12, test( 2) = 2.87982324319273845011773673750535e+12
+ TRANS='N', N =    5, NRHS=  1, type 12, test( 3) = 1.38228990876916945366197248223877e+12
+ TRANS='N', N =    5, NRHS=  2, type 12, test( 2) = 2.33490622417339946539965470546576e+13
+ TRANS='N', N =    5, NRHS=  2, type 12, test( 3) = 1.38128818384147662932802577027993e+13
+ TRANS='N', N =    5, NRHS= 15, type 12, test( 2) = 3.39730568403711400749636350266383e+13
+ TRANS='N', N =    5, NRHS= 15, type 12, test( 3) = 1.57215545846463170372572152445217e+13
+ TRANS='N', N =   10, NRHS=  1, type  2, test( 2) = 3.73841109897451871743027555534811e+12
+ TRANS='N', N =   10, NRHS=  1, type  2, test( 3) = 9.41053278375067840988291462193743e+12
+ TRANS='N', N =   10, NRHS=  2, type  2, test( 2) = 3.77378558606723706422732937484344e+13
+ TRANS='N', N =   10, NRHS=  2, type  2, test( 3) = 7.88614192537742593373814715833156e+13
+ TRANS='N', N =   10, NRHS= 15, type  2, test( 2) = 4.22315482798044071542572430386365e+13
+ TRANS='N', N =   10, NRHS= 15, type  2, test( 3) = 8.43014707478770895800156662920065e+13
+ TRANS='N', N =   10, NRHS=  1, type  4, test( 6) = 6.36979928458072104673261806702910e+07
+ TRANS='N', N =   10, NRHS=  2, type  4, test( 6) = 5.68880398389080935003948183225249e+08
+ TRANS='N', N =   10, NRHS= 15, type  4, test( 6) = 2.30669616169053289094884282738240e+09
+ TRANS='N', N =   10, NRHS=  1, type  5, test( 2) = 9.01605267018766750304648319332145e+12
+ TRANS='N', N =   10, NRHS=  1, type  5, test( 3) = 2.46670323329715853071817058652330e+13
+ TRANS='N', N =   10, NRHS=  2, type  5, test( 2) = 5.05033597993261539831649509114959e+11
+ TRANS='N', N =   10, NRHS=  2, type  5, test( 3) = 1.01998882421073745322488998021097e+12
+ TRANS='N', N =   10, NRHS= 15, type  5, test( 2) = 4.84398655601809585793519115168825e+12
+ TRANS='N', N =   10, NRHS= 15, type  5, test( 3) = 1.28916698888150597248323679042468e+13
+ TRANS='N', N =   10, NRHS=  1, type  6, test( 2) = 1.59193740442589185469731318243442e+13
+ TRANS='N', N =   10, NRHS=  1, type  6, test( 3) = 2.70176951875728306241312791374507e+13
+ TRANS='N', N =   10, NRHS=  2, type  6, test( 2) = 1.55391201816746914967661108457723e+12
+ TRANS='N', N =   10, NRHS=  2, type  6, test( 3) = 3.64528424240282699222506858595698e+12
+ TRANS='N', N =   10, NRHS= 15, type  6, test( 2) = 1.77151363494439775334766241063270e+13
+ TRANS='N', N =   10, NRHS= 15, type  6, test( 3) = 3.93011852236646524347117743958591e+13
+ TRANS='N', N =   10, NRHS=  1, type  7, test( 2) = 1.84949519991643365855021263592482e+12
+ TRANS='N', N =   10, NRHS=  1, type  7, test( 3) = 3.69884506135092176787632136555896e+11
+ TRANS='N', N =   10, NRHS=  2, type  7, test( 2) = 1.10363146031627208553581059340282e+13
+ TRANS='N', N =   10, NRHS=  2, type  7, test( 3) = 2.38188937717367707879603599154039e+12
+ TRANS='N', N =   10, NRHS= 15, type  7, test( 2) = 1.85414429778855352489348173062099e+13
+ TRANS='N', N =   10, NRHS= 15, type  7, test( 3) = 3.85469027705177569381368724291618e+12
+ TRANS='N', N =   10, NRHS=  1, type 11, test( 2) = 7.36238092907380238851576297138351e+11
+ TRANS='N', N =   10, NRHS=  1, type 11, test( 3) = 4.49704641393060069108928371801472e+11
+ TRANS='N', N =   10, NRHS=  2, type 11, test( 2) = 2.07714567304689344190552040288266e+12
+ TRANS='N', N =   10, NRHS=  2, type 11, test( 3) = 1.33984124831544475276223052382204e+12
+ TRANS='N', N =   10, NRHS= 15, type 11, test( 2) = 4.31436827792990689026112457880576e+12
+ TRANS='N', N =   10, NRHS= 15, type 11, test( 3) = 2.11608194968029709503669319607683e+12
+ TRANS='N', N =   10, NRHS=  1, type 12, test( 2) = 1.97581994859434614365963169033188e+13
+ TRANS='N', N =   10, NRHS=  1, type 12, test( 3) = 2.73390317566793676031149501301686e+12
+ TRANS='N', N =   10, NRHS=  2, type 12, test( 2) = 9.28888189936839623054118277339284e+13
+ TRANS='N', N =   10, NRHS=  2, type 12, test( 3) = 1.44477095919819223430055895293822e+13
+ TRANS='N', N =   10, NRHS= 15, type 12, test( 2) = 6.04758746707982999284597512008972e+13
+ TRANS='N', N =   10, NRHS= 15, type 12, test( 3) = 8.43922017207192081076174391223111e+12
+ TRANS='N', N =   50, NRHS=  1, type  2, test( 2) = 1.17539979327471448824161613036957e+12
+ TRANS='N', N =   50, NRHS=  1, type  2, test( 3) = 1.28487590951713216136675321129632e+13
+ TRANS='N', N =   50, NRHS=  2, type  2, test( 2) = 2.30460144924816241473165231011908e+12
+ TRANS='N', N =   50, NRHS=  2, type  2, test( 3) = 2.64187632889878617298622127491278e+13
+ TRANS='N', N =   50, NRHS= 15, type  2, test( 2) = 1.14378466253129695609011446671503e+13
+ TRANS='N', N =   50, NRHS= 15, type  2, test( 3) = 1.21678610604960722399042436979566e+14
+ TRANS='N', N =   50, NRHS=  1, type  5, test( 2) = 6.84142313993918161973887058812996e+09
+ TRANS='N', N =   50, NRHS=  1, type  5, test( 3) = 8.74830477964687660268267445028812e+10
+ TRANS='N', N =   50, NRHS=  2, type  5, test( 2) = 3.80178882974055218242428730177169e+09
+ TRANS='N', N =   50, NRHS=  2, type  5, test( 3) = 4.60602782067638511851879020328267e+10
+ TRANS='N', N =   50, NRHS= 15, type  5, test( 2) = 7.38561822554146918762914516978300e+09
+ TRANS='N', N =   50, NRHS= 15, type  5, test( 3) = 1.03888600999217333805108076780611e+11
+ TRANS='N', N =   50, NRHS=  1, type  6, test( 2) = 4.74386824868214956211320235413947e+10
+ TRANS='N', N =   50, NRHS=  1, type  6, test( 3) = 4.74259922862939379815425343452228e+11
+ TRANS='N', N =   50, NRHS=  2, type  6, test( 2) = 7.23878446151201235280663364269120e+10
+ TRANS='N', N =   50, NRHS=  2, type  6, test( 3) = 7.57370831117522908950251105919119e+11
+ TRANS='N', N =   50, NRHS= 15, type  6, test( 2) = 3.97724985307345051229858504603439e+11
+ TRANS='N', N =   50, NRHS= 15, type  6, test( 3) = 4.13957514021036223993996002007146e+12
+ TRANS='N', N =   50, NRHS=  1, type  7, test( 2) = 2.25465582395854922410983040059845e+12
+ TRANS='N', N =   50, NRHS=  1, type  7, test( 3) = 5.84454416292195317688495933524722e+12
+ TRANS='N', N =   50, NRHS=  2, type  7, test( 2) = 1.27684568639047277771818055954072e+13
+ TRANS='N', N =   50, NRHS=  2, type  7, test( 3) = 3.27534483742023207708888187225989e+13
+ TRANS='N', N =   50, NRHS= 15, type  7, test( 2) = 1.17803000819131581422377736436442e+13
+ TRANS='N', N =   50, NRHS= 15, type  7, test( 3) = 3.36295422717161558972737316693415e+13
+ TRANS='N', N =   50, NRHS=  1, type 11, test( 2) = 1.40662215222588641603202912827601e+11
+ TRANS='N', N =   50, NRHS=  1, type 11, test( 3) = 1.94279419044740134371735729556034e+10
+ TRANS='N', N =   50, NRHS=  2, type 11, test( 2) = 6.66448968699863035738322980110312e+11
+ TRANS='N', N =   50, NRHS=  2, type 11, test( 3) = 8.40701613243610580745653542236496e+10
+ TRANS='N', N =   50, NRHS= 15, type 11, test( 2) = 1.23791110492536534667255638451951e+12
+ TRANS='N', N =   50, NRHS= 15, type 11, test( 3) = 1.67746951157023329263055618807697e+11
+ TRANS='N', N =   50, NRHS=  1, type 12, test( 2) = 6.61768326626710338784553717524028e+11
+ TRANS='N', N =   50, NRHS=  1, type 12, test( 3) = 2.55051523640429193506464742385450e+11
+ TRANS='N', N =   50, NRHS=  2, type 12, test( 2) = 5.15392096531300788567194630589895e+11
+ TRANS='N', N =   50, NRHS=  2, type 12, test( 3) = 2.03662217263362380228995039010370e+11
+ TRANS='N', N =   50, NRHS= 15, type 12, test( 2) = 4.26348539853986204729051942892247e+12
+ TRANS='N', N =   50, NRHS= 15, type 12, test( 3) = 1.43170223164885808351155217051746e+12
+ DGT:    204 out of   2694 tests failed to pass the threshold
+ 
+ DGT drivers passed the tests of the error exits
+
+ DGT drivers:  General tridiagonal
+ Matrix types (1-6 have specified condition numbers):
+    1. Diagonal                        7. Random, unspecified CNDNUM
+    2. Random, CNDNUM = 2              8. First column zero
+    3. Random, CNDNUM = sqrt(0.1/EPS)  9. Last column zero
+    4. Random, CNDNUM = 0.1/EPS       10. Last n/2 columns zero
+    5. Scaled near underflow          11. Scaled near underflow
+    6. Scaled near overflow           12. Scaled near overflow
+ Test ratios:
+    1: norm( L * U - A )  / ( N * norm(A) * EPS )
+    2: norm( B - A * X )  / ( norm(A) * norm(X) * EPS )
+    3: norm( X - XACT )   / ( norm(XACT) * CNDNUM * EPS )
+    4: norm( X - XACT )   / ( norm(XACT) * (error bound) )
+    5: (backward error)   / EPS
+    6: RCOND * CNDNUM - 1.0
+ Messages:
+ Rgtsvx, FACT='F', TRANS='N', N =    2, type  4, test  2, ratio = 2.73711982967873147572425904142738e+12
+ Rgtsvx, FACT='F', TRANS='N', N =    2, type  4, test  5, ratio = 5.69662204919247232503972271145997e+11
+ Rgtsvx, FACT='N', TRANS='N', N =    2, type  4, test  2, ratio = 1.99572406938859216371146597664714e+11
+ Rgtsvx, FACT='N', TRANS='N', N =    2, type  4, test  5, ratio = 5.13180267270776327635106669229747e+10
+ Rgtsvx, FACT='F', TRANS='N', N =    3, type  4, test  5, ratio = 1.15843668101423931352598341253945e+09
+ Rgtsvx, FACT='N', TRANS='N', N =    3, type  4, test  5, ratio = 3.82102041226589737192440572813136e+08
+ Rgtsvx, FACT='F', TRANS='N', N =    5, type  4, test  5, ratio = 2.84582831411684641180699838815717e+09
+ Rgtsvx, FACT='N', TRANS='N', N =    5, type  4, test  5, ratio = 1.44524716917264531578515051620948e+10
+ Rgtsvx, FACT='F', TRANS='N', N =   10, type  4, test  5, ratio = 1.14893223837535567088985782044993e+08
+ Rgtsvx, FACT='N', TRANS='N', N =   10, type  4, test  5, ratio = 4.47569645772208300037009140963266e+07
+ DGT drivers:     10 out of   2033 tests failed to pass the threshold
+ 
+ DPO routines passed the tests of the error exits
+
+ All tests for DPO routines passed the threshold (   1628 tests run)
+ 
+ DPO drivers passed the tests of the error exits
+
+ All tests for DPO drivers  passed the threshold (   1910 tests run)
+ 
+ DPS routines passed the tests of the error exits
+
+ All tests for DPS routines passed the threshold (    150 tests run)
+ 
+ DPP routines passed the tests of the error exits
+
+ All tests for DPP routines passed the threshold (   1332 tests run)
+ 
+ DPP drivers passed the tests of the error exits
+
+ All tests for DPP drivers  passed the threshold (   1910 tests run)
+ 
+ DPB routines passed the tests of the error exits
+
+ All tests for DPB routines passed the threshold (   3458 tests run)
+ 
+ DPB drivers passed the tests of the error exits
+
+ All tests for DPB drivers  passed the threshold (   4750 tests run)
+ 
+ DPT routines passed the tests of the error exits
+
+ All tests for DPT routines passed the threshold (    953 tests run)
+ 
+ DPT drivers passed the tests of the error exits
+
+ All tests for DPT drivers  passed the threshold (    788 tests run)
+ 
+ DSY routines passed the tests of the error exits
+
+ All tests for DSY routines passed the threshold (   1846 tests run)
+ 
+ DSY drivers passed the tests of the error exits
+
+ All tests for DSY drivers  passed the threshold (   1072 tests run)
+ 
+ DSR routines passed the tests of the error exits
+
+ All tests for DSR routines passed the threshold (   1618 tests run)
+ 
+ DSR drivers passed the tests of the error exits
+
+ All tests for DSR drivers  passed the threshold (    222 tests run)
+ 
+ DSK routines passed the tests of the error exits
+
+ All tests for DSK routines passed the threshold (   1618 tests run)
+ 
+ DSK drivers passed the tests of the error exits
+
+ All tests for DSK drivers  passed the threshold (    222 tests run)
+ 
+ DSA routines passed the tests of the error exits
+
+ All tests for DSA routines passed the threshold (   1320 tests run)
+ 
+ DSA drivers passed the tests of the error exits
+
+ All tests for DSA drivers  passed the threshold (    148 tests run)
+ 
+ DS2 routines passed the tests of the error exits
+
+ All tests for DS2 routines passed the threshold (    666 tests run)
+ 
+ DS2 drivers passed the tests of the error exits
+
+ All tests for DS2 drivers  passed the threshold (     74 tests run)
+ 
+ DSP routines passed the tests of the error exits
+
+ All tests for DSP routines passed the threshold (   1404 tests run)
+ 
+ DSP drivers passed the tests of the error exits
+
+ All tests for DSP drivers  passed the threshold (   1072 tests run)
+ 
+ DTR routines passed the tests of the error exits
+
+ All tests for DTR routines passed the threshold (   7672 tests run)
+ 
+ DTP routines passed the tests of the error exits
+
+ All tests for DTP routines passed the threshold (   7392 tests run)
+ 
+ DTB routines passed the tests of the error exits
+
+ All tests for DTB routines passed the threshold (  19888 tests run)
+ 
+ DQR routines passed the tests of the error exits
+
+ All tests for DQR routines passed the threshold (  42840 tests run)
+ 
+ DRQ routines passed the tests of the error exits
+
+ All tests for DRQ routines passed the threshold (  28784 tests run)
+ 
+ DLQ routines passed the tests of the error exits
+
+ All tests for DLQ routines passed the threshold (  28784 tests run)
+ 
+ DQL routines passed the tests of the error exits
+
+ All tests for DQL routines passed the threshold (  28784 tests run)
+
+ All tests for DQ3 routines passed the threshold (   4410 tests run)
+ 
+ DTZ routines passed the tests of the error exits
+
+ All tests for DTZ routines passed the threshold (    252 tests run)
+ 
+ DLS routines passed the tests of the error exits
+
+ All tests for DLS drivers  passed the threshold ( 105840 tests run)
+ 
+ All tests for DEQ routines passed the threshold
+ 
+ DQT routines passed the tests of the error exits
+
+ All tests for DQT routines passed the threshold (    510 tests run)
+ 
+ DQX routines passed the tests of the error exits
+
+ All tests for DQX routines passed the threshold (   1482 tests run)
+ 
+ DXQ routines passed the tests of the error exits
+
+ All tests for DXQ routines passed the threshold (   1482 tests run)
+ 
+ DTQ routines passed the tests of the error exits
+
+ All tests for DTQ routines passed the threshold (    510 tests run)
+ 
+ DTS routines passed the tests of the error exits
+
+ All tests for DTS routines passed the threshold (  10800 tests run)
+ 
+ DHH routines passed the tests of the error exits
+
+ All tests for DHH routines passed the threshold (  15900 tests run)
+
+ End of tests
+ Total time used =       313.46 seconds
+

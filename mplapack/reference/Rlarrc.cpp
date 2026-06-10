@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,42 +26,29 @@
  *
  */
 
+// Derived from LAPACK routine DLARRC.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rlarrc(const char *jobt, INTEGER const n, REAL const vl, REAL const vu, REAL *d, REAL *e, REAL const /* pivmin */, INTEGER &eigcnt, INTEGER &lcnt, INTEGER &rcnt, INTEGER &info) {
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     info = 0;
+    lcnt = 0;
+    rcnt = 0;
+    eigcnt = 0;
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n <= 0) {
         return;
     }
     //
-    lcnt = 0;
-    rcnt = 0;
-    eigcnt = 0;
     bool matt = Mlsame(jobt, "T");
     //
     REAL lpivot = 0.0;
@@ -73,7 +60,7 @@ void Rlarrc(const char *jobt, INTEGER const n, REAL const vl, REAL const vu, REA
     REAL su = 0.0;
     REAL tmp2 = 0.0;
     if (matt) {
-        //        Sturm sequence count on T
+        // Sturm sequence count on T
         lpivot = d[1 - 1] - vl;
         rpivot = d[1 - 1] - vu;
         if (lpivot <= zero) {
@@ -94,7 +81,7 @@ void Rlarrc(const char *jobt, INTEGER const n, REAL const vl, REAL const vu, REA
             }
         }
     } else {
-        //        Sturm sequence count on L D L^T
+        // Sturm sequence count on L D L^T
         sl = -vl;
         su = -vu;
         for (i = 1; i <= n - 1; i = i + 1) {
@@ -133,6 +120,6 @@ void Rlarrc(const char *jobt, INTEGER const n, REAL const vl, REAL const vu, REA
     }
     eigcnt = rcnt - lcnt;
     //
-    //     end of Rlarrc
+    // End of Rlarrc
     //
 }

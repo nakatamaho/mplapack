@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZERRUNHR_COL.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -35,14 +42,15 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack_debug.h>
 
-void Cerrunhr_col(const char *path, INTEGER const nunit) {
+void Cerrunhr_col(fem::str_cref path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
-    nout = nunit;
     //
-    //     Set the variables to innocuous values.
+    nout = nunit;
+    write(nout, star);
+    //
+    // Set the variables to innocuous values.
     //
     INTEGER j = 0;
     const INTEGER nmax = 2;
@@ -50,65 +58,63 @@ void Cerrunhr_col(const char *path, INTEGER const nunit) {
     COMPLEX a[nmax * nmax];
     COMPLEX t[nmax * nmax];
     COMPLEX d[nmax];
-    INTEGER lda = nmax;
-    INTEGER ldt = nmax;
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
-            a[(i - 1) + (j - 1) * lda] = COMPLEX(1.e+0 / castREAL(i + j));
-            t[(i - 1) + (j - 1) * ldt] = COMPLEX(1.e+0 / castREAL(i + j));
+            a[(i - 1) + (j - 1) * nmax] = COMPLEX(1.0 / castREAL(i + j));
+            t[(i - 1) + (j - 1) * nmax] = COMPLEX(1.0 / castREAL(i + j));
         }
-        d[j - 1] = (0.e+0, 0.e+0);
+        d[j - 1] = COMPLEX(0.0, 0.0);
     }
     ok = true;
     //
-    //     Error exits for Householder reconstruction
+    // Error exits for Householder reconstruction
     //
-    //     Cunhr_col
+    // Cunhr_col
     //
+    srnamt = "Cunhr_col";
     //
-    strncpy(srnamt, "Cunhr_col", srnamt_len);
     infot = 1;
     INTEGER info = 0;
     Cunhr_col(-1, 0, 1, a, 1, t, 1, d, info);
-    chkxer("Cunhr_col", infot, nout, lerr, ok);
+    Chkxer("Cunhr_col", infot, nout, lerr, ok);
     //
     infot = 2;
     Cunhr_col(0, -1, 1, a, 1, t, 1, d, info);
-    chkxer("Cunhr_col", infot, nout, lerr, ok);
+    Chkxer("Cunhr_col", infot, nout, lerr, ok);
     Cunhr_col(1, 2, 1, a, 1, t, 1, d, info);
-    chkxer("Cunhr_col", infot, nout, lerr, ok);
+    Chkxer("Cunhr_col", infot, nout, lerr, ok);
     //
     infot = 3;
     Cunhr_col(0, 0, -1, a, 1, t, 1, d, info);
-    chkxer("Cunhr_col", infot, nout, lerr, ok);
+    Chkxer("Cunhr_col", infot, nout, lerr, ok);
     //
     Cunhr_col(0, 0, 0, a, 1, t, 1, d, info);
-    chkxer("Cunhr_col", infot, nout, lerr, ok);
+    Chkxer("Cunhr_col", infot, nout, lerr, ok);
     //
     infot = 5;
     Cunhr_col(0, 0, 1, a, -1, t, 1, d, info);
-    chkxer("Cunhr_col", infot, nout, lerr, ok);
+    Chkxer("Cunhr_col", infot, nout, lerr, ok);
     //
     Cunhr_col(0, 0, 1, a, 0, t, 1, d, info);
-    chkxer("Cunhr_col", infot, nout, lerr, ok);
+    Chkxer("Cunhr_col", infot, nout, lerr, ok);
     //
     Cunhr_col(2, 0, 1, a, 1, t, 1, d, info);
-    chkxer("Cunhr_col", infot, nout, lerr, ok);
+    Chkxer("Cunhr_col", infot, nout, lerr, ok);
     //
     infot = 7;
     Cunhr_col(0, 0, 1, a, 1, t, -1, d, info);
-    chkxer("Cunhr_col", infot, nout, lerr, ok);
+    Chkxer("Cunhr_col", infot, nout, lerr, ok);
     //
     Cunhr_col(0, 0, 1, a, 1, t, 0, d, info);
-    chkxer("Cunhr_col", infot, nout, lerr, ok);
+    Chkxer("Cunhr_col", infot, nout, lerr, ok);
     //
     Cunhr_col(4, 3, 2, a, 4, t, 1, d, info);
-    chkxer("Cunhr_col", infot, nout, lerr, ok);
+    Chkxer("Cunhr_col", infot, nout, lerr, ok);
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     Alaesm(path, ok, nout);
     //
-    //     End of Cerrunhr_col
+    // End of Cerrunhr_col
     //
 }

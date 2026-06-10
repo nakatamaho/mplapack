@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DTPT01.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,32 +43,9 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Rtpt01(const char *uplo, const char *diag, INTEGER const n, REAL *ap, REAL *ainvp, REAL &rcond, REAL *work, REAL &resid) {
+void Rtpt01(fem::str_cref uplo, fem::str_cref diag, INTEGER const n, REAL *ap, REAL *ainvp, REAL &rcond, REAL *work, REAL &resid) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Quick exit if N = 0.
+    // Quick exit if N = 0.
     //
     const REAL one = 1.0;
     const REAL zero = 0.0;
@@ -71,11 +55,11 @@ void Rtpt01(const char *uplo, const char *diag, INTEGER const n, REAL *ap, REAL 
         return;
     }
     //
-    //     Exit with RESID = 1/EPS if ANORM = 0 or AINVNM = 0.
+    // Exit with RESID = 1/EPS if ANORM = 0 or AINVNM = 0.
     //
     REAL eps = Rlamch("Epsilon");
-    REAL anorm = Rlantp("1", uplo, diag, n, ap, work);
-    REAL ainvnm = Rlantp("1", uplo, diag, n, ainvp, work);
+    REAL anorm = Rlantp("1", uplo.elems(), diag.elems(), n, ap, work);
+    REAL ainvnm = Rlantp("1", uplo.elems(), diag.elems(), n, ainvp, work);
     if (anorm <= zero || ainvnm <= zero) {
         rcond = zero;
         resid = one / eps;
@@ -83,23 +67,23 @@ void Rtpt01(const char *uplo, const char *diag, INTEGER const n, REAL *ap, REAL 
     }
     rcond = (one / anorm) / ainvnm;
     //
-    //     Compute A * AINV, overwriting AINV.
+    // Compute A * AINV, overwriting AINV.
     //
-    bool unitd = Mlsame(diag, "U");
+    bool unitd = Mlsame(diag.elems(), "U");
     INTEGER jc = 0;
     INTEGER j = 0;
-    if (Mlsame(uplo, "U")) {
+    if (Mlsame(uplo.elems(), "U")) {
         jc = 1;
         for (j = 1; j <= n; j = j + 1) {
             if (unitd) {
                 ainvp[(jc + j - 1) - 1] = one;
             }
             //
-            //           Form the j-th column of A*AINV
+            // Form the j-th column of A*AINV
             //
-            Rtpmv("Upper", "No transpose", diag, j, ap, &ainvp[jc - 1], 1);
+            Rtpmv("Upper", "No transpose", diag.elems(), j, ap, &ainvp[jc - 1], 1);
             //
-            //           Subtract 1 from the diagonal
+            // Subtract 1 from the diagonal
             //
             ainvp[(jc + j - 1) - 1] = ainvp[(jc + j - 1) - 1] - one;
             jc += j;
@@ -111,23 +95,23 @@ void Rtpt01(const char *uplo, const char *diag, INTEGER const n, REAL *ap, REAL 
                 ainvp[jc - 1] = one;
             }
             //
-            //           Form the j-th column of A*AINV
+            // Form the j-th column of A*AINV
             //
-            Rtpmv("Lower", "No transpose", diag, n - j + 1, &ap[jc - 1], &ainvp[jc - 1], 1);
+            Rtpmv("Lower", "No transpose", diag.elems(), n - j + 1, &ap[jc - 1], &ainvp[jc - 1], 1);
             //
-            //           Subtract 1 from the diagonal
+            // Subtract 1 from the diagonal
             //
             ainvp[jc - 1] = ainvp[jc - 1] - one;
             jc += n - j + 1;
         }
     }
     //
-    //     Compute norm(A*AINV - I) / (N * norm(A) * norm(AINV) * EPS)
+    // Compute norm(A*AINV - I) / (N * norm(A) * norm(AINV) * EPS)
     //
-    resid = Rlantp("1", uplo, "Non-unit", n, ainvp, work);
+    resid = Rlantp("1", uplo.elems(), "Non-unit", n, ainvp, work);
     //
     resid = ((resid * rcond) / castREAL(n)) / eps;
     //
-    //     End of Rtpt01
+    // End of Rtpt01
     //
 }

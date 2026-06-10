@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,46 +26,30 @@
  *
  */
 
+// Derived from LAPACK routine DGESC2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rgesc2(INTEGER const n, REAL *a, INTEGER const lda, REAL *rhs, INTEGER *ipiv, INTEGER *jpiv, REAL &scale) {
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //      Set constant to control overflow
+    // Set constant to control overflow
     //
     REAL eps = Rlamch("P");
     REAL smlnum = Rlamch("S") / eps;
     const REAL one = 1.0;
     REAL bignum = one / smlnum;
     //
-    //     Apply permutations IPIV to RHS
+    // Apply permutations IPIV to RHS
     //
     Rlaswp(1, rhs, lda, 1, n - 1, ipiv, 1);
     //
-    //     Solve for L part
+    // Solve for L part
     //
     INTEGER i = 0;
     INTEGER j = 0;
@@ -75,14 +59,14 @@ void Rgesc2(INTEGER const n, REAL *a, INTEGER const lda, REAL *rhs, INTEGER *ipi
         }
     }
     //
-    //     Solve for U part
+    // Solve for U part
     //
     scale = one;
     //
-    //     Check for scaling
+    // Check for scaling
     //
     i = iRamax(n, rhs, 1);
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     REAL temp = 0.0;
     if (two * smlnum * abs(rhs[i - 1]) > abs(a[(n - 1) + (n - 1) * lda])) {
         temp = (one / two) / abs(rhs[i - 1]);
@@ -98,10 +82,10 @@ void Rgesc2(INTEGER const n, REAL *a, INTEGER const lda, REAL *rhs, INTEGER *ipi
         }
     }
     //
-    //     Apply permutations JPIV to the solution (RHS)
+    // Apply permutations JPIV to the solution (RHS)
     //
     Rlaswp(1, rhs, lda, 1, n - 1, jpiv, -1);
     //
-    //     End of Rgesc2
+    // End of Rgesc2
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DSTEBZ.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -48,7 +55,7 @@ void Rstebz(const char *range, const char *order, INTEGER const n, REAL const vl
     REAL gl = 0.0;
     REAL tmp2 = 0.0;
     REAL tnorm = 0.0;
-    const REAL fudge = 2.1e0;
+    const REAL fudge = 2.1;
     const REAL two = 2.0;
     INTEGER itmax = 0;
     REAL atoli = 0.0;
@@ -82,7 +89,7 @@ void Rstebz(const char *range, const char *order, INTEGER const n, REAL const vl
     //
     info = 0;
     //
-    //     Decode RANGE
+    // Decode RANGE
     //
     if (Mlsame(range, "A")) {
         irange = 1;
@@ -94,7 +101,7 @@ void Rstebz(const char *range, const char *order, INTEGER const n, REAL const vl
         irange = 0;
     }
     //
-    //     Decode ORDER
+    // Decode ORDER
     //
     if (Mlsame(order, "B")) {
         iorder = 2;
@@ -104,7 +111,7 @@ void Rstebz(const char *range, const char *order, INTEGER const n, REAL const vl
         iorder = 0;
     }
     //
-    //     Check for Errors
+    // Check for Errors
     //
     if (irange <= 0) {
         info = -1;
@@ -127,28 +134,28 @@ void Rstebz(const char *range, const char *order, INTEGER const n, REAL const vl
         return;
     }
     //
-    //     Initialize error flags
+    // Initialize error flags
     //
     info = 0;
     ncnvrg = false;
     toofew = false;
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     m = 0;
     if (n == 0) {
         return;
     }
     //
-    //     Simplifications:
+    // Simplifications:
     //
     if (irange == 3 && il == 1 && iu == n) {
         irange = 1;
     }
     //
-    //     Get machine constants
-    //     NB is the minimum vector length for vector bisection, or 0
-    //     if only scalar is to be done.
+    // Get machine constants
+    // NB is the minimum vector length for vector bisection, or 0
+    // if only scalar is to be done.
     //
     safemn = Rlamch("S");
     ulp = Rlamch("P");
@@ -158,7 +165,7 @@ void Rstebz(const char *range, const char *order, INTEGER const n, REAL const vl
         nb = 0;
     }
     //
-    //     Special Case when N=1
+    // Special Case when N=1
     //
     if (n == 1) {
         nsplit = 1;
@@ -173,7 +180,7 @@ void Rstebz(const char *range, const char *order, INTEGER const n, REAL const vl
         return;
     }
     //
-    //     Compute Splitting Points
+    // Compute Splitting Points
     //
     nsplit = 1;
     work[n - 1] = zero;
@@ -193,15 +200,15 @@ void Rstebz(const char *range, const char *order, INTEGER const n, REAL const vl
     isplit[nsplit - 1] = n;
     pivmin = pivmin * safemn;
     //
-    //     Compute Interval and ATOLI
+    // Compute Interval and ATOLI
     //
     if (irange == 3) {
         //
-        //        RANGE='I': Compute the interval containing eigenvalues
-        //                   IL through IU.
+        // RANGE='I': Compute the interval containing eigenvalues
+        // IL through IU.
         //
-        //        Compute Gershgorin interval for entire (split) matrix
-        //        and use it as the initial interval
+        // Compute Gershgorin interval for entire (split) matrix
+        // and use it as the initial interval
         //
         gu = d[1 - 1];
         gl = d[1 - 1];
@@ -209,23 +216,23 @@ void Rstebz(const char *range, const char *order, INTEGER const n, REAL const vl
         //
         for (j = 1; j <= n - 1; j = j + 1) {
             tmp2 = sqrt(work[j - 1]);
-            gu = max(gu, REAL(d[j - 1] + tmp1 + tmp2));
-            gl = min(gl, REAL(d[j - 1] - tmp1 - tmp2));
+            gu = max(gu, d[j - 1] + tmp1 + tmp2);
+            gl = min(gl, d[j - 1] - tmp1 - tmp2);
             tmp1 = tmp2;
         }
         //
-        gu = max(gu, REAL(d[n - 1] + tmp1));
-        gl = min(gl, REAL(d[n - 1] - tmp1));
+        gu = max(gu, d[n - 1] + tmp1);
+        gl = min(gl, d[n - 1] - tmp1);
         tnorm = max(abs(gl), abs(gu));
         gl = gl - fudge * tnorm * ulp * n - fudge * two * pivmin;
         gu += fudge * tnorm * ulp * n + fudge * pivmin;
         //
-        //        Compute Iteration parameters
+        // Compute Iteration parameters
         //
         itmax = castINTEGER((log(tnorm + pivmin) - log(pivmin)) / log(two)) + 2;
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
-        if (itmax >= 10240)
-            itmax = 10240; // XXX itmax can be too large for MPFR (=10^8)
+#if defined ___MPLAPACK_BUILD_WITH_MPFR___ || defined ___MPLAPACK_BUILD_WITH_GMP___
+        if (itmax >= 100000)
+            itmax = 100000; // XXX itmax can be too large for MPFR/GMP (=10^8)
 #endif
         if (abstol <= zero) {
             atoli = ulp * tnorm;
@@ -270,12 +277,12 @@ void Rstebz(const char *range, const char *order, INTEGER const n, REAL const vl
         }
     } else {
         //
-        //        RANGE='A' or 'V' -- Set ATOLI
+        // RANGE='A' or 'V' -- Set ATOLI
         //
         tnorm = max(abs(d[1 - 1]) + abs(e[1 - 1]), abs(d[n - 1]) + abs(e[(n - 1) - 1]));
         //
         for (j = 2; j <= n - 1; j = j + 1) {
-            tnorm = max(tnorm, REAL(abs(d[j - 1]) + abs(e[(j - 1) - 1]) + abs(e[j - 1])));
+            tnorm = max(tnorm, abs(d[j - 1]) + abs(e[(j - 1) - 1]) + abs(e[j - 1]));
         }
         //
         if (abstol <= zero) {
@@ -293,9 +300,9 @@ void Rstebz(const char *range, const char *order, INTEGER const n, REAL const vl
         }
     }
     //
-    //     Find Eigenvalues -- Loop Over Blocks and recompute NWL and NWU.
-    //     NWL accumulates the number of eigenvalues .le. WL,
-    //     NWU accumulates the number of eigenvalues .le. WU
+    // Find Eigenvalues -- Loop Over Blocks and recompute NWL and NWU.
+    // NWL accumulates the number of eigenvalues .le. WL,
+    // NWU accumulates the number of eigenvalues .le. WU
     //
     m = 0;
     iend = 0;
@@ -311,8 +318,21 @@ void Rstebz(const char *range, const char *order, INTEGER const n, REAL const vl
         //
         if (in == 1) {
             //
-            //           Special Case -- IN=1
+            // Special Case -- IN=1
             //
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+            if (irange == 1 || wl >= d[ibegin - 1]) {
+                nwl++;
+            }
+            if (irange == 1 || wu >= d[ibegin - 1]) {
+                nwu++;
+            }
+            if (irange == 1 || (wl < d[ibegin - 1] && wu >= d[ibegin - 1])) {
+                m++;
+                w[m - 1] = d[ibegin - 1];
+                iblock[m - 1] = jb;
+            }
+#else
             if (irange == 1 || wl >= d[ibegin - 1] - pivmin) {
                 nwl++;
             }
@@ -324,12 +344,13 @@ void Rstebz(const char *range, const char *order, INTEGER const n, REAL const vl
                 w[m - 1] = d[ibegin - 1];
                 iblock[m - 1] = jb;
             }
+#endif
         } else {
             //
-            //           General Case -- IN > 1
+            // General Case -- IN > 1
             //
-            //           Compute Gershgorin Interval
-            //           and use it as the initial interval
+            // Compute Gershgorin Interval
+            // and use it as the initial interval
             //
             gu = d[ibegin - 1];
             gl = d[ibegin - 1];
@@ -337,18 +358,18 @@ void Rstebz(const char *range, const char *order, INTEGER const n, REAL const vl
             //
             for (j = ibegin; j <= iend - 1; j = j + 1) {
                 tmp2 = abs(e[j - 1]);
-                gu = max(gu, REAL(d[j - 1] + tmp1 + tmp2));
-                gl = min(gl, REAL(d[j - 1] - tmp1 - tmp2));
+                gu = max(gu, d[j - 1] + tmp1 + tmp2);
+                gl = min(gl, d[j - 1] - tmp1 - tmp2);
                 tmp1 = tmp2;
             }
             //
-            gu = max(gu, REAL(d[iend - 1] + tmp1));
-            gl = min(gl, REAL(d[iend - 1] - tmp1));
+            gu = max(gu, d[iend - 1] + tmp1);
+            gl = min(gl, d[iend - 1] - tmp1);
             bnorm = max(abs(gl), abs(gu));
             gl = gl - fudge * bnorm * ulp * in - fudge * pivmin;
             gu += fudge * bnorm * ulp * in + fudge * pivmin;
             //
-            //           Compute ATOLI for the current submatrix
+            // Compute ATOLI for the current submatrix
             //
             if (abstol <= zero) {
                 atoli = ulp * max(abs(gl), abs(gu));
@@ -369,7 +390,7 @@ void Rstebz(const char *range, const char *order, INTEGER const n, REAL const vl
                 }
             }
             //
-            //           Set Up Initial Interval
+            // Set Up Initial Interval
             //
             work[(n + 1) - 1] = gl;
             work[(n + in + 1) - 1] = gu;
@@ -379,22 +400,22 @@ void Rstebz(const char *range, const char *order, INTEGER const n, REAL const vl
             nwu += iwork[(in + 1) - 1];
             iwoff = m - iwork[1 - 1];
             //
-            //           Compute Eigenvalues
+            // Compute Eigenvalues
             //
             itmax = castINTEGER((log(gu - gl + pivmin) - log(pivmin)) / log(two)) + 2;
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
-            if (itmax >= 10240)
-                itmax = 10240; // XXX itmax can be too large for MPFR (=10^8)
+#if defined ___MPLAPACK_BUILD_WITH_MPFR___ || defined ___MPLAPACK_BUILD_WITH_GMP___
+            if (itmax >= 100000)
+                itmax = 100000; // XXX itmax can be too large for MPFR/GMP (=10^8)
 #endif
             Rlaebz(2, itmax, in, in, 1, nb, atoli, rtoli, pivmin, &d[ibegin - 1], &e[ibegin - 1], &work[ibegin - 1], idumma, &work[(n + 1) - 1], &work[(n + 2 * in + 1) - 1], iout, iwork, &w[(m + 1) - 1], &iblock[(m + 1) - 1], iinfo);
             //
-            //           Copy Eigenvalues Into W and IBLOCK
-            //           Use -JB for block number for unconverged eigenvalues.
+            // Copy Eigenvalues Into W and IBLOCK
+            // Use -JB for block number for unconverged eigenvalues.
             //
             for (j = 1; j <= iout; j = j + 1) {
                 tmp1 = half * (work[(j + n) - 1] + work[(j + in + n) - 1]);
                 //
-                //              Flag non-convergence.
+                // Flag non-convergence.
                 //
                 if (j > iout - iinfo) {
                     ncnvrg = true;
@@ -413,8 +434,8 @@ void Rstebz(const char *range, const char *order, INTEGER const n, REAL const vl
     statement_70:;
     }
     //
-    //     If RANGE='I', then (WL,WU) contains eigenvalues NWL+1,...,NWU
-    //     If NWL+1 < IL or NWU > IU, discard extra eigenvalues.
+    // If RANGE='I', then (WL,WU) contains eigenvalues NWL+1,...,NWU
+    // If NWL+1 < IL or NWU > IU, discard extra eigenvalues.
     //
     if (irange == 3) {
         im = 0;
@@ -437,15 +458,15 @@ void Rstebz(const char *range, const char *order, INTEGER const n, REAL const vl
         }
         if (idiscl > 0 || idiscu > 0) {
             //
-            //           Code to deal with effects of bad arithmetic:
-            //           Some low eigenvalues to be discarded are not in (WL,WLU],
-            //           or high eigenvalues to be discarded are not in (WUL,WU]
-            //           so just kill off the smallest IDISCL/largest IDISCU
-            //           eigenvalues, by simply finding the smallest/largest
-            //           eigenvalue(s).
+            // Code to deal with effects of bad arithmetic:
+            // Some low eigenvalues to be discarded are not in (WL,WLU],
+            // or high eigenvalues to be discarded are not in (WUL,WU]
+            // so just kill off the smallest IDISCL/largest IDISCU
+            // eigenvalues, by simply finding the smallest/largest
+            // eigenvalue(s).
             //
-            //           (If N(w) is monotone non-decreasing, this should never
-            //               happen.)
+            // (If N(w) is monotone non-decreasing, this should never
+            // happen.)
             //
             if (idiscl > 0) {
                 wkill = wu;
@@ -489,9 +510,9 @@ void Rstebz(const char *range, const char *order, INTEGER const n, REAL const vl
         }
     }
     //
-    //     If ORDER='B', do nothing -- the eigenvalues are already sorted
-    //        by block.
-    //     If ORDER='E', sort the eigenvalues from smallest to largest
+    // If ORDER='B', do nothing -- the eigenvalues are already sorted
+    // by block.
+    // If ORDER='E', sort the eigenvalues from smallest to largest
     //
     if (iorder == 1 && nsplit > 1) {
         for (je = 1; je <= m - 1; je = je + 1) {
@@ -522,6 +543,6 @@ void Rstebz(const char *range, const char *order, INTEGER const n, REAL const vl
         info += 2;
     }
     //
-    //     End of Rstebz
+    // End of Rstebz
     //
 }

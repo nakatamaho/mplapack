@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZGBT01.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -38,30 +45,7 @@ using fem::common;
 
 void Cgbt01(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, COMPLEX *a, INTEGER const lda, COMPLEX *afac, INTEGER const ldafac, INTEGER *ipiv, COMPLEX *work, REAL &resid) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Quick exit if M = 0 or N = 0.
+    // Quick exit if M = 0 or N = 0.
     //
     const REAL zero = 0.0;
     resid = zero;
@@ -69,7 +53,7 @@ void Cgbt01(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
         return;
     }
     //
-    //     Determine EPS and the norm of A.
+    // Determine EPS and the norm of A.
     //
     REAL eps = Rlamch("Epsilon");
     INTEGER kd = ku + 1;
@@ -81,11 +65,11 @@ void Cgbt01(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
         i1 = max(kd + 1 - j, (INTEGER)1);
         i2 = min(kd + m - j, kl + kd);
         if (i2 >= i1) {
-            anorm = max({anorm, RCasum(i2 - i1 + 1, &a[(i1 - 1) + (j - 1) * lda], 1)});
+            anorm = max(anorm, RCasum(i2 - i1 + 1, &a[(i1 - 1) + (j - 1) * lda], 1));
         }
     }
     //
-    //     Compute one column at a time of L*U - A.
+    // Compute one column at a time of L*U - A.
     //
     kd = kl + ku + 1;
     INTEGER ju = 0;
@@ -100,7 +84,7 @@ void Cgbt01(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
     const REAL one = 1.0;
     for (j = 1; j <= n; j = j + 1) {
         //
-        //        Copy the J-th column of U to WORK.
+        // Copy the J-th column of U to WORK.
         //
         ju = min(kl + ku, j - 1);
         jl = min(kl, m - j);
@@ -111,8 +95,8 @@ void Cgbt01(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
                 work[i - 1] = zero;
             }
             //
-            //           Multiply by the unit lower triangular matrix L.  Note that L
-            //           is stored as a product of transformations and permutations.
+            // Multiply by the unit lower triangular matrix L.  Note that L
+            // is stored as a product of transformations and permutations.
             //
             for (i = min(m - 1, j); i >= j - ju; i = i - 1) {
                 il = min(kl, m - i);
@@ -129,20 +113,20 @@ void Cgbt01(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
                 }
             }
             //
-            //           Subtract the corresponding column of A.
+            // Subtract the corresponding column of A.
             //
             jua = min(ju, ku);
             if (jua + jl + 1 > 0) {
                 Caxpy(jua + jl + 1, -COMPLEX(one), &a[((ku + 1 - jua) - 1) + (j - 1) * lda], 1, &work[(ju + 1 - jua) - 1], 1);
             }
             //
-            //           Compute the 1-norm of the column.
+            // Compute the 1-norm of the column.
             //
-            resid = max({resid, RCasum(ju + jl + 1, work, 1)});
+            resid = max(resid, RCasum(ju + jl + 1, work, 1));
         }
     }
     //
-    //     Compute norm( L*U - A ) / ( N * norm(A) * EPS )
+    // Compute norm(L*U - A) / ( N * norm(A) * EPS )
     //
     if (anorm <= zero) {
         if (resid != zero) {
@@ -152,6 +136,6 @@ void Cgbt01(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
         resid = ((resid / castREAL(n)) / anorm) / eps;
     }
     //
-    //     End of Cgbt01
+    // End of Cgbt01
     //
 }

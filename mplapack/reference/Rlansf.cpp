@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DLANSF.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -56,53 +63,53 @@ REAL Rlansf(const char *norm, const char *transr, const char *uplo, INTEGER cons
         return return_value;
     }
     //
-    //     set noe = 1 if n is odd. if n is even set noe=0
+    // set noe = 1 if n is odd. if n is even set noe=0
     //
     noe = 1;
     if (mod(n, 2) == 0) {
         noe = 0;
     }
     //
-    //     set ifm = 0 when form='T or 't' and 1 otherwise
+    // set ifm = 0 when form='T or 't' and 1 otherwise
     //
     ifm = 1;
     if (Mlsame(transr, "T")) {
         ifm = 0;
     }
     //
-    //     set ilu = 0 when uplo='U or 'u' and 1 otherwise
+    // set ilu = 0 when uplo='U or 'u' and 1 otherwise
     //
     ilu = 1;
     if (Mlsame(uplo, "U")) {
         ilu = 0;
     }
     //
-    //     set lda = (n+1)/2 when ifm = 0
-    //     set lda = n when ifm = 1 and noe = 1
-    //     set lda = n+1 when ifm = 1 and noe = 0
+    // set lda = (n+1)/2 when ifm = 0
+    // set lda = n when ifm = 1 and noe = 1
+    // set lda = n+1 when ifm = 1 and noe = 0
     //
     if (ifm == 1) {
         if (noe == 1) {
             lda = n;
         } else {
-            //           noe=0
+            // noe=0
             lda = n + 1;
         }
     } else {
-        //        ifm=0
+        // ifm=0
         lda = (n + 1) / 2;
     }
     //
     if (Mlsame(norm, "M")) {
         //
-        //       Find max(abs(A(i,j))).
+        // Find max(abs(A(i,j))).
         //
         k = (n + 1) / 2;
         value = zero;
         if (noe == 1) {
-            //           n is odd
+            // n is odd
             if (ifm == 1) {
-                //           A is n by k
+                // A is n by k
                 for (j = 0; j <= k - 1; j = j + 1) {
                     for (i = 0; i <= n - 1; i = i + 1) {
                         temp = abs(a[(i + j * lda)]);
@@ -112,7 +119,7 @@ REAL Rlansf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                     }
                 }
             } else {
-                //              xpose case; A is k by n
+                // xpose case; A is k by n
                 for (j = 0; j <= n - 1; j = j + 1) {
                     for (i = 0; i <= k - 1; i = i + 1) {
                         temp = abs(a[(i + j * lda)]);
@@ -123,9 +130,9 @@ REAL Rlansf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                 }
             }
         } else {
-            //           n is even
+            // n is even
             if (ifm == 1) {
-                //              A is n+1 by k
+                // A is n+1 by k
                 for (j = 0; j <= k - 1; j = j + 1) {
                     for (i = 0; i <= n; i = i + 1) {
                         temp = abs(a[(i + j * lda)]);
@@ -135,7 +142,7 @@ REAL Rlansf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                     }
                 }
             } else {
-                //              xpose case; A is k by n+1
+                // xpose case; A is k by n+1
                 for (j = 0; j <= n; j = j + 1) {
                     for (i = 0; i <= k - 1; i = i + 1) {
                         temp = abs(a[(i + j * lda)]);
@@ -148,12 +155,12 @@ REAL Rlansf(const char *norm, const char *transr, const char *uplo, INTEGER cons
         }
     } else if ((Mlsame(norm, "I")) || (Mlsame(norm, "O")) || (Mlsame(norm, "1"))) {
         //
-        //        Find normI(A) ( = norm1(A), since A is symmetric).
+        // Find normI(A) ( = norm1(A), since A is symmetric).
         //
         if (ifm == 1) {
             k = n / 2;
             if (noe == 1) {
-                //              n is odd
+                // n is odd
                 if (ilu == 0) {
                     for (i = 0; i <= k - 1; i = i + 1) {
                         work[i] = zero;
@@ -162,25 +169,25 @@ REAL Rlansf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                         s = zero;
                         for (i = 0; i <= k + j - 1; i = i + 1) {
                             aa = abs(a[(i + j * lda)]);
-                            //                       -> A(i,j+k)
+                            // -> A(i,j+k)
                             s += aa;
                             work[i] += aa;
                         }
                         aa = abs(a[(i + j * lda)]);
-                        //                    -> A(j+k,j+k)
+                        // -> A(j+k,j+k)
                         work[(j + k)] = s + aa;
                         if (i == k + k) {
                             goto statement_10;
                         }
                         i++;
                         aa = abs(a[(i + j * lda)]);
-                        //                    -> A(j,j)
+                        // -> A(j,j)
                         work[j] += aa;
                         s = zero;
                         for (l = j + 1; l <= k - 1; l = l + 1) {
                             i++;
                             aa = abs(a[(i + j * lda)]);
-                            //                       -> A(l,j)
+                            // -> A(l,j)
                             s += aa;
                             work[l] += aa;
                         }
@@ -195,9 +202,9 @@ REAL Rlansf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                         }
                     }
                 } else {
-                    //                 ilu = 1
+                    // ilu = 1
                     k++;
-                    //                 k=(n+1)/2 for n odd and ilu=1
+                    // k=(n+1)/2 for n odd and ilu=1
                     for (i = k; i <= n - 1; i = i + 1) {
                         work[i] = zero;
                     }
@@ -205,26 +212,26 @@ REAL Rlansf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                         s = zero;
                         for (i = 0; i <= j - 2; i = i + 1) {
                             aa = abs(a[(i + j * lda)]);
-                            //                       -> A(j+k,i+k)
+                            // -> A(j+k,i+k)
                             s += aa;
                             work[(i + k)] += aa;
                         }
                         if (j > 0) {
                             aa = abs(a[(i + j * lda)]);
-                            //                       -> A(j+k,j+k)
+                            // -> A(j+k,j+k)
                             s += aa;
                             work[(i + k)] += s;
-                            //                       i=j
+                            // i=j
                             i++;
                         }
                         aa = abs(a[(i + j * lda)]);
-                        //                    -> A(j,j)
+                        // -> A(j,j)
                         work[j] = aa;
                         s = zero;
                         for (l = j + 1; l <= n - 1; l = l + 1) {
                             i++;
                             aa = abs(a[(i + j * lda)]);
-                            //                       -> A(l,j)
+                            // -> A(l,j)
                             s += aa;
                             work[l] += aa;
                         }
@@ -239,7 +246,7 @@ REAL Rlansf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                     }
                 }
             } else {
-                //              n is even
+                // n is even
                 if (ilu == 0) {
                     for (i = 0; i <= k - 1; i = i + 1) {
                         work[i] = zero;
@@ -248,22 +255,22 @@ REAL Rlansf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                         s = zero;
                         for (i = 0; i <= k + j - 1; i = i + 1) {
                             aa = abs(a[(i + j * lda)]);
-                            //                       -> A(i,j+k)
+                            // -> A(i,j+k)
                             s += aa;
                             work[i] += aa;
                         }
                         aa = abs(a[(i + j * lda)]);
-                        //                    -> A(j+k,j+k)
+                        // -> A(j+k,j+k)
                         work[(j + k)] = s + aa;
                         i++;
                         aa = abs(a[(i + j * lda)]);
-                        //                    -> A(j,j)
+                        // -> A(j,j)
                         work[j] += aa;
                         s = zero;
                         for (l = j + 1; l <= k - 1; l = l + 1) {
                             i++;
                             aa = abs(a[(i + j * lda)]);
-                            //                       -> A(l,j)
+                            // -> A(l,j)
                             s += aa;
                             work[l] += aa;
                         }
@@ -277,7 +284,7 @@ REAL Rlansf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                         }
                     }
                 } else {
-                    //                 ilu = 1
+                    // ilu = 1
                     for (i = k; i <= n - 1; i = i + 1) {
                         work[i] = zero;
                     }
@@ -285,24 +292,24 @@ REAL Rlansf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                         s = zero;
                         for (i = 0; i <= j - 1; i = i + 1) {
                             aa = abs(a[(i + j * lda)]);
-                            //                       -> A(j+k,i+k)
+                            // -> A(j+k,i+k)
                             s += aa;
                             work[(i + k)] += aa;
                         }
                         aa = abs(a[(i + j * lda)]);
-                        //                    -> A(j+k,j+k)
+                        // -> A(j+k,j+k)
                         s += aa;
                         work[(i + k)] += s;
-                        //                    i=j
+                        // i=j
                         i++;
                         aa = abs(a[(i + j * lda)]);
-                        //                    -> A(j,j)
+                        // -> A(j,j)
                         work[j] = aa;
                         s = zero;
                         for (l = j + 1; l <= n - 1; l = l + 1) {
                             i++;
                             aa = abs(a[(i + j * lda)]);
-                            //                       -> A(l,j)
+                            // -> A(l,j)
                             s += aa;
                             work[l] += aa;
                         }
@@ -318,15 +325,15 @@ REAL Rlansf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                 }
             }
         } else {
-            //           ifm=0
+            // ifm=0
             k = n / 2;
             if (noe == 1) {
-                //              n is odd
+                // n is odd
                 if (ilu == 0) {
                     n1 = k;
-                    //                 n/2
+                    // n/2
                     k++;
-                    //                 k is the row size and lda
+                    // k is the row size and lda
                     for (i = n1; i <= n - 1; i = i + 1) {
                         work[i] = zero;
                     }
@@ -334,18 +341,18 @@ REAL Rlansf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                         s = zero;
                         for (i = 0; i <= k - 1; i = i + 1) {
                             aa = abs(a[(i + j * lda)]);
-                            //                       A(j,n1+i)
+                            // A(j,n1+i)
                             work[(i + n1)] += aa;
                             s += aa;
                         }
                         work[j] = s;
                     }
-                    //                 j=n1=k-1 is special
-                    s = abs(a[(0 + j * lda)]);
-                    //                 A(k-1,k-1)
+                    // j=n1=k-1 is special
+                    s = abs(a[(j * lda)]);
+                    // A(k-1,k-1)
                     for (i = 1; i <= k - 1; i = i + 1) {
                         aa = abs(a[(i + j * lda)]);
-                        //                    A(k-1,i+n1)
+                        // A(k-1,i+n1)
                         work[(i + n1)] += aa;
                         s += aa;
                     }
@@ -354,22 +361,22 @@ REAL Rlansf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                         s = zero;
                         for (i = 0; i <= j - k - 1; i = i + 1) {
                             aa = abs(a[(i + j * lda)]);
-                            //                       A(i,j-k)
+                            // A(i,j-k)
                             work[i] += aa;
                             s += aa;
                         }
-                        //                    i=j-k
+                        // i=j-k
                         aa = abs(a[(i + j * lda)]);
-                        //                    A(j-k,j-k)
+                        // A(j-k,j-k)
                         s += aa;
                         work[(j - k)] += s;
                         i++;
                         s = abs(a[(i + j * lda)]);
-                        //                    A(j,j)
+                        // A(j,j)
                         for (l = j + 1; l <= n - 1; l = l + 1) {
                             i++;
                             aa = abs(a[(i + j * lda)]);
-                            //                       A(j,l)
+                            // A(j,l)
                             work[l] += aa;
                             s += aa;
                         }
@@ -383,59 +390,59 @@ REAL Rlansf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                         }
                     }
                 } else {
-                    //                 ilu=1
+                    // ilu=1
                     k++;
-                    //                 k=(n+1)/2 for n odd and ilu=1
+                    // k=(n+1)/2 for n odd and ilu=1
                     for (i = k; i <= n - 1; i = i + 1) {
                         work[i] = zero;
                     }
                     for (j = 0; j <= k - 2; j = j + 1) {
-                        //                    process
+                        // process
                         s = zero;
                         for (i = 0; i <= j - 1; i = i + 1) {
                             aa = abs(a[(i + j * lda)]);
-                            //                       A(j,i)
+                            // A(j,i)
                             work[i] += aa;
                             s += aa;
                         }
                         aa = abs(a[(i + j * lda)]);
-                        //                    i=j so process of A(j,j)
+                        // i=j so process of A(j,j)
                         s += aa;
                         work[j] = s;
-                        //                    is initialised here
+                        // is initialised here
                         i++;
-                        //                    i=j process A(j+k,j+k)
+                        // i=j process A(j+k,j+k)
                         aa = abs(a[(i + j * lda)]);
                         s = aa;
                         for (l = k + j + 1; l <= n - 1; l = l + 1) {
                             i++;
                             aa = abs(a[(i + j * lda)]);
-                            //                       A(l,k+j)
+                            // A(l,k+j)
                             s += aa;
                             work[l] += aa;
                         }
                         work[(k + j)] += s;
                     }
-                    //                 j=k-1 is special :process col A(k-1,0:k-1)
+                    // j=k-1 is special :process col A(k-1,0:k-1)
                     s = zero;
                     for (i = 0; i <= k - 2; i = i + 1) {
                         aa = abs(a[(i + j * lda)]);
-                        //                    A(k,i)
+                        // A(k,i)
                         work[i] += aa;
                         s += aa;
                     }
-                    //                 i=k-1
+                    // i=k-1
                     aa = abs(a[(i + j * lda)]);
-                    //                 A(k-1,k-1)
+                    // A(k-1,k-1)
                     s += aa;
                     work[i] = s;
-                    //                 done with col j=k+1
+                    // done with col j=k+1
                     for (j = k; j <= n - 1; j = j + 1) {
-                        //                    process col j of A = A(j,0:k-1)
+                        // process col j of A = A(j,0:k-1)
                         s = zero;
                         for (i = 0; i <= k - 1; i = i + 1) {
                             aa = abs(a[(i + j * lda)]);
-                            //                       A(j,i)
+                            // A(j,i)
                             work[i] += aa;
                             s += aa;
                         }
@@ -450,7 +457,7 @@ REAL Rlansf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                     }
                 }
             } else {
-                //              n is even
+                // n is even
                 if (ilu == 0) {
                     for (i = k; i <= n - 1; i = i + 1) {
                         work[i] = zero;
@@ -459,19 +466,19 @@ REAL Rlansf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                         s = zero;
                         for (i = 0; i <= k - 1; i = i + 1) {
                             aa = abs(a[(i + j * lda)]);
-                            //                       A(j,i+k)
+                            // A(j,i+k)
                             work[(i + k)] += aa;
                             s += aa;
                         }
                         work[j] = s;
                     }
-                    //                 j=k
-                    aa = abs(a[(0 + j * lda)]);
-                    //                 A(k,k)
+                    // j=k
+                    aa = abs(a[(j * lda)]);
+                    // A(k,k)
                     s = aa;
                     for (i = 1; i <= k - 1; i = i + 1) {
                         aa = abs(a[(i + j * lda)]);
-                        //                    A(k,k+i)
+                        // A(k,k+i)
                         work[(i + k)] += aa;
                         s += aa;
                     }
@@ -480,39 +487,39 @@ REAL Rlansf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                         s = zero;
                         for (i = 0; i <= j - 2 - k; i = i + 1) {
                             aa = abs(a[(i + j * lda)]);
-                            //                       A(i,j-k-1)
+                            // A(i,j-k-1)
                             work[i] += aa;
                             s += aa;
                         }
-                        //                     i=j-1-k
+                        // i=j-1-k
                         aa = abs(a[(i + j * lda)]);
-                        //                    A(j-k-1,j-k-1)
+                        // A(j-k-1,j-k-1)
                         s += aa;
                         work[(j - k - 1)] += s;
                         i++;
                         aa = abs(a[(i + j * lda)]);
-                        //                    A(j,j)
+                        // A(j,j)
                         s = aa;
                         for (l = j + 1; l <= n - 1; l = l + 1) {
                             i++;
                             aa = abs(a[(i + j * lda)]);
-                            //                       A(j,l)
+                            // A(j,l)
                             work[l] += aa;
                             s += aa;
                         }
                         work[j] += s;
                     }
-                    //                 j=n
+                    // j=n
                     s = zero;
                     for (i = 0; i <= k - 2; i = i + 1) {
                         aa = abs(a[(i + j * lda)]);
-                        //                    A(i,k-1)
+                        // A(i,k-1)
                         work[i] += aa;
                         s += aa;
                     }
-                    //                 i=k-1
+                    // i=k-1
                     aa = abs(a[(i + j * lda)]);
-                    //                 A(k-1,k-1)
+                    // A(k-1,k-1)
                     s += aa;
                     work[i] += s;
                     value = work[0];
@@ -523,67 +530,67 @@ REAL Rlansf(const char *norm, const char *transr, const char *uplo, INTEGER cons
                         }
                     }
                 } else {
-                    //                 ilu=1
+                    // ilu=1
                     for (i = k; i <= n - 1; i = i + 1) {
                         work[i] = zero;
                     }
-                    //                 j=0 is special :process col A(k:n-1,k)
+                    // j=0 is special :process col A(k:n-1,k)
                     s = abs(a[0]);
-                    //                 A(k,k)
+                    // A(k,k)
                     for (i = 1; i <= k - 1; i = i + 1) {
                         aa = abs(a[i]);
-                        //                    A(k+i,k)
+                        // A(k+i,k)
                         work[(i + k)] += aa;
                         s += aa;
                     }
                     work[k] += s;
                     for (j = 1; j <= k - 1; j = j + 1) {
-                        //                    process
+                        // process
                         s = zero;
                         for (i = 0; i <= j - 2; i = i + 1) {
                             aa = abs(a[(i + j * lda)]);
-                            //                       A(j-1,i)
+                            // A(j-1,i)
                             work[i] += aa;
                             s += aa;
                         }
                         aa = abs(a[(i + j * lda)]);
-                        //                    i=j-1 so process of A(j-1,j-1)
+                        // i=j-1 so process of A(j-1,j-1)
                         s += aa;
                         work[(j - 1)] = s;
-                        //                    is initialised here
+                        // is initialised here
                         i++;
-                        //                    i=j process A(j+k,j+k)
+                        // i=j process A(j+k,j+k)
                         aa = abs(a[(i + j * lda)]);
                         s = aa;
                         for (l = k + j + 1; l <= n - 1; l = l + 1) {
                             i++;
                             aa = abs(a[(i + j * lda)]);
-                            //                       A(l,k+j)
+                            // A(l,k+j)
                             s += aa;
                             work[l] += aa;
                         }
                         work[(k + j)] += s;
                     }
-                    //                 j=k is special :process col A(k,0:k-1)
+                    // j=k is special :process col A(k,0:k-1)
                     s = zero;
                     for (i = 0; i <= k - 2; i = i + 1) {
                         aa = abs(a[(i + j * lda)]);
-                        //                    A(k,i)
+                        // A(k,i)
                         work[i] += aa;
                         s += aa;
                     }
-                    //                 i=k-1
+                    // i=k-1
                     aa = abs(a[(i + j * lda)]);
-                    //                 A(k-1,k-1)
+                    // A(k-1,k-1)
                     s += aa;
                     work[i] = s;
-                    //                 done with col j=k+1
+                    // done with col j=k+1
                     for (j = k + 1; j <= n; j = j + 1) {
-                        //                    process col j-1 of A = A(j-1,0:k-1)
+                        // process col j-1 of A = A(j-1,0:k-1)
                         s = zero;
                         for (i = 0; i <= k - 1; i = i + 1) {
                             aa = abs(a[(i + j * lda)]);
-                            //                       A(j-1,i)
+                            // A(j-1,i)
                             work[i] += aa;
                             s += aa;
                         }
@@ -601,171 +608,171 @@ REAL Rlansf(const char *norm, const char *transr, const char *uplo, INTEGER cons
         }
     } else if ((Mlsame(norm, "F")) || (Mlsame(norm, "E"))) {
         //
-        //       Find normF(A).
+        // Find normF(A).
         //
         k = (n + 1) / 2;
         scale = zero;
         s = one;
         if (noe == 1) {
-            //           n is odd
+            // n is odd
             if (ifm == 1) {
-                //              A is normal
+                // A is normal
                 if (ilu == 0) {
-                    //                 A is upper
+                    // A is upper
                     for (j = 0; j <= k - 3; j = j + 1) {
                         Rlassq(k - j - 2, &a[(k + j + 1 + j * lda)], 1, scale, s);
-                        //                    L at A(k,0)
+                        // L at A(k,0)
                     }
                     for (j = 0; j <= k - 1; j = j + 1) {
-                        Rlassq(k + j - 1, &a[(0 + j * lda)], 1, scale, s);
-                        //                    trap U at A(0,0)
+                        Rlassq(k + j - 1, &a[(j * lda)], 1, scale, s);
+                        // trap U at A(0,0)
                     }
                     s += s;
-                    //                 REAL s for the off diagonal elements
+                    // double s for the off diagonal elements
                     Rlassq(k - 1, &a[k], lda + 1, scale, s);
-                    //                 tri L at A(k,0)
+                    // tri L at A(k,0)
                     Rlassq(k, &a[(k - 1)], lda + 1, scale, s);
-                    //                 tri U at A(k-1,0)
+                    // tri U at A(k-1,0)
                 } else {
-                    //                 ilu=1 & A is lower
+                    // ilu=1 & A is lower
                     for (j = 0; j <= k - 1; j = j + 1) {
                         Rlassq(n - j - 1, &a[(j + 1 + j * lda)], 1, scale, s);
-                        //                    trap L at A(0,0)
+                        // trap L at A(0,0)
                     }
                     for (j = 0; j <= k - 2; j = j + 1) {
-                        Rlassq(j, &a[(0 + (1 + j) * lda)], 1, scale, s);
-                        //                    U at A(0,1)
+                        Rlassq(j, &a[((1 + j) * lda)], 1, scale, s);
+                        // U at A(0,1)
                     }
                     s += s;
-                    //                 REAL s for the off diagonal elements
+                    // double s for the off diagonal elements
                     Rlassq(k, &a[0], lda + 1, scale, s);
-                    //                 tri L at A(0,0)
-                    Rlassq(k - 1, &a[(0 + lda)], lda + 1, scale, s);
-                    //                 tri U at A(0,1)
+                    // tri L at A(0,0)
+                    Rlassq(k - 1, &a[lda], lda + 1, scale, s);
+                    // tri U at A(0,1)
                 }
             } else {
-                //              A is xpose
+                // A is xpose
                 if (ilu == 0) {
-                    //                 A**T is upper
+                    // A**T is upper
                     for (j = 1; j <= k - 2; j = j + 1) {
-                        Rlassq(j, &a[(0 + (k + j) * lda)], 1, scale, s);
-                        //                    U at A(0,k)
+                        Rlassq(j, &a[((k + j) * lda)], 1, scale, s);
+                        // U at A(0,k)
                     }
                     for (j = 0; j <= k - 2; j = j + 1) {
-                        Rlassq(k, &a[(0 + j * lda)], 1, scale, s);
-                        //                    k by k-1 rect. at A(0,0)
+                        Rlassq(k, &a[(j * lda)], 1, scale, s);
+                        // k by k-1 rect. at A(0,0)
                     }
                     for (j = 0; j <= k - 2; j = j + 1) {
                         Rlassq(k - j - 1, &a[(j + 1 + (j + k - 1) * lda)], 1, scale, s);
-                        //                    L at A(0,k-1)
+                        // L at A(0,k-1)
                     }
                     s += s;
-                    //                 REAL s for the off diagonal elements
-                    Rlassq(k - 1, &a[(0 + k * lda)], lda + 1, scale, s);
-                    //                 tri U at A(0,k)
-                    Rlassq(k, &a[(0 + (k - 1) * lda)], lda + 1, scale, s);
-                    //                 tri L at A(0,k-1)
+                    // double s for the off diagonal elements
+                    Rlassq(k - 1, &a[(k * lda)], lda + 1, scale, s);
+                    // tri U at A(0,k)
+                    Rlassq(k, &a[((k - 1) * lda)], lda + 1, scale, s);
+                    // tri L at A(0,k-1)
                 } else {
-                    //                 A**T is lower
+                    // A**T is lower
                     for (j = 1; j <= k - 1; j = j + 1) {
-                        Rlassq(j, &a[(0 + j * lda)], 1, scale, s);
-                        //                    U at A(0,0)
+                        Rlassq(j, &a[(j * lda)], 1, scale, s);
+                        // U at A(0,0)
                     }
                     for (j = k; j <= n - 1; j = j + 1) {
-                        Rlassq(k, &a[(0 + j * lda)], 1, scale, s);
-                        //                    k by k-1 rect. at A(0,k)
+                        Rlassq(k, &a[(j * lda)], 1, scale, s);
+                        // k by k-1 rect. at A(0,k)
                     }
                     for (j = 0; j <= k - 3; j = j + 1) {
                         Rlassq(k - j - 2, &a[(j + 2 + j * lda)], 1, scale, s);
-                        //                    L at A(1,0)
+                        // L at A(1,0)
                     }
                     s += s;
-                    //                 REAL s for the off diagonal elements
+                    // double s for the off diagonal elements
                     Rlassq(k, &a[0], lda + 1, scale, s);
-                    //                 tri U at A(0,0)
+                    // tri U at A(0,0)
                     Rlassq(k - 1, &a[1], lda + 1, scale, s);
-                    //                 tri L at A(1,0)
+                    // tri L at A(1,0)
                 }
             }
         } else {
-            //           n is even
+            // n is even
             if (ifm == 1) {
-                //              A is normal
+                // A is normal
                 if (ilu == 0) {
-                    //                 A is upper
+                    // A is upper
                     for (j = 0; j <= k - 2; j = j + 1) {
                         Rlassq(k - j - 1, &a[(k + j + 2 + j * lda)], 1, scale, s);
-                        //                    L at A(k+1,0)
+                        // L at A(k+1,0)
                     }
                     for (j = 0; j <= k - 1; j = j + 1) {
-                        Rlassq(k + j, &a[(0 + j * lda)], 1, scale, s);
-                        //                    trap U at A(0,0)
+                        Rlassq(k + j, &a[(j * lda)], 1, scale, s);
+                        // trap U at A(0,0)
                     }
                     s += s;
-                    //                 REAL s for the off diagonal elements
+                    // double s for the off diagonal elements
                     Rlassq(k, &a[(k + 1)], lda + 1, scale, s);
-                    //                 tri L at A(k+1,0)
+                    // tri L at A(k+1,0)
                     Rlassq(k, &a[k], lda + 1, scale, s);
-                    //                 tri U at A(k,0)
+                    // tri U at A(k,0)
                 } else {
-                    //                 ilu=1 & A is lower
+                    // ilu=1 & A is lower
                     for (j = 0; j <= k - 1; j = j + 1) {
                         Rlassq(n - j - 1, &a[(j + 2 + j * lda)], 1, scale, s);
-                        //                    trap L at A(1,0)
+                        // trap L at A(1,0)
                     }
                     for (j = 1; j <= k - 1; j = j + 1) {
-                        Rlassq(j, &a[(0 + j * lda)], 1, scale, s);
-                        //                    U at A(0,0)
+                        Rlassq(j, &a[(j * lda)], 1, scale, s);
+                        // U at A(0,0)
                     }
                     s += s;
-                    //                 REAL s for the off diagonal elements
+                    // double s for the off diagonal elements
                     Rlassq(k, &a[1], lda + 1, scale, s);
-                    //                 tri L at A(1,0)
+                    // tri L at A(1,0)
                     Rlassq(k, &a[0], lda + 1, scale, s);
-                    //                 tri U at A(0,0)
+                    // tri U at A(0,0)
                 }
             } else {
-                //              A is xpose
+                // A is xpose
                 if (ilu == 0) {
-                    //                 A**T is upper
+                    // A**T is upper
                     for (j = 1; j <= k - 1; j = j + 1) {
-                        Rlassq(j, &a[(0 + (k + 1 + j) * lda)], 1, scale, s);
-                        //                    U at A(0,k+1)
+                        Rlassq(j, &a[((k + 1 + j) * lda)], 1, scale, s);
+                        // U at A(0,k+1)
                     }
                     for (j = 0; j <= k - 1; j = j + 1) {
-                        Rlassq(k, &a[(0 + j * lda)], 1, scale, s);
-                        //                    k by k rect. at A(0,0)
+                        Rlassq(k, &a[(j * lda)], 1, scale, s);
+                        // k by k rect. at A(0,0)
                     }
                     for (j = 0; j <= k - 2; j = j + 1) {
                         Rlassq(k - j - 1, &a[(j + 1 + (j + k) * lda)], 1, scale, s);
-                        //                    L at A(0,k)
+                        // L at A(0,k)
                     }
                     s += s;
-                    //                 REAL s for the off diagonal elements
-                    Rlassq(k, &a[(0 + (k + 1) * lda)], lda + 1, scale, s);
-                    //                 tri U at A(0,k+1)
-                    Rlassq(k, &a[(0 + k * lda)], lda + 1, scale, s);
-                    //                 tri L at A(0,k)
+                    // double s for the off diagonal elements
+                    Rlassq(k, &a[((k + 1) * lda)], lda + 1, scale, s);
+                    // tri U at A(0,k+1)
+                    Rlassq(k, &a[(k * lda)], lda + 1, scale, s);
+                    // tri L at A(0,k)
                 } else {
-                    //                 A**T is lower
+                    // A**T is lower
                     for (j = 1; j <= k - 1; j = j + 1) {
-                        Rlassq(j, &a[(0 + (j + 1) * lda)], 1, scale, s);
-                        //                    U at A(0,1)
+                        Rlassq(j, &a[((j + 1) * lda)], 1, scale, s);
+                        // U at A(0,1)
                     }
                     for (j = k + 1; j <= n; j = j + 1) {
-                        Rlassq(k, &a[(0 + j * lda)], 1, scale, s);
-                        //                    k by k rect. at A(0,k+1)
+                        Rlassq(k, &a[(j * lda)], 1, scale, s);
+                        // k by k rect. at A(0,k+1)
                     }
                     for (j = 0; j <= k - 2; j = j + 1) {
                         Rlassq(k - j - 1, &a[(j + 1 + j * lda)], 1, scale, s);
-                        //                    L at A(0,0)
+                        // L at A(0,0)
                     }
                     s += s;
-                    //                 REAL s for the off diagonal elements
+                    // double s for the off diagonal elements
                     Rlassq(k, &a[lda], lda + 1, scale, s);
-                    //                 tri L at A(0,1)
+                    // tri L at A(0,1)
                     Rlassq(k, &a[0], lda + 1, scale, s);
-                    //                 tri U at A(0,0)
+                    // tri U at A(0,0)
                 }
             }
         }
@@ -775,6 +782,6 @@ REAL Rlansf(const char *norm, const char *transr, const char *uplo, INTEGER cons
     return_value = value;
     return return_value;
     //
-    //     End of Rlansf
+    // End of Rlansf
     //
 }

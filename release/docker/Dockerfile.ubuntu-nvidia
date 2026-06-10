@@ -1,0 +1,41 @@
+# Dockerfile.ubuntu-nvidia
+# Ubuntu CUDA GCC distcheck environment using distro-provided cuda-toolkit.
+ARG BASE=ubuntu:26.04
+FROM ${BASE}
+
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    gfortran \
+    autoconf \
+    automake \
+    libtool \
+    ccache \
+    python3 \
+    git \
+    ca-certificates \
+    pkg-config \
+    xz-utils \
+    bzip2 \
+    patch \
+    cuda-toolkit \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN cuda_nvcc="$(find /usr/local -path '*/bin/nvcc' -type f | sort -V | tail -n 1)" \
+    && test -n "${cuda_nvcc}" \
+    && ln -sfn "$(dirname "$(dirname "${cuda_nvcc}")")" /usr/local/cuda \
+    && /usr/local/cuda/bin/nvcc --version
+
+ENV CCACHE_DIR=/ccache
+ENV CUDA_HOME=/usr/local/cuda
+ENV PATH="/usr/lib/ccache:${CUDA_HOME}/bin:${PATH}"
+ENV CC="ccache gcc"
+ENV CXX="ccache g++"
+ENV FC="ccache gfortran"
+ENV MPLAPACK_REPO=https://github.com/nakatamaho/mplapack.git
+ENV MPLAPACK_REF="master"
+
+WORKDIR /work
+COPY run-ubuntu-nvidia-distcheck.sh /run-ubuntu-nvidia-distcheck.sh
+RUN chmod +x /run-ubuntu-nvidia-distcheck.sh
+CMD ["/run-ubuntu-nvidia-distcheck.sh"]

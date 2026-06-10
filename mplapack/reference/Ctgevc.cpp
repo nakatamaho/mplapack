@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,10 +26,15 @@
  *
  */
 
+// Derived from LAPACK routine ZTGEVC.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
-
-inline REAL abs1(COMPLEX x) { return abs(x.real()) + abs(x.imag()); }
 
 void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n, COMPLEX *s, INTEGER const lds, COMPLEX *p, INTEGER const ldp, COMPLEX *vl, INTEGER const ldvl, COMPLEX *vr, INTEGER const ldvr, INTEGER const mm, INTEGER &m, COMPLEX *work, REAL *rwork, INTEGER &info) {
     COMPLEX x = 0.0;
@@ -82,7 +87,7 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
     COMPLEX cb = 0.0;
     INTEGER iend = 0;
     //
-    //     Decode and Test the input parameters
+    // Decode and Test the input parameters
     //
     if (Mlsame(howmny, "A")) {
         ihwmny = 1;
@@ -133,7 +138,7 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
         return;
     }
     //
-    //     Count the number of eigenvectors
+    // Count the number of eigenvectors
     //
     if (!ilall) {
         im = 0;
@@ -146,7 +151,7 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
         im = n;
     }
     //
-    //     Check diagonal of B
+    // Check diagonal of B
     //
     ilbbad = false;
     for (j = 1; j <= n; j = j + 1) {
@@ -169,14 +174,14 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     m = im;
     if (n == 0) {
         return;
     }
     //
-    //     Machine Constants
+    // Machine Constants
     //
     safmin = Rlamch("Safe minimum");
     big = one / safmin;
@@ -185,34 +190,34 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
     big = one / small;
     bignum = one / (safmin * n);
     //
-    //     Compute the 1-norm of each column of the strictly upper triangular
-    //     part of A and B to check for possible overflow in the triangular
-    //     solver.
+    // Compute the 1-norm of each column of the strictly upper triangular
+    // part of A and B to check for possible overflow in the triangular
+    // solver.
     //
-    anorm = abs1(s[(1 - 1)]);
-    bnorm = abs1(p[(1 - 1)]);
+    anorm = cabs1(s[0]);
+    bnorm = cabs1(p[0]);
     rwork[1 - 1] = zero;
     rwork[(n + 1) - 1] = zero;
     for (j = 2; j <= n; j = j + 1) {
         rwork[j - 1] = zero;
         rwork[(n + j) - 1] = zero;
         for (i = 1; i <= j - 1; i = i + 1) {
-            rwork[j - 1] += abs1(s[(i - 1) + (j - 1) * lds]);
-            rwork[(n + j) - 1] += abs1(p[(i - 1) + (j - 1) * ldp]);
+            rwork[j - 1] += cabs1(s[(i - 1) + (j - 1) * lds]);
+            rwork[(n + j) - 1] += cabs1(p[(i - 1) + (j - 1) * ldp]);
         }
-        anorm = max(anorm, REAL(rwork[j - 1] + abs1(s[(j - 1) + (j - 1) * lds])));
-        bnorm = max(bnorm, REAL(rwork[(n + j) - 1] + abs1(p[(j - 1) + (j - 1) * ldp])));
+        anorm = max(anorm, rwork[j - 1] + cabs1(s[(j - 1) + (j - 1) * lds]));
+        bnorm = max(bnorm, rwork[(n + j) - 1] + cabs1(p[(j - 1) + (j - 1) * ldp]));
     }
     //
     ascale = one / max(anorm, safmin);
     bscale = one / max(bnorm, safmin);
     //
-    //     Left eigenvectors
+    // Left eigenvectors
     //
     if (identifier_compl) {
         ieig = 0;
         //
-        //        Main loop over eigenvalues
+        // Main loop over eigenvalues
         //
         for (je = 1; je <= n; je = je + 1) {
             if (ilall) {
@@ -223,9 +228,9 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
             if (ilcomp) {
                 ieig++;
                 //
-                if (abs1(s[(je - 1) + (je - 1) * lds]) <= safmin && abs(p[(je - 1) + (je - 1) * ldp].real()) <= safmin) {
+                if (cabs1(s[(je - 1) + (je - 1) * lds]) <= safmin && abs(p[(je - 1) + (je - 1) * ldp].real()) <= safmin) {
                     //
-                    //                 Singular matrix pencil -- return unit eigenvector
+                    // Singular matrix pencil -- return unit eigenvector
                     //
                     for (jr = 1; jr <= n; jr = jr + 1) {
                         vl[(jr - 1) + (ieig - 1) * ldvl] = czero;
@@ -234,31 +239,31 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                     goto statement_140;
                 }
                 //
-                //              Non-singular eigenvalue:
-                //              Compute coefficients  a  and  b  in
-                //                   H
-                //                 y  ( a A - b B ) = 0
+                // Non-singular eigenvalue:
+                // Compute coefficients  a  and  b  in
+                // H
+                // y  ( a A - b B ) = 0
                 //
-                temp = one / max({REAL(abs1(s[(je - 1) + (je - 1) * lds]) * ascale), REAL(abs(p[(je - 1) + (je - 1) * ldp].real()) * bscale), safmin});
+                temp = one / max(cabs1(s[(je - 1) + (je - 1) * lds]) * ascale, abs(p[(je - 1) + (je - 1) * ldp].real()) * bscale, safmin);
                 salpha = (temp * s[(je - 1) + (je - 1) * lds]) * ascale;
                 sbeta = (temp * p[(je - 1) + (je - 1) * ldp].real()) * bscale;
                 acoeff = sbeta * ascale;
                 bcoeff = salpha * bscale;
                 //
-                //              Scale to avoid underflow
+                // Scale to avoid underflow
                 //
                 lsa = abs(sbeta) >= safmin && abs(acoeff) < small;
-                lsb = abs1(salpha) >= safmin && abs1(bcoeff) < small;
+                lsb = cabs1(salpha) >= safmin && cabs1(bcoeff) < small;
                 //
                 scale = one;
                 if (lsa) {
                     scale = (small / abs(sbeta)) * min(anorm, big);
                 }
                 if (lsb) {
-                    scale = max(scale, REAL((small / abs1(salpha)) * min(bnorm, big)));
+                    scale = max(scale, (small / cabs1(salpha)) * min(bnorm, big));
                 }
                 if (lsa || lsb) {
-                    scale = min(scale, REAL(one / REAL(safmin * max({one, REAL(abs(acoeff)), REAL(abs1(bcoeff))}))));
+                    scale = min(scale, one / (safmin * max(one, abs(acoeff), cabs1(bcoeff))));
                     if (lsa) {
                         acoeff = ascale * (scale * sbeta);
                     } else {
@@ -272,27 +277,27 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                 }
                 //
                 acoefa = abs(acoeff);
-                bcoefa = abs1(bcoeff);
+                bcoefa = cabs1(bcoeff);
                 xmax = one;
                 for (jr = 1; jr <= n; jr = jr + 1) {
                     work[jr - 1] = czero;
                 }
                 work[je - 1] = cone;
-                dmin = max({REAL(ulp * acoefa * anorm), REAL(ulp * bcoefa * bnorm), safmin});
+                dmin = max(ulp * acoefa * anorm, ulp * bcoefa * bnorm, safmin);
                 //
-                //                                              H
-                //              Triangular solve of  (a A - b B)  y = 0
+                // H
+                // Triangular solve of  (a A - b B)  y = 0
                 //
-                //                                      H
-                //              (rowwise in  (a A - b B) , or columnwise in a A - b B)
+                // H
+                // (rowwise in  (a A - b B) , or columnwise in a A - b B)
                 //
                 for (j = je + 1; j <= n; j = j + 1) {
                     //
-                    //                 Compute
-                    //                       j-1
-                    //                 SUM = sum  conj( a*S(k,j) - b*P(k,j) )*x(k)
-                    //                       k=je
-                    //                 (Scale if necessary)
+                    // Compute
+                    // j-1
+                    // SUM = sum  conjg( a*S(k,j) - b*P(k,j) )*x(k)
+                    // k=je
+                    // (Scale if necessary)
                     //
                     temp = one / xmax;
                     if (acoefa * rwork[j - 1] + bcoefa * rwork[(n + j) - 1] > bignum * temp) {
@@ -310,18 +315,18 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                     }
                     sum = acoeff * suma - conj(bcoeff) * sumb;
                     //
-                    //                 Form x(j) = - SUM / conj( a*S(j,j) - b*P(j,j) )
+                    // Form x(j) = - SUM / conjg( a*S(j,j) - b*P(j,j) )
                     //
-                    //                 with scaling and perturbation of the denominator
+                    // with scaling and perturbation of the denominator
                     //
                     d = conj(acoeff * s[(j - 1) + (j - 1) * lds] - bcoeff * p[(j - 1) + (j - 1) * ldp]);
-                    if (abs1(d) <= dmin) {
+                    if (cabs1(d) <= dmin) {
                         d = COMPLEX(dmin);
                     }
                     //
-                    if (abs1(d) < one) {
-                        if (abs1(sum) >= bignum * abs1(d)) {
-                            temp = one / abs1(sum);
+                    if (cabs1(d) < one) {
+                        if (cabs1(sum) >= bignum * cabs1(d)) {
+                            temp = one / cabs1(sum);
                             for (jr = je; jr <= j - 1; jr = jr + 1) {
                                 work[jr - 1] = temp * work[jr - 1];
                             }
@@ -330,10 +335,10 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                         }
                     }
                     work[j - 1] = Cladiv(-sum, d);
-                    xmax = max(xmax, abs1(work[j - 1]));
+                    xmax = max(xmax, cabs1(work[j - 1]));
                 }
                 //
-                //              Back transform eigenvector if HOWMNY='B'.
+                // Back transform eigenvector if HOWMNY='B'.
                 //
                 if (ilback) {
                     Cgemv("N", n, n + 1 - je, cone, &vl[(je - 1) * ldvl], ldvl, &work[je - 1], 1, czero, &work[(n + 1) - 1], 1);
@@ -344,11 +349,11 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                     ibeg = je;
                 }
                 //
-                //              Copy and scale eigenvector into column of VL
+                // Copy and scale eigenvector into column of VL
                 //
                 xmax = zero;
                 for (jr = ibeg; jr <= n; jr = jr + 1) {
-                    xmax = max(xmax, abs1(work[((isrc - 1) * n + jr) - 1]));
+                    xmax = max(xmax, cabs1(work[((isrc - 1) * n + jr) - 1]));
                 }
                 //
                 if (xmax > safmin) {
@@ -369,12 +374,12 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
         }
     }
     //
-    //     Right eigenvectors
+    // Right eigenvectors
     //
     if (compr) {
         ieig = im + 1;
         //
-        //        Main loop over eigenvalues
+        // Main loop over eigenvalues
         //
         for (je = n; je >= 1; je = je - 1) {
             if (ilall) {
@@ -385,9 +390,9 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
             if (ilcomp) {
                 ieig = ieig - 1;
                 //
-                if (abs1(s[(je - 1) + (je - 1) * lds]) <= safmin && abs(p[(je - 1) + (je - 1) * ldp].real()) <= safmin) {
+                if (cabs1(s[(je - 1) + (je - 1) * lds]) <= safmin && abs(p[(je - 1) + (je - 1) * ldp].real()) <= safmin) {
                     //
-                    //                 Singular matrix pencil -- return unit eigenvector
+                    // Singular matrix pencil -- return unit eigenvector
                     //
                     for (jr = 1; jr <= n; jr = jr + 1) {
                         vr[(jr - 1) + (ieig - 1) * ldvr] = czero;
@@ -396,31 +401,31 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                     goto statement_250;
                 }
                 //
-                //              Non-singular eigenvalue:
-                //              Compute coefficients  a  and  b  in
+                // Non-singular eigenvalue:
+                // Compute coefficients  a  and  b  in
                 //
-                //              ( a A - b B ) x  = 0
+                // ( a A - b B ) x  = 0
                 //
-                temp = one / max({REAL(abs1(s[(je - 1) + (je - 1) * lds]) * ascale), REAL(abs(p[(je - 1) + (je - 1) * ldp].real()) * bscale), safmin});
+                temp = one / max(cabs1(s[(je - 1) + (je - 1) * lds]) * ascale, abs(p[(je - 1) + (je - 1) * ldp].real()) * bscale, safmin);
                 salpha = (temp * s[(je - 1) + (je - 1) * lds]) * ascale;
                 sbeta = (temp * p[(je - 1) + (je - 1) * ldp].real()) * bscale;
                 acoeff = sbeta * ascale;
                 bcoeff = salpha * bscale;
                 //
-                //              Scale to avoid underflow
+                // Scale to avoid underflow
                 //
                 lsa = abs(sbeta) >= safmin && abs(acoeff) < small;
-                lsb = abs1(salpha) >= safmin && abs1(bcoeff) < small;
+                lsb = cabs1(salpha) >= safmin && cabs1(bcoeff) < small;
                 //
                 scale = one;
                 if (lsa) {
                     scale = (small / abs(sbeta)) * min(anorm, big);
                 }
                 if (lsb) {
-                    scale = max(scale, REAL((small / abs1(salpha)) * min(bnorm, big)));
+                    scale = max(scale, (small / cabs1(salpha)) * min(bnorm, big));
                 }
                 if (lsa || lsb) {
-                    scale = min(scale, REAL(one / (safmin * max({one, REAL(abs(acoeff)), REAL(abs1(bcoeff))}))));
+                    scale = min(scale, one / (safmin * max(one, abs(acoeff), cabs1(bcoeff))));
                     if (lsa) {
                         acoeff = ascale * (scale * sbeta);
                     } else {
@@ -434,18 +439,18 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                 }
                 //
                 acoefa = abs(acoeff);
-                bcoefa = abs1(bcoeff);
+                bcoefa = cabs1(bcoeff);
                 xmax = one;
                 for (jr = 1; jr <= n; jr = jr + 1) {
                     work[jr - 1] = czero;
                 }
                 work[je - 1] = cone;
-                dmin = max({REAL(ulp * acoefa * anorm), REAL(ulp * bcoefa * bnorm), safmin});
+                dmin = max(ulp * acoefa * anorm, ulp * bcoefa * bnorm, safmin);
                 //
-                //              Triangular solve of  (a A - b B) x = 0  (columnwise)
+                // Triangular solve of  (a A - b B) x = 0  (columnwise)
                 //
-                //              WORK(1:j-1) contains sums w,
-                //              WORK(j+1:JE) contains x
+                // WORK(1:j-1) contains sums w,
+                // WORK(j+1:JE) contains x
                 //
                 for (jr = 1; jr <= je - 1; jr = jr + 1) {
                     work[jr - 1] = acoeff * s[(jr - 1) + (je - 1) * lds] - bcoeff * p[(jr - 1) + (je - 1) * ldp];
@@ -454,17 +459,17 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                 //
                 for (j = je - 1; j >= 1; j = j - 1) {
                     //
-                    //                 Form x(j) := - w(j) / d
-                    //                 with scaling and perturbation of the denominator
+                    // Form x(j) := - w(j) / d
+                    // with scaling and perturbation of the denominator
                     //
                     d = acoeff * s[(j - 1) + (j - 1) * lds] - bcoeff * p[(j - 1) + (j - 1) * ldp];
-                    if (abs1(d) <= dmin) {
+                    if (cabs1(d) <= dmin) {
                         d = COMPLEX(dmin);
                     }
                     //
-                    if (abs1(d) < one) {
-                        if (abs1(work[j - 1]) >= bignum * abs1(d)) {
-                            temp = one / abs1(work[j - 1]);
+                    if (cabs1(d) < one) {
+                        if (cabs1(work[j - 1]) >= bignum * cabs1(d)) {
+                            temp = one / cabs1(work[j - 1]);
                             for (jr = 1; jr <= je; jr = jr + 1) {
                                 work[jr - 1] = temp * work[jr - 1];
                             }
@@ -475,10 +480,10 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                     //
                     if (j > 1) {
                         //
-                        //                    w = w + x(j)*(a S(*,j) - b P(*,j) ) with scaling
+                        // w = w + x(j)*(a S(*,j) - b P(*,j) ) with scaling
                         //
-                        if (abs1(work[j - 1]) > one) {
-                            temp = one / abs1(work[j - 1]);
+                        if (cabs1(work[j - 1]) > one) {
+                            temp = one / cabs1(work[j - 1]);
                             if (acoefa * rwork[j - 1] + bcoefa * rwork[(n + j) - 1] >= bignum * temp) {
                                 for (jr = 1; jr <= je; jr = jr + 1) {
                                     work[jr - 1] = temp * work[jr - 1];
@@ -494,7 +499,7 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                     }
                 }
                 //
-                //              Back transform eigenvector if HOWMNY='B'.
+                // Back transform eigenvector if HOWMNY='B'.
                 //
                 if (ilback) {
                     Cgemv("N", n, je, cone, vr, ldvr, work, 1, czero, &work[(n + 1) - 1], 1);
@@ -505,11 +510,11 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                     iend = je;
                 }
                 //
-                //              Copy and scale eigenvector into column of VR
+                // Copy and scale eigenvector into column of VR
                 //
                 xmax = zero;
                 for (jr = 1; jr <= iend; jr = jr + 1) {
-                    xmax = max(xmax, abs1(work[((isrc - 1) * n + jr) - 1]));
+                    xmax = max(xmax, cabs1(work[((isrc - 1) * n + jr) - 1]));
                 }
                 //
                 if (xmax > safmin) {
@@ -530,6 +535,6 @@ void Ctgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
         }
     }
     //
-    //     End of Ctgevc
+    // End of Ctgevc
     //
 }

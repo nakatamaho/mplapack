@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZLATRD.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Clatrd(const char *uplo, INTEGER const n, INTEGER const nb, COMPLEX *a, INTEGER const lda, REAL *e, COMPLEX *tau, COMPLEX *w, INTEGER const ldw) {
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n <= 0) {
         return;
@@ -42,16 +49,16 @@ void Clatrd(const char *uplo, INTEGER const n, INTEGER const nb, COMPLEX *a, INT
     const COMPLEX one = COMPLEX(1.0, 0.0);
     COMPLEX alpha = 0.0;
     const COMPLEX zero = COMPLEX(0.0, 0.0);
-    const COMPLEX half = COMPLEX(0.5e+0, 0.0);
+    const COMPLEX half = COMPLEX(0.5, 0.0);
     if (Mlsame(uplo, "U")) {
         //
-        //        Reduce last NB columns of upper triangle
+        // Reduce last NB columns of upper triangle
         //
         for (i = n; i >= n - nb + 1; i = i - 1) {
             iw = i - n + nb;
             if (i < n) {
                 //
-                //              Update A(1:i,i)
+                // Update A(1:i,i)
                 //
                 a[(i - 1) + (i - 1) * lda] = a[(i - 1) + (i - 1) * lda].real();
                 Clacgv(n - i, &w[(i - 1) + ((iw + 1) - 1) * ldw], ldw);
@@ -64,15 +71,15 @@ void Clatrd(const char *uplo, INTEGER const n, INTEGER const nb, COMPLEX *a, INT
             }
             if (i > 1) {
                 //
-                //              Generate elementary reflector H(i) to annihilate
-                //              A(1:i-2,i)
+                // Generate elementary reflector H(i) to annihilate
+                // A(1:i-2,i)
                 //
                 alpha = a[((i - 1) - 1) + (i - 1) * lda];
                 Clarfg(i - 1, alpha, &a[(i - 1) * lda], 1, tau[(i - 1) - 1]);
                 e[(i - 1) - 1] = alpha.real();
                 a[((i - 1) - 1) + (i - 1) * lda] = one;
                 //
-                //              Compute W(1:i-1,i)
+                // Compute W(1:i-1,i)
                 //
                 Chemv("Upper", i - 1, one, a, lda, &a[(i - 1) * lda], 1, zero, &w[(iw - 1) * ldw], 1);
                 if (i < n) {
@@ -89,11 +96,11 @@ void Clatrd(const char *uplo, INTEGER const n, INTEGER const nb, COMPLEX *a, INT
         }
     } else {
         //
-        //        Reduce first NB columns of lower triangle
+        // Reduce first NB columns of lower triangle
         //
         for (i = 1; i <= nb; i = i + 1) {
             //
-            //           Update A(i:n,i)
+            // Update A(i:n,i)
             //
             a[(i - 1) + (i - 1) * lda] = a[(i - 1) + (i - 1) * lda].real();
             Clacgv(i - 1, &w[(i - 1)], ldw);
@@ -105,15 +112,15 @@ void Clatrd(const char *uplo, INTEGER const n, INTEGER const nb, COMPLEX *a, INT
             a[(i - 1) + (i - 1) * lda] = a[(i - 1) + (i - 1) * lda].real();
             if (i < n) {
                 //
-                //              Generate elementary reflector H(i) to annihilate
-                //              A(i+2:n,i)
+                // Generate elementary reflector H(i) to annihilate
+                // A(i+2:n,i)
                 //
                 alpha = a[((i + 1) - 1) + (i - 1) * lda];
                 Clarfg(n - i, alpha, &a[(min(i + 2, n) - 1) + (i - 1) * lda], 1, tau[i - 1]);
                 e[i - 1] = alpha.real();
                 a[((i + 1) - 1) + (i - 1) * lda] = one;
                 //
-                //              Compute W(i+1:n,i)
+                // Compute W(i+1:n,i)
                 //
                 Chemv("Lower", n - i, one, &a[((i + 1) - 1) + ((i + 1) - 1) * lda], lda, &a[((i + 1) - 1) + (i - 1) * lda], 1, zero, &w[((i + 1) - 1) + (i - 1) * ldw], 1);
                 Cgemv("Conjugate transpose", n - i, i - 1, one, &w[((i + 1) - 1)], ldw, &a[((i + 1) - 1) + (i - 1) * lda], 1, zero, &w[(i - 1) * ldw], 1);
@@ -128,6 +135,6 @@ void Clatrd(const char *uplo, INTEGER const n, INTEGER const nb, COMPLEX *a, INT
         }
     }
     //
-    //     End of Clatrd
+    // End of Clatrd
     //
 }

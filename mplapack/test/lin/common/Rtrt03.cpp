@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DTRT03.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,9 +43,9 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Rtrt03(const char *uplo, const char *trans, const char *diag, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL const scale, REAL *cnorm, REAL const tscal, REAL *x, INTEGER const ldx, REAL *b, INTEGER const ldb, REAL *work, REAL &resid) {
+void Rtrt03(fem::str_cref uplo, fem::str_cref trans, fem::str_cref diag, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL const scale, REAL *cnorm, REAL const tscal, REAL *x, INTEGER const ldx, REAL *b, INTEGER const ldb, REAL *work, REAL &resid) {
     //
-    //     Quick exit if N = 0
+    // Quick exit if N = 0
     //
     const REAL zero = 0.0;
     if (n <= 0 || nrhs <= 0) {
@@ -50,23 +57,23 @@ void Rtrt03(const char *uplo, const char *trans, const char *diag, INTEGER const
     const REAL one = 1.0;
     REAL bignum = one / smlnum;
     //
-    //     Compute the norm of the triangular matrix A using the column
-    //     norms already computed by Rlatrs.
+    // Compute the norm of the triangular matrix A using the column
+    // norms already computed by Rlatrs.
     //
     REAL tnorm = zero;
     INTEGER j = 0;
-    if (Mlsame(diag, "N")) {
+    if (Mlsame(diag.elems(), "N")) {
         for (j = 1; j <= n; j = j + 1) {
-            tnorm = max(tnorm, REAL(tscal * abs(a[(j - 1) + (j - 1) * lda]) + cnorm[j - 1]));
+            tnorm = max(tnorm, tscal * abs(a[(j - 1) + (j - 1) * lda]) + cnorm[j - 1]);
         }
     } else {
         for (j = 1; j <= n; j = j + 1) {
-            tnorm = max(tnorm, REAL(tscal + cnorm[j - 1]));
+            tnorm = max(tnorm, tscal + cnorm[j - 1]);
         }
     }
     //
-    //     Compute the maximum over the number of right hand sides of
-    //        norm(op(A)*x - s*b) / ( norm(op(A)) * norm(x) * EPS ).
+    // Compute the maximum over the number of right hand sides of
+    // norm(op(A)*x - s*b) / ( norm(op(A)) * norm(x) * EPS ).
     //
     resid = zero;
     INTEGER ix = 0;
@@ -76,10 +83,10 @@ void Rtrt03(const char *uplo, const char *trans, const char *diag, INTEGER const
     for (j = 1; j <= nrhs; j = j + 1) {
         Rcopy(n, &x[(j - 1) * ldx], 1, work, 1);
         ix = iRamax(n, work, 1);
-        xnorm = max(one, REAL(abs(x[(ix - 1) + (j - 1) * ldx])));
+        xnorm = max(one, abs(x[(ix - 1) + (j - 1) * ldx]));
         xscal = (one / xnorm) / castREAL(n);
         Rscal(n, xscal, work, 1);
-        Rtrmv(uplo, trans, diag, n, a, lda, work, 1);
+        Rtrmv(uplo.elems(), trans.elems(), diag.elems(), n, a, lda, work, 1);
         Raxpy(n, -scale * xscal, &b[(j - 1) * ldb], 1, work, 1);
         ix = iRamax(n, work, 1);
         err = tscal * abs(work[ix - 1]);
@@ -106,6 +113,6 @@ void Rtrt03(const char *uplo, const char *trans, const char *diag, INTEGER const
         resid = max(resid, err);
     }
     //
-    //     End of Rtrt03
+    // End of Rtrt03
     //
 }

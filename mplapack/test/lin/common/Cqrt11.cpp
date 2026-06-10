@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZQRT11.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -39,42 +46,17 @@ using fem::common;
 REAL Cqrt11(INTEGER const m, INTEGER const k, COMPLEX *a, INTEGER const lda, COMPLEX *tau, COMPLEX *work, INTEGER const lwork) {
     REAL return_value = 0.0;
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     const REAL zero = 0.0;
     return_value = zero;
     //
-    //     Test for sufficient workspace
+    // Test for sufficient workspace
     //
     if (lwork < m * m + m) {
         Mxerbla("Cqrt11", 7);
         return return_value;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (m <= 0) {
         return return_value;
@@ -83,12 +65,12 @@ REAL Cqrt11(INTEGER const m, INTEGER const k, COMPLEX *a, INTEGER const lda, COM
     const REAL one = 1.0;
     Claset("Full", m, m, COMPLEX(zero), COMPLEX(one), work, m);
     //
-    //     Form Q
+    // Form Q
     //
     INTEGER info = 0;
     Cunm2r("Left", "No transpose", m, m, k, a, lda, tau, work, m, &work[(m * m + 1) - 1], info);
     //
-    //     Form Q'*Q
+    // Form Q'*Q
     //
     Cunm2r("Left", "Conjugate transpose", m, m, k, a, lda, tau, work, m, &work[(m * m + 1) - 1], info);
     //
@@ -102,6 +84,6 @@ REAL Cqrt11(INTEGER const m, INTEGER const k, COMPLEX *a, INTEGER const lda, COM
     //
     return return_value;
     //
-    //     End of Cqrt11
+    // End of Cqrt11
     //
 }

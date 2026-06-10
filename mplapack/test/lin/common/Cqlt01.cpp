@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZQLT01.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -38,71 +45,42 @@ using fem::common;
 
 void Cqlt01(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, COMPLEX *q, COMPLEX *l, INTEGER const lda, COMPLEX *tau, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL *result) {
     //
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     INTEGER minmn = min(m, n);
     REAL eps = Rlamch("Epsilon");
-    INTEGER ldaf = lda;
-    INTEGER ldq = lda;
-    INTEGER ldl = lda;
     //
-    //     Copy the matrix A to the array AF.
+    // Copy the matrix A to the array AF.
     //
     Clacpy("Full", m, n, a, lda, af, lda);
     //
-    //     Factorize the matrix A in the array AF.
+    // Factorize the matrix A in the array AF.
     //
+    srnamt = "Cgeqlf";
     INTEGER info = 0;
     Cgeqlf(m, n, af, lda, tau, work, lwork, info);
     //
-    //     Copy details of Q
+    // Copy details of Q
     //
-    const COMPLEX rogue = COMPLEX(-1.0e+10, -1.0e+10);
+    const COMPLEX rogue = COMPLEX(-10000000000.0, -10000000000.0);
     Claset("Full", m, m, rogue, rogue, q, lda);
     if (m >= n) {
         if (n < m && n > 0) {
-            Clacpy("Full", m - n, n, af, lda, &q[((m - n + 1) - 1) * ldq], lda);
+            Clacpy("Full", m - n, n, af, lda, &q[((m - n + 1) - 1) * lda], lda);
         }
         if (n > 1) {
-            Clacpy("Upper", n - 1, n - 1, &af[((m - n + 1) - 1) + (2 - 1) * ldaf], lda, &q[((m - n + 1) - 1) + ((m - n + 2) - 1) * ldq], lda);
+            Clacpy("Upper", n - 1, n - 1, &af[((m - n + 1) - 1) + (2 - 1) * lda], lda, &q[((m - n + 1) - 1) + ((m - n + 2) - 1) * lda], lda);
         }
     } else {
         if (m > 1) {
-            Clacpy("Upper", m - 1, m - 1, &af[((n - m + 2) - 1) * ldaf], lda, &q[(2 - 1) * ldq], lda);
+            Clacpy("Upper", m - 1, m - 1, &af[((n - m + 2) - 1) * lda], lda, &q[(2 - 1) * lda], lda);
         }
     }
     //
-    //     Generate the m-by-m matrix Q
+    // Generate the m-by-m matrix Q
     //
+    srnamt = "Cungql";
     Cungql(m, m, minmn, q, lda, tau, work, lwork, info);
     //
-    //     Copy L
+    // Copy L
     //
     const REAL zero = 0.0;
     Claset("Full", m, n, COMPLEX(zero), COMPLEX(zero), l, lda);
@@ -115,16 +93,16 @@ void Cqlt01(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, COMPLEX *
             Clacpy("Full", m, n - m, af, lda, l, lda);
         }
         if (m > 0) {
-            Clacpy("Lower", m, m, &af[((n - m + 1) - 1) * ldaf], lda, &l[((n - m + 1) - 1) * ldl], lda);
+            Clacpy("Lower", m, m, &af[((n - m + 1) - 1) * lda], lda, &l[((n - m + 1) - 1) * lda], lda);
         }
     }
     //
-    //     Compute L - Q'*A
+    // Compute L - Q'*A
     //
     const REAL one = 1.0;
     Cgemm("Conjugate transpose", "No transpose", m, n, m, COMPLEX(-one), q, lda, a, lda, COMPLEX(one), l, lda);
     //
-    //     Compute norm( L - Q'*A ) / ( M * norm(A) * EPS ) .
+    // Compute norm( L - Q'*A ) / ( M * norm(A) * EPS ) .
     //
     REAL anorm = Clange("1", m, n, a, lda, rwork);
     REAL resid = Clange("1", m, n, l, lda, rwork);
@@ -134,17 +112,17 @@ void Cqlt01(INTEGER const m, INTEGER const n, COMPLEX *a, COMPLEX *af, COMPLEX *
         result[1 - 1] = zero;
     }
     //
-    //     Compute I - Q'*Q
+    // Compute I - Q'*Q
     //
     Claset("Full", m, m, COMPLEX(zero), COMPLEX(one), l, lda);
     Cherk("Upper", "Conjugate transpose", m, m, -one, q, lda, one, l, lda);
     //
-    //     Compute norm( I - Q'*Q ) / ( M * EPS ) .
+    // Compute norm( I - Q'*Q ) / ( M * EPS ) .
     //
     resid = Clansy("1", "Upper", m, l, lda, rwork);
     //
     result[2 - 1] = (resid / castREAL(max((INTEGER)1, m))) / eps;
     //
-    //     End of Cqlt01
+    // End of Cqlt01
     //
 }

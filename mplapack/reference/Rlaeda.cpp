@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,33 +26,21 @@
  *
  */
 
+// Derived from LAPACK routine DLAEDA.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rlaeda(INTEGER const n, INTEGER const tlvls, INTEGER const curlvl, INTEGER const curpbm, INTEGER *prmptr, INTEGER *perm, INTEGER *givptr, INTEGER *givcol, REAL *givnum, REAL *q, INTEGER *qptr, REAL *z, REAL *ztemp, INTEGER &info) {
+    INTEGER ldgivcol = 2;
+    INTEGER ldgivnum = 2;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     //
@@ -64,30 +52,30 @@ void Rlaeda(INTEGER const n, INTEGER const tlvls, INTEGER const curlvl, INTEGER 
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
     }
     //
-    //     Determine location of first number in second half.
+    // Determine location of first number in second half.
     //
     INTEGER mid = n / 2 + 1;
     //
-    //     Gather last/first rows of appropriate eigenblocks into center of Z
+    // Gather last/first rows of appropriate eigenblocks into center of Z
     //
     INTEGER ptr = 1;
     //
-    //     Determine location of lowest level subproblem in the full storage
-    //     scheme
+    // Determine location of lowest level subproblem in the full storage
+    // scheme
     //
-    INTEGER curr = ptr + curpbm * (INTEGER)pow((double)2, (double)curlvl) + (INTEGER)pow((double)2, (double)(curlvl - 1)) - 1;
+    INTEGER curr = ptr + curpbm * (INTEGER(1) << (curlvl)) + (INTEGER(1) << ((curlvl - 1))) - 1;
     //
-    //     Determine size of these matrices.  We add HALF to the value of
-    //     the SQRT in case the machine underestimates one of these square
-    //     roots.
+    // Determine size of these matrices.  We add HALF to the value of
+    // the SQRT in case the machine underestimates one of these square
+    // roots.
     //
-    const REAL half = 0.5e0;
+    const REAL half = 0.5;
     INTEGER bsiz1 = castINTEGER(half + sqrt(castREAL(qptr[(curr + 1) - 1] - qptr[curr - 1])));
     INTEGER bsiz2 = castINTEGER(half + sqrt(castREAL(qptr[(curr + 2) - 1] - qptr[(curr + 1) - 1])));
     INTEGER k = 0;
@@ -96,34 +84,34 @@ void Rlaeda(INTEGER const n, INTEGER const tlvls, INTEGER const curlvl, INTEGER 
         z[k - 1] = zero;
     }
     Rcopy(bsiz1, &q[(qptr[curr - 1] + bsiz1 - 1) - 1], bsiz1, &z[(mid - bsiz1) - 1], 1);
-    Rcopy(bsiz2, &q[(qptr[(curr + 1) - 1]) - 1], bsiz2, &z[mid - 1], 1);
+    Rcopy(bsiz2, &q[qptr[(curr + 1) - 1] - 1], bsiz2, &z[mid - 1], 1);
     for (k = mid + bsiz2; k <= n; k = k + 1) {
         z[k - 1] = zero;
     }
     //
-    //     Loop through remaining levels 1 -> CURLVL applying the Givens
-    //     rotations and permutation and then multiplying the center matrices
-    //     against the current Z.
+    // Loop through remaining levels 1 -> CURLVL applying the Givens
+    // rotations and permutation and then multiplying the center matrices
+    // against the current Z.
     //
-    ptr = (INTEGER)pow((double)2, (double)tlvls) + 1;
+    ptr = (INTEGER(1) << (tlvls)) + 1;
     INTEGER psiz1 = 0;
     INTEGER psiz2 = 0;
     INTEGER zptr1 = 0;
     INTEGER i = 0;
     const REAL one = 1.0;
     for (k = 1; k <= curlvl - 1; k = k + 1) {
-        curr = ptr + curpbm * (INTEGER)pow((double)2, (double)(curlvl - k)) + (INTEGER)pow((double)2, (double)(curlvl - k - 1)) - 1;
+        curr = ptr + curpbm * (INTEGER(1) << ((curlvl - k))) + (INTEGER(1) << ((curlvl - k - 1))) - 1;
         psiz1 = prmptr[(curr + 1) - 1] - prmptr[curr - 1];
         psiz2 = prmptr[(curr + 2) - 1] - prmptr[(curr + 1) - 1];
         zptr1 = mid - psiz1;
         //
-        //       Apply Givens at CURR and CURR+1
+        // Apply Givens at CURR and CURR+1
         //
         for (i = givptr[curr - 1]; i <= givptr[(curr + 1) - 1] - 1; i = i + 1) {
-            Rrot(1, &z[(zptr1 + givcol[(i - 1) * 2] - 1) - 1], 1, &z[(zptr1 + givcol[(2 - 1) + (i - 1) * 2] - 1) - 1], 1, givnum[(i - 1) * 2], givnum[(2 - 1) + (i - 1) * 2]);
+            Rrot(1, &z[(zptr1 + givcol[(i - 1) * ldgivcol] - 1) - 1], 1, &z[(zptr1 + givcol[(2 - 1) + (i - 1) * ldgivcol] - 1) - 1], 1, givnum[(i - 1) * ldgivnum], givnum[(2 - 1) + (i - 1) * ldgivnum]);
         }
         for (i = givptr[(curr + 1) - 1]; i <= givptr[(curr + 2) - 1] - 1; i = i + 1) {
-            Rrot(1, &z[(mid - 1 + givcol[(i - 1) * 2]) - 1], 1, &z[(mid - 1 + givcol[(2 - 1) + (i - 1) * 2]) - 1], 1, givnum[(i - 1) * 2], givnum[(2 - 1) + (i - 1) * 2]);
+            Rrot(1, &z[(mid - 1 + givcol[(i - 1) * ldgivcol]) - 1], 1, &z[(mid - 1 + givcol[(2 - 1) + (i - 1) * ldgivcol]) - 1], 1, givnum[(i - 1) * ldgivnum], givnum[(2 - 1) + (i - 1) * ldgivnum]);
         }
         psiz1 = prmptr[(curr + 1) - 1] - prmptr[curr - 1];
         psiz2 = prmptr[(curr + 2) - 1] - prmptr[(curr + 1) - 1];
@@ -134,11 +122,11 @@ void Rlaeda(INTEGER const n, INTEGER const tlvls, INTEGER const curlvl, INTEGER 
             ztemp[(psiz1 + i + 1) - 1] = z[(mid + perm[(prmptr[(curr + 1) - 1] + i) - 1] - 1) - 1];
         }
         //
-        //        Multiply Blocks at CURR and CURR+1
+        // Multiply Blocks at CURR and CURR+1
         //
-        //        Determine size of these matrices.  We add HALF to the value of
-        //        the SQRT in case the machine underestimates one of these
-        //        square roots.
+        // Determine size of these matrices.  We add HALF to the value of
+        // the SQRT in case the machine underestimates one of these
+        // square roots.
         //
         bsiz1 = castINTEGER(half + sqrt(castREAL(qptr[(curr + 1) - 1] - qptr[curr - 1])));
         bsiz2 = castINTEGER(half + sqrt(castREAL(qptr[(curr + 2) - 1] - qptr[(curr + 1) - 1])));
@@ -147,13 +135,13 @@ void Rlaeda(INTEGER const n, INTEGER const tlvls, INTEGER const curlvl, INTEGER 
         }
         Rcopy(psiz1 - bsiz1, &ztemp[(bsiz1 + 1) - 1], 1, &z[(zptr1 + bsiz1) - 1], 1);
         if (bsiz2 > 0) {
-            Rgemv("T", bsiz2, bsiz2, one, &q[(qptr[(curr + 1) - 1]) - 1], bsiz2, &ztemp[(psiz1 + 1) - 1], 1, zero, &z[mid - 1], 1);
+            Rgemv("T", bsiz2, bsiz2, one, &q[qptr[(curr + 1) - 1] - 1], bsiz2, &ztemp[(psiz1 + 1) - 1], 1, zero, &z[mid - 1], 1);
         }
         Rcopy(psiz2 - bsiz2, &ztemp[(psiz1 + bsiz2 + 1) - 1], 1, &z[(mid + bsiz2) - 1], 1);
         //
-        ptr += (INTEGER)pow((double)2, (double)(tlvls - k));
+        ptr += (INTEGER(1) << ((tlvls - k)));
     }
     //
-    //     End of Rlaeda
+    // End of Rlaeda
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,49 +26,31 @@
  *
  */
 
+// Derived from LAPACK routine ZLAHILB.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
-void Clahilb(INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const ldx, COMPLEX *b, INTEGER const ldb, REAL *work, INTEGER &info, const char *path) {
+#include <mplapack_matgen.h>
+
+void Clahilb(INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const ldx, COMPLEX *b, INTEGER const ldb, REAL *work, INTEGER &info, fem::str_cref path) {
+    static COMPLEX d1[8] = {COMPLEX(-1.0, 0.0), COMPLEX(0.0, 1.0), COMPLEX(-1.0, -1.0), COMPLEX(0.0, -1.0), COMPLEX(1.0, 0.0), COMPLEX(-1.0, 1.0), COMPLEX(1.0, 1.0), COMPLEX(1.0, -1.0)};
+    static COMPLEX d2[8] = {COMPLEX(-1.0, 0.0), COMPLEX(0.0, -1.0), COMPLEX(-1.0, 1.0), COMPLEX(0.0, 1.0), COMPLEX(1.0, 0.0), COMPLEX(-1.0, -1.0), COMPLEX(1.0, -1.0), COMPLEX(1.0, 1.0)};
+    static COMPLEX invd1[8] = {COMPLEX(-1.0, 0.0), COMPLEX(0.0, -1.0), COMPLEX(-0.5, 0.5), COMPLEX(0.0, 1.0), COMPLEX(1.0, 0.0), COMPLEX(-0.5, -0.5), COMPLEX(0.5, -0.5), COMPLEX(0.5, 0.5)};
+    static COMPLEX invd2[8] = {COMPLEX(-1.0, 0.0), COMPLEX(0.0, 1.0), COMPLEX(-0.5, -0.5), COMPLEX(0.0, -1.0), COMPLEX(1.0, 0.0), COMPLEX(-0.5, 0.5), COMPLEX(0.5, 0.5), COMPLEX(0.5, -0.5)};
+    fem::str<2> c2 = path(2, 3);
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Parameters ..
-    //                  exact.
-    //                  a small componentwise relative error.
-    //     ??? complex uses how many bits ???
-    //
-    //     d's are generated from random permutation of those eight elements.
-    //
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions
-    //     ..
-    //     .. Executable Statements ..
-    COMPLEX d1[8] = {COMPLEX(-1.0, 0.0), COMPLEX(0.0, 1.0), COMPLEX(-1.0, -1.0), COMPLEX(0.0, -1.0), COMPLEX(1.0, 0.0), COMPLEX(-1.0, 1.0), COMPLEX(1.0, 1.0), COMPLEX(1.0, -1.0)};
-    COMPLEX d2[8] = {COMPLEX(-1.0, 0.0), COMPLEX(0.0, -1.0), COMPLEX(-1.0, 1.0), COMPLEX(0.0, 1.0), COMPLEX(1.0, 0.0), COMPLEX(-1.0, -1.0), COMPLEX(1.0, -1.0), COMPLEX(1.0, 1.0)};
-    COMPLEX invd1[8] = {COMPLEX(-1.0, 0.0), COMPLEX(0.0, -1.0), COMPLEX(-0.5, 0.5), COMPLEX(0.0, 1.0), COMPLEX(1.0, 0.0), COMPLEX(-0.5, -0.5), COMPLEX(0.5, -0.5), COMPLEX(0.5, 0.5)};
-    COMPLEX invd2[8] = {COMPLEX(-1.0, 0.0), COMPLEX(0.0, 1.0), COMPLEX(-0.5, -0.5), COMPLEX(0.0, -1.0), COMPLEX(1.0, 0.0), COMPLEX(-0.5, 0.5), COMPLEX(0.5, 0.5), COMPLEX(0.5, -0.5)};
-    char c2[2];
-    c2[0] = path[(2 - 1)];
-    c2[1] = path[(3 - 1)];
-    //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     const INTEGER nmax_approx = 11;
     if (n < 0 || n > nmax_approx) {
-        info = -1.0;
+        info = -1;
     } else if (nrhs < 0) {
         info = -2;
     } else if (lda < n) {
@@ -87,8 +69,8 @@ void Clahilb(INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda,
         info = 1;
     }
     //
-    //     Compute M = the LCM of the integers [1, 2*N-1].  The largest
-    //     reasonable N is small enough that integers suffice (up to N = 11).
+    // Compute M = the LCM of the integers [1, 2*N-1].  The largest
+    // reasonable N is small enough that integers suffice (up to N = 11).
     INTEGER m = 1;
     INTEGER i = 0;
     INTEGER tm = 0;
@@ -106,12 +88,12 @@ void Clahilb(INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda,
         m = (m / ti) * i;
     }
     //
-    //     Generate the scaled Hilbert matrix in A
-    //     If we are testing SY routines,
-    //        take D1_i = D2_i, else, D1_i = D2_i*
+    // Generate the scaled Hilbert matrix in A
+    // If we are testing SY routines,
+    // take D1_i = D2_i, else, D1_i = D2_i*
     INTEGER j = 0;
     const INTEGER size_d = 8;
-    if (Mlsamen(2, c2, "SY")) {
+    if (Mlsamen(2, c2.elems, "SY")) {
         for (j = 1; j <= n; j = j + 1) {
             for (i = 1; i <= n; i = i + 1) {
                 a[(i - 1) + (j - 1) * lda] = d1[(mod(j, size_d) + 1) - 1] * (castREAL(m) / (i + j - 1)) * d1[(mod(i, size_d) + 1) - 1];
@@ -125,22 +107,22 @@ void Clahilb(INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda,
         }
     }
     //
-    //     Generate matrix B as simply the first NRHS columns of M * the
-    //     identity.
+    // Generate matrix B as simply the first NRHS columns of M * the
+    // identity.
     COMPLEX tmp = castREAL(m);
     Claset("Full", n, nrhs, (0.0, 0.0), tmp, b, ldb);
     //
-    //     Generate the true solutions in X.  Because B = the first NRHS
-    //     columns of M*I, the true solutions are just the first NRHS columns
-    //     of the inverse Hilbert matrix.
+    // Generate the true solutions in X.  Because B = the first NRHS
+    // columns of M*I, the true solutions are just the first NRHS columns
+    // of the inverse Hilbert matrix.
     work[1 - 1] = n;
     for (j = 2; j <= n; j = j + 1) {
         work[j - 1] = (((work[(j - 1) - 1] / (j - 1)) * (j - 1 - n)) / (j - 1)) * (n + j - 1);
     }
     //
-    //     If we are testing SY routines,
-    //           take D1_i = D2_i, else, D1_i = D2_i*
-    if (Mlsamen(2, c2, "SY")) {
+    // If we are testing SY routines,
+    // take D1_i = D2_i, else, D1_i = D2_i*
+    if (Mlsamen(2, c2.elems, "SY")) {
         for (j = 1; j <= nrhs; j = j + 1) {
             for (i = 1; i <= n; i = i + 1) {
                 x[(i - 1) + (j - 1) * ldx] = invd1[(mod(j, size_d) + 1) - 1] * ((work[i - 1] * work[j - 1]) / (i + j - 1)) * invd1[(mod(i, size_d) + 1) - 1];

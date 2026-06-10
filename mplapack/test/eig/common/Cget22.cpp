@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZGET22.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,11 +43,9 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-void Cget22(const char *transa, const char *transe, const char *transw, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *e, INTEGER const lde, COMPLEX *w, COMPLEX *work, REAL *rwork, REAL *result) {
+void Cget22(fem::str_cref transa, fem::str_cref transe, fem::str_cref transw, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *e, INTEGER const lde, COMPLEX *w, COMPLEX *work, REAL *rwork, REAL *result) {
     //
-    //     Initialize RESULT (in case N=0)
+    // Initialize RESULT (in case N=0)
     //
     const REAL zero = 0.0;
     result[1 - 1] = zero;
@@ -54,28 +59,26 @@ void Cget22(const char *transa, const char *transe, const char *transw, INTEGER 
     //
     INTEGER itrnse = 0;
     INTEGER itrnsw = 0;
-    char norma;
-    char norme;
-    norma = 'O';
-    norme = 'O';
+    fem::str<1> norma = "O";
+    fem::str<1> norme = "O";
     //
-    if (Mlsame(transa, "T") || Mlsame(transa, "C")) {
-        norma = 'I';
+    if (Mlsame(transa.elems(), "T") || Mlsame(transa.elems(), "C")) {
+        norma = "I";
     }
     //
-    if (Mlsame(transe, "T")) {
+    if (Mlsame(transe.elems(), "T")) {
         itrnse = 1;
-        norme = 'I';
-    } else if (Mlsame(transe, "C")) {
+        norme = "I";
+    } else if (Mlsame(transe.elems(), "C")) {
         itrnse = 2;
-        norme = 'I';
+        norme = "I";
     }
     //
-    if (Mlsame(transw, "C")) {
+    if (Mlsame(transw.elems(), "C")) {
         itrnsw = 1;
     }
     //
-    //     Normalization of E:
+    // Normalization of E:
     //
     const REAL one = 1.0;
     REAL enrmin = one / ulp;
@@ -87,7 +90,7 @@ void Cget22(const char *transa, const char *transe, const char *transw, INTEGER 
         for (jvec = 1; jvec <= n; jvec = jvec + 1) {
             temp1 = zero;
             for (j = 1; j <= n; j = j + 1) {
-                temp1 = max(temp1, REAL(abs(e[(j - 1) + (jvec - 1) * lde].real()) + abs(e[(j - 1) + (jvec - 1) * lde].imag())));
+                temp1 = max(temp1, abs(e[(j - 1) + (jvec - 1) * lde].real()) + abs(e[(j - 1) + (jvec - 1) * lde].imag()));
             }
             enrmin = min(enrmin, temp1);
             enrmax = max(enrmax, temp1);
@@ -99,7 +102,7 @@ void Cget22(const char *transa, const char *transe, const char *transw, INTEGER 
         //
         for (j = 1; j <= n; j = j + 1) {
             for (jvec = 1; jvec <= n; jvec = jvec + 1) {
-                rwork[jvec - 1] = max(rwork[jvec - 1], REAL(abs(e[(jvec - 1) + (j - 1) * lde].real()) + abs(e[(jvec - 1) + (j - 1) * lde].imag())));
+                rwork[jvec - 1] = max(rwork[jvec - 1], abs(e[(jvec - 1) + (j - 1) * lde].real()) + abs(e[(jvec - 1) + (j - 1) * lde].imag()));
             }
         }
         //
@@ -109,17 +112,17 @@ void Cget22(const char *transa, const char *transe, const char *transw, INTEGER 
         }
     }
     //
-    //     Norm of A:
+    // Norm of A:
     //
-    REAL anorm = max({Clange(&norma, n, n, a, lda, rwork), unfl});
+    REAL anorm = max(Clange(norma.elems, n, n, a, lda, rwork), unfl);
     //
-    //     Norm of E:
+    // Norm of E:
     //
-    REAL enorm = max({Clange(&norme, n, n, e, lde, rwork), ulp});
+    REAL enorm = max(Clange(norme.elems, n, n, e, lde, rwork), ulp);
     //
-    //     Norm of error:
+    // Norm of error:
     //
-    //     Error =  AE - EW
+    // Error =  AE - EW
     //
     const COMPLEX czero = COMPLEX(0.0, 0.0);
     Claset("Full", n, n, czero, czero, work, n);
@@ -152,26 +155,26 @@ void Cget22(const char *transa, const char *transe, const char *transw, INTEGER 
     }
     //
     const COMPLEX cone = COMPLEX(1.0, 0.0);
-    Cgemm(transa, transe, n, n, n, cone, a, lda, e, lde, -cone, work, n);
+    Cgemm(transa.elems(), transe.elems(), n, n, n, cone, a, lda, e, lde, -cone, work, n);
     //
     REAL errnrm = Clange("One", n, n, work, n, rwork) / enorm;
     //
-    //     Compute RESULT(1) (avoiding under/overflow)
+    // Compute RESULT(1) (avoiding under/overflow)
     //
     if (anorm > errnrm) {
         result[1 - 1] = (errnrm / anorm) / ulp;
     } else {
         if (anorm < one) {
-            result[1 - 1] = (min(errnrm, anorm) / anorm) / ulp;
+            result[1 - 1] = one / ulp;
         } else {
-            result[1 - 1] = min(REAL(errnrm / anorm), one) / ulp;
+            result[1 - 1] = min(errnrm / anorm, one) / ulp;
         }
     }
     //
-    //     Compute RESULT(2) : the normalization error in E.
+    // Compute RESULT(2) : the normalization error in E.
     //
     result[2 - 1] = max(abs(enrmax - one), abs(enrmin - one)) / (castREAL(n) * ulp);
     //
-    //     End of Cget22
+    // End of Cget22
     //
 }

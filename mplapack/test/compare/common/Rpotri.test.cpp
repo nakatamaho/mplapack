@@ -64,8 +64,8 @@ void Rpotri_test2(const char *uplo) {
             while (j < MAX_ITER) {
                 for (int p = 0; p < matlen(lda, n); p++) {
                     A[p] = 0.0;
-                    A_ref[p] = 0.0; 
-		}
+                    A_ref[p] = 0.0;
+                }
                 set_random_symmmat_cond(A_ref, A, lda, n, 2);
 //		set_random_psdmat(A_ref, A, lda, n);
 // numerical error measure: first do inversion
@@ -87,10 +87,10 @@ void Rpotri_test2(const char *uplo) {
                     A[p] = cast2dd_real(A_ref[p]);
 #elif defined ___MPLAPACK_BUILD_WITH_DOUBLE___
                     A[p] = cast2double(A_ref[p]);
-#elif defined ___MPLAPACK_BUILD_WITH__FLOAT64X___
-                    A[p] = cast2_Float64x(A_ref[p]);
-#elif defined ___MPLAPACK_BUILD_WITH__FLOAT128___
-                    A[p] = cast2_Float128(A_ref[p]);
+#elif defined ___MPLAPACK_BUILD_WITH_BINARY80___
+                    A[p] = cast2binary80_t(A_ref[p]);
+#elif defined ___MPLAPACK_BUILD_WITH_BINARY128___
+                    A[p] = cast2binary128_t(A_ref[p]);
 #endif
                 }
 // doing inversion twice.

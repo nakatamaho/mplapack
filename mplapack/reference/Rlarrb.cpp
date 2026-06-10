@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DLARRB.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -47,7 +54,7 @@ void Rlarrb(INTEGER const n, REAL *d, REAL *lld, INTEGER const ifirst, INTEGER c
     REAL gap = 0.0;
     REAL back = 0.0;
     INTEGER negcnt = 0;
-    const REAL half = 0.5e0;
+    const REAL half = 0.5;
     REAL width = 0.0;
     REAL tmp = 0.0;
     REAL cvrgd = 0.0;
@@ -60,15 +67,17 @@ void Rlarrb(INTEGER const n, REAL *d, REAL *lld, INTEGER const ifirst, INTEGER c
     //
     info = 0;
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n <= 0) {
         return;
     }
     //
     maxitr = castINTEGER((log(spdiam + pivmin) - log(pivmin)) / log(two)) + (INTEGER)2;
-    if (maxitr >= 1024)
-        maxitr = 1024; // XXX itmax can be too large for MPFR (=10^8)
+#if defined ___MPLAPACK_BUILD_WITH_MPFR___ || defined ___MPLAPACK_BUILD_WITH_GMP___
+    if (maxitr >= 100000)
+        maxitr = 100000; // XXX itmax can be too large for MPFR/GMP (=10^8)
+#endif
     mnwdth = two * pivmin;
     //
     r = twist;
@@ -76,17 +85,17 @@ void Rlarrb(INTEGER const n, REAL *d, REAL *lld, INTEGER const ifirst, INTEGER c
         r = n;
     }
     //
-    //     Initialize unconverged intervals in [ WORK(2*I-1), WORK(2*I) ].
-    //     The Sturm Count, Count( WORK(2*I-1) ) is arranged to be I-1, while
-    //     Count( WORK(2*I) ) is stored in IWORK( 2*I ). The integer IWORK( 2*I-1 )
-    //     for an unconverged interval is set to the index of the next unconverged
-    //     interval, and is -1 or 0 for a converged interval. Thus a linked
-    //     list of unconverged intervals is set up.
+    // Initialize unconverged intervals in [ WORK(2*I-1), WORK(2*I) ].
+    // The Sturm Count, Count( WORK(2*I-1) ) is arranged to be I-1, while
+    // Count( WORK(2*I) ) is stored in IWORK( 2*I ). The integer IWORK( 2*I-1 )
+    // for an unconverged interval is set to the index of the next unconverged
+    // interval, and is -1 or 0 for a converged interval. Thus a linked
+    // list of unconverged intervals is set up.
     //
     i1 = ifirst;
-    //     The number of unconverged intervals
+    // The number of unconverged intervals
     nint = 0;
-    //     The last unconverged interval found
+    // The last unconverged interval found
     prev = 0;
     //
     rgap = wgap[(i1 - offset) - 1];
@@ -99,10 +108,10 @@ void Rlarrb(INTEGER const n, REAL *d, REAL *lld, INTEGER const ifirst, INTEGER c
         rgap = wgap[ii - 1];
         gap = min(lgap, rgap);
         //
-        //        Make sure that [LEFT,RIGHT] contains the desired eigenvalue
-        //        Compute negcount from dstqds facto L+D+L+^T = L D L^T - LEFT
+        // Make sure that [LEFT,RIGHT] contains the desired eigenvalue
+        // Compute negcount from dstqds facto L+D+L+^T = L D L^T - LEFT
         //
-        //        Do while( NEGCNT(LEFT).GT.I-1 )
+        // Do while( NEGCNT(LEFT).GT.I-1 )
         //
         back = werr[ii - 1];
     statement_20:
@@ -113,8 +122,8 @@ void Rlarrb(INTEGER const n, REAL *d, REAL *lld, INTEGER const ifirst, INTEGER c
             goto statement_20;
         }
         //
-        //        Do while( NEGCNT(RIGHT).LT.I )
-        //        Compute negcount from dstqds facto L+D+L+^T = L D L^T - RIGHT
+        // Do while( NEGCNT(RIGHT).LT.I )
+        // Compute negcount from dstqds facto L+D+L+^T = L D L^T - RIGHT
         //
         back = werr[ii - 1];
     statement_50:
@@ -129,12 +138,12 @@ void Rlarrb(INTEGER const n, REAL *d, REAL *lld, INTEGER const ifirst, INTEGER c
         tmp = max(abs(left), abs(right));
         cvrgd = max(rtol1 * gap, rtol2 * tmp);
         if (width <= cvrgd || width <= mnwdth) {
-            //           This interval has already converged and does not need refinement.
-            //           (Note that the gaps might change through refining the
-            //            eigenvalues, however, they can only get bigger.)
-            //           Remove it from the list.
+            // This interval has already converged and does not need refinement.
+            // (Note that the gaps might change through refining the
+            // eigenvalues, however, they can only get bigger.)
+            // Remove it from the list.
             iwork[(k - 1) - 1] = -1;
-            //           Make sure that I1 always points to the first unconverged interval
+            // Make sure that I1 always points to the first unconverged interval
             if ((i == i1) && (i < ilast)) {
                 i1 = i + 1;
             }
@@ -142,7 +151,7 @@ void Rlarrb(INTEGER const n, REAL *d, REAL *lld, INTEGER const ifirst, INTEGER c
                 iwork[(2 * prev - 1) - 1] = i + 1;
             }
         } else {
-            //           unconverged interval found
+            // unconverged interval found
             prev = i;
             nint++;
             iwork[(k - 1) - 1] = i + 1;
@@ -152,8 +161,8 @@ void Rlarrb(INTEGER const n, REAL *d, REAL *lld, INTEGER const ifirst, INTEGER c
         work[k - 1] = right;
     }
     //
-    //     Do while( NINT.GT.0 ), i.e. there are still unconverged intervals
-    //     and while (ITER.LT.MAXITR)
+    // Do while( NINT.GT.0 ), i.e. there are still unconverged intervals
+    // and while (ITER.LT.MAXITR)
     //
     iter = 0;
 statement_80:
@@ -175,19 +184,19 @@ statement_80:
         right = work[k - 1];
         mid = half * (left + right);
         //
-        //        semiwidth of interval
+        // semiwidth of interval
         width = right - mid;
         tmp = max(abs(left), abs(right));
         cvrgd = max(rtol1 * gap, rtol2 * tmp);
         if ((width <= cvrgd) || (width <= mnwdth) || (iter == maxitr)) {
-            //           reduce number of unconverged intervals
+            // reduce number of unconverged intervals
             nint = nint - 1;
-            //           Mark interval as converged.
+            // Mark interval as converged.
             iwork[(k - 1) - 1] = 0;
             if (i1 == i) {
                 i1 = next;
             } else {
-                //              Prev holds the last unconverged interval previously examined
+                // Prev holds the last unconverged interval previously examined
                 if (prev >= i1) {
                     iwork[(2 * prev - 1) - 1] = next;
                 }
@@ -197,7 +206,7 @@ statement_80:
         }
         prev = i;
         //
-        //        Perform one bisection step
+        // Perform one bisection step
         //
         negcnt = Rlaneg(n, d, lld, mid, pivmin, r);
         if (negcnt <= i - 1) {
@@ -209,18 +218,18 @@ statement_80:
     statement_100:;
     }
     iter++;
-    //     do another loop if there are still unconverged intervals
-    //     However, in the last iteration, all intervals are accepted
-    //     since this is the best we can do.
+    // do another loop if there are still unconverged intervals
+    // However, in the last iteration, all intervals are accepted
+    // since this is the best we can do.
     if ((nint > 0) && (iter <= maxitr)) {
         goto statement_80;
     }
     //
-    //     At this point, all the intervals have converged
+    // At this point, all the intervals have converged
     for (i = ifirst; i <= ilast; i = i + 1) {
         k = 2 * i;
         ii = i - offset;
-        //        All intervals marked by '0' have been refined.
+        // All intervals marked by '0' have been refined.
         if (iwork[(k - 1) - 1] == 0) {
             w[ii - 1] = half * (work[(k - 1) - 1] + work[k - 1]);
             werr[ii - 1] = work[k - 1] - w[ii - 1];
@@ -230,9 +239,9 @@ statement_80:
     for (i = ifirst + 1; i <= ilast; i = i + 1) {
         k = 2 * i;
         ii = i - offset;
-        wgap[(ii - 1) - 1] = max(zero, REAL(w[ii - 1] - werr[ii - 1] - w[(ii - 1) - 1] - werr[(ii - 1) - 1]));
+        wgap[(ii - 1) - 1] = max(zero, w[ii - 1] - werr[ii - 1] - w[(ii - 1) - 1] - werr[(ii - 1) - 1]);
     }
     //
-    //     End of Rlarrb
+    // End of Rlarrb
     //
 }

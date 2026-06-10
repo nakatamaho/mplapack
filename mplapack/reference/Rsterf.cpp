@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DSTERF.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -67,34 +74,11 @@ void Rsterf(INTEGER const n, REAL *d, REAL *e, INTEGER &info) {
     REAL oldgam = 0.0;
     REAL alpha = 0.0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n < 0) {
         info = -1;
@@ -105,7 +89,7 @@ void Rsterf(INTEGER const n, REAL *d, REAL *e, INTEGER &info) {
         return;
     }
     //
-    //     Determine the unit roundoff for this environment.
+    // Determine the unit roundoff for this environment.
     //
     eps = Rlamch("E");
     eps2 = pow2(eps);
@@ -115,15 +99,15 @@ void Rsterf(INTEGER const n, REAL *d, REAL *e, INTEGER &info) {
     ssfmin = sqrt(safmin) / eps2;
     rmax = Rlamch("O");
     //
-    //     Compute the eigenvalues of the tridiagonal matrix.
+    // Compute the eigenvalues of the tridiagonal matrix.
     //
     nmaxit = n * maxit;
     sigma = zero;
     jtot = 0;
     //
-    //     Determine where the matrix splits and choose QL or QR iteration
-    //     for each block, according to whether top or bottom diagonal
-    //     element is smaller.
+    // Determine where the matrix splits and choose QL or QR iteration
+    // for each block, according to whether top or bottom diagonal
+    // element is smaller.
     //
     l1 = 1;
 //
@@ -152,7 +136,7 @@ statement_30:
         goto statement_10;
     }
     //
-    //     Scale submatrix in rows and columns L to LEND
+    // Scale submatrix in rows and columns L to LEND
     //
     anorm = Rlanst("M", lend - l + 1, &d[l - 1], &e[l - 1]);
     iscale = 0;
@@ -173,7 +157,7 @@ statement_30:
         e[i - 1] = pow2(e[i - 1]);
     }
     //
-    //     Choose between QL and QR iteration
+    // Choose between QL and QR iteration
     //
     if (abs(d[lend - 1]) < abs(d[l - 1])) {
         lend = lsv;
@@ -182,9 +166,9 @@ statement_30:
     //
     if (lend >= l) {
     //
-    //        QL Iteration
+    // QL Iteration
     //
-    //        Look for small subdiagonal element.
+    // Look for small subdiagonal element.
     //
     statement_50:
         if (l != lend) {
@@ -205,8 +189,8 @@ statement_30:
             goto statement_90;
         }
         //
-        //        If remaining matrix is 2 by 2, use Rlae2 to compute its
-        //        eigenvalues.
+        // If remaining matrix is 2 by 2, use Rlae2 to compute its
+        // eigenvalues.
         //
         if (m == l + 1) {
             rte = sqrt(e[l - 1]);
@@ -226,7 +210,7 @@ statement_30:
         }
         jtot++;
         //
-        //        Form shift.
+        // Form shift.
         //
         rte = sqrt(e[l - 1]);
         sigma = (d[(l + 1) - 1] - p) / (two * rte);
@@ -238,7 +222,7 @@ statement_30:
         gamma = d[m - 1] - sigma;
         p = gamma * gamma;
         //
-        //        Inner loop
+        // Inner loop
         //
         for (i = m - 1; i >= l; i = i - 1) {
             bb = e[i - 1];
@@ -264,7 +248,7 @@ statement_30:
         d[l - 1] = sigma + gamma;
         goto statement_50;
     //
-    //        Eigenvalue found.
+    // Eigenvalue found.
     //
     statement_90:
         d[l - 1] = p;
@@ -277,9 +261,9 @@ statement_30:
         //
     } else {
     //
-    //        QR Iteration
+    // QR Iteration
     //
-    //        Look for small superdiagonal element.
+    // Look for small superdiagonal element.
     //
     statement_100:
         for (m = l; m >= lend + 1; m = m - 1) {
@@ -298,8 +282,8 @@ statement_30:
             goto statement_140;
         }
         //
-        //        If remaining matrix is 2 by 2, use Rlae2 to compute its
-        //        eigenvalues.
+        // If remaining matrix is 2 by 2, use Rlae2 to compute its
+        // eigenvalues.
         //
         if (m == l - 1) {
             rte = sqrt(e[(l - 1) - 1]);
@@ -319,7 +303,7 @@ statement_30:
         }
         jtot++;
         //
-        //        Form shift.
+        // Form shift.
         //
         rte = sqrt(e[(l - 1) - 1]);
         sigma = (d[(l - 1) - 1] - p) / (two * rte);
@@ -331,7 +315,7 @@ statement_30:
         gamma = d[m - 1] - sigma;
         p = gamma * gamma;
         //
-        //        Inner loop
+        // Inner loop
         //
         for (i = m; i <= l - 1; i = i + 1) {
             bb = e[i - 1];
@@ -357,7 +341,7 @@ statement_30:
         d[l - 1] = sigma + gamma;
         goto statement_100;
     //
-    //        Eigenvalue found.
+    // Eigenvalue found.
     //
     statement_140:
         d[l - 1] = p;
@@ -370,7 +354,7 @@ statement_30:
         //
     }
 //
-//     Undo scaling if necessary
+// Undo scaling if necessary
 //
 statement_150:
     if (iscale == 1) {
@@ -380,8 +364,8 @@ statement_150:
         Rlascl("G", 0, 0, ssfmin, anorm, lendsv - lsv + 1, 1, &d[lsv - 1], n, info);
     }
     //
-    //     Check for no convergence to an eigenvalue after a total
-    //     of N*MAXIT iterations.
+    // Check for no convergence to an eigenvalue after a total
+    // of N*MAXIT iterations.
     //
     if (jtot < nmaxit) {
         goto statement_10;
@@ -393,13 +377,13 @@ statement_150:
     }
     goto statement_180;
 //
-//     Sort eigenvalues in increasing order.
+// Sort eigenvalues in increasing order.
 //
 statement_170:
     Rlasrt("I", n, d, info);
 //
 statement_180:;
     //
-    //     End of Rsterf
+    // End of Rsterf
     //
 }

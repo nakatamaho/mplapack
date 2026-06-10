@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZGTT01.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -38,30 +45,7 @@ using fem::common;
 
 void Cgtt01(INTEGER const n, COMPLEX *dl, COMPLEX *d, COMPLEX *du, COMPLEX *dlf, COMPLEX *df, COMPLEX *duf, COMPLEX *du2, INTEGER *ipiv, COMPLEX *work, INTEGER const ldwork, REAL *rwork, REAL &resid) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Quick return if possible
+    // Quick return if possible
     //
     const REAL zero = 0.0;
     if (n <= 0) {
@@ -71,7 +55,7 @@ void Cgtt01(INTEGER const n, COMPLEX *dl, COMPLEX *d, COMPLEX *du, COMPLEX *dlf,
     //
     REAL eps = Rlamch("Epsilon");
     //
-    //     Copy the matrix U to WORK.
+    // Copy the matrix U to WORK.
     //
     INTEGER j = 0;
     INTEGER i = 0;
@@ -100,7 +84,7 @@ void Cgtt01(INTEGER const n, COMPLEX *dl, COMPLEX *d, COMPLEX *du, COMPLEX *dlf,
         }
     }
     //
-    //     Multiply on the left by L.
+    // Multiply on the left by L.
     //
     INTEGER lastj = n;
     COMPLEX li = 0.0;
@@ -116,9 +100,9 @@ void Cgtt01(INTEGER const n, COMPLEX *dl, COMPLEX *d, COMPLEX *du, COMPLEX *dlf,
         }
     }
     //
-    //     Subtract the matrix A.
+    // Subtract the matrix A.
     //
-    work[(1 - 1)] = work[(1 - 1)] - d[1 - 1];
+    work[0] = work[0] - d[1 - 1];
     if (n > 1) {
         work[(2 - 1) * ldwork] = work[(2 - 1) * ldwork] - du[1 - 1];
         work[(n - 1) + ((n - 1) - 1) * ldwork] = work[(n - 1) + ((n - 1) - 1) * ldwork] - dl[(n - 1) - 1];
@@ -130,16 +114,16 @@ void Cgtt01(INTEGER const n, COMPLEX *dl, COMPLEX *d, COMPLEX *du, COMPLEX *dlf,
         }
     }
     //
-    //     Compute the 1-norm of the tridiagonal matrix A.
+    // Compute the 1-norm of the tridiagonal matrix A.
     //
     REAL anorm = Clangt("1", n, dl, d, du);
     //
-    //     Compute the 1-norm of WORK, which is only guaranteed to be
-    //     upper Hessenberg.
+    // Compute the 1-norm of WORK, which is only guaranteed to be
+    // upper Hessenberg.
     //
     resid = Clanhs("1", n, work, ldwork, rwork);
     //
-    //     Compute norm(L*U - A) / (norm(A) * EPS)
+    // Compute norm(L*U - A) / (norm(A) * EPS)
     //
     const REAL one = 1.0;
     if (anorm <= zero) {
@@ -150,6 +134,6 @@ void Cgtt01(INTEGER const n, COMPLEX *dl, COMPLEX *d, COMPLEX *du, COMPLEX *dlf,
         resid = (resid / anorm) / eps;
     }
     //
-    //     End of Cgtt01
+    // End of Cgtt01
     //
 }

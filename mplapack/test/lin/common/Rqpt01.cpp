@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DQPT01.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -39,43 +46,17 @@ using fem::common;
 REAL Rqpt01(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, REAL *af, INTEGER const lda, REAL *tau, INTEGER *jpvt, REAL *work, INTEGER const lwork) {
     REAL return_value = 0.0;
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     const REAL zero = 0.0;
     return_value = zero;
-    INTEGER ldaf = lda;
     //
-    //     Test if there is enough workspace
+    // Test if there is enough workspace
     //
     if (lwork < m * n + n) {
         Mxerbla("Rqpt01", 10);
         return return_value;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (m <= 0 || n <= 0) {
         return return_value;
@@ -87,15 +68,28 @@ REAL Rqpt01(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, REAL *af
     INTEGER j = 0;
     INTEGER i = 0;
     for (j = 1; j <= k; j = j + 1) {
+        //
+        // Copy the upper triangular part of the factor R stored
+        // in AF(1:K,1:K) into the work array WORK.
+        //
         for (i = 1; i <= min(j, m); i = i + 1) {
-            work[((j - 1) * m + i) - 1] = af[(i - 1) + (j - 1) * ldaf];
+            work[((j - 1) * m + i) - 1] = af[(i - 1) + (j - 1) * lda];
         }
+        //
+        // Zero out the elements below the diagonal in the work array.
+        //
         for (i = j + 1; i <= m; i = i + 1) {
             work[((j - 1) * m + i) - 1] = zero;
         }
     }
+    //
+    // Copy columns (K+1,N) from AF into the work array WORK.
+    // AF(1:K,K+1:N) contains the rectangular block of the upper trapezoidal
+    // factor R, AF(K+1:M,K+1:N) contains the partially updated residual
+    // matrix of R.
+    //
     for (j = k + 1; j <= n; j = j + 1) {
-        Rcopy(m, &af[(j - 1) * ldaf], 1, &work[((j - 1) * m + 1) - 1], 1);
+        Rcopy(m, &af[(j - 1) * lda], 1, &work[((j - 1) * m + 1) - 1], 1);
     }
     //
     INTEGER info = 0;
@@ -104,7 +98,7 @@ REAL Rqpt01(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, REAL *af
     const REAL one = 1.0;
     for (j = 1; j <= n; j = j + 1) {
         //
-        //        Compare i-th column of QR and jpvt(i)-th column of A
+        // Compare J-th column of QR and JPVT(J)-th column of A.
         //
         Raxpy(m, -one, &a[(jpvt[j - 1] - 1) * lda], 1, &work[((j - 1) * m + 1) - 1], 1);
     }
@@ -116,6 +110,6 @@ REAL Rqpt01(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, REAL *af
     //
     return return_value;
     //
-    //     End of Rqpt01
+    // End of Rqpt01
     //
 }

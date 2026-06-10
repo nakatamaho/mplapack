@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ALAREQ.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,40 +43,37 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-#include <iostream>
-#include <sstream>
-#include <string>
-#include <vector>
-using namespace std;
-
-void Alareq(const char *path, INTEGER const nmats, bool *dotype, INTEGER const ntypes, INTEGER const nin, INTEGER const nout) {
+void Alareq(fem::str_cref path, INTEGER const nmats, bool *dotype, INTEGER const ntypes, INTEGER const nin, INTEGER const nout) {
     common cmn;
     common_read read(cmn);
     common_write write(cmn);
+    static fem::str<10> intstr = "0123456789";
     INTEGER i = 0;
     bool firstt = false;
+    fem::str<80> line;
     INTEGER lenp = 0;
     INTEGER j = 0;
     INTEGER nreq[100];
     INTEGER i1 = 0;
-    char c1;
+    fem::str<1> c1;
     INTEGER k = 0;
     INTEGER ic = 0;
     INTEGER nt = 0;
-    string str;
-    istringstream iss;
-    char line[1024];
-    double dtmp;
-    int itmp;
-
+    static const char *format_9999 = "(' *** Invalid type request for ',a3,', type  ',i4,"
+                                     "': must satisfy  1 <= type <= ',i2)";
+    static const char *format_9998 = "(/,' *** End of file reached when trying to read matrix ','types for ',"
+                                     "a3,/,' *** Check that you are requesting the',"
+                                     "' right number of types for each path',/)";
+    static const char *format_9997 = "(' *** Warning:  duplicate request of matrix type ',i2,' for ',a3)";
+    static const char *format_9996 = "(/,/,' *** Invalid integer value in column ',i2,' of input',' line:',/,"
+                                     "a79)";
+    static const char *format_9995 = "(/,/,' *** Not enough matrix types on input line',/,a79)";
     static const char *format_9994 = "(' ==> Specify ',i4,' matrix types on this line or ',"
                                      "'adjust NTYPES on previous line')";
     //
     if (nmats >= ntypes) {
         //
-        //        Test everything if NMATS >= NTYPES.
+        // Test everything if NMATS >= NTYPES.
         //
         for (i = 1; i <= ntypes; i = i + 1) {
             dotype[i - 1] = true;
@@ -80,50 +84,80 @@ void Alareq(const char *path, INTEGER const nmats, bool *dotype, INTEGER const n
         }
         firstt = true;
         //
-        //        Read a line of matrix types if 0 < NMATS < NTYPES.
+        // Read a line of matrix types if 0 < NMATS < NTYPES.
         //
         if (nmats > 0) {
-            getline(cin, str);
+            try {
+                read(nin, "(a80)"), line;
+            } catch (fem::read_end const &) {
+                goto statement_90;
+            }
+            lenp = fem::len(line);
+            i = 0;
             for (j = 1; j <= nmats; j = j + 1) {
                 nreq[j - 1] = 0;
-            }
-            iss.clear();
-            iss.str(str);
-            for (j = 1; j <= nmats; j = j + 1) {
-                iss >> itmp;
-                nreq[j - 1] = itmp;
-            }
-            for (i = 1; i <= nmats; i = i + 1) {
-                nt = nreq[i - 1];
-                if (nt > 0 && nt <= ntypes) {
-                    if (dotype[nt - 1]) {
-                        if (firstt) {
-                            write(nout, star);
-                        }
-                        firstt = false;
-                        write(nout, "(' *** Warning:  duplicate request of matrix type ',i2,' for ',"
-                                    "a3)"),
-                            nt, path;
+                i1 = 0;
+            statement_30:
+                i++;
+                if (i > lenp) {
+                    if (j == nmats && i1 > 0) {
+                        goto statement_60;
+                    } else {
+                        write(nout, format_9995), line;
+                        write(nout, format_9994), nmats;
+                        goto statement_80;
                     }
-                    dotype[nt - 1] = true;
-                } else {
-                    write(nout, "(' *** Invalid type request for ',a3,', type  ',i4,"
-                                "': must satisfy  1 <= type <= ',i2)"),
-                        path, nt, ntypes;
                 }
+                if (line(i, i) != " " && line(i, i) != ",") {
+                    i1 = i;
+                    c1 = line(i1, i1);
+                    //
+                    // Check that a valid integer was read
+                    //
+                    for (k = 1; k <= 10; k = k + 1) {
+                        if (c1 == intstr(k, k)) {
+                            ic = k - 1;
+                            goto statement_50;
+                        }
+                    }
+                    write(nout, format_9996), i, line;
+                    write(nout, format_9994), nmats;
+                    goto statement_80;
+                statement_50:
+                    nreq[j - 1] = 10 * nreq[j - 1] + ic;
+                    goto statement_30;
+                } else if (i1 > 0) {
+                    goto statement_60;
+                } else {
+                    goto statement_30;
+                }
+            statement_60:;
             }
-        statement_80:;
         }
-        //
+        for (i = 1; i <= nmats; i = i + 1) {
+            nt = nreq[i - 1];
+            if (nt > 0 && nt <= ntypes) {
+                if (dotype[nt - 1]) {
+                    if (firstt) {
+                        write(nout, star);
+                    }
+                    firstt = false;
+                    write(nout, format_9997), nt, path;
+                }
+                dotype[nt - 1] = true;
+            } else {
+                write(nout, format_9999), path, nt, ntypes;
+            }
+        }
+    statement_80:;
     }
     return;
+//
 statement_90:
-    write(nout, "(/,' *** End of file reached when trying to read matrix ','types for ',"
-                "a3,/,' *** Check that you are requesting the',"
-                "' right number of types for each path',/)"),
-        path;
+    write(nout, format_9998), path;
     write(nout, star);
+    FEM_STOP(0);
     //
-    //     End of Alareq
+    // End of Alareq
     //
 }

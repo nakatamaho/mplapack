@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DERRLS.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -35,23 +42,20 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack_debug.h>
 
-void Rerrls(const char *path, INTEGER const nunit) {
+void Rerrls(fem::str_cref path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
     //
     nout = nunit;
-    char c2[2];
-    c2[0] = path[1];
-    c2[1] = path[2];
+    write(nout, star);
+    fem::str<2> c2 = path(2, 3);
     const INTEGER nmax = 2;
     REAL a[nmax * nmax];
-    INTEGER lda = nmax;
-    a[(1 - 1) + (1 - 1) * lda] = 1.0;
-    a[(1 - 1) + (2 - 1) * lda] = 2.0e+0;
-    a[(2 - 1) + (2 - 1) * lda] = 3.0e+0;
-    a[(2 - 1)] = 4.0e+0;
+    a[0] = 1.0;
+    a[(2 - 1) * nmax] = 2.0;
+    a[(2 - 1) + (2 - 1) * nmax] = 3.0;
+    a[(2 - 1)] = 4.0;
     ok = true;
     //
     REAL b[nmax * nmax];
@@ -61,103 +65,159 @@ void Rerrls(const char *path, INTEGER const nunit) {
     REAL rcond = 0.0;
     INTEGER irnk = 0;
     INTEGER ip[nmax];
-    if (Mlsamen(2, c2, "LS")) {
+    if (Mlsamen(2, c2.elems, "LS")) {
         //
-        //        Test error exits for the least squares driver routines.
+        // Test error exits for the least squares driver routines.
         //
-        //        Rgels
+        // Rgels
         //
-        strncpy(srnamt, "Rgels", srnamt_len);
+        srnamt = "Rgels";
         infot = 1;
         Rgels("/", 0, 0, 0, a, 1, b, 1, w, 1, info);
-        chkxer("Rgels", infot, nout, lerr, ok);
+        Chkxer("Rgels", infot, nout, lerr, ok);
         infot = 2;
         Rgels("N", -1, 0, 0, a, 1, b, 1, w, 1, info);
-        chkxer("Rgels", infot, nout, lerr, ok);
+        Chkxer("Rgels", infot, nout, lerr, ok);
         infot = 3;
         Rgels("N", 0, -1, 0, a, 1, b, 1, w, 1, info);
-        chkxer("Rgels", infot, nout, lerr, ok);
+        Chkxer("Rgels", infot, nout, lerr, ok);
         infot = 4;
         Rgels("N", 0, 0, -1, a, 1, b, 1, w, 1, info);
-        chkxer("Rgels", infot, nout, lerr, ok);
+        Chkxer("Rgels", infot, nout, lerr, ok);
         infot = 6;
         Rgels("N", 2, 0, 0, a, 1, b, 2, w, 2, info);
-        chkxer("Rgels", infot, nout, lerr, ok);
+        Chkxer("Rgels", infot, nout, lerr, ok);
         infot = 8;
         Rgels("N", 2, 0, 0, a, 2, b, 1, w, 2, info);
-        chkxer("Rgels", infot, nout, lerr, ok);
+        Chkxer("Rgels", infot, nout, lerr, ok);
+        infot = 8;
+        Rgels("N", 0, 2, 0, a, 1, b, 1, w, 2, info);
+        Chkxer("Rgels", infot, nout, lerr, ok);
         infot = 10;
         Rgels("N", 1, 1, 0, a, 1, b, 1, w, 1, info);
-        chkxer("Rgels", infot, nout, lerr, ok);
+        Chkxer("Rgels", infot, nout, lerr, ok);
         //
-        //        Rgelss
+        // Rgelst
         //
-        strncpy(srnamt, "Rgelss", srnamt_len);
+        srnamt = "Rgelst";
+        infot = 1;
+        Rgelst("/", 0, 0, 0, a, 1, b, 1, w, 1, info);
+        Chkxer("Rgelst", infot, nout, lerr, ok);
+        infot = 2;
+        Rgelst("N", -1, 0, 0, a, 1, b, 1, w, 1, info);
+        Chkxer("Rgelst", infot, nout, lerr, ok);
+        infot = 3;
+        Rgelst("N", 0, -1, 0, a, 1, b, 1, w, 1, info);
+        Chkxer("Rgelst", infot, nout, lerr, ok);
+        infot = 4;
+        Rgelst("N", 0, 0, -1, a, 1, b, 1, w, 1, info);
+        Chkxer("Rgelst", infot, nout, lerr, ok);
+        infot = 6;
+        Rgelst("N", 2, 0, 0, a, 1, b, 2, w, 2, info);
+        Chkxer("Rgelst", infot, nout, lerr, ok);
+        infot = 8;
+        Rgelst("N", 2, 0, 0, a, 2, b, 1, w, 2, info);
+        Chkxer("Rgelst", infot, nout, lerr, ok);
+        infot = 8;
+        Rgelst("N", 0, 2, 0, a, 1, b, 1, w, 2, info);
+        Chkxer("Rgelst", infot, nout, lerr, ok);
+        infot = 10;
+        Rgelst("N", 1, 1, 0, a, 1, b, 1, w, 1, info);
+        Chkxer("Rgelst", infot, nout, lerr, ok);
+        //
+        // Rgetsls
+        //
+        srnamt = "Rgetsls";
+        infot = 1;
+        Rgetsls("/", 0, 0, 0, a, 1, b, 1, w, 1, info);
+        Chkxer("Rgetsls", infot, nout, lerr, ok);
+        infot = 2;
+        Rgetsls("N", -1, 0, 0, a, 1, b, 1, w, 1, info);
+        Chkxer("Rgetsls", infot, nout, lerr, ok);
+        infot = 3;
+        Rgetsls("N", 0, -1, 0, a, 1, b, 1, w, 1, info);
+        Chkxer("Rgetsls", infot, nout, lerr, ok);
+        infot = 4;
+        Rgetsls("N", 0, 0, -1, a, 1, b, 1, w, 1, info);
+        Chkxer("Rgetsls", infot, nout, lerr, ok);
+        infot = 6;
+        Rgetsls("N", 2, 0, 0, a, 1, b, 2, w, 2, info);
+        Chkxer("Rgetsls", infot, nout, lerr, ok);
+        infot = 8;
+        Rgetsls("N", 2, 0, 0, a, 2, b, 1, w, 2, info);
+        Chkxer("Rgetsls", infot, nout, lerr, ok);
+        infot = 8;
+        Rgetsls("N", 0, 2, 0, a, 1, b, 1, w, 2, info);
+        Chkxer("Rgetsls", infot, nout, lerr, ok);
+        //
+        // Rgelss
+        //
+        srnamt = "Rgelss";
         infot = 1;
         Rgelss(-1, 0, 0, a, 1, b, 1, s, rcond, irnk, w, 1, info);
-        chkxer("Rgelss", infot, nout, lerr, ok);
+        Chkxer("Rgelss", infot, nout, lerr, ok);
         infot = 2;
         Rgelss(0, -1, 0, a, 1, b, 1, s, rcond, irnk, w, 1, info);
-        chkxer("Rgelss", infot, nout, lerr, ok);
+        Chkxer("Rgelss", infot, nout, lerr, ok);
         infot = 3;
         Rgelss(0, 0, -1, a, 1, b, 1, s, rcond, irnk, w, 1, info);
-        chkxer("Rgelss", infot, nout, lerr, ok);
+        Chkxer("Rgelss", infot, nout, lerr, ok);
         infot = 5;
         Rgelss(2, 0, 0, a, 1, b, 2, s, rcond, irnk, w, 2, info);
-        chkxer("Rgelss", infot, nout, lerr, ok);
+        Chkxer("Rgelss", infot, nout, lerr, ok);
         infot = 7;
         Rgelss(2, 0, 0, a, 2, b, 1, s, rcond, irnk, w, 2, info);
-        chkxer("Rgelss", infot, nout, lerr, ok);
+        Chkxer("Rgelss", infot, nout, lerr, ok);
         //
-        //        Rgelsy
+        // Rgelsy
         //
-        strncpy(srnamt, "Rgelsy", srnamt_len);
+        srnamt = "Rgelsy";
         infot = 1;
         Rgelsy(-1, 0, 0, a, 1, b, 1, ip, rcond, irnk, w, 10, info);
-        chkxer("Rgelsy", infot, nout, lerr, ok);
+        Chkxer("Rgelsy", infot, nout, lerr, ok);
         infot = 2;
         Rgelsy(0, -1, 0, a, 1, b, 1, ip, rcond, irnk, w, 10, info);
-        chkxer("Rgelsy", infot, nout, lerr, ok);
+        Chkxer("Rgelsy", infot, nout, lerr, ok);
         infot = 3;
         Rgelsy(0, 0, -1, a, 1, b, 1, ip, rcond, irnk, w, 10, info);
-        chkxer("Rgelsy", infot, nout, lerr, ok);
+        Chkxer("Rgelsy", infot, nout, lerr, ok);
         infot = 5;
         Rgelsy(2, 0, 0, a, 1, b, 2, ip, rcond, irnk, w, 10, info);
-        chkxer("Rgelsy", infot, nout, lerr, ok);
+        Chkxer("Rgelsy", infot, nout, lerr, ok);
         infot = 7;
         Rgelsy(2, 0, 0, a, 2, b, 1, ip, rcond, irnk, w, 10, info);
-        chkxer("Rgelsy", infot, nout, lerr, ok);
+        Chkxer("Rgelsy", infot, nout, lerr, ok);
         infot = 12;
         Rgelsy(2, 2, 1, a, 2, b, 2, ip, rcond, irnk, w, 1, info);
-        chkxer("Rgelsy", infot, nout, lerr, ok);
+        Chkxer("Rgelsy", infot, nout, lerr, ok);
         //
-        //        Rgelsd
+        // Rgelsd
         //
-        strncpy(srnamt, "Rgelsd", srnamt_len);
+        srnamt = "Rgelsd";
         infot = 1;
         Rgelsd(-1, 0, 0, a, 1, b, 1, s, rcond, irnk, w, 10, ip, info);
-        chkxer("Rgelsd", infot, nout, lerr, ok);
+        Chkxer("Rgelsd", infot, nout, lerr, ok);
         infot = 2;
         Rgelsd(0, -1, 0, a, 1, b, 1, s, rcond, irnk, w, 10, ip, info);
-        chkxer("Rgelsd", infot, nout, lerr, ok);
+        Chkxer("Rgelsd", infot, nout, lerr, ok);
         infot = 3;
         Rgelsd(0, 0, -1, a, 1, b, 1, s, rcond, irnk, w, 10, ip, info);
-        chkxer("Rgelsd", infot, nout, lerr, ok);
+        Chkxer("Rgelsd", infot, nout, lerr, ok);
         infot = 5;
         Rgelsd(2, 0, 0, a, 1, b, 2, s, rcond, irnk, w, 10, ip, info);
-        chkxer("Rgelsd", infot, nout, lerr, ok);
+        Chkxer("Rgelsd", infot, nout, lerr, ok);
         infot = 7;
         Rgelsd(2, 0, 0, a, 2, b, 1, s, rcond, irnk, w, 10, ip, info);
-        chkxer("Rgelsd", infot, nout, lerr, ok);
+        Chkxer("Rgelsd", infot, nout, lerr, ok);
         infot = 12;
         Rgelsd(2, 2, 1, a, 2, b, 2, s, rcond, irnk, w, 1, ip, info);
-        chkxer("Rgelsd", infot, nout, lerr, ok);
+        Chkxer("Rgelsd", infot, nout, lerr, ok);
     }
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     Alaesm(path, ok, nout);
     //
-    //     End of Rerrls
+    // End of Rerrls
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,35 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZHEGS2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Chegs2(INTEGER const itype, const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     bool upper = Mlsame(uplo, "U");
@@ -78,17 +62,17 @@ void Chegs2(INTEGER const itype, const char *uplo, INTEGER const n, COMPLEX *a, 
     REAL akk = 0.0;
     REAL bkk = 0.0;
     const REAL one = 1.0;
-    const REAL half = 0.5e+0;
+    const REAL half = 0.5;
     COMPLEX ct = 0.0;
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     if (itype == 1) {
         if (upper) {
             //
-            //           Compute inv(U**H)*A*inv(U)
+            // Compute inv(U**H)*A*inv(U)
             //
             for (k = 1; k <= n; k = k + 1) {
                 //
-                //              Update the upper triangle of A(k:n,k:n)
+                // Update the upper triangle of A(k:n,k:n)
                 //
                 akk = a[(k - 1) + (k - 1) * lda].real();
                 bkk = b[(k - 1) + (k - 1) * ldb].real();
@@ -109,11 +93,11 @@ void Chegs2(INTEGER const itype, const char *uplo, INTEGER const n, COMPLEX *a, 
             }
         } else {
             //
-            //           Compute inv(L)*A*inv(L**H)
+            // Compute inv(L)*A*inv(L**H)
             //
             for (k = 1; k <= n; k = k + 1) {
                 //
-                //              Update the lower triangle of A(k:n,k:n)
+                // Update the lower triangle of A(k:n,k:n)
                 //
                 akk = a[(k - 1) + (k - 1) * lda].real();
                 bkk = b[(k - 1) + (k - 1) * ldb].real();
@@ -132,11 +116,11 @@ void Chegs2(INTEGER const itype, const char *uplo, INTEGER const n, COMPLEX *a, 
     } else {
         if (upper) {
             //
-            //           Compute U*A*U**H
+            // Compute U*A*U**H
             //
             for (k = 1; k <= n; k = k + 1) {
                 //
-                //              Update the upper triangle of A(1:k,1:k)
+                // Update the upper triangle of A(1:k,1:k)
                 //
                 akk = a[(k - 1) + (k - 1) * lda].real();
                 bkk = b[(k - 1) + (k - 1) * ldb].real();
@@ -150,11 +134,11 @@ void Chegs2(INTEGER const itype, const char *uplo, INTEGER const n, COMPLEX *a, 
             }
         } else {
             //
-            //           Compute L**H *A*L
+            // Compute L**H *A*L
             //
             for (k = 1; k <= n; k = k + 1) {
                 //
-                //              Update the lower triangle of A(1:k,1:k)
+                // Update the lower triangle of A(1:k,1:k)
                 //
                 akk = a[(k - 1) + (k - 1) * lda].real();
                 bkk = b[(k - 1) + (k - 1) * ldb].real();
@@ -173,6 +157,6 @@ void Chegs2(INTEGER const itype, const char *uplo, INTEGER const n, COMPLEX *a, 
         }
     }
     //
-    //     End of Chegs2
+    // End of Chegs2
     //
 }

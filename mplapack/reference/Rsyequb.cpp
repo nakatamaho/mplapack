@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DSYEQUB.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -33,6 +40,7 @@ void Rsyequb(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL
     bool up = false;
     const REAL zero = 0.0;
     const REAL one = 1.0;
+    const REAL two = 2.0;
     INTEGER i = 0;
     INTEGER j = 0;
     REAL tol = 0.0;
@@ -55,30 +63,7 @@ void Rsyequb(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL
     REAL smax = 0.0;
     REAL base = 0.0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     if (!(Mlsame(uplo, "U") || Mlsame(uplo, "L"))) {
@@ -96,7 +81,7 @@ void Rsyequb(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL
     up = Mlsame(uplo, "U");
     amax = zero;
     //
-    //     Quick return if possible.
+    // Quick return if possible.
     //
     if (n == 0) {
         scond = one;
@@ -111,21 +96,21 @@ void Rsyequb(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL
     if (up) {
         for (j = 1; j <= n; j = j + 1) {
             for (i = 1; i <= j - 1; i = i + 1) {
-                s[i - 1] = max(s[i - 1], REAL(abs(a[(i - 1) + (j - 1) * lda])));
-                s[j - 1] = max(s[j - 1], REAL(abs(a[(i - 1) + (j - 1) * lda])));
-                amax = max(amax, REAL(abs(a[(i - 1) + (j - 1) * lda])));
+                s[i - 1] = max(s[i - 1], abs(a[(i - 1) + (j - 1) * lda]));
+                s[j - 1] = max(s[j - 1], abs(a[(i - 1) + (j - 1) * lda]));
+                amax = max(amax, abs(a[(i - 1) + (j - 1) * lda]));
             }
-            s[j - 1] = max(s[j - 1], REAL(abs(a[(j - 1) + (j - 1) * lda])));
-            amax = max(amax, REAL(abs(a[(j - 1) + (j - 1) * lda])));
+            s[j - 1] = max(s[j - 1], abs(a[(j - 1) + (j - 1) * lda]));
+            amax = max(amax, abs(a[(j - 1) + (j - 1) * lda]));
         }
     } else {
         for (j = 1; j <= n; j = j + 1) {
-            s[j - 1] = max(s[j - 1], REAL(abs(a[(j - 1) + (j - 1) * lda])));
-            amax = max(amax, REAL(abs(a[(j - 1) + (j - 1) * lda])));
+            s[j - 1] = max(s[j - 1], abs(a[(j - 1) + (j - 1) * lda]));
+            amax = max(amax, abs(a[(j - 1) + (j - 1) * lda]));
             for (i = j + 1; i <= n; i = i + 1) {
-                s[i - 1] = max(s[i - 1], REAL(abs(a[(i - 1) + (j - 1) * lda])));
-                s[j - 1] = max(s[j - 1], REAL(abs(a[(i - 1) + (j - 1) * lda])));
-                amax = max(amax, REAL(abs(a[(i - 1) + (j - 1) * lda])));
+                s[i - 1] = max(s[i - 1], abs(a[(i - 1) + (j - 1) * lda]));
+                s[j - 1] = max(s[j - 1], abs(a[(i - 1) + (j - 1) * lda]));
+                amax = max(amax, abs(a[(i - 1) + (j - 1) * lda]));
             }
         }
     }
@@ -133,12 +118,12 @@ void Rsyequb(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL
         s[j - 1] = 1.0 / s[j - 1];
     }
     //
-    tol = one / sqrt(2.0 * castREAL(n));
+    tol = one / sqrt(two * n);
     //
     for (iter = 1; iter <= max_iter; iter = iter + 1) {
         scale = 0.0;
         sumsq = 0.0;
-        //        beta = |A|s
+        // beta = |A|s
         for (i = 1; i <= n; i = i + 1) {
             work[i - 1] = zero;
         }
@@ -160,7 +145,7 @@ void Rsyequb(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL
             }
         }
         //
-        //        avg = s^T beta / n
+        // avg = s^T beta / n
         avg = 0.0;
         for (i = 1; i <= n; i = i + 1) {
             avg += s[i - 1] * work[i - 1];

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,15 +26,22 @@
  *
  */
 
+// Derived from LAPACK routine ZGETSLS.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Cgetsls(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
-    INTEGER minmn = 0;
     INTEGER maxmn = 0;
-    INTEGER mnk = 0;
     bool tran = false;
     bool lquery = false;
+    INTEGER wsizeo = 0;
+    INTEGER wsizem = 0;
     COMPLEX tq[5];
     COMPLEX workq[1];
     INTEGER info2 = 0;
@@ -42,8 +49,6 @@ void Cgetsls(const char *trans, INTEGER const m, INTEGER const n, INTEGER const 
     INTEGER lwo = 0;
     INTEGER tszm = 0;
     INTEGER lwm = 0;
-    INTEGER wsizeo = 0;
-    INTEGER wsizem = 0;
     INTEGER lw1 = 0;
     INTEGER lw2 = 0;
     const COMPLEX czero = COMPLEX(0.0, 0.0);
@@ -61,36 +66,10 @@ void Cgetsls(const char *trans, INTEGER const m, INTEGER const n, INTEGER const 
     INTEGER j = 0;
     INTEGER i = 0;
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input arguments.
+    // Test the input arguments.
     //
     info = 0;
-    minmn = min(m, n);
     maxmn = max(m, n);
-    mnk = max(minmn, nrhs);
     tran = Mlsame(trans, "C");
     //
     lquery = (lwork == -1 || lwork == -2);
@@ -104,15 +83,18 @@ void Cgetsls(const char *trans, INTEGER const m, INTEGER const n, INTEGER const 
         info = -4;
     } else if (lda < max((INTEGER)1, m)) {
         info = -6;
-    } else if (ldb < max({(INTEGER)1, m, n})) {
+    } else if (ldb < max((INTEGER)1, m, n)) {
         info = -8;
     }
     //
     if (info == 0) {
         //
-        //     Determine the block size and minimum LWORK
+        // Determine the optimum and minimum LWORK
         //
-        if (m >= n) {
+        if (min(m, n, nrhs) == 0) {
+            wsizeo = 1;
+            wsizem = 1;
+        } else if (m >= n) {
             Cgeqr(m, n, a, lda, tq, -1, workq, -1, info2);
             tszo = castINTEGER(tq[1 - 1].real());
             lwo = castINTEGER(workq[1 - 1].real());
@@ -144,17 +126,15 @@ void Cgetsls(const char *trans, INTEGER const m, INTEGER const n, INTEGER const 
             info = -10;
         }
         //
+        work[1 - 1] = castREAL(wsizeo);
+        //
     }
     //
     if (info != 0) {
         Mxerbla("Cgetsls", -info);
-        work[1 - 1] = castREAL(wsizeo);
         return;
     }
     if (lquery) {
-        if (lwork == -1) {
-            work[1 - 1] = castREAL(wsizeo);
-        }
         if (lwork == -2) {
             work[1 - 1] = castREAL(wsizem);
         }
@@ -168,37 +148,37 @@ void Cgetsls(const char *trans, INTEGER const m, INTEGER const n, INTEGER const 
         lw2 = lwo;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
-    if (min({m, n, nrhs}) == 0) {
+    if (min(m, n, nrhs) == 0) {
         Claset("FULL", max(m, n), nrhs, czero, czero, b, ldb);
         return;
     }
     //
-    //     Get machine parameters
+    // Get machine parameters
     //
     smlnum = Rlamch("S") / Rlamch("P");
     bignum = one / smlnum;
     //
-    //     Scale A, B if max element outside range [SMLNUM,BIGNUM]
+    // Scale A, B if max element outside range [SMLNUM,BIGNUM]
     //
     anrm = Clange("M", m, n, a, lda, dum);
     iascl = 0;
     if (anrm > zero && anrm < smlnum) {
         //
-        //        Scale matrix norm up to SMLNUM
+        // Scale matrix norm up to SMLNUM
         //
         Clascl("G", 0, 0, anrm, smlnum, m, n, a, lda, info);
         iascl = 1;
     } else if (anrm > bignum) {
         //
-        //        Scale matrix norm down to BIGNUM
+        // Scale matrix norm down to BIGNUM
         //
         Clascl("G", 0, 0, anrm, bignum, m, n, a, lda, info);
         iascl = 2;
     } else if (anrm == zero) {
         //
-        //        Matrix all zero. Return zero solution.
+        // Matrix all zero. Return zero solution.
         //
         Claset("F", maxmn, nrhs, czero, czero, b, ldb);
         goto statement_50;
@@ -212,13 +192,13 @@ void Cgetsls(const char *trans, INTEGER const m, INTEGER const n, INTEGER const 
     ibscl = 0;
     if (bnrm > zero && bnrm < smlnum) {
         //
-        //        Scale matrix norm up to SMLNUM
+        // Scale matrix norm up to SMLNUM
         //
         Clascl("G", 0, 0, bnrm, smlnum, brow, nrhs, b, ldb, info);
         ibscl = 1;
     } else if (bnrm > bignum) {
         //
-        //        Scale matrix norm down to BIGNUM
+        // Scale matrix norm down to BIGNUM
         //
         Clascl("G", 0, 0, bnrm, bignum, brow, nrhs, b, ldb, info);
         ibscl = 2;
@@ -226,18 +206,18 @@ void Cgetsls(const char *trans, INTEGER const m, INTEGER const n, INTEGER const 
     //
     if (m >= n) {
         //
-        //        compute QR factorization of A
+        // compute QR factorization of A
         //
         Cgeqr(m, n, a, lda, &work[(lw2 + 1) - 1], lw1, &work[1 - 1], lw2, info);
         if (!tran) {
             //
-            //           Least-Squares Problem min || A * X - B ||
+            // Least-Squares Problem min || A * X - B ||
             //
-            //           B(1:M,1:NRHS) := Q**T * B(1:M,1:NRHS)
+            // B(1:M,1:NRHS) := Q**T * B(1:M,1:NRHS)
             //
             Cgemqr("L", "C", m, nrhs, n, a, lda, &work[(lw2 + 1) - 1], lw1, b, ldb, &work[1 - 1], lw2, info);
             //
-            //           B(1:N,1:NRHS) := inv(R) * B(1:N,1:NRHS)
+            // B(1:N,1:NRHS) := inv(R) * B(1:N,1:NRHS)
             //
             Ctrtrs("U", "N", "N", n, nrhs, a, lda, b, ldb, info);
             if (info > 0) {
@@ -246,9 +226,9 @@ void Cgetsls(const char *trans, INTEGER const m, INTEGER const n, INTEGER const 
             scllen = n;
         } else {
             //
-            //           Overdetermined system of equations A**T * X = B
+            // Overdetermined system of equations A**T * X = B
             //
-            //           B(1:N,1:NRHS) := inv(R**T) * B(1:N,1:NRHS)
+            // B(1:N,1:NRHS) := inv(R**T) * B(1:N,1:NRHS)
             //
             Ctrtrs("U", "C", "N", n, nrhs, a, lda, b, ldb, info);
             //
@@ -256,7 +236,7 @@ void Cgetsls(const char *trans, INTEGER const m, INTEGER const n, INTEGER const 
                 return;
             }
             //
-            //           B(N+1:M,1:NRHS) = CZERO
+            // B(N+1:M,1:NRHS) = CZERO
             //
             for (j = 1; j <= nrhs; j = j + 1) {
                 for (i = n + 1; i <= m; i = i + 1) {
@@ -264,7 +244,7 @@ void Cgetsls(const char *trans, INTEGER const m, INTEGER const n, INTEGER const 
                 }
             }
             //
-            //           B(1:M,1:NRHS) := Q(1:N,:) * B(1:N,1:NRHS)
+            // B(1:M,1:NRHS) := Q(1:N,:) * B(1:N,1:NRHS)
             //
             Cgemqr("L", "N", m, nrhs, n, a, lda, &work[(lw2 + 1) - 1], lw1, b, ldb, &work[1 - 1], lw2, info);
             //
@@ -274,17 +254,17 @@ void Cgetsls(const char *trans, INTEGER const m, INTEGER const n, INTEGER const 
         //
     } else {
         //
-        //        Compute LQ factorization of A
+        // Compute LQ factorization of A
         //
         Cgelq(m, n, a, lda, &work[(lw2 + 1) - 1], lw1, &work[1 - 1], lw2, info);
         //
-        //        workspace at least M, optimally M*NB.
+        // workspace at least M, optimally M*NB.
         //
         if (!tran) {
             //
-            //           underdetermined system of equations A * X = B
+            // underdetermined system of equations A * X = B
             //
-            //           B(1:M,1:NRHS) := inv(L) * B(1:M,1:NRHS)
+            // B(1:M,1:NRHS) := inv(L) * B(1:M,1:NRHS)
             //
             Ctrtrs("L", "N", "N", m, nrhs, a, lda, b, ldb, info);
             //
@@ -292,7 +272,7 @@ void Cgetsls(const char *trans, INTEGER const m, INTEGER const n, INTEGER const 
                 return;
             }
             //
-            //           B(M+1:N,1:NRHS) = 0
+            // B(M+1:N,1:NRHS) = 0
             //
             for (j = 1; j <= nrhs; j = j + 1) {
                 for (i = m + 1; i <= n; i = i + 1) {
@@ -300,25 +280,25 @@ void Cgetsls(const char *trans, INTEGER const m, INTEGER const n, INTEGER const 
                 }
             }
             //
-            //           B(1:N,1:NRHS) := Q(1:N,:)**T * B(1:M,1:NRHS)
+            // B(1:N,1:NRHS) := Q(1:N,:)**T * B(1:M,1:NRHS)
             //
             Cgemlq("L", "C", n, nrhs, m, a, lda, &work[(lw2 + 1) - 1], lw1, b, ldb, &work[1 - 1], lw2, info);
             //
-            //           workspace at least NRHS, optimally NRHS*NB
+            // workspace at least NRHS, optimally NRHS*NB
             //
             scllen = n;
             //
         } else {
             //
-            //           overdetermined system min || A**T * X - B ||
+            // overdetermined system min || A**T * X - B ||
             //
-            //           B(1:N,1:NRHS) := Q * B(1:N,1:NRHS)
+            // B(1:N,1:NRHS) := Q * B(1:N,1:NRHS)
             //
             Cgemlq("L", "N", n, nrhs, m, a, lda, &work[(lw2 + 1) - 1], lw1, b, ldb, &work[1 - 1], lw2, info);
             //
-            //           workspace at least NRHS, optimally NRHS*NB
+            // workspace at least NRHS, optimally NRHS*NB
             //
-            //           B(1:M,1:NRHS) := inv(L**T) * B(1:M,1:NRHS)
+            // B(1:M,1:NRHS) := inv(L**T) * B(1:M,1:NRHS)
             //
             Ctrtrs("L", "C", "N", m, nrhs, a, lda, b, ldb, info);
             //
@@ -332,7 +312,7 @@ void Cgetsls(const char *trans, INTEGER const m, INTEGER const n, INTEGER const 
         //
     }
     //
-    //     Undo scaling
+    // Undo scaling
     //
     if (iascl == 1) {
         Clascl("G", 0, 0, anrm, smlnum, scllen, nrhs, b, ldb, info);
@@ -348,6 +328,6 @@ void Cgetsls(const char *trans, INTEGER const m, INTEGER const n, INTEGER const 
 statement_50:
     work[1 - 1] = castREAL(tszo + lwo);
     //
-    //     End of Cgetsls
+    // End of Cgetsls
     //
 }

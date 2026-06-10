@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZLAPTM.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,28 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Claptm(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL const alpha, REAL *d, COMPLEX *e, COMPLEX *x, INTEGER const ldx, REAL const beta, COMPLEX *b, INTEGER const ldb) {
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
+void Claptm(fem::str_cref uplo, INTEGER const n, INTEGER const nrhs, REAL const alpha, REAL *d, COMPLEX *e, COMPLEX *x, INTEGER const ldx, REAL const beta, COMPLEX *b, INTEGER const ldb) {
     //
     if (n == 0) {
         return;
@@ -82,9 +68,9 @@ void Claptm(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL const al
     }
     //
     if (alpha == one) {
-        if (Mlsame(uplo, "U")) {
+        if (Mlsame(uplo.elems(), "U")) {
             //
-            //           Compute B := B + A*X, where E is the superdiagonal of A.
+            // Compute B := B + A*X, where E is the superdiagonal of A.
             //
             for (j = 1; j <= nrhs; j = j + 1) {
                 if (n == 1) {
@@ -99,7 +85,7 @@ void Claptm(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL const al
             }
         } else {
             //
-            //           Compute B := B + A*X, where E is the subdiagonal of A.
+            // Compute B := B + A*X, where E is the subdiagonal of A.
             //
             for (j = 1; j <= nrhs; j = j + 1) {
                 if (n == 1) {
@@ -114,9 +100,9 @@ void Claptm(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL const al
             }
         }
     } else if (alpha == -one) {
-        if (Mlsame(uplo, "U")) {
+        if (Mlsame(uplo.elems(), "U")) {
             //
-            //           Compute B := B - A*X, where E is the superdiagonal of A.
+            // Compute B := B - A*X, where E is the superdiagonal of A.
             //
             for (j = 1; j <= nrhs; j = j + 1) {
                 if (n == 1) {
@@ -131,7 +117,7 @@ void Claptm(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL const al
             }
         } else {
             //
-            //           Compute B := B - A*X, where E is the subdiagonal of A.
+            // Compute B := B - A*X, where E is the subdiagonal of A.
             //
             for (j = 1; j <= nrhs; j = j + 1) {
                 if (n == 1) {
@@ -147,6 +133,6 @@ void Claptm(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL const al
         }
     }
     //
-    //     End of Claptm
+    // End of Claptm
     //
 }

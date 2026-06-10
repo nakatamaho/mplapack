@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DLASD8.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rlasd8(INTEGER const icompq, INTEGER const k, REAL *d, REAL *z, REAL *vf, REAL *vl, REAL *difl, REAL *difr, INTEGER const lddifr, REAL *dsigma, REAL *work, INTEGER &info) {
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     //
@@ -47,7 +54,7 @@ void Rlasd8(INTEGER const icompq, INTEGER const k, REAL *d, REAL *z, REAL *vf, R
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     const REAL one = 1.0;
     if (k == 1) {
@@ -60,29 +67,7 @@ void Rlasd8(INTEGER const icompq, INTEGER const k, REAL *d, REAL *z, REAL *vf, R
         return;
     }
     //
-    //     Modify values DSIGMA(i) to make sure all DSIGMA(i)-DSIGMA(j) can
-    //     be computed with high relative accuracy (barring over/underflow).
-    //     This is a problem on machines without a guard digit in
-    //     add/subtract (Cray XMP, Cray YMP, Cray C 90 and Cray 2).
-    //     The following code replaces DSIGMA(I) by 2*DSIGMA(I)-DSIGMA(I),
-    //     which on any of these machines zeros out the bottommost
-    //     bit of DSIGMA(I) if it is 1; this makes the subsequent
-    //     subtractions DSIGMA(I)-DSIGMA(J) unproblematic when cancellation
-    //     occurs. On binary machines with a guard digit (almost all
-    //     machines) it does not change DSIGMA(I) at all. On hexadecimal
-    //     and decimal machines with a guard digit, it slightly
-    //     changes the bottommost bits of DSIGMA(I). It does not account
-    //     for hexadecimal or decimal machines without guard digits
-    //     (we know of none). We use a subroutine call to compute
-    //     2*DLAMBDA(I) to prevent optimizing compilers from eliminating
-    //     this code.
-    //
-    INTEGER i = 0;
-    for (i = 1; i <= k; i = i + 1) {
-        dsigma[i - 1] = Rlamc3(dsigma[i - 1], dsigma[i - 1]) - dsigma[i - 1];
-    }
-    //
-    //     Book keeping.
+    // Book keeping.
     //
     INTEGER iwk1 = 1;
     INTEGER iwk2 = iwk1 + k;
@@ -90,24 +75,25 @@ void Rlasd8(INTEGER const icompq, INTEGER const k, REAL *d, REAL *z, REAL *vf, R
     INTEGER iwk2i = iwk2 - 1;
     INTEGER iwk3i = iwk3 - 1;
     //
-    //     Normalize Z.
+    // Normalize Z.
     //
     REAL rho = Rnrm2(k, z, 1);
     Rlascl("G", 0, 0, rho, one, k, 1, z, k, info);
     rho = rho * rho;
     //
-    //     Initialize WORK(IWK3).
+    // Initialize WORK(IWK3).
     //
     Rlaset("A", k, 1, one, one, &work[iwk3 - 1], k);
     //
-    //     Compute the updated singular values, the arrays DIFL, DIFR,
-    //     and the updated Z.
+    // Compute the updated singular values, the arrays DIFL, DIFR,
+    // and the updated Z.
     //
     INTEGER j = 0;
+    INTEGER i = 0;
     for (j = 1; j <= k; j = j + 1) {
         Rlasd4(k, j, dsigma, z, &work[iwk1 - 1], rho, d[j - 1], &work[iwk2 - 1], info);
         //
-        //        If the root finder fails, report the convergence failure.
+        // If the root finder fails, report the convergence failure.
         //
         if (info != 0) {
             return;
@@ -123,13 +109,13 @@ void Rlasd8(INTEGER const icompq, INTEGER const k, REAL *d, REAL *z, REAL *vf, R
         }
     }
     //
-    //     Compute updated Z.
+    // Compute updated Z.
     //
     for (i = 1; i <= k; i = i + 1) {
         z[i - 1] = sign(sqrt(abs(work[(iwk3i + i) - 1])), z[i - 1]);
     }
     //
-    //     Update VF and VL.
+    // Update VF and VL.
     //
     REAL diflj = 0.0;
     REAL dj = 0.0;
@@ -146,6 +132,11 @@ void Rlasd8(INTEGER const icompq, INTEGER const k, REAL *d, REAL *z, REAL *vf, R
             dsigjp = -dsigma[(j + 1) - 1];
         }
         work[j - 1] = -z[j - 1] / diflj / (dsigma[j - 1] + dj);
+        //
+        // Use calls to the subroutine Rlamc3 to enforce the parentheses
+        // (x+y)+z. The goal is to prevent optimizing compilers
+        // from doing x+(y+z).
+        //
         for (i = 1; i <= j - 1; i = i + 1) {
             work[i - 1] = z[i - 1] / (Rlamc3(dsigma[i - 1], dsigj) - diflj) / (dsigma[i - 1] + dj);
         }
@@ -163,6 +154,6 @@ void Rlasd8(INTEGER const icompq, INTEGER const k, REAL *d, REAL *z, REAL *vf, R
     Rcopy(k, &work[iwk2 - 1], 1, vf, 1);
     Rcopy(k, &work[iwk3 - 1], 1, vl, 1);
     //
-    //     End of Rlasd8
+    // End of Rlasd8
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,31 +26,17 @@
  *
  */
 
+// Derived from LAPACK routine ZLAIC1.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Claic1(INTEGER const job, INTEGER const j, COMPLEX *x, REAL const sest, COMPLEX *w, COMPLEX const gamma, REAL &sestpr, COMPLEX &s, COMPLEX &c) {
-    //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     REAL eps = Rlamch("Epsilon");
     COMPLEX alpha = Cdotc(j, x, 1, w, 1);
@@ -67,7 +53,7 @@ void Claic1(INTEGER const job, INTEGER const j, COMPLEX *x, REAL const sest, COM
     REAL scl = 0.0;
     REAL zeta1 = 0.0;
     REAL zeta2 = 0.0;
-    const REAL half = 0.5e0;
+    const REAL half = 0.5;
     REAL b = 0.0;
     REAL t = 0.0;
     COMPLEX sine = 0.0;
@@ -78,9 +64,9 @@ void Claic1(INTEGER const job, INTEGER const j, COMPLEX *x, REAL const sest, COM
     const REAL four = 4.0;
     if (job == 1) {
         //
-        //        Estimating largest singular value
+        // Estimating largest singular value
         //
-        //        special cases
+        // special cases
         //
         if (sest == zero) {
             s1 = max(absgam, absalp);
@@ -137,7 +123,7 @@ void Claic1(INTEGER const job, INTEGER const j, COMPLEX *x, REAL const sest, COM
             return;
         } else {
             //
-            //           normal case
+            // normal case
             //
             zeta1 = absalp / absest;
             zeta2 = absgam / absest;
@@ -145,7 +131,7 @@ void Claic1(INTEGER const job, INTEGER const j, COMPLEX *x, REAL const sest, COM
             b = (one - zeta1 * zeta1 - zeta2 * zeta2) * half;
             c = zeta1 * zeta1;
             if (b > zero) {
-                t = (c / (b + sqrt(b * b) + c)).real();
+                t = (c / (b + sqrt(b * b + c))).real();
             } else {
                 t = (sqrt(b * b + c) - b).real();
             }
@@ -161,9 +147,9 @@ void Claic1(INTEGER const job, INTEGER const j, COMPLEX *x, REAL const sest, COM
         //
     } else if (job == 2) {
         //
-        //        Estimating smallest singular value
+        // Estimating smallest singular value
         //
-        //        special cases
+        // special cases
         //
         if (sest == zero) {
             sestpr = zero;
@@ -218,19 +204,19 @@ void Claic1(INTEGER const job, INTEGER const j, COMPLEX *x, REAL const sest, COM
             return;
         } else {
             //
-            //           normal case
+            // normal case
             //
             zeta1 = absalp / absest;
             zeta2 = absgam / absest;
             //
-            norma = max(REAL(one + zeta1 * zeta1 + zeta1 * zeta2), REAL(zeta1 * zeta2 + zeta2 * zeta2));
+            norma = max(one + zeta1 * zeta1 + zeta1 * zeta2, zeta1 * zeta2 + zeta2 * zeta2);
             //
-            //           See if root is closer to zero or to ONE
+            // See if root is closer to zero or to ONE
             //
             test = one + two * (zeta1 - zeta2) * (zeta1 + zeta2);
             if (test >= zero) {
                 //
-                //              root is close to zero, compute directly
+                // root is close to zero, compute directly
                 //
                 b = (zeta1 * zeta1 + zeta2 * zeta2 + one) * half;
                 c = zeta2 * zeta2;
@@ -240,7 +226,7 @@ void Claic1(INTEGER const job, INTEGER const j, COMPLEX *x, REAL const sest, COM
                 sestpr = sqrt(t + four * eps * eps * norma) * absest;
             } else {
                 //
-                //              root is closer to ONE, shift by that amount
+                // root is closer to ONE, shift by that amount
                 //
                 b = (zeta2 * zeta2 + zeta1 * zeta1 - one) * half;
                 c = zeta1 * zeta1;
@@ -261,6 +247,6 @@ void Claic1(INTEGER const job, INTEGER const j, COMPLEX *x, REAL const sest, COM
         }
     }
     //
-    //     End of Claic1
+    // End of Claic1
     //
 }

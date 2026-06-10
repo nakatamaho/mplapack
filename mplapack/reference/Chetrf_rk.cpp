@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZHETRF_RK.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -43,28 +50,7 @@ void Chetrf_rk(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
     INTEGER i = 0;
     INTEGER ip = 0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     upper = Mlsame(uplo, "U");
@@ -81,10 +67,10 @@ void Chetrf_rk(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
     //
     if (info == 0) {
         //
-        //        Determine the block size
+        // Determine the block size
         //
         nb = iMlaenv(1, "Chetrf_rk", uplo, n, -1, -1, -1);
-        lwkopt = n * nb;
+        lwkopt = max((INTEGER)1, n * nb);
         work[1 - 1] = lwkopt;
     }
     //
@@ -112,16 +98,16 @@ void Chetrf_rk(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
     //
     if (upper) {
         //
-        //        Factorize A as U*D*U**T using the upper triangle of A
+        // Factorize A as U*D*U**T using the upper triangle of A
         //
-        //        K is the main loop index, decreasing from N to 1 in steps of
-        //        KB, where KB is the number of columns factorized by Clahef_rk;
-        //        KB is either NB or NB-1, or K for the last block
+        // K is the main loop index, decreasing from N to 1 in steps of
+        // KB, where KB is the number of columns factorized by Clahef_rk;
+        // KB is either NB or NB-1, or K for the last block
         //
         k = n;
     statement_10:
         //
-        //        If K < 1, exit from loop
+        // If K < 1, exit from loop
         //
         if (k < 1) {
             goto statement_15;
@@ -129,34 +115,34 @@ void Chetrf_rk(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
         //
         if (k > nb) {
             //
-            //           Factorize columns k-kb+1:k of A and use blocked code to
-            //           update columns 1:k-kb
+            // Factorize columns k-kb+1:k of A and use blocked code to
+            // update columns 1:k-kb
             //
             Clahef_rk(uplo, k, nb, kb, a, lda, e, ipiv, work, ldwork, iinfo);
         } else {
             //
-            //           Use unblocked code to factorize columns 1:k of A
+            // Use unblocked code to factorize columns 1:k of A
             //
             Chetf2_rk(uplo, k, a, lda, e, ipiv, iinfo);
             kb = k;
         }
         //
-        //        Set INFO on the first occurrence of a zero pivot
+        // Set INFO on the first occurrence of a zero pivot
         //
         if (info == 0 && iinfo > 0) {
             info = iinfo;
         }
         //
-        //        No need to adjust IPIV
+        // No need to adjust IPIV
         //
-        //        Apply permutations to the leading panel 1:k-1
+        // Apply permutations to the leading panel 1:k-1
         //
-        //        Read IPIV from the last block factored, i.e.
-        //        indices  k-kb+1:k and apply row permutations to the
-        //        last k+1 colunms k+1:N after that block
-        //        (We can do the simple loop over IPIV with decrement -1,
-        //        since the ABS value of IPIV( I ) represents the row index
-        //        of the interchange with row i in both 1x1 and 2x2 pivot cases)
+        // Read IPIV from the last block factored, i.e.
+        // indices  k-kb+1:k and apply row permutations to the
+        // last k+1 colunms k+1:N after that block
+        // (We can do the simple loop over IPIV with decrement -1,
+        // since the ABS value of IPIV( I ) represents the row index
+        // of the interchange with row i in both 1x1 and 2x2 pivot cases)
         //
         if (k < n) {
             for (i = k; i >= (k - kb + 1); i = i - 1) {
@@ -167,28 +153,28 @@ void Chetrf_rk(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
             }
         }
         //
-        //        Decrease K and return to the start of the main loop
+        // Decrease K and return to the start of the main loop
         //
         k = k - kb;
         goto statement_10;
     //
-    //        This label is the exit from main loop over K decreasing
-    //        from N to 1 in steps of KB
+    // This label is the exit from main loop over K decreasing
+    // from N to 1 in steps of KB
     //
     statement_15:;
         //
     } else {
         //
-        //        Factorize A as L*D*L**T using the lower triangle of A
+        // Factorize A as L*D*L**T using the lower triangle of A
         //
-        //        K is the main loop index, increasing from 1 to N in steps of
-        //        KB, where KB is the number of columns factorized by Clahef_rk;
-        //        KB is either NB or NB-1, or N-K+1 for the last block
+        // K is the main loop index, increasing from 1 to N in steps of
+        // KB, where KB is the number of columns factorized by Clahef_rk;
+        // KB is either NB or NB-1, or N-K+1 for the last block
         //
         k = 1;
     statement_20:
         //
-        //        If K > N, exit from loop
+        // If K > N, exit from loop
         //
         if (k > n) {
             goto statement_35;
@@ -196,27 +182,27 @@ void Chetrf_rk(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
         //
         if (k <= n - nb) {
             //
-            //           Factorize columns k:k+kb-1 of A and use blocked code to
-            //           update columns k+kb:n
+            // Factorize columns k:k+kb-1 of A and use blocked code to
+            // update columns k+kb:n
             //
             Clahef_rk(uplo, n - k + 1, nb, kb, &a[(k - 1) + (k - 1) * lda], lda, &e[k - 1], &ipiv[k - 1], work, ldwork, iinfo);
             //
         } else {
             //
-            //           Use unblocked code to factorize columns k:n of A
+            // Use unblocked code to factorize columns k:n of A
             //
             Chetf2_rk(uplo, n - k + 1, &a[(k - 1) + (k - 1) * lda], lda, &e[k - 1], &ipiv[k - 1], iinfo);
             kb = n - k + 1;
             //
         }
         //
-        //        Set INFO on the first occurrence of a zero pivot
+        // Set INFO on the first occurrence of a zero pivot
         //
         if (info == 0 && iinfo > 0) {
             info = iinfo + k - 1;
         }
         //
-        //        Adjust IPIV
+        // Adjust IPIV
         //
         for (i = k; i <= k + kb - 1; i = i + 1) {
             if (ipiv[i - 1] > 0) {
@@ -226,14 +212,14 @@ void Chetrf_rk(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
             }
         }
         //
-        //        Apply permutations to the leading panel 1:k-1
+        // Apply permutations to the leading panel 1:k-1
         //
-        //        Read IPIV from the last block factored, i.e.
-        //        indices  k:k+kb-1 and apply row permutations to the
-        //        first k-1 colunms 1:k-1 before that block
-        //        (We can do the simple loop over IPIV with increment 1,
-        //        since the ABS value of IPIV( I ) represents the row index
-        //        of the interchange with row i in both 1x1 and 2x2 pivot cases)
+        // Read IPIV from the last block factored, i.e.
+        // indices  k:k+kb-1 and apply row permutations to the
+        // first k-1 colunms 1:k-1 before that block
+        // (We can do the simple loop over IPIV with increment 1,
+        // since the ABS value of IPIV( I ) represents the row index
+        // of the interchange with row i in both 1x1 and 2x2 pivot cases)
         //
         if (k > 1) {
             for (i = k; i <= (k + kb - 1); i = i + 1) {
@@ -244,22 +230,22 @@ void Chetrf_rk(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
             }
         }
         //
-        //        Increase K and return to the start of the main loop
+        // Increase K and return to the start of the main loop
         //
         k += kb;
         goto statement_20;
     //
-    //        This label is the exit from main loop over K increasing
-    //        from 1 to N in steps of KB
+    // This label is the exit from main loop over K increasing
+    // from 1 to N in steps of KB
     //
     statement_35:;
         //
-        //     End Lower
+        // End Lower
         //
     }
     //
     work[1 - 1] = lwkopt;
     //
-    //     End of Chetrf_rk
+    // End of Chetrf_rk
     //
 }

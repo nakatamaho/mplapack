@@ -1,8 +1,5 @@
-FILES=`ls *.cpp *.h *h.in *.hpp`
+. "$(dirname "$0")/clang_format_common.sh"
 
-for _file in $FILES; do
-clang-format -style="{BasedOnStyle: llvm, IndentWidth: 4, ColumnLimit: 10000, SortIncludes: false}" $_file > ${_file}__ ; mv ${_file}__ ${_file}
+for f in *.cpp *.cc *.h *.hpp *.h.in; do
+    run_clang_format "$f"
 done
-
-
-

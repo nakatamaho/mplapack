@@ -383,8 +383,6 @@ keywords = {elementary function, IEEE 754 standard, portable software, correct r
   title =        "Installation Guide for {LAPACK}",
   type =         "LAPACK Working Note",
   number =       "41",
-  institution =  inst-UTK-CS,
-  address =      inst-UTK-CS:adr,
   month =        mar,
   year =         "1992",
   bibdate =      "Fri Apr 22 17:06:37 2005",
@@ -392,7 +390,6 @@ keywords = {elementary function, IEEE 754 standard, portable software, correct r
   note =         "UT-CS-92-151, March, 1992.",
   URL =          "http://www.netlib.org/lapack/lawns/lawn41.ps;
                  http://www.netlib.org/lapack/lawnspdf/lawn41.pdf",
-  acknowledgement = ack-nhfb,
 }
 
 @INPROCEEDINGS{6424545,  author={Nakata, Maho and Takao, Yasuyoshi and Noda, Shigeho and Himeno, Ryutaro},  booktitle={2012 Third International Conference on Networking and Computing},   title={A Fast Implementation of Matrix-matrix Product in Double-double Precision on NVIDIA C2050 and Application to Semidefinite Programming},   year={2012},  volume={},  number={},  pages={68-75},  doi={10.1109/ICNC.2012.19}}
@@ -729,4 +726,64 @@ year = {1969},
   year={2011},
   volume={38},
   pages={50-55}
+}
+
+  @MISC{macosgccbug,
+    Title = "{GMP failure on Mac OS X 10.5}",
+    note = {\url{https://gmplib.org/list-archives/gmp-bugs/2008-February/000930.html}},
+    year = {retrieved August 29, 2022}
+}
+
+
+  @MISC{ibmdd,
+    Title = "{6.12 Additional Floating Types}",
+    note = {\url{https://gcc.gnu.org/onlinedocs/gcc/Floating-Types.html}},
+    year = {retrieved September 7, 2022}
+}
+
+  @MISC{benchmark_mplapack,
+    Title = "{Benchmark results of MPLAPACK and MPBLAS}",
+    note = {\url{https://github.com/nakatamaho/mplapack/tree/master/benchmark/results/2022}},
+    year = {retrieved September 9, 2022}
+}
+
+  @MISC{eigtest_mplapack,
+    Title = "{Eigenproblem test results of MPLAPACK}",
+    note = {\url{https://github.com/nakatamaho/mplapack/tree/master/mplapack/test/eig/results}},
+    year = {retrieved September 9, 2022}
+}
+
+  @MISC{lintest_mplapack,
+    Title = "{Linear equation est results of MPLAPACK}",
+    note = {\url{https://github.com/nakatamaho/mplapack/tree/master/mplapack/test/lin/results}},
+    year = {retrieved September 9, 2022}
+}
+
+@article{NPR,
+author = {Noschese, Silvia and Pasquini, Lionello and Reichel, Lothar},
+title = {Tridiagonal Toeplitz matrices: properties and novel applications},
+journal = {Numerical Linear Algebra with Applications},
+volume = {20},
+number = {2},
+pages = {302-326},
+keywords = {eigenvalues, conditioning, Toeplitz matrix, matrix nearness problem, distance to normality, inverse eigenvalue problem, Krylov subspace bases, Tikhonov regularization},
+doi = {https://doi.org/10.1002/nla.1811},
+url = {https://onlinelibrary.wiley.com/doi/abs/10.1002/nla.1811},
+eprint = {https://onlinelibrary.wiley.com/doi/pdf/10.1002/nla.1811},
+abstract = {SUMMARYThe eigenvalues and eigenvectors of tridiagonal Toeplitz matrices are known in closed form. This property is in the first part of the paper used to investigate the sensitivity of the spectrum. Explicit expressions for the structured distance to the closest normal matrix, the departure from normality, and the ϵ-pseudospectrum are derived. The second part of the paper discusses applications of the theory to inverse eigenvalue problems, the construction of Chebyshev polynomial-based Krylov subspace bases, and Tikhonov regularization. Copyright © 2012 John Wiley \& Sons, Ltd.},
+year = {2013}
+}
+
+
+  @MISC{arm64abi,
+    Title = "{8   Arm C AND C++ Language Mappings}",
+    note = {\url{https://github.com/ARM-software/abi-aa/blob/2bcab1e3b22d55170c563c3c7940134089176746/aapcs64/aapcs64.rst#811arithmetic-types}},
+    year = {retrieved September 10, 2022}
+}
+
+
+  @MISC{mpreal,
+    Title = "{MPFR C++}",
+    note = {\url{http://www.holoborodko.com/pavel/mpfr/}},
+    year = {retrieved September 10, 2022}
 }

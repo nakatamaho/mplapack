@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DCHKQ3.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,14 +43,11 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-#include <mplapack_debug.h>
-
 void Rchkq3(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER *nxval, REAL const thresh, REAL *a, REAL *copya, REAL *s, REAL *tau, REAL *work, INTEGER *iwork, INTEGER const nout) {
     common cmn;
     common_write write(cmn);
-    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
-    char path[4] = {};
-    char buf[1024];
+    static INTEGER iseedy[4] = {1988, 1989, 1990, 1991};
+    fem::str<3> path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -74,11 +78,13 @@ void Rchkq3(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     REAL result[ntests];
     INTEGER k = 0;
     //
-    //     Initialize constants and the random number seed.
+    static const char *format_9999 = "(1x,a,' M =',i5,', N =',i5,', NB =',i4,', type ',i2,', test ',i2,"
+                                     "', ratio =',g12.5)";
     //
-    path[0] = 'R';
-    path[1] = 'Q';
-    path[2] = '3';
+    // Initialize constants and the random number seed.
+    //
+    path(1, 1) = "Double precision";
+    path(2, 3) = "Q3";
     nrun = 0;
     nfail = 0;
     nerrs = 0;
@@ -86,42 +92,43 @@ void Rchkq3(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
         iseed[i - 1] = iseedy[i - 1];
     }
     eps = Rlamch("Epsilon");
+    infot = 0;
     //
     for (im = 1; im <= nm; im = im + 1) {
         //
-        //        Do for each value of M in MVAL.
+        // Do for each value of M in MVAL.
         //
         m = mval[im - 1];
         lda = max((INTEGER)1, m);
         //
         for (in = 1; in <= nn; in = in + 1) {
             //
-            //           Do for each value of N in NVAL.
+            // Do for each value of N in NVAL.
             //
             n = nval[in - 1];
             mnmin = min(m, n);
-            lwork = max({(INTEGER)1, m * max(m, n) + 4 * mnmin + max(m, n), m * n + 2 * mnmin + 4 * n});
+            lwork = max((INTEGER)1, m * max(m, n) + 4 * mnmin + max(m, n), m * n + 2 * mnmin + 4 * n);
             //
             for (imode = 1; imode <= ntypes; imode = imode + 1) {
                 if (!dotype[imode - 1]) {
                     goto statement_70;
                 }
                 //
-                //              Do for each type of matrix
-                //                 1:  zero matrix
-                //                 2:  one small singular value
-                //                 3:  geometric distribution of singular values
-                //                 4:  first n/2 columns fixed
-                //                 5:  last n/2 columns fixed
-                //                 6:  every second column fixed
+                // Do for each type of matrix
+                // 1:  zero matrix
+                // 2:  one small singular value
+                // 3:  geometric distribution of singular values
+                // 4:  first n/2 columns fixed
+                // 5:  last n/2 columns fixed
+                // 6:  every second column fixed
                 //
                 mode = imode;
                 if (imode > 3) {
                     mode = 1;
                 }
                 //
-                //              Generate test matrix of size m by n using
-                //              singular value distribution indicated by `mode'.
+                // Generate test matrix of size m by n using
+                // singular value distribution indicated by `mode'.
                 //
                 for (i = 1; i <= n; i = i + 1) {
                     iwork[i - 1] = 0;
@@ -156,51 +163,49 @@ void Rchkq3(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                 //
                 for (inb = 1; inb <= nnb; inb = inb + 1) {
                     //
-                    //                 Do for each pair of values (NB,NX) in NBVAL and NXVAL.
+                    // Do for each pair of values (NB,NX) in NBVAL and NXVAL.
                     //
                     nb = nbval[inb - 1];
-                    xlaenv(1, nb);
+                    Mxlaenv(1, nb);
                     nx = nxval[inb - 1];
-                    xlaenv(3, nx);
+                    Mxlaenv(3, nx);
                     //
-                    //                 Get a working copy of COPYA into A and a copy of
-                    //                 vector IWORK.
+                    // Get a working copy of COPYA into A and a copy of
+                    // vector IWORK.
                     //
                     Rlacpy("All", m, n, copya, lda, a, lda);
                     icopy(n, &iwork[1 - 1], 1, &iwork[(n + 1) - 1], 1);
                     //
-                    //                 Compute the QR factorization with pivoting of A
+                    // Compute the QR factorization with pivoting of A
                     //
                     lw = max((INTEGER)1, 2 * n + nb * (n + 1));
                     //
-                    //                 Compute the QP3 factorization of A
+                    // Compute the QP3 factorization of A
                     //
+                    srnamt = "Rgeqp3";
                     Rgeqp3(m, n, a, lda, &iwork[(n + 1) - 1], tau, work, lw, info);
                     //
-                    //                 Compute norm(svd(a) - svd(r))
+                    // Compute norm(svd(a) - svd(r))
                     //
                     result[1 - 1] = Rqrt12(m, n, a, lda, s, work, lwork);
                     //
-                    //                 Compute norm( A*P - Q*R )
+                    // Compute norm( A*P - Q*R )
                     //
                     result[2 - 1] = Rqpt01(m, n, mnmin, copya, a, lda, tau, &iwork[(n + 1) - 1], work, lwork);
                     //
-                    //                 Compute Q'*Q
+                    // Compute Q'*Q
                     //
                     result[3 - 1] = Rqrt11(m, mnmin, a, lda, tau, work, lwork);
                     //
-                    //                 Print information about the tests that did not pass
-                    //                 the threshold.
+                    // Print information about the tests that did not pass
+                    // the threshold.
                     //
                     for (k = 1; k <= ntests; k = k + 1) {
                         if (result[k - 1] >= thresh) {
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
-                            sprintnum_short(buf, result[k - 1]);
-                            write(nout, "(1x,a,' M =',i5,', N =',i5,', NB =',i4,', type ',i2,"
-                                        "', test ',i2,', ratio =',a)"),
-                                "Rgeqp3", m, n, nb, imode, k, buf;
+                            write(nout, format_9999), "Rgeqp3", m, n, nb, imode, k, result[k - 1];
                             nfail++;
                         }
                     }
@@ -212,10 +217,10 @@ void Rchkq3(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
         }
     }
     //
-    //     Print a summary of the results.
+    // Print a summary of the results.
     //
     Alasum(path, nout, nfail, nrun, nerrs);
     //
-    //     End of Rchkq3
+    // End of Rchkq3
     //
 }

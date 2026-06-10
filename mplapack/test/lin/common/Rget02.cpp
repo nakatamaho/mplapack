@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,39 +26,26 @@
  *
  */
 
+// Derived from LAPACK routine DGET02.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
-#include <mplapack_lin.h>
-#include <mplapack.h>
 
-void Rget02(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *x, INTEGER const ldx, REAL *b, INTEGER const ldb, REAL *rwork, REAL &resid) {
+#include <mplapack_matgen.h>
+#include <mplapack_lin.h>
+
+void Rget02(fem::str_cref trans, INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *x, INTEGER const ldx, REAL *b, INTEGER const ldb, REAL *rwork, REAL &resid) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Quick exit if M = 0 or N = 0 or NRHS = 0
+    // Quick exit if M = 0 or N = 0 or NRHS = 0
     //
     const REAL zero = 0.0;
     if (m <= 0 || n <= 0 || nrhs == 0) {
@@ -68,7 +55,7 @@ void Rget02(const char *trans, INTEGER const m, INTEGER const n, INTEGER const n
     //
     INTEGER n1 = 0;
     INTEGER n2 = 0;
-    if (Mlsame(trans, "T") || Mlsame(trans, "C")) {
+    if (Mlsame(trans.elems(), "T") || Mlsame(trans.elems(), "C")) {
         n1 = n;
         n2 = m;
     } else {
@@ -76,22 +63,27 @@ void Rget02(const char *trans, INTEGER const m, INTEGER const n, INTEGER const n
         n2 = n;
     }
     //
-    //     Exit with RESID = 1/EPS if ANORM = 0.
+    // Exit with RESID = 1/EPS if ANORM = 0.
     //
     REAL eps = Rlamch("Epsilon");
-    REAL anorm = Rlange("1", m, n, a, lda, rwork);
+    REAL anorm = 0.0;
+    if (Mlsame(trans.elems(), "N")) {
+        anorm = Rlange("1", m, n, a, lda, rwork);
+    } else {
+        anorm = Rlange("I", m, n, a, lda, rwork);
+    }
     const REAL one = 1.0;
     if (anorm <= zero) {
         resid = one / eps;
         return;
     }
     //
-    //     Compute  B - A*X  (or  B - A'*X ) and store in B.
+    // Compute B - op(A)*X and store in B.
     //
-    Rgemm(trans, "No transpose", n1, nrhs, n2, -one, a, lda, x, ldx, one, b, ldb);
+    Rgemm(trans.elems(), "No transpose", n1, nrhs, n2, -one, a, lda, x, ldx, one, b, ldb);
     //
-    //     Compute the maximum over the number of right hand sides of
-    //        norm(B - A*X) / ( norm(A) * norm(X) * EPS ) .
+    // Compute the maximum over the number of right hand sides of
+    // norm(B - op(A)*X) / ( norm(op(A)) * norm(X) * EPS ) .
     //
     resid = zero;
     INTEGER j = 0;
@@ -103,10 +95,10 @@ void Rget02(const char *trans, INTEGER const m, INTEGER const n, INTEGER const n
         if (xnorm <= zero) {
             resid = one / eps;
         } else {
-            resid = max(resid, REAL(((bnorm / anorm) / xnorm) / eps));
+            resid = max(resid, ((bnorm / anorm) / xnorm) / eps);
         }
     }
     //
-    //     End of Rget02
+    // End of Rget02
     //
 }

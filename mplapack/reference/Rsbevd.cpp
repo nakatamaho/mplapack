@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,35 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DSBEVD.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rsbevd(const char *jobz, const char *uplo, INTEGER const n, INTEGER const kd, REAL *ab, INTEGER const ldab, REAL *w, REAL *z, INTEGER const ldz, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const liwork, INTEGER &info) {
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     bool wantz = Mlsame(jobz, "V");
     bool lower = Mlsame(uplo, "L");
@@ -69,7 +53,7 @@ void Rsbevd(const char *jobz, const char *uplo, INTEGER const n, INTEGER const k
     } else {
         if (wantz) {
             liwmin = 3 + 5 * n;
-            lwmin = 1 + 5 * n + 2 * n * n;
+            lwmin = 1 + 5 * n + 2 * pow2(n);
         } else {
             liwmin = 1;
             lwmin = 2 * n;
@@ -107,7 +91,7 @@ void Rsbevd(const char *jobz, const char *uplo, INTEGER const n, INTEGER const k
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
@@ -115,14 +99,14 @@ void Rsbevd(const char *jobz, const char *uplo, INTEGER const n, INTEGER const k
     //
     const REAL one = 1.0;
     if (n == 1) {
-        w[1 - 1] = ab[(1 - 1)];
+        w[1 - 1] = ab[0];
         if (wantz) {
-            z[(1 - 1)] = one;
+            z[0] = one;
         }
         return;
     }
     //
-    //     Get machine constants.
+    // Get machine constants.
     //
     REAL safmin = Rlamch("Safe minimum");
     REAL eps = Rlamch("Precision");
@@ -131,7 +115,7 @@ void Rsbevd(const char *jobz, const char *uplo, INTEGER const n, INTEGER const k
     REAL rmin = sqrt(smlnum);
     REAL rmax = sqrt(bignum);
     //
-    //     Scale matrix to allowable range, if necessary.
+    // Scale matrix to allowable range, if necessary.
     //
     REAL anrm = Rlansb("M", uplo, n, kd, ab, ldab, work);
     INTEGER iscale = 0;
@@ -152,7 +136,7 @@ void Rsbevd(const char *jobz, const char *uplo, INTEGER const n, INTEGER const k
         }
     }
     //
-    //     Call Rsbtrd to reduce symmetric band matrix to tridiagonal form.
+    // Call Rsbtrd to reduce symmetric band matrix to tridiagonal form.
     //
     INTEGER inde = 1;
     INTEGER indwrk = inde + n;
@@ -161,7 +145,7 @@ void Rsbevd(const char *jobz, const char *uplo, INTEGER const n, INTEGER const k
     INTEGER iinfo = 0;
     Rsbtrd(jobz, uplo, n, kd, ab, ldab, w, &work[inde - 1], z, ldz, &work[indwrk - 1], iinfo);
     //
-    //     For eigenvalues only, call Rsterf.  For eigenvectors, call SSTEDC.
+    // For eigenvalues only, call Rsterf.  For eigenvectors, call SSTEDC.
     //
     if (!wantz) {
         Rsterf(n, w, &work[inde - 1], info);
@@ -171,7 +155,7 @@ void Rsbevd(const char *jobz, const char *uplo, INTEGER const n, INTEGER const k
         Rlacpy("A", n, n, &work[indwk2 - 1], n, z, ldz);
     }
     //
-    //     If matrix was scaled, then rescale eigenvalues appropriately.
+    // If matrix was scaled, then rescale eigenvalues appropriately.
     //
     if (iscale == 1) {
         Rscal(n, one / sigma, w, 1);
@@ -180,6 +164,6 @@ void Rsbevd(const char *jobz, const char *uplo, INTEGER const n, INTEGER const k
     work[1 - 1] = lwmin;
     iwork[1 - 1] = liwmin;
     //
-    //     End of Rsbevd
+    // End of Rsbevd
     //
 }

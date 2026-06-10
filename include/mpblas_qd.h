@@ -1,9 +1,7 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *	Nakata, Maho
  * 	All rights reserved.
- *
- * $Id: mpblas_qd.h,v 1.12 2010/08/07 03:15:46 nakatamaho Exp $
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -53,6 +51,7 @@ void Caxpy(mplapackint const n, qd_complex const za, qd_complex *zx, mplapackint
 void Ccopy(mplapackint const n, qd_complex *zx, mplapackint const incx, qd_complex *zy, mplapackint const incy);
 void Cgbmv(const char *trans, mplapackint const m, mplapackint const n, mplapackint const kl, mplapackint const ku, qd_complex const alpha, qd_complex *a, mplapackint const lda, qd_complex *x, mplapackint const incx, qd_complex const beta, qd_complex *y, mplapackint const incy);
 void Cgemm(const char *transa, const char *transb, mplapackint const m, mplapackint const n, mplapackint const k, qd_complex const alpha, qd_complex *a, mplapackint const lda, qd_complex *b, mplapackint const ldb, qd_complex const beta, qd_complex *c, mplapackint const ldc);
+void Cgemmtr(const char *uplo, const char *transa, const char *transb, mplapackint const n, mplapackint const k, qd_complex const alpha, qd_complex *a, mplapackint const lda, qd_complex *b, mplapackint const ldb, qd_complex const beta, qd_complex *c, mplapackint const ldc);
 void Cgemv(const char *trans, mplapackint const m, mplapackint const n, qd_complex const alpha, qd_complex *a, mplapackint const lda, qd_complex *x, mplapackint const incx, qd_complex const beta, qd_complex *y, mplapackint const incy);
 void Cgerc(mplapackint const m, mplapackint const n, qd_complex const alpha, qd_complex *x, mplapackint const incx, qd_complex *y, mplapackint const incy, qd_complex *a, mplapackint const lda);
 void Cgeru(mplapackint const m, mplapackint const n, qd_complex const alpha, qd_complex *x, mplapackint const incx, qd_complex *y, mplapackint const incy, qd_complex *a, mplapackint const lda);
@@ -66,7 +65,7 @@ void Cherk(const char *uplo, const char *trans, mplapackint const n, mplapackint
 void Chpmv(const char *uplo, mplapackint const n, qd_complex const alpha, qd_complex *ap, qd_complex *x, mplapackint const incx, qd_complex const beta, qd_complex *y, mplapackint const incy);
 void Chpr(const char *uplo, mplapackint const n, qd_real const alpha, qd_complex *x, mplapackint const incx, qd_complex *ap);
 void Chpr2(const char *uplo, mplapackint const n, qd_complex const alpha, qd_complex *x, mplapackint const incx, qd_complex *y, mplapackint const incy, qd_complex *ap);
-void Crotg(qd_complex &ca, qd_complex const cb, qd_real &c, qd_complex &s);
+void Crotg(qd_complex &a, qd_complex const b, qd_real &c, qd_complex &s);
 void Cscal(mplapackint const n, qd_complex const za, qd_complex *zx, mplapackint const incx);
 void Cswap(mplapackint const n, qd_complex *zx, mplapackint const incx, qd_complex *zy, mplapackint const incy);
 void Csymm(const char *side, const char *uplo, mplapackint const m, mplapackint const n, qd_complex const alpha, qd_complex *a, mplapackint const lda, qd_complex *b, mplapackint const ldb, qd_complex const beta, qd_complex *c, mplapackint const ldc);
@@ -85,10 +84,11 @@ void Raxpy(mplapackint const n, qd_real const da, qd_real *dx, mplapackint const
 void Rcopy(mplapackint const n, qd_real *dx, mplapackint const incx, qd_real *dy, mplapackint const incy);
 void Rgbmv(const char *trans, mplapackint const m, mplapackint const n, mplapackint const kl, mplapackint const ku, qd_real const alpha, qd_real *a, mplapackint const lda, qd_real *x, mplapackint const incx, qd_real const beta, qd_real *y, mplapackint const incy);
 void Rgemm(const char *transa, const char *transb, mplapackint const m, mplapackint const n, mplapackint const k, qd_real const alpha, qd_real *a, mplapackint const lda, qd_real *b, mplapackint const ldb, qd_real const beta, qd_real *c, mplapackint const ldc);
+void Rgemmtr(const char *uplo, const char *transa, const char *transb, mplapackint const n, mplapackint const k, qd_real const alpha, qd_real *a, mplapackint const lda, qd_real *b, mplapackint const ldb, qd_real const beta, qd_real *c, mplapackint const ldc);
 void Rgemv(const char *trans, mplapackint const m, mplapackint const n, qd_real const alpha, qd_real *a, mplapackint const lda, qd_real *x, mplapackint const incx, qd_real const beta, qd_real *y, mplapackint const incy);
 void Rger(mplapackint const m, mplapackint const n, qd_real const alpha, qd_real *x, mplapackint const incx, qd_real *y, mplapackint const incy, qd_real *a, mplapackint const lda);
 void Rrot(mplapackint const n, qd_real *dx, mplapackint const incx, qd_real *dy, mplapackint const incy, qd_real const c, qd_real const s);
-void Rrotg(qd_real &da, qd_real &db, qd_real &c, qd_real &s);
+void Rrotg(qd_real &a, qd_real &b, qd_real &c, qd_real &s);
 void Rrotm(mplapackint const n, qd_real *dx, mplapackint const incx, qd_real *dy, mplapackint const incy, qd_real *dparam);
 void Rrotmg(qd_real &dd1, qd_real &dd2, qd_real &dx1, qd_real const dy1, qd_real *dparam);
 void Rsbmv(const char *uplo, mplapackint const n, mplapackint const k, qd_real const alpha, qd_real *a, mplapackint const lda, qd_real *x, mplapackint const incx, qd_real const beta, qd_real *y, mplapackint const incy);

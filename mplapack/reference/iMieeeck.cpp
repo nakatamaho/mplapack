@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,35 +26,47 @@
  *
  */
 
+// Derived from LAPACK routine IEEECK.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
-INTEGER iMieeeck(INTEGER const &ispec, REAL const &zero, REAL const &one) {
+INTEGER iMieeeck(INTEGER const ispec, REAL const zero, REAL const one) {
     INTEGER return_value = 0;
-    //
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
-    // GMP is not a natural extention to IEEE 754.
+    // GMP uses arbitrary-precision integers/rationals internally and does not
+    // implement IEEE 754 semantics: division by zero does not yield +Inf/-Inf,
+    // and NaN/signed-zero behavior is undefined.  The runtime checks below
+    // would invoke undefined behavior on GMP arithmetic, so return 0 here.
     return 0;
 #endif
 #if defined ___MPLAPACK_BUILD_WITH_DD___
-    // DD does not comply IEEE 754.
+    // DD (double-double) arithmetic does not comply with IEEE 754: it lacks
+    // proper handling of infinities, NaN, and signed zero.  The runtime checks
+    // below would invoke undefined behavior on DD arithmetic, so return 0 here.
     return 0;
 #endif
 #if defined ___MPLAPACK_BUILD_WITH_QD___
-    // DD does not comply IEEE 754.
+    // QD (quad-double) arithmetic does not comply with IEEE 754: it lacks
+    // proper handling of infinities, NaN, and signed zero.  The runtime checks
+    // below would invoke undefined behavior on QD arithmetic, so return 0 here.
     return 0;
 #endif
-
     return_value = 1;
     //
     REAL posinf = one / zero;
-    if (posinf <= one) {
+    if (!Risinf(posinf) || posinf <= zero) {
         return_value = 0;
         return return_value;
     }
     //
     REAL neginf = -one / zero;
-    if (neginf >= zero) {
+    if (!Risinf(neginf) || neginf >= zero) {
         return_value = 0;
         return return_value;
     }
@@ -66,7 +78,7 @@ INTEGER iMieeeck(INTEGER const &ispec, REAL const &zero, REAL const &one) {
     }
     //
     neginf = one / negzro;
-    if (neginf >= zero) {
+    if (!Risinf(neginf) || neginf >= zero) {
         return_value = 0;
         return return_value;
     }
@@ -78,24 +90,24 @@ INTEGER iMieeeck(INTEGER const &ispec, REAL const &zero, REAL const &one) {
     }
     //
     posinf = one / newzro;
-    if (posinf <= one) {
+    if (!Risinf(posinf) || posinf <= zero) {
         return_value = 0;
         return return_value;
     }
     //
     neginf = neginf * posinf;
-    if (neginf >= zero) {
+    if (!Risinf(neginf) || neginf >= zero) {
         return_value = 0;
         return return_value;
     }
     //
     posinf = posinf * posinf;
-    if (posinf <= one) {
+    if (!Risinf(posinf) || posinf <= zero) {
         return_value = 0;
         return return_value;
     }
     //
-    //     Return if we were only asked to check infinity arithmetic
+    // Return if we were only asked to check infinity arithmetic
     //
     if (ispec == 0) {
         return return_value;
@@ -113,32 +125,32 @@ INTEGER iMieeeck(INTEGER const &ispec, REAL const &zero, REAL const &one) {
     //
     REAL nan6 = nan5 * zero;
     //
-    if (nan1 == nan1) {
+    if (!Risnan(nan1)) {
         return_value = 0;
         return return_value;
     }
     //
-    if (nan2 == nan2) {
+    if (!Risnan(nan2)) {
         return_value = 0;
         return return_value;
     }
     //
-    if (nan3 == nan3) {
+    if (!Risnan(nan3)) {
         return_value = 0;
         return return_value;
     }
     //
-    if (nan4 == nan4) {
+    if (!Risnan(nan4)) {
         return_value = 0;
         return return_value;
     }
     //
-    if (nan5 == nan5) {
+    if (!Risnan(nan5)) {
         return_value = 0;
         return return_value;
     }
     //
-    if (nan6 == nan6) {
+    if (!Risnan(nan6)) {
         return_value = 0;
         return return_value;
     }

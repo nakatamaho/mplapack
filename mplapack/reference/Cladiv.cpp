@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,29 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZLADIV.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 COMPLEX
 Cladiv(COMPLEX const x, COMPLEX const y) {
-    COMPLEX return_value = 0.0;
-    //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
+    COMPLEX return_value = COMPLEX(0.0, 0.0);
     //
     REAL zr = 0.0;
     REAL zi = 0.0;
@@ -57,6 +47,6 @@ Cladiv(COMPLEX const x, COMPLEX const y) {
     //
     return return_value;
     //
-    //     End of Cladiv
+    // End of Cladiv
     //
 }

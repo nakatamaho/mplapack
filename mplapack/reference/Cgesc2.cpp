@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,23 +26,30 @@
  *
  */
 
+// Derived from LAPACK routine ZGESC2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Cgesc2(INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *rhs, INTEGER *ipiv, INTEGER *jpiv, REAL &scale) {
     //
-    //     Set constant to control overflow
+    // Set constant to control overflow
     //
     REAL eps = Rlamch("P");
     REAL smlnum = Rlamch("S") / eps;
     const REAL one = 1.0;
     REAL bignum = one / smlnum;
     //
-    //     Apply permutations IPIV to RHS
+    // Apply permutations IPIV to RHS
     //
     Claswp(1, rhs, lda, 1, n - 1, ipiv, 1);
     //
-    //     Solve for L part
+    // Solve for L part
     //
     INTEGER i = 0;
     INTEGER j = 0;
@@ -52,14 +59,14 @@ void Cgesc2(INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *rhs, INTEGE
         }
     }
     //
-    //     Solve for U part
+    // Solve for U part
     //
     scale = one;
     //
-    //     Check for scaling
+    // Check for scaling
     //
     i = iCamax(n, rhs, 1);
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     const REAL zero = 0.0;
     COMPLEX temp = 0.0;
     if (two * smlnum * abs(rhs[i - 1]) > abs(a[(n - 1) + (n - 1) * lda])) {
@@ -75,10 +82,10 @@ void Cgesc2(INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *rhs, INTEGE
         }
     }
     //
-    //     Apply permutations JPIV to the solution (RHS)
+    // Apply permutations JPIV to the solution (RHS)
     //
     Claswp(1, rhs, lda, 1, n - 1, jpiv, -1);
     //
-    //     End of Cgesc2
+    // End of Cgesc2
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZHBEVX_2STAGE.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -78,30 +85,7 @@ void Chbevx_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
     INTEGER jj = 0;
     INTEGER itmp1 = 0;
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     wantz = Mlsame(jobz, "V");
     alleig = Mlsame(range, "A");
@@ -168,7 +152,7 @@ void Chbevx_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     m = 0;
     if (n == 0) {
@@ -178,7 +162,7 @@ void Chbevx_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
     if (n == 1) {
         m = 1;
         if (lower) {
-            ctmp1 = ab[(1 - 1)];
+            ctmp1 = ab[0];
         } else {
             ctmp1 = ab[((kd + 1) - 1)];
         }
@@ -191,22 +175,22 @@ void Chbevx_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
         if (m == 1) {
             w[1 - 1] = ctmp1.real();
             if (wantz) {
-                z[(1 - 1)] = cone;
+                z[0] = cone;
             }
         }
         return;
     }
     //
-    //     Get machine constants.
+    // Get machine constants.
     //
     safmin = Rlamch("Safe minimum");
     eps = Rlamch("Precision");
     smlnum = safmin / eps;
     bignum = one / smlnum;
     rmin = sqrt(smlnum);
-    rmax = min(REAL(sqrt(bignum)), REAL(one / sqrt(sqrt(safmin))));
+    rmax = min(sqrt(bignum), one / sqrt(sqrt(safmin)));
     //
-    //     Scale matrix to allowable range, if necessary.
+    // Scale matrix to allowable range, if necessary.
     //
     iscale = 0;
     abstll = abstol;
@@ -240,7 +224,7 @@ void Chbevx_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
         }
     }
     //
-    //     Call Chbtrd_HB2ST to reduce Hermitian band matrix to tridiagonal form.
+    // Call ZHBTRD_HB2ST to reduce Hermitian band matrix to tridiagonal form.
     //
     indd = 1;
     inde = indd + n;
@@ -252,9 +236,9 @@ void Chbevx_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
     //
     Chetrd_hb2st("N", jobz, uplo, n, kd, ab, ldab, &rwork[indd - 1], &rwork[inde - 1], &work[indhous - 1], lhtrd, &work[indwrk - 1], llwork, iinfo);
     //
-    //     If all eigenvalues are desired and ABSTOL is less than or equal
-    //     to zero, then call Rsterf or Csteqr.  If this fails for some
-    //     eigenvalue, then try Rstebz.
+    // If all eigenvalues are desired and ABSTOL is less than or equal
+    // to zero, then call Rsterf or Csteqr.  If this fails for some
+    // eigenvalue, then try Rstebz.
     //
     test = false;
     if (indeig) {
@@ -285,7 +269,7 @@ void Chbevx_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
         info = 0;
     }
     //
-    //     Otherwise, call Rstebz and, if eigenvectors are desired, Cstein.
+    // Otherwise, call Rstebz and, if eigenvectors are desired, Cstein.
     //
     if (wantz) {
         order = 'B';
@@ -295,13 +279,22 @@ void Chbevx_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
     indibl = 1;
     indisp = indibl + n;
     indiwk = indisp + n;
-    Rstebz(range, &order, n, vll, vuu, il, iu, abstll, &rwork[indd - 1], &rwork[inde - 1], m, nsplit, w, &iwork[indibl - 1], &iwork[indisp - 1], &rwork[indrwk - 1], &iwork[indiwk - 1], info);
+    Rstebz(range, &order, n, vll, vuu, il, iu, abstll, &rwork[indd - 1], &rwork[inde - 1], m, nsplit, w, &iwork[indibl - 1], &iwork[indisp - 1], &rwork[indrwk - 1], &iwork[indiwk - 1], iinfo);
+    if (iinfo != 0) {
+        info = n + iinfo;
+        if (iinfo != 1) {
+            goto statement_30;
+        }
+    }
     //
     if (wantz) {
-        Cstein(n, &rwork[indd - 1], &rwork[inde - 1], m, w, &iwork[indibl - 1], &iwork[indisp - 1], z, ldz, &rwork[indrwk - 1], &iwork[indiwk - 1], ifail, info);
+        Cstein(n, &rwork[indd - 1], &rwork[inde - 1], m, w, &iwork[indibl - 1], &iwork[indisp - 1], z, ldz, &rwork[indrwk - 1], &iwork[indiwk - 1], ifail, iinfo);
+        if (iinfo != 0 && info == 0) {
+            info = iinfo;
+        }
         //
-        //        Apply unitary matrix used in reduction to tridiagonal
-        //        form to eigenvectors returned by Cstein.
+        // Apply unitary matrix used in reduction to tridiagonal
+        // form to eigenvectors returned by Cstein.
         //
         for (j = 1; j <= m; j = j + 1) {
             Ccopy(n, &z[(j - 1) * ldz], 1, &work[1 - 1], 1);
@@ -309,7 +302,7 @@ void Chbevx_2stage(const char *jobz, const char *range, const char *uplo, INTEGE
         }
     }
 //
-//     If matrix was scaled, then rescale eigenvalues appropriately.
+// If matrix was scaled, then rescale eigenvalues appropriately.
 //
 statement_30:
     if (iscale == 1) {
@@ -321,8 +314,8 @@ statement_30:
         Rscal(imax, one / sigma, w, 1);
     }
     //
-    //     If eigenvalues are not in order, then sort them, along with
-    //     eigenvectors.
+    // If eigenvalues are not in order, then sort them, along with
+    // eigenvectors.
     //
     if (wantz) {
         for (j = 1; j <= m - 1; j = j + 1) {
@@ -351,10 +344,10 @@ statement_30:
         }
     }
     //
-    //     Set WORK(1) to optimal workspace size.
+    // Set WORK(1) to optimal workspace size.
     //
     work[1 - 1] = lwmin;
     //
-    //     End of Chbevx_2stage
+    // End of Chbevx_2stage
     //
 }

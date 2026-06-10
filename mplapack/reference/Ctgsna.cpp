@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZTGSNA.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -59,7 +66,7 @@ void Ctgsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
     const INTEGER idifjb = 3;
     REAL scale = 0.0;
     //
-    //     Decode and test the input parameters
+    // Decode and test the input parameters
     //
     wantbh = Mlsame(job, "B");
     wants = Mlsame(job, "E") || wantbh;
@@ -86,8 +93,8 @@ void Ctgsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
         info = -12;
     } else {
         //
-        //        Set M to the number of eigenpairs for which condition numbers
-        //        are required, and test MM.
+        // Set M to the number of eigenpairs for which condition numbers
+        // are required, and test MM.
         //
         if (somcon) {
             m = 0;
@@ -123,13 +130,13 @@ void Ctgsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
     }
     //
-    //     Get machine constants
+    // Get machine constants
     //
     eps = Rlamch("P");
     smlnum = Rlamch("S") / eps;
@@ -137,8 +144,8 @@ void Ctgsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
     ks = 0;
     for (k = 1; k <= n; k = k + 1) {
         //
-        //        Determine whether condition numbers are required for the k-th
-        //        eigenpair.
+        // Determine whether condition numbers are required for the k-th
+        // eigenpair.
         //
         if (somcon) {
             if (!select[k - 1]) {
@@ -150,8 +157,8 @@ void Ctgsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
         //
         if (wants) {
             //
-            //           Compute the reciprocal condition number of the k-th
-            //           eigenvalue.
+            // Compute the reciprocal condition number of the k-th
+            // eigenvalue.
             //
             rnrm = RCnrm2(n, &vr[(ks - 1) * ldvr], 1);
             lnrm = RCnrm2(n, &vl[(ks - 1) * ldvl], 1);
@@ -169,14 +176,14 @@ void Ctgsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
         //
         if (wantdf) {
             if (n == 1) {
-                dif[ks - 1] = Rlapy2(abs(a[(1 - 1)]), abs(b[(1 - 1)]));
+                dif[ks - 1] = Rlapy2(abs(a[0]), abs(b[0]));
             } else {
                 //
-                //              Estimate the reciprocal condition number of the k-th
-                //              eigenvectors.
+                // Estimate the reciprocal condition number of the k-th
+                // eigenvectors.
                 //
-                //              Copy the matrix (A, B) to the array WORK and move the
-                //              (k,k)th pair to the (1,1) position.
+                // Copy the matrix (A, B) to the array WORK and move the
+                // (k,k)th pair to the (1,1) position.
                 //
                 Clacpy("Full", n, n, a, lda, work, n);
                 Clacpy("Full", n, n, b, ldb, &work[(n * n + 1) - 1], n);
@@ -187,16 +194,16 @@ void Ctgsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
                 //
                 if (ierr > 0) {
                     //
-                    //                 Ill-conditioned problem - swap rejected.
+                    // Ill-conditioned problem - swap rejected.
                     //
                     dif[ks - 1] = zero;
                 } else {
                     //
-                    //                 Reordering successful, solve generalized Sylvester
-                    //                 equation for R and L,
-                    //                            A22 * R - L * A11 = A12
-                    //                            B22 * R - L * B11 = B12,
-                    //                 and compute estimate of Difl[(A11,B11), (A22, B22)].
+                    // Reordering successful, solve generalized Sylvester
+                    // equation for R and L,
+                    // A22 * R - L * A11 = A12
+                    // B22 * R - L * B11 = B12,
+                    // and compute estimate of Difl[(A11,B11), (A22, B22)].
                     //
                     n1 = 1;
                     n2 = n - n1;
@@ -210,6 +217,6 @@ void Ctgsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
     }
     work[1 - 1] = lwmin;
     //
-    //     End of Ctgsna
+    // End of Ctgsna
     //
 }

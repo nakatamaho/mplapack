@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,31 +26,21 @@
  *
  */
 
+// Derived from LAPACK routine DLAKF2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
+#include <mplapack_matgen.h>
+
 void Rlakf2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, REAL *d, REAL *e, REAL *z, INTEGER const ldz) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  ====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Initialize Z
+    // Initialize Z
     //
     INTEGER mn = m * n;
     INTEGER mn2 = 2 * mn;
@@ -61,12 +51,9 @@ void Rlakf2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
     INTEGER l = 0;
     INTEGER i = 0;
     INTEGER j = 0;
-    INTEGER ldb = lda;
-    INTEGER ldd = lda;
-    INTEGER lde = lda;
     for (l = 1; l <= n; l = l + 1) {
         //
-        //        form kron(In, A)
+        // form kron(In, A)
         //
         for (i = 1; i <= m; i = i + 1) {
             for (j = 1; j <= m; j = j + 1) {
@@ -74,11 +61,11 @@ void Rlakf2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
             }
         }
         //
-        //        form kron(In, D)
+        // form kron(In, D)
         //
         for (i = 1; i <= m; i = i + 1) {
             for (j = 1; j <= m; j = j + 1) {
-                z[((ik + mn + i - 1) - 1) + ((ik + j - 1) - 1) * ldz] = d[(i - 1) + (j - 1) * ldd];
+                z[((ik + mn + i - 1) - 1) + ((ik + j - 1) - 1) * ldz] = d[(i - 1) + (j - 1) * lda];
             }
         }
         //
@@ -92,16 +79,16 @@ void Rlakf2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
         //
         for (j = 1; j <= n; j = j + 1) {
             //
-            //           form -kron(B', Im)
+            // form -kron(B', Im)
             //
             for (i = 1; i <= m; i = i + 1) {
-                z[((ik + i - 1) - 1) + ((jk + i - 1) - 1) * ldz] = -b[(j - 1) + (l - 1) * ldb];
+                z[((ik + i - 1) - 1) + ((jk + i - 1) - 1) * ldz] = -b[(j - 1) + (l - 1) * lda];
             }
             //
-            //           form -kron(E', Im)
+            // form -kron(E', Im)
             //
             for (i = 1; i <= m; i = i + 1) {
-                z[((ik + mn + i - 1) - 1) + ((jk + i - 1) - 1) * ldz] = -e[(j - 1) + (l - 1) * lde];
+                z[((ik + mn + i - 1) - 1) + ((jk + i - 1) - 1) * ldz] = -e[(j - 1) + (l - 1) * lda];
             }
             //
             jk += m;
@@ -110,6 +97,6 @@ void Rlakf2(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
         ik += m;
     }
     //
-    //     End of Rlakf2
+    // End of Rlakf2
     //
 }

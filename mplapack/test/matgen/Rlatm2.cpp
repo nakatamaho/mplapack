@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,45 +26,22 @@
  *
  */
 
+// Derived from LAPACK routine DLATM2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 #include <mplapack_matgen.h>
 
-REAL Rlatm2(INTEGER const m, INTEGER const n, INTEGER const i, INTEGER const j, INTEGER const kl, INTEGER const ku, INTEGER const idist, INTEGER *iseed, REAL *d, INTEGER const igrade, REAL *dl, REAL *dr, INTEGER const ipvtng, INTEGER *iwork, REAL const sparse) {
+REAL Rlatm2(INTEGER const m, INTEGER const n, INTEGER const i, INTEGER const j, INTEGER const kl, INTEGER const ku, INTEGER const idist, INTEGER (&iseed)[4], REAL *d, INTEGER const igrade, REAL *dl, REAL *dr, INTEGER const ipvtng, INTEGER *iwork, REAL const sparse) {
     REAL return_value = 0.0;
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //
-    //     ..
-    //
-    //     .. Array Arguments ..
-    //
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //
-    //     ..
-    //
-    //     .. Local Scalars ..
-    //
-    //     ..
-    //
-    //     .. External Functions ..
-    //
-    //     ..
-    //
-    //-----------------------------------------------------------------------
-    //
-    //     .. Executable Statements ..
-    //
-    //     Check for I and J in range
+    // Check for I and J in range
     //
     const REAL zero = 0.0;
     if (i < 1 || i > m || j < 1 || j > n) {
@@ -72,14 +49,14 @@ REAL Rlatm2(INTEGER const m, INTEGER const n, INTEGER const i, INTEGER const j, 
         return return_value;
     }
     //
-    //     Check for banding
+    // Check for banding
     //
     if (j > i + ku || j < i - kl) {
         return_value = zero;
         return return_value;
     }
     //
-    //     Check for sparsity
+    // Check for sparsity
     //
     if (sparse > zero) {
         if (Rlaran(iseed) < sparse) {
@@ -88,7 +65,7 @@ REAL Rlatm2(INTEGER const m, INTEGER const n, INTEGER const i, INTEGER const j, 
         }
     }
     //
-    //     Compute subscripts depending on IPVTNG
+    // Compute subscripts depending on IPVTNG
     //
     INTEGER isub = 0;
     INTEGER jsub = 0;
@@ -106,7 +83,7 @@ REAL Rlatm2(INTEGER const m, INTEGER const n, INTEGER const i, INTEGER const j, 
         jsub = iwork[j - 1];
     }
     //
-    //     Compute entry and grade it according to IGRADE
+    // Compute entry and grade it according to IGRADE
     //
     REAL temp = 0.0;
     if (isub == jsub) {
@@ -128,6 +105,6 @@ REAL Rlatm2(INTEGER const m, INTEGER const n, INTEGER const i, INTEGER const j, 
     return_value = temp;
     return return_value;
     //
-    //     End of Rlatm2
+    // End of Rlatm2
     //
 }

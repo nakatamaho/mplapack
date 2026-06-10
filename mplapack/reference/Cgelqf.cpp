@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,15 +26,23 @@
  *
  */
 
+// Derived from LAPACK routine ZGELQF.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Cgelqf(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *tau, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
+    // Test the input arguments
+    //
     info = 0;
+    INTEGER k = min(m, n);
     INTEGER nb = iMlaenv(1, "Cgelqf", " ", m, n, -1, -1);
-    INTEGER lwkopt = m * nb;
-    work[1 - 1] = lwkopt;
     bool lquery = (lwork == -1);
     if (m < 0) {
         info = -1;
@@ -42,21 +50,29 @@ void Cgelqf(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
         info = -2;
     } else if (lda < max((INTEGER)1, m)) {
         info = -4;
-    } else if (lwork < max((INTEGER)1, m) && !lquery) {
-        info = -7;
+    } else if (!lquery) {
+        if (lwork <= 0 || (n > 0 && lwork < max((INTEGER)1, m))) {
+            info = -7;
+        }
     }
+    INTEGER lwkopt = 0;
     if (info != 0) {
         Mxerbla("Cgelqf", -info);
         return;
     } else if (lquery) {
+        if (k == 0) {
+            lwkopt = 1;
+        } else {
+            lwkopt = m * nb;
+        }
+        work[1 - 1] = lwkopt;
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
-    INTEGER k = min(m, n);
     if (k == 0) {
-        work[1 - 1] = 1;
+        work[1 - 1] = 1.0;
         return;
     }
     //
@@ -66,19 +82,19 @@ void Cgelqf(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
     INTEGER ldwork = 0;
     if (nb > 1 && nb < k) {
         //
-        //        Determine when to cross over from blocked to unblocked code.
+        // Determine when to cross over from blocked to unblocked code.
         //
         nx = max((INTEGER)0, iMlaenv(3, "Cgelqf", " ", m, n, -1, -1));
         if (nx < k) {
             //
-            //           Determine if workspace is large enough for blocked code.
+            // Determine if workspace is large enough for blocked code.
             //
             ldwork = m;
             iws = ldwork * nb;
             if (lwork < iws) {
                 //
-                //              Not enough workspace to use optimal NB:  reduce NB and
-                //              determine the minimum value of NB.
+                // Not enough workspace to use optimal NB:  reduce NB and
+                // determine the minimum value of NB.
                 //
                 nb = lwork / ldwork;
                 nbmin = max((INTEGER)2, iMlaenv(2, "Cgelqf", " ", m, n, -1, -1));
@@ -91,23 +107,23 @@ void Cgelqf(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
     INTEGER iinfo = 0;
     if (nb >= nbmin && nb < k && nx < k) {
         //
-        //        Use blocked code initially
+        // Use blocked code initially
         //
         for (i = 1; i <= k - nx; i = i + nb) {
             ib = min(k - i + 1, nb);
             //
-            //           Compute the LQ factorization of the current block
-            //           A(i:i+ib-1,i:n)
+            // Compute the LQ factorization of the current block
+            // A(i:i+ib-1,i:n)
             //
             Cgelq2(ib, n - i + 1, &a[(i - 1) + (i - 1) * lda], lda, &tau[i - 1], work, iinfo);
             if (i + ib <= m) {
                 //
-                //              Form the triangular factor of the block reflector
-                //              H = H(i) H(i+1) . . . H(i+ib-1)
+                // Form the triangular factor of the block reflector
+                // H = H(i) H(i+1) . . . H(i+ib-1)
                 //
                 Clarft("Forward", "Rowwise", n - i + 1, ib, &a[(i - 1) + (i - 1) * lda], lda, &tau[i - 1], work, ldwork);
                 //
-                //              Apply H to A(i+ib:m,i:n) from the right
+                // Apply H to A(i+ib:m,i:n) from the right
                 //
                 Clarfb("Right", "No transpose", "Forward", "Rowwise", m - i - ib + 1, n - i + 1, ib, &a[(i - 1) + (i - 1) * lda], lda, work, ldwork, &a[((i + ib) - 1) + (i - 1) * lda], lda, &work[(ib + 1) - 1], ldwork);
             }
@@ -116,7 +132,7 @@ void Cgelqf(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
         i = 1;
     }
     //
-    //     Use unblocked code to factor the last or only block.
+    // Use unblocked code to factor the last or only block.
     //
     if (i <= k) {
         Cgelq2(m - i + 1, n - i + 1, &a[(i - 1) + (i - 1) * lda], lda, &tau[i - 1], work, iinfo);
@@ -124,6 +140,6 @@ void Cgelqf(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
     //
     work[1 - 1] = iws;
     //
-    //     End of Cgelqf
+    // End of Cgelqf
     //
 }

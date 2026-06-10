@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZSTEDC.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -53,30 +60,7 @@ void Cstedc(const char *compz, INTEGER const n, REAL *d, REAL *e, COMPLEX *z, IN
     INTEGER k = 0;
     REAL p = 0.0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     lquery = (lwork == -1 || lrwork == -1 || liwork == -1);
@@ -100,7 +84,7 @@ void Cstedc(const char *compz, INTEGER const n, REAL *d, REAL *e, COMPLEX *z, IN
     //
     if (info == 0) {
         //
-        //        Compute the workspace requirements
+        // Compute the workspace requirements
         //
         smlsiz = iMlaenv(9, "Cstedc", " ", 0, 0, 0, 0);
         if (n <= 1 || icompz == 0) {
@@ -113,22 +97,22 @@ void Cstedc(const char *compz, INTEGER const n, REAL *d, REAL *e, COMPLEX *z, IN
             lrwmin = 2 * (n - 1);
         } else if (icompz == 1) {
             lgn = castINTEGER(log(castREAL(n)) / log(two));
-            if ((INTEGER)pow((double)2, (double)lgn) < n) {
+            if ((INTEGER(1) << (lgn)) < n) {
                 lgn++;
             }
-            if ((INTEGER)pow((double)2, (double)lgn) < n) {
+            if ((INTEGER(1) << (lgn)) < n) {
                 lgn++;
             }
             lwmin = n * n;
-            lrwmin = 1 + 3 * n + 2 * n * lgn + 4 * n * n;
+            lrwmin = 1 + 3 * n + 2 * n * lgn + 4 * pow2(n);
             liwmin = 6 + 6 * n + 5 * n * lgn;
         } else if (icompz == 2) {
             lwmin = 1;
-            lrwmin = 1 + 4 * n + 2 * n * n;
+            lrwmin = 1 + 4 * n + 2 * pow2(n);
             liwmin = 3 + 5 * n;
         }
         work[1 - 1] = lwmin;
-        rwork[1 - 1] = lrwmin;
+        rwork[1 - 1] = castREAL(lrwmin);
         iwork[1 - 1] = liwmin;
         //
         if (lwork < lwmin && !lquery) {
@@ -147,36 +131,36 @@ void Cstedc(const char *compz, INTEGER const n, REAL *d, REAL *e, COMPLEX *z, IN
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
     }
     if (n == 1) {
         if (icompz != 0) {
-            z[(1 - 1)] = one;
+            z[0] = one;
         }
         return;
     }
     //
-    //     If the following conditional clause is removed, then the routine
-    //     will use the Divide and Conquer routine to compute only the
-    //     eigenvalues, which requires (3N + 3N**2) real workspace and
-    //     (2 + 5N + 2N lg(N)) integer workspace.
-    //     Since on many architectures Rsterf is much faster than any other
-    //     algorithm for finding eigenvalues only, it is used here
-    //     as the default. If the conditional clause is removed, then
-    //     information on the size of workspace needs to be changed.
+    // If the following conditional clause is removed, then the routine
+    // will use the Divide and Conquer routine to compute only the
+    // eigenvalues, which requires (3N + 3N**2) real workspace and
+    // (2 + 5N + 2N lg(N)) integer workspace.
+    // Since on many architectures Rsterf is much faster than any other
+    // algorithm for finding eigenvalues only, it is used here
+    // as the default. If the conditional clause is removed, then
+    // information on the size of workspace needs to be changed.
     //
-    //     If COMPZ = 'N', use Rsterf to compute the eigenvalues.
+    // If COMPZ = 'N', use Rsterf to compute the eigenvalues.
     //
     if (icompz == 0) {
         Rsterf(n, d, e, info);
         goto statement_70;
     }
     //
-    //     If N is smaller than the minimum divide size (SMLSIZ+1), then
-    //     solve the problem with another solver.
+    // If N is smaller than the minimum divide size (SMLSIZ+1), then
+    // solve the problem with another solver.
     //
     if (n <= smlsiz) {
         //
@@ -184,7 +168,7 @@ void Cstedc(const char *compz, INTEGER const n, REAL *d, REAL *e, COMPLEX *z, IN
         //
     } else {
         //
-        //        If COMPZ = 'I', we simply call Rstedc instead.
+        // If COMPZ = 'I', we simply call Rstedc instead.
         //
         if (icompz == 2) {
             Rlaset("Full", n, n, zero, one, rwork, n);
@@ -198,10 +182,10 @@ void Cstedc(const char *compz, INTEGER const n, REAL *d, REAL *e, COMPLEX *z, IN
             goto statement_70;
         }
         //
-        //        From now on, only option left to be handled is COMPZ = 'V',
-        //        i.e. ICOMPZ = 1.
+        // From now on, only option left to be handled is COMPZ = 'V',
+        // i.e. ICOMPZ = 1.
         //
-        //        Scale.
+        // Scale.
         //
         orgnrm = Rlanst("M", n, d, e);
         if (orgnrm == zero) {
@@ -212,16 +196,16 @@ void Cstedc(const char *compz, INTEGER const n, REAL *d, REAL *e, COMPLEX *z, IN
         //
         start = 1;
     //
-    //        while ( START <= N )
+    // while ( START <= N )
     //
     statement_30:
         if (start <= n) {
             //
-            //           Let FINISH be the position of the next subdiagonal entry
-            //           such that E( FINISH ) <= TINY or FINISH = N if no such
-            //           subdiagonal exists.  The matrix identified by the elements
-            //           between START and FINISH constitutes an independent
-            //           sub-problem.
+            // Let FINISH be the position of the next subdiagonal entry
+            // such that E( FINISH ) <= TINY or FINISH = N if no such
+            // subdiagonal exists.  The matrix identified by the elements
+            // between START and FINISH constitutes an independent
+            // sub-problem.
             //
             finish = start;
         statement_40:
@@ -233,12 +217,12 @@ void Cstedc(const char *compz, INTEGER const n, REAL *d, REAL *e, COMPLEX *z, IN
                 }
             }
             //
-            //           (Sub) Problem determined.  Compute its size and solve it.
+            // (Sub) Problem determined.  Compute its size and solve it.
             //
             m = finish - start + 1;
             if (m > smlsiz) {
                 //
-                //              Scale.
+                // Scale.
                 //
                 orgnrm = Rlanst("M", m, &d[start - 1], &e[start - 1]);
                 Rlascl("G", 0, 0, orgnrm, one, m, 1, &d[start - 1], m, info);
@@ -250,7 +234,7 @@ void Cstedc(const char *compz, INTEGER const n, REAL *d, REAL *e, COMPLEX *z, IN
                     goto statement_70;
                 }
                 //
-                //              Scale back.
+                // Scale back.
                 //
                 Rlascl("G", 0, 0, one, orgnrm, m, 1, &d[start - 1], m, info);
                 //
@@ -268,9 +252,9 @@ void Cstedc(const char *compz, INTEGER const n, REAL *d, REAL *e, COMPLEX *z, IN
             goto statement_30;
         }
         //
-        //        endwhile
+        // endwhile
         //
-        //        Use Selection Sort to minimize swaps of eigenvectors
+        // Use Selection Sort to minimize swaps of eigenvectors
         //
         for (ii = 2; ii <= n; ii = ii + 1) {
             i = ii - 1;
@@ -292,9 +276,9 @@ void Cstedc(const char *compz, INTEGER const n, REAL *d, REAL *e, COMPLEX *z, IN
 //
 statement_70:
     work[1 - 1] = lwmin;
-    rwork[1 - 1] = lrwmin;
+    rwork[1 - 1] = castREAL(lrwmin);
     iwork[1 - 1] = liwmin;
     //
-    //     End of Cstedc
+    // End of Cstedc
     //
 }

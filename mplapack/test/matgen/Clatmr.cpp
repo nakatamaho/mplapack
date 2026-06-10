@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,162 +26,145 @@
  *
  */
 
+// Derived from LAPACK routine ZLATMR.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
+
 #include <mplapack_matgen.h>
 
-void Clatmr(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, const char *sym, COMPLEX *d, INTEGER const mode, REAL const cond, COMPLEX const dmax, const char *rsign, const char *grade, COMPLEX *dl, INTEGER const model, REAL const condl, COMPLEX *dr, INTEGER const moder, REAL const condr, const char *pivtng, INTEGER *ipivot, INTEGER const kl, INTEGER const ku, REAL const sparse, REAL const anorm, const char *pack, COMPLEX *a, INTEGER const lda, INTEGER *iwork, INTEGER &info) {
+void Clatmr(INTEGER const m, INTEGER const n, fem::str_cref dist, INTEGER (&iseed)[4], fem::str_cref sym, COMPLEX *d, INTEGER const mode, REAL const cond, COMPLEX const dmax, fem::str_cref rsign, fem::str_cref grade, COMPLEX *dl, INTEGER const model, REAL const condl, COMPLEX *dr, INTEGER const moder, REAL const condr, fem::str_cref pivtng, INTEGER *ipivot, INTEGER const kl, INTEGER const ku, REAL const sparse, REAL const anorm, fem::str_cref pack, COMPLEX *a, INTEGER const lda, INTEGER *iwork, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     1)      Decode and Test the input parameters.
-    //             Initialize flags & seed.
+    // 1)      Decode and Test the input parameters.
+    // Initialize flags & seed.
     //
     info = 0;
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (m == 0 || n == 0) {
         return;
     }
     //
-    //     Decode DIST
+    // Decode DIST
     //
     INTEGER idist = 0;
-    if (Mlsame(dist, "U")) {
+    if (Mlsame(dist.elems(), "U")) {
         idist = 1;
-    } else if (Mlsame(dist, "S")) {
+    } else if (Mlsame(dist.elems(), "S")) {
         idist = 2;
-    } else if (Mlsame(dist, "N")) {
+    } else if (Mlsame(dist.elems(), "N")) {
         idist = 3;
-    } else if (Mlsame(dist, "D")) {
+    } else if (Mlsame(dist.elems(), "D")) {
         idist = 4;
     } else {
         idist = -1;
     }
     //
-    //     Decode SYM
+    // Decode SYM
     //
     INTEGER isym = 0;
-    if (Mlsame(sym, "H")) {
+    if (Mlsame(sym.elems(), "H")) {
         isym = 0;
-    } else if (Mlsame(sym, "N")) {
+    } else if (Mlsame(sym.elems(), "N")) {
         isym = 1;
-    } else if (Mlsame(sym, "S")) {
+    } else if (Mlsame(sym.elems(), "S")) {
         isym = 2;
     } else {
         isym = -1;
     }
     //
-    //     Decode RSIGN
+    // Decode RSIGN
     //
     INTEGER irsign = 0;
-    if (Mlsame(rsign, "F")) {
+    if (Mlsame(rsign.elems(), "F")) {
         irsign = 0;
-    } else if (Mlsame(rsign, "T")) {
+    } else if (Mlsame(rsign.elems(), "T")) {
         irsign = 1;
     } else {
         irsign = -1;
     }
     //
-    //     Decode PIVTNG
+    // Decode PIVTNG
     //
     INTEGER ipvtng = 0;
     INTEGER npvts = 0;
-    if (Mlsame(pivtng, "N")) {
+    if (Mlsame(pivtng.elems(), "N")) {
         ipvtng = 0;
-    } else if (Mlsame(pivtng, " ")) {
+    } else if (Mlsame(pivtng.elems(), " ")) {
         ipvtng = 0;
-    } else if (Mlsame(pivtng, "L")) {
+    } else if (Mlsame(pivtng.elems(), "L")) {
         ipvtng = 1;
         npvts = m;
-    } else if (Mlsame(pivtng, "R")) {
+    } else if (Mlsame(pivtng.elems(), "R")) {
         ipvtng = 2;
         npvts = n;
-    } else if (Mlsame(pivtng, "B")) {
+    } else if (Mlsame(pivtng.elems(), "B")) {
         ipvtng = 3;
         npvts = min(n, m);
-    } else if (Mlsame(pivtng, "F")) {
+    } else if (Mlsame(pivtng.elems(), "F")) {
         ipvtng = 3;
         npvts = min(n, m);
     } else {
         ipvtng = -1;
     }
     //
-    //     Decode GRADE
+    // Decode GRADE
     //
     INTEGER igrade = 0;
-    if (Mlsame(grade, "N")) {
+    if (Mlsame(grade.elems(), "N")) {
         igrade = 0;
-    } else if (Mlsame(grade, "L")) {
+    } else if (Mlsame(grade.elems(), "L")) {
         igrade = 1;
-    } else if (Mlsame(grade, "R")) {
+    } else if (Mlsame(grade.elems(), "R")) {
         igrade = 2;
-    } else if (Mlsame(grade, "B")) {
+    } else if (Mlsame(grade.elems(), "B")) {
         igrade = 3;
-    } else if (Mlsame(grade, "E")) {
+    } else if (Mlsame(grade.elems(), "E")) {
         igrade = 4;
-    } else if (Mlsame(grade, "H")) {
+    } else if (Mlsame(grade.elems(), "H")) {
         igrade = 5;
-    } else if (Mlsame(grade, "S")) {
+    } else if (Mlsame(grade.elems(), "S")) {
         igrade = 6;
     } else {
         igrade = -1;
     }
     //
-    //     Decode PACK
+    // Decode PACK
     //
     INTEGER ipack = 0;
-    if (Mlsame(pack, "N")) {
+    if (Mlsame(pack.elems(), "N")) {
         ipack = 0;
-    } else if (Mlsame(pack, "U")) {
+    } else if (Mlsame(pack.elems(), "U")) {
         ipack = 1;
-    } else if (Mlsame(pack, "L")) {
+    } else if (Mlsame(pack.elems(), "L")) {
         ipack = 2;
-    } else if (Mlsame(pack, "C")) {
+    } else if (Mlsame(pack.elems(), "C")) {
         ipack = 3;
-    } else if (Mlsame(pack, "R")) {
+    } else if (Mlsame(pack.elems(), "R")) {
         ipack = 4;
-    } else if (Mlsame(pack, "B")) {
+    } else if (Mlsame(pack.elems(), "B")) {
         ipack = 5;
-    } else if (Mlsame(pack, "Q")) {
+    } else if (Mlsame(pack.elems(), "Q")) {
         ipack = 6;
-    } else if (Mlsame(pack, "Z")) {
+    } else if (Mlsame(pack.elems(), "Z")) {
         ipack = 7;
     } else {
         ipack = -1;
     }
     //
-    //     Set certain internal parameters
+    // Set certain internal parameters
     //
     INTEGER mnmin = min(m, n);
     INTEGER kll = min(kl, m - 1);
     INTEGER kuu = min(ku, n - 1);
     //
-    //     If inv(DL) is used, check to see if DL has a zero entry.
+    // If inv(DL) is used, check to see if DL has a zero entry.
     //
     bool dzero = false;
     INTEGER i = 0;
@@ -194,7 +177,7 @@ void Clatmr(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
         }
     }
     //
-    //     Check values in IPIVOT
+    // Check values in IPIVOT
     //
     bool badpvt = false;
     INTEGER j = 0;
@@ -206,7 +189,7 @@ void Clatmr(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
         }
     }
     //
-    //     Set INFO if an error
+    // Set INFO if an error
     //
     const REAL one = 1.0;
     const REAL zero = 0.0;
@@ -259,14 +242,14 @@ void Clatmr(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
         return;
     }
     //
-    //     Decide if we can pivot consistently
+    // Decide if we can pivot consistently
     //
     bool fulbnd = false;
     if (kuu == n - 1 && kll == m - 1) {
         fulbnd = true;
     }
     //
-    //     Initialize random number generator
+    // Initialize random number generator
     //
     for (i = 1; i <= 4; i = i + 1) {
         iseed[i - 1] = mod(abs(iseed[i - 1]), 4096);
@@ -274,9 +257,9 @@ void Clatmr(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
     //
     iseed[4 - 1] = 2 * (iseed[4 - 1] / 2) + 1;
     //
-    //     2)      Set up D, DL, and DR, if indicated.
+    // 2)      Set up D, DL, and DR, if indicated.
     //
-    //             Compute D according to COND and MODE
+    // Compute D according to COND and MODE
     //
     Clatm1(mode, cond, irsign, idist, iseed, d, mnmin, info);
     if (info != 0) {
@@ -288,7 +271,7 @@ void Clatmr(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     if (mode != 0 && mode != -6 && mode != 6) {
         //
-        //        Scale by DMAX
+        // Scale by DMAX
         //
         temp = abs(d[1 - 1]);
         for (i = 2; i <= mnmin; i = i + 1) {
@@ -309,7 +292,7 @@ void Clatmr(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
         //
     }
     //
-    //     If matrix Hermitian, make D real
+    // If matrix Hermitian, make D real
     //
     if (isym == 0) {
         for (i = 1; i <= mnmin; i = i + 1) {
@@ -317,7 +300,7 @@ void Clatmr(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
         }
     }
     //
-    //     Compute DL if grading set
+    // Compute DL if grading set
     //
     if (igrade == 1 || igrade == 3 || igrade == 4 || igrade == 5 || igrade == 6) {
         Clatm1(model, condl, 0, idist, iseed, dl, m, info);
@@ -327,7 +310,7 @@ void Clatmr(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
         }
     }
     //
-    //     Compute DR if grading set
+    // Compute DR if grading set
     //
     if (igrade == 2 || igrade == 3) {
         Clatm1(moder, condr, 0, idist, iseed, dr, n, info);
@@ -337,7 +320,7 @@ void Clatmr(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
         }
     }
     //
-    //     3)     Generate IWORK if pivoting
+    // 3)     Generate IWORK if pivoting
     //
     INTEGER k = 0;
     if (ipvtng > 0) {
@@ -361,10 +344,10 @@ void Clatmr(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
         }
     }
     //
-    //     4)      Generate matrices for each kind of PACKing
-    //             Always sweep matrix columnwise (if symmetric, upper
-    //             half only) so that matrix generated does not depend
-    //             on PACK
+    // 4)      Generate matrices for each kind of PACKing
+    // Always sweep matrix columnwise (if symmetric, upper
+    // half only) so that matrix generated does not depend
+    // on PACK
     //
     INTEGER isub = 0;
     INTEGER jsub = 0;
@@ -375,8 +358,8 @@ void Clatmr(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
     INTEGER iisub = 0;
     if (fulbnd) {
         //
-        //        Use Clatm3 so matrices generated with differing PIVOTing only
-        //        differ only in the order of their rows and/or columns.
+        // Use Clatm3 so matrices generated with differing PIVOTing only
+        // differ only in the order of their rows and/or columns.
         //
         if (ipack == 0) {
             if (isym == 0) {
@@ -446,14 +429,14 @@ void Clatmr(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                 for (i = 1; i <= j; i = i + 1) {
                     ctemp = Clatm3(m, n, i, j, isub, jsub, kl, ku, idist, iseed, d, igrade, dl, dr, ipvtng, iwork, sparse);
                     //
-                    //                 Compute K = location of (ISUB,JSUB) entry in packed
-                    //                 array
+                    // Compute K = location of (ISUB,JSUB) entry in packed
+                    // array
                     //
                     mnsub = min(isub, jsub);
                     mxsub = max(isub, jsub);
                     k = mxsub * (mxsub - 1) / 2 + mnsub;
                     //
-                    //                 Convert K to (IISUB,JJSUB) location
+                    // Convert K to (IISUB,JJSUB) location
                     //
                     jjsub = (k - 1) / lda + 1;
                     iisub = k - lda * (jjsub - 1);
@@ -472,7 +455,7 @@ void Clatmr(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                 for (i = 1; i <= j; i = i + 1) {
                     ctemp = Clatm3(m, n, i, j, isub, jsub, kl, ku, idist, iseed, d, igrade, dl, dr, ipvtng, iwork, sparse);
                     //
-                    //                 Compute K = location of (I,J) entry in packed array
+                    // Compute K = location of (I,J) entry in packed array
                     //
                     mnsub = min(isub, jsub);
                     mxsub = max(isub, jsub);
@@ -482,7 +465,7 @@ void Clatmr(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                         k = n * (n + 1) / 2 - (n - mnsub + 1) * (n - mnsub + 2) / 2 + mxsub - mnsub + 1;
                     }
                     //
-                    //                 Convert K to (IISUB,JJSUB) location
+                    // Convert K to (IISUB,JJSUB) location
                     //
                     jjsub = (k - 1) / lda + 1;
                     iisub = k - lda * (jjsub - 1);
@@ -567,7 +550,7 @@ void Clatmr(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
         //
     } else {
         //
-        //        Use Clatm2
+        // Use Clatm2
         //
         if (ipack == 0) {
             if (isym == 0) {
@@ -639,7 +622,7 @@ void Clatmr(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                 for (j = 1; j <= n; j = j + 1) {
                     for (i = 1; i <= j; i = i + 1) {
                         //
-                        //                    Compute K = location of (I,J) entry in packed array
+                        // Compute K = location of (I,J) entry in packed array
                         //
                         if (i == 1) {
                             k = j;
@@ -647,7 +630,7 @@ void Clatmr(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
                             k = n * (n + 1) / 2 - (n - i + 1) * (n - i + 2) / 2 + j - i + 1;
                         }
                         //
-                        //                    Convert K to (ISUB,JSUB) location
+                        // Convert K to (ISUB,JSUB) location
                         //
                         jsub = (k - 1) / lda + 1;
                         isub = k - lda * (jsub - 1);
@@ -727,7 +710,7 @@ void Clatmr(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
         //
     }
     //
-    //     5)      Scaling the norm
+    // 5)      Scaling the norm
     //
     REAL tempa[1];
     REAL onorm = 0.0;
@@ -753,14 +736,14 @@ void Clatmr(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
         //
         if (anorm > zero && onorm == zero) {
             //
-            //           Desired scaling impossible
+            // Desired scaling impossible
             //
             info = 5;
             return;
             //
         } else if ((anorm > one && onorm < one) || (anorm < one && onorm > one)) {
             //
-            //           Scale carefully to avoid over / underflow
+            // Scale carefully to avoid over / underflow
             //
             if (ipack <= 2) {
                 for (j = 1; j <= n; j = j + 1) {
@@ -784,7 +767,7 @@ void Clatmr(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
             //
         } else {
             //
-            //           Scale straightforwardly
+            // Scale straightforwardly
             //
             if (ipack <= 2) {
                 for (j = 1; j <= n; j = j + 1) {
@@ -806,6 +789,6 @@ void Clatmr(INTEGER const m, INTEGER const n, const char *dist, INTEGER *iseed, 
         //
     }
     //
-    //     End of Clatmr
+    // End of Clatmr
     //
 }

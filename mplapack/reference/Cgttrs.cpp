@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,14 +26,21 @@
  *
  */
 
+// Derived from LAPACK routine ZGTTRS.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Cgttrs(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *dl, COMPLEX *d, COMPLEX *du, COMPLEX *du2, INTEGER *ipiv, COMPLEX *b, INTEGER const ldb, INTEGER &info) {
     //
     info = 0;
-    bool notran = (Mlsame(trans, "N"));
-    if (!notran && !(Mlsame(trans, "T")) && !(Mlsame(trans, "C"))) {
+    bool notran = Mlsame(trans, "N");
+    if (!notran && !Mlsame(trans, "T") && !Mlsame(trans, "C")) {
         info = -1;
     } else if (n < 0) {
         info = -2;
@@ -47,13 +54,13 @@ void Cgttrs(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *dl,
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0 || nrhs == 0) {
         return;
     }
     //
-    //     Decode TRANS
+    // Decode TRANS
     //
     INTEGER itrans = 0;
     if (notran) {
@@ -64,13 +71,13 @@ void Cgttrs(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *dl,
         itrans = 2;
     }
     //
-    //     Determine the number of right-hand sides to solve at a time.
+    // Determine the number of right-hand sides to solve at a time.
     //
     INTEGER nb = 0;
     if (nrhs == 1) {
         nb = 1;
     } else {
-        nb = max({(INTEGER)1, iMlaenv(1, "Cgttrs", trans, n, nrhs, -1, -1)});
+        nb = max((INTEGER)1, iMlaenv(1, "Cgttrs", trans, n, nrhs, -1, -1));
     }
     //
     INTEGER j = 0;
@@ -84,6 +91,6 @@ void Cgttrs(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *dl,
         }
     }
     //
-    //     End of Cgttrs
+    // End of Cgttrs
     //
 }

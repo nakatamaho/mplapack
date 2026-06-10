@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZPTT01.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -38,28 +45,7 @@ using fem::common;
 
 void Cptt01(INTEGER const n, REAL *d, COMPLEX *e, REAL *df, COMPLEX *ef, COMPLEX *work, REAL &resid) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Quick return if possible
+    // Quick return if possible
     //
     const REAL zero = 0.0;
     if (n <= 0) {
@@ -69,7 +55,7 @@ void Cptt01(INTEGER const n, REAL *d, COMPLEX *e, REAL *df, COMPLEX *ef, COMPLEX
     //
     REAL eps = Rlamch("Epsilon");
     //
-    //     Construct the difference L*D*L' - A.
+    // Construct the difference L*D*L' - A.
     //
     work[1 - 1] = df[1 - 1] - d[1 - 1];
     INTEGER i = 0;
@@ -80,7 +66,7 @@ void Cptt01(INTEGER const n, REAL *d, COMPLEX *e, REAL *df, COMPLEX *ef, COMPLEX
         work[(1 + i) - 1] = de * conj(ef[i - 1]) + df[(i + 1) - 1] - d[(i + 1) - 1];
     }
     //
-    //     Compute the 1-norms of the tridiagonal matrices A and WORK.
+    // Compute the 1-norms of the tridiagonal matrices A and WORK.
     //
     REAL anorm = 0.0;
     if (n == 1) {
@@ -90,12 +76,12 @@ void Cptt01(INTEGER const n, REAL *d, COMPLEX *e, REAL *df, COMPLEX *ef, COMPLEX
         anorm = max(d[1 - 1] + abs(e[1 - 1]), d[n - 1] + abs(e[(n - 1) - 1]));
         resid = max(abs(work[1 - 1]) + abs(work[(n + 1) - 1]), abs(work[n - 1]) + abs(work[(2 * n - 1) - 1]));
         for (i = 2; i <= n - 1; i = i + 1) {
-            anorm = max(anorm, REAL(d[i - 1] + abs(e[i - 1]) + abs(e[(i - 1) - 1])));
-            resid = max(resid, REAL(abs(work[i - 1]) + abs(work[(n + i - 1) - 1]) + abs(work[(n + i) - 1])));
+            anorm = max(anorm, d[i - 1] + abs(e[i - 1]) + abs(e[(i - 1) - 1]));
+            resid = max(resid, abs(work[i - 1]) + abs(work[(n + i - 1) - 1]) + abs(work[(n + i) - 1]));
         }
     }
     //
-    //     Compute norm(L*D*L' - A) / (n * norm(A) * EPS)
+    // Compute norm(L*D*L' - A) / (n * norm(A) * EPS)
     //
     const REAL one = 1.0;
     if (anorm <= zero) {
@@ -106,6 +92,6 @@ void Cptt01(INTEGER const n, REAL *d, COMPLEX *e, REAL *df, COMPLEX *ef, COMPLEX
         resid = ((resid / castREAL(n)) / anorm) / eps;
     }
     //
-    //     End of Cptt01
+    // End of Cptt01
     //
 }

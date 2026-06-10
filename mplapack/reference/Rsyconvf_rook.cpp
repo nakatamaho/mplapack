@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,30 +26,17 @@
  *
  */
 
+// Derived from LAPACK routine DSYCONVF_ROOK.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rsyconvf_rook(const char *uplo, const char *way, INTEGER const n, REAL *a, INTEGER const lda, REAL *e, INTEGER *ipiv, INTEGER &info) {
-    //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. External Functions ..
-    //
-    //     .. External Subroutines ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Executable Statements ..
     //
     info = 0;
     bool upper = Mlsame(uplo, "U");
@@ -69,7 +56,7 @@ void Rsyconvf_rook(const char *uplo, const char *way, INTEGER const n, REAL *a, 
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
@@ -81,16 +68,16 @@ void Rsyconvf_rook(const char *uplo, const char *way, INTEGER const n, REAL *a, 
     INTEGER ip2 = 0;
     if (upper) {
         //
-        //        Begin A is UPPER
+        // Begin A is UPPER
         //
         if (convert) {
             //
-            //           Convert A (A is upper)
+            // Convert A (A is upper)
             //
-            //           Convert VALUE
+            // Convert VALUE
             //
-            //           Assign superdiagonal entries of D to array E and zero out
-            //           corresponding entries in input storage A
+            // Assign superdiagonal entries of D to array E and zero out
+            // corresponding entries in input storage A
             //
             i = n;
             e[1 - 1] = zero;
@@ -106,18 +93,18 @@ void Rsyconvf_rook(const char *uplo, const char *way, INTEGER const n, REAL *a, 
                 i = i - 1;
             }
             //
-            //           Convert PERMUTATIONS
+            // Convert PERMUTATIONS
             //
-            //           Apply permutations to submatrices of upper part of A
-            //           in factorization order where i decreases from N to 1
+            // Apply permutations to submatrices of upper part of A
+            // in factorization order where i decreases from N to 1
             //
             i = n;
             while (i >= 1) {
                 if (ipiv[i - 1] > 0) {
                     //
-                    //                 1-by-1 pivot interchange
+                    // 1-by-1 pivot interchange
                     //
-                    //                 Swap rows i and IPIV(i) in A(1:i,N-i:N)
+                    // Swap rows i and IPIV(i) in A(1:i,N-i:N)
                     //
                     ip = ipiv[i - 1];
                     if (i < n) {
@@ -128,10 +115,10 @@ void Rsyconvf_rook(const char *uplo, const char *way, INTEGER const n, REAL *a, 
                     //
                 } else {
                     //
-                    //                 2-by-2 pivot interchange
+                    // 2-by-2 pivot interchange
                     //
-                    //                 Swap rows i and IPIV(i) and i-1 and IPIV(i-1)
-                    //                 in A(1:i,N-i:N)
+                    // Swap rows i and IPIV(i) and i-1 and IPIV(i-1)
+                    // in A(1:i,N-i:N)
                     //
                     ip = -ipiv[i - 1];
                     ip2 = -ipiv[(i - 1) - 1];
@@ -151,20 +138,20 @@ void Rsyconvf_rook(const char *uplo, const char *way, INTEGER const n, REAL *a, 
             //
         } else {
             //
-            //           Revert A (A is upper)
+            // Revert A (A is upper)
             //
-            //           Revert PERMUTATIONS
+            // Revert PERMUTATIONS
             //
-            //           Apply permutations to submatrices of upper part of A
-            //           in reverse factorization order where i increases from 1 to N
+            // Apply permutations to submatrices of upper part of A
+            // in reverse factorization order where i increases from 1 to N
             //
             i = 1;
             while (i <= n) {
                 if (ipiv[i - 1] > 0) {
                     //
-                    //                 1-by-1 pivot interchange
+                    // 1-by-1 pivot interchange
                     //
-                    //                 Swap rows i and IPIV(i) in A(1:i,N-i:N)
+                    // Swap rows i and IPIV(i) in A(1:i,N-i:N)
                     //
                     ip = ipiv[i - 1];
                     if (i < n) {
@@ -175,10 +162,10 @@ void Rsyconvf_rook(const char *uplo, const char *way, INTEGER const n, REAL *a, 
                     //
                 } else {
                     //
-                    //                 2-by-2 pivot interchange
+                    // 2-by-2 pivot interchange
                     //
-                    //                 Swap rows i-1 and IPIV(i-1) and i and IPIV(i)
-                    //                 in A(1:i,N-i:N)
+                    // Swap rows i-1 and IPIV(i-1) and i and IPIV(i)
+                    // in A(1:i,N-i:N)
                     //
                     i++;
                     ip = -ipiv[i - 1];
@@ -196,9 +183,9 @@ void Rsyconvf_rook(const char *uplo, const char *way, INTEGER const n, REAL *a, 
                 i++;
             }
             //
-            //           Revert VALUE
-            //           Assign superdiagonal entries of D from array E to
-            //           superdiagonal entries of A.
+            // Revert VALUE
+            // Assign superdiagonal entries of D from array E to
+            // superdiagonal entries of A.
             //
             i = n;
             while (i > 1) {
@@ -209,21 +196,21 @@ void Rsyconvf_rook(const char *uplo, const char *way, INTEGER const n, REAL *a, 
                 i = i - 1;
             }
             //
-            //        End A is UPPER
+            // End A is UPPER
             //
         }
         //
     } else {
         //
-        //        Begin A is LOWER
+        // Begin A is LOWER
         //
         if (convert) {
             //
-            //           Convert A (A is lower)
+            // Convert A (A is lower)
             //
-            //           Convert VALUE
-            //           Assign subdiagonal entries of D to array E and zero out
-            //           corresponding entries in input storage A
+            // Convert VALUE
+            // Assign subdiagonal entries of D to array E and zero out
+            // corresponding entries in input storage A
             //
             i = 1;
             e[n - 1] = zero;
@@ -239,18 +226,18 @@ void Rsyconvf_rook(const char *uplo, const char *way, INTEGER const n, REAL *a, 
                 i++;
             }
             //
-            //           Convert PERMUTATIONS
+            // Convert PERMUTATIONS
             //
-            //           Apply permutations to submatrices of lower part of A
-            //           in factorization order where i increases from 1 to N
+            // Apply permutations to submatrices of lower part of A
+            // in factorization order where i increases from 1 to N
             //
             i = 1;
             while (i <= n) {
                 if (ipiv[i - 1] > 0) {
                     //
-                    //                 1-by-1 pivot interchange
+                    // 1-by-1 pivot interchange
                     //
-                    //                 Swap rows i and IPIV(i) in A(i:N,1:i-1)
+                    // Swap rows i and IPIV(i) in A(i:N,1:i-1)
                     //
                     ip = ipiv[i - 1];
                     if (i > 1) {
@@ -261,10 +248,10 @@ void Rsyconvf_rook(const char *uplo, const char *way, INTEGER const n, REAL *a, 
                     //
                 } else {
                     //
-                    //                 2-by-2 pivot interchange
+                    // 2-by-2 pivot interchange
                     //
-                    //                 Swap rows i and IPIV(i) and i+1 and IPIV(i+1)
-                    //                 in A(i:N,1:i-1)
+                    // Swap rows i and IPIV(i) and i+1 and IPIV(i+1)
+                    // in A(i:N,1:i-1)
                     //
                     ip = -ipiv[i - 1];
                     ip2 = -ipiv[(i + 1) - 1];
@@ -284,20 +271,20 @@ void Rsyconvf_rook(const char *uplo, const char *way, INTEGER const n, REAL *a, 
             //
         } else {
             //
-            //           Revert A (A is lower)
+            // Revert A (A is lower)
             //
-            //           Revert PERMUTATIONS
+            // Revert PERMUTATIONS
             //
-            //           Apply permutations to submatrices of lower part of A
-            //           in reverse factorization order where i decreases from N to 1
+            // Apply permutations to submatrices of lower part of A
+            // in reverse factorization order where i decreases from N to 1
             //
             i = n;
             while (i >= 1) {
                 if (ipiv[i - 1] > 0) {
                     //
-                    //                 1-by-1 pivot interchange
+                    // 1-by-1 pivot interchange
                     //
-                    //                 Swap rows i and IPIV(i) in A(i:N,1:i-1)
+                    // Swap rows i and IPIV(i) in A(i:N,1:i-1)
                     //
                     ip = ipiv[i - 1];
                     if (i > 1) {
@@ -308,10 +295,10 @@ void Rsyconvf_rook(const char *uplo, const char *way, INTEGER const n, REAL *a, 
                     //
                 } else {
                     //
-                    //                 2-by-2 pivot interchange
+                    // 2-by-2 pivot interchange
                     //
-                    //                 Swap rows i+1 and IPIV(i+1) and i and IPIV(i)
-                    //                 in A(i:N,1:i-1)
+                    // Swap rows i+1 and IPIV(i+1) and i and IPIV(i)
+                    // in A(i:N,1:i-1)
                     //
                     i = i - 1;
                     ip = -ipiv[i - 1];
@@ -329,9 +316,9 @@ void Rsyconvf_rook(const char *uplo, const char *way, INTEGER const n, REAL *a, 
                 i = i - 1;
             }
             //
-            //           Revert VALUE
-            //           Assign subdiagonal entries of D from array E to
-            //           subgiagonal entries of A.
+            // Revert VALUE
+            // Assign subdiagonal entries of D from array E to
+            // subdiagonal entries of A.
             //
             i = 1;
             while (i <= n - 1) {
@@ -344,10 +331,10 @@ void Rsyconvf_rook(const char *uplo, const char *way, INTEGER const n, REAL *a, 
             //
         }
         //
-        //        End A is LOWER
+        // End A is LOWER
         //
     }
     //
-    //     End of Rsyconvf_rook
+    // End of Rsyconvf_rook
     //
 }

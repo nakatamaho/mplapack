@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZHEGVX.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Chegvx(INTEGER const itype, const char *jobz, const char *range, const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, REAL const vl, REAL const vu, INTEGER const il, INTEGER const iu, REAL const abstol, INTEGER &m, REAL *w, COMPLEX *z, INTEGER const ldz, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER *iwork, INTEGER *ifail, INTEGER &info) {
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     bool wantz = Mlsame(jobz, "V");
     bool upper = Mlsame(uplo, "U");
@@ -93,14 +100,14 @@ void Chegvx(INTEGER const itype, const char *jobz, const char *range, const char
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     m = 0;
     if (n == 0) {
         return;
     }
     //
-    //     Form a Cholesky factorization of B.
+    // Form a Cholesky factorization of B.
     //
     Cpotrf(uplo, n, b, ldb, info);
     if (info != 0) {
@@ -108,7 +115,7 @@ void Chegvx(INTEGER const itype, const char *jobz, const char *range, const char
         return;
     }
     //
-    //     Transform problem to standard eigenvalue problem and solve.
+    // Transform problem to standard eigenvalue problem and solve.
     //
     Chegst(itype, uplo, n, a, lda, b, ldb, info);
     Cheevx(jobz, range, uplo, n, a, lda, vl, vu, il, iu, abstol, m, w, z, ldz, work, lwork, rwork, iwork, ifail, info);
@@ -117,15 +124,15 @@ void Chegvx(INTEGER const itype, const char *jobz, const char *range, const char
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     if (wantz) {
         //
-        //        Backtransform eigenvectors to the original problem.
+        // Backtransform eigenvectors to the original problem.
         //
         if (info > 0) {
             m = info - 1;
         }
         if (itype == 1 || itype == 2) {
             //
-            //           For A*x=(lambda)*B*x and A*B*x=(lambda)*x;
-            //           backtransform eigenvectors: x = inv(L)**H *y or inv(U)*y
+            // For A*x=(lambda)*B*x and A*B*x=(lambda)*x;
+            // backtransform eigenvectors: x = inv(L)**H *y or inv(U)*y
             //
             if (upper) {
                 trans = 'N';
@@ -137,8 +144,8 @@ void Chegvx(INTEGER const itype, const char *jobz, const char *range, const char
             //
         } else if (itype == 3) {
             //
-            //           For B*A*x=(lambda)*x;
-            //           backtransform eigenvectors: x = L*y or U**H *y
+            // For B*A*x=(lambda)*x;
+            // backtransform eigenvectors: x = L*y or U**H *y
             //
             if (upper) {
                 trans = 'C';
@@ -150,10 +157,10 @@ void Chegvx(INTEGER const itype, const char *jobz, const char *range, const char
         }
     }
     //
-    //     Set WORK(1) to optimal complex workspace size.
+    // Set WORK(1) to optimal complex workspace size.
     //
     work[1 - 1] = lwkopt;
     //
-    //     End of Chegvx
+    // End of Chegvx
     //
 }

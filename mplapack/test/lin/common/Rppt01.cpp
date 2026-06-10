@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DPPT01.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,32 +43,9 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Rppt01(const char *uplo, INTEGER const n, REAL *a, REAL *afac, REAL *rwork, REAL &resid) {
+void Rppt01(fem::str_cref uplo, INTEGER const n, REAL *a, REAL *afac, REAL *rwork, REAL &resid) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Quick exit if N = 0
+    // Quick exit if N = 0
     //
     const REAL zero = 0.0;
     if (n <= 0) {
@@ -69,31 +53,31 @@ void Rppt01(const char *uplo, INTEGER const n, REAL *a, REAL *afac, REAL *rwork,
         return;
     }
     //
-    //     Exit with RESID = 1/EPS if ANORM = 0.
+    // Exit with RESID = 1/EPS if ANORM = 0.
     //
     REAL eps = Rlamch("Epsilon");
-    REAL anorm = Rlansp("1", uplo, n, a, rwork);
+    REAL anorm = Rlansp("1", uplo.elems(), n, a, rwork);
     const REAL one = 1.0;
     if (anorm <= zero) {
         resid = one / eps;
         return;
     }
     //
-    //     Compute the product U'*U, overwriting U.
+    // Compute the product U'*U, overwriting U.
     //
     INTEGER kc = 0;
     INTEGER k = 0;
     REAL t = 0.0;
-    if (Mlsame(uplo, "U")) {
+    if (Mlsame(uplo.elems(), "U")) {
         kc = (n * (n - 1)) / 2 + 1;
         for (k = n; k >= 1; k = k - 1) {
             //
-            //           Compute the (K,K) element of the result.
+            // Compute the (K,K) element of the result.
             //
             t = Rdot(k, &afac[kc - 1], 1, &afac[kc - 1], 1);
             afac[(kc + k - 1) - 1] = t;
             //
-            //           Compute the rest of column K.
+            // Compute the rest of column K.
             //
             if (k > 1) {
                 Rtpmv("Upper", "Transpose", "Non-unit", k - 1, afac, &afac[kc - 1], 1);
@@ -101,20 +85,20 @@ void Rppt01(const char *uplo, INTEGER const n, REAL *a, REAL *afac, REAL *rwork,
             }
         }
         //
-        //     Compute the product L*L', overwriting L.
+        // Compute the product L*L', overwriting L.
         //
     } else {
         kc = (n * (n + 1)) / 2;
         for (k = n; k >= 1; k = k - 1) {
             //
-            //           Add a multiple of column K of the factor L to each of
-            //           columns K+1 through N.
+            // Add a multiple of column K of the factor L to each of
+            // columns K+1 through N.
             //
             if (k < n) {
                 Rspr("Lower", n - k, one, &afac[(kc + 1) - 1], 1, &afac[(kc + n - k + 1) - 1]);
             }
             //
-            //           Scale column K by the diagonal element.
+            // Scale column K by the diagonal element.
             //
             t = afac[kc - 1];
             Rscal(n - k + 1, t, &afac[kc - 1], 1);
@@ -123,7 +107,7 @@ void Rppt01(const char *uplo, INTEGER const n, REAL *a, REAL *afac, REAL *rwork,
         }
     }
     //
-    //     Compute the difference  L*L' - A (or U'*U - A).
+    // Compute the difference  L*L' - A (or U'*U - A).
     //
     INTEGER npp = n * (n + 1) / 2;
     INTEGER i = 0;
@@ -131,12 +115,12 @@ void Rppt01(const char *uplo, INTEGER const n, REAL *a, REAL *afac, REAL *rwork,
         afac[i - 1] = afac[i - 1] - a[i - 1];
     }
     //
-    //     Compute norm( L*U - A ) / ( N * norm(A) * EPS )
+    // Compute norm( L*U - A ) / ( N * norm(A) * EPS )
     //
-    resid = Rlansp("1", uplo, n, afac, rwork);
+    resid = Rlansp("1", uplo.elems(), n, afac, rwork);
     //
     resid = ((resid / castREAL(n)) / anorm) / eps;
     //
-    //     End of Rppt01
+    // End of Rppt01
     //
 }

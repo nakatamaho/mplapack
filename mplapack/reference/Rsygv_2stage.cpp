@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DSYGV_2STAGE.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rsygv_2stage(INTEGER const itype, const char *jobz, const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *w, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     bool wantz = Mlsame(jobz, "V");
     bool upper = Mlsame(uplo, "U");
@@ -77,13 +84,13 @@ void Rsygv_2stage(INTEGER const itype, const char *jobz, const char *uplo, INTEG
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
     }
     //
-    //     Form a Cholesky factorization of B.
+    // Form a Cholesky factorization of B.
     //
     Rpotrf(uplo, n, b, ldb, info);
     if (info != 0) {
@@ -91,7 +98,7 @@ void Rsygv_2stage(INTEGER const itype, const char *jobz, const char *uplo, INTEG
         return;
     }
     //
-    //     Transform problem to standard eigenvalue problem and solve.
+    // Transform problem to standard eigenvalue problem and solve.
     //
     Rsygst(itype, uplo, n, a, lda, b, ldb, info);
     Rsyev_2stage(jobz, uplo, n, a, lda, w, work, lwork, info);
@@ -101,7 +108,7 @@ void Rsygv_2stage(INTEGER const itype, const char *jobz, const char *uplo, INTEG
     const REAL one = 1.0;
     if (wantz) {
         //
-        //        Backtransform eigenvectors to the original problem.
+        // Backtransform eigenvectors to the original problem.
         //
         neig = n;
         if (info > 0) {
@@ -109,8 +116,8 @@ void Rsygv_2stage(INTEGER const itype, const char *jobz, const char *uplo, INTEG
         }
         if (itype == 1 || itype == 2) {
             //
-            //           For A*x=(lambda)*B*x and A*B*x=(lambda)*x;
-            //           backtransform eigenvectors: x = inv(L)**T*y or inv(U)*y
+            // For A*x=(lambda)*B*x and A*B*x=(lambda)*x;
+            // backtransform eigenvectors: x = inv(L)**T*y or inv(U)*y
             //
             if (upper) {
                 trans = 'N';
@@ -122,8 +129,8 @@ void Rsygv_2stage(INTEGER const itype, const char *jobz, const char *uplo, INTEG
             //
         } else if (itype == 3) {
             //
-            //           For B*A*x=(lambda)*x;
-            //           backtransform eigenvectors: x = L*y or U**T*y
+            // For B*A*x=(lambda)*x;
+            // backtransform eigenvectors: x = L*y or U**T*y
             //
             if (upper) {
                 trans = 'T';
@@ -137,6 +144,6 @@ void Rsygv_2stage(INTEGER const itype, const char *jobz, const char *uplo, INTEG
     //
     work[1 - 1] = lwmin;
     //
-    //     End of Rsygv_2stage
+    // End of Rsygv_2stage
     //
 }

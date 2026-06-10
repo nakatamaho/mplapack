@@ -1,0 +1,174 @@
+=== precision: double ===
+
+ Tests of the Generalized Nonsymmetric Eigenvalue Problem Driver Rgges
+ Tests of the Multiple precision version of LAPACK 2.2.0
+ Based on the original LAPACK VERSION 3.12.1
+
+The following parameter values will be used:
+
+ The following parameter values will be used:
+    M:         2     6    10    12    20
+    N:         2     6    10    12    20
+    NB:        1
+    NBMIN:     1
+    NX:        1
+    NS:        2
+    MAXB:      1
+ 
+ Relative machine underflow is taken to be    0.222507-307
+ Relative machine overflow  is taken to be    0.179769+309
+ Relative machine precision is taken to be    0.111022D-15
+
+ Routines pass computational tests if test ratio is less than   10.00
+
+ 
+ DGS routines passed the tests of the error exits (108 tests done)
+
+ All tests for DGS drivers  passed the threshold (   1560 tests run)
+
+ All tests for DGS drivers  passed the threshold (   1560 tests run)
+
+ -----------------------------------------------------------------------
+
+ Tests of the Generalized Nonsymmetric Eigenvalue Problem Driver Rggev
+ Tests of the Multiple precision version of LAPACK 2.2.0
+ Based on the original LAPACK VERSION 3.12.1
+
+The following parameter values will be used:
+
+ The following parameter values will be used:
+    M:         2     6     8    10    15    20
+    N:         2     6     8    10    15    20
+    NB:        1
+    NBMIN:     1
+    NX:        1
+    NS:        2
+    MAXB:      1
+ 
+ Relative machine underflow is taken to be    0.222507-307
+ Relative machine overflow  is taken to be    0.179769+309
+ Relative machine precision is taken to be    0.111022D-15
+
+ Routines pass computational tests if test ratio is less than   10.00
+
+ 
+ DGV routines passed the tests of the error exits (108 tests done)
+
+ All tests for DGV drivers  passed the threshold (   1092 tests run)
+
+ All tests for DGV drivers  passed the threshold (   1092 tests run)
+
+ -----------------------------------------------------------------------
+
+ Tests of the Generalized Nonsymmetric Eigenvalue Problem Expert Driver Rggesx
+ Tests of the Multiple precision version of LAPACK 2.2.0
+ Based on the original LAPACK VERSION 3.12.1
+
+The following parameter values will be used:
+
+ The following parameter values will be used:
+    N:         2
+    NB:        1
+    NBMIN:     1
+    NX:        1
+    NS:        2
+    MAXB:      1
+ 
+ Relative machine underflow is taken to be    0.222507-307
+ Relative machine overflow  is taken to be    0.179769+309
+ Relative machine precision is taken to be    0.111022D-15
+
+ Routines pass computational tests if test ratio is less than   10.00
+
+ 
+ DGX routines passed the tests of the error exits (108 tests done)
+
+ All tests for DGX drivers  passed the threshold (    150 tests run)
+
+ -----------------------------------------------------------------------
+
+ Tests of the Generalized Nonsymmetric Eigenvalue Problem Expert Driver Rggesx
+ Tests of the Multiple precision version of LAPACK 2.2.0
+ Based on the original LAPACK VERSION 3.12.1
+
+The following parameter values will be used:
+
+ The following parameter values will be used:
+    N:         0
+    NB:        1
+    NBMIN:     1
+    NX:        1
+    NS:        2
+    MAXB:      1
+ 
+ Relative machine underflow is taken to be    0.222507-307
+ Relative machine overflow  is taken to be    0.179769+309
+ Relative machine precision is taken to be    0.111022D-15
+
+ Routines pass computational tests if test ratio is less than   10.00
+
+ 
+ DGX routines passed the tests of the error exits (108 tests done)
+
+ All tests for DGX drivers  passed the threshold (     20 tests run)
+
+ -----------------------------------------------------------------------
+
+ Tests of the Generalized Nonsymmetric Eigenvalue Problem Expert Driver Rggevx
+ Tests of the Multiple precision version of LAPACK 2.2.0
+ Based on the original LAPACK VERSION 3.12.1
+
+The following parameter values will be used:
+
+ The following parameter values will be used:
+    N:         5
+    NB:        1
+    NBMIN:     1
+    NX:        1
+    NS:        2
+    MAXB:      1
+ 
+ Relative machine underflow is taken to be    0.222507-307
+ Relative machine overflow  is taken to be    0.179769+309
+ Relative machine precision is taken to be    0.111022D-15
+
+ Routines pass computational tests if test ratio is less than   10.00
+
+ 
+ DXV routines passed the tests of the error exits (108 tests done)
+
+ All tests for DXV drivers  passed the threshold (   5000 tests run)
+
+ -----------------------------------------------------------------------
+
+ Tests of the Generalized Nonsymmetric Eigenvalue Problem Expert Driver Rggevx
+ Tests of the Multiple precision version of LAPACK 2.2.0
+ Based on the original LAPACK VERSION 3.12.1
+
+The following parameter values will be used:
+
+ The following parameter values will be used:
+    N:         0
+    NB:        1
+    NBMIN:     1
+    NX:        1
+    NS:        2
+    MAXB:      1
+ 
+ Relative machine underflow is taken to be    0.222507-307
+ Relative machine overflow  is taken to be    0.179769+309
+ Relative machine precision is taken to be    0.111022D-15
+
+ Routines pass computational tests if test ratio is less than   10.00
+
+ 
+ DXV routines passed the tests of the error exits (108 tests done)
+
+ All tests for DXV drivers  passed the threshold (      8 tests run)
+
+ -----------------------------------------------------------------------
+
+
+ End of tests
+ Total time used =         0.48 seconds
+

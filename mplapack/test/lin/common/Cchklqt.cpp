@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZCHKLQT.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,29 +43,28 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-#include <mplapack_debug.h>
-
 void Cchklqt(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nout) {
     common cmn;
     common_write write(cmn);
     //
-    char path[4] = {};
-    path[0] = 'C';
-    path[1] = 'T';
-    path[2] = 'Q';
-    char buf[1024];
+    static const char *format_9999 = "(' M=',i5,', N=',i5,', NB=',i4,' test(',i2,')=',g12.5)";
+    //
+    // Initialize constants
+    //
+    fem::str<3> path = "Z";
+    path(2, 3) = "TQ";
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
     //
-    //     Test the error exits
+    // Test the error exits
     //
     if (tsterr) {
         Cerrlqt(path, nout);
     }
     infot = 0;
     //
-    //     Do for each value of M in MVAL.
+    // Do for each value of M in MVAL.
     //
     INTEGER i = 0;
     INTEGER m = 0;
@@ -73,32 +79,31 @@ void Cchklqt(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *mv
     for (i = 1; i <= nm; i = i + 1) {
         m = mval[i - 1];
         //
-        //        Do for each value of N in NVAL.
+        // Do for each value of N in NVAL.
         //
         for (j = 1; j <= nn; j = j + 1) {
             n = nval[j - 1];
             //
-            //        Do for each possible value of NB
+            // Do for each possible value of NB
             //
             minmn = min(m, n);
             for (k = 1; k <= nnb; k = k + 1) {
                 nb = nbval[k - 1];
                 //
-                //              Test Cgelqt and CunmlqT
+                // Test Cgelqt and ZUNMLQT
                 //
                 if ((nb <= minmn) && (nb > 0)) {
                     Clqt04(m, n, nb, result);
                     //
-                    //                 Print information about the tests that did not
-                    //                 pass the threshold.
+                    // Print information about the tests that did not
+                    // pass the threshold.
                     //
                     for (t = 1; t <= ntests; t = t + 1) {
                         if (result[t - 1] >= thresh) {
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
-                            sprintnum_short(buf, result[t - 1]);
-                            write(nout, "(' M=',i5,', N=',i5,', NB=',i4,' test(',i2,')=',a)"), m, n, nb, t, buf;
+                            write(nout, format_9999), m, n, nb, t, result[t - 1];
                             nfail++;
                         }
                     }
@@ -108,10 +113,10 @@ void Cchklqt(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *mv
         }
     }
     //
-    //     Print a summary of the results.
+    // Print a summary of the results.
     //
     Alasum(path, nout, nfail, nrun, nerrs);
     //
-    //     End of Cchklqt
+    // End of Cchklqt
     //
 }

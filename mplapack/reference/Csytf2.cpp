@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,17 +26,22 @@
  *
  */
 
+// Derived from LAPACK routine ZSYTF2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
-
-inline REAL cabs1(COMPLEX z) { return abs(z.real()) + abs(z.imag()); }
 
 void Csytf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, INTEGER &info) {
     COMPLEX z = 0.0;
     bool upper = false;
     const REAL one = 1.0;
-    const REAL sevten = 17.0e+0;
-    const REAL eight = 8.0e+0;
+    const REAL sevten = 17.0;
+    const REAL eight = 8.0;
     REAL alpha = 0.0;
     INTEGER k = 0;
     INTEGER kstep = 0;
@@ -61,34 +66,7 @@ void Csytf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
     COMPLEX d21 = 0.0;
     COMPLEX wkp1 = 0.0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Statement Functions ..
-    //     ..
-    //     .. Statement Function definitions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     upper = Mlsame(uplo, "U");
@@ -104,35 +82,35 @@ void Csytf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
         return;
     }
     //
-    //     Initialize ALPHA for use in choosing pivot block size.
+    // Initialize ALPHA for use in choosing pivot block size.
     //
     alpha = (one + sqrt(sevten)) / eight;
     //
     if (upper) {
         //
-        //        Factorize A as U*D*U**T using the upper triangle of A
+        // Factorize A as U*D*U**T using the upper triangle of A
         //
-        //        K is the main loop index, decreasing from N to 1 in steps of
-        //        1 or 2
+        // K is the main loop index, decreasing from N to 1 in steps of
+        // 1 or 2
         //
         k = n;
     statement_10:
         //
-        //        If K < 1, exit from loop
+        // If K < 1, exit from loop
         //
         if (k < 1) {
             goto statement_70;
         }
         kstep = 1;
         //
-        //        Determine rows and columns to be interchanged and whether
-        //        a 1-by-1 or 2-by-2 pivot block will be used
+        // Determine rows and columns to be interchanged and whether
+        // a 1-by-1 or 2-by-2 pivot block will be used
         //
         absakk = cabs1(a[(k - 1) + (k - 1) * lda]);
         //
-        //        IMAX is the row-index of the largest off-diagonal element in
-        //        column K, and COLMAX is its absolute value.
-        //        Determine both COLMAX and IMAX.
+        // IMAX is the row-index of the largest off-diagonal element in
+        // column K, and COLMAX is its absolute value.
+        // Determine both COLMAX and IMAX.
         //
         if (k > 1) {
             imax = iCamax(k - 1, &a[(k - 1) * lda], 1);
@@ -143,8 +121,8 @@ void Csytf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
         //
         if (max(absakk, colmax) == zero || Risnan(absakk)) {
             //
-            //           Column K is zero or underflow, or contains a NaN:
-            //           set INFO and continue
+            // Column K is zero or underflow, or contains a NaN:
+            // set INFO and continue
             //
             if (info == 0) {
                 info = k;
@@ -153,13 +131,13 @@ void Csytf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
         } else {
             if (absakk >= alpha * colmax) {
                 //
-                //              no interchange, use 1-by-1 pivot block
+                // no interchange, use 1-by-1 pivot block
                 //
                 kp = k;
             } else {
                 //
-                //              JMAX is the column-index of the largest off-diagonal
-                //              element in row IMAX, and ROWMAX is its absolute value
+                // JMAX is the column-index of the largest off-diagonal
+                // element in row IMAX, and ROWMAX is its absolute value
                 //
                 jmax = imax + iCamax(k - imax, &a[(imax - 1) + ((imax + 1) - 1) * lda], lda);
                 rowmax = cabs1(a[(imax - 1) + (jmax - 1) * lda]);
@@ -170,19 +148,19 @@ void Csytf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
                 //
                 if (absakk >= alpha * colmax * (colmax / rowmax)) {
                     //
-                    //                 no interchange, use 1-by-1 pivot block
+                    // no interchange, use 1-by-1 pivot block
                     //
                     kp = k;
                 } else if (cabs1(a[(imax - 1) + (imax - 1) * lda]) >= alpha * rowmax) {
                     //
-                    //                 interchange rows and columns K and IMAX, use 1-by-1
-                    //                 pivot block
+                    // interchange rows and columns K and IMAX, use 1-by-1
+                    // pivot block
                     //
                     kp = imax;
                 } else {
                     //
-                    //                 interchange rows and columns K-1 and IMAX, use 2-by-2
-                    //                 pivot block
+                    // interchange rows and columns K-1 and IMAX, use 2-by-2
+                    // pivot block
                     //
                     kp = imax;
                     kstep = 2;
@@ -192,8 +170,8 @@ void Csytf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
             kk = k - kstep + 1;
             if (kp != kk) {
                 //
-                //              Interchange rows and columns KK and KP in the leading
-                //              submatrix A(1:k,1:k)
+                // Interchange rows and columns KK and KP in the leading
+                // submatrix A(1:k,1:k)
                 //
                 Cswap(kp - 1, &a[(kk - 1) * lda], 1, &a[(kp - 1) * lda], 1);
                 Cswap(kk - kp - 1, &a[((kp + 1) - 1) + (kk - 1) * lda], 1, &a[(kp - 1) + ((kp + 1) - 1) * lda], lda);
@@ -207,39 +185,39 @@ void Csytf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
                 }
             }
             //
-            //           Update the leading submatrix
+            // Update the leading submatrix
             //
             if (kstep == 1) {
                 //
-                //              1-by-1 pivot block D(k): column k now holds
+                // 1-by-1 pivot block D(k): column k now holds
                 //
-                //              W(k) = U(k)*D(k)
+                // W(k) = U(k)*D(k)
                 //
-                //              where U(k) is the k-th column of U
+                // where U(k) is the k-th column of U
                 //
-                //              Perform a rank-1 update of A(1:k-1,1:k-1) as
+                // Perform a rank-1 update of A(1:k-1,1:k-1) as
                 //
-                //              A := A - U(k)*D(k)*U(k)**T = A - W(k)*1/D(k)*W(k)**T
+                // A := A - U(k)*D(k)*U(k)**T = A - W(k)*1/D(k)*W(k)**T
                 //
                 r1 = cone / a[(k - 1) + (k - 1) * lda];
                 Csyr(uplo, k - 1, -r1, &a[(k - 1) * lda], 1, a, lda);
                 //
-                //              Store U(k) in column k
+                // Store U(k) in column k
                 //
                 Cscal(k - 1, r1, &a[(k - 1) * lda], 1);
             } else {
                 //
-                //              2-by-2 pivot block D(k): columns k and k-1 now hold
+                // 2-by-2 pivot block D(k): columns k and k-1 now hold
                 //
-                //              ( W(k-1) W(k) ) = ( U(k-1) U(k) )*D(k)
+                // ( W(k-1) W(k) ) = ( U(k-1) U(k) )*D(k)
                 //
-                //              where U(k) and U(k-1) are the k-th and (k-1)-th columns
-                //              of U
+                // where U(k) and U(k-1) are the k-th and (k-1)-th columns
+                // of U
                 //
-                //              Perform a rank-2 update of A(1:k-2,1:k-2) as
+                // Perform a rank-2 update of A(1:k-2,1:k-2) as
                 //
-                //              A := A - ( U(k-1) U(k) )*D(k)*( U(k-1) U(k) )**T
-                //                 = A - ( W(k-1) W(k) )*inv(D(k))*( W(k-1) W(k) )**T
+                // A := A - ( U(k-1) U(k) )*D(k)*( U(k-1) U(k) )**T
+                // = A - ( W(k-1) W(k) )*inv(D(k))*( W(k-1) W(k) )**T
                 //
                 if (k > 2) {
                     //
@@ -264,7 +242,7 @@ void Csytf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
             }
         }
         //
-        //        Store details of the interchanges in IPIV
+        // Store details of the interchanges in IPIV
         //
         if (kstep == 1) {
             ipiv[k - 1] = kp;
@@ -273,36 +251,36 @@ void Csytf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
             ipiv[(k - 1) - 1] = -kp;
         }
         //
-        //        Decrease K and return to the start of the main loop
+        // Decrease K and return to the start of the main loop
         //
         k = k - kstep;
         goto statement_10;
         //
     } else {
         //
-        //        Factorize A as L*D*L**T using the lower triangle of A
+        // Factorize A as L*D*L**T using the lower triangle of A
         //
-        //        K is the main loop index, increasing from 1 to N in steps of
-        //        1 or 2
+        // K is the main loop index, increasing from 1 to N in steps of
+        // 1 or 2
         //
         k = 1;
     statement_40:
         //
-        //        If K > N, exit from loop
+        // If K > N, exit from loop
         //
         if (k > n) {
             goto statement_70;
         }
         kstep = 1;
         //
-        //        Determine rows and columns to be interchanged and whether
-        //        a 1-by-1 or 2-by-2 pivot block will be used
+        // Determine rows and columns to be interchanged and whether
+        // a 1-by-1 or 2-by-2 pivot block will be used
         //
         absakk = cabs1(a[(k - 1) + (k - 1) * lda]);
         //
-        //        IMAX is the row-index of the largest off-diagonal element in
-        //        column K, and COLMAX is its absolute value.
-        //        Determine both COLMAX and IMAX.
+        // IMAX is the row-index of the largest off-diagonal element in
+        // column K, and COLMAX is its absolute value.
+        // Determine both COLMAX and IMAX.
         //
         if (k < n) {
             imax = k + iCamax(n - k, &a[((k + 1) - 1) + (k - 1) * lda], 1);
@@ -313,8 +291,8 @@ void Csytf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
         //
         if (max(absakk, colmax) == zero || Risnan(absakk)) {
             //
-            //           Column K is zero or underflow, or contains a NaN:
-            //           set INFO and continue
+            // Column K is zero or underflow, or contains a NaN:
+            // set INFO and continue
             //
             if (info == 0) {
                 info = k;
@@ -323,13 +301,13 @@ void Csytf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
         } else {
             if (absakk >= alpha * colmax) {
                 //
-                //              no interchange, use 1-by-1 pivot block
+                // no interchange, use 1-by-1 pivot block
                 //
                 kp = k;
             } else {
                 //
-                //              JMAX is the column-index of the largest off-diagonal
-                //              element in row IMAX, and ROWMAX is its absolute value
+                // JMAX is the column-index of the largest off-diagonal
+                // element in row IMAX, and ROWMAX is its absolute value
                 //
                 jmax = k - 1 + iCamax(imax - k, &a[(imax - 1) + (k - 1) * lda], lda);
                 rowmax = cabs1(a[(imax - 1) + (jmax - 1) * lda]);
@@ -340,19 +318,19 @@ void Csytf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
                 //
                 if (absakk >= alpha * colmax * (colmax / rowmax)) {
                     //
-                    //                 no interchange, use 1-by-1 pivot block
+                    // no interchange, use 1-by-1 pivot block
                     //
                     kp = k;
                 } else if (cabs1(a[(imax - 1) + (imax - 1) * lda]) >= alpha * rowmax) {
                     //
-                    //                 interchange rows and columns K and IMAX, use 1-by-1
-                    //                 pivot block
+                    // interchange rows and columns K and IMAX, use 1-by-1
+                    // pivot block
                     //
                     kp = imax;
                 } else {
                     //
-                    //                 interchange rows and columns K+1 and IMAX, use 2-by-2
-                    //                 pivot block
+                    // interchange rows and columns K+1 and IMAX, use 2-by-2
+                    // pivot block
                     //
                     kp = imax;
                     kstep = 2;
@@ -362,8 +340,8 @@ void Csytf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
             kk = k + kstep - 1;
             if (kp != kk) {
                 //
-                //              Interchange rows and columns KK and KP in the trailing
-                //              submatrix A(k:n,k:n)
+                // Interchange rows and columns KK and KP in the trailing
+                // submatrix A(k:n,k:n)
                 //
                 if (kp < n) {
                     Cswap(n - kp, &a[((kp + 1) - 1) + (kk - 1) * lda], 1, &a[((kp + 1) - 1) + (kp - 1) * lda], 1);
@@ -379,42 +357,42 @@ void Csytf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
                 }
             }
             //
-            //           Update the trailing submatrix
+            // Update the trailing submatrix
             //
             if (kstep == 1) {
                 //
-                //              1-by-1 pivot block D(k): column k now holds
+                // 1-by-1 pivot block D(k): column k now holds
                 //
-                //              W(k) = L(k)*D(k)
+                // W(k) = L(k)*D(k)
                 //
-                //              where L(k) is the k-th column of L
+                // where L(k) is the k-th column of L
                 //
                 if (k < n) {
                     //
-                    //                 Perform a rank-1 update of A(k+1:n,k+1:n) as
+                    // Perform a rank-1 update of A(k+1:n,k+1:n) as
                     //
-                    //                 A := A - L(k)*D(k)*L(k)**T = A - W(k)*(1/D(k))*W(k)**T
+                    // A := A - L(k)*D(k)*L(k)**T = A - W(k)*(1/D(k))*W(k)**T
                     //
                     r1 = cone / a[(k - 1) + (k - 1) * lda];
                     Csyr(uplo, n - k, -r1, &a[((k + 1) - 1) + (k - 1) * lda], 1, &a[((k + 1) - 1) + ((k + 1) - 1) * lda], lda);
                     //
-                    //                 Store L(k) in column K
+                    // Store L(k) in column K
                     //
                     Cscal(n - k, r1, &a[((k + 1) - 1) + (k - 1) * lda], 1);
                 }
             } else {
                 //
-                //              2-by-2 pivot block D(k)
+                // 2-by-2 pivot block D(k)
                 //
                 if (k < n - 1) {
                     //
-                    //                 Perform a rank-2 update of A(k+2:n,k+2:n) as
+                    // Perform a rank-2 update of A(k+2:n,k+2:n) as
                     //
-                    //                 A := A - ( L(k) L(k+1) )*D(k)*( L(k) L(k+1) )**T
-                    //                    = A - ( W(k) W(k+1) )*inv(D(k))*( W(k) W(k+1) )**T
+                    // A := A - ( L(k) L(k+1) )*D(k)*( L(k) L(k+1) )**T
+                    // = A - ( W(k) W(k+1) )*inv(D(k))*( W(k) W(k+1) )**T
                     //
-                    //                 where L(k) and L(k+1) are the k-th and (k+1)-th
-                    //                 columns of L
+                    // where L(k) and L(k+1) are the k-th and (k+1)-th
+                    // columns of L
                     //
                     d21 = a[((k + 1) - 1) + (k - 1) * lda];
                     d11 = a[((k + 1) - 1) + ((k + 1) - 1) * lda] / d21;
@@ -435,7 +413,7 @@ void Csytf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
             }
         }
         //
-        //        Store details of the interchanges in IPIV
+        // Store details of the interchanges in IPIV
         //
         if (kstep == 1) {
             ipiv[k - 1] = kp;
@@ -444,7 +422,7 @@ void Csytf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
             ipiv[(k + 1) - 1] = -kp;
         }
         //
-        //        Increase K and return to the start of the main loop
+        // Increase K and return to the start of the main loop
         //
         k += kstep;
         goto statement_40;
@@ -453,6 +431,6 @@ void Csytf2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
 //
 statement_70:;
     //
-    //     End of Csytf2
+    // End of Csytf2
     //
 }

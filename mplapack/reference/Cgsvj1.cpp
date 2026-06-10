@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZGSVJ1.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -72,7 +79,7 @@ void Cgsvj1(const char *jobv, INTEGER const m, INTEGER const n, INTEGER const n1
     COMPLEX ompq = 0.0;
     REAL aqoap = 0.0;
     REAL apoaq = 0.0;
-    const REAL half = 0.5e0;
+    const REAL half = 0.5;
     REAL theta = 0.0;
     REAL t = 0.0;
     REAL cs = 0.0;
@@ -80,32 +87,7 @@ void Cgsvj1(const char *jobv, INTEGER const m, INTEGER const n, INTEGER const n1
     REAL sn = 0.0;
     REAL temp1 = 0.0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     .. from BLAS
-    //     .. from LAPACK
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     applv = Mlsame(jobv, "A");
     rsvec = Mlsame(jobv, "V");
@@ -133,7 +115,7 @@ void Cgsvj1(const char *jobv, INTEGER const m, INTEGER const n, INTEGER const n1
         info = 0;
     }
     //
-    //     #:(
+    // #:(
     if (info != 0) {
         Mxerbla("Cgsvj1", -info);
         return;
@@ -151,18 +133,18 @@ void Cgsvj1(const char *jobv, INTEGER const m, INTEGER const n, INTEGER const n1
     small = sfmin / eps;
     big = one / sfmin;
     rootbig = one / rootsfmin;
-    //     LARGE = BIG / SQRT( DBLE( M*N ) )
+    // LARGE = BIG / SQRT( DBLE( M*N ) )
     bigtheta = one / rooteps;
     roottol = sqrt(tol);
     //
-    //     .. Initialize the right singular vector matrix ..
+    // .. Initialize the right singular vector matrix ..
     //
-    //     RSVEC = LSAME( JOBV, 'Y' )
+    // RSVEC = Mlsame( JOBV, 'Y' )
     //
     emptsw = n1 * (n - n1);
     notrot = 0;
     //
-    //     .. Row-cyclic pivot strategy with de Rijk's pivoting ..
+    // .. Row-cyclic pivot strategy with de Rijk's pivoting ..
     //
     kbl = min((INTEGER)8, n);
     nblr = n1 / kbl;
@@ -170,30 +152,32 @@ void Cgsvj1(const char *jobv, INTEGER const m, INTEGER const n, INTEGER const n1
         nblr++;
     }
     //
-    //     .. the tiling is nblr-by-nblc [tiles]
+    // .. the tiling is nblr-by-nblc [tiles]
     //
     nblc = (n - n1) / kbl;
     if ((nblc * kbl) != (n - n1)) {
         nblc++;
     }
-    blskip = (kbl * kbl) + 1;
-    //[TP] BLKSKIP is a tuning parameter that depends on SWBAND and KBL.
+    blskip = (pow2(kbl)) + 1;
+    // [TP] BLKSKIP is a tuning parameter that depends on SWBAND and KBL.
     //
     rowskip = min((INTEGER)5, kbl);
-    //[TP] ROWSKIP is a tuning parameter.
+    // [TP] ROWSKIP is a tuning parameter.
     swband = 0;
-    //[TP] SWBAND is a tuning parameter. It is meaningful and effective
-    //     if Cgesvj is used as a computational routine in the preconditioned
-    //     Jacobi SVD algorithm Cgejsv.
+    // [TP] SWBAND is a tuning parameter. It is meaningful and effective
+    // if Cgesvj is used as a computational routine in the preconditioned
+    // Jacobi SVD algorithm Cgejsv.
     //
-    //     | *   *   * [x] [x] [x]|
-    //     | *   *   * [x] [x] [x]|    Row-cycling in the nblr-by-nblc [x] blocks.
-    //     | *   *   * [x] [x] [x]|    Row-cyclic pivoting inside each [x] block.
-    //     |[x] [x] [x] *   *   * |
+    // | *   *   * [x] [x] [x]|
+    // | *   *   * [x] [x] [x]|    Row-cycling in the nblr-by-nblc [x] blocks.
+    // | *   *   * [x] [x] [x]|    Row-cyclic pivoting inside each [x] block.
+    // |[x] [x] [x] *   *   * |
+    // |[x] [x] [x] *   *   * |
+    // |[x] [x] [x] *   *   * |
     //
     for (i = 1; i <= nsweep; i = i + 1) {
         //
-        //     .. go go go ...
+        // .. go go go ...
         //
         mxaapq = zero;
         mxsinj = zero;
@@ -202,10 +186,10 @@ void Cgsvj1(const char *jobv, INTEGER const m, INTEGER const n, INTEGER const n1
         notrot = 0;
         pskipped = 0;
         //
-        //     Each sweep is unrolled using KBL-by-KBL tiles over the pivot pairs
-        //     1 <= p < q <= N. This is the first step toward a blocked implementation
-        //     of the rotations. New implementation, based on block transformations,
-        //     is under development.
+        // Each sweep is unrolled using KBL-by-KBL tiles over the pivot pairs
+        // 1 <= p < q <= N. This is the first step toward a blocked implementation
+        // of the rotations. New implementation, based on block transformations,
+        // is under development.
         //
         for (ibr = 1; ibr <= nblr; ibr = ibr + 1) {
             //
@@ -215,12 +199,12 @@ void Cgsvj1(const char *jobv, INTEGER const m, INTEGER const n, INTEGER const n1
             //
             igl = (ibr - 1) * kbl + 1;
             //
-            //            DO 2010 jbc = ibr + 1, NBL
+            // DO 2010 jbc = ibr + 1, NBL
             for (jbc = 1; jbc <= nblc; jbc = jbc + 1) {
                 //
                 jgl = (jbc - 1) * kbl + n1 + 1;
                 //
-                //        doing the block at ( ibr, jbc )
+                // doing the block at ( ibr, jbc )
                 //
                 ijblsk = 0;
                 for (p = igl; p <= min(igl + kbl - 1, n1); p = p + 1) {
@@ -236,9 +220,9 @@ void Cgsvj1(const char *jobv, INTEGER const m, INTEGER const n, INTEGER const n1
                             if (aaqq > zero) {
                                 aapp0 = aapp;
                                 //
-                                //     .. M x 2 Jacobi SVD ..
+                                // .. M x 2 Jacobi SVD ..
                                 //
-                                //        Safe Gram matrix computation
+                                // Safe Gram matrix computation
                                 //
                                 if (aaqq >= one) {
                                     if (aapp >= aaqq) {
@@ -268,16 +252,16 @@ void Cgsvj1(const char *jobv, INTEGER const m, INTEGER const n, INTEGER const n1
                                     }
                                 }
                                 //
-                                //                           AAPQ = AAPQ * CONJG(CWORK(p))*CWORK(q)
+                                // AAPQ = AAPQ * CONJG(CWORK(p))*CWORK(q)
                                 aapq1 = -abs(aapq);
-                                mxaapq = max(mxaapq, REAL(-aapq1));
+                                mxaapq = max(mxaapq, -aapq1);
                                 //
-                                //        TO rotate or NOT to rotate, THAT is the question ...
+                                // TO rotate or NOT to rotate, THAT is the question ...
                                 //
                                 if (abs(aapq1) > tol) {
                                     ompq = aapq / abs(aapq);
                                     notrot = 0;
-                                    //[RTD]      ROTATED  = ROTATED + 1
+                                    // [RTD]      ROTATED  = ROTATED + 1
                                     pskipped = 0;
                                     iswrot++;
                                     //
@@ -297,12 +281,12 @@ void Cgsvj1(const char *jobv, INTEGER const m, INTEGER const n, INTEGER const n1
                                             if (rsvec) {
                                                 Crot(mvl, &v[(p - 1) * ldv], 1, &v[(q - 1) * ldv], 1, cs, conj(ompq) * t);
                                             }
-                                            sva[q - 1] = aaqq * sqrt(max(zero, REAL(one + t * apoaq * aapq1)));
-                                            aapp = aapp * sqrt(max(zero, REAL(one - t * aqoap * aapq1)));
-                                            mxsinj = max(mxsinj, REAL(abs(t)));
+                                            sva[q - 1] = aaqq * sqrt(max(zero, one + t * apoaq * aapq1));
+                                            aapp = aapp * sqrt(max(zero, one - t * aqoap * aapq1));
+                                            mxsinj = max(mxsinj, abs(t));
                                         } else {
                                             //
-                                            //                 .. choose correct signum for THETA and rotate
+                                            // .. choose correct signum for THETA and rotate
                                             //
                                             thsign = -sign(one, aapq1);
                                             if (aaqq > aapp0) {
@@ -311,9 +295,9 @@ void Cgsvj1(const char *jobv, INTEGER const m, INTEGER const n, INTEGER const n1
                                             t = one / (theta + thsign * sqrt(one + theta * theta));
                                             cs = sqrt(one / (one + t * t));
                                             sn = t * cs;
-                                            mxsinj = max(mxsinj, REAL(abs(sn)));
-                                            sva[q - 1] = aaqq * sqrt(max(zero, REAL(one + t * apoaq * aapq1)));
-                                            aapp = aapp * sqrt(max(zero, REAL(one - t * aqoap * aapq1)));
+                                            mxsinj = max(mxsinj, abs(sn));
+                                            sva[q - 1] = aaqq * sqrt(max(zero, one + t * apoaq * aapq1));
+                                            aapp = aapp * sqrt(max(zero, one - t * aqoap * aapq1));
                                             //
                                             Crot(m, &a[(p - 1) * lda], 1, &a[(q - 1) * lda], 1, cs, conj(ompq) * sn);
                                             if (rsvec) {
@@ -323,14 +307,14 @@ void Cgsvj1(const char *jobv, INTEGER const m, INTEGER const n, INTEGER const n1
                                         d[p - 1] = -d[q - 1] * ompq;
                                         //
                                     } else {
-                                        //              .. have to use modified Gram-Schmidt like transformation
+                                        // .. have to use modified Gram-Schmidt like transformation
                                         if (aapp > aaqq) {
                                             Ccopy(m, &a[(p - 1) * lda], 1, work, 1);
                                             Clascl("G", 0, 0, aapp, one, m, 1, work, lda, ierr);
                                             Clascl("G", 0, 0, aaqq, one, m, 1, &a[(q - 1) * lda], lda, ierr);
                                             Caxpy(m, -aapq, work, 1, &a[(q - 1) * lda], 1);
                                             Clascl("G", 0, 0, one, aaqq, m, 1, &a[(q - 1) * lda], lda, ierr);
-                                            sva[q - 1] = aaqq * sqrt(max(zero, REAL(one - aapq1 * aapq1)));
+                                            sva[q - 1] = aaqq * sqrt(max(zero, one - aapq1 * aapq1));
                                             mxsinj = max(mxsinj, sfmin);
                                         } else {
                                             Ccopy(m, &a[(q - 1) * lda], 1, work, 1);
@@ -338,14 +322,14 @@ void Cgsvj1(const char *jobv, INTEGER const m, INTEGER const n, INTEGER const n1
                                             Clascl("G", 0, 0, aapp, one, m, 1, &a[(p - 1) * lda], lda, ierr);
                                             Caxpy(m, -conj(aapq), work, 1, &a[(p - 1) * lda], 1);
                                             Clascl("G", 0, 0, one, aapp, m, 1, &a[(p - 1) * lda], lda, ierr);
-                                            sva[p - 1] = aapp * sqrt(max(zero, REAL(one - aapq1 * aapq1)));
+                                            sva[p - 1] = aapp * sqrt(max(zero, one - aapq1 * aapq1));
                                             mxsinj = max(mxsinj, sfmin);
                                         }
                                     }
-                                    //           END IF ROTOK THEN ... ELSE
+                                    // END IF ROTOK THEN ... ELSE
                                     //
-                                    //           In the case of cancellation in updating SVA(q), SVA(p)
-                                    //           .. recompute SVA(q), SVA(p)
+                                    // In the case of cancellation in updating SVA(q), SVA(p)
+                                    // .. recompute SVA(q), SVA(p)
                                     if (pow2((sva[q - 1] / aaqq)) <= rooteps) {
                                         if ((aaqq < rootbig) && (aaqq > rootsfmin)) {
                                             sva[q - 1] = RCnrm2(m, &a[(q - 1) * lda], 1);
@@ -367,10 +351,10 @@ void Cgsvj1(const char *jobv, INTEGER const m, INTEGER const n, INTEGER const n1
                                         }
                                         sva[p - 1] = aapp;
                                     }
-                                    //              end of OK rotation
+                                    // end of OK rotation
                                 } else {
                                     notrot++;
-                                    //[RTD]      SKIPPED  = SKIPPED  + 1
+                                    // [RTD]      SKIPPED  = SKIPPED  + 1
                                     pskipped++;
                                     ijblsk++;
                                 }
@@ -392,7 +376,7 @@ void Cgsvj1(const char *jobv, INTEGER const m, INTEGER const n, INTEGER const n1
                             }
                             //
                         }
-                    //        end of the q-loop
+                    // end of the q-loop
                     statement_2203:
                         //
                         sva[p - 1] = aapp;
@@ -409,19 +393,19 @@ void Cgsvj1(const char *jobv, INTEGER const m, INTEGER const n, INTEGER const n1
                     }
                     //
                 }
-                //     end of the p-loop
+                // end of the p-loop
             }
-        //     end of the jbc-loop
+        // end of the jbc-loop
         statement_2011:
             // 2011 bailed out of the jbc-loop
             for (p = igl; p <= min(igl + kbl - 1, n); p = p + 1) {
                 sva[p - 1] = abs(sva[p - 1]);
             }
-            //**
+            // **
         }
         // 2000 :: end of the ibr-loop
         //
-        //     .. update SVA(N)
+        // .. update SVA(N)
         if ((sva[n - 1] < rootbig) && (sva[n - 1] > rootsfmin)) {
             sva[n - 1] = RCnrm2(m, &a[(n - 1) * lda], 1);
         } else {
@@ -431,13 +415,13 @@ void Cgsvj1(const char *jobv, INTEGER const m, INTEGER const n, INTEGER const n1
             sva[n - 1] = t * sqrt(aapp);
         }
         //
-        //     Additional steering devices
+        // Additional steering devices
         //
         if ((i < swband) && ((mxaapq <= roottol) || (iswrot <= n))) {
             swband = i;
         }
         //
-        if ((i > swband + 1) && (mxaapq < sqrt(castREAL(n) * tol) && (castREAL(n) * mxaapq * mxsinj < tol))) {
+        if ((i > swband + 1) && (mxaapq < sqrt(castREAL(n)) * tol) && (castREAL(n) * mxaapq * mxsinj < tol)) {
             goto statement_1994;
         }
         //
@@ -446,7 +430,7 @@ void Cgsvj1(const char *jobv, INTEGER const m, INTEGER const n, INTEGER const n1
         }
         //
     }
-    //     end i=1:NSWEEP loop
+    // end i=1:NSWEEP loop
     //
     // #:( Reaching this point means that the procedure has not converged.
     info = nsweep - 1;
@@ -454,13 +438,13 @@ void Cgsvj1(const char *jobv, INTEGER const m, INTEGER const n, INTEGER const n1
 //
 statement_1994:
     // #:) Reaching this point means numerical convergence after the i-th
-    //     sweep.
+    // sweep.
     //
     info = 0;
 // #:) INFO = 0 confirms successful iterations.
 statement_1995:
     //
-    //     Sort the vector SVA() of column norms.
+    // Sort the vector SVA() of column norms.
     for (p = 1; p <= n - 1; p = p + 1) {
         q = iRamax(n - p + 1, &sva[p - 1], 1) + p - 1;
         if (p != q) {
@@ -477,7 +461,7 @@ statement_1995:
         }
     }
     //
-    //     ..
-    //     .. END OF Cgsvj1
-    //     ..
+    // ..
+    // .. END OF Cgsvj1
+    // ..
 }

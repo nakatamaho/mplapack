@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZPOT01.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,32 +43,9 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Cpot01(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *afac, INTEGER const ldafac, REAL *rwork, REAL &resid) {
+void Cpot01(fem::str_cref uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *afac, INTEGER const ldafac, REAL *rwork, REAL &resid) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Quick exit if N = 0.
+    // Quick exit if N = 0.
     //
     const REAL zero = 0.0;
     if (n <= 0) {
@@ -69,18 +53,18 @@ void Cpot01(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
         return;
     }
     //
-    //     Exit with RESID = 1/EPS if ANORM = 0.
+    // Exit with RESID = 1/EPS if ANORM = 0.
     //
     REAL eps = Rlamch("Epsilon");
-    REAL anorm = Clanhe("1", uplo, n, a, lda, rwork);
+    REAL anorm = Clanhe("1", uplo.elems(), n, a, lda, rwork);
     const REAL one = 1.0;
     if (anorm <= zero) {
         resid = one / eps;
         return;
     }
     //
-    //     Check the imaginary parts of the diagonal elements and return with
-    //     an error code if any are nonzero.
+    // Check the imaginary parts of the diagonal elements and return with
+    // an error code if any are nonzero.
     //
     INTEGER j = 0;
     for (j = 1; j <= n; j = j + 1) {
@@ -90,38 +74,38 @@ void Cpot01(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
         }
     }
     //
-    //     Compute the product U'*U, overwriting U.
+    // Compute the product U**H * U, overwriting U.
     //
     INTEGER k = 0;
     REAL tr = 0.0;
     COMPLEX tc = 0.0;
-    if (Mlsame(uplo, "U")) {
+    if (Mlsame(uplo.elems(), "U")) {
         for (k = n; k >= 1; k = k - 1) {
             //
-            //           Compute the (K,K) element of the result.
+            // Compute the (K,K) element of the result.
             //
             tr = Cdotc(k, &afac[(k - 1) * ldafac], 1, &afac[(k - 1) * ldafac], 1).real();
             afac[(k - 1) + (k - 1) * ldafac] = tr;
             //
-            //           Compute the rest of column K.
+            // Compute the rest of column K.
             //
             Ctrmv("Upper", "Conjugate", "Non-unit", k - 1, afac, ldafac, &afac[(k - 1) * ldafac], 1);
             //
         }
         //
-        //     Compute the product L*L', overwriting L.
+        // Compute the product L * L**H, overwriting L.
         //
     } else {
         for (k = n; k >= 1; k = k - 1) {
             //
-            //           Add a multiple of column K of the factor L to each of
-            //           columns K+1 through N.
+            // Add a multiple of column K of the factor L to each of
+            // columns K+1 through N.
             //
             if (k + 1 <= n) {
                 Cher("Lower", n - k, one, &afac[((k + 1) - 1) + (k - 1) * ldafac], 1, &afac[((k + 1) - 1) + ((k + 1) - 1) * ldafac], ldafac);
             }
             //
-            //           Scale column K by the diagonal element.
+            // Scale column K by the diagonal element.
             //
             tc = afac[(k - 1) + (k - 1) * ldafac];
             Cscal(n - k + 1, tc, &afac[(k - 1) + (k - 1) * ldafac], 1);
@@ -129,31 +113,31 @@ void Cpot01(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
         }
     }
     //
-    //     Compute the difference  L*L' - A (or U'*U - A).
+    // Compute the difference L * L**H - A (or U**H * U - A).
     //
     INTEGER i = 0;
-    if (Mlsame(uplo, "U")) {
+    if (Mlsame(uplo.elems(), "U")) {
         for (j = 1; j <= n; j = j + 1) {
             for (i = 1; i <= j - 1; i = i + 1) {
                 afac[(i - 1) + (j - 1) * ldafac] = afac[(i - 1) + (j - 1) * ldafac] - a[(i - 1) + (j - 1) * lda];
             }
-            afac[(j - 1) + (j - 1) * ldafac] = afac[(j - 1) + (j - 1) * ldafac] - (a[(j - 1) + (j - 1) * lda]).real();
+            afac[(j - 1) + (j - 1) * ldafac] = afac[(j - 1) + (j - 1) * ldafac] - a[(j - 1) + (j - 1) * lda].real();
         }
     } else {
         for (j = 1; j <= n; j = j + 1) {
-            afac[(j - 1) + (j - 1) * ldafac] = afac[(j - 1) + (j - 1) * ldafac] - (a[(j - 1) + (j - 1) * lda]).real();
+            afac[(j - 1) + (j - 1) * ldafac] = afac[(j - 1) + (j - 1) * ldafac] - a[(j - 1) + (j - 1) * lda].real();
             for (i = j + 1; i <= n; i = i + 1) {
                 afac[(i - 1) + (j - 1) * ldafac] = afac[(i - 1) + (j - 1) * ldafac] - a[(i - 1) + (j - 1) * lda];
             }
         }
     }
     //
-    //     Compute norm( L*U - A ) / ( N * norm(A) * EPS )
+    // Compute norm(L*U - A) / ( N * norm(A) * EPS )
     //
-    resid = Clanhe("1", uplo, n, afac, ldafac, rwork);
+    resid = Clanhe("1", uplo.elems(), n, afac, ldafac, rwork);
     //
     resid = ((resid / castREAL(n)) / anorm) / eps;
     //
-    //     End of Cpot01
+    // End of Cpot01
     //
 }

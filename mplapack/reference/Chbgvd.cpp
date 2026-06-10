@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,33 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZHBGVD.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Chbgvd(const char *jobz, const char *uplo, INTEGER const n, INTEGER const ka, INTEGER const kb, COMPLEX *ab, INTEGER const ldab, COMPLEX *bb, INTEGER const ldbb, REAL *w, COMPLEX *z, INTEGER const ldz, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER const lrwork, INTEGER *iwork, INTEGER const liwork, INTEGER &info) {
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     bool wantz = Mlsame(jobz, "V");
     bool upper = Mlsame(uplo, "U");
@@ -67,8 +53,8 @@ void Chbgvd(const char *jobz, const char *uplo, INTEGER const n, INTEGER const k
         lrwmin = 1 + n;
         liwmin = 1;
     } else if (wantz) {
-        lwmin = 2 * n * n;
-        lrwmin = 1 + 5 * n + 2 * n * n;
+        lwmin = 2 * pow2(n);
+        lrwmin = 1 + 5 * n + 2 * pow2(n);
         liwmin = 3 + 5 * n;
     } else {
         lwmin = n;
@@ -95,7 +81,7 @@ void Chbgvd(const char *jobz, const char *uplo, INTEGER const n, INTEGER const k
     //
     if (info == 0) {
         work[1 - 1] = lwmin;
-        rwork[1 - 1] = lrwmin;
+        rwork[1 - 1] = castREAL(lrwmin);
         iwork[1 - 1] = liwmin;
         //
         if (lwork < lwmin && !lquery) {
@@ -114,13 +100,13 @@ void Chbgvd(const char *jobz, const char *uplo, INTEGER const n, INTEGER const k
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
     }
     //
-    //     Form a split Cholesky factorization of B.
+    // Form a split Cholesky factorization of B.
     //
     Cpbstf(uplo, n, kb, bb, ldbb, info);
     if (info != 0) {
@@ -128,7 +114,7 @@ void Chbgvd(const char *jobz, const char *uplo, INTEGER const n, INTEGER const k
         return;
     }
     //
-    //     Transform problem to standard eigenvalue problem.
+    // Transform problem to standard eigenvalue problem.
     //
     INTEGER inde = 1;
     INTEGER indwrk = inde + n;
@@ -138,7 +124,7 @@ void Chbgvd(const char *jobz, const char *uplo, INTEGER const n, INTEGER const k
     INTEGER iinfo = 0;
     Chbgst(jobz, uplo, n, ka, kb, ab, ldab, bb, ldbb, z, ldz, work, rwork, iinfo);
     //
-    //     Reduce Hermitian band matrix to tridiagonal form.
+    // Reduce Hermitian band matrix to tridiagonal form.
     //
     char vect;
     if (wantz) {
@@ -148,7 +134,7 @@ void Chbgvd(const char *jobz, const char *uplo, INTEGER const n, INTEGER const k
     }
     Chbtrd(&vect, uplo, n, ka, ab, ldab, w, &rwork[inde - 1], z, ldz, work, iinfo);
     //
-    //     For eigenvalues only, call Rsterf.  For eigenvectors, call Cstedc.
+    // For eigenvalues only, call Rsterf.  For eigenvectors, call Cstedc.
     //
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     const COMPLEX czero = COMPLEX(0.0, 0.0);
@@ -161,9 +147,9 @@ void Chbgvd(const char *jobz, const char *uplo, INTEGER const n, INTEGER const k
     }
     //
     work[1 - 1] = lwmin;
-    rwork[1 - 1] = lrwmin;
+    rwork[1 - 1] = castREAL(lrwmin);
     iwork[1 - 1] = liwmin;
     //
-    //     End of Chbgvd
+    // End of Chbgvd
     //
 }

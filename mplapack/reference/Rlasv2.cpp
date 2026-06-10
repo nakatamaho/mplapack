@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,39 +26,27 @@
  *
  */
 
+// Derived from LAPACK routine DLASV2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rlasv2(REAL const f, REAL const g, REAL const h, REAL &ssmin, REAL &ssmax, REAL &snr, REAL &csr, REAL &snl, REAL &csl) {
-    //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    // =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     REAL ft = f;
     REAL fa = abs(ft);
     REAL ht = h;
     REAL ha = abs(h);
     //
-    //     PMAX points to the maximum absolute element of matrix
-    //       PMAX = 1 if F largest in absolute values
-    //       PMAX = 2 if G largest in absolute values
-    //       PMAX = 3 if H largest in absolute values
+    // PMAX points to the maximum absolute element of matrix
+    // PMAX = 1 if F largest in absolute values
+    // PMAX = 2 if G largest in absolute values
+    // PMAX = 3 if H largest in absolute values
     //
     INTEGER pmax = 1;
     bool swap = (ha > fa);
@@ -72,7 +60,7 @@ void Rlasv2(REAL const f, REAL const g, REAL const h, REAL &ssmin, REAL &ssmax, 
         fa = ha;
         ha = temp;
         //
-        //        Now FA .ge. HA
+        // Now FA .ge. HA
         //
     }
     REAL gt = g;
@@ -93,12 +81,12 @@ void Rlasv2(REAL const f, REAL const g, REAL const h, REAL &ssmin, REAL &ssmax, 
     REAL tt = 0.0;
     REAL s = 0.0;
     REAL r = 0.0;
-    const REAL half = 0.5e0;
+    const REAL half = 0.5;
     REAL a = 0.0;
     const REAL four = 4.0;
     if (ga == zero) {
         //
-        //        Diagonal matrix
+        // Diagonal matrix
         //
         ssmin = ha;
         ssmax = fa;
@@ -112,7 +100,7 @@ void Rlasv2(REAL const f, REAL const g, REAL const h, REAL &ssmin, REAL &ssmax, 
             pmax = 2;
             if ((fa / ga) < Rlamch("EPS")) {
                 //
-                //              Case of very large GA
+                // Case of very large GA
                 //
                 gasmal = false;
                 ssmax = ga;
@@ -129,33 +117,33 @@ void Rlasv2(REAL const f, REAL const g, REAL const h, REAL &ssmin, REAL &ssmax, 
         }
         if (gasmal) {
             //
-            //           Normal case
+            // Normal case
             //
             d = fa - ha;
             if (d == fa) {
                 //
-                //              Copes with infinite F or H
+                // Copes with infinite F or H
                 //
                 l = one;
             } else {
                 l = d / fa;
             }
             //
-            //           Note that 0 .le. L .le. 1
+            // Note that 0 .le. L .le. 1
             //
             m = gt / ft;
             //
-            //           Note that abs(M) .le. 1/macheps
+            // Note that abs(M) .le. 1/macheps
             //
             t = two - l;
             //
-            //           Note that T .ge. 1
+            // Note that T .ge. 1
             //
             mm = m * m;
             tt = t * t;
             s = sqrt(tt + mm);
             //
-            //           Note that 1 .le. S .le. 1 + 1/macheps
+            // Note that 1 .le. S .le. 1 + 1/macheps
             //
             if (l == zero) {
                 r = abs(m);
@@ -163,17 +151,17 @@ void Rlasv2(REAL const f, REAL const g, REAL const h, REAL &ssmin, REAL &ssmax, 
                 r = sqrt(l * l + mm);
             }
             //
-            //           Note that 0 .le. R .le. 1 + 1/macheps
+            // Note that 0 .le. R .le. 1 + 1/macheps
             //
             a = half * (s + r);
             //
-            //           Note that 1 .le. A .le. 1 + abs(M)
+            // Note that 1 .le. A .le. 1 + abs(M)
             //
             ssmin = ha / a;
             ssmax = fa * a;
             if (mm == zero) {
                 //
-                //              Note that M is very tiny
+                // Note that M is very tiny
                 //
                 if (l == zero) {
                     t = sign(two, ft) * sign(one, gt);
@@ -202,7 +190,7 @@ void Rlasv2(REAL const f, REAL const g, REAL const h, REAL &ssmin, REAL &ssmax, 
         snr = srt;
     }
     //
-    //     Correct signs of SSMAX and SSMIN
+    // Correct signs of SSMAX and SSMIN
     //
     REAL tsign = 0.0;
     if (pmax == 1) {
@@ -217,6 +205,6 @@ void Rlasv2(REAL const f, REAL const g, REAL const h, REAL &ssmin, REAL &ssmax, 
     ssmax = sign(ssmax, tsign);
     ssmin = sign(ssmin, tsign * sign(one, f) * sign(one, h));
     //
-    //     End of Rlasv2
+    // End of Rlasv2
     //
 }

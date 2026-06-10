@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DCHKBK.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,23 +43,10 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-#include <iostream>
-#include <sstream>
-#include <string>
-#include <vector>
-#include <regex>
-
-using namespace std;
-using std::regex;
-using std::regex_replace;
-
 void Rchkbk(INTEGER const nin, INTEGER const nout) {
     common cmn;
     common_read read(cmn);
     common_write write(cmn);
-    char buf[1024];
     INTEGER lmax[2];
     INTEGER ninfo = 0;
     INTEGER knt = 0;
@@ -69,106 +63,91 @@ void Rchkbk(INTEGER const nin, INTEGER const nout) {
     REAL e[lde * lde];
     INTEGER j = 0;
     REAL ein[lde * lde];
-    INTEGER ldein = lde;
     INTEGER info = 0;
     REAL vmax = 0.0;
     REAL x = 0.0;
+    static const char *format_9999 = "(1x,'.. test output of Rgebak .. ')";
+    static const char *format_9998 = "(1x,'value of largest test error             = ',d12.3)";
+    static const char *format_9997 = "(1x,'example number where info is not zero   = ',i4)";
+    static const char *format_9996 = "(1x,'example number having largest error     = ',i4)";
+    static const char *format_9995 = "(1x,'number of examples where info is not 0  = ',i4)";
+    static const char *format_9994 = "(1x,'total number of examples tested         = ',i4)";
     //
     lmax[1 - 1] = 0;
     lmax[2 - 1] = 0;
     ninfo = 0;
     knt = 0;
     rmax = zero;
+    eps = Rlamch("E");
     safmin = Rlamch("S");
-    // following should be double of Rlamch("E") since input data is at most in double prec.
-    eps = 1.1102230246251565E-016; // Rlamch("E");
-    string str;
-    char line[1024];
-    double dtmp;
+//
+statement_10:
     //
-    while (getline(cin, str)) {
-        stringstream ss(str);
-        ss >> n;
-        ss >> ilo;
-        ss >> ihi;
-        if (n == 0)
-            break;
-        //
-        // printf("%d %d %d\n", (int)n, (int)ilo, (int)ihi);
-        getline(cin, str);
-        string _r = regex_replace(str, regex("D\\+"), "e+");
-        str = regex_replace(_r, regex("D\\-"), "e-");
-        istringstream iss(str);
-        for (i = 1; i <= n; i = i + 1) {
-            iss >> dtmp;
-            scale[i - 1] = dtmp;
-        }
-        // printf("scale=");printvec(scale,n);printf("\n");
-        getline(cin, str); // ignore blank line
-        for (i = 1; i <= n; i = i + 1) {
-            getline(cin, str);
-            string _r = regex_replace(str, regex("D\\+"), "e+");
-            str = regex_replace(_r, regex("D\\-"), "e-");
-            istringstream iss(str);
-            for (j = 1; j <= n; j = j + 1) {
-                iss >> dtmp;
-                e[(i - 1) + (j - 1) * lde] = dtmp;
-            }
-        }
-        //
-        // printf("e=");printmat(n,n,e,lde);printf("\n");
-        getline(cin, str); // ignore blank line
-        for (i = 1; i <= n; i = i + 1) {
-            getline(cin, str);
-            string _r = regex_replace(str, regex("D\\+"), "e+");
-            str = regex_replace(_r, regex("D\\-"), "e-");
-            istringstream iss(str);
-            for (j = 1; j <= n; j = j + 1) {
-                iss >> dtmp;
-                ein[(i - 1) + (j - 1) * ldein] = dtmp;
-            }
-        }
-        //
-        knt++;
-        // printf("ein=");printmat(n,n,ein,lde);printf("\n");
-        Rgebak("B", "R", n, ilo, ihi, scale, n, e, lde, info);
-        // printf("eout=");printmat(n,n,e,lde);printf("\n");
-        // printf("ein-eout\n");
-        //
-        if (info != 0) {
-            ninfo++;
-            lmax[1 - 1] = knt;
-        }
-        //
-        getline(cin, str); // ignore blank line
-        vmax = zero;
-        for (i = 1; i <= n; i = i + 1) {
-            for (j = 1; j <= n; j = j + 1) {
-                x = abs(e[(i - 1) + (j - 1) * lde] - ein[(i - 1) + (j - 1) * ldein]) / eps;
-                if (abs(e[(i - 1) + (j - 1) * lde]) > safmin) {
-                    x = x / abs(e[(i - 1) + (j - 1) * lde]);
-                }
-                vmax = max(vmax, x);
-            }
-        }
-        //
-        if (vmax > rmax) {
-            lmax[2 - 1] = knt;
-            rmax = vmax;
-        }
-        //
+    read(nin, star), n, ilo, ihi;
+    if (n == 0) {
+        goto statement_60;
     }
     //
+    {
+        read_loop rloop(cmn, nin, star);
+        for (i = 1; i <= n; i = i + 1) {
+            rloop, scale[i - 1];
+        }
+    }
+    for (i = 1; i <= n; i = i + 1) {
+        {
+            read_loop rloop(cmn, nin, star);
+            for (j = 1; j <= n; j = j + 1) {
+                rloop, e[(i - 1) + (j - 1) * lde];
+            }
+        }
+    }
     //
-    write(nout, "(1x,'.. test output of Rgebak .. ')");
+    for (i = 1; i <= n; i = i + 1) {
+        {
+            read_loop rloop(cmn, nin, star);
+            for (j = 1; j <= n; j = j + 1) {
+                rloop, ein[(i - 1) + (j - 1) * lde];
+            }
+        }
+    }
     //
-    sprintnum_short(buf, rmax);
-    write(nout, "(1x,'value of largest test error             = ',a)"), buf;
-    write(nout, "(1x,'example number where info is not zero   = ',i4)"), lmax[1 - 1];
-    write(nout, "(1x,'example number having largest error     = ',i4)"), lmax[2 - 1];
-    write(nout, "(1x,'number of examples where info is not 0  = ',i4)"), ninfo;
-    write(nout, "(1x,'total number of examples tested         = ',i4)"), knt;
+    knt++;
+    Rgebak("B", "R", n, ilo, ihi, scale, n, e, lde, info);
     //
-    //     End of Rchkbk
+    if (info != 0) {
+        ninfo++;
+        lmax[1 - 1] = knt;
+    }
+    //
+    vmax = zero;
+    for (i = 1; i <= n; i = i + 1) {
+        for (j = 1; j <= n; j = j + 1) {
+            x = abs(e[(i - 1) + (j - 1) * lde] - ein[(i - 1) + (j - 1) * lde]) / eps;
+            if (abs(e[(i - 1) + (j - 1) * lde]) > safmin) {
+                x = x / abs(e[(i - 1) + (j - 1) * lde]);
+            }
+            vmax = max(vmax, x);
+        }
+    }
+    //
+    if (vmax > rmax) {
+        lmax[2 - 1] = knt;
+        rmax = vmax;
+    }
+    //
+    goto statement_10;
+//
+statement_60:
+    //
+    write(nout, format_9999);
+    //
+    write(nout, format_9998), rmax;
+    write(nout, format_9997), lmax[1 - 1];
+    write(nout, format_9996), lmax[2 - 1];
+    write(nout, format_9995), ninfo;
+    write(nout, format_9994), knt;
+    //
+    // End of Rchkbk
     //
 }

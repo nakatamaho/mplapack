@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZGELQ2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Cgelq2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *tau, COMPLEX *work, INTEGER &info) {
     //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     if (m < 0) {
@@ -49,26 +56,21 @@ void Cgelq2(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COM
     INTEGER k = min(m, n);
     //
     INTEGER i = 0;
-    COMPLEX alpha = 0.0;
-    const COMPLEX one = COMPLEX(1.0, 0.0);
     for (i = 1; i <= k; i = i + 1) {
         //
-        //        Generate elementary reflector H(i) to annihilate A(i,i+1:n)
+        // Generate elementary reflector H(i) to annihilate A(i,i+1:n)
         //
         Clacgv(n - i + 1, &a[(i - 1) + (i - 1) * lda], lda);
-        alpha = a[(i - 1) + (i - 1) * lda];
-        Clarfg(n - i + 1, alpha, &a[(i - 1) + (min(i + 1, n) - 1) * lda], lda, tau[i - 1]);
+        Clarfg(n - i + 1, a[(i - 1) + (i - 1) * lda], &a[(i - 1) + (min(i + 1, n) - 1) * lda], lda, tau[i - 1]);
         if (i < m) {
             //
-            //           Apply H(i) to A(i+1:m,i:n) from the right
+            // Apply H(i) to A(i+1:m,i:n) from the right
             //
-            a[(i - 1) + (i - 1) * lda] = one;
-            Clarf("Right", m - i, n - i + 1, &a[(i - 1) + (i - 1) * lda], lda, tau[i - 1], &a[((i + 1) - 1) + (i - 1) * lda], lda, work);
+            Clarf1f("Right", m - i, n - i + 1, &a[(i - 1) + (i - 1) * lda], lda, tau[i - 1], &a[((i + 1) - 1) + (i - 1) * lda], lda, work);
         }
-        a[(i - 1) + (i - 1) * lda] = alpha;
         Clacgv(n - i + 1, &a[(i - 1) + (i - 1) * lda], lda);
     }
     //
-    //     End of Cgelq2
+    // End of Cgelq2
     //
 }

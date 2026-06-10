@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DSYT01.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,32 +43,9 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Rsyt01(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL *afac, INTEGER const ldafac, INTEGER *ipiv, REAL *c, INTEGER const ldc, REAL *rwork, REAL &resid) {
+void Rsyt01(fem::str_cref uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL *afac, INTEGER const ldafac, INTEGER *ipiv, REAL *c, INTEGER const ldc, REAL *rwork, REAL &resid) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Quick exit if N = 0.
+    // Quick exit if N = 0.
     //
     const REAL zero = 0.0;
     if (n <= 0) {
@@ -69,30 +53,30 @@ void Rsyt01(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL 
         return;
     }
     //
-    //     Determine EPS and the norm of A.
+    // Determine EPS and the norm of A.
     //
     REAL eps = Rlamch("Epsilon");
-    REAL anorm = Rlansy("1", uplo, n, a, lda, rwork);
+    REAL anorm = Rlansy("1", uplo.elems(), n, a, lda, rwork);
     //
-    //     Initialize C to the identity matrix.
+    // Initialize C to the identity matrix.
     //
     const REAL one = 1.0;
     Rlaset("Full", n, n, zero, one, c, ldc);
     //
-    //     Call Rlavsy to form the product D * U' (or D * L' ).
+    // Call Rlavsy to form the product D * U' (or D * L' ).
     //
     INTEGER info = 0;
     Rlavsy(uplo, "Transpose", "Non-unit", n, n, afac, ldafac, ipiv, c, ldc, info);
     //
-    //     Call Rlavsy again to multiply by U (or L ).
+    // Call Rlavsy again to multiply by U (or L ).
     //
     Rlavsy(uplo, "No transpose", "Unit", n, n, afac, ldafac, ipiv, c, ldc, info);
     //
-    //     Compute the difference  C - A .
+    // Compute the difference  C - A .
     //
     INTEGER j = 0;
     INTEGER i = 0;
-    if (Mlsame(uplo, "U")) {
+    if (Mlsame(uplo.elems(), "U")) {
         for (j = 1; j <= n; j = j + 1) {
             for (i = 1; i <= j; i = i + 1) {
                 c[(i - 1) + (j - 1) * ldc] = c[(i - 1) + (j - 1) * ldc] - a[(i - 1) + (j - 1) * lda];
@@ -106,9 +90,9 @@ void Rsyt01(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL 
         }
     }
     //
-    //     Compute norm( C - A ) / ( N * norm(A) * EPS )
+    // Compute norm( C - A ) / ( N * norm(A) * EPS )
     //
-    resid = Rlansy("1", uplo, n, c, ldc, rwork);
+    resid = Rlansy("1", uplo.elems(), n, c, ldc, rwork);
     //
     if (anorm <= zero) {
         if (resid != zero) {
@@ -118,6 +102,6 @@ void Rsyt01(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL 
         resid = ((resid / castREAL(n)) / anorm) / eps;
     }
     //
-    //     End of Rsyt01
+    // End of Rsyt01
     //
 }

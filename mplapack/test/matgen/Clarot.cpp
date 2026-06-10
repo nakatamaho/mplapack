@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,33 +26,21 @@
  *
  */
 
+// Derived from LAPACK routine ZLAROT.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
+#include <mplapack_matgen.h>
+
 void Clarot(bool const lrows, bool const lleft, bool const lright, INTEGER const nl, COMPLEX const c, COMPLEX const s, COMPLEX *a, INTEGER const lda, COMPLEX &xleft, COMPLEX &xright) {
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Set up indices, arrays for ends
+    // Set up indices, arrays for ends
     //
     INTEGER iinc = 0;
     INTEGER inext = 0;
@@ -89,7 +77,7 @@ void Clarot(bool const lrows, bool const lleft, bool const lright, INTEGER const
         yt[nt - 1] = a[iyt - 1];
     }
     //
-    //     Check for errors
+    // Check for errors
     //
     if (nl < nt) {
         Mxerbla("Clarot", 4);
@@ -100,9 +88,9 @@ void Clarot(bool const lrows, bool const lleft, bool const lright, INTEGER const
         return;
     }
     //
-    //     Rotate
+    // Rotate
     //
-    //     ZROT( NL-NT, A(IX),IINC, A(IY),IINC, C, S ) with complex C, S
+    // Crot( NL-NT, A(IX),IINC, A(IY),IINC, C, S ) with complex C, S
     //
     INTEGER j = 0;
     COMPLEX tempx = 0.0;
@@ -112,7 +100,7 @@ void Clarot(bool const lrows, bool const lleft, bool const lright, INTEGER const
         a[(ix + j * iinc) - 1] = tempx;
     }
     //
-    //     ZROT( NT, XT,1, YT,1, C, S ) with complex C, S
+    // Crot( NT, XT,1, YT,1, C, S ) with complex C, S
     //
     for (j = 1; j <= nt; j = j + 1) {
         tempx = c * xt[j - 1] + s * yt[j - 1];
@@ -120,7 +108,7 @@ void Clarot(bool const lrows, bool const lleft, bool const lright, INTEGER const
         xt[j - 1] = tempx;
     }
     //
-    //     Stuff values back into XLEFT, XRIGHT, etc.
+    // Stuff values back into XLEFT, XRIGHT, etc.
     //
     if (lleft) {
         a[1 - 1] = xt[1 - 1];
@@ -132,6 +120,6 @@ void Clarot(bool const lrows, bool const lleft, bool const lright, INTEGER const
         a[iyt - 1] = yt[nt - 1];
     }
     //
-    //     End of Clarot
+    // End of Clarot
     //
 }

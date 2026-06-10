@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,35 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DDISNA.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rdisna(const char *job, INTEGER const m, INTEGER const n, REAL *d, REAL *sep, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     bool eigen = Mlsame(job, "E");
@@ -105,13 +89,13 @@ void Rdisna(const char *job, INTEGER const m, INTEGER const n, REAL *d, REAL *se
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (k == 0) {
         return;
     }
     //
-    //     Compute reciprocal condition numbers
+    // Compute reciprocal condition numbers
     //
     REAL oldgap = 0.0;
     REAL newgap = 0.0;
@@ -138,8 +122,8 @@ void Rdisna(const char *job, INTEGER const m, INTEGER const n, REAL *d, REAL *se
         }
     }
     //
-    //     Ensure that reciprocal condition numbers are not less than
-    //     threshold, in order to limit the size of the error bound
+    // Ensure that reciprocal condition numbers are not less than
+    // threshold, in order to limit the size of the error bound
     //
     REAL eps = Rlamch("E");
     REAL safmin = Rlamch("S");
@@ -148,12 +132,12 @@ void Rdisna(const char *job, INTEGER const m, INTEGER const n, REAL *d, REAL *se
     if (anorm == zero) {
         thresh = eps;
     } else {
-        thresh = max(REAL(eps * anorm), safmin);
+        thresh = max(eps * anorm, safmin);
     }
     for (i = 1; i <= k; i = i + 1) {
         sep[i - 1] = max(sep[i - 1], thresh);
     }
     //
-    //     End of Rdisna
+    // End of Rdisna
     //
 }

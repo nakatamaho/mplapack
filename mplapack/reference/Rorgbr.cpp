@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,35 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DORGBR.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rorgbr(const char *vect, INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, INTEGER const lda, REAL *tau, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     bool wantq = Mlsame(vect, "Q");
@@ -77,13 +61,13 @@ void Rorgbr(const char *vect, INTEGER const m, INTEGER const n, INTEGER const k,
     INTEGER iinfo = 0;
     INTEGER lwkopt = 0;
     if (info == 0) {
-        work[1 - 1] = 1;
+        work[1 - 1] = 1.0;
         if (wantq) {
             if (m >= k) {
                 Rorgqr(m, n, k, a, lda, tau, work, -1, iinfo);
             } else {
                 if (m > 1) {
-                    Rorgqr(m - 1, m - 1, m - 1, &a[(2 - 1) + (2 - 1) * lda], lda, tau, work, -1, iinfo);
+                    Rorgqr(m - 1, m - 1, m - 1, a, lda, tau, work, -1, iinfo);
                 }
             }
         } else {
@@ -91,7 +75,7 @@ void Rorgbr(const char *vect, INTEGER const m, INTEGER const n, INTEGER const k,
                 Rorglq(m, n, k, a, lda, tau, work, -1, iinfo);
             } else {
                 if (n > 1) {
-                    Rorglq(n - 1, n - 1, n - 1, &a[(2 - 1) + (2 - 1) * lda], lda, tau, work, -1, iinfo);
+                    Rorglq(n - 1, n - 1, n - 1, a, lda, tau, work, -1, iinfo);
                 }
             }
         }
@@ -107,10 +91,10 @@ void Rorgbr(const char *vect, INTEGER const m, INTEGER const n, INTEGER const k,
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (m == 0 || n == 0) {
-        work[1 - 1] = 1;
+        work[1 - 1] = 1.0;
         return;
     }
     //
@@ -120,22 +104,22 @@ void Rorgbr(const char *vect, INTEGER const m, INTEGER const n, INTEGER const k,
     const REAL one = 1.0;
     if (wantq) {
         //
-        //        Form Q, determined by a call to Rgebrd to reduce an m-by-k
-        //        matrix
+        // Form Q, determined by a call to Rgebrd to reduce an m-by-k
+        // matrix
         //
         if (m >= k) {
             //
-            //           If m >= k, assume m >= n >= k
+            // If m >= k, assume m >= n >= k
             //
             Rorgqr(m, n, k, a, lda, tau, work, lwork, iinfo);
             //
         } else {
             //
-            //           If m < k, assume m = n
+            // If m < k, assume m = n
             //
-            //           Shift the vectors which define the elementary reflectors one
-            //           column to the right, and set the first row and column of Q
-            //           to those of the unit matrix
+            // Shift the vectors which define the elementary reflectors one
+            // column to the right, and set the first row and column of Q
+            // to those of the unit matrix
             //
             for (j = m; j >= 2; j = j - 1) {
                 a[(j - 1) * lda] = zero;
@@ -143,37 +127,37 @@ void Rorgbr(const char *vect, INTEGER const m, INTEGER const n, INTEGER const k,
                     a[(i - 1) + (j - 1) * lda] = a[(i - 1) + ((j - 1) - 1) * lda];
                 }
             }
-            a[(1 - 1)] = one;
+            a[0] = one;
             for (i = 2; i <= m; i = i + 1) {
                 a[(i - 1)] = zero;
             }
             if (m > 1) {
                 //
-                //              Form Q(2:m,2:m)
+                // Form Q(2:m,2:m)
                 //
                 Rorgqr(m - 1, m - 1, m - 1, &a[(2 - 1) + (2 - 1) * lda], lda, tau, work, lwork, iinfo);
             }
         }
     } else {
         //
-        //        Form P**T, determined by a call to Rgebrd to reduce a k-by-n
-        //        matrix
+        // Form P**T, determined by a call to Rgebrd to reduce a k-by-n
+        // matrix
         //
         if (k < n) {
             //
-            //           If k < n, assume k <= m <= n
+            // If k < n, assume k <= m <= n
             //
             Rorglq(m, n, k, a, lda, tau, work, lwork, iinfo);
             //
         } else {
             //
-            //           If k >= n, assume m = n
+            // If k >= n, assume m = n
             //
-            //           Shift the vectors which define the elementary reflectors one
-            //           row downward, and set the first row and column of P**T to
-            //           those of the unit matrix
+            // Shift the vectors which define the elementary reflectors one
+            // row downward, and set the first row and column of P**T to
+            // those of the unit matrix
             //
-            a[(1 - 1)] = one;
+            a[0] = one;
             for (i = 2; i <= n; i = i + 1) {
                 a[(i - 1)] = zero;
             }
@@ -185,7 +169,7 @@ void Rorgbr(const char *vect, INTEGER const m, INTEGER const n, INTEGER const k,
             }
             if (n > 1) {
                 //
-                //              Form P**T(2:n,2:n)
+                // Form P**T(2:n,2:n)
                 //
                 Rorglq(n - 1, n - 1, n - 1, &a[(2 - 1) + (2 - 1) * lda], lda, tau, work, lwork, iinfo);
             }
@@ -193,6 +177,6 @@ void Rorgbr(const char *vect, INTEGER const m, INTEGER const n, INTEGER const k,
     }
     work[1 - 1] = lwkopt;
     //
-    //     End of Rorgbr
+    // End of Rorgbr
     //
 }

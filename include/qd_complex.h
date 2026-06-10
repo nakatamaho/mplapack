@@ -129,20 +129,20 @@ const qd_complex operator+(const std::complex<double> &a, const qd_complex &b);
 const qd_complex operator-(const qd_complex &a, const qd_complex &b);
 const qd_complex operator-(const qd_complex &a, const qd_real &b);
 const qd_complex operator-(const qd_real &a, const qd_complex &b);
-const qd_complex operator-(const qd_complex &a, std::complex<double> &b);
-const qd_complex operator-(std::complex<double> &a, const qd_complex &b);
+const qd_complex operator-(const qd_complex &a, const std::complex<double> &b);
+const qd_complex operator-(const std::complex<double> &a, const qd_complex &b);
 
 const qd_complex operator*(const qd_complex &a, const qd_complex &b);
 const qd_complex operator*(const qd_complex &a, const qd_real &b);
 const qd_complex operator*(const qd_real &a, const qd_complex &b);
-const qd_complex operator*(const qd_complex &a, std::complex<double> &b);
-const qd_complex operator*(std::complex<double> &a, const qd_complex &b);
+const qd_complex operator*(const qd_complex &a, const std::complex<double> &b);
+const qd_complex operator*(const std::complex<double> &a, const qd_complex &b);
 
 const qd_complex operator/(const qd_complex &a, const qd_complex &b);
 const qd_complex operator/(const qd_complex &a, const qd_real &b);
 const qd_complex operator/(const qd_real &a, const qd_complex &b);
-const qd_complex operator/(const qd_complex &a, std::complex<double> &b);
-const qd_complex operator/(std::complex<double> &a, const qd_complex &b);
+const qd_complex operator/(const qd_complex &a, const std::complex<double> &b);
+const qd_complex operator/(const std::complex<double> &a, const qd_complex &b);
 
 // constructor
 inline qd_complex::qd_complex() {
@@ -309,6 +309,14 @@ inline const qd_complex operator-(const qd_complex &a, const qd_complex &b) {
     return tmp -= b;
 }
 
+inline const qd_complex operator-(const qd_complex &a, const std::complex<double> &b) {
+    return a - qd_complex(b);
+}
+
+inline const qd_complex operator-(const std::complex<double> &a, const qd_complex &b) {
+    return qd_complex(a) - b;
+}
+
 // XXX can overflow
 inline qd_complex &qd_complex::operator*=(const qd_complex &b) {
     qd_complex tmp(*this);
@@ -328,6 +336,14 @@ inline const qd_complex operator*(const qd_complex &a, const qd_complex &b) {
     qd_complex tmp(a);
     tmp *= b;
     return tmp;
+}
+
+inline const qd_complex operator*(const qd_complex &a, const std::complex<double> &b) {
+    return a * qd_complex(b);
+}
+
+inline const qd_complex operator*(const std::complex<double> &a, const qd_complex &b) {
+    return qd_complex(a) * b;
 }
 
 inline qd_complex &qd_complex::operator/=(const qd_complex &b) {
@@ -360,8 +376,8 @@ inline qd_complex &qd_complex::operator/=(const qd_complex &b) {
 
 inline qd_complex &qd_complex::operator/=(const qd_real &b) {
     qd_complex tmp(*this);
-    re = (tmp.re * b);
-    im = (tmp.im * b);
+    re = (tmp.re / b);
+    im = (tmp.im / b);
     return (*this);
 }
 
@@ -376,6 +392,12 @@ inline const qd_complex operator/(const qd_complex &a, const qd_complex &b) {
     qd_complex tmp(a);
     tmp /= b;
     return tmp;
+}
+inline const qd_complex operator/(const qd_complex &a, const std::complex<double> &b) {
+    return a / qd_complex(b);
+}
+inline const qd_complex operator/(const std::complex<double> &a, const qd_complex &b) {
+    return qd_complex(a) / b;
 }
 inline const qd_complex operator/(const qd_complex &a, const qd_real &b) {
     qd_complex tmp;

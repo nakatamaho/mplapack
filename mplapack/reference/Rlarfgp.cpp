@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,13 +26,21 @@
  *
  */
 
+// Derived from LAPACK routine DLARFGP.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rlarfgp(INTEGER const n, REAL &alpha, REAL *x, INTEGER const incx, REAL &tau) {
     const REAL zero = 0.0;
+    REAL eps = 0.0;
     REAL xnorm = 0.0;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     INTEGER j = 0;
     REAL beta = 0.0;
     REAL smlnum = 0.0;
@@ -46,20 +54,21 @@ void Rlarfgp(INTEGER const n, REAL &alpha, REAL *x, INTEGER const incx, REAL &ta
         return;
     }
     //
+    eps = Rlamch("Precision");
     xnorm = Rnrm2(n - 1, x, incx);
     //
-    if (xnorm == zero) {
+    if (xnorm <= eps * abs(alpha)) {
         //
-        //        H  =  [+/-1, 0; I], sign chosen so ALPHA >= 0
+        // H  =  [+/-1, 0; I], sign chosen so ALPHA >= 0.
         //
         if (alpha >= zero) {
-            //           When TAU.eq.ZERO, the vector is special-cased to be
-            //           all zeros in the application routines.  We do not need
-            //           to clear it.
+            // When TAU.eq.ZERO, the vector is special-cased to be
+            // all zeros in the application routines.  We do not need
+            // to clear it.
             tau = zero;
         } else {
-            //           However, the application routines rely on explicit
-            //           zero checks when TAU.ne.ZERO, and we must clear X.
+            // However, the application routines rely on explicit
+            // zero checks when TAU.ne.ZERO, and we must clear X.
             tau = two;
             for (j = 1; j <= n - 1; j = j + 1) {
                 x[(1 + (j - 1) * incx) - 1] = 0.0;
@@ -68,14 +77,14 @@ void Rlarfgp(INTEGER const n, REAL &alpha, REAL *x, INTEGER const incx, REAL &ta
         }
     } else {
         //
-        //        general case
+        // general case
         //
         beta = sign(Rlapy2(alpha, xnorm), alpha);
         smlnum = Rlamch("S") / Rlamch("E");
         knt = 0;
         if (abs(beta) < smlnum) {
             //
-            //           XNORM, BETA may be inaccurate; scale X and recompute them
+            // XNORM, BETA may be inaccurate; scale X and recompute them
             //
             bignum = one / smlnum;
         statement_10:
@@ -87,7 +96,7 @@ void Rlarfgp(INTEGER const n, REAL &alpha, REAL *x, INTEGER const incx, REAL &ta
                 goto statement_10;
             }
             //
-            //           New BETA is at most 1, at least SMLNUM
+            // New BETA is at most 1, at least SMLNUM
             //
             xnorm = Rnrm2(n - 1, x, incx);
             beta = sign(Rlapy2(alpha, xnorm), alpha);
@@ -105,12 +114,12 @@ void Rlarfgp(INTEGER const n, REAL &alpha, REAL *x, INTEGER const incx, REAL &ta
         //
         if (abs(tau) <= smlnum) {
             //
-            //           In the case where the computed TAU ends up being a denormalized number,
-            //           it loses relative accuracy. This is a BIG problem. Solution: flush TAU
-            //           to ZERO. This explains the next IF statement.
+            // In the case where the computed TAU ends up being a denormalized number,
+            // it loses relative accuracy. This is a BIG problem. Solution: flush TAU
+            // to ZERO. This explains the next IF statement.
             //
-            //           (Bug report provided by Pat Quillen from MathWorks on Jul 29, 2009.)
-            //           (Thanks Pat. Thanks MathWorks.)
+            // (Bug report provided by Pat Quillen from MathWorks on Jul 29, 2009.)
+            // (Thanks Pat. Thanks MathWorks.)
             //
             if (savealpha >= zero) {
                 tau = zero;
@@ -124,13 +133,13 @@ void Rlarfgp(INTEGER const n, REAL &alpha, REAL *x, INTEGER const incx, REAL &ta
             //
         } else {
             //
-            //           This is the general case.
+            // This is the general case.
             //
             Rscal(n - 1, one / alpha, x, incx);
             //
         }
         //
-        //        If BETA is subnormal, it may lose relative accuracy
+        // If BETA is subnormal, it may lose relative accuracy
         //
         for (j = 1; j <= knt; j = j + 1) {
             beta = beta * smlnum;
@@ -138,6 +147,6 @@ void Rlarfgp(INTEGER const n, REAL &alpha, REAL *x, INTEGER const incx, REAL &ta
         alpha = beta;
     }
     //
-    //     End of Rlarfgp
+    // End of Rlarfgp
     //
 }

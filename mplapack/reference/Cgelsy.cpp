@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZGELSY.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -68,15 +75,15 @@ void Cgelsy(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
     ismin = mn + 1;
     ismax = 2 * mn + 1;
     //
-    //     Test the input arguments.
+    // Test the input arguments.
     //
     info = 0;
     nb1 = iMlaenv(1, "Cgeqrf", " ", m, n, -1, -1);
     nb2 = iMlaenv(1, "Cgerqf", " ", m, n, -1, -1);
     nb3 = iMlaenv(1, "Cunmqr", " ", m, n, nrhs, -1);
     nb4 = iMlaenv(1, "Cunmrq", " ", m, n, nrhs, -1);
-    nb = max({nb1, nb2, nb3, nb4});
-    lwkopt = max({(INTEGER)1, mn + 2 * n + nb * (n + 1), 2 * mn + nb * nrhs});
+    nb = max(nb1, nb2, nb3, nb4);
+    lwkopt = max((INTEGER)1, mn + 2 * n + nb * (n + 1), 2 * mn + nb * nrhs);
     work[1 - 1] = COMPLEX(lwkopt);
     lquery = (lwork == -1);
     if (m < 0) {
@@ -87,9 +94,9 @@ void Cgelsy(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
         info = -3;
     } else if (lda < max((INTEGER)1, m)) {
         info = -5;
-    } else if (ldb < max({(INTEGER)1, m, n})) {
+    } else if (ldb < max((INTEGER)1, m, n)) {
         info = -7;
-    } else if (lwork < (mn + max({(INTEGER)2 * mn, n + 1, mn + nrhs})) && !lquery) {
+    } else if (lwork < (mn + max(2 * mn, n + 1, mn + nrhs)) && !lquery) {
         info = -12;
     }
     //
@@ -100,37 +107,37 @@ void Cgelsy(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
-    if (min({m, n, nrhs}) == 0) {
+    if (min(m, n, nrhs) == 0) {
         rank = 0;
         return;
     }
     //
-    //     Get machine parameters
+    // Get machine parameters
     //
     smlnum = Rlamch("S") / Rlamch("P");
     bignum = one / smlnum;
     //
-    //     Scale A, B if max entries outside range [SMLNUM,BIGNUM]
+    // Scale A, B if max entries outside range [SMLNUM,BIGNUM]
     //
     anrm = Clange("M", m, n, a, lda, rwork);
     iascl = 0;
     if (anrm > zero && anrm < smlnum) {
         //
-        //        Scale matrix norm up to SMLNUM
+        // Scale matrix norm up to SMLNUM
         //
         Clascl("G", 0, 0, anrm, smlnum, m, n, a, lda, info);
         iascl = 1;
     } else if (anrm > bignum) {
         //
-        //        Scale matrix norm down to BIGNUM
+        // Scale matrix norm down to BIGNUM
         //
         Clascl("G", 0, 0, anrm, bignum, m, n, a, lda, info);
         iascl = 2;
     } else if (anrm == zero) {
         //
-        //        Matrix all zero. Return zero solution.
+        // Matrix all zero. Return zero solution.
         //
         Claset("F", max(m, n), nrhs, czero, czero, b, ldb);
         rank = 0;
@@ -141,34 +148,34 @@ void Cgelsy(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
     ibscl = 0;
     if (bnrm > zero && bnrm < smlnum) {
         //
-        //        Scale matrix norm up to SMLNUM
+        // Scale matrix norm up to SMLNUM
         //
         Clascl("G", 0, 0, bnrm, smlnum, m, nrhs, b, ldb, info);
         ibscl = 1;
     } else if (bnrm > bignum) {
         //
-        //        Scale matrix norm down to BIGNUM
+        // Scale matrix norm down to BIGNUM
         //
         Clascl("G", 0, 0, bnrm, bignum, m, nrhs, b, ldb, info);
         ibscl = 2;
     }
     //
-    //     Compute QR factorization with column pivoting of A:
-    //        A * P = Q * R
+    // Compute QR factorization with column pivoting of A:
+    // A * P = Q * R
     //
     Cgeqp3(m, n, a, lda, jpvt, &work[1 - 1], &work[(mn + 1) - 1], lwork - mn, rwork, info);
     wsize = mn + work[(mn + 1) - 1].real();
     //
-    //     complex workspace: MN+NB*(N+1). real workspace 2*N.
-    //     Details of Householder rotations stored in WORK(1:MN).
+    // complex workspace: MN+NB*(N+1). real workspace 2*N.
+    // Details of Householder rotations stored in WORK(1:MN).
     //
-    //     Determine RANK using incremental condition estimation
+    // Determine RANK using incremental condition estimation
     //
     work[ismin - 1] = cone;
     work[ismax - 1] = cone;
-    smax = abs(a[(1 - 1)]);
+    smax = abs(a[0]);
     smin = smax;
-    if (abs(a[(1 - 1)]) == zero) {
+    if (abs(a[0]) == zero) {
         rank = 0;
         Claset("F", max(m, n), nrhs, czero, czero, b, ldb);
         goto statement_70;
@@ -196,29 +203,29 @@ statement_10:
         }
     }
     //
-    //     complex workspace: 3*MN.
+    // complex workspace: 3*MN.
     //
-    //     Logically partition R = [ R11 R12 ]
-    //                             [  0  R22 ]
-    //     where R11 = R(1:RANK,1:RANK)
+    // Logically partition R = [ R11 R12 ]
+    // [  0  R22 ]
+    // where R11 = R(1:RANK,1:RANK)
     //
-    //     [R11,R12] = [ T11, 0 ] * Y
+    // [R11,R12] = [ T11, 0 ] * Y
     //
     if (rank < n) {
         Ctzrzf(rank, n, a, lda, &work[(mn + 1) - 1], &work[(2 * mn + 1) - 1], lwork - 2 * mn, info);
     }
     //
-    //     complex workspace: 2*MN.
-    //     Details of Householder rotations stored in WORK(MN+1:2*MN)
+    // complex workspace: 2*MN.
+    // Details of Householder rotations stored in WORK(MN+1:2*MN)
     //
-    //     B(1:M,1:NRHS) := Q**H * B(1:M,1:NRHS)
+    // B(1:M,1:NRHS) := Q**H * B(1:M,1:NRHS)
     //
     Cunmqr("Left", "Conjugate transpose", m, nrhs, mn, a, lda, &work[1 - 1], b, ldb, &work[(2 * mn + 1) - 1], lwork - 2 * mn, info);
-    wsize = max(wsize, REAL(2 * mn + work[(2 * mn + 1) - 1].real()));
+    wsize = max(wsize, 2 * mn + work[(2 * mn + 1) - 1].real());
     //
-    //     complex workspace: 2*MN+NB*NRHS.
+    // complex workspace: 2*MN+NB*NRHS.
     //
-    //     B(1:RANK,1:NRHS) := inv(T11) * B(1:RANK,1:NRHS)
+    // B(1:RANK,1:NRHS) := inv(T11) * B(1:RANK,1:NRHS)
     //
     Ctrsm("Left", "Upper", "No transpose", "Non-unit", rank, nrhs, cone, a, lda, b, ldb);
     //
@@ -228,15 +235,15 @@ statement_10:
         }
     }
     //
-    //     B(1:N,1:NRHS) := Y**H * B(1:N,1:NRHS)
+    // B(1:N,1:NRHS) := Y**H * B(1:N,1:NRHS)
     //
     if (rank < n) {
         Cunmrz("Left", "Conjugate transpose", n, nrhs, rank, n - rank, a, lda, &work[(mn + 1) - 1], b, ldb, &work[(2 * mn + 1) - 1], lwork - 2 * mn, info);
     }
     //
-    //     complex workspace: 2*MN+NRHS.
+    // complex workspace: 2*MN+NRHS.
     //
-    //     B(1:N,1:NRHS) := P * B(1:N,1:NRHS)
+    // B(1:N,1:NRHS) := P * B(1:N,1:NRHS)
     //
     for (j = 1; j <= nrhs; j = j + 1) {
         for (i = 1; i <= n; i = i + 1) {
@@ -245,9 +252,9 @@ statement_10:
         Ccopy(n, &work[1 - 1], 1, &b[(j - 1) * ldb], 1);
     }
     //
-    //     complex workspace: N.
+    // complex workspace: N.
     //
-    //     Undo scaling
+    // Undo scaling
     //
     if (iascl == 1) {
         Clascl("G", 0, 0, anrm, smlnum, n, nrhs, b, ldb, info);
@@ -265,6 +272,6 @@ statement_10:
 statement_70:
     work[1 - 1] = COMPLEX(lwkopt);
     //
-    //     End of Cgelsy
+    // End of Cgelsy
     //
 }

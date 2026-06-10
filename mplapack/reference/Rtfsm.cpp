@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DTFSM.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rtfsm(const char *transr, const char *side, const char *uplo, const char *trans, const char *diag, INTEGER const m, INTEGER const n, REAL const alpha, REAL *a, REAL *b, INTEGER const ldb) {
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     INTEGER info = 0;
     bool normaltransr = Mlsame(transr, "N");
@@ -60,13 +67,13 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
         return;
     }
     //
-    //     Quick return when ( (N.EQ.0).OR.(M.EQ.0) )
+    // Quick return when ( (N.EQ.0).OR.(M.EQ.0) )
     //
     if ((m == 0) || (n == 0)) {
         return;
     }
     //
-    //     Quick return when ALPHA.EQ.(0D+0)
+    // Quick return when ALPHA.EQ.(0D+0)
     //
     const REAL zero = 0.0;
     INTEGER j = 0;
@@ -90,11 +97,11 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
     INTEGER n1 = 0;
     if (lside) {
         //
-        //        SIDE = 'L'
+        // SIDE = 'L'
         //
-        //        A is M-by-M.
-        //        If M is odd, set NISODD = .TRUE., and M1 and M2.
-        //        If M is even, NISODD = .FALSE., and M.
+        // A is M-by-M.
+        // If M is odd, set NISODD = .TRUE., and M1 and M2.
+        // If M is even, NISODD = .FALSE., and M.
         //
         if (mod(m, 2) == 0) {
             misodd = false;
@@ -112,20 +119,20 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
         //
         if (misodd) {
             //
-            //           SIDE = 'L' and N is odd
+            // SIDE = 'L' and N is odd
             //
             if (normaltransr) {
                 //
-                //              SIDE = 'L', N is odd, and TRANSR = 'N'
+                // SIDE = 'L', N is odd, and TRANSR = 'N'
                 //
                 if (lower) {
                     //
-                    //                 SIDE  ='L', N is odd, TRANSR = 'N', and UPLO = 'L'
+                    // SIDE  ='L', N is odd, TRANSR = 'N', and UPLO = 'L'
                     //
                     if (notrans) {
                         //
-                        //                    SIDE  ='L', N is odd, TRANSR = 'N', UPLO = 'L', and
-                        //                    TRANS = 'N'
+                        // SIDE  ='L', N is odd, TRANSR = 'N', UPLO = 'L', and
+                        // TRANS = 'N'
                         //
                         if (m == 1) {
                             Rtrsm("L", "L", "N", diag, m1, n, alpha, a, m, b, ldb);
@@ -137,8 +144,8 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
                         //
                     } else {
                         //
-                        //                    SIDE  ='L', N is odd, TRANSR = 'N', UPLO = 'L', and
-                        //                    TRANS = 'T'
+                        // SIDE  ='L', N is odd, TRANSR = 'N', UPLO = 'L', and
+                        // TRANS = 'T'
                         //
                         if (m == 1) {
                             Rtrsm("L", "L", "T", diag, m1, n, alpha, &a[0], m, b, ldb);
@@ -152,12 +159,12 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
                     //
                 } else {
                     //
-                    //                 SIDE  ='L', N is odd, TRANSR = 'N', and UPLO = 'U'
+                    // SIDE  ='L', N is odd, TRANSR = 'N', and UPLO = 'U'
                     //
                     if (!notrans) {
                         //
-                        //                    SIDE  ='L', N is odd, TRANSR = 'N', UPLO = 'U', and
-                        //                    TRANS = 'N'
+                        // SIDE  ='L', N is odd, TRANSR = 'N', UPLO = 'U', and
+                        // TRANS = 'N'
                         //
                         Rtrsm("L", "L", "N", diag, m1, n, alpha, &a[m2], m, b, ldb);
                         Rgemm("T", "N", m2, n, m1, -one, &a[0], m, b, ldb, alpha, &b[m1], ldb);
@@ -165,8 +172,8 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
                         //
                     } else {
                         //
-                        //                    SIDE  ='L', N is odd, TRANSR = 'N', UPLO = 'U', and
-                        //                    TRANS = 'T'
+                        // SIDE  ='L', N is odd, TRANSR = 'N', UPLO = 'U', and
+                        // TRANS = 'T'
                         //
                         Rtrsm("L", "U", "N", diag, m2, n, alpha, &a[m1], m, &b[m1], ldb);
                         Rgemm("N", "N", m1, n, m2, -one, &a[0], m, &b[m1], ldb, alpha, b, ldb);
@@ -178,16 +185,16 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
                 //
             } else {
                 //
-                //              SIDE = 'L', N is odd, and TRANSR = 'T'
+                // SIDE = 'L', N is odd, and TRANSR = 'T'
                 //
                 if (lower) {
                     //
-                    //                 SIDE  ='L', N is odd, TRANSR = 'T', and UPLO = 'L'
+                    // SIDE  ='L', N is odd, TRANSR = 'T', and UPLO = 'L'
                     //
                     if (notrans) {
                         //
-                        //                    SIDE  ='L', N is odd, TRANSR = 'T', UPLO = 'L', and
-                        //                    TRANS = 'N'
+                        // SIDE  ='L', N is odd, TRANSR = 'T', UPLO = 'L', and
+                        // TRANS = 'N'
                         //
                         if (m == 1) {
                             Rtrsm("L", "U", "T", diag, m1, n, alpha, &a[0], m1, b, ldb);
@@ -199,8 +206,8 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
                         //
                     } else {
                         //
-                        //                    SIDE  ='L', N is odd, TRANSR = 'T', UPLO = 'L', and
-                        //                    TRANS = 'T'
+                        // SIDE  ='L', N is odd, TRANSR = 'T', UPLO = 'L', and
+                        // TRANS = 'T'
                         //
                         if (m == 1) {
                             Rtrsm("L", "U", "N", diag, m1, n, alpha, &a[0], m1, b, ldb);
@@ -214,12 +221,12 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
                     //
                 } else {
                     //
-                    //                 SIDE  ='L', N is odd, TRANSR = 'T', and UPLO = 'U'
+                    // SIDE  ='L', N is odd, TRANSR = 'T', and UPLO = 'U'
                     //
                     if (!notrans) {
                         //
-                        //                    SIDE  ='L', N is odd, TRANSR = 'T', UPLO = 'U', and
-                        //                    TRANS = 'N'
+                        // SIDE  ='L', N is odd, TRANSR = 'T', UPLO = 'U', and
+                        // TRANS = 'N'
                         //
                         Rtrsm("L", "U", "T", diag, m1, n, alpha, &a[(m2 * m2)], m2, b, ldb);
                         Rgemm("N", "N", m2, n, m1, -one, &a[0], m2, b, ldb, alpha, &b[m1], ldb);
@@ -227,8 +234,8 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
                         //
                     } else {
                         //
-                        //                    SIDE  ='L', N is odd, TRANSR = 'T', UPLO = 'U', and
-                        //                    TRANS = 'T'
+                        // SIDE  ='L', N is odd, TRANSR = 'T', UPLO = 'U', and
+                        // TRANS = 'T'
                         //
                         Rtrsm("L", "L", "T", diag, m2, n, alpha, &a[(m1 * m2)], m2, &b[m1], ldb);
                         Rgemm("T", "N", m1, n, m2, -one, &a[0], m2, &b[m1], ldb, alpha, b, ldb);
@@ -242,20 +249,20 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
             //
         } else {
             //
-            //           SIDE = 'L' and N is even
+            // SIDE = 'L' and N is even
             //
             if (normaltransr) {
                 //
-                //              SIDE = 'L', N is even, and TRANSR = 'N'
+                // SIDE = 'L', N is even, and TRANSR = 'N'
                 //
                 if (lower) {
                     //
-                    //                 SIDE  ='L', N is even, TRANSR = 'N', and UPLO = 'L'
+                    // SIDE  ='L', N is even, TRANSR = 'N', and UPLO = 'L'
                     //
                     if (notrans) {
                         //
-                        //                    SIDE  ='L', N is even, TRANSR = 'N', UPLO = 'L',
-                        //                    and TRANS = 'N'
+                        // SIDE  ='L', N is even, TRANSR = 'N', UPLO = 'L',
+                        // and TRANS = 'N'
                         //
                         Rtrsm("L", "L", "N", diag, k, n, alpha, &a[1], m + 1, b, ldb);
                         Rgemm("N", "N", k, n, k, -one, &a[(k + 1)], m + 1, b, ldb, alpha, &b[k], ldb);
@@ -263,8 +270,8 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
                         //
                     } else {
                         //
-                        //                    SIDE  ='L', N is even, TRANSR = 'N', UPLO = 'L',
-                        //                    and TRANS = 'T'
+                        // SIDE  ='L', N is even, TRANSR = 'N', UPLO = 'L',
+                        // and TRANS = 'T'
                         //
                         Rtrsm("L", "U", "N", diag, k, n, alpha, &a[0], m + 1, &b[k], ldb);
                         Rgemm("T", "N", k, n, k, -one, &a[(k + 1)], m + 1, &b[k], ldb, alpha, b, ldb);
@@ -274,12 +281,12 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
                     //
                 } else {
                     //
-                    //                 SIDE  ='L', N is even, TRANSR = 'N', and UPLO = 'U'
+                    // SIDE  ='L', N is even, TRANSR = 'N', and UPLO = 'U'
                     //
                     if (!notrans) {
                         //
-                        //                    SIDE  ='L', N is even, TRANSR = 'N', UPLO = 'U',
-                        //                    and TRANS = 'N'
+                        // SIDE  ='L', N is even, TRANSR = 'N', UPLO = 'U',
+                        // and TRANS = 'N'
                         //
                         Rtrsm("L", "L", "N", diag, k, n, alpha, &a[(k + 1)], m + 1, b, ldb);
                         Rgemm("T", "N", k, n, k, -one, &a[0], m + 1, b, ldb, alpha, &b[k], ldb);
@@ -287,8 +294,8 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
                         //
                     } else {
                         //
-                        //                    SIDE  ='L', N is even, TRANSR = 'N', UPLO = 'U',
-                        //                    and TRANS = 'T'
+                        // SIDE  ='L', N is even, TRANSR = 'N', UPLO = 'U',
+                        // and TRANS = 'T'
                         Rtrsm("L", "U", "N", diag, k, n, alpha, &a[k], m + 1, &b[k], ldb);
                         Rgemm("N", "N", k, n, k, -one, &a[0], m + 1, &b[k], ldb, alpha, b, ldb);
                         Rtrsm("L", "L", "T", diag, k, n, one, &a[(k + 1)], m + 1, b, ldb);
@@ -299,16 +306,16 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
                 //
             } else {
                 //
-                //              SIDE = 'L', N is even, and TRANSR = 'T'
+                // SIDE = 'L', N is even, and TRANSR = 'T'
                 //
                 if (lower) {
                     //
-                    //                 SIDE  ='L', N is even, TRANSR = 'T', and UPLO = 'L'
+                    // SIDE  ='L', N is even, TRANSR = 'T', and UPLO = 'L'
                     //
                     if (notrans) {
                         //
-                        //                    SIDE  ='L', N is even, TRANSR = 'T', UPLO = 'L',
-                        //                    and TRANS = 'N'
+                        // SIDE  ='L', N is even, TRANSR = 'T', UPLO = 'L',
+                        // and TRANS = 'N'
                         //
                         Rtrsm("L", "U", "T", diag, k, n, alpha, &a[k], k, b, ldb);
                         Rgemm("T", "N", k, n, k, -one, &a[(k * (k + 1))], k, b, ldb, alpha, &b[k], ldb);
@@ -316,8 +323,8 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
                         //
                     } else {
                         //
-                        //                    SIDE  ='L', N is even, TRANSR = 'T', UPLO = 'L',
-                        //                    and TRANS = 'T'
+                        // SIDE  ='L', N is even, TRANSR = 'T', UPLO = 'L',
+                        // and TRANS = 'T'
                         //
                         Rtrsm("L", "L", "T", diag, k, n, alpha, &a[0], k, &b[k], ldb);
                         Rgemm("N", "N", k, n, k, -one, &a[(k * (k + 1))], k, &b[k], ldb, alpha, b, ldb);
@@ -327,12 +334,12 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
                     //
                 } else {
                     //
-                    //                 SIDE  ='L', N is even, TRANSR = 'T', and UPLO = 'U'
+                    // SIDE  ='L', N is even, TRANSR = 'T', and UPLO = 'U'
                     //
                     if (!notrans) {
                         //
-                        //                    SIDE  ='L', N is even, TRANSR = 'T', UPLO = 'U',
-                        //                    and TRANS = 'N'
+                        // SIDE  ='L', N is even, TRANSR = 'T', UPLO = 'U',
+                        // and TRANS = 'N'
                         //
                         Rtrsm("L", "U", "T", diag, k, n, alpha, &a[(k * (k + 1))], k, b, ldb);
                         Rgemm("N", "N", k, n, k, -one, &a[0], k, b, ldb, alpha, &b[k], ldb);
@@ -340,8 +347,8 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
                         //
                     } else {
                         //
-                        //                    SIDE  ='L', N is even, TRANSR = 'T', UPLO = 'U',
-                        //                    and TRANS = 'T'
+                        // SIDE  ='L', N is even, TRANSR = 'T', UPLO = 'U',
+                        // and TRANS = 'T'
                         //
                         Rtrsm("L", "L", "T", diag, k, n, alpha, &a[(k * k)], k, &b[k], ldb);
                         Rgemm("T", "N", k, n, k, -one, &a[0], k, &b[k], ldb, alpha, b, ldb);
@@ -357,11 +364,11 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
         //
     } else {
         //
-        //        SIDE = 'R'
+        // SIDE = 'R'
         //
-        //        A is N-by-N.
-        //        If N is odd, set NISODD = .TRUE., and N1 and N2.
-        //        If N is even, NISODD = .FALSE., and K.
+        // A is N-by-N.
+        // If N is odd, set NISODD = .TRUE., and N1 and N2.
+        // If N is even, NISODD = .FALSE., and K.
         //
         if (mod(n, 2) == 0) {
             nisodd = false;
@@ -379,20 +386,20 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
         //
         if (nisodd) {
             //
-            //           SIDE = 'R' and N is odd
+            // SIDE = 'R' and N is odd
             //
             if (normaltransr) {
                 //
-                //              SIDE = 'R', N is odd, and TRANSR = 'N'
+                // SIDE = 'R', N is odd, and TRANSR = 'N'
                 //
                 if (lower) {
                     //
-                    //                 SIDE  ='R', N is odd, TRANSR = 'N', and UPLO = 'L'
+                    // SIDE  ='R', N is odd, TRANSR = 'N', and UPLO = 'L'
                     //
                     if (notrans) {
                         //
-                        //                    SIDE  ='R', N is odd, TRANSR = 'N', UPLO = 'L', and
-                        //                    TRANS = 'N'
+                        // SIDE  ='R', N is odd, TRANSR = 'N', UPLO = 'L', and
+                        // TRANS = 'N'
                         //
                         Rtrsm("R", "U", "T", diag, m, n2, alpha, &a[n], n, &b[n1 * ldb], ldb);
                         Rgemm("N", "N", m, n1, n2, -one, &b[n1 * ldb], ldb, &a[n1], n, alpha, &b[0], ldb);
@@ -400,8 +407,8 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
                         //
                     } else {
                         //
-                        //                    SIDE  ='R', N is odd, TRANSR = 'N', UPLO = 'L', and
-                        //                    TRANS = 'T'
+                        // SIDE  ='R', N is odd, TRANSR = 'N', UPLO = 'L', and
+                        // TRANS = 'T'
                         //
                         Rtrsm("R", "L", "T", diag, m, n1, alpha, &a[0], n, &b[0], ldb);
                         Rgemm("N", "T", m, n2, n1, -one, &b[0], ldb, &a[n1], n, alpha, &b[n1 * ldb], ldb);
@@ -411,12 +418,12 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
                     //
                 } else {
                     //
-                    //                 SIDE  ='R', N is odd, TRANSR = 'N', and UPLO = 'U'
+                    // SIDE  ='R', N is odd, TRANSR = 'N', and UPLO = 'U'
                     //
                     if (notrans) {
                         //
-                        //                    SIDE  ='R', N is odd, TRANSR = 'N', UPLO = 'U', and
-                        //                    TRANS = 'N'
+                        // SIDE  ='R', N is odd, TRANSR = 'N', UPLO = 'U', and
+                        // TRANS = 'N'
                         //
                         Rtrsm("R", "L", "T", diag, m, n1, alpha, &a[n2], n, &b[0], ldb);
                         Rgemm("N", "N", m, n2, n1, -one, &b[0], ldb, &a[0], n, alpha, &b[n1 * ldb], ldb);
@@ -424,8 +431,8 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
                         //
                     } else {
                         //
-                        //                    SIDE  ='R', N is odd, TRANSR = 'N', UPLO = 'U', and
-                        //                    TRANS = 'T'
+                        // SIDE  ='R', N is odd, TRANSR = 'N', UPLO = 'U', and
+                        // TRANS = 'T'
                         //
                         Rtrsm("R", "U", "T", diag, m, n2, alpha, &a[n1], n, &b[n1 * ldb], ldb);
                         Rgemm("N", "T", m, n1, n2, -one, &b[n1 * ldb], ldb, &a[0], n, alpha, &b[0], ldb);
@@ -437,16 +444,16 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
                 //
             } else {
                 //
-                //              SIDE = 'R', N is odd, and TRANSR = 'T'
+                // SIDE = 'R', N is odd, and TRANSR = 'T'
                 //
                 if (lower) {
                     //
-                    //                 SIDE  ='R', N is odd, TRANSR = 'T', and UPLO = 'L'
+                    // SIDE  ='R', N is odd, TRANSR = 'T', and UPLO = 'L'
                     //
                     if (notrans) {
                         //
-                        //                    SIDE  ='R', N is odd, TRANSR = 'T', UPLO = 'L', and
-                        //                    TRANS = 'N'
+                        // SIDE  ='R', N is odd, TRANSR = 'T', UPLO = 'L', and
+                        // TRANS = 'N'
                         //
                         Rtrsm("R", "L", "N", diag, m, n2, alpha, &a[1], n1, &b[n1 * ldb], ldb);
                         Rgemm("N", "T", m, n1, n2, -one, &b[n1 * ldb], ldb, &a[(n1 * n1)], n1, alpha, &b[0], ldb);
@@ -454,8 +461,8 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
                         //
                     } else {
                         //
-                        //                    SIDE  ='R', N is odd, TRANSR = 'T', UPLO = 'L', and
-                        //                    TRANS = 'T'
+                        // SIDE  ='R', N is odd, TRANSR = 'T', UPLO = 'L', and
+                        // TRANS = 'T'
                         //
                         Rtrsm("R", "U", "N", diag, m, n1, alpha, &a[0], n1, &b[0], ldb);
                         Rgemm("N", "N", m, n2, n1, -one, &b[0], ldb, &a[(n1 * n1)], n1, alpha, &b[n1 * ldb], ldb);
@@ -465,12 +472,12 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
                     //
                 } else {
                     //
-                    //                 SIDE  ='R', N is odd, TRANSR = 'T', and UPLO = 'U'
+                    // SIDE  ='R', N is odd, TRANSR = 'T', and UPLO = 'U'
                     //
                     if (notrans) {
                         //
-                        //                    SIDE  ='R', N is odd, TRANSR = 'T', UPLO = 'U', and
-                        //                    TRANS = 'N'
+                        // SIDE  ='R', N is odd, TRANSR = 'T', UPLO = 'U', and
+                        // TRANS = 'N'
                         //
                         Rtrsm("R", "U", "N", diag, m, n1, alpha, &a[(n2 * n2)], n2, &b[0], ldb);
                         Rgemm("N", "T", m, n2, n1, -one, &b[0], ldb, &a[0], n2, alpha, &b[n1 * ldb], ldb);
@@ -478,8 +485,8 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
                         //
                     } else {
                         //
-                        //                    SIDE  ='R', N is odd, TRANSR = 'T', UPLO = 'U', and
-                        //                    TRANS = 'T'
+                        // SIDE  ='R', N is odd, TRANSR = 'T', UPLO = 'U', and
+                        // TRANS = 'T'
                         //
                         Rtrsm("R", "L", "N", diag, m, n2, alpha, &a[(n1 * n2)], n2, &b[n1 * ldb], ldb);
                         Rgemm("N", "N", m, n1, n2, -one, &b[n1 * ldb], ldb, &a[0], n2, alpha, &b[0], ldb);
@@ -493,20 +500,20 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
             //
         } else {
             //
-            //           SIDE = 'R' and N is even
+            // SIDE = 'R' and N is even
             //
             if (normaltransr) {
                 //
-                //              SIDE = 'R', N is even, and TRANSR = 'N'
+                // SIDE = 'R', N is even, and TRANSR = 'N'
                 //
                 if (lower) {
                     //
-                    //                 SIDE  ='R', N is even, TRANSR = 'N', and UPLO = 'L'
+                    // SIDE  ='R', N is even, TRANSR = 'N', and UPLO = 'L'
                     //
                     if (notrans) {
                         //
-                        //                    SIDE  ='R', N is even, TRANSR = 'N', UPLO = 'L',
-                        //                    and TRANS = 'N'
+                        // SIDE  ='R', N is even, TRANSR = 'N', UPLO = 'L',
+                        // and TRANS = 'N'
                         //
                         Rtrsm("R", "U", "T", diag, m, k, alpha, &a[0], n + 1, &b[k * ldb], ldb);
                         Rgemm("N", "N", m, k, k, -one, &b[k * ldb], ldb, &a[(k + 1)], n + 1, alpha, &b[0], ldb);
@@ -514,8 +521,8 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
                         //
                     } else {
                         //
-                        //                    SIDE  ='R', N is even, TRANSR = 'N', UPLO = 'L',
-                        //                    and TRANS = 'T'
+                        // SIDE  ='R', N is even, TRANSR = 'N', UPLO = 'L',
+                        // and TRANS = 'T'
                         //
                         Rtrsm("R", "L", "T", diag, m, k, alpha, &a[1], n + 1, &b[0], ldb);
                         Rgemm("N", "T", m, k, k, -one, &b[0], ldb, &a[(k + 1)], n + 1, alpha, &b[k * ldb], ldb);
@@ -525,12 +532,12 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
                     //
                 } else {
                     //
-                    //                 SIDE  ='R', N is even, TRANSR = 'N', and UPLO = 'U'
+                    // SIDE  ='R', N is even, TRANSR = 'N', and UPLO = 'U'
                     //
                     if (notrans) {
                         //
-                        //                    SIDE  ='R', N is even, TRANSR = 'N', UPLO = 'U',
-                        //                    and TRANS = 'N'
+                        // SIDE  ='R', N is even, TRANSR = 'N', UPLO = 'U',
+                        // and TRANS = 'N'
                         //
                         Rtrsm("R", "L", "T", diag, m, k, alpha, &a[(k + 1)], n + 1, &b[0], ldb);
                         Rgemm("N", "N", m, k, k, -one, &b[0], ldb, &a[0], n + 1, alpha, &b[k * ldb], ldb);
@@ -538,8 +545,8 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
                         //
                     } else {
                         //
-                        //                    SIDE  ='R', N is even, TRANSR = 'N', UPLO = 'U',
-                        //                    and TRANS = 'T'
+                        // SIDE  ='R', N is even, TRANSR = 'N', UPLO = 'U',
+                        // and TRANS = 'T'
                         //
                         Rtrsm("R", "U", "T", diag, m, k, alpha, &a[k], n + 1, &b[k * ldb], ldb);
                         Rgemm("N", "T", m, k, k, -one, &b[k * ldb], ldb, &a[0], n + 1, alpha, &b[0], ldb);
@@ -551,16 +558,16 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
                 //
             } else {
                 //
-                //              SIDE = 'R', N is even, and TRANSR = 'T'
+                // SIDE = 'R', N is even, and TRANSR = 'T'
                 //
                 if (lower) {
                     //
-                    //                 SIDE  ='R', N is even, TRANSR = 'T', and UPLO = 'L'
+                    // SIDE  ='R', N is even, TRANSR = 'T', and UPLO = 'L'
                     //
                     if (notrans) {
                         //
-                        //                    SIDE  ='R', N is even, TRANSR = 'T', UPLO = 'L',
-                        //                    and TRANS = 'N'
+                        // SIDE  ='R', N is even, TRANSR = 'T', UPLO = 'L',
+                        // and TRANS = 'N'
                         //
                         Rtrsm("R", "L", "N", diag, m, k, alpha, &a[0], k, &b[k * ldb], ldb);
                         Rgemm("N", "T", m, k, k, -one, &b[k * ldb], ldb, &a[((k + 1) * k)], k, alpha, &b[0], ldb);
@@ -568,8 +575,8 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
                         //
                     } else {
                         //
-                        //                    SIDE  ='R', N is even, TRANSR = 'T', UPLO = 'L',
-                        //                    and TRANS = 'T'
+                        // SIDE  ='R', N is even, TRANSR = 'T', UPLO = 'L',
+                        // and TRANS = 'T'
                         //
                         Rtrsm("R", "U", "N", diag, m, k, alpha, &a[k], k, &b[0], ldb);
                         Rgemm("N", "N", m, k, k, -one, &b[0], ldb, &a[((k + 1) * k)], k, alpha, &b[k * ldb], ldb);
@@ -579,12 +586,12 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
                     //
                 } else {
                     //
-                    //                 SIDE  ='R', N is even, TRANSR = 'T', and UPLO = 'U'
+                    // SIDE  ='R', N is even, TRANSR = 'T', and UPLO = 'U'
                     //
                     if (notrans) {
                         //
-                        //                    SIDE  ='R', N is even, TRANSR = 'T', UPLO = 'U',
-                        //                    and TRANS = 'N'
+                        // SIDE  ='R', N is even, TRANSR = 'T', UPLO = 'U',
+                        // and TRANS = 'N'
                         //
                         Rtrsm("R", "U", "N", diag, m, k, alpha, &a[((k + 1) * k)], k, &b[0], ldb);
                         Rgemm("N", "T", m, k, k, -one, &b[0], ldb, &a[0], k, alpha, &b[k * ldb], ldb);
@@ -592,8 +599,8 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
                         //
                     } else {
                         //
-                        //                    SIDE  ='R', N is even, TRANSR = 'T', UPLO = 'U',
-                        //                    and TRANS = 'T'
+                        // SIDE  ='R', N is even, TRANSR = 'T', UPLO = 'U',
+                        // and TRANS = 'T'
                         //
                         Rtrsm("R", "L", "N", diag, m, k, alpha, &a[(k * k)], k, &b[k * ldb], ldb);
                         Rgemm("N", "N", m, k, k, -one, &b[k * ldb], ldb, &a[0], k, alpha, &b[0], ldb);
@@ -608,6 +615,6 @@ void Rtfsm(const char *transr, const char *side, const char *uplo, const char *t
         }
     }
     //
-    //     End of Rtfsm
+    // End of Rtfsm
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZLSETS.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,54 +43,33 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
 void Clsets(INTEGER const m, INTEGER const p, INTEGER const n, COMPLEX *a, COMPLEX *af, INTEGER const lda, COMPLEX *b, COMPLEX *bf, INTEGER const ldb, COMPLEX *c, COMPLEX *cf, COMPLEX *d, COMPLEX *df, COMPLEX *x, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL *result) {
-    INTEGER ldaf = lda;
-    INTEGER ldbf = ldb;
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //
-    //  ====================================================================
-    //
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Copy the matrices A and B to the arrays AF and BF,
-    //     and the vectors C and D to the arrays CF and DF,
+    // Copy the matrices A and B to the arrays AF and BF,
+    // and the vectors C and D to the arrays CF and DF,
     //
     Clacpy("Full", m, n, a, lda, af, lda);
     Clacpy("Full", p, n, b, ldb, bf, ldb);
     Ccopy(m, c, 1, cf, 1);
     Ccopy(p, d, 1, df, 1);
     //
-    //     Solve LSE problem
+    // Solve LSE problem
     //
     INTEGER info = 0;
     Cgglse(m, n, p, af, lda, bf, ldb, cf, df, x, work, lwork, info);
     //
-    //     Test the residual for the solution of LSE
+    // Test the residual for the solution of LSE
     //
-    //     Compute RESULT(1) = norm( A*x - c ) / norm(A)*norm(X)*EPS
+    // Compute RESULT(1) = norm( A*x - c ) / norm(A)*norm(X)*EPS
     //
     Ccopy(m, c, 1, cf, 1);
     Ccopy(p, d, 1, df, 1);
     Cget02("No transpose", m, n, 1, a, lda, x, n, cf, m, rwork, result[1 - 1]);
     //
-    //     Compute result(2) = norm( B*x - d ) / norm(B)*norm(X)*EPS
+    // Compute result(2) = norm( B*x - d ) / norm(B)*norm(X)*EPS
     //
     Cget02("No transpose", p, n, 1, b, ldb, x, n, df, p, rwork, result[2 - 1]);
     //
-    //     End of Clsets
+    // End of Clsets
     //
 }

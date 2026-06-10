@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DTRSNA.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -62,12 +69,12 @@ void Rtrsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
     REAL cs = 0.0;
     REAL sn = 0.0;
     INTEGER j = 0;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     INTEGER kase = 0;
     INTEGER isave[3];
     REAL dumm = 0.0;
     //
-    //     Decode and test the input parameters
+    // Decode and test the input parameters
     //
     wantbh = Mlsame(job, "B");
     wants = Mlsame(job, "E") || wantbh;
@@ -90,8 +97,8 @@ void Rtrsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
         info = -10;
     } else {
         //
-        //        Set M to the number of eigenpairs for which condition numbers
-        //        are required, and test MM.
+        // Set M to the number of eigenpairs for which condition numbers
+        // are required, and test MM.
         //
         if (somcon) {
             m = 0;
@@ -133,7 +140,7 @@ void Rtrsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
@@ -149,12 +156,12 @@ void Rtrsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
             s[1 - 1] = one;
         }
         if (wantsp) {
-            sep[1 - 1] = abs(t[(1 - 1)]);
+            sep[1 - 1] = abs(t[0]);
         }
         return;
     }
     //
-    //     Get machine constants
+    // Get machine constants
     //
     eps = Rlamch("P");
     smlnum = Rlamch("S") / eps;
@@ -164,7 +171,7 @@ void Rtrsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
     pair = false;
     for (k = 1; k <= n; k = k + 1) {
         //
-        //        Determine whether T(k,k) begins a 1-by-1 or 2-by-2 block.
+        // Determine whether T(k,k) begins a 1-by-1 or 2-by-2 block.
         //
         if (pair) {
             pair = false;
@@ -175,8 +182,8 @@ void Rtrsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
             }
         }
         //
-        //        Determine whether condition numbers are required for the k-th
-        //        eigenpair.
+        // Determine whether condition numbers are required for the k-th
+        // eigenpair.
         //
         if (somcon) {
             if (pair) {
@@ -194,12 +201,12 @@ void Rtrsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
         //
         if (wants) {
             //
-            //           Compute the reciprocal condition number of the k-th
-            //           eigenvalue.
+            // Compute the reciprocal condition number of the k-th
+            // eigenvalue.
             //
             if (!pair) {
                 //
-                //              Real eigenvalue.
+                // Real eigenvalue.
                 //
                 prod = Rdot(n, &vr[(ks - 1) * ldvr], 1, &vl[(ks - 1) * ldvl], 1);
                 rnrm = Rnrm2(n, &vr[(ks - 1) * ldvr], 1);
@@ -207,7 +214,7 @@ void Rtrsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
                 s[ks - 1] = abs(prod) / (rnrm * lnrm);
             } else {
                 //
-                //              Complex eigenvalue.
+                // Complex eigenvalue.
                 //
                 prod1 = Rdot(n, &vr[(ks - 1) * ldvr], 1, &vl[(ks - 1) * ldvl], 1);
                 prod1 += Rdot(n, &vr[((ks + 1) - 1) * ldvr], 1, &vl[((ks + 1) - 1) * ldvl], 1);
@@ -223,11 +230,11 @@ void Rtrsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
         //
         if (wantsp) {
             //
-            //           Estimate the reciprocal condition number of the k-th
-            //           eigenvector.
+            // Estimate the reciprocal condition number of the k-th
+            // eigenvector.
             //
-            //           Copy the matrix T to the array WORK and swap the diagonal
-            //           block beginning at T(k,k) to the (1,1) position.
+            // Copy the matrix T to the array WORK and swap the diagonal
+            // block beginning at T(k,k) to the (1,1) position.
             //
             Rlacpy("Full", n, n, t, ldt, work, ldwork);
             ifst = k;
@@ -236,52 +243,52 @@ void Rtrsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
             //
             if (ierr == 1 || ierr == 2) {
                 //
-                //              Could not swap because blocks not well separated
+                // Could not swap because blocks not well separated
                 //
                 scale = one;
                 est = bignum;
             } else {
                 //
-                //              Reordering successful
+                // Reordering successful
                 //
                 if (work[(2 - 1)] == zero) {
                     //
-                    //                 Form C = T22 - lambda*I in WORK(2:N,2:N).
+                    // Form C = T22 - lambda*I in WORK(2:N,2:N).
                     //
                     for (i = 2; i <= n; i = i + 1) {
-                        work[(i - 1) + (i - 1) * ldwork] = work[(i - 1) + (i - 1) * ldwork] - work[(1 - 1)];
+                        work[(i - 1) + (i - 1) * ldwork] = work[(i - 1) + (i - 1) * ldwork] - work[0];
                     }
                     n2 = 1;
                     nn = n - 1;
                 } else {
                     //
-                    //                 Triangularize the 2 by 2 block by unitary
-                    //                 transformation U = [  cs   i*ss ]
-                    //                                    [ i*ss   cs  ].
-                    //                 such that the (1,1) position of WORK is complex
-                    //                 eigenvalue lambda with positive imaginary part. (2,2)
-                    //                 position of WORK is the complex eigenvalue lambda
-                    //                 with negative imaginary  part.
+                    // Triangularize the 2 by 2 block by unitary
+                    // transformation U = [  cs   i*ss ]
+                    // [ i*ss   cs  ].
+                    // such that the (1,1) position of WORK is complex
+                    // eigenvalue lambda with positive imaginary part. (2,2)
+                    // position of WORK is the complex eigenvalue lambda
+                    // with negative imaginary  part.
                     //
                     mu = sqrt(abs(work[(2 - 1) * ldwork])) * sqrt(abs(work[(2 - 1)]));
                     delta = Rlapy2(mu, work[(2 - 1)]);
                     cs = mu / delta;
                     sn = -work[(2 - 1)] / delta;
                     //
-                    //                 Form
+                    // Form
                     //
-                    //                 C**T = WORK(2:N,2:N) + i*[rwork(1) ..... rwork(n-1) ]
-                    //                                          [   mu                     ]
-                    //                                          [         ..               ]
-                    //                                          [             ..           ]
-                    //                                          [                  mu      ]
-                    //                 where C**T is transpose of matrix C,
-                    //                 and RWORK is stored starting in the N+1-st column of
-                    //                 WORK.
+                    // C**T = WORK(2:N,2:N) + i*[rwork(1) ..... rwork(n-1) ]
+                    // [   mu                     ]
+                    // [         ..               ]
+                    // [             ..           ]
+                    // [                  mu      ]
+                    // where C**T is transpose of matrix C,
+                    // and RWORK is stored starting in the N+1-st column of
+                    // WORK.
                     //
                     for (j = 3; j <= n; j = j + 1) {
                         work[(2 - 1) + (j - 1) * ldwork] = cs * work[(2 - 1) + (j - 1) * ldwork];
-                        work[(j - 1) + (j - 1) * ldwork] = work[(j - 1) + (j - 1) * ldwork] - work[(1 - 1)];
+                        work[(j - 1) + (j - 1) * ldwork] = work[(j - 1) + (j - 1) * ldwork] - work[0];
                     }
                     work[(2 - 1) + (2 - 1) * ldwork] = zero;
                     //
@@ -293,7 +300,7 @@ void Rtrsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
                     nn = 2 * (n - 1);
                 }
                 //
-                //              Estimate norm(inv(C**T))
+                // Estimate norm(inv(C**T))
                 //
                 est = zero;
                 kase = 0;
@@ -303,26 +310,26 @@ void Rtrsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
                     if (kase == 1) {
                         if (n2 == 1) {
                             //
-                            //                       Real eigenvalue: solve C**T*x = scale*c.
+                            // Real eigenvalue: solve C**T*x = scale*c.
                             //
                             Rlaqtr(true, true, n - 1, &work[(2 - 1) + (2 - 1) * ldwork], ldwork, dummy, dumm, scale, &work[((n + 4) - 1) * ldwork], &work[((n + 6) - 1) * ldwork], ierr);
                         } else {
                             //
-                            //                       Complex eigenvalue: solve
-                            //                       C**T*(p+iq) = scale*(c+id) in real arithmetic.
+                            // Complex eigenvalue: solve
+                            // C**T*(p+iq) = scale*(c+id) in real arithmetic.
                             //
                             Rlaqtr(true, false, n - 1, &work[(2 - 1) + (2 - 1) * ldwork], ldwork, &work[((n + 1) - 1) * ldwork], mu, scale, &work[((n + 4) - 1) * ldwork], &work[((n + 6) - 1) * ldwork], ierr);
                         }
                     } else {
                         if (n2 == 1) {
                             //
-                            //                       Real eigenvalue: solve C*x = scale*c.
+                            // Real eigenvalue: solve C*x = scale*c.
                             //
                             Rlaqtr(false, true, n - 1, &work[(2 - 1) + (2 - 1) * ldwork], ldwork, dummy, dumm, scale, &work[((n + 4) - 1) * ldwork], &work[((n + 6) - 1) * ldwork], ierr);
                         } else {
                             //
-                            //                       Complex eigenvalue: solve
-                            //                       C*(p+iq) = scale*(c+id) in real arithmetic.
+                            // Complex eigenvalue: solve
+                            // C*(p+iq) = scale*(c+id) in real arithmetic.
                             //
                             Rlaqtr(false, false, n - 1, &work[(2 - 1) + (2 - 1) * ldwork], ldwork, &work[((n + 1) - 1) * ldwork], mu, scale, &work[((n + 4) - 1) * ldwork], &work[((n + 6) - 1) * ldwork], ierr);
                             //
@@ -346,6 +353,6 @@ void Rtrsna(const char *job, const char *howmny, bool *select, INTEGER const n, 
     statement_60:;
     }
     //
-    //     End of Rtrsna
+    // End of Rtrsna
     //
 }

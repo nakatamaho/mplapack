@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,35 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DPOTRF2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rpotrf2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters
+    // Test the input parameters
     //
     info = 0;
     bool upper = Mlsame(uplo, "U");
@@ -70,13 +54,13 @@ void Rpotrf2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTE
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
     }
     //
-    //     N=1 case
+    // N=1 case
     //
     const REAL zero = 0.0;
     INTEGER n1 = 0;
@@ -85,40 +69,40 @@ void Rpotrf2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTE
     const REAL one = 1.0;
     if (n == 1) {
         //
-        //        Test for non-positive-definiteness
+        // Test for non-positive-definiteness
         //
-        if (a[(1 - 1)] <= zero || Risnan(a[(1 - 1)])) {
+        if (a[0] <= zero || Risnan(a[0])) {
             info = 1;
             return;
         }
         //
-        //        Factor
+        // Factor
         //
-        a[(1 - 1)] = sqrt(a[(1 - 1)]);
+        a[0] = sqrt(a[0]);
         //
-        //     Use recursive code
+        // Use recursive code
         //
     } else {
         n1 = n / 2;
         n2 = n - n1;
         //
-        //        Factor A11
+        // Factor A11
         //
-        Rpotrf2(uplo, n1, &a[(1 - 1)], lda, iinfo);
+        Rpotrf2(uplo, n1, &a[0], lda, iinfo);
         if (iinfo != 0) {
             info = iinfo;
             return;
         }
         //
-        //        Compute the Cholesky factorization A = U**T*U
+        // Compute the Cholesky factorization A = U**T*U
         //
         if (upper) {
             //
-            //           Update and scale A12
+            // Update and scale A12
             //
-            Rtrsm("L", "U", "T", "N", n1, n2, one, &a[(1 - 1)], lda, &a[((n1 + 1) - 1) * lda], lda);
+            Rtrsm("L", "U", "T", "N", n1, n2, one, &a[0], lda, &a[((n1 + 1) - 1) * lda], lda);
             //
-            //           Update and factor A22
+            // Update and factor A22
             //
             Rsyrk(uplo, "T", n2, n1, -one, &a[((n1 + 1) - 1) * lda], lda, one, &a[((n1 + 1) - 1) + ((n1 + 1) - 1) * lda], lda);
             Rpotrf2(uplo, n2, &a[((n1 + 1) - 1) + ((n1 + 1) - 1) * lda], lda, iinfo);
@@ -127,15 +111,15 @@ void Rpotrf2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTE
                 return;
             }
             //
-            //        Compute the Cholesky factorization A = L*L**T
+            // Compute the Cholesky factorization A = L*L**T
             //
         } else {
             //
-            //           Update and scale A21
+            // Update and scale A21
             //
-            Rtrsm("R", "L", "T", "N", n2, n1, one, &a[(1 - 1)], lda, &a[((n1 + 1) - 1)], lda);
+            Rtrsm("R", "L", "T", "N", n2, n1, one, &a[0], lda, &a[((n1 + 1) - 1)], lda);
             //
-            //           Update and factor A22
+            // Update and factor A22
             //
             Rsyrk(uplo, "N", n2, n1, -one, &a[((n1 + 1) - 1)], lda, one, &a[((n1 + 1) - 1) + ((n1 + 1) - 1) * lda], lda);
             Rpotrf2(uplo, n2, &a[((n1 + 1) - 1) + ((n1 + 1) - 1) * lda], lda, iinfo);
@@ -146,6 +130,6 @@ void Rpotrf2(const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, INTE
         }
     }
     //
-    //     End of Rpotrf2
+    // End of Rpotrf2
     //
 }

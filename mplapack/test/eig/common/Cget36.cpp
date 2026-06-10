@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZGET36.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -35,18 +42,6 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
-
-#include <mplapack_debug.h>
-
-#include <iostream>
-#include <sstream>
-#include <string>
-#include <vector>
-#include <regex>
-
-using namespace std;
-using std::regex;
-using std::regex_replace;
 
 void Cget36(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt, INTEGER const nin) {
     common cmn;
@@ -59,17 +54,13 @@ void Cget36(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt, INTEGER con
     INTEGER i = 0;
     const INTEGER ldt = 10;
     COMPLEX tmp[ldt * ldt];
-    INTEGER ldtmp = ldt;
     INTEGER j = 0;
     COMPLEX t1[ldt * ldt];
     COMPLEX t2[ldt * ldt];
-    INTEGER ldt1 = ldt;
-    INTEGER ldt2 = ldt;
     REAL res = 0.0;
     const COMPLEX czero = COMPLEX(0.0, 0.0);
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     COMPLEX q[ldt * ldt];
-    INTEGER ldq = ldt;
     INTEGER info1 = 0;
     const REAL one = 1.0;
     INTEGER info2 = 0;
@@ -85,66 +76,52 @@ void Cget36(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt, INTEGER con
     lmax = 0;
     knt = 0;
     ninfo = 0;
-    string str;
-    istringstream iss;
-    double dtmp_r;
-    double dtmp_i;
 //
-//     Read input data until N=0
+// Read input data until N=0
 //
 statement_10:
-    getline(cin, str);
-    stringstream ss(str);
-    ss >> n;
-    ss >> ifst;
-    ss >> ilst;
+    read(nin, star), n, ifst, ilst;
     if (n == 0) {
         return;
     }
     knt++;
     for (i = 1; i <= n; i = i + 1) {
-        getline(cin, str);
-        string ___r = regex_replace(str, regex(","), " ");
-        string __r = regex_replace(___r, regex("\\)"), " ");
-        string _r = regex_replace(__r, regex("\\("), " ");
-        str = regex_replace(_r, regex("D"), "e");
-        iss.clear();
-        iss.str(str);
-        for (j = 1; j <= n; j = j + 1) {
-            iss >> dtmp_r;
-            iss >> dtmp_i;
-            tmp[(i - 1) + (j - 1) * ldtmp] = COMPLEX(dtmp_r, dtmp_i);
+        {
+            read_loop rloop(cmn, nin, star);
+            for (j = 1; j <= n; j = j + 1) {
+                rloop, tmp[(i - 1) + (j - 1) * ldt];
+            }
         }
     }
     Clacpy("F", n, n, tmp, ldt, t1, ldt);
     Clacpy("F", n, n, tmp, ldt, t2, ldt);
     res = zero;
     //
-    //     Test without accumulating Q
+    // Test without accumulating Q
     //
     Claset("Full", n, n, czero, cone, q, ldt);
     Ctrexc("N", n, t1, ldt, q, ldt, ifst, ilst, info1);
     for (i = 1; i <= n; i = i + 1) {
         for (j = 1; j <= n; j = j + 1) {
-            if (i == j && q[(i - 1) + (j - 1) * ldq] != cone) {
+            if (i == j && q[(i - 1) + (j - 1) * ldt] != cone) {
                 res += one / eps;
             }
-            if (i != j && q[(i - 1) + (j - 1) * ldq] != czero) {
+            if (i != j && q[(i - 1) + (j - 1) * ldt] != czero) {
                 res += one / eps;
             }
         }
     }
     //
-    //     Test with accumulating Q
+    // Test with accumulating Q
     //
     Claset("Full", n, n, czero, cone, q, ldt);
     Ctrexc("V", n, t2, ldt, q, ldt, ifst, ilst, info2);
     //
-    //     Compare T1 with T2
+    // Compare T1 with T2
     //
     for (i = 1; i <= n; i = i + 1) {
         for (j = 1; j <= n; j = j + 1) {
-            if (t1[(i - 1) + (j - 1) * ldt1] != t2[(i - 1) + (j - 1) * ldt2]) {
+            if (t1[(i - 1) + (j - 1) * ldt] != t2[(i - 1) + (j - 1) * ldt]) {
                 res += one / eps;
             }
         }
@@ -156,7 +133,7 @@ statement_10:
         res += one / eps;
     }
     //
-    //     Test for successful reordering of T2
+    // Test for successful reordering of T2
     //
     Ccopy(n, tmp, ldt + 1, diag, 1);
     if (ifst < ilst) {
@@ -173,21 +150,21 @@ statement_10:
         }
     }
     for (i = 1; i <= n; i = i + 1) {
-        if (t2[(i - 1) + (i - 1) * ldt2] != diag[i - 1]) {
+        if (t2[(i - 1) + (i - 1) * ldt] != diag[i - 1]) {
             res += one / eps;
         }
     }
     //
-    //     Test for small residual, and orthogonality of Q
+    // Test for small residual, and orthogonality of Q
     //
     Chst01(n, 1, n, tmp, ldt, t2, ldt, q, ldt, work, lwork, rwork, result);
     res += result[1 - 1] + result[2 - 1];
     //
-    //     Test for T2 being in Schur form
+    // Test for T2 being in Schur form
     //
     for (j = 1; j <= n - 1; j = j + 1) {
         for (i = j + 1; i <= n; i = i + 1) {
-            if (t2[(i - 1) + (j - 1) * ldt2] != czero) {
+            if (t2[(i - 1) + (j - 1) * ldt] != czero) {
                 res += one / eps;
             }
         }
@@ -198,6 +175,6 @@ statement_10:
     }
     goto statement_10;
     //
-    //     End of Cget36
+    // End of Cget36
     //
 }

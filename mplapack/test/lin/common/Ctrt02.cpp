@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZTRT02.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,32 +43,9 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Ctrt02(const char *uplo, const char *trans, const char *diag, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const ldx, COMPLEX *b, INTEGER const ldb, COMPLEX *work, REAL *rwork, REAL &resid) {
+void Ctrt02(fem::str_cref uplo, fem::str_cref trans, fem::str_cref diag, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const ldx, COMPLEX *b, INTEGER const ldb, COMPLEX *work, REAL *rwork, REAL &resid) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Quick exit if N = 0 or NRHS = 0
+    // Quick exit if N = 0 or NRHS = 0
     //
     const REAL zero = 0.0;
     if (n <= 0 || nrhs <= 0) {
@@ -69,16 +53,16 @@ void Ctrt02(const char *uplo, const char *trans, const char *diag, INTEGER const
         return;
     }
     //
-    //     Compute the 1-norm of A or A**H.
+    // Compute the 1-norm of op(A).
     //
     REAL anorm = 0.0;
-    if (Mlsame(trans, "N")) {
-        anorm = Clantr("1", uplo, diag, n, n, a, lda, rwork);
+    if (Mlsame(trans.elems(), "N")) {
+        anorm = Clantr("1", uplo.elems(), diag.elems(), n, n, a, lda, rwork);
     } else {
-        anorm = Clantr("I", uplo, diag, n, n, a, lda, rwork);
+        anorm = Clantr("I", uplo.elems(), diag.elems(), n, n, a, lda, rwork);
     }
     //
-    //     Exit with RESID = 1/EPS if ANORM = 0.
+    // Exit with RESID = 1/EPS if ANORM = 0.
     //
     REAL eps = Rlamch("Epsilon");
     const REAL one = 1.0;
@@ -87,8 +71,8 @@ void Ctrt02(const char *uplo, const char *trans, const char *diag, INTEGER const
         return;
     }
     //
-    //     Compute the maximum over the number of right hand sides of
-    //        norm(op(A)*x - b) / ( norm(op(A)) * norm(x) * EPS )
+    // Compute the maximum over the number of right hand sides of
+    // norm(op(A)*X - B) / ( norm(op(A)) * norm(X) * EPS )
     //
     resid = zero;
     INTEGER j = 0;
@@ -96,17 +80,17 @@ void Ctrt02(const char *uplo, const char *trans, const char *diag, INTEGER const
     REAL xnorm = 0.0;
     for (j = 1; j <= nrhs; j = j + 1) {
         Ccopy(n, &x[(j - 1) * ldx], 1, work, 1);
-        Ctrmv(uplo, trans, diag, n, a, lda, work, 1);
+        Ctrmv(uplo.elems(), trans.elems(), diag.elems(), n, a, lda, work, 1);
         Caxpy(n, COMPLEX(-one), &b[(j - 1) * ldb], 1, work, 1);
         bnorm = RCasum(n, work, 1);
         xnorm = RCasum(n, &x[(j - 1) * ldx], 1);
         if (xnorm <= zero) {
             resid = one / eps;
         } else {
-            resid = max(resid, REAL(((bnorm / anorm) / xnorm) / eps));
+            resid = max(resid, ((bnorm / anorm) / xnorm) / eps);
         }
     }
     //
-    //     End of Ctrt02
+    // End of Ctrt02
     //
 }

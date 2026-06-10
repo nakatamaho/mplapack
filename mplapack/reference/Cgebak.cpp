@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZGEBAK.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -38,7 +45,7 @@ void Cgebak(const char *job, const char *side, INTEGER const n, INTEGER const il
     INTEGER ii = 0;
     INTEGER k = 0;
     //
-    //     Decode and Test the input parameters
+    // Decode and Test the input parameters
     //
     rightv = Mlsame(side, "R");
     leftv = Mlsame(side, "L");
@@ -64,7 +71,7 @@ void Cgebak(const char *job, const char *side, INTEGER const n, INTEGER const il
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
@@ -80,7 +87,7 @@ void Cgebak(const char *job, const char *side, INTEGER const n, INTEGER const il
         goto statement_30;
     }
     //
-    //     Backward balance
+    // Backward balance
     //
     if (Mlsame(job, "S") || Mlsame(job, "B")) {
         //
@@ -100,44 +107,50 @@ void Cgebak(const char *job, const char *side, INTEGER const n, INTEGER const il
         //
     }
 //
-//     Backward permutation
+// Backward permutation
 //
-//     For  I = ILO-1 step -1 until 1,
-//              IHI+1 step 1 until N do --
+// For  I = ILO-1 step -1 until 1,
+// IHI+1 step 1 until N do --
 //
 statement_30:
     if (Mlsame(job, "P") || Mlsame(job, "B")) {
         if (rightv) {
             for (ii = 1; ii <= n; ii = ii + 1) {
                 i = ii;
-                if (i >= ilo && i <= ihi)
-                    continue;
+                if (i >= ilo && i <= ihi) {
+                    goto statement_40;
+                }
                 if (i < ilo) {
                     i = ilo - ii;
                 }
                 k = castINTEGER(scale[i - 1]);
-                if (k == i)
-                    continue;
+                if (k == i) {
+                    goto statement_40;
+                }
                 Cswap(m, &v[(i - 1)], ldv, &v[(k - 1)], ldv);
+            statement_40:;
             }
         }
         //
         if (leftv) {
             for (ii = 1; ii <= n; ii = ii + 1) {
                 i = ii;
-                if (i >= ilo && i <= ihi)
-                    continue;
+                if (i >= ilo && i <= ihi) {
+                    goto statement_50;
+                }
                 if (i < ilo) {
                     i = ilo - ii;
                 }
                 k = castINTEGER(scale[i - 1]);
-                if (k == i)
-                    continue;
+                if (k == i) {
+                    goto statement_50;
+                }
                 Cswap(m, &v[(i - 1)], ldv, &v[(k - 1)], ldv);
+            statement_50:;
             }
         }
     }
     //
-    //     End of Cgebak
+    // End of Cgebak
     //
 }

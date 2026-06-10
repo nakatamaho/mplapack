@@ -206,6 +206,8 @@ class mpcomplex {
     friend const mpcomplex atanh(const mpcomplex &a, mpc_rnd_t mode);
 
     // Type Conversion operators
+    inline operator mpc_ptr() { return mpc; }
+    inline operator mpc_srcptr() const { return mpc; }
     operator std::complex<double>() const;
     operator std::complex<long double>() const;
     operator std::string() const;
@@ -230,14 +232,26 @@ class mpcomplex {
     mpcomplex(const dd_complex &a, mp_prec_t pr = default_real_prec, mp_prec_t pi = default_imag_prec, mpc_rnd_t mode = default_rnd);
     mpcomplex &operator=(const dd_complex &a);
 #endif
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && !defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___ && !defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
+#if defined ___MPLAPACK_BUILD_WITH_BINARY128___
+#if MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_FLOAT128
     mpcomplex(const std::complex<_Float128> &a, mp_prec_t pr = default_real_prec, mp_prec_t pi = default_imag_prec, mpc_rnd_t mode = default_rnd);
     mpcomplex &operator=(const std::complex<_Float128> &a);
+#elif MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_QUADMATH
+    mpcomplex(const std::complex<__float128> &a, mp_prec_t pr = default_real_prec, mp_prec_t pi = default_imag_prec, mpc_rnd_t mode = default_rnd);
+    mpcomplex &operator=(const std::complex<__float128> &a);
+#elif MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_LDBL
+    // nothing to be done
 #endif
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT64X___ && defined ___MPLAPACK__FLOAT64X_IS_LONGDOUBLE___
-//    mpcomplex(const std::complex<_Float64x> &a, mp_prec_t pr = default_real_prec, mp_prec_t pi = default_imag_prec, mpc_rnd_t mode = default_rnd);
-//    mpcomplex &operator=(const std::complex<_Float64x> &a);
+#endif // ___MPLAPACK_BUILD_WITH_BINARY128___
+
+#if defined ___MPLAPACK_BUILD_WITH_BINARY80___
+#if MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_FLOAT64X
+    mpcomplex(const std::complex<_Float64x> &a, mp_prec_t pr = default_real_prec, mp_prec_t pi = default_imag_prec, mpc_rnd_t mode = default_rnd);
+    mpcomplex &operator=(const std::complex<_Float64x> &a);
+#elif MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_LDBL
+    // nothing to be done
 #endif
+#endif // ___MPLAPACK_BUILD_WITH_BINARY80___
 };
 
 #if defined ___MPLAPACK_MPLAPACK_INIT___
@@ -367,12 +381,12 @@ inline mpcomplex::mpcomplex(const mpcomplex &a) {
 
 inline mpcomplex::mpcomplex(const std::complex<double> &a, mp_prec_t pr, mp_prec_t pi, mpc_rnd_t mode) {
     mpc_init3(mpc, pr, pi);
-    mpc_set_d_d(mpc, a.real(), a.imag(), default_rnd);
+    mpc_set_d_d(mpc, a.real(), a.imag(), mode);
 }
 
 inline mpcomplex::mpcomplex(const std::complex<long double> &a, mp_prec_t pr, mp_prec_t pi, mpc_rnd_t mode) {
     mpc_init3(mpc, pr, pi);
-    mpc_set_ld_ld(mpc, a.real(), a.imag(), default_rnd);
+    mpc_set_ld_ld(mpc, a.real(), a.imag(), mode);
 }
 
 inline mpcomplex::mpcomplex(const mpreal &a, const mpreal &b) {
@@ -385,8 +399,8 @@ inline mpcomplex::mpcomplex(const mpreal &a, const mpreal &b) {
 }
 
 inline mpcomplex::mpcomplex(const double &a, const double &b, mp_prec_t pr, mp_prec_t pi, mpc_rnd_t mode) {
-    mpc_init3(mpc, default_real_prec, default_imag_prec);
-    mpc_set_d_d(mpc, a, b, default_rnd);
+    mpc_init3(mpc, pr, pi);
+    mpc_set_d_d(mpc, a, b, mode);
 }
 
 inline mpcomplex::mpcomplex(const mpreal &a, const double &b) {
@@ -405,7 +419,7 @@ inline mpcomplex::mpcomplex(const char *s, const char *t, mp_prec_t pr, mp_prec_
     mpfr_set_str(a, s, default_base, MPC_RND_RE(mode));
     mpfr_set_str(b, t, default_base, MPC_RND_IM(mode));
     mpc_init3(mpc, pr, pi);
-    mpc_set_fr_fr(mpc, a, b, default_rnd);
+    mpc_set_fr_fr(mpc, a, b, mode);
     mpfr_clear(a);
     mpfr_clear(b);
 }
@@ -433,7 +447,7 @@ inline mpcomplex::mpcomplex(const mpf_t a) {
 
 inline mpcomplex::mpcomplex(const double a, mp_prec_t pr, mp_prec_t pi, mpc_rnd_t mode) {
     mpc_init3(mpc, pr, pi);
-    mpc_set_d(mpc, a, default_rnd);
+    mpc_set_d(mpc, a, mode);
 }
 
 inline mpcomplex::~mpcomplex() { mpc_clear(mpc); }
@@ -525,21 +539,28 @@ inline const mpcomplex mpcomplex::operator++(int) {
 
 // + Addition again
 inline const mpcomplex operator+(const mpcomplex &a, const mpcomplex &b) {
-    mpcomplex tmp;
-    if (!a.get_prec() == 0 && !b.get_prec() == 0) {
-        if (a.get_prec() > b.get_prec()) {
-            tmp = a;
-            tmp += b;
-            return tmp;
-        } else {
-            tmp = b;
-            tmp += a;
-            return tmp;
-        }
-    } else {
-        tmp = a;
-        tmp.set_prec2(std::max(a.get_prec_re(), b.get_prec_re()), std::max(a.get_prec_im(), b.get_prec_im()), mpcomplex::default_rnd);
-        return tmp += b;
+    mp_prec_t prec_re_a = a.get_prec_re();
+    mp_prec_t prec_im_a = a.get_prec_im();
+    mp_prec_t prec_re_b = b.get_prec_re();
+    mp_prec_t prec_im_b = b.get_prec_im();
+
+    mp_prec_t prec_re_max = std::max(prec_re_a, prec_re_b);
+    mp_prec_t prec_im_max = std::max(prec_im_a, prec_im_b);
+
+    // If a already has maximum precision in both components
+    if (prec_re_a == prec_re_max && prec_im_a == prec_im_max) {
+        return mpcomplex(a) += b;
+    }
+    // If b already has maximum precision in both components
+    else if (prec_re_b == prec_re_max && prec_im_b == prec_im_max) {
+        return mpcomplex(b) += a;
+    }
+    // Mixed precision case
+    else {
+        mpcomplex result;
+        result.set_prec2(prec_re_max, prec_im_max, mpcomplex::default_rnd);
+        result = a; // Use assignment operator
+        return result += b;
     }
 }
 
@@ -632,7 +653,7 @@ inline const mpcomplex mpcomplex::operator--(int) {
 }
 
 inline const mpcomplex operator-(const mpcomplex &a, const mpcomplex &b) {
-    if (!a.get_prec() == 0 && !b.get_prec() == 0) {
+    if (a.get_prec() != 0 && b.get_prec() != 0) {
         if (a.get_prec() > b.get_prec())
             return mpcomplex(a) -= b;
         else
@@ -657,7 +678,7 @@ inline const mpcomplex operator-(const std::complex<long double> &a, const mpcom
 inline const mpcomplex operator-(const char *a, const mpcomplex &b) { return mpcomplex(a) - b; }
 
 inline const mpcomplex operator-(const mpcomplex &a, const mpreal b) {
-    if (!a.get_prec() == 0 && !b.get_prec() == 0) {
+    if (a.get_prec() != 0 && b.get_prec() != 0) {
         if (a.get_prec() > b.get_prec())
             return mpcomplex(a) -= b;
         else
@@ -706,43 +727,15 @@ inline mpcomplex &mpcomplex::operator*=(const mpfr_t a) {
 
 inline mpcomplex &mpcomplex::operator*=(const double a) {
     mpreal p(a);
-    mpc_add_fr(mpc, mpc, (mpfr_ptr)(&p), default_rnd);
+    mpc_mul_fr(mpc, mpc, (mpfr_ptr)(&p), default_rnd);
     return *this;
 }
 
-inline const mpcomplex operator*(const mpcomplex &a, const mpcomplex &b) {
-    return mpcomplex(a) *= b;
-    /*
-        if (!a.get_prec() == 0 && !b.get_prec() == 0) {
-            if (a.get_prec() > b.get_prec())
-                return mpcomplex(a) *= b;
-            else
-                return mpcomplex(b) *= a;
-        } else {
-            mpcomplex tmp(a);
-            tmp.set_prec2(std::max(a.get_prec_re(), b.get_prec_re()), std::max(a.get_prec_im(), b.get_prec_im()), mpcomplex::default_rnd);
-            return tmp *= b;
-        }
-    */
-}
+inline const mpcomplex operator*(const mpcomplex &a, const mpcomplex &b) { return mpcomplex(a) *= b; }
 
-inline const mpcomplex operator*(const mpcomplex &a, const mpreal &b) {
-    return mpcomplex(a) *= mpcomplex(b);
-    /*
-        mpcomplex tmp(a);
-        tmp.set_prec2(std::max(a.get_prec_re(), b.get_prec()), a.get_prec_im(), mpcomplex::default_rnd);
-        return tmp *= mpcomplex(b);
-    */
-}
+inline const mpcomplex operator*(const mpcomplex &a, const mpreal &b) { return mpcomplex(a) *= mpcomplex(b); }
 
-inline const mpcomplex operator*(const mpreal &a, const mpcomplex &b) {
-    return mpcomplex(a) *= mpcomplex(b);
-    /*
-        mpcomplex tmp(a);
-        tmp.set_prec2(std::max(b.get_prec_re(), a.get_prec()), b.get_prec_im(), mpcomplex::default_rnd);
-        return tmp *= b;
-    */
-}
+inline const mpcomplex operator*(const mpreal &a, const mpcomplex &b) { return mpcomplex(a) *= mpcomplex(b); }
 
 // / division
 inline mpcomplex &mpcomplex::operator/=(const mpcomplex &a) {
@@ -813,16 +806,15 @@ inline bool operator==(const mpreal &a, const mpcomplex &b) {
     return (mpc_cmp(c.mpc, b.mpc) == 0);
 }
 
-inline bool operator!=(const mpcomplex &a, const mpcomplex &b) { return (!mpc_cmp(a.mpc, b.mpc) == 0); }
-
+inline bool operator!=(const mpcomplex &a, const mpcomplex &b) { return (mpc_cmp(a.mpc, b.mpc) != 0); }
 inline bool operator!=(const mpcomplex &a, const mpreal &b) {
     mpcomplex c(b);
-    return (!mpc_cmp(a.mpc, c.mpc) == 0);
+    return (mpc_cmp(a.mpc, c.mpc) != 0);
 }
 
 inline bool operator!=(const mpreal &a, const mpcomplex &b) {
     mpcomplex c(a);
-    return (!mpc_cmp(b.mpc, c.mpc) == 0);
+    return (mpc_cmp(b.mpc, c.mpc) != 0);
 }
 
 inline mpcomplex::operator std::complex<double>() const {
@@ -1012,9 +1004,9 @@ inline mpcomplex::mpcomplex(const mpc_class &a, mp_prec_t pr, mp_prec_t pi, mpc_
     mpc_set_f_f(mpc, a.real().get_mpf_t(), a.imag().get_mpf_t(), mode);
 }
 
-inline const mpcomplex operator-(const mpcomplex &a, const mpc_class &b) { return mpcomplex(b) -= a; }
+inline const mpcomplex operator-(const mpcomplex &a, const mpc_class &b) { return -(mpcomplex(b) -= a); }
 
-inline const mpcomplex operator-(const mpc_class &a, const mpcomplex &b) { return -(mpcomplex(a) -= b); }
+inline const mpcomplex operator-(const mpc_class &a, const mpcomplex &b) { return mpcomplex(a) -= b; }
 
 inline mpc_class cast2mpc_class(const mpcomplex &b) {
     // mpcomplex -> mpfr, mpfr -> mpf, mpf -> mpc_class
@@ -1036,7 +1028,7 @@ inline mpc_class cast2mpc_class(const mpcomplex &b) {
     mpfr_set(tmpim2, (mpfr_ptr)aim, MPC_RND_IM(mpcomplex::default_rnd));
 
     mpf_init2(tmpre, pr);
-    mpf_init2(tmpim, pr);
+    mpf_init2(tmpim, pi);
     mpfr_get_f(tmpre, tmpre2, MPC_RND_RE(mpcomplex::default_rnd));
     mpfr_get_f(tmpim, tmpim2, MPC_RND_IM(mpcomplex::default_rnd));
 
@@ -1101,9 +1093,9 @@ inline qd_complex cast2qd_complex(const mpcomplex &b) {
     q.imag().x[3] = p[3].imag();
     return q;
 }
-inline const mpcomplex operator-(const mpcomplex &a, const qd_complex &b) { return mpcomplex(b) -= a; }
+inline const mpcomplex operator-(const mpcomplex &a, const qd_complex &b) { return -(mpcomplex(b) -= a); }
 
-inline const mpcomplex operator-(const qd_complex &a, const mpcomplex &b) { return -(mpcomplex(a) -= b); }
+inline const mpcomplex operator-(const qd_complex &a, const mpcomplex &b) { return mpcomplex(a) -= b; }
 
 inline mpcomplex &mpcomplex::operator=(const qd_complex &a) {
     mpcomplex tmp(a);
@@ -1146,9 +1138,9 @@ inline dd_complex cast2dd_complex(const mpcomplex &b) {
 
     return q;
 }
-inline const mpcomplex operator-(const mpcomplex &a, const dd_complex &b) { return mpcomplex(b) -= a; }
 
-inline const mpcomplex operator-(const dd_complex &a, const mpcomplex &b) { return -(mpcomplex(a) -= b); }
+inline const mpcomplex operator-(const mpcomplex &a, const dd_complex &b) { return -(mpcomplex(b) -= a); }
+inline const mpcomplex operator-(const dd_complex &a, const mpcomplex &b) { return mpcomplex(a) -= b; }
 
 inline mpcomplex &mpcomplex::operator=(const dd_complex &a) {
     mpcomplex tmp(a);
@@ -1158,8 +1150,9 @@ inline mpcomplex &mpcomplex::operator=(const dd_complex &a) {
 
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && !defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___ && !defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
-inline mpcomplex::mpcomplex(const std::complex<_Float128> &a, mp_prec_t pr, mp_prec_t pi, mpc_rnd_t mode) {
+#if defined ___MPLAPACK_BUILD_WITH_BINARY128___
+#if MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_FLOAT128
+inline mpcomplex::mpcomplex(const std::complex<mplapack_binary128_t> &a, mp_prec_t pr, mp_prec_t pi, mpc_rnd_t mode) {
     mpfr_t mp_real, mp_imag;
     mpc_init3(mpc, pr, pi);
 
@@ -1173,19 +1166,15 @@ inline mpcomplex::mpcomplex(const std::complex<_Float128> &a, mp_prec_t pr, mp_p
     mpfr_clear(mp_imag);
     mpfr_clear(mp_real);
 }
-inline const mpcomplex operator-(const mpcomplex &a, const std::complex<_Float128> &b) { return mpcomplex(b) -= a; }
-
-inline const mpcomplex operator-(const std::complex<_Float128> &a, const mpcomplex &b) { return -(mpcomplex(a) -= b); }
-
-inline mpcomplex &mpcomplex::operator=(const std::complex<_Float128> &a) {
+inline const mpcomplex operator-(const mpcomplex &a, const std::complex<mplapack_binary128_t> &b) { return mpcomplex(a) -= b; }
+inline const mpcomplex operator-(const std::complex<mplapack_binary128_t> &a, const mpcomplex &b) { return -(mpcomplex(a) -= b); }
+inline mpcomplex &mpcomplex::operator=(const std::complex<mplapack_binary128_t> &a) {
     mpcomplex tmp(a);
     *this = tmp;
     return *this;
 }
-#endif
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
-inline std::complex<_Float128> cast2complex_Float128(const mpcomplex &b) {
-    std::complex<_Float128> q;
+inline std::complex<mplapack_binary128_t> cast2complex_binary128(const mpcomplex &b) {
+    std::complex<mplapack_binary128_t> q;
     mpreal re_tmp, im_tmp;
     re_tmp = b.real();
     im_tmp = b.imag();
@@ -1193,7 +1182,96 @@ inline std::complex<_Float128> cast2complex_Float128(const mpcomplex &b) {
     q.imag(mpfr_get_float128((mpfr_ptr)(im_tmp), mpreal::default_rnd));
     return q;
 }
-#endif
+#elif MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_QUADMATH
+inline mpcomplex::mpcomplex(const std::complex<mplapack_binary128_t> &a, mp_prec_t pr, mp_prec_t pi, mpc_rnd_t mode) {
+    mpfr_t mp_real, mp_imag;
+    mpc_init3(mpc, pr, pi);
+
+    mpfr_init2(mp_real, pr);
+    mpfr_set_float128((mpfr_ptr)mp_real, a.real(), mpreal::default_rnd);
+
+    mpfr_init2(mp_imag, pi);
+    mpfr_set_float128((mpfr_ptr)mp_imag, a.imag(), mpreal::default_rnd);
+
+    mpc_set_fr_fr(mpc, mp_real, mp_imag, mode);
+    mpfr_clear(mp_imag);
+    mpfr_clear(mp_real);
+}
+inline const mpcomplex operator-(const mpcomplex &a, const std::complex<mplapack_binary128_t> &b) { return mpcomplex(a) -= b; }
+inline const mpcomplex operator-(const std::complex<mplapack_binary128_t> &a, const mpcomplex &b) { return -(mpcomplex(a) -= b); }
+inline mpcomplex &mpcomplex::operator=(const std::complex<mplapack_binary128_t> &a) {
+    mpcomplex tmp(a);
+    *this = tmp;
+    return *this;
+}
+inline std::complex<mplapack_binary128_t> cast2complex_binary128(const mpcomplex &b) {
+    std::complex<mplapack_binary128_t> q;
+    mpreal re_tmp, im_tmp;
+    re_tmp = b.real();
+    im_tmp = b.imag();
+    q.real(mpfr_get_float128((mpfr_ptr)(re_tmp), mpreal::default_rnd));
+    q.imag(mpfr_get_float128((mpfr_ptr)(im_tmp), mpreal::default_rnd));
+    return q;
+}
+#elif MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_LDBL
+inline std::complex<mplapack_binary128_t> cast2complex_binary128(const mpcomplex &b) {
+    std::complex<mplapack_binary128_t> q;
+    mpreal re_tmp, im_tmp;
+    re_tmp = b.real();
+    im_tmp = b.imag();
+    q.real(mpfr_get_ld((mpfr_ptr)(re_tmp), mpreal::default_rnd));
+    q.imag(mpfr_get_ld((mpfr_ptr)(im_tmp), mpreal::default_rnd));
+    return q;
+}
+#else
+#error "unknown MPLAPACK_BINARY128_MODE"
+#endif // MPLAPACK_BINARY128_MODE
+
+#endif //___MPLAPACK_BUILD_WITH_BINARY128___
+
+// Binary80 (extended precision) support
+#if defined ___MPLAPACK_BUILD_WITH_BINARY80___
+#if MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_FLOAT64X
+inline mpcomplex::mpcomplex(const std::complex<mplapack_binary80_t> &a, mp_prec_t pr, mp_prec_t pi, mpc_rnd_t mode) {
+    mpfr_t mp_real, mp_imag;
+    mpc_init3(mpc, pr, pi);
+
+    mpfr_init2(mp_real, pr);
+    mpfr_set_ld((mpfr_ptr)mp_real, (long double)a.real(), mpreal::default_rnd);
+
+    mpfr_init2(mp_imag, pi);
+    mpfr_set_ld((mpfr_ptr)mp_imag, (long double)a.imag(), mpreal::default_rnd);
+
+    mpc_set_fr_fr(mpc, mp_real, mp_imag, mode);
+    mpfr_clear(mp_imag);
+    mpfr_clear(mp_real);
+}
+
+inline const mpcomplex operator-(const mpcomplex &a, const std::complex<mplapack_binary80_t> &b) { return -(mpcomplex(b) -= a); }
+
+inline const mpcomplex operator-(const std::complex<mplapack_binary80_t> &a, const mpcomplex &b) { return mpcomplex(a) -= b; }
+
+inline mpcomplex &mpcomplex::operator=(const std::complex<mplapack_binary80_t> &a) {
+    mpcomplex tmp(a);
+    *this = tmp;
+    return *this;
+}
+
+inline std::complex<mplapack_binary80_t> cast2complex_binary80(const mpcomplex &b) {
+    std::complex<mplapack_binary80_t> q;
+    mpreal re_tmp, im_tmp;
+    re_tmp = b.real();
+    im_tmp = b.imag();
+    q.real((mplapack_binary80_t)mpfr_get_ld((mpfr_ptr)(re_tmp), mpreal::default_rnd));
+    q.imag((mplapack_binary80_t)mpfr_get_ld((mpfr_ptr)(im_tmp), mpreal::default_rnd));
+    return q;
+}
+#elif MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_LDBL80
+// nothing to be done
+#else
+#error
+#endif // MPLAPACK_BINARY80_MODE
+#endif //___MPLAPACK_BUILD_WITH_BINARY80___
 
 } // namespace mpfr
 

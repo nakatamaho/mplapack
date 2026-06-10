@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DBDT02.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,34 +43,9 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
 void Rbdt02(INTEGER const m, INTEGER const n, REAL *b, INTEGER const ldb, REAL *c, INTEGER const ldc, REAL *u, INTEGER const ldu, REAL *work, REAL &resid) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    // ======================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Quick return if possible
+    // Quick return if possible
     //
     const REAL zero = 0.0;
     resid = zero;
@@ -73,17 +55,17 @@ void Rbdt02(INTEGER const m, INTEGER const n, REAL *b, INTEGER const ldb, REAL *
     REAL realmn = castREAL(max(m, n));
     REAL eps = Rlamch("Precision");
     //
-    //     Compute norm( B - U * C )
+    // Compute norm(B - U * C)
     //
     INTEGER j = 0;
     const REAL one = 1.0;
     for (j = 1; j <= n; j = j + 1) {
         Rcopy(m, &b[(j - 1) * ldb], 1, work, 1);
         Rgemv("No transpose", m, m, -one, u, ldu, &c[(j - 1) * ldc], 1, one, work, 1);
-        resid = max({resid, Rasum(m, work, 1)});
+        resid = max(resid, Rasum(m, work, 1));
     }
     //
-    //     Compute norm of B.
+    // Compute norm of B.
     //
     REAL bnorm = Rlange("1", m, n, b, ldb, work);
     //
@@ -96,13 +78,13 @@ void Rbdt02(INTEGER const m, INTEGER const n, REAL *b, INTEGER const ldb, REAL *
             resid = (resid / bnorm) / (realmn * eps);
         } else {
             if (bnorm < one) {
-                resid = (min(resid, REAL(realmn * bnorm)) / bnorm) / (realmn * eps);
+                resid = (min(resid, realmn * bnorm) / bnorm) / (realmn * eps);
             } else {
-                resid = min(REAL(resid / bnorm), realmn) / (realmn * eps);
+                resid = min(resid / bnorm, realmn) / (realmn * eps);
             }
         }
     }
     //
-    //     End of Rbdt02
+    // End of Rbdt02
     //
 }

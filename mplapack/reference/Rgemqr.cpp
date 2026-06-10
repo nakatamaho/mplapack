@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,36 +26,21 @@
  *
  */
 
+// Derived from LAPACK routine DGEMQR.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rgemqr(const char *side, const char *trans, INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, INTEGER const lda, REAL *t, INTEGER const tsize, REAL *c, INTEGER const ldc, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    // Test the input arguments
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    // =====================================================================
-    //
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input arguments
-    //
-    bool lquery = lwork == -1;
+    bool lquery = (lwork == -1);
     bool notran = Mlsame(trans, "N");
     bool tran = Mlsame(trans, "T");
     bool left = Mlsame(side, "L");
@@ -71,6 +56,14 @@ void Rgemqr(const char *side, const char *trans, INTEGER const m, INTEGER const 
     } else {
         lw = mb * nb;
         mn = n;
+    }
+    //
+    INTEGER minmnk = min(m, n, k);
+    INTEGER lwmin = 0;
+    if (minmnk == 0) {
+        lwmin = 1;
+    } else {
+        lwmin = max((INTEGER)1, lw);
     }
     //
     INTEGER nblcks = 0;
@@ -101,12 +94,12 @@ void Rgemqr(const char *side, const char *trans, INTEGER const m, INTEGER const 
         info = -9;
     } else if (ldc < max((INTEGER)1, m)) {
         info = -11;
-    } else if ((lwork < max((INTEGER)1, lw)) && (!lquery)) {
+    } else if (lwork < lwmin && !lquery) {
         info = -13;
     }
     //
     if (info == 0) {
-        work[1 - 1] = lw;
+        work[1 - 1] = lwmin;
     }
     //
     if (info != 0) {
@@ -116,20 +109,20 @@ void Rgemqr(const char *side, const char *trans, INTEGER const m, INTEGER const 
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
-    if (min({m, n, k}) == 0) {
+    if (minmnk == 0) {
         return;
     }
     //
-    if ((left && m <= k) || (right && n <= k) || (mb <= k) || (mb >= max({m, n, k}))) {
+    if ((left && m <= k) || (right && n <= k) || (mb <= k) || (mb >= max(m, n, k))) {
         Rgemqrt(side, trans, m, n, k, nb, a, lda, &t[6 - 1], nb, c, ldc, work, info);
     } else {
         Rlamtsqr(side, trans, m, n, k, mb, nb, a, lda, &t[6 - 1], nb, c, ldc, work, lwork, info);
     }
     //
-    work[1 - 1] = lw;
+    work[1 - 1] = lwmin;
     //
-    //     End of Rgemqr
+    // End of Rgemqr
     //
 }

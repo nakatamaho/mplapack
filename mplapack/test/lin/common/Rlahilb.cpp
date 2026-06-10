@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DLAHILB.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -38,27 +45,7 @@ using fem::common;
 
 void Rlahilb(INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *x, INTEGER const ldx, REAL *b, INTEGER const ldb, REAL *work, INTEGER &info) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Parameters ..
-    //                  exact.
-    //                  a small componentwise relative error.
-    //
-    //     ..
-    //     .. External Functions
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     const INTEGER nmax_approx = 11;
@@ -82,8 +69,8 @@ void Rlahilb(INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, RE
         info = 1;
     }
     //
-    //     Compute M = the LCM of the integers [1, 2*N-1].  The largest
-    //     reasonable N is small enough that integers suffice (up to N = 11).
+    // Compute M = the LCM of the integers [1, 2*N-1].  The largest
+    // reasonable N is small enough that integers suffice (up to N = 11).
     INTEGER m = 1;
     INTEGER i = 0;
     INTEGER tm = 0;
@@ -101,29 +88,29 @@ void Rlahilb(INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, RE
         m = (m / ti) * i;
     }
     //
-    //     Generate the scaled Hilbert matrix in A
+    // Generate the scaled Hilbert matrix in A
     INTEGER j = 0;
     for (j = 1; j <= n; j = j + 1) {
         for (i = 1; i <= n; i = i + 1) {
-            a[(i - 1) + (j - 1) * lda] = castREAL(m) / castREAL(i + j - 1);
+            a[(i - 1) + (j - 1) * lda] = castREAL(m) / (i + j - 1);
         }
     }
     //
-    //     Generate matrix B as simply the first NRHS columns of M * the
-    //     identity.
+    // Generate matrix B as simply the first NRHS columns of M * the
+    // identity.
     Rlaset("Full", n, nrhs, 0.0, castREAL(m), b, ldb);
     //
-    //     Generate the true solutions in X.  Because B = the first NRHS
-    //     columns of M*I, the true solutions are just the first NRHS columns
-    //     of the inverse Hilbert matrix.
+    // Generate the true solutions in X.  Because B = the first NRHS
+    // columns of M*I, the true solutions are just the first NRHS columns
+    // of the inverse Hilbert matrix.
     work[1 - 1] = n;
     for (j = 2; j <= n; j = j + 1) {
-        work[j - 1] = (((work[(j - 1) - 1] / castREAL(j - 1)) * castREAL(j - 1 - n)) / castREAL(j - 1)) * castREAL(n + j - 1);
+        work[j - 1] = (((work[(j - 1) - 1] / (j - 1)) * (j - 1 - n)) / (j - 1)) * (n + j - 1);
     }
     //
     for (j = 1; j <= nrhs; j = j + 1) {
         for (i = 1; i <= n; i = i + 1) {
-            x[(i - 1) + (j - 1) * ldx] = (work[i - 1] * work[j - 1]) / castREAL(i + j - 1);
+            x[(i - 1) + (j - 1) * ldx] = (work[i - 1] * work[j - 1]) / (i + j - 1);
         }
     }
     //

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZHPGV.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Chpgv(INTEGER const itype, const char *jobz, const char *uplo, INTEGER const n, COMPLEX *ap, COMPLEX *bp, REAL *w, COMPLEX *z, INTEGER const ldz, COMPLEX *work, REAL *rwork, INTEGER &info) {
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     bool wantz = Mlsame(jobz, "V");
     bool upper = Mlsame(uplo, "U");
@@ -53,13 +60,13 @@ void Chpgv(INTEGER const itype, const char *jobz, const char *uplo, INTEGER cons
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
     }
     //
-    //     Form a Cholesky factorization of B.
+    // Form a Cholesky factorization of B.
     //
     Cpptrf(uplo, n, bp, info);
     if (info != 0) {
@@ -67,7 +74,7 @@ void Chpgv(INTEGER const itype, const char *jobz, const char *uplo, INTEGER cons
         return;
     }
     //
-    //     Transform problem to standard eigenvalue problem and solve.
+    // Transform problem to standard eigenvalue problem and solve.
     //
     Chpgst(itype, uplo, n, ap, bp, info);
     Chpev(jobz, uplo, n, ap, w, z, ldz, work, rwork, info);
@@ -77,7 +84,7 @@ void Chpgv(INTEGER const itype, const char *jobz, const char *uplo, INTEGER cons
     INTEGER j = 0;
     if (wantz) {
         //
-        //        Backtransform eigenvectors to the original problem.
+        // Backtransform eigenvectors to the original problem.
         //
         neig = n;
         if (info > 0) {
@@ -85,8 +92,8 @@ void Chpgv(INTEGER const itype, const char *jobz, const char *uplo, INTEGER cons
         }
         if (itype == 1 || itype == 2) {
             //
-            //           For A*x=(lambda)*B*x and A*B*x=(lambda)*x;
-            //           backtransform eigenvectors: x = inv(L)**H *y or inv(U)*y
+            // For A*x=(lambda)*B*x and A*B*x=(lambda)*x;
+            // backtransform eigenvectors: x = inv(L)**H *y or inv(U)*y
             //
             if (upper) {
                 trans = 'N';
@@ -100,8 +107,8 @@ void Chpgv(INTEGER const itype, const char *jobz, const char *uplo, INTEGER cons
             //
         } else if (itype == 3) {
             //
-            //           For B*A*x=(lambda)*x;
-            //           backtransform eigenvectors: x = L*y or U**H *y
+            // For B*A*x=(lambda)*x;
+            // backtransform eigenvectors: x = L*y or U**H *y
             //
             if (upper) {
                 trans = 'C';
@@ -115,6 +122,6 @@ void Chpgv(INTEGER const itype, const char *jobz, const char *uplo, INTEGER cons
         }
     }
     //
-    //     End of Chpgv
+    // End of Chpgv
     //
 }

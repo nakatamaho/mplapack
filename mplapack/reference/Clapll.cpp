@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,35 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZLAPLL.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Clapll(INTEGER const n, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER const incy, REAL &ssmin) {
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Quick return if possible
+    // Quick return if possible
     //
     const REAL zero = 0.0;
     if (n <= 1) {
@@ -62,7 +46,7 @@ void Clapll(INTEGER const n, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER
         return;
     }
     //
-    //     Compute the QR factorization of the N-by-2 matrix ( X Y )
+    // Compute the QR factorization of the N-by-2 matrix ( X Y )
     //
     COMPLEX tau = 0.0;
     Clarfg(n, x[1 - 1], &x[(1 + incx) - 1], incx, tau);
@@ -78,11 +62,11 @@ void Clapll(INTEGER const n, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER
     COMPLEX a12 = y[1 - 1];
     COMPLEX a22 = y[(1 + incy) - 1];
     //
-    //     Compute the SVD of 2-by-2 Upper triangular matrix.
+    // Compute the SVD of 2-by-2 Upper triangular matrix.
     //
     REAL ssmax = 0.0;
     Rlas2(abs(a11), abs(a12), abs(a22), ssmin, ssmax);
     //
-    //     End of Clapll
+    // End of Clapll
     //
 }

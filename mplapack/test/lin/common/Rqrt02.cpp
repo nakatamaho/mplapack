@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DQRT02.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -38,58 +45,32 @@ using fem::common;
 
 void Rqrt02(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, REAL *af, REAL *q, REAL *r, INTEGER const lda, REAL *tau, REAL *work, INTEGER const lwork, REAL *rwork, REAL *result) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     REAL eps = Rlamch("Epsilon");
     //
-    //     Copy the first k columns of the factorization to the array Q
+    // Copy the first k columns of the factorization to the array Q
     //
-    const REAL rogue = -1.0e+10;
+    const REAL rogue = -10000000000.0;
     Rlaset("Full", m, n, rogue, rogue, q, lda);
     Rlacpy("Lower", m - 1, k, &af[(2 - 1)], lda, &q[(2 - 1)], lda);
     //
-    //     Generate the first n columns of the matrix Q
+    // Generate the first n columns of the matrix Q
     //
+    srnamt = "Rorgqr";
     INTEGER info = 0;
     Rorgqr(m, n, k, q, lda, tau, work, lwork, info);
     //
-    //     Copy R(1:n,1:k)
+    // Copy R(1:n,1:k)
     //
     const REAL zero = 0.0;
     Rlaset("Full", n, k, zero, zero, r, lda);
     Rlacpy("Upper", n, k, af, lda, r, lda);
     //
-    //     Compute R(1:n,1:k) - Q(1:m,1:n)' * A(1:m,1:k)
+    // Compute R(1:n,1:k) - Q(1:m,1:n)' * A(1:m,1:k)
     //
     const REAL one = 1.0;
     Rgemm("Transpose", "No transpose", n, k, m, -one, q, lda, a, lda, one, r, lda);
     //
-    //     Compute norm( R - Q'*A ) / ( M * norm(A) * EPS ) .
+    // Compute norm( R - Q'*A ) / ( M * norm(A) * EPS ) .
     //
     REAL anorm = Rlange("1", m, k, a, lda, rwork);
     REAL resid = Rlange("1", n, k, r, lda, rwork);
@@ -99,17 +80,17 @@ void Rqrt02(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, REAL *af
         result[1 - 1] = zero;
     }
     //
-    //     Compute I - Q'*Q
+    // Compute I - Q'*Q
     //
     Rlaset("Full", n, n, zero, one, r, lda);
     Rsyrk("Upper", "Transpose", n, m, -one, q, lda, one, r, lda);
     //
-    //     Compute norm( I - Q'*Q ) / ( M * EPS ) .
+    // Compute norm( I - Q'*Q ) / ( M * EPS ) .
     //
     resid = Rlansy("1", "Upper", n, r, lda, rwork);
     //
     result[2 - 1] = (resid / castREAL(max((INTEGER)1, m))) / eps;
     //
-    //     End of Rqrt02
+    // End of Rqrt02
     //
 }

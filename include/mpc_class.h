@@ -57,7 +57,9 @@ Complex class declare for the GMP.
 #define _MPC_CLASS_H_
 
 #include "gmpxx.h"
+#include <algorithm>
 #include <complex>
+#include <utility>
 
 class mpc_class {
   private:
@@ -89,11 +91,13 @@ class mpc_class {
     friend bool operator==(const mpc_class &a, const mpf_class &b);
     friend bool operator==(const mpf_class &a, const mpc_class &b);
     friend bool operator==(const mpc_class &a, const double &b);
+    friend bool operator==(const double &a, const mpc_class &b);
 
     friend bool operator!=(const mpc_class &a, const mpc_class &b);
     friend bool operator!=(const mpc_class &a, const mpf_class &b);
     friend bool operator!=(const mpf_class &a, const mpc_class &b);
     friend bool operator!=(const mpc_class &a, const double &b);
+    friend bool operator!=(const double &a, const mpc_class &b);
 
     // subsututtion
     // difficult to implement; mpc_class& operator=(const mpc_class& b);
@@ -143,6 +147,13 @@ const mpc_class operator/(const mpc_class &a, const mpf_class &b);
 const mpc_class operator/(const mpf_class &a, const mpc_class &b);
 const mpc_class operator/(const mpc_class &a, std::complex<double> b);
 const mpc_class operator/(std::complex<double> a, const mpc_class &b);
+mpf_class real(const mpc_class &a);
+mpf_class imag(const mpc_class &a);
+mpf_class norm(const mpc_class &a);
+mpf_class abs(const mpc_class &a);
+mpc_class sqrt(mpc_class z);
+mpc_class conj(const mpc_class &a);
+void swap(mpc_class &a, mpc_class &b);
 
 // constructor
 inline mpc_class::mpc_class() {
@@ -220,6 +231,8 @@ inline bool operator==(const mpc_class &a, const double &b) {
         return false;
 }
 
+inline bool operator==(const double &a, const mpc_class &b) { return b == a; }
+
 inline bool operator!=(const mpc_class &a, const mpc_class &b) {
     if ((a.re != b.re) || (a.im != b.im)) {
         return true;
@@ -242,11 +255,13 @@ inline bool operator!=(const mpc_class &a, const mpf_class &b) {
 }
 
 inline bool operator!=(const mpc_class &a, const double &b) {
-    if ((a.re != b) || (a.im == 0.0)) {
+    if ((a.re != b) || (a.im != 0.0)) {
         return true;
     } else
         return false;
 }
+
+inline bool operator!=(const double &a, const mpc_class &b) { return b != a; }
 
 inline mpc_class &mpc_class::operator=(const std::complex<double> b) {
     re = b.real();
@@ -297,6 +312,14 @@ inline const mpc_class operator+(const mpf_class &a, const mpc_class &b) {
     return tmp;
 }
 
+inline const mpc_class operator+(const mpc_class &a, std::complex<double> b) {
+    return a + mpc_class(b);
+}
+
+inline const mpc_class operator+(std::complex<double> a, const mpc_class &b) {
+    return mpc_class(a) + b;
+}
+
 inline mpc_class &mpc_class::operator-=(const mpc_class &b) {
     re -= b.re;
     im -= b.im;
@@ -328,6 +351,14 @@ inline const mpc_class operator-(const mpc_class &a, const mpf_class &b) {
 inline const mpc_class operator-(const mpf_class &a, const mpc_class &b) {
     mpc_class tmp(a);
     return tmp -= b;
+}
+
+inline const mpc_class operator-(const mpc_class &a, std::complex<double> b) {
+    return a - mpc_class(b);
+}
+
+inline const mpc_class operator-(std::complex<double> a, const mpc_class &b) {
+    return mpc_class(a) - b;
 }
 
 // not so bad as overflow might not occur with GMP; exponet range is extraordinarly large.
@@ -366,6 +397,14 @@ inline const mpc_class operator*(const mpc_class &a, const mpf_class &b) {
     return tmp;
 }
 
+inline const mpc_class operator*(const mpc_class &a, std::complex<double> b) {
+    return a * mpc_class(b);
+}
+
+inline const mpc_class operator*(std::complex<double> a, const mpc_class &b) {
+    return mpc_class(a) * b;
+}
+
 inline mpc_class &mpc_class::operator/=(const mpc_class &b) {
     mpc_class tmp(*this);
     mpf_class abr, abi, ratio, den;
@@ -396,8 +435,8 @@ inline mpc_class &mpc_class::operator/=(const mpc_class &b) {
 
 inline mpc_class &mpc_class::operator/=(const mpf_class &b) {
     mpc_class tmp(*this);
-    re = (tmp.re * b);
-    im = (tmp.im * b);
+    re = (tmp.re / b);
+    im = (tmp.im / b);
     return (*this);
 }
 
@@ -422,51 +461,193 @@ inline const mpc_class operator/(const mpf_class &a, const mpc_class &b) {
     return tmp;
 }
 
-inline mpf_class abs(mpc_class ctemp) {
-    mpf_class temp;
-    if (ctemp.real() < 0)
-        ctemp.real() = -ctemp.real();
-    if (ctemp.imag() < 0)
-        ctemp.imag() = -ctemp.imag();
-    if (ctemp.imag() > ctemp.real()) {
-        temp = ctemp.real();
-        ctemp.real() = ctemp.imag();
-        ctemp.imag() = temp;
+inline const mpc_class operator/(const mpc_class &a, std::complex<double> b) {
+    return a / mpc_class(b);
+}
+
+inline const mpc_class operator/(std::complex<double> a, const mpc_class &b) {
+    return mpc_class(a) / b;
+}
+
+namespace mplapack_gmp_mpc_detail {
+
+inline mp_bitcnt_t precision_for(const mpc_class &value) {
+    return std::max(value.real().get_prec(), value.imag().get_prec());
+}
+
+inline mpf_class zero(mp_bitcnt_t precision) {
+    return mpf_class(0, precision);
+}
+
+inline mpf_class one(mp_bitcnt_t precision) {
+    mpf_class result(0, precision);
+    mpf_set_ui(result.get_mpf_t(), 1ul);
+    return result;
+}
+
+inline mpf_class half(mp_bitcnt_t precision) {
+    mpf_class result = one(precision);
+    mpf_div_2exp(result.get_mpf_t(), result.get_mpf_t(), 1);
+    return result;
+}
+
+inline mpf_class set_prec_copy(const mpf_class &value, mp_bitcnt_t precision) {
+    mpf_class result(0, precision);
+    mpf_set(result.get_mpf_t(), value.get_mpf_t());
+    return result;
+}
+
+inline mpf_class abs_prec(const mpf_class &value, mp_bitcnt_t precision) {
+    mpf_class result(0, precision);
+    mpf_abs(result.get_mpf_t(), value.get_mpf_t());
+    return result;
+}
+
+inline mpf_class neg_prec(const mpf_class &value, mp_bitcnt_t precision) {
+    mpf_class result(0, precision);
+    mpf_neg(result.get_mpf_t(), value.get_mpf_t());
+    return result;
+}
+
+inline mpf_class add(const mpf_class &lhs, const mpf_class &rhs, mp_bitcnt_t precision) {
+    mpf_class result(0, precision);
+    mpf_add(result.get_mpf_t(), lhs.get_mpf_t(), rhs.get_mpf_t());
+    return result;
+}
+
+inline mpf_class sub(const mpf_class &lhs, const mpf_class &rhs, mp_bitcnt_t precision) {
+    mpf_class result(0, precision);
+    mpf_sub(result.get_mpf_t(), lhs.get_mpf_t(), rhs.get_mpf_t());
+    return result;
+}
+
+inline mpf_class mul(const mpf_class &lhs, const mpf_class &rhs, mp_bitcnt_t precision) {
+    mpf_class result(0, precision);
+    mpf_mul(result.get_mpf_t(), lhs.get_mpf_t(), rhs.get_mpf_t());
+    return result;
+}
+
+inline mpf_class div(const mpf_class &lhs, const mpf_class &rhs, mp_bitcnt_t precision) {
+    mpf_class result(0, precision);
+    mpf_div(result.get_mpf_t(), lhs.get_mpf_t(), rhs.get_mpf_t());
+    return result;
+}
+
+inline mpf_class sqr(const mpf_class &value, mp_bitcnt_t precision) {
+    return mul(value, value, precision);
+}
+
+inline mpf_class sqrt_prec(const mpf_class &value, mp_bitcnt_t precision) {
+    mpf_class result(0, precision);
+    mpf_sqrt(result.get_mpf_t(), value.get_mpf_t());
+    return result;
+}
+
+inline mpf_class scaled_hypot_abs(const mpf_class &lhs, const mpf_class &rhs, mp_bitcnt_t precision) {
+    mpf_class lhs_abs = abs_prec(lhs, precision);
+    mpf_class rhs_abs = abs_prec(rhs, precision);
+
+    const mpf_class *high = &lhs_abs;
+    const mpf_class *low = &rhs_abs;
+    if (mpf_cmp(lhs_abs.get_mpf_t(), rhs_abs.get_mpf_t()) < 0) {
+        high = &rhs_abs;
+        low = &lhs_abs;
     }
-    if ((ctemp.real() + ctemp.imag()) == ctemp.real())
-        return (ctemp.real());
 
-    temp = ctemp.imag() / ctemp.real();
-    temp = ctemp.real() * sqrt(1.0 + temp * temp); /*overflow!!*/
+    if (mpf_sgn(high->get_mpf_t()) == 0) {
+        return zero(precision);
+    }
 
-    return temp;
+    mpf_class ratio = div(*low, *high, precision);
+    mpf_mul(ratio.get_mpf_t(), ratio.get_mpf_t(), ratio.get_mpf_t());
+    mpf_add_ui(ratio.get_mpf_t(), ratio.get_mpf_t(), 1ul);
+    mpf_sqrt(ratio.get_mpf_t(), ratio.get_mpf_t());
+
+    mpf_class result(0, precision);
+    mpf_mul(result.get_mpf_t(), high->get_mpf_t(), ratio.get_mpf_t());
+    return result;
+}
+
+} // namespace mplapack_gmp_mpc_detail
+
+inline mpf_class real(const mpc_class &a) { return a.real(); }
+
+inline mpf_class imag(const mpc_class &a) { return a.imag(); }
+
+inline mpf_class norm(const mpc_class &a) {
+    const mp_bitcnt_t precision = mplapack_gmp_mpc_detail::precision_for(a);
+    mpf_class real_abs = mplapack_gmp_mpc_detail::abs_prec(a.real(), precision);
+    mpf_class imag_abs = mplapack_gmp_mpc_detail::abs_prec(a.imag(), precision);
+
+    const mpf_class *high = &real_abs;
+    const mpf_class *low = &imag_abs;
+    if (mpf_cmp(real_abs.get_mpf_t(), imag_abs.get_mpf_t()) < 0) {
+        high = &imag_abs;
+        low = &real_abs;
+    }
+
+    if (mpf_sgn(high->get_mpf_t()) == 0) {
+        return mplapack_gmp_mpc_detail::zero(precision);
+    }
+
+    mpf_class ratio = mplapack_gmp_mpc_detail::div(*low, *high, precision);
+    mpf_mul(ratio.get_mpf_t(), ratio.get_mpf_t(), ratio.get_mpf_t());
+    mpf_add_ui(ratio.get_mpf_t(), ratio.get_mpf_t(), 1ul);
+
+    mpf_class result = mplapack_gmp_mpc_detail::sqr(*high, precision);
+    mpf_mul(result.get_mpf_t(), result.get_mpf_t(), ratio.get_mpf_t());
+    return result;
+}
+
+inline mpf_class abs(const mpc_class &a) {
+    const mp_bitcnt_t precision = mplapack_gmp_mpc_detail::precision_for(a);
+    return mplapack_gmp_mpc_detail::scaled_hypot_abs(a.real(), a.imag(), precision);
 }
 
 inline mpc_class sqrt(mpc_class z) {
-    mpf_class mag;
-    mpc_class r;
+    const mp_bitcnt_t precision = mplapack_gmp_mpc_detail::precision_for(z);
+    const mpf_class zero = mplapack_gmp_mpc_detail::zero(precision);
+    const mpf_class real_part_input = mplapack_gmp_mpc_detail::set_prec_copy(z.real(), precision);
+    const mpf_class imag_part_input = mplapack_gmp_mpc_detail::set_prec_copy(z.imag(), precision);
 
-    mag = abs(z);
-    if (abs(mag) == 0.0) {
-        r.real(0.0), r.imag(0.0);
-    } else if (z.real() > 0.0) {
-        r.real(sqrt(0.5 * (mag + z.real())));
-        r.imag(z.imag() / (2.0 * r.real()));
-    } else {
-        r.imag(sqrt(0.5 * (mag - z.real())));
-        if (z.imag() < 0.0)
-            r.imag(-r.imag());
-        r.real(z.imag() / (2.0 * r.imag()));
+    if (mpf_sgn(imag_part_input.get_mpf_t()) == 0) {
+        if (mpf_sgn(real_part_input.get_mpf_t()) < 0) {
+            return mpc_class(zero, mplapack_gmp_mpc_detail::sqrt_prec(mplapack_gmp_mpc_detail::neg_prec(real_part_input, precision), precision));
+        }
+        return mpc_class(mplapack_gmp_mpc_detail::sqrt_prec(real_part_input, precision), zero);
     }
-    return r;
+
+    const mpf_class half = mplapack_gmp_mpc_detail::half(precision);
+    const mpf_class magnitude = mplapack_gmp_mpc_detail::scaled_hypot_abs(real_part_input, imag_part_input, precision);
+
+    if (mpf_sgn(real_part_input.get_mpf_t()) >= 0) {
+        const mpf_class real_argument = mplapack_gmp_mpc_detail::mul(mplapack_gmp_mpc_detail::add(magnitude, real_part_input, precision), half, precision);
+        const mpf_class real_part = mplapack_gmp_mpc_detail::sqrt_prec(real_argument, precision);
+        const mpf_class imag_part = mplapack_gmp_mpc_detail::div(imag_part_input, mplapack_gmp_mpc_detail::add(real_part, real_part, precision), precision);
+        return mpc_class(real_part, imag_part);
+    }
+
+    const mpf_class imag_argument = mplapack_gmp_mpc_detail::mul(mplapack_gmp_mpc_detail::sub(magnitude, real_part_input, precision), half, precision);
+    mpf_class imag_magnitude = mplapack_gmp_mpc_detail::sqrt_prec(imag_argument, precision);
+    const mpf_class real_part = mplapack_gmp_mpc_detail::div(mplapack_gmp_mpc_detail::abs_prec(imag_part_input, precision), mplapack_gmp_mpc_detail::add(imag_magnitude, imag_magnitude, precision), precision);
+    if (mpf_sgn(imag_part_input.get_mpf_t()) < 0) {
+        imag_magnitude = mplapack_gmp_mpc_detail::neg_prec(imag_magnitude, precision);
+    }
+    return mpc_class(real_part, imag_magnitude);
 }
 
-inline mpc_class conj(mpc_class ctmp) {
+inline mpc_class conj(const mpc_class &ctmp) {
     mpc_class ctmp2;
 
     ctmp2.real(ctmp.real());
     ctmp2.imag(-ctmp.imag());
     return ctmp2;
+}
+
+inline void swap(mpc_class &a, mpc_class &b) {
+    using std::swap;
+    swap(a.real(), b.real());
+    swap(a.imag(), b.imag());
 }
 
 #endif

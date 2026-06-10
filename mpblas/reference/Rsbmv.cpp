@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,33 +26,18 @@
  *
  */
 
+// Derived from BLAS routine DSBMV.
+// Original BLAS authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 
 void Rsbmv(const char *uplo, INTEGER const n, INTEGER const k, REAL const alpha, REAL *a, INTEGER const lda, REAL *x, INTEGER const incx, REAL const beta, REAL *y, INTEGER const incy) {
     //
-    //  -- Reference BLAS level2 routine --
-    //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     INTEGER info = 0;
     if (!Mlsame(uplo, "U") && !Mlsame(uplo, "L")) {
@@ -69,11 +54,11 @@ void Rsbmv(const char *uplo, INTEGER const n, INTEGER const k, REAL const alpha,
         info = 11;
     }
     if (info != 0) {
-        Mxerbla("Rsbmv ", info);
+        Mxerbla("Rsbmv", info);
         return;
     }
     //
-    //     Quick return if possible.
+    // Quick return if possible.
     //
     const REAL zero = 0.0;
     const REAL one = 1.0;
@@ -81,7 +66,7 @@ void Rsbmv(const char *uplo, INTEGER const n, INTEGER const k, REAL const alpha,
         return;
     }
     //
-    //     Set up the start points in  X  and  Y.
+    // Set up the start points in  X  and  Y.
     //
     INTEGER kx = 0;
     if (incx > 0) {
@@ -96,10 +81,10 @@ void Rsbmv(const char *uplo, INTEGER const n, INTEGER const k, REAL const alpha,
         ky = 1 - (n - 1) * incy;
     }
     //
-    //     Start the operations. In this version the elements of the array A
-    //     are accessed sequentially with one pass through A.
+    // Start the operations. In this version the elements of the array A
+    // are accessed sequentially with one pass through A.
     //
-    //     First form  y := beta*y.
+    // First form  y := beta*y.
     //
     INTEGER i = 0;
     INTEGER iy = 0;
@@ -142,7 +127,7 @@ void Rsbmv(const char *uplo, INTEGER const n, INTEGER const k, REAL const alpha,
     INTEGER ix = 0;
     if (Mlsame(uplo, "U")) {
         //
-        //        Form  y  when upper triangle of A is stored.
+        // Form  y  when upper triangle of A is stored.
         //
         kplus1 = k + 1;
         if ((incx == 1) && (incy == 1)) {
@@ -182,7 +167,7 @@ void Rsbmv(const char *uplo, INTEGER const n, INTEGER const k, REAL const alpha,
         }
     } else {
         //
-        //        Form  y  when lower triangle of A is stored.
+        // Form  y  when lower triangle of A is stored.
         //
         if ((incx == 1) && (incy == 1)) {
             for (j = 1; j <= n; j = j + 1) {
@@ -219,6 +204,6 @@ void Rsbmv(const char *uplo, INTEGER const n, INTEGER const k, REAL const alpha,
         }
     }
     //
-    //     End of Rsbmv .
+    // End of Rsbmv
     //
 }

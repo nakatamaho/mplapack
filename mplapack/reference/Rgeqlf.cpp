@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,33 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DGEQLF.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rgeqlf(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *tau, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     bool lquery = (lwork == -1);
@@ -77,8 +63,10 @@ void Rgeqlf(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
         }
         work[1 - 1] = lwkopt;
         //
-        if (lwork < max((INTEGER)1, n) && !lquery) {
-            info = -7;
+        if (!lquery) {
+            if (lwork <= 0 || (m > 0 && lwork < max((INTEGER)1, n))) {
+                info = -7;
+            }
         }
     }
     //
@@ -89,7 +77,7 @@ void Rgeqlf(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (k == 0) {
         return;
@@ -101,19 +89,19 @@ void Rgeqlf(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
     INTEGER ldwork = 0;
     if (nb > 1 && nb < k) {
         //
-        //        Determine when to cross over from blocked to unblocked code.
+        // Determine when to cross over from blocked to unblocked code.
         //
         nx = max((INTEGER)0, iMlaenv(3, "Rgeqlf", " ", m, n, -1, -1));
         if (nx < k) {
             //
-            //           Determine if workspace is large enough for blocked code.
+            // Determine if workspace is large enough for blocked code.
             //
             ldwork = n;
             iws = ldwork * nb;
             if (lwork < iws) {
                 //
-                //              Not enough workspace to use optimal NB:  reduce NB and
-                //              determine the minimum value of NB.
+                // Not enough workspace to use optimal NB:  reduce NB and
+                // determine the minimum value of NB.
                 //
                 nb = lwork / ldwork;
                 nbmin = max((INTEGER)2, iMlaenv(2, "Rgeqlf", " ", m, n, -1, -1));
@@ -130,8 +118,8 @@ void Rgeqlf(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
     INTEGER nu = 0;
     if (nb >= nbmin && nb < k && nx < k) {
         //
-        //        Use blocked code initially.
-        //        The last kk columns are handled by the block method.
+        // Use blocked code initially.
+        // The last kk columns are handled by the block method.
         //
         ki = ((k - nx - 1) / nb) * nb;
         kk = min(k, ki + nb);
@@ -139,18 +127,18 @@ void Rgeqlf(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
         for (i = k - kk + ki + 1; i >= k - kk + 1; i = i - nb) {
             ib = min(k - i + 1, nb);
             //
-            //           Compute the QL factorization of the current block
-            //           A(1:m-k+i+ib-1,n-k+i:n-k+i+ib-1)
+            // Compute the QL factorization of the current block
+            // A(1:m-k+i+ib-1,n-k+i:n-k+i+ib-1)
             //
             Rgeql2(m - k + i + ib - 1, ib, &a[((n - k + i) - 1) * lda], lda, &tau[i - 1], work, iinfo);
             if (n - k + i > 1) {
                 //
-                //              Form the triangular factor of the block reflector
-                //              H = H(i+ib-1) . . . H(i+1) H(i)
+                // Form the triangular factor of the block reflector
+                // H = H(i+ib-1) . . . H(i+1) H(i)
                 //
                 Rlarft("Backward", "Columnwise", m - k + i + ib - 1, ib, &a[((n - k + i) - 1) * lda], lda, &tau[i - 1], work, ldwork);
                 //
-                //              Apply H**T to A(1:m-k+i+ib-1,1:n-k+i-1) from the left
+                // Apply H**T to A(1:m-k+i+ib-1,1:n-k+i-1) from the left
                 //
                 Rlarfb("Left", "Transpose", "Backward", "Columnwise", m - k + i + ib - 1, n - k + i - 1, ib, &a[((n - k + i) - 1) * lda], lda, work, ldwork, a, lda, &work[(ib + 1) - 1], ldwork);
             }
@@ -162,7 +150,7 @@ void Rgeqlf(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
         nu = n;
     }
     //
-    //     Use unblocked code to factor the last or only block
+    // Use unblocked code to factor the last or only block
     //
     if (mu > 0 && nu > 0) {
         Rgeql2(mu, nu, a, lda, tau, work, iinfo);
@@ -170,6 +158,6 @@ void Rgeqlf(INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *
     //
     work[1 - 1] = iws;
     //
-    //     End of Rgeqlf
+    // End of Rgeqlf
     //
 }

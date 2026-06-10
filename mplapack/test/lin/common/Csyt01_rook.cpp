@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZSYT01_ROOK.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,32 +43,9 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Csyt01_rook(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *afac, INTEGER const ldafac, INTEGER *ipiv, COMPLEX *c, INTEGER const ldc, REAL *rwork, REAL &resid) {
+void Csyt01_rook(fem::str_cref uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *afac, INTEGER const ldafac, INTEGER *ipiv, COMPLEX *c, INTEGER const ldc, REAL *rwork, REAL &resid) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Quick exit if N = 0.
+    // Quick exit if N = 0.
     //
     const REAL zero = 0.0;
     if (n <= 0) {
@@ -69,31 +53,31 @@ void Csyt01_rook(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const ld
         return;
     }
     //
-    //     Determine EPS and the norm of A.
+    // Determine EPS and the norm of A.
     //
     REAL eps = Rlamch("Epsilon");
-    REAL anorm = Clansy("1", uplo, n, a, lda, rwork);
+    REAL anorm = Clansy("1", uplo.elems(), n, a, lda, rwork);
     //
-    //     Initialize C to the identity matrix.
+    // Initialize C to the identity matrix.
     //
     const COMPLEX czero = COMPLEX(0.0, 0.0);
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     Claset("Full", n, n, czero, cone, c, ldc);
     //
-    //     Call Clavsy_rook to form the product D * U' (or D * L' ).
+    // Call Clavsy_rook to form the product D * U' (or D * L' ).
     //
     INTEGER info = 0;
     Clavsy_rook(uplo, "Transpose", "Non-unit", n, n, afac, ldafac, ipiv, c, ldc, info);
     //
-    //     Call Clavsy_rook again to multiply by U (or L ).
+    // Call Clavsy_rook again to multiply by U (or L ).
     //
     Clavsy_rook(uplo, "No transpose", "Unit", n, n, afac, ldafac, ipiv, c, ldc, info);
     //
-    //     Compute the difference  C - A .
+    // Compute the difference  C - A .
     //
     INTEGER j = 0;
     INTEGER i = 0;
-    if (Mlsame(uplo, "U")) {
+    if (Mlsame(uplo.elems(), "U")) {
         for (j = 1; j <= n; j = j + 1) {
             for (i = 1; i <= j; i = i + 1) {
                 c[(i - 1) + (j - 1) * ldc] = c[(i - 1) + (j - 1) * ldc] - a[(i - 1) + (j - 1) * lda];
@@ -107,9 +91,9 @@ void Csyt01_rook(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const ld
         }
     }
     //
-    //     Compute norm( C - A ) / ( N * norm(A) * EPS )
+    // Compute norm( C - A ) / ( N * norm(A) * EPS )
     //
-    resid = Clansy("1", uplo, n, c, ldc, rwork);
+    resid = Clansy("1", uplo.elems(), n, c, ldc, rwork);
     //
     const REAL one = 1.0;
     if (anorm <= zero) {
@@ -120,6 +104,6 @@ void Csyt01_rook(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const ld
         resid = ((resid / castREAL(n)) / anorm) / eps;
     }
     //
-    //     End of Csyt01_rook
+    // End of Csyt01_rook
     //
 }

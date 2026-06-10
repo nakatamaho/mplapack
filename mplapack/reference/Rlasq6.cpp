@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,31 +26,17 @@
  *
  */
 
+// Derived from LAPACK routine DLASQ6.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rlasq6(INTEGER const i0, INTEGER const n0, REAL *z, INTEGER const pp, REAL &dmin, REAL &dmin1, REAL &dmin2, REAL &dn, REAL &dnm1, REAL &dnm2) {
-    //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameter ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Function ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     if ((n0 - i0 - 1) <= 0) {
         return;
@@ -104,7 +90,7 @@ void Rlasq6(INTEGER const i0, INTEGER const n0, REAL *z, INTEGER const pp, REAL 
         }
     }
     //
-    //     Unroll last two steps.
+    // Unroll last two steps.
     //
     dnm2 = d;
     dmin2 = dmin;
@@ -148,6 +134,6 @@ void Rlasq6(INTEGER const i0, INTEGER const n0, REAL *z, INTEGER const pp, REAL 
     z[(j4 + 2) - 1] = dn;
     z[(4 * n0 - pp) - 1] = emin;
     //
-    //     End of Rlasq6
+    // End of Rlasq6
     //
 }

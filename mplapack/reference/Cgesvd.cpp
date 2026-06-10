@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZGESVD.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL *s, COMPLEX *u, INTEGER const ldu, COMPLEX *vt, INTEGER const ldvt, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER &info) {
     //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     INTEGER minmn = min(m, n);
@@ -63,13 +70,13 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
         info = -11;
     }
     //
-    //     Compute workspace
-    //      (Note: Comments in the code beginning "Workspace:" describe the
-    //       minimal amount of workspace needed at that point in the code,
-    //       as well as the preferred amount for good performance.
-    //       CWorkspace refers to complex workspace, and RWorkspace to
-    //       real workspace. NB refers to the optimal block size for the
-    //       immediately following subroutine, as returned by iMlaenv.)
+    // Compute workspace
+    // (Note: Comments in the code beginning "Workspace:" describe the
+    // minimal amount of workspace needed at that point in the code,
+    // as well as the preferred amount for good performance.
+    // CWorkspace refers to complex workspace, and RWorkspace to
+    // real workspace. NB refers to the optimal block size for the
+    // immediately following subroutine, as returned by iMlaenv.)
     //
     INTEGER minwrk = 0;
     INTEGER maxwrk = 0;
@@ -87,30 +94,26 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
     INTEGER lwork_Cgelqf = 0;
     INTEGER lwork_Cunglq_n = 0;
     INTEGER lwork_Cunglq_m = 0;
-    char jobu_jobvt[3];
-    jobu_jobvt[0] = jobu[0];
-    jobu_jobvt[1] = jobvt[0];
-    jobu_jobvt[2] = '\0';
     if (info == 0) {
         minwrk = 1;
         maxwrk = 1;
         if (m >= n && minmn > 0) {
             //
-            //           Space needed for Cbdsqr is BDSPAC = 5*N
+            // Space needed for Cbdsqr is BDSPAC = 5*N
             //
-            mnthr = iMlaenv(6, "Cgesvd", jobu_jobvt, m, n, 0, 0);
-            //           Compute space needed for Cgeqrf
+            mnthr = iMlaenv(6, "Cgesvd", CHAR2(jobu, jobvt), m, n, 0, 0);
+            // Compute space needed for Cgeqrf
             Cgeqrf(m, n, a, lda, &cdum[1 - 1], &cdum[1 - 1], -1, ierr);
             lwork_Cgeqrf = castINTEGER(cdum[1 - 1].real());
-            //           Compute space needed for Cungqr
+            // Compute space needed for Cungqr
             Cungqr(m, n, n, a, lda, &cdum[1 - 1], &cdum[1 - 1], -1, ierr);
             lwork_Cungqr_n = castINTEGER(cdum[1 - 1].real());
             Cungqr(m, m, n, a, lda, &cdum[1 - 1], &cdum[1 - 1], -1, ierr);
             lwork_Cungqr_m = castINTEGER(cdum[1 - 1].real());
-            //           Compute space needed for Cgebrd
+            // Compute space needed for Cgebrd
             Cgebrd(n, n, a, lda, s, &dum[1 - 1], &cdum[1 - 1], &cdum[1 - 1], &cdum[1 - 1], -1, ierr);
             lwork_Cgebrd = castINTEGER(cdum[1 - 1].real());
-            //           Compute space needed for Cungbr
+            // Compute space needed for Cungbr
             Cungbr("P", n, n, n, a, lda, &cdum[1 - 1], &cdum[1 - 1], -1, ierr);
             lwork_Cungbr_p = castINTEGER(cdum[1 - 1].real());
             Cungbr("Q", n, n, n, a, lda, &cdum[1 - 1], &cdum[1 - 1], -1, ierr);
@@ -119,7 +122,7 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
             if (m >= mnthr) {
                 if (wntun) {
                     //
-                    //                 Path 1 (M much larger than N, JOBU='N')
+                    // Path 1 (M much larger than N, JOBU='N')
                     //
                     maxwrk = n + lwork_Cgeqrf;
                     maxwrk = max(maxwrk, 2 * n + lwork_Cgebrd);
@@ -129,7 +132,7 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                     minwrk = 3 * n;
                 } else if (wntuo && wntvn) {
                     //
-                    //                 Path 2 (M much larger than N, JOBU='O', JOBVT='N')
+                    // Path 2 (M much larger than N, JOBU='O', JOBVT='N')
                     //
                     wrkbl = n + lwork_Cgeqrf;
                     wrkbl = max(wrkbl, n + lwork_Cungqr_n);
@@ -139,8 +142,8 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                     minwrk = 2 * n + m;
                 } else if (wntuo && wntvas) {
                     //
-                    //                 Path 3 (M much larger than N, JOBU='O', JOBVT='S' or
-                    //                 'A')
+                    // Path 3 (M much larger than N, JOBU='O', JOBVT='S' or
+                    // 'A')
                     //
                     wrkbl = n + lwork_Cgeqrf;
                     wrkbl = max(wrkbl, n + lwork_Cungqr_n);
@@ -151,7 +154,7 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                     minwrk = 2 * n + m;
                 } else if (wntus && wntvn) {
                     //
-                    //                 Path 4 (M much larger than N, JOBU='S', JOBVT='N')
+                    // Path 4 (M much larger than N, JOBU='S', JOBVT='N')
                     //
                     wrkbl = n + lwork_Cgeqrf;
                     wrkbl = max(wrkbl, n + lwork_Cungqr_n);
@@ -161,7 +164,7 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                     minwrk = 2 * n + m;
                 } else if (wntus && wntvo) {
                     //
-                    //                 Path 5 (M much larger than N, JOBU='S', JOBVT='O')
+                    // Path 5 (M much larger than N, JOBU='S', JOBVT='O')
                     //
                     wrkbl = n + lwork_Cgeqrf;
                     wrkbl = max(wrkbl, n + lwork_Cungqr_n);
@@ -172,8 +175,8 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                     minwrk = 2 * n + m;
                 } else if (wntus && wntvas) {
                     //
-                    //                 Path 6 (M much larger than N, JOBU='S', JOBVT='S' or
-                    //                 'A')
+                    // Path 6 (M much larger than N, JOBU='S', JOBVT='S' or
+                    // 'A')
                     //
                     wrkbl = n + lwork_Cgeqrf;
                     wrkbl = max(wrkbl, n + lwork_Cungqr_n);
@@ -184,7 +187,7 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                     minwrk = 2 * n + m;
                 } else if (wntua && wntvn) {
                     //
-                    //                 Path 7 (M much larger than N, JOBU='A', JOBVT='N')
+                    // Path 7 (M much larger than N, JOBU='A', JOBVT='N')
                     //
                     wrkbl = n + lwork_Cgeqrf;
                     wrkbl = max(wrkbl, n + lwork_Cungqr_m);
@@ -194,7 +197,7 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                     minwrk = 2 * n + m;
                 } else if (wntua && wntvo) {
                     //
-                    //                 Path 8 (M much larger than N, JOBU='A', JOBVT='O')
+                    // Path 8 (M much larger than N, JOBU='A', JOBVT='O')
                     //
                     wrkbl = n + lwork_Cgeqrf;
                     wrkbl = max(wrkbl, n + lwork_Cungqr_m);
@@ -205,8 +208,8 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                     minwrk = 2 * n + m;
                 } else if (wntua && wntvas) {
                     //
-                    //                 Path 9 (M much larger than N, JOBU='A', JOBVT='S' or
-                    //                 'A')
+                    // Path 9 (M much larger than N, JOBU='A', JOBVT='S' or
+                    // 'A')
                     //
                     wrkbl = n + lwork_Cgeqrf;
                     wrkbl = max(wrkbl, n + lwork_Cungqr_m);
@@ -218,7 +221,7 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                 }
             } else {
                 //
-                //              Path 10 (M at least N, but not much larger)
+                // Path 10 (M at least N, but not much larger)
                 //
                 Cgebrd(m, n, a, lda, s, &dum[1 - 1], &cdum[1 - 1], &cdum[1 - 1], &cdum[1 - 1], -1, ierr);
                 lwork_Cgebrd = castINTEGER(cdum[1 - 1].real());
@@ -240,30 +243,30 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
             }
         } else if (minmn > 0) {
             //
-            //           Space needed for Cbdsqr is BDSPAC = 5*M
+            // Space needed for Cbdsqr is BDSPAC = 5*M
             //
-            mnthr = iMlaenv(6, "Cgesvd", jobu_jobvt, m, n, 0, 0);
-            //           Compute space needed for Cgelqf
+            mnthr = iMlaenv(6, "Cgesvd", CHAR2(jobu, jobvt), m, n, 0, 0);
+            // Compute space needed for Cgelqf
             Cgelqf(m, n, a, lda, &cdum[1 - 1], &cdum[1 - 1], -1, ierr);
             lwork_Cgelqf = castINTEGER(cdum[1 - 1].real());
-            //           Compute space needed for Cunglq
+            // Compute space needed for Cunglq
             Cunglq(n, n, m, &cdum[1 - 1], n, &cdum[1 - 1], &cdum[1 - 1], -1, ierr);
             lwork_Cunglq_n = castINTEGER(cdum[1 - 1].real());
             Cunglq(m, n, m, a, lda, &cdum[1 - 1], &cdum[1 - 1], -1, ierr);
             lwork_Cunglq_m = castINTEGER(cdum[1 - 1].real());
-            //           Compute space needed for Cgebrd
+            // Compute space needed for Cgebrd
             Cgebrd(m, m, a, lda, s, &dum[1 - 1], &cdum[1 - 1], &cdum[1 - 1], &cdum[1 - 1], -1, ierr);
             lwork_Cgebrd = castINTEGER(cdum[1 - 1].real());
-            //            Compute space needed for Cungbr P
+            // Compute space needed for Cungbr P
             Cungbr("P", m, m, m, a, n, &cdum[1 - 1], &cdum[1 - 1], -1, ierr);
             lwork_Cungbr_p = castINTEGER(cdum[1 - 1].real());
-            //           Compute space needed for Cungbr Q
+            // Compute space needed for Cungbr Q
             Cungbr("Q", m, m, m, a, n, &cdum[1 - 1], &cdum[1 - 1], -1, ierr);
             lwork_Cungbr_q = castINTEGER(cdum[1 - 1].real());
             if (n >= mnthr) {
                 if (wntvn) {
                     //
-                    //                 Path 1 (N much larger than M, JOBVT='N')
+                    // Path 1t(N much larger than M, JOBVT='N')
                     //
                     maxwrk = m + lwork_Cgelqf;
                     maxwrk = max(maxwrk, 2 * m + lwork_Cgebrd);
@@ -273,7 +276,7 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                     minwrk = 3 * m;
                 } else if (wntvo && wntun) {
                     //
-                    //                 Path 2 (N much larger than M, JOBU='N', JOBVT='O')
+                    // Path 2t(N much larger than M, JOBU='N', JOBVT='O')
                     //
                     wrkbl = m + lwork_Cgelqf;
                     wrkbl = max(wrkbl, m + lwork_Cunglq_m);
@@ -283,8 +286,8 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                     minwrk = 2 * m + n;
                 } else if (wntvo && wntuas) {
                     //
-                    //                 Path 3 (N much larger than M, JOBU='S' or 'A',
-                    //                 JOBVT='O')
+                    // Path 3t(N much larger than M, JOBU='S' or 'A',
+                    // JOBVT='O')
                     //
                     wrkbl = m + lwork_Cgelqf;
                     wrkbl = max(wrkbl, m + lwork_Cunglq_m);
@@ -295,7 +298,7 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                     minwrk = 2 * m + n;
                 } else if (wntvs && wntun) {
                     //
-                    //                 Path 4 (N much larger than M, JOBU='N', JOBVT='S')
+                    // Path 4t(N much larger than M, JOBU='N', JOBVT='S')
                     //
                     wrkbl = m + lwork_Cgelqf;
                     wrkbl = max(wrkbl, m + lwork_Cunglq_m);
@@ -305,7 +308,7 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                     minwrk = 2 * m + n;
                 } else if (wntvs && wntuo) {
                     //
-                    //                 Path 5 (N much larger than M, JOBU='O', JOBVT='S')
+                    // Path 5t(N much larger than M, JOBU='O', JOBVT='S')
                     //
                     wrkbl = m + lwork_Cgelqf;
                     wrkbl = max(wrkbl, m + lwork_Cunglq_m);
@@ -316,8 +319,8 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                     minwrk = 2 * m + n;
                 } else if (wntvs && wntuas) {
                     //
-                    //                 Path 6 (N much larger than M, JOBU='S' or 'A',
-                    //                 JOBVT='S')
+                    // Path 6t(N much larger than M, JOBU='S' or 'A',
+                    // JOBVT='S')
                     //
                     wrkbl = m + lwork_Cgelqf;
                     wrkbl = max(wrkbl, m + lwork_Cunglq_m);
@@ -328,7 +331,7 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                     minwrk = 2 * m + n;
                 } else if (wntva && wntun) {
                     //
-                    //                 Path 7 (N much larger than M, JOBU='N', JOBVT='A')
+                    // Path 7t(N much larger than M, JOBU='N', JOBVT='A')
                     //
                     wrkbl = m + lwork_Cgelqf;
                     wrkbl = max(wrkbl, m + lwork_Cunglq_n);
@@ -338,7 +341,7 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                     minwrk = 2 * m + n;
                 } else if (wntva && wntuo) {
                     //
-                    //                 Path 8 (N much larger than M, JOBU='O', JOBVT='A')
+                    // Path 8t(N much larger than M, JOBU='O', JOBVT='A')
                     //
                     wrkbl = m + lwork_Cgelqf;
                     wrkbl = max(wrkbl, m + lwork_Cunglq_n);
@@ -349,8 +352,8 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                     minwrk = 2 * m + n;
                 } else if (wntva && wntuas) {
                     //
-                    //                 Path 9 (N much larger than M, JOBU='S' or 'A',
-                    //                 JOBVT='A')
+                    // Path 9t(N much larger than M, JOBU='S' or 'A',
+                    // JOBVT='A')
                     //
                     wrkbl = m + lwork_Cgelqf;
                     wrkbl = max(wrkbl, m + lwork_Cunglq_n);
@@ -362,13 +365,13 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                 }
             } else {
                 //
-                //              Path 10 (N greater than M, but not much larger)
+                // Path 10t(N greater than M, but not much larger)
                 //
                 Cgebrd(m, n, a, lda, s, &dum[1 - 1], &cdum[1 - 1], &cdum[1 - 1], &cdum[1 - 1], -1, ierr);
                 lwork_Cgebrd = castINTEGER(cdum[1 - 1].real());
                 maxwrk = 2 * m + lwork_Cgebrd;
                 if (wntvs || wntvo) {
-                    //                Compute space needed for Cungbr P
+                    // Compute space needed for Cungbr P
                     Cungbr("P", m, n, m, a, n, &cdum[1 - 1], &cdum[1 - 1], -1, ierr);
                     lwork_Cungbr_p = castINTEGER(cdum[1 - 1].real());
                     maxwrk = max(maxwrk, 2 * m + lwork_Cungbr_p);
@@ -399,20 +402,20 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (m == 0 || n == 0) {
         return;
     }
     //
-    //     Get machine constants
+    // Get machine constants
     //
     REAL eps = Rlamch("P");
     REAL smlnum = sqrt(Rlamch("S")) / eps;
     const REAL one = 1.0;
     REAL bignum = one / smlnum;
     //
-    //     Scale A if max element outside range [SMLNUM,BIGNUM]
+    // Scale A if max element outside range [SMLNUM,BIGNUM]
     //
     REAL anrm = Clange("M", m, n, a, lda, dum);
     INTEGER iscl = 0;
@@ -446,27 +449,27 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
     INTEGER nrvt = 0;
     if (m >= n) {
         //
-        //        A has at least as many rows as columns. If A has sufficiently
-        //        more rows than columns, first reduce using the QR
-        //        decomposition (if sufficient workspace available)
+        // A has at least as many rows as columns. If A has sufficiently
+        // more rows than columns, first reduce using the QR
+        // decomposition (if sufficient workspace available)
         //
         if (m >= mnthr) {
             //
             if (wntun) {
                 //
-                //              Path 1 (M much larger than N, JOBU='N')
-                //              No left singular vectors to be computed
+                // Path 1 (M much larger than N, JOBU='N')
+                // No left singular vectors to be computed
                 //
                 itau = 1;
                 iwork = itau + n;
                 //
-                //              Compute A=Q*R
-                //              (CWorkspace: need 2*N, prefer N+N*NB)
-                //              (RWorkspace: need 0)
+                // Compute A=Q*R
+                // (CWorkspace: need 2*N, prefer N+N*NB)
+                // (RWorkspace: need 0)
                 //
                 Cgeqrf(m, n, a, lda, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                 //
-                //              Zero out below R
+                // Zero out below R
                 //
                 if (n > 1) {
                     Claset("L", n - 1, n - 1, czero, czero, &a[(2 - 1)], lda);
@@ -476,31 +479,31 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                 itaup = itauq + n;
                 iwork = itaup + n;
                 //
-                //              Bidiagonalize R in A
-                //              (CWorkspace: need 3*N, prefer 2*N+2*N*NB)
-                //              (RWorkspace: need N)
+                // Bidiagonalize R in A
+                // (CWorkspace: need 3*N, prefer 2*N+2*N*NB)
+                // (RWorkspace: need N)
                 //
                 Cgebrd(n, n, a, lda, s, &rwork[ie - 1], &work[itauq - 1], &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                 ncvt = 0;
                 if (wntvo || wntvas) {
                     //
-                    //                 If right singular vectors desired, generate P'.
-                    //                 (CWorkspace: need 3*N-1, prefer 2*N+(N-1)*NB)
-                    //                 (RWorkspace: 0)
+                    // If right singular vectors desired, generate P'.
+                    // (CWorkspace: need 3*N-1, prefer 2*N+(N-1)*NB)
+                    // (RWorkspace: 0)
                     //
                     Cungbr("P", n, n, n, a, lda, &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                     ncvt = n;
                 }
                 irwork = ie + n;
                 //
-                //              Perform bidiagonal QR iteration, computing right
-                //              singular vectors of A in A if desired
-                //              (CWorkspace: 0)
-                //              (RWorkspace: need BDSPAC)
+                // Perform bidiagonal QR iteration, computing right
+                // singular vectors of A in A if desired
+                // (CWorkspace: 0)
+                // (RWorkspace: need BDSPAC)
                 //
                 Cbdsqr("U", n, ncvt, 0, 0, s, &rwork[ie - 1], a, lda, cdum, 1, cdum, 1, &rwork[irwork - 1], info);
                 //
-                //              If right singular vectors desired in VT, copy them there
+                // If right singular vectors desired in VT, copy them there
                 //
                 if (wntvas) {
                     Clacpy("F", n, n, a, lda, vt, ldvt);
@@ -508,30 +511,30 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                 //
             } else if (wntuo && wntvn) {
                 //
-                //              Path 2 (M much larger than N, JOBU='O', JOBVT='N')
-                //              N left singular vectors to be overwritten on A and
-                //              no right singular vectors to be computed
+                // Path 2 (M much larger than N, JOBU='O', JOBVT='N')
+                // N left singular vectors to be overwritten on A and
+                // no right singular vectors to be computed
                 //
                 if (lwork >= n * n + 3 * n) {
                     //
-                    //                 Sufficient workspace for a fast algorithm
+                    // Sufficient workspace for a fast algorithm
                     //
                     ir = 1;
                     if (lwork >= max(wrkbl, lda * n) + lda * n) {
                         //
-                        //                    WORK(IU) is LDA by N, WORK(IR) is LDA by N
+                        // WORK(IU) is LDA by N, WORK(IR) is LDA by N
                         //
                         ldwrku = lda;
                         ldwrkr = lda;
                     } else if (lwork >= max(wrkbl, lda * n) + n * n) {
                         //
-                        //                    WORK(IU) is LDA by N, WORK(IR) is N by N
+                        // WORK(IU) is LDA by N, WORK(IR) is N by N
                         //
                         ldwrku = lda;
                         ldwrkr = n;
                     } else {
                         //
-                        //                    WORK(IU) is LDWRKU by N, WORK(IR) is N by N
+                        // WORK(IU) is LDWRKU by N, WORK(IR) is N by N
                         //
                         ldwrku = (lwork - n * n) / n;
                         ldwrkr = n;
@@ -539,20 +542,20 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                     itau = ir + ldwrkr * n;
                     iwork = itau + n;
                     //
-                    //                 Compute A=Q*R
-                    //                 (CWorkspace: need N*N+2*N, prefer N*N+N+N*NB)
-                    //                 (RWorkspace: 0)
+                    // Compute A=Q*R
+                    // (CWorkspace: need N*N+2*N, prefer N*N+N+N*NB)
+                    // (RWorkspace: 0)
                     //
                     Cgeqrf(m, n, a, lda, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                     //
-                    //                 Copy R to WORK(IR) and zero out below it
+                    // Copy R to WORK(IR) and zero out below it
                     //
                     Clacpy("U", n, n, a, lda, &work[ir - 1], ldwrkr);
                     Claset("L", n - 1, n - 1, czero, czero, &work[(ir + 1) - 1], ldwrkr);
                     //
-                    //                 Generate Q in A
-                    //                 (CWorkspace: need N*N+2*N, prefer N*N+N+N*NB)
-                    //                 (RWorkspace: 0)
+                    // Generate Q in A
+                    // (CWorkspace: need N*N+2*N, prefer N*N+N+N*NB)
+                    // (RWorkspace: 0)
                     //
                     Cungqr(m, n, n, a, lda, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                     ie = 1;
@@ -560,31 +563,31 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                     itaup = itauq + n;
                     iwork = itaup + n;
                     //
-                    //                 Bidiagonalize R in WORK(IR)
-                    //                 (CWorkspace: need N*N+3*N, prefer N*N+2*N+2*N*NB)
-                    //                 (RWorkspace: need N)
+                    // Bidiagonalize R in WORK(IR)
+                    // (CWorkspace: need N*N+3*N, prefer N*N+2*N+2*N*NB)
+                    // (RWorkspace: need N)
                     //
                     Cgebrd(n, n, &work[ir - 1], ldwrkr, s, &rwork[ie - 1], &work[itauq - 1], &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                     //
-                    //                 Generate left vectors bidiagonalizing R
-                    //                 (CWorkspace: need N*N+3*N, prefer N*N+2*N+N*NB)
-                    //                 (RWorkspace: need 0)
+                    // Generate left vectors bidiagonalizing R
+                    // (CWorkspace: need N*N+3*N, prefer N*N+2*N+N*NB)
+                    // (RWorkspace: need 0)
                     //
                     Cungbr("Q", n, n, n, &work[ir - 1], ldwrkr, &work[itauq - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                     irwork = ie + n;
                     //
-                    //                 Perform bidiagonal QR iteration, computing left
-                    //                 singular vectors of R in WORK(IR)
-                    //                 (CWorkspace: need N*N)
-                    //                 (RWorkspace: need BDSPAC)
+                    // Perform bidiagonal QR iteration, computing left
+                    // singular vectors of R in WORK(IR)
+                    // (CWorkspace: need N*N)
+                    // (RWorkspace: need BDSPAC)
                     //
                     Cbdsqr("U", n, 0, n, 0, s, &rwork[ie - 1], cdum, 1, &work[ir - 1], ldwrkr, cdum, 1, &rwork[irwork - 1], info);
                     iu = itauq;
                     //
-                    //                 Multiply Q in A by left singular vectors of R in
-                    //                 WORK(IR), storing result in WORK(IU) and copying to A
-                    //                 (CWorkspace: need N*N+N, prefer N*N+M*N)
-                    //                 (RWorkspace: 0)
+                    // Multiply Q in A by left singular vectors of R in
+                    // WORK(IR), storing result in WORK(IU) and copying to A
+                    // (CWorkspace: need N*N+N, prefer N*N+M*N)
+                    // (RWorkspace: 0)
                     //
                     for (i = 1; i <= m; i = i + ldwrku) {
                         chunk = min(m - i + 1, ldwrku);
@@ -594,30 +597,30 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                     //
                 } else {
                     //
-                    //                 Insufficient workspace for a fast algorithm
+                    // Insufficient workspace for a fast algorithm
                     //
                     ie = 1;
                     itauq = 1;
                     itaup = itauq + n;
                     iwork = itaup + n;
                     //
-                    //                 Bidiagonalize A
-                    //                 (CWorkspace: need 2*N+M, prefer 2*N+(M+N)*NB)
-                    //                 (RWorkspace: N)
+                    // Bidiagonalize A
+                    // (CWorkspace: need 2*N+M, prefer 2*N+(M+N)*NB)
+                    // (RWorkspace: N)
                     //
                     Cgebrd(m, n, a, lda, s, &rwork[ie - 1], &work[itauq - 1], &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                     //
-                    //                 Generate left vectors bidiagonalizing A
-                    //                 (CWorkspace: need 3*N, prefer 2*N+N*NB)
-                    //                 (RWorkspace: 0)
+                    // Generate left vectors bidiagonalizing A
+                    // (CWorkspace: need 3*N, prefer 2*N+N*NB)
+                    // (RWorkspace: 0)
                     //
                     Cungbr("Q", m, n, n, a, lda, &work[itauq - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                     irwork = ie + n;
                     //
-                    //                 Perform bidiagonal QR iteration, computing left
-                    //                 singular vectors of A in A
-                    //                 (CWorkspace: need 0)
-                    //                 (RWorkspace: need BDSPAC)
+                    // Perform bidiagonal QR iteration, computing left
+                    // singular vectors of A in A
+                    // (CWorkspace: need 0)
+                    // (RWorkspace: need BDSPAC)
                     //
                     Cbdsqr("U", n, 0, m, 0, s, &rwork[ie - 1], cdum, 1, a, lda, cdum, 1, &rwork[irwork - 1], info);
                     //
@@ -625,30 +628,30 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                 //
             } else if (wntuo && wntvas) {
                 //
-                //              Path 3 (M much larger than N, JOBU='O', JOBVT='S' or 'A')
-                //              N left singular vectors to be overwritten on A and
-                //              N right singular vectors to be computed in VT
+                // Path 3 (M much larger than N, JOBU='O', JOBVT='S' or 'A')
+                // N left singular vectors to be overwritten on A and
+                // N right singular vectors to be computed in VT
                 //
                 if (lwork >= n * n + 3 * n) {
                     //
-                    //                 Sufficient workspace for a fast algorithm
+                    // Sufficient workspace for a fast algorithm
                     //
                     ir = 1;
                     if (lwork >= max(wrkbl, lda * n) + lda * n) {
                         //
-                        //                    WORK(IU) is LDA by N and WORK(IR) is LDA by N
+                        // WORK(IU) is LDA by N and WORK(IR) is LDA by N
                         //
                         ldwrku = lda;
                         ldwrkr = lda;
                     } else if (lwork >= max(wrkbl, lda * n) + n * n) {
                         //
-                        //                    WORK(IU) is LDA by N and WORK(IR) is N by N
+                        // WORK(IU) is LDA by N and WORK(IR) is N by N
                         //
                         ldwrku = lda;
                         ldwrkr = n;
                     } else {
                         //
-                        //                    WORK(IU) is LDWRKU by N and WORK(IR) is N by N
+                        // WORK(IU) is LDWRKU by N and WORK(IR) is N by N
                         //
                         ldwrku = (lwork - n * n) / n;
                         ldwrkr = n;
@@ -656,22 +659,22 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                     itau = ir + ldwrkr * n;
                     iwork = itau + n;
                     //
-                    //                 Compute A=Q*R
-                    //                 (CWorkspace: need N*N+2*N, prefer N*N+N+N*NB)
-                    //                 (RWorkspace: 0)
+                    // Compute A=Q*R
+                    // (CWorkspace: need N*N+2*N, prefer N*N+N+N*NB)
+                    // (RWorkspace: 0)
                     //
                     Cgeqrf(m, n, a, lda, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                     //
-                    //                 Copy R to VT, zeroing out below it
+                    // Copy R to VT, zeroing out below it
                     //
                     Clacpy("U", n, n, a, lda, vt, ldvt);
                     if (n > 1) {
                         Claset("L", n - 1, n - 1, czero, czero, &vt[(2 - 1)], ldvt);
                     }
                     //
-                    //                 Generate Q in A
-                    //                 (CWorkspace: need N*N+2*N, prefer N*N+N+N*NB)
-                    //                 (RWorkspace: 0)
+                    // Generate Q in A
+                    // (CWorkspace: need N*N+2*N, prefer N*N+N+N*NB)
+                    // (RWorkspace: 0)
                     //
                     Cungqr(m, n, n, a, lda, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                     ie = 1;
@@ -679,39 +682,39 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                     itaup = itauq + n;
                     iwork = itaup + n;
                     //
-                    //                 Bidiagonalize R in VT, copying result to WORK(IR)
-                    //                 (CWorkspace: need N*N+3*N, prefer N*N+2*N+2*N*NB)
-                    //                 (RWorkspace: need N)
+                    // Bidiagonalize R in VT, copying result to WORK(IR)
+                    // (CWorkspace: need N*N+3*N, prefer N*N+2*N+2*N*NB)
+                    // (RWorkspace: need N)
                     //
                     Cgebrd(n, n, vt, ldvt, s, &rwork[ie - 1], &work[itauq - 1], &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                     Clacpy("L", n, n, vt, ldvt, &work[ir - 1], ldwrkr);
                     //
-                    //                 Generate left vectors bidiagonalizing R in WORK(IR)
-                    //                 (CWorkspace: need N*N+3*N, prefer N*N+2*N+N*NB)
-                    //                 (RWorkspace: 0)
+                    // Generate left vectors bidiagonalizing R in WORK(IR)
+                    // (CWorkspace: need N*N+3*N, prefer N*N+2*N+N*NB)
+                    // (RWorkspace: 0)
                     //
                     Cungbr("Q", n, n, n, &work[ir - 1], ldwrkr, &work[itauq - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                     //
-                    //                 Generate right vectors bidiagonalizing R in VT
-                    //                 (CWorkspace: need N*N+3*N-1, prefer N*N+2*N+(N-1)*NB)
-                    //                 (RWorkspace: 0)
+                    // Generate right vectors bidiagonalizing R in VT
+                    // (CWorkspace: need N*N+3*N-1, prefer N*N+2*N+(N-1)*NB)
+                    // (RWorkspace: 0)
                     //
                     Cungbr("P", n, n, n, vt, ldvt, &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                     irwork = ie + n;
                     //
-                    //                 Perform bidiagonal QR iteration, computing left
-                    //                 singular vectors of R in WORK(IR) and computing right
-                    //                 singular vectors of R in VT
-                    //                 (CWorkspace: need N*N)
-                    //                 (RWorkspace: need BDSPAC)
+                    // Perform bidiagonal QR iteration, computing left
+                    // singular vectors of R in WORK(IR) and computing right
+                    // singular vectors of R in VT
+                    // (CWorkspace: need N*N)
+                    // (RWorkspace: need BDSPAC)
                     //
                     Cbdsqr("U", n, n, n, 0, s, &rwork[ie - 1], vt, ldvt, &work[ir - 1], ldwrkr, cdum, 1, &rwork[irwork - 1], info);
                     iu = itauq;
                     //
-                    //                 Multiply Q in A by left singular vectors of R in
-                    //                 WORK(IR), storing result in WORK(IU) and copying to A
-                    //                 (CWorkspace: need N*N+N, prefer N*N+M*N)
-                    //                 (RWorkspace: 0)
+                    // Multiply Q in A by left singular vectors of R in
+                    // WORK(IR), storing result in WORK(IU) and copying to A
+                    // (CWorkspace: need N*N+N, prefer N*N+M*N)
+                    // (RWorkspace: 0)
                     //
                     for (i = 1; i <= m; i = i + ldwrku) {
                         chunk = min(m - i + 1, ldwrku);
@@ -721,27 +724,27 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                     //
                 } else {
                     //
-                    //                 Insufficient workspace for a fast algorithm
+                    // Insufficient workspace for a fast algorithm
                     //
                     itau = 1;
                     iwork = itau + n;
                     //
-                    //                 Compute A=Q*R
-                    //                 (CWorkspace: need 2*N, prefer N+N*NB)
-                    //                 (RWorkspace: 0)
+                    // Compute A=Q*R
+                    // (CWorkspace: need 2*N, prefer N+N*NB)
+                    // (RWorkspace: 0)
                     //
                     Cgeqrf(m, n, a, lda, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                     //
-                    //                 Copy R to VT, zeroing out below it
+                    // Copy R to VT, zeroing out below it
                     //
                     Clacpy("U", n, n, a, lda, vt, ldvt);
                     if (n > 1) {
                         Claset("L", n - 1, n - 1, czero, czero, &vt[(2 - 1)], ldvt);
                     }
                     //
-                    //                 Generate Q in A
-                    //                 (CWorkspace: need 2*N, prefer N+N*NB)
-                    //                 (RWorkspace: 0)
+                    // Generate Q in A
+                    // (CWorkspace: need 2*N, prefer N+N*NB)
+                    // (RWorkspace: 0)
                     //
                     Cungqr(m, n, n, a, lda, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                     ie = 1;
@@ -749,30 +752,30 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                     itaup = itauq + n;
                     iwork = itaup + n;
                     //
-                    //                 Bidiagonalize R in VT
-                    //                 (CWorkspace: need 3*N, prefer 2*N+2*N*NB)
-                    //                 (RWorkspace: N)
+                    // Bidiagonalize R in VT
+                    // (CWorkspace: need 3*N, prefer 2*N+2*N*NB)
+                    // (RWorkspace: N)
                     //
                     Cgebrd(n, n, vt, ldvt, s, &rwork[ie - 1], &work[itauq - 1], &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                     //
-                    //                 Multiply Q in A by left vectors bidiagonalizing R
-                    //                 (CWorkspace: need 2*N+M, prefer 2*N+M*NB)
-                    //                 (RWorkspace: 0)
+                    // Multiply Q in A by left vectors bidiagonalizing R
+                    // (CWorkspace: need 2*N+M, prefer 2*N+M*NB)
+                    // (RWorkspace: 0)
                     //
                     Cunmbr("Q", "R", "N", m, n, n, vt, ldvt, &work[itauq - 1], a, lda, &work[iwork - 1], lwork - iwork + 1, ierr);
                     //
-                    //                 Generate right vectors bidiagonalizing R in VT
-                    //                 (CWorkspace: need 3*N-1, prefer 2*N+(N-1)*NB)
-                    //                 (RWorkspace: 0)
+                    // Generate right vectors bidiagonalizing R in VT
+                    // (CWorkspace: need 3*N-1, prefer 2*N+(N-1)*NB)
+                    // (RWorkspace: 0)
                     //
                     Cungbr("P", n, n, n, vt, ldvt, &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                     irwork = ie + n;
                     //
-                    //                 Perform bidiagonal QR iteration, computing left
-                    //                 singular vectors of A in A and computing right
-                    //                 singular vectors of A in VT
-                    //                 (CWorkspace: 0)
-                    //                 (RWorkspace: need BDSPAC)
+                    // Perform bidiagonal QR iteration, computing left
+                    // singular vectors of A in A and computing right
+                    // singular vectors of A in VT
+                    // (CWorkspace: 0)
+                    // (RWorkspace: need BDSPAC)
                     //
                     Cbdsqr("U", n, n, m, 0, s, &rwork[ie - 1], vt, ldvt, a, lda, cdum, 1, &rwork[irwork - 1], info);
                     //
@@ -782,43 +785,43 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                 //
                 if (wntvn) {
                     //
-                    //                 Path 4 (M much larger than N, JOBU='S', JOBVT='N')
-                    //                 N left singular vectors to be computed in U and
-                    //                 no right singular vectors to be computed
+                    // Path 4 (M much larger than N, JOBU='S', JOBVT='N')
+                    // N left singular vectors to be computed in U and
+                    // no right singular vectors to be computed
                     //
                     if (lwork >= n * n + 3 * n) {
                         //
-                        //                    Sufficient workspace for a fast algorithm
+                        // Sufficient workspace for a fast algorithm
                         //
                         ir = 1;
                         if (lwork >= wrkbl + lda * n) {
                             //
-                            //                       WORK(IR) is LDA by N
+                            // WORK(IR) is LDA by N
                             //
                             ldwrkr = lda;
                         } else {
                             //
-                            //                       WORK(IR) is N by N
+                            // WORK(IR) is N by N
                             //
                             ldwrkr = n;
                         }
                         itau = ir + ldwrkr * n;
                         iwork = itau + n;
                         //
-                        //                    Compute A=Q*R
-                        //                    (CWorkspace: need N*N+2*N, prefer N*N+N+N*NB)
-                        //                    (RWorkspace: 0)
+                        // Compute A=Q*R
+                        // (CWorkspace: need N*N+2*N, prefer N*N+N+N*NB)
+                        // (RWorkspace: 0)
                         //
                         Cgeqrf(m, n, a, lda, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         //
-                        //                    Copy R to WORK(IR), zeroing out below it
+                        // Copy R to WORK(IR), zeroing out below it
                         //
                         Clacpy("U", n, n, a, lda, &work[ir - 1], ldwrkr);
                         Claset("L", n - 1, n - 1, czero, czero, &work[(ir + 1) - 1], ldwrkr);
                         //
-                        //                    Generate Q in A
-                        //                    (CWorkspace: need N*N+2*N, prefer N*N+N+N*NB)
-                        //                    (RWorkspace: 0)
+                        // Generate Q in A
+                        // (CWorkspace: need N*N+2*N, prefer N*N+N+N*NB)
+                        // (RWorkspace: 0)
                         //
                         Cungqr(m, n, n, a, lda, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         ie = 1;
@@ -826,50 +829,50 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                         itaup = itauq + n;
                         iwork = itaup + n;
                         //
-                        //                    Bidiagonalize R in WORK(IR)
-                        //                    (CWorkspace: need N*N+3*N, prefer N*N+2*N+2*N*NB)
-                        //                    (RWorkspace: need N)
+                        // Bidiagonalize R in WORK(IR)
+                        // (CWorkspace: need N*N+3*N, prefer N*N+2*N+2*N*NB)
+                        // (RWorkspace: need N)
                         //
                         Cgebrd(n, n, &work[ir - 1], ldwrkr, s, &rwork[ie - 1], &work[itauq - 1], &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         //
-                        //                    Generate left vectors bidiagonalizing R in WORK(IR)
-                        //                    (CWorkspace: need N*N+3*N, prefer N*N+2*N+N*NB)
-                        //                    (RWorkspace: 0)
+                        // Generate left vectors bidiagonalizing R in WORK(IR)
+                        // (CWorkspace: need N*N+3*N, prefer N*N+2*N+N*NB)
+                        // (RWorkspace: 0)
                         //
                         Cungbr("Q", n, n, n, &work[ir - 1], ldwrkr, &work[itauq - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         irwork = ie + n;
                         //
-                        //                    Perform bidiagonal QR iteration, computing left
-                        //                    singular vectors of R in WORK(IR)
-                        //                    (CWorkspace: need N*N)
-                        //                    (RWorkspace: need BDSPAC)
+                        // Perform bidiagonal QR iteration, computing left
+                        // singular vectors of R in WORK(IR)
+                        // (CWorkspace: need N*N)
+                        // (RWorkspace: need BDSPAC)
                         //
                         Cbdsqr("U", n, 0, n, 0, s, &rwork[ie - 1], cdum, 1, &work[ir - 1], ldwrkr, cdum, 1, &rwork[irwork - 1], info);
                         //
-                        //                    Multiply Q in A by left singular vectors of R in
-                        //                    WORK(IR), storing result in U
-                        //                    (CWorkspace: need N*N)
-                        //                    (RWorkspace: 0)
+                        // Multiply Q in A by left singular vectors of R in
+                        // WORK(IR), storing result in U
+                        // (CWorkspace: need N*N)
+                        // (RWorkspace: 0)
                         //
                         Cgemm("N", "N", m, n, n, cone, a, lda, &work[ir - 1], ldwrkr, czero, u, ldu);
                         //
                     } else {
                         //
-                        //                    Insufficient workspace for a fast algorithm
+                        // Insufficient workspace for a fast algorithm
                         //
                         itau = 1;
                         iwork = itau + n;
                         //
-                        //                    Compute A=Q*R, copying result to U
-                        //                    (CWorkspace: need 2*N, prefer N+N*NB)
-                        //                    (RWorkspace: 0)
+                        // Compute A=Q*R, copying result to U
+                        // (CWorkspace: need 2*N, prefer N+N*NB)
+                        // (RWorkspace: 0)
                         //
                         Cgeqrf(m, n, a, lda, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         Clacpy("L", m, n, a, lda, u, ldu);
                         //
-                        //                    Generate Q in U
-                        //                    (CWorkspace: need 2*N, prefer N+N*NB)
-                        //                    (RWorkspace: 0)
+                        // Generate Q in U
+                        // (CWorkspace: need 2*N, prefer N+N*NB)
+                        // (RWorkspace: 0)
                         //
                         Cungqr(m, n, n, u, ldu, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         ie = 1;
@@ -877,29 +880,29 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                         itaup = itauq + n;
                         iwork = itaup + n;
                         //
-                        //                    Zero out below R in A
+                        // Zero out below R in A
                         //
                         if (n > 1) {
                             Claset("L", n - 1, n - 1, czero, czero, &a[(2 - 1)], lda);
                         }
                         //
-                        //                    Bidiagonalize R in A
-                        //                    (CWorkspace: need 3*N, prefer 2*N+2*N*NB)
-                        //                    (RWorkspace: need N)
+                        // Bidiagonalize R in A
+                        // (CWorkspace: need 3*N, prefer 2*N+2*N*NB)
+                        // (RWorkspace: need N)
                         //
                         Cgebrd(n, n, a, lda, s, &rwork[ie - 1], &work[itauq - 1], &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         //
-                        //                    Multiply Q in U by left vectors bidiagonalizing R
-                        //                    (CWorkspace: need 2*N+M, prefer 2*N+M*NB)
-                        //                    (RWorkspace: 0)
+                        // Multiply Q in U by left vectors bidiagonalizing R
+                        // (CWorkspace: need 2*N+M, prefer 2*N+M*NB)
+                        // (RWorkspace: 0)
                         //
                         Cunmbr("Q", "R", "N", m, n, n, a, lda, &work[itauq - 1], u, ldu, &work[iwork - 1], lwork - iwork + 1, ierr);
                         irwork = ie + n;
                         //
-                        //                    Perform bidiagonal QR iteration, computing left
-                        //                    singular vectors of A in U
-                        //                    (CWorkspace: 0)
-                        //                    (RWorkspace: need BDSPAC)
+                        // Perform bidiagonal QR iteration, computing left
+                        // singular vectors of A in U
+                        // (CWorkspace: 0)
+                        // (RWorkspace: need BDSPAC)
                         //
                         Cbdsqr("U", n, 0, m, 0, s, &rwork[ie - 1], cdum, 1, u, ldu, cdum, 1, &rwork[irwork - 1], info);
                         //
@@ -907,32 +910,32 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                     //
                 } else if (wntvo) {
                     //
-                    //                 Path 5 (M much larger than N, JOBU='S', JOBVT='O')
-                    //                 N left singular vectors to be computed in U and
-                    //                 N right singular vectors to be overwritten on A
+                    // Path 5 (M much larger than N, JOBU='S', JOBVT='O')
+                    // N left singular vectors to be computed in U and
+                    // N right singular vectors to be overwritten on A
                     //
                     if (lwork >= 2 * n * n + 3 * n) {
                         //
-                        //                    Sufficient workspace for a fast algorithm
+                        // Sufficient workspace for a fast algorithm
                         //
                         iu = 1;
                         if (lwork >= wrkbl + 2 * lda * n) {
                             //
-                            //                       WORK(IU) is LDA by N and WORK(IR) is LDA by N
+                            // WORK(IU) is LDA by N and WORK(IR) is LDA by N
                             //
                             ldwrku = lda;
                             ir = iu + ldwrku * n;
                             ldwrkr = lda;
                         } else if (lwork >= wrkbl + (lda + n) * n) {
                             //
-                            //                       WORK(IU) is LDA by N and WORK(IR) is N by N
+                            // WORK(IU) is LDA by N and WORK(IR) is N by N
                             //
                             ldwrku = lda;
                             ir = iu + ldwrku * n;
                             ldwrkr = n;
                         } else {
                             //
-                            //                       WORK(IU) is N by N and WORK(IR) is N by N
+                            // WORK(IU) is N by N and WORK(IR) is N by N
                             //
                             ldwrku = n;
                             ir = iu + ldwrku * n;
@@ -941,20 +944,20 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                         itau = ir + ldwrkr * n;
                         iwork = itau + n;
                         //
-                        //                    Compute A=Q*R
-                        //                    (CWorkspace: need 2*N*N+2*N, prefer 2*N*N+N+N*NB)
-                        //                    (RWorkspace: 0)
+                        // Compute A=Q*R
+                        // (CWorkspace: need 2*N*N+2*N, prefer 2*N*N+N+N*NB)
+                        // (RWorkspace: 0)
                         //
                         Cgeqrf(m, n, a, lda, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         //
-                        //                    Copy R to WORK(IU), zeroing out below it
+                        // Copy R to WORK(IU), zeroing out below it
                         //
                         Clacpy("U", n, n, a, lda, &work[iu - 1], ldwrku);
                         Claset("L", n - 1, n - 1, czero, czero, &work[(iu + 1) - 1], ldwrku);
                         //
-                        //                    Generate Q in A
-                        //                    (CWorkspace: need 2*N*N+2*N, prefer 2*N*N+N+N*NB)
-                        //                    (RWorkspace: 0)
+                        // Generate Q in A
+                        // (CWorkspace: need 2*N*N+2*N, prefer 2*N*N+N+N*NB)
+                        // (RWorkspace: 0)
                         //
                         Cungqr(m, n, n, a, lda, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         ie = 1;
@@ -962,67 +965,67 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                         itaup = itauq + n;
                         iwork = itaup + n;
                         //
-                        //                    Bidiagonalize R in WORK(IU), copying result to
-                        //                    WORK(IR)
-                        //                    (CWorkspace: need   2*N*N+3*N,
-                        //                                 prefer 2*N*N+2*N+2*N*NB)
-                        //                    (RWorkspace: need   N)
+                        // Bidiagonalize R in WORK(IU), copying result to
+                        // WORK(IR)
+                        // (CWorkspace: need   2*N*N+3*N,
+                        // prefer 2*N*N+2*N+2*N*NB)
+                        // (RWorkspace: need   N)
                         //
                         Cgebrd(n, n, &work[iu - 1], ldwrku, s, &rwork[ie - 1], &work[itauq - 1], &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         Clacpy("U", n, n, &work[iu - 1], ldwrku, &work[ir - 1], ldwrkr);
                         //
-                        //                    Generate left bidiagonalizing vectors in WORK(IU)
-                        //                    (CWorkspace: need 2*N*N+3*N, prefer 2*N*N+2*N+N*NB)
-                        //                    (RWorkspace: 0)
+                        // Generate left bidiagonalizing vectors in WORK(IU)
+                        // (CWorkspace: need 2*N*N+3*N, prefer 2*N*N+2*N+N*NB)
+                        // (RWorkspace: 0)
                         //
                         Cungbr("Q", n, n, n, &work[iu - 1], ldwrku, &work[itauq - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         //
-                        //                    Generate right bidiagonalizing vectors in WORK(IR)
-                        //                    (CWorkspace: need   2*N*N+3*N-1,
-                        //                                 prefer 2*N*N+2*N+(N-1)*NB)
-                        //                    (RWorkspace: 0)
+                        // Generate right bidiagonalizing vectors in WORK(IR)
+                        // (CWorkspace: need   2*N*N+3*N-1,
+                        // prefer 2*N*N+2*N+(N-1)*NB)
+                        // (RWorkspace: 0)
                         //
                         Cungbr("P", n, n, n, &work[ir - 1], ldwrkr, &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         irwork = ie + n;
                         //
-                        //                    Perform bidiagonal QR iteration, computing left
-                        //                    singular vectors of R in WORK(IU) and computing
-                        //                    right singular vectors of R in WORK(IR)
-                        //                    (CWorkspace: need 2*N*N)
-                        //                    (RWorkspace: need BDSPAC)
+                        // Perform bidiagonal QR iteration, computing left
+                        // singular vectors of R in WORK(IU) and computing
+                        // right singular vectors of R in WORK(IR)
+                        // (CWorkspace: need 2*N*N)
+                        // (RWorkspace: need BDSPAC)
                         //
                         Cbdsqr("U", n, n, n, 0, s, &rwork[ie - 1], &work[ir - 1], ldwrkr, &work[iu - 1], ldwrku, cdum, 1, &rwork[irwork - 1], info);
                         //
-                        //                    Multiply Q in A by left singular vectors of R in
-                        //                    WORK(IU), storing result in U
-                        //                    (CWorkspace: need N*N)
-                        //                    (RWorkspace: 0)
+                        // Multiply Q in A by left singular vectors of R in
+                        // WORK(IU), storing result in U
+                        // (CWorkspace: need N*N)
+                        // (RWorkspace: 0)
                         //
                         Cgemm("N", "N", m, n, n, cone, a, lda, &work[iu - 1], ldwrku, czero, u, ldu);
                         //
-                        //                    Copy right singular vectors of R to A
-                        //                    (CWorkspace: need N*N)
-                        //                    (RWorkspace: 0)
+                        // Copy right singular vectors of R to A
+                        // (CWorkspace: need N*N)
+                        // (RWorkspace: 0)
                         //
                         Clacpy("F", n, n, &work[ir - 1], ldwrkr, a, lda);
                         //
                     } else {
                         //
-                        //                    Insufficient workspace for a fast algorithm
+                        // Insufficient workspace for a fast algorithm
                         //
                         itau = 1;
                         iwork = itau + n;
                         //
-                        //                    Compute A=Q*R, copying result to U
-                        //                    (CWorkspace: need 2*N, prefer N+N*NB)
-                        //                    (RWorkspace: 0)
+                        // Compute A=Q*R, copying result to U
+                        // (CWorkspace: need 2*N, prefer N+N*NB)
+                        // (RWorkspace: 0)
                         //
                         Cgeqrf(m, n, a, lda, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         Clacpy("L", m, n, a, lda, u, ldu);
                         //
-                        //                    Generate Q in U
-                        //                    (CWorkspace: need 2*N, prefer N+N*NB)
-                        //                    (RWorkspace: 0)
+                        // Generate Q in U
+                        // (CWorkspace: need 2*N, prefer N+N*NB)
+                        // (RWorkspace: 0)
                         //
                         Cungqr(m, n, n, u, ldu, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         ie = 1;
@@ -1030,36 +1033,36 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                         itaup = itauq + n;
                         iwork = itaup + n;
                         //
-                        //                    Zero out below R in A
+                        // Zero out below R in A
                         //
                         if (n > 1) {
                             Claset("L", n - 1, n - 1, czero, czero, &a[(2 - 1)], lda);
                         }
                         //
-                        //                    Bidiagonalize R in A
-                        //                    (CWorkspace: need 3*N, prefer 2*N+2*N*NB)
-                        //                    (RWorkspace: need N)
+                        // Bidiagonalize R in A
+                        // (CWorkspace: need 3*N, prefer 2*N+2*N*NB)
+                        // (RWorkspace: need N)
                         //
                         Cgebrd(n, n, a, lda, s, &rwork[ie - 1], &work[itauq - 1], &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         //
-                        //                    Multiply Q in U by left vectors bidiagonalizing R
-                        //                    (CWorkspace: need 2*N+M, prefer 2*N+M*NB)
-                        //                    (RWorkspace: 0)
+                        // Multiply Q in U by left vectors bidiagonalizing R
+                        // (CWorkspace: need 2*N+M, prefer 2*N+M*NB)
+                        // (RWorkspace: 0)
                         //
                         Cunmbr("Q", "R", "N", m, n, n, a, lda, &work[itauq - 1], u, ldu, &work[iwork - 1], lwork - iwork + 1, ierr);
                         //
-                        //                    Generate right vectors bidiagonalizing R in A
-                        //                    (CWorkspace: need 3*N-1, prefer 2*N+(N-1)*NB)
-                        //                    (RWorkspace: 0)
+                        // Generate right vectors bidiagonalizing R in A
+                        // (CWorkspace: need 3*N-1, prefer 2*N+(N-1)*NB)
+                        // (RWorkspace: 0)
                         //
                         Cungbr("P", n, n, n, a, lda, &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         irwork = ie + n;
                         //
-                        //                    Perform bidiagonal QR iteration, computing left
-                        //                    singular vectors of A in U and computing right
-                        //                    singular vectors of A in A
-                        //                    (CWorkspace: 0)
-                        //                    (RWorkspace: need BDSPAC)
+                        // Perform bidiagonal QR iteration, computing left
+                        // singular vectors of A in U and computing right
+                        // singular vectors of A in A
+                        // (CWorkspace: 0)
+                        // (RWorkspace: need BDSPAC)
                         //
                         Cbdsqr("U", n, n, m, 0, s, &rwork[ie - 1], a, lda, u, ldu, cdum, 1, &rwork[irwork - 1], info);
                         //
@@ -1067,44 +1070,44 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                     //
                 } else if (wntvas) {
                     //
-                    //                 Path 6 (M much larger than N, JOBU='S', JOBVT='S'
-                    //                         or 'A')
-                    //                 N left singular vectors to be computed in U and
-                    //                 N right singular vectors to be computed in VT
+                    // Path 6 (M much larger than N, JOBU='S', JOBVT='S'
+                    // or 'A')
+                    // N left singular vectors to be computed in U and
+                    // N right singular vectors to be computed in VT
                     //
                     if (lwork >= n * n + 3 * n) {
                         //
-                        //                    Sufficient workspace for a fast algorithm
+                        // Sufficient workspace for a fast algorithm
                         //
                         iu = 1;
                         if (lwork >= wrkbl + lda * n) {
                             //
-                            //                       WORK(IU) is LDA by N
+                            // WORK(IU) is LDA by N
                             //
                             ldwrku = lda;
                         } else {
                             //
-                            //                       WORK(IU) is N by N
+                            // WORK(IU) is N by N
                             //
                             ldwrku = n;
                         }
                         itau = iu + ldwrku * n;
                         iwork = itau + n;
                         //
-                        //                    Compute A=Q*R
-                        //                    (CWorkspace: need N*N+2*N, prefer N*N+N+N*NB)
-                        //                    (RWorkspace: 0)
+                        // Compute A=Q*R
+                        // (CWorkspace: need N*N+2*N, prefer N*N+N+N*NB)
+                        // (RWorkspace: 0)
                         //
                         Cgeqrf(m, n, a, lda, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         //
-                        //                    Copy R to WORK(IU), zeroing out below it
+                        // Copy R to WORK(IU), zeroing out below it
                         //
                         Clacpy("U", n, n, a, lda, &work[iu - 1], ldwrku);
                         Claset("L", n - 1, n - 1, czero, czero, &work[(iu + 1) - 1], ldwrku);
                         //
-                        //                    Generate Q in A
-                        //                    (CWorkspace: need N*N+2*N, prefer N*N+N+N*NB)
-                        //                    (RWorkspace: 0)
+                        // Generate Q in A
+                        // (CWorkspace: need N*N+2*N, prefer N*N+N+N*NB)
+                        // (RWorkspace: 0)
                         //
                         Cungqr(m, n, n, a, lda, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         ie = 1;
@@ -1112,63 +1115,63 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                         itaup = itauq + n;
                         iwork = itaup + n;
                         //
-                        //                    Bidiagonalize R in WORK(IU), copying result to VT
-                        //                    (CWorkspace: need N*N+3*N, prefer N*N+2*N+2*N*NB)
-                        //                    (RWorkspace: need N)
+                        // Bidiagonalize R in WORK(IU), copying result to VT
+                        // (CWorkspace: need N*N+3*N, prefer N*N+2*N+2*N*NB)
+                        // (RWorkspace: need N)
                         //
                         Cgebrd(n, n, &work[iu - 1], ldwrku, s, &rwork[ie - 1], &work[itauq - 1], &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         Clacpy("U", n, n, &work[iu - 1], ldwrku, vt, ldvt);
                         //
-                        //                    Generate left bidiagonalizing vectors in WORK(IU)
-                        //                    (CWorkspace: need N*N+3*N, prefer N*N+2*N+N*NB)
-                        //                    (RWorkspace: 0)
+                        // Generate left bidiagonalizing vectors in WORK(IU)
+                        // (CWorkspace: need N*N+3*N, prefer N*N+2*N+N*NB)
+                        // (RWorkspace: 0)
                         //
                         Cungbr("Q", n, n, n, &work[iu - 1], ldwrku, &work[itauq - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         //
-                        //                    Generate right bidiagonalizing vectors in VT
-                        //                    (CWorkspace: need   N*N+3*N-1,
-                        //                                 prefer N*N+2*N+(N-1)*NB)
-                        //                    (RWorkspace: 0)
+                        // Generate right bidiagonalizing vectors in VT
+                        // (CWorkspace: need   N*N+3*N-1,
+                        // prefer N*N+2*N+(N-1)*NB)
+                        // (RWorkspace: 0)
                         //
                         Cungbr("P", n, n, n, vt, ldvt, &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         irwork = ie + n;
                         //
-                        //                    Perform bidiagonal QR iteration, computing left
-                        //                    singular vectors of R in WORK(IU) and computing
-                        //                    right singular vectors of R in VT
-                        //                    (CWorkspace: need N*N)
-                        //                    (RWorkspace: need BDSPAC)
+                        // Perform bidiagonal QR iteration, computing left
+                        // singular vectors of R in WORK(IU) and computing
+                        // right singular vectors of R in VT
+                        // (CWorkspace: need N*N)
+                        // (RWorkspace: need BDSPAC)
                         //
                         Cbdsqr("U", n, n, n, 0, s, &rwork[ie - 1], vt, ldvt, &work[iu - 1], ldwrku, cdum, 1, &rwork[irwork - 1], info);
                         //
-                        //                    Multiply Q in A by left singular vectors of R in
-                        //                    WORK(IU), storing result in U
-                        //                    (CWorkspace: need N*N)
-                        //                    (RWorkspace: 0)
+                        // Multiply Q in A by left singular vectors of R in
+                        // WORK(IU), storing result in U
+                        // (CWorkspace: need N*N)
+                        // (RWorkspace: 0)
                         //
                         Cgemm("N", "N", m, n, n, cone, a, lda, &work[iu - 1], ldwrku, czero, u, ldu);
                         //
                     } else {
                         //
-                        //                    Insufficient workspace for a fast algorithm
+                        // Insufficient workspace for a fast algorithm
                         //
                         itau = 1;
                         iwork = itau + n;
                         //
-                        //                    Compute A=Q*R, copying result to U
-                        //                    (CWorkspace: need 2*N, prefer N+N*NB)
-                        //                    (RWorkspace: 0)
+                        // Compute A=Q*R, copying result to U
+                        // (CWorkspace: need 2*N, prefer N+N*NB)
+                        // (RWorkspace: 0)
                         //
                         Cgeqrf(m, n, a, lda, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         Clacpy("L", m, n, a, lda, u, ldu);
                         //
-                        //                    Generate Q in U
-                        //                    (CWorkspace: need 2*N, prefer N+N*NB)
-                        //                    (RWorkspace: 0)
+                        // Generate Q in U
+                        // (CWorkspace: need 2*N, prefer N+N*NB)
+                        // (RWorkspace: 0)
                         //
                         Cungqr(m, n, n, u, ldu, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         //
-                        //                    Copy R to VT, zeroing out below it
+                        // Copy R to VT, zeroing out below it
                         //
                         Clacpy("U", n, n, a, lda, vt, ldvt);
                         if (n > 1) {
@@ -1179,31 +1182,31 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                         itaup = itauq + n;
                         iwork = itaup + n;
                         //
-                        //                    Bidiagonalize R in VT
-                        //                    (CWorkspace: need 3*N, prefer 2*N+2*N*NB)
-                        //                    (RWorkspace: need N)
+                        // Bidiagonalize R in VT
+                        // (CWorkspace: need 3*N, prefer 2*N+2*N*NB)
+                        // (RWorkspace: need N)
                         //
                         Cgebrd(n, n, vt, ldvt, s, &rwork[ie - 1], &work[itauq - 1], &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         //
-                        //                    Multiply Q in U by left bidiagonalizing vectors
-                        //                    in VT
-                        //                    (CWorkspace: need 2*N+M, prefer 2*N+M*NB)
-                        //                    (RWorkspace: 0)
+                        // Multiply Q in U by left bidiagonalizing vectors
+                        // in VT
+                        // (CWorkspace: need 2*N+M, prefer 2*N+M*NB)
+                        // (RWorkspace: 0)
                         //
                         Cunmbr("Q", "R", "N", m, n, n, vt, ldvt, &work[itauq - 1], u, ldu, &work[iwork - 1], lwork - iwork + 1, ierr);
                         //
-                        //                    Generate right bidiagonalizing vectors in VT
-                        //                    (CWorkspace: need 3*N-1, prefer 2*N+(N-1)*NB)
-                        //                    (RWorkspace: 0)
+                        // Generate right bidiagonalizing vectors in VT
+                        // (CWorkspace: need 3*N-1, prefer 2*N+(N-1)*NB)
+                        // (RWorkspace: 0)
                         //
                         Cungbr("P", n, n, n, vt, ldvt, &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         irwork = ie + n;
                         //
-                        //                    Perform bidiagonal QR iteration, computing left
-                        //                    singular vectors of A in U and computing right
-                        //                    singular vectors of A in VT
-                        //                    (CWorkspace: 0)
-                        //                    (RWorkspace: need BDSPAC)
+                        // Perform bidiagonal QR iteration, computing left
+                        // singular vectors of A in U and computing right
+                        // singular vectors of A in VT
+                        // (CWorkspace: 0)
+                        // (RWorkspace: need BDSPAC)
                         //
                         Cbdsqr("U", n, n, m, 0, s, &rwork[ie - 1], vt, ldvt, u, ldu, cdum, 1, &rwork[irwork - 1], info);
                         //
@@ -1215,44 +1218,44 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                 //
                 if (wntvn) {
                     //
-                    //                 Path 7 (M much larger than N, JOBU='A', JOBVT='N')
-                    //                 M left singular vectors to be computed in U and
-                    //                 no right singular vectors to be computed
+                    // Path 7 (M much larger than N, JOBU='A', JOBVT='N')
+                    // M left singular vectors to be computed in U and
+                    // no right singular vectors to be computed
                     //
                     if (lwork >= n * n + max(n + m, 3 * n)) {
                         //
-                        //                    Sufficient workspace for a fast algorithm
+                        // Sufficient workspace for a fast algorithm
                         //
                         ir = 1;
                         if (lwork >= wrkbl + lda * n) {
                             //
-                            //                       WORK(IR) is LDA by N
+                            // WORK(IR) is LDA by N
                             //
                             ldwrkr = lda;
                         } else {
                             //
-                            //                       WORK(IR) is N by N
+                            // WORK(IR) is N by N
                             //
                             ldwrkr = n;
                         }
                         itau = ir + ldwrkr * n;
                         iwork = itau + n;
                         //
-                        //                    Compute A=Q*R, copying result to U
-                        //                    (CWorkspace: need N*N+2*N, prefer N*N+N+N*NB)
-                        //                    (RWorkspace: 0)
+                        // Compute A=Q*R, copying result to U
+                        // (CWorkspace: need N*N+2*N, prefer N*N+N+N*NB)
+                        // (RWorkspace: 0)
                         //
                         Cgeqrf(m, n, a, lda, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         Clacpy("L", m, n, a, lda, u, ldu);
                         //
-                        //                    Copy R to WORK(IR), zeroing out below it
+                        // Copy R to WORK(IR), zeroing out below it
                         //
                         Clacpy("U", n, n, a, lda, &work[ir - 1], ldwrkr);
                         Claset("L", n - 1, n - 1, czero, czero, &work[(ir + 1) - 1], ldwrkr);
                         //
-                        //                    Generate Q in U
-                        //                    (CWorkspace: need N*N+N+M, prefer N*N+N+M*NB)
-                        //                    (RWorkspace: 0)
+                        // Generate Q in U
+                        // (CWorkspace: need N*N+N+M, prefer N*N+N+M*NB)
+                        // (RWorkspace: 0)
                         //
                         Cungqr(m, m, n, u, ldu, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         ie = 1;
@@ -1260,54 +1263,54 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                         itaup = itauq + n;
                         iwork = itaup + n;
                         //
-                        //                    Bidiagonalize R in WORK(IR)
-                        //                    (CWorkspace: need N*N+3*N, prefer N*N+2*N+2*N*NB)
-                        //                    (RWorkspace: need N)
+                        // Bidiagonalize R in WORK(IR)
+                        // (CWorkspace: need N*N+3*N, prefer N*N+2*N+2*N*NB)
+                        // (RWorkspace: need N)
                         //
                         Cgebrd(n, n, &work[ir - 1], ldwrkr, s, &rwork[ie - 1], &work[itauq - 1], &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         //
-                        //                    Generate left bidiagonalizing vectors in WORK(IR)
-                        //                    (CWorkspace: need N*N+3*N, prefer N*N+2*N+N*NB)
-                        //                    (RWorkspace: 0)
+                        // Generate left bidiagonalizing vectors in WORK(IR)
+                        // (CWorkspace: need N*N+3*N, prefer N*N+2*N+N*NB)
+                        // (RWorkspace: 0)
                         //
                         Cungbr("Q", n, n, n, &work[ir - 1], ldwrkr, &work[itauq - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         irwork = ie + n;
                         //
-                        //                    Perform bidiagonal QR iteration, computing left
-                        //                    singular vectors of R in WORK(IR)
-                        //                    (CWorkspace: need N*N)
-                        //                    (RWorkspace: need BDSPAC)
+                        // Perform bidiagonal QR iteration, computing left
+                        // singular vectors of R in WORK(IR)
+                        // (CWorkspace: need N*N)
+                        // (RWorkspace: need BDSPAC)
                         //
                         Cbdsqr("U", n, 0, n, 0, s, &rwork[ie - 1], cdum, 1, &work[ir - 1], ldwrkr, cdum, 1, &rwork[irwork - 1], info);
                         //
-                        //                    Multiply Q in U by left singular vectors of R in
-                        //                    WORK(IR), storing result in A
-                        //                    (CWorkspace: need N*N)
-                        //                    (RWorkspace: 0)
+                        // Multiply Q in U by left singular vectors of R in
+                        // WORK(IR), storing result in A
+                        // (CWorkspace: need N*N)
+                        // (RWorkspace: 0)
                         //
                         Cgemm("N", "N", m, n, n, cone, u, ldu, &work[ir - 1], ldwrkr, czero, a, lda);
                         //
-                        //                    Copy left singular vectors of A from A to U
+                        // Copy left singular vectors of A from A to U
                         //
                         Clacpy("F", m, n, a, lda, u, ldu);
                         //
                     } else {
                         //
-                        //                    Insufficient workspace for a fast algorithm
+                        // Insufficient workspace for a fast algorithm
                         //
                         itau = 1;
                         iwork = itau + n;
                         //
-                        //                    Compute A=Q*R, copying result to U
-                        //                    (CWorkspace: need 2*N, prefer N+N*NB)
-                        //                    (RWorkspace: 0)
+                        // Compute A=Q*R, copying result to U
+                        // (CWorkspace: need 2*N, prefer N+N*NB)
+                        // (RWorkspace: 0)
                         //
                         Cgeqrf(m, n, a, lda, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         Clacpy("L", m, n, a, lda, u, ldu);
                         //
-                        //                    Generate Q in U
-                        //                    (CWorkspace: need N+M, prefer N+M*NB)
-                        //                    (RWorkspace: 0)
+                        // Generate Q in U
+                        // (CWorkspace: need N+M, prefer N+M*NB)
+                        // (RWorkspace: 0)
                         //
                         Cungqr(m, m, n, u, ldu, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         ie = 1;
@@ -1315,30 +1318,30 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                         itaup = itauq + n;
                         iwork = itaup + n;
                         //
-                        //                    Zero out below R in A
+                        // Zero out below R in A
                         //
                         if (n > 1) {
                             Claset("L", n - 1, n - 1, czero, czero, &a[(2 - 1)], lda);
                         }
                         //
-                        //                    Bidiagonalize R in A
-                        //                    (CWorkspace: need 3*N, prefer 2*N+2*N*NB)
-                        //                    (RWorkspace: need N)
+                        // Bidiagonalize R in A
+                        // (CWorkspace: need 3*N, prefer 2*N+2*N*NB)
+                        // (RWorkspace: need N)
                         //
                         Cgebrd(n, n, a, lda, s, &rwork[ie - 1], &work[itauq - 1], &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         //
-                        //                    Multiply Q in U by left bidiagonalizing vectors
-                        //                    in A
-                        //                    (CWorkspace: need 2*N+M, prefer 2*N+M*NB)
-                        //                    (RWorkspace: 0)
+                        // Multiply Q in U by left bidiagonalizing vectors
+                        // in A
+                        // (CWorkspace: need 2*N+M, prefer 2*N+M*NB)
+                        // (RWorkspace: 0)
                         //
                         Cunmbr("Q", "R", "N", m, n, n, a, lda, &work[itauq - 1], u, ldu, &work[iwork - 1], lwork - iwork + 1, ierr);
                         irwork = ie + n;
                         //
-                        //                    Perform bidiagonal QR iteration, computing left
-                        //                    singular vectors of A in U
-                        //                    (CWorkspace: 0)
-                        //                    (RWorkspace: need BDSPAC)
+                        // Perform bidiagonal QR iteration, computing left
+                        // singular vectors of A in U
+                        // (CWorkspace: 0)
+                        // (RWorkspace: need BDSPAC)
                         //
                         Cbdsqr("U", n, 0, m, 0, s, &rwork[ie - 1], cdum, 1, u, ldu, cdum, 1, &rwork[irwork - 1], info);
                         //
@@ -1346,32 +1349,32 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                     //
                 } else if (wntvo) {
                     //
-                    //                 Path 8 (M much larger than N, JOBU='A', JOBVT='O')
-                    //                 M left singular vectors to be computed in U and
-                    //                 N right singular vectors to be overwritten on A
+                    // Path 8 (M much larger than N, JOBU='A', JOBVT='O')
+                    // M left singular vectors to be computed in U and
+                    // N right singular vectors to be overwritten on A
                     //
                     if (lwork >= 2 * n * n + max(n + m, 3 * n)) {
                         //
-                        //                    Sufficient workspace for a fast algorithm
+                        // Sufficient workspace for a fast algorithm
                         //
                         iu = 1;
                         if (lwork >= wrkbl + 2 * lda * n) {
                             //
-                            //                       WORK(IU) is LDA by N and WORK(IR) is LDA by N
+                            // WORK(IU) is LDA by N and WORK(IR) is LDA by N
                             //
                             ldwrku = lda;
                             ir = iu + ldwrku * n;
                             ldwrkr = lda;
                         } else if (lwork >= wrkbl + (lda + n) * n) {
                             //
-                            //                       WORK(IU) is LDA by N and WORK(IR) is N by N
+                            // WORK(IU) is LDA by N and WORK(IR) is N by N
                             //
                             ldwrku = lda;
                             ir = iu + ldwrku * n;
                             ldwrkr = n;
                         } else {
                             //
-                            //                       WORK(IU) is N by N and WORK(IR) is N by N
+                            // WORK(IU) is N by N and WORK(IR) is N by N
                             //
                             ldwrku = n;
                             ir = iu + ldwrku * n;
@@ -1380,20 +1383,20 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                         itau = ir + ldwrkr * n;
                         iwork = itau + n;
                         //
-                        //                    Compute A=Q*R, copying result to U
-                        //                    (CWorkspace: need 2*N*N+2*N, prefer 2*N*N+N+N*NB)
-                        //                    (RWorkspace: 0)
+                        // Compute A=Q*R, copying result to U
+                        // (CWorkspace: need 2*N*N+2*N, prefer 2*N*N+N+N*NB)
+                        // (RWorkspace: 0)
                         //
                         Cgeqrf(m, n, a, lda, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         Clacpy("L", m, n, a, lda, u, ldu);
                         //
-                        //                    Generate Q in U
-                        //                    (CWorkspace: need 2*N*N+N+M, prefer 2*N*N+N+M*NB)
-                        //                    (RWorkspace: 0)
+                        // Generate Q in U
+                        // (CWorkspace: need 2*N*N+N+M, prefer 2*N*N+N+M*NB)
+                        // (RWorkspace: 0)
                         //
                         Cungqr(m, m, n, u, ldu, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         //
-                        //                    Copy R to WORK(IU), zeroing out below it
+                        // Copy R to WORK(IU), zeroing out below it
                         //
                         Clacpy("U", n, n, a, lda, &work[iu - 1], ldwrku);
                         Claset("L", n - 1, n - 1, czero, czero, &work[(iu + 1) - 1], ldwrku);
@@ -1402,69 +1405,69 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                         itaup = itauq + n;
                         iwork = itaup + n;
                         //
-                        //                    Bidiagonalize R in WORK(IU), copying result to
-                        //                    WORK(IR)
-                        //                    (CWorkspace: need   2*N*N+3*N,
-                        //                                 prefer 2*N*N+2*N+2*N*NB)
-                        //                    (RWorkspace: need   N)
+                        // Bidiagonalize R in WORK(IU), copying result to
+                        // WORK(IR)
+                        // (CWorkspace: need   2*N*N+3*N,
+                        // prefer 2*N*N+2*N+2*N*NB)
+                        // (RWorkspace: need   N)
                         //
                         Cgebrd(n, n, &work[iu - 1], ldwrku, s, &rwork[ie - 1], &work[itauq - 1], &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         Clacpy("U", n, n, &work[iu - 1], ldwrku, &work[ir - 1], ldwrkr);
                         //
-                        //                    Generate left bidiagonalizing vectors in WORK(IU)
-                        //                    (CWorkspace: need 2*N*N+3*N, prefer 2*N*N+2*N+N*NB)
-                        //                    (RWorkspace: 0)
+                        // Generate left bidiagonalizing vectors in WORK(IU)
+                        // (CWorkspace: need 2*N*N+3*N, prefer 2*N*N+2*N+N*NB)
+                        // (RWorkspace: 0)
                         //
                         Cungbr("Q", n, n, n, &work[iu - 1], ldwrku, &work[itauq - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         //
-                        //                    Generate right bidiagonalizing vectors in WORK(IR)
-                        //                    (CWorkspace: need   2*N*N+3*N-1,
-                        //                                 prefer 2*N*N+2*N+(N-1)*NB)
-                        //                    (RWorkspace: 0)
+                        // Generate right bidiagonalizing vectors in WORK(IR)
+                        // (CWorkspace: need   2*N*N+3*N-1,
+                        // prefer 2*N*N+2*N+(N-1)*NB)
+                        // (RWorkspace: 0)
                         //
                         Cungbr("P", n, n, n, &work[ir - 1], ldwrkr, &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         irwork = ie + n;
                         //
-                        //                    Perform bidiagonal QR iteration, computing left
-                        //                    singular vectors of R in WORK(IU) and computing
-                        //                    right singular vectors of R in WORK(IR)
-                        //                    (CWorkspace: need 2*N*N)
-                        //                    (RWorkspace: need BDSPAC)
+                        // Perform bidiagonal QR iteration, computing left
+                        // singular vectors of R in WORK(IU) and computing
+                        // right singular vectors of R in WORK(IR)
+                        // (CWorkspace: need 2*N*N)
+                        // (RWorkspace: need BDSPAC)
                         //
                         Cbdsqr("U", n, n, n, 0, s, &rwork[ie - 1], &work[ir - 1], ldwrkr, &work[iu - 1], ldwrku, cdum, 1, &rwork[irwork - 1], info);
                         //
-                        //                    Multiply Q in U by left singular vectors of R in
-                        //                    WORK(IU), storing result in A
-                        //                    (CWorkspace: need N*N)
-                        //                    (RWorkspace: 0)
+                        // Multiply Q in U by left singular vectors of R in
+                        // WORK(IU), storing result in A
+                        // (CWorkspace: need N*N)
+                        // (RWorkspace: 0)
                         //
                         Cgemm("N", "N", m, n, n, cone, u, ldu, &work[iu - 1], ldwrku, czero, a, lda);
                         //
-                        //                    Copy left singular vectors of A from A to U
+                        // Copy left singular vectors of A from A to U
                         //
                         Clacpy("F", m, n, a, lda, u, ldu);
                         //
-                        //                    Copy right singular vectors of R from WORK(IR) to A
+                        // Copy right singular vectors of R from WORK(IR) to A
                         //
                         Clacpy("F", n, n, &work[ir - 1], ldwrkr, a, lda);
                         //
                     } else {
                         //
-                        //                    Insufficient workspace for a fast algorithm
+                        // Insufficient workspace for a fast algorithm
                         //
                         itau = 1;
                         iwork = itau + n;
                         //
-                        //                    Compute A=Q*R, copying result to U
-                        //                    (CWorkspace: need 2*N, prefer N+N*NB)
-                        //                    (RWorkspace: 0)
+                        // Compute A=Q*R, copying result to U
+                        // (CWorkspace: need 2*N, prefer N+N*NB)
+                        // (RWorkspace: 0)
                         //
                         Cgeqrf(m, n, a, lda, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         Clacpy("L", m, n, a, lda, u, ldu);
                         //
-                        //                    Generate Q in U
-                        //                    (CWorkspace: need N+M, prefer N+M*NB)
-                        //                    (RWorkspace: 0)
+                        // Generate Q in U
+                        // (CWorkspace: need N+M, prefer N+M*NB)
+                        // (RWorkspace: 0)
                         //
                         Cungqr(m, m, n, u, ldu, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         ie = 1;
@@ -1472,37 +1475,37 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                         itaup = itauq + n;
                         iwork = itaup + n;
                         //
-                        //                    Zero out below R in A
+                        // Zero out below R in A
                         //
                         if (n > 1) {
                             Claset("L", n - 1, n - 1, czero, czero, &a[(2 - 1)], lda);
                         }
                         //
-                        //                    Bidiagonalize R in A
-                        //                    (CWorkspace: need 3*N, prefer 2*N+2*N*NB)
-                        //                    (RWorkspace: need N)
+                        // Bidiagonalize R in A
+                        // (CWorkspace: need 3*N, prefer 2*N+2*N*NB)
+                        // (RWorkspace: need N)
                         //
                         Cgebrd(n, n, a, lda, s, &rwork[ie - 1], &work[itauq - 1], &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         //
-                        //                    Multiply Q in U by left bidiagonalizing vectors
-                        //                    in A
-                        //                    (CWorkspace: need 2*N+M, prefer 2*N+M*NB)
-                        //                    (RWorkspace: 0)
+                        // Multiply Q in U by left bidiagonalizing vectors
+                        // in A
+                        // (CWorkspace: need 2*N+M, prefer 2*N+M*NB)
+                        // (RWorkspace: 0)
                         //
                         Cunmbr("Q", "R", "N", m, n, n, a, lda, &work[itauq - 1], u, ldu, &work[iwork - 1], lwork - iwork + 1, ierr);
                         //
-                        //                    Generate right bidiagonalizing vectors in A
-                        //                    (CWorkspace: need 3*N-1, prefer 2*N+(N-1)*NB)
-                        //                    (RWorkspace: 0)
+                        // Generate right bidiagonalizing vectors in A
+                        // (CWorkspace: need 3*N-1, prefer 2*N+(N-1)*NB)
+                        // (RWorkspace: 0)
                         //
                         Cungbr("P", n, n, n, a, lda, &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         irwork = ie + n;
                         //
-                        //                    Perform bidiagonal QR iteration, computing left
-                        //                    singular vectors of A in U and computing right
-                        //                    singular vectors of A in A
-                        //                    (CWorkspace: 0)
-                        //                    (RWorkspace: need BDSPAC)
+                        // Perform bidiagonal QR iteration, computing left
+                        // singular vectors of A in U and computing right
+                        // singular vectors of A in A
+                        // (CWorkspace: 0)
+                        // (RWorkspace: need BDSPAC)
                         //
                         Cbdsqr("U", n, n, m, 0, s, &rwork[ie - 1], a, lda, u, ldu, cdum, 1, &rwork[irwork - 1], info);
                         //
@@ -1510,44 +1513,44 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                     //
                 } else if (wntvas) {
                     //
-                    //                 Path 9 (M much larger than N, JOBU='A', JOBVT='S'
-                    //                         or 'A')
-                    //                 M left singular vectors to be computed in U and
-                    //                 N right singular vectors to be computed in VT
+                    // Path 9 (M much larger than N, JOBU='A', JOBVT='S'
+                    // or 'A')
+                    // M left singular vectors to be computed in U and
+                    // N right singular vectors to be computed in VT
                     //
                     if (lwork >= n * n + max(n + m, 3 * n)) {
                         //
-                        //                    Sufficient workspace for a fast algorithm
+                        // Sufficient workspace for a fast algorithm
                         //
                         iu = 1;
                         if (lwork >= wrkbl + lda * n) {
                             //
-                            //                       WORK(IU) is LDA by N
+                            // WORK(IU) is LDA by N
                             //
                             ldwrku = lda;
                         } else {
                             //
-                            //                       WORK(IU) is N by N
+                            // WORK(IU) is N by N
                             //
                             ldwrku = n;
                         }
                         itau = iu + ldwrku * n;
                         iwork = itau + n;
                         //
-                        //                    Compute A=Q*R, copying result to U
-                        //                    (CWorkspace: need N*N+2*N, prefer N*N+N+N*NB)
-                        //                    (RWorkspace: 0)
+                        // Compute A=Q*R, copying result to U
+                        // (CWorkspace: need N*N+2*N, prefer N*N+N+N*NB)
+                        // (RWorkspace: 0)
                         //
                         Cgeqrf(m, n, a, lda, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         Clacpy("L", m, n, a, lda, u, ldu);
                         //
-                        //                    Generate Q in U
-                        //                    (CWorkspace: need N*N+N+M, prefer N*N+N+M*NB)
-                        //                    (RWorkspace: 0)
+                        // Generate Q in U
+                        // (CWorkspace: need N*N+N+M, prefer N*N+N+M*NB)
+                        // (RWorkspace: 0)
                         //
                         Cungqr(m, m, n, u, ldu, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         //
-                        //                    Copy R to WORK(IU), zeroing out below it
+                        // Copy R to WORK(IU), zeroing out below it
                         //
                         Clacpy("U", n, n, a, lda, &work[iu - 1], ldwrku);
                         Claset("L", n - 1, n - 1, czero, czero, &work[(iu + 1) - 1], ldwrku);
@@ -1556,67 +1559,67 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                         itaup = itauq + n;
                         iwork = itaup + n;
                         //
-                        //                    Bidiagonalize R in WORK(IU), copying result to VT
-                        //                    (CWorkspace: need N*N+3*N, prefer N*N+2*N+2*N*NB)
-                        //                    (RWorkspace: need N)
+                        // Bidiagonalize R in WORK(IU), copying result to VT
+                        // (CWorkspace: need N*N+3*N, prefer N*N+2*N+2*N*NB)
+                        // (RWorkspace: need N)
                         //
                         Cgebrd(n, n, &work[iu - 1], ldwrku, s, &rwork[ie - 1], &work[itauq - 1], &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         Clacpy("U", n, n, &work[iu - 1], ldwrku, vt, ldvt);
                         //
-                        //                    Generate left bidiagonalizing vectors in WORK(IU)
-                        //                    (CWorkspace: need N*N+3*N, prefer N*N+2*N+N*NB)
-                        //                    (RWorkspace: 0)
+                        // Generate left bidiagonalizing vectors in WORK(IU)
+                        // (CWorkspace: need N*N+3*N, prefer N*N+2*N+N*NB)
+                        // (RWorkspace: 0)
                         //
                         Cungbr("Q", n, n, n, &work[iu - 1], ldwrku, &work[itauq - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         //
-                        //                    Generate right bidiagonalizing vectors in VT
-                        //                    (CWorkspace: need   N*N+3*N-1,
-                        //                                 prefer N*N+2*N+(N-1)*NB)
-                        //                    (RWorkspace: need   0)
+                        // Generate right bidiagonalizing vectors in VT
+                        // (CWorkspace: need   N*N+3*N-1,
+                        // prefer N*N+2*N+(N-1)*NB)
+                        // (RWorkspace: need   0)
                         //
                         Cungbr("P", n, n, n, vt, ldvt, &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         irwork = ie + n;
                         //
-                        //                    Perform bidiagonal QR iteration, computing left
-                        //                    singular vectors of R in WORK(IU) and computing
-                        //                    right singular vectors of R in VT
-                        //                    (CWorkspace: need N*N)
-                        //                    (RWorkspace: need BDSPAC)
+                        // Perform bidiagonal QR iteration, computing left
+                        // singular vectors of R in WORK(IU) and computing
+                        // right singular vectors of R in VT
+                        // (CWorkspace: need N*N)
+                        // (RWorkspace: need BDSPAC)
                         //
                         Cbdsqr("U", n, n, n, 0, s, &rwork[ie - 1], vt, ldvt, &work[iu - 1], ldwrku, cdum, 1, &rwork[irwork - 1], info);
                         //
-                        //                    Multiply Q in U by left singular vectors of R in
-                        //                    WORK(IU), storing result in A
-                        //                    (CWorkspace: need N*N)
-                        //                    (RWorkspace: 0)
+                        // Multiply Q in U by left singular vectors of R in
+                        // WORK(IU), storing result in A
+                        // (CWorkspace: need N*N)
+                        // (RWorkspace: 0)
                         //
                         Cgemm("N", "N", m, n, n, cone, u, ldu, &work[iu - 1], ldwrku, czero, a, lda);
                         //
-                        //                    Copy left singular vectors of A from A to U
+                        // Copy left singular vectors of A from A to U
                         //
                         Clacpy("F", m, n, a, lda, u, ldu);
                         //
                     } else {
                         //
-                        //                    Insufficient workspace for a fast algorithm
+                        // Insufficient workspace for a fast algorithm
                         //
                         itau = 1;
                         iwork = itau + n;
                         //
-                        //                    Compute A=Q*R, copying result to U
-                        //                    (CWorkspace: need 2*N, prefer N+N*NB)
-                        //                    (RWorkspace: 0)
+                        // Compute A=Q*R, copying result to U
+                        // (CWorkspace: need 2*N, prefer N+N*NB)
+                        // (RWorkspace: 0)
                         //
                         Cgeqrf(m, n, a, lda, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         Clacpy("L", m, n, a, lda, u, ldu);
                         //
-                        //                    Generate Q in U
-                        //                    (CWorkspace: need N+M, prefer N+M*NB)
-                        //                    (RWorkspace: 0)
+                        // Generate Q in U
+                        // (CWorkspace: need N+M, prefer N+M*NB)
+                        // (RWorkspace: 0)
                         //
                         Cungqr(m, m, n, u, ldu, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         //
-                        //                    Copy R from A to VT, zeroing out below it
+                        // Copy R from A to VT, zeroing out below it
                         //
                         Clacpy("U", n, n, a, lda, vt, ldvt);
                         if (n > 1) {
@@ -1627,31 +1630,31 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                         itaup = itauq + n;
                         iwork = itaup + n;
                         //
-                        //                    Bidiagonalize R in VT
-                        //                    (CWorkspace: need 3*N, prefer 2*N+2*N*NB)
-                        //                    (RWorkspace: need N)
+                        // Bidiagonalize R in VT
+                        // (CWorkspace: need 3*N, prefer 2*N+2*N*NB)
+                        // (RWorkspace: need N)
                         //
                         Cgebrd(n, n, vt, ldvt, s, &rwork[ie - 1], &work[itauq - 1], &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         //
-                        //                    Multiply Q in U by left bidiagonalizing vectors
-                        //                    in VT
-                        //                    (CWorkspace: need 2*N+M, prefer 2*N+M*NB)
-                        //                    (RWorkspace: 0)
+                        // Multiply Q in U by left bidiagonalizing vectors
+                        // in VT
+                        // (CWorkspace: need 2*N+M, prefer 2*N+M*NB)
+                        // (RWorkspace: 0)
                         //
                         Cunmbr("Q", "R", "N", m, n, n, vt, ldvt, &work[itauq - 1], u, ldu, &work[iwork - 1], lwork - iwork + 1, ierr);
                         //
-                        //                    Generate right bidiagonalizing vectors in VT
-                        //                    (CWorkspace: need 3*N-1, prefer 2*N+(N-1)*NB)
-                        //                    (RWorkspace: 0)
+                        // Generate right bidiagonalizing vectors in VT
+                        // (CWorkspace: need 3*N-1, prefer 2*N+(N-1)*NB)
+                        // (RWorkspace: 0)
                         //
                         Cungbr("P", n, n, n, vt, ldvt, &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         irwork = ie + n;
                         //
-                        //                    Perform bidiagonal QR iteration, computing left
-                        //                    singular vectors of A in U and computing right
-                        //                    singular vectors of A in VT
-                        //                    (CWorkspace: 0)
-                        //                    (RWorkspace: need BDSPAC)
+                        // Perform bidiagonal QR iteration, computing left
+                        // singular vectors of A in U and computing right
+                        // singular vectors of A in VT
+                        // (CWorkspace: 0)
+                        // (RWorkspace: need BDSPAC)
                         //
                         Cbdsqr("U", n, n, m, 0, s, &rwork[ie - 1], vt, ldvt, u, ldu, cdum, 1, &rwork[irwork - 1], info);
                         //
@@ -1663,27 +1666,27 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
             //
         } else {
             //
-            //           M .LT. MNTHR
+            // M .LT. MNTHR
             //
-            //           Path 10 (M at least N, but not much larger)
-            //           Reduce to bidiagonal form without QR decomposition
+            // Path 10 (M at least N, but not much larger)
+            // Reduce to bidiagonal form without QR decomposition
             //
             ie = 1;
             itauq = 1;
             itaup = itauq + n;
             iwork = itaup + n;
             //
-            //           Bidiagonalize A
-            //           (CWorkspace: need 2*N+M, prefer 2*N+(M+N)*NB)
-            //           (RWorkspace: need N)
+            // Bidiagonalize A
+            // (CWorkspace: need 2*N+M, prefer 2*N+(M+N)*NB)
+            // (RWorkspace: need N)
             //
             Cgebrd(m, n, a, lda, s, &rwork[ie - 1], &work[itauq - 1], &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
             if (wntuas) {
                 //
-                //              If left singular vectors desired in U, copy result to U
-                //              and generate left bidiagonalizing vectors in U
-                //              (CWorkspace: need 2*N+NCU, prefer 2*N+NCU*NB)
-                //              (RWorkspace: 0)
+                // If left singular vectors desired in U, copy result to U
+                // and generate left bidiagonalizing vectors in U
+                // (CWorkspace: need 2*N+NCU, prefer 2*N+NCU*NB)
+                // (RWorkspace: 0)
                 //
                 Clacpy("L", m, n, a, lda, u, ldu);
                 if (wntus) {
@@ -1696,29 +1699,29 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
             }
             if (wntvas) {
                 //
-                //              If right singular vectors desired in VT, copy result to
-                //              VT and generate right bidiagonalizing vectors in VT
-                //              (CWorkspace: need 3*N-1, prefer 2*N+(N-1)*NB)
-                //              (RWorkspace: 0)
+                // If right singular vectors desired in VT, copy result to
+                // VT and generate right bidiagonalizing vectors in VT
+                // (CWorkspace: need 3*N-1, prefer 2*N+(N-1)*NB)
+                // (RWorkspace: 0)
                 //
                 Clacpy("U", n, n, a, lda, vt, ldvt);
                 Cungbr("P", n, n, n, vt, ldvt, &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
             }
             if (wntuo) {
                 //
-                //              If left singular vectors desired in A, generate left
-                //              bidiagonalizing vectors in A
-                //              (CWorkspace: need 3*N, prefer 2*N+N*NB)
-                //              (RWorkspace: 0)
+                // If left singular vectors desired in A, generate left
+                // bidiagonalizing vectors in A
+                // (CWorkspace: need 3*N, prefer 2*N+N*NB)
+                // (RWorkspace: 0)
                 //
                 Cungbr("Q", m, n, n, a, lda, &work[itauq - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
             }
             if (wntvo) {
                 //
-                //              If right singular vectors desired in A, generate right
-                //              bidiagonalizing vectors in A
-                //              (CWorkspace: need 3*N-1, prefer 2*N+(N-1)*NB)
-                //              (RWorkspace: 0)
+                // If right singular vectors desired in A, generate right
+                // bidiagonalizing vectors in A
+                // (CWorkspace: need 3*N-1, prefer 2*N+(N-1)*NB)
+                // (RWorkspace: 0)
                 //
                 Cungbr("P", n, n, n, a, lda, &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
             }
@@ -1737,29 +1740,29 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
             }
             if ((!wntuo) && (!wntvo)) {
                 //
-                //              Perform bidiagonal QR iteration, if desired, computing
-                //              left singular vectors in U and computing right singular
-                //              vectors in VT
-                //              (CWorkspace: 0)
-                //              (RWorkspace: need BDSPAC)
+                // Perform bidiagonal QR iteration, if desired, computing
+                // left singular vectors in U and computing right singular
+                // vectors in VT
+                // (CWorkspace: 0)
+                // (RWorkspace: need BDSPAC)
                 //
                 Cbdsqr("U", n, ncvt, nru, 0, s, &rwork[ie - 1], vt, ldvt, u, ldu, cdum, 1, &rwork[irwork - 1], info);
             } else if ((!wntuo) && wntvo) {
                 //
-                //              Perform bidiagonal QR iteration, if desired, computing
-                //              left singular vectors in U and computing right singular
-                //              vectors in A
-                //              (CWorkspace: 0)
-                //              (RWorkspace: need BDSPAC)
+                // Perform bidiagonal QR iteration, if desired, computing
+                // left singular vectors in U and computing right singular
+                // vectors in A
+                // (CWorkspace: 0)
+                // (RWorkspace: need BDSPAC)
                 //
                 Cbdsqr("U", n, ncvt, nru, 0, s, &rwork[ie - 1], a, lda, u, ldu, cdum, 1, &rwork[irwork - 1], info);
             } else {
                 //
-                //              Perform bidiagonal QR iteration, if desired, computing
-                //              left singular vectors in A and computing right singular
-                //              vectors in VT
-                //              (CWorkspace: 0)
-                //              (RWorkspace: need BDSPAC)
+                // Perform bidiagonal QR iteration, if desired, computing
+                // left singular vectors in A and computing right singular
+                // vectors in VT
+                // (CWorkspace: 0)
+                // (RWorkspace: need BDSPAC)
                 //
                 Cbdsqr("U", n, ncvt, nru, 0, s, &rwork[ie - 1], vt, ldvt, a, lda, cdum, 1, &rwork[irwork - 1], info);
             }
@@ -1768,27 +1771,27 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
         //
     } else {
         //
-        //        A has more columns than rows. If A has sufficiently more
-        //        columns than rows, first reduce using the LQ decomposition (if
-        //        sufficient workspace available)
+        // A has more columns than rows. If A has sufficiently more
+        // columns than rows, first reduce using the LQ decomposition (if
+        // sufficient workspace available)
         //
         if (n >= mnthr) {
             //
             if (wntvn) {
                 //
-                //              Path 1t(N much larger than M, JOBVT='N')
-                //              No right singular vectors to be computed
+                // Path 1t(N much larger than M, JOBVT='N')
+                // No right singular vectors to be computed
                 //
                 itau = 1;
                 iwork = itau + m;
                 //
-                //              Compute A=L*Q
-                //              (CWorkspace: need 2*M, prefer M+M*NB)
-                //              (RWorkspace: 0)
+                // Compute A=L*Q
+                // (CWorkspace: need 2*M, prefer M+M*NB)
+                // (RWorkspace: 0)
                 //
                 Cgelqf(m, n, a, lda, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                 //
-                //              Zero out above L
+                // Zero out above L
                 //
                 Claset("U", m - 1, m - 1, czero, czero, &a[(2 - 1) * lda], lda);
                 ie = 1;
@@ -1796,16 +1799,16 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                 itaup = itauq + m;
                 iwork = itaup + m;
                 //
-                //              Bidiagonalize L in A
-                //              (CWorkspace: need 3*M, prefer 2*M+2*M*NB)
-                //              (RWorkspace: need M)
+                // Bidiagonalize L in A
+                // (CWorkspace: need 3*M, prefer 2*M+2*M*NB)
+                // (RWorkspace: need M)
                 //
                 Cgebrd(m, m, a, lda, s, &rwork[ie - 1], &work[itauq - 1], &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                 if (wntuo || wntuas) {
                     //
-                    //                 If left singular vectors desired, generate Q
-                    //                 (CWorkspace: need 3*M, prefer 2*M+M*NB)
-                    //                 (RWorkspace: 0)
+                    // If left singular vectors desired, generate Q
+                    // (CWorkspace: need 3*M, prefer 2*M+M*NB)
+                    // (RWorkspace: 0)
                     //
                     Cungbr("Q", m, m, m, a, lda, &work[itauq - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                 }
@@ -1815,14 +1818,14 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                     nru = m;
                 }
                 //
-                //              Perform bidiagonal QR iteration, computing left singular
-                //              vectors of A in A if desired
-                //              (CWorkspace: 0)
-                //              (RWorkspace: need BDSPAC)
+                // Perform bidiagonal QR iteration, computing left singular
+                // vectors of A in A if desired
+                // (CWorkspace: 0)
+                // (RWorkspace: need BDSPAC)
                 //
                 Cbdsqr("U", m, 0, nru, 0, s, &rwork[ie - 1], cdum, 1, a, lda, cdum, 1, &rwork[irwork - 1], info);
                 //
-                //              If left singular vectors desired in U, copy them there
+                // If left singular vectors desired in U, copy them there
                 //
                 if (wntuas) {
                     Clacpy("F", m, m, a, lda, u, ldu);
@@ -1830,32 +1833,32 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                 //
             } else if (wntvo && wntun) {
                 //
-                //              Path 2t(N much larger than M, JOBU='N', JOBVT='O')
-                //              M right singular vectors to be overwritten on A and
-                //              no left singular vectors to be computed
+                // Path 2t(N much larger than M, JOBU='N', JOBVT='O')
+                // M right singular vectors to be overwritten on A and
+                // no left singular vectors to be computed
                 //
                 if (lwork >= m * m + 3 * m) {
                     //
-                    //                 Sufficient workspace for a fast algorithm
+                    // Sufficient workspace for a fast algorithm
                     //
                     ir = 1;
                     if (lwork >= max(wrkbl, lda * n) + lda * m) {
                         //
-                        //                    WORK(IU) is LDA by N and WORK(IR) is LDA by M
+                        // WORK(IU) is LDA by N and WORK(IR) is LDA by M
                         //
                         ldwrku = lda;
                         chunk = n;
                         ldwrkr = lda;
                     } else if (lwork >= max(wrkbl, lda * n) + m * m) {
                         //
-                        //                    WORK(IU) is LDA by N and WORK(IR) is M by M
+                        // WORK(IU) is LDA by N and WORK(IR) is M by M
                         //
                         ldwrku = lda;
                         chunk = n;
                         ldwrkr = m;
                     } else {
                         //
-                        //                    WORK(IU) is M by CHUNK and WORK(IR) is M by M
+                        // WORK(IU) is M by CHUNK and WORK(IR) is M by M
                         //
                         ldwrku = m;
                         chunk = (lwork - m * m) / m;
@@ -1864,20 +1867,20 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                     itau = ir + ldwrkr * m;
                     iwork = itau + m;
                     //
-                    //                 Compute A=L*Q
-                    //                 (CWorkspace: need M*M+2*M, prefer M*M+M+M*NB)
-                    //                 (RWorkspace: 0)
+                    // Compute A=L*Q
+                    // (CWorkspace: need M*M+2*M, prefer M*M+M+M*NB)
+                    // (RWorkspace: 0)
                     //
                     Cgelqf(m, n, a, lda, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                     //
-                    //                 Copy L to WORK(IR) and zero out above it
+                    // Copy L to WORK(IR) and zero out above it
                     //
                     Clacpy("L", m, m, a, lda, &work[ir - 1], ldwrkr);
                     Claset("U", m - 1, m - 1, czero, czero, &work[(ir + ldwrkr) - 1], ldwrkr);
                     //
-                    //                 Generate Q in A
-                    //                 (CWorkspace: need M*M+2*M, prefer M*M+M+M*NB)
-                    //                 (RWorkspace: 0)
+                    // Generate Q in A
+                    // (CWorkspace: need M*M+2*M, prefer M*M+M+M*NB)
+                    // (RWorkspace: 0)
                     //
                     Cunglq(m, n, m, a, lda, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                     ie = 1;
@@ -1885,31 +1888,31 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                     itaup = itauq + m;
                     iwork = itaup + m;
                     //
-                    //                 Bidiagonalize L in WORK(IR)
-                    //                 (CWorkspace: need M*M+3*M, prefer M*M+2*M+2*M*NB)
-                    //                 (RWorkspace: need M)
+                    // Bidiagonalize L in WORK(IR)
+                    // (CWorkspace: need M*M+3*M, prefer M*M+2*M+2*M*NB)
+                    // (RWorkspace: need M)
                     //
                     Cgebrd(m, m, &work[ir - 1], ldwrkr, s, &rwork[ie - 1], &work[itauq - 1], &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                     //
-                    //                 Generate right vectors bidiagonalizing L
-                    //                 (CWorkspace: need M*M+3*M-1, prefer M*M+2*M+(M-1)*NB)
-                    //                 (RWorkspace: 0)
+                    // Generate right vectors bidiagonalizing L
+                    // (CWorkspace: need M*M+3*M-1, prefer M*M+2*M+(M-1)*NB)
+                    // (RWorkspace: 0)
                     //
                     Cungbr("P", m, m, m, &work[ir - 1], ldwrkr, &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                     irwork = ie + m;
                     //
-                    //                 Perform bidiagonal QR iteration, computing right
-                    //                 singular vectors of L in WORK(IR)
-                    //                 (CWorkspace: need M*M)
-                    //                 (RWorkspace: need BDSPAC)
+                    // Perform bidiagonal QR iteration, computing right
+                    // singular vectors of L in WORK(IR)
+                    // (CWorkspace: need M*M)
+                    // (RWorkspace: need BDSPAC)
                     //
                     Cbdsqr("U", m, m, 0, 0, s, &rwork[ie - 1], &work[ir - 1], ldwrkr, cdum, 1, cdum, 1, &rwork[irwork - 1], info);
                     iu = itauq;
                     //
-                    //                 Multiply right singular vectors of L in WORK(IR) by Q
-                    //                 in A, storing result in WORK(IU) and copying to A
-                    //                 (CWorkspace: need M*M+M, prefer M*M+M*N)
-                    //                 (RWorkspace: 0)
+                    // Multiply right singular vectors of L in WORK(IR) by Q
+                    // in A, storing result in WORK(IU) and copying to A
+                    // (CWorkspace: need M*M+M, prefer M*M+M*N)
+                    // (RWorkspace: 0)
                     //
                     for (i = 1; i <= n; i = i + chunk) {
                         blk = min(n - i + 1, chunk);
@@ -1919,30 +1922,30 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                     //
                 } else {
                     //
-                    //                 Insufficient workspace for a fast algorithm
+                    // Insufficient workspace for a fast algorithm
                     //
                     ie = 1;
                     itauq = 1;
                     itaup = itauq + m;
                     iwork = itaup + m;
                     //
-                    //                 Bidiagonalize A
-                    //                 (CWorkspace: need 2*M+N, prefer 2*M+(M+N)*NB)
-                    //                 (RWorkspace: need M)
+                    // Bidiagonalize A
+                    // (CWorkspace: need 2*M+N, prefer 2*M+(M+N)*NB)
+                    // (RWorkspace: need M)
                     //
                     Cgebrd(m, n, a, lda, s, &rwork[ie - 1], &work[itauq - 1], &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                     //
-                    //                 Generate right vectors bidiagonalizing A
-                    //                 (CWorkspace: need 3*M, prefer 2*M+M*NB)
-                    //                 (RWorkspace: 0)
+                    // Generate right vectors bidiagonalizing A
+                    // (CWorkspace: need 3*M, prefer 2*M+M*NB)
+                    // (RWorkspace: 0)
                     //
                     Cungbr("P", m, n, m, a, lda, &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                     irwork = ie + m;
                     //
-                    //                 Perform bidiagonal QR iteration, computing right
-                    //                 singular vectors of A in A
-                    //                 (CWorkspace: 0)
-                    //                 (RWorkspace: need BDSPAC)
+                    // Perform bidiagonal QR iteration, computing right
+                    // singular vectors of A in A
+                    // (CWorkspace: 0)
+                    // (RWorkspace: need BDSPAC)
                     //
                     Cbdsqr("L", m, n, 0, 0, s, &rwork[ie - 1], a, lda, cdum, 1, cdum, 1, &rwork[irwork - 1], info);
                     //
@@ -1950,32 +1953,32 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                 //
             } else if (wntvo && wntuas) {
                 //
-                //              Path 3t(N much larger than M, JOBU='S' or 'A', JOBVT='O')
-                //              M right singular vectors to be overwritten on A and
-                //              M left singular vectors to be computed in U
+                // Path 3t(N much larger than M, JOBU='S' or 'A', JOBVT='O')
+                // M right singular vectors to be overwritten on A and
+                // M left singular vectors to be computed in U
                 //
                 if (lwork >= m * m + 3 * m) {
                     //
-                    //                 Sufficient workspace for a fast algorithm
+                    // Sufficient workspace for a fast algorithm
                     //
                     ir = 1;
                     if (lwork >= max(wrkbl, lda * n) + lda * m) {
                         //
-                        //                    WORK(IU) is LDA by N and WORK(IR) is LDA by M
+                        // WORK(IU) is LDA by N and WORK(IR) is LDA by M
                         //
                         ldwrku = lda;
                         chunk = n;
                         ldwrkr = lda;
                     } else if (lwork >= max(wrkbl, lda * n) + m * m) {
                         //
-                        //                    WORK(IU) is LDA by N and WORK(IR) is M by M
+                        // WORK(IU) is LDA by N and WORK(IR) is M by M
                         //
                         ldwrku = lda;
                         chunk = n;
                         ldwrkr = m;
                     } else {
                         //
-                        //                    WORK(IU) is M by CHUNK and WORK(IR) is M by M
+                        // WORK(IU) is M by CHUNK and WORK(IR) is M by M
                         //
                         ldwrku = m;
                         chunk = (lwork - m * m) / m;
@@ -1984,20 +1987,20 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                     itau = ir + ldwrkr * m;
                     iwork = itau + m;
                     //
-                    //                 Compute A=L*Q
-                    //                 (CWorkspace: need M*M+2*M, prefer M*M+M+M*NB)
-                    //                 (RWorkspace: 0)
+                    // Compute A=L*Q
+                    // (CWorkspace: need M*M+2*M, prefer M*M+M+M*NB)
+                    // (RWorkspace: 0)
                     //
                     Cgelqf(m, n, a, lda, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                     //
-                    //                 Copy L to U, zeroing about above it
+                    // Copy L to U, zeroing about above it
                     //
                     Clacpy("L", m, m, a, lda, u, ldu);
                     Claset("U", m - 1, m - 1, czero, czero, &u[(2 - 1) * ldu], ldu);
                     //
-                    //                 Generate Q in A
-                    //                 (CWorkspace: need M*M+2*M, prefer M*M+M+M*NB)
-                    //                 (RWorkspace: 0)
+                    // Generate Q in A
+                    // (CWorkspace: need M*M+2*M, prefer M*M+M+M*NB)
+                    // (RWorkspace: 0)
                     //
                     Cunglq(m, n, m, a, lda, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                     ie = 1;
@@ -2005,39 +2008,39 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                     itaup = itauq + m;
                     iwork = itaup + m;
                     //
-                    //                 Bidiagonalize L in U, copying result to WORK(IR)
-                    //                 (CWorkspace: need M*M+3*M, prefer M*M+2*M+2*M*NB)
-                    //                 (RWorkspace: need M)
+                    // Bidiagonalize L in U, copying result to WORK(IR)
+                    // (CWorkspace: need M*M+3*M, prefer M*M+2*M+2*M*NB)
+                    // (RWorkspace: need M)
                     //
                     Cgebrd(m, m, u, ldu, s, &rwork[ie - 1], &work[itauq - 1], &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                     Clacpy("U", m, m, u, ldu, &work[ir - 1], ldwrkr);
                     //
-                    //                 Generate right vectors bidiagonalizing L in WORK(IR)
-                    //                 (CWorkspace: need M*M+3*M-1, prefer M*M+2*M+(M-1)*NB)
-                    //                 (RWorkspace: 0)
+                    // Generate right vectors bidiagonalizing L in WORK(IR)
+                    // (CWorkspace: need M*M+3*M-1, prefer M*M+2*M+(M-1)*NB)
+                    // (RWorkspace: 0)
                     //
                     Cungbr("P", m, m, m, &work[ir - 1], ldwrkr, &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                     //
-                    //                 Generate left vectors bidiagonalizing L in U
-                    //                 (CWorkspace: need M*M+3*M, prefer M*M+2*M+M*NB)
-                    //                 (RWorkspace: 0)
+                    // Generate left vectors bidiagonalizing L in U
+                    // (CWorkspace: need M*M+3*M, prefer M*M+2*M+M*NB)
+                    // (RWorkspace: 0)
                     //
                     Cungbr("Q", m, m, m, u, ldu, &work[itauq - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                     irwork = ie + m;
                     //
-                    //                 Perform bidiagonal QR iteration, computing left
-                    //                 singular vectors of L in U, and computing right
-                    //                 singular vectors of L in WORK(IR)
-                    //                 (CWorkspace: need M*M)
-                    //                 (RWorkspace: need BDSPAC)
+                    // Perform bidiagonal QR iteration, computing left
+                    // singular vectors of L in U, and computing right
+                    // singular vectors of L in WORK(IR)
+                    // (CWorkspace: need M*M)
+                    // (RWorkspace: need BDSPAC)
                     //
                     Cbdsqr("U", m, m, m, 0, s, &rwork[ie - 1], &work[ir - 1], ldwrkr, u, ldu, cdum, 1, &rwork[irwork - 1], info);
                     iu = itauq;
                     //
-                    //                 Multiply right singular vectors of L in WORK(IR) by Q
-                    //                 in A, storing result in WORK(IU) and copying to A
-                    //                 (CWorkspace: need M*M+M, prefer M*M+M*N))
-                    //                 (RWorkspace: 0)
+                    // Multiply right singular vectors of L in WORK(IR) by Q
+                    // in A, storing result in WORK(IU) and copying to A
+                    // (CWorkspace: need M*M+M, prefer M*M+M*N))
+                    // (RWorkspace: 0)
                     //
                     for (i = 1; i <= n; i = i + chunk) {
                         blk = min(n - i + 1, chunk);
@@ -2047,25 +2050,25 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                     //
                 } else {
                     //
-                    //                 Insufficient workspace for a fast algorithm
+                    // Insufficient workspace for a fast algorithm
                     //
                     itau = 1;
                     iwork = itau + m;
                     //
-                    //                 Compute A=L*Q
-                    //                 (CWorkspace: need 2*M, prefer M+M*NB)
-                    //                 (RWorkspace: 0)
+                    // Compute A=L*Q
+                    // (CWorkspace: need 2*M, prefer M+M*NB)
+                    // (RWorkspace: 0)
                     //
                     Cgelqf(m, n, a, lda, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                     //
-                    //                 Copy L to U, zeroing out above it
+                    // Copy L to U, zeroing out above it
                     //
                     Clacpy("L", m, m, a, lda, u, ldu);
                     Claset("U", m - 1, m - 1, czero, czero, &u[(2 - 1) * ldu], ldu);
                     //
-                    //                 Generate Q in A
-                    //                 (CWorkspace: need 2*M, prefer M+M*NB)
-                    //                 (RWorkspace: 0)
+                    // Generate Q in A
+                    // (CWorkspace: need 2*M, prefer M+M*NB)
+                    // (RWorkspace: 0)
                     //
                     Cunglq(m, n, m, a, lda, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                     ie = 1;
@@ -2073,30 +2076,30 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                     itaup = itauq + m;
                     iwork = itaup + m;
                     //
-                    //                 Bidiagonalize L in U
-                    //                 (CWorkspace: need 3*M, prefer 2*M+2*M*NB)
-                    //                 (RWorkspace: need M)
+                    // Bidiagonalize L in U
+                    // (CWorkspace: need 3*M, prefer 2*M+2*M*NB)
+                    // (RWorkspace: need M)
                     //
                     Cgebrd(m, m, u, ldu, s, &rwork[ie - 1], &work[itauq - 1], &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                     //
-                    //                 Multiply right vectors bidiagonalizing L by Q in A
-                    //                 (CWorkspace: need 2*M+N, prefer 2*M+N*NB)
-                    //                 (RWorkspace: 0)
+                    // Multiply right vectors bidiagonalizing L by Q in A
+                    // (CWorkspace: need 2*M+N, prefer 2*M+N*NB)
+                    // (RWorkspace: 0)
                     //
                     Cunmbr("P", "L", "C", m, n, m, u, ldu, &work[itaup - 1], a, lda, &work[iwork - 1], lwork - iwork + 1, ierr);
                     //
-                    //                 Generate left vectors bidiagonalizing L in U
-                    //                 (CWorkspace: need 3*M, prefer 2*M+M*NB)
-                    //                 (RWorkspace: 0)
+                    // Generate left vectors bidiagonalizing L in U
+                    // (CWorkspace: need 3*M, prefer 2*M+M*NB)
+                    // (RWorkspace: 0)
                     //
                     Cungbr("Q", m, m, m, u, ldu, &work[itauq - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                     irwork = ie + m;
                     //
-                    //                 Perform bidiagonal QR iteration, computing left
-                    //                 singular vectors of A in U and computing right
-                    //                 singular vectors of A in A
-                    //                 (CWorkspace: 0)
-                    //                 (RWorkspace: need BDSPAC)
+                    // Perform bidiagonal QR iteration, computing left
+                    // singular vectors of A in U and computing right
+                    // singular vectors of A in A
+                    // (CWorkspace: 0)
+                    // (RWorkspace: need BDSPAC)
                     //
                     Cbdsqr("U", m, n, m, 0, s, &rwork[ie - 1], a, lda, u, ldu, cdum, 1, &rwork[irwork - 1], info);
                     //
@@ -2106,43 +2109,43 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                 //
                 if (wntun) {
                     //
-                    //                 Path 4t(N much larger than M, JOBU='N', JOBVT='S')
-                    //                 M right singular vectors to be computed in VT and
-                    //                 no left singular vectors to be computed
+                    // Path 4t(N much larger than M, JOBU='N', JOBVT='S')
+                    // M right singular vectors to be computed in VT and
+                    // no left singular vectors to be computed
                     //
                     if (lwork >= m * m + 3 * m) {
                         //
-                        //                    Sufficient workspace for a fast algorithm
+                        // Sufficient workspace for a fast algorithm
                         //
                         ir = 1;
                         if (lwork >= wrkbl + lda * m) {
                             //
-                            //                       WORK(IR) is LDA by M
+                            // WORK(IR) is LDA by M
                             //
                             ldwrkr = lda;
                         } else {
                             //
-                            //                       WORK(IR) is M by M
+                            // WORK(IR) is M by M
                             //
                             ldwrkr = m;
                         }
                         itau = ir + ldwrkr * m;
                         iwork = itau + m;
                         //
-                        //                    Compute A=L*Q
-                        //                    (CWorkspace: need M*M+2*M, prefer M*M+M+M*NB)
-                        //                    (RWorkspace: 0)
+                        // Compute A=L*Q
+                        // (CWorkspace: need M*M+2*M, prefer M*M+M+M*NB)
+                        // (RWorkspace: 0)
                         //
                         Cgelqf(m, n, a, lda, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         //
-                        //                    Copy L to WORK(IR), zeroing out above it
+                        // Copy L to WORK(IR), zeroing out above it
                         //
                         Clacpy("L", m, m, a, lda, &work[ir - 1], ldwrkr);
                         Claset("U", m - 1, m - 1, czero, czero, &work[(ir + ldwrkr) - 1], ldwrkr);
                         //
-                        //                    Generate Q in A
-                        //                    (CWorkspace: need M*M+2*M, prefer M*M+M+M*NB)
-                        //                    (RWorkspace: 0)
+                        // Generate Q in A
+                        // (CWorkspace: need M*M+2*M, prefer M*M+M+M*NB)
+                        // (RWorkspace: 0)
                         //
                         Cunglq(m, n, m, a, lda, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         ie = 1;
@@ -2150,54 +2153,54 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                         itaup = itauq + m;
                         iwork = itaup + m;
                         //
-                        //                    Bidiagonalize L in WORK(IR)
-                        //                    (CWorkspace: need M*M+3*M, prefer M*M+2*M+2*M*NB)
-                        //                    (RWorkspace: need M)
+                        // Bidiagonalize L in WORK(IR)
+                        // (CWorkspace: need M*M+3*M, prefer M*M+2*M+2*M*NB)
+                        // (RWorkspace: need M)
                         //
                         Cgebrd(m, m, &work[ir - 1], ldwrkr, s, &rwork[ie - 1], &work[itauq - 1], &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         //
-                        //                    Generate right vectors bidiagonalizing L in
-                        //                    WORK(IR)
-                        //                    (CWorkspace: need M*M+3*M, prefer M*M+2*M+(M-1)*NB)
-                        //                    (RWorkspace: 0)
+                        // Generate right vectors bidiagonalizing L in
+                        // WORK(IR)
+                        // (CWorkspace: need M*M+3*M, prefer M*M+2*M+(M-1)*NB)
+                        // (RWorkspace: 0)
                         //
                         Cungbr("P", m, m, m, &work[ir - 1], ldwrkr, &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         irwork = ie + m;
                         //
-                        //                    Perform bidiagonal QR iteration, computing right
-                        //                    singular vectors of L in WORK(IR)
-                        //                    (CWorkspace: need M*M)
-                        //                    (RWorkspace: need BDSPAC)
+                        // Perform bidiagonal QR iteration, computing right
+                        // singular vectors of L in WORK(IR)
+                        // (CWorkspace: need M*M)
+                        // (RWorkspace: need BDSPAC)
                         //
                         Cbdsqr("U", m, m, 0, 0, s, &rwork[ie - 1], &work[ir - 1], ldwrkr, cdum, 1, cdum, 1, &rwork[irwork - 1], info);
                         //
-                        //                    Multiply right singular vectors of L in WORK(IR) by
-                        //                    Q in A, storing result in VT
-                        //                    (CWorkspace: need M*M)
-                        //                    (RWorkspace: 0)
+                        // Multiply right singular vectors of L in WORK(IR) by
+                        // Q in A, storing result in VT
+                        // (CWorkspace: need M*M)
+                        // (RWorkspace: 0)
                         //
                         Cgemm("N", "N", m, n, m, cone, &work[ir - 1], ldwrkr, a, lda, czero, vt, ldvt);
                         //
                     } else {
                         //
-                        //                    Insufficient workspace for a fast algorithm
+                        // Insufficient workspace for a fast algorithm
                         //
                         itau = 1;
                         iwork = itau + m;
                         //
-                        //                    Compute A=L*Q
-                        //                    (CWorkspace: need 2*M, prefer M+M*NB)
-                        //                    (RWorkspace: 0)
+                        // Compute A=L*Q
+                        // (CWorkspace: need 2*M, prefer M+M*NB)
+                        // (RWorkspace: 0)
                         //
                         Cgelqf(m, n, a, lda, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         //
-                        //                    Copy result to VT
+                        // Copy result to VT
                         //
                         Clacpy("U", m, n, a, lda, vt, ldvt);
                         //
-                        //                    Generate Q in VT
-                        //                    (CWorkspace: need 2*M, prefer M+M*NB)
-                        //                    (RWorkspace: 0)
+                        // Generate Q in VT
+                        // (CWorkspace: need 2*M, prefer M+M*NB)
+                        // (RWorkspace: 0)
                         //
                         Cunglq(m, n, m, vt, ldvt, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         ie = 1;
@@ -2205,27 +2208,27 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                         itaup = itauq + m;
                         iwork = itaup + m;
                         //
-                        //                    Zero out above L in A
+                        // Zero out above L in A
                         //
                         Claset("U", m - 1, m - 1, czero, czero, &a[(2 - 1) * lda], lda);
                         //
-                        //                    Bidiagonalize L in A
-                        //                    (CWorkspace: need 3*M, prefer 2*M+2*M*NB)
-                        //                    (RWorkspace: need M)
+                        // Bidiagonalize L in A
+                        // (CWorkspace: need 3*M, prefer 2*M+2*M*NB)
+                        // (RWorkspace: need M)
                         //
                         Cgebrd(m, m, a, lda, s, &rwork[ie - 1], &work[itauq - 1], &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         //
-                        //                    Multiply right vectors bidiagonalizing L by Q in VT
-                        //                    (CWorkspace: need 2*M+N, prefer 2*M+N*NB)
-                        //                    (RWorkspace: 0)
+                        // Multiply right vectors bidiagonalizing L by Q in VT
+                        // (CWorkspace: need 2*M+N, prefer 2*M+N*NB)
+                        // (RWorkspace: 0)
                         //
                         Cunmbr("P", "L", "C", m, n, m, a, lda, &work[itaup - 1], vt, ldvt, &work[iwork - 1], lwork - iwork + 1, ierr);
                         irwork = ie + m;
                         //
-                        //                    Perform bidiagonal QR iteration, computing right
-                        //                    singular vectors of A in VT
-                        //                    (CWorkspace: 0)
-                        //                    (RWorkspace: need BDSPAC)
+                        // Perform bidiagonal QR iteration, computing right
+                        // singular vectors of A in VT
+                        // (CWorkspace: 0)
+                        // (RWorkspace: need BDSPAC)
                         //
                         Cbdsqr("U", m, n, 0, 0, s, &rwork[ie - 1], vt, ldvt, cdum, 1, cdum, 1, &rwork[irwork - 1], info);
                         //
@@ -2233,32 +2236,32 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                     //
                 } else if (wntuo) {
                     //
-                    //                 Path 5t(N much larger than M, JOBU='O', JOBVT='S')
-                    //                 M right singular vectors to be computed in VT and
-                    //                 M left singular vectors to be overwritten on A
+                    // Path 5t(N much larger than M, JOBU='O', JOBVT='S')
+                    // M right singular vectors to be computed in VT and
+                    // M left singular vectors to be overwritten on A
                     //
                     if (lwork >= 2 * m * m + 3 * m) {
                         //
-                        //                    Sufficient workspace for a fast algorithm
+                        // Sufficient workspace for a fast algorithm
                         //
                         iu = 1;
                         if (lwork >= wrkbl + 2 * lda * m) {
                             //
-                            //                       WORK(IU) is LDA by M and WORK(IR) is LDA by M
+                            // WORK(IU) is LDA by M and WORK(IR) is LDA by M
                             //
                             ldwrku = lda;
                             ir = iu + ldwrku * m;
                             ldwrkr = lda;
                         } else if (lwork >= wrkbl + (lda + m) * m) {
                             //
-                            //                       WORK(IU) is LDA by M and WORK(IR) is M by M
+                            // WORK(IU) is LDA by M and WORK(IR) is M by M
                             //
                             ldwrku = lda;
                             ir = iu + ldwrku * m;
                             ldwrkr = m;
                         } else {
                             //
-                            //                       WORK(IU) is M by M and WORK(IR) is M by M
+                            // WORK(IU) is M by M and WORK(IR) is M by M
                             //
                             ldwrku = m;
                             ir = iu + ldwrku * m;
@@ -2267,20 +2270,20 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                         itau = ir + ldwrkr * m;
                         iwork = itau + m;
                         //
-                        //                    Compute A=L*Q
-                        //                    (CWorkspace: need 2*M*M+2*M, prefer 2*M*M+M+M*NB)
-                        //                    (RWorkspace: 0)
+                        // Compute A=L*Q
+                        // (CWorkspace: need 2*M*M+2*M, prefer 2*M*M+M+M*NB)
+                        // (RWorkspace: 0)
                         //
                         Cgelqf(m, n, a, lda, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         //
-                        //                    Copy L to WORK(IU), zeroing out below it
+                        // Copy L to WORK(IU), zeroing out below it
                         //
                         Clacpy("L", m, m, a, lda, &work[iu - 1], ldwrku);
                         Claset("U", m - 1, m - 1, czero, czero, &work[(iu + ldwrku) - 1], ldwrku);
                         //
-                        //                    Generate Q in A
-                        //                    (CWorkspace: need 2*M*M+2*M, prefer 2*M*M+M+M*NB)
-                        //                    (RWorkspace: 0)
+                        // Generate Q in A
+                        // (CWorkspace: need 2*M*M+2*M, prefer 2*M*M+M+M*NB)
+                        // (RWorkspace: 0)
                         //
                         Cunglq(m, n, m, a, lda, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         ie = 1;
@@ -2288,67 +2291,67 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                         itaup = itauq + m;
                         iwork = itaup + m;
                         //
-                        //                    Bidiagonalize L in WORK(IU), copying result to
-                        //                    WORK(IR)
-                        //                    (CWorkspace: need   2*M*M+3*M,
-                        //                                 prefer 2*M*M+2*M+2*M*NB)
-                        //                    (RWorkspace: need   M)
+                        // Bidiagonalize L in WORK(IU), copying result to
+                        // WORK(IR)
+                        // (CWorkspace: need   2*M*M+3*M,
+                        // prefer 2*M*M+2*M+2*M*NB)
+                        // (RWorkspace: need   M)
                         //
                         Cgebrd(m, m, &work[iu - 1], ldwrku, s, &rwork[ie - 1], &work[itauq - 1], &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         Clacpy("L", m, m, &work[iu - 1], ldwrku, &work[ir - 1], ldwrkr);
                         //
-                        //                    Generate right bidiagonalizing vectors in WORK(IU)
-                        //                    (CWorkspace: need   2*M*M+3*M-1,
-                        //                                 prefer 2*M*M+2*M+(M-1)*NB)
-                        //                    (RWorkspace: 0)
+                        // Generate right bidiagonalizing vectors in WORK(IU)
+                        // (CWorkspace: need   2*M*M+3*M-1,
+                        // prefer 2*M*M+2*M+(M-1)*NB)
+                        // (RWorkspace: 0)
                         //
                         Cungbr("P", m, m, m, &work[iu - 1], ldwrku, &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         //
-                        //                    Generate left bidiagonalizing vectors in WORK(IR)
-                        //                    (CWorkspace: need 2*M*M+3*M, prefer 2*M*M+2*M+M*NB)
-                        //                    (RWorkspace: 0)
+                        // Generate left bidiagonalizing vectors in WORK(IR)
+                        // (CWorkspace: need 2*M*M+3*M, prefer 2*M*M+2*M+M*NB)
+                        // (RWorkspace: 0)
                         //
                         Cungbr("Q", m, m, m, &work[ir - 1], ldwrkr, &work[itauq - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         irwork = ie + m;
                         //
-                        //                    Perform bidiagonal QR iteration, computing left
-                        //                    singular vectors of L in WORK(IR) and computing
-                        //                    right singular vectors of L in WORK(IU)
-                        //                    (CWorkspace: need 2*M*M)
-                        //                    (RWorkspace: need BDSPAC)
+                        // Perform bidiagonal QR iteration, computing left
+                        // singular vectors of L in WORK(IR) and computing
+                        // right singular vectors of L in WORK(IU)
+                        // (CWorkspace: need 2*M*M)
+                        // (RWorkspace: need BDSPAC)
                         //
                         Cbdsqr("U", m, m, m, 0, s, &rwork[ie - 1], &work[iu - 1], ldwrku, &work[ir - 1], ldwrkr, cdum, 1, &rwork[irwork - 1], info);
                         //
-                        //                    Multiply right singular vectors of L in WORK(IU) by
-                        //                    Q in A, storing result in VT
-                        //                    (CWorkspace: need M*M)
-                        //                    (RWorkspace: 0)
+                        // Multiply right singular vectors of L in WORK(IU) by
+                        // Q in A, storing result in VT
+                        // (CWorkspace: need M*M)
+                        // (RWorkspace: 0)
                         //
                         Cgemm("N", "N", m, n, m, cone, &work[iu - 1], ldwrku, a, lda, czero, vt, ldvt);
                         //
-                        //                    Copy left singular vectors of L to A
-                        //                    (CWorkspace: need M*M)
-                        //                    (RWorkspace: 0)
+                        // Copy left singular vectors of L to A
+                        // (CWorkspace: need M*M)
+                        // (RWorkspace: 0)
                         //
                         Clacpy("F", m, m, &work[ir - 1], ldwrkr, a, lda);
                         //
                     } else {
                         //
-                        //                    Insufficient workspace for a fast algorithm
+                        // Insufficient workspace for a fast algorithm
                         //
                         itau = 1;
                         iwork = itau + m;
                         //
-                        //                    Compute A=L*Q, copying result to VT
-                        //                    (CWorkspace: need 2*M, prefer M+M*NB)
-                        //                    (RWorkspace: 0)
+                        // Compute A=L*Q, copying result to VT
+                        // (CWorkspace: need 2*M, prefer M+M*NB)
+                        // (RWorkspace: 0)
                         //
                         Cgelqf(m, n, a, lda, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         Clacpy("U", m, n, a, lda, vt, ldvt);
                         //
-                        //                    Generate Q in VT
-                        //                    (CWorkspace: need 2*M, prefer M+M*NB)
-                        //                    (RWorkspace: 0)
+                        // Generate Q in VT
+                        // (CWorkspace: need 2*M, prefer M+M*NB)
+                        // (RWorkspace: 0)
                         //
                         Cunglq(m, n, m, vt, ldvt, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         ie = 1;
@@ -2356,34 +2359,34 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                         itaup = itauq + m;
                         iwork = itaup + m;
                         //
-                        //                    Zero out above L in A
+                        // Zero out above L in A
                         //
                         Claset("U", m - 1, m - 1, czero, czero, &a[(2 - 1) * lda], lda);
                         //
-                        //                    Bidiagonalize L in A
-                        //                    (CWorkspace: need 3*M, prefer 2*M+2*M*NB)
-                        //                    (RWorkspace: need M)
+                        // Bidiagonalize L in A
+                        // (CWorkspace: need 3*M, prefer 2*M+2*M*NB)
+                        // (RWorkspace: need M)
                         //
                         Cgebrd(m, m, a, lda, s, &rwork[ie - 1], &work[itauq - 1], &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         //
-                        //                    Multiply right vectors bidiagonalizing L by Q in VT
-                        //                    (CWorkspace: need 2*M+N, prefer 2*M+N*NB)
-                        //                    (RWorkspace: 0)
+                        // Multiply right vectors bidiagonalizing L by Q in VT
+                        // (CWorkspace: need 2*M+N, prefer 2*M+N*NB)
+                        // (RWorkspace: 0)
                         //
                         Cunmbr("P", "L", "C", m, n, m, a, lda, &work[itaup - 1], vt, ldvt, &work[iwork - 1], lwork - iwork + 1, ierr);
                         //
-                        //                    Generate left bidiagonalizing vectors of L in A
-                        //                    (CWorkspace: need 3*M, prefer 2*M+M*NB)
-                        //                    (RWorkspace: 0)
+                        // Generate left bidiagonalizing vectors of L in A
+                        // (CWorkspace: need 3*M, prefer 2*M+M*NB)
+                        // (RWorkspace: 0)
                         //
                         Cungbr("Q", m, m, m, a, lda, &work[itauq - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         irwork = ie + m;
                         //
-                        //                    Perform bidiagonal QR iteration, computing left
-                        //                    singular vectors of A in A and computing right
-                        //                    singular vectors of A in VT
-                        //                    (CWorkspace: 0)
-                        //                    (RWorkspace: need BDSPAC)
+                        // Perform bidiagonal QR iteration, computing left
+                        // singular vectors of A in A and computing right
+                        // singular vectors of A in VT
+                        // (CWorkspace: 0)
+                        // (RWorkspace: need BDSPAC)
                         //
                         Cbdsqr("U", m, n, m, 0, s, &rwork[ie - 1], vt, ldvt, a, lda, cdum, 1, &rwork[irwork - 1], info);
                         //
@@ -2391,44 +2394,44 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                     //
                 } else if (wntuas) {
                     //
-                    //                 Path 6t(N much larger than M, JOBU='S' or 'A',
-                    //                         JOBVT='S')
-                    //                 M right singular vectors to be computed in VT and
-                    //                 M left singular vectors to be computed in U
+                    // Path 6t(N much larger than M, JOBU='S' or 'A',
+                    // JOBVT='S')
+                    // M right singular vectors to be computed in VT and
+                    // M left singular vectors to be computed in U
                     //
                     if (lwork >= m * m + 3 * m) {
                         //
-                        //                    Sufficient workspace for a fast algorithm
+                        // Sufficient workspace for a fast algorithm
                         //
                         iu = 1;
                         if (lwork >= wrkbl + lda * m) {
                             //
-                            //                       WORK(IU) is LDA by N
+                            // WORK(IU) is LDA by N
                             //
                             ldwrku = lda;
                         } else {
                             //
-                            //                       WORK(IU) is LDA by M
+                            // WORK(IU) is LDA by M
                             //
                             ldwrku = m;
                         }
                         itau = iu + ldwrku * m;
                         iwork = itau + m;
                         //
-                        //                    Compute A=L*Q
-                        //                    (CWorkspace: need M*M+2*M, prefer M*M+M+M*NB)
-                        //                    (RWorkspace: 0)
+                        // Compute A=L*Q
+                        // (CWorkspace: need M*M+2*M, prefer M*M+M+M*NB)
+                        // (RWorkspace: 0)
                         //
                         Cgelqf(m, n, a, lda, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         //
-                        //                    Copy L to WORK(IU), zeroing out above it
+                        // Copy L to WORK(IU), zeroing out above it
                         //
                         Clacpy("L", m, m, a, lda, &work[iu - 1], ldwrku);
                         Claset("U", m - 1, m - 1, czero, czero, &work[(iu + ldwrku) - 1], ldwrku);
                         //
-                        //                    Generate Q in A
-                        //                    (CWorkspace: need M*M+2*M, prefer M*M+M+M*NB)
-                        //                    (RWorkspace: 0)
+                        // Generate Q in A
+                        // (CWorkspace: need M*M+2*M, prefer M*M+M+M*NB)
+                        // (RWorkspace: 0)
                         //
                         Cunglq(m, n, m, a, lda, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         ie = 1;
@@ -2436,63 +2439,63 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                         itaup = itauq + m;
                         iwork = itaup + m;
                         //
-                        //                    Bidiagonalize L in WORK(IU), copying result to U
-                        //                    (CWorkspace: need M*M+3*M, prefer M*M+2*M+2*M*NB)
-                        //                    (RWorkspace: need M)
+                        // Bidiagonalize L in WORK(IU), copying result to U
+                        // (CWorkspace: need M*M+3*M, prefer M*M+2*M+2*M*NB)
+                        // (RWorkspace: need M)
                         //
                         Cgebrd(m, m, &work[iu - 1], ldwrku, s, &rwork[ie - 1], &work[itauq - 1], &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         Clacpy("L", m, m, &work[iu - 1], ldwrku, u, ldu);
                         //
-                        //                    Generate right bidiagonalizing vectors in WORK(IU)
-                        //                    (CWorkspace: need   M*M+3*M-1,
-                        //                                 prefer M*M+2*M+(M-1)*NB)
-                        //                    (RWorkspace: 0)
+                        // Generate right bidiagonalizing vectors in WORK(IU)
+                        // (CWorkspace: need   M*M+3*M-1,
+                        // prefer M*M+2*M+(M-1)*NB)
+                        // (RWorkspace: 0)
                         //
                         Cungbr("P", m, m, m, &work[iu - 1], ldwrku, &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         //
-                        //                    Generate left bidiagonalizing vectors in U
-                        //                    (CWorkspace: need M*M+3*M, prefer M*M+2*M+M*NB)
-                        //                    (RWorkspace: 0)
+                        // Generate left bidiagonalizing vectors in U
+                        // (CWorkspace: need M*M+3*M, prefer M*M+2*M+M*NB)
+                        // (RWorkspace: 0)
                         //
                         Cungbr("Q", m, m, m, u, ldu, &work[itauq - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         irwork = ie + m;
                         //
-                        //                    Perform bidiagonal QR iteration, computing left
-                        //                    singular vectors of L in U and computing right
-                        //                    singular vectors of L in WORK(IU)
-                        //                    (CWorkspace: need M*M)
-                        //                    (RWorkspace: need BDSPAC)
+                        // Perform bidiagonal QR iteration, computing left
+                        // singular vectors of L in U and computing right
+                        // singular vectors of L in WORK(IU)
+                        // (CWorkspace: need M*M)
+                        // (RWorkspace: need BDSPAC)
                         //
                         Cbdsqr("U", m, m, m, 0, s, &rwork[ie - 1], &work[iu - 1], ldwrku, u, ldu, cdum, 1, &rwork[irwork - 1], info);
                         //
-                        //                    Multiply right singular vectors of L in WORK(IU) by
-                        //                    Q in A, storing result in VT
-                        //                    (CWorkspace: need M*M)
-                        //                    (RWorkspace: 0)
+                        // Multiply right singular vectors of L in WORK(IU) by
+                        // Q in A, storing result in VT
+                        // (CWorkspace: need M*M)
+                        // (RWorkspace: 0)
                         //
                         Cgemm("N", "N", m, n, m, cone, &work[iu - 1], ldwrku, a, lda, czero, vt, ldvt);
                         //
                     } else {
                         //
-                        //                    Insufficient workspace for a fast algorithm
+                        // Insufficient workspace for a fast algorithm
                         //
                         itau = 1;
                         iwork = itau + m;
                         //
-                        //                    Compute A=L*Q, copying result to VT
-                        //                    (CWorkspace: need 2*M, prefer M+M*NB)
-                        //                    (RWorkspace: 0)
+                        // Compute A=L*Q, copying result to VT
+                        // (CWorkspace: need 2*M, prefer M+M*NB)
+                        // (RWorkspace: 0)
                         //
                         Cgelqf(m, n, a, lda, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         Clacpy("U", m, n, a, lda, vt, ldvt);
                         //
-                        //                    Generate Q in VT
-                        //                    (CWorkspace: need 2*M, prefer M+M*NB)
-                        //                    (RWorkspace: 0)
+                        // Generate Q in VT
+                        // (CWorkspace: need 2*M, prefer M+M*NB)
+                        // (RWorkspace: 0)
                         //
                         Cunglq(m, n, m, vt, ldvt, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         //
-                        //                    Copy L to U, zeroing out above it
+                        // Copy L to U, zeroing out above it
                         //
                         Clacpy("L", m, m, a, lda, u, ldu);
                         Claset("U", m - 1, m - 1, czero, czero, &u[(2 - 1) * ldu], ldu);
@@ -2501,31 +2504,31 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                         itaup = itauq + m;
                         iwork = itaup + m;
                         //
-                        //                    Bidiagonalize L in U
-                        //                    (CWorkspace: need 3*M, prefer 2*M+2*M*NB)
-                        //                    (RWorkspace: need M)
+                        // Bidiagonalize L in U
+                        // (CWorkspace: need 3*M, prefer 2*M+2*M*NB)
+                        // (RWorkspace: need M)
                         //
                         Cgebrd(m, m, u, ldu, s, &rwork[ie - 1], &work[itauq - 1], &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         //
-                        //                    Multiply right bidiagonalizing vectors in U by Q
-                        //                    in VT
-                        //                    (CWorkspace: need 2*M+N, prefer 2*M+N*NB)
-                        //                    (RWorkspace: 0)
+                        // Multiply right bidiagonalizing vectors in U by Q
+                        // in VT
+                        // (CWorkspace: need 2*M+N, prefer 2*M+N*NB)
+                        // (RWorkspace: 0)
                         //
                         Cunmbr("P", "L", "C", m, n, m, u, ldu, &work[itaup - 1], vt, ldvt, &work[iwork - 1], lwork - iwork + 1, ierr);
                         //
-                        //                    Generate left bidiagonalizing vectors in U
-                        //                    (CWorkspace: need 3*M, prefer 2*M+M*NB)
-                        //                    (RWorkspace: 0)
+                        // Generate left bidiagonalizing vectors in U
+                        // (CWorkspace: need 3*M, prefer 2*M+M*NB)
+                        // (RWorkspace: 0)
                         //
                         Cungbr("Q", m, m, m, u, ldu, &work[itauq - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         irwork = ie + m;
                         //
-                        //                    Perform bidiagonal QR iteration, computing left
-                        //                    singular vectors of A in U and computing right
-                        //                    singular vectors of A in VT
-                        //                    (CWorkspace: 0)
-                        //                    (RWorkspace: need BDSPAC)
+                        // Perform bidiagonal QR iteration, computing left
+                        // singular vectors of A in U and computing right
+                        // singular vectors of A in VT
+                        // (CWorkspace: 0)
+                        // (RWorkspace: need BDSPAC)
                         //
                         Cbdsqr("U", m, n, m, 0, s, &rwork[ie - 1], vt, ldvt, u, ldu, cdum, 1, &rwork[irwork - 1], info);
                         //
@@ -2537,44 +2540,44 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                 //
                 if (wntun) {
                     //
-                    //                 Path 7t(N much larger than M, JOBU='N', JOBVT='A')
-                    //                 N right singular vectors to be computed in VT and
-                    //                 no left singular vectors to be computed
+                    // Path 7t(N much larger than M, JOBU='N', JOBVT='A')
+                    // N right singular vectors to be computed in VT and
+                    // no left singular vectors to be computed
                     //
                     if (lwork >= m * m + max(n + m, 3 * m)) {
                         //
-                        //                    Sufficient workspace for a fast algorithm
+                        // Sufficient workspace for a fast algorithm
                         //
                         ir = 1;
                         if (lwork >= wrkbl + lda * m) {
                             //
-                            //                       WORK(IR) is LDA by M
+                            // WORK(IR) is LDA by M
                             //
                             ldwrkr = lda;
                         } else {
                             //
-                            //                       WORK(IR) is M by M
+                            // WORK(IR) is M by M
                             //
                             ldwrkr = m;
                         }
                         itau = ir + ldwrkr * m;
                         iwork = itau + m;
                         //
-                        //                    Compute A=L*Q, copying result to VT
-                        //                    (CWorkspace: need M*M+2*M, prefer M*M+M+M*NB)
-                        //                    (RWorkspace: 0)
+                        // Compute A=L*Q, copying result to VT
+                        // (CWorkspace: need M*M+2*M, prefer M*M+M+M*NB)
+                        // (RWorkspace: 0)
                         //
                         Cgelqf(m, n, a, lda, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         Clacpy("U", m, n, a, lda, vt, ldvt);
                         //
-                        //                    Copy L to WORK(IR), zeroing out above it
+                        // Copy L to WORK(IR), zeroing out above it
                         //
                         Clacpy("L", m, m, a, lda, &work[ir - 1], ldwrkr);
                         Claset("U", m - 1, m - 1, czero, czero, &work[(ir + ldwrkr) - 1], ldwrkr);
                         //
-                        //                    Generate Q in VT
-                        //                    (CWorkspace: need M*M+M+N, prefer M*M+M+N*NB)
-                        //                    (RWorkspace: 0)
+                        // Generate Q in VT
+                        // (CWorkspace: need M*M+M+N, prefer M*M+M+N*NB)
+                        // (RWorkspace: 0)
                         //
                         Cunglq(n, n, m, vt, ldvt, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         ie = 1;
@@ -2582,55 +2585,55 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                         itaup = itauq + m;
                         iwork = itaup + m;
                         //
-                        //                    Bidiagonalize L in WORK(IR)
-                        //                    (CWorkspace: need M*M+3*M, prefer M*M+2*M+2*M*NB)
-                        //                    (RWorkspace: need M)
+                        // Bidiagonalize L in WORK(IR)
+                        // (CWorkspace: need M*M+3*M, prefer M*M+2*M+2*M*NB)
+                        // (RWorkspace: need M)
                         //
                         Cgebrd(m, m, &work[ir - 1], ldwrkr, s, &rwork[ie - 1], &work[itauq - 1], &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         //
-                        //                    Generate right bidiagonalizing vectors in WORK(IR)
-                        //                    (CWorkspace: need   M*M+3*M-1,
-                        //                                 prefer M*M+2*M+(M-1)*NB)
-                        //                    (RWorkspace: 0)
+                        // Generate right bidiagonalizing vectors in WORK(IR)
+                        // (CWorkspace: need   M*M+3*M-1,
+                        // prefer M*M+2*M+(M-1)*NB)
+                        // (RWorkspace: 0)
                         //
                         Cungbr("P", m, m, m, &work[ir - 1], ldwrkr, &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         irwork = ie + m;
                         //
-                        //                    Perform bidiagonal QR iteration, computing right
-                        //                    singular vectors of L in WORK(IR)
-                        //                    (CWorkspace: need M*M)
-                        //                    (RWorkspace: need BDSPAC)
+                        // Perform bidiagonal QR iteration, computing right
+                        // singular vectors of L in WORK(IR)
+                        // (CWorkspace: need M*M)
+                        // (RWorkspace: need BDSPAC)
                         //
                         Cbdsqr("U", m, m, 0, 0, s, &rwork[ie - 1], &work[ir - 1], ldwrkr, cdum, 1, cdum, 1, &rwork[irwork - 1], info);
                         //
-                        //                    Multiply right singular vectors of L in WORK(IR) by
-                        //                    Q in VT, storing result in A
-                        //                    (CWorkspace: need M*M)
-                        //                    (RWorkspace: 0)
+                        // Multiply right singular vectors of L in WORK(IR) by
+                        // Q in VT, storing result in A
+                        // (CWorkspace: need M*M)
+                        // (RWorkspace: 0)
                         //
                         Cgemm("N", "N", m, n, m, cone, &work[ir - 1], ldwrkr, vt, ldvt, czero, a, lda);
                         //
-                        //                    Copy right singular vectors of A from A to VT
+                        // Copy right singular vectors of A from A to VT
                         //
                         Clacpy("F", m, n, a, lda, vt, ldvt);
                         //
                     } else {
                         //
-                        //                    Insufficient workspace for a fast algorithm
+                        // Insufficient workspace for a fast algorithm
                         //
                         itau = 1;
                         iwork = itau + m;
                         //
-                        //                    Compute A=L*Q, copying result to VT
-                        //                    (CWorkspace: need 2*M, prefer M+M*NB)
-                        //                    (RWorkspace: 0)
+                        // Compute A=L*Q, copying result to VT
+                        // (CWorkspace: need 2*M, prefer M+M*NB)
+                        // (RWorkspace: 0)
                         //
                         Cgelqf(m, n, a, lda, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         Clacpy("U", m, n, a, lda, vt, ldvt);
                         //
-                        //                    Generate Q in VT
-                        //                    (CWorkspace: need M+N, prefer M+N*NB)
-                        //                    (RWorkspace: 0)
+                        // Generate Q in VT
+                        // (CWorkspace: need M+N, prefer M+N*NB)
+                        // (RWorkspace: 0)
                         //
                         Cunglq(n, n, m, vt, ldvt, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         ie = 1;
@@ -2638,28 +2641,28 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                         itaup = itauq + m;
                         iwork = itaup + m;
                         //
-                        //                    Zero out above L in A
+                        // Zero out above L in A
                         //
                         Claset("U", m - 1, m - 1, czero, czero, &a[(2 - 1) * lda], lda);
                         //
-                        //                    Bidiagonalize L in A
-                        //                    (CWorkspace: need 3*M, prefer 2*M+2*M*NB)
-                        //                    (RWorkspace: need M)
+                        // Bidiagonalize L in A
+                        // (CWorkspace: need 3*M, prefer 2*M+2*M*NB)
+                        // (RWorkspace: need M)
                         //
                         Cgebrd(m, m, a, lda, s, &rwork[ie - 1], &work[itauq - 1], &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         //
-                        //                    Multiply right bidiagonalizing vectors in A by Q
-                        //                    in VT
-                        //                    (CWorkspace: need 2*M+N, prefer 2*M+N*NB)
-                        //                    (RWorkspace: 0)
+                        // Multiply right bidiagonalizing vectors in A by Q
+                        // in VT
+                        // (CWorkspace: need 2*M+N, prefer 2*M+N*NB)
+                        // (RWorkspace: 0)
                         //
                         Cunmbr("P", "L", "C", m, n, m, a, lda, &work[itaup - 1], vt, ldvt, &work[iwork - 1], lwork - iwork + 1, ierr);
                         irwork = ie + m;
                         //
-                        //                    Perform bidiagonal QR iteration, computing right
-                        //                    singular vectors of A in VT
-                        //                    (CWorkspace: 0)
-                        //                    (RWorkspace: need BDSPAC)
+                        // Perform bidiagonal QR iteration, computing right
+                        // singular vectors of A in VT
+                        // (CWorkspace: 0)
+                        // (RWorkspace: need BDSPAC)
                         //
                         Cbdsqr("U", m, n, 0, 0, s, &rwork[ie - 1], vt, ldvt, cdum, 1, cdum, 1, &rwork[irwork - 1], info);
                         //
@@ -2667,32 +2670,32 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                     //
                 } else if (wntuo) {
                     //
-                    //                 Path 8t(N much larger than M, JOBU='O', JOBVT='A')
-                    //                 N right singular vectors to be computed in VT and
-                    //                 M left singular vectors to be overwritten on A
+                    // Path 8t(N much larger than M, JOBU='O', JOBVT='A')
+                    // N right singular vectors to be computed in VT and
+                    // M left singular vectors to be overwritten on A
                     //
                     if (lwork >= 2 * m * m + max(n + m, 3 * m)) {
                         //
-                        //                    Sufficient workspace for a fast algorithm
+                        // Sufficient workspace for a fast algorithm
                         //
                         iu = 1;
                         if (lwork >= wrkbl + 2 * lda * m) {
                             //
-                            //                       WORK(IU) is LDA by M and WORK(IR) is LDA by M
+                            // WORK(IU) is LDA by M and WORK(IR) is LDA by M
                             //
                             ldwrku = lda;
                             ir = iu + ldwrku * m;
                             ldwrkr = lda;
                         } else if (lwork >= wrkbl + (lda + m) * m) {
                             //
-                            //                       WORK(IU) is LDA by M and WORK(IR) is M by M
+                            // WORK(IU) is LDA by M and WORK(IR) is M by M
                             //
                             ldwrku = lda;
                             ir = iu + ldwrku * m;
                             ldwrkr = m;
                         } else {
                             //
-                            //                       WORK(IU) is M by M and WORK(IR) is M by M
+                            // WORK(IU) is M by M and WORK(IR) is M by M
                             //
                             ldwrku = m;
                             ir = iu + ldwrku * m;
@@ -2701,20 +2704,20 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                         itau = ir + ldwrkr * m;
                         iwork = itau + m;
                         //
-                        //                    Compute A=L*Q, copying result to VT
-                        //                    (CWorkspace: need 2*M*M+2*M, prefer 2*M*M+M+M*NB)
-                        //                    (RWorkspace: 0)
+                        // Compute A=L*Q, copying result to VT
+                        // (CWorkspace: need 2*M*M+2*M, prefer 2*M*M+M+M*NB)
+                        // (RWorkspace: 0)
                         //
                         Cgelqf(m, n, a, lda, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         Clacpy("U", m, n, a, lda, vt, ldvt);
                         //
-                        //                    Generate Q in VT
-                        //                    (CWorkspace: need 2*M*M+M+N, prefer 2*M*M+M+N*NB)
-                        //                    (RWorkspace: 0)
+                        // Generate Q in VT
+                        // (CWorkspace: need 2*M*M+M+N, prefer 2*M*M+M+N*NB)
+                        // (RWorkspace: 0)
                         //
                         Cunglq(n, n, m, vt, ldvt, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         //
-                        //                    Copy L to WORK(IU), zeroing out above it
+                        // Copy L to WORK(IU), zeroing out above it
                         //
                         Clacpy("L", m, m, a, lda, &work[iu - 1], ldwrku);
                         Claset("U", m - 1, m - 1, czero, czero, &work[(iu + ldwrku) - 1], ldwrku);
@@ -2723,69 +2726,69 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                         itaup = itauq + m;
                         iwork = itaup + m;
                         //
-                        //                    Bidiagonalize L in WORK(IU), copying result to
-                        //                    WORK(IR)
-                        //                    (CWorkspace: need   2*M*M+3*M,
-                        //                                 prefer 2*M*M+2*M+2*M*NB)
-                        //                    (RWorkspace: need   M)
+                        // Bidiagonalize L in WORK(IU), copying result to
+                        // WORK(IR)
+                        // (CWorkspace: need   2*M*M+3*M,
+                        // prefer 2*M*M+2*M+2*M*NB)
+                        // (RWorkspace: need   M)
                         //
                         Cgebrd(m, m, &work[iu - 1], ldwrku, s, &rwork[ie - 1], &work[itauq - 1], &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         Clacpy("L", m, m, &work[iu - 1], ldwrku, &work[ir - 1], ldwrkr);
                         //
-                        //                    Generate right bidiagonalizing vectors in WORK(IU)
-                        //                    (CWorkspace: need   2*M*M+3*M-1,
-                        //                                 prefer 2*M*M+2*M+(M-1)*NB)
-                        //                    (RWorkspace: 0)
+                        // Generate right bidiagonalizing vectors in WORK(IU)
+                        // (CWorkspace: need   2*M*M+3*M-1,
+                        // prefer 2*M*M+2*M+(M-1)*NB)
+                        // (RWorkspace: 0)
                         //
                         Cungbr("P", m, m, m, &work[iu - 1], ldwrku, &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         //
-                        //                    Generate left bidiagonalizing vectors in WORK(IR)
-                        //                    (CWorkspace: need 2*M*M+3*M, prefer 2*M*M+2*M+M*NB)
-                        //                    (RWorkspace: 0)
+                        // Generate left bidiagonalizing vectors in WORK(IR)
+                        // (CWorkspace: need 2*M*M+3*M, prefer 2*M*M+2*M+M*NB)
+                        // (RWorkspace: 0)
                         //
                         Cungbr("Q", m, m, m, &work[ir - 1], ldwrkr, &work[itauq - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         irwork = ie + m;
                         //
-                        //                    Perform bidiagonal QR iteration, computing left
-                        //                    singular vectors of L in WORK(IR) and computing
-                        //                    right singular vectors of L in WORK(IU)
-                        //                    (CWorkspace: need 2*M*M)
-                        //                    (RWorkspace: need BDSPAC)
+                        // Perform bidiagonal QR iteration, computing left
+                        // singular vectors of L in WORK(IR) and computing
+                        // right singular vectors of L in WORK(IU)
+                        // (CWorkspace: need 2*M*M)
+                        // (RWorkspace: need BDSPAC)
                         //
                         Cbdsqr("U", m, m, m, 0, s, &rwork[ie - 1], &work[iu - 1], ldwrku, &work[ir - 1], ldwrkr, cdum, 1, &rwork[irwork - 1], info);
                         //
-                        //                    Multiply right singular vectors of L in WORK(IU) by
-                        //                    Q in VT, storing result in A
-                        //                    (CWorkspace: need M*M)
-                        //                    (RWorkspace: 0)
+                        // Multiply right singular vectors of L in WORK(IU) by
+                        // Q in VT, storing result in A
+                        // (CWorkspace: need M*M)
+                        // (RWorkspace: 0)
                         //
                         Cgemm("N", "N", m, n, m, cone, &work[iu - 1], ldwrku, vt, ldvt, czero, a, lda);
                         //
-                        //                    Copy right singular vectors of A from A to VT
+                        // Copy right singular vectors of A from A to VT
                         //
                         Clacpy("F", m, n, a, lda, vt, ldvt);
                         //
-                        //                    Copy left singular vectors of A from WORK(IR) to A
+                        // Copy left singular vectors of A from WORK(IR) to A
                         //
                         Clacpy("F", m, m, &work[ir - 1], ldwrkr, a, lda);
                         //
                     } else {
                         //
-                        //                    Insufficient workspace for a fast algorithm
+                        // Insufficient workspace for a fast algorithm
                         //
                         itau = 1;
                         iwork = itau + m;
                         //
-                        //                    Compute A=L*Q, copying result to VT
-                        //                    (CWorkspace: need 2*M, prefer M+M*NB)
-                        //                    (RWorkspace: 0)
+                        // Compute A=L*Q, copying result to VT
+                        // (CWorkspace: need 2*M, prefer M+M*NB)
+                        // (RWorkspace: 0)
                         //
                         Cgelqf(m, n, a, lda, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         Clacpy("U", m, n, a, lda, vt, ldvt);
                         //
-                        //                    Generate Q in VT
-                        //                    (CWorkspace: need M+N, prefer M+N*NB)
-                        //                    (RWorkspace: 0)
+                        // Generate Q in VT
+                        // (CWorkspace: need M+N, prefer M+N*NB)
+                        // (RWorkspace: 0)
                         //
                         Cunglq(n, n, m, vt, ldvt, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         ie = 1;
@@ -2793,35 +2796,35 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                         itaup = itauq + m;
                         iwork = itaup + m;
                         //
-                        //                    Zero out above L in A
+                        // Zero out above L in A
                         //
                         Claset("U", m - 1, m - 1, czero, czero, &a[(2 - 1) * lda], lda);
                         //
-                        //                    Bidiagonalize L in A
-                        //                    (CWorkspace: need 3*M, prefer 2*M+2*M*NB)
-                        //                    (RWorkspace: need M)
+                        // Bidiagonalize L in A
+                        // (CWorkspace: need 3*M, prefer 2*M+2*M*NB)
+                        // (RWorkspace: need M)
                         //
                         Cgebrd(m, m, a, lda, s, &rwork[ie - 1], &work[itauq - 1], &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         //
-                        //                    Multiply right bidiagonalizing vectors in A by Q
-                        //                    in VT
-                        //                    (CWorkspace: need 2*M+N, prefer 2*M+N*NB)
-                        //                    (RWorkspace: 0)
+                        // Multiply right bidiagonalizing vectors in A by Q
+                        // in VT
+                        // (CWorkspace: need 2*M+N, prefer 2*M+N*NB)
+                        // (RWorkspace: 0)
                         //
                         Cunmbr("P", "L", "C", m, n, m, a, lda, &work[itaup - 1], vt, ldvt, &work[iwork - 1], lwork - iwork + 1, ierr);
                         //
-                        //                    Generate left bidiagonalizing vectors in A
-                        //                    (CWorkspace: need 3*M, prefer 2*M+M*NB)
-                        //                    (RWorkspace: 0)
+                        // Generate left bidiagonalizing vectors in A
+                        // (CWorkspace: need 3*M, prefer 2*M+M*NB)
+                        // (RWorkspace: 0)
                         //
                         Cungbr("Q", m, m, m, a, lda, &work[itauq - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         irwork = ie + m;
                         //
-                        //                    Perform bidiagonal QR iteration, computing left
-                        //                    singular vectors of A in A and computing right
-                        //                    singular vectors of A in VT
-                        //                    (CWorkspace: 0)
-                        //                    (RWorkspace: need BDSPAC)
+                        // Perform bidiagonal QR iteration, computing left
+                        // singular vectors of A in A and computing right
+                        // singular vectors of A in VT
+                        // (CWorkspace: 0)
+                        // (RWorkspace: need BDSPAC)
                         //
                         Cbdsqr("U", m, n, m, 0, s, &rwork[ie - 1], vt, ldvt, a, lda, cdum, 1, &rwork[irwork - 1], info);
                         //
@@ -2829,44 +2832,44 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                     //
                 } else if (wntuas) {
                     //
-                    //                 Path 9t(N much larger than M, JOBU='S' or 'A',
-                    //                         JOBVT='A')
-                    //                 N right singular vectors to be computed in VT and
-                    //                 M left singular vectors to be computed in U
+                    // Path 9t(N much larger than M, JOBU='S' or 'A',
+                    // JOBVT='A')
+                    // N right singular vectors to be computed in VT and
+                    // M left singular vectors to be computed in U
                     //
                     if (lwork >= m * m + max(n + m, 3 * m)) {
                         //
-                        //                    Sufficient workspace for a fast algorithm
+                        // Sufficient workspace for a fast algorithm
                         //
                         iu = 1;
                         if (lwork >= wrkbl + lda * m) {
                             //
-                            //                       WORK(IU) is LDA by M
+                            // WORK(IU) is LDA by M
                             //
                             ldwrku = lda;
                         } else {
                             //
-                            //                       WORK(IU) is M by M
+                            // WORK(IU) is M by M
                             //
                             ldwrku = m;
                         }
                         itau = iu + ldwrku * m;
                         iwork = itau + m;
                         //
-                        //                    Compute A=L*Q, copying result to VT
-                        //                    (CWorkspace: need M*M+2*M, prefer M*M+M+M*NB)
-                        //                    (RWorkspace: 0)
+                        // Compute A=L*Q, copying result to VT
+                        // (CWorkspace: need M*M+2*M, prefer M*M+M+M*NB)
+                        // (RWorkspace: 0)
                         //
                         Cgelqf(m, n, a, lda, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         Clacpy("U", m, n, a, lda, vt, ldvt);
                         //
-                        //                    Generate Q in VT
-                        //                    (CWorkspace: need M*M+M+N, prefer M*M+M+N*NB)
-                        //                    (RWorkspace: 0)
+                        // Generate Q in VT
+                        // (CWorkspace: need M*M+M+N, prefer M*M+M+N*NB)
+                        // (RWorkspace: 0)
                         //
                         Cunglq(n, n, m, vt, ldvt, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         //
-                        //                    Copy L to WORK(IU), zeroing out above it
+                        // Copy L to WORK(IU), zeroing out above it
                         //
                         Clacpy("L", m, m, a, lda, &work[iu - 1], ldwrku);
                         Claset("U", m - 1, m - 1, czero, czero, &work[(iu + ldwrku) - 1], ldwrku);
@@ -2875,66 +2878,66 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                         itaup = itauq + m;
                         iwork = itaup + m;
                         //
-                        //                    Bidiagonalize L in WORK(IU), copying result to U
-                        //                    (CWorkspace: need M*M+3*M, prefer M*M+2*M+2*M*NB)
-                        //                    (RWorkspace: need M)
+                        // Bidiagonalize L in WORK(IU), copying result to U
+                        // (CWorkspace: need M*M+3*M, prefer M*M+2*M+2*M*NB)
+                        // (RWorkspace: need M)
                         //
                         Cgebrd(m, m, &work[iu - 1], ldwrku, s, &rwork[ie - 1], &work[itauq - 1], &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         Clacpy("L", m, m, &work[iu - 1], ldwrku, u, ldu);
                         //
-                        //                    Generate right bidiagonalizing vectors in WORK(IU)
-                        //                    (CWorkspace: need M*M+3*M, prefer M*M+2*M+(M-1)*NB)
-                        //                    (RWorkspace: 0)
+                        // Generate right bidiagonalizing vectors in WORK(IU)
+                        // (CWorkspace: need M*M+3*M, prefer M*M+2*M+(M-1)*NB)
+                        // (RWorkspace: 0)
                         //
                         Cungbr("P", m, m, m, &work[iu - 1], ldwrku, &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         //
-                        //                    Generate left bidiagonalizing vectors in U
-                        //                    (CWorkspace: need M*M+3*M, prefer M*M+2*M+M*NB)
-                        //                    (RWorkspace: 0)
+                        // Generate left bidiagonalizing vectors in U
+                        // (CWorkspace: need M*M+3*M, prefer M*M+2*M+M*NB)
+                        // (RWorkspace: 0)
                         //
                         Cungbr("Q", m, m, m, u, ldu, &work[itauq - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         irwork = ie + m;
                         //
-                        //                    Perform bidiagonal QR iteration, computing left
-                        //                    singular vectors of L in U and computing right
-                        //                    singular vectors of L in WORK(IU)
-                        //                    (CWorkspace: need M*M)
-                        //                    (RWorkspace: need BDSPAC)
+                        // Perform bidiagonal QR iteration, computing left
+                        // singular vectors of L in U and computing right
+                        // singular vectors of L in WORK(IU)
+                        // (CWorkspace: need M*M)
+                        // (RWorkspace: need BDSPAC)
                         //
                         Cbdsqr("U", m, m, m, 0, s, &rwork[ie - 1], &work[iu - 1], ldwrku, u, ldu, cdum, 1, &rwork[irwork - 1], info);
                         //
-                        //                    Multiply right singular vectors of L in WORK(IU) by
-                        //                    Q in VT, storing result in A
-                        //                    (CWorkspace: need M*M)
-                        //                    (RWorkspace: 0)
+                        // Multiply right singular vectors of L in WORK(IU) by
+                        // Q in VT, storing result in A
+                        // (CWorkspace: need M*M)
+                        // (RWorkspace: 0)
                         //
                         Cgemm("N", "N", m, n, m, cone, &work[iu - 1], ldwrku, vt, ldvt, czero, a, lda);
                         //
-                        //                    Copy right singular vectors of A from A to VT
+                        // Copy right singular vectors of A from A to VT
                         //
                         Clacpy("F", m, n, a, lda, vt, ldvt);
                         //
                     } else {
                         //
-                        //                    Insufficient workspace for a fast algorithm
+                        // Insufficient workspace for a fast algorithm
                         //
                         itau = 1;
                         iwork = itau + m;
                         //
-                        //                    Compute A=L*Q, copying result to VT
-                        //                    (CWorkspace: need 2*M, prefer M+M*NB)
-                        //                    (RWorkspace: 0)
+                        // Compute A=L*Q, copying result to VT
+                        // (CWorkspace: need 2*M, prefer M+M*NB)
+                        // (RWorkspace: 0)
                         //
                         Cgelqf(m, n, a, lda, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         Clacpy("U", m, n, a, lda, vt, ldvt);
                         //
-                        //                    Generate Q in VT
-                        //                    (CWorkspace: need M+N, prefer M+N*NB)
-                        //                    (RWorkspace: 0)
+                        // Generate Q in VT
+                        // (CWorkspace: need M+N, prefer M+N*NB)
+                        // (RWorkspace: 0)
                         //
                         Cunglq(n, n, m, vt, ldvt, &work[itau - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         //
-                        //                    Copy L to U, zeroing out above it
+                        // Copy L to U, zeroing out above it
                         //
                         Clacpy("L", m, m, a, lda, u, ldu);
                         Claset("U", m - 1, m - 1, czero, czero, &u[(2 - 1) * ldu], ldu);
@@ -2943,31 +2946,31 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
                         itaup = itauq + m;
                         iwork = itaup + m;
                         //
-                        //                    Bidiagonalize L in U
-                        //                    (CWorkspace: need 3*M, prefer 2*M+2*M*NB)
-                        //                    (RWorkspace: need M)
+                        // Bidiagonalize L in U
+                        // (CWorkspace: need 3*M, prefer 2*M+2*M*NB)
+                        // (RWorkspace: need M)
                         //
                         Cgebrd(m, m, u, ldu, s, &rwork[ie - 1], &work[itauq - 1], &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         //
-                        //                    Multiply right bidiagonalizing vectors in U by Q
-                        //                    in VT
-                        //                    (CWorkspace: need 2*M+N, prefer 2*M+N*NB)
-                        //                    (RWorkspace: 0)
+                        // Multiply right bidiagonalizing vectors in U by Q
+                        // in VT
+                        // (CWorkspace: need 2*M+N, prefer 2*M+N*NB)
+                        // (RWorkspace: 0)
                         //
                         Cunmbr("P", "L", "C", m, n, m, u, ldu, &work[itaup - 1], vt, ldvt, &work[iwork - 1], lwork - iwork + 1, ierr);
                         //
-                        //                    Generate left bidiagonalizing vectors in U
-                        //                    (CWorkspace: need 3*M, prefer 2*M+M*NB)
-                        //                    (RWorkspace: 0)
+                        // Generate left bidiagonalizing vectors in U
+                        // (CWorkspace: need 3*M, prefer 2*M+M*NB)
+                        // (RWorkspace: 0)
                         //
                         Cungbr("Q", m, m, m, u, ldu, &work[itauq - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
                         irwork = ie + m;
                         //
-                        //                    Perform bidiagonal QR iteration, computing left
-                        //                    singular vectors of A in U and computing right
-                        //                    singular vectors of A in VT
-                        //                    (CWorkspace: 0)
-                        //                    (RWorkspace: need BDSPAC)
+                        // Perform bidiagonal QR iteration, computing left
+                        // singular vectors of A in U and computing right
+                        // singular vectors of A in VT
+                        // (CWorkspace: 0)
+                        // (RWorkspace: need BDSPAC)
                         //
                         Cbdsqr("U", m, n, m, 0, s, &rwork[ie - 1], vt, ldvt, u, ldu, cdum, 1, &rwork[irwork - 1], info);
                         //
@@ -2979,37 +2982,37 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
             //
         } else {
             //
-            //           N .LT. MNTHR
+            // N .LT. MNTHR
             //
-            //           Path 10t(N greater than M, but not much larger)
-            //           Reduce to bidiagonal form without LQ decomposition
+            // Path 10t(N greater than M, but not much larger)
+            // Reduce to bidiagonal form without LQ decomposition
             //
             ie = 1;
             itauq = 1;
             itaup = itauq + m;
             iwork = itaup + m;
             //
-            //           Bidiagonalize A
-            //           (CWorkspace: need 2*M+N, prefer 2*M+(M+N)*NB)
-            //           (RWorkspace: M)
+            // Bidiagonalize A
+            // (CWorkspace: need 2*M+N, prefer 2*M+(M+N)*NB)
+            // (RWorkspace: M)
             //
             Cgebrd(m, n, a, lda, s, &rwork[ie - 1], &work[itauq - 1], &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
             if (wntuas) {
                 //
-                //              If left singular vectors desired in U, copy result to U
-                //              and generate left bidiagonalizing vectors in U
-                //              (CWorkspace: need 3*M-1, prefer 2*M+(M-1)*NB)
-                //              (RWorkspace: 0)
+                // If left singular vectors desired in U, copy result to U
+                // and generate left bidiagonalizing vectors in U
+                // (CWorkspace: need 3*M-1, prefer 2*M+(M-1)*NB)
+                // (RWorkspace: 0)
                 //
                 Clacpy("L", m, m, a, lda, u, ldu);
                 Cungbr("Q", m, m, n, u, ldu, &work[itauq - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
             }
             if (wntvas) {
                 //
-                //              If right singular vectors desired in VT, copy result to
-                //              VT and generate right bidiagonalizing vectors in VT
-                //              (CWorkspace: need 2*M+NRVT, prefer 2*M+NRVT*NB)
-                //              (RWorkspace: 0)
+                // If right singular vectors desired in VT, copy result to
+                // VT and generate right bidiagonalizing vectors in VT
+                // (CWorkspace: need 2*M+NRVT, prefer 2*M+NRVT*NB)
+                // (RWorkspace: 0)
                 //
                 Clacpy("U", m, n, a, lda, vt, ldvt);
                 if (wntva) {
@@ -3022,19 +3025,19 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
             }
             if (wntuo) {
                 //
-                //              If left singular vectors desired in A, generate left
-                //              bidiagonalizing vectors in A
-                //              (CWorkspace: need 3*M-1, prefer 2*M+(M-1)*NB)
-                //              (RWorkspace: 0)
+                // If left singular vectors desired in A, generate left
+                // bidiagonalizing vectors in A
+                // (CWorkspace: need 3*M-1, prefer 2*M+(M-1)*NB)
+                // (RWorkspace: 0)
                 //
                 Cungbr("Q", m, m, n, a, lda, &work[itauq - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
             }
             if (wntvo) {
                 //
-                //              If right singular vectors desired in A, generate right
-                //              bidiagonalizing vectors in A
-                //              (CWorkspace: need 3*M, prefer 2*M+M*NB)
-                //              (RWorkspace: 0)
+                // If right singular vectors desired in A, generate right
+                // bidiagonalizing vectors in A
+                // (CWorkspace: need 3*M, prefer 2*M+M*NB)
+                // (RWorkspace: 0)
                 //
                 Cungbr("P", m, n, m, a, lda, &work[itaup - 1], &work[iwork - 1], lwork - iwork + 1, ierr);
             }
@@ -3053,29 +3056,29 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
             }
             if ((!wntuo) && (!wntvo)) {
                 //
-                //              Perform bidiagonal QR iteration, if desired, computing
-                //              left singular vectors in U and computing right singular
-                //              vectors in VT
-                //              (CWorkspace: 0)
-                //              (RWorkspace: need BDSPAC)
+                // Perform bidiagonal QR iteration, if desired, computing
+                // left singular vectors in U and computing right singular
+                // vectors in VT
+                // (CWorkspace: 0)
+                // (RWorkspace: need BDSPAC)
                 //
                 Cbdsqr("L", m, ncvt, nru, 0, s, &rwork[ie - 1], vt, ldvt, u, ldu, cdum, 1, &rwork[irwork - 1], info);
             } else if ((!wntuo) && wntvo) {
                 //
-                //              Perform bidiagonal QR iteration, if desired, computing
-                //              left singular vectors in U and computing right singular
-                //              vectors in A
-                //              (CWorkspace: 0)
-                //              (RWorkspace: need BDSPAC)
+                // Perform bidiagonal QR iteration, if desired, computing
+                // left singular vectors in U and computing right singular
+                // vectors in A
+                // (CWorkspace: 0)
+                // (RWorkspace: need BDSPAC)
                 //
                 Cbdsqr("L", m, ncvt, nru, 0, s, &rwork[ie - 1], a, lda, u, ldu, cdum, 1, &rwork[irwork - 1], info);
             } else {
                 //
-                //              Perform bidiagonal QR iteration, if desired, computing
-                //              left singular vectors in A and computing right singular
-                //              vectors in VT
-                //              (CWorkspace: 0)
-                //              (RWorkspace: need BDSPAC)
+                // Perform bidiagonal QR iteration, if desired, computing
+                // left singular vectors in A and computing right singular
+                // vectors in VT
+                // (CWorkspace: 0)
+                // (RWorkspace: need BDSPAC)
                 //
                 Cbdsqr("L", m, ncvt, nru, 0, s, &rwork[ie - 1], vt, ldvt, a, lda, cdum, 1, &rwork[irwork - 1], info);
             }
@@ -3084,7 +3087,7 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
         //
     }
     //
-    //     Undo scaling if necessary
+    // Undo scaling if necessary
     //
     if (iscl == 1) {
         if (anrm > bignum) {
@@ -3101,10 +3104,10 @@ void Cgesvd(const char *jobu, const char *jobvt, INTEGER const m, INTEGER const 
         }
     }
     //
-    //     Return optimal workspace in WORK(1)
+    // Return optimal workspace in WORK(1)
     //
     work[1 - 1] = maxwrk;
     //
-    //     End of Cgesvd
+    // End of Cgesvd
     //
 }

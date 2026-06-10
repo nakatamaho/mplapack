@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZHEEV.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Cheev(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL *w, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER &info) {
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     bool wantz = Mlsame(jobz, "V");
     bool lower = Mlsame(uplo, "L");
@@ -67,7 +74,7 @@ void Cheev(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *a, INTE
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
@@ -75,15 +82,15 @@ void Cheev(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *a, INTE
     //
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     if (n == 1) {
-        w[1 - 1] = a[(1 - 1)].real();
-        work[1 - 1] = 1;
+        w[1 - 1] = a[0].real();
+        work[1 - 1] = 1.0;
         if (wantz) {
-            a[(1 - 1)] = cone;
+            a[0] = cone;
         }
         return;
     }
     //
-    //     Get machine constants.
+    // Get machine constants.
     //
     REAL safmin = Rlamch("Safe minimum");
     REAL eps = Rlamch("Precision");
@@ -93,7 +100,7 @@ void Cheev(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *a, INTE
     REAL rmin = sqrt(smlnum);
     REAL rmax = sqrt(bignum);
     //
-    //     Scale matrix to allowable range, if necessary.
+    // Scale matrix to allowable range, if necessary.
     //
     REAL anrm = Clanhe("M", uplo, n, a, lda, rwork);
     INTEGER iscale = 0;
@@ -110,7 +117,7 @@ void Cheev(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *a, INTE
         Clascl(uplo, 0, 0, one, sigma, n, n, a, lda, info);
     }
     //
-    //     Call Chetrd to reduce Hermitian matrix to tridiagonal form.
+    // Call Chetrd to reduce Hermitian matrix to tridiagonal form.
     //
     INTEGER inde = 1;
     INTEGER indtau = 1;
@@ -119,8 +126,8 @@ void Cheev(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *a, INTE
     INTEGER iinfo = 0;
     Chetrd(uplo, n, a, lda, w, &rwork[inde - 1], &work[indtau - 1], &work[indwrk - 1], llwork, iinfo);
     //
-    //     For eigenvalues only, call Rsterf.  For eigenvectors, first call
-    //     Cungtr to generate the unitary matrix, then call Csteqr.
+    // For eigenvalues only, call Rsterf.  For eigenvectors, first call
+    // Cungtr to generate the unitary matrix, then call Csteqr.
     //
     if (!wantz) {
         Rsterf(n, w, &rwork[inde - 1], info);
@@ -130,7 +137,7 @@ void Cheev(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *a, INTE
         Csteqr(jobz, n, w, &rwork[inde - 1], a, lda, &rwork[indwrk - 1], info);
     }
     //
-    //     If matrix was scaled, then rescale eigenvalues appropriately.
+    // If matrix was scaled, then rescale eigenvalues appropriately.
     //
     INTEGER imax = 0;
     if (iscale == 1) {
@@ -142,10 +149,10 @@ void Cheev(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *a, INTE
         Rscal(imax, one / sigma, w, 1);
     }
     //
-    //     Set WORK(1) to optimal complex workspace size.
+    // Set WORK(1) to optimal complex workspace size.
     //
     work[1 - 1] = lwkopt;
     //
-    //     End of Cheev
+    // End of Cheev
     //
 }

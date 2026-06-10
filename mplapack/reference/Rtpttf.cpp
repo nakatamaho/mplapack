@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,23 @@
  *
  */
 
+// Derived from LAPACK routine DTPTTF.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
+#if defined(__INTEL_LLVM_COMPILER)
+#pragma clang optimize off
+#endif
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rtpttf(const char *transr, const char *uplo, INTEGER const n, REAL *ap, REAL *arf, INTEGER &info) {
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     bool normaltransr = Mlsame(transr, "N");
@@ -48,7 +59,7 @@ void Rtpttf(const char *transr, const char *uplo, INTEGER const n, REAL *ap, REA
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
@@ -63,11 +74,11 @@ void Rtpttf(const char *transr, const char *uplo, INTEGER const n, REAL *ap, REA
         return;
     }
     //
-    //     Size of array ARF(0:NT-1)
+    // Size of array ARF(0:NT-1)
     //
     INTEGER nt = n * (n + 1) / 2;
     //
-    //     Set N1 and N2 depending on LOWER
+    // Set N1 and N2 depending on LOWER
     //
     INTEGER n2 = 0;
     INTEGER n1 = 0;
@@ -79,11 +90,11 @@ void Rtpttf(const char *transr, const char *uplo, INTEGER const n, REAL *ap, REA
         n2 = n - n1;
     }
     //
-    //     If N is odd, set NISODD = .TRUE.
-    //     If N is even, set K = N/2 and NISODD = .FALSE.
+    // If N is odd, set NISODD = .TRUE.
+    // If N is even, set K = N/2 and NISODD = .FALSE.
     //
-    //     set lda of ARF^C; ARF^C is (0:(N+1)/2-1,0:N-noe)
-    //     where noe = 0 if n is even, noe = 1 if n is odd
+    // set lda of ARF^C; ARF^C is (0:(N+1)/2-1,0:N-noe)
+    // where noe = 0 if n is even, noe = 1 if n is odd
     //
     INTEGER k = 0;
     bool nisodd = false;
@@ -97,13 +108,13 @@ void Rtpttf(const char *transr, const char *uplo, INTEGER const n, REAL *ap, REA
         lda = n;
     }
     //
-    //     ARF^C has lda rows and n+1-noe cols
+    // ARF^C has lda rows and n+1-noe cols
     //
     if (!normaltransr) {
         lda = (n + 1) / 2;
     }
     //
-    //     start execution: there are eight cases
+    // start execution: there are eight cases
     //
     INTEGER ijp = 0;
     INTEGER jp = 0;
@@ -113,15 +124,15 @@ void Rtpttf(const char *transr, const char *uplo, INTEGER const n, REAL *ap, REA
     INTEGER js = 0;
     if (nisodd) {
         //
-        //        N is odd
+        // N is odd
         //
         if (normaltransr) {
             //
-            //           N is odd and TRANSR = 'N'
+            // N is odd and TRANSR = 'N'
             //
             if (lower) {
                 //
-                //              N is odd, TRANSR = 'N', and UPLO = 'L'
+                // N is odd, TRANSR = 'N', and UPLO = 'L'
                 //
                 ijp = 0;
                 jp = 0;
@@ -143,7 +154,7 @@ void Rtpttf(const char *transr, const char *uplo, INTEGER const n, REAL *ap, REA
                 //
             } else {
                 //
-                //              N is odd, TRANSR = 'N', and UPLO = 'U'
+                // N is odd, TRANSR = 'N', and UPLO = 'U'
                 //
                 ijp = 0;
                 for (j = 0; j <= n1 - 1; j = j + 1) {
@@ -168,11 +179,11 @@ void Rtpttf(const char *transr, const char *uplo, INTEGER const n, REAL *ap, REA
             //
         } else {
             //
-            //           N is odd and TRANSR = 'T'
+            // N is odd and TRANSR = 'T'
             //
             if (lower) {
                 //
-                //              N is odd, TRANSR = 'T', and UPLO = 'L'
+                // N is odd, TRANSR = 'T', and UPLO = 'L'
                 //
                 ijp = 0;
                 for (i = 0; i <= n2; i = i + 1) {
@@ -192,7 +203,7 @@ void Rtpttf(const char *transr, const char *uplo, INTEGER const n, REAL *ap, REA
                 //
             } else {
                 //
-                //              N is odd, TRANSR = 'T', and UPLO = 'U'
+                // N is odd, TRANSR = 'T', and UPLO = 'U'
                 //
                 ijp = 0;
                 js = n2 * lda;
@@ -216,15 +227,15 @@ void Rtpttf(const char *transr, const char *uplo, INTEGER const n, REAL *ap, REA
         //
     } else {
         //
-        //        N is even
+        // N is even
         //
         if (normaltransr) {
             //
-            //           N is even and TRANSR = 'N'
+            // N is even and TRANSR = 'N'
             //
             if (lower) {
                 //
-                //              N is even, TRANSR = 'N', and UPLO = 'L'
+                // N is even, TRANSR = 'N', and UPLO = 'L'
                 //
                 ijp = 0;
                 jp = 0;
@@ -246,7 +257,7 @@ void Rtpttf(const char *transr, const char *uplo, INTEGER const n, REAL *ap, REA
                 //
             } else {
                 //
-                //              N is even, TRANSR = 'N', and UPLO = 'U'
+                // N is even, TRANSR = 'N', and UPLO = 'U'
                 //
                 ijp = 0;
                 for (j = 0; j <= k - 1; j = j + 1) {
@@ -271,11 +282,11 @@ void Rtpttf(const char *transr, const char *uplo, INTEGER const n, REAL *ap, REA
             //
         } else {
             //
-            //           N is even and TRANSR = 'T'
+            // N is even and TRANSR = 'T'
             //
             if (lower) {
                 //
-                //              N is even, TRANSR = 'T', and UPLO = 'L'
+                // N is even, TRANSR = 'T', and UPLO = 'L'
                 //
                 ijp = 0;
                 for (i = 0; i <= k - 1; i = i + 1) {
@@ -295,7 +306,7 @@ void Rtpttf(const char *transr, const char *uplo, INTEGER const n, REAL *ap, REA
                 //
             } else {
                 //
-                //              N is even, TRANSR = 'T', and UPLO = 'U'
+                // N is even, TRANSR = 'T', and UPLO = 'U'
                 //
                 ijp = 0;
                 js = (k + 1) * lda;
@@ -319,6 +330,6 @@ void Rtpttf(const char *transr, const char *uplo, INTEGER const n, REAL *ap, REA
         //
     }
     //
-    //     End of Rtpttf
+    // End of Rtpttf
     //
 }

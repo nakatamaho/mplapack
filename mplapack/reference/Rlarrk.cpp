@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DLARRK.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -42,20 +49,20 @@ void Rlarrk(INTEGER const n, INTEGER const iw, REAL const gl, REAL const gu, REA
     INTEGER it = 0;
     REAL tmp1 = 0.0;
     REAL tmp2 = 0.0;
-    const REAL half = 0.5e0;
+    const REAL half = 0.5;
     REAL mid = 0.0;
     INTEGER negcnt = 0;
     const REAL zero = 0.0;
     INTEGER i = 0;
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n <= 0) {
         info = 0;
         return;
     }
     //
-    //     Get machine constants
+    // Get machine constants
     eps = Rlamch("P");
     //
     tnorm = max(abs(gl), abs(gu));
@@ -63,8 +70,10 @@ void Rlarrk(INTEGER const n, INTEGER const iw, REAL const gl, REAL const gu, REA
     atoli = fudge * two * pivmin;
     //
     itmax = castINTEGER((log(tnorm + pivmin) - log(pivmin)) / log(two)) + 2;
-    if (itmax > 1024)
-        itmax = 1024; // XXX itmax can be too large for MPFR (=10^8)
+#if defined ___MPLAPACK_BUILD_WITH_MPFR___ || defined ___MPLAPACK_BUILD_WITH_GMP___
+    if (itmax > 100000)
+        itmax = 100000; // XXX itmax can be too large for MPFR/GMP (=10^8)
+#endif
     //
     info = -1;
     //
@@ -74,11 +83,11 @@ void Rlarrk(INTEGER const n, INTEGER const iw, REAL const gl, REAL const gu, REA
 //
 statement_10:
     //
-    //     Check if interval converged or maximum number of iterations reached
+    // Check if interval converged or maximum number of iterations reached
     //
     tmp1 = abs(right - left);
     tmp2 = max(abs(right), abs(left));
-    if (tmp1 < max({atoli, pivmin, REAL(rtoli * tmp2)})) {
+    if (tmp1 < max(atoli, pivmin, rtoli * tmp2)) {
         info = 0;
         goto statement_30;
     }
@@ -86,7 +95,7 @@ statement_10:
         goto statement_30;
     }
     //
-    //     Count number of negative pivots for mid-point
+    // Count number of negative pivots for mid-point
     //
     it++;
     mid = half * (left + right);
@@ -118,11 +127,11 @@ statement_10:
 //
 statement_30:
     //
-    //     Converged or maximum number of iterations reached
+    // Converged or maximum number of iterations reached
     //
     w = half * (left + right);
     werr = half * abs(right - left);
     //
-    //     End of Rlarrk
+    // End of Rlarrk
     //
 }

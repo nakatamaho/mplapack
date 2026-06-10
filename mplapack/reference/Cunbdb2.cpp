@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZUNBDB2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Cunbdb2(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x11, INTEGER const ldx11, COMPLEX *x21, INTEGER const ldx21, REAL *theta, REAL *phi, COMPLEX *taup1, COMPLEX *taup2, COMPLEX *tauq1, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //     Test input arguments
+    // Test input arguments
     //
     info = 0;
     bool lquery = lwork == -1;
@@ -48,7 +55,7 @@ void Cunbdb2(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x11, IN
         info = -7;
     }
     //
-    //     Compute workspace
+    // Compute workspace
     //
     INTEGER ilarf = 0;
     INTEGER llarf = 0;
@@ -58,12 +65,12 @@ void Cunbdb2(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x11, IN
     INTEGER lworkmin = 0;
     if (info == 0) {
         ilarf = 2;
-        llarf = max({p - 1, m - p, q - 1});
+        llarf = max(p - 1, m - p, q - 1);
         iorbdb5 = 2;
         lorbdb5 = q - 1;
         lworkopt = max(ilarf + llarf - 1, iorbdb5 + lorbdb5 - 1);
         lworkmin = lworkopt;
-        work[1 - 1] = castREAL(lworkopt);
+        work[1 - 1] = lworkopt;
         if (lwork < lworkmin && !lquery) {
             info = -14;
         }
@@ -75,12 +82,11 @@ void Cunbdb2(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x11, IN
         return;
     }
     //
-    //     Reduce rows 1, ..., P of X11 and X21
+    // Reduce rows 1, ..., P of X11 and X21
     //
     INTEGER i = 0;
     REAL c = 0.0;
     REAL s = 0.0;
-    const COMPLEX one = COMPLEX(1.0, 0.0);
     INTEGER childinfo = 0;
     const COMPLEX negone = COMPLEX(-1.0, 0.0);
     for (i = 1; i <= p; i = i + 1) {
@@ -91,9 +97,8 @@ void Cunbdb2(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x11, IN
         Clacgv(q - i + 1, &x11[(i - 1) + (i - 1) * ldx11], ldx11);
         Clarfgp(q - i + 1, x11[(i - 1) + (i - 1) * ldx11], &x11[(i - 1) + ((i + 1) - 1) * ldx11], ldx11, tauq1[i - 1]);
         c = x11[(i - 1) + (i - 1) * ldx11].real();
-        x11[(i - 1) + (i - 1) * ldx11] = one;
-        Clarf("R", p - i, q - i + 1, &x11[(i - 1) + (i - 1) * ldx11], ldx11, tauq1[i - 1], &x11[((i + 1) - 1) + (i - 1) * ldx11], ldx11, &work[ilarf - 1]);
-        Clarf("R", m - p - i + 1, q - i + 1, &x11[(i - 1) + (i - 1) * ldx11], ldx11, tauq1[i - 1], &x21[(i - 1) + (i - 1) * ldx21], ldx21, &work[ilarf - 1]);
+        Clarf1f("R", p - i, q - i + 1, &x11[(i - 1) + (i - 1) * ldx11], ldx11, tauq1[i - 1], &x11[((i + 1) - 1) + (i - 1) * ldx11], ldx11, &work[ilarf - 1]);
+        Clarf1f("R", m - p - i + 1, q - i + 1, &x11[(i - 1) + (i - 1) * ldx11], ldx11, tauq1[i - 1], &x21[(i - 1) + (i - 1) * ldx21], ldx21, &work[ilarf - 1]);
         Clacgv(q - i + 1, &x11[(i - 1) + (i - 1) * ldx11], ldx11);
         s = sqrt(pow2(RCnrm2(p - i, &x11[((i + 1) - 1) + (i - 1) * ldx11], 1)) + pow2(RCnrm2(m - p - i + 1, &x21[(i - 1) + (i - 1) * ldx21], 1)));
         theta[i - 1] = atan2(s, c);
@@ -106,22 +111,19 @@ void Cunbdb2(INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x11, IN
             phi[i - 1] = atan2(x11[((i + 1) - 1) + (i - 1) * ldx11].real(), x21[(i - 1) + (i - 1) * ldx21].real());
             c = cos(phi[i - 1]);
             s = sin(phi[i - 1]);
-            x11[((i + 1) - 1) + (i - 1) * ldx11] = one;
-            Clarf("L", p - i, q - i, &x11[((i + 1) - 1) + (i - 1) * ldx11], 1, conj(taup1[i - 1]), &x11[((i + 1) - 1) + ((i + 1) - 1) * ldx11], ldx11, &work[ilarf - 1]);
+            Clarf1f("L", p - i, q - i, &x11[((i + 1) - 1) + (i - 1) * ldx11], 1, conj(taup1[i - 1]), &x11[((i + 1) - 1) + ((i + 1) - 1) * ldx11], ldx11, &work[ilarf - 1]);
         }
-        x21[(i - 1) + (i - 1) * ldx21] = one;
-        Clarf("L", m - p - i + 1, q - i, &x21[(i - 1) + (i - 1) * ldx21], 1, conj(taup2[i - 1]), &x21[(i - 1) + ((i + 1) - 1) * ldx21], ldx21, &work[ilarf - 1]);
+        Clarf1f("L", m - p - i + 1, q - i, &x21[(i - 1) + (i - 1) * ldx21], 1, conj(taup2[i - 1]), &x21[(i - 1) + ((i + 1) - 1) * ldx21], ldx21, &work[ilarf - 1]);
         //
     }
     //
-    //     Reduce the bottom-right portion of X21 to the identity matrix
+    // Reduce the bottom-right portion of X21 to the identity matrix
     //
     for (i = p + 1; i <= q; i = i + 1) {
         Clarfgp(m - p - i + 1, x21[(i - 1) + (i - 1) * ldx21], &x21[((i + 1) - 1) + (i - 1) * ldx21], 1, taup2[i - 1]);
-        x21[(i - 1) + (i - 1) * ldx21] = one;
-        Clarf("L", m - p - i + 1, q - i, &x21[(i - 1) + (i - 1) * ldx21], 1, conj(taup2[i - 1]), &x21[(i - 1) + ((i + 1) - 1) * ldx21], ldx21, &work[ilarf - 1]);
+        Clarf1f("L", m - p - i + 1, q - i, &x21[(i - 1) + (i - 1) * ldx21], 1, conj(taup2[i - 1]), &x21[(i - 1) + ((i + 1) - 1) * ldx21], ldx21, &work[ilarf - 1]);
     }
     //
-    //     End of Cunbdb2
+    // End of Cunbdb2
     //
 }

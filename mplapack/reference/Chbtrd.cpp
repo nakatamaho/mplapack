@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZHBTRD.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Chbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const kd, COMPLEX *ab, INTEGER const ldab, REAL *d, REAL *e, COMPLEX *q, INTEGER const ldq, COMPLEX *work, INTEGER &info) {
     //
-    //     Test the input parameters
+    // Test the input parameters
     //
     bool initq = Mlsame(vect, "V");
     bool wantq = initq || Mlsame(vect, "U");
@@ -60,13 +67,13 @@ void Chbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
     }
     //
-    //     Initialize Q to the unit matrix, if needed
+    // Initialize Q to the unit matrix, if needed
     //
     const COMPLEX czero = COMPLEX(0.0, 0.0);
     const COMPLEX cone = COMPLEX(1.0, 0.0);
@@ -74,11 +81,11 @@ void Chbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
         Claset("Full", n, n, czero, cone, q, ldq);
     }
     //
-    //     Wherever possible, plane rotations are generated and applied in
-    //     vector operations of length NR over the index set J1:J2:KD1.
+    // Wherever possible, plane rotations are generated and applied in
+    // vector operations of length NR over the index set J1:J2:KD1.
     //
-    //     The real cosines and complex sines of the plane rotations are
-    //     stored in the arrays D and WORK.
+    // The real cosines and complex sines of the plane rotations are
+    // stored in the arrays D and WORK.
     //
     INTEGER inca = kd1 * ldab;
     INTEGER kdn = min(n - 1, kd);
@@ -110,8 +117,8 @@ void Chbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
         //
         if (kd > 1) {
             //
-            //           Reduce to complex Hermitian tridiagonal form, working with
-            //           the upper triangle
+            // Reduce to complex Hermitian tridiagonal form, working with
+            // the upper triangle
             //
             nr = 0;
             j1 = kdn + 2;
@@ -120,7 +127,7 @@ void Chbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
             ab[(kd1 - 1)] = ab[(kd1 - 1)].real();
             for (i = 1; i <= n - 2; i = i + 1) {
                 //
-                //              Reduce i-th row of matrix to tridiagonal form
+                // Reduce i-th row of matrix to tridiagonal form
                 //
                 for (k = kdn + 1; k >= 2; k = k - 1) {
                     j1 += kdn;
@@ -128,15 +135,15 @@ void Chbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
                     //
                     if (nr > 0) {
                         //
-                        //                    generate plane rotations to annihilate nonzero
-                        //                    elements which have been created outside the band
+                        // generate plane rotations to annihilate nonzero
+                        // elements which have been created outside the band
                         //
                         Clargv(nr, &ab[((j1 - 1) - 1) * ldab], inca, &work[j1 - 1], kd1, &d[j1 - 1], kd1);
                         //
-                        //                    apply rotations from the right
+                        // apply rotations from the right
                         //
-                        //                    Dependent on the the number of diagonals either
-                        //                    Clartv or Crot is used
+                        // Dependent on the the number of diagonals either
+                        // Clartv or Crot is used
                         //
                         if (nr >= 2 * kd - 1) {
                             for (l = 1; l <= kd - 1; l = l + 1) {
@@ -154,13 +161,13 @@ void Chbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
                     if (k > 2) {
                         if (k <= n - i + 1) {
                             //
-                            //                       generate plane rotation to annihilate a(i,i+k-1)
-                            //                       within the band
+                            // generate plane rotation to annihilate a(i,i+k-1)
+                            // within the band
                             //
                             Clartg(ab[((kd - k + 3) - 1) + ((i + k - 2) - 1) * ldab], ab[((kd - k + 2) - 1) + ((i + k - 1) - 1) * ldab], d[(i + k - 1) - 1], work[(i + k - 1) - 1], temp);
                             ab[((kd - k + 3) - 1) + ((i + k - 2) - 1) * ldab] = temp;
                             //
-                            //                       apply rotation from the right
+                            // apply rotation from the right
                             //
                             Crot(k - 3, &ab[((kd - k + 4) - 1) + ((i + k - 2) - 1) * ldab], 1, &ab[((kd - k + 3) - 1) + ((i + k - 1) - 1) * ldab], 1, d[(i + k - 1) - 1], work[(i + k - 1) - 1]);
                         }
@@ -168,21 +175,21 @@ void Chbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
                         j1 = j1 - kdn - 1;
                     }
                     //
-                    //                 apply plane rotations from both sides to diagonal
-                    //                 blocks
+                    // apply plane rotations from both sides to diagonal
+                    // blocks
                     //
                     if (nr > 0) {
                         Clar2v(nr, &ab[(kd1 - 1) + ((j1 - 1) - 1) * ldab], &ab[(kd1 - 1) + (j1 - 1) * ldab], &ab[(kd - 1) + (j1 - 1) * ldab], inca, &d[j1 - 1], &work[j1 - 1], kd1);
                     }
                     //
-                    //                 apply plane rotations from the left
+                    // apply plane rotations from the left
                     //
                     if (nr > 0) {
                         Clacgv(nr, &work[j1 - 1], kd1);
                         if (2 * kd - 1 < nr) {
                             //
-                            //                    Dependent on the the number of diagonals either
-                            //                    Clartv or Crot is used
+                            // Dependent on the the number of diagonals either
+                            // Clartv or Crot is used
                             //
                             for (l = 1; l <= kd - 1; l = l + 1) {
                                 if (j2 + l > n) {
@@ -211,12 +218,12 @@ void Chbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
                     //
                     if (wantq) {
                         //
-                        //                    accumulate product of plane rotations in Q
+                        // accumulate product of plane rotations in Q
                         //
                         if (initq) {
                             //
-                            //                 take advantage of the fact that Q was
-                            //                 initially the Identity matrix
+                            // take advantage of the fact that Q was
+                            // initially the Identity matrix
                             //
                             iqend = max(iqend, j2);
                             i2 = max((INTEGER)0, k - 3);
@@ -244,7 +251,7 @@ void Chbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
                     //
                     if (j2 + kdn > n) {
                         //
-                        //                    adjust J2 to keep within the bounds of the matrix
+                        // adjust J2 to keep within the bounds of the matrix
                         //
                         nr = nr - 1;
                         j2 = j2 - kdn - 1;
@@ -252,8 +259,8 @@ void Chbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
                     //
                     for (j = j1; j <= j2; j = j + kd1) {
                         //
-                        //                    create nonzero element a(j-1,j+kd) outside the band
-                        //                    and store it in WORK
+                        // create nonzero element a(j-1,j+kd) outside the band
+                        // and store it in WORK
                         //
                         work[(j + kd) - 1] = work[j - 1] * ab[((j + kd) - 1) * ldab];
                         ab[((j + kd) - 1) * ldab] = d[j - 1] * ab[((j + kd) - 1) * ldab];
@@ -264,7 +271,7 @@ void Chbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
         //
         if (kd > 0) {
             //
-            //           make off-diagonal elements real and copy them to E
+            // make off-diagonal elements real and copy them to E
             //
             for (i = 1; i <= n - 1; i = i + 1) {
                 t = ab[(kd - 1) + ((i + 1) - 1) * ldab];
@@ -285,14 +292,14 @@ void Chbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
             }
         } else {
             //
-            //           set E to zero if original matrix was diagonal
+            // set E to zero if original matrix was diagonal
             //
             for (i = 1; i <= n - 1; i = i + 1) {
                 e[i - 1] = zero;
             }
         }
         //
-        //        copy diagonal elements to D
+        // copy diagonal elements to D
         //
         for (i = 1; i <= n; i = i + 1) {
             d[i - 1] = ab[(kd1 - 1) + (i - 1) * ldab].real();
@@ -302,17 +309,17 @@ void Chbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
         //
         if (kd > 1) {
             //
-            //           Reduce to complex Hermitian tridiagonal form, working with
-            //           the lower triangle
+            // Reduce to complex Hermitian tridiagonal form, working with
+            // the lower triangle
             //
             nr = 0;
             j1 = kdn + 2;
             j2 = 1;
             //
-            ab[(1 - 1)] = ab[(1 - 1)].real();
+            ab[0] = ab[0].real();
             for (i = 1; i <= n - 2; i = i + 1) {
                 //
-                //              Reduce i-th column of matrix to tridiagonal form
+                // Reduce i-th column of matrix to tridiagonal form
                 //
                 for (k = kdn + 1; k >= 2; k = k - 1) {
                     j1 += kdn;
@@ -320,15 +327,15 @@ void Chbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
                     //
                     if (nr > 0) {
                         //
-                        //                    generate plane rotations to annihilate nonzero
-                        //                    elements which have been created outside the band
+                        // generate plane rotations to annihilate nonzero
+                        // elements which have been created outside the band
                         //
                         Clargv(nr, &ab[(kd1 - 1) + ((j1 - kd1) - 1) * ldab], inca, &work[j1 - 1], kd1, &d[j1 - 1], kd1);
                         //
-                        //                    apply plane rotations from one side
+                        // apply plane rotations from one side
                         //
-                        //                    Dependent on the the number of diagonals either
-                        //                    Clartv or Crot is used
+                        // Dependent on the the number of diagonals either
+                        // Clartv or Crot is used
                         //
                         if (nr > 2 * kd - 1) {
                             for (l = 1; l <= kd - 1; l = l + 1) {
@@ -346,13 +353,13 @@ void Chbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
                     if (k > 2) {
                         if (k <= n - i + 1) {
                             //
-                            //                       generate plane rotation to annihilate a(i+k-1,i)
-                            //                       within the band
+                            // generate plane rotation to annihilate a(i+k-1,i)
+                            // within the band
                             //
                             Clartg(ab[((k - 1) - 1) + (i - 1) * ldab], ab[(k - 1) + (i - 1) * ldab], d[(i + k - 1) - 1], work[(i + k - 1) - 1], temp);
                             ab[((k - 1) - 1) + (i - 1) * ldab] = temp;
                             //
-                            //                       apply rotation from the left
+                            // apply rotation from the left
                             //
                             Crot(k - 3, &ab[((k - 2) - 1) + ((i + 1) - 1) * ldab], ldab - 1, &ab[((k - 1) - 1) + ((i + 1) - 1) * ldab], ldab - 1, d[(i + k - 1) - 1], work[(i + k - 1) - 1]);
                         }
@@ -360,17 +367,17 @@ void Chbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
                         j1 = j1 - kdn - 1;
                     }
                     //
-                    //                 apply plane rotations from both sides to diagonal
-                    //                 blocks
+                    // apply plane rotations from both sides to diagonal
+                    // blocks
                     //
                     if (nr > 0) {
                         Clar2v(nr, &ab[((j1 - 1) - 1) * ldab], &ab[(j1 - 1) * ldab], &ab[(2 - 1) + ((j1 - 1) - 1) * ldab], inca, &d[j1 - 1], &work[j1 - 1], kd1);
                     }
                     //
-                    //                 apply plane rotations from the right
+                    // apply plane rotations from the right
                     //
-                    //                    Dependent on the the number of diagonals either
-                    //                    Clartv or Crot is used
+                    // Dependent on the the number of diagonals either
+                    // Clartv or Crot is used
                     //
                     if (nr > 0) {
                         Clacgv(nr, &work[j1 - 1], kd1);
@@ -402,12 +409,12 @@ void Chbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
                     //
                     if (wantq) {
                         //
-                        //                    accumulate product of plane rotations in Q
+                        // accumulate product of plane rotations in Q
                         //
                         if (initq) {
                             //
-                            //                 take advantage of the fact that Q was
-                            //                 initially the Identity matrix
+                            // take advantage of the fact that Q was
+                            // initially the Identity matrix
                             //
                             iqend = max(iqend, j2);
                             i2 = max((INTEGER)0, k - 3);
@@ -434,7 +441,7 @@ void Chbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
                     //
                     if (j2 + kdn > n) {
                         //
-                        //                    adjust J2 to keep within the bounds of the matrix
+                        // adjust J2 to keep within the bounds of the matrix
                         //
                         nr = nr - 1;
                         j2 = j2 - kdn - 1;
@@ -442,8 +449,8 @@ void Chbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
                     //
                     for (j = j1; j <= j2; j = j + kd1) {
                         //
-                        //                    create nonzero element a(j+kd,j-1) outside the
-                        //                    band and store it in WORK
+                        // create nonzero element a(j+kd,j-1) outside the
+                        // band and store it in WORK
                         //
                         work[(j + kd) - 1] = work[j - 1] * ab[(kd1 - 1) + (j - 1) * ldab];
                         ab[(kd1 - 1) + (j - 1) * ldab] = d[j - 1] * ab[(kd1 - 1) + (j - 1) * ldab];
@@ -454,7 +461,7 @@ void Chbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
         //
         if (kd > 0) {
             //
-            //           make off-diagonal elements real and copy them to E
+            // make off-diagonal elements real and copy them to E
             //
             for (i = 1; i <= n - 1; i = i + 1) {
                 t = ab[(2 - 1) + (i - 1) * ldab];
@@ -475,20 +482,20 @@ void Chbtrd(const char *vect, const char *uplo, INTEGER const n, INTEGER const k
             }
         } else {
             //
-            //           set E to zero if original matrix was diagonal
+            // set E to zero if original matrix was diagonal
             //
             for (i = 1; i <= n - 1; i = i + 1) {
                 e[i - 1] = zero;
             }
         }
         //
-        //        copy diagonal elements to D
+        // copy diagonal elements to D
         //
         for (i = 1; i <= n; i = i + 1) {
             d[i - 1] = ab[(i - 1) * ldab].real();
         }
     }
     //
-    //     End of Chbtrd
+    // End of Chbtrd
     //
 }

@@ -42,34 +42,37 @@
 #include <cfloat>
 #include <cmath>
 
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
-#define MPFR_WANT_FLOAT128
-#endif
-
-#include "mpfr.h"
-
 #ifndef ___MPREAL_DEFAULT_PRECISION___
 #define ___MPREAL_DEFAULT_PRECISION___ 512
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
 #include "gmpxx.h"
+#include "mplapack_config.h"
 #endif
 #if defined ___MPLAPACK_BUILD_WITH_QD___
 #include "qd/qd_real.h"
+#include "mplapack_config.h"
 #endif
 #if defined ___MPLAPACK_BUILD_WITH_DD___
 #include "qd/dd_real.h"
+#include "mplapack_config.h"
 #endif
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && defined ___MPLAPACK_WANT_LIBQUADMATH___
-#ifdef __cplusplus
-extern "C" {
+#if defined ___MPLAPACK_BUILD_WITH_BINARY128___
+#include "mplapack_config.h"
+#if (MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_QUADMATH)
+#ifndef mpfr_float128
+#define mpfr_float128 __float128
 #endif
 #include <quadmath.h>
-#ifdef __cplusplus
-}
 #endif
 #endif
+
+#if defined ___MPLAPACK_BUILD_WITH_BINARY128___
+#define MPFR_WANT_FLOAT128
+#endif
+
+#include "mpfr.h"
 
 // Detect compiler using signatures from http://predef.sourceforge.net/
 #if defined(__GNUC__) && defined(__INTEL_COMPILER)
@@ -83,6 +86,14 @@ extern "C" {
 
 #else
 #define IsInf(x) std::isinf(x) // C99 conformance
+#endif
+
+// Include <array> and <cstddef> before namespace for binary80 _Float64x mode
+#if defined ___MPLAPACK_BUILD_WITH_BINARY80___
+#if MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_FLOAT64X && MPLAPACK_BINARY80_IO == MPLAPACK_BINARY80_IO_STRFROMF64X
+#include <array>
+#include <cstddef>
+#endif
 #endif
 
 namespace mpfr {
@@ -415,18 +426,22 @@ class mpreal {
     mpreal(const dd_real &a, mp_prec_t prec = default_prec, mp_rnd_t mode = default_rnd);
     mpreal &operator=(const dd_real &a);
 #endif
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && !defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___ && !defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
-    mpreal(const _Float128 &a, mp_prec_t prec = default_prec, mp_rnd_t mode = default_rnd);
-    mpreal &operator=(const _Float128 &a);
+#if defined ___MPLAPACK_BUILD_WITH_BINARY128___
+#if !(MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_LDBL)
+    mpreal(const mplapack_binary128_t &a, mp_prec_t prec = default_prec, mp_rnd_t mode = default_rnd);
+    mpreal &operator=(const mplapack_binary128_t &a);
 #endif
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT64X___ && defined ___MPLAPACK__FLOAT64X_IS_LONGDOUBLE___
-//    mpreal(const _Float64x &a, mp_prec_t prec = default_prec, mp_rnd_t mode = default_rnd);
-//    mpreal &operator=(const _Float64x &a);
+#endif
+#if defined ___MPLAPACK_BUILD_WITH_BINARY80___
+#if MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_FLOAT64X
+    mpreal(const _Float64x &a, mp_prec_t prec = default_prec, mp_rnd_t mode = default_rnd);
+    mpreal &operator=(const _Float64x &a);
+#endif
 #endif
 };
 
 #if defined ___MPLAPACK_MPLAPACK_INIT___
-mp_rnd_t mpfr::mpreal::default_rnd = MPFR_RNDN; //must be initialized at mpblas/reference/mplapackinit.cpp
+mp_rnd_t mpfr::mpreal::default_rnd = MPFR_RNDN; // must be initialized at mpblas/reference/mplapackinit.cpp
 mp_prec_t mpfr::mpreal::default_prec = ___MPREAL_DEFAULT_PRECISION___;
 int mpfr::mpreal::default_base = 2;
 int mpfr::mpreal::double_bits = -1;
@@ -1894,7 +1909,6 @@ inline mpreal::mpreal() {
 
 inline mpreal::mpreal(const mpreal &u) {
     mpfr_init2(mp, u.get_prec());
-    mpfr_set_prec(mp, default_prec);
     mpfr_set(mp, u.mp, default_rnd);
 }
 
@@ -2335,63 +2349,114 @@ inline double cast2double(const mpreal &b) {
     return p;
 }
 
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___ && !defined ___MPLAPACK__FLOAT128_IS_LONGDOUBLE___ && !defined ___MPLAPACK_LONGDOUBLE_IS_BINARY128___
-inline mpreal &mpreal::operator=(const _Float128 &a) {
+#if defined ___MPLAPACK_BUILD_WITH_BINARY128___
+#if MPLAPACK_BINARY128_MODE != MPLAPACK_BINARY128_MODE_LDBL
+// These would be duplicates of the existing long double overloads when
+// mplapack_binary128_t == long double (LDBL mode).
+inline mpreal &mpreal::operator=(const mplapack_binary128_t &a) {
     mpfr_init2(mp, default_prec);
     mpfr_set_float128(mp, a, default_rnd);
     return *this;
 }
 
-inline mpreal::mpreal(const _Float128 &a, mp_prec_t prec, mp_rnd_t mode) {
+inline mpreal::mpreal(const mplapack_binary128_t &a, mp_prec_t prec, mp_rnd_t mode) {
     mpfr_init2(mp, prec);
     mpfr_set_float128(mp, a, mode);
 }
 
-inline const mpreal operator-(const _Float128 a, const mpreal b) { return mpreal(a) -= b; }
+inline const mpreal operator-(const mplapack_binary128_t a, const mpreal b) { return mpreal(a) -= b; }
 
-inline const mpreal operator-(const mpreal &a, const _Float128 &b) {
+inline const mpreal operator-(const mpreal &a, const mplapack_binary128_t &b) {
     mpreal tmp(b);
     return -(mpreal(b) -= a);
 }
-#endif
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT128___
-inline _Float128 cast2_Float128(const mpreal &b) {
-    _Float128 q;
+#endif // MPLAPACK_BINARY128_MODE != MPLAPACK_BINARY128_MODE_LDBL
+inline mplapack_binary128_t cast2binary128_t(const mpreal &b) {
+    mplapack_binary128_t q;
     mpreal a(b);
     q = mpfr_get_float128((mpfr_ptr)a, mpreal::default_rnd);
     return q;
 }
+#endif // ___MPLAPACK_BUILD_WITH_BINARY128___
 
+#if defined ___MPLAPACK_BUILD_WITH_BINARY80___
+#if MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_LDBL80
+inline long double cast2binary80_t(const mpreal &b) {
+    // mpreal -> MPFR -> long double
+    mpreal a(b);
+    return mpfr_get_ld((mpfr_ptr)a, mpreal::default_rnd);
+}
+#elif MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_FLOAT64X && MPLAPACK_BINARY80_IO == MPLAPACK_BINARY80_IO_STRFROMF64X
+extern "C" _Float64x strtof64x(const char *nptr, char **endptr);
+
+inline mpreal &mpreal::operator=(const _Float64x &a) {
+    mpfr_init2(mp, default_prec);
+    // Convert _Float64x to string, then parse into MPFR
+#if defined(__FLT64X_DECIMAL_DIG__)
+    constexpr int kDigits = __FLT64X_DECIMAL_DIG__ + 8;
+#else
+    constexpr int kDigits = 96;
 #endif
+    std::array<char, static_cast<std::size_t>(kDigits) + 64> buf{};
+    // Build format string: "%.XXe" where XX is kDigits
+    char fmt[32];
+    snprintf(fmt, sizeof(fmt), "%%.%de", kDigits);
 
-#if defined ___MPLAPACK_BUILD_WITH__FLOAT64X___ && defined ___MPLAPACK__FLOAT64X_IS_LONGDOUBLE___
-/*
-inline mpreal &mpreal::operator=(const _Float128 &a) {
-  mpfr_init2((mpfr_ptr)mp, default_prec);
-  mpfr_set_ld((mpfr_ptr)mp, a, default_rnd);
-  return *this;
+    int n = strfromf64x(buf.data(), buf.size(), fmt, a);
+    if (n < 0 || n >= static_cast<int>(buf.size())) {
+        mpfr_set_ui(mp, 0, default_rnd);
+    } else {
+        mpfr_set_str(mp, buf.data(), 10, default_rnd);
+    }
+    return *this;
 }
 
 inline mpreal::mpreal(const _Float64x &a, mp_prec_t prec, mp_rnd_t mode) {
-  mpfr_init2(mp, prec);
-  mpfr_set_ld(mp, a, mode);
+    mpfr_init2(mp, prec);
+    // Convert _Float64x to string, then parse into MPFR
+#if defined(__FLT64X_DECIMAL_DIG__)
+    constexpr int kDigits = __FLT64X_DECIMAL_DIG__ + 8;
+#else
+    constexpr int kDigits = 96;
+#endif
+    std::array<char, static_cast<std::size_t>(kDigits) + 64> buf{};
+    // Build format string: "%.XXe" where XX is kDigits
+    char fmt[32];
+    snprintf(fmt, sizeof(fmt), "%%.%de", kDigits);
+
+    int n = strfromf64x(buf.data(), buf.size(), fmt, a);
+    if (n < 0 || n >= static_cast<int>(buf.size())) {
+        mpfr_set_ui(mp, 0, mode);
+    } else {
+        mpfr_set_str(mp, buf.data(), 10, mode);
+    }
 }
 
 inline const mpreal operator-(const _Float64x a, const mpreal b) { return mpreal(a) -= b; }
-
 inline const mpreal operator-(const mpreal &a, const _Float64x &b) {
-  mpreal tmp(b);
-  return -(mpreal(b) -= a);
+    mpreal tmp(b);
+    return -(mpreal(b) -= a);
 }
-*/
-inline _Float64x cast2_Float64x(const mpreal &b) {
-    // mpreal -> mpfr -> long double
-    long double q;
+inline _Float64x cast2binary80_t(const mpreal &b) {
     mpreal a(b);
-    q = mpfr_get_ld((mpfr_ptr)a, mpreal::default_rnd);
-    return q;
-}
+#if defined(__FLT64X_DECIMAL_DIG__)
+    constexpr int kDigits = __FLT64X_DECIMAL_DIG__ + 8; // extra guard digits
+#else
+    constexpr int kDigits = 96; // conservative fallback
 #endif
+    std::array<char, static_cast<std::size_t>(kDigits) + 64> buf{};
+    // Print with kDigits significant digits; then let strtof64x round to _Float64x.
+    int n = mpfr_snprintf(buf.data(), buf.size(), "%.*Rg", kDigits, (mpfr_ptr)a);
+    if (n < 0) {
+        return static_cast<_Float64x>(0);
+    }
+    char *endp = nullptr;
+    return strtof64x(buf.data(), &endp);
+}
+#else
+#error "Unsupported MPLAPACK_BINARY80_MODE"
+#endif // MPLAPACK_BINARY80_MODE
+#endif // defined ___MPLAPACK_BUILD_WITH_BINARY80___
 
 } // namespace mpfr
 

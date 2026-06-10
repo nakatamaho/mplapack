@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DTFTRI.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rtftri(const char *transr, const char *uplo, const char *diag, INTEGER const n, REAL *a, INTEGER &info) {
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     bool normaltransr = Mlsame(transr, "N");
@@ -50,14 +57,14 @@ void Rtftri(const char *transr, const char *uplo, const char *diag, INTEGER cons
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
     }
     //
-    //     If N is odd, set NISODD = .TRUE.
-    //     If N is even, set K = N/2 and NISODD = .FALSE.
+    // If N is odd, set NISODD = .TRUE.
+    // If N is even, set K = N/2 and NISODD = .FALSE.
     //
     INTEGER k = 0;
     bool nisodd = false;
@@ -68,7 +75,7 @@ void Rtftri(const char *transr, const char *uplo, const char *diag, INTEGER cons
         nisodd = true;
     }
     //
-    //     Set N1 and N2 depending on LOWER
+    // Set N1 and N2 depending on LOWER
     //
     INTEGER n2 = 0;
     INTEGER n1 = 0;
@@ -80,22 +87,22 @@ void Rtftri(const char *transr, const char *uplo, const char *diag, INTEGER cons
         n2 = n - n1;
     }
     //
-    //     start execution: there are eight cases
+    // start execution: there are eight cases
     //
     const REAL one = 1.0;
     if (nisodd) {
         //
-        //        N is odd
+        // N is odd
         //
         if (normaltransr) {
             //
-            //           N is odd and TRANSR = 'N'
+            // N is odd and TRANSR = 'N'
             //
             if (lower) {
                 //
-                //             SRPA for LOWER, NORMAL and N is odd ( a(0:n-1,0:n1-1) )
-                //             T1 -> a(0,0), T2 -> a(0,1), S -> a(n1,0)
-                //             T1 -> a(0), T2 -> a(n), S -> a(n1)
+                // SRPA for LOWER, NORMAL and N is odd ( a(0:n-1,0:n1-1) )
+                // T1 -> a(0,0), T2 -> a(0,1), S -> a(n1,0)
+                // T1 -> a(0), T2 -> a(n), S -> a(n1)
                 //
                 Rtrtri("L", diag, n1, &a[0], n, info);
                 if (info > 0) {
@@ -113,9 +120,9 @@ void Rtftri(const char *transr, const char *uplo, const char *diag, INTEGER cons
                 //
             } else {
                 //
-                //             SRPA for UPPER, NORMAL and N is odd ( a(0:n-1,0:n2-1)
-                //             T1 -> a(n1+1,0), T2 -> a(n1,0), S -> a(0,0)
-                //             T1 -> a(n2), T2 -> a(n1), S -> a(0)
+                // SRPA for UPPER, NORMAL and N is odd ( a(0:n-1,0:n2-1)
+                // T1 -> a(n1+1,0), T2 -> a(n1,0), S -> a(0,0)
+                // T1 -> a(n2), T2 -> a(n1), S -> a(0)
                 //
                 Rtrtri("L", diag, n1, &a[n2], n, info);
                 if (info > 0) {
@@ -135,12 +142,12 @@ void Rtftri(const char *transr, const char *uplo, const char *diag, INTEGER cons
             //
         } else {
             //
-            //           N is odd and TRANSR = 'T'
+            // N is odd and TRANSR = 'T'
             //
             if (lower) {
                 //
-                //              SRPA for LOWER, TRANSPOSE and N is odd
-                //              T1 -> a(0), T2 -> a(1), S -> a(0+n1*n1)
+                // SRPA for LOWER, TRANSPOSE and N is odd
+                // T1 -> a(0), T2 -> a(1), S -> a(0+n1*n1)
                 //
                 Rtrtri("U", diag, n1, &a[0], n1, info);
                 if (info > 0) {
@@ -158,8 +165,8 @@ void Rtftri(const char *transr, const char *uplo, const char *diag, INTEGER cons
                 //
             } else {
                 //
-                //              SRPA for UPPER, TRANSPOSE and N is odd
-                //              T1 -> a(0+n2*n2), T2 -> a(0+n1*n2), S -> a(0)
+                // SRPA for UPPER, TRANSPOSE and N is odd
+                // T1 -> a(0+n2*n2), T2 -> a(0+n1*n2), S -> a(0)
                 //
                 Rtrtri("U", diag, n1, &a[(n2 * n2)], n2, info);
                 if (info > 0) {
@@ -180,17 +187,17 @@ void Rtftri(const char *transr, const char *uplo, const char *diag, INTEGER cons
         //
     } else {
         //
-        //        N is even
+        // N is even
         //
         if (normaltransr) {
             //
-            //           N is even and TRANSR = 'N'
+            // N is even and TRANSR = 'N'
             //
             if (lower) {
                 //
-                //              SRPA for LOWER, NORMAL, and N is even ( a(0:n,0:k-1) )
-                //              T1 -> a(1,0), T2 -> a(0,0), S -> a(k+1,0)
-                //              T1 -> a(1), T2 -> a(0), S -> a(k+1)
+                // SRPA for LOWER, NORMAL, and N is even ( a(0:n,0:k-1) )
+                // T1 -> a(1,0), T2 -> a(0,0), S -> a(k+1,0)
+                // T1 -> a(1), T2 -> a(0), S -> a(k+1)
                 //
                 Rtrtri("L", diag, k, &a[1], n + 1, info);
                 if (info > 0) {
@@ -208,9 +215,9 @@ void Rtftri(const char *transr, const char *uplo, const char *diag, INTEGER cons
                 //
             } else {
                 //
-                //              SRPA for UPPER, NORMAL, and N is even ( a(0:n,0:k-1) )
-                //              T1 -> a(k+1,0) ,  T2 -> a(k,0),   S -> a(0,0)
-                //              T1 -> a(k+1), T2 -> a(k), S -> a(0)
+                // SRPA for UPPER, NORMAL, and N is even ( a(0:n,0:k-1) )
+                // T1 -> a(k+1,0) ,  T2 -> a(k,0),   S -> a(0,0)
+                // T1 -> a(k+1), T2 -> a(k), S -> a(0)
                 //
                 Rtrtri("L", diag, k, &a[(k + 1)], n + 1, info);
                 if (info > 0) {
@@ -228,13 +235,13 @@ void Rtftri(const char *transr, const char *uplo, const char *diag, INTEGER cons
             }
         } else {
             //
-            //           N is even and TRANSR = 'T'
+            // N is even and TRANSR = 'T'
             //
             if (lower) {
                 //
-                //              SRPA for LOWER, TRANSPOSE and N is even (see paper)
-                //              T1 -> B(0,1), T2 -> B(0,0), S -> B(0,k+1)
-                //              T1 -> a(0+k), T2 -> a(0+0), S -> a(0+k*(k+1)); lda=k
+                // SRPA for LOWER, TRANSPOSE and N is even (see paper)
+                // T1 -> B(0,1), T2 -> B(0,0), S -> B(0,k+1)
+                // T1 -> a(0+k), T2 -> a(0+0), S -> a(0+k*(k+1)); lda=k
                 //
                 Rtrtri("U", diag, k, &a[k], k, info);
                 if (info > 0) {
@@ -251,9 +258,9 @@ void Rtftri(const char *transr, const char *uplo, const char *diag, INTEGER cons
                 Rtrmm("R", "L", "T", diag, k, k, one, &a[0], k, &a[(k * (k + 1))], k);
             } else {
                 //
-                //              SRPA for UPPER, TRANSPOSE and N is even (see paper)
-                //              T1 -> B(0,k+1),     T2 -> B(0,k),   S -> B(0,0)
-                //              T1 -> a(0+k*(k+1)), T2 -> a(0+k*k), S -> a(0+0)); lda=k
+                // SRPA for UPPER, TRANSPOSE and N is even (see paper)
+                // T1 -> B(0,k+1),     T2 -> B(0,k),   S -> B(0,0)
+                // T1 -> a(0+k*(k+1)), T2 -> a(0+k*k), S -> a(0+0)); lda=k
                 //
                 Rtrtri("U", diag, k, &a[(k * (k + 1))], k, info);
                 if (info > 0) {
@@ -272,6 +279,6 @@ void Rtftri(const char *transr, const char *uplo, const char *diag, INTEGER cons
         }
     }
     //
-    //     End of Rtftri
+    // End of Rtftri
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DLASUM.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,18 +43,18 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-void Rlasum(const char *type, INTEGER const iounit, INTEGER const ie, INTEGER const nrun) {
+void Rlasum(fem::str_cref type, INTEGER const iounit, INTEGER const ie, INTEGER const nrun) {
     common cmn;
     common_write write(cmn);
+    static const char *format_9999 = "(1x,a3,a2,i4,a8,i5,a35)";
+    static const char *format_9998 = "(/,1x,a14,a3,a24,i5,a11)";
     //
     if (ie > 0) {
-        write(iounit, "(1x,a3,a2,i4,a8,i5,a35)"), type, ": ", ie, " out of ", nrun, " tests failed to pass the threshold";
+        write(iounit, format_9999), type, ": ", ie, " out of ", nrun, " tests failed to pass the threshold";
     } else {
-        write(iounit, "(/,1x,a14,a3,a24,i5,a11)"), "All tests for ", type, " passed the threshold ( ", nrun, " tests run)";
+        write(iounit, format_9998), "All tests for ", type, " passed the threshold ( ", nrun, " tests run)";
     }
     //
-    //     End of Rlasum
+    // End of Rlasum
     //
 }

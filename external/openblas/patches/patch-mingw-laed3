@@ -1,0 +1,35 @@
+diff --git a/lapack/laed3/laed3_parallel.c b/lapack/laed3/laed3_parallel.c
+--- a/lapack/laed3/laed3_parallel.c
++++ b/lapack/laed3/laed3_parallel.c
+@@ -33,6 +33,9 @@
+ #include <stdio.h>
+ #include "common.h"
+ 
++#ifdef max
++#undef max
++#endif
+ #define max(a,b) ((a) > (b) ? (a) : (b))
+ #define copysign(x,y) ((y) < 0 ? ((x) < 0 ? (x) : -(x)) : ((x) < 0 ? -(x) : (x)))
+ 
+@@ -54,7 +57,7 @@
+ #define LASET  BLASFUNC(slaset)
+ #endif
+ 
+-FLOAT LAMC3(FLOAT *, FLOAT *);
++FLOATRET LAMC3(FLOAT *, FLOAT *);
+ void LAED4(blasint *, blasint *, FLOAT *, FLOAT *, FLOAT *, FLOAT *, FLOAT *, blasint *);
+ void LACPY(char *, blasint *, blasint *, FLOAT *, blasint *, FLOAT *, blasint *);
+ void LASET(char *, blasint *, blasint *, FLOAT *, FLOAT *, FLOAT *, blasint *);
+diff --git a/lapack/laed3/laed3_single.c b/lapack/laed3/laed3_single.c
+--- a/lapack/laed3/laed3_single.c
++++ b/lapack/laed3/laed3_single.c
+@@ -53,7 +53,7 @@
+ #define LASET  BLASFUNC(slaset)
+ #endif
+ 
+-FLOAT LAMC3(FLOAT *, FLOAT *);
++FLOATRET LAMC3(FLOAT *, FLOAT *);
+ void LAED4(blasint *, blasint *, FLOAT *, FLOAT *, FLOAT *, FLOAT *, FLOAT *, blasint *);
+ void LACPY(char *, blasint *, blasint *, FLOAT *, blasint *, FLOAT *, blasint *);
+ void LASET(char *, blasint *, blasint *, FLOAT *, FLOAT *, FLOAT *, blasint *);
+

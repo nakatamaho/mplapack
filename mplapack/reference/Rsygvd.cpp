@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DSYGVD.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rsygvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *w, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const liwork, INTEGER &info) {
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     bool wantz = Mlsame(jobz, "V");
     bool upper = Mlsame(uplo, "U");
@@ -45,7 +52,7 @@ void Rsygvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
         lwmin = 1;
     } else if (wantz) {
         liwmin = 3 + 5 * n;
-        lwmin = 1 + 6 * n + 2 * n * n;
+        lwmin = 1 + 6 * n + 2 * pow2(n);
     } else {
         liwmin = 1;
         lwmin = 2 * n + 1;
@@ -67,7 +74,7 @@ void Rsygvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
     }
     //
     if (info == 0) {
-        work[1 - 1] = lopt;
+        work[1 - 1] = Rroundup_lwork(lopt);
         iwork[1 - 1] = liopt;
         //
         if (lwork < lwmin && !lquery) {
@@ -84,13 +91,13 @@ void Rsygvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
     }
     //
-    //     Form a Cholesky factorization of B.
+    // Form a Cholesky factorization of B.
     //
     Rpotrf(uplo, n, b, ldb, info);
     if (info != 0) {
@@ -98,23 +105,23 @@ void Rsygvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
         return;
     }
     //
-    //     Transform problem to standard eigenvalue problem and solve.
+    // Transform problem to standard eigenvalue problem and solve.
     //
     Rsygst(itype, uplo, n, a, lda, b, ldb, info);
     Rsyevd(jobz, uplo, n, a, lda, w, work, lwork, iwork, liwork, info);
-    lopt = castINTEGER(max(castREAL(lopt), work[1 - 1]));
+    lopt = max(lopt, castINTEGER(work[1 - 1]));
     liopt = max(liopt, iwork[1 - 1]);
     //
     char trans;
     const REAL one = 1.0;
     if (wantz && info == 0) {
         //
-        //        Backtransform eigenvectors to the original problem.
+        // Backtransform eigenvectors to the original problem.
         //
         if (itype == 1 || itype == 2) {
             //
-            //           For A*x=(lambda)*B*x and A*B*x=(lambda)*x;
-            //           backtransform eigenvectors: x = inv(L)**T*y or inv(U)*y
+            // For A*x=(lambda)*B*x and A*B*x=(lambda)*x;
+            // backtransform eigenvectors: x = inv(L)**T*y or inv(U)*y
             //
             if (upper) {
                 trans = 'N';
@@ -126,8 +133,8 @@ void Rsygvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
             //
         } else if (itype == 3) {
             //
-            //           For B*A*x=(lambda)*x;
-            //           backtransform eigenvectors: x = L*y or U**T*y
+            // For B*A*x=(lambda)*x;
+            // backtransform eigenvectors: x = L*y or U**T*y
             //
             if (upper) {
                 trans = 'T';
@@ -139,9 +146,9 @@ void Rsygvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
         }
     }
     //
-    work[1 - 1] = lopt;
+    work[1 - 1] = Rroundup_lwork(lopt);
     iwork[1 - 1] = liopt;
     //
-    //     End of Rsygvd
+    // End of Rsygvd
     //
 }

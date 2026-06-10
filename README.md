@@ -1,298 +1,509 @@
-# The MPLAPACK is a multiprecision linear algebra package based on BLAS and LAPACK.
-This package is rewritten in C++, and supports several high precision
-libraries like GMP, MPFR and QD etc so that users can choose for user's
-convenience. The MPLAPACK is a free software (2-clause BSD style license with
-original license by LAPACK).
+# MPLAPACK — Multi-Precision Linear Algebra Package
+
+MPLAPACK is a multi-precision linear algebra package based on BLAS and LAPACK,
+implemented in C++ (C++17 required). It supports a range of high-precision arithmetic
+libraries including GMP, MPFR, and QD, allowing users to select the backend that best
+suits their requirements. MPLAPACK is free software distributed under a 2-clause
+BSD-style license, supplemental to the original LAPACK license.
 
 # News
 
-* 2022/9/12 MPLAPACK 2.0.1 released! CUDA version of Rgemm (dd) and Rsyrk (dd) on Vota and Ampere; on Tesla V100; performance of both are approximately 450GFlops! V100 and A100 support revived by Nakazato (aizu-u), provide DLLs for MINGW mplapack.
-* 2022/7/26 MPLAPACK 2.0.0 released! All routines excpet for mixed precision routines are now working and checked by extensive tests for all multiple precisions.
+* 2026-05-12  MPLAPACK 2.2.0 has been released. Available from
+  <https://github.com/nakatamaho/mplapack/releases>. This final release is
+  based on 2.2.0-rc1: rebased from LAPACK 3.9.1 to 3.12.1, added new
+  BLAS/LAPACK routines including `Cgemmtr/Rgemmtr`, `Cgedmd/Rgedmd`,
+  `Cgedmdq/Rgedmdq`, `Cgelst/Rgelst`, `Clatrs3/Rlatrs3`,
+  `Cgeqp3rk/Rgeqp3rk`, `Cunhr_col/Rorhr_col`,
+  `Cungtsqr_row/Rorgtsqr_row`, and `Claqz0-4/Rlaqz0-4`, and improved
+  robustness across binary80, binary128, DD, QD, GMP, and MPFR. See
+  [CHANGES.2.2.0.md](CHANGES.2.2.0.md). Differences from
+  binary64 behavior and other multiprecision-specific failure modes are
+  summarized in
+  [MULTIPRECISION_FAILURE_MODES_2.2.0.md](MULTIPRECISION_FAILURE_MODES_2.2.0.md).
+* 2026-04-09  MPLAPACK 2.1.1 released. Patch release: GCC 15 support
+  (`external/gmp` C23 fix, `{C,R}drgvx` IPA-modref workaround), arm64
+  promoted to **Tier 1** (Ubuntu arm64 and macOS Apple Silicon),
+  musl/Alpine ARM64 build fix, MinGW `laed3` build fix, binary128
+  `std::abs(__float128)` ambiguity fix on aarch64-apple-darwin, and a
+  latent DD miscompilation fix (propagating `-ffp-contract=off` to all
+  DD build targets). OpenBLAS bumped to 0.3.32. ABI/source compatible
+  with 2.1.0.
+* 2026-03-05  MPLAPACK 2.1.0 released. C++17 now required.
+  binary128/binary80 naming unified, MPFR emin/emax auto-adjustment,
+  extended build matrix. LAPACK 3.9.1 Fortran sources are now mechanically
+  converted to idiomatic C++ via Fable and bundled in the release tarball.
+  See [CHANGES.2.1.0.md](CHANGES.2.1.0.md) and [MIGRATION.md](MIGRATION.md).
+* 2022-09-12  MPLAPACK 2.0.1 released, featuring CUDA versions of Rgemm (dd) and Rsyrk (dd)
+  for Volta and Ampere architectures (~450 GFlops on V100), and Windows DLLs for MinGW-w64.
+* 2022-07-26  MPLAPACK 2.0.0 released. All routines (except mixed-precision) functional and
+  tested across all supported precisions.
 
 # Capabilities
-* MPBLAS: All BLAS routines can be done in multiple precision arithmetic.
-* MPLAPACK: All LAPACK routines can be done in multiple precision arithmetic; except for mixed precision routines.
-* Linear Equations
-* Linear Least Squares (LLS) Problems
-* Generalized Linear Least Squares (LSE and GLM) Problems
-* Standard Eigenvalue and Singular Value Problems
-* Symmetric Eigenproblems (SEP)
-* Nonsymmetric Eigenproblems (NEP)
-* Singular Value Decomposition (SVD) 
-* Generalized Eigenvalue and Singular Value Problems
-* Generalized Symmetric Definite Eigenproblems (GSEP)
-* Generalized Nonsymmetric Eigenproblems (GNEP)
-* Generalized Singular Value Decomposition (GSVD) 
 
-# Supported multiple precision libraries and floating point formats
+* **MPBLAS:** All BLAS routines in multiple-precision arithmetic.
+* **MPLAPACK:** All LAPACK routines in multiple-precision arithmetic (except mixed-precision routines):
+  * Linear Equations
+  * Linear Least Squares (LLS) Problems
+  * Generalized Linear Least Squares (LSE and GLM) Problems
+  * Standard Eigenvalue and Singular Value Problems
+  * Symmetric Eigenproblems (SEP)
+  * Nonsymmetric Eigenproblems (NEP)
+  * Singular Value Decomposition (SVD)
+  * Generalized Eigenvalue and Singular Value Problems
+  * Generalized Symmetric Definite Eigenproblems (GSEP)
+  * Generalized Nonsymmetric Eigenproblems (GNEP)
+  * Generalized Singular Value Decomposition (GSVD)
 
-* MPFR + MPC https://www.mpfr.org/ and http://www.multiprecision.org/mpc/  (arbitrary precision with IEEE like rounding mode)
-* GMP https://gmplib.org/ (arbitrary precision)
-* double (binary64)
-* DD, QD (https://www.davidhbailey.com/dhbsoftware/) (DD=approx. binary128, QD=approx. binary256)
-* _Float128 (binary128; via glibc or libquadmath; automatically detected)
-* _Float64x (extended precision of double; binary80 Intel CPU only)
+# Supported Precision Backends
 
-We use MPFR + MPC as the primary arithmetic class.
+* **MPFR + MPC** https://www.mpfr.org/ / http://www.multiprecision.org/mpc/
+  (arbitrary precision with IEEE-like rounding; primary backend)
+* **GMP** https://gmplib.org/ (arbitrary precision)
+* **double** (binary64)
+* **DD, QD** https://www.davidhbailey.com/dhbsoftware/
+  (DD ≈ binary128, QD ≈ binary256)
+* **binary128** (IEEE 754-2018; compiler and platform support is complex —
+  see [binary128_binary80_type_support.md](binary128_binary80_type_support.md))
+* **binary80** (80-bit extended precision; Intel/AMD x86 only)
 
-# Supported platforms
+# Compiler Support
 
-* Ubuntu 22.04, 20.04, 18.04 (amd64, AArch64)
-* CentOS 7,8 (amd64, AArch64)
-* Ubuntu 20.04 (amd64) + Intel oneAPI
-* macOS (Intel) + gcc via macports (you may use homebrew instead, small modification of build script req'ed)
-* Windows (64bit; mingw64 on Ubuntu with wine64)
+| Compiler | binary128 | binary80 |
+|---|---|---|
+| GCC | ✅ Supported | ✅ (x86/x86\_64 only) |
+| Intel oneAPI (icx/icpx) | ✅ Supported | ✅ (x86/x86\_64 only) |
+| Clang/LLVM | ❌ Not supported | ✅ Supported |
 
-# MPLAPACK test results
+> **Clang users:** `binary128` is not supported. Use GCC for `binary128`.
+> **GCC 15:** supported as of 2.1.1. On musl-based distros (e.g. Alpine),
+> the binary128 backend stays on `__float128 + libquadmath` because musl does
+> not ship `strfromf128`/`strfromf64x`.
+
+# Supported Platforms
+
+| Tier | Guarantee | Platforms |
+|---|---|---|
+| **Tier 1** | `make distcheck` + full test suite | macOS Sonoma (amd64), macOS (arm64, Apple Silicon), Windows / MinGW-w64 (amd64), Ubuntu 22.04 (amd64), Ubuntu 24.04 (amd64), Ubuntu 24.04 (arm64) |
+| **Tier 2** | Build only | Debian 12/13 (amd64, arm64, i386, ppc64le, s390x, riscv64, mips64le), Alpine Linux 3.19–3.23 (amd64, arm64, riscv64), Rocky Linux 8/9/10 (amd64), Fedora 42/43, openSUSE Leap 15.6/16.0, openSUSE Tumbleweed |
+| **Tier 3** | Patches accepted; no CI coverage | Other platforms |
+
+Release test targets are run from `release/`:
+
+| Tier | Make target | OS | CPU | Host | Backend |
+|---|---|---|---|---|---|
+| Tier 1 | `tier1-macos-arm64` | macOS 26 | arm64 | `172.27.109.40` | SSH |
+| Tier 1 | `tier1-macos-amd64` | macOS 15 | amd64 | `172.27.109.97` | SSH |
+| Tier 1 | `tier1-ubuntu2404-arm64` | Ubuntu 24.04 | arm64 | `172.27.109.40` | Docker/Colima |
+| Tier 1 | `tier1-ubuntu2604-arm64` | Ubuntu 26.04 | arm64 | `172.27.109.40` | Docker/Colima |
+| Tier 1 | `tier1-ubuntu2404-amd64` | Ubuntu 24.04 | amd64 | `172.27.109.80` | Docker |
+| Tier 1 | `tier1-ubuntu2604-amd64` | Ubuntu 26.04 | amd64 | `172.27.109.80` | Docker |
+| Tier 1 | `tier1-ubuntu2404-mingw64-amd64` | Windows via Ubuntu 24.04 | amd64 | `172.27.109.80` | Docker + MinGW64/Wine |
+| Tier 1 | `tier1-ubuntu2604-mingw64-amd64` | Windows via Ubuntu 26.04 | amd64 | `172.27.109.80` | Docker + MinGW64/Wine |
+| Tier 2 | `tier2-ubuntu2404-inteloneapi-amd64` | Ubuntu 24.04 | amd64 | `172.27.109.80` | Docker + Intel oneAPI |
+| Tier 2 | `tier2-ubuntu2604-inteloneapi-amd64` | Ubuntu 26.04 | amd64 | `172.27.109.80` | Docker + Intel oneAPI |
+| Tier 2 | `tier2-debian12-i386` | Debian 12 | i386 | `172.27.109.80` | Docker |
+
+Tier 1/2 release build scripts are in `release/`:
+```
+release/buildtest_tier1_macos_amd64.sh
+release/buildtest_tier1_macos_arm64.sh
+release/buildtest_tier1_mingw64_amd64.sh
+release/buildtest_tier1_ubuntu_amd64.sh
+release/buildtest_tier1_ubuntu_arm64.sh
+release/buildtest_tier2_ubuntu_inteloneapi_amd64.sh
+release/buildtest_tier2_debian_i386.sh
+```
+
+# How to Build and Install
+
+## Prerequisites
+
+* GCC / G++ / GFortran (C++17 is required; **GCC 15 supported as of 2.1.1**)
+* `wget` or `curl` for release tarball builds, or `git` for Git checkout builds
+* Standard autotools (`autoconf`, `automake`, `libtool`) are required only when building from a Git checkout
+* `ccache` is recommended. The `misc/reconfig.*.sh` helper scripts use it by default.
+
+All third-party libraries (GMP, MPFR, MPC, QD, OpenBLAS, dlfcn-win32) are bundled and
+built automatically. No separate installation of these libraries is required.
+
+Release tarballs already include generated autotools files, so `autoreconf` is not needed.
+Git checkout builds must run one of the `misc/reconfig.*.sh` scripts before `make`; these
+scripts generate local build files, run `autoreconf`, and execute `./configure` with the
+usual MPLAPACK options.
+
+## Linux (amd64 / arm64)
+
+### Release tarball
+
+```sh
+mkdir -p $HOME/tmp && cd $HOME/tmp
+wget https://github.com/nakatamaho/mplapack/releases/download/v2.1.1/mplapack-2.1.1.tar.xz
+tar xvf mplapack-2.1.1.tar.xz
+cd mplapack-2.1.1
+export CXX=g++ CC=gcc FC=gfortran
+./configure \
+    --prefix=$HOME/MPLAPACK \
+    --enable-gmp=yes \
+    --enable-mpfr=yes \
+    --enable-binary128=yes \
+    --enable-qd=yes \
+    --enable-dd=yes \
+    --enable-double=yes \
+    --enable-test=yes \
+    --enable-benchmark=yes
+make -j$(nproc)
+make install
+```
+
+### Git checkout
+
+```sh
+mkdir -p $HOME/tmp && cd $HOME/tmp
+git clone https://github.com/nakatamaho/mplapack.git
+cd mplapack
+bash misc/reconfig.ubuntu24.04.sh
+make -j$(nproc)
+make install
+```
+
+For Ubuntu 22.04 or 26.04, use `misc/reconfig.ubuntu22.04.sh` or
+`misc/reconfig.ubuntu26.04.sh` instead. The Linux reconfig scripts enable
+`binary80` automatically on Intel/AMD x86 and omit it on non-x86 CPUs.
+
+To also enable `binary80` manually in a tarball build (Intel/AMD x86 only), add
+`--enable-binary80=yes`:
+
+```sh
+./configure \
+    --prefix=$HOME/MPLAPACK \
+    --enable-binary80=yes \
+    --enable-binary128=yes \
+    --enable-gmp=yes \
+    --enable-mpfr=yes \
+    --enable-qd=yes \
+    --enable-dd=yes \
+    --enable-double=yes \
+    --enable-test=yes \
+    --enable-benchmark=yes
+```
+
+## macOS (Intel or Apple Silicon; using MacPorts)
+
+FSF GCC is required. The default Apple Clang does not support `binary128`.
+On Apple Silicon (arm64), omit `--enable-binary80=yes` (binary80 is x86-only).
+
+### Release tarball
+
+```sh
+sudo port install gcc15 coreutils git gsed
+mkdir -p $HOME/tmp && cd $HOME/tmp
+wget https://github.com/nakatamaho/mplapack/releases/download/v2.1.1/mplapack-2.1.1.tar.xz
+tar xvf mplapack-2.1.1.tar.xz
+cd mplapack-2.1.1
+export CXX=g++-mp-15 CC=gcc-mp-15 FC=gfortran-mp-15
+./configure \
+    --prefix=$HOME/MPLAPACK \
+    --enable-gmp=yes \
+    --enable-mpfr=yes \
+    --enable-binary128=yes \
+    --enable-qd=yes \
+    --enable-dd=yes \
+    --enable-double=yes \
+    --enable-test=yes \
+    --enable-benchmark=yes
+# On Intel macs, additionally pass --enable-binary80=yes
+make -j$(sysctl -n hw.logicalcpu)
+make install
+```
+
+### Git checkout
+
+```sh
+sudo port install gcc15 coreutils git gsed ccache autoconf automake libtool
+mkdir -p $HOME/tmp && cd $HOME/tmp
+git clone https://github.com/nakatamaho/mplapack.git
+cd mplapack
+bash misc/reconfig.macOS.sh
+make -j$(sysctl -n hw.logicalcpu)
+make install
+```
+
+## Windows (MinGW-w64 cross-compile on Ubuntu)
+
+### Release tarball
+
+```sh
+sudo apt-get install gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64 gfortran-mingw-w64-x86-64
+mkdir -p $HOME/tmp && cd $HOME/tmp
+wget https://github.com/nakatamaho/mplapack/releases/download/v2.1.1/mplapack-2.1.1.tar.xz
+tar xvf mplapack-2.1.1.tar.xz
+cd mplapack-2.1.1
+export CXX=x86_64-w64-mingw32-g++
+export CC=x86_64-w64-mingw32-gcc
+export FC=x86_64-w64-mingw32-gfortran
+./configure \
+    --host=x86_64-w64-mingw32 \
+    --prefix=$HOME/MPLAPACK \
+    --enable-gmp=yes \
+    --enable-mpfr=yes \
+    --enable-binary128=yes \
+    --enable-binary80=yes \
+    --enable-qd=yes \
+    --enable-dd=yes \
+    --enable-double=yes \
+    --enable-test=yes
+make -j$(nproc)
+make install
+```
+
+### Git checkout
+
+```sh
+sudo apt-get install git autoconf automake libtool ccache \
+    gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64 gfortran-mingw-w64-x86-64
+mkdir -p $HOME/tmp && cd $HOME/tmp
+git clone https://github.com/nakatamaho/mplapack.git
+cd mplapack
+bash misc/reconfig.ubuntu24.04.mingw64.sh
+make -j$(nproc)
+make install
+```
+
+## Verifying the Build
+
+```sh
+make check
+```
+
+Test results are summarized automatically by `misc/summarize_mplapack_tests.py`.
+
+# Fable — Fortran-to-C++ Conversion Pipeline
+
+> **Note:** The Fable conversion pipeline is **not included in the release tarball**.
+> It is available only via Git clone. Regenerating sources also requires expanding the
+> bundled LAPACK 3.9.1 source under `external/lapack/` before running the scripts.
+
+`fable/` is a top-level standalone component providing automated Fortran-to-C++ conversion
+of LAPACK 3.9.1 sources via [Fable](https://cci.lbl.gov/fable/) and FEM (Fortran Emulator).
+
+```sh
+# Step 1: clone the repository
+git clone https://github.com/nakatamaho/mplapack
+cd mplapack
+
+# Step 2: expand bundled LAPACK sources
+cd external/lapack
+tar xvf lapack-3.9.1.tar.gz
+cd ../..
+
+# Step 3: run the conversion pipeline
+bash fable/go.sh          # library routines (BLAS/LAPACK C++ sources + headers + patches)
+bash fable/go_testing.sh  # test programs (EIG/LIN/MATGEN)
+```
+
+# MPLAPACK Test Results
+
 * https://github.com/nakatamaho/mplapack/tree/master/mplapack/test/lin/results
 * https://github.com/nakatamaho/mplapack/tree/master/mplapack/test/eig/results
 
-# MPLAPACK benchmark results
+# MPLAPACK Benchmark Results
+
 * https://github.com/nakatamaho/mplapack/tree/master/benchmark/results/2022
 
 # Manual
-* Please wait for update of the manual. However, usage has not changed. 
+
 * https://arxiv.org/abs/2109.13406v2
-* https://raw.githubusercontent.com/nakatamaho/mplapack/master/doc/manual/manual.pdf (updated frequently)
-```
+* https://raw.githubusercontent.com/nakatamaho/mplapack/master/doc/manual/manual.pdf
+
+```bibtex
 @misc{2109.13406v2,
-Author = {Maho Nakata},
-Title = {MPLAPACK version 2.0.1 user manual},
-Year = {2022},
-Eprint = {arXiv:2109.13406v2},
+  Author = {Maho Nakata},
+  Title  = {MPLAPACK version 2.0.1 user manual},
+  Year   = {2022},
+  Eprint = {arXiv:2109.13406v2},
 }
 ```
+
+# Movies
+
+* https://www.youtube.com/watch?v=M76wHwckNPU (created by Ge Baolai)
 
 # Slides
-* https://github.com/nakatamaho/mplapack/blob/v2.0/doc/presentation/20211128_%E7%B2%BE%E5%BA%A6%E4%BF%9D%E8%A8%BCmeeting.pdf
 
-# How to build on Linux and Win (using Docker; recommended)
+* https://github.com/nakatamaho/mplapack/blob/master/doc/presentation/2023-06-01%20CMSI%E6%95%99%E8%82%B2%E8%A8%88%E7%AE%97%E7%A7%91%E5%AD%A6%E6%8A%80%E8%A1%93%E7%89%B9%E8%AB%96A%20%E7%AC%AC7%E5%9B%9E%20%E4%B8%AD%E7%94%B0%E7%9C%9F%E7%A7%80.pdf (in Japanese)
+* https://github.com/nakatamaho/mplapack/blob/v2.0/doc/presentation/20211128_%E7%B2%BE%E5%BA%A6%E4%BF%9D%E8%A8%98meeting.pdf (in Japanese)
 
-It took 3.5 hours on my Mac mini (2018), Core i5-8500B (6 cores@3GHz), to finish the build.
+# MPLAPACK Release Process
 
-Ubuntu 22.04
-```
-$ git clone https://github.com/nakatamaho/mplapack/
-$ cd mplapack
-$ /usr/bin/time docker build -t mplapack:ubuntu2204 -f Dockerfile_ubuntu22.04 . 2>&1 | tee log.ubuntu2204
-```
+## MPLAPACK 2.1.1 Release Process
 
-Ubuntu 20.04
-```
-$ git clone https://github.com/nakatamaho/mplapack/
-$ cd mplapack
-$ /usr/bin/time docker build -t mplapack:ubuntu2004 -f Dockerfile_ubuntu20.04 . 2>&1 | tee log.ubuntu2004
-```
+2.1.1 is a patch release. No API/ABI changes vs. 2.1.0. Highlights:
 
-Ubuntu 20.04 + Intel oneAPI
-```
-$ git clone https://github.com/nakatamaho/mplapack/
-$ cd mplapack
-$ /usr/bin/time docker build -t mplapack:ubuntu2004intel -f Dockerfile_ubuntu20.04_inteloneapi . 2>&1 | tee log.ubuntu2004.intel
-```
+- **GCC 15 support.** `external/gmp` patched for the C23 default
+  (`void g(){}` → properly typed prototype); patch is gated on
+  `GCC >= 15` at configure time. `{C,R}drgvx` test drivers carry an
+  `__attribute__((optimize("O1")))` workaround for a g++-15 IPA-modref
+  miscompilation.
+- **arm64 promoted to Tier 1**: Ubuntu arm64 and macOS Apple Silicon.
+- **musl/Alpine ARM64** build fix (`M_PIl` fallback).
+- **MinGW** `lapack/laed3` build fix (`LAMC3` prototype, `max` macro guard).
+- **binary128** `sign()` ambiguity on aarch64-apple-darwin / MacPorts GCC 15
+  fixed (unqualified `abs()`).
+- **DD miscompilation hardening**: `-ffp-contract=off` (and `-fp-model strict`
+  for `icpx`) is now propagated to *all* DD build targets — reference and
+  optimized BLAS/LAPACK, tests, and benchmarks. CUDA DD targets are
+  intentionally excluded (`nvcc` rejects the flag).
+- **`configure` fix**: a stale `CXXFLAGS="$SAVE_CXXFLAGS"` line was
+  silently clearing user-supplied `CXXFLAGS` (e.g. `-fsanitize=address`).
+- **`std::abs(__float128)` probe** tightened to require an exact-overload
+  match instead of trusting `__SIZEOF_FLOAT128__`.
+- **dd/qd test comparisons** switched from `diff` to `misc/num_diff.py`
+  (relative tolerance `1e-30` for dd, `1e-60` for qd) to absorb 1-bit
+  FMA-induced rounding noise.
+- **`make distcheck`** fixes: `external/openblas/Makefile` moved into the
+  benchmark-conditional `AC_CONFIG_FILES` block; dd/qd test scripts use
+  `${srcdir}` for VPATH builds; missing `misc/` scripts added to `EXTRA_DIST`.
+- **OpenBLAS** updated to 0.3.32 (also fixes the macOS arm64 build).
+- **`configure` build summary**: now reports compiler commands and versions,
+  target CPU and integer model, OpenMP runtime, enabled backends,
+  binary128/binary80 type / I/O / math / literal-suffix / interop, and
+  `std::abs(__float128)` availability.
+- **Release build matrix** broadened across 77 (OS, arch, toolchain)
+  configurations: Alpine 3.19–3.23, Debian 11–13, Ubuntu 18.04–24.04,
+  Rocky 8–10, Fedora 42/43, openSUSE Leap 15/16, openSUSE Tumbleweed,
+  on x86_64, i386/i686, aarch64, ppc64le, s390x, riscv64, mips64le,
+  plus Intel oneAPI (`icpx` 2025.3.2) and MinGW-w64 cross targets.
+- **Enterprise lifecycle note**: Rocky 8/9, openSUSE Leap 15, and
+  Ubuntu 18/20/22 stay on the `libquadmath` path for their full support
+  window — `libquadmath` support cannot be dropped yet.
 
-Windows 64bit (using cross compiler on Ubuntu)
-```
-$ git clone https://github.com/nakatamaho/mplapack/
-$ cd mplapack
-$ /usr/bin/time docker build -t mplapack:mingw -f  Dockerfile_ubuntu20.04_mingw64 . 2>&1 | tee log.mingw
-```
+## MPLAPACK 2.1.0 Release Process
 
-CentOS 7 (amd64)
-```
-$ git clone https://github.com/nakatamaho/mplapack/
-$ cd mplapack
-$ /usr/bin/time docker build -t mplapack:centos7 -f Dockerfile_CentOS7_amd64 . 2>&1 | tee log.CentOS7
-```
+### Tier-S Representative Gate Matrix (Release Blockers)
 
-CentOS 7 (aarch64)
-```
-$ git clone https://github.com/nakatamaho/mplapack/
-$ cd mplapack
-$ /usr/bin/time docker build -t mplapack:centos7 -f Dockerfile_CentOS7_AArch64 . 2>&1 | tee log.CentOS7
-```
+Tier 1 platforms run the full pipeline including `make distcheck`. Tier 2 platforms run build only.
 
-CentOS 8
-```
-$ git clone https://github.com/nakatamaho/mplapack/
-$ cd mplapack
-$ /usr/bin/time docker build -t mplapack:centos8 -f Dockerfile_CentOS8 . 2>&1 | tee log.CentOS8
-```
+| # | Tier | OS | Arch | Compiler | binary80 | binary128 | Required tasks | Date |
+|---:|:---:|:---|:---|:---|:---:|:---:|:---|:---|
+| 1 | 1 | macOS Intel Sonoma | amd64 | GCC (MacPorts) | ✅ | ✅ | `make distcheck` + examples | - |
+| 2 | 1 | macOS Apple Silicon | arm64 | GCC (MacPorts) | N/A | ✅ | `make distcheck` + examples | 2.1.1 |
+| 3 | 1 | Windows | amd64 | GCC (MinGW-w64) | ✅ | ✅ | `make distcheck` + examples | - |
+| 4 | 1 | Ubuntu 22.04 | amd64 | GCC | ✅ | ✅ | `make distcheck` + examples | - |
+| 5 | 1 | Ubuntu 24.04 | amd64 | GCC | ✅ | ✅ | `make distcheck` + examples | - |
+| 6 | 1 | Ubuntu 24.04 | arm64 | GCC | N/A | ✅ | `make distcheck` + examples | 2.1.1 |
+| 7 | 2 | Debian 12 | i386 | GCC | ✅ | N/A | build only | - |
+| 8 | 2 | Rocky 8/9/10 | amd64 | GCC | ✅ | ✅ | build only | - |
+| 9 | 2 | Alpine 3.19–3.23 | amd64, arm64, riscv64 | GCC | ✅ (x86) | ✅ | build only | - |
+| 10 | 2 | Debian 12/13 | ppc64le, s390x, riscv64, mips64le | GCC | N/A | ✅ | build only | - |
+| 11 | 2 | Debian 13 | amd64 | GCC | ✅ | ✅ | build only | - |
 
-Ubuntu 18.04
-```
-$ git clone https://github.com/nakatamaho/mplapack/
-$ cd mplapack
-$ /usr/bin/time docker build -t mplapack:ubuntu1804 -f Dockerfile_ubuntu18.04 . 2>&1 | tee log.ubuntu1804
-```
+### Tier Policy
 
-# How to build and install from source tarball
-* on Linux: prerequiesties: gcc, g++ and gfortran
+> **Tier 1 (release blockers):** `make distcheck` must pass on all Tier 1 platforms.
+> **Tier 2 (build guarantee):** build only; not release-blocking.
+> **Tier 3 (patches accepted):** no CI coverage.
 
-```
-$ rm -rf $HOME/tmp $HOME/MPLAPACK
-$ mkdir $HOME/tmp
-$ cd $HOME/tmp
-$ wget https://github.com/nakatamaho/mplapack/releases/download/v2.0.1/mplapack-2.0.1.tar.xz
-$ tar xvfz mplapack-2.0.1.tar.xz
-$ cd mplapack-2.0.1
-$ CXX="g++" ; export CXX
-$ CC="gcc" ; export CC
-$ FC="gfortran"; export FC
-$ ./configure --prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes --enable-benchmark=yes #--enable-_Float64x=yes 
-$ make -j4
-$ make install
-```
+#### CPU Architecture Tiers
 
-* on macOS (using macports)
-FSF gcc is required (via macports, homebrew, or whatever); we don't test clang which doesn't support _Float128. 
-There are two problems with building the mac version. We have to downgrade the command line tools to 13.4. See https://github.com/nakatamaho/mplapack/issues/60  and /opt/local/bin/ginstall is somewhat broken. See https://github.com/nakatamaho/mplapack/issues/44 to workaround.
-```
-$ sudo port install gcc10 coreutils git gsed
-$ rm -rf $HOME/tmp $HOME/MPLAPACK
-$ mkdir $HOME/tmp
-$ cd $HOME/tmp
-$ wget https://github.com/nakatamaho/mplapack/releases/download/v2.0.1/mplapack-2.0.1.tar.xz
-$ tar xvfz mplapack-2.0.1.tar.xz
-$ cd mplapack-2.0.1
-$ CXX="g++-mp-10" ; export CXX
-$ CC="gcc-mp-10" ; export CC
-$ FC="gfortran-mp-10"; export FC
-$ INSTALL="/usr/bin/install"; export INSTALL
-$ ./configure --prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes --enable-benchmark=yes #--enable-_Float64x=yes 
-$ make -j4
-$ make install
-```
+| Tier | Architectures | Expectation |
+|:---:|:---|:---|
+| 1 | amd64 (macOS, Windows, Ubuntu); arm64 (macOS, Ubuntu) | `make distcheck` + examples |
+| 2 | i386, ppc64le, s390x, riscv64, mips64le | build only |
+| 3 | others | build-only best-effort |
 
-Note: Float64x is supported only on Intel CPUs, you can enable this by uncomment "#--enable-_Float64x=yes" -> "--enable-_Float64x=yes" as follows:
-```
-$ ./configure --prefix=$HOME/MPLAPACK --enable-_Float64x=yes --enable-gmp=yes --enable-mpfr=yes --enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes
-```
+#### Compiler Tiers
 
-# Docker build for developemnt (+ FABLE; Automatic Fortran to C++ converter)
+| Tier | Compilers | Expectation |
+|:---:|:---|:---|
+| 1 | GCC 11–15 (native), GCC (MinGW-w64) | Must be green |
+| 2 | Clang | Build only; binary128 N/A |
+| — | Intel oneAPI | binary128 and binary80 broken (2024+); oneAPI 2023 worked but no longer readily available; https://github.com/nakatamaho/mplapack/issues/77 |
 
-https://github.com/cctbx/cctbx_project/tree/master/fable
-FABLE: Automatic Fortran to C++ conversion (https://doi.org/10.1186/1751-0473-7-5).
+#### Feature Tiers (Precision)
 
-## How to build
-```
-$ git clone https://github.com/nakatamaho/mplapack/
-$ cd mplapack
-$ /usr/bin/time docker build -t mplapack:fable -f Dockerfile_fable . 2>&1 | tee log.fable
-```
+| Tier | Feature | Primary coverage targets | Notes |
+|:---:|:---|:---|:---|
+| 1 | binary80 | amd64, i386, Windows (MinGW-w64) | N/A on arm64; Clang supported; oneAPI broken |
+| 1 | binary128 | amd64, arm64, macOS (GCC), Windows (MinGW-w64) | N/A on Clang; oneAPI broken |
 
-## How to convert a sample Fortran to C++
-```
-$ docker run -it mplapack:fable
-$ cd ; fable.cout sample.f
-```
+## MPLAPACK 3.0.0 Release Process
 
-# MPLAPACK Release process
-
-## MPLAPACK 3.0.0 Release process
-This is the release process for MPLAPACK 3.0.0
 | Action | Date | Status | Description |
-| --- | --- | --- | --- |
-| add openblas for benchmark of double           |            |     |                          | 
-| update to LAPACK 3.10.1                        |            |     |                          | 
-| FMA for QD, DD                                 |            |     |                          |
-| add more benchmarks, Rsyev, Rgesvd etc         |            |     |                          | 
-| optimized implementations                      |            |     |                          | 
-| optimized implementations should be the default|            |     |                          | 
-| add qa program of BLAS                         |            |     |                          | 
-| Take benchmark on A100 (Rgemm, Rsyrk dd)       |            |     |                          |
-| python integration?                            |            |     |                          | 
-| octave integration?                            |            |     |                          | 
-| Drop GMP version                               |            |     | Since trigonometric functions req'ed | 
-| add gmpfrxx                                    |            |     | https://math.berkeley.edu/~wilken/code/gmpfrxx/ | 
-| Impliment mixed precision version              |            |     |                     | 
-| cleanup pow (REAL, long int)                   |            |     |                          | 
-| Get rid of compiler warnings                   |            |     |                          | 
-| lp64 ilp64 llp64 ilp32 lp32 cleanup            |            |     |                          | 
+|---|---|---|---|
+| Optimized implementations as default | | | |
+| Add template version | | | mockup: https://github.com/nakatamaho/mplapack-template |
+| Add gmpfrxx | | | https://math.berkeley.edu/~wilken/code/gmpfrxx/ |
+| Add OpenBLAS for double benchmark | | | |
+| Update to LAPACK 3.12.1 | | | Patches already bundled in 2.1.0 |
+| FMA for QD, DD | | | |
+| Add more benchmarks (Rsyev, Rgesvd, etc.) | | | |
+| Add QA program for BLAS | | | |
+| Take benchmark on A100 (Rgemm, Rsyrk dd) | | | |
+| Python integration | | | |
+| Octave integration | | | |
+| Mixed-precision routines | | | |
+| lp64/ilp64/llp64/ilp32 cleanup | | | |
+| Eliminate compiler warnings | | | |
 
-## MPLAPACK 4.0.0 Release process
-This is the release process for MPLAPACK 3.0.0
-| Action | Date | Status | Description |
-| --- | --- | --- | --- |
-| template version                               |            |     | mockup https://github.com/nakatamaho/mplapack-template | 
+## Old Release Schedules
 
-## old schedules
-
-* version 2.0.1 https://github.com/nakatamaho/mplapack/blob/master/doc/Release2.0.1.md
-* version 2.0.0 https://github.com/nakatamaho/mplapack/blob/master/doc/Release2.0.0.md
-* version 1.0.0 https://github.com/nakatamaho/mplapack/blob/master/doc/Release1.0.0.md
+* version 2.0.1: https://github.com/nakatamaho/mplapack/blob/master/doc/Release2.0.1.md
+* version 2.0.0: https://github.com/nakatamaho/mplapack/blob/master/doc/Release2.0.0.md
+* version 1.0.0: https://github.com/nakatamaho/mplapack/blob/master/doc/Release1.0.0.md
 
 # History
-* 2022/6/14 MPLAPACK 2.0.0 alpha released. Complex version and RFP version are now working. If you find problems feel free to raise issues.
-* 2022/05/24 2.0 All tests for complex and RFP have passed! alpha version is merged into HEAD.
-* 2022/03/21 2.0 (develoment ongoing). Now complex lin tests have passed for all precisions.
-* 2021/11/1 1.0.1 release. Fixing dd and qd arithmetic by Inte One API.
-* 2021/10/1 1.0.0 release. Huge improvement; all real LAPACK routines are available; SVD, eigenproblem solver for non symmetric matrices are added. manual is available:  https://raw.githubusercontent.com/nakatamaho/mplapack/master/doc/manual/manual.pdf 
-* 2021/4/11 0.9.3 release. CentOS7 AArch64 support
-* 2021/4/6  0.9.1 release. CentOS support
-* 2021/4/1  0.9.0 release. Rename to mplapack. You must rename include files, etc. Rewrite and recompilation required.
-* 2012/12/25: MPACK 0.8.0 NVIDIA C2050 support for Rgemm in double-double, and preliminary support for Intel Xeon Phi. ANNOUNCE
-* 2012/12/20: MPACK 0.8.0-RC2 Build fixes on various platforms.
-* 2012/12/05: Our Rgemm dd paper "A Fast implementation of matrix-matrix product in double-double precision on NVIDIA C2050 and application to semidefinite programming" is selected as the Best Papers of The Third International Conference on Networking and Computing. Slide is here.
-* 2012/11/29: MPACK 0.8.0-RC1 CUDA version of Rgemm in double-double precision is integrated.
-* 2012/10/13: CUDA 4.2 or later version of accelerated Rgemm in double-double precision on NVIDIA C2050 GPU is now available. Note it does not work on CUDA 4.1. Original release announce is here., and preprint is available from here, and it will be presented at The Third International Conference on Networking and Computing Okinawa, Japan, December 5-7, 2012 .
-* 2012/06/16: MPACK 0.7.0! Announcement
-* 2012/06/16: Development has been migrated to SVN repository.
-* 2011/10/28: Rgemm acceleration in double-double precision on NVIDIA C2050 GPU is now available. Even though papers are not published, you can just try by "make". Note that only CUDA 3.2 is supported. Origial release announce is here.
-* 2011/08/24: Rgemm acceleration on NVIDIA C2050 GPU is coming. Unfortunately paper are rejected, so please wait... Here is a pdf slide.
-* 2010/08/20: MPACK 0.6.7! Includes condition number estimators; Rgecon and Rpocon. Now 100 MLAPACK routines, and license has been changed to 2-clause BSD style license. No longer use LGPLv3.
-* 2010/08/6: MPACK 0.6.6! Build fix release. Tested on various Linux distributions.
-* 2010/05/31: A paper for MPACK (0.6.4) in Japanese has been uploaded.
-* 2010/05/21: MPACK 0.6.5! MPFR support, and MBLAS license has been changed to BSD style. Still MLAPACK part is LGPLv3. I'll replace hopefully soon.
-* 2010/01/13: MPACK 0.6.4! BUILD FIX RELEASE! PLEASE CHECK ON YOUR ENVIRONMENT! THANKS! ALSO WINDOWS IS SUPPORTED!
-* 2009/12/18: POSTER and SLIDE ARE UPLOADED; MPACK (MBLAS/MLAPACK) poster at HPCS2010 in English, and slide in Japanese, and I did two seminars about MPACK (MBLAS/MLAPACK) @NII and @Tokyo Univ; here is the slide.
-* 2009/11/24: MPACK 0.6.0!
-* 2009/11/7: Add example page.
-* 2009/10/9: MPACK 0.5.2, build fix on Intel Mac.
-* 2009/10/6: The cvs version has faster Raxpy using OpenMP parallelism.
-* 2009/10/5: MPACK 0.5.1, just minor updates.
-* 2009/9/24: MPACK 0.5.0!
-* 2009/9/17: GMP/QD/DD integration is going very well; now builds the mlapack part as well.
-* 2009/9/11: Now CVS version of MBLAS supports QD and DD. I abandoned "explicit generation of instances" for bad performance.
-* 2009/5/25: Now I switched to template programming so that the library will be most portable. We automatically generate GMP, QD and DD versions via "explicit generation of instances". For real calculations, source code level compatibility is retained and also we can made some optimized version as well, whereas complex code we need a small changes. Typically 2-3 percent performance loss have been observed.
-* 2009/3/21: QD and DD version of SDPA (SDPA-QD, DD) have been uploaded. These packages include some part of MPACK in QD and DD.
-* 2009/2/10: mpack-devel ML has been launched.
-* 2009/2/10: mpack-0.0.9.tar.gz. 
-* 2009/2/5: SDPA-GMP 7.1.2 has been released now is supported by MPACK (MBLAS/MLAPACK!)
-* 2009/1/8: mpack-0.0.8.tar.gz. Moved to souceforge.net.
-* 2008/8/22: mpack-0.0.6.tar.gz. Build fix release.
-* 2008/8/14: mpack-0.0.5.tar.gz. Eighteen LAPACK routines (Rlamch, Rlae2, Rlaev2, Rlassq, Rlanst, Rlansy, Rlapy2, Rlarf, Rlarfg, Rpotf2, Rlarfb, Rlaset, Rlarft, Rlartg, Rlascl, Rlasrt, Rlasr, Rlatrd) with check programs and complete "blas.h" and "lapack.h" (prototypes for the BLAS and LAPACK) have been made.
-* 2008/7/23: mpack-0.0.4.tar.gz. All test cases are imported.
-* 2008/7/18: mpack-0.0.3.tar.gz. Fix copyright issues, make check partially works, except for MacOSX.
-* 2008/7/17: mpack-0.0.2.tar.gz. Installation instructions on Fedora9 and Ubuntu 8.04 are now available. Build fix with gcc-4.3.
-* 2008/7/15: mpack-0.0.1.tar.gz. Now configurable and installable :)
-* 2008/7/11: Change GPL to LGPLv3 and upload mpack-0.0.0.tar.gz.
-* 2008/6/27: Add mBSD header of original authors.
-* 2008/6/26: Tar ball has been provided. All sources for MBLAS have been uploaded.
-* 2008/6/24: This page has been created. 
 
-# Oldpage
+* 2026-04-09  MPLAPACK 2.1.1 released. GCC 15 support, arm64 promoted to Tier 1
+  (Ubuntu arm64, macOS Apple Silicon), DD `-ffp-contract=off` propagation fix,
+  binary128 / MinGW / musl build fixes, OpenBLAS 0.3.32. ABI compatible with 2.1.0.
+* 2026-03-05  MPLAPACK 2.1.0 released. binary128/binary80 naming unified, MPFR emin/emax
+  auto-adjustment, extended build matrix (Alpine, Rocky, Debian i386, CUDA 13.1.1).
+  LAPACK 3.9.1 Fortran sources mechanically converted to idiomatic C++ via Fable and
+  bundled in the release tarball.
+* 2022-09-12  MPLAPACK 2.0.1 released.
+* 2022-07-26  MPLAPACK 2.0.0 released.
+* 2022-06-14  MPLAPACK 2.0.0 alpha released.
+* 2021-11-01  1.0.1 release. Fixed DD and QD arithmetic with Intel oneAPI.
+* 2021-10-01  1.0.0 release. All real LAPACK routines available; SVD and non-symmetric
+  eigenproblem solvers added.
+* 2021-04-11  0.9.3 release. CentOS 7 AArch64 support.
+* 2021-04-01  0.9.0 release. Renamed to mplapack.
+* 2012-12-25  MPACK 0.8.0. NVIDIA C2050 support for Rgemm (double-double).
+* 2010-08-20  MPACK 0.6.7. Condition number estimators added (Rgecon, Rpocon).
+  License changed to 2-clause BSD.
+* 2009-11-24  MPACK 0.6.0.
+* 2008-07-15  mpack-0.0.1. Now configurable and installable.
+* 2008-06-24  Project page created.
+
+# Old Page
+
 http://mplapack.sourceforge.net/
 
-# Acknowledgment:
+# Acknowledgment
 
 This work has been supported by:
-The Special Postdoctoral Researchers' Program of RIKEN (2008, 2009)
-Grant-in-Aid for Scientific Research (B) 21300017 from the Japan Society for the Promotion of Science (2009, 2010, 2011).
-Microsoft Research CORE6 (2010), and the Japan Society for the Promotion of Science (JSPS KAKENHI Grant no. 18H03206) and TIS inc.
+The Special Postdoctoral Researchers' Program of RIKEN (2008, 2009),
+Grant-in-Aid for Scientific Research (B) 21300017 from the Japan Society for the Promotion
+of Science (2009–2011), Microsoft Research CORE6 (2010), JSPS KAKENHI Grant no. 18H03206,
+and TIS inc.
 
-Also the M.N would like to thank Dr. Imamura Toshiyuki. Dr. Nakasato Naohito, Dr. Fujisawa Katsuki, Dr. Kouya Tomonori, Dr. Takahashi Daisuke, Dr. Goto Kazushige, Dr. Himeno Ryutaro, Dr. Hishimuna Toshiaki, Dr. Katagiri Takahiro, Dr. Ogita Takeshi, Dr. Kashiwagi Masahide, Dr. Yuasa Fukuko, Dr. Ishikawa Tadashi, Dr. Geshi Masaaki and Mr. Minato Yuichiro for warm encouragement.
+M.N. would like to thank Dr. Imamura Toshiyuki, Dr. Nakasato Naohito, Dr. Fujisawa Katsuki,
+Dr. Kouya Tomonori, Dr. Takahashi Daisuke, Dr. Goto Kazushige, Dr. Himeno Ryutaro,
+Dr. Hishimuna Toshiaki, Dr. Katagiri Takahiro, Dr. Ogita Takeshi, Dr. Kashiwagi Masaaki,
+Dr. Yuasa Fukuko, Dr. Ishikawa Tadashi, Dr. Geshi Masaaki, and Mr. Minato Yuichiro
+for warm encouragement.
 
 # Citation
-```
+
+```bibtex
 @misc{2109.13406v2,
-Author = {Maho Nakata},
-Title = {MPLAPACK version 2.0.1 user manual},
-Year = {2022},
-Eprint = {arXiv:2109.13406v2},
+  Author = {Maho Nakata},
+  Title  = {MPLAPACK version 2.0.1 user manual},
+  Year   = {2022},
+  Eprint = {arXiv:2109.13406v2},
 }
 ```
 
-# contact
-NAKATA Maho <maho.nakata@gmail.com> <maho@riken.jp>
+# Contact
 
+NAKATA Maho <maho.nakata@gmail.com> <maho@riken.jp>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DDRVSY_AA_2STAGE.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,19 +43,14 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-#include <mplapack_debug.h>
-
 void Rdrvsy_aa_2stage(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER const nrhs, REAL const thresh, bool const tsterr, INTEGER const nmax, REAL *a, REAL *afac, REAL *ainv, REAL *b, REAL *x, REAL *xact, REAL *work, REAL *rwork, INTEGER *iwork, INTEGER const nout) {
     common cmn;
     common_write write(cmn);
-    //
-    const INTEGER nfact = 2;
-    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
-    char uplos[] = {'U', 'L'};
-    char facts[] = {'F', 'N'};
-    char path[4] = {};
-    char matpath[4] = {};
-    char buf[1024];
+    static INTEGER iseedy[4] = {1988, 1989, 1990, 1991};
+    static fem::str<1> uplos[2] = {"U", "L"};
+    static fem::str<1> facts[2] = {"F", "N"};
+    fem::str<3> path;
+    fem::str<3> matpath;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -59,20 +61,20 @@ void Rdrvsy_aa_2stage(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER con
     INTEGER in = 0;
     INTEGER n = 0;
     INTEGER lda = 0;
-    char xtype;
+    fem::str<1> xtype;
     const INTEGER ntypes = 10;
     INTEGER nimat = 0;
     INTEGER imat = 0;
     bool zerot = false;
     INTEGER iuplo = 0;
-    char uplo;
-    char type;
+    fem::str<1> uplo;
+    fem::str<1> type;
     INTEGER kl = 0;
     INTEGER ku = 0;
     REAL anorm = 0.0;
     INTEGER mode = 0;
     REAL cndnum = 0.0;
-    char dist;
+    fem::str<1> dist;
     INTEGER info = 0;
     INTEGER izero = 0;
     INTEGER ioff = 0;
@@ -81,57 +83,28 @@ void Rdrvsy_aa_2stage(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER con
     INTEGER i2 = 0;
     INTEGER i1 = 0;
     INTEGER ifact = 0;
-    char fact;
+    const INTEGER nfact = 2;
+    fem::str<1> fact;
     INTEGER lwork = 0;
     INTEGER k = 0;
     const INTEGER ntests = 3;
     REAL result[ntests];
     INTEGER nt = 0;
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    static const char *format_9999 = "(1x,a,', UPLO=''',a1,''', N =',i5,', type ',i2,', test ',i2,', ratio =',"
+                                     "g12.5)";
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
+    // Initialize constants and the random number seed.
     //
-    //  =====================================================================
+    // Test path
     //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
+    path(1, 1) = "Double precision";
+    path(2, 3) = "S2";
     //
-    //     Initialize constants and the random number seed.
+    // Path to generate matrices
     //
-    //     Test path
-    //
-    path[0] = 'R';
-    path[1] = 'S';
-    path[2] = '2';
-    //
-    //     Path to generate matrices
-    //
-    matpath[0] = 'R';
-    matpath[1] = 'S';
-    matpath[2] = 'Y';
+    matpath(1, 1) = "Double precision";
+    matpath(2, 3) = "SY";
     //
     nrun = 0;
     nfail = 0;
@@ -140,25 +113,26 @@ void Rdrvsy_aa_2stage(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER con
         iseed[i - 1] = iseedy[i - 1];
     }
     //
-    //     Test the error exits
+    // Test the error exits
     //
     if (tsterr) {
         Rerrvx(path, nout);
     }
+    infot = 0;
     //
-    //     Set the block size and minimum block size for testing.
+    // Set the block size and minimum block size for testing.
     //
     nb = 1;
     nbmin = 2;
-    xlaenv(1, nb);
-    xlaenv(2, nbmin);
+    Mxlaenv(1, nb);
+    Mxlaenv(2, nbmin);
     //
-    //     Do for each value of N in NVAL
+    // Do for each value of N in NVAL
     //
     for (in = 1; in <= nn; in = in + 1) {
         n = nval[in - 1];
         lda = max(n, (INTEGER)1);
-        xtype = 'N';
+        xtype = "N";
         nimat = ntypes;
         if (n <= 0) {
             nimat = 1;
@@ -166,44 +140,45 @@ void Rdrvsy_aa_2stage(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER con
         //
         for (imat = 1; imat <= nimat; imat = imat + 1) {
             //
-            //           Do the tests only if DOTYPE( IMAT ) is true.
+            // Do the tests only if DOTYPE( IMAT ) is true.
             //
             if (!dotype[imat - 1]) {
                 goto statement_170;
             }
             //
-            //           Skip types 3, 4, 5, or 6 if the matrix size is too small.
+            // Skip types 3, 4, 5, or 6 if the matrix size is too small.
             //
             zerot = imat >= 3 && imat <= 6;
             if (zerot && n < imat - 2) {
                 goto statement_170;
             }
             //
-            //           Do first for UPLO = 'U', then for UPLO = 'L'
+            // Do first for UPLO = 'U', then for UPLO = 'L'
             //
             for (iuplo = 1; iuplo <= 2; iuplo = iuplo + 1) {
                 uplo = uplos[iuplo - 1];
                 //
-                //              Begin generate the test matrix A.
+                // Begin generate the test matrix A.
                 //
-                //              Set up parameters with Rlatb4 for the matrix generator
-                //              based on the type of matrix to be generated.
+                // Set up parameters with Rlatb4 for the matrix generator
+                // based on the type of matrix to be generated.
                 //
-                Rlatb4(matpath, imat, n, n, &type, kl, ku, anorm, mode, cndnum, &dist);
+                Rlatb4(matpath, imat, n, n, type, kl, ku, anorm, mode, cndnum, dist);
                 //
-                //              Generate a matrix with Rlatms.
+                // Generate a matrix with Rlatms.
                 //
-                Rlatms(n, n, &dist, iseed, &type, rwork, mode, cndnum, anorm, kl, ku, &uplo, a, lda, work, info);
+                srnamt = "Rlatms";
+                Rlatms(n, n, dist, iseed, type, rwork, mode, cndnum, anorm, kl, ku, uplo, a, lda, work, info);
                 //
-                //                 Check error code from Rlatms and handle error.
+                // Check error code from Rlatms and handle error.
                 //
                 if (info != 0) {
-                    Alaerh(path, "Rlatms", info, 0, &uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
+                    Alaerh(path, "Rlatms", info, 0, uplo, n, n, -1, -1, -1, imat, nfail, nerrs, nout);
                     goto statement_160;
                 }
                 //
-                //                 For types 3-6, zero one or more rows and columns of
-                //                 the matrix to test that INFO is returned correctly.
+                // For types 3-6, zero one or more rows and columns of
+                // the matrix to test that INFO is returned correctly.
                 //
                 if (zerot) {
                     if (imat == 3) {
@@ -216,7 +191,7 @@ void Rdrvsy_aa_2stage(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER con
                     //
                     if (imat < 6) {
                         //
-                        //                       Set row and column IZERO to zero.
+                        // Set row and column IZERO to zero.
                         //
                         if (iuplo == 1) {
                             ioff = (izero - 1) * lda;
@@ -243,7 +218,7 @@ void Rdrvsy_aa_2stage(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER con
                         ioff = 0;
                         if (iuplo == 1) {
                             //
-                            //                       Set the first IZERO rows and columns to zero.
+                            // Set the first IZERO rows and columns to zero.
                             //
                             for (j = 1; j <= n; j = j + 1) {
                                 i2 = min(j, izero);
@@ -255,7 +230,7 @@ void Rdrvsy_aa_2stage(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER con
                             izero = 1;
                         } else {
                             //
-                            //                       Set the first IZERO rows and columns to zero.
+                            // Set the first IZERO rows and columns to zero.
                             //
                             ioff = 0;
                             for (j = 1; j <= n; j = j + 1) {
@@ -271,32 +246,34 @@ void Rdrvsy_aa_2stage(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER con
                     izero = 0;
                 }
                 //
-                //                 End generate the test matrix A.
+                // End generate the test matrix A.
                 //
                 for (ifact = 1; ifact <= nfact; ifact = ifact + 1) {
                     //
-                    //                 Do first for FACT = 'F', then for other values.
+                    // Do first for FACT = 'F', then for other values.
                     //
                     fact = facts[ifact - 1];
                     //
-                    //                 Form an exact solution and set the right hand side.
+                    // Form an exact solution and set the right hand side.
                     //
-                    Rlarhs(matpath, &xtype, &uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
-                    xtype = 'C';
+                    srnamt = "Rlarhs";
+                    Rlarhs(matpath, xtype, uplo, " ", n, n, kl, ku, nrhs, a, lda, xact, lda, b, lda, iseed, info);
+                    xtype = "C";
                     //
-                    //                 --- Test Rsysv_aa_2stage  ---
+                    // --- Test Rsysv_aa_2stage  ---
                     //
                     if (ifact == 2) {
-                        Rlacpy(&uplo, n, n, a, lda, afac, lda);
+                        Rlacpy(uplo.elems, n, n, a, lda, afac, lda);
                         Rlacpy("Full", n, nrhs, b, lda, x, lda);
                         //
-                        //                    Factor the matrix and solve the system using Rsysv_aa.
+                        // Factor the matrix and solve the system using Rsysv_aa.
                         //
-                        lwork = min(n * nb, 3 * nmax * nmax);
-                        Rsysv_aa_2stage(&uplo, n, nrhs, afac, lda, ainv, (3 * nb + 1) * n, iwork, &iwork[(1 + n) - 1], x, lda, work, lwork, info);
+                        srnamt = "Rsysv_aa_2stage";
+                        lwork = min(max((INTEGER)1, n * nb), 3 * nmax * nmax);
+                        Rsysv_aa_2stage(uplo.elems, n, nrhs, afac, lda, ainv, max((INTEGER)1, (3 * nb + 1) * n), iwork, &iwork[(1 + n) - 1], x, lda, work, lwork, info);
                         //
-                        //                    Adjust the expected value of INFO to account for
-                        //                    pivoting.
+                        // Adjust the expected value of INFO to account for
+                        // pivoting.
                         //
                         if (izero > 0) {
                             j = 1;
@@ -315,41 +292,38 @@ void Rdrvsy_aa_2stage(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER con
                             k = 0;
                         }
                         //
-                        //                    Check error code from Rsysv_aa .
+                        // Check error code from Rsysv_aa .
                         //
                         if (info != k) {
-                            Alaerh(path, "Rsysv_aa", info, k, &uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
+                            Alaerh(path, "Rsysv_aa", info, k, uplo, n, n, -1, -1, nrhs, imat, nfail, nerrs, nout);
                             goto statement_120;
                         } else if (info != 0) {
                             goto statement_120;
                         }
                         //
-                        //                    Compute residual of the computed solution.
+                        // Compute residual of the computed solution.
                         //
                         Rlacpy("Full", n, nrhs, b, lda, work, lda);
-                        Rpot02(&uplo, n, nrhs, a, lda, x, lda, work, lda, rwork, result[1 - 1]);
+                        Rpot02(uplo, n, nrhs, a, lda, x, lda, work, lda, rwork, result[1 - 1]);
                         //
-                        //                    Reconstruct matrix from factors and compute
-                        //                    residual.
+                        // Reconstruct matrix from factors and compute
+                        // residual.
                         //
-                        //                     CALL CHET01_AA( UPLO, N, A, LDA, AFAC, LDA,
-                        //     $                                  IWORK, AINV, LDA, RWORK,
-                        //     $                                  RESULT( 2 ) )
-                        //                     NT = 2
+                        // CALL CHET01_AA( UPLO, N, A, LDA, AFAC, LDA,
+                        // $                                  IWORK, AINV, LDA, RWORK,
+                        // $                                  RESULT( 2 ) )
+                        // NT = 2
                         nt = 1;
                         //
-                        //                    Print information about the tests that did not pass
-                        //                    the threshold.
+                        // Print information about the tests that did not pass
+                        // the threshold.
                         //
                         for (k = 1; k <= nt; k = k + 1) {
                             if (result[k - 1] >= thresh) {
                                 if (nfail == 0 && nerrs == 0) {
                                     Aladhd(nout, path);
                                 }
-                                sprintnum_short(buf, result[k - 1]);
-                                write(nout, "(1x,a,', UPLO=''',a1,''', N =',i5,', type ',i2,', test ',"
-                                            "i2,', ratio =',a)"),
-                                    "Rsysv_aa ", uplo, n, imat, k, buf;
+                                write(nout, format_9999), "Rsysv_aa", uplo, n, imat, k, result[k - 1];
                                 nfail++;
                             }
                         }
@@ -365,10 +339,10 @@ void Rdrvsy_aa_2stage(bool *dotype, INTEGER const nn, INTEGER *nval, INTEGER con
         }
     }
     //
-    //     Print a summary of the results.
+    // Print a summary of the results.
     //
     Alasvm(path, nout, nfail, nrun, nerrs);
     //
-    //     End of Rdrvsy_aa_2stage
+    // End of Rdrvsy_aa_2stage
     //
 }

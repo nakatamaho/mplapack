@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,31 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DLAQR1.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rlaqr1(INTEGER const n, REAL *h, INTEGER const ldh, REAL const sr1, REAL const si1, REAL const sr2, REAL const si2, REAL *v) {
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  ================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n != 2 && n != 3) {
         return;
@@ -61,17 +49,17 @@ void Rlaqr1(INTEGER const n, REAL *h, INTEGER const ldh, REAL const sr1, REAL co
     REAL h21s = 0.0;
     REAL h31s = 0.0;
     if (n == 2) {
-        s = abs(h[(1 - 1)] - sr2) + abs(si2) + abs(h[(2 - 1)]);
+        s = abs(h[0] - sr2) + abs(si2) + abs(h[(2 - 1)]);
         if (s == zero) {
             v[1 - 1] = zero;
             v[2 - 1] = zero;
         } else {
             h21s = h[(2 - 1)] / s;
-            v[1 - 1] = h21s * h[(2 - 1) * ldh] + (h[(1 - 1)] - sr1) * ((h[(1 - 1)] - sr2) / s) - si1 * (si2 / s);
-            v[2 - 1] = h21s * (h[(1 - 1)] + h[(2 - 1) + (2 - 1) * ldh] - sr1 - sr2);
+            v[1 - 1] = h21s * h[(2 - 1) * ldh] + (h[0] - sr1) * ((h[0] - sr2) / s) - si1 * (si2 / s);
+            v[2 - 1] = h21s * (h[0] + h[(2 - 1) + (2 - 1) * ldh] - sr1 - sr2);
         }
     } else {
-        s = abs(h[(1 - 1)] - sr2) + abs(si2) + abs(h[(2 - 1)]) + abs(h[(3 - 1)]);
+        s = abs(h[0] - sr2) + abs(si2) + abs(h[(2 - 1)]) + abs(h[(3 - 1)]);
         if (s == zero) {
             v[1 - 1] = zero;
             v[2 - 1] = zero;
@@ -79,9 +67,9 @@ void Rlaqr1(INTEGER const n, REAL *h, INTEGER const ldh, REAL const sr1, REAL co
         } else {
             h21s = h[(2 - 1)] / s;
             h31s = h[(3 - 1)] / s;
-            v[1 - 1] = (h[(1 - 1)] - sr1) * ((h[(1 - 1)] - sr2) / s) - si1 * (si2 / s) + h[(2 - 1) * ldh] * h21s + h[(3 - 1) * ldh] * h31s;
-            v[2 - 1] = h21s * (h[(1 - 1)] + h[(2 - 1) + (2 - 1) * ldh] - sr1 - sr2) + h[(2 - 1) + (3 - 1) * ldh] * h31s;
-            v[3 - 1] = h31s * (h[(1 - 1)] + h[(3 - 1) + (3 - 1) * ldh] - sr1 - sr2) + h21s * h[(3 - 1) + (2 - 1) * ldh];
+            v[1 - 1] = (h[0] - sr1) * ((h[0] - sr2) / s) - si1 * (si2 / s) + h[(2 - 1) * ldh] * h21s + h[(3 - 1) * ldh] * h31s;
+            v[2 - 1] = h21s * (h[0] + h[(2 - 1) + (2 - 1) * ldh] - sr1 - sr2) + h[(2 - 1) + (3 - 1) * ldh] * h31s;
+            v[3 - 1] = h31s * (h[0] + h[(3 - 1) + (3 - 1) * ldh] - sr1 - sr2) + h21s * h[(3 - 1) + (2 - 1) * ldh];
         }
     }
 }

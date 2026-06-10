@@ -1,0 +1,26 @@
+diff --git a/mplapack/test/eig/mpfr/Makefile.am b/mplapack/test/eig/mpfr/Makefile.am
+index 706803c5..2395b17b 100644
+--- a/mplapack/test/eig/mpfr/Makefile.am
++++ b/mplapack/test/eig/mpfr/Makefile.am
+@@ -3,6 +3,9 @@ check_PROGRAMS = $(mplapack_mpfr_test_PROGRAMS)
+ mplapack_mpfr_test_PROGRAMS = xeigtstR_mpfr xeigtstC_mpfr
+ mplapack_mpfr_testdir = $(prefix)/lib/$(target)/mplapack/test/eig
+ 
++cgesvj_test_PROGRAMS = debug_cgesvj_type4
++cgesvj_testdir = $(prefix)/lib/$(target)/mplapack/test/eig
++
+ # -----------------------------------------------------------------------------
+ # MPFR emulation profiles
+ #
+@@ -46,6 +49,11 @@ xeigtstC_mpfr_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -l
+ xeigtstC_mpfr_LDFLAGS += -Wl,-rpath,$(libdir)
+ xeigtstC_mpfr_CXXFLAGS = $(cxxflags)
+ 
++debug_cgesvj_type4_SOURCES  = tests/debug_cgesvj_type4.cpp
++debug_cgesvj_type4_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
++debug_cgesvj_type4_LDFLAGS += -Wl,-rpath,$(libdir)
++debug_cgesvj_type4_CXXFLAGS = $(cxxflags)
++
+ install-data-hook:
+ if IS_MACOS
+ 	bash $(top_builddir)/misc/fix_dylib_macOS.sh $(mplapack_mpfr_testdir) $(prefix)

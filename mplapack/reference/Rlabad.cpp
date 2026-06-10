@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2026
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,32 +26,25 @@
  *
  */
 
+// Derived from LAPACK routine DLABAD.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rlabad(REAL &small, REAL &large) {
-    //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     If it looks like we're on a Cray, take the square root of
-    //     SMALL and LARGE to avoid overflow and underflow problems.
-    //
+    // If it looks like we're on a machine with infinite exponent
+    // range (arbitrary precision), take square roots of small and
+    // large to avoid overflow and underflow problems.
+    // This mirrors the historical LAPACK DLABAD routine deprecated
+    // in LAPACK 3.6+, which is reintroduced in MPLAPACK to handle
+    // arbitrary-precision profiles (MPFR, GMP, binary128 and binary80).
     if (log10(large) > 2000.0) {
         small = sqrt(small);
         large = sqrt(large);
     }
-    //
-    //     End of Rlabad
-    //
 }

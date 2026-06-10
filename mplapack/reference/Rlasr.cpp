@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DLASR.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rlasr(const char *side, const char *pivot, const char *direct, INTEGER const m, INTEGER const n, REAL *c, REAL *s, REAL *a, INTEGER const lda) {
     //
-    //     Test the input parameters
+    // Test the input parameters
     //
     INTEGER info = 0;
     if (!(Mlsame(side, "L") || Mlsame(side, "R"))) {
@@ -52,7 +59,7 @@ void Rlasr(const char *side, const char *pivot, const char *direct, INTEGER cons
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if ((m == 0) || (n == 0)) {
         return;
@@ -66,7 +73,7 @@ void Rlasr(const char *side, const char *pivot, const char *direct, INTEGER cons
     REAL temp = 0.0;
     if (Mlsame(side, "L")) {
         //
-        //        Form  P * A
+        // Form  P * A
         //
         if (Mlsame(pivot, "V")) {
             if (Mlsame(direct, "F")) {
@@ -149,7 +156,7 @@ void Rlasr(const char *side, const char *pivot, const char *direct, INTEGER cons
         }
     } else if (Mlsame(side, "R")) {
         //
-        //        Form A * P**T
+        // Form A * P**T
         //
         if (Mlsame(pivot, "V")) {
             if (Mlsame(direct, "F")) {
@@ -232,6 +239,6 @@ void Rlasr(const char *side, const char *pivot, const char *direct, INTEGER cons
         }
     }
     //
-    //     End of Rlasr
+    // End of Rlasr
     //
 }

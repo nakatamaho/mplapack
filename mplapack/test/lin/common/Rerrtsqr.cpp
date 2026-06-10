@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DERRTSQR.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,190 +43,218 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-#include <mplapack_debug.h>
-
-void Rerrtsqr(const char *path, INTEGER const nunit) {
+void Rerrtsqr(fem::str_cref path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     nout = nunit;
     write(nout, star);
     //
-    //     Set the variables to innocuous values.
+    // Set the variables to innocuous values.
     //
     INTEGER j = 0;
     const INTEGER nmax = 2;
     INTEGER i = 0;
     REAL a[nmax * nmax];
     REAL c[nmax * nmax];
-    REAL t[nmax * nmax];
-    INTEGER lda = nmax;
-    INTEGER ldc = nmax;
-    INTEGER ldt = nmax;
     REAL w[nmax];
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
-            a[(i - 1) + (j - 1) * lda] = 1.0 / castREAL(i + j);
-            c[(i - 1) + (j - 1) * ldc] = 1.0 / castREAL(i + j);
-            t[(i - 1) + (j - 1) * ldt] = 1.0 / castREAL(i + j);
+            a[(i - 1) + (j - 1) * nmax] = 1.0 / castREAL(i + j);
+            c[(i - 1) + (j - 1) * nmax] = 1.0 / castREAL(i + j);
         }
         w[j - 1] = 0.0;
     }
     ok = true;
     //
-    //     Error exits for TS factorization
+    // Error exits for TS factorization
     //
-    //     Rgeqr
+    // Rgeqr
     //
+    srnamt = "Rgeqr";
     infot = 1;
-    REAL tau[nmax * 2];
+    REAL tau[5];
     INTEGER info = 0;
-    strncpy(srnamt, "Rgeqr", srnamt_len);
     Rgeqr(-1, 0, a, 1, tau, 1, w, 1, info);
-    chkxer("Rgeqr", infot, nout, lerr, ok);
+    Chkxer("Rgeqr", infot, nout, lerr, ok);
     infot = 2;
     Rgeqr(0, -1, a, 1, tau, 1, w, 1, info);
-    chkxer("Rgeqr", infot, nout, lerr, ok);
+    Chkxer("Rgeqr", infot, nout, lerr, ok);
     infot = 4;
     Rgeqr(1, 1, a, 0, tau, 1, w, 1, info);
-    chkxer("Rgeqr", infot, nout, lerr, ok);
+    Chkxer("Rgeqr", infot, nout, lerr, ok);
     infot = 6;
     Rgeqr(3, 2, a, 3, tau, 1, w, 1, info);
-    chkxer("Rgeqr", infot, nout, lerr, ok);
+    Chkxer("Rgeqr", infot, nout, lerr, ok);
     infot = 8;
     Rgeqr(3, 2, a, 3, tau, 7, w, 0, info);
-    chkxer("Rgeqr", infot, nout, lerr, ok);
+    Chkxer("Rgeqr", infot, nout, lerr, ok);
     //
-    //     Rgemqr
+    // Rlatsqr
     //
-    tau[1 - 1] = 1;
-    tau[2 - 1] = 1;
-    tau[3 - 1] = 1;
-    tau[4 - 1] = 1;
+    INTEGER mb = 1;
     INTEGER nb = 1;
+    srnamt = "Rlatsqr";
     infot = 1;
-    strncpy(srnamt, "Rgemqr", srnamt_len);
-    Rgemqr("/", "N", 0, 0, 0, a, 1, tau, 1, c, 1, w, 1, info);
-    chkxer("Rgemqr", infot, nout, lerr, ok);
+    Rlatsqr(-1, 0, mb, nb, a, 1, tau, 1, w, 1, info);
+    Chkxer("Rlatsqr", infot, nout, lerr, ok);
     infot = 2;
-    Rgemqr("L", "/", 0, 0, 0, a, 1, tau, 1, c, 1, w, 1, info);
-    chkxer("Rgemqr", infot, nout, lerr, ok);
+    Rlatsqr(1, 2, mb, nb, a, 1, tau, 1, w, 1, info);
+    Chkxer("Rlatsqr", infot, nout, lerr, ok);
+    Rlatsqr(0, -1, mb, nb, a, 1, tau, 1, w, 1, info);
+    Chkxer("Rlatsqr", infot, nout, lerr, ok);
     infot = 3;
-    Rgemqr("L", "N", -1, 0, 0, a, 1, tau, 1, c, 1, w, 1, info);
-    chkxer("Rgemqr", infot, nout, lerr, ok);
+    Rlatsqr(2, 1, -1, nb, a, 2, tau, 1, w, 1, info);
+    Chkxer("Rlatsqr", infot, nout, lerr, ok);
     infot = 4;
-    Rgemqr("L", "N", 0, -1, 0, a, 1, tau, 1, c, 1, w, 1, info);
-    chkxer("Rgemqr", infot, nout, lerr, ok);
-    infot = 5;
-    Rgemqr("L", "N", 0, 0, -1, a, 1, tau, 1, c, 1, w, 1, info);
-    chkxer("Rgemqr", infot, nout, lerr, ok);
-    infot = 5;
-    Rgemqr("R", "N", 0, 0, -1, a, 1, tau, 1, c, 1, w, 1, info);
-    chkxer("Rgemqr", infot, nout, lerr, ok);
-    infot = 7;
-    Rgemqr("L", "N", 2, 1, 0, a, 0, tau, 1, c, 1, w, 1, info);
-    chkxer("Rgemqr", infot, nout, lerr, ok);
-    infot = 9;
-    Rgemqr("R", "N", 2, 2, 1, a, 2, tau, 0, c, 1, w, 1, info);
-    chkxer("Rgemqr", infot, nout, lerr, ok);
-    infot = 9;
-    Rgemqr("L", "N", 2, 2, 1, a, 2, tau, 0, c, 1, w, 1, info);
-    chkxer("Rgemqr", infot, nout, lerr, ok);
-    infot = 11;
-    Rgemqr("L", "N", 2, 1, 1, a, 2, tau, 6, c, 0, w, 1, info);
-    chkxer("Rgemqr", infot, nout, lerr, ok);
-    infot = 13;
-    Rgemqr("L", "N", 2, 2, 1, a, 2, tau, 6, c, 2, w, 0, info);
-    chkxer("Rgemqr", infot, nout, lerr, ok);
-    //
-    //     Rgelq
-    //
-    infot = 1;
-    strncpy(srnamt, "Rgelq", srnamt_len);
-    Rgelq(-1, 0, a, 1, tau, 1, w, 1, info);
-    chkxer("Rgelq", infot, nout, lerr, ok);
-    infot = 2;
-    Rgelq(0, -1, a, 1, tau, 1, w, 1, info);
-    chkxer("Rgelq", infot, nout, lerr, ok);
-    infot = 4;
-    Rgelq(1, 1, a, 0, tau, 1, w, 1, info);
-    chkxer("Rgelq", infot, nout, lerr, ok);
+    Rlatsqr(2, 1, mb, 2, a, 2, tau, 1, w, 1, info);
+    Chkxer("Rlatsqr", infot, nout, lerr, ok);
     infot = 6;
-    Rgelq(2, 3, a, 3, tau, 1, w, 1, info);
-    chkxer("Rgelq", infot, nout, lerr, ok);
+    Rlatsqr(2, 1, mb, nb, a, 1, tau, 1, w, 1, info);
+    Chkxer("Rlatsqr", infot, nout, lerr, ok);
     infot = 8;
-    Rgelq(2, 3, a, 3, tau, 7, w, 0, info);
-    chkxer("Rgelq", infot, nout, lerr, ok);
+    Rlatsqr(2, 1, mb, nb, a, 2, tau, 0, w, 1, info);
+    Chkxer("Rlatsqr", infot, nout, lerr, ok);
+    infot = 10;
+    Rlatsqr(2, 1, mb, nb, a, 2, tau, 2, w, 0, info);
+    Chkxer("Rlatsqr", infot, nout, lerr, ok);
     //
-    //     Rgemlq
+    // Rgemqr
     //
-    tau[1 - 1] = 1;
-    tau[2 - 1] = 1;
+    for (i = 1; i <= 5; i = i + 1) {
+        tau[i - 1] = 1.0;
+    }
+    srnamt = "Rgemqr";
     nb = 1;
     infot = 1;
-    strncpy(srnamt, "Rgemlq", srnamt_len);
+    Rgemqr("/", "N", 0, 0, 0, a, 1, tau, 1, c, 1, w, 1, info);
+    Chkxer("Rgemqr", infot, nout, lerr, ok);
+    infot = 2;
+    Rgemqr("L", "/", 0, 0, 0, a, 1, tau, 1, c, 1, w, 1, info);
+    Chkxer("Rgemqr", infot, nout, lerr, ok);
+    infot = 3;
+    Rgemqr("L", "N", -1, 0, 0, a, 1, tau, 1, c, 1, w, 1, info);
+    Chkxer("Rgemqr", infot, nout, lerr, ok);
+    infot = 4;
+    Rgemqr("L", "N", 0, -1, 0, a, 1, tau, 1, c, 1, w, 1, info);
+    Chkxer("Rgemqr", infot, nout, lerr, ok);
+    infot = 5;
+    Rgemqr("L", "N", 0, 0, -1, a, 1, tau, 1, c, 1, w, 1, info);
+    Chkxer("Rgemqr", infot, nout, lerr, ok);
+    infot = 5;
+    Rgemqr("R", "N", 0, 0, -1, a, 1, tau, 1, c, 1, w, 1, info);
+    Chkxer("Rgemqr", infot, nout, lerr, ok);
+    infot = 7;
+    Rgemqr("L", "N", 2, 1, 0, a, 0, tau, 1, c, 1, w, 1, info);
+    Chkxer("Rgemqr", infot, nout, lerr, ok);
+    infot = 9;
+    Rgemqr("R", "N", 2, 2, 1, a, 2, tau, 0, c, 1, w, 1, info);
+    Chkxer("Rgemqr", infot, nout, lerr, ok);
+    infot = 9;
+    Rgemqr("L", "N", 2, 2, 1, a, 2, tau, 0, c, 1, w, 1, info);
+    Chkxer("Rgemqr", infot, nout, lerr, ok);
+    infot = 11;
+    Rgemqr("L", "N", 2, 1, 1, a, 2, tau, 6, c, 0, w, 1, info);
+    Chkxer("Rgemqr", infot, nout, lerr, ok);
+    infot = 13;
+    Rgemqr("L", "N", 2, 2, 1, a, 2, tau, 6, c, 2, w, 0, info);
+    Chkxer("Rgemqr", infot, nout, lerr, ok);
+    //
+    // Rgelq
+    //
+    srnamt = "Rgelq";
+    infot = 1;
+    Rgelq(-1, 0, a, 1, tau, 1, w, 1, info);
+    Chkxer("Rgelq", infot, nout, lerr, ok);
+    infot = 2;
+    Rgelq(0, -1, a, 1, tau, 1, w, 1, info);
+    Chkxer("Rgelq", infot, nout, lerr, ok);
+    infot = 4;
+    Rgelq(1, 1, a, 0, tau, 1, w, 1, info);
+    Chkxer("Rgelq", infot, nout, lerr, ok);
+    infot = 6;
+    Rgelq(2, 3, a, 3, tau, 1, w, 1, info);
+    Chkxer("Rgelq", infot, nout, lerr, ok);
+    infot = 8;
+    Rgelq(2, 3, a, 3, tau, 7, w, 0, info);
+    Chkxer("Rgelq", infot, nout, lerr, ok);
+    //
+    // Rlaswlq
+    //
+    mb = 1;
+    nb = 1;
+    srnamt = "Rlaswlq";
+    infot = 1;
+    Rlaswlq(-1, 0, mb, nb, a, 1, tau, 1, w, 1, info);
+    Chkxer("Rlaswlq", infot, nout, lerr, ok);
+    infot = 2;
+    Rlaswlq(2, 1, mb, nb, a, 1, tau, 1, w, 1, info);
+    Chkxer("Rlaswlq", infot, nout, lerr, ok);
+    Rlaswlq(0, -1, mb, nb, a, 1, tau, 1, w, 1, info);
+    Chkxer("Rlaswlq", infot, nout, lerr, ok);
+    infot = 3;
+    Rlaswlq(1, 2, -1, nb, a, 1, tau, 1, w, 1, info);
+    Chkxer("Rlaswlq", infot, nout, lerr, ok);
+    Rlaswlq(1, 1, 2, nb, a, 1, tau, 1, w, 1, info);
+    Chkxer("Rlaswlq", infot, nout, lerr, ok);
+    infot = 4;
+    Rlaswlq(1, 2, mb, -1, a, 1, tau, 1, w, 1, info);
+    Chkxer("Rlaswlq", infot, nout, lerr, ok);
+    infot = 6;
+    Rlaswlq(1, 2, mb, nb, a, 0, tau, 1, w, 1, info);
+    Chkxer("Rlaswlq", infot, nout, lerr, ok);
+    infot = 8;
+    Rlaswlq(1, 2, mb, nb, a, 1, tau, 0, w, 1, info);
+    Chkxer("Rlaswlq", infot, nout, lerr, ok);
+    infot = 10;
+    Rlaswlq(1, 2, mb, nb, a, 1, tau, 1, w, 0, info);
+    Chkxer("Rlaswlq", infot, nout, lerr, ok);
+    //
+    // Rgemlq
+    //
+    for (i = 1; i <= 5; i = i + 1) {
+        tau[i - 1] = 1.0;
+    }
+    srnamt = "Rgemlq";
+    nb = 1;
+    infot = 1;
     Rgemlq("/", "N", 0, 0, 0, a, 1, tau, 1, c, 1, w, 1, info);
-    chkxer("Rgemlq", infot, nout, lerr, ok);
+    Chkxer("Rgemlq", infot, nout, lerr, ok);
     infot = 2;
     Rgemlq("L", "/", 0, 0, 0, a, 1, tau, 1, c, 1, w, 1, info);
-    chkxer("Rgemlq", infot, nout, lerr, ok);
+    Chkxer("Rgemlq", infot, nout, lerr, ok);
     infot = 3;
     Rgemlq("L", "N", -1, 0, 0, a, 1, tau, 1, c, 1, w, 1, info);
-    chkxer("Rgemlq", infot, nout, lerr, ok);
+    Chkxer("Rgemlq", infot, nout, lerr, ok);
     infot = 4;
     Rgemlq("L", "N", 0, -1, 0, a, 1, tau, 1, c, 1, w, 1, info);
-    chkxer("Rgemlq", infot, nout, lerr, ok);
+    Chkxer("Rgemlq", infot, nout, lerr, ok);
     infot = 5;
     Rgemlq("L", "N", 0, 0, -1, a, 1, tau, 1, c, 1, w, 1, info);
-    chkxer("Rgemlq", infot, nout, lerr, ok);
+    Chkxer("Rgemlq", infot, nout, lerr, ok);
     infot = 5;
     Rgemlq("R", "N", 0, 0, -1, a, 1, tau, 1, c, 1, w, 1, info);
-    chkxer("Rgemlq", infot, nout, lerr, ok);
+    Chkxer("Rgemlq", infot, nout, lerr, ok);
     infot = 7;
     Rgemlq("L", "N", 1, 2, 0, a, 0, tau, 1, c, 1, w, 1, info);
-    chkxer("Rgemlq", infot, nout, lerr, ok);
+    Chkxer("Rgemlq", infot, nout, lerr, ok);
     infot = 9;
     Rgemlq("R", "N", 2, 2, 1, a, 1, tau, 0, c, 1, w, 1, info);
-    chkxer("Rgemlq", infot, nout, lerr, ok);
+    Chkxer("Rgemlq", infot, nout, lerr, ok);
     infot = 9;
     Rgemlq("L", "N", 2, 2, 1, a, 1, tau, 0, c, 1, w, 1, info);
-    chkxer("Rgemlq", infot, nout, lerr, ok);
+    Chkxer("Rgemlq", infot, nout, lerr, ok);
     infot = 11;
     Rgemlq("L", "N", 1, 2, 1, a, 1, tau, 6, c, 0, w, 1, info);
-    chkxer("Rgemlq", infot, nout, lerr, ok);
+    Chkxer("Rgemlq", infot, nout, lerr, ok);
     infot = 13;
     Rgemlq("L", "N", 2, 2, 1, a, 2, tau, 6, c, 2, w, 0, info);
-    chkxer("Rgemlq", infot, nout, lerr, ok);
+    Chkxer("Rgemlq", infot, nout, lerr, ok);
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     Alaesm(path, ok, nout);
     //
-    //     End of Rerrtsqr
+    // End of Rerrtsqr
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,29 +26,17 @@
  *
  */
 
+// Derived from LAPACK routine ZGELQT3.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Cgelqt3(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *t, INTEGER const ldt, INTEGER &info) {
-    //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
     //
     info = 0;
     if (m < 0) {
@@ -72,29 +60,29 @@ void Cgelqt3(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
     INTEGER iinfo = 0;
     INTEGER i = 0;
     INTEGER j = 0;
-    const COMPLEX one = COMPLEX(1.00, 0.00);
-    const COMPLEX zero = COMPLEX(0.00, 0.00);
+    const COMPLEX one = COMPLEX(1.0, 0.0);
+    const COMPLEX zero = COMPLEX(0.0, 0.0);
     if (m == 1) {
         //
-        //        Compute Householder transform when N=1
+        // Compute Householder transform when M=1
         //
-        Clarfg(n, a[0], &a[(1 - 1) + (min((INTEGER)2, n) - 1) * lda], lda, t[0]);
-        t[(1 - 1)] = conj(t[(1 - 1)]);
+        Clarfg(n, a[0], &a[(min((INTEGER)2, n) - 1) * lda], lda, t[0]);
+        t[0] = conj(t[0]);
         //
     } else {
         //
-        //        Otherwise, split A into blocks...
+        // Otherwise, split A into blocks...
         //
         m1 = m / 2;
         m2 = m - m1;
         i1 = min(m1 + 1, m);
         j1 = min(m + 1, n);
         //
-        //        Compute A(1:M1,1:N) <- (Y1,R1,T1), where Q1 = I - Y1 T1 Y1^H
+        // Compute A(1:M1,1:N) <- (Y1,R1,T1), where Q1 = I - Y1 T1 Y1^H
         //
         Cgelqt3(m1, n, a, lda, t, ldt, iinfo);
         //
-        //        Compute A(J1:M,1:N) =  A(J1:M,1:N) Q1^H [workspace: T(1:N1,J1:N)]
+        // Compute A(J1:M,1:N) =  A(J1:M,1:N) Q1^H [workspace: T(1:N1,J1:N)]
         //
         for (i = 1; i <= m2; i = i + 1) {
             for (j = 1; j <= m1; j = j + 1) {
@@ -118,11 +106,11 @@ void Cgelqt3(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
             }
         }
         //
-        //        Compute A(J1:M,J1:N) <- (Y2,R2,T2) where Q2 = I - Y2 T2 Y2^H
+        // Compute A(J1:M,J1:N) <- (Y2,R2,T2) where Q2 = I - Y2 T2 Y2^H
         //
         Cgelqt3(m2, n - m1, &a[(i1 - 1) + (i1 - 1) * lda], lda, &t[(i1 - 1) + (i1 - 1) * ldt], ldt, iinfo);
         //
-        //        Compute T3 = T(J1:N1,1:N) = -T1 Y1^H Y2 T2
+        // Compute T3 = T(J1:N1,1:N) = -T1 Y1^H Y2 T2
         //
         for (i = 1; i <= m2; i = i + 1) {
             for (j = 1; j <= m1; j = j + 1) {
@@ -138,11 +126,11 @@ void Cgelqt3(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, CO
         //
         Ctrmm("R", "U", "N", "N", m1, m2, one, &t[(i1 - 1) + (i1 - 1) * ldt], ldt, &t[(i1 - 1) * ldt], ldt);
         //
-        //        Y = (Y1,Y2); L = [ L1            0  ];  T = [T1 T3]
-        //                         [ A(1:N1,J1:N)  L2 ]       [ 0 T2]
+        // Y = (Y1,Y2); L = [ L1            0  ];  T = [T1 T3]
+        // [ A(1:N1,J1:N)  L2 ]       [ 0 T2]
         //
     }
     //
-    //     End of Cgelqt3
+    // End of Cgelqt3
     //
 }

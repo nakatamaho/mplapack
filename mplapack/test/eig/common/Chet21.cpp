@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZHET21.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,9 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-void Chet21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER const kband, COMPLEX *a, INTEGER const lda, REAL *d, REAL *e, COMPLEX *u, INTEGER const ldu, COMPLEX *v, INTEGER const ldv, COMPLEX *tau, COMPLEX *work, REAL *rwork, REAL *result) {
+void Chet21(INTEGER const itype, fem::str_cref uplo, INTEGER const n, INTEGER const kband, COMPLEX *a, INTEGER const lda, REAL *d, REAL *e, COMPLEX *u, INTEGER const ldu, COMPLEX *v, INTEGER const ldv, COMPLEX *tau, COMPLEX *work, REAL *rwork, REAL *result) {
     //
     const REAL zero = 0.0;
     result[1 - 1] = zero;
@@ -50,19 +55,19 @@ void Chet21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
     }
     //
     bool lower = false;
-    char cuplo;
-    if (Mlsame(uplo, "U")) {
+    fem::str<1> cuplo;
+    if (Mlsame(uplo.elems(), "U")) {
         lower = false;
-        cuplo = 'U';
+        cuplo = "U";
     } else {
         lower = true;
-        cuplo = 'L';
+        cuplo = "L";
     }
     //
     REAL unfl = Rlamch("Safe minimum");
     REAL ulp = Rlamch("Epsilon") * Rlamch("Base");
     //
-    //     Some Error Checks
+    // Some Error Checks
     //
     const REAL ten = 10.0;
     if (itype < 1 || itype > 3) {
@@ -70,19 +75,19 @@ void Chet21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
         return;
     }
     //
-    //     Do Test 1
+    // Do Test 1
     //
-    //     Norm of A:
+    // Norm of A:
     //
     const REAL one = 1.0;
     REAL anorm = 0.0;
     if (itype == 3) {
         anorm = one;
     } else {
-        anorm = max({Clanhe("1", &cuplo, n, a, lda, rwork), unfl});
+        anorm = max(Clanhe("1", cuplo.elems, n, a, lda, rwork), unfl);
     }
     //
-    //     Compute error matrix:
+    // Compute error matrix:
     //
     const COMPLEX czero = COMPLEX(0.0, 0.0);
     INTEGER j = 0;
@@ -95,30 +100,30 @@ void Chet21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
     INTEGER iinfo = 0;
     if (itype == 1) {
         //
-        //        ITYPE=1: error = A - U S U**H
+        // ITYPE=1: error = A - U S U**H
         //
         Claset("Full", n, n, czero, czero, work, n);
-        Clacpy(&cuplo, n, n, a, lda, work, n);
+        Clacpy(cuplo.elems, n, n, a, lda, work, n);
         //
         for (j = 1; j <= n; j = j + 1) {
-            Cher(&cuplo, n, -d[j - 1], &u[(j - 1) * ldu], 1, work, n);
+            Cher(cuplo.elems, n, -d[j - 1], &u[(j - 1) * ldu], 1, work, n);
         }
         //
         if (n > 1 && kband == 1) {
-            for (j = 2; j <= n - 1; j = j + 1) {
-                Cher2(&cuplo, n, -COMPLEX(e[j - 1]), &u[(j - 1) * ldu], 1, &u[((j - 1) - 1) * ldu], 1, work, n);
+            for (j = 1; j <= n - 1; j = j + 1) {
+                Cher2(cuplo.elems, n, -COMPLEX(e[j - 1]), &u[(j - 1) * ldu], 1, &u[((j + 1) - 1) * ldu], 1, work, n);
             }
         }
-        wnorm = Clanhe("1", &cuplo, n, work, n, rwork);
+        wnorm = Clanhe("1", cuplo.elems, n, work, n, rwork);
         //
     } else if (itype == 2) {
         //
-        //        ITYPE=2: error = V S V**H - A
+        // ITYPE=2: error = V S V**H - A
         //
         Claset("Full", n, n, czero, czero, work, n);
         //
         if (lower) {
-            work[n * n - 1] = d[n - 1];
+            work[pow2(n) - 1] = d[n - 1];
             for (j = n - 1; j >= 1; j = j - 1) {
                 if (kband == 1) {
                     work[((n + 1) * (j - 1) + 2) - 1] = (cone - tau[j - 1]) * e[j - 1];
@@ -129,7 +134,7 @@ void Chet21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
                 //
                 vsave = v[((j + 1) - 1) + (j - 1) * ldv];
                 v[((j + 1) - 1) + (j - 1) * ldv] = one;
-                Clarfy("L", n - j, &v[((j + 1) - 1) + (j - 1) * ldv], 1, tau[j - 1], &work[((n + 1) * j + 1) - 1], n, &work[(n * n + 1) - 1]);
+                Clarfy("L", n - j, &v[((j + 1) - 1) + (j - 1) * ldv], 1, tau[j - 1], &work[((n + 1) * j + 1) - 1], n, &work[(pow2(n) + 1) - 1]);
                 v[((j + 1) - 1) + (j - 1) * ldv] = vsave;
                 work[((n + 1) * (j - 1) + 1) - 1] = d[j - 1];
             }
@@ -145,7 +150,7 @@ void Chet21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
                 //
                 vsave = v[(j - 1) + ((j + 1) - 1) * ldv];
                 v[(j - 1) + ((j + 1) - 1) * ldv] = one;
-                Clarfy("U", j, &v[((j + 1) - 1) * ldv], 1, tau[j - 1], work, n, &work[(n * n + 1) - 1]);
+                Clarfy("U", j, &v[((j + 1) - 1) * ldv], 1, tau[j - 1], work, n, &work[(pow2(n) + 1) - 1]);
                 v[(j - 1) + ((j + 1) - 1) * ldv] = vsave;
                 work[((n + 1) * j + 1) - 1] = d[(j + 1) - 1];
             }
@@ -162,20 +167,20 @@ void Chet21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
                 }
             }
         }
-        wnorm = Clanhe("1", &cuplo, n, work, n, rwork);
+        wnorm = Clanhe("1", cuplo.elems, n, work, n, rwork);
         //
     } else if (itype == 3) {
         //
-        //        ITYPE=3: error = U V**H - I
+        // ITYPE=3: error = U V**H - I
         //
         if (n < 2) {
             return;
         }
         Clacpy(" ", n, n, u, ldu, work, n);
         if (lower) {
-            Cunm2r("R", "C", n, n - 1, n - 1, &v[(2 - 1)], ldv, tau, &work[(n + 1) - 1], n, &work[(n * n + 1) - 1], iinfo);
+            Cunm2r("R", "C", n, n - 1, n - 1, &v[(2 - 1)], ldv, tau, &work[(n + 1) - 1], n, &work[(pow2(n) + 1) - 1], iinfo);
         } else {
-            Cunm2l("R", "C", n, n - 1, n - 1, &v[(2 - 1) * ldv], ldv, tau, work, n, &work[(n * n + 1) - 1], iinfo);
+            Cunm2l("R", "C", n, n - 1, n - 1, &v[(2 - 1) * ldv], ldv, tau, work, n, &work[(pow2(n) + 1) - 1], iinfo);
         }
         if (iinfo != 0) {
             result[1 - 1] = ten / ulp;
@@ -190,18 +195,18 @@ void Chet21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
     }
     //
     if (anorm > wnorm) {
-        result[1 - 1] = (wnorm / anorm) / (castREAL(n) * ulp);
+        result[1 - 1] = (wnorm / anorm) / (n * ulp);
     } else {
         if (anorm < one) {
-            result[1 - 1] = (min(wnorm, REAL(castREAL(n) * anorm)) / anorm) / (castREAL(n) * ulp);
+            result[1 - 1] = (min(wnorm, n * anorm) / anorm) / (n * ulp);
         } else {
-            result[1 - 1] = min(REAL(wnorm / anorm), castREAL(n)) / (castREAL(n) * ulp);
+            result[1 - 1] = min(wnorm / anorm, castREAL(n)) / (n * ulp);
         }
     }
     //
-    //     Do Test 2
+    // Do Test 2
     //
-    //     Compute  U U**H - I
+    // Compute  U U**H - I
     //
     if (itype == 1) {
         Cgemm("N", "C", n, n, n, cone, u, ldu, u, ldu, czero, work, n);
@@ -210,9 +215,9 @@ void Chet21(INTEGER const itype, const char *uplo, INTEGER const n, INTEGER cons
             work[((n + 1) * (j - 1) + 1) - 1] = work[((n + 1) * (j - 1) + 1) - 1] - cone;
         }
         //
-        result[2 - 1] = min({Clange("1", n, n, work, n, rwork), castREAL(n)}) / (n * ulp);
+        result[2 - 1] = min(Clange("1", n, n, work, n, rwork), castREAL(n)) / (n * ulp);
     }
     //
-    //     End of Chet21
+    // End of Chet21
     //
 }

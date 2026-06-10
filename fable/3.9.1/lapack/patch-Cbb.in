@@ -1,0 +1,10 @@
+--- Cbb.in_	2026-01-28 20:20:49.883765120 +0900
++++ Cbb.in	2026-01-28 20:20:49.889765226 +0900
+@@ -7,6 +7,6 @@
+ 2                                 Number of values of NRHS
+ 1 2                               Values of NRHS
+ 20.0                              Threshold value
+-F                                 Put T to test the error exits
++T                                 Put T to test the error exits
+ 1                                 Code to interpret the seed
+ ZBB 15

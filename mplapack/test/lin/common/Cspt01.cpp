@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZSPT01.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,32 +43,9 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Cspt01(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *afac, INTEGER *ipiv, COMPLEX *c, INTEGER const ldc, REAL *rwork, REAL &resid) {
+void Cspt01(fem::str_cref uplo, INTEGER const n, COMPLEX *a, COMPLEX *afac, INTEGER *ipiv, COMPLEX *c, INTEGER const ldc, REAL *rwork, REAL &resid) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Quick exit if N = 0.
+    // Quick exit if N = 0.
     //
     const REAL zero = 0.0;
     if (n <= 0) {
@@ -69,32 +53,32 @@ void Cspt01(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *afac, INTEGE
         return;
     }
     //
-    //     Determine EPS and the norm of A.
+    // Determine EPS and the norm of A.
     //
     REAL eps = Rlamch("Epsilon");
-    REAL anorm = Clansp("1", uplo, n, a, rwork);
+    REAL anorm = Clansp("1", uplo.elems(), n, a, rwork);
     //
-    //     Initialize C to the identity matrix.
+    // Initialize C to the identity matrix.
     //
     const COMPLEX czero = COMPLEX(0.0, 0.0);
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     Claset("Full", n, n, czero, cone, c, ldc);
     //
-    //     Call Clavsp to form the product D * U' (or D * L' ).
+    // Call Clavsp to form the product D * U' (or D * L' ).
     //
     INTEGER info = 0;
     Clavsp(uplo, "Transpose", "Non-unit", n, n, afac, ipiv, c, ldc, info);
     //
-    //     Call Clavsp again to multiply by U ( or L ).
+    // Call Clavsp again to multiply by U ( or L ).
     //
     Clavsp(uplo, "No transpose", "Unit", n, n, afac, ipiv, c, ldc, info);
     //
-    //     Compute the difference  C - A .
+    // Compute the difference  C - A .
     //
     INTEGER jc = 0;
     INTEGER j = 0;
     INTEGER i = 0;
-    if (Mlsame(uplo, "U")) {
+    if (Mlsame(uplo.elems(), "U")) {
         jc = 0;
         for (j = 1; j <= n; j = j + 1) {
             for (i = 1; i <= j; i = i + 1) {
@@ -112,9 +96,9 @@ void Cspt01(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *afac, INTEGE
         }
     }
     //
-    //     Compute norm( C - A ) / ( N * norm(A) * EPS )
+    // Compute norm( C - A ) / ( N * norm(A) * EPS )
     //
-    resid = Clansy("1", uplo, n, c, ldc, rwork);
+    resid = Clansy("1", uplo.elems(), n, c, ldc, rwork);
     //
     const REAL one = 1.0;
     if (anorm <= zero) {
@@ -125,6 +109,6 @@ void Cspt01(const char *uplo, INTEGER const n, COMPLEX *a, COMPLEX *afac, INTEGE
         resid = ((resid / castREAL(n)) / anorm) / eps;
     }
     //
-    //     End of Cspt01
+    // End of Cspt01
     //
 }

@@ -1,6 +1,6 @@
 # public domain
 
-CXX=g++-mp-10
+CXX=g++-mp-14
 MPLAPACKDIR=%%MPLAPACKDIR%%
 CXXFLAGS= -I$(MPLAPACKDIR)/include -I$(MPLAPACKDIR)/include/mplapack -I$(MPLAPACKDIR)/include/qd
 OPTFLAGS= -O2 -fopenmp
@@ -9,24 +9,24 @@ MPFRLIBS=-lmpblas_mpfr -lmpfr -lmpc -lgmp
 GMPLIBS=-lmpblas_gmp -lgmpxx -lgmp 
 QDLIBS=-lmpblas_qd -lqd
 DDLIBS=-lmpblas_dd -lqd
-_FLOAT64xLIBS=-lmpblas__Float64x
-_FLOAT128LIBS=-lmpblas__Float128%%LIBQUADMATH%%
+BINARY80LIBS=-lmpblas_binary80
+BINARY128LIBS=-lmpblas_binary128%%LIBQUADMATH%%
 DOUBLELIBS=-lmpblas_double
 
 MPFROPTLIBS=-fopenmp -lmpblas_mpfr_opt -lmpfr -lmpc -lgmp
 GMPOPTLIBS=-fopenmp -lmpblas_gmp_opt -lgmpxx -lgmp
 QDOPTLIBS=-fopenmp -lmpblas_qd_opt -lqd
 DDOPTLIBS=-fopenmp -lmpblas_dd_opt -lqd
-_FLOAT64xOPTLIBS=-fopenmp -lmpblas__Float64x
-_FLOAT128OPTLIBS=-fopenmp -lmpblas__Float128_opt%%LIBQUADMATH%%
+BINARY80OPTLIBS=-fopenmp -lmpblas_binary80_opt
+BINARY128OPTLIBS=-fopenmp -lmpblas_binary128_opt%%LIBQUADMATH%%
 DOUBLEOPTLIBS=-fopenmp -lmpblas_double_opt
 
 BLAS=
 LAPACK=
 FLIBS=-framework vecLib
 
-programs=%%ROUTINE%%_mpfr %%ROUTINE%%_gmp %%ROUTINE%%_qd %%ROUTINE%%_dd %%ROUTINE%%__Float64x %%ROUTINE%%__Float128 %%ROUTINE%%_double \
-%%ROUTINE%%_mpfr_opt %%ROUTINE%%_gmp_opt %%ROUTINE%%_qd_opt %%ROUTINE%%_dd_opt %%ROUTINE%%__Float64x_opt %%ROUTINE%%__Float128_opt %%ROUTINE%%_double_opt
+programs=%%ROUTINE%%_mpfr %%ROUTINE%%_gmp %%ROUTINE%%_qd %%ROUTINE%%_dd %%ROUTINE%%_binary80 %%ROUTINE%%_binary128 %%ROUTINE%%_double \
+%%ROUTINE%%_mpfr_opt %%ROUTINE%%_gmp_opt %%ROUTINE%%_qd_opt %%ROUTINE%%_dd_opt %%ROUTINE%%_binary80_opt %%ROUTINE%%_binary128_opt %%ROUTINE%%_double_opt
 
 all: $(programs)
 
@@ -43,7 +43,7 @@ all: $(programs)
 	$(CXX) -o %%ROUTINE%%_gmp %%ROUTINE%%_gmp.o $(LIBFLAGS) $(GMPLIBS)
 
 %%ROUTINE%%_gmp_opt: %%ROUTINE%%_gmp.o
-	$(CXX) -o %%ROUTINE%%_gmp_opt %%ROUTINE%%_gmp_opt.o $(LIBFLAGS) $(GMPOPTLIBS)
+	$(CXX) -o %%ROUTINE%%_gmp_opt %%ROUTINE%%_gmp.o $(LIBFLAGS) $(GMPOPTLIBS)
 
 %%ROUTINE%%_qd: %%ROUTINE%%_qd.o
 	$(CXX) -o %%ROUTINE%%_qd %%ROUTINE%%_qd.o $(LIBFLAGS) $(QDLIBS)
@@ -57,17 +57,17 @@ all: $(programs)
 %%ROUTINE%%_dd_opt: %%ROUTINE%%_dd.o
 	$(CXX) -o %%ROUTINE%%_dd_opt %%ROUTINE%%_dd.o $(LIBFLAGS) $(DDOPTLIBS)
 
-%%ROUTINE%%__Float64x: %%ROUTINE%%__Float64x.o
-	$(CXX) -o %%ROUTINE%%__Float64x %%ROUTINE%%__Float64x.o $(LIBFLAGS) $(_FLOAT64xLIBS)
+%%ROUTINE%%_binary80: %%ROUTINE%%_binary80.o
+	$(CXX) -o %%ROUTINE%%_binary80 %%ROUTINE%%_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
 
-%%ROUTINE%%__Float64x_opt: %%ROUTINE%%__Float64x.o
-	$(CXX) -o %%ROUTINE%%__Float64x_opt %%ROUTINE%%__Float64x.o $(LIBFLAGS) $(_FLOAT64xOPTLIBS)
+%%ROUTINE%%_binary80_opt: %%ROUTINE%%_binary80.o
+	$(CXX) -o %%ROUTINE%%_binary80_opt %%ROUTINE%%_binary80.o $(LIBFLAGS) $(BINARY80OPTLIBS)
 
-%%ROUTINE%%__Float128: %%ROUTINE%%__Float128.o
-	$(CXX) -o %%ROUTINE%%__Float128 %%ROUTINE%%__Float128.o $(LIBFLAGS) $(_FLOAT128LIBS)
+%%ROUTINE%%_binary128: %%ROUTINE%%_binary128.o
+	$(CXX) -o %%ROUTINE%%_binary128 %%ROUTINE%%_binary128.o $(LIBFLAGS) $(BINARY128LIBS)
 
-%%ROUTINE%%__Float128_opt: %%ROUTINE%%__Float128.o
-	$(CXX) -o %%ROUTINE%%__Float128_opt %%ROUTINE%%__Float128.o $(LIBFLAGS) $(_FLOAT128OPTLIBS)
+%%ROUTINE%%_binary128_opt: %%ROUTINE%%_binary128.o
+	$(CXX) -o %%ROUTINE%%_binary128_opt %%ROUTINE%%_binary128.o $(LIBFLAGS) $(BINARY128OPTLIBS)
 
 %%ROUTINE%%_double: %%ROUTINE%%_double.o
 	$(CXX) -o %%ROUTINE%%_double %%ROUTINE%%_double.o $(LIBFLAGS) $(DOUBLELIBS)

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DLASQ4.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -35,43 +42,24 @@ void Rlasq4(INTEGER const i0, INTEGER const n0, REAL *z, INTEGER const pp, INTEG
     REAL b1 = 0.0;
     REAL b2 = 0.0;
     REAL a2 = 0.0;
-    const REAL qurtr = 0.250e0;
+    const REAL qurtr = 0.25;
     REAL gap2 = 0.0;
     REAL gap1 = 0.0;
-    const REAL half = 0.50e0;
+    const REAL half = 0.5;
     REAL s = 0.0;
-    const REAL third = 0.3330e0;
+    const REAL third = 0.333;
     REAL gam = 0.0;
     INTEGER np = 0;
     INTEGER i4 = 0;
     const REAL hundrd = 100.0;
-    const REAL cnst1 = 0.5630e0;
-    const REAL cnst3 = 1.050e0;
+    const REAL cnst1 = 0.563;
+    const REAL cnst3 = 1.05;
     const REAL one = 1.0;
-    const REAL cnst2 = 1.010e0;
+    const REAL cnst2 = 1.01;
     const REAL two = 2.0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     A negative DMIN forces the shift to take that absolute value
-    //     TTYPE records the type of shift.
+    // A negative DMIN forces the shift to take that absolute value
+    // TTYPE records the type of shift.
     //
     if (dmin <= zero) {
         tau = -dmin;
@@ -82,7 +70,7 @@ void Rlasq4(INTEGER const i0, INTEGER const n0, REAL *z, INTEGER const pp, INTEG
     nn = 4 * n0 + pp;
     if (n0in == n0) {
         //
-        //        No eigenvalues deflated.
+        // No eigenvalues deflated.
         //
         if (dmin == dn || dmin == dn1) {
             //
@@ -90,7 +78,7 @@ void Rlasq4(INTEGER const i0, INTEGER const n0, REAL *z, INTEGER const pp, INTEG
             b2 = sqrt(z[(nn - 7) - 1]) * sqrt(z[(nn - 9) - 1]);
             a2 = z[(nn - 7) - 1] + z[(nn - 5) - 1];
             //
-            //           Cases 2 and 3.
+            // Cases 2 and 3.
             //
             if (dmin == dn && dmin1 == dn1) {
                 gap2 = dmin2 - a2 - dmin2 * qurtr;
@@ -100,7 +88,7 @@ void Rlasq4(INTEGER const i0, INTEGER const n0, REAL *z, INTEGER const pp, INTEG
                     gap1 = a2 - dn - (b1 + b2);
                 }
                 if (gap1 > zero && gap1 > b1) {
-                    s = max(REAL(dn - (b1 / gap1) * b1), REAL(half * dmin));
+                    s = max(dn - (b1 / gap1) * b1, half * dmin);
                     ttype = -2;
                 } else {
                     s = zero;
@@ -108,14 +96,14 @@ void Rlasq4(INTEGER const i0, INTEGER const n0, REAL *z, INTEGER const pp, INTEG
                         s = dn - b1;
                     }
                     if (a2 > (b1 + b2)) {
-                        s = min(s, REAL(a2 - (b1 + b2)));
+                        s = min(s, a2 - (b1 + b2));
                     }
-                    s = max(s, REAL(third * dmin));
+                    s = max(s, third * dmin);
                     ttype = -3;
                 }
             } else {
                 //
-                //              Case 4.
+                // Case 4.
                 //
                 ttype = -4;
                 s = qurtr * dmin;
@@ -141,7 +129,7 @@ void Rlasq4(INTEGER const i0, INTEGER const n0, REAL *z, INTEGER const pp, INTEG
                     np = nn - 13;
                 }
                 //
-                //              Approximate contribution to norm squared from I < NN-1.
+                // Approximate contribution to norm squared from I < NN-1.
                 //
                 a2 += b2;
                 for (i4 = np; i4 >= 4 * i0 - 1 + pp; i4 = i4 - 4) {
@@ -161,7 +149,7 @@ void Rlasq4(INTEGER const i0, INTEGER const n0, REAL *z, INTEGER const pp, INTEG
             statement_20:
                 a2 = cnst3 * a2;
                 //
-                //              Rayleigh quotient residual bound.
+                // Rayleigh quotient residual bound.
                 //
                 if (a2 < cnst1) {
                     s = gam * (one - sqrt(a2)) / (one + a2);
@@ -169,12 +157,12 @@ void Rlasq4(INTEGER const i0, INTEGER const n0, REAL *z, INTEGER const pp, INTEG
             }
         } else if (dmin == dn2) {
             //
-            //           Case 5.
+            // Case 5.
             //
             ttype = -5;
             s = qurtr * dmin;
             //
-            //           Compute contribution to norm squared from I > NN-2.
+            // Compute contribution to norm squared from I > NN-2.
             //
             np = nn - 2 * pp;
             b1 = z[(np - 2) - 1];
@@ -185,7 +173,7 @@ void Rlasq4(INTEGER const i0, INTEGER const n0, REAL *z, INTEGER const pp, INTEG
             }
             a2 = (z[(np - 8) - 1] / b2) * (one + z[(np - 4) - 1] / b1);
             //
-            //           Approximate contribution to norm squared from I < NN-2.
+            // Approximate contribution to norm squared from I < NN-2.
             //
             if (n0 - i0 > 2) {
                 b2 = z[(nn - 13) - 1] / z[(nn - 15) - 1];
@@ -213,7 +201,7 @@ void Rlasq4(INTEGER const i0, INTEGER const n0, REAL *z, INTEGER const pp, INTEG
             }
         } else {
             //
-            //           Case 6, no information to guide us.
+            // Case 6, no information to guide us.
             //
             if (ttype == -6) {
                 g += third * (one - g);
@@ -228,11 +216,11 @@ void Rlasq4(INTEGER const i0, INTEGER const n0, REAL *z, INTEGER const pp, INTEG
         //
     } else if (n0in == (n0 + 1)) {
         //
-        //        One eigenvalue just deflated. Use DMIN1, DN1 for DMIN and DN.
+        // One eigenvalue just deflated. Use DMIN1, DN1 for DMIN and DN.
         //
         if (dmin1 == dn1 && dmin2 == dn2) {
             //
-            //           Cases 7 and 8.
+            // Cases 7 and 8.
             //
             ttype = -7;
             s = third * dmin1;
@@ -260,14 +248,14 @@ void Rlasq4(INTEGER const i0, INTEGER const n0, REAL *z, INTEGER const pp, INTEG
             a2 = dmin1 / (one + pow2(b2));
             gap2 = half * dmin2 - a2;
             if (gap2 > zero && gap2 > b2 * a2) {
-                s = max(s, REAL(a2 * (one - cnst2 * a2 * (b2 / gap2) * b2)));
+                s = max(s, a2 * (one - cnst2 * a2 * (b2 / gap2) * b2));
             } else {
-                s = max(s, REAL(a2 * (one - cnst2 * b2)));
+                s = max(s, a2 * (one - cnst2 * b2));
                 ttype = -8;
             }
         } else {
             //
-            //           Case 9.
+            // Case 9.
             //
             s = qurtr * dmin1;
             if (dmin1 == dn1) {
@@ -278,9 +266,9 @@ void Rlasq4(INTEGER const i0, INTEGER const n0, REAL *z, INTEGER const pp, INTEG
         //
     } else if (n0in == (n0 + 2)) {
         //
-        //        Two eigenvalues deflated. Use DMIN2, DN2 for DMIN and DN.
+        // Two eigenvalues deflated. Use DMIN2, DN2 for DMIN and DN.
         //
-        //        Cases 10 and 11.
+        // Cases 10 and 11.
         //
         if (dmin2 == dn2 && two * z[(nn - 5) - 1] < z[(nn - 7) - 1]) {
             ttype = -10;
@@ -308,9 +296,9 @@ void Rlasq4(INTEGER const i0, INTEGER const n0, REAL *z, INTEGER const pp, INTEG
             a2 = dmin2 / (one + pow2(b2));
             gap2 = z[(nn - 7) - 1] + z[(nn - 9) - 1] - sqrt(z[(nn - 11) - 1]) * sqrt(z[(nn - 9) - 1]) - a2;
             if (gap2 > zero && gap2 > b2 * a2) {
-                s = max(s, REAL(a2 * (one - cnst2 * a2 * (b2 / gap2) * b2)));
+                s = max(s, a2 * (one - cnst2 * a2 * (b2 / gap2) * b2));
             } else {
-                s = max(s, REAL(a2 * (one - cnst2 * b2)));
+                s = max(s, a2 * (one - cnst2 * b2));
             }
         } else {
             s = qurtr * dmin2;
@@ -318,7 +306,7 @@ void Rlasq4(INTEGER const i0, INTEGER const n0, REAL *z, INTEGER const pp, INTEG
         }
     } else if (n0in > (n0 + 2)) {
         //
-        //        Case 12, more than two eigenvalues deflated. No information.
+        // Case 12, more than two eigenvalues deflated. No information.
         //
         s = zero;
         ttype = -12;
@@ -326,6 +314,6 @@ void Rlasq4(INTEGER const i0, INTEGER const n0, REAL *z, INTEGER const pp, INTEG
     //
     tau = s;
     //
-    //     End of Rlasq4
+    // End of Rlasq4
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DTGEVC.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -72,7 +79,7 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
     REAL acoefa = 0.0;
     REAL bcoefa = 0.0;
     REAL xmax = 0.0;
-    const REAL safety = 1.0e+2;
+    const REAL safety = 100.0;
     REAL temp2r = 0.0;
     REAL temp2i = 0.0;
     REAL dmin = 0.0;
@@ -82,12 +89,9 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
     REAL xscale = 0.0;
     INTEGER jw = 0;
     INTEGER ja = 0;
-    REAL sums[4];
-    REAL sump[4];
-    REAL sum[4];
-    INTEGER ldsums = 2;
-    INTEGER ldsump = 2;
-    INTEGER ldsum = 2;
+    REAL sums[2 * 2];
+    REAL sump[2 * 2];
+    REAL sum[2 * 2];
     INTEGER iinfo = 0;
     INTEGER ibeg = 0;
     REAL creala = 0.0;
@@ -99,33 +103,11 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
     REAL cre2b = 0.0;
     REAL cim2b = 0.0;
     INTEGER jc = 0;
+    INTEGER ldsums = 2;
+    INTEGER ldsump = 2;
+    INTEGER ldsum = 2;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Decode and Test the input parameters
+    // Decode and Test the input parameters
     //
     if (Mlsame(howmny, "A")) {
         ihwmny = 1;
@@ -177,7 +159,7 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
         return;
     }
     //
-    //     Count the number of eigenvectors to be computed
+    // Count the number of eigenvectors to be computed
     //
     if (!ilall) {
         im = 0;
@@ -207,7 +189,7 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
         im = n;
     }
     //
-    //     Check 2-by-2 diagonal blocks of A, B
+    // Check 2-by-2 diagonal blocks of A, B
     //
     ilabad = false;
     ilbbad = false;
@@ -240,32 +222,32 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     m = im;
     if (n == 0) {
         return;
     }
     //
-    //     Machine Constants
+    // Machine Constants
     //
     safmin = Rlamch("Safe minimum");
     big = one / safmin;
     ulp = Rlamch("Epsilon") * Rlamch("Base");
-    small = safmin * castREAL(n) / ulp;
+    small = safmin * n / ulp;
     big = one / small;
-    bignum = one / (safmin * castREAL(n));
+    bignum = one / (safmin * n);
     //
-    //     Compute the 1-norm of each column of the strictly upper triangular
-    //     part (i.e., excluding all elements belonging to the diagonal
-    //     blocks) of A and B to check for possible overflow in the
-    //     triangular solver.
+    // Compute the 1-norm of each column of the strictly upper triangular
+    // part (i.e., excluding all elements belonging to the diagonal
+    // blocks) of A and B to check for possible overflow in the
+    // triangular solver.
     //
-    anorm = abs(s[(1 - 1)]);
+    anorm = abs(s[0]);
     if (n > 1) {
         anorm += abs(s[(2 - 1)]);
     }
-    bnorm = abs(p[(1 - 1)]);
+    bnorm = abs(p[0]);
     work[1 - 1] = zero;
     work[(n + 1) - 1] = zero;
     //
@@ -294,20 +276,20 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
     ascale = one / max(anorm, safmin);
     bscale = one / max(bnorm, safmin);
     //
-    //     Left eigenvectors
+    // Left eigenvectors
     //
     if (identifier_compl) {
         ieig = 0;
         //
-        //        Main loop over eigenvalues
+        // Main loop over eigenvalues
         //
         ilcplx = false;
         for (je = 1; je <= n; je = je + 1) {
             //
-            //           Skip this iteration if (a) HOWMNY='S' and SELECT=.FALSE., or
-            //           (b) this would be the second of a complex pair.
-            //           Check for complex eigenvalue, so as to be sure of which
-            //           entry(-ies) of SELECT to look at.
+            // Skip this iteration if (a) HOWMNY='S' and SELECT=.FALSE., or
+            // (b) this would be the second of a complex pair.
+            // Check for complex eigenvalue, so as to be sure of which
+            // entry(-ies) of SELECT to look at.
             //
             if (ilcplx) {
                 ilcplx = false;
@@ -331,13 +313,13 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                 goto statement_220;
             }
             //
-            //           Decide if (a) singular pencil, (b) real eigenvalue, or
-            //           (c) complex eigenvalue.
+            // Decide if (a) singular pencil, (b) real eigenvalue, or
+            // (c) complex eigenvalue.
             //
             if (!ilcplx) {
                 if (abs(s[(je - 1) + (je - 1) * lds]) <= safmin && abs(p[(je - 1) + (je - 1) * ldp]) <= safmin) {
                     //
-                    //                 Singular matrix pencil -- return unit eigenvector
+                    // Singular matrix pencil -- return unit eigenvector
                     //
                     ieig++;
                     for (jr = 1; jr <= n; jr = jr + 1) {
@@ -348,28 +330,28 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                 }
             }
             //
-            //           Clear vector
+            // Clear vector
             //
             for (jr = 1; jr <= nw * n; jr = jr + 1) {
                 work[(2 * n + jr) - 1] = zero;
             }
-            //                                                 T
-            //           Compute coefficients in  ( a A - b B )  y = 0
-            //              a  is  ACOEF
-            //              b  is  BCOEFR + i*BCOEFI
+            // T
+            // Compute coefficients in  ( a A - b B )  y = 0
+            // a  is  ACOEF
+            // b  is  BCOEFR + i*BCOEFI
             //
             if (!ilcplx) {
                 //
-                //              Real eigenvalue
+                // Real eigenvalue
                 //
-                temp = one / max({REAL(abs(s[(je - 1) + (je - 1) * lds]) * ascale), REAL(abs(p[(je - 1) + (je - 1) * ldp]) * bscale), safmin});
+                temp = one / max(abs(s[(je - 1) + (je - 1) * lds]) * ascale, abs(p[(je - 1) + (je - 1) * ldp]) * bscale, safmin);
                 salfar = (temp * s[(je - 1) + (je - 1) * lds]) * ascale;
                 sbeta = (temp * p[(je - 1) + (je - 1) * ldp]) * bscale;
                 acoef = sbeta * ascale;
                 bcoefr = salfar * bscale;
                 bcoefi = zero;
                 //
-                //              Scale to avoid underflow
+                // Scale to avoid underflow
                 //
                 scale = one;
                 lsa = abs(sbeta) >= safmin && abs(acoef) < small;
@@ -378,10 +360,10 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                     scale = (small / abs(sbeta)) * min(anorm, big);
                 }
                 if (lsb) {
-                    scale = max(scale, REAL((small / abs(salfar)) * min(bnorm, big)));
+                    scale = max(scale, (small / abs(salfar)) * min(bnorm, big));
                 }
                 if (lsa || lsb) {
-                    scale = min(scale, REAL(one / (safmin * max({one, REAL(abs(acoef)), REAL(abs(bcoefr))}))));
+                    scale = min(scale, one / (safmin * max(one, abs(acoef), abs(bcoefr))));
                     if (lsa) {
                         acoef = ascale * (scale * sbeta);
                     } else {
@@ -396,13 +378,13 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                 acoefa = abs(acoef);
                 bcoefa = abs(bcoefr);
                 //
-                //              First component is 1
+                // First component is 1
                 //
                 work[(2 * n + je) - 1] = one;
                 xmax = one;
             } else {
                 //
-                //              Complex eigenvalue
+                // Complex eigenvalue
                 //
                 Rlag2(&s[(je - 1) + (je - 1) * lds], lds, &p[(je - 1) + (je - 1) * ldp], ldp, safmin * safety, acoef, temp, bcoefr, temp2, bcoefi);
                 bcoefi = -bcoefi;
@@ -411,7 +393,7 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                     return;
                 }
                 //
-                //              Scale to avoid over/underflow
+                // Scale to avoid over/underflow
                 //
                 acoefa = abs(acoef);
                 bcoefa = abs(bcoefr) + abs(bcoefi);
@@ -420,13 +402,13 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                     scale = (safmin / ulp) / acoefa;
                 }
                 if (bcoefa * ulp < safmin && bcoefa >= safmin) {
-                    scale = max(scale, REAL((safmin / ulp) / bcoefa));
+                    scale = max(scale, (safmin / ulp) / bcoefa);
                 }
                 if (safmin * acoefa > ascale) {
                     scale = ascale / (safmin * acoefa);
                 }
                 if (safmin * bcoefa > bscale) {
-                    scale = min(scale, REAL(bscale / (safmin * bcoefa)));
+                    scale = min(scale, bscale / (safmin * bcoefa));
                 }
                 if (scale != one) {
                     acoef = scale * acoef;
@@ -436,7 +418,7 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                     bcoefa = abs(bcoefr) + abs(bcoefi);
                 }
                 //
-                //              Compute first two components of eigenvector
+                // Compute first two components of eigenvector
                 //
                 temp = acoef * s[((je + 1) - 1) + (je - 1) * lds];
                 temp2r = acoef * s[(je - 1) + (je - 1) * lds] - bcoefr * p[(je - 1) + (je - 1) * ldp];
@@ -456,13 +438,13 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                 xmax = max(abs(work[(2 * n + je) - 1]) + abs(work[(3 * n + je) - 1]), abs(work[(2 * n + je + 1) - 1]) + abs(work[(3 * n + je + 1) - 1]));
             }
             //
-            dmin = max({REAL(ulp * acoefa * anorm), REAL(ulp * bcoefa * bnorm), safmin});
+            dmin = max(ulp * acoefa * anorm, ulp * bcoefa * bnorm, safmin);
             //
-            //                                           T
-            //           Triangular solve of  (a A - b B)  y = 0
+            // T
+            // Triangular solve of  (a A - b B)  y = 0
             //
-            //                                   T
-            //           (rowwise in  (a A - b B) , or columnwise in (a A - b B) )
+            // T
+            // (rowwise in  (a A - b B) , or columnwise in (a A - b B) )
             //
             il2by2 = false;
             //
@@ -482,12 +464,12 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                     }
                 }
                 //
-                //              Check whether scaling is necessary for dot products
+                // Check whether scaling is necessary for dot products
                 //
                 xscale = one / max(one, xmax);
-                temp = max({work[j - 1], work[(n + j) - 1], REAL(acoefa * work[j - 1] + bcoefa * work[(n + j) - 1])});
+                temp = max(work[j - 1], work[(n + j) - 1], acoefa * work[j - 1] + bcoefa * work[(n + j) - 1]);
                 if (il2by2) {
-                    temp = max({temp, work[(j + 1) - 1], work[(n + j + 1) - 1], REAL(acoefa * work[(j + 1) - 1] + bcoefa * work[(n + j + 1) - 1])});
+                    temp = max(temp, work[(j + 1) - 1], work[(n + j + 1) - 1], acoefa * work[(j + 1) - 1] + bcoefa * work[(n + j + 1) - 1]);
                 }
                 if (temp > bignum * xscale) {
                     for (jw = 0; jw <= nw - 1; jw = jw + 1) {
@@ -498,20 +480,20 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                     xmax = xmax * xscale;
                 }
                 //
-                //              Compute dot products
+                // Compute dot products
                 //
-                //                    j-1
-                //              SUM = sum  conj( a*S(k,j) - b*P(k,j) )*x(k)
-                //                    k=je
+                // j-1
+                // SUM = sum  conjg( a*S(k,j) - b*P(k,j) )*x(k)
+                // k=je
                 //
-                //              To reduce the op count, this is done as
+                // To reduce the op count, this is done as
                 //
-                //              _        j-1                  _        j-1
-                //              a*conj( sum  S(k,j)*x(k) ) - b*conj( sum  P(k,j)*x(k) )
-                //                       k=je                          k=je
+                // _        j-1                  _        j-1
+                // a*conjg( sum  S(k,j)*x(k) ) - b*conjg( sum  P(k,j)*x(k) )
+                // k=je                          k=je
                 //
-                //              which may cause underflow problems if A or B are close
-                //              to underflow.  (E.g., less than SMALL.)
+                // which may cause underflow problems if A or B are close
+                // to underflow.  (E.g., less than SMALL.)
                 //
                 for (jw = 1; jw <= nw; jw = jw + 1) {
                     for (ja = 1; ja <= na; ja = ja + 1) {
@@ -534,9 +516,9 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                     }
                 }
                 //
-                //                                  T
-                //              Solve  ( a A - b B )  y = SUM(,)
-                //              with scaling and perturbation of the denominator
+                // T
+                // Solve  ( a A - b B )  y = SUM(,)
+                // with scaling and perturbation of the denominator
                 //
                 Rlaln2(true, na, nw, dmin, acoef, &s[(j - 1) + (j - 1) * lds], lds, bdiag[1 - 1], bdiag[2 - 1], sum, 2, bcoefr, bcoefi, &work[(2 * n + j) - 1], n, scale, temp, iinfo);
                 if (scale < one) {
@@ -551,8 +533,8 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
             statement_160:;
             }
             //
-            //           Copy eigenvector to VL, back transforming if
-            //           HOWMNY='B'.
+            // Copy eigenvector to VL, back transforming if
+            // HOWMNY='B'.
             //
             ieig++;
             if (ilback) {
@@ -566,16 +548,16 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                 ibeg = je;
             }
             //
-            //           Scale eigenvector
+            // Scale eigenvector
             //
             xmax = zero;
             if (ilcplx) {
                 for (j = ibeg; j <= n; j = j + 1) {
-                    xmax = max(xmax, REAL(abs(vl[(j - 1) + (ieig - 1) * ldvl]) + abs(vl[(j - 1) + ((ieig + 1) - 1) * ldvl])));
+                    xmax = max(xmax, abs(vl[(j - 1) + (ieig - 1) * ldvl]) + abs(vl[(j - 1) + ((ieig + 1) - 1) * ldvl]));
                 }
             } else {
                 for (j = ibeg; j <= n; j = j + 1) {
-                    xmax = max(xmax, REAL(abs(vl[(j - 1) + (ieig - 1) * ldvl])));
+                    xmax = max(xmax, abs(vl[(j - 1) + (ieig - 1) * ldvl]));
                 }
             }
             //
@@ -594,23 +576,23 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
         }
     }
     //
-    //     Right eigenvectors
+    // Right eigenvectors
     //
     if (compr) {
         ieig = im + 1;
         //
-        //        Main loop over eigenvalues
+        // Main loop over eigenvalues
         //
         ilcplx = false;
         for (je = n; je >= 1; je = je - 1) {
             //
-            //           Skip this iteration if (a) HOWMNY='S' and SELECT=.FALSE., or
-            //           (b) this would be the second of a complex pair.
-            //           Check for complex eigenvalue, so as to be sure of which
-            //           entry(-ies) of SELECT to look at -- if complex, SELECT(JE)
-            //           or SELECT(JE-1).
-            //           If this is a complex pair, the 2-by-2 diagonal block
-            //           corresponding to the eigenvalue is in rows/columns JE-1:JE
+            // Skip this iteration if (a) HOWMNY='S' and SELECT=.FALSE., or
+            // (b) this would be the second of a complex pair.
+            // Check for complex eigenvalue, so as to be sure of which
+            // entry(-ies) of SELECT to look at -- if complex, SELECT(JE)
+            // or SELECT(JE-1).
+            // If this is a complex pair, the 2-by-2 diagonal block
+            // corresponding to the eigenvalue is in rows/columns JE-1:JE
             //
             if (ilcplx) {
                 ilcplx = false;
@@ -634,13 +616,13 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                 goto statement_500;
             }
             //
-            //           Decide if (a) singular pencil, (b) real eigenvalue, or
-            //           (c) complex eigenvalue.
+            // Decide if (a) singular pencil, (b) real eigenvalue, or
+            // (c) complex eigenvalue.
             //
             if (!ilcplx) {
                 if (abs(s[(je - 1) + (je - 1) * lds]) <= safmin && abs(p[(je - 1) + (je - 1) * ldp]) <= safmin) {
                     //
-                    //                 Singular matrix pencil -- unit eigenvector
+                    // Singular matrix pencil -- unit eigenvector
                     //
                     ieig = ieig - 1;
                     for (jr = 1; jr <= n; jr = jr + 1) {
@@ -651,7 +633,7 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                 }
             }
             //
-            //           Clear vector
+            // Clear vector
             //
             for (jw = 0; jw <= nw - 1; jw = jw + 1) {
                 for (jr = 1; jr <= n; jr = jr + 1) {
@@ -659,22 +641,22 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                 }
             }
             //
-            //           Compute coefficients in  ( a A - b B ) x = 0
-            //              a  is  ACOEF
-            //              b  is  BCOEFR + i*BCOEFI
+            // Compute coefficients in  ( a A - b B ) x = 0
+            // a  is  ACOEF
+            // b  is  BCOEFR + i*BCOEFI
             //
             if (!ilcplx) {
                 //
-                //              Real eigenvalue
+                // Real eigenvalue
                 //
-                temp = one / max({REAL(abs(s[(je - 1) + (je - 1) * lds]) * ascale), REAL(abs(p[(je - 1) + (je - 1) * ldp]) * bscale), safmin});
+                temp = one / max(abs(s[(je - 1) + (je - 1) * lds]) * ascale, abs(p[(je - 1) + (je - 1) * ldp]) * bscale, safmin);
                 salfar = (temp * s[(je - 1) + (je - 1) * lds]) * ascale;
                 sbeta = (temp * p[(je - 1) + (je - 1) * ldp]) * bscale;
                 acoef = sbeta * ascale;
                 bcoefr = salfar * bscale;
                 bcoefi = zero;
                 //
-                //              Scale to avoid underflow
+                // Scale to avoid underflow
                 //
                 scale = one;
                 lsa = abs(sbeta) >= safmin && abs(acoef) < small;
@@ -683,10 +665,10 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                     scale = (small / abs(sbeta)) * min(anorm, big);
                 }
                 if (lsb) {
-                    scale = max(scale, REAL((small / abs(salfar)) * min(bnorm, big)));
+                    scale = max(scale, (small / abs(salfar)) * min(bnorm, big));
                 }
                 if (lsa || lsb) {
-                    scale = min(scale, REAL(one / (safmin * max({one, REAL(abs(acoef)), REAL(abs(bcoefr))}))));
+                    scale = min(scale, one / (safmin * max(one, abs(acoef), abs(bcoefr))));
                     if (lsa) {
                         acoef = ascale * (scale * sbeta);
                     } else {
@@ -701,20 +683,20 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                 acoefa = abs(acoef);
                 bcoefa = abs(bcoefr);
                 //
-                //              First component is 1
+                // First component is 1
                 //
                 work[(2 * n + je) - 1] = one;
                 xmax = one;
                 //
-                //              Compute contribution from column JE of A and B to sum
-                //              (See "Further Details", above.)
+                // Compute contribution from column JE of A and B to sum
+                // (See "Further Details", above.)
                 //
                 for (jr = 1; jr <= je - 1; jr = jr + 1) {
                     work[(2 * n + jr) - 1] = bcoefr * p[(jr - 1) + (je - 1) * ldp] - acoef * s[(jr - 1) + (je - 1) * lds];
                 }
             } else {
                 //
-                //              Complex eigenvalue
+                // Complex eigenvalue
                 //
                 Rlag2(&s[((je - 1) - 1) + ((je - 1) - 1) * lds], lds, &p[((je - 1) - 1) + ((je - 1) - 1) * ldp], ldp, safmin * safety, acoef, temp, bcoefr, temp2, bcoefi);
                 if (bcoefi == zero) {
@@ -722,7 +704,7 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                     return;
                 }
                 //
-                //              Scale to avoid over/underflow
+                // Scale to avoid over/underflow
                 //
                 acoefa = abs(acoef);
                 bcoefa = abs(bcoefr) + abs(bcoefi);
@@ -731,13 +713,13 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                     scale = (safmin / ulp) / acoefa;
                 }
                 if (bcoefa * ulp < safmin && bcoefa >= safmin) {
-                    scale = max(scale, REAL((safmin / ulp) / bcoefa));
+                    scale = max(scale, (safmin / ulp) / bcoefa);
                 }
                 if (safmin * acoefa > ascale) {
                     scale = ascale / (safmin * acoefa);
                 }
                 if (safmin * bcoefa > bscale) {
-                    scale = min(scale, REAL(bscale / (safmin * bcoefa)));
+                    scale = min(scale, bscale / (safmin * bcoefa));
                 }
                 if (scale != one) {
                     acoef = scale * acoef;
@@ -747,8 +729,8 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                     bcoefa = abs(bcoefr) + abs(bcoefi);
                 }
                 //
-                //              Compute first two components of eigenvector
-                //              and contribution to sums
+                // Compute first two components of eigenvector
+                // and contribution to sums
                 //
                 temp = acoef * s[(je - 1) + ((je - 1) - 1) * lds];
                 temp2r = acoef * s[(je - 1) + (je - 1) * lds] - bcoefr * p[(je - 1) + (je - 1) * ldp];
@@ -768,8 +750,8 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                 //
                 xmax = max(abs(work[(2 * n + je) - 1]) + abs(work[(3 * n + je) - 1]), abs(work[(2 * n + je - 1) - 1]) + abs(work[(3 * n + je - 1) - 1]));
                 //
-                //              Compute contribution from columns JE and JE-1
-                //              of A and B to the sums.
+                // Compute contribution from columns JE and JE-1
+                // of A and B to the sums.
                 //
                 creala = acoef * work[(2 * n + je - 1) - 1];
                 cimaga = acoef * work[(3 * n + je - 1) - 1];
@@ -785,15 +767,15 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                 }
             }
             //
-            dmin = max({REAL(ulp * acoefa * anorm), REAL(ulp * bcoefa * bnorm), safmin});
+            dmin = max(ulp * acoefa * anorm, ulp * bcoefa * bnorm, safmin);
             //
-            //           Columnwise triangular solve of  (a A - b B)  x = 0
+            // Columnwise triangular solve of  (a A - b B)  x = 0
             //
             il2by2 = false;
             for (j = je - nw; j >= 1; j = j - 1) {
                 //
-                //              If a 2-by-2 block, is in position j-1:j, wait until
-                //              next iteration to process it (when it will be j:j+1)
+                // If a 2-by-2 block, is in position j-1:j, wait until
+                // next iteration to process it (when it will be j:j+1)
                 //
                 if (!il2by2 && j > 1) {
                     if (s[(j - 1) + ((j - 1) - 1) * lds] != zero) {
@@ -809,7 +791,7 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                     na = 1;
                 }
                 //
-                //              Compute x(j) (and x(j+1), if 2-by-2 block)
+                // Compute x(j) (and x(j+1), if 2-by-2 block)
                 //
                 Rlaln2(false, na, nw, dmin, acoef, &s[(j - 1) + (j - 1) * lds], lds, bdiag[1 - 1], bdiag[2 - 1], &work[(2 * n + j) - 1], n, bcoefr, bcoefi, sum, 2, scale, temp, iinfo);
                 if (scale < one) {
@@ -820,7 +802,7 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                         }
                     }
                 }
-                xmax = max(REAL(scale * xmax), temp);
+                xmax = max(scale * xmax, temp);
                 //
                 for (jw = 1; jw <= nw; jw = jw + 1) {
                     for (ja = 1; ja <= na; ja = ja + 1) {
@@ -828,18 +810,18 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                     }
                 }
                 //
-                //              w = w + x(j)*(a S(*,j) - b P(*,j) ) with scaling
+                // w = w + x(j)*(a S(*,j) - b P(*,j) ) with scaling
                 //
                 if (j > 1) {
                     //
-                    //                 Check whether scaling is necessary for sum.
+                    // Check whether scaling is necessary for sum.
                     //
                     xscale = one / max(one, xmax);
                     temp = acoefa * work[j - 1] + bcoefa * work[(n + j) - 1];
                     if (il2by2) {
-                        temp = max(temp, REAL(acoefa * work[(j + 1) - 1] + bcoefa * work[(n + j + 1) - 1]));
+                        temp = max(temp, acoefa * work[(j + 1) - 1] + bcoefa * work[(n + j + 1) - 1]);
                     }
-                    temp = max({temp, acoefa, bcoefa});
+                    temp = max(temp, acoefa, bcoefa);
                     if (temp > bignum * xscale) {
                         //
                         for (jw = 0; jw <= nw - 1; jw = jw + 1) {
@@ -850,9 +832,9 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                         xmax = xmax * xscale;
                     }
                     //
-                    //                 Compute the contributions of the off-diagonals of
-                    //                 column j (and j+1, if 2-by-2 block) of A and B to the
-                    //                 sums.
+                    // Compute the contributions of the off-diagonals of
+                    // column j (and j+1, if 2-by-2 block) of A and B to the
+                    // sums.
                     //
                     for (ja = 1; ja <= na; ja = ja + 1) {
                         if (ilcplx) {
@@ -878,8 +860,8 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
             statement_370:;
             }
             //
-            //           Copy eigenvector to VR, back transforming if
-            //           HOWMNY='B'.
+            // Copy eigenvector to VR, back transforming if
+            // HOWMNY='B'.
             //
             ieig = ieig - nw;
             if (ilback) {
@@ -889,8 +871,8 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                         work[((jw + 4) * n + jr) - 1] = work[((jw + 2) * n + 1) - 1] * vr[(jr - 1)];
                     }
                     //
-                    //                 A series of compiler directives to defeat
-                    //                 vectorization for the next loop
+                    // A series of compiler directives to defeat
+                    // vectorization for the next loop
                     //
                     for (jc = 2; jc <= je; jc = jc + 1) {
                         for (jr = 1; jr <= n; jr = jr + 1) {
@@ -916,16 +898,16 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
                 iend = je;
             }
             //
-            //           Scale eigenvector
+            // Scale eigenvector
             //
             xmax = zero;
             if (ilcplx) {
                 for (j = 1; j <= iend; j = j + 1) {
-                    xmax = max(xmax, REAL(abs(vr[(j - 1) + (ieig - 1) * ldvr]) + abs(vr[(j - 1) + ((ieig + 1) - 1) * ldvr])));
+                    xmax = max(xmax, abs(vr[(j - 1) + (ieig - 1) * ldvr]) + abs(vr[(j - 1) + ((ieig + 1) - 1) * ldvr]));
                 }
             } else {
                 for (j = 1; j <= iend; j = j + 1) {
-                    xmax = max(xmax, REAL(abs(vr[(j - 1) + (ieig - 1) * ldvr])));
+                    xmax = max(xmax, abs(vr[(j - 1) + (ieig - 1) * ldvr]));
                 }
             }
             //
@@ -941,6 +923,6 @@ void Rtgevc(const char *side, const char *howmny, bool *select, INTEGER const n,
         }
     }
     //
-    //     End of Rtgevc
+    // End of Rtgevc
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZLATM4.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,9 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-void Clatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER const nz2, bool const rsign, REAL const amagn, REAL const rcond, REAL const triang, INTEGER const idist, INTEGER *iseed, COMPLEX *a, INTEGER const lda) {
+void Clatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER const nz2, bool const rsign, REAL const amagn, REAL const rcond, REAL const triang, INTEGER const idist, INTEGER (&iseed)[4], COMPLEX *a, INTEGER const lda) {
     const COMPLEX czero = COMPLEX(0.0, 0.0);
     INTEGER kbeg = 0;
     INTEGER kend = 0;
@@ -61,19 +66,19 @@ void Clatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
     }
     Claset("Full", n, n, czero, czero, a, lda);
     //
-    //     Insure a correct ISEED
+    // Insure a correct ISEED
     //
     if (mod(iseed[4 - 1], 2) != 1) {
         iseed[4 - 1]++;
     }
     //
-    //     Compute diagonal and subdiagonal according to ITYPE, NZ1, NZ2,
-    //     and RCOND
+    // Compute diagonal and subdiagonal according to ITYPE, NZ1, NZ2,
+    // and RCOND
     //
     if (itype != 0) {
         if (abs(itype) >= 4) {
-            kbeg = max({(INTEGER)1, min(n, nz1 + 1)});
-            kend = max({kbeg, min(n, n - nz2)});
+            kbeg = max((INTEGER)1, min(n, nz1 + 1));
+            kend = max(kbeg, min(n, n - nz2));
             klen = kend + 1 - kbeg;
         } else {
             kbeg = 1;
@@ -107,7 +112,7 @@ void Clatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
             break;
         }
     //
-    //        abs(ITYPE) = 1: Identity
+    // abs(ITYPE) = 1: Identity
     //
     statement_10:
         for (jd = 1; jd <= n; jd = jd + 1) {
@@ -115,7 +120,7 @@ void Clatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
         }
         goto statement_220;
     //
-    //        abs(ITYPE) = 2: Transposed Jordan block
+    // abs(ITYPE) = 2: Transposed Jordan block
     //
     statement_30:
         for (jd = 1; jd <= n - 1; jd = jd + 1) {
@@ -125,8 +130,8 @@ void Clatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
         isde = n - 1;
         goto statement_220;
     //
-    //        abs(ITYPE) = 3: Transposed Jordan block, followed by the
-    //                        identity.
+    // abs(ITYPE) = 3: Transposed Jordan block, followed by the
+    // identity.
     //
     statement_50:
         k = (n - 1) / 2;
@@ -140,7 +145,7 @@ void Clatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
         }
         goto statement_220;
     //
-    //        abs(ITYPE) = 4: 1,...,k
+    // abs(ITYPE) = 4: 1,...,k
     //
     statement_80:
         for (jd = kbeg; jd <= kend; jd = jd + 1) {
@@ -148,7 +153,7 @@ void Clatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
         }
         goto statement_220;
     //
-    //        abs(ITYPE) = 5: One large D value:
+    // abs(ITYPE) = 5: One large D value:
     //
     statement_100:
         for (jd = kbeg + 1; jd <= kend; jd = jd + 1) {
@@ -157,7 +162,7 @@ void Clatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
         a[(kbeg - 1) + (kbeg - 1) * lda] = cone;
         goto statement_220;
     //
-    //        abs(ITYPE) = 6: One small D value:
+    // abs(ITYPE) = 6: One small D value:
     //
     statement_120:
         for (jd = kbeg; jd <= kend - 1; jd = jd + 1) {
@@ -166,7 +171,7 @@ void Clatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
         a[(kend - 1) + (kend - 1) * lda] = COMPLEX(rcond);
         goto statement_220;
     //
-    //        abs(ITYPE) = 7: Exponentially distributed D values:
+    // abs(ITYPE) = 7: Exponentially distributed D values:
     //
     statement_140:
         a[(kbeg - 1) + (kbeg - 1) * lda] = cone;
@@ -178,7 +183,7 @@ void Clatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
         }
         goto statement_220;
     //
-    //        abs(ITYPE) = 8: Arithmetically distributed D values:
+    // abs(ITYPE) = 8: Arithmetically distributed D values:
     //
     statement_160:
         a[(kbeg - 1) + (kbeg - 1) * lda] = cone;
@@ -190,7 +195,7 @@ void Clatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
         }
         goto statement_220;
     //
-    //        abs(ITYPE) = 9: Randomly distributed D values on ( RCOND, 1):
+    // abs(ITYPE) = 9: Randomly distributed D values on ( RCOND, 1):
     //
     statement_180:
         alpha = log(rcond);
@@ -199,7 +204,7 @@ void Clatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
         }
         goto statement_220;
     //
-    //        abs(ITYPE) = 10: Randomly distributed D values from DIST
+    // abs(ITYPE) = 10: Randomly distributed D values from DIST
     //
     statement_200:
         for (jd = kbeg; jd <= kend; jd = jd + 1) {
@@ -208,7 +213,7 @@ void Clatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
     //
     statement_220:
         //
-        //        Scale by AMAGN
+        // Scale by AMAGN
         //
         for (jd = kbeg; jd <= kend; jd = jd + 1) {
             a[(jd - 1) + (jd - 1) * lda] = amagn * a[(jd - 1) + (jd - 1) * lda].real();
@@ -217,8 +222,8 @@ void Clatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
             a[((jd + 1) - 1) + (jd - 1) * lda] = amagn * a[((jd + 1) - 1) + (jd - 1) * lda].real();
         }
         //
-        //        If RSIGN = .TRUE., assign random signs to diagonal and
-        //        subdiagonal
+        // If RSIGN = .TRUE., assign random signs to diagonal and
+        // subdiagonal
         //
         if (rsign) {
             for (jd = kbeg; jd <= kend; jd = jd + 1) {
@@ -237,7 +242,7 @@ void Clatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
             }
         }
         //
-        //        Reverse if ITYPE < 0
+        // Reverse if ITYPE < 0
         //
         if (itype < 0) {
             for (jd = kbeg; jd <= (kbeg + kend - 1) / 2; jd = jd + 1) {
@@ -254,7 +259,7 @@ void Clatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
         //
     }
     //
-    //     Fill in upper triangle
+    // Fill in upper triangle
     //
     if (triang != zero) {
         for (jc = 2; jc <= n; jc = jc + 1) {
@@ -264,6 +269,6 @@ void Clatm4(INTEGER const itype, INTEGER const n, INTEGER const nz1, INTEGER con
         }
     }
     //
-    //     End of Clatm4
+    // End of Clatm4
     //
 }

@@ -1,0 +1,13 @@
+=== precision: qd ===
+ .. test output of Cggbal .. 
+ ratio of largest test error              = 2.2010770166329374914704541882441964330700810709699853638902703822e-03
+ example number where info is not zero    =    0
+ example number where ILO or IHI is wrong =    0
+ example number having largest error      =    7
+ number of examples where info is not 0   =    0
+ total number of examples tested          =   10
+
+
+ End of tests
+ Total time used =         0.10 seconds
+

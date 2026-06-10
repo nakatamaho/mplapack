@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DLATB5.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,39 +43,33 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Rlatb5(const char *path, INTEGER const imat, INTEGER const n, char *type, INTEGER &kl, INTEGER &ku, REAL &anorm, INTEGER &mode, REAL &cndnum, char *dist) {
+void Rlatb5(fem::str_cref path, INTEGER const imat, INTEGER const n, fem::str_ref type, INTEGER &kl, INTEGER &ku, REAL &anorm, INTEGER &mode, REAL &cndnum, fem::str_ref dist) {
     //
-    const REAL tenth = 0.1e+0;
+    // Set some constants for use in the subroutine.
+    //
+    const REAL tenth = 0.1;
     const REAL one = 1.0;
-    const REAL shrink = 0.25e0;
-    REAL badc1;
-    REAL badc2;
-    REAL eps;
-    REAL large;
-    REAL small;
-    eps = Rlamch("Precision");
-    badc2 = tenth / eps;
-    badc1 = sqrt(badc2);
-    small = Rlamch("Safe minimum");
-    large = one / small;
-    //
+    const REAL shrink = 0.25;
+    REAL eps = Rlamch("Precision");
+    REAL badc2 = tenth / eps;
+    REAL badc1 = sqrt(badc2);
+    REAL small = Rlamch("Safe minimum");
+    REAL large = one / small;
     small = shrink * (small / eps);
     large = one / small;
     //
-    char c2[2];
-    c2[0] = path[1];
-    c2[1] = path[2];
+    fem::str<2> c2 = path(2, 3);
     //
-    //     Set some parameters
+    // Set some parameters
     //
-    *dist = 'S';
+    dist = "S";
     mode = 3;
     //
-    //     Set TYPE, the type of matrix to be generated.
+    // Set TYPE, the type of matrix to be generated.
     //
-    *type = c2[0];
+    type = c2(1, 1);
     //
-    //     Set the lower and upper bandwidths.
+    // Set the lower and upper bandwidths.
     //
     if (imat == 1) {
         kl = 0;
@@ -77,17 +78,17 @@ void Rlatb5(const char *path, INTEGER const imat, INTEGER const n, char *type, I
     }
     ku = kl;
     //
-    //     Set the condition number and norm.etc
+    // Set the condition number and norm.etc
     //
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     if (imat == 3) {
-        cndnum = 1.0e12;
+        cndnum = 1000000000000.0;
         mode = 2;
     } else if (imat == 4) {
-        cndnum = 1.0e12;
+        cndnum = 1000000000000.0;
         mode = 1;
     } else if (imat == 5) {
-        cndnum = 1.0e12;
+        cndnum = 1000000000000.0;
         mode = 3;
     } else if (imat == 6) {
         cndnum = badc1;
@@ -109,6 +110,6 @@ void Rlatb5(const char *path, INTEGER const imat, INTEGER const n, char *type, I
         cndnum = one;
     }
     //
-    //     End of Rlatb5
+    // End of Rlatb5
     //
 }

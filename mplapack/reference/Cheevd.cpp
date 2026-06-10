@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,35 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZHEEVD.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Cheevd(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL *w, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER const lrwork, INTEGER *iwork, INTEGER const liwork, INTEGER &info) {
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     bool wantz = Mlsame(jobz, "V");
     bool lower = Mlsame(uplo, "L");
@@ -88,19 +72,19 @@ void Cheevd(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *a, INT
         } else {
             if (wantz) {
                 lwmin = 2 * n + n * n;
-                lrwmin = 1 + 5 * n + 2 * n * n;
+                lrwmin = 1 + 5 * n + 2 * pow2(n);
                 liwmin = 3 + 5 * n;
             } else {
                 lwmin = n + 1;
                 lrwmin = n;
                 liwmin = 1;
             }
-            lopt = max({lwmin, n + iMlaenv(1, "Chetrd", uplo, n, -1, -1, -1)});
+            lopt = max(lwmin, n + n * iMlaenv(1, "Chetrd", uplo, n, -1, -1, -1));
             lropt = lrwmin;
             liopt = liwmin;
         }
         work[1 - 1] = lopt;
-        rwork[1 - 1] = lropt;
+        rwork[1 - 1] = castREAL(lropt);
         iwork[1 - 1] = liopt;
         //
         if (lwork < lwmin && !lquery) {
@@ -119,7 +103,7 @@ void Cheevd(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *a, INT
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
@@ -127,14 +111,14 @@ void Cheevd(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *a, INT
     //
     const COMPLEX cone = COMPLEX(1.0, 0.0);
     if (n == 1) {
-        w[1 - 1] = a[(1 - 1)].real();
+        w[1 - 1] = a[0].real();
         if (wantz) {
-            a[(1 - 1)] = cone;
+            a[0] = cone;
         }
         return;
     }
     //
-    //     Get machine constants.
+    // Get machine constants.
     //
     REAL safmin = Rlamch("Safe minimum");
     REAL eps = Rlamch("Precision");
@@ -144,7 +128,7 @@ void Cheevd(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *a, INT
     REAL rmin = sqrt(smlnum);
     REAL rmax = sqrt(bignum);
     //
-    //     Scale matrix to allowable range, if necessary.
+    // Scale matrix to allowable range, if necessary.
     //
     REAL anrm = Clanhe("M", uplo, n, a, lda, rwork);
     INTEGER iscale = 0;
@@ -161,7 +145,7 @@ void Cheevd(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *a, INT
         Clascl(uplo, 0, 0, one, sigma, n, n, a, lda, info);
     }
     //
-    //     Call Chetrd to reduce Hermitian matrix to tridiagonal form.
+    // Call Chetrd to reduce Hermitian matrix to tridiagonal form.
     //
     INTEGER inde = 1;
     INTEGER indtau = 1;
@@ -174,11 +158,11 @@ void Cheevd(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *a, INT
     INTEGER iinfo = 0;
     Chetrd(uplo, n, a, lda, w, &rwork[inde - 1], &work[indtau - 1], &work[indwrk - 1], llwork, iinfo);
     //
-    //     For eigenvalues only, call Rsterf.  For eigenvectors, first call
-    //     Cstedc to generate the eigenvector matrix, WORK(INDWRK), of the
-    //     tridiagonal matrix, then call Cunmtr to multiply it to the
-    //     Householder transformations represented as Householder vectors in
-    //     A.
+    // For eigenvalues only, call Rsterf.  For eigenvectors, first call
+    // Cstedc to generate the eigenvector matrix, WORK(INDWRK), of the
+    // tridiagonal matrix, then call Cunmtr to multiply it to the
+    // Householder transformations represented as Householder vectors in
+    // A.
     //
     if (!wantz) {
         Rsterf(n, w, &rwork[inde - 1], info);
@@ -188,7 +172,7 @@ void Cheevd(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *a, INT
         Clacpy("A", n, n, &work[indwrk - 1], n, a, lda);
     }
     //
-    //     If matrix was scaled, then rescale eigenvalues appropriately.
+    // If matrix was scaled, then rescale eigenvalues appropriately.
     //
     INTEGER imax = 0;
     if (iscale == 1) {
@@ -201,9 +185,9 @@ void Cheevd(const char *jobz, const char *uplo, INTEGER const n, COMPLEX *a, INT
     }
     //
     work[1 - 1] = lopt;
-    rwork[1 - 1] = lropt;
+    rwork[1 - 1] = castREAL(lropt);
     iwork[1 - 1] = liopt;
     //
-    //     End of Cheevd
+    // End of Cheevd
     //
 }

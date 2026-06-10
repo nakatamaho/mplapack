@@ -114,6 +114,6 @@ void Rsyrk_cuda(const char *uplo, const char *trans, mplapackint n, mplapackint 
             }
 	}
     }
-    cudaThreadSynchronize();
+    cudaDeviceSynchronize();
 }
 

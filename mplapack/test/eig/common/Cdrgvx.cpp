@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZDRGVX.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,37 +43,11 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-#include <iostream>
-#include <sstream>
-#include <string>
-#include <vector>
-#include <regex>
-
-using namespace std;
-using std::regex;
-using std::regex_replace;
-
+__attribute__((optimize("O1")))
 void Cdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER const nout, COMPLEX *a, INTEGER const lda, COMPLEX *b, COMPLEX *ai, COMPLEX *bi, COMPLEX *alpha, COMPLEX *beta, COMPLEX *vl, COMPLEX *vr, INTEGER &ilo, INTEGER &ihi, REAL *lscale, REAL *rscale, REAL *s, REAL *dtru, REAL *dif, REAL *diftru, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER *iwork, INTEGER const liwork, REAL *result, bool *bwork, INTEGER &info) {
     common cmn;
     common_read read(cmn);
     common_write write(cmn);
-    INTEGER ldb = lda;
-    INTEGER ldai = lda;
-    INTEGER ldbi = lda;
-    INTEGER ldvl = lda;
-    INTEGER ldvr = lda;
-    double dtmp;
-    string str;
-    string _str;
-    string __str;
-    string ___str;
-    istringstream iss;
-    double dtmp_r;
-    double dtmp_i;
-    std::complex<double> ctmp;
-    char buf[1024];
     INTEGER nmax = 0;
     const REAL zero = 0.0;
     INTEGER minwrk = 0;
@@ -75,14 +56,14 @@ void Cdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER c
     REAL ulp = 0.0;
     const REAL one = 1.0;
     REAL ulpinv = 0.0;
-    const REAL ten = 1.0e+1;
+    const REAL ten = 10.0;
     REAL thrsh2 = 0.0;
     INTEGER nerrs = 0;
     INTEGER nptknt = 0;
     INTEGER ntestt = 0;
-    const REAL tnth = 1.0e-1;
+    const REAL tnth = 0.1;
     COMPLEX weight[5];
-    const REAL half = 0.5e+0;
+    const REAL half = 0.5;
     INTEGER iptype = 0;
     INTEGER iwa = 0;
     INTEGER iwb = 0;
@@ -96,22 +77,55 @@ void Cdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER c
     REAL ratio1 = 0.0;
     REAL ratio2 = 0.0;
     INTEGER j = 0;
-    static const char *format_9986 = "(' Cdrgvx: ',a,' Eigenvectors from ',a,' incorrectly ','normalized.',/,"
-                                     "' Bits of error=',0p,a,',',9x,'N=',i6,', Input Example #',i2,')')";
+    //
+    static const char *format_9999 = "(' Cdrgvx: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,')')";
+    //
+    static const char *format_9998 = "(' Cdrgvx: ',a,' Eigenvectors from ',a,' incorrectly ','normalized.',/,"
+                                     "' Bits of error=',0p,g10.3,',',9x,'N=',i6,', JTYPE=',i6,', IWA=',i5,"
+                                     "', IWB=',i5,', IWX=',i5,', IWY=',i5)";
+    //
+    static const char *format_9997 = "(/,1x,a3,' -- Complex Expert Eigenvalue/vector',' problem driver')";
+    //
+    static const char *format_9996 = "('Input Example')";
+    //
+    static const char *format_9995 = "(' Matrix types: ',/)";
+    //
+    static const char *format_9994 = "(' TYPE 1: Da is diagonal, Db is identity, ',/,"
+                                     "'     A = Y^(-H) Da X^(-1), B = Y^(-H) Db X^(-1) ',/,"
+                                     "'     YH and X are left and right eigenvectors. ',/)";
+    //
+    static const char *format_9993 = "(' TYPE 2: Da is quasi-diagonal, Db is identity, ',/,"
+                                     "'     A = Y^(-H) Da X^(-1), B = Y^(-H) Db X^(-1) ',/,"
+                                     "'     YH and X are left and right eigenvectors. ',/)";
+    //
     static const char *format_9992 = "(/,' Tests performed:  ',/,4x,"
                                      "' a is alpha, b is beta, l is a left eigenvector, ',/,4x,"
                                      "' r is a right eigenvector and ',a,' means ',a,'.',/,"
                                      "' 1 = max | ( b A - a B )',a,' l | / const.',/,"
                                      "' 2 = max | ( b A - a B ) r | / const.',/,"
-                                     "' 3 = max ( Sest/Stru, Stru/Sest ) ',' over all eigenvalues',/,"
+                                     "' 3 = max( Sest/Stru, Stru/Sest ) ',' over all eigenvalues',/,"
                                      "' 4 = max( DIFest/DIFtru, DIFtru/DIFest ) ',"
                                      "' over the 1st and 5th eigenvectors',/)";
-    static const char *format_9997 = "(/,1x,a3,' -- Complex Expert Eigenvalue/vector',' problem driver')";
-    static const char *format_9998 = "(' Cdrgvx: ',a,' Eigenvectors from ',a,' incorrectly ','normalized.',/,"
-                                     "' Bits of error=',0p,a,',',9x,'N=',i6,', JTYPE=',i6,', IWA=',i5,"
-                                     "', IWB=',i5,', IWX=',i5,', IWY=',i5)";
     //
-    //     Check for errors
+    static const char *format_9991 = "(' Type=',i2,',',' IWA=',i2,', IWB=',i2,', IWX=',i2,', IWY=',i2,"
+                                     "', result ',i2,' is',0p,f8.2)";
+    //
+    static const char *format_9990 = "(' Type=',i2,',',' IWA=',i2,', IWB=',i2,', IWX=',i2,', IWY=',i2,"
+                                     "', result ',i2,' is',1p,d10.3)";
+    //
+    static const char *format_9989 = "(' Input example #',i2,', matrix order=',i4,',',' result ',i2,' is',0p,"
+                                     "f8.2)";
+    //
+    static const char *format_9988 = "(' Input example #',i2,', matrix order=',i4,',',' result ',i2,' is',1p,"
+                                     "d10.3)";
+    //
+    static const char *format_9987 = "(' Cdrgvx: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', Input example #',"
+                                     "i2,')')";
+    //
+    static const char *format_9986 = "(' Cdrgvx: ',a,' Eigenvectors from ',a,' incorrectly ','normalized.',/,"
+                                     "' Bits of error=',0p,g10.3,',',9x,'N=',i6,', Input Example #',i2,')')";
+    //
+    // Check for errors
     //
     info = 0;
     //
@@ -131,12 +145,12 @@ void Cdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER c
         info = -26;
     }
     //
-    //     Compute workspace
-    //      (Note: Comments in the code beginning "Workspace:" describe the
-    //       minimal amount of workspace needed at that point in the code,
-    //       as well as the preferred amount for good performance.
-    //       NB refers to the optimal block size for the immediately
-    //       following subroutine, as returned by iMlaenv.)
+    // Compute workspace
+    // (Note: Comments in the code beginning "Workspace:" describe the
+    // minimal amount of workspace needed at that point in the code,
+    // as well as the preferred amount for good performance.
+    // NB refers to the optimal block size for the immediately
+    // following subroutine, as returned by iMlaenv.)
     //
     minwrk = 1;
     if (info == 0 && lwork >= 1) {
@@ -167,7 +181,7 @@ void Cdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER c
         goto statement_90;
     }
     //
-    //     Parameters used for generating test matrices.
+    // Parameters used for generating test matrices.
     //
     weight[1 - 1] = COMPLEX(tnth, zero);
     weight[2 - 1] = COMPLEX(half, zero);
@@ -181,48 +195,44 @@ void Cdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER c
                 for (iwx = 1; iwx <= 5; iwx = iwx + 1) {
                     for (iwy = 1; iwy <= 5; iwy = iwy + 1) {
                         //
-                        //                    generated a pair of test matrix
+                        // generated a pair of test matrix
                         //
                         Clatm6(iptype, 5, a, lda, b, vr, lda, vl, lda, weight[iwa - 1], weight[iwb - 1], weight[iwx - 1], weight[iwy - 1], dtru, diftru);
                         //
-                        //                    Compute eigenvalues/eigenvectors of (A, B).
-                        //                    Compute eigenvalue/eigenvector condition numbers
-                        //                    using computed eigenvectors.
+                        // Compute eigenvalues/eigenvectors of (A, B).
+                        // Compute eigenvalue/eigenvector condition numbers
+                        // using computed eigenvectors.
                         //
                         Clacpy("F", n, n, a, lda, ai, lda);
                         Clacpy("F", n, n, b, lda, bi, lda);
                         //
                         Cggevx("N", "V", "V", "B", n, ai, lda, bi, lda, alpha, beta, vl, lda, vr, lda, ilo, ihi, lscale, rscale, anorm, bnorm, s, dif, work, lwork, rwork, iwork, bwork, linfo);
                         if (linfo != 0) {
-                            write(nout, "(' Cdrgvx: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,"
-                                        "', JTYPE=',i6,')')"),
-                                "Cggevx", linfo, n, iptype, iwa, iwb, iwx, iwy;
+                            write(nout, format_9999), "Cggevx", linfo, n, iptype, iwa, iwb, iwx, iwy;
                             goto statement_30;
                         }
                         //
-                        //                    Compute the norm(A, B)
+                        // Compute the norm(A, B)
                         //
                         Clacpy("Full", n, n, ai, lda, work, n);
                         Clacpy("Full", n, n, bi, lda, &work[(n * n + 1) - 1], n);
                         abnorm = Clange("Fro", n, 2 * n, work, n, rwork);
                         //
-                        //                    Tests (1) and (2)
+                        // Tests (1) and (2)
                         //
                         result[1 - 1] = zero;
                         Cget52(true, n, a, lda, b, lda, vl, lda, alpha, beta, work, rwork, &result[1 - 1]);
                         if (result[2 - 1] > thresh) {
-                            sprintnum_short(buf, result[2 - 1]);
-                            write(nout, format_9998), "Left", "Cggevx", buf, n, iptype, iwa, iwb, iwx, iwy;
+                            write(nout, format_9998), "Left", "Cggevx", result[2 - 1], n, iptype, iwa, iwb, iwx, iwy;
                         }
                         //
                         result[2 - 1] = zero;
                         Cget52(false, n, a, lda, b, lda, vr, lda, alpha, beta, work, rwork, &result[2 - 1]);
                         if (result[3 - 1] > thresh) {
-                            sprintnum_short(buf, result[3 - 1]);
-                            write(nout, format_9998), "Right", "Cggevx", buf, n, iptype, iwa, iwb, iwx, iwy;
+                            write(nout, format_9998), "Right", "Cggevx", result[3 - 1], n, iptype, iwa, iwb, iwx, iwy;
                         }
                         //
-                        //                    Test (3)
+                        // Test (3)
                         //
                         result[3 - 1] = zero;
                         for (i = 1; i <= n; i = i + 1) {
@@ -240,7 +250,7 @@ void Cdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER c
                             }
                         }
                         //
-                        //                    Test (4)
+                        // Test (4)
                         //
                         result[4 - 1] = zero;
                         if (dif[1 - 1] == zero) {
@@ -267,45 +277,35 @@ void Cdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER c
                         //
                         ntestt += 4;
                         //
-                        //                    Print out tests which fail.
+                        // Print out tests which fail.
                         //
                         for (j = 1; j <= 4; j = j + 1) {
                             if ((result[j - 1] >= thrsh2 && j >= 4) || (result[j - 1] >= thresh && j <= 3)) {
                                 //
-                                //                       If this is the first test to fail,
-                                //                       print a header to the data file.
+                                // If this is the first test to fail,
+                                // print a header to the data file.
                                 //
                                 if (nerrs == 0) {
                                     write(nout, format_9997), "ZXV";
                                     //
-                                    //                          Print out messages for built-in examples
+                                    // Print out messages for built-in examples
                                     //
-                                    //                          Matrix types
+                                    // Matrix types
                                     //
-                                    write(nout, "(' Matrix types: ',/)");
-                                    write(nout, "(' TYPE 1: Da is diagonal, Db is identity, ',/,"
-                                                "'     A = Y^(-H) Da X^(-1), B = Y^(-H) Db X^(-1) ',/,"
-                                                "'     YH and X are left and right eigenvectors. ',/)");
-                                    write(nout, "(' TYPE 2: Da is quasi-diagonal, Db is identity, ',/,"
-                                                "'     A = Y^(-H) Da X^(-1), B = Y^(-H) Db X^(-1) ',/,"
-                                                "'     YH and X are left and right eigenvectors. ',/)");
+                                    write(nout, format_9995);
+                                    write(nout, format_9994);
+                                    write(nout, format_9993);
                                     //
-                                    //                          Tests performed
+                                    // Tests performed
                                     //
                                     write(nout, format_9992), "'", "transpose", "'";
                                     //
                                 }
                                 nerrs++;
                                 if (result[j - 1] < 10000.0) {
-                                    sprintnum_short(buf, result[j - 1]);
-                                    write(nout, "(' Type=',i2,',',' IWA=',i2,', IWB=',i2,', IWX=',i2,"
-                                                "', IWY=',i2,', result ',i2,' is',0p,buf)"),
-                                        iptype, iwa, iwb, iwx, iwy, j, buf;
+                                    write(nout, format_9991), iptype, iwa, iwb, iwx, iwy, j, result[j - 1];
                                 } else {
-                                    sprintnum_short(buf, result[j - 1]);
-                                    write(nout, "(' Type=',i2,',',' IWA=',i2,', IWB=',i2,', IWX=',i2,"
-                                                "', IWY=',i2,', result ',i2,' is',1p,buf)"),
-                                        iptype, iwa, iwb, iwx, iwy, j, buf;
+                                    write(nout, format_9990), iptype, iwa, iwb, iwx, iwy, j, result[j - 1];
                                 }
                             }
                         }
@@ -322,194 +322,169 @@ void Cdrgvx(INTEGER const nsize, REAL const thresh, INTEGER const nin, INTEGER c
 //
 statement_90:
     //
-    //     Read in data from file to check accuracy of condition estimation
-    //     Read input data until N=0
+    // Read in data from file to check accuracy of condition estimation
+    // Read input data until N=0
     //
-    while (1) {
-        getline(cin, str);
-        iss.clear();
-        iss.str(str);
-        iss >> n;
-        if (n == 0) {
-            break;
-        }
-        for (i = 1; i <= n; i = i + 1) {
+    try {
+        read(nin, star), n;
+    } catch (fem::read_end const &) {
+        goto statement_150;
+    }
+    if (n == 0) {
+        goto statement_150;
+    }
+    for (i = 1; i <= n; i = i + 1) {
+        {
+            read_loop rloop(cmn, nin, star);
             for (j = 1; j <= n; j = j + 1) {
-                getline(cin, str);
-                ___str = regex_replace(str, regex(","), " ");
-                __str = regex_replace(___str, regex("\\)"), " ");
-                _str = regex_replace(__str, regex("\\("), " ");
-                str = regex_replace(_str, regex("D"), "e");
-                iss.clear();
-                iss.str(str);
-                iss >> dtmp_r;
-                iss >> dtmp_i;
-                a[(i - 1) + (j - 1) * lda] = COMPLEX(dtmp_r, dtmp_i);
+                rloop, a[(i - 1) + (j - 1) * lda];
             }
         }
-        for (i = 1; i <= n; i = i + 1) {
+    }
+    for (i = 1; i <= n; i = i + 1) {
+        {
+            read_loop rloop(cmn, nin, star);
             for (j = 1; j <= n; j = j + 1) {
-                getline(cin, str);
-                ___str = regex_replace(str, regex(","), " ");
-                __str = regex_replace(___str, regex("\\)"), " ");
-                _str = regex_replace(__str, regex("\\("), " ");
-                str = regex_replace(_str, regex("D"), "e");
-                iss.clear();
-                iss.str(str);
-                iss >> dtmp_r;
-                iss >> dtmp_i;
-                b[(i - 1) + (j - 1) * ldb] = COMPLEX(dtmp_r, dtmp_i);
+                rloop, b[(i - 1) + (j - 1) * lda];
             }
         }
-        getline(cin, _str);
-        str = regex_replace(_str, regex("D"), "e");
-        iss.clear();
-        iss.str(str);
+    }
+    {
+        read_loop rloop(cmn, nin, star);
         for (i = 1; i <= n; i = i + 1) {
-            iss >> dtmp;
-            dtru[i - 1] = dtmp;
+            rloop, dtru[i - 1];
         }
-        getline(cin, _str);
-        str = regex_replace(_str, regex("D"), "e");
-        iss.clear();
-        iss.str(str);
+    }
+    {
+        read_loop rloop(cmn, nin, star);
         for (i = 1; i <= n; i = i + 1) {
-            iss >> dtmp;
-            diftru[i - 1] = dtmp;
+            rloop, diftru[i - 1];
         }
-        //
-        nptknt++;
-        //
-        //     Compute eigenvalues/eigenvectors of (A, B).
-        //     Compute eigenvalue/eigenvector condition numbers
-        //     using computed eigenvectors.
-        //
-        Clacpy("F", n, n, a, lda, ai, lda);
-        Clacpy("F", n, n, b, lda, bi, lda);
-        //
-        Cggevx("N", "V", "V", "B", n, ai, lda, bi, lda, alpha, beta, vl, lda, vr, lda, ilo, ihi, lscale, rscale, anorm, bnorm, s, dif, work, lwork, rwork, iwork, bwork, linfo);
-        //
-        if (linfo != 0) {
-            write(nout, "(' Cdrgvx: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,"
-                        "', Input example #',i2,')')"),
-                "Cggevx", linfo, n, nptknt;
-            continue;
-        }
-        //
-        //     Compute the norm(A, B)
-        //
-        Clacpy("Full", n, n, ai, lda, work, n);
-        Clacpy("Full", n, n, bi, lda, &work[(n * n + 1) - 1], n);
-        abnorm = Clange("Fro", n, 2 * n, work, n, rwork);
-        //
-        //     Tests (1) and (2)
-        //
-        result[1 - 1] = zero;
-        Cget52(true, n, a, lda, b, lda, vl, lda, alpha, beta, work, rwork, &result[1 - 1]);
-        if (result[2 - 1] > thresh) {
-            sprintnum_short(buf, result[2 - 1]);
-            write(nout, format_9986), "Left", "Cggevx", buf, n, nptknt;
-        }
-        //
-        result[2 - 1] = zero;
-        Cget52(false, n, a, lda, b, lda, vr, lda, alpha, beta, work, rwork, &result[2 - 1]);
-        if (result[3 - 1] > thresh) {
-            sprintnum_short(buf, result[3 - 1]);
-            write(nout, format_9986), "Right", "Cggevx", buf, n, nptknt;
-        }
-        //
-        //     Test (3)
-        //
-        result[3 - 1] = zero;
-        for (i = 1; i <= n; i = i + 1) {
-            if (s[i - 1] == zero) {
-                if (dtru[i - 1] > abnorm * ulp) {
-                    result[3 - 1] = ulpinv;
-                }
-            } else if (dtru[i - 1] == zero) {
-                if (s[i - 1] > abnorm * ulp) {
-                    result[3 - 1] = ulpinv;
-                }
-            } else {
-                rwork[i - 1] = max(abs(dtru[i - 1] / s[i - 1]), abs(s[i - 1] / dtru[i - 1]));
-                result[3 - 1] = max(result[3 - 1], rwork[i - 1]);
+    }
+    //
+    nptknt++;
+    //
+    // Compute eigenvalues/eigenvectors of (A, B).
+    // Compute eigenvalue/eigenvector condition numbers
+    // using computed eigenvectors.
+    //
+    Clacpy("F", n, n, a, lda, ai, lda);
+    Clacpy("F", n, n, b, lda, bi, lda);
+    //
+    Cggevx("N", "V", "V", "B", n, ai, lda, bi, lda, alpha, beta, vl, lda, vr, lda, ilo, ihi, lscale, rscale, anorm, bnorm, s, dif, work, lwork, rwork, iwork, bwork, linfo);
+    //
+    if (linfo != 0) {
+        write(nout, format_9987), "Cggevx", linfo, n, nptknt;
+        goto statement_140;
+    }
+    //
+    // Compute the norm(A, B)
+    //
+    Clacpy("Full", n, n, ai, lda, work, n);
+    Clacpy("Full", n, n, bi, lda, &work[(n * n + 1) - 1], n);
+    abnorm = Clange("Fro", n, 2 * n, work, n, rwork);
+    //
+    // Tests (1) and (2)
+    //
+    result[1 - 1] = zero;
+    Cget52(true, n, a, lda, b, lda, vl, lda, alpha, beta, work, rwork, &result[1 - 1]);
+    if (result[2 - 1] > thresh) {
+        write(nout, format_9986), "Left", "Cggevx", result[2 - 1], n, nptknt;
+    }
+    //
+    result[2 - 1] = zero;
+    Cget52(false, n, a, lda, b, lda, vr, lda, alpha, beta, work, rwork, &result[2 - 1]);
+    if (result[3 - 1] > thresh) {
+        write(nout, format_9986), "Right", "Cggevx", result[3 - 1], n, nptknt;
+    }
+    //
+    // Test (3)
+    //
+    result[3 - 1] = zero;
+    for (i = 1; i <= n; i = i + 1) {
+        if (s[i - 1] == zero) {
+            if (dtru[i - 1] > abnorm * ulp) {
+                result[3 - 1] = ulpinv;
             }
-        }
-        //
-        //     Test (4)
-        //
-        result[4 - 1] = zero;
-        if (dif[1 - 1] == zero) {
-            if (diftru[1 - 1] > abnorm * ulp) {
-                result[4 - 1] = ulpinv;
-            }
-        } else if (diftru[1 - 1] == zero) {
-            if (dif[1 - 1] > abnorm * ulp) {
-                result[4 - 1] = ulpinv;
-            }
-        } else if (dif[5 - 1] == zero) {
-            if (diftru[5 - 1] > abnorm * ulp) {
-                result[4 - 1] = ulpinv;
-            }
-        } else if (diftru[5 - 1] == zero) {
-            if (dif[5 - 1] > abnorm * ulp) {
-                result[4 - 1] = ulpinv;
+        } else if (dtru[i - 1] == zero) {
+            if (s[i - 1] > abnorm * ulp) {
+                result[3 - 1] = ulpinv;
             }
         } else {
-            ratio1 = max(abs(diftru[1 - 1] / dif[1 - 1]), abs(dif[1 - 1] / diftru[1 - 1]));
-            ratio2 = max(abs(diftru[5 - 1] / dif[5 - 1]), abs(dif[5 - 1] / diftru[5 - 1]));
-            result[4 - 1] = max(ratio1, ratio2);
+            rwork[i - 1] = max(abs(dtru[i - 1] / s[i - 1]), abs(s[i - 1] / dtru[i - 1]));
+            result[3 - 1] = max(result[3 - 1], rwork[i - 1]);
         }
-        //
-        ntestt += 4;
-        //
-        //     Print out tests which fail.
-        //
-        for (j = 1; j <= 4; j = j + 1) {
-            if (result[j - 1] >= thrsh2) {
+    }
+    //
+    // Test (4)
+    //
+    result[4 - 1] = zero;
+    if (dif[1 - 1] == zero) {
+        if (diftru[1 - 1] > abnorm * ulp) {
+            result[4 - 1] = ulpinv;
+        }
+    } else if (diftru[1 - 1] == zero) {
+        if (dif[1 - 1] > abnorm * ulp) {
+            result[4 - 1] = ulpinv;
+        }
+    } else if (dif[5 - 1] == zero) {
+        if (diftru[5 - 1] > abnorm * ulp) {
+            result[4 - 1] = ulpinv;
+        }
+    } else if (diftru[5 - 1] == zero) {
+        if (dif[5 - 1] > abnorm * ulp) {
+            result[4 - 1] = ulpinv;
+        }
+    } else {
+        ratio1 = max(abs(diftru[1 - 1] / dif[1 - 1]), abs(dif[1 - 1] / diftru[1 - 1]));
+        ratio2 = max(abs(diftru[5 - 1] / dif[5 - 1]), abs(dif[5 - 1] / diftru[5 - 1]));
+        result[4 - 1] = max(ratio1, ratio2);
+    }
+    //
+    ntestt += 4;
+    //
+    // Print out tests which fail.
+    //
+    for (j = 1; j <= 4; j = j + 1) {
+        if (result[j - 1] >= thrsh2) {
+            //
+            // If this is the first test to fail,
+            // print a header to the data file.
+            //
+            if (nerrs == 0) {
+                write(nout, format_9997), "ZXV";
                 //
-                //           If this is the first test to fail,
-                //           print a header to the data file.
+                // Print out messages for built-in examples
                 //
-                if (nerrs == 0) {
-                    write(nout, format_9997), "ZXV";
-                    //
-                    //              Print out messages for built-in examples
-                    //
-                    //              Matrix types
-                    //
-                    write(nout, "('Input Example')");
-                    //
-                    //              Tests performed
-                    //
-                    write(nout, format_9992), "'", "transpose", "'";
-                    //
-                }
-                nerrs++;
-                if (result[j - 1] < 10000.0) {
-                    sprintnum_short(buf, result[j - 1]);
-                    write(nout, "(' Input example #',i2,', matrix order=',i4,',',' result ',i2,"
-                                "' is ',a)"),
-                        nptknt, n, j, buf;
-                } else {
-                    sprintnum_short(buf, result[j - 1]);
-                    write(nout, "(' Input example #',i2,', matrix order=',i4,',',' result ',i2,"
-                                "' is ',a)"),
-                        nptknt, n, j, buf;
-                }
+                // Matrix types
+                //
+                write(nout, format_9996);
+                //
+                // Tests performed
+                //
+                write(nout, format_9992), "'", "transpose", "'";
+                //
+            }
+            nerrs++;
+            if (result[j - 1] < 10000.0) {
+                write(nout, format_9989), nptknt, n, j, result[j - 1];
+            } else {
+                write(nout, format_9988), nptknt, n, j, result[j - 1];
             }
         }
-        //
     }
-statement_150:
-
+//
+statement_140:
     //
-    //     Summary
+    goto statement_90;
+statement_150:
+    //
+    // Summary
     //
     Alasvm("ZXV", nout, nerrs, ntestt, 0);
     //
     work[1 - 1] = maxwrk;
     //
-    //     End of Cdrgvx
+    // End of Cdrgvx
     //
 }

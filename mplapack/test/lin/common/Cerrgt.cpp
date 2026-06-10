@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZERRGT.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,16 +43,13 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-#include <mplapack_debug.h>
-
-void Cerrgt(const char *path, INTEGER const nunit) {
+void Cerrgt(fem::str_cref path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
     //
     nout = nunit;
-    char c2[2];
-    c2[0] = path[1];
-    c2[1] = path[2];
+    write(nout, star);
+    fem::str<2> c2 = path(2, 3);
     INTEGER i = 0;
     const INTEGER nmax = 2;
     REAL d[nmax];
@@ -55,8 +59,8 @@ void Cerrgt(const char *path, INTEGER const nunit) {
     for (i = 1; i <= nmax; i = i + 1) {
         d[i - 1] = 1.0;
         e[i - 1] = 2.0;
-        dl[i - 1] = 3.e0;
-        du[i - 1] = 4.e0;
+        dl[i - 1] = 3.0;
+        du[i - 1] = 4.0;
     }
     REAL anorm = 1.0;
     ok = true;
@@ -75,127 +79,127 @@ void Cerrgt(const char *path, INTEGER const nunit) {
     REAL rw[nmax];
     REAL rcond = 0.0;
     REAL df[nmax];
-    if (Mlsamen(2, c2, "GT")) {
+    if (Mlsamen(2, c2.elems, "GT")) {
         //
-        //        Test error exits for the general tridiagonal routines.
+        // Test error exits for the general tridiagonal routines.
         //
-        //        Cgttrf
+        // Cgttrf
         //
-        strncpy(srnamt, "Cgttrf", srnamt_len);
+        srnamt = "Cgttrf";
         infot = 1;
         Cgttrf(-1, dl, e, du, du2, ip, info);
-        chkxer("Cgttrf", infot, nout, lerr, ok);
+        Chkxer("Cgttrf", infot, nout, lerr, ok);
         //
-        //        Cgttrs
+        // Cgttrs
         //
-        strncpy(srnamt, "Cgttrs", srnamt_len);
+        srnamt = "Cgttrs";
         infot = 1;
         Cgttrs("/", 0, 0, dl, e, du, du2, ip, x, 1, info);
-        chkxer("Cgttrs", infot, nout, lerr, ok);
+        Chkxer("Cgttrs", infot, nout, lerr, ok);
         infot = 2;
         Cgttrs("N", -1, 0, dl, e, du, du2, ip, x, 1, info);
-        chkxer("Cgttrs", infot, nout, lerr, ok);
+        Chkxer("Cgttrs", infot, nout, lerr, ok);
         infot = 3;
         Cgttrs("N", 0, -1, dl, e, du, du2, ip, x, 1, info);
-        chkxer("Cgttrs", infot, nout, lerr, ok);
+        Chkxer("Cgttrs", infot, nout, lerr, ok);
         infot = 10;
         Cgttrs("N", 2, 1, dl, e, du, du2, ip, x, 1, info);
-        chkxer("Cgttrs", infot, nout, lerr, ok);
+        Chkxer("Cgttrs", infot, nout, lerr, ok);
         //
-        //        Cgtrfs
+        // Cgtrfs
         //
-        strncpy(srnamt, "Cgtrfs", srnamt_len);
+        srnamt = "Cgtrfs";
         infot = 1;
         Cgtrfs("/", 0, 0, dl, e, du, dlf, ef, duf, du2, ip, b, 1, x, 1, r1, r2, w, rw, info);
-        chkxer("Cgtrfs", infot, nout, lerr, ok);
+        Chkxer("Cgtrfs", infot, nout, lerr, ok);
         infot = 2;
         Cgtrfs("N", -1, 0, dl, e, du, dlf, ef, duf, du2, ip, b, 1, x, 1, r1, r2, w, rw, info);
-        chkxer("Cgtrfs", infot, nout, lerr, ok);
+        Chkxer("Cgtrfs", infot, nout, lerr, ok);
         infot = 3;
         Cgtrfs("N", 0, -1, dl, e, du, dlf, ef, duf, du2, ip, b, 1, x, 1, r1, r2, w, rw, info);
-        chkxer("Cgtrfs", infot, nout, lerr, ok);
+        Chkxer("Cgtrfs", infot, nout, lerr, ok);
         infot = 13;
         Cgtrfs("N", 2, 1, dl, e, du, dlf, ef, duf, du2, ip, b, 1, x, 2, r1, r2, w, rw, info);
-        chkxer("Cgtrfs", infot, nout, lerr, ok);
+        Chkxer("Cgtrfs", infot, nout, lerr, ok);
         infot = 15;
         Cgtrfs("N", 2, 1, dl, e, du, dlf, ef, duf, du2, ip, b, 2, x, 1, r1, r2, w, rw, info);
-        chkxer("Cgtrfs", infot, nout, lerr, ok);
+        Chkxer("Cgtrfs", infot, nout, lerr, ok);
         //
-        //        Cgtcon
+        // Cgtcon
         //
-        strncpy(srnamt, "Cgtcon", srnamt_len);
+        srnamt = "Cgtcon";
         infot = 1;
         Cgtcon("/", 0, dl, e, du, du2, ip, anorm, rcond, w, info);
-        chkxer("Cgtcon", infot, nout, lerr, ok);
+        Chkxer("Cgtcon", infot, nout, lerr, ok);
         infot = 2;
         Cgtcon("I", -1, dl, e, du, du2, ip, anorm, rcond, w, info);
-        chkxer("Cgtcon", infot, nout, lerr, ok);
+        Chkxer("Cgtcon", infot, nout, lerr, ok);
         infot = 8;
         Cgtcon("I", 0, dl, e, du, du2, ip, -anorm, rcond, w, info);
-        chkxer("Cgtcon", infot, nout, lerr, ok);
+        Chkxer("Cgtcon", infot, nout, lerr, ok);
         //
-    } else if (Mlsamen(2, c2, "PT")) {
+    } else if (Mlsamen(2, c2.elems, "PT")) {
         //
-        //        Test error exits for the positive definite tridiagonal
-        //        routines.
+        // Test error exits for the positive definite tridiagonal
+        // routines.
         //
-        //        Cpttrf
+        // Cpttrf
         //
-        strncpy(srnamt, "Cpttrf", srnamt_len);
+        srnamt = "Cpttrf";
         infot = 1;
         Cpttrf(-1, d, e, info);
-        chkxer("Cpttrf", infot, nout, lerr, ok);
+        Chkxer("Cpttrf", infot, nout, lerr, ok);
         //
-        //        Cpttrs
+        // Cpttrs
         //
-        strncpy(srnamt, "Cpttrs", srnamt_len);
+        srnamt = "Cpttrs";
         infot = 1;
         Cpttrs("/", 1, 0, d, e, x, 1, info);
-        chkxer("Cpttrs", infot, nout, lerr, ok);
+        Chkxer("Cpttrs", infot, nout, lerr, ok);
         infot = 2;
         Cpttrs("U", -1, 0, d, e, x, 1, info);
-        chkxer("Cpttrs", infot, nout, lerr, ok);
+        Chkxer("Cpttrs", infot, nout, lerr, ok);
         infot = 3;
         Cpttrs("U", 0, -1, d, e, x, 1, info);
-        chkxer("Cpttrs", infot, nout, lerr, ok);
+        Chkxer("Cpttrs", infot, nout, lerr, ok);
         infot = 7;
         Cpttrs("U", 2, 1, d, e, x, 1, info);
-        chkxer("Cpttrs", infot, nout, lerr, ok);
+        Chkxer("Cpttrs", infot, nout, lerr, ok);
         //
-        //        Cptrfs
+        // Cptrfs
         //
-        strncpy(srnamt, "Cptrfs", srnamt_len);
+        srnamt = "Cptrfs";
         infot = 1;
         Cptrfs("/", 1, 0, d, e, df, ef, b, 1, x, 1, r1, r2, w, rw, info);
-        chkxer("Cptrfs", infot, nout, lerr, ok);
+        Chkxer("Cptrfs", infot, nout, lerr, ok);
         infot = 2;
         Cptrfs("U", -1, 0, d, e, df, ef, b, 1, x, 1, r1, r2, w, rw, info);
-        chkxer("Cptrfs", infot, nout, lerr, ok);
+        Chkxer("Cptrfs", infot, nout, lerr, ok);
         infot = 3;
         Cptrfs("U", 0, -1, d, e, df, ef, b, 1, x, 1, r1, r2, w, rw, info);
-        chkxer("Cptrfs", infot, nout, lerr, ok);
+        Chkxer("Cptrfs", infot, nout, lerr, ok);
         infot = 9;
         Cptrfs("U", 2, 1, d, e, df, ef, b, 1, x, 2, r1, r2, w, rw, info);
-        chkxer("Cptrfs", infot, nout, lerr, ok);
+        Chkxer("Cptrfs", infot, nout, lerr, ok);
         infot = 11;
         Cptrfs("U", 2, 1, d, e, df, ef, b, 2, x, 1, r1, r2, w, rw, info);
-        chkxer("Cptrfs", infot, nout, lerr, ok);
+        Chkxer("Cptrfs", infot, nout, lerr, ok);
         //
-        //        Cptcon
+        // Cptcon
         //
-        strncpy(srnamt, "Cptcon", srnamt_len);
+        srnamt = "Cptcon";
         infot = 1;
         Cptcon(-1, d, e, anorm, rcond, rw, info);
-        chkxer("Cptcon", infot, nout, lerr, ok);
+        Chkxer("Cptcon", infot, nout, lerr, ok);
         infot = 4;
         Cptcon(0, d, e, -anorm, rcond, rw, info);
-        chkxer("Cptcon", infot, nout, lerr, ok);
+        Chkxer("Cptcon", infot, nout, lerr, ok);
     }
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     Alaesm(path, ok, nout);
     //
-    //     End of Cerrgt
+    // End of Cerrgt
     //
 }

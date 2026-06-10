@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DERRQP.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,81 +43,51 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-#include <mplapack_debug.h>
-
-void Rerrqp(const char *path, INTEGER const nunit) {
+void Rerrqp(fem::str_cref path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
     //
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    INTEGER nout = nunit;
-    char c2[2];
-    c2[0] = path[1];
-    c2[1] = path[2];
+    nout = nunit;
+    write(nout, star);
+    fem::str<2> c2 = path(2, 3);
     const INTEGER nmax = 3;
     INTEGER lw = 3 * nmax + 1;
     REAL a[nmax * nmax];
-    INTEGER lda = nmax;
-    a[(1 - 1) + (1 - 1) * lda] = 1.0;
-    a[(1 - 1) + (2 - 1) * lda] = 2.0e+0;
-    a[(2 - 1) + (2 - 1) * lda] = 3.0e+0;
-    a[(2 - 1)] = 4.0e+0;
+    a[0] = 1.0;
+    a[(2 - 1) * nmax] = 2.0;
+    a[(2 - 1) + (2 - 1) * nmax] = 3.0;
+    a[(2 - 1)] = 4.0;
     ok = true;
     //
     INTEGER ip[nmax];
     REAL tau[nmax];
     REAL w[3 * nmax + 1];
     INTEGER info = 0;
-    if (Mlsamen(2, c2, "QP")) {
+    if (Mlsamen(2, c2.elems, "QP")) {
         //
-        //        Test error exits for QR factorization with pivoting
+        // Test error exits for QR factorization with pivoting
         //
-        //        Rgeqp3
+        // Rgeqp3
         //
+        srnamt = "Rgeqp3";
         infot = 1;
-        strncpy(srnamt, "Rgeqp3", srnamt_len);
         Rgeqp3(-1, 0, a, 1, ip, tau, w, lw, info);
-        chkxer("Rgeqp3", infot, nout, lerr, ok);
+        Chkxer("Rgeqp3", infot, nout, lerr, ok);
         infot = 2;
         Rgeqp3(1, -1, a, 1, ip, tau, w, lw, info);
-        chkxer("Rgeqp3", infot, nout, lerr, ok);
+        Chkxer("Rgeqp3", infot, nout, lerr, ok);
         infot = 4;
         Rgeqp3(2, 3, a, 1, ip, tau, w, lw, info);
-        chkxer("Rgeqp3", infot, nout, lerr, ok);
+        Chkxer("Rgeqp3", infot, nout, lerr, ok);
         infot = 8;
         Rgeqp3(2, 2, a, 2, ip, tau, w, lw - 10, info);
-        chkxer("Rgeqp3", infot, nout, lerr, ok);
+        Chkxer("Rgeqp3", infot, nout, lerr, ok);
     }
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     Alaesm(path, ok, nout);
     //
-    //     End of Rerrqp
+    // End of Rerrqp
     //
 }

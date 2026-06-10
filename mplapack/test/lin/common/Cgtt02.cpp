@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZGTT02.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,32 +43,9 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Cgtt02(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *dl, COMPLEX *d, COMPLEX *du, COMPLEX *x, INTEGER const ldx, COMPLEX *b, INTEGER const ldb, REAL &resid) {
+void Cgtt02(fem::str_cref trans, INTEGER const n, INTEGER const nrhs, COMPLEX *dl, COMPLEX *d, COMPLEX *du, COMPLEX *x, INTEGER const ldx, COMPLEX *b, INTEGER const ldb, REAL &resid) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Quick exit if N = 0 or NRHS = 0
+    // Quick exit if N = 0 or NRHS = 0
     //
     const REAL zero = 0.0;
     resid = zero;
@@ -69,17 +53,17 @@ void Cgtt02(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *dl,
         return;
     }
     //
-    //     Compute the maximum over the number of right hand sides of
-    //        norm(B - op(A)*X) / ( norm(A) * norm(X) * EPS ).
+    // Compute the maximum over the number of right hand sides of
+    // norm(B - op(A)*X) / ( norm(op(A)) * norm(X) * EPS ).
     //
     REAL anorm = 0.0;
-    if (Mlsame(trans, "N")) {
+    if (Mlsame(trans.elems(), "N")) {
         anorm = Clangt("1", n, dl, d, du);
     } else {
         anorm = Clangt("I", n, dl, d, du);
     }
     //
-    //     Exit with RESID = 1/EPS if ANORM = 0.
+    // Exit with RESID = 1/EPS if ANORM = 0.
     //
     REAL eps = Rlamch("Epsilon");
     const REAL one = 1.0;
@@ -88,9 +72,9 @@ void Cgtt02(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *dl,
         return;
     }
     //
-    //     Compute B - op(A)*X.
+    // Compute B - op(A)*X and store in B.
     //
-    Clagtm(trans, n, nrhs, -one, dl, d, du, x, ldx, one, b, ldb);
+    Clagtm(trans.elems(), n, nrhs, -one, dl, d, du, x, ldx, one, b, ldb);
     //
     INTEGER j = 0;
     REAL bnorm = 0.0;
@@ -101,10 +85,10 @@ void Cgtt02(const char *trans, INTEGER const n, INTEGER const nrhs, COMPLEX *dl,
         if (xnorm <= zero) {
             resid = one / eps;
         } else {
-            resid = max(resid, REAL(((bnorm / anorm) / xnorm) / eps));
+            resid = max(resid, ((bnorm / anorm) / xnorm) / eps);
         }
     }
     //
-    //     End of Cgtt02
+    // End of Cgtt02
     //
 }

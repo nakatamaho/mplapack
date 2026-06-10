@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,40 +26,24 @@
  *
  */
 
+// Derived from LAPACK routine ZGBTF2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Cgbtf2(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku, COMPLEX *ab, INTEGER const ldab, INTEGER *ipiv, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     KV is the number of superdiagonals in the factor U, allowing for
-    //     fill-in.
+    // KV is the number of superdiagonals in the factor U, allowing for
+    // fill-in.
     //
     INTEGER kv = ku + kl;
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     if (m < 0) {
@@ -78,15 +62,15 @@ void Cgbtf2(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (m == 0 || n == 0) {
         return;
     }
     //
-    //     Gaussian elimination with partial pivoting
+    // Gaussian elimination with partial pivoting
     //
-    //     Set fill-in elements in columns KU+2 to KV to zero.
+    // Set fill-in elements in columns KU+2 to KV to zero.
     //
     INTEGER j = 0;
     INTEGER i = 0;
@@ -97,8 +81,8 @@ void Cgbtf2(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
         }
     }
     //
-    //     JU is the index of the last column affected by the current stage
-    //     of the factorization.
+    // JU is the index of the last column affected by the current stage
+    // of the factorization.
     //
     INTEGER ju = 1;
     //
@@ -107,7 +91,7 @@ void Cgbtf2(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
     const COMPLEX one = COMPLEX(1.0, 0.0);
     for (j = 1; j <= min(m, n); j = j + 1) {
         //
-        //        Set fill-in elements in column J+KV to zero.
+        // Set fill-in elements in column J+KV to zero.
         //
         if (j + kv <= n) {
             for (i = 1; i <= kl; i = i + 1) {
@@ -115,8 +99,8 @@ void Cgbtf2(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
             }
         }
         //
-        //        Find pivot and test for singularity. KM is the number of
-        //        subdiagonal elements in the current column.
+        // Find pivot and test for singularity. KM is the number of
+        // subdiagonal elements in the current column.
         //
         km = min(kl, m - j);
         jp = iCamax(km + 1, &ab[((kv + 1) - 1) + (j - 1) * ldab], 1);
@@ -124,18 +108,18 @@ void Cgbtf2(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
         if (ab[((kv + jp) - 1) + (j - 1) * ldab] != zero) {
             ju = max(ju, min(j + ku + jp - 1, n));
             //
-            //           Apply interchange to columns J to JU.
+            // Apply interchange to columns J to JU.
             //
             if (jp != 1) {
                 Cswap(ju - j + 1, &ab[((kv + jp) - 1) + (j - 1) * ldab], ldab - 1, &ab[((kv + 1) - 1) + (j - 1) * ldab], ldab - 1);
             }
             if (km > 0) {
                 //
-                //              Compute multipliers.
+                // Compute multipliers.
                 //
                 Cscal(km, one / ab[((kv + 1) - 1) + (j - 1) * ldab], &ab[((kv + 2) - 1) + (j - 1) * ldab], 1);
                 //
-                //              Update trailing submatrix within the band.
+                // Update trailing submatrix within the band.
                 //
                 if (ju > j) {
                     Cgeru(km, ju - j, -one, &ab[((kv + 2) - 1) + (j - 1) * ldab], 1, &ab[(kv - 1) + ((j + 1) - 1) * ldab], ldab - 1, &ab[((kv + 1) - 1) + ((j + 1) - 1) * ldab], ldab - 1);
@@ -143,8 +127,8 @@ void Cgbtf2(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
             }
         } else {
             //
-            //           If pivot is zero, set INFO to the index of the pivot
-            //           unless a zero pivot has already been found.
+            // If pivot is zero, set INFO to the index of the pivot
+            // unless a zero pivot has already been found.
             //
             if (info == 0) {
                 info = j;
@@ -152,6 +136,6 @@ void Cgbtf2(INTEGER const m, INTEGER const n, INTEGER const kl, INTEGER const ku
         }
     }
     //
-    //     End of Cgbtf2
+    // End of Cgbtf2
     //
 }

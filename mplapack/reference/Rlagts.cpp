@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DLAGTS.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -40,29 +47,6 @@ void Rlagts(INTEGER const job, INTEGER const n, REAL *a, REAL *b, REAL *c, REAL 
     REAL ak = 0.0;
     REAL absak = 0.0;
     REAL pert = 0.0;
-    //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Executable Statements ..
     //
     info = 0;
     if ((abs(job) > 2) || (job == 0)) {
@@ -87,10 +71,10 @@ void Rlagts(INTEGER const job, INTEGER const n, REAL *a, REAL *b, REAL *c, REAL 
         if (tol <= zero) {
             tol = abs(a[1 - 1]);
             if (n > 1) {
-                tol = max({tol, REAL(abs(a[2 - 1])), REAL(abs(b[1 - 1]))});
+                tol = max(tol, abs(a[2 - 1]), abs(b[1 - 1]));
             }
             for (k = 3; k <= n; k = k + 1) {
-                tol = max({tol, REAL(abs(a[k - 1])), REAL(abs(b[(k - 1) - 1])), REAL(abs(d[(k - 2) - 1]))});
+                tol = max(tol, abs(a[k - 1]), abs(b[(k - 1) - 1]), abs(d[(k - 2) - 1]));
             }
             tol = tol * eps;
             if (tol == zero) {
@@ -170,7 +154,7 @@ void Rlagts(INTEGER const job, INTEGER const n, REAL *a, REAL *b, REAL *c, REAL 
         }
     } else {
         //
-        //        Come to here if  JOB = 2 or -2
+        // Come to here if  JOB = 2 or -2
         //
         if (job == 2) {
             for (k = 1; k <= n; k = k + 1) {
@@ -243,6 +227,6 @@ void Rlagts(INTEGER const job, INTEGER const n, REAL *a, REAL *b, REAL *c, REAL 
         }
     }
     //
-    //     End of Rlagts
+    // End of Rlagts
     //
 }

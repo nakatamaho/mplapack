@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DCKCSD.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,14 +43,51 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
+void Rlacsg(INTEGER const m, INTEGER const p, INTEGER const q, REAL *theta, INTEGER (&iseed)[4], REAL *x, INTEGER const ldx, REAL *work) {
+    //
+    INTEGER r = min(p, m - p, q, m - q);
+    //
+    const REAL zero = 0.0;
+    Rlaset("Full", m, m, zero, zero, x, ldx);
+    //
+    INTEGER i = 0;
+    const REAL one = 1.0;
+    for (i = 1; i <= min(p, q) - r; i = i + 1) {
+        x[(i - 1) + (i - 1) * ldx] = one;
+    }
+    for (i = 1; i <= r; i = i + 1) {
+        x[((min(p, q) - r + i) - 1) + ((min(p, q) - r + i) - 1) * ldx] = cos(theta[i - 1]);
+    }
+    for (i = 1; i <= min(p, m - q) - r; i = i + 1) {
+        x[((p - i + 1) - 1) + ((m - i + 1) - 1) * ldx] = -one;
+    }
+    for (i = 1; i <= r; i = i + 1) {
+        x[((p - (min(p, m - q) - r) + 1 - i) - 1) + ((m - (min(p, m - q) - r) + 1 - i) - 1) * ldx] = -sin(theta[(r - i + 1) - 1]);
+    }
+    for (i = 1; i <= min(m - p, q) - r; i = i + 1) {
+        x[((m - i + 1) - 1) + ((q - i + 1) - 1) * ldx] = one;
+    }
+    for (i = 1; i <= r; i = i + 1) {
+        x[((m - (min(m - p, q) - r) + 1 - i) - 1) + ((q - (min(m - p, q) - r) + 1 - i) - 1) * ldx] = sin(theta[(r - i + 1) - 1]);
+    }
+    for (i = 1; i <= min(m - p, m - q) - r; i = i + 1) {
+        x[((p + i) - 1) + ((q + i) - 1) * ldx] = one;
+    }
+    for (i = 1; i <= r; i = i + 1) {
+        x[((p + (min(m - p, m - q) - r) + i) - 1) + ((q + (min(m - p, m - q) - r) + i) - 1) * ldx] = cos(theta[i - 1]);
+    }
+    INTEGER info = 0;
+    Rlaror("Left", "No init", p, m, x, ldx, iseed, work, info);
+    Rlaror("Left", "No init", m - p, m, &x[((p + 1) - 1)], ldx, iseed, work, info);
+    Rlaror("Right", "No init", m, q, x, ldx, iseed, work, info);
+    Rlaror("Right", "No init", m, m - q, &x[((q + 1) - 1) * ldx], ldx, iseed, work, info);
+    //
+}
 
-void Rckcsd(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *qval, INTEGER const nmats, INTEGER *iseed, REAL const thresh, INTEGER const mmax, REAL *x, REAL *xf, REAL *u1, REAL *u2, REAL *v1t, REAL *v2t, REAL *theta, INTEGER *iwork, REAL *work, REAL *rwork, INTEGER const nin, INTEGER const nout, INTEGER &info) {
-
+void Rckcsd(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *qval, INTEGER const nmats, INTEGER (&iseed)[4], REAL const thresh, INTEGER const mmax, REAL *x, REAL *xf, REAL *u1, REAL *u2, REAL *v1t, REAL *v2t, REAL *theta, INTEGER *iwork, REAL *work, REAL *rwork, INTEGER const nin, INTEGER const nout, INTEGER &info) {
     common cmn;
     common_write write(cmn);
-    char path[4];
-    char buf[1024];
+    fem::str<3> path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     bool firstt = false;
@@ -63,7 +107,8 @@ void Rckcsd(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *qval, INTEG
     INTEGER iinfo = 0;
     INTEGER r = 0;
     INTEGER i = 0;
-    REAL dummy;
+    const REAL dummy = 0.0;
+    const REAL two = 2.0;
     const REAL piover2 = pi(dummy) / 2.0;
     INTEGER j = 0;
     const REAL orth = 1.0e-12;
@@ -75,12 +120,12 @@ void Rckcsd(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *qval, INTEG
     const INTEGER ntests = 15;
     REAL result[ntests];
     //
-    //     Initialize constants and the random number seed.
+    static const char *format_9999 = "(' Rlaror in Rckcsd: M = ',i5,', INFO = ',i15)";
+    static const char *format_9998 = "(' M=',i4,' P=',i4,', Q=',i4,', type ',i2,', test ',i2,', ratio=',g13.6)";
     //
-    path[0] = 'C';
-    path[1] = 'S';
-    path[2] = 'D';
-    path[3] = '\0';
+    // Initialize constants and the random number seed.
+    //
+    path(1, 3) = "CSD";
     info = 0;
     nrun = 0;
     nfail = 0;
@@ -93,7 +138,7 @@ void Rckcsd(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *qval, INTEG
     ldv2t = mmax;
     lwork = mmax * mmax;
     //
-    //     Do for each value of M in MVAL.
+    // Do for each value of M in MVAL.
     //
     for (im = 1; im <= nm; im = im + 1) {
         m = mval[im - 1];
@@ -102,23 +147,23 @@ void Rckcsd(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *qval, INTEG
         //
         for (imat = 1; imat <= ntypes; imat = imat + 1) {
             //
-            //           Do the tests only if DOTYPE( IMAT ) is true.
+            // Do the tests only if DOTYPE( IMAT ) is true.
             //
             if (!dotype[imat - 1]) {
                 goto statement_20;
             }
             //
-            //           Generate X
+            // Generate X
             //
             if (imat == 1) {
                 Rlaror("L", "I", m, m, x, ldx, iseed, work, iinfo);
                 if (m != 0 && iinfo != 0) {
-                    write(nout, "(' DLAROR in Rckcsd: M = ',i5,', INFO = ',i15)"), m, iinfo;
+                    write(nout, format_9999), m, iinfo;
                     info = abs(iinfo);
                     goto statement_20;
                 }
             } else if (imat == 2) {
-                r = min({p, m - p, q, m - q});
+                r = min(p, m - p, q, m - q);
                 for (i = 1; i <= r; i = i + 1) {
                     theta[i - 1] = piover2 * Rlarnd(1, iseed);
                 }
@@ -129,9 +174,9 @@ void Rckcsd(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *qval, INTEG
                     }
                 }
             } else if (imat == 3) {
-                r = min({p, m - p, q, m - q});
+                r = min(p, m - p, q, m - q);
                 for (i = 1; i <= r + 1; i = i + 1) {
-                    theta[i - 1] = pow(ten, -Rlarnd(1, iseed) * gapdigit);
+                    theta[i - 1] = pow(ten, (-Rlarnd(1, iseed) * gapdigit));
                 }
                 for (i = 2; i <= r + 1; i = i + 1) {
                     theta[i - 1] += theta[(i - 1) - 1];
@@ -154,8 +199,8 @@ void Rckcsd(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *qval, INTEG
             //
             Rcsdts(m, p, q, x, xf, ldx, u1, ldu1, u2, ldu2, v1t, ldv1t, v2t, ldv2t, theta, iwork, work, lwork, rwork, result);
             //
-            //           Print information about the tests that did not
-            //           pass the threshold.
+            // Print information about the tests that did not
+            // pass the threshold.
             //
             for (i = 1; i <= nt; i = i + 1) {
                 if (result[i - 1] >= thresh) {
@@ -163,10 +208,7 @@ void Rckcsd(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *qval, INTEG
                         firstt = false;
                         Alahdg(nout, path);
                     }
-                    sprintnum_short(buf, result[i - 1]);
-                    write(nout, "(' M=',i4,' P=',i4,', Q=',i4,', type ',i2,', test ',i2,"
-                                "', ratio=',a)"),
-                        m, p, q, imat, i, buf;
+                    write(nout, format_9998), m, p, q, imat, i, result[i - 1];
                     nfail++;
                 }
             }
@@ -175,10 +217,10 @@ void Rckcsd(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *qval, INTEG
         }
     }
     //
-    //     Print a summary of the results.
+    // Print a summary of the results.
     //
     Alasum(path, nout, nfail, nrun, 0);
     //
-    //     End of Rckcsd
+    // End of Rckcsd
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZLACRT.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -35,21 +42,6 @@ void Clacrt(INTEGER const n, COMPLEX *cx, INTEGER const incx, COMPLEX *cy, INTEG
     INTEGER i = 0;
     COMPLEX ctemp = 0.0;
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    // =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     if (n <= 0) {
         return;
     }
@@ -57,7 +49,7 @@ void Clacrt(INTEGER const n, COMPLEX *cx, INTEGER const incx, COMPLEX *cy, INTEG
         goto statement_20;
     }
     //
-    //     Code for unequal increments or equal increments not equal to 1
+    // Code for unequal increments or equal increments not equal to 1
     //
     ix = 1;
     iy = 1;
@@ -76,7 +68,7 @@ void Clacrt(INTEGER const n, COMPLEX *cx, INTEGER const incx, COMPLEX *cy, INTEG
     }
     return;
 //
-//     Code for both increments equal to 1
+// Code for both increments equal to 1
 //
 statement_20:
     for (i = 1; i <= n; i = i + 1) {

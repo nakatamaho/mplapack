@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,31 +26,18 @@
  *
  */
 
+// Derived from BLAS routine DSPMV.
+// Original BLAS authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 
 void Rspmv(const char *uplo, INTEGER const n, REAL const alpha, REAL *ap, REAL *x, INTEGER const incx, REAL const beta, REAL *y, INTEGER const incy) {
     //
-    //  -- Reference BLAS level2 routine --
-    //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     INTEGER info = 0;
     if (!Mlsame(uplo, "U") && !Mlsame(uplo, "L")) {
@@ -63,11 +50,11 @@ void Rspmv(const char *uplo, INTEGER const n, REAL const alpha, REAL *ap, REAL *
         info = 9;
     }
     if (info != 0) {
-        Mxerbla("Rspmv ", info);
+        Mxerbla("Rspmv", info);
         return;
     }
     //
-    //     Quick return if possible.
+    // Quick return if possible.
     //
     const REAL zero = 0.0;
     const REAL one = 1.0;
@@ -75,7 +62,7 @@ void Rspmv(const char *uplo, INTEGER const n, REAL const alpha, REAL *ap, REAL *
         return;
     }
     //
-    //     Set up the start points in  X  and  Y.
+    // Set up the start points in  X  and  Y.
     //
     INTEGER kx = 0;
     if (incx > 0) {
@@ -90,10 +77,10 @@ void Rspmv(const char *uplo, INTEGER const n, REAL const alpha, REAL *ap, REAL *
         ky = 1 - (n - 1) * incy;
     }
     //
-    //     Start the operations. In this version the elements of the array AP
-    //     are accessed sequentially with one pass through AP.
+    // Start the operations. In this version the elements of the array AP
+    // are accessed sequentially with one pass through AP.
     //
-    //     First form  y := beta*y.
+    // First form  y := beta*y.
     //
     INTEGER i = 0;
     INTEGER iy = 0;
@@ -136,7 +123,7 @@ void Rspmv(const char *uplo, INTEGER const n, REAL const alpha, REAL *ap, REAL *
     INTEGER ix = 0;
     if (Mlsame(uplo, "U")) {
         //
-        //        Form  y  when AP contains the upper triangle.
+        // Form  y  when AP contains the upper triangle.
         //
         if ((incx == 1) && (incy == 1)) {
             for (j = 1; j <= n; j = j + 1) {
@@ -173,7 +160,7 @@ void Rspmv(const char *uplo, INTEGER const n, REAL const alpha, REAL *ap, REAL *
         }
     } else {
         //
-        //        Form  y  when AP contains the lower triangle.
+        // Form  y  when AP contains the lower triangle.
         //
         if ((incx == 1) && (incy == 1)) {
             for (j = 1; j <= n; j = j + 1) {
@@ -212,6 +199,6 @@ void Rspmv(const char *uplo, INTEGER const n, REAL const alpha, REAL *ap, REAL *
         }
     }
     //
-    //     End of Rspmv .
+    // End of Rspmv
     //
 }

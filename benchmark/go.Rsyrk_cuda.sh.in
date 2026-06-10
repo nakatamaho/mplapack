@@ -1,0 +1,70 @@
+#!/bin/sh
+# go.Rsyrk_cuda.sh — CUDA benchmark runner for Rsyrk
+# %%CPU_OS_DETECTION_SH%% and %%CC_TAG%% are replaced:
+#   - at "make" time   : builddir paths
+#   - at "make install": installed paths
+# Never edit the installed copy; edit go.Rsyrk_cuda.sh.in instead.
+
+TIMEOUT=7200
+
+# ---------------------------------------------------------------------------
+# Self-location: works both in builddir and after install
+# ---------------------------------------------------------------------------
+SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
+
+# ---------------------------------------------------------------------------
+# Platform detection (one call for OUTDIR and MODELNAME)
+# Field 1: directory-safe CPU tag   (e.g. Ryzen_Threadripper_3970X)
+# Field 2: OS identifier            (e.g. ubuntu2204)
+# Field 3: human-readable CPU name  (e.g. AMD Ryzen Threadripper 3970X)
+# ---------------------------------------------------------------------------
+_DETECTION=$(sh "%%CPU_OS_DETECTION_SH%%")
+_CPU_NORM=$(printf '%s' "${_DETECTION}" | cut -d'|' -f1)
+_OS_ID=$(   printf '%s' "${_DETECTION}" | cut -d'|' -f2)
+MODELNAME=$( printf '%s' "${_DETECTION}" | cut -d'|' -f3)
+MODELNAME="${MODELNAME:-unknown}"
+
+CC_TAG="%%CC_TAG%%"
+OUTDIR="${_CPU_NORM}-${_OS_ID}-${CC_TAG}"
+OUTPATH="${SCRIPT_DIR}/results/${OUTDIR}"
+mkdir -p "${OUTPATH}"
+
+# ---------------------------------------------------------------------------
+# Library path prefix (macOS vs Linux)
+# ---------------------------------------------------------------------------
+if [ "$(uname)" = "Darwin" ]; then
+    LDPATHPREFIX="DYLD_LIBRARY_PATH=%%PREFIX%%/lib"
+    SED=gsed
+else
+    LDPATHPREFIX="LD_LIBRARY_PATH=%%PREFIX%%/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+    SED=sed
+fi
+
+# ---------------------------------------------------------------------------
+# Helper: run one binary, save log under OUTPATH
+# ---------------------------------------------------------------------------
+run_bench() {
+    _bin="${SCRIPT_DIR}/$1"; shift
+    _log="${OUTPATH}/log.$(basename "${_bin}")"
+    if [ ! -x "${_bin}" ]; then
+        echo "SKIP (not found): ${_bin}" >&2
+        return 0
+    fi
+    echo "RUN: ${_bin} $*"
+    env ${LDPATHPREFIX} timeout ${TIMEOUT} "${_bin}" "$@" > "${_log}" 2>&1
+}
+
+# ---------------------------------------------------------------------------
+# DD CUDA benchmarks
+# ---------------------------------------------------------------------------
+run_bench Rsyrk.dd_cuda_total  -NOCHECK -LOOPS 3
+run_bench Rsyrk.dd_cuda_kernel -NOCHECK -LOOPS 3
+
+# ---------------------------------------------------------------------------
+# Generate gnuplot script, render PDF
+# ---------------------------------------------------------------------------
+$SED -e "s/%%MODELNAME%%/${MODELNAME}/g" \
+    "${SCRIPT_DIR}/Rsyrk_cuda.plt.in" > "${OUTPATH}/Rsyrk_cuda.plt"
+(cd "${OUTPATH}" && gnuplot "Rsyrk_cuda.plt" > "Rsyrk_cuda.pdf")
+
+echo "Done. Results: ${OUTPATH}"

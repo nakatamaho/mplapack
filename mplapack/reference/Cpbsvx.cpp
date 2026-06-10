@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,33 +26,17 @@
  *
  */
 
+// Derived from LAPACK routine ZPBSVX.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Cpbsvx(const char *fact, const char *uplo, INTEGER const n, INTEGER const kd, INTEGER const nrhs, COMPLEX *ab, INTEGER const ldab, COMPLEX *afb, INTEGER const ldafb, char *equed, REAL *s, COMPLEX *b, INTEGER const ldb, COMPLEX *x, INTEGER const ldx, REAL &rcond, REAL *ferr, REAL *berr, COMPLEX *work, REAL *rwork, INTEGER &info) {
-    //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     info = 0;
     bool nofact = Mlsame(fact, "N");
@@ -71,7 +55,7 @@ void Cpbsvx(const char *fact, const char *uplo, INTEGER const n, INTEGER const k
         bignum = one / smlnum;
     }
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     REAL smin = 0.0;
     const REAL zero = 0.0;
@@ -128,19 +112,19 @@ void Cpbsvx(const char *fact, const char *uplo, INTEGER const n, INTEGER const k
     INTEGER infequ = 0;
     if (equil) {
         //
-        //        Compute row and column scalings to equilibrate the matrix A.
+        // Compute row and column scalings to equilibrate the matrix A.
         //
         Cpbequ(uplo, n, kd, ab, ldab, s, scond, amax, infequ);
         if (infequ == 0) {
             //
-            //           Equilibrate the matrix.
+            // Equilibrate the matrix.
             //
             Claqhb(uplo, n, kd, ab, ldab, s, scond, amax, equed);
             rcequ = Mlsame(equed, "Y");
         }
     }
     //
-    //     Scale the right-hand side.
+    // Scale the right-hand side.
     //
     INTEGER i = 0;
     if (rcequ) {
@@ -155,7 +139,7 @@ void Cpbsvx(const char *fact, const char *uplo, INTEGER const n, INTEGER const k
     INTEGER j2 = 0;
     if (nofact || equil) {
         //
-        //        Compute the Cholesky factorization A = U**H *U or A = L*L**H.
+        // Compute the Cholesky factorization A = U**H *U or A = L*L**H.
         //
         if (upper) {
             for (j = 1; j <= n; j = j + 1) {
@@ -171,7 +155,7 @@ void Cpbsvx(const char *fact, const char *uplo, INTEGER const n, INTEGER const k
         //
         Cpbtrf(uplo, n, kd, afb, ldafb, info);
         //
-        //        Return if INFO is non-zero.
+        // Return if INFO is non-zero.
         //
         if (info > 0) {
             rcond = zero;
@@ -179,26 +163,26 @@ void Cpbsvx(const char *fact, const char *uplo, INTEGER const n, INTEGER const k
         }
     }
     //
-    //     Compute the norm of the matrix A.
+    // Compute the norm of the matrix A.
     //
     REAL anorm = Clanhb("1", uplo, n, kd, ab, ldab, rwork);
     //
-    //     Compute the reciprocal of the condition number of A.
+    // Compute the reciprocal of the condition number of A.
     //
     Cpbcon(uplo, n, kd, afb, ldafb, anorm, rcond, work, rwork, info);
     //
-    //     Compute the solution matrix X.
+    // Compute the solution matrix X.
     //
     Clacpy("Full", n, nrhs, b, ldb, x, ldx);
     Cpbtrs(uplo, n, kd, nrhs, afb, ldafb, x, ldx, info);
     //
-    //     Use iterative refinement to improve the computed solution and
-    //     compute error bounds and backward error estimates for it.
+    // Use iterative refinement to improve the computed solution and
+    // compute error bounds and backward error estimates for it.
     //
     Cpbrfs(uplo, n, kd, nrhs, ab, ldab, afb, ldafb, b, ldb, x, ldx, ferr, berr, work, rwork, info);
     //
-    //     Transform the solution matrix X to a solution of the original
-    //     system.
+    // Transform the solution matrix X to a solution of the original
+    // system.
     //
     if (rcequ) {
         for (j = 1; j <= nrhs; j = j + 1) {
@@ -211,12 +195,12 @@ void Cpbsvx(const char *fact, const char *uplo, INTEGER const n, INTEGER const k
         }
     }
     //
-    //     Set INFO = N+1 if the matrix is singular to working precision.
+    // Set INFO = N+1 if the matrix is singular to working precision.
     //
     if (rcond < Rlamch("Epsilon")) {
         info = n + 1;
     }
     //
-    //     End of Cpbsvx
+    // End of Cpbsvx
     //
 }

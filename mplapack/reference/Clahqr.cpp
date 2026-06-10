@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,10 +26,15 @@
  *
  */
 
+// Derived from LAPACK routine ZLAHQR.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
-
-inline REAL cabs1(COMPLEX cdum) { return (abs(cdum.real()) + abs(cdum.imag())); }
 
 void Clahqr(bool const wantt, bool const wantz, INTEGER const n, INTEGER const ilo, INTEGER const ihi, COMPLEX *h, INTEGER const ldh, COMPLEX *w, INTEGER const iloz, INTEGER const ihiz, COMPLEX *z, INTEGER const ldz, INTEGER &info) {
     COMPLEX cdum = 0.0;
@@ -64,7 +69,7 @@ void Clahqr(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
     const REAL dat1 = 3.0 / 4.0;
     COMPLEX t = 0.0;
     COMPLEX u = 0.0;
-    const REAL half = 0.5e0;
+    const REAL half = 0.5;
     COMPLEX x = 0.0;
     REAL sx = 0.0;
     COMPLEX y = 0.0;
@@ -85,7 +90,7 @@ void Clahqr(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
     //
     info = 0;
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
@@ -95,7 +100,7 @@ void Clahqr(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
         return;
     }
     //
-    //     ==== clear out the trash ====
+    // ==== clear out the trash ====
     for (j = ilo; j <= ihi - 3; j = j + 1) {
         h[((j + 2) - 1) + (j - 1) * ldh] = zero;
         h[((j + 3) - 1) + (j - 1) * ldh] = zero;
@@ -103,7 +108,7 @@ void Clahqr(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
     if (ilo <= ihi - 2) {
         h[(ihi - 1) + ((ihi - 2) - 1) * ldh] = zero;
     }
-    //     ==== ensure that subdiagonal entries are real ====
+    // ==== ensure that subdiagonal entries are real ====
     if (wantt) {
         jlo = 1;
         jhi = n;
@@ -113,9 +118,9 @@ void Clahqr(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
     }
     for (i = ilo + 1; i <= ihi; i = i + 1) {
         if (h[(i - 1) + ((i - 1) - 1) * ldh].imag() != rzero) {
-            //           ==== The following redundant normalization
-            //           .    avoids problems with both gradual and
-            //           .    sudden underflow in ABS(H(I,I-1)) ====
+            // ==== The following redundant normalization
+            // .    avoids problems with both gradual and
+            // .    sudden underflow in ABS(H(I,I-1)) ====
             sc = h[(i - 1) + ((i - 1) - 1) * ldh] / cabs1(h[(i - 1) + ((i - 1) - 1) * ldh]);
             sc = conj(sc) / abs(sc);
             h[(i - 1) + ((i - 1) - 1) * ldh] = abs(h[(i - 1) + ((i - 1) - 1) * ldh]);
@@ -130,35 +135,35 @@ void Clahqr(bool const wantt, bool const wantz, INTEGER const n, INTEGER const i
     nh = ihi - ilo + 1;
     nz = ihiz - iloz + 1;
     //
-    //     Set machine-dependent constants for the stopping criterion.
+    // Set machine-dependent constants for the stopping criterion.
     //
     safmin = Rlamch("SAFE MINIMUM");
     safmax = rone / safmin;
     ulp = Rlamch("PRECISION");
     smlnum = safmin * (castREAL(nh) / ulp);
     //
-    //     I1 and I2 are the indices of the first row and last column of H
-    //     to which transformations must be applied. If eigenvalues only are
-    //     being computed, I1 and I2 are set inside the main loop.
+    // I1 and I2 are the indices of the first row and last column of H
+    // to which transformations must be applied. If eigenvalues only are
+    // being computed, I1 and I2 are set inside the main loop.
     //
     if (wantt) {
         i1 = 1;
         i2 = n;
     }
     //
-    //     ITMAX is the total number of QR iterations allowed.
+    // ITMAX is the total number of QR iterations allowed.
     //
     itmax = 30 * max((INTEGER)10, nh);
     //
-    //     KDEFL counts the number of iterations since a deflation
+    // KDEFL counts the number of iterations since a deflation
     //
     kdefl = 0;
     //
-    //     The main loop begins here. I is the loop index and decreases from
-    //     IHI to ILO in steps of 1. Each iteration of the loop works
-    //     with the active submatrix in rows and columns L to I.
-    //     Eigenvalues I+1 to IHI have already converged. Either L = ILO, or
-    //     H(L,L-1) is negligible so that the matrix splits.
+    // The main loop begins here. I is the loop index and decreases from
+    // IHI to ILO in steps of 1. Each iteration of the loop works
+    // with the active submatrix in rows and columns L to I.
+    // Eigenvalues I+1 to IHI have already converged. Either L = ILO, or
+    // H(L,L-1) is negligible so that the matrix splits.
     //
     i = ihi;
 statement_30:
@@ -166,14 +171,14 @@ statement_30:
         goto statement_150;
     }
     //
-    //     Perform QR iterations on rows and columns ILO to I until a
-    //     submatrix of order 1 splits off at the bottom because a
-    //     subdiagonal element has become negligible.
+    // Perform QR iterations on rows and columns ILO to I until a
+    // submatrix of order 1 splits off at the bottom because a
+    // subdiagonal element has become negligible.
     //
     l = ilo;
     for (its = 0; its <= itmax; its = its + 1) {
         //
-        //        Look for a single small subdiagonal element.
+        // Look for a single small subdiagonal element.
         //
         for (k = i; k >= l + 1; k = k - 1) {
             if (cabs1(h[(k - 1) + ((k - 1) - 1) * ldh]) <= smlnum) {
@@ -188,17 +193,17 @@ statement_30:
                     tst += abs(h[((k + 1) - 1) + (k - 1) * ldh].real());
                 }
             }
-            //           ==== The following is a conservative small subdiagonal
-            //           .    deflation criterion due to Ahues & Tisseur (LAWN 122,
-            //           .    1997). It has better mathematical foundation and
-            //           .    improves accuracy in some examples.  ====
+            // ==== The following is a conservative small subdiagonal
+            // .    deflation criterion due to Ahues & Tisseur (LAWN 122,
+            // .    1997). It has better mathematical foundation and
+            // .    improves accuracy in some examples.  ====
             if (abs(h[(k - 1) + ((k - 1) - 1) * ldh].real()) <= ulp * tst) {
                 ab = max(cabs1(h[(k - 1) + ((k - 1) - 1) * ldh]), cabs1(h[((k - 1) - 1) + (k - 1) * ldh]));
                 ba = min(cabs1(h[(k - 1) + ((k - 1) - 1) * ldh]), cabs1(h[((k - 1) - 1) + (k - 1) * ldh]));
                 aa = max(cabs1(h[(k - 1) + (k - 1) * ldh]), cabs1(h[((k - 1) - 1) + ((k - 1) - 1) * ldh] - h[(k - 1) + (k - 1) * ldh]));
                 bb = min(cabs1(h[(k - 1) + (k - 1) * ldh]), cabs1(h[((k - 1) - 1) + ((k - 1) - 1) * ldh] - h[(k - 1) + (k - 1) * ldh]));
                 s = aa + ab;
-                if (ba * (ab / s) <= max(smlnum, REAL(ulp * (bb * (aa / s))))) {
+                if (ba * (ab / s) <= max(smlnum, ulp * (bb * (aa / s)))) {
                     goto statement_50;
                 }
             }
@@ -207,21 +212,21 @@ statement_30:
         l = k;
         if (l > ilo) {
             //
-            //           H(L,L-1) is negligible
+            // H(L,L-1) is negligible
             //
             h[(l - 1) + ((l - 1) - 1) * ldh] = zero;
         }
         //
-        //        Exit from loop if a submatrix of order 1 has split off.
+        // Exit from loop if a submatrix of order 1 has split off.
         //
         if (l >= i) {
             goto statement_140;
         }
         kdefl++;
         //
-        //        Now the active submatrix is in rows and columns L to I. If
-        //        eigenvalues only are being computed, only the active submatrix
-        //        need be transformed.
+        // Now the active submatrix is in rows and columns L to I. If
+        // eigenvalues only are being computed, only the active submatrix
+        // need be transformed.
         //
         if (!wantt) {
             i1 = l;
@@ -230,19 +235,19 @@ statement_30:
         //
         if (mod(kdefl, 2 * kexsh) == 0) {
             //
-            //           Exceptional shift.
+            // Exceptional shift.
             //
             s = dat1 * abs(h[(i - 1) + ((i - 1) - 1) * ldh].real());
             t = s + h[(i - 1) + (i - 1) * ldh];
         } else if (mod(kdefl, kexsh) == 0) {
             //
-            //           Exceptional shift.
+            // Exceptional shift.
             //
             s = dat1 * abs(h[((l + 1) - 1) + (l - 1) * ldh].real());
             t = s + h[(l - 1) + (l - 1) * ldh];
         } else {
             //
-            //           Wilkinson's shift.
+            // Wilkinson's shift.
             //
             t = h[(i - 1) + (i - 1) * ldh];
             u = sqrt(h[((i - 1) - 1) + (i - 1) * ldh]) * sqrt(h[(i - 1) + ((i - 1) - 1) * ldh]);
@@ -251,7 +256,7 @@ statement_30:
                 x = half * (h[((i - 1) - 1) + ((i - 1) - 1) * ldh] - t);
                 sx = cabs1(x);
                 s = max(s, cabs1(x));
-                y = s * sqrt((x / s) * (x / s) + (u / s) * (u / s));
+                y = s * sqrt(pow2((x / s)) + pow2((u / s)));
                 if (sx > rzero) {
                     if ((x / sx).real() * y.real() + (x / sx).imag() * y.imag() < rzero) {
                         y = -y;
@@ -261,13 +266,13 @@ statement_30:
             }
         }
         //
-        //        Look for two consecutive small subdiagonal elements.
+        // Look for two consecutive small subdiagonal elements.
         //
         for (m = i - 1; m >= l + 1; m = m - 1) {
             //
-            //           Determine the effect of starting the single-shift QR
-            //           iteration at row M, and see if this would make H(M,M-1)
-            //           negligible.
+            // Determine the effect of starting the single-shift QR
+            // iteration at row M, and see if this would make H(M,M-1)
+            // negligible.
             //
             h11 = h[(m - 1) + (m - 1) * ldh];
             h22 = h[((m + 1) - 1) + ((m + 1) - 1) * ldh];
@@ -294,21 +299,21 @@ statement_30:
         v[2 - 1] = h21;
     statement_70:
         //
-        //        Single-shift QR step
+        // Single-shift QR step
         //
         for (k = m; k <= i - 1; k = k + 1) {
             //
-            //           The first iteration of this loop determines a reflection G
-            //           from the vector V and applies it from left and right to H,
-            //           thus creating a nonzero bulge below the subdiagonal.
+            // The first iteration of this loop determines a reflection G
+            // from the vector V and applies it from left and right to H,
+            // thus creating a nonzero bulge below the subdiagonal.
             //
-            //           Each subsequent iteration determines a reflection G to
-            //           restore the Hessenberg form in the (K-1)th column, and thus
-            //           chases the bulge one step toward the bottom of the active
-            //           submatrix.
+            // Each subsequent iteration determines a reflection G to
+            // restore the Hessenberg form in the (K-1)th column, and thus
+            // chases the bulge one step toward the bottom of the active
+            // submatrix.
             //
-            //           V(2) is always real before the call to Clarfg, and hence
-            //           after the call T2 ( = T1*V(2) ) is also real.
+            // V(2) is always real before the call to Clarfg, and hence
+            // after the call T2 ( = T1*V(2) ) is also real.
             //
             if (k > m) {
                 Ccopy(2, &h[(k - 1) + ((k - 1) - 1) * ldh], 1, v, 1);
@@ -321,8 +326,8 @@ statement_30:
             v2 = v[2 - 1];
             t2 = (t1 * v2).real();
             //
-            //           Apply G from the left to transform the rows of the matrix
-            //           in columns K to I2.
+            // Apply G from the left to transform the rows of the matrix
+            // in columns K to I2.
             //
             for (j = k; j <= i2; j = j + 1) {
                 sum = conj(t1) * h[(k - 1) + (j - 1) * ldh] + t2 * h[((k + 1) - 1) + (j - 1) * ldh];
@@ -330,8 +335,8 @@ statement_30:
                 h[((k + 1) - 1) + (j - 1) * ldh] = h[((k + 1) - 1) + (j - 1) * ldh] - sum * v2;
             }
             //
-            //           Apply G from the right to transform the columns of the
-            //           matrix in rows I1 to min(K+2,I).
+            // Apply G from the right to transform the columns of the
+            // matrix in rows I1 to min(K+2,I).
             //
             for (j = i1; j <= min(k + 2, i); j = j + 1) {
                 sum = t1 * h[(j - 1) + (k - 1) * ldh] + t2 * h[(j - 1) + ((k + 1) - 1) * ldh];
@@ -341,7 +346,7 @@ statement_30:
             //
             if (wantz) {
                 //
-                //              Accumulate transformations in the matrix Z
+                // Accumulate transformations in the matrix Z
                 //
                 for (j = iloz; j <= ihiz; j = j + 1) {
                     sum = t1 * z[(j - 1) + (k - 1) * ldz] + t2 * z[(j - 1) + ((k + 1) - 1) * ldz];
@@ -352,10 +357,10 @@ statement_30:
             //
             if (k == m && m > l) {
                 //
-                //              If the QR step was started at row M > L because two
-                //              consecutive small subdiagonals were found, then extra
-                //              scaling must be performed to ensure that H(M,M-1) remains
-                //              real.
+                // If the QR step was started at row M > L because two
+                // consecutive small subdiagonals were found, then extra
+                // scaling must be performed to ensure that H(M,M-1) remains
+                // real.
                 //
                 temp = one - t1;
                 temp = temp / abs(temp);
@@ -377,7 +382,7 @@ statement_30:
             }
         }
         //
-        //        Ensure that H(I,I-1) is real.
+        // Ensure that H(I,I-1) is real.
         //
         temp = h[(i - 1) + ((i - 1) - 1) * ldh];
         if (temp.imag() != rzero) {
@@ -395,26 +400,26 @@ statement_30:
         //
     }
     //
-    //     Failure to converge in remaining number of iterations
+    // Failure to converge in remaining number of iterations
     //
     info = i;
     return;
 //
 statement_140:
     //
-    //     H(I,I-1) is negligible: one eigenvalue has converged.
+    // H(I,I-1) is negligible: one eigenvalue has converged.
     //
     w[i - 1] = h[(i - 1) + (i - 1) * ldh];
-    //     reset deflation counter
+    // reset deflation counter
     kdefl = 0;
     //
-    //     return to start of the main loop with new value of I.
+    // return to start of the main loop with new value of I.
     //
     i = l - 1;
     goto statement_30;
 //
 statement_150:;
     //
-    //     End of Clahqr
+    // End of Clahqr
     //
 }

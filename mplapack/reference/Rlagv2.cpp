@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,56 +26,40 @@
  *
  */
 
+// Derived from LAPACK routine DLAGV2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rlagv2(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *alphar, REAL *alphai, REAL *beta, REAL &csl, REAL &snl, REAL &csr, REAL &snr) {
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     REAL safmin = Rlamch("S");
     REAL ulp = Rlamch("P");
     //
-    //     Scale A
+    // Scale A
     //
-    REAL anorm = max({REAL(abs(a[(1 - 1)]) + abs(a[(2 - 1)])), REAL(abs(a[(2 - 1) * lda]) + abs(a[(2 - 1) + (2 - 1) * lda])), safmin});
+    REAL anorm = max(abs(a[0]) + abs(a[(2 - 1)]), abs(a[(2 - 1) * lda]) + abs(a[(2 - 1) + (2 - 1) * lda]), safmin);
     const REAL one = 1.0;
     REAL ascale = one / anorm;
-    a[(1 - 1)] = ascale * a[(1 - 1)];
+    a[0] = ascale * a[0];
     a[(2 - 1) * lda] = ascale * a[(2 - 1) * lda];
     a[(2 - 1)] = ascale * a[(2 - 1)];
     a[(2 - 1) + (2 - 1) * lda] = ascale * a[(2 - 1) + (2 - 1) * lda];
     //
-    //     Scale B
+    // Scale B
     //
-    REAL bnorm = max({REAL(abs(b[(1 - 1)])), REAL(abs(b[(2 - 1) * ldb]) + abs(b[(2 - 1) + (2 - 1) * ldb])), safmin});
+    REAL bnorm = max(abs(b[0]), abs(b[(2 - 1) * ldb]) + abs(b[(2 - 1) + (2 - 1) * ldb]), safmin);
     REAL bscale = one / bnorm;
-    b[(1 - 1)] = bscale * b[(1 - 1)];
+    b[0] = bscale * b[0];
     b[(2 - 1) * ldb] = bscale * b[(2 - 1) * ldb];
     b[(2 - 1) + (2 - 1) * ldb] = bscale * b[(2 - 1) + (2 - 1) * ldb];
     //
-    //     Check if A can be deflated
+    // Check if A can be deflated
     //
     const REAL zero = 0.0;
     REAL wi = 0.0;
@@ -99,24 +83,24 @@ void Rlagv2(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *alphar
         b[(2 - 1)] = zero;
         wi = zero;
         //
-        //     Check if B is singular
+        // Check if B is singular
         //
-    } else if (abs(b[(1 - 1)]) <= ulp) {
-        Rlartg(a[(1 - 1)], a[(2 - 1)], csl, snl, r);
+    } else if (abs(b[0]) <= ulp) {
+        Rlartg(a[0], a[(2 - 1)], csl, snl, r);
         csr = one;
         snr = zero;
-        Rrot(2, &a[(1 - 1)], lda, &a[(2 - 1)], lda, csl, snl);
-        Rrot(2, &b[(1 - 1)], ldb, &b[(2 - 1)], ldb, csl, snl);
+        Rrot(2, &a[0], lda, &a[(2 - 1)], lda, csl, snl);
+        Rrot(2, &b[0], ldb, &b[(2 - 1)], ldb, csl, snl);
         a[(2 - 1)] = zero;
-        b[(1 - 1)] = zero;
+        b[0] = zero;
         b[(2 - 1)] = zero;
         wi = zero;
         //
     } else if (abs(b[(2 - 1) + (2 - 1) * ldb]) <= ulp) {
         Rlartg(a[(2 - 1) + (2 - 1) * lda], a[(2 - 1)], csr, snr, t);
         snr = -snr;
-        Rrot(2, &a[(1 - 1)], 1, &a[(2 - 1) * lda], 1, csr, snr);
-        Rrot(2, &b[(1 - 1)], 1, &b[(2 - 1) * ldb], 1, csr, snr);
+        Rrot(2, &a[0], 1, &a[(2 - 1) * lda], 1, csr, snr);
+        Rrot(2, &b[0], 1, &b[(2 - 1) * ldb], 1, csr, snr);
         csl = one;
         snl = zero;
         a[(2 - 1)] = zero;
@@ -126,15 +110,15 @@ void Rlagv2(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *alphar
         //
     } else {
         //
-        //        B is nonsingular, first compute the eigenvalues of (A,B)
+        // B is nonsingular, first compute the eigenvalues of (A,B)
         //
         Rlag2(a, lda, b, ldb, safmin, scale1, scale2, wr1, wr2, wi);
         //
         if (wi == zero) {
             //
-            //           two real eigenvalues, compute s*A-w*B
+            // two real eigenvalues, compute s*A-w*B
             //
-            h1 = scale1 * a[(1 - 1)] - wr1 * b[(1 - 1)];
+            h1 = scale1 * a[0] - wr1 * b[0];
             h2 = scale1 * a[(2 - 1) * lda] - wr1 * b[(2 - 1) * ldb];
             h3 = scale1 * a[(2 - 1) + (2 - 1) * lda] - wr1 * b[(2 - 1) + (2 - 1) * ldb];
             //
@@ -143,63 +127,63 @@ void Rlagv2(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *alphar
             //
             if (rr > qq) {
                 //
-                //              find right rotation matrix to zero 1,1 element of
-                //              (sA - wB)
+                // find right rotation matrix to zero 1,1 element of
+                // (sA - wB)
                 //
                 Rlartg(h2, h1, csr, snr, t);
                 //
             } else {
                 //
-                //              find right rotation matrix to zero 2,1 element of
-                //              (sA - wB)
+                // find right rotation matrix to zero 2,1 element of
+                // (sA - wB)
                 //
                 Rlartg(h3, scale1 * a[(2 - 1)], csr, snr, t);
                 //
             }
             //
             snr = -snr;
-            Rrot(2, &a[(1 - 1)], 1, &a[(2 - 1) * lda], 1, csr, snr);
-            Rrot(2, &b[(1 - 1)], 1, &b[(2 - 1) * ldb], 1, csr, snr);
+            Rrot(2, &a[0], 1, &a[(2 - 1) * lda], 1, csr, snr);
+            Rrot(2, &b[0], 1, &b[(2 - 1) * ldb], 1, csr, snr);
             //
-            //           compute inf norms of A and B
+            // compute inf norms of A and B
             //
-            h1 = max(abs(a[(1 - 1)]) + abs(a[(2 - 1) * lda]), abs(a[(2 - 1)]) + abs(a[(2 - 1) + (2 - 1) * lda]));
-            h2 = max(abs(b[(1 - 1)]) + abs(b[(2 - 1) * ldb]), abs(b[(2 - 1)]) + abs(b[(2 - 1) + (2 - 1) * ldb]));
+            h1 = max(abs(a[0]) + abs(a[(2 - 1) * lda]), abs(a[(2 - 1)]) + abs(a[(2 - 1) + (2 - 1) * lda]));
+            h2 = max(abs(b[0]) + abs(b[(2 - 1) * ldb]), abs(b[(2 - 1)]) + abs(b[(2 - 1) + (2 - 1) * ldb]));
             //
             if ((scale1 * h1) >= abs(wr1) * h2) {
                 //
-                //              find left rotation matrix Q to zero out B(2,1)
+                // find left rotation matrix Q to zero out B(2,1)
                 //
-                Rlartg(b[(1 - 1)], b[(2 - 1)], csl, snl, r);
+                Rlartg(b[0], b[(2 - 1)], csl, snl, r);
                 //
             } else {
                 //
-                //              find left rotation matrix Q to zero out A(2,1)
+                // find left rotation matrix Q to zero out A(2,1)
                 //
-                Rlartg(a[(1 - 1)], a[(2 - 1)], csl, snl, r);
+                Rlartg(a[0], a[(2 - 1)], csl, snl, r);
                 //
             }
             //
-            Rrot(2, &a[(1 - 1)], lda, &a[(2 - 1)], lda, csl, snl);
-            Rrot(2, &b[(1 - 1)], ldb, &b[(2 - 1)], ldb, csl, snl);
+            Rrot(2, &a[0], lda, &a[(2 - 1)], lda, csl, snl);
+            Rrot(2, &b[0], ldb, &b[(2 - 1)], ldb, csl, snl);
             //
             a[(2 - 1)] = zero;
             b[(2 - 1)] = zero;
             //
         } else {
             //
-            //           a pair of complex conjugate eigenvalues
-            //           first compute the SVD of the matrix B
+            // a pair of complex conjugate eigenvalues
+            // first compute the SVD of the matrix B
             //
-            Rlasv2(b[(1 - 1)], b[(2 - 1) * ldb], b[(2 - 1) + (2 - 1) * ldb], r, t, snr, csr, snl, csl);
+            Rlasv2(b[0], b[(2 - 1) * ldb], b[(2 - 1) + (2 - 1) * ldb], r, t, snr, csr, snl, csl);
             //
-            //           Form (A,B) := Q(A,B)Z**T where Q is left rotation matrix and
-            //           Z is right rotation matrix computed from Rlasv2
+            // Form (A,B) := Q(A,B)Z**T where Q is left rotation matrix and
+            // Z is right rotation matrix computed from Rlasv2
             //
-            Rrot(2, &a[(1 - 1)], lda, &a[(2 - 1)], lda, csl, snl);
-            Rrot(2, &b[(1 - 1)], ldb, &b[(2 - 1)], ldb, csl, snl);
-            Rrot(2, &a[(1 - 1)], 1, &a[(2 - 1) * lda], 1, csr, snr);
-            Rrot(2, &b[(1 - 1)], 1, &b[(2 - 1) * ldb], 1, csr, snr);
+            Rrot(2, &a[0], lda, &a[(2 - 1)], lda, csl, snl);
+            Rrot(2, &b[0], ldb, &b[(2 - 1)], ldb, csl, snl);
+            Rrot(2, &a[0], 1, &a[(2 - 1) * lda], 1, csr, snr);
+            Rrot(2, &b[0], 1, &b[(2 - 1) * ldb], 1, csr, snr);
             //
             b[(2 - 1)] = zero;
             b[(2 - 1) * ldb] = zero;
@@ -208,23 +192,23 @@ void Rlagv2(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *alphar
         //
     }
     //
-    //     Unscaling
+    // Unscaling
     //
-    a[(1 - 1)] = anorm * a[(1 - 1)];
+    a[0] = anorm * a[0];
     a[(2 - 1)] = anorm * a[(2 - 1)];
     a[(2 - 1) * lda] = anorm * a[(2 - 1) * lda];
     a[(2 - 1) + (2 - 1) * lda] = anorm * a[(2 - 1) + (2 - 1) * lda];
-    b[(1 - 1)] = bnorm * b[(1 - 1)];
+    b[0] = bnorm * b[0];
     b[(2 - 1)] = bnorm * b[(2 - 1)];
     b[(2 - 1) * ldb] = bnorm * b[(2 - 1) * ldb];
     b[(2 - 1) + (2 - 1) * ldb] = bnorm * b[(2 - 1) + (2 - 1) * ldb];
     //
     if (wi == zero) {
-        alphar[1 - 1] = a[(1 - 1)];
+        alphar[1 - 1] = a[0];
         alphar[2 - 1] = a[(2 - 1) + (2 - 1) * lda];
         alphai[1 - 1] = zero;
         alphai[2 - 1] = zero;
-        beta[1 - 1] = b[(1 - 1)];
+        beta[1 - 1] = b[0];
         beta[2 - 1] = b[(2 - 1) + (2 - 1) * ldb];
     } else {
         alphar[1 - 1] = anorm * wr1 / scale1 / bnorm;
@@ -235,6 +219,6 @@ void Rlagv2(REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *alphar
         beta[2 - 1] = one;
     }
     //
-    //     End of Rlagv2
+    // End of Rlagv2
     //
 }

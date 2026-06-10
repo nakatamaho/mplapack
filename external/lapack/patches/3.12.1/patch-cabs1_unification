@@ -1,0 +1,2680 @@
+diff --git a/BLAS/TESTING/cblat2.f b/BLAS/TESTING/cblat2.f
+index a29c1a63a..00b6e063d 100644
+--- a/BLAS/TESTING/cblat2.f
++++ b/BLAS/TESTING/cblat2.f
+@@ -2974,9 +2974,9 @@
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, AIMAG, CONJG, MAX, REAL, SQRT
+ *     .. Statement Functions ..
+-      REAL               ABS1
++      REAL               CABS1
+ *     .. Statement Function definitions ..
+-      ABS1( C ) = ABS( REAL( C ) ) + ABS( AIMAG( C ) )
++      CABS1( C ) = ABS( REAL( C ) ) + ABS( AIMAG( C ) )
+ *     .. Executable Statements ..
+       TRAN = TRANS.EQ.'T'
+       CTRAN = TRANS.EQ.'C'
+@@ -3013,24 +3013,25 @@
+          IF( TRAN )THEN
+             DO 10 J = 1, NL
+                YT( IY ) = YT( IY ) + A( J, I )*X( JX )
+-               G( IY ) = G( IY ) + ABS1( A( J, I ) )*ABS1( X( JX ) )
++               G( IY ) = G( IY ) + CABS1( A( J, I ) )*CABS1( X( JX ) )
+                JX = JX + INCXL
+    10       CONTINUE
+          ELSE IF( CTRAN )THEN
+             DO 20 J = 1, NL
+                YT( IY ) = YT( IY ) + CONJG( A( J, I ) )*X( JX )
+-               G( IY ) = G( IY ) + ABS1( A( J, I ) )*ABS1( X( JX ) )
++               G( IY ) = G( IY ) + CABS1( A( J, I ) )*CABS1( X( JX ) )
+                JX = JX + INCXL
+    20       CONTINUE
+          ELSE
+             DO 30 J = 1, NL
+                YT( IY ) = YT( IY ) + A( I, J )*X( JX )
+-               G( IY ) = G( IY ) + ABS1( A( I, J ) )*ABS1( X( JX ) )
++               G( IY ) = G( IY ) + CABS1( A( I, J ) )*CABS1( X( JX ) )
+                JX = JX + INCXL
+    30       CONTINUE
+          END IF
+          YT( IY ) = ALPHA*YT( IY ) + BETA*Y( IY )
+-         G( IY ) = ABS1( ALPHA )*G( IY ) + ABS1( BETA )*ABS1( Y( IY ) )
++         G( IY ) = CABS1( ALPHA )*G( IY )
++     $   + CABS1( BETA )*CABS1( Y( IY ) )
+          IY = IY + INCYL
+    40 CONTINUE
+ *
+diff --git a/BLAS/TESTING/cblat3.f b/BLAS/TESTING/cblat3.f
+index 06d8b2b78..b4a83c76a 100644
+--- a/BLAS/TESTING/cblat3.f
++++ b/BLAS/TESTING/cblat3.f
+@@ -3288,9 +3288,9 @@
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, AIMAG, CONJG, MAX, REAL, SQRT
+ *     .. Statement Functions ..
+-      REAL               ABS1
++      REAL               CABS1
+ *     .. Statement Function definitions ..
+-      ABS1( CL ) = ABS( REAL( CL ) ) + ABS( AIMAG( CL ) )
++      CABS1( CL ) = ABS( REAL( CL ) ) + ABS( AIMAG( CL ) )
+ *     .. Executable Statements ..
+       TRANA = TRANSA.EQ.'T'.OR.TRANSA.EQ.'C'
+       TRANB = TRANSB.EQ.'T'.OR.TRANSB.EQ.'C'
+@@ -3311,7 +3311,8 @@
+             DO 30 K = 1, KK
+                DO 20 I = 1, M
+                   CT( I ) = CT( I ) + A( I, K )*B( K, J )
+-                  G( I ) = G( I ) + ABS1( A( I, K ) )*ABS1( B( K, J ) )
++                  G( I ) = G( I )
++     $            + CABS1( A( I, K ) )*CABS1( B( K, J ) )
+    20          CONTINUE
+    30       CONTINUE
+          ELSE IF( TRANA.AND..NOT.TRANB )THEN
+@@ -3319,16 +3320,16 @@
+                DO 50 K = 1, KK
+                   DO 40 I = 1, M
+                      CT( I ) = CT( I ) + CONJG( A( K, I ) )*B( K, J )
+-                     G( I ) = G( I ) + ABS1( A( K, I ) )*
+-     $                        ABS1( B( K, J ) )
++                     G( I ) = G( I ) + CABS1( A( K, I ) )*
++     $                        CABS1( B( K, J ) )
+    40             CONTINUE
+    50          CONTINUE
+             ELSE
+                DO 70 K = 1, KK
+                   DO 60 I = 1, M
+                      CT( I ) = CT( I ) + A( K, I )*B( K, J )
+-                     G( I ) = G( I ) + ABS1( A( K, I ) )*
+-     $                        ABS1( B( K, J ) )
++                     G( I ) = G( I ) + CABS1( A( K, I ) )*
++     $                        CABS1( B( K, J ) )
+    60             CONTINUE
+    70          CONTINUE
+             END IF
+@@ -3337,16 +3338,16 @@
+                DO 90 K = 1, KK
+                   DO 80 I = 1, M
+                      CT( I ) = CT( I ) + A( I, K )*CONJG( B( J, K ) )
+-                     G( I ) = G( I ) + ABS1( A( I, K ) )*
+-     $                        ABS1( B( J, K ) )
++                     G( I ) = G( I ) + CABS1( A( I, K ) )*
++     $                        CABS1( B( J, K ) )
+    80             CONTINUE
+    90          CONTINUE
+             ELSE
+                DO 110 K = 1, KK
+                   DO 100 I = 1, M
+                      CT( I ) = CT( I ) + A( I, K )*B( J, K )
+-                     G( I ) = G( I ) + ABS1( A( I, K ) )*
+-     $                        ABS1( B( J, K ) )
++                     G( I ) = G( I ) + CABS1( A( I, K ) )*
++     $                        CABS1( B( J, K ) )
+   100             CONTINUE
+   110          CONTINUE
+             END IF
+@@ -3357,16 +3358,16 @@
+                      DO 120 I = 1, M
+                         CT( I ) = CT( I ) + CONJG( A( K, I ) )*
+      $                            CONJG( B( J, K ) )
+-                        G( I ) = G( I ) + ABS1( A( K, I ) )*
+-     $                           ABS1( B( J, K ) )
++                        G( I ) = G( I ) + CABS1( A( K, I ) )*
++     $                           CABS1( B( J, K ) )
+   120                CONTINUE
+   130             CONTINUE
+                ELSE
+                   DO 150 K = 1, KK
+                      DO 140 I = 1, M
+                         CT( I ) = CT( I ) + CONJG( A( K, I ) )*B( J, K )
+-                        G( I ) = G( I ) + ABS1( A( K, I ) )*
+-     $                           ABS1( B( J, K ) )
++                        G( I ) = G( I ) + CABS1( A( K, I ) )*
++     $                           CABS1( B( J, K ) )
+   140                CONTINUE
+   150             CONTINUE
+                END IF
+@@ -3375,16 +3376,16 @@
+                   DO 170 K = 1, KK
+                      DO 160 I = 1, M
+                         CT( I ) = CT( I ) + A( K, I )*CONJG( B( J, K ) )
+-                        G( I ) = G( I ) + ABS1( A( K, I ) )*
+-     $                           ABS1( B( J, K ) )
++                        G( I ) = G( I ) + CABS1( A( K, I ) )*
++     $                           CABS1( B( J, K ) )
+   160                CONTINUE
+   170             CONTINUE
+                ELSE
+                   DO 190 K = 1, KK
+                      DO 180 I = 1, M
+                         CT( I ) = CT( I ) + A( K, I )*B( J, K )
+-                        G( I ) = G( I ) + ABS1( A( K, I ) )*
+-     $                           ABS1( B( J, K ) )
++                        G( I ) = G( I ) + CABS1( A( K, I ) )*
++     $                           CABS1( B( J, K ) )
+   180                CONTINUE
+   190             CONTINUE
+                END IF
+@@ -3392,15 +3393,15 @@
+          END IF
+          DO 200 I = 1, M
+             CT( I ) = ALPHA*CT( I ) + BETA*C( I, J )
+-            G( I ) = ABS1( ALPHA )*G( I ) +
+-     $               ABS1( BETA )*ABS1( C( I, J ) )
++            G( I ) = CABS1( ALPHA )*G( I ) +
++     $               CABS1( BETA )*CABS1( C( I, J ) )
+   200    CONTINUE
+ *
+ *        Compute the error ratio for this result.
+ *
+          ERR = ZERO
+          DO 210 I = 1, M
+-            ERRI = ABS1( CT( I ) - CC( I, J ) )/EPS
++            ERRI = CABS1( CT( I ) - CC( I, J ) )/EPS
+             IF( G( I ).NE.RZERO )
+      $         ERRI = ERRI/G( I )
+             ERR = MAX( ERR, ERRI )
+@@ -4022,9 +4023,9 @@
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, AIMAG, CONJG, MAX, REAL, SQRT
+ *     .. Statement Functions ..
+-      REAL               ABS1
++      REAL               CABS1
+ *     .. Statement Function definitions ..
+-      ABS1( CL ) = ABS( REAL( CL ) ) + ABS( AIMAG( CL ) )
++      CABS1( CL ) = ABS( REAL( CL ) ) + ABS( AIMAG( CL ) )
+ *     .. Executable Statements ..
+       UPPER = UPLO.EQ.'U'
+       TRANA = TRANSA.EQ.'T'.OR.TRANSA.EQ.'C'
+@@ -4057,7 +4058,8 @@
+             DO 30 K = 1, KK
+                DO 20 I = ISTART, ISTOP
+                   CT( I ) = CT( I ) + A( I, K )*B( K, J )
+-                  G( I ) = G( I ) + ABS1( A( I, K ) )*ABS1( B( K, J ) )
++                  G( I ) = G( I )
++     $            + CABS1( A( I, K ) )*CABS1( B( K, J ) )
+    20          CONTINUE
+    30       CONTINUE
+          ELSE IF( TRANA.AND..NOT.TRANB )THEN
+@@ -4065,16 +4067,16 @@
+                DO 50 K = 1, KK
+                   DO 40 I = ISTART, ISTOP
+                      CT( I ) = CT( I ) + CONJG( A( K, I ) )*B( K, J )
+-                     G( I ) = G( I ) + ABS1( A( K, I ) )*
+-     $                        ABS1( B( K, J ) )
++                     G( I ) = G( I ) + CABS1( A( K, I ) )*
++     $                        CABS1( B( K, J ) )
+    40             CONTINUE
+    50          CONTINUE
+             ELSE
+                DO 70 K = 1, KK
+                   DO 60 I = ISTART, ISTOP
+                      CT( I ) = CT( I ) + A( K, I )*B( K, J )
+-                     G( I ) = G( I ) + ABS1( A( K, I ) )*
+-     $                        ABS1( B( K, J ) )
++                     G( I ) = G( I ) + CABS1( A( K, I ) )*
++     $                        CABS1( B( K, J ) )
+    60             CONTINUE
+    70          CONTINUE
+             END IF
+@@ -4083,16 +4085,16 @@
+                DO 90 K = 1, KK
+                   DO 80 I = ISTART, ISTOP
+                      CT( I ) = CT( I ) + A( I, K )*CONJG( B( J, K ) )
+-                     G( I ) = G( I ) + ABS1( A( I, K ) )*
+-     $                        ABS1( B( J, K ) )
++                     G( I ) = G( I ) + CABS1( A( I, K ) )*
++     $                        CABS1( B( J, K ) )
+    80             CONTINUE
+    90          CONTINUE
+             ELSE
+                DO 110 K = 1, KK
+                   DO 100 I = ISTART, ISTOP
+                      CT( I ) = CT( I ) + A( I, K )*B( J, K )
+-                     G( I ) = G( I ) + ABS1( A( I, K ) )*
+-     $                        ABS1( B( J, K ) )
++                     G( I ) = G( I ) + CABS1( A( I, K ) )*
++     $                        CABS1( B( J, K ) )
+   100             CONTINUE
+   110          CONTINUE
+             END IF
+@@ -4103,16 +4105,16 @@
+                      DO 120 I = ISTART, ISTOP
+                         CT( I ) = CT( I ) + CONJG( A( K, I ) )*
+      $                            CONJG( B( J, K ) )
+-                        G( I ) = G( I ) + ABS1( A( K, I ) )*
+-     $                           ABS1( B( J, K ) )
++                        G( I ) = G( I ) + CABS1( A( K, I ) )*
++     $                           CABS1( B( J, K ) )
+   120                CONTINUE
+   130             CONTINUE
+                ELSE
+                   DO 150 K = 1, KK
+                      DO 140 I = ISTART, ISTOP
+                         CT( I ) = CT( I ) + CONJG( A( K, I ) )*B( J, K )
+-                        G( I ) = G( I ) + ABS1( A( K, I ) )*
+-     $                           ABS1( B( J, K ) )
++                        G( I ) = G( I ) + CABS1( A( K, I ) )*
++     $                           CABS1( B( J, K ) )
+   140                CONTINUE
+   150             CONTINUE
+                END IF
+@@ -4121,16 +4123,16 @@
+                   DO 170 K = 1, KK
+                      DO 160 I = ISTART, ISTOP
+                         CT( I ) = CT( I ) + A( K, I )*CONJG( B( J, K ) )
+-                        G( I ) = G( I ) + ABS1( A( K, I ) )*
+-     $                           ABS1( B( J, K ) )
++                        G( I ) = G( I ) + CABS1( A( K, I ) )*
++     $                           CABS1( B( J, K ) )
+   160                CONTINUE
+   170             CONTINUE
+                ELSE
+                   DO 190 K = 1, KK
+                      DO 180 I = ISTART, ISTOP
+                         CT( I ) = CT( I ) + A( K, I )*B( J, K )
+-                        G( I ) = G( I ) + ABS1( A( K, I ) )*
+-     $                           ABS1( B( J, K ) )
++                        G( I ) = G( I ) + CABS1( A( K, I ) )*
++     $                           CABS1( B( J, K ) )
+   180                CONTINUE
+   190             CONTINUE
+                END IF
+@@ -4138,15 +4140,15 @@
+          END IF
+          DO 200 I = ISTART, ISTOP
+             CT( I ) = ALPHA*CT( I ) + BETA*C( I, J )
+-            G( I ) = ABS1( ALPHA )*G( I ) +
+-     $               ABS1( BETA )*ABS1( C( I, J ) )
++            G( I ) = CABS1( ALPHA )*G( I ) +
++     $               CABS1( BETA )*CABS1( C( I, J ) )
+   200    CONTINUE
+ *
+ *        Compute the error ratio for this result.
+ *
+          ERR = ZERO
+          DO 210 I = ISTART, ISTOP
+-            ERRI = ABS1( CT( I ) - CC( I, J ) )/EPS
++            ERRI = CABS1( CT( I ) - CC( I, J ) )/EPS
+             IF( G( I ).NE.RZERO )
+      $         ERRI = ERRI/G( I )
+             ERR = MAX( ERR, ERRI )
+diff --git a/BLAS/TESTING/zblat2.f b/BLAS/TESTING/zblat2.f
+index b7f4a3c71..9ac306f42 100644
+--- a/BLAS/TESTING/zblat2.f
++++ b/BLAS/TESTING/zblat2.f
+@@ -2982,9 +2982,9 @@
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, DBLE, DCONJG, DIMAG, MAX, SQRT
+ *     .. Statement Functions ..
+-      DOUBLE PRECISION   ABS1
++      DOUBLE PRECISION   CABS1
+ *     .. Statement Function definitions ..
+-      ABS1( C ) = ABS( DBLE( C ) ) + ABS( DIMAG( C ) )
++      CABS1( C ) = ABS( DBLE( C ) ) + ABS( DIMAG( C ) )
+ *     .. Executable Statements ..
+       TRAN = TRANS.EQ.'T'
+       CTRAN = TRANS.EQ.'C'
+@@ -3021,24 +3021,25 @@
+          IF( TRAN )THEN
+             DO 10 J = 1, NL
+                YT( IY ) = YT( IY ) + A( J, I )*X( JX )
+-               G( IY ) = G( IY ) + ABS1( A( J, I ) )*ABS1( X( JX ) )
++               G( IY ) = G( IY ) + CABS1( A( J, I ) )*CABS1( X( JX ) )
+                JX = JX + INCXL
+    10       CONTINUE
+          ELSE IF( CTRAN )THEN
+             DO 20 J = 1, NL
+                YT( IY ) = YT( IY ) + DCONJG( A( J, I ) )*X( JX )
+-               G( IY ) = G( IY ) + ABS1( A( J, I ) )*ABS1( X( JX ) )
++               G( IY ) = G( IY ) + CABS1( A( J, I ) )*CABS1( X( JX ) )
+                JX = JX + INCXL
+    20       CONTINUE
+          ELSE
+             DO 30 J = 1, NL
+                YT( IY ) = YT( IY ) + A( I, J )*X( JX )
+-               G( IY ) = G( IY ) + ABS1( A( I, J ) )*ABS1( X( JX ) )
++               G( IY ) = G( IY ) + CABS1( A( I, J ) )*CABS1( X( JX ) )
+                JX = JX + INCXL
+    30       CONTINUE
+          END IF
+          YT( IY ) = ALPHA*YT( IY ) + BETA*Y( IY )
+-         G( IY ) = ABS1( ALPHA )*G( IY ) + ABS1( BETA )*ABS1( Y( IY ) )
++         G( IY ) = CABS1( ALPHA )*G( IY )
++     $   + CABS1( BETA )*CABS1( Y( IY ) )
+          IY = IY + INCYL
+    40 CONTINUE
+ *
+diff --git a/BLAS/TESTING/zblat3.f b/BLAS/TESTING/zblat3.f
+index ccb492a65..578582b93 100644
+--- a/BLAS/TESTING/zblat3.f
++++ b/BLAS/TESTING/zblat3.f
+@@ -3298,9 +3298,9 @@
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, DIMAG, DCONJG, MAX, DBLE, SQRT
+ *     .. Statement Functions ..
+-      DOUBLE PRECISION   ABS1
++      DOUBLE PRECISION   CABS1
+ *     .. Statement Function definitions ..
+-      ABS1( CL ) = ABS( DBLE( CL ) ) + ABS( DIMAG( CL ) )
++      CABS1( CL ) = ABS( DBLE( CL ) ) + ABS( DIMAG( CL ) )
+ *     .. Executable Statements ..
+       TRANA = TRANSA.EQ.'T'.OR.TRANSA.EQ.'C'
+       TRANB = TRANSB.EQ.'T'.OR.TRANSB.EQ.'C'
+@@ -3321,7 +3321,8 @@
+             DO 30 K = 1, KK
+                DO 20 I = 1, M
+                   CT( I ) = CT( I ) + A( I, K )*B( K, J )
+-                  G( I ) = G( I ) + ABS1( A( I, K ) )*ABS1( B( K, J ) )
++                  G( I ) = G( I )
++     $            + CABS1( A( I, K ) )*CABS1( B( K, J ) )
+    20          CONTINUE
+    30       CONTINUE
+          ELSE IF( TRANA.AND..NOT.TRANB )THEN
+@@ -3329,16 +3330,16 @@
+                DO 50 K = 1, KK
+                   DO 40 I = 1, M
+                      CT( I ) = CT( I ) + DCONJG( A( K, I ) )*B( K, J )
+-                     G( I ) = G( I ) + ABS1( A( K, I ) )*
+-     $                        ABS1( B( K, J ) )
++                     G( I ) = G( I ) + CABS1( A( K, I ) )*
++     $                        CABS1( B( K, J ) )
+    40             CONTINUE
+    50          CONTINUE
+             ELSE
+                DO 70 K = 1, KK
+                   DO 60 I = 1, M
+                      CT( I ) = CT( I ) + A( K, I )*B( K, J )
+-                     G( I ) = G( I ) + ABS1( A( K, I ) )*
+-     $                        ABS1( B( K, J ) )
++                     G( I ) = G( I ) + CABS1( A( K, I ) )*
++     $                        CABS1( B( K, J ) )
+    60             CONTINUE
+    70          CONTINUE
+             END IF
+@@ -3347,16 +3348,16 @@
+                DO 90 K = 1, KK
+                   DO 80 I = 1, M
+                      CT( I ) = CT( I ) + A( I, K )*DCONJG( B( J, K ) )
+-                     G( I ) = G( I ) + ABS1( A( I, K ) )*
+-     $                        ABS1( B( J, K ) )
++                     G( I ) = G( I ) + CABS1( A( I, K ) )*
++     $                        CABS1( B( J, K ) )
+    80             CONTINUE
+    90          CONTINUE
+             ELSE
+                DO 110 K = 1, KK
+                   DO 100 I = 1, M
+                      CT( I ) = CT( I ) + A( I, K )*B( J, K )
+-                     G( I ) = G( I ) + ABS1( A( I, K ) )*
+-     $                        ABS1( B( J, K ) )
++                     G( I ) = G( I ) + CABS1( A( I, K ) )*
++     $                        CABS1( B( J, K ) )
+   100             CONTINUE
+   110          CONTINUE
+             END IF
+@@ -3367,8 +3368,8 @@
+                      DO 120 I = 1, M
+                         CT( I ) = CT( I ) + DCONJG( A( K, I ) )*
+      $                            DCONJG( B( J, K ) )
+-                        G( I ) = G( I ) + ABS1( A( K, I ) )*
+-     $                           ABS1( B( J, K ) )
++                        G( I ) = G( I ) + CABS1( A( K, I ) )*
++     $                           CABS1( B( J, K ) )
+   120                CONTINUE
+   130             CONTINUE
+                ELSE
+@@ -3376,8 +3377,8 @@
+                      DO 140 I = 1, M
+                         CT( I ) = CT( I ) + DCONJG( A( K, I ) )*
+      $                            B( J, K )
+-                        G( I ) = G( I ) + ABS1( A( K, I ) )*
+-     $                           ABS1( B( J, K ) )
++                        G( I ) = G( I ) + CABS1( A( K, I ) )*
++     $                           CABS1( B( J, K ) )
+   140                CONTINUE
+   150             CONTINUE
+                END IF
+@@ -3387,16 +3388,16 @@
+                      DO 160 I = 1, M
+                         CT( I ) = CT( I ) + A( K, I )*
+      $                            DCONJG( B( J, K ) )
+-                        G( I ) = G( I ) + ABS1( A( K, I ) )*
+-     $                           ABS1( B( J, K ) )
++                        G( I ) = G( I ) + CABS1( A( K, I ) )*
++     $                           CABS1( B( J, K ) )
+   160                CONTINUE
+   170             CONTINUE
+                ELSE
+                   DO 190 K = 1, KK
+                      DO 180 I = 1, M
+                         CT( I ) = CT( I ) + A( K, I )*B( J, K )
+-                        G( I ) = G( I ) + ABS1( A( K, I ) )*
+-     $                           ABS1( B( J, K ) )
++                        G( I ) = G( I ) + CABS1( A( K, I ) )*
++     $                           CABS1( B( J, K ) )
+   180                CONTINUE
+   190             CONTINUE
+                END IF
+@@ -3404,15 +3405,15 @@
+          END IF
+          DO 200 I = 1, M
+             CT( I ) = ALPHA*CT( I ) + BETA*C( I, J )
+-            G( I ) = ABS1( ALPHA )*G( I ) +
+-     $               ABS1( BETA )*ABS1( C( I, J ) )
++            G( I ) = CABS1( ALPHA )*G( I ) +
++     $               CABS1( BETA )*CABS1( C( I, J ) )
+   200    CONTINUE
+ *
+ *        Compute the error ratio for this result.
+ *
+          ERR = ZERO
+          DO 210 I = 1, M
+-            ERRI = ABS1( CT( I ) - CC( I, J ) )/EPS
++            ERRI = CABS1( CT( I ) - CC( I, J ) )/EPS
+             IF( G( I ).NE.RZERO )
+      $         ERRI = ERRI/G( I )
+             ERR = MAX( ERR, ERRI )
+@@ -4036,9 +4037,9 @@
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, AIMAG, CONJG, MAX, REAL, SQRT
+ *     .. Statement Functions ..
+-      DOUBLE PRECISION   ABS1
++      DOUBLE PRECISION   CABS1
+ *     .. Statement Function definitions ..
+-      ABS1( CL ) = ABS( DBLE( CL ) ) + ABS( DIMAG( CL ) )
++      CABS1( CL ) = ABS( DBLE( CL ) ) + ABS( DIMAG( CL ) )
+ *     .. Executable Statements ..
+       UPPER = UPLO.EQ.'U'
+       TRANA = TRANSA.EQ.'T'.OR.TRANSA.EQ.'C'
+@@ -4071,7 +4072,8 @@
+             DO 30 K = 1, KK
+                DO 20 I = ISTART, ISTOP
+                   CT( I ) = CT( I ) + A( I, K )*B( K, J )
+-                  G( I ) = G( I ) + ABS1( A( I, K ) )*ABS1( B( K, J ) )
++                  G( I ) = G( I )
++     $            + CABS1( A( I, K ) )*CABS1( B( K, J ) )
+    20          CONTINUE
+    30       CONTINUE
+          ELSE IF( TRANA.AND..NOT.TRANB )THEN
+@@ -4079,16 +4081,16 @@
+                DO 50 K = 1, KK
+                   DO 40 I = ISTART, ISTOP
+                      CT( I ) = CT( I ) + CONJG( A( K, I ) )*B( K, J )
+-                     G( I ) = G( I ) + ABS1( A( K, I ) )*
+-     $                        ABS1( B( K, J ) )
++                     G( I ) = G( I ) + CABS1( A( K, I ) )*
++     $                        CABS1( B( K, J ) )
+    40             CONTINUE
+    50          CONTINUE
+             ELSE
+                DO 70 K = 1, KK
+                   DO 60 I = ISTART, ISTOP
+                      CT( I ) = CT( I ) + A( K, I )*B( K, J )
+-                     G( I ) = G( I ) + ABS1( A( K, I ) )*
+-     $                        ABS1( B( K, J ) )
++                     G( I ) = G( I ) + CABS1( A( K, I ) )*
++     $                        CABS1( B( K, J ) )
+    60             CONTINUE
+    70          CONTINUE
+             END IF
+@@ -4097,16 +4099,16 @@
+                DO 90 K = 1, KK
+                   DO 80 I = ISTART, ISTOP
+                      CT( I ) = CT( I ) + A( I, K )*CONJG( B( J, K ) )
+-                     G( I ) = G( I ) + ABS1( A( I, K ) )*
+-     $                        ABS1( B( J, K ) )
++                     G( I ) = G( I ) + CABS1( A( I, K ) )*
++     $                        CABS1( B( J, K ) )
+    80             CONTINUE
+    90          CONTINUE
+             ELSE
+                DO 110 K = 1, KK
+                   DO 100 I = ISTART, ISTOP
+                      CT( I ) = CT( I ) + A( I, K )*B( J, K )
+-                     G( I ) = G( I ) + ABS1( A( I, K ) )*
+-     $                        ABS1( B( J, K ) )
++                     G( I ) = G( I ) + CABS1( A( I, K ) )*
++     $                        CABS1( B( J, K ) )
+   100             CONTINUE
+   110          CONTINUE
+             END IF
+@@ -4117,16 +4119,16 @@
+                      DO 120 I = ISTART, ISTOP
+                         CT( I ) = CT( I ) + CONJG( A( K, I ) )*
+      $                            CONJG( B( J, K ) )
+-                        G( I ) = G( I ) + ABS1( A( K, I ) )*
+-     $                           ABS1( B( J, K ) )
++                        G( I ) = G( I ) + CABS1( A( K, I ) )*
++     $                           CABS1( B( J, K ) )
+   120                CONTINUE
+   130             CONTINUE
+                ELSE
+                   DO 150 K = 1, KK
+                      DO 140 I = ISTART, ISTOP
+                         CT( I ) = CT( I ) + CONJG( A( K, I ) )*B( J, K )
+-                        G( I ) = G( I ) + ABS1( A( K, I ) )*
+-     $                           ABS1( B( J, K ) )
++                        G( I ) = G( I ) + CABS1( A( K, I ) )*
++     $                           CABS1( B( J, K ) )
+   140                CONTINUE
+   150             CONTINUE
+                END IF
+@@ -4135,16 +4137,16 @@
+                   DO 170 K = 1, KK
+                      DO 160 I = ISTART, ISTOP
+                         CT( I ) = CT( I ) + A( K, I )*CONJG( B( J, K ) )
+-                        G( I ) = G( I ) + ABS1( A( K, I ) )*
+-     $                           ABS1( B( J, K ) )
++                        G( I ) = G( I ) + CABS1( A( K, I ) )*
++     $                           CABS1( B( J, K ) )
+   160                CONTINUE
+   170             CONTINUE
+                ELSE
+                   DO 190 K = 1, KK
+                      DO 180 I = ISTART, ISTOP
+                         CT( I ) = CT( I ) + A( K, I )*B( J, K )
+-                        G( I ) = G( I ) + ABS1( A( K, I ) )*
+-     $                           ABS1( B( J, K ) )
++                        G( I ) = G( I ) + CABS1( A( K, I ) )*
++     $                           CABS1( B( J, K ) )
+   180                CONTINUE
+   190             CONTINUE
+                END IF
+@@ -4152,15 +4154,15 @@
+          END IF
+          DO 200 I = ISTART, ISTOP
+             CT( I ) = ALPHA*CT( I ) + BETA*C( I, J )
+-            G( I ) = ABS1( ALPHA )*G( I ) +
+-     $               ABS1( BETA )*ABS1( C( I, J ) )
++            G( I ) = CABS1( ALPHA )*G( I ) +
++     $               CABS1( BETA )*CABS1( C( I, J ) )
+   200    CONTINUE
+ *
+ *        Compute the error ratio for this result.
+ *
+          ERR = ZERO
+          DO 210 I = ISTART, ISTOP
+-            ERRI = ABS1( CT( I ) - CC( I, J ) )/EPS
++            ERRI = CABS1( CT( I ) - CC( I, J ) )/EPS
+             IF( G( I ).NE.RZERO )
+      $         ERRI = ERRI/G( I )
+             ERR = MAX( ERR, ERRI )
+diff --git a/CBLAS/testing/c_cblat2.f b/CBLAS/testing/c_cblat2.f
+index 3aa7908c3..fce05e472 100644
+--- a/CBLAS/testing/c_cblat2.f
++++ b/CBLAS/testing/c_cblat2.f
+@@ -2504,9 +2504,9 @@
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, AIMAG, CONJG, MAX, REAL, SQRT
+ *     .. Statement Functions ..
+-      REAL               ABS1
++      REAL               CABS1
+ *     .. Statement Function definitions ..
+-      ABS1( C ) = ABS( REAL( C ) ) + ABS( AIMAG( C ) )
++      CABS1( C ) = ABS( REAL( C ) ) + ABS( AIMAG( C ) )
+ *     .. Executable Statements ..
+       TRAN = TRANS.EQ.'T'
+       CTRAN = TRANS.EQ.'C'
+@@ -2543,24 +2543,25 @@
+          IF( TRAN )THEN
+             DO 10 J = 1, NL
+                YT( IY ) = YT( IY ) + A( J, I )*X( JX )
+-               G( IY ) = G( IY ) + ABS1( A( J, I ) )*ABS1( X( JX ) )
++               G( IY ) = G( IY ) + CABS1( A( J, I ) )*CABS1( X( JX ) )
+                JX = JX + INCXL
+    10       CONTINUE
+          ELSE IF( CTRAN )THEN
+             DO 20 J = 1, NL
+                YT( IY ) = YT( IY ) + CONJG( A( J, I ) )*X( JX )
+-               G( IY ) = G( IY ) + ABS1( A( J, I ) )*ABS1( X( JX ) )
++               G( IY ) = G( IY ) + CABS1( A( J, I ) )*CABS1( X( JX ) )
+                JX = JX + INCXL
+    20       CONTINUE
+          ELSE
+             DO 30 J = 1, NL
+                YT( IY ) = YT( IY ) + A( I, J )*X( JX )
+-               G( IY ) = G( IY ) + ABS1( A( I, J ) )*ABS1( X( JX ) )
++               G( IY ) = G( IY ) + CABS1( A( I, J ) )*CABS1( X( JX ) )
+                JX = JX + INCXL
+    30       CONTINUE
+          END IF
+          YT( IY ) = ALPHA*YT( IY ) + BETA*Y( IY )
+-         G( IY ) = ABS1( ALPHA )*G( IY ) + ABS1( BETA )*ABS1( Y( IY ) )
++         G( IY ) = CABS1( ALPHA )*G( IY )
++     $   + CABS1( BETA )*CABS1( Y( IY ) )
+          IY = IY + INCYL
+    40 CONTINUE
+ *
+diff --git a/CBLAS/testing/c_cblat3.f b/CBLAS/testing/c_cblat3.f
+index 44aa1425c..3575e6d8f 100644
+--- a/CBLAS/testing/c_cblat3.f
++++ b/CBLAS/testing/c_cblat3.f
+@@ -2520,9 +2520,9 @@
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, AIMAG, CONJG, MAX, REAL, SQRT
+ *     .. Statement Functions ..
+-      REAL               ABS1
++      REAL               CABS1
+ *     .. Statement Function definitions ..
+-      ABS1( CL ) = ABS( REAL( CL ) ) + ABS( AIMAG( CL ) )
++      CABS1( CL ) = ABS( REAL( CL ) ) + ABS( AIMAG( CL ) )
+ *     .. Executable Statements ..
+       TRANA = TRANSA.EQ.'T'.OR.TRANSA.EQ.'C'
+       TRANB = TRANSB.EQ.'T'.OR.TRANSB.EQ.'C'
+@@ -2543,7 +2543,8 @@
+             DO 30 K = 1, KK
+                DO 20 I = 1, M
+                   CT( I ) = CT( I ) + A( I, K )*B( K, J )
+-                  G( I ) = G( I ) + ABS1( A( I, K ) )*ABS1( B( K, J ) )
++                  G( I ) = G( I )
++     $            + CABS1( A( I, K ) )*CABS1( B( K, J ) )
+    20          CONTINUE
+    30       CONTINUE
+          ELSE IF( TRANA.AND..NOT.TRANB )THEN
+@@ -2551,16 +2552,16 @@
+                DO 50 K = 1, KK
+                   DO 40 I = 1, M
+                      CT( I ) = CT( I ) + CONJG( A( K, I ) )*B( K, J )
+-                     G( I ) = G( I ) + ABS1( A( K, I ) )*
+-     $                        ABS1( B( K, J ) )
++                     G( I ) = G( I ) + CABS1( A( K, I ) )*
++     $                        CABS1( B( K, J ) )
+    40             CONTINUE
+    50          CONTINUE
+             ELSE
+                DO 70 K = 1, KK
+                   DO 60 I = 1, M
+                      CT( I ) = CT( I ) + A( K, I )*B( K, J )
+-                     G( I ) = G( I ) + ABS1( A( K, I ) )*
+-     $                        ABS1( B( K, J ) )
++                     G( I ) = G( I ) + CABS1( A( K, I ) )*
++     $                        CABS1( B( K, J ) )
+    60             CONTINUE
+    70          CONTINUE
+             END IF
+@@ -2569,16 +2570,16 @@
+                DO 90 K = 1, KK
+                   DO 80 I = 1, M
+                      CT( I ) = CT( I ) + A( I, K )*CONJG( B( J, K ) )
+-                     G( I ) = G( I ) + ABS1( A( I, K ) )*
+-     $                        ABS1( B( J, K ) )
++                     G( I ) = G( I ) + CABS1( A( I, K ) )*
++     $                        CABS1( B( J, K ) )
+    80             CONTINUE
+    90          CONTINUE
+             ELSE
+                DO 110 K = 1, KK
+                   DO 100 I = 1, M
+                      CT( I ) = CT( I ) + A( I, K )*B( J, K )
+-                     G( I ) = G( I ) + ABS1( A( I, K ) )*
+-     $                        ABS1( B( J, K ) )
++                     G( I ) = G( I ) + CABS1( A( I, K ) )*
++     $                        CABS1( B( J, K ) )
+   100             CONTINUE
+   110          CONTINUE
+             END IF
+@@ -2589,16 +2590,16 @@
+                      DO 120 I = 1, M
+                         CT( I ) = CT( I ) + CONJG( A( K, I ) )*
+      $                            CONJG( B( J, K ) )
+-                        G( I ) = G( I ) + ABS1( A( K, I ) )*
+-     $                           ABS1( B( J, K ) )
++                        G( I ) = G( I ) + CABS1( A( K, I ) )*
++     $                           CABS1( B( J, K ) )
+   120                CONTINUE
+   130             CONTINUE
+                ELSE
+                   DO 150 K = 1, KK
+                      DO 140 I = 1, M
+                        CT( I ) = CT( I ) + CONJG( A( K, I ) )*B( J, K )
+-                       G( I ) = G( I ) + ABS1( A( K, I ) )*
+-     $                           ABS1( B( J, K ) )
++                       G( I ) = G( I ) + CABS1( A( K, I ) )*
++     $                           CABS1( B( J, K ) )
+   140                CONTINUE
+   150             CONTINUE
+                END IF
+@@ -2607,16 +2608,16 @@
+                   DO 170 K = 1, KK
+                      DO 160 I = 1, M
+                        CT( I ) = CT( I ) + A( K, I )*CONJG( B( J, K ) )
+-                       G( I ) = G( I ) + ABS1( A( K, I ) )*
+-     $                           ABS1( B( J, K ) )
++                       G( I ) = G( I ) + CABS1( A( K, I ) )*
++     $                           CABS1( B( J, K ) )
+   160                CONTINUE
+   170             CONTINUE
+                ELSE
+                   DO 190 K = 1, KK
+                      DO 180 I = 1, M
+                         CT( I ) = CT( I ) + A( K, I )*B( J, K )
+-                        G( I ) = G( I ) + ABS1( A( K, I ) )*
+-     $                           ABS1( B( J, K ) )
++                        G( I ) = G( I ) + CABS1( A( K, I ) )*
++     $                           CABS1( B( J, K ) )
+   180                CONTINUE
+   190             CONTINUE
+                END IF
+@@ -2624,15 +2625,15 @@
+          END IF
+          DO 200 I = 1, M
+             CT( I ) = ALPHA*CT( I ) + BETA*C( I, J )
+-            G( I ) = ABS1( ALPHA )*G( I ) +
+-     $               ABS1( BETA )*ABS1( C( I, J ) )
++            G( I ) = CABS1( ALPHA )*G( I ) +
++     $               CABS1( BETA )*CABS1( C( I, J ) )
+   200    CONTINUE
+ *
+ *        Compute the error ratio for this result.
+ *
+          ERR = ZERO
+          DO 210 I = 1, M
+-            ERRI = ABS1( CT( I ) - CC( I, J ) )/EPS
++            ERRI = CABS1( CT( I ) - CC( I, J ) )/EPS
+             IF( G( I ).NE.RZERO )
+      $         ERRI = ERRI/G( I )
+             ERR = MAX( ERR, ERRI )
+@@ -3229,9 +3230,9 @@
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, AIMAG, CONJG, MAX, REAL, SQRT
+ *     .. Statement Functions ..
+-      REAL               ABS1
++      REAL               CABS1
+ *     .. Statement Function definitions ..
+-      ABS1( CL ) = ABS( REAL( CL ) ) + ABS( AIMAG( CL ) )
++      CABS1( CL ) = ABS( REAL( CL ) ) + ABS( AIMAG( CL ) )
+ *     .. Executable Statements ..
+ 
+       UPPER = UPLO.EQ.'U'
+@@ -3264,7 +3265,8 @@
+             DO 30 K = 1, KK
+                DO 20 I = ISTART, ISTOP
+                   CT( I ) = CT( I ) + A( I, K )*B( K, J )
+-                  G( I ) = G( I ) + ABS1( A( I, K ) )*ABS1( B( K, J ) )
++                  G( I ) = G( I )
++     $            + CABS1( A( I, K ) )*CABS1( B( K, J ) )
+    20          CONTINUE
+    30       CONTINUE
+          ELSE IF( TRANA.AND..NOT.TRANB )THEN
+@@ -3272,16 +3274,16 @@
+                DO 50 K = 1, KK
+                   DO 40 I =  ISTART, ISTOP
+                      CT( I ) = CT( I ) + CONJG( A( K, I ) )*B( K, J )
+-                     G( I ) = G( I ) + ABS1( A( K, I ) )*
+-     $                        ABS1( B( K, J ) )
++                     G( I ) = G( I ) + CABS1( A( K, I ) )*
++     $                        CABS1( B( K, J ) )
+    40             CONTINUE
+    50          CONTINUE
+             ELSE
+                DO 70 K = 1, KK
+                   DO 60 I = ISTART, ISTOP
+                      CT( I ) = CT( I ) + A( K, I )*B( K, J )
+-                     G( I ) = G( I ) + ABS1( A( K, I ) )*
+-     $                        ABS1( B( K, J ) )
++                     G( I ) = G( I ) + CABS1( A( K, I ) )*
++     $                        CABS1( B( K, J ) )
+    60             CONTINUE
+    70          CONTINUE
+             END IF
+@@ -3290,16 +3292,16 @@
+                DO 90 K = 1, KK
+                   DO 80 I =  ISTART, ISTOP
+                      CT( I ) = CT( I ) + A( I, K )*CONJG( B( J, K ) )
+-                     G( I ) = G( I ) + ABS1( A( I, K ) )*
+-     $                        ABS1( B( J, K ) )
++                     G( I ) = G( I ) + CABS1( A( I, K ) )*
++     $                        CABS1( B( J, K ) )
+    80             CONTINUE
+    90          CONTINUE
+             ELSE
+                DO 110 K = 1, KK
+                   DO 100 I = ISTART, ISTOP
+                      CT( I ) = CT( I ) + A( I, K )*B( J, K )
+-                     G( I ) = G( I ) + ABS1( A( I, K ) )*
+-     $                        ABS1( B( J, K ) )
++                     G( I ) = G( I ) + CABS1( A( I, K ) )*
++     $                        CABS1( B( J, K ) )
+   100             CONTINUE
+   110          CONTINUE
+             END IF
+@@ -3310,16 +3312,16 @@
+                      DO 120 I = ISTART, ISTOP
+                         CT( I ) = CT( I ) + CONJG( A( K, I ) )*
+      $                            CONJG( B( J, K ) )
+-                        G( I ) = G( I ) + ABS1( A( K, I ) )*
+-     $                           ABS1( B( J, K ) )
++                        G( I ) = G( I ) + CABS1( A( K, I ) )*
++     $                           CABS1( B( J, K ) )
+   120                CONTINUE
+   130             CONTINUE
+                ELSE
+                   DO 150 K = 1, KK
+                      DO 140 I =  ISTART, ISTOP
+                        CT( I ) = CT( I ) + CONJG( A( K, I ) )*B( J, K )
+-                       G( I ) = G( I ) + ABS1( A( K, I ) )*
+-     $                           ABS1( B( J, K ) )
++                       G( I ) = G( I ) + CABS1( A( K, I ) )*
++     $                           CABS1( B( J, K ) )
+   140                CONTINUE
+   150             CONTINUE
+                END IF
+@@ -3328,16 +3330,16 @@
+                   DO 170 K = 1, KK
+                      DO 160 I =  ISTART, ISTOP
+                        CT( I ) = CT( I ) + A( K, I )*CONJG( B( J, K ) )
+-                       G( I ) = G( I ) + ABS1( A( K, I ) )*
+-     $                           ABS1( B( J, K ) )
++                       G( I ) = G( I ) + CABS1( A( K, I ) )*
++     $                           CABS1( B( J, K ) )
+   160                CONTINUE
+   170             CONTINUE
+                ELSE
+                   DO 190 K = 1, KK
+                      DO 180 I =  ISTART, ISTOP
+                         CT( I ) = CT( I ) + A( K, I )*B( J, K )
+-                        G( I ) = G( I ) + ABS1( A( K, I ) )*
+-     $                           ABS1( B( J, K ) )
++                        G( I ) = G( I ) + CABS1( A( K, I ) )*
++     $                           CABS1( B( J, K ) )
+   180                CONTINUE
+   190             CONTINUE
+                END IF
+@@ -3345,15 +3347,15 @@
+          END IF
+          DO 200 I =  ISTART, ISTOP
+             CT( I ) = ALPHA*CT( I ) + BETA*C( I, J )
+-            G( I ) = ABS1( ALPHA )*G( I ) +
+-     $               ABS1( BETA )*ABS1( C( I, J ) )
++            G( I ) = CABS1( ALPHA )*G( I ) +
++     $               CABS1( BETA )*CABS1( C( I, J ) )
+   200    CONTINUE
+ *
+ *        Compute the error ratio for this result.
+ *
+          ERR = ZERO
+          DO 210 I =  ISTART, ISTOP
+-            ERRI = ABS1( CT( I ) - CC( I, J ) )/EPS
++            ERRI = CABS1( CT( I ) - CC( I, J ) )/EPS
+             IF( G( I ).NE.RZERO )
+      $         ERRI = ERRI/G( I )
+             ERR = MAX( ERR, ERRI )
+diff --git a/CBLAS/testing/c_zblat2.f b/CBLAS/testing/c_zblat2.f
+index 21424468c..5347864b7 100644
+--- a/CBLAS/testing/c_zblat2.f
++++ b/CBLAS/testing/c_zblat2.f
+@@ -2510,9 +2510,9 @@
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, DIMAG, DCONJG, MAX, DBLE, SQRT
+ *     .. Statement Functions ..
+-      DOUBLE PRECISION   ABS1
++      DOUBLE PRECISION   CABS1
+ *     .. Statement Function definitions ..
+-      ABS1( C ) = ABS( DBLE( C ) ) + ABS( DIMAG( C ) )
++      CABS1( C ) = ABS( DBLE( C ) ) + ABS( DIMAG( C ) )
+ *     .. Executable Statements ..
+       TRAN = TRANS.EQ.'T'
+       CTRAN = TRANS.EQ.'C'
+@@ -2549,24 +2549,25 @@
+          IF( TRAN )THEN
+             DO 10 J = 1, NL
+                YT( IY ) = YT( IY ) + A( J, I )*X( JX )
+-               G( IY ) = G( IY ) + ABS1( A( J, I ) )*ABS1( X( JX ) )
++               G( IY ) = G( IY ) + CABS1( A( J, I ) )*CABS1( X( JX ) )
+                JX = JX + INCXL
+    10       CONTINUE
+          ELSE IF( CTRAN )THEN
+             DO 20 J = 1, NL
+                YT( IY ) = YT( IY ) + DCONJG( A( J, I ) )*X( JX )
+-               G( IY ) = G( IY ) + ABS1( A( J, I ) )*ABS1( X( JX ) )
++               G( IY ) = G( IY ) + CABS1( A( J, I ) )*CABS1( X( JX ) )
+                JX = JX + INCXL
+    20       CONTINUE
+          ELSE
+             DO 30 J = 1, NL
+                YT( IY ) = YT( IY ) + A( I, J )*X( JX )
+-               G( IY ) = G( IY ) + ABS1( A( I, J ) )*ABS1( X( JX ) )
++               G( IY ) = G( IY ) + CABS1( A( I, J ) )*CABS1( X( JX ) )
+                JX = JX + INCXL
+    30       CONTINUE
+          END IF
+          YT( IY ) = ALPHA*YT( IY ) + BETA*Y( IY )
+-         G( IY ) = ABS1( ALPHA )*G( IY ) + ABS1( BETA )*ABS1( Y( IY ) )
++         G( IY ) = CABS1( ALPHA )*G( IY )
++     $   + CABS1( BETA )*CABS1( Y( IY ) )
+          IY = IY + INCYL
+    40 CONTINUE
+ *
+diff --git a/CBLAS/testing/c_zblat3.f b/CBLAS/testing/c_zblat3.f
+index a68a64a14..8e5be3072 100644
+--- a/CBLAS/testing/c_zblat3.f
++++ b/CBLAS/testing/c_zblat3.f
+@@ -2519,9 +2519,9 @@
+ *     .. Intrinsic Functions ..
+       INTRINSIC          ABS, DIMAG, DCONJG, MAX, DBLE, SQRT
+ *     .. Statement Functions ..
+-      DOUBLE PRECISION   ABS1
++      DOUBLE PRECISION   CABS1
+ *     .. Statement Function definitions ..
+-      ABS1( CL ) = ABS( DBLE( CL ) ) + ABS( DIMAG( CL ) )
++      CABS1( CL ) = ABS( DBLE( CL ) ) + ABS( DIMAG( CL ) )
+ *     .. Executable Statements ..
+       TRANA = TRANSA.EQ.'T'.OR.TRANSA.EQ.'C'
+       TRANB = TRANSB.EQ.'T'.OR.TRANSB.EQ.'C'
+@@ -2542,7 +2542,8 @@
+             DO 30 K = 1, KK
+                DO 20 I = 1, M
+                   CT( I ) = CT( I ) + A( I, K )*B( K, J )
+-                  G( I ) = G( I ) + ABS1( A( I, K ) )*ABS1( B( K, J ) )
++                  G( I ) = G( I )
++     $            + CABS1( A( I, K ) )*CABS1( B( K, J ) )
+    20          CONTINUE
+    30       CONTINUE
+          ELSE IF( TRANA.AND..NOT.TRANB )THEN
+@@ -2550,16 +2551,16 @@
+                DO 50 K = 1, KK
+                   DO 40 I = 1, M
+                      CT( I ) = CT( I ) + DCONJG( A( K, I ) )*B( K, J )
+-                     G( I ) = G( I ) + ABS1( A( K, I ) )*
+-     $                        ABS1( B( K, J ) )
++                     G( I ) = G( I ) + CABS1( A( K, I ) )*
++     $                        CABS1( B( K, J ) )
+    40             CONTINUE
+    50          CONTINUE
+             ELSE
+                DO 70 K = 1, KK
+                   DO 60 I = 1, M
+                      CT( I ) = CT( I ) + A( K, I )*B( K, J )
+-                     G( I ) = G( I ) + ABS1( A( K, I ) )*
+-     $                        ABS1( B( K, J ) )
++                     G( I ) = G( I ) + CABS1( A( K, I ) )*
++     $                        CABS1( B( K, J ) )
+    60             CONTINUE
+    70          CONTINUE
+             END IF
+@@ -2568,16 +2569,16 @@
+                DO 90 K = 1, KK
+                   DO 80 I = 1, M
+                      CT( I ) = CT( I ) + A( I, K )*DCONJG( B( J, K ) )
+-                     G( I ) = G( I ) + ABS1( A( I, K ) )*
+-     $                        ABS1( B( J, K ) )
++                     G( I ) = G( I ) + CABS1( A( I, K ) )*
++     $                        CABS1( B( J, K ) )
+    80             CONTINUE
+    90          CONTINUE
+             ELSE
+                DO 110 K = 1, KK
+                   DO 100 I = 1, M
+                      CT( I ) = CT( I ) + A( I, K )*B( J, K )
+-                     G( I ) = G( I ) + ABS1( A( I, K ) )*
+-     $                        ABS1( B( J, K ) )
++                     G( I ) = G( I ) + CABS1( A( I, K ) )*
++     $                        CABS1( B( J, K ) )
+   100             CONTINUE
+   110          CONTINUE
+             END IF
+@@ -2588,8 +2589,8 @@
+                      DO 120 I = 1, M
+                         CT( I ) = CT( I ) + DCONJG( A( K, I ) )*
+      $                            DCONJG( B( J, K ) )
+-                        G( I ) = G( I ) + ABS1( A( K, I ) )*
+-     $                           ABS1( B( J, K ) )
++                        G( I ) = G( I ) + CABS1( A( K, I ) )*
++     $                           CABS1( B( J, K ) )
+   120                CONTINUE
+   130             CONTINUE
+                ELSE
+@@ -2597,8 +2598,8 @@
+                      DO 140 I = 1, M
+                         CT( I ) = CT( I ) + DCONJG( A( K, I ) )*
+      $                            B( J, K )
+-                        G( I ) = G( I ) + ABS1( A( K, I ) )*
+-     $                           ABS1( B( J, K ) )
++                        G( I ) = G( I ) + CABS1( A( K, I ) )*
++     $                           CABS1( B( J, K ) )
+   140                CONTINUE
+   150             CONTINUE
+                END IF
+@@ -2608,16 +2609,16 @@
+                      DO 160 I = 1, M
+                         CT( I ) = CT( I ) + A( K, I )*
+      $                            DCONJG( B( J, K ) )
+-                        G( I ) = G( I ) + ABS1( A( K, I ) )*
+-     $                           ABS1( B( J, K ) )
++                        G( I ) = G( I ) + CABS1( A( K, I ) )*
++     $                           CABS1( B( J, K ) )
+   160                CONTINUE
+   170             CONTINUE
+                ELSE
+                   DO 190 K = 1, KK
+                      DO 180 I = 1, M
+                         CT( I ) = CT( I ) + A( K, I )*B( J, K )
+-                        G( I ) = G( I ) + ABS1( A( K, I ) )*
+-     $                           ABS1( B( J, K ) )
++                        G( I ) = G( I ) + CABS1( A( K, I ) )*
++     $                           CABS1( B( J, K ) )
+   180                CONTINUE
+   190             CONTINUE
+                END IF
+@@ -2625,15 +2626,15 @@
+          END IF
+          DO 200 I = 1, M
+             CT( I ) = ALPHA*CT( I ) + BETA*C( I, J )
+-            G( I ) = ABS1( ALPHA )*G( I ) +
+-     $               ABS1( BETA )*ABS1( C( I, J ) )
++            G( I ) = CABS1( ALPHA )*G( I ) +
++     $               CABS1( BETA )*CABS1( C( I, J ) )
+   200    CONTINUE
+ *
+ *        Compute the error ratio for this result.
+ *
+          ERR = ZERO
+          DO 210 I = 1, M
+-            ERRI = ABS1( CT( I ) - CC( I, J ) )/EPS
++            ERRI = CABS1( CT( I ) - CC( I, J ) )/EPS
+             IF( G( I ).NE.RZERO )
+      $         ERRI = ERRI/G( I )
+             ERR = MAX( ERR, ERRI )
+@@ -3230,9 +3231,9 @@
+ *     .. Intrinsic Functions ..
+       INTRINSIC          DABS, DIMAG, DCONJG, MAX, DBLE, DSQRT
+ *     .. Statement Functions ..
+-      DOUBLE PRECISION   ABS1
++      DOUBLE PRECISION   CABS1
+ *     .. Statement Function definitions ..
+-      ABS1( CL ) = DABS( DBLE( CL ) ) + DABS( DIMAG( CL ) )
++      CABS1( CL ) = DABS( DBLE( CL ) ) + DABS( DIMAG( CL ) )
+ *     .. Executable Statements ..
+ 
+       UPPER = UPLO.EQ.'U'
+@@ -3265,7 +3266,8 @@
+             DO 30 K = 1, KK
+                DO 20 I = ISTART, ISTOP
+                   CT( I ) = CT( I ) + A( I, K )*B( K, J )
+-                  G( I ) = G( I ) + ABS1( A( I, K ) )*ABS1( B( K, J ) )
++                  G( I ) = G( I )
++     $            + CABS1( A( I, K ) )*CABS1( B( K, J ) )
+    20          CONTINUE
+    30       CONTINUE
+          ELSE IF( TRANA.AND..NOT.TRANB )THEN
+@@ -3273,16 +3275,16 @@
+                DO 50 K = 1, KK
+                   DO 40 I =  ISTART, ISTOP
+                      CT( I ) = CT( I ) + DCONJG( A( K, I ) )*B( K, J )
+-                     G( I ) = G( I ) + ABS1( A( K, I ) )*
+-     $                        ABS1( B( K, J ) )
++                     G( I ) = G( I ) + CABS1( A( K, I ) )*
++     $                        CABS1( B( K, J ) )
+    40             CONTINUE
+    50          CONTINUE
+             ELSE
+                DO 70 K = 1, KK
+                   DO 60 I = ISTART, ISTOP
+                      CT( I ) = CT( I ) + A( K, I )*B( K, J )
+-                     G( I ) = G( I ) + ABS1( A( K, I ) )*
+-     $                        ABS1( B( K, J ) )
++                     G( I ) = G( I ) + CABS1( A( K, I ) )*
++     $                        CABS1( B( K, J ) )
+    60             CONTINUE
+    70          CONTINUE
+             END IF
+@@ -3291,16 +3293,16 @@
+                DO 90 K = 1, KK
+                   DO 80 I =  ISTART, ISTOP
+                      CT( I ) = CT( I ) + A( I, K )*DCONJG( B( J, K ) )
+-                     G( I ) = G( I ) + ABS1( A( I, K ) )*
+-     $                        ABS1( B( J, K ) )
++                     G( I ) = G( I ) + CABS1( A( I, K ) )*
++     $                        CABS1( B( J, K ) )
+    80             CONTINUE
+    90          CONTINUE
+             ELSE
+                DO 110 K = 1, KK
+                   DO 100 I = ISTART, ISTOP
+                      CT( I ) = CT( I ) + A( I, K )*B( J, K )
+-                     G( I ) = G( I ) + ABS1( A( I, K ) )*
+-     $                        ABS1( B( J, K ) )
++                     G( I ) = G( I ) + CABS1( A( I, K ) )*
++     $                        CABS1( B( J, K ) )
+   100             CONTINUE
+   110          CONTINUE
+             END IF
+@@ -3311,16 +3313,16 @@
+                      DO 120 I = ISTART, ISTOP
+                         CT( I ) = CT( I ) + DCONJG( A( K, I ) )*
+      $                            DCONJG( B( J, K ) )
+-                        G( I ) = G( I ) + ABS1( A( K, I ) )*
+-     $                           ABS1( B( J, K ) )
++                        G( I ) = G( I ) + CABS1( A( K, I ) )*
++     $                           CABS1( B( J, K ) )
+   120                CONTINUE
+   130             CONTINUE
+                ELSE
+                   DO 150 K = 1, KK
+                      DO 140 I =  ISTART, ISTOP
+                        CT( I ) = CT( I ) + DCONJG( A( K, I ) )*B( J, K )
+-                       G( I ) = G( I ) + ABS1( A( K, I ) )*
+-     $                           ABS1( B( J, K ) )
++                       G( I ) = G( I ) + CABS1( A( K, I ) )*
++     $                           CABS1( B( J, K ) )
+   140                CONTINUE
+   150             CONTINUE
+                END IF
+@@ -3329,16 +3331,16 @@
+                   DO 170 K = 1, KK
+                      DO 160 I =  ISTART, ISTOP
+                        CT( I ) = CT( I ) + A( K, I )*DCONJG( B( J, K ) )
+-                       G( I ) = G( I ) + ABS1( A( K, I ) )*
+-     $                           ABS1( B( J, K ) )
++                       G( I ) = G( I ) + CABS1( A( K, I ) )*
++     $                           CABS1( B( J, K ) )
+   160                CONTINUE
+   170             CONTINUE
+                ELSE
+                   DO 190 K = 1, KK
+                      DO 180 I =  ISTART, ISTOP
+                         CT( I ) = CT( I ) + A( K, I )*B( J, K )
+-                        G( I ) = G( I ) + ABS1( A( K, I ) )*
+-     $                           ABS1( B( J, K ) )
++                        G( I ) = G( I ) + CABS1( A( K, I ) )*
++     $                           CABS1( B( J, K ) )
+   180                CONTINUE
+   190             CONTINUE
+                END IF
+@@ -3346,15 +3348,15 @@
+          END IF
+          DO 200 I =  ISTART, ISTOP
+             CT( I ) = ALPHA*CT( I ) + BETA*C( I, J )
+-            G( I ) = ABS1( ALPHA )*G( I ) +
+-     $               ABS1( BETA )*ABS1( C( I, J ) )
++            G( I ) = CABS1( ALPHA )*G( I ) +
++     $               CABS1( BETA )*CABS1( C( I, J ) )
+   200    CONTINUE
+ *
+ *        Compute the error ratio for this result.
+ *
+          ERR = ZERO
+          DO 210 I =  ISTART, ISTOP
+-            ERRI = ABS1( CT( I ) - CC( I, J ) )/EPS
++            ERRI = CABS1( CT( I ) - CC( I, J ) )/EPS
+             IF( G( I ).NE.RZERO )
+      $         ERRI = ERRI/G( I )
+             ERR = MAX( ERR, ERRI )
+diff --git a/SRC/DEPRECATED/cgegv.f b/SRC/DEPRECATED/cgegv.f
+index 4adeeb9d5..d8272ca0e 100644
+--- a/SRC/DEPRECATED/cgegv.f
++++ b/SRC/DEPRECATED/cgegv.f
+@@ -330,10 +330,10 @@
+       INTRINSIC          ABS, AIMAG, CMPLX, INT, MAX, REAL
+ *     ..
+ *     .. Statement Functions ..
+-      REAL               ABS1
++      REAL               CABS1
+ *     ..
+ *     .. Statement Function definitions ..
+-      ABS1( X ) = ABS( REAL( X ) ) + ABS( AIMAG( X ) )
++      CABS1( X ) = ABS( REAL( X ) ) + ABS( AIMAG( X ) )
+ *     ..
+ *     .. Executable Statements ..
+ *
+@@ -590,7 +590,7 @@
+             DO 30 JC = 1, N
+                TEMP = ZERO
+                DO 10 JR = 1, N
+-                  TEMP = MAX( TEMP, ABS1( VL( JR, JC ) ) )
++                  TEMP = MAX( TEMP, CABS1( VL( JR, JC ) ) )
+    10          CONTINUE
+                IF( TEMP.LT.SAFMIN )
+      $            GO TO 30
+@@ -610,7 +610,7 @@
+             DO 60 JC = 1, N
+                TEMP = ZERO
+                DO 40 JR = 1, N
+-                  TEMP = MAX( TEMP, ABS1( VR( JR, JC ) ) )
++                  TEMP = MAX( TEMP, CABS1( VR( JR, JC ) ) )
+    40          CONTINUE
+                IF( TEMP.LT.SAFMIN )
+      $            GO TO 60
+diff --git a/SRC/DEPRECATED/zgegv.f b/SRC/DEPRECATED/zgegv.f
+index b8769f61a..323b925ad 100644
+--- a/SRC/DEPRECATED/zgegv.f
++++ b/SRC/DEPRECATED/zgegv.f
+@@ -330,10 +330,10 @@
+       INTRINSIC          ABS, DBLE, DCMPLX, DIMAG, INT, MAX
+ *     ..
+ *     .. Statement Functions ..
+-      DOUBLE PRECISION   ABS1
++      DOUBLE PRECISION   CABS1
+ *     ..
+ *     .. Statement Function definitions ..
+-      ABS1( X ) = ABS( DBLE( X ) ) + ABS( DIMAG( X ) )
++      CABS1( X ) = ABS( DBLE( X ) ) + ABS( DIMAG( X ) )
+ *     ..
+ *     .. Executable Statements ..
+ *
+@@ -590,7 +590,7 @@
+             DO 30 JC = 1, N
+                TEMP = ZERO
+                DO 10 JR = 1, N
+-                  TEMP = MAX( TEMP, ABS1( VL( JR, JC ) ) )
++                  TEMP = MAX( TEMP, CABS1( VL( JR, JC ) ) )
+    10          CONTINUE
+                IF( TEMP.LT.SAFMIN )
+      $            GO TO 30
+@@ -610,7 +610,7 @@
+             DO 60 JC = 1, N
+                TEMP = ZERO
+                DO 40 JR = 1, N
+-                  TEMP = MAX( TEMP, ABS1( VR( JR, JC ) ) )
++                  TEMP = MAX( TEMP, CABS1( VR( JR, JC ) ) )
+    40          CONTINUE
+                IF( TEMP.LT.SAFMIN )
+      $            GO TO 60
+diff --git a/SRC/cggev.f b/SRC/cggev.f
+index 4266cf959..81df79c4e 100644
+--- a/SRC/cggev.f
++++ b/SRC/cggev.f
+@@ -267,10 +267,10 @@
+       INTRINSIC          ABS, AIMAG, MAX, REAL, SQRT
+ *     ..
+ *     .. Statement Functions ..
+-      REAL               ABS1
++      REAL               CABS1
+ *     ..
+ *     .. Statement Function definitions ..
+-      ABS1( X ) = ABS( REAL( X ) ) + ABS( AIMAG( X ) )
++      CABS1( X ) = ABS( REAL( X ) ) + ABS( AIMAG( X ) )
+ *     ..
+ *     .. Executable Statements ..
+ *
+@@ -510,7 +510,7 @@
+             DO 30 JC = 1, N
+                TEMP = ZERO
+                DO 10 JR = 1, N
+-                  TEMP = MAX( TEMP, ABS1( VL( JR, JC ) ) )
++                  TEMP = MAX( TEMP, CABS1( VL( JR, JC ) ) )
+    10          CONTINUE
+                IF( TEMP.LT.SMLNUM )
+      $            GO TO 30
+@@ -526,7 +526,7 @@
+             DO 60 JC = 1, N
+                TEMP = ZERO
+                DO 40 JR = 1, N
+-                  TEMP = MAX( TEMP, ABS1( VR( JR, JC ) ) )
++                  TEMP = MAX( TEMP, CABS1( VR( JR, JC ) ) )
+    40          CONTINUE
+                IF( TEMP.LT.SMLNUM )
+      $            GO TO 60
+diff --git a/SRC/cggev3.f b/SRC/cggev3.f
+index ce6b486a3..de9df5806 100644
+--- a/SRC/cggev3.f
++++ b/SRC/cggev3.f
+@@ -267,10 +267,10 @@
+       INTRINSIC          ABS, AIMAG, MAX, REAL, SQRT
+ *     ..
+ *     .. Statement Functions ..
+-      REAL               ABS1
++      REAL               CABS1
+ *     ..
+ *     .. Statement Function definitions ..
+-      ABS1( X ) = ABS( REAL( X ) ) + ABS( AIMAG( X ) )
++      CABS1( X ) = ABS( REAL( X ) ) + ABS( AIMAG( X ) )
+ *     ..
+ *     .. Executable Statements ..
+ *
+@@ -518,7 +518,7 @@
+             DO 30 JC = 1, N
+                TEMP = ZERO
+                DO 10 JR = 1, N
+-                  TEMP = MAX( TEMP, ABS1( VL( JR, JC ) ) )
++                  TEMP = MAX( TEMP, CABS1( VL( JR, JC ) ) )
+    10          CONTINUE
+                IF( TEMP.LT.SMLNUM )
+      $            GO TO 30
+@@ -534,7 +534,7 @@
+             DO 60 JC = 1, N
+                TEMP = ZERO
+                DO 40 JR = 1, N
+-                  TEMP = MAX( TEMP, ABS1( VR( JR, JC ) ) )
++                  TEMP = MAX( TEMP, CABS1( VR( JR, JC ) ) )
+    40          CONTINUE
+                IF( TEMP.LT.SMLNUM )
+      $            GO TO 60
+diff --git a/SRC/cggevx.f b/SRC/cggevx.f
+index c1d34c18c..24d408cd6 100644
+--- a/SRC/cggevx.f
++++ b/SRC/cggevx.f
+@@ -430,10 +430,10 @@
+       INTRINSIC          ABS, AIMAG, MAX, REAL, SQRT
+ *     ..
+ *     .. Statement Functions ..
+-      REAL               ABS1
++      REAL               CABS1
+ *     ..
+ *     .. Statement Function definitions ..
+-      ABS1( X ) = ABS( REAL( X ) ) + ABS( AIMAG( X ) )
++      CABS1( X ) = ABS( REAL( X ) ) + ABS( AIMAG( X ) )
+ *     ..
+ *     .. Executable Statements ..
+ *
+@@ -761,7 +761,7 @@
+          DO 50 JC = 1, N
+             TEMP = ZERO
+             DO 30 JR = 1, N
+-               TEMP = MAX( TEMP, ABS1( VL( JR, JC ) ) )
++               TEMP = MAX( TEMP, CABS1( VL( JR, JC ) ) )
+    30       CONTINUE
+             IF( TEMP.LT.SMLNUM )
+      $         GO TO 50
+@@ -779,7 +779,7 @@
+          DO 80 JC = 1, N
+             TEMP = ZERO
+             DO 60 JR = 1, N
+-               TEMP = MAX( TEMP, ABS1( VR( JR, JC ) ) )
++               TEMP = MAX( TEMP, CABS1( VR( JR, JC ) ) )
+    60       CONTINUE
+             IF( TEMP.LT.SMLNUM )
+      $         GO TO 80
+diff --git a/SRC/chgeqz.f b/SRC/chgeqz.f
+index 5adce73c0..edbb104b1 100644
+--- a/SRC/chgeqz.f
++++ b/SRC/chgeqz.f
+@@ -332,10 +332,10 @@
+       INTRINSIC          ABS, AIMAG, CMPLX, CONJG, MAX, MIN, REAL, SQRT
+ *     ..
+ *     .. Statement Functions ..
+-      REAL               ABS1
++      REAL               CABS1
+ *     ..
+ *     .. Statement Function definitions ..
+-      ABS1( X ) = ABS( REAL( X ) ) + ABS( AIMAG( X ) )
++      CABS1( X ) = ABS( REAL( X ) ) + ABS( AIMAG( X ) )
+ *     ..
+ *     .. Executable Statements ..
+ *
+@@ -515,9 +515,9 @@
+          IF( ILAST.EQ.ILO ) THEN
+             GO TO 60
+          ELSE
+-            IF( ABS1( H( ILAST, ILAST-1 ) ).LE.MAX( SAFMIN, ULP*( 
+-     $         ABS1( H( ILAST, ILAST ) ) + ABS1( H( ILAST-1, ILAST-1 ) 
+-     $         ) ) ) ) THEN
++            IF( CABS1( H( ILAST, ILAST-1 ) ).LE.MAX( SAFMIN,
++     $         ULP*( CABS1( H( ILAST, ILAST ) )
++     $         + CABS1( H( ILAST-1, ILAST-1 ) ) ) ) ) THEN
+                H( ILAST, ILAST-1 ) = CZERO
+                GO TO 60
+             END IF
+@@ -537,8 +537,8 @@
+             IF( J.EQ.ILO ) THEN
+                ILAZRO = .TRUE.
+             ELSE
+-               IF( ABS1( H( J, J-1 ) ).LE.MAX( SAFMIN, ULP*( 
+-     $            ABS1( H( J, J ) ) + ABS1( H( J-1, J-1 ) ) 
++               IF( CABS1( H( J, J-1 ) ).LE.MAX( SAFMIN, ULP*(
++     $            CABS1( H( J, J ) ) + CABS1( H( J-1, J-1 ) )
+      $            ) ) ) THEN
+                   H( J, J-1 ) = CZERO
+                   ILAZRO = .TRUE.
+@@ -556,8 +556,8 @@
+ *
+                ILAZR2 = .FALSE.
+                IF( .NOT.ILAZRO ) THEN
+-                  IF( ABS1( H( J, J-1 ) )*( ASCALE*ABS1( H( J+1,
+-     $                J ) ) ).LE.ABS1( H( J, J ) )*( ASCALE*ATOL ) )
++                  IF( CABS1( H( J, J-1 ) )*( ASCALE*CABS1( H( J+1,
++     $                J ) ) ).LE.CABS1( H( J, J ) )*( ASCALE*ATOL ) )
+      $                ILAZR2 = .TRUE.
+                END IF
+ *
+@@ -584,7 +584,7 @@
+                      IF( ILAZR2 )
+      $                  H( JCH, JCH-1 ) = H( JCH, JCH-1 )*C
+                      ILAZR2 = .FALSE.
+-                     IF( ABS1( T( JCH+1, JCH+1 ) ).GE.BTOL ) THEN
++                     IF( CABS1( T( JCH+1, JCH+1 ) ).GE.BTOL ) THEN
+                         IF( JCH+1.GE.ILAST ) THEN
+                            GO TO 60
+                         ELSE
+@@ -745,11 +745,11 @@
+ *
+             SHIFT = ABI22
+             CTEMP = SQRT( ABI12 )*SQRT( AD21 )
+-            TEMP = ABS1( CTEMP )
++            TEMP = CABS1( CTEMP )
+             IF( CTEMP.NE.ZERO ) THEN
+                X = HALF*( AD11-SHIFT )
+-               TEMP2 = ABS1( X )
+-               TEMP = MAX( TEMP, ABS1( X ) )
++               TEMP2 = CABS1( X )
++               TEMP = MAX( TEMP, CABS1( X ) )
+                Y = TEMP*SQRT( ( X / TEMP )**2+( CTEMP / TEMP )**2 )
+                IF( TEMP2.GT.ZERO ) THEN
+                   IF( REAL( X / TEMP2 )*REAL( Y )+
+@@ -762,7 +762,7 @@
+ *           Exceptional shift.  Chosen for no particularly good reason.
+ *
+             IF( ( IITER / 20 )*20.EQ.IITER .AND. 
+-     $         BSCALE*ABS1(T( ILAST, ILAST )).GT.SAFMIN ) THEN
++     $         BSCALE*CABS1(T( ILAST, ILAST )).GT.SAFMIN ) THEN
+                ESHIFT = ESHIFT + ( ASCALE*H( ILAST,
+      $            ILAST ) )/( BSCALE*T( ILAST, ILAST ) )
+             ELSE
+@@ -777,14 +777,14 @@
+          DO 80 J = ILAST - 1, IFIRST + 1, -1
+             ISTART = J
+             CTEMP = ASCALE*H( J, J ) - SHIFT*( BSCALE*T( J, J ) )
+-            TEMP = ABS1( CTEMP )
+-            TEMP2 = ASCALE*ABS1( H( J+1, J ) )
++            TEMP = CABS1( CTEMP )
++            TEMP2 = ASCALE*CABS1( H( J+1, J ) )
+             TEMPR = MAX( TEMP, TEMP2 )
+             IF( TEMPR.LT.ONE .AND. TEMPR.NE.ZERO ) THEN
+                TEMP = TEMP / TEMPR
+                TEMP2 = TEMP2 / TEMPR
+             END IF
+-            IF( ABS1( H( J, J-1 ) )*TEMP2.LE.TEMP*ATOL )
++            IF( CABS1( H( J, J-1 ) )*TEMP2.LE.TEMP*ATOL )
+      $         GO TO 90
+    80    CONTINUE
+ *
+diff --git a/SRC/clags2.f b/SRC/clags2.f
+index c5f3df30e..86dbdcb84 100644
+--- a/SRC/clags2.f
++++ b/SRC/clags2.f
+@@ -186,10 +186,10 @@
+       INTRINSIC          ABS, AIMAG, CMPLX, CONJG, REAL
+ *     ..
+ *     .. Statement Functions ..
+-      REAL               ABS1
++      REAL               CABS1
+ *     ..
+ *     .. Statement Function definitions ..
+-      ABS1( T ) = ABS( REAL( T ) ) + ABS( AIMAG( T ) )
++      CABS1( T ) = ABS( REAL( T ) ) + ABS( AIMAG( T ) )
+ *     ..
+ *     .. Executable Statements ..
+ *
+@@ -231,19 +231,19 @@
+             VB11R = CSR*B1
+             VB12 = CSR*B2 + D1*SNR*B3
+ *
+-            AUA12 = ABS( CSL )*ABS1( A2 ) + ABS( SNL )*ABS( A3 )
+-            AVB12 = ABS( CSR )*ABS1( B2 ) + ABS( SNR )*ABS( B3 )
++            AUA12 = ABS( CSL )*CABS1( A2 ) + ABS( SNL )*ABS( A3 )
++            AVB12 = ABS( CSR )*CABS1( B2 ) + ABS( SNR )*ABS( B3 )
+ *
+ *           zero (1,2) elements of U**H *A and V**H *B
+ *
+-            IF( ( ABS( UA11R )+ABS1( UA12 ) ).EQ.ZERO ) THEN
++            IF( ( ABS( UA11R )+CABS1( UA12 ) ).EQ.ZERO ) THEN
+                CALL CLARTG( -CMPLX( VB11R ), CONJG( VB12 ), CSQ, SNQ,
+      $                      R )
+-            ELSE IF( ( ABS( VB11R )+ABS1( VB12 ) ).EQ.ZERO ) THEN
++            ELSE IF( ( ABS( VB11R )+CABS1( VB12 ) ).EQ.ZERO ) THEN
+                CALL CLARTG( -CMPLX( UA11R ), CONJG( UA12 ), CSQ, SNQ,
+      $                      R )
+-            ELSE IF( AUA12 / ( ABS( UA11R )+ABS1( UA12 ) ).LE.AVB12 /
+-     $               ( ABS( VB11R )+ABS1( VB12 ) ) ) THEN
++            ELSE IF( AUA12 / ( ABS( UA11R )+CABS1( UA12 ) ).LE.AVB12 /
++     $               ( ABS( VB11R )+CABS1( VB12 ) ) ) THEN
+                CALL CLARTG( -CMPLX( UA11R ), CONJG( UA12 ), CSQ, SNQ,
+      $                      R )
+             ELSE
+@@ -267,19 +267,19 @@
+             VB21 = -CONJG( D1 )*SNR*B1
+             VB22 = -CONJG( D1 )*SNR*B2 + CSR*B3
+ *
+-            AUA22 = ABS( SNL )*ABS1( A2 ) + ABS( CSL )*ABS( A3 )
+-            AVB22 = ABS( SNR )*ABS1( B2 ) + ABS( CSR )*ABS( B3 )
++            AUA22 = ABS( SNL )*CABS1( A2 ) + ABS( CSL )*ABS( A3 )
++            AVB22 = ABS( SNR )*CABS1( B2 ) + ABS( CSR )*ABS( B3 )
+ *
+ *           zero (2,2) elements of U**H *A and V**H *B, and then swap.
+ *
+-            IF( ( ABS1( UA21 )+ABS1( UA22 ) ).EQ.ZERO ) THEN
++            IF( ( CABS1( UA21 )+CABS1( UA22 ) ).EQ.ZERO ) THEN
+                CALL CLARTG( -CONJG( VB21 ), CONJG( VB22 ), CSQ, SNQ,
+      $                      R )
+-            ELSE IF( ( ABS1( VB21 )+ABS( VB22 ) ).EQ.ZERO ) THEN
++            ELSE IF( ( CABS1( VB21 )+ABS( VB22 ) ).EQ.ZERO ) THEN
+                CALL CLARTG( -CONJG( UA21 ), CONJG( UA22 ), CSQ, SNQ,
+      $                      R )
+-            ELSE IF( AUA22 / ( ABS1( UA21 )+ABS1( UA22 ) ).LE.AVB22 /
+-     $               ( ABS1( VB21 )+ABS1( VB22 ) ) ) THEN
++            ELSE IF( AUA22 / ( CABS1( UA21 )+CABS1( UA22 ) ).LE.AVB22 /
++     $               ( CABS1( VB21 )+CABS1( VB22 ) ) ) THEN
+                CALL CLARTG( -CONJG( UA21 ), CONJG( UA22 ), CSQ, SNQ,
+      $                      R )
+             ELSE
+@@ -332,17 +332,17 @@
+             VB21 = -D1*SNL*B1 + CSL*B2
+             VB22R = CSL*B3
+ *
+-            AUA21 = ABS( SNR )*ABS( A1 ) + ABS( CSR )*ABS1( A2 )
+-            AVB21 = ABS( SNL )*ABS( B1 ) + ABS( CSL )*ABS1( B2 )
++            AUA21 = ABS( SNR )*ABS( A1 ) + ABS( CSR )*CABS1( A2 )
++            AVB21 = ABS( SNL )*ABS( B1 ) + ABS( CSL )*CABS1( B2 )
+ *
+ *           zero (2,1) elements of U**H *A and V**H *B.
+ *
+-            IF( ( ABS1( UA21 )+ABS( UA22R ) ).EQ.ZERO ) THEN
++            IF( ( CABS1( UA21 )+ABS( UA22R ) ).EQ.ZERO ) THEN
+                CALL CLARTG( CMPLX( VB22R ), VB21, CSQ, SNQ, R )
+-            ELSE IF( ( ABS1( VB21 )+ABS( VB22R ) ).EQ.ZERO ) THEN
++            ELSE IF( ( CABS1( VB21 )+ABS( VB22R ) ).EQ.ZERO ) THEN
+                CALL CLARTG( CMPLX( UA22R ), UA21, CSQ, SNQ, R )
+-            ELSE IF( AUA21 / ( ABS1( UA21 )+ABS( UA22R ) ).LE.AVB21 /
+-     $               ( ABS1( VB21 )+ABS( VB22R ) ) ) THEN
++            ELSE IF( AUA21 / ( CABS1( UA21 )+ABS( UA22R ) ).LE.AVB21 /
++     $               ( CABS1( VB21 )+ABS( VB22R ) ) ) THEN
+                CALL CLARTG( CMPLX( UA22R ), UA21, CSQ, SNQ, R )
+             ELSE
+                CALL CLARTG( CMPLX( VB22R ), VB21, CSQ, SNQ, R )
+@@ -364,17 +364,17 @@
+             VB11 = CSL*B1 + CONJG( D1 )*SNL*B2
+             VB12 = CONJG( D1 )*SNL*B3
+ *
+-            AUA11 = ABS( CSR )*ABS( A1 ) + ABS( SNR )*ABS1( A2 )
+-            AVB11 = ABS( CSL )*ABS( B1 ) + ABS( SNL )*ABS1( B2 )
++            AUA11 = ABS( CSR )*ABS( A1 ) + ABS( SNR )*CABS1( A2 )
++            AVB11 = ABS( CSL )*ABS( B1 ) + ABS( SNL )*CABS1( B2 )
+ *
+ *           zero (1,1) elements of U**H *A and V**H *B, and then swap.
+ *
+-            IF( ( ABS1( UA11 )+ABS1( UA12 ) ).EQ.ZERO ) THEN
++            IF( ( CABS1( UA11 )+CABS1( UA12 ) ).EQ.ZERO ) THEN
+                CALL CLARTG( VB12, VB11, CSQ, SNQ, R )
+-            ELSE IF( ( ABS1( VB11 )+ABS1( VB12 ) ).EQ.ZERO ) THEN
++            ELSE IF( ( CABS1( VB11 )+CABS1( VB12 ) ).EQ.ZERO ) THEN
+                CALL CLARTG( UA12, UA11, CSQ, SNQ, R )
+-            ELSE IF( AUA11 / ( ABS1( UA11 )+ABS1( UA12 ) ).LE.AVB11 /
+-     $               ( ABS1( VB11 )+ABS1( VB12 ) ) ) THEN
++            ELSE IF( AUA11 / ( CABS1( UA11 )+CABS1( UA12 ) ).LE.AVB11 /
++     $               ( CABS1( VB11 )+CABS1( VB12 ) ) ) THEN
+                CALL CLARTG( UA12, UA11, CSQ, SNQ, R )
+             ELSE
+                CALL CLARTG( VB12, VB11, CSQ, SNQ, R )
+diff --git a/SRC/ctgevc.f b/SRC/ctgevc.f
+index 504d670d0..43a63a569 100644
+--- a/SRC/ctgevc.f
++++ b/SRC/ctgevc.f
+@@ -264,10 +264,10 @@
+       INTRINSIC          ABS, AIMAG, CMPLX, CONJG, MAX, MIN, REAL
+ *     ..
+ *     .. Statement Functions ..
+-      REAL               ABS1
++      REAL               CABS1
+ *     ..
+ *     .. Statement Function definitions ..
+-      ABS1( X ) = ABS( REAL( X ) ) + ABS( AIMAG( X ) )
++      CABS1( X ) = ABS( REAL( X ) ) + ABS( AIMAG( X ) )
+ *     ..
+ *     .. Executable Statements ..
+ *
+@@ -375,19 +375,19 @@
+ *     part of A and B to check for possible overflow in the triangular
+ *     solver.
+ *
+-      ANORM = ABS1( S( 1, 1 ) )
+-      BNORM = ABS1( P( 1, 1 ) )
++      ANORM = CABS1( S( 1, 1 ) )
++      BNORM = CABS1( P( 1, 1 ) )
+       RWORK( 1 ) = ZERO
+       RWORK( N+1 ) = ZERO
+       DO 40 J = 2, N
+          RWORK( J ) = ZERO
+          RWORK( N+J ) = ZERO
+          DO 30 I = 1, J - 1
+-            RWORK( J ) = RWORK( J ) + ABS1( S( I, J ) )
+-            RWORK( N+J ) = RWORK( N+J ) + ABS1( P( I, J ) )
++            RWORK( J ) = RWORK( J ) + CABS1( S( I, J ) )
++            RWORK( N+J ) = RWORK( N+J ) + CABS1( P( I, J ) )
+    30    CONTINUE
+-         ANORM = MAX( ANORM, RWORK( J )+ABS1( S( J, J ) ) )
+-         BNORM = MAX( BNORM, RWORK( N+J )+ABS1( P( J, J ) ) )
++         ANORM = MAX( ANORM, RWORK( J )+CABS1( S( J, J ) ) )
++         BNORM = MAX( BNORM, RWORK( N+J )+CABS1( P( J, J ) ) )
+    40 CONTINUE
+ *
+       ASCALE = ONE / MAX( ANORM, SAFMIN )
+@@ -409,7 +409,7 @@
+             IF( ILCOMP ) THEN
+                IEIG = IEIG + 1
+ *
+-               IF( ABS1( S( JE, JE ) ).LE.SAFMIN .AND.
++               IF( CABS1( S( JE, JE ) ).LE.SAFMIN .AND.
+      $             ABS( REAL( P( JE, JE ) ) ).LE.SAFMIN ) THEN
+ *
+ *                 Singular matrix pencil -- return unit eigenvector
+@@ -426,7 +426,7 @@
+ *                   H
+ *                 y  ( a A - b B ) = 0
+ *
+-               TEMP = ONE / MAX( ABS1( S( JE, JE ) )*ASCALE,
++               TEMP = ONE / MAX( CABS1( S( JE, JE ) )*ASCALE,
+      $                ABS( REAL( P( JE, JE ) ) )*BSCALE, SAFMIN )
+                SALPHA = ( TEMP*S( JE, JE ) )*ASCALE
+                SBETA = ( TEMP*REAL( P( JE, JE ) ) )*BSCALE
+@@ -436,19 +436,19 @@
+ *              Scale to avoid underflow
+ *
+                LSA = ABS( SBETA ).GE.SAFMIN .AND. ABS( ACOEFF ).LT.SMALL
+-               LSB = ABS1( SALPHA ).GE.SAFMIN .AND. ABS1( BCOEFF ).LT.
++               LSB = CABS1( SALPHA ).GE.SAFMIN .AND. CABS1( BCOEFF ).LT.
+      $               SMALL
+ *
+                SCALE = ONE
+                IF( LSA )
+      $            SCALE = ( SMALL / ABS( SBETA ) )*MIN( ANORM, BIG )
+                IF( LSB )
+-     $            SCALE = MAX( SCALE, ( SMALL / ABS1( SALPHA ) )*
++     $            SCALE = MAX( SCALE, ( SMALL / CABS1( SALPHA ) )*
+      $                    MIN( BNORM, BIG ) )
+                IF( LSA .OR. LSB ) THEN
+                   SCALE = MIN( SCALE, ONE /
+      $                    ( SAFMIN*MAX( ONE, ABS( ACOEFF ),
+-     $                    ABS1( BCOEFF ) ) ) )
++     $                    CABS1( BCOEFF ) ) ) )
+                   IF( LSA ) THEN
+                      ACOEFF = ASCALE*( SCALE*SBETA )
+                   ELSE
+@@ -462,7 +462,7 @@
+                END IF
+ *
+                ACOEFA = ABS( ACOEFF )
+-               BCOEFA = ABS1( BCOEFF )
++               BCOEFA = CABS1( BCOEFF )
+                XMAX = ONE
+                DO 60 JR = 1, N
+                   WORK( JR ) = CZERO
+@@ -506,12 +506,12 @@
+ *                 with scaling and perturbation of the denominator
+ *
+                   D = CONJG( ACOEFF*S( J, J )-BCOEFF*P( J, J ) )
+-                  IF( ABS1( D ).LE.DMIN )
++                  IF( CABS1( D ).LE.DMIN )
+      $               D = CMPLX( DMIN )
+ *
+-                  IF( ABS1( D ).LT.ONE ) THEN
+-                     IF( ABS1( SUM ).GE.BIGNUM*ABS1( D ) ) THEN
+-                        TEMP = ONE / ABS1( SUM )
++                  IF( CABS1( D ).LT.ONE ) THEN
++                     IF( CABS1( SUM ).GE.BIGNUM*CABS1( D ) ) THEN
++                        TEMP = ONE / CABS1( SUM )
+                         DO 90 JR = JE, J - 1
+                            WORK( JR ) = TEMP*WORK( JR )
+    90                   CONTINUE
+@@ -520,7 +520,7 @@
+                      END IF
+                   END IF
+                   WORK( J ) = CLADIV( -SUM, D )
+-                  XMAX = MAX( XMAX, ABS1( WORK( J ) ) )
++                  XMAX = MAX( XMAX, CABS1( WORK( J ) ) )
+   100          CONTINUE
+ *
+ *              Back transform eigenvector if HOWMNY='B'.
+@@ -540,7 +540,7 @@
+ *
+                XMAX = ZERO
+                DO 110 JR = IBEG, N
+-                  XMAX = MAX( XMAX, ABS1( WORK( ( ISRC-1 )*N+JR ) ) )
++                  XMAX = MAX( XMAX, CABS1( WORK( ( ISRC-1 )*N+JR ) ) )
+   110          CONTINUE
+ *
+                IF( XMAX.GT.SAFMIN ) THEN
+@@ -576,7 +576,7 @@
+             IF( ILCOMP ) THEN
+                IEIG = IEIG - 1
+ *
+-               IF( ABS1( S( JE, JE ) ).LE.SAFMIN .AND.
++               IF( CABS1( S( JE, JE ) ).LE.SAFMIN .AND.
+      $             ABS( REAL( P( JE, JE ) ) ).LE.SAFMIN ) THEN
+ *
+ *                 Singular matrix pencil -- return unit eigenvector
+@@ -593,7 +593,7 @@
+ *
+ *              ( a A - b B ) x  = 0
+ *
+-               TEMP = ONE / MAX( ABS1( S( JE, JE ) )*ASCALE,
++               TEMP = ONE / MAX( CABS1( S( JE, JE ) )*ASCALE,
+      $                ABS( REAL( P( JE, JE ) ) )*BSCALE, SAFMIN )
+                SALPHA = ( TEMP*S( JE, JE ) )*ASCALE
+                SBETA = ( TEMP*REAL( P( JE, JE ) ) )*BSCALE
+@@ -603,19 +603,19 @@
+ *              Scale to avoid underflow
+ *
+                LSA = ABS( SBETA ).GE.SAFMIN .AND. ABS( ACOEFF ).LT.SMALL
+-               LSB = ABS1( SALPHA ).GE.SAFMIN .AND. ABS1( BCOEFF ).LT.
++               LSB = CABS1( SALPHA ).GE.SAFMIN .AND. CABS1( BCOEFF ).LT.
+      $               SMALL
+ *
+                SCALE = ONE
+                IF( LSA )
+      $            SCALE = ( SMALL / ABS( SBETA ) )*MIN( ANORM, BIG )
+                IF( LSB )
+-     $            SCALE = MAX( SCALE, ( SMALL / ABS1( SALPHA ) )*
++     $            SCALE = MAX( SCALE, ( SMALL / CABS1( SALPHA ) )*
+      $                    MIN( BNORM, BIG ) )
+                IF( LSA .OR. LSB ) THEN
+                   SCALE = MIN( SCALE, ONE /
+      $                    ( SAFMIN*MAX( ONE, ABS( ACOEFF ),
+-     $                    ABS1( BCOEFF ) ) ) )
++     $                    CABS1( BCOEFF ) ) ) )
+                   IF( LSA ) THEN
+                      ACOEFF = ASCALE*( SCALE*SBETA )
+                   ELSE
+@@ -629,7 +629,7 @@
+                END IF
+ *
+                ACOEFA = ABS( ACOEFF )
+-               BCOEFA = ABS1( BCOEFF )
++               BCOEFA = CABS1( BCOEFF )
+                XMAX = ONE
+                DO 160 JR = 1, N
+                   WORK( JR ) = CZERO
+@@ -653,12 +653,12 @@
+ *                 with scaling and perturbation of the denominator
+ *
+                   D = ACOEFF*S( J, J ) - BCOEFF*P( J, J )
+-                  IF( ABS1( D ).LE.DMIN )
++                  IF( CABS1( D ).LE.DMIN )
+      $               D = CMPLX( DMIN )
+ *
+-                  IF( ABS1( D ).LT.ONE ) THEN
+-                     IF( ABS1( WORK( J ) ).GE.BIGNUM*ABS1( D ) ) THEN
+-                        TEMP = ONE / ABS1( WORK( J ) )
++                  IF( CABS1( D ).LT.ONE ) THEN
++                     IF( CABS1( WORK( J ) ).GE.BIGNUM*CABS1( D ) ) THEN
++                        TEMP = ONE / CABS1( WORK( J ) )
+                         DO 180 JR = 1, JE
+                            WORK( JR ) = TEMP*WORK( JR )
+   180                   CONTINUE
+@@ -671,8 +671,8 @@
+ *
+ *                    w = w + x(j)*(a S(*,j) - b P(*,j) ) with scaling
+ *
+-                     IF( ABS1( WORK( J ) ).GT.ONE ) THEN
+-                        TEMP = ONE / ABS1( WORK( J ) )
++                     IF( CABS1( WORK( J ) ).GT.ONE ) THEN
++                        TEMP = ONE / CABS1( WORK( J ) )
+                         IF( ACOEFA*RWORK( J )+BCOEFA*RWORK( N+J ).GE.
+      $                      BIGNUM*TEMP ) THEN
+                            DO 190 JR = 1, JE
+@@ -706,7 +706,7 @@
+ *
+                XMAX = ZERO
+                DO 220 JR = 1, IEND
+-                  XMAX = MAX( XMAX, ABS1( WORK( ( ISRC-1 )*N+JR ) ) )
++                  XMAX = MAX( XMAX, CABS1( WORK( ( ISRC-1 )*N+JR ) ) )
+   220          CONTINUE
+ *
+                IF( XMAX.GT.SAFMIN ) THEN
+diff --git a/SRC/zggev.f b/SRC/zggev.f
+index a9df7563f..8ad4f3648 100644
+--- a/SRC/zggev.f
++++ b/SRC/zggev.f
+@@ -266,10 +266,10 @@
+       INTRINSIC          ABS, DBLE, DIMAG, MAX, SQRT
+ *     ..
+ *     .. Statement Functions ..
+-      DOUBLE PRECISION   ABS1
++      DOUBLE PRECISION   CABS1
+ *     ..
+ *     .. Statement Function definitions ..
+-      ABS1( X ) = ABS( DBLE( X ) ) + ABS( DIMAG( X ) )
++      CABS1( X ) = ABS( DBLE( X ) ) + ABS( DIMAG( X ) )
+ *     ..
+ *     .. Executable Statements ..
+ *
+@@ -509,7 +509,7 @@
+             DO 30 JC = 1, N
+                TEMP = ZERO
+                DO 10 JR = 1, N
+-                  TEMP = MAX( TEMP, ABS1( VL( JR, JC ) ) )
++                  TEMP = MAX( TEMP, CABS1( VL( JR, JC ) ) )
+    10          CONTINUE
+                IF( TEMP.LT.SMLNUM )
+      $            GO TO 30
+@@ -525,7 +525,7 @@
+             DO 60 JC = 1, N
+                TEMP = ZERO
+                DO 40 JR = 1, N
+-                  TEMP = MAX( TEMP, ABS1( VR( JR, JC ) ) )
++                  TEMP = MAX( TEMP, CABS1( VR( JR, JC ) ) )
+    40          CONTINUE
+                IF( TEMP.LT.SMLNUM )
+      $            GO TO 60
+diff --git a/SRC/zggev3.f b/SRC/zggev3.f
+index 135270ef9..4d904a783 100644
+--- a/SRC/zggev3.f
++++ b/SRC/zggev3.f
+@@ -266,10 +266,10 @@
+       INTRINSIC          ABS, DBLE, DIMAG, MAX, SQRT
+ *     ..
+ *     .. Statement Functions ..
+-      DOUBLE PRECISION   ABS1
++      DOUBLE PRECISION   CABS1
+ *     ..
+ *     .. Statement Function definitions ..
+-      ABS1( X ) = ABS( DBLE( X ) ) + ABS( DIMAG( X ) )
++      CABS1( X ) = ABS( DBLE( X ) ) + ABS( DIMAG( X ) )
+ *     ..
+ *     .. Executable Statements ..
+ *
+@@ -516,7 +516,7 @@
+             DO 30 JC = 1, N
+                TEMP = ZERO
+                DO 10 JR = 1, N
+-                  TEMP = MAX( TEMP, ABS1( VL( JR, JC ) ) )
++                  TEMP = MAX( TEMP, CABS1( VL( JR, JC ) ) )
+    10          CONTINUE
+                IF( TEMP.LT.SMLNUM )
+      $            GO TO 30
+@@ -532,7 +532,7 @@
+             DO 60 JC = 1, N
+                TEMP = ZERO
+                DO 40 JR = 1, N
+-                  TEMP = MAX( TEMP, ABS1( VR( JR, JC ) ) )
++                  TEMP = MAX( TEMP, CABS1( VR( JR, JC ) ) )
+    40          CONTINUE
+                IF( TEMP.LT.SMLNUM )
+      $            GO TO 60
+diff --git a/SRC/zggevx.f b/SRC/zggevx.f
+index c062aef29..24110ca19 100644
+--- a/SRC/zggevx.f
++++ b/SRC/zggevx.f
+@@ -429,10 +429,10 @@
+       INTRINSIC          ABS, DBLE, DIMAG, MAX, SQRT
+ *     ..
+ *     .. Statement Functions ..
+-      DOUBLE PRECISION   ABS1
++      DOUBLE PRECISION   CABS1
+ *     ..
+ *     .. Statement Function definitions ..
+-      ABS1( X ) = ABS( DBLE( X ) ) + ABS( DIMAG( X ) )
++      CABS1( X ) = ABS( DBLE( X ) ) + ABS( DIMAG( X ) )
+ *     ..
+ *     .. Executable Statements ..
+ *
+@@ -760,7 +760,7 @@
+          DO 50 JC = 1, N
+             TEMP = ZERO
+             DO 30 JR = 1, N
+-               TEMP = MAX( TEMP, ABS1( VL( JR, JC ) ) )
++               TEMP = MAX( TEMP, CABS1( VL( JR, JC ) ) )
+    30       CONTINUE
+             IF( TEMP.LT.SMLNUM )
+      $         GO TO 50
+@@ -778,7 +778,7 @@
+          DO 80 JC = 1, N
+             TEMP = ZERO
+             DO 60 JR = 1, N
+-               TEMP = MAX( TEMP, ABS1( VR( JR, JC ) ) )
++               TEMP = MAX( TEMP, CABS1( VR( JR, JC ) ) )
+    60       CONTINUE
+             IF( TEMP.LT.SMLNUM )
+      $         GO TO 80
+diff --git a/SRC/zhgeqz.f b/SRC/zhgeqz.f
+index 7c01542ff..06ee88e27 100644
+--- a/SRC/zhgeqz.f
++++ b/SRC/zhgeqz.f
+@@ -333,10 +333,10 @@
+      $                   SQRT
+ *     ..
+ *     .. Statement Functions ..
+-      DOUBLE PRECISION   ABS1
++      DOUBLE PRECISION   CABS1
+ *     ..
+ *     .. Statement Function definitions ..
+-      ABS1( X ) = ABS( DBLE( X ) ) + ABS( DIMAG( X ) )
++      CABS1( X ) = ABS( DBLE( X ) ) + ABS( DIMAG( X ) )
+ *     ..
+ *     .. Executable Statements ..
+ *
+@@ -516,9 +516,9 @@
+          IF( ILAST.EQ.ILO ) THEN
+             GO TO 60
+          ELSE
+-            IF( ABS1( H( ILAST, ILAST-1 ) ).LE.MAX( SAFMIN, ULP*( 
+-     $         ABS1( H( ILAST, ILAST ) ) + ABS1( H( ILAST-1, ILAST-1 ) 
+-     $         ) ) ) ) THEN
++            IF( CABS1( H( ILAST, ILAST-1 ) ).LE.MAX( SAFMIN, 
++     $         ULP*( CABS1( H( ILAST, ILAST ) )
++     $         + CABS1( H( ILAST-1, ILAST-1 ) ) ) ) ) THEN
+                H( ILAST, ILAST-1 ) = CZERO
+                GO TO 60
+             END IF
+@@ -538,8 +538,8 @@
+             IF( J.EQ.ILO ) THEN
+                ILAZRO = .TRUE.
+             ELSE
+-               IF( ABS1( H( J, J-1 ) ).LE.MAX( SAFMIN, ULP*( 
+-     $            ABS1( H( J, J ) ) + ABS1( H( J-1, J-1 ) ) 
++               IF( CABS1( H( J, J-1 ) ).LE.MAX( SAFMIN, ULP*(
++     $            CABS1( H( J, J ) ) + CABS1( H( J-1, J-1 ) )
+      $            ) ) ) THEN
+                   H( J, J-1 ) = CZERO
+                   ILAZRO = .TRUE.
+@@ -557,8 +557,8 @@
+ *
+                ILAZR2 = .FALSE.
+                IF( .NOT.ILAZRO ) THEN
+-                  IF( ABS1( H( J, J-1 ) )*( ASCALE*ABS1( H( J+1,
+-     $                J ) ) ).LE.ABS1( H( J, J ) )*( ASCALE*ATOL ) )
++                  IF( CABS1( H( J, J-1 ) )*( ASCALE*CABS1( H( J+1,
++     $                J ) ) ).LE.CABS1( H( J, J ) )*( ASCALE*ATOL ) )
+      $                ILAZR2 = .TRUE.
+                END IF
+ *
+@@ -585,7 +585,7 @@
+                      IF( ILAZR2 )
+      $                  H( JCH, JCH-1 ) = H( JCH, JCH-1 )*C
+                      ILAZR2 = .FALSE.
+-                     IF( ABS1( T( JCH+1, JCH+1 ) ).GE.BTOL ) THEN
++                     IF( CABS1( T( JCH+1, JCH+1 ) ).GE.BTOL ) THEN
+                         IF( JCH+1.GE.ILAST ) THEN
+                            GO TO 60
+                         ELSE
+@@ -746,11 +746,11 @@
+ *
+             SHIFT = ABI22
+             CTEMP = SQRT( ABI12 )*SQRT( AD21 )
+-            TEMP = ABS1( CTEMP )
++            TEMP = CABS1( CTEMP )
+             IF( CTEMP.NE.ZERO ) THEN
+                X = HALF*( AD11-SHIFT )
+-               TEMP2 = ABS1( X )
+-               TEMP = MAX( TEMP, ABS1( X ) )
++               TEMP2 = CABS1( X )
++               TEMP = MAX( TEMP, CABS1( X ) )
+                Y = TEMP*SQRT( ( X / TEMP )**2+( CTEMP / TEMP )**2 )
+                IF( TEMP2.GT.ZERO ) THEN
+                   IF( DBLE( X / TEMP2 )*DBLE( Y )+
+@@ -763,7 +763,7 @@
+ *           Exceptional shift.  Chosen for no particularly good reason.
+ *
+             IF( ( IITER / 20 )*20.EQ.IITER .AND. 
+-     $         BSCALE*ABS1(T( ILAST, ILAST )).GT.SAFMIN ) THEN
++     $         BSCALE*CABS1(T( ILAST, ILAST )).GT.SAFMIN ) THEN
+                ESHIFT = ESHIFT + ( ASCALE*H( ILAST,
+      $            ILAST ) )/( BSCALE*T( ILAST, ILAST ) )
+             ELSE
+@@ -778,14 +778,14 @@
+          DO 80 J = ILAST - 1, IFIRST + 1, -1
+             ISTART = J
+             CTEMP = ASCALE*H( J, J ) - SHIFT*( BSCALE*T( J, J ) )
+-            TEMP = ABS1( CTEMP )
+-            TEMP2 = ASCALE*ABS1( H( J+1, J ) )
++            TEMP = CABS1( CTEMP )
++            TEMP2 = ASCALE*CABS1( H( J+1, J ) )
+             TEMPR = MAX( TEMP, TEMP2 )
+             IF( TEMPR.LT.ONE .AND. TEMPR.NE.ZERO ) THEN
+                TEMP = TEMP / TEMPR
+                TEMP2 = TEMP2 / TEMPR
+             END IF
+-            IF( ABS1( H( J, J-1 ) )*TEMP2.LE.TEMP*ATOL )
++            IF( CABS1( H( J, J-1 ) )*TEMP2.LE.TEMP*ATOL )
+      $         GO TO 90
+    80    CONTINUE
+ *
+diff --git a/SRC/zlags2.f b/SRC/zlags2.f
+index d66fbf138..927925312 100644
+--- a/SRC/zlags2.f
++++ b/SRC/zlags2.f
+@@ -186,10 +186,10 @@
+       INTRINSIC          ABS, DBLE, DCMPLX, DCONJG, DIMAG
+ *     ..
+ *     .. Statement Functions ..
+-      DOUBLE PRECISION   ABS1
++      DOUBLE PRECISION   CABS1
+ *     ..
+ *     .. Statement Function definitions ..
+-      ABS1( T ) = ABS( DBLE( T ) ) + ABS( DIMAG( T ) )
++      CABS1( T ) = ABS( DBLE( T ) ) + ABS( DIMAG( T ) )
+ *     ..
+ *     .. Executable Statements ..
+ *
+@@ -231,21 +231,21 @@
+             VB11R = CSR*B1
+             VB12 = CSR*B2 + D1*SNR*B3
+ *
+-            AUA12 = ABS( CSL )*ABS1( A2 ) + ABS( SNL )*ABS( A3 )
+-            AVB12 = ABS( CSR )*ABS1( B2 ) + ABS( SNR )*ABS( B3 )
++            AUA12 = ABS( CSL )*CABS1( A2 ) + ABS( SNL )*ABS( A3 )
++            AVB12 = ABS( CSR )*CABS1( B2 ) + ABS( SNR )*ABS( B3 )
+ *
+ *           zero (1,2) elements of U**H *A and V**H *B
+ *
+-            IF( ( ABS( UA11R )+ABS1( UA12 ) ).EQ.ZERO ) THEN
++            IF( ( ABS( UA11R )+CABS1( UA12 ) ).EQ.ZERO ) THEN
+                CALL ZLARTG( -DCMPLX( VB11R ), DCONJG( VB12 ), CSQ,
+      $                      SNQ,
+      $                      R )
+-            ELSE IF( ( ABS( VB11R )+ABS1( VB12 ) ).EQ.ZERO ) THEN
++            ELSE IF( ( ABS( VB11R )+CABS1( VB12 ) ).EQ.ZERO ) THEN
+                CALL ZLARTG( -DCMPLX( UA11R ), DCONJG( UA12 ), CSQ,
+      $                      SNQ,
+      $                      R )
+-            ELSE IF( AUA12 / ( ABS( UA11R )+ABS1( UA12 ) ).LE.AVB12 /
+-     $               ( ABS( VB11R )+ABS1( VB12 ) ) ) THEN
++            ELSE IF( AUA12 / ( ABS( UA11R )+CABS1( UA12 ) ).LE.AVB12 /
++     $               ( ABS( VB11R )+CABS1( VB12 ) ) ) THEN
+                CALL ZLARTG( -DCMPLX( UA11R ), DCONJG( UA12 ), CSQ,
+      $                      SNQ,
+      $                      R )
+@@ -271,21 +271,21 @@
+             VB21 = -DCONJG( D1 )*SNR*B1
+             VB22 = -DCONJG( D1 )*SNR*B2 + CSR*B3
+ *
+-            AUA22 = ABS( SNL )*ABS1( A2 ) + ABS( CSL )*ABS( A3 )
+-            AVB22 = ABS( SNR )*ABS1( B2 ) + ABS( CSR )*ABS( B3 )
++            AUA22 = ABS( SNL )*CABS1( A2 ) + ABS( CSL )*ABS( A3 )
++            AVB22 = ABS( SNR )*CABS1( B2 ) + ABS( CSR )*ABS( B3 )
+ *
+ *           zero (2,2) elements of U**H *A and V**H *B, and then swap.
+ *
+-            IF( ( ABS1( UA21 )+ABS1( UA22 ) ).EQ.ZERO ) THEN
++            IF( ( CABS1( UA21 )+CABS1( UA22 ) ).EQ.ZERO ) THEN
+                CALL ZLARTG( -DCONJG( VB21 ), DCONJG( VB22 ), CSQ,
+      $                      SNQ,
+      $                      R )
+-            ELSE IF( ( ABS1( VB21 )+ABS( VB22 ) ).EQ.ZERO ) THEN
++            ELSE IF( ( CABS1( VB21 )+ABS( VB22 ) ).EQ.ZERO ) THEN
+                CALL ZLARTG( -DCONJG( UA21 ), DCONJG( UA22 ), CSQ,
+      $                      SNQ,
+      $                      R )
+-            ELSE IF( AUA22 / ( ABS1( UA21 )+ABS1( UA22 ) ).LE.AVB22 /
+-     $               ( ABS1( VB21 )+ABS1( VB22 ) ) ) THEN
++            ELSE IF( AUA22 / ( CABS1( UA21 )+CABS1( UA22 ) ).LE.AVB22 /
++     $               ( CABS1( VB21 )+CABS1( VB22 ) ) ) THEN
+                CALL ZLARTG( -DCONJG( UA21 ), DCONJG( UA22 ), CSQ,
+      $                      SNQ,
+      $                      R )
+@@ -340,17 +340,17 @@
+             VB21 = -D1*SNL*B1 + CSL*B2
+             VB22R = CSL*B3
+ *
+-            AUA21 = ABS( SNR )*ABS( A1 ) + ABS( CSR )*ABS1( A2 )
+-            AVB21 = ABS( SNL )*ABS( B1 ) + ABS( CSL )*ABS1( B2 )
++            AUA21 = ABS( SNR )*ABS( A1 ) + ABS( CSR )*CABS1( A2 )
++            AVB21 = ABS( SNL )*ABS( B1 ) + ABS( CSL )*CABS1( B2 )
+ *
+ *           zero (2,1) elements of U**H *A and V**H *B.
+ *
+-            IF( ( ABS1( UA21 )+ABS( UA22R ) ).EQ.ZERO ) THEN
++            IF( ( CABS1( UA21 )+ABS( UA22R ) ).EQ.ZERO ) THEN
+                CALL ZLARTG( DCMPLX( VB22R ), VB21, CSQ, SNQ, R )
+-            ELSE IF( ( ABS1( VB21 )+ABS( VB22R ) ).EQ.ZERO ) THEN
++            ELSE IF( ( CABS1( VB21 )+ABS( VB22R ) ).EQ.ZERO ) THEN
+                CALL ZLARTG( DCMPLX( UA22R ), UA21, CSQ, SNQ, R )
+-            ELSE IF( AUA21 / ( ABS1( UA21 )+ABS( UA22R ) ).LE.AVB21 /
+-     $               ( ABS1( VB21 )+ABS( VB22R ) ) ) THEN
++            ELSE IF( AUA21 / ( CABS1( UA21 )+ABS( UA22R ) ).LE.AVB21 /
++     $               ( CABS1( VB21 )+ABS( VB22R ) ) ) THEN
+                CALL ZLARTG( DCMPLX( UA22R ), UA21, CSQ, SNQ, R )
+             ELSE
+                CALL ZLARTG( DCMPLX( VB22R ), VB21, CSQ, SNQ, R )
+@@ -372,17 +372,17 @@
+             VB11 = CSL*B1 + DCONJG( D1 )*SNL*B2
+             VB12 = DCONJG( D1 )*SNL*B3
+ *
+-            AUA11 = ABS( CSR )*ABS( A1 ) + ABS( SNR )*ABS1( A2 )
+-            AVB11 = ABS( CSL )*ABS( B1 ) + ABS( SNL )*ABS1( B2 )
++            AUA11 = ABS( CSR )*ABS( A1 ) + ABS( SNR )*CABS1( A2 )
++            AVB11 = ABS( CSL )*ABS( B1 ) + ABS( SNL )*CABS1( B2 )
+ *
+ *           zero (1,1) elements of U**H *A and V**H *B, and then swap.
+ *
+-            IF( ( ABS1( UA11 )+ABS1( UA12 ) ).EQ.ZERO ) THEN
++            IF( ( CABS1( UA11 )+CABS1( UA12 ) ).EQ.ZERO ) THEN
+                CALL ZLARTG( VB12, VB11, CSQ, SNQ, R )
+-            ELSE IF( ( ABS1( VB11 )+ABS1( VB12 ) ).EQ.ZERO ) THEN
++            ELSE IF( ( CABS1( VB11 )+CABS1( VB12 ) ).EQ.ZERO ) THEN
+                CALL ZLARTG( UA12, UA11, CSQ, SNQ, R )
+-            ELSE IF( AUA11 / ( ABS1( UA11 )+ABS1( UA12 ) ).LE.AVB11 /
+-     $               ( ABS1( VB11 )+ABS1( VB12 ) ) ) THEN
++            ELSE IF( AUA11 / ( CABS1( UA11 )+CABS1( UA12 ) ).LE.AVB11 /
++     $               ( CABS1( VB11 )+CABS1( VB12 ) ) ) THEN
+                CALL ZLARTG( UA12, UA11, CSQ, SNQ, R )
+             ELSE
+                CALL ZLARTG( VB12, VB11, CSQ, SNQ, R )
+diff --git a/SRC/ztgevc.f b/SRC/ztgevc.f
+index 1d0a28dd0..34d1ddf61 100644
+--- a/SRC/ztgevc.f
++++ b/SRC/ztgevc.f
+@@ -264,10 +264,10 @@
+       INTRINSIC          ABS, DBLE, DCMPLX, DCONJG, DIMAG, MAX, MIN
+ *     ..
+ *     .. Statement Functions ..
+-      DOUBLE PRECISION   ABS1
++      DOUBLE PRECISION   CABS1
+ *     ..
+ *     .. Statement Function definitions ..
+-      ABS1( X ) = ABS( DBLE( X ) ) + ABS( DIMAG( X ) )
++      CABS1( X ) = ABS( DBLE( X ) ) + ABS( DIMAG( X ) )
+ *     ..
+ *     .. Executable Statements ..
+ *
+@@ -375,19 +375,19 @@
+ *     part of A and B to check for possible overflow in the triangular
+ *     solver.
+ *
+-      ANORM = ABS1( S( 1, 1 ) )
+-      BNORM = ABS1( P( 1, 1 ) )
++      ANORM = CABS1( S( 1, 1 ) )
++      BNORM = CABS1( P( 1, 1 ) )
+       RWORK( 1 ) = ZERO
+       RWORK( N+1 ) = ZERO
+       DO 40 J = 2, N
+          RWORK( J ) = ZERO
+          RWORK( N+J ) = ZERO
+          DO 30 I = 1, J - 1
+-            RWORK( J ) = RWORK( J ) + ABS1( S( I, J ) )
+-            RWORK( N+J ) = RWORK( N+J ) + ABS1( P( I, J ) )
++            RWORK( J ) = RWORK( J ) + CABS1( S( I, J ) )
++            RWORK( N+J ) = RWORK( N+J ) + CABS1( P( I, J ) )
+    30    CONTINUE
+-         ANORM = MAX( ANORM, RWORK( J )+ABS1( S( J, J ) ) )
+-         BNORM = MAX( BNORM, RWORK( N+J )+ABS1( P( J, J ) ) )
++         ANORM = MAX( ANORM, RWORK( J )+CABS1( S( J, J ) ) )
++         BNORM = MAX( BNORM, RWORK( N+J )+CABS1( P( J, J ) ) )
+    40 CONTINUE
+ *
+       ASCALE = ONE / MAX( ANORM, SAFMIN )
+@@ -409,7 +409,7 @@
+             IF( ILCOMP ) THEN
+                IEIG = IEIG + 1
+ *
+-               IF( ABS1( S( JE, JE ) ).LE.SAFMIN .AND.
++               IF( CABS1( S( JE, JE ) ).LE.SAFMIN .AND.
+      $             ABS( DBLE( P( JE, JE ) ) ).LE.SAFMIN ) THEN
+ *
+ *                 Singular matrix pencil -- return unit eigenvector
+@@ -426,7 +426,7 @@
+ *                   H
+ *                 y  ( a A - b B ) = 0
+ *
+-               TEMP = ONE / MAX( ABS1( S( JE, JE ) )*ASCALE,
++               TEMP = ONE / MAX( CABS1( S( JE, JE ) )*ASCALE,
+      $                ABS( DBLE( P( JE, JE ) ) )*BSCALE, SAFMIN )
+                SALPHA = ( TEMP*S( JE, JE ) )*ASCALE
+                SBETA = ( TEMP*DBLE( P( JE, JE ) ) )*BSCALE
+@@ -436,19 +436,19 @@
+ *              Scale to avoid underflow
+ *
+                LSA = ABS( SBETA ).GE.SAFMIN .AND. ABS( ACOEFF ).LT.SMALL
+-               LSB = ABS1( SALPHA ).GE.SAFMIN .AND. ABS1( BCOEFF ).LT.
++               LSB = CABS1( SALPHA ).GE.SAFMIN .AND. CABS1( BCOEFF ).LT.
+      $               SMALL
+ *
+                SCALE = ONE
+                IF( LSA )
+      $            SCALE = ( SMALL / ABS( SBETA ) )*MIN( ANORM, BIG )
+                IF( LSB )
+-     $            SCALE = MAX( SCALE, ( SMALL / ABS1( SALPHA ) )*
++     $            SCALE = MAX( SCALE, ( SMALL / CABS1( SALPHA ) )*
+      $                    MIN( BNORM, BIG ) )
+                IF( LSA .OR. LSB ) THEN
+                   SCALE = MIN( SCALE, ONE /
+      $                    ( SAFMIN*MAX( ONE, ABS( ACOEFF ),
+-     $                    ABS1( BCOEFF ) ) ) )
++     $                    CABS1( BCOEFF ) ) ) )
+                   IF( LSA ) THEN
+                      ACOEFF = ASCALE*( SCALE*SBETA )
+                   ELSE
+@@ -462,7 +462,7 @@
+                END IF
+ *
+                ACOEFA = ABS( ACOEFF )
+-               BCOEFA = ABS1( BCOEFF )
++               BCOEFA = CABS1( BCOEFF )
+                XMAX = ONE
+                DO 60 JR = 1, N
+                   WORK( JR ) = CZERO
+@@ -506,12 +506,12 @@
+ *                 with scaling and perturbation of the denominator
+ *
+                   D = DCONJG( ACOEFF*S( J, J )-BCOEFF*P( J, J ) )
+-                  IF( ABS1( D ).LE.DMIN )
++                  IF( CABS1( D ).LE.DMIN )
+      $               D = DCMPLX( DMIN )
+ *
+-                  IF( ABS1( D ).LT.ONE ) THEN
+-                     IF( ABS1( SUM ).GE.BIGNUM*ABS1( D ) ) THEN
+-                        TEMP = ONE / ABS1( SUM )
++                  IF( CABS1( D ).LT.ONE ) THEN
++                     IF( CABS1( SUM ).GE.BIGNUM*CABS1( D ) ) THEN
++                        TEMP = ONE / CABS1( SUM )
+                         DO 90 JR = JE, J - 1
+                            WORK( JR ) = TEMP*WORK( JR )
+    90                   CONTINUE
+@@ -520,7 +520,7 @@
+                      END IF
+                   END IF
+                   WORK( J ) = ZLADIV( -SUM, D )
+-                  XMAX = MAX( XMAX, ABS1( WORK( J ) ) )
++                  XMAX = MAX( XMAX, CABS1( WORK( J ) ) )
+   100          CONTINUE
+ *
+ *              Back transform eigenvector if HOWMNY='B'.
+@@ -540,7 +540,7 @@
+ *
+                XMAX = ZERO
+                DO 110 JR = IBEG, N
+-                  XMAX = MAX( XMAX, ABS1( WORK( ( ISRC-1 )*N+JR ) ) )
++                  XMAX = MAX( XMAX, CABS1( WORK( ( ISRC-1 )*N+JR ) ) )
+   110          CONTINUE
+ *
+                IF( XMAX.GT.SAFMIN ) THEN
+@@ -576,7 +576,7 @@
+             IF( ILCOMP ) THEN
+                IEIG = IEIG - 1
+ *
+-               IF( ABS1( S( JE, JE ) ).LE.SAFMIN .AND.
++               IF( CABS1( S( JE, JE ) ).LE.SAFMIN .AND.
+      $             ABS( DBLE( P( JE, JE ) ) ).LE.SAFMIN ) THEN
+ *
+ *                 Singular matrix pencil -- return unit eigenvector
+@@ -593,7 +593,7 @@
+ *
+ *              ( a A - b B ) x  = 0
+ *
+-               TEMP = ONE / MAX( ABS1( S( JE, JE ) )*ASCALE,
++               TEMP = ONE / MAX( CABS1( S( JE, JE ) )*ASCALE,
+      $                ABS( DBLE( P( JE, JE ) ) )*BSCALE, SAFMIN )
+                SALPHA = ( TEMP*S( JE, JE ) )*ASCALE
+                SBETA = ( TEMP*DBLE( P( JE, JE ) ) )*BSCALE
+@@ -603,19 +603,19 @@
+ *              Scale to avoid underflow
+ *
+                LSA = ABS( SBETA ).GE.SAFMIN .AND. ABS( ACOEFF ).LT.SMALL
+-               LSB = ABS1( SALPHA ).GE.SAFMIN .AND. ABS1( BCOEFF ).LT.
++               LSB = CABS1( SALPHA ).GE.SAFMIN .AND. CABS1( BCOEFF ).LT.
+      $               SMALL
+ *
+                SCALE = ONE
+                IF( LSA )
+      $            SCALE = ( SMALL / ABS( SBETA ) )*MIN( ANORM, BIG )
+                IF( LSB )
+-     $            SCALE = MAX( SCALE, ( SMALL / ABS1( SALPHA ) )*
++     $            SCALE = MAX( SCALE, ( SMALL / CABS1( SALPHA ) )*
+      $                    MIN( BNORM, BIG ) )
+                IF( LSA .OR. LSB ) THEN
+                   SCALE = MIN( SCALE, ONE /
+      $                    ( SAFMIN*MAX( ONE, ABS( ACOEFF ),
+-     $                    ABS1( BCOEFF ) ) ) )
++     $                    CABS1( BCOEFF ) ) ) )
+                   IF( LSA ) THEN
+                      ACOEFF = ASCALE*( SCALE*SBETA )
+                   ELSE
+@@ -629,7 +629,7 @@
+                END IF
+ *
+                ACOEFA = ABS( ACOEFF )
+-               BCOEFA = ABS1( BCOEFF )
++               BCOEFA = CABS1( BCOEFF )
+                XMAX = ONE
+                DO 160 JR = 1, N
+                   WORK( JR ) = CZERO
+@@ -653,12 +653,12 @@
+ *                 with scaling and perturbation of the denominator
+ *
+                   D = ACOEFF*S( J, J ) - BCOEFF*P( J, J )
+-                  IF( ABS1( D ).LE.DMIN )
++                  IF( CABS1( D ).LE.DMIN )
+      $               D = DCMPLX( DMIN )
+ *
+-                  IF( ABS1( D ).LT.ONE ) THEN
+-                     IF( ABS1( WORK( J ) ).GE.BIGNUM*ABS1( D ) ) THEN
+-                        TEMP = ONE / ABS1( WORK( J ) )
++                  IF( CABS1( D ).LT.ONE ) THEN
++                     IF( CABS1( WORK( J ) ).GE.BIGNUM*CABS1( D ) ) THEN
++                        TEMP = ONE / CABS1( WORK( J ) )
+                         DO 180 JR = 1, JE
+                            WORK( JR ) = TEMP*WORK( JR )
+   180                   CONTINUE
+@@ -671,8 +671,8 @@
+ *
+ *                    w = w + x(j)*(a S(*,j) - b P(*,j) ) with scaling
+ *
+-                     IF( ABS1( WORK( J ) ).GT.ONE ) THEN
+-                        TEMP = ONE / ABS1( WORK( J ) )
++                     IF( CABS1( WORK( J ) ).GT.ONE ) THEN
++                        TEMP = ONE / CABS1( WORK( J ) )
+                         IF( ACOEFA*RWORK( J )+BCOEFA*RWORK( N+J ).GE.
+      $                      BIGNUM*TEMP ) THEN
+                            DO 190 JR = 1, JE
+@@ -706,7 +706,7 @@
+ *
+                XMAX = ZERO
+                DO 220 JR = 1, IEND
+-                  XMAX = MAX( XMAX, ABS1( WORK( ( ISRC-1 )*N+JR ) ) )
++                  XMAX = MAX( XMAX, CABS1( WORK( ( ISRC-1 )*N+JR ) ) )
+   220          CONTINUE
+ *
+                IF( XMAX.GT.SAFMIN ) THEN
+diff --git a/TESTING/EIG/cdrges.f b/TESTING/EIG/cdrges.f
+index bfe91116b..77e4c6d60 100644
+--- a/TESTING/EIG/cdrges.f
++++ b/TESTING/EIG/cdrges.f
+@@ -442,10 +442,10 @@
+       INTRINSIC          ABS, AIMAG, CONJG, MAX, MIN, REAL, SIGN
+ *     ..
+ *     .. Statement Functions ..
+-      REAL               ABS1
++      REAL               CABS1
+ *     ..
+ *     .. Statement Function definitions ..
+-      ABS1( X ) = ABS( REAL( X ) ) + ABS( AIMAG( X ) )
++      CABS1( X ) = ABS( REAL( X ) ) + ABS( AIMAG( X ) )
+ *     ..
+ *     .. Data statements ..
+       DATA               KCLASS / 15*1, 10*2, 1*3 /
+@@ -785,10 +785,10 @@
+ *
+                DO 130 J = 1, N
+                   ILABAD = .FALSE.
+-                  TEMP2 = ( ABS1( ALPHA( J )-S( J, J ) ) /
+-     $                    MAX( SAFMIN, ABS1( ALPHA( J ) ), ABS1( S( J,
+-     $                    J ) ) )+ABS1( BETA( J )-T( J, J ) ) /
+-     $                    MAX( SAFMIN, ABS1( BETA( J ) ), ABS1( T( J,
++                  TEMP2 = ( CABS1( ALPHA( J )-S( J, J ) ) /
++     $                    MAX( SAFMIN, CABS1( ALPHA( J ) ), CABS1( S( J,
++     $                    J ) ) )+CABS1( BETA( J )-T( J, J ) ) /
++     $                    MAX( SAFMIN, CABS1( BETA( J ) ), CABS1( T( J,
+      $                    J ) ) ) ) / ULP
+ *
+                   IF( J.LT.N ) THEN
+diff --git a/TESTING/EIG/cdrges3.f b/TESTING/EIG/cdrges3.f
+index 84cc2f429..2aaaaaeba 100644
+--- a/TESTING/EIG/cdrges3.f
++++ b/TESTING/EIG/cdrges3.f
+@@ -443,10 +443,10 @@
+       INTRINSIC          ABS, AIMAG, CONJG, MAX, MIN, REAL, SIGN
+ *     ..
+ *     .. Statement Functions ..
+-      REAL               ABS1
++      REAL               CABS1
+ *     ..
+ *     .. Statement Function definitions ..
+-      ABS1( X ) = ABS( REAL( X ) ) + ABS( AIMAG( X ) )
++      CABS1( X ) = ABS( REAL( X ) ) + ABS( AIMAG( X ) )
+ *     ..
+ *     .. Data statements ..
+       DATA               KCLASS / 15*1, 10*2, 1*3 /
+@@ -794,10 +794,10 @@
+ *
+                DO 130 J = 1, N
+                   ILABAD = .FALSE.
+-                  TEMP2 = ( ABS1( ALPHA( J )-S( J, J ) ) /
+-     $                    MAX( SAFMIN, ABS1( ALPHA( J ) ), ABS1( S( J,
+-     $                    J ) ) )+ABS1( BETA( J )-T( J, J ) ) /
+-     $                    MAX( SAFMIN, ABS1( BETA( J ) ), ABS1( T( J,
++                  TEMP2 = ( CABS1( ALPHA( J )-S( J, J ) ) /
++     $                    MAX( SAFMIN, CABS1( ALPHA( J ) ), CABS1( S( J,
++     $                    J ) ) )+CABS1( BETA( J )-T( J, J ) ) /
++     $                    MAX( SAFMIN, CABS1( BETA( J ) ), CABS1( T( J,
+      $                    J ) ) ) ) / ULP
+ *
+                   IF( J.LT.N ) THEN
+diff --git a/TESTING/EIG/cdrgsx.f b/TESTING/EIG/cdrgsx.f
+index 019f78d9b..be68b8812 100644
+--- a/TESTING/EIG/cdrgsx.f
++++ b/TESTING/EIG/cdrgsx.f
+@@ -409,10 +409,10 @@
+       INTRINSIC          ABS, AIMAG, MAX, REAL, SQRT
+ *     ..
+ *     .. Statement Functions ..
+-      REAL               ABS1
++      REAL               CABS1
+ *     ..
+ *     .. Statement Function definitions ..
+-      ABS1( X ) = ABS( REAL( X ) ) + ABS( AIMAG( X ) )
++      CABS1( X ) = ABS( REAL( X ) ) + ABS( AIMAG( X ) )
+ *     ..
+ *     .. Executable Statements ..
+ *
+@@ -583,12 +583,12 @@
+ *
+                   DO 10 J = 1, MPLUSN
+                      ILABAD = .FALSE.
+-                     TEMP2 = ( ABS1( ALPHA( J )-AI( J, J ) ) /
+-     $                       MAX( SMLNUM, ABS1( ALPHA( J ) ),
+-     $                       ABS1( AI( J, J ) ) )+
+-     $                       ABS1( BETA( J )-BI( J, J ) ) /
+-     $                       MAX( SMLNUM, ABS1( BETA( J ) ),
+-     $                       ABS1( BI( J, J ) ) ) ) / ULP
++                     TEMP2 = ( CABS1( ALPHA( J )-AI( J, J ) ) /
++     $                       MAX( SMLNUM, CABS1( ALPHA( J ) ),
++     $                       CABS1( AI( J, J ) ) )+
++     $                       CABS1( BETA( J )-BI( J, J ) ) /
++     $                       MAX( SMLNUM, CABS1( BETA( J ) ),
++     $                       CABS1( BI( J, J ) ) ) ) / ULP
+                      IF( J.LT.MPLUSN ) THEN
+                         IF( AI( J+1, J ).NE.ZERO ) THEN
+                            ILABAD = .TRUE.
+@@ -776,10 +776,12 @@
+ *
+       DO 110 J = 1, MPLUSN
+          ILABAD = .FALSE.
+-         TEMP2 = ( ABS1( ALPHA( J )-AI( J, J ) ) /
+-     $           MAX( SMLNUM, ABS1( ALPHA( J ) ), ABS1( AI( J, J ) ) )+
+-     $           ABS1( BETA( J )-BI( J, J ) ) /
+-     $           MAX( SMLNUM, ABS1( BETA( J ) ), ABS1( BI( J, J ) ) ) )
++         TEMP2 = ( CABS1( ALPHA( J )-AI( J, J ) ) /
++     $           MAX( SMLNUM, CABS1( ALPHA( J ) ),
++     $           CABS1( AI( J, J ) ) )+
++     $           CABS1( BETA( J )-BI( J, J ) ) /
++     $           MAX( SMLNUM, CABS1( BETA( J ) ),
++     $           CABS1( BI( J, J ) ) ) )
+      $            / ULP
+          IF( J.LT.MPLUSN ) THEN
+             IF( AI( J+1, J ).NE.ZERO ) THEN
+diff --git a/TESTING/EIG/cget52.f b/TESTING/EIG/cget52.f
+index 967d56e36..3a86bc31e 100644
+--- a/TESTING/EIG/cget52.f
++++ b/TESTING/EIG/cget52.f
+@@ -202,10 +202,10 @@
+       INTRINSIC          ABS, AIMAG, CONJG, MAX, REAL
+ *     ..
+ *     .. Statement Functions ..
+-      REAL               ABS1
++      REAL               CABS1
+ *     ..
+ *     .. Statement Function definitions ..
+-      ABS1( X ) = ABS( REAL( X ) ) + ABS( AIMAG( X ) )
++      CABS1( X ) = ABS( REAL( X ) ) + ABS( AIMAG( X ) )
+ *     ..
+ *     .. Executable Statements ..
+ *
+@@ -240,14 +240,15 @@
+       DO 10 JVEC = 1, N
+          ALPHAI = ALPHA( JVEC )
+          BETAI = BETA( JVEC )
+-         ABMAX = MAX( ABS1( ALPHAI ), ABS1( BETAI ) )
+-         IF( ABS1( ALPHAI ).GT.ALFMAX .OR. ABS1( BETAI ).GT.BETMAX .OR.
++         ABMAX = MAX( CABS1( ALPHAI ), CABS1( BETAI ) )
++         IF( CABS1( ALPHAI ).GT.ALFMAX .OR. CABS1( BETAI ).GT.BETMAX
++     $   .OR.
+      $       ABMAX.LT.ONE ) THEN
+             SCALE = ONE / MAX( ABMAX, SAFMIN )
+             ALPHAI = SCALE*ALPHAI
+             BETAI = SCALE*BETAI
+          END IF
+-         SCALE = ONE / MAX( ABS1( ALPHAI )*BNORM, ABS1( BETAI )*ANORM,
++         SCALE = ONE / MAX( CABS1( ALPHAI )*BNORM, CABS1( BETAI )*ANORM,
+      $           SAFMIN )
+          ACOEFF = SCALE*BETAI
+          BCOEFF = SCALE*ALPHAI
+@@ -273,7 +274,7 @@
+       DO 30 JVEC = 1, N
+          TEMP1 = ZERO
+          DO 20 J = 1, N
+-            TEMP1 = MAX( TEMP1, ABS1( E( J, JVEC ) ) )
++            TEMP1 = MAX( TEMP1, CABS1( E( J, JVEC ) ) )
+    20    CONTINUE
+          ENRMER = MAX( ENRMER, ABS( TEMP1-ONE ) )
+    30 CONTINUE
+diff --git a/TESTING/EIG/zdrges.f b/TESTING/EIG/zdrges.f
+index 9b4726a16..692583c97 100644
+--- a/TESTING/EIG/zdrges.f
++++ b/TESTING/EIG/zdrges.f
+@@ -442,10 +442,10 @@
+       INTRINSIC          ABS, DBLE, DCONJG, DIMAG, MAX, MIN, SIGN
+ *     ..
+ *     .. Statement Functions ..
+-      DOUBLE PRECISION   ABS1
++      DOUBLE PRECISION   CABS1
+ *     ..
+ *     .. Statement Function definitions ..
+-      ABS1( X ) = ABS( DBLE( X ) ) + ABS( DIMAG( X ) )
++      CABS1( X ) = ABS( DBLE( X ) ) + ABS( DIMAG( X ) )
+ *     ..
+ *     .. Data statements ..
+       DATA               KCLASS / 15*1, 10*2, 1*3 /
+@@ -785,10 +785,10 @@
+ *
+                DO 130 J = 1, N
+                   ILABAD = .FALSE.
+-                  TEMP2 = ( ABS1( ALPHA( J )-S( J, J ) ) /
+-     $                    MAX( SAFMIN, ABS1( ALPHA( J ) ), ABS1( S( J,
+-     $                    J ) ) )+ABS1( BETA( J )-T( J, J ) ) /
+-     $                    MAX( SAFMIN, ABS1( BETA( J ) ), ABS1( T( J,
++                  TEMP2 = ( CABS1( ALPHA( J )-S( J, J ) ) /
++     $                    MAX( SAFMIN, CABS1( ALPHA( J ) ), CABS1( S( J,
++     $                    J ) ) )+CABS1( BETA( J )-T( J, J ) ) /
++     $                    MAX( SAFMIN, CABS1( BETA( J ) ), CABS1( T( J,
+      $                    J ) ) ) ) / ULP
+ *
+                   IF( J.LT.N ) THEN
+diff --git a/TESTING/EIG/zdrges3.f b/TESTING/EIG/zdrges3.f
+index 7dc73fee9..87064ef23 100644
+--- a/TESTING/EIG/zdrges3.f
++++ b/TESTING/EIG/zdrges3.f
+@@ -443,10 +443,10 @@
+       INTRINSIC          ABS, DBLE, DCONJG, DIMAG, MAX, MIN, SIGN
+ *     ..
+ *     .. Statement Functions ..
+-      DOUBLE PRECISION   ABS1
++      DOUBLE PRECISION   CABS1
+ *     ..
+ *     .. Statement Function definitions ..
+-      ABS1( X ) = ABS( DBLE( X ) ) + ABS( DIMAG( X ) )
++      CABS1( X ) = ABS( DBLE( X ) ) + ABS( DIMAG( X ) )
+ *     ..
+ *     .. Data statements ..
+       DATA               KCLASS / 15*1, 10*2, 1*3 /
+@@ -794,10 +794,10 @@
+ *
+                DO 130 J = 1, N
+                   ILABAD = .FALSE.
+-                  TEMP2 = ( ABS1( ALPHA( J )-S( J, J ) ) /
+-     $                    MAX( SAFMIN, ABS1( ALPHA( J ) ), ABS1( S( J,
+-     $                    J ) ) )+ABS1( BETA( J )-T( J, J ) ) /
+-     $                    MAX( SAFMIN, ABS1( BETA( J ) ), ABS1( T( J,
++                  TEMP2 = ( CABS1( ALPHA( J )-S( J, J ) ) /
++     $                    MAX( SAFMIN, CABS1( ALPHA( J ) ), CABS1( S( J,
++     $                    J ) ) )+CABS1( BETA( J )-T( J, J ) ) /
++     $                    MAX( SAFMIN, CABS1( BETA( J ) ), CABS1( T( J,
+      $                    J ) ) ) ) / ULP
+ *
+                   IF( J.LT.N ) THEN
+diff --git a/TESTING/EIG/zdrgsx.f b/TESTING/EIG/zdrgsx.f
+index c43cc94a6..ded735aae 100644
+--- a/TESTING/EIG/zdrgsx.f
++++ b/TESTING/EIG/zdrgsx.f
+@@ -409,10 +409,10 @@
+       INTRINSIC          ABS, DBLE, DIMAG, MAX, SQRT
+ *     ..
+ *     .. Statement Functions ..
+-      DOUBLE PRECISION   ABS1
++      DOUBLE PRECISION   CABS1
+ *     ..
+ *     .. Statement Function definitions ..
+-      ABS1( X ) = ABS( DBLE( X ) ) + ABS( DIMAG( X ) )
++      CABS1( X ) = ABS( DBLE( X ) ) + ABS( DIMAG( X ) )
+ *     ..
+ *     .. Executable Statements ..
+ *
+@@ -584,12 +584,12 @@
+ *
+                   DO 10 J = 1, MPLUSN
+                      ILABAD = .FALSE.
+-                     TEMP2 = ( ABS1( ALPHA( J )-AI( J, J ) ) /
+-     $                       MAX( SMLNUM, ABS1( ALPHA( J ) ),
+-     $                       ABS1( AI( J, J ) ) )+
+-     $                       ABS1( BETA( J )-BI( J, J ) ) /
+-     $                       MAX( SMLNUM, ABS1( BETA( J ) ),
+-     $                       ABS1( BI( J, J ) ) ) ) / ULP
++                     TEMP2 = ( CABS1( ALPHA( J )-AI( J, J ) ) /
++     $                       MAX( SMLNUM, CABS1( ALPHA( J ) ),
++     $                       CABS1( AI( J, J ) ) )+
++     $                       CABS1( BETA( J )-BI( J, J ) ) /
++     $                       MAX( SMLNUM, CABS1( BETA( J ) ),
++     $                       CABS1( BI( J, J ) ) ) ) / ULP
+                      IF( J.LT.MPLUSN ) THEN
+                         IF( AI( J+1, J ).NE.ZERO ) THEN
+                            ILABAD = .TRUE.
+@@ -777,10 +777,12 @@
+ *
+       DO 110 J = 1, MPLUSN
+          ILABAD = .FALSE.
+-         TEMP2 = ( ABS1( ALPHA( J )-AI( J, J ) ) /
+-     $           MAX( SMLNUM, ABS1( ALPHA( J ) ), ABS1( AI( J, J ) ) )+
+-     $           ABS1( BETA( J )-BI( J, J ) ) /
+-     $           MAX( SMLNUM, ABS1( BETA( J ) ), ABS1( BI( J, J ) ) ) )
++         TEMP2 = ( CABS1( ALPHA( J )-AI( J, J ) ) /
++     $           MAX( SMLNUM, CABS1( ALPHA( J ) ),
++     $           CABS1( AI( J, J ) ) )+
++     $           CABS1( BETA( J )-BI( J, J ) ) /
++     $           MAX( SMLNUM, CABS1( BETA( J ) ),
++     $           CABS1( BI( J, J ) ) ) )
+      $            / ULP
+          IF( J.LT.MPLUSN ) THEN
+             IF( AI( J+1, J ).NE.ZERO ) THEN
+diff --git a/TESTING/EIG/zget52.f b/TESTING/EIG/zget52.f
+index d0d256383..b5216254c 100644
+--- a/TESTING/EIG/zget52.f
++++ b/TESTING/EIG/zget52.f
+@@ -203,10 +203,10 @@
+       INTRINSIC          ABS, DBLE, DCONJG, DIMAG, MAX
+ *     ..
+ *     .. Statement Functions ..
+-      DOUBLE PRECISION   ABS1
++      DOUBLE PRECISION   CABS1
+ *     ..
+ *     .. Statement Function definitions ..
+-      ABS1( X ) = ABS( DBLE( X ) ) + ABS( DIMAG( X ) )
++      CABS1( X ) = ABS( DBLE( X ) ) + ABS( DIMAG( X ) )
+ *     ..
+ *     .. Executable Statements ..
+ *
+@@ -241,14 +241,15 @@
+       DO 10 JVEC = 1, N
+          ALPHAI = ALPHA( JVEC )
+          BETAI = BETA( JVEC )
+-         ABMAX = MAX( ABS1( ALPHAI ), ABS1( BETAI ) )
+-         IF( ABS1( ALPHAI ).GT.ALFMAX .OR. ABS1( BETAI ).GT.BETMAX .OR.
++         ABMAX = MAX( CABS1( ALPHAI ), CABS1( BETAI ) )
++         IF( CABS1( ALPHAI ).GT.ALFMAX .OR. CABS1( BETAI ).GT.BETMAX
++     $   .OR.
+      $       ABMAX.LT.ONE ) THEN
+             SCALE = ONE / MAX( ABMAX, SAFMIN )
+             ALPHAI = SCALE*ALPHAI
+             BETAI = SCALE*BETAI
+          END IF
+-         SCALE = ONE / MAX( ABS1( ALPHAI )*BNORM, ABS1( BETAI )*ANORM,
++         SCALE = ONE / MAX( CABS1( ALPHAI )*BNORM, CABS1( BETAI )*ANORM,
+      $           SAFMIN )
+          ACOEFF = SCALE*BETAI
+          BCOEFF = SCALE*ALPHAI
+@@ -274,7 +275,7 @@
+       DO 30 JVEC = 1, N
+          TEMP1 = ZERO
+          DO 20 J = 1, N
+-            TEMP1 = MAX( TEMP1, ABS1( E( J, JVEC ) ) )
++            TEMP1 = MAX( TEMP1, CABS1( E( J, JVEC ) ) )
+    20    CONTINUE
+          ENRMER = MAX( ENRMER, ABS( TEMP1-ONE ) )
+    30 CONTINUE

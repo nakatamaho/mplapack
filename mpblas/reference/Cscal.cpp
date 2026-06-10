@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,42 +26,39 @@
  *
  */
 
+// Derived from BLAS routine ZSCAL.
+// Original BLAS authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 
 void Cscal(INTEGER const n, COMPLEX const za, COMPLEX *zx, INTEGER const incx) {
-    //
-    //  -- Reference BLAS level1 routine --
-    //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    if (n <= 0 || incx <= 0) {
+    const COMPLEX one = COMPLEX(1.0, 0.0);
+    if (n <= 0 || incx <= 0 || za == one) {
         return;
     }
     INTEGER i = 0;
     INTEGER nincx = 0;
     if (incx == 1) {
         //
-        //        code for increment equal to 1
+        // code for increment equal to 1
         //
         for (i = 1; i <= n; i = i + 1) {
             zx[i - 1] = za * zx[i - 1];
         }
     } else {
         //
-        //        code for increment not equal to 1
+        // code for increment not equal to 1
         //
         nincx = n * incx;
         for (i = 1; i <= nincx; i = i + incx) {
             zx[i - 1] = za * zx[i - 1];
         }
     }
+    //
+    // End of Cscal
+    //
 }

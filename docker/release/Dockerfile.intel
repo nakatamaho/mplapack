@@ -1,0 +1,47 @@
+# Dockerfile.intel
+# Intel oneAPI build environment for Ubuntu (branch: requires autoreconf)
+# Build happens at runtime with ccache mounted from host
+ARG BASE=ubuntu:24.04
+FROM ${BASE}
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    gfortran \
+    autoconf \
+    automake \
+    libtool \
+    ccache \
+    python3 \
+    git \
+    xz-utils \
+    bzip2 \
+    patch \
+    wget \
+    gnupg \
+    ca-certificates \
+    && wget -qO- https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB | \
+       gpg --dearmor -o /usr/share/keyrings/intel-oneapi.gpg \
+    && echo "deb [signed-by=/usr/share/keyrings/intel-oneapi.gpg] https://apt.repos.intel.com/oneapi all main" \
+       > /etc/apt/sources.list.d/intel-oneapi.list
+
+# Install compilers and dependencies
+RUN apt-get update && apt-get install -y \
+    intel-oneapi-compiler-dpcpp-cpp \
+    intel-oneapi-compiler-fortran \
+    intel-oneapi-mkl-devel
+
+# Configure ccache (directory will be mounted at runtime)
+ENV CCACHE_DIR=/ccache
+ENV PATH="/usr/lib/ccache:${PATH}"
+
+ENV CC="ccache icx"
+ENV CXX="ccache icpx"
+ENV FC="ccache ifx"
+ENV MPLAPACK_REPO=https://github.com/nakatamaho/mplapack.git
+# Branch name or commit SHA. Example: release/2.1 or a full SHA.
+# ENV MPLAPACK_REF="release/2.1"
+ENV MPLAPACK_REF="master"
+
+WORKDIR /work
+COPY run-ubuntu-intel-distcheck.sh /run-ubuntu-intel-distcheck.sh
+RUN chmod +x /run-ubuntu-intel-distcheck.sh
+CMD ["/run-ubuntu-intel-distcheck.sh"]

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,35 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DORBDB3.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rorbdb3(INTEGER const m, INTEGER const p, INTEGER const q, REAL *x11, INTEGER const ldx11, REAL *x21, INTEGER const ldx21, REAL *theta, REAL *phi, REAL *taup1, REAL *taup2, REAL *tauq1, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  ====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Function ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test input arguments
+    // Test input arguments
     //
     info = 0;
     bool lquery = lwork == -1;
@@ -71,7 +55,7 @@ void Rorbdb3(INTEGER const m, INTEGER const p, INTEGER const q, REAL *x11, INTEG
         info = -7;
     }
     //
-    //     Compute workspace
+    // Compute workspace
     //
     INTEGER ilarf = 0;
     INTEGER llarf = 0;
@@ -81,7 +65,7 @@ void Rorbdb3(INTEGER const m, INTEGER const p, INTEGER const q, REAL *x11, INTEG
     INTEGER lworkmin = 0;
     if (info == 0) {
         ilarf = 2;
-        llarf = max({p, m - p - 1, q - 1});
+        llarf = max(p, m - p - 1, q - 1);
         iorbdb5 = 2;
         lorbdb5 = q - 1;
         lworkopt = max(ilarf + llarf - 1, iorbdb5 + lorbdb5 - 1);
@@ -98,12 +82,11 @@ void Rorbdb3(INTEGER const m, INTEGER const p, INTEGER const q, REAL *x11, INTEG
         return;
     }
     //
-    //     Reduce rows 1, ..., M-P of X11 and X21
+    // Reduce rows 1, ..., M-P of X11 and X21
     //
     INTEGER i = 0;
     REAL c = 0.0;
     REAL s = 0.0;
-    const REAL one = 1.0;
     INTEGER childinfo = 0;
     for (i = 1; i <= m - p; i = i + 1) {
         //
@@ -113,9 +96,8 @@ void Rorbdb3(INTEGER const m, INTEGER const p, INTEGER const q, REAL *x11, INTEG
         //
         Rlarfgp(q - i + 1, x21[(i - 1) + (i - 1) * ldx21], &x21[(i - 1) + ((i + 1) - 1) * ldx21], ldx21, tauq1[i - 1]);
         s = x21[(i - 1) + (i - 1) * ldx21];
-        x21[(i - 1) + (i - 1) * ldx21] = one;
-        Rlarf("R", p - i + 1, q - i + 1, &x21[(i - 1) + (i - 1) * ldx21], ldx21, tauq1[i - 1], &x11[(i - 1) + (i - 1) * ldx11], ldx11, &work[ilarf - 1]);
-        Rlarf("R", m - p - i, q - i + 1, &x21[(i - 1) + (i - 1) * ldx21], ldx21, tauq1[i - 1], &x21[((i + 1) - 1) + (i - 1) * ldx21], ldx21, &work[ilarf - 1]);
+        Rlarf1f("R", p - i + 1, q - i + 1, &x21[(i - 1) + (i - 1) * ldx21], ldx21, tauq1[i - 1], &x11[(i - 1) + (i - 1) * ldx11], ldx11, &work[ilarf - 1]);
+        Rlarf1f("R", m - p - i, q - i + 1, &x21[(i - 1) + (i - 1) * ldx21], ldx21, tauq1[i - 1], &x21[((i + 1) - 1) + (i - 1) * ldx21], ldx21, &work[ilarf - 1]);
         c = sqrt(pow2(Rnrm2(p - i + 1, &x11[(i - 1) + (i - 1) * ldx11], 1)) + pow2(Rnrm2(m - p - i, &x21[((i + 1) - 1) + (i - 1) * ldx21], 1)));
         theta[i - 1] = atan2(s, c);
         //
@@ -126,22 +108,19 @@ void Rorbdb3(INTEGER const m, INTEGER const p, INTEGER const q, REAL *x11, INTEG
             phi[i - 1] = atan2(x21[((i + 1) - 1) + (i - 1) * ldx21], x11[(i - 1) + (i - 1) * ldx11]);
             c = cos(phi[i - 1]);
             s = sin(phi[i - 1]);
-            x21[((i + 1) - 1) + (i - 1) * ldx21] = one;
-            Rlarf("L", m - p - i, q - i, &x21[((i + 1) - 1) + (i - 1) * ldx21], 1, taup2[i - 1], &x21[((i + 1) - 1) + ((i + 1) - 1) * ldx21], ldx21, &work[ilarf - 1]);
+            Rlarf1f("L", m - p - i, q - i, &x21[((i + 1) - 1) + (i - 1) * ldx21], 1, taup2[i - 1], &x21[((i + 1) - 1) + ((i + 1) - 1) * ldx21], ldx21, &work[ilarf - 1]);
         }
-        x11[(i - 1) + (i - 1) * ldx11] = one;
-        Rlarf("L", p - i + 1, q - i, &x11[(i - 1) + (i - 1) * ldx11], 1, taup1[i - 1], &x11[(i - 1) + ((i + 1) - 1) * ldx11], ldx11, &work[ilarf - 1]);
+        Rlarf1f("L", p - i + 1, q - i, &x11[(i - 1) + (i - 1) * ldx11], 1, taup1[i - 1], &x11[(i - 1) + ((i + 1) - 1) * ldx11], ldx11, &work[ilarf - 1]);
         //
     }
     //
-    //     Reduce the bottom-right portion of X11 to the identity matrix
+    // Reduce the bottom-right portion of X11 to the identity matrix
     //
     for (i = m - p + 1; i <= q; i = i + 1) {
         Rlarfgp(p - i + 1, x11[(i - 1) + (i - 1) * ldx11], &x11[((i + 1) - 1) + (i - 1) * ldx11], 1, taup1[i - 1]);
-        x11[(i - 1) + (i - 1) * ldx11] = one;
-        Rlarf("L", p - i + 1, q - i, &x11[(i - 1) + (i - 1) * ldx11], 1, taup1[i - 1], &x11[(i - 1) + ((i + 1) - 1) * ldx11], ldx11, &work[ilarf - 1]);
+        Rlarf1f("L", p - i + 1, q - i, &x11[(i - 1) + (i - 1) * ldx11], 1, taup1[i - 1], &x11[(i - 1) + ((i + 1) - 1) * ldx11], ldx11, &work[ilarf - 1]);
     }
     //
-    //     End of Rorbdb3
+    // End of Rorbdb3
     //
 }

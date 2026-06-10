@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DCHKSB2STG.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,15 +43,12 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-void Rchksb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER *kk, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, INTEGER const nounit, REAL *a, INTEGER const lda, REAL *sd, REAL *se, REAL *d1, REAL *d2, REAL *d3, REAL *u, INTEGER const ldu, REAL *work, INTEGER const lwork, REAL *result, INTEGER &info) {
+void Rchksb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER *kk, INTEGER const ntypes, bool *dotype, INTEGER (&iseed)[4], REAL const thresh, INTEGER const nounit, REAL *a, INTEGER const lda, REAL *sd, REAL *se, REAL *d1, REAL *d2, REAL *d3, REAL *u, INTEGER const ldu, REAL *work, INTEGER const lwork, REAL *result, INTEGER &info) {
     common cmn;
     common_write write(cmn);
-    const INTEGER maxtyp = 15;
-    INTEGER ktype[15] = {1, 2, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 8, 8, 8};
-    INTEGER kmagn[15] = {1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 2, 3, 1, 2, 3};
-    INTEGER kmode[15] = {0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 4, 4, 0, 0, 0};
+    static INTEGER ktype[15] = {1, 2, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 8, 8, 8};
+    static INTEGER kmagn[15] = {1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 2, 3, 1, 2, 3};
+    static INTEGER kmode[15] = {0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 4, 4, 0, 0, 0};
     INTEGER ntestt = 0;
     bool badnn = false;
     INTEGER nmax = 0;
@@ -65,6 +69,7 @@ void Rchksb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
     REAL aninv = 0.0;
     INTEGER jwidth = 0;
     INTEGER k = 0;
+    const INTEGER maxtyp = 15;
     INTEGER mtypes = 0;
     INTEGER jtype = 0;
     INTEGER ntest = 0;
@@ -89,16 +94,46 @@ void Rchksb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
     REAL temp2 = 0.0;
     REAL temp3 = 0.0;
     REAL temp4 = 0.0;
-    char buf[1024];
-    static const char *format_9999 = "(' Rchksbstg: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
+    //
+    static const char *format_9999 = "(' Rchksb2stg: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
                                      "', ISEED=(',3(i5,','),i5,')')";
     //
-    //     Check for errors
+    static const char *format_9998 = "(/,1x,a3,' -- Real Symmetric Banded Tridiagonal Reduction Routines')";
+    static const char *format_9997 = "(' Matrix types (see Rchksb2stg for details): ')";
+    //
+    static const char *format_9996 = "(/,' Special Matrices:',/,'  1=Zero matrix.                        ',"
+                                     "'  5=Diagonal: clustered entries.',/,"
+                                     "'  2=Identity matrix.                    ',"
+                                     "'  6=Diagonal: large, evenly spaced.',/,"
+                                     "'  3=Diagonal: evenly spaced entries.    ',"
+                                     "'  7=Diagonal: small, evenly spaced.',/,"
+                                     "'  4=Diagonal: geometr. spaced entries.')";
+    static const char *format_9995 = "(' Dense ',a,' Banded Matrices:',/,"
+                                     "'  8=Evenly spaced eigenvals.            ',"
+                                     "' 12=Small, evenly spaced eigenvals.',/,"
+                                     "'  9=Geometrically spaced eigenvals.     ',"
+                                     "' 13=Matrix with random O(1) entries.',/,"
+                                     "' 10=Clustered eigenvalues.              ',"
+                                     "' 14=Matrix with large random entries.',/,"
+                                     "' 11=Large, evenly spaced eigenvals.     ',"
+                                     "' 15=Matrix with small random entries.')";
+    //
+    static const char *format_9994 = "(/,' Tests performed:   (S is Tridiag,  U is ',a,',',/,20x,a,' means ',a,"
+                                     "'.',/,' UPLO=''U'':',/,'  1= | A - U S U',a1,' | / ( |A| n ulp )     ',"
+                                     "'  2= | I - U U',a1,' | / ( n ulp )',/,' UPLO=''L'':',/,"
+                                     "'  3= | A - U S U',a1,' | / ( |A| n ulp )     ','  4= | I - U U',a1,"
+                                     "' | / ( n ulp )',/,' Eig check:',/,'  5= | D1 - D2','',"
+                                     "' | / ( |D1| ulp )         ','  6= | D1 - D3','',"
+                                     "' | / ( |D1| ulp )          ')";
+    static const char *format_9993 = "(' N=',i5,', K=',i4,', seed=',4(i4,','),' type ',i2,', test(',i2,')=',"
+                                     "g10.3)";
+    //
+    // Check for errors
     //
     ntestt = 0;
     info = 0;
     //
-    //     Important constants
+    // Important constants
     //
     badnn = false;
     nmax = 1;
@@ -119,7 +154,7 @@ void Rchksb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
     }
     kmax = min(nmax - 1, kmax);
     //
-    //     Check for errors
+    // Check for errors
     //
     if (nsizes < 0) {
         info = -1;
@@ -140,17 +175,17 @@ void Rchksb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
     }
     //
     if (info != 0) {
-        Mxerbla("Rchksbstg", -info);
+        Mxerbla("Rchksb2stg", -info);
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (nsizes == 0 || ntypes == 0 || nwdths == 0) {
         return;
     }
     //
-    //     More Important constants
+    // More Important constants
     //
     unfl = Rlamch("Safe minimum");
     ovfl = one / unfl;
@@ -159,7 +194,7 @@ void Rchksb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
     rtunfl = sqrt(unfl);
     rtovfl = sqrt(ovfl);
     //
-    //     Loop over sizes, types
+    // Loop over sizes, types
     //
     nerrs = 0;
     nmats = 0;
@@ -173,7 +208,7 @@ void Rchksb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
             if (k > n) {
                 goto statement_180;
             }
-            k = max({(INTEGER)0, min(n - 1, k)});
+            k = max((INTEGER)0, min(n - 1, k));
             //
             if (nsizes != 1) {
                 mtypes = min(maxtyp, ntypes);
@@ -192,22 +227,22 @@ void Rchksb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
                     ioldsd[j - 1] = iseed[j - 1];
                 }
                 //
-                //              Compute "A".
-                //              Store as "Upper"; later, we will copy to other format.
+                // Compute "A".
+                // Store as "Upper"; later, we will copy to other format.
                 //
-                //              Control parameters:
+                // Control parameters:
                 //
-                //                  KMAGN  KMODE        KTYPE
-                //              =1  O(1)   clustered 1  zero
-                //              =2  large  clustered 2  identity
-                //              =3  small  exponential  (none)
-                //              =4         arithmetic   diagonal, (w/ eigenvalues)
-                //              =5         random log   symmetric, w/ eigenvalues
-                //              =6         random       (none)
-                //              =7                      random diagonal
-                //              =8                      random symmetric
-                //              =9                      positive definite
-                //              =10                     diagonally dominant tridiagonal
+                // KMAGN  KMODE        KTYPE
+                // =1  O(1)   clustered 1  zero
+                // =2  large  clustered 2  identity
+                // =3  small  exponential  (none)
+                // =4         arithmetic   diagonal, (w/ eigenvalues)
+                // =5         random log   symmetric, w/ eigenvalues
+                // =6         random       (none)
+                // =7                      random diagonal
+                // =8                      random symmetric
+                // =9                      positive definite
+                // =10                     diagonally dominant tridiagonal
                 //
                 if (mtypes > maxtyp) {
                     goto statement_100;
@@ -216,7 +251,7 @@ void Rchksb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
                 itype = ktype[jtype - 1];
                 imode = kmode[jtype - 1];
                 //
-                //              Compute norm
+                // Compute norm
                 //
                 switch (kmagn[jtype - 1]) {
                 case 1:
@@ -251,16 +286,16 @@ void Rchksb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
                     cond = ulpinv * aninv / ten;
                 }
                 //
-                //              Special Matrices -- Identity & Jordan block
+                // Special Matrices -- Identity & Jordan block
                 //
-                //                 Zero
+                // Zero
                 //
                 if (itype == 1) {
                     iinfo = 0;
                     //
                 } else if (itype == 2) {
                     //
-                    //                 Identity
+                    // Identity
                     //
                     for (jcol = 1; jcol <= n; jcol = jcol + 1) {
                         a[((k + 1) - 1) + (jcol - 1) * lda] = anorm;
@@ -268,37 +303,37 @@ void Rchksb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
                     //
                 } else if (itype == 4) {
                     //
-                    //                 Diagonal Matrix, [Eigen]values Specified
+                    // Diagonal Matrix, [Eigen]values Specified
                     //
                     Rlatms(n, n, "S", iseed, "S", work, imode, cond, anorm, 0, 0, "Q", &a[((k + 1) - 1)], lda, &work[(n + 1) - 1], iinfo);
                     //
                 } else if (itype == 5) {
                     //
-                    //                 Symmetric, eigenvalues specified
+                    // Symmetric, eigenvalues specified
                     //
                     Rlatms(n, n, "S", iseed, "S", work, imode, cond, anorm, k, k, "Q", a, lda, &work[(n + 1) - 1], iinfo);
                     //
                 } else if (itype == 7) {
                     //
-                    //                 Diagonal, random eigenvalues
+                    // Diagonal, random eigenvalues
                     //
                     Rlatmr(n, n, "S", iseed, "S", work, 6, one, one, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, 0, 0, zero, anorm, "Q", &a[((k + 1) - 1)], lda, idumma, iinfo);
                     //
                 } else if (itype == 8) {
                     //
-                    //                 Symmetric, random eigenvalues
+                    // Symmetric, random eigenvalues
                     //
                     Rlatmr(n, n, "S", iseed, "S", work, 6, one, one, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, k, k, zero, anorm, "Q", a, lda, idumma, iinfo);
                     //
                 } else if (itype == 9) {
                     //
-                    //                 Positive definite, eigenvalues specified.
+                    // Positive definite, eigenvalues specified.
                     //
                     Rlatms(n, n, "S", iseed, "P", work, imode, cond, anorm, k, k, "Q", a, lda, &work[(n + 1) - 1], iinfo);
                     //
                 } else if (itype == 10) {
                     //
-                    //                 Positive definite tridiagonal, eigenvalues specified.
+                    // Positive definite tridiagonal, eigenvalues specified.
                     //
                     if (n > 1) {
                         k = max((INTEGER)1, k);
@@ -317,14 +352,14 @@ void Rchksb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
                 }
                 //
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Generator", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9999), "Generator", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     return;
                 }
             //
             statement_100:
                 //
-                //              Call Rsbtrd to compute S and U from upper triangle.
+                // Call Rsbtrd to compute S and U from upper triangle.
                 //
                 Rlacpy(" ", k + 1, n, a, lda, work, lda);
                 //
@@ -332,7 +367,7 @@ void Rchksb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
                 Rsbtrd("V", "U", n, k, work, lda, sd, se, u, ldu, &work[(lda * n + 1) - 1], iinfo);
                 //
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Rsbtrd(U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9999), "Rsbtrd(U)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -342,21 +377,21 @@ void Rchksb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
                     }
                 }
                 //
-                //              Do tests 1 and 2
+                // Do tests 1 and 2
                 //
                 Rsbt21("Upper", n, k, 1, a, lda, sd, se, u, ldu, work, &result[1 - 1]);
                 //
-                //              Before converting A into lower for Rsbtrd, run Rsytrd_SB2ST
-                //              otherwise matrix A will be converted to lower and then need
-                //              to be converted back to upper in order to run the upper case
-                //              ofRsytrd_SB2ST
+                // Before converting A into lower for Rsbtrd, run Rsytrd_sb2st
+                // otherwise matrix A will be converted to lower and then need
+                // to be converted back to upper in order to run the upper case
+                // ofDSYTRD_SB2ST
                 //
-                //              Compute D1 the eigenvalues resulting from the tridiagonal
-                //              form using the Rsbtrd and used as reference to compare
-                //              with the Rsytrd_SB2ST routine
+                // Compute D1 the eigenvalues resulting from the tridiagonal
+                // form using the Rsbtrd and used as reference to compare
+                // with the Rsytrd_sb2st routine
                 //
-                //              Compute D1 from the Rsbtrd and used as reference for the
-                //              Rsytrd_SB2ST
+                // Compute D1 from the Rsbtrd and used as reference for the
+                // Rsytrd_sb2st
                 //
                 Rcopy(n, sd, 1, d1, 1);
                 if (n > 0) {
@@ -365,7 +400,7 @@ void Rchksb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
                 //
                 Rsteqr("N", n, d1, work, &work[(n + 1) - 1], ldu, &work[(n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Rsteqr(N)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9999), "Rsteqr(N)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -375,10 +410,10 @@ void Rchksb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
                     }
                 }
                 //
-                //              Rsytrd_sb2st Upper case is used to compute D2.
-                //              Note to set SD and SE to zero to be sure not reusing
-                //              the one from above. Compare it with D1 computed
-                //              using the Rsbtrd.
+                // Rsytrd_sb2st Upper case is used to compute D2.
+                // Note to set SD and SE to zero to be sure not reusing
+                // the one from above. Compare it with D1 computed
+                // using the Rsbtrd.
                 //
                 Rlaset("Full", n, 1, zero, zero, sd, n);
                 Rlaset("Full", n, 1, zero, zero, se, n);
@@ -387,7 +422,7 @@ void Rchksb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
                 lw = lwork - lh;
                 Rsytrd_sb2st("N", "N", "U", n, k, u, ldu, sd, se, work, lh, &work[(lh + 1) - 1], lw, iinfo);
                 //
-                //              Compute D2 from the Rsytrd_SB2ST Upper case
+                // Compute D2 from the Rsytrd_sb2st Upper case
                 //
                 Rcopy(n, sd, 1, d2, 1);
                 if (n > 0) {
@@ -396,7 +431,7 @@ void Rchksb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
                 //
                 Rsteqr("N", n, d2, work, &work[(n + 1) - 1], ldu, &work[(n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Rsteqr(N)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9999), "Rsteqr(N)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -406,8 +441,8 @@ void Rchksb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
                     }
                 }
                 //
-                //              Convert A from Upper-Triangle-Only storage to
-                //              Lower-Triangle-Only storage.
+                // Convert A from Upper-Triangle-Only storage to
+                // Lower-Triangle-Only storage.
                 //
                 for (jc = 1; jc <= n; jc = jc + 1) {
                     for (jr = 0; jr <= min(k, n - jc); jr = jr + 1) {
@@ -420,7 +455,7 @@ void Rchksb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
                     }
                 }
                 //
-                //              Call Rsbtrd to compute S and U from lower triangle
+                // Call Rsbtrd to compute S and U from lower triangle
                 //
                 Rlacpy(" ", k + 1, n, a, lda, work, lda);
                 //
@@ -428,7 +463,7 @@ void Rchksb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
                 Rsbtrd("V", "L", n, k, work, lda, sd, se, u, ldu, &work[(lda * n + 1) - 1], iinfo);
                 //
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Rsbtrd(L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9999), "Rsbtrd(L)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -439,14 +474,14 @@ void Rchksb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
                 }
                 ntest = 4;
                 //
-                //              Do tests 3 and 4
+                // Do tests 3 and 4
                 //
                 Rsbt21("Lower", n, k, 1, a, lda, sd, se, u, ldu, work, &result[3 - 1]);
                 //
-                //              Rsytrd_SB2ST Lower case is used to compute D3.
-                //              Note to set SD and SE to zero to be sure not reusing
-                //              the one from above. Compare it with D1 computed
-                //              using the Rsbtrd.
+                // Rsytrd_sb2st Lower case is used to compute D3.
+                // Note to set SD and SE to zero to be sure not reusing
+                // the one from above. Compare it with D1 computed
+                // using the Rsbtrd.
                 //
                 Rlaset("Full", n, 1, zero, zero, sd, n);
                 Rlaset("Full", n, 1, zero, zero, se, n);
@@ -455,7 +490,7 @@ void Rchksb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
                 lw = lwork - lh;
                 Rsytrd_sb2st("N", "N", "L", n, k, u, ldu, sd, se, work, lh, &work[(lh + 1) - 1], lw, iinfo);
                 //
-                //              Compute D3 from the 2-stage Upper case
+                // Compute D3 from the 2-stage Upper case
                 //
                 Rcopy(n, sd, 1, d3, 1);
                 if (n > 0) {
@@ -464,7 +499,7 @@ void Rchksb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
                 //
                 Rsteqr("N", n, d3, work, &work[(n + 1) - 1], ldu, &work[(n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Rsteqr(N)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9999), "Rsteqr(N)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -474,8 +509,8 @@ void Rchksb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
                     }
                 }
                 //
-                //              Do Tests 3 and 4 which are similar to 11 and 12 but with the
-                //              D1 computed using the standard 1-stage reduction as reference
+                // Do Tests 3 and 4 which are similar to 11 and 12 but with the
+                // D1 computed using the standard 1-stage reduction as reference
                 //
                 ntest = 6;
                 temp1 = zero;
@@ -484,61 +519,35 @@ void Rchksb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
                 temp4 = zero;
                 //
                 for (j = 1; j <= n; j = j + 1) {
-                    temp1 = max({temp1, REAL(abs(d1[j - 1])), REAL(abs(d2[j - 1]))});
-                    temp2 = max(temp2, REAL(abs(d1[j - 1] - d2[j - 1])));
-                    temp3 = max({temp3, REAL(abs(d1[j - 1])), REAL(abs(d3[j - 1]))});
-                    temp4 = max(temp4, REAL(abs(d1[j - 1] - d3[j - 1])));
+                    temp1 = max(temp1, abs(d1[j - 1]), abs(d2[j - 1]));
+                    temp2 = max(temp2, abs(d1[j - 1] - d2[j - 1]));
+                    temp3 = max(temp3, abs(d1[j - 1]), abs(d3[j - 1]));
+                    temp4 = max(temp4, abs(d1[j - 1] - d3[j - 1]));
                 }
                 //
-                result[5 - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
-                result[6 - 1] = temp4 / max(unfl, REAL(ulp * max(temp3, temp4)));
+                result[5 - 1] = temp2 / max(unfl, ulp * max(temp1, temp2));
+                result[6 - 1] = temp4 / max(unfl, ulp * max(temp3, temp4));
             //
-            //              End of Loop -- Check for RESULT(j) > THRESH
+            // End of Loop -- Check for RESULT(j) > THRESH
             //
             statement_150:
                 ntestt += ntest;
                 //
-                //              Print out tests which fail.
+                // Print out tests which fail.
                 //
                 for (jr = 1; jr <= ntest; jr = jr + 1) {
                     if (result[jr - 1] >= thresh) {
                         //
-                        //                    If this is the first test to fail,
-                        //                    print a header to the data file.
+                        // If this is the first test to fail,
+                        // print a header to the data file.
                         //
                         if (nerrs == 0) {
-                            write(nounit, "(/,1x,a3,"
-                                          "' -- Real Symmetric Banded Tridiagonal Reduction Routines')"),
-                                "DSB";
-                            write(nounit, "(' Matrix types (see RchksbSTG for details): ')");
-                            write(nounit, "(/,' Special Matrices:',/,"
-                                          "'  1=Zero matrix.                        ',"
-                                          "'  5=Diagonal: clustered entries.',/,"
-                                          "'  2=Identity matrix.                    ',"
-                                          "'  6=Diagonal: large, evenly spaced.',/,"
-                                          "'  3=Diagonal: evenly spaced entries.    ',"
-                                          "'  7=Diagonal: small, evenly spaced.',/,"
-                                          "'  4=Diagonal: geometr. spaced entries.')");
-                            write(nounit, "(' Dense ',a,' Banded Matrices:',/,"
-                                          "'  8=Evenly spaced eigenvals.            ',"
-                                          "' 12=Small, evenly spaced eigenvals.',/,"
-                                          "'  9=Geometrically spaced eigenvals.     ',"
-                                          "' 13=Matrix with random O(1) entries.',/,"
-                                          "' 10=Clustered eigenvalues.              ',"
-                                          "' 14=Matrix with large random entries.',/,"
-                                          "' 11=Large, evenly spaced eigenvals.     ',"
-                                          "' 15=Matrix with small random entries.')"),
-                                "Symmetric";
+                            write(nounit, format_9998), "DSB";
+                            write(nounit, format_9997);
+                            write(nounit, format_9996);
+                            write(nounit, format_9995), "Symmetric";
                             {
-                                write_loop wloop(cmn, nounit,
-                                                 "(/,' Tests performed:   (S is Tridiag,  U is ',a,',',/,20x,"
-                                                 "a,' means ',a,'.',/,' UPLO=''U'':',/,'  1= | A - U S U',a1,"
-                                                 "' | / ( |A| n ulp )     ','  2= | I - U U',a1,"
-                                                 "' | / ( n ulp )',/,' UPLO=''L'':',/,'  3= | A - U S U',a1,"
-                                                 "' | / ( |A| n ulp )     ','  4= | I - U U',a1,"
-                                                 "' | / ( n ulp )',/,' Eig check:',/,'  5= | D1 - D2','',"
-                                                 "' | / ( |D1| ulp )         ','  6= | D1 - D3','',"
-                                                 "' | / ( |D1| ulp )          ')");
+                                write_loop wloop(cmn, nounit, format_9994);
                                 wloop, "orthogonal", "'", "transpose";
                                 for (j = 1; j <= 6; j = j + 1) {
                                     wloop, "'";
@@ -546,10 +555,7 @@ void Rchksb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
                             }
                         }
                         nerrs++;
-                        sprintnum_short(buf, result[jr - 1]);
-                        write(nounit, "(' N=',i5,', K=',i4,', seed=',4(i4,','),' type ',i2,', test(',"
-                                      "i2,')=',a)"),
-                            n, k, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3], jtype, jr, buf;
+                        write(nounit, format_9993), n, k, ioldsd, jtype, jr, result[jr - 1];
                     }
                 }
             //
@@ -559,10 +565,10 @@ void Rchksb2stg(INTEGER const nsizes, INTEGER *nn, INTEGER const nwdths, INTEGER
         }
     }
     //
-    //     Summary
+    // Summary
     //
     Rlasum("DSB", nounit, nerrs, ntestt);
     //
-    //     End of RchksbSTG
+    // End of Rchksb2stg
     //
 }

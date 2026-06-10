@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,41 +26,26 @@
  *
  */
 
+// Derived from LAPACK routine ZUNMRZ.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Cunmrz(const char *side, const char *trans, INTEGER const m, INTEGER const n, INTEGER const k, INTEGER const l, COMPLEX *a, INTEGER const lda, COMPLEX *tau, COMPLEX *c, INTEGER const ldc, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     bool left = Mlsame(side, "L");
     bool notran = Mlsame(trans, "N");
     bool lquery = (lwork == -1);
     //
+    // NQ is the order of Q and NW is the minimum dimension of WORK
     //
     INTEGER nq = 0;
     INTEGER nw = 0;
@@ -96,18 +81,14 @@ void Cunmrz(const char *side, const char *trans, INTEGER const m, INTEGER const 
     INTEGER nb = 0;
     const INTEGER ldt = nbmax + 1;
     const INTEGER tsize = ldt * nbmax;
-    char side_trans[3];
-    side_trans[0] = side[0];
-    side_trans[1] = trans[0];
-    side_trans[2] = '\0';
     if (info == 0) {
         //
-        //        Compute the workspace requirements
+        // Compute the workspace requirements
         //
         if (m == 0 || n == 0) {
             lwkopt = 1;
         } else {
-            nb = min({nbmax, iMlaenv(1, "Cunmrq", side_trans, m, n, k, -1)});
+            nb = min(nbmax, iMlaenv(1, "Cunmrq", CHAR2(side, trans), m, n, k, -1));
             lwkopt = nw * nb + tsize;
         }
         work[1 - 1] = lwkopt;
@@ -120,22 +101,22 @@ void Cunmrz(const char *side, const char *trans, INTEGER const m, INTEGER const 
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (m == 0 || n == 0) {
         return;
     }
     //
-    //     Determine the block size.  NB may be at most NBMAX, where NBMAX
-    //     is used to define the local array T.
+    // Determine the block size.  NB may be at most NBMAX, where NBMAX
+    // is used to define the local array T.
     //
-    nb = min({nbmax, iMlaenv(1, "Cunmrq", side_trans, m, n, k, -1)});
+    nb = min(nbmax, iMlaenv(1, "Cunmrq", CHAR2(side, trans), m, n, k, -1));
     INTEGER nbmin = 2;
     INTEGER ldwork = nw;
     if (nb > 1 && nb < k) {
-        if (lwork < nw * nb + tsize) {
+        if (lwork < lwkopt) {
             nb = (lwork - tsize) / ldwork;
-            nbmin = max({(INTEGER)2, iMlaenv(2, "Cunmrq", side_trans, m, n, k, -1)});
+            nbmin = max((INTEGER)2, iMlaenv(2, "Cunmrq", CHAR2(side, trans), m, n, k, -1));
         }
     }
     //
@@ -154,12 +135,12 @@ void Cunmrz(const char *side, const char *trans, INTEGER const m, INTEGER const 
     INTEGER ib = 0;
     if (nb < nbmin || nb >= k) {
         //
-        //        Use unblocked code
+        // Use unblocked code
         //
         Cunmr3(side, trans, m, n, k, l, a, lda, tau, c, ldc, work, iinfo);
     } else {
         //
-        //        Use blocked code
+        // Use blocked code
         //
         iwt = 1 + nw * nb;
         if ((left && !notran) || (!left && notran)) {
@@ -188,29 +169,29 @@ void Cunmrz(const char *side, const char *trans, INTEGER const m, INTEGER const 
             transt = 'N';
         }
         //
-        for (i = i1; i3 >= 0 ? i <= i2 : i >= i2; i = i + i3) {
+        for (i = i1; i3 > 0 ? i <= i2 : i >= i2; i = i + i3) {
             ib = min(nb, k - i + 1);
             //
-            //           Form the triangular factor of the block reflector
-            //           H = H(i+ib-1) . . . H(i+1) H(i)
+            // Form the triangular factor of the block reflector
+            // H = H(i+ib-1) . . . H(i+1) H(i)
             //
             Clarzt("Backward", "Rowwise", l, ib, &a[(i - 1) + (ja - 1) * lda], lda, &tau[i - 1], &work[iwt - 1], ldt);
             //
             if (left) {
                 //
-                //              H or H**H is applied to C(i:m,1:n)
+                // H or H**H is applied to C(i:m,1:n)
                 //
                 mi = m - i + 1;
                 ic = i;
             } else {
                 //
-                //              H or H**H is applied to C(1:m,i:n)
+                // H or H**H is applied to C(1:m,i:n)
                 //
                 ni = n - i + 1;
                 jc = i;
             }
             //
-            //           Apply H or H**H
+            // Apply H or H**H
             //
             Clarzb(side, &transt, "Backward", "Rowwise", mi, ni, ib, l, &a[(i - 1) + (ja - 1) * lda], lda, &work[iwt - 1], ldt, &c[(ic - 1) + (jc - 1) * ldc], ldc, work, ldwork);
         }
@@ -219,6 +200,6 @@ void Cunmrz(const char *side, const char *trans, INTEGER const m, INTEGER const 
     //
     work[1 - 1] = lwkopt;
     //
-    //     End of Cunmrz
+    // End of Cunmrz
     //
 }

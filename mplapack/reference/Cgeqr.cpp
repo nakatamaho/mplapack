@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZGEQR.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Cgeqr(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *t, INTEGER const tsize, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     //
@@ -48,13 +55,13 @@ void Cgeqr(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMP
         }
     }
     //
-    //     Determine the block size
+    // Determine the block size
     //
     INTEGER mb = 0;
     INTEGER nb = 0;
     if (min(m, n) > 0) {
-        mb = iMlaenv(1, "Cgeqr", " ", m, n, 1, -1);
-        nb = iMlaenv(1, "Cgeqr", " ", m, n, 2, -1);
+        mb = iMlaenv(1, "Cgeqr ", " ", m, n, 1, -1);
+        nb = iMlaenv(1, "Cgeqr ", " ", m, n, 2, -1);
     } else {
         mb = m;
         nb = 1;
@@ -77,16 +84,18 @@ void Cgeqr(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMP
         nblcks = 1;
     }
     //
-    //     Determine if the workspace size satisfies minimal size
+    // Determine if the workspace size satisfies minimal size
     //
+    INTEGER lwmin = max((INTEGER)1, n);
+    INTEGER lwreq = max((INTEGER)1, n * nb);
     bool lminws = false;
-    if ((tsize < max((INTEGER)1, nb * n * nblcks + 5) || lwork < nb * n) && (lwork >= n) && (tsize >= mintsz) && (!lquery)) {
+    if ((tsize < max((INTEGER)1, nb * n * nblcks + 5) || lwork < lwreq) && (lwork >= n) && (tsize >= mintsz) && (!lquery)) {
         if (tsize < max((INTEGER)1, nb * n * nblcks + 5)) {
             lminws = true;
             nb = 1;
             mb = m;
         }
-        if (lwork < nb * n) {
+        if (lwork < lwreq) {
             lminws = true;
             nb = 1;
         }
@@ -100,7 +109,7 @@ void Cgeqr(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMP
         info = -4;
     } else if (tsize < max((INTEGER)1, nb * n * nblcks + 5) && (!lquery) && (!lminws)) {
         info = -6;
-    } else if ((lwork < max((INTEGER)1, n * nb)) && (!lquery) && (!lminws)) {
+    } else if ((lwork < lwreq) && (!lquery) && (!lminws)) {
         info = -8;
     }
     //
@@ -113,9 +122,9 @@ void Cgeqr(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMP
         t[2 - 1] = mb;
         t[3 - 1] = nb;
         if (minw) {
-            work[1 - 1] = max((INTEGER)1, n);
+            work[1 - 1] = lwmin;
         } else {
-            work[1 - 1] = max((INTEGER)1, nb * n);
+            work[1 - 1] = lwreq;
         }
     }
     if (info != 0) {
@@ -125,13 +134,13 @@ void Cgeqr(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMP
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (min(m, n) == 0) {
         return;
     }
     //
-    //     The QR Decomposition
+    // The QR Decomposition
     //
     if ((m <= n) || (mb <= n) || (mb >= m)) {
         Cgeqrt(m, n, nb, a, lda, &t[6 - 1], nb, work, info);
@@ -139,8 +148,8 @@ void Cgeqr(INTEGER const m, INTEGER const n, COMPLEX *a, INTEGER const lda, COMP
         Clatsqr(m, n, mb, nb, a, lda, &t[6 - 1], nb, work, lwork, info);
     }
     //
-    work[1 - 1] = max((INTEGER)1, nb * n);
+    work[1 - 1] = lwreq;
     //
-    //     End of Cgeqr
+    // End of Cgeqr
     //
 }

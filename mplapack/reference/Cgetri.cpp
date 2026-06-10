@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,39 +26,23 @@
  *
  */
 
+// Derived from LAPACK routine ZGETRI.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Cgetri(INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     INTEGER nb = iMlaenv(1, "Cgetri", " ", n, -1, -1, -1);
-    INTEGER lwkopt = n * nb;
+    INTEGER lwkopt = max((INTEGER)1, n * nb);
     work[1 - 1] = lwkopt;
     bool lquery = (lwork == -1);
     if (n < 0) {
@@ -75,14 +59,14 @@ void Cgetri(INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, COMPL
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
     }
     //
-    //     Form inv(U).  If INFO > 0 from Ctrtri, then U is singular,
-    //     and the inverse is not computed.
+    // Form inv(U).  If INFO > 0 from Ctrtri, then U is singular,
+    // and the inverse is not computed.
     //
     Ctrtri("Upper", "Non-unit", n, a, lda, info);
     if (info > 0) {
@@ -102,7 +86,7 @@ void Cgetri(INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, COMPL
         iws = n;
     }
     //
-    //     Solve the equation inv(A)*L = inv(U) for inv(A).
+    // Solve the equation inv(A)*L = inv(U) for inv(A).
     //
     INTEGER j = 0;
     INTEGER i = 0;
@@ -113,18 +97,18 @@ void Cgetri(INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, COMPL
     INTEGER jj = 0;
     if (nb < nbmin || nb >= n) {
         //
-        //        Use unblocked code.
+        // Use unblocked code.
         //
         for (j = n; j >= 1; j = j - 1) {
             //
-            //           Copy current column of L to WORK and replace with zeros.
+            // Copy current column of L to WORK and replace with zeros.
             //
             for (i = j + 1; i <= n; i = i + 1) {
                 work[i - 1] = a[(i - 1) + (j - 1) * lda];
                 a[(i - 1) + (j - 1) * lda] = zero;
             }
             //
-            //           Compute current column of inv(A).
+            // Compute current column of inv(A).
             //
             if (j < n) {
                 Cgemv("No transpose", n, n - j, -one, &a[((j + 1) - 1) * lda], lda, &work[(j + 1) - 1], 1, one, &a[(j - 1) * lda], 1);
@@ -132,14 +116,14 @@ void Cgetri(INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, COMPL
         }
     } else {
         //
-        //        Use blocked code.
+        // Use blocked code.
         //
         nn = ((n - 1) / nb) * nb + 1;
         for (j = nn; j >= 1; j = j - nb) {
             jb = min(nb, n - j + 1);
             //
-            //           Copy current block column of L to WORK and replace with
-            //           zeros.
+            // Copy current block column of L to WORK and replace with
+            // zeros.
             //
             for (jj = j; jj <= j + jb - 1; jj = jj + 1) {
                 for (i = jj + 1; i <= n; i = i + 1) {
@@ -148,7 +132,7 @@ void Cgetri(INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, COMPL
                 }
             }
             //
-            //           Compute current block column of inv(A).
+            // Compute current block column of inv(A).
             //
             if (j + jb <= n) {
                 Cgemm("No transpose", "No transpose", n, jb, n - j - jb + 1, -one, &a[((j + jb) - 1) * lda], lda, &work[(j + jb) - 1], ldwork, one, &a[(j - 1) * lda], lda);
@@ -157,7 +141,7 @@ void Cgetri(INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, COMPL
         }
     }
     //
-    //     Apply column interchanges.
+    // Apply column interchanges.
     //
     INTEGER jp = 0;
     for (j = n - 1; j >= 1; j = j - 1) {
@@ -169,6 +153,6 @@ void Cgetri(INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, COMPL
     //
     work[1 - 1] = iws;
     //
-    //     End of Cgetri
+    // End of Cgetri
     //
 }

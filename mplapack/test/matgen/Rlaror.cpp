@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,35 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DLAROR.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 #include <mplapack_matgen.h>
 
-void Rlaror(const char *side, const char *init, INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEGER *iseed, REAL *x, INTEGER &info) {
-    //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
+void Rlaror(fem::str_cref side, fem::str_cref init, INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, INTEGER (&iseed)[4], REAL *x, INTEGER &info) {
     //
     info = 0;
     if (n == 0 || m == 0) {
@@ -62,15 +46,15 @@ void Rlaror(const char *side, const char *init, INTEGER const m, INTEGER const n
     }
     //
     INTEGER itype = 0;
-    if (Mlsame(side, "L")) {
+    if (Mlsame(side.elems(), "L")) {
         itype = 1;
-    } else if (Mlsame(side, "R")) {
+    } else if (Mlsame(side.elems(), "R")) {
         itype = 2;
-    } else if (Mlsame(side, "C") || Mlsame(side, "T")) {
+    } else if (Mlsame(side.elems(), "C") || Mlsame(side.elems(), "T")) {
         itype = 3;
     }
     //
-    //     Check for argument errors.
+    // Check for argument errors.
     //
     if (itype == 0) {
         info = -1;
@@ -93,18 +77,18 @@ void Rlaror(const char *side, const char *init, INTEGER const m, INTEGER const n
         nxfrm = n;
     }
     //
-    //     Initialize A to the identity matrix if desired
+    // Initialize A to the identity matrix if desired
     //
     const REAL zero = 0.0;
     const REAL one = 1.0;
-    if (Mlsame(init, "I")) {
+    if (Mlsame(init.elems(), "I")) {
         Rlaset("Full", m, n, zero, one, a, lda);
     }
     //
-    //     If no rotation possible, multiply by random +/-1
+    // If no rotation possible, multiply by random +/-1
     //
-    //     Compute rotation by computing Householder transformations
-    //     H(2), H(3), ..., H(nhouse)
+    // Compute rotation by computing Householder transformations
+    // H(2), H(3), ..., H(nhouse)
     //
     INTEGER j = 0;
     for (j = 1; j <= nxfrm; j = j + 1) {
@@ -120,13 +104,13 @@ void Rlaror(const char *side, const char *init, INTEGER const m, INTEGER const n
     for (ixfrm = 2; ixfrm <= nxfrm; ixfrm = ixfrm + 1) {
         kbeg = nxfrm - ixfrm + 1;
         //
-        //        Generate independent normal( 0, 1 ) random numbers
+        // Generate independent normal( 0, 1 ) random numbers
         //
         for (j = kbeg; j <= nxfrm; j = j + 1) {
             x[j - 1] = Rlarnd(3, iseed);
         }
         //
-        //        Generate a Householder transformation from the random vector X
+        // Generate a Householder transformation from the random vector X
         //
         xnorm = Rnrm2(ixfrm, &x[kbeg - 1], 1);
         xnorms = sign(xnorm, x[kbeg - 1]);
@@ -141,11 +125,11 @@ void Rlaror(const char *side, const char *init, INTEGER const m, INTEGER const n
         }
         x[kbeg - 1] += xnorms;
         //
-        //        Apply Householder transformation to A
+        // Apply Householder transformation to A
         //
         if (itype == 1 || itype == 3) {
             //
-            //           Apply H(k) from the left.
+            // Apply H(k) from the left.
             //
             Rgemv("T", ixfrm, n, one, &a[(kbeg - 1)], lda, &x[kbeg - 1], 1, zero, &x[(2 * nxfrm + 1) - 1], 1);
             Rger(ixfrm, n, -factor, &x[kbeg - 1], 1, &x[(2 * nxfrm + 1) - 1], 1, &a[(kbeg - 1)], lda);
@@ -154,7 +138,7 @@ void Rlaror(const char *side, const char *init, INTEGER const m, INTEGER const n
         //
         if (itype == 2 || itype == 3) {
             //
-            //           Apply H(k) from the right.
+            // Apply H(k) from the right.
             //
             Rgemv("N", m, ixfrm, one, &a[(kbeg - 1) * lda], lda, &x[kbeg - 1], 1, zero, &x[(2 * nxfrm + 1) - 1], 1);
             Rger(m, ixfrm, -factor, &x[(2 * nxfrm + 1) - 1], 1, &x[kbeg - 1], 1, &a[(kbeg - 1) * lda], lda);
@@ -164,7 +148,7 @@ void Rlaror(const char *side, const char *init, INTEGER const m, INTEGER const n
     //
     x[(2 * nxfrm) - 1] = sign(one, Rlarnd(3, iseed));
     //
-    //     Scale the matrix A by D.
+    // Scale the matrix A by D.
     //
     INTEGER irow = 0;
     if (itype == 1 || itype == 3) {
@@ -180,6 +164,6 @@ void Rlaror(const char *side, const char *init, INTEGER const m, INTEGER const n
         }
     }
     //
-    //     End of Rlaror
+    // End of Rlaror
     //
 }

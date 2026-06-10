@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,39 +26,26 @@
  *
  */
 
+// Derived from LAPACK routine DGET03.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 void Rget03(INTEGER const n, REAL *a, INTEGER const lda, REAL *ainv, INTEGER const ldainv, REAL *work, INTEGER const ldwork, REAL *rwork, REAL &rcond, REAL &resid) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Quick exit if N = 0.
+    // Quick exit if N = 0.
     //
     const REAL one = 1.0;
     const REAL zero = 0.0;
@@ -68,7 +55,7 @@ void Rget03(INTEGER const n, REAL *a, INTEGER const lda, REAL *ainv, INTEGER con
         return;
     }
     //
-    //     Exit with RESID = 1/EPS if ANORM = 0 or AINVNM = 0.
+    // Exit with RESID = 1/EPS if ANORM = 0 or AINVNM = 0.
     //
     REAL eps = Rlamch("Epsilon");
     REAL anorm = Rlange("1", n, n, a, lda, rwork);
@@ -80,7 +67,7 @@ void Rget03(INTEGER const n, REAL *a, INTEGER const lda, REAL *ainv, INTEGER con
     }
     rcond = (one / anorm) / ainvnm;
     //
-    //     Compute I - A * AINV
+    // Compute I - A * AINV
     //
     Rgemm("No transpose", "No transpose", n, n, n, -one, ainv, ldainv, a, lda, zero, work, ldwork);
     INTEGER i = 0;
@@ -88,12 +75,12 @@ void Rget03(INTEGER const n, REAL *a, INTEGER const lda, REAL *ainv, INTEGER con
         work[(i - 1) + (i - 1) * ldwork] += one;
     }
     //
-    //     Compute norm(I - AINV*A) / (N * norm(A) * norm(AINV) * EPS)
+    // Compute norm(I - AINV*A) / (N * norm(A) * norm(AINV) * EPS)
     //
     resid = Rlange("1", n, n, work, ldwork, rwork);
     //
     resid = ((resid * rcond) / eps) / castREAL(n);
     //
-    //     End of Rget03
+    // End of Rget03
     //
 }

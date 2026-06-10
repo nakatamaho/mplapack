@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DGET24.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -37,16 +44,10 @@ using fem::common;
 #include <mplapack_eig.h>
 
 #include <mplapack_common_sslct.h>
-#include <mplapack_debug.h>
 
-void Rget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *iseed, INTEGER const nounit, INTEGER const n, REAL *a, INTEGER const lda, REAL *h, REAL *ht, REAL *wr, REAL *wi, REAL *wrt, REAL *wit, REAL *wrtmp, REAL *witmp, REAL *vs, INTEGER const ldvs, REAL *vs1, REAL const rcdein, REAL const rcdvin, INTEGER const nslct, INTEGER *islct, REAL *result, REAL *work, INTEGER const lwork, INTEGER *iwork, bool *bwork, INTEGER &info) {
-
-    INTEGER ldh = lda;
-    INTEGER ldht = lda;
-    INTEGER ldvs1 = ldvs;
+void Rget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER (&iseed)[4], INTEGER const nounit, INTEGER const n, REAL *a, INTEGER const lda, REAL *h, REAL *ht, REAL *wr, REAL *wi, REAL *wrt, REAL *wit, REAL *wrtmp, REAL *witmp, REAL *vs, INTEGER const ldvs, REAL *vs1, REAL const rcdein, REAL const rcdvin, INTEGER const nslct, INTEGER *islct, REAL *result, REAL *work, INTEGER const lwork, INTEGER *iwork, bool *bwork, INTEGER &info) {
     common cmn;
     common_write write(cmn);
-    //
     const REAL zero = 0.0;
     INTEGER i = 0;
     const REAL one = 1.0;
@@ -55,7 +56,7 @@ void Rget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
     REAL ulpinv = 0.0;
     INTEGER liwork = 0;
     INTEGER isort = 0;
-    char sort;
+    fem::str<1> sort;
     INTEGER rsub = 0;
     INTEGER sdim = 0;
     REAL rconde = 0.0;
@@ -69,7 +70,7 @@ void Rget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
     INTEGER sdim1 = 0;
     REAL rcnde1 = 0.0;
     REAL rcndv1 = 0.0;
-    const REAL epsin = 5.9605e-8;
+    const REAL epsin = 0.000000059605;
     REAL eps = 0.0;
     INTEGER ipnt[20];
     INTEGER kmin = 0;
@@ -79,12 +80,13 @@ void Rget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
     REAL v = 0.0;
     REAL tol = 0.0;
     REAL tolin = 0.0;
-    static const char *format_9998 = "(' Rget24: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
-                                     "', ISEED=(',3(i5,','),i5,')')";
+    //
     static const char *format_9999 = "(' Rget24: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,"
                                      "', INPUT EXAMPLE NUMBER = ',i4)";
+    static const char *format_9998 = "(' Rget24: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
+                                     "', ISEED=(',3(i5,','),i5,')')";
     //
-    //     Check for errors
+    // Check for errors
     //
     info = 0;
     if (thresh < zero) {
@@ -106,7 +108,7 @@ void Rget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
         return;
     }
     //
-    //     Quick return if nothing to do
+    // Quick return if nothing to do
     //
     for (i = 1; i <= 17; i = i + 1) {
         result[i - 1] = -one;
@@ -116,29 +118,29 @@ void Rget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
         return;
     }
     //
-    //     Important constants
+    // Important constants
     //
     smlnum = Rlamch("Safe minimum");
     ulp = Rlamch("Precision");
     ulpinv = one / ulp;
     //
-    //     Perform tests (1)-(13)
+    // Perform tests (1)-(13)
     //
     selopt = 0;
     liwork = n * n;
     for (isort = 0; isort <= 1; isort = isort + 1) {
         if (isort == 0) {
-            sort = 'N';
+            sort = "N";
             rsub = 0;
         } else {
-            sort = 'S';
+            sort = "S";
             rsub = 6;
         }
         //
-        //        Compute Schur form and Schur vectors, and test them
+        // Compute Schur form and Schur vectors, and test them
         //
         Rlacpy("F", n, n, a, lda, h, lda);
-        Rgeesx("V", &sort, Rslect, "N", n, h, lda, sdim, wr, wi, vs, ldvs, rconde, rcondv, work, lwork, iwork, liwork, bwork, iinfo);
+        Rgeesx("V", sort.elems, Rslect, "N", n, h, lda, sdim, wr, wi, vs, ldvs, rconde, rcondv, work, lwork, iwork, liwork, bwork, iinfo);
         if (iinfo != 0 && iinfo != n + 2) {
             result[(1 + rsub) - 1] = ulpinv;
             if (jtype != 22) {
@@ -154,65 +156,65 @@ void Rget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
             Rcopy(n, wi, 1, witmp, 1);
         }
         //
-        //        Do Test (1) or Test (7)
+        // Do Test (1) or Test (7)
         //
         result[(1 + rsub) - 1] = zero;
         for (j = 1; j <= n - 2; j = j + 1) {
             for (i = j + 2; i <= n; i = i + 1) {
-                if (h[(i - 1) + (j - 1) * ldh] != zero) {
+                if (h[(i - 1) + (j - 1) * lda] != zero) {
                     result[(1 + rsub) - 1] = ulpinv;
                 }
             }
         }
         for (i = 1; i <= n - 2; i = i + 1) {
-            if (h[((i + 1) - 1) + (i - 1) * ldh] != zero && h[((i + 2) - 1) + ((i + 1) - 1) * ldh] != zero) {
+            if (h[((i + 1) - 1) + (i - 1) * lda] != zero && h[((i + 2) - 1) + ((i + 1) - 1) * lda] != zero) {
                 result[(1 + rsub) - 1] = ulpinv;
             }
         }
         for (i = 1; i <= n - 1; i = i + 1) {
-            if (h[((i + 1) - 1) + (i - 1) * ldh] != zero) {
-                if (h[(i - 1) + (i - 1) * ldh] != h[((i + 1) - 1) + ((i + 1) - 1) * ldh] || h[(i - 1) + ((i + 1) - 1) * ldh] == zero || sign(one, h[((i + 1) - 1) + (i - 1) * ldh]) == sign(one, h[(i - 1) + ((i + 1) - 1) * ldh])) {
+            if (h[((i + 1) - 1) + (i - 1) * lda] != zero) {
+                if (h[(i - 1) + (i - 1) * lda] != h[((i + 1) - 1) + ((i + 1) - 1) * lda] || h[(i - 1) + ((i + 1) - 1) * lda] == zero || sign(one, h[((i + 1) - 1) + (i - 1) * lda]) == sign(one, h[(i - 1) + ((i + 1) - 1) * lda])) {
                     result[(1 + rsub) - 1] = ulpinv;
                 }
             }
         }
         //
-        //        Test (2) or (8): Compute norm(A - Q*H*Q') / (norm(A) * N * ULP)
+        // Test (2) or (8): Compute norm(A - Q*H*Q') / (norm(A) * N * ULP)
         //
-        //        Copy A to VS1, used as workspace
+        // Copy A to VS1, used as workspace
         //
         Rlacpy(" ", n, n, a, lda, vs1, ldvs);
         //
-        //        Compute Q*H and store in HT.
+        // Compute Q*H and store in HT.
         //
         Rgemm("No transpose", "No transpose", n, n, n, one, vs, ldvs, h, lda, zero, ht, lda);
         //
-        //        Compute A - Q*H*Q'
+        // Compute A - Q*H*Q'
         //
         Rgemm("No transpose", "Transpose", n, n, n, -one, ht, lda, vs, ldvs, one, vs1, ldvs);
         //
-        anorm = max({Rlange("1", n, n, a, lda, work), smlnum});
+        anorm = max(Rlange("1", n, n, a, lda, work), smlnum);
         wnorm = Rlange("1", n, n, vs1, ldvs, work);
         //
         if (anorm > wnorm) {
-            result[(2 + rsub) - 1] = (wnorm / anorm) / (castREAL(n) * ulp);
+            result[(2 + rsub) - 1] = (wnorm / anorm) / (n * ulp);
         } else {
             if (anorm < one) {
-                result[(2 + rsub) - 1] = (min(wnorm, REAL(castREAL(n) * anorm)) / anorm) / (castREAL(n) * ulp);
+                result[(2 + rsub) - 1] = (min(wnorm, n * anorm) / anorm) / (n * ulp);
             } else {
-                result[(2 + rsub) - 1] = min(REAL(wnorm / anorm), castREAL(n)) / (castREAL(n) * ulp);
+                result[(2 + rsub) - 1] = min(wnorm / anorm, castREAL(n)) / (n * ulp);
             }
         }
         //
-        //        Test (3) or (9):  Compute norm( I - Q'*Q ) / ( N * ULP )
+        // Test (3) or (9):  Compute norm( I - Q'*Q ) / ( N * ULP )
         //
         Rort01("Columns", n, n, vs, ldvs, work, lwork, result[(3 + rsub) - 1]);
         //
-        //        Do Test (4) or Test (10)
+        // Do Test (4) or Test (10)
         //
         result[(4 + rsub) - 1] = zero;
         for (i = 1; i <= n; i = i + 1) {
-            if (h[(i - 1) + (i - 1) * ldh] != wr[i - 1]) {
+            if (h[(i - 1) + (i - 1) * lda] != wr[i - 1]) {
                 result[(4 + rsub) - 1] = ulpinv;
             }
         }
@@ -220,26 +222,26 @@ void Rget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
             if (h[(2 - 1)] == zero && wi[1 - 1] != zero) {
                 result[(4 + rsub) - 1] = ulpinv;
             }
-            if (h[(n - 1) + ((n - 1) - 1) * ldh] == zero && wi[n - 1] != zero) {
+            if (h[(n - 1) + ((n - 1) - 1) * lda] == zero && wi[n - 1] != zero) {
                 result[(4 + rsub) - 1] = ulpinv;
             }
         }
         for (i = 1; i <= n - 1; i = i + 1) {
-            if (h[((i + 1) - 1) + (i - 1) * ldh] != zero) {
-                tmp = sqrt(abs(h[((i + 1) - 1) + (i - 1) * ldh])) * sqrt(abs(h[(i - 1) + ((i + 1) - 1) * ldh]));
-                result[(4 + rsub) - 1] = max(result[(4 + rsub) - 1], REAL(abs(wi[i - 1] - tmp) / max(REAL(ulp * tmp), smlnum)));
-                result[(4 + rsub) - 1] = max(result[(4 + rsub) - 1], REAL(abs(wi[(i + 1) - 1] + tmp) / max(REAL(ulp * tmp), smlnum)));
+            if (h[((i + 1) - 1) + (i - 1) * lda] != zero) {
+                tmp = sqrt(abs(h[((i + 1) - 1) + (i - 1) * lda])) * sqrt(abs(h[(i - 1) + ((i + 1) - 1) * lda]));
+                result[(4 + rsub) - 1] = max(result[(4 + rsub) - 1], abs(wi[i - 1] - tmp) / max(ulp * tmp, smlnum));
+                result[(4 + rsub) - 1] = max(result[(4 + rsub) - 1], abs(wi[(i + 1) - 1] + tmp) / max(ulp * tmp, smlnum));
             } else if (i > 1) {
-                if (h[((i + 1) - 1) + (i - 1) * ldh] == zero && h[(i - 1) + ((i - 1) - 1) * ldh] == zero && wi[i - 1] != zero) {
+                if (h[((i + 1) - 1) + (i - 1) * lda] == zero && h[(i - 1) + ((i - 1) - 1) * lda] == zero && wi[i - 1] != zero) {
                     result[(4 + rsub) - 1] = ulpinv;
                 }
             }
         }
         //
-        //        Do Test (5) or Test (11)
+        // Do Test (5) or Test (11)
         //
         Rlacpy("F", n, n, a, lda, ht, lda);
-        Rgeesx("N", &sort, Rslect, "N", n, ht, lda, sdim, wrt, wit, vs, ldvs, rconde, rcondv, work, lwork, iwork, liwork, bwork, iinfo);
+        Rgeesx("N", sort.elems, Rslect, "N", n, ht, lda, sdim, wrt, wit, vs, ldvs, rconde, rcondv, work, lwork, iwork, liwork, bwork, iinfo);
         if (iinfo != 0 && iinfo != n + 2) {
             result[(5 + rsub) - 1] = ulpinv;
             if (jtype != 22) {
@@ -254,13 +256,13 @@ void Rget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
         result[(5 + rsub) - 1] = zero;
         for (j = 1; j <= n; j = j + 1) {
             for (i = 1; i <= n; i = i + 1) {
-                if (h[(i - 1) + (j - 1) * ldh] != ht[(i - 1) + (j - 1) * ldht]) {
+                if (h[(i - 1) + (j - 1) * lda] != ht[(i - 1) + (j - 1) * lda]) {
                     result[(5 + rsub) - 1] = ulpinv;
                 }
             }
         }
         //
-        //        Do Test (6) or Test (12)
+        // Do Test (6) or Test (12)
         //
         result[(6 + rsub) - 1] = zero;
         for (i = 1; i <= n; i = i + 1) {
@@ -269,7 +271,7 @@ void Rget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
             }
         }
         //
-        //        Do Test (13)
+        // Do Test (13)
         //
         if (isort == 1) {
             result[13 - 1] = zero;
@@ -291,18 +293,18 @@ void Rget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
         //
     }
     //
-    //     If there is enough workspace, perform tests (14) and (15)
-    //     as well as (10) through (13)
+    // If there is enough workspace, perform tests (14) and (15)
+    // as well as (10) through (13)
     //
     if (lwork >= n + (n * n) / 2) {
         //
-        //        Compute both RCONDE and RCONDV with VS
+        // Compute both RCONDE and RCONDV with VS
         //
-        sort = 'S';
+        sort = "S";
         result[14 - 1] = zero;
         result[15 - 1] = zero;
         Rlacpy("F", n, n, a, lda, ht, lda);
-        Rgeesx("V", &sort, Rslect, "B", n, ht, lda, sdim1, wrt, wit, vs1, ldvs, rconde, rcondv, work, lwork, iwork, liwork, bwork, iinfo);
+        Rgeesx("V", sort.elems, Rslect, "B", n, ht, lda, sdim1, wrt, wit, vs1, ldvs, rconde, rcondv, work, lwork, iwork, liwork, bwork, iinfo);
         if (iinfo != 0 && iinfo != n + 2) {
             result[14 - 1] = ulpinv;
             result[15 - 1] = ulpinv;
@@ -315,17 +317,17 @@ void Rget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
             goto statement_250;
         }
         //
-        //        Perform tests (10), (11), (12), and (13)
+        // Perform tests (10), (11), (12), and (13)
         //
         for (i = 1; i <= n; i = i + 1) {
             if (wr[i - 1] != wrt[i - 1] || wi[i - 1] != wit[i - 1]) {
                 result[10 - 1] = ulpinv;
             }
             for (j = 1; j <= n; j = j + 1) {
-                if (h[(i - 1) + (j - 1) * ldh] != ht[(i - 1) + (j - 1) * ldht]) {
+                if (h[(i - 1) + (j - 1) * lda] != ht[(i - 1) + (j - 1) * lda]) {
                     result[11 - 1] = ulpinv;
                 }
-                if (vs[(i - 1) + (j - 1) * ldvs] != vs1[(i - 1) + (j - 1) * ldvs1]) {
+                if (vs[(i - 1) + (j - 1) * ldvs] != vs1[(i - 1) + (j - 1) * ldvs]) {
                     result[12 - 1] = ulpinv;
                 }
             }
@@ -334,10 +336,10 @@ void Rget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
             result[13 - 1] = ulpinv;
         }
         //
-        //        Compute both RCONDE and RCONDV without VS, and compare
+        // Compute both RCONDE and RCONDV without VS, and compare
         //
         Rlacpy("F", n, n, a, lda, ht, lda);
-        Rgeesx("N", &sort, Rslect, "B", n, ht, lda, sdim1, wrt, wit, vs1, ldvs, rcnde1, rcndv1, work, lwork, iwork, liwork, bwork, iinfo);
+        Rgeesx("N", sort.elems, Rslect, "B", n, ht, lda, sdim1, wrt, wit, vs1, ldvs, rcnde1, rcndv1, work, lwork, iwork, liwork, bwork, iinfo);
         if (iinfo != 0 && iinfo != n + 2) {
             result[14 - 1] = ulpinv;
             result[15 - 1] = ulpinv;
@@ -350,7 +352,7 @@ void Rget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
             goto statement_250;
         }
         //
-        //        Perform tests (14) and (15)
+        // Perform tests (14) and (15)
         //
         if (rcnde1 != rconde) {
             result[14 - 1] = ulpinv;
@@ -359,17 +361,17 @@ void Rget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
             result[15 - 1] = ulpinv;
         }
         //
-        //        Perform tests (10), (11), (12), and (13)
+        // Perform tests (10), (11), (12), and (13)
         //
         for (i = 1; i <= n; i = i + 1) {
             if (wr[i - 1] != wrt[i - 1] || wi[i - 1] != wit[i - 1]) {
                 result[10 - 1] = ulpinv;
             }
             for (j = 1; j <= n; j = j + 1) {
-                if (h[(i - 1) + (j - 1) * ldh] != ht[(i - 1) + (j - 1) * ldht]) {
+                if (h[(i - 1) + (j - 1) * lda] != ht[(i - 1) + (j - 1) * lda]) {
                     result[11 - 1] = ulpinv;
                 }
-                if (vs[(i - 1) + (j - 1) * ldvs] != vs1[(i - 1) + (j - 1) * ldvs1]) {
+                if (vs[(i - 1) + (j - 1) * ldvs] != vs1[(i - 1) + (j - 1) * ldvs]) {
                     result[12 - 1] = ulpinv;
                 }
             }
@@ -378,10 +380,10 @@ void Rget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
             result[13 - 1] = ulpinv;
         }
         //
-        //        Compute RCONDE with VS, and compare
+        // Compute RCONDE with VS, and compare
         //
         Rlacpy("F", n, n, a, lda, ht, lda);
-        Rgeesx("V", &sort, Rslect, "E", n, ht, lda, sdim1, wrt, wit, vs1, ldvs, rcnde1, rcndv1, work, lwork, iwork, liwork, bwork, iinfo);
+        Rgeesx("V", sort.elems, Rslect, "E", n, ht, lda, sdim1, wrt, wit, vs1, ldvs, rcnde1, rcndv1, work, lwork, iwork, liwork, bwork, iinfo);
         if (iinfo != 0 && iinfo != n + 2) {
             result[14 - 1] = ulpinv;
             if (jtype != 22) {
@@ -393,23 +395,23 @@ void Rget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
             goto statement_250;
         }
         //
-        //        Perform test (14)
+        // Perform test (14)
         //
         if (rcnde1 != rconde) {
             result[14 - 1] = ulpinv;
         }
         //
-        //        Perform tests (10), (11), (12), and (13)
+        // Perform tests (10), (11), (12), and (13)
         //
         for (i = 1; i <= n; i = i + 1) {
             if (wr[i - 1] != wrt[i - 1] || wi[i - 1] != wit[i - 1]) {
                 result[10 - 1] = ulpinv;
             }
             for (j = 1; j <= n; j = j + 1) {
-                if (h[(i - 1) + (j - 1) * ldh] != ht[(i - 1) + (j - 1) * ldht]) {
+                if (h[(i - 1) + (j - 1) * lda] != ht[(i - 1) + (j - 1) * lda]) {
                     result[11 - 1] = ulpinv;
                 }
-                if (vs[(i - 1) + (j - 1) * ldvs] != vs1[(i - 1) + (j - 1) * ldvs1]) {
+                if (vs[(i - 1) + (j - 1) * ldvs] != vs1[(i - 1) + (j - 1) * ldvs]) {
                     result[12 - 1] = ulpinv;
                 }
             }
@@ -418,10 +420,10 @@ void Rget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
             result[13 - 1] = ulpinv;
         }
         //
-        //        Compute RCONDE without VS, and compare
+        // Compute RCONDE without VS, and compare
         //
         Rlacpy("F", n, n, a, lda, ht, lda);
-        Rgeesx("N", &sort, Rslect, "E", n, ht, lda, sdim1, wrt, wit, vs1, ldvs, rcnde1, rcndv1, work, lwork, iwork, liwork, bwork, iinfo);
+        Rgeesx("N", sort.elems, Rslect, "E", n, ht, lda, sdim1, wrt, wit, vs1, ldvs, rcnde1, rcndv1, work, lwork, iwork, liwork, bwork, iinfo);
         if (iinfo != 0 && iinfo != n + 2) {
             result[14 - 1] = ulpinv;
             if (jtype != 22) {
@@ -433,23 +435,23 @@ void Rget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
             goto statement_250;
         }
         //
-        //        Perform test (14)
+        // Perform test (14)
         //
         if (rcnde1 != rconde) {
             result[14 - 1] = ulpinv;
         }
         //
-        //        Perform tests (10), (11), (12), and (13)
+        // Perform tests (10), (11), (12), and (13)
         //
         for (i = 1; i <= n; i = i + 1) {
             if (wr[i - 1] != wrt[i - 1] || wi[i - 1] != wit[i - 1]) {
                 result[10 - 1] = ulpinv;
             }
             for (j = 1; j <= n; j = j + 1) {
-                if (h[(i - 1) + (j - 1) * ldh] != ht[(i - 1) + (j - 1) * ldht]) {
+                if (h[(i - 1) + (j - 1) * lda] != ht[(i - 1) + (j - 1) * lda]) {
                     result[11 - 1] = ulpinv;
                 }
-                if (vs[(i - 1) + (j - 1) * ldvs] != vs1[(i - 1) + (j - 1) * ldvs1]) {
+                if (vs[(i - 1) + (j - 1) * ldvs] != vs1[(i - 1) + (j - 1) * ldvs]) {
                     result[12 - 1] = ulpinv;
                 }
             }
@@ -458,10 +460,10 @@ void Rget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
             result[13 - 1] = ulpinv;
         }
         //
-        //        Compute RCONDV with VS, and compare
+        // Compute RCONDV with VS, and compare
         //
         Rlacpy("F", n, n, a, lda, ht, lda);
-        Rgeesx("V", &sort, Rslect, "V", n, ht, lda, sdim1, wrt, wit, vs1, ldvs, rcnde1, rcndv1, work, lwork, iwork, liwork, bwork, iinfo);
+        Rgeesx("V", sort.elems, Rslect, "V", n, ht, lda, sdim1, wrt, wit, vs1, ldvs, rcnde1, rcndv1, work, lwork, iwork, liwork, bwork, iinfo);
         if (iinfo != 0 && iinfo != n + 2) {
             result[15 - 1] = ulpinv;
             if (jtype != 22) {
@@ -473,23 +475,23 @@ void Rget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
             goto statement_250;
         }
         //
-        //        Perform test (15)
+        // Perform test (15)
         //
         if (rcndv1 != rcondv) {
             result[15 - 1] = ulpinv;
         }
         //
-        //        Perform tests (10), (11), (12), and (13)
+        // Perform tests (10), (11), (12), and (13)
         //
         for (i = 1; i <= n; i = i + 1) {
             if (wr[i - 1] != wrt[i - 1] || wi[i - 1] != wit[i - 1]) {
                 result[10 - 1] = ulpinv;
             }
             for (j = 1; j <= n; j = j + 1) {
-                if (h[(i - 1) + (j - 1) * ldh] != ht[(i - 1) + (j - 1) * ldht]) {
+                if (h[(i - 1) + (j - 1) * lda] != ht[(i - 1) + (j - 1) * lda]) {
                     result[11 - 1] = ulpinv;
                 }
-                if (vs[(i - 1) + (j - 1) * ldvs] != vs1[(i - 1) + (j - 1) * ldvs1]) {
+                if (vs[(i - 1) + (j - 1) * ldvs] != vs1[(i - 1) + (j - 1) * ldvs]) {
                     result[12 - 1] = ulpinv;
                 }
             }
@@ -498,10 +500,10 @@ void Rget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
             result[13 - 1] = ulpinv;
         }
         //
-        //        Compute RCONDV without VS, and compare
+        // Compute RCONDV without VS, and compare
         //
         Rlacpy("F", n, n, a, lda, ht, lda);
-        Rgeesx("N", &sort, Rslect, "V", n, ht, lda, sdim1, wrt, wit, vs1, ldvs, rcnde1, rcndv1, work, lwork, iwork, liwork, bwork, iinfo);
+        Rgeesx("N", sort.elems, Rslect, "V", n, ht, lda, sdim1, wrt, wit, vs1, ldvs, rcnde1, rcndv1, work, lwork, iwork, liwork, bwork, iinfo);
         if (iinfo != 0 && iinfo != n + 2) {
             result[15 - 1] = ulpinv;
             if (jtype != 22) {
@@ -513,23 +515,23 @@ void Rget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
             goto statement_250;
         }
         //
-        //        Perform test (15)
+        // Perform test (15)
         //
         if (rcndv1 != rcondv) {
             result[15 - 1] = ulpinv;
         }
         //
-        //        Perform tests (10), (11), (12), and (13)
+        // Perform tests (10), (11), (12), and (13)
         //
         for (i = 1; i <= n; i = i + 1) {
             if (wr[i - 1] != wrt[i - 1] || wi[i - 1] != wit[i - 1]) {
                 result[10 - 1] = ulpinv;
             }
             for (j = 1; j <= n; j = j + 1) {
-                if (h[(i - 1) + (j - 1) * ldh] != ht[(i - 1) + (j - 1) * ldht]) {
+                if (h[(i - 1) + (j - 1) * lda] != ht[(i - 1) + (j - 1) * lda]) {
                     result[11 - 1] = ulpinv;
                 }
-                if (vs[(i - 1) + (j - 1) * ldvs] != vs1[(i - 1) + (j - 1) * ldvs1]) {
+                if (vs[(i - 1) + (j - 1) * ldvs] != vs1[(i - 1) + (j - 1) * ldvs]) {
                     result[12 - 1] = ulpinv;
                 }
             }
@@ -542,14 +544,14 @@ void Rget24(bool const comp, INTEGER const jtype, REAL const thresh, INTEGER *is
 //
 statement_250:
     //
-    //     If there are precomputed reciprocal condition numbers, compare
-    //     computed values with them.
+    // If there are precomputed reciprocal condition numbers, compare
+    // computed values with them.
     //
     if (comp) {
         //
-        //        First set up SELOPT, SELDIM, SELVAL, SELWR, and SELWI so that
-        //        the logical function Rslect selects the eigenvalues specified
-        //        by NSLCT and ISLCT.
+        // First set up SELOPT, SELDIM, SELVAL, SELWR, and SELWI so that
+        // the logical function Rslect selects the eigenvalues specified
+        // by NSLCT and ISLCT.
         //
         seldim = n;
         selopt = 1;
@@ -580,10 +582,10 @@ statement_250:
             ipnt[kmin - 1] = itmp;
         }
         for (i = 1; i <= nslct; i = i + 1) {
-            selval[ipnt[islct[i - 1] - 1] - 1] = true;
+            selval[(ipnt[islct[i - 1] - 1]) - 1] = true;
         }
         //
-        //        Compute condition numbers
+        // Compute condition numbers
         //
         Rlacpy("F", n, n, a, lda, ht, lda);
         Rgeesx("N", "S", Rslect, "B", n, ht, lda, sdim1, wrt, wit, vs1, ldvs, rconde, rcondv, work, lwork, iwork, liwork, bwork, iinfo);
@@ -595,11 +597,11 @@ statement_250:
             goto statement_300;
         }
         //
-        //        Compare condition number for average of selected eigenvalues
-        //        taking its condition number into account
+        // Compare condition number for average of selected eigenvalues
+        // taking its condition number into account
         //
         anorm = Rlange("1", n, n, a, lda, work);
-        v = max(REAL(castREAL(n) * eps * anorm), smlnum);
+        v = max(castREAL(n) * eps * anorm, smlnum);
         if (anorm == zero) {
             v = one;
         }
@@ -613,8 +615,8 @@ statement_250:
         } else {
             tolin = v / rcdvin;
         }
-        tol = max(tol, REAL(smlnum / eps));
-        tolin = max(tolin, REAL(smlnum / eps));
+        tol = max(tol, smlnum / eps);
+        tolin = max(tolin, smlnum / eps);
         if (eps * (rcdein - tolin) > rconde + tol) {
             result[16 - 1] = ulpinv;
         } else if (rcdein - tolin > rconde + tol) {
@@ -627,8 +629,8 @@ statement_250:
             result[16 - 1] = one;
         }
         //
-        //        Compare condition numbers for right invariant subspace
-        //        taking its condition number into account
+        // Compare condition numbers for right invariant subspace
+        // taking its condition number into account
         //
         if (v > rcondv * rconde) {
             tol = rcondv;
@@ -640,8 +642,8 @@ statement_250:
         } else {
             tolin = v / rcdein;
         }
-        tol = max(tol, REAL(smlnum / eps));
-        tolin = max(tolin, REAL(smlnum / eps));
+        tol = max(tol, smlnum / eps);
+        tolin = max(tolin, smlnum / eps);
         if (eps * (rcdvin - tolin) > rcondv + tol) {
             result[17 - 1] = ulpinv;
         } else if (rcdvin - tolin > rcondv + tol) {
@@ -658,6 +660,6 @@ statement_250:
         //
     }
     //
-    //     End of Rget24
+    // End of Rget24
     //
 }

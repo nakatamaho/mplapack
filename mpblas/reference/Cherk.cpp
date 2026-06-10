@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,33 +26,18 @@
  *
  */
 
+// Derived from BLAS routine ZHERK.
+// Original BLAS authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 
 void Cherk(const char *uplo, const char *trans, INTEGER const n, INTEGER const k, REAL const alpha, COMPLEX *a, INTEGER const lda, REAL const beta, COMPLEX *c, INTEGER const ldc) {
     //
-    //  -- Reference BLAS level3 routine --
-    //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Parameters ..
-    //     ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     INTEGER nrowa = 0;
     if (Mlsame(trans, "N")) {
@@ -77,11 +62,11 @@ void Cherk(const char *uplo, const char *trans, INTEGER const n, INTEGER const k
         info = 10;
     }
     if (info != 0) {
-        Mxerbla("Cherk ", info);
+        Mxerbla("Cherk", info);
         return;
     }
     //
-    //     Quick return if possible.
+    // Quick return if possible.
     //
     const REAL zero = 0.0;
     const REAL one = 1.0;
@@ -89,7 +74,7 @@ void Cherk(const char *uplo, const char *trans, INTEGER const n, INTEGER const k
         return;
     }
     //
-    //     And when  alpha.eq.zero.
+    // And when  alpha.eq.zero.
     //
     INTEGER j = 0;
     INTEGER i = 0;
@@ -128,14 +113,14 @@ void Cherk(const char *uplo, const char *trans, INTEGER const n, INTEGER const k
         return;
     }
     //
-    //     Start the operations.
+    // Start the operations.
     //
     INTEGER l = 0;
     COMPLEX temp = 0.0;
     REAL rtemp = 0.0;
     if (Mlsame(trans, "N")) {
         //
-        //        Form  C := alpha*A*A**H + beta*C.
+        // Form  C := alpha*A*A**H + beta*C.
         //
         if (upper) {
             for (j = 1; j <= n; j = j + 1) {
@@ -188,7 +173,7 @@ void Cherk(const char *uplo, const char *trans, INTEGER const n, INTEGER const k
         }
     } else {
         //
-        //        Form  C := alpha*A**H*A + beta*C.
+        // Form  C := alpha*A**H*A + beta*C.
         //
         if (upper) {
             for (j = 1; j <= n; j = j + 1) {
@@ -239,6 +224,6 @@ void Cherk(const char *uplo, const char *trans, INTEGER const n, INTEGER const k
         }
     }
     //
-    //     End of Cherk .
+    // End of Cherk
     //
 }

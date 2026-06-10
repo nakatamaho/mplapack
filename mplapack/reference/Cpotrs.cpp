@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,35 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZPOTRS.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Cpotrs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     bool upper = Mlsame(uplo, "U");
@@ -74,7 +58,7 @@ void Cpotrs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, I
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0 || nrhs == 0) {
         return;
@@ -83,28 +67,28 @@ void Cpotrs(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, I
     const COMPLEX one = COMPLEX(1.0, 0.0);
     if (upper) {
         //
-        //        Solve A*X = B where A = U**H *U.
+        // Solve A*X = B where A = U**H *U.
         //
-        //        Solve U**H *X = B, overwriting B with X.
+        // Solve U**H *X = B, overwriting B with X.
         //
         Ctrsm("Left", "Upper", "Conjugate transpose", "Non-unit", n, nrhs, one, a, lda, b, ldb);
         //
-        //        Solve U*X = B, overwriting B with X.
+        // Solve U*X = B, overwriting B with X.
         //
         Ctrsm("Left", "Upper", "No transpose", "Non-unit", n, nrhs, one, a, lda, b, ldb);
     } else {
         //
-        //        Solve A*X = B where A = L*L**H.
+        // Solve A*X = B where A = L*L**H.
         //
-        //        Solve L*X = B, overwriting B with X.
+        // Solve L*X = B, overwriting B with X.
         //
         Ctrsm("Left", "Lower", "No transpose", "Non-unit", n, nrhs, one, a, lda, b, ldb);
         //
-        //        Solve L**H *X = B, overwriting B with X.
+        // Solve L**H *X = B, overwriting B with X.
         //
         Ctrsm("Left", "Lower", "Conjugate transpose", "Non-unit", n, nrhs, one, a, lda, b, ldb);
     }
     //
-    //     End of Cpotrs
+    // End of Cpotrs
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,8 +26,17 @@
  *
  */
 
+// Derived from LAPACK routine DBDSQR.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
+#include <mplapack_arithmetic_params.h>
+#include <mplapack_arithmetic_params_double.h>
 
 void Rbdsqr(const char *uplo, INTEGER const n, INTEGER const ncvt, INTEGER const nru, INTEGER const ncc, REAL *d, REAL *e, REAL *vt, INTEGER const ldvt, REAL *u, INTEGER const ldu, REAL *c, INTEGER const ldc, REAL *work, INTEGER &info) {
     bool lower = false;
@@ -44,15 +53,19 @@ void Rbdsqr(const char *uplo, INTEGER const n, INTEGER const ncvt, INTEGER const
     REAL r = 0.0;
     const REAL ten = 10.0;
     const REAL hndrd = 100.0;
-    const REAL meigth = -0.125e0;
+    const REAL meigth = -0.125;
     REAL tolmul = 0.0;
     REAL tol = 0.0;
     const REAL zero = 0.0;
     REAL smax = 0.0;
-    REAL sminl = 0.0;
+    REAL smin = 0.0;
     REAL sminoa = 0.0;
     REAL mu = 0.0;
-    const INTEGER maxitr = 6;
+    const INTEGER maxitr_base = 6;
+    INTEGER maxitr = maxitr_base;
+    const INTEGER maxitr_cap = 1000;
+    REAL eps_ref = 0.0;
+    REAL scale_ratio = 0.0;
     REAL thresh = 0.0;
     INTEGER maxitdivn = 0;
     INTEGER iterdivn = 0;
@@ -60,7 +73,6 @@ void Rbdsqr(const char *uplo, INTEGER const n, INTEGER const ncvt, INTEGER const
     INTEGER oldll = 0;
     INTEGER oldm = 0;
     INTEGER m = 0;
-    REAL smin = 0.0;
     INTEGER lll = 0;
     INTEGER ll = 0;
     REAL abss = 0.0;
@@ -71,7 +83,7 @@ void Rbdsqr(const char *uplo, INTEGER const n, INTEGER const ncvt, INTEGER const
     REAL cosr = 0.0;
     REAL sinl = 0.0;
     REAL cosl = 0.0;
-    const REAL hndrth = 0.01e0;
+    const REAL hndrth = 0.01;
     REAL shift = 0.0;
     REAL sll = 0.0;
     const REAL one = 1.0;
@@ -84,7 +96,7 @@ void Rbdsqr(const char *uplo, INTEGER const n, INTEGER const ncvt, INTEGER const
     INTEGER isub = 0;
     INTEGER j = 0;
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     lower = Mlsame(uplo, "L");
@@ -116,16 +128,16 @@ void Rbdsqr(const char *uplo, INTEGER const n, INTEGER const ncvt, INTEGER const
         goto statement_160;
     }
     //
-    //     ROTATE is true if any singular vectors desired, false otherwise
+    // ROTATE is true if any singular vectors desired, false otherwise
     //
     rotate = (ncvt > 0) || (nru > 0) || (ncc > 0);
     //
-    //     If no singular vectors desired, use qd algorithm
+    // If no singular vectors desired, use qd algorithm
     //
     if (!rotate) {
         Rlasq1(n, d, e, work, info);
         //
-        //     If INFO equals 2, dqds didn't finish, try to finish
+        // If INFO equals 2, dqds didn't finish, try to finish
         //
         if (info != 2) {
             return;
@@ -138,13 +150,23 @@ void Rbdsqr(const char *uplo, INTEGER const n, INTEGER const ncvt, INTEGER const
     nm13 = nm12 + nm1;
     idir = 0;
     //
-    //     Get machine constants
+    // Get machine constants
     //
     eps = Rlamch("Epsilon");
     unfl = Rlamch("Safe minimum");
+    eps_ref = mplapack::get_arithmetic_params<double>().eps;
+    // maxitr is tuned for double precision. For high-precision backends,
+    // scale the zero-shift QR sweep limit with log(1/eps).
+    scale_ratio = log(eps) / log(eps_ref);
+    if (scale_ratio >= one) {
+        maxitr = iceil(castREAL(maxitr_base) * scale_ratio);
+    }
+    if (maxitr > maxitr_cap) {
+        maxitr = maxitr_cap;
+    }
     //
-    //     If matrix lower bidiagonal, rotate to be upper bidiagonal
-    //     by applying Givens rotations on the left
+    // If matrix lower bidiagonal, rotate to be upper bidiagonal
+    // by applying Givens rotations on the left
     //
     if (lower) {
         for (i = 1; i <= n - 1; i = i + 1) {
@@ -156,7 +178,7 @@ void Rbdsqr(const char *uplo, INTEGER const n, INTEGER const ncvt, INTEGER const
             work[(nm1 + i) - 1] = sn;
         }
         //
-        //        Update singular vectors if desired
+        // Update singular vectors if desired
         //
         if (nru > 0) {
             Rlasr("R", "V", "F", nru, n, &work[1 - 1], &work[n - 1], u, ldu);
@@ -166,26 +188,31 @@ void Rbdsqr(const char *uplo, INTEGER const n, INTEGER const ncvt, INTEGER const
         }
     }
     //
-    //     Compute singular values to relative accuracy TOL
-    //     (By setting TOL to be negative, algorithm will compute
-    //     singular values to absolute accuracy ABS(TOL)*norm(input matrix))
+    // Compute singular values to relative accuracy TOL
+    // (By setting TOL to be negative, algorithm will compute
+    // singular values to absolute accuracy ABS(TOL)*norm(input matrix))
     //
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+    tolmul = max(ten, min(hndrd, one / sqrt(sqrt(sqrt(eps)))));
+#else
     tolmul = max(ten, min(hndrd, pow(eps, meigth)));
+#endif
+
     tol = tolmul * eps;
     //
-    //     Compute approximate maximum, minimum singular values
+    // Compute approximate maximum, minimum singular values
     //
     smax = zero;
     for (i = 1; i <= n; i = i + 1) {
-        smax = max(smax, REAL(abs(d[i - 1])));
+        smax = max(smax, abs(d[i - 1]));
     }
     for (i = 1; i <= n - 1; i = i + 1) {
-        smax = max(smax, REAL(abs(e[i - 1])));
+        smax = max(smax, abs(e[i - 1]));
     }
-    sminl = zero;
+    smin = zero;
     if (tol >= zero) {
         //
-        //        Relative accuracy desired
+        // Relative accuracy desired
         //
         sminoa = abs(d[1 - 1]);
         if (sminoa == zero) {
@@ -201,17 +228,17 @@ void Rbdsqr(const char *uplo, INTEGER const n, INTEGER const ncvt, INTEGER const
         }
     statement_50:
         sminoa = sminoa / sqrt(castREAL(n));
-        thresh = max(REAL(tol * sminoa), REAL(castREAL(maxitr * n * n) * unfl));
+        thresh = max(tol * sminoa, maxitr * (n * (n * unfl)));
     } else {
         //
-        //        Absolute accuracy desired
+        // Absolute accuracy desired
         //
-        thresh = max(REAL(abs(tol) * smax), REAL(castREAL(maxitr * n * n) * unfl));
+        thresh = max(abs(tol) * smax, maxitr * (n * (n * unfl)));
     }
     //
-    //     Prepare for main iteration loop for the singular values
-    //     (MAXIT is the maximum number of passes through the inner
-    //     loop permitted before nonconvergence signalled.)
+    // Prepare for main iteration loop for the singular values
+    // (MAXIT is the maximum number of passes through the inner
+    // loop permitted before nonconvergence signalled.)
     //
     maxitdivn = maxitr * n;
     iterdivn = 0;
@@ -219,15 +246,15 @@ void Rbdsqr(const char *uplo, INTEGER const n, INTEGER const ncvt, INTEGER const
     oldll = -1;
     oldm = -1;
     //
-    //     M points to last element of unconverged part of matrix
+    // M points to last element of unconverged part of matrix
     //
     m = n;
 //
-//     Begin main iteration loop
+// Begin main iteration loop
 //
 statement_60:
     //
-    //     Check for convergence or exceeding iteration count
+    // Check for convergence or exceeding iteration count
     //
     if (m <= 1) {
         goto statement_160;
@@ -241,13 +268,12 @@ statement_60:
         }
     }
     //
-    //     Find diagonal block of matrix to work on
+    // Find diagonal block of matrix to work on
     //
     if (tol < zero && abs(d[m - 1]) <= thresh) {
         d[m - 1] = zero;
     }
     smax = abs(d[m - 1]);
-    smin = smax;
     for (lll = 1; lll <= m - 1; lll = lll + 1) {
         ll = m - lll;
         abss = abs(d[ll - 1]);
@@ -258,19 +284,18 @@ statement_60:
         if (abse <= thresh) {
             goto statement_80;
         }
-        smin = min(smin, abss);
-        smax = max({smax, abss, abse});
+        smax = max(smax, abss, abse);
     }
     ll = 0;
     goto statement_90;
 statement_80:
     e[ll - 1] = zero;
     //
-    //     Matrix splits since E(LL) = 0
+    // Matrix splits since E(LL) = 0
     //
     if (ll == m - 1) {
         //
-        //        Convergence of bottom singular value, return to top of loop
+        // Convergence of bottom singular value, return to top of loop
         //
         m = m - 1;
         goto statement_60;
@@ -278,18 +303,18 @@ statement_80:
 statement_90:
     ll++;
     //
-    //     E(LL) through E(M-1) are nonzero, E(LL-1) is zero
+    // E(LL) through E(M-1) are nonzero, E(LL-1) is zero
     //
     if (ll == m - 1) {
         //
-        //        2 by 2 block, handle separately
+        // 2 by 2 block, handle separately
         //
         Rlasv2(d[(m - 1) - 1], e[(m - 1) - 1], d[m - 1], sigmn, sigmx, sinr, cosr, sinl, cosl);
         d[(m - 1) - 1] = sigmx;
         e[(m - 1) - 1] = zero;
         d[m - 1] = sigmn;
         //
-        //        Compute singular vectors, if desired
+        // Compute singular vectors, if desired
         //
         if (ncvt > 0) {
             Rrot(ncvt, &vt[((m - 1) - 1)], ldvt, &vt[(m - 1)], ldvt, cosr, sinr);
@@ -304,29 +329,29 @@ statement_90:
         goto statement_60;
     }
     //
-    //     If working on new submatrix, choose shift direction
-    //     (from larger end diagonal element towards smaller)
+    // If working on new submatrix, choose shift direction
+    // (from larger end diagonal element towards smaller)
     //
     if (ll > oldm || m < oldll) {
         if (abs(d[ll - 1]) >= abs(d[m - 1])) {
             //
-            //           Chase bulge from top (big end) to bottom (small end)
+            // Chase bulge from top (big end) to bottom (small end)
             //
             idir = 1;
         } else {
             //
-            //           Chase bulge from bottom (big end) to top (small end)
+            // Chase bulge from bottom (big end) to top (small end)
             //
             idir = 2;
         }
     }
     //
-    //     Apply convergence tests
+    // Apply convergence tests
     //
     if (idir == 1) {
         //
-        //        Run convergence test in forward direction
-        //        First apply standard test to bottom of matrix
+        // Run convergence test in forward direction
+        // First apply standard test to bottom of matrix
         //
         if (abs(e[(m - 1) - 1]) <= abs(tol) * abs(d[m - 1]) || (tol < zero && abs(e[(m - 1) - 1]) <= thresh)) {
             e[(m - 1) - 1] = zero;
@@ -335,25 +360,25 @@ statement_90:
         //
         if (tol >= zero) {
             //
-            //           If relative accuracy desired,
-            //           apply convergence criterion forward
+            // If relative accuracy desired,
+            // apply convergence criterion forward
             //
             mu = abs(d[ll - 1]);
-            sminl = mu;
+            smin = mu;
             for (lll = ll; lll <= m - 1; lll = lll + 1) {
                 if (abs(e[lll - 1]) <= tol * mu) {
                     e[lll - 1] = zero;
                     goto statement_60;
                 }
                 mu = abs(d[(lll + 1) - 1]) * (mu / (mu + abs(e[lll - 1])));
-                sminl = min(sminl, mu);
+                smin = min(smin, mu);
             }
         }
         //
     } else {
         //
-        //        Run convergence test in backward direction
-        //        First apply standard test to top of matrix
+        // Run convergence test in backward direction
+        // First apply standard test to top of matrix
         //
         if (abs(e[ll - 1]) <= abs(tol) * abs(d[ll - 1]) || (tol < zero && abs(e[ll - 1]) <= thresh)) {
             e[ll - 1] = zero;
@@ -362,35 +387,35 @@ statement_90:
         //
         if (tol >= zero) {
             //
-            //           If relative accuracy desired,
-            //           apply convergence criterion backward
+            // If relative accuracy desired,
+            // apply convergence criterion backward
             //
             mu = abs(d[m - 1]);
-            sminl = mu;
+            smin = mu;
             for (lll = m - 1; lll >= ll; lll = lll - 1) {
                 if (abs(e[lll - 1]) <= tol * mu) {
                     e[lll - 1] = zero;
                     goto statement_60;
                 }
                 mu = abs(d[lll - 1]) * (mu / (mu + abs(e[lll - 1])));
-                sminl = min(sminl, mu);
+                smin = min(smin, mu);
             }
         }
     }
     oldll = ll;
     oldm = m;
     //
-    //     Compute shift.  First, test if shifting would ruin relative
-    //     accuracy, and if so set the shift to zero.
+    // Compute shift.  First, test if shifting would ruin relative
+    // accuracy, and if so set the shift to zero.
     //
-    if (tol >= zero && n * tol * (sminl / smax) <= max(eps, REAL(hndrth * tol))) {
+    if (tol >= zero && n * tol * (smin / smax) <= max(eps, hndrth * tol)) {
         //
-        //        Use a zero shift to avoid loss of relative accuracy
+        // Use a zero shift to avoid loss of relative accuracy
         //
         shift = zero;
     } else {
         //
-        //        Compute the shift from 2-by-2 block at end of matrix
+        // Compute the shift from 2-by-2 block at end of matrix
         //
         if (idir == 1) {
             sll = abs(d[ll - 1]);
@@ -400,7 +425,7 @@ statement_90:
             Rlas2(d[ll - 1], e[ll - 1], d[(ll + 1) - 1], shift, r);
         }
         //
-        //        Test if shift negligible, and if so set to zero
+        // Test if shift negligible, and if so set to zero
         //
         if (sll > zero) {
             if (pow2((shift / sll)) < eps) {
@@ -409,17 +434,17 @@ statement_90:
         }
     }
     //
-    //     Increment iteration count
+    // Increment iteration count
     //
     iter += m - ll;
     //
-    //     If SHIFT = 0, do simplified QR iteration
+    // If SHIFT = 0, do simplified QR iteration
     //
     if (shift == zero) {
         if (idir == 1) {
             //
-            //           Chase bulge from top to bottom
-            //           Save cosines and sines for later singular vector updates
+            // Chase bulge from top to bottom
+            // Save cosines and sines for later singular vector updates
             //
             cs = one;
             oldcs = one;
@@ -438,7 +463,7 @@ statement_90:
             d[m - 1] = h * oldcs;
             e[(m - 1) - 1] = h * oldsn;
             //
-            //           Update singular vectors
+            // Update singular vectors
             //
             if (ncvt > 0) {
                 Rlasr("L", "V", "F", m - ll + 1, ncvt, &work[1 - 1], &work[n - 1], &vt[(ll - 1)], ldvt);
@@ -450,7 +475,7 @@ statement_90:
                 Rlasr("L", "V", "F", m - ll + 1, ncc, &work[(nm12 + 1) - 1], &work[(nm13 + 1) - 1], &c[(ll - 1)], ldc);
             }
             //
-            //           Test convergence
+            // Test convergence
             //
             if (abs(e[(m - 1) - 1]) <= thresh) {
                 e[(m - 1) - 1] = zero;
@@ -458,8 +483,8 @@ statement_90:
             //
         } else {
             //
-            //           Chase bulge from bottom to top
-            //           Save cosines and sines for later singular vector updates
+            // Chase bulge from bottom to top
+            // Save cosines and sines for later singular vector updates
             //
             cs = one;
             oldcs = one;
@@ -478,7 +503,7 @@ statement_90:
             d[ll - 1] = h * oldcs;
             e[ll - 1] = h * oldsn;
             //
-            //           Update singular vectors
+            // Update singular vectors
             //
             if (ncvt > 0) {
                 Rlasr("L", "V", "B", m - ll + 1, ncvt, &work[(nm12 + 1) - 1], &work[(nm13 + 1) - 1], &vt[(ll - 1)], ldvt);
@@ -490,7 +515,7 @@ statement_90:
                 Rlasr("L", "V", "B", m - ll + 1, ncc, &work[1 - 1], &work[n - 1], &c[(ll - 1)], ldc);
             }
             //
-            //           Test convergence
+            // Test convergence
             //
             if (abs(e[ll - 1]) <= thresh) {
                 e[ll - 1] = zero;
@@ -498,12 +523,12 @@ statement_90:
         }
     } else {
         //
-        //        Use nonzero shift
+        // Use nonzero shift
         //
         if (idir == 1) {
             //
-            //           Chase bulge from top to bottom
-            //           Save cosines and sines for later singular vector updates
+            // Chase bulge from top to bottom
+            // Save cosines and sines for later singular vector updates
             //
             f = (abs(d[ll - 1]) - shift) * (sign(one, d[ll - 1]) + shift / d[ll - 1]);
             g = e[ll - 1];
@@ -531,7 +556,7 @@ statement_90:
             }
             e[(m - 1) - 1] = f;
             //
-            //           Update singular vectors
+            // Update singular vectors
             //
             if (ncvt > 0) {
                 Rlasr("L", "V", "F", m - ll + 1, ncvt, &work[1 - 1], &work[n - 1], &vt[(ll - 1)], ldvt);
@@ -543,7 +568,7 @@ statement_90:
                 Rlasr("L", "V", "F", m - ll + 1, ncc, &work[(nm12 + 1) - 1], &work[(nm13 + 1) - 1], &c[(ll - 1)], ldc);
             }
             //
-            //           Test convergence
+            // Test convergence
             //
             if (abs(e[(m - 1) - 1]) <= thresh) {
                 e[(m - 1) - 1] = zero;
@@ -551,8 +576,8 @@ statement_90:
             //
         } else {
             //
-            //           Chase bulge from bottom to top
-            //           Save cosines and sines for later singular vector updates
+            // Chase bulge from bottom to top
+            // Save cosines and sines for later singular vector updates
             //
             f = (abs(d[m - 1]) - shift) * (sign(one, d[m - 1]) + shift / d[m - 1]);
             g = e[(m - 1) - 1];
@@ -580,13 +605,13 @@ statement_90:
             }
             e[ll - 1] = f;
             //
-            //           Test convergence
+            // Test convergence
             //
             if (abs(e[ll - 1]) <= thresh) {
                 e[ll - 1] = zero;
             }
             //
-            //           Update singular vectors if desired
+            // Update singular vectors if desired
             //
             if (ncvt > 0) {
                 Rlasr("L", "V", "B", m - ll + 1, ncvt, &work[(nm12 + 1) - 1], &work[(nm13 + 1) - 1], &vt[(ll - 1)], ldvt);
@@ -600,18 +625,24 @@ statement_90:
         }
     }
     //
-    //     QR iteration finished, go back and check convergence
+    // QR iteration finished, go back and check convergence
     //
     goto statement_60;
 //
-//     All singular values converged, so make them positive
+// All singular values converged, so make them positive
 //
 statement_160:
     for (i = 1; i <= n; i = i + 1) {
+        if (d[i - 1] == zero) {
+            //
+            // Avoid -ZERO
+            //
+            d[i - 1] = zero;
+        }
         if (d[i - 1] < zero) {
             d[i - 1] = -d[i - 1];
             //
-            //           Change sign of singular vectors, if desired
+            // Change sign of singular vectors, if desired
             //
             if (ncvt > 0) {
                 Rscal(ncvt, negone, &vt[(i - 1)], ldvt);
@@ -619,12 +650,12 @@ statement_160:
         }
     }
     //
-    //     Sort the singular values into decreasing order (insertion sort on
-    //     singular values, but only one transposition per singular vector)
+    // Sort the singular values into decreasing order (insertion sort on
+    // singular values, but only one transposition per singular vector)
     //
     for (i = 1; i <= n - 1; i = i + 1) {
         //
-        //        Scan for smallest D(I)
+        // Scan for smallest D(I)
         //
         isub = 1;
         smin = d[1 - 1];
@@ -636,7 +667,7 @@ statement_160:
         }
         if (isub != n + 1 - i) {
             //
-            //           Swap singular values and vectors
+            // Swap singular values and vectors
             //
             d[isub - 1] = d[(n + 1 - i) - 1];
             d[(n + 1 - i) - 1] = smin;
@@ -653,7 +684,7 @@ statement_160:
     }
     goto statement_220;
 //
-//     Maximum number of iterations exceeded, failure to converge
+// Maximum number of iterations exceeded, failure to converge
 //
 statement_200:
     info = 0;
@@ -664,6 +695,6 @@ statement_200:
     }
 statement_220:;
     //
-    //     End of Rbdsqr
+    // End of Rbdsqr
     //
 }

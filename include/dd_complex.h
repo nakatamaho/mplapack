@@ -129,20 +129,20 @@ const dd_complex operator+(const std::complex<double> &a, const dd_complex &b);
 const dd_complex operator-(const dd_complex &a, const dd_complex &b);
 const dd_complex operator-(const dd_complex &a, const dd_real &b);
 const dd_complex operator-(const dd_real &a, const dd_complex &b);
-const dd_complex operator-(const dd_complex &a, std::complex<double> &b);
-const dd_complex operator-(std::complex<double> &a, const dd_complex &b);
+const dd_complex operator-(const dd_complex &a, const std::complex<double> &b);
+const dd_complex operator-(const std::complex<double> &a, const dd_complex &b);
 
 const dd_complex operator*(const dd_complex &a, const dd_complex &b);
 const dd_complex operator*(const dd_complex &a, const dd_real &b);
 const dd_complex operator*(const dd_real &a, const dd_complex &b);
-const dd_complex operator*(const dd_complex &a, std::complex<double> &b);
-const dd_complex operator*(std::complex<double> &a, const dd_complex &b);
+const dd_complex operator*(const dd_complex &a, const std::complex<double> &b);
+const dd_complex operator*(const std::complex<double> &a, const dd_complex &b);
 
 const dd_complex operator/(const dd_complex &a, const dd_complex &b);
 const dd_complex operator/(const dd_complex &a, const dd_real &b);
 const dd_complex operator/(const dd_real &a, const dd_complex &b);
-const dd_complex operator/(const dd_complex &a, std::complex<double> &b);
-const dd_complex operator/(std::complex<double> &a, const dd_complex &b);
+const dd_complex operator/(const dd_complex &a, const std::complex<double> &b);
+const dd_complex operator/(const std::complex<double> &a, const dd_complex &b);
 
 // constructor
 inline dd_complex::dd_complex() {
@@ -309,6 +309,14 @@ inline const dd_complex operator-(const dd_complex &a, const dd_complex &b) {
     return tmp -= b;
 }
 
+inline const dd_complex operator-(const dd_complex &a, const std::complex<double> &b) {
+    return a - dd_complex(b);
+}
+
+inline const dd_complex operator-(const std::complex<double> &a, const dd_complex &b) {
+    return dd_complex(a) - b;
+}
+
 // XXX can overflow
 inline dd_complex &dd_complex::operator*=(const dd_complex &b) {
     dd_complex tmp(*this);
@@ -328,6 +336,14 @@ inline const dd_complex operator*(const dd_complex &a, const dd_complex &b) {
     dd_complex tmp(a);
     tmp *= b;
     return tmp;
+}
+
+inline const dd_complex operator*(const dd_complex &a, const std::complex<double> &b) {
+    return a * dd_complex(b);
+}
+
+inline const dd_complex operator*(const std::complex<double> &a, const dd_complex &b) {
+    return dd_complex(a) * b;
 }
 
 inline dd_complex &dd_complex::operator/=(const dd_complex &b) {
@@ -360,8 +376,8 @@ inline dd_complex &dd_complex::operator/=(const dd_complex &b) {
 
 inline dd_complex &dd_complex::operator/=(const dd_real &b) {
     dd_complex tmp(*this);
-    re = (tmp.re * b);
-    im = (tmp.im * b);
+    re = (tmp.re / b);
+    im = (tmp.im / b);
     return (*this);
 }
 
@@ -376,6 +392,12 @@ inline const dd_complex operator/(const dd_complex &a, const dd_complex &b) {
     dd_complex tmp(a);
     tmp /= b;
     return tmp;
+}
+inline const dd_complex operator/(const dd_complex &a, const std::complex<double> &b) {
+    return a / dd_complex(b);
+}
+inline const dd_complex operator/(const std::complex<double> &a, const dd_complex &b) {
+    return dd_complex(a) / b;
 }
 inline const dd_complex operator/(const dd_complex &a, const dd_real &b) {
     dd_complex tmp;

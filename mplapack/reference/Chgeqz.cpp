@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,10 +26,17 @@
  *
  */
 
+// Derived from LAPACK routine ZHGEQZ.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
-
-inline REAL abs1(COMPLEX x) { return abs(x.real()) + abs(x.imag()); }
+#include <mplapack_arithmetic_params.h>
+#include <mplapack_arithmetic_params_double.h>
 
 void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const n, INTEGER const ilo, INTEGER const ihi, COMPLEX *h, INTEGER const ldh, COMPLEX *t, INTEGER const ldt, COMPLEX *alpha, COMPLEX *beta, COMPLEX *q, INTEGER const ldq, COMPLEX *z, INTEGER const ldz, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER &info) {
     COMPLEX x = 0.0;
@@ -60,10 +67,14 @@ void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const
     INTEGER ilastm = 0;
     INTEGER iiter = 0;
     COMPLEX eshift = 0.0;
+    const INTEGER maxit_base = 30;
     INTEGER maxit = 0;
+    const INTEGER maxit_cap = 1000;
     INTEGER jiter = 0;
+    REAL eps = 0.0;
+    REAL eps_ref = 0.0;
+    REAL scale_ratio = 0.0;
     bool ilazro = false;
-    REAL temp = 0.0;
     bool ilazr2 = false;
     INTEGER jch = 0;
     COMPLEX ctemp = 0.0;
@@ -78,8 +89,9 @@ void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const
     COMPLEX abi22 = 0.0;
     COMPLEX abi12 = 0.0;
     COMPLEX shift = 0.0;
+    REAL temp = 0.0;
     const REAL zero = 0.0;
-    const REAL half = 0.5e+0;
+    const REAL half = 0.5;
     REAL temp2 = 0.0;
     COMPLEX y = 0.0;
     INTEGER istart = 0;
@@ -89,7 +101,7 @@ void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const
     INTEGER jc = 0;
     INTEGER jr = 0;
     //
-    //     Decode JOB, COMPQ, COMPZ
+    // Decode JOB, COMPQ, COMPZ
     //
     if (Mlsame(job, "E")) {
         ilschr = false;
@@ -130,7 +142,7 @@ void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const
         icompz = 0;
     }
     //
-    //     Check Argument Values
+    // Check Argument Values
     //
     info = 0;
     work[1 - 1] = max((INTEGER)1, n);
@@ -165,15 +177,15 @@ void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
-    //     WORK( 1 ) = CMPLX( 1 )
+    // WORK( 1 ) = CMPLX( 1 )
     if (n <= 0) {
         work[1 - 1] = COMPLEX(1);
         return;
     }
     //
-    //     Initialize Q and Z
+    // Initialize Q and Z
     //
     if (icompq == 3) {
         Claset("Full", n, n, czero, cone, q, ldq);
@@ -182,19 +194,21 @@ void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const
         Claset("Full", n, n, czero, cone, z, ldz);
     }
     //
-    //     Machine Constants
+    // Machine Constants
     //
     in = ihi + 1 - ilo;
     safmin = Rlamch("S");
-    ulp = Rlamch("E") * Rlamch("B");
+    eps = Rlamch("E");
+    ulp = eps * Rlamch("B");
+    eps_ref = mplapack::get_arithmetic_params<double>().eps;
     anorm = Clanhs("F", in, &h[(ilo - 1) + (ilo - 1) * ldh], ldh, rwork);
     bnorm = Clanhs("F", in, &t[(ilo - 1) + (ilo - 1) * ldt], ldt, rwork);
-    atol = max(safmin, REAL(ulp * anorm));
-    btol = max(safmin, REAL(ulp * bnorm));
+    atol = max(safmin, ulp * anorm);
+    btol = max(safmin, ulp * bnorm);
     ascale = one / max(safmin, anorm);
     bscale = one / max(safmin, bnorm);
     //
-    //     Set Eigenvalues IHI+1:N
+    // Set Eigenvalues IHI+1:N
     //
     for (j = ihi + 1; j <= n; j = j + 1) {
         absb = abs(t[(j - 1) + (j - 1) * ldt]);
@@ -217,26 +231,26 @@ void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const
         beta[j - 1] = t[(j - 1) + (j - 1) * ldt];
     }
     //
-    //     If IHI < ILO, skip QZ steps
+    // If IHI < ILO, skip QZ steps
     //
     if (ihi < ilo) {
         goto statement_190;
     }
     //
-    //     MAIN QZ ITERATION LOOP
+    // MAIN QZ ITERATION LOOP
     //
-    //     Initialize dynamic indices
+    // Initialize dynamic indices
     //
-    //     Eigenvalues ILAST+1:N have been found.
-    //        Column operations modify rows IFRSTM:whatever
-    //        Row operations modify columns whatever:ILASTM
+    // Eigenvalues ILAST+1:N have been found.
+    // Column operations modify rows IFRSTM:whatever
+    // Row operations modify columns whatever:ILASTM
     //
-    //     If only eigenvalues are being computed, then
-    //        IFRSTM is the row of the last splitting row above row ILAST;
-    //        this is always at least ILO.
-    //     IITER counts iterations since the last eigenvalue was found,
-    //        to tell when to use an extraordinary shift.
-    //     MAXIT is the maximum number of QZ sweeps allowed.
+    // If only eigenvalues are being computed, then
+    // IFRSTM is the row of the last splitting row above row ILAST;
+    // this is always at least ILO.
+    // IITER counts iterations since the last eigenvalue was found,
+    // to tell when to use an extraordinary shift.
+    // MAXIT is the maximum number of QZ sweeps allowed.
     //
     ilast = ihi;
     if (ilschr) {
@@ -248,48 +262,57 @@ void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const
     }
     iiter = 0;
     eshift = czero;
-    maxit = 30 * (ihi - ilo + 1);
+    // maxit is tuned for double precision. For high-precision backends,
+    // scale the QZ sweep limit with log(1/eps).
+    maxit = maxit_base * in;
+    scale_ratio = log(eps) / log(eps_ref);
+    if (scale_ratio >= one) {
+        maxit = iceil(castREAL(maxit_base * in) * scale_ratio);
+    }
+    if (maxit > maxit_cap) {
+        maxit = maxit_cap;
+    }
     //
     for (jiter = 1; jiter <= maxit; jiter = jiter + 1) {
         //
-        //        Check for too many iterations.
+        // Check for too many iterations.
         //
         if (jiter > maxit) {
             goto statement_180;
         }
         //
-        //        Split the matrix if possible.
+        // Split the matrix if possible.
         //
-        //        Two tests:
-        //           1: H(j,j-1)=0  or  j=ILO
-        //           2: T(j,j)=0
+        // Two tests:
+        // 1: H(j,j-1)=0  or  j=ILO
+        // 2: T(j,j)=0
         //
-        //        Special case: j=ILAST
+        // Special case: j=ILAST
         //
         if (ilast == ilo) {
             goto statement_60;
         } else {
-            if (abs1(h[(ilast - 1) + ((ilast - 1) - 1) * ldh]) <= max(safmin, REAL(ulp * (abs1(h[(ilast - 1) + (ilast - 1) * ldh]) + abs1(h[((ilast - 1) - 1) + ((ilast - 1) - 1) * ldh]))))) {
+            if (cabs1(h[(ilast - 1) + ((ilast - 1) - 1) * ldh]) <= max(safmin, ulp * (cabs1(h[(ilast - 1) + (ilast - 1) * ldh]) + cabs1(h[((ilast - 1) - 1) + ((ilast - 1) - 1) * ldh])))) {
                 h[(ilast - 1) + ((ilast - 1) - 1) * ldh] = czero;
                 goto statement_60;
             }
         }
         //
-        if (abs(t[(ilast - 1) + (ilast - 1) * ldt]) <= max(safmin, REAL(ulp * (abs(t[((ilast - 1) - 1) + (ilast - 1) * ldt]) + abs(t[((ilast - 1) - 1) + ((ilast - 1) - 1) * ldt]))))) {
+        if (abs(t[(ilast - 1) + (ilast - 1) * ldt]) <= btol) {
             t[(ilast - 1) + (ilast - 1) * ldt] = czero;
             goto statement_50;
         }
         //
-        //        General case: j<ILAST
+        // General case: j<ILAST
         //
         for (j = ilast - 1; j >= ilo; j = j - 1) {
             //
-            //           Test 1: for H(j,j-1)=0 or j=ILO
+            // Test 1: for H(j,j-1)=0 or j=ILO
             //
             if (j == ilo) {
                 ilazro = true;
             } else {
-                if (abs1(h[(j - 1) + ((j - 1) - 1) * ldh]) <= max(safmin, REAL(ulp * (abs1(h[(j - 1) + (j - 1) * ldh]) + abs1(h[((j - 1) - 1) + ((j - 1) - 1) * ldh]))))) {
+                if (cabs1(h[(j - 1) + ((j - 1) - 1) * ldh]) <= max(safmin, ulp * (cabs1(h[(j - 1) + (j - 1) * ldh]) + cabs1(h[((j - 1) - 1) + ((j - 1) - 1) * ldh])))) {
                     h[(j - 1) + ((j - 1) - 1) * ldh] = czero;
                     ilazro = true;
                 } else {
@@ -297,29 +320,25 @@ void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const
                 }
             }
             //
-            //           Test 2: for T(j,j)=0
+            // Test 2: for T(j,j)=0
             //
-            temp = abs(t[(j - 1) + ((j + 1) - 1) * ldt]);
-            if (j > ilo) {
-                temp += abs(t[((j - 1) - 1) + (j - 1) * ldt]);
-            }
-            if (abs(t[(j - 1) + (j - 1) * ldt]) < max(safmin, REAL(ulp * temp))) {
+            if (abs(t[(j - 1) + (j - 1) * ldt]) < btol) {
                 t[(j - 1) + (j - 1) * ldt] = czero;
                 //
-                //              Test 1a: Check for 2 consecutive small subdiagonals in A
+                // Test 1a: Check for 2 consecutive small subdiagonals in A
                 //
                 ilazr2 = false;
                 if (!ilazro) {
-                    if (abs1(h[(j - 1) + ((j - 1) - 1) * ldh]) * (ascale * abs1(h[((j + 1) - 1) + (j - 1) * ldh])) <= abs1(h[(j - 1) + (j - 1) * ldh]) * (ascale * atol)) {
+                    if (cabs1(h[(j - 1) + ((j - 1) - 1) * ldh]) * (ascale * cabs1(h[((j + 1) - 1) + (j - 1) * ldh])) <= cabs1(h[(j - 1) + (j - 1) * ldh]) * (ascale * atol)) {
                         ilazr2 = true;
                     }
                 }
                 //
-                //              If both tests pass (1 & 2), i.e., the leading diagonal
-                //              element of B in the block is zero, split a 1x1 block off
-                //              at the top. (I.e., at the J-th row/column) The leading
-                //              diagonal element of the remainder can also be zero, so
-                //              this may have to be done repeatedly.
+                // If both tests pass (1 & 2), i.e., the leading diagonal
+                // element of B in the block is zero, split a 1x1 block off
+                // at the top. (I.e., at the J-th row/column) The leading
+                // diagonal element of the remainder can also be zero, so
+                // this may have to be done repeatedly.
                 //
                 if (ilazro || ilazr2) {
                     for (jch = j; jch <= ilast - 1; jch = jch + 1) {
@@ -335,7 +354,7 @@ void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const
                             h[(jch - 1) + ((jch - 1) - 1) * ldh] = h[(jch - 1) + ((jch - 1) - 1) * ldh] * c;
                         }
                         ilazr2 = false;
-                        if (abs1(t[((jch + 1) - 1) + ((jch + 1) - 1) * ldt]) >= btol) {
+                        if (cabs1(t[((jch + 1) - 1) + ((jch + 1) - 1) * ldt]) >= btol) {
                             if (jch + 1 >= ilast) {
                                 goto statement_60;
                             } else {
@@ -348,8 +367,8 @@ void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const
                     goto statement_50;
                 } else {
                     //
-                    //                 Only test 2 passed -- chase the zero to T(ILAST,ILAST)
-                    //                 Then process as in the case T(ILAST,ILAST)=0
+                    // Only test 2 passed -- chase the zero to T(ILAST,ILAST)
+                    // Then process as in the case T(ILAST,ILAST)=0
                     //
                     for (jch = j; jch <= ilast - 1; jch = jch + 1) {
                         ctemp = t[(jch - 1) + ((jch + 1) - 1) * ldt];
@@ -375,23 +394,23 @@ void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const
                 }
             } else if (ilazro) {
                 //
-                //              Only test 1 passed -- work on J:ILAST
+                // Only test 1 passed -- work on J:ILAST
                 //
                 ifirst = j;
                 goto statement_70;
             }
             //
-            //           Neither test passed -- try next J
+            // Neither test passed -- try next J
             //
         }
         //
-        //        (Drop-through is "impossible")
+        // (Drop-through is "impossible")
         //
         info = 2 * n + 1;
         goto statement_210;
     //
-    //        T(ILAST,ILAST)=0 -- clear H(ILAST,ILAST-1) to split off a
-    //        1x1 block.
+    // T(ILAST,ILAST)=0 -- clear H(ILAST,ILAST-1) to split off a
+    // 1x1 block.
     //
     statement_50:
         ctemp = h[(ilast - 1) + (ilast - 1) * ldh];
@@ -403,7 +422,7 @@ void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const
             Crot(n, &z[(ilast - 1) * ldz], 1, &z[((ilast - 1) - 1) * ldz], 1, c, s);
         }
     //
-    //        H(ILAST,ILAST-1)=0 -- Standardize B, set ALPHA and BETA
+    // H(ILAST,ILAST-1)=0 -- Standardize B, set ALPHA and BETA
     //
     statement_60:
         absb = abs(t[(ilast - 1) + (ilast - 1) * ldt]);
@@ -425,14 +444,14 @@ void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const
         alpha[ilast - 1] = h[(ilast - 1) + (ilast - 1) * ldh];
         beta[ilast - 1] = t[(ilast - 1) + (ilast - 1) * ldt];
         //
-        //        Go to next block -- exit if finished.
+        // Go to next block -- exit if finished.
         //
         ilast = ilast - 1;
         if (ilast < ilo) {
             goto statement_190;
         }
         //
-        //        Reset counters
+        // Reset counters
         //
         iiter = 0;
         eshift = czero;
@@ -444,10 +463,10 @@ void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const
         }
         goto statement_160;
     //
-    //        QZ step
+    // QZ step
     //
-    //        This iteration only involves rows/columns IFIRST:ILAST.  We
-    //        assume IFIRST < ILAST, and that the diagonal of B is non-zero.
+    // This iteration only involves rows/columns IFIRST:ILAST.  We
+    // assume IFIRST < ILAST, and that the diagonal of B is non-zero.
     //
     statement_70:
         iiter++;
@@ -455,20 +474,20 @@ void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const
             ifrstm = ifirst;
         }
         //
-        //        Compute the Shift.
+        // Compute the Shift.
         //
-        //        At this point, IFIRST < ILAST, and the diagonal elements of
-        //        T(IFIRST:ILAST,IFIRST,ILAST) are larger than BTOL (in
-        //        magnitude)
+        // At this point, IFIRST < ILAST, and the diagonal elements of
+        // T(IFIRST:ILAST,IFIRST,ILAST) are larger than BTOL (in
+        // magnitude)
         //
         if ((iiter / 10) * 10 != iiter) {
             //
-            //           The Wilkinson shift (AEP p.512), i.e., the eigenvalue of
-            //           the bottom-right 2x2 block of A inv(B) which is nearest to
-            //           the bottom-right element.
+            // The Wilkinson shift (AEP p.512), i.e., the eigenvalue of
+            // the bottom-right 2x2 block of A inv(B) which is nearest to
+            // the bottom-right element.
             //
-            //           We factor B as U*D, where U has unit diagonals, and
-            //           compute (A*inv(D))*inv(U).
+            // We factor B as U*D, where U has unit diagonals, and
+            // compute (A*inv(D))*inv(U).
             //
             u12 = (bscale * t[((ilast - 1) - 1) + (ilast - 1) * ldt]) / (bscale * t[(ilast - 1) + (ilast - 1) * ldt]);
             ad11 = (ascale * h[((ilast - 1) - 1) + ((ilast - 1) - 1) * ldh]) / (bscale * t[((ilast - 1) - 1) + ((ilast - 1) - 1) * ldt]);
@@ -480,12 +499,12 @@ void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const
             //
             shift = abi22;
             ctemp = sqrt(abi12) * sqrt(ad21);
-            temp = abs1(ctemp);
+            temp = cabs1(ctemp);
             if (ctemp != zero) {
                 x = half * (ad11 - shift);
-                temp2 = abs1(x);
-                temp = max(temp, abs1(x));
-                y = temp * sqrt((x / temp) * (x / temp) + (ctemp / temp) * (ctemp / temp));
+                temp2 = cabs1(x);
+                temp = max(temp, cabs1(x));
+                y = temp * sqrt(pow2((x / temp)) + pow2((ctemp / temp)));
                 if (temp2 > zero) {
                     if ((x / temp2).real() * y.real() + (x / temp2).imag() * y.imag() < zero) {
                         y = -y;
@@ -495,9 +514,9 @@ void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const
             }
         } else {
             //
-            //           Exceptional shift.  Chosen for no particularly good reason.
+            // Exceptional shift.  Chosen for no particularly good reason.
             //
-            if ((iiter / 20) * 20 == iiter && bscale * abs1(t[(ilast - 1) + (ilast - 1) * ldt]) > safmin) {
+            if ((iiter / 20) * 20 == iiter && bscale * cabs1(t[(ilast - 1) + (ilast - 1) * ldt]) > safmin) {
                 eshift += (ascale * h[(ilast - 1) + (ilast - 1) * ldh]) / (bscale * t[(ilast - 1) + (ilast - 1) * ldt]);
             } else {
                 eshift += (ascale * h[(ilast - 1) + ((ilast - 1) - 1) * ldh]) / (bscale * t[((ilast - 1) - 1) + ((ilast - 1) - 1) * ldt]);
@@ -505,19 +524,19 @@ void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const
             shift = eshift;
         }
         //
-        //        Now check for two consecutive small subdiagonals.
+        // Now check for two consecutive small subdiagonals.
         //
         for (j = ilast - 1; j >= ifirst + 1; j = j - 1) {
             istart = j;
             ctemp = ascale * h[(j - 1) + (j - 1) * ldh] - shift * (bscale * t[(j - 1) + (j - 1) * ldt]);
-            temp = abs1(ctemp);
-            temp2 = ascale * abs1(h[((j + 1) - 1) + (j - 1) * ldh]);
+            temp = cabs1(ctemp);
+            temp2 = ascale * cabs1(h[((j + 1) - 1) + (j - 1) * ldh]);
             tempr = max(temp, temp2);
             if (tempr < one && tempr != zero) {
                 temp = temp / tempr;
                 temp2 = temp2 / tempr;
             }
-            if (abs1(h[(j - 1) + ((j - 1) - 1) * ldh]) * temp2 <= temp * atol) {
+            if (cabs1(h[(j - 1) + ((j - 1) - 1) * ldh]) * temp2 <= temp * atol) {
                 goto statement_90;
             }
         }
@@ -526,14 +545,14 @@ void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const
         ctemp = ascale * h[(ifirst - 1) + (ifirst - 1) * ldh] - shift * (bscale * t[(ifirst - 1) + (ifirst - 1) * ldt]);
     statement_90:
         //
-        //        Do an implicit-shift QZ sweep.
+        // Do an implicit-shift QZ sweep.
         //
-        //        Initial Q
+        // Initial Q
         //
         ctemp2 = ascale * h[((istart + 1) - 1) + (istart - 1) * ldh];
         Clartg(ctemp, ctemp2, c, s, ctemp3);
         //
-        //        Sweep
+        // Sweep
         //
         for (j = istart; j <= ilast - 1; j = j + 1) {
             if (j > istart) {
@@ -585,17 +604,17 @@ void Chgeqz(const char *job, const char *compq, const char *compz, INTEGER const
         //
     }
 //
-//     Drop-through = non-convergence
+// Drop-through = non-convergence
 //
 statement_180:
     info = ilast;
     goto statement_210;
 //
-//     Successful completion of all QZ steps
+// Successful completion of all QZ steps
 //
 statement_190:
     //
-    //     Set Eigenvalues 1:ILO-1
+    // Set Eigenvalues 1:ILO-1
     //
     for (j = 1; j <= ilo - 1; j = j + 1) {
         absb = abs(t[(j - 1) + (j - 1) * ldt]);
@@ -618,15 +637,15 @@ statement_190:
         beta[j - 1] = t[(j - 1) + (j - 1) * ldt];
     }
     //
-    //     Normal Termination
+    // Normal Termination
     //
     info = 0;
 //
-//     Exit (other than argument error) -- return optimal workspace size
+// Exit (other than argument error) -- return optimal workspace size
 //
 statement_210:
     work[1 - 1] = COMPLEX(n);
     //
-    //     End of Chgeqz
+    // End of Chgeqz
     //
 }

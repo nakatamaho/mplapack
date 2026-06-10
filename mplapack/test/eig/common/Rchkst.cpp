@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DCHKST.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,18 +43,12 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER *iseed, REAL const thresh, INTEGER const nounit, REAL *a, INTEGER const lda, REAL *ap, REAL *sd, REAL *se, REAL *d1, REAL *d2, REAL *d3, REAL *d4, REAL *d5, REAL *wa1, REAL *wa2, REAL *wa3, REAL *wr, REAL *u, INTEGER const ldu, REAL *v, REAL *vp, REAL *tau, REAL *z, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const liwork, REAL *result, INTEGER &info) {
-    INTEGER ldv = ldu;
-    INTEGER ldz = ldu;
+void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotype, INTEGER (&iseed)[4], REAL const thresh, INTEGER const nounit, REAL *a, INTEGER const lda, REAL *ap, REAL *sd, REAL *se, REAL *d1, REAL *d2, REAL *d3, REAL *d4, REAL *d5, REAL *wa1, REAL *wa2, REAL *wa3, REAL *wr, REAL *u, INTEGER const ldu, REAL *v, REAL *vp, REAL *tau, REAL *z, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const liwork, REAL *result, INTEGER &info) {
     common cmn;
     common_write write(cmn);
-    const INTEGER maxtyp = 21;
-    char buf[1024];
-    INTEGER ktype[21] = {1, 2, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 8, 8, 8, 9, 9, 9, 9, 9, 10};
-    INTEGER kmagn[21] = {1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 2, 3, 1, 2, 3, 1, 1, 1, 2, 3, 1};
-    INTEGER kmode[21] = {0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 4, 4, 0, 0, 0, 4, 3, 1, 4, 4, 3};
+    static INTEGER ktype[21] = {1, 2, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 8, 8, 8, 9, 9, 9, 9, 9, 10};
+    static INTEGER kmagn[21] = {1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 2, 3, 1, 2, 3, 1, 1, 1, 2, 3, 1};
+    static INTEGER kmode[21] = {0, 0, 4, 3, 1, 4, 4, 4, 3, 1, 4, 4, 0, 0, 0, 4, 3, 1, 4, 4, 3};
     INTEGER idumma[1];
     INTEGER ntestt = 0;
     bool badnn = false;
@@ -75,6 +76,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     INTEGER liwedc = 0;
     INTEGER nap = 0;
     REAL aninv = 0.0;
+    const INTEGER maxtyp = 21;
     INTEGER mtypes = 0;
     INTEGER jtype = 0;
     INTEGER ntest = 0;
@@ -108,18 +110,49 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     INTEGER m3 = 0;
     const bool srel = false;
     const bool srange = false;
+    //
     static const char *format_9999 = "(' Rchkst: ',a,' returned INFO=',i6,'.',/,9x,'N=',i6,', JTYPE=',i6,"
                                      "', ISEED=(',3(i5,','),i5,')')";
     //
-    //     Keep ftnchek happy
+    static const char *format_9998 = "(/,1x,a3,' -- Real Symmetric eigenvalue problem')";
+    static const char *format_9997 = "(' Matrix types (see Rchkst for details): ')";
+    //
+    static const char *format_9996 = "(/,' Special Matrices:',/,'  1=Zero matrix.                        ',"
+                                     "'  5=Diagonal: clustered entries.',/,"
+                                     "'  2=Identity matrix.                    ',"
+                                     "'  6=Diagonal: large, evenly spaced.',/,"
+                                     "'  3=Diagonal: evenly spaced entries.    ',"
+                                     "'  7=Diagonal: small, evenly spaced.',/,"
+                                     "'  4=Diagonal: geometr. spaced entries.')";
+    static const char *format_9995 = "(' Dense ',a,' Matrices:',/,'  8=Evenly spaced eigenvals.            ',"
+                                     "' 12=Small, evenly spaced eigenvals.',/,"
+                                     "'  9=Geometrically spaced eigenvals.     ',"
+                                     "' 13=Matrix with random O(1) entries.',/,"
+                                     "' 10=Clustered eigenvalues.              ',"
+                                     "' 14=Matrix with large random entries.',/,"
+                                     "' 11=Large, evenly spaced eigenvals.     ',"
+                                     "' 15=Matrix with small random entries.')";
+    static const char *format_9994 = "(' 16=Positive definite, evenly spaced eigenvalues',/,"
+                                     "' 17=Positive definite, geometrically spaced eigenvlaues',/,"
+                                     "' 18=Positive definite, clustered eigenvalues',/,"
+                                     "' 19=Positive definite, small evenly spaced eigenvalues',/,"
+                                     "' 20=Positive definite, large evenly spaced eigenvalues',/,"
+                                     "' 21=Diagonally dominant tridiagonal, geometrically',"
+                                     "' spaced eigenvalues')";
+    //
+    static const char *format_9990 = "(' N=',i5,', seed=',4(i4,','),' type ',i2,', test(',i2,')=',g10.3)";
+    //
+    static const char *format_9988 = "(/,'Test performed:  see Rchkst for details.',/)";
+    //
+    // Keep ftnchek happy
     idumma[1 - 1] = 1;
     //
-    //     Check for errors
+    // Check for errors
     //
     ntestt = 0;
     info = 0;
     //
-    //     Important constants
+    // Important constants
     //
     badnn = false;
     tryrac = true;
@@ -132,9 +165,9 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     }
     //
     nblock = iMlaenv(1, "Rsytrd", "L", nmax, -1, -1, -1);
-    nblock = min({nmax, max((INTEGER)1, nblock)});
+    nblock = min(nmax, max((INTEGER)1, nblock));
     //
-    //     Check for errors
+    // Check for errors
     //
     if (nsizes < 0) {
         info = -1;
@@ -146,7 +179,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         info = -9;
     } else if (ldu < nmax) {
         info = -23;
-    } else if (2 * max((INTEGER)2, nmax) * max((INTEGER)2, nmax) > lwork) {
+    } else if (2 * pow2(max((INTEGER)2, nmax)) > lwork) {
         info = -29;
     }
     //
@@ -155,13 +188,13 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (nsizes == 0 || ntypes == 0) {
         return;
     }
     //
-    //     More Important constants
+    // More Important constants
     //
     unfl = Rlamch("Safe minimum");
     ovfl = one / unfl;
@@ -171,7 +204,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
     rtunfl = sqrt(unfl);
     rtovfl = sqrt(ovfl);
     //
-    //     Loop over sizes, types
+    // Loop over sizes, types
     //
     for (i = 1; i <= 4; i = i + 1) {
         iseed2[i - 1] = iseed[i - 1];
@@ -183,13 +216,13 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         n = nn[jsize - 1];
         if (n > 0) {
             lgn = castINTEGER(log(castREAL(n)) / log(two));
-            if ((INTEGER)pow((double)2, (double)lgn) < n) {
+            if ((INTEGER(1) << (lgn)) < n) {
                 lgn++;
             }
-            if ((INTEGER)pow((double)2, (double)lgn) < n) {
+            if ((INTEGER(1) << (lgn)) < n) {
                 lgn++;
             }
-            lwedc = 1 + 4 * n + 2 * n * lgn + 4 * n * n;
+            lwedc = 1 + 4 * n + 2 * n * lgn + 4 * pow2(n);
             liwedc = 6 + 6 * n + 5 * n * lgn;
         } else {
             lwedc = 8;
@@ -215,21 +248,21 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 ioldsd[j - 1] = iseed[j - 1];
             }
             //
-            //           Compute "A"
+            // Compute "A"
             //
-            //           Control parameters:
+            // Control parameters:
             //
-            //               KMAGN  KMODE        KTYPE
-            //           =1  O(1)   clustered 1  zero
-            //           =2  large  clustered 2  identity
-            //           =3  small  exponential  (none)
-            //           =4         arithmetic   diagonal, (w/ eigenvalues)
-            //           =5         random log   symmetric, w/ eigenvalues
-            //           =6         random       (none)
-            //           =7                      random diagonal
-            //           =8                      random symmetric
-            //           =9                      positive definite
-            //           =10                     diagonally dominant tridiagonal
+            // KMAGN  KMODE        KTYPE
+            // =1  O(1)   clustered 1  zero
+            // =2  large  clustered 2  identity
+            // =3  small  exponential  (none)
+            // =4         arithmetic   diagonal, (w/ eigenvalues)
+            // =5         random log   symmetric, w/ eigenvalues
+            // =6         random       (none)
+            // =7                      random diagonal
+            // =8                      random symmetric
+            // =9                      positive definite
+            // =10                     diagonally dominant tridiagonal
             //
             if (mtypes > maxtyp) {
                 goto statement_100;
@@ -238,7 +271,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             itype = ktype[jtype - 1];
             imode = kmode[jtype - 1];
             //
-            //           Compute norm
+            // Compute norm
             //
             switch (kmagn[jtype - 1]) {
             case 1:
@@ -273,16 +306,16 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 cond = ulpinv * aninv / ten;
             }
             //
-            //           Special Matrices -- Identity & Jordan block
+            // Special Matrices -- Identity & Jordan block
             //
-            //              Zero
+            // Zero
             //
             if (itype == 1) {
                 iinfo = 0;
                 //
             } else if (itype == 2) {
                 //
-                //              Identity
+                // Identity
                 //
                 for (jc = 1; jc <= n; jc = jc + 1) {
                     a[(jc - 1) + (jc - 1) * lda] = anorm;
@@ -290,37 +323,37 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
             } else if (itype == 4) {
                 //
-                //              Diagonal Matrix, [Eigen]values Specified
+                // Diagonal Matrix, [Eigen]values Specified
                 //
                 Rlatms(n, n, "S", iseed, "S", work, imode, cond, anorm, 0, 0, "N", a, lda, &work[(n + 1) - 1], iinfo);
                 //
             } else if (itype == 5) {
                 //
-                //              Symmetric, eigenvalues specified
+                // Symmetric, eigenvalues specified
                 //
                 Rlatms(n, n, "S", iseed, "S", work, imode, cond, anorm, n, n, "N", a, lda, &work[(n + 1) - 1], iinfo);
                 //
             } else if (itype == 7) {
                 //
-                //              Diagonal, random eigenvalues
+                // Diagonal, random eigenvalues
                 //
                 Rlatmr(n, n, "S", iseed, "S", work, 6, one, one, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, 0, 0, zero, anorm, "NO", a, lda, iwork, iinfo);
                 //
             } else if (itype == 8) {
                 //
-                //              Symmetric, random eigenvalues
+                // Symmetric, random eigenvalues
                 //
                 Rlatmr(n, n, "S", iseed, "S", work, 6, one, one, "T", "N", &work[(n + 1) - 1], 1, one, &work[(2 * n + 1) - 1], 1, one, "N", idumma, n, n, zero, anorm, "NO", a, lda, iwork, iinfo);
                 //
             } else if (itype == 9) {
                 //
-                //              Positive definite, eigenvalues specified.
+                // Positive definite, eigenvalues specified.
                 //
                 Rlatms(n, n, "S", iseed, "P", work, imode, cond, anorm, n, n, "N", a, lda, &work[(n + 1) - 1], iinfo);
                 //
             } else if (itype == 10) {
                 //
-                //              Positive definite tridiagonal, eigenvalues specified.
+                // Positive definite tridiagonal, eigenvalues specified.
                 //
                 Rlatms(n, n, "S", iseed, "P", work, imode, cond, anorm, 1, 1, "N", a, lda, &work[(n + 1) - 1], iinfo);
                 for (i = 2; i <= n; i = i + 1) {
@@ -337,15 +370,15 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             }
             //
             if (iinfo != 0) {
-                write(nounit, format_9999), "Generator", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Generator", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 return;
             }
         //
         statement_100:
             //
-            //           Call Rsytrd and Rorgtr to compute S and U from
-            //           upper triangle.
+            // Call Rsytrd and Rorgtr to compute S and U from
+            // upper triangle.
             //
             Rlacpy("U", n, n, a, lda, v, ldu);
             //
@@ -353,7 +386,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             Rsytrd("U", n, v, ldu, sd, se, tau, work, lwork, iinfo);
             //
             if (iinfo != 0) {
-                write(nounit, format_9999), "Rsytrd(U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Rsytrd(U)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -368,7 +401,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             ntest = 2;
             Rorgtr("U", n, u, ldu, tau, work, lwork, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Rorgtr(U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Rorgtr(U)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -378,13 +411,13 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 }
             }
             //
-            //           Do tests 1 and 2
+            // Do tests 1 and 2
             //
             Rsyt21(2, "Upper", n, 1, a, lda, sd, se, u, ldu, v, ldu, tau, work, &result[1 - 1]);
             Rsyt21(3, "Upper", n, 1, a, lda, sd, se, u, ldu, v, ldu, tau, work, &result[2 - 1]);
             //
-            //           Call Rsytrd and Rorgtr to compute S and U from
-            //           lower triangle, do tests.
+            // Call Rsytrd and Rorgtr to compute S and U from
+            // lower triangle, do tests.
             //
             Rlacpy("L", n, n, a, lda, v, ldu);
             //
@@ -392,7 +425,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             Rsytrd("L", n, v, ldu, sd, se, tau, work, lwork, iinfo);
             //
             if (iinfo != 0) {
-                write(nounit, format_9999), "Rsytrd(L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Rsytrd(L)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -407,7 +440,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             ntest = 4;
             Rorgtr("L", n, u, ldu, tau, work, lwork, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Rorgtr(L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Rorgtr(L)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -420,7 +453,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             Rsyt21(2, "Lower", n, 1, a, lda, sd, se, u, ldu, v, ldu, tau, work, &result[3 - 1]);
             Rsyt21(3, "Lower", n, 1, a, lda, sd, se, u, ldu, v, ldu, tau, work, &result[4 - 1]);
             //
-            //           Store the upper triangle of A in AP
+            // Store the upper triangle of A in AP
             //
             i = 0;
             for (jc = 1; jc <= n; jc = jc + 1) {
@@ -430,7 +463,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 }
             }
             //
-            //           Call Rsptrd and Ropgtr to compute S and U from AP
+            // Call Rsptrd and Ropgtr to compute S and U from AP
             //
             Rcopy(nap, ap, 1, vp, 1);
             //
@@ -438,7 +471,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             Rsptrd("U", n, vp, sd, se, tau, iinfo);
             //
             if (iinfo != 0) {
-                write(nounit, format_9999), "Rsptrd(U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Rsptrd(U)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -451,7 +484,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             ntest = 6;
             Ropgtr("U", n, vp, tau, u, ldu, work, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Ropgtr(U)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Ropgtr(U)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -461,12 +494,12 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 }
             }
             //
-            //           Do tests 5 and 6
+            // Do tests 5 and 6
             //
             Rspt21(2, "Upper", n, 1, ap, sd, se, u, ldu, vp, tau, work, &result[5 - 1]);
             Rspt21(3, "Upper", n, 1, ap, sd, se, u, ldu, vp, tau, work, &result[6 - 1]);
             //
-            //           Store the lower triangle of A in AP
+            // Store the lower triangle of A in AP
             //
             i = 0;
             for (jc = 1; jc <= n; jc = jc + 1) {
@@ -476,7 +509,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 }
             }
             //
-            //           Call Rsptrd and Ropgtr to compute S and U from AP
+            // Call Rsptrd and Ropgtr to compute S and U from AP
             //
             Rcopy(nap, ap, 1, vp, 1);
             //
@@ -484,7 +517,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             Rsptrd("L", n, vp, sd, se, tau, iinfo);
             //
             if (iinfo != 0) {
-                write(nounit, format_9999), "Rsptrd(L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Rsptrd(L)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -497,7 +530,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             ntest = 8;
             Ropgtr("L", n, vp, tau, u, ldu, work, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Ropgtr(L)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Ropgtr(L)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -510,9 +543,9 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             Rspt21(2, "Lower", n, 1, ap, sd, se, u, ldu, vp, tau, work, &result[7 - 1]);
             Rspt21(3, "Lower", n, 1, ap, sd, se, u, ldu, vp, tau, work, &result[8 - 1]);
             //
-            //           Call Rsteqr to compute D1, D2, and Z, do tests.
+            // Call Rsteqr to compute D1, D2, and Z, do tests.
             //
-            //           Compute D1 and Z
+            // Compute D1 and Z
             //
             Rcopy(n, sd, 1, d1, 1);
             if (n > 0) {
@@ -523,7 +556,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             ntest = 9;
             Rsteqr("V", n, d1, work, z, ldu, &work[(n + 1) - 1], iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Rsteqr(V)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Rsteqr(V)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -533,7 +566,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 }
             }
             //
-            //           Compute D2
+            // Compute D2
             //
             Rcopy(n, sd, 1, d2, 1);
             if (n > 0) {
@@ -543,7 +576,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             ntest = 11;
             Rsteqr("N", n, d2, work, &work[(n + 1) - 1], ldu, &work[(n + 1) - 1], iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Rsteqr(N)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Rsteqr(N)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -553,7 +586,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 }
             }
             //
-            //           Compute D3 (using PWK method)
+            // Compute D3 (using PWK method)
             //
             Rcopy(n, sd, 1, d3, 1);
             if (n > 0) {
@@ -563,7 +596,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             ntest = 12;
             Rsterf(n, d3, work, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Rsterf", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Rsterf", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -573,11 +606,11 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 }
             }
             //
-            //           Do Tests 9 and 10
+            // Do Tests 9 and 10
             //
             Rstt21(n, 0, sd, se, d1, dumma, z, ldu, work, &result[9 - 1]);
             //
-            //           Do Tests 11 and 12
+            // Do Tests 11 and 12
             //
             temp1 = zero;
             temp2 = zero;
@@ -585,17 +618,17 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             temp4 = zero;
             //
             for (j = 1; j <= n; j = j + 1) {
-                temp1 = max({temp1, REAL(abs(d1[j - 1])), REAL(abs(d2[j - 1]))});
-                temp2 = max(temp2, REAL(abs(d1[j - 1] - d2[j - 1])));
-                temp3 = max({temp3, REAL(abs(d1[j - 1])), REAL(abs(d3[j - 1]))});
-                temp4 = max(temp4, REAL(abs(d1[j - 1] - d3[j - 1])));
+                temp1 = max(temp1, abs(d1[j - 1]), abs(d2[j - 1]));
+                temp2 = max(temp2, abs(d1[j - 1] - d2[j - 1]));
+                temp3 = max(temp3, abs(d1[j - 1]), abs(d3[j - 1]));
+                temp4 = max(temp4, abs(d1[j - 1] - d3[j - 1]));
             }
             //
-            result[11 - 1] = temp2 / max({unfl, REAL(ulp * max(temp1, temp2))});
-            result[12 - 1] = temp4 / max({unfl, REAL(ulp * max(temp3, temp4))});
+            result[11 - 1] = temp2 / max(unfl, ulp * max(temp1, temp2));
+            result[12 - 1] = temp4 / max(unfl, ulp * max(temp3, temp4));
             //
-            //           Do Test 13 -- Sturm Sequence Test of Eigenvalues
-            //                         Go up by factors of two until it succeeds
+            // Do Test 13 -- Sturm Sequence Test of Eigenvalues
+            // Go up by factors of two until it succeeds
             //
             ntest = 13;
             temp1 = thresh * (half - ulp);
@@ -611,12 +644,12 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
         statement_170:
             result[13 - 1] = temp1;
             //
-            //           For positive definite matrices ( JTYPE.GT.15 ) call Rpteqr
-            //           and do tests 14, 15, and 16 .
+            // For positive definite matrices ( JTYPE.GT.15 ) call Rpteqr
+            // and do tests 14, 15, and 16 .
             //
             if (jtype > 15) {
                 //
-                //              Compute D4 and Z4
+                // Compute D4 and Z4
                 //
                 Rcopy(n, sd, 1, d4, 1);
                 if (n > 0) {
@@ -627,7 +660,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 ntest = 14;
                 Rpteqr("V", n, d4, work, z, ldu, &work[(n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Rpteqr(V)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9999), "Rpteqr(V)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -637,11 +670,11 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     }
                 }
                 //
-                //              Do Tests 14 and 15
+                // Do Tests 14 and 15
                 //
                 Rstt21(n, 0, sd, se, d4, dumma, z, ldu, work, &result[14 - 1]);
                 //
-                //              Compute D5
+                // Compute D5
                 //
                 Rcopy(n, sd, 1, d5, 1);
                 if (n > 0) {
@@ -651,7 +684,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 ntest = 16;
                 Rpteqr("N", n, d5, work, z, ldu, &work[(n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Rpteqr(N)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9999), "Rpteqr(N)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -661,26 +694,26 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     }
                 }
                 //
-                //              Do Test 16
+                // Do Test 16
                 //
                 temp1 = zero;
                 temp2 = zero;
                 for (j = 1; j <= n; j = j + 1) {
-                    temp1 = max({temp1, REAL(abs(d4[j - 1])), REAL(abs(d5[j - 1]))});
-                    temp2 = max(temp2, REAL(abs(d4[j - 1] - d5[j - 1])));
+                    temp1 = max(temp1, abs(d4[j - 1]), abs(d5[j - 1]));
+                    temp2 = max(temp2, abs(d4[j - 1] - d5[j - 1]));
                 }
                 //
-                result[16 - 1] = temp2 / max(unfl, REAL(hun * ulp * max(temp1, temp2)));
+                result[16 - 1] = temp2 / max(unfl, hun * ulp * max(temp1, temp2));
             } else {
                 result[14 - 1] = zero;
                 result[15 - 1] = zero;
                 result[16 - 1] = zero;
             }
             //
-            //           Call Rstebz with different options and do tests 17-18.
+            // Call Rstebz with different options and do tests 17-18.
             //
-            //              If S is positive definite and diagonally dominant,
-            //              ask for all eigenvalues with high relative accuracy.
+            // If S is positive definite and diagonally dominant,
+            // ask for all eigenvalues with high relative accuracy.
             //
             vl = zero;
             vu = zero;
@@ -691,7 +724,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 abstol = unfl + unfl;
                 Rstebz("A", "E", n, vl, vu, il, iu, abstol, sd, se, m, nsplit, wr, &iwork[1 - 1], &iwork[(n + 1) - 1], work, &iwork[(2 * n + 1) - 1], iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Rstebz(A,rel)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9999), "Rstebz(A,rel)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -701,13 +734,13 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     }
                 }
                 //
-                //              Do test 17
+                // Do test 17
                 //
-                temp2 = two * (two * n - one) * ulp * (one + eight * half * half) / ((one - half) * (one - half) * (one - half) * (one - half));
+                temp2 = two * (two * n - one) * ulp * (one + eight * pow2(half)) / pow4((one - half));
                 //
                 temp1 = zero;
                 for (j = 1; j <= n; j = j + 1) {
-                    temp1 = max(temp1, REAL(abs(d4[j - 1] - wr[(n - j + 1) - 1]) / (abstol + abs(d4[j - 1]))));
+                    temp1 = max(temp1, abs(d4[j - 1] - wr[(n - j + 1) - 1]) / (abstol + abs(d4[j - 1])));
                 }
                 //
                 result[17 - 1] = temp1 / temp2;
@@ -715,13 +748,13 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 result[17 - 1] = zero;
             }
             //
-            //           Now ask for all eigenvalues with high absolute accuracy.
+            // Now ask for all eigenvalues with high absolute accuracy.
             //
             ntest = 18;
             abstol = unfl + unfl;
             Rstebz("A", "E", n, vl, vu, il, iu, abstol, sd, se, m, nsplit, wa1, &iwork[1 - 1], &iwork[(n + 1) - 1], work, &iwork[(2 * n + 1) - 1], iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Rstebz(A)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Rstebz(A)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -731,27 +764,27 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 }
             }
             //
-            //           Do test 18
+            // Do test 18
             //
             temp1 = zero;
             temp2 = zero;
             for (j = 1; j <= n; j = j + 1) {
-                temp1 = max({temp1, REAL(abs(d3[j - 1])), REAL(abs(wa1[j - 1]))});
-                temp2 = max(temp2, REAL(abs(d3[j - 1] - wa1[j - 1])));
+                temp1 = max(temp1, abs(d3[j - 1]), abs(wa1[j - 1]));
+                temp2 = max(temp2, abs(d3[j - 1] - wa1[j - 1]));
             }
             //
-            result[18 - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
+            result[18 - 1] = temp2 / max(unfl, ulp * max(temp1, temp2));
             //
-            //           Choose random values for IL and IU, and ask for the
-            //           IL-th through IU-th eigenvalues.
+            // Choose random values for IL and IU, and ask for the
+            // IL-th through IU-th eigenvalues.
             //
             ntest = 19;
             if (n <= 1) {
                 il = 1;
                 iu = n;
             } else {
-                il = 1 + castINTEGER(castREAL(n - 1) * Rlarnd(1, iseed2));
-                iu = 1 + castINTEGER(castREAL(n - 1) * Rlarnd(1, iseed2));
+                il = 1 + (n - 1) * castINTEGER(Rlarnd(1, iseed2));
+                iu = 1 + (n - 1) * castINTEGER(Rlarnd(1, iseed2));
                 if (iu < il) {
                     itemp = iu;
                     iu = il;
@@ -761,7 +794,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Rstebz("I", "E", n, vl, vu, il, iu, abstol, sd, se, m2, nsplit, wa2, &iwork[1 - 1], &iwork[(n + 1) - 1], work, &iwork[(2 * n + 1) - 1], iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Rstebz(I)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Rstebz(I)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -771,19 +804,19 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 }
             }
             //
-            //           Determine the values VL and VU of the IL-th and IU-th
-            //           eigenvalues and ask for all eigenvalues in this range.
+            // Determine the values VL and VU of the IL-th and IU-th
+            // eigenvalues and ask for all eigenvalues in this range.
             //
             if (n > 0) {
                 if (il != 1) {
-                    vl = wa1[il - 1] - max({REAL(half * (wa1[il - 1] - wa1[(il - 1) - 1])), REAL(ulp * anorm), REAL(two * rtunfl)});
+                    vl = wa1[il - 1] - max(half * (wa1[il - 1] - wa1[(il - 1) - 1]), ulp * anorm, two * rtunfl);
                 } else {
-                    vl = wa1[1 - 1] - max({REAL(half * (wa1[n - 1] - wa1[1 - 1])), REAL(ulp * anorm), REAL(two * rtunfl)});
+                    vl = wa1[1 - 1] - max(half * (wa1[n - 1] - wa1[1 - 1]), ulp * anorm, two * rtunfl);
                 }
                 if (iu != n) {
-                    vu = wa1[iu - 1] + max({REAL(half * (wa1[(iu + 1) - 1] - wa1[iu - 1])), REAL(ulp * anorm), REAL(two * rtunfl)});
+                    vu = wa1[iu - 1] + max(half * (wa1[(iu + 1) - 1] - wa1[iu - 1]), ulp * anorm, two * rtunfl);
                 } else {
-                    vu = wa1[n - 1] + max({REAL(half * (wa1[n - 1] - wa1[1 - 1])), REAL(ulp * anorm), REAL(two * rtunfl)});
+                    vu = wa1[n - 1] + max(half * (wa1[n - 1] - wa1[1 - 1]), ulp * anorm, two * rtunfl);
                 }
             } else {
                 vl = zero;
@@ -792,7 +825,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Rstebz("V", "E", n, vl, vu, il, iu, abstol, sd, se, m3, nsplit, wa3, &iwork[1 - 1], &iwork[(n + 1) - 1], work, &iwork[(2 * n + 1) - 1], iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Rstebz(V)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Rstebz(V)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -807,7 +840,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 goto statement_280;
             }
             //
-            //           Do test 19
+            // Do test 19
             //
             temp1 = Rsxt1(1, wa2, m2, wa3, m3, abstol, ulp, unfl);
             temp2 = Rsxt1(1, wa3, m3, wa2, m2, abstol, ulp, unfl);
@@ -817,16 +850,16 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 temp3 = zero;
             }
             //
-            result[19 - 1] = (temp1 + temp2) / max(unfl, REAL(temp3 * ulp));
+            result[19 - 1] = (temp1 + temp2) / max(unfl, temp3 * ulp);
             //
-            //           Call Rstein to compute eigenvectors corresponding to
-            //           eigenvalues in WA1.  (First call Rstebz again, to make sure
-            //           it returns these eigenvalues in the correct order.)
+            // Call Rstein to compute eigenvectors corresponding to
+            // eigenvalues in WA1.  (First call Rstebz again, to make sure
+            // it returns these eigenvalues in the correct order.)
             //
             ntest = 21;
             Rstebz("A", "B", n, vl, vu, il, iu, abstol, sd, se, m, nsplit, wa1, &iwork[1 - 1], &iwork[(n + 1) - 1], work, &iwork[(2 * n + 1) - 1], iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Rstebz(A,B)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Rstebz(A,B)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -839,7 +872,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             //
             Rstein(n, sd, se, m, wa1, &iwork[1 - 1], &iwork[(n + 1) - 1], z, ldu, work, &iwork[(2 * n + 1) - 1], &iwork[(3 * n + 1) - 1], iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Rstein", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Rstein", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -850,13 +883,13 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 }
             }
             //
-            //           Do tests 20 and 21
+            // Do tests 20 and 21
             //
             Rstt21(n, 0, sd, se, wa1, dumma, z, ldu, work, &result[20 - 1]);
             //
-            //           Call Rstedc(I) to compute D1 and Z, do tests.
+            // Call Rstedc(I) to compute D1 and Z, do tests.
             //
-            //           Compute D1 and Z
+            // Compute D1 and Z
             //
             Rcopy(n, sd, 1, d1, 1);
             if (n > 0) {
@@ -867,7 +900,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             ntest = 22;
             Rstedc("I", n, d1, work, z, ldu, &work[(n + 1) - 1], lwedc - n, iwork, liwedc, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Rstedc(I)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Rstedc(I)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -877,13 +910,13 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 }
             }
             //
-            //           Do Tests 22 and 23
+            // Do Tests 22 and 23
             //
             Rstt21(n, 0, sd, se, d1, dumma, z, ldu, work, &result[22 - 1]);
             //
-            //           Call Rstedc(V) to compute D1 and Z, do tests.
+            // Call Rstedc(V) to compute D1 and Z, do tests.
             //
-            //           Compute D1 and Z
+            // Compute D1 and Z
             //
             Rcopy(n, sd, 1, d1, 1);
             if (n > 0) {
@@ -894,7 +927,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             ntest = 24;
             Rstedc("V", n, d1, work, z, ldu, &work[(n + 1) - 1], lwedc - n, iwork, liwedc, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Rstedc(V)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Rstedc(V)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -904,13 +937,13 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 }
             }
             //
-            //           Do Tests 24 and 25
+            // Do Tests 24 and 25
             //
             Rstt21(n, 0, sd, se, d1, dumma, z, ldu, work, &result[24 - 1]);
             //
-            //           Call Rstedc(N) to compute D2, do tests.
+            // Call Rstedc(N) to compute D2, do tests.
             //
-            //           Compute D2
+            // Compute D2
             //
             Rcopy(n, sd, 1, d2, 1);
             if (n > 0) {
@@ -921,7 +954,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
             ntest = 26;
             Rstedc("N", n, d2, work, z, ldu, &work[(n + 1) - 1], lwedc - n, iwork, liwedc, iinfo);
             if (iinfo != 0) {
-                write(nounit, format_9999), "Rstedc(N)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                write(nounit, format_9999), "Rstedc(N)", iinfo, n, jtype, ioldsd;
                 info = abs(iinfo);
                 if (iinfo < 0) {
                     return;
@@ -931,26 +964,26 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 }
             }
             //
-            //           Do Test 26
+            // Do Test 26
             //
             temp1 = zero;
             temp2 = zero;
             //
             for (j = 1; j <= n; j = j + 1) {
-                temp1 = max({temp1, REAL(abs(d1[j - 1])), REAL(abs(d2[j - 1]))});
-                temp2 = max(temp2, REAL(abs(d1[j - 1] - d2[j - 1])));
+                temp1 = max(temp1, abs(d1[j - 1]), abs(d2[j - 1]));
+                temp2 = max(temp2, abs(d1[j - 1] - d2[j - 1]));
             }
             //
-            result[26 - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
+            result[26 - 1] = temp2 / max(unfl, ulp * max(temp1, temp2));
             //
-            //           Only test Rstemr if IEEE compliant
+            // Only test Rstemr if IEEE compliant
             //
             if (iMlaenv(10, "Rstemr", "VA", 1, 0, 0, 0) == 1 && iMlaenv(11, "Rstemr", "VA", 1, 0, 0, 0) == 1) {
                 //
-                //           Call Rstemr, do test 27 (relative eigenvalue accuracy)
+                // Call Rstemr, do test 27 (relative eigenvalue accuracy)
                 //
-                //              If S is positive definite and diagonally dominant,
-                //              ask for all eigenvalues with high relative accuracy.
+                // If S is positive definite and diagonally dominant,
+                // ask for all eigenvalues with high relative accuracy.
                 //
                 vl = zero;
                 vu = zero;
@@ -961,7 +994,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     abstol = unfl + unfl;
                     Rstemr("V", "A", n, sd, se, vl, vu, il, iu, m, wr, z, ldu, n, &iwork[1 - 1], tryrac, work, lwork, &iwork[(2 * n + 1) - 1], lwork - 2 * n, iinfo);
                     if (iinfo != 0) {
-                        write(nounit, format_9999), "Rstemr(V,A,rel)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                        write(nounit, format_9999), "Rstemr(V,A,rel)", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -971,13 +1004,13 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         }
                     }
                     //
-                    //              Do test 27
+                    // Do test 27
                     //
-                    temp2 = two * (two * n - one) * ulp * (one + eight * half * half) / ((one - half) * (one - half) * (one - half) * (one - half));
+                    temp2 = two * (two * n - one) * ulp * (one + eight * pow2(half)) / pow4((one - half));
                     //
                     temp1 = zero;
                     for (j = 1; j <= n; j = j + 1) {
-                        temp1 = max(temp1, REAL(abs(d4[j - 1] - wr[(n - j + 1) - 1]) / (abstol + abs(d4[j - 1]))));
+                        temp1 = max(temp1, abs(d4[j - 1] - wr[(n - j + 1) - 1]) / (abstol + abs(d4[j - 1])));
                     }
                     //
                     result[27 - 1] = temp1 / temp2;
@@ -996,7 +1029,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         Rstemr("V", "I", n, sd, se, vl, vu, il, iu, m, wr, z, ldu, n, &iwork[1 - 1], tryrac, work, lwork, &iwork[(2 * n + 1) - 1], lwork - 2 * n, iinfo);
                         //
                         if (iinfo != 0) {
-                            write(nounit, format_9999), "Rstemr(V,I,rel)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                            write(nounit, format_9999), "Rstemr(V,I,rel)", iinfo, n, jtype, ioldsd;
                             info = abs(iinfo);
                             if (iinfo < 0) {
                                 return;
@@ -1006,13 +1039,13 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                             }
                         }
                         //
-                        //                 Do test 28
+                        // Do test 28
                         //
-                        temp2 = two * (two * n - one) * ulp * (one + eight * half * half) / ((one - half) * (one - half) * (one - half) * (one - half));
+                        temp2 = two * (two * n - one) * ulp * (one + eight * pow2(half)) / pow4((one - half));
                         //
                         temp1 = zero;
                         for (j = il; j <= iu; j = j + 1) {
-                            temp1 = max(temp1, REAL(abs(wr[(j - il + 1) - 1] - d4[(n - j + 1) - 1]) / (abstol + abs(wr[(j - il + 1) - 1]))));
+                            temp1 = max(temp1, abs(wr[(j - il + 1) - 1] - d4[(n - j + 1) - 1]) / (abstol + abs(wr[(j - il + 1) - 1])));
                         }
                         //
                         result[28 - 1] = temp1 / temp2;
@@ -1024,9 +1057,9 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     result[28 - 1] = zero;
                 }
                 //
-                //           Call Rstemr(V,I) to compute D1 and Z, do tests.
+                // Call Rstemr(V,I) to compute D1 and Z, do tests.
                 //
-                //           Compute D1 and Z
+                // Compute D1 and Z
                 //
                 Rcopy(n, sd, 1, d5, 1);
                 if (n > 0) {
@@ -1036,8 +1069,8 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 if (srange) {
                     ntest = 29;
-                    il = 1 + castINTEGER(castREAL(n - 1) * Rlarnd(1, iseed2));
-                    iu = 1 + castINTEGER(castREAL(n - 1) * Rlarnd(1, iseed2));
+                    il = 1 + (n - 1) * castINTEGER(Rlarnd(1, iseed2));
+                    iu = 1 + (n - 1) * castINTEGER(Rlarnd(1, iseed2));
                     if (iu < il) {
                         itemp = iu;
                         iu = il;
@@ -1045,7 +1078,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     }
                     Rstemr("V", "I", n, d5, work, vl, vu, il, iu, m, d1, z, ldu, n, &iwork[1 - 1], tryrac, &work[(n + 1) - 1], lwork - n, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                     if (iinfo != 0) {
-                        write(nounit, format_9999), "Rstemr(V,I)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                        write(nounit, format_9999), "Rstemr(V,I)", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -1055,13 +1088,13 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         }
                     }
                     //
-                    //           Do Tests 29 and 30
+                    // Do Tests 29 and 30
                     //
                     Rstt22(n, m, 0, sd, se, d1, dumma, z, ldu, work, m, &result[29 - 1]);
                     //
-                    //           Call Rstemr to compute D2, do tests.
+                    // Call Rstemr to compute D2, do tests.
                     //
-                    //           Compute D2
+                    // Compute D2
                     //
                     Rcopy(n, sd, 1, d5, 1);
                     if (n > 0) {
@@ -1071,7 +1104,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     ntest = 31;
                     Rstemr("N", "I", n, d5, work, vl, vu, il, iu, m, d2, z, ldu, n, &iwork[1 - 1], tryrac, &work[(n + 1) - 1], lwork - n, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                     if (iinfo != 0) {
-                        write(nounit, format_9999), "Rstemr(N,I)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                        write(nounit, format_9999), "Rstemr(N,I)", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -1081,21 +1114,21 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         }
                     }
                     //
-                    //           Do Test 31
+                    // Do Test 31
                     //
                     temp1 = zero;
                     temp2 = zero;
                     //
                     for (j = 1; j <= iu - il + 1; j = j + 1) {
-                        temp1 = max({temp1, REAL(abs(d1[j - 1])), REAL(abs(d2[j - 1]))});
-                        temp2 = max(temp2, REAL(abs(d1[j - 1] - d2[j - 1])));
+                        temp1 = max(temp1, abs(d1[j - 1]), abs(d2[j - 1]));
+                        temp2 = max(temp2, abs(d1[j - 1] - d2[j - 1]));
                     }
                     //
-                    result[31 - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
+                    result[31 - 1] = temp2 / max(unfl, ulp * max(temp1, temp2));
                     //
-                    //           Call Rstemr(V,V) to compute D1 and Z, do tests.
+                    // Call Rstemr(V,V) to compute D1 and Z, do tests.
                     //
-                    //           Compute D1 and Z
+                    // Compute D1 and Z
                     //
                     Rcopy(n, sd, 1, d5, 1);
                     if (n > 0) {
@@ -1107,14 +1140,14 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     //
                     if (n > 0) {
                         if (il != 1) {
-                            vl = d2[il - 1] - max({REAL(half * (d2[il - 1] - d2[(il - 1) - 1])), REAL(ulp * anorm), REAL(two * rtunfl)});
+                            vl = d2[il - 1] - max(half * (d2[il - 1] - d2[(il - 1) - 1]), ulp * anorm, two * rtunfl);
                         } else {
-                            vl = d2[1 - 1] - max({REAL(half * (d2[n - 1] - d2[1 - 1])), REAL(ulp * anorm), REAL(two * rtunfl)});
+                            vl = d2[1 - 1] - max(half * (d2[n - 1] - d2[1 - 1]), ulp * anorm, two * rtunfl);
                         }
                         if (iu != n) {
-                            vu = d2[iu - 1] + max({REAL(half * (d2[(iu + 1) - 1] - d2[iu - 1])), REAL(ulp * anorm), REAL(two * rtunfl)});
+                            vu = d2[iu - 1] + max(half * (d2[(iu + 1) - 1] - d2[iu - 1]), ulp * anorm, two * rtunfl);
                         } else {
-                            vu = d2[n - 1] + max({REAL(half * (d2[n - 1] - d2[1 - 1])), REAL(ulp * anorm), REAL(two * rtunfl)});
+                            vu = d2[n - 1] + max(half * (d2[n - 1] - d2[1 - 1]), ulp * anorm, two * rtunfl);
                         }
                     } else {
                         vl = zero;
@@ -1123,7 +1156,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     //
                     Rstemr("V", "V", n, d5, work, vl, vu, il, iu, m, d1, z, ldu, n, &iwork[1 - 1], tryrac, &work[(n + 1) - 1], lwork - n, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                     if (iinfo != 0) {
-                        write(nounit, format_9999), "Rstemr(V,V)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                        write(nounit, format_9999), "Rstemr(V,V)", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -1133,13 +1166,13 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         }
                     }
                     //
-                    //           Do Tests 32 and 33
+                    // Do Tests 32 and 33
                     //
                     Rstt22(n, m, 0, sd, se, d1, dumma, z, ldu, work, m, &result[32 - 1]);
                     //
-                    //           Call Rstemr to compute D2, do tests.
+                    // Call Rstemr to compute D2, do tests.
                     //
-                    //           Compute D2
+                    // Compute D2
                     //
                     Rcopy(n, sd, 1, d5, 1);
                     if (n > 0) {
@@ -1149,7 +1182,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     ntest = 34;
                     Rstemr("N", "V", n, d5, work, vl, vu, il, iu, m, d2, z, ldu, n, &iwork[1 - 1], tryrac, &work[(n + 1) - 1], lwork - n, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                     if (iinfo != 0) {
-                        write(nounit, format_9999), "Rstemr(N,V)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                        write(nounit, format_9999), "Rstemr(N,V)", iinfo, n, jtype, ioldsd;
                         info = abs(iinfo);
                         if (iinfo < 0) {
                             return;
@@ -1159,17 +1192,17 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                         }
                     }
                     //
-                    //           Do Test 34
+                    // Do Test 34
                     //
                     temp1 = zero;
                     temp2 = zero;
                     //
                     for (j = 1; j <= iu - il + 1; j = j + 1) {
-                        temp1 = max({temp1, REAL(abs(d1[j - 1])), REAL(abs(d2[j - 1]))});
-                        temp2 = max(temp2, REAL(abs(d1[j - 1] - d2[j - 1])));
+                        temp1 = max(temp1, abs(d1[j - 1]), abs(d2[j - 1]));
+                        temp2 = max(temp2, abs(d1[j - 1] - d2[j - 1]));
                     }
                     //
-                    result[34 - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
+                    result[34 - 1] = temp2 / max(unfl, ulp * max(temp1, temp2));
                 } else {
                     result[29 - 1] = zero;
                     result[30 - 1] = zero;
@@ -1179,9 +1212,9 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     result[34 - 1] = zero;
                 }
                 //
-                //           Call Rstemr(V,A) to compute D1 and Z, do tests.
+                // Call Rstemr(V,A) to compute D1 and Z, do tests.
                 //
-                //           Compute D1 and Z
+                // Compute D1 and Z
                 //
                 Rcopy(n, sd, 1, d5, 1);
                 if (n > 0) {
@@ -1192,7 +1225,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 //
                 Rstemr("V", "A", n, d5, work, vl, vu, il, iu, m, d1, z, ldu, n, &iwork[1 - 1], tryrac, &work[(n + 1) - 1], lwork - n, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Rstemr(V,A)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9999), "Rstemr(V,A)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1202,13 +1235,13 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     }
                 }
                 //
-                //           Do Tests 35 and 36
+                // Do Tests 35 and 36
                 //
                 Rstt22(n, m, 0, sd, se, d1, dumma, z, ldu, work, m, &result[35 - 1]);
                 //
-                //           Call Rstemr to compute D2, do tests.
+                // Call Rstemr to compute D2, do tests.
                 //
-                //           Compute D2
+                // Compute D2
                 //
                 Rcopy(n, sd, 1, d5, 1);
                 if (n > 0) {
@@ -1218,7 +1251,7 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                 ntest = 37;
                 Rstemr("N", "A", n, d5, work, vl, vu, il, iu, m, d2, z, ldu, n, &iwork[1 - 1], tryrac, &work[(n + 1) - 1], lwork - n, &iwork[(2 * n + 1) - 1], liwork - 2 * n, iinfo);
                 if (iinfo != 0) {
-                    write(nounit, format_9999), "Rstemr(N,A)", iinfo, n, jtype, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3];
+                    write(nounit, format_9999), "Rstemr(N,A)", iinfo, n, jtype, ioldsd;
                     info = abs(iinfo);
                     if (iinfo < 0) {
                         return;
@@ -1228,80 +1261,54 @@ void Rchkst(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *dotyp
                     }
                 }
                 //
-                //           Do Test 34
+                // Do Test 34
                 //
                 temp1 = zero;
                 temp2 = zero;
                 //
                 for (j = 1; j <= n; j = j + 1) {
-                    temp1 = max({temp1, REAL(abs(d1[j - 1])), REAL(abs(d2[j - 1]))});
-                    temp2 = max(temp2, REAL(abs(d1[j - 1] - d2[j - 1])));
+                    temp1 = max(temp1, abs(d1[j - 1]), abs(d2[j - 1]));
+                    temp2 = max(temp2, abs(d1[j - 1] - d2[j - 1]));
                 }
                 //
-                result[37 - 1] = temp2 / max(unfl, REAL(ulp * max(temp1, temp2)));
+                result[37 - 1] = temp2 / max(unfl, ulp * max(temp1, temp2));
             }
         statement_270:
         statement_280:
             ntestt += ntest;
             //
-            //           End of Loop -- Check for RESULT(j) > THRESH
+            // End of Loop -- Check for RESULT(j) > THRESH
             //
-            //           Print out tests which fail.
+            // Print out tests which fail.
             //
             for (jr = 1; jr <= ntest; jr = jr + 1) {
                 if (result[jr - 1] >= thresh) {
                     //
-                    //                 If this is the first test to fail,
-                    //                 print a header to the data file.
+                    // If this is the first test to fail,
+                    // print a header to the data file.
                     //
                     if (nerrs == 0) {
-                        write(nounit, "(/,1x,a3,' -- Real Symmetric eigenvalue problem')"), "DST";
-                        write(nounit, "(' Matrix types (see Rchkst for details): ')");
-                        write(nounit, "(/,' Special Matrices:',/,"
-                                      "'  1=Zero matrix.                        ',"
-                                      "'  5=Diagonal: clustered entries.',/,"
-                                      "'  2=Identity matrix.                    ',"
-                                      "'  6=Diagonal: large, evenly spaced.',/,"
-                                      "'  3=Diagonal: evenly spaced entries.    ',"
-                                      "'  7=Diagonal: small, evenly spaced.',/,"
-                                      "'  4=Diagonal: geometr. spaced entries.')");
-                        write(nounit, "(' Dense ',a,' Matrices:',/,"
-                                      "'  8=Evenly spaced eigenvals.            ',"
-                                      "' 12=Small, evenly spaced eigenvals.',/,"
-                                      "'  9=Geometrically spaced eigenvals.     ',"
-                                      "' 13=Matrix with random O(1) entries.',/,"
-                                      "' 10=Clustered eigenvalues.              ',"
-                                      "' 14=Matrix with large random entries.',/,"
-                                      "' 11=Large, evenly spaced eigenvals.     ',"
-                                      "' 15=Matrix with small random entries.')"),
-                            "Symmetric";
-                        write(nounit, "(' 16=Positive definite, evenly spaced eigenvalues',/,"
-                                      "' 17=Positive definite, geometrically spaced eigenvlaues',/,"
-                                      "' 18=Positive definite, clustered eigenvalues',/,"
-                                      "' 19=Positive definite, small evenly spaced eigenvalues',/,"
-                                      "' 20=Positive definite, large evenly spaced eigenvalues',/,"
-                                      "' 21=Diagonally dominant tridiagonal, geometrically',"
-                                      "' spaced eigenvalues')");
+                        write(nounit, format_9998), "DST";
+                        write(nounit, format_9997);
+                        write(nounit, format_9996);
+                        write(nounit, format_9995), "Symmetric";
+                        write(nounit, format_9994);
                         //
-                        //                    Tests performed
+                        // Tests performed
                         //
-                        write(nounit, "(/,'Test performed:  see Rchkst for details.',/)");
+                        write(nounit, format_9988);
                     }
                     nerrs++;
-                    sprintnum_short(buf, result[jr - 1]);
-                    write(nounit, "(' N=',i5,', seed=',4(i4,','),' type ',i2,', test(',i2,')=',"
-                                  "a)"),
-                        n, ioldsd[0], ioldsd[1], ioldsd[2], ioldsd[3], jtype, jr, buf;
+                    write(nounit, format_9990), n, ioldsd, jtype, jr, result[jr - 1];
                 }
             }
         statement_300:;
         }
     }
     //
-    //     Summary
+    // Summary
     //
     Rlasum("DST", nounit, nerrs, ntestt);
-    //
-    //     End of Rchkst
+    // End of Rchkst
     //
 }

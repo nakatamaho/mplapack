@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DLASD6.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rlasd6(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER const sqre, REAL *d, REAL *vf, REAL *vl, REAL &alpha, REAL &beta, INTEGER *idxq, INTEGER *perm, INTEGER &givptr, INTEGER *givcol, INTEGER const ldgcol, REAL *givnum, INTEGER const ldgnum, REAL *poles, REAL *difl, REAL *difr, REAL *z, INTEGER &k, REAL &c, REAL &s, REAL *work, INTEGER *iwork, INTEGER &info) {
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     INTEGER n = nl + nr + 1;
@@ -55,9 +62,9 @@ void Rlasd6(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER co
         return;
     }
     //
-    //     The following values are for bookkeeping purposes only.  They are
-    //     integer pointers which indicate the portion of the workspace
-    //     used by a particular array in Rlasd7 and Rlasd8.
+    // The following values are for bookkeeping purposes only.  They are
+    // integer pointers which indicate the portion of the workspace
+    // used by a particular array in Rlasd7 and Rlasd8.
     //
     INTEGER isigma = 1;
     INTEGER iw = isigma + n;
@@ -68,7 +75,7 @@ void Rlasd6(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER co
     INTEGER idxc = idx + n;
     INTEGER idxp = idxc + n;
     //
-    //     Scale.
+    // Scale.
     //
     REAL orgnrm = max(abs(alpha), abs(beta));
     const REAL zero = 0.0;
@@ -84,37 +91,37 @@ void Rlasd6(INTEGER const icompq, INTEGER const nl, INTEGER const nr, INTEGER co
     alpha = alpha / orgnrm;
     beta = beta / orgnrm;
     //
-    //     Sort and Deflate singular values.
+    // Sort and Deflate singular values.
     //
     Rlasd7(icompq, nl, nr, sqre, k, d, z, &work[iw - 1], vf, &work[ivfw - 1], vl, &work[ivlw - 1], alpha, beta, &work[isigma - 1], &iwork[idx - 1], &iwork[idxp - 1], idxq, perm, givptr, givcol, ldgcol, givnum, ldgnum, c, s, info);
     //
-    //     solve Secular Equation, compute DIFL, DIFR, and update VF, VL.
+    // Solve Secular Equation, compute DIFL, DIFR, and update VF, VL.
     //
     Rlasd8(icompq, k, d, z, vf, vl, difl, difr, ldgnum, &work[isigma - 1], &work[iw - 1], info);
     //
-    //     Report the possible convergence failure.
+    // Report the possible convergence failure.
     //
     if (info != 0) {
         return;
     }
     //
-    //     Save the poles if ICOMPQ = 1.
+    // Save the poles if ICOMPQ = 1.
     //
     if (icompq == 1) {
-        Rcopy(k, d, 1, &poles[(1 - 1)], 1);
+        Rcopy(k, d, 1, &poles[0], 1);
         Rcopy(k, &work[isigma - 1], 1, &poles[(2 - 1) * ldgnum], 1);
     }
     //
-    //     Unscale.
+    // Unscale.
     //
     Rlascl("G", 0, 0, one, orgnrm, n, 1, d, n, info);
     //
-    //     Prepare the IDXQ sorting permutation.
+    // Prepare the IDXQ sorting permutation.
     //
     INTEGER n1 = k;
     INTEGER n2 = n - k;
     Rlamrg(n1, n2, d, 1, -1, idxq);
     //
-    //     End of Rlasd6
+    // End of Rlasd6
     //
 }

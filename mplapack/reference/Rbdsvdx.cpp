@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DBDSVDX.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER const n, REAL *d, REAL *e, REAL const vl, REAL const vu, INTEGER const il, INTEGER const iu, INTEGER &ns, REAL *s, REAL *z, INTEGER const ldz, REAL *work, INTEGER *iwork, INTEGER &info) {
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     bool allsv = Mlsame(range, "A");
     bool valsv = Mlsame(range, "V");
@@ -41,6 +48,7 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
     //
     info = 0;
     const REAL zero = 0.0;
+    const REAL two = 2.0;
     if (!Mlsame(uplo, "U") && !lower) {
         info = -1;
     } else if (!(wantz || Mlsame(jobz, "N"))) {
@@ -75,7 +83,7 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
         return;
     }
     //
-    //     Quick return if possible (N.LE.1)
+    // Quick return if possible (N.LE.1)
     //
     ns = 0;
     if (n == 0) {
@@ -94,37 +102,40 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
             }
         }
         if (wantz) {
-            z[(1 - 1)] = sign(one, d[1 - 1]);
+            z[0] = sign(one, d[1 - 1]);
             z[(2 - 1)] = one;
         }
         return;
     }
     //
-    REAL two = 2.0;
     REAL abstol = two * Rlamch("Safe Minimum");
     REAL ulp = Rlamch("Precision");
     REAL eps = Rlamch("Epsilon");
     REAL sqrt2 = sqrt(two);
     REAL ortol = sqrt(ulp);
     //
-    //     Criterion for splitting is taken from Rbdsqr when singular
-    //     values are computed to relative accuracy TOL. (See J. Demmel and
-    //     W. Kahan, Accurate singular values of bidiagonal matrices, SIAM
-    //     J. Sci. and Stat. Comput., 11:873912, 1990.)
+    // Criterion for splitting is taken from Rbdsqr when singular
+    // values are computed to relative accuracy TOL. (See J. Demmel and
+    // W. Kahan, Accurate singular values of bidiagonal matrices, SIAM
+    // J. Sci. and Stat. Comput., 11:873–912, 1990.)
     //
     const REAL ten = 10.0;
     const REAL hndrd = 100.0;
-    const REAL meigth = -0.1250e0;
+    const REAL meigth = -0.125;
+#if defined ___MPLAPACK_BUILD_WITH_GMP___
+    REAL tol = max(ten, min(hndrd, one / sqrt(sqrt(sqrt(eps))))) * eps;
+#else
     REAL tol = max(ten, min(hndrd, pow(eps, meigth))) * eps;
+#endif
     //
-    //     Compute approximate maximum, minimum singular values.
+    // Compute approximate maximum, minimum singular values.
     //
     INTEGER i = iRamax(n, d, 1);
     REAL smax = abs(d[i - 1]);
     i = iRamax(n - 1, e, 1);
-    smax = max(smax, REAL(abs(e[i - 1])));
+    smax = max(smax, abs(e[i - 1]));
     //
-    //     Compute threshold for neglecting D's and E's.
+    // Compute threshold for neglecting D's and E's.
     //
     REAL smin = abs(d[1 - 1]);
     REAL mu = 0.0;
@@ -141,7 +152,7 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
     smin = smin / sqrt(castREAL(n));
     REAL thresh = tol * smin;
     //
-    //     Check for zeros in D and E (splits), i.e. submatrices.
+    // Check for zeros in D and E (splits), i.e. submatrices.
     //
     for (i = 1; i <= n - 1; i = i + 1) {
         if (abs(d[i - 1]) <= thresh) {
@@ -155,7 +166,7 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
         d[n - 1] = zero;
     }
     //
-    //     Pointers for arrays used by Rstevx.
+    // Pointers for arrays used by Rstevx.
     //
     INTEGER idtgk = 1;
     INTEGER ietgk = idtgk + n * 2;
@@ -163,9 +174,9 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
     INTEGER iifail = 1;
     INTEGER iiwork = iifail + n * 2;
     //
-    //     Set RNGVX, which corresponds to RANGE for Rstevx in TGK mode.
-    //     VL,VU or IL,IU are redefined to conform to implementation a)
-    //     described in the leading comments.
+    // Set RNGVX, which corresponds to RANGE for Rstevx in TGK mode.
+    // VL,VU or IL,IU are redefined to conform to implementation a)
+    // described in the leading comments.
     //
     INTEGER iltgk = 0;
     INTEGER iutgk = 0;
@@ -176,9 +187,10 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
     const REAL fudge = 2.0;
     if (allsv) {
         //
-        //        All singular values will be found. We aim at -s (see
-        //        leading comments) with RNGVX = 'I'. IL and IU are set
-        //        of the active submatrix.
+        // All singular values will be found. We aim at -s (see
+        // leading comments) with RNGVX = 'I'. IL and IU are set
+        // later (as ILTGK and IUTGK) according to the dimension
+        // of the active submatrix.
         //
         rngvx = 'I';
         if (wantz) {
@@ -186,15 +198,16 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
         }
     } else if (valsv) {
         //
-        //        Find singular values in a half-open interval. We aim
-        //        at -s (see leading comments) and we swap VL and VU
-        //        (as VUTGK and VLTGK), changing their signs.
+        // Find singular values in a half-open interval. We aim
+        // at -s (see leading comments) and we swap VL and VU
+        // (as VUTGK and VLTGK), changing their signs.
         //
         rngvx = 'V';
         vltgk = -vu;
         vutgk = -vl;
-        for (int l = idtgk; l <= idtgk + 2 * n - 1; l++)
-            work[l - 1] = zero;
+        for (INTEGER i_ = idtgk; i_ <= idtgk + 2 * n - 1; i_++) {
+            work[i_ - 1] = zero;
+        }
         Rcopy(n, d, 1, &work[ietgk - 1], 2);
         Rcopy(n - 1, e, 1, &work[(ietgk + 1) - 1], 2);
         Rstevx("N", "V", n * 2, &work[idtgk - 1], &work[ietgk - 1], vltgk, vutgk, iltgk, iltgk, abstol, ns, s, z, ldz, &work[itemp - 1], &iwork[iiwork - 1], &iwork[iifail - 1], info);
@@ -207,32 +220,34 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
         }
     } else if (indsv) {
         //
-        //        Find the IL-th through the IU-th singular values. We aim
-        //        at -s (see leading comments) and indices are mapped into
-        //        values, therefore mimicking Rstebz, where
+        // Find the IL-th through the IU-th singular values. We aim
+        // at -s (see leading comments) and indices are mapped into
+        // values, therefore mimicking Rstebz, where
         //
-        //        GL = GL - FUDGE*TNORM*ULP*N - FUDGE*TWO*PIVMIN
-        //        GU = GU + FUDGE*TNORM*ULP*N + FUDGE*PIVMIN
+        // GL = GL - FUDGE*TNORM*ULP*N - FUDGE*TWO*PIVMIN
+        // GU = GU + FUDGE*TNORM*ULP*N + FUDGE*PIVMIN
         //
         iltgk = il;
         iutgk = iu;
         rngvx = 'V';
-        for (int l = idtgk; l <= idtgk + 2 * n - 1; l++)
-            work[l - 1] = zero;
+        for (INTEGER i_ = idtgk; i_ <= idtgk + 2 * n - 1; i_++) {
+            work[i_ - 1] = zero;
+        }
         Rcopy(n, d, 1, &work[ietgk - 1], 2);
         Rcopy(n - 1, e, 1, &work[(ietgk + 1) - 1], 2);
         Rstevx("N", "I", n * 2, &work[idtgk - 1], &work[ietgk - 1], vltgk, vltgk, iltgk, iltgk, abstol, ns, s, z, ldz, &work[itemp - 1], &iwork[iiwork - 1], &iwork[iifail - 1], info);
         vltgk = s[1 - 1] - fudge * smax * ulp * n;
-        for (int l = idtgk; l <= idtgk + 2 * n - 1; l++)
-            work[l - 1] = zero;
+        for (INTEGER i_ = idtgk; i_ <= idtgk + 2 * n - 1; i_++) {
+            work[i_ - 1] = zero;
+        }
         Rcopy(n, d, 1, &work[ietgk - 1], 2);
         Rcopy(n - 1, e, 1, &work[(ietgk + 1) - 1], 2);
         Rstevx("N", "I", n * 2, &work[idtgk - 1], &work[ietgk - 1], vutgk, vutgk, iutgk, iutgk, abstol, ns, s, z, ldz, &work[itemp - 1], &iwork[iiwork - 1], &iwork[iifail - 1], info);
         vutgk = s[1 - 1] + fudge * smax * ulp * n;
         vutgk = min(vutgk, zero);
         //
-        //        If VLTGK=VUTGK, Rstevx returns an error message,
-        //        so if needed we change VUTGK slightly.
+        // If VLTGK=VUTGK, Rstevx returns an error message,
+        // so if needed we change VUTGK slightly.
         //
         if (vltgk == vutgk) {
             vltgk = vltgk - tol;
@@ -243,12 +258,12 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
         }
     }
     //
-    //     Initialize variables and pointers for S, Z, and WORK.
+    // Initialize variables and pointers for S, Z, and WORK.
     //
-    //     NRU, NRV: number of rows in U and V for the active submatrix
-    //     IDBEG, ISBEG: offsets for the entries of D and S
-    //     IROWZ, ICOLZ: offsets for the rows and columns of Z
-    //     IROWU, IROWV: offsets for the rows of U and V
+    // NRU, NRV: number of rows in U and V for the active submatrix
+    // IDBEG, ISBEG: offsets for the entries of D and S
+    // IROWZ, ICOLZ: offsets for the rows and columns of Z
+    // IROWU, IROWV: offsets for the rows of U and V
     //
     ns = 0;
     INTEGER nru = 0;
@@ -262,18 +277,20 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
     bool split = false;
     bool sveq0 = false;
     //
-    //     Form the tridiagonal TGK matrix.
+    // Form the tridiagonal TGK matrix.
     //
-    for (int i = 1; i <= n; i++)
-        s[i - 1] = zero;
+    for (INTEGER i_ = 1; i_ <= n; i_++) {
+        s[i_ - 1] = zero;
+    }
     work[(ietgk + 2 * n - 1) - 1] = zero;
-    for (int l = idtgk; l <= idtgk + 2 * n - 1; l++)
-        work[l - 1] = zero;
+    for (INTEGER i_ = idtgk; i_ <= idtgk + 2 * n - 1; i_++) {
+        work[i_ - 1] = zero;
+    }
     Rcopy(n, d, 1, &work[ietgk - 1], 2);
     Rcopy(n - 1, e, 1, &work[(ietgk + 1) - 1], 2);
     //
-    //     Check for splits in two levels, outer level
-    //     in E and inner level in D.
+    // Check for splits in two levels, outer level
+    // in E and inner level in D.
     //
     INTEGER ieptr = 0;
     INTEGER isplt = 0;
@@ -289,20 +306,20 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
     for (ieptr = 2; ieptr <= n * 2; ieptr = ieptr + 2) {
         if (work[(ietgk + ieptr - 1) - 1] == zero) {
             //
-            //           Split in E (this piece of B is square) or bottom
-            //           of the (input bidiagonal) matrix.
+            // Split in E (this piece of B is square) or bottom
+            // of the (input bidiagonal) matrix.
             //
             isplt = idbeg;
             idend = ieptr - 1;
             for (idptr = idbeg; idptr <= idend; idptr = idptr + 2) {
                 if (work[(ietgk + idptr - 1) - 1] == zero) {
                     //
-                    //                 Split in D (rectangular submatrix). Set the number
-                    //                 of rows in U and V (NRU and NRV) accordingly.
+                    // Split in D (rectangular submatrix). Set the number
+                    // of rows in U and V (NRU and NRV) accordingly.
                     //
                     if (idptr == idbeg) {
                         //
-                        //                    D=0 at the top.
+                        // D=0 at the top.
                         //
                         sveq0 = true;
                         if (idbeg == idend) {
@@ -311,7 +328,7 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
                         }
                     } else if (idptr == idend) {
                         //
-                        //                    D=0 at the bottom.
+                        // D=0 at the bottom.
                         //
                         sveq0 = true;
                         nru = (idend - isplt) / 2 + 1;
@@ -322,13 +339,13 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
                     } else {
                         if (isplt == idbeg) {
                             //
-                            //                       Split: top rectangular submatrix.
+                            // Split: top rectangular submatrix.
                             //
                             nru = (idptr - idbeg) / 2;
                             nrv = nru + 1;
                         } else {
                             //
-                            //                       Split: middle square submatrix.
+                            // Split: middle square submatrix.
                             //
                             nru = (idptr - isplt) / 2 + 1;
                             nrv = nru;
@@ -336,17 +353,17 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
                     }
                 } else if (idptr == idend) {
                     //
-                    //                 Last entry of D in the active submatrix.
+                    // Last entry of D in the active submatrix.
                     //
                     if (isplt == idbeg) {
                         //
-                        //                    No split (trivial case).
+                        // No split (trivial case).
                         //
                         nru = (idend - idbeg) / 2 + 1;
                         nrv = nru;
                     } else {
                         //
-                        //                    Split: bottom rectangular submatrix.
+                        // Split: bottom rectangular submatrix.
                         //
                         nrv = (idend - isplt) / 2 + 1;
                         nru = nrv + 1;
@@ -357,58 +374,60 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
                 //
                 if (ntgk > 0) {
                     //
-                    //                 Compute eigenvalues/vectors of the active
-                    //                 submatrix according to RANGE:
-                    //                 if RANGE='A' (ALLSV) then RNGVX = 'I'
-                    //                 if RANGE='V' (VALSV) then RNGVX = 'V'
-                    //                 if RANGE='I' (INDSV) then RNGVX = 'V'
+                    // Compute eigenvalues/vectors of the active
+                    // submatrix according to RANGE:
+                    // if RANGE='A' (ALLSV) then RNGVX = 'I'
+                    // if RANGE='V' (VALSV) then RNGVX = 'V'
+                    // if RANGE='I' (INDSV) then RNGVX = 'V'
                     //
                     iltgk = 1;
                     iutgk = ntgk / 2;
                     if (allsv || vutgk == zero) {
                         if (sveq0 || smin < eps || mod(ntgk, 2) > 0) {
-                            //                        Special case: eigenvalue equal to zero or very
-                            //                        small, additional eigenvector is needed.
+                            // Special case: eigenvalue equal to zero or very
+                            // small, additional eigenvector is needed.
                             iutgk++;
                         }
                     }
                     //
-                    //                 Workspace needed by Rstevx:
-                    //                 WORK( ITEMP: ): 2*5*NTGK
-                    //                 IWORK( 1: ): 2*6*NTGK
+                    // Workspace needed by Rstevx:
+                    // WORK( ITEMP: ): 2*5*NTGK
+                    // IWORK( 1: ): 2*6*NTGK
                     //
                     Rstevx(jobz, &rngvx, ntgk, &work[(idtgk + isplt - 1) - 1], &work[(ietgk + isplt - 1) - 1], vltgk, vutgk, iltgk, iutgk, abstol, nsl, &s[isbeg - 1], &z[(irowz - 1) + (icolz - 1) * ldz], ldz, &work[itemp - 1], &iwork[iiwork - 1], &iwork[iifail - 1], info);
                     if (info != 0) {
-                        //                    Exit with the error code from Rstevx.
+                        // Exit with the error code from Rstevx.
                         return;
                     }
                     emin = abs(Mmaxval(s, isbeg, isbeg + nsl - 1, 1));
                     //
                     if (nsl > 0 && wantz) {
                         //
-                        //                    Normalize u=Z([2,4,...],:) and v=Z([1,3,...],:),
-                        //                    changing the sign of v as discussed in the leading
-                        //                    comments. The norms of u and v may be (slightly)
-                        //                    different from 1/sqrt(2) if the corresponding
-                        //                    eigenvalues are very small or too close. We check
-                        //                    those norms and, if needed, reorthogonalize the
-                        //                    vectors.
+                        // Normalize u=Z([2,4,...],:) and v=Z([1,3,...],:),
+                        // changing the sign of v as discussed in the leading
+                        // comments. The norms of u and v may be (slightly)
+                        // different from 1/sqrt(2) if the corresponding
+                        // eigenvalues are very small or too close. We check
+                        // those norms and, if needed, reorthogonalize the
+                        // vectors.
                         //
                         if (nsl > 1 && vutgk == zero && mod(ntgk, 2) == 0 && emin == 0 && !split) {
                             //
-                            //                       D=0 at the top or bottom of the active submatrix:
-                            //                       one eigenvalue is equal to zero; concatenate the
-                            //                       eigenvectors corresponding to the two smallest
-                            //                       eigenvalues.
+                            // D=0 at the top or bottom of the active submatrix:
+                            // one eigenvalue is equal to zero; concatenate the
+                            // eigenvectors corresponding to the two smallest
+                            // eigenvalues.
                             //
-                            for (int l = irowz; l <= irowz + ntgk - 1; l++)
-                                z[(l - 1) + ((icolz + nsl - 2) - 1) * ldz] = z[(l - 1) + ((icolz + nsl - 2) - 1) * ldz] + z[(l - 1) + ((icolz + nsl - 1) - 1) * ldz];
-                            for (int l = irowz; l <= irowz + ntgk - 1; l++)
-                                z[(l - 1) + ((icolz + nsl - 1) - 1) * ldz] = 0.0;
-                            //                       IF( IUTGK*2.GT.NTGK ) THEN
-                            //                          Eigenvalue equal to zero or very small.
-                            //                          NSL = NSL - 1
-                            //                       END IF
+                            for (INTEGER i_ = irowz; i_ <= irowz + ntgk - 1; i_++) {
+                                z[(i_ - 1) + ((icolz + nsl - 2) - 1) * ldz] += z[(i_ - 1) + ((icolz + nsl - 1) - 1) * ldz];
+                            }
+                            for (INTEGER i_ = irowz; i_ <= irowz + ntgk - 1; i_++) {
+                                z[(i_ - 1) + ((icolz + nsl - 1) - 1) * ldz] = zero;
+                            }
+                            // IF( IUTGK*2.GT.NTGK ) THEN
+                            // Eigenvalue equal to zero or very small.
+                            // NSL = NSL - 1
+                            // END IF
                         }
                         //
                         for (i = 0; i <= min(nsl - 1, nru - 1); i = i + 1) {
@@ -445,31 +464,32 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
                         }
                         if (vutgk == zero && idptr < idend && mod(ntgk, 2) > 0) {
                             //
-                            //                       D=0 in the middle of the active submatrix (one
-                            //                       eigenvalue is equal to zero): save the corresponding
-                            //                       eigenvector for later use (when bottom of the
-                            //                       active submatrix is reached).
+                            // D=0 in the middle of the active submatrix (one
+                            // eigenvalue is equal to zero): save the corresponding
+                            // eigenvector for later use (when bottom of the
+                            // active submatrix is reached).
                             //
                             split = true;
-
-                            for (int l = irowz; l <= irowz + ntgk - 1; l++)
-                                z[l + ((n + 1) - 1) * ldz] = z[l + ((ns + nsl) - 1) * ldz];
-                            for (int l = irowz; l <= irowz + ntgk - 1; l++)
-                                z[l + ((ns + nsl) - 1) * ldz] = 0.0;
+                            for (INTEGER i_ = irowz; i_ <= irowz + ntgk - 1; i_++) {
+                                z[(i_ - 1) + ((n + 1) - 1) * ldz] = z[(i_ - 1) + ((ns + nsl) - 1) * ldz];
+                            }
+                            for (INTEGER i_ = irowz; i_ <= irowz + ntgk - 1; i_++) {
+                                z[(i_ - 1) + ((ns + nsl) - 1) * ldz] = zero;
+                            }
                         }
-                        //** WANTZ **!
+                        // ** WANTZ **!
                     }
                     //
                     nsl = min(nsl, nru);
                     sveq0 = false;
                     //
-                    //                 Absolute values of the eigenvalues of TGK.
+                    // Absolute values of the eigenvalues of TGK.
                     //
                     for (i = 0; i <= nsl - 1; i = i + 1) {
                         s[(isbeg + i) - 1] = abs(s[(isbeg + i) - 1]);
                     }
                     //
-                    //                 Update pointers for TGK, S and Z.
+                    // Update pointers for TGK, S and Z.
                     //
                     isbeg += nsl;
                     irowz += ntgk;
@@ -480,36 +500,39 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
                     ns += nsl;
                     nru = 0;
                     nrv = 0;
-                    //** NTGK.GT.0 **!
+                    // ** NTGK.GT.0 **!
                 }
                 if (irowz < n * 2 && wantz) {
-                    for (int l = 1; l <= irowz - 1; l++)
-                        z[(l - 1) + (icolz - 1) * ldz] = zero;
+                    for (INTEGER i_ = 1; i_ <= irowz - 1; i_++) {
+                        z[(i_ - 1) + (icolz - 1) * ldz] = zero;
+                    }
                 }
-                //** IDPTR loop **!
+                // ** IDPTR loop **!
             }
             if (split && wantz) {
                 //
-                //              Bring back eigenvector corresponding
-                //              to eigenvalue equal to zero.
+                // Bring back eigenvector corresponding
+                // to eigenvalue equal to zero.
                 //
-                for (int l = idbeg; l <= idend - ntgk + 1; l++)
-                    z[(l - 1) + (isbeg - 1) * ldz] = z[(l - 1) + (isbeg - 1) * ldz] + z[(l - 1) + ((n + 1) - 1) * ldz];
-                for (int l = idbeg; l <= idend - ntgk + 1; l++)
-                    z[(l - 1) + ((n + 1) - 1) * ldz] = 0.0;
+                for (INTEGER i_ = idbeg; i_ <= idend - ntgk + 1; i_++) {
+                    z[(i_ - 1) + ((isbeg - 1) - 1) * ldz] += z[(i_ - 1) + ((n + 1) - 1) * ldz];
+                }
+                for (INTEGER i_ = idbeg; i_ <= idend - ntgk + 1; i_++) {
+                    z[(i_ - 1) + ((n + 1) - 1) * ldz] = 0.0;
+                }
             }
             irowv = irowv - 1;
             irowu++;
             idbeg = ieptr + 1;
             sveq0 = false;
             split = false;
-            //** Check for split in E **!
+            // ** Check for split in E **!
         }
-        //** IEPTR loop **!
+        // ** IEPTR loop **!
     }
     //
-    //     Sort the singular values into decreasing order (insertion sort on
-    //     singular values, but only one transposition per singular vector)
+    // Sort the singular values into decreasing order (insertion sort on
+    // singular values, but only one transposition per singular vector)
     //
     INTEGER k = 0;
     for (i = 1; i <= ns - 1; i = i + 1) {
@@ -530,24 +553,27 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
         }
     }
     //
-    //     If RANGE=I, check for singular values/vectors to be discarded.
+    // If RANGE=I, check for singular values/vectors to be discarded.
     //
     if (indsv) {
         k = iu - il + 1;
         if (k < ns) {
-            for (int l = k + 1; l <= ns; l++)
-                s[l - 1] = zero;
+            for (INTEGER i_ = k + 1; i_ <= ns; i_++) {
+                s[i_ - 1] = zero;
+            }
             if (wantz) {
-                for (int l = 1; l <= n * 2; l++)
-                    for (int m = k + 1; m <= ns; m++)
-                        z[(l - 1) + (m - 1) * ldz] = zero;
+                for (INTEGER l_ = 1; l_ <= n * 2; l_++) {
+                    for (INTEGER m_ = k + 1; m_ <= ns; m_++) {
+                        z[(l_ - 1) + (m_ - 1) * ldz] = zero;
+                    }
+                }
             }
             ns = k;
         }
     }
     //
-    //     Reorder Z: U = Z( 1:N,1:NS ), V = Z( N+1:N*2,1:NS ).
-    //     If B is a lower diagonal, swap U and V.
+    // Reorder Z: U = Z( 1:N,1:NS ), V = Z( N+1:N*2,1:NS ).
+    // If B is a lower diagonal, swap U and V.
     //
     if (wantz) {
         for (i = 1; i <= ns; i = i + 1) {
@@ -562,6 +588,6 @@ void Rbdsvdx(const char *uplo, const char *jobz, const char *range, INTEGER cons
         }
     }
     //
-    //     End of Rbdsvdx
+    // End of Rbdsvdx
     //
 }

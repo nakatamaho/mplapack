@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,33 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DSPGVD.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rspgvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER const n, REAL *ap, REAL *bp, REAL *w, REAL *z, INTEGER const ldz, REAL *work, INTEGER const lwork, INTEGER *iwork, INTEGER const liwork, INTEGER &info) {
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     bool wantz = Mlsame(jobz, "V");
     bool upper = Mlsame(uplo, "U");
@@ -80,13 +66,13 @@ void Rspgvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
         } else {
             if (wantz) {
                 liwmin = 3 + 5 * n;
-                lwmin = 1 + 6 * n + 2 * n * n;
+                lwmin = 1 + 6 * n + 2 * pow2(n);
             } else {
                 liwmin = 1;
                 lwmin = 2 * n;
             }
         }
-        work[1 - 1] = lwmin;
+        work[1 - 1] = Rroundup_lwork(lwmin);
         iwork[1 - 1] = liwmin;
         if (lwork < lwmin && !lquery) {
             info = -11;
@@ -102,13 +88,13 @@ void Rspgvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
     }
     //
-    //     Form a Cholesky factorization of BP.
+    // Form a Cholesky factorization of BP.
     //
     Rpptrf(uplo, n, bp, info);
     if (info != 0) {
@@ -116,7 +102,7 @@ void Rspgvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
         return;
     }
     //
-    //     Transform problem to standard eigenvalue problem and solve.
+    // Transform problem to standard eigenvalue problem and solve.
     //
     Rspgst(itype, uplo, n, ap, bp, info);
     Rspevd(jobz, uplo, n, ap, w, z, ldz, work, lwork, iwork, liwork, info);
@@ -128,7 +114,7 @@ void Rspgvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
     INTEGER j = 0;
     if (wantz) {
         //
-        //        Backtransform eigenvectors to the original problem.
+        // Backtransform eigenvectors to the original problem.
         //
         neig = n;
         if (info > 0) {
@@ -136,8 +122,8 @@ void Rspgvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
         }
         if (itype == 1 || itype == 2) {
             //
-            //           For A*x=(lambda)*B*x and A*B*x=(lambda)*x;
-            //           backtransform eigenvectors: x = inv(L)**T *y or inv(U)*y
+            // For A*x=(lambda)*B*x and A*B*x=(lambda)*x;
+            // backtransform eigenvectors: x = inv(L)**T *y or inv(U)*y
             //
             if (upper) {
                 trans = 'N';
@@ -151,8 +137,8 @@ void Rspgvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
             //
         } else if (itype == 3) {
             //
-            //           For B*A*x=(lambda)*x;
-            //           backtransform eigenvectors: x = L*y or U**T *y
+            // For B*A*x=(lambda)*x;
+            // backtransform eigenvectors: x = L*y or U**T *y
             //
             if (upper) {
                 trans = 'T';
@@ -166,9 +152,9 @@ void Rspgvd(INTEGER const itype, const char *jobz, const char *uplo, INTEGER con
         }
     }
     //
-    work[1 - 1] = lwmin;
+    work[1 - 1] = Rroundup_lwork(lwmin);
     iwork[1 - 1] = liwmin;
     //
-    //     End of Rspgvd
+    // End of Rspgvd
     //
 }

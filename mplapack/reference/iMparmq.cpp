@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2022
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,15 +26,22 @@
  *
  */
 
+// Derived from LAPACK routine IPARMQ.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 #include <string.h>
 
 #define subnamlen 32
 
-INTEGER iMparmq(INTEGER const ispec, const char *name, const char *opts, INTEGER const n, INTEGER const ilo, INTEGER const ihi, INTEGER const lwork) {
+INTEGER
+iMparmq(INTEGER const ispec, const char *name, const char * /* opts */, INTEGER const /* n */, INTEGER const ilo, INTEGER const ihi, INTEGER const /* lwork */) {
     INTEGER return_value = 0;
-    //
     const INTEGER ishfts = 15;
     const INTEGER inwin = 13;
     const INTEGER iacc22 = 16;
@@ -44,7 +51,7 @@ INTEGER iMparmq(INTEGER const ispec, const char *name, const char *opts, INTEGER
     const REAL two = 2.0;
     if ((ispec == ishfts) || (ispec == inwin) || (ispec == iacc22)) {
         //
-        //        ==== Set the number simultaneous shifts ====
+        // ==== Set the number simultaneous shifts ====
         //
         nh = ihi - ilo + 1;
         ns = 2;
@@ -55,7 +62,7 @@ INTEGER iMparmq(INTEGER const ispec, const char *name, const char *opts, INTEGER
             ns = 10;
         }
         if (nh >= 150) {
-            ns = max((INTEGER)10, nh / nint((log(castREAL(nh - 1)) / log(two)) - 1));
+            ns = max((INTEGER)10, nh / nint(log(castREAL(nh)) / log(two)));
         }
         if (nh >= 590) {
             ns = 64;
@@ -80,31 +87,33 @@ INTEGER iMparmq(INTEGER const ispec, const char *name, const char *opts, INTEGER
     INTEGER i = 0;
     const INTEGER k22min = 14;
     const INTEGER kacmin = 14;
+    const INTEGER icost = 17;
+    const INTEGER rcost = 10;
     if (ispec == inmin) {
         //
-        //        ===== Matrices of order smaller than NMIN get sent
-        //        .     to xLAHQR, the classic REAL shift algorithm.
-        //        .     This must be at least 11. ====
+        // ===== Matrices of order smaller than NMIN get sent
+        // .     to xLAHQR, the classic double shift algorithm.
+        // .     This must be at least 11. ====
         //
         return_value = nmin;
         //
     } else if (ispec == inibl) {
         //
-        //        ==== INIBL: skip a multi-shift qr iteration and
-        //        .    whenever aggressive early deflation finds
-        //        .    at least (NIBBLE*(window size)/100) deflations. ====
+        // ==== INIBL: skip a multi-shift qr iteration and
+        // .    whenever aggressive early deflation finds
+        // .    at least (NIBBLE*(window size)/100) deflations. ====
         //
         return_value = nibble;
         //
     } else if (ispec == ishfts) {
         //
-        //        ==== NSHFTS: The number of simultaneous shifts =====
+        // ==== NSHFTS: The number of simultaneous shifts =====
         //
         return_value = ns;
         //
     } else if (ispec == inwin) {
         //
-        //        ==== NW: deflation window size.  ====
+        // ==== NW: deflation window size.  ====
         //
         if (nh <= knwswp) {
             return_value = ns;
@@ -114,14 +123,14 @@ INTEGER iMparmq(INTEGER const ispec, const char *name, const char *opts, INTEGER
         //
     } else if (ispec == iacc22) {
         //
-        //        ==== IACC22: Whether to accumulate reflections
-        //        .     before updating the far-from-diagonal elements
-        //        .     and whether to use 2-by-2 block structure while
-        //        .     doing it.  A small amount of work could be saved
-        //        .     by making this choice dependent also upon the
-        //        .     NH=IHI-ILO+1.
+        // ==== IACC22: Whether to accumulate reflections
+        // .     before updating the far-from-diagonal elements
+        // .     and whether to use 2-by-2 block structure while
+        // .     doing it.  A small amount of work could be saved
+        // .     by making this choice dependent also upon the
+        // .     NH=IHI-ILO+1.
         //
-        //        Convert NAME to upper case if the first character is lower case.
+        // Convert NAME to upper case if the first character is lower case.
         //
         return_value = 0;
         strncpy(subnam, name, subnamlen - 1);
@@ -129,7 +138,7 @@ INTEGER iMparmq(INTEGER const ispec, const char *name, const char *opts, INTEGER
         iz = 'Z';
         if (iz == 90 || iz == 122) {
             //
-            //           ASCII character set
+            // ASCII character set
             //
             if (ic >= 97 && ic <= 122) {
                 *subnam = (char)(ic - 32);
@@ -144,32 +153,38 @@ INTEGER iMparmq(INTEGER const ispec, const char *name, const char *opts, INTEGER
         //
         if (strncmp(subnam + 1, "GGHRD", 5) == 0 || strncmp(subnam + 1, "GGHD3", 5) == 0) {
             return_value = 1;
-            if (nh >= 14) {
+            if (nh >= k22min) {
                 return_value = 2;
             }
         } else if (strncmp(subnam + 3, "EXC", 3) == 0) {
-            if (nh >= 14) {
+            if (nh >= kacmin) {
                 return_value = 1;
             }
-            if (nh >= 14) {
+            if (nh >= k22min) {
                 return_value = 2;
             }
         } else if (strncmp(subnam + 1, "HSEQR", 5) == 0 || strncmp(subnam + 1, "LAQR", 4) == 0) {
-            if (ns >= 14) {
+            if (ns >= kacmin) {
                 return_value = 1;
             }
-            if (ns >= 14) {
+            if (ns >= k22min) {
                 return_value = 2;
             }
         }
         //
+    } else if (ispec == icost) {
+        //
+        // === Relative cost of near-the-diagonal chase vs
+        // BLAS updates ===
+        //
+        return_value = rcost;
     } else {
-        //        ===== invalid value of ispec =====
+        // ===== invalid value of ispec =====
         return_value = -1;
         //
     }
     return return_value;
     //
-    //     ==== End of IPARMQ ====
+    // ==== End of iMparmq ====
     //
 }

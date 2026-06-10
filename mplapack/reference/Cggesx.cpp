@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZGGESX.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -75,7 +82,7 @@ void Cggesx(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
     bool lastsl = false;
     bool cursl = false;
     //
-    //     Decode the input arguments
+    // Decode the input arguments
     //
     if (Mlsame(jobvsl, "N")) {
         ijobvl = 1;
@@ -115,7 +122,7 @@ void Cggesx(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
         ijob = 4;
     }
     //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     if (ijobvl <= 0) {
@@ -138,20 +145,20 @@ void Cggesx(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
         info = -17;
     }
     //
-    //     Compute workspace
-    //      (Note: Comments in the code beginning "Workspace:" describe the
-    //       minimal amount of workspace needed at that point in the code,
-    //       as well as the preferred amount for good performance.
-    //       NB refers to the optimal block size for the immediately
-    //       following subroutine, as returned by iMlaenv.)
+    // Compute workspace
+    // (Note: Comments in the code beginning "Workspace:" describe the
+    // minimal amount of workspace needed at that point in the code,
+    // as well as the preferred amount for good performance.
+    // NB refers to the optimal block size for the immediately
+    // following subroutine, as returned by iMlaenv.)
     //
     if (info == 0) {
         if (n > 0) {
             minwrk = 2 * n;
             maxwrk = n * (1 + iMlaenv(1, "Cgeqrf", " ", n, 1, n, 0));
-            maxwrk = max({maxwrk, n * (1 + iMlaenv(1, "Cunmqr", " ", n, 1, n, -1))});
+            maxwrk = max(maxwrk, n * (1 + iMlaenv(1, "Cunmqr", " ", n, 1, n, -1)));
             if (ilvsl) {
-                maxwrk = max({maxwrk, n * (1 + iMlaenv(1, "Cungqr", " ", n, 1, n, -1))});
+                maxwrk = max(maxwrk, n * (1 + iMlaenv(1, "Cungqr", " ", n, 1, n, -1)));
             }
             lwrk = maxwrk;
             if (ijob >= 1) {
@@ -184,14 +191,14 @@ void Cggesx(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         sdim = 0;
         return;
     }
     //
-    //     Get machine constants
+    // Get machine constants
     //
     eps = Rlamch("P");
     smlnum = Rlamch("S");
@@ -199,7 +206,7 @@ void Cggesx(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
     smlnum = sqrt(smlnum) / eps;
     bignum = one / smlnum;
     //
-    //     Scale A if max element outside range [SMLNUM,BIGNUM]
+    // Scale A if max element outside range [SMLNUM,BIGNUM]
     //
     anrm = Clange("M", n, n, a, lda, rwork);
     ilascl = false;
@@ -214,7 +221,7 @@ void Cggesx(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
         Clascl("G", 0, 0, anrm, anrmto, n, n, a, lda, ierr);
     }
     //
-    //     Scale B if max element outside range [SMLNUM,BIGNUM]
+    // Scale B if max element outside range [SMLNUM,BIGNUM]
     //
     bnrm = Clange("M", n, n, b, ldb, rwork);
     ilbscl = false;
@@ -229,16 +236,16 @@ void Cggesx(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
         Clascl("G", 0, 0, bnrm, bnrmto, n, n, b, ldb, ierr);
     }
     //
-    //     Permute the matrix to make it more nearly triangular
-    //     (Real Workspace: need 6*N)
+    // Permute the matrix to make it more nearly triangular
+    // (Real Workspace: need 6*N)
     //
     ileft = 1;
     iright = n + 1;
     irwrk = iright + n;
     Cggbal("P", n, a, lda, b, ldb, ilo, ihi, &rwork[ileft - 1], &rwork[iright - 1], &rwork[irwrk - 1], ierr);
     //
-    //     Reduce B to triangular form (QR decomposition of B)
-    //     (Complex Workspace: need N, prefer N*NB)
+    // Reduce B to triangular form (QR decomposition of B)
+    // (Complex Workspace: need N, prefer N*NB)
     //
     irows = ihi + 1 - ilo;
     icols = n + 1 - ilo;
@@ -246,13 +253,13 @@ void Cggesx(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
     iwrk = itau + irows;
     Cgeqrf(irows, icols, &b[(ilo - 1) + (ilo - 1) * ldb], ldb, &work[itau - 1], &work[iwrk - 1], lwork + 1 - iwrk, ierr);
     //
-    //     Apply the unitary transformation to matrix A
-    //     (Complex Workspace: need N, prefer N*NB)
+    // Apply the unitary transformation to matrix A
+    // (Complex Workspace: need N, prefer N*NB)
     //
     Cunmqr("L", "C", irows, icols, irows, &b[(ilo - 1) + (ilo - 1) * ldb], ldb, &work[itau - 1], &a[(ilo - 1) + (ilo - 1) * lda], lda, &work[iwrk - 1], lwork + 1 - iwrk, ierr);
     //
-    //     Initialize VSL
-    //     (Complex Workspace: need N, prefer N*NB)
+    // Initialize VSL
+    // (Complex Workspace: need N, prefer N*NB)
     //
     if (ilvsl) {
         Claset("Full", n, n, czero, cone, vsl, ldvsl);
@@ -262,22 +269,22 @@ void Cggesx(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
         Cungqr(irows, irows, irows, &vsl[(ilo - 1) + (ilo - 1) * ldvsl], ldvsl, &work[itau - 1], &work[iwrk - 1], lwork + 1 - iwrk, ierr);
     }
     //
-    //     Initialize VSR
+    // Initialize VSR
     //
     if (ilvsr) {
         Claset("Full", n, n, czero, cone, vsr, ldvsr);
     }
     //
-    //     Reduce to generalized Hessenberg form
-    //     (Workspace: none needed)
+    // Reduce to generalized Hessenberg form
+    // (Workspace: none needed)
     //
     Cgghrd(jobvsl, jobvsr, n, ilo, ihi, a, lda, b, ldb, vsl, ldvsl, vsr, ldvsr, ierr);
     //
     sdim = 0;
     //
-    //     Perform QZ algorithm, computing Schur vectors if desired
-    //     (Complex Workspace: need N)
-    //     (Real Workspace:    need N)
+    // Perform QZ algorithm, computing Schur vectors if desired
+    // (Complex Workspace: need N)
+    // (Real Workspace:    need N)
     //
     iwrk = itau;
     Chgeqz("S", jobvsl, jobvsr, n, ilo, ihi, a, lda, b, ldb, alpha, beta, vsl, ldvsl, vsr, ldvsr, &work[iwrk - 1], lwork + 1 - iwrk, &rwork[irwrk - 1], ierr);
@@ -292,12 +299,12 @@ void Cggesx(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
         goto statement_40;
     }
     //
-    //     Sort eigenvalues ALPHA/BETA and compute the reciprocal of
-    //     condition number(s)
+    // Sort eigenvalues ALPHA/BETA and compute the reciprocal of
+    // condition number(s)
     //
     if (wantst) {
         //
-        //        Undo scaling on eigenvalues before SELCTGing
+        // Undo scaling on eigenvalues before SELCTGing
         //
         if (ilascl) {
             Clascl("G", 0, 0, anrmto, anrm, n, 1, alpha, n, ierr);
@@ -306,16 +313,16 @@ void Cggesx(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
             Clascl("G", 0, 0, bnrmto, bnrm, n, 1, beta, n, ierr);
         }
         //
-        //        Select eigenvalues
+        // Select eigenvalues
         //
         for (i = 1; i <= n; i = i + 1) {
             bwork[i - 1] = selctg(alpha[i - 1], beta[i - 1]);
         }
         //
-        //        Reorder eigenvalues, transform Generalized Schur vectors, and
-        //        compute reciprocal condition numbers
-        //        (Complex Workspace: If IJOB >= 1, need MAX(1, 2*SDIM*(N-SDIM))
-        //                            otherwise, need 1 )
+        // Reorder eigenvalues, transform Generalized Schur vectors, and
+        // compute reciprocal condition numbers
+        // (Complex Workspace: If IJOB >= 1, need MAX(1, 2*SDIM*(N-SDIM))
+        // otherwise, need 1 )
         //
         Ctgsen(ijob, ilvsl, ilvsr, bwork, n, a, lda, b, ldb, alpha, beta, vsl, ldvsl, vsr, ldvsr, sdim, pl, pr, dif, &work[iwrk - 1], lwork - iwrk + 1, iwork, liwork, ierr);
         //
@@ -324,7 +331,7 @@ void Cggesx(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
         }
         if (ierr == -21) {
             //
-            //            not enough complex workspace
+            // not enough complex workspace
             //
             info = -21;
         } else {
@@ -343,8 +350,8 @@ void Cggesx(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
         //
     }
     //
-    //     Apply permutation to VSL and VSR
-    //     (Workspace: none needed)
+    // Apply permutation to VSL and VSR
+    // (Workspace: none needed)
     //
     if (ilvsl) {
         Cggbak("P", "L", n, ilo, ihi, &rwork[ileft - 1], &rwork[iright - 1], n, vsl, ldvsl, ierr);
@@ -354,7 +361,7 @@ void Cggesx(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
         Cggbak("P", "R", n, ilo, ihi, &rwork[ileft - 1], &rwork[iright - 1], n, vsr, ldvsr, ierr);
     }
     //
-    //     Undo scaling
+    // Undo scaling
     //
     if (ilascl) {
         Clascl("U", 0, 0, anrmto, anrm, n, n, a, lda, ierr);
@@ -368,7 +375,7 @@ void Cggesx(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
     //
     if (wantst) {
         //
-        //        Check if reordering is correct
+        // Check if reordering is correct
         //
         lastsl = true;
         sdim = 0;
@@ -390,6 +397,6 @@ statement_40:
     work[1 - 1] = maxwrk;
     iwork[1 - 1] = liwmin;
     //
-    //     End of Cggesx
+    // End of Cggesx
     //
 }

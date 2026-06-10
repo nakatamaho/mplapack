@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DGET35.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,30 +43,33 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
 void Rget35(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
-    INTEGER idim[8] = {1, 2, 3, 4, 3, 3, 6, 4};
-    INTEGER ival[6 * 6 * 8] = {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, -2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 5, 1, 2, 0, 0, 0, -8, -2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 4, 0, 0, 0, 0, -5, 3, 0, 0, 0, 0, 1, 2, 1, 4, 0, 0, -3, -9, -1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 2, 3, 0, 0, 0, 0, 5, 6, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 3, -4, 0, 0, 0, 2, 5, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, -2, 0, 0, 0, 0, 0, 5, 6, 3, 4, 0, 0, -1, -9, -5, 2, 0, 0, 8, 8, 8, 8, 5, 6, 9, 9, 9, 9, -7, 5, 1, 0, 0, 0, 0, 0, 1, 5, 2, 0, 0, 0, 2, -21, 5, 0, 0, 0, 1, 2, 3, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    static INTEGER idim[8] = {1, 2, 3, 4, 3, 3, 6, 4};
+    static INTEGER ival[] = {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, -2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 5, 1, 2, 0, 0, 0, -8, -2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 4, 0, 0, 0, 0, -5, 3, 0, 0, 0, 0, 1, 2, 1, 4, 0, 0, -3, -9, -1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 2, 3, 0, 0, 0, 0, 5, 6, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 3, -4, 0, 0, 0, 2, 5, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, -2, 0, 0, 0, 0, 0, 5, 6, 3, 4, 0, 0, -1, -9, -5, 2, 0, 0, 8, 8, 8, 8, 5, 6, 9, 9, 9, 9, -7, 5, 1, 0, 0, 0, 0, 0, 1, 5, 2, 0, 0, 0, 2, -21, 5, 0, 0, 0, 1, 2, 3, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    INTEGER ldival = 6;
+    INTEGER ld2ival = 6;
+    INTEGER lda = 6;
+    INTEGER ldb = 6;
+    INTEGER ldc = 6;
+    INTEGER ldcc = 6;
     //
-    const REAL four = 4.0;
-    const REAL one = 1.0;
+    // Get machine parameters
+    //
     REAL eps = Rlamch("P");
+    const REAL four = 4.0;
     REAL smlnum = Rlamch("S") * four / eps;
-    // REAL eps = 2.2204460492503131E-016;
-    // REAL smlnum = 2.2250738585072014E-308 * four / eps;
+    const REAL one = 1.0;
     REAL bignum = one / smlnum;
     //
-    //     Set up test case parameters
+    // Set up test case parameters
     //
-    const REAL two = 2.0;
     REAL vm1[3];
-    REAL vm2[3];
     vm1[1 - 1] = sqrt(smlnum);
     vm1[2 - 1] = one;
     vm1[3 - 1] = sqrt(bignum);
-
+    REAL vm2[3];
     vm2[1 - 1] = one;
+    const REAL two = 2.0;
     vm2[2 - 1] = one + two * eps;
     vm2[3 - 1] = two;
     //
@@ -69,7 +79,7 @@ void Rget35(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
     const REAL zero = 0.0;
     rmax = zero;
     //
-    //     Begin test loop
+    // Begin test loop
     //
     INTEGER itrana = 0;
     INTEGER itranb = 0;
@@ -80,8 +90,8 @@ void Rget35(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
     INTEGER imloff = 0;
     INTEGER imb = 0;
     INTEGER imldb1 = 0;
-    char trana;
-    char tranb;
+    fem::str<1> trana;
+    fem::str<1> tranb;
     INTEGER m = 0;
     INTEGER n = 0;
     REAL tnrm = 0.0;
@@ -92,10 +102,6 @@ void Rget35(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
     REAL cnrm = 0.0;
     REAL c[6 * 6];
     REAL cc[6 * 6];
-    INTEGER lda = 6;
-    INTEGER ldb = 6;
-    INTEGER ldc = 6;
-    INTEGER ldcc = 6;
     REAL scale = 0.0;
     INTEGER info = 0;
     REAL dum[1];
@@ -113,53 +119,53 @@ void Rget35(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
                                 for (imb = 1; imb <= 8; imb = imb + 1) {
                                     for (imldb1 = 1; imldb1 <= 3; imldb1 = imldb1 + 1) {
                                         if (itrana == 1) {
-                                            trana = 'N';
+                                            trana = "N";
                                         }
                                         if (itrana == 2) {
-                                            trana = 'T';
+                                            trana = "T";
                                         }
                                         if (itranb == 1) {
-                                            tranb = 'N';
+                                            tranb = "N";
                                         }
                                         if (itranb == 2) {
-                                            tranb = 'T';
+                                            tranb = "T";
                                         }
                                         m = idim[ima - 1];
                                         n = idim[imb - 1];
                                         tnrm = zero;
                                         for (i = 1; i <= m; i = i + 1) {
                                             for (j = 1; j <= m; j = j + 1) {
-                                                a[(i - 1) + (j - 1) * lda] = castREAL(ival[(i - 1) + (j - 1) * 6 + (ima - 1) * 36]);
+                                                a[(i - 1) + (j - 1) * lda] = ival[(i - 1) + (j - 1) * ldival + (ima - 1) * ldival * ld2ival];
                                                 if (abs(i - j) <= 1) {
                                                     a[(i - 1) + (j - 1) * lda] = a[(i - 1) + (j - 1) * lda] * vm1[imlda1 - 1];
                                                     a[(i - 1) + (j - 1) * lda] = a[(i - 1) + (j - 1) * lda] * vm2[imlda2 - 1];
                                                 } else {
                                                     a[(i - 1) + (j - 1) * lda] = a[(i - 1) + (j - 1) * lda] * vm1[imloff - 1];
                                                 }
-                                                tnrm = max(tnrm, REAL(abs(a[(i - 1) + (j - 1) * lda])));
+                                                tnrm = max(tnrm, abs(a[(i - 1) + (j - 1) * lda]));
                                             }
                                         }
                                         for (i = 1; i <= n; i = i + 1) {
                                             for (j = 1; j <= n; j = j + 1) {
-                                                b[(i - 1) + (j - 1) * ldb] = castREAL(ival[(i - 1) + (j - 1) * 6 + (ima - 1) * 36]);
+                                                b[(i - 1) + (j - 1) * ldb] = ival[(i - 1) + (j - 1) * ldival + (imb - 1) * ldival * ld2ival];
                                                 if (abs(i - j) <= 1) {
                                                     b[(i - 1) + (j - 1) * ldb] = b[(i - 1) + (j - 1) * ldb] * vm1[imldb1 - 1];
                                                 } else {
                                                     b[(i - 1) + (j - 1) * ldb] = b[(i - 1) + (j - 1) * ldb] * vm1[imloff - 1];
                                                 }
-                                                tnrm = max(tnrm, REAL(abs(b[(i - 1) + (j - 1) * ldb])));
+                                                tnrm = max(tnrm, abs(b[(i - 1) + (j - 1) * ldb]));
                                             }
                                         }
                                         cnrm = zero;
                                         for (i = 1; i <= m; i = i + 1) {
                                             for (j = 1; j <= n; j = j + 1) {
-                                                c[(i - 1) + (j - 1) * ldc] = sin(i * j);
+                                                c[(i - 1) + (j - 1) * ldc] = sin(castREAL(i * j));
                                                 cnrm = max(cnrm, c[(i - 1) + (j - 1) * ldc]);
                                                 cc[(i - 1) + (j - 1) * ldcc] = c[(i - 1) + (j - 1) * ldc];
                                             }
                                         }
                                         knt++;
-                                        Rtrsyl(&trana, &tranb, isgn, m, n, a, 6, b, 6, c, 6, scale, info);
+                                        Rtrsyl(trana.elems, tranb.elems, isgn, m, n, a, 6, b, 6, c, 6, scale, info);
                                         if (info != 0) {
                                             ninfo++;
                                         }
@@ -170,10 +176,10 @@ void Rget35(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
                                                 rmul = one / max(xnrm, tnrm);
                                             }
                                         }
-                                        Rgemm(&trana, "N", m, n, m, rmul, a, 6, c, 6, -scale * rmul, cc, 6);
-                                        Rgemm("N", &tranb, m, n, n, castREAL(isgn) * rmul, c, 6, b, 6, one, cc, 6);
+                                        Rgemm(trana.elems, "N", m, n, m, rmul, a, 6, c, 6, -scale * rmul, cc, 6);
+                                        Rgemm("N", tranb.elems, m, n, n, castREAL(isgn) * rmul, c, 6, b, 6, one, cc, 6);
                                         res1 = Rlange("M", m, n, cc, 6, dum);
-                                        res = res1 / max({smlnum, REAL(smlnum * xnrm), REAL(((rmul * tnrm) * eps) * xnrm)});
+                                        res = res1 / max(smlnum, smlnum * xnrm, ((rmul * tnrm) * eps) * xnrm);
                                         if (res > rmax) {
                                             lmax = knt;
                                             rmax = res;
@@ -188,6 +194,6 @@ void Rget35(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
         }
     }
     //
-    //     End of Rget35
+    // End of Rget35
     //
 }

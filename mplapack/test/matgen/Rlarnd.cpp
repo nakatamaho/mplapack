@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,62 +26,48 @@
  *
  */
 
+// Derived from LAPACK routine DLARND.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 #include <mplapack_matgen.h>
 
-REAL Rlarnd(INTEGER const idist, INTEGER *iseed) {
+REAL Rlarnd(INTEGER const idist, INTEGER (&iseed)[4]) {
     REAL return_value = 0.0;
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Generate a real random number from a uniform (0,1) distribution
+    // Generate a real random number from a uniform (0,1) distribution
     //
     REAL t1 = Rlaran(iseed);
     //
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     const REAL one = 1.0;
     REAL t2 = 0.0;
-    const REAL twopi = pi(one);
+    const REAL twopi = two * pi(one);
     if (idist == 1) {
         //
-        //        uniform (0,1)
+        // uniform (0,1)
         //
         return_value = t1;
     } else if (idist == 2) {
         //
-        //        uniform (-1,1)
+        // uniform (-1,1)
         //
         return_value = two * t1 - one;
     } else if (idist == 3) {
         //
-        //        normal (0,1)
+        // normal (0,1)
         //
         t2 = Rlaran(iseed);
         return_value = sqrt(-two * log(t1)) * cos(twopi * t2);
     }
     return return_value;
     //
-    //     End of Rlarnd
+    // End of Rlarnd
     //
 }

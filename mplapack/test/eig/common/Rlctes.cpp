@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DLCTES.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,9 +43,7 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-bool Rlctes(REAL const zr, REAL const zi, REAL const d) {
+bool Rlctes(REAL const zr, REAL const /* zi */, REAL const d) {
     bool return_value = false;
     //
     const REAL zero = 0.0;
@@ -51,6 +56,6 @@ bool Rlctes(REAL const zr, REAL const zi, REAL const d) {
     //
     return return_value;
     //
-    //     End of Rlctes
+    // End of Rlctes
     //
 }

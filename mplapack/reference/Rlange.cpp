@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,36 +26,18 @@
  *
  */
 
+// Derived from LAPACK routine DLANGE.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 REAL Rlange(const char *norm, INTEGER const m, INTEGER const n, REAL *a, INTEGER const lda, REAL *work) {
     REAL return_value = 0.0;
-    //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    // =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     const REAL zero = 0.0;
     REAL value = 0.0;
@@ -63,14 +45,13 @@ REAL Rlange(const char *norm, INTEGER const m, INTEGER const n, REAL *a, INTEGER
     INTEGER i = 0;
     REAL temp = 0.0;
     REAL sum = 0.0;
-    REAL ssq[2];
+    REAL scale = 0.0;
     const REAL one = 1.0;
-    REAL colssq[2];
     if (min(m, n) == 0) {
         value = zero;
     } else if (Mlsame(norm, "M")) {
         //
-        //        Find max(abs(A(i,j))).
+        // Find max(abs(A(i,j))).
         //
         value = zero;
         for (j = 1; j <= n; j = j + 1) {
@@ -81,9 +62,9 @@ REAL Rlange(const char *norm, INTEGER const m, INTEGER const n, REAL *a, INTEGER
                 }
             }
         }
-    } else if ((Mlsame(norm, "O")) || ((Mlsame(norm, "1")))) {
+    } else if ((Mlsame(norm, "O")) || (Mlsame(norm, "1"))) {
         //
-        //        Find norm1(A).
+        // Find norm1(A).
         //
         value = zero;
         for (j = 1; j <= n; j = j + 1) {
@@ -97,7 +78,7 @@ REAL Rlange(const char *norm, INTEGER const m, INTEGER const n, REAL *a, INTEGER
         }
     } else if (Mlsame(norm, "I")) {
         //
-        //        Find normI(A).
+        // Find normI(A).
         //
         for (i = 1; i <= m; i = i + 1) {
             work[i - 1] = zero;
@@ -116,25 +97,19 @@ REAL Rlange(const char *norm, INTEGER const m, INTEGER const n, REAL *a, INTEGER
         }
     } else if ((Mlsame(norm, "F")) || (Mlsame(norm, "E"))) {
         //
-        //        Find normF(A).
-        //        SSQ(1) is scale
-        //        SSQ(2) is sum-of-squares
-        //        For better accuracy, sum each column separately.
+        // Find normF(A).
         //
-        ssq[1 - 1] = zero;
-        ssq[2 - 1] = one;
+        scale = zero;
+        sum = one;
         for (j = 1; j <= n; j = j + 1) {
-            colssq[1 - 1] = zero;
-            colssq[2 - 1] = one;
-            Rlassq(m, &a[(j - 1) * lda], 1, colssq[1 - 1], colssq[2 - 1]);
-            Rcombssq(ssq, colssq);
+            Rlassq(m, &a[(j - 1) * lda], 1, scale, sum);
         }
-        value = ssq[1 - 1] * sqrt(ssq[2 - 1]);
+        value = scale * sqrt(sum);
     }
     //
     return_value = value;
     return return_value;
     //
-    //     End of Rlange
+    // End of Rlange
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine XERBLA.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -44,26 +51,43 @@ void Mxerbla(const char *srname, int info) {
     common cmn;
     common_write write(cmn);
     //
+    // Trim trailing null bytes and spaces from srnamt.
+    // fem::str<N>::operator std::string() copies all N bytes via std::string(elems, StrLen).
+    // fem::str<N>::str() zero-fills elems with memset, so unset srnamt is all '\0'.
+    // We must strip both '\0' and ' ' to get a clean C++ string.
+    std::string srnamt_trimmed = static_cast<std::string>(srnamt);
+    {
+        size_t end = srnamt_trimmed.find_last_not_of(std::string("\0 ", 2));
+        srnamt_trimmed = (end == std::string::npos) ? "" : srnamt_trimmed.substr(0, end + 1);
+    }
+    //
     lerr = true;
     if (info != infot) {
         if (infot != 0) {
+            // srnamt was set: report which routine was expected and what info was received
             write(nout, "(' *** XERBLA was called from ',a,' with INFO = ',i6,' instead of ',"
                         "i2,' ***')"),
-                srnamt, info, infot;
+                srnamt_trimmed, info, infot;
         } else {
+            // srnamt was not set: this is an unexpected XERBLA call from srname itself
             write(nout, "(' *** On entry to ',a,' parameter number ',i6,"
                         "' had an illegal value ***')"),
                 srname, info;
         }
         ok = false;
     }
-    std::string _srname = srname;
-    std::string _srnamt = srnamt;
-    if (_srname != _srnamt) {
-        write(nout, "(' *** XERBLA was called with SRNAME = ',a,' instead of ',a9,' ***')"), srname, srnamt;
+    // Check that XERBLA was called by the expected routine.
+    // Guard with infot != 0: when infot == 0, srnamt was not set by the test
+    // harness (all '\0' after memset), so comparing against srname is meaningless.
+    if (infot == 0) {
+        // srnamt was not set by the test harness: unexpected XERBLA call
+        write(nout, "(' *** XERBLA was called with srname= ',a,' but no srname was expected (srnamt not set) ***')"), srname;
+        ok = false;
+    } else if (!(srnamt == srname)) {
+        write(nout, "(' *** XERBLA was called with srname= ',a,' instead of ',a,' ***')"), srname, srnamt_trimmed;
         ok = false;
     }
     //
-    //     End of XERBLA
+    // End of Mxerbla
     //
 }

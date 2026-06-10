@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZLAPMR.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -35,21 +42,6 @@ void Clapmr(bool const forwrd, INTEGER const m, INTEGER const n, COMPLEX *x, INT
     INTEGER in = 0;
     INTEGER jj = 0;
     COMPLEX temp = 0.0;
-    //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Executable Statements ..
     //
     if (m <= 1) {
         return;
@@ -61,7 +53,7 @@ void Clapmr(bool const forwrd, INTEGER const m, INTEGER const n, COMPLEX *x, INT
     //
     if (forwrd) {
         //
-        //        Forward permutation
+        // Forward permutation
         //
         for (i = 1; i <= m; i = i + 1) {
             //
@@ -95,7 +87,7 @@ void Clapmr(bool const forwrd, INTEGER const m, INTEGER const n, COMPLEX *x, INT
         //
     } else {
         //
-        //        Backward permutation
+        // Backward permutation
         //
         for (i = 1; i <= m; i = i + 1) {
             //
@@ -126,6 +118,6 @@ void Clapmr(bool const forwrd, INTEGER const m, INTEGER const n, COMPLEX *x, INT
         //
     }
     //
-    //     End of Clapmt
+    // End of Clapmr
     //
 }

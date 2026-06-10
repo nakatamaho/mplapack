@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DBDT01.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,11 +43,9 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
 void Rbdt01(INTEGER const m, INTEGER const n, INTEGER const kd, REAL *a, INTEGER const lda, REAL *q, INTEGER const ldq, REAL *d, REAL *e, REAL *pt, INTEGER const ldpt, REAL *work, REAL &resid) {
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     const REAL zero = 0.0;
     if (m <= 0 || n <= 0) {
@@ -48,7 +53,7 @@ void Rbdt01(INTEGER const m, INTEGER const n, INTEGER const kd, REAL *a, INTEGER
         return;
     }
     //
-    //     Compute A - Q * B * P' one column at a time.
+    // Compute A - Q * B * P**T one column at a time.
     //
     resid = zero;
     INTEGER j = 0;
@@ -56,11 +61,11 @@ void Rbdt01(INTEGER const m, INTEGER const n, INTEGER const kd, REAL *a, INTEGER
     const REAL one = 1.0;
     if (kd != 0) {
         //
-        //        B is bidiagonal.
+        // B is bidiagonal.
         //
         if (kd != 0 && m >= n) {
             //
-            //           B is upper bidiagonal and M >= N.
+            // B is upper bidiagonal and M >= N.
             //
             for (j = 1; j <= n; j = j + 1) {
                 Rcopy(m, &a[(j - 1) * lda], 1, work, 1);
@@ -69,11 +74,11 @@ void Rbdt01(INTEGER const m, INTEGER const n, INTEGER const kd, REAL *a, INTEGER
                 }
                 work[(m + n) - 1] = d[n - 1] * pt[(n - 1) + (j - 1) * ldpt];
                 Rgemv("No transpose", m, n, -one, q, ldq, &work[(m + 1) - 1], 1, one, work, 1);
-                resid = max({resid, Rasum(m, work, 1)});
+                resid = max(resid, Rasum(m, work, 1));
             }
         } else if (kd < 0) {
             //
-            //           B is upper bidiagonal and M < N.
+            // B is upper bidiagonal and M < N.
             //
             for (j = 1; j <= n; j = j + 1) {
                 Rcopy(m, &a[(j - 1) * lda], 1, work, 1);
@@ -82,11 +87,11 @@ void Rbdt01(INTEGER const m, INTEGER const n, INTEGER const kd, REAL *a, INTEGER
                 }
                 work[(m + m) - 1] = d[m - 1] * pt[(m - 1) + (j - 1) * ldpt];
                 Rgemv("No transpose", m, m, -one, q, ldq, &work[(m + 1) - 1], 1, one, work, 1);
-                resid = max({resid, Rasum(m, work, 1)});
+                resid = max(resid, Rasum(m, work, 1));
             }
         } else {
             //
-            //           B is lower bidiagonal.
+            // B is lower bidiagonal.
             //
             for (j = 1; j <= n; j = j + 1) {
                 Rcopy(m, &a[(j - 1) * lda], 1, work, 1);
@@ -95,12 +100,12 @@ void Rbdt01(INTEGER const m, INTEGER const n, INTEGER const kd, REAL *a, INTEGER
                     work[(m + i) - 1] = e[(i - 1) - 1] * pt[((i - 1) - 1) + (j - 1) * ldpt] + d[i - 1] * pt[(i - 1) + (j - 1) * ldpt];
                 }
                 Rgemv("No transpose", m, m, -one, q, ldq, &work[(m + 1) - 1], 1, one, work, 1);
-                resid = max({resid, Rasum(m, work, 1)});
+                resid = max(resid, Rasum(m, work, 1));
             }
         }
     } else {
         //
-        //        B is diagonal.
+        // B is diagonal.
         //
         if (m >= n) {
             for (j = 1; j <= n; j = j + 1) {
@@ -109,7 +114,7 @@ void Rbdt01(INTEGER const m, INTEGER const n, INTEGER const kd, REAL *a, INTEGER
                     work[(m + i) - 1] = d[i - 1] * pt[(i - 1) + (j - 1) * ldpt];
                 }
                 Rgemv("No transpose", m, n, -one, q, ldq, &work[(m + 1) - 1], 1, one, work, 1);
-                resid = max({resid, Rasum(m, work, 1)});
+                resid = max(resid, Rasum(m, work, 1));
             }
         } else {
             for (j = 1; j <= n; j = j + 1) {
@@ -118,12 +123,12 @@ void Rbdt01(INTEGER const m, INTEGER const n, INTEGER const kd, REAL *a, INTEGER
                     work[(m + i) - 1] = d[i - 1] * pt[(i - 1) + (j - 1) * ldpt];
                 }
                 Rgemv("No transpose", m, m, -one, q, ldq, &work[(m + 1) - 1], 1, one, work, 1);
-                resid = max({resid, Rasum(m, work, 1)});
+                resid = max(resid, Rasum(m, work, 1));
             }
         }
     }
     //
-    //     Compute norm(A - Q * B * P') / ( n * norm(A) * EPS )
+    // Compute norm(A - Q * B * P**T) / ( n * norm(A) * EPS )
     //
     REAL anorm = Rlange("1", m, n, a, lda, work);
     REAL eps = Rlamch("Precision");
@@ -137,13 +142,13 @@ void Rbdt01(INTEGER const m, INTEGER const n, INTEGER const kd, REAL *a, INTEGER
             resid = (resid / anorm) / (castREAL(n) * eps);
         } else {
             if (anorm < one) {
-                resid = (min(resid, REAL(castREAL(n) * anorm)) / anorm) / (castREAL(n) * eps);
+                resid = (min(resid, castREAL(n) * anorm) / anorm) / (castREAL(n) * eps);
             } else {
-                resid = min(REAL(resid / anorm), castREAL(n)) / (castREAL(n) * eps);
+                resid = min(resid / anorm, castREAL(n)) / (castREAL(n) * eps);
             }
         }
     }
     //
-    //     End of Rbdt01
+    // End of Rbdt01
     //
 }

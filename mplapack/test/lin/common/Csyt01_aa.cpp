@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZSYT01_AA.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,32 +43,9 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Csyt01_aa(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *afac, INTEGER const ldafac, INTEGER *ipiv, COMPLEX *c, INTEGER const ldc, REAL *rwork, REAL &resid) {
+void Csyt01_aa(fem::str_cref uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *afac, INTEGER const ldafac, INTEGER *ipiv, COMPLEX *c, INTEGER const ldc, REAL *rwork, REAL &resid) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Quick exit if N = 0.
+    // Quick exit if N = 0.
     //
     const REAL zero = 0.0;
     if (n <= 0) {
@@ -69,44 +53,44 @@ void Csyt01_aa(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
         return;
     }
     //
-    //     Determine EPS and the norm of A.
+    // Determine EPS and the norm of A.
     //
     REAL eps = Rlamch("Epsilon");
-    REAL anorm = Clansy("1", uplo, n, a, lda, rwork);
+    REAL anorm = Clansy("1", uplo.elems(), n, a, lda, rwork);
     //
-    //     Initialize C to the tridiagonal matrix T.
+    // Initialize C to the tridiagonal matrix T.
     //
-    const COMPLEX czero = 0.0f;
+    const COMPLEX czero = COMPLEX(0.0, 0.0);
     Claset("Full", n, n, czero, czero, c, ldc);
-    Clacpy("F", 1, n, &afac[(1 - 1) + (1 - 1) * ldafac], ldafac + 1, &c[(1 - 1) + (1 - 1) * ldc], ldc + 1);
-    const COMPLEX cone = 1.0f;
+    Clacpy("F", 1, n, &afac[0], ldafac + 1, &c[0], ldc + 1);
+    const COMPLEX cone = COMPLEX(1.0, 0.0);
     if (n > 1) {
-        if (Mlsame(uplo, "U")) {
-            Clacpy("F", 1, n - 1, &afac[(1 - 1) + (2 - 1) * ldafac], ldafac + 1, &c[(1 - 1) + (2 - 1) * ldc], ldc + 1);
-            Clacpy("F", 1, n - 1, &afac[(1 - 1) + (2 - 1) * ldafac], ldafac + 1, &c[(2 - 1)], ldc + 1);
+        if (Mlsame(uplo.elems(), "U")) {
+            Clacpy("F", 1, n - 1, &afac[(2 - 1) * ldafac], ldafac + 1, &c[(2 - 1) * ldc], ldc + 1);
+            Clacpy("F", 1, n - 1, &afac[(2 - 1) * ldafac], ldafac + 1, &c[(2 - 1)], ldc + 1);
         } else {
-            Clacpy("F", 1, n - 1, &afac[(2 - 1)], ldafac + 1, &c[(1 - 1) + (2 - 1) * ldc], ldc + 1);
+            Clacpy("F", 1, n - 1, &afac[(2 - 1)], ldafac + 1, &c[(2 - 1) * ldc], ldc + 1);
             Clacpy("F", 1, n - 1, &afac[(2 - 1)], ldafac + 1, &c[(2 - 1)], ldc + 1);
         }
         //
-        //        Call Ctrmm to form the product U' * D (or L * D ).
+        // Call Ctrmm to form the product U' * D (or L * D ).
         //
-        if (Mlsame(uplo, "U")) {
-            Ctrmm("Left", uplo, "Transpose", "Unit", n - 1, n, cone, &afac[(1 - 1) + (2 - 1) * ldafac], ldafac, &c[(2 - 1)], ldc);
+        if (Mlsame(uplo.elems(), "U")) {
+            Ctrmm("Left", uplo.elems(), "Transpose", "Unit", n - 1, n, cone, &afac[(2 - 1) * ldafac], ldafac, &c[(2 - 1)], ldc);
         } else {
-            Ctrmm("Left", uplo, "No transpose", "Unit", n - 1, n, cone, &afac[(2 - 1)], ldafac, &c[(2 - 1)], ldc);
+            Ctrmm("Left", uplo.elems(), "No transpose", "Unit", n - 1, n, cone, &afac[(2 - 1)], ldafac, &c[(2 - 1)], ldc);
         }
         //
-        //        Call Ctrmm again to multiply by U (or L ).
+        // Call Ctrmm again to multiply by U (or L ).
         //
-        if (Mlsame(uplo, "U")) {
-            Ctrmm("Right", uplo, "No transpose", "Unit", n, n - 1, cone, &afac[(1 - 1) + (2 - 1) * ldafac], ldafac, &c[(1 - 1) + (2 - 1) * ldc], ldc);
+        if (Mlsame(uplo.elems(), "U")) {
+            Ctrmm("Right", uplo.elems(), "No transpose", "Unit", n, n - 1, cone, &afac[(2 - 1) * ldafac], ldafac, &c[(2 - 1) * ldc], ldc);
         } else {
-            Ctrmm("Right", uplo, "Transpose", "Unit", n, n - 1, cone, &afac[(2 - 1)], ldafac, &c[(1 - 1) + (2 - 1) * ldc], ldc);
+            Ctrmm("Right", uplo.elems(), "Transpose", "Unit", n, n - 1, cone, &afac[(2 - 1)], ldafac, &c[(2 - 1) * ldc], ldc);
         }
     }
     //
-    //     Apply symmetric pivots
+    // Apply symmetric pivots
     //
     INTEGER j = 0;
     INTEGER i = 0;
@@ -123,9 +107,9 @@ void Csyt01_aa(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
         }
     }
     //
-    //     Compute the difference  C - A .
+    // Compute the difference  C - A .
     //
-    if (Mlsame(uplo, "U")) {
+    if (Mlsame(uplo.elems(), "U")) {
         for (j = 1; j <= n; j = j + 1) {
             for (i = 1; i <= j; i = i + 1) {
                 c[(i - 1) + (j - 1) * ldc] = c[(i - 1) + (j - 1) * ldc] - a[(i - 1) + (j - 1) * lda];
@@ -139,9 +123,9 @@ void Csyt01_aa(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
         }
     }
     //
-    //     Compute norm( C - A ) / ( N * norm(A) * EPS )
+    // Compute norm( C - A ) / ( N * norm(A) * EPS )
     //
-    resid = Clansy("1", uplo, n, c, ldc, rwork);
+    resid = Clansy("1", uplo.elems(), n, c, ldc, rwork);
     //
     const REAL one = 1.0;
     if (anorm <= zero) {
@@ -152,6 +136,6 @@ void Csyt01_aa(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda,
         resid = ((resid / castREAL(n)) / anorm) / eps;
     }
     //
-    //     End of Csyt01
+    // End of Csyt01_aa
     //
 }

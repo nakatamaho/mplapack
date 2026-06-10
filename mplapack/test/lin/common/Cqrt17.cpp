@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZQRT17.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,44 +43,18 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-REAL Cqrt17(const char *trans, INTEGER const iresid, INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const ldx, COMPLEX *b, INTEGER const ldb, COMPLEX *c, COMPLEX *work, INTEGER const lwork) {
+REAL Cqrt17(fem::str_cref trans, INTEGER const iresid, INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, COMPLEX *x, INTEGER const ldx, COMPLEX *b, INTEGER const ldb, COMPLEX *c, COMPLEX *work, INTEGER const lwork) {
     REAL return_value = 0.0;
-    INTEGER ldc = ldb;
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     const REAL zero = 0.0;
     return_value = zero;
     //
     INTEGER nrows = 0;
     INTEGER ncols = 0;
-    if (Mlsame(trans, "N")) {
+    if (Mlsame(trans.elems(), "N")) {
         nrows = m;
         ncols = n;
-    } else if (Mlsame(trans, "C")) {
+    } else if (Mlsame(trans.elems(), "C")) {
         nrows = n;
         ncols = m;
     } else {
@@ -93,14 +74,13 @@ REAL Cqrt17(const char *trans, INTEGER const iresid, INTEGER const m, INTEGER co
     REAL rwork[1];
     REAL norma = Clange("One-norm", m, n, a, lda, rwork);
     REAL smlnum = Rlamch("Safe minimum") / Rlamch("Precision");
-    const REAL one = 1.0;
-    REAL bignum = one / smlnum;
     INTEGER iscl = 0;
     //
-    //     compute residual and scale it
+    // compute residual and scale it
     //
     Clacpy("All", nrows, nrhs, b, ldb, c, ldb);
-    Cgemm(trans, "No transpose", nrows, nrhs, ncols, COMPLEX(-one), a, lda, x, ldx, COMPLEX(one), c, ldb);
+    const REAL one = 1.0;
+    Cgemm(trans.elems(), "No transpose", nrows, nrhs, ncols, COMPLEX(-one), a, lda, x, ldx, COMPLEX(one), c, ldb);
     REAL normrs = Clange("Max", nrows, nrhs, c, ldb, rwork);
     INTEGER info = 0;
     if (normrs > smlnum) {
@@ -108,11 +88,11 @@ REAL Cqrt17(const char *trans, INTEGER const iresid, INTEGER const m, INTEGER co
         Clascl("General", 0, 0, normrs, one, nrows, nrhs, c, ldb, info);
     }
     //
-    //     compute R'*A
+    // compute R**H * op(A)
     //
-    Cgemm("Conjugate transpose", trans, nrhs, ncols, nrows, COMPLEX(one), c, ldb, a, lda, COMPLEX(zero), work, nrhs);
+    Cgemm("Conjugate transpose", trans.elems(), nrhs, ncols, nrows, COMPLEX(one), c, ldb, a, lda, COMPLEX(zero), work, nrhs);
     //
-    //     compute and properly scale error
+    // compute and properly scale error
     //
     REAL err = Clange("One-norm", nrhs, ncols, work, nrhs, rwork);
     if (norma != zero) {
@@ -135,9 +115,9 @@ REAL Cqrt17(const char *trans, INTEGER const iresid, INTEGER const m, INTEGER co
         }
     }
     //
-    return_value = err / (Rlamch("Epsilon") * castREAL(max({m, n, nrhs})));
+    return_value = err / (Rlamch("Epsilon") * castREAL(max(m, n, nrhs)));
     return return_value;
     //
-    //     End of Cqrt17
+    // End of Cqrt17
     //
 }

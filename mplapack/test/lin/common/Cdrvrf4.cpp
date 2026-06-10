@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZDRVRF4.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,21 +43,24 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-#include <mplapack_debug.h>
-
-void Cdrvrf4(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thresh, COMPLEX *c1, COMPLEX *c2, INTEGER const ldc, COMPLEX *crf, COMPLEX *a, INTEGER const lda, REAL *d_work_Clange) {
+void Cdrvrf4(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thresh, COMPLEX *c1, COMPLEX *c2, INTEGER const ldc, COMPLEX *crf, COMPLEX *a, INTEGER const lda, REAL *d_work_zlange) {
     common cmn;
     common_write write(cmn);
+    static INTEGER iseedy[4] = {1988, 1989, 1990, 1991};
+    static fem::str<1> uplos[2] = {"U", "L"};
+    static fem::str<1> forms[2] = {"N", "C"};
+    static fem::str<1> transs[2] = {"N", "C"};
     //
-    //     Initialize constants and the random number seed.
+    static const char *format_9999 = "(1x,' *** Error(s) or Failure(s) while testing Chfrk         ***')";
+    static const char *format_9997 = "(1x,'     Failure in ',a5,', CFORM=''',a1,''',',' UPLO=''',a1,''',',"
+                                     "' TRANS=''',a1,''',',' N=',i3,', K =',i3,', test=',g12.5)";
+    static const char *format_9996 = "(1x,'All tests for ',a5,' auxiliary routine passed the ','threshold ( ',"
+                                     "i6,' tests run)')";
+    static const char *format_9995 = "(1x,a6,' auxiliary routine: ',i6,' out of ',i6,"
+                                     "' tests failed to pass the threshold')";
     //
-    INTEGER ldc1 = ldc;
-    INTEGER ldc2 = ldc;
-    char transs[] = {'N', 'C'};
-    char uplos[] = {'U', 'L'};
-    char forms[] = {'N', 'C'};
-    char buf[1024];
-    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
+    // Initialize constants and the random number seed.
+    //
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER info = 0;
@@ -66,11 +76,11 @@ void Cdrvrf4(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
     INTEGER iik = 0;
     INTEGER k = 0;
     INTEGER iform = 0;
-    char cform;
+    fem::str<1> cform;
     INTEGER iuplo = 0;
-    char uplo;
+    fem::str<1> uplo;
     INTEGER itrans = 0;
-    char trans;
+    fem::str<1> trans;
     INTEGER ialpha = 0;
     const REAL zero = 0.0;
     REAL alpha = 0.0;
@@ -117,16 +127,16 @@ void Cdrvrf4(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                                 beta = Rlarnd(2, iseed);
                             }
                             //
-                            //                       All the parameters are set:
-                            //                          CFORM, UPLO, TRANS, M, N,
-                            //                          ALPHA, and BETA
-                            //                       READY TO TEST!
+                            // All the parameters are set:
+                            // CFORM, UPLO, TRANS, M, N,
+                            // ALPHA, and BETA
+                            // READY TO TEST!
                             //
                             nrun++;
                             //
                             if (itrans == 1) {
                                 //
-                                //                          In this case we are NOTRANS, so A is N-by-K
+                                // In this case we are NOTRANS, so A is N-by-K
                                 //
                                 for (j = 1; j <= k; j = j + 1) {
                                     for (i = 1; i <= n; i = i + 1) {
@@ -134,11 +144,11 @@ void Cdrvrf4(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                                     }
                                 }
                                 //
-                                norma = Clange("I", n, k, a, lda, d_work_Clange);
+                                norma = Clange("I", n, k, a, lda, d_work_zlange);
                                 //
                             } else {
                                 //
-                                //                          In this case we are TRANS, so A is K-by-N
+                                // In this case we are TRANS, so A is K-by-N
                                 //
                                 for (j = 1; j <= n; j = j + 1) {
                                     for (i = 1; i <= k; i = i + 1) {
@@ -146,68 +156,67 @@ void Cdrvrf4(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
                                     }
                                 }
                                 //
-                                norma = Clange("I", k, n, a, lda, d_work_Clange);
+                                norma = Clange("I", k, n, a, lda, d_work_zlange);
                                 //
                             }
                             //
-                            //                       Generate C1 our N--by--N Hermitian matrix.
-                            //                       Make sure C2 has the same upper/lower part,
-                            //                       (the one that we do not touch), so
-                            //                       copy the initial C1 in C2 in it.
+                            // Generate C1 our N--by--N Hermitian matrix.
+                            // Make sure C2 has the same upper/lower part,
+                            // (the one that we do not touch), so
+                            // copy the initial C1 in C2 in it.
                             //
                             for (j = 1; j <= n; j = j + 1) {
                                 for (i = 1; i <= n; i = i + 1) {
-                                    c1[(i - 1) + (j - 1) * ldc1] = Clarnd(4, iseed);
-                                    c2[(i - 1) + (j - 1) * ldc2] = c1[(i - 1) + (j - 1) * ldc1];
+                                    c1[(i - 1) + (j - 1) * ldc] = Clarnd(4, iseed);
+                                    c2[(i - 1) + (j - 1) * ldc] = c1[(i - 1) + (j - 1) * ldc];
                                 }
                             }
                             //
-                            //                       (See comment later on for why we use Clange and
-                            //                       not Clanhe for C1.)
+                            // (See comment later on for why we use Clange and
+                            // not Clanhe for C1.)
                             //
-                            normc = Clange("I", n, n, c1, ldc, d_work_Clange);
+                            normc = Clange("I", n, n, c1, ldc, d_work_zlange);
                             //
-                            Ctrttf(&cform, &uplo, n, c1, ldc, crf, info);
+                            srnamt = "Ctrttf";
+                            Ctrttf(cform.elems, uplo.elems, n, c1, ldc, crf, info);
                             //
-                            //                       call Cherk the BLAS routine -> gives C1
+                            // call zherk the BLAS routine -> gives C1
                             //
-                            Cherk(&uplo, &trans, n, k, alpha, a, lda, beta, c1, ldc);
+                            srnamt = "Cherk";
+                            Cherk(uplo.elems, trans.elems, n, k, alpha, a, lda, beta, c1, ldc);
                             //
-                            //                       call Chfrk the RFP routine -> gives CRF
+                            // call zhfrk the RFP routine -> gives CRF
                             //
-                            Chfrk(&cform, &uplo, &trans, n, k, alpha, a, lda, beta, crf);
+                            srnamt = "Chfrk";
+                            Chfrk(cform.elems, uplo.elems, trans.elems, n, k, alpha, a, lda, beta, crf);
                             //
-                            //                       convert CRF in full format -> gives C2
+                            // convert CRF in full format -> gives C2
                             //
-                            Ctfttr(&cform, &uplo, n, crf, c2, ldc, info);
+                            srnamt = "Ctfttr";
+                            Ctfttr(cform.elems, uplo.elems, n, crf, c2, ldc, info);
                             //
-                            //                       compare C1 and C2
+                            // compare C1 and C2
                             //
                             for (j = 1; j <= n; j = j + 1) {
                                 for (i = 1; i <= n; i = i + 1) {
-                                    c1[(i - 1) + (j - 1) * ldc1] = c1[(i - 1) + (j - 1) * ldc1] - c2[(i - 1) + (j - 1) * ldc2];
+                                    c1[(i - 1) + (j - 1) * ldc] = c1[(i - 1) + (j - 1) * ldc] - c2[(i - 1) + (j - 1) * ldc];
                                 }
                             }
                             //
-                            //                       Yes, C1 is Hermitian so we could call Clanhe,
-                            //                       but we want to check the upper part that is
-                            //                       supposed to be unchanged and the diagonal that
-                            //                       is supposed to be real -> Clange
+                            // Yes, C1 is Hermitian so we could call Clanhe,
+                            // but we want to check the upper part that is
+                            // supposed to be unchanged and the diagonal that
+                            // is supposed to be real -> Clange
                             //
-                            result[1 - 1] = Clange("I", n, n, c1, ldc, d_work_Clange);
-                            result[1 - 1] = result[1 - 1] / max(REAL(abs(alpha) * norma * norma + abs(beta) * normc), one) / castREAL(max(n, (INTEGER)1)) / eps;
+                            result[1 - 1] = Clange("I", n, n, c1, ldc, d_work_zlange);
+                            result[1 - 1] = result[1 - 1] / max(abs(alpha) * norma * norma + abs(beta) * normc, one) / max(n, (INTEGER)1) / eps;
                             //
                             if (result[1 - 1] >= thresh) {
                                 if (nfail == 0) {
                                     write(nout, star);
-                                    write(nout, "(1x,' *** Error(s) or Failure(s) while testing Chfrk     "
-                                                "    ***')");
+                                    write(nout, format_9999);
                                 }
-                                sprintnum_short(buf, result[0]);
-                                write(nout, "(1x,'     Failure in ',a5,', CFORM=''',a1,''',',' UPLO=''',"
-                                            "a1,''',',' TRANS=''',a1,''',',' N=',i3,', K =',i3,"
-                                            "', test=',a)"),
-                                    "Chfrk", &cform, &uplo, &trans, n, k, buf;
+                                write(nout, format_9997), "Chfrk", cform, uplo, trans, n, k, result[1 - 1];
                                 nfail++;
                             }
                             //
@@ -218,18 +227,14 @@ void Cdrvrf4(INTEGER const nout, INTEGER const nn, INTEGER *nval, REAL const thr
         }
     }
     //
-    //     Print a summary of the results.
+    // Print a summary of the results.
     //
     if (nfail == 0) {
-        write(nout, "(1x,'All tests for ',a5,' auxiliary routine passed the ',"
-                    "'threshold ( ',i6,' tests run)')"),
-            "Chfrk", nrun;
+        write(nout, format_9996), "Chfrk", nrun;
     } else {
-        write(nout, "(1x,a6,' auxiliary routine: ',i6,' out of ',i6,"
-                    "' tests failed to pass the threshold')"),
-            "Chfrk", nfail, nrun;
+        write(nout, format_9995), "Chfrk", nfail, nrun;
     }
     //
-    //     End of Cdrvrf4
+    // End of Cdrvrf4
     //
 }

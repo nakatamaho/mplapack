@@ -30,10 +30,10 @@
 #include <mplapack.h>
 
 void iMlaver(INTEGER &mplapack_ver_major, INTEGER &mplapack_ver_minor, INTEGER &mplapack_ver_patch, INTEGER &lapack_ver_major, INTEGER &lapack_ver_minor, INTEGER &lapack_ver_patch) {
-    mplapack_ver_major = %%mplapack_ver_major%%;
-    mplapack_ver_minor = %%mplapack_ver_minor%%;
-    mplapack_ver_patch = %%mplapack_ver_patch%%;
-    lapack_ver_major = %%lapack_ver_major%%;
-    lapack_ver_minor = %%lapack_ver_minor%%;
-    lapack_ver_patch = %%lapack_ver_patch%%;
+    mplapack_ver_major = @mplapack_ver_major@;
+    mplapack_ver_minor = @mplapack_ver_minor@;
+    mplapack_ver_patch = @mplapack_ver_patch@;
+    lapack_ver_major = @LAPACK_VER_MAJOR@;
+    lapack_ver_minor = @LAPACK_VER_MINOR@;
+    lapack_ver_patch = @LAPACK_VER_PATCH@;
 }

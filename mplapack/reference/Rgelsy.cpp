@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine DGELSY.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -63,34 +70,11 @@ void Rgelsy(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
     REAL c2 = 0.0;
     INTEGER j = 0;
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     mn = min(m, n);
     ismin = mn + 1;
     ismax = 2 * mn + 1;
     //
-    //     Test the input arguments.
+    // Test the input arguments.
     //
     info = 0;
     lquery = (lwork == -1);
@@ -102,11 +86,11 @@ void Rgelsy(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
         info = -3;
     } else if (lda < max((INTEGER)1, m)) {
         info = -5;
-    } else if (ldb < max({(INTEGER)1, m, n})) {
+    } else if (ldb < max((INTEGER)1, m, n)) {
         info = -7;
     }
     //
-    //     Figure out optimal block size
+    // Figure out optimal block size
     //
     if (info == 0) {
         if (mn == 0 || nrhs == 0) {
@@ -117,9 +101,9 @@ void Rgelsy(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
             nb2 = iMlaenv(1, "Rgerqf", " ", m, n, -1, -1);
             nb3 = iMlaenv(1, "Rormqr", " ", m, n, nrhs, -1);
             nb4 = iMlaenv(1, "Rormrq", " ", m, n, nrhs, -1);
-            nb = max({nb1, nb2, nb3, nb4});
-            lwkmin = mn + max({2 * mn, n + 1, mn + nrhs});
-            lwkopt = max({lwkmin, mn + 2 * n + nb * (n + 1), 2 * mn + nb * nrhs});
+            nb = max(nb1, nb2, nb3, nb4);
+            lwkmin = mn + max(2 * mn, n + 1, mn + nrhs);
+            lwkopt = max(lwkmin, mn + 2 * n + nb * (n + 1), 2 * mn + nb * nrhs);
         }
         work[1 - 1] = lwkopt;
         //
@@ -135,37 +119,37 @@ void Rgelsy(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (mn == 0 || nrhs == 0) {
         rank = 0;
         return;
     }
     //
-    //     Get machine parameters
+    // Get machine parameters
     //
     smlnum = Rlamch("S") / Rlamch("P");
     bignum = one / smlnum;
     //
-    //     Scale A, B if max entries outside range [SMLNUM,BIGNUM]
+    // Scale A, B if max entries outside range [SMLNUM,BIGNUM]
     //
     anrm = Rlange("M", m, n, a, lda, work);
     iascl = 0;
     if (anrm > zero && anrm < smlnum) {
         //
-        //        Scale matrix norm up to SMLNUM
+        // Scale matrix norm up to SMLNUM
         //
         Rlascl("G", 0, 0, anrm, smlnum, m, n, a, lda, info);
         iascl = 1;
     } else if (anrm > bignum) {
         //
-        //        Scale matrix norm down to BIGNUM
+        // Scale matrix norm down to BIGNUM
         //
         Rlascl("G", 0, 0, anrm, bignum, m, n, a, lda, info);
         iascl = 2;
     } else if (anrm == zero) {
         //
-        //        Matrix all zero. Return zero solution.
+        // Matrix all zero. Return zero solution.
         //
         Rlaset("F", max(m, n), nrhs, zero, zero, b, ldb);
         rank = 0;
@@ -176,34 +160,34 @@ void Rgelsy(INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEG
     ibscl = 0;
     if (bnrm > zero && bnrm < smlnum) {
         //
-        //        Scale matrix norm up to SMLNUM
+        // Scale matrix norm up to SMLNUM
         //
         Rlascl("G", 0, 0, bnrm, smlnum, m, nrhs, b, ldb, info);
         ibscl = 1;
     } else if (bnrm > bignum) {
         //
-        //        Scale matrix norm down to BIGNUM
+        // Scale matrix norm down to BIGNUM
         //
         Rlascl("G", 0, 0, bnrm, bignum, m, nrhs, b, ldb, info);
         ibscl = 2;
     }
     //
-    //     Compute QR factorization with column pivoting of A:
-    //        A * P = Q * R
+    // Compute QR factorization with column pivoting of A:
+    // A * P = Q * R
     //
     Rgeqp3(m, n, a, lda, jpvt, &work[1 - 1], &work[(mn + 1) - 1], lwork - mn, info);
     wsize = mn + work[(mn + 1) - 1];
     //
-    //     workspace: MN+2*N+NB*(N+1).
-    //     Details of Householder rotations stored in WORK(1:MN).
+    // workspace: MN+2*N+NB*(N+1).
+    // Details of Householder rotations stored in WORK(1:MN).
     //
-    //     Determine RANK using incremental condition estimation
+    // Determine RANK using incremental condition estimation
     //
     work[ismin - 1] = one;
     work[ismax - 1] = one;
-    smax = abs(a[(1 - 1)]);
+    smax = abs(a[0]);
     smin = smax;
-    if (abs(a[(1 - 1)]) == zero) {
+    if (abs(a[0]) == zero) {
         rank = 0;
         Rlaset("F", max(m, n), nrhs, zero, zero, b, ldb);
         goto statement_70;
@@ -231,29 +215,29 @@ statement_10:
         }
     }
     //
-    //     workspace: 3*MN.
+    // workspace: 3*MN.
     //
-    //     Logically partition R = [ R11 R12 ]
-    //                             [  0  R22 ]
-    //     where R11 = R(1:RANK,1:RANK)
+    // Logically partition R = [ R11 R12 ]
+    // [  0  R22 ]
+    // where R11 = R(1:RANK,1:RANK)
     //
-    //     [R11,R12] = [ T11, 0 ] * Y
+    // [R11,R12] = [ T11, 0 ] * Y
     //
     if (rank < n) {
         Rtzrzf(rank, n, a, lda, &work[(mn + 1) - 1], &work[(2 * mn + 1) - 1], lwork - 2 * mn, info);
     }
     //
-    //     workspace: 2*MN.
-    //     Details of Householder rotations stored in WORK(MN+1:2*MN)
+    // workspace: 2*MN.
+    // Details of Householder rotations stored in WORK(MN+1:2*MN)
     //
-    //     B(1:M,1:NRHS) := Q**T * B(1:M,1:NRHS)
+    // B(1:M,1:NRHS) := Q**T * B(1:M,1:NRHS)
     //
     Rormqr("Left", "Transpose", m, nrhs, mn, a, lda, &work[1 - 1], b, ldb, &work[(2 * mn + 1) - 1], lwork - 2 * mn, info);
-    wsize = max(wsize, REAL(2 * mn + work[(2 * mn + 1) - 1]));
+    wsize = max(wsize, 2 * mn + work[(2 * mn + 1) - 1]);
     //
-    //     workspace: 2*MN+NB*NRHS.
+    // workspace: 2*MN+NB*NRHS.
     //
-    //     B(1:RANK,1:NRHS) := inv(T11) * B(1:RANK,1:NRHS)
+    // B(1:RANK,1:NRHS) := inv(T11) * B(1:RANK,1:NRHS)
     //
     Rtrsm("Left", "Upper", "No transpose", "Non-unit", rank, nrhs, one, a, lda, b, ldb);
     //
@@ -263,15 +247,15 @@ statement_10:
         }
     }
     //
-    //     B(1:N,1:NRHS) := Y**T * B(1:N,1:NRHS)
+    // B(1:N,1:NRHS) := Y**T * B(1:N,1:NRHS)
     //
     if (rank < n) {
         Rormrz("Left", "Transpose", n, nrhs, rank, n - rank, a, lda, &work[(mn + 1) - 1], b, ldb, &work[(2 * mn + 1) - 1], lwork - 2 * mn, info);
     }
     //
-    //     workspace: 2*MN+NRHS.
+    // workspace: 2*MN+NRHS.
     //
-    //     B(1:N,1:NRHS) := P * B(1:N,1:NRHS)
+    // B(1:N,1:NRHS) := P * B(1:N,1:NRHS)
     //
     for (j = 1; j <= nrhs; j = j + 1) {
         for (i = 1; i <= n; i = i + 1) {
@@ -280,9 +264,9 @@ statement_10:
         Rcopy(n, &work[1 - 1], 1, &b[(j - 1) * ldb], 1);
     }
     //
-    //     workspace: N.
+    // workspace: N.
     //
-    //     Undo scaling
+    // Undo scaling
     //
     if (iascl == 1) {
         Rlascl("G", 0, 0, anrm, smlnum, n, nrhs, b, ldb, info);
@@ -300,6 +284,6 @@ statement_10:
 statement_70:
     work[1 - 1] = lwkopt;
     //
-    //     End of Rgelsy
+    // End of Rgelsy
     //
 }

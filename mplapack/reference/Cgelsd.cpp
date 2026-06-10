@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZGELSD.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -39,7 +46,7 @@ void Cgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
     INTEGER lrwork = 0;
     INTEGER smlsiz = 0;
     INTEGER mnthr = 0;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     INTEGER nlvl = 0;
     INTEGER mm = 0;
     REAL eps = 0.0;
@@ -62,30 +69,7 @@ void Cgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
     INTEGER ldwork = 0;
     INTEGER il = 0;
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input arguments.
+    // Test the input arguments.
     //
     info = 0;
     minmn = min(m, n);
@@ -103,12 +87,12 @@ void Cgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
         info = -7;
     }
     //
-    //     Compute workspace.
-    //     (Note: Comments in the code beginning "Workspace:" describe the
-    //     minimal amount of workspace needed at that point in the code,
-    //     as well as the preferred amount for good performance.
-    //     NB refers to the optimal block size for the immediately
-    //     following subroutine, as returned by iMlaenv.)
+    // Compute workspace.
+    // (Note: Comments in the code beginning "Workspace:" describe the
+    // minimal amount of workspace needed at that point in the code,
+    // as well as the preferred amount for good performance.
+    // NB refers to the optimal block size for the immediately
+    // following subroutine, as returned by iMlaenv.)
     //
     if (info == 0) {
         minwrk = 1;
@@ -123,54 +107,54 @@ void Cgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
             mm = m;
             if (m >= n && m >= mnthr) {
                 //
-                //              Path 1a - overdetermined, with many more rows than
-                //                        columns.
+                // Path 1a - overdetermined, with many more rows than
+                // columns.
                 //
                 mm = n;
-                maxwrk = max({maxwrk, n * iMlaenv(1, "Cgeqrf", " ", m, n, -1, -1)});
-                maxwrk = max({maxwrk, nrhs * iMlaenv(1, "Cunmqr", "LC", m, nrhs, n, -1)});
+                maxwrk = max(maxwrk, n * iMlaenv(1, "Cgeqrf", " ", m, n, -1, -1));
+                maxwrk = max(maxwrk, nrhs * iMlaenv(1, "Cunmqr", "LC", m, nrhs, n, -1));
             }
             if (m >= n) {
                 //
-                //              Path 1 - overdetermined or exactly determined.
+                // Path 1 - overdetermined or exactly determined.
                 //
-                lrwork = 10 * n + 2 * n * smlsiz + 8 * n * nlvl + 3 * smlsiz * nrhs + max((smlsiz + 1) * (smlsiz + 1), n * (1 + nrhs) + 2 * nrhs);
-                maxwrk = max({maxwrk, 2 * n + (mm + n) * iMlaenv(1, "Cgebrd", " ", mm, n, -1, -1)});
-                maxwrk = max({maxwrk, 2 * n + nrhs * iMlaenv(1, "Cunmbr", "QLC", mm, nrhs, n, -1)});
-                maxwrk = max({maxwrk, 2 * n + (n - 1) * iMlaenv(1, "Cunmbr", "PLN", n, nrhs, n, -1)});
+                lrwork = 10 * n + 2 * n * smlsiz + 8 * n * nlvl + 3 * smlsiz * nrhs + max(pow2((smlsiz + 1)), n * (1 + nrhs) + 2 * nrhs);
+                maxwrk = max(maxwrk, 2 * n + (mm + n) * iMlaenv(1, "Cgebrd", " ", mm, n, -1, -1));
+                maxwrk = max(maxwrk, 2 * n + nrhs * iMlaenv(1, "Cunmbr", "QLC", mm, nrhs, n, -1));
+                maxwrk = max(maxwrk, 2 * n + (n - 1) * iMlaenv(1, "Cunmbr", "PLN", n, nrhs, n, -1));
                 maxwrk = max(maxwrk, 2 * n + n * nrhs);
-                minwrk = max((INTEGER)2 * n + mm, 2 * n + n * nrhs);
+                minwrk = max(2 * n + mm, 2 * n + n * nrhs);
             }
             if (n > m) {
-                lrwork = 10 * m + 2 * m * smlsiz + 8 * m * nlvl + 3 * smlsiz * nrhs + max((smlsiz + 1) * (smlsiz + 1), INTEGER(n * (1 + nrhs) + 2 * nrhs));
+                lrwork = 10 * m + 2 * m * smlsiz + 8 * m * nlvl + 3 * smlsiz * nrhs + max(pow2((smlsiz + 1)), n * (1 + nrhs) + 2 * nrhs);
                 if (n >= mnthr) {
                     //
-                    //                 Path 2a - underdetermined, with many more columns
-                    //                           than rows.
+                    // Path 2a - underdetermined, with many more columns
+                    // than rows.
                     //
                     maxwrk = m + m * iMlaenv(1, "Cgelqf", " ", m, n, -1, -1);
-                    maxwrk = max({maxwrk, m * m + 4 * m + 2 * m * iMlaenv(1, "Cgebrd", " ", m, m, -1, -1)});
-                    maxwrk = max({maxwrk, m * m + 4 * m + nrhs * iMlaenv(1, "Cunmbr", "QLC", m, nrhs, m, -1)});
-                    maxwrk = max({maxwrk, m * m + 4 * m + (m - 1) * iMlaenv(1, "Cunmlq", "LC", n, nrhs, m, -1)});
+                    maxwrk = max(maxwrk, m * m + 4 * m + 2 * m * iMlaenv(1, "Cgebrd", " ", m, m, -1, -1));
+                    maxwrk = max(maxwrk, m * m + 4 * m + nrhs * iMlaenv(1, "Cunmbr", "QLC", m, nrhs, m, -1));
+                    maxwrk = max(maxwrk, m * m + 4 * m + (m - 1) * iMlaenv(1, "Cunmlq", "LC", n, nrhs, m, -1));
                     if (nrhs > 1) {
                         maxwrk = max(maxwrk, m * m + m + m * nrhs);
                     } else {
                         maxwrk = max(maxwrk, m * m + 2 * m);
                     }
                     maxwrk = max(maxwrk, m * m + 4 * m + m * nrhs);
-                    //     XXX: Ensure the Path 2a case below is triggered.  The workspace
-                    //     calculation should use queries for all routines eventually.
-                    maxwrk = max({maxwrk, 4 * m + m * m + max({m, 2 * m - 4, nrhs, n - 3 * m})});
+                    // XXX: Ensure the Path 2a case below is triggered.  The workspace
+                    // calculation should use queries for all routines eventually.
+                    maxwrk = max(maxwrk, 4 * m + m * m + max(m, 2 * m - 4, nrhs, n - 3 * m));
                 } else {
                     //
-                    //                 Path 2 - underdetermined.
+                    // Path 2 - underdetermined.
                     //
                     maxwrk = 2 * m + (n + m) * iMlaenv(1, "Cgebrd", " ", m, n, -1, -1);
-                    maxwrk = max({maxwrk, 2 * m + nrhs * iMlaenv(1, "Cunmbr", "QLC", m, nrhs, m, -1)});
-                    maxwrk = max({maxwrk, 2 * m + m * iMlaenv(1, "Cunmbr", "PLN", n, nrhs, m, -1)});
+                    maxwrk = max(maxwrk, 2 * m + nrhs * iMlaenv(1, "Cunmbr", "QLC", m, nrhs, m, -1));
+                    maxwrk = max(maxwrk, 2 * m + m * iMlaenv(1, "Cunmbr", "PLN", n, nrhs, m, -1));
                     maxwrk = max(maxwrk, 2 * m + m * nrhs);
                 }
-                minwrk = max((INTEGER)2 * m + n, 2 * m + m * nrhs);
+                minwrk = max(2 * m + n, 2 * m + m * nrhs);
             }
         }
         minwrk = min(minwrk, maxwrk);
@@ -190,39 +174,39 @@ void Cgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
         return;
     }
     //
-    //     Quick return if possible.
+    // Quick return if possible.
     //
     if (m == 0 || n == 0) {
         rank = 0;
         return;
     }
     //
-    //     Get machine parameters.
+    // Get machine parameters.
     //
     eps = Rlamch("P");
     sfmin = Rlamch("S");
     smlnum = sfmin / eps;
     bignum = one / smlnum;
     //
-    //     Scale A if max entry outside range [SMLNUM,BIGNUM].
+    // Scale A if max entry outside range [SMLNUM,BIGNUM].
     //
     anrm = Clange("M", m, n, a, lda, rwork);
     iascl = 0;
     if (anrm > zero && anrm < smlnum) {
         //
-        //        Scale matrix norm up to SMLNUM
+        // Scale matrix norm up to SMLNUM
         //
         Clascl("G", 0, 0, anrm, smlnum, m, n, a, lda, info);
         iascl = 1;
     } else if (anrm > bignum) {
         //
-        //        Scale matrix norm down to BIGNUM.
+        // Scale matrix norm down to BIGNUM.
         //
         Clascl("G", 0, 0, anrm, bignum, m, n, a, lda, info);
         iascl = 2;
     } else if (anrm == zero) {
         //
-        //        Matrix all zero. Return zero solution.
+        // Matrix all zero. Return zero solution.
         //
         Claset("F", max(m, n), nrhs, czero, czero, b, ldb);
         Rlaset("F", minmn, 1, zero, zero, s, 1);
@@ -230,58 +214,58 @@ void Cgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
         goto statement_10;
     }
     //
-    //     Scale B if max entry outside range [SMLNUM,BIGNUM].
+    // Scale B if max entry outside range [SMLNUM,BIGNUM].
     //
     bnrm = Clange("M", m, nrhs, b, ldb, rwork);
     ibscl = 0;
     if (bnrm > zero && bnrm < smlnum) {
         //
-        //        Scale matrix norm up to SMLNUM.
+        // Scale matrix norm up to SMLNUM.
         //
         Clascl("G", 0, 0, bnrm, smlnum, m, nrhs, b, ldb, info);
         ibscl = 1;
     } else if (bnrm > bignum) {
         //
-        //        Scale matrix norm down to BIGNUM.
+        // Scale matrix norm down to BIGNUM.
         //
         Clascl("G", 0, 0, bnrm, bignum, m, nrhs, b, ldb, info);
         ibscl = 2;
     }
     //
-    //     If M < N make sure B(M+1:N,:) = 0
+    // If M < N make sure B(M+1:N,:) = 0
     //
     if (m < n) {
         Claset("F", n - m, nrhs, czero, czero, &b[((m + 1) - 1)], ldb);
     }
     //
-    //     Overdetermined case.
+    // Overdetermined case.
     //
     if (m >= n) {
         //
-        //        Path 1 - overdetermined or exactly determined.
+        // Path 1 - overdetermined or exactly determined.
         //
         mm = m;
         if (m >= mnthr) {
             //
-            //           Path 1a - overdetermined, with many more rows than columns
+            // Path 1a - overdetermined, with many more rows than columns
             //
             mm = n;
             itau = 1;
             nwork = itau + n;
             //
-            //           Compute A=Q*R.
-            //           (RWorkspace: need N)
-            //           (CWorkspace: need N, prefer N*NB)
+            // Compute A=Q*R.
+            // (RWorkspace: need N)
+            // (CWorkspace: need N, prefer N*NB)
             //
             Cgeqrf(m, n, a, lda, &work[itau - 1], &work[nwork - 1], lwork - nwork + 1, info);
             //
-            //           Multiply B by transpose(Q).
-            //           (RWorkspace: need N)
-            //           (CWorkspace: need NRHS, prefer NRHS*NB)
+            // Multiply B by transpose(Q).
+            // (RWorkspace: need N)
+            // (CWorkspace: need NRHS, prefer NRHS*NB)
             //
             Cunmqr("L", "C", m, nrhs, n, a, lda, &work[itau - 1], b, ldb, &work[nwork - 1], lwork - nwork + 1, info);
             //
-            //           Zero out below R.
+            // Zero out below R.
             //
             if (n > 1) {
                 Claset("L", n - 1, n - 1, czero, czero, &a[(2 - 1)], lda);
@@ -294,47 +278,47 @@ void Cgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
         ie = 1;
         nrwork = ie + n;
         //
-        //        Bidiagonalize R in A.
-        //        (RWorkspace: need N)
-        //        (CWorkspace: need 2*N+MM, prefer 2*N+(MM+N)*NB)
+        // Bidiagonalize R in A.
+        // (RWorkspace: need N)
+        // (CWorkspace: need 2*N+MM, prefer 2*N+(MM+N)*NB)
         //
         Cgebrd(mm, n, a, lda, s, &rwork[ie - 1], &work[itauq - 1], &work[itaup - 1], &work[nwork - 1], lwork - nwork + 1, info);
         //
-        //        Multiply B by transpose of left bidiagonalizing vectors of R.
-        //        (CWorkspace: need 2*N+NRHS, prefer 2*N+NRHS*NB)
+        // Multiply B by transpose of left bidiagonalizing vectors of R.
+        // (CWorkspace: need 2*N+NRHS, prefer 2*N+NRHS*NB)
         //
         Cunmbr("Q", "L", "C", mm, nrhs, n, a, lda, &work[itauq - 1], b, ldb, &work[nwork - 1], lwork - nwork + 1, info);
         //
-        //        Solve the bidiagonal least squares problem.
+        // Solve the bidiagonal least squares problem.
         //
         Clalsd("U", smlsiz, n, nrhs, s, &rwork[ie - 1], b, ldb, rcond, rank, &work[nwork - 1], &rwork[nrwork - 1], iwork, info);
         if (info != 0) {
             goto statement_10;
         }
         //
-        //        Multiply B by right bidiagonalizing vectors of R.
+        // Multiply B by right bidiagonalizing vectors of R.
         //
         Cunmbr("P", "L", "N", n, nrhs, n, a, lda, &work[itaup - 1], b, ldb, &work[nwork - 1], lwork - nwork + 1, info);
         //
-    } else if (n >= mnthr && lwork >= 4 * m + m * m + max({m, 2 * m - 4, nrhs, n - 3 * m})) {
+    } else if (n >= mnthr && lwork >= 4 * m + m * m + max(m, 2 * m - 4, nrhs, n - 3 * m)) {
         //
-        //        Path 2a - underdetermined, with many more columns than rows
-        //        and sufficient workspace for an efficient algorithm.
+        // Path 2a - underdetermined, with many more columns than rows
+        // and sufficient workspace for an efficient algorithm.
         //
         ldwork = m;
-        if (lwork >= max({4 * m + m * lda + max({m, 2 * m - 4, nrhs, n - 3 * m}), m * lda + m + m * nrhs})) {
+        if (lwork >= max(4 * m + m * lda + max(m, 2 * m - 4, nrhs, n - 3 * m), m * lda + m + m * nrhs)) {
             ldwork = lda;
         }
         itau = 1;
         nwork = m + 1;
         //
-        //        Compute A=L*Q.
-        //        (CWorkspace: need 2*M, prefer M+M*NB)
+        // Compute A=L*Q.
+        // (CWorkspace: need 2*M, prefer M+M*NB)
         //
         Cgelqf(m, n, a, lda, &work[itau - 1], &work[nwork - 1], lwork - nwork + 1, info);
         il = nwork;
         //
-        //        Copy L to WORK(IL), zeroing out above its diagonal.
+        // Copy L to WORK(IL), zeroing out above its diagonal.
         //
         Clacpy("L", m, m, a, lda, &work[il - 1], ldwork);
         Claset("U", m - 1, m - 1, czero, czero, &work[(il + ldwork) - 1], ldwork);
@@ -344,41 +328,41 @@ void Cgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
         ie = 1;
         nrwork = ie + m;
         //
-        //        Bidiagonalize L in WORK(IL).
-        //        (RWorkspace: need M)
-        //        (CWorkspace: need M*M+4*M, prefer M*M+4*M+2*M*NB)
+        // Bidiagonalize L in WORK(IL).
+        // (RWorkspace: need M)
+        // (CWorkspace: need M*M+4*M, prefer M*M+4*M+2*M*NB)
         //
         Cgebrd(m, m, &work[il - 1], ldwork, s, &rwork[ie - 1], &work[itauq - 1], &work[itaup - 1], &work[nwork - 1], lwork - nwork + 1, info);
         //
-        //        Multiply B by transpose of left bidiagonalizing vectors of L.
-        //        (CWorkspace: need M*M+4*M+NRHS, prefer M*M+4*M+NRHS*NB)
+        // Multiply B by transpose of left bidiagonalizing vectors of L.
+        // (CWorkspace: need M*M+4*M+NRHS, prefer M*M+4*M+NRHS*NB)
         //
         Cunmbr("Q", "L", "C", m, nrhs, m, &work[il - 1], ldwork, &work[itauq - 1], b, ldb, &work[nwork - 1], lwork - nwork + 1, info);
         //
-        //        Solve the bidiagonal least squares problem.
+        // Solve the bidiagonal least squares problem.
         //
         Clalsd("U", smlsiz, m, nrhs, s, &rwork[ie - 1], b, ldb, rcond, rank, &work[nwork - 1], &rwork[nrwork - 1], iwork, info);
         if (info != 0) {
             goto statement_10;
         }
         //
-        //        Multiply B by right bidiagonalizing vectors of L.
+        // Multiply B by right bidiagonalizing vectors of L.
         //
         Cunmbr("P", "L", "N", m, nrhs, m, &work[il - 1], ldwork, &work[itaup - 1], b, ldb, &work[nwork - 1], lwork - nwork + 1, info);
         //
-        //        Zero out below first M rows of B.
+        // Zero out below first M rows of B.
         //
         Claset("F", n - m, nrhs, czero, czero, &b[((m + 1) - 1)], ldb);
         nwork = itau + m;
         //
-        //        Multiply transpose(Q) by B.
-        //        (CWorkspace: need NRHS, prefer NRHS*NB)
+        // Multiply transpose(Q) by B.
+        // (CWorkspace: need NRHS, prefer NRHS*NB)
         //
         Cunmlq("L", "C", n, nrhs, m, a, lda, &work[itau - 1], b, ldb, &work[nwork - 1], lwork - nwork + 1, info);
         //
     } else {
         //
-        //        Path 2 - remaining underdetermined cases.
+        // Path 2 - remaining underdetermined cases.
         //
         itauq = 1;
         itaup = itauq + m;
@@ -386,31 +370,31 @@ void Cgelsd(INTEGER const m, INTEGER const n, INTEGER const nrhs, COMPLEX *a, IN
         ie = 1;
         nrwork = ie + m;
         //
-        //        Bidiagonalize A.
-        //        (RWorkspace: need M)
-        //        (CWorkspace: need 2*M+N, prefer 2*M+(M+N)*NB)
+        // Bidiagonalize A.
+        // (RWorkspace: need M)
+        // (CWorkspace: need 2*M+N, prefer 2*M+(M+N)*NB)
         //
         Cgebrd(m, n, a, lda, s, &rwork[ie - 1], &work[itauq - 1], &work[itaup - 1], &work[nwork - 1], lwork - nwork + 1, info);
         //
-        //        Multiply B by transpose of left bidiagonalizing vectors.
-        //        (CWorkspace: need 2*M+NRHS, prefer 2*M+NRHS*NB)
+        // Multiply B by transpose of left bidiagonalizing vectors.
+        // (CWorkspace: need 2*M+NRHS, prefer 2*M+NRHS*NB)
         //
         Cunmbr("Q", "L", "C", m, nrhs, n, a, lda, &work[itauq - 1], b, ldb, &work[nwork - 1], lwork - nwork + 1, info);
         //
-        //        Solve the bidiagonal least squares problem.
+        // Solve the bidiagonal least squares problem.
         //
         Clalsd("L", smlsiz, m, nrhs, s, &rwork[ie - 1], b, ldb, rcond, rank, &work[nwork - 1], &rwork[nrwork - 1], iwork, info);
         if (info != 0) {
             goto statement_10;
         }
         //
-        //        Multiply B by right bidiagonalizing vectors of A.
+        // Multiply B by right bidiagonalizing vectors of A.
         //
         Cunmbr("P", "L", "N", n, nrhs, m, a, lda, &work[itaup - 1], b, ldb, &work[nwork - 1], lwork - nwork + 1, info);
         //
     }
     //
-    //     Undo scaling.
+    // Undo scaling.
     //
     if (iascl == 1) {
         Clascl("G", 0, 0, anrm, smlnum, n, nrhs, b, ldb, info);
@@ -430,6 +414,6 @@ statement_10:
     iwork[1 - 1] = liwork;
     rwork[1 - 1] = lrwork;
     //
-    //     End of Cgelsd
+    // End of Cgelsd
     //
 }

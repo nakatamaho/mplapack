@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,21 +26,20 @@
  *
  */
 
+// Derived from BLAS routine DCABS1.
+// Original BLAS authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 
 REAL RCabs1(COMPLEX const z) {
     REAL return_value = 0.0;
-    //
-    //  -- Reference BLAS level1 routine --
-    //  -- Reference BLAS is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //  =====================================================================
-    //
-    //     .. Intrinsic Functions ..
-    //
     return_value = abs(z.real()) + abs(z.imag());
     return return_value;
+    //
+    // End of RCabs1
+    //
 }

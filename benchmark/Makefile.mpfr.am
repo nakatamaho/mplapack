@@ -1,0 +1,95 @@
+bench_PROGRAMS += \
+Raxpy.mpfr  Raxpy.mpfr_opt  \
+Rcopy.mpfr  Rcopy.mpfr_opt  \
+Rdot.mpfr   Rdot.mpfr_opt   \
+Rgemm.mpfr  Rgemm.mpfr_opt  \
+Rgemv.mpfr  Rgemv.mpfr_opt  \
+Rsyrk.mpfr  Rsyrk.mpfr_opt  \
+Rpotrf.mpfr Rpotrf.mpfr_opt \
+Rpotf2.mpfr Rpotf2.mpfr_opt \
+Rgetrf.mpfr Rgetrf.mpfr_opt
+
+mpfrcxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mpfrc++ -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_MPFR___
+mpfrlapack_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_mpfr
+mpfr_libdepends    = $(mpfrlapack_libdepends) -L$(top_builddir)/mpblas/reference          -lmpblas_mpfr     -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp $(DYLD)
+mpfropt_libdepends = $(mpfrlapack_libdepends) -L$(top_builddir)/mpblas/optimized/mpfr     -lmpblas_mpfr_opt -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp $(DYLD)
+
+if IS_MINGW
+mpfrcxxflags       += -I$(DLFCN_WIN32_INCLUDEDIR)
+mpfr_libdepends    += -L$(DLFCN_WIN32_LIBDIR) -ldl
+mpfropt_libdepends += -L$(DLFCN_WIN32_LIBDIR) -ldl
+endif
+
+# BLAS benchmarks
+Raxpy_mpfr_SOURCES=      Raxpy.cpp
+Raxpy_mpfr_CXXFLAGS=     $(mpfrcxxflags)
+Raxpy_mpfr_LDFLAGS=      $(mpfr_libdepends)
+
+Raxpy_mpfr_opt_SOURCES=  Raxpy.cpp
+Raxpy_mpfr_opt_CXXFLAGS= $(mpfrcxxflags)
+Raxpy_mpfr_opt_LDFLAGS=  $(mpfropt_libdepends)
+
+Rcopy_mpfr_SOURCES=      Rcopy.cpp
+Rcopy_mpfr_CXXFLAGS=     $(mpfrcxxflags)
+Rcopy_mpfr_LDFLAGS=      $(mpfr_libdepends)
+
+Rcopy_mpfr_opt_SOURCES=  Rcopy.cpp
+Rcopy_mpfr_opt_CXXFLAGS= $(mpfrcxxflags)
+Rcopy_mpfr_opt_LDFLAGS=  $(mpfropt_libdepends)
+
+Rdot_mpfr_SOURCES=       Rdot.cpp
+Rdot_mpfr_CXXFLAGS=      $(mpfrcxxflags)
+Rdot_mpfr_LDFLAGS=       $(mpfr_libdepends)
+
+Rdot_mpfr_opt_SOURCES=   Rdot.cpp
+Rdot_mpfr_opt_CXXFLAGS=  $(mpfrcxxflags)
+Rdot_mpfr_opt_LDFLAGS=   $(mpfropt_libdepends)
+
+Rgemm_mpfr_SOURCES=      Rgemm.cpp
+Rgemm_mpfr_CXXFLAGS=     $(mpfrcxxflags)
+Rgemm_mpfr_LDFLAGS=      $(mpfr_libdepends)
+
+Rgemm_mpfr_opt_SOURCES=  Rgemm.cpp
+Rgemm_mpfr_opt_CXXFLAGS= $(mpfrcxxflags)
+Rgemm_mpfr_opt_LDFLAGS=  $(mpfropt_libdepends)
+
+Rgemv_mpfr_SOURCES=      Rgemv.cpp
+Rgemv_mpfr_CXXFLAGS=     $(mpfrcxxflags)
+Rgemv_mpfr_LDFLAGS=      $(mpfr_libdepends)
+
+Rgemv_mpfr_opt_SOURCES=  Rgemv.cpp
+Rgemv_mpfr_opt_CXXFLAGS= $(mpfrcxxflags)
+Rgemv_mpfr_opt_LDFLAGS=  $(mpfropt_libdepends)
+
+Rsyrk_mpfr_SOURCES=      Rsyrk.cpp
+Rsyrk_mpfr_CXXFLAGS=     $(mpfrcxxflags)
+Rsyrk_mpfr_LDFLAGS=      $(mpfr_libdepends)
+
+Rsyrk_mpfr_opt_SOURCES=  Rsyrk.cpp
+Rsyrk_mpfr_opt_CXXFLAGS= $(mpfrcxxflags)
+Rsyrk_mpfr_opt_LDFLAGS=  $(mpfropt_libdepends)
+
+# LAPACK benchmarks
+Rpotrf_mpfr_SOURCES=      Rpotrf.cpp
+Rpotrf_mpfr_CXXFLAGS=     $(mpfrcxxflags)
+Rpotrf_mpfr_LDFLAGS=      $(mpfr_libdepends)
+
+Rpotrf_mpfr_opt_SOURCES=  Rpotrf.cpp
+Rpotrf_mpfr_opt_CXXFLAGS= $(mpfrcxxflags)
+Rpotrf_mpfr_opt_LDFLAGS=  $(mpfropt_libdepends)
+
+Rpotf2_mpfr_SOURCES=      Rpotf2.cpp
+Rpotf2_mpfr_CXXFLAGS=     $(mpfrcxxflags)
+Rpotf2_mpfr_LDFLAGS=      $(mpfr_libdepends)
+
+Rpotf2_mpfr_opt_SOURCES=  Rpotf2.cpp
+Rpotf2_mpfr_opt_CXXFLAGS= $(mpfrcxxflags)
+Rpotf2_mpfr_opt_LDFLAGS=  $(mpfropt_libdepends)
+
+Rgetrf_mpfr_SOURCES=      Rgetrf.cpp
+Rgetrf_mpfr_CXXFLAGS=     $(mpfrcxxflags)
+Rgetrf_mpfr_LDFLAGS=      $(mpfr_libdepends)
+
+Rgetrf_mpfr_opt_SOURCES=  Rgetrf.cpp
+Rgetrf_mpfr_opt_CXXFLAGS= $(mpfrcxxflags)
+Rgetrf_mpfr_opt_LDFLAGS=  $(mpfropt_libdepends)

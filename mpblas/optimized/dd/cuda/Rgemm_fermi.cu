@@ -79,8 +79,8 @@ void Is_cuda_Rgemm_error(cudaError_t rc, const char *mes, mplapackint m, mplapac
     /* not an error */
 }
 
-#define fetch_x_A(A,i) A[i]
-#define fetch_x_B(B,i) B[i]
+#define fetch_x_A(XX,i) XX[i]
+#define fetch_x_B(XX,i) XX[i]
 
 #include <Rgemm_fermi_NN_0.cu>
 #include <Rgemm_fermi_NN_p.cu>
@@ -144,8 +144,7 @@ void Rgemm_fermi_cuda(const char *transa, const char *transb, mplapackint m, mpl
             }
         }
     }
-
-    cudaThreadSynchronize();
+    cudaDeviceSynchronize();
 }
 
 void Rgemm_fermi(const char *transa, const char *transb, mplapackint m, mplapackint n, mplapackint k, dd_real alpha, dd_real * A, mplapackint lda, dd_real * B, mplapackint ldb, dd_real beta, dd_real * C, mplapackint ldc)

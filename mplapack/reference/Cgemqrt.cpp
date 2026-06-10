@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,34 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZGEMQRT.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Cgemqrt(const char *side, const char *trans, INTEGER const m, INTEGER const n, INTEGER const k, INTEGER const nb, COMPLEX *v, INTEGER const ldv, COMPLEX *t, INTEGER const ldt, COMPLEX *c, INTEGER const ldc, COMPLEX *work, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     .. Test the input arguments ..
+    // .. Test the input arguments ..
     //
     info = 0;
     bool left = Mlsame(side, "L");
@@ -95,7 +80,7 @@ void Cgemqrt(const char *side, const char *trans, INTEGER const m, INTEGER const
         return;
     }
     //
-    //     .. Quick return if possible ..
+    // .. Quick return if possible ..
     //
     if (m == 0 || n == 0 || k == 0) {
         return;
@@ -136,6 +121,6 @@ void Cgemqrt(const char *side, const char *trans, INTEGER const m, INTEGER const
         //
     }
     //
-    //     End of Cgemqrt
+    // End of Cgemqrt
     //
 }

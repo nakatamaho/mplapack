@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,35 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DGGLSE.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rgglse(INTEGER const m, INTEGER const n, INTEGER const p, REAL *a, INTEGER const lda, REAL *b, INTEGER const ldb, REAL *c, REAL *d, REAL *x, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters
+    // Test the input parameters
     //
     info = 0;
     INTEGER mn = min(m, n);
@@ -71,7 +55,7 @@ void Rgglse(INTEGER const m, INTEGER const n, INTEGER const p, REAL *a, INTEGER 
         info = -7;
     }
     //
-    //     Calculate workspace
+    // Calculate workspace
     //
     INTEGER lwkmin = 0;
     INTEGER lwkopt = 0;
@@ -89,7 +73,7 @@ void Rgglse(INTEGER const m, INTEGER const n, INTEGER const p, REAL *a, INTEGER 
             nb2 = iMlaenv(1, "Rgerqf", " ", m, n, -1, -1);
             nb3 = iMlaenv(1, "Rormqr", " ", m, n, p, -1);
             nb4 = iMlaenv(1, "Rormrq", " ", m, n, p, -1);
-            nb = max({nb1, nb2, nb3, nb4});
+            nb = max(nb1, nb2, nb3, nb4);
             lwkmin = m + n + p;
             lwkopt = p + mn + max(m, n) * nb;
         }
@@ -107,31 +91,31 @@ void Rgglse(INTEGER const m, INTEGER const n, INTEGER const p, REAL *a, INTEGER 
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
     }
     //
-    //     Compute the GRQ factorization of matrices B and A:
+    // Compute the GRQ factorization of matrices B and A:
     //
-    //            B*Q**T = (  0  T12 ) P   Z**T*A*Q**T = ( R11 R12 ) N-P
-    //                        N-P  P                     (  0  R22 ) M+P-N
-    //                                                      N-P  P
+    // B*Q**T = (  0  T12 ) P   Z**T*A*Q**T = ( R11 R12 ) N-P
+    // N-P  P                     (  0  R22 ) M+P-N
+    // N-P  P
     //
-    //     where T12 and R11 are upper triangular, and Q and Z are
-    //     orthogonal.
+    // where T12 and R11 are upper triangular, and Q and Z are
+    // orthogonal.
     //
     Rggrqf(p, m, n, b, ldb, work, a, lda, &work[(p + 1) - 1], &work[(p + mn + 1) - 1], lwork - p - mn, info);
     INTEGER lopt = castINTEGER(work[(p + mn + 1) - 1]);
     //
-    //     Update c = Z**T *c = ( c1 ) N-P
-    //                          ( c2 ) M+P-N
+    // Update c = Z**T *c = ( c1 ) N-P
+    // ( c2 ) M+P-N
     //
     Rormqr("Left", "Transpose", m, 1, mn, a, lda, &work[(p + 1) - 1], c, max((INTEGER)1, m), &work[(p + mn + 1) - 1], lwork - p - mn, info);
     lopt = max(lopt, castINTEGER(work[(p + mn + 1) - 1]));
     //
-    //     Solve T12*x2 = d for x2
+    // Solve T12*x2 = d for x2
     //
     const REAL one = 1.0;
     if (p > 0) {
@@ -142,16 +126,16 @@ void Rgglse(INTEGER const m, INTEGER const n, INTEGER const p, REAL *a, INTEGER 
             return;
         }
         //
-        //        Put the solution in X
+        // Put the solution in X
         //
         Rcopy(p, d, 1, &x[(n - p + 1) - 1], 1);
         //
-        //        Update c1
+        // Update c1
         //
         Rgemv("No transpose", n - p, p, -one, &a[((n - p + 1) - 1) * lda], lda, d, 1, one, c, 1);
     }
     //
-    //     Solve R11*x1 = c1 for x1
+    // Solve R11*x1 = c1 for x1
     //
     if (n > p) {
         Rtrtrs("Upper", "No transpose", "Non-unit", n - p, 1, a, lda, c, n - p, info);
@@ -161,12 +145,12 @@ void Rgglse(INTEGER const m, INTEGER const n, INTEGER const p, REAL *a, INTEGER 
             return;
         }
         //
-        //        Put the solutions in X
+        // Put the solutions in X
         //
         Rcopy(n - p, c, 1, x, 1);
     }
     //
-    //     Compute the residual vector:
+    // Compute the residual vector:
     //
     INTEGER nr = 0;
     if (m < n) {
@@ -182,11 +166,11 @@ void Rgglse(INTEGER const m, INTEGER const n, INTEGER const p, REAL *a, INTEGER 
         Raxpy(nr, -one, d, 1, &c[(n - p + 1) - 1], 1);
     }
     //
-    //     Backward transformation x = Q**T*x
+    // Backward transformation x = Q**T*x
     //
     Rormrq("Left", "Transpose", n, 1, p, b, ldb, &work[1 - 1], x, n, &work[(p + mn + 1) - 1], lwork - p - mn, info);
     work[1 - 1] = p + mn + max(lopt, castINTEGER(work[(p + mn + 1) - 1]));
     //
-    //     End of Rgglse
+    // End of Rgglse
     //
 }

@@ -1,4 +1,5 @@
-MPFRVERSION=4.1.0
+MPFRVERSION=4.2.2
+MPFR_DISTFILE=mpfr/download/mpfr-$(MPFRVERSION).tar.bz2
 MAKEFLAGS =
 
 #GMPINCLUDEDIR=$(abs_builddir)/../i/GMP/include/
@@ -17,15 +18,34 @@ CHECK_STAMP=.mpfr_check_done
 
 all: extract config build check install_internal
 
+.PHONY: verify-distfile
+verify-distfile:
+	@distfile="$(MPFR_DISTFILE)"; \
+	cd "$(abs_srcdir)/.." && \
+	entry=`awk -v f="$$distfile" '$$2 == f { print $$0 }' distfiles.sha256`; \
+	if test -z "$$entry"; then \
+		echo "error: no SHA256 checksum recorded for $$distfile" >&2; \
+		exit 1; \
+	fi; \
+	if command -v sha256sum >/dev/null 2>&1; then \
+		printf '%s\n' "$$entry" | sha256sum -c -; \
+	elif command -v shasum >/dev/null 2>&1; then \
+		printf '%s\n' "$$entry" | shasum -a 256 -c -; \
+	else \
+		echo "error: no SHA256 checksum tool found (sha256sum or shasum)" >&2; \
+		exit 1; \
+	fi
+
 work/$(EXTRACT_STAMP):
+	@$(MAKE) verify-distfile MPFRVERSION="$(MPFRVERSION)" MPFR_DISTFILE="$(MPFR_DISTFILE)"
 	rm -rf work ; mkdir -p work/internal  ; mkdir -p work/install
-	cd $(abs_builddir)/work/internal; tar xvfj ../../download/mpfr-$(MPFRVERSION).tar.bz2
-	cd $(abs_builddir)/work/install; tar xvfj ../../download/mpfr-$(MPFRVERSION).tar.bz2
+	cd $(abs_builddir)/work/internal; tar xvfj $(abs_srcdir)/download/mpfr-$(MPFRVERSION).tar.bz2
+	cd $(abs_builddir)/work/install; tar xvfj $(abs_srcdir)/download/mpfr-$(MPFRVERSION).tar.bz2
 	touch $(abs_builddir)/work/$(EXTRACT_STAMP)
 
 work/$(PATCH_STAMP): work/$(EXTRACT_STAMP)
-	cd $(abs_builddir)/work/internal/mpfr-$(MPFRVERSION) ; patch -N -Z -p1 < ../../../download/allpatches
-	cd $(abs_builddir)/work/install/mpfr-$(MPFRVERSION) ; patch -N -Z -p1 < ../../../download/allpatches
+	@# cd $(abs_builddir)/work/internal/mpfr-$(MPFRVERSION) ; patch -N -Z -p1 < ../../../download/allpatches
+	@# cd $(abs_builddir)/work/install/mpfr-$(MPFRVERSION) ; patch -N -Z -p1 < ../../../download/allpatches
 	touch $(abs_builddir)/work/$(PATCH_STAMP)
 
 work/$(CONFIGURE_STAMP): work/$(PATCH_STAMP)
@@ -39,22 +59,22 @@ endif
 	touch $(abs_builddir)/work/$(CONFIGURE_STAMP)
 
 work/$(BUILD_STAMP): work/$(CONFIGURE_STAMP)
-	cd $(abs_builddir)/work/internal/mpfr-$(MPFRVERSION) ; ${MAKE}
-	cd $(abs_builddir)/work/install/mpfr-$(MPFRVERSION) ; ${MAKE}
+	+cd $(abs_builddir)/work/internal/mpfr-$(MPFRVERSION) ; ${MAKE}
+	+cd $(abs_builddir)/work/install/mpfr-$(MPFRVERSION) ; ${MAKE}
 	touch $(abs_builddir)/work/$(BUILD_STAMP)
 
 work/$(CHECK_STAMP): work/$(BUILD_STAMP)
 	touch $(abs_builddir)/work/$(CHECK_STAMP)
 if IS_MINGW
-	cd $(abs_builddir)/work/internal/mpfr-$(MPFRVERSION) ; VERBOSE=1 ${MAKE} check LOG_COMPILER=wine64
-	cd $(abs_builddir)/work/install/mpfr-$(MPFRVERSION)  ; VERBOSE=1 ${MAKE} check LOG_COMPILER=wine64
+	+cd $(abs_builddir)/work/internal/mpfr-$(MPFRVERSION) ; VERBOSE=1 ${MAKE} check LOG_COMPILER=wine
+	+cd $(abs_builddir)/work/install/mpfr-$(MPFRVERSION)  ; VERBOSE=1 ${MAKE} check LOG_COMPILER=wine
 else
-	cd $(abs_builddir)/work/internal/mpfr-$(MPFRVERSION) ; ${MAKE} check
-	cd $(abs_builddir)/work/install/mpfr-$(MPFRVERSION) ; ${MAKE} check
+	+cd $(abs_builddir)/work/internal/mpfr-$(MPFRVERSION) ; ${MAKE} check
+	+cd $(abs_builddir)/work/install/mpfr-$(MPFRVERSION) ; ${MAKE} check
 endif
 
 work/$(INSTALL_INTERNAL_STAMP): work/$(CHECK_STAMP)
-	cd $(abs_builddir)/work/internal/mpfr-$(MPFRVERSION) ; ${MAKE} install
+	+cd $(abs_builddir)/work/internal/mpfr-$(MPFRVERSION) ; ${MAKE} install
 	touch $(abs_builddir)/work/$(INSTALL_INTERNAL_STAMP)
 
 work/$(INSTALL_STAMP): work/$(CHECK_STAMP)
@@ -66,7 +86,7 @@ if !SYSTEM_GMP
 	install_name_tool -change $$ORG $$FIX $(abs_builddir)/work/install/mpfr-$(MPFRVERSION)/src/.libs/libmpfr.dylib
 endif
 endif
-	cd $(abs_builddir)/work/install/mpfr-$(MPFRVERSION) ; ${MAKE} install
+	+cd $(abs_builddir)/work/install/mpfr-$(MPFRVERSION) ; ${MAKE} install
 	touch $(abs_builddir)/work/$(INSTALL_STAMP)
 
 extract: work/$(EXTRACT_STAMP)
@@ -83,10 +103,13 @@ install_internal: work/$(INSTALL_INTERNAL_STAMP)
 
 install: work/$(INSTALL_STAMP)
 
+uninstall:
+	-+cd $(abs_builddir)/work/install/mpfr-$(MPFRVERSION) ; ${MAKE} uninstall
+
 distdir:
 
-clean:
+clean-local:
 	rm -rf work
 
-distclean:
+distclean-local:
 	rm -rf work

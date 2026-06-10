@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DQRT17.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,19 +43,18 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-REAL Rqrt17(const char *trans, INTEGER const iresid, INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *x, INTEGER const ldx, REAL *b, INTEGER const ldb, REAL *c, REAL *work, INTEGER const lwork) {
+REAL Rqrt17(fem::str_cref trans, INTEGER const iresid, INTEGER const m, INTEGER const n, INTEGER const nrhs, REAL *a, INTEGER const lda, REAL *x, INTEGER const ldx, REAL *b, INTEGER const ldb, REAL *c, REAL *work, INTEGER const lwork) {
     REAL return_value = 0.0;
-    INTEGER ldc = ldb;
     //
     const REAL zero = 0.0;
     return_value = zero;
     //
     INTEGER nrows = 0;
     INTEGER ncols = 0;
-    if (Mlsame(trans, "N")) {
+    if (Mlsame(trans.elems(), "N")) {
         nrows = m;
         ncols = n;
-    } else if (Mlsame(trans, "T")) {
+    } else if (Mlsame(trans.elems(), "T")) {
         nrows = n;
         ncols = m;
     } else {
@@ -68,14 +74,13 @@ REAL Rqrt17(const char *trans, INTEGER const iresid, INTEGER const m, INTEGER co
     REAL rwork[1];
     REAL norma = Rlange("One-norm", m, n, a, lda, rwork);
     REAL smlnum = Rlamch("Safe minimum") / Rlamch("Precision");
-    const REAL one = 1.0;
-    REAL bignum = one / smlnum;
     INTEGER iscl = 0;
     //
-    //     compute residual and scale it
+    // compute residual and scale it
     //
     Rlacpy("All", nrows, nrhs, b, ldb, c, ldb);
-    Rgemm(trans, "No transpose", nrows, nrhs, ncols, -one, a, lda, x, ldx, one, c, ldb);
+    const REAL one = 1.0;
+    Rgemm(trans.elems(), "No transpose", nrows, nrhs, ncols, -one, a, lda, x, ldx, one, c, ldb);
     REAL normrs = Rlange("Max", nrows, nrhs, c, ldb, rwork);
     INTEGER info = 0;
     if (normrs > smlnum) {
@@ -83,11 +88,11 @@ REAL Rqrt17(const char *trans, INTEGER const iresid, INTEGER const m, INTEGER co
         Rlascl("General", 0, 0, normrs, one, nrows, nrhs, c, ldb, info);
     }
     //
-    //     compute R'*A
+    // compute R**T * op(A)
     //
-    Rgemm("Transpose", trans, nrhs, ncols, nrows, one, c, ldb, a, lda, zero, work, nrhs);
+    Rgemm("Transpose", trans.elems(), nrhs, ncols, nrows, one, c, ldb, a, lda, zero, work, nrhs);
     //
-    //     compute and properly scale error
+    // compute and properly scale error
     //
     REAL err = Rlange("One-norm", nrhs, ncols, work, nrhs, rwork);
     if (norma != zero) {
@@ -110,9 +115,9 @@ REAL Rqrt17(const char *trans, INTEGER const iresid, INTEGER const m, INTEGER co
         }
     }
     //
-    return_value = err / (Rlamch("Epsilon") * castREAL(max({m, n, nrhs})));
+    return_value = err / (Rlamch("Epsilon") * castREAL(max(m, n, nrhs)));
     return return_value;
     //
-    //     End of Rqrt17
+    // End of Rqrt17
     //
 }

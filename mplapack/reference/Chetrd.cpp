@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZHETRD.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Chetrd(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL *d, REAL *e, COMPLEX *tau, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
     //
-    //     Test the input parameters
+    // Test the input parameters
     //
     info = 0;
     bool upper = Mlsame(uplo, "U");
@@ -50,10 +57,10 @@ void Chetrd(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, RE
     INTEGER lwkopt = 0;
     if (info == 0) {
         //
-        //        Determine the block size.
+        // Determine the block size.
         //
         nb = iMlaenv(1, "Chetrd", uplo, n, -1, -1, -1);
-        lwkopt = n * nb;
+        lwkopt = max((INTEGER)1, n * nb);
         work[1 - 1] = lwkopt;
     }
     //
@@ -64,10 +71,10 @@ void Chetrd(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, RE
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
-        work[1 - 1] = 1;
+        work[1 - 1] = 1.0;
         return;
     }
     //
@@ -77,21 +84,21 @@ void Chetrd(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, RE
     INTEGER nbmin = 0;
     if (nb > 1 && nb < n) {
         //
-        //        Determine when to cross over from blocked to unblocked code
-        //        (last block is always handled by unblocked code).
+        // Determine when to cross over from blocked to unblocked code
+        // (last block is always handled by unblocked code).
         //
         nx = max(nb, iMlaenv(3, "Chetrd", uplo, n, -1, -1, -1));
         if (nx < n) {
             //
-            //           Determine if workspace is large enough for blocked code.
+            // Determine if workspace is large enough for blocked code.
             //
             ldwork = n;
             iws = ldwork * nb;
             if (lwork < iws) {
                 //
-                //              Not enough workspace to use optimal NB:  determine the
-                //              minimum value of NB, and reduce NB or force use of
-                //              unblocked code by setting NX = N.
+                // Not enough workspace to use optimal NB:  determine the
+                // minimum value of NB, and reduce NB or force use of
+                // unblocked code by setting NX = N.
                 //
                 nb = max(lwork / ldwork, (INTEGER)1);
                 nbmin = iMlaenv(2, "Chetrd", uplo, n, -1, -1, -1);
@@ -114,25 +121,25 @@ void Chetrd(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, RE
     INTEGER iinfo = 0;
     if (upper) {
         //
-        //        Reduce the upper triangle of A.
-        //        Columns 1:kk are handled by the unblocked method.
+        // Reduce the upper triangle of A.
+        // Columns 1:kk are handled by the unblocked method.
         //
         kk = n - ((n - nx + nb - 1) / nb) * nb;
         for (i = n - nb + 1; i >= kk + 1; i = i - nb) {
             //
-            //           Reduce columns i:i+nb-1 to tridiagonal form and form the
-            //           matrix W which is needed to update the unreduced part of
-            //           the matrix
+            // Reduce columns i:i+nb-1 to tridiagonal form and form the
+            // matrix W which is needed to update the unreduced part of
+            // the matrix
             //
             Clatrd(uplo, i + nb - 1, nb, a, lda, e, tau, work, ldwork);
             //
-            //           Update the unreduced submatrix A(1:i-1,1:i-1), using an
-            //           update of the form:  A := A - V*W**H - W*V**H
+            // Update the unreduced submatrix A(1:i-1,1:i-1), using an
+            // update of the form:  A := A - V*W**H - W*V**H
             //
             Cher2k(uplo, "No transpose", i - 1, nb, -cone, &a[(i - 1) * lda], lda, work, ldwork, one, a, lda);
             //
-            //           Copy superdiagonal elements back into A, and diagonal
-            //           elements into D
+            // Copy superdiagonal elements back into A, and diagonal
+            // elements into D
             //
             for (j = i; j <= i + nb - 1; j = j + 1) {
                 a[((j - 1) - 1) + (j - 1) * lda] = e[(j - 1) - 1];
@@ -140,28 +147,28 @@ void Chetrd(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, RE
             }
         }
         //
-        //        Use unblocked code to reduce the last or only block
+        // Use unblocked code to reduce the last or only block
         //
         Chetd2(uplo, kk, a, lda, d, e, tau, iinfo);
     } else {
         //
-        //        Reduce the lower triangle of A
+        // Reduce the lower triangle of A
         //
         for (i = 1; i <= n - nx; i = i + nb) {
             //
-            //           Reduce columns i:i+nb-1 to tridiagonal form and form the
-            //           matrix W which is needed to update the unreduced part of
-            //           the matrix
+            // Reduce columns i:i+nb-1 to tridiagonal form and form the
+            // matrix W which is needed to update the unreduced part of
+            // the matrix
             //
             Clatrd(uplo, n - i + 1, nb, &a[(i - 1) + (i - 1) * lda], lda, &e[i - 1], &tau[i - 1], work, ldwork);
             //
-            //           Update the unreduced submatrix A(i+nb:n,i+nb:n), using
-            //           an update of the form:  A := A - V*W**H - W*V**H
+            // Update the unreduced submatrix A(i+nb:n,i+nb:n), using
+            // an update of the form:  A := A - V*W**H - W*V**H
             //
             Cher2k(uplo, "No transpose", n - i - nb + 1, nb, -cone, &a[((i + nb) - 1) + (i - 1) * lda], lda, &work[(nb + 1) - 1], ldwork, one, &a[((i + nb) - 1) + ((i + nb) - 1) * lda], lda);
             //
-            //           Copy subdiagonal elements back into A, and diagonal
-            //           elements into D
+            // Copy subdiagonal elements back into A, and diagonal
+            // elements into D
             //
             for (j = i; j <= i + nb - 1; j = j + 1) {
                 a[((j + 1) - 1) + (j - 1) * lda] = e[j - 1];
@@ -169,13 +176,13 @@ void Chetrd(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, RE
             }
         }
         //
-        //        Use unblocked code to reduce the last or only block
+        // Use unblocked code to reduce the last or only block
         //
         Chetd2(uplo, n - i + 1, &a[(i - 1) + (i - 1) * lda], lda, &d[i - 1], &e[i - 1], &tau[i - 1], iinfo);
     }
     //
     work[1 - 1] = lwkopt;
     //
-    //     End of Chetrd
+    // End of Chetrd
     //
 }

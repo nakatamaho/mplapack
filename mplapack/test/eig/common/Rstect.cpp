@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DSTECT.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,45 +43,22 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
 void Rstect(INTEGER const n, REAL *a, REAL *b, REAL const shift, INTEGER &num) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Get machine constants
+    // Get machine constants
     //
     REAL unfl = Rlamch("Safe minimum");
     REAL ovfl = Rlamch("Overflow");
     //
-    //     Find largest entry
+    // Find largest entry
     //
     REAL mx = abs(a[1 - 1]);
     INTEGER i = 0;
     for (i = 1; i <= n - 1; i = i + 1) {
-        mx = max({mx, REAL(abs(a[(i + 1) - 1])), REAL(abs(b[i - 1]))});
+        mx = max(mx, abs(a[(i + 1) - 1]), abs(b[i - 1]));
     }
     //
-    //     Handle easy cases, including zero matrix
+    // Handle easy cases, including zero matrix
     //
     const REAL three = 3.0;
     if (shift >= three * mx) {
@@ -86,8 +70,8 @@ void Rstect(INTEGER const n, REAL *a, REAL *b, REAL const shift, INTEGER &num) {
         return;
     }
     //
-    //     Compute scale factors as in Kahan's report
-    //     At this point, MX .NE. 0 so we can divide by it
+    // Compute scale factors as in Kahan's report
+    // At this point, MX .NE. 0 so we can divide by it
     //
     REAL sun = sqrt(unfl);
     REAL ssun = sqrt(sun);
@@ -104,7 +88,7 @@ void Rstect(INTEGER const n, REAL *a, REAL *b, REAL const shift, INTEGER &num) {
         m2 = tom / mx;
     }
     //
-    //     Begin counting
+    // Begin counting
     //
     num = 0;
     REAL sshift = (shift * m1) * m2;
@@ -136,6 +120,6 @@ void Rstect(INTEGER const n, REAL *a, REAL *b, REAL const shift, INTEGER &num) {
         }
     }
     //
-    //     End of Rstect
+    // End of Rstect
     //
 }

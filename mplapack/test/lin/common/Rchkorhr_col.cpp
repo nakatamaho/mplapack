@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DCHKORHR_COL.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,58 +43,31 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-#include <mplapack_debug.h>
-
 void Rchkorhr_col(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, INTEGER const nnb, INTEGER *nbval, INTEGER const nout) {
     common cmn;
     common_write write(cmn);
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    static const char *format_9999 = "('Rorgtsqr and Rorhr_col: M=',i5,', N=',i5,', MB1=',i5,', NB1=',i5,"
+                                     "', NB2=',i5,' test(',i2,')=',g12.5)";
+    static const char *format_9998 = "('Rorgtsqr_row and Rorhr_col: M=',i5,', N=',i5,', MB1=',i5,', NB1=',i5,"
+                                     "', NB2=',i5,' test(',i2,')=',g12.5)";
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
+    // Initialize constants
     //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Initialize constants
-    //
-    char path[4] = {};
-    path[0] = 'R';
-    path[1] = 'H';
-    path[2] = 'H';
-    char buf[1024];
+    fem::str<3> path = "D";
+    path(2, 3) = "HH";
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
     //
-    //     Test the error exits
+    // Test the error exits
     //
     if (tsterr) {
         Rerrorhr_col(path, nout);
     }
     infot = 0;
     //
-    //     Do for each value of M in MVAL.
+    // Do for each value of M in MVAL.
     //
     INTEGER i = 0;
     INTEGER m = 0;
@@ -105,52 +85,49 @@ void Rchkorhr_col(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGE
     for (i = 1; i <= nm; i = i + 1) {
         m = mval[i - 1];
         //
-        //        Do for each value of N in NVAL.
+        // Do for each value of N in NVAL.
         //
         for (j = 1; j <= nn; j = j + 1) {
             n = nval[j - 1];
             //
-            //           Only for M >= N
+            // Only for M >= N
             //
             if (min(m, n) > 0 && m >= n) {
                 //
-                //              Do for each possible value of MB1
+                // Do for each possible value of MB1
                 //
                 for (imb1 = 1; imb1 <= nnb; imb1 = imb1 + 1) {
                     mb1 = nbval[imb1 - 1];
                     //
-                    //                 Only for MB1 > N
+                    // Only for MB1 > N
                     //
                     if (mb1 > n) {
                         //
-                        //                    Do for each possible value of NB1
+                        // Do for each possible value of NB1
                         //
                         for (inb1 = 1; inb1 <= nnb; inb1 = inb1 + 1) {
                             nb1 = nbval[inb1 - 1];
                             //
-                            //                       Do for each possible value of NB2
+                            // Do for each possible value of NB2
                             //
                             for (inb2 = 1; inb2 <= nnb; inb2 = inb2 + 1) {
                                 nb2 = nbval[inb2 - 1];
                                 //
                                 if (nb1 > 0 && nb2 > 0) {
                                     //
-                                    //                             Test Rorhr_col
+                                    // Test Rorhr_col
                                     //
                                     Rorhr_col01(m, n, mb1, nb1, nb2, result);
                                     //
-                                    //                             Print information about the tests that did
-                                    //                             not pass the threshold.
+                                    // Print information about the tests that did
+                                    // not pass the threshold.
                                     //
                                     for (t = 1; t <= ntests; t = t + 1) {
                                         if (result[t - 1] >= thresh) {
                                             if (nfail == 0 && nerrs == 0) {
                                                 Alahd(nout, path);
                                             }
-                                            sprintnum_short(buf, result[t - 1]);
-                                            write(nout, "('Rorgtsqr and Rorhr_col: M=',i5,', N=',i5,', MB1=',"
-                                                        "i5,', NB1=',i5,', NB2=',i5,' test(',i2,')=',a)"),
-                                                m, n, mb1, nb1, nb2, t, buf;
+                                            write(nout, format_9999), m, n, mb1, nb1, nb2, t, result[t - 1];
                                             nfail++;
                                         }
                                     }
@@ -164,58 +141,54 @@ void Rchkorhr_col(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGE
         }
     }
     //
-    //     Do for each value of M in MVAL.
+    // Do for each value of M in MVAL.
     //
     for (i = 1; i <= nm; i = i + 1) {
         m = mval[i - 1];
         //
-        //        Do for each value of N in NVAL.
+        // Do for each value of N in NVAL.
         //
         for (j = 1; j <= nn; j = j + 1) {
             n = nval[j - 1];
             //
-            //           Only for M >= N
+            // Only for M >= N
             //
             if (min(m, n) > 0 && m >= n) {
                 //
-                //              Do for each possible value of MB1
+                // Do for each possible value of MB1
                 //
                 for (imb1 = 1; imb1 <= nnb; imb1 = imb1 + 1) {
                     mb1 = nbval[imb1 - 1];
                     //
-                    //                 Only for MB1 > N
+                    // Only for MB1 > N
                     //
                     if (mb1 > n) {
                         //
-                        //                    Do for each possible value of NB1
+                        // Do for each possible value of NB1
                         //
                         for (inb1 = 1; inb1 <= nnb; inb1 = inb1 + 1) {
                             nb1 = nbval[inb1 - 1];
                             //
-                            //                       Do for each possible value of NB2
+                            // Do for each possible value of NB2
                             //
                             for (inb2 = 1; inb2 <= nnb; inb2 = inb2 + 1) {
                                 nb2 = nbval[inb2 - 1];
                                 //
                                 if (nb1 > 0 && nb2 > 0) {
                                     //
-                                    //                             Test Rorhr_col
+                                    // Test Rorhr_col
                                     //
                                     Rorhr_col02(m, n, mb1, nb1, nb2, result);
                                     //
-                                    //                             Print information about the tests that did
-                                    //                             not pass the threshold.
+                                    // Print information about the tests that did
+                                    // not pass the threshold.
                                     //
                                     for (t = 1; t <= ntests; t = t + 1) {
                                         if (result[t - 1] >= thresh) {
                                             if (nfail == 0 && nerrs == 0) {
                                                 Alahd(nout, path);
                                             }
-                                            sprintnum_short(buf, result[t - 1]);
-                                            write(nout, "('Rorgtsqr_row and Rorhr_col: M=',i5,', N=',i5,"
-                                                        "', MB1=',i5,', NB1=',i5,', NB2=',i5,' test(',i2,')=',"
-                                                        "a)"),
-                                                m, n, mb1, nb1, nb2, t, buf;
+                                            write(nout, format_9998), m, n, mb1, nb1, nb2, t, result[t - 1];
                                             nfail++;
                                         }
                                     }
@@ -229,10 +202,10 @@ void Rchkorhr_col(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGE
         }
     }
     //
-    //     Print a summary of the results.
+    // Print a summary of the results.
     //
     Alasum(path, nout, nfail, nrun, nerrs);
     //
-    //     End of Rchkorhr_col
+    // End of Rchkorhr_col
     //
 }

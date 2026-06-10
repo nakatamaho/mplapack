@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZLARFX.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -55,35 +62,12 @@ void Clarfx(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, COMP
     COMPLEX v10 = 0.0;
     COMPLEX t10 = 0.0;
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     if (tau == zero) {
         return;
     }
     if (Mlsame(side, "L")) {
         //
-        //        Form  H * C, where H has order m.
+        // Form  H * C, where H has order m.
         //
         switch (m) {
         case 1:
@@ -110,13 +94,13 @@ void Clarfx(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, COMP
             break;
         }
         //
-        //        Code for general M
+        // Code for general M
         //
         Clarf(side, m, n, v, 1, tau, c, ldc, work);
         goto statement_410;
     statement_10:
         //
-        //        Special code for 1 x 1 Householder
+        // Special code for 1 x 1 Householder
         //
         t1 = one - tau * v[1 - 1] * conj(v[1 - 1]);
         for (j = 1; j <= n; j = j + 1) {
@@ -125,7 +109,7 @@ void Clarfx(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, COMP
         goto statement_410;
     statement_30:
         //
-        //        Special code for 2 x 2 Householder
+        // Special code for 2 x 2 Householder
         //
         v1 = conj(v[1 - 1]);
         t1 = tau * conj(v1);
@@ -139,7 +123,7 @@ void Clarfx(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, COMP
         goto statement_410;
     statement_50:
         //
-        //        Special code for 3 x 3 Householder
+        // Special code for 3 x 3 Householder
         //
         v1 = conj(v[1 - 1]);
         t1 = tau * conj(v1);
@@ -156,7 +140,7 @@ void Clarfx(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, COMP
         goto statement_410;
     statement_70:
         //
-        //        Special code for 4 x 4 Householder
+        // Special code for 4 x 4 Householder
         //
         v1 = conj(v[1 - 1]);
         t1 = tau * conj(v1);
@@ -176,7 +160,7 @@ void Clarfx(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, COMP
         goto statement_410;
     statement_90:
         //
-        //        Special code for 5 x 5 Householder
+        // Special code for 5 x 5 Householder
         //
         v1 = conj(v[1 - 1]);
         t1 = tau * conj(v1);
@@ -199,7 +183,7 @@ void Clarfx(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, COMP
         goto statement_410;
     statement_110:
         //
-        //        Special code for 6 x 6 Householder
+        // Special code for 6 x 6 Householder
         //
         v1 = conj(v[1 - 1]);
         t1 = tau * conj(v1);
@@ -225,7 +209,7 @@ void Clarfx(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, COMP
         goto statement_410;
     statement_130:
         //
-        //        Special code for 7 x 7 Householder
+        // Special code for 7 x 7 Householder
         //
         v1 = conj(v[1 - 1]);
         t1 = tau * conj(v1);
@@ -254,7 +238,7 @@ void Clarfx(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, COMP
         goto statement_410;
     statement_150:
         //
-        //        Special code for 8 x 8 Householder
+        // Special code for 8 x 8 Householder
         //
         v1 = conj(v[1 - 1]);
         t1 = tau * conj(v1);
@@ -286,7 +270,7 @@ void Clarfx(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, COMP
         goto statement_410;
     statement_170:
         //
-        //        Special code for 9 x 9 Householder
+        // Special code for 9 x 9 Householder
         //
         v1 = conj(v[1 - 1]);
         t1 = tau * conj(v1);
@@ -321,7 +305,7 @@ void Clarfx(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, COMP
         goto statement_410;
     statement_190:
         //
-        //        Special code for 10 x 10 Householder
+        // Special code for 10 x 10 Householder
         //
         v1 = conj(v[1 - 1]);
         t1 = tau * conj(v1);
@@ -359,7 +343,7 @@ void Clarfx(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, COMP
         goto statement_410;
     } else {
         //
-        //        Form  C * H, where H has order n.
+        // Form  C * H, where H has order n.
         //
         switch (n) {
         case 1:
@@ -386,13 +370,13 @@ void Clarfx(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, COMP
             break;
         }
         //
-        //        Code for general N
+        // Code for general N
         //
         Clarf(side, m, n, v, 1, tau, c, ldc, work);
         goto statement_410;
     statement_210:
         //
-        //        Special code for 1 x 1 Householder
+        // Special code for 1 x 1 Householder
         //
         t1 = one - tau * v[1 - 1] * conj(v[1 - 1]);
         for (j = 1; j <= m; j = j + 1) {
@@ -401,7 +385,7 @@ void Clarfx(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, COMP
         goto statement_410;
     statement_230:
         //
-        //        Special code for 2 x 2 Householder
+        // Special code for 2 x 2 Householder
         //
         v1 = v[1 - 1];
         t1 = tau * conj(v1);
@@ -415,7 +399,7 @@ void Clarfx(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, COMP
         goto statement_410;
     statement_250:
         //
-        //        Special code for 3 x 3 Householder
+        // Special code for 3 x 3 Householder
         //
         v1 = v[1 - 1];
         t1 = tau * conj(v1);
@@ -432,7 +416,7 @@ void Clarfx(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, COMP
         goto statement_410;
     statement_270:
         //
-        //        Special code for 4 x 4 Householder
+        // Special code for 4 x 4 Householder
         //
         v1 = v[1 - 1];
         t1 = tau * conj(v1);
@@ -452,7 +436,7 @@ void Clarfx(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, COMP
         goto statement_410;
     statement_290:
         //
-        //        Special code for 5 x 5 Householder
+        // Special code for 5 x 5 Householder
         //
         v1 = v[1 - 1];
         t1 = tau * conj(v1);
@@ -475,7 +459,7 @@ void Clarfx(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, COMP
         goto statement_410;
     statement_310:
         //
-        //        Special code for 6 x 6 Householder
+        // Special code for 6 x 6 Householder
         //
         v1 = v[1 - 1];
         t1 = tau * conj(v1);
@@ -501,7 +485,7 @@ void Clarfx(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, COMP
         goto statement_410;
     statement_330:
         //
-        //        Special code for 7 x 7 Householder
+        // Special code for 7 x 7 Householder
         //
         v1 = v[1 - 1];
         t1 = tau * conj(v1);
@@ -530,7 +514,7 @@ void Clarfx(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, COMP
         goto statement_410;
     statement_350:
         //
-        //        Special code for 8 x 8 Householder
+        // Special code for 8 x 8 Householder
         //
         v1 = v[1 - 1];
         t1 = tau * conj(v1);
@@ -562,7 +546,7 @@ void Clarfx(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, COMP
         goto statement_410;
     statement_370:
         //
-        //        Special code for 9 x 9 Householder
+        // Special code for 9 x 9 Householder
         //
         v1 = v[1 - 1];
         t1 = tau * conj(v1);
@@ -597,7 +581,7 @@ void Clarfx(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, COMP
         goto statement_410;
     statement_390:
         //
-        //        Special code for 10 x 10 Householder
+        // Special code for 10 x 10 Householder
         //
         v1 = v[1 - 1];
         t1 = tau * conj(v1);
@@ -636,6 +620,6 @@ void Clarfx(const char *side, INTEGER const m, INTEGER const n, COMPLEX *v, COMP
     }
 statement_410:;
     //
-    //     End of Clarfx
+    // End of Clarfx
     //
 }

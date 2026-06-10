@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZSPR.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Cspr(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *x, INTEGER const incx, COMPLEX *ap) {
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     INTEGER info = 0;
     if (!Mlsame(uplo, "U") && !Mlsame(uplo, "L")) {
@@ -46,14 +53,14 @@ void Cspr(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *x, IN
         return;
     }
     //
-    //     Quick return if possible.
+    // Quick return if possible.
     //
     const COMPLEX zero = COMPLEX(0.0, 0.0);
     if ((n == 0) || (alpha == zero)) {
         return;
     }
     //
-    //     Set the start point in X if the increment is not unity.
+    // Set the start point in X if the increment is not unity.
     //
     INTEGER kx = 0;
     if (incx <= 0) {
@@ -62,8 +69,8 @@ void Cspr(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *x, IN
         kx = 1;
     }
     //
-    //     Start the operations. In this version the elements of the array AP
-    //     are accessed sequentially with one pass through AP.
+    // Start the operations. In this version the elements of the array AP
+    // are accessed sequentially with one pass through AP.
     //
     INTEGER kk = 1;
     INTEGER j = 0;
@@ -74,7 +81,7 @@ void Cspr(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *x, IN
     INTEGER ix = 0;
     if (Mlsame(uplo, "U")) {
         //
-        //        Form  A  when upper triangle is stored in AP.
+        // Form  A  when upper triangle is stored in AP.
         //
         if (incx == 1) {
             for (j = 1; j <= n; j = j + 1) {
@@ -111,7 +118,7 @@ void Cspr(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *x, IN
         }
     } else {
         //
-        //        Form  A  when lower triangle is stored in AP.
+        // Form  A  when lower triangle is stored in AP.
         //
         if (incx == 1) {
             for (j = 1; j <= n; j = j + 1) {
@@ -148,6 +155,6 @@ void Cspr(const char *uplo, INTEGER const n, COMPLEX const alpha, COMPLEX *x, IN
         }
     }
     //
-    //     End of Cspr
+    // End of Cspr
     //
 }

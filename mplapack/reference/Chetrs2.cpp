@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,33 +26,17 @@
  *
  */
 
+// Derived from LAPACK routine ZHETRS2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Chetrs2(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, INTEGER const lda, INTEGER *ipiv, COMPLEX *b, INTEGER const ldb, COMPLEX *work, INTEGER &info) {
-    //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     info = 0;
     bool upper = Mlsame(uplo, "U");
@@ -72,13 +56,13 @@ void Chetrs2(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, 
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0 || nrhs == 0) {
         return;
     }
     //
-    //     Convert A
+    // Convert A
     //
     INTEGER iinfo = 0;
     Csyconv(uplo, "C", n, a, lda, ipiv, work, iinfo);
@@ -97,22 +81,22 @@ void Chetrs2(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, 
     COMPLEX bk = 0.0;
     if (upper) {
         //
-        //        Solve A*X = B, where A = U*D*U**H.
+        // Solve A*X = B, where A = U*D*U**H.
         //
-        //       P**T * B
+        // P**T * B
         k = n;
         while (k >= 1) {
             if (ipiv[k - 1] > 0) {
-                //           1 x 1 diagonal block
-                //           Interchange rows K and IPIV(K).
+                // 1 x 1 diagonal block
+                // Interchange rows K and IPIV(K).
                 kp = ipiv[k - 1];
                 if (kp != k) {
                     Cswap(nrhs, &b[(k - 1)], ldb, &b[(kp - 1)], ldb);
                 }
                 k = k - 1;
             } else {
-                //           2 x 2 diagonal block
-                //           Interchange rows K-1 and -IPIV(K).
+                // 2 x 2 diagonal block
+                // Interchange rows K-1 and -IPIV(K).
                 kp = -ipiv[k - 1];
                 if (kp == -ipiv[(k - 1) - 1]) {
                     Cswap(nrhs, &b[((k - 1) - 1)], ldb, &b[(kp - 1)], ldb);
@@ -121,11 +105,11 @@ void Chetrs2(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, 
             }
         }
         //
-        //  Compute (U \P**T * B) -> B    [ (U \P**T * B) ]
+        // Compute (U \P**T * B) -> B    [ (U \P**T * B) ]
         //
         Ctrsm("L", "U", "N", "U", n, nrhs, one, a, lda, b, ldb);
         //
-        //  Compute D \ B -> B   [ D \ (U \P**T * B) ]
+        // Compute D \ B -> B   [ D \ (U \P**T * B) ]
         //
         i = n;
         while (i >= 1) {
@@ -150,25 +134,25 @@ void Chetrs2(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, 
             i = i - 1;
         }
         //
-        //      Compute (U**H \ B) -> B   [ U**H \ (D \ (U \P**T * B) ) ]
+        // Compute (U**H \ B) -> B   [ U**H \ (D \ (U \P**T * B) ) ]
         //
         Ctrsm("L", "U", "C", "U", n, nrhs, one, a, lda, b, ldb);
         //
-        //       P * B  [ P * (U**H \ (D \ (U \P**T * B) )) ]
+        // P * B  [ P * (U**H \ (D \ (U \P**T * B) )) ]
         //
         k = 1;
         while (k <= n) {
             if (ipiv[k - 1] > 0) {
-                //           1 x 1 diagonal block
-                //           Interchange rows K and IPIV(K).
+                // 1 x 1 diagonal block
+                // Interchange rows K and IPIV(K).
                 kp = ipiv[k - 1];
                 if (kp != k) {
                     Cswap(nrhs, &b[(k - 1)], ldb, &b[(kp - 1)], ldb);
                 }
                 k++;
             } else {
-                //           2 x 2 diagonal block
-                //           Interchange rows K-1 and -IPIV(K).
+                // 2 x 2 diagonal block
+                // Interchange rows K-1 and -IPIV(K).
                 kp = -ipiv[k - 1];
                 if (k < n && kp == -ipiv[(k + 1) - 1]) {
                     Cswap(nrhs, &b[(k - 1)], ldb, &b[(kp - 1)], ldb);
@@ -179,22 +163,22 @@ void Chetrs2(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, 
         //
     } else {
         //
-        //        Solve A*X = B, where A = L*D*L**H.
+        // Solve A*X = B, where A = L*D*L**H.
         //
-        //       P**T * B
+        // P**T * B
         k = 1;
         while (k <= n) {
             if (ipiv[k - 1] > 0) {
-                //           1 x 1 diagonal block
-                //           Interchange rows K and IPIV(K).
+                // 1 x 1 diagonal block
+                // Interchange rows K and IPIV(K).
                 kp = ipiv[k - 1];
                 if (kp != k) {
                     Cswap(nrhs, &b[(k - 1)], ldb, &b[(kp - 1)], ldb);
                 }
                 k++;
             } else {
-                //           2 x 2 diagonal block
-                //           Interchange rows K and -IPIV(K+1).
+                // 2 x 2 diagonal block
+                // Interchange rows K and -IPIV(K+1).
                 kp = -ipiv[(k + 1) - 1];
                 if (kp == -ipiv[k - 1]) {
                     Cswap(nrhs, &b[((k + 1) - 1)], ldb, &b[(kp - 1)], ldb);
@@ -203,11 +187,11 @@ void Chetrs2(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, 
             }
         }
         //
-        //  Compute (L \P**T * B) -> B    [ (L \P**T * B) ]
+        // Compute (L \P**T * B) -> B    [ (L \P**T * B) ]
         //
         Ctrsm("L", "L", "N", "U", n, nrhs, one, a, lda, b, ldb);
         //
-        //  Compute D \ B -> B   [ D \ (L \P**T * B) ]
+        // Compute D \ B -> B   [ D \ (L \P**T * B) ]
         //
         i = 1;
         while (i <= n) {
@@ -230,25 +214,25 @@ void Chetrs2(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, 
             i++;
         }
         //
-        //  Compute (L**H \ B) -> B   [ L**H \ (D \ (L \P**T * B) ) ]
+        // Compute (L**H \ B) -> B   [ L**H \ (D \ (L \P**T * B) ) ]
         //
         Ctrsm("L", "L", "C", "U", n, nrhs, one, a, lda, b, ldb);
         //
-        //       P * B  [ P * (L**H \ (D \ (L \P**T * B) )) ]
+        // P * B  [ P * (L**H \ (D \ (L \P**T * B) )) ]
         //
         k = n;
         while (k >= 1) {
             if (ipiv[k - 1] > 0) {
-                //           1 x 1 diagonal block
-                //           Interchange rows K and IPIV(K).
+                // 1 x 1 diagonal block
+                // Interchange rows K and IPIV(K).
                 kp = ipiv[k - 1];
                 if (kp != k) {
                     Cswap(nrhs, &b[(k - 1)], ldb, &b[(kp - 1)], ldb);
                 }
                 k = k - 1;
             } else {
-                //           2 x 2 diagonal block
-                //           Interchange rows K-1 and -IPIV(K).
+                // 2 x 2 diagonal block
+                // Interchange rows K-1 and -IPIV(K).
                 kp = -ipiv[k - 1];
                 if (k > 1 && kp == -ipiv[(k - 1) - 1]) {
                     Cswap(nrhs, &b[(k - 1)], ldb, &b[(kp - 1)], ldb);
@@ -259,10 +243,10 @@ void Chetrs2(const char *uplo, INTEGER const n, INTEGER const nrhs, COMPLEX *a, 
         //
     }
     //
-    //     Revert A
+    // Revert A
     //
     Csyconv(uplo, "R", n, a, lda, ipiv, work, iinfo);
     //
-    //     End of Chetrs2
+    // End of Chetrs2
     //
 }

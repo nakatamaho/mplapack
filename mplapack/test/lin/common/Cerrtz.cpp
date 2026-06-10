@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZERRTZ.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -35,56 +42,54 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack_debug.h>
 
-void Cerrtz(const char *path, INTEGER const nunit) {
+void Cerrtz(fem::str_cref path, INTEGER const nunit) {
+    common cmn;
+    common_write write(cmn);
     //
     nout = nunit;
-    char c2[2];
-    c2[0] = path[1];
-    c2[1] = path[2];
-
+    fem::str<2> c2 = path(2, 3);
     const INTEGER nmax = 2;
     COMPLEX a[nmax * nmax];
-    INTEGER lda = nmax;
-    a[(1 - 1) + (1 - 1) * lda] = COMPLEX(1.e+0, -1.e+0);
-    a[(1 - 1) + (2 - 1) * lda] = COMPLEX(2.e+0, -2.e+0);
-    a[(2 - 1) + (2 - 1) * lda] = COMPLEX(3.e+0, -3.e+0);
-    a[(2 - 1)] = COMPLEX(4.e+0, -4.e+0);
+    a[0] = COMPLEX(1.0, -1.0);
+    a[(2 - 1) * nmax] = COMPLEX(2.0, -2.0);
+    a[(2 - 1) + (2 - 1) * nmax] = COMPLEX(3.0, -3.0);
+    a[(2 - 1)] = COMPLEX(4.0, -4.0);
     COMPLEX w[nmax];
-    w[1 - 1] = COMPLEX(0.e+0, 0.e+0);
-    w[2 - 1] = COMPLEX(0.e+0, 0.e+0);
+    w[1 - 1] = COMPLEX(0.0, 0.0);
+    w[2 - 1] = COMPLEX(0.0, 0.0);
     ok = true;
     //
-    //     Test error exits for the trapezoidal routines.
+    // Test error exits for the trapezoidal routines.
+    write(nout, star);
     COMPLEX tau[nmax];
     INTEGER info = 0;
-    if (Mlsamen(2, c2, "TZ")) {
+    if (Mlsamen(2, c2.elems, "TZ")) {
         //
-        //        Ctzrzf
+        // Ctzrzf
         //
-        strncpy(srnamt, "Ctzrzf", srnamt_len);
+        srnamt = "Ctzrzf";
         infot = 1;
         Ctzrzf(-1, 0, a, 1, tau, w, 1, info);
-        chkxer("Ctzrzf", infot, nout, lerr, ok);
+        Chkxer("Ctzrzf", infot, nout, lerr, ok);
         infot = 2;
         Ctzrzf(1, 0, a, 1, tau, w, 1, info);
-        chkxer("Ctzrzf", infot, nout, lerr, ok);
+        Chkxer("Ctzrzf", infot, nout, lerr, ok);
         infot = 4;
         Ctzrzf(2, 2, a, 1, tau, w, 1, info);
-        chkxer("Ctzrzf", infot, nout, lerr, ok);
+        Chkxer("Ctzrzf", infot, nout, lerr, ok);
         infot = 7;
         Ctzrzf(2, 2, a, 2, tau, w, 0, info);
-        chkxer("Ctzrzf", infot, nout, lerr, ok);
+        Chkxer("Ctzrzf", infot, nout, lerr, ok);
         infot = 7;
         Ctzrzf(2, 3, a, 2, tau, w, 1, info);
-        chkxer("Ctzrzf", infot, nout, lerr, ok);
+        Chkxer("Ctzrzf", infot, nout, lerr, ok);
     }
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     Alaesm(path, ok, nout);
     //
-    //     End of Cerrtz
+    // End of Cerrtz
     //
 }

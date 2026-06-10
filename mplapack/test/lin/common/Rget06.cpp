@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,22 @@
  *
  */
 
+// Derived from LAPACK routine DGET06.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
+#include <mplapack.h>
+
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
+
+#include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack.h>
 
 REAL Rget06(REAL const rcond, REAL const rcondc) {
     REAL return_value = 0.0;
@@ -56,6 +66,6 @@ REAL Rget06(REAL const rcond, REAL const rcondc) {
     return_value = rat;
     return return_value;
     //
-    //     End of Rget06
+    // End of Rget06
     //
 }

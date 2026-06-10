@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DSTT21.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,34 +43,9 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
 void Rstt21(INTEGER const n, INTEGER const kband, REAL *ad, REAL *ae, REAL *sd, REAL *se, REAL *u, INTEGER const ldu, REAL *work, REAL *result) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     1)      Constants
+    // 1)      Constants
     //
     const REAL zero = 0.0;
     result[1 - 1] = zero;
@@ -75,9 +57,9 @@ void Rstt21(INTEGER const n, INTEGER const kband, REAL *ad, REAL *ae, REAL *sd, 
     REAL unfl = Rlamch("Safe minimum");
     REAL ulp = Rlamch("Precision");
     //
-    //     Do Test 1
+    // Do Test 1
     //
-    //     Copy A & Compute its 1-Norm:
+    // Copy A & Compute its 1-Norm:
     //
     Rlaset("Full", n, n, zero, zero, work, n);
     //
@@ -90,14 +72,14 @@ void Rstt21(INTEGER const n, INTEGER const kband, REAL *ad, REAL *ae, REAL *sd, 
         work[((n + 1) * (j - 1) + 1) - 1] = ad[j - 1];
         work[((n + 1) * (j - 1) + 2) - 1] = ae[j - 1];
         temp2 = abs(ae[j - 1]);
-        anorm = max(anorm, REAL(abs(ad[j - 1]) + temp1 + temp2));
+        anorm = max(anorm, abs(ad[j - 1]) + temp1 + temp2);
         temp1 = temp2;
     }
     //
-    work[n * n - 1] = ad[n - 1];
-    anorm = max({anorm, REAL(abs(ad[n - 1]) + temp1), unfl});
+    work[pow2(n) - 1] = ad[n - 1];
+    anorm = max(anorm, abs(ad[n - 1]) + temp1, unfl);
     //
-    //     Norm of A - USU'
+    // Norm of A - USU'
     //
     for (j = 1; j <= n; j = j + 1) {
         Rsyr("L", n, -sd[j - 1], &u[(j - 1) * ldu], 1, work, n);
@@ -109,22 +91,22 @@ void Rstt21(INTEGER const n, INTEGER const kband, REAL *ad, REAL *ae, REAL *sd, 
         }
     }
     //
-    REAL wnorm = Rlansy("1", "L", n, work, n, &work[(n * n + 1) - 1]);
+    REAL wnorm = Rlansy("1", "L", n, work, n, &work[(pow2(n) + 1) - 1]);
     //
     const REAL one = 1.0;
     if (anorm > wnorm) {
         result[1 - 1] = (wnorm / anorm) / (n * ulp);
     } else {
         if (anorm < one) {
-            result[1 - 1] = (min(wnorm, REAL(castREAL(n) * anorm)) / anorm) / (castREAL(n) * ulp);
+            result[1 - 1] = (min(wnorm, n * anorm) / anorm) / (n * ulp);
         } else {
-            result[1 - 1] = min(REAL(wnorm / anorm), castREAL(n)) / (castREAL(n) * ulp);
+            result[1 - 1] = min(wnorm / anorm, castREAL(n)) / (n * ulp);
         }
     }
     //
-    //     Do Test 2
+    // Do Test 2
     //
-    //     Compute  UU' - I
+    // Compute  UU' - I
     //
     Rgemm("N", "C", n, n, n, one, u, ldu, u, ldu, zero, work, n);
     //
@@ -132,8 +114,8 @@ void Rstt21(INTEGER const n, INTEGER const kband, REAL *ad, REAL *ae, REAL *sd, 
         work[((n + 1) * (j - 1) + 1) - 1] = work[((n + 1) * (j - 1) + 1) - 1] - one;
     }
     //
-    result[2 - 1] = min(castREAL(n), Rlange("1", n, n, work, n, &work[(n * n + 1) - 1])) / (n * ulp);
+    result[2 - 1] = min(castREAL(n), Rlange("1", n, n, work, n, &work[(pow2(n) + 1) - 1])) / (n * ulp);
     //
-    //     End of Rstt21
+    // End of Rstt21
     //
 }

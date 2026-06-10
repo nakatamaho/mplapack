@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DTPTTR.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rtpttr(const char *uplo, INTEGER const n, REAL *ap, REAL *a, INTEGER const lda, INTEGER &info) {
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     bool lower = Mlsame(uplo, "L");
@@ -68,6 +75,6 @@ void Rtpttr(const char *uplo, INTEGER const n, REAL *ap, REAL *a, INTEGER const 
         }
     }
     //
-    //     End of Rtpttr
+    // End of Rtpttr
     //
 }

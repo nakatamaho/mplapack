@@ -1,0 +1,96 @@
+bench_PROGRAMS += \
+Raxpy.gmp  Raxpy.gmp_opt  \
+Rcopy.gmp  Rcopy.gmp_opt  \
+Rdot.gmp   Rdot.gmp_opt   \
+Rgemm.gmp  Rgemm.gmp_opt  \
+Rgemv.gmp  Rgemv.gmp_opt  \
+Rsyrk.gmp  Rsyrk.gmp_opt  \
+Rpotrf.gmp Rpotrf.gmp_opt \
+Rpotf2.gmp Rpotf2.gmp_opt \
+Rgetrf.gmp Rgetrf.gmp_opt
+
+# Note: includes gmpc++ and MPC headers (superset of BLAS-only flags)
+gmpcxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/gmpc++ -I$(GMP_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_GMP___
+gmplapack_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_gmp
+gmp_libdepends    = $(gmplapack_libdepends) -L$(top_builddir)/mpblas/reference        -lmpblas_gmp     -L$(GMP_LIBDIR) -lgmpxx -lgmp $(DYLD)
+gmpopt_libdepends = $(gmplapack_libdepends) -L$(top_builddir)/mpblas/optimized/gmp   -lmpblas_gmp_opt -L$(GMP_LIBDIR) -lgmpxx -lgmp $(DYLD)
+
+if IS_MINGW
+gmpcxxflags       += -I$(DLFCN_WIN32_INCLUDEDIR)
+gmp_libdepends    += -L$(DLFCN_WIN32_LIBDIR) -ldl
+gmpopt_libdepends += -L$(DLFCN_WIN32_LIBDIR) -ldl
+endif
+
+# BLAS benchmarks
+Raxpy_gmp_SOURCES=      Raxpy.cpp
+Raxpy_gmp_CXXFLAGS=     $(gmpcxxflags)
+Raxpy_gmp_LDFLAGS=      $(gmp_libdepends)
+
+Raxpy_gmp_opt_SOURCES=  Raxpy.cpp
+Raxpy_gmp_opt_CXXFLAGS= $(gmpcxxflags)
+Raxpy_gmp_opt_LDFLAGS=  $(gmpopt_libdepends)
+
+Rcopy_gmp_SOURCES=      Rcopy.cpp
+Rcopy_gmp_CXXFLAGS=     $(gmpcxxflags)
+Rcopy_gmp_LDFLAGS=      $(gmp_libdepends)
+
+Rcopy_gmp_opt_SOURCES=  Rcopy.cpp
+Rcopy_gmp_opt_CXXFLAGS= $(gmpcxxflags)
+Rcopy_gmp_opt_LDFLAGS=  $(gmpopt_libdepends)
+
+Rdot_gmp_SOURCES=       Rdot.cpp
+Rdot_gmp_CXXFLAGS=      $(gmpcxxflags)
+Rdot_gmp_LDFLAGS=       $(gmp_libdepends)
+
+Rdot_gmp_opt_SOURCES=   Rdot.cpp
+Rdot_gmp_opt_CXXFLAGS=  $(gmpcxxflags)
+Rdot_gmp_opt_LDFLAGS=   $(gmpopt_libdepends)
+
+Rgemm_gmp_SOURCES=      Rgemm.cpp
+Rgemm_gmp_CXXFLAGS=     $(gmpcxxflags)
+Rgemm_gmp_LDFLAGS=      $(gmp_libdepends)
+
+Rgemm_gmp_opt_SOURCES=  Rgemm.cpp
+Rgemm_gmp_opt_CXXFLAGS= $(gmpcxxflags)
+Rgemm_gmp_opt_LDFLAGS=  $(gmpopt_libdepends)
+
+Rgemv_gmp_SOURCES=      Rgemv.cpp
+Rgemv_gmp_CXXFLAGS=     $(gmpcxxflags)
+Rgemv_gmp_LDFLAGS=      $(gmp_libdepends)
+
+Rgemv_gmp_opt_SOURCES=  Rgemv.cpp
+Rgemv_gmp_opt_CXXFLAGS= $(gmpcxxflags)
+Rgemv_gmp_opt_LDFLAGS=  $(gmpopt_libdepends)
+
+Rsyrk_gmp_SOURCES=      Rsyrk.cpp
+Rsyrk_gmp_CXXFLAGS=     $(gmpcxxflags)
+Rsyrk_gmp_LDFLAGS=      $(gmp_libdepends)
+
+Rsyrk_gmp_opt_SOURCES=  Rsyrk.cpp
+Rsyrk_gmp_opt_CXXFLAGS= $(gmpcxxflags)
+Rsyrk_gmp_opt_LDFLAGS=  $(gmpopt_libdepends)
+
+# LAPACK benchmarks
+Rpotrf_gmp_SOURCES=      Rpotrf.cpp
+Rpotrf_gmp_CXXFLAGS=     $(gmpcxxflags)
+Rpotrf_gmp_LDFLAGS=      $(gmp_libdepends)
+
+Rpotrf_gmp_opt_SOURCES=  Rpotrf.cpp
+Rpotrf_gmp_opt_CXXFLAGS= $(gmpcxxflags)
+Rpotrf_gmp_opt_LDFLAGS=  $(gmpopt_libdepends)
+
+Rpotf2_gmp_SOURCES=      Rpotf2.cpp
+Rpotf2_gmp_CXXFLAGS=     $(gmpcxxflags)
+Rpotf2_gmp_LDFLAGS=      $(gmp_libdepends)
+
+Rpotf2_gmp_opt_SOURCES=  Rpotf2.cpp
+Rpotf2_gmp_opt_CXXFLAGS= $(gmpcxxflags)
+Rpotf2_gmp_opt_LDFLAGS=  $(gmpopt_libdepends)
+
+Rgetrf_gmp_SOURCES=      Rgetrf.cpp
+Rgetrf_gmp_CXXFLAGS=     $(gmpcxxflags)
+Rgetrf_gmp_LDFLAGS=      $(gmp_libdepends)
+
+Rgetrf_gmp_opt_SOURCES=  Rgetrf.cpp
+Rgetrf_gmp_opt_CXXFLAGS= $(gmpcxxflags)
+Rgetrf_gmp_opt_LDFLAGS=  $(gmpopt_libdepends)

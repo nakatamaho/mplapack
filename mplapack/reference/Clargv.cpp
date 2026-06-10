@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,13 +26,25 @@
  *
  */
 
+// Derived from LAPACK routine ZLARGV.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL abs1(COMPLEX ff) { return max(abs(ff.real()), abs(ff.imag())); }
 inline REAL abssq(COMPLEX ff) {
     REAL temp;
     temp = (ff.real() * ff.real()) + (ff.imag() * ff.imag());
+    return temp;
+}
+
+inline REAL cabsmax(COMPLEX z) {
+    REAL temp;
+    temp = max(abs(z.real()), abs(z.imag()));
     return temp;
 }
 
@@ -40,7 +52,7 @@ void Clargv(INTEGER const n, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER
     COMPLEX ff = 0.0;
     REAL safmin = 0.0;
     REAL eps = 0.0;
-    const REAL two = 2.0e+0;
+    const REAL two = 2.0;
     REAL safmn2 = 0.0;
     const REAL one = 1.0;
     REAL safmx2 = 0.0;
@@ -68,46 +80,13 @@ void Clargv(INTEGER const n, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER
     REAL di = 0.0;
     INTEGER j = 0;
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     LOGICAL            FIRST
-    //
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Statement Functions ..
-    //     ..
-    //     .. Save statement ..
-    //     SAVE               FIRST, SAFMX2, SAFMIN, SAFMN2
-    //     ..
-    //     .. Data statements ..
-    //     DATA               FIRST / .TRUE. /
-    //     ..
-    //     .. Statement Function definitions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     IF( FIRST ) THEN
-    //        FIRST = .FALSE.
+    // IF( FIRST ) THEN
+    // FIRST = .FALSE.
     safmin = Rlamch("S");
     eps = Rlamch("E");
     safmn2 = pow(Rlamch("B"), castINTEGER(log(safmin / eps) / log(Rlamch("B")) / two));
     safmx2 = one / safmn2;
-    //     END IF
+    // END IF
     ix = 1;
     iy = 1;
     ic = 1;
@@ -115,9 +94,9 @@ void Clargv(INTEGER const n, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER
         f = x[ix - 1];
         g = y[iy - 1];
         //
-        //        Use identical algorithm as in Clartg
+        // Use identical algorithm as in Clartg
         //
-        scale = max(abs1(f), abs1(g));
+        scale = max(cabsmax(f), cabsmax(g));
         fs = f;
         gs = g;
         count = 0;
@@ -150,32 +129,32 @@ void Clargv(INTEGER const n, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER
         g2 = abssq(gs);
         if (f2 <= max(g2, one) * safmin) {
             //
-            //           This is a rare case: F is very small.
+            // This is a rare case: F is very small.
             //
             if (f == czero) {
                 cs = zero;
                 r = Rlapy2(g.real(), g.imag());
-                //              Do complex/real division explicitly with two real
-                //              divisions
+                // Do complex/real division explicitly with two real
+                // divisions
                 d = Rlapy2(gs.real(), gs.imag());
                 sn = COMPLEX(gs.real() / d, -gs.imag() / d);
                 goto statement_50;
             }
             f2s = Rlapy2(fs.real(), fs.imag());
-            //           G2 and G2S are accurate
-            //           G2 is at least SAFMIN, and G2S is at least SAFMN2
+            // G2 and G2S are accurate
+            // G2 is at least SAFMIN, and G2S is at least SAFMN2
             g2s = sqrt(g2);
-            //           Error in CS from underflow in F2S is at most
-            //           UNFL / SAFMN2 .lt. sqrt(UNFL*EPS) .lt. EPS
-            //           If MAX(G2,ONE)=G2, then F2 .lt. G2*SAFMIN,
-            //           and so CS .lt. sqrt(SAFMIN)
-            //           If MAX(G2,ONE)=ONE, then F2 .lt. SAFMIN
-            //           and so CS .lt. sqrt(SAFMIN)/SAFMN2 = sqrt(EPS)
-            //           Therefore, CS = F2S/G2S / sqrt( 1 + (F2S/G2S)**2 ) = F2S/G2S
+            // Error in CS from underflow in F2S is at most
+            // UNFL / SAFMN2 .lt. sqrt(UNFL*EPS) .lt. EPS
+            // If MAX(G2,ONE)=G2, then F2 .lt. G2*SAFMIN,
+            // and so CS .lt. sqrt(SAFMIN)
+            // If MAX(G2,ONE)=ONE, then F2 .lt. SAFMIN
+            // and so CS .lt. sqrt(SAFMIN)/SAFMN2 = sqrt(EPS)
+            // Therefore, CS = F2S/G2S / sqrt( 1 + (F2S/G2S)**2 ) = F2S/G2S
             cs = f2s / g2s;
-            //           Make sure abs(FF) = 1
-            //           Do complex/real division explicitly with 2 real divisions
-            if (abs1(f) > one) {
+            // Make sure abs(FF) = 1
+            // Do complex/real division explicitly with 2 real divisions
+            if (cabsmax(f) > one) {
                 d = Rlapy2(f.real(), f.imag());
                 ff = COMPLEX(f.real() / d, f.imag() / d);
             } else {
@@ -188,17 +167,17 @@ void Clargv(INTEGER const n, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER
             r = cs * f + sn * g;
         } else {
             //
-            //           This is the most common case.
-            //           Neither F2 nor F2/G2 are less than SAFMIN
-            //           F2S cannot overflow, and it is accurate
+            // This is the most common case.
+            // Neither F2 nor F2/G2 are less than SAFMIN
+            // F2S cannot overflow, and it is accurate
             //
             f2s = sqrt(one + g2 / f2);
-            //           Do the F2S(real)*FS(complex) multiply with two real
-            //           multiplies
+            // Do the F2S(real)*FS(complex) multiply with two real
+            // multiplies
             r = COMPLEX(f2s * fs.real(), f2s * fs.imag());
             cs = one / f2s;
             d = f2 + g2;
-            //           Do complex/real division explicitly with two real divisions
+            // Do complex/real division explicitly with two real divisions
             sn = COMPLEX(r.real() / d, r.imag() / d);
             sn = sn * conj(gs);
             if (count != 0) {
@@ -222,6 +201,6 @@ void Clargv(INTEGER const n, COMPLEX *x, INTEGER const incx, COMPLEX *y, INTEGER
         ix += incx;
     }
     //
-    //     End of Clargv
+    // End of Clargv
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZTRT01.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,32 +43,9 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-void Ctrt01(const char *uplo, const char *diag, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *ainv, INTEGER const ldainv, REAL &rcond, REAL *rwork, REAL &resid) {
+void Ctrt01(fem::str_cref uplo, fem::str_cref diag, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *ainv, INTEGER const ldainv, REAL &rcond, REAL *rwork, REAL &resid) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Quick exit if N = 0
+    // Quick exit if N = 0
     //
     const REAL one = 1.0;
     const REAL zero = 0.0;
@@ -71,11 +55,11 @@ void Ctrt01(const char *uplo, const char *diag, INTEGER const n, COMPLEX *a, INT
         return;
     }
     //
-    //     Exit with RESID = 1/EPS if ANORM = 0 or AINVNM = 0.
+    // Exit with RESID = 1/EPS if ANORM = 0 or AINVNM = 0.
     //
     REAL eps = Rlamch("Epsilon");
-    REAL anorm = Clantr("1", uplo, diag, n, n, a, lda, rwork);
-    REAL ainvnm = Clantr("1", uplo, diag, n, n, ainv, ldainv, rwork);
+    REAL anorm = Clantr("1", uplo.elems(), diag.elems(), n, n, a, lda, rwork);
+    REAL ainvnm = Clantr("1", uplo.elems(), diag.elems(), n, n, ainv, ldainv, rwork);
     if (anorm <= zero || ainvnm <= zero) {
         rcond = zero;
         resid = one / eps;
@@ -83,39 +67,39 @@ void Ctrt01(const char *uplo, const char *diag, INTEGER const n, COMPLEX *a, INT
     }
     rcond = (one / anorm) / ainvnm;
     //
-    //     Set the diagonal of AINV to 1 if AINV has unit diagonal.
+    // Set the diagonal of AINV to 1 if AINV has unit diagonal.
     //
     INTEGER j = 0;
-    if (Mlsame(diag, "U")) {
+    if (Mlsame(diag.elems(), "U")) {
         for (j = 1; j <= n; j = j + 1) {
             ainv[(j - 1) + (j - 1) * ldainv] = one;
         }
     }
     //
-    //     Compute A * AINV, overwriting AINV.
+    // Compute A * AINV, overwriting AINV.
     //
-    if (Mlsame(uplo, "U")) {
+    if (Mlsame(uplo.elems(), "U")) {
         for (j = 1; j <= n; j = j + 1) {
-            Ctrmv("Upper", "No transpose", diag, j, a, lda, &ainv[(j - 1) * ldainv], 1);
+            Ctrmv("Upper", "No transpose", diag.elems(), j, a, lda, &ainv[(j - 1) * ldainv], 1);
         }
     } else {
         for (j = 1; j <= n; j = j + 1) {
-            Ctrmv("Lower", "No transpose", diag, n - j + 1, &a[(j - 1) + (j - 1) * lda], lda, &ainv[(j - 1) + (j - 1) * ldainv], 1);
+            Ctrmv("Lower", "No transpose", diag.elems(), n - j + 1, &a[(j - 1) + (j - 1) * lda], lda, &ainv[(j - 1) + (j - 1) * ldainv], 1);
         }
     }
     //
-    //     Subtract 1 from each diagonal element to form A*AINV - I.
+    // Subtract 1 from each diagonal element to form A*AINV - I.
     //
     for (j = 1; j <= n; j = j + 1) {
         ainv[(j - 1) + (j - 1) * ldainv] = ainv[(j - 1) + (j - 1) * ldainv] - one;
     }
     //
-    //     Compute norm(A*AINV - I) / (N * norm(A) * norm(AINV) * EPS)
+    // Compute norm(A*AINV - I) / (N * norm(A) * norm(AINV) * EPS)
     //
-    resid = Clantr("1", uplo, "Non-unit", n, n, ainv, ldainv, rwork);
+    resid = Clantr("1", uplo.elems(), "Non-unit", n, n, ainv, ldainv, rwork);
     //
     resid = ((resid * rcond) / castREAL(n)) / eps;
     //
-    //     End of Ctrt01
+    // End of Ctrt01
     //
 }

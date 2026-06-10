@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DSXT1.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,8 +43,6 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
 REAL Rsxt1(INTEGER const ijob, REAL *d1, INTEGER const n1, REAL *d2, INTEGER const n2, REAL const abstol, REAL const ulp, REAL const unfl) {
     REAL return_value = 0.0;
     const REAL zero = 0.0;
@@ -45,25 +50,6 @@ REAL Rsxt1(INTEGER const ijob, REAL *d1, INTEGER const n1, REAL *d2, INTEGER con
     INTEGER j = 0;
     INTEGER i = 0;
     REAL temp2 = 0.0;
-    //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
     //
     temp1 = zero;
     //
@@ -77,12 +63,12 @@ REAL Rsxt1(INTEGER const ijob, REAL *d1, INTEGER const n1, REAL *d2, INTEGER con
         if (j == 1) {
             temp2 = abs(d2[j - 1] - d1[i - 1]);
             if (ijob == 2) {
-                temp2 = temp2 / max(unfl, REAL(abstol + ulp * abs(d1[i - 1])));
+                temp2 = temp2 / max(unfl, abstol + ulp * abs(d1[i - 1]));
             }
         } else {
             temp2 = min(abs(d2[j - 1] - d1[i - 1]), abs(d1[i - 1] - d2[(j - 1) - 1]));
             if (ijob == 2) {
-                temp2 = temp2 / max(unfl, REAL(abstol + ulp * abs(d1[i - 1])));
+                temp2 = temp2 / max(unfl, abstol + ulp * abs(d1[i - 1]));
             }
         }
         temp1 = max(temp1, temp2);
@@ -91,6 +77,6 @@ REAL Rsxt1(INTEGER const ijob, REAL *d1, INTEGER const n1, REAL *d2, INTEGER con
     return_value = temp1;
     return return_value;
     //
-    //     End of Rsxt1
+    // End of Rsxt1
     //
 }

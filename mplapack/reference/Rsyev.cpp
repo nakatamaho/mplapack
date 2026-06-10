@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine DSYEV.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Rsyev(const char *jobz, const char *uplo, INTEGER const n, REAL *a, INTEGER const lda, REAL *w, REAL *work, INTEGER const lwork, INTEGER &info) {
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     bool wantz = Mlsame(jobz, "V");
     bool lower = Mlsame(uplo, "L");
@@ -67,7 +74,7 @@ void Rsyev(const char *jobz, const char *uplo, INTEGER const n, REAL *a, INTEGER
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
@@ -75,15 +82,15 @@ void Rsyev(const char *jobz, const char *uplo, INTEGER const n, REAL *a, INTEGER
     //
     const REAL one = 1.0;
     if (n == 1) {
-        w[1 - 1] = a[(1 - 1)];
-        work[1 - 1] = 2;
+        w[1 - 1] = a[0];
+        work[1 - 1] = 2.0;
         if (wantz) {
-            a[(1 - 1)] = one;
+            a[0] = one;
         }
         return;
     }
     //
-    //     Get machine constants.
+    // Get machine constants.
     //
     REAL safmin = Rlamch("Safe minimum");
     REAL eps = Rlamch("Precision");
@@ -92,7 +99,7 @@ void Rsyev(const char *jobz, const char *uplo, INTEGER const n, REAL *a, INTEGER
     REAL rmin = sqrt(smlnum);
     REAL rmax = sqrt(bignum);
     //
-    //     Scale matrix to allowable range, if necessary.
+    // Scale matrix to allowable range, if necessary.
     //
     REAL anrm = Rlansy("M", uplo, n, a, lda, work);
     INTEGER iscale = 0;
@@ -109,7 +116,7 @@ void Rsyev(const char *jobz, const char *uplo, INTEGER const n, REAL *a, INTEGER
         Rlascl(uplo, 0, 0, one, sigma, n, n, a, lda, info);
     }
     //
-    //     Call Rsytrd to reduce symmetric matrix to tridiagonal form.
+    // Call Rsytrd to reduce symmetric matrix to tridiagonal form.
     //
     INTEGER inde = 1;
     INTEGER indtau = inde + n;
@@ -118,8 +125,8 @@ void Rsyev(const char *jobz, const char *uplo, INTEGER const n, REAL *a, INTEGER
     INTEGER iinfo = 0;
     Rsytrd(uplo, n, a, lda, w, &work[inde - 1], &work[indtau - 1], &work[indwrk - 1], llwork, iinfo);
     //
-    //     For eigenvalues only, call Rsterf.  For eigenvectors, first call
-    //     Rorgtr to generate the orthogonal matrix, then call Rsteqr.
+    // For eigenvalues only, call Rsterf.  For eigenvectors, first call
+    // Rorgtr to generate the orthogonal matrix, then call Rsteqr.
     //
     if (!wantz) {
         Rsterf(n, w, &work[inde - 1], info);
@@ -128,7 +135,7 @@ void Rsyev(const char *jobz, const char *uplo, INTEGER const n, REAL *a, INTEGER
         Rsteqr(jobz, n, w, &work[inde - 1], a, lda, &work[indtau - 1], info);
     }
     //
-    //     If matrix was scaled, then rescale eigenvalues appropriately.
+    // If matrix was scaled, then rescale eigenvalues appropriately.
     //
     INTEGER imax = 0;
     if (iscale == 1) {
@@ -140,10 +147,10 @@ void Rsyev(const char *jobz, const char *uplo, INTEGER const n, REAL *a, INTEGER
         Rscal(imax, one / sigma, w, 1);
     }
     //
-    //     Set WORK(1) to optimal workspace size.
+    // Set WORK(1) to optimal workspace size.
     //
     work[1 - 1] = lwkopt;
     //
-    //     End of Rsyev
+    // End of Rsyev
     //
 }

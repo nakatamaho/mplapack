@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,35 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZLAUU2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Clauu2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, INTEGER &info) {
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     bool upper = Mlsame(uplo, "U");
@@ -70,7 +54,7 @@ void Clauu2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
@@ -81,12 +65,12 @@ void Clauu2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
     const COMPLEX one = COMPLEX(1.0, 0.0);
     if (upper) {
         //
-        //        Compute the product U * U**H.
+        // Compute the product U * U**H.
         //
         for (i = 1; i <= n; i = i + 1) {
             aii = a[(i - 1) + (i - 1) * lda].real();
             if (i < n) {
-                a[(i - 1) + (i - 1) * lda] = aii * aii + (Cdotc(n - i, &a[(i - 1) + ((i + 1) - 1) * lda], lda, &a[(i - 1) + ((i + 1) - 1) * lda], lda)).real();
+                a[(i - 1) + (i - 1) * lda] = aii * aii + Cdotc(n - i, &a[(i - 1) + ((i + 1) - 1) * lda], lda, &a[(i - 1) + ((i + 1) - 1) * lda], lda).real();
                 Clacgv(n - i, &a[(i - 1) + ((i + 1) - 1) * lda], lda);
                 Cgemv("No transpose", i - 1, n - i, one, &a[((i + 1) - 1) * lda], lda, &a[(i - 1) + ((i + 1) - 1) * lda], lda, COMPLEX(aii), &a[(i - 1) * lda], 1);
                 Clacgv(n - i, &a[(i - 1) + ((i + 1) - 1) * lda], lda);
@@ -97,12 +81,12 @@ void Clauu2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
         //
     } else {
         //
-        //        Compute the product L**H * L.
+        // Compute the product L**H * L.
         //
         for (i = 1; i <= n; i = i + 1) {
             aii = a[(i - 1) + (i - 1) * lda].real();
             if (i < n) {
-                a[(i - 1) + (i - 1) * lda] = aii * aii + (Cdotc(n - i, &a[((i + 1) - 1) + (i - 1) * lda], 1, &a[((i + 1) - 1) + (i - 1) * lda], 1)).real();
+                a[(i - 1) + (i - 1) * lda] = aii * aii + Cdotc(n - i, &a[((i + 1) - 1) + (i - 1) * lda], 1, &a[((i + 1) - 1) + (i - 1) * lda], 1).real();
                 Clacgv(i - 1, &a[(i - 1)], lda);
                 Cgemv("Conjugate transpose", n - i, i - 1, one, &a[((i + 1) - 1)], lda, &a[((i + 1) - 1) + (i - 1) * lda], 1, COMPLEX(aii), &a[(i - 1)], lda);
                 Clacgv(i - 1, &a[(i - 1)], lda);
@@ -112,6 +96,6 @@ void Clauu2(const char *uplo, INTEGER const n, COMPLEX *a, INTEGER const lda, IN
         }
     }
     //
-    //     End of Clauu2
+    // End of Clauu2
     //
 }

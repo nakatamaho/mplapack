@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZLQT03.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -37,59 +44,24 @@ using fem::common;
 #include <mplapack_lin.h>
 
 void Clqt03(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *af, COMPLEX *c, COMPLEX *cc, COMPLEX *q, INTEGER const lda, COMPLEX *tau, COMPLEX *work, INTEGER const lwork, REAL *rwork, REAL *result) {
-
+    static INTEGER iseed[4] = {1988, 1989, 1990, 1991};
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Data statements ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    INTEGER ldaf = lda;
-    INTEGER ldc = lda;
-    INTEGER ldcc = lda;
-    INTEGER ldq = lda;
-    INTEGER iseed[] = {1988, 1989, 1990, 1991};
     REAL eps = Rlamch("Epsilon");
     //
-    //     Copy the first k rows of the factorization to the array Q
+    // Copy the first k rows of the factorization to the array Q
     //
-    const COMPLEX rogue = COMPLEX(-1.0e+10, -1.0e+10);
+    const COMPLEX rogue = COMPLEX(-10000000000.0, -10000000000.0);
     Claset("Full", n, n, rogue, rogue, q, lda);
-    Clacpy("Upper", k, n - 1, &af[(2 - 1) * ldaf], lda, &q[(2 - 1) * ldq], lda);
+    Clacpy("Upper", k, n - 1, &af[(2 - 1) * lda], lda, &q[(2 - 1) * lda], lda);
     //
-    //     Generate the n-by-n matrix Q
+    // Generate the n-by-n matrix Q
     //
+    srnamt = "Cunglq";
     INTEGER info = 0;
     Cunglq(n, n, k, q, lda, tau, work, lwork, info);
     //
     INTEGER iside = 0;
-    char side;
+    fem::str<1> side;
     INTEGER mc = 0;
     INTEGER nc = 0;
     INTEGER j = 0;
@@ -97,23 +69,23 @@ void Clqt03(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *af, COMP
     const REAL zero = 0.0;
     const REAL one = 1.0;
     INTEGER itrans = 0;
-    char trans;
+    fem::str<1> trans;
     REAL resid = 0.0;
     for (iside = 1; iside <= 2; iside = iside + 1) {
         if (iside == 1) {
-            side = 'L';
+            side = "L";
             mc = n;
             nc = m;
         } else {
-            side = 'R';
+            side = "R";
             mc = m;
             nc = n;
         }
         //
-        //        Generate MC by NC matrix C
+        // Generate MC by NC matrix C
         //
         for (j = 1; j <= nc; j = j + 1) {
-            Clarnv(2, iseed, mc, &c[(j - 1) * ldc]);
+            Clarnv(2, iseed, mc, &c[(j - 1) * lda]);
         }
         cnorm = Clange("1", mc, nc, c, lda, rwork);
         if (cnorm == zero) {
@@ -122,28 +94,29 @@ void Clqt03(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *af, COMP
         //
         for (itrans = 1; itrans <= 2; itrans = itrans + 1) {
             if (itrans == 1) {
-                trans = 'N';
+                trans = "N";
             } else {
-                trans = 'C';
+                trans = "C";
             }
             //
-            //           Copy C
+            // Copy C
             //
             Clacpy("Full", mc, nc, c, lda, cc, lda);
             //
-            //           Apply Q or Q' to C
+            // Apply Q or Q' to C
             //
-            Cunmlq(&side, &trans, mc, nc, k, af, lda, tau, cc, lda, work, lwork, info);
+            srnamt = "Cunmlq";
+            Cunmlq(side.elems, trans.elems, mc, nc, k, af, lda, tau, cc, lda, work, lwork, info);
             //
-            //           Form explicit product and subtract
+            // Form explicit product and subtract
             //
-            if (Mlsame(&side, "L")) {
-                Cgemm(&trans, "No transpose", mc, nc, mc, COMPLEX(-one), q, lda, c, lda, COMPLEX(one), cc, lda);
+            if (Mlsame(side.elems, "L")) {
+                Cgemm(trans.elems, "No transpose", mc, nc, mc, COMPLEX(-one), q, lda, c, lda, COMPLEX(one), cc, lda);
             } else {
-                Cgemm("No transpose", &trans, mc, nc, nc, COMPLEX(-one), c, lda, q, lda, COMPLEX(one), cc, lda);
+                Cgemm("No transpose", trans.elems, mc, nc, nc, COMPLEX(-one), c, lda, q, lda, COMPLEX(one), cc, lda);
             }
             //
-            //           Compute error in the difference
+            // Compute error in the difference
             //
             resid = Clange("1", mc, nc, cc, lda, rwork);
             result[((iside - 1) * 2 + itrans) - 1] = resid / (castREAL(max((INTEGER)1, n)) * cnorm * eps);
@@ -151,6 +124,6 @@ void Clqt03(INTEGER const m, INTEGER const n, INTEGER const k, COMPLEX *af, COMP
         }
     }
     //
-    //     End of Clqt03
+    // End of Clqt03
     //
 }

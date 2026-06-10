@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DGELS.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -49,7 +56,7 @@ void Rgels(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nr
     INTEGER j = 0;
     INTEGER i = 0;
     //
-    //     Test the input arguments.
+    // Test the input arguments.
     //
     info = 0;
     mn = min(m, n);
@@ -64,13 +71,13 @@ void Rgels(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nr
         info = -4;
     } else if (lda < max((INTEGER)1, m)) {
         info = -6;
-    } else if (ldb < max({(INTEGER)1, m, n})) {
+    } else if (ldb < max((INTEGER)1, m, n)) {
         info = -8;
     } else if (lwork < max((INTEGER)1, mn + max(mn, nrhs)) && !lquery) {
         info = -10;
     }
     //
-    //     Figure out optimal block size
+    // Figure out optimal block size
     //
     if (info == 0 || info == -10) {
         //
@@ -107,37 +114,37 @@ void Rgels(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nr
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
-    if (min({m, n, nrhs}) == 0) {
+    if (min(m, n, nrhs) == 0) {
         Rlaset("Full", max(m, n), nrhs, zero, zero, b, ldb);
         return;
     }
     //
-    //     Get machine parameters
+    // Get machine parameters
     //
     smlnum = Rlamch("S") / Rlamch("P");
     bignum = one / smlnum;
     //
-    //     Scale A, B if max element outside range [SMLNUM,BIGNUM]
+    // Scale A, B if max element outside range [SMLNUM,BIGNUM]
     //
     anrm = Rlange("M", m, n, a, lda, rwork);
     iascl = 0;
     if (anrm > zero && anrm < smlnum) {
         //
-        //        Scale matrix norm up to SMLNUM
+        // Scale matrix norm up to SMLNUM
         //
         Rlascl("G", 0, 0, anrm, smlnum, m, n, a, lda, info);
         iascl = 1;
     } else if (anrm > bignum) {
         //
-        //        Scale matrix norm down to BIGNUM
+        // Scale matrix norm down to BIGNUM
         //
         Rlascl("G", 0, 0, anrm, bignum, m, n, a, lda, info);
         iascl = 2;
     } else if (anrm == zero) {
         //
-        //        Matrix all zero. Return zero solution.
+        // Matrix all zero. Return zero solution.
         //
         Rlaset("F", max(m, n), nrhs, zero, zero, b, ldb);
         goto statement_50;
@@ -151,13 +158,13 @@ void Rgels(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nr
     ibscl = 0;
     if (bnrm > zero && bnrm < smlnum) {
         //
-        //        Scale matrix norm up to SMLNUM
+        // Scale matrix norm up to SMLNUM
         //
         Rlascl("G", 0, 0, bnrm, smlnum, brow, nrhs, b, ldb, info);
         ibscl = 1;
     } else if (bnrm > bignum) {
         //
-        //        Scale matrix norm down to BIGNUM
+        // Scale matrix norm down to BIGNUM
         //
         Rlascl("G", 0, 0, bnrm, bignum, brow, nrhs, b, ldb, info);
         ibscl = 2;
@@ -165,23 +172,23 @@ void Rgels(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nr
     //
     if (m >= n) {
         //
-        //        compute QR factorization of A
+        // compute QR factorization of A
         //
         Rgeqrf(m, n, a, lda, &work[1 - 1], &work[(mn + 1) - 1], lwork - mn, info);
         //
-        //        workspace at least N, optimally N*NB
+        // workspace at least N, optimally N*NB
         //
         if (!tpsd) {
             //
-            //           Least-Squares Problem min || A * X - B ||
+            // Least-Squares Problem min || A * X - B ||
             //
-            //           B(1:M,1:NRHS) := Q**T * B(1:M,1:NRHS)
+            // B(1:M,1:NRHS) := Q**T * B(1:M,1:NRHS)
             //
             Rormqr("Left", "Transpose", m, nrhs, n, a, lda, &work[1 - 1], b, ldb, &work[(mn + 1) - 1], lwork - mn, info);
             //
-            //           workspace at least NRHS, optimally NRHS*NB
+            // workspace at least NRHS, optimally NRHS*NB
             //
-            //           B(1:N,1:NRHS) := inv(R) * B(1:N,1:NRHS)
+            // B(1:N,1:NRHS) := inv(R) * B(1:N,1:NRHS)
             //
             Rtrtrs("Upper", "No transpose", "Non-unit", n, nrhs, a, lda, b, ldb, info);
             //
@@ -193,9 +200,9 @@ void Rgels(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nr
             //
         } else {
             //
-            //           Underdetermined system of equations A**T * X = B
+            // Underdetermined system of equations A**T * X = B
             //
-            //           B(1:N,1:NRHS) := inv(R**T) * B(1:N,1:NRHS)
+            // B(1:N,1:NRHS) := inv(R**T) * B(1:N,1:NRHS)
             //
             Rtrtrs("Upper", "Transpose", "Non-unit", n, nrhs, a, lda, b, ldb, info);
             //
@@ -203,7 +210,7 @@ void Rgels(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nr
                 return;
             }
             //
-            //           B(N+1:M,1:NRHS) = ZERO
+            // B(N+1:M,1:NRHS) = ZERO
             //
             for (j = 1; j <= nrhs; j = j + 1) {
                 for (i = n + 1; i <= m; i = i + 1) {
@@ -211,11 +218,11 @@ void Rgels(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nr
                 }
             }
             //
-            //           B(1:M,1:NRHS) := Q(1:N,:) * B(1:N,1:NRHS)
+            // B(1:M,1:NRHS) := Q(1:N,:) * B(1:N,1:NRHS)
             //
             Rormqr("Left", "No transpose", m, nrhs, n, a, lda, &work[1 - 1], b, ldb, &work[(mn + 1) - 1], lwork - mn, info);
             //
-            //           workspace at least NRHS, optimally NRHS*NB
+            // workspace at least NRHS, optimally NRHS*NB
             //
             scllen = m;
             //
@@ -223,17 +230,17 @@ void Rgels(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nr
         //
     } else {
         //
-        //        Compute LQ factorization of A
+        // Compute LQ factorization of A
         //
         Rgelqf(m, n, a, lda, &work[1 - 1], &work[(mn + 1) - 1], lwork - mn, info);
         //
-        //        workspace at least M, optimally M*NB.
+        // workspace at least M, optimally M*NB.
         //
         if (!tpsd) {
             //
-            //           underdetermined system of equations A * X = B
+            // underdetermined system of equations A * X = B
             //
-            //           B(1:M,1:NRHS) := inv(L) * B(1:M,1:NRHS)
+            // B(1:M,1:NRHS) := inv(L) * B(1:M,1:NRHS)
             //
             Rtrtrs("Lower", "No transpose", "Non-unit", m, nrhs, a, lda, b, ldb, info);
             //
@@ -241,7 +248,7 @@ void Rgels(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nr
                 return;
             }
             //
-            //           B(M+1:N,1:NRHS) = 0
+            // B(M+1:N,1:NRHS) = 0
             //
             for (j = 1; j <= nrhs; j = j + 1) {
                 for (i = m + 1; i <= n; i = i + 1) {
@@ -249,25 +256,25 @@ void Rgels(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nr
                 }
             }
             //
-            //           B(1:N,1:NRHS) := Q(1:N,:)**T * B(1:M,1:NRHS)
+            // B(1:N,1:NRHS) := Q(1:N,:)**T * B(1:M,1:NRHS)
             //
             Rormlq("Left", "Transpose", n, nrhs, m, a, lda, &work[1 - 1], b, ldb, &work[(mn + 1) - 1], lwork - mn, info);
             //
-            //           workspace at least NRHS, optimally NRHS*NB
+            // workspace at least NRHS, optimally NRHS*NB
             //
             scllen = n;
             //
         } else {
             //
-            //           overdetermined system min || A**T * X - B ||
+            // overdetermined system min || A**T * X - B ||
             //
-            //           B(1:N,1:NRHS) := Q * B(1:N,1:NRHS)
+            // B(1:N,1:NRHS) := Q * B(1:N,1:NRHS)
             //
             Rormlq("Left", "No transpose", n, nrhs, m, a, lda, &work[1 - 1], b, ldb, &work[(mn + 1) - 1], lwork - mn, info);
             //
-            //           workspace at least NRHS, optimally NRHS*NB
+            // workspace at least NRHS, optimally NRHS*NB
             //
-            //           B(1:M,1:NRHS) := inv(L**T) * B(1:M,1:NRHS)
+            // B(1:M,1:NRHS) := inv(L**T) * B(1:M,1:NRHS)
             //
             Rtrtrs("Lower", "Transpose", "Non-unit", m, nrhs, a, lda, b, ldb, info);
             //
@@ -281,7 +288,7 @@ void Rgels(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nr
         //
     }
     //
-    //     Undo scaling
+    // Undo scaling
     //
     if (iascl == 1) {
         Rlascl("G", 0, 0, anrm, smlnum, scllen, nrhs, b, ldb, info);
@@ -297,6 +304,6 @@ void Rgels(const char *trans, INTEGER const m, INTEGER const n, INTEGER const nr
 statement_50:
     work[1 - 1] = castREAL(wsize);
     //
-    //     End of Rgels
+    // End of Rgels
     //
 }

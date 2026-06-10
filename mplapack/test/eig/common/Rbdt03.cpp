@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DBDT03.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,11 +43,9 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-void Rbdt03(const char *uplo, INTEGER const n, INTEGER const kd, REAL *d, REAL *e, REAL *u, INTEGER const ldu, REAL *s, REAL *vt, INTEGER const ldvt, REAL *work, REAL &resid) {
+void Rbdt03(fem::str_cref uplo, INTEGER const n, INTEGER const kd, REAL *d, REAL *e, REAL *u, INTEGER const ldu, REAL *s, REAL *vt, INTEGER const ldvt, REAL *work, REAL &resid) {
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     const REAL zero = 0.0;
     resid = zero;
@@ -48,7 +53,7 @@ void Rbdt03(const char *uplo, INTEGER const n, INTEGER const kd, REAL *d, REAL *
         return;
     }
     //
-    //     Compute B - U * S * V' one column at a time.
+    // Compute B - U * S * V' one column at a time.
     //
     REAL bnorm = zero;
     INTEGER j = 0;
@@ -56,11 +61,11 @@ void Rbdt03(const char *uplo, INTEGER const n, INTEGER const kd, REAL *d, REAL *
     const REAL one = 1.0;
     if (kd >= 1) {
         //
-        //        B is bidiagonal.
+        // B is bidiagonal.
         //
-        if (Mlsame(uplo, "U")) {
+        if (Mlsame(uplo.elems(), "U")) {
             //
-            //           B is upper bidiagonal.
+            // B is upper bidiagonal.
             //
             for (j = 1; j <= n; j = j + 1) {
                 for (i = 1; i <= n; i = i + 1) {
@@ -70,15 +75,15 @@ void Rbdt03(const char *uplo, INTEGER const n, INTEGER const kd, REAL *d, REAL *
                 work[j - 1] += d[j - 1];
                 if (j > 1) {
                     work[(j - 1) - 1] += e[(j - 1) - 1];
-                    bnorm = max(bnorm, REAL(abs(d[j - 1]) + abs(e[(j - 1) - 1])));
+                    bnorm = max(bnorm, abs(d[j - 1]) + abs(e[(j - 1) - 1]));
                 } else {
-                    bnorm = max(bnorm, REAL(abs(d[j - 1])));
+                    bnorm = max(bnorm, abs(d[j - 1]));
                 }
-                resid = max({resid, Rasum(n, work, 1)});
+                resid = max(resid, Rasum(n, work, 1));
             }
         } else {
             //
-            //           B is lower bidiagonal.
+            // B is lower bidiagonal.
             //
             for (j = 1; j <= n; j = j + 1) {
                 for (i = 1; i <= n; i = i + 1) {
@@ -88,16 +93,16 @@ void Rbdt03(const char *uplo, INTEGER const n, INTEGER const kd, REAL *d, REAL *
                 work[j - 1] += d[j - 1];
                 if (j < n) {
                     work[(j + 1) - 1] += e[j - 1];
-                    bnorm = max(bnorm, REAL(abs(d[j - 1]) + abs(e[j - 1])));
+                    bnorm = max(bnorm, abs(d[j - 1]) + abs(e[j - 1]));
                 } else {
-                    bnorm = max(bnorm, REAL(abs(d[j - 1])));
+                    bnorm = max(bnorm, abs(d[j - 1]));
                 }
-                resid = max({resid, Rasum(n, work, 1)});
+                resid = max(resid, Rasum(n, work, 1));
             }
         }
     } else {
         //
-        //        B is diagonal.
+        // B is diagonal.
         //
         for (j = 1; j <= n; j = j + 1) {
             for (i = 1; i <= n; i = i + 1) {
@@ -105,13 +110,13 @@ void Rbdt03(const char *uplo, INTEGER const n, INTEGER const kd, REAL *d, REAL *
             }
             Rgemv("No transpose", n, n, -one, u, ldu, &work[(n + 1) - 1], 1, zero, work, 1);
             work[j - 1] += d[j - 1];
-            resid = max({resid, Rasum(n, work, 1)});
+            resid = max(resid, Rasum(n, work, 1));
         }
         j = iRamax(n, d, 1);
         bnorm = abs(d[j - 1]);
     }
     //
-    //     Compute norm(B - U * S * V') / ( n * norm(B) * EPS )
+    // Compute norm(B - U * S * V') / ( n * norm(B) * EPS )
     //
     REAL eps = Rlamch("Precision");
     //
@@ -124,13 +129,13 @@ void Rbdt03(const char *uplo, INTEGER const n, INTEGER const kd, REAL *d, REAL *
             resid = (resid / bnorm) / (castREAL(n) * eps);
         } else {
             if (bnorm < one) {
-                resid = (min(resid, REAL(castREAL(n) * bnorm)) / bnorm) / (castREAL(n) * eps);
+                resid = (min(resid, castREAL(n) * bnorm) / bnorm) / (castREAL(n) * eps);
             } else {
-                resid = min(REAL(resid / bnorm), castREAL(n)) / (castREAL(n) * eps);
+                resid = min(resid / bnorm, castREAL(n)) / (castREAL(n) * eps);
             }
         }
     }
     //
-    //     End of Rbdt03
+    // End of Rbdt03
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZGTCON.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -39,32 +46,7 @@ void Cgtcon(const char *norm, INTEGER const n, COMPLEX *dl, COMPLEX *d, COMPLEX 
     INTEGER kase = 0;
     INTEGER isave[3];
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input arguments.
+    // Test the input arguments.
     //
     info = 0;
     onenrm = Mlsame(norm, "1") || Mlsame(norm, "O");
@@ -80,7 +62,7 @@ void Cgtcon(const char *norm, INTEGER const n, COMPLEX *dl, COMPLEX *d, COMPLEX 
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     rcond = zero;
     if (n == 0) {
@@ -90,7 +72,7 @@ void Cgtcon(const char *norm, INTEGER const n, COMPLEX *dl, COMPLEX *d, COMPLEX 
         return;
     }
     //
-    //     Check that D(1:N) is non-zero.
+    // Check that D(1:N) is non-zero.
     //
     for (i = 1; i <= n; i = i + 1) {
         if (d[i - 1] == COMPLEX(zero)) {
@@ -110,24 +92,24 @@ statement_20:
     if (kase != 0) {
         if (kase == kase1) {
             //
-            //           Multiply by inv(U)*inv(L).
+            // Multiply by inv(U)*inv(L).
             //
             Cgttrs("No transpose", n, 1, dl, d, du, du2, ipiv, work, n, info);
         } else {
             //
-            //           Multiply by inv(L**H)*inv(U**H).
+            // Multiply by inv(L**H)*inv(U**H).
             //
             Cgttrs("Conjugate transpose", n, 1, dl, d, du, du2, ipiv, work, n, info);
         }
         goto statement_20;
     }
     //
-    //     Compute the estimate of the reciprocal condition number.
+    // Compute the estimate of the reciprocal condition number.
     //
     if (ainvnm != zero) {
         rcond = (one / ainvnm) / anorm;
     }
     //
-    //     End of Cgtcon
+    // End of Cgtcon
     //
 }

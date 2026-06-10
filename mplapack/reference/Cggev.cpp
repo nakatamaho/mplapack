@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,10 +26,15 @@
  *
  */
 
+// Derived from LAPACK routine ZGGEV.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
-
-inline REAL abs1(COMPLEX x) { return abs(x.real()) + abs(x.imag()); }
 
 void Cggev(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, INTEGER const lda, COMPLEX *b, INTEGER const ldb, COMPLEX *alpha, COMPLEX *beta, COMPLEX *vl, INTEGER const ldvl, COMPLEX *vr, INTEGER const ldvr, COMPLEX *work, INTEGER const lwork, REAL *rwork, INTEGER &info) {
     COMPLEX x = 0.0;
@@ -71,36 +76,7 @@ void Cggev(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, IN
     REAL temp = 0.0;
     INTEGER jr = 0;
     //
-    //  -- LAPACK driver routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Statement Functions ..
-    //     ..
-    //     .. Statement Function definitions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Decode the input arguments
+    // Decode the input arguments
     //
     if (Mlsame(jobvl, "N")) {
         ijobvl = 1;
@@ -125,7 +101,7 @@ void Cggev(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, IN
     }
     ilv = ilvl || ilvr;
     //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     lquery = (lwork == -1);
@@ -145,20 +121,20 @@ void Cggev(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, IN
         info = -13;
     }
     //
-    //     Compute workspace
-    //      (Note: Comments in the code beginning "Workspace:" describe the
-    //       minimal amount of workspace needed at that point in the code,
-    //       as well as the preferred amount for good performance.
-    //       NB refers to the optimal block size for the immediately
-    //       following subroutine, as returned by iMlaenv. The workspace is
-    //       computed assuming ILO = 1 and IHI = N, the worst case.)
+    // Compute workspace
+    // (Note: Comments in the code beginning "Workspace:" describe the
+    // minimal amount of workspace needed at that point in the code,
+    // as well as the preferred amount for good performance.
+    // NB refers to the optimal block size for the immediately
+    // following subroutine, as returned by iMlaenv. The workspace is
+    // computed assuming ILO = 1 and IHI = N, the worst case.)
     //
     if (info == 0) {
         lwkmin = max((INTEGER)1, 2 * n);
-        lwkopt = max({(INTEGER)1, n + n * iMlaenv(1, "Cgeqrf", " ", n, 1, n, 0)});
-        lwkopt = max({lwkopt, n + n * iMlaenv(1, "Cunmqr", " ", n, 1, n, 0)});
+        lwkopt = max((INTEGER)1, n + n * iMlaenv(1, "Cgeqrf", " ", n, 1, n, 0));
+        lwkopt = max(lwkopt, n + n * iMlaenv(1, "Cunmqr", " ", n, 1, n, 0));
         if (ilvl) {
-            lwkopt = max({lwkopt, n + n * iMlaenv(1, "Cungqr", " ", n, 1, n, -1)});
+            lwkopt = max(lwkopt, n + n * iMlaenv(1, "Cungqr", " ", n, 1, n, -1));
         }
         work[1 - 1] = lwkopt;
         //
@@ -174,13 +150,13 @@ void Cggev(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, IN
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
     }
     //
-    //     Get machine constants
+    // Get machine constants
     //
     eps = Rlamch("E") * Rlamch("B");
     smlnum = Rlamch("S");
@@ -188,7 +164,7 @@ void Cggev(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, IN
     smlnum = sqrt(smlnum) / eps;
     bignum = one / smlnum;
     //
-    //     Scale A if max element outside range [SMLNUM,BIGNUM]
+    // Scale A if max element outside range [SMLNUM,BIGNUM]
     //
     anrm = Clange("M", n, n, a, lda, rwork);
     ilascl = false;
@@ -203,7 +179,7 @@ void Cggev(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, IN
         Clascl("G", 0, 0, anrm, anrmto, n, n, a, lda, ierr);
     }
     //
-    //     Scale B if max element outside range [SMLNUM,BIGNUM]
+    // Scale B if max element outside range [SMLNUM,BIGNUM]
     //
     bnrm = Clange("M", n, n, b, ldb, rwork);
     ilbscl = false;
@@ -218,16 +194,16 @@ void Cggev(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, IN
         Clascl("G", 0, 0, bnrm, bnrmto, n, n, b, ldb, ierr);
     }
     //
-    //     Permute the matrices A, B to isolate eigenvalues if possible
-    //     (Real Workspace: need 6*N)
+    // Permute the matrices A, B to isolate eigenvalues if possible
+    // (Real Workspace: need 6*N)
     //
     ileft = 1;
     iright = n + 1;
     irwrk = iright + n;
     Cggbal("P", n, a, lda, b, ldb, ilo, ihi, &rwork[ileft - 1], &rwork[iright - 1], &rwork[irwrk - 1], ierr);
     //
-    //     Reduce B to triangular form (QR decomposition of B)
-    //     (Complex Workspace: need N, prefer N*NB)
+    // Reduce B to triangular form (QR decomposition of B)
+    // (Complex Workspace: need N, prefer N*NB)
     //
     irows = ihi + 1 - ilo;
     if (ilv) {
@@ -239,13 +215,13 @@ void Cggev(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, IN
     iwrk = itau + irows;
     Cgeqrf(irows, icols, &b[(ilo - 1) + (ilo - 1) * ldb], ldb, &work[itau - 1], &work[iwrk - 1], lwork + 1 - iwrk, ierr);
     //
-    //     Apply the orthogonal transformation to matrix A
-    //     (Complex Workspace: need N, prefer N*NB)
+    // Apply the orthogonal transformation to matrix A
+    // (Complex Workspace: need N, prefer N*NB)
     //
     Cunmqr("L", "C", irows, icols, irows, &b[(ilo - 1) + (ilo - 1) * ldb], ldb, &work[itau - 1], &a[(ilo - 1) + (ilo - 1) * lda], lda, &work[iwrk - 1], lwork + 1 - iwrk, ierr);
     //
-    //     Initialize VL
-    //     (Complex Workspace: need N, prefer N*NB)
+    // Initialize VL
+    // (Complex Workspace: need N, prefer N*NB)
     //
     if (ilvl) {
         Claset("Full", n, n, czero, cone, vl, ldvl);
@@ -255,27 +231,27 @@ void Cggev(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, IN
         Cungqr(irows, irows, irows, &vl[(ilo - 1) + (ilo - 1) * ldvl], ldvl, &work[itau - 1], &work[iwrk - 1], lwork + 1 - iwrk, ierr);
     }
     //
-    //     Initialize VR
+    // Initialize VR
     //
     if (ilvr) {
         Claset("Full", n, n, czero, cone, vr, ldvr);
     }
     //
-    //     Reduce to generalized Hessenberg form
+    // Reduce to generalized Hessenberg form
     //
     if (ilv) {
         //
-        //        Eigenvectors requested -- work on whole matrix.
+        // Eigenvectors requested -- work on whole matrix.
         //
         Cgghrd(jobvl, jobvr, n, ilo, ihi, a, lda, b, ldb, vl, ldvl, vr, ldvr, ierr);
     } else {
         Cgghrd("N", "N", irows, 1, irows, &a[(ilo - 1) + (ilo - 1) * lda], lda, &b[(ilo - 1) + (ilo - 1) * ldb], ldb, vl, ldvl, vr, ldvr, ierr);
     }
     //
-    //     Perform QZ algorithm (Compute eigenvalues, and optionally, the
-    //     Schur form and Schur vectors)
-    //     (Complex Workspace: need N)
-    //     (Real Workspace: need N)
+    // Perform QZ algorithm (Compute eigenvalues, and optionally, the
+    // Schur form and Schur vectors)
+    // (Complex Workspace: need N)
+    // (Real Workspace: need N)
     //
     iwrk = itau;
     if (ilv) {
@@ -295,9 +271,9 @@ void Cggev(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, IN
         goto statement_70;
     }
     //
-    //     Compute Eigenvectors
-    //     (Real Workspace: need 2*N)
-    //     (Complex Workspace: need 2*N)
+    // Compute Eigenvectors
+    // (Real Workspace: need 2*N)
+    // (Complex Workspace: need 2*N)
     //
     if (ilv) {
         if (ilvl) {
@@ -316,15 +292,15 @@ void Cggev(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, IN
             goto statement_70;
         }
         //
-        //        Undo balancing on VL and VR and normalization
-        //        (Workspace: none needed)
+        // Undo balancing on VL and VR and normalization
+        // (Workspace: none needed)
         //
         if (ilvl) {
             Cggbak("P", "L", n, ilo, ihi, &rwork[ileft - 1], &rwork[iright - 1], n, vl, ldvl, ierr);
             for (jc = 1; jc <= n; jc = jc + 1) {
                 temp = zero;
                 for (jr = 1; jr <= n; jr = jr + 1) {
-                    temp = max(temp, abs1(vl[(jr - 1) + (jc - 1) * ldvl]));
+                    temp = max(temp, cabs1(vl[(jr - 1) + (jc - 1) * ldvl]));
                 }
                 if (temp < smlnum) {
                     goto statement_30;
@@ -341,7 +317,7 @@ void Cggev(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, IN
             for (jc = 1; jc <= n; jc = jc + 1) {
                 temp = zero;
                 for (jr = 1; jr <= n; jr = jr + 1) {
-                    temp = max(temp, abs1(vr[(jr - 1) + (jc - 1) * ldvr]));
+                    temp = max(temp, cabs1(vr[(jr - 1) + (jc - 1) * ldvr]));
                 }
                 if (temp < smlnum) {
                     goto statement_60;
@@ -355,7 +331,7 @@ void Cggev(const char *jobvl, const char *jobvr, INTEGER const n, COMPLEX *a, IN
         }
     }
 //
-//     Undo scaling if necessary
+// Undo scaling if necessary
 //
 statement_70:
     //
@@ -369,6 +345,6 @@ statement_70:
     //
     work[1 - 1] = lwkopt;
     //
-    //     End of Cggev
+    // End of Cggev
     //
 }

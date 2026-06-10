@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DCKGSV.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,13 +43,10 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_eig.h>
 
-#include <mplapack_debug.h>
-
-void Rckgsv(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEGER const nmats, INTEGER *iseed, REAL const thresh, INTEGER const nmax, REAL *a, REAL *af, REAL *b, REAL *bf, REAL *u, REAL *v, REAL *q, REAL *alpha, REAL *beta, REAL *r, INTEGER *iwork, REAL *work, REAL *rwork, INTEGER const nin, INTEGER const nout, INTEGER &info) {
+void Rckgsv(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEGER const nmats, INTEGER (&iseed)[4], REAL const thresh, INTEGER const nmax, REAL *a, REAL *af, REAL *b, REAL *bf, REAL *u, REAL *v, REAL *q, REAL *alpha, REAL *beta, REAL *r, INTEGER *iwork, REAL *work, REAL *rwork, INTEGER const nin, INTEGER const nout, INTEGER &info) {
     common cmn;
     common_write write(cmn);
-    char path[4];
-    char buf[1024];
+    fem::str<3> path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     bool firstt = false;
@@ -60,7 +64,7 @@ void Rckgsv(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEG
     INTEGER p = 0;
     INTEGER n = 0;
     INTEGER imat = 0;
-    char type;
+    fem::str<1> type;
     INTEGER kla = 0;
     INTEGER kua = 0;
     INTEGER klb = 0;
@@ -71,21 +75,20 @@ void Rckgsv(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEG
     INTEGER modeb = 0;
     REAL cndnma = 0.0;
     REAL cndnmb = 0.0;
-    char dista;
-    char distb;
+    fem::str<1> dista;
+    fem::str<1> distb;
     INTEGER iinfo = 0;
     INTEGER nt = 0;
     const INTEGER ntests = 12;
     REAL result[ntests];
     INTEGER i = 0;
-    static const char *format_9999 = "(' DLATMS in Rckgsv   INFO = ',i5)";
     //
-    //     Initialize constants and the random number seed.
+    static const char *format_9999 = "(' Rlatms in Rckgsv   INFO = ',i5)";
+    static const char *format_9998 = "(' M=',i4,' P=',i4,', N=',i4,', type ',i2,', test ',i2,', ratio=',g13.6)";
     //
-    path[0] = 'G';
-    path[1] = 'S';
-    path[2] = 'V';
-    path[3] = '\0';
+    // Initialize constants and the random number seed.
+    //
+    path(1, 3) = "GSV";
     info = 0;
     nrun = 0;
     nfail = 0;
@@ -99,7 +102,7 @@ void Rckgsv(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEG
     ldr = nmax;
     lwork = nmax * nmax;
     //
-    //     Do for each value of M in MVAL.
+    // Do for each value of M in MVAL.
     //
     for (im = 1; im <= nm; im = im + 1) {
         m = mval[im - 1];
@@ -108,27 +111,27 @@ void Rckgsv(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEG
         //
         for (imat = 1; imat <= ntypes; imat = imat + 1) {
             //
-            //           Do the tests only if DOTYPE( IMAT ) is true.
+            // Do the tests only if DOTYPE( IMAT ) is true.
             //
             if (!dotype[imat - 1]) {
                 goto statement_20;
             }
             //
-            //           Set up parameters with Rlatb9 and generate test
-            //           matrices A and B with DLATMS.
+            // Set up parameters with Rlatb9 and generate test
+            // matrices A and B with Rlatms.
             //
-            Rlatb9(path, imat, m, p, n, &type, kla, kua, klb, kub, anorm, bnorm, modea, modeb, cndnma, cndnmb, &dista, &distb);
+            Rlatb9(path, imat, m, p, n, type, kla, kua, klb, kub, anorm, bnorm, modea, modeb, cndnma, cndnmb, dista, distb);
             //
-            //           Generate M by N matrix A
+            // Generate M by N matrix A
             //
-            Rlatms(m, n, &dista, iseed, &type, rwork, modea, cndnma, anorm, kla, kua, "No packing", a, lda, work, iinfo);
+            Rlatms(m, n, dista, iseed, type, rwork, modea, cndnma, anorm, kla, kua, "No packing", a, lda, work, iinfo);
             if (iinfo != 0) {
                 write(nout, format_9999), iinfo;
                 info = abs(iinfo);
                 goto statement_20;
             }
             //
-            Rlatms(p, n, &distb, iseed, &type, rwork, modeb, cndnmb, bnorm, klb, kub, "No packing", b, ldb, work, iinfo);
+            Rlatms(p, n, distb, iseed, type, rwork, modeb, cndnmb, bnorm, klb, kub, "No packing", b, ldb, work, iinfo);
             if (iinfo != 0) {
                 write(nout, format_9999), iinfo;
                 info = abs(iinfo);
@@ -139,8 +142,8 @@ void Rckgsv(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEG
             //
             Rgsvts3(m, p, n, a, af, lda, b, bf, ldb, u, ldu, v, ldv, q, ldq, alpha, beta, r, ldr, iwork, work, lwork, rwork, result);
             //
-            //           Print information about the tests that did not
-            //           pass the threshold.
+            // Print information about the tests that did not
+            // pass the threshold.
             //
             for (i = 1; i <= nt; i = i + 1) {
                 if (result[i - 1] >= thresh) {
@@ -148,10 +151,7 @@ void Rckgsv(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEG
                         firstt = false;
                         Alahdg(nout, path);
                     }
-                    sprintnum_short(buf, result[i - 1]);
-                    write(nout, "(' M=',i4,' P=',i4,', N=',i4,', type ',i2,', test ',i2,"
-                                "', ratio=',a)"),
-                        m, p, n, imat, i, buf;
+                    write(nout, format_9998), m, p, n, imat, i, result[i - 1];
                     nfail++;
                 }
             }
@@ -160,10 +160,10 @@ void Rckgsv(INTEGER const nm, INTEGER *mval, INTEGER *pval, INTEGER *nval, INTEG
         }
     }
     //
-    //     Print a summary of the results.
+    // Print a summary of the results.
     //
     Alasum(path, nout, nfail, nrun, 0);
     //
-    //     End of Rckgsv
+    // End of Rckgsv
     //
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,13 +26,19 @@
  *
  */
 
+// Derived from LAPACK routine ZGECON.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
-inline REAL abs1(COMPLEX zdum) { return abs(zdum.real()) + abs(zdum.imag()); }
-
 void Cgecon(const char *norm, INTEGER const n, COMPLEX *a, INTEGER const lda, REAL const anorm, REAL &rcond, COMPLEX *work, REAL *rwork, INTEGER &info) {
     COMPLEX zdum = 0.0;
+    REAL hugeval = 0.0;
     bool onenrm = false;
     const REAL zero = 0.0;
     const REAL one = 1.0;
@@ -47,36 +53,9 @@ void Cgecon(const char *norm, INTEGER const n, COMPLEX *a, INTEGER const lda, RE
     REAL scale = 0.0;
     INTEGER ix = 0;
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    hugeval = Rlamch("Overflow");
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. Local Arrays ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Statement Functions ..
-    //     ..
-    //     .. Statement Function definitions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     onenrm = Mlsame(norm, "1") || Mlsame(norm, "O");
@@ -94,7 +73,7 @@ void Cgecon(const char *norm, INTEGER const n, COMPLEX *a, INTEGER const lda, RE
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     rcond = zero;
     if (n == 0) {
@@ -102,11 +81,18 @@ void Cgecon(const char *norm, INTEGER const n, COMPLEX *a, INTEGER const lda, RE
         return;
     } else if (anorm == zero) {
         return;
+    } else if (Risnan(anorm)) {
+        rcond = anorm;
+        info = -5;
+        return;
+    } else if (anorm > hugeval) {
+        info = -5;
+        return;
     }
     //
     smlnum = Rlamch("Safe minimum");
     //
-    //     Estimate the norm of inv(A).
+    // Estimate the norm of inv(A).
     //
     ainvnm = zero;
     normin = 'N';
@@ -121,31 +107,31 @@ statement_10:
     if (kase != 0) {
         if (kase == kase1) {
             //
-            //           Multiply by inv(L).
+            // Multiply by inv(L).
             //
             Clatrs("Lower", "No transpose", "Unit", &normin, n, a, lda, work, sl, rwork, info);
             //
-            //           Multiply by inv(U).
+            // Multiply by inv(U).
             //
             Clatrs("Upper", "No transpose", "Non-unit", &normin, n, a, lda, work, su, &rwork[(n + 1) - 1], info);
         } else {
             //
-            //           Multiply by inv(U**H).
+            // Multiply by inv(U**H).
             //
             Clatrs("Upper", "Conjugate transpose", "Non-unit", &normin, n, a, lda, work, su, &rwork[(n + 1) - 1], info);
             //
-            //           Multiply by inv(L**H).
+            // Multiply by inv(L**H).
             //
             Clatrs("Lower", "Conjugate transpose", "Unit", &normin, n, a, lda, work, sl, rwork, info);
         }
         //
-        //        Divide X by 1/(SL*SU) if doing so will not cause overflow.
+        // Divide X by 1/(SL*SU) if doing so will not cause overflow.
         //
         scale = sl * su;
         normin = 'Y';
         if (scale != one) {
             ix = iCamax(n, work, 1);
-            if (scale < abs1(work[ix - 1]) * smlnum || scale == zero) {
+            if (scale < cabs1(work[ix - 1]) * smlnum || scale == zero) {
                 goto statement_20;
             }
             CRrscl(n, scale, work, 1);
@@ -153,14 +139,23 @@ statement_10:
         goto statement_10;
     }
     //
-    //     Compute the estimate of the reciprocal condition number.
+    // Compute the estimate of the reciprocal condition number.
     //
     if (ainvnm != zero) {
         rcond = (one / ainvnm) / anorm;
+    } else {
+        info = 1;
+        return;
+    }
+    //
+    // Check for NaNs and Infs
+    //
+    if (Risnan(rcond) || rcond > hugeval) {
+        info = 1;
     }
 //
 statement_20:;
     //
-    //     End of Cgecon
+    // End of Cgecon
     //
 }

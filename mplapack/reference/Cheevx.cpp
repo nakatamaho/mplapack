@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -25,6 +25,13 @@
  * SUCH DAMAGE.
  *
  */
+
+// Derived from LAPACK routine ZHEEVX.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
 
 #include <mpblas.h>
 #include <mplapack.h>
@@ -75,7 +82,7 @@ void Cheevx(const char *jobz, const char *range, const char *uplo, INTEGER const
     INTEGER jj = 0;
     INTEGER itmp1 = 0;
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     lower = Mlsame(uplo, "L");
     wantz = Mlsame(jobz, "V");
@@ -121,7 +128,7 @@ void Cheevx(const char *jobz, const char *range, const char *uplo, INTEGER const
         } else {
             lwkmin = 2 * n;
             nb = iMlaenv(1, "Chetrd", uplo, n, -1, -1, -1);
-            nb = max({nb, iMlaenv(1, "Cunmtr", uplo, n, -1, -1, -1)});
+            nb = max(nb, iMlaenv(1, "Cunmtr", uplo, n, -1, -1, -1));
             lwkopt = max((INTEGER)1, (nb + 1) * n);
             work[1 - 1] = lwkopt;
         }
@@ -138,7 +145,7 @@ void Cheevx(const char *jobz, const char *range, const char *uplo, INTEGER const
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     m = 0;
     if (n == 0) {
@@ -148,29 +155,29 @@ void Cheevx(const char *jobz, const char *range, const char *uplo, INTEGER const
     if (n == 1) {
         if (alleig || indeig) {
             m = 1;
-            w[1 - 1] = a[(1 - 1)].real();
+            w[1 - 1] = a[0].real();
         } else if (valeig) {
-            if (vl < a[(1 - 1)].real() && vu >= a[(1 - 1)].real()) {
+            if (vl < a[0].real() && vu >= a[0].real()) {
                 m = 1;
-                w[1 - 1] = a[(1 - 1)].real();
+                w[1 - 1] = a[0].real();
             }
         }
         if (wantz) {
-            z[(1 - 1)] = cone;
+            z[0] = cone;
         }
         return;
     }
     //
-    //     Get machine constants.
+    // Get machine constants.
     //
     safmin = Rlamch("Safe minimum");
     eps = Rlamch("Precision");
     smlnum = safmin / eps;
     bignum = one / smlnum;
     rmin = sqrt(smlnum);
-    rmax = min(REAL(sqrt(bignum)), REAL(one / sqrt(sqrt(safmin))));
+    rmax = min(sqrt(bignum), one / sqrt(sqrt(safmin)));
     //
-    //     Scale matrix to allowable range, if necessary.
+    // Scale matrix to allowable range, if necessary.
     //
     iscale = 0;
     abstll = abstol;
@@ -205,7 +212,7 @@ void Cheevx(const char *jobz, const char *range, const char *uplo, INTEGER const
         }
     }
     //
-    //     Call Chetrd to reduce Hermitian matrix to tridiagonal form.
+    // Call Chetrd to reduce Hermitian matrix to tridiagonal form.
     //
     indd = 1;
     inde = indd + n;
@@ -215,9 +222,9 @@ void Cheevx(const char *jobz, const char *range, const char *uplo, INTEGER const
     llwork = lwork - indwrk + 1;
     Chetrd(uplo, n, a, lda, &rwork[indd - 1], &rwork[inde - 1], &work[indtau - 1], &work[indwrk - 1], llwork, iinfo);
     //
-    //     If all eigenvalues are desired and ABSTOL is less than or equal to
-    //     zero, then call Rsterf or Cungtr and Csteqr.  If this fails for
-    //     some eigenvalue, then try Rstebz.
+    // If all eigenvalues are desired and ABSTOL is less than or equal to
+    // zero, then call Rsterf or Cungtr and Csteqr.  If this fails for
+    // some eigenvalue, then try Rstebz.
     //
     test = false;
     if (indeig) {
@@ -249,7 +256,7 @@ void Cheevx(const char *jobz, const char *range, const char *uplo, INTEGER const
         info = 0;
     }
     //
-    //     Otherwise, call Rstebz and, if eigenvectors are desired, Cstein.
+    // Otherwise, call Rstebz and, if eigenvectors are desired, Cstein.
     //
     if (wantz) {
         order = 'B';
@@ -259,18 +266,27 @@ void Cheevx(const char *jobz, const char *range, const char *uplo, INTEGER const
     indibl = 1;
     indisp = indibl + n;
     indiwk = indisp + n;
-    Rstebz(range, &order, n, vll, vuu, il, iu, abstll, &rwork[indd - 1], &rwork[inde - 1], m, nsplit, w, &iwork[indibl - 1], &iwork[indisp - 1], &rwork[indrwk - 1], &iwork[indiwk - 1], info);
+    Rstebz(range, &order, n, vll, vuu, il, iu, abstll, &rwork[indd - 1], &rwork[inde - 1], m, nsplit, w, &iwork[indibl - 1], &iwork[indisp - 1], &rwork[indrwk - 1], &iwork[indiwk - 1], iinfo);
+    if (iinfo != 0) {
+        info = n + iinfo;
+        if (iinfo != 1) {
+            goto statement_40;
+        }
+    }
     //
     if (wantz) {
-        Cstein(n, &rwork[indd - 1], &rwork[inde - 1], m, w, &iwork[indibl - 1], &iwork[indisp - 1], z, ldz, &rwork[indrwk - 1], &iwork[indiwk - 1], ifail, info);
+        Cstein(n, &rwork[indd - 1], &rwork[inde - 1], m, w, &iwork[indibl - 1], &iwork[indisp - 1], z, ldz, &rwork[indrwk - 1], &iwork[indiwk - 1], ifail, iinfo);
+        if (iinfo != 0 && info == 0) {
+            info = iinfo;
+        }
         //
-        //        Apply unitary matrix used in reduction to tridiagonal
-        //        form to eigenvectors returned by Cstein.
+        // Apply unitary matrix used in reduction to tridiagonal
+        // form to eigenvectors returned by Cstein.
         //
         Cunmtr("L", uplo, "N", n, m, a, lda, &work[indtau - 1], z, ldz, &work[indwrk - 1], llwork, iinfo);
     }
 //
-//     If matrix was scaled, then rescale eigenvalues appropriately.
+// If matrix was scaled, then rescale eigenvalues appropriately.
 //
 statement_40:
     if (iscale == 1) {
@@ -282,8 +298,8 @@ statement_40:
         Rscal(imax, one / sigma, w, 1);
     }
     //
-    //     If eigenvalues are not in order, then sort them, along with
-    //     eigenvectors.
+    // If eigenvalues are not in order, then sort them, along with
+    // eigenvectors.
     //
     if (wantz) {
         for (j = 1; j <= m - 1; j = j + 1) {
@@ -312,10 +328,10 @@ statement_40:
         }
     }
     //
-    //     Set WORK(1) to optimal complex workspace size.
+    // Set WORK(1) to optimal complex workspace size.
     //
     work[1 - 1] = lwkopt;
     //
-    //     End of Cheevx
+    // End of Cheevx
     //
 }

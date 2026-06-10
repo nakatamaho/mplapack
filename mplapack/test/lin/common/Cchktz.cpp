@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZCHKTZ.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,14 +43,11 @@ using fem::common;
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
 
-#include <mplapack_debug.h>
-
 void Cchktz(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INTEGER *nval, REAL const thresh, bool const tsterr, COMPLEX *a, COMPLEX *copya, REAL *s, COMPLEX *tau, COMPLEX *work, REAL *rwork, INTEGER const nout) {
     common cmn;
     common_write write(cmn);
-    INTEGER iseedy[] = {1988, 1989, 1990, 1991};
-    char path[4] = {};
-    char buf[1024];
+    static INTEGER iseedy[4] = {1988, 1989, 1990, 1991};
+    fem::str<3> path;
     INTEGER nrun = 0;
     INTEGER nfail = 0;
     INTEGER nerrs = 0;
@@ -67,9 +71,12 @@ void Cchktz(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     REAL result[ntests];
     INTEGER k = 0;
     //
-    path[0] = 'C';
-    path[1] = 'T';
-    path[2] = 'Z';
+    static const char *format_9999 = "(' M =',i5,', N =',i5,', type ',i2,', test ',i2,', ratio =',g12.5)";
+    //
+    // Initialize constants and the random number seed.
+    //
+    path(1, 1) = "Zomplex precision";
+    path(2, 3) = "TZ";
     nrun = 0;
     nfail = 0;
     nerrs = 0;
@@ -78,7 +85,7 @@ void Cchktz(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     }
     eps = Rlamch("Epsilon");
     //
-    //     Test the error exits
+    // Test the error exits
     //
     if (tsterr) {
         Cerrtz(path, nout);
@@ -87,14 +94,14 @@ void Cchktz(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
     //
     for (im = 1; im <= nm; im = im + 1) {
         //
-        //        Do for each value of M in MVAL.
+        // Do for each value of M in MVAL.
         //
         m = mval[im - 1];
         lda = max((INTEGER)1, m);
         //
         for (in = 1; in <= nn; in = in + 1) {
             //
-            //           Do for each value of N in NVAL for which M .LE. N.
+            // Do for each value of N in NVAL for which M .LE. N.
             //
             n = nval[in - 1];
             mnmin = min(m, n);
@@ -106,17 +113,17 @@ void Cchktz(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                         goto statement_50;
                     }
                     //
-                    //                 Do for each type of singular value distribution.
-                    //                    0:  zero matrix
-                    //                    1:  one small singular value
-                    //                    2:  exponential distribution
+                    // Do for each type of singular value distribution.
+                    // 0:  zero matrix
+                    // 1:  one small singular value
+                    // 2:  exponential distribution
                     //
                     mode = imode - 1;
                     //
-                    //                 Test ZTZRQF
+                    // Test ZTZRQF
                     //
-                    //                 Generate test matrix of size m by n using
-                    //                 singular value distribution indicated by `mode'.
+                    // Generate test matrix of size m by n using
+                    // singular value distribution indicated by `mode'.
                     //
                     if (mode == 0) {
                         Claset("Full", m, n, COMPLEX(zero), COMPLEX(zero), a, lda);
@@ -130,40 +137,37 @@ void Cchktz(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
                         Rlaord("Decreasing", mnmin, s, 1);
                     }
                     //
-                    //                 Save A and its singular values
+                    // Save A and its singular values
                     //
                     Clacpy("All", m, n, a, lda, copya, lda);
                     //
-                    //                 Call Ctzrzf to reduce the upper trapezoidal matrix to
-                    //                 upper triangular form.
+                    // Call Ctzrzf to reduce the upper trapezoidal matrix to
+                    // upper triangular form.
                     //
-                    strncpy(srnamt, "Ctzrzf", srnamt_len);
+                    srnamt = "Ctzrzf";
                     Ctzrzf(m, n, a, lda, tau, work, lwork, info);
                     //
-                    //                 Compute norm(svd(a) - svd(r))
+                    // Compute norm(svd(a) - svd(r))
                     //
                     result[1 - 1] = Cqrt12(m, m, a, lda, s, work, lwork, rwork);
                     //
-                    //                 Compute norm( A - R*Q )
+                    // Compute norm( A - R*Q )
                     //
                     result[2 - 1] = Crzt01(m, n, copya, a, lda, tau, work, lwork);
                     //
-                    //                 Compute norm(Q'*Q - I).
+                    // Compute norm(Q'*Q - I).
                     //
                     result[3 - 1] = Crzt02(m, n, a, lda, tau, work, lwork);
                     //
-                    //                 Print information about the tests that did not pass
-                    //                 the threshold.
+                    // Print information about the tests that did not pass
+                    // the threshold.
                     //
                     for (k = 1; k <= ntests; k = k + 1) {
                         if (result[k - 1] >= thresh) {
                             if (nfail == 0 && nerrs == 0) {
                                 Alahd(nout, path);
                             }
-                            sprintnum_short(buf, result[k - 1]);
-                            write(nout, "(' M =',i5,', N =',i5,', type ',i2,', test ',i2,', ratio =',"
-                                        "a)"),
-                                m, n, imode, k, buf;
+                            write(nout, format_9999), m, n, imode, k, result[k - 1];
                             nfail++;
                         }
                     }
@@ -174,10 +178,10 @@ void Cchktz(bool *dotype, INTEGER const nm, INTEGER *mval, INTEGER const nn, INT
         }
     }
     //
-    //     Print a summary of the results.
+    // Print a summary of the results.
     //
     Alasum(path, nout, nfail, nrun, nerrs);
     //
-    //     End if Cchktz
+    // End if Cchktz
     //
 }

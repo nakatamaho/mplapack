@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,37 +26,23 @@
  *
  */
 
+// Derived from LAPACK routine ZPTTRS.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Cpttrs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *d, COMPLEX *e, COMPLEX *b, INTEGER const ldb, INTEGER &info) {
     //
-    //  -- LAPACK computational routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Test the input arguments.
+    // Test the input arguments.
     //
     info = 0;
-    bool upper = (Mlsame(uplo, "U") || Mlsame(uplo, "u"));
-    if (!upper && !(Mlsame(uplo, "L") || Mlsame(uplo, "l"))) {
+    bool upper = Mlsame(uplo, "U");
+    if (!upper && !Mlsame(uplo, "L")) {
         info = -1;
     } else if (n < 0) {
         info = -2;
@@ -70,13 +56,13 @@ void Cpttrs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *d, COMP
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0 || nrhs == 0) {
         return;
     }
     //
-    //     Determine the number of right-hand sides to solve at a time.
+    // Determine the number of right-hand sides to solve at a time.
     //
     INTEGER nb = 0;
     if (nrhs == 1) {
@@ -85,7 +71,7 @@ void Cpttrs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *d, COMP
         nb = max((INTEGER)1, iMlaenv(1, "Cpttrs", uplo, n, nrhs, -1, -1));
     }
     //
-    //     Decode UPLO
+    // Decode UPLO
     //
     INTEGER iuplo = 0;
     if (upper) {
@@ -105,6 +91,6 @@ void Cpttrs(const char *uplo, INTEGER const n, INTEGER const nrhs, REAL *d, COMP
         }
     }
     //
-    //     End of Cpttrs
+    // End of Cpttrs
     //
 }

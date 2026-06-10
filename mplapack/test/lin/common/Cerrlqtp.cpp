@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZERRLQTP.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -35,132 +42,131 @@ using fem::common;
 
 #include <mplapack_matgen.h>
 #include <mplapack_lin.h>
-#include <mplapack_debug.h>
 
-void Cerrlqtp(const char *path, INTEGER const nunit) {
+void Cerrlqtp(fem::str_cref path, INTEGER const nunit) {
     common cmn;
     common_write write(cmn);
-    nout = nunit;
     //
-    //     Set the variables to innocuous values.
+    nout = nunit;
+    write(nout, star);
+    //
+    // Set the variables to innocuous values.
     //
     INTEGER j = 0;
     const INTEGER nmax = 2;
     INTEGER i = 0;
+    const REAL one = 1.0; 
     COMPLEX a[nmax * nmax];
     COMPLEX c[nmax * nmax];
     COMPLEX t[nmax * nmax];
     COMPLEX w[nmax];
-    INTEGER lda = nmax;
-    INTEGER ldc = nmax;
-    INTEGER ldt = nmax;
     for (j = 1; j <= nmax; j = j + 1) {
         for (i = 1; i <= nmax; i = i + 1) {
-            a[(i - 1) + (j - 1) * lda] = COMPLEX(1.0 / castREAL(i + j), -1.0 / castREAL(i + j));
-            c[(i - 1) + (j - 1) * ldc] = COMPLEX(1.0 / castREAL(i + j), -1.0 / castREAL(i + j));
-            t[(i - 1) + (j - 1) * ldt] = COMPLEX(1.0 / castREAL(i + j), -1.0 / castREAL(i + j));
+            a[(i - 1) + (j - 1) * nmax] = one / COMPLEX(castREAL(i + j), 0.0);
+            c[(i - 1) + (j - 1) * nmax] = one / COMPLEX(castREAL(i + j), 0.0);
+            t[(i - 1) + (j - 1) * nmax] = one / COMPLEX(castREAL(i + j), 0.0);
         }
-        w[j - 1] = 0.0f;
+        w[j - 1] = 0.0;
     }
     ok = true;
     //
-    //     Error exits for TPLQT factorization
+    // Error exits for TPLQT factorization
     //
-    //     Ctplqt
+    // Ctplqt
     //
-    strncpy(srnamt, "Ctplqt", srnamt_len);
+    srnamt = "Ctplqt";
     infot = 1;
     COMPLEX b[nmax * nmax];
     INTEGER info = 0;
     Ctplqt(-1, 1, 0, 1, a, 1, b, 1, t, 1, w, info);
-    chkxer("Ctplqt", infot, nout, lerr, ok);
+    Chkxer("Ctplqt", infot, nout, lerr, ok);
     infot = 2;
     Ctplqt(1, -1, 0, 1, a, 1, b, 1, t, 1, w, info);
-    chkxer("Ctplqt", infot, nout, lerr, ok);
+    Chkxer("Ctplqt", infot, nout, lerr, ok);
     infot = 3;
     Ctplqt(0, 1, -1, 1, a, 1, b, 1, t, 1, w, info);
-    chkxer("Ctplqt", infot, nout, lerr, ok);
+    Chkxer("Ctplqt", infot, nout, lerr, ok);
     infot = 3;
     Ctplqt(0, 1, 1, 1, a, 1, b, 1, t, 1, w, info);
-    chkxer("Ctplqt", infot, nout, lerr, ok);
+    Chkxer("Ctplqt", infot, nout, lerr, ok);
     infot = 4;
     Ctplqt(0, 1, 0, 0, a, 1, b, 1, t, 1, w, info);
-    chkxer("Ctplqt", infot, nout, lerr, ok);
+    Chkxer("Ctplqt", infot, nout, lerr, ok);
     infot = 4;
     Ctplqt(1, 1, 0, 2, a, 1, b, 1, t, 1, w, info);
-    chkxer("Ctplqt", infot, nout, lerr, ok);
+    Chkxer("Ctplqt", infot, nout, lerr, ok);
     infot = 6;
     Ctplqt(2, 1, 0, 2, a, 1, b, 1, t, 1, w, info);
-    chkxer("Ctplqt", infot, nout, lerr, ok);
+    Chkxer("Ctplqt", infot, nout, lerr, ok);
     infot = 8;
     Ctplqt(2, 1, 0, 1, a, 2, b, 1, t, 1, w, info);
-    chkxer("Ctplqt", infot, nout, lerr, ok);
+    Chkxer("Ctplqt", infot, nout, lerr, ok);
     infot = 10;
     Ctplqt(2, 2, 1, 2, a, 2, b, 2, t, 1, w, info);
-    chkxer("Ctplqt", infot, nout, lerr, ok);
+    Chkxer("Ctplqt", infot, nout, lerr, ok);
     //
-    //     Ctplqt2
+    // Ctplqt2
     //
-    strncpy(srnamt, "Ctplqt2", srnamt_len);
+    srnamt = "Ctplqt2";
     infot = 1;
     Ctplqt2(-1, 0, 0, a, 1, b, 1, t, 1, info);
-    chkxer("Ctplqt2", infot, nout, lerr, ok);
+    Chkxer("Ctplqt2", infot, nout, lerr, ok);
     infot = 2;
     Ctplqt2(0, -1, 0, a, 1, b, 1, t, 1, info);
-    chkxer("Ctplqt2", infot, nout, lerr, ok);
+    Chkxer("Ctplqt2", infot, nout, lerr, ok);
     infot = 3;
     Ctplqt2(0, 0, -1, a, 1, b, 1, t, 1, info);
-    chkxer("Ctplqt2", infot, nout, lerr, ok);
+    Chkxer("Ctplqt2", infot, nout, lerr, ok);
     infot = 5;
     Ctplqt2(2, 2, 0, a, 1, b, 2, t, 2, info);
-    chkxer("Ctplqt2", infot, nout, lerr, ok);
+    Chkxer("Ctplqt2", infot, nout, lerr, ok);
     infot = 7;
     Ctplqt2(2, 2, 0, a, 2, b, 1, t, 2, info);
-    chkxer("Ctplqt2", infot, nout, lerr, ok);
+    Chkxer("Ctplqt2", infot, nout, lerr, ok);
     infot = 9;
     Ctplqt2(2, 2, 0, a, 2, b, 2, t, 1, info);
-    chkxer("Ctplqt2", infot, nout, lerr, ok);
+    Chkxer("Ctplqt2", infot, nout, lerr, ok);
     //
-    //     Ctpmlqt
+    // Ctpmlqt
     //
-    strncpy(srnamt, "Ctpmlqt", srnamt_len);
+    srnamt = "Ctpmlqt";
     infot = 1;
     Ctpmlqt("/", "N", 0, 0, 0, 0, 1, a, 1, t, 1, b, 1, c, 1, w, info);
-    chkxer("Ctpmlqt", infot, nout, lerr, ok);
+    Chkxer("Ctpmlqt", infot, nout, lerr, ok);
     infot = 2;
     Ctpmlqt("L", "/", 0, 0, 0, 0, 1, a, 1, t, 1, b, 1, c, 1, w, info);
-    chkxer("Ctpmlqt", infot, nout, lerr, ok);
+    Chkxer("Ctpmlqt", infot, nout, lerr, ok);
     infot = 3;
     Ctpmlqt("L", "N", -1, 0, 0, 0, 1, a, 1, t, 1, b, 1, c, 1, w, info);
-    chkxer("Ctpmlqt", infot, nout, lerr, ok);
+    Chkxer("Ctpmlqt", infot, nout, lerr, ok);
     infot = 4;
     Ctpmlqt("L", "N", 0, -1, 0, 0, 1, a, 1, t, 1, b, 1, c, 1, w, info);
-    chkxer("Ctpmlqt", infot, nout, lerr, ok);
+    Chkxer("Ctpmlqt", infot, nout, lerr, ok);
     infot = 5;
     Ctpmlqt("L", "N", 0, 0, -1, 0, 1, a, 1, t, 1, b, 1, c, 1, w, info);
     infot = 6;
     Ctpmlqt("L", "N", 0, 0, 0, -1, 1, a, 1, t, 1, b, 1, c, 1, w, info);
-    chkxer("Ctpmlqt", infot, nout, lerr, ok);
+    Chkxer("Ctpmlqt", infot, nout, lerr, ok);
     infot = 7;
     Ctpmlqt("L", "N", 0, 0, 0, 0, 0, a, 1, t, 1, b, 1, c, 1, w, info);
-    chkxer("Ctpmlqt", infot, nout, lerr, ok);
+    Chkxer("Ctpmlqt", infot, nout, lerr, ok);
     infot = 9;
     Ctpmlqt("R", "N", 2, 2, 2, 1, 1, a, 1, t, 1, b, 1, c, 1, w, info);
-    chkxer("Ctpmlqt", infot, nout, lerr, ok);
+    Chkxer("Ctpmlqt", infot, nout, lerr, ok);
     infot = 11;
     Ctpmlqt("R", "N", 1, 1, 1, 1, 1, a, 1, t, 0, b, 1, c, 1, w, info);
-    chkxer("Ctpmlqt", infot, nout, lerr, ok);
+    Chkxer("Ctpmlqt", infot, nout, lerr, ok);
     infot = 13;
     Ctpmlqt("L", "N", 1, 1, 1, 1, 1, a, 1, t, 1, b, 0, c, 1, w, info);
-    chkxer("Ctpmlqt", infot, nout, lerr, ok);
+    Chkxer("Ctpmlqt", infot, nout, lerr, ok);
     infot = 15;
     Ctpmlqt("L", "N", 1, 1, 1, 1, 1, a, 1, t, 1, b, 1, c, 0, w, info);
-    chkxer("Ctpmlqt", infot, nout, lerr, ok);
+    Chkxer("Ctpmlqt", infot, nout, lerr, ok);
     //
-    //     Print a summary line.
+    // Print a summary line.
     //
     Alaesm(path, ok, nout);
     //
-    //     End of Cerrlqt
+    // End of Cerrlqtp
     //
 }

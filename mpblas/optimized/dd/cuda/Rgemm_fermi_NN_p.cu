@@ -74,19 +74,19 @@ __global__ void Rgemm_fermi_NN_p(dd_real * Adev, dd_real * Bdev, dd_real * Cdev,
 
     jBb = blockIdx.y * Gn + 0;
     B_j = blockDim.y * jBb + threadIdx.y;
-    regB0 = fetch_x_B(Bdev,min(B_i, (int) (k - 1)) + min(B_j, (int) (n - 1)) * ldb);
+    regB0 = fetch_x_B(Bdev, min(B_i, (int) (k - 1)) + min(B_j, (int) (n - 1)) * ldb);
 
     jBb = blockIdx.y * Gn + 1;
     B_j = blockDim.y * jBb + threadIdx.y;
-    regB1 = fetch_x_B(Bdev,min(B_i, (int) (k - 1)) + min(B_j, (int) (n - 1)) * ldb);
+    regB1 = fetch_x_B(Bdev, min(B_i, (int) (k - 1)) + min(B_j, (int) (n - 1)) * ldb);
 
     jBb = blockIdx.y * Gn + 2;
     B_j = blockDim.y * jBb + threadIdx.y;
-    regB2 = fetch_x_B(Bdev,min(B_i, (int) (k - 1)) + min(B_j, (int) (n - 1)) * ldb);
+    regB2 = fetch_x_B(Bdev, min(B_i, (int) (k - 1)) + min(B_j, (int) (n - 1)) * ldb);
 
     jBb = blockIdx.y * Gn + 3;
     B_j = blockDim.y * jBb + threadIdx.y;
-    regB3 = fetch_x_B(Bdev,min(B_i, (int) (k - 1)) + min(B_j, (int) (n - 1)) * ldb);
+    regB3 = fetch_x_B(Bdev, min(B_i, (int) (k - 1)) + min(B_j, (int) (n - 1)) * ldb);
 
     // get initial Cdev data
     iCb = blockIdx.x;

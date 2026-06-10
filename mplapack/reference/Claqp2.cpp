@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,45 +26,27 @@
  *
  */
 
+// Derived from LAPACK routine ZLAQP2.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Claqp2(INTEGER const m, INTEGER const n, INTEGER const offset, COMPLEX *a, INTEGER const lda, INTEGER *jpvt, COMPLEX *tau, REAL *vn1, REAL *vn2, COMPLEX *work) {
     //
-    //  -- LAPACK auxiliary routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
-    //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. Executable Statements ..
-    //
     INTEGER mn = min(m - offset, n);
     REAL tol3z = sqrt(Rlamch("Epsilon"));
     //
-    //     Compute factorization.
+    // Compute factorization.
     //
     INTEGER i = 0;
     INTEGER offpi = 0;
     INTEGER pvt = 0;
     INTEGER itemp = 0;
-    COMPLEX aii = 0.0;
-    const COMPLEX cone = COMPLEX(1.0, 0.0);
     INTEGER j = 0;
     const REAL zero = 0.0;
     const REAL one = 1.0;
@@ -74,7 +56,7 @@ void Claqp2(INTEGER const m, INTEGER const n, INTEGER const offset, COMPLEX *a, 
         //
         offpi = offset + i;
         //
-        //        Determine ith pivot column and swap if necessary.
+        // Determine ith pivot column and swap if necessary.
         //
         pvt = (i - 1) + iRamax(n - i + 1, &vn1[i - 1], 1);
         //
@@ -87,7 +69,7 @@ void Claqp2(INTEGER const m, INTEGER const n, INTEGER const offset, COMPLEX *a, 
             vn2[pvt - 1] = vn2[i - 1];
         }
         //
-        //        Generate elementary reflector H(i).
+        // Generate elementary reflector H(i).
         //
         if (offpi < m) {
             Clarfg(m - offpi + 1, a[(offpi - 1) + (i - 1) * lda], &a[((offpi + 1) - 1) + (i - 1) * lda], 1, tau[i - 1]);
@@ -97,21 +79,18 @@ void Claqp2(INTEGER const m, INTEGER const n, INTEGER const offset, COMPLEX *a, 
         //
         if (i < n) {
             //
-            //           Apply H(i)**H to A(offset+i:m,i+1:n) from the left.
+            // Apply H(i)**H to A(offset+i:m,i+1:n) from the left.
             //
-            aii = a[(offpi - 1) + (i - 1) * lda];
-            a[(offpi - 1) + (i - 1) * lda] = cone;
-            Clarf("Left", m - offpi + 1, n - i, &a[(offpi - 1) + (i - 1) * lda], 1, conj(tau[i - 1]), &a[(offpi - 1) + ((i + 1) - 1) * lda], lda, &work[1 - 1]);
-            a[(offpi - 1) + (i - 1) * lda] = aii;
+            Clarf1f("Left", m - offpi + 1, n - i, &a[(offpi - 1) + (i - 1) * lda], 1, conj(tau[i - 1]), &a[(offpi - 1) + ((i + 1) - 1) * lda], lda, &work[1 - 1]);
         }
         //
-        //        Update partial column norms.
+        // Update partial column norms.
         //
         for (j = i + 1; j <= n; j = j + 1) {
             if (vn1[j - 1] != zero) {
                 //
-                //              NOTE: The following 4 lines follow from the analysis in
-                //              Lapack Working Note 176.
+                // NOTE: The following 4 lines follow from the analysis in
+                // Lapack Working Note 176.
                 //
                 temp = one - pow2((abs(a[(offpi - 1) + (j - 1) * lda]) / vn1[j - 1]));
                 temp = max(temp, zero);
@@ -132,6 +111,6 @@ void Claqp2(INTEGER const m, INTEGER const n, INTEGER const offset, COMPLEX *a, 
         //
     }
     //
-    //     End of Claqp2
+    // End of Claqp2
     //
 }

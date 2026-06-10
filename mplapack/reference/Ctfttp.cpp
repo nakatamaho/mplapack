@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,12 +26,23 @@
  *
  */
 
+// Derived from LAPACK routine ZTFTTP.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
+#if defined(__INTEL_LLVM_COMPILER)
+#pragma clang optimize off
+#endif
+
 #include <mpblas.h>
 #include <mplapack.h>
 
 void Ctfttp(const char *transr, const char *uplo, INTEGER const n, COMPLEX *arf, COMPLEX *ap, INTEGER &info) {
     //
-    //     Test the input parameters.
+    // Test the input parameters.
     //
     info = 0;
     bool normaltransr = Mlsame(transr, "N");
@@ -48,7 +59,7 @@ void Ctfttp(const char *transr, const char *uplo, INTEGER const n, COMPLEX *arf,
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         return;
@@ -63,11 +74,11 @@ void Ctfttp(const char *transr, const char *uplo, INTEGER const n, COMPLEX *arf,
         return;
     }
     //
-    //     Size of array ARF(0:NT-1)
+    // Size of array ARF(0:NT-1)
     //
     INTEGER nt = n * (n + 1) / 2;
     //
-    //     Set N1 and N2 depending on LOWER
+    // Set N1 and N2 depending on LOWER
     //
     INTEGER n2 = 0;
     INTEGER n1 = 0;
@@ -79,11 +90,11 @@ void Ctfttp(const char *transr, const char *uplo, INTEGER const n, COMPLEX *arf,
         n2 = n - n1;
     }
     //
-    //     If N is odd, set NISODD = .TRUE.
-    //     If N is even, set K = N/2 and NISODD = .FALSE.
+    // If N is odd, set NISODD = .TRUE.
+    // If N is even, set K = N/2 and NISODD = .FALSE.
     //
-    //     set lda of ARF^C; ARF^C is (0:(N+1)/2-1,0:N-noe)
-    //     where noe = 0 if n is even, noe = 1 if n is odd
+    // set lda of ARF^C; ARF^C is (0:(N+1)/2-1,0:N-noe)
+    // where noe = 0 if n is even, noe = 1 if n is odd
     //
     INTEGER k = 0;
     bool nisodd = false;
@@ -97,13 +108,13 @@ void Ctfttp(const char *transr, const char *uplo, INTEGER const n, COMPLEX *arf,
         lda = n;
     }
     //
-    //     ARF^C has lda rows and n+1-noe cols
+    // ARF^C has lda rows and n+1-noe cols
     //
     if (!normaltransr) {
         lda = (n + 1) / 2;
     }
     //
-    //     start execution: there are eight cases
+    // start execution: there are eight cases
     //
     INTEGER ijp = 0;
     INTEGER jp = 0;
@@ -113,17 +124,17 @@ void Ctfttp(const char *transr, const char *uplo, INTEGER const n, COMPLEX *arf,
     INTEGER js = 0;
     if (nisodd) {
         //
-        //        N is odd
+        // N is odd
         //
         if (normaltransr) {
             //
-            //           N is odd and TRANSR = 'N'
+            // N is odd and TRANSR = 'N'
             //
             if (lower) {
                 //
-                //             SRPA for LOWER, NORMAL and N is odd ( a(0:n-1,0:n1-1) )
-                //             T1 -> a(0,0), T2 -> a(0,1), S -> a(n1,0)
-                //             T1 -> a(0), T2 -> a(n), S -> a(n1); lda = n
+                // SRPA for LOWER, NORMAL and N is odd ( a(0:n-1,0:n1-1) )
+                // T1 -> a(0,0), T2 -> a(0,1), S -> a(n1,0)
+                // T1 -> a(0), T2 -> a(n), S -> a(n1); lda = n
                 //
                 ijp = 0;
                 jp = 0;
@@ -145,9 +156,9 @@ void Ctfttp(const char *transr, const char *uplo, INTEGER const n, COMPLEX *arf,
                 //
             } else {
                 //
-                //             SRPA for UPPER, NORMAL and N is odd ( a(0:n-1,0:n2-1)
-                //             T1 -> a(n1+1,0), T2 -> a(n1,0), S -> a(0,0)
-                //             T1 -> a(n2), T2 -> a(n1), S -> a(0)
+                // SRPA for UPPER, NORMAL and N is odd ( a(0:n-1,0:n2-1)
+                // T1 -> a(n1+1,0), T2 -> a(n1,0), S -> a(0,0)
+                // T1 -> a(n2), T2 -> a(n1), S -> a(0)
                 //
                 ijp = 0;
                 for (j = 0; j <= n1 - 1; j = j + 1) {
@@ -172,13 +183,13 @@ void Ctfttp(const char *transr, const char *uplo, INTEGER const n, COMPLEX *arf,
             //
         } else {
             //
-            //           N is odd and TRANSR = 'C'
+            // N is odd and TRANSR = 'C'
             //
             if (lower) {
                 //
-                //              SRPA for LOWER, TRANSPOSE and N is odd
-                //              T1 -> A(0,0) , T2 -> A(1,0) , S -> A(0,n1)
-                //              T1 -> a(0+0) , T2 -> a(1+0) , S -> a(0+n1*n1); lda=n1
+                // SRPA for LOWER, TRANSPOSE and N is odd
+                // T1 -> A(0,0) , T2 -> A(1,0) , S -> A(0,n1)
+                // T1 -> a(0+0) , T2 -> a(1+0) , S -> a(0+n1*n1); lda=n1
                 //
                 ijp = 0;
                 for (i = 0; i <= n2; i = i + 1) {
@@ -198,9 +209,9 @@ void Ctfttp(const char *transr, const char *uplo, INTEGER const n, COMPLEX *arf,
                 //
             } else {
                 //
-                //              SRPA for UPPER, TRANSPOSE and N is odd
-                //              T1 -> A(0,n1+1), T2 -> A(0,n1), S -> A(0,0)
-                //              T1 -> a(n2*n2), T2 -> a(n1*n2), S -> a(0); lda = n2
+                // SRPA for UPPER, TRANSPOSE and N is odd
+                // T1 -> A(0,n1+1), T2 -> A(0,n1), S -> A(0,0)
+                // T1 -> a(n2*n2), T2 -> a(n1*n2), S -> a(0); lda = n2
                 //
                 ijp = 0;
                 js = n2 * lda;
@@ -224,17 +235,17 @@ void Ctfttp(const char *transr, const char *uplo, INTEGER const n, COMPLEX *arf,
         //
     } else {
         //
-        //        N is even
+        // N is even
         //
         if (normaltransr) {
             //
-            //           N is even and TRANSR = 'N'
+            // N is even and TRANSR = 'N'
             //
             if (lower) {
                 //
-                //              SRPA for LOWER, NORMAL, and N is even ( a(0:n,0:k-1) )
-                //              T1 -> a(1,0), T2 -> a(0,0), S -> a(k+1,0)
-                //              T1 -> a(1), T2 -> a(0), S -> a(k+1)
+                // SRPA for LOWER, NORMAL, and N is even ( a(0:n,0:k-1) )
+                // T1 -> a(1,0), T2 -> a(0,0), S -> a(k+1,0)
+                // T1 -> a(1), T2 -> a(0), S -> a(k+1)
                 //
                 ijp = 0;
                 jp = 0;
@@ -256,9 +267,9 @@ void Ctfttp(const char *transr, const char *uplo, INTEGER const n, COMPLEX *arf,
                 //
             } else {
                 //
-                //              SRPA for UPPER, NORMAL, and N is even ( a(0:n,0:k-1) )
-                //              T1 -> a(k+1,0) ,  T2 -> a(k,0),   S -> a(0,0)
-                //              T1 -> a(k+1), T2 -> a(k), S -> a(0)
+                // SRPA for UPPER, NORMAL, and N is even ( a(0:n,0:k-1) )
+                // T1 -> a(k+1,0) ,  T2 -> a(k,0),   S -> a(0,0)
+                // T1 -> a(k+1), T2 -> a(k), S -> a(0)
                 //
                 ijp = 0;
                 for (j = 0; j <= k - 1; j = j + 1) {
@@ -283,13 +294,13 @@ void Ctfttp(const char *transr, const char *uplo, INTEGER const n, COMPLEX *arf,
             //
         } else {
             //
-            //           N is even and TRANSR = 'C'
+            // N is even and TRANSR = 'C'
             //
             if (lower) {
                 //
-                //              SRPA for LOWER, TRANSPOSE and N is even (see paper)
-                //              T1 -> B(0,1), T2 -> B(0,0), S -> B(0,k+1)
-                //              T1 -> a(0+k), T2 -> a(0+0), S -> a(0+k*(k+1)); lda=k
+                // SRPA for LOWER, TRANSPOSE and N is even (see paper)
+                // T1 -> B(0,1), T2 -> B(0,0), S -> B(0,k+1)
+                // T1 -> a(0+k), T2 -> a(0+0), S -> a(0+k*(k+1)); lda=k
                 //
                 ijp = 0;
                 for (i = 0; i <= k - 1; i = i + 1) {
@@ -309,9 +320,9 @@ void Ctfttp(const char *transr, const char *uplo, INTEGER const n, COMPLEX *arf,
                 //
             } else {
                 //
-                //              SRPA for UPPER, TRANSPOSE and N is even (see paper)
-                //              T1 -> B(0,k+1),     T2 -> B(0,k),   S -> B(0,0)
-                //              T1 -> a(0+k*(k+1)), T2 -> a(0+k*k), S -> a(0+0)); lda=k
+                // SRPA for UPPER, TRANSPOSE and N is even (see paper)
+                // T1 -> B(0,k+1),     T2 -> B(0,k),   S -> B(0,0)
+                // T1 -> a(0+k*(k+1)), T2 -> a(0+k*k), S -> a(0+0)); lda=k
                 //
                 ijp = 0;
                 js = (k + 1) * lda;
@@ -335,6 +346,6 @@ void Ctfttp(const char *transr, const char *uplo, INTEGER const n, COMPLEX *arf,
         //
     }
     //
-    //     End of Ctfttp
+    // End of Ctfttp
     //
 }

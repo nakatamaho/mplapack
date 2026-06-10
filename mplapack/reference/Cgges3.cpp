@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008-2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine ZGGES3.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -36,6 +43,7 @@ void Cgges3(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
     bool ilvsr = false;
     bool wantst = false;
     bool lquery = false;
+    INTEGER lwkmin = 0;
     INTEGER ierr = 0;
     INTEGER lwkopt = 0;
     REAL pvsl = 0.0;
@@ -68,7 +76,7 @@ void Cgges3(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
     bool lastsl = false;
     bool cursl = false;
     //
-    //     Decode the input arguments
+    // Decode the input arguments
     //
     if (Mlsame(jobvsl, "N")) {
         ijobvl = 1;
@@ -94,10 +102,12 @@ void Cgges3(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
     //
     wantst = Mlsame(sort, "S");
     //
-    //     Test the input arguments
+    // Test the input arguments
     //
     info = 0;
     lquery = (lwork == -1);
+    lwkmin = max((INTEGER)1, 2 * n);
+    //
     if (ijobvl <= 0) {
         info = -1;
     } else if (ijobvr <= 0) {
@@ -114,15 +124,15 @@ void Cgges3(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
         info = -14;
     } else if (ldvsr < 1 || (ilvsr && ldvsr < n)) {
         info = -16;
-    } else if (lwork < max((INTEGER)1, 2 * n) && !lquery) {
+    } else if (lwork < lwkmin && !lquery) {
         info = -18;
     }
     //
-    //     Compute workspace
+    // Compute workspace
     //
     if (info == 0) {
         Cgeqrf(n, n, b, ldb, work, work, -1, ierr);
-        lwkopt = max((INTEGER)1, n + castINTEGER(work[1 - 1].real()));
+        lwkopt = max(lwkmin, n + castINTEGER(work[1 - 1].real()));
         Cunmqr("L", "C", n, n, n, b, ldb, work, a, lda, work, -1, ierr);
         lwkopt = max(lwkopt, n + castINTEGER(work[1 - 1].real()));
         if (ilvsl) {
@@ -131,13 +141,17 @@ void Cgges3(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
         }
         Cgghd3(jobvsl, jobvsr, n, 1, n, a, lda, b, ldb, vsl, ldvsl, vsr, ldvsr, work, -1, ierr);
         lwkopt = max(lwkopt, n + castINTEGER(work[1 - 1].real()));
-        Chgeqz("S", jobvsl, jobvsr, n, 1, n, a, lda, b, ldb, alpha, beta, vsl, ldvsl, vsr, ldvsr, work, -1, rwork, ierr);
+        Claqz0("S", jobvsl, jobvsr, n, 1, n, a, lda, b, ldb, alpha, beta, vsl, ldvsl, vsr, ldvsr, work, -1, rwork, 0, ierr);
         lwkopt = max(lwkopt, castINTEGER(work[1 - 1].real()));
         if (wantst) {
             Ctgsen(0, ilvsl, ilvsr, bwork, n, a, lda, b, ldb, alpha, beta, vsl, ldvsl, vsr, ldvsr, sdim, pvsl, pvsr, dif, work, -1, idum, 1, ierr);
             lwkopt = max(lwkopt, castINTEGER(work[1 - 1].real()));
         }
-        work[1 - 1] = COMPLEX(lwkopt);
+        if (n == 0) {
+            work[1 - 1] = 1.0;
+        } else {
+            work[1 - 1] = COMPLEX(lwkopt);
+        }
     }
     //
     if (info != 0) {
@@ -147,22 +161,25 @@ void Cgges3(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
         return;
     }
     //
-    //     Quick return if possible
+    // Quick return if possible
     //
     if (n == 0) {
         sdim = 0;
         return;
     }
     //
-    //     Get machine constants
+    // Get machine constants
     //
     eps = Rlamch("P");
     smlnum = Rlamch("S");
     bignum = one / smlnum;
+#if defined ___MPLAPACK_BUILD_WITH_MPFR___ ||  defined ___MPLAPACK_BUILD_WITH_GMP___ ||  defined ___MPLAPACK_BUILD_WITH_BINARY80___ ||  defined ___MPLAPACK_BUILD_WITH_BINARY128___
+    Rlabad(smlnum, bignum);
+#endif
     smlnum = sqrt(smlnum) / eps;
     bignum = one / smlnum;
     //
-    //     Scale A if max element outside range [SMLNUM,BIGNUM]
+    // Scale A if max element outside range [SMLNUM,BIGNUM]
     //
     anrm = Clange("M", n, n, a, lda, rwork);
     ilascl = false;
@@ -178,7 +195,7 @@ void Cgges3(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
         Clascl("G", 0, 0, anrm, anrmto, n, n, a, lda, ierr);
     }
     //
-    //     Scale B if max element outside range [SMLNUM,BIGNUM]
+    // Scale B if max element outside range [SMLNUM,BIGNUM]
     //
     bnrm = Clange("M", n, n, b, ldb, rwork);
     ilbscl = false;
@@ -194,14 +211,14 @@ void Cgges3(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
         Clascl("G", 0, 0, bnrm, bnrmto, n, n, b, ldb, ierr);
     }
     //
-    //     Permute the matrix to make it more nearly triangular
+    // Permute the matrix to make it more nearly triangular
     //
     ileft = 1;
     iright = n + 1;
     irwrk = iright + n;
     Cggbal("P", n, a, lda, b, ldb, ilo, ihi, &rwork[ileft - 1], &rwork[iright - 1], &rwork[irwrk - 1], ierr);
     //
-    //     Reduce B to triangular form (QR decomposition of B)
+    // Reduce B to triangular form (QR decomposition of B)
     //
     irows = ihi + 1 - ilo;
     icols = n + 1 - ilo;
@@ -209,11 +226,11 @@ void Cgges3(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
     iwrk = itau + irows;
     Cgeqrf(irows, icols, &b[(ilo - 1) + (ilo - 1) * ldb], ldb, &work[itau - 1], &work[iwrk - 1], lwork + 1 - iwrk, ierr);
     //
-    //     Apply the orthogonal transformation to matrix A
+    // Apply the orthogonal transformation to matrix A
     //
     Cunmqr("L", "C", irows, icols, irows, &b[(ilo - 1) + (ilo - 1) * ldb], ldb, &work[itau - 1], &a[(ilo - 1) + (ilo - 1) * lda], lda, &work[iwrk - 1], lwork + 1 - iwrk, ierr);
     //
-    //     Initialize VSL
+    // Initialize VSL
     //
     if (ilvsl) {
         Claset("Full", n, n, czero, cone, vsl, ldvsl);
@@ -223,22 +240,22 @@ void Cgges3(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
         Cungqr(irows, irows, irows, &vsl[(ilo - 1) + (ilo - 1) * ldvsl], ldvsl, &work[itau - 1], &work[iwrk - 1], lwork + 1 - iwrk, ierr);
     }
     //
-    //     Initialize VSR
+    // Initialize VSR
     //
     if (ilvsr) {
         Claset("Full", n, n, czero, cone, vsr, ldvsr);
     }
     //
-    //     Reduce to generalized Hessenberg form
+    // Reduce to generalized Hessenberg form
     //
     Cgghd3(jobvsl, jobvsr, n, ilo, ihi, a, lda, b, ldb, vsl, ldvsl, vsr, ldvsr, &work[iwrk - 1], lwork + 1 - iwrk, ierr);
     //
     sdim = 0;
     //
-    //     Perform QZ algorithm, computing Schur vectors if desired
+    // Perform QZ algorithm, computing Schur vectors if desired
     //
     iwrk = itau;
-    Chgeqz("S", jobvsl, jobvsr, n, ilo, ihi, a, lda, b, ldb, alpha, beta, vsl, ldvsl, vsr, ldvsr, &work[iwrk - 1], lwork + 1 - iwrk, &rwork[irwrk - 1], ierr);
+    Claqz0("S", jobvsl, jobvsr, n, ilo, ihi, a, lda, b, ldb, alpha, beta, vsl, ldvsl, vsr, ldvsr, &work[iwrk - 1], lwork + 1 - iwrk, &rwork[irwrk - 1], 0, ierr);
     if (ierr != 0) {
         if (ierr > 0 && ierr <= n) {
             info = ierr;
@@ -250,11 +267,11 @@ void Cgges3(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
         goto statement_30;
     }
     //
-    //     Sort eigenvalues ALPHA/BETA if desired
+    // Sort eigenvalues ALPHA/BETA if desired
     //
     if (wantst) {
         //
-        //        Undo scaling on eigenvalues before selecting
+        // Undo scaling on eigenvalues before selecting
         //
         if (ilascl) {
             Clascl("G", 0, 0, anrm, anrmto, n, 1, alpha, n, ierr);
@@ -263,7 +280,7 @@ void Cgges3(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
             Clascl("G", 0, 0, bnrm, bnrmto, n, 1, beta, n, ierr);
         }
         //
-        //        Select eigenvalues
+        // Select eigenvalues
         //
         for (i = 1; i <= n; i = i + 1) {
             bwork[i - 1] = selctg(alpha[i - 1], beta[i - 1]);
@@ -276,7 +293,7 @@ void Cgges3(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
         //
     }
     //
-    //     Apply back-permutation to VSL and VSR
+    // Apply back-permutation to VSL and VSR
     //
     if (ilvsl) {
         Cggbak("P", "L", n, ilo, ihi, &rwork[ileft - 1], &rwork[iright - 1], n, vsl, ldvsl, ierr);
@@ -285,7 +302,7 @@ void Cgges3(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
         Cggbak("P", "R", n, ilo, ihi, &rwork[ileft - 1], &rwork[iright - 1], n, vsr, ldvsr, ierr);
     }
     //
-    //     Undo scaling
+    // Undo scaling
     //
     if (ilascl) {
         Clascl("U", 0, 0, anrmto, anrm, n, n, a, lda, ierr);
@@ -299,7 +316,7 @@ void Cgges3(const char *jobvsl, const char *jobvsr, const char *sort, bool (*sel
     //
     if (wantst) {
         //
-        //        Check if reordering is correct
+        // Check if reordering is correct
         //
         lastsl = true;
         sdim = 0;
@@ -320,6 +337,6 @@ statement_30:
     //
     work[1 - 1] = COMPLEX(lwkopt);
     //
-    //     End of Cgges3
+    // End of Cgges3
     //
 }

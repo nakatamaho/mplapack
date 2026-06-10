@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021
+ * Copyright (c) 2008-2025
  *      Nakata, Maho
  *      All rights reserved.
  *
@@ -26,6 +26,13 @@
  *
  */
 
+// Derived from LAPACK routine DRQT02.
+// Original LAPACK authors:
+//   Univ. of Tennessee
+//   Univ. of California Berkeley
+//   Univ. of Colorado Denver
+//   NAG Ltd.
+
 #include <mpblas.h>
 #include <mplapack.h>
 
@@ -38,38 +45,8 @@ using fem::common;
 
 void Rrqt02(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, REAL *af, REAL *q, REAL *r, INTEGER const lda, REAL *tau, REAL *work, INTEGER const lwork, REAL *rwork, REAL *result) {
     //
-    //  -- LAPACK test routine --
-    //  -- LAPACK is a software package provided by Univ. of Tennessee,    --
-    //  -- Univ. of California Berkeley, Univ. of Colorado Denver and NAG Ltd..--
+    // Quick return if possible
     //
-    //     .. Scalar Arguments ..
-    //     ..
-    //     .. Array Arguments ..
-    //     ..
-    //
-    //  =====================================================================
-    //
-    //     .. Parameters ..
-    //     ..
-    //     .. Local Scalars ..
-    //     ..
-    //     .. External Functions ..
-    //     ..
-    //     .. External Subroutines ..
-    //     ..
-    //     .. Intrinsic Functions ..
-    //     ..
-    //     .. Scalars in Common ..
-    //     ..
-    //     .. Common blocks ..
-    //     ..
-    //     .. Executable Statements ..
-    //
-    //     Quick return if possible
-    //
-    INTEGER ldaf = lda;
-    INTEGER ldq = lda;
-    INTEGER ldr = lda;
     const REAL zero = 0.0;
     if (m == 0 || n == 0 || k == 0) {
         result[1 - 1] = zero;
@@ -79,53 +56,54 @@ void Rrqt02(INTEGER const m, INTEGER const n, INTEGER const k, REAL *a, REAL *af
     //
     REAL eps = Rlamch("Epsilon");
     //
-    //     Copy the last k rows of the factorization to the array Q
+    // Copy the last k rows of the factorization to the array Q
     //
-    const REAL rogue = -1.0e+10;
+    const REAL rogue = -10000000000.0;
     Rlaset("Full", m, n, rogue, rogue, q, lda);
     if (k < n) {
         Rlacpy("Full", k, n - k, &af[((m - k + 1) - 1)], lda, &q[((m - k + 1) - 1)], lda);
     }
     if (k > 1) {
-        Rlacpy("Lower", k - 1, k - 1, &af[((m - k + 2) - 1) + ((n - k + 1) - 1) * ldaf], lda, &q[((m - k + 2) - 1) + ((n - k + 1) - 1) * ldq], lda);
+        Rlacpy("Lower", k - 1, k - 1, &af[((m - k + 2) - 1) + ((n - k + 1) - 1) * lda], lda, &q[((m - k + 2) - 1) + ((n - k + 1) - 1) * lda], lda);
     }
     //
-    //     Generate the last n rows of the matrix Q
+    // Generate the last n rows of the matrix Q
     //
+    srnamt = "Rorgrq";
     INTEGER info = 0;
     Rorgrq(m, n, k, q, lda, &tau[(m - k + 1) - 1], work, lwork, info);
     //
-    //     Copy R(m-k+1:m,n-m+1:n)
+    // Copy R(m-k+1:m,n-m+1:n)
     //
-    Rlaset("Full", k, m, zero, zero, &r[((m - k + 1) - 1) + ((n - m + 1) - 1) * ldr], lda);
-    Rlacpy("Upper", k, k, &af[((m - k + 1) - 1) + ((n - k + 1) - 1) * ldaf], lda, &r[((m - k + 1) - 1) + ((n - k + 1) - 1) * ldr], lda);
+    Rlaset("Full", k, m, zero, zero, &r[((m - k + 1) - 1) + ((n - m + 1) - 1) * lda], lda);
+    Rlacpy("Upper", k, k, &af[((m - k + 1) - 1) + ((n - k + 1) - 1) * lda], lda, &r[((m - k + 1) - 1) + ((n - k + 1) - 1) * lda], lda);
     //
-    //     Compute R(m-k+1:m,n-m+1:n) - A(m-k+1:m,1:n) * Q(n-m+1:n,1:n)'
+    // Compute R(m-k+1:m,n-m+1:n) - A(m-k+1:m,1:n) * Q(n-m+1:n,1:n)'
     //
     const REAL one = 1.0;
-    Rgemm("No transpose", "Transpose", k, m, n, -one, &a[((m - k + 1) - 1)], lda, q, lda, one, &r[((m - k + 1) - 1) + ((n - m + 1) - 1) * ldr], lda);
+    Rgemm("No transpose", "Transpose", k, m, n, -one, &a[((m - k + 1) - 1)], lda, q, lda, one, &r[((m - k + 1) - 1) + ((n - m + 1) - 1) * lda], lda);
     //
-    //     Compute norm( R - A*Q' ) / ( N * norm(A) * EPS ) .
+    // Compute norm( R - A*Q' ) / ( N * norm(A) * EPS ) .
     //
     REAL anorm = Rlange("1", k, n, &a[((m - k + 1) - 1)], lda, rwork);
-    REAL resid = Rlange("1", k, m, &r[((m - k + 1) - 1) + ((n - m + 1) - 1) * ldr], lda, rwork);
+    REAL resid = Rlange("1", k, m, &r[((m - k + 1) - 1) + ((n - m + 1) - 1) * lda], lda, rwork);
     if (anorm > zero) {
         result[1 - 1] = ((resid / castREAL(max((INTEGER)1, n))) / anorm) / eps;
     } else {
         result[1 - 1] = zero;
     }
     //
-    //     Compute I - Q*Q'
+    // Compute I - Q*Q'
     //
     Rlaset("Full", m, m, zero, one, r, lda);
     Rsyrk("Upper", "No transpose", m, n, -one, q, lda, one, r, lda);
     //
-    //     Compute norm( I - Q*Q' ) / ( N * EPS ) .
+    // Compute norm( I - Q*Q' ) / ( N * EPS ) .
     //
     resid = Rlansy("1", "Upper", m, r, lda, rwork);
     //
     result[2 - 1] = (resid / castREAL(max((INTEGER)1, n))) / eps;
     //
-    //     End of Rrqt02
+    // End of Rrqt02
     //
 }
