@@ -328,7 +328,7 @@ namespace __CPP {
     cl_int result = CL_SUCCESS;
 
     if ((result = clGetPlatformIDs(16, platform_id, &npl)) != CL_SUCCESS) {
-      fprintf(stderr, "clGetPlatformIDs() failed : %dn", result);
+      fprintf(stderr, "clGetPlatformIDs() failed : %d\n", result);
       exit(-1);
     }
 
