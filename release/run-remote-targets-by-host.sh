@@ -76,17 +76,25 @@ run_target() {
 
 run_host_targets() {
     local host="$1"
-    local target target_file
+    local host_rc target target_file target_rc
 
+    host_rc=0
     target_file="${host_target_files[$host]}"
     echo "=== Running remote targets on $host ===" >&2
     while IFS= read -r target; do
         [[ -n "$target" ]] || continue
         echo "=== Running remote target on $host: $target ===" >&2
         # Keep ssh in child scripts from consuming the remaining target list.
-        run_target "$target" </dev/null
-        echo "=== Finished remote target on $host: $target ===" >&2
+        if run_target "$target" </dev/null; then
+            echo "=== Finished remote target on $host: $target ===" >&2
+        else
+            target_rc="$?"
+            echo "ERROR: remote target failed on $host: $target (rc=$target_rc)" >&2
+            echo "=== Finished remote target on $host: $target (FAILED) ===" >&2
+            host_rc=1
+        fi
     done < "$target_file"
+    return "$host_rc"
 }
 
 pids=()
