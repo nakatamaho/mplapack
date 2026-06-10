@@ -14,11 +14,14 @@ RUN apt-get update && apt-get install -y \
     automake \
     libtool \
     ccache \
+    pkg-config \
     python3 \
     git \
     xz-utils \
     bzip2 \
     patch \
+    ocl-icd-opencl-dev \
+    opencl-headers \
     && rm -rf /var/lib/apt/lists/*
 
 # Verify CUDA installation

@@ -15,6 +15,9 @@ RUN apt-get update && apt-get install -y \
     libmpc-dev \
     libblas-dev \
     liblapack-dev \
+    pkg-config \
+    ocl-icd-opencl-dev \
+    opencl-headers \
     && rm -rf /var/lib/apt/lists/*
 
 # Verify CUDA installation
