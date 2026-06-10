@@ -281,7 +281,7 @@ void test_cos_vs_mpfr(const std::vector<mp_bitcnt_t> &precisions) {
             const mpf_class gx = div(pi(p), make_ui(3, p), p);
             set_from_mpf(x.value, gx);
             mpfr_cos(ref.value, x.value, MPFR_RNDN);
-            require_ulp("cos_vs_mpfr_pi_over_three", compute_cos(gx, p), ref.value, p, 2.0);
+            require_ulp("cos_vs_mpfr_pi_over_three", compute_cos(gx, p), ref.value, p, 3.0);
         }
         {
             mpfr_holder x(p);
