@@ -51,7 +51,7 @@ safe_rmdir() {
 : "${MPLAPACK_DOCKERFILE:=release/docker/Dockerfile.debian-i386}"
 : "${MPLAPACK_DOCKER_CONTEXT:=release/docker}"
 : "${MPLAPACK_DOCKER_PLATFORM:=linux/386}"
-: "${MPLAPACK_IMAGE_TAG:=mplapack-tier2-debian-i386:latest}"
+: "${MPLAPACK_IMAGE_TAG:=mplapack-tier1-debian-i386:latest}"
 : "${MPLAPACK_CCACHE_DIR:=/home/maho/.ccache}"
 : "${MPLAPACK_CCACHE_MAXSIZE:=200G}"
 : "${MPLAPACK_COLIMA_CPUS:=$(sysctl -n hw.ncpu 2>/dev/null || echo 10)}"
@@ -83,7 +83,7 @@ else
     old_pid=""
     [ -f "${LOCKDIR}/pid" ] && old_pid="$(cat "${LOCKDIR}/pid" 2>/dev/null || true)"
     if [ -n "${old_pid}" ] && [ "${old_pid}" != "$$" ] && kill -0 "${old_pid}" 2>/dev/null; then
-        log "Another tier2-debian-i386 buildtest is running (pid: ${old_pid}); stopping it."
+        log "Another tier1-debian-i386 buildtest is running (pid: ${old_pid}); stopping it."
         kill "${old_pid}" 2>/dev/null || true
         for _wait_i in $(seq 1 60); do
             kill -0 "${old_pid}" 2>/dev/null || break

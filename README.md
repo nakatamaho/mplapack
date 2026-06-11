@@ -83,8 +83,8 @@ BSD-style license, supplemental to the original LAPACK license.
 
 | Tier | Guarantee | Platforms |
 |---|---|---|
-| **Tier 1** | `make distcheck` + full test suite | macOS Sonoma (amd64), macOS (arm64, Apple Silicon), Windows / MinGW-w64 (amd64), Ubuntu 22.04 (amd64), Ubuntu 24.04 (amd64), Ubuntu 24.04 (arm64) |
-| **Tier 2** | Build only | Debian 12/13 (amd64, arm64, i386, ppc64le, s390x, riscv64, mips64le), Alpine Linux 3.19–3.23 (amd64, arm64, riscv64), Rocky Linux 8/9/10 (amd64), Fedora 42/43, openSUSE Leap 15.6/16.0, openSUSE Tumbleweed |
+| **Tier 1** | Dedicated release `buildtest` target; `make distcheck` + full test suite | macOS 15/26 (amd64/arm64), Ubuntu 24.04/26.04 (amd64/arm64), Windows / MinGW-w64 via Ubuntu 24.04/26.04 (amd64), Ubuntu 24.04/26.04 Intel oneAPI (amd64), Debian 12/13 i386 |
+| **Tier 2** | Build only / matrix coverage without a dedicated release `buildtest` target | Other Debian/Ubuntu architectures and versions, Alpine Linux 3.19–3.23, Rocky Linux 8/9/10, Fedora 42/43, openSUSE Leap 15.6/16.0, openSUSE Tumbleweed |
 | **Tier 3** | Patches accepted; no CI coverage | Other platforms |
 
 Release test targets are run from `release/`:
@@ -99,19 +99,20 @@ Release test targets are run from `release/`:
 | Tier 1 | `tier1-ubuntu2604-amd64` | Ubuntu 26.04 | amd64 | `172.27.109.80` | Docker |
 | Tier 1 | `tier1-ubuntu2404-mingw64-amd64` | Windows via Ubuntu 24.04 | amd64 | `172.27.109.80` | Docker + MinGW64/Wine |
 | Tier 1 | `tier1-ubuntu2604-mingw64-amd64` | Windows via Ubuntu 26.04 | amd64 | `172.27.109.80` | Docker + MinGW64/Wine |
-| Tier 2 | `tier2-ubuntu2404-inteloneapi-amd64` | Ubuntu 24.04 | amd64 | `172.27.109.80` | Docker + Intel oneAPI |
-| Tier 2 | `tier2-ubuntu2604-inteloneapi-amd64` | Ubuntu 26.04 | amd64 | `172.27.109.80` | Docker + Intel oneAPI |
-| Tier 2 | `tier2-debian12-i386` | Debian 12 | i386 | `172.27.109.80` | Docker |
+| Tier 1 | `tier1-ubuntu2404-inteloneapi-amd64` | Ubuntu 24.04 | amd64 | `172.27.109.80` | Docker + Intel oneAPI |
+| Tier 1 | `tier1-ubuntu2604-inteloneapi-amd64` | Ubuntu 26.04 | amd64 | `172.27.109.80` | Docker + Intel oneAPI |
+| Tier 1 | `tier1-debian12-i386` | Debian 12 | i386 | `172.27.109.80` | Docker |
+| Tier 1 | `tier1-debian13-i386` | Debian 13 | i386 | `172.27.109.80` | Docker |
 
-Tier 1/2 release build scripts are in `release/`:
+Dedicated release buildtest scripts are in `release/`:
 ```
 release/buildtest_tier1_macos_amd64.sh
 release/buildtest_tier1_macos_arm64.sh
 release/buildtest_tier1_mingw64_amd64.sh
 release/buildtest_tier1_ubuntu_amd64.sh
 release/buildtest_tier1_ubuntu_arm64.sh
-release/buildtest_tier2_ubuntu_inteloneapi_amd64.sh
-release/buildtest_tier2_debian_i386.sh
+release/buildtest_tier1_ubuntu_inteloneapi_amd64.sh
+release/buildtest_tier1_debian_i386.sh
 ```
 
 # How to Build and Install

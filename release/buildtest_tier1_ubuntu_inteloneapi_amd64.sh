@@ -50,7 +50,7 @@ safe_rmdir() {
 : "${MPLAPACK_DOCKER_BASE:=ubuntu:${MPLAPACK_DISTRO_VERSION}}"
 : "${MPLAPACK_DOCKERFILE:=docker/release/Dockerfile.intel}"
 : "${MPLAPACK_DOCKER_CONTEXT:=docker/release}"
-: "${MPLAPACK_IMAGE_TAG:=mplapack-tier2-ubuntu-inteloneapi-amd64:latest}"
+: "${MPLAPACK_IMAGE_TAG:=mplapack-tier1-ubuntu-inteloneapi-amd64:latest}"
 : "${MPLAPACK_CCACHE_DIR:=/home/maho/.ccache}"
 : "${MPLAPACK_CCACHE_MAXSIZE:=200G}"
 : "${MPLAPACK_COLIMA_CPUS:=$(sysctl -n hw.ncpu 2>/dev/null || echo 10)}"
@@ -82,7 +82,7 @@ else
     old_pid=""
     [ -f "${LOCKDIR}/pid" ] && old_pid="$(cat "${LOCKDIR}/pid" 2>/dev/null || true)"
     if [ -n "${old_pid}" ] && [ "${old_pid}" != "$$" ] && kill -0 "${old_pid}" 2>/dev/null; then
-        log "Another tier2-ubuntu-inteloneapi-amd64 buildtest is running (pid: ${old_pid}); stopping it."
+        log "Another tier1-ubuntu-inteloneapi-amd64 buildtest is running (pid: ${old_pid}); stopping it."
         kill "${old_pid}" 2>/dev/null || true
         for _wait_i in $(seq 1 60); do
             kill -0 "${old_pid}" 2>/dev/null || break

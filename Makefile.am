@@ -278,9 +278,9 @@ release/buildtest_tier1_macos_amd64.sh \
 release/buildtest_tier1_macos_arm64.sh \
 release/buildtest_tier1_mingw64_amd64.sh \
 release/buildtest_tier1_ubuntu_amd64.sh \
-release/buildtest_tier2_ubuntu_inteloneapi_amd64.sh \
+release/buildtest_tier1_ubuntu_inteloneapi_amd64.sh \
 release/buildtest_tier1_ubuntu_arm64.sh \
-release/buildtest_tier2_debian_i386.sh \
+release/buildtest_tier1_debian_i386.sh \
 docker/release/Dockerfile.intel \
 docker/release/Dockerfile.mingw \
 docker/release/run-ubuntu-intel-distcheck.sh \

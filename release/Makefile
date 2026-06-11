@@ -13,13 +13,10 @@ REMOTE_LINUX_SSH ?= ssh
 
 export CONF_FILE LOGDIR PROJECT_ROOT HOST_WORK_DIR HOST_CCACHE_DIR SUCCESS_DIR
 
-TIER1_TARGETS := tier1-macos-arm64 tier1-macos-amd64 tier1-ubuntu2404-arm64 tier1-ubuntu2604-arm64 tier1-ubuntu2404-amd64 tier1-ubuntu2604-amd64 tier1-ubuntu2404-mingw64-amd64 tier1-ubuntu2604-mingw64-amd64
+TIER1_TARGETS := tier1-macos-arm64 tier1-macos-amd64 tier1-ubuntu2404-arm64 tier1-ubuntu2604-arm64 tier1-ubuntu2404-amd64 tier1-ubuntu2604-amd64 tier1-ubuntu2404-mingw64-amd64 tier1-ubuntu2604-mingw64-amd64 tier1-ubuntu2404-inteloneapi-amd64 tier1-ubuntu2604-inteloneapi-amd64 tier1-debian12-i386 tier1-debian13-i386
 TIER1_MACOS_TARGETS := tier1-macos-arm64 tier1-macos-amd64
-TIER1_LINUX_TARGETS := tier1-ubuntu2404-arm64 tier1-ubuntu2604-arm64 tier1-ubuntu2404-amd64 tier1-ubuntu2604-amd64 tier1-ubuntu2404-mingw64-amd64 tier1-ubuntu2604-mingw64-amd64
-TIER2_TARGETS := tier2-ubuntu2404-inteloneapi-amd64 tier2-ubuntu2604-inteloneapi-amd64 tier2-debian12-i386
-TIER12_TARGETS := $(TIER1_TARGETS) $(TIER2_TARGETS)
-TIER12_REQUESTED := $(and $(filter tier1,$(MAKECMDGOALS)),$(filter tier2,$(MAKECMDGOALS)))
-FIRST_TIER12_GOAL := $(firstword $(filter tier1 tier2,$(MAKECMDGOALS)))
+TIER1_LINUX_TARGETS := tier1-ubuntu2404-arm64 tier1-ubuntu2604-arm64 tier1-ubuntu2404-amd64 tier1-ubuntu2604-amd64 tier1-ubuntu2404-mingw64-amd64 tier1-ubuntu2604-mingw64-amd64 tier1-ubuntu2404-inteloneapi-amd64 tier1-ubuntu2604-inteloneapi-amd64 tier1-debian12-i386 tier1-debian13-i386
+TIER2_TARGETS :=
 RUN_REMOTE_TARGETS = CONF_FILE=$(CONF_FILE) LOGDIR=$(LOGDIR) PROJECT_ROOT=$(PROJECT_ROOT) SUCCESS_DIR=$(SUCCESS_DIR) MACOS_REMOTE_SSH=$(MACOS_REMOTE_SSH) REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-targets-by-host.sh
 
 .PHONY: all branch tarball dist clean clean-remote clean-all clean-success list help
@@ -27,7 +24,7 @@ RUN_REMOTE_TARGETS = CONF_FILE=$(CONF_FILE) LOGDIR=$(LOGDIR) PROJECT_ROOT=$(PROJ
 .PHONY: amd64 arm64 ppc64le i386 s390x mips64le
 .PHONY: branch-ubuntu branch-debian branch-amd64 branch-cuda branch-rocky branch-suse
 .PHONY: tarball-ubuntu tarball-debian tarball-amd64 tarball-cuda tarball-rocky tarball-suse
-.PHONY: tier1 tier1-macos tier1-linux tier2 tier1-macos-arm64 tier1-macos-amd64 tier1-ubuntu2404-arm64 tier1-ubuntu2604-arm64 tier1-ubuntu2404-amd64 tier1-ubuntu2604-amd64 tier1-ubuntu2404-mingw64-amd64 tier1-ubuntu2604-mingw64-amd64 tier2-ubuntu2404-inteloneapi-amd64 tier2-ubuntu2604-inteloneapi-amd64 tier2-debian12-i386
+.PHONY: tier1 tier1-macos tier1-linux tier2 tier1-macos-arm64 tier1-macos-amd64 tier1-ubuntu2404-arm64 tier1-ubuntu2604-arm64 tier1-ubuntu2404-amd64 tier1-ubuntu2604-amd64 tier1-ubuntu2404-mingw64-amd64 tier1-ubuntu2604-mingw64-amd64 tier1-ubuntu2404-inteloneapi-amd64 tier1-ubuntu2604-inteloneapi-amd64 tier1-debian12-i386 tier1-debian13-i386
 .PHONY: ccache-stats ccache-clear
 
 # === Main Targets ===
@@ -85,23 +82,11 @@ amd64:
 arm64:
 	@FILTER_ARCH=arm64 ./build-all.sh branch
 
-ifeq ($(TIER12_REQUESTED),)
 tier1:
 	@$(RUN_REMOTE_TARGETS) $(TIER1_TARGETS)
 
 tier2:
-	@$(RUN_REMOTE_TARGETS) $(TIER2_TARGETS)
-else
-tier1:
-	@if [ "$(FIRST_TIER12_GOAL)" = "tier1" ]; then \
-		$(RUN_REMOTE_TARGETS) $(TIER12_TARGETS); \
-	fi
-
-tier2:
-	@if [ "$(FIRST_TIER12_GOAL)" = "tier2" ]; then \
-		$(RUN_REMOTE_TARGETS) $(TIER12_TARGETS); \
-	fi
-endif
+	@echo "No dedicated Tier 2 remote buildtest targets; use make branch for matrix coverage."
 
 tier1-macos:
 	@$(RUN_REMOTE_TARGETS) $(TIER1_MACOS_TARGETS)
@@ -133,14 +118,17 @@ tier1-ubuntu2404-mingw64-amd64:
 tier1-ubuntu2604-mingw64-amd64:
 	@REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-linux-docker.sh tier1-ubuntu2604-mingw64-amd64
 
-tier2-ubuntu2404-inteloneapi-amd64:
-	@REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-linux-docker.sh tier2-ubuntu2404-inteloneapi-amd64
+tier1-ubuntu2404-inteloneapi-amd64:
+	@REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-linux-docker.sh tier1-ubuntu2404-inteloneapi-amd64
 
-tier2-ubuntu2604-inteloneapi-amd64:
-	@REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-linux-docker.sh tier2-ubuntu2604-inteloneapi-amd64
+tier1-ubuntu2604-inteloneapi-amd64:
+	@REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-linux-docker.sh tier1-ubuntu2604-inteloneapi-amd64
 
-tier2-debian12-i386:
-	@REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-linux-docker.sh tier2-debian12-i386
+tier1-debian12-i386:
+	@REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-linux-docker.sh tier1-debian12-i386
+
+tier1-debian13-i386:
+	@REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-linux-docker.sh tier1-debian13-i386
 
 i386:
 	@FILTER_ARCH=386 ./build-all.sh branch
@@ -298,8 +286,13 @@ help:
 	@echo "  make tier1-macos-amd64  - run Tier 1 macOS amd64 test via SSH"
 	@echo "  make tier1-macos-arm64  - run Tier 1 macOS arm64 test via SSH"
 	@echo "  make tier1-ubuntu2404-arm64 - run Tier 1 Ubuntu 24.04 arm64 test via SSH/Docker"
+	@echo "  make tier1-ubuntu2404-inteloneapi-amd64 - run Tier 1 Ubuntu 24.04 Intel oneAPI amd64 test"
+	@echo "  make tier1-ubuntu2604-inteloneapi-amd64 - run Tier 1 Ubuntu 26.04 Intel oneAPI amd64 test"
+	@echo "  make tier1-debian12-i386 - run Tier 1 Debian 12 i386 test"
+	@echo "  make tier1-debian13-i386 - run Tier 1 Debian 13 i386 test"
+	@echo "  make tier2              - show Tier 2 matrix coverage note"
 	@echo "  make arm64       - aarch64"
-		@echo "  make ppc64le     - PowerPC 64-bit LE"
+	@echo "  make ppc64le     - PowerPC 64-bit LE"
 	@echo "  make i386        - x86 32-bit"
 	@echo "  make s390x       - IBM Z mainframe"
 	@echo "  make mips64le    - MIPS 64-bit LE"
