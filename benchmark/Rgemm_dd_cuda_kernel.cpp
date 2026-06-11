@@ -263,6 +263,8 @@ int main(int argc, char *argv[]) {
         m = m + STEPM;
         n = n + STEPN;
         k = k + STEPK;
+
+	fflush(stdout);
     }
     if (check_flag)
         dlclose(handle);

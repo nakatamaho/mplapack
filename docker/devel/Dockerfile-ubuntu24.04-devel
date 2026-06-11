@@ -73,7 +73,8 @@ RUN apt install -y build-essential python3 python3-pip gcc g++ gfortran
 RUN apt install -y autotools-dev automake libtool libtool-bin universal-ctags gnuplot
 RUN apt install -y gdb valgrind linux-tools-`uname -r` google-perftools linux-headers-`uname -r`
 RUN apt install -y git wget gpg ccache time parallel bc
-RUN apt install -y pkg-config clangd python3-autopep8 clang-format-19 unifdef octave
+RUN apt install -y pkg-config ocl-icd-opencl-dev opencl-headers clangd python3-autopep8 clang-format-19 unifdef octave
+RUN mkdir -p /etc/OpenCL/vendors && printf '%s\n' libnvidia-opencl.so.1 > /etc/OpenCL/vendors/nvidia.icd
 RUN apt install -y ng-common ng-cjk emacs-nox ripgrep pipx
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 1
 

@@ -15,7 +15,12 @@ RUN apt-get update && apt-get install -y \
     libmpc-dev \
     libblas-dev \
     liblapack-dev \
+    pkg-config \
+    ocl-icd-opencl-dev \
+    opencl-headers \
     && rm -rf /var/lib/apt/lists/*
+
+RUN mkdir -p /etc/OpenCL/vendors && printf '%s\n' libnvidia-opencl.so.1 > /etc/OpenCL/vendors/nvidia.icd
 
 # Verify CUDA installation
 RUN nvcc --version

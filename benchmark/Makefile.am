@@ -9,7 +9,7 @@ dist_bench_DATA = \
     Rcopy1.plt.in  Rcopy2.plt.in  Rcopy3.plt.in  \
     Rdot1.plt.in   Rdot2.plt.in   Rdot3.plt.in   \
     Rgemm1.plt.in  Rgemm2.plt.in  Rgemm3.plt.in  \
-    Rgemm_cuda.plt.in              \
+    Rgemm_cuda.plt.in  Rgemm_opencl.plt.in \
     Rgemv1.plt.in  Rgemv2.plt.in  Rgemv3.plt.in  \
     Rsyrk1.plt.in  Rsyrk2.plt.in  Rsyrk3.plt.in  \
     Rsyrk_cuda.plt.in              \
@@ -27,6 +27,7 @@ EXTRA_DIST = \
     go.Rdot.sh.in        \
     go.Rgemm.sh.in       \
     go.Rgemm_cuda.sh.in  \
+    go.Rgemm_opencl.sh.in \
     go.Rgemv.sh.in       \
     go.Rsyrk.sh.in       \
     go.Rsyrk_cuda.sh.in  \
@@ -52,6 +53,7 @@ GO_SH_FILES = \
     go.Rdot.sh        \
     go.Rgemm.sh       \
     go.Rgemm_cuda.sh  \
+    go.Rgemm_opencl.sh \
     go.Rgemv.sh       \
     go.Rsyrk.sh       \
     go.Rsyrk_cuda.sh  \

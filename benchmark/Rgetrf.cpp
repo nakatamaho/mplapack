@@ -215,6 +215,7 @@ int main(int argc, char *argv[]) {
             }
         }
 
+        fflush(stdout);
         n += STEPN; m += STEPM;
     }
 

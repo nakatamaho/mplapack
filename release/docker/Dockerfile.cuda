@@ -14,12 +14,17 @@ RUN apt-get update && apt-get install -y \
     automake \
     libtool \
     ccache \
+    pkg-config \
     python3 \
     git \
     xz-utils \
     bzip2 \
     patch \
+    ocl-icd-opencl-dev \
+    opencl-headers \
     && rm -rf /var/lib/apt/lists/*
+
+RUN mkdir -p /etc/OpenCL/vendors && printf '%s\n' libnvidia-opencl.so.1 > /etc/OpenCL/vendors/nvidia.icd
 
 # Verify CUDA installation
 RUN nvcc --version

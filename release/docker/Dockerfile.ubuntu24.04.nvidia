@@ -15,10 +15,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     ca-certificates \
     pkg-config \
+    ocl-icd-opencl-dev \
+    opencl-headers \
     xz-utils \
     bzip2 \
     patch \
     && rm -rf /var/lib/apt/lists/*
+
+RUN mkdir -p /etc/OpenCL/vendors && printf '%s\n' libnvidia-opencl.so.1 > /etc/OpenCL/vendors/nvidia.icd
 
 RUN nvcc --version
 

@@ -88,3 +88,8 @@ endif
 if IS_MINGW
 libmpblas_binary128_opt_la_LDFLAGS += -fopenmp -no-undefined -lquadmath
 endif
+
+SUBDIRS =
+if ENABLE_OPENCL
+SUBDIRS += opencl
+endif

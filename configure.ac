@@ -159,16 +159,16 @@ dnl M4 Macro: Auto-detect quadmath library paths (for Intel compilers)
 dnl ===================================================================
 AC_DEFUN([AX_FIND_QUADMATH], [
   AC_MSG_CHECKING([for quadmath library and headers])
-  
+
   quadmath_found=no
   quadmath_include_dir=""
   quadmath_lib_dir=""
-  
+
   dnl First try standard paths
   save_LIBS="$LIBS"
   save_CPPFLAGS="$CPPFLAGS"
   LIBS="-lquadmath $LIBS"
-  
+
   AC_LINK_IFELSE([
     AC_LANG_PROGRAM([[#include <quadmath.h>]],
                      [[__float128 x = 1.0Q; quadmath_snprintf(0,0,"%.1Qf",x);]])
@@ -178,26 +178,26 @@ AC_DEFUN([AX_FIND_QUADMATH], [
   ], [
     dnl Not in standard paths, try to find via gcc
     LIBS="$save_LIBS"
-    
+
     dnl Try to get GCC's include path
     if command -v gcc >/dev/null 2>&1; then
       gcc_include=$(gcc -print-file-name=include 2>/dev/null)
       if test -n "$gcc_include" && test -f "$gcc_include/quadmath.h"; then
         quadmath_include_dir="$gcc_include"
       fi
-      
+
       dnl Try to get GCC's lib path
       gcc_libdir=$(gcc -print-file-name=libquadmath.so 2>/dev/null | xargs dirname 2>/dev/null)
       if test -z "$gcc_libdir" || ! test -d "$gcc_libdir"; then
         gcc_libdir=$(gcc -print-file-name=libquadmath.a 2>/dev/null | xargs dirname 2>/dev/null)
       fi
-      
+
       dnl Try with detected paths
       if test -n "$quadmath_include_dir" && test -n "$gcc_libdir" && test -d "$gcc_libdir"; then
         quadmath_lib_dir="$gcc_libdir"
         CPPFLAGS="$save_CPPFLAGS -idirafter $quadmath_include_dir"
         LIBS="-L$quadmath_lib_dir -lquadmath $save_LIBS"
-        
+
         AC_LINK_IFELSE([
           AC_LANG_PROGRAM([[#include <quadmath.h>]],
                            [[__float128 x = 1.0Q; quadmath_snprintf(0,0,"%.1Qf",x);]])
@@ -212,14 +212,14 @@ AC_DEFUN([AX_FIND_QUADMATH], [
         ])
       fi
     fi
-    
+
     if test "x$quadmath_found" = "xno"; then
       AC_MSG_RESULT([no])
       CPPFLAGS="$save_CPPFLAGS"
       LIBS="$save_LIBS"
     fi
   ])
-  
+
   dnl Export results
   if test "x$quadmath_found" = "xyes"; then
     dnl Only set CPPFLAGS if quadmath.h is NOT in standard paths
@@ -237,7 +237,7 @@ AC_DEFUN([AX_FIND_QUADMATH], [
     fi
     QUADMATH_LIBS="-lquadmath"
   fi
-  
+
   AC_SUBST([QUADMATH_CPPFLAGS])
   AC_SUBST([QUADMATH_LDFLAGS])
   AC_SUBST([QUADMATH_LIBS])
@@ -303,7 +303,7 @@ dnl dummy for Intel Xeon Phi (aka MIC)
 IS_MIC=0
 AM_CONDITIONAL(IS_MIC, test x$IS_MIC = x1)
 
-dnl enable debug; compare with reference LAPACK and BLAS. 
+dnl enable debug; compare with reference LAPACK and BLAS.
 dnl when enable this flag, we perform full build;
 dnl all mp versions of mplapack and mpblas, etc.
 AC_ARG_ENABLE(test,
@@ -334,7 +334,7 @@ AM_CONDITIONAL(ENABLE_CUDA, test x$enable_cuda = xyes)
 
 AC_ARG_WITH(cudatoolkithome,
 AS_HELP_STRING([--with-cudatoolkithome], [Specify path to CUDA Toolkit (default: /usr/local/cuda)]),
-[ CUDATOOLKITHOME="$withval"], 
+[ CUDATOOLKITHOME="$withval"],
 [ CUDATOOLKITHOME=/usr/local/cuda]
 )
 
@@ -371,13 +371,77 @@ AC_SUBST(CUDA_VERSION_MAJOR)
 AC_SUBST(IS_CUDA_VERSION_MAJOR_3)
 AC_SUBST(NVCC)
 
+# ---- OpenCL detection ----
+AC_ARG_WITH([opencl],
+  [AS_HELP_STRING([--with-opencl@<:@=DIR@:>@],
+     [enable OpenCL; optionally a vendor SDK prefix, e.g. /usr/local/cuda])],
+  [], [with_opencl=check])
+AC_ARG_WITH([opencl-include],
+  [AS_HELP_STRING([--with-opencl-include=DIR], [OpenCL headers dir])],
+  [OPENCL_CPPFLAGS="-I$withval"], [])
+AC_ARG_WITH([opencl-lib],
+  [AS_HELP_STRING([--with-opencl-lib=DIR], [OpenCL library dir])],
+  [OPENCL_LDFLAGS="-L$withval"], [])
+
+have_opencl=no
+OPENCL_CFLAGS=
+OPENCL_LIBS=
+OPENCL_VERSION_DEF="-DCL_TARGET_OPENCL_VERSION=300"
+
+AS_IF([test "x$with_opencl" != xno], [
+  AS_IF([test -d "$with_opencl"], [
+    OPENCL_CPPFLAGS="$OPENCL_CPPFLAGS -I$with_opencl/include"
+    OPENCL_LDFLAGS="$OPENCL_LDFLAGS -L$with_opencl/lib64 -L$with_opencl/lib"
+  ])
+
+  PKG_PROG_PKG_CONFIG
+  PKG_CHECK_MODULES([OPENCL], [OpenCL],
+    [have_opencl=yes
+     OPENCL_CFLAGS="$OPENCL_CFLAGS $OPENCL_VERSION_DEF"],
+    [
+      save_CPPFLAGS="$CPPFLAGS"; save_LDFLAGS="$LDFLAGS"; save_LIBS="$LIBS"
+      CPPFLAGS="$CPPFLAGS $OPENCL_CPPFLAGS $OPENCL_VERSION_DEF"
+      LDFLAGS="$LDFLAGS $OPENCL_LDFLAGS"
+
+      case "$host_os" in
+        darwin*)
+          AC_CHECK_HEADER([OpenCL/cl.h],
+            [AC_DEFINE([HAVE_OPENCL_CL_H], [1], [Define if <OpenCL/cl.h> exists])
+             OPENCL_LIBS="-framework OpenCL"; have_opencl=yes],
+            [AC_MSG_WARN([OpenCL/cl.h not found])])
+          ;;
+        *)
+          AC_CHECK_HEADER([CL/cl.h],
+            [AC_DEFINE([HAVE_CL_CL_H], [1], [Define if <CL/cl.h> exists])
+             AC_CHECK_LIB([OpenCL], [clGetPlatformIDs],
+               [OPENCL_LIBS="-lOpenCL"; have_opencl=yes],
+               [AC_MSG_WARN([libOpenCL (ICD loader) not found])])],
+            [AC_MSG_WARN([CL/cl.h not found])])
+          ;;
+      esac
+
+      OPENCL_CFLAGS="$OPENCL_CPPFLAGS $OPENCL_VERSION_DEF"
+      CPPFLAGS="$save_CPPFLAGS"; LDFLAGS="$save_LDFLAGS"; LIBS="$save_LIBS"
+    ])
+])
+
+AS_IF([test "x$with_opencl" = xyes && test "x$have_opencl" = xno],
+  [AC_MSG_ERROR([OpenCL requested but not found])])
+AS_IF([test "x$have_opencl" = xyes],
+  [AC_DEFINE([HAVE_OPENCL], [1], [Define if OpenCL support is available])])
+
+AM_CONDITIONAL([ENABLE_OPENCL], [test "x$have_opencl" = xyes])
+AC_SUBST([OPENCL_CFLAGS])
+AC_SUBST([OPENCL_LDFLAGS])
+AC_SUBST([OPENCL_LIBS])
+
 dnl enable benchmark; compare with reference LAPACK and BLAS, and OpenBLAS
 AC_ARG_ENABLE(benchmark,
 AS_HELP_STRING([--enable-benchmark], [Enable benchmark]))
 AM_CONDITIONAL(ENABLE_BENCHMARK, test x$enable_benchmark = xyes)
 
 dnl disable examples
-AC_ARG_ENABLE(examples, 
+AC_ARG_ENABLE(examples,
 AS_HELP_STRING([--disable-examples], [Disable examples]))
 AM_CONDITIONAL(DISABLE_EXAMPLES, test x$enable_examples = xno)
 
@@ -396,7 +460,7 @@ AC_ARG_ENABLE(mpfr,
 AS_HELP_STRING([--enable-mpfr], [Enable MPFR version]))
 
 dnl We use MPFR version as reference
-dnl so if test is turned on, 
+dnl so if test is turned on,
 if test x$enable_test = x"yes"; then
     enable_mpfr=yes
 fi
@@ -1570,7 +1634,7 @@ if test x$enable_qd = x"yes" -o x$enable_dd = x"yes" -o x$enable_test = x"yes"; 
         AC_MSG_RESULT([Using QD library comes with MPLAPACK])
         QD_INCLUDEDIR=$highest_abs_top_builddir/external/i/QD/include/
         QD_LIBDIR=$highest_abs_top_builddir/external/i/QD/lib/
-    fi   
+    fi
 fi
 AM_CONDITIONAL(SYSTEM_QD, test x$SYSTEM_QD = xyes)
 AC_SUBST(QD_INCLUDEDIR, [$QD_INCLUDEDIR])
@@ -2085,7 +2149,7 @@ if test x"$enable_test" = x"yes"; then
     AC_SUBST(FCLIBS)
     AC_LANG_PUSH([Fortran])
     AC_OPENMP
-    
+
     dnl Intel Fortran compilers prefer -qopenmp over -fopenmp
     dnl Check if FC is ifort or ifx
     if echo "$FC" | grep -qE '(ifort|ifx)'; then
@@ -2094,7 +2158,7 @@ if test x"$enable_test" = x"yes"; then
             AC_MSG_RESULT([Using -qopenmp for Intel Fortran compiler])
         fi
     fi
-    
+
     AC_LANG_POP([Fortran])
 fi
 
@@ -2172,6 +2236,7 @@ mpblas/optimized/dd/cuda/Makefile
 mpblas/optimized/double/Makefile
 mpblas/optimized/binary80/Makefile
 mpblas/optimized/binary128/Makefile
+mpblas/optimized/binary128/opencl/Makefile
 mpblas/test/Makefile
 mpblas/test/gmp/Makefile
 mpblas/test/mpfr/Makefile
