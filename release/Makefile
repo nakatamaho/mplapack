@@ -23,7 +23,7 @@ RUN_REMOTE_TARGETS = CONF_FILE=$(CONF_FILE) LOGDIR=$(LOGDIR) PROJECT_ROOT=$(PROJ
 .PHONY: intel mingw cuda ubuntu debian fedora rocky suse alpine
 .PHONY: amd64 arm64 ppc64le i386 s390x mips64le
 .PHONY: branch-ubuntu branch-debian branch-amd64 branch-cuda branch-rocky branch-suse
-.PHONY: tarball-ubuntu tarball-debian tarball-amd64 tarball-cuda tarball-rocky tarball-suse
+.PHONY: tarball-ubuntu tarball-amd64
 .PHONY: tier1 tier1-macos tier1-linux tier2 tier1-macos-arm64 tier1-macos-amd64 tier1-ubuntu2404-arm64 tier1-ubuntu2604-arm64 tier1-ubuntu2404-amd64 tier1-ubuntu2604-amd64 tier1-ubuntu2404-mingw64-amd64 tier1-ubuntu2604-mingw64-amd64 tier1-ubuntu2404-inteloneapi-amd64 tier1-ubuntu2604-inteloneapi-amd64 tier1-debian12-i386 tier1-debian13-i386
 .PHONY: ccache-stats ccache-clear
 
@@ -39,10 +39,10 @@ dist:
 	@./build-all.sh dist
 
 tarball:
-	@./build-all.sh tarball
+	@TARBALL= ./build-all.sh tarball
 
 tarball-with:
-	@test -n "$(TARBALL)" || (echo "Usage: make tarball-with TARBALL=path/to/mplapack-x.y.z.tar.gz" && exit 1)
+	@test -n "$(TARBALL)" || (echo "Usage: make tarball-with TARBALL=path/to/mplapack-x.y.z.tar.xz" && exit 1)
 	@TARBALL=$(TARBALL) ./build-all.sh tarball
 
 # === Distro Filters ===
@@ -163,22 +163,10 @@ branch-suse:
 	@FILTER_NAME=suse ./build-all.sh branch
 
 tarball-ubuntu:
-	@FILTER_NAME=ubuntu ./build-all.sh tarball
-
-tarball-debian:
-	@FILTER_NAME=debian ./build-all.sh tarball
+	@TARBALL= FILTER_NAME=ubuntu ./build-all.sh tarball
 
 tarball-amd64:
-	@FILTER_ARCH=amd64 ./build-all.sh tarball
-
-tarball-cuda:
-	@FILTER_NAME=cuda ./build-all.sh tarball
-
-tarball-rocky:
-	@FILTER_NAME=rocky ./build-all.sh tarball
-
-tarball-suse:
-	@FILTER_NAME=suse ./build-all.sh tarball
+	@TARBALL= FILTER_ARCH=amd64 ./build-all.sh tarball
 
 # === ccache Utilities ===
 
@@ -264,8 +252,8 @@ help:
 	@echo "Individual phases:"
 	@echo "  make branch      - branch matrix builds only"
 	@echo "  make dist        - make dist only"
-	@echo "  make tarball     - tarball tests (runs dist if needed)"
-	@echo "  make tarball-with TARBALL=path/to/foo.tar.gz"
+	@echo "  make tarball     - run make dist, then test that tarball"
+	@echo "  make tarball-with TARBALL=path/to/foo.tar.xz"
 	@echo ""
 	@echo "Distro filters:"
 	@echo "  make ubuntu      - Ubuntu only"

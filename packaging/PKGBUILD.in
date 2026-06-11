@@ -16,9 +16,9 @@ makedepends=( 'qd'
               'libmpc'
               'libtool'
               'check')
-source=(mplapack-${pkgver}.tar.gz)
+source=(mplapack-${pkgver}.tar.xz)
 
-#create this sum with the command "sha256sum mplapack-${pkgver}.tar.gz" before each build of the package
+#create this sum with the command "sha256sum mplapack-${pkgver}.tar.xz" before each build of the package
 sha256sums=('5a211622838db5e954355840423c232010335cf1690d5224076f212663de4c84')
 
 build() {

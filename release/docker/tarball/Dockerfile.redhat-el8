@@ -11,6 +11,7 @@ RUN dnf install -y dnf-plugins-core && \
     gcc-c++ \
     gcc-gfortran \
     make \
+    xz \
     gmp-devel \
     mpfr-devel \
     libmpc-devel \
@@ -19,9 +20,9 @@ RUN dnf install -y dnf-plugins-core && \
     && dnf clean all
 
 # Extract and build from tarball
-COPY mplapack-*.tar.gz /tmp/
+COPY mplapack-*.tar.* /tmp/
 WORKDIR /tmp
-RUN tar xzf mplapack-*.tar.gz && rm mplapack-*.tar.gz
+RUN tar xf mplapack-*.tar.* && rm mplapack-*.tar.*
 
 WORKDIR /tmp/mplapack-*
 RUN ./configure && make -j$(nproc)

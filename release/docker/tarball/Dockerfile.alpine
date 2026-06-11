@@ -7,15 +7,16 @@ FROM ${BASE}
 RUN apk add --no-cache \
     build-base \
     gfortran \
+    xz \
     gmp-dev \
     mpfr-dev \
     mpc1-dev \
     openblas-dev
 
 # Extract and build from tarball
-COPY mplapack-*.tar.gz /tmp/
+COPY mplapack-*.tar.* /tmp/
 WORKDIR /tmp
-RUN tar xzf mplapack-*.tar.gz && rm mplapack-*.tar.gz
+RUN tar xf mplapack-*.tar.* && rm mplapack-*.tar.*
 
 WORKDIR /tmp/mplapack-*
 RUN ./configure && make -j$(nproc)

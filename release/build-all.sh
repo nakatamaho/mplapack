@@ -114,6 +114,76 @@ abspath() {
     fi
 }
 
+
+write_checksum_file() {
+    # Usage: write_checksum_file <sha256|md5> <tarball> <output-file>
+    local algorithm="$1" tarball="$2" output="$3"
+    local dir base
+    dir="$(dirname "$tarball")"
+    base="$(basename "$tarball")"
+
+    (
+        cd "$dir"
+        case "$algorithm" in
+            sha256)
+                if command -v sha256sum >/dev/null 2>&1; then
+                    sha256sum "$base"
+                elif command -v shasum >/dev/null 2>&1; then
+                    shasum -a 256 "$base"
+                elif command -v openssl >/dev/null 2>&1; then
+                    openssl dgst -sha256 -r "$base"
+                else
+                    echo "ERROR: no sha256 checksum command found" >&2
+                    exit 1
+                fi
+                ;;
+            md5)
+                if command -v md5sum >/dev/null 2>&1; then
+                    md5sum "$base"
+                elif command -v md5 >/dev/null 2>&1; then
+                    md5 -r "$base"
+                elif command -v openssl >/dev/null 2>&1; then
+                    openssl dgst -md5 -r "$base"
+                else
+                    echo "ERROR: no md5 checksum command found" >&2
+                    exit 1
+                fi
+                ;;
+            *)
+                echo "ERROR: unknown checksum algorithm: $algorithm" >&2
+                exit 1
+                ;;
+        esac
+    ) > "$output"
+}
+
+report_tarball() {
+    # Create checksum sidecars next to the tarball and print the release artifact summary.
+    local tarball="$1"
+    local tarball_abs sha_file md5_file sha md5
+
+    if [[ -z "$tarball" || ! -f "$tarball" ]]; then
+        log "ERROR: tarball not found: ${tarball:-<empty>}"
+        exit 1
+    fi
+
+    tarball_abs="$(abspath "$tarball")"
+    sha_file="${tarball_abs}.sha256sum"
+    md5_file="${tarball_abs}.md5sum"
+
+    write_checksum_file sha256 "$tarball_abs" "$sha_file"
+    write_checksum_file md5 "$tarball_abs" "$md5_file"
+
+    read -r sha _ < "$sha_file"
+    read -r md5 _ < "$md5_file"
+
+    log "Tarball: $tarball_abs"
+    log "SHA256: $sha"
+    log "SHA256 file: $sha_file"
+    log "MD5: $md5"
+    log "MD5 file: $md5_file"
+}
+
 setup_ccache() {
     local conf="$HOST_CCACHE_DIR/ccache.conf"
 
@@ -289,6 +359,12 @@ make_dist() {
         exit 1
     fi
 
+    log "Generating compare Makefile.am files..."
+    (
+        cd mplapack/test/compare
+        bash gen.Makefile.am.sh
+    ) > "$distdir/gen_compare_makefiles.log" 2>&1
+
     log "Running autoreconf..."
     autoreconf -fi > "$distdir/autoreconf.log" 2>&1
 
@@ -298,9 +374,10 @@ make_dist() {
     log "Running make dist..."
     make dist > "$distdir/make_dist.log" 2>&1
 
-    cp mplapack-*.tar.gz "$distdir/"
-    TARBALL=$(ls "$distdir"/mplapack-*.tar.gz | head -1)
+    TARBALL=$(ls -t mplapack-*.tar.xz | head -1)
+    TARBALL=$(abspath "$TARBALL")
     log "Created: $TARBALL"
+    report_tarball "$TARBALL"
 
     cd "$SCRIPT_DIR"
 }
@@ -538,7 +615,11 @@ case "${1:-}" in
         show_summary
         ;;
     tarball)
-        [[ -z "$TARBALL" ]] && make_dist
+        if [[ -z "$TARBALL" ]]; then
+            make_dist
+        else
+            report_tarball "$TARBALL"
+        fi
         PHASE=tarball run_matrix | tee "$LOGDIR/results.csv"
         show_summary
         ;;

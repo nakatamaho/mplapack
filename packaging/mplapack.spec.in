@@ -13,7 +13,7 @@ Vendor:         Maho Nakata <maho@riken.jp>
 Group:          -
 License:        The MPLAPACK is a free software (BSD-2-Clause style license with original license by LAPACK)
 URL:            https://github.com/nakatamaho/mplapack
-Source0:        mplapack-%{version}.tar.gz
+Source0:        mplapack-%{version}.tar.xz
 BuildRoot:      %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 
 BuildRequires:  autoconf

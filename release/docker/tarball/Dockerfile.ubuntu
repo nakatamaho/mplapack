@@ -1,5 +1,5 @@
 # Dockerfile.ubuntu-tarball
-# GCC build for Debian/Ubuntu (tarball: no autoreconf needed)
+# GCC build for Debian/Ubuntu tarballs (no top-level autoreconf; bundled deps may use autotools)
 
 ARG BASE=ubuntu:22.04
 FROM ${BASE}
@@ -7,26 +7,23 @@ FROM ${BASE}
 RUN apt-get update && apt-get install -y \
     build-essential \
     gfortran \
+    autoconf \
+    automake \
+    libtool \
+    m4 \
+    xz-utils \
+    ccache \
     && rm -rf /var/lib/apt/lists/*
 
-# Extract tarball
-COPY mplapack-*.tar.gz /tmp/
-WORKDIR /tmp
-RUN tar xzf mplapack-*.tar.gz && rm mplapack-*.tar.gz
+ENV CC="ccache gcc"
+ENV CXX="ccache g++"
+ENV FC="ccache gfortran"
+ENV CCACHE_DIR=/ccache
+ENV PATH="/usr/lib/ccache:${PATH}"
 
-WORKDIR /tmp/mplapack-*
+COPY common/tarball-smoke.sh /tarball-smoke.sh
+RUN chmod +x /tarball-smoke.sh
 
-# Detect architecture and set configure options
-RUN ARCH=$(dpkg --print-architecture) && \
-    echo "Detected architecture: $ARCH" && \
-    COMMON_OPTS="--enable-gmp=yes --enable-mpfr=yes --enable-binary128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes --enable-benchmark=yes" && \
-    if [ "$ARCH" = "amd64" ] || [ "$ARCH" = "i386" ]; then \
-        CONFIGURE_OPTS="$COMMON_OPTS --enable-binary80=yes"; \
-    else \
-        CONFIGURE_OPTS="$COMMON_OPTS"; \
-    fi && \
-    echo "Configure options: $CONFIGURE_OPTS" && \
-    ./configure $CONFIGURE_OPTS && \
-    make -j$(nproc)
+WORKDIR /work
 
-CMD ["make", "check"]
+CMD ["/tarball-smoke.sh"]
