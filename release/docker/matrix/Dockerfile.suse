@@ -11,6 +11,8 @@ RUN zypper --non-interactive install \
     autoconf \
     automake \
     libtool \
+    pkgconf \
+    pkgconf-m4 \
     ccache \
     python3 \
     git-core \

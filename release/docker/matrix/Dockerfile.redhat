@@ -31,6 +31,7 @@ RUN set -eux; \
         libarchive \
         gcc gcc-c++ gfortran make \
         autoconf automake libtool cmake \
+        pkgconf-pkg-config pkgconf-m4 \
         which findutils diffutils tar xz bzip2 patch; \
     if dnf -q list available ccache >/dev/null 2>&1; then \
         dnf -y install ccache; \

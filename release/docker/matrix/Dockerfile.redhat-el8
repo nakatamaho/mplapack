@@ -15,6 +15,7 @@ RUN set -eux; \
       ccache \
       gcc gcc-c++ gcc-gfortran make \
       autoconf automake libtool \
+      pkgconf-pkg-config pkgconf-m4 \
       which findutils diffutils tar xz bzip2 patch \
     && dnf clean all
 

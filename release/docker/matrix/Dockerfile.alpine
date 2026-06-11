@@ -10,6 +10,7 @@ RUN apk add --no-cache \
     autoconf \
     automake \
     libtool \
+    pkgconf \
     ccache \
     python3 \
     git \
