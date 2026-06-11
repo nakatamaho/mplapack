@@ -230,12 +230,7 @@ Create corresponding Dockerfile under `release/docker/matrix/`, `release/docker/
 | distcheck/Dockerfile.debian-i386 | Tier 1 Debian i386 release distcheck |
 | distcheck/Dockerfile.intel | Tier 1 Intel oneAPI release distcheck |
 | distcheck/Dockerfile.mingw | Tier 1 MinGW-w64 release distcheck |
-| tarball/Dockerfile.debian | Debian tarball build |
-| tarball/Dockerfile.ubuntu | Ubuntu tarball build |
-| tarball/Dockerfile.redhat | Fedora/Rocky tarball build |
-| tarball/Dockerfile.suse | openSUSE tarball build |
-| tarball/Dockerfile.alpine | Alpine tarball build |
-| tarball/Dockerfile.cuda | CUDA tarball build |
+| tarball/Dockerfile.ubuntu | Ubuntu tarball smoke test |
 
 ## Troubleshooting
 
@@ -360,7 +355,8 @@ release/
 ├── .gitignore             # Ignore logs and artifacts
 ├── docker/
 │   ├── common/
-│   │   └── entrypoint.sh
+│   │   ├── entrypoint.sh
+│   │   └── tarball-smoke.sh
 │   ├── matrix/
 │   │   ├── Dockerfile.debian
 │   │   ├── Dockerfile.redhat
@@ -378,13 +374,7 @@ release/
 │   │   ├── Dockerfile.intel
 │   │   └── Dockerfile.mingw
 │   └── tarball/
-│       ├── Dockerfile.debian
-│       ├── Dockerfile.ubuntu
-│       ├── Dockerfile.redhat
-│       ├── Dockerfile.redhat-el8
-│       ├── Dockerfile.suse
-│       ├── Dockerfile.alpine
-│       └── Dockerfile.cuda
+│       └── Dockerfile.ubuntu
 └── logs/                  # Build logs (gitignored)
     └── YYYYMMDD_HHMMSS/
         ├── dist/

@@ -282,6 +282,7 @@ release/buildtest_tier1_ubuntu_inteloneapi_amd64.sh \
 release/buildtest_tier1_ubuntu_arm64.sh \
 release/buildtest_tier1_debian_i386.sh \
 release/docker/common/entrypoint.sh \
+release/docker/common/tarball-smoke.sh \
 release/docker/distcheck/Dockerfile.debian-i386 \
 release/docker/distcheck/Dockerfile.intel \
 release/docker/distcheck/Dockerfile.mingw \
@@ -302,12 +303,6 @@ release/docker/matrix/Dockerfile.redhat-el8 \
 release/docker/matrix/Dockerfile.suse \
 release/docker/matrix/run-ubuntu-intel-build.sh \
 release/docker/matrix/run-ubuntu-mingw64-build.sh \
-release/docker/tarball/Dockerfile.alpine \
-release/docker/tarball/Dockerfile.cuda \
-release/docker/tarball/Dockerfile.debian \
-release/docker/tarball/Dockerfile.redhat \
-release/docker/tarball/Dockerfile.redhat-el8 \
-release/docker/tarball/Dockerfile.suse \
 release/docker/tarball/Dockerfile.ubuntu \
 release/run-remote-linux-docker.sh \
 release/run-remote-macos.sh \
