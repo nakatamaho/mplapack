@@ -433,7 +433,7 @@ Tier 1 platforms run the full pipeline including `make distcheck`. Tier 2 platfo
 |---|---|---|---|
 | Optimized implementations as default | | | |
 | Add template version | | | mockup: https://github.com/nakatamaho/mplapack-template |
-| Add gmpfrxx | | | https://math.berkeley.edu/~wilken/code/gmpfrxx/ |
+| Integrate libqd3 and gmpfrxx_mkII | | | Consolidate the next-generation QD and GMP/MPFR C++ wrappers for 3.0.0. |
 | Add OpenBLAS for double benchmark | | | |
 | Update to LAPACK 3.12.1 | | | Patches already bundled in 2.1.0 |
 | FMA for QD, DD | | | |
@@ -445,6 +445,7 @@ Tier 1 platforms run the full pipeline including `make distcheck`. Tier 2 platfo
 | Mixed-precision routines | | | |
 | lp64/ilp64/llp64/ilp32 cleanup | | | |
 | Eliminate compiler warnings | | | |
+| Remove autoreconf/autotools dependency from release tarball builds | | | Tarball users should not need autoconf, automake, libtool, or m4; bundled dependencies should build from shipped configure files. |
 
 ## Old Release Schedules
 
