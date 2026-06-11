@@ -1,4 +1,4 @@
-# Dockerfile.debian-tarball
+# tarball/Dockerfile.debian
 # GCC build for Debian/Ubuntu (tarball: no autoreconf needed)
 
 ARG BASE=debian:12

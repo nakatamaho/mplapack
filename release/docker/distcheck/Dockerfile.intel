@@ -1,6 +1,6 @@
 # Dockerfile.intel
-# Intel oneAPI build environment for Ubuntu (branch: requires autoreconf)
-# Build happens at runtime with ccache mounted from host
+# Intel oneAPI release distcheck environment for Ubuntu
+# Distcheck runs at runtime with ccache mounted from host
 ARG BASE=ubuntu:24.04
 FROM ${BASE}
 RUN apt-get update && apt-get install -y \
@@ -42,6 +42,6 @@ ENV MPLAPACK_REPO=https://github.com/nakatamaho/mplapack.git
 ENV MPLAPACK_REF="master"
 
 WORKDIR /work
-COPY run-ubuntu-intel-distcheck.sh /run-ubuntu-intel-distcheck.sh
+COPY distcheck/run-ubuntu-intel-distcheck.sh /run-ubuntu-intel-distcheck.sh
 RUN chmod +x /run-ubuntu-intel-distcheck.sh
 CMD ["/run-ubuntu-intel-distcheck.sh"]

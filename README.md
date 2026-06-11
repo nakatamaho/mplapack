@@ -84,10 +84,10 @@ BSD-style license, supplemental to the original LAPACK license.
 | Tier | Guarantee | Platforms |
 |---|---|---|
 | **Tier 1** | Dedicated release `buildtest` target; `make distcheck` + full test suite | macOS 15/26 (amd64/arm64), Ubuntu 24.04/26.04 (amd64/arm64), Windows / MinGW-w64 via Ubuntu 24.04/26.04 (amd64), Ubuntu 24.04/26.04 Intel oneAPI (amd64), Debian 12/13 i386 |
-| **Tier 2** | Build only / matrix coverage without a dedicated release `buildtest` target | Other Debian/Ubuntu architectures and versions, Alpine Linux 3.19–3.23, Rocky Linux 8/9/10, Fedora 42/43, openSUSE Leap 15.6/16.0, openSUSE Tumbleweed |
+| **Tier 2** | Docker branch build matrix coverage via `make tier2`; no dedicated release `buildtest` target | Other Debian/Ubuntu architectures and versions, Alpine Linux 3.19–3.23, Rocky Linux 8/9/10, Fedora 42/43, openSUSE Leap 15.6/16.0, openSUSE Tumbleweed |
 | **Tier 3** | Patches accepted; no CI coverage | Other platforms |
 
-Release test targets are run from `release/`:
+Release test targets are run from `release/`. `make tier1` runs dedicated remote buildtests; `make tier2` runs the Docker branch matrix entries from `release/build-matrix.conf`.
 
 | Tier | Make target | OS | CPU | Host | Backend |
 |---|---|---|---|---|---|
@@ -382,7 +382,7 @@ bash fable/go_testing.sh  # test programs (EIG/LIN/MATGEN)
 
 ### Tier-S Representative Gate Matrix (Release Blockers)
 
-Tier 1 platforms run the full pipeline including `make distcheck`. Tier 2 platforms run build only.
+Tier 1 platforms run the full pipeline including `make distcheck`. Tier 2 platforms run the Docker branch matrix from `release/build-matrix.conf`.
 
 | # | Tier | OS | Arch | Compiler | binary80 | binary128 | Required tasks | Date |
 |---:|:---:|:---|:---|:---|:---:|:---:|:---|:---|
@@ -401,7 +401,7 @@ Tier 1 platforms run the full pipeline including `make distcheck`. Tier 2 platfo
 ### Tier Policy
 
 > **Tier 1 (release blockers):** `make distcheck` must pass on all Tier 1 platforms.
-> **Tier 2 (build guarantee):** build only; not release-blocking.
+> **Tier 2 (matrix coverage):** Docker branch build matrix coverage; not release-blocking.
 > **Tier 3 (patches accepted):** no CI coverage.
 
 #### CPU Architecture Tiers

@@ -40,6 +40,6 @@ ENV MPLAPACK_REPO=https://github.com/nakatamaho/mplapack.git
 ENV MPLAPACK_REF="master"
 
 WORKDIR /work
-COPY run-ubuntu-nvidia-distcheck.sh /run-ubuntu-nvidia-distcheck.sh
+COPY distcheck/run-ubuntu-nvidia-distcheck.sh /run-ubuntu-nvidia-distcheck.sh
 RUN chmod +x /run-ubuntu-nvidia-distcheck.sh
 CMD ["/run-ubuntu-nvidia-distcheck.sh"]

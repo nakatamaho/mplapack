@@ -48,7 +48,7 @@ safe_rmdir() {
 : "${MPLAPACK_REF:=master}"
 : "${MPLAPACK_DISTRO_VERSION:=24.04}"
 : "${MPLAPACK_DOCKER_BASE:=ubuntu:${MPLAPACK_DISTRO_VERSION}}"
-: "${MPLAPACK_DOCKERFILE:=release/docker/Dockerfile.ubuntu}"
+: "${MPLAPACK_DOCKERFILE:=release/docker/distcheck/Dockerfile.ubuntu}"
 : "${MPLAPACK_DOCKER_CONTEXT:=release/docker}"
 : "${MPLAPACK_IMAGE_TAG:=mplapack-tier1-ubuntu-arm64:latest}"
 : "${MPLAPACK_CCACHE_DIR:=/Users/maho/.ccache}"

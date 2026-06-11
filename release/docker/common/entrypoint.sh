@@ -11,7 +11,7 @@
 #           uname -m reports "i686".
 #
 # Usage in Dockerfile:
-#   COPY entrypoint.sh /entrypoint.sh
+#   COPY common/entrypoint.sh /entrypoint.sh
 #   RUN chmod +x /entrypoint.sh
 #   ENTRYPOINT ["/entrypoint.sh"]
 #   CMD ["/bin/bash", "-lc", "cd /work && ./configure && make -j$(nproc)"]

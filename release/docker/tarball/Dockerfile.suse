@@ -1,19 +1,19 @@
-# Dockerfile.redhat-tarball
-# GCC build for RHEL/Fedora (tarball: no autoreconf needed)
+# tarball/Dockerfile.suse
+# GCC build for openSUSE (tarball: no autoreconf needed)
 
-ARG BASE=fedora:39
+ARG BASE=opensuse/leap:15.5
 FROM ${BASE}
 
-RUN dnf install -y \
+RUN zypper --non-interactive install \
     gcc-c++ \
-    gcc-gfortran \
+    gcc-fortran \
     make \
     gmp-devel \
     mpfr-devel \
-    libmpc-devel \
+    mpc-devel \
     blas-devel \
     lapack-devel \
-    && dnf clean all
+    && zypper clean --all
 
 # Extract and build from tarball
 COPY mplapack-*.tar.gz /tmp/

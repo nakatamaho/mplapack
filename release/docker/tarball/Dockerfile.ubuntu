@@ -1,4 +1,4 @@
-# Dockerfile.debian-tarball
+# Dockerfile.ubuntu-tarball
 # GCC build for Debian/Ubuntu (tarball: no autoreconf needed)
 
 ARG BASE=ubuntu:22.04

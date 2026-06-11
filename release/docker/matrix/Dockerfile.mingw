@@ -1,0 +1,22 @@
+# Dockerfile.mingw
+# MinGW-w64 build environment for Ubuntu/Debian branch matrix.
+ARG BASE=ubuntu:24.04
+FROM ${BASE}
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y     build-essential     ca-certificates     gcc-mingw-w64-x86-64-posix     g++-mingw-w64-x86-64-posix     gfortran-mingw-w64-x86-64-posix     wine     wine64     autoconf     automake     libtool     pkg-config     ccache     python3     git     xz-utils     bzip2     patch     file     && rm -rf /var/lib/apt/lists/*
+
+ENV CCACHE_DIR=/ccache
+ENV PATH="/usr/lib/ccache:${PATH}"
+ENV CC="ccache x86_64-w64-mingw32-gcc-posix"
+ENV CXX="ccache x86_64-w64-mingw32-g++-posix"
+ENV FC="ccache x86_64-w64-mingw32-gfortran-posix"
+ENV WINEDEBUG=-all
+ENV MPLAPACK_REPO=https://github.com/nakatamaho/mplapack.git
+ENV MPLAPACK_REF="master"
+
+WORKDIR /work
+COPY matrix/run-ubuntu-mingw64-build.sh /run-ubuntu-mingw64-build.sh
+RUN chmod +x /run-ubuntu-mingw64-build.sh
+CMD ["/run-ubuntu-mingw64-build.sh"]

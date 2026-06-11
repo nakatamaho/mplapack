@@ -11,7 +11,7 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 CONF_FILE="${CONF_FILE:-$SCRIPT_DIR/build-matrix.conf}"
 LOGDIR="${LOGDIR:-$SCRIPT_DIR/logs/$(date +%Y%m%d_%H%M%S)}"
 SUCCESS_DIR="${SUCCESS_DIR:-$SCRIPT_DIR/success}"
-DOCKER_DIR="$SCRIPT_DIR/../docker/release"
+DOCKER_DIR="$SCRIPT_DIR/docker"
 TARBALL="${TARBALL:-}"
 PHASE="${PHASE:-all}"
 FILTER_NAME="${FILTER_NAME:-}"
@@ -313,8 +313,7 @@ build_one() {
     local base=$2
     local arch=$3
     local dockerfile=$4
-    local test_cmd=$5
-    local source_type=$6
+    local source_type=$5
 
     # Refuse editor backup Dockerfiles (very common footgun: Dockerfile.debian~)
     if [[ "$dockerfile" == *"~" ]]; then
@@ -346,7 +345,7 @@ build_one() {
     if [[ -L "$stamp" && -e "$stamp" ]]; then
         log "  (Already passed; skipping $name / ${arch_short} / $source_type)"
         log "  (Success log: $(readlink "$stamp"))"
-        echo "$name,$arch_short,$base,test,SKIPPED,0,$source_type"
+        echo "$name,$arch_short,$base,build,SKIPPED,0,$source_type"
         return 0
     fi
 
@@ -413,9 +412,6 @@ fi
         log "  (i386 on amd64: entrypoint.sh will apply linux32 personality)"
     fi
 
-    # Pass test command via env; the Dockerfile CMD runs it after the build.
-    docker_run_args+=( -e TEST_CMD="$test_cmd" )
-
     if [[ -n "$gpu_flag" ]]; then
         # gpu_flag may contain multiple tokens (e.g., "--gpus all")
         docker_run_args+=( $gpu_flag )
@@ -444,44 +440,49 @@ fi
         return 1
     fi
 
-    # Run build + test in a single container.
+    # Run the branch/tarball build in a single container.
     # /work is tmpfs so a second docker run would lose all build artifacts.
-    # The Dockerfile CMD does the build; TEST_CMD env var triggers tests at the end.
     if ! docker run "${docker_run_args[@]}" \
         "$tag" > "$logfile" 2>&1; then
 
         local elapsed=$(($(date +%s) - start))
-        # Inspect the log to distinguish build vs test failure
-        if grep -q '=== Running tests ===' "$logfile" 2>/dev/null; then
-            echo "$name,$arch_short,$base,test,FAILED,$elapsed,$source_type"
-        else
-            echo "$name,$arch_short,$base,build,FAILED,$elapsed,$source_type"
-        fi
+        echo "$name,$arch_short,$base,build,FAILED,$elapsed,$source_type"
         return 1
     fi
 
     local elapsed=$(($(date +%s) - start))
     ln -sfn "$(abspath "$logfile")" "$stamp"
-    echo "$name,$arch_short,$base,test,OK,$elapsed,$source_type"
+    echo "$name,$arch_short,$base,build,OK,$elapsed,$source_type"
 }
 
 # Process build matrix
 run_matrix() {
     echo "name,arch,base,stage,result,elapsed,source_type"
 
-    while IFS='|' read -r name base archs dockerfile test_cmd source_type; do
+    while IFS= read -r line; do
         # Skip comments and empty lines
-        [[ -z "$name" || "$name" =~ ^# ]] && continue
+        [[ -z "$line" || "$line" =~ ^[[:space:]]*# ]] && continue
+
+        IFS='|' read -r -a fields <<< "$line"
+        local name="${fields[0]:-}"
+        local base="${fields[1]:-}"
+        local archs="${fields[2]:-}"
+        local dockerfile="${fields[3]:-}"
+        local source_type=""
+
+        if [[ "${fields[5]:-}" == remote-* ]]; then
+            source_type="${fields[5]}"
+        else
+            source_type="${fields[4]:-branch}"
+        fi
 
         # Apply name filter
         [[ -n "$FILTER_NAME" && "$name" != *"$FILTER_NAME"* ]] && continue
 
         # Set defaults
         source_type="${source_type:-branch}"
-        test_cmd="${test_cmd:-make check -j}"
         # Remote targets are launched by explicit Makefile targets, not Docker matrix runs.
         [[ "$source_type" == remote-* ]] && continue
-
 
         # Apply phase filter
         [[ "$PHASE" != "all" && "$source_type" != "$PHASE" ]] && continue
@@ -495,7 +496,7 @@ run_matrix() {
             [[ -n "$FILTER_ARCH" && "$arch_short" != "$FILTER_ARCH" ]] && continue
 
             log "START $name / $arch_short ($source_type)"
-            build_one "$name" "$base" "$arch" "$dockerfile" "$test_cmd" "$source_type" || true
+            build_one "$name" "$base" "$arch" "$dockerfile" "$source_type" || true
         done
     done < "$CONF_FILE"
 }
@@ -543,7 +544,7 @@ case "${1:-}" in
         ;;
     *)
         # Full cycle: branch -> dist -> tarball
-        log "=== Phase 1: Branch tests ==="
+        log "=== Phase 1: Branch matrix builds ==="
         PHASE=branch run_matrix | tee "$LOGDIR/results_branch.csv"
 
         echo "" >&2

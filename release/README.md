@@ -10,7 +10,7 @@ cd release/
 # Full test cycle (branch → make dist → tarball)
 make
 
-# Branch tests only
+# Branch matrix builds only
 make branch
 
 # Tarball tests only (with existing tarball)
@@ -21,13 +21,15 @@ make tarball-with TARBALL=~/mplapack-2.1.0.tar.gz
 
 Defined in `build-matrix.conf`. Format:
 ```
-name|base_image|archs|dockerfile|test_cmd|source_type
+name|base_image|archs|dockerfile|source_type
 ```
 
 ### Source Types
 
 - `branch`: Build from git source (requires autoreconf)
 - `tarball`: Build from release tarball (no autoreconf)
+
+Docker matrix entries are build-only checks; dedicated Tier 1 targets run `make distcheck`.
 
 ### Supported Configurations
 
@@ -60,7 +62,7 @@ make
 ```
 
 This runs:
-1. Branch tests on all configurations
+1. Branch matrix builds on all configurations
 2. `make dist` to generate tarball
 3. Tarball tests on all configurations
 
@@ -86,6 +88,9 @@ make arm64
 make tier1
 make tier1-macos
 make tier1-linux
+
+# Tier 2 Docker matrix tests
+make tier2
 make tier1-macos-amd64   # SSH to macOS amd64 host and run Tier 1 buildtest
 make tier1-macos-arm64   # SSH to macOS arm64 host and run Tier 1 buildtest
 make tier1-ubuntu2404-arm64  # SSH to arm64 host and run Ubuntu 24.04 arm64 Docker distcheck
@@ -138,10 +143,10 @@ logs/20250201_143000/
 
 ```csv
 name,arch,base,stage,result,elapsed,source_type
-ubuntu22,amd64,ubuntu:22.04,test,OK,342,branch
-debian12,s390x,debian:12,test,OK,4521,branch
-cuda124-ubuntu22,amd64,nvidia/cuda:12.4.0-devel-ubuntu22.04,test,OK,567,branch
-rocky9,arm64,rockylinux:9,test,FAILED,892,branch
+ubuntu22,amd64,ubuntu:22.04,build,OK,342,branch
+debian12,s390x,debian:12,build,OK,4521,branch
+cuda124-ubuntu22,amd64,nvidia/cuda:12.4.0-devel-ubuntu22.04,build,OK,567,branch
+rocky9,arm64,rockylinux:9,build,FAILED,892,branch
 ```
 
 ## Prerequisites
@@ -193,31 +198,37 @@ USE_GPU=no make cuda    # Force no GPU (build-only validation)
 Edit `build-matrix.conf`:
 
 ```conf
-# name|base|archs|dockerfile|test_cmd|source_type
-rocky9|rockylinux:9|linux/amd64,linux/arm64|Dockerfile.redhat|make check|branch
-cuda130-ubuntu24|nvidia/cuda:13.0.0-devel-ubuntu24.04|linux/amd64|Dockerfile.cuda|make check|branch
+# name|base|archs|dockerfile|source_type
+rocky9|rockylinux:9|linux/amd64,linux/arm64|matrix/Dockerfile.redhat|branch
+cuda130-ubuntu24|nvidia/cuda:13.0.0-devel-ubuntu24.04|linux/amd64|matrix/Dockerfile.cuda|branch
 ```
 
-Create corresponding Dockerfile in `docker/` if needed.
+Create corresponding Dockerfile under `release/docker/matrix/`, `release/docker/distcheck/`, or `release/docker/tarball/` as appropriate. Matrix rows use paths relative to `release/docker/`.
 
-### Dockerfile Naming Convention
+### Dockerfile Layout
 
-| Dockerfile | Description |
-|------------|-------------|
-| Dockerfile.debian | Debian/Ubuntu, branch build |
-| Dockerfile.debian-tarball | Debian/Ubuntu, tarball build |
-| Dockerfile.redhat | Fedora/Rocky 9+, branch build |
-| Dockerfile.redhat-tarball | Fedora/Rocky 9+, tarball build |
-| Dockerfile.redhat-el8 | Rocky 8 / RHEL 8, branch build |
-| Dockerfile.redhat-el8-tarball | Rocky 8 / RHEL 8, tarball build |
-| Dockerfile.suse | openSUSE, branch build |
-| Dockerfile.suse-tarball | openSUSE, tarball build |
-| Dockerfile.alpine | Alpine, branch build |
-| Dockerfile.alpine-tarball | Alpine, tarball build |
-| Dockerfile.intel | Intel oneAPI, branch build |
-| Dockerfile.mingw | MinGW cross-compile |
-| Dockerfile.cuda | CUDA, branch build |
-| Dockerfile.cuda-tarball | CUDA, tarball build |
+| Path | Description |
+|------|-------------|
+| matrix/Dockerfile.debian | Debian/Ubuntu branch matrix build |
+| matrix/Dockerfile.redhat | Fedora/Rocky 9+ branch matrix build |
+| matrix/Dockerfile.redhat-el8 | Rocky 8 / RHEL 8 branch matrix build |
+| matrix/Dockerfile.suse | openSUSE branch matrix build |
+| matrix/Dockerfile.alpine | Alpine branch matrix build |
+| matrix/Dockerfile.intel | Intel oneAPI branch matrix build |
+| matrix/Dockerfile.mingw | MinGW-w64 branch matrix build |
+| matrix/Dockerfile.cuda | CUDA branch matrix build |
+| distcheck/Dockerfile.ubuntu | Tier 1 Ubuntu release distcheck |
+| distcheck/Dockerfile.ubuntu-nvidia | Tier 1 Ubuntu NVIDIA/CUDA release distcheck |
+| distcheck/Dockerfile.ubuntu24.04.nvidia | Tier 1 Ubuntu 24.04 NVIDIA/CUDA release distcheck |
+| distcheck/Dockerfile.debian-i386 | Tier 1 Debian i386 release distcheck |
+| distcheck/Dockerfile.intel | Tier 1 Intel oneAPI release distcheck |
+| distcheck/Dockerfile.mingw | Tier 1 MinGW-w64 release distcheck |
+| tarball/Dockerfile.debian | Debian tarball build |
+| tarball/Dockerfile.ubuntu | Ubuntu tarball build |
+| tarball/Dockerfile.redhat | Fedora/Rocky tarball build |
+| tarball/Dockerfile.suse | openSUSE tarball build |
+| tarball/Dockerfile.alpine | Alpine tarball build |
+| tarball/Dockerfile.cuda | CUDA tarball build |
 
 ## Troubleshooting
 
@@ -242,7 +253,7 @@ export COMPOSE_HTTP_TIMEOUT=600
 
 ### Rocky 8 package installation fails
 
-Rocky 8 requires PowerTools repository for development packages. The `Dockerfile.redhat-el8` handles this automatically.
+Rocky 8 requires PowerTools repository for development packages. The `matrix/Dockerfile.redhat-el8` handles this automatically.
 
 ### Intel compiler license issues
 
@@ -341,20 +352,32 @@ release/
 ├── build-matrix.conf      # Build configuration matrix
 ├── .gitignore             # Ignore logs and artifacts
 ├── docker/
-│   ├── Dockerfile.debian
-│   ├── Dockerfile.debian-tarball
-│   ├── Dockerfile.redhat
-│   ├── Dockerfile.redhat-tarball
-│   ├── Dockerfile.redhat-el8
-│   ├── Dockerfile.redhat-el8-tarball
-│   ├── Dockerfile.suse
-│   ├── Dockerfile.suse-tarball
-│   ├── Dockerfile.alpine
-│   ├── Dockerfile.alpine-tarball
-│   ├── Dockerfile.intel
-│   ├── Dockerfile.mingw
-│   ├── Dockerfile.cuda
-│   └── Dockerfile.cuda-tarball
+│   ├── common/
+│   │   └── entrypoint.sh
+│   ├── matrix/
+│   │   ├── Dockerfile.debian
+│   │   ├── Dockerfile.redhat
+│   │   ├── Dockerfile.redhat-el8
+│   │   ├── Dockerfile.suse
+│   │   ├── Dockerfile.alpine
+│   │   ├── Dockerfile.intel
+│   │   ├── Dockerfile.mingw
+│   │   └── Dockerfile.cuda
+│   ├── distcheck/
+│   │   ├── Dockerfile.ubuntu
+│   │   ├── Dockerfile.ubuntu-nvidia
+│   │   ├── Dockerfile.ubuntu24.04.nvidia
+│   │   ├── Dockerfile.debian-i386
+│   │   ├── Dockerfile.intel
+│   │   └── Dockerfile.mingw
+│   └── tarball/
+│       ├── Dockerfile.debian
+│       ├── Dockerfile.ubuntu
+│       ├── Dockerfile.redhat
+│       ├── Dockerfile.redhat-el8
+│       ├── Dockerfile.suse
+│       ├── Dockerfile.alpine
+│       └── Dockerfile.cuda
 └── logs/                  # Build logs (gitignored)
     └── YYYYMMDD_HHMMSS/
         ├── dist/

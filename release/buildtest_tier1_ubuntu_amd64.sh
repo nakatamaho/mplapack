@@ -49,15 +49,15 @@ safe_rmdir() {
 : "${MPLAPACK_DISTRO_VERSION:=24.04}"
 : "${MPLAPACK_DOCKER_BASE:=ubuntu:${MPLAPACK_DISTRO_VERSION}}"
 
-DEFAULT_DOCKERFILE="release/docker/Dockerfile.ubuntu"
+DEFAULT_DOCKERFILE="release/docker/distcheck/Dockerfile.ubuntu"
 DEFAULT_DOCKER_BUILD_BASE="${MPLAPACK_DOCKER_BASE}"
 case "${MPLAPACK_DOCKER_BASE}" in
     ubuntu:24.04)
-        DEFAULT_DOCKERFILE="release/docker/Dockerfile.ubuntu24.04.nvidia"
+        DEFAULT_DOCKERFILE="release/docker/distcheck/Dockerfile.ubuntu24.04.nvidia"
         DEFAULT_DOCKER_BUILD_BASE="nvidia/cuda:13.3.0-devel-ubuntu24.04"
         ;;
     ubuntu:*)
-        DEFAULT_DOCKERFILE="release/docker/Dockerfile.ubuntu-nvidia"
+        DEFAULT_DOCKERFILE="release/docker/distcheck/Dockerfile.ubuntu-nvidia"
         DEFAULT_DOCKER_BUILD_BASE="${MPLAPACK_DOCKER_BASE}"
         ;;
 esac

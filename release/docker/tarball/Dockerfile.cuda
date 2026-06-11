@@ -1,4 +1,4 @@
-# Dockerfile.cuda-tarball
+# tarball/Dockerfile.cuda
 # CUDA-enabled build (tarball: no autoreconf needed)
 
 ARG BASE=nvidia/cuda:12.4.0-devel-ubuntu22.04

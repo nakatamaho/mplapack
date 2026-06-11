@@ -48,7 +48,7 @@ safe_rmdir() {
 : "${MPLAPACK_REF:=master}"
 : "${MPLAPACK_DISTRO_VERSION:=12}"
 : "${MPLAPACK_DOCKER_BASE:=debian:${MPLAPACK_DISTRO_VERSION}}"
-: "${MPLAPACK_DOCKERFILE:=release/docker/Dockerfile.debian-i386}"
+: "${MPLAPACK_DOCKERFILE:=release/docker/distcheck/Dockerfile.debian-i386}"
 : "${MPLAPACK_DOCKER_CONTEXT:=release/docker}"
 : "${MPLAPACK_DOCKER_PLATFORM:=linux/386}"
 : "${MPLAPACK_IMAGE_TAG:=mplapack-tier1-debian-i386:latest}"

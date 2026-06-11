@@ -1,4 +1,4 @@
-# Dockerfile.alpine-tarball
+# tarball/Dockerfile.alpine
 # GCC build for Alpine (musl libc, tarball: no autoreconf needed)
 
 ARG BASE=alpine:3.19

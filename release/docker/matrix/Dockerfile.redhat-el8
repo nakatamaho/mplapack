@@ -1,36 +1,32 @@
-# Dockerfile.debian
-# GCC build environment for Debian/Ubuntu (branch: requires autoreconf)
+# Dockerfile.redhat-el8
+# GCC build environment for RHEL 8 / Rocky 8 (branch: requires autoreconf)
 # Build happens at runtime with ccache mounted from host
-ARG BASE=debian:12
-FROM ${BASE}
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    gfortran \
-    autoconf \
-    automake \
-    libtool \
-    ccache \
-    python3 \
-    git \
-    xz-utils \
-    bzip2 \
-    patch \
-    util-linux \
-    && rm -rf /var/lib/apt/lists/*
-# Personality wrapper: when running linux/386 on an x86_64 host, the shared
-# kernel makes uname -m return "x86_64" despite 32-bit userland.
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-ENTRYPOINT ["/entrypoint.sh"]
-# Configure ccache (directory will be mounted at runtime)
 
+ARG BASE=rockylinux:8
+FROM ${BASE}
+
+RUN set -eux; \
+    dnf -y install dnf-plugins-core ca-certificates curl && \
+    (dnf config-manager --set-enabled powertools || true) && \
+    dnf -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm && \
+    dnf -y makecache && \
+    dnf -y install \
+      bash git python3 \
+      ccache \
+      gcc gcc-c++ gcc-gfortran make \
+      autoconf automake libtool \
+      which findutils diffutils tar xz bzip2 patch \
+    && dnf clean all
+
+# Configure ccache (directory will be mounted at runtime)
+ENV CCACHE_DIR=/ccache
+ENV PATH="/usr/lib64/ccache:/usr/lib/ccache:${PATH}"
 ENV CC="ccache gcc"
 ENV CXX="ccache g++"
 ENV FC="ccache gfortran"
-ENV CCACHE_DIR=/ccache
-ENV PATH="/usr/lib/ccache:${PATH}"
 
 ENV MPLAPACK_REPO=https://github.com/nakatamaho/mplapack.git
+# Branch name or commit SHA. Example: release/2.1 or a full SHA.
 ENV MPLAPACK_REF="master"
 
 WORKDIR /work
@@ -49,13 +45,14 @@ CMD ["/bin/bash", "-lc", "\
     cd /work/mplapack; \
     git log -1; \
     \
+    # Autotools prep \
     cd mplapack/test/compare; bash gen.Makefile.am.sh; cd /work/mplapack; \
     autoreconf --force --install; \
     \
-    ARCH=$(dpkg --print-architecture); \
+    ARCH=$(uname -m); \
     echo \"Detected architecture: $ARCH\"; \
     COMMON_OPTS=\"--enable-gmp=yes --enable-mpfr=yes --enable-binary128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes\"; \
-    if [ \"$ARCH\" = \"amd64\" ] || [ \"$ARCH\" = \"i386\" ]; then \
+    if [ \"$ARCH\" = \"x86_64\" ] || [ \"$ARCH\" = \"i686\" ] || [ \"$ARCH\" = \"i386\" ]; then \
         CONFIGURE_OPTS=\"$COMMON_OPTS --enable-benchmark=yes --enable-binary80=yes\"; \
     else \
         CONFIGURE_OPTS=\"$COMMON_OPTS\"; \
@@ -65,9 +62,5 @@ CMD ["/bin/bash", "-lc", "\
     ./configure $CONFIGURE_OPTS; \
     make -j\"$(nproc)\"; \
     make install; \
-    if [ \"$ARCH\" = \"amd64\" ] || [ \"$ARCH\" = \"i386\" ]; then \
-        echo '=== Running make check ==='; \
-        make check -j\"$(nproc)\"; \
-    fi; \
-    echo '=== ccache stats (after) ==='; ccache -s || true; \
+    echo '=== ccache stats (after) ==='; ccache -s; \
 "]

@@ -171,7 +171,7 @@ git -C "$PROJECT_ROOT" update-ref "$bundle_ref" "$MPLAPACK_REF"
 git -C "$PROJECT_ROOT" bundle create "$source_bundle" "$bundle_ref"
 git -C "$PROJECT_ROOT" update-ref -d "$bundle_ref"
 tar -czf "$context_tar" \
-    -C "$PROJECT_ROOT" release/docker docker/release \
+    -C "$PROJECT_ROOT" release/docker \
     -C "$LOGDIR" "$(basename "$source_bundle")"
 
 set +e

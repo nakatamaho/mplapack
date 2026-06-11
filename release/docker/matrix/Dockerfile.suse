@@ -75,9 +75,5 @@ echo \"Configure options: $CONFIGURE_OPTS\"; \
 make -j\"$(nproc)\"; \
 make install; \
 make dist; \
-if [ \"$ARCH\" = \"x86_64\" ] || [ \"$ARCH\" = \"i686\" ] || [ \"$ARCH\" = \"i386\" ]; then \
-    echo '=== Running make check ==='; \
-    make check -j32; \
-fi; \
 echo '=== ccache stats (after) ==='; ccache -s; \
 "]

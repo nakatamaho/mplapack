@@ -1,7 +1,6 @@
-# Dockerfile.ubuntu
-# GCC build environment for Debian/Ubuntu (branch: requires autoreconf)
-# Build happens at runtime with ccache mounted from host
-ARG BASE=ubuntu:22.04
+# Dockerfile.debian-i386
+# Debian i386 GCC build environment for remote release distcheck.
+ARG BASE=debian:12
 FROM ${BASE}
 RUN apt-get update && apt-get install -y \
     build-essential \
@@ -15,17 +14,21 @@ RUN apt-get update && apt-get install -y \
     xz-utils \
     bzip2 \
     patch \
+    util-linux \
     && rm -rf /var/lib/apt/lists/*
-# Configure ccache (directory will be mounted at runtime)
+# Docker --platform linux/386 on x86_64 hosts still shares the host kernel;
+# use linux32 so uname -m reports i686 for GMP/config.guess.
+COPY common/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
 ENV CCACHE_DIR=/ccache
 ENV PATH="/usr/lib/ccache:${PATH}"
 ENV CC="ccache gcc"
 ENV CXX="ccache g++"
 ENV FC="ccache gfortran"
 ENV MPLAPACK_REPO=https://github.com/nakatamaho/mplapack.git
-# Branch name or commit SHA. Example: release/2.1 or a full SHA.
 ENV MPLAPACK_REF="master"
 WORKDIR /work
-COPY run-ubuntu-distcheck.sh /run-ubuntu-distcheck.sh
+COPY distcheck/run-ubuntu-distcheck.sh /run-ubuntu-distcheck.sh
 RUN chmod +x /run-ubuntu-distcheck.sh
 CMD ["/run-ubuntu-distcheck.sh"]

@@ -86,7 +86,7 @@ tier1:
 	@$(RUN_REMOTE_TARGETS) $(TIER1_TARGETS)
 
 tier2:
-	@echo "No dedicated Tier 2 remote buildtest targets; use make branch for matrix coverage."
+	@./build-all.sh branch
 
 tier1-macos:
 	@$(RUN_REMOTE_TARGETS) $(TIER1_MACOS_TARGETS)
@@ -197,10 +197,10 @@ ccache-clear:
 
 list:
 	@echo "=== Build Matrix ==="
-	@printf "%-25s %-45s %-40s %s\n" "NAME" "BASE" "ARCHS" "SOURCE"
-	@echo "----------------------------------------------------------------------------------------------------------------------"
+	@printf "%-38s %-45s %-72s %s\n" "NAME" "BASE" "ARCHS" "SOURCE"
+	@echo "------------------------------------------------------------------------------------------------------------------------------------------------------------------------"
 	@grep -v '^#' $(CONF_FILE) | grep -v '^$$' | \
-		awk -F'|' '{printf "%-25s %-45s %-40s %s\n", $$1, $$2, $$3, $$6}'
+		awk -F'|' '{src=($$6 ~ /^remote-/ ? $$6 : $$5); printf "%-38s %-45s %-72s %s\n", $$1, $$2, $$3, src}'
 
 clean: clean-remote
 	@mkdir -p logs/ $(SUCCESS_DIR)
@@ -262,7 +262,7 @@ help:
 	@echo "  make             - run all (branch -> dist -> tarball)"
 	@echo ""
 	@echo "Individual phases:"
-	@echo "  make branch      - branch tests only"
+	@echo "  make branch      - branch matrix builds only"
 	@echo "  make dist        - make dist only"
 	@echo "  make tarball     - tarball tests (runs dist if needed)"
 	@echo "  make tarball-with TARBALL=path/to/foo.tar.gz"
@@ -290,7 +290,7 @@ help:
 	@echo "  make tier1-ubuntu2604-inteloneapi-amd64 - run Tier 1 Ubuntu 26.04 Intel oneAPI amd64 test"
 	@echo "  make tier1-debian12-i386 - run Tier 1 Debian 12 i386 test"
 	@echo "  make tier1-debian13-i386 - run Tier 1 Debian 13 i386 test"
-	@echo "  make tier2              - show Tier 2 matrix coverage note"
+	@echo "  make tier2              - run Tier 2 Docker build matrix"
 	@echo "  make arm64       - aarch64"
 	@echo "  make ppc64le     - PowerPC 64-bit LE"
 	@echo "  make i386        - x86 32-bit"
@@ -298,11 +298,11 @@ help:
 	@echo "  make mips64le    - MIPS 64-bit LE"
 	@echo ""
 	@echo "Combined filters:"
-	@echo "  make branch-ubuntu    - Ubuntu branch tests"
-	@echo "  make branch-debian    - Debian branch tests"
-	@echo "  make branch-rocky     - Rocky Linux branch tests"
-	@echo "  make branch-suse      - openSUSE branch tests"
-	@echo "  make branch-cuda      - CUDA branch tests"
+	@echo "  make branch-ubuntu    - Ubuntu branch builds"
+	@echo "  make branch-debian    - Debian branch builds"
+	@echo "  make branch-rocky     - Rocky Linux branch builds"
+	@echo "  make branch-suse      - openSUSE branch builds"
+	@echo "  make branch-cuda      - CUDA branch builds"
 	@echo "  make tarball-amd64    - amd64 tarball tests"
 	@echo ""
 	@echo "ccache:"

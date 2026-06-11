@@ -1,3 +1,4 @@
+# MinGW-w64 release distcheck environment for Ubuntu
 ARG BASE=ubuntu:24.04
 FROM ${BASE}
 
@@ -35,6 +36,6 @@ ENV MPLAPACK_REPO=https://github.com/nakatamaho/mplapack.git
 ENV MPLAPACK_REF="master"
 
 WORKDIR /work
-COPY run-ubuntu-mingw64-distcheck.sh /run-ubuntu-mingw64-distcheck.sh
+COPY distcheck/run-ubuntu-mingw64-distcheck.sh /run-ubuntu-mingw64-distcheck.sh
 RUN chmod +x /run-ubuntu-mingw64-distcheck.sh
 CMD ["/run-ubuntu-mingw64-distcheck.sh"]
