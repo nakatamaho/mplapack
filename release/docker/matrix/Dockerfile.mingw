@@ -1,5 +1,5 @@
 # Dockerfile.mingw
-# MinGW-w64 build environment for Ubuntu/Debian branch matrix.
+# MinGW-w64 build environment for Ubuntu/Debian ref matrix.
 ARG BASE=ubuntu:24.04
 FROM ${BASE}
 

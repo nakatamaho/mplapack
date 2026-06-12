@@ -7,11 +7,11 @@ Multi-environment build and test tools for release validation.
 ```bash
 cd release/
 
-# Full test cycle (branch → make dist → tarball)
+# Full test cycle (ref → make dist → tarball)
 make
 
-# Branch matrix builds only
-make branch
+# Git ref matrix builds only
+make ref
 
 # Tarball tests only (with existing tarball)
 make tarball-with TARBALL=~/mplapack-2.1.0.tar.xz
@@ -26,7 +26,7 @@ name|base_image|archs|dockerfile|source_type
 
 ### Source Types
 
-- `branch`: Build from git source (requires autoreconf)
+- `ref`: Build from `MPLAPACK_REF` git ref (requires autoreconf)
 - `tarball`: Build from release tarball (no autoreconf)
 
 Docker matrix entries are build-only checks; dedicated Tier 1 targets run `make distcheck`.
@@ -62,7 +62,7 @@ make
 ```
 
 This runs:
-1. Branch matrix builds on all configurations
+1. Git ref matrix builds on all configurations
 2. `make dist` to generate tarball
 3. Tarball tests on all configurations
 
@@ -101,11 +101,11 @@ make s390x
 make mips64le
 
 # Combined
-make branch-ubuntu
-make branch-debian
-make branch-rocky
-make branch-suse
-make branch-cuda
+make ref-ubuntu
+make ref-debian
+make ref-rocky
+make ref-suse
+make ref-cuda
 make tarball-ubuntu
 make tarball-amd64   # runs the amd64 tarball smoke test on 172.27.109.80 Docker
 make tarball-arm64   # runs the arm64 tarball smoke test on 172.27.109.40 Docker/Colima
@@ -138,7 +138,7 @@ logs/20250201_143000/
 │   ├── configure.log
 │   └── make_dist.log
 ├── results.csv
-├── results_branch.csv
+├── results_ref.csv
 ├── results_tarball.csv
 ├── ubuntu22_amd64_build.log
 ├── ubuntu22_amd64_test.log
@@ -153,10 +153,10 @@ logs/20250201_143000/
 
 ```csv
 name,arch,base,stage,result,elapsed,source_type
-ubuntu22,amd64,ubuntu:22.04,build,OK,342,branch
-debian12,s390x,debian:12,build,OK,4521,branch
-cuda124-ubuntu22,amd64,nvidia/cuda:12.4.0-devel-ubuntu22.04,build,OK,567,branch
-rocky9,arm64,rockylinux:9,build,FAILED,892,branch
+ubuntu22,amd64,ubuntu:22.04,build,OK,342,ref
+debian12,s390x,debian:12,build,OK,4521,ref
+cuda124-ubuntu22,amd64,nvidia/cuda:12.4.0-devel-ubuntu22.04,build,OK,567,ref
+rocky9,arm64,rockylinux:9,build,FAILED,892,ref
 ```
 
 ## Prerequisites
@@ -210,8 +210,8 @@ Edit `build-matrix.conf`:
 ```conf
 # Local Docker rows:
 # name|base|archs|dockerfile|source_type
-rocky9|rockylinux:9|linux/amd64,linux/arm64|matrix/Dockerfile.redhat|branch
-cuda130-ubuntu24|nvidia/cuda:13.0.0-devel-ubuntu24.04|linux/amd64|matrix/Dockerfile.cuda|branch
+rocky9|rockylinux:9|linux/amd64,linux/arm64|matrix/Dockerfile.redhat|ref
+cuda130-ubuntu24|nvidia/cuda:13.0.0-devel-ubuntu24.04|linux/amd64|matrix/Dockerfile.cuda|ref
 
 # Remote tarball Docker rows:
 # name|host|target_dir|dockerfile|command|remote-tarball-docker|docker_base|arch|ccache_dir|ccache_maxsize
@@ -225,14 +225,14 @@ Create corresponding Dockerfile under `release/docker/matrix/`, `release/docker/
 
 | Path | Description |
 |------|-------------|
-| matrix/Dockerfile.debian | Debian/Ubuntu branch matrix build |
-| matrix/Dockerfile.redhat | Fedora/Rocky 9+ branch matrix build |
-| matrix/Dockerfile.redhat-el8 | Rocky 8 / RHEL 8 branch matrix build |
-| matrix/Dockerfile.suse | openSUSE branch matrix build |
-| matrix/Dockerfile.alpine | Alpine branch matrix build |
-| matrix/Dockerfile.intel | Intel oneAPI branch matrix build |
-| matrix/Dockerfile.mingw | MinGW-w64 branch matrix build |
-| matrix/Dockerfile.cuda | CUDA branch matrix build |
+| matrix/Dockerfile.debian | Debian/Ubuntu ref matrix build |
+| matrix/Dockerfile.redhat | Fedora/Rocky 9+ ref matrix build |
+| matrix/Dockerfile.redhat-el8 | Rocky 8 / RHEL 8 ref matrix build |
+| matrix/Dockerfile.suse | openSUSE ref matrix build |
+| matrix/Dockerfile.alpine | Alpine ref matrix build |
+| matrix/Dockerfile.intel | Intel oneAPI ref matrix build |
+| matrix/Dockerfile.mingw | MinGW-w64 ref matrix build |
+| matrix/Dockerfile.cuda | CUDA ref matrix build |
 | distcheck/Dockerfile.ubuntu | Tier 1 Ubuntu release distcheck |
 | distcheck/Dockerfile.ubuntu-nvidia | Tier 1 Ubuntu NVIDIA/CUDA release distcheck |
 | distcheck/Dockerfile.ubuntu24.04.nvidia | Tier 1 Ubuntu 24.04 NVIDIA/CUDA release distcheck |
@@ -338,7 +338,7 @@ cat /proc/sys/fs/binfmt_misc/qemu-aarch64
 
 1. **Quick validation**: Test amd64 only first
    ```bash
-   make branch-amd64
+   make ref-amd64
    ```
 
 2. **Pre-release**: Add arm64

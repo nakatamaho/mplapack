@@ -22,6 +22,7 @@ WORK_MOUNT_MODE="${WORK_MOUNT_MODE:-bind}"  # bind|tmpfs
 REMOTE_TARBALL_SSH="${REMOTE_TARBALL_SSH:-${REMOTE_LINUX_SSH:-ssh}}"
 REMOTE_TARBALL_CCACHE_DIR="${REMOTE_TARBALL_CCACHE_DIR:-}"
 REMOTE_TARBALL_CCACHE_MAXSIZE="${REMOTE_TARBALL_CCACHE_MAXSIZE:-}"
+MPLAPACK_REF="${MPLAPACK_REF:-$(git -C "$PROJECT_ROOT" rev-parse HEAD 2>/dev/null || echo master)}"
 
 # Host directories
 HOST_WORK_DIR="${HOST_WORK_DIR:-/work/mplapack-work}"
@@ -61,32 +62,33 @@ sanitize_token() {
 }
 
 git_meta() {
-    # Print: <branch> <sha7>. If not a git repo, print: nogit nogit
+    # Print: <ref> <sha7>. If not a git repo, print: nogit nogit
     local dir="$1"
-    local br="nogit" sha="nogit"
+    local ref="${MPLAPACK_REF:-nogit}" sha="nogit"
     if command -v git >/dev/null 2>&1 && git -C "$dir" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-        br="$(git -C "$dir" rev-parse --abbrev-ref HEAD 2>/dev/null || echo nogit)"
-        sha="$(git -C "$dir" rev-parse --short=7 HEAD 2>/dev/null || echo nogit)"
+        if git -C "$dir" rev-parse --verify -q "$ref^{commit}" >/dev/null 2>&1; then
+            sha="$(git -C "$dir" rev-parse --short=7 "$ref^{commit}" 2>/dev/null || echo nogit)"
+        fi
     fi
-    echo "$br $sha"
+    echo "$ref $sha"
 }
 
 make_image_tag() {
     # Usage: make_image_tag <name> <arch_short> <source_type>
     local name_raw="$1" arch_short="$2" source_type="$3"
-    local name arch src br sha stamp extra
+    local name arch src ref sha stamp extra
     name="$(sanitize_token "$name_raw")"
     arch="$(sanitize_token "$arch_short")"
     src="$(sanitize_token "$source_type")"
-    read -r br sha <<< "$(git_meta "$PROJECT_ROOT")"
-    br="$(sanitize_token "$br")"
+    read -r ref sha <<< "$(git_meta "$PROJECT_ROOT")"
+    ref="$(sanitize_token "$ref")"
     sha="$(sanitize_token "$sha")"
     stamp="$(date +%Y%m%d_%H%M%S)"
     extra="${EXTRA_TAG:-}"
     if [[ -n "$extra" ]]; then extra="$(sanitize_token "$extra")"; fi
 
-    # Format: <prefix>:<name>-<arch>-<src>-<branch>-<sha>-<timestamp>[-<extra>]
-    local tag="${IMAGE_PREFIX}:${name}-${arch}-${src}-${br}-${sha}-${stamp}"
+    # Format: <prefix>:<name>-<arch>-<src>-<ref>-<sha>-<timestamp>[-<extra>]
+    local tag="${IMAGE_PREFIX}:${name}-${arch}-${src}-${ref}-${sha}-${stamp}"
     if [[ -n "$extra" ]]; then tag="${tag}-${extra}"; fi
     echo "$tag"
 }
@@ -94,11 +96,19 @@ make_image_tag() {
 make_success_stamp() {
     # Usage: make_success_stamp <name> <arch> <source_type>
     local name_raw="$1" arch_raw="$2" source_type_raw="$3"
-    local name arch src
+    local name arch src ref sha ref_part
     name="$(sanitize_token "$name_raw")"
     arch="$(sanitize_token "$arch_raw")"
     src="$(sanitize_token "$source_type_raw")"
-    echo "$SUCCESS_DIR/${name}_${arch}_${src}.ok"
+    if [[ "$source_type_raw" == "ref" ]]; then
+        read -r ref sha <<< "$(git_meta "$PROJECT_ROOT")"
+        ref="$(sanitize_token "$ref")"
+        sha="$(sanitize_token "$sha")"
+        ref_part="_${ref}_${sha}"
+    else
+        ref_part=""
+    fi
+    echo "$SUCCESS_DIR/${name}_${arch}_${src}${ref_part}.ok"
 }
 
 abspath() {
@@ -478,6 +488,7 @@ fi
         -v "$HOST_CCACHE_DIR:/ccache:rw"
         -e CCACHE_DIR=/ccache
         -e CCACHE_MAXSIZE="$CCACHE_MAXSIZE"
+        -e MPLAPACK_REF="$MPLAPACK_REF"
     )
     if [[ "$WORK_MOUNT_MODE" == "bind" ]]; then
         docker_run_args+=( -v "$HOST_WORK_DIR:/work:rw" )
@@ -520,7 +531,7 @@ fi
         return 1
     fi
 
-    # Run the branch/tarball build in a single container.
+    # Run the ref/tarball build in a single container.
     # /work is tmpfs so a second docker run would lose all build artifacts.
     if ! docker run "${docker_run_args[@]}" \
         "$tag" > "$logfile" 2>&1; then
@@ -710,14 +721,14 @@ run_matrix() {
         if [[ "${fields[5]:-}" == remote-* ]]; then
             source_type="${fields[5]}"
         else
-            source_type="${fields[4]:-branch}"
+            source_type="${fields[4]:-ref}"
         fi
 
         # Apply name filter
         [[ -n "$FILTER_NAME" && "$name" != *"$FILTER_NAME"* ]] && continue
 
         # Set defaults
-        source_type="${source_type:-branch}"
+        source_type="${source_type:-ref}"
 
         if [[ "$source_type" == "remote-tarball-docker" ]]; then
             local host="$base"
@@ -813,8 +824,8 @@ case "${1:-}" in
     dist)
         make_dist
         ;;
-    branch)
-        PHASE=branch run_matrix | tee "$LOGDIR/results.csv"
+    ref)
+        PHASE=ref run_matrix | tee "$LOGDIR/results.csv"
         show_summary
         ;;
     tarball)
@@ -827,9 +838,9 @@ case "${1:-}" in
         show_summary
         ;;
     *)
-        # Full cycle: branch -> dist -> tarball
-        log "=== Phase 1: Branch matrix builds ==="
-        PHASE=branch run_matrix | tee "$LOGDIR/results_branch.csv"
+        # Full cycle: ref -> dist -> tarball
+        log "=== Phase 1: Git ref matrix builds ==="
+        PHASE=ref run_matrix | tee "$LOGDIR/results_ref.csv"
 
         echo "" >&2
         make_dist
@@ -839,7 +850,7 @@ case "${1:-}" in
         PHASE=tarball run_matrix | tee "$LOGDIR/results_tarball.csv"
 
         # Merge results
-        cat "$LOGDIR/results_branch.csv" > "$LOGDIR/results.csv"
+        cat "$LOGDIR/results_ref.csv" > "$LOGDIR/results.csv"
         tail -n +2 "$LOGDIR/results_tarball.csv" >> "$LOGDIR/results.csv"
 
         show_summary

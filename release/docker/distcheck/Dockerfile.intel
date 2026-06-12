@@ -38,8 +38,7 @@ ENV CC="ccache icx"
 ENV CXX="ccache icpx"
 ENV FC="ccache ifx"
 ENV MPLAPACK_REPO=https://github.com/nakatamaho/mplapack.git
-# Branch name or commit SHA. Example: release/2.1 or a full SHA.
-# ENV MPLAPACK_REF="release/2.1"
+# Git ref selected by MPLAPACK_REF.
 ENV MPLAPACK_REF="master"
 
 WORKDIR /work

@@ -12,7 +12,7 @@ MACOS_REMOTE_SSH ?= ssh
 REMOTE_LINUX_SSH ?= ssh
 REMOTE_TARBALL_SSH ?= ssh
 
-export CONF_FILE LOGDIR PROJECT_ROOT HOST_WORK_DIR HOST_CCACHE_DIR SUCCESS_DIR REMOTE_TARBALL_SSH
+export CONF_FILE LOGDIR PROJECT_ROOT HOST_WORK_DIR HOST_CCACHE_DIR SUCCESS_DIR REMOTE_TARBALL_SSH MPLAPACK_REF
 
 TIER1_TARGETS := tier1-macos-arm64 tier1-macos-amd64 tier1-ubuntu2404-arm64 tier1-ubuntu2604-arm64 tier1-ubuntu2404-amd64 tier1-ubuntu2604-amd64 tier1-ubuntu2404-mingw64-amd64 tier1-ubuntu2604-mingw64-amd64 tier1-ubuntu2404-inteloneapi-amd64 tier1-ubuntu2604-inteloneapi-amd64 tier1-debian12-i386 tier1-debian13-i386
 TIER1_MACOS_TARGETS := tier1-macos-arm64 tier1-macos-amd64
@@ -20,10 +20,10 @@ TIER1_LINUX_TARGETS := tier1-ubuntu2404-arm64 tier1-ubuntu2604-arm64 tier1-ubunt
 TIER2_TARGETS :=
 RUN_REMOTE_TARGETS = CONF_FILE=$(CONF_FILE) LOGDIR=$(LOGDIR) PROJECT_ROOT=$(PROJECT_ROOT) SUCCESS_DIR=$(SUCCESS_DIR) MACOS_REMOTE_SSH=$(MACOS_REMOTE_SSH) REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-targets-by-host.sh
 
-.PHONY: all branch tarball dist clean clean-remote clean-all clean-success list help
+.PHONY: all ref tarball dist clean clean-remote clean-all clean-success list help
 .PHONY: intel mingw cuda ubuntu debian fedora rocky suse alpine
 .PHONY: amd64 arm64 ppc64le i386 s390x mips64le
-.PHONY: branch-ubuntu branch-debian branch-amd64 branch-cuda branch-rocky branch-suse
+.PHONY: ref-ubuntu ref-debian ref-amd64 ref-cuda ref-rocky ref-suse
 .PHONY: tarball-ubuntu tarball-amd64 tarball-arm64
 .PHONY: tier1 tier1-macos tier1-linux tier2 tier1-macos-arm64 tier1-macos-amd64 tier1-ubuntu2404-arm64 tier1-ubuntu2604-arm64 tier1-ubuntu2404-amd64 tier1-ubuntu2604-amd64 tier1-ubuntu2404-mingw64-amd64 tier1-ubuntu2604-mingw64-amd64 tier1-ubuntu2404-inteloneapi-amd64 tier1-ubuntu2604-inteloneapi-amd64 tier1-debian12-i386 tier1-debian13-i386
 .PHONY: ccache-stats ccache-clear
@@ -33,8 +33,8 @@ RUN_REMOTE_TARGETS = CONF_FILE=$(CONF_FILE) LOGDIR=$(LOGDIR) PROJECT_ROOT=$(PROJ
 all:
 	@./build-all.sh
 
-branch:
-	@./build-all.sh branch
+ref:
+	@./build-all.sh ref
 
 dist:
 	@./build-all.sh dist
@@ -49,45 +49,45 @@ tarball-with:
 # === Distro Filters ===
 
 intel:
-	@FILTER_NAME=intel ./build-all.sh branch
+	@FILTER_NAME=intel ./build-all.sh ref
 
 mingw:
-	@FILTER_NAME=mingw ./build-all.sh branch
+	@FILTER_NAME=mingw ./build-all.sh ref
 
 cuda:
-	@FILTER_NAME=cuda ./build-all.sh branch
+	@FILTER_NAME=cuda ./build-all.sh ref
 
 ubuntu:
-	@FILTER_NAME=ubuntu ./build-all.sh branch
+	@FILTER_NAME=ubuntu ./build-all.sh ref
 
 debian:
-	@FILTER_NAME=debian ./build-all.sh branch
+	@FILTER_NAME=debian ./build-all.sh ref
 
 fedora:
-	@FILTER_NAME=fedora ./build-all.sh branch
+	@FILTER_NAME=fedora ./build-all.sh ref
 
 rocky:
-	@FILTER_NAME=rocky ./build-all.sh branch
+	@FILTER_NAME=rocky ./build-all.sh ref
 
 suse:
-	@FILTER_NAME=suse ./build-all.sh branch
+	@FILTER_NAME=suse ./build-all.sh ref
 
 alpine:
-	@FILTER_NAME=alpine ./build-all.sh branch
+	@FILTER_NAME=alpine ./build-all.sh ref
 
 # === Arch Filters ===
 
 amd64:
-	@FILTER_ARCH=amd64 ./build-all.sh branch
+	@FILTER_ARCH=amd64 ./build-all.sh ref
 
 arm64:
-	@FILTER_ARCH=arm64 ./build-all.sh branch
+	@FILTER_ARCH=arm64 ./build-all.sh ref
 
 tier1:
 	@$(RUN_REMOTE_TARGETS) $(TIER1_TARGETS)
 
 tier2:
-	@./build-all.sh branch
+	@./build-all.sh ref
 
 tier1-macos:
 	@$(RUN_REMOTE_TARGETS) $(TIER1_MACOS_TARGETS)
@@ -132,36 +132,36 @@ tier1-debian13-i386:
 	@REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-linux-docker.sh tier1-debian13-i386
 
 i386:
-	@FILTER_ARCH=386 ./build-all.sh branch
+	@FILTER_ARCH=386 ./build-all.sh ref
 
 ppc64le:
-	@FILTER_ARCH=ppc64le ./build-all.sh branch
+	@FILTER_ARCH=ppc64le ./build-all.sh ref
 
 s390x:
-	@FILTER_ARCH=s390x ./build-all.sh branch
+	@FILTER_ARCH=s390x ./build-all.sh ref
 
 mips64le:
-	@FILTER_ARCH=mips64le ./build-all.sh branch
+	@FILTER_ARCH=mips64le ./build-all.sh ref
 
 # === Combined Filters ===
 
-branch-ubuntu:
-	@FILTER_NAME=ubuntu ./build-all.sh branch
+ref-ubuntu:
+	@FILTER_NAME=ubuntu ./build-all.sh ref
 
-branch-debian:
-	@FILTER_NAME=debian ./build-all.sh branch
+ref-debian:
+	@FILTER_NAME=debian ./build-all.sh ref
 
-branch-amd64:
-	@FILTER_ARCH=amd64 ./build-all.sh branch
+ref-amd64:
+	@FILTER_ARCH=amd64 ./build-all.sh ref
 
-branch-cuda:
-	@FILTER_NAME=cuda ./build-all.sh branch
+ref-cuda:
+	@FILTER_NAME=cuda ./build-all.sh ref
 
-branch-rocky:
-	@FILTER_NAME=rocky ./build-all.sh branch
+ref-rocky:
+	@FILTER_NAME=rocky ./build-all.sh ref
 
-branch-suse:
-	@FILTER_NAME=suse ./build-all.sh branch
+ref-suse:
+	@FILTER_NAME=suse ./build-all.sh ref
 
 tarball-ubuntu:
 	@TARBALL= FILTER_NAME=ubuntu ./build-all.sh tarball
@@ -251,10 +251,10 @@ help:
 	@echo "MPLAPACK Release Engineering"
 	@echo ""
 	@echo "Full test cycle:"
-	@echo "  make             - run all (branch -> dist -> tarball)"
+	@echo "  make             - run all (ref -> dist -> tarball)"
 	@echo ""
 	@echo "Individual phases:"
-	@echo "  make branch      - branch matrix builds only"
+	@echo "  make ref         - Git ref matrix builds only"
 	@echo "  make dist        - make dist only"
 	@echo "  make tarball     - run make dist, then test that tarball"
 	@echo "  make tarball-with TARBALL=path/to/foo.tar.xz"
@@ -290,11 +290,11 @@ help:
 	@echo "  make mips64le    - MIPS 64-bit LE"
 	@echo ""
 	@echo "Combined filters:"
-	@echo "  make branch-ubuntu    - Ubuntu branch builds"
-	@echo "  make branch-debian    - Debian branch builds"
-	@echo "  make branch-rocky     - Rocky Linux branch builds"
-	@echo "  make branch-suse      - openSUSE branch builds"
-	@echo "  make branch-cuda      - CUDA branch builds"
+	@echo "  make ref-ubuntu       - Ubuntu ref builds"
+	@echo "  make ref-debian       - Debian ref builds"
+	@echo "  make ref-rocky        - Rocky Linux ref builds"
+	@echo "  make ref-suse         - openSUSE ref builds"
+	@echo "  make ref-cuda         - CUDA ref builds"
 	@echo "  make tarball-amd64    - amd64 tarball tests via 172.27.109.80 Docker"
 	@echo "  make tarball-arm64    - arm64 tarball tests via 172.27.109.40 Docker"
 	@echo ""

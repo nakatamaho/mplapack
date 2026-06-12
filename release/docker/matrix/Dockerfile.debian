@@ -1,5 +1,5 @@
 # Dockerfile.debian
-# GCC build environment for Debian/Ubuntu (branch: requires autoreconf)
+# GCC build environment for Debian/Ubuntu (ref: requires autoreconf)
 # Build happens at runtime with ccache mounted from host
 ARG BASE=debian:12
 FROM ${BASE}

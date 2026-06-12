@@ -1,5 +1,5 @@
 # Dockerfile.alpine
-# GCC build environment for Alpine Linux (musl libc, branch: requires autoreconf)
+# GCC build environment for Alpine Linux (musl libc, ref: requires autoreconf)
 # Build happens at runtime with ccache mounted from host
 ARG BASE=alpine:3.19
 FROM ${BASE}
@@ -35,8 +35,7 @@ ENV CXX="ccache g++"
 ENV FC="ccache gfortran"
 
 ENV MPLAPACK_REPO=https://github.com/nakatamaho/mplapack.git
-# Branch name or commit SHA. Example: release/2.1 or a full SHA.
-# ENV MPLAPACK_REF="release/2.1"
+# Git ref selected by MPLAPACK_REF.
 ENV MPLAPACK_REF="master"
 
 WORKDIR /work
@@ -48,7 +47,7 @@ echo '=== ccache stats (before) ==='; ccache -s; \
 # Fresh checkout every run \
 rm -rf /work/mplapack; \
 git clone --depth 1 --branch \"$MPLAPACK_REF\" \"$MPLAPACK_REPO\" /work/mplapack || { \
-  # If MPLAPACK_REF is a commit SHA, clone then checkout \
+  # If shallow clone fails, clone then checkout the requested ref \
   git clone \"$MPLAPACK_REPO\" /work/mplapack; \
   cd /work/mplapack; \
   git checkout \"$MPLAPACK_REF\"; \

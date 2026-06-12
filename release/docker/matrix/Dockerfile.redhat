@@ -1,5 +1,5 @@
 # Dockerfile.redhat
-# GCC build environment for Fedora/RHEL-like (branch: requires autoreconf)
+# GCC build environment for Fedora/RHEL-like (ref: requires autoreconf)
 # Build happens at runtime with ccache mounted from host
 
 ARG BASE=fedora:39
@@ -74,7 +74,7 @@ RUN if [ -x /usr/bin/bsdtar ]; then \
 
 
 ENV MPLAPACK_REPO=https://github.com/nakatamaho/mplapack.git
-# Branch name or commit SHA. Example: release/2.1 or a full SHA.
+# Git ref selected by MPLAPACK_REF.
 ENV MPLAPACK_REF="master"
 
 WORKDIR /work

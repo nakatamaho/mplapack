@@ -24,7 +24,7 @@ ENV CC="ccache gcc"
 ENV CXX="ccache g++"
 ENV FC="ccache gfortran"
 ENV MPLAPACK_REPO=https://github.com/nakatamaho/mplapack.git
-# Branch name or commit SHA. Example: release/2.1 or a full SHA.
+# Git ref selected by MPLAPACK_REF.
 ENV MPLAPACK_REF="master"
 WORKDIR /work
 COPY distcheck/run-ubuntu-distcheck.sh /run-ubuntu-distcheck.sh

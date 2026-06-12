@@ -1,5 +1,5 @@
 # Dockerfile.redhat-el8
-# GCC build environment for RHEL 8 / Rocky 8 (branch: requires autoreconf)
+# GCC build environment for RHEL 8 / Rocky 8 (ref: requires autoreconf)
 # Build happens at runtime with ccache mounted from host
 
 ARG BASE=rockylinux:8
@@ -27,7 +27,7 @@ ENV CXX="ccache g++"
 ENV FC="ccache gfortran"
 
 ENV MPLAPACK_REPO=https://github.com/nakatamaho/mplapack.git
-# Branch name or commit SHA. Example: release/2.1 or a full SHA.
+# Git ref selected by MPLAPACK_REF.
 ENV MPLAPACK_REF="master"
 
 WORKDIR /work
