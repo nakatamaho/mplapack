@@ -350,9 +350,11 @@ chmod -R u+rwX "${WORKDIR}" 2>/dev/null || true
 find "${WORKDIR}" -mindepth 1 -maxdepth 1 -exec rm -rf -- {} +
 
 log "WORKDIR: ${WORKDIR}"
+log "MPLAPACK_REF: ${MPLAPACK_REF:-master}"
 
-git clone --depth 1 git@github.com:nakatamaho/mplapack.git "${WORKDIR}"
+git clone git@github.com:nakatamaho/mplapack.git "${WORKDIR}"
 cd "${WORKDIR}"
+git checkout "${MPLAPACK_REF:-master}"
 git --no-pager log -1 | tee "${LOG_DIR}/git_log.log" | tee -a "${LOG_DIR}/summary.log"
 
 RESULTS_VERSION="$(get_mplapack_version)"

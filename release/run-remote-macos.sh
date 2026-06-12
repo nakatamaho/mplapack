@@ -7,6 +7,7 @@ CONF_FILE="${CONF_FILE:-$SCRIPT_DIR/build-matrix.conf}"
 LOGDIR="${LOGDIR:-$SCRIPT_DIR/logs/$(date +%Y%m%d_%H%M%S)}"
 SUCCESS_DIR="${SUCCESS_DIR:-$SCRIPT_DIR/success}"
 MACOS_REMOTE_SSH="${MACOS_REMOTE_SSH:-ssh}"
+MPLAPACK_REF="${MPLAPACK_REF:-$(git -C "$PROJECT_ROOT" rev-parse HEAD)}"
 
 name="${1:?Usage: run-remote-macos.sh <matrix-name>}"
 
@@ -139,10 +140,11 @@ fi
 
 start="$(date +%s)"
 echo "Running $script_rel on $host:$target_dir" >&2
+echo "MPLAPACK_REF: $MPLAPACK_REF" >&2
 echo "Log: $logfile" >&2
 
 set +e
-"$MACOS_REMOTE_SSH" "$host" "MPLAPACK_REMOTE_WORKDIR=$target_dir $remote_cmd -s" < "$script_path" > "$logfile" 2>&1
+"$MACOS_REMOTE_SSH" "$host" "MPLAPACK_REMOTE_WORKDIR='$target_dir' MPLAPACK_REF='$MPLAPACK_REF' $remote_cmd -s" < "$script_path" > "$logfile" 2>&1
 rc=$?
 set -e
 

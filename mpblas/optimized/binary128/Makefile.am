@@ -90,6 +90,6 @@ libmpblas_binary128_opt_la_LDFLAGS += -fopenmp -no-undefined -lquadmath
 endif
 
 SUBDIRS =
-if ENABLE_OPENCL
+if ENABLE_OPENCL_BINARY128
 SUBDIRS += opencl
 endif

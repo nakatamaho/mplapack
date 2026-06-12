@@ -8,6 +8,7 @@ LOGDIR="${LOGDIR:-$SCRIPT_DIR/logs/$(date +%Y%m%d_%H%M%S)}"
 SUCCESS_DIR="${SUCCESS_DIR:-$SCRIPT_DIR/success}"
 MACOS_REMOTE_SSH="${MACOS_REMOTE_SSH:-ssh}"
 REMOTE_LINUX_SSH="${REMOTE_LINUX_SSH:-ssh}"
+MPLAPACK_REF="${MPLAPACK_REF:-$(git -C "$PROJECT_ROOT" rev-parse HEAD)}"
 
 if [[ "$#" -eq 0 ]]; then
     echo "Usage: run-remote-targets-by-host.sh <target>..." >&2
@@ -85,11 +86,11 @@ run_target() {
     case "$source_type" in
         remote-macos)
             CONF_FILE="$CONF_FILE" LOGDIR="$LOGDIR" PROJECT_ROOT="$PROJECT_ROOT" SUCCESS_DIR="$SUCCESS_DIR" \
-                MACOS_REMOTE_SSH="$MACOS_REMOTE_SSH" "$SCRIPT_DIR/run-remote-macos.sh" "$target"
+                MACOS_REMOTE_SSH="$MACOS_REMOTE_SSH" MPLAPACK_REF="$MPLAPACK_REF" "$SCRIPT_DIR/run-remote-macos.sh" "$target"
             ;;
         remote-linux-docker)
             CONF_FILE="$CONF_FILE" LOGDIR="$LOGDIR" PROJECT_ROOT="$PROJECT_ROOT" SUCCESS_DIR="$SUCCESS_DIR" \
-                REMOTE_LINUX_SSH="$REMOTE_LINUX_SSH" "$SCRIPT_DIR/run-remote-linux-docker.sh" "$target"
+                REMOTE_LINUX_SSH="$REMOTE_LINUX_SSH" MPLAPACK_REF="$MPLAPACK_REF" "$SCRIPT_DIR/run-remote-linux-docker.sh" "$target"
             ;;
     esac
 }

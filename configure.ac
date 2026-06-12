@@ -987,6 +987,7 @@ dnl ===================================================================
 dnl Automake conditionals
 dnl ===================================================================
 AM_CONDITIONAL(ENABLE_BINARY128, test x$enable_binary128 = xyes)
+AM_CONDITIONAL([ENABLE_OPENCL_BINARY128], [test "x$have_opencl" = xyes && test x$enable_binary128 = xyes])
 AM_CONDITIONAL(BINARY128_USE_QUADMATH, test "$mplapack_binary128_mode" = "3")
 AM_CONDITIONAL(BINARY128_USE_FLOAT128, test "$mplapack_binary128_mode" = "2")
 AM_CONDITIONAL(BINARY128_USE_LDBL,     test "$mplapack_binary128_mode" = "1")
@@ -1891,6 +1892,18 @@ if test x$enable_cuda = x"yes"; then
   AC_MSG_NOTICE([  Toolkit home:   $CUDATOOLKITHOME])
 else
   AC_MSG_NOTICE([CUDA backend:     disabled])
+fi
+
+if test x$have_opencl = x"yes" && test x$enable_binary128 = x"yes"; then
+  AC_MSG_NOTICE([OpenCL binary128 backend: enabled])
+  if test "x$OPENCL_CFLAGS" != x; then
+    AC_MSG_NOTICE([  C++ flags:      $OPENCL_CFLAGS])
+  fi
+  if test "x$OPENCL_LIBS" != x; then
+    AC_MSG_NOTICE([  Libs:           $OPENCL_LIBS])
+  fi
+else
+  AC_MSG_NOTICE([OpenCL binary128 backend: disabled])
 fi
 
 if test x$enable_qd = x"yes"; then

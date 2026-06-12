@@ -9,6 +9,7 @@ lib_LTLIBRARIES = libmpblas_binary128_opt_opencl.la
 #	$(CC) -o $@ -c $< $(OPENCL_CFLAGS)
 
 AM_CXXFLAGS = $(OPENCL_CFLAGS)
+libmpblas_binary128_opt_opencl_la_CPPFLAGS = -I. -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_BINARY128___
 
 LINK = $(LIBTOOL) --mode=link $(CC) -o $@ $(OPENCL_LDFLAGS) $(OPENCL_LIBS)
 
