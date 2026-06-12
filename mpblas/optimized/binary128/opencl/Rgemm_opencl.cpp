@@ -1,5 +1,5 @@
 #include <assert.h>
-#include <malloc.h>
+#include <stdlib.h>
 #include <mpblas_binary128.h>
 #include "OclHelper.hpp"
 
