@@ -140,6 +140,7 @@ collect_remote_test_results() {
     fi
 }
 
+mkdir -p "$(dirname "$resultfile")"
 echo "name,arch,base,stage,result,elapsed,source_type" > "$resultfile"
 cleanup_stale_success_links
 
@@ -174,12 +175,26 @@ tar -czf "$context_tar" \
     -C "$PROJECT_ROOT" release/docker \
     -C "$LOGDIR" "$(basename "$source_bundle")"
 
+remote_pid=""
+cleanup_remote_command() {
+    trap - INT TERM HUP
+    if [[ -n "${remote_pid:-}" ]] && kill -0 "$remote_pid" 2>/dev/null; then
+        kill "$remote_pid" 2>/dev/null || true
+        wait "$remote_pid" 2>/dev/null || true
+    fi
+    exit 130
+}
+trap cleanup_remote_command INT TERM HUP
+
 set +e
-{
-    "$REMOTE_SSH" "$host" "mkdir -p '$(dirname "$target_dir")' && cat > '$remote_context_tar'" < "$context_tar" && \
-    "$REMOTE_SSH" "$host" "MPLAPACK_REMOTE_WORKDIR='$target_dir' MPLAPACK_CONTEXT_TARBALL='$remote_context_tar' MPLAPACK_REF='$MPLAPACK_REF' MPLAPACK_DISTRO_VERSION='$remote_distro_version' MPLAPACK_DOCKER_BASE='$remote_docker_base' $remote_cmd -s" < "$script_path"
-} > "$logfile" 2>&1
+(
+    "$REMOTE_SSH" "$host" "mkdir -p '$(dirname "$target_dir")' && cat > '$remote_context_tar'" < "$context_tar" &&     "$REMOTE_SSH" "$host" "MPLAPACK_REMOTE_WORKDIR='$target_dir' MPLAPACK_CONTEXT_TARBALL='$remote_context_tar' MPLAPACK_REF='$MPLAPACK_REF' MPLAPACK_DISTRO_VERSION='$remote_distro_version' MPLAPACK_DOCKER_BASE='$remote_docker_base' $remote_cmd -s" < "$script_path"
+) > "$logfile" 2>&1 &
+remote_pid="$!"
+wait "$remote_pid"
 rc=$?
+remote_pid=""
+trap - INT TERM HUP
 set -e
 
 elapsed=$(($(date +%s) - start))
@@ -188,6 +203,7 @@ if [[ "$rc" -eq 0 ]]; then
     compiler_label="$(detect_compiler_label_from_results "$COLLECTED_RESULTS_STAGE")"
     if [[ "$compiler_label" == "compiler_unknown" ]]; then
         echo "ERROR: compiler label could not be determined from collected results; refusing to create success stamp." >&2
+        mkdir -p "$(dirname "$resultfile")"
         echo "$matrix_name,$arch,${remote_docker_base:-${host:-}},test,FAILED,$elapsed,$source_type" | tee -a "$resultfile"
         exit 1
     fi
@@ -198,8 +214,10 @@ if [[ "$rc" -eq 0 ]]; then
     fi
     stamp="${stamp_prefix}${compiler_label}${stamp_suffix}"
     ln -sfn "$logfile" "$stamp"
+    mkdir -p "$(dirname "$resultfile")"
     echo "$matrix_name,$arch,${remote_docker_base:-$host},test,OK,$elapsed,$source_type" | tee -a "$resultfile"
 else
+    mkdir -p "$(dirname "$resultfile")"
     echo "$matrix_name,$arch,${remote_docker_base:-$host},test,FAILED,$elapsed,$source_type" | tee -a "$resultfile"
     exit "$rc"
 fi

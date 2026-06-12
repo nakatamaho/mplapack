@@ -19,6 +19,9 @@ FILTER_ARCH="${FILTER_ARCH:-}"
 USE_GPU="${USE_GPU:-auto}"
 CCACHE_MAXSIZE="${CCACHE_MAXSIZE:-200G}"
 WORK_MOUNT_MODE="${WORK_MOUNT_MODE:-bind}"  # bind|tmpfs
+REMOTE_TARBALL_SSH="${REMOTE_TARBALL_SSH:-${REMOTE_LINUX_SSH:-ssh}}"
+REMOTE_TARBALL_CCACHE_DIR="${REMOTE_TARBALL_CCACHE_DIR:-}"
+REMOTE_TARBALL_CCACHE_MAXSIZE="${REMOTE_TARBALL_CCACHE_MAXSIZE:-}"
 
 # Host directories
 HOST_WORK_DIR="${HOST_WORK_DIR:-/work/mplapack-work}"
@@ -532,9 +535,166 @@ fi
     echo "$name,$arch_short,$base,build,OK,$elapsed,$source_type"
 }
 
+
+shell_quote() {
+    printf '%q' "$1"
+}
+
+remote_tarball_default_ccache_dir() {
+    local target_dir="$1" rest user
+    case "$target_dir" in
+        /Users/*/tmp/*)
+            rest="${target_dir#/Users/}"
+            user="${rest%%/*}"
+            echo "/Users/${user}/.ccache"
+            ;;
+        /home/*/tmp/*)
+            rest="${target_dir#/home/}"
+            user="${rest%%/*}"
+            echo "/home/${user}/.ccache"
+            ;;
+        *)
+            echo "${HOME:-/tmp}/.ccache"
+            ;;
+    esac
+}
+
+remote_tarball_default_ccache_maxsize() {
+    local target_dir="$1"
+    case "$target_dir" in
+        /home/*/tmp/*) echo '200G' ;;
+        *) echo '80G' ;;
+    esac
+}
+
+# Build and test a tarball on a native remote Docker host.
+build_remote_tarball_one() {
+    local name=$1
+    local host=$2
+    local target_dir=$3
+    local dockerfile=$4
+    local remote_cmd=$5
+    local source_type=$6
+    local base=$7
+    local arch=$8
+    local matrix_ccache_dir=${9:-}
+    local matrix_ccache_maxsize=${10:-}
+
+    local remote_ccache_dir="${REMOTE_TARBALL_CCACHE_DIR:-${matrix_ccache_dir:-$(remote_tarball_default_ccache_dir "$target_dir")}}"
+    local remote_ccache_maxsize="${REMOTE_TARBALL_CCACHE_MAXSIZE:-${matrix_ccache_maxsize:-$(remote_tarball_default_ccache_maxsize "$target_dir")}}"
+
+    local arch_short=${arch##*/}
+    local logprefix="$LOGDIR/${name}_${arch_short}_${source_type}"
+    local logfile="${logprefix}_build.log"
+    local stamp
+    stamp="$(make_success_stamp "$name" "$arch" "$source_type")"
+    local start elapsed rc
+    local image_tag="$(make_image_tag "$name" "$arch_short" "$source_type")"
+    image_tag="${image_tag/:/-remote:}"
+
+    if [[ -z "$TARBALL" || ! -f "$TARBALL" ]]; then
+        echo "$name,$arch_short,$base,build,SKIPPED,0,$source_type"
+        return 0
+    fi
+    if [[ ! -f "$DOCKER_DIR/$dockerfile" ]]; then
+        log "ERROR: Dockerfile not found: $DOCKER_DIR/$dockerfile"
+        echo "$name,$arch_short,$base,image,FAILED,0,$source_type"
+        return 1
+    fi
+
+    if [[ -L "$stamp" && ! -e "$stamp" ]]; then
+        log "Removing broken success link: $stamp"
+        rm -f "$stamp"
+    fi
+    if [[ -L "$stamp" && -e "$stamp" ]]; then
+        log "  (Already passed; skipping $name / ${arch_short} / $source_type)"
+        log "  (Success log: $(readlink "$stamp"))"
+        echo "$name,$arch_short,$base,build,SKIPPED,0,$source_type"
+        return 0
+    fi
+
+    local tarball_name
+    tarball_name="$(basename "$TARBALL")"
+    local remote_tarball="$target_dir/input/$tarball_name"
+    local remote_script="$SCRIPT_DIR/run-remote-tarball-docker-worker.sh"
+    if [[ ! -f "$remote_script" ]]; then
+        log "ERROR: remote tarball worker not found: $remote_script"
+        echo "$name,$arch_short,$base,build,FAILED,0,$source_type"
+        return 1
+    fi
+
+    start=$(date +%s)
+    log "START remote $name / $arch_short ($source_type) on $host"
+    log "Remote tarball log: $logfile"
+
+    set +e
+    {
+        "$REMOTE_TARBALL_SSH" "$host" \
+            "MPLAPACK_REMOTE_WORKDIR=$(shell_quote "$target_dir") bash -s" <<'REMOTE_PREP'
+set -euo pipefail
+export PATH="/opt/local/bin:/opt/local/sbin:${PATH}"
+: "${MPLAPACK_REMOTE_WORKDIR:?}"
+if [ -z "${HOME:-}" ] || [ "${HOME}" = "/" ]; then
+    echo "ERROR: invalid HOME: ${HOME:-<unset>}"
+    exit 1
+fi
+case "${MPLAPACK_REMOTE_WORKDIR}" in
+    "${HOME}/"*) ;;
+    *)
+        echo "ERROR: refusing remote workdir outside HOME: ${MPLAPACK_REMOTE_WORKDIR}"
+        exit 1
+        ;;
+esac
+rm -rf "${MPLAPACK_REMOTE_WORKDIR}/context" "${MPLAPACK_REMOTE_WORKDIR}/input" "${MPLAPACK_REMOTE_WORKDIR}/work"
+mkdir -p "${MPLAPACK_REMOTE_WORKDIR}/context" "${MPLAPACK_REMOTE_WORKDIR}/input" "${MPLAPACK_REMOTE_WORKDIR}/work"
+REMOTE_PREP
+        tar -C "$PROJECT_ROOT" -czf - release/docker | \
+            "$REMOTE_TARBALL_SSH" "$host" "tar -C $(shell_quote "$target_dir/context") -xzf -"
+        "$REMOTE_TARBALL_SSH" "$host" "cat > $(shell_quote "$remote_tarball")" < "$TARBALL"
+        "$REMOTE_TARBALL_SSH" "$host" \
+            "MPLAPACK_REMOTE_WORKDIR=$(shell_quote "$target_dir") MPLAPACK_DOCKER_BASE=$(shell_quote "$base") MPLAPACK_DOCKERFILE=$(shell_quote "$dockerfile") MPLAPACK_IMAGE_TAG=$(shell_quote "$image_tag") MPLAPACK_TARBALL_NAME=$(shell_quote "$tarball_name") MPLAPACK_CCACHE_DIR=$(shell_quote "$remote_ccache_dir") MPLAPACK_CCACHE_MAXSIZE=$(shell_quote "$remote_ccache_maxsize") MPLAPACK_DOCKER_PLATFORM=$(shell_quote "$arch") $remote_cmd -s" < "$remote_script"
+    } > "$logfile" 2>&1
+    rc=$?
+    set -e
+
+    elapsed=$(($(date +%s) - start))
+    if [[ "$rc" -eq 0 ]]; then
+        ln -sfn "$(abspath "$logfile")" "$stamp"
+        echo "$name,$arch_short,$base,build,OK,$elapsed,$source_type"
+        return 0
+    fi
+
+    echo "$name,$arch_short,$base,build,FAILED,$elapsed,$source_type"
+    return "$rc"
+}
+
 # Process build matrix
 run_matrix() {
     echo "name,arch,base,stage,result,elapsed,source_type"
+
+    local remote_tmpdir
+    local -a remote_pids=()
+    local -a remote_result_files=()
+    local -a remote_fallback_rows=()
+    remote_tmpdir="$(mktemp -d "$LOGDIR/remote_tarball_results.XXXXXX")"
+
+    cleanup_remote_tarball_jobs() {
+        local rc="${1:-130}" pid
+        trap - INT TERM HUP
+        for pid in "${remote_pids[@]:-}"; do
+            if kill -0 "$pid" 2>/dev/null; then
+                kill "$pid" 2>/dev/null || true
+            fi
+        done
+        for pid in "${remote_pids[@]:-}"; do
+            wait "$pid" 2>/dev/null || true
+        done
+        rm -rf "$remote_tmpdir"
+        exit "$rc"
+    }
+
+    trap 'cleanup_remote_tarball_jobs 130' INT
+    trap 'cleanup_remote_tarball_jobs 143' TERM HUP
 
     while IFS= read -r line; do
         # Skip comments and empty lines
@@ -558,7 +718,33 @@ run_matrix() {
 
         # Set defaults
         source_type="${source_type:-branch}"
-        # Remote targets are launched by explicit Makefile targets, not Docker matrix runs.
+
+        if [[ "$source_type" == "remote-tarball-docker" ]]; then
+            local host="$base"
+            local target_dir="$archs"
+            local remote_cmd="${fields[4]:-bash}"
+            local docker_base="${fields[6]:-}"
+            local remote_arch="${fields[7]:-linux/arm64}"
+            local remote_ccache_dir="${fields[8]:-}"
+            local remote_ccache_maxsize="${fields[9]:-}"
+            local arch_short="${remote_arch##*/}"
+            local result_file
+
+            [[ "$PHASE" != "all" && "$PHASE" != "tarball" ]] && continue
+            [[ -n "$FILTER_ARCH" && "$arch_short" != "$FILTER_ARCH" ]] && continue
+
+            log "START $name / $arch_short ($source_type) on $host"
+            result_file="$remote_tmpdir/${#remote_pids[@]}_${name}_${arch_short}.csv"
+            (
+                build_remote_tarball_one "$name" "$host" "$target_dir" "$dockerfile" "$remote_cmd" "$source_type" "$docker_base" "$remote_arch" "$remote_ccache_dir" "$remote_ccache_maxsize"
+            ) > "$result_file" &
+            remote_pids+=("$!")
+            remote_result_files+=("$result_file")
+            remote_fallback_rows+=("$name,$arch_short,$docker_base,build,FAILED,0,$source_type")
+            continue
+        fi
+
+        # Remote distcheck targets are launched by explicit Makefile targets, not Docker matrix runs.
         [[ "$source_type" == remote-* ]] && continue
 
         # Apply phase filter
@@ -576,6 +762,23 @@ run_matrix() {
             build_one "$name" "$base" "$arch" "$dockerfile" "$source_type" || true
         done
     done < "$CONF_FILE"
+
+    local i
+    for i in "${!remote_pids[@]}"; do
+        wait "${remote_pids[$i]}" || true
+    done
+
+    for i in "${!remote_result_files[@]}"; do
+        if [[ -s "${remote_result_files[$i]}" ]]; then
+            cat "${remote_result_files[$i]}"
+        else
+            echo "${remote_fallback_rows[$i]}"
+        fi
+    done
+
+    rm -rf "$remote_tmpdir"
+    trap - INT TERM HUP
+    return 0
 }
 
 # Display summary of results

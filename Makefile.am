@@ -305,6 +305,7 @@ release/docker/matrix/run-ubuntu-intel-build.sh \
 release/docker/matrix/run-ubuntu-mingw64-build.sh \
 release/docker/tarball/Dockerfile.ubuntu \
 release/run-remote-linux-docker.sh \
+release/run-remote-tarball-docker-worker.sh \
 release/run-remote-macos.sh \
 release/run-remote-targets-by-host.sh \
 release/clean-remote-workdirs.sh \

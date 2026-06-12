@@ -85,6 +85,8 @@ clean_one() {
         ssh_cmd="$REMOTE_LINUX_SSH"
         context_name="$(linux_context_name "$name" "$docker_base")"
         context_tar="$(dirname "$target_dir")/${context_name}.context.tar.gz"
+    elif [[ "$source_type" == "remote-tarball-docker" ]]; then
+        ssh_cmd="$REMOTE_LINUX_SSH"
     fi
 
     echo "Cleaning $name on $host:$target_dir" >&2
@@ -167,7 +169,7 @@ cleanup_with_docker() {
 
 chmod -R u+rwX "$workdir" "$results_dir" 2>/dev/null || true
 if ! rm -rf -- "$workdir" "$lockdir" "$results_dir" "$legacy_context_tar" "$context_tar" 2>/dev/null; then
-    if [ "$source_type" = "remote-linux-docker" ]; then
+    if [ "$source_type" = "remote-linux-docker" ] || [ "$source_type" = "remote-tarball-docker" ]; then
         echo "Regular cleanup could not remove every file; using Docker root helper." >&2
         cleanup_with_docker
     else
@@ -183,6 +185,6 @@ while IFS='|' read -r name host target_dir script_rel remote_cmd source_type doc
         ''|'#'*) continue ;;
     esac
     case "$source_type" in
-        remote-macos|remote-linux-docker) clean_one "$name" "$host" "$target_dir" "$source_type" "${docker_base:-}" ;;
+        remote-macos|remote-linux-docker|remote-tarball-docker) clean_one "$name" "$host" "$target_dir" "$source_type" "${docker_base:-}" ;;
     esac
 done < "$CONF_FILE"

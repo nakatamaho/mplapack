@@ -10,8 +10,9 @@ HOST_CCACHE_DIR ?= /work/ccache
 SUCCESS_DIR ?= $(SCRIPT_DIR)/success
 MACOS_REMOTE_SSH ?= ssh
 REMOTE_LINUX_SSH ?= ssh
+REMOTE_TARBALL_SSH ?= ssh
 
-export CONF_FILE LOGDIR PROJECT_ROOT HOST_WORK_DIR HOST_CCACHE_DIR SUCCESS_DIR
+export CONF_FILE LOGDIR PROJECT_ROOT HOST_WORK_DIR HOST_CCACHE_DIR SUCCESS_DIR REMOTE_TARBALL_SSH
 
 TIER1_TARGETS := tier1-macos-arm64 tier1-macos-amd64 tier1-ubuntu2404-arm64 tier1-ubuntu2604-arm64 tier1-ubuntu2404-amd64 tier1-ubuntu2604-amd64 tier1-ubuntu2404-mingw64-amd64 tier1-ubuntu2604-mingw64-amd64 tier1-ubuntu2404-inteloneapi-amd64 tier1-ubuntu2604-inteloneapi-amd64 tier1-debian12-i386 tier1-debian13-i386
 TIER1_MACOS_TARGETS := tier1-macos-arm64 tier1-macos-amd64
@@ -23,7 +24,7 @@ RUN_REMOTE_TARGETS = CONF_FILE=$(CONF_FILE) LOGDIR=$(LOGDIR) PROJECT_ROOT=$(PROJ
 .PHONY: intel mingw cuda ubuntu debian fedora rocky suse alpine
 .PHONY: amd64 arm64 ppc64le i386 s390x mips64le
 .PHONY: branch-ubuntu branch-debian branch-amd64 branch-cuda branch-rocky branch-suse
-.PHONY: tarball-ubuntu tarball-amd64
+.PHONY: tarball-ubuntu tarball-amd64 tarball-arm64
 .PHONY: tier1 tier1-macos tier1-linux tier2 tier1-macos-arm64 tier1-macos-amd64 tier1-ubuntu2404-arm64 tier1-ubuntu2604-arm64 tier1-ubuntu2404-amd64 tier1-ubuntu2604-amd64 tier1-ubuntu2404-mingw64-amd64 tier1-ubuntu2604-mingw64-amd64 tier1-ubuntu2404-inteloneapi-amd64 tier1-ubuntu2604-inteloneapi-amd64 tier1-debian12-i386 tier1-debian13-i386
 .PHONY: ccache-stats ccache-clear
 
@@ -168,6 +169,9 @@ tarball-ubuntu:
 tarball-amd64:
 	@TARBALL= FILTER_ARCH=amd64 ./build-all.sh tarball
 
+tarball-arm64:
+	@TARBALL= FILTER_ARCH=arm64 ./build-all.sh tarball
+
 # === ccache Utilities ===
 
 ccache-stats:
@@ -291,7 +295,8 @@ help:
 	@echo "  make branch-rocky     - Rocky Linux branch builds"
 	@echo "  make branch-suse      - openSUSE branch builds"
 	@echo "  make branch-cuda      - CUDA branch builds"
-	@echo "  make tarball-amd64    - amd64 tarball tests"
+	@echo "  make tarball-amd64    - amd64 tarball tests via 172.27.109.80 Docker"
+	@echo "  make tarball-arm64    - arm64 tarball tests via 172.27.109.40 Docker"
 	@echo ""
 	@echo "ccache:"
 	@echo "  make ccache-stats     - show ccache statistics"
@@ -301,6 +306,7 @@ help:
 	@echo "Mount options:"
 	@echo "  HOST_WORK_DIR=/path   - override source directory (default: project root)"
 	@echo "  MACOS_REMOTE_SSH=ssh - override remote macOS SSH command"
+	@echo "  REMOTE_TARBALL_SSH=ssh - override remote tarball SSH command"
 	@echo ""
 	@echo "Utilities:"
 	@echo "  make list        - show build matrix"

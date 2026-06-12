@@ -22,6 +22,26 @@ declare -A host_seen=()
 declare -A host_target_files=()
 host_order=()
 tmpdir="$(mktemp -d)"
+pids=()
+pid_hosts=()
+
+cleanup_all() {
+    local rc="${1:-130}" pid
+    trap - INT TERM HUP EXIT
+    for pid in "${pids[@]:-}"; do
+        if kill -0 "$pid" 2>/dev/null; then
+            kill "$pid" 2>/dev/null || true
+        fi
+    done
+    for pid in "${pids[@]:-}"; do
+        wait "$pid" 2>/dev/null || true
+    done
+    rm -rf "$tmpdir"
+    exit "$rc"
+}
+
+trap 'cleanup_all 130' INT
+trap 'cleanup_all 143' TERM HUP
 trap 'rm -rf "$tmpdir"' EXIT
 
 matrix_row() {
@@ -76,16 +96,30 @@ run_target() {
 
 run_host_targets() {
     local host="$1"
-    local host_rc target target_file target_rc
+    local host_rc target target_file target_rc current_pid
+
+    stop_current_target() {
+        trap - INT TERM HUP
+        if [[ -n "${current_pid:-}" ]] && kill -0 "$current_pid" 2>/dev/null; then
+            kill "$current_pid" 2>/dev/null || true
+            wait "$current_pid" 2>/dev/null || true
+        fi
+        exit 130
+    }
+
+    trap stop_current_target INT TERM HUP
 
     host_rc=0
+    current_pid=""
     target_file="${host_target_files[$host]}"
     echo "=== Running remote targets on $host ===" >&2
     while IFS= read -r target; do
         [[ -n "$target" ]] || continue
         echo "=== Running remote target on $host: $target ===" >&2
         # Keep ssh in child scripts from consuming the remaining target list.
-        if run_target "$target" </dev/null; then
+        run_target "$target" </dev/null &
+        current_pid="$!"
+        if wait "$current_pid"; then
             echo "=== Finished remote target on $host: $target ===" >&2
         else
             target_rc="$?"
@@ -93,12 +127,12 @@ run_host_targets() {
             echo "=== Finished remote target on $host: $target (FAILED) ===" >&2
             host_rc=1
         fi
+        current_pid=""
     done < "$target_file"
+    trap - INT TERM HUP
     return "$host_rc"
 }
 
-pids=()
-pid_hosts=()
 for host in "${host_order[@]}"; do
     run_host_targets "$host" &
     pids+=("$!")

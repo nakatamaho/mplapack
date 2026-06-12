@@ -107,8 +107,11 @@ make branch-rocky
 make branch-suse
 make branch-cuda
 make tarball-ubuntu
-make tarball-amd64
+make tarball-amd64   # runs the amd64 tarball smoke test on 172.27.109.80 Docker
+make tarball-arm64   # runs the arm64 tarball smoke test on 172.27.109.40 Docker/Colima
 ```
+
+`make tarball` runs remote tarball Docker rows in parallel after the tarball is created.
 
 ### Testing Existing Tarball
 
@@ -205,9 +208,15 @@ USE_GPU=no make cuda    # Force no GPU (build-only validation)
 Edit `build-matrix.conf`:
 
 ```conf
+# Local Docker rows:
 # name|base|archs|dockerfile|source_type
 rocky9|rockylinux:9|linux/amd64,linux/arm64|matrix/Dockerfile.redhat|branch
 cuda130-ubuntu24|nvidia/cuda:13.0.0-devel-ubuntu24.04|linux/amd64|matrix/Dockerfile.cuda|branch
+
+# Remote tarball Docker rows:
+# name|host|target_dir|dockerfile|command|remote-tarball-docker|docker_base|arch|ccache_dir|ccache_maxsize
+ubuntu24-tarball|172.27.109.80|/home/maho/tmp/mplapack-tarball-ubuntu2404-amd64|tarball/Dockerfile.ubuntu|bash|remote-tarball-docker|ubuntu:24.04|linux/amd64|/home/maho/.ccache|200G
+ubuntu24-tarball|172.27.109.40|/Users/maho/tmp/mplapack-tarball-ubuntu2404-arm64|tarball/Dockerfile.ubuntu|bash|remote-tarball-docker|ubuntu:24.04|linux/arm64|/Users/maho/.ccache|80G
 ```
 
 Create corresponding Dockerfile under `release/docker/matrix/`, `release/docker/distcheck/`, or `release/docker/tarball/` as appropriate. Matrix rows use paths relative to `release/docker/`.
@@ -236,7 +245,7 @@ Create corresponding Dockerfile under `release/docker/matrix/`, `release/docker/
 
 ### Build fails on arm64/ppc64le/s390x/mips64le
 
-QEMU emulation is slow and may timeout. These architectures can take 10-50x longer than native builds.
+QEMU emulation is slow and may timeout. These architectures can take 10-50x longer than native builds. The Ubuntu tarball smoke tests are therefore run on native remote Docker hosts: amd64 on `172.27.109.80` and arm64 on `172.27.109.40` Docker/Colima.
 
 Check logs:
 ```bash
