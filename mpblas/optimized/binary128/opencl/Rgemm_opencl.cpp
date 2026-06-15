@@ -50,13 +50,13 @@ void init_gpu(int bs = 4)
   std::cout << "block size for OpenCL kernels = " << bs_opencl << "\n";
 }
 
-void Rgemm_internal(bool btransa, bool btransb,
-		    int m, int n, int k,
-		    mplapack_binary128_t alpha,
-		    mplapack_binary128_t *A, int lda,
-		    mplapack_binary128_t *B, int ldb,
-		    mplapack_binary128_t beta,
-		    mplapack_binary128_t *C, int ldc)
+void Rgemm_binary128_opencl_kernel(bool btransa, bool btransb,
+                                   int m, int n, int k,
+                                   mplapack_binary128_t alpha,
+                                   mplapack_binary128_t *A, int lda,
+                                   mplapack_binary128_t *B, int ldb,
+                                   mplapack_binary128_t beta,
+                                   mplapack_binary128_t *C, int ldc)
 {
   cl_event event;
 
@@ -219,7 +219,7 @@ void Rgemm(const char *transa, const char *transb,
   if (transa[0] == 'T' || transa[0] == 't') b_transa = true;
   if (transb[0] == 'T' || transb[0] == 't') b_transb = true;
 
-  Rgemm_internal(b_transa, b_transb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
+  Rgemm_binary128_opencl_kernel(b_transa, b_transb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
 
   return;
 }

@@ -99,7 +99,3 @@ Rgetrf_binary128_LDFLAGS=      $(binary128_libdepends)
 Rgetrf_binary128_opt_SOURCES=  Rgetrf.cpp
 Rgetrf_binary128_opt_CXXFLAGS= $(binary128cxxflags)
 Rgetrf_binary128_opt_LDFLAGS=  $(binary128opt_libdepends)
-
-if ENABLE_OPENCL
-include Makefile.binary128_opencl.am
-endif

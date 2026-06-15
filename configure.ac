@@ -371,7 +371,49 @@ AC_SUBST(CUDA_VERSION_MAJOR)
 AC_SUBST(IS_CUDA_VERSION_MAJOR_3)
 AC_SUBST(NVCC)
 
+dnl ===================================================================
+dnl OpenCL API-version probing helpers
+dnl
+dnl _MPLAPACK_OPENCL_TRY_VER(HEADER, MACRO_SUFFIX, NUMERIC)
+dnl   If CL_VERSION_<MACRO_SUFFIX> is defined by <HEADER>, raise
+dnl   opencl_header_max to NUMERIC.  Called in ascending order, so the
+dnl   highest version the headers declare wins.
+dnl
+dnl MPLAPACK_OPENCL_MAXVER(HEADER)
+dnl   Set shell var opencl_header_max to the highest OpenCL level the
+dnl   headers expose (100,110,120,200,210,220,300); 0 if none found.
+dnl   HEADER must be an m4 literal (CL/cl.h or OpenCL/cl.h).  CPPFLAGS
+dnl   must already carry the include path for HEADER before calling.
+dnl ===================================================================
+AC_DEFUN([_MPLAPACK_OPENCL_TRY_VER],
+[AC_COMPILE_IFELSE(
+   [AC_LANG_PROGRAM([[
+#include <$1>
+#if !defined(CL_VERSION_$2)
+#error CL_VERSION_$2 not defined
+#endif
+]], [[]])],
+   [opencl_header_max=$3])])
+
+AC_DEFUN([MPLAPACK_OPENCL_MAXVER],
+[opencl_header_max=0
+ _MPLAPACK_OPENCL_TRY_VER([$1], [1_0], [100])
+ _MPLAPACK_OPENCL_TRY_VER([$1], [1_1], [110])
+ _MPLAPACK_OPENCL_TRY_VER([$1], [1_2], [120])
+ _MPLAPACK_OPENCL_TRY_VER([$1], [2_0], [200])
+ _MPLAPACK_OPENCL_TRY_VER([$1], [2_1], [210])
+ _MPLAPACK_OPENCL_TRY_VER([$1], [2_2], [220])
+ _MPLAPACK_OPENCL_TRY_VER([$1], [3_0], [300])])
+
 # ---- OpenCL detection ----
+#
+# CL_TARGET_OPENCL_VERSION selects which API symbols the Khronos headers
+# expose and which deprecation guards fire.  Pin the default to OpenCL 1.2:
+# the current binary128 OpenCL backend uses 1.x host APIs, and Apple OpenCL is
+# frozen at 1.2.  Users can request another level explicitly, or use "max" to
+# target the highest level the installed headers expose.
+m4_define([MPLAPACK_OPENCL_TARGET_DEFAULT], [120])
+
 AC_ARG_WITH([opencl],
   [AS_HELP_STRING([--with-opencl@<:@=DIR@:>@],
      [enable OpenCL; optionally a vendor SDK prefix, e.g. /usr/local/cuda])],
@@ -382,11 +424,17 @@ AC_ARG_WITH([opencl-include],
 AC_ARG_WITH([opencl-lib],
   [AS_HELP_STRING([--with-opencl-lib=DIR], [OpenCL library dir])],
   [OPENCL_LDFLAGS="-L$withval"], [])
+AC_ARG_WITH([opencl-version],
+  [AS_HELP_STRING([--with-opencl-version=VER],
+     [OpenCL API level to target: 100, 110, 120, 200, 210, 220, 300, or
+      'max' for the highest the headers expose (default: ]MPLAPACK_OPENCL_TARGET_DEFAULT[)])],
+  [opencl_target_req="$withval"],
+  [opencl_target_req="MPLAPACK_OPENCL_TARGET_DEFAULT"])
 
 have_opencl=no
 OPENCL_CFLAGS=
 OPENCL_LIBS=
-OPENCL_VERSION_DEF="-DCL_TARGET_OPENCL_VERSION=300"
+OPENCL_TARGET_VERSION=
 
 AS_IF([test "x$with_opencl" != xno], [
   AS_IF([test -d "$with_opencl"], [
@@ -397,10 +445,10 @@ AS_IF([test "x$with_opencl" != xno], [
   PKG_PROG_PKG_CONFIG
   PKG_CHECK_MODULES([OPENCL], [OpenCL],
     [have_opencl=yes
-     OPENCL_CFLAGS="$OPENCL_CFLAGS $OPENCL_VERSION_DEF"],
+     OPENCL_CFLAGS="$OPENCL_CPPFLAGS $OPENCL_CFLAGS"],
     [
       save_CPPFLAGS="$CPPFLAGS"; save_LDFLAGS="$LDFLAGS"; save_LIBS="$LIBS"
-      CPPFLAGS="$CPPFLAGS $OPENCL_CPPFLAGS $OPENCL_VERSION_DEF"
+      CPPFLAGS="$CPPFLAGS $OPENCL_CPPFLAGS"
       LDFLAGS="$LDFLAGS $OPENCL_LDFLAGS"
 
       case "$host_os" in
@@ -420,9 +468,44 @@ AS_IF([test "x$with_opencl" != xno], [
           ;;
       esac
 
-      OPENCL_CFLAGS="$OPENCL_CPPFLAGS $OPENCL_VERSION_DEF"
+      OPENCL_CFLAGS="$OPENCL_CPPFLAGS"
       CPPFLAGS="$save_CPPFLAGS"; LDFLAGS="$save_LDFLAGS"; LIBS="$save_LIBS"
     ])
+])
+
+AS_IF([test "x$have_opencl" = xyes], [
+  save_CPPFLAGS="$CPPFLAGS"
+  CPPFLAGS="$CPPFLAGS $OPENCL_CFLAGS"
+  AC_MSG_CHECKING([highest OpenCL version exposed by the headers])
+  case "$host_os" in
+    darwin*) MPLAPACK_OPENCL_MAXVER([OpenCL/cl.h]) ;;
+    *)       MPLAPACK_OPENCL_MAXVER([CL/cl.h]) ;;
+  esac
+  CPPFLAGS="$save_CPPFLAGS"
+  AS_IF([test "$opencl_header_max" = 0],
+    [AC_MSG_RESULT([unknown])
+     AC_MSG_WARN([no CL_VERSION_x_y macro found in headers; assuming 120])
+     opencl_header_max=120],
+    [AC_MSG_RESULT([$opencl_header_max])])
+
+  AS_CASE([$opencl_target_req],
+    [max|auto], [OPENCL_TARGET_VERSION=$opencl_header_max],
+    [OPENCL_TARGET_VERSION=$opencl_target_req])
+
+  AS_CASE([$OPENCL_TARGET_VERSION],
+    [100|110|120|200|210|220|300], [],
+    [AC_MSG_ERROR([--with-opencl-version: invalid value '$opencl_target_req'; use 100, 110, 120, 200, 210, 220, 300, or max])])
+
+  AS_IF([test "$opencl_header_max" -lt "$OPENCL_TARGET_VERSION"],
+    [AC_MSG_ERROR([requested OpenCL target $OPENCL_TARGET_VERSION but the headers expose at most $opencl_header_max; install newer OpenCL headers or lower --with-opencl-version])])
+
+  OPENCL_CFLAGS="$OPENCL_CFLAGS -DCL_TARGET_OPENCL_VERSION=$OPENCL_TARGET_VERSION"
+
+  case "$host_os" in
+    darwin*) OPENCL_CFLAGS="$OPENCL_CFLAGS -DCL_SILENCE_DEPRECATION" ;;
+  esac
+
+  AC_MSG_NOTICE([OpenCL API target: CL_TARGET_OPENCL_VERSION=$OPENCL_TARGET_VERSION])
 ])
 
 AS_IF([test "x$with_opencl" = xyes && test "x$have_opencl" = xno],
@@ -431,9 +514,11 @@ AS_IF([test "x$have_opencl" = xyes],
   [AC_DEFINE([HAVE_OPENCL], [1], [Define if OpenCL support is available])])
 
 AM_CONDITIONAL([ENABLE_OPENCL], [test "x$have_opencl" = xyes])
+AC_SUBST([OPENCL_CPPFLAGS])
 AC_SUBST([OPENCL_CFLAGS])
 AC_SUBST([OPENCL_LDFLAGS])
 AC_SUBST([OPENCL_LIBS])
+AC_SUBST([OPENCL_TARGET_VERSION])
 
 dnl enable benchmark; compare with reference LAPACK and BLAS, and OpenBLAS
 AC_ARG_ENABLE(benchmark,

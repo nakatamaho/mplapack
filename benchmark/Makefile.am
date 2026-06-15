@@ -14,9 +14,9 @@ dist_bench_DATA = \
     Rsyrk1.plt.in  Rsyrk2.plt.in  Rsyrk3.plt.in  \
     Rsyrk_cuda.plt.in              \
     Rgetrf1.plt.in Rgetrf2.plt.in Rgetrf3.plt.in \
-    Rgetrf_cuda.plt.in             \
+    Rgetrf_cuda.plt.in Rgetrf_opencl.plt.in \
     Rpotrf1.plt.in Rpotrf2.plt.in Rpotrf3.plt.in \
-    Rpotrf_cuda.plt.in
+    Rpotrf_cuda.plt.in Rpotrf_opencl.plt.in
 
 # -----------------------------------------------------------------------------
 # Source templates for go.*.sh (included in "make dist").
@@ -33,8 +33,10 @@ EXTRA_DIST = \
     go.Rsyrk_cuda.sh.in  \
     go.Rgetrf.sh.in      \
     go.Rgetrf_cuda.sh.in \
+    go.Rgetrf_opencl.sh.in \
     go.Rpotrf.sh.in      \
-    go.Rpotrf_cuda.sh.in
+    go.Rpotrf_cuda.sh.in \
+    go.Rpotrf_opencl.sh.in
 
 # -----------------------------------------------------------------------------
 # Generated scripts.
@@ -59,8 +61,10 @@ GO_SH_FILES = \
     go.Rsyrk_cuda.sh  \
     go.Rgetrf.sh      \
     go.Rgetrf_cuda.sh \
+    go.Rgetrf_opencl.sh \
     go.Rpotrf.sh      \
-    go.Rpotrf_cuda.sh
+    go.Rpotrf_cuda.sh \
+    go.Rpotrf_opencl.sh
 
 CLEANFILES = $(GO_SH_FILES)
 
@@ -104,6 +108,9 @@ include Makefile.double.am
 endif
 if ENABLE_BINARY128
 include Makefile.binary128.am
+endif
+if ENABLE_OPENCL_BINARY128
+include Makefile.binary128_opencl.am
 endif
 if ENABLE_BINARY80
 include Makefile.binary80.am

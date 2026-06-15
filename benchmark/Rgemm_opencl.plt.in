@@ -8,4 +8,5 @@ set ylabel "MFLOPS"
 set key above
 set terminal pdf
 
-plot "log.Rgemm.binary128_opencl_total" using 1:4 title 'binary128 OpenCL total' with lines linewidth 1
+plot "log.Rgemm.binary128_opencl_kernel" using 1:4 title 'binary128 OpenCL kernel' with lines linewidth 1,\
+     "log.Rgemm.binary128_opencl_total"  using 1:4 title 'binary128 OpenCL total' with lines linewidth 1

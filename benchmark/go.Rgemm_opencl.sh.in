@@ -72,7 +72,8 @@ run_bench() {
 # ---------------------------------------------------------------------------
 # Binary128 OpenCL benchmarks
 # ---------------------------------------------------------------------------
-run_bench Rgemm.binary128_opencl_total -NOCHECK -LOOPS 3
+run_bench Rgemm.binary128_opencl_total  -NOCHECK -LOOPS 3
+run_bench Rgemm.binary128_opencl_kernel -NOCHECK -LOOPS 3
 
 OPENCL_LOG="${OUTPATH}/log.Rgemm.binary128_opencl_total"
 if [ ! -s "${OPENCL_LOG}" ]; then

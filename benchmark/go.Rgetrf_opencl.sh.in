@@ -1,0 +1,68 @@
+#!/bin/sh
+# go.Rgetrf_opencl.sh - OpenCL benchmark runner for Rgetrf
+# %%CPU_OS_DETECTION_SH%% and %%CC_TAG%% are replaced:
+#   - at "make" time   : builddir paths
+#   - at "make install": installed paths
+# Never edit the installed copy; edit go.Rgetrf_opencl.sh.in instead.
+
+TIMEOUT=7200
+
+SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
+
+_DETECTION=$(sh "%%CPU_OS_DETECTION_SH%%")
+_CPU_NORM=$(printf '%s' "${_DETECTION}" | cut -d'|' -f1)
+_OS_ID=$(printf '%s' "${_DETECTION}" | cut -d'|' -f2)
+MODELNAME=$(printf '%s' "${_DETECTION}" | cut -d'|' -f3)
+MODELNAME="${MODELNAME:-unknown}"
+
+CC_TAG="%%CC_TAG%%"
+OUTDIR="${_CPU_NORM}-${_OS_ID}-${CC_TAG}"
+OUTPATH="${SCRIPT_DIR}/results/${OUTDIR}"
+mkdir -p "${OUTPATH}"
+
+if [ "$(uname)" = "Darwin" ]; then
+    LDPATHPREFIX="DYLD_LIBRARY_PATH=%%PREFIX%%/lib"
+    SED=gsed
+else
+    LDPATHPREFIX="LD_LIBRARY_PATH=%%PREFIX%%/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+    SED=sed
+fi
+
+if [ -z "${OCL_ICD_VENDORS:-}" ] && [ ! -e /etc/OpenCL/vendors/nvidia.icd ]; then
+    for _lib in /usr/lib/x86_64-linux-gnu/libnvidia-opencl.so.1 /usr/lib64/libnvidia-opencl.so.1; do
+        if [ -e "${_lib}" ]; then
+            ICD_DIR="${OUTPATH}/opencl-vendors"
+            mkdir -p "${ICD_DIR}"
+            printf "%s\n" "libnvidia-opencl.so.1" > "${ICD_DIR}/nvidia.icd"
+            OCL_ICD_VENDORS="${ICD_DIR}"
+            export OCL_ICD_VENDORS
+            break
+        fi
+    done
+fi
+
+run_bench() {
+    _bin="${SCRIPT_DIR}/$1"; shift
+    _log="${OUTPATH}/log.$(basename "${_bin}")"
+    if [ ! -x "${_bin}" ]; then
+        echo "SKIP (not found): ${_bin}" >&2
+        return 0
+    fi
+    echo "RUN: ${_bin} $*"
+    env ${LDPATHPREFIX} timeout ${TIMEOUT} "${_bin}" "$@" > "${_log}" 2>&1
+}
+
+run_bench Rgetrf.binary128_opencl_total -NOCHECK -TOTALSTEPS 700 -STEPM 5 -STEPN 5
+
+OPENCL_LOG="${OUTPATH}/log.Rgetrf.binary128_opencl_total"
+if [ ! -s "${OPENCL_LOG}" ]; then
+    echo "SKIP plot (no OpenCL benchmark log): ${OPENCL_LOG}" >&2
+    echo "Done. Results: ${OUTPATH}"
+    exit 0
+fi
+
+$SED -e "s/%%MODELNAME%%/${MODELNAME}/g" \
+    "${SCRIPT_DIR}/Rgetrf_opencl.plt.in" > "${OUTPATH}/Rgetrf_opencl.plt"
+(cd "${OUTPATH}" && gnuplot "Rgetrf_opencl.plt" > "Rgetrf_opencl.pdf")
+
+echo "Done. Results: ${OUTPATH}"

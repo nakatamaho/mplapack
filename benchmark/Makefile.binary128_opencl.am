@@ -1,14 +1,42 @@
 bench_PROGRAMS += \
-Rgemm.binary128_opencl_total
-#Rgemm.dd_cuda_kernel \
-#Rsyrk.dd_cuda_total \
-#Rsyrk.dd_cuda_kernel
+Rgemm.binary128_opencl_total  \
+Rgemm.binary128_opencl_kernel \
+Rpotrf.binary128_opencl_total \
+Rgetrf.binary128_opencl_total
 
-binary128opt_opencl_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_BINARY128___ $(OPENCL_CFLAGS)
-binary128opt_opencl_libdepends = $(binary128lapack_libdepends) -L$(top_builddir)/mpblas/optimized/binary128/opencl -lmpblas_binary128_opt_opencl -L$(top_builddir)/mpblas/optimized/binary128 -lmpblas_binary128_opt $(OPENCL_LDFLAGS) $(OPENCL_LIBS) $(DYLD)
-binary128opt_opencl_link = $(LIBTOOL) --mode=link $(CXX) -o $@ $(OPENCL_LDFLAGS) $(OPENCL_LIBS) $(binary128opt_opencl_libdepends) $(OPENMP_CXXFLAGS)
+# binary128_opencl_libdepends relies on binary128lapack_libdepends defined in
+# Makefile.binary128.am, which already pulls in -lmplapack_binary128.
+binary128_opencl_cxxflags   = -I$(top_srcdir)/include $(OPENCL_CFLAGS) -D___MPLAPACK_BUILD_WITH_BINARY128___
+binary128_opencl_libdepends = $(binary128lapack_libdepends) \
+                              -L$(top_builddir)/mpblas/optimized/binary128/opencl -lmpblas_binary128_opt_opencl \
+                              $(OPENCL_LDFLAGS) $(OPENCL_LIBS) \
+                              -L$(top_builddir)/mpblas/optimized/binary128 -lmpblas_binary128_opt \
+                              $(DYLD)
+binary128_opencl_link       = $(LIBTOOL) --mode=link $(CXX) -o $@ $(OPENCL_LDFLAGS) $(OPENCL_LIBS) $(binary128_opencl_libdepends) $(OPENMP_CXXFLAGS)
 
+if BINARY128_USE_QUADMATH
+binary128_opencl_libdepends += -lquadmath
+endif
 
-Rgemm_binary128_opencl_total_SOURCES = Rgemm.cpp
-Rgemm_binary128_opencl_total_LINK = $(binary128opt_opencl_link)
-Rgemm_binary128_opencl_total_CXXFLAGS = $(binary128opt_opencl_cxxflags)
+if IS_MINGW
+binary128_opencl_cxxflags   += -I$(DLFCN_WIN32_INCLUDEDIR)
+binary128_opencl_libdepends += -L$(DLFCN_WIN32_LIBDIR) -ldl
+endif
+
+# BLAS benchmarks
+Rgemm_binary128_opencl_total_SOURCES=   Rgemm.cpp
+Rgemm_binary128_opencl_total_LINK=      $(binary128_opencl_link)
+Rgemm_binary128_opencl_total_CXXFLAGS=  $(binary128_opencl_cxxflags)
+
+Rgemm_binary128_opencl_kernel_SOURCES=  Rgemm_binary128_opencl_kernel.cpp
+Rgemm_binary128_opencl_kernel_LINK=     $(binary128_opencl_link)
+Rgemm_binary128_opencl_kernel_CXXFLAGS= $(binary128_opencl_cxxflags)
+
+# LAPACK benchmarks
+Rpotrf_binary128_opencl_total_SOURCES=  Rpotrf.cpp
+Rpotrf_binary128_opencl_total_LINK=     $(binary128_opencl_link)
+Rpotrf_binary128_opencl_total_CXXFLAGS= $(binary128_opencl_cxxflags)
+
+Rgetrf_binary128_opencl_total_SOURCES=  Rgetrf.cpp
+Rgetrf_binary128_opencl_total_LINK=     $(binary128_opencl_link)
+Rgetrf_binary128_opencl_total_CXXFLAGS= $(binary128_opencl_cxxflags)
