@@ -67,6 +67,9 @@ echo "MPLAPACK_TEST_RESULTS_STAGING=$MPLAPACK_TEST_RESULTS_STAGING"
 bash misc/reconfig.ubuntu24.04.intel.sh
 make -j"${MAKE_JOBS}"
 make install
+INSTALL_PREFIX="$(sed -n 's/^prefix = //p' Makefile | head -n 1)"
+bash release/check-installed-examples.sh "${INSTALL_PREFIX}" Makefile.linux "${MAKE_JOBS}"
+bash release/check-installed-benchmarks.sh "${INSTALL_PREFIX}"
 make distcheck MAKEFLAGS="-j${MAKE_JOBS}" DISTCHECK_CONFIGURE_FLAGS="$CONFIGURE_OPTS"
 
 echo '=== ccache stats (after) ==='

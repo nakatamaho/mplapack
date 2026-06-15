@@ -45,9 +45,9 @@ EXTRA_DIST = \
 # are driven via all-local instead.
 #
 # Placeholder substitution strategy:
-#   Build time : %%CC_TAG%% only  (compiler tag is fixed per configure run)
-#   Install time: %%CPU_OS_DETECTION_SH%% and %%PREFIX%%
-#                 (paths differ between builddir and installdir)
+#   Build time : %%CC_TAG%%, %%CPU_OS_DETECTION_SH%%, and %%PREFIX%%
+#                (compiler tag and configured prefix are fixed per configure run)
+#   Install time: keep the install hook idempotent for already-generated scripts.
 # -----------------------------------------------------------------------------
 GO_SH_FILES = \
     go.Raxpy.sh       \
@@ -70,12 +70,12 @@ CLEANFILES = $(GO_SH_FILES)
 
 all-local: $(GO_SH_FILES)
 
-# At build time substitute only %%CC_TAG%%.
-# %%CPU_OS_DETECTION_SH%% and %%PREFIX%% are left as-is for install-exec-hook.
+# At build time substitute all placeholders needed by builddir runners.
 go.%.sh: $(srcdir)/go.%.sh.in
 	$(SED) \
 	  -e "s|%%CC_TAG%%|$(MPLAPACK_CC_TAG)|g" \
 	  -e "s|%%CPU_OS_DETECTION_SH%%|$(abs_top_srcdir)/misc/cpu_os_detection.sh|g" \
+	  -e "s|%%PREFIX%%|$(prefix)|g" \
 	  $< > $@
 	chmod +x $@
 
@@ -120,9 +120,9 @@ include Makefile.blas.am
 endif
 
 # -----------------------------------------------------------------------------
-# Install go.*.sh: copy generated scripts, then rewrite the remaining
-# placeholders (%%CPU_OS_DETECTION_SH%% and %%PREFIX%%) to installed paths.
-# %%CC_TAG%% is already baked in at build time and needs no further treatment.
+# Install go.*.sh: copy generated scripts, then rewrite any stale builddir
+# path to the installed helper path.  Placeholder replacement is intentionally
+# idempotent for older generated scripts.
 #
 # Portability note: "sed -i" differs between GNU sed and BSD sed (macOS).
 # Use a .bak suffix and remove it explicitly to work on both.

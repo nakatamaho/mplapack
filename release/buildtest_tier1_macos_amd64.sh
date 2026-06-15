@@ -200,11 +200,11 @@ PREFIX_DIR="${HOME}/MPLAPACK"
 # DISTCHECK_CONFIGURE_FLAGS: feature flags only, no --prefix
 # Note: Apple Silicon (arm64) does not have x87, so binary80 is x86_64 only
 # ---------------------------------------------------------------------------
-COMMON_FLAGS="--enable-gmp=yes --enable-mpfr=yes --enable-binary128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes"
+COMMON_FLAGS="--enable-gmp=yes --enable-mpfr=yes --enable-binary128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes --enable-benchmark=yes"
 ARCH=$(uname -m)
 case "${ARCH}" in
     x86_64|i686|i586|i486|i386)
-        DISTCHECK_CONFIGURE_FLAGS="${COMMON_FLAGS} --enable-binary80=yes --enable-benchmark=yes"
+        DISTCHECK_CONFIGURE_FLAGS="${COMMON_FLAGS} --enable-binary80=yes"
         ;;
     *)
         DISTCHECK_CONFIGURE_FLAGS="${COMMON_FLAGS}"
@@ -372,6 +372,8 @@ log "MPLAPACK_TEST_RESULTS_STAGING: ${MPLAPACK_TEST_RESULTS_STAGING}"
 run_step "reconfig"       bash misc/reconfig.macOS.sh
 run_step "make"           make -j"${MAKE_JOBS}"
 run_step "make_install"   make install
+run_step "check_installed_examples" bash release/check-installed-examples.sh "${PREFIX_DIR}" Makefile.macos "${MAKE_JOBS}"
+run_step "check_installed_benchmarks" bash release/check-installed-benchmarks.sh "${PREFIX_DIR}"
 
 # Copy config.log (records actual configure invocation and detected settings)
 cp config.log "${LOG_DIR}/config.log" 2>/dev/null || true

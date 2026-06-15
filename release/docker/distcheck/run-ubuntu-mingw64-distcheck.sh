@@ -89,6 +89,9 @@ echo "MPLAPACK_TEST_RESULTS_STAGING=$MPLAPACK_TEST_RESULTS_STAGING"
 ./configure $CONFIGURE_OPTS
 make -j"${MAKE_JOBS}"
 make install
+INSTALL_PREFIX="$(sed -n 's/^prefix = //p' Makefile | head -n 1)"
+bash release/check-installed-examples.sh "${INSTALL_PREFIX}" Makefile.mingw "${MAKE_JOBS}" CXX=x86_64-w64-mingw32-g++-posix
+bash release/check-installed-benchmarks.sh "${INSTALL_PREFIX}"
 
 echo '=== Running make distcheck ==='
 env CC="ccache x86_64-w64-mingw32-gcc-posix" CXX="ccache x86_64-w64-mingw32-g++-posix" FC="ccache x86_64-w64-mingw32-gfortran-posix" \

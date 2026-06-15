@@ -76,6 +76,11 @@ mkdir -p "$MPLAPACK_TEST_RESULTS_STAGING"
 echo "MPLAPACK_TEST_RESULTS_STAGING=$MPLAPACK_TEST_RESULTS_STAGING"
 
 bash "$RECONFIG_SCRIPT"
+INSTALL_PREFIX="$(sed -n 's/^prefix = //p' Makefile | head -n 1)"
+make -j"${MAKE_JOBS}"
+make install
+bash release/check-installed-examples.sh "${INSTALL_PREFIX}" Makefile.linux_cuda,Makefile.linux "${MAKE_JOBS}"
+bash release/check-installed-benchmarks.sh "${INSTALL_PREFIX}"
 
 echo "DISTCHECK_CONFIGURE_FLAGS=$NVIDIA_CONFIGURE_OPTS"
 echo '=== Running make distcheck with NVIDIA reconfig options ==='

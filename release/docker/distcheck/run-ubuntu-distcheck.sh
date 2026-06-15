@@ -46,7 +46,9 @@ autoreconf --force --install
 ARCH=$(dpkg --print-architecture)
 echo "Detected architecture: $ARCH"
 COMMON_OPTS="--enable-gmp=yes --enable-mpfr=yes --enable-binary128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes"
-if [ "$ARCH" = "amd64" ] || [ "$ARCH" = "i386" ]; then
+if [ "$ARCH" = "arm64" ] || [ "$ARCH" = "aarch64" ]; then
+    CONFIGURE_OPTS="$COMMON_OPTS --enable-benchmark=yes"
+elif [ "$ARCH" = "amd64" ] || [ "$ARCH" = "i386" ]; then
     CONFIGURE_OPTS="$COMMON_OPTS --enable-benchmark=yes --enable-binary80=yes"
 else
     CONFIGURE_OPTS="$COMMON_OPTS"
@@ -61,6 +63,11 @@ mkdir -p "$MPLAPACK_TEST_RESULTS_STAGING"
 echo "MPLAPACK_TEST_RESULTS_STAGING=$MPLAPACK_TEST_RESULTS_STAGING"
 
 ./configure $CONFIGURE_OPTS
+INSTALL_PREFIX="$(sed -n 's/^prefix = //p' Makefile | head -n 1)"
+make -j"${MAKE_JOBS}"
+make install
+bash release/check-installed-examples.sh "${INSTALL_PREFIX}" Makefile.linux "${MAKE_JOBS}"
+bash release/check-installed-benchmarks.sh "${INSTALL_PREFIX}"
 echo '=== Running make distcheck ==='
 make distcheck MAKEFLAGS="-j${MAKE_JOBS}" DISTCHECK_CONFIGURE_FLAGS="$CONFIGURE_OPTS"
 

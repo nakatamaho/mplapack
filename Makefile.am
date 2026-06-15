@@ -8,6 +8,9 @@ endif
 
 ACLOCAL_AMFLAGS = -I m4
 
+miscdir = $(prefix)/misc
+dist_misc_SCRIPTS = misc/cpu_os_detection.sh
+
 mplapack_includedir = $(includedir)/mplapack
 mplapack_include_HEADERS = \
     include/blas.h \
@@ -281,6 +284,8 @@ release/buildtest_tier1_ubuntu_amd64.sh \
 release/buildtest_tier1_ubuntu_inteloneapi_amd64.sh \
 release/buildtest_tier1_ubuntu_arm64.sh \
 release/buildtest_tier1_debian_i386.sh \
+release/check-installed-benchmarks.sh \
+release/check-installed-examples.sh \
 release/docker/common/entrypoint.sh \
 release/docker/common/tarball-smoke.sh \
 release/docker/distcheck/Dockerfile.debian-i386 \
@@ -309,7 +314,6 @@ release/run-remote-tarball-docker-worker.sh \
 release/run-remote-macos.sh \
 release/run-remote-targets-by-host.sh \
 release/clean-remote-workdirs.sh \
-misc/cpu_os_detection.sh \
 misc/cudalt.py \
 misc/fix_dylib_macOS.sh \
 misc/num_diff.py \
