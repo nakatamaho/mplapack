@@ -250,17 +250,51 @@ MPLAPACK_SED_SUBST = \
         -e 's|%%LIBQUADMATH%%||g'
 endif
 
+DISABLED_EXAMPLE_SUFFIXES =
+if ENABLE_MPFR
+else
+DISABLED_EXAMPLE_SUFFIXES += mpfr
+endif
+if ENABLE_GMP
+else
+DISABLED_EXAMPLE_SUFFIXES += gmp
+endif
+if ENABLE_QD
+else
+DISABLED_EXAMPLE_SUFFIXES += qd
+endif
+if ENABLE_DD
+else
+DISABLED_EXAMPLE_SUFFIXES += dd
+endif
+if ENABLE_DOUBLE
+else
+DISABLED_EXAMPLE_SUFFIXES += double
+endif
+if ENABLE_BINARY128
+else
+DISABLED_EXAMPLE_SUFFIXES += binary128
+endif
+if ENABLE_BINARY80
+else
+DISABLED_EXAMPLE_SUFFIXES += binary80
+endif
+
 Makefile.freebsd: Makefile.freebsd.in
 	sed $(MPLAPACK_SED_SUBST) $< > $@
+	bash $(top_srcdir)/misc/filter-example-programs.sh $@ $(DISABLED_EXAMPLE_SUFFIXES)
 
 Makefile.linux: Makefile.linux.in
 	sed $(MPLAPACK_SED_SUBST) $< > $@
+	bash $(top_srcdir)/misc/filter-example-programs.sh $@ $(DISABLED_EXAMPLE_SUFFIXES)
 
 Makefile.macos: Makefile.macos.in
 	sed $(MPLAPACK_SED_SUBST) $< > $@
+	bash $(top_srcdir)/misc/filter-example-programs.sh $@ $(DISABLED_EXAMPLE_SUFFIXES)
 
 Makefile.mingw: Makefile.mingw.in
 	sed $(MPLAPACK_SED_SUBST) $< > $@
+	bash $(top_srcdir)/misc/filter-example-programs.sh $@ $(DISABLED_EXAMPLE_SUFFIXES)
 
 all-local: $(GENERATED_MAKEFILES)
 

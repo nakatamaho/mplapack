@@ -277,6 +277,7 @@ fable/tbxx/time_accu.hpp \
 include/mplapack_symbol_resolver.h \
 misc/add_ldlibpath.sh \
 misc/ccache_set_min_maxsize.sh \
+misc/filter-example-programs.sh \
 release/buildtest_tier1_macos_amd64.sh \
 release/buildtest_tier1_macos_arm64.sh \
 release/buildtest_tier1_mingw64_amd64.sh \
