@@ -17,8 +17,8 @@ MPFROPTLIBS=-fopenmp -lmpblas_mpfr_opt -lmpfr -lmpc -lgmp
 GMPOPTLIBS=-fopenmp -lmpblas_gmp_opt -lgmpxx -lgmp
 QDOPTLIBS=-fopenmp -lmpblas_qd_opt -lqd
 DDOPTLIBS=-fopenmp -lmpblas_dd_opt -lqd
-BINARY80OPTLIBS=-fopenmp -lmpblas_binary80
-BINARY128OPTLIBS=-fopenmp -lmpblas_biary128_opt%%LIBQUADMATH%%
+BINARY80OPTLIBS=-fopenmp -lmpblas_binary80_opt
+BINARY128OPTLIBS=-fopenmp -lmpblas_binary128_opt%%LIBQUADMATH%%
 DOUBLEOPTLIBS=-fopenmp -lmpblas_double_opt
 
 BLAS=
@@ -26,7 +26,7 @@ LAPACK=
 FLIBS=
 
 programs=%%ROUTINE%%_mpfr.exe %%ROUTINE%%_gmp.exe %%ROUTINE%%_qd.exe %%ROUTINE%%_dd.exe %%ROUTINE%%_binary80.exe %%ROUTINE%%_binary128.exe %%ROUTINE%%_double.exe \
-%%ROUTINE%%_mpfr_opt.exe %%ROUTINE%%_gmp_opt.exe %%ROUTINE%%_qd_opt.exe %%ROUTINE%%_dd_opt.exe %%ROUTINE%%_biary80_opt.exe %%ROUTINE%%_biary128_opt.exe %%ROUTINE%%_double_opt.exe
+%%ROUTINE%%_mpfr_opt.exe %%ROUTINE%%_gmp_opt.exe %%ROUTINE%%_qd_opt.exe %%ROUTINE%%_dd_opt.exe %%ROUTINE%%_binary80_opt.exe %%ROUTINE%%_binary128_opt.exe %%ROUTINE%%_double_opt.exe
 
 all: $(programs)
 
@@ -60,14 +60,14 @@ all: $(programs)
 %%ROUTINE%%_binary80.exe: %%ROUTINE%%_binary80.o
 	$(CXX) -o %%ROUTINE%%_binary80.exe %%ROUTINE%%_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
 
-%%ROUTINE%%_biary80_opt.exe: %%ROUTINE%%_binary80.o
-	$(CXX) -o %%ROUTINE%%_biary80_opt.exe %%ROUTINE%%_binary80.o $(LIBFLAGS) $(BINARY80OPTLIBS)
+%%ROUTINE%%_binary80_opt.exe: %%ROUTINE%%_binary80.o
+	$(CXX) -o %%ROUTINE%%_binary80_opt.exe %%ROUTINE%%_binary80.o $(LIBFLAGS) $(BINARY80OPTLIBS)
 
 %%ROUTINE%%_binary128.exe: %%ROUTINE%%_binary128.o
 	$(CXX) -o %%ROUTINE%%_binary128.exe %%ROUTINE%%_binary128.o $(LIBFLAGS) $(BINARY128LIBS)
 
-%%ROUTINE%%_biary128_opt.exe: %%ROUTINE%%_binary128.o
-	$(CXX) -o %%ROUTINE%%_biary128_opt.exe %%ROUTINE%%_binary128.o $(LIBFLAGS) $(BINARY128OPTLIBS)
+%%ROUTINE%%_binary128_opt.exe: %%ROUTINE%%_binary128.o
+	$(CXX) -o %%ROUTINE%%_binary128_opt.exe %%ROUTINE%%_binary128.o $(LIBFLAGS) $(BINARY128OPTLIBS)
 
 %%ROUTINE%%_double.exe: %%ROUTINE%%_double.o
 	$(CXX) -o %%ROUTINE%%_double.exe %%ROUTINE%%_double.o $(LIBFLAGS) $(DOUBLELIBS)

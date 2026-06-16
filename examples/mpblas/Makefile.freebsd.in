@@ -17,7 +17,7 @@ MPFROPTLIBS=-fopenmp -lmpblas_mpfr_opt -lmpfr -lmpc -lgmp
 GMPOPTLIBS=-fopenmp -lmpblas_gmp_opt -lgmpxx -lgmp
 QDOPTLIBS=-fopenmp -lmpblas_qd_opt -lqd
 DDOPTLIBS=-fopenmp -lmpblas_dd_opt -lqd
-BINARY80OPTLIBS=-fopenmp -lmpblas_binary80
+BINARY80OPTLIBS=-fopenmp -lmpblas_binary80_opt
 BINARY128OPTLIBS=-fopenmp -lmpblas_binary128_opt%%LIBQUADMATH%%
 DOUBLEOPTLIBS=-fopenmp -lmpblas_double_opt
 
