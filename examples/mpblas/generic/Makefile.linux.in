@@ -5,6 +5,7 @@ CXX=c++
 MPLAPACKDIR=%%MPLAPACKDIR%%
 CXXFLAGS= -I$(MPLAPACKDIR)/include -I$(MPLAPACKDIR)/include/mplapack -I$(MPLAPACKDIR)/include/qd
 OPTFLAGS= -O2 -fopenmp
+OPENMP_EXAMPLE_OPENMP_LIBS = -fopenmp
 LIBFLAGS=-L$(MPLAPACKDIR)/lib -Wl,--rpath=$(MPLAPACKDIR)/lib
 MPFRLIBS=-lmpblas_mpfr -lmpfr -lmpc -lgmp
 GMPLIBS=-lmpblas_gmp -lgmpxx -lgmp 
@@ -14,13 +15,13 @@ BINARY80LIBS=-lmpblas_binary80
 BINARY128LIBS=-lmpblas_binary128%%LIBQUADMATH%%
 DOUBLELIBS=-lmpblas_double
 
-MPFROPTLIBS=-fopenmp -lmpblas_mpfr_opt -lmpfr -lmpc -lgmp
-GMPOPTLIBS=-fopenmp -lmpblas_gmp_opt -lgmpxx -lgmp
-QDOPTLIBS=-fopenmp -lmpblas_qd_opt -lqd
-DDOPTLIBS=-fopenmp -lmpblas_dd_opt -lqd
-BINARY80OPTLIBS=-fopenmp -lmpblas_binary80
-BINARY128OPTLIBS=-fopenmp -lmpblas_binary128_opt%%LIBQUADMATH%%
-DOUBLEOPTLIBS=-fopenmp -lmpblas_double_opt
+MPFROPTLIBS=$(OPENMP_EXAMPLE_OPENMP_LIBS) -lmpblas_mpfr_opt -lmpfr -lmpc -lgmp
+GMPOPTLIBS=$(OPENMP_EXAMPLE_OPENMP_LIBS) -lmpblas_gmp_opt -lgmpxx -lgmp
+QDOPTLIBS=$(OPENMP_EXAMPLE_OPENMP_LIBS) -lmpblas_qd_opt -lqd
+DDOPTLIBS=$(OPENMP_EXAMPLE_OPENMP_LIBS) -lmpblas_dd_opt -lqd
+BINARY80OPTLIBS=$(OPENMP_EXAMPLE_OPENMP_LIBS) -lmpblas_binary80_opt
+BINARY128OPTLIBS=$(OPENMP_EXAMPLE_OPENMP_LIBS) -lmpblas_binary128_opt%%LIBQUADMATH%%
+DOUBLEOPTLIBS=$(OPENMP_EXAMPLE_OPENMP_LIBS) -lmpblas_double_opt
 
 BLAS=
 LAPACK=
