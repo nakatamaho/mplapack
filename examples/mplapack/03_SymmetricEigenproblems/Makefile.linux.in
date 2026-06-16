@@ -5,6 +5,7 @@ CXX=c++
 MPLAPACKDIR=%%MPLAPACKDIR%%
 CXXFLAGS= -I$(MPLAPACKDIR)/include -I$(MPLAPACKDIR)/include/mplapack -I$(MPLAPACKDIR)/include/qd
 OPTFLAGS= -O2
+OPENMP_EXAMPLE_OPENMP_LIBS = -fopenmp
 LIBFLAGS=-L$(MPLAPACKDIR)/lib -Wl,--rpath=$(MPLAPACKDIR)/lib
 MPFRLIBS= -lmplapack_mpfr -lmpblas_mpfr -lmpfr -lmpc -lgmp
 GMPLIBS=-lmplapack_gmp -lmpblas_gmp -lgmpxx -lgmp
@@ -22,28 +23,28 @@ programs=Rsyev_Frank_mpfr Rsyev_Frank_gmp Rsyev_Frank_qd Rsyev_Frank_dd Rsyev_Fr
 all: $(programs)
 
 .cpp.o:
-	$(CXX) -c $(OPTFLAGS) $(CXXFLAGS) $<
+	$(CXX) -c $(OPTFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(CXXFLAGS) $<
 
 Rsyev_Frank_mpfr: Rsyev_Frank_mpfr.o
-	$(CXX) -o Rsyev_Frank_mpfr Rsyev_Frank_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
+	$(CXX) -o Rsyev_Frank_mpfr Rsyev_Frank_mpfr.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(MPFRLIBS)
 
 Rsyev_Frank_gmp: Rsyev_Frank_gmp.o
-	$(CXX) -o Rsyev_Frank_gmp Rsyev_Frank_gmp.o $(LIBFLAGS) $(GMPLIBS)
+	$(CXX) -o Rsyev_Frank_gmp Rsyev_Frank_gmp.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(GMPLIBS)
 
 Rsyev_Frank_qd: Rsyev_Frank_qd.o
-	$(CXX) -o Rsyev_Frank_qd Rsyev_Frank_qd.o $(LIBFLAGS) $(QDLIBS)
+	$(CXX) -o Rsyev_Frank_qd Rsyev_Frank_qd.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(QDLIBS)
 
 Rsyev_Frank_dd: Rsyev_Frank_dd.o
-	$(CXX) -o Rsyev_Frank_dd Rsyev_Frank_dd.o $(LIBFLAGS) $(DDLIBS)
+	$(CXX) -o Rsyev_Frank_dd Rsyev_Frank_dd.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(DDLIBS)
 
 Rsyev_Frank_binary80: Rsyev_Frank_binary80.o
-	$(CXX) -o Rsyev_Frank_binary80 Rsyev_Frank_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
+	$(CXX) -o Rsyev_Frank_binary80 Rsyev_Frank_binary80.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(BINARY80LIBS)
 
 Rsyev_Frank_binary128: Rsyev_Frank_binary128.o
-	$(CXX) -o Rsyev_Frank_binary128 Rsyev_Frank_binary128.o $(LIBFLAGS) $(BINARY128LIBS)
+	$(CXX) -o Rsyev_Frank_binary128 Rsyev_Frank_binary128.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(BINARY128LIBS)
 
 Rsyev_Frank_double: Rsyev_Frank_double.o
-	$(CXX) -o Rsyev_Frank_double Rsyev_Frank_double.o $(LIBFLAGS) $(DOUBLELIBS)
+	$(CXX) -o Rsyev_Frank_double Rsyev_Frank_double.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(DOUBLELIBS)
 
 clean:
 	rm -rf *.o *~ $(programs) *bak

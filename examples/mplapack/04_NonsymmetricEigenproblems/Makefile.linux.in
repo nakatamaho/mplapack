@@ -5,6 +5,7 @@ CXX=c++
 MPLAPACKDIR=%%MPLAPACKDIR%%
 CXXFLAGS= -I$(MPLAPACKDIR)/include -I$(MPLAPACKDIR)/include/mplapack -I$(MPLAPACKDIR)/include/qd
 OPTFLAGS= -O2
+OPENMP_EXAMPLE_OPENMP_LIBS = -fopenmp
 LIBFLAGS=-L$(MPLAPACKDIR)/lib -Wl,--rpath=$(MPLAPACKDIR)/lib
 MPFRLIBS= -lmplapack_mpfr -lmpblas_mpfr -lmpfr -lmpc -lgmp
 GMPLIBS=-lmplapack_gmp -lmpblas_gmp -lgmpxx -lgmp
@@ -22,28 +23,28 @@ programs=Rgees_Grcar_mpfr Rgees_Grcar_gmp Rgees_Grcar_qd Rgees_Grcar_dd Rgees_Gr
 all: $(programs)
 
 .cpp.o:
-	$(CXX) -c $(OPTFLAGS) $(CXXFLAGS) $<
+	$(CXX) -c $(OPTFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(CXXFLAGS) $<
 
 Rgees_Grcar_mpfr: Rgees_Grcar_mpfr.o
-	$(CXX) -o Rgees_Grcar_mpfr Rgees_Grcar_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
+	$(CXX) -o Rgees_Grcar_mpfr Rgees_Grcar_mpfr.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(MPFRLIBS)
 
 Rgees_Grcar_gmp: Rgees_Grcar_gmp.o
-	$(CXX) -o Rgees_Grcar_gmp Rgees_Grcar_gmp.o $(LIBFLAGS) $(GMPLIBS)
+	$(CXX) -o Rgees_Grcar_gmp Rgees_Grcar_gmp.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(GMPLIBS)
 
 Rgees_Grcar_qd: Rgees_Grcar_qd.o
-	$(CXX) -o Rgees_Grcar_qd Rgees_Grcar_qd.o $(LIBFLAGS) $(QDLIBS)
+	$(CXX) -o Rgees_Grcar_qd Rgees_Grcar_qd.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(QDLIBS)
 
 Rgees_Grcar_dd: Rgees_Grcar_dd.o
-	$(CXX) -o Rgees_Grcar_dd Rgees_Grcar_dd.o $(LIBFLAGS) $(DDLIBS)
+	$(CXX) -o Rgees_Grcar_dd Rgees_Grcar_dd.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(DDLIBS)
 
 Rgees_Grcar_binary80: Rgees_Grcar_binary80.o
-	$(CXX) -o Rgees_Grcar_binary80 Rgees_Grcar_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
+	$(CXX) -o Rgees_Grcar_binary80 Rgees_Grcar_binary80.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(BINARY80LIBS)
 
 Rgees_Grcar_binary128: Rgees_Grcar_binary128.o
-	$(CXX) -o Rgees_Grcar_binary128 Rgees_Grcar_binary128.o $(LIBFLAGS) $(BINARY128LIBS)
+	$(CXX) -o Rgees_Grcar_binary128 Rgees_Grcar_binary128.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(BINARY128LIBS)
 
 Rgees_Grcar_double: Rgees_Grcar_double.o
-	$(CXX) -o Rgees_Grcar_double Rgees_Grcar_double.o $(LIBFLAGS) $(DOUBLELIBS)
+	$(CXX) -o Rgees_Grcar_double Rgees_Grcar_double.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(DOUBLELIBS)
 
 clean:
 	rm -rf *.o *~ $(programs) *bak
