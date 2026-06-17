@@ -1,41 +1,41 @@
+# * How to start Colima for arm64 Docker builds
+#  colima start --runtime docker --arch aarch64 --cpu 8 --memory 16 --disk 100
+#  docker context use colima
+#
 # * How to build (for public users - read-only access)
-#  podman build -f Dockerfile-ubuntu24.04-arm64-devel-podman -t mplapack:devel2404 .
+#  docker build -f Dockerfile-ubuntu24.04-arm64-devel -t mplapack:devel2404 .
 #
 # * How to build (for maintainers with SSH key - read-write access)
-#  podman build -f Dockerfile-ubuntu24.04-arm64-devel-podman \
+#  DOCKER_BUILDKIT=1 docker build -f Dockerfile-ubuntu24.04-arm64-devel \
 #    --build-arg DOCKER_UID="$(id -u)" --build-arg DOCKER_GID="$(id -g)" \
 #    --build-arg USE_SSH=true --build-arg SSH_KEY_NAME="${SSH_KEY_NAME:-id_ed25519}" \
 #    --secret id=ssh_key,src="$HOME/.ssh/${SSH_KEY_NAME:-id_ed25519}" \
 #    -t mplapack:devel2404 .
 #
 # * How to build with custom repository (for users with forks)
-#  podman build -f Dockerfile-ubuntu24.04-arm64-devel-podman \
+#  docker build -f Dockerfile-ubuntu24.04-arm64-devel \
 #    --build-arg DOCKER_UID=$(id -u) --build-arg DOCKER_GID=$(id -g) \
 #    --build-arg MPLAPACK_REPO=https://github.com/username/mplapack.git \
 #    -t mplapack:devel2404 .
 #
 # * How to build with custom repository using SSH
-#  SSH_KEY_NAME=id_ed25519 podman build -f Dockerfile-ubuntu24.04-arm64-devel-podman \
+#  SSH_KEY_NAME=id_ed25519 DOCKER_BUILDKIT=1 docker build -f Dockerfile-ubuntu24.04-arm64-devel \
 #    --build-arg DOCKER_UID=$(id -u) --build-arg DOCKER_GID=$(id -g) \
 #    --build-arg USE_SSH=true --build-arg SSH_KEY_NAME=${SSH_KEY_NAME} \
 #    --build-arg MPLAPACK_REPO=https://github.com/<username>/mplapack.git \
 #    --secret id=ssh_key,src=$HOME/.ssh/${SSH_KEY_NAME} \
 #    -t mplapack:devel2404 .
 #
-# * How to run (rootless Podman - no --privileged needed for normal use)
-#  podman run -it --rm mplapack:devel2404 /bin/bash
+# * How to run
+#  docker run -it --rm mplapack:devel2404 /bin/bash
 #
-# * How to run with perf support (requires host-side sysctl, then --cap-add)
-#  sudo sysctl -w kernel.perf_event_paranoid=-1
-#  podman run --cap-add SYS_ADMIN --cap-add PERFMON -it --rm mplapack:devel2404 /bin/bash
+# * How to run with perf support (requires Colima VM-side sysctl, then --cap-add)
+#  colima ssh -- sudo sysctl -w kernel.perf_event_paranoid=-1
+#  docker run --cap-add SYS_ADMIN --cap-add PERFMON -it --rm mplapack:devel2404 /bin/bash
 #
 # * How to run with SSH key for git operations (maintainers only)
 #  eval $(ssh-agent); ssh-add ~/.ssh/id_ed25519
-#  podman run -v $SSH_AUTH_SOCK:/ssh-agent:z -e SSH_AUTH_SOCK=/ssh-agent -it --rm mplapack:devel2404 /bin/bash
-#
-# Note: When using rootless Podman, pass --userns=keep-id to map your host UID/GID
-#  into the container as the 'docker' user, e.g.:
-#  podman run --userns=keep-id -it --rm mplapack:devel2404 /bin/bash
+#  docker run -v $SSH_AUTH_SOCK:/ssh-agent -e SSH_AUTH_SOCK=/ssh-agent -it --rm mplapack:devel2404 /bin/bash
 
 FROM ubuntu:24.04
 
