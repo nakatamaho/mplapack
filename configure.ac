@@ -417,13 +417,13 @@ m4_define([MPLAPACK_OPENCL_TARGET_DEFAULT], [120])
 AC_ARG_WITH([opencl],
   [AS_HELP_STRING([--with-opencl@<:@=DIR@:>@],
      [enable OpenCL; optionally a vendor SDK prefix, e.g. /usr/local/cuda])],
-  [], [with_opencl=check])
+  [opencl_required=yes], [with_opencl=check; opencl_required=no])
 AC_ARG_WITH([opencl-include],
   [AS_HELP_STRING([--with-opencl-include=DIR], [OpenCL headers dir])],
-  [OPENCL_CPPFLAGS="-I$withval"], [])
+  [OPENCL_CPPFLAGS="-I$withval"; opencl_required=yes], [])
 AC_ARG_WITH([opencl-lib],
   [AS_HELP_STRING([--with-opencl-lib=DIR], [OpenCL library dir])],
-  [OPENCL_LDFLAGS="-L$withval"], [])
+  [OPENCL_LDFLAGS="-L$withval"; opencl_required=yes], [])
 AC_ARG_WITH([opencl-version],
   [AS_HELP_STRING([--with-opencl-version=VER],
      [OpenCL API level to target: 100, 110, 120, 200, 210, 220, 300, or
@@ -432,6 +432,7 @@ AC_ARG_WITH([opencl-version],
   [opencl_target_req="MPLAPACK_OPENCL_TARGET_DEFAULT"])
 
 have_opencl=no
+opencl_header=
 OPENCL_CFLAGS=
 OPENCL_LIBS=
 OPENCL_TARGET_VERSION=
@@ -444,43 +445,69 @@ AS_IF([test "x$with_opencl" != xno], [
 
   PKG_PROG_PKG_CONFIG
   PKG_CHECK_MODULES([OPENCL], [OpenCL],
-    [have_opencl=yes
-     OPENCL_CFLAGS="$OPENCL_CPPFLAGS $OPENCL_CFLAGS"],
-    [
-      save_CPPFLAGS="$CPPFLAGS"; save_LDFLAGS="$LDFLAGS"; save_LIBS="$LIBS"
-      CPPFLAGS="$CPPFLAGS $OPENCL_CPPFLAGS"
-      LDFLAGS="$LDFLAGS $OPENCL_LDFLAGS"
+    [OPENCL_CFLAGS="$OPENCL_CPPFLAGS $OPENCL_CFLAGS"
+     OPENCL_LIBS="$OPENCL_LDFLAGS $OPENCL_LIBS"],
+    [OPENCL_CFLAGS="$OPENCL_CPPFLAGS"
+     case "$host_os" in
+       darwin*) OPENCL_LIBS="$OPENCL_LDFLAGS -framework OpenCL" ;;
+       *)       OPENCL_LIBS="$OPENCL_LDFLAGS -lOpenCL" ;;
+     esac])
 
-      case "$host_os" in
-        darwin*)
-          AC_CHECK_HEADER([OpenCL/cl.h],
-            [AC_DEFINE([HAVE_OPENCL_CL_H], [1], [Define if <OpenCL/cl.h> exists])
-             OPENCL_LIBS="-framework OpenCL"; have_opencl=yes],
-            [AC_MSG_WARN([OpenCL/cl.h not found])])
-          ;;
-        *)
-          AC_CHECK_HEADER([CL/cl.h],
-            [AC_DEFINE([HAVE_CL_CL_H], [1], [Define if <CL/cl.h> exists])
-             AC_CHECK_LIB([OpenCL], [clGetPlatformIDs],
-               [OPENCL_LIBS="-lOpenCL"; have_opencl=yes],
-               [AC_MSG_WARN([libOpenCL (ICD loader) not found])])],
-            [AC_MSG_WARN([CL/cl.h not found])])
-          ;;
-      esac
+  save_CPPFLAGS="$CPPFLAGS"; save_LDFLAGS="$LDFLAGS"; save_LIBS="$LIBS"
+  CPPFLAGS="$CPPFLAGS $OPENCL_CFLAGS"
+  case "$host_os" in
+    darwin*) opencl_header=OpenCL/cl.h ;;
+    *)       opencl_header=CL/cl.h ;;
+  esac
 
-      OPENCL_CFLAGS="$OPENCL_CPPFLAGS"
-      CPPFLAGS="$save_CPPFLAGS"; LDFLAGS="$save_LDFLAGS"; LIBS="$save_LIBS"
-    ])
+  AC_MSG_CHECKING([whether OpenCL headers compile])
+  AC_COMPILE_IFELSE(
+    [AC_LANG_PROGRAM([[
+#include <$opencl_header>
+]], [[]])],
+    [opencl_header_works=yes],
+    [opencl_header_works=no])
+  AC_MSG_RESULT([$opencl_header_works])
+
+  AS_IF([test "x$opencl_header_works" = xyes], [
+    LDFLAGS="$LDFLAGS $OPENCL_LDFLAGS"
+    LIBS="$OPENCL_LIBS $LIBS"
+    AC_MSG_CHECKING([whether OpenCL links])
+    AC_LINK_IFELSE(
+      [AC_LANG_PROGRAM([[
+#include <$opencl_header>
+]], [[
+cl_uint nplatforms = 0;
+clGetPlatformIDs(0, 0, &nplatforms);
+]])],
+      [have_opencl=yes],
+      [have_opencl=no])
+    AC_MSG_RESULT([$have_opencl])
+  ])
+
+  CPPFLAGS="$save_CPPFLAGS"; LDFLAGS="$save_LDFLAGS"; LIBS="$save_LIBS"
+
+  AS_IF([test "x$have_opencl" = xyes], [
+    case "$opencl_header" in
+      OpenCL/cl.h) AC_DEFINE([HAVE_OPENCL_CL_H], [1], [Define if <OpenCL/cl.h> exists]) ;;
+      CL/cl.h)     AC_DEFINE([HAVE_CL_CL_H], [1], [Define if <CL/cl.h> exists]) ;;
+    esac
+  ], [
+    AS_IF([test "x$opencl_required" = xyes],
+      [AC_MSG_ERROR([OpenCL requested but headers or library are not usable; use --with-opencl=DIR or --with-opencl-include=DIR --with-opencl-lib=DIR])],
+      [AC_MSG_WARN([OpenCL not usable; disabling OpenCL support])])
+    OPENCL_CFLAGS=
+    OPENCL_LIBS=
+  ])
 ])
 
 AS_IF([test "x$have_opencl" = xyes], [
   save_CPPFLAGS="$CPPFLAGS"
   CPPFLAGS="$CPPFLAGS $OPENCL_CFLAGS"
   AC_MSG_CHECKING([highest OpenCL version exposed by the headers])
-  case "$host_os" in
-    darwin*) MPLAPACK_OPENCL_MAXVER([OpenCL/cl.h]) ;;
-    *)       MPLAPACK_OPENCL_MAXVER([CL/cl.h]) ;;
-  esac
+  AS_CASE([$opencl_header],
+    [OpenCL/cl.h], [MPLAPACK_OPENCL_MAXVER([OpenCL/cl.h])],
+    [CL/cl.h],     [MPLAPACK_OPENCL_MAXVER([CL/cl.h])])
   CPPFLAGS="$save_CPPFLAGS"
   AS_IF([test "$opencl_header_max" = 0],
     [AC_MSG_RESULT([unknown])
@@ -508,8 +535,6 @@ AS_IF([test "x$have_opencl" = xyes], [
   AC_MSG_NOTICE([OpenCL API target: CL_TARGET_OPENCL_VERSION=$OPENCL_TARGET_VERSION])
 ])
 
-AS_IF([test "x$with_opencl" = xyes && test "x$have_opencl" = xno],
-  [AC_MSG_ERROR([OpenCL requested but not found])])
 AS_IF([test "x$have_opencl" = xyes],
   [AC_DEFINE([HAVE_OPENCL], [1], [Define if OpenCL support is available])])
 
