@@ -210,7 +210,7 @@ external/mpfr/download/mpfr-4.1.0.tar.bz2 \
 external/mpfr/download/mpfr-4.2.2.tar.bz2 \
 external/openblas/Makefile.am \
 external/openblas/Makefile.in \
-external/openblas/download/OpenBLAS-0.3.32.tar.gz \
+external/openblas/download/OpenBLAS-0.3.33.tar.gz \
 external/openblas/patches/patch-mingw \
 external/openblas/patches/patch-mingw-laed3 \
 external/qd/Makefile.am \

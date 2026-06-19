@@ -56,7 +56,7 @@ BLAS / LAPACK routines were changed.
   the patch. The patch file (`gcc-15.patch`) is included in
   `EXTRA_DIST`.
 
-* **External OpenBLAS bumped to 0.3.32.**
+* **External OpenBLAS bumped to 0.3.33.**
   Also fixes the external OpenBLAS build on macOS arm64.
 
 * **`DD` backend: `-ffp-contract=off` (and `-fp-model strict` for

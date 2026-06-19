@@ -26,7 +26,7 @@ BSD-style license, supplemental to the original LAPACK license.
   musl/Alpine ARM64 build fix, MinGW `laed3` build fix, binary128
   `std::abs(__float128)` ambiguity fix on aarch64-apple-darwin, and a
   latent DD miscompilation fix (propagating `-ffp-contract=off` to all
-  DD build targets). OpenBLAS bumped to 0.3.32. ABI/source compatible
+  DD build targets). OpenBLAS bumped to 0.3.33. ABI/source compatible
   with 2.1.0.
 * 2026-03-05  MPLAPACK 2.1.0 released. C++17 now required.
   binary128/binary80 naming unified, MPFR emin/emax auto-adjustment,
@@ -364,7 +364,7 @@ bash fable/go_testing.sh  # test programs (EIG/LIN/MATGEN)
 - **`make distcheck`** fixes: `external/openblas/Makefile` moved into the
   benchmark-conditional `AC_CONFIG_FILES` block; dd/qd test scripts use
   `${srcdir}` for VPATH builds; missing `misc/` scripts added to `EXTRA_DIST`.
-- **OpenBLAS** updated to 0.3.32 (also fixes the macOS arm64 build).
+- **OpenBLAS** updated to 0.3.33 (also fixes the macOS arm64 build).
 - **`configure` build summary**: now reports compiler commands and versions,
   target CPU and integer model, OpenMP runtime, enabled backends,
   binary128/binary80 type / I/O / math / literal-suffix / interop, and
@@ -457,7 +457,7 @@ Tier 1 platforms run the full pipeline including `make distcheck`. Tier 2 platfo
 
 * 2026-04-09  MPLAPACK 2.1.1 released. GCC 15 support, arm64 promoted to Tier 1
   (Ubuntu arm64, macOS Apple Silicon), DD `-ffp-contract=off` propagation fix,
-  binary128 / MinGW / musl build fixes, OpenBLAS 0.3.32. ABI compatible with 2.1.0.
+  binary128 / MinGW / musl build fixes, OpenBLAS 0.3.33. ABI compatible with 2.1.0.
 * 2026-03-05  MPLAPACK 2.1.0 released. binary128/binary80 naming unified, MPFR emin/emax
   auto-adjustment, extended build matrix (Alpine, Rocky, Debian i386, CUDA 13.1.1).
   LAPACK 3.9.1 Fortran sources mechanically converted to idiomatic C++ via Fable and
