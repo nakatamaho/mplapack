@@ -159,7 +159,6 @@ examples/mplapack/05_SingularValueDecomposition/Matrix_02.txt \
 examples/mplapack/05_SingularValueDecomposition/Matrix_03.txt \
 external/dlfcn-win32/Makefile.in \
 external/dlfcn-win32/Makefile.am \
-external/dlfcn-win32/download/dlfcn-win32-1.3.1.tar.gz \
 external/dlfcn-win32/download/dlfcn-win32-1.4.2.tar.gz \
 external/distfiles.sha256 \
 external/gmp/Makefile.am \
@@ -210,7 +209,7 @@ external/mpfr/download/mpfr-4.1.0.tar.bz2 \
 external/mpfr/download/mpfr-4.2.2.tar.bz2 \
 external/openblas/Makefile.am \
 external/openblas/Makefile.in \
-external/openblas/download/OpenBLAS-0.3.33.tar.gz \
+external/openblas/download/OpenBLAS-0.3.32.tar.gz \
 external/openblas/patches/patch-mingw \
 external/openblas/patches/patch-mingw-laed3 \
 external/qd/Makefile.am \
