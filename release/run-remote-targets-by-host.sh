@@ -9,6 +9,7 @@ SUCCESS_DIR="${SUCCESS_DIR:-$SCRIPT_DIR/success}"
 MACOS_REMOTE_SSH="${MACOS_REMOTE_SSH:-ssh}"
 REMOTE_LINUX_SSH="${REMOTE_LINUX_SSH:-ssh}"
 MPLAPACK_REF="${MPLAPACK_REF:-$(git -C "$PROJECT_ROOT" rev-parse HEAD)}"
+MPLAPACK_SOURCE_MODE="${MPLAPACK_SOURCE_MODE:-dist}"
 
 if [[ "$#" -eq 0 ]]; then
     echo "Usage: run-remote-targets-by-host.sh <target>..." >&2
@@ -18,6 +19,7 @@ if [[ ! -f "$CONF_FILE" ]]; then
     echo "ERROR: build matrix not found: $CONF_FILE" >&2
     exit 1
 fi
+
 
 declare -A host_seen=()
 declare -A host_target_files=()
@@ -77,6 +79,18 @@ for target in "$@"; do
     printf '%s\n' "$target" >> "${host_target_files[$host]}"
 done
 
+if [[ "$MPLAPACK_SOURCE_MODE" == "dist" && -z "${MPLAPACK_SOURCE_TARBALL:-}" ]]; then
+    mkdir -p "$LOGDIR"
+    source_info_file="$LOGDIR/source/source.env"
+    PROJECT_ROOT="$PROJECT_ROOT" LOGDIR="$LOGDIR" MPLAPACK_SOURCE_INFO_FILE="$source_info_file" \
+        "$SCRIPT_DIR/make-source-snapshot.sh"
+    # shellcheck disable=SC1090
+    source "$source_info_file"
+elif [[ "$MPLAPACK_SOURCE_MODE" != "dist" && "$MPLAPACK_SOURCE_MODE" != "ref" ]]; then
+    echo "ERROR: MPLAPACK_SOURCE_MODE must be 'dist' or 'ref' (got '$MPLAPACK_SOURCE_MODE')" >&2
+    exit 1
+fi
+
 run_target() {
     local target="$1"
     local row matrix_name host target_dir script_rel remote_cmd source_type rest
@@ -86,11 +100,11 @@ run_target() {
     case "$source_type" in
         remote-macos)
             CONF_FILE="$CONF_FILE" LOGDIR="$LOGDIR" PROJECT_ROOT="$PROJECT_ROOT" SUCCESS_DIR="$SUCCESS_DIR" \
-                MACOS_REMOTE_SSH="$MACOS_REMOTE_SSH" MPLAPACK_REF="$MPLAPACK_REF" "$SCRIPT_DIR/run-remote-macos.sh" "$target"
+                MACOS_REMOTE_SSH="$MACOS_REMOTE_SSH" MPLAPACK_REF="$MPLAPACK_REF" MPLAPACK_SOURCE_MODE="$MPLAPACK_SOURCE_MODE" MPLAPACK_SOURCE_TARBALL="${MPLAPACK_SOURCE_TARBALL:-}" MPLAPACK_SOURCE_METADATA="${MPLAPACK_SOURCE_METADATA:-}" MPLAPACK_SOURCE_PATCH="${MPLAPACK_SOURCE_PATCH:-}" MPLAPACK_SOURCE_STATUS="${MPLAPACK_SOURCE_STATUS:-}" MPLAPACK_SOURCE_LABEL="${MPLAPACK_SOURCE_LABEL:-}" "$SCRIPT_DIR/run-remote-macos.sh" "$target"
             ;;
         remote-linux-docker)
             CONF_FILE="$CONF_FILE" LOGDIR="$LOGDIR" PROJECT_ROOT="$PROJECT_ROOT" SUCCESS_DIR="$SUCCESS_DIR" \
-                REMOTE_LINUX_SSH="$REMOTE_LINUX_SSH" MPLAPACK_REF="$MPLAPACK_REF" "$SCRIPT_DIR/run-remote-linux-docker.sh" "$target"
+                REMOTE_LINUX_SSH="$REMOTE_LINUX_SSH" MPLAPACK_REF="$MPLAPACK_REF" MPLAPACK_SOURCE_MODE="$MPLAPACK_SOURCE_MODE" MPLAPACK_SOURCE_TARBALL="${MPLAPACK_SOURCE_TARBALL:-}" MPLAPACK_SOURCE_METADATA="${MPLAPACK_SOURCE_METADATA:-}" MPLAPACK_SOURCE_PATCH="${MPLAPACK_SOURCE_PATCH:-}" MPLAPACK_SOURCE_STATUS="${MPLAPACK_SOURCE_STATUS:-}" MPLAPACK_SOURCE_LABEL="${MPLAPACK_SOURCE_LABEL:-}" "$SCRIPT_DIR/run-remote-linux-docker.sh" "$target"
             ;;
     esac
 }

@@ -30,25 +30,42 @@ echo "MAKE_JOBS=${MAKE_JOBS}"
 echo '=== ccache stats (before) ==='
 ccache -s || true
 
-rm -rf /work/mplapack
-if [ -f "$MPLAPACK_REPO" ]; then
-    git clone --no-checkout "$MPLAPACK_REPO" /work/mplapack
+rm -rf /work/mplapack /work/mplapack-src
+SOURCE_KIND=git
+if [ -n "${MPLAPACK_SOURCE_TARBALL:-}" ]; then
+    test -f "${MPLAPACK_SOURCE_TARBALL}"
+    mkdir -p /work/mplapack-src
+    tar xf "${MPLAPACK_SOURCE_TARBALL}" -C /work/mplapack-src
+    src_dir="$(find /work/mplapack-src -mindepth 1 -maxdepth 1 -type d | head -n 1)"
+    test -n "${src_dir}"
+    mv "${src_dir}" /work/mplapack
     cd /work/mplapack
-    git checkout "$MPLAPACK_REF"
+    SOURCE_KIND=tarball
+    echo "Using source tarball: ${MPLAPACK_SOURCE_TARBALL}"
 else
-    git clone --depth 1 --branch "$MPLAPACK_REF" "$MPLAPACK_REPO" /work/mplapack || {
-        git clone "$MPLAPACK_REPO" /work/mplapack
+    if [ -f "$MPLAPACK_REPO" ]; then
+        git clone --no-checkout "$MPLAPACK_REPO" /work/mplapack
         cd /work/mplapack
         git checkout "$MPLAPACK_REF"
-    }
-    cd /work/mplapack
+    else
+        git clone --depth 1 --branch "$MPLAPACK_REF" "$MPLAPACK_REPO" /work/mplapack || {
+            git clone "$MPLAPACK_REPO" /work/mplapack
+            cd /work/mplapack
+            git checkout "$MPLAPACK_REF"
+        }
+        cd /work/mplapack
+    fi
+    git log -1
 fi
-git log -1
 
-cd mplapack/test/compare
-bash gen.Makefile.am.sh
-cd /work/mplapack
-autoreconf --force --install
+if [ "$SOURCE_KIND" = "git" ]; then
+    cd mplapack/test/compare
+    bash gen.Makefile.am.sh
+    cd /work/mplapack
+    autoreconf --force --install
+else
+    echo "Using distributed configure files from source tarball; skipping autoreconf."
+fi
 
 ARCH=$(dpkg --print-architecture)
 BUILD_TRIPLE=$(gcc -dumpmachine)

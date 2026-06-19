@@ -8,6 +8,7 @@ LOGDIR="${LOGDIR:-$SCRIPT_DIR/logs/$(date +%Y%m%d_%H%M%S)}"
 SUCCESS_DIR="${SUCCESS_DIR:-$SCRIPT_DIR/success}"
 MACOS_REMOTE_SSH="${MACOS_REMOTE_SSH:-ssh}"
 MPLAPACK_REF="${MPLAPACK_REF:-$(git -C "$PROJECT_ROOT" rev-parse HEAD)}"
+MPLAPACK_SOURCE_MODE="${MPLAPACK_SOURCE_MODE:-dist}"
 
 name="${1:?Usage: run-remote-macos.sh <matrix-name>}"
 
@@ -124,6 +125,21 @@ collect_remote_test_results() {
 }
 
 echo "name,arch,base,stage,result,elapsed,source_type" > "$resultfile"
+if [[ "$MPLAPACK_SOURCE_MODE" == "dist" && -z "${MPLAPACK_SOURCE_TARBALL:-}" ]]; then
+    source_info_file="$LOGDIR/${tier}-${arch}_source.env"
+    PROJECT_ROOT="$PROJECT_ROOT" LOGDIR="$LOGDIR" MPLAPACK_SOURCE_INFO_FILE="$source_info_file" \
+        "$SCRIPT_DIR/make-source-snapshot.sh"
+    # shellcheck disable=SC1090
+    source "$source_info_file"
+elif [[ "$MPLAPACK_SOURCE_MODE" != "dist" && "$MPLAPACK_SOURCE_MODE" != "ref" ]]; then
+    echo "ERROR: MPLAPACK_SOURCE_MODE must be 'dist' or 'ref' (got '$MPLAPACK_SOURCE_MODE')" >&2
+    exit 1
+fi
+
+if [[ "$MPLAPACK_SOURCE_MODE" == "dist" ]]; then
+    stamp_suffix="-${MPLAPACK_SOURCE_LABEL:-dist}-macos.ok"
+fi
+
 cleanup_stale_success_links
 
 existing_stamp="$(find "$SUCCESS_DIR" -maxdepth 1 -type l -name "$(basename "$stamp_prefix")*${stamp_suffix}" | head -n 1 || true)"
@@ -138,14 +154,39 @@ if [[ -n "$existing_stamp" && -e "$existing_stamp" ]]; then
     exit 0
 fi
 
+
 start="$(date +%s)"
 echo "Running $script_rel on $host:$target_dir" >&2
 echo "MPLAPACK_REF: $MPLAPACK_REF" >&2
+echo "MPLAPACK_SOURCE_MODE: $MPLAPACK_SOURCE_MODE" >&2
 echo "Log: $logfile" >&2
 
+context_name="${tier}-${os_label}-${arch}"
+remote_context_tar="$(dirname "$target_dir")/${context_name}.context.tar.gz"
+context_tar="$LOGDIR/${context_name}_context.tar.gz"
+if [[ "$MPLAPACK_SOURCE_MODE" == "dist" ]]; then
+    if [[ -z "${MPLAPACK_SOURCE_TARBALL:-}" || ! -f "$MPLAPACK_SOURCE_TARBALL" ]]; then
+        echo "ERROR: MPLAPACK_SOURCE_TARBALL is not set or missing: ${MPLAPACK_SOURCE_TARBALL:-<unset>}" >&2
+        exit 1
+    fi
+    tar_args=(-C "$(dirname "$MPLAPACK_SOURCE_TARBALL")" "$(basename "$MPLAPACK_SOURCE_TARBALL")")
+    for source_extra in "${MPLAPACK_SOURCE_METADATA:-}" "${MPLAPACK_SOURCE_PATCH:-}" "${MPLAPACK_SOURCE_STATUS:-}"; do
+        if [[ -n "$source_extra" && -f "$source_extra" ]]; then
+            tar_args+=(-C "$(dirname "$source_extra")" "$(basename "$source_extra")")
+        fi
+    done
+    tar -czf "$context_tar" "${tar_args[@]}"
+fi
+
 set +e
-"$MACOS_REMOTE_SSH" "$host" "MPLAPACK_REMOTE_WORKDIR='$target_dir' MPLAPACK_REF='$MPLAPACK_REF' $remote_cmd -s" < "$script_path" > "$logfile" 2>&1
-rc=$?
+if [[ "$MPLAPACK_SOURCE_MODE" == "dist" ]]; then
+    "$MACOS_REMOTE_SSH" "$host" "mkdir -p '$(dirname "$target_dir")' && cat > '$remote_context_tar'" < "$context_tar" && \
+        "$MACOS_REMOTE_SSH" "$host" "MPLAPACK_REMOTE_WORKDIR='$target_dir' MPLAPACK_CONTEXT_TARBALL='$remote_context_tar' MPLAPACK_REF='$MPLAPACK_REF' MPLAPACK_SOURCE_MODE='$MPLAPACK_SOURCE_MODE' $remote_cmd -s" < "$script_path" > "$logfile" 2>&1
+    rc=$?
+else
+    "$MACOS_REMOTE_SSH" "$host" "MPLAPACK_REMOTE_WORKDIR='$target_dir' MPLAPACK_REF='$MPLAPACK_REF' MPLAPACK_SOURCE_MODE='$MPLAPACK_SOURCE_MODE' $remote_cmd -s" < "$script_path" > "$logfile" 2>&1
+    rc=$?
+fi
 set -e
 
 elapsed=$(($(date +%s) - start))

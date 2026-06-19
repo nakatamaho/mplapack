@@ -20,7 +20,7 @@ TIER1_LINUX_TARGETS := tier1-ubuntu2404-arm64 tier1-ubuntu2604-arm64 tier1-ubunt
 TIER2_TARGETS :=
 RUN_REMOTE_TARGETS = CONF_FILE=$(CONF_FILE) LOGDIR=$(LOGDIR) PROJECT_ROOT=$(PROJECT_ROOT) SUCCESS_DIR=$(SUCCESS_DIR) MACOS_REMOTE_SSH=$(MACOS_REMOTE_SSH) REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-targets-by-host.sh
 
-.PHONY: all ref tarball dist clean clean-remote clean-all clean-success list help
+.PHONY: all ref tarball dist clean clean-remote clean-all realclean clean-success list help
 .PHONY: intel mingw cuda ubuntu debian fedora rocky suse alpine
 .PHONY: amd64 arm64 ppc64le i386 s390x mips64le
 .PHONY: ref-ubuntu ref-debian ref-amd64 ref-cuda ref-rocky ref-suse
@@ -247,6 +247,13 @@ clean-all:
 	-docker ps -aq --filter label=org.mplapack.project=mplapack --filter label=org.mplapack.purpose=mplapack-qa | xargs -r docker rm -f
 	-docker images -q --filter label=org.mplapack.project=mplapack --filter label=org.mplapack.purpose=mplapack-qa | xargs -r docker rmi -f
 
+realclean: clean-all
+	@for d in "$(HOME)"/mplapack_logs* "$(HOME)"/mplapack_build_logs* mplapack_logs* mplapack_build_logs*; do \
+		[ -e "$$d" ] || continue; \
+		echo "RM   $$d"; \
+		rm -rf "$$d"; \
+	done
+
 help:
 	@echo "MPLAPACK Release Engineering"
 	@echo ""
@@ -313,6 +320,7 @@ help:
 	@echo "  make clean       - remove unprotected logs and images"
 	@echo "  make clean-success - remove success stamps only"
 	@echo "  make clean-all   - remove all logs, success stamps, and images"
+	@echo "  make realclean   - clean-all plus mplapack_logs*/mplapack_build_logs*"
 	@echo ""
 	@echo "Architecture notes:"
 	@echo "  - i386/s390x/mips64le: Debian only (QEMU, very slow)"

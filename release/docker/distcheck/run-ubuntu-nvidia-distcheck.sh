@@ -48,20 +48,33 @@ nvcc --version
 echo '=== ccache stats (before) ==='
 ccache -s || true
 
-rm -rf /work/mplapack
-if [ -f "$MPLAPACK_REPO" ]; then
-    git clone --no-checkout "$MPLAPACK_REPO" /work/mplapack
+rm -rf /work/mplapack /work/mplapack-src
+SOURCE_KIND=git
+if [ -n "${MPLAPACK_SOURCE_TARBALL:-}" ]; then
+    test -f "${MPLAPACK_SOURCE_TARBALL}"
+    mkdir -p /work/mplapack-src
+    tar xf "${MPLAPACK_SOURCE_TARBALL}" -C /work/mplapack-src
+    src_dir="$(find /work/mplapack-src -mindepth 1 -maxdepth 1 -type d | head -n 1)"
+    test -n "${src_dir}"
+    mv "${src_dir}" /work/mplapack
     cd /work/mplapack
-    git checkout "$MPLAPACK_REF"
+    SOURCE_KIND=tarball
+    echo "Using source tarball: ${MPLAPACK_SOURCE_TARBALL}"
 else
-    git clone --depth 1 --branch "$MPLAPACK_REF" "$MPLAPACK_REPO" /work/mplapack || {
-        git clone "$MPLAPACK_REPO" /work/mplapack
+    if [ -f "$MPLAPACK_REPO" ]; then
+        git clone --no-checkout "$MPLAPACK_REPO" /work/mplapack
         cd /work/mplapack
         git checkout "$MPLAPACK_REF"
-    }
-    cd /work/mplapack
+    else
+        git clone --depth 1 --branch "$MPLAPACK_REF" "$MPLAPACK_REPO" /work/mplapack || {
+            git clone "$MPLAPACK_REPO" /work/mplapack
+            cd /work/mplapack
+            git checkout "$MPLAPACK_REF"
+        }
+        cd /work/mplapack
+    fi
+    git log -1
 fi
-git log -1
 
 if [ ! -f "$RECONFIG_SCRIPT" ]; then
     echo "ERROR: NVIDIA reconfig script not found: $RECONFIG_SCRIPT" >&2
@@ -75,7 +88,13 @@ rm -rf "$MPLAPACK_TEST_RESULTS_STAGING"
 mkdir -p "$MPLAPACK_TEST_RESULTS_STAGING"
 echo "MPLAPACK_TEST_RESULTS_STAGING=$MPLAPACK_TEST_RESULTS_STAGING"
 
-bash "$RECONFIG_SCRIPT"
+if [ "$SOURCE_KIND" = "git" ]; then
+    bash "$RECONFIG_SCRIPT"
+else
+    echo "Using distributed configure files from source tarball; skipping autoreconf."
+    env CC="ccache gcc" CXX="ccache g++" FC="gfortran" F77="gfortran" \
+        ./configure --prefix="$HOME/MPLAPACK_NVIDIA" $NVIDIA_CONFIGURE_OPTS --with-opencl=/usr/local/cuda
+fi
 INSTALL_PREFIX="$(sed -n 's/^prefix = //p' Makefile | head -n 1)"
 make -j"${MAKE_JOBS}"
 make install

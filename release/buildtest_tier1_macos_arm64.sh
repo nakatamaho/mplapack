@@ -351,11 +351,39 @@ find "${WORKDIR}" -mindepth 1 -maxdepth 1 -exec rm -rf -- {} +
 
 log "WORKDIR: ${WORKDIR}"
 log "MPLAPACK_REF: ${MPLAPACK_REF:-master}"
+log "MPLAPACK_SOURCE_MODE: ${MPLAPACK_SOURCE_MODE:-dist}"
 
-git clone git@github.com:nakatamaho/mplapack.git "${WORKDIR}"
-cd "${WORKDIR}"
-git checkout "${MPLAPACK_REF:-master}"
-git --no-pager log -1 | tee "${LOG_DIR}/git_log.log" | tee -a "${LOG_DIR}/summary.log"
+SOURCE_KIND=git
+if [ "${MPLAPACK_SOURCE_MODE:-dist}" = "dist" ]; then
+    if [ -z "${MPLAPACK_CONTEXT_TARBALL:-}" ] || [ ! -f "${MPLAPACK_CONTEXT_TARBALL}" ]; then
+        log "ERROR: context tarball not found: ${MPLAPACK_CONTEXT_TARBALL:-<unset>}"
+        exit 1
+    fi
+    CONTEXT_DIR="${WORKDIR}.context"
+    safe_rmdir "${CONTEXT_DIR}"
+    mkdir -p "${CONTEXT_DIR}"
+    tar -xzf "${MPLAPACK_CONTEXT_TARBALL}" -C "${CONTEXT_DIR}"
+    SOURCE_TARBALL="$(find "${CONTEXT_DIR}" -maxdepth 1 -type f -name 'mplapack-*.tar.*' | head -n 1 || true)"
+    SOURCE_METADATA="$(find "${CONTEXT_DIR}" -maxdepth 1 -type f -name 'source-metadata.txt' | head -n 1 || true)"
+    if [ -z "${SOURCE_TARBALL}" ]; then
+        log "ERROR: no mplapack source tarball found in context: ${CONTEXT_DIR}"
+        exit 1
+    fi
+    log "MPLAPACK_SOURCE_TARBALL: ${SOURCE_TARBALL}"
+    if [ -n "${SOURCE_METADATA}" ]; then
+        log "=== MPLAPACK SOURCE METADATA ==="
+        cat "${SOURCE_METADATA}" | tee -a "${LOG_DIR}/summary.log"
+        log "=== END MPLAPACK SOURCE METADATA ==="
+    fi
+    tar xf "${SOURCE_TARBALL}" -C "${WORKDIR}" --strip-components 1
+    cd "${WORKDIR}"
+    SOURCE_KIND=tarball
+else
+    git clone git@github.com:nakatamaho/mplapack.git "${WORKDIR}"
+    cd "${WORKDIR}"
+    git checkout "${MPLAPACK_REF:-master}"
+    git --no-pager log -1 | tee "${LOG_DIR}/git_log.log" | tee -a "${LOG_DIR}/summary.log"
+fi
 
 RESULTS_VERSION="$(get_mplapack_version)"
 if [ -z "${RESULTS_VERSION}" ]; then
@@ -370,7 +398,12 @@ export MPLAPACK_TEST_RESULTS_STAGING="${DISTCHECK_RESULTS_STAGING}"
 log "MPLAPACK_RESULTS_VERSION: ${MPLAPACK_RESULTS_VERSION}"
 log "MPLAPACK_TEST_RESULTS_STAGING: ${MPLAPACK_TEST_RESULTS_STAGING}"
 
-run_step "reconfig"       bash misc/reconfig.macOS.sh
+if [ "$SOURCE_KIND" = "git" ]; then
+    run_step "reconfig"       bash misc/reconfig.macOS.sh
+else
+    run_step "configure"      env CC="ccache gcc-mp-15" CXX="ccache g++-mp-15" FC="gfortran-mp-15" \
+                              ./configure --prefix="${PREFIX_DIR}" ${DISTCHECK_CONFIGURE_FLAGS}
+fi
 run_step "make"           make -j"${MAKE_JOBS}"
 run_step "make_install"   make install
 run_step "check_installed_examples" bash release/check-installed-examples.sh "${PREFIX_DIR}" Makefile.macos "${MAKE_JOBS}"
@@ -384,7 +417,11 @@ grep "^  \$ \./configure" "${LOG_DIR}/config.log" 2>/dev/null \
 # make distcheck internally does: dist -> extract -> configure -> make -> check -> install -> uninstall
 # --prefix must NOT be in DISTCHECK_CONFIGURE_FLAGS (distcheck uses its own isolated prefix)
 safe_rmdir "${PREFIX_DIR}"
-run_step "autoreconf"     autoreconf -fi
+if [ "$SOURCE_KIND" = "git" ]; then
+    run_step "autoreconf"     autoreconf -fi
+else
+    log "Using distributed configure files from source tarball; skipping autoreconf."
+fi
 run_step "make_distcheck" env CC="ccache gcc" CXX="ccache g++" FC="ccache gfortran" \
                           make distcheck MAKEFLAGS="-j${MAKE_JOBS}" DISTCHECK_CONFIGURE_FLAGS="${DISTCHECK_CONFIGURE_FLAGS}"
 run_step "collect_test_results" collect_test_results

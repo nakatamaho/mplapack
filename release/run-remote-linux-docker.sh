@@ -8,6 +8,7 @@ LOGDIR="${LOGDIR:-$SCRIPT_DIR/logs/$(date +%Y%m%d_%H%M%S)}"
 SUCCESS_DIR="${SUCCESS_DIR:-$SCRIPT_DIR/success}"
 REMOTE_SSH="${REMOTE_LINUX_SSH:-ssh}"
 MPLAPACK_REF="${MPLAPACK_REF:-$(git -C "$PROJECT_ROOT" rev-parse HEAD)}"
+MPLAPACK_SOURCE_MODE="${MPLAPACK_SOURCE_MODE:-dist}"
 
 name="${1:?Usage: run-remote-linux-docker.sh <matrix-name>}"
 
@@ -142,6 +143,21 @@ collect_remote_test_results() {
 
 mkdir -p "$(dirname "$resultfile")"
 echo "name,arch,base,stage,result,elapsed,source_type" > "$resultfile"
+if [[ "$MPLAPACK_SOURCE_MODE" == "dist" && -z "${MPLAPACK_SOURCE_TARBALL:-}" ]]; then
+    source_info_file="$LOGDIR/${name_prefix}_source.env"
+    PROJECT_ROOT="$PROJECT_ROOT" LOGDIR="$LOGDIR" MPLAPACK_SOURCE_INFO_FILE="$source_info_file" \
+        "$SCRIPT_DIR/make-source-snapshot.sh"
+    # shellcheck disable=SC1090
+    source "$source_info_file"
+elif [[ "$MPLAPACK_SOURCE_MODE" != "dist" && "$MPLAPACK_SOURCE_MODE" != "ref" ]]; then
+    echo "ERROR: MPLAPACK_SOURCE_MODE must be 'dist' or 'ref' (got '$MPLAPACK_SOURCE_MODE')" >&2
+    exit 1
+fi
+
+if [[ "$MPLAPACK_SOURCE_MODE" == "dist" ]]; then
+    stamp_suffix="-${MPLAPACK_SOURCE_LABEL:-dist}-linux-docker.ok"
+fi
+
 cleanup_stale_success_links
 
 existing_stamp="$(find "$SUCCESS_DIR" -maxdepth 1 -type l -name "$(basename "$stamp_prefix")*${stamp_suffix}" | head -n 1 || true)"
@@ -156,9 +172,15 @@ if [[ -n "$existing_stamp" && -e "$existing_stamp" ]]; then
     exit 0
 fi
 
+
 start="$(date +%s)"
 echo "Running $script_rel on $host:$target_dir" >&2
 echo "MPLAPACK_REF: $MPLAPACK_REF" >&2
+echo "MPLAPACK_SOURCE_MODE: $MPLAPACK_SOURCE_MODE" >&2
+if [[ "$MPLAPACK_SOURCE_MODE" == "dist" ]]; then
+    echo "MPLAPACK_SOURCE_TARBALL: ${MPLAPACK_SOURCE_TARBALL:-<unset>}" >&2
+    echo "MPLAPACK_SOURCE_LABEL: ${MPLAPACK_SOURCE_LABEL:-<unset>}" >&2
+fi
 echo "MPLAPACK_DISTRO_VERSION: ${remote_distro_version:-<default>}" >&2
 echo "MPLAPACK_DOCKER_BASE: ${remote_docker_base:-<default>}" >&2
 echo "Log: $logfile" >&2
@@ -167,13 +189,27 @@ context_name="${name_prefix}"
 context_tar="$LOGDIR/${context_name}_context.tar.gz"
 source_bundle="$LOGDIR/${context_name}_source.bundle"
 remote_context_tar="$(dirname "$target_dir")/${context_name}.context.tar.gz"
-bundle_ref="refs/heads/mplapack-buildtest-${context_name}"
-git -C "$PROJECT_ROOT" update-ref "$bundle_ref" "$MPLAPACK_REF"
-git -C "$PROJECT_ROOT" bundle create "$source_bundle" "$bundle_ref"
-git -C "$PROJECT_ROOT" update-ref -d "$bundle_ref"
-tar -czf "$context_tar" \
-    -C "$PROJECT_ROOT" release/docker \
-    -C "$LOGDIR" "$(basename "$source_bundle")"
+if [[ "$MPLAPACK_SOURCE_MODE" == "dist" ]]; then
+    if [[ -z "${MPLAPACK_SOURCE_TARBALL:-}" || ! -f "$MPLAPACK_SOURCE_TARBALL" ]]; then
+        echo "ERROR: MPLAPACK_SOURCE_TARBALL is not set or missing: ${MPLAPACK_SOURCE_TARBALL:-<unset>}" >&2
+        exit 1
+    fi
+    tar_args=(-C "$PROJECT_ROOT" release/docker -C "$(dirname "$MPLAPACK_SOURCE_TARBALL")" "$(basename "$MPLAPACK_SOURCE_TARBALL")")
+    for source_extra in "${MPLAPACK_SOURCE_METADATA:-}" "${MPLAPACK_SOURCE_PATCH:-}" "${MPLAPACK_SOURCE_STATUS:-}"; do
+        if [[ -n "$source_extra" && -f "$source_extra" ]]; then
+            tar_args+=(-C "$(dirname "$source_extra")" "$(basename "$source_extra")")
+        fi
+    done
+    tar -czf "$context_tar" "${tar_args[@]}"
+else
+    bundle_ref="refs/heads/mplapack-buildtest-${context_name}"
+    git -C "$PROJECT_ROOT" update-ref "$bundle_ref" "$MPLAPACK_REF"
+    git -C "$PROJECT_ROOT" bundle create "$source_bundle" "$bundle_ref"
+    git -C "$PROJECT_ROOT" update-ref -d "$bundle_ref"
+    tar -czf "$context_tar" \
+        -C "$PROJECT_ROOT" release/docker \
+        -C "$LOGDIR" "$(basename "$source_bundle")"
+fi
 
 remote_pid=""
 cleanup_remote_command() {
@@ -188,7 +224,7 @@ trap cleanup_remote_command INT TERM HUP
 
 set +e
 (
-    "$REMOTE_SSH" "$host" "mkdir -p '$(dirname "$target_dir")' && cat > '$remote_context_tar'" < "$context_tar" &&     "$REMOTE_SSH" "$host" "MPLAPACK_REMOTE_WORKDIR='$target_dir' MPLAPACK_CONTEXT_TARBALL='$remote_context_tar' MPLAPACK_REF='$MPLAPACK_REF' MPLAPACK_DISTRO_VERSION='$remote_distro_version' MPLAPACK_DOCKER_BASE='$remote_docker_base' $remote_cmd -s" < "$script_path"
+    "$REMOTE_SSH" "$host" "mkdir -p '$(dirname "$target_dir")' && cat > '$remote_context_tar'" < "$context_tar" &&     "$REMOTE_SSH" "$host" "MPLAPACK_REMOTE_WORKDIR='$target_dir' MPLAPACK_CONTEXT_TARBALL='$remote_context_tar' MPLAPACK_REF='$MPLAPACK_REF' MPLAPACK_SOURCE_MODE='$MPLAPACK_SOURCE_MODE' MPLAPACK_DISTRO_VERSION='$remote_distro_version' MPLAPACK_DOCKER_BASE='$remote_docker_base' $remote_cmd -s" < "$script_path"
 ) > "$logfile" 2>&1 &
 remote_pid="$!"
 wait "$remote_pid"

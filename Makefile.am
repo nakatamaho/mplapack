@@ -163,7 +163,6 @@ external/dlfcn-win32/download/dlfcn-win32-1.4.2.tar.gz \
 external/distfiles.sha256 \
 external/gmp/Makefile.am \
 external/gmp/Makefile.in \
-external/gmp/download/gmp-6.2.1.tar.bz2 \
 external/gmp/download/gmp-6.3.0.tar.xz \
 external/gmp/patches/gcc-15.patch \
 external/gmp/patches/gmp-6.3.0_libtool-2.4.7.patch \
@@ -200,12 +199,10 @@ external/lapack/patches/3.9.1/print.c \
 external/lapack/patches/print.c \
 external/mpc/Makefile.am \
 external/mpc/Makefile.in \
-external/mpc/download/mpc-1.3.1.tar.gz \
 external/mpc/download/mpc-1.4.1.tar.xz \
 external/mpfr/Makefile.am \
 external/mpfr/Makefile.in \
 external/mpfr/download/allpatches \
-external/mpfr/download/mpfr-4.1.0.tar.bz2 \
 external/mpfr/download/mpfr-4.2.2.tar.bz2 \
 external/openblas/Makefile.am \
 external/openblas/Makefile.in \
@@ -214,7 +211,6 @@ external/openblas/patches/patch-mingw \
 external/openblas/patches/patch-mingw-laed3 \
 external/qd/Makefile.am \
 external/qd/Makefile.in \
-external/qd/download/qd-2.3.23.tar.gz \
 external/qd/download/qd-2.3.24.tar.gz \
 external/qd/patches/patch-configure \
 external/qd/patches/patch-mingw \
@@ -309,6 +305,7 @@ release/docker/matrix/Dockerfile.suse \
 release/docker/matrix/run-ubuntu-intel-build.sh \
 release/docker/matrix/run-ubuntu-mingw64-build.sh \
 release/docker/tarball/Dockerfile.ubuntu \
+release/make-source-snapshot.sh \
 release/run-remote-linux-docker.sh \
 release/run-remote-tarball-docker-worker.sh \
 release/run-remote-macos.sh \

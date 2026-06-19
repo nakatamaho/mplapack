@@ -169,6 +169,16 @@ SOURCE_BUNDLE="$(find "${CONTEXT_DIR}" -maxdepth 1 -type f -name '*_source.bundl
 if [ -n "${SOURCE_BUNDLE}" ]; then
     log "MPLAPACK_SOURCE_BUNDLE: ${SOURCE_BUNDLE}"
 fi
+SOURCE_TARBALL="$(find "${CONTEXT_DIR}" -maxdepth 1 -type f -name 'mplapack-*.tar.*' | head -n 1 || true)"
+SOURCE_METADATA="$(find "${CONTEXT_DIR}" -maxdepth 1 -type f -name 'source-metadata.txt' | head -n 1 || true)"
+if [ -n "${SOURCE_TARBALL}" ]; then
+    log "MPLAPACK_SOURCE_TARBALL: ${SOURCE_TARBALL}"
+fi
+if [ -n "${SOURCE_METADATA}" ]; then
+    log "=== MPLAPACK SOURCE METADATA ==="
+    cat "${SOURCE_METADATA}"
+    log "=== END MPLAPACK SOURCE METADATA ==="
+fi
 
 docker build \
     --build-arg BASE="${MPLAPACK_DOCKER_BASE}" \
@@ -183,7 +193,19 @@ docker_run --rm \
 
 log_ccache_stats "START"
 
-if [ -n "${SOURCE_BUNDLE}" ]; then
+if [ -n "${SOURCE_TARBALL}" ]; then
+    docker_run --rm \
+        -e MPLAPACK_REF="${MPLAPACK_REF}" \
+        -e MPLAPACK_DISTRO_VERSION="${MPLAPACK_DISTRO_VERSION:-}" \
+        -e MPLAPACK_TEST_RESULTS_BASE=/results \
+        -e CCACHE_MAXSIZE="${MPLAPACK_CCACHE_MAXSIZE}" \
+        -e CPU_MODEL_OVERRIDE="${MPLAPACK_CPU_MODEL_OVERRIDE:-}" \
+        -e MPLAPACK_SOURCE_TARBALL=/source.tarball \
+        -v "${SOURCE_TARBALL}:/source.tarball:ro" \
+        -v "${CCACHE_DIR_HOST}:/ccache:rw" \
+        -v "${RESULTS_DIR}:/results:rw" \
+        "${MPLAPACK_IMAGE_TAG}"
+elif [ -n "${SOURCE_BUNDLE}" ]; then
     docker_run --rm \
         -e MPLAPACK_REF="${MPLAPACK_REF}" \
         -e MPLAPACK_TEST_RESULTS_BASE=/results \
