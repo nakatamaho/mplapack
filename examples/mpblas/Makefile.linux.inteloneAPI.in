@@ -1,0 +1,81 @@
+# public domain
+# whether BINARY128 libs is requred or not is heavily dependent on your environment.
+
+CXX=icpx
+MPLAPACKDIR=%%MPLAPACKDIR%%
+CXXFLAGS= -I$(MPLAPACKDIR)/include -I$(MPLAPACKDIR)/include/mplapack -I$(MPLAPACKDIR)/include/qd
+OPTFLAGS= -O2 -qopenmp
+OPENMP_EXAMPLE_OPENMP_LIBS = -qopenmp
+LIBFLAGS=-L$(MPLAPACKDIR)/lib -Wl,--rpath=$(MPLAPACKDIR)/lib
+MPFRLIBS=-lmpblas_mpfr -lmpfr -lmpc -lgmp
+GMPLIBS=-lmpblas_gmp -lgmpxx -lgmp 
+QDLIBS=-lmpblas_qd -lqd
+DDLIBS=-lmpblas_dd -lqd
+BINARY80LIBS=-lmpblas_binary80
+BINARY128LIBS=-lmpblas_binary128%%LIBQUADMATH%%
+DOUBLELIBS=-lmpblas_double
+
+MPFROPTLIBS=$(OPENMP_EXAMPLE_OPENMP_LIBS) -lmpblas_mpfr_opt -lmpfr -lmpc -lgmp
+GMPOPTLIBS=$(OPENMP_EXAMPLE_OPENMP_LIBS) -lmpblas_gmp_opt -lgmpxx -lgmp
+QDOPTLIBS=$(OPENMP_EXAMPLE_OPENMP_LIBS) -lmpblas_qd_opt -lqd
+DDOPTLIBS=$(OPENMP_EXAMPLE_OPENMP_LIBS) -lmpblas_dd_opt -lqd
+BINARY80OPTLIBS=$(OPENMP_EXAMPLE_OPENMP_LIBS) -lmpblas_binary80_opt
+BINARY128OPTLIBS=$(OPENMP_EXAMPLE_OPENMP_LIBS) -lmpblas_binary128_opt%%LIBQUADMATH%%
+DOUBLEOPTLIBS=$(OPENMP_EXAMPLE_OPENMP_LIBS) -lmpblas_double_opt
+
+BLAS=
+LAPACK=
+FLIBS=
+
+programs=Rgemm_mpfr Rgemm_gmp Rgemm_qd Rgemm_dd Rgemm_binary80 Rgemm_binary128 Rgemm_double \
+Rgemm_mpfr_opt Rgemm_gmp_opt Rgemm_qd_opt Rgemm_dd_opt Rgemm_binary80_opt Rgemm_binary128_opt Rgemm_double_opt
+
+all: $(programs)
+
+.cpp.o:
+	$(CXX) -c $(OPTFLAGS) $(CXXFLAGS) $<
+
+Rgemm_mpfr: Rgemm_mpfr.o
+	$(CXX) -o Rgemm_mpfr Rgemm_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
+
+Rgemm_mpfr_opt: Rgemm_mpfr.o
+	$(CXX) -o Rgemm_mpfr_opt Rgemm_mpfr.o $(LIBFLAGS) $(MPFROPTLIBS)
+
+Rgemm_gmp: Rgemm_gmp.o
+	$(CXX) -o Rgemm_gmp Rgemm_gmp.o $(LIBFLAGS) $(GMPLIBS)
+
+Rgemm_gmp_opt: Rgemm_gmp.o
+	$(CXX) -o Rgemm_gmp_opt Rgemm_gmp.o $(LIBFLAGS) $(GMPOPTLIBS)
+
+Rgemm_qd: Rgemm_qd.o
+	$(CXX) -o Rgemm_qd Rgemm_qd.o $(LIBFLAGS) $(QDLIBS)
+
+Rgemm_qd_opt: Rgemm_qd.o
+	$(CXX) -o Rgemm_qd_opt Rgemm_qd.o $(LIBFLAGS) $(QDOPTLIBS)
+
+Rgemm_dd: Rgemm_dd.o
+	$(CXX) -o Rgemm_dd Rgemm_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Rgemm_dd_opt: Rgemm_dd.o
+	$(CXX) -o Rgemm_dd_opt Rgemm_dd.o $(LIBFLAGS) $(DDOPTLIBS)
+
+Rgemm_binary80: Rgemm_binary80.o
+	$(CXX) -o Rgemm_binary80 Rgemm_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
+
+Rgemm_binary80_opt: Rgemm_binary80.o
+	$(CXX) -o Rgemm_binary80_opt Rgemm_binary80.o $(LIBFLAGS) $(BINARY80OPTLIBS)
+
+Rgemm_binary128: Rgemm_binary128.o
+	$(CXX) -o Rgemm_binary128 Rgemm_binary128.o $(LIBFLAGS) $(BINARY128LIBS)
+
+Rgemm_binary128_opt: Rgemm_binary128.o
+	$(CXX) -o Rgemm_binary128_opt Rgemm_binary128.o $(LIBFLAGS) $(BINARY128OPTLIBS)
+
+Rgemm_double: Rgemm_double.o
+	$(CXX) -o Rgemm_double Rgemm_double.o $(LIBFLAGS) $(DOUBLELIBS)
+
+Rgemm_double_opt: Rgemm_double.o
+	$(CXX) -o Rgemm_double_opt Rgemm_double.o $(LIBFLAGS) $(DOUBLEOPTLIBS)
+
+clean:
+	rm -rf *.o *~ $(programs) *bak

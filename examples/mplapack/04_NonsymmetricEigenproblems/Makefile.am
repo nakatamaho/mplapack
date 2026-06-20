@@ -367,7 +367,7 @@ endif
 mplapackexamplesdir=$(prefix)/share/examples/mplapack/04_NonsymmetricEigenproblems
 
 mplapackexamples_DATA = Cgees_test_mpfr.cpp Cgees_test_gmp.cpp Cgees_test_binary128.cpp Cgees_test_binary80.cpp Cgees_test_double.cpp Cgees_test_dd.cpp Cgees_test_qd.cpp Cgeev_NPR_mpfr.cpp Cgeev_NPR_binary128.cpp Cgeev_NPR_binary80.cpp Cgeev_NPR_double.cpp Cgeev_NPR_dd.cpp Cgeev_NPR_qd.cpp Cgeev_test2_mpfr.cpp Cgeev_test2_gmp.cpp Cgeev_test2_binary128.cpp Cgeev_test2_binary80.cpp Cgeev_test2_double.cpp Cgeev_test2_dd.cpp Cgeev_test2_qd.cpp Cgeev_test_mpfr.cpp Cgeev_test_gmp.cpp Cgeev_test_binary128.cpp Cgeev_test_binary80.cpp Cgeev_test_double.cpp Cgeev_test_dd.cpp Cgeev_test_qd.cpp Rgees_Grcar_mpfr.cpp Rgees_Grcar_gmp.cpp Rgees_Grcar_binary128.cpp Rgees_Grcar_binary80.cpp Rgees_Grcar_double.cpp Rgees_Grcar_dd.cpp Rgees_Grcar_qd.cpp Rgees_readfromfile_mpfr.cpp Rgees_readfromfile_gmp.cpp Rgees_readfromfile_binary128.cpp Rgees_readfromfile_binary80.cpp Rgees_readfromfile_double.cpp Rgees_readfromfile_dd.cpp Rgees_readfromfile_qd.cpp Rgees_test_mpfr.cpp Rgees_test_gmp.cpp Rgees_test_binary128.cpp Rgees_test_binary80.cpp Rgees_test_double.cpp Rgees_test_dd.cpp Rgees_test_qd.cpp Rgeev_Frank_mpfr.cpp Rgeev_Frank_gmp.cpp Rgeev_Frank_binary128.cpp Rgeev_Frank_binary80.cpp Rgeev_Frank_double.cpp Rgeev_Frank_dd.cpp Rgeev_Frank_qd.cpp Rgeev_random_highcond_mpfr.cpp Rgeev_random_highcond_gmp.cpp Rgeev_random_highcond_binary128.cpp Rgeev_random_highcond_binary80.cpp Rgeev_random_highcond_double.cpp Rgeev_random_highcond_dd.cpp Rgeev_random_highcond_qd.cpp Rgeev_readfromfile_mpfr.cpp Rgeev_readfromfile_gmp.cpp Rgeev_readfromfile_binary128.cpp Rgeev_readfromfile_binary80.cpp Rgeev_readfromfile_double.cpp Rgeev_readfromfile_dd.cpp Rgeev_readfromfile_qd.cpp Rgeev_test_mpfr.cpp Rgeev_test_gmp.cpp Rgeev_test_binary128.cpp Rgeev_test_binary80.cpp Rgeev_test_double.cpp Rgeev_test_dd.cpp Rgeev_test_qd.cpp \
-Matrix_01.txt Matrix_02.txt Matrix_03.txt Matrix_04.txt Matrix_05.txt Matrix_06.txt Matrix_07.txt Makefile.freebsd Makefile.linux Makefile.macos Makefile.mingw
+Matrix_01.txt Matrix_02.txt Matrix_03.txt Matrix_04.txt Matrix_05.txt Matrix_06.txt Matrix_07.txt Makefile.freebsd Makefile.linux Makefile.linux.inteloneAPI Makefile.macos Makefile.mingw
 
 install-data-hook:
 if IS_MACOS
@@ -377,12 +377,14 @@ endif
 EXTRA_DIST = \
 	Makefile.freebsd.in \
 	Makefile.linux.in \
+	Makefile.linux.inteloneAPI.in \
 	Makefile.macos.in \
 	Makefile.mingw.in
 
 GENERATED_MAKEFILES = \
 	Makefile.freebsd \
 	Makefile.linux \
+	Makefile.linux.inteloneAPI \
 	Makefile.macos \
 	Makefile.mingw
 
@@ -438,6 +440,10 @@ Makefile.freebsd: Makefile.freebsd.in
 	bash $(top_srcdir)/misc/filter-example-programs.sh $@ $(DISABLED_EXAMPLE_SUFFIXES)
 
 Makefile.linux: Makefile.linux.in
+	sed $(MPLAPACK_SED_SUBST) $< > $@
+	bash $(top_srcdir)/misc/filter-example-programs.sh $@ $(DISABLED_EXAMPLE_SUFFIXES)
+
+Makefile.linux.inteloneAPI: Makefile.linux.inteloneAPI.in
 	sed $(MPLAPACK_SED_SUBST) $< > $@
 	bash $(top_srcdir)/misc/filter-example-programs.sh $@ $(DISABLED_EXAMPLE_SUFFIXES)
 

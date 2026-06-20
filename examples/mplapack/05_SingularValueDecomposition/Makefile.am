@@ -203,7 +203,7 @@ endif
 mplapackexamplesdir=$(prefix)/share/examples/mplapack/05_SingularValueDecomposition
 
 mplapackexamples_DATA = Cgesvd_test_mpfr.cpp Cgesvd_test_gmp.cpp Cgesvd_test_binary128.cpp Cgesvd_test_binary80.cpp Cgesvd_test_double.cpp Cgesvd_test_dd.cpp Cgesvd_test_qd.cpp Rgesvd_random_highcond_mpfr.cpp Rgesvd_random_highcond_gmp.cpp Rgesvd_random_highcond_binary128.cpp Rgesvd_random_highcond_binary80.cpp Rgesvd_random_highcond_double.cpp Rgesvd_random_highcond_dd.cpp Rgesvd_random_highcond_qd.cpp Rgesvd_readfromfile_mpfr.cpp Rgesvd_readfromfile_gmp.cpp Rgesvd_readfromfile_binary128.cpp Rgesvd_readfromfile_binary80.cpp Rgesvd_readfromfile_double.cpp Rgesvd_readfromfile_dd.cpp Rgesvd_readfromfile_qd.cpp Rgesvd_test2_mpfr.cpp Rgesvd_test2_gmp.cpp Rgesvd_test2_binary128.cpp Rgesvd_test2_binary80.cpp Rgesvd_test2_double.cpp Rgesvd_test2_dd.cpp Rgesvd_test2_qd.cpp Rgesvd_test_mpfr.cpp Rgesvd_test_gmp.cpp Rgesvd_test_binary128.cpp Rgesvd_test_binary80.cpp Rgesvd_test_double.cpp Rgesvd_test_dd.cpp Rgesvd_test_qd.cpp \
-Matrix_01.txt Matrix_02.txt Matrix_03.txt Makefile.freebsd Makefile.linux Makefile.macos Makefile.mingw
+Matrix_01.txt Matrix_02.txt Matrix_03.txt Makefile.freebsd Makefile.linux Makefile.linux.inteloneAPI Makefile.macos Makefile.mingw
 
 install-data-hook:
 if IS_MACOS
@@ -213,12 +213,14 @@ endif
 EXTRA_DIST = \
 	Makefile.freebsd.in \
 	Makefile.linux.in \
+	Makefile.linux.inteloneAPI.in \
 	Makefile.macos.in \
 	Makefile.mingw.in
 
 GENERATED_MAKEFILES = \
 	Makefile.freebsd \
 	Makefile.linux \
+	Makefile.linux.inteloneAPI \
 	Makefile.macos \
 	Makefile.mingw
 
@@ -274,6 +276,10 @@ Makefile.freebsd: Makefile.freebsd.in
 	bash $(top_srcdir)/misc/filter-example-programs.sh $@ $(DISABLED_EXAMPLE_SUFFIXES)
 
 Makefile.linux: Makefile.linux.in
+	sed $(MPLAPACK_SED_SUBST) $< > $@
+	bash $(top_srcdir)/misc/filter-example-programs.sh $@ $(DISABLED_EXAMPLE_SUFFIXES)
+
+Makefile.linux.inteloneAPI: Makefile.linux.inteloneAPI.in
 	sed $(MPLAPACK_SED_SUBST) $< > $@
 	bash $(top_srcdir)/misc/filter-example-programs.sh $@ $(DISABLED_EXAMPLE_SUFFIXES)
 

@@ -1,0 +1,50 @@
+# public domain
+# whether _FLOAT128 libs is requred or not is heavily dependent on your environment.
+
+CXX=icpx
+MPLAPACKDIR=%%MPLAPACKDIR%%
+CXXFLAGS= -I$(MPLAPACKDIR)/include -I$(MPLAPACKDIR)/include/mplapack -I$(MPLAPACKDIR)/include/qd
+OPTFLAGS= -O2
+OPENMP_EXAMPLE_OPENMP_LIBS = -qopenmp
+LIBFLAGS=-L$(MPLAPACKDIR)/lib -Wl,--rpath=$(MPLAPACKDIR)/lib
+MPFRLIBS= -lmplapack_mpfr -lmpblas_mpfr -lmpfr -lmpc -lgmp
+GMPLIBS=-lmplapack_gmp -lmpblas_gmp -lgmpxx -lgmp
+QDLIBS=-lmplapack_qd -lmpblas_qd -lqd
+DDLIBS=-lmplapack_dd -lmpblas_dd -lqd
+BINARY80LIBS=-lmplapack_binary80 -lmpblas_binary80
+BINARY128LIBS=-lmplapack_binary128 -lmpblas_binary128%%LIBQUADMATH%%
+DOUBLELIBS=-lmplapack_double -lmpblas_double
+BLAS=
+LAPACK=
+FLIBS=
+
+programs=Rgees_Grcar_mpfr Rgees_Grcar_gmp Rgees_Grcar_qd Rgees_Grcar_dd Rgees_Grcar_binary80 Rgees_Grcar_binary128 Rgees_Grcar_double
+
+all: $(programs)
+
+.cpp.o:
+	$(CXX) -c $(OPTFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(CXXFLAGS) $<
+
+Rgees_Grcar_mpfr: Rgees_Grcar_mpfr.o
+	$(CXX) -o Rgees_Grcar_mpfr Rgees_Grcar_mpfr.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(MPFRLIBS)
+
+Rgees_Grcar_gmp: Rgees_Grcar_gmp.o
+	$(CXX) -o Rgees_Grcar_gmp Rgees_Grcar_gmp.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(GMPLIBS)
+
+Rgees_Grcar_qd: Rgees_Grcar_qd.o
+	$(CXX) -o Rgees_Grcar_qd Rgees_Grcar_qd.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(QDLIBS)
+
+Rgees_Grcar_dd: Rgees_Grcar_dd.o
+	$(CXX) -o Rgees_Grcar_dd Rgees_Grcar_dd.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(DDLIBS)
+
+Rgees_Grcar_binary80: Rgees_Grcar_binary80.o
+	$(CXX) -o Rgees_Grcar_binary80 Rgees_Grcar_binary80.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(BINARY80LIBS)
+
+Rgees_Grcar_binary128: Rgees_Grcar_binary128.o
+	$(CXX) -o Rgees_Grcar_binary128 Rgees_Grcar_binary128.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(BINARY128LIBS)
+
+Rgees_Grcar_double: Rgees_Grcar_double.o
+	$(CXX) -o Rgees_Grcar_double Rgees_Grcar_double.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(DOUBLELIBS)
+
+clean:
+	rm -rf *.o *~ $(programs) *bak

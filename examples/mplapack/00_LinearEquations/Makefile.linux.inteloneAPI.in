@@ -1,0 +1,50 @@
+# public domain
+# whether _FLOAT128 libs is requred or not is heavily dependent on your environment.
+
+CXX=icpx
+MPLAPACKDIR=%%MPLAPACKDIR%%
+CXXFLAGS= -I$(MPLAPACKDIR)/include -I$(MPLAPACKDIR)/include/mplapack -I$(MPLAPACKDIR)/include/qd
+OPTFLAGS= -O2
+OPENMP_EXAMPLE_OPENMP_LIBS = -qopenmp
+LIBFLAGS=-L$(MPLAPACKDIR)/lib -Wl,--rpath=$(MPLAPACKDIR)/lib
+MPFRLIBS= -lmplapack_mpfr -lmpblas_mpfr -lmpfr -lmpc -lgmp
+GMPLIBS=-lmplapack_gmp -lmpblas_gmp -lgmpxx -lgmp
+QDLIBS=-lmplapack_qd -lmpblas_qd -lqd
+DDLIBS=-lmplapack_dd -lmpblas_dd -lqd
+BINARY80LIBS=-lmplapack_binary80 -lmpblas_binary80
+BINARY128LIBS=-lmplapack_binary128 -lmpblas_binary128%%LIBQUADMATH%%
+DOUBLELIBS=-lmplapack_double -lmpblas_double
+BLAS=
+LAPACK=
+FLIBS=
+
+programs=Rgesv_test_mpfr Rgesv_test_gmp Rgesv_test_qd Rgesv_test_dd Rgesv_test_binary80 Rgesv_test_binary128 Rgesv_test_double
+
+all: $(programs)
+
+.cpp.o:
+	$(CXX) -c $(OPTFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(CXXFLAGS) $<
+
+Rgesv_test_mpfr: Rgesv_test_mpfr.o
+	$(CXX) -o Rgesv_test_mpfr Rgesv_test_mpfr.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(MPFRLIBS)
+
+Rgesv_test_gmp: Rgesv_test_gmp.o
+	$(CXX) -o Rgesv_test_gmp Rgesv_test_gmp.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(GMPLIBS)
+
+Rgesv_test_qd: Rgesv_test_qd.o
+	$(CXX) -o Rgesv_test_qd Rgesv_test_qd.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(QDLIBS)
+
+Rgesv_test_dd: Rgesv_test_dd.o
+	$(CXX) -o Rgesv_test_dd Rgesv_test_dd.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(DDLIBS)
+
+Rgesv_test_binary80: Rgesv_test_binary80.o
+	$(CXX) -o Rgesv_test_binary80 Rgesv_test_binary80.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(BINARY80LIBS)
+
+Rgesv_test_binary128: Rgesv_test_binary128.o
+	$(CXX) -o Rgesv_test_binary128 Rgesv_test_binary128.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(BINARY128LIBS)
+
+Rgesv_test_double: Rgesv_test_double.o
+	$(CXX) -o Rgesv_test_double Rgesv_test_double.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(DOUBLELIBS)
+
+clean:
+	rm -rf *.o *~ $(programs) *bak

@@ -231,7 +231,7 @@ endif
 mplapackexamplesdir=$(prefix)/share/examples/mplapack/03_SymmetricEigenproblems
 
 mplapackexamples_DATA = Cheev_test_mpfr.cpp Cheev_test_gmp.cpp Cheev_test_binary128.cpp Cheev_test_binary80.cpp Cheev_test_double.cpp Cheev_test_dd.cpp Cheev_test_qd.cpp Rsyev_Frank_mpfr.cpp Rsyev_Frank_gmp.cpp Rsyev_Frank_binary128.cpp Rsyev_Frank_binary80.cpp Rsyev_Frank_double.cpp Rsyev_Frank_dd.cpp Rsyev_Frank_qd.cpp Rsyev_test_mpfr.cpp Rsyev_test_gmp.cpp Rsyev_test_binary128.cpp Rsyev_test_binary80.cpp Rsyev_test_double.cpp Rsyev_test_dd.cpp Rsyev_test_qd.cpp Rsyevd_DingDong_mpfr.cpp Rsyevd_DingDong_gmp.cpp Rsyevd_DingDong_binary128.cpp Rsyevd_DingDong_binary80.cpp Rsyevd_DingDong_double.cpp Rsyevd_DingDong_dd.cpp Rsyevd_DingDong_qd.cpp Rsyevd_Frank_mpfr.cpp Rsyevd_Frank_gmp.cpp Rsyevd_Frank_binary128.cpp Rsyevd_Frank_binary80.cpp Rsyevd_Frank_double.cpp Rsyevd_Frank_dd.cpp Rsyevd_Frank_qd.cpp Rsyevr_Frank_mpfr.cpp Rsyevr_Frank_gmp.cpp Rsyevr_Frank_binary128.cpp Rsyevr_Frank_binary80.cpp Rsyevr_Frank_double.cpp Rsyevr_Frank_dd.cpp Rsyevr_Frank_qd.cpp \
- Makefile.freebsd Makefile.linux Makefile.macos Makefile.mingw
+ Makefile.freebsd Makefile.linux Makefile.linux.inteloneAPI Makefile.macos Makefile.mingw
 
 install-data-hook:
 if IS_MACOS
@@ -241,12 +241,14 @@ endif
 EXTRA_DIST = \
 	Makefile.freebsd.in \
 	Makefile.linux.in \
+	Makefile.linux.inteloneAPI.in \
 	Makefile.macos.in \
 	Makefile.mingw.in
 
 GENERATED_MAKEFILES = \
 	Makefile.freebsd \
 	Makefile.linux \
+	Makefile.linux.inteloneAPI \
 	Makefile.macos \
 	Makefile.mingw
 
@@ -302,6 +304,10 @@ Makefile.freebsd: Makefile.freebsd.in
 	bash $(top_srcdir)/misc/filter-example-programs.sh $@ $(DISABLED_EXAMPLE_SUFFIXES)
 
 Makefile.linux: Makefile.linux.in
+	sed $(MPLAPACK_SED_SUBST) $< > $@
+	bash $(top_srcdir)/misc/filter-example-programs.sh $@ $(DISABLED_EXAMPLE_SUFFIXES)
+
+Makefile.linux.inteloneAPI: Makefile.linux.inteloneAPI.in
 	sed $(MPLAPACK_SED_SUBST) $< > $@
 	bash $(top_srcdir)/misc/filter-example-programs.sh $@ $(DISABLED_EXAMPLE_SUFFIXES)
 

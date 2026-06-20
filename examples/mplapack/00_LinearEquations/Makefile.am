@@ -231,7 +231,7 @@ endif
 mplapackexamplesdir=$(prefix)/share/examples/mplapack/00_LinearEquations
 
 mplapackexamples_DATA = Cgetri_test_mpfr.cpp Cgetri_test_gmp.cpp Cgetri_test_binary128.cpp Cgetri_test_binary80.cpp Cgetri_test_double.cpp Cgetri_test_dd.cpp Cgetri_test_qd.cpp Rgesv_test_mpfr.cpp Rgesv_test_gmp.cpp Rgesv_test_binary128.cpp Rgesv_test_binary80.cpp Rgesv_test_double.cpp Rgesv_test_dd.cpp Rgesv_test_qd.cpp Rgetri_Hilbert_mpfr.cpp Rgetri_Hilbert_gmp.cpp Rgetri_Hilbert_binary128.cpp Rgetri_Hilbert_binary80.cpp Rgetri_Hilbert_double.cpp Rgetri_Hilbert_dd.cpp Rgetri_Hilbert_qd.cpp Rgetri_test2_mpfr.cpp Rgetri_test2_gmp.cpp Rgetri_test2_binary128.cpp Rgetri_test2_binary80.cpp Rgetri_test2_double.cpp Rgetri_test2_dd.cpp Rgetri_test2_qd.cpp Rgetri_test3_mpfr.cpp Rgetri_test3_gmp.cpp Rgetri_test3_binary128.cpp Rgetri_test3_binary80.cpp Rgetri_test3_double.cpp Rgetri_test3_dd.cpp Rgetri_test3_qd.cpp Rgetri_test_mpfr.cpp Rgetri_test_gmp.cpp Rgetri_test_binary128.cpp Rgetri_test_binary80.cpp Rgetri_test_double.cpp Rgetri_test_dd.cpp Rgetri_test_qd.cpp \
- Makefile.freebsd Makefile.linux Makefile.macos Makefile.mingw
+ Makefile.freebsd Makefile.linux Makefile.linux.inteloneAPI Makefile.macos Makefile.mingw
 
 install-data-hook:
 if IS_MACOS
@@ -241,12 +241,14 @@ endif
 EXTRA_DIST = \
 	Makefile.freebsd.in \
 	Makefile.linux.in \
+	Makefile.linux.inteloneAPI.in \
 	Makefile.macos.in \
 	Makefile.mingw.in
 
 GENERATED_MAKEFILES = \
 	Makefile.freebsd \
 	Makefile.linux \
+	Makefile.linux.inteloneAPI \
 	Makefile.macos \
 	Makefile.mingw
 
@@ -302,6 +304,10 @@ Makefile.freebsd: Makefile.freebsd.in
 	bash $(top_srcdir)/misc/filter-example-programs.sh $@ $(DISABLED_EXAMPLE_SUFFIXES)
 
 Makefile.linux: Makefile.linux.in
+	sed $(MPLAPACK_SED_SUBST) $< > $@
+	bash $(top_srcdir)/misc/filter-example-programs.sh $@ $(DISABLED_EXAMPLE_SUFFIXES)
+
+Makefile.linux.inteloneAPI: Makefile.linux.inteloneAPI.in
 	sed $(MPLAPACK_SED_SUBST) $< > $@
 	bash $(top_srcdir)/misc/filter-example-programs.sh $@ $(DISABLED_EXAMPLE_SUFFIXES)
 

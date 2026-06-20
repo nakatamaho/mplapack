@@ -1,0 +1,50 @@
+# public domain
+# whether _FLOAT128 libs is requred or not is heavily dependent on your environment.
+
+CXX=icpx
+MPLAPACKDIR=%%MPLAPACKDIR%%
+CXXFLAGS= -I$(MPLAPACKDIR)/include -I$(MPLAPACKDIR)/include/mplapack -I$(MPLAPACKDIR)/include/qd
+OPTFLAGS= -O2
+OPENMP_EXAMPLE_OPENMP_LIBS = -qopenmp
+LIBFLAGS=-L$(MPLAPACKDIR)/lib -Wl,--rpath=$(MPLAPACKDIR)/lib
+MPFRLIBS= -lmplapack_mpfr -lmpblas_mpfr -lmpfr -lmpc -lgmp
+GMPLIBS=-lmplapack_gmp -lmpblas_gmp -lgmpxx -lgmp
+QDLIBS=-lmplapack_qd -lmpblas_qd -lqd
+DDLIBS=-lmplapack_dd -lmpblas_dd -lqd
+BINARY80LIBS=-lmplapack_binary80 -lmpblas_binary80
+BINARY128LIBS=-lmplapack_binary128 -lmpblas_binary128%%LIBQUADMATH%%
+DOUBLELIBS=-lmplapack_double -lmpblas_double
+BLAS=
+LAPACK=
+FLIBS=
+
+programs=Rgesvd_random_highcond_mpfr Rgesvd_random_highcond_gmp Rgesvd_random_highcond_qd Rgesvd_random_highcond_dd Rgesvd_random_highcond_binary80 Rgesvd_random_highcond_binary128 Rgesvd_random_highcond_double
+
+all: $(programs)
+
+.cpp.o:
+	$(CXX) -c $(OPTFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(CXXFLAGS) $<
+
+Rgesvd_random_highcond_mpfr: Rgesvd_random_highcond_mpfr.o
+	$(CXX) -o Rgesvd_random_highcond_mpfr Rgesvd_random_highcond_mpfr.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(MPFRLIBS)
+
+Rgesvd_random_highcond_gmp: Rgesvd_random_highcond_gmp.o
+	$(CXX) -o Rgesvd_random_highcond_gmp Rgesvd_random_highcond_gmp.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(GMPLIBS)
+
+Rgesvd_random_highcond_qd: Rgesvd_random_highcond_qd.o
+	$(CXX) -o Rgesvd_random_highcond_qd Rgesvd_random_highcond_qd.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(QDLIBS)
+
+Rgesvd_random_highcond_dd: Rgesvd_random_highcond_dd.o
+	$(CXX) -o Rgesvd_random_highcond_dd Rgesvd_random_highcond_dd.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(DDLIBS)
+
+Rgesvd_random_highcond_binary80: Rgesvd_random_highcond_binary80.o
+	$(CXX) -o Rgesvd_random_highcond_binary80 Rgesvd_random_highcond_binary80.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(BINARY80LIBS)
+
+Rgesvd_random_highcond_binary128: Rgesvd_random_highcond_binary128.o
+	$(CXX) -o Rgesvd_random_highcond_binary128 Rgesvd_random_highcond_binary128.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(BINARY128LIBS)
+
+Rgesvd_random_highcond_double: Rgesvd_random_highcond_double.o
+	$(CXX) -o Rgesvd_random_highcond_double Rgesvd_random_highcond_double.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(DOUBLELIBS)
+
+clean:
+	rm -rf *.o *~ $(programs) *bak

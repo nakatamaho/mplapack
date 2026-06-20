@@ -12,6 +12,7 @@ _FILE=`ls R*.cpp | head -1 | $SED 's/_/ /g' | awk '{print $1}'`
 $SED -e "s|%%ROUTINE%%|$_FILE|g" Makefile.freebsd.in > ../Makefile.freebsd.in
 $SED -e "s|%%ROUTINE%%|$_FILE|g" Makefile.macos.in   > ../Makefile.macos.in
 $SED -e "s|%%ROUTINE%%|$_FILE|g" Makefile.linux.in   > ../Makefile.linux.in
+$SED -e "s|%%ROUTINE%%|$_FILE|g" Makefile.linux.inteloneAPI.in > ../Makefile.linux.inteloneAPI.in
 $SED -e "s|%%ROUTINE%%|$_FILE|g" Makefile.mingw.in   > ../Makefile.mingw.in
 cp Makefile.linux_cuda.in ../Makefile.linux_cuda.in
 
@@ -265,7 +266,7 @@ path=`pwd`
 echo "mpblasexamplesdir=\$(prefix)/share/examples/mpblas/"   >> ../Makefile.am
 echo ""               >> ../Makefile.am
 echo "mpblasexamples_DATA = $SOURCEFILES \\" >> ../Makefile.am
-echo "Makefile.freebsd Makefile.linux Makefile.linux_cuda Makefile.macos Makefile.mingw" >> ../Makefile.am
+echo "Makefile.freebsd Makefile.linux Makefile.linux.inteloneAPI Makefile.linux_cuda Makefile.macos Makefile.mingw" >> ../Makefile.am
 echo ""               >> ../Makefile.am
 cat >> ../Makefile.am << EOF
 install-data-hook:
@@ -279,6 +280,7 @@ cat >> ../Makefile.am << 'EOF'
 EXTRA_DIST = \
 	Makefile.freebsd.in \
 	Makefile.linux.in \
+	Makefile.linux.inteloneAPI.in \
 	Makefile.linux_cuda.in \
 	Makefile.macos.in \
 	Makefile.mingw.in
@@ -286,6 +288,7 @@ EXTRA_DIST = \
 GENERATED_MAKEFILES = \
 	Makefile.freebsd \
 	Makefile.linux \
+	Makefile.linux.inteloneAPI \
 	Makefile.linux_cuda \
 	Makefile.macos \
 	Makefile.mingw
@@ -342,6 +345,10 @@ Makefile.freebsd: Makefile.freebsd.in
 	bash $(top_srcdir)/misc/filter-example-programs.sh $@ $(DISABLED_EXAMPLE_SUFFIXES)
 
 Makefile.linux: Makefile.linux.in
+	sed $(MPLAPACK_SED_SUBST) $< > $@
+	bash $(top_srcdir)/misc/filter-example-programs.sh $@ $(DISABLED_EXAMPLE_SUFFIXES)
+
+Makefile.linux.inteloneAPI: Makefile.linux.inteloneAPI.in
 	sed $(MPLAPACK_SED_SUBST) $< > $@
 	bash $(top_srcdir)/misc/filter-example-programs.sh $@ $(DISABLED_EXAMPLE_SUFFIXES)
 

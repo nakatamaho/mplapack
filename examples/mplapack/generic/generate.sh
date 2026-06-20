@@ -18,6 +18,7 @@ _FILE=`ls R*.cpp | head -1 | $SED 's/_generic\.cpp//g' | awk '{print $1}'`
 $SED -e "s|%%ROUTINE%%|$_FILE|g" ../../generic/Makefile.freebsd.in > ../Makefile.freebsd.in
 $SED -e "s|%%ROUTINE%%|$_FILE|g" ../../generic/Makefile.macos.in   > ../Makefile.macos.in
 $SED -e "s|%%ROUTINE%%|$_FILE|g" ../../generic/Makefile.linux.in   > ../Makefile.linux.in
+$SED -e "s|%%ROUTINE%%|$_FILE|g" ../../generic/Makefile.linux.inteloneAPI.in > ../Makefile.linux.inteloneAPI.in
 $SED -e "s|%%ROUTINE%%|$_FILE|g" ../../generic/Makefile.mingw.in   > ../Makefile.mingw.in
 
 SOURCEFILES=""
@@ -213,7 +214,7 @@ kind_index=`expr ${#array[@]} - 2`
 echo "mplapackexamplesdir=\$(prefix)/share/examples/mplapack/${array[${kind_index}]}"   >> ../Makefile.am
 echo ""               >> ../Makefile.am
 echo "mplapackexamples_DATA = $SOURCEFILES \\" >> ../Makefile.am
-echo "$MATFILES Makefile.freebsd Makefile.linux Makefile.macos Makefile.mingw" >> ../Makefile.am
+echo "$MATFILES Makefile.freebsd Makefile.linux Makefile.linux.inteloneAPI Makefile.macos Makefile.mingw" >> ../Makefile.am
 echo ""               >> ../Makefile.am
 cat >> ../Makefile.am << 'EOF'
 install-data-hook:
@@ -224,12 +225,14 @@ endif
 EXTRA_DIST = \
 	Makefile.freebsd.in \
 	Makefile.linux.in \
+	Makefile.linux.inteloneAPI.in \
 	Makefile.macos.in \
 	Makefile.mingw.in
 
 GENERATED_MAKEFILES = \
 	Makefile.freebsd \
 	Makefile.linux \
+	Makefile.linux.inteloneAPI \
 	Makefile.macos \
 	Makefile.mingw
 
@@ -285,6 +288,10 @@ Makefile.freebsd: Makefile.freebsd.in
 	bash $(top_srcdir)/misc/filter-example-programs.sh $@ $(DISABLED_EXAMPLE_SUFFIXES)
 
 Makefile.linux: Makefile.linux.in
+	sed $(MPLAPACK_SED_SUBST) $< > $@
+	bash $(top_srcdir)/misc/filter-example-programs.sh $@ $(DISABLED_EXAMPLE_SUFFIXES)
+
+Makefile.linux.inteloneAPI: Makefile.linux.inteloneAPI.in
 	sed $(MPLAPACK_SED_SUBST) $< > $@
 	bash $(top_srcdir)/misc/filter-example-programs.sh $@ $(DISABLED_EXAMPLE_SUFFIXES)
 

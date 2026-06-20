@@ -184,7 +184,7 @@ endif
 mpblasexamplesdir=$(prefix)/share/examples/mpblas/
 
 mpblasexamples_DATA = Cgemm_mpfr.cpp Cgemm_gmp.cpp Cgemm_binary128.cpp Cgemm_binary80.cpp Cgemm_double.cpp Cgemm_dd.cpp Cgemm_qd.cpp Rgemm_mpfr.cpp Rgemm_gmp.cpp Rgemm_binary128.cpp Rgemm_binary80.cpp Rgemm_double.cpp Rgemm_dd.cpp Rgemm_qd.cpp \
-Makefile.freebsd Makefile.linux Makefile.linux_cuda Makefile.macos Makefile.mingw
+Makefile.freebsd Makefile.linux Makefile.linux.inteloneAPI Makefile.linux_cuda Makefile.macos Makefile.mingw
 
 install-data-hook:
 if IS_MACOS
@@ -194,6 +194,7 @@ endif
 EXTRA_DIST = \
 	Makefile.freebsd.in \
 	Makefile.linux.in \
+	Makefile.linux.inteloneAPI.in \
 	Makefile.linux_cuda.in \
 	Makefile.macos.in \
 	Makefile.mingw.in
@@ -201,6 +202,7 @@ EXTRA_DIST = \
 GENERATED_MAKEFILES = \
 	Makefile.freebsd \
 	Makefile.linux \
+	Makefile.linux.inteloneAPI \
 	Makefile.linux_cuda \
 	Makefile.macos \
 	Makefile.mingw
@@ -257,6 +259,10 @@ Makefile.freebsd: Makefile.freebsd.in
 	bash $(top_srcdir)/misc/filter-example-programs.sh $@ $(DISABLED_EXAMPLE_SUFFIXES)
 
 Makefile.linux: Makefile.linux.in
+	sed $(MPLAPACK_SED_SUBST) $< > $@
+	bash $(top_srcdir)/misc/filter-example-programs.sh $@ $(DISABLED_EXAMPLE_SUFFIXES)
+
+Makefile.linux.inteloneAPI: Makefile.linux.inteloneAPI.in
 	sed $(MPLAPACK_SED_SUBST) $< > $@
 	bash $(top_srcdir)/misc/filter-example-programs.sh $@ $(DISABLED_EXAMPLE_SUFFIXES)
 
