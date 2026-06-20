@@ -125,7 +125,10 @@ release/buildtest_tier1_debian_i386.sh
 * `ccache` is recommended. The `misc/reconfig.*.sh` helper scripts use it by default.
 
 All third-party libraries (GMP, MPFR, MPC, QD, OpenBLAS, dlfcn-win32) are bundled and
-built automatically. No separate installation of these libraries is required.
+built automatically. No separate installation of these libraries is required. For benchmark
+builds, `--with-openblas=system` uses the distribution OpenBLAS (`-lopenblas`) instead of
+building the bundled OpenBLAS; pass `--with-openblas="-L/path -lopenblas"` for a custom
+OpenBLAS location.
 
 Release tarballs already include generated autotools files, so `autoreconf` is not needed.
 Git checkout builds must run one of the `misc/reconfig.*.sh` scripts before `make`; these

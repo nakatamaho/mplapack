@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y \
     automake \
     libtool \
     pkg-config \
+    libopenblas-dev \
     ccache \
     python3 \
     git \

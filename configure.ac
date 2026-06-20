@@ -550,6 +550,12 @@ AC_ARG_ENABLE(benchmark,
 AS_HELP_STRING([--enable-benchmark], [Enable benchmark]))
 AM_CONDITIONAL(ENABLE_BENCHMARK, test x$enable_benchmark = xyes)
 
+AC_ARG_WITH([openblas],
+AS_HELP_STRING([--with-openblas=internal|system|LIBS],
+               [OpenBLAS for benchmarks: build bundled OpenBLAS, use -lopenblas, or use explicit linker flags (default: internal)]),
+    [with_openblas=$withval],
+    [with_openblas=internal])
+
 dnl disable examples
 AC_ARG_ENABLE(examples,
 AS_HELP_STRING([--disable-examples], [Disable examples]))
@@ -1783,9 +1789,40 @@ fi
 #AM_CONDITIONAL(NEED_INTERNAL_MPCLIB, test x$need_internal_mpclib = xyes)
 
 need_internal_openblas=no
+OPENBLAS_SOURCE=disabled
+OPENBLAS_LIBS=
 if test x$enable_benchmark = x"yes"; then
-    need_internal_openblas=yes
-    AC_SUBST(OPENBLAS_DIR, [openblas])
+    AS_CASE([$with_openblas],
+        [internal|yes|""], [
+            need_internal_openblas=yes
+            OPENBLAS_SOURCE=internal
+            OPENBLAS_LIBS="\$(top_builddir)/external/i/OPENBLAS/lib/libopenblas.a"
+            AC_SUBST(OPENBLAS_DIR, [openblas])
+        ],
+        [system], [
+            OPENBLAS_SOURCE=system
+            AC_CHECK_LIB([openblas], [dgemm_],
+                [OPENBLAS_LIBS="-lopenblas"],
+                [AC_MSG_ERROR([system OpenBLAS requested but dgemm_ was not found in -lopenblas; install libopenblas-dev/openblas-devel or pass --with-openblas="-L... -lopenblas"])])
+        ],
+        [no], [
+            AC_MSG_ERROR([--with-openblas=no is not supported with --enable-benchmark; use --disable-benchmark])
+        ],
+        [
+            OPENBLAS_SOURCE=custom
+            OPENBLAS_LIBS="$with_openblas"
+            save_LIBS="$LIBS"
+            LIBS="$OPENBLAS_LIBS $LIBS"
+            AC_MSG_CHECKING([whether custom OpenBLAS linker flags provide dgemm_])
+            AC_LINK_IFELSE(
+                [AC_LANG_PROGRAM([[extern void dgemm_(void);]], [[dgemm_();]])],
+                [AC_MSG_RESULT([yes])],
+                [AC_MSG_RESULT([no])
+                 AC_MSG_ERROR([custom OpenBLAS linker flags do not provide dgemm_: $OPENBLAS_LIBS])])
+            LIBS="$save_LIBS"
+        ])
+    AC_SUBST([OPENBLAS_SOURCE])
+    AC_SUBST([OPENBLAS_LIBS])
     if test x$IS_MINGW = x"1"; then
 	DLFCN_WIN32_INCLUDEDIR=$highest_abs_top_builddir/external/i/DLFCN_WIN32/include/
 	DLFCN_WIN32_LIBDIR=$highest_abs_top_builddir/external/i/DLFCN_WIN32/lib/
@@ -2212,11 +2249,10 @@ AC_MSG_NOTICE([])
 
 if test x$enable_benchmark = x"yes"; then
     AC_MSG_NOTICE([Benchmark:         enabled])
-    AC_MSG_NOTICE([Internal OpenBLAS: enabled])
 else
     AC_MSG_NOTICE([Benchmark:         disabled])
-    AC_MSG_NOTICE([Internal OpenBLAS: disabled])
 fi
+AC_MSG_NOTICE([OpenBLAS:          $OPENBLAS_SOURCE])
 
 if test x$enable_test = x"yes"; then
     AC_MSG_NOTICE([Tests:             enabled])
@@ -2234,11 +2270,10 @@ AC_MSG_NOTICE([])
 
 if test x$enable_benchmark = x"yes"; then
 AC_MSG_RESULT([Enable benchmark])
-AC_MSG_RESULT([Build internal OpenBLAS])
 else
 AC_MSG_RESULT([Disable benchmark])
-AC_MSG_RESULT([Do not build internal OpenBLAS])
 fi
+AC_MSG_RESULT([OpenBLAS: $OPENBLAS_SOURCE])
 
 if test x$enable_test = x"yes"; then
 AC_MSG_RESULT([Enable test])
@@ -2405,9 +2440,13 @@ external/lapack/Makefile
 external/dlfcn-win32/Makefile
 ])
 
-if test x$enable_benchmark != xno; then
+if test x$need_internal_openblas = xyes; then
 AC_CONFIG_FILES([
 external/openblas/Makefile
+])
+fi
+if test x$enable_benchmark != xno; then
+AC_CONFIG_FILES([
 benchmark/Makefile
 ])
 fi

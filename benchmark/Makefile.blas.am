@@ -7,7 +7,7 @@ dpotf2_openblas dpotrf_openblas dgetrf_openblas
 cxxflags            = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include
 blas_ref_libdepends   = -L$(top_builddir)/external/i/LAPACK/lib -lblas $(FCLIBS)
 lapack_ref_libdepends = -L$(top_builddir)/external/i/LAPACK/lib -llapack -lblas $(FCLIBS)
-opt_libdepends        = $(top_builddir)/external/i/OPENBLAS/lib/libopenblas.a $(FCLIBS)
+opt_libdepends        = $(OPENBLAS_LIBS) $(FCLIBS)
 
 # double-precision BLAS reference / OpenBLAS
 daxpy_ref_SOURCES=       daxpy.cpp

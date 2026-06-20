@@ -64,8 +64,10 @@ ARCH=$(dpkg --print-architecture)
 echo "Detected architecture: $ARCH"
 COMMON_OPTS="--enable-gmp=yes --enable-mpfr=yes --enable-binary128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes"
 if [ "$ARCH" = "arm64" ] || [ "$ARCH" = "aarch64" ]; then
-    CONFIGURE_OPTS="$COMMON_OPTS --enable-benchmark=yes"
-elif [ "$ARCH" = "amd64" ] || [ "$ARCH" = "i386" ]; then
+    CONFIGURE_OPTS="$COMMON_OPTS --enable-benchmark=yes --with-openblas=system"
+elif [ "$ARCH" = "i386" ]; then
+    CONFIGURE_OPTS="$COMMON_OPTS --enable-benchmark=yes --enable-binary80=yes --with-openblas=system"
+elif [ "$ARCH" = "amd64" ]; then
     CONFIGURE_OPTS="$COMMON_OPTS --enable-benchmark=yes --enable-binary80=yes"
 else
     CONFIGURE_OPTS="$COMMON_OPTS"
