@@ -18,6 +18,12 @@ TIER1_TARGETS := tier1-macos-arm64 tier1-macos-amd64 tier1-ubuntu2404-arm64 tier
 TIER1_MACOS_TARGETS := tier1-macos-arm64 tier1-macos-amd64
 TIER1_LINUX_TARGETS := tier1-ubuntu2404-arm64 tier1-ubuntu2604-arm64 tier1-ubuntu2404-amd64 tier1-ubuntu2604-amd64 tier1-ubuntu2404-mingw64-amd64 tier1-ubuntu2604-mingw64-amd64 tier1-ubuntu2404-inteloneapi-amd64 tier1-ubuntu2604-inteloneapi-amd64 tier1-debian12-i386 tier1-debian13-i386
 TIER2_TARGETS :=
+LEGACY_QA_IMAGE_TAGS := \
+    mplapack-tier1-ubuntu-amd64:latest \
+    mplapack-tier1-ubuntu-arm64:latest \
+    mplapack-tier1-debian-i386:latest \
+    mplapack-tier1-mingw64-amd64:latest \
+    mplapack-tier1-ubuntu-inteloneapi-amd64:latest
 RUN_REMOTE_TARGETS = CONF_FILE=$(CONF_FILE) LOGDIR=$(LOGDIR) PROJECT_ROOT=$(PROJECT_ROOT) SUCCESS_DIR=$(SUCCESS_DIR) MACOS_REMOTE_SSH=$(MACOS_REMOTE_SSH) REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-targets-by-host.sh
 
 .PHONY: all ref tarball dist clean clean-remote clean-all realclean clean-success list help
@@ -225,10 +231,14 @@ clean: clean-remote
 		mkdir -p logs/; \
 	fi
 	@# Stop and remove any running containers using our labeled images first.
+	@# The image-name fallback catches legacy containers created before labels were added.
 	@# "docker rmi -f" cannot remove images used by *running* containers even with -f.
 	-docker ps -q  --filter label=org.mplapack.project=mplapack --filter label=org.mplapack.purpose=mplapack-qa | xargs -r docker stop
 	-docker ps -aq --filter label=org.mplapack.project=mplapack --filter label=org.mplapack.purpose=mplapack-qa | xargs -r docker rm -f
+	-@for image in $(LEGACY_QA_IMAGE_TAGS); do docker ps -q  --filter ancestor=$$image; done | sort -u | xargs -r docker stop
+	-@for image in $(LEGACY_QA_IMAGE_TAGS); do docker ps -aq --filter ancestor=$$image; done | sort -u | xargs -r docker rm -f
 	-docker images -q --filter label=org.mplapack.project=mplapack --filter label=org.mplapack.purpose=mplapack-qa | xargs -r docker rmi -f
+	-@for image in $(LEGACY_QA_IMAGE_TAGS); do docker images -q $$image; done | sort -u | xargs -r docker rmi -f
 
 
 clean-remote:
@@ -242,10 +252,14 @@ clean-all:
 	@rm -rf logs/ $(SUCCESS_DIR)
 	@mkdir -p logs/ $(SUCCESS_DIR)
 	@# Stop and remove any running containers using our labeled images first.
+	@# The image-name fallback catches legacy containers created before labels were added.
 	@# "docker rmi -f" cannot remove images used by *running* containers even with -f.
 	-docker ps -q  --filter label=org.mplapack.project=mplapack --filter label=org.mplapack.purpose=mplapack-qa | xargs -r docker stop
 	-docker ps -aq --filter label=org.mplapack.project=mplapack --filter label=org.mplapack.purpose=mplapack-qa | xargs -r docker rm -f
+	-@for image in $(LEGACY_QA_IMAGE_TAGS); do docker ps -q  --filter ancestor=$$image; done | sort -u | xargs -r docker stop
+	-@for image in $(LEGACY_QA_IMAGE_TAGS); do docker ps -aq --filter ancestor=$$image; done | sort -u | xargs -r docker rm -f
 	-docker images -q --filter label=org.mplapack.project=mplapack --filter label=org.mplapack.purpose=mplapack-qa | xargs -r docker rmi -f
+	-@for image in $(LEGACY_QA_IMAGE_TAGS); do docker images -q $$image; done | sort -u | xargs -r docker rmi -f
 
 realclean: clean-all
 	@for d in "$(HOME)"/mplapack_logs* "$(HOME)"/mplapack_build_logs* mplapack_logs* mplapack_build_logs*; do \

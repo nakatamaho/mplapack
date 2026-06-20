@@ -7,14 +7,18 @@ log() {
 }
 
 docker_run() {
+    local labels=(
+        --label org.mplapack.project=mplapack
+        --label org.mplapack.purpose=mplapack-qa
+    )
     if [ -n "${MPLAPACK_DOCKER_PLATFORM:-}" ] && [ -n "${MPLAPACK_DOCKER_RUN_RUNTIME:-}" ]; then
-        docker run --platform "${MPLAPACK_DOCKER_PLATFORM}" --runtime "${MPLAPACK_DOCKER_RUN_RUNTIME}" "$@"
+        docker run --platform "${MPLAPACK_DOCKER_PLATFORM}" --runtime "${MPLAPACK_DOCKER_RUN_RUNTIME}" "${labels[@]}" "$@"
     elif [ -n "${MPLAPACK_DOCKER_PLATFORM:-}" ]; then
-        docker run --platform "${MPLAPACK_DOCKER_PLATFORM}" "$@"
+        docker run --platform "${MPLAPACK_DOCKER_PLATFORM}" "${labels[@]}" "$@"
     elif [ -n "${MPLAPACK_DOCKER_RUN_RUNTIME:-}" ]; then
-        docker run --runtime "${MPLAPACK_DOCKER_RUN_RUNTIME}" "$@"
+        docker run --runtime "${MPLAPACK_DOCKER_RUN_RUNTIME}" "${labels[@]}" "$@"
     else
-        docker run "$@"
+        docker run "${labels[@]}" "$@"
     fi
 }
 
@@ -185,6 +189,8 @@ fi
 docker build \
     --platform "${MPLAPACK_DOCKER_PLATFORM}" \
     --build-arg BASE="${MPLAPACK_DOCKER_BASE}" \
+    --label org.mplapack.project=mplapack \
+    --label org.mplapack.purpose=mplapack-qa \
     -t "${MPLAPACK_IMAGE_TAG}" \
     -f "${CONTEXT_DIR}/${MPLAPACK_DOCKERFILE}" \
     "${CONTEXT_DIR}/${MPLAPACK_DOCKER_CONTEXT}"
