@@ -130,6 +130,31 @@ if [ -f "${lockdir}/pid" ]; then
     fi
 fi
 
+stop_remote_docker_jobs() {
+    if ! command -v docker >/dev/null 2>&1; then
+        return 0
+    fi
+
+    ids="$(docker ps -q --filter label=org.mplapack.project=mplapack --filter label=org.mplapack.purpose=mplapack-qa 2>/dev/null || true)"
+    if [ -n "$ids" ]; then
+        echo "Stopping labeled MPLAPACK Docker containers: $ids" >&2
+        docker stop $ids >/dev/null 2>&1 || true
+    fi
+
+    for image in \
+        mplapack-tier1-ubuntu-amd64:latest \
+        mplapack-tier1-ubuntu-arm64:latest \
+        mplapack-tier1-debian-i386:latest \
+        mplapack-tier1-mingw64-amd64:latest \
+        mplapack-tier1-ubuntu-inteloneapi-amd64:latest; do
+        ids="$(docker ps -q --filter ancestor=$image 2>/dev/null || true)"
+        if [ -n "$ids" ]; then
+            echo "Stopping legacy MPLAPACK Docker containers for $image: $ids" >&2
+            docker stop $ids >/dev/null 2>&1 || true
+        fi
+    done
+}
+
 cleanup_with_docker() {
     parent_dir="$(dirname "$workdir")"
     work_base="$(basename "$workdir")"
@@ -166,6 +191,8 @@ cleanup_with_docker() {
             sh "$work_base" "${work_base}.distcheck-results" "${work_base}.context.tar.gz" "$context_base"
     fi
 }
+
+stop_remote_docker_jobs
 
 chmod -R u+rwX "$workdir" "$results_dir" 2>/dev/null || true
 if ! rm -rf -- "$workdir" "$lockdir" "$results_dir" "$legacy_context_tar" "$context_tar" 2>/dev/null; then
