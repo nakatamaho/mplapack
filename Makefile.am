@@ -157,6 +157,13 @@ examples/mplapack/04_NonsymmetricEigenproblems/Matrix_07.txt \
 examples/mplapack/05_SingularValueDecomposition/Matrix_01.txt \
 examples/mplapack/05_SingularValueDecomposition/Matrix_02.txt \
 examples/mplapack/05_SingularValueDecomposition/Matrix_03.txt \
+examples/mpblas/Makefile.linux.inteloneAPI.in \
+examples/mpblas/generic/Makefile.linux.inteloneAPI.in \
+examples/mplapack/generic/Makefile.linux.inteloneAPI.in \
+examples/mplapack/00_LinearEquations/Makefile.linux.inteloneAPI.in \
+examples/mplapack/03_SymmetricEigenproblems/Makefile.linux.inteloneAPI.in \
+examples/mplapack/04_NonsymmetricEigenproblems/Makefile.linux.inteloneAPI.in \
+examples/mplapack/05_SingularValueDecomposition/Makefile.linux.inteloneAPI.in \
 external/dlfcn-win32/Makefile.in \
 external/dlfcn-win32/Makefile.am \
 external/dlfcn-win32/download/dlfcn-win32-1.4.2.tar.gz \
