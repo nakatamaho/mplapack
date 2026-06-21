@@ -332,6 +332,10 @@ misc/reconfig.ubuntu24.04.intel.sh \
 misc/reconfig.ubuntu24.04.mingw64.sh \
 misc/reconfig.ubuntu24.04.nvidia.sh \
 misc/reconfig.ubuntu24.04.sh \
+misc/reconfig.ubuntu26.04.intel.sh \
+misc/reconfig.ubuntu26.04.mingw64.sh \
+misc/reconfig.ubuntu26.04.nvidia.sh \
+misc/reconfig.ubuntu26.04.sh \
 misc/summarize_mplapack_tests.py \
 mpblas/optimized/dd/cuda/dd_real_cuda.h \
 mpfrc++/copying.lib mpfrc++/copying mpfrc++/makefile.org \
