@@ -48,6 +48,46 @@ log() {
     echo "[$(date +%H:%M:%S)] $*" >&2
 }
 
+lang_c_date() {
+    LANG=C LC_ALL=C date
+}
+
+format_elapsed() {
+    local seconds="$1"
+    printf '%02d:%02d:%02d' "$((seconds / 3600))" "$(((seconds % 3600) / 60))" "$((seconds % 60))"
+}
+
+write_log_start() {
+    local logfile="$1"
+    local label="$2"
+    local epoch="$3"
+    {
+        echo "=== LOG START: ${label} ==="
+        echo "LOG_START_EPOCH=${epoch}"
+        printf 'LOG_START_DATE='
+        lang_c_date
+        echo
+    } >> "$logfile"
+}
+
+write_log_end() {
+    local logfile="$1"
+    local label="$2"
+    local rc="$3"
+    local end_epoch="$4"
+    local elapsed="$5"
+    {
+        echo
+        echo "=== LOG END: ${label} ==="
+        echo "LOG_END_EPOCH=${end_epoch}"
+        printf 'LOG_END_DATE='
+        lang_c_date
+        echo "LOG_ELAPSED_SECONDS=${elapsed}"
+        echo "LOG_ELAPSED_HMS=$(format_elapsed "$elapsed")"
+        echo "=== LOG ELAPSED: ${elapsed}s ($(format_elapsed "$elapsed")) | rc: ${rc} ==="
+    } >> "$logfile"
+}
+
 
 # Image naming (safer than mplapack-*)
 IMAGE_PREFIX="${IMAGE_PREFIX:-mplapack-qa}"   # e.g., mplapack-qa, mplapack-ci
@@ -422,10 +462,12 @@ build_one() {
     local tag="$(make_image_tag "$name" "$arch_short" "$source_type")"
     local logprefix="$LOGDIR/${name}_${arch_short}_${source_type}"
     local logfile="${logprefix}_build.log"
+    local image_logfile="${logprefix}_image.log"
     local stamp
     stamp="$(make_success_stamp "$name" "$arch" "$source_type")"
-    local start=$(date +%s)
+    local start
     local gpu_flag=""
+    start=$(date +%s)
 
     if [[ -L "$stamp" && ! -e "$stamp" ]]; then
         log "Removing broken success link: $stamp"
@@ -512,6 +554,10 @@ fi
     fi
 
     # Build image (environment setup only, no compilation)
+    local image_start image_end image_elapsed
+    image_start="$(date +%s)"
+    : > "$image_logfile"
+    write_log_start "$image_logfile" "docker image ${name} / ${arch_short} (${source_type})" "$image_start"
     if ! docker buildx build \
         --platform "$arch" \
         --build-arg BASE="$base" \
@@ -524,23 +570,39 @@ fi
         -t "$tag" \
         -f "$DOCKER_DIR/$dockerfile" \
         "$DOCKER_DIR" \
-        > "${logprefix}_image.log" 2>&1; then
+        >> "$image_logfile" 2>&1; then
 
+        image_end="$(date +%s)"
+        image_elapsed=$((image_end - image_start))
+        write_log_end "$image_logfile" "docker image ${name} / ${arch_short} (${source_type})" 1 "$image_end" "$image_elapsed"
         local elapsed=$(($(date +%s) - start))
         echo "$name,$arch_short,$base,image,FAILED,$elapsed,$source_type"
         return 1
     fi
+    image_end="$(date +%s)"
+    image_elapsed=$((image_end - image_start))
+    write_log_end "$image_logfile" "docker image ${name} / ${arch_short} (${source_type})" 0 "$image_end" "$image_elapsed"
 
     # Run the ref/tarball build in a single container.
     # /work is tmpfs so a second docker run would lose all build artifacts.
+    local run_start run_end run_elapsed
+    run_start="$(date +%s)"
+    : > "$logfile"
+    write_log_start "$logfile" "docker run ${name} / ${arch_short} (${source_type})" "$run_start"
     if ! docker run "${docker_run_args[@]}" \
-        "$tag" > "$logfile" 2>&1; then
+        "$tag" >> "$logfile" 2>&1; then
 
+        run_end="$(date +%s)"
+        run_elapsed=$((run_end - run_start))
+        write_log_end "$logfile" "docker run ${name} / ${arch_short} (${source_type})" 1 "$run_end" "$run_elapsed"
         local elapsed=$(($(date +%s) - start))
         echo "$name,$arch_short,$base,build,FAILED,$elapsed,$source_type"
         return 1
     fi
 
+    run_end="$(date +%s)"
+    run_elapsed=$((run_end - run_start))
+    write_log_end "$logfile" "docker run ${name} / ${arch_short} (${source_type})" 0 "$run_end" "$run_elapsed"
     local elapsed=$(($(date +%s) - start))
     ln -sfn "$(abspath "$logfile")" "$stamp"
     echo "$name,$arch_short,$base,build,OK,$elapsed,$source_type"
@@ -637,6 +699,8 @@ build_remote_tarball_one() {
     start=$(date +%s)
     log "START remote $name / $arch_short ($source_type) on $host"
     log "Remote tarball log: $logfile"
+    : > "$logfile"
+    write_log_start "$logfile" "remote tarball ${name} / ${arch_short} (${source_type})" "$start"
 
     set +e
     {
@@ -664,11 +728,13 @@ REMOTE_PREP
         "$REMOTE_TARBALL_SSH" "$host" "cat > $(shell_quote "$remote_tarball")" < "$TARBALL"
         "$REMOTE_TARBALL_SSH" "$host" \
             "MPLAPACK_REMOTE_WORKDIR=$(shell_quote "$target_dir") MPLAPACK_DOCKER_BASE=$(shell_quote "$base") MPLAPACK_DOCKERFILE=$(shell_quote "$dockerfile") MPLAPACK_IMAGE_TAG=$(shell_quote "$image_tag") MPLAPACK_TARBALL_NAME=$(shell_quote "$tarball_name") MPLAPACK_CCACHE_DIR=$(shell_quote "$remote_ccache_dir") MPLAPACK_CCACHE_MAXSIZE=$(shell_quote "$remote_ccache_maxsize") MPLAPACK_DOCKER_PLATFORM=$(shell_quote "$arch") $remote_cmd -s" < "$remote_script"
-    } > "$logfile" 2>&1
+    } >> "$logfile" 2>&1
     rc=$?
     set -e
 
-    elapsed=$(($(date +%s) - start))
+    end="$(date +%s)"
+    elapsed=$((end - start))
+    write_log_end "$logfile" "remote tarball ${name} / ${arch_short} (${source_type})" "$rc" "$end" "$elapsed"
     if [[ "$rc" -eq 0 ]]; then
         ln -sfn "$(abspath "$logfile")" "$stamp"
         echo "$name,$arch_short,$base,build,OK,$elapsed,$source_type"

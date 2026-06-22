@@ -5,7 +5,7 @@ export PATH="/opt/local/bin:/opt/local/sbin:${PATH}"
 # ---------------------------------------------------------------------------
 # Logging setup
 # ---------------------------------------------------------------------------
-LOG_DIR="${HOME}/mplapack_build_logs/$(LANG=C date +%Y%m%d_%H%M%S)_$$_tier1_macos_amd64"
+LOG_DIR="${HOME}/mplapack_build_logs/$(LANG=C LC_ALL=C date +%Y%m%d_%H%M%S)_$$_tier1_macos_amd64"
 mkdir -p "${LOG_DIR}"
 
 log() {
@@ -38,7 +38,7 @@ run_step() {
 
     log ""
     log "=== START: ${name} ==="
-    LANG=C date | tee -a "${logfile}" | tee -a "${LOG_DIR}/summary.log"
+    LANG=C LC_ALL=C date | tee -a "${logfile}" | tee -a "${LOG_DIR}/summary.log"
     t_start=$(date +%s)
 
     # Disable errexit inside run_step so rc is always captured before exit
@@ -48,7 +48,7 @@ run_step() {
     set -e
 
     t_end=$(date +%s)
-    LANG=C date | tee -a "${logfile}" | tee -a "${LOG_DIR}/summary.log"
+    LANG=C LC_ALL=C date | tee -a "${logfile}" | tee -a "${LOG_DIR}/summary.log"
     log "=== END: ${name} | elapsed: $((t_end - t_start))s | rc: ${rc} ==="
 
     if [ "${rc}" -ne 0 ]; then

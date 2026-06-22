@@ -141,6 +141,42 @@ collect_remote_test_results() {
     fi
 }
 
+lang_c_date() {
+    LANG=C LC_ALL=C date
+}
+
+format_elapsed() {
+    local seconds="$1"
+    printf '%02d:%02d:%02d' "$((seconds / 3600))" "$(((seconds % 3600) / 60))" "$((seconds % 60))"
+}
+
+write_log_start() {
+    local epoch="$1"
+    {
+        echo "=== LOG START: ${matrix_name} ==="
+        echo "LOG_START_EPOCH=${epoch}"
+        printf 'LOG_START_DATE='
+        lang_c_date
+        echo
+    } >> "$logfile"
+}
+
+write_log_end() {
+    local rc="$1"
+    local end_epoch="$2"
+    local elapsed="$3"
+    {
+        echo
+        echo "=== LOG END: ${matrix_name} ==="
+        echo "LOG_END_EPOCH=${end_epoch}"
+        printf 'LOG_END_DATE='
+        lang_c_date
+        echo "LOG_ELAPSED_SECONDS=${elapsed}"
+        echo "LOG_ELAPSED_HMS=$(format_elapsed "$elapsed")"
+        echo "=== LOG ELAPSED: ${elapsed}s ($(format_elapsed "$elapsed")) | rc: ${rc} ==="
+    } >> "$logfile"
+}
+
 mkdir -p "$(dirname "$resultfile")"
 echo "name,arch,base,stage,result,elapsed,source_type" > "$resultfile"
 if [[ "$MPLAPACK_SOURCE_MODE" == "dist" && -z "${MPLAPACK_SOURCE_TARBALL:-}" ]]; then
@@ -173,7 +209,6 @@ if [[ -n "$existing_stamp" && -e "$existing_stamp" ]]; then
 fi
 
 
-start="$(date +%s)"
 echo "Running $script_rel on $host:$target_dir" >&2
 echo "MPLAPACK_REF: $MPLAPACK_REF" >&2
 echo "MPLAPACK_SOURCE_MODE: $MPLAPACK_SOURCE_MODE" >&2
@@ -213,19 +248,26 @@ fi
 
 remote_pid=""
 cleanup_remote_command() {
+    local rc=130
+    local end_epoch start_epoch
     trap - INT TERM HUP
     if [[ -n "${remote_pid:-}" ]] && kill -0 "$remote_pid" 2>/dev/null; then
         kill "$remote_pid" 2>/dev/null || true
         wait "$remote_pid" 2>/dev/null || true
     fi
-    exit 130
+    end_epoch="$(date +%s)"
+    start_epoch="${start:-$end_epoch}"
+    write_log_end "$rc" "$end_epoch" "$((end_epoch - start_epoch))"
+    exit "$rc"
 }
 trap cleanup_remote_command INT TERM HUP
 
+start="$(date +%s)"
 set +e
+write_log_start "$start"
 (
     "$REMOTE_SSH" "$host" "mkdir -p '$(dirname "$target_dir")' && cat > '$remote_context_tar'" < "$context_tar" &&     "$REMOTE_SSH" "$host" "MPLAPACK_REMOTE_WORKDIR='$target_dir' MPLAPACK_CONTEXT_TARBALL='$remote_context_tar' MPLAPACK_REF='$MPLAPACK_REF' MPLAPACK_SOURCE_MODE='$MPLAPACK_SOURCE_MODE' MPLAPACK_DISTRO_VERSION='$remote_distro_version' MPLAPACK_DOCKER_BASE='$remote_docker_base' $remote_cmd -s" < "$script_path"
-) > "$logfile" 2>&1 &
+) >> "$logfile" 2>&1 &
 remote_pid="$!"
 wait "$remote_pid"
 rc=$?
@@ -233,7 +275,9 @@ remote_pid=""
 trap - INT TERM HUP
 set -e
 
-elapsed=$(($(date +%s) - start))
+end="$(date +%s)"
+elapsed=$((end - start))
+write_log_end "$rc" "$end" "$elapsed"
 if [[ "$rc" -eq 0 ]]; then
     collect_remote_test_results
     compiler_label="$(detect_compiler_label_from_results "$COLLECTED_RESULTS_STAGE")"
