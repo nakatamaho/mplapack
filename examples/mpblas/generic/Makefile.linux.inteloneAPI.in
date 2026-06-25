@@ -3,10 +3,10 @@
 
 CXX=icpx
 MPLAPACKDIR=%%MPLAPACKDIR%%
-CXXFLAGS= -I$(MPLAPACKDIR)/include -I$(MPLAPACKDIR)/include/mplapack -I$(MPLAPACKDIR)/include/qd
+CXXFLAGS= -I$(MPLAPACKDIR)/include -I$(MPLAPACKDIR)/include/mplapack -I$(MPLAPACKDIR)/include/qd %%QUADMATH_CPPFLAGS%%
 OPTFLAGS= -O2 -qopenmp
 OPENMP_EXAMPLE_OPENMP_LIBS = -qopenmp
-LIBFLAGS=-L$(MPLAPACKDIR)/lib -Wl,--rpath=$(MPLAPACKDIR)/lib
+LIBFLAGS=-L$(MPLAPACKDIR)/lib %%QUADMATH_LDFLAGS%% -Wl,--rpath=$(MPLAPACKDIR)/lib
 MPFRLIBS=-lmpblas_mpfr -lmpfr -lmpc -lgmp
 GMPLIBS=-lmpblas_gmp -lgmpxx -lgmp 
 QDLIBS=-lmpblas_qd -lqd

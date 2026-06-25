@@ -246,11 +246,15 @@ endif
 if MPLAPACK_BINARY128_MODE_QUADMATH
 MPLAPACK_SED_SUBST = \
         -e 's|%%MPLAPACKDIR%%|$(prefix)|g' \
-        -e 's|%%LIBQUADMATH%%| -lquadmath|g'
+        -e 's|%%LIBQUADMATH%%| -lquadmath|g' \
+        -e 's|%%QUADMATH_CPPFLAGS%%|$(QUADMATH_CPPFLAGS)|g' \
+        -e 's|%%QUADMATH_LDFLAGS%%|$(QUADMATH_LDFLAGS)|g'
 else
 MPLAPACK_SED_SUBST = \
         -e 's|%%MPLAPACKDIR%%|$(prefix)|g' \
-        -e 's|%%LIBQUADMATH%%||g'
+        -e 's|%%LIBQUADMATH%%||g' \
+        -e 's|%%QUADMATH_CPPFLAGS%%||g' \
+        -e 's|%%QUADMATH_LDFLAGS%%||g'
 endif
 
 DISABLED_EXAMPLE_SUFFIXES =
