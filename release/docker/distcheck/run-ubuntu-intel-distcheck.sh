@@ -68,7 +68,7 @@ ARCH=$(dpkg --print-architecture)
 echo "Detected architecture: $ARCH"
 COMMON_OPTS="--enable-gmp=yes --enable-mpfr=yes --enable-binary128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes"
 if [ "$ARCH" = "amd64" ] || [ "$ARCH" = "i386" ]; then
-    CONFIGURE_OPTS="$COMMON_OPTS --enable-benchmark=yes --enable-binary80=yes --with-openblas=system"
+    CONFIGURE_OPTS="$COMMON_OPTS --enable-benchmark=yes --enable-binary80=yes --with-openblas=-qmkl"
 else
     CONFIGURE_OPTS="$COMMON_OPTS"
 fi
@@ -81,7 +81,7 @@ rm -rf "$MPLAPACK_TEST_RESULTS_STAGING"
 mkdir -p "$MPLAPACK_TEST_RESULTS_STAGING"
 echo "MPLAPACK_TEST_RESULTS_STAGING=$MPLAPACK_TEST_RESULTS_STAGING"
 
-OPENBLAS_CONFIGURE_OPT=--with-openblas=system bash misc/reconfig.ubuntu24.04.intel.sh
+OPENBLAS_CONFIGURE_OPT=--with-openblas=-qmkl bash misc/reconfig.ubuntu24.04.intel.sh
 make -j"${MAKE_JOBS}"
 make install
 INSTALL_PREFIX="$(sed -n 's/^prefix = //p' Makefile | head -n 1)"

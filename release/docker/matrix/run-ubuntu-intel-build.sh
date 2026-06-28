@@ -46,7 +46,7 @@ bash gen.Makefile.am.sh
 cd /work/mplapack
 autoreconf --force --install
 
-OPENBLAS_CONFIGURE_OPT=--with-openblas=system bash misc/reconfig.ubuntu24.04.intel.sh
+OPENBLAS_CONFIGURE_OPT=--with-openblas=-qmkl bash misc/reconfig.ubuntu24.04.intel.sh
 make -j"${MAKE_JOBS}"
 make install
 
