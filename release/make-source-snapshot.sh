@@ -90,7 +90,7 @@ git_value() {
     git -C "$PROJECT_ROOT" "$@" 2>/dev/null || printf '%s\n' "$fallback"
 }
 
-reuse_existing_snapshot
+reuse_existing_snapshot || true
 
 base_ref="$(git_value unknown rev-parse HEAD)"
 base_ref_short="$(git_value unknown rev-parse --short=12 HEAD)"
