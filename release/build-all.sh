@@ -13,6 +13,8 @@ LOGDIR="${LOGDIR:-$SCRIPT_DIR/logs/$(date +%Y%m%d_%H%M%S)}"
 SUCCESS_DIR="${SUCCESS_DIR:-$SCRIPT_DIR/success}"
 DOCKER_DIR="$SCRIPT_DIR/docker"
 TARBALL="${TARBALL:-}"
+TARBALL_LABEL="${TARBALL_LABEL:-}"
+TARBALL_SHA256="${TARBALL_SHA256:-}"
 PHASE="${PHASE:-all}"
 FILTER_NAME="${FILTER_NAME:-}"
 FILTER_ARCH="${FILTER_ARCH:-}"
@@ -145,6 +147,8 @@ make_success_stamp() {
         ref="$(sanitize_token "$ref")"
         sha="$(sanitize_token "$sha")"
         ref_part="_${ref}_${sha}"
+    elif [[ "$source_type_raw" == "tarball" || "$source_type_raw" == "remote-tarball-docker" ]] && [[ -n "${TARBALL_LABEL:-}" ]]; then
+        ref_part="_sha256-${TARBALL_LABEL}"
     else
         ref_part=""
     fi
@@ -229,6 +233,8 @@ report_tarball() {
 
     read -r sha _ < "$sha_file"
     read -r md5 _ < "$md5_file"
+    TARBALL_SHA256="$sha"
+    TARBALL_LABEL="${sha:0:12}"
 
     log "Tarball: $tarball_abs"
     log "SHA256: $sha"
@@ -460,7 +466,11 @@ build_one() {
 
     local arch_short=${arch##*/}
     local tag="$(make_image_tag "$name" "$arch_short" "$source_type")"
-    local logprefix="$LOGDIR/${name}_${arch_short}_${source_type}"
+    local source_label_part=""
+    if [[ "$source_type" == "tarball" && -n "${TARBALL_LABEL:-}" ]]; then
+        source_label_part="_sha256-${TARBALL_LABEL}"
+    fi
+    local logprefix="$LOGDIR/${name}_${arch_short}_${source_type}${source_label_part}"
     local logfile="${logprefix}_build.log"
     local image_logfile="${logprefix}_image.log"
     local stamp
@@ -657,7 +667,11 @@ build_remote_tarball_one() {
     local remote_ccache_maxsize="${REMOTE_TARBALL_CCACHE_MAXSIZE:-${matrix_ccache_maxsize:-$(remote_tarball_default_ccache_maxsize "$target_dir")}}"
 
     local arch_short=${arch##*/}
-    local logprefix="$LOGDIR/${name}_${arch_short}_${source_type}"
+    local source_label_part=""
+    if [[ -n "${TARBALL_LABEL:-}" ]]; then
+        source_label_part="_sha256-${TARBALL_LABEL}"
+    fi
+    local logprefix="$LOGDIR/${name}_${arch_short}_${source_type}${source_label_part}"
     local logfile="${logprefix}_build.log"
     local stamp
     stamp="$(make_success_stamp "$name" "$arch" "$source_type")"

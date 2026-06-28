@@ -49,6 +49,7 @@ fi
 stamp_prefix="$SUCCESS_DIR/${tier}-${os_label}-${arch}-"
 stamp_suffix="-macos.ok"
 logfile="$LOGDIR/${tier}-${os_label}-${arch}-macos.log"
+source_log_part=""
 resultfile="$LOGDIR/results_${tier}-${os_label}-${arch}.csv"
 stamp=""
 COLLECTED_RESULTS_STAGE=""
@@ -162,7 +163,7 @@ write_log_end() {
 
 echo "name,arch,base,stage,result,elapsed,source_type" > "$resultfile"
 if [[ "$MPLAPACK_SOURCE_MODE" == "dist" && -z "${MPLAPACK_SOURCE_TARBALL:-}" ]]; then
-    source_info_file="$LOGDIR/${tier}-${arch}_source.env"
+    source_info_file="$LOGDIR/source/source.env"
     PROJECT_ROOT="$PROJECT_ROOT" LOGDIR="$LOGDIR" MPLAPACK_SOURCE_INFO_FILE="$source_info_file" \
         "$SCRIPT_DIR/make-source-snapshot.sh"
     # shellcheck disable=SC1090
@@ -173,7 +174,9 @@ elif [[ "$MPLAPACK_SOURCE_MODE" != "dist" && "$MPLAPACK_SOURCE_MODE" != "ref" ]]
 fi
 
 if [[ "$MPLAPACK_SOURCE_MODE" == "dist" ]]; then
-    stamp_suffix="-${MPLAPACK_SOURCE_LABEL:-dist}-macos.ok"
+    source_log_part="-${MPLAPACK_SOURCE_LABEL:-dist}"
+    stamp_suffix="${source_log_part}-macos.ok"
+    logfile="$LOGDIR/${tier}-${os_label}-${arch}${source_log_part}-macos.log"
 fi
 
 cleanup_stale_success_links
@@ -194,9 +197,13 @@ fi
 echo "Running $script_rel on $host:$target_dir" >&2
 echo "MPLAPACK_REF: $MPLAPACK_REF" >&2
 echo "MPLAPACK_SOURCE_MODE: $MPLAPACK_SOURCE_MODE" >&2
+if [[ "$MPLAPACK_SOURCE_MODE" == "dist" ]]; then
+    echo "MPLAPACK_SOURCE_TARBALL: ${MPLAPACK_SOURCE_TARBALL:-<unset>}" >&2
+    echo "MPLAPACK_SOURCE_LABEL: ${MPLAPACK_SOURCE_LABEL:-<unset>}" >&2
+fi
 echo "Log: $logfile" >&2
 
-context_name="${tier}-${os_label}-${arch}"
+context_name="${tier}-${os_label}-${arch}${source_log_part}"
 remote_context_tar="$(dirname "$target_dir")/${context_name}.context.tar.gz"
 context_tar="$LOGDIR/${context_name}_context.tar.gz"
 if [[ "$MPLAPACK_SOURCE_MODE" == "dist" ]]; then
@@ -237,7 +244,7 @@ if [[ "$rc" -eq 0 ]]; then
         echo "$matrix_name,$arch,${remote_docker_base:-${host:-}},test,FAILED,$elapsed,$source_type" | tee -a "$resultfile"
         exit 1
     fi
-    final_logfile="$LOGDIR/${tier}-${os_label}-${arch}-${compiler_label}-macos.log"
+    final_logfile="$LOGDIR/${tier}-${os_label}-${arch}-${compiler_label}${source_log_part}-macos.log"
     if [[ "$final_logfile" != "$logfile" ]]; then
         mv "$logfile" "$final_logfile"
         logfile="$final_logfile"

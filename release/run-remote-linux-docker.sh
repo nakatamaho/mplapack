@@ -66,6 +66,7 @@ name_prefix="${tier}-${os_label}${flavor:+-${flavor}}-${arch}"
 stamp_prefix="$SUCCESS_DIR/${name_prefix}-"
 stamp_suffix="-linux-docker.ok"
 logfile="$LOGDIR/${name_prefix}-linux-docker.log"
+source_log_part=""
 resultfile="$LOGDIR/results_${name_prefix}.csv"
 stamp=""
 COLLECTED_RESULTS_STAGE=""
@@ -180,7 +181,7 @@ write_log_end() {
 mkdir -p "$(dirname "$resultfile")"
 echo "name,arch,base,stage,result,elapsed,source_type" > "$resultfile"
 if [[ "$MPLAPACK_SOURCE_MODE" == "dist" && -z "${MPLAPACK_SOURCE_TARBALL:-}" ]]; then
-    source_info_file="$LOGDIR/${name_prefix}_source.env"
+    source_info_file="$LOGDIR/source/source.env"
     PROJECT_ROOT="$PROJECT_ROOT" LOGDIR="$LOGDIR" MPLAPACK_SOURCE_INFO_FILE="$source_info_file" \
         "$SCRIPT_DIR/make-source-snapshot.sh"
     # shellcheck disable=SC1090
@@ -191,7 +192,9 @@ elif [[ "$MPLAPACK_SOURCE_MODE" != "dist" && "$MPLAPACK_SOURCE_MODE" != "ref" ]]
 fi
 
 if [[ "$MPLAPACK_SOURCE_MODE" == "dist" ]]; then
-    stamp_suffix="-${MPLAPACK_SOURCE_LABEL:-dist}-linux-docker.ok"
+    source_log_part="-${MPLAPACK_SOURCE_LABEL:-dist}"
+    stamp_suffix="${source_log_part}-linux-docker.ok"
+    logfile="$LOGDIR/${name_prefix}${source_log_part}-linux-docker.log"
 fi
 
 cleanup_stale_success_links
@@ -220,7 +223,7 @@ echo "MPLAPACK_DISTRO_VERSION: ${remote_distro_version:-<default>}" >&2
 echo "MPLAPACK_DOCKER_BASE: ${remote_docker_base:-<default>}" >&2
 echo "Log: $logfile" >&2
 
-context_name="${name_prefix}"
+context_name="${name_prefix}${source_log_part}"
 context_tar="$LOGDIR/${context_name}_context.tar.gz"
 source_bundle="$LOGDIR/${context_name}_source.bundle"
 remote_context_tar="$(dirname "$target_dir")/${context_name}.context.tar.gz"
@@ -287,7 +290,7 @@ if [[ "$rc" -eq 0 ]]; then
         echo "$matrix_name,$arch,${remote_docker_base:-${host:-}},test,FAILED,$elapsed,$source_type" | tee -a "$resultfile"
         exit 1
     fi
-    final_logfile="$LOGDIR/${name_prefix}-${compiler_label}-linux-docker.log"
+    final_logfile="$LOGDIR/${name_prefix}-${compiler_label}${source_log_part}-linux-docker.log"
     if [[ "$final_logfile" != "$logfile" ]]; then
         mv "$logfile" "$final_logfile"
         logfile="$final_logfile"
