@@ -1,0 +1,32 @@
+@PACKAGE_INIT@
+
+# mplapackConfig.cmake — package config for find_package(mplapack).
+#
+# Exposes the namespaced targets mplapack::mpblas_<backend> and
+# mplapack::mplapack_<backend> for every backend that was built and installed.
+
+include(CMakeFindDependencyMacro)
+
+# Allow our bundled Find modules (installed alongside this file) to be used by
+# find_dependency below.
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}")
+
+set(MPLAPACK_ENABLED_BACKENDS "@MPLAPACK_ENABLED_BACKENDS@")
+
+if(@MPLAPACK_NEEDS_GMP@)
+  find_dependency(GMP)
+endif()
+if(@MPLAPACK_NEEDS_MPFR@)
+  find_dependency(MPFR)
+  find_dependency(MPC)
+endif()
+if(@MPLAPACK_NEEDS_QD@)
+  find_dependency(QD)
+endif()
+if(@MPLAPACK_NEEDS_OPENMP@)
+  find_dependency(OpenMP COMPONENTS CXX)
+endif()
+
+include("${CMAKE_CURRENT_LIST_DIR}/mplapackTargets.cmake")
+
+check_required_components(mplapack)
