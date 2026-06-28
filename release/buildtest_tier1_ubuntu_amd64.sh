@@ -33,6 +33,19 @@ log_ccache_stats() {
     log "=== END CCACHE STATS (${label}) ==="
 }
 
+
+log_ccache_start() {
+    log_ccache_stats "START"
+    CCACHE_STATS_STARTED=1
+}
+
+log_ccache_end_once() {
+    if [ "${CCACHE_STATS_STARTED:-0}" -eq 1 ] && [ "${CCACHE_STATS_ENDED:-0}" -eq 0 ]; then
+        log_ccache_stats "END"
+        CCACHE_STATS_ENDED=1
+    fi
+}
+
 safe_rmdir() {
     local target="$1"
     if [ -z "${HOME:-}" ] || [ "${HOME}" = "/" ]; then
@@ -82,6 +95,8 @@ LOCKDIR="${WORKDIR}.lock"
 CONTEXT_DIR="${WORKDIR}/context"
 RESULTS_DIR="${MPLAPACK_RESULTS_DIR}"
 CCACHE_DIR_HOST="${MPLAPACK_CCACHE_DIR}"
+CCACHE_STATS_STARTED=0
+CCACHE_STATS_ENDED=0
 
 case "${WORKDIR}" in
     "${HOME}/"*) ;;
@@ -119,6 +134,7 @@ else
 fi
 
 cleanup() {
+    log_ccache_end_once
     rm -rf "${LOCKDIR}"
 }
 trap cleanup EXIT INT TERM HUP
@@ -186,7 +202,7 @@ docker_run --rm \
     "${MPLAPACK_IMAGE_TAG}" \
     ccache -M "${MPLAPACK_CCACHE_MAXSIZE}"
 
-log_ccache_stats "START"
+log_ccache_start
 
 if [ -n "${SOURCE_TARBALL}" ]; then
     docker_run --rm \
@@ -224,6 +240,6 @@ else
         "${MPLAPACK_IMAGE_TAG}"
 fi
 
-log_ccache_stats "END"
+log_ccache_end_once
 
 log "=== ALL STEPS COMPLETED SUCCESSFULLY ==="

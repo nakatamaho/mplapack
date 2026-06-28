@@ -1,2 +1,4 @@
 logs/
 docker/mplapack-*.tar.gz
+success/
+failed/

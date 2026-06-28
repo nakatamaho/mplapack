@@ -8,11 +8,12 @@ LOGDIR ?= $(SCRIPT_DIR)/logs/$(shell date +%Y%m%d_%H%M%S)
 HOST_WORK_DIR ?= /work/mplapack-work
 HOST_CCACHE_DIR ?= /work/ccache
 SUCCESS_DIR ?= $(SCRIPT_DIR)/success
+FAILED_DIR ?= $(SCRIPT_DIR)/failed
 MACOS_REMOTE_SSH ?= ssh
 REMOTE_LINUX_SSH ?= ssh
 REMOTE_TARBALL_SSH ?= ssh
 
-export CONF_FILE LOGDIR PROJECT_ROOT HOST_WORK_DIR HOST_CCACHE_DIR SUCCESS_DIR REMOTE_TARBALL_SSH MPLAPACK_REF
+export CONF_FILE LOGDIR PROJECT_ROOT HOST_WORK_DIR HOST_CCACHE_DIR SUCCESS_DIR FAILED_DIR REMOTE_TARBALL_SSH MPLAPACK_REF
 export MPLAPACK_SOURCE_MODE MPLAPACK_SOURCE_TARBALL MPLAPACK_SOURCE_METADATA MPLAPACK_SOURCE_PATCH MPLAPACK_SOURCE_STATUS MPLAPACK_SOURCE_LABEL MPLAPACK_SOURCE_TARBALL_SHA256 MPLAPACK_SOURCE_SNAPSHOT_REUSE
 
 TIER1_TARGETS := tier1-macos-arm64 tier1-macos-amd64 tier1-ubuntu2404-arm64 tier1-ubuntu2604-arm64 tier1-ubuntu2404-amd64 tier1-ubuntu2604-amd64 tier1-ubuntu2404-mingw64-amd64 tier1-ubuntu2604-mingw64-amd64 tier1-ubuntu2404-inteloneapi-amd64 tier1-ubuntu2604-inteloneapi-amd64 tier1-debian12-i386 tier1-debian13-i386
@@ -25,9 +26,9 @@ LEGACY_QA_IMAGE_TAGS := \
     mplapack-tier1-debian-i386:latest \
     mplapack-tier1-mingw64-amd64:latest \
     mplapack-tier1-ubuntu-inteloneapi-amd64:latest
-RUN_REMOTE_TARGETS = CONF_FILE=$(CONF_FILE) LOGDIR=$(LOGDIR) PROJECT_ROOT=$(PROJECT_ROOT) SUCCESS_DIR=$(SUCCESS_DIR) MACOS_REMOTE_SSH=$(MACOS_REMOTE_SSH) REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-targets-by-host.sh
+RUN_REMOTE_TARGETS = CONF_FILE=$(CONF_FILE) LOGDIR=$(LOGDIR) PROJECT_ROOT=$(PROJECT_ROOT) SUCCESS_DIR=$(SUCCESS_DIR) FAILED_DIR=$(FAILED_DIR) MACOS_REMOTE_SSH=$(MACOS_REMOTE_SSH) REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-targets-by-host.sh
 
-.PHONY: all ref tarball dist clean clean-remote clean-all realclean clean-success list help
+.PHONY: all ref tarball dist clean clean-remote clean-all realclean clean-success clean-failed list help
 .PHONY: intel mingw cuda ubuntu debian fedora rocky suse alpine
 .PHONY: amd64 arm64 ppc64le i386 s390x mips64le
 .PHONY: ref-ubuntu ref-debian ref-amd64 ref-cuda ref-rocky ref-suse
@@ -202,10 +203,10 @@ list:
 		awk -F'|' '{src=($$6 ~ /^remote-/ ? $$6 : $$5); printf "%-38s %-45s %-72s %s\n", $$1, $$2, $$3, src}'
 
 clean: clean-remote
-	@mkdir -p logs/ $(SUCCESS_DIR)
+	@mkdir -p logs/ $(SUCCESS_DIR) $(FAILED_DIR)
 	@tmp="$$(mktemp)"; \
 	trap 'rm -f "$$tmp"' EXIT; \
-	find "$(SUCCESS_DIR)" -maxdepth 1 -type l -name '*.ok' | while IFS= read -r link; do \
+	{ find "$(SUCCESS_DIR)" -maxdepth 1 -type l -name '*.ok'; find "$(FAILED_DIR)" -maxdepth 1 -type l -name '*.failed'; } | while IFS= read -r link; do \
 		target="$$(readlink -f "$$link" 2>/dev/null || true)"; \
 		if [ -n "$$target" ] && [ -e "$$target" ]; then \
 			dir="$$(dirname "$$target")"; \
@@ -215,7 +216,7 @@ clean: clean-remote
 		fi; \
 	done | sort -u > "$$tmp"; \
 	if [ -s "$$tmp" ]; then \
-		echo "Preserving successful log directories:"; \
+		echo "Preserving linked success/failed log directories:"; \
 		sed 's#^#  #g' "$$tmp"; \
 		find logs -mindepth 1 -maxdepth 1 -type d | while IFS= read -r d; do \
 			rd="$$(readlink -f "$$d" 2>/dev/null || true)"; \
@@ -227,7 +228,7 @@ clean: clean-remote
 			fi; \
 		done; \
 	else \
-		echo "No protected success logs; removing logs/"; \
+		echo "No protected success/failed logs; removing logs/"; \
 		rm -rf logs/; \
 		mkdir -p logs/; \
 	fi
@@ -249,9 +250,13 @@ clean-success:
 	@rm -rf $(SUCCESS_DIR)
 	@mkdir -p $(SUCCESS_DIR)
 
+clean-failed:
+	@rm -rf $(FAILED_DIR)
+	@mkdir -p $(FAILED_DIR)
+
 clean-all:
-	@rm -rf logs/ $(SUCCESS_DIR)
-	@mkdir -p logs/ $(SUCCESS_DIR)
+	@rm -rf logs/ $(SUCCESS_DIR) $(FAILED_DIR)
+	@mkdir -p logs/ $(SUCCESS_DIR) $(FAILED_DIR)
 	@# Stop and remove any running containers using our labeled images first.
 	@# The image-name fallback catches legacy containers created before labels were added.
 	@# "docker rmi -f" cannot remove images used by *running* containers even with -f.
@@ -334,6 +339,7 @@ help:
 	@echo "  make list        - show build matrix"
 	@echo "  make clean       - remove unprotected logs and images"
 	@echo "  make clean-success - remove success stamps only"
+	@echo "  make clean-failed  - remove failed log links only"
 	@echo "  make clean-all   - remove all logs, success stamps, and images"
 	@echo "  make realclean   - clean-all plus mplapack_logs*/mplapack_build_logs*"
 	@echo ""

@@ -6,13 +6,14 @@ PROJECT_ROOT="${PROJECT_ROOT:-$(cd "$SCRIPT_DIR/.." && pwd)}"
 CONF_FILE="${CONF_FILE:-$SCRIPT_DIR/build-matrix.conf}"
 LOGDIR="${LOGDIR:-$SCRIPT_DIR/logs/$(date +%Y%m%d_%H%M%S)}"
 SUCCESS_DIR="${SUCCESS_DIR:-$SCRIPT_DIR/success}"
+FAILED_DIR="${FAILED_DIR:-$SCRIPT_DIR/failed}"
 MACOS_REMOTE_SSH="${MACOS_REMOTE_SSH:-ssh}"
 MPLAPACK_REF="${MPLAPACK_REF:-$(git -C "$PROJECT_ROOT" rev-parse HEAD)}"
 MPLAPACK_SOURCE_MODE="${MPLAPACK_SOURCE_MODE:-dist}"
 
 name="${1:?Usage: run-remote-macos.sh <matrix-name>}"
 
-mkdir -p "$LOGDIR" "$SUCCESS_DIR"
+mkdir -p "$LOGDIR" "$SUCCESS_DIR" "$FAILED_DIR"
 
 row="$(awk -F'|' -v target="$name" '$1 == target { print; exit }' "$CONF_FILE")"
 if [[ -z "$row" ]]; then
@@ -56,6 +57,22 @@ COLLECTED_RESULTS_STAGE=""
 
 cleanup_stale_success_links() {
     find "$SUCCESS_DIR" -maxdepth 1 -xtype l -name '*.ok' -exec rm -f {} +
+    find "$FAILED_DIR" -maxdepth 1 -xtype l -name '*.failed' -exec rm -f {} +
+}
+
+failed_stamp_path() {
+    local label="${1:-failed}"
+    printf '%s/%s-%s-%s-%s%s-macos.failed\n' "$FAILED_DIR" "$tier" "$os_label" "$arch" "$label" "$source_log_part"
+}
+
+link_failed_log() {
+    local label="${1:-failed}"
+    mkdir -p "$FAILED_DIR"
+    ln -sfn "$logfile" "$(failed_stamp_path "$label")"
+}
+
+clear_failed_logs() {
+    find "$FAILED_DIR" -maxdepth 1 -type l -name "${tier}-${os_label}-${arch}-*${source_log_part}-macos.failed" -exec rm -f {} +
 }
 
 detect_compiler_label_from_results() {
@@ -134,6 +151,42 @@ format_elapsed() {
     printf '%02d:%02d:%02d' "$((seconds / 3600))" "$(((seconds % 3600) / 60))" "$((seconds % 60))"
 }
 
+
+append_final_ccache_stats() {
+    local src_logfile="$1"
+    local tmp
+
+    [[ -f "$src_logfile" ]] || return 0
+    tmp="$(mktemp "${src_logfile}.ccache-summary.XXXXXX")" || return 0
+    awk '
+        /=== CCACHE STATS \(START\) ===/ { in_start=1; start=$0 ORS; next }
+        in_start {
+            start=start $0 ORS
+            if ($0 ~ /=== END CCACHE STATS \(START\) ===/) in_start=0
+            next
+        }
+        /=== CCACHE STATS \(END\) ===/ { in_end=1; end=$0 ORS; next }
+        in_end {
+            end=end $0 ORS
+            if ($0 ~ /=== END CCACHE STATS \(END\) ===/) in_end=0
+            next
+        }
+        END {
+            if (start != "" || end != "") {
+                print ""
+                print "=== FINAL CCACHE STATS SUMMARY ==="
+                if (start != "") printf "%s", start
+                if (end != "") printf "%s", end
+                print "=== END FINAL CCACHE STATS SUMMARY ==="
+            }
+        }
+    ' "$src_logfile" > "$tmp"
+    if [[ -s "$tmp" ]]; then
+        cat "$tmp" >> "$src_logfile"
+    fi
+    rm -f "$tmp"
+}
+
 write_log_start() {
     local epoch="$1"
     {
@@ -159,6 +212,7 @@ write_log_end() {
         echo "LOG_ELAPSED_HMS=$(format_elapsed "$elapsed")"
         echo "=== LOG ELAPSED: ${elapsed}s ($(format_elapsed "$elapsed")) | rc: ${rc} ==="
     } >> "$logfile"
+    append_final_ccache_stats "$logfile"
 }
 
 echo "name,arch,base,stage,result,elapsed,source_type" > "$resultfile"
@@ -203,6 +257,17 @@ if [[ "$MPLAPACK_SOURCE_MODE" == "dist" ]]; then
 fi
 echo "Log: $logfile" >&2
 
+cleanup_remote_command() {
+    local rc=130
+    local end_epoch start_epoch
+    trap - INT TERM HUP
+    end_epoch="$(date +%s)"
+    start_epoch="${start:-$end_epoch}"
+    write_log_end "$rc" "$end_epoch" "$((end_epoch - start_epoch))"
+    link_failed_log "interrupted"
+    exit "$rc"
+}
+
 context_name="${tier}-${os_label}-${arch}${source_log_part}"
 remote_context_tar="$(dirname "$target_dir")/${context_name}.context.tar.gz"
 context_tar="$LOGDIR/${context_name}_context.tar.gz"
@@ -223,6 +288,7 @@ fi
 start="$(date +%s)"
 set +e
 write_log_start "$start"
+trap cleanup_remote_command INT TERM HUP
 if [[ "$MPLAPACK_SOURCE_MODE" == "dist" ]]; then
     "$MACOS_REMOTE_SSH" "$host" "mkdir -p '$(dirname "$target_dir")' && cat > '$remote_context_tar'" < "$context_tar" && \
         "$MACOS_REMOTE_SSH" "$host" "MPLAPACK_REMOTE_WORKDIR='$target_dir' MPLAPACK_CONTEXT_TARBALL='$remote_context_tar' MPLAPACK_REF='$MPLAPACK_REF' MPLAPACK_SOURCE_MODE='$MPLAPACK_SOURCE_MODE' $remote_cmd -s" < "$script_path" >> "$logfile" 2>&1
@@ -231,6 +297,7 @@ else
     "$MACOS_REMOTE_SSH" "$host" "MPLAPACK_REMOTE_WORKDIR='$target_dir' MPLAPACK_REF='$MPLAPACK_REF' MPLAPACK_SOURCE_MODE='$MPLAPACK_SOURCE_MODE' $remote_cmd -s" < "$script_path" >> "$logfile" 2>&1
     rc=$?
 fi
+trap - INT TERM HUP
 set -e
 
 end="$(date +%s)"
@@ -241,6 +308,7 @@ if [[ "$rc" -eq 0 ]]; then
     compiler_label="$(detect_compiler_label_from_results "$COLLECTED_RESULTS_STAGE")"
     if [[ "$compiler_label" == "compiler_unknown" ]]; then
         echo "ERROR: compiler label could not be determined from collected results; refusing to create success stamp." >&2
+        link_failed_log "compiler_unknown"
         echo "$matrix_name,$arch,${remote_docker_base:-${host:-}},test,FAILED,$elapsed,$source_type" | tee -a "$resultfile"
         exit 1
     fi
@@ -250,9 +318,11 @@ if [[ "$rc" -eq 0 ]]; then
         logfile="$final_logfile"
     fi
     stamp="${stamp_prefix}${compiler_label}${stamp_suffix}"
+    clear_failed_logs
     ln -sfn "$logfile" "$stamp"
     echo "$matrix_name,$arch,$host,test,OK,$elapsed,$source_type" | tee -a "$resultfile"
 else
+    link_failed_log "failed"
     echo "$matrix_name,$arch,$host,test,FAILED,$elapsed,$source_type" | tee -a "$resultfile"
     exit "$rc"
 fi

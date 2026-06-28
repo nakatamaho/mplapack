@@ -6,13 +6,14 @@ PROJECT_ROOT="${PROJECT_ROOT:-$(cd "$SCRIPT_DIR/.." && pwd)}"
 CONF_FILE="${CONF_FILE:-$SCRIPT_DIR/build-matrix.conf}"
 LOGDIR="${LOGDIR:-$SCRIPT_DIR/logs/$(date +%Y%m%d_%H%M%S)}"
 SUCCESS_DIR="${SUCCESS_DIR:-$SCRIPT_DIR/success}"
+FAILED_DIR="${FAILED_DIR:-$SCRIPT_DIR/failed}"
 REMOTE_SSH="${REMOTE_LINUX_SSH:-ssh}"
 MPLAPACK_REF="${MPLAPACK_REF:-$(git -C "$PROJECT_ROOT" rev-parse HEAD)}"
 MPLAPACK_SOURCE_MODE="${MPLAPACK_SOURCE_MODE:-dist}"
 
 name="${1:?Usage: run-remote-linux-docker.sh <matrix-name>}"
 
-mkdir -p "$LOGDIR" "$SUCCESS_DIR"
+mkdir -p "$LOGDIR" "$SUCCESS_DIR" "$FAILED_DIR"
 
 row="$(awk -F'|' -v target="$name" '$1 == target { print; exit }' "$CONF_FILE")"
 if [[ -z "$row" ]]; then
@@ -73,6 +74,22 @@ COLLECTED_RESULTS_STAGE=""
 
 cleanup_stale_success_links() {
     find "$SUCCESS_DIR" -maxdepth 1 -xtype l -name '*.ok' -exec rm -f {} +
+    find "$FAILED_DIR" -maxdepth 1 -xtype l -name '*.failed' -exec rm -f {} +
+}
+
+failed_stamp_path() {
+    local label="${1:-failed}"
+    printf '%s/%s-%s%s-linux-docker.failed\n' "$FAILED_DIR" "$name_prefix" "$label" "$source_log_part"
+}
+
+link_failed_log() {
+    local label="${1:-failed}"
+    mkdir -p "$FAILED_DIR"
+    ln -sfn "$logfile" "$(failed_stamp_path "$label")"
+}
+
+clear_failed_logs() {
+    find "$FAILED_DIR" -maxdepth 1 -type l -name "${name_prefix}-*${source_log_part}-linux-docker.failed" -exec rm -f {} +
 }
 
 detect_compiler_label_from_results() {
@@ -151,6 +168,42 @@ format_elapsed() {
     printf '%02d:%02d:%02d' "$((seconds / 3600))" "$(((seconds % 3600) / 60))" "$((seconds % 60))"
 }
 
+
+append_final_ccache_stats() {
+    local src_logfile="$1"
+    local tmp
+
+    [[ -f "$src_logfile" ]] || return 0
+    tmp="$(mktemp "${src_logfile}.ccache-summary.XXXXXX")" || return 0
+    awk '
+        /=== CCACHE STATS \(START\) ===/ { in_start=1; start=$0 ORS; next }
+        in_start {
+            start=start $0 ORS
+            if ($0 ~ /=== END CCACHE STATS \(START\) ===/) in_start=0
+            next
+        }
+        /=== CCACHE STATS \(END\) ===/ { in_end=1; end=$0 ORS; next }
+        in_end {
+            end=end $0 ORS
+            if ($0 ~ /=== END CCACHE STATS \(END\) ===/) in_end=0
+            next
+        }
+        END {
+            if (start != "" || end != "") {
+                print ""
+                print "=== FINAL CCACHE STATS SUMMARY ==="
+                if (start != "") printf "%s", start
+                if (end != "") printf "%s", end
+                print "=== END FINAL CCACHE STATS SUMMARY ==="
+            }
+        }
+    ' "$src_logfile" > "$tmp"
+    if [[ -s "$tmp" ]]; then
+        cat "$tmp" >> "$src_logfile"
+    fi
+    rm -f "$tmp"
+}
+
 write_log_start() {
     local epoch="$1"
     {
@@ -176,6 +229,7 @@ write_log_end() {
         echo "LOG_ELAPSED_HMS=$(format_elapsed "$elapsed")"
         echo "=== LOG ELAPSED: ${elapsed}s ($(format_elapsed "$elapsed")) | rc: ${rc} ==="
     } >> "$logfile"
+    append_final_ccache_stats "$logfile"
 }
 
 mkdir -p "$(dirname "$resultfile")"
@@ -261,6 +315,7 @@ cleanup_remote_command() {
     end_epoch="$(date +%s)"
     start_epoch="${start:-$end_epoch}"
     write_log_end "$rc" "$end_epoch" "$((end_epoch - start_epoch))"
+    link_failed_log "interrupted"
     exit "$rc"
 }
 trap cleanup_remote_command INT TERM HUP
@@ -286,6 +341,7 @@ if [[ "$rc" -eq 0 ]]; then
     compiler_label="$(detect_compiler_label_from_results "$COLLECTED_RESULTS_STAGE")"
     if [[ "$compiler_label" == "compiler_unknown" ]]; then
         echo "ERROR: compiler label could not be determined from collected results; refusing to create success stamp." >&2
+        link_failed_log "compiler_unknown"
         mkdir -p "$(dirname "$resultfile")"
         echo "$matrix_name,$arch,${remote_docker_base:-${host:-}},test,FAILED,$elapsed,$source_type" | tee -a "$resultfile"
         exit 1
@@ -296,10 +352,12 @@ if [[ "$rc" -eq 0 ]]; then
         logfile="$final_logfile"
     fi
     stamp="${stamp_prefix}${compiler_label}${stamp_suffix}"
+    clear_failed_logs
     ln -sfn "$logfile" "$stamp"
     mkdir -p "$(dirname "$resultfile")"
     echo "$matrix_name,$arch,${remote_docker_base:-$host},test,OK,$elapsed,$source_type" | tee -a "$resultfile"
 else
+    link_failed_log "failed"
     mkdir -p "$(dirname "$resultfile")"
     echo "$matrix_name,$arch,${remote_docker_base:-$host},test,FAILED,$elapsed,$source_type" | tee -a "$resultfile"
     exit "$rc"

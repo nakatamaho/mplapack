@@ -47,6 +47,19 @@ log_ccache_stats() {
     log "=== END CCACHE STATS (${label}) ==="
 }
 
+
+log_ccache_start() {
+    log_ccache_stats "START"
+    CCACHE_STATS_STARTED=1
+}
+
+log_ccache_end_once() {
+    if [ "${CCACHE_STATS_STARTED:-0}" -eq 1 ] && [ "${CCACHE_STATS_ENDED:-0}" -eq 0 ]; then
+        log_ccache_stats "END"
+        CCACHE_STATS_ENDED=1
+    fi
+}
+
 : "${MPLAPACK_REMOTE_WORKDIR:?}"
 : "${MPLAPACK_DOCKER_BASE:?}"
 : "${MPLAPACK_DOCKERFILE:?}"
@@ -64,6 +77,8 @@ DOCKER_ROOT="${CONTEXT_DIR}/release/docker"
 INPUT_DIR="${WORKDIR}/input"
 BUILD_WORK_DIR="${WORKDIR}/work"
 LOCKDIR="${WORKDIR}.lock"
+CCACHE_STATS_STARTED=0
+CCACHE_STATS_ENDED=0
 
 safe_workdir "${WORKDIR}"
 mkdir -p "$(dirname "${WORKDIR}")"
@@ -101,6 +116,7 @@ cleanup() {
             docker stop ${ids} >/dev/null 2>&1 || true
         fi
     fi
+    log_ccache_end_once
     rm -rf "${LOCKDIR}"
 }
 trap cleanup EXIT INT TERM HUP
@@ -170,7 +186,7 @@ docker_run --rm \
     "${MPLAPACK_IMAGE_TAG}" \
     ccache -M "${MPLAPACK_CCACHE_MAXSIZE}"
 
-log_ccache_stats START
+log_ccache_start
 
 docker_run --rm \
     -e CCACHE_DIR=/ccache \
@@ -180,5 +196,5 @@ docker_run --rm \
     -v "${BUILD_WORK_DIR}:/work:rw" \
     "${MPLAPACK_IMAGE_TAG}"
 
-log_ccache_stats END
+log_ccache_end_once
 log "=== REMOTE TARBALL BUILD COMPLETED SUCCESSFULLY ==="

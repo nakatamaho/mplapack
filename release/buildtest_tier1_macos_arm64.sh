@@ -7,6 +7,8 @@ export PATH="/opt/local/bin:/opt/local/sbin:${PATH}"
 # ---------------------------------------------------------------------------
 LOG_DIR="${HOME}/mplapack_build_logs/$(LANG=C LC_ALL=C date +%Y%m%d_%H%M%S)_$$_tier1_macos_arm64"
 mkdir -p "${LOG_DIR}"
+CCACHE_STATS_STARTED=0
+CCACHE_STATS_ENDED=0
 
 log() {
     echo "$*" | tee -a "${LOG_DIR}/summary.log"
@@ -22,6 +24,19 @@ log_ccache_stats() {
         log "ccache command not found"
     fi
     log "=== END CCACHE STATS (${label}) ==="
+}
+
+
+log_ccache_start() {
+    log_ccache_stats "START"
+    CCACHE_STATS_STARTED=1
+}
+
+log_ccache_end_once() {
+    if [ "${CCACHE_STATS_STARTED:-0}" -eq 1 ] && [ "${CCACHE_STATS_ENDED:-0}" -eq 0 ]; then
+        log_ccache_stats "END"
+        CCACHE_STATS_ENDED=1
+    fi
 }
 
 # ERR trap: fires on any uncaught error outside run_step, prints line/command
@@ -225,7 +240,8 @@ if command -v ccache >/dev/null 2>&1; then
 fi
 log "CCACHE_DIR: ${CCACHE_DIR}"
 log "MPLAPACK_CCACHE_MAXSIZE: ${MPLAPACK_CCACHE_MAXSIZE}"
-log_ccache_stats "START"
+log_ccache_start
+trap log_ccache_end_once EXIT
 
 # ---------------------------------------------------------------------------
 # Main
@@ -335,6 +351,7 @@ fi
 
 # Always release the lock on exit.
 cleanup_lock() {
+    log_ccache_end_once
     # make distcheck intentionally makes extracted tree read-only;
     # restore write bits so the directory can be removed on any exit path.
     chmod -R u+rwX "${WORKDIR}" 2>/dev/null || true
@@ -426,7 +443,7 @@ run_step "make_distcheck" env CC="ccache gcc" CXX="ccache g++" FC="ccache gfortr
                           make distcheck MAKEFLAGS="-j${MAKE_JOBS}" DISTCHECK_CONFIGURE_FLAGS="${DISTCHECK_CONFIGURE_FLAGS}"
 run_step "collect_test_results" collect_test_results
 
-log_ccache_stats "END"
+log_ccache_end_once
 
 log ""
 log "=== ALL STEPS COMPLETED SUCCESSFULLY ==="

@@ -11,6 +11,7 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 CONF_FILE="${CONF_FILE:-$SCRIPT_DIR/build-matrix.conf}"
 LOGDIR="${LOGDIR:-$SCRIPT_DIR/logs/$(date +%Y%m%d_%H%M%S)}"
 SUCCESS_DIR="${SUCCESS_DIR:-$SCRIPT_DIR/success}"
+FAILED_DIR="${FAILED_DIR:-$SCRIPT_DIR/failed}"
 DOCKER_DIR="$SCRIPT_DIR/docker"
 TARBALL="${TARBALL:-}"
 TARBALL_LABEL="${TARBALL_LABEL:-}"
@@ -32,6 +33,7 @@ HOST_CCACHE_DIR="${HOST_CCACHE_DIR:-/work/ccache}"
 
 mkdir -p "$LOGDIR"
 mkdir -p "$SUCCESS_DIR"
+mkdir -p "$FAILED_DIR"
 mkdir -p "$HOST_CCACHE_DIR"
 if [[ "$WORK_MOUNT_MODE" == "bind" ]]; then
     mkdir -p "$HOST_WORK_DIR"
@@ -57,6 +59,42 @@ lang_c_date() {
 format_elapsed() {
     local seconds="$1"
     printf '%02d:%02d:%02d' "$((seconds / 3600))" "$(((seconds % 3600) / 60))" "$((seconds % 60))"
+}
+
+
+append_final_ccache_stats() {
+    local src_logfile="$1"
+    local tmp
+
+    [[ -f "$src_logfile" ]] || return 0
+    tmp="$(mktemp "${src_logfile}.ccache-summary.XXXXXX")" || return 0
+    awk '
+        /=== CCACHE STATS \(START\) ===/ { in_start=1; start=$0 ORS; next }
+        in_start {
+            start=start $0 ORS
+            if ($0 ~ /=== END CCACHE STATS \(START\) ===/) in_start=0
+            next
+        }
+        /=== CCACHE STATS \(END\) ===/ { in_end=1; end=$0 ORS; next }
+        in_end {
+            end=end $0 ORS
+            if ($0 ~ /=== END CCACHE STATS \(END\) ===/) in_end=0
+            next
+        }
+        END {
+            if (start != "" || end != "") {
+                print ""
+                print "=== FINAL CCACHE STATS SUMMARY ==="
+                if (start != "") printf "%s", start
+                if (end != "") printf "%s", end
+                print "=== END FINAL CCACHE STATS SUMMARY ==="
+            }
+        }
+    ' "$src_logfile" > "$tmp"
+    if [[ -s "$tmp" ]]; then
+        cat "$tmp" >> "$src_logfile"
+    fi
+    rm -f "$tmp"
 }
 
 write_log_start() {
@@ -88,6 +126,7 @@ write_log_end() {
         echo "LOG_ELAPSED_HMS=$(format_elapsed "$elapsed")"
         echo "=== LOG ELAPSED: ${elapsed}s ($(format_elapsed "$elapsed")) | rc: ${rc} ==="
     } >> "$logfile"
+    append_final_ccache_stats "$logfile"
 }
 
 
@@ -153,6 +192,27 @@ make_success_stamp() {
         ref_part=""
     fi
     echo "$SUCCESS_DIR/${name}_${arch}_${src}${ref_part}.ok"
+}
+
+
+make_failure_stamp() {
+    # Usage: make_failure_stamp <name> <arch> <source_type>
+    local name_raw="$1" arch_raw="$2" source_type_raw="$3"
+    local name arch src ref sha ref_part
+    name="$(sanitize_token "$name_raw")"
+    arch="$(sanitize_token "$arch_raw")"
+    src="$(sanitize_token "$source_type_raw")"
+    if [[ "$source_type_raw" == "ref" ]]; then
+        read -r ref sha <<< "$(git_meta "$PROJECT_ROOT")"
+        ref="$(sanitize_token "$ref")"
+        sha="$(sanitize_token "$sha")"
+        ref_part="_${ref}_${sha}"
+    elif [[ "$source_type_raw" == "tarball" || "$source_type_raw" == "remote-tarball-docker" ]] && [[ -n "${TARBALL_LABEL:-}" ]]; then
+        ref_part="_sha256-${TARBALL_LABEL}"
+    else
+        ref_part=""
+    fi
+    echo "$FAILED_DIR/${name}_${arch}_${src}${ref_part}.failed"
 }
 
 abspath() {
@@ -266,6 +326,26 @@ setup_ccache() {
 }
 
 setup_ccache
+
+
+
+log_docker_ccache_stats() {
+    local logfile="$1"
+    local label="$2"
+    local arch="$3"
+    local tag="$4"
+
+    {
+        echo "=== CCACHE STATS (${label}) ==="
+        docker run --rm \
+            --platform "$arch" \
+            -v "$HOST_CCACHE_DIR:/ccache:rw" \
+            -e CCACHE_DIR=/ccache \
+            "$tag" \
+            ccache -s || true
+        echo "=== END CCACHE STATS (${label}) ==="
+    } >> "$logfile" 2>&1
+}
 
 
 # Detect host Docker platform (best-effort)
@@ -473,8 +553,9 @@ build_one() {
     local logprefix="$LOGDIR/${name}_${arch_short}_${source_type}${source_label_part}"
     local logfile="${logprefix}_build.log"
     local image_logfile="${logprefix}_image.log"
-    local stamp
+    local stamp failed_stamp
     stamp="$(make_success_stamp "$name" "$arch" "$source_type")"
+    failed_stamp="$(make_failure_stamp "$name" "$arch" "$source_type")"
     local start
     local gpu_flag=""
     start=$(date +%s)
@@ -482,6 +563,10 @@ build_one() {
     if [[ -L "$stamp" && ! -e "$stamp" ]]; then
         log "Removing broken success link: $stamp"
         rm -f "$stamp"
+    fi
+    if [[ -L "$failed_stamp" && ! -e "$failed_stamp" ]]; then
+        log "Removing broken failed link: $failed_stamp"
+        rm -f "$failed_stamp"
     fi
 
     if [[ -L "$stamp" && -e "$stamp" ]]; then
@@ -585,6 +670,7 @@ fi
         image_end="$(date +%s)"
         image_elapsed=$((image_end - image_start))
         write_log_end "$image_logfile" "docker image ${name} / ${arch_short} (${source_type})" 1 "$image_end" "$image_elapsed"
+        ln -sfn "$(abspath "$image_logfile")" "$failed_stamp"
         local elapsed=$(($(date +%s) - start))
         echo "$name,$arch_short,$base,image,FAILED,$elapsed,$source_type"
         return 1
@@ -599,12 +685,15 @@ fi
     run_start="$(date +%s)"
     : > "$logfile"
     write_log_start "$logfile" "docker run ${name} / ${arch_short} (${source_type})" "$run_start"
+    log_docker_ccache_stats "$logfile" "START" "$arch" "$tag"
     if ! docker run "${docker_run_args[@]}" \
         "$tag" >> "$logfile" 2>&1; then
 
         run_end="$(date +%s)"
         run_elapsed=$((run_end - run_start))
+        log_docker_ccache_stats "$logfile" "END" "$arch" "$tag"
         write_log_end "$logfile" "docker run ${name} / ${arch_short} (${source_type})" 1 "$run_end" "$run_elapsed"
+        ln -sfn "$(abspath "$logfile")" "$failed_stamp"
         local elapsed=$(($(date +%s) - start))
         echo "$name,$arch_short,$base,build,FAILED,$elapsed,$source_type"
         return 1
@@ -612,8 +701,10 @@ fi
 
     run_end="$(date +%s)"
     run_elapsed=$((run_end - run_start))
+    log_docker_ccache_stats "$logfile" "END" "$arch" "$tag"
     write_log_end "$logfile" "docker run ${name} / ${arch_short} (${source_type})" 0 "$run_end" "$run_elapsed"
     local elapsed=$(($(date +%s) - start))
+    rm -f "$failed_stamp"
     ln -sfn "$(abspath "$logfile")" "$stamp"
     echo "$name,$arch_short,$base,build,OK,$elapsed,$source_type"
 }
@@ -673,8 +764,9 @@ build_remote_tarball_one() {
     fi
     local logprefix="$LOGDIR/${name}_${arch_short}_${source_type}${source_label_part}"
     local logfile="${logprefix}_build.log"
-    local stamp
+    local stamp failed_stamp
     stamp="$(make_success_stamp "$name" "$arch" "$source_type")"
+    failed_stamp="$(make_failure_stamp "$name" "$arch" "$source_type")"
     local start elapsed rc
     local image_tag="$(make_image_tag "$name" "$arch_short" "$source_type")"
     image_tag="${image_tag/:/-remote:}"
@@ -692,6 +784,10 @@ build_remote_tarball_one() {
     if [[ -L "$stamp" && ! -e "$stamp" ]]; then
         log "Removing broken success link: $stamp"
         rm -f "$stamp"
+    fi
+    if [[ -L "$failed_stamp" && ! -e "$failed_stamp" ]]; then
+        log "Removing broken failed link: $failed_stamp"
+        rm -f "$failed_stamp"
     fi
     if [[ -L "$stamp" && -e "$stamp" ]]; then
         log "  (Already passed; skipping $name / ${arch_short} / $source_type)"
@@ -750,11 +846,13 @@ REMOTE_PREP
     elapsed=$((end - start))
     write_log_end "$logfile" "remote tarball ${name} / ${arch_short} (${source_type})" "$rc" "$end" "$elapsed"
     if [[ "$rc" -eq 0 ]]; then
+        rm -f "$failed_stamp"
         ln -sfn "$(abspath "$logfile")" "$stamp"
         echo "$name,$arch_short,$base,build,OK,$elapsed,$source_type"
         return 0
     fi
 
+    ln -sfn "$(abspath "$logfile")" "$failed_stamp"
     echo "$name,$arch_short,$base,build,FAILED,$elapsed,$source_type"
     return "$rc"
 }
@@ -889,6 +987,7 @@ show_summary() {
     echo "Total: $total | Passed: $passed | Failed: $failed | Skipped: $skipped" >&2
     echo "Logs:   $LOGDIR/" >&2
     echo "Passes: $SUCCESS_DIR/" >&2
+    echo "Failures: $FAILED_DIR/" >&2
     echo "ccache: $HOST_CCACHE_DIR" >&2
 
     [[ $failed -eq 0 ]] || exit 1
@@ -900,6 +999,11 @@ case "${1:-}" in
         rm -rf "$SUCCESS_DIR"
         mkdir -p "$SUCCESS_DIR"
         log "Cleaned success links: $SUCCESS_DIR"
+        ;;
+    clean-failed)
+        rm -rf "$FAILED_DIR"
+        mkdir -p "$FAILED_DIR"
+        log "Cleaned failed links: $FAILED_DIR"
         ;;
     dist)
         make_dist
