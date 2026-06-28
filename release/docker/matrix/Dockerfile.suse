@@ -70,7 +70,7 @@ COMMON_OPTS=\"--enable-gmp=yes --enable-mpfr=yes --enable-binary128=yes --enable
 if [ \"$ARCH\" = \"x86_64\" ] || [ \"$ARCH\" = \"i686\" ]; then \
   CONFIGURE_OPTS=\"$COMMON_OPTS --enable-binary80=yes --enable-benchmark=yes --with-openblas=system\"; \
 else \
-  CONFIGURE_OPTS=\"$COMMON_OPTS\"; \
+  CONFIGURE_OPTS=\"$COMMON_OPTS --enable-benchmark=yes --with-openblas=system\"; \
 fi; \
 echo \"Configure options: $CONFIGURE_OPTS\"; \
 \

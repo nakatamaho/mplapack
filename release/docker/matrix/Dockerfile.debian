@@ -60,7 +60,7 @@ CMD ["/bin/bash", "-lc", "\
     if [ \"$ARCH\" = \"amd64\" ] || [ \"$ARCH\" = \"i386\" ]; then \
         CONFIGURE_OPTS=\"$COMMON_OPTS --enable-benchmark=yes --enable-binary80=yes --with-openblas=system\"; \
     else \
-        CONFIGURE_OPTS=\"$COMMON_OPTS\"; \
+        CONFIGURE_OPTS=\"$COMMON_OPTS --enable-benchmark=yes --with-openblas=system\"; \
     fi; \
     echo \"Configure options: $CONFIGURE_OPTS\"; \
     \
