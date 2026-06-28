@@ -32,6 +32,7 @@ RUN set -eux; \
         gcc gcc-c++ gfortran make \
         autoconf automake libtool cmake \
         pkgconf-pkg-config pkgconf-m4 \
+        openblas-devel \
         which findutils diffutils tar xz bzip2 patch; \
     if dnf -q list available ccache >/dev/null 2>&1; then \
         dnf -y install ccache; \

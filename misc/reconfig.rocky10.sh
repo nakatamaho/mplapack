@@ -35,7 +35,7 @@ esac
 
 case "$enable_benchmark" in
     yes)
-        configure_opts="$configure_opts --enable-benchmark=yes"
+        configure_opts="$configure_opts --enable-benchmark=yes --with-openblas=system"
         ;;
     no)
         ;;

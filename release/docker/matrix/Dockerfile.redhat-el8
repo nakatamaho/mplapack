@@ -16,6 +16,7 @@ RUN set -eux; \
       gcc gcc-c++ gcc-gfortran make \
       autoconf automake libtool \
       pkgconf-pkg-config pkgconf-m4 \
+      openblas-devel \
       which findutils diffutils tar xz bzip2 patch \
     && dnf clean all
 
@@ -54,7 +55,7 @@ CMD ["/bin/bash", "-lc", "\
     echo \"Detected architecture: $ARCH\"; \
     COMMON_OPTS=\"--enable-gmp=yes --enable-mpfr=yes --enable-binary128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes\"; \
     if [ \"$ARCH\" = \"x86_64\" ] || [ \"$ARCH\" = \"i686\" ] || [ \"$ARCH\" = \"i386\" ]; then \
-        CONFIGURE_OPTS=\"$COMMON_OPTS --enable-benchmark=yes --enable-binary80=yes\"; \
+        CONFIGURE_OPTS=\"$COMMON_OPTS --enable-benchmark=yes --enable-binary80=yes --with-openblas=system\"; \
     else \
         CONFIGURE_OPTS=\"$COMMON_OPTS\"; \
     fi; \

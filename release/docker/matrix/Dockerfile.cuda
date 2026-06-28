@@ -15,6 +15,7 @@ RUN apt-get update && apt-get install -y \
     libtool \
     ccache \
     pkg-config \
+    libopenblas-dev \
     python3 \
     git \
     xz-utils \
@@ -62,7 +63,7 @@ cd mplapack/test/compare; bash gen.Makefile.am.sh; cd /work/mplapack; \
 autoreconf --force --install; \
 \
 # CUDA builds are x86_64, so enable binary80 \
-CONFIGURE_OPTS=\"--enable-cuda --enable-gmp=yes --enable-mpfr=yes --enable-binary128=yes --enable-binary80=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes --enable-benchmark=yes\"; \
+CONFIGURE_OPTS=\"--enable-cuda --enable-gmp=yes --enable-mpfr=yes --enable-binary128=yes --enable-binary80=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes --enable-benchmark=yes --with-openblas=system\"; \
 echo \"Configure options: $CONFIGURE_OPTS\"; \
 \
 ./configure $CONFIGURE_OPTS; \

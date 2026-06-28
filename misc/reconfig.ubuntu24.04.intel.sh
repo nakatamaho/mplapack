@@ -20,4 +20,4 @@ fi
 pushd mplapack/test/compare ; bash gen.Makefile.am.sh ; popd
 
 autoreconf --force --install
-./configure --prefix=$HOME/MPLAPACK_INTELONEAPI --enable-gmp=yes --enable-mpfr=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes --enable-benchmark=yes --enable-binary128=yes --enable-binary80=yes
+./configure --prefix=$HOME/MPLAPACK_INTELONEAPI --enable-gmp=yes --enable-mpfr=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes --enable-benchmark=yes --enable-binary128=yes --enable-binary80=yes ${OPENBLAS_CONFIGURE_OPT:-}
