@@ -85,9 +85,9 @@ BSD-style license, supplemental to the original LAPACK license.
 |---|---|---|
 | **Tier 1** | Dedicated release `buildtest` target; `make distcheck` + full test suite | macOS 15/26 (amd64/arm64), Ubuntu 24.04/26.04 (amd64/arm64), Windows / MinGW-w64 via Ubuntu 24.04/26.04 (amd64), Ubuntu 24.04/26.04 Intel oneAPI (amd64), Debian 12/13 i386 |
 | **Tier 2** | Docker branch build matrix coverage via `make tier2`; no dedicated release `buildtest` target | Other Debian/Ubuntu architectures and versions, Alpine Linux 3.19–3.23, Rocky Linux 8/9/10, Fedora 42/43, openSUSE Leap 15.6/16.0, openSUSE Tumbleweed |
-| **Tier 3** | Patches accepted; no CI coverage | Other platforms |
+| **Tier 3** | Build-only Docker coverage for selected non-release-gating checks via `make tier3`; otherwise patches accepted | Ubuntu 26.04 arm64 C++ standard variants; other platforms |
 
-Release test targets are run from `release/`. `make tier1` runs dedicated remote buildtests; `make tier2` runs the Docker branch matrix entries from `release/build-matrix.conf`.
+Release test targets are run from `release/`. `make tier1` runs dedicated remote buildtests; `make tier2` runs the Docker branch matrix entries from `release/build-matrix.conf`; `make tier3` runs build-only non-release-gating checks.
 
 | Tier | Make target | OS | CPU | Host | Backend |
 |---|---|---|---|---|---|
@@ -103,6 +103,7 @@ Release test targets are run from `release/`. `make tier1` runs dedicated remote
 | Tier 1 | `tier1-ubuntu2604-inteloneapi-amd64` | Ubuntu 26.04 | amd64 | `172.27.109.80` | Docker + Intel oneAPI |
 | Tier 1 | `tier1-debian12-i386` | Debian 12 | i386 | `172.27.109.80` | Docker |
 | Tier 1 | `tier1-debian13-i386` | Debian 13 | i386 | `172.27.109.80` | Docker |
+| Tier 3 | `tier3-ubuntu2604-cxxstd-arm64` | Ubuntu 26.04 | arm64 | `172.27.109.40` | Docker/Colima build-only |
 
 Dedicated release buildtest scripts are in `release/`:
 ```

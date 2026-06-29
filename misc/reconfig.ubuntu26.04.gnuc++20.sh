@@ -20,5 +20,5 @@ autoreconf --force --install
 if [ "`uname -m`" = "x86_64" ] || [ "`uname -m`" = "i686" ]; then
 ./configure --prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-binary128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-binary80=yes --enable-test=yes --enable-benchmark=yes $CXX_STANDARD_CONFIGURE_OPT
 else
-./configure --prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-binary128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-binary80=yes --enable-test=yes --enable-benchmark=yes $CXX_STANDARD_CONFIGURE_OPT
+./configure --prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes --enable-binary128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes --enable-benchmark=yes $CXX_STANDARD_CONFIGURE_OPT
 fi

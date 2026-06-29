@@ -340,11 +340,15 @@ if [[ "$rc" -eq 0 ]]; then
     collect_remote_test_results
     compiler_label="$(detect_compiler_label_from_results "$COLLECTED_RESULTS_STAGE")"
     if [[ "$compiler_label" == "compiler_unknown" ]]; then
-        echo "ERROR: compiler label could not be determined from collected results; refusing to create success stamp." >&2
-        link_failed_log "compiler_unknown"
-        mkdir -p "$(dirname "$resultfile")"
-        echo "$matrix_name,$arch,${remote_docker_base:-${host:-}},test,FAILED,$elapsed,$source_type" | tee -a "$resultfile"
-        exit 1
+        if [[ "$tier" == "tier3" ]]; then
+            compiler_label="build"
+        else
+            echo "ERROR: compiler label could not be determined from collected results; refusing to create success stamp." >&2
+            link_failed_log "compiler_unknown"
+            mkdir -p "$(dirname "$resultfile")"
+            echo "$matrix_name,$arch,${remote_docker_base:-${host:-}},test,FAILED,$elapsed,$source_type" | tee -a "$resultfile"
+            exit 1
+        fi
     fi
     final_logfile="$LOGDIR/${name_prefix}-${compiler_label}${source_log_part}-linux-docker.log"
     if [[ "$final_logfile" != "$logfile" ]]; then

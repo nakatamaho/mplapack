@@ -1,0 +1,35 @@
+# Dockerfile.ubuntu-cxxstd
+# Ubuntu build-only environment for Tier 3 C++ standard coverage.
+ARG BASE=ubuntu:26.04
+FROM ${BASE}
+
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    gfortran \
+    autoconf \
+    automake \
+    libtool \
+    pkg-config \
+    libopenblas-dev \
+    ccache \
+    python3 \
+    git \
+    ca-certificates \
+    xz-utils \
+    bzip2 \
+    patch \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV CCACHE_DIR=/ccache
+ENV PATH="/usr/lib/ccache:${PATH}"
+ENV CC="ccache gcc"
+ENV CXX="ccache g++"
+ENV FC="ccache gfortran"
+ENV MPLAPACK_REPO=https://github.com/nakatamaho/mplapack.git
+ENV MPLAPACK_REF="master"
+
+WORKDIR /work
+COPY tier3/run-ubuntu-cxxstd-build.sh /run-ubuntu-cxxstd-build.sh
+RUN chmod +x /run-ubuntu-cxxstd-build.sh
+CMD ["/run-ubuntu-cxxstd-build.sh"]
