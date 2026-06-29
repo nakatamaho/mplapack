@@ -1801,9 +1801,16 @@ if test x$enable_benchmark = x"yes"; then
         ],
         [system], [
             OPENBLAS_SOURCE=system
-            AC_CHECK_LIB([openblas], [dgemm_],
-                [OPENBLAS_LIBS="-lopenblas"],
-                [AC_MSG_ERROR([system OpenBLAS requested but dgemm_ was not found in -lopenblas; install libopenblas-dev/openblas-devel or pass --with-openblas="-L... -lopenblas"])])
+            save_LIBS="$LIBS"
+            LIBS="-lopenblas $LIBS"
+            AC_MSG_CHECKING([whether system OpenBLAS provides dgemm_])
+            AC_LINK_IFELSE(
+                [AC_LANG_PROGRAM([[extern "C" void dgemm_(void);]], [[dgemm_();]])],
+                [AC_MSG_RESULT([yes])
+                 OPENBLAS_LIBS="-lopenblas"],
+                [AC_MSG_RESULT([no])
+                 AC_MSG_ERROR([system OpenBLAS requested but dgemm_ was not found in -lopenblas; install libopenblas-dev/openblas-devel or pass --with-openblas="-L... -lopenblas"])])
+            LIBS="$save_LIBS"
         ],
         [no], [
             AC_MSG_ERROR([--with-openblas=no is not supported with --enable-benchmark; use --disable-benchmark])
@@ -1815,7 +1822,7 @@ if test x$enable_benchmark = x"yes"; then
             LIBS="$OPENBLAS_LIBS $LIBS"
             AC_MSG_CHECKING([whether custom OpenBLAS linker flags provide dgemm_])
             AC_LINK_IFELSE(
-                [AC_LANG_PROGRAM([[extern void dgemm_(void);]], [[dgemm_();]])],
+                [AC_LANG_PROGRAM([[extern "C" void dgemm_(void);]], [[dgemm_();]])],
                 [AC_MSG_RESULT([yes])],
                 [AC_MSG_RESULT([no])
                  AC_MSG_ERROR([custom OpenBLAS linker flags do not provide dgemm_: $OPENBLAS_LIBS])])

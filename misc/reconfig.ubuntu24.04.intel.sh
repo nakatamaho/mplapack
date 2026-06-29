@@ -2,6 +2,7 @@
 
 USE_CCACHE=yes
 source /opt/intel/oneapi/setvars.sh
+OPENBLAS_CONFIGURE_OPT="${OPENBLAS_CONFIGURE_OPT:---with-openblas=-qmkl}"
 
 #https://gmplib.org/list-archives/gmp-bugs/2014-September/003526.html
 if [ x$USE_CCACHE = x"yes" ] ; then
@@ -20,4 +21,4 @@ fi
 pushd mplapack/test/compare ; bash gen.Makefile.am.sh ; popd
 
 autoreconf --force --install
-./configure --prefix=$HOME/MPLAPACK_INTELONEAPI --enable-gmp=yes --enable-mpfr=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes --enable-benchmark=yes --enable-binary128=yes --enable-binary80=yes ${OPENBLAS_CONFIGURE_OPT:-}
+./configure --prefix=$HOME/MPLAPACK_INTELONEAPI --enable-gmp=yes --enable-mpfr=yes --enable-qd=yes --enable-dd=yes --enable-double=yes --enable-test=yes --enable-benchmark=yes --enable-binary128=yes --enable-binary80=yes "$OPENBLAS_CONFIGURE_OPT"
