@@ -94,19 +94,117 @@ AC_CONFIG_FILES([packaging/PKGBUILD packaging/mplapack.spec])
 
 AC_CANONICAL_TARGET
 
+AC_ARG_WITH([cxx-standard],
+AS_HELP_STRING([--with-cxx-standard=17|20|23|gnu++17|gnu++20|gnu++23|c++17|c++20|c++23],
+               [C++ standard used to build MPLAPACK (default: 17)]),
+    [with_cxx_standard=$withval],
+    [with_cxx_standard=17])
+
+AC_ARG_ENABLE([cxx-extensions],
+AS_HELP_STRING([--disable-cxx-extensions],
+               [use strict ISO C++ mode instead of GNU dialect (default: enabled)]),
+    [],
+    [enable_cxx_extensions=yes])
+
 dnl Determine the C++ compiler, then drop any -std=* that arrived through the
 dnl environment (CXX or CXXFLAGS) before selecting the required standard.
-dnl AX_CXX_COMPILE_STDCXX only *appends* -std=gnu++17 to CXX; it does not remove
-dnl a pre-existing -std.  A stale -std=gnu++11 (exported in CXX, or in CXXFLAGS
-dnl where it lands after CXX on the command line) would therefore survive and,
-dnl being last, override gnu++17 -- breaking the C++14/17 features the
-dnl mplapack_utils_*.h headers rely on (std::enable_if_t, std::is_same_v,
-dnl variadic fold expressions).  Strip first so exactly one -std=gnu++17 is in
-dnl effect and cannot be overridden.
+dnl A stale -std=gnu++11 (exported in CXX or CXXFLAGS) could otherwise survive
+dnl and override the standard selected below.  Strip first so exactly one -std
+dnl option is in effect.
 AC_PROG_CXX
 MPLAPACK_STRIP_FLAG([CXX], [-std=*])
 MPLAPACK_STRIP_FLAG([CXXFLAGS], [-std=*])
-AX_CXX_COMPILE_STDCXX([17], [ext], [mandatory])
+
+AS_CASE([$with_cxx_standard],
+    [17],         [MPLAPACK_CXX_STANDARD=17],
+    [20],         [MPLAPACK_CXX_STANDARD=20],
+    [23],         [MPLAPACK_CXX_STANDARD=23],
+    [gnu++17],    [MPLAPACK_CXX_STANDARD=17
+                   enable_cxx_extensions=yes],
+    [c++17],      [MPLAPACK_CXX_STANDARD=17
+                   enable_cxx_extensions=no],
+    [gnu++20|gnu++2a],
+                  [MPLAPACK_CXX_STANDARD=20
+                   enable_cxx_extensions=yes],
+    [c++20|c++2a],
+                  [MPLAPACK_CXX_STANDARD=20
+                   enable_cxx_extensions=no],
+    [gnu++23|gnu++2b],
+                  [MPLAPACK_CXX_STANDARD=23
+                   enable_cxx_extensions=yes],
+    [c++23|c++2b],
+                  [MPLAPACK_CXX_STANDARD=23
+                   enable_cxx_extensions=no],
+    [AC_MSG_ERROR([invalid --with-cxx-standard value '$with_cxx_standard'; use 17, 20, 23, gnu++17, gnu++20, gnu++23, c++17, c++20, or c++23])])
+
+AS_CASE([$enable_cxx_extensions],
+    [yes], [MPLAPACK_CXX_EXTENSIONS=1
+            mplapack_cxx_std_prefix=gnu++],
+    [no],  [MPLAPACK_CXX_EXTENSIONS=0
+            mplapack_cxx_std_prefix=c++],
+    [AC_MSG_ERROR([invalid --enable-cxx-extensions value '$enable_cxx_extensions'; use yes or no])])
+
+AS_CASE([$MPLAPACK_CXX_STANDARD],
+    [17], [MPLAPACK_CXX_STD_CANDIDATES="-std=${mplapack_cxx_std_prefix}17"],
+    [20], [MPLAPACK_CXX_STD_CANDIDATES="-std=${mplapack_cxx_std_prefix}20 -std=${mplapack_cxx_std_prefix}2a"],
+    [23], [MPLAPACK_CXX_STD_CANDIDATES="-std=${mplapack_cxx_std_prefix}23 -std=${mplapack_cxx_std_prefix}2b"])
+
+AC_LANG_PUSH([C++])
+mplapack_cxx_standard_ok=no
+ac_save_CXX="$CXX"
+for mplapack_cxx_std_flag in $MPLAPACK_CXX_STD_CANDIDATES; do
+    CXX="$ac_save_CXX $mplapack_cxx_std_flag"
+    AC_MSG_CHECKING([whether $ac_save_CXX supports C++$MPLAPACK_CXX_STANDARD with $mplapack_cxx_std_flag])
+    AS_CASE([$MPLAPACK_CXX_STANDARD],
+        [17], [AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+#if __cplusplus < 201703L
+#error C++17 required
+#endif
+#include <type_traits>
+template <typename... Ts>
+constexpr bool mplapack_cxx17_pack = (std::is_same_v<Ts, Ts> && ...);
+int main() { return mplapack_cxx17_pack<int, double> ? 0 : 1; }
+        ]])], [mplapack_cxx_standard_ok=yes], [mplapack_cxx_standard_ok=no])],
+        [20], [AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+#if __cplusplus < 202002L
+#error C++20 required
+#endif
+#include <concepts>
+template <typename T>
+concept mplapack_integral = std::integral<T>;
+int main() { static_assert(mplapack_integral<int>); return 0; }
+        ]])], [mplapack_cxx_standard_ok=yes], [mplapack_cxx_standard_ok=no])],
+        [23], [AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+#if __cplusplus <= 202002L
+#error C++23 required
+#endif
+#include <version>
+int main() { return 0; }
+        ]])], [mplapack_cxx_standard_ok=yes], [mplapack_cxx_standard_ok=no])])
+    AC_MSG_RESULT([$mplapack_cxx_standard_ok])
+    AS_IF([test "x$mplapack_cxx_standard_ok" = xyes],
+        [MPLAPACK_CXX_STD_FLAG="$mplapack_cxx_std_flag"
+         break])
+done
+CXX="$ac_save_CXX"
+AS_IF([test "x$mplapack_cxx_standard_ok" != xyes],
+    [AC_MSG_ERROR([a compiler accepting $with_cxx_standard for C++$MPLAPACK_CXX_STANDARD is required])])
+CXX="$CXX $MPLAPACK_CXX_STD_FLAG"
+AS_IF([test -n "$CXXCPP"], [CXXCPP="$CXXCPP $MPLAPACK_CXX_STD_FLAG"])
+AC_LANG_POP([C++])
+
+AC_SUBST([MPLAPACK_CXX_STANDARD])
+AC_SUBST([MPLAPACK_CXX_EXTENSIONS])
+AC_DEFINE([HAVE_CXX17], [1], [define if the compiler supports basic C++17 syntax])
+AS_IF([test "$MPLAPACK_CXX_STANDARD" -ge 20],
+    [AC_DEFINE([HAVE_CXX20], [1], [define if the compiler supports basic C++20 syntax])])
+AS_IF([test "$MPLAPACK_CXX_STANDARD" -ge 23],
+    [AC_DEFINE([HAVE_CXX23], [1], [define if the compiler supports basic C++23 syntax])])
+AC_DEFINE_UNQUOTED([MPLAPACK_CXX_STANDARD], [$MPLAPACK_CXX_STANDARD],
+    [C++ standard selected for the MPLAPACK build])
+AC_DEFINE_UNQUOTED([MPLAPACK_CXX_EXTENSIONS], [$MPLAPACK_CXX_EXTENSIONS],
+    [Define to 1 when the MPLAPACK build uses GNU C++ extensions])
+AC_MSG_NOTICE([C++ standard flag: $MPLAPACK_CXX_STD_FLAG])
 
 : ${CFLAGS=""}
 : ${CXXFLAGS=""}
@@ -1924,6 +2022,12 @@ AC_MSG_RESULT([$GMP_NEEDS_GCC15_PATCH (gcc major=$GCC_MAJOR)])
 AC_SUBST([GMP_NEEDS_GCC15_PATCH])
 
 AC_MSG_NOTICE([C++ compiler:      $CXX])
+if test "$MPLAPACK_CXX_EXTENSIONS" = "1"; then
+    MPLAPACK_CXX_DIALECT="gnu++$MPLAPACK_CXX_STANDARD"
+else
+    MPLAPACK_CXX_DIALECT="c++$MPLAPACK_CXX_STANDARD"
+fi
+AC_MSG_NOTICE([C++ standard:      C++$MPLAPACK_CXX_STANDARD ($MPLAPACK_CXX_DIALECT; $MPLAPACK_CXX_STD_FLAG)])
 
 AC_MSG_CHECKING([C++ compiler version])
 CXX_VERSION=`$CXX --version 2>/dev/null | head -n 1`

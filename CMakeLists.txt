@@ -30,15 +30,34 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
 endif()
 
-# Build everything (libraries, tests, examples, benchmarks) at gnu++17, matching
-# the autotools build's single -std=gnu++17.  This is the default standard for
-# targets in this project's scope; it does NOT leak to a parent project that
-# pulls mplapack in via add_subdirectory/FetchContent (such a consumer instead
-# inherits the C++17 *floor* exported as a PUBLIC compile feature on the
-# backend targets).  Extensions stay on for the __float80/__float128 backends.
-set(CMAKE_CXX_STANDARD 17)
+# Build everything (libraries, tests, examples, benchmarks) with a fixed C++
+# standard.  The default remains gnu++17.  Callers can select the standard with
+# -DMPLAPACK_CXX_STANDARD=20/23 or -DCMAKE_CXX_STANDARD=20/23, and can select
+# strict ISO mode with -DMPLAPACK_CXX_EXTENSIONS=OFF or -DCMAKE_CXX_EXTENSIONS=OFF.
+# Consumers still inherit only the C++17 floor exported as a PUBLIC compile
+# feature on the backend targets.
+if(DEFINED CMAKE_CXX_STANDARD AND NOT CMAKE_CXX_STANDARD STREQUAL "")
+  set(_mplapack_default_cxx_standard "${CMAKE_CXX_STANDARD}")
+else()
+  set(_mplapack_default_cxx_standard 17)
+endif()
+if(DEFINED CMAKE_CXX_EXTENSIONS AND NOT CMAKE_CXX_EXTENSIONS STREQUAL "")
+  set(_mplapack_default_cxx_extensions "${CMAKE_CXX_EXTENSIONS}")
+else()
+  set(_mplapack_default_cxx_extensions ON)
+endif()
+set(MPLAPACK_CXX_STANDARD "${_mplapack_default_cxx_standard}" CACHE STRING
+    "C++ standard used to build MPLAPACK (17, 20, or 23)")
+set_property(CACHE MPLAPACK_CXX_STANDARD PROPERTY STRINGS 17 20 23)
+option(MPLAPACK_CXX_EXTENSIONS
+       "Build MPLAPACK with compiler C++ extensions enabled (gnu++ mode)"
+       ${_mplapack_default_cxx_extensions})
+if(NOT MPLAPACK_CXX_STANDARD MATCHES "^(17|20|23)$")
+  message(FATAL_ERROR "MPLAPACK_CXX_STANDARD must be 17, 20, or 23")
+endif()
+set(CMAKE_CXX_STANDARD ${MPLAPACK_CXX_STANDARD})
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS ON)
+set(CMAKE_CXX_EXTENSIONS ${MPLAPACK_CXX_EXTENSIONS})
 
 # ABI (libtool -version-info 1:0:0) — independent of the package version.
 set(MPLAPACK_LIB_VERSION   "1.0.0")

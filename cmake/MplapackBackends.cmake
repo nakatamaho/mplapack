@@ -28,15 +28,14 @@ function(mplapack_add_backend backend macro)
     # PUBLIC floor: consumers compiling against the mplapack headers need at
     # least C++17 (the headers use std::enable_if_t / is_same_v / fold exprs).
     target_compile_features(${tgt} PUBLIC cxx_std_17)
-    # Pin the library's OWN compilation to gnu++17, matching the autotools build
-    # (configure.ac forces a single -std=gnu++17).  Without this the libraries
-    # would build at the compiler's default standard (e.g. gnu++20 on GCC 16),
-    # which the cxx_std_17 floor alone permits.  CXX_EXTENSIONS ON keeps the gnu
-    # dialect that the binary80/binary128 backends rely on (__float80/__float128).
+    # Pin the library's OWN compilation to the project-selected standard.
+    # The cxx_std_17 floor alone permits newer compiler defaults; this property
+    # keeps library builds reproducible while MPLAPACK_CXX_EXTENSIONS controls
+    # whether targets use gnu++XX or strict c++XX mode.
     set_target_properties(${tgt} PROPERTIES
-      CXX_STANDARD 17
+      CXX_STANDARD ${MPLAPACK_CXX_STANDARD}
       CXX_STANDARD_REQUIRED ON
-      CXX_EXTENSIONS ON)
+      CXX_EXTENSIONS ${MPLAPACK_CXX_EXTENSIONS})
     # The backend-selecting macro must reach consumers -> PUBLIC.
     target_compile_definitions(${tgt} PUBLIC ${macro})
     target_include_directories(${tgt} PUBLIC
