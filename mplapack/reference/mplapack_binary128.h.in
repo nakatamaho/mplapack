@@ -30,6 +30,7 @@
 #define _MPLAPACK_BINARY128_H_
 
 #include "mplapack_config.h"
+#include <complex>
 
 #if MPLAPACK_BINARY128_MATH == MPLAPACK_BINARY128_MATH_QUADMATH
 #include <quadmath.h>
