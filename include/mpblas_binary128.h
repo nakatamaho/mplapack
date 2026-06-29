@@ -29,8 +29,8 @@
 #ifndef _MPBLAS_BINARY128_H_
 #define _MPBLAS_BINARY128_H_
 
-#include <complex>
 #include "mplapack_config.h"
+#include <complex>
 #include "mplapack_utils_binary128.h"
 
 bool Mlsame_binary128(const char *a, const char *b);
