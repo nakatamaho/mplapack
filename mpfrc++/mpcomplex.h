@@ -236,9 +236,17 @@ class mpcomplex {
 #if MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_FLOAT128
     mpcomplex(const std::complex<_Float128> &a, mp_prec_t pr = default_real_prec, mp_prec_t pi = default_imag_prec, mpc_rnd_t mode = default_rnd);
     mpcomplex &operator=(const std::complex<_Float128> &a);
+    mpcomplex &operator+=(const std::complex<_Float128> a);
+    mpcomplex &operator-=(const std::complex<_Float128> a);
+    mpcomplex &operator*=(const std::complex<_Float128> a);
+    mpcomplex &operator/=(const std::complex<_Float128> a);
 #elif MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_QUADMATH
     mpcomplex(const std::complex<__float128> &a, mp_prec_t pr = default_real_prec, mp_prec_t pi = default_imag_prec, mpc_rnd_t mode = default_rnd);
     mpcomplex &operator=(const std::complex<__float128> &a);
+    mpcomplex &operator+=(const std::complex<__float128> a);
+    mpcomplex &operator-=(const std::complex<__float128> a);
+    mpcomplex &operator*=(const std::complex<__float128> a);
+    mpcomplex &operator/=(const std::complex<__float128> a);
 #elif MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_LDBL
     // nothing to be done
 #endif
@@ -248,6 +256,10 @@ class mpcomplex {
 #if MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_FLOAT64X
     mpcomplex(const std::complex<_Float64x> &a, mp_prec_t pr = default_real_prec, mp_prec_t pi = default_imag_prec, mpc_rnd_t mode = default_rnd);
     mpcomplex &operator=(const std::complex<_Float64x> &a);
+    mpcomplex &operator+=(const std::complex<_Float64x> a);
+    mpcomplex &operator-=(const std::complex<_Float64x> a);
+    mpcomplex &operator*=(const std::complex<_Float64x> a);
+    mpcomplex &operator/=(const std::complex<_Float64x> a);
 #elif MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_LDBL
     // nothing to be done
 #endif
@@ -1166,6 +1178,10 @@ inline mpcomplex::mpcomplex(const std::complex<mplapack_binary128_t> &a, mp_prec
     mpfr_clear(mp_imag);
     mpfr_clear(mp_real);
 }
+inline mpcomplex &mpcomplex::operator+=(const std::complex<mplapack_binary128_t> a) { return *this += mpcomplex(a); }
+inline mpcomplex &mpcomplex::operator-=(const std::complex<mplapack_binary128_t> a) { return *this -= mpcomplex(a); }
+inline mpcomplex &mpcomplex::operator*=(const std::complex<mplapack_binary128_t> a) { return *this *= mpcomplex(a); }
+inline mpcomplex &mpcomplex::operator/=(const std::complex<mplapack_binary128_t> a) { return *this /= mpcomplex(a); }
 inline const mpcomplex operator-(const mpcomplex &a, const std::complex<mplapack_binary128_t> &b) { return mpcomplex(a) -= b; }
 inline const mpcomplex operator-(const std::complex<mplapack_binary128_t> &a, const mpcomplex &b) { return -(mpcomplex(a) -= b); }
 inline mpcomplex &mpcomplex::operator=(const std::complex<mplapack_binary128_t> &a) {
@@ -1197,6 +1213,10 @@ inline mpcomplex::mpcomplex(const std::complex<mplapack_binary128_t> &a, mp_prec
     mpfr_clear(mp_imag);
     mpfr_clear(mp_real);
 }
+inline mpcomplex &mpcomplex::operator+=(const std::complex<mplapack_binary128_t> a) { return *this += mpcomplex(a); }
+inline mpcomplex &mpcomplex::operator-=(const std::complex<mplapack_binary128_t> a) { return *this -= mpcomplex(a); }
+inline mpcomplex &mpcomplex::operator*=(const std::complex<mplapack_binary128_t> a) { return *this *= mpcomplex(a); }
+inline mpcomplex &mpcomplex::operator/=(const std::complex<mplapack_binary128_t> a) { return *this /= mpcomplex(a); }
 inline const mpcomplex operator-(const mpcomplex &a, const std::complex<mplapack_binary128_t> &b) { return mpcomplex(a) -= b; }
 inline const mpcomplex operator-(const std::complex<mplapack_binary128_t> &a, const mpcomplex &b) { return -(mpcomplex(a) -= b); }
 inline mpcomplex &mpcomplex::operator=(const std::complex<mplapack_binary128_t> &a) {
@@ -1246,6 +1266,11 @@ inline mpcomplex::mpcomplex(const std::complex<mplapack_binary80_t> &a, mp_prec_
     mpfr_clear(mp_imag);
     mpfr_clear(mp_real);
 }
+
+inline mpcomplex &mpcomplex::operator+=(const std::complex<mplapack_binary80_t> a) { return *this += mpcomplex(a); }
+inline mpcomplex &mpcomplex::operator-=(const std::complex<mplapack_binary80_t> a) { return *this -= mpcomplex(a); }
+inline mpcomplex &mpcomplex::operator*=(const std::complex<mplapack_binary80_t> a) { return *this *= mpcomplex(a); }
+inline mpcomplex &mpcomplex::operator/=(const std::complex<mplapack_binary80_t> a) { return *this /= mpcomplex(a); }
 
 inline const mpcomplex operator-(const mpcomplex &a, const std::complex<mplapack_binary80_t> &b) { return -(mpcomplex(b) -= a); }
 

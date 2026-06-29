@@ -59,6 +59,12 @@
 #define MPLAPACK_USE_C_COMPLEX_FLOAT128 0
 #endif
 
+#if defined(__cplusplus) && (__cplusplus > 202002L) && defined(__GLIBCXX__)
+#define MPLAPACK_USE_STD_MATH_FLOAT128 1
+#else
+#define MPLAPACK_USE_STD_MATH_FLOAT128 0
+#endif
+
 #if defined ___MPLAPACK_INTERNAL___
 #include <cstring>
 
@@ -603,6 +609,30 @@ inline __float128 pi(__float128 dummy) { return M_PIq; }
 #include <complex>
 #include <complex.h>
 
+#if MPLAPACK_USE_STD_MATH_FLOAT128 == 1
+#include <cmath>
+using std::abs;
+using std::atan2;
+using std::ceil;
+using std::cos;
+using std::cosh;
+using std::exp;
+using std::floor;
+using std::ldexp;
+using std::log;
+using std::log10;
+using std::log2;
+using std::nextafter;
+using std::pow;
+using std::sin;
+using std::sinh;
+using std::sqrt;
+
+inline _Float128 pow(const long &a, const long &b) { return powf128((_Float128)a, (_Float128)b); }
+inline _Float128 pow(const int &a, const long &b) { return powf128((_Float128)a, (_Float128)b); }
+inline _Float128 pow(const _Float128 &a, const long &b) { return powf128(a, (_Float128)b); }
+
+#else
 inline _Float128 pow(const _Float128 &a, const _Float128 &b) { return powf128(a, b); }
 inline _Float128 pow(const long &a, const long &b) { return powf128((_Float128)a, (_Float128)b); }
 inline _Float128 pow(const int &a, const long &b) { return powf128((_Float128)a, (_Float128)b); }
@@ -627,6 +657,7 @@ inline _Float128 log2(const _Float128 &a) { return logf128(a) / logf128(2.0); }
 inline _Float128 ceil(_Float128 a) { return ceilf128(a); }
 inline _Float128 nextafter(const _Float128 &a, const _Float128 &b) { return nextafterf128(a, b); }
 inline _Float128 ldexp(const _Float128 &a, int exp) { return ldexpf128(a, exp); }
+#endif
 
 #if MPLAPACK_USE_STD_COMPLEX_FLOAT128 == 1
 inline _Float128 abs(const std::complex<_Float128> &a) { return std::abs(a); }
