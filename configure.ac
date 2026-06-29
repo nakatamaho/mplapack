@@ -1091,16 +1091,36 @@ if test x$enable_binary128 = x"yes"; then
     fi
 fi
 
-# on older gcc's abs(__float128) appears with gnu++17 extension
-dnl Check whether std::abs(__float128) exists.
+dnl Check whether std::abs() exists for the selected binary128 scalar type.
 dnl Do not rely on __SIZEOF_FLOAT128__ here: on some Power targets it is not a
 dnl reliable proxy for whether C++ __float128 is actually usable, and the
-dnl compile test itself already answers the question.
+dnl compile test itself already answers the question.  In strict C++ modes,
+dnl libstdc++ may expose std::abs(_Float128) but not std::abs(__float128), so
+dnl the probe must match the binary128 mode selected above.
 AC_LANG_PUSH([C++])
-AC_MSG_CHECKING([for std::abs(__float128)])
-if test "x$have___float128" = "xyes"; then
-AC_COMPILE_IFELSE(
-  [AC_LANG_SOURCE([[
+mplapack_have_std_abs_float128=no
+AS_CASE([$mplapack_binary128_mode],
+  [2], [
+    AC_MSG_CHECKING([for std::abs(_Float128)])
+    if test "x$have__Float128" = "xyes"; then
+      AC_COMPILE_IFELSE(
+        [AC_LANG_SOURCE([[
+#include <cmath>
+int main() {
+  auto p = static_cast<_Float128 (*)(_Float128)>(&std::abs);
+  (void)p;
+  return 0;
+}
+]])],
+        [mplapack_have_std_abs_float128=yes],
+        [mplapack_have_std_abs_float128=no])
+    fi
+  ],
+  [3], [
+    AC_MSG_CHECKING([for std::abs(__float128)])
+    if test "x$have___float128" = "xyes"; then
+      AC_COMPILE_IFELSE(
+        [AC_LANG_SOURCE([[
 #include <cmath>
 int main() {
   auto p = static_cast<__float128 (*)(__float128)>(&std::abs);
@@ -1108,18 +1128,95 @@ int main() {
   return 0;
 }
 ]])],
-  [mplapack_have_std_abs_float128=yes],
-  [mplapack_have_std_abs_float128=no]
-)
-else
-  mplapack_have_std_abs_float128=no
-fi
+        [mplapack_have_std_abs_float128=yes],
+        [mplapack_have_std_abs_float128=no])
+    fi
+  ],
+  [AC_MSG_CHECKING([for std::abs(selected binary128 type)])])
 AC_MSG_RESULT([$mplapack_have_std_abs_float128])
 AS_IF([test "x$mplapack_have_std_abs_float128" = "xyes"],
   [AC_DEFINE([MPLAPACK_HAVE_STD_ABS_FLOAT128],[1],
-    [Define to 1 if std::abs(__float128) is available])],
+    [Define to 1 if std::abs() is available for the selected binary128 scalar type])],
   [AC_DEFINE([MPLAPACK_HAVE_STD_ABS_FLOAT128],[0],
-    [Define to 0 if std::abs(__float128) is not available])]
+    [Define to 0 if std::abs() is not available for the selected binary128 scalar type])]
+)
+AC_LANG_POP([C++])
+
+dnl Check which complex _Float128 implementation can be used by headers built
+dnl with this C++ mode.  std::complex<_Float128> math is available in modern
+dnl libstdc++ C++23 modes, while glibc's C _Float128 _Complex functions are
+dnl typically only declared in GNU C++ modes.  The installed header also guards
+dnl these with compile-time C++ mode checks so consumers using a different
+dnl standard still fall back safely.
+AC_LANG_PUSH([C++])
+mplapack_have_std_complex_float128=no
+mplapack_have_c_complex_float128=no
+AS_IF([test "x$mplapack_binary128_mode" = "x2"], [
+  AC_MSG_CHECKING([for std::complex<_Float128> math functions])
+  AC_COMPILE_IFELSE(
+    [AC_LANG_SOURCE([[
+#include <complex>
+int main() {
+  std::complex<_Float128> z((_Float128)1.0, (_Float128)2.0);
+  volatile _Float128 a = std::abs(z);
+  (void)a;
+  (void)std::sqrt(z);
+  (void)std::sin(z);
+  (void)std::cos(z);
+  (void)std::exp(z);
+  (void)std::log(z);
+  return 0;
+}
+]])],
+    [mplapack_have_std_complex_float128=yes],
+    [mplapack_have_std_complex_float128=no])
+  AC_MSG_RESULT([$mplapack_have_std_complex_float128])
+
+  AC_MSG_CHECKING([for C _Float128 complex math functions])
+  AC_COMPILE_IFELSE(
+    [AC_LANG_SOURCE([[
+#ifndef __STDC_WANT_IEC_60559_TYPES_EXT__
+#define __STDC_WANT_IEC_60559_TYPES_EXT__ 1
+#endif
+#ifndef __STDC_WANT_IEC_60559_FUNCS_EXT__
+#define __STDC_WANT_IEC_60559_FUNCS_EXT__ 1
+#endif
+#include <complex.h>
+int main() {
+  _Float128 _Complex z;
+  __real__(z) = (_Float128)1.0;
+  __imag__(z) = (_Float128)2.0;
+  volatile _Float128 a = cabsf128(z);
+  (void)a;
+  (void)csqrtf128(z);
+  (void)csinf128(z);
+  (void)ccosf128(z);
+  (void)cexpf128(z);
+  (void)clogf128(z);
+  return 0;
+}
+]])],
+    [mplapack_have_c_complex_float128=yes],
+    [mplapack_have_c_complex_float128=no])
+  AC_MSG_RESULT([$mplapack_have_c_complex_float128])
+])
+AS_IF([test "x$mplapack_binary128_mode" != "x2"], [
+  AC_MSG_CHECKING([for std::complex<_Float128> math functions])
+  AC_MSG_RESULT([no])
+  AC_MSG_CHECKING([for C _Float128 complex math functions])
+  AC_MSG_RESULT([no])
+])
+AS_IF([test "x$mplapack_have_std_complex_float128" = "xyes"],
+  [AC_DEFINE([MPLAPACK_HAVE_STD_COMPLEX_FLOAT128],[1],
+    [Define to 1 if std::complex<_Float128> math functions are available])],
+  [AC_DEFINE([MPLAPACK_HAVE_STD_COMPLEX_FLOAT128],[0],
+    [Define to 0 if std::complex<_Float128> math functions are not available])]
+)
+AS_IF([test "x$mplapack_have_c_complex_float128" = "xyes"],
+  [AC_DEFINE([MPLAPACK_HAVE_C_COMPLEX_FLOAT128],[1],
+    [Define to 1 if C _Float128 complex math functions are available in C++])],
+  [AC_DEFINE([MPLAPACK_HAVE_C_COMPLEX_FLOAT128],[0],
+    [Define to 0 if C _Float128 complex math functions are not available in C++])]
 )
 AC_LANG_POP([C++])
 
@@ -2265,9 +2362,9 @@ if test "x$BINARY128_SUPPORT" = "xenabled"; then
     AC_MSG_NOTICE([  Math:           $BINARY128_MATH])
     AC_MSG_NOTICE([  Literal:        $BINARY128_LITERAL])
     if test "x$mplapack_have_std_abs_float128" = "xyes"; then
-        AC_MSG_NOTICE([  std::abs:       yes (__float128)])
+        AC_MSG_NOTICE([  std::abs:       yes ($BINARY128_TYPE)])
     else
-        AC_MSG_NOTICE([  std::abs:       no (__float128)])
+        AC_MSG_NOTICE([  std::abs:       no ($BINARY128_TYPE)])
     fi
     AC_MSG_NOTICE([  Interop:])
     AC_MSG_NOTICE([    _Float128  <-> __float128 : $FLOAT128_INTEROP_STD_GNU])

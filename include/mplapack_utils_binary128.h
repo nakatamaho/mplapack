@@ -31,6 +31,34 @@
 
 #include "mplapack_config.h"
 
+#ifndef MPLAPACK_HAVE_STD_ABS_FLOAT128
+#define MPLAPACK_HAVE_STD_ABS_FLOAT128 0
+#endif
+#ifndef MPLAPACK_HAVE_STD_COMPLEX_FLOAT128
+#define MPLAPACK_HAVE_STD_COMPLEX_FLOAT128 0
+#endif
+#ifndef MPLAPACK_HAVE_C_COMPLEX_FLOAT128
+#define MPLAPACK_HAVE_C_COMPLEX_FLOAT128 0
+#endif
+
+#if (MPLAPACK_HAVE_STD_ABS_FLOAT128 == 1) && defined(__cplusplus) && ((__cplusplus > 202002L) || !defined(__STRICT_ANSI__))
+#define MPLAPACK_USE_STD_ABS_FLOAT128 1
+#else
+#define MPLAPACK_USE_STD_ABS_FLOAT128 0
+#endif
+
+#if (MPLAPACK_HAVE_STD_COMPLEX_FLOAT128 == 1) && defined(__cplusplus) && (__cplusplus > 202002L)
+#define MPLAPACK_USE_STD_COMPLEX_FLOAT128 1
+#else
+#define MPLAPACK_USE_STD_COMPLEX_FLOAT128 0
+#endif
+
+#if (MPLAPACK_HAVE_C_COMPLEX_FLOAT128 == 1) && !defined(__STRICT_ANSI__)
+#define MPLAPACK_USE_C_COMPLEX_FLOAT128 1
+#else
+#define MPLAPACK_USE_C_COMPLEX_FLOAT128 0
+#endif
+
 #if defined ___MPLAPACK_INTERNAL___
 #include <cstring>
 
@@ -472,8 +500,8 @@ inline __float128 pow(const int &a, const long &b) { return powq((__float128)a, 
 inline __float128 pow(const __float128 &a, const long &b) { return powq(a, (__float128)b); }
 inline __float128 sqrt(const __float128 &a) { return sqrtq(a); }
 
-#if !defined(MPLAPACK_HAVE_STD_ABS_FLOAT128) || (MPLAPACK_HAVE_STD_ABS_FLOAT128 != 1)
-// Define a fallback abs for __float128 only when std::abs(__float128) is missing.
+#if MPLAPACK_USE_STD_ABS_FLOAT128 != 1
+// Define a fallback abs for __float128 when the active C++ mode cannot use std::abs.
 inline __float128 abs(const __float128 &a) { return fabsq(a); }
 #endif
 
@@ -581,7 +609,7 @@ inline _Float128 pow(const int &a, const long &b) { return powf128((_Float128)a,
 inline _Float128 pow(const _Float128 &a, const long &b) { return powf128(a, (_Float128)b); }
 inline _Float128 sqrt(const _Float128 &a) { return sqrtf128(a); }
 
-#if !defined(MPLAPACK_HAVE_STD_ABS_FLOAT128) || (MPLAPACK_HAVE_STD_ABS_FLOAT128 != 1)
+#if MPLAPACK_USE_STD_ABS_FLOAT128 != 1
 inline _Float128 abs(const _Float128 &a) { return fabsf128(a); }
 #endif
 
@@ -600,69 +628,117 @@ inline _Float128 ceil(_Float128 a) { return ceilf128(a); }
 inline _Float128 nextafter(const _Float128 &a, const _Float128 &b) { return nextafterf128(a, b); }
 inline _Float128 ldexp(const _Float128 &a, int exp) { return ldexpf128(a, exp); }
 
+#if MPLAPACK_USE_STD_COMPLEX_FLOAT128 == 1
+inline _Float128 abs(const std::complex<_Float128> &a) { return std::abs(a); }
+inline std::complex<_Float128> sqrt(const std::complex<_Float128> a) { return std::sqrt(a); }
+inline std::complex<_Float128> sin(const std::complex<_Float128> a) { return std::sin(a); }
+inline std::complex<_Float128> cos(const std::complex<_Float128> a) { return std::cos(a); }
+inline std::complex<_Float128> exp(const std::complex<_Float128> &a) { return std::exp(a); }
+inline std::complex<_Float128> log(const std::complex<_Float128> &a) { return std::log(a); }
+
+#elif MPLAPACK_USE_C_COMPLEX_FLOAT128 == 1
 inline _Float128 abs(const std::complex<_Float128> &a) {
-    _Float128 _Complex b, tmp;
-    _Float128 c;
-    __real__(b) = (a.real());
-    __imag__(b) = (a.imag());
-    c = cabsf128(b);
-    return c;
+    _Float128 _Complex b;
+    __real__(b) = a.real();
+    __imag__(b) = a.imag();
+    return cabsf128(b);
 }
 
 inline std::complex<_Float128> sqrt(const std::complex<_Float128> a) {
     _Float128 _Complex b, tmp;
-    std::complex<_Float128> c;
-    __real__(b) = (a.real());
-    __imag__(b) = (a.imag());
+    __real__(b) = a.real();
+    __imag__(b) = a.imag();
     tmp = csqrtf128(b);
-    c.real(__real__(tmp));
-    c.imag(__imag__(tmp));
-    return c;
+    return std::complex<_Float128>(__real__(tmp), __imag__(tmp));
 }
 
 inline std::complex<_Float128> sin(const std::complex<_Float128> a) {
     _Float128 _Complex b, tmp;
-    std::complex<_Float128> c;
-    __real__(b) = (a.real());
-    __imag__(b) = (a.imag());
+    __real__(b) = a.real();
+    __imag__(b) = a.imag();
     tmp = csinf128(b);
-    c.real(__real__(tmp));
-    c.imag(__imag__(tmp));
-    return c;
+    return std::complex<_Float128>(__real__(tmp), __imag__(tmp));
 }
 
 inline std::complex<_Float128> cos(const std::complex<_Float128> a) {
     _Float128 _Complex b, tmp;
-    std::complex<_Float128> c;
-    __real__(b) = (a.real());
-    __imag__(b) = (a.imag());
+    __real__(b) = a.real();
+    __imag__(b) = a.imag();
     tmp = ccosf128(b);
-    c.real(__real__(tmp));
-    c.imag(__imag__(tmp));
-    return c;
+    return std::complex<_Float128>(__real__(tmp), __imag__(tmp));
 }
 
 inline std::complex<_Float128> exp(const std::complex<_Float128> &a) {
     _Float128 _Complex b, tmp;
-    std::complex<_Float128> c;
-    __real__(b) = (a.real());
-    __imag__(b) = (a.imag());
+    __real__(b) = a.real();
+    __imag__(b) = a.imag();
     tmp = cexpf128(b);
-    c.real(__real__(tmp));
-    c.imag(__imag__(tmp));
-    return c;
+    return std::complex<_Float128>(__real__(tmp), __imag__(tmp));
 }
 
 inline std::complex<_Float128> log(const std::complex<_Float128> &a) {
     _Float128 _Complex b, tmp;
-    std::complex<_Float128> c;
-    __real__(b) = (a.real());
-    __imag__(b) = (a.imag());
+    __real__(b) = a.real();
+    __imag__(b) = a.imag();
     tmp = clogf128(b);
-    c.real(__real__(tmp));
-    c.imag(__imag__(tmp));
-    return c;
+    return std::complex<_Float128>(__real__(tmp), __imag__(tmp));
 }
+
+#else
+inline _Float128 abs(const std::complex<_Float128> &a) {
+    const _Float128 x = fabsf128(a.real());
+    const _Float128 y = fabsf128(a.imag());
+    if (x == (_Float128)0.0) {
+        return y;
+    }
+    if (y == (_Float128)0.0) {
+        return x;
+    }
+    if (x < y) {
+        const _Float128 r = x / y;
+        return y * sqrtf128((_Float128)1.0 + r * r);
+    }
+    const _Float128 r = y / x;
+    return x * sqrtf128((_Float128)1.0 + r * r);
+}
+
+inline std::complex<_Float128> sqrt(const std::complex<_Float128> a) {
+    const _Float128 x = a.real();
+    const _Float128 y = a.imag();
+    if (y == (_Float128)0.0) {
+        if (x < (_Float128)0.0) {
+            return std::complex<_Float128>((_Float128)0.0, sqrtf128(-x));
+        }
+        return std::complex<_Float128>(sqrtf128(x), (_Float128)0.0);
+    }
+    const _Float128 r = abs(a);
+    const _Float128 re = sqrtf128((r + x) / (_Float128)2.0);
+    _Float128 im = sqrtf128((r - x) / (_Float128)2.0);
+    if (y < (_Float128)0.0) {
+        im = -im;
+    }
+    return std::complex<_Float128>(re, im);
+}
+
+inline std::complex<_Float128> sin(const std::complex<_Float128> a) {
+    const _Float128 x = a.real();
+    const _Float128 y = a.imag();
+    return std::complex<_Float128>(sinf128(x) * coshf128(y), cosf128(x) * sinhf128(y));
+}
+
+inline std::complex<_Float128> cos(const std::complex<_Float128> a) {
+    const _Float128 x = a.real();
+    const _Float128 y = a.imag();
+    return std::complex<_Float128>(cosf128(x) * coshf128(y), -sinf128(x) * sinhf128(y));
+}
+
+inline std::complex<_Float128> exp(const std::complex<_Float128> &a) {
+    const _Float128 ex = expf128(a.real());
+    return std::complex<_Float128>(ex * cosf128(a.imag()), ex * sinf128(a.imag()));
+}
+
+inline std::complex<_Float128> log(const std::complex<_Float128> &a) { return std::complex<_Float128>(logf128(abs(a)), atan2f128(a.imag(), a.real())); }
+#endif
 
 inline mplapackint nint(_Float128 a) {
     mplapackint i;
