@@ -580,7 +580,10 @@ inline _Float128 pow(const long &a, const long &b) { return powf128((_Float128)a
 inline _Float128 pow(const int &a, const long &b) { return powf128((_Float128)a, (_Float128)b); }
 inline _Float128 pow(const _Float128 &a, const long &b) { return powf128(a, (_Float128)b); }
 inline _Float128 sqrt(const _Float128 &a) { return sqrtf128(a); }
+
+#if !defined(MPLAPACK_HAVE_STD_ABS_FLOAT128) || (MPLAPACK_HAVE_STD_ABS_FLOAT128 != 1)
 inline _Float128 abs(const _Float128 &a) { return fabsf128(a); }
+#endif
 
 inline _Float128 sin(_Float128 a) { return sinf128(a); }
 inline _Float128 sinh(_Float128 a) { return sinhf128(a); }
