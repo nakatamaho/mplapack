@@ -34,35 +34,14 @@
 #ifndef MPLAPACK_HAVE_STD_ABS_FLOAT128
 #define MPLAPACK_HAVE_STD_ABS_FLOAT128 0
 #endif
+#ifndef MPLAPACK_HAVE_STD_MATH_FLOAT128
+#define MPLAPACK_HAVE_STD_MATH_FLOAT128 0
+#endif
 #ifndef MPLAPACK_HAVE_STD_COMPLEX_FLOAT128
 #define MPLAPACK_HAVE_STD_COMPLEX_FLOAT128 0
 #endif
 #ifndef MPLAPACK_HAVE_C_COMPLEX_FLOAT128
 #define MPLAPACK_HAVE_C_COMPLEX_FLOAT128 0
-#endif
-
-#if (MPLAPACK_HAVE_STD_ABS_FLOAT128 == 1) && defined(__cplusplus) && ((__cplusplus > 202002L) || !defined(__STRICT_ANSI__))
-#define MPLAPACK_USE_STD_ABS_FLOAT128 1
-#else
-#define MPLAPACK_USE_STD_ABS_FLOAT128 0
-#endif
-
-#if (MPLAPACK_HAVE_STD_COMPLEX_FLOAT128 == 1) && defined(__cplusplus) && (__cplusplus > 202002L)
-#define MPLAPACK_USE_STD_COMPLEX_FLOAT128 1
-#else
-#define MPLAPACK_USE_STD_COMPLEX_FLOAT128 0
-#endif
-
-#if (MPLAPACK_HAVE_C_COMPLEX_FLOAT128 == 1) && !defined(__STRICT_ANSI__)
-#define MPLAPACK_USE_C_COMPLEX_FLOAT128 1
-#else
-#define MPLAPACK_USE_C_COMPLEX_FLOAT128 0
-#endif
-
-#if defined(__cplusplus) && (__cplusplus > 202002L) && defined(__GLIBCXX__)
-#define MPLAPACK_USE_STD_MATH_FLOAT128 1
-#else
-#define MPLAPACK_USE_STD_MATH_FLOAT128 0
 #endif
 
 #if defined ___MPLAPACK_INTERNAL___
@@ -499,6 +478,9 @@ inline void sprintnum_short(char *buf, std::complex<long double> ctmp) {
 
 #if MPLAPACK_BINARY128_MATH == MPLAPACK_BINARY128_MATH_QUADMATH
 #include <quadmath.h>
+#if MPLAPACK_HAVE_STD_ABS_FLOAT128 == 1
+#include <cmath>
+#endif
 
 inline __float128 pow(const __float128 &a, const __float128 &b) { return powq(a, b); }
 inline __float128 pow(const long &a, const long &b) { return powq((__float128)a, (__float128)b); }
@@ -506,8 +488,9 @@ inline __float128 pow(const int &a, const long &b) { return powq((__float128)a, 
 inline __float128 pow(const __float128 &a, const long &b) { return powq(a, (__float128)b); }
 inline __float128 sqrt(const __float128 &a) { return sqrtq(a); }
 
-#if MPLAPACK_USE_STD_ABS_FLOAT128 != 1
-// Define a fallback abs for __float128 when the active C++ mode cannot use std::abs.
+#if MPLAPACK_HAVE_STD_ABS_FLOAT128 == 1
+using std::abs;
+#else
 inline __float128 abs(const __float128 &a) { return fabsq(a); }
 #endif
 
@@ -608,16 +591,16 @@ inline __float128 pi(__float128 dummy) { return M_PIq; }
 
 #include <complex>
 #include <complex.h>
-
-#if MPLAPACK_USE_STD_MATH_FLOAT128 == 1
+#if (MPLAPACK_HAVE_STD_ABS_FLOAT128 == 1) || (MPLAPACK_HAVE_STD_MATH_FLOAT128 == 1)
 #include <cmath>
-using std::abs;
+#endif
+
+#if MPLAPACK_HAVE_STD_MATH_FLOAT128 == 1
 using std::atan2;
 using std::ceil;
 using std::cos;
 using std::cosh;
 using std::exp;
-using std::floor;
 using std::ldexp;
 using std::log;
 using std::log10;
@@ -638,18 +621,11 @@ inline _Float128 pow(const long &a, const long &b) { return powf128((_Float128)a
 inline _Float128 pow(const int &a, const long &b) { return powf128((_Float128)a, (_Float128)b); }
 inline _Float128 pow(const _Float128 &a, const long &b) { return powf128(a, (_Float128)b); }
 inline _Float128 sqrt(const _Float128 &a) { return sqrtf128(a); }
-
-#if MPLAPACK_USE_STD_ABS_FLOAT128 != 1
-inline _Float128 abs(const _Float128 &a) { return fabsf128(a); }
-#endif
-
 inline _Float128 sin(_Float128 a) { return sinf128(a); }
 inline _Float128 sinh(_Float128 a) { return sinhf128(a); }
 inline _Float128 cos(_Float128 a) { return cosf128(a); }
 inline _Float128 cosh(_Float128 a) { return coshf128(a); }
-
 inline _Float128 atan2(_Float128 a, _Float128 b) { return atan2f128(a, b); }
-
 inline _Float128 exp(const _Float128 &a) { return expf128(a); }
 inline _Float128 log(const _Float128 &a) { return logf128(a); }
 inline _Float128 log10(const _Float128 &a) { return log10f128(a); }
@@ -659,7 +635,13 @@ inline _Float128 nextafter(const _Float128 &a, const _Float128 &b) { return next
 inline _Float128 ldexp(const _Float128 &a, int exp) { return ldexpf128(a, exp); }
 #endif
 
-#if MPLAPACK_USE_STD_COMPLEX_FLOAT128 == 1
+#if MPLAPACK_HAVE_STD_ABS_FLOAT128 == 1
+using std::abs;
+#else
+inline _Float128 abs(const _Float128 &a) { return fabsf128(a); }
+#endif
+
+#if MPLAPACK_HAVE_STD_COMPLEX_FLOAT128 == 1
 inline _Float128 abs(const std::complex<_Float128> &a) { return std::abs(a); }
 inline std::complex<_Float128> sqrt(const std::complex<_Float128> a) { return std::sqrt(a); }
 inline std::complex<_Float128> sin(const std::complex<_Float128> a) { return std::sin(a); }
@@ -667,7 +649,7 @@ inline std::complex<_Float128> cos(const std::complex<_Float128> a) { return std
 inline std::complex<_Float128> exp(const std::complex<_Float128> &a) { return std::exp(a); }
 inline std::complex<_Float128> log(const std::complex<_Float128> &a) { return std::log(a); }
 
-#elif MPLAPACK_USE_C_COMPLEX_FLOAT128 == 1
+#elif MPLAPACK_HAVE_C_COMPLEX_FLOAT128 == 1
 inline _Float128 abs(const std::complex<_Float128> &a) {
     _Float128 _Complex b;
     __real__(b) = a.real();

@@ -1142,12 +1142,58 @@ AS_IF([test "x$mplapack_have_std_abs_float128" = "xyes"],
 )
 AC_LANG_POP([C++])
 
+dnl Check whether std::* math overloads exist for _Float128.  This is separate
+dnl from std::abs(): libstdc++ exposes these overloads on a different schedule,
+dnl and defining global wrappers with the same signatures conflicts with C++23
+dnl <math.h> using-declarations.
+AC_LANG_PUSH([C++])
+mplapack_have_std_math_float128=no
+AS_IF([test "x$mplapack_binary128_mode" = "x2"], [
+  AC_MSG_CHECKING([for std::_Float128 math functions])
+  AC_COMPILE_IFELSE(
+    [AC_LANG_SOURCE([[
+#include <cmath>
+#include <type_traits>
+int main() {
+  _Float128 x = (_Float128)1.0;
+  _Float128 y = (_Float128)2.0;
+  static_assert(std::is_same<decltype(std::sin(x)), _Float128>::value, "std::sin(_Float128)");
+  static_assert(std::is_same<decltype(std::sinh(x)), _Float128>::value, "std::sinh(_Float128)");
+  static_assert(std::is_same<decltype(std::cos(x)), _Float128>::value, "std::cos(_Float128)");
+  static_assert(std::is_same<decltype(std::cosh(x)), _Float128>::value, "std::cosh(_Float128)");
+  static_assert(std::is_same<decltype(std::atan2(x, y)), _Float128>::value, "std::atan2(_Float128)");
+  static_assert(std::is_same<decltype(std::exp(x)), _Float128>::value, "std::exp(_Float128)");
+  static_assert(std::is_same<decltype(std::log(x)), _Float128>::value, "std::log(_Float128)");
+  static_assert(std::is_same<decltype(std::log10(x)), _Float128>::value, "std::log10(_Float128)");
+  static_assert(std::is_same<decltype(std::log2(x)), _Float128>::value, "std::log2(_Float128)");
+  static_assert(std::is_same<decltype(std::pow(x, y)), _Float128>::value, "std::pow(_Float128)");
+  static_assert(std::is_same<decltype(std::sqrt(x)), _Float128>::value, "std::sqrt(_Float128)");
+  static_assert(std::is_same<decltype(std::ceil(x)), _Float128>::value, "std::ceil(_Float128)");
+  static_assert(std::is_same<decltype(std::nextafter(x, y)), _Float128>::value, "std::nextafter(_Float128)");
+  static_assert(std::is_same<decltype(std::ldexp(x, 1)), _Float128>::value, "std::ldexp(_Float128)");
+  return 0;
+}
+]])],
+    [mplapack_have_std_math_float128=yes],
+    [mplapack_have_std_math_float128=no])
+  AC_MSG_RESULT([$mplapack_have_std_math_float128])
+], [
+  AC_MSG_CHECKING([for std::_Float128 math functions])
+  AC_MSG_RESULT([no])
+])
+AS_IF([test "x$mplapack_have_std_math_float128" = "xyes"],
+  [AC_DEFINE([MPLAPACK_HAVE_STD_MATH_FLOAT128],[1],
+    [Define to 1 if std::_Float128 scalar math functions are available])],
+  [AC_DEFINE([MPLAPACK_HAVE_STD_MATH_FLOAT128],[0],
+    [Define to 0 if std::_Float128 scalar math functions are not available])]
+)
+AC_LANG_POP([C++])
+
 dnl Check which complex _Float128 implementation can be used by headers built
-dnl with this C++ mode.  std::complex<_Float128> math is available in modern
-dnl libstdc++ C++23 modes, while glibc's C _Float128 _Complex functions are
-dnl typically only declared in GNU C++ modes.  The installed header also guards
-dnl these with compile-time C++ mode checks so consumers using a different
-dnl standard still fall back safely.
+dnl with this configured C++ mode.  std::complex<_Float128> math is available
+dnl in modern libstdc++ C++23 modes, while glibc C _Float128 _Complex
+dnl functions are typically only declared in GNU C++ modes.  The header trusts
+dnl these probe results; re-run configure when changing the C++ mode.
 AC_LANG_PUSH([C++])
 mplapack_have_std_complex_float128=no
 mplapack_have_c_complex_float128=no
@@ -1635,6 +1681,84 @@ if test x$enable_binary80 = x"yes"; then
         AC_MSG_ERROR([binary80 is not supported on this system])
     fi
 fi
+
+dnl Check whether std::abs() exists for _Float64x in the selected C++ mode.
+dnl Keep this separate from the other std::_Float64x math functions, mirroring
+dnl the binary128 split: abs has its own overload set and library exposure
+dnl history.
+AC_LANG_PUSH([C++])
+mplapack_have_std_abs_float64x=no
+AS_IF([test "x$mplapack_binary80_mode" = "x2"], [
+  AC_MSG_CHECKING([for std::abs(_Float64x)])
+  AC_COMPILE_IFELSE(
+    [AC_LANG_SOURCE([[
+#include <cmath>
+int main() {
+  auto p = static_cast<_Float64x (*)(_Float64x)>(&std::abs);
+  (void)p;
+  return 0;
+}
+]])],
+    [mplapack_have_std_abs_float64x=yes],
+    [mplapack_have_std_abs_float64x=no])
+  AC_MSG_RESULT([$mplapack_have_std_abs_float64x])
+], [
+  AC_MSG_CHECKING([for std::abs(_Float64x)])
+  AC_MSG_RESULT([no])
+])
+AS_IF([test "x$mplapack_have_std_abs_float64x" = "xyes"],
+  [AC_DEFINE([MPLAPACK_HAVE_STD_ABS_FLOAT64X],[1],
+    [Define to 1 if std::abs() is available for _Float64x])],
+  [AC_DEFINE([MPLAPACK_HAVE_STD_ABS_FLOAT64X],[0],
+    [Define to 0 if std::abs() is not available for _Float64x])]
+)
+AC_LANG_POP([C++])
+
+dnl Check whether std::* math overloads exist for _Float64x.  If they do, the
+dnl header should expose those overloads rather than defining global wrappers
+dnl with the same signatures.
+AC_LANG_PUSH([C++])
+mplapack_have_std_math_float64x=no
+AS_IF([test "x$mplapack_binary80_mode" = "x2"], [
+  AC_MSG_CHECKING([for std::_Float64x math functions])
+  AC_COMPILE_IFELSE(
+    [AC_LANG_SOURCE([[
+#include <cmath>
+#include <type_traits>
+int main() {
+  _Float64x x = (_Float64x)1.0;
+  _Float64x y = (_Float64x)2.0;
+  static_assert(std::is_same<decltype(std::sin(x)), _Float64x>::value, "std::sin(_Float64x)");
+  static_assert(std::is_same<decltype(std::sinh(x)), _Float64x>::value, "std::sinh(_Float64x)");
+  static_assert(std::is_same<decltype(std::cos(x)), _Float64x>::value, "std::cos(_Float64x)");
+  static_assert(std::is_same<decltype(std::cosh(x)), _Float64x>::value, "std::cosh(_Float64x)");
+  static_assert(std::is_same<decltype(std::atan2(x, y)), _Float64x>::value, "std::atan2(_Float64x)");
+  static_assert(std::is_same<decltype(std::exp(x)), _Float64x>::value, "std::exp(_Float64x)");
+  static_assert(std::is_same<decltype(std::floor(x)), _Float64x>::value, "std::floor(_Float64x)");
+  static_assert(std::is_same<decltype(std::log(x)), _Float64x>::value, "std::log(_Float64x)");
+  static_assert(std::is_same<decltype(std::log10(x)), _Float64x>::value, "std::log10(_Float64x)");
+  static_assert(std::is_same<decltype(std::log2(x)), _Float64x>::value, "std::log2(_Float64x)");
+  static_assert(std::is_same<decltype(std::pow(x, y)), _Float64x>::value, "std::pow(_Float64x)");
+  static_assert(std::is_same<decltype(std::sqrt(x)), _Float64x>::value, "std::sqrt(_Float64x)");
+  static_assert(std::is_same<decltype(std::nextafter(x, y)), _Float64x>::value, "std::nextafter(_Float64x)");
+  static_assert(std::is_same<decltype(std::ldexp(x, 1)), _Float64x>::value, "std::ldexp(_Float64x)");
+  return 0;
+}
+]])],
+    [mplapack_have_std_math_float64x=yes],
+    [mplapack_have_std_math_float64x=no])
+  AC_MSG_RESULT([$mplapack_have_std_math_float64x])
+], [
+  AC_MSG_CHECKING([for std::_Float64x math functions])
+  AC_MSG_RESULT([no])
+])
+AS_IF([test "x$mplapack_have_std_math_float64x" = "xyes"],
+  [AC_DEFINE([MPLAPACK_HAVE_STD_MATH_FLOAT64X],[1],
+    [Define to 1 if std::_Float64x scalar math functions are available])],
+  [AC_DEFINE([MPLAPACK_HAVE_STD_MATH_FLOAT64X],[0],
+    [Define to 0 if std::_Float64x scalar math functions are not available])]
+)
+AC_LANG_POP([C++])
 
 dnl ===================================================================
 dnl Define macros for config.h (type availability / relationships)
@@ -2320,6 +2444,44 @@ elif test "x$have_suffix_L_binary128" = "xyes"; then
     BINARY128_LITERAL="L"
 fi
 
+BINARY128_STD_ABS="not applicable ($BINARY128_TYPE)"
+AS_CASE([$mplapack_binary128_mode],
+    [1], [BINARY128_STD_ABS="standard overload set (long double)"],
+    [2], [BINARY128_STD_ABS="no (_Float128)"],
+    [3], [BINARY128_STD_ABS="no (__float128)"])
+if test "x$mplapack_have_std_abs_float128" = "xyes"; then
+    AS_CASE([$mplapack_binary128_mode],
+        [2], [BINARY128_STD_ABS="yes (_Float128)"],
+        [3], [BINARY128_STD_ABS="yes (__float128)"])
+fi
+
+BINARY128_STD_MATH="not applicable ($BINARY128_TYPE)"
+if test "x$mplapack_binary128_mode" = "x1"; then
+    BINARY128_STD_MATH="standard overload set (long double)"
+elif test "x$mplapack_binary128_mode" = "x2"; then
+    BINARY128_STD_MATH="no (_Float128)"
+    if test "x$mplapack_have_std_math_float128" = "xyes"; then
+        BINARY128_STD_MATH="yes (_Float128)"
+    fi
+fi
+BINARY128_STD_MATH_FUNCS1="sin, sinh, cos, cosh, atan2, exp, log, log10"
+BINARY128_STD_MATH_FUNCS2="log2, pow, sqrt, ceil, nextafter, ldexp"
+
+BINARY128_STD_COMPLEX="not applicable ($BINARY128_TYPE)"
+BINARY128_C_COMPLEX="not applicable ($BINARY128_TYPE)"
+if test "x$mplapack_binary128_mode" = "x2"; then
+    BINARY128_STD_COMPLEX="no (_Float128)"
+    BINARY128_C_COMPLEX="no (_Float128)"
+    if test "x$mplapack_have_std_complex_float128" = "xyes"; then
+        BINARY128_STD_COMPLEX="yes (_Float128)"
+    fi
+    if test "x$mplapack_have_c_complex_float128" = "xyes"; then
+        BINARY128_C_COMPLEX="yes (_Float128)"
+    fi
+fi
+BINARY128_STD_COMPLEX_FUNCS="abs, sqrt, sin, cos, exp, log"
+BINARY128_C_COMPLEX_FUNCS="cabsf128, csqrtf128, csinf128, ccosf128, cexpf128, clogf128"
+
 FLOAT128_INTEROP_STD_GNU="not tested"
 if test "x$have__Float128" = "xyes" && test "x$have___float128" = "xyes"; then
     if test "x$float128_types_same" = "xyes"; then
@@ -2361,11 +2523,14 @@ if test "x$BINARY128_SUPPORT" = "xenabled"; then
     AC_MSG_NOTICE([  I/O:            $BINARY128_IO])
     AC_MSG_NOTICE([  Math:           $BINARY128_MATH])
     AC_MSG_NOTICE([  Literal:        $BINARY128_LITERAL])
-    if test "x$mplapack_have_std_abs_float128" = "xyes"; then
-        AC_MSG_NOTICE([  std::abs:       yes ($BINARY128_TYPE)])
-    else
-        AC_MSG_NOTICE([  std::abs:       no ($BINARY128_TYPE)])
-    fi
+    AC_MSG_NOTICE([  std::abs:       $BINARY128_STD_ABS])
+    AC_MSG_NOTICE([  std::math:      $BINARY128_STD_MATH])
+    AC_MSG_NOTICE([    functions:    $BINARY128_STD_MATH_FUNCS1])
+    AC_MSG_NOTICE([                  $BINARY128_STD_MATH_FUNCS2])
+    AC_MSG_NOTICE([  std::complex:   $BINARY128_STD_COMPLEX])
+    AC_MSG_NOTICE([    functions:    $BINARY128_STD_COMPLEX_FUNCS])
+    AC_MSG_NOTICE([  C complex:      $BINARY128_C_COMPLEX])
+    AC_MSG_NOTICE([    functions:    $BINARY128_C_COMPLEX_FUNCS])
     AC_MSG_NOTICE([  Interop:])
     AC_MSG_NOTICE([    _Float128  <-> __float128 : $FLOAT128_INTEROP_STD_GNU])
     AC_MSG_NOTICE([    _Float128  <-> long double: $FLOAT128_INTEROP_STD_LDBL])
@@ -2407,6 +2572,28 @@ elif test "x$have_suffix_L_binary80" = "xyes"; then
     BINARY80_LITERAL="L"
 fi
 
+BINARY80_STD_ABS="not applicable ($BINARY80_TYPE)"
+if test "x$mplapack_binary80_mode" = "x1"; then
+    BINARY80_STD_ABS="standard overload set (long double)"
+elif test "x$mplapack_binary80_mode" = "x2"; then
+    BINARY80_STD_ABS="no (_Float64x)"
+    if test "x$mplapack_have_std_abs_float64x" = "xyes"; then
+        BINARY80_STD_ABS="yes (_Float64x)"
+    fi
+fi
+
+BINARY80_STD_MATH="not applicable ($BINARY80_TYPE)"
+if test "x$mplapack_binary80_mode" = "x1"; then
+    BINARY80_STD_MATH="standard overload set (long double)"
+elif test "x$mplapack_binary80_mode" = "x2"; then
+    BINARY80_STD_MATH="no (_Float64x)"
+    if test "x$mplapack_have_std_math_float64x" = "xyes"; then
+        BINARY80_STD_MATH="yes (_Float64x)"
+    fi
+fi
+BINARY80_STD_MATH_FUNCS1="sin, sinh, cos, cosh, atan2, exp, floor, log"
+BINARY80_STD_MATH_FUNCS2="log10, log2, pow, sqrt, nextafter, ldexp"
+
 FLOAT80_INTEROP_STD_GNU="not tested"
 if test "x$have__Float64x" = "xyes" && test "x$have___float80" = "xyes"; then
     if test "x$float80_types_same" = "xyes"; then
@@ -2447,6 +2634,10 @@ if test "x$BINARY80_SUPPORT" = "xenabled"; then
     AC_MSG_NOTICE([  Type:           $BINARY80_TYPE])
     AC_MSG_NOTICE([  I/O:            $BINARY80_IO])
     AC_MSG_NOTICE([  Math:           $BINARY80_MATH])
+    AC_MSG_NOTICE([  std::abs:       $BINARY80_STD_ABS])
+    AC_MSG_NOTICE([  std::math:      $BINARY80_STD_MATH])
+    AC_MSG_NOTICE([    functions:    $BINARY80_STD_MATH_FUNCS1])
+    AC_MSG_NOTICE([                  $BINARY80_STD_MATH_FUNCS2])
     AC_MSG_NOTICE([  Literal:        $BINARY80_LITERAL])
     AC_MSG_NOTICE([  Interop:])
     AC_MSG_NOTICE([    _Float64x <-> __float80   : $FLOAT80_INTEROP_STD_GNU])

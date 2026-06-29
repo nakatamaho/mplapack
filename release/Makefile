@@ -20,7 +20,7 @@ TIER1_TARGETS := tier1-macos-arm64 tier1-macos-amd64 tier1-ubuntu2404-arm64 tier
 TIER1_MACOS_TARGETS := tier1-macos-arm64 tier1-macos-amd64
 TIER1_LINUX_TARGETS := tier1-ubuntu2404-arm64 tier1-ubuntu2604-arm64 tier1-ubuntu2404-amd64 tier1-ubuntu2604-amd64 tier1-ubuntu2404-mingw64-amd64 tier1-ubuntu2604-mingw64-amd64 tier1-ubuntu2404-inteloneapi-amd64 tier1-ubuntu2604-inteloneapi-amd64 tier1-debian12-i386 tier1-debian13-i386
 TIER2_TARGETS :=
-TIER3_TARGETS := tier3-ubuntu2604-cxxstd-arm64
+TIER3_TARGETS := tier3-ubuntu2604-cxxstd-amd64
 LEGACY_QA_IMAGE_TAGS := \
     mplapack-tier1-ubuntu-amd64:latest \
     mplapack-tier1-ubuntu-arm64:latest \
@@ -34,7 +34,7 @@ RUN_REMOTE_TARGETS = CONF_FILE=$(CONF_FILE) LOGDIR=$(LOGDIR) PROJECT_ROOT=$(PROJ
 .PHONY: amd64 arm64 ppc64le i386 s390x mips64le
 .PHONY: ref-ubuntu ref-debian ref-amd64 ref-cuda ref-rocky ref-suse
 .PHONY: tarball-ubuntu tarball-amd64 tarball-arm64
-.PHONY: tier1 tier1-macos tier1-linux tier2 tier3 tier1-macos-arm64 tier1-macos-amd64 tier1-ubuntu2404-arm64 tier1-ubuntu2604-arm64 tier1-ubuntu2404-amd64 tier1-ubuntu2604-amd64 tier1-ubuntu2404-mingw64-amd64 tier1-ubuntu2604-mingw64-amd64 tier1-ubuntu2404-inteloneapi-amd64 tier1-ubuntu2604-inteloneapi-amd64 tier1-debian12-i386 tier1-debian13-i386 tier3-ubuntu2604-cxxstd-arm64
+.PHONY: tier1 tier1-macos tier1-linux tier2 tier3 tier1-macos-arm64 tier1-macos-amd64 tier1-ubuntu2404-arm64 tier1-ubuntu2604-arm64 tier1-ubuntu2404-amd64 tier1-ubuntu2604-amd64 tier1-ubuntu2404-mingw64-amd64 tier1-ubuntu2604-mingw64-amd64 tier1-ubuntu2404-inteloneapi-amd64 tier1-ubuntu2604-inteloneapi-amd64 tier1-debian12-i386 tier1-debian13-i386 tier3-ubuntu2604-cxxstd-amd64
 .PHONY: ccache-stats ccache-clear
 
 # === Main Targets ===
@@ -143,8 +143,8 @@ tier1-debian12-i386:
 tier1-debian13-i386:
 	@REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-linux-docker.sh tier1-debian13-i386
 
-tier3-ubuntu2604-cxxstd-arm64:
-	@MPLAPACK_SOURCE_MODE=$${MPLAPACK_SOURCE_MODE:-ref} REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-linux-docker.sh tier3-ubuntu2604-cxxstd-arm64
+tier3-ubuntu2604-cxxstd-amd64:
+	@MPLAPACK_SOURCE_MODE=$${MPLAPACK_SOURCE_MODE:-ref} REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-linux-docker.sh tier3-ubuntu2604-cxxstd-amd64
 
 i386:
 	@FILTER_ARCH=386 ./build-all.sh ref

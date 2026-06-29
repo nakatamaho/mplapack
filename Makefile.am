@@ -286,7 +286,7 @@ release/buildtest_tier1_ubuntu_amd64.sh \
 release/buildtest_tier1_ubuntu_inteloneapi_amd64.sh \
 release/buildtest_tier1_ubuntu_arm64.sh \
 release/buildtest_tier1_debian_i386.sh \
-release/buildtest_tier3_ubuntu2604_cxxstd_arm64.sh \
+release/buildtest_tier3_ubuntu2604_cxxstd_amd64.sh \
 release/check-installed-benchmarks.sh \
 release/check-installed-examples.sh \
 release/docker/common/entrypoint.sh \

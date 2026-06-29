@@ -32,6 +32,13 @@
 
 #include "mplapack_config.h"
 
+#ifndef MPLAPACK_HAVE_STD_ABS_FLOAT64X
+#define MPLAPACK_HAVE_STD_ABS_FLOAT64X 0
+#endif
+#ifndef MPLAPACK_HAVE_STD_MATH_FLOAT64X
+#define MPLAPACK_HAVE_STD_MATH_FLOAT64X 0
+#endif
+
 #if defined ___MPLAPACK_INTERNAL___
 
 #include <cstring>
@@ -455,6 +462,7 @@ inline void sprintnum_short(char *buf, std::complex<_Float64x> ctmp) {
 // Expose <cmath> overload sets for unqualified calls in auto-converted LAPACK code.
 // This ensures long double stays long double (avoids accidental long double -> double demotion),
 // and avoids ambiguous overloads caused by custom global wrappers.
+using std::abs;
 using std::atan2;
 using std::cos;
 using std::cosh;
@@ -516,6 +524,22 @@ inline long double pi([[maybe_unused]] long double dummy) { return 0xc.90fdaa221
 #include <math.h>
 #include <complex>
 // Basic real functions
+#if MPLAPACK_HAVE_STD_MATH_FLOAT64X == 1
+using std::atan2;
+using std::cos;
+using std::cosh;
+using std::exp;
+using std::floor;
+using std::ldexp;
+using std::log;
+using std::log10;
+using std::log2;
+using std::nextafter;
+using std::pow;
+using std::sin;
+using std::sinh;
+using std::sqrt;
+#else
 inline _Float64x atan2(_Float64x a, _Float64x b) { return ::atan2f64x(a, b); }
 inline _Float64x cos(_Float64x a) { return ::cosf64x(a); }
 inline _Float64x cosh(_Float64x a) { return ::coshf64x(a); }
@@ -528,6 +552,7 @@ inline _Float64x pow(_Float64x a, _Float64x b) { return ::powf64x(a, b); }
 inline _Float64x sin(_Float64x a) { return ::sinf64x(a); }
 inline _Float64x sinh(_Float64x a) { return ::sinhf64x(a); }
 inline _Float64x sqrt(_Float64x a) { return ::sqrtf64x(a); }
+#endif
 
 // Integer-exponent convenience overloads (matches your long double intent)
 inline _Float64x pow(const long &a, const long &b) { return ::powf64x((_Float64x)a, (_Float64x)b); }
@@ -548,11 +573,17 @@ inline std::complex<_Float64x> pow4(const std::complex<_Float64x> &a) {
 }
 
 // ldexp/nextafter
+#if MPLAPACK_HAVE_STD_MATH_FLOAT64X != 1
 inline _Float64x ldexp(const _Float64x &a, int exp) { return ::ldexpf64x(a, exp); }
 inline _Float64x nextafter(const _Float64x &a, const _Float64x &b) { return ::nextafterf64x(a, b); }
+#endif
 
 // absolute value
+#if MPLAPACK_HAVE_STD_ABS_FLOAT64X == 1
+using std::abs;
+#else
 inline _Float64x abs(_Float64x a) { return ::fabsf64x(a); }
+#endif
 
 // sign transfer (your semantics preserved)
 inline _Float64x sign(const _Float64x &a, const _Float64x &b) {

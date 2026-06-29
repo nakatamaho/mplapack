@@ -179,6 +179,30 @@ No sixth combination occurs in the matrix.
 
 ---
 
+## Table 3: C++ Standard Math Exposure Summary
+
+This table summarizes the current configure probes and header behavior for `std::abs`,
+`std::sin` / `std::cos` / related scalar math overloads, and complex math. The scalar
+`std::math` checks are group probes: if any listed overload is missing, MPLAPACK does not use
+the `std::` overload set for that backend and instead keeps its C/libquadmath wrapper path.
+
+| Area | Selected type / mode | Configure macro(s) | Probed functions | Header behavior |
+|---|---|---|---|---|
+| binary128 scalar abs | `_Float128` or `__float128` | `MPLAPACK_HAVE_STD_ABS_FLOAT128` | `std::abs(_Float128)` or `std::abs(__float128)`, matching the selected binary128 mode | If present, expose `using std::abs`; otherwise define fallback `fabsf128` / `fabsq` wrapper. |
+| binary128 scalar math | `_Float128` only | `MPLAPACK_HAVE_STD_MATH_FLOAT128` | `std::sin`, `std::sinh`, `std::cos`, `std::cosh`, `std::atan2`, `std::exp`, `std::log`, `std::log10`, `std::log2`, `std::pow`, `std::sqrt`, `std::ceil`, `std::nextafter`, `std::ldexp` | If present, expose the `std::` overload set; otherwise define `*f128` wrappers. The `__float128` mode stays on libquadmath wrappers, and `long double (binary128)` uses the normal long-double overload set. |
+| binary128 complex math | `_Float128` complex | `MPLAPACK_HAVE_STD_COMPLEX_FLOAT128`, `MPLAPACK_HAVE_C_COMPLEX_FLOAT128` | `std::complex<_Float128>`: `abs`, `sqrt`, `sin`, `cos`, `exp`, `log`; C complex fallback: `cabsf128`, `csqrtf128`, `csinf128`, `ccosf128`, `cexpf128`, `clogf128` | Prefer `std::complex<_Float128>` math when available; otherwise use C `_Float128 _Complex` functions; otherwise use manual formulas backed by `*f128` scalar functions. |
+| binary80 scalar abs | `_Float64x` | `MPLAPACK_HAVE_STD_ABS_FLOAT64X` | `std::abs(_Float64x)` | If present, expose `using std::abs`; otherwise define fallback `fabsf64x` wrapper. `long double (binary80)` uses the normal long-double overload set. |
+| binary80 scalar math | `_Float64x` | `MPLAPACK_HAVE_STD_MATH_FLOAT64X` | `std::sin`, `std::sinh`, `std::cos`, `std::cosh`, `std::atan2`, `std::exp`, `std::floor`, `std::log`, `std::log10`, `std::log2`, `std::pow`, `std::sqrt`, `std::nextafter`, `std::ldexp` | If present, expose the `std::` overload set; otherwise define `*f64x` wrappers. The `long double (binary80)` mode uses the normal long-double overload set. |
+| binary80 complex math | `_Float64x` complex | none today | none today | The header currently provides only simple algebra helpers such as `pow2` / `pow4` for `std::complex<_Float64x>`; no complex transcendental probe is used today. |
+
+The binary128 scalar group currently includes `ceil`, while the binary80 scalar group includes
+`floor`, because those are the global helper wrappers currently exposed by the respective
+headers. This is not a mathematical distinction between the formats; it is a probe boundary
+chosen to match the functions that would otherwise be defined as global wrappers and could
+therefore conflict with C++23 `<math.h>` / `<cmath>` declarations.
+
+---
+
 ## Technical Findings
 
 ### 1. The binary128 code path is determined by **three orthogonal axes**, not just GCC version
