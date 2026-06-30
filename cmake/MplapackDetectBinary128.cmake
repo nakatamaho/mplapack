@@ -13,6 +13,9 @@
 #   MPLAPACK_BINARY128_IO    (0 NONE / 1 SNPRINTF_LDBL / 2 STRFROMF128 / 3 QUADMATH_SNPRINTF)
 #   MPLAPACK_BINARY128_MATH  (0 NONE / 1 LDBL / 2 F128 / 3 QUADMATH)
 #   MPLAPACK_HAVE_STD_ABS_FLOAT128
+#   MPLAPACK_HAVE_STD_MATH_FLOAT128
+#   MPLAPACK_HAVE_STD_COMPLEX_FLOAT128
+#   MPLAPACK_HAVE_C_COMPLEX_FLOAT128
 #   MPLAPACK_BINARY128_EXTRA_LIBS / MPLAPACK_BINARY128_EXTRA_FLAGS
 #
 # Priority follows configure.ac: _Float128 > __float128+quadmath > long double.
@@ -41,6 +44,9 @@ set(MPLAPACK_BINARY128_MODE 0)
 set(MPLAPACK_BINARY128_IO 0)
 set(MPLAPACK_BINARY128_MATH 0)
 set(MPLAPACK_HAVE_STD_ABS_FLOAT128 0)
+set(MPLAPACK_HAVE_STD_MATH_FLOAT128 0)
+set(MPLAPACK_HAVE_STD_COMPLEX_FLOAT128 0)
+set(MPLAPACK_HAVE_C_COMPLEX_FLOAT128 0)
 set(MPLAPACK_BINARY128_EXTRA_LIBS "")
 set(MPLAPACK_BINARY128_EXTRA_FLAGS "")
 
@@ -152,10 +158,39 @@ if(NOT _configured)
                       "Use GCC, or pass -DMPLAPACK_ENABLE_BINARY128=OFF.")
 endif()
 
-# std::abs(__float128) availability (gnu++17 extension on older GCC).
+# std::abs availability for the selected binary128 scalar type.
 set(_mp_std_abs 0)
-if(_mp_have_q128)
-  _mp_try(_mp_std_abs "#include <cmath>\nint main(){ auto p=static_cast<__float128(*)(__float128)>(&std::abs); (void)p; return 0; }")
+if(_mode EQUAL 2 AND _mp_have_f128)
+  _mp_try(_mp_std_abs "#include <cmath>
+int main(){ auto p=static_cast<_Float128(*)(_Float128)>(&std::abs); (void)p; return 0; }")
+elseif(_mode EQUAL 3 AND _mp_have_q128)
+  _mp_try(_mp_std_abs "#include <cmath>
+int main(){ auto p=static_cast<__float128(*)(__float128)>(&std::abs); (void)p; return 0; }")
+endif()
+
+# std::_Float128 scalar math overloads.  These must be probed separately from
+# the C f128 functions because modern libstdc++ exposes them by C++ mode.
+set(_mp_std_math 0)
+if(_mode EQUAL 2)
+  _mp_try(_mp_std_math "#include <cmath>
+#include <type_traits>
+int main(){ _Float128 x=(_Float128)1.0; _Float128 y=(_Float128)2.0; static_assert(std::is_same<decltype(std::sin(x)), _Float128>::value, \"std::sin(_Float128)\"); static_assert(std::is_same<decltype(std::sinh(x)), _Float128>::value, \"std::sinh(_Float128)\"); static_assert(std::is_same<decltype(std::cos(x)), _Float128>::value, \"std::cos(_Float128)\"); static_assert(std::is_same<decltype(std::cosh(x)), _Float128>::value, \"std::cosh(_Float128)\"); static_assert(std::is_same<decltype(std::atan2(x,y)), _Float128>::value, \"std::atan2(_Float128)\"); static_assert(std::is_same<decltype(std::exp(x)), _Float128>::value, \"std::exp(_Float128)\"); static_assert(std::is_same<decltype(std::log(x)), _Float128>::value, \"std::log(_Float128)\"); static_assert(std::is_same<decltype(std::log10(x)), _Float128>::value, \"std::log10(_Float128)\"); static_assert(std::is_same<decltype(std::log2(x)), _Float128>::value, \"std::log2(_Float128)\"); static_assert(std::is_same<decltype(std::pow(x,y)), _Float128>::value, \"std::pow(_Float128)\"); static_assert(std::is_same<decltype(std::sqrt(x)), _Float128>::value, \"std::sqrt(_Float128)\"); static_assert(std::is_same<decltype(std::ceil(x)), _Float128>::value, \"std::ceil(_Float128)\"); static_assert(std::is_same<decltype(std::nextafter(x,y)), _Float128>::value, \"std::nextafter(_Float128)\"); static_assert(std::is_same<decltype(std::ldexp(x,1)), _Float128>::value, \"std::ldexp(_Float128)\"); return 0; }")
+endif()
+
+# Complex _Float128 math options used by mplapack_utils_binary128.h.
+set(_mp_std_complex 0)
+set(_mp_c_complex 0)
+if(_mode EQUAL 2)
+  _mp_try(_mp_std_complex "#include <complex>
+int main(){ std::complex<_Float128> z((_Float128)1.0, (_Float128)2.0); volatile _Float128 a=std::abs(z); (void)a; (void)std::sqrt(z); (void)std::sin(z); (void)std::cos(z); (void)std::exp(z); (void)std::log(z); return 0; }")
+  _mp_try(_mp_c_complex "#ifndef __STDC_WANT_IEC_60559_TYPES_EXT__
+#define __STDC_WANT_IEC_60559_TYPES_EXT__ 1
+#endif
+#ifndef __STDC_WANT_IEC_60559_FUNCS_EXT__
+#define __STDC_WANT_IEC_60559_FUNCS_EXT__ 1
+#endif
+#include <complex.h>
+int main(){ _Float128 _Complex z; __real__(z)=(_Float128)1.0; __imag__(z)=(_Float128)2.0; volatile _Float128 a=cabsf128(z); (void)a; (void)csqrtf128(z); (void)csinf128(z); (void)ccosf128(z); (void)cexpf128(z); (void)clogf128(z); return 0; }")
 endif()
 
 # Export results. (This module is include()'d, so it shares the caller's scope;
@@ -171,6 +206,9 @@ set(MPLAPACK_BINARY128_MODE ${_mode})
 set(MPLAPACK_BINARY128_IO ${_io})
 set(MPLAPACK_BINARY128_MATH ${_math})
 set(MPLAPACK_HAVE_STD_ABS_FLOAT128 ${_mp_std_abs})
+set(MPLAPACK_HAVE_STD_MATH_FLOAT128 ${_mp_std_math})
+set(MPLAPACK_HAVE_STD_COMPLEX_FLOAT128 ${_mp_std_complex})
+set(MPLAPACK_HAVE_C_COMPLEX_FLOAT128 ${_mp_c_complex})
 
 # Backend link/compile needs: QUADMATH mode requires -lquadmath.
 if(_mode EQUAL 3)

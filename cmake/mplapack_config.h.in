@@ -53,6 +53,9 @@
 #define MPLAPACK_BINARY128_MATH  @MPLAPACK_BINARY128_MATH@
 
 #define MPLAPACK_HAVE_STD_ABS_FLOAT128 @MPLAPACK_HAVE_STD_ABS_FLOAT128@
+#define MPLAPACK_HAVE_STD_MATH_FLOAT128 @MPLAPACK_HAVE_STD_MATH_FLOAT128@
+#define MPLAPACK_HAVE_STD_COMPLEX_FLOAT128 @MPLAPACK_HAVE_STD_COMPLEX_FLOAT128@
+#define MPLAPACK_HAVE_C_COMPLEX_FLOAT128 @MPLAPACK_HAVE_C_COMPLEX_FLOAT128@
 
 /* ----------------------------------------------------------------------- */
 /* Detected binary80 capabilities                                          */
@@ -69,6 +72,9 @@
 #define MPLAPACK_BINARY80_MODE  @MPLAPACK_BINARY80_MODE@
 #define MPLAPACK_BINARY80_IO    @MPLAPACK_BINARY80_IO@
 #define MPLAPACK_BINARY80_MATH  @MPLAPACK_BINARY80_MATH@
+
+#define MPLAPACK_HAVE_STD_ABS_FLOAT64X @MPLAPACK_HAVE_STD_ABS_FLOAT64X@
+#define MPLAPACK_HAVE_STD_MATH_FLOAT64X @MPLAPACK_HAVE_STD_MATH_FLOAT64X@
 
 /* ----------------------------------------------------------------------- */
 /* Public ABI typedefs.  (Kept here intentionally: this header is installed.) */

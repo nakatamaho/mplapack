@@ -10,6 +10,8 @@
 #   MPLAPACK_BINARY80_MODE  (0 DISABLED / 1 LDBL80 / 2 FLOAT64X)
 #   MPLAPACK_BINARY80_IO    (0 NONE / 1 SNPRINTF_LDBL / 2 STRFROMF64X)
 #   MPLAPACK_BINARY80_MATH  (0 NONE / 1 LDBL / 2 F64X)
+#   MPLAPACK_HAVE_STD_ABS_FLOAT64X
+#   MPLAPACK_HAVE_STD_MATH_FLOAT64X
 #
 # Priority follows configure.ac: _Float64x(binary80) > long double(binary80).
 
@@ -35,6 +37,8 @@ set(MPLAPACK_FLOAT80_CONVERT_STD_TO_GNU 0)
 set(MPLAPACK_BINARY80_MODE 0)
 set(MPLAPACK_BINARY80_IO 0)
 set(MPLAPACK_BINARY80_MATH 0)
+set(MPLAPACK_HAVE_STD_ABS_FLOAT64X 0)
+set(MPLAPACK_HAVE_STD_MATH_FLOAT64X 0)
 
 if(NOT MPLAPACK_ENABLE_BINARY80)
   return()
@@ -115,6 +119,14 @@ if(NOT _configured)
                       "Pass -DMPLAPACK_ENABLE_BINARY80=OFF.")
 endif()
 
+# std::_Float64x overloads are exposed by libstdc++ depending on the C++ mode.
+set(_b80_std_abs 0)
+set(_b80_std_math 0)
+if(_mode EQUAL 2)
+  _mp80_try(_b80_std_abs "#include <cmath>\nint main(){ auto p=static_cast<_Float64x(*)(_Float64x)>(&std::abs); (void)p; return 0; }")
+  _mp80_try(_b80_std_math "#include <cmath>\n#include <type_traits>\nint main(){ _Float64x x=(_Float64x)1.0; _Float64x y=(_Float64x)2.0; static_assert(std::is_same<decltype(std::sin(x)), _Float64x>::value, \"std::sin(_Float64x)\"); static_assert(std::is_same<decltype(std::sinh(x)), _Float64x>::value, \"std::sinh(_Float64x)\"); static_assert(std::is_same<decltype(std::cos(x)), _Float64x>::value, \"std::cos(_Float64x)\"); static_assert(std::is_same<decltype(std::cosh(x)), _Float64x>::value, \"std::cosh(_Float64x)\"); static_assert(std::is_same<decltype(std::atan2(x,y)), _Float64x>::value, \"std::atan2(_Float64x)\"); static_assert(std::is_same<decltype(std::exp(x)), _Float64x>::value, \"std::exp(_Float64x)\"); static_assert(std::is_same<decltype(std::floor(x)), _Float64x>::value, \"std::floor(_Float64x)\"); static_assert(std::is_same<decltype(std::log(x)), _Float64x>::value, \"std::log(_Float64x)\"); static_assert(std::is_same<decltype(std::log10(x)), _Float64x>::value, \"std::log10(_Float64x)\"); static_assert(std::is_same<decltype(std::log2(x)), _Float64x>::value, \"std::log2(_Float64x)\"); static_assert(std::is_same<decltype(std::pow(x,y)), _Float64x>::value, \"std::pow(_Float64x)\"); static_assert(std::is_same<decltype(std::sqrt(x)), _Float64x>::value, \"std::sqrt(_Float64x)\"); static_assert(std::is_same<decltype(std::nextafter(x,y)), _Float64x>::value, \"std::nextafter(_Float64x)\"); static_assert(std::is_same<decltype(std::ldexp(x,1)), _Float64x>::value, \"std::ldexp(_Float64x)\"); return 0; }")
+endif()
+
 # Export (include()'d module shares caller scope; plain set()).
 set(MPLAPACK_HAVE__FLOAT64X ${_b80_f64x})
 set(MPLAPACK_HAVE___FLOAT80 ${_b80_f80})
@@ -127,3 +139,5 @@ set(MPLAPACK_FLOAT80_CONVERT_STD_TO_GNU ${_b80_std2gnu})
 set(MPLAPACK_BINARY80_MODE ${_mode})
 set(MPLAPACK_BINARY80_IO ${_io})
 set(MPLAPACK_BINARY80_MATH ${_math})
+set(MPLAPACK_HAVE_STD_ABS_FLOAT64X ${_b80_std_abs})
+set(MPLAPACK_HAVE_STD_MATH_FLOAT64X ${_b80_std_math})

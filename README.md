@@ -285,6 +285,49 @@ make check
 
 Test results are summarized automatically by `misc/summarize_mplapack_tests.py`.
 
+## Experimental CMake Build
+
+MPLAPACK also has an experimental CMake build. The autotools build above remains
+the primary release path. Unlike autotools, the CMake build does not download or
+build bundled third-party libraries; GMP, MPFR, MPC, QD, BLAS, and LAPACK are
+found from the system when the corresponding backends or tests are enabled. See
+[README.cmake.md](README.cmake.md) for the complete option list.
+
+For a dependency-light build that verifies the CMake path itself, build only the
+double and binary128 backends:
+
+```sh
+cmake -S . -B build-cmake \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DMPLAPACK_CXX_STANDARD=23 \
+    -DMPLAPACK_CXX_EXTENSIONS=OFF \
+    -DMPLAPACK_ENABLE_GMP=OFF \
+    -DMPLAPACK_ENABLE_MPFR=OFF \
+    -DMPLAPACK_ENABLE_QD=OFF \
+    -DMPLAPACK_ENABLE_DD=OFF \
+    -DMPLAPACK_ENABLE_DOUBLE=ON \
+    -DMPLAPACK_ENABLE_BINARY128=ON \
+    -DMPLAPACK_ENABLE_BINARY80=OFF
+cmake --build build-cmake -j
+```
+
+On x86/x86_64 systems, add `-DMPLAPACK_ENABLE_BINARY80=ON` to include the
+binary80 backend. To run the CMake test targets, enable tests and use CTest:
+
+```sh
+cmake -S . -B build-cmake \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DMPLAPACK_BUILD_TESTS=ON
+cmake --build build-cmake -j
+ctest --test-dir build-cmake --output-on-failure
+```
+
+Install from a CMake build tree with:
+
+```sh
+cmake --install build-cmake --prefix $HOME/MPLAPACK
+```
+
 # Fable — Fortran-to-C++ Conversion Pipeline
 
 > **Note:** The Fable conversion pipeline is **not included in the release tarball**.
