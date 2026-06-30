@@ -29,8 +29,8 @@
 #ifndef _MPBLAS_BINARY80_H_
 #define _MPBLAS_BINARY80_H_
 
-#include <complex>
 #include "mplapack_config.h"
+#include <complex>
 #include "mplapack_utils_binary80.h"
 
 bool Mlsame_binary80(const char *a, const char *b);
