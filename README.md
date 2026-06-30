@@ -103,6 +103,7 @@ Release test targets are run from `release/`. `make tier1` runs dedicated remote
 | Tier 1 | `tier1-ubuntu2604-inteloneapi-amd64` | Ubuntu 26.04 | amd64 | `172.27.109.80` | Docker + Intel oneAPI |
 | Tier 1 | `tier1-debian12-i386` | Debian 12 | i386 | `172.27.109.80` | Docker |
 | Tier 1 | `tier1-debian13-i386` | Debian 13 | i386 | `172.27.109.80` | Docker |
+| Tier 3 | `tier3-ubuntu2604-cxxstd-arm64` | Ubuntu 26.04 | arm64 | `172.27.109.40` | Docker/Colima build-only |
 | Tier 3 | `tier3-ubuntu2604-cxxstd-amd64` | Ubuntu 26.04 | amd64 | `172.27.109.80` | Docker build-only |
 
 Dedicated release buildtest scripts are in `release/`:
@@ -114,6 +115,8 @@ release/buildtest_tier1_ubuntu_amd64.sh
 release/buildtest_tier1_ubuntu_arm64.sh
 release/buildtest_tier1_ubuntu_inteloneapi_amd64.sh
 release/buildtest_tier1_debian_i386.sh
+release/buildtest_tier3_ubuntu2604_cxxstd_arm64.sh
+release/buildtest_tier3_ubuntu2604_cxxstd_amd64.sh
 ```
 
 # How to Build and Install
