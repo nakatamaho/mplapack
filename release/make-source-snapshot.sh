@@ -10,6 +10,10 @@ METADATA_FILE="$SNAPSHOT_DIR/source-metadata.txt"
 PATCH_FILE="$SNAPSHOT_DIR/source.patch"
 STATUS_FILE="$SNAPSHOT_DIR/source-status.txt"
 SNAPSHOT_REUSE="${MPLAPACK_SOURCE_SNAPSHOT_REUSE:-yes}"
+DIST_CACHE_DIR="${MPLAPACK_DIST_CACHE_DIR:-$SCRIPT_DIR/dist-cache}"
+
+# shellcheck disable=SC1091
+source "$SCRIPT_DIR/dist-cache.sh"
 
 tmp_meta_dir="$(mktemp -d)"
 DIST_ARTIFACT_DIR="$tmp_meta_dir/top-level-dist-artifacts"
@@ -122,21 +126,38 @@ else
     dirty="yes"
 fi
 
-preserve_top_level_dist_artifacts
-make -C "$PROJECT_ROOT" dist
+dist_cache_key="$(mplapack_dist_cache_key "$PROJECT_ROOT" 2>/dev/null || true)"
 mkdir -p "$SNAPSHOT_DIR"
 cp -f "$tmp_status" "$STATUS_FILE"
 cp -f "$tmp_patch" "$PATCH_FILE"
 
-tarball="$(find "$PROJECT_ROOT" -maxdepth 1 -type f \( -name 'mplapack-*.tar.gz' -o -name 'mplapack-*.tar.xz' -o -name 'mplapack-*.tar.bz2' \) -print0 | xargs -0 ls -t 2>/dev/null | head -n 1 || true)"
-if [[ -z "$tarball" ]]; then
-    echo "ERROR: make dist did not produce an mplapack tarball in $PROJECT_ROOT" >&2
-    exit 1
+snapshot_tarball=""
+if [[ -n "$dist_cache_key" ]]; then
+    snapshot_tarball="$(mplapack_dist_cache_reuse "$DIST_CACHE_DIR" "$dist_cache_key" "$SNAPSHOT_DIR" || true)"
+    if [[ -n "$snapshot_tarball" ]]; then
+        echo "Reusing cached dist tarball: $snapshot_tarball" >&2
+        echo "Dist cache key: $dist_cache_key" >&2
+    fi
 fi
 
-snapshot_tarball="$SNAPSHOT_DIR/$(basename "$tarball")"
-cp -f "$tarball" "$snapshot_tarball"
-restore_top_level_dist_artifacts
+if [[ -z "$snapshot_tarball" ]]; then
+    preserve_top_level_dist_artifacts
+    make -C "$PROJECT_ROOT" dist
+
+    tarball="$(find "$PROJECT_ROOT" -maxdepth 1 -type f \( -name 'mplapack-*.tar.gz' -o -name 'mplapack-*.tar.xz' -o -name 'mplapack-*.tar.bz2' \) -print0 | xargs -0 ls -t 2>/dev/null | head -n 1 || true)"
+    if [[ -z "$tarball" ]]; then
+        echo "ERROR: make dist did not produce an mplapack tarball in $PROJECT_ROOT" >&2
+        exit 1
+    fi
+
+    snapshot_tarball="$SNAPSHOT_DIR/$(basename "$tarball")"
+    cp -f "$tarball" "$snapshot_tarball"
+    restore_top_level_dist_artifacts
+    if [[ -n "$dist_cache_key" ]]; then
+        mplapack_dist_cache_store "$DIST_CACHE_DIR" "$dist_cache_key" "$snapshot_tarball"
+        echo "Stored dist tarball cache: $DIST_CACHE_DIR/$dist_cache_key" >&2
+    fi
+fi
 
 tarball_sha="$(sha256_file "$snapshot_tarball")"
 if [[ "$git_head" == "yes" ]]; then
@@ -157,6 +178,7 @@ fi
     echo "MPLAPACK_SOURCE_DIRTY=$dirty"
     echo "MPLAPACK_SOURCE_PATCH_SHA256=$patch_sha"
     echo "MPLAPACK_SOURCE_TARBALL_SHA256=$tarball_sha"
+    echo "MPLAPACK_DIST_CACHE_KEY=${dist_cache_key:-}"
     echo "MPLAPACK_SOURCE_TARBALL=$(basename "$snapshot_tarball")"
     echo "MPLAPACK_SOURCE_LABEL=$source_label"
     echo "MPLAPACK_SOURCE_CREATED_AT=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
@@ -170,6 +192,7 @@ fi
     printf 'MPLAPACK_SOURCE_STATUS=%s\n' "$(shell_quote "$STATUS_FILE")"
     printf 'MPLAPACK_SOURCE_LABEL=%s\n' "$(shell_quote "$source_label")"
     printf 'MPLAPACK_SOURCE_TARBALL_SHA256=%s\n' "$(shell_quote "$tarball_sha")"
+    printf 'MPLAPACK_DIST_CACHE_KEY=%s\n' "$(shell_quote "${dist_cache_key:-}")"
     printf 'MPLAPACK_SOURCE_BASE_REF=%s\n' "$(shell_quote "$base_ref")"
     printf 'MPLAPACK_SOURCE_GIT_HEAD=%s\n' "$(shell_quote "$git_head")"
     printf 'MPLAPACK_SOURCE_DIRTY=%s\n' "$(shell_quote "$dirty")"

@@ -30,6 +30,10 @@ MPLAPACK_REF="${MPLAPACK_REF:-$(git -C "$PROJECT_ROOT" rev-parse HEAD 2>/dev/nul
 # Host directories
 HOST_WORK_DIR="${HOST_WORK_DIR:-/work/mplapack-work}"
 HOST_CCACHE_DIR="${HOST_CCACHE_DIR:-/work/ccache}"
+DIST_CACHE_DIR="${MPLAPACK_DIST_CACHE_DIR:-$SCRIPT_DIR/dist-cache}"
+
+# shellcheck disable=SC1091
+source "$SCRIPT_DIR/dist-cache.sh"
 
 mkdir -p "$LOGDIR"
 mkdir -p "$SUCCESS_DIR"
@@ -489,6 +493,7 @@ check_gpu() {
 make_dist() {
     log "=== Phase 0: make dist ==="
     local distdir="$LOGDIR/dist"
+    local dist_cache_key="" cached_tarball=""
     mkdir -p "$distdir"
 
     cd "$PROJECT_ROOT"
@@ -496,6 +501,19 @@ make_dist() {
     if [[ ! -f configure.ac ]]; then
         log "ERROR: configure.ac not found in $PROJECT_ROOT"
         exit 1
+    fi
+
+    dist_cache_key="$(mplapack_dist_cache_key "$PROJECT_ROOT" 2>/dev/null || true)"
+    if [[ -n "$dist_cache_key" ]]; then
+        cached_tarball="$(mplapack_dist_cache_reuse "$DIST_CACHE_DIR" "$dist_cache_key" "$PROJECT_ROOT" || true)"
+        if [[ -n "$cached_tarball" ]]; then
+            TARBALL="$(abspath "$cached_tarball")"
+            log "Reusing cached dist tarball: $TARBALL"
+            log "Dist cache key: $dist_cache_key"
+            report_tarball "$TARBALL"
+            cd "$SCRIPT_DIR"
+            return 0
+        fi
     fi
 
     log "Generating compare Makefile.am files..."
@@ -517,6 +535,10 @@ make_dist() {
     TARBALL=$(abspath "$TARBALL")
     log "Created: $TARBALL"
     report_tarball "$TARBALL"
+    if [[ -n "$dist_cache_key" ]]; then
+        mplapack_dist_cache_store "$DIST_CACHE_DIR" "$dist_cache_key" "$TARBALL"
+        log "Stored dist tarball cache: $DIST_CACHE_DIR/$dist_cache_key"
+    fi
 
     cd "$SCRIPT_DIR"
 }

@@ -1,4 +1,5 @@
 release/distcheck/
+/release/dist-cache/
 
 # ---------------------------------------------------------------------------
 # Autotools: build artifacts

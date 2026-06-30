@@ -315,6 +315,7 @@ release/docker/matrix/run-ubuntu-mingw64-build.sh \
 release/docker/tarball/Dockerfile.ubuntu \
 release/docker/tier3/Dockerfile.ubuntu-cxxstd \
 release/docker/tier3/run-ubuntu-cxxstd-build.sh \
+release/dist-cache.sh \
 release/make-source-snapshot.sh \
 release/run-remote-linux-docker.sh \
 release/run-remote-tarball-docker-worker.sh \
