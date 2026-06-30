@@ -95,7 +95,7 @@ AC_CONFIG_FILES([packaging/PKGBUILD packaging/mplapack.spec])
 AC_CANONICAL_TARGET
 
 AC_ARG_WITH([cxx-standard],
-AS_HELP_STRING([--with-cxx-standard=17|20|23|gnu++17|gnu++20|gnu++23|c++17|c++20|c++23],
+AS_HELP_STRING([--with-cxx-standard=17|20|23|26|gnu++17|gnu++20|gnu++23|gnu++26|gnu++2c|c++17|c++20|c++23|c++26|c++2c],
                [C++ standard used to build MPLAPACK (default: 17)]),
     [with_cxx_standard=$withval],
     [with_cxx_standard=17])
@@ -119,6 +119,7 @@ AS_CASE([$with_cxx_standard],
     [17],         [MPLAPACK_CXX_STANDARD=17],
     [20],         [MPLAPACK_CXX_STANDARD=20],
     [23],         [MPLAPACK_CXX_STANDARD=23],
+    [26],         [MPLAPACK_CXX_STANDARD=26],
     [gnu++17],    [MPLAPACK_CXX_STANDARD=17
                    enable_cxx_extensions=yes],
     [c++17],      [MPLAPACK_CXX_STANDARD=17
@@ -135,7 +136,13 @@ AS_CASE([$with_cxx_standard],
     [c++23|c++2b],
                   [MPLAPACK_CXX_STANDARD=23
                    enable_cxx_extensions=no],
-    [AC_MSG_ERROR([invalid --with-cxx-standard value '$with_cxx_standard'; use 17, 20, 23, gnu++17, gnu++20, gnu++23, c++17, c++20, or c++23])])
+    [gnu++26|gnu++2c],
+                  [MPLAPACK_CXX_STANDARD=26
+                   enable_cxx_extensions=yes],
+    [c++26|c++2c],
+                  [MPLAPACK_CXX_STANDARD=26
+                   enable_cxx_extensions=no],
+    [AC_MSG_ERROR([invalid --with-cxx-standard value '$with_cxx_standard'; use 17, 20, 23, 26, gnu++17, gnu++20, gnu++23, gnu++26, gnu++2c, c++17, c++20, c++23, c++26, or c++2c])])
 
 AS_CASE([$enable_cxx_extensions],
     [yes], [MPLAPACK_CXX_EXTENSIONS=1
@@ -147,7 +154,8 @@ AS_CASE([$enable_cxx_extensions],
 AS_CASE([$MPLAPACK_CXX_STANDARD],
     [17], [MPLAPACK_CXX_STD_CANDIDATES="-std=${mplapack_cxx_std_prefix}17"],
     [20], [MPLAPACK_CXX_STD_CANDIDATES="-std=${mplapack_cxx_std_prefix}20 -std=${mplapack_cxx_std_prefix}2a"],
-    [23], [MPLAPACK_CXX_STD_CANDIDATES="-std=${mplapack_cxx_std_prefix}23 -std=${mplapack_cxx_std_prefix}2b"])
+    [23], [MPLAPACK_CXX_STD_CANDIDATES="-std=${mplapack_cxx_std_prefix}23 -std=${mplapack_cxx_std_prefix}2b"],
+    [26], [MPLAPACK_CXX_STD_CANDIDATES="-std=${mplapack_cxx_std_prefix}26 -std=${mplapack_cxx_std_prefix}2c"])
 
 AC_LANG_PUSH([C++])
 mplapack_cxx_standard_ok=no
@@ -180,6 +188,13 @@ int main() { static_assert(mplapack_integral<int>); return 0; }
 #endif
 #include <version>
 int main() { return 0; }
+        ]])], [mplapack_cxx_standard_ok=yes], [mplapack_cxx_standard_ok=no])],
+        [26], [AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+#if __cplusplus <= 202302L
+#error C++26 required
+#endif
+#include <version>
+int main() { return 0; }
         ]])], [mplapack_cxx_standard_ok=yes], [mplapack_cxx_standard_ok=no])])
     AC_MSG_RESULT([$mplapack_cxx_standard_ok])
     AS_IF([test "x$mplapack_cxx_standard_ok" = xyes],
@@ -200,6 +215,8 @@ AS_IF([test "$MPLAPACK_CXX_STANDARD" -ge 20],
     [AC_DEFINE([HAVE_CXX20], [1], [define if the compiler supports basic C++20 syntax])])
 AS_IF([test "$MPLAPACK_CXX_STANDARD" -ge 23],
     [AC_DEFINE([HAVE_CXX23], [1], [define if the compiler supports basic C++23 syntax])])
+AS_IF([test "$MPLAPACK_CXX_STANDARD" -ge 26],
+    [AC_DEFINE([HAVE_CXX26], [1], [define if the compiler supports basic C++26 syntax])])
 AC_DEFINE_UNQUOTED([MPLAPACK_CXX_STANDARD], [$MPLAPACK_CXX_STANDARD],
     [C++ standard selected for the MPLAPACK build])
 AC_DEFINE_UNQUOTED([MPLAPACK_CXX_EXTENSIONS], [$MPLAPACK_CXX_EXTENSIONS],

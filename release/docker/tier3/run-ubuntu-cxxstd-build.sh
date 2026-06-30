@@ -46,7 +46,7 @@ ccache -s || true
 
 prepare_source
 
-RECONFIG_SCRIPTS="${MPLAPACK_TIER3_RECONFIG_SCRIPTS:-misc/reconfig.ubuntu26.04.c++17.sh misc/reconfig.ubuntu26.04.c++20.sh misc/reconfig.ubuntu26.04.c++23.sh misc/reconfig.ubuntu26.04.gnuc++20.sh misc/reconfig.ubuntu26.04.gnuc++23.sh}"
+RECONFIG_SCRIPTS="${MPLAPACK_TIER3_RECONFIG_SCRIPTS:-misc/reconfig.ubuntu26.04.c++17.sh misc/reconfig.ubuntu26.04.c++20.sh misc/reconfig.ubuntu26.04.c++23.sh misc/reconfig.ubuntu26.04.c++26.sh misc/reconfig.ubuntu26.04.gnuc++20.sh misc/reconfig.ubuntu26.04.gnuc++23.sh misc/reconfig.ubuntu26.04.gnuc++26.sh}"
 
 for reconfig_script in ${RECONFIG_SCRIPTS}; do
     echo "=== TIER3 BUILD START: ${reconfig_script} ==="

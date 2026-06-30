@@ -338,8 +338,10 @@ misc/reconfig.ubuntu24.04.sh \
 misc/reconfig.ubuntu26.04.c++17.sh \
 misc/reconfig.ubuntu26.04.c++20.sh \
 misc/reconfig.ubuntu26.04.c++23.sh \
+misc/reconfig.ubuntu26.04.c++26.sh \
 misc/reconfig.ubuntu26.04.gnuc++20.sh \
 misc/reconfig.ubuntu26.04.gnuc++23.sh \
+misc/reconfig.ubuntu26.04.gnuc++26.sh \
 misc/reconfig.ubuntu26.04.intel.sh \
 misc/reconfig.ubuntu26.04.mingw64.sh \
 misc/reconfig.ubuntu26.04.nvidia.sh \
