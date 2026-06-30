@@ -92,7 +92,7 @@ if [ "$SOURCE_KIND" = "git" ]; then
     bash "$RECONFIG_SCRIPT"
 else
     echo "Using distributed configure files from source tarball; skipping autoreconf."
-    env CC="ccache gcc" CXX="ccache g++" FC="gfortran" F77="gfortran" \
+    env CC="ccache gcc" CXX="ccache g++" FC="ccache gfortran" F77="ccache gfortran" \
         ./configure --prefix="$HOME/MPLAPACK_NVIDIA" $NVIDIA_CONFIGURE_OPTS --with-opencl=/usr/local/cuda
 fi
 INSTALL_PREFIX="$(sed -n 's/^prefix = //p' Makefile | head -n 1)"

@@ -6,7 +6,7 @@ CXX_STANDARD_CONFIGURE_OPT="--with-cxx-standard=gnu++23"
 if [ x"$USE_CCACHE" = x"yes" ] ; then
 CXX="ccache g++" ; export CXX
 CC="ccache gcc" ; export CC
-FC="gfortran"; export FC
+FC="ccache gfortran"; export FC
 "$(cd "$(dirname "$0")" && pwd)/ccache_set_min_maxsize.sh" 80G
 else
 CXX="g++" ; export CXX

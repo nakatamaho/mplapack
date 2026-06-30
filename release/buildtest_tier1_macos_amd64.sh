@@ -127,9 +127,9 @@ log_env() {
         LANG=C uname -a
         sw_vers 2>/dev/null || true
         echo '--- compiler versions ---'
-        gcc-mp-14   --version 2>/dev/null || true
-        g++-mp-14 --version 2>/dev/null || true
-        gfortran-mp-14 --version 2>/dev/null || true
+        gcc-mp-15   --version 2>/dev/null || true
+        g++-mp-15 --version 2>/dev/null || true
+        gfortran-mp-15 --version 2>/dev/null || true
         brew --version 2>/dev/null || true
         echo '--- PATH ---'
         echo "${PATH}"
@@ -417,7 +417,7 @@ log "MPLAPACK_TEST_RESULTS_STAGING: ${MPLAPACK_TEST_RESULTS_STAGING}"
 if [ "$SOURCE_KIND" = "git" ]; then
     run_step "reconfig"       bash misc/reconfig.macOS.sh
 else
-    run_step "configure"      env CC="ccache gcc-mp-15" CXX="ccache g++-mp-15" FC="gfortran-mp-15" \
+    run_step "configure"      env CC="ccache gcc-mp-15" CXX="ccache g++-mp-15" FC="ccache gfortran-mp-15" \
                               ./configure --prefix="${PREFIX_DIR}" ${DISTCHECK_CONFIGURE_FLAGS}
 fi
 run_step "make"           make -j"${MAKE_JOBS}"
@@ -438,7 +438,7 @@ if [ "$SOURCE_KIND" = "git" ]; then
 else
     log "Using distributed configure files from source tarball; skipping autoreconf."
 fi
-run_step "make_distcheck" env CC="ccache gcc" CXX="ccache g++" FC="ccache gfortran" \
+run_step "make_distcheck" env CC="ccache gcc" CXX="ccache g++" FC="ccache gfortran-mp-15" \
                           make distcheck MAKEFLAGS="-j${MAKE_JOBS}" DISTCHECK_CONFIGURE_FLAGS="${DISTCHECK_CONFIGURE_FLAGS}"
 run_step "collect_test_results" collect_test_results
 

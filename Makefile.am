@@ -326,7 +326,6 @@ misc/cudalt.py \
 misc/fix_dylib_macOS.sh \
 misc/num_diff.py \
 misc/reconfig.bullseye.sh \
-misc/reconfig.develop.sh \
 misc/reconfig.macOS.sh \
 misc/reconfig.rocky10.sh \
 misc/reconfig.ubuntu22.04.intel.sh \

@@ -5,7 +5,7 @@ USE_CCACHE=yes
 if [ x$USE_CCACHE = x"yes" ] ; then
 CXX="ccache g++-mp-15" ; export CXX
 CC="ccache gcc-mp-15" ; export CC
-FC="gfortran-mp-15"; export FC
+FC="ccache gfortran-mp-15"; export FC
 "$(cd "$(dirname "$0")" && pwd)/ccache_set_min_maxsize.sh" 80G
 else
 CXX="g++-mp-15" ; export CXX

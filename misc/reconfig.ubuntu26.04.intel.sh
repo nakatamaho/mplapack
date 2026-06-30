@@ -8,8 +8,8 @@ OPENBLAS_CONFIGURE_OPT="${OPENBLAS_CONFIGURE_OPT:---with-openblas=-qmkl}"
 if [ x$USE_CCACHE = x"yes" ] ; then
 CXX="ccache icpx" ; export CXX
 CC="ccache icx" ; export CC
-FC="ifx"; export FC
-F77="ifx"; export F77
+FC="ccache ifx"; export FC
+F77="ccache ifx"; export F77
 "$(cd "$(dirname "$0")" && pwd)/ccache_set_min_maxsize.sh" 80G
 else
 CXX="icpx" ; export CXX
