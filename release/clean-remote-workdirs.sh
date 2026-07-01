@@ -5,15 +5,20 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 CONF_FILE="${CONF_FILE:-$SCRIPT_DIR/build-matrix.conf}"
 MACOS_REMOTE_SSH="${MACOS_REMOTE_SSH:-ssh}"
 REMOTE_LINUX_SSH="${REMOTE_LINUX_SSH:-ssh}"
+REALCLEAN=0
 
 usage() {
-    echo "Usage: clean-remote-workdirs.sh" >&2
+    echo "Usage: clean-remote-workdirs.sh [--realclean]" >&2
 }
 
-if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
-    usage
-    exit 0
-fi
+while [[ "$#" -gt 0 ]]; do
+    case "$1" in
+        --realclean) REALCLEAN=1 ;;
+        -h|--help) usage; exit 0 ;;
+        *) echo "ERROR: unknown option: $1" >&2; usage; exit 1 ;;
+    esac
+    shift
+done
 
 if [[ ! -f "$CONF_FILE" ]]; then
     echo "ERROR: build matrix not found: $CONF_FILE" >&2
@@ -60,6 +65,153 @@ is_safe_remote_workdir() {
         /Users/*/tmp/*|/home/*/tmp/*) return 0 ;;
         *) return 1 ;;
     esac
+}
+
+realclean_host_keys=""
+
+remember_realclean_host() {
+    local ssh_cmd="$1"
+    local host="$2"
+    local key="${ssh_cmd}|${host}"
+
+    case "
+${realclean_host_keys}
+" in
+        *"
+${key}
+"*) return 0 ;;
+    esac
+    realclean_host_keys="${realclean_host_keys}${realclean_host_keys:+
+}${key}"
+}
+
+clean_host_realclean() {
+    local host="$1"
+    local ssh_cmd="$2"
+
+    echo "Realclean remote host $host" >&2
+    "$ssh_cmd" "$host" "bash -s" <<'REMOTE_REALCLEAN'
+set -eu
+
+if [ -z "${HOME:-}" ] || [ "$HOME" = "/" ]; then
+    echo "ERROR: invalid HOME on remote host: ${HOME:-<unset>}" >&2
+    exit 1
+fi
+
+path_candidates() {
+    for p in \
+        "$HOME"/mplapack_build_log* \
+        "$HOME"/mplapack_logs* \
+        "$HOME"/tmp/mplapack*; do
+        [ -e "$p" ] && printf '%s\n' "$p"
+    done
+}
+
+remove_release_paths() {
+    path_candidates | while IFS= read -r p; do
+        case "$p" in
+            "$HOME"/mplapack_build_log*|"$HOME"/mplapack_logs*|"$HOME"/tmp/mplapack*) ;;
+            *) echo "ERROR: refusing unsafe realclean path: $p" >&2; exit 1 ;;
+        esac
+        echo "RM   $p" >&2
+        chmod -R u+rwX "$p" 2>/dev/null || true
+        rm -rf -- "$p"
+    done
+}
+
+remove_release_paths_with_docker() {
+    local helper_image
+
+    command -v docker >/dev/null 2>&1 || return 1
+    helper_image="$(docker images --format '{{.Repository}}:{{.Tag}}' 2>/dev/null | awk '$1 == "ubuntu:26.04" || $1 == "ubuntu:24.04" { print $1; exit }')"
+    helper_image="${helper_image:-ubuntu:24.04}"
+    echo "Retrying remote path cleanup via Docker root helper: $helper_image" >&2
+    docker run --rm \
+        -v "$HOME:/cleanup:rw" \
+        "$helper_image" \
+        sh -c 'for p in mplapack_build_log* mplapack_logs* tmp/mplapack*; do [ -e "/cleanup/$p" ] || continue; chmod -R u+rwX "/cleanup/$p" 2>/dev/null || true; rm -rf -- "/cleanup/$p"; done'
+}
+
+verify_release_paths_removed() {
+    local remaining
+
+    remaining="$(path_candidates || true)"
+    if [ -n "$remaining" ]; then
+        echo "ERROR: remote realclean paths remain:" >&2
+        printf '%s\n' "$remaining" >&2
+        return 1
+    fi
+    echo "Verified remote MPLAPACK logs/tmp paths removed." >&2
+}
+
+docker_container_ids() {
+    command -v docker >/dev/null 2>&1 || return 0
+    {
+        docker ps -aq --filter label=org.mplapack.project=mplapack 2>/dev/null || true
+        docker ps -aq --filter label=org.mplapack.purpose=mplapack-qa 2>/dev/null || true
+        docker ps -aq --format '{{.ID}} {{.Image}}' 2>/dev/null | awk '$2 ~ /^mplapack(-|:)/ { print $1 }' || true
+    } | awk 'NF' | sort -u
+}
+
+docker_image_ids() {
+    command -v docker >/dev/null 2>&1 || return 0
+    docker images -q --filter label=org.mplapack.purpose=mplapack-qa 2>/dev/null | awk 'NF' | sort -u
+}
+
+remove_release_docker() {
+    local ids image_ids
+
+    if ! command -v docker >/dev/null 2>&1; then
+        echo "Docker not found on remote host; skipping Docker cleanup verification." >&2
+        return 0
+    fi
+
+    ids="$(docker_container_ids)"
+    if [ -n "$ids" ]; then
+        echo "Removing remote MPLAPACK Docker containers:" >&2
+        printf '%s\n' "$ids" >&2
+        # shellcheck disable=SC2086
+        docker rm -f $ids >/dev/null 2>&1 || true
+    fi
+
+    image_ids="$(docker_image_ids)"
+    if [ -n "$image_ids" ]; then
+        echo "Removing remote MPLAPACK Docker images:" >&2
+        printf '%s\n' "$image_ids" >&2
+        # shellcheck disable=SC2086
+        docker rmi -f $image_ids >/dev/null 2>&1 || true
+    fi
+}
+
+verify_release_docker_removed() {
+    local ids image_ids
+
+    if ! command -v docker >/dev/null 2>&1; then
+        return 0
+    fi
+
+    ids="$(docker_container_ids)"
+    image_ids="$(docker_image_ids)"
+    if [ -n "$ids" ] || [ -n "$image_ids" ]; then
+        echo "ERROR: remote MPLAPACK Docker resources remain." >&2
+        if [ -n "$ids" ]; then
+            echo "Containers:" >&2
+            printf '%s\n' "$ids" >&2
+        fi
+        if [ -n "$image_ids" ]; then
+            echo "Images:" >&2
+            printf '%s\n' "$image_ids" >&2
+        fi
+        return 1
+    fi
+    echo "Verified remote MPLAPACK Docker containers/images removed." >&2
+}
+
+remove_release_paths || remove_release_paths_with_docker
+verify_release_paths_removed
+remove_release_docker
+verify_release_docker_removed
+REMOTE_REALCLEAN
 }
 
 clean_one() {
@@ -212,6 +364,26 @@ while IFS='|' read -r name host target_dir script_rel remote_cmd source_type doc
         ''|'#'*) continue ;;
     esac
     case "$source_type" in
-        remote-macos|remote-linux-docker|remote-tarball-docker) clean_one "$name" "$host" "$target_dir" "$source_type" "${docker_base:-}" ;;
+        remote-macos)
+            clean_one "$name" "$host" "$target_dir" "$source_type" "${docker_base:-}"
+            if [[ "$REALCLEAN" -eq 1 ]]; then
+                remember_realclean_host "$MACOS_REMOTE_SSH" "$host"
+            fi
+            ;;
+        remote-linux-docker|remote-tarball-docker)
+            clean_one "$name" "$host" "$target_dir" "$source_type" "${docker_base:-}"
+            if [[ "$REALCLEAN" -eq 1 ]]; then
+                remember_realclean_host "$REMOTE_LINUX_SSH" "$host"
+            fi
+            ;;
     esac
 done < "$CONF_FILE"
+
+if [[ "$REALCLEAN" -eq 1 && -n "$realclean_host_keys" ]]; then
+    while IFS='|' read -r ssh_cmd host; do
+        [[ -n "$ssh_cmd" && -n "$host" ]] || continue
+        clean_host_realclean "$host" "$ssh_cmd"
+    done <<EOF
+$realclean_host_keys
+EOF
+fi

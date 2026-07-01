@@ -29,7 +29,7 @@ LEGACY_QA_IMAGE_TAGS := \
     mplapack-tier1-ubuntu-inteloneapi-amd64:latest
 RUN_REMOTE_TARGETS = CONF_FILE=$(CONF_FILE) LOGDIR=$(LOGDIR) PROJECT_ROOT=$(PROJECT_ROOT) SUCCESS_DIR=$(SUCCESS_DIR) FAILED_DIR=$(FAILED_DIR) MACOS_REMOTE_SSH=$(MACOS_REMOTE_SSH) REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-targets-by-host.sh
 
-.PHONY: all ref tarball dist clean clean-remote clean-all realclean clean-success clean-failed list help
+.PHONY: all ref tarball dist clean clean-remote clean-remote-realclean clean-all realclean clean-success clean-failed clean-test-results list help
 .PHONY: intel mingw cuda ubuntu debian fedora rocky suse alpine
 .PHONY: amd64 arm64 ppc64le i386 s390x mips64le
 .PHONY: ref-ubuntu ref-debian ref-amd64 ref-cuda ref-rocky ref-suse
@@ -244,17 +244,20 @@ clean: clean-remote
 	fi
 	@# Stop and remove any running containers using our labeled images first.
 	@# The image-name fallback catches legacy containers created before labels were added.
+	@# Images are removed only when they carry the MPLAPACK QA label.
 	@# "docker rmi -f" cannot remove images used by *running* containers even with -f.
 	-docker ps -q  --filter label=org.mplapack.project=mplapack --filter label=org.mplapack.purpose=mplapack-qa | xargs -r docker stop
 	-docker ps -aq --filter label=org.mplapack.project=mplapack --filter label=org.mplapack.purpose=mplapack-qa | xargs -r docker rm -f
 	-@for image in $(LEGACY_QA_IMAGE_TAGS); do docker ps -q  --filter ancestor=$$image; done | sort -u | xargs -r docker stop
 	-@for image in $(LEGACY_QA_IMAGE_TAGS); do docker ps -aq --filter ancestor=$$image; done | sort -u | xargs -r docker rm -f
-	-docker images -q --filter label=org.mplapack.project=mplapack --filter label=org.mplapack.purpose=mplapack-qa | xargs -r docker rmi -f
-	-@for image in $(LEGACY_QA_IMAGE_TAGS); do docker images -q $$image; done | sort -u | xargs -r docker rmi -f
+	-docker images -q --filter label=org.mplapack.purpose=mplapack-qa | xargs -r docker rmi -f
 
 
 clean-remote:
 	@CONF_FILE=$(CONF_FILE) MACOS_REMOTE_SSH=$(MACOS_REMOTE_SSH) REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./clean-remote-workdirs.sh
+
+clean-remote-realclean:
+	@CONF_FILE=$(CONF_FILE) MACOS_REMOTE_SSH=$(MACOS_REMOTE_SSH) REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./clean-remote-workdirs.sh --realclean
 
 clean-success:
 	@rm -rf $(SUCCESS_DIR)
@@ -264,21 +267,39 @@ clean-failed:
 	@rm -rf $(FAILED_DIR)
 	@mkdir -p $(FAILED_DIR)
 
+clean-test-results:
+	@if git -C "$(PROJECT_ROOT)" rev-parse --is-inside-work-tree >/dev/null 2>&1; then \
+		git -C "$(PROJECT_ROOT)" clean -fd -- mplapack/test/eig/results mplapack/test/lin/results; \
+	else \
+		version=$$(awk -F'[][]' '/^m4_define\(\[MPLAPACK_VER_MAJOR\]/{maj=$$4} /^m4_define\(\[MPLAPACK_VER_MINOR\]/{min=$$4} /^m4_define\(\[MPLAPACK_VER_PATCH\]/{patch=$$4} END{if (maj != "" && min != "" && patch != "") print maj "." min "." patch}' "$(PROJECT_ROOT)/configure.ac"); \
+		if [ -n "$$version" ]; then \
+			for d in "$(PROJECT_ROOT)/mplapack/test/eig/results/$$version" "$(PROJECT_ROOT)/mplapack/test/lin/results/$$version"; do \
+				[ -e "$$d" ] || continue; \
+				echo "RM   $$d"; \
+				rm -rf "$$d"; \
+			done; \
+		fi; \
+	fi
+
 clean-all:
 	@rm -rf logs/ $(SUCCESS_DIR) $(FAILED_DIR)
 	@mkdir -p logs/ $(SUCCESS_DIR) $(FAILED_DIR)
 	@# Stop and remove any running containers using our labeled images first.
 	@# The image-name fallback catches legacy containers created before labels were added.
+	@# Images are removed only when they carry the MPLAPACK QA label.
 	@# "docker rmi -f" cannot remove images used by *running* containers even with -f.
 	-docker ps -q  --filter label=org.mplapack.project=mplapack --filter label=org.mplapack.purpose=mplapack-qa | xargs -r docker stop
 	-docker ps -aq --filter label=org.mplapack.project=mplapack --filter label=org.mplapack.purpose=mplapack-qa | xargs -r docker rm -f
 	-@for image in $(LEGACY_QA_IMAGE_TAGS); do docker ps -q  --filter ancestor=$$image; done | sort -u | xargs -r docker stop
 	-@for image in $(LEGACY_QA_IMAGE_TAGS); do docker ps -aq --filter ancestor=$$image; done | sort -u | xargs -r docker rm -f
-	-docker images -q --filter label=org.mplapack.project=mplapack --filter label=org.mplapack.purpose=mplapack-qa | xargs -r docker rmi -f
-	-@for image in $(LEGACY_QA_IMAGE_TAGS); do docker images -q $$image; done | sort -u | xargs -r docker rmi -f
+	-docker images -q --filter label=org.mplapack.purpose=mplapack-qa | xargs -r docker rmi -f
 
-realclean: clean-all
-	@for d in "$(HOME)"/mplapack_logs* "$(HOME)"/mplapack_build_logs* mplapack_logs* mplapack_build_logs*; do \
+realclean:
+	@CONF_FILE=$(CONF_FILE) MACOS_REMOTE_SSH=$(MACOS_REMOTE_SSH) REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./clean-remote-workdirs.sh --realclean
+	@$(MAKE) --no-print-directory clean-all
+	@$(MAKE) --no-print-directory clean-test-results
+	@rm -rf logs/ $(SUCCESS_DIR) $(FAILED_DIR)
+	@for d in "$(HOME)"/mplapack_logs* "$(HOME)"/mplapack_build_log* mplapack_logs* mplapack_build_log*; do \
 		[ -e "$$d" ] || continue; \
 		echo "RM   $$d"; \
 		rm -rf "$$d"; \
@@ -350,8 +371,9 @@ help:
 	@echo "  make clean       - remove unprotected logs and images"
 	@echo "  make clean-success - remove success stamps only"
 	@echo "  make clean-failed  - remove failed log links only"
+	@echo "  make clean-test-results - remove generated eig/lin test results"
 	@echo "  make clean-all   - remove all logs, success stamps, and images"
-	@echo "  make realclean   - clean-all plus mplapack_logs*/mplapack_build_logs*"
+	@echo "  make realclean   - clean-all plus remote tmp/log/Docker and test results cleanup"
 	@echo ""
 	@echo "Architecture notes:"
 	@echo "  - i386/s390x/mips64le: Debian only (QEMU, very slow)"
