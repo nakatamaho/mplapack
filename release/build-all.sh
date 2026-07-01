@@ -34,6 +34,8 @@ DIST_CACHE_DIR="${MPLAPACK_DIST_CACHE_DIR:-$SCRIPT_DIR/dist-cache}"
 
 # shellcheck disable=SC1091
 source "$SCRIPT_DIR/dist-cache.sh"
+# shellcheck disable=SC1091
+source "$SCRIPT_DIR/host-lock.sh"
 
 mkdir -p "$LOGDIR"
 mkdir -p "$SUCCESS_DIR"
@@ -828,6 +830,8 @@ build_remote_tarball_one() {
         return 1
     fi
 
+    mplapack_host_lock_acquire "$host" "remote-tarball $name/$arch_short"
+
     start=$(date +%s)
     log "START remote $name / $arch_short ($source_type) on $host"
     log "Remote tarball log: $logfile"
@@ -863,6 +867,7 @@ REMOTE_PREP
     } >> "$logfile" 2>&1
     rc=$?
     set -e
+    mplapack_host_lock_release_all
 
     end="$(date +%s)"
     elapsed=$((end - start))

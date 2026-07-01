@@ -11,6 +11,9 @@ REMOTE_SSH="${REMOTE_LINUX_SSH:-ssh}"
 MPLAPACK_REF="${MPLAPACK_REF:-$(git -C "$PROJECT_ROOT" rev-parse HEAD)}"
 MPLAPACK_SOURCE_MODE="${MPLAPACK_SOURCE_MODE:-dist}"
 
+# shellcheck disable=SC1091
+source "$SCRIPT_DIR/host-lock.sh"
+
 name="${1:?Usage: run-remote-linux-docker.sh <matrix-name>}"
 
 mkdir -p "$LOGDIR" "$SUCCESS_DIR" "$FAILED_DIR"
@@ -312,6 +315,7 @@ cleanup_remote_command() {
         kill "$remote_pid" 2>/dev/null || true
         wait "$remote_pid" 2>/dev/null || true
     fi
+    mplapack_host_lock_release_all
     end_epoch="$(date +%s)"
     start_epoch="${start:-$end_epoch}"
     write_log_end "$rc" "$end_epoch" "$((end_epoch - start_epoch))"
@@ -319,6 +323,8 @@ cleanup_remote_command() {
     exit "$rc"
 }
 trap cleanup_remote_command INT TERM HUP
+
+mplapack_host_lock_acquire "$host" "$matrix_name"
 
 start="$(date +%s)"
 set +e
@@ -330,6 +336,7 @@ remote_pid="$!"
 wait "$remote_pid"
 rc=$?
 remote_pid=""
+mplapack_host_lock_release_all
 trap - INT TERM HUP
 set -e
 

@@ -11,6 +11,9 @@ MACOS_REMOTE_SSH="${MACOS_REMOTE_SSH:-ssh}"
 MPLAPACK_REF="${MPLAPACK_REF:-$(git -C "$PROJECT_ROOT" rev-parse HEAD)}"
 MPLAPACK_SOURCE_MODE="${MPLAPACK_SOURCE_MODE:-dist}"
 
+# shellcheck disable=SC1091
+source "$SCRIPT_DIR/host-lock.sh"
+
 name="${1:?Usage: run-remote-macos.sh <matrix-name>}"
 
 mkdir -p "$LOGDIR" "$SUCCESS_DIR" "$FAILED_DIR"
@@ -261,6 +264,7 @@ cleanup_remote_command() {
     local rc=130
     local end_epoch start_epoch
     trap - INT TERM HUP
+    mplapack_host_lock_release_all
     end_epoch="$(date +%s)"
     start_epoch="${start:-$end_epoch}"
     write_log_end "$rc" "$end_epoch" "$((end_epoch - start_epoch))"
@@ -285,10 +289,11 @@ if [[ "$MPLAPACK_SOURCE_MODE" == "dist" ]]; then
     tar -czf "$context_tar" "${tar_args[@]}"
 fi
 
+trap cleanup_remote_command INT TERM HUP
+mplapack_host_lock_acquire "$host" "$matrix_name"
 start="$(date +%s)"
 set +e
 write_log_start "$start"
-trap cleanup_remote_command INT TERM HUP
 if [[ "$MPLAPACK_SOURCE_MODE" == "dist" ]]; then
     "$MACOS_REMOTE_SSH" "$host" "mkdir -p '$(dirname "$target_dir")' && cat > '$remote_context_tar'" < "$context_tar" && \
         "$MACOS_REMOTE_SSH" "$host" "MPLAPACK_REMOTE_WORKDIR='$target_dir' MPLAPACK_CONTEXT_TARBALL='$remote_context_tar' MPLAPACK_REF='$MPLAPACK_REF' MPLAPACK_SOURCE_MODE='$MPLAPACK_SOURCE_MODE' $remote_cmd -s" < "$script_path" >> "$logfile" 2>&1
@@ -297,6 +302,7 @@ else
     "$MACOS_REMOTE_SSH" "$host" "MPLAPACK_REMOTE_WORKDIR='$target_dir' MPLAPACK_REF='$MPLAPACK_REF' MPLAPACK_SOURCE_MODE='$MPLAPACK_SOURCE_MODE' $remote_cmd -s" < "$script_path" >> "$logfile" 2>&1
     rc=$?
 fi
+mplapack_host_lock_release_all
 trap - INT TERM HUP
 set -e
 
