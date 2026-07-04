@@ -1182,6 +1182,8 @@ inline mpcomplex &mpcomplex::operator+=(const std::complex<mplapack_binary128_t>
 inline mpcomplex &mpcomplex::operator-=(const std::complex<mplapack_binary128_t> a) { return *this -= mpcomplex(a); }
 inline mpcomplex &mpcomplex::operator*=(const std::complex<mplapack_binary128_t> a) { return *this *= mpcomplex(a); }
 inline mpcomplex &mpcomplex::operator/=(const std::complex<mplapack_binary128_t> a) { return *this /= mpcomplex(a); }
+inline const mpcomplex operator+(const mpcomplex &a, const std::complex<mplapack_binary128_t> &b) { return mpcomplex(a) += b; }
+inline const mpcomplex operator+(const std::complex<mplapack_binary128_t> &a, const mpcomplex &b) { return mpcomplex(b) += a; }
 inline const mpcomplex operator-(const mpcomplex &a, const std::complex<mplapack_binary128_t> &b) { return mpcomplex(a) -= b; }
 inline const mpcomplex operator-(const std::complex<mplapack_binary128_t> &a, const mpcomplex &b) { return -(mpcomplex(a) -= b); }
 inline mpcomplex &mpcomplex::operator=(const std::complex<mplapack_binary128_t> &a) {
@@ -1217,6 +1219,8 @@ inline mpcomplex &mpcomplex::operator+=(const std::complex<mplapack_binary128_t>
 inline mpcomplex &mpcomplex::operator-=(const std::complex<mplapack_binary128_t> a) { return *this -= mpcomplex(a); }
 inline mpcomplex &mpcomplex::operator*=(const std::complex<mplapack_binary128_t> a) { return *this *= mpcomplex(a); }
 inline mpcomplex &mpcomplex::operator/=(const std::complex<mplapack_binary128_t> a) { return *this /= mpcomplex(a); }
+inline const mpcomplex operator+(const mpcomplex &a, const std::complex<mplapack_binary128_t> &b) { return mpcomplex(a) += b; }
+inline const mpcomplex operator+(const std::complex<mplapack_binary128_t> &a, const mpcomplex &b) { return mpcomplex(b) += a; }
 inline const mpcomplex operator-(const mpcomplex &a, const std::complex<mplapack_binary128_t> &b) { return mpcomplex(a) -= b; }
 inline const mpcomplex operator-(const std::complex<mplapack_binary128_t> &a, const mpcomplex &b) { return -(mpcomplex(a) -= b); }
 inline mpcomplex &mpcomplex::operator=(const std::complex<mplapack_binary128_t> &a) {
@@ -1271,6 +1275,10 @@ inline mpcomplex &mpcomplex::operator+=(const std::complex<mplapack_binary80_t> 
 inline mpcomplex &mpcomplex::operator-=(const std::complex<mplapack_binary80_t> a) { return *this -= mpcomplex(a); }
 inline mpcomplex &mpcomplex::operator*=(const std::complex<mplapack_binary80_t> a) { return *this *= mpcomplex(a); }
 inline mpcomplex &mpcomplex::operator/=(const std::complex<mplapack_binary80_t> a) { return *this /= mpcomplex(a); }
+
+inline const mpcomplex operator+(const mpcomplex &a, const std::complex<mplapack_binary80_t> &b) { return mpcomplex(a) += b; }
+
+inline const mpcomplex operator+(const std::complex<mplapack_binary80_t> &a, const mpcomplex &b) { return mpcomplex(b) += a; }
 
 inline const mpcomplex operator-(const mpcomplex &a, const std::complex<mplapack_binary80_t> &b) { return -(mpcomplex(b) -= a); }
 
