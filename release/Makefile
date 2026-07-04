@@ -4,7 +4,9 @@
 SCRIPT_DIR := $(patsubst %/,%,$(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
 PROJECT_ROOT := $(abspath $(SCRIPT_DIR)/..)
 CONF_FILE ?= $(SCRIPT_DIR)/build-matrix.conf
-LOGDIR ?= $(SCRIPT_DIR)/logs/$(shell date +%Y%m%d_%H%M%S)
+ifeq ($(origin LOGDIR), undefined)
+LOGDIR := $(SCRIPT_DIR)/logs/$(shell date +%Y%m%d_%H%M%S)
+endif
 HOST_WORK_DIR ?= /work/mplapack-work
 HOST_CCACHE_DIR ?= /work/ccache
 SUCCESS_DIR ?= $(SCRIPT_DIR)/success
@@ -12,9 +14,10 @@ FAILED_DIR ?= $(SCRIPT_DIR)/failed
 MACOS_REMOTE_SSH ?= ssh
 REMOTE_LINUX_SSH ?= ssh
 REMOTE_TARBALL_SSH ?= ssh
+SOURCE_INFO_FILE ?= $(LOGDIR)/source/source.env
 
 export CONF_FILE LOGDIR PROJECT_ROOT HOST_WORK_DIR HOST_CCACHE_DIR SUCCESS_DIR FAILED_DIR REMOTE_TARBALL_SSH MPLAPACK_REF
-export MPLAPACK_SOURCE_MODE MPLAPACK_SOURCE_TARBALL MPLAPACK_SOURCE_METADATA MPLAPACK_SOURCE_PATCH MPLAPACK_SOURCE_STATUS MPLAPACK_SOURCE_LABEL MPLAPACK_SOURCE_TARBALL_SHA256 MPLAPACK_SOURCE_SNAPSHOT_REUSE MPLAPACK_DIST_CACHE_DIR MPLAPACK_DIST_CACHE_REUSE MPLAPACK_HOST_LOCK_DIR MPLAPACK_HOST_LOCK_POLL_SECONDS
+export MPLAPACK_SOURCE_MODE MPLAPACK_SOURCE_TARBALL MPLAPACK_SOURCE_METADATA MPLAPACK_SOURCE_PATCH MPLAPACK_SOURCE_STATUS MPLAPACK_SOURCE_LABEL MPLAPACK_SOURCE_TARBALL_SHA256 MPLAPACK_SOURCE_SNAPSHOT_REUSE MPLAPACK_DIST_CACHE_DIR MPLAPACK_DIST_CACHE_REUSE MPLAPACK_HOST_LOCK_DIR MPLAPACK_HOST_LOCK_POLL_SECONDS MPLAPACK_LOCAL_HOST_LOCK
 
 TIER1_TARGETS := tier1-macos-arm64 tier1-macos-amd64 tier1-ubuntu2404-arm64 tier1-ubuntu2604-arm64 tier1-ubuntu2404-amd64 tier1-ubuntu2604-amd64 tier1-ubuntu2404-mingw64-amd64 tier1-ubuntu2604-mingw64-amd64 tier1-ubuntu2404-inteloneapi-amd64 tier1-ubuntu2604-inteloneapi-amd64 tier1-debian12-i386 tier1-debian13-i386
 TIER1_MACOS_TARGETS := tier1-macos-arm64 tier1-macos-amd64
@@ -28,8 +31,9 @@ LEGACY_QA_IMAGE_TAGS := \
     mplapack-tier1-mingw64-amd64:latest \
     mplapack-tier1-ubuntu-inteloneapi-amd64:latest
 RUN_REMOTE_TARGETS = CONF_FILE=$(CONF_FILE) LOGDIR=$(LOGDIR) PROJECT_ROOT=$(PROJECT_ROOT) SUCCESS_DIR=$(SUCCESS_DIR) FAILED_DIR=$(FAILED_DIR) MACOS_REMOTE_SSH=$(MACOS_REMOTE_SSH) REMOTE_LINUX_SSH=$(REMOTE_LINUX_SSH) ./run-remote-targets-by-host.sh
+WITH_SOURCE_TARBALL = set -a; . "$(SOURCE_INFO_FILE)"; set +a;
 
-.PHONY: all ref tarball dist clean clean-remote clean-remote-realclean clean-all realclean clean-success clean-failed clean-test-results list help
+.PHONY: all ref tarball dist prepare-dist-source clean clean-remote clean-remote-realclean clean-all realclean clean-success clean-failed clean-test-results list help
 .PHONY: intel mingw cuda ubuntu debian fedora rocky suse alpine
 .PHONY: amd64 arm64 ppc64le i386 s390x mips64le
 .PHONY: ref-ubuntu ref-debian ref-amd64 ref-cuda ref-rocky ref-suse
@@ -48,8 +52,15 @@ ref:
 dist:
 	@./build-all.sh dist
 
+prepare-dist-source: $(SOURCE_INFO_FILE)
+
+$(SOURCE_INFO_FILE):
+	@PROJECT_ROOT=$(PROJECT_ROOT) LOGDIR=$(LOGDIR) MPLAPACK_SOURCE_INFO_FILE=$(SOURCE_INFO_FILE) ./make-source-snapshot.sh
+
+tier1 tier1-macos tier1-linux $(TIER1_TARGETS) tier2 tier3 $(TIER3_TARGETS) tarball tarball-ubuntu tarball-amd64 tarball-arm64: prepare-dist-source
+
 tarball:
-	@TARBALL= ./build-all.sh tarball
+	@$(WITH_SOURCE_TARBALL) TARBALL="$$MPLAPACK_SOURCE_TARBALL" ./build-all.sh tarball
 
 tarball-with:
 	@test -n "$(TARBALL)" || (echo "Usage: make tarball-with TARBALL=path/to/mplapack-x.y.z.tar.xz" && exit 1)
@@ -182,13 +193,13 @@ ref-suse:
 	@FILTER_NAME=suse ./build-all.sh ref
 
 tarball-ubuntu:
-	@TARBALL= FILTER_NAME=ubuntu ./build-all.sh tarball
+	@$(WITH_SOURCE_TARBALL) TARBALL="$$MPLAPACK_SOURCE_TARBALL" FILTER_NAME=ubuntu ./build-all.sh tarball
 
 tarball-amd64:
-	@TARBALL= FILTER_ARCH=amd64 ./build-all.sh tarball
+	@$(WITH_SOURCE_TARBALL) TARBALL="$$MPLAPACK_SOURCE_TARBALL" FILTER_ARCH=amd64 ./build-all.sh tarball
 
 tarball-arm64:
-	@TARBALL= FILTER_ARCH=arm64 ./build-all.sh tarball
+	@$(WITH_SOURCE_TARBALL) TARBALL="$$MPLAPACK_SOURCE_TARBALL" FILTER_ARCH=arm64 ./build-all.sh tarball
 
 # === ccache Utilities ===
 
@@ -299,7 +310,7 @@ realclean:
 	@$(MAKE) --no-print-directory clean-all
 	@$(MAKE) --no-print-directory clean-test-results
 	@rm -rf logs/ $(SUCCESS_DIR) $(FAILED_DIR)
-	@for d in "$(HOME)"/mplapack_logs* "$(HOME)"/mplapack_build_log* mplapack_logs* mplapack_build_log*; do \
+	@for d in "$(HOME)"/mplapack_logs* "$(HOME)"/mplapack_build_log* "$(HOME)"/tmp/tier* mplapack_logs* mplapack_build_log*; do \
 		[ -e "$$d" ] || continue; \
 		echo "RM   $$d"; \
 		rm -rf "$$d"; \
@@ -365,6 +376,7 @@ help:
 	@echo "  HOST_WORK_DIR=/path   - override source directory (default: project root)"
 	@echo "  MACOS_REMOTE_SSH=ssh - override remote macOS SSH command"
 	@echo "  REMOTE_TARBALL_SSH=ssh - override remote tarball SSH command"
+	@echo "  MPLAPACK_LOCAL_HOST_LOCK=host - override local Docker host lock key"
 	@echo ""
 	@echo "Utilities:"
 	@echo "  make list        - show build matrix"

@@ -333,6 +333,68 @@ setup_ccache() {
 
 setup_ccache
 
+local_host_lock_candidates() {
+    {
+        hostname -I 2>/dev/null || true
+        hostname -f 2>/dev/null || true
+        hostname -s 2>/dev/null || true
+        hostname 2>/dev/null || true
+    } | tr ' ' '\n' | awk 'NF && $1 != "127.0.0.1" && $1 != "::1" && !seen[$1]++ { print }'
+}
+
+local_docker_host_lock_name() {
+    local configured="${MPLAPACK_LOCAL_HOST_LOCK:-}"
+    local candidates matrix_host candidate
+
+    case "$configured" in
+        none|no|off|0) return 1 ;;
+        "") ;;
+        *) printf '%s\n' "$configured"; return 0 ;;
+    esac
+
+    candidates="$(local_host_lock_candidates || true)"
+    while IFS= read -r matrix_host; do
+        [[ -n "$matrix_host" ]] || continue
+        while IFS= read -r candidate; do
+            [[ "$matrix_host" == "$candidate" ]] || continue
+            printf '%s\n' "$matrix_host"
+            return 0
+        done <<EOF
+$candidates
+EOF
+    done < <(awk -F'|' '$6 ~ /^remote-/ { print $2 }' "$CONF_FILE" | awk 'NF && !seen[$1]++ { print }')
+
+    candidate="$(printf '%s\n' "$candidates" | awk 'NF { print; exit }')"
+    [[ -n "$candidate" ]] || candidate="local-docker"
+    printf '%s\n' "$candidate"
+}
+
+run_local_docker_build_one() {
+    local name="$1"
+    local base="$2"
+    local arch="$3"
+    local dockerfile="$4"
+    local source_type="$5"
+    local arch_short="${arch##*/}"
+    local lock_host=""
+    local rc
+
+    lock_host="$(local_docker_host_lock_name || true)"
+    if [[ -n "$lock_host" ]]; then
+        mplapack_host_lock_acquire "$lock_host" "local-docker $name/$arch_short/$source_type"
+    fi
+
+    log "START $name / $arch_short ($source_type)"
+    set +e
+    build_one "$name" "$base" "$arch" "$dockerfile" "$source_type"
+    rc=$?
+    set -e
+
+    if [[ -n "$lock_host" ]]; then
+        mplapack_host_lock_release_all
+    fi
+    return "$rc"
+}
 
 
 log_docker_ccache_stats() {
@@ -974,8 +1036,7 @@ run_matrix() {
             # Apply arch filter
             [[ -n "$FILTER_ARCH" && "$arch_short" != "$FILTER_ARCH" ]] && continue
 
-            log "START $name / $arch_short ($source_type)"
-            build_one "$name" "$base" "$arch" "$dockerfile" "$source_type" || true
+            run_local_docker_build_one "$name" "$base" "$arch" "$dockerfile" "$source_type" || true
         done
     done < "$CONF_FILE"
 

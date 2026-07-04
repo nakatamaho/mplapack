@@ -102,7 +102,8 @@ path_candidates() {
     for p in \
         "$HOME"/mplapack_build_log* \
         "$HOME"/mplapack_logs* \
-        "$HOME"/tmp/mplapack*; do
+        "$HOME"/tmp/mplapack* \
+        "$HOME"/tmp/tier*; do
         [ -e "$p" ] && printf '%s\n' "$p"
     done
 }
@@ -110,7 +111,7 @@ path_candidates() {
 remove_release_paths() {
     path_candidates | while IFS= read -r p; do
         case "$p" in
-            "$HOME"/mplapack_build_log*|"$HOME"/mplapack_logs*|"$HOME"/tmp/mplapack*) ;;
+            "$HOME"/mplapack_build_log*|"$HOME"/mplapack_logs*|"$HOME"/tmp/mplapack*|"$HOME"/tmp/tier*) ;;
             *) echo "ERROR: refusing unsafe realclean path: $p" >&2; exit 1 ;;
         esac
         echo "RM   $p" >&2
@@ -129,7 +130,7 @@ remove_release_paths_with_docker() {
     docker run --rm \
         -v "$HOME:/cleanup:rw" \
         "$helper_image" \
-        sh -c 'for p in mplapack_build_log* mplapack_logs* tmp/mplapack*; do [ -e "/cleanup/$p" ] || continue; chmod -R u+rwX "/cleanup/$p" 2>/dev/null || true; rm -rf -- "/cleanup/$p"; done'
+        sh -c 'for p in mplapack_build_log* mplapack_logs* tmp/mplapack* tmp/tier*; do [ -e "/cleanup/$p" ] || continue; chmod -R u+rwX "/cleanup/$p" 2>/dev/null || true; rm -rf -- "/cleanup/$p"; done'
 }
 
 verify_release_paths_removed() {
