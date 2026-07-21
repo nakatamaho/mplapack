@@ -3,22 +3,25 @@
 # Build happens at runtime with ccache mounted from host
 ARG BASE=debian:12
 FROM ${BASE}
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    gfortran \
-    autoconf \
-    automake \
-    libtool \
-    pkg-config \
-    libopenblas-dev \
-    ccache \
-    python3 \
-    git \
-    xz-utils \
-    bzip2 \
-    patch \
-    util-linux \
-    && rm -rf /var/lib/apt/lists/*
+RUN set -eux; \
+    export DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC; \
+    apt-get update; \
+    apt-get install -y \
+        build-essential \
+        gfortran \
+        autoconf \
+        automake \
+        libtool \
+        pkg-config \
+        libopenblas-dev \
+        ccache \
+        python3 \
+        git \
+        xz-utils \
+        bzip2 \
+        patch \
+        util-linux; \
+    rm -rf /var/lib/apt/lists/*
 # Personality wrapper: when running linux/386 on an x86_64 host, the shared
 # kernel makes uname -m return "x86_64" despite 32-bit userland.
 COPY common/entrypoint.sh /entrypoint.sh
