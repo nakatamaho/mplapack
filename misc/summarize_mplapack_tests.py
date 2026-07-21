@@ -21,7 +21,7 @@ import re
 import sys
 from collections import defaultdict
 from pathlib import Path
-from typing import NamedTuple, List, Dict, Tuple
+from typing import NamedTuple, List, Dict, Tuple, Optional
 
 # ---------------------------------------------------------------------------
 # Data model
@@ -29,6 +29,7 @@ from typing import NamedTuple, List, Dict, Tuple
 
 class TestRecord(NamedTuple):
     category:  str   # "eig" or "lin"
+    triplet:   str   # platform/build triplet directory name
     precision: str   # e.g. "double", "mpfr (binary64)", "qd", ...
     file:      str   # path relative to <root>
     suite:     str   # e.g. "DSB", "DGS drivers", ...
@@ -84,6 +85,17 @@ def normalize_outdir(outdir: str) -> str:
     return outdir
 
 
+def precision_from_backend(backend: str, out_path: Path) -> str:
+    """Convert a backend directory name into the summary precision label."""
+    if backend != "mpfr":
+        return backend
+
+    # mpfr: extract variant from filename
+    m = RE_MPFR_VARIANT.match(out_path.name)
+    variant = m.group(1) if m else "default"
+    return f"mpfr ({variant})"
+
+
 def detect_precision(out_path: Path, search_root: Path) -> str:
     """
     Derive a single precision label from an .out file path.
@@ -107,43 +119,58 @@ def detect_precision(out_path: Path, search_root: Path) -> str:
     else:
         backend = rel.parts[0] if rel.parts else "unknown"
 
-    if backend != "mpfr":
-        return backend
-
-    # mpfr: extract variant from filename
-    m = RE_MPFR_VARIANT.match(out_path.name)
-    variant = m.group(1) if m else "default"
-    return f"mpfr ({variant})"
+    return precision_from_backend(backend, out_path)
 
 
-def _infer_category(search_root: Path) -> str:
+def _infer_category(search_root: Path, outdir: str = "") -> str:
     """
-    Infer eig/lin category from the resolved path of the search root.
+    Infer eig/lin category from OUTDIR or the resolved path of the search root.
     Falls back to the directory's own name, then 'unknown'.
     """
+    for part in reversed(Path(outdir).parts):
+        if part in ("eig", "lin"):
+            return part
     for part in reversed(search_root.resolve().parts):
         if part in ("eig", "lin"):
             return part
     return search_root.resolve().name or "unknown"
 
 
+def _looks_like_version(part: str) -> bool:
+    return re.match(r"^\d+(?:\.\d+)*$", part) is not None
+
+
+def _infer_triplet_from_outdir(outdir: str) -> Optional[str]:
+    parts = [part for part in Path(outdir).parts if part not in ("results", "eig", "lin")]
+    if not parts or _looks_like_version(parts[-1]):
+        return None
+    return parts[-1]
+
+
 # ---------------------------------------------------------------------------
 # Parser
 # ---------------------------------------------------------------------------
 
-def parse_out_file(out_path: Path, category: str, search_root: Path) -> List[TestRecord]:
+def parse_out_file(
+    out_path: Path,
+    category: str,
+    search_root: Path,
+    backend: Optional[str] = None,
+    triplet: Optional[str] = None,
+) -> List[TestRecord]:
     """
     Parse a single .out file and return zero or more TestRecord entries.
     Returns one UNKNOWN record if no recognizable result lines are found.
     """
-    precision = detect_precision(out_path, search_root)
+    precision = precision_from_backend(backend, out_path) if backend else detect_precision(out_path, search_root)
+    triplet_label = triplet or "unknown"
     rel_file  = str(out_path.relative_to(search_root))
 
     try:
         text = out_path.read_text(errors="replace")
     except OSError as exc:
         print(f"[WARNING] Cannot read {out_path}: {exc}", file=sys.stderr)
-        return [TestRecord(category, precision, rel_file, "READ_ERROR", 0, 0, "UNKNOWN")]
+        return [TestRecord(category, triplet_label, precision, rel_file, "READ_ERROR", 0, 0, "UNKNOWN")]
 
     records: List[TestRecord] = []
 
@@ -151,7 +178,7 @@ def parse_out_file(out_path: Path, category: str, search_root: Path) -> List[Tes
     for m in RE_PASS.finditer(text):
         suite = m.group(1).strip()
         total = int(m.group(2))
-        records.append(TestRecord(category, precision, rel_file, suite, 0, total, "PASS"))
+        records.append(TestRecord(category, triplet_label, precision, rel_file, suite, 0, total, "PASS"))
 
     # Collect FAIL matches.
     # NOTE: Do NOT skip suites already seen in pass_suites.
@@ -163,11 +190,49 @@ def parse_out_file(out_path: Path, category: str, search_root: Path) -> List[Tes
         suite  = m.group(1).strip()
         failed = int(m.group(2))
         total  = int(m.group(3))
-        records.append(TestRecord(category, precision, rel_file, suite, failed, total, "FAIL"))
+        records.append(TestRecord(category, triplet_label, precision, rel_file, suite, failed, total, "FAIL"))
 
     if not records:
-        records.append(TestRecord(category, precision, rel_file, "UNKNOWN", 0, 0, "UNKNOWN"))
+        records.append(TestRecord(category, triplet_label, precision, rel_file, "UNKNOWN", 0, 0, "UNKNOWN"))
 
+    return records
+
+
+def _collect_backend_tree(
+    root: Path,
+    category: str,
+    search_root: Path,
+    triplet_hint: Optional[str] = None,
+) -> List[TestRecord]:
+    """Collect *.out files from root/<backend>/*.out or root/.../<backend>/*.out."""
+    records: List[TestRecord] = []
+    if not root.is_dir():
+        return records
+    for out_path in sorted(root.rglob("*.out")):
+        rel = out_path.relative_to(root)
+        triplet = triplet_hint
+        if len(rel.parts) >= 3:
+            triplet = rel.parts[-3]
+        records.extend(parse_out_file(out_path, category, search_root, out_path.parent.name, triplet))
+    return records
+
+
+def _collect_direct_backend_tree(
+    root: Path,
+    category: str,
+    search_root: Path,
+    triplet_hint: Optional[str] = None,
+) -> List[TestRecord]:
+    """Collect only immediate root/<backend>/*.out files."""
+    records: List[TestRecord] = []
+    if not root.is_dir():
+        return records
+    triplet = triplet_hint or root.name
+    for backend_dir in sorted(root.iterdir()):
+        if not backend_dir.is_dir():
+            continue
+        for out_path in sorted(backend_dir.glob("*.out")):
+            records.extend(parse_out_file(out_path, category, search_root, backend_dir.name, triplet))
     return records
 
 
@@ -179,26 +244,38 @@ def collect_all_records(outdir: str, search_root: Path) -> List[TestRecord]:
         <search_root>/results/<outdir>/<backend>/*.out
         where <outdir> may contain subdirectories
 
+    Copied results layout:
+        <search_root>/<outdir>/<backend>/*.out
+        <search_root>/<outdir>/<platform>/<backend>/*.out
+
+    Direct platform layout:
+        <search_root>/<backend>/*.out
+
     Old layout (fallback):
         <search_root>/<backend>/<outdir>/*.out
     """
-    all_records: List[TestRecord] = []
-    category = _infer_category(search_root)
-
-    found_any = False
+    category = _infer_category(search_root, outdir)
+    triplet_hint = _infer_triplet_from_outdir(outdir)
 
     # --- New layout: results/<outdir>/<backend>/*.out ---
+    # rglob also handles results/<outdir>/<platform>/<backend>/*.out.
     new_root = search_root / "results" / outdir
-    if new_root.is_dir():
-        for backend_dir in sorted(new_root.iterdir()):
-            if not backend_dir.is_dir():
-                continue
-            for out_path in sorted(backend_dir.glob("*.out")):
-                found_any = True
-                all_records.extend(parse_out_file(out_path, category, search_root))
+    all_records = _collect_backend_tree(new_root, category, search_root, triplet_hint)
+
+    # --- Copied layout below search_root: <outdir>/<backend>/*.out ---
+    # This also handles <outdir>/<platform>/<backend>/*.out.
+    if not all_records:
+        copied_root = search_root / outdir
+        all_records = _collect_backend_tree(copied_root, category, search_root, triplet_hint)
+
+    # --- Direct platform layout: <backend>/*.out ---
+    # Useful after copying one platform directory such as
+    # lin/results/2.2.1/Apple_M4_macos26_gcc-15_2_0.
+    if not all_records:
+        all_records = _collect_direct_backend_tree(search_root, category, search_root, triplet_hint)
 
     # --- Old layout fallback: <backend>/<outdir>/*.out ---
-    if not found_any:
+    if not all_records:
         for backend_dir in sorted(search_root.iterdir()):
             if not backend_dir.is_dir() or backend_dir.name == "results":
                 continue
@@ -206,13 +283,16 @@ def collect_all_records(outdir: str, search_root: Path) -> List[TestRecord]:
             if not target_dir.is_dir():
                 continue
             for out_path in sorted(target_dir.glob("*.out")):
-                found_any = True
-                all_records.extend(parse_out_file(out_path, category, search_root))
+                all_records.extend(parse_out_file(out_path, category, search_root, backend_dir.name, triplet_hint))
 
-    if not found_any:
+    if not all_records:
         print(
             f"[INFO] No *.out files found for OUTDIR='{outdir}' under: {search_root}\n"
             f"       Tried: {search_root}/results/{outdir}/<backend>/*.out\n"
+            f"              {search_root}/results/{outdir}/<platform>/<backend>/*.out\n"
+            f"              {search_root}/{outdir}/<backend>/*.out\n"
+            f"              {search_root}/{outdir}/<platform>/<backend>/*.out\n"
+            f"              {search_root}/<backend>/*.out\n"
             f"       and:  {search_root}/<backend>/{outdir}/*.out",
             file=sys.stderr,
         )
@@ -225,10 +305,10 @@ def collect_all_records(outdir: str, search_root: Path) -> List[TestRecord]:
 # ---------------------------------------------------------------------------
 
 def sort_records(records: List[TestRecord]) -> List[TestRecord]:
-    """Default sort: fail_rate descending, then category / precision / file / suite."""
+    """Default sort: fail_rate descending, then category / triplet / precision / file / suite."""
     return sorted(
         records,
-        key=lambda r: (-r.fail_rate, r.category, r.precision, r.file, r.suite),
+        key=lambda r: (-r.fail_rate, r.category, r.triplet, r.precision, r.file, r.suite),
     )
 
 
@@ -238,15 +318,15 @@ def sort_records(records: List[TestRecord]) -> List[TestRecord]:
 
 def build_summary(records: List[TestRecord]) -> Dict:
     """
-    Aggregate statistics grouped by (category, precision).
-    Returns an ordered dict keyed by (category, precision).
+    Aggregate statistics grouped by (category, triplet, precision).
+    Returns an ordered dict keyed by (category, triplet, precision).
     """
-    groups: Dict[Tuple[str, str], Dict] = defaultdict(
+    groups: Dict[Tuple[str, str, str], Dict] = defaultdict(
         lambda: {"total_tests": 0, "total_failed": 0, "files_with_fail": set(), "file_count": set()}
     )
 
     for r in records:
-        key = (r.category, r.precision)
+        key = (r.category, r.triplet, r.precision)
         g   = groups[key]
         g["total_tests"]  += r.total
         g["total_failed"] += r.failed
@@ -274,7 +354,7 @@ def build_summary(records: List[TestRecord]) -> Dict:
 # Output formatters
 # ---------------------------------------------------------------------------
 
-DETAIL_HEADERS = ["category", "precision", "file", "suite",
+DETAIL_HEADERS = ["category", "triplet", "precision", "file", "suite",
                   "failed", "total", "fail_rate", "status"]
 
 
@@ -283,6 +363,8 @@ def format_text(records: List[TestRecord], summary: Dict) -> str:
     lines: List[str] = []
 
     # Dynamic widths
+    triplet_w = max((len(r.triplet) for r in records), default=7)
+    triplet_w = max(triplet_w, len("TRIPLET"))
     prec_w  = max((len(r.precision) for r in records), default=10)
     prec_w  = max(prec_w, len("PRECISION"))
     file_w  = max((len(r.file)      for r in records), default=50)
@@ -290,14 +372,14 @@ def format_text(records: List[TestRecord], summary: Dict) -> str:
     suite_w = max((len(r.suite)     for r in records), default=22)
     suite_w = max(suite_w, len("SUITE"))
 
-    def row(cat, prec, file_, suite, failed, total, fail_pct, status):
+    def row(cat, triplet, prec, file_, suite, failed, total, fail_pct, status):
         return (
-            f"{cat:<8}  {prec:<{prec_w}}  {file_:<{file_w}}  "
+            f"{cat:<8}  {triplet:<{triplet_w}}  {prec:<{prec_w}}  {file_:<{file_w}}  "
             f"{suite:<{suite_w}}  {str(failed):>7}  {str(total):>9}  "
             f"{fail_pct:>8}  {status:<7}"
         )
 
-    header = row("CATEGORY", "PRECISION", "FILE", "SUITE",
+    header = row("CATEGORY", "TRIPLET", "PRECISION", "FILE", "SUITE",
                  "FAILED", "TOTAL", "FAIL%", "STATUS")
     sep = "-" * len(header)
 
@@ -305,38 +387,39 @@ def format_text(records: List[TestRecord], summary: Dict) -> str:
 
     for r in records:
         fail_pct = f"{r.fail_rate * 100:.2f}%" if r.total > 0 else "N/A"
-        lines.append(row(r.category, r.precision, r.file, r.suite,
+        lines.append(row(r.category, r.triplet, r.precision, r.file, r.suite,
                          r.failed, r.total, fail_pct, r.status))
 
     lines += [sep, f"Total rows: {len(records)}", ""]
 
     # --- Summary table ---
-    prec_ws = max((len(k[1]) for k in summary), default=10)
+    triplet_ws = max((len(k[1]) for k in summary), default=7)
+    triplet_ws = max(triplet_ws, len("TRIPLET"))
+    prec_ws = max((len(k[2]) for k in summary), default=10)
     prec_ws = max(prec_ws, len("PRECISION"))
 
-    def srow(cat, prec, tt, tf, fp, wf, fc):
+    def srow(cat, triplet, prec, tt, tf, fp, wf, fc):
         return (
-            f"{cat:<8}  {prec:<{prec_ws}}  "
+            f"{cat:<8}  {triplet:<{triplet_ws}}  {prec:<{prec_ws}}  "
             f"{str(tt):>12}  {str(tf):>10}  {fp:>8}  {str(wf):>12}  {str(fc):>10}"
         )
 
-    sheader = srow("CATEGORY", "PRECISION",
+    sheader = srow("CATEGORY", "TRIPLET", "PRECISION",
                    "TOTAL_TESTS", "TOTAL_FAIL", "FAIL%", "FILES_W_FAIL", "FILE_COUNT")
     ssep = "-" * len(sheader)
 
     lines += [ssep,
-              "MPLAPACK Test Summary - Aggregated by (category, precision)",
+              "MPLAPACK Test Summary - Aggregated by (category, triplet, precision)",
               ssep, sheader, ssep]
 
-    for (cat, prec), stats in summary.items():
+    for (cat, triplet, prec), stats in summary.items():
         fp = f"{stats['fail_rate'] * 100:.2f}%"
-        lines.append(srow(cat, prec,
+        lines.append(srow(cat, triplet, prec,
                           stats["total_tests"], stats["total_failed"], fp,
                           stats["files_with_fail"], stats["file_count"]))
 
     lines.append(ssep)
     return "\n".join(lines)
-
 
 def format_csv(records: List[TestRecord], summary: Dict) -> str:
     buf    = io.StringIO()
@@ -345,28 +428,28 @@ def format_csv(records: List[TestRecord], summary: Dict) -> str:
     writer.writerow(DETAIL_HEADERS)
     for r in records:
         writer.writerow([
-            r.category, r.precision, r.file, r.suite,
+            r.category, r.triplet, r.precision, r.file, r.suite,
             r.failed, r.total, f"{r.fail_rate:.6f}", r.status,
         ])
 
     writer.writerow([])
-    writer.writerow(["# Summary by (category, precision)"])
-    writer.writerow(["category", "precision", "total_tests", "total_failed",
+    writer.writerow(["# Summary by (category, triplet, precision)"])
+    writer.writerow(["category", "triplet", "precision", "total_tests", "total_failed",
                      "fail_rate", "files_with_fail", "file_count"])
-    for (cat, prec), stats in summary.items():
+    for (cat, triplet, prec), stats in summary.items():
         writer.writerow([
-            cat, prec,
+            cat, triplet, prec,
             stats["total_tests"], stats["total_failed"],
             f"{stats['fail_rate']:.6f}",
             stats["files_with_fail"], stats["file_count"],
         ])
     return buf.getvalue()
 
-
 def format_json(records: List[TestRecord], summary: Dict) -> str:
     detail = [
         {
             "category":  r.category,
+            "triplet":   r.triplet,
             "precision": r.precision,
             "file":      r.file,
             "suite":     r.suite,
@@ -380,10 +463,11 @@ def format_json(records: List[TestRecord], summary: Dict) -> str:
     agg = [
         {
             "category":  cat,
+            "triplet":   triplet,
             "precision": prec,
             **{k: (round(v, 6) if isinstance(v, float) else v) for k, v in stats.items()},
         }
-        for (cat, prec), stats in summary.items()
+        for (cat, triplet, prec), stats in summary.items()
     ]
     return json.dumps({"detail": detail, "summary": agg}, indent=2)
 
@@ -405,18 +489,19 @@ def build_parser() -> argparse.ArgumentParser:
             "Output subdirectory name (e.g. Ryzen_Threadripper_3970X_gcc_14_2_0_ubuntu22_04). "
             "May include a version prefix such as 2.2.0/Core_i5-8500B_macos15_gcc-15_2_0. "
             "A leading results/ prefix is accepted and ignored. "
-            "The script first tries SEARCH_ROOT/results/OUTDIR/<backend>/*.out (new layout), "
+            "The script tries SEARCH_ROOT/results/OUTDIR/<backend>/*.out, "
+            "SEARCH_ROOT/OUTDIR/<backend>/*.out, direct SEARCH_ROOT/<backend>/*.out, "
             "then falls back to SEARCH_ROOT/<backend>/OUTDIR/*.out (old layout)."
         ),
     )
     p.add_argument(
         "search_root",
         metavar="SEARCH_ROOT",
-        nargs="?",
-        default=".",
+        nargs="*",
+        default=["."],
         help=(
-            "The eig/ or lin/ directory. "
-            "For the new layout this must contain a results/ subdirectory. "
+            "One or more eig/ or lin/ directories, or copied platform result directories. "
+            "For the new layout these may contain a results/ subdirectory. "
             "Defaults to the current directory."
         ),
     )
@@ -444,18 +529,19 @@ def main() -> int:
     args   = parser.parse_args()
     outdir = normalize_outdir(args.outdir)
 
-    search_root = Path(args.search_root).expanduser().resolve()
-    if not search_root.is_dir():
-        print(f"[ERROR] SEARCH_ROOT does not exist or is not a directory: {search_root}",
-              file=sys.stderr)
-        return 1
-
-    records = collect_all_records(outdir, search_root)
+    records: List[TestRecord] = []
+    search_roots = [Path(root).expanduser().resolve() for root in args.search_root]
+    for search_root in search_roots:
+        if not search_root.is_dir():
+            print(f"[ERROR] SEARCH_ROOT does not exist or is not a directory: {search_root}",
+                  file=sys.stderr)
+            return 1
+        records.extend(collect_all_records(outdir, search_root))
 
     if not records:
         print(
             f"[WARNING] No records extracted. "
-            f"Check that <backend>/{outdir}/*.out files exist under {search_root}.",
+            f"Check the searched layouts listed above for OUTDIR='{outdir}' under SEARCH_ROOTS={search_roots}.",
             file=sys.stderr,
         )
         return 0
@@ -498,10 +584,22 @@ if __name__ == "__main__":
 # WITH EXPLICIT SEARCH ROOT
 #   python summarize_mplapack_tests.py <OUTDIR> /path/to/eig
 #
-# The script first looks for the new layout:
+# MULTIPLE COPIED PLATFORM DIRECTORIES
+#   python summarize_mplapack_tests.py lin lin/results/2.2.1/* --only-fail
+#   python summarize_mplapack_tests.py eig eig/results/2.2.1/* --only-fail
+#
+# The script looks for these layouts, in order:
 #   SEARCH_ROOT/results/<OUTDIR>/<backend>/*.out
-# and falls back to the old layout if results/ is absent:
+#   SEARCH_ROOT/results/<OUTDIR>/<platform>/<backend>/*.out
+#   SEARCH_ROOT/<OUTDIR>/<backend>/*.out
+#   SEARCH_ROOT/<OUTDIR>/<platform>/<backend>/*.out
+#   SEARCH_ROOT/<backend>/*.out
+# and falls back to the old layout if needed:
 #   SEARCH_ROOT/<backend>/<OUTDIR>/*.out
+#
+# DIRECT COPIED PLATFORM DIRECTORY
+#   python summarize_mplapack_tests.py lin /path/to/lin/results/2.2.1/<platform>
+#   python summarize_mplapack_tests.py eig /path/to/eig/results/2.2.1/<platform>
 #
 # SHOW ONLY FAILURES
 #   python summarize_mplapack_tests.py <OUTDIR> . --only-fail
