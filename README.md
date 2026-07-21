@@ -8,6 +8,13 @@ BSD-style license, supplemental to the original LAPACK license.
 
 # News
 
+* 2026-07-21  MPLAPACK 2.2.1 has been released. Available from
+  <https://github.com/nakatamaho/mplapack/releases/tag/v2.2.1>. This patch
+  release keeps the LAPACK 3.12.1 base from 2.2.0 and focuses on GMP
+  transcendental correctness, binary128/binary80 C++ standard compatibility,
+  include-order hardening, experimental CMake support, OpenCL binary128
+  benchmarks, and release engineering for the expanded Tier 1/2/3 matrix.
+  See [CHANGES.2.2.1.md](CHANGES.2.2.1.md).
 * 2026-05-12  MPLAPACK 2.2.0 has been released. Available from
   <https://github.com/nakatamaho/mplapack/releases>. This final release is
   based on 2.2.0-rc1: rebased from LAPACK 3.9.1 to 3.12.1, added new
@@ -145,9 +152,9 @@ usual MPLAPACK options.
 
 ```sh
 mkdir -p $HOME/tmp && cd $HOME/tmp
-wget https://github.com/nakatamaho/mplapack/releases/download/v2.1.1/mplapack-2.1.1.tar.xz
-tar xvf mplapack-2.1.1.tar.xz
-cd mplapack-2.1.1
+wget https://github.com/nakatamaho/mplapack/releases/download/v2.2.1/mplapack-2.2.1.tar.xz
+tar xvf mplapack-2.2.1.tar.xz
+cd mplapack-2.2.1
 export CXX=g++ CC=gcc FC=gfortran
 ./configure \
     --prefix=$HOME/MPLAPACK \
@@ -205,9 +212,9 @@ On Apple Silicon (arm64), omit `--enable-binary80=yes` (binary80 is x86-only).
 ```sh
 sudo port install gcc15 coreutils git gsed
 mkdir -p $HOME/tmp && cd $HOME/tmp
-wget https://github.com/nakatamaho/mplapack/releases/download/v2.1.1/mplapack-2.1.1.tar.xz
-tar xvf mplapack-2.1.1.tar.xz
-cd mplapack-2.1.1
+wget https://github.com/nakatamaho/mplapack/releases/download/v2.2.1/mplapack-2.2.1.tar.xz
+tar xvf mplapack-2.2.1.tar.xz
+cd mplapack-2.2.1
 export CXX=g++-mp-15 CC=gcc-mp-15 FC=gfortran-mp-15
 ./configure \
     --prefix=$HOME/MPLAPACK \
@@ -243,9 +250,9 @@ make install
 ```sh
 sudo apt-get install gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64 gfortran-mingw-w64-x86-64
 mkdir -p $HOME/tmp && cd $HOME/tmp
-wget https://github.com/nakatamaho/mplapack/releases/download/v2.1.1/mplapack-2.1.1.tar.xz
-tar xvf mplapack-2.1.1.tar.xz
-cd mplapack-2.1.1
+wget https://github.com/nakatamaho/mplapack/releases/download/v2.2.1/mplapack-2.2.1.tar.xz
+tar xvf mplapack-2.2.1.tar.xz
+cd mplapack-2.2.1
 export CXX=x86_64-w64-mingw32-g++
 export CC=x86_64-w64-mingw32-gcc
 export FC=x86_64-w64-mingw32-gfortran
@@ -386,6 +393,34 @@ bash fable/go_testing.sh  # test programs (EIG/LIN/MATGEN)
 
 # MPLAPACK Release Process
 
+## MPLAPACK 2.2.1 Release Process
+
+2.2.1 is a patch release on top of 2.2.0. No public BLAS/LAPACK routine set
+is intentionally changed. Highlights:
+
+- **GMP transcendental hardening.** Native GMP-backed `log2`, `log1p`,
+  `log`, `exp`, `expm1`, `sin`/`cos`, `atan`, `atan2`, and `pow` helpers
+  were added and tested against MPFR oracles.
+- **C++ standard selection.** `--with-cxx-standard` now supports C++17,
+  C++20, C++23, and C++26, including GNU and strict modes.
+- **binary128/binary80 math probes.** `std::abs`, scalar math, complex math,
+  and C-complex availability are now configure/CMake probe results rather
+  than language-mode assumptions.
+- **Header include-order hardening.** Installed binary128/binary80 BLAS and
+  LAPACK headers include `mplapack_config.h` before standard headers where
+  feature-test macros matter, and include `<complex>` where declarations use
+  `std::complex`.
+- **Experimental CMake build.** CMake can build/install MPLAPACK, package
+  sources/binaries with CPack, and run selected MPBLAS/MPLAPACK tests and
+  benchmarks. Autotools remains the primary release path.
+- **OpenCL binary128 benchmarks.** OpenCL binary128 RGEMM support and
+  benchmark targets were added and gated on a usable OpenCL setup.
+- **Release engineering.** Remote Tier 1/2/3 execution, dist tarball caching,
+  per-host job serialization, ccache reporting, source snapshot handling, and
+  cleanup were tightened for the expanded release matrix.
+
+See [CHANGES.2.2.1.md](CHANGES.2.2.1.md) for the full change summary.
+
 ## MPLAPACK 2.1.1 Release Process
 
 2.1.1 is a patch release. No API/ABI changes vs. 2.1.0. Highlights:
@@ -505,6 +540,13 @@ Tier 1 platforms run the full pipeline including `make distcheck`. Tier 2 platfo
 
 # History
 
+* 2026-07-21  MPLAPACK 2.2.1 released. Patch release: GMP transcendental
+  hardening, C++17/20/23/26 selection, binary128/binary80 math probes,
+  include-order fixes, experimental CMake support, OpenCL binary128
+  benchmarks, and release engineering updates.
+* 2026-05-12  MPLAPACK 2.2.0 released. LAPACK reference rebased from 3.9.1
+  to 3.12.1; new BLAS/LAPACK routines and arithmetic-params infrastructure
+  added.
 * 2026-04-09  MPLAPACK 2.1.1 released. GCC 15 support, arm64 promoted to Tier 1
   (Ubuntu arm64, macOS Apple Silicon), DD `-ffp-contract=off` propagation fix,
   binary128 / MinGW / musl build fixes, OpenBLAS 0.3.33. ABI compatible with 2.1.0.
