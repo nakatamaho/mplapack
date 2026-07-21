@@ -4,27 +4,36 @@
 ARG BASE=opensuse/leap:16
 FROM ${BASE}
 
-RUN zypper --non-interactive install \
-    gcc-c++ \
-    gcc-fortran \
-    make \
-    autoconf \
-    automake \
-    libtool \
-    pkgconf \
-    pkgconf-m4 \
-    openblas-devel \
-    ccache \
-    python3 \
-    git-core \
-    gzip \
-    awk \
-    xz \
-    bsdtar \
-    bzip2 \
-    patch \
-    diff \
-    && zypper clean --all
+RUN set -eux; \
+    zypper --gpg-auto-import-keys --non-interactive refresh; \
+    zypper --non-interactive install \
+        gcc-c++ \
+        gcc-fortran \
+        make \
+        autoconf \
+        automake \
+        libtool \
+        pkgconf \
+        libopenblas_pthreads-devel \
+        ccache \
+        python3 \
+        git-core \
+        gzip \
+        gawk \
+        xz \
+        bsdtar \
+        bzip2 \
+        patch \
+        diffutils; \
+    if ! command -v pkg-config >/dev/null 2>&1 || [ ! -f /usr/share/aclocal/pkg.m4 ]; then \
+        zypper --non-interactive install pkg-config || true; \
+    fi; \
+    if ! command -v pkg-config >/dev/null 2>&1 || [ ! -f /usr/share/aclocal/pkg.m4 ]; then \
+        zypper --non-interactive install pkgconf-pkg-config pkgconf-m4; \
+    fi; \
+    command -v pkg-config; \
+    test -f /usr/share/aclocal/pkg.m4; \
+    zypper clean --all
 
 # Configure ccache (directory will be mounted at runtime)
 ENV CCACHE_DIR=/ccache
