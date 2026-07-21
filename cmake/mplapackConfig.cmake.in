@@ -2,8 +2,7 @@
 
 # mplapackConfig.cmake — package config for find_package(mplapack).
 #
-# Exposes the namespaced targets mplapack::mpblas_<backend> and
-# mplapack::mplapack_<backend> for every backend that was built and installed.
+# Exposes mplapack::mplapack_<backend> for every installed backend.
 
 include(CMakeFindDependencyMacro)
 

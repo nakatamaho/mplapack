@@ -7,7 +7,7 @@ CXXFLAGS= -I$(MPLAPACKDIR)/include -I$(MPLAPACKDIR)/include/mplapack -I$(MPLAPAC
 OPTFLAGS= -O2
 LIBFLAGS=-L$(MPLAPACKDIR)/lib -L/usr/local/cuda/lib64 -Wl,--rpath=$(MPLAPACKDIR)/lib
 DDLIBS=-fopenmp -lmpblas_dd_cuda -lcudart -lmpblas_dd_opt -lqd
-DOUBLELIBS=-lmpblas_double
+DOUBLELIBS=-lmplapack_double
 BLAS=
 LAPACK=
 FLIBS=

@@ -45,7 +45,7 @@ foreach(_b ${_backends})
     endif()
 
     add_executable(${_exe} "${_src}" ${_support} ${_extra})
-    # Exactly one backend macro (set explicitly; the mplapack/mpblas archives are
+    # Exactly one backend macro (set explicitly; the merged archives are
     # linked by file path below so their target macros do not leak in).
     target_compile_definitions(${_exe} PRIVATE
       ___MPLAPACK_BUILD_WITH_${_B}___ ___MPLAPACK_INTERNAL___)
@@ -56,12 +56,10 @@ foreach(_b ${_backends})
     target_link_libraries(${_exe} PRIVATE
       "$<TARGET_FILE:mplapack_${_b}>"
       "$<TARGET_FILE:mplapack_mpfr>"
-      "$<TARGET_FILE:mpblas_${_b}>"
-      "$<TARGET_FILE:mpblas_mpfr>"
       MPC::MPC MPFR::MPFR GMP::GMPXX
       ${LAPACK_LIBRARIES} ${BLAS_LIBRARIES})   # reference Fortran LAPACK + BLAS
     add_dependencies(${_exe}
-      mplapack_${_b} mplapack_mpfr mpblas_${_b} mpblas_mpfr)
+      mplapack_${_b} mplapack_mpfr)
     if(MPLAPACK_GFORTRAN_LIBRARY)
       target_link_libraries(${_exe} PRIVATE ${MPLAPACK_GFORTRAN_LIBRARY})
     endif()

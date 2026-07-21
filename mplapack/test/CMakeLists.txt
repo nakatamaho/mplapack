@@ -134,12 +134,12 @@ foreach(_b ${_backends})
     # backend libraries -- e.g. the error-exit tests rely on the override
     # Mxerbla recording the error instead of printing and aborting.  Linking the
     # override archive with --whole-archive forces all its objects in first, so
-    # its definitions win over the duplicates in mpblas/mplapack (kept first by
+    # its definitions win over the duplicates in the merged backend library (kept first by
     # --allow-multiple-definition).  The remaining static archives have circular
     # dependencies, so wrap them in a RESCAN group (--start-group/--end-group).
     target_link_libraries(${_exe} PRIVATE
       "$<LINK_LIBRARY:WHOLE_ARCHIVE,${_kind}_override_${_b}>"
-      "$<LINK_GROUP:RESCAN,${_kind}_${_b},matgen_${_b},mplapack_${_b},mpblas_${_b}>")
+      "$<LINK_GROUP:RESCAN,${_kind}_${_b},matgen_${_b},mplapack_${_b}>")
     if(MPLAPACK_LD_ALLOW_MULTIDEF)
       target_link_options(${_exe} PRIVATE "-Wl,--allow-multiple-definition")
     endif()

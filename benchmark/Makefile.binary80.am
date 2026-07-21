@@ -13,10 +13,10 @@ binary80cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUIL
 binary80lapack_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_binary80
 
 if BINARY128_USE_QUADMATH
-binary80_libdepends    = $(binary80lapack_libdepends) -L$(top_builddir)/mpblas/reference           -lmpblas_binary80     -lquadmath $(DYLD)
+binary80_libdepends    = $(binary80lapack_libdepends) -lquadmath $(DYLD)
 binary80opt_libdepends = $(binary80lapack_libdepends) -L$(top_builddir)/mpblas/optimized/binary80  -lmpblas_binary80_opt -lquadmath $(DYLD)
 else
-binary80_libdepends    = $(binary80lapack_libdepends) -L$(top_builddir)/mpblas/reference           -lmpblas_binary80     $(DYLD)
+binary80_libdepends    = $(binary80lapack_libdepends) $(DYLD)
 binary80opt_libdepends = $(binary80lapack_libdepends) -L$(top_builddir)/mpblas/optimized/binary80  -lmpblas_binary80_opt $(DYLD)
 endif
 

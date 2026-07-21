@@ -6,7 +6,7 @@
 //   g++ -O2 -I${MPLAPACK}/include \
 //       -D___MPLAPACK_BUILD_WITH_MPFR___ \
 //       debug_cgesvj_type4_v2.cpp \
-//       -L${MPLAPACK}/lib -lmplapack_mpfr -lmpblas_mpfr \
+//       -L${MPLAPACK}/lib -lmplapack_mpfr \
 //       -lmpc -lmpfr -lgmp -o debug_cgesvj_type4_v2
 //
 // If Clatms is not easily callable, this program uses an alternative:

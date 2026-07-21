@@ -15,7 +15,7 @@ Rgetrf.dd Rgetrf.dd_opt
 
 ddcxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_DD___ $(DD_CXXFLAGS)
 ddlapack_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_dd
-dd_libdepends    = $(ddlapack_libdepends) -L$(top_builddir)/mpblas/reference       -lmpblas_dd     -L$(QD_LIBDIR) -lqd $(DYLD)
+dd_libdepends    = $(ddlapack_libdepends) -L$(QD_LIBDIR) -lqd $(DYLD)
 ddopt_libdepends = $(ddlapack_libdepends) -L$(top_builddir)/mpblas/optimized/dd    -lmpblas_dd_opt -L$(QD_LIBDIR) -lqd $(DYLD)
 
 if IS_MINGW

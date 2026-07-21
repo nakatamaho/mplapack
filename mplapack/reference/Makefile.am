@@ -30,7 +30,7 @@ endif
 
 if ENABLE_GMP
 libmplapack_gmp_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_GMP___
-libmplapack_gmp_la_SOURCES = $(MPLAPACK_SOURCES)
+libmplapack_gmp_la_SOURCES = $(MPLAPACK_SOURCES) $(MPBLAS_REFERENCE_SOURCES)
 libmplapack_gmp_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 if IS_MACOS
 libmplapack_gmp_la_LDFLAGS += -Wl,-rpath,$(libdir) -Wl,-flat_namespace,-undefined,dynamic_lookup
@@ -38,82 +38,162 @@ else
 libmplapack_gmp_la_LDFLAGS += -Wl,-rpath=$(libdir)
 endif
 if IS_MINGW
-libmplapack_gmp_la_LDFLAGS += -no-undefined -L$(GMP_LIBDIR) -lgmp -L$(top_builddir)/mpblas/reference -lmpblas_gmp
+libmplapack_gmp_la_LDFLAGS += -no-undefined -L$(GMP_LIBDIR) -lgmp
 endif
 endif
 
 if ENABLE_MPFR
 libmplapack_mpfr_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR)  -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___
-libmplapack_mpfr_la_SOURCES = $(MPLAPACK_SOURCES)
+libmplapack_mpfr_la_SOURCES = $(MPLAPACK_SOURCES) $(MPBLAS_REFERENCE_SOURCES)
 libmplapack_mpfr_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO) -Wl,-rpath,$(libdir)
 if IS_MACOS
 libmplapack_mpfr_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 if IS_MINGW
-libmplapack_mpfr_la_LDFLAGS += -no-undefined -L$(top_builddir)/mpblas/reference -lmpblas_mpfr -L$(MPC_LIBDIR) -lmpc -L$(MPFR_LIBDIR) -lmpfr -L$(GMP_LIBDIR) -lgmp
+libmplapack_mpfr_la_LDFLAGS += -no-undefined -L$(MPC_LIBDIR) -lmpc -L$(MPFR_LIBDIR) -lmpfr -L$(GMP_LIBDIR) -lgmp
 endif
 endif
 
 if ENABLE_QD
 libmplapack_qd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_QD___
-libmplapack_qd_la_SOURCES = $(MPLAPACK_SOURCES)
+libmplapack_qd_la_SOURCES = $(MPLAPACK_SOURCES) $(MPBLAS_REFERENCE_SOURCES)
 libmplapack_qd_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO) -Wl,-rpath,$(libdir)
 if IS_MACOS
 libmplapack_qd_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 if IS_MINGW
-libmplapack_qd_la_LDFLAGS += -no-undefined -L$(top_builddir)/mpblas/reference -lmpblas_qd -L$(QD_LIBDIR) -lqd
+libmplapack_qd_la_LDFLAGS += -no-undefined -L$(QD_LIBDIR) -lqd
 endif
 endif
 
 if ENABLE_DD
 libmplapack_dd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_DD___
-libmplapack_dd_la_SOURCES = $(MPLAPACK_SOURCES)
+libmplapack_dd_la_SOURCES = $(MPLAPACK_SOURCES) $(MPBLAS_REFERENCE_SOURCES)
 libmplapack_dd_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO) -Wl,-rpath,$(libdir)
 libmplapack_dd_la_CXXFLAGS = $(DD_CXXFLAGS)
 if IS_MACOS
 libmplapack_dd_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 if IS_MINGW
-libmplapack_dd_la_LDFLAGS += -no-undefined -L$(top_builddir)/mpblas/reference -lmpblas_dd -L$(QD_LIBDIR) -lqd
+libmplapack_dd_la_LDFLAGS += -no-undefined -L$(QD_LIBDIR) -lqd
 endif
 endif
 
 if ENABLE_DOUBLE
 libmplapack_double_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_DOUBLE___
-libmplapack_double_la_SOURCES = $(MPLAPACK_SOURCES)
+libmplapack_double_la_SOURCES = $(MPLAPACK_SOURCES) $(MPBLAS_REFERENCE_SOURCES)
 libmplapack_double_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO) -Wl,-rpath,$(libdir)
 if IS_MACOS
 libmplapack_double_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 if IS_MINGW
-libmplapack_double_la_LDFLAGS += -no-undefined -L$(top_builddir)/mpblas/reference -lmpblas_double
+libmplapack_double_la_LDFLAGS += -no-undefined
 endif
 endif
 
 if ENABLE_BINARY80
 libmplapack_binary80_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_BINARY80___
-libmplapack_binary80_la_SOURCES = $(MPLAPACK_SOURCES)
+libmplapack_binary80_la_SOURCES = $(MPLAPACK_SOURCES) $(MPBLAS_REFERENCE_SOURCES)
 libmplapack_binary80_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO) -Wl,-rpath,$(libdir)
 if IS_MACOS
 libmplapack_binary80_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 if IS_MINGW
-libmplapack_binary80_la_LDFLAGS += -no-undefined -L$(top_builddir)/mpblas/reference -lmpblas_binary80
+libmplapack_binary80_la_LDFLAGS += -no-undefined
 endif
 endif
 
 if ENABLE_BINARY128
 libmplapack_binary128_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_BINARY128___
-libmplapack_binary128_la_SOURCES = $(MPLAPACK_SOURCES)
+libmplapack_binary128_la_SOURCES = $(MPLAPACK_SOURCES) $(MPBLAS_REFERENCE_SOURCES)
 libmplapack_binary128_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO) -Wl,-rpath,$(libdir)
 if IS_MACOS
 libmplapack_binary128_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 if IS_MINGW
-libmplapack_binary128_la_LDFLAGS += -no-undefined -L$(top_builddir)/mpblas/reference -lmpblas_binary128 -lquadmath
+libmplapack_binary128_la_LDFLAGS += -no-undefined -lquadmath
 endif
 endif
+
+MPBLAS_REFERENCE_SOURCES = \
+../../mpblas/reference/CRrot.cpp \
+../../mpblas/reference/CRscal.cpp \
+../../mpblas/reference/Caxpy.cpp \
+../../mpblas/reference/Ccopy.cpp \
+../../mpblas/reference/Cdotc.cpp \
+../../mpblas/reference/Cdotu.cpp \
+../../mpblas/reference/Cgbmv.cpp \
+../../mpblas/reference/Cgemm.cpp \
+../../mpblas/reference/Cgemmtr.cpp \
+../../mpblas/reference/Cgemv.cpp \
+../../mpblas/reference/Cgerc.cpp \
+../../mpblas/reference/Cgeru.cpp \
+../../mpblas/reference/Chbmv.cpp \
+../../mpblas/reference/Chemm.cpp \
+../../mpblas/reference/Chemv.cpp \
+../../mpblas/reference/Cher.cpp \
+../../mpblas/reference/Cher2.cpp \
+../../mpblas/reference/Cher2k.cpp \
+../../mpblas/reference/Cherk.cpp \
+../../mpblas/reference/Chpmv.cpp \
+../../mpblas/reference/Chpr.cpp \
+../../mpblas/reference/Chpr2.cpp \
+../../mpblas/reference/Crotg.cpp \
+../../mpblas/reference/Cscal.cpp \
+../../mpblas/reference/Cswap.cpp \
+../../mpblas/reference/Csymm.cpp \
+../../mpblas/reference/Csyr2k.cpp \
+../../mpblas/reference/Csyrk.cpp \
+../../mpblas/reference/Ctbmv.cpp \
+../../mpblas/reference/Ctbsv.cpp \
+../../mpblas/reference/Ctpmv.cpp \
+../../mpblas/reference/Ctpsv.cpp \
+../../mpblas/reference/Ctrmm.cpp \
+../../mpblas/reference/Ctrmv.cpp \
+../../mpblas/reference/Ctrsm.cpp \
+../../mpblas/reference/Ctrsv.cpp \
+../../mpblas/reference/Mlsame.cpp \
+../../mpblas/reference/Mxerbla.cpp \
+../../mpblas/reference/RCabs1.cpp \
+../../mpblas/reference/RCasum.cpp \
+../../mpblas/reference/RCnrm2.cpp \
+../../mpblas/reference/Rasum.cpp \
+../../mpblas/reference/Raxpy.cpp \
+../../mpblas/reference/Rcopy.cpp \
+../../mpblas/reference/Rdot.cpp \
+../../mpblas/reference/Rgbmv.cpp \
+../../mpblas/reference/Rgemm.cpp \
+../../mpblas/reference/Rgemmtr.cpp \
+../../mpblas/reference/Rgemv.cpp \
+../../mpblas/reference/Rger.cpp \
+../../mpblas/reference/Rnrm2.cpp \
+../../mpblas/reference/Rrot.cpp \
+../../mpblas/reference/Rrotg.cpp \
+../../mpblas/reference/Rrotm.cpp \
+../../mpblas/reference/Rrotmg.cpp \
+../../mpblas/reference/Rsbmv.cpp \
+../../mpblas/reference/Rscal.cpp \
+../../mpblas/reference/Rspmv.cpp \
+../../mpblas/reference/Rspr.cpp \
+../../mpblas/reference/Rspr2.cpp \
+../../mpblas/reference/Rswap.cpp \
+../../mpblas/reference/Rsymm.cpp \
+../../mpblas/reference/Rsymv.cpp \
+../../mpblas/reference/Rsyr.cpp \
+../../mpblas/reference/Rsyr2.cpp \
+../../mpblas/reference/Rsyr2k.cpp \
+../../mpblas/reference/Rsyrk.cpp \
+../../mpblas/reference/Rtbmv.cpp \
+../../mpblas/reference/Rtbsv.cpp \
+../../mpblas/reference/Rtpmv.cpp \
+../../mpblas/reference/Rtpsv.cpp \
+../../mpblas/reference/Rtrmm.cpp \
+../../mpblas/reference/Rtrmv.cpp \
+../../mpblas/reference/Rtrsm.cpp \
+../../mpblas/reference/Rtrsv.cpp \
+../../mpblas/reference/iCamax.cpp \
+../../mpblas/reference/iRamax.cpp \
+../../mpblas/reference/mplapackinit.cpp
 
 MPLAPACK_SOURCES = \
 CRrscl.cpp \

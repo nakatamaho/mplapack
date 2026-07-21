@@ -3,9 +3,9 @@ dnl Configure for MPLAPACK
 dnl
 
 m4_define([MPLAPACK_VER_MAJOR], [2])
-m4_define([MPLAPACK_VER_MINOR], [2])
-m4_define([MPLAPACK_VER_PATCH], [1])
-m4_define([MPLAPACK_VERSION], [MPLAPACK_VER_MAJOR.MPLAPACK_VER_MINOR.MPLAPACK_VER_PATCH])
+m4_define([MPLAPACK_VER_MINOR], [3])
+m4_define([MPLAPACK_VER_PATCH], [0])
+m4_define([MPLAPACK_VERSION], [MPLAPACK_VER_MAJOR.MPLAPACK_VER_MINOR.MPLAPACK_VER_PATCH-dev])
 AC_INIT(mplapack, [MPLAPACK_VERSION])
 
 mplapack_ver_major=MPLAPACK_VER_MAJOR
@@ -2752,32 +2752,32 @@ AC_SUBST(FCFLAGS)
 
 PACKAGE_CREATED_LIBS=""
 if test x$enable_dd = x"yes"; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_dd -lmpblas_dd"
+  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_dd"
 fi
 if test x$enable_qd = x"yes"; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_qd -lmpblas_qd"
+  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_qd"
 fi
 if test x$enable_gmp = x"yes"; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_gmp -lmpblas_gmp"
+  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_gmp"
 fi
 if test x$enable_mpfr = x"yes"; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_mpfr -lmpblas_mpfr"
+  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_mpfr"
 fi
 if test x$enable_mpc = x"yes"; then
   PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_mpc -lmpblas_mpc"
 fi
 if test x$enable_binary128 = x"yes"; then
     if test "$want_libquadmath" = "yes"; then
-        PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_binary128 -lmpblas_binary128 -lquadmath"
+        PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_binary128 -lquadmath"
     else
-        PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_binary128 -lmpblas_binary128"
+        PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_binary128"
     fi
 fi
 if test x$enable_double = x"yes"; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_double -lmpblas_double"
+  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_double"
 fi
 if test x$enable_binary80 = x"yes"; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_binary80 -lmpblas_binary80"
+  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_binary80"
 fi
 
 # add external libraries only if they will be installed with the package

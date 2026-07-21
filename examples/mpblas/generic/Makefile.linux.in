@@ -7,13 +7,13 @@ CXXFLAGS= -I$(MPLAPACKDIR)/include -I$(MPLAPACKDIR)/include/mplapack -I$(MPLAPAC
 OPTFLAGS= -O2 -fopenmp
 OPENMP_EXAMPLE_OPENMP_LIBS = -fopenmp
 LIBFLAGS=-L$(MPLAPACKDIR)/lib -Wl,--rpath=$(MPLAPACKDIR)/lib
-MPFRLIBS=-lmpblas_mpfr -lmpfr -lmpc -lgmp
-GMPLIBS=-lmpblas_gmp -lgmpxx -lgmp 
-QDLIBS=-lmpblas_qd -lqd
-DDLIBS=-lmpblas_dd -lqd
-BINARY80LIBS=-lmpblas_binary80
-BINARY128LIBS=-lmpblas_binary128%%LIBQUADMATH%%
-DOUBLELIBS=-lmpblas_double
+MPFRLIBS=-lmplapack_mpfr -lmpfr -lmpc -lgmp
+GMPLIBS=-lmplapack_gmp -lgmpxx -lgmp
+QDLIBS=-lmplapack_qd -lqd
+DDLIBS=-lmplapack_dd -lqd
+BINARY80LIBS=-lmplapack_binary80
+BINARY128LIBS=-lmplapack_binary128%%LIBQUADMATH%%
+DOUBLELIBS=-lmplapack_double
 
 MPFROPTLIBS=$(OPENMP_EXAMPLE_OPENMP_LIBS) -lmpblas_mpfr_opt -lmpfr -lmpc -lgmp
 GMPOPTLIBS=$(OPENMP_EXAMPLE_OPENMP_LIBS) -lmpblas_gmp_opt -lgmpxx -lgmp

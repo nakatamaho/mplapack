@@ -51,7 +51,7 @@ foreach(_b ${_backends})
 
     add_executable(${_exe} "${_src}" ${_support})
     # Set exactly one backend macro explicitly.  We must NOT obtain it by linking
-    # the mpblas_<b> target, because the test also needs the mpblas_mpfr backend
+    # the mplapack_<b> target, because the test also needs the mplapack_mpfr backend
     # and linking both targets would push BOTH ___MPLAPACK_BUILD_WITH_*___ macros
     # onto the compile line (conflicting REAL/COMPLEX typedefs).
     target_compile_definitions(${_exe} PRIVATE
@@ -60,14 +60,14 @@ foreach(_b ${_backends})
       "${CMAKE_BINARY_DIR}/include"          # generated mplapack_config.h
       "${CMAKE_SOURCE_DIR}/include"
       "${CMAKE_SOURCE_DIR}/mpfrc++")         # mpreal/mpcomplex (always used)
-    # Link the mpblas archives by file path so they contribute object code only,
+    # Link the merged archives by file path so they contribute object code only,
     # without their target usage requirements (i.e. without the backend macro).
     target_link_libraries(${_exe} PRIVATE
-      "$<TARGET_FILE:mpblas_${_b}>"
-      "$<TARGET_FILE:mpblas_mpfr>"
+      "$<TARGET_FILE:mplapack_${_b}>"
+      "$<TARGET_FILE:mplapack_mpfr>"
       MPC::MPC MPFR::MPFR GMP::GMPXX   # mpfr/mpc/gmp headers + libs (no macro)
       ${BLAS_LIBRARIES})              # reference Fortran BLAS to compare against
-    add_dependencies(${_exe} mpblas_${_b} mpblas_mpfr)
+    add_dependencies(${_exe} mplapack_${_b} mplapack_mpfr)
     if(MPLAPACK_GFORTRAN_LIBRARY)
       target_link_libraries(${_exe} PRIVATE ${MPLAPACK_GFORTRAN_LIBRARY})
     endif()

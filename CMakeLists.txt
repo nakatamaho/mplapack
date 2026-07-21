@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.20)
 # MPLAPACK — multiple-precision BLAS and LAPACK in C++.
 #
 # This is a modern CMake build that produces, for each enabled precision
-# backend, a pair of libraries (mpblas_<backend>, mplapack_<backend>) with
+# backend, one self-contained library (mplapack_<backend>) with
 # namespaced targets and an installed package config, so that downstream
 # projects can consume MPLAPACK either via find_package(mplapack) or via
 # FetchContent.  Precision dependencies (GMP/MPFR/MPC/QD) are located with
@@ -13,10 +13,12 @@ cmake_minimum_required(VERSION 3.20)
 
 # Keep version in sync with configure.ac (m4 MPLAPACK_VER_* and LAPACK_VER_*).
 project(mplapack
-  VERSION 2.2.1
+  VERSION 2.3.0
   DESCRIPTION "A multiple precision version of BLAS and LAPACK"
   HOMEPAGE_URL "https://github.com/nakatamaho/mplapack"
   LANGUAGES CXX C)
+
+set(PROJECT_VERSION "${PROJECT_VERSION}-dev")
 
 set(MPLAPACK_LAPACK_VERSION "3.12.1")
 
@@ -158,58 +160,51 @@ check_cxx_compiler_flag("-ffp-contract=off" MPLAPACK_HAS_FP_CONTRACT_OFF)
 # -----------------------------------------------------------------------------
 if(MPLAPACK_ENABLE_GMP)
   mplapack_add_backend(gmp ___MPLAPACK_BUILD_WITH_GMP___)
-  target_link_libraries(mpblas_gmp   PUBLIC GMP::GMPXX GMP::GMP)
   target_link_libraries(mplapack_gmp PUBLIC GMP::GMPXX GMP::GMP)
-  list(APPEND MPLAPACK_INSTALL_TARGETS mpblas_gmp mplapack_gmp)
+  list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_gmp)
 endif()
 
 if(MPLAPACK_ENABLE_MPFR)
   mplapack_add_backend(mpfr ___MPLAPACK_BUILD_WITH_MPFR___)
   # mpfrc++ headers (mpreal.h / mpcomplex.h) are bundled in-tree.
-  foreach(tgt mpblas_mpfr mplapack_mpfr)
-    target_include_directories(${tgt} PUBLIC
+  target_include_directories(mplapack_mpfr PUBLIC
       "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/mpfrc++>")
-    target_link_libraries(${tgt} PUBLIC MPC::MPC MPFR::MPFR GMP::GMPXX GMP::GMP)
-  endforeach()
-  list(APPEND MPLAPACK_INSTALL_TARGETS mpblas_mpfr mplapack_mpfr)
+  target_link_libraries(mplapack_mpfr PUBLIC MPC::MPC MPFR::MPFR GMP::GMPXX GMP::GMP)
+  list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_mpfr)
 endif()
 
 if(MPLAPACK_ENABLE_QD)
   mplapack_add_backend(qd ___MPLAPACK_BUILD_WITH_QD___)
-  target_link_libraries(mpblas_qd   PUBLIC QD::QD)
   target_link_libraries(mplapack_qd PUBLIC QD::QD)
-  list(APPEND MPLAPACK_INSTALL_TARGETS mpblas_qd mplapack_qd)
+  list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_qd)
 endif()
 
 if(MPLAPACK_ENABLE_DD)
   mplapack_add_backend(dd ___MPLAPACK_BUILD_WITH_DD___)
-  target_link_libraries(mpblas_dd   PUBLIC QD::QD)
   target_link_libraries(mplapack_dd PUBLIC QD::QD)
   # DD requires FMA contraction to be disabled for correctness.
   if(MPLAPACK_HAS_FP_CONTRACT_OFF)
-    target_compile_options(mpblas_dd   PRIVATE -ffp-contract=off)
     target_compile_options(mplapack_dd PRIVATE -ffp-contract=off)
   endif()
-  list(APPEND MPLAPACK_INSTALL_TARGETS mpblas_dd mplapack_dd)
+  list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_dd)
 endif()
 
 if(MPLAPACK_ENABLE_DOUBLE)
   mplapack_add_backend(double ___MPLAPACK_BUILD_WITH_DOUBLE___)
-  list(APPEND MPLAPACK_INSTALL_TARGETS mpblas_double mplapack_double)
+  list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_double)
 endif()
 
 if(MPLAPACK_ENABLE_BINARY80)
   mplapack_add_backend(binary80 ___MPLAPACK_BUILD_WITH_BINARY80___)
-  list(APPEND MPLAPACK_INSTALL_TARGETS mpblas_binary80 mplapack_binary80)
+  list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_binary80)
 endif()
 
 if(MPLAPACK_ENABLE_BINARY128)
   mplapack_add_backend(binary128 ___MPLAPACK_BUILD_WITH_BINARY128___)
   if(MPLAPACK_BINARY128_EXTRA_LIBS)
-    target_link_libraries(mpblas_binary128   PUBLIC ${MPLAPACK_BINARY128_EXTRA_LIBS})
     target_link_libraries(mplapack_binary128 PUBLIC ${MPLAPACK_BINARY128_EXTRA_LIBS})
   endif()
-  list(APPEND MPLAPACK_INSTALL_TARGETS mpblas_binary128 mplapack_binary128)
+  list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_binary128)
 endif()
 
 if(NOT MPLAPACK_INSTALL_TARGETS)
@@ -225,6 +220,13 @@ if(MPLAPACK_BUILD_EXAMPLES)
 endif()
 if(MPLAPACK_BUILD_TESTS)
   enable_testing()
+  foreach(b gmp mpfr qd dd double binary80 binary128)
+    if(TARGET mplapack_${b})
+      add_test(NAME unique_symbols_${b}
+        COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/misc/check_unique_symbols.sh"
+                "$<TARGET_FILE:mplapack_${b}>")
+    endif()
+  endforeach()
   # Shared by both test directories: the override libraries/objects rely on the
   # linker keeping the first (overriding) definition of duplicated symbols.
   include(CheckLinkerFlag)

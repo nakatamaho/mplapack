@@ -9,7 +9,35 @@ endif
 ACLOCAL_AMFLAGS = -I m4
 
 miscdir = $(prefix)/misc
-dist_misc_SCRIPTS = misc/cpu_os_detection.sh
+dist_misc_SCRIPTS = \
+misc/cpu_os_detection.sh \
+misc/check_unique_symbols.sh
+
+MPLAPACK_UNIQUE_SYMBOL_ARCHIVES =
+if ENABLE_GMP
+MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mplapack/reference/.libs/libmplapack_gmp.a
+endif
+if ENABLE_MPFR
+MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mplapack/reference/.libs/libmplapack_mpfr.a
+endif
+if ENABLE_QD
+MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mplapack/reference/.libs/libmplapack_qd.a
+endif
+if ENABLE_DD
+MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mplapack/reference/.libs/libmplapack_dd.a
+endif
+if ENABLE_DOUBLE
+MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mplapack/reference/.libs/libmplapack_double.a
+endif
+if ENABLE_BINARY80
+MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mplapack/reference/.libs/libmplapack_binary80.a
+endif
+if ENABLE_BINARY128
+MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mplapack/reference/.libs/libmplapack_binary128.a
+endif
+
+check-local:
+	$(SHELL) $(top_srcdir)/misc/check_unique_symbols.sh $(MPLAPACK_UNIQUE_SYMBOL_ARCHIVES)
 
 mplapack_includedir = $(includedir)/mplapack
 mplapack_include_HEADERS = \
