@@ -1,0 +1,18 @@
+=== precision: double ===
+ Tests of the Nonsymmetric eigenproblem condition estimation routines
+ Rlaln2, Rlasy2, Rlanv2, Rlaexc, DTRSYL, Rtrexc, Rtrsna, Rtrsen, Rlaqtr, Rtgexc
+
+ Relative machine precision (EPS) =     0.222045D-15
+ Safe minimum (SFMIN)             =     0.222507-307
+
+ Routines pass computational tests if test ratio is less than   20.00
+
+
+ DEC routines passed the tests of the error exits ( 43 tests done)
+Error in Rtrsyl3:       16 tests fail the threshold.
+Maximum test ratio =   0.377D+01 threshold =   0.200D+02
+
+
+ End of tests
+ Total time used =        14.90 seconds
+

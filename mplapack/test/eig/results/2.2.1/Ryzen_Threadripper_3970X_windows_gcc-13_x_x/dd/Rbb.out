@@ -1,0 +1,36 @@
+ Tests of Rgbbrd
+ (reduction of a general band matrix to real bidiagonal form)
+ Tests of the Multiple precision version of LAPACK 2.2.1
+ Based on the original LAPACK VERSION 3.12.1
+
+The following parameter values will be used:
+
+ The following parameter values will be used:
+    M:         0     0     0     0     1     1     1     1     2     2
+               2     2     3     3     3     3    10    10    16    16
+    N:         0     1     2     3     0     1     2     3     0     1
+               2     3     0     1     2     3    10    16    10    16
+    K:         0     1     2     3    16
+    NS:        1     2
+ 
+ Relative machine underflow is taken to be2.00416836000897277799610805134985e-292
+ Relative machine overflow  is taken to be1.79769313486231580793728971405329e+308
+ Relative machine precision is taken to be4.93038065763132323644109090613580e-32
+
+ Routines pass computational tests if test ratio is less than2.00000000000000000000000000000000e+01
+
+
+
+ DBB:  NRHS =   1
+
+ All tests for DBB passed the threshold (  3000 tests run)
+
+
+ DBB:  NRHS =   2
+
+ All tests for DBB passed the threshold (  3000 tests run)
+
+
+ End of tests
+ Total time used =         0.14 seconds
+

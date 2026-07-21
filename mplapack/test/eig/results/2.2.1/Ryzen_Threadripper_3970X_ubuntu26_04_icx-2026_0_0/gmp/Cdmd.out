@@ -1,0 +1,20 @@
+=== precision: gmp ===
+ L Loop Index =                      1
+ M = 
+                    10
+ N = 
+                     5
+ *** On entry to Rlasd0 parameter number      9 had an illegal value ***
+ *** XERBLA was called with srname= Rlasd0 but no srname was expected (srnamt not set) ***
+ :( .................Cgedmd FAILED!Check the code for implementation errors.
+ The input parameters were SVRR                     2                    10
+                     5                    10                    10
+                    -1 +1.4916681462400413e-153
+ :( ..................Cgedmd FAILED!Check the code for implementation errors.
+ The input parameters were SVRR                     2                    10
+                     5                    10                    10
+                    -1 +1.4916681462400413e-153
+ *** On entry to Rlasd0 parameter number      9 had an illegal value ***
+ *** XERBLA was called with srname= Rlasd0 but no srname was expected (srnamt not set) ***
+ ................ Cgedmdq FAILED!Check the code for implementation errors.
+STOP at ../../../../../../mplapack/test/eig/gmp/../common/Cchkdmd.cpp(713)

@@ -1,0 +1,40 @@
+=== precision: double ===
+ Tests of the Hermitian Eigenvalue Problem routines
+ Tests of the Multiple precision version of LAPACK 2.2.1
+ Based on the original LAPACK VERSION 3.12.1
+
+The following parameter values will be used:
+
+ The following parameter values will be used:
+    M:         0     1     2     3     5    10    16
+    N:         0     1     2     3     5    10    16
+    NB:        1     3    20
+    NBMIN:     2     2     2
+    NX:        1     1     1
+ 
+ Relative machine underflow is taken to be    0.222507-307
+ Relative machine overflow  is taken to be    0.179769+309
+ Relative machine precision is taken to be    0.111022D-15
+
+ Routines pass computational tests if test ratio is less than   20.00
+
+
+
+ ZSG:  NB =   1, NBMIN =   2, NX =   1
+
+ All tests for ZSG passed the threshold ( 11172 tests run)
+
+
+ ZSG:  NB =   3, NBMIN =   2, NX =   1
+
+ All tests for ZSG passed the threshold ( 11172 tests run)
+
+
+ ZSG:  NB =  20, NBMIN =   2, NX =   1
+
+ All tests for ZSG passed the threshold ( 11172 tests run)
+
+
+ End of tests
+ Total time used =         1.66 seconds
+

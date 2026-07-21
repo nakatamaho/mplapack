@@ -1,0 +1,67 @@
+=== MPFR profile: binary64 (prec=53 emin=-1021 emax=1024) ===
+ Tests of the Symmetric Eigenvalue Problem routines
+ Tests of the Multiple precision version of LAPACK 2.2.1
+ Based on the original LAPACK VERSION 3.12.1
+
+The following parameter values will be used:
+
+ The following parameter values will be used:
+    M:         0     1     2     3     5    25
+    N:         0     1     2     3     5    25
+    NB:        1     3     3     3    10
+    NBMIN:     2     2     2     2     2
+    NX:        1     0     5     9     1
+ 
+ Relative machine underflow is taken to be+2.2250738585072014e-308
+ Relative machine overflow  is taken to be+1.7976931348623157e+308
+ Relative machine precision is taken to be+1.1102230246251565e-16
+
+ Routines pass computational tests if test ratio is less than+5.0000000000000000e+01
+
+ 
+ DST routines passed the tests of the error exits (212 tests done)
+
+
+ SEP:  NB =   1, NBMIN =   2, NX =   1
+
+ All tests for DST passed the threshold (  4440 tests run)
+Warning! Threshold has been lifted to: +8.0000000000000000e+01 for SEP drivers
+
+ All tests for DST drivers  passed the threshold (  13464 tests run)
+
+
+ SEP:  NB =   3, NBMIN =   2, NX =   0
+
+ All tests for DST passed the threshold (  4440 tests run)
+Warning! Threshold has been lifted to: +8.0000000000000000e+01 for SEP drivers
+
+ All tests for DST drivers  passed the threshold (  13464 tests run)
+
+
+ SEP:  NB =   3, NBMIN =   2, NX =   5
+
+ All tests for DST passed the threshold (  4440 tests run)
+Warning! Threshold has been lifted to: +8.0000000000000000e+01 for SEP drivers
+
+ All tests for DST drivers  passed the threshold (  13464 tests run)
+
+
+ SEP:  NB =   3, NBMIN =   2, NX =   9
+
+ All tests for DST passed the threshold (  4440 tests run)
+Warning! Threshold has been lifted to: +8.0000000000000000e+01 for SEP drivers
+
+ All tests for DST drivers  passed the threshold (  13464 tests run)
+
+
+ SEP:  NB =  10, NBMIN =   2, NX =   1
+
+ All tests for DST passed the threshold (  4440 tests run)
+Warning! Threshold has been lifted to: +8.0000000000000000e+01 for SEP drivers
+
+ All tests for DST drivers  passed the threshold (  13464 tests run)
+
+
+ End of tests
+ Total time used =       269.03 seconds
+
