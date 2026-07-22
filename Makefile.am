@@ -1,4 +1,7 @@
 SUBDIRS = external mpblas mplapack
+if ENABLE_TEST
+SUBDIRS += mpblas/test
+endif
 if ENABLE_BENCHMARK
 SUBDIRS += benchmark
 endif
