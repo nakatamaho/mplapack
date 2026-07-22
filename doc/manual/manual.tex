@@ -1382,7 +1382,7 @@ Finally, to link against the CUDA version, we compile the program as follows:
 $ g++ -O2 -I/home/docker/MPLAPACK_CUDA/include \
 -I/home/docker/MPLAPACK_CUDA/include/mplapack Rgemm_dd.cpp \
 -Wl,--rpath=/home/docker/MPLAPACK_CUDA/lib -L/home/docker/MPLAPACK_CUDA/lib \
--lmpblas_dd_cuda -lmpblas_dd -lqd \
+-lmplapack_dd_opt_cuda -lqd \
 -L/usr/local/cuda/lib64/ -lcudart
 $ ./a.out
 ...

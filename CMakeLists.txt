@@ -76,6 +76,10 @@ option(MPLAPACK_ENABLE_DD        "Build the DD (double-double) backend"     ON)
 option(MPLAPACK_ENABLE_BINARY128 "Build the binary128 backend"             ON)
 option(MPLAPACK_ENABLE_BINARY80  "Build the binary80 backend (x86 only)"  OFF)
 option(MPLAPACK_ENABLE_OPT       "Build optimized libraries"                ON)
+option(MPLAPACK_ENABLE_CUDA      "Build the DD CUDA accelerator library"    OFF)
+option(MPLAPACK_ENABLE_OPENCL    "Build the binary128 OpenCL library"       OFF)
+set(MPLAPACK_CUDA_ARCHITECTURES "70;80;90" CACHE STRING
+    "CUDA architectures for mplapack_dd_opt_cuda")
 
 option(MPLAPACK_BUILD_EXAMPLES   "Build the examples"                      OFF)
 option(MPLAPACK_BUILD_TESTS      "Build the test suite"                    OFF)
@@ -98,6 +102,27 @@ if(MPLAPACK_ENABLE_MPFR)
 endif()
 if(MPLAPACK_ENABLE_QD OR MPLAPACK_ENABLE_DD)
   find_package(QD REQUIRED)
+endif()
+if(MPLAPACK_ENABLE_CUDA)
+  if(NOT MPLAPACK_ENABLE_DD)
+    message(FATAL_ERROR "MPLAPACK_ENABLE_CUDA requires MPLAPACK_ENABLE_DD=ON")
+  endif()
+  find_package(CUDAToolkit REQUIRED)
+  set(CMAKE_CUDA_ARCHITECTURES "${MPLAPACK_CUDA_ARCHITECTURES}")
+  if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    # glibc 2.42 exposes C23 rsqrt declarations that conflict with CUDA 13.1.
+    # X/Open keeps the POSIX declarations required by the C++ standard library.
+    string(APPEND CMAKE_CUDA_FLAGS_INIT
+      " -U_GNU_SOURCE -D_XOPEN_SOURCE=700")
+  endif()
+  enable_language(CUDA)
+endif()
+if(MPLAPACK_ENABLE_OPENCL)
+  if(NOT MPLAPACK_ENABLE_BINARY128)
+    message(FATAL_ERROR
+      "MPLAPACK_ENABLE_OPENCL requires MPLAPACK_ENABLE_BINARY128=ON")
+  endif()
+  find_package(OpenCL REQUIRED)
 endif()
 
 find_package(OpenMP QUIET COMPONENTS CXX)
@@ -216,6 +241,31 @@ if(MPLAPACK_ENABLE_DD)
   endif()
 endif()
 
+if(MPLAPACK_ENABLE_CUDA)
+  file(GLOB _mplapack_cuda_sources CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/dd/cuda/*.cu")
+  # Split kernels are textually included by the six CUDA translation units.
+  list(FILTER _mplapack_cuda_sources EXCLUDE REGEX
+    "/(Rgemm_(fermi|tesla)_(NN|NT|TN|TT)_[0p]|Rsyrk_[NT][LU]_[0p])\\.cu$")
+  # cuda/Rgemm.cu and cuda/Rsyrk.cu shadow the same-stem CPU/reference files.
+  mplapack_add_accelerator_backend(dd cuda ${_mplapack_cuda_sources})
+  target_sources(mplapack_dd_opt_cuda PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/dd/cuda/dd_real_cuda.h")
+  target_include_directories(mplapack_dd_opt_cuda PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/dd/cuda")
+  target_link_libraries(mplapack_dd_opt_cuda PUBLIC QD::QD CUDA::cudart)
+  if(MPLAPACK_HAS_FP_CONTRACT_OFF)
+    target_compile_options(mplapack_dd_opt_cuda PRIVATE
+      $<$<COMPILE_LANGUAGE:CXX>:-ffp-contract=off>)
+  endif()
+  set_target_properties(mplapack_dd_opt_cuda PROPERTIES
+    CUDA_ARCHITECTURES "${MPLAPACK_CUDA_ARCHITECTURES}"
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED ON)
+  mplapack_add_unique_symbol_post_build(mplapack_dd_opt_cuda)
+  list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_dd_opt_cuda)
+endif()
+
 if(MPLAPACK_ENABLE_DOUBLE)
   mplapack_add_backend(double ___MPLAPACK_BUILD_WITH_DOUBLE___)
   list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_double)
@@ -250,6 +300,27 @@ if(MPLAPACK_ENABLE_BINARY128)
   endif()
 endif()
 
+if(MPLAPACK_ENABLE_OPENCL)
+  file(GLOB _mplapack_opencl_sources CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/binary128/opencl/*.cpp")
+  set_source_files_properties(${_mplapack_opencl_sources} PROPERTIES
+    COMPILE_DEFINITIONS CL_TARGET_OPENCL_VERSION=120)
+  mplapack_add_accelerator_backend(
+    binary128 opencl ${_mplapack_opencl_sources})
+  target_sources(mplapack_binary128_opt_opencl PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/binary128/opencl/OclHelper.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/binary128/opencl/cpp_kernel.h")
+  target_include_directories(mplapack_binary128_opt_opencl PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/binary128/opencl")
+  target_link_libraries(mplapack_binary128_opt_opencl PUBLIC OpenCL::OpenCL)
+  if(MPLAPACK_BINARY128_EXTRA_LIBS)
+    target_link_libraries(mplapack_binary128_opt_opencl PUBLIC
+      ${MPLAPACK_BINARY128_EXTRA_LIBS})
+  endif()
+  mplapack_add_unique_symbol_post_build(mplapack_binary128_opt_opencl)
+  list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_binary128_opt_opencl)
+endif()
+
 if(NOT MPLAPACK_INSTALL_TARGETS)
   message(FATAL_ERROR "No MPLAPACK backend enabled; enable at least one "
                       "MPLAPACK_ENABLE_<backend> option.")
@@ -273,6 +344,13 @@ if(MPLAPACK_BUILD_TESTS)
       add_test(NAME unique_symbols_${b}_opt
         COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/misc/check_unique_symbols.sh"
                 "$<TARGET_FILE:mplapack_${b}_opt>")
+    endif()
+  endforeach()
+  foreach(accelerator dd_opt_cuda binary128_opt_opencl)
+    if(TARGET mplapack_${accelerator})
+      add_test(NAME unique_symbols_${accelerator}
+        COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/misc/check_unique_symbols.sh"
+                "$<TARGET_FILE:mplapack_${accelerator}>")
     endif()
   endforeach()
   # Shared by both test directories: the override libraries/objects rely on the

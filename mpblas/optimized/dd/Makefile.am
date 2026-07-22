@@ -1,5 +1,10 @@
 include $(top_srcdir)/mplapack/reference/sources.am
 
+SUBDIRS =
+if ENABLE_CUDA
+SUBDIRS += cuda
+endif
+
 # Basename shadowing intentionally omits Raxpy.cpp, Rcopy.cpp, Rdot.cpp,
 # and Rgemm.cpp from the reference BLAS list. The public dispatchers below
 # replace them; *_ref.cpp and openmp/*_omp.cpp remain non-shadowing helpers.

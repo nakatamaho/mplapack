@@ -29,6 +29,9 @@ endif
 if ENABLE_DD
 MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mplapack/reference/.libs/libmplapack_dd.a
 MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mpblas/optimized/dd/.libs/libmplapack_dd_opt.a
+if ENABLE_CUDA
+MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mpblas/optimized/dd/cuda/.libs/libmplapack_dd_opt_cuda.a
+endif
 endif
 if ENABLE_DOUBLE
 MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mplapack/reference/.libs/libmplapack_double.a
@@ -41,6 +44,9 @@ endif
 if ENABLE_BINARY128
 MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mplapack/reference/.libs/libmplapack_binary128.a
 MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mpblas/optimized/binary128/.libs/libmplapack_binary128_opt.a
+if ENABLE_OPENCL_BINARY128
+MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mpblas/optimized/binary128/opencl/.libs/libmplapack_binary128_opt_opencl.a
+endif
 endif
 
 check-local:

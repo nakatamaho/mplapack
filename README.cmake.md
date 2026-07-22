@@ -1,10 +1,10 @@
 # Building MPLAPACK with CMake
 
 This is a modern CMake build for MPLAPACK that lives alongside the existing
-autotools build. It produces, for each enabled precision backend, a pair of
-libraries — `mpblas_<backend>` (BLAS) and `mplapack_<backend>` (LAPACK) — with
-namespaced targets and an installed CMake package, so downstream CMake projects
-can consume MPLAPACK via `find_package(mplapack)` or `FetchContent`.
+autotools build. It produces self-contained `mplapack_<backend>`,
+`mplapack_<backend>_opt`, and optional accelerator libraries with namespaced
+targets and an installed CMake package, so downstream CMake projects can
+consume MPLAPACK via `find_package(mplapack)` or `FetchContent`.
 
 Unlike the autotools build, the CMake build **does not download or build the
 precision dependencies**. GMP, MPFR, MPC and QD are located with
@@ -30,6 +30,9 @@ cmake --install build --prefix /path/to/prefix
 | `MPLAPACK_ENABLE_DD`        | ON  | needs QD; built with `-ffp-contract=off` |
 | `MPLAPACK_ENABLE_BINARY128` | ON  | GCC/Intel; not supported by Clang |
 | `MPLAPACK_ENABLE_BINARY80`  | OFF | x86/x86_64 only |
+| `MPLAPACK_ENABLE_OPT`       | ON  | optimized CPU flavors |
+| `MPLAPACK_ENABLE_CUDA`      | OFF | `dd_opt_cuda`; needs CUDA and DD |
+| `MPLAPACK_ENABLE_OPENCL`    | OFF | `binary128_opt_opencl`; needs OpenCL |
 
 The binary128/binary80 type, I/O and math modes are auto-detected at configure
 time (mirroring `configure.ac`) and written into the generated
@@ -44,6 +47,13 @@ Other options: `MPLAPACK_BUILD_EXAMPLES`, `MPLAPACK_BUILD_TESTS`,
 ```cmake
 find_package(mplapack REQUIRED)
 target_link_libraries(myapp PRIVATE mplapack::mplapack_mpfr)
+```
+
+Installed target suffixes are also package components. For example:
+
+```cmake
+find_package(mplapack REQUIRED COMPONENTS dd_opt_cuda)
+target_link_libraries(myapp PRIVATE mplapack::mplapack_dd_opt_cuda)
 ```
 
 Linking `mplapack::mplapack_<backend>` transitively provides the MPBLAS layer,
@@ -96,6 +106,5 @@ ctest --test-dir build
 ## Scope vs. the autotools build
 
 Not ported (intentionally): the bundled third-party builds
-(GMP/MPFR/MPC/QD/OpenBLAS — replaced by `find_package`), the CUDA-optimized
-kernels (`*/optimized/*/cuda`), the `_opt` optimized-library variants, and the
-Fable Fortran-to-C++ regeneration pipeline.
+(GMP/MPFR/MPC/QD/OpenBLAS — replaced by `find_package`) and the Fable
+Fortran-to-C++ regeneration pipeline.
