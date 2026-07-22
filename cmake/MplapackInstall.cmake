@@ -14,8 +14,9 @@ install(TARGETS ${MPLAPACK_INSTALL_TARGETS}
   ARCHIVE  DESTINATION ${CMAKE_INSTALL_LIBDIR})
 
 # --- Headers ---------------------------------------------------------------
-# Install the full public header set into <prefix>/include/mplapack.  Consumers
-# include the backend-specific headers directly, e.g. <mplapack_mpfr.h>.
+# Match the autotools install layout: public headers live in
+# <prefix>/include/mplapack and are included as, for example,
+# <mplapack_mpfr.h> through the exported target's include directory.
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/include/"
   DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/mplapack"
   FILES_MATCHING PATTERN "*.h")
@@ -113,13 +114,29 @@ install(FILES
   "${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindQD.cmake"
   DESTINATION "${MPLAPACK_INSTALL_CMAKEDIR}")
 
-# --- pkg-config (one file per enabled mplapack_<backend>) ------------------
-foreach(b ${MPLAPACK_ENABLED_BACKENDS})
-  set(PC_BACKEND ${b})
+# The build-tree package config uses the same dependency discovery path as the
+# installed package, so copy the bundled Find modules next to it as well.
+file(COPY
+  "${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindGMP.cmake"
+  "${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindMPFR.cmake"
+  "${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindMPC.cmake"
+  "${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindQD.cmake"
+  DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
+
+# --- pkg-config (per-flavor only; identical convention in autotools) -------
+file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/pkgconfig")
+foreach(_target IN LISTS MPLAPACK_INSTALL_TARGETS)
+  set(PC_PREFIX "${CMAKE_INSTALL_PREFIX}")
+  set(PC_LIBDIR "${CMAKE_INSTALL_FULL_LIBDIR}")
+  set(PC_INCLUDEDIR "${CMAKE_INSTALL_FULL_INCLUDEDIR}/mplapack")
+  set(PC_NAME "${_target}")
+  string(REGEX REPLACE "^mplapack_" "" PC_FLAVOR "${_target}")
+  set(PC_DESCRIPTION "${PROJECT_DESCRIPTION}")
+  set(PC_VERSION "${PROJECT_VERSION}")
   configure_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/cmake/mplapack.pc.cmake.in"
-    "${CMAKE_CURRENT_BINARY_DIR}/pkgconfig/mplapack_${b}.pc"
+    "${CMAKE_CURRENT_BINARY_DIR}/pkgconfig/${_target}.pc"
     @ONLY)
-  install(FILES "${CMAKE_CURRENT_BINARY_DIR}/pkgconfig/mplapack_${b}.pc"
+  install(FILES "${CMAKE_CURRENT_BINARY_DIR}/pkgconfig/${_target}.pc"
     DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig")
 endforeach()

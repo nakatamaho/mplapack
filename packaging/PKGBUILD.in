@@ -44,9 +44,6 @@ package_mplapack() {
   cd "${srcdir}/mplapack-${pkgver}"
   make DESTDIR="${pkgdir}" install
 
-  # install pkg-config file
-  install -Dm644 mplapack.pc "$pkgdir/usr/lib/pkgconfig/mplapack.pc"
-
   install -Dm644 COPYING "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
   cd ../..
 }

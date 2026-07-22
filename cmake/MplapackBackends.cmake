@@ -23,6 +23,16 @@ function(mplapack_configure_backend_target target macro)
   endif()
 endfunction()
 
+# DD arithmetic is only correct when contraction is disabled.  Keep this a
+# PUBLIC usage requirement so every downstream C++ translation unit using the
+# header-defined dd_real operations receives the same correctness flag.
+function(mplapack_configure_dd_arithmetic target)
+  if(MPLAPACK_HAS_FP_CONTRACT_OFF)
+    target_compile_options(${target} PUBLIC
+      $<$<COMPILE_LANGUAGE:CXX>:-ffp-contract=off>)
+  endif()
+endfunction()
+
 function(mplapack_add_backend backend macro)
   set(_target mplapack_${backend})
   add_library(${_target} ${MPBLAS_SOURCES} ${MPLAPACK_SOURCES})

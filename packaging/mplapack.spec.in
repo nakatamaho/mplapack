@@ -157,6 +157,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/*.so.*.*.*
 
 %{_includedir}/mplapack
-%{_libdir}/pkgconfig/mplapack.pc
+%{_libdir}/pkgconfig/mplapack_*.pc
 
 

@@ -49,6 +49,9 @@ foreach(_b ${_backends})
       # the MPFR oracle target's conflicting backend macro.
       target_compile_definitions(${_exe} PRIVATE
         ___MPLAPACK_BUILD_WITH_${_B}___ ___MPLAPACK_INTERNAL___)
+      if(_b STREQUAL "dd" AND MPLAPACK_HAS_FP_CONTRACT_OFF)
+        target_compile_options(${_exe} PRIVATE -ffp-contract=off)
+      endif()
       target_include_directories(${_exe} PRIVATE
         "${CMAKE_BINARY_DIR}/include"
         "${CMAKE_SOURCE_DIR}/include"

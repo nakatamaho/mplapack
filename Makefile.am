@@ -177,10 +177,58 @@ noinst_HEADERS = \
     include/mplapack_eig_mpfr.h \
     include/mplapack_eig_qd.h
 
+MPLAPACK_PKGCONFIG_FILES =
+if ENABLE_GMP
+MPLAPACK_PKGCONFIG_FILES += mplapack_gmp.pc mplapack_gmp_opt.pc
+endif
+if ENABLE_MPFR
+MPLAPACK_PKGCONFIG_FILES += mplapack_mpfr.pc mplapack_mpfr_opt.pc
+endif
+if ENABLE_QD
+MPLAPACK_PKGCONFIG_FILES += mplapack_qd.pc mplapack_qd_opt.pc
+endif
+if ENABLE_DD
+MPLAPACK_PKGCONFIG_FILES += mplapack_dd.pc mplapack_dd_opt.pc
+if ENABLE_CUDA
+MPLAPACK_PKGCONFIG_FILES += mplapack_dd_opt_cuda.pc
+endif
+endif
+if ENABLE_DOUBLE
+MPLAPACK_PKGCONFIG_FILES += mplapack_double.pc mplapack_double_opt.pc
+endif
+if ENABLE_BINARY80
+MPLAPACK_PKGCONFIG_FILES += mplapack_binary80.pc mplapack_binary80_opt.pc
+endif
+if ENABLE_BINARY128
+MPLAPACK_PKGCONFIG_FILES += mplapack_binary128.pc mplapack_binary128_opt.pc
+if ENABLE_OPENCL_BINARY128
+MPLAPACK_PKGCONFIG_FILES += mplapack_binary128_opt_opencl.pc
+endif
+endif
+
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = mplapack.pc
+pkgconfig_DATA = $(MPLAPACK_PKGCONFIG_FILES)
+CLEANFILES = $(MPLAPACK_PKGCONFIG_FILES)
+
+$(MPLAPACK_PKGCONFIG_FILES): cmake/mplapack.pc.cmake.in
+	@pc_name='$@'; \
+	pc_name=$${pc_name%.pc}; \
+	pc_flavor=$${pc_name#mplapack_}; \
+	sed -e 's|@PC_PREFIX@|$(prefix)|g' \
+	    -e 's|@PC_LIBDIR@|$(libdir)|g' \
+	    -e 's|@PC_INCLUDEDIR@|$(includedir)/mplapack|g' \
+	    -e "s|@PC_NAME@|$$pc_name|g" \
+	    -e "s|@PC_FLAVOR@|$$pc_flavor|g" \
+	    -e 's|@PC_DESCRIPTION@|$(PACKAGE_DESCRIPTION)|g' \
+	    -e 's|@PC_VERSION@|$(PACKAGE_VERSION)|g' \
+	    $(srcdir)/cmake/mplapack.pc.cmake.in > '$@'
 
 EXTRA_DIST = \
+cmake/mplapack.pc.cmake.in \
+cmake/tests/CMakeLists.txt \
+cmake/tests/consume/CMakeLists.txt \
+cmake/tests/ComparePkgConfig.cmake \
+cmake/tests/consume/main.cpp \
 benchmark/Rgetrf1.plt.in \
 benchmark/Rgetrf2.plt.in \
 benchmark/Rgetrf3.plt.in \

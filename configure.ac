@@ -89,7 +89,7 @@ AC_DEFUN([MPLAPACK_STRIP_FLAG], [
 ])
 
 AC_CONFIG_HEADERS([include/mplapack_config.h])
-AC_CONFIG_FILES([ Makefile mplapack.pc ])
+AC_CONFIG_FILES([ Makefile ])
 AC_CONFIG_FILES([packaging/PKGBUILD packaging/mplapack.spec])
 
 AC_CANONICAL_TARGET
@@ -2748,57 +2748,6 @@ AC_SUBST(CFLAGS)
 AC_SUBST(CXXFLAGS)
 AC_SUBST(FCFLAGS)
 
-############ select created libraries for the pkg-config ###############
-
-PACKAGE_CREATED_LIBS=""
-if test x$enable_dd = x"yes"; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_dd"
-fi
-if test x$enable_qd = x"yes"; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_qd"
-fi
-if test x$enable_gmp = x"yes"; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_gmp"
-fi
-if test x$enable_mpfr = x"yes"; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_mpfr"
-fi
-if test x$enable_mpc = x"yes"; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_mpc -lmpblas_mpc"
-fi
-if test x$enable_binary128 = x"yes"; then
-    if test "$want_libquadmath" = "yes"; then
-        PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_binary128 -lquadmath"
-    else
-        PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_binary128"
-    fi
-fi
-if test x$enable_double = x"yes"; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_double"
-fi
-if test x$enable_binary80 = x"yes"; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_binary80"
-fi
-
-# add external libraries only if they will be installed with the package
-if test x$need_internal_gmplib = xyes; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lgmpxx -lgmp"
-fi
-if test x$need_internal_qdlib = xyes; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lqd"
-fi
-if test x$need_internal_mpfrlib = xyes; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmpfr"
-fi
-if test x$need_internal_mpclib = xyes; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmpc"
-fi
-
-PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" ${OPENMP_CXXFLAGS}"
-
-AC_SUBST([PACKAGE_CREATED_LIBS])
-
-########################################################################
 
 AC_CONFIG_FILES([
 mpblas/optimized/Makefile
