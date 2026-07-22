@@ -11,7 +11,8 @@ ACLOCAL_AMFLAGS = -I m4
 miscdir = $(prefix)/misc
 dist_misc_SCRIPTS = \
 misc/cpu_os_detection.sh \
-misc/check_unique_symbols.sh
+misc/check_unique_symbols.sh \
+misc/check_source_manifests.sh
 
 MPLAPACK_UNIQUE_SYMBOL_ARCHIVES =
 if ENABLE_GMP
@@ -51,6 +52,7 @@ endif
 
 check-local:
 	$(SHELL) $(top_srcdir)/misc/check_unique_symbols.sh $(MPLAPACK_UNIQUE_SYMBOL_ARCHIVES)
+	$(SHELL) $(top_srcdir)/misc/check_source_manifests.sh $(top_srcdir)
 
 mplapack_includedir = $(includedir)/mplapack
 mplapack_include_HEADERS = \

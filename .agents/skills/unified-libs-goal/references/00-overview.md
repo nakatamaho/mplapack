@@ -48,11 +48,13 @@ Rules:
 2. Helper files never shadow and are never shadowed: anything matching
    `*_ref.cpp`, `*_omp.cpp`, `*_cuda.cu` (internal entry), and split-kernel
    files (`*_fermi_*`, `*_tesla_*`, `Rsyrk_[NT][LU]_*`). These define private
-   symbols only. KNOWN EXCEPTION: `binary128/opencl/Rgemm_opencl.cpp` defines
-   the PUBLIC symbol `Rgemm` despite its helper-looking name; goal 03 must
-   either rename it to `Rgemm.cpp` (preferred, restores stem-shadowing) or
-   register it as an explicit shadow of the reference `Rgemm`. Decide by `nm`
-   on compiled objects, never by filename alone.
+   symbols only. RESOLVED (goal 03): `binary128/opencl/Rgemm_opencl.cpp`
+   defined the PUBLIC symbol `Rgemm` despite its helper-looking name and was
+   renamed to `Rgemm.cpp`, restoring stem-shadowing. Standing rule: any file
+   that defines a public routine must be named after that routine; decide by
+   `nm` on compiled objects, never by filename alone. Known remaining
+   helper-named public definition: `*/openmp/Rgemm_omp.cpp` (dead code,
+   explicitly excluded from all source lists in both build systems).
 3. Every public API symbol (Rgemm, Rdot, ...) must be defined exactly once
    inside each installed library. Enforced by a check (see below), not by
    convention.
