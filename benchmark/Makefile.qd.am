@@ -11,8 +11,8 @@ Rgetrf.qd Rgetrf.qd_opt
 
 qdcxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_QD___
 qdlapack_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_qd
-qd_libdepends    = $(qdlapack_libdepends) -L$(top_builddir)/mpblas/reference       -lmpblas_qd     -L$(QD_LIBDIR) -lqd $(DYLD)
-qdopt_libdepends = $(qdlapack_libdepends) -L$(top_builddir)/mpblas/optimized/qd    -lmpblas_qd_opt -L$(QD_LIBDIR) -lqd $(DYLD)
+qd_libdepends    = $(qdlapack_libdepends) -L$(QD_LIBDIR) -lqd $(DYLD)
+qdopt_libdepends = -L$(top_builddir)/mpblas/optimized/qd -lmplapack_qd_opt -L$(QD_LIBDIR) -lqd $(DYLD)
 
 if IS_MINGW
 qdcxxflags       += -I$(DLFCN_WIN32_INCLUDEDIR)

@@ -4,13 +4,13 @@ MPLAPACKDIR=%%MPLAPACKDIR%%
 CXXFLAGS= -I$(MPLAPACKDIR)/include -I$(MPLAPACKDIR)/include/mplapack -I$(MPLAPACKDIR)/include/qd
 OPTFLAGS= -O2
 LIBFLAGS=-L$(MPLAPACKDIR)/lib -Wl,--rpath=$(MPLAPACKDIR)/lib
-MPFRLIBS=-lmplapack_mpfr -lmpblas_mpfr -lmpfr -lmpc -lgmp
-GMPLIBS=-lmplapack_gmp -lmpblas_gmp -lgmpxx -lgmp
-QDLIBS=-lmplapack_qd -lmpblas_qd -lqd
-DDLIBS=-lmplapack_dd -lmpblas_dd -lqd
-BINARY80LIBS=-lmplapack_binary80 -lmpblas_binary80
-BINARY128LIBS=-lmplapack_binary128 -lmpblas_binary128%%LIBQUADMATH%%
-DOUBLELIBS=-lmplapack_double -lmpblas_double
+MPFRLIBS=-lmplapack_mpfr -lmpfr -lmpc -lgmp
+GMPLIBS=-lmplapack_gmp -lgmpxx -lgmp
+QDLIBS=-lmplapack_qd -lqd
+DDLIBS=-lmplapack_dd -lqd
+BINARY80LIBS=-lmplapack_binary80
+BINARY128LIBS=-lmplapack_binary128%%LIBQUADMATH%%
+DOUBLELIBS=-lmplapack_double
 
 programs=Rsyev_Frank_mpfr Rsyev_Frank_gmp Rsyev_Frank_qd Rsyev_Frank_dd Rsyev_Frank_binary80 Rsyev_Frank_binary128 Rsyev_Frank_double
 

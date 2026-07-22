@@ -1,14 +1,8 @@
 # MPBLAS correctness tests, ported from the autotools mpblas/test harness.
 #
-# Each common/<Routine>.test.cpp is a self-contained program that exercises one
-# MPBLAS routine and compares it against the reference Fortran BLAS (dgemm_ etc.,
-# declared in blas.h via F77_FUNC); it exit(1)s on a mismatch.  The test support
-# code (mplapack.test.cpp) always uses MPFR for random-number generation, so
-# these tests require the MPFR backend and a reference BLAS.
-#
-# Requirements (otherwise this directory is skipped):
-#   * the MPFR backend (MPLAPACK_ENABLE_MPFR)
-#   * a reference Fortran BLAS (find_package(BLAS)) + its Fortran runtime
+# Each common/<Routine>.test.cpp compares one MPBLAS routine against the
+# reference Fortran BLAS. Test support always uses MPFR for random-number
+# generation, so these tests require the MPFR backend and a reference BLAS.
 
 if(NOT MPLAPACK_ENABLE_MPFR)
   message(STATUS "mpblas/test: skipped (needs the MPFR backend for its test support)")
@@ -20,22 +14,11 @@ if(NOT BLAS_FOUND)
 endif()
 
 set(_common "${CMAKE_CURRENT_SOURCE_DIR}/common")
-
-# Support sources compiled into every test program (mirrors test_srcdepends):
-#   xerbla.cpp           - the xerbla_ the reference BLAS calls on bad args
-#   mplapack.test.cpp    - random generators / comparison helpers (uses MPFR)
-#   Mxerbla.override.cpp - test version of Mxerbla; in the executable's own
-#                          objects it wins over the backend's via
-#                          --allow-multiple-definition
 set(_support
   "${_common}/xerbla.cpp"
   "${_common}/mplapack.test.cpp"
   "${_common}/Mxerbla.override.cpp")
 
-# MPLAPACK_GFORTRAN_LIBRARY (the Fortran runtime the reference BLAS needs) is
-# located once by the top-level CMakeLists.
-
-# Every routine in common/ gets a program per enabled backend.
 file(GLOB _mpblas_tests CONFIGURE_DEPENDS "${_common}/*.test.cpp")
 
 set(_backends gmp mpfr qd dd double binary80 binary128)
@@ -45,41 +28,66 @@ foreach(_b ${_backends})
     continue()
   endif()
 
-  foreach(_src ${_mpblas_tests})
-    get_filename_component(_stem "${_src}" NAME_WE)   # e.g. Rgemm (from Rgemm.test.cpp)
-    set(_exe "${_stem}_test_${_b}")
+  set(_backend_libraries mplapack_${_b})
+  if(TARGET mplapack_${_b}_opt)
+    list(APPEND _backend_libraries mplapack_${_b}_opt)
+  endif()
 
-    add_executable(${_exe} "${_src}" ${_support})
-    # Set exactly one backend macro explicitly.  We must NOT obtain it by linking
-    # the mpblas_<b> target, because the test also needs the mpblas_mpfr backend
-    # and linking both targets would push BOTH ___MPLAPACK_BUILD_WITH_*___ macros
-    # onto the compile line (conflicting REAL/COMPLEX typedefs).
-    target_compile_definitions(${_exe} PRIVATE
-      ___MPLAPACK_BUILD_WITH_${_B}___ ___MPLAPACK_INTERNAL___)
-    target_include_directories(${_exe} PRIVATE
-      "${CMAKE_BINARY_DIR}/include"          # generated mplapack_config.h
-      "${CMAKE_SOURCE_DIR}/include"
-      "${CMAKE_SOURCE_DIR}/mpfrc++")         # mpreal/mpcomplex (always used)
-    # Link the mpblas archives by file path so they contribute object code only,
-    # without their target usage requirements (i.e. without the backend macro).
-    target_link_libraries(${_exe} PRIVATE
-      "$<TARGET_FILE:mpblas_${_b}>"
-      "$<TARGET_FILE:mpblas_mpfr>"
-      MPC::MPC MPFR::MPFR GMP::GMPXX   # mpfr/mpc/gmp headers + libs (no macro)
-      ${BLAS_LIBRARIES})              # reference Fortran BLAS to compare against
-    add_dependencies(${_exe} mpblas_${_b} mpblas_mpfr)
-    if(MPLAPACK_GFORTRAN_LIBRARY)
-      target_link_libraries(${_exe} PRIVATE ${MPLAPACK_GFORTRAN_LIBRARY})
+  foreach(_backend_library IN LISTS _backend_libraries)
+    if(_backend_library MATCHES "_opt$")
+      set(_variant "${_b}_opt")
+    else()
+      set(_variant "${_b}")
     endif()
-    if(TARGET OpenMP::OpenMP_CXX)
-      target_link_libraries(${_exe} PRIVATE OpenMP::OpenMP_CXX)
-    endif()
-    if(MPLAPACK_LD_ALLOW_MULTIDEF)
-      target_link_options(${_exe} PRIVATE "-Wl,--allow-multiple-definition")
-    endif()
-    set_target_properties(${_exe} PROPERTIES
-      RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${_b}")
 
-    add_test(NAME mpblas_${_b}_${_stem} COMMAND ${_exe})
+    foreach(_src ${_mpblas_tests})
+      get_filename_component(_stem "${_src}" NAME_WE)
+      set(_exe "${_stem}_test_${_variant}")
+
+      add_executable(${_exe} "${_src}" ${_support})
+      # Set one backend macro explicitly. Linking target files avoids inheriting
+      # the MPFR oracle target's conflicting backend macro.
+      target_compile_definitions(${_exe} PRIVATE
+        ___MPLAPACK_BUILD_WITH_${_B}___ ___MPLAPACK_INTERNAL___)
+      if(_b STREQUAL "dd" AND MPLAPACK_HAS_FP_CONTRACT_OFF)
+        target_compile_options(${_exe} PRIVATE -ffp-contract=off)
+      endif()
+      target_include_directories(${_exe} PRIVATE
+        "${CMAKE_BINARY_DIR}/include"
+        "${CMAKE_SOURCE_DIR}/include"
+        "${CMAKE_SOURCE_DIR}/mpfrc++")
+
+      set(_backend_archives "$<TARGET_FILE:${_backend_library}>")
+      set(_backend_dependencies ${_backend_library})
+      if(NOT _b STREQUAL "mpfr")
+        list(APPEND _backend_archives "$<TARGET_FILE:mplapack_mpfr>")
+        list(APPEND _backend_dependencies mplapack_mpfr)
+      endif()
+      target_link_libraries(${_exe} PRIVATE
+        ${_backend_archives}
+        MPC::MPC MPFR::MPFR GMP::GMPXX
+        ${BLAS_LIBRARIES})
+      if(_b STREQUAL "dd" OR _b STREQUAL "qd")
+        target_link_libraries(${_exe} PRIVATE QD::QD)
+      endif()
+      if(_b STREQUAL "binary128" AND MPLAPACK_BINARY128_EXTRA_LIBS)
+        target_link_libraries(${_exe} PRIVATE ${MPLAPACK_BINARY128_EXTRA_LIBS})
+      endif()
+      add_dependencies(${_exe} ${_backend_dependencies})
+
+      if(MPLAPACK_GFORTRAN_LIBRARY)
+        target_link_libraries(${_exe} PRIVATE ${MPLAPACK_GFORTRAN_LIBRARY})
+      endif()
+      if(TARGET OpenMP::OpenMP_CXX)
+        target_link_libraries(${_exe} PRIVATE OpenMP::OpenMP_CXX)
+      endif()
+      if(MPLAPACK_LD_ALLOW_MULTIDEF)
+        target_link_options(${_exe} PRIVATE "-Wl,--allow-multiple-definition")
+      endif()
+      set_target_properties(${_exe} PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${_variant}")
+
+      add_test(NAME mpblas_${_variant}_${_stem} COMMAND ${_exe})
+    endforeach()
   endforeach()
 endforeach()

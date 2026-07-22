@@ -2,8 +2,7 @@
 
 # mplapackConfig.cmake — package config for find_package(mplapack).
 #
-# Exposes the namespaced targets mplapack::mpblas_<backend> and
-# mplapack::mplapack_<backend> for every backend that was built and installed.
+# Exposes mplapack::mplapack_<backend> for every installed backend.
 
 include(CMakeFindDependencyMacro)
 
@@ -12,6 +11,7 @@ include(CMakeFindDependencyMacro)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}")
 
 set(MPLAPACK_ENABLED_BACKENDS "@MPLAPACK_ENABLED_BACKENDS@")
+set(MPLAPACK_AVAILABLE_COMPONENTS "@MPLAPACK_AVAILABLE_COMPONENTS@")
 
 if(@MPLAPACK_NEEDS_GMP@)
   find_dependency(GMP)
@@ -26,7 +26,19 @@ endif()
 if(@MPLAPACK_NEEDS_OPENMP@)
   find_dependency(OpenMP COMPONENTS CXX)
 endif()
+if(@MPLAPACK_NEEDS_CUDA@)
+  find_dependency(CUDAToolkit)
+endif()
+if(@MPLAPACK_NEEDS_OPENCL@)
+  find_dependency(OpenCL)
+endif()
 
 include("${CMAKE_CURRENT_LIST_DIR}/mplapackTargets.cmake")
+
+foreach(_component IN LISTS MPLAPACK_AVAILABLE_COMPONENTS)
+  if(TARGET mplapack::mplapack_${_component})
+    set(mplapack_${_component}_FOUND TRUE)
+  endif()
+endforeach()
 
 check_required_components(mplapack)

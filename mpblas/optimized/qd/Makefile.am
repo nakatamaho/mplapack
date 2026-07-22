@@ -1,7 +1,14 @@
-lib_LTLIBRARIES = libmpblas_qd_opt.la
+include $(top_srcdir)/mplapack/reference/sources.am
 
-libmpblas_qd_opt_la_CPPFLAGS = -I. -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) $(OPENMP_CXXFLAGS) -D___MPLAPACK_BUILD_WITH_QD___
-libmpblas_qd_opt_la_SOURCES = \
+# Basename shadowing intentionally omits Raxpy.cpp, Rcopy.cpp, Rdot.cpp,
+# and Rgemm.cpp from the reference BLAS list. The public dispatchers below
+# replace them; *_ref.cpp and openmp/*_omp.cpp remain non-shadowing helpers.
+MPLAPACK_QD_OPTIMIZED_SOURCES =
+
+lib_LTLIBRARIES = libmplapack_qd_opt.la
+
+libmplapack_qd_opt_la_CPPFLAGS = -I. -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) $(OPENMP_CXXFLAGS) -D___MPLAPACK_BUILD_WITH_QD___
+libmplapack_qd_opt_la_SOURCES = \
 Rcopy.cpp Rcopy_ref.cpp openmp/Rcopy_omp.cpp \
 Rdot.cpp  Rdot_ref.cpp  openmp/Rdot_omp.cpp \
 Rgemm.cpp Rgemm_ref.cpp openmp/Rgemm_NN_omp.cpp openmp/Rgemm_NT_omp.cpp openmp/Rgemm_TN_omp.cpp openmp/Rgemm_TT_omp.cpp \
@@ -79,12 +86,14 @@ Raxpy.cpp Raxpy_ref.cpp openmp/Raxpy_omp.cpp \
 ../../reference/Rtrsv.cpp \
 ../../reference/iCamax.cpp \
 ../../reference/iRamax.cpp \
-../../reference/mplapackinit.cpp
+../../reference/mplapackinit.cpp \
+$(MPLAPACK_OPT_REFERENCE_SOURCES) \
+$(MPLAPACK_QD_OPTIMIZED_SOURCES)
 
-libmpblas_qd_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO) -Wl,-rpath,$(libdir)
+libmplapack_qd_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO) -Wl,-rpath,$(libdir)
 if IS_MACOS
-libmpblas_qd_opt_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
+libmplapack_qd_opt_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 if IS_MINGW
-libmpblas_qd_opt_la_LDFLAGS += -fopenmp -no-undefined -L$(QD_LIBDIR) -lqd
+libmplapack_qd_opt_la_LDFLAGS += -fopenmp -no-undefined -L$(QD_LIBDIR) -lqd
 endif

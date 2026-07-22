@@ -4,7 +4,7 @@ if ENABLE_MPFR
 mplapackexamples_PROGRAMS += Cgees_test_mpfr Cgeev_NPR_mpfr Cgeev_test2_mpfr Cgeev_test_mpfr Rgees_Grcar_mpfr Rgees_readfromfile_mpfr Rgees_test_mpfr Rgeev_Frank_mpfr Rgeev_random_highcond_mpfr Rgeev_readfromfile_mpfr Rgeev_test_mpfr
 
 mpfr_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mpfrc++ -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR)
-mpfr_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_mpfr -L$(top_builddir)/mpblas/reference -lmpblas_mpfr -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp
+mpfr_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_mpfr -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp
 
 Cgees_test_mpfr_SOURCES = Cgees_test_mpfr.cpp
 Cgees_test_mpfr_CXXFLAGS = $(mpfr_cxxflags)
@@ -56,7 +56,7 @@ if ENABLE_GMP
 mplapackexamples_PROGRAMS += Cgees_test_gmp Cgeev_test2_gmp Cgeev_test_gmp Rgees_Grcar_gmp Rgees_readfromfile_gmp Rgees_test_gmp Rgeev_Frank_gmp Rgeev_random_highcond_gmp Rgeev_readfromfile_gmp Rgeev_test_gmp
 
 gmp_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR)
-gmp_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_gmp -L$(top_builddir)/mpblas/reference -lmpblas_gmp -L$(GMP_LIBDIR) -lgmp
+gmp_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_gmp -L$(GMP_LIBDIR) -lgmp
 
 Cgees_test_gmp_SOURCES = Cgees_test_gmp.cpp
 Cgees_test_gmp_CXXFLAGS = $(gmp_cxxflags)
@@ -105,9 +105,9 @@ mplapackexamples_PROGRAMS += Cgees_test_binary128 Cgeev_NPR_binary128 Cgeev_test
 
 binary128_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include
 if MPLAPACK_BINARY128_MODE_QUADMATH
-binary128_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_binary128 -L$(top_builddir)/mpblas/reference -lmpblas_binary128 -lquadmath
+binary128_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_binary128 -lquadmath
 else
-binary128_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_binary128 -L$(top_builddir)/mpblas/reference -lmpblas_binary128
+binary128_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_binary128
 endif
 
 Cgees_test_binary128_SOURCES = Cgees_test_binary128.cpp
@@ -160,7 +160,7 @@ if ENABLE_BINARY80
 mplapackexamples_PROGRAMS += Cgees_test_binary80 Cgeev_NPR_binary80 Cgeev_test2_binary80 Cgeev_test_binary80 Rgees_Grcar_binary80 Rgees_readfromfile_binary80 Rgees_test_binary80 Rgeev_Frank_binary80 Rgeev_random_highcond_binary80 Rgeev_readfromfile_binary80 Rgeev_test_binary80
 
 binary80_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include
-binary80_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_binary80 -L$(top_builddir)/mpblas/reference -lmpblas_binary80
+binary80_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_binary80
 
 Cgees_test_binary80_SOURCES = Cgees_test_binary80.cpp
 Cgees_test_binary80_CXXFLAGS = $(binary80_cxxflags)
@@ -212,7 +212,7 @@ if ENABLE_DOUBLE
 mplapackexamples_PROGRAMS += Cgees_test_double Cgeev_NPR_double Cgeev_test2_double Cgeev_test_double Rgees_Grcar_double Rgees_readfromfile_double Rgees_test_double Rgeev_Frank_double Rgeev_random_highcond_double Rgeev_readfromfile_double Rgeev_test_double
 
 double_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include
-double_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_double -L$(top_builddir)/mpblas/reference -lmpblas_double
+double_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_double
 
 Cgees_test_double_SOURCES = Cgees_test_double.cpp
 Cgees_test_double_CXXFLAGS = $(double_cxxflags)
@@ -264,7 +264,7 @@ if ENABLE_DD
 mplapackexamples_PROGRAMS += Cgees_test_dd Cgeev_NPR_dd Cgeev_test2_dd Cgeev_test_dd Rgees_Grcar_dd Rgees_readfromfile_dd Rgees_test_dd Rgeev_Frank_dd Rgeev_random_highcond_dd Rgeev_readfromfile_dd Rgeev_test_dd
 
 dd_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR)
-dd_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_dd -L$(top_builddir)/mpblas/reference -lmpblas_dd -L$(QD_LIBDIR) -lqd
+dd_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_dd -L$(QD_LIBDIR) -lqd
 
 Cgees_test_dd_SOURCES = Cgees_test_dd.cpp
 Cgees_test_dd_CXXFLAGS = $(dd_cxxflags)
@@ -316,7 +316,7 @@ if ENABLE_QD
 mplapackexamples_PROGRAMS += Cgees_test_qd Cgeev_NPR_qd Cgeev_test2_qd Cgeev_test_qd Rgees_Grcar_qd Rgees_readfromfile_qd Rgees_test_qd Rgeev_Frank_qd Rgeev_random_highcond_qd Rgeev_readfromfile_qd Rgeev_test_qd
 
 qd_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR)
-qd_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_qd -L$(top_builddir)/mpblas/reference -lmpblas_qd -L$(QD_LIBDIR) -lqd
+qd_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_qd -L$(QD_LIBDIR) -lqd
 
 Cgees_test_qd_SOURCES = Cgees_test_qd.cpp
 Cgees_test_qd_CXXFLAGS = $(qd_cxxflags)

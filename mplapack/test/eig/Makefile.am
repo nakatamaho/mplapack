@@ -16,7 +16,7 @@ CHECK_BACKENDS =
 
 mplapack_eig_DATA = Cbak.in Cbal.in Cbb.in Cec.in Ced.in Cgbak.in Cgbal.in Cgd.in Cgg.in \
 Csb.in Csg.in Rbak.in Rbal.in Rbb.in Rec.in Red.in Rgbak.in Rgbal.in Rgd.in Rgg.in Rsb.in Rsg.in \
-csd.in glm.in gqr.in gsv.in lse.in nep.in se2.in sep.in svd.in
+csd.in glm.in gqr.in gsv.in lse.in nep.in se2.in se2_opt.in sep.in svd.in
 mplapack_eigdir = $(prefix)/lib/$(target)/mplapack/test/eig
 
 if ENABLE_MPFR

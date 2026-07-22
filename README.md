@@ -8,6 +8,12 @@ BSD-style license, supplemental to the original LAPACK license.
 
 # News
 
+* 2026-07-22  MPLAPACK 2.3.0 adopts one self-contained library per
+  backend/flavor, removes the separate BLAS-only products, eliminates
+  duplicate public symbols with layered basename shadowing, and completes the
+  CMake build/test/install interface for the unified layout. See
+  [CHANGES.2.3.0.md](CHANGES.2.3.0.md) and [MIGRATION.md](MIGRATION.md).
+
 * 2026-07-21  MPLAPACK 2.2.1 has been released. Available from
   <https://github.com/nakatamaho/mplapack/releases/tag/v2.2.1>. This patch
   release keeps the LAPACK 3.12.1 base from 2.2.0 and focuses on GMP

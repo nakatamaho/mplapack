@@ -1,4 +1,7 @@
 SUBDIRS = external mpblas mplapack
+if ENABLE_TEST
+SUBDIRS += mpblas/test
+endif
 if ENABLE_BENCHMARK
 SUBDIRS += benchmark
 endif
@@ -9,7 +12,50 @@ endif
 ACLOCAL_AMFLAGS = -I m4
 
 miscdir = $(prefix)/misc
-dist_misc_SCRIPTS = misc/cpu_os_detection.sh
+dist_misc_SCRIPTS = \
+misc/cpu_os_detection.sh \
+misc/check_unique_symbols.sh \
+misc/check_source_manifests.sh
+
+MPLAPACK_UNIQUE_SYMBOL_ARCHIVES =
+if ENABLE_GMP
+MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mplapack/reference/.libs/libmplapack_gmp.a
+MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mpblas/optimized/gmp/.libs/libmplapack_gmp_opt.a
+endif
+if ENABLE_MPFR
+MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mplapack/reference/.libs/libmplapack_mpfr.a
+MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mpblas/optimized/mpfr/.libs/libmplapack_mpfr_opt.a
+endif
+if ENABLE_QD
+MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mplapack/reference/.libs/libmplapack_qd.a
+MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mpblas/optimized/qd/.libs/libmplapack_qd_opt.a
+endif
+if ENABLE_DD
+MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mplapack/reference/.libs/libmplapack_dd.a
+MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mpblas/optimized/dd/.libs/libmplapack_dd_opt.a
+if ENABLE_CUDA
+MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mpblas/optimized/dd/cuda/.libs/libmplapack_dd_opt_cuda.a
+endif
+endif
+if ENABLE_DOUBLE
+MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mplapack/reference/.libs/libmplapack_double.a
+MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mpblas/optimized/double/.libs/libmplapack_double_opt.a
+endif
+if ENABLE_BINARY80
+MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mplapack/reference/.libs/libmplapack_binary80.a
+MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mpblas/optimized/binary80/.libs/libmplapack_binary80_opt.a
+endif
+if ENABLE_BINARY128
+MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mplapack/reference/.libs/libmplapack_binary128.a
+MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mpblas/optimized/binary128/.libs/libmplapack_binary128_opt.a
+if ENABLE_OPENCL_BINARY128
+MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mpblas/optimized/binary128/opencl/.libs/libmplapack_binary128_opt_opencl.a
+endif
+endif
+
+check-local:
+	$(SHELL) $(top_srcdir)/misc/check_unique_symbols.sh $(MPLAPACK_UNIQUE_SYMBOL_ARCHIVES)
+	$(SHELL) $(top_srcdir)/misc/check_source_manifests.sh $(top_srcdir)
 
 mplapack_includedir = $(includedir)/mplapack
 mplapack_include_HEADERS = \
@@ -134,10 +180,58 @@ noinst_HEADERS = \
     include/mplapack_eig_mpfr.h \
     include/mplapack_eig_qd.h
 
+MPLAPACK_PKGCONFIG_FILES =
+if ENABLE_GMP
+MPLAPACK_PKGCONFIG_FILES += mplapack_gmp.pc mplapack_gmp_opt.pc
+endif
+if ENABLE_MPFR
+MPLAPACK_PKGCONFIG_FILES += mplapack_mpfr.pc mplapack_mpfr_opt.pc
+endif
+if ENABLE_QD
+MPLAPACK_PKGCONFIG_FILES += mplapack_qd.pc mplapack_qd_opt.pc
+endif
+if ENABLE_DD
+MPLAPACK_PKGCONFIG_FILES += mplapack_dd.pc mplapack_dd_opt.pc
+if ENABLE_CUDA
+MPLAPACK_PKGCONFIG_FILES += mplapack_dd_opt_cuda.pc
+endif
+endif
+if ENABLE_DOUBLE
+MPLAPACK_PKGCONFIG_FILES += mplapack_double.pc mplapack_double_opt.pc
+endif
+if ENABLE_BINARY80
+MPLAPACK_PKGCONFIG_FILES += mplapack_binary80.pc mplapack_binary80_opt.pc
+endif
+if ENABLE_BINARY128
+MPLAPACK_PKGCONFIG_FILES += mplapack_binary128.pc mplapack_binary128_opt.pc
+if ENABLE_OPENCL_BINARY128
+MPLAPACK_PKGCONFIG_FILES += mplapack_binary128_opt_opencl.pc
+endif
+endif
+
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = mplapack.pc
+pkgconfig_DATA = $(MPLAPACK_PKGCONFIG_FILES)
+CLEANFILES = $(MPLAPACK_PKGCONFIG_FILES)
+
+$(MPLAPACK_PKGCONFIG_FILES): cmake/mplapack.pc.cmake.in
+	@pc_name='$@'; \
+	pc_name=$${pc_name%.pc}; \
+	pc_flavor=$${pc_name#mplapack_}; \
+	sed -e 's|@PC_PREFIX@|$(prefix)|g' \
+	    -e 's|@PC_LIBDIR@|$(libdir)|g' \
+	    -e 's|@PC_INCLUDEDIR@|$(includedir)/mplapack|g' \
+	    -e "s|@PC_NAME@|$$pc_name|g" \
+	    -e "s|@PC_FLAVOR@|$$pc_flavor|g" \
+	    -e 's|@PC_DESCRIPTION@|$(PACKAGE_DESCRIPTION)|g' \
+	    -e 's|@PC_VERSION@|$(PACKAGE_VERSION)|g' \
+	    $(srcdir)/cmake/mplapack.pc.cmake.in > '$@'
 
 EXTRA_DIST = \
+cmake/mplapack.pc.cmake.in \
+cmake/tests/CMakeLists.txt \
+cmake/tests/consume/CMakeLists.txt \
+cmake/tests/ComparePkgConfig.cmake \
+cmake/tests/consume/main.cpp \
 benchmark/Rgetrf1.plt.in \
 benchmark/Rgetrf2.plt.in \
 benchmark/Rgetrf3.plt.in \

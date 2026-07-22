@@ -13,11 +13,11 @@ binary128cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUI
 binary128lapack_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_binary128
 
 if BINARY128_USE_QUADMATH
-binary128_libdepends    = $(binary128lapack_libdepends) -L$(top_builddir)/mpblas/reference             -lmpblas_binary128     -lquadmath $(DYLD)
-binary128opt_libdepends = $(binary128lapack_libdepends) -L$(top_builddir)/mpblas/optimized/binary128   -lmpblas_binary128_opt -lquadmath $(DYLD)
+binary128_libdepends    = $(binary128lapack_libdepends) -lquadmath $(DYLD)
+binary128opt_libdepends = -L$(top_builddir)/mpblas/optimized/binary128 -lmplapack_binary128_opt -lquadmath $(DYLD)
 else
-binary128_libdepends    = $(binary128lapack_libdepends) -L$(top_builddir)/mpblas/reference             -lmpblas_binary128     $(DYLD)
-binary128opt_libdepends = $(binary128lapack_libdepends) -L$(top_builddir)/mpblas/optimized/binary128   -lmpblas_binary128_opt $(DYLD)
+binary128_libdepends    = $(binary128lapack_libdepends) $(DYLD)
+binary128opt_libdepends = -L$(top_builddir)/mpblas/optimized/binary128 -lmplapack_binary128_opt $(DYLD)
 endif
 
 if IS_MINGW

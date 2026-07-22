@@ -3,8 +3,8 @@ dnl Configure for MPLAPACK
 dnl
 
 m4_define([MPLAPACK_VER_MAJOR], [2])
-m4_define([MPLAPACK_VER_MINOR], [2])
-m4_define([MPLAPACK_VER_PATCH], [1])
+m4_define([MPLAPACK_VER_MINOR], [3])
+m4_define([MPLAPACK_VER_PATCH], [0])
 m4_define([MPLAPACK_VERSION], [MPLAPACK_VER_MAJOR.MPLAPACK_VER_MINOR.MPLAPACK_VER_PATCH])
 AC_INIT(mplapack, [MPLAPACK_VERSION])
 
@@ -26,7 +26,7 @@ AC_SUBST([LAPACK_VER_PATCH])
 
 AC_CONFIG_FILES([mplapack/reference/iMlaver.cpp])
 
-MPLAPACK_LT_CURRENT=1
+MPLAPACK_LT_CURRENT=2
 MPLAPACK_LT_REVISION=0
 MPLAPACK_LT_AGE=0
 MPLAPACK_LT_VERSION_INFO="${MPLAPACK_LT_CURRENT}:${MPLAPACK_LT_REVISION}:${MPLAPACK_LT_AGE}"
@@ -89,7 +89,7 @@ AC_DEFUN([MPLAPACK_STRIP_FLAG], [
 ])
 
 AC_CONFIG_HEADERS([include/mplapack_config.h])
-AC_CONFIG_FILES([ Makefile mplapack.pc ])
+AC_CONFIG_FILES([ Makefile ])
 AC_CONFIG_FILES([packaging/PKGBUILD packaging/mplapack.spec])
 
 AC_CANONICAL_TARGET
@@ -2748,57 +2748,6 @@ AC_SUBST(CFLAGS)
 AC_SUBST(CXXFLAGS)
 AC_SUBST(FCFLAGS)
 
-############ select created libraries for the pkg-config ###############
-
-PACKAGE_CREATED_LIBS=""
-if test x$enable_dd = x"yes"; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_dd -lmpblas_dd"
-fi
-if test x$enable_qd = x"yes"; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_qd -lmpblas_qd"
-fi
-if test x$enable_gmp = x"yes"; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_gmp -lmpblas_gmp"
-fi
-if test x$enable_mpfr = x"yes"; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_mpfr -lmpblas_mpfr"
-fi
-if test x$enable_mpc = x"yes"; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_mpc -lmpblas_mpc"
-fi
-if test x$enable_binary128 = x"yes"; then
-    if test "$want_libquadmath" = "yes"; then
-        PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_binary128 -lmpblas_binary128 -lquadmath"
-    else
-        PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_binary128 -lmpblas_binary128"
-    fi
-fi
-if test x$enable_double = x"yes"; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_double -lmpblas_double"
-fi
-if test x$enable_binary80 = x"yes"; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmplapack_binary80 -lmpblas_binary80"
-fi
-
-# add external libraries only if they will be installed with the package
-if test x$need_internal_gmplib = xyes; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lgmpxx -lgmp"
-fi
-if test x$need_internal_qdlib = xyes; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lqd"
-fi
-if test x$need_internal_mpfrlib = xyes; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmpfr"
-fi
-if test x$need_internal_mpclib = xyes; then
-  PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" -lmpc"
-fi
-
-PACKAGE_CREATED_LIBS=$PACKAGE_CREATED_LIBS" ${OPENMP_CXXFLAGS}"
-
-AC_SUBST([PACKAGE_CREATED_LIBS])
-
-########################################################################
 
 AC_CONFIG_FILES([
 mpblas/optimized/Makefile
@@ -2811,6 +2760,14 @@ mpblas/optimized/double/Makefile
 mpblas/optimized/binary80/Makefile
 mpblas/optimized/binary128/Makefile
 mpblas/optimized/binary128/opencl/Makefile
+mplapack/optimized/Makefile
+mplapack/optimized/gmp/Makefile
+mplapack/optimized/mpfr/Makefile
+mplapack/optimized/qd/Makefile
+mplapack/optimized/dd/Makefile
+mplapack/optimized/double/Makefile
+mplapack/optimized/binary80/Makefile
+mplapack/optimized/binary128/Makefile
 mpblas/test/Makefile
 mpblas/test/gmp/Makefile
 mpblas/test/mpfr/Makefile

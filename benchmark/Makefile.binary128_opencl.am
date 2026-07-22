@@ -4,13 +4,9 @@ Rgemm.binary128_opencl_kernel \
 Rpotrf.binary128_opencl_total \
 Rgetrf.binary128_opencl_total
 
-# binary128_opencl_libdepends relies on binary128lapack_libdepends defined in
-# Makefile.binary128.am, which already pulls in -lmplapack_binary128.
 binary128_opencl_cxxflags   = -I$(top_srcdir)/include $(OPENCL_CFLAGS) -D___MPLAPACK_BUILD_WITH_BINARY128___
-binary128_opencl_libdepends = $(binary128lapack_libdepends) \
-                              -L$(top_builddir)/mpblas/optimized/binary128/opencl -lmpblas_binary128_opt_opencl \
+binary128_opencl_libdepends = -L$(top_builddir)/mpblas/optimized/binary128/opencl -lmplapack_binary128_opt_opencl \
                               $(OPENCL_LDFLAGS) $(OPENCL_LIBS) \
-                              -L$(top_builddir)/mpblas/optimized/binary128 -lmpblas_binary128_opt \
                               $(DYLD)
 binary128_opencl_link       = $(LIBTOOL) --mode=link $(CXX) -o $@ $(OPENCL_LDFLAGS) $(OPENCL_LIBS) $(binary128_opencl_libdepends) $(OPENMP_CXXFLAGS)
 

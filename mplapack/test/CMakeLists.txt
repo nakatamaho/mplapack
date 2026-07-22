@@ -39,13 +39,13 @@ foreach(_x ${_override_files} ${_eig_mains})
 endforeach()
 
 # Helper: apply the common test compile settings to a target.
-function(_mplapack_test_setup tgt backend internal)
+function(_mplapack_test_setup tgt backend_target internal)
   # PRIVATE: these are static archives; they only need the backend's headers,
   # the ___MPLAPACK_BUILD_WITH_<backend>___ macro and the fable headers to
   # compile.  We deliberately do NOT propagate the backend link to consumers --
   # the driver executables link the backend explicitly inside a LINK_GROUP so
   # that ordering/override resolution is under our control.
-  target_link_libraries(${tgt} PRIVATE mplapack::mplapack_${backend})
+  target_link_libraries(${tgt} PRIVATE ${backend_target})
   target_include_directories(${tgt} PRIVATE "${_fable_dir}")
   if(internal)
     target_compile_definitions(${tgt} PRIVATE ___MPLAPACK_INTERNAL___)
@@ -85,78 +85,99 @@ foreach(_b ${_backends})
     continue()
   endif()
 
-  # --- libraries ----------------------------------------------------------
-  add_library(matgen_${_b}        STATIC ${_matgen_srcs})
-  add_library(lin_${_b}           STATIC ${_lin_lib_srcs})
-  add_library(lin_override_${_b}  STATIC)
-  add_library(eig_${_b}           STATIC ${_eig_lib_srcs})
-  add_library(eig_override_${_b}  STATIC)
-  foreach(_o ${_override_files})
-    target_sources(lin_override_${_b} PRIVATE "${_lin_common}/${_o}.cpp")
-    target_sources(eig_override_${_b} PRIVATE "${_eig_common}/${_o}.cpp")
-  endforeach()
+  set(_backend_libraries mplapack_${_b})
+  if(TARGET mplapack_${_b}_opt)
+    list(APPEND _backend_libraries mplapack_${_b}_opt)
+  endif()
 
-  _mplapack_test_setup(matgen_${_b}       ${_b} TRUE)
-  _mplapack_test_setup(lin_${_b}          ${_b} TRUE)
-  _mplapack_test_setup(lin_override_${_b} ${_b} FALSE)
-  _mplapack_test_setup(eig_${_b}          ${_b} TRUE)
-  _mplapack_test_setup(eig_override_${_b} ${_b} FALSE)
-
-  # --- drivers ------------------------------------------------------------
-  # name : driver-suffix : main-source : dataset-list-variable
-  set(_lin_drivers
-    "xlintstR_${_b}|${_lin_common}/Rchkaa.cpp|_lin_R_inputs"
-    "xlintstC_${_b}|${_lin_common}/Cchkaa.cpp|_lin_C_inputs"
-    "xlintstrfR_${_b}|${_lin_common}/Rchkrfp.cpp|_lin_rfR_inputs"
-    "xlintstrfC_${_b}|${_lin_common}/Cchkrfp.cpp|_lin_rfC_inputs")
-  set(_eig_drivers
-    "xeigtstR_${_b}|${_eig_common}/Rchkee.cpp|_eig_R_inputs"
-    "xeigtstC_${_b}|${_eig_common}/Cchkee.cpp|_eig_C_inputs"
-    "xdmdeigtstR_${_b}|${_eig_common}/Rchkdmd.cpp|_dmd_R_inputs"
-    "xdmdeigtstC_${_b}|${_eig_common}/Cchkdmd.cpp|_dmd_C_inputs")
-
-  foreach(_spec ${_lin_drivers} ${_eig_drivers})
-    string(REPLACE "|" ";" _parts "${_spec}")
-    list(GET _parts 0 _exe)
-    list(GET _parts 1 _main)
-    list(GET _parts 2 _inputs_var)
-
-    add_executable(${_exe} "${_main}")
-    target_compile_definitions(${_exe} PRIVATE ___MPLAPACK_INTERNAL___)
-    target_include_directories(${_exe} PRIVATE "${_fable_dir}")
-    if(_exe MATCHES "^xeig|^xdmd")
-      set(_kind eig)
+  foreach(_backend_library IN LISTS _backend_libraries)
+    if(_backend_library MATCHES "_opt$")
+      set(_variant "${_b}_opt")
     else()
-      set(_kind lin)
-    endif()
-    # The override lib provides the test versions of Mxerbla, iMlaenv and
-    # Mxlaenv (and defines srnamt/infot) that must REPLACE the real ones in the
-    # backend libraries -- e.g. the error-exit tests rely on the override
-    # Mxerbla recording the error instead of printing and aborting.  Linking the
-    # override archive with --whole-archive forces all its objects in first, so
-    # its definitions win over the duplicates in mpblas/mplapack (kept first by
-    # --allow-multiple-definition).  The remaining static archives have circular
-    # dependencies, so wrap them in a RESCAN group (--start-group/--end-group).
-    target_link_libraries(${_exe} PRIVATE
-      "$<LINK_LIBRARY:WHOLE_ARCHIVE,${_kind}_override_${_b}>"
-      "$<LINK_GROUP:RESCAN,${_kind}_${_b},matgen_${_b},mplapack_${_b},mpblas_${_b}>")
-    if(MPLAPACK_LD_ALLOW_MULTIDEF)
-      target_link_options(${_exe} PRIVATE "-Wl,--allow-multiple-definition")
-    endif()
-    if(TARGET OpenMP::OpenMP_CXX)
-      target_link_libraries(${_exe} PRIVATE OpenMP::OpenMP_CXX)
+      set(_variant "${_b}")
     endif()
 
-    if(_kind STREQUAL lin)
-      set(_dataset_dir "${_test_dir}/lin")
-    else()
-      set(_dataset_dir "${_test_dir}/eig")
-    endif()
-    foreach(_in ${${_inputs_var}})
-      # ${_exe} already embeds the backend and the R/C/rf/dmd driver variant,
-      # so it disambiguates datasets shared between drivers (e.g. nep, svd).
-      _mplapack_register_stdin_test(
-        "${_exe}_${_in}" ${_exe} "${_dataset_dir}/${_in}.in")
+    # --- libraries --------------------------------------------------------
+    add_library(matgen_${_variant}        STATIC ${_matgen_srcs})
+    add_library(lin_${_variant}           STATIC ${_lin_lib_srcs})
+    add_library(lin_override_${_variant}  STATIC)
+    add_library(eig_${_variant}           STATIC ${_eig_lib_srcs})
+    add_library(eig_override_${_variant}  STATIC)
+    foreach(_o ${_override_files})
+      target_sources(lin_override_${_variant} PRIVATE "${_lin_common}/${_o}.cpp")
+      target_sources(eig_override_${_variant} PRIVATE "${_eig_common}/${_o}.cpp")
+    endforeach()
+
+    _mplapack_test_setup(matgen_${_variant}       ${_backend_library} TRUE)
+    _mplapack_test_setup(lin_${_variant}          ${_backend_library} TRUE)
+    _mplapack_test_setup(lin_override_${_variant} ${_backend_library} FALSE)
+    _mplapack_test_setup(eig_${_variant}          ${_backend_library} TRUE)
+    _mplapack_test_setup(eig_override_${_variant} ${_backend_library} FALSE)
+
+    # --- drivers ----------------------------------------------------------
+    # name : driver-suffix : main-source : dataset-list-variable
+    set(_lin_drivers
+      "xlintstR_${_variant}|${_lin_common}/Rchkaa.cpp|_lin_R_inputs"
+      "xlintstC_${_variant}|${_lin_common}/Cchkaa.cpp|_lin_C_inputs"
+      "xlintstrfR_${_variant}|${_lin_common}/Rchkrfp.cpp|_lin_rfR_inputs"
+      "xlintstrfC_${_variant}|${_lin_common}/Cchkrfp.cpp|_lin_rfC_inputs")
+    set(_eig_drivers
+      "xeigtstR_${_variant}|${_eig_common}/Rchkee.cpp|_eig_R_inputs"
+      "xeigtstC_${_variant}|${_eig_common}/Cchkee.cpp|_eig_C_inputs"
+      "xdmdeigtstR_${_variant}|${_eig_common}/Rchkdmd.cpp|_dmd_R_inputs"
+      "xdmdeigtstC_${_variant}|${_eig_common}/Cchkdmd.cpp|_dmd_C_inputs")
+
+    foreach(_spec ${_lin_drivers} ${_eig_drivers})
+      string(REPLACE "|" ";" _parts "${_spec}")
+      list(GET _parts 0 _exe)
+      list(GET _parts 1 _main)
+      list(GET _parts 2 _inputs_var)
+
+      add_executable(${_exe} "${_main}")
+      target_compile_definitions(${_exe} PRIVATE ___MPLAPACK_INTERNAL___)
+      target_include_directories(${_exe} PRIVATE "${_fable_dir}")
+      if(_b STREQUAL "dd" AND MPLAPACK_HAS_FP_CONTRACT_OFF)
+        target_compile_options(${_exe} PRIVATE -ffp-contract=off)
+      endif()
+      if(_exe MATCHES "^xeig|^xdmd")
+        set(_kind eig)
+      else()
+        set(_kind lin)
+      endif()
+      # The override lib provides the test versions of Mxerbla, iMlaenv and
+      # Mxlaenv (and defines srnamt/infot) that must REPLACE the real ones in
+      # the backend libraries -- e.g. the error-exit tests rely on the
+      # override Mxerbla recording the error instead of printing and aborting.
+      # Linking the override archive with --whole-archive forces all its
+      # objects in first, so its definitions win over the duplicates in the
+      # merged backend library (kept first by --allow-multiple-definition).
+      # The remaining static archives have circular dependencies, so wrap
+      # them in a RESCAN group (--start-group/--end-group).
+      target_link_libraries(${_exe} PRIVATE
+        "$<LINK_LIBRARY:WHOLE_ARCHIVE,${_kind}_override_${_variant}>"
+        "$<LINK_GROUP:RESCAN,${_kind}_${_variant},matgen_${_variant},${_backend_library}>")
+      if(MPLAPACK_LD_ALLOW_MULTIDEF)
+        target_link_options(${_exe} PRIVATE "-Wl,--allow-multiple-definition")
+      endif()
+      if(TARGET OpenMP::OpenMP_CXX)
+        target_link_libraries(${_exe} PRIVATE OpenMP::OpenMP_CXX)
+      endif()
+
+      if(_kind STREQUAL lin)
+        set(_dataset_dir "${_test_dir}/lin")
+      else()
+        set(_dataset_dir "${_test_dir}/eig")
+      endif()
+      foreach(_in ${${_inputs_var}})
+        # ${_exe} embeds the backend flavor and R/C/rf/dmd driver variant, so
+        # it disambiguates datasets shared between drivers (e.g. nep, svd).
+        set(_input_file "${_dataset_dir}/${_in}.in")
+        if(_kind STREQUAL eig AND _in STREQUAL se2 AND _variant MATCHES "_opt$")
+          set(_input_file "${_dataset_dir}/se2_opt.in")
+        endif()
+        _mplapack_register_stdin_test(
+          "${_exe}_${_in}" ${_exe} "${_input_file}")
+      endforeach()
     endforeach()
   endforeach()
 endforeach()

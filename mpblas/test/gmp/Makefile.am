@@ -117,11 +117,11 @@ lib_LTLIBRARIES = libmxerbla_override.la
 libmxerbla_override_la_CPPFLAGS = -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_GMP___
 libmxerbla_override_la_SOURCES = ../common/Mxerbla.override.cpp
 libmxerbla_override_la_LDFLAGS = -no-undefined
-libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,.libs/libmxerbla_override.a,$(top_builddir)/mpblas/reference/.libs/libmpblas_gmp.a,$(top_builddir)/mpblas/reference/.libs/libmpblas_mpfr.a,--no-whole-archive
-opt_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,.libs/libmxerbla_override.a,$(top_builddir)/mpblas/optimized/gmp/.libs/libmpblas_gmp_opt.a,$(top_builddir)/mpblas/reference/.libs/libmpblas_mpfr.a,--no-whole-archive
+libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,.libs/libmxerbla_override.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_gmp.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_mpfr.a,--no-whole-archive
+opt_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,.libs/libmxerbla_override.a,$(top_builddir)/mpblas/optimized/gmp/.libs/libmplapack_gmp_opt.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_mpfr.a,--no-whole-archive
 else
-libdepends = -L$(top_builddir)/mpblas/reference -lmpblas_gmp -lmpblas_mpfr
-opt_libdepends = -L$(top_builddir)/mpblas/optimized/gmp -lmpblas_gmp_opt -L$(top_builddir)/mpblas/reference -lmpblas_mpfr
+libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_gmp -lmplapack_mpfr
+opt_libdepends = -L$(top_builddir)/mpblas/optimized/gmp -lmplapack_gmp_opt -L$(top_builddir)/mplapack/reference -lmplapack_mpfr
 endif
 
 ##
@@ -135,14 +135,14 @@ complex_test_gmp_LDFLAGS=$(libdepends) $(mplibs) $(refblas)
 
 transcendents_gmp_test_SOURCES=../common/transcendents_gmp.test.cpp
 transcendents_gmp_test_CXXFLAGS=$(gmp_only_test_cxxflags)
-transcendents_gmp_test_LDFLAGS=-L$(top_builddir)/mpblas/reference -lmpblas_gmp $(gmp_only_mplibs)
+transcendents_gmp_test_LDFLAGS=-L$(top_builddir)/mplapack/reference -lmplapack_gmp $(gmp_only_mplibs)
 
 if ENABLE_MPFR
 mpblas_gmp_test_PROGRAMS += transcendents_gmp_vs_mpfr.test
 mpblas_gmp_smoke_TESTS += transcendents_gmp_vs_mpfr.test
 transcendents_gmp_vs_mpfr_test_SOURCES=../common/transcendents_gmp_vs_mpfr.test.cpp
 transcendents_gmp_vs_mpfr_test_CXXFLAGS=$(gmp_vs_mpfr_test_cxxflags)
-transcendents_gmp_vs_mpfr_test_LDFLAGS=-L$(top_builddir)/mpblas/reference -lmpblas_gmp $(mplibs)
+transcendents_gmp_vs_mpfr_test_LDFLAGS=-L$(top_builddir)/mplapack/reference -lmplapack_gmp $(mplibs)
 else
 EXTRA_DIST = ../common/transcendents_gmp_vs_mpfr.test.cpp
 endif

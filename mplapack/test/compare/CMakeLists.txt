@@ -35,45 +35,70 @@ foreach(_b ${_backends})
     continue()
   endif()
 
-  foreach(_src ${_compare_tests})
-    get_filename_component(_stem "${_src}" NAME_WE)
-    set(_exe "${_stem}_compare_${_b}")
+  set(_backend_libraries mplapack_${_b})
+  if(TARGET mplapack_${_b}_opt)
+    list(APPEND _backend_libraries mplapack_${_b}_opt)
+  endif()
 
-    set(_extra "")
-    if(_stem STREQUAL "Mutils")
-      set(_extra "${_common}/ilaenv.cpp")   # Mutils.test needs the test ILAENV
+  foreach(_backend_library IN LISTS _backend_libraries)
+    if(_backend_library MATCHES "_opt$")
+      set(_variant "${_b}_opt")
+    else()
+      set(_variant "${_b}")
     endif()
 
-    add_executable(${_exe} "${_src}" ${_support} ${_extra})
-    # Exactly one backend macro (set explicitly; the mplapack/mpblas archives are
-    # linked by file path below so their target macros do not leak in).
-    target_compile_definitions(${_exe} PRIVATE
-      ___MPLAPACK_BUILD_WITH_${_B}___ ___MPLAPACK_INTERNAL___)
-    target_include_directories(${_exe} PRIVATE
-      "${CMAKE_BINARY_DIR}/include"
-      "${CMAKE_SOURCE_DIR}/include"
-      "${CMAKE_SOURCE_DIR}/mpfrc++")
-    target_link_libraries(${_exe} PRIVATE
-      "$<TARGET_FILE:mplapack_${_b}>"
-      "$<TARGET_FILE:mplapack_mpfr>"
-      "$<TARGET_FILE:mpblas_${_b}>"
-      "$<TARGET_FILE:mpblas_mpfr>"
-      MPC::MPC MPFR::MPFR GMP::GMPXX
-      ${LAPACK_LIBRARIES} ${BLAS_LIBRARIES})   # reference Fortran LAPACK + BLAS
-    add_dependencies(${_exe}
-      mplapack_${_b} mplapack_mpfr mpblas_${_b} mpblas_mpfr)
-    if(MPLAPACK_GFORTRAN_LIBRARY)
-      target_link_libraries(${_exe} PRIVATE ${MPLAPACK_GFORTRAN_LIBRARY})
-    endif()
-    if(TARGET OpenMP::OpenMP_CXX)
-      target_link_libraries(${_exe} PRIVATE OpenMP::OpenMP_CXX)
-    endif()
-    if(MPLAPACK_LD_ALLOW_MULTIDEF)
-      target_link_options(${_exe} PRIVATE "-Wl,--allow-multiple-definition")
-    endif()
-    set_target_properties(${_exe} PROPERTIES
-      RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${_b}")
+    foreach(_src ${_compare_tests})
+      get_filename_component(_stem "${_src}" NAME_WE)
+      set(_exe "${_stem}_compare_${_variant}")
 
-    add_test(NAME compare_${_b}_${_stem} COMMAND ${_exe})
+      set(_extra "")
+      if(_stem STREQUAL "Mutils")
+        set(_extra "${_common}/ilaenv.cpp")   # Mutils.test needs the test ILAENV
+      endif()
+
+      add_executable(${_exe} "${_src}" ${_support} ${_extra})
+      # Exactly one backend macro (the merged archives are linked by file path
+      # below so their target macros do not leak in).
+      target_compile_definitions(${_exe} PRIVATE
+        ___MPLAPACK_BUILD_WITH_${_B}___ ___MPLAPACK_INTERNAL___)
+      if(_b STREQUAL "dd" AND MPLAPACK_HAS_FP_CONTRACT_OFF)
+        target_compile_options(${_exe} PRIVATE -ffp-contract=off)
+      endif()
+      target_include_directories(${_exe} PRIVATE
+        "${CMAKE_BINARY_DIR}/include"
+        "${CMAKE_SOURCE_DIR}/include"
+        "${CMAKE_SOURCE_DIR}/mpfrc++")
+
+      set(_backend_archives "$<TARGET_FILE:${_backend_library}>")
+      set(_backend_dependencies ${_backend_library})
+      if(NOT _b STREQUAL "mpfr")
+        list(APPEND _backend_archives "$<TARGET_FILE:mplapack_mpfr>")
+        list(APPEND _backend_dependencies mplapack_mpfr)
+      endif()
+      target_link_libraries(${_exe} PRIVATE
+        ${_backend_archives}
+        MPC::MPC MPFR::MPFR GMP::GMPXX
+        ${LAPACK_LIBRARIES} ${BLAS_LIBRARIES})
+      add_dependencies(${_exe} ${_backend_dependencies})
+      if(_b STREQUAL "dd" OR _b STREQUAL "qd")
+        target_link_libraries(${_exe} PRIVATE QD::QD)
+      endif()
+      if(_b STREQUAL "binary128" AND MPLAPACK_BINARY128_EXTRA_LIBS)
+        target_link_libraries(${_exe} PRIVATE ${MPLAPACK_BINARY128_EXTRA_LIBS})
+      endif()
+      if(MPLAPACK_GFORTRAN_LIBRARY)
+        target_link_libraries(${_exe} PRIVATE ${MPLAPACK_GFORTRAN_LIBRARY})
+      endif()
+      if(TARGET OpenMP::OpenMP_CXX)
+        target_link_libraries(${_exe} PRIVATE OpenMP::OpenMP_CXX)
+      endif()
+      if(MPLAPACK_LD_ALLOW_MULTIDEF)
+        target_link_options(${_exe} PRIVATE "-Wl,--allow-multiple-definition")
+      endif()
+      set_target_properties(${_exe} PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${_variant}")
+
+      add_test(NAME compare_${_variant}_${_stem} COMMAND ${_exe})
+    endforeach()
   endforeach()
 endforeach()

@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.20)
 # MPLAPACK — multiple-precision BLAS and LAPACK in C++.
 #
 # This is a modern CMake build that produces, for each enabled precision
-# backend, a pair of libraries (mpblas_<backend>, mplapack_<backend>) with
+# backend, one self-contained library (mplapack_<backend>) with
 # namespaced targets and an installed package config, so that downstream
 # projects can consume MPLAPACK either via find_package(mplapack) or via
 # FetchContent.  Precision dependencies (GMP/MPFR/MPC/QD) are located with
@@ -13,7 +13,7 @@ cmake_minimum_required(VERSION 3.20)
 
 # Keep version in sync with configure.ac (m4 MPLAPACK_VER_* and LAPACK_VER_*).
 project(mplapack
-  VERSION 2.2.1
+  VERSION 2.3.0
   DESCRIPTION "A multiple precision version of BLAS and LAPACK"
   HOMEPAGE_URL "https://github.com/nakatamaho/mplapack"
   LANGUAGES CXX C)
@@ -59,9 +59,9 @@ set(CMAKE_CXX_STANDARD ${MPLAPACK_CXX_STANDARD})
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS ${MPLAPACK_CXX_EXTENSIONS})
 
-# ABI (libtool -version-info 1:0:0) — independent of the package version.
-set(MPLAPACK_LIB_VERSION   "1.0.0")
-set(MPLAPACK_LIB_SOVERSION "1")
+# ABI (libtool -version-info 2:0:0) — independent of the package version.
+set(MPLAPACK_LIB_VERSION   "2.0.0")
+set(MPLAPACK_LIB_SOVERSION "2")
 
 # -----------------------------------------------------------------------------
 # Options
@@ -73,6 +73,11 @@ option(MPLAPACK_ENABLE_QD        "Build the QD (quad-double) backend"       ON)
 option(MPLAPACK_ENABLE_DD        "Build the DD (double-double) backend"     ON)
 option(MPLAPACK_ENABLE_BINARY128 "Build the binary128 backend"             ON)
 option(MPLAPACK_ENABLE_BINARY80  "Build the binary80 backend (x86 only)"  OFF)
+option(MPLAPACK_ENABLE_OPT       "Build optimized libraries"                ON)
+option(MPLAPACK_ENABLE_CUDA      "Build the DD CUDA accelerator library"    OFF)
+option(MPLAPACK_ENABLE_OPENCL    "Build the binary128 OpenCL library"       OFF)
+set(MPLAPACK_CUDA_ARCHITECTURES "70;80;90" CACHE STRING
+    "CUDA architectures for mplapack_dd_opt_cuda")
 
 option(MPLAPACK_BUILD_EXAMPLES   "Build the examples"                      OFF)
 option(MPLAPACK_BUILD_TESTS      "Build the test suite"                    OFF)
@@ -95,6 +100,27 @@ if(MPLAPACK_ENABLE_MPFR)
 endif()
 if(MPLAPACK_ENABLE_QD OR MPLAPACK_ENABLE_DD)
   find_package(QD REQUIRED)
+endif()
+if(MPLAPACK_ENABLE_CUDA)
+  if(NOT MPLAPACK_ENABLE_DD)
+    message(FATAL_ERROR "MPLAPACK_ENABLE_CUDA requires MPLAPACK_ENABLE_DD=ON")
+  endif()
+  find_package(CUDAToolkit REQUIRED)
+  set(CMAKE_CUDA_ARCHITECTURES "${MPLAPACK_CUDA_ARCHITECTURES}")
+  if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    # glibc 2.42 exposes C23 rsqrt declarations that conflict with CUDA 13.1.
+    # X/Open keeps the POSIX declarations required by the C++ standard library.
+    string(APPEND CMAKE_CUDA_FLAGS_INIT
+      " -U_GNU_SOURCE -D_XOPEN_SOURCE=700")
+  endif()
+  enable_language(CUDA)
+endif()
+if(MPLAPACK_ENABLE_OPENCL)
+  if(NOT MPLAPACK_ENABLE_BINARY128)
+    message(FATAL_ERROR
+      "MPLAPACK_ENABLE_OPENCL requires MPLAPACK_ENABLE_BINARY128=ON")
+  endif()
+  find_package(OpenCL REQUIRED)
 endif()
 
 find_package(OpenMP QUIET COMPONENTS CXX)
@@ -158,58 +184,131 @@ check_cxx_compiler_flag("-ffp-contract=off" MPLAPACK_HAS_FP_CONTRACT_OFF)
 # -----------------------------------------------------------------------------
 if(MPLAPACK_ENABLE_GMP)
   mplapack_add_backend(gmp ___MPLAPACK_BUILD_WITH_GMP___)
-  target_link_libraries(mpblas_gmp   PUBLIC GMP::GMPXX GMP::GMP)
   target_link_libraries(mplapack_gmp PUBLIC GMP::GMPXX GMP::GMP)
-  list(APPEND MPLAPACK_INSTALL_TARGETS mpblas_gmp mplapack_gmp)
+  list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_gmp)
+  if(MPLAPACK_ENABLE_OPT)
+    mplapack_add_opt_backend(gmp)
+    target_link_libraries(mplapack_gmp_opt PUBLIC GMP::GMPXX GMP::GMP)
+    list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_gmp_opt)
+  endif()
 endif()
 
 if(MPLAPACK_ENABLE_MPFR)
   mplapack_add_backend(mpfr ___MPLAPACK_BUILD_WITH_MPFR___)
   # mpfrc++ headers (mpreal.h / mpcomplex.h) are bundled in-tree.
-  foreach(tgt mpblas_mpfr mplapack_mpfr)
-    target_include_directories(${tgt} PUBLIC
+  target_include_directories(mplapack_mpfr PUBLIC
       "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/mpfrc++>")
-    target_link_libraries(${tgt} PUBLIC MPC::MPC MPFR::MPFR GMP::GMPXX GMP::GMP)
-  endforeach()
-  list(APPEND MPLAPACK_INSTALL_TARGETS mpblas_mpfr mplapack_mpfr)
+  target_link_libraries(mplapack_mpfr PUBLIC MPC::MPC MPFR::MPFR GMP::GMPXX GMP::GMP)
+  list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_mpfr)
+  if(MPLAPACK_ENABLE_OPT)
+    mplapack_add_opt_backend(mpfr)
+    target_include_directories(mplapack_mpfr_opt PUBLIC
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/mpfrc++>")
+    target_link_libraries(mplapack_mpfr_opt PUBLIC
+        MPC::MPC MPFR::MPFR GMP::GMPXX GMP::GMP)
+    list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_mpfr_opt)
+  endif()
 endif()
 
 if(MPLAPACK_ENABLE_QD)
   mplapack_add_backend(qd ___MPLAPACK_BUILD_WITH_QD___)
-  target_link_libraries(mpblas_qd   PUBLIC QD::QD)
   target_link_libraries(mplapack_qd PUBLIC QD::QD)
-  list(APPEND MPLAPACK_INSTALL_TARGETS mpblas_qd mplapack_qd)
+  list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_qd)
+  if(MPLAPACK_ENABLE_OPT)
+    mplapack_add_opt_backend(qd)
+    target_link_libraries(mplapack_qd_opt PUBLIC QD::QD)
+    list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_qd_opt)
+  endif()
 endif()
 
 if(MPLAPACK_ENABLE_DD)
   mplapack_add_backend(dd ___MPLAPACK_BUILD_WITH_DD___)
-  target_link_libraries(mpblas_dd   PUBLIC QD::QD)
   target_link_libraries(mplapack_dd PUBLIC QD::QD)
-  # DD requires FMA contraction to be disabled for correctness.
-  if(MPLAPACK_HAS_FP_CONTRACT_OFF)
-    target_compile_options(mpblas_dd   PRIVATE -ffp-contract=off)
-    target_compile_options(mplapack_dd PRIVATE -ffp-contract=off)
+  mplapack_configure_dd_arithmetic(mplapack_dd)
+  list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_dd)
+  if(MPLAPACK_ENABLE_OPT)
+    mplapack_add_opt_backend(dd)
+    target_link_libraries(mplapack_dd_opt PUBLIC QD::QD)
+    mplapack_configure_dd_arithmetic(mplapack_dd_opt)
+    list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_dd_opt)
   endif()
-  list(APPEND MPLAPACK_INSTALL_TARGETS mpblas_dd mplapack_dd)
+endif()
+
+if(MPLAPACK_ENABLE_CUDA)
+  file(GLOB _mplapack_cuda_sources CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/dd/cuda/*.cu")
+  # Split kernels are textually included by the six CUDA translation units.
+  list(FILTER _mplapack_cuda_sources EXCLUDE REGEX
+    "/(Rgemm_(fermi|tesla)_(NN|NT|TN|TT)_[0p]|Rsyrk_[NT][LU]_[0p])\\.cu$")
+  # cuda/Rgemm.cu and cuda/Rsyrk.cu shadow the same-stem CPU/reference files.
+  mplapack_add_accelerator_backend(dd cuda ${_mplapack_cuda_sources})
+  target_sources(mplapack_dd_opt_cuda PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/dd/cuda/dd_real_cuda.h")
+  target_include_directories(mplapack_dd_opt_cuda PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/dd/cuda")
+  target_link_libraries(mplapack_dd_opt_cuda PUBLIC QD::QD CUDA::cudart)
+  mplapack_configure_dd_arithmetic(mplapack_dd_opt_cuda)
+  set_target_properties(mplapack_dd_opt_cuda PROPERTIES
+    CUDA_ARCHITECTURES "${MPLAPACK_CUDA_ARCHITECTURES}"
+    CUDA_STANDARD 17
+    CUDA_STANDARD_REQUIRED ON)
+  mplapack_add_unique_symbol_post_build(mplapack_dd_opt_cuda)
+  list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_dd_opt_cuda)
 endif()
 
 if(MPLAPACK_ENABLE_DOUBLE)
   mplapack_add_backend(double ___MPLAPACK_BUILD_WITH_DOUBLE___)
-  list(APPEND MPLAPACK_INSTALL_TARGETS mpblas_double mplapack_double)
+  list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_double)
+  if(MPLAPACK_ENABLE_OPT)
+    mplapack_add_opt_backend(double)
+    list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_double_opt)
+  endif()
 endif()
 
 if(MPLAPACK_ENABLE_BINARY80)
   mplapack_add_backend(binary80 ___MPLAPACK_BUILD_WITH_BINARY80___)
-  list(APPEND MPLAPACK_INSTALL_TARGETS mpblas_binary80 mplapack_binary80)
+  list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_binary80)
+  if(MPLAPACK_ENABLE_OPT)
+    mplapack_add_opt_backend(binary80)
+    list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_binary80_opt)
+  endif()
 endif()
 
 if(MPLAPACK_ENABLE_BINARY128)
   mplapack_add_backend(binary128 ___MPLAPACK_BUILD_WITH_BINARY128___)
   if(MPLAPACK_BINARY128_EXTRA_LIBS)
-    target_link_libraries(mpblas_binary128   PUBLIC ${MPLAPACK_BINARY128_EXTRA_LIBS})
     target_link_libraries(mplapack_binary128 PUBLIC ${MPLAPACK_BINARY128_EXTRA_LIBS})
   endif()
-  list(APPEND MPLAPACK_INSTALL_TARGETS mpblas_binary128 mplapack_binary128)
+  list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_binary128)
+  if(MPLAPACK_ENABLE_OPT)
+    mplapack_add_opt_backend(binary128)
+    if(MPLAPACK_BINARY128_EXTRA_LIBS)
+      target_link_libraries(mplapack_binary128_opt PUBLIC
+        ${MPLAPACK_BINARY128_EXTRA_LIBS})
+    endif()
+    list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_binary128_opt)
+  endif()
+endif()
+
+if(MPLAPACK_ENABLE_OPENCL)
+  file(GLOB _mplapack_opencl_sources CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/binary128/opencl/*.cpp")
+  set_source_files_properties(${_mplapack_opencl_sources} PROPERTIES
+    COMPILE_DEFINITIONS CL_TARGET_OPENCL_VERSION=120)
+  mplapack_add_accelerator_backend(
+    binary128 opencl ${_mplapack_opencl_sources})
+  target_sources(mplapack_binary128_opt_opencl PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/binary128/opencl/OclHelper.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/binary128/opencl/cpp_kernel.h")
+  target_include_directories(mplapack_binary128_opt_opencl PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}/mpblas/optimized/binary128/opencl")
+  target_link_libraries(mplapack_binary128_opt_opencl PUBLIC OpenCL::OpenCL)
+  if(MPLAPACK_BINARY128_EXTRA_LIBS)
+    target_link_libraries(mplapack_binary128_opt_opencl PUBLIC
+      ${MPLAPACK_BINARY128_EXTRA_LIBS})
+  endif()
+  mplapack_add_unique_symbol_post_build(mplapack_binary128_opt_opencl)
+  list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_binary128_opt_opencl)
 endif()
 
 if(NOT MPLAPACK_INSTALL_TARGETS)
@@ -225,6 +324,25 @@ if(MPLAPACK_BUILD_EXAMPLES)
 endif()
 if(MPLAPACK_BUILD_TESTS)
   enable_testing()
+  foreach(b gmp mpfr qd dd double binary80 binary128)
+    if(TARGET mplapack_${b})
+      add_test(NAME unique_symbols_${b}
+        COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/misc/check_unique_symbols.sh"
+                "$<TARGET_FILE:mplapack_${b}>")
+    endif()
+    if(TARGET mplapack_${b}_opt)
+      add_test(NAME unique_symbols_${b}_opt
+        COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/misc/check_unique_symbols.sh"
+                "$<TARGET_FILE:mplapack_${b}_opt>")
+    endif()
+  endforeach()
+  foreach(accelerator dd_opt_cuda binary128_opt_opencl)
+    if(TARGET mplapack_${accelerator})
+      add_test(NAME unique_symbols_${accelerator}
+        COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/misc/check_unique_symbols.sh"
+                "$<TARGET_FILE:mplapack_${accelerator}>")
+    endif()
+  endforeach()
   # Shared by both test directories: the override libraries/objects rely on the
   # linker keeping the first (overriding) definition of duplicated symbols.
   include(CheckLinkerFlag)
@@ -237,6 +355,7 @@ if(MPLAPACK_BUILD_TESTS)
   add_subdirectory(mpblas/test)
   add_subdirectory(mplapack/test)
   add_subdirectory(mplapack/test/compare)
+  add_subdirectory(cmake/tests)
 endif()
 if(MPLAPACK_BUILD_BENCHMARKS)
   add_subdirectory(benchmark)

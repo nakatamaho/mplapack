@@ -69,11 +69,11 @@ libmxerbla_override_la_SOURCES = ../../../../mpblas/test/common/Mxerbla.override
 libmxerbla_override_la_LDFLAGS = -no-undefined
 
 test_libdepends = $(mplibs) $(reflapack) $(refblas) -Wl,--allow-multiple-definition
-libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,.libs/libmxerbla_override.a,$(top_builddir)/mpblas/reference/.libs/libmpblas_qd.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_qd.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_mpfr.a,$(top_builddir)/mpblas/reference/.libs/libmpblas_mpfr.a,--no-whole-archive
+libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,.libs/libmxerbla_override.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_qd.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_mpfr.a,--no-whole-archive
 else
 test_srcdepends += ../../../../mpblas/test/common/Mxerbla.override.cpp
 test_libdepends = $(mplibs) $(reflapack) $(refblas)
-libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_qd -lmplapack_mpfr -L$(top_builddir)/mpblas/reference -lmpblas_qd -lmpblas_mpfr
+libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_qd -lmplapack_mpfr
 endif
 
 Mutils_test_qd_SOURCES  = ../common/Mutils.test.cpp $(test_srcdepends) ../common/ilaenv.cpp

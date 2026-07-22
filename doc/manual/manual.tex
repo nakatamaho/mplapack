@@ -703,7 +703,7 @@ Then, one can compile on one own following in the Docker environment as follows:
 \begin{verbatim}
 $ g++ -O2 -I/home/docker/MPLAPACK/include -I/home/docker/MPLAPACK/include/mplapack \
 Rgemm_mpfr.cpp -Wl,--rpath=/home/docker/MPLAPACK/lib -L/home/docker/MPLAPACK/lib \
--lmpblas_mpfr -lgmp -lmpfr -lmpc
+-lmplapack_mpfr -lgmp -lmpfr -lmpc
 \end{verbatim}
 If the compilation is done successfully, one can run as follows:
 {\fontsize{9.5pt}{0.4cm}\selectfont
@@ -856,56 +856,56 @@ As a summary, we show how we compile and run binary64, FP80, binary128, double-d
 \begin{verbatim}
 $ g++ -O2 -I/home/docker/MPLAPACK/include -I/home/docker/MPLAPACK/include/mplapack \
 Rgemm_double.cpp -Wl,--rpath=/home/docker/MPLAPACK/lib \
--L/home/docker/MPLAPACK/lib -lmpblas_double
+-L/home/docker/MPLAPACK/lib -lmplapack_double
 $ ./a.out
 \end{verbatim}
 \item FP80 (extended double) version
 \begin{verbatim}
 $ g++ -O2 -I/home/docker/MPLAPACK/include -I/home/docker/MPLAPACK/include/mplapack \
 Rgemm__Float64x.cpp -Wl,--rpath=/home/docker/MPLAPACK/lib \
--L/home/docker/MPLAPACK/lib -lmpblas__Float64x
+-L/home/docker/MPLAPACK/lib -lmplapack_binary80
 $ ./a.out
 \end{verbatim}
 \item binary128 version
 \begin{verbatim}
 $ g++ -O2 -I/home/docker/MPLAPACK/include -I/home/docker/MPLAPACK/include/mplapack \
 Rgemm__Float128.cpp -Wl,--rpath=/home/docker/MPLAPACK/lib \
--L/home/docker/MPLAPACK/lib -lmpblas__Float128
+-L/home/docker/MPLAPACK/lib -lmplapack_binary128
 $ ./a.out
 \end{verbatim}
 or (on macOS, mingw64 and CentOS7 amd64)
 \begin{verbatim}
 $ g++ -O2 -I/home/docker/MPLAPACK/include -I/home/docker/MPLAPACK/include/mplapack \
 Rgemm__Float128.cpp -Wl,--rpath=/home/docker/MPLAPACK/lib \
--L/home/docker/MPLAPACK/lib -lmpblas__Float128 -lquadmath
+-L/home/docker/MPLAPACK/lib -lmplapack_binary128 -lquadmath
 $ ./a.out
 \end{verbatim}
 \item double-double version
 \begin{verbatim}
 $ g++ -O2 -I/home/docker/MPLAPACK/include -I/home/docker/MPLAPACK/include/mplapack \
 Rgemm_dd.cpp -Wl,--rpath=/home/docker/MPLAPACK/lib \ 
--L/home/docker/MPLAPACK/lib -lmpblas_dd -lqd
+-L/home/docker/MPLAPACK/lib -lmplapack_dd -lqd
 $ ./a.out
 \end{verbatim}
 \item quad-double version
 \begin{verbatim}
 $ g++ -O2 -I/home/docker/MPLAPACK/include -I/home/docker/MPLAPACK/include/mplapack \
 Rgemm_qd.cpp -Wl,--rpath=/home/docker/MPLAPACK/lib \
--L/home/docker/MPLAPACK/lib -lmpblas_qd -lqd
+-L/home/docker/MPLAPACK/lib -lmplapack_qd -lqd
 $ ./a.out
 \end{verbatim}
 \item GMP version
 \begin{verbatim}
 $ g++ -O2 -I/home/docker/MPLAPACK/include -I/home/docker/MPLAPACK/include/mplapack \
 Rgemm_gmp.cpp -Wl,--rpath=/home/docker/MPLAPACK/lib \
--L/home/docker/MPLAPACK/lib -lmpblas_gmp -lgmpxx -lgmp
+-L/home/docker/MPLAPACK/lib -lmplapack_gmp -lgmpxx -lgmp
 $ ./a.out
 \end{verbatim}
 \item MPFR version
 \begin{verbatim}
 $ g++ -O2 -I/home/docker/MPLAPACK/include -I/home/docker/MPLAPACK/include/mplapack \
 Rgemm_mpfr.cpp -Wl,--rpath=/home/docker/MPLAPACK/lib \
--L/home/docker/MPLAPACK/lib -lmpblas_mpfr -lmpfr -lmpc -lgmp
+-L/home/docker/MPLAPACK/lib -lmplapack_mpfr -lmpfr -lmpc -lgmp
 $ ./a.out
 \end{verbatim}
 \end{itemize}
@@ -1078,7 +1078,7 @@ Then, one can compile on one own following in the Docker environment as follows:
 \begin{verbatim}
 $ g++ -O2 -I/home/docker/MPLAPACK/include -I/home/docker/MPLAPACK/include/mplapack \
 Cgemm_gmp.cpp -Wl,--rpath=/home/docker/MPLAPACK/lib -L/home/docker/MPLAPACK/lib \
--lmpblas_gmp -lgmp
+-lmplapack_gmp -lgmp
 \end{verbatim}
 Then, you can run as follows:
 {\tiny
@@ -1342,16 +1342,16 @@ In any case, the calculations are correct up to specified precisions.
 
 \subsubsection{OpenMP accelerated MPBLAS}
 We have provided reference implementation, and a simple OpenMP accelerated version for MPBLAS, shown in Table~\ref{mpblasroutinesopt}. Even though the number of optimized routines is small; however, acceleration of {\tt Rgemm} is significant as it impacts the performance.
-To change linking against the optimized version, we must add ``{\tt \_opt}" for {\tt MPBLAS} library as follows:
+To select the optimized flavor, add ``{\tt \_opt}" to the unified {\tt MPLAPACK} library name as follows:
 \begin{itemize}
-    \item {\tt -lmpblas\_mpfr} $\rightarrow$ {\tt -lmpblas\_mpfr\_opt} 
-    \item {\tt -lmpblas\_gmp} $\rightarrow$ {\tt -lmpblas\_gmp\_opt} 
-    \item {\tt -lmpblas\_double} $\rightarrow$ {\tt -lmpblas\_double\_opt} 
-    \item {\tt -lmpblas\_\_Float128} $\rightarrow$ {\tt -lmpblas\_\_Float128\_opt} 
-    \item {\tt -lmpblas\_dd} $\rightarrow$ {\tt -lmpblas\_dd\_opt} 
-    \item {\tt -lmpblas\_qd} $\rightarrow$ {\tt -lmpblas\_qd\_opt} 
-    \item {\tt -lmpblas\_\_Float128} $\rightarrow$ {\tt -lmpblas\_\_Float128\_opt} 
-    \item {\tt -lmpblas\_\_Float64x} $\rightarrow$ {\tt -lmpblas\_\_Float64x\_opt}.
+    \item {\tt -lmplapack\_mpfr} $\rightarrow$ {\tt -lmplapack\_mpfr\_opt}
+    \item {\tt -lmplapack\_gmp} $\rightarrow$ {\tt -lmplapack\_gmp\_opt}
+    \item {\tt -lmplapack\_double} $\rightarrow$ {\tt -lmplapack\_double\_opt}
+    \item {\tt -lmplapack\_binary128} $\rightarrow$ {\tt -lmplapack\_binary128\_opt}
+    \item {\tt -lmplapack\_dd} $\rightarrow$ {\tt -lmplapack\_dd\_opt}
+    \item {\tt -lmplapack\_qd} $\rightarrow$ {\tt -lmplapack\_qd\_opt}
+    \item {\tt -lmplapack\_binary128} $\rightarrow$ {\tt -lmplapack\_binary128\_opt}
+    \item {\tt -lmplapack\_binary80} $\rightarrow$ {\tt -lmplapack\_binary80\_opt}.
 \end{itemize}
 Besides, we must add the ``{\tt -fopenmp}" flag when compiling and linking.
 
@@ -1360,7 +1360,7 @@ We can compile the demo program for the {\tt MPFR} version and link it against t
 $ g++ -fopenmp -O2 -I/home/docker/MPLAPACK/include \
 -I/home/docker/MPLAPACK/include/mplapack \
 Rgemm_mpfr.cpp -Wl,--rpath=/home/docker/MPLAPACK/lib -L/home/docker/MPLAPACK/lib \
--lmpblas_mpfr_opt -lmpfr -lmpc -lgmp
+-lmplapack_mpfr_opt -lmpfr -lmpc -lgmp
 $ ./a.out
 ...
 \end{verbatim}
@@ -1382,7 +1382,7 @@ Finally, to link against the CUDA version, we compile the program as follows:
 $ g++ -O2 -I/home/docker/MPLAPACK_CUDA/include \
 -I/home/docker/MPLAPACK_CUDA/include/mplapack Rgemm_dd.cpp \
 -Wl,--rpath=/home/docker/MPLAPACK_CUDA/lib -L/home/docker/MPLAPACK_CUDA/lib \
--lmpblas_dd_cuda -lmpblas_dd -lqd \
+-lmplapack_dd_opt_cuda -lqd \
 -L/usr/local/cuda/lib64/ -lcudart
 $ ./a.out
 ...
@@ -1528,7 +1528,7 @@ One can input the list and save it as {\tt Rsyev\_test\_gmp.cpp}, or you can fin
 \begin{verbatim}
 $ g++ -O2 -I/home/docker/MPLAPACK/include -I/home/docker/MPLAPACK/include/mplapack \
 Rsyev_test_gmp.cpp -Wl,--rpath=/home/docker/MPLAPACK/lib -L/home/docker/MPLAPACK/lib \
--lmplapack_gmp -lmpblas_gmp -lgmpxx -lgmp
+-lmplapack_gmp -lgmpxx -lgmp
 \end{verbatim}
 Finally, you can run as follows:
 {\fontsize{9.5pt}{0.4cm}\selectfont
@@ -1598,14 +1598,14 @@ As a summary, we show how we compile and run binary64, FP80, binary128, double-d
 \begin{verbatim}
 $ g++ -O2 -I/home/docker/MPLAPACK/include -I/home/docker/MPLAPACK/include/mplapack \
 Rsyev_test_double.cpp -Wl,--rpath=/home/docker/MPLAPACK/lib \
--L/home/docker/MPLAPACK/lib -lmplapack_double -lmpblas_double
+-L/home/docker/MPLAPACK/lib -lmplapack_double
 $ ./a.out
 \end{verbatim}
 \item FP80 (extended double) version
 \begin{verbatim}
 $ g++ -O2 -I/home/docker/MPLAPACK/include -I/home/docker/MPLAPACK/include/mplapack \
 Rsyev_test__Float64x.cpp -Wl,--rpath=/home/docker/MPLAPACK/lib \
--L/home/docker/MPLAPACK/lib -lmplapack__Float64x -lmpblas__Float64x
+-L/home/docker/MPLAPACK/lib -lmplapack_binary80
 $ ./a.out
 \end{verbatim}
 \item binary128 version
@@ -1613,7 +1613,7 @@ $ ./a.out
 $ g++ -O2 -I/home/docker/MPLAPACK/include -I/home/docker/MPLAPACK/include/mplapack \
 Rsyev_test__Float128.cpp -Wl,--rpath=/home/docker/MPLAPACK/lib \
 -L/home/docker/MPLAPACK/lib \
--lmplapack__Float128 -lmpblas__Float128
+-lmplapack_binary128
 $ ./a.out
 \end{verbatim}
 or (on macOS, mingw64 and CentOS7 amd64)
@@ -1621,35 +1621,35 @@ or (on macOS, mingw64 and CentOS7 amd64)
 $ g++ -O2 -I/home/docker/MPLAPACK/include -I/home/docker/MPLAPACK/include/mplapack \
 Rsyev_test__Float128.cpp -Wl,--rpath=/home/docker/MPLAPACK/lib \
 -L/home/docker/MPLAPACK/lib \
--lmplapack__Float128 -lmpblas__Float128 -lquadmath
+-lmplapack_binary128 -lquadmath
 $ ./a.out
 \end{verbatim}
 \item double-double version
 \begin{verbatim}
 $ g++ -O2 -I/home/docker/MPLAPACK/include -I/home/docker/MPLAPACK/include/mplapack \
 Rsyev_test_dd.cpp -Wl,--rpath=/home/docker/MPLAPACK/lib -L/home/docker/MPLAPACK/lib \
--lmplapack_dd -lmpblas_dd -lqd
+-lmplapack_dd -lqd
 $ ./a.out
 \end{verbatim}
 \item quad-double version
 \begin{verbatim}
 $ g++ -O2 -I/home/docker/MPLAPACK/include -I/home/docker/MPLAPACK/include/mplapack \
 Rsyev_test_qd.cpp -Wl,--rpath=/home/docker/MPLAPACK/lib -L/home/docker/MPLAPACK/lib \
--lmplapack_qd -lmpblas_qd -lqd
+-lmplapack_qd -lqd
 $ ./a.out
 \end{verbatim}
 \item GMP version
 \begin{verbatim}
 $ g++ -O2 -I/home/docker/MPLAPACK/include -I/home/docker/MPLAPACK/include/mplapack \
 Rsyev_test_gmp.cpp -Wl,--rpath=/home/docker/MPLAPACK/lib -L/home/docker/MPLAPACK/lib \
--lmplapack_gmp -lmpblas_gmp -lgmpxx -lgmp
+-lmplapack_gmp -lgmpxx -lgmp
 $ ./a.out
 \end{verbatim}
 \item MPFR version
 \begin{verbatim}
 $ g++ -O2 -I/home/docker/MPLAPACK/include -I/home/docker/MPLAPACK/include/mplapack \
 Rsyev_test_mpfr.cpp -Wl,--rpath=/home/docker/MPLAPACK/lib -L/home/docker/MPLAPACK/lib \
--lmplapack_mpfr -lmpblas_mpfr -lmpfr -lmpc -lgmp
+-lmplapack_mpfr -lmpfr -lmpc -lgmp
 $ ./a.out
 \end{verbatim}
 \end{itemize}
@@ -1792,7 +1792,7 @@ One can input the list and save it as {\tt Cheev\_test\_gmp.cpp}, or you can fin
 \begin{verbatim}
 $ g++ -O2 -I/home/docker/MPLAPACK/include -I/home/docker/MPLAPACK/include/mplapack \
 Cheev_test_gmp.cpp -Wl,--rpath=/home/docker/MPLAPACK/lib -L/home/docker/MPLAPACK/lib \
--lmplapack_gmp -lmpblas_gmp -lgmpxx -lgmp
+-lmplapack_gmp -lgmpxx -lgmp
 \end{verbatim}
 Finally, you can run as follows:
 {\fontsize{7.5pt}{0.4cm}\selectfont
@@ -1871,14 +1871,14 @@ As a summary, we show how we compile and run binary64, FP80, binary128, double-d
 \begin{verbatim}
 $ g++ -O2 -I/home/docker/MPLAPACK/include -I/home/docker/MPLAPACK/include/mplapack \
 Cheev_test_double.cpp -Wl,--rpath=/home/docker/MPLAPACK/lib \
--L/home/docker/MPLAPACK/lib -lmplapack_double -lmpblas_double
+-L/home/docker/MPLAPACK/lib -lmplapack_double
 $ ./a.out
 \end{verbatim}
 \item FP80 (extended double) version
 \begin{verbatim}
 $ g++ -O2 -I/home/docker/MPLAPACK/include -I/home/docker/MPLAPACK/include/mplapack \
 Cheev_test__Float64x.cpp -Wl,--rpath=/home/docker/MPLAPACK/lib \
--L/home/docker/MPLAPACK/lib -lmplapack__Float64x -lmpblas__Float64x
+-L/home/docker/MPLAPACK/lib -lmplapack_binary80
 $ ./a.out
 \end{verbatim}
 \item binary128 version
@@ -1886,7 +1886,7 @@ $ ./a.out
 $ g++ -O2 -I/home/docker/MPLAPACK/include -I/home/docker/MPLAPACK/include/mplapack \
 Cheev_test__Float128.cpp -Wl,--rpath=/home/docker/MPLAPACK/lib \
 -L/home/docker/MPLAPACK/lib \
--lmplapack__Float128 -lmpblas__Float128
+-lmplapack_binary128
 $ ./a.out
 \end{verbatim}
 or (on macOS, mingw64 and CentOS7 amd64)
@@ -1894,35 +1894,35 @@ or (on macOS, mingw64 and CentOS7 amd64)
 $ g++ -O2 -I/home/docker/MPLAPACK/include -I/home/docker/MPLAPACK/include/mplapack \
 Cheev_test__Float128.cpp -Wl,--rpath=/home/docker/MPLAPACK/lib \
 -L/home/docker/MPLAPACK/lib \
--lmplapack__Float128 -lmpblas__Float128 -lquadmath
+-lmplapack_binary128 -lquadmath
 $ ./a.out
 \end{verbatim}
 \item double-double version
 \begin{verbatim}
 $ g++ -O2 -I/home/docker/MPLAPACK/include -I/home/docker/MPLAPACK/include/mplapack \
 Cheev_test_dd.cpp -Wl,--rpath=/home/docker/MPLAPACK/lib -L/home/docker/MPLAPACK/lib \
--lmplapack_dd -lmpblas_dd -lqd
+-lmplapack_dd -lqd
 $ ./a.out
 \end{verbatim}
 \item quad-double version
 \begin{verbatim}
 $ g++ -O2 -I/home/docker/MPLAPACK/include -I/home/docker/MPLAPACK/include/mplapack \
 Cheev_test_qd.cpp -Wl,--rpath=/home/docker/MPLAPACK/lib -L/home/docker/MPLAPACK/lib \
--lmplapack_qd -lmpblas_qd -lqd
+-lmplapack_qd -lqd
 $ ./a.out
 \end{verbatim}
 \item GMP version
 \begin{verbatim}
 $ g++ -O2 -I/home/docker/MPLAPACK/include -I/home/docker/MPLAPACK/include/mplapack \
 Cheev_test_gmp.cpp -Wl,--rpath=/home/docker/MPLAPACK/lib -L/home/docker/MPLAPACK/lib \
--lmplapack_gmp -lmpblas_gmp -lgmpxx -lgmp
+-lmplapack_gmp -lgmpxx -lgmp
 $ ./a.out
 \end{verbatim}
 \item MPFR version
 \begin{verbatim}
 $ g++ -O2 -I/home/docker/MPLAPACK/include -I/home/docker/MPLAPACK/include/mplapack \
 Cheev_test_mpfr.cpp -Wl,--rpath=/home/docker/MPLAPACK/lib -L/home/docker/MPLAPACK/lib \
--lmplapack_mpfr -lmpblas_mpfr -lmpfr -lmpc -lgmp
+-lmplapack_mpfr -lmpfr -lmpc -lgmp
 $ ./a.out
 \end{verbatim}
 \end{itemize}
@@ -2061,7 +2061,7 @@ int main() {
 One can compile this source code by:
 \begin{verbatim}
 $ g++ -O2 -I/home/docker/MPLAPACK/include -I/home/docker/MPLAPACK/include/mplapack \
-Rgees_test_dd.cpp -L/home/docker/MPLAPACK/lib -lmplapack_dd -lmpblas_dd -lqd
+Rgees_test_dd.cpp -L/home/docker/MPLAPACK/lib -lmplapack_dd -lqd
 \end{verbatim}
 The output of the executable is the following:
 {\footnotesize
@@ -2301,7 +2301,7 @@ One can compile this source code by:
 \begin{verbatim}
 $ g++ -O2 -I/home/docker/MPLAPACK/include -I/home/docker/MPLAPACK/include/mplapack \
 Cgees_test_dd.cpp -Wl,--rpath=/home/docker/MPLAPACK/lib -L/home/docker/MPLAPACK/lib \
--lmplapack_dd -lmpblas_dd -lqd
+-lmplapack_dd -lqd
 \end{verbatim}
 The output of the executable is the following:
 {\fontsize{8.5pt}{0.4cm}\selectfont
@@ -2590,7 +2590,7 @@ Furthermore, compile this source code by:
 \begin{verbatim}
 $ g++ -O2 -I/home/docker/MPLAPACK/include -I/home/docker/MPLAPACK/include/mplapack \
 Rgeev_test_qd.cpp -Wl,--rpath=/home/docker/MPLAPACK/lib -L/home/docker/MPLAPACK/lib \
--lmplapack_qd -lmpblas_qd -lqd
+-lmplapack_qd -lqd
 \end{verbatim}
 The output of the executable is the following:
 {\footnotesize
@@ -2872,7 +2872,7 @@ and compile this source code by:
 \begin{verbatim}
 $ g++ -O2 -I/home/docker/MPLAPACK/include -I/home/docker/MPLAPACK/include/mplapack \
 Cgeev_test_qd.cpp -Wl,--rpath=/home/docker/MPLAPACK/lib -L/home/docker/MPLAPACK/lib \
--lmplapack_qd -lmpblas_qd -lqd
+-lmplapack_qd -lqd
 \end{verbatim}
 The output of the executable is the following:
 {\footnotesize
@@ -3079,7 +3079,7 @@ In {\tt dd\_real} case, you can compile {\tt dd\_real} version by:
 \begin{verbatim}
 $ g++ -O2 -I/home/docker/MPLAPACK/include -I/home/docker/MPLAPACK/include/mplapack \
 Rgesvd_test_dd.cpp -Wl,--rpath=/home/docker/MPLAPACK/lib -L/home/docker/MPLAPACK/lib \
--lmplapack_dd -lmpblas_dd -lqd
+-lmplapack_dd -lqd
 \end{verbatim}
 The output of the executable is the following:
 {\footnotesize
@@ -3363,7 +3363,7 @@ In {\tt dd\_real} case, you can compile {\tt dd\_real} version by:
 \begin{verbatim}
 $ g++ -O2 -I/home/docker/MPLAPACK/include -I/home/docker/MPLAPACK/include/mplapack \
 Cgesvd_test_dd.cpp -Wl,--rpath=/home/docker/MPLAPACK/lib -L/home/docker/MPLAPACK/lib \
--lmplapack_dd -lmpblas_dd -lqd
+-lmplapack_dd -lqd
 \end{verbatim}
 The output of the executable is the following:
 {\fontsize{7pt}{0.4cm}\selectfont
@@ -3556,7 +3556,7 @@ The output is the following:
 $ cd /home/docker/mplapack/examples/mplapack/00_LinearEquations
 $ g++ -O2 -I/home/docker/MPLAPACK/include -I/home/docker/MPLAPACK/include/mplapack \
 Rgetri_Hilbert_mpfr.cpp -Wl,--rpath=/home/docker/MPLAPACK/lib \ 
--L/home/docker/MPLAPACK/lib -lmplapack_mpfr -lmpblas_mpfr -lmpfr -lmpc -lgmp
+-L/home/docker/MPLAPACK/lib -lmplapack_mpfr -lmpfr -lmpc -lgmp
 $ ./a.out | grep InfnromL 
 InfnormL:(ainv * a - I)=+0.0000000000000000e+00
 InfnormL:(ainv * a - I)=+0.0000000000000000e+00
@@ -3835,15 +3835,15 @@ Following is the basic strategy for using MPLAPACK routines.
 \item Look for {\tt Rggsvd} prototype definition of MPLAPACK and change the variables appropriately to fit MPLAPACK.
 \end{enumerate}
 
-\subsection{How to link MPBLAS and MPLAPACK statically}
-In this subsection, we show how to link MPBLAS and MPLAPACK statically.
-For MPBLAS, we need to specify the full path of the library name and enclose it with {\tt -Wl,--whole-archive} and {\tt --no-whole-archive}. Note that {\tt -Wl,--whole-archive} is necessary as we call some initialization function at runtime; otherwise, MPBLAS will not work correctly.
+\subsection{How to link a unified MPLAPACK library statically}
+The unified archive contains both MPBLAS and MPLAPACK entry points.
+Specify the full archive path once and enclose it with {\tt -Wl,--whole-archive} and {\tt --no-whole-archive}; this retains the runtime initialization objects.
 For example, when one builds {\tt Rgemm\_mpfr} statically, one should type the following: 
 \begin{verbatim}
 $ cd /home/docker/MPLAPACK/share/examples/mpblas
 $ g++ -fopenmp -O2 -I/home/docker/MPLAPACK/include \
 -I/home/docker/MPLAPACK/include/mplapack Rgemm_mpfr.cpp \
--Wl,--whole-archive,/home/docker/MPLAPACK/lib/libmpblas_mpfr.a,--no-whole-archive \
+-Wl,--whole-archive,/home/docker/MPLAPACK/lib/libmplapack_mpfr.a,--no-whole-archive \
 -L/home/docker/MPLAPACK/lib -lmpfr -lmpc -lgmp
 $ ldd ./a.out
         linux-vdso.so.1 (0x00007fff1dd12000)
@@ -3859,14 +3859,12 @@ $ ldd ./a.out
 $ ./a.out
 ...
 \end{verbatim}
-For MPLAPACK, we need to specify the full path of library name, but enclosed with {\tt -Wl,--whole-archive} and {\tt --no-whole-archive} is {\it not necessary}. For example,
-To link MPBLAS and MLAPACK statically, we compile as follows:
+The same one-archive rule applies to programs that call MPLAPACK routines:
 \begin{verbatim}
 $ cd /home/docker/MPLAPACK/share/examples/mplapack/00_LinearEquations
 $ g++ -O2 -I/home/docker/MPLAPACK/include -I/home/docker/MPLAPACK/include/mplapack \
 Rgetri_Hilbert_mpfr.cpp \
-/home/docker/MPLAPACK/lib/libmplapack_mpfr.a \
--Wl,--whole-archive,/home/docker/MPLAPACK/lib/libmpblas_mpfr.a,--no-whole-archive \
+-Wl,--whole-archive,/home/docker/MPLAPACK/lib/libmplapack_mpfr.a,--no-whole-archive \
 -L/home/docker/MPLAPACK/lib -lmpfr -lmpc -lgmp
 $ ldd ./a.out
         linux-vdso.so.1 (0x00007ffd64db1000)
@@ -3915,7 +3913,7 @@ $ cd /Volumes/Users/maho/MPLAPACK/share/examples/mpblas
 $ g++-mp-10 -c -O2 -fopenmp -I/Volumes/Users/maho/MPLAPACK/include \
 -I/Volumes/Users/maho/MPLAPACK/include/mplapack Rgemm_mpfr.cpp
 $ g++-mp-10 -o Rgemm_mpfr Rgemm_mpfr.o -L/Volumes/Users/maho/MPLAPACK/lib \
--lmpblas_mpfr -lmpfr -lmpc -lgmp
+-lmplapack_mpfr -lmpfr -lmpc -lgmp
 $ ./Rgemm_mpfr
 ...
 \end{verbatim}
@@ -3923,7 +3921,7 @@ $ ./Rgemm_mpfr
 \begin{verbatim}
 $ otool -L Rgemm_mpfr
 Rgemm_mpfr:
-        /Volumes/Users/maho/MPLAPACK/lib/libmpblas_mpfr.0.dylib (compatibility version 1.0.0, current version 1.0.0)
+        /Volumes/Users/maho/MPLAPACK/lib/libmplapack_mpfr.2.dylib (compatibility version 2.0.0, current version 2.0.0)
         /Volumes/Users/maho/MPLAPACK/lib/libmpfr.6.dylib (compatibility version 8.0.0, current version 8.0.0)
         /Volumes/Users/maho/MPLAPACK/lib/libmpc.3.dylib (compatibility version 6.0.0, current version 6.1.0)
         /Volumes/Users/maho/MPLAPACK/lib/libgmp.10.dylib (compatibility version 15.0.0, current version 15.1.0)
@@ -3947,7 +3945,7 @@ $ cd /home/docker/MPLAPACK_MINGW/share/examples/mpblas/
 $ x86_64-w64-mingw32-g++ -c -O2 -fopenmp -I/home/docker/MPLAPACK_MINGW/include \
 -I/home/docker/MPLAPACK_MINGW/include/mplapack Rgemm_mpfr.cpp
 $ x86_64-w64-mingw32-g++ -o Rgemm_mpfr.exe Rgemm_mpfr.o -L/home/docker/MPLAPACK_MINGW/lib \
--lmpblas_mpfr -lmpfr -lmpc -lgmp
+-lmplapack_mpfr -lmpfr -lmpc -lgmp
 $ wine64 ./Rgemm_mpfr.exe
 ...
 \end{verbatim}
@@ -3958,7 +3956,7 @@ $ cd /home/docker/MPLAPACK_MINGW/share/examples/mplapack/04_NonsymmetricEigenpro
 $ x86_64-w64-mingw32-g++ -c -O2 -fopenmp -I/home/docker/MPLAPACK_MINGW/include \
  -I/home/docker/MPLAPACK_MINGW/include/mplapack Rgees_test_gmp.cpp
 $ x86_64-w64-mingw32-g++ -O2 -fopenmp -o Rgees_test_gmp.exe \
-Rgees_test_gmp.o -L/home/docker/MPLAPACK_MINGW/lib -lmplapack_gmp -lmpblas_gmp -lgmp
+Rgees_test_gmp.o -L/home/docker/MPLAPACK_MINGW/lib -lmplapack_gmp -lgmp
 $ wine64 ./Rgees_test_gmp.exe
 ...
 \end{verbatim}
@@ -3969,10 +3967,10 @@ $ cd /home/docker/MPLAPACK_MINGW/share/examples/mpblas/
 $ x86_64-w64-mingw32-g++ -c -O2 -fopenmp -I/home/docker/MPLAPACK_MINGW/include \
 -I/home/docker/MPLAPACK_MINGW/include/mplapack Rgemm_mpfr.cpp
 $ x86_64-w64-mingw32-g++ -o Rgemm_mpfr.exe Rgemm_mpfr.o -L/home/docker/MPLAPACK_MINGW/lib \
--lmpblas_mpfr -lmpfr -lmpc -lgmp
+-lmplapack_mpfr -lmpfr -lmpc -lgmp
 $ x86_64-w64-mingw32-objdump -p Rgemm_mpfr.exe | grep 'DLL Name'
         DLL Name: libmpfr-6.dll
-        DLL Name: libmpblas_mpfr-0.dll
+        DLL Name: libmplapack_mpfr-2.dll
         DLL Name: KERNEL32.dll
         DLL Name: msvcrt.dll
         DLL Name: libgcc_s_seh-1.dll
@@ -3983,18 +3981,18 @@ to somewhere under {\tt C:\textbackslash{}Program File}, like \\
 {\tt C:\textbackslash{}Program File\textbackslash{}MPLAPACK} or current directory.
 
 \subsubsection{Static link for mingw64 (Windows)}
-To link mpblas statically on the mingw64 system, we should add\\
-``{\tt -Wl,--whole-archive,/home/docker/MPLAPACK\_MINGW/lib/libmpblas\_mpfr.a,--no-whole-archive}"\\
+To link the unified MPLAPACK archive statically on mingw64, add\\
+``{\tt -Wl,--whole-archive,/home/docker/MPLAPACK\_MINGW/lib/libmplapack\_mpfr.a,--no-whole-archive}"\\
 when linking. This is required because MPBLAS initializes some values at the runtime. If you do not specify
-them, simply link like ``{\tt /home/docker/MPLAPACK\_MINGW/lib/libmpblas\_mpfr.a}", MPBLAS will not work properly.
-The following example shows how we link Rgemm\_mpfr.exe against {\tt libmpblas\_mpfr.a}, which is a static library: 
+them, simply link like ``{\tt /home/docker/MPLAPACK\_MINGW/lib/libmplapack\_mpfr.a}", MPBLAS will not work properly.
+The following example shows how we link Rgemm\_mpfr.exe against {\tt libmplapack\_mpfr.a}, which is a static library:
 \begin{verbatim}
 $ cd /home/docker/MPLAPACK_MINGW/share/examples/mpblas/
 $ x86_64-w64-mingw32-g++ -c -O2 -fopenmp -I/home/docker/MPLAPACK_MINGW/include \
 -I/home/docker/MPLAPACK_MINGW/include/mplapack Rgemm_mpfr.cpp
 $ x86_64-w64-mingw32-g++ -o Rgemm_mpfr.exe Rgemm_mpfr.o -L/home/docker/MPLAPACK_MINGW/lib \
 -static-libgcc -static-libstdc++ \
--Wl,--whole-archive,/home/docker/MPLAPACK_MINGW/lib/libmpblas_mpfr.a,--no-whole-archive \
+-Wl,--whole-archive,/home/docker/MPLAPACK_MINGW/lib/libmplapack_mpfr.a,--no-whole-archive \
 -lmpfr -lmpc -lgmp
 \end{verbatim}
 However, the resultant file {\tt Rgemm\_mpfr.exe} is not a completely static executable.

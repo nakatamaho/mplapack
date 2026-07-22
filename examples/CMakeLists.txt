@@ -1,7 +1,5 @@
-# Examples.  Each source is named <Name>_<backend>.cpp and uses the matching
-# backend libraries.  Sources under examples/mpblas link the MPBLAS library;
-# those under examples/mplapack link the MPLAPACK library (which pulls in
-# MPBLAS).  The "generic" template examples and the "_opt" optimized-library
+# Examples. Each source is named <Name>_<backend>.cpp and uses the matching
+# self-contained backend library.  The "generic" template examples and the "_opt" optimized-library
 # variants from the autotools build are not part of this CMake port.
 
 set(_mplapack_example_backends gmp mpfr qd dd double binary80 binary128)
@@ -28,7 +26,7 @@ foreach(_layer mpblas mplapack)
       string(REGEX REPLACE "[/.]" "_" _name "example_${_name}")
 
       add_executable(${_name} "${_src}")
-      target_link_libraries(${_name} PRIVATE mplapack::${_layer}_${_b})
+      target_link_libraries(${_name} PRIVATE mplapack::mplapack_${_b})
       set_target_properties(${_name} PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${_layer}/${_b}")
     endforeach()
