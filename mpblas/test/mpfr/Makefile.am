@@ -114,10 +114,10 @@ libmxerbla_override_la_CPPFLAGS = -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WI
 libmxerbla_override_la_SOURCES = ../common/Mxerbla.override.cpp
 libmxerbla_override_la_LDFLAGS = -no-undefined
 libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,.libs/libmxerbla_override.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_mpfr.a,--no-whole-archive
-opt_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,.libs/libmxerbla_override.a,$(top_builddir)/mpblas/optimized/mpfr/.libs/libmpblas_mpfr_opt.a,--no-whole-archive
+opt_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,.libs/libmxerbla_override.a,$(top_builddir)/mpblas/optimized/mpfr/.libs/libmplapack_mpfr_opt.a,--no-whole-archive
 else
 libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_mpfr
-opt_libdepends = -L$(top_builddir)/mpblas/optimized/mpfr -lmpblas_mpfr_opt -L$(top_builddir)/mplapack/reference -lmplapack_mpfr
+opt_libdepends = -L$(top_builddir)/mpblas/optimized/mpfr -lmplapack_mpfr_opt
 endif
 
 ##

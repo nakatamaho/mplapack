@@ -5,7 +5,7 @@ mpblasexamples_PROGRAMS += Cgemm_mpfr Rgemm_mpfr Cgemm_mpfr_opt Rgemm_mpfr_opt
 
 mpfr_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mpfrc++ -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR)
 mpfr_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_mpfr -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp
-mpfr_opt_libdepends = -L$(top_builddir)/mpblas/optimized/mpfr -lmpblas_mpfr_opt -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp
+mpfr_opt_libdepends = -L$(top_builddir)/mpblas/optimized/mpfr -lmplapack_mpfr_opt -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp
 
 Cgemm_mpfr_SOURCES = Cgemm_mpfr.cpp
 Cgemm_mpfr_CXXFLAGS = $(mpfr_cxxflags)
@@ -30,7 +30,7 @@ mpblasexamples_PROGRAMS += Cgemm_gmp Rgemm_gmp Cgemm_gmp_opt Rgemm_gmp_opt
 
 gmp_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR)
 gmp_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_gmp -L$(GMP_LIBDIR) -lgmp
-gmp_opt_libdepends = -L$(top_builddir)/mpblas/optimized/gmp -lmpblas_gmp_opt -L$(GMP_LIBDIR) -lgmp
+gmp_opt_libdepends = -L$(top_builddir)/mpblas/optimized/gmp -lmplapack_gmp_opt -L$(GMP_LIBDIR) -lgmp
 
 Cgemm_gmp_SOURCES = Cgemm_gmp.cpp
 Cgemm_gmp_CXXFLAGS = $(gmp_cxxflags)
@@ -58,7 +58,7 @@ binary128_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_binary128
 if MPLAPACK_BINARY128_MODE_QUADMATH
 binary128_libdepends += -lquadmath
 endif
-binary128_opt_libdepends = -L$(top_builddir)/mpblas/optimized/binary128 -lmpblas_binary128_opt
+binary128_opt_libdepends = -L$(top_builddir)/mpblas/optimized/binary128 -lmplapack_binary128_opt
 if MPLAPACK_BINARY128_MODE_QUADMATH
 binary128_opt_libdepends += -lquadmath
 endif
@@ -86,7 +86,7 @@ mpblasexamples_PROGRAMS += Cgemm_binary80 Rgemm_binary80 Cgemm_binary80_opt Rgem
 
 binary80_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include
 binary80_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_binary80
-binary80_opt_libdepends = -L$(top_builddir)/mpblas/optimized/binary80 -lmpblas_binary80_opt
+binary80_opt_libdepends = -L$(top_builddir)/mpblas/optimized/binary80 -lmplapack_binary80_opt
 
 Cgemm_binary80_SOURCES = Cgemm_binary80.cpp
 Cgemm_binary80_CXXFLAGS = $(binary80_cxxflags)
@@ -111,7 +111,7 @@ mpblasexamples_PROGRAMS += Cgemm_double Rgemm_double Cgemm_double_opt Rgemm_doub
 
 double_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include
 double_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_double
-double_opt_libdepends = -L$(top_builddir)/mpblas/optimized/double -lmpblas_double_opt
+double_opt_libdepends = -L$(top_builddir)/mpblas/optimized/double -lmplapack_double_opt
 
 Cgemm_double_SOURCES = Cgemm_double.cpp
 Cgemm_double_CXXFLAGS = $(double_cxxflags)
@@ -136,7 +136,7 @@ mpblasexamples_PROGRAMS += Cgemm_dd Rgemm_dd Cgemm_dd_opt Rgemm_dd_opt
 
 dd_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR)
 dd_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_dd -L$(QD_LIBDIR) -lqd
-dd_opt_libdepends = -L$(top_builddir)/mpblas/optimized/dd -lmpblas_dd_opt -L$(QD_LIBDIR) -lqd
+dd_opt_libdepends = -L$(top_builddir)/mpblas/optimized/dd -lmplapack_dd_opt -L$(QD_LIBDIR) -lqd
 
 Cgemm_dd_SOURCES = Cgemm_dd.cpp
 Cgemm_dd_CXXFLAGS = $(dd_cxxflags)
@@ -161,7 +161,7 @@ mpblasexamples_PROGRAMS += Cgemm_qd Rgemm_qd Cgemm_qd_opt Rgemm_qd_opt
 
 qd_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR)
 qd_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_qd -L$(QD_LIBDIR) -lqd
-qd_opt_libdepends = -L$(top_builddir)/mpblas/optimized/qd -lmpblas_qd_opt -L$(QD_LIBDIR) -lqd
+qd_opt_libdepends = -L$(top_builddir)/mpblas/optimized/qd -lmplapack_qd_opt -L$(QD_LIBDIR) -lqd
 
 Cgemm_qd_SOURCES = Cgemm_qd.cpp
 Cgemm_qd_CXXFLAGS = $(qd_cxxflags)

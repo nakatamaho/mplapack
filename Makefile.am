@@ -16,24 +16,31 @@ misc/check_unique_symbols.sh
 MPLAPACK_UNIQUE_SYMBOL_ARCHIVES =
 if ENABLE_GMP
 MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mplapack/reference/.libs/libmplapack_gmp.a
+MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mpblas/optimized/gmp/.libs/libmplapack_gmp_opt.a
 endif
 if ENABLE_MPFR
 MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mplapack/reference/.libs/libmplapack_mpfr.a
+MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mpblas/optimized/mpfr/.libs/libmplapack_mpfr_opt.a
 endif
 if ENABLE_QD
 MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mplapack/reference/.libs/libmplapack_qd.a
+MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mpblas/optimized/qd/.libs/libmplapack_qd_opt.a
 endif
 if ENABLE_DD
 MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mplapack/reference/.libs/libmplapack_dd.a
+MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mpblas/optimized/dd/.libs/libmplapack_dd_opt.a
 endif
 if ENABLE_DOUBLE
 MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mplapack/reference/.libs/libmplapack_double.a
+MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mpblas/optimized/double/.libs/libmplapack_double_opt.a
 endif
 if ENABLE_BINARY80
 MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mplapack/reference/.libs/libmplapack_binary80.a
+MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mpblas/optimized/binary80/.libs/libmplapack_binary80_opt.a
 endif
 if ENABLE_BINARY128
 MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mplapack/reference/.libs/libmplapack_binary128.a
+MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mpblas/optimized/binary128/.libs/libmplapack_binary128_opt.a
 endif
 
 check-local:

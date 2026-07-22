@@ -14,10 +14,10 @@ binary80lapack_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_bina
 
 if BINARY128_USE_QUADMATH
 binary80_libdepends    = $(binary80lapack_libdepends) -lquadmath $(DYLD)
-binary80opt_libdepends = $(binary80lapack_libdepends) -L$(top_builddir)/mpblas/optimized/binary80  -lmpblas_binary80_opt -lquadmath $(DYLD)
+binary80opt_libdepends = -L$(top_builddir)/mpblas/optimized/binary80 -lmplapack_binary80_opt -lquadmath $(DYLD)
 else
 binary80_libdepends    = $(binary80lapack_libdepends) $(DYLD)
-binary80opt_libdepends = $(binary80lapack_libdepends) -L$(top_builddir)/mpblas/optimized/binary80  -lmpblas_binary80_opt $(DYLD)
+binary80opt_libdepends = -L$(top_builddir)/mpblas/optimized/binary80 -lmplapack_binary80_opt $(DYLD)
 endif
 
 if IS_MINGW

@@ -1169,4 +1169,4 @@ iMlazlr.cpp \
 iMparam2stage.cpp \
 iMparmq.cpp
 
-EXTRA_DIST = iMlaver.cpp.in
+EXTRA_DIST = iMlaver.cpp.in sources.am

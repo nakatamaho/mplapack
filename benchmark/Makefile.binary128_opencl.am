@@ -10,7 +10,7 @@ binary128_opencl_cxxflags   = -I$(top_srcdir)/include $(OPENCL_CFLAGS) -D___MPLA
 binary128_opencl_libdepends = $(binary128lapack_libdepends) \
                               -L$(top_builddir)/mpblas/optimized/binary128/opencl -lmpblas_binary128_opt_opencl \
                               $(OPENCL_LDFLAGS) $(OPENCL_LIBS) \
-                              -L$(top_builddir)/mpblas/optimized/binary128 -lmpblas_binary128_opt \
+                              -L$(top_builddir)/mpblas/optimized/binary128 -lmplapack_binary128_opt \
                               $(DYLD)
 binary128_opencl_link       = $(LIBTOOL) --mode=link $(CXX) -o $@ $(OPENCL_LDFLAGS) $(OPENCL_LIBS) $(binary128_opencl_libdepends) $(OPENMP_CXXFLAGS)
 

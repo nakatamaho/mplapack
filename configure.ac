@@ -2811,6 +2811,14 @@ mpblas/optimized/double/Makefile
 mpblas/optimized/binary80/Makefile
 mpblas/optimized/binary128/Makefile
 mpblas/optimized/binary128/opencl/Makefile
+mplapack/optimized/Makefile
+mplapack/optimized/gmp/Makefile
+mplapack/optimized/mpfr/Makefile
+mplapack/optimized/qd/Makefile
+mplapack/optimized/dd/Makefile
+mplapack/optimized/double/Makefile
+mplapack/optimized/binary80/Makefile
+mplapack/optimized/binary128/Makefile
 mpblas/test/Makefile
 mpblas/test/gmp/Makefile
 mpblas/test/mpfr/Makefile

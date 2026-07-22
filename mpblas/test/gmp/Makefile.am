@@ -118,10 +118,10 @@ libmxerbla_override_la_CPPFLAGS = -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WI
 libmxerbla_override_la_SOURCES = ../common/Mxerbla.override.cpp
 libmxerbla_override_la_LDFLAGS = -no-undefined
 libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,.libs/libmxerbla_override.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_gmp.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_mpfr.a,--no-whole-archive
-opt_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,.libs/libmxerbla_override.a,$(top_builddir)/mpblas/optimized/gmp/.libs/libmpblas_gmp_opt.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_mpfr.a,--no-whole-archive
+opt_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,.libs/libmxerbla_override.a,$(top_builddir)/mpblas/optimized/gmp/.libs/libmplapack_gmp_opt.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_mpfr.a,--no-whole-archive
 else
 libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_gmp -lmplapack_mpfr
-opt_libdepends = -L$(top_builddir)/mpblas/optimized/gmp -lmpblas_gmp_opt -L$(top_builddir)/mplapack/reference -lmplapack_mpfr
+opt_libdepends = -L$(top_builddir)/mpblas/optimized/gmp -lmplapack_gmp_opt -L$(top_builddir)/mplapack/reference -lmplapack_mpfr
 endif
 
 ##

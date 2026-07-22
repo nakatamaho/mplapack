@@ -1,7 +1,7 @@
 #CTBSV, CTPSV might have bugs or intrinsically inaccurate
 #Rnrm2 should be checked more
 check_PROGRAMS = $(mpblas_double_test_PROGRAMS) 
-mpblas_double_smoke_TESTS = arithmetic.test_double complex.test_double
+mpblas_double_smoke_TESTS = arithmetic.test_double complex.test_double Rgemm.test.double_opt
 mpblas_double_smoke_WRAPPERS = $(mpblas_double_smoke_TESTS:%=run_%.sh)
 mpblas_double_test_WRAPPERS = $(mpblas_double_test_PROGRAMS:%=run_%.sh)
 TESTS = $(mpblas_double_smoke_WRAPPERS)
@@ -114,10 +114,10 @@ libmxerbla_override_la_CPPFLAGS = -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WI
 libmxerbla_override_la_SOURCES = ../common/Mxerbla.override.cpp
 libmxerbla_override_la_LDFLAGS = -no-undefined
 libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,.libs/libmxerbla_override.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_double.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_mpfr.a,--no-whole-archive
-opt_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,.libs/libmxerbla_override.a,$(top_builddir)/mpblas/optimized/double/.libs/libmpblas_double_opt.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_mpfr.a,--no-whole-archive
+opt_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,.libs/libmxerbla_override.a,$(top_builddir)/mpblas/optimized/double/.libs/libmplapack_double_opt.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_mpfr.a,--no-whole-archive
 else
 libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_double -lmplapack_mpfr
-opt_libdepends = -L$(top_builddir)/mpblas/optimized/double -lmpblas_double_opt -L$(top_builddir)/mplapack/reference -lmplapack_mpfr
+opt_libdepends = -L$(top_builddir)/mpblas/optimized/double -lmplapack_double_opt -L$(top_builddir)/mplapack/reference -lmplapack_mpfr
 endif
 
 ##

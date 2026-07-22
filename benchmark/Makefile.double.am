@@ -12,7 +12,7 @@ Rgetrf.double Rgetrf.double_opt
 doublecxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_DOUBLE___
 doublelapack_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_double
 double_libdepends    = $(doublelapack_libdepends) $(DYLD)
-doubleopt_libdepends = $(doublelapack_libdepends) -L$(top_builddir)/mpblas/optimized/double  -lmpblas_double_opt $(DYLD)
+doubleopt_libdepends = -L$(top_builddir)/mpblas/optimized/double -lmplapack_double_opt $(DYLD)
 
 if IS_MINGW
 doublecxxflags       += -I$(DLFCN_WIN32_INCLUDEDIR)

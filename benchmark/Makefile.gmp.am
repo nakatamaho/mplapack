@@ -13,7 +13,7 @@ Rgetrf.gmp Rgetrf.gmp_opt
 gmpcxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/gmpc++ -I$(GMP_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_GMP___
 gmplapack_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_gmp
 gmp_libdepends    = $(gmplapack_libdepends) -L$(GMP_LIBDIR) -lgmpxx -lgmp $(DYLD)
-gmpopt_libdepends = $(gmplapack_libdepends) -L$(top_builddir)/mpblas/optimized/gmp   -lmpblas_gmp_opt -L$(GMP_LIBDIR) -lgmpxx -lgmp $(DYLD)
+gmpopt_libdepends = -L$(top_builddir)/mpblas/optimized/gmp -lmplapack_gmp_opt -L$(GMP_LIBDIR) -lgmpxx -lgmp $(DYLD)
 
 if IS_MINGW
 gmpcxxflags       += -I$(DLFCN_WIN32_INCLUDEDIR)
