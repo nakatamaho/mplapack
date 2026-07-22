@@ -73,7 +73,7 @@ for _mplib in $MPLIBS; do
         echo "mplapackexamples_PROGRAMS += $executefilenames" >> ../Makefile.am
         echo ""               >> ../Makefile.am
         echo "${_mplib}_cxxflags = \$(OPENMP_CXXFLAGS) -I\$(top_srcdir)/include -I\$(top_srcdir)/mpfrc++ -I\$(GMP_INCLUDEDIR) -I\$(MPFR_INCLUDEDIR) -I\$(MPC_INCLUDEDIR)" >> ../Makefile.am
-        echo "${_mplib}_libdepends = -Wl,-rpath,\$(libdir) -L\$(top_builddir)/mplapack/reference -lmplapack_${_mplib} -L\$(top_builddir)/mpblas/reference -lmpblas_${_mplib} -L\$(MPC_LIBDIR) -L\$(MPFR_LIBDIR) -L\$(GMP_LIBDIR) -lmpfr -lmpc -lgmp"  >> ../Makefile.am
+        echo "${_mplib}_libdepends = -Wl,-rpath,\$(libdir) -L\$(top_builddir)/mplapack/reference -lmplapack_${_mplib} -L\$(MPC_LIBDIR) -L\$(MPFR_LIBDIR) -L\$(GMP_LIBDIR) -lmpfr -lmpc -lgmp"  >> ../Makefile.am
         echo ""               >> ../Makefile.am
         for _file in $FILES; do
             A=`echo $_file | $SED "s/generic\.cpp/${_mplib}/g"`
@@ -92,7 +92,7 @@ for _mplib in $MPLIBS; do
         echo "mplapackexamples_PROGRAMS += $executefilenames" >> ../Makefile.am
         echo ""               >> ../Makefile.am
         echo "${_mplib}_cxxflags = \$(OPENMP_CXXFLAGS) -I\$(top_srcdir)/include -I\$(GMP_INCLUDEDIR)" >> ../Makefile.am
-        echo "${_mplib}_libdepends = -Wl,-rpath,\$(libdir) -L\$(top_builddir)/mplapack/reference -lmplapack_${_mplib} -L\$(top_builddir)/mpblas/reference -lmpblas_${_mplib} -L\$(GMP_LIBDIR) -lgmp"  >> ../Makefile.am
+        echo "${_mplib}_libdepends = -Wl,-rpath,\$(libdir) -L\$(top_builddir)/mplapack/reference -lmplapack_${_mplib} -L\$(GMP_LIBDIR) -lgmp"  >> ../Makefile.am
         echo ""               >> ../Makefile.am
         for _file in $FILES; do
             if [ "$_file" = "Cgeev_NPR_generic.cpp" ]; then
@@ -115,9 +115,9 @@ for _mplib in $MPLIBS; do
         echo ""               >> ../Makefile.am
         echo "${_mplib}_cxxflags = \$(OPENMP_CXXFLAGS) -I\$(top_srcdir)/include" >> ../Makefile.am
         echo "if MPLAPACK_BINARY128_MODE_QUADMATH" >> ../Makefile.am
-        echo "${_mplib}_libdepends = -Wl,-rpath,\$(libdir) -L\$(top_builddir)/mplapack/reference -lmplapack_${_mplib} -L\$(top_builddir)/mpblas/reference -lmpblas_${_mplib} -lquadmath"  >> ../Makefile.am
+        echo "${_mplib}_libdepends = -Wl,-rpath,\$(libdir) -L\$(top_builddir)/mplapack/reference -lmplapack_${_mplib} -lquadmath"  >> ../Makefile.am
         echo "else" >> ../Makefile.am
-        echo "${_mplib}_libdepends = -Wl,-rpath,\$(libdir) -L\$(top_builddir)/mplapack/reference -lmplapack_${_mplib} -L\$(top_builddir)/mpblas/reference -lmpblas_${_mplib}"  >> ../Makefile.am
+        echo "${_mplib}_libdepends = -Wl,-rpath,\$(libdir) -L\$(top_builddir)/mplapack/reference -lmplapack_${_mplib}"  >> ../Makefile.am
         echo "endif" >> ../Makefile.am
         echo ""               >> ../Makefile.am
         for _file in $FILES; do
@@ -137,7 +137,7 @@ for _mplib in $MPLIBS; do
         echo "mplapackexamples_PROGRAMS += $executefilenames" >> ../Makefile.am
         echo ""               >> ../Makefile.am
         echo "${_mplib}_cxxflags = \$(OPENMP_CXXFLAGS) -I\$(top_srcdir)/include" >> ../Makefile.am
-        echo "${_mplib}_libdepends = -Wl,-rpath,\$(libdir) -L\$(top_builddir)/mplapack/reference -lmplapack_${_mplib} -L\$(top_builddir)/mpblas/reference -lmpblas_${_mplib}"  >> ../Makefile.am
+        echo "${_mplib}_libdepends = -Wl,-rpath,\$(libdir) -L\$(top_builddir)/mplapack/reference -lmplapack_${_mplib}"  >> ../Makefile.am
         echo ""               >> ../Makefile.am
         for _file in $FILES; do
             A=`echo $_file | $SED "s/generic\.cpp/${_mplib}/g"`
@@ -156,7 +156,7 @@ for _mplib in $MPLIBS; do
         echo "mplapackexamples_PROGRAMS += $executefilenames" >> ../Makefile.am
         echo ""               >> ../Makefile.am
         echo "${_mplib}_cxxflags = \$(OPENMP_CXXFLAGS) -I\$(top_srcdir)/include" >> ../Makefile.am
-        echo "${_mplib}_libdepends = -Wl,-rpath,\$(libdir) -L\$(top_builddir)/mplapack/reference -lmplapack_${_mplib} -L\$(top_builddir)/mpblas/reference -lmpblas_${_mplib}"  >> ../Makefile.am
+        echo "${_mplib}_libdepends = -Wl,-rpath,\$(libdir) -L\$(top_builddir)/mplapack/reference -lmplapack_${_mplib}"  >> ../Makefile.am
         echo ""               >> ../Makefile.am
         for _file in $FILES; do
             A=`echo $_file | $SED "s/generic\.cpp/${_mplib}/g"`
@@ -175,7 +175,7 @@ for _mplib in $MPLIBS; do
         echo "mplapackexamples_PROGRAMS += $executefilenames" >> ../Makefile.am
         echo ""               >> ../Makefile.am
         echo "${_mplib}_cxxflags = \$(OPENMP_CXXFLAGS) -I\$(top_srcdir)/include -I\$(QD_INCLUDEDIR)" >> ../Makefile.am
-        echo "${_mplib}_libdepends = -Wl,-rpath,\$(libdir) -L\$(top_builddir)/mplapack/reference -lmplapack_dd -L\$(top_builddir)/mpblas/reference -lmpblas_${_mplib} -L\$(QD_LIBDIR) -lqd"  >> ../Makefile.am
+        echo "${_mplib}_libdepends = -Wl,-rpath,\$(libdir) -L\$(top_builddir)/mplapack/reference -lmplapack_dd -L\$(QD_LIBDIR) -lqd"  >> ../Makefile.am
         echo ""               >> ../Makefile.am
         for _file in $FILES; do
             A=`echo $_file | $SED "s/generic\.cpp/${_mplib}/g"`
@@ -194,7 +194,7 @@ for _mplib in $MPLIBS; do
         echo "mplapackexamples_PROGRAMS += $executefilenames" >> ../Makefile.am
         echo ""               >> ../Makefile.am
         echo "${_mplib}_cxxflags = \$(OPENMP_CXXFLAGS) -I\$(top_srcdir)/include -I\$(QD_INCLUDEDIR)" >> ../Makefile.am
-        echo "${_mplib}_libdepends = -Wl,-rpath,\$(libdir) -L\$(top_builddir)/mplapack/reference -lmplapack_qd -L\$(top_builddir)/mpblas/reference -lmpblas_${_mplib} -L\$(QD_LIBDIR) -lqd"  >> ../Makefile.am
+        echo "${_mplib}_libdepends = -Wl,-rpath,\$(libdir) -L\$(top_builddir)/mplapack/reference -lmplapack_qd -L\$(QD_LIBDIR) -lqd"  >> ../Makefile.am
         echo ""               >> ../Makefile.am
         for _file in $FILES; do
             A=`echo $_file | $SED "s/generic\.cpp/${_mplib}/g"`

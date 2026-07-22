@@ -1,4 +1,46 @@
-# MPLAPACK 2.0.x → 2.1.0 Migration Guide
+# MPLAPACK Migration Guide
+
+## MPLAPACK 2.3.0: Unified libraries
+
+MPLAPACK 2.3.0 replaces the separate MPBLAS and MPLAPACK products with one
+self-contained library for each backend/flavor. This is an ABI-breaking change;
+the shared-library ABI is now 2.
+
+### Link-line translation
+
+| Old link line | New link line |
+|---|---|
+| `-lmplapack_dd -lmpblas_dd` | `-lmplapack_dd` |
+| `-lmpblas_dd_opt` | `-lmplapack_dd_opt` |
+| `-lmpblas_dd_opt -lmpblas_dd_cuda` | `-lmplapack_dd_opt_cuda` |
+| `-lmpblas_binary128_opt_opencl` (+ opt library) | `-lmplapack_binary128_opt_opencl` |
+
+Link exactly one `mplapack` library per backend/flavor. The selected library
+already contains both the BLAS and LAPACK routines and all lower-priority
+implementations needed by that flavor.
+
+```sh
+# DD reference flavor
+c++ app.cpp -lmplapack_dd -lqd
+
+# DD optimized CUDA flavor
+c++ app.cpp -lmplapack_dd_opt_cuda -lqd -lcudart -lcublas
+```
+
+### CMake target translation
+
+| Before 2.3.0 | MPLAPACK 2.3.0 |
+|---|---|
+| `mplapack::mpblas_<b>` | Gone; use `mplapack::mplapack_<b>` |
+| `mplapack::mpblas_<b>_opt` | Gone; use `mplapack::mplapack_<b>_opt` |
+| `mplapack::mpblas_dd_opt_cuda` | Gone; use `mplapack::mplapack_dd_opt_cuda` |
+| `mplapack::mpblas_binary128_opt_opencl` | Gone; use `mplapack::mplapack_binary128_opt_opencl` |
+
+The same one-target rule applies to CMake. Per-flavor pkg-config files are named
+`mplapack_<flavor>.pc`; the aggregate `mplapack.pc` and separate `mpblas`
+products are no longer installed.
+
+---
 
 This document covers all changes in MPLAPACK 2.1.0 that require action from users or
 downstream package maintainers.

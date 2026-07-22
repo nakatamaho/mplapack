@@ -1,5 +1,9 @@
 # CMake package-consumption checks for build-tree and installed exports.
 
+add_test(NAME source_manifests
+  COMMAND "${PROJECT_SOURCE_DIR}/misc/check_source_manifests.sh"
+          "${PROJECT_SOURCE_DIR}")
+
 set(_consume_source_dir "${CMAKE_CURRENT_SOURCE_DIR}/consume")
 set(_consume_root "${CMAKE_CURRENT_BINARY_DIR}/consume")
 set(_consume_install_prefix "${_consume_root}/install")

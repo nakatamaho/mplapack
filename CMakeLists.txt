@@ -18,8 +18,6 @@ project(mplapack
   HOMEPAGE_URL "https://github.com/nakatamaho/mplapack"
   LANGUAGES CXX C)
 
-set(PROJECT_VERSION "${PROJECT_VERSION}-dev")
-
 set(MPLAPACK_LAPACK_VERSION "3.12.1")
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
@@ -61,9 +59,9 @@ set(CMAKE_CXX_STANDARD ${MPLAPACK_CXX_STANDARD})
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS ${MPLAPACK_CXX_EXTENSIONS})
 
-# ABI (libtool -version-info 1:0:0) — independent of the package version.
-set(MPLAPACK_LIB_VERSION   "1.0.0")
-set(MPLAPACK_LIB_SOVERSION "1")
+# ABI (libtool -version-info 2:0:0) — independent of the package version.
+set(MPLAPACK_LIB_VERSION   "2.0.0")
+set(MPLAPACK_LIB_SOVERSION "2")
 
 # -----------------------------------------------------------------------------
 # Options

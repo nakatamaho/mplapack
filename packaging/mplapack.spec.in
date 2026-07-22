@@ -57,34 +57,20 @@ original license by LAPACK)
 Summary:  Library and header files for mplapack libraries
 Group:    Development/Libraries
 
-Provides: libmpblas_dd_ref.so = %{version}-%{release}
-Provides: libmpblas_dd.so = %{version}-%{release}
-Provides: libmpblas_double_ref.so = %{version}-%{release}
-Provides: libmpblas_double.so = %{version}-%{release}
-Provides: libmpblas__Float128_ref.so = %{version}-%{release}
-Provides: libmpblas_binary128.so = %{version}-%{release}
-Provides: libmpblas_gmp_ref.so = %{version}-%{release}
-Provides: libmpblas_gmp.so = %{version}-%{release}
-Provides: libmpblas_binary80.h_ref.so = %{version}-%{release}
-Provides: libmpblas_binary80.h.so = %{version}-%{release}
-Provides: libmpblas_mpfr_ref.so = %{version}-%{release}
-Provides: libmpblas_mpfr.so = %{version}-%{release}
-Provides: libmpblas_qd_ref.so = %{version}-%{release}
-Provides: libmpblas_qd.so = %{version}-%{release}
-Provides: libmplapack_dd_ref.so = %{version}-%{release}
 Provides: libmplapack_dd.so = %{version}-%{release}
-Provides: libmplapack_double_ref.so = %{version}-%{release}
+Provides: libmplapack_dd_opt.so = %{version}-%{release}
 Provides: libmplapack_double.so = %{version}-%{release}
-Provides: libmplapack__Float128_ref.so = %{version}-%{release}
+Provides: libmplapack_double_opt.so = %{version}-%{release}
 Provides: libmplapack_binary128.so = %{version}-%{release}
-Provides: libmplapack_gmp_ref.so = %{version}-%{release}
-Provides: libmplapack_gmp.so = %{version}-%{release}
-Provides: libmplapack__Float64x_ref.so = %{version}-%{release}
+Provides: libmplapack_binary128_opt.so = %{version}-%{release}
 Provides: libmplapack_binary80.so = %{version}-%{release}
-Provides: libmplapack_mpfr_ref.so = %{version}-%{release}
+Provides: libmplapack_binary80_opt.so = %{version}-%{release}
+Provides: libmplapack_gmp.so = %{version}-%{release}
+Provides: libmplapack_gmp_opt.so = %{version}-%{release}
 Provides: libmplapack_mpfr.so = %{version}-%{release}
-Provides: libmplapack_qd_ref.so = %{version}-%{release}
+Provides: libmplapack_mpfr_opt.so = %{version}-%{release}
 Provides: libmplapack_qd.so = %{version}-%{release}
+Provides: libmplapack_qd_opt.so = %{version}-%{release}
 Provides: libmpfrcxx.so = %{version}-%{release}
 
 #Requires: %{name} = %{version}-%{release}
@@ -153,7 +139,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root,-)
 %{_libdir}/*.a
 %{_libdir}/*.so
-%{_libdir}/*.so.0
+%{_libdir}/*.so.2
 %{_libdir}/*.so.*.*.*
 
 %{_includedir}/mplapack

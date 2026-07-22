@@ -46,8 +46,8 @@
 //
 // Verbose output (stderr):
 //   resolve_symbol: "Rgemm" -> "_Z5RgemmPKcS0_lllgPglS1_lgS1_l"
-//                   in /usr/local/lib/libmpblas_dd.so [via elf, scanned 342 syms]
-//   resolve_symbol: "Raxpy" NOT FOUND in /usr/local/lib/libmpblas_dd.so [scanned 342 syms via elf]
+//                   in /usr/local/lib/libmplapack_dd.so [via elf, scanned 342 syms]
+//   resolve_symbol: "Raxpy" NOT FOUND in /usr/local/lib/libmplapack_dd.so [scanned 342 syms via elf]
 //
 // Notes:
 //   - Matches by demangled pattern "FuncName(" with boundary detection,
@@ -669,8 +669,8 @@ inline void *resolve_via_pe(void *handle, const char *func_name, char *out_mangl
 //
 // If verbose == true (default), prints diagnostic info to stderr:
 //   resolve_symbol: "Rgemm" -> "_Z5RgemmPKcS0_lllgPglS1_lgS1_l"
-//                   in /usr/local/lib/libmpblas_dd.so [via elf, scanned 342 syms]
-//   resolve_symbol: "Raxpy" NOT FOUND in /usr/local/lib/libmpblas_dd.so [scanned 342 syms via elf]
+//                   in /usr/local/lib/libmplapack_dd.so [via elf, scanned 342 syms]
+//   resolve_symbol: "Raxpy" NOT FOUND in /usr/local/lib/libmplapack_dd.so [scanned 342 syms via elf]
 //
 // Resolution order:
 //   1. Cache lookup

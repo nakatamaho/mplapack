@@ -171,8 +171,12 @@ foreach(_b ${_backends})
       foreach(_in ${${_inputs_var}})
         # ${_exe} embeds the backend flavor and R/C/rf/dmd driver variant, so
         # it disambiguates datasets shared between drivers (e.g. nep, svd).
+        set(_input_file "${_dataset_dir}/${_in}.in")
+        if(_kind STREQUAL eig AND _in STREQUAL se2 AND _variant MATCHES "_opt$")
+          set(_input_file "${_dataset_dir}/se2_opt.in")
+        endif()
         _mplapack_register_stdin_test(
-          "${_exe}_${_in}" ${_exe} "${_dataset_dir}/${_in}.in")
+          "${_exe}_${_in}" ${_exe} "${_input_file}")
       endforeach()
     endforeach()
   endforeach()

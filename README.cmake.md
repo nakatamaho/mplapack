@@ -1,5 +1,10 @@
 # Building MPLAPACK with CMake
 
+CMake builds are fully exercised by the test suite as of the unified-library
+migration (goal 04). Autotools remains the canonical build system for release
+tarballs and packaging. The CMake interface is still experimental: option
+names and exported targets may change without notice.
+
 This is a modern CMake build for MPLAPACK that lives alongside the existing
 autotools build. It produces self-contained `mplapack_<backend>`,
 `mplapack_<backend>_opt`, and optional accelerator libraries with namespaced
