@@ -35,12 +35,38 @@ peripheral consumer inside the repo.
      libmpblas), mplapack.pc.in.
    - `git grep -n "mpblas"` at the end: remaining hits must be source dirs,
      historical CHANGES, or MIGRATION — nothing operational.
-5. Docker smoke: if the docker matrix is runnable in the environment, build
+5. CMake support-tier statement: README.cmake.md must state the tier
+   explicitly: CMake builds are fully exercised by the test suite as of goal
+   04, but autotools remains the canonical system for release tarballs and
+   packaging, and the CMake interface (option names, export targets) may
+   still change without notice (experimental). Do not silently drop or keep
+   the word "experimental" without this sentence.
+6. CTest manifest gate: add an add_test invocation running
+   misc/check_source_manifests.sh with the source dir, so manifest drift
+   fails both build systems, not only autotools check-local.
+7. Resolve the standing CTest failure xeigtstR_double_opt_se2
+   (ratio 57.2705 > THRESH 50, recorded in goal 04):
+   a. Re-run the driver with OMP_NUM_THREADS=1 and with the default thread
+      count; record both ratios. Identify the failing test line (driver,
+      matrix type, N) from the xeigtst output.
+   b. Confirm the reference double run of the same input passes.
+   c. If (b) passes and the exceedance is stable and O(100) at most, the
+      cause is summation-order divergence in the optimized BLAS path
+      (dispatchers + OpenMP kernels). Then raise THRESH to 100 ONLY in the
+      input file consumed by the _opt test runs, with an in-file comment
+      recording the observed ratio, cause, compiler, and date. Reference
+      inputs keep THRESH 50. Do not modify kernels.
+   d. If (b) fails, or the ratio is thread-count-unstable beyond O(100),
+      STOP: leave the test red, record findings in the commit body, and do
+      not change any threshold.
+   Record the outcome in CHANGES.2.3.0.md either way.
+8. Docker smoke: if the docker matrix is runnable in the environment, build
    ONE image (the default ubuntu one) to prove packaging file lists are
    consistent; otherwise mark UNVERIFIED in the commit body.
 
 ## Acceptance criteria
 
+- Zero failing CTests after task 7 (or an explicit task-7d stop recorded).
 - Fresh clone of the branch: autotools full build (default backends) and
   CMake build both succeed; `make distcheck` passes if it passed on master
   (check first; if it was already broken, do not fix here, note it).
