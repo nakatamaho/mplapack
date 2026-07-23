@@ -1,0 +1,15 @@
+check_PROGRAMS = $(compare_tests)
+TESTS = run_Rlaruv_test.sh run_Rlamch_test.sh
+CLEANFILES = run_Rlaruv_test.sh run_Rlamch_test.sh Rlaruv.txt Rlamch.txt
+
+TEST_EXTENSIONS = .sh
+SH_LOG_COMPILER = $(SHELL)
+
+AM_TESTS_ENVIRONMENT = \
+    LOG_COMPILER='$(LOG_COMPILER)'; export LOG_COMPILER; \
+    EXEEXT='$(EXEEXT)'; export EXEEXT; \
+    srcdir='$(srcdir)'; export srcdir;
+
+.PHONY: check-all
+check-all: $(check_PROGRAMS)
+	$(MAKE) $(AM_MAKEFLAGS) check TESTS="$(compare_tests)"

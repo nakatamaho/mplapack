@@ -18,7 +18,6 @@ FC="gfortran"; export FC
 F77="gfortran"; export F77
 fi
 
-pushd mplapack/test/compare ; bash gen.Makefile.am.sh ; popd
 
 autoreconf --force --install
 arch="$(uname -m)"

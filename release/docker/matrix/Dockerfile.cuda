@@ -59,7 +59,6 @@ cd /work/mplapack; \
 git log -1; \
 \
 # Autotools prep \
-cd mplapack/test/compare; bash gen.Makefile.am.sh; cd /work/mplapack; \
 autoreconf --force --install; \
 \
 # CUDA builds are x86_64, so enable binary80 \

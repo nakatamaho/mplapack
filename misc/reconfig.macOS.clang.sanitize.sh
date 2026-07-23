@@ -14,8 +14,7 @@ else
     FC="gfortran-mp-15"; export FC
 fi
 
-# Generate Makefile.am and run autoreconf
-pushd mplapack/test/compare ; bash gen.Makefile.am.sh ; popd
+# Regenerate the autotools files
 autoreconf --force --install
 
 CONFIG_FLAGS=(

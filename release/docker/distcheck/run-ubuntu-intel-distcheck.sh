@@ -56,9 +56,6 @@ source /opt/intel/oneapi/setvars.sh
 set -u
 
 if [ "$SOURCE_KIND" = "git" ]; then
-    cd mplapack/test/compare
-    bash gen.Makefile.am.sh
-    cd /work/mplapack
     autoreconf --force --install
 else
     echo "Using distributed configure files from source tarball; skipping autoreconf."

@@ -57,7 +57,6 @@ cd /work/mplapack; \
 git log -1; \
 \
 # Autotools prep \
-cd mplapack/test/compare; bash gen.Makefile.am.sh; cd /work/mplapack; \
 autoreconf --force --install; \
 \
 ARCH=$(uname -m); \

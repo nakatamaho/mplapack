@@ -580,12 +580,6 @@ make_dist() {
         fi
     fi
 
-    log "Generating compare Makefile.am files..."
-    (
-        cd mplapack/test/compare
-        bash gen.Makefile.am.sh
-    ) > "$distdir/gen_compare_makefiles.log" 2>&1
-
     log "Running autoreconf..."
     autoreconf -fi > "$distdir/autoreconf.log" 2>&1
 

@@ -15,7 +15,6 @@ CC="clang" ; export CC
 FC="flang-new"; export FC
 fi
 
-pushd mplapack/test/compare ; bash gen.Makefile.am.sh ; popd
 autoreconf --force --install
 
 CONFIG_FLAGS=(

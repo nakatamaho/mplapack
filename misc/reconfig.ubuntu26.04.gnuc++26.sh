@@ -14,7 +14,6 @@ CC="gcc" ; export CC
 FC="gfortran"; export FC
 fi
 
-pushd mplapack/test/compare ; bash gen.Makefile.am.sh ; popd
 
 autoreconf --force --install
 if [ "`uname -m`" = "x86_64" ] || [ "`uname -m`" = "i686" ]; then

@@ -44,9 +44,6 @@ else
 fi
 git log -1
 
-cd mplapack/test/compare
-bash gen.Makefile.am.sh
-cd /work/mplapack
 autoreconf --force --install
 
 ARCH=$(dpkg --print-architecture)

@@ -19,7 +19,6 @@ RANLIB="x86_64-w64-mingw32-ranlib" ; export RANLIB
 AR="x86_64-w64-mingw32-ar" ; export AR
 fi
 
-pushd mplapack/test/compare ; bash gen.Makefile.am.sh ; popd
 
 autoreconf --force --install
 
