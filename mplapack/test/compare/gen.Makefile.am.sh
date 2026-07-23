@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -eu
+
 if [ `uname` = "Linux" ]; then
     SED=sed
 else
@@ -13,7 +15,18 @@ MPLIBS="gmp mpfr binary128 dd qd double binary80"
 for _mplib in $MPLIBS; do
     rm -f $_mplib/Makefile.am
     rm -f ${_mplib}/_filelist_test
-    cp $_mplib/Makefile.am.part ${_mplib}/Makefile.am.part.${_mplib}
+    if [ "$_mplib" = "mpfr" ]; then
+        _mplapack_mpfr_archive=""
+        _mplapack_mpfr_lib=""
+    else
+        _mplapack_mpfr_archive=',$(top_builddir)/mplapack/reference/.libs/libmplapack_mpfr.a'
+        _mplapack_mpfr_lib=' -lmplapack_mpfr'
+    fi
+    $SED \
+        -e "s|%%MPLIB%%|${_mplib}|g" \
+        -e "s|%%MPLAPACK_MPFR_ARCHIVE%%|${_mplapack_mpfr_archive}|g" \
+        -e "s|%%MPLAPACK_MPFR_LIB%%|${_mplapack_mpfr_lib}|g" \
+        $_mplib/Makefile.am.part > ${_mplib}/Makefile.am.part.${_mplib}
     FILES=`cat _tmpfilelist_test`
     for _file in $FILES; do
         echo "${_file}_${_mplib} \\" | $SED 's/\.cpp//g' >> ${_mplib}/_filelist_test
@@ -33,6 +46,10 @@ for _mplib in $MPLIBS; do
 
     $SED -e "/%%insert here2%%/e cat ${_mplib}/Makefile.am.part.3rd" ${_mplib}/Makefile.am.part.2nd | grep -v %%FUNCTION%% | grep -v %%TEST%% > ${_mplib}/Makefile.am
     $SED -i -e "s/%%insert here2%%//g" ${_mplib}/Makefile.am
+    if grep -Eq -- '(-lmpblas_|libmpblas_|%%(MPLIB|MPLAPACK_MPFR_(ARCHIVE|LIB))%%)' ${_mplib}/Makefile.am; then
+        echo "error: stale library name or unresolved placeholder in ${_mplib}/Makefile.am" >&2
+        exit 1
+    fi
     rm ${_mplib}/Makefile.am.part.* ${_mplib}/_filelist_test
 done
 
