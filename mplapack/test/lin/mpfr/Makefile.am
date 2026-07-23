@@ -1,14 +1,19 @@
-check_PROGRAMS = $(mplapack_mpfr_test_PROGRAMS)
+check_PROGRAMS = $(mplapack_mpfr_test_PROGRAMS) $(mplapack_mpfr_opt_test_PROGRAMS)
 
 mplapack_mpfr_test_PROGRAMS = xlintstR_mpfr xlintstC_mpfr xlintstrfR_mpfr xlintstrfC_mpfr
+mplapack_mpfr_opt_test_PROGRAMS = xlintstR_mpfr_opt xlintstC_mpfr_opt xlintstrfR_mpfr_opt xlintstrfC_mpfr_opt
 mplapack_mpfr_testdir = $(prefix)/lib/$(target)/mplapack/test/lin
+mplapack_mpfr_opt_testdir = $(prefix)/lib/$(target)/mplapack/test/lin
 
-$(check_PROGRAMS): ../liblin_mpfr.la ../liblin_override_mpfr.la
+$(mplapack_mpfr_test_PROGRAMS): ../liblin_mpfr.la ../liblin_override_mpfr.la
+$(mplapack_mpfr_opt_test_PROGRAMS): ../liblin_mpfr_opt.la ../liblin_override_mpfr_opt.la
 
 if IS_MINGW
 libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/lin/.libs/liblin_mpfr.a,$(top_builddir)/mplapack/test/lin/.libs/liblin_override_mpfr.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_mpfr.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_mpfr.a,--no-whole-archive
+opt_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/lin/.libs/liblin_mpfr_opt.a,$(top_builddir)/mplapack/test/lin/.libs/liblin_override_mpfr_opt.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_mpfr_opt.a,$(top_builddir)/mpblas/optimized/mpfr/.libs/libmplapack_mpfr_opt.a,--no-whole-archive
 else
 libdepends = -L$(top_builddir)/mplapack/test/lin -llin_mpfr -llin_override_mpfr -L$(top_builddir)/mplapack/test/matgen -lmatgen_mpfr -L$(top_builddir)/mplapack/reference -lmplapack_mpfr
+opt_libdepends = -L$(top_builddir)/mplapack/test/lin -llin_mpfr_opt -llin_override_mpfr_opt -L$(top_builddir)/mplapack/test/matgen -lmatgen_mpfr_opt -L$(top_builddir)/mpblas/optimized/mpfr -lmplapack_mpfr_opt
 endif
 
 mplibs = -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpc -lmpfr -lgmpxx -lgmp -lm
@@ -44,24 +49,40 @@ OUTDIR_PATH = ../results/$(OUTDIR)/mpfr
 
 
 xlintstR_mpfr_SOURCES  = ../common/Rchkaa.cpp
+xlintstR_mpfr_opt_SOURCES  = ../common/Rchkaa.cpp
 xlintstR_mpfr_LDFLAGS  = $(libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstR_mpfr_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstR_mpfr_LDFLAGS += -Wl,-rpath,$(libdir)
-xlintstR_mpfr_CXXFLAGS = $(cxxflags) 
+xlintstR_mpfr_opt_LDFLAGS += -Wl,-rpath,$(libdir)
+xlintstR_mpfr_CXXFLAGS = $(cxxflags)
+xlintstR_mpfr_opt_CXXFLAGS = $(cxxflags)
 
 xlintstC_mpfr_SOURCES  = ../common/Cchkaa.cpp
+xlintstC_mpfr_opt_SOURCES  = ../common/Cchkaa.cpp
 xlintstC_mpfr_LDFLAGS  = $(libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstC_mpfr_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstC_mpfr_LDFLAGS += -Wl,-rpath,$(libdir)
+xlintstC_mpfr_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstC_mpfr_CXXFLAGS = $(cxxflags)
+xlintstC_mpfr_opt_CXXFLAGS = $(cxxflags)
 
 xlintstrfR_mpfr_SOURCES  = ../common/Rchkrfp.cpp
+xlintstrfR_mpfr_opt_SOURCES  = ../common/Rchkrfp.cpp
 xlintstrfR_mpfr_LDFLAGS  = $(libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstrfR_mpfr_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfR_mpfr_LDFLAGS += -Wl,-rpath,$(libdir)
+xlintstrfR_mpfr_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstrfR_mpfr_CXXFLAGS = $(cxxflags)
+xlintstrfR_mpfr_opt_CXXFLAGS = $(cxxflags)
 
 xlintstrfC_mpfr_SOURCES  = ../common/Cchkrfp.cpp
+xlintstrfC_mpfr_opt_SOURCES  = ../common/Cchkrfp.cpp
 xlintstrfC_mpfr_LDFLAGS  = $(libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstrfC_mpfr_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfC_mpfr_LDFLAGS += -Wl,-rpath,$(libdir)
+xlintstrfC_mpfr_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstrfC_mpfr_CXXFLAGS = $(cxxflags)
+xlintstrfC_mpfr_opt_CXXFLAGS = $(cxxflags)
 
 # -----------------------------------------------------------------------------
 # MPFR emulation profiles

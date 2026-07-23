@@ -1,38 +1,59 @@
-check_PROGRAMS = $(mplapack_gmp_test_PROGRAMS)
+check_PROGRAMS = $(mplapack_gmp_test_PROGRAMS) $(mplapack_gmp_opt_test_PROGRAMS)
 
 mplapack_gmp_test_PROGRAMS = xlintstR_gmp xlintstC_gmp xlintstrfR_gmp xlintstrfC_gmp
+mplapack_gmp_opt_test_PROGRAMS = xlintstR_gmp_opt xlintstC_gmp_opt xlintstrfR_gmp_opt xlintstrfC_gmp_opt
 mplapack_gmp_testdir = $(prefix)/lib/$(target)/mplapack/test/lin
+mplapack_gmp_opt_testdir = $(prefix)/lib/$(target)/mplapack/test/lin
 
-$(check_PROGRAMS): ../liblin_gmp.la ../liblin_override_gmp.la
+$(mplapack_gmp_test_PROGRAMS): ../liblin_gmp.la ../liblin_override_gmp.la
+$(mplapack_gmp_opt_test_PROGRAMS): ../liblin_gmp_opt.la ../liblin_override_gmp_opt.la
 
 if IS_MINGW
 libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/lin/.libs/liblin_gmp.a,$(top_builddir)/mplapack/test/lin/.libs/liblin_override_gmp.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_gmp.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_gmp.a,--no-whole-archive
+opt_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/lin/.libs/liblin_gmp_opt.a,$(top_builddir)/mplapack/test/lin/.libs/liblin_override_gmp_opt.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_gmp_opt.a,$(top_builddir)/mpblas/optimized/gmp/.libs/libmplapack_gmp_opt.a,--no-whole-archive
 else
 libdepends = -L$(top_builddir)/mplapack/test/lin -llin_gmp -llin_override_gmp -L$(top_builddir)/mplapack/test/matgen -lmatgen_gmp -L$(top_builddir)/mplapack/reference -lmplapack_gmp
+opt_libdepends = -L$(top_builddir)/mplapack/test/lin -llin_gmp_opt -llin_override_gmp_opt -L$(top_builddir)/mplapack/test/matgen -lmatgen_gmp_opt -L$(top_builddir)/mpblas/optimized/gmp -lmplapack_gmp_opt
 endif
 
 mplibs = -L$(GMP_LIBDIR) -lgmpxx -lgmp -lm
 cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_GMP___ -D___MPLAPACK_INTERNAL___ -I$(top_srcdir)/fable
 
 xlintstR_gmp_SOURCES  = ../common/Rchkaa.cpp
+xlintstR_gmp_opt_SOURCES  = ../common/Rchkaa.cpp
 xlintstR_gmp_LDFLAGS  = $(libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstR_gmp_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstR_gmp_LDFLAGS += -Wl,-rpath,$(libdir)
-xlintstR_gmp_CXXFLAGS = $(cxxflags) 
+xlintstR_gmp_opt_LDFLAGS += -Wl,-rpath,$(libdir)
+xlintstR_gmp_CXXFLAGS = $(cxxflags)
+xlintstR_gmp_opt_CXXFLAGS = $(cxxflags)
 
 xlintstC_gmp_SOURCES  = ../common/Cchkaa.cpp
+xlintstC_gmp_opt_SOURCES  = ../common/Cchkaa.cpp
 xlintstC_gmp_LDFLAGS  = $(libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstC_gmp_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstC_gmp_LDFLAGS += -Wl,-rpath,$(libdir)
+xlintstC_gmp_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstC_gmp_CXXFLAGS = $(cxxflags)
+xlintstC_gmp_opt_CXXFLAGS = $(cxxflags)
 
 xlintstrfR_gmp_SOURCES  = ../common/Rchkrfp.cpp
+xlintstrfR_gmp_opt_SOURCES  = ../common/Rchkrfp.cpp
 xlintstrfR_gmp_LDFLAGS  = $(libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstrfR_gmp_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfR_gmp_LDFLAGS += -Wl,-rpath,$(libdir)
+xlintstrfR_gmp_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstrfR_gmp_CXXFLAGS = $(cxxflags)
+xlintstrfR_gmp_opt_CXXFLAGS = $(cxxflags)
 
 xlintstrfC_gmp_SOURCES  = ../common/Cchkrfp.cpp
+xlintstrfC_gmp_opt_SOURCES  = ../common/Cchkrfp.cpp
 xlintstrfC_gmp_LDFLAGS  = $(libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstrfC_gmp_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfC_gmp_LDFLAGS += -Wl,-rpath,$(libdir)
+xlintstrfC_gmp_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstrfC_gmp_CXXFLAGS = $(cxxflags)
+xlintstrfC_gmp_opt_CXXFLAGS = $(cxxflags)
 
 install-data-hook:
 if IS_MACOS

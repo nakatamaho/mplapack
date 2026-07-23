@@ -1,38 +1,59 @@
-check_PROGRAMS = $(mplapack_binary80_test_PROGRAMS)
+check_PROGRAMS = $(mplapack_binary80_test_PROGRAMS) $(mplapack_binary80_opt_test_PROGRAMS)
 
 mplapack_binary80_test_PROGRAMS = xlintstR_binary80 xlintstC_binary80 xlintstrfR_binary80 xlintstrfC_binary80
+mplapack_binary80_opt_test_PROGRAMS = xlintstR_binary80_opt xlintstC_binary80_opt xlintstrfR_binary80_opt xlintstrfC_binary80_opt
 mplapack_binary80_testdir = $(prefix)/lib/$(target)/mplapack/test/lin
+mplapack_binary80_opt_testdir = $(prefix)/lib/$(target)/mplapack/test/lin
 
-$(check_PROGRAMS): ../liblin_binary80.la ../liblin_override_binary80.la
+$(mplapack_binary80_test_PROGRAMS): ../liblin_binary80.la ../liblin_override_binary80.la
+$(mplapack_binary80_opt_test_PROGRAMS): ../liblin_binary80_opt.la ../liblin_override_binary80_opt.la
 
 if IS_MINGW
 libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/lin/.libs/liblin_binary80.a,$(top_builddir)/mplapack/test/lin/.libs/liblin_override_binary80.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_binary80.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_binary80.a,--no-whole-archive
+opt_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/lin/.libs/liblin_binary80_opt.a,$(top_builddir)/mplapack/test/lin/.libs/liblin_override_binary80_opt.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_binary80_opt.a,$(top_builddir)/mpblas/optimized/binary80/.libs/libmplapack_binary80_opt.a,--no-whole-archive
 else
 libdepends = -L$(top_builddir)/mplapack/test/lin -llin_binary80 -llin_override_binary80 -L$(top_builddir)/mplapack/test/matgen -lmatgen_binary80 -L$(top_builddir)/mplapack/reference -lmplapack_binary80
+opt_libdepends = -L$(top_builddir)/mplapack/test/lin -llin_binary80_opt -llin_override_binary80_opt -L$(top_builddir)/mplapack/test/matgen -lmatgen_binary80_opt -L$(top_builddir)/mpblas/optimized/binary80 -lmplapack_binary80_opt
 endif
 
 mplibs = -lm
 cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_BINARY80___ -D___MPLAPACK_INTERNAL___ -I$(top_srcdir)/fable
 
 xlintstR_binary80_SOURCES  = ../common/Rchkaa.cpp
+xlintstR_binary80_opt_SOURCES  = ../common/Rchkaa.cpp
 xlintstR_binary80_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstR_binary80_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstR_binary80_LDFLAGS += -Wl,-rpath,$(libdir)
+xlintstR_binary80_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstR_binary80_CXXFLAGS = $(cxxflags)
+xlintstR_binary80_opt_CXXFLAGS = $(cxxflags)
 
 xlintstC_binary80_SOURCES  = ../common/Cchkaa.cpp
+xlintstC_binary80_opt_SOURCES  = ../common/Cchkaa.cpp
 xlintstC_binary80_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstC_binary80_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstC_binary80_LDFLAGS += -Wl,-rpath,$(libdir)
+xlintstC_binary80_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstC_binary80_CXXFLAGS = $(cxxflags)
+xlintstC_binary80_opt_CXXFLAGS = $(cxxflags)
 
 xlintstrfR_binary80_SOURCES  = ../common/Rchkrfp.cpp
+xlintstrfR_binary80_opt_SOURCES  = ../common/Rchkrfp.cpp
 xlintstrfR_binary80_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstrfR_binary80_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfR_binary80_LDFLAGS += -Wl,-rpath,$(libdir)
+xlintstrfR_binary80_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstrfR_binary80_CXXFLAGS = $(cxxflags)
+xlintstrfR_binary80_opt_CXXFLAGS = $(cxxflags)
 
 xlintstrfC_binary80_SOURCES  = ../common/Cchkrfp.cpp
+xlintstrfC_binary80_opt_SOURCES  = ../common/Cchkrfp.cpp
 xlintstrfC_binary80_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstrfC_binary80_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfC_binary80_LDFLAGS += -Wl,-rpath,$(libdir)
+xlintstrfC_binary80_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstrfC_binary80_CXXFLAGS = $(cxxflags)
+xlintstrfC_binary80_opt_CXXFLAGS = $(cxxflags)
 
 install-data-hook:
 if IS_MACOS

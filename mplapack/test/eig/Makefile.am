@@ -1,5 +1,5 @@
 SUBDIRS = .
-lib_LTLIBRARIES = 
+lib_LTLIBRARIES =
 # -----------------------------------------------------------------------------
 # Parallel 'make -j check' across independent backend subdirectories.
 #
@@ -16,47 +16,47 @@ CHECK_BACKENDS =
 
 mplapack_eig_DATA = Cbak.in Cbal.in Cbb.in Cec.in Ced.in Cgbak.in Cgbal.in Cgd.in Cgg.in \
 Csb.in Csg.in Rbak.in Rbal.in Rbb.in Rec.in Red.in Rgbak.in Rgbal.in Rgd.in Rgg.in Rsb.in Rsg.in \
-csd.in glm.in gqr.in gsv.in lse.in nep.in se2.in se2_opt.in sep.in svd.in
+csd.in glm.in gqr.in gsv.in lse.in nep.in se2.in sep.in svd.in
 mplapack_eigdir = $(prefix)/lib/$(target)/mplapack/test/eig
 
 if ENABLE_MPFR
-lib_LTLIBRARIES += libeig_mpfr.la libeig_override_mpfr.la
+lib_LTLIBRARIES += libeig_mpfr.la libeig_override_mpfr.la libeig_mpfr_opt.la libeig_override_mpfr_opt.la
 SUBDIRS += mpfr
 CHECK_BACKENDS += mpfr
 endif
 
 if ENABLE_GMP
-lib_LTLIBRARIES += libeig_gmp.la libeig_override_gmp.la
+lib_LTLIBRARIES += libeig_gmp.la libeig_override_gmp.la libeig_gmp_opt.la libeig_override_gmp_opt.la
 SUBDIRS += gmp
 CHECK_BACKENDS += gmp
 endif
 
 if ENABLE_DD
-lib_LTLIBRARIES += libeig_dd.la libeig_override_dd.la
+lib_LTLIBRARIES += libeig_dd.la libeig_override_dd.la libeig_dd_opt.la libeig_override_dd_opt.la
 SUBDIRS += dd
 CHECK_BACKENDS += dd
 endif
 
 if ENABLE_QD
-lib_LTLIBRARIES += libeig_qd.la libeig_override_qd.la
+lib_LTLIBRARIES += libeig_qd.la libeig_override_qd.la libeig_qd_opt.la libeig_override_qd_opt.la
 SUBDIRS += qd
 CHECK_BACKENDS += qd
 endif
 
 if ENABLE_DOUBLE
-lib_LTLIBRARIES += libeig_double.la libeig_override_double.la
+lib_LTLIBRARIES += libeig_double.la libeig_override_double.la libeig_double_opt.la libeig_override_double_opt.la
 SUBDIRS += double
 CHECK_BACKENDS += double
 endif
 
 if ENABLE_BINARY80
-lib_LTLIBRARIES += libeig_binary80.la libeig_override_binary80.la
+lib_LTLIBRARIES += libeig_binary80.la libeig_override_binary80.la libeig_binary80_opt.la libeig_override_binary80_opt.la
 SUBDIRS += binary80
 CHECK_BACKENDS += binary80
 endif
 
 if ENABLE_BINARY128
-lib_LTLIBRARIES += libeig_binary128.la libeig_override_binary128.la
+lib_LTLIBRARIES += libeig_binary128.la libeig_override_binary128.la libeig_binary128_opt.la libeig_override_binary128_opt.la
 SUBDIRS += binary128
 CHECK_BACKENDS += binary128
 endif
@@ -88,92 +88,148 @@ check-recursive: check-parallel
 
 if ENABLE_MPFR
 libeig_mpfr_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(LAPACK_INCLUDEDIR) -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR)  -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___ -D___MPLAPACK_INTERNAL___
+libeig_mpfr_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(LAPACK_INCLUDEDIR) -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR)  -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___ -D___MPLAPACK_INTERNAL___
 libeig_mpfr_la_SOURCES = $(EIG_SOURCES)
+libeig_mpfr_opt_la_SOURCES = $(EIG_SOURCES)
 libeig_mpfr_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
+libeig_mpfr_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 libeig_override_mpfr_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___ -I$(top_srcdir)/fable
+libeig_override_mpfr_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___ -I$(top_srcdir)/fable
 libeig_override_mpfr_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp common/Mxlaenv.cpp
+libeig_override_mpfr_opt_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp common/Mxlaenv.cpp
 libeig_override_mpfr_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
+libeig_override_mpfr_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 if IS_MACOS
 libeig_mpfr_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
+libeig_mpfr_opt_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 libeig_override_mpfr_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
+libeig_override_mpfr_opt_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 endif
 
 if ENABLE_GMP
 libeig_gmp_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(LAPACK_INCLUDEDIR) -I$(GMP_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_GMP___ -D___MPLAPACK_INTERNAL___
+libeig_gmp_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(LAPACK_INCLUDEDIR) -I$(GMP_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_GMP___ -D___MPLAPACK_INTERNAL___
 libeig_gmp_la_SOURCES = $(EIG_SOURCES)
+libeig_gmp_opt_la_SOURCES = $(EIG_SOURCES)
 libeig_gmp_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
+libeig_gmp_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 libeig_override_gmp_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(top_srcdir)/fable -D___MPLAPACK_BUILD_WITH_GMP___
+libeig_override_gmp_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(top_srcdir)/fable -D___MPLAPACK_BUILD_WITH_GMP___
 libeig_override_gmp_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp common/Mxlaenv.cpp
+libeig_override_gmp_opt_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp common/Mxlaenv.cpp
 libeig_override_gmp_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
+libeig_override_gmp_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 if IS_MACOS
 libeig_gmp_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
+libeig_gmp_opt_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 libeig_override_gmp_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
+libeig_override_gmp_opt_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 endif
 
 if ENABLE_QD
 libeig_qd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(LAPACK_INCLUDEDIR) -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_QD___ @qd_extra_cxxflags@ -D___MPLAPACK_INTERNAL___
+libeig_qd_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(LAPACK_INCLUDEDIR) -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_QD___ @qd_extra_cxxflags@ -D___MPLAPACK_INTERNAL___
 libeig_qd_la_SOURCES = $(EIG_SOURCES)
+libeig_qd_opt_la_SOURCES = $(EIG_SOURCES)
 libeig_qd_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
+libeig_qd_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 libeig_override_qd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_QD___ @qd_extra_cxxflags@
+libeig_override_qd_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_QD___ @qd_extra_cxxflags@
 libeig_override_qd_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp common/Mxlaenv.cpp
+libeig_override_qd_opt_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp common/Mxlaenv.cpp
 libeig_override_qd_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
+libeig_override_qd_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 if IS_MACOS
 libeig_qd_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
+libeig_qd_opt_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 libeig_override_qd_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
+libeig_override_qd_opt_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 endif
 
 if ENABLE_DD
 libeig_dd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(LAPACK_INCLUDEDIR) -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_DD___ @qd_extra_cxxflags@ -D___MPLAPACK_INTERNAL___
+libeig_dd_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(LAPACK_INCLUDEDIR) -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_DD___ @qd_extra_cxxflags@ -D___MPLAPACK_INTERNAL___
 libeig_dd_la_SOURCES = $(EIG_SOURCES)
+libeig_dd_opt_la_SOURCES = $(EIG_SOURCES)
 libeig_dd_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
+libeig_dd_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 libeig_override_dd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_DD___ @qd_extra_cxxflags@
+libeig_override_dd_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_DD___ @qd_extra_cxxflags@
 libeig_override_dd_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp common/Mxlaenv.cpp
+libeig_override_dd_opt_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp common/Mxlaenv.cpp
 libeig_override_dd_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
+libeig_override_dd_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 if IS_MACOS
 libeig_dd_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
+libeig_dd_opt_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 libeig_override_dd_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
+libeig_override_dd_opt_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 endif
 
 if ENABLE_DOUBLE
 libeig_double_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(LAPACK_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_DOUBLE___ -D___MPLAPACK_INTERNAL___
+libeig_double_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(LAPACK_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_DOUBLE___ -D___MPLAPACK_INTERNAL___
 libeig_double_la_SOURCES = $(EIG_SOURCES)
+libeig_double_opt_la_SOURCES = $(EIG_SOURCES)
 libeig_double_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
+libeig_double_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 libeig_override_double_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -D___MPLAPACK_BUILD_WITH_DOUBLE___
+libeig_override_double_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -D___MPLAPACK_BUILD_WITH_DOUBLE___
 libeig_override_double_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp common/Mxlaenv.cpp
+libeig_override_double_opt_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp common/Mxlaenv.cpp
 libeig_override_double_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
+libeig_override_double_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 if IS_MACOS
 libeig_double_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
+libeig_double_opt_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 libeig_override_double_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
+libeig_override_double_opt_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 endif
 
 if ENABLE_BINARY80
 libeig_binary80_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(LAPACK_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_BINARY80___ -D___MPLAPACK_INTERNAL___
+libeig_binary80_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(LAPACK_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_BINARY80___ -D___MPLAPACK_INTERNAL___
 libeig_binary80_la_SOURCES = $(EIG_SOURCES)
+libeig_binary80_opt_la_SOURCES = $(EIG_SOURCES)
 libeig_binary80_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
+libeig_binary80_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 libeig_override_binary80_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -D___MPLAPACK_BUILD_WITH_BINARY80___
+libeig_override_binary80_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -D___MPLAPACK_BUILD_WITH_BINARY80___
 libeig_override_binary80_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp common/Mxlaenv.cpp
+libeig_override_binary80_opt_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp common/Mxlaenv.cpp
 libeig_override_binary80_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
+libeig_override_binary80_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 if IS_MACOS
 libeig_binary80_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
+libeig_binary80_opt_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 libeig_override_binary80_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
+libeig_override_binary80_opt_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 endif
 
 if ENABLE_BINARY128
 libeig_binary128_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(LAPACK_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_BINARY128___ -D___MPLAPACK_INTERNAL___
+libeig_binary128_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(LAPACK_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_BINARY128___ -D___MPLAPACK_INTERNAL___
 libeig_binary128_la_SOURCES = $(EIG_SOURCES)
+libeig_binary128_opt_la_SOURCES = $(EIG_SOURCES)
 libeig_binary128_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
+libeig_binary128_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 libeig_override_binary128_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -D___MPLAPACK_BUILD_WITH_BINARY128___
+libeig_override_binary128_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -D___MPLAPACK_BUILD_WITH_BINARY128___
 libeig_override_binary128_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp common/Mxlaenv.cpp
+libeig_override_binary128_opt_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp common/Mxlaenv.cpp
 libeig_override_binary128_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
+libeig_override_binary128_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 if IS_MACOS
 libeig_binary128_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
+libeig_binary128_opt_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 libeig_override_binary128_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
+libeig_override_binary128_opt_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 endif
 

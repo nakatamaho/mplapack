@@ -1,14 +1,19 @@
-check_PROGRAMS = $(mplapack_binary128_test_PROGRAMS)
+check_PROGRAMS = $(mplapack_binary128_test_PROGRAMS) $(mplapack_binary128_opt_test_PROGRAMS)
 
 mplapack_binary128_test_PROGRAMS = xlintstR_binary128 xlintstC_binary128 xlintstrfR_binary128 xlintstrfC_binary128
+mplapack_binary128_opt_test_PROGRAMS = xlintstR_binary128_opt xlintstC_binary128_opt xlintstrfR_binary128_opt xlintstrfC_binary128_opt
 mplapack_binary128_testdir = $(prefix)/lib/$(target)/mplapack/test/lin
+mplapack_binary128_opt_testdir = $(prefix)/lib/$(target)/mplapack/test/lin
 
-$(check_PROGRAMS): ../liblin_binary128.la ../liblin_override_binary128.la
+$(mplapack_binary128_test_PROGRAMS): ../liblin_binary128.la ../liblin_override_binary128.la
+$(mplapack_binary128_opt_test_PROGRAMS): ../liblin_binary128_opt.la ../liblin_override_binary128_opt.la
 
 if IS_MINGW
 libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/lin/.libs/liblin_binary128.a,$(top_builddir)/mplapack/test/lin/.libs/liblin_override_binary128.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_binary128.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_binary128.a,--no-whole-archive
+opt_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/lin/.libs/liblin_binary128_opt.a,$(top_builddir)/mplapack/test/lin/.libs/liblin_override_binary128_opt.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_binary128_opt.a,$(top_builddir)/mpblas/optimized/binary128/.libs/libmplapack_binary128_opt.a,--no-whole-archive
 else
 libdepends = -L$(top_builddir)/mplapack/test/lin -llin_binary128 -llin_override_binary128 -L$(top_builddir)/mplapack/test/matgen -lmatgen_binary128 -L$(top_builddir)/mplapack/reference -lmplapack_binary128
+opt_libdepends = -L$(top_builddir)/mplapack/test/lin -llin_binary128_opt -llin_override_binary128_opt -L$(top_builddir)/mplapack/test/matgen -lmatgen_binary128_opt -L$(top_builddir)/mpblas/optimized/binary128 -lmplapack_binary128_opt
 endif
 
 if BINARY128_USE_QUADMATH
@@ -20,24 +25,40 @@ endif
 cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_BINARY128___ -D___MPLAPACK_INTERNAL___ -I$(top_srcdir)/fable
 
 xlintstR_binary128_SOURCES  = ../common/Rchkaa.cpp
+xlintstR_binary128_opt_SOURCES  = ../common/Rchkaa.cpp
 xlintstR_binary128_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstR_binary128_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstR_binary128_LDFLAGS += -Wl,-rpath,$(libdir)
+xlintstR_binary128_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstR_binary128_CXXFLAGS = $(cxxflags)
+xlintstR_binary128_opt_CXXFLAGS = $(cxxflags)
 
 xlintstC_binary128_SOURCES  = ../common/Cchkaa.cpp
+xlintstC_binary128_opt_SOURCES  = ../common/Cchkaa.cpp
 xlintstC_binary128_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstC_binary128_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstC_binary128_LDFLAGS += -Wl,-rpath,$(libdir)
+xlintstC_binary128_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstC_binary128_CXXFLAGS = $(cxxflags)
+xlintstC_binary128_opt_CXXFLAGS = $(cxxflags)
 
 xlintstrfR_binary128_SOURCES  = ../common/Rchkrfp.cpp
+xlintstrfR_binary128_opt_SOURCES  = ../common/Rchkrfp.cpp
 xlintstrfR_binary128_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstrfR_binary128_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfR_binary128_LDFLAGS += -Wl,-rpath,$(libdir)
+xlintstrfR_binary128_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstrfR_binary128_CXXFLAGS = $(cxxflags)
+xlintstrfR_binary128_opt_CXXFLAGS = $(cxxflags)
 
 xlintstrfC_binary128_SOURCES  = ../common/Cchkrfp.cpp
+xlintstrfC_binary128_opt_SOURCES  = ../common/Cchkrfp.cpp
 xlintstrfC_binary128_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstrfC_binary128_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfC_binary128_LDFLAGS += -Wl,-rpath,$(libdir)
+xlintstrfC_binary128_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstrfC_binary128_CXXFLAGS = $(cxxflags)
+xlintstrfC_binary128_opt_CXXFLAGS = $(cxxflags)
 
 install-data-hook:
 if IS_MACOS

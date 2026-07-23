@@ -93,8 +93,10 @@ foreach(_b ${_backends})
   foreach(_backend_library IN LISTS _backend_libraries)
     if(_backend_library MATCHES "_opt$")
       set(_variant "${_b}_opt")
+      set(_register_stdin_tests FALSE)
     else()
       set(_variant "${_b}")
+      set(_register_stdin_tests TRUE)
     endif()
 
     # --- libraries --------------------------------------------------------
@@ -168,16 +170,15 @@ foreach(_b ${_backends})
       else()
         set(_dataset_dir "${_test_dir}/eig")
       endif()
-      foreach(_in ${${_inputs_var}})
-        # ${_exe} embeds the backend flavor and R/C/rf/dmd driver variant, so
-        # it disambiguates datasets shared between drivers (e.g. nep, svd).
-        set(_input_file "${_dataset_dir}/${_in}.in")
-        if(_kind STREQUAL eig AND _in STREQUAL se2 AND _variant MATCHES "_opt$")
-          set(_input_file "${_dataset_dir}/se2_opt.in")
-        endif()
-        _mplapack_register_stdin_test(
-          "${_exe}_${_in}" ${_exe} "${_input_file}")
-      endforeach()
+      if(_register_stdin_tests)
+        foreach(_in ${${_inputs_var}})
+          # ${_exe} embeds the backend flavor and R/C/rf/dmd driver variant, so
+          # it disambiguates datasets shared between drivers (e.g. nep, svd).
+          set(_input_file "${_dataset_dir}/${_in}.in")
+          _mplapack_register_stdin_test(
+            "${_exe}_${_in}" ${_exe} "${_input_file}")
+        endforeach()
+      endif()
     endforeach()
   endforeach()
 endforeach()

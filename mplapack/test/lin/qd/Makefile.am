@@ -1,38 +1,59 @@
-check_PROGRAMS = $(mplapack_qd_test_PROGRAMS)
+check_PROGRAMS = $(mplapack_qd_test_PROGRAMS) $(mplapack_qd_opt_test_PROGRAMS)
 
 mplapack_qd_test_PROGRAMS = xlintstR_qd xlintstC_qd xlintstrfR_qd xlintstrfC_qd
+mplapack_qd_opt_test_PROGRAMS = xlintstR_qd_opt xlintstC_qd_opt xlintstrfR_qd_opt xlintstrfC_qd_opt
 mplapack_qd_testdir = $(prefix)/lib/$(target)/mplapack/test/lin
+mplapack_qd_opt_testdir = $(prefix)/lib/$(target)/mplapack/test/lin
 
-$(check_PROGRAMS): ../liblin_qd.la ../liblin_override_qd.la
+$(mplapack_qd_test_PROGRAMS): ../liblin_qd.la ../liblin_override_qd.la
+$(mplapack_qd_opt_test_PROGRAMS): ../liblin_qd_opt.la ../liblin_override_qd_opt.la
 
 if IS_MINGW
 libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/lin/.libs/liblin_qd.a,$(top_builddir)/mplapack/test/lin/.libs/liblin_override_qd.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_qd.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_qd.a,--no-whole-archive
+opt_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/lin/.libs/liblin_qd_opt.a,$(top_builddir)/mplapack/test/lin/.libs/liblin_override_qd_opt.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_qd_opt.a,$(top_builddir)/mpblas/optimized/qd/.libs/libmplapack_qd_opt.a,--no-whole-archive
 else
 libdepends = -L$(top_builddir)/mplapack/test/lin -llin_qd -llin_override_qd -L$(top_builddir)/mplapack/test/matgen -lmatgen_qd -L$(top_builddir)/mplapack/reference -lmplapack_qd
+opt_libdepends = -L$(top_builddir)/mplapack/test/lin -llin_qd_opt -llin_override_qd_opt -L$(top_builddir)/mplapack/test/matgen -lmatgen_qd_opt -L$(top_builddir)/mpblas/optimized/qd -lmplapack_qd_opt
 endif
 
 mplibs = -L$(QD_LIBDIR) -lqd -lm
 cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_QD___ @qd_extra_cxxflags@ -D___MPLAPACK_INTERNAL___ -I$(top_srcdir)/fable
 
 xlintstR_qd_SOURCES  = ../common/Rchkaa.cpp
+xlintstR_qd_opt_SOURCES  = ../common/Rchkaa.cpp
 xlintstR_qd_LDFLAGS  = $(libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstR_qd_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstR_qd_LDFLAGS += -Wl,-rpath,$(libdir)
+xlintstR_qd_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstR_qd_CXXFLAGS = $(cxxflags)
+xlintstR_qd_opt_CXXFLAGS = $(cxxflags)
 
 xlintstC_qd_SOURCES  = ../common/Cchkaa.cpp
+xlintstC_qd_opt_SOURCES  = ../common/Cchkaa.cpp
 xlintstC_qd_LDFLAGS  = $(libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstC_qd_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstC_qd_LDFLAGS += -Wl,-rpath,$(libdir)
+xlintstC_qd_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstC_qd_CXXFLAGS = $(cxxflags)
+xlintstC_qd_opt_CXXFLAGS = $(cxxflags)
 
 xlintstrfR_qd_SOURCES  = ../common/Rchkrfp.cpp
+xlintstrfR_qd_opt_SOURCES  = ../common/Rchkrfp.cpp
 xlintstrfR_qd_LDFLAGS  = $(libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstrfR_qd_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfR_qd_LDFLAGS += -Wl,-rpath,$(libdir)
+xlintstrfR_qd_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstrfR_qd_CXXFLAGS = $(cxxflags)
+xlintstrfR_qd_opt_CXXFLAGS = $(cxxflags)
 
 xlintstrfC_qd_SOURCES  = ../common/Cchkrfp.cpp
+xlintstrfC_qd_opt_SOURCES  = ../common/Cchkrfp.cpp
 xlintstrfC_qd_LDFLAGS  = $(libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstrfC_qd_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) # -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfC_qd_LDFLAGS += -Wl,-rpath,$(libdir)
+xlintstrfC_qd_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstrfC_qd_CXXFLAGS = $(cxxflags)
+xlintstrfC_qd_opt_CXXFLAGS = $(cxxflags)
 
 install-data-hook:
 if IS_MACOS

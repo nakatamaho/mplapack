@@ -1,14 +1,19 @@
-check_PROGRAMS = $(mplapack_binary128_test_PROGRAMS)
+check_PROGRAMS = $(mplapack_binary128_test_PROGRAMS) $(mplapack_binary128_opt_test_PROGRAMS)
 
 mplapack_binary128_test_PROGRAMS = xeigtstR_binary128 xeigtstC_binary128 xdmdeigtstR_binary128 xdmdeigtstC_binary128
+mplapack_binary128_opt_test_PROGRAMS = xeigtstR_binary128_opt xeigtstC_binary128_opt xdmdeigtstR_binary128_opt xdmdeigtstC_binary128_opt
 mplapack_binary128_testdir = $(prefix)/lib/$(target)/mplapack/test/eig
+mplapack_binary128_opt_testdir = $(prefix)/lib/$(target)/mplapack/test/eig
 
-$(check_PROGRAMS): ../libeig_binary128.la ../libeig_override_binary128.la
+$(mplapack_binary128_test_PROGRAMS): ../libeig_binary128.la ../libeig_override_binary128.la
+$(mplapack_binary128_opt_test_PROGRAMS): ../libeig_binary128_opt.la ../libeig_override_binary128_opt.la
 
 if IS_MINGW
 libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/eig/.libs/libeig_binary128.a,$(top_builddir)/mplapack/test/eig/.libs/libeig_override_binary128.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_binary128.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_binary128.a,--no-whole-archive
+opt_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/eig/.libs/libeig_binary128_opt.a,$(top_builddir)/mplapack/test/eig/.libs/libeig_override_binary128_opt.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_binary128_opt.a,$(top_builddir)/mpblas/optimized/binary128/.libs/libmplapack_binary128_opt.a,--no-whole-archive
 else
 libdepends = -L$(top_builddir)/mplapack/test/eig -leig_binary128 -leig_override_binary128 -L$(top_builddir)/mplapack/test/matgen -lmatgen_binary128 -L$(top_builddir)/mplapack/reference -lmplapack_binary128
+opt_libdepends = -L$(top_builddir)/mplapack/test/eig -leig_binary128_opt -leig_override_binary128_opt -L$(top_builddir)/mplapack/test/matgen -lmatgen_binary128_opt -L$(top_builddir)/mpblas/optimized/binary128 -lmplapack_binary128_opt
 endif
 
 if BINARY128_USE_QUADMATH
@@ -19,24 +24,40 @@ endif
 cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(LAPACK_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_BINARY128___ -D___MPLAPACK_INTERNAL___ -I$(top_srcdir)/fable
 
 xeigtstR_binary128_SOURCES  = ../common/Rchkee.cpp
+xeigtstR_binary128_opt_SOURCES  = ../common/Rchkee.cpp
 xeigtstR_binary128_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xeigtstR_binary128_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstR_binary128_LDFLAGS += -Wl,-rpath,$(libdir)
+xeigtstR_binary128_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xeigtstR_binary128_CXXFLAGS = $(cxxflags)
+xeigtstR_binary128_opt_CXXFLAGS = $(cxxflags)
 
 xeigtstC_binary128_SOURCES  = ../common/Cchkee.cpp
+xeigtstC_binary128_opt_SOURCES  = ../common/Cchkee.cpp
 xeigtstC_binary128_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xeigtstC_binary128_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstC_binary128_LDFLAGS += -Wl,-rpath,$(libdir)
+xeigtstC_binary128_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xeigtstC_binary128_CXXFLAGS = $(cxxflags)
+xeigtstC_binary128_opt_CXXFLAGS = $(cxxflags)
 
 xdmdeigtstR_binary128_SOURCES  = ../common/Rchkdmd.cpp
+xdmdeigtstR_binary128_opt_SOURCES  = ../common/Rchkdmd.cpp
 xdmdeigtstR_binary128_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xdmdeigtstR_binary128_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xdmdeigtstR_binary128_LDFLAGS += -Wl,-rpath,$(libdir)
+xdmdeigtstR_binary128_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xdmdeigtstR_binary128_CXXFLAGS = $(cxxflags)
+xdmdeigtstR_binary128_opt_CXXFLAGS = $(cxxflags)
 
 xdmdeigtstC_binary128_SOURCES  = ../common/Cchkdmd.cpp
+xdmdeigtstC_binary128_opt_SOURCES  = ../common/Cchkdmd.cpp
 xdmdeigtstC_binary128_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xdmdeigtstC_binary128_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xdmdeigtstC_binary128_LDFLAGS += -Wl,-rpath,$(libdir)
+xdmdeigtstC_binary128_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xdmdeigtstC_binary128_CXXFLAGS = $(cxxflags)
+xdmdeigtstC_binary128_opt_CXXFLAGS = $(cxxflags)
 
 install-data-hook:
 if IS_MACOS

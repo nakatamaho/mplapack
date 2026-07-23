@@ -1,38 +1,59 @@
-check_PROGRAMS = $(mplapack_dd_test_PROGRAMS)
+check_PROGRAMS = $(mplapack_dd_test_PROGRAMS) $(mplapack_dd_opt_test_PROGRAMS)
 
 mplapack_dd_test_PROGRAMS = xeigtstR_dd xeigtstC_dd xdmdeigtstR_dd xdmdeigtstC_dd
+mplapack_dd_opt_test_PROGRAMS = xeigtstR_dd_opt xeigtstC_dd_opt xdmdeigtstR_dd_opt xdmdeigtstC_dd_opt
 mplapack_dd_testdir = $(prefix)/lib/$(target)/mplapack/test/eig
+mplapack_dd_opt_testdir = $(prefix)/lib/$(target)/mplapack/test/eig
 
-$(check_PROGRAMS): ../libeig_dd.la ../libeig_override_dd.la
+$(mplapack_dd_test_PROGRAMS): ../libeig_dd.la ../libeig_override_dd.la
+$(mplapack_dd_opt_test_PROGRAMS): ../libeig_dd_opt.la ../libeig_override_dd_opt.la
 
 if IS_MINGW
 libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/eig/.libs/libeig_dd.a,$(top_builddir)/mplapack/test/eig/.libs/libeig_override_dd.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_dd.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_dd.a,--no-whole-archive
+opt_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/eig/.libs/libeig_dd_opt.a,$(top_builddir)/mplapack/test/eig/.libs/libeig_override_dd_opt.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_dd_opt.a,$(top_builddir)/mpblas/optimized/dd/.libs/libmplapack_dd_opt.a,--no-whole-archive
 else
 libdepends = -L$(top_builddir)/mplapack/test/eig -leig_dd -leig_override_dd -L$(top_builddir)/mplapack/test/matgen -lmatgen_dd -L$(top_builddir)/mplapack/reference -lmplapack_dd
+opt_libdepends = -L$(top_builddir)/mplapack/test/eig -leig_dd_opt -leig_override_dd_opt -L$(top_builddir)/mplapack/test/matgen -lmatgen_dd_opt -L$(top_builddir)/mpblas/optimized/dd -lmplapack_dd_opt
 endif
 
 mplibs = -L$(QD_LIBDIR) -lqd -lm
 cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(LAPACK_INCLUDEDIR) -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_DD___ @qd_extra_cxxflags@ -D___MPLAPACK_INTERNAL___ -I$(top_srcdir)/fable
 
 xeigtstR_dd_SOURCES  = ../common/Rchkee.cpp
+xeigtstR_dd_opt_SOURCES  = ../common/Rchkee.cpp
 xeigtstR_dd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xeigtstR_dd_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstR_dd_LDFLAGS += -Wl,-rpath,$(libdir)
+xeigtstR_dd_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xeigtstR_dd_CXXFLAGS = $(cxxflags) $(DD_CXXFLAGS)
+xeigtstR_dd_opt_CXXFLAGS = $(cxxflags) $(DD_CXXFLAGS)
 
 xeigtstC_dd_SOURCES  = ../common/Cchkee.cpp
+xeigtstC_dd_opt_SOURCES  = ../common/Cchkee.cpp
 xeigtstC_dd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xeigtstC_dd_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstC_dd_LDFLAGS += -Wl,-rpath,$(libdir)
+xeigtstC_dd_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xeigtstC_dd_CXXFLAGS = $(cxxflags) $(DD_CXXFLAGS)
+xeigtstC_dd_opt_CXXFLAGS = $(cxxflags) $(DD_CXXFLAGS)
 
 xdmdeigtstR_dd_SOURCES  = ../common/Rchkdmd.cpp
+xdmdeigtstR_dd_opt_SOURCES  = ../common/Rchkdmd.cpp
 xdmdeigtstR_dd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xdmdeigtstR_dd_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xdmdeigtstR_dd_LDFLAGS += -Wl,-rpath,$(libdir)
+xdmdeigtstR_dd_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xdmdeigtstR_dd_CXXFLAGS = $(cxxflags) $(DD_CXXFLAGS)
+xdmdeigtstR_dd_opt_CXXFLAGS = $(cxxflags) $(DD_CXXFLAGS)
 
 xdmdeigtstC_dd_SOURCES  = ../common/Cchkdmd.cpp
+xdmdeigtstC_dd_opt_SOURCES  = ../common/Cchkdmd.cpp
 xdmdeigtstC_dd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xdmdeigtstC_dd_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xdmdeigtstC_dd_LDFLAGS += -Wl,-rpath,$(libdir)
+xdmdeigtstC_dd_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xdmdeigtstC_dd_CXXFLAGS = $(cxxflags) $(DD_CXXFLAGS)
+xdmdeigtstC_dd_opt_CXXFLAGS = $(cxxflags) $(DD_CXXFLAGS)
 
 install-data-hook:
 if IS_MACOS

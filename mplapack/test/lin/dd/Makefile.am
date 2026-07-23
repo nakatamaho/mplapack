@@ -1,38 +1,59 @@
-check_PROGRAMS = $(mplapack_dd_test_PROGRAMS)
+check_PROGRAMS = $(mplapack_dd_test_PROGRAMS) $(mplapack_dd_opt_test_PROGRAMS)
 
 mplapack_dd_test_PROGRAMS = xlintstR_dd xlintstC_dd xlintstrfR_dd xlintstrfC_dd
+mplapack_dd_opt_test_PROGRAMS = xlintstR_dd_opt xlintstC_dd_opt xlintstrfR_dd_opt xlintstrfC_dd_opt
 mplapack_dd_testdir = $(prefix)/lib/$(target)/mplapack/test/lin
+mplapack_dd_opt_testdir = $(prefix)/lib/$(target)/mplapack/test/lin
 
-$(check_PROGRAMS): ../liblin_dd.la ../liblin_override_dd.la
+$(mplapack_dd_test_PROGRAMS): ../liblin_dd.la ../liblin_override_dd.la
+$(mplapack_dd_opt_test_PROGRAMS): ../liblin_dd_opt.la ../liblin_override_dd_opt.la
 
 if IS_MINGW
 libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/lin/.libs/liblin_dd.a,$(top_builddir)/mplapack/test/lin/.libs/liblin_override_dd.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_dd.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_dd.a,--no-whole-archive
+opt_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/lin/.libs/liblin_dd_opt.a,$(top_builddir)/mplapack/test/lin/.libs/liblin_override_dd_opt.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_dd_opt.a,$(top_builddir)/mpblas/optimized/dd/.libs/libmplapack_dd_opt.a,--no-whole-archive
 else
 libdepends = -L$(top_builddir)/mplapack/test/lin -llin_dd -llin_override_dd -L$(top_builddir)/mplapack/test/matgen -lmatgen_dd -L$(top_builddir)/mplapack/reference -lmplapack_dd
+opt_libdepends = -L$(top_builddir)/mplapack/test/lin -llin_dd_opt -llin_override_dd_opt -L$(top_builddir)/mplapack/test/matgen -lmatgen_dd_opt -L$(top_builddir)/mpblas/optimized/dd -lmplapack_dd_opt
 endif
 
 mplibs = -L$(QD_LIBDIR) -lqd -lm
 cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_DD___ @qd_extra_cxxflags@ -D___MPLAPACK_INTERNAL___ -I$(top_srcdir)/fable
 
 xlintstR_dd_SOURCES  = ../common/Rchkaa.cpp
+xlintstR_dd_opt_SOURCES  = ../common/Rchkaa.cpp
 xlintstR_dd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstR_dd_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstR_dd_LDFLAGS += -Wl,-rpath,$(libdir)
+xlintstR_dd_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstR_dd_CXXFLAGS = $(cxxflags) $(DD_CXXFLAGS)
+xlintstR_dd_opt_CXXFLAGS = $(cxxflags) $(DD_CXXFLAGS)
 
 xlintstC_dd_SOURCES  = ../common/Cchkaa.cpp
+xlintstC_dd_opt_SOURCES  = ../common/Cchkaa.cpp
 xlintstC_dd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstC_dd_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstC_dd_LDFLAGS += -Wl,-rpath,$(libdir)
+xlintstC_dd_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstC_dd_CXXFLAGS = $(cxxflags) $(DD_CXXFLAGS)
+xlintstC_dd_opt_CXXFLAGS = $(cxxflags) $(DD_CXXFLAGS)
 
 xlintstrfR_dd_SOURCES  = ../common/Rchkrfp.cpp
+xlintstrfR_dd_opt_SOURCES  = ../common/Rchkrfp.cpp
 xlintstrfR_dd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstrfR_dd_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfR_dd_LDFLAGS += -Wl,-rpath,$(libdir)
+xlintstrfR_dd_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstrfR_dd_CXXFLAGS = $(cxxflags) $(DD_CXXFLAGS)
+xlintstrfR_dd_opt_CXXFLAGS = $(cxxflags) $(DD_CXXFLAGS)
 
 xlintstrfC_dd_SOURCES  = ../common/Cchkrfp.cpp
+xlintstrfC_dd_opt_SOURCES  = ../common/Cchkrfp.cpp
 xlintstrfC_dd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xlintstrfC_dd_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xlintstrfC_dd_LDFLAGS += -Wl,-rpath,$(libdir)
+xlintstrfC_dd_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xlintstrfC_dd_CXXFLAGS = $(cxxflags) $(DD_CXXFLAGS)
+xlintstrfC_dd_opt_CXXFLAGS = $(cxxflags) $(DD_CXXFLAGS)
 
 install-data-hook:
 if IS_MACOS

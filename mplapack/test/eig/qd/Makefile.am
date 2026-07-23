@@ -1,38 +1,59 @@
-check_PROGRAMS = $(mplapack_qd_test_PROGRAMS)
+check_PROGRAMS = $(mplapack_qd_test_PROGRAMS) $(mplapack_qd_opt_test_PROGRAMS)
 
 mplapack_qd_test_PROGRAMS = xeigtstR_qd xeigtstC_qd xdmdeigtstR_qd xdmdeigtstC_qd
+mplapack_qd_opt_test_PROGRAMS = xeigtstR_qd_opt xeigtstC_qd_opt xdmdeigtstR_qd_opt xdmdeigtstC_qd_opt
 mplapack_qd_testdir = $(prefix)/lib/$(target)/mplapack/test/eig
+mplapack_qd_opt_testdir = $(prefix)/lib/$(target)/mplapack/test/eig
 
-$(check_PROGRAMS): ../libeig_qd.la ../libeig_override_qd.la
+$(mplapack_qd_test_PROGRAMS): ../libeig_qd.la ../libeig_override_qd.la
+$(mplapack_qd_opt_test_PROGRAMS): ../libeig_qd_opt.la ../libeig_override_qd_opt.la
 
 if IS_MINGW
 libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/eig/.libs/libeig_qd.a,$(top_builddir)/mplapack/test/eig/.libs/libeig_override_qd.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_qd.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_qd.a,--no-whole-archive
+opt_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/eig/.libs/libeig_qd_opt.a,$(top_builddir)/mplapack/test/eig/.libs/libeig_override_qd_opt.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_qd_opt.a,$(top_builddir)/mpblas/optimized/qd/.libs/libmplapack_qd_opt.a,--no-whole-archive
 else
 libdepends = -L$(top_builddir)/mplapack/test/eig -leig_qd -leig_override_qd -L$(top_builddir)/mplapack/test/matgen -lmatgen_qd -L$(top_builddir)/mplapack/reference -lmplapack_qd
+opt_libdepends = -L$(top_builddir)/mplapack/test/eig -leig_qd_opt -leig_override_qd_opt -L$(top_builddir)/mplapack/test/matgen -lmatgen_qd_opt -L$(top_builddir)/mpblas/optimized/qd -lmplapack_qd_opt
 endif
 
 mplibs = -L$(QD_LIBDIR) -lqd -lm
 cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(LAPACK_INCLUDEDIR) -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_QD___ @qd_extra_cxxflags@ -D___MPLAPACK_INTERNAL___ -I$(top_srcdir)/fable
 
 xeigtstR_qd_SOURCES  = ../common/Rchkee.cpp
+xeigtstR_qd_opt_SOURCES  = ../common/Rchkee.cpp
 xeigtstR_qd_LDFLAGS  = $(libdepends) $(mplibs) #-L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xeigtstR_qd_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) #-L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstR_qd_LDFLAGS += -Wl,-rpath,$(libdir)
+xeigtstR_qd_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xeigtstR_qd_CXXFLAGS = $(cxxflags)
+xeigtstR_qd_opt_CXXFLAGS = $(cxxflags)
 
 xeigtstC_qd_SOURCES  = ../common/Cchkee.cpp
+xeigtstC_qd_opt_SOURCES  = ../common/Cchkee.cpp
 xeigtstC_qd_LDFLAGS  = $(libdepends) $(mplibs) #-L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xeigtstC_qd_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) #-L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xeigtstC_qd_LDFLAGS += -Wl,-rpath,$(libdir)
+xeigtstC_qd_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xeigtstC_qd_CXXFLAGS = $(cxxflags)
+xeigtstC_qd_opt_CXXFLAGS = $(cxxflags)
 
 xdmdeigtstR_qd_SOURCES  = ../common/Rchkdmd.cpp
+xdmdeigtstR_qd_opt_SOURCES  = ../common/Rchkdmd.cpp
 xdmdeigtstR_qd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xdmdeigtstR_qd_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xdmdeigtstR_qd_LDFLAGS += -Wl,-rpath,$(libdir)
+xdmdeigtstR_qd_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xdmdeigtstR_qd_CXXFLAGS = $(cxxflags)
+xdmdeigtstR_qd_opt_CXXFLAGS = $(cxxflags)
 
 xdmdeigtstC_qd_SOURCES  = ../common/Cchkdmd.cpp
+xdmdeigtstC_qd_opt_SOURCES  = ../common/Cchkdmd.cpp
 xdmdeigtstC_qd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xdmdeigtstC_qd_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xdmdeigtstC_qd_LDFLAGS += -Wl,-rpath,$(libdir)
+xdmdeigtstC_qd_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xdmdeigtstC_qd_CXXFLAGS = $(cxxflags)
+xdmdeigtstC_qd_opt_CXXFLAGS = $(cxxflags)
 
 install-data-hook:
 if IS_MACOS
