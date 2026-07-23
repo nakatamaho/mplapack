@@ -217,8 +217,8 @@ cuda130-ubuntu24|nvidia/cuda:13.0.0-devel-ubuntu24.04|linux/amd64|matrix/Dockerf
 
 # Remote tarball Docker rows:
 # name|host|target_dir|dockerfile|command|remote-tarball-docker|docker_base|arch|ccache_dir|ccache_maxsize
-ubuntu24-tarball|172.27.109.80|/home/maho/tmp/mplapack-tarball-ubuntu2404-amd64|tarball/Dockerfile.ubuntu|bash|remote-tarball-docker|ubuntu:24.04|linux/amd64|/home/maho/.ccache|200G
-ubuntu24-tarball|172.27.109.40|/Users/maho/tmp/mplapack-tarball-ubuntu2404-arm64|tarball/Dockerfile.ubuntu|bash|remote-tarball-docker|ubuntu:24.04|linux/arm64|/Users/maho/.ccache|80G
+tarball-ubuntu24|172.27.109.80|/home/maho/tmp/mplapack-tarball-ubuntu2404-amd64|tarball/Dockerfile.ubuntu|bash|remote-tarball-docker|ubuntu:24.04|linux/amd64|/home/maho/.ccache|200G
+tarball-ubuntu24|172.27.109.40|/Users/maho/tmp/mplapack-tarball-ubuntu2404-arm64|tarball/Dockerfile.ubuntu|bash|remote-tarball-docker|ubuntu:24.04|linux/arm64|/Users/maho/.ccache|80G
 ```
 
 Create corresponding Dockerfile under `release/docker/matrix/`, `release/docker/distcheck/`, or `release/docker/tarball/` as appropriate. Matrix rows use paths relative to `release/docker/`.

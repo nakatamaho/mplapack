@@ -107,7 +107,7 @@ tier1:
 	@$(RUN_REMOTE_TARGETS) $(TIER1_TARGETS)
 
 tier2:
-	@./build-all.sh ref
+	@MPLAPACK_LOG_PREFIX=tier2- ./build-all.sh ref
 
 tier3:
 	@MPLAPACK_SOURCE_MODE=$${MPLAPACK_SOURCE_MODE:-ref} $(RUN_REMOTE_TARGETS) $(TIER3_TARGETS)

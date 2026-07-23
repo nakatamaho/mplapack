@@ -19,6 +19,7 @@ TARBALL_SHA256="${TARBALL_SHA256:-}"
 PHASE="${PHASE:-all}"
 FILTER_NAME="${FILTER_NAME:-}"
 FILTER_ARCH="${FILTER_ARCH:-}"
+MPLAPACK_LOG_PREFIX="${MPLAPACK_LOG_PREFIX:-}"
 USE_GPU="${USE_GPU:-auto}"
 CCACHE_MAXSIZE="${CCACHE_MAXSIZE:-200G}"
 WORK_MOUNT_MODE="${WORK_MOUNT_MODE:-bind}"  # bind|tmpfs
@@ -630,7 +631,7 @@ build_one() {
     if [[ "$source_type" == "tarball" && -n "${TARBALL_LABEL:-}" ]]; then
         source_label_part="_sha256-${TARBALL_LABEL}"
     fi
-    local logprefix="$LOGDIR/${name}_${arch_short}_${source_type}${source_label_part}"
+    local logprefix="$LOGDIR/${MPLAPACK_LOG_PREFIX}${name}_${arch_short}_${source_type}${source_label_part}"
     local logfile="${logprefix}_build.log"
     local image_logfile="${logprefix}_image.log"
     local stamp failed_stamp
