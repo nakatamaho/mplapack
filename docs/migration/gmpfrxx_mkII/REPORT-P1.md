@@ -16,7 +16,7 @@ Autotools adds the established external subdirectory and two-prefix CMake build.
 
 The exact upstream options used were `GMPFRXX_MKII_DEPS_AUTO_FETCH=OFF`, `GMPFRXX_MKII_BUILD_EXAMPLES=OFF`, `GMPFRXX_MKII_BUILD_BENCHMARKS=OFF`, and `GMPFRXX_MKII_COMPONENTS=GMP,MPFR,MPC`. No patches were applied. MPLAPACK CMake only performs `find_package(gmpfrxx_mkII CONFIG REQUIRED)` when explicitly enabled and does not link any backend to it.
 
-Internal and final manifests contain headers, `gmpfrxx_mkIIConfig.cmake`, and exported target files for `gmpxx_mkII::`, `mpfrxx_mkII::`, `mpcxx_mkII::`, and `gmpfrxx_mkII::`. The staged and independent-prefix CMake commands were the two invocations recorded by `gate-P1.sh`; both passed. The external package's real upstream CMake build and install completed. A system-prefix consumer was represented by the actual CMake package/target discovery path; no MPLAPACK backend was linked to the package in P1.
+Internal and final manifests contain headers, `gmpfrxx_mkIIConfig.cmake`, and exported target files for `gmpxx_mkII::`, `mpfrxx_mkII::`, `mpcxx_mkII::`, and `gmpfrxx_mkII::`. The staged and independent-prefix CMake commands were the two invocations recorded by `gate-P1.sh`; both passed. The external package's real upstream CMake build and install completed. The gate also compiles, links, and runs a real consumer against the installed package and staged GMP/MPFR/MPC libraries. No MPLAPACK backend was linked to the package in P1.
 
 ## Acceptance
 
@@ -34,4 +34,4 @@ Autotools regeneration used `./gen_configure.sh`; the generated external `Makefi
 
 ## Deviations
 
-The P1 system-prefix consumer was validated through the installed package's real exported-target CMake discovery path; MPLAPACK backend targets were intentionally not linked, as required by P1. No other deviations or blockers.
+MPLAPACK backend targets were intentionally not linked, as required by P1. No other deviations or blockers.
