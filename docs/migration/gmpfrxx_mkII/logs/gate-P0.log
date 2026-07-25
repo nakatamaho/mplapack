@@ -1,0 +1,76 @@
+gate-P0: PASS: branch and immutable base
+gate-P0: PASS: changed-path restriction (112 paths)
+validate-p0: PASS
+  lock/provenance: complete
+  interop matrix: 12 REQUIRED; reverse/mixed forbidden; edd/td out
+  precision smoke: one fresh process; MPFR=512; MPF=512
+  baseline: GMP/MPFR Autotools sets; MPFR default profile only
+  ABI/install: seven backends; pkg-config and CMake consumers pass
+  compile spike: every observed failure has a later-phase owner
+gate-P0: PASS: locked data, interop, precision, baseline, ABI, and spike manifests
+inventory: 42831 hits
+inventory: wrote /tmp/mplapack-gate-p0.Vb3Rso/inventory.json
+inventory: wrote /tmp/mplapack-gate-p0.Vb3Rso/INVENTORY.md
+test_generated_build_and_history_categories (docs.migration.gmpfrxx_mkII.tools.test_inventory.InventoryFixtureTest.test_generated_build_and_history_categories) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.002s
+
+OK
+gate-P0: PASS: inventory reproduction and fixture test
+test_arbitrary_large_exponent (docs.migration.gmpfrxx_mkII.tools.test_capture_baseline.CaptureBaselineTest.test_arbitrary_large_exponent) ... ok
+test_dmd_summary (docs.migration.gmpfrxx_mkII.tools.test_capture_baseline.CaptureBaselineTest.test_dmd_summary) ... ok
+test_incomplete_summary_is_rejected (docs.migration.gmpfrxx_mkII.tools.test_capture_baseline.CaptureBaselineTest.test_incomplete_summary_is_rejected) ... ok
+test_largest_error_example_summary (docs.migration.gmpfrxx_mkII.tools.test_capture_baseline.CaptureBaselineTest.test_largest_error_example_summary) ... ok
+test_largest_error_info_failure (docs.migration.gmpfrxx_mkII.tools.test_capture_baseline.CaptureBaselineTest.test_largest_error_info_failure) ... ok
+test_standard_threshold_summary (docs.migration.gmpfrxx_mkII.tools.test_capture_baseline.CaptureBaselineTest.test_standard_threshold_summary) ... ok
+test_allowed_directional_improvement (docs.migration.gmpfrxx_mkII.tools.test_compare_baseline.CompareBaselineTests.test_allowed_directional_improvement) ... ok
+test_arbitrary_large_exponent (docs.migration.gmpfrxx_mkII.tools.test_compare_baseline.CompareBaselineTests.test_arbitrary_large_exponent) ... ok
+test_duplicate (docs.migration.gmpfrxx_mkII.tools.test_compare_baseline.CompareBaselineTests.test_duplicate) ... ok
+test_identical (docs.migration.gmpfrxx_mkII.tools.test_compare_baseline.CompareBaselineTests.test_identical) ... ok
+test_malformed_input (docs.migration.gmpfrxx_mkII.tools.test_compare_baseline.CompareBaselineTests.test_malformed_input) ... ok
+test_missing (docs.migration.gmpfrxx_mkII.tools.test_compare_baseline.CompareBaselineTests.test_missing) ... ok
+test_numeric_significand_ordering (docs.migration.gmpfrxx_mkII.tools.test_compare_baseline.CompareBaselineTests.test_numeric_significand_ordering) ... ok
+test_unknown (docs.migration.gmpfrxx_mkII.tools.test_compare_baseline.CompareBaselineTests.test_unknown) ... ok
+test_worsening (docs.migration.gmpfrxx_mkII.tools.test_compare_baseline.CompareBaselineTests.test_worsening) ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 0.006s
+
+OK
+baseline comparison: PASS
+gate-P0: PASS: baseline comparator tests and self-comparison
+test_non_migrated_backend_is_immutable (docs.migration.gmpfrxx_mkII.tools.test_compare_abi.CompareAbiTests.test_non_migrated_backend_is_immutable) ... ok
+test_p3_allows_only_mpfr (docs.migration.gmpfrxx_mkII.tools.test_compare_abi.CompareAbiTests.test_p3_allows_only_mpfr) ... ok
+test_p4_allows_only_gmp (docs.migration.gmpfrxx_mkII.tools.test_compare_abi.CompareAbiTests.test_p4_allows_only_gmp) ... ok
+test_self_comparison (docs.migration.gmpfrxx_mkII.tools.test_compare_abi.CompareAbiTests.test_self_comparison) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.002s
+
+OK
+ABI comparison: PASS (P0)
+gate-P0: PASS: ABI comparator tests and self-comparison
+default-precision-512: PASS
+same-family-arithmetic: PASS
+utility-print-hex: PASS
+mplapack-mpfr-surface: COMPILE_FAIL
+mplapack-gmp-surface: COMPILE_FAIL
+legacy-name-collision: PASS
+expression-lifetime: PASS
+REAL-DOUBLE: PASS
+REAL-DD: COMPILE_FAIL
+REAL-QD: COMPILE_FAIL
+REAL-BINARY80: COMPILE_FAIL
+REAL-BINARY128: COMPILE_FAIL
+REAL-GMP: COMPILE_FAIL
+COMPLEX-DOUBLE: PASS
+COMPLEX-DD: RUN_FAIL
+COMPLEX-QD: RUN_FAIL
+COMPLEX-BINARY80: COMPILE_FAIL
+COMPLEX-BINARY128: COMPILE_FAIL
+COMPLEX-GMP: COMPILE_FAIL
+spike execution: PASS (all failures have later owners)
+gate-P0: PASS: compile spikes and fresh-process 512-bit smoke
+gate-P0: PASS: P0 report and separate CMake test-level record
+gate-P0: PASS

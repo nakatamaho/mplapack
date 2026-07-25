@@ -1,0 +1,772 @@
+printf '%s\n' '#!/bin/sh' > run_arithmetic.test_mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_complex.test_mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_iCamax.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_iCamax.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_iRamax.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_iRamax.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Mlsame.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Mlsame.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./arithmetic.test_mpfr${EXEEXT}' >> run_arithmetic.test_mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./iCamax.test.mpfr${EXEEXT}' >> run_iCamax.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./complex.test_mpfr${EXEEXT}' >> run_complex.test_mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./iCamax.test.mpfr_opt${EXEEXT}' >> run_iCamax.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Mxerbla.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./iRamax.test.mpfr_opt${EXEEXT}' >> run_iRamax.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./iRamax.test.mpfr${EXEEXT}' >> run_iRamax.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Mxerbla.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Mlsame.test.mpfr_opt${EXEEXT}' >> run_Mlsame.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Mlsame.test.mpfr${EXEEXT}' >> run_Mlsame.test.mpfr.sh
+chmod +x run_arithmetic.test_mpfr.sh
+chmod +x run_iCamax.test.mpfr.sh
+chmod +x run_complex.test_mpfr.sh
+chmod +x run_iCamax.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Mxerbla.test.mpfr_opt${EXEEXT}' >> run_Mxerbla.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Mxerbla.test.mpfr${EXEEXT}' >> run_Mxerbla.test.mpfr.sh
+chmod +x run_iRamax.test.mpfr_opt.sh
+chmod +x run_iRamax.test.mpfr.sh
+chmod +x run_Mlsame.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_CRrot.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_CRrot.test.mpfr.sh
+chmod +x run_Mlsame.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_CRscal.test.mpfr_opt.sh
+chmod +x run_Mxerbla.test.mpfr.sh
+chmod +x run_Mxerbla.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_CRscal.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./CRrot.test.mpfr_opt${EXEEXT}' >> run_CRrot.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./CRrot.test.mpfr${EXEEXT}' >> run_CRrot.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Caxpy.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./CRscal.test.mpfr_opt${EXEEXT}' >> run_CRscal.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Caxpy.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Ccopy.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Ccopy.test.mpfr.sh
+chmod +x run_CRrot.test.mpfr.sh
+chmod +x run_CRrot.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Caxpy.test.mpfr_opt${EXEEXT}' >> run_Caxpy.test.mpfr_opt.sh
+chmod +x run_CRscal.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Caxpy.test.mpfr${EXEEXT}' >> run_Caxpy.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./CRscal.test.mpfr${EXEEXT}' >> run_CRscal.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Cdotc.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Ccopy.test.mpfr_opt${EXEEXT}' >> run_Ccopy.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Cdotc.test.mpfr.sh
+chmod +x run_Caxpy.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Ccopy.test.mpfr${EXEEXT}' >> run_Ccopy.test.mpfr.sh
+chmod +x run_Caxpy.test.mpfr.sh
+chmod +x run_CRscal.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Cdotc.test.mpfr_opt${EXEEXT}' >> run_Cdotc.test.mpfr_opt.sh
+chmod +x run_Ccopy.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Cdotu.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Cdotc.test.mpfr${EXEEXT}' >> run_Cdotc.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Cdotu.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Cgbmv.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Cgbmv.test.mpfr.sh
+chmod +x run_Cdotc.test.mpfr_opt.sh
+chmod +x run_Ccopy.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Cgemm.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Cdotu.test.mpfr_opt${EXEEXT}' >> run_Cdotu.test.mpfr_opt.sh
+chmod +x run_Cdotc.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Cdotu.test.mpfr${EXEEXT}' >> run_Cdotu.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Cgbmv.test.mpfr_opt${EXEEXT}' >> run_Cgbmv.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Cgbmv.test.mpfr${EXEEXT}' >> run_Cgbmv.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Cgemm.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Cgemv.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Cgemv.test.mpfr.sh
+chmod +x run_Cdotu.test.mpfr_opt.sh
+chmod +x run_Cdotu.test.mpfr.sh
+chmod +x run_Cgbmv.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Cgemm.test.mpfr_opt${EXEEXT}' >> run_Cgemm.test.mpfr_opt.sh
+chmod +x run_Cgbmv.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Cgemm.test.mpfr${EXEEXT}' >> run_Cgemm.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Cgemv.test.mpfr_opt${EXEEXT}' >> run_Cgemv.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Cgemv.test.mpfr${EXEEXT}' >> run_Cgemv.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Cgerc.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Cgerc.test.mpfr.sh
+chmod +x run_Cgemm.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Cgeru.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Cgeru.test.mpfr.sh
+chmod +x run_Cgemv.test.mpfr_opt.sh
+chmod +x run_Cgemm.test.mpfr.sh
+chmod +x run_Cgemv.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Cgerc.test.mpfr_opt${EXEEXT}' >> run_Cgerc.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Chbmv.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Cgerc.test.mpfr${EXEEXT}' >> run_Cgerc.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Cgeru.test.mpfr_opt${EXEEXT}' >> run_Cgeru.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Chbmv.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Cgeru.test.mpfr${EXEEXT}' >> run_Cgeru.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Chemm.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Chemm.test.mpfr.sh
+chmod +x run_Cgerc.test.mpfr_opt.sh
+chmod +x run_Cgerc.test.mpfr.sh
+chmod +x run_Cgeru.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Chbmv.test.mpfr${EXEEXT}' >> run_Chbmv.test.mpfr.sh
+chmod +x run_Cgeru.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Chbmv.test.mpfr_opt${EXEEXT}' >> run_Chbmv.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Chemm.test.mpfr_opt${EXEEXT}' >> run_Chemm.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Chemm.test.mpfr${EXEEXT}' >> run_Chemm.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Chemv.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Chemv.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Cher.test.mpfr_opt.sh
+chmod +x run_Chbmv.test.mpfr_opt.sh
+chmod +x run_Chbmv.test.mpfr.sh
+chmod +x run_Chemm.test.mpfr_opt.sh
+chmod +x run_Chemm.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Chemv.test.mpfr_opt${EXEEXT}' >> run_Chemv.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Cher.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Chemv.test.mpfr${EXEEXT}' >> run_Chemv.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Cher2.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Cher2.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Cher2k.test.mpfr_opt.sh
+chmod +x run_Chemv.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Cher.test.mpfr_opt${EXEEXT}' >> run_Cher.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Cher.test.mpfr${EXEEXT}' >> run_Cher.test.mpfr.sh
+chmod +x run_Chemv.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Cher2.test.mpfr_opt${EXEEXT}' >> run_Cher2.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Cher2k.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Cher2.test.mpfr${EXEEXT}' >> run_Cher2.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Cher2k.test.mpfr_opt${EXEEXT}' >> run_Cher2k.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Cherk.test.mpfr_opt.sh
+chmod +x run_Cher.test.mpfr.sh
+chmod +x run_Cher2.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Cherk.test.mpfr.sh
+chmod +x run_Cher.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Chpmv.test.mpfr_opt.sh
+chmod +x run_Cher2k.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Cherk.test.mpfr_opt${EXEEXT}' >> run_Cherk.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Cher2k.test.mpfr${EXEEXT}' >> run_Cher2k.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Chpmv.test.mpfr.sh
+chmod +x run_Cher2.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Chpr.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Chpmv.test.mpfr_opt${EXEEXT}' >> run_Chpmv.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Chpr.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Cherk.test.mpfr${EXEEXT}' >> run_Cherk.test.mpfr.sh
+chmod +x run_Cherk.test.mpfr_opt.sh
+chmod +x run_Cher2k.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Chpmv.test.mpfr${EXEEXT}' >> run_Chpmv.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Chpr2.test.mpfr_opt.sh
+chmod +x run_Chpmv.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Chpr2.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Chpr.test.mpfr_opt${EXEEXT}' >> run_Chpr.test.mpfr_opt.sh
+chmod +x run_Cherk.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Chpr.test.mpfr${EXEEXT}' >> run_Chpr.test.mpfr.sh
+chmod +x run_Chpmv.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Chpr2.test.mpfr_opt${EXEEXT}' >> run_Chpr2.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Crotg.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Chpr2.test.mpfr${EXEEXT}' >> run_Chpr2.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Crotg.test.mpfr.sh
+chmod +x run_Chpr.test.mpfr_opt.sh
+chmod +x run_Chpr.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Cscal.test.mpfr_opt.sh
+chmod +x run_Chpr2.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Crotg.test.mpfr_opt${EXEEXT}' >> run_Crotg.test.mpfr_opt.sh
+chmod +x run_Chpr2.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Cscal.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Crotg.test.mpfr${EXEEXT}' >> run_Crotg.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Cswap.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Cscal.test.mpfr_opt${EXEEXT}' >> run_Cscal.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Cswap.test.mpfr.sh
+chmod +x run_Crotg.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Cscal.test.mpfr${EXEEXT}' >> run_Cscal.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Csymm.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Csymm.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Csyr2k.test.mpfr_opt.sh
+chmod +x run_Crotg.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Cswap.test.mpfr_opt${EXEEXT}' >> run_Cswap.test.mpfr_opt.sh
+chmod +x run_Cscal.test.mpfr_opt.sh
+chmod +x run_Cscal.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Cswap.test.mpfr${EXEEXT}' >> run_Cswap.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Csymm.test.mpfr_opt${EXEEXT}' >> run_Csymm.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Csymm.test.mpfr${EXEEXT}' >> run_Csymm.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Csyr2k.test.mpfr_opt${EXEEXT}' >> run_Csyr2k.test.mpfr_opt.sh
+chmod +x run_Cswap.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Csyr2k.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Csyrk.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Csyrk.test.mpfr.sh
+chmod +x run_Csymm.test.mpfr_opt.sh
+chmod +x run_Csymm.test.mpfr.sh
+chmod +x run_Csyr2k.test.mpfr_opt.sh
+chmod +x run_Cswap.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Ctbmv.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Csyr2k.test.mpfr${EXEEXT}' >> run_Csyr2k.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Csyrk.test.mpfr${EXEEXT}' >> run_Csyrk.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Ctbmv.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Ctbsv.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Csyrk.test.mpfr_opt${EXEEXT}' >> run_Csyrk.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Ctbmv.test.mpfr_opt${EXEEXT}' >> run_Ctbmv.test.mpfr_opt.sh
+chmod +x run_Csyr2k.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Ctbsv.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Ctbmv.test.mpfr${EXEEXT}' >> run_Ctbmv.test.mpfr.sh
+chmod +x run_Csyrk.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Ctbsv.test.mpfr_opt${EXEEXT}' >> run_Ctbsv.test.mpfr_opt.sh
+chmod +x run_Csyrk.test.mpfr_opt.sh
+chmod +x run_Ctbmv.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Ctpmv.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Ctpmv.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Ctbsv.test.mpfr${EXEEXT}' >> run_Ctbsv.test.mpfr.sh
+chmod +x run_Ctbmv.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Ctpsv.test.mpfr_opt.sh
+chmod +x run_Ctbsv.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Ctpsv.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Ctpmv.test.mpfr_opt${EXEEXT}' >> run_Ctpmv.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Ctpmv.test.mpfr${EXEEXT}' >> run_Ctpmv.test.mpfr.sh
+chmod +x run_Ctbsv.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Ctrmm.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Ctpsv.test.mpfr_opt${EXEEXT}' >> run_Ctpsv.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Ctrmm.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Ctpsv.test.mpfr${EXEEXT}' >> run_Ctpsv.test.mpfr.sh
+chmod +x run_Ctpmv.test.mpfr_opt.sh
+chmod +x run_Ctpmv.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Ctrmv.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Ctrmv.test.mpfr.sh
+chmod +x run_Ctpsv.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Ctrmm.test.mpfr${EXEEXT}' >> run_Ctrmm.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Ctrmm.test.mpfr_opt${EXEEXT}' >> run_Ctrmm.test.mpfr_opt.sh
+chmod +x run_Ctpsv.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Ctrsm.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Ctrsm.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Ctrmv.test.mpfr_opt${EXEEXT}' >> run_Ctrmv.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Ctrmv.test.mpfr${EXEEXT}' >> run_Ctrmv.test.mpfr.sh
+chmod +x run_Ctrmm.test.mpfr.sh
+chmod +x run_Ctrmm.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Ctrsv.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Ctrsm.test.mpfr_opt${EXEEXT}' >> run_Ctrsm.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Ctrsm.test.mpfr${EXEEXT}' >> run_Ctrsm.test.mpfr.sh
+chmod +x run_Ctrmv.test.mpfr_opt.sh
+chmod +x run_Ctrmv.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Ctrsv.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_RCabs1.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Ctrsv.test.mpfr_opt${EXEEXT}' >> run_Ctrsv.test.mpfr_opt.sh
+chmod +x run_Ctrsm.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_RCabs1.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_RCasum.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_RCasum.test.mpfr.sh
+chmod +x run_Ctrsm.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Ctrsv.test.mpfr${EXEEXT}' >> run_Ctrsv.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./RCabs1.test.mpfr_opt${EXEEXT}' >> run_RCabs1.test.mpfr_opt.sh
+chmod +x run_Ctrsv.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./RCabs1.test.mpfr${EXEEXT}' >> run_RCabs1.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./RCasum.test.mpfr_opt${EXEEXT}' >> run_RCasum.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./RCasum.test.mpfr${EXEEXT}' >> run_RCasum.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_RCnrm2.test.mpfr_opt.sh
+chmod +x run_Ctrsv.test.mpfr.sh
+chmod +x run_RCabs1.test.mpfr_opt.sh
+chmod +x run_RCabs1.test.mpfr.sh
+chmod +x run_RCasum.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_RCnrm2.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Rasum.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./RCnrm2.test.mpfr_opt${EXEEXT}' >> run_RCnrm2.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rasum.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Raxpy.test.mpfr_opt.sh
+chmod +x run_RCasum.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Raxpy.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Rcopy.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./RCnrm2.test.mpfr${EXEEXT}' >> run_RCnrm2.test.mpfr.sh
+chmod +x run_RCnrm2.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rasum.test.mpfr_opt${EXEEXT}' >> run_Rasum.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rasum.test.mpfr${EXEEXT}' >> run_Rasum.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Raxpy.test.mpfr_opt${EXEEXT}' >> run_Raxpy.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rcopy.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Raxpy.test.mpfr${EXEEXT}' >> run_Raxpy.test.mpfr.sh
+chmod +x run_RCnrm2.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Rcopy.test.mpfr_opt${EXEEXT}' >> run_Rcopy.test.mpfr_opt.sh
+chmod +x run_Rasum.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rdot.test.mpfr_opt.sh
+chmod +x run_Rasum.test.mpfr.sh
+chmod +x run_Raxpy.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rcopy.test.mpfr${EXEEXT}' >> run_Rcopy.test.mpfr.sh
+chmod +x run_Raxpy.test.mpfr.sh
+chmod +x run_Rcopy.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rdot.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Rdot.test.mpfr_opt${EXEEXT}' >> run_Rdot.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rgbmv.test.mpfr_opt.sh
+chmod +x run_Rcopy.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Rgbmv.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Rgemm.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rdot.test.mpfr${EXEEXT}' >> run_Rdot.test.mpfr.sh
+chmod +x run_Rdot.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rgemm.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Rgbmv.test.mpfr_opt${EXEEXT}' >> run_Rgbmv.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rgemv.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rgbmv.test.mpfr${EXEEXT}' >> run_Rgbmv.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Rgemv.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Rgemm.test.mpfr_opt${EXEEXT}' >> run_Rgemm.test.mpfr_opt.sh
+chmod +x run_Rdot.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Rger.test.mpfr_opt.sh
+chmod +x run_Rgbmv.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rgemm.test.mpfr${EXEEXT}' >> run_Rgemm.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Rgemv.test.mpfr_opt${EXEEXT}' >> run_Rgemv.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rger.test.mpfr.sh
+chmod +x run_Rgbmv.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Rgemv.test.mpfr${EXEEXT}' >> run_Rgemv.test.mpfr.sh
+chmod +x run_Rgemm.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rger.test.mpfr_opt${EXEEXT}' >> run_Rger.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rnrm2.test.mpfr_opt.sh
+chmod +x run_Rgemm.test.mpfr.sh
+chmod +x run_Rgemv.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rnrm2.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Rger.test.mpfr${EXEEXT}' >> run_Rger.test.mpfr.sh
+chmod +x run_Rgemv.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Rrot.test.mpfr_opt.sh
+chmod +x run_Rger.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rnrm2.test.mpfr_opt${EXEEXT}' >> run_Rnrm2.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rrot.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Rnrm2.test.mpfr${EXEEXT}' >> run_Rnrm2.test.mpfr.sh
+chmod +x run_Rger.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Rrotg.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rrotg.test.mpfr.sh
+chmod +x run_Rnrm2.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rrotm.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rrot.test.mpfr${EXEEXT}' >> run_Rrot.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Rrot.test.mpfr_opt${EXEEXT}' >> run_Rrot.test.mpfr_opt.sh
+chmod +x run_Rnrm2.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Rrotm.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Rsbmv.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rrotg.test.mpfr_opt${EXEEXT}' >> run_Rrotg.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rrotg.test.mpfr${EXEEXT}' >> run_Rrotg.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Rrotm.test.mpfr_opt${EXEEXT}' >> run_Rrotm.test.mpfr_opt.sh
+chmod +x run_Rrot.test.mpfr.sh
+chmod +x run_Rrot.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rrotm.test.mpfr${EXEEXT}' >> run_Rrotm.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Rsbmv.test.mpfr.sh
+chmod +x run_Rrotg.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rscal.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rsbmv.test.mpfr_opt${EXEEXT}' >> run_Rsbmv.test.mpfr_opt.sh
+chmod +x run_Rrotg.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Rscal.test.mpfr.sh
+chmod +x run_Rrotm.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Rsbmv.test.mpfr${EXEEXT}' >> run_Rsbmv.test.mpfr.sh
+chmod +x run_Rrotm.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rspmv.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rscal.test.mpfr_opt${EXEEXT}' >> run_Rscal.test.mpfr_opt.sh
+chmod +x run_Rsbmv.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rspmv.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Rscal.test.mpfr${EXEEXT}' >> run_Rscal.test.mpfr.sh
+chmod +x run_Rsbmv.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Rspr.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rspmv.test.mpfr_opt${EXEEXT}' >> run_Rspmv.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rspr.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Rspr2.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rspmv.test.mpfr${EXEEXT}' >> run_Rspmv.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Rspr2.test.mpfr.sh
+chmod +x run_Rscal.test.mpfr_opt.sh
+chmod +x run_Rscal.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Rspr.test.mpfr_opt${EXEEXT}' >> run_Rspr.test.mpfr_opt.sh
+chmod +x run_Rspmv.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rspr.test.mpfr${EXEEXT}' >> run_Rspr.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Rspr2.test.mpfr_opt${EXEEXT}' >> run_Rspr2.test.mpfr_opt.sh
+chmod +x run_Rspmv.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Rspr2.test.mpfr${EXEEXT}' >> run_Rspr2.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Rswap.test.mpfr_opt.sh
+chmod +x run_Rspr.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rswap.test.mpfr.sh
+chmod +x run_Rspr.test.mpfr.sh
+chmod +x run_Rspr2.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rsymm.test.mpfr_opt.sh
+chmod +x run_Rspr2.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Rswap.test.mpfr_opt${EXEEXT}' >> run_Rswap.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rsymm.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Rsymv.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rsymv.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Rswap.test.mpfr${EXEEXT}' >> run_Rswap.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Rsymm.test.mpfr_opt${EXEEXT}' >> run_Rsymm.test.mpfr_opt.sh
+chmod +x run_Rswap.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rsyr.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rsyr.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Rsymv.test.mpfr${EXEEXT}' >> run_Rsymv.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Rsyr2.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rsymm.test.mpfr${EXEEXT}' >> run_Rsymm.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Rsymv.test.mpfr_opt${EXEEXT}' >> run_Rsymv.test.mpfr_opt.sh
+chmod +x run_Rswap.test.mpfr.sh
+chmod +x run_Rsymm.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rsyr.test.mpfr_opt${EXEEXT}' >> run_Rsyr.test.mpfr_opt.sh
+chmod +x run_Rsymv.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Rsyr2.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Rsyr2k.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rsyr.test.mpfr${EXEEXT}' >> run_Rsyr.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Rsyr2.test.mpfr_opt${EXEEXT}' >> run_Rsyr2.test.mpfr_opt.sh
+chmod +x run_Rsymm.test.mpfr.sh
+chmod +x run_Rsymv.test.mpfr_opt.sh
+chmod +x run_Rsyr.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rsyr2k.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Rsyr2.test.mpfr${EXEEXT}' >> run_Rsyr2.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Rsyr2k.test.mpfr_opt${EXEEXT}' >> run_Rsyr2k.test.mpfr_opt.sh
+chmod +x run_Rsyr.test.mpfr.sh
+chmod +x run_Rsyr2.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rsyrk.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rsyrk.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Rtbmv.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rsyr2k.test.mpfr${EXEEXT}' >> run_Rsyr2k.test.mpfr.sh
+chmod +x run_Rsyr2.test.mpfr.sh
+chmod +x run_Rsyr2k.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rtbmv.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Rsyrk.test.mpfr_opt${EXEEXT}' >> run_Rsyrk.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rsyrk.test.mpfr${EXEEXT}' >> run_Rsyrk.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Rtbmv.test.mpfr_opt${EXEEXT}' >> run_Rtbmv.test.mpfr_opt.sh
+chmod +x run_Rsyr2k.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Rtbsv.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rtbsv.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Rtpmv.test.mpfr_opt.sh
+chmod +x run_Rsyrk.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rtbmv.test.mpfr${EXEEXT}' >> run_Rtbmv.test.mpfr.sh
+chmod +x run_Rsyrk.test.mpfr.sh
+chmod +x run_Rtbmv.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rtbsv.test.mpfr_opt${EXEEXT}' >> run_Rtbsv.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rtpmv.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Rtpsv.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rtpsv.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Rtbsv.test.mpfr${EXEEXT}' >> run_Rtbsv.test.mpfr.sh
+chmod +x run_Rtbmv.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Rtrmm.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rtpmv.test.mpfr_opt${EXEEXT}' >> run_Rtpmv.test.mpfr_opt.sh
+chmod +x run_Rtbsv.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rtpmv.test.mpfr${EXEEXT}' >> run_Rtpmv.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Rtpsv.test.mpfr_opt${EXEEXT}' >> run_Rtpsv.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rtpsv.test.mpfr${EXEEXT}' >> run_Rtpsv.test.mpfr.sh
+chmod +x run_Rtbsv.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Rtrmm.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Rtrmv.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rtrmm.test.mpfr_opt${EXEEXT}' >> run_Rtrmm.test.mpfr_opt.sh
+chmod +x run_Rtpmv.test.mpfr.sh
+chmod +x run_Rtpsv.test.mpfr_opt.sh
+chmod +x run_Rtpsv.test.mpfr.sh
+chmod +x run_Rtpmv.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rtrmm.test.mpfr${EXEEXT}' >> run_Rtrmm.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Rtrmv.test.mpfr_opt${EXEEXT}' >> run_Rtrmv.test.mpfr_opt.sh
+chmod +x run_Rtrmm.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rtrmv.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Rtrsm.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rtrsm.test.mpfr.sh
+chmod +x run_Rtrmm.test.mpfr.sh
+printf '%s\n' '#!/bin/sh' > run_Rtrsv.test.mpfr_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rtrsv.test.mpfr.sh
+chmod +x run_Rtrmv.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rtrmv.test.mpfr${EXEEXT}' >> run_Rtrmv.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Rtrsm.test.mpfr_opt${EXEEXT}' >> run_Rtrsm.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rtrsm.test.mpfr${EXEEXT}' >> run_Rtrsm.test.mpfr.sh
+printf '%s\n' '${LOG_COMPILER} ./Rtrsv.test.mpfr_opt${EXEEXT}' >> run_Rtrsv.test.mpfr_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rtrsv.test.mpfr${EXEEXT}' >> run_Rtrsv.test.mpfr.sh
+chmod +x run_Rtrsm.test.mpfr.sh
+chmod +x run_Rtrmv.test.mpfr.sh
+chmod +x run_Rtrsv.test.mpfr_opt.sh
+chmod +x run_Rtrsm.test.mpfr_opt.sh
+chmod +x run_Rtrsv.test.mpfr.sh
+make  check TESTS="run_arithmetic.test_mpfr.sh run_complex.test_mpfr.sh run_iCamax.test.mpfr_opt.sh run_iCamax.test.mpfr.sh run_iRamax.test.mpfr_opt.sh run_iRamax.test.mpfr.sh run_Mlsame.test.mpfr_opt.sh run_Mlsame.test.mpfr.sh run_Mxerbla.test.mpfr_opt.sh run_Mxerbla.test.mpfr.sh run_CRrot.test.mpfr_opt.sh run_CRrot.test.mpfr.sh run_CRscal.test.mpfr_opt.sh run_CRscal.test.mpfr.sh run_Caxpy.test.mpfr_opt.sh run_Caxpy.test.mpfr.sh run_Ccopy.test.mpfr_opt.sh run_Ccopy.test.mpfr.sh run_Cdotc.test.mpfr_opt.sh run_Cdotc.test.mpfr.sh run_Cdotu.test.mpfr_opt.sh run_Cdotu.test.mpfr.sh run_Cgbmv.test.mpfr_opt.sh run_Cgbmv.test.mpfr.sh run_Cgemm.test.mpfr_opt.sh run_Cgemm.test.mpfr.sh run_Cgemv.test.mpfr_opt.sh run_Cgemv.test.mpfr.sh run_Cgerc.test.mpfr_opt.sh run_Cgerc.test.mpfr.sh run_Cgeru.test.mpfr_opt.sh run_Cgeru.test.mpfr.sh run_Chbmv.test.mpfr_opt.sh run_Chbmv.test.mpfr.sh run_Chemm.test.mpfr_opt.sh run_Chemm.test.mpfr.sh run_Chemv.test.mpfr_opt.sh run_Chemv.test.mpfr.sh run_Cher.test.mpfr_opt.sh run_Cher.test.mpfr.sh run_Cher2.test.mpfr_opt.sh run_Cher2.test.mpfr.sh run_Cher2k.test.mpfr_opt.sh run_Cher2k.test.mpfr.sh run_Cherk.test.mpfr_opt.sh run_Cherk.test.mpfr.sh run_Chpmv.test.mpfr_opt.sh run_Chpmv.test.mpfr.sh run_Chpr.test.mpfr_opt.sh run_Chpr.test.mpfr.sh run_Chpr2.test.mpfr_opt.sh run_Chpr2.test.mpfr.sh run_Crotg.test.mpfr_opt.sh run_Crotg.test.mpfr.sh run_Cscal.test.mpfr_opt.sh run_Cscal.test.mpfr.sh run_Cswap.test.mpfr_opt.sh run_Cswap.test.mpfr.sh run_Csymm.test.mpfr_opt.sh run_Csymm.test.mpfr.sh run_Csyr2k.test.mpfr_opt.sh run_Csyr2k.test.mpfr.sh run_Csyrk.test.mpfr_opt.sh run_Csyrk.test.mpfr.sh run_Ctbmv.test.mpfr_opt.sh run_Ctbmv.test.mpfr.sh run_Ctbsv.test.mpfr_opt.sh run_Ctbsv.test.mpfr.sh run_Ctpmv.test.mpfr_opt.sh run_Ctpmv.test.mpfr.sh run_Ctpsv.test.mpfr_opt.sh run_Ctpsv.test.mpfr.sh run_Ctrmm.test.mpfr_opt.sh run_Ctrmm.test.mpfr.sh run_Ctrmv.test.mpfr_opt.sh run_Ctrmv.test.mpfr.sh run_Ctrsm.test.mpfr_opt.sh run_Ctrsm.test.mpfr.sh run_Ctrsv.test.mpfr_opt.sh run_Ctrsv.test.mpfr.sh run_RCabs1.test.mpfr_opt.sh run_RCabs1.test.mpfr.sh run_RCasum.test.mpfr_opt.sh run_RCasum.test.mpfr.sh run_RCnrm2.test.mpfr_opt.sh run_RCnrm2.test.mpfr.sh run_Rasum.test.mpfr_opt.sh run_Rasum.test.mpfr.sh run_Raxpy.test.mpfr_opt.sh run_Raxpy.test.mpfr.sh run_Rcopy.test.mpfr_opt.sh run_Rcopy.test.mpfr.sh run_Rdot.test.mpfr_opt.sh run_Rdot.test.mpfr.sh run_Rgbmv.test.mpfr_opt.sh run_Rgbmv.test.mpfr.sh run_Rgemm.test.mpfr_opt.sh run_Rgemm.test.mpfr.sh run_Rgemv.test.mpfr_opt.sh run_Rgemv.test.mpfr.sh run_Rger.test.mpfr_opt.sh run_Rger.test.mpfr.sh run_Rnrm2.test.mpfr_opt.sh run_Rnrm2.test.mpfr.sh run_Rrot.test.mpfr_opt.sh run_Rrot.test.mpfr.sh run_Rrotg.test.mpfr_opt.sh run_Rrotg.test.mpfr.sh run_Rrotm.test.mpfr_opt.sh run_Rrotm.test.mpfr.sh run_Rsbmv.test.mpfr_opt.sh run_Rsbmv.test.mpfr.sh run_Rscal.test.mpfr_opt.sh run_Rscal.test.mpfr.sh run_Rspmv.test.mpfr_opt.sh run_Rspmv.test.mpfr.sh run_Rspr.test.mpfr_opt.sh run_Rspr.test.mpfr.sh run_Rspr2.test.mpfr_opt.sh run_Rspr2.test.mpfr.sh run_Rswap.test.mpfr_opt.sh run_Rswap.test.mpfr.sh run_Rsymm.test.mpfr_opt.sh run_Rsymm.test.mpfr.sh run_Rsymv.test.mpfr_opt.sh run_Rsymv.test.mpfr.sh run_Rsyr.test.mpfr_opt.sh run_Rsyr.test.mpfr.sh run_Rsyr2.test.mpfr_opt.sh run_Rsyr2.test.mpfr.sh run_Rsyr2k.test.mpfr_opt.sh run_Rsyr2k.test.mpfr.sh run_Rsyrk.test.mpfr_opt.sh run_Rsyrk.test.mpfr.sh run_Rtbmv.test.mpfr_opt.sh run_Rtbmv.test.mpfr.sh run_Rtbsv.test.mpfr_opt.sh run_Rtbsv.test.mpfr.sh run_Rtpmv.test.mpfr_opt.sh run_Rtpmv.test.mpfr.sh run_Rtpsv.test.mpfr_opt.sh run_Rtpsv.test.mpfr.sh run_Rtrmm.test.mpfr_opt.sh run_Rtrmm.test.mpfr.sh run_Rtrmv.test.mpfr_opt.sh run_Rtrmv.test.mpfr.sh run_Rtrsm.test.mpfr_opt.sh run_Rtrsm.test.mpfr.sh run_Rtrsv.test.mpfr_opt.sh run_Rtrsv.test.mpfr.sh"
+make[1]: Entering directory '/tmp/mplapack-p0-base/mpblas/test/mpfr'
+make  arithmetic.test_mpfr complex.test_mpfr iCamax.test.mpfr_opt iCamax.test.mpfr iRamax.test.mpfr_opt iRamax.test.mpfr Mlsame.test.mpfr_opt Mlsame.test.mpfr Mxerbla.test.mpfr_opt Mxerbla.test.mpfr CRrot.test.mpfr_opt CRrot.test.mpfr CRscal.test.mpfr_opt CRscal.test.mpfr Caxpy.test.mpfr_opt Caxpy.test.mpfr Ccopy.test.mpfr_opt Ccopy.test.mpfr Cdotc.test.mpfr_opt Cdotc.test.mpfr Cdotu.test.mpfr_opt Cdotu.test.mpfr Cgbmv.test.mpfr_opt Cgbmv.test.mpfr Cgemm.test.mpfr_opt Cgemm.test.mpfr Cgemv.test.mpfr_opt Cgemv.test.mpfr Cgerc.test.mpfr_opt Cgerc.test.mpfr Cgeru.test.mpfr_opt Cgeru.test.mpfr Chbmv.test.mpfr_opt Chbmv.test.mpfr Chemm.test.mpfr_opt Chemm.test.mpfr Chemv.test.mpfr_opt Chemv.test.mpfr Cher.test.mpfr_opt Cher.test.mpfr Cher2.test.mpfr_opt Cher2.test.mpfr Cher2k.test.mpfr_opt Cher2k.test.mpfr Cherk.test.mpfr_opt Cherk.test.mpfr Chpmv.test.mpfr_opt Chpmv.test.mpfr Chpr.test.mpfr_opt Chpr.test.mpfr Chpr2.test.mpfr_opt Chpr2.test.mpfr Crotg.test.mpfr_opt Crotg.test.mpfr Cscal.test.mpfr_opt Cscal.test.mpfr Cswap.test.mpfr_opt Cswap.test.mpfr Csymm.test.mpfr_opt Csymm.test.mpfr Csyr2k.test.mpfr_opt Csyr2k.test.mpfr Csyrk.test.mpfr_opt Csyrk.test.mpfr Ctbmv.test.mpfr_opt Ctbmv.test.mpfr Ctbsv.test.mpfr_opt Ctbsv.test.mpfr Ctpmv.test.mpfr_opt Ctpmv.test.mpfr Ctpsv.test.mpfr_opt Ctpsv.test.mpfr Ctrmm.test.mpfr_opt Ctrmm.test.mpfr Ctrmv.test.mpfr_opt Ctrmv.test.mpfr Ctrsm.test.mpfr_opt Ctrsm.test.mpfr Ctrsv.test.mpfr_opt Ctrsv.test.mpfr RCabs1.test.mpfr_opt RCabs1.test.mpfr RCasum.test.mpfr_opt RCasum.test.mpfr RCnrm2.test.mpfr_opt RCnrm2.test.mpfr Rasum.test.mpfr_opt Rasum.test.mpfr Raxpy.test.mpfr_opt Raxpy.test.mpfr Rcopy.test.mpfr_opt Rcopy.test.mpfr Rdot.test.mpfr_opt Rdot.test.mpfr Rgbmv.test.mpfr_opt Rgbmv.test.mpfr Rgemm.test.mpfr_opt Rgemm.test.mpfr Rgemv.test.mpfr_opt Rgemv.test.mpfr Rger.test.mpfr_opt Rger.test.mpfr Rnrm2.test.mpfr_opt Rnrm2.test.mpfr Rrot.test.mpfr_opt Rrot.test.mpfr Rrotg.test.mpfr_opt Rrotg.test.mpfr Rrotm.test.mpfr_opt Rrotm.test.mpfr Rsbmv.test.mpfr_opt Rsbmv.test.mpfr Rscal.test.mpfr_opt Rscal.test.mpfr Rspmv.test.mpfr_opt Rspmv.test.mpfr Rspr.test.mpfr_opt Rspr.test.mpfr Rspr2.test.mpfr_opt Rspr2.test.mpfr Rswap.test.mpfr_opt Rswap.test.mpfr Rsymm.test.mpfr_opt Rsymm.test.mpfr Rsymv.test.mpfr_opt Rsymv.test.mpfr Rsyr.test.mpfr_opt Rsyr.test.mpfr Rsyr2.test.mpfr_opt Rsyr2.test.mpfr Rsyr2k.test.mpfr_opt Rsyr2k.test.mpfr Rsyrk.test.mpfr_opt Rsyrk.test.mpfr Rtbmv.test.mpfr_opt Rtbmv.test.mpfr Rtbsv.test.mpfr_opt Rtbsv.test.mpfr Rtpmv.test.mpfr_opt Rtpmv.test.mpfr Rtpsv.test.mpfr_opt Rtpsv.test.mpfr Rtrmm.test.mpfr_opt Rtrmm.test.mpfr Rtrmv.test.mpfr_opt Rtrmv.test.mpfr Rtrsm.test.mpfr_opt Rtrsm.test.mpfr Rtrsv.test.mpfr_opt Rtrsv.test.mpfr
+make[2]: Entering directory '/tmp/mplapack-p0-base/mpblas/test/mpfr'
+make[2]: 'arithmetic.test_mpfr' is up to date.
+make[2]: 'complex.test_mpfr' is up to date.
+make[2]: 'iCamax.test.mpfr_opt' is up to date.
+make[2]: 'iCamax.test.mpfr' is up to date.
+make[2]: 'iRamax.test.mpfr_opt' is up to date.
+make[2]: 'iRamax.test.mpfr' is up to date.
+make[2]: 'Mlsame.test.mpfr_opt' is up to date.
+make[2]: 'Mlsame.test.mpfr' is up to date.
+make[2]: 'Mxerbla.test.mpfr_opt' is up to date.
+make[2]: 'Mxerbla.test.mpfr' is up to date.
+make[2]: 'CRrot.test.mpfr_opt' is up to date.
+make[2]: 'CRrot.test.mpfr' is up to date.
+make[2]: 'CRscal.test.mpfr_opt' is up to date.
+make[2]: 'CRscal.test.mpfr' is up to date.
+make[2]: 'Caxpy.test.mpfr_opt' is up to date.
+make[2]: 'Caxpy.test.mpfr' is up to date.
+make[2]: 'Ccopy.test.mpfr_opt' is up to date.
+make[2]: 'Ccopy.test.mpfr' is up to date.
+make[2]: 'Cdotc.test.mpfr_opt' is up to date.
+make[2]: 'Cdotc.test.mpfr' is up to date.
+make[2]: 'Cdotu.test.mpfr_opt' is up to date.
+make[2]: 'Cdotu.test.mpfr' is up to date.
+make[2]: 'Cgbmv.test.mpfr_opt' is up to date.
+make[2]: 'Cgbmv.test.mpfr' is up to date.
+make[2]: 'Cgemm.test.mpfr_opt' is up to date.
+make[2]: 'Cgemm.test.mpfr' is up to date.
+make[2]: 'Cgemv.test.mpfr_opt' is up to date.
+make[2]: 'Cgemv.test.mpfr' is up to date.
+make[2]: 'Cgerc.test.mpfr_opt' is up to date.
+make[2]: 'Cgerc.test.mpfr' is up to date.
+make[2]: 'Cgeru.test.mpfr_opt' is up to date.
+make[2]: 'Cgeru.test.mpfr' is up to date.
+make[2]: 'Chbmv.test.mpfr_opt' is up to date.
+make[2]: 'Chbmv.test.mpfr' is up to date.
+make[2]: 'Chemm.test.mpfr_opt' is up to date.
+make[2]: 'Chemm.test.mpfr' is up to date.
+make[2]: 'Chemv.test.mpfr_opt' is up to date.
+make[2]: 'Chemv.test.mpfr' is up to date.
+make[2]: 'Cher.test.mpfr_opt' is up to date.
+make[2]: 'Cher.test.mpfr' is up to date.
+make[2]: 'Cher2.test.mpfr_opt' is up to date.
+make[2]: 'Cher2.test.mpfr' is up to date.
+make[2]: 'Cher2k.test.mpfr_opt' is up to date.
+make[2]: 'Cher2k.test.mpfr' is up to date.
+make[2]: 'Cherk.test.mpfr_opt' is up to date.
+make[2]: 'Cherk.test.mpfr' is up to date.
+make[2]: 'Chpmv.test.mpfr_opt' is up to date.
+make[2]: 'Chpmv.test.mpfr' is up to date.
+make[2]: 'Chpr.test.mpfr_opt' is up to date.
+make[2]: 'Chpr.test.mpfr' is up to date.
+make[2]: 'Chpr2.test.mpfr_opt' is up to date.
+make[2]: 'Chpr2.test.mpfr' is up to date.
+make[2]: 'Crotg.test.mpfr_opt' is up to date.
+make[2]: 'Crotg.test.mpfr' is up to date.
+make[2]: 'Cscal.test.mpfr_opt' is up to date.
+make[2]: 'Cscal.test.mpfr' is up to date.
+make[2]: 'Cswap.test.mpfr_opt' is up to date.
+make[2]: 'Cswap.test.mpfr' is up to date.
+make[2]: 'Csymm.test.mpfr_opt' is up to date.
+make[2]: 'Csymm.test.mpfr' is up to date.
+make[2]: 'Csyr2k.test.mpfr_opt' is up to date.
+make[2]: 'Csyr2k.test.mpfr' is up to date.
+make[2]: 'Csyrk.test.mpfr_opt' is up to date.
+make[2]: 'Csyrk.test.mpfr' is up to date.
+make[2]: 'Ctbmv.test.mpfr_opt' is up to date.
+make[2]: 'Ctbmv.test.mpfr' is up to date.
+make[2]: 'Ctbsv.test.mpfr_opt' is up to date.
+make[2]: 'Ctbsv.test.mpfr' is up to date.
+make[2]: 'Ctpmv.test.mpfr_opt' is up to date.
+make[2]: 'Ctpmv.test.mpfr' is up to date.
+make[2]: 'Ctpsv.test.mpfr_opt' is up to date.
+make[2]: 'Ctpsv.test.mpfr' is up to date.
+make[2]: 'Ctrmm.test.mpfr_opt' is up to date.
+make[2]: 'Ctrmm.test.mpfr' is up to date.
+make[2]: 'Ctrmv.test.mpfr_opt' is up to date.
+make[2]: 'Ctrmv.test.mpfr' is up to date.
+make[2]: 'Ctrsm.test.mpfr_opt' is up to date.
+make[2]: 'Ctrsm.test.mpfr' is up to date.
+make[2]: 'Ctrsv.test.mpfr_opt' is up to date.
+make[2]: 'Ctrsv.test.mpfr' is up to date.
+make[2]: 'RCabs1.test.mpfr_opt' is up to date.
+make[2]: 'RCabs1.test.mpfr' is up to date.
+make[2]: 'RCasum.test.mpfr_opt' is up to date.
+make[2]: 'RCasum.test.mpfr' is up to date.
+make[2]: 'RCnrm2.test.mpfr_opt' is up to date.
+make[2]: 'RCnrm2.test.mpfr' is up to date.
+make[2]: 'Rasum.test.mpfr_opt' is up to date.
+make[2]: 'Rasum.test.mpfr' is up to date.
+make[2]: 'Raxpy.test.mpfr_opt' is up to date.
+make[2]: 'Raxpy.test.mpfr' is up to date.
+make[2]: 'Rcopy.test.mpfr_opt' is up to date.
+make[2]: 'Rcopy.test.mpfr' is up to date.
+make[2]: 'Rdot.test.mpfr_opt' is up to date.
+make[2]: 'Rdot.test.mpfr' is up to date.
+make[2]: 'Rgbmv.test.mpfr_opt' is up to date.
+make[2]: 'Rgbmv.test.mpfr' is up to date.
+make[2]: 'Rgemm.test.mpfr_opt' is up to date.
+make[2]: 'Rgemm.test.mpfr' is up to date.
+make[2]: 'Rgemv.test.mpfr_opt' is up to date.
+make[2]: 'Rgemv.test.mpfr' is up to date.
+make[2]: 'Rger.test.mpfr_opt' is up to date.
+make[2]: 'Rger.test.mpfr' is up to date.
+make[2]: 'Rnrm2.test.mpfr_opt' is up to date.
+make[2]: 'Rnrm2.test.mpfr' is up to date.
+make[2]: 'Rrot.test.mpfr_opt' is up to date.
+make[2]: 'Rrot.test.mpfr' is up to date.
+make[2]: 'Rrotg.test.mpfr_opt' is up to date.
+make[2]: 'Rrotg.test.mpfr' is up to date.
+make[2]: 'Rrotm.test.mpfr_opt' is up to date.
+make[2]: 'Rrotm.test.mpfr' is up to date.
+make[2]: 'Rsbmv.test.mpfr_opt' is up to date.
+make[2]: 'Rsbmv.test.mpfr' is up to date.
+make[2]: 'Rscal.test.mpfr_opt' is up to date.
+make[2]: 'Rscal.test.mpfr' is up to date.
+make[2]: 'Rspmv.test.mpfr_opt' is up to date.
+make[2]: 'Rspmv.test.mpfr' is up to date.
+make[2]: 'Rspr.test.mpfr_opt' is up to date.
+make[2]: 'Rspr.test.mpfr' is up to date.
+make[2]: 'Rspr2.test.mpfr_opt' is up to date.
+make[2]: 'Rspr2.test.mpfr' is up to date.
+make[2]: 'Rswap.test.mpfr_opt' is up to date.
+make[2]: 'Rswap.test.mpfr' is up to date.
+make[2]: 'Rsymm.test.mpfr_opt' is up to date.
+make[2]: 'Rsymm.test.mpfr' is up to date.
+make[2]: 'Rsymv.test.mpfr_opt' is up to date.
+make[2]: 'Rsymv.test.mpfr' is up to date.
+make[2]: 'Rsyr.test.mpfr_opt' is up to date.
+make[2]: 'Rsyr.test.mpfr' is up to date.
+make[2]: 'Rsyr2.test.mpfr_opt' is up to date.
+make[2]: 'Rsyr2.test.mpfr' is up to date.
+make[2]: 'Rsyr2k.test.mpfr_opt' is up to date.
+make[2]: 'Rsyr2k.test.mpfr' is up to date.
+make[2]: 'Rsyrk.test.mpfr_opt' is up to date.
+make[2]: 'Rsyrk.test.mpfr' is up to date.
+make[2]: 'Rtbmv.test.mpfr_opt' is up to date.
+make[2]: 'Rtbmv.test.mpfr' is up to date.
+make[2]: 'Rtbsv.test.mpfr_opt' is up to date.
+make[2]: 'Rtbsv.test.mpfr' is up to date.
+make[2]: 'Rtpmv.test.mpfr_opt' is up to date.
+make[2]: 'Rtpmv.test.mpfr' is up to date.
+make[2]: 'Rtpsv.test.mpfr_opt' is up to date.
+make[2]: 'Rtpsv.test.mpfr' is up to date.
+make[2]: 'Rtrmm.test.mpfr_opt' is up to date.
+make[2]: 'Rtrmm.test.mpfr' is up to date.
+make[2]: 'Rtrmv.test.mpfr_opt' is up to date.
+make[2]: 'Rtrmv.test.mpfr' is up to date.
+make[2]: 'Rtrsm.test.mpfr_opt' is up to date.
+make[2]: 'Rtrsm.test.mpfr' is up to date.
+make[2]: 'Rtrsv.test.mpfr_opt' is up to date.
+make[2]: 'Rtrsv.test.mpfr' is up to date.
+make[2]: Leaving directory '/tmp/mplapack-p0-base/mpblas/test/mpfr'
+make  check-TESTS
+make[2]: Entering directory '/tmp/mplapack-p0-base/mpblas/test/mpfr'
+make[3]: Entering directory '/tmp/mplapack-p0-base/mpblas/test/mpfr'
+PASS: run_iCamax.test.mpfr.sh
+PASS: run_Mxerbla.test.mpfr_opt.sh
+PASS: run_iCamax.test.mpfr_opt.sh
+PASS: run_Mxerbla.test.mpfr.sh
+PASS: run_Mlsame.test.mpfr_opt.sh
+PASS: run_arithmetic.test_mpfr.sh
+PASS: run_complex.test_mpfr.sh
+PASS: run_Mlsame.test.mpfr.sh
+PASS: run_iRamax.test.mpfr.sh
+PASS: run_iRamax.test.mpfr_opt.sh
+PASS: run_CRrot.test.mpfr.sh
+PASS: run_CRrot.test.mpfr_opt.sh
+PASS: run_CRscal.test.mpfr_opt.sh
+PASS: run_CRscal.test.mpfr.sh
+PASS: run_Cdotu.test.mpfr_opt.sh
+PASS: run_Cdotu.test.mpfr.sh
+PASS: run_Cdotc.test.mpfr_opt.sh
+PASS: run_Cdotc.test.mpfr.sh
+PASS: run_Chpr.test.mpfr_opt.sh
+PASS: run_Chpr.test.mpfr.sh
+PASS: run_Caxpy.test.mpfr_opt.sh
+PASS: run_Caxpy.test.mpfr.sh
+PASS: run_Crotg.test.mpfr_opt.sh
+PASS: run_Crotg.test.mpfr.sh
+PASS: run_Chemv.test.mpfr.sh
+PASS: run_Ccopy.test.mpfr.sh
+PASS: run_Ccopy.test.mpfr_opt.sh
+PASS: run_Chemv.test.mpfr_opt.sh
+PASS: run_Chpmv.test.mpfr_opt.sh
+PASS: run_Chpr2.test.mpfr_opt.sh
+PASS: run_Chpr2.test.mpfr.sh
+PASS: run_Chpmv.test.mpfr.sh
+PASS: run_Cswap.test.mpfr_opt.sh
+PASS: run_Cswap.test.mpfr.sh
+PASS: run_Cher2.test.mpfr_opt.sh
+PASS: run_Cher2.test.mpfr.sh
+PASS: run_Ctbmv.test.mpfr_opt.sh
+PASS: run_Ctbmv.test.mpfr.sh
+PASS: run_Ctbsv.test.mpfr_opt.sh
+PASS: run_Ctbsv.test.mpfr.sh
+PASS: run_Ctpsv.test.mpfr_opt.sh
+PASS: run_Cher.test.mpfr_opt.sh
+PASS: run_Ctpsv.test.mpfr.sh
+PASS: run_Cscal.test.mpfr_opt.sh
+PASS: run_Ctrmv.test.mpfr_opt.sh
+PASS: run_Ctrmv.test.mpfr.sh
+PASS: run_Ctpmv.test.mpfr.sh
+PASS: run_Ctpmv.test.mpfr_opt.sh
+PASS: run_Cgeru.test.mpfr.sh
+PASS: run_Cgeru.test.mpfr_opt.sh
+PASS: run_RCabs1.test.mpfr_opt.sh
+PASS: run_RCabs1.test.mpfr.sh
+PASS: run_Cher2k.test.mpfr.sh
+PASS: run_Cgerc.test.mpfr_opt.sh
+PASS: run_Csyrk.test.mpfr_opt.sh
+PASS: run_Cher2k.test.mpfr_opt.sh
+PASS: run_Cscal.test.mpfr.sh
+PASS: run_Ctrsv.test.mpfr_opt.sh
+PASS: run_Cher.test.mpfr.sh
+PASS: run_Ctrsv.test.mpfr.sh
+PASS: run_Chbmv.test.mpfr_opt.sh
+PASS: run_Chbmv.test.mpfr.sh
+PASS: run_Csyrk.test.mpfr.sh
+PASS: run_Rdot.test.mpfr.sh
+PASS: run_Rcopy.test.mpfr.sh
+PASS: run_Rasum.test.mpfr.sh
+PASS: run_Cgerc.test.mpfr.sh
+PASS: run_Rasum.test.mpfr_opt.sh
+PASS: run_Csymm.test.mpfr.sh
+PASS: run_Csyr2k.test.mpfr.sh
+PASS: run_Cgemv.test.mpfr_opt.sh
+PASS: run_Cgemv.test.mpfr.sh
+PASS: run_Rnrm2.test.mpfr_opt.sh
+PASS: run_Rger.test.mpfr_opt.sh
+PASS: run_Csyr2k.test.mpfr_opt.sh
+PASS: run_Rnrm2.test.mpfr.sh
+PASS: run_Rrotg.test.mpfr_opt.sh
+PASS: run_Rrotg.test.mpfr.sh
+PASS: run_Raxpy.test.mpfr.sh
+PASS: run_Rger.test.mpfr.sh
+PASS: run_Csymm.test.mpfr_opt.sh
+PASS: run_RCasum.test.mpfr.sh
+PASS: run_Rrotm.test.mpfr.sh
+PASS: run_Rspmv.test.mpfr_opt.sh
+PASS: run_RCasum.test.mpfr_opt.sh
+PASS: run_Rspr.test.mpfr_opt.sh
+PASS: run_Cherk.test.mpfr_opt.sh
+PASS: run_Rrot.test.mpfr_opt.sh
+PASS: run_Rspr.test.mpfr.sh
+PASS: run_Rgemv.test.mpfr_opt.sh
+PASS: run_RCnrm2.test.mpfr_opt.sh
+PASS: run_Rrotm.test.mpfr_opt.sh
+PASS: run_Rswap.test.mpfr_opt.sh
+PASS: run_Rspmv.test.mpfr.sh
+PASS: run_Rspr2.test.mpfr.sh
+PASS: run_Rspr2.test.mpfr_opt.sh
+PASS: run_Rswap.test.mpfr.sh
+PASS: run_Cgemm.test.mpfr.sh
+PASS: run_Chemm.test.mpfr.sh
+PASS: run_Rsyr.test.mpfr.sh
+PASS: run_Rsyr.test.mpfr_opt.sh
+PASS: run_Rrot.test.mpfr.sh
+PASS: run_Rcopy.test.mpfr_opt.sh
+PASS: run_Cherk.test.mpfr.sh
+PASS: run_RCnrm2.test.mpfr.sh
+PASS: run_Rtbmv.test.mpfr_opt.sh
+PASS: run_Rtbmv.test.mpfr.sh
+PASS: run_Rsyr2.test.mpfr.sh
+PASS: run_Rtbsv.test.mpfr_opt.sh
+PASS: run_Rtbsv.test.mpfr.sh
+PASS: run_Rsyr2.test.mpfr_opt.sh
+PASS: run_Chemm.test.mpfr_opt.sh
+PASS: run_Rtpsv.test.mpfr_opt.sh
+PASS: run_Rsymv.test.mpfr_opt.sh
+PASS: run_Rtpsv.test.mpfr.sh
+PASS: run_Rtpmv.test.mpfr.sh
+PASS: run_Rsymv.test.mpfr.sh
+PASS: run_Rtrmv.test.mpfr_opt.sh
+PASS: run_Rtrmv.test.mpfr.sh
+PASS: run_Rgemv.test.mpfr.sh
+PASS: run_Rtrsv.test.mpfr_opt.sh
+PASS: run_Rtrsv.test.mpfr.sh
+PASS: run_Rsyr2k.test.mpfr_opt.sh
+PASS: run_Cgemm.test.mpfr_opt.sh
+PASS: run_Rtpmv.test.mpfr_opt.sh
+PASS: run_Ctrmm.test.mpfr.sh
+PASS: run_Rsbmv.test.mpfr.sh
+PASS: run_Rgemm.test.mpfr.sh
+PASS: run_Rtrmm.test.mpfr_opt.sh
+PASS: run_Rsyr2k.test.mpfr.sh
+PASS: run_Rdot.test.mpfr_opt.sh
+PASS: run_Rsbmv.test.mpfr_opt.sh
+PASS: run_Rsyrk.test.mpfr_opt.sh
+PASS: run_Rsyrk.test.mpfr.sh
+PASS: run_Rscal.test.mpfr_opt.sh
+PASS: run_Rtrmm.test.mpfr.sh
+PASS: run_Rtrsm.test.mpfr.sh
+PASS: run_Ctrmm.test.mpfr_opt.sh
+PASS: run_Rsymm.test.mpfr.sh
+PASS: run_Rtrsm.test.mpfr_opt.sh
+PASS: run_Ctrsm.test.mpfr_opt.sh
+PASS: run_Rsymm.test.mpfr_opt.sh
+PASS: run_Rscal.test.mpfr.sh
+PASS: run_Rgbmv.test.mpfr.sh
+PASS: run_Ctrsm.test.mpfr.sh
+PASS: run_Rgbmv.test.mpfr_opt.sh
+PASS: run_Raxpy.test.mpfr_opt.sh
+PASS: run_Cgbmv.test.mpfr.sh
+PASS: run_Cgbmv.test.mpfr_opt.sh
+PASS: run_Rgemm.test.mpfr_opt.sh
+============================================================================
+Testsuite summary for mplapack 2.3.0
+============================================================================
+# TOTAL: 150
+# PASS:  150
+# SKIP:  0
+# XFAIL: 0
+# FAIL:  0
+# XPASS: 0
+# ERROR: 0
+============================================================================
+make[3]: Leaving directory '/tmp/mplapack-p0-base/mpblas/test/mpfr'
+make[2]: Leaving directory '/tmp/mplapack-p0-base/mpblas/test/mpfr'
+make[1]: Leaving directory '/tmp/mplapack-p0-base/mpblas/test/mpfr'

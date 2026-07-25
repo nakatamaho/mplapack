@@ -1,0 +1,71 @@
+$ c++ -std=gnu++17 -fopenmp -ffp-contract=off -I/tmp/gmpfrxx-p0-install/include -D___MPLAPACK_INTERNAL___ -I/tmp/mplapack-p0-final/include/mplapack -I/tmp/mplapack-p0-final/include -L/tmp/mplapack-p0-final/lib -Wl,-rpath,/tmp/mplapack-p0-final/lib -I/tmp/mplapack-p0-base/include /home/docker/mplapack/docs/migration/gmpfrxx_mkII/tools/spike/mplapack_gmp_surface.cpp -o /tmp/mplapack-p0-spikes/mplapack-gmp-surface -lmpc -lmpfr -lgmp -lqd -lquadmath
+/home/docker/mplapack/docs/migration/gmpfrxx_mkII/tools/spike/mplapack_gmp_surface.cpp: In function ‘int main()’:
+/home/docker/mplapack/docs/migration/gmpfrxx_mkII/tools/spike/mplapack_gmp_surface.cpp:8:23: error: no matching function for call to ‘pow2(gmpxx::mpf_class&)’
+    8 |     auto square = pow2(value);
+      |                   ~~~~^~~~~~~
+/home/docker/mplapack/docs/migration/gmpfrxx_mkII/tools/spike/mplapack_gmp_surface.cpp:8:23: note: there are 3 candidates
+In file included from /home/docker/mplapack/docs/migration/gmpfrxx_mkII/tools/spike/mplapack_gmp_surface.cpp:3:
+/tmp/mplapack-p0-final/include/mplapack/mplapack_utils_gmp.h:214:18: note: candidate 1: ‘mpf_class pow2(mpf_class)’
+  214 | inline mpf_class pow2(mpf_class a) {
+      |                  ^~~~
+/tmp/mplapack-p0-final/include/mplapack/mplapack_utils_gmp.h:214:33: note: no known conversion for argument 1 from ‘gmpxx::mpf_class’ to ‘mpf_class’ {aka ‘__gmp_expr<__mpf_struct [1], __mpf_struct [1]>’}
+  214 | inline mpf_class pow2(mpf_class a) {
+      |                       ~~~~~~~~~~^
+/tmp/mplapack-p0-final/include/mplapack/mplapack_utils_gmp.h:219:18: note: candidate 2: ‘mpc_class pow2(mpc_class)’
+  219 | inline mpc_class pow2(mpc_class a) {
+      |                  ^~~~
+/tmp/mplapack-p0-final/include/mplapack/mplapack_utils_gmp.h:219:33: note: no known conversion for argument 1 from ‘gmpxx::mpf_class’ to ‘mpc_class’
+  219 | inline mpc_class pow2(mpc_class a) {
+      |                       ~~~~~~~~~~^
+/tmp/mplapack-p0-final/include/mplapack/mplapack_utils_gmp.h:239:20: note: candidate 3: ‘mplapackint pow2(mplapackint)’
+  239 | inline mplapackint pow2(mplapackint a) { return a * a; }
+      |                    ^~~~
+/tmp/mplapack-p0-final/include/mplapack/mplapack_utils_gmp.h:239:37: note: no known conversion for argument 1 from ‘gmpxx::mpf_class’ to ‘mplapackint’ {aka ‘long int’}
+  239 | inline mplapackint pow2(mplapackint a) { return a * a; }
+      |                         ~~~~~~~~~~~~^
+/home/docker/mplapack/docs/migration/gmpfrxx_mkII/tools/spike/mplapack_gmp_surface.cpp:9:30: error: could not convert ‘value’ from ‘gmpxx::mpf_class’ to ‘mpf_class’ {aka ‘__gmp_expr<__mpf_struct [1], __mpf_struct [1]>’}
+    9 |     auto signed_value = sign(value, -value);
+      |                              ^~~~~
+      |                              |
+      |                              gmpxx::mpf_class
+/home/docker/mplapack/docs/migration/gmpfrxx_mkII/tools/spike/mplapack_gmp_surface.cpp:10:25: error: could not convert ‘value’ from ‘gmpxx::mpf_class’ to ‘mpf_class’ {aka ‘__gmp_expr<__mpf_struct [1], __mpf_struct [1]>’}
+   10 |     auto nearest = nint(value);
+      |                         ^~~~~
+      |                         |
+      |                         gmpxx::mpf_class
+/home/docker/mplapack/docs/migration/gmpfrxx_mkII/tools/spike/mplapack_gmp_surface.cpp:11:21: error: no matching function for call to ‘pi(gmpxx::mpf_class&)’
+   11 |     auto circle = pi(value);
+      |                   ~~^~~~~~~
+/home/docker/mplapack/docs/migration/gmpfrxx_mkII/tools/spike/mplapack_gmp_surface.cpp:11:21: note: there are 2 candidates
+/tmp/mplapack-p0-final/include/mplapack/mplapack_utils_gmp.h:444:18: note: candidate 1: ‘mpf_class pi(mpf_class)’
+  444 | inline mpf_class pi(mpf_class dummy) {
+      |                  ^~
+/tmp/mplapack-p0-final/include/mplapack/mplapack_utils_gmp.h:444:31: note: no known conversion for argument 1 from ‘gmpxx::mpf_class’ to ‘mpf_class’ {aka ‘__gmp_expr<__mpf_struct [1], __mpf_struct [1]>’}
+  444 | inline mpf_class pi(mpf_class dummy) {
+      |                     ~~~~~~~~~~^~~~~
+In file included from /tmp/gmpfrxx-p0-install/include/gmpxx_mkII.h:40,
+                 from /tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII.h:32,
+                 from /home/docker/mplapack/docs/migration/gmpfrxx_mkII/tools/spike/mplapack_gmp_surface.cpp:1:
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/math_mpf.hpp:1592:18: note: candidate 2: ‘gmpxx::mpf_class gmpxx::pi(mp_bitcnt_t)’
+ 1592 | inline mpf_class pi(mp_bitcnt_t target_precision)
+      |                  ^~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/math_mpf.hpp:1592:33: note: no known conversion for argument 1 from ‘gmpxx::mpf_class’ to ‘mp_bitcnt_t’ {aka ‘long unsigned int’}
+ 1592 | inline mpf_class pi(mp_bitcnt_t target_precision)
+      |                     ~~~~~~~~~~~~^~~~~~~~~~~~~~~~
+/home/docker/mplapack/docs/migration/gmpfrxx_mkII/tools/spike/mplapack_gmp_surface.cpp:12:14: error: no matching function for call to ‘sprintnum(char [1024], gmpxx::mpf_class&)’
+   12 |     sprintnum(buffer, value);
+      |     ~~~~~~~~~^~~~~~~~~~~~~~~
+/home/docker/mplapack/docs/migration/gmpfrxx_mkII/tools/spike/mplapack_gmp_surface.cpp:12:14: note: there are 2 candidates
+/tmp/mplapack-p0-final/include/mplapack/mplapack_utils_gmp.h:65:13: note: candidate 1: ‘void sprintnum(char*, mpf_class)’
+   65 | inline void sprintnum(char *buf, mpf_class rtmp) {
+      |             ^~~~~~~~~
+/tmp/mplapack-p0-final/include/mplapack/mplapack_utils_gmp.h:65:44: note: no known conversion for argument 2 from ‘gmpxx::mpf_class’ to ‘mpf_class’ {aka ‘__gmp_expr<__mpf_struct [1], __mpf_struct [1]>’}
+   65 | inline void sprintnum(char *buf, mpf_class rtmp) {
+      |                                  ~~~~~~~~~~^~~~
+/tmp/mplapack-p0-final/include/mplapack/mplapack_utils_gmp.h:75:13: note: candidate 2: ‘void sprintnum(char*, mpc_class)’
+   75 | inline void sprintnum(char *buf, mpc_class ctmp) {
+      |             ^~~~~~~~~
+/tmp/mplapack-p0-final/include/mplapack/mplapack_utils_gmp.h:75:44: note: no known conversion for argument 2 from ‘gmpxx::mpf_class’ to ‘mpc_class’
+   75 | inline void sprintnum(char *buf, mpc_class ctmp) {
+      |                                  ~~~~~~~~~~^~~~
+compile_exit=1

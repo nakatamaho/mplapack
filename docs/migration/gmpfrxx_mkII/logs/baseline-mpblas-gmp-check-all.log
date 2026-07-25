@@ -1,0 +1,782 @@
+printf '%s\n' '#!/bin/sh' > run_arithmetic.test_gmp.sh
+printf '%s\n' '#!/bin/sh' > run_complex.test_gmp.sh
+printf '%s\n' '#!/bin/sh' > run_transcendents_gmp.test.sh
+printf '%s\n' '#!/bin/sh' > run_iCamax.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_iCamax.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./arithmetic.test_gmp${EXEEXT}' >> run_arithmetic.test_gmp.sh
+printf '%s\n' '#!/bin/sh' > run_iRamax.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_iRamax.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Mlsame.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./transcendents_gmp.test${EXEEXT}' >> run_transcendents_gmp.test.sh
+printf '%s\n' '#!/bin/sh' > run_Mlsame.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./complex.test_gmp${EXEEXT}' >> run_complex.test_gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./iCamax.test.gmp_opt${EXEEXT}' >> run_iCamax.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./iCamax.test.gmp${EXEEXT}' >> run_iCamax.test.gmp.sh
+chmod +x run_arithmetic.test_gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Mxerbla.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./iRamax.test.gmp_opt${EXEEXT}' >> run_iRamax.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./iRamax.test.gmp${EXEEXT}' >> run_iRamax.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Mlsame.test.gmp_opt${EXEEXT}' >> run_Mlsame.test.gmp_opt.sh
+chmod +x run_transcendents_gmp.test.sh
+printf '%s\n' '${LOG_COMPILER} ./Mlsame.test.gmp${EXEEXT}' >> run_Mlsame.test.gmp.sh
+chmod +x run_complex.test_gmp.sh
+chmod +x run_iCamax.test.gmp_opt.sh
+chmod +x run_iCamax.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Mxerbla.test.gmp_opt${EXEEXT}' >> run_Mxerbla.test.gmp_opt.sh
+chmod +x run_iRamax.test.gmp_opt.sh
+chmod +x run_iRamax.test.gmp.sh
+chmod +x run_Mlsame.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Mxerbla.test.gmp.sh
+chmod +x run_Mlsame.test.gmp_opt.sh
+chmod +x run_Mxerbla.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_CRrot.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_CRrot.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_CRscal.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_CRscal.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Caxpy.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Mxerbla.test.gmp${EXEEXT}' >> run_Mxerbla.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./CRrot.test.gmp_opt${EXEEXT}' >> run_CRrot.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Caxpy.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./CRscal.test.gmp_opt${EXEEXT}' >> run_CRscal.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./CRscal.test.gmp${EXEEXT}' >> run_CRscal.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./CRrot.test.gmp${EXEEXT}' >> run_CRrot.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Caxpy.test.gmp_opt${EXEEXT}' >> run_Caxpy.test.gmp_opt.sh
+chmod +x run_Mxerbla.test.gmp.sh
+chmod +x run_CRrot.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Caxpy.test.gmp${EXEEXT}' >> run_Caxpy.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Ccopy.test.gmp_opt.sh
+chmod +x run_CRscal.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Ccopy.test.gmp.sh
+chmod +x run_Caxpy.test.gmp_opt.sh
+chmod +x run_CRrot.test.gmp.sh
+chmod +x run_CRscal.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Cdotc.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Cdotc.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Ccopy.test.gmp_opt${EXEEXT}' >> run_Ccopy.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Cdotu.test.gmp_opt.sh
+chmod +x run_Caxpy.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Cdotu.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Cdotc.test.gmp_opt${EXEEXT}' >> run_Cdotc.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Cgbmv.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Ccopy.test.gmp${EXEEXT}' >> run_Ccopy.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Cdotc.test.gmp${EXEEXT}' >> run_Cdotc.test.gmp.sh
+chmod +x run_Ccopy.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Cdotu.test.gmp_opt${EXEEXT}' >> run_Cdotu.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Cgbmv.test.gmp.sh
+chmod +x run_Cdotc.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Cgemm.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Cgbmv.test.gmp_opt${EXEEXT}' >> run_Cgbmv.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Cdotu.test.gmp${EXEEXT}' >> run_Cdotu.test.gmp.sh
+chmod +x run_Ccopy.test.gmp.sh
+chmod +x run_Cdotc.test.gmp.sh
+chmod +x run_Cdotu.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Cgbmv.test.gmp${EXEEXT}' >> run_Cgbmv.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Cgemm.test.gmp_opt${EXEEXT}' >> run_Cgemm.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Cgemm.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Cgemv.test.gmp_opt.sh
+chmod +x run_Cgbmv.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Cgemv.test.gmp.sh
+chmod +x run_Cdotu.test.gmp.sh
+chmod +x run_Cgbmv.test.gmp.sh
+chmod +x run_Cgemm.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Cgemm.test.gmp${EXEEXT}' >> run_Cgemm.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Cgerc.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Cgerc.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Cgeru.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Cgeru.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Cgemv.test.gmp_opt${EXEEXT}' >> run_Cgemv.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Cgemv.test.gmp${EXEEXT}' >> run_Cgemv.test.gmp.sh
+chmod +x run_Cgemm.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Chbmv.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Cgerc.test.gmp_opt${EXEEXT}' >> run_Cgerc.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Cgeru.test.gmp_opt${EXEEXT}' >> run_Cgeru.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Cgerc.test.gmp${EXEEXT}' >> run_Cgerc.test.gmp.sh
+chmod +x run_Cgemv.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Chbmv.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Cgeru.test.gmp${EXEEXT}' >> run_Cgeru.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Chbmv.test.gmp_opt${EXEEXT}' >> run_Chbmv.test.gmp_opt.sh
+chmod +x run_Cgerc.test.gmp_opt.sh
+chmod +x run_Cgemv.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Chemm.test.gmp_opt.sh
+chmod +x run_Cgeru.test.gmp_opt.sh
+chmod +x run_Cgeru.test.gmp.sh
+chmod +x run_Cgerc.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Chbmv.test.gmp${EXEEXT}' >> run_Chbmv.test.gmp.sh
+chmod +x run_Chbmv.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Chemm.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Chemm.test.gmp_opt${EXEEXT}' >> run_Chemm.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Chemv.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Chemv.test.gmp.sh
+chmod +x run_Chbmv.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Cher.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Chemm.test.gmp${EXEEXT}' >> run_Chemm.test.gmp.sh
+chmod +x run_Chemm.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Cher.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Cher2.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Cher2.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Cher2k.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Chemv.test.gmp_opt${EXEEXT}' >> run_Chemv.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Chemv.test.gmp${EXEEXT}' >> run_Chemv.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Cher.test.gmp_opt${EXEEXT}' >> run_Cher.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Cher.test.gmp${EXEEXT}' >> run_Cher.test.gmp.sh
+chmod +x run_Chemm.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Cher2.test.gmp_opt${EXEEXT}' >> run_Cher2.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Cher2k.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Cherk.test.gmp_opt.sh
+chmod +x run_Chemv.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Cher2.test.gmp${EXEEXT}' >> run_Cher2.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Cher2k.test.gmp_opt${EXEEXT}' >> run_Cher2k.test.gmp_opt.sh
+chmod +x run_Chemv.test.gmp.sh
+chmod +x run_Cher.test.gmp_opt.sh
+chmod +x run_Cher.test.gmp.sh
+chmod +x run_Cher2.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Cherk.test.gmp_opt${EXEEXT}' >> run_Cherk.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Cherk.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Cher2k.test.gmp${EXEEXT}' >> run_Cher2k.test.gmp.sh
+chmod +x run_Cher2.test.gmp.sh
+chmod +x run_Cher2k.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Chpmv.test.gmp_opt.sh
+chmod +x run_Cherk.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Chpmv.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Cherk.test.gmp${EXEEXT}' >> run_Cherk.test.gmp.sh
+chmod +x run_Cher2k.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Chpr.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Chpmv.test.gmp_opt${EXEEXT}' >> run_Chpmv.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Chpr.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Chpmv.test.gmp${EXEEXT}' >> run_Chpmv.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Chpr2.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Chpr2.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Crotg.test.gmp_opt.sh
+chmod +x run_Cherk.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Chpr.test.gmp_opt${EXEEXT}' >> run_Chpr.test.gmp_opt.sh
+chmod +x run_Chpmv.test.gmp_opt.sh
+chmod +x run_Chpmv.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Chpr2.test.gmp_opt${EXEEXT}' >> run_Chpr2.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Chpr2.test.gmp${EXEEXT}' >> run_Chpr2.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Crotg.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Chpr.test.gmp${EXEEXT}' >> run_Chpr.test.gmp.sh
+chmod +x run_Chpr.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Cscal.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Crotg.test.gmp_opt${EXEEXT}' >> run_Crotg.test.gmp_opt.sh
+chmod +x run_Chpr2.test.gmp_opt.sh
+chmod +x run_Chpr2.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Cscal.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Cswap.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Crotg.test.gmp${EXEEXT}' >> run_Crotg.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Cscal.test.gmp_opt${EXEEXT}' >> run_Cscal.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Cswap.test.gmp.sh
+chmod +x run_Chpr.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Csymm.test.gmp_opt.sh
+chmod +x run_Crotg.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Cscal.test.gmp${EXEEXT}' >> run_Cscal.test.gmp.sh
+chmod +x run_Crotg.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Csymm.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Cswap.test.gmp_opt${EXEEXT}' >> run_Cswap.test.gmp_opt.sh
+chmod +x run_Cscal.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Cswap.test.gmp${EXEEXT}' >> run_Cswap.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Csyr2k.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Csyr2k.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Csymm.test.gmp_opt${EXEEXT}' >> run_Csymm.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Csymm.test.gmp${EXEEXT}' >> run_Csymm.test.gmp.sh
+chmod +x run_Cswap.test.gmp_opt.sh
+chmod +x run_Cscal.test.gmp.sh
+chmod +x run_Cswap.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Csyrk.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Csyrk.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Csyr2k.test.gmp${EXEEXT}' >> run_Csyr2k.test.gmp.sh
+chmod +x run_Csymm.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Ctbmv.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Csyr2k.test.gmp_opt${EXEEXT}' >> run_Csyr2k.test.gmp_opt.sh
+chmod +x run_Csymm.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Csyrk.test.gmp_opt${EXEEXT}' >> run_Csyrk.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Ctbmv.test.gmp.sh
+chmod +x run_Csyr2k.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Ctbsv.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Csyrk.test.gmp${EXEEXT}' >> run_Csyrk.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Ctbmv.test.gmp_opt${EXEEXT}' >> run_Ctbmv.test.gmp_opt.sh
+chmod +x run_Csyr2k.test.gmp_opt.sh
+chmod +x run_Csyrk.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Ctbsv.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Ctbmv.test.gmp${EXEEXT}' >> run_Ctbmv.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Ctbsv.test.gmp_opt${EXEEXT}' >> run_Ctbsv.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Ctpmv.test.gmp_opt.sh
+chmod +x run_Csyrk.test.gmp.sh
+chmod +x run_Ctbmv.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Ctpmv.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Ctbsv.test.gmp${EXEEXT}' >> run_Ctbsv.test.gmp.sh
+chmod +x run_Ctbmv.test.gmp.sh
+chmod +x run_Ctbsv.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Ctpsv.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Ctpmv.test.gmp_opt${EXEEXT}' >> run_Ctpmv.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Ctpsv.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Ctrmm.test.gmp_opt.sh
+chmod +x run_Ctbsv.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Ctpmv.test.gmp${EXEEXT}' >> run_Ctpmv.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Ctrmm.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Ctpsv.test.gmp_opt${EXEEXT}' >> run_Ctpsv.test.gmp_opt.sh
+chmod +x run_Ctpmv.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Ctrmv.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Ctrmm.test.gmp_opt${EXEEXT}' >> run_Ctrmm.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Ctrmv.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Ctpsv.test.gmp${EXEEXT}' >> run_Ctpsv.test.gmp.sh
+chmod +x run_Ctpmv.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Ctrsm.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Ctrsm.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Ctrmv.test.gmp_opt${EXEEXT}' >> run_Ctrmv.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Ctrmm.test.gmp${EXEEXT}' >> run_Ctrmm.test.gmp.sh
+chmod +x run_Ctpsv.test.gmp_opt.sh
+chmod +x run_Ctrmm.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Ctrmv.test.gmp${EXEEXT}' >> run_Ctrmv.test.gmp.sh
+chmod +x run_Ctpsv.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Ctrsv.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Ctrsv.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Ctrsm.test.gmp_opt${EXEEXT}' >> run_Ctrsm.test.gmp_opt.sh
+chmod +x run_Ctrmv.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Ctrsm.test.gmp${EXEEXT}' >> run_Ctrsm.test.gmp.sh
+chmod +x run_Ctrmm.test.gmp.sh
+chmod +x run_Ctrmv.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Ctrsv.test.gmp_opt${EXEEXT}' >> run_Ctrsv.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_RCabs1.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_RCabs1.test.gmp.sh
+chmod +x run_Ctrsm.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_RCasum.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_RCasum.test.gmp.sh
+chmod +x run_Ctrsm.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Ctrsv.test.gmp${EXEEXT}' >> run_Ctrsv.test.gmp.sh
+chmod +x run_Ctrsv.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./RCabs1.test.gmp_opt${EXEEXT}' >> run_RCabs1.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./RCabs1.test.gmp${EXEEXT}' >> run_RCabs1.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_RCnrm2.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./RCasum.test.gmp_opt${EXEEXT}' >> run_RCasum.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./RCasum.test.gmp${EXEEXT}' >> run_RCasum.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_RCnrm2.test.gmp.sh
+chmod +x run_RCabs1.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rasum.test.gmp_opt.sh
+chmod +x run_RCabs1.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Rasum.test.gmp.sh
+chmod +x run_Ctrsv.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Raxpy.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./RCnrm2.test.gmp_opt${EXEEXT}' >> run_RCnrm2.test.gmp_opt.sh
+chmod +x run_RCasum.test.gmp_opt.sh
+chmod +x run_RCasum.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./RCnrm2.test.gmp${EXEEXT}' >> run_RCnrm2.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Rasum.test.gmp_opt${EXEEXT}' >> run_Rasum.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rasum.test.gmp${EXEEXT}' >> run_Rasum.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Raxpy.test.gmp_opt${EXEEXT}' >> run_Raxpy.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Raxpy.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Rcopy.test.gmp_opt.sh
+chmod +x run_RCnrm2.test.gmp.sh
+chmod +x run_RCnrm2.test.gmp_opt.sh
+chmod +x run_Rasum.test.gmp_opt.sh
+chmod +x run_Rasum.test.gmp.sh
+chmod +x run_Raxpy.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Raxpy.test.gmp${EXEEXT}' >> run_Raxpy.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Rcopy.test.gmp_opt${EXEEXT}' >> run_Rcopy.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rcopy.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Rdot.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rdot.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Rgbmv.test.gmp_opt.sh
+chmod +x run_Raxpy.test.gmp.sh
+chmod +x run_Rcopy.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rcopy.test.gmp${EXEEXT}' >> run_Rcopy.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Rgbmv.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Rdot.test.gmp_opt${EXEEXT}' >> run_Rdot.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rdot.test.gmp${EXEEXT}' >> run_Rdot.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Rgemm.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rgemm.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Rgbmv.test.gmp_opt${EXEEXT}' >> run_Rgbmv.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rgemv.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rgbmv.test.gmp${EXEEXT}' >> run_Rgbmv.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Rgemv.test.gmp.sh
+chmod +x run_Rcopy.test.gmp.sh
+chmod +x run_Rdot.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Rgemm.test.gmp_opt${EXEEXT}' >> run_Rgemm.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rgemm.test.gmp${EXEEXT}' >> run_Rgemm.test.gmp.sh
+chmod +x run_Rdot.test.gmp_opt.sh
+chmod +x run_Rgbmv.test.gmp_opt.sh
+chmod +x run_Rgbmv.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Rger.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rgemv.test.gmp_opt${EXEEXT}' >> run_Rgemv.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rgemv.test.gmp${EXEEXT}' >> run_Rgemv.test.gmp.sh
+chmod +x run_Rgemm.test.gmp_opt.sh
+chmod +x run_Rgemm.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Rger.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Rnrm2.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rnrm2.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Rger.test.gmp_opt${EXEEXT}' >> run_Rger.test.gmp_opt.sh
+chmod +x run_Rgemv.test.gmp_opt.sh
+chmod +x run_Rgemv.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Rrot.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rger.test.gmp${EXEEXT}' >> run_Rger.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Rrot.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Rrotg.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rnrm2.test.gmp${EXEEXT}' >> run_Rnrm2.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Rnrm2.test.gmp_opt${EXEEXT}' >> run_Rnrm2.test.gmp_opt.sh
+chmod +x run_Rger.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rrot.test.gmp_opt${EXEEXT}' >> run_Rrot.test.gmp_opt.sh
+chmod +x run_Rger.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Rrotg.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Rrotm.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rrotg.test.gmp_opt${EXEEXT}' >> run_Rrotg.test.gmp_opt.sh
+chmod +x run_Rnrm2.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Rrot.test.gmp${EXEEXT}' >> run_Rrot.test.gmp.sh
+chmod +x run_Rnrm2.test.gmp_opt.sh
+chmod +x run_Rrot.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rrotg.test.gmp${EXEEXT}' >> run_Rrotg.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Rrotm.test.gmp.sh
+chmod +x run_Rrotg.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rsbmv.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rsbmv.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Rrotm.test.gmp_opt${EXEEXT}' >> run_Rrotm.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rscal.test.gmp_opt.sh
+chmod +x run_Rrotg.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Rrotm.test.gmp${EXEEXT}' >> run_Rrotm.test.gmp.sh
+chmod +x run_Rrot.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Rsbmv.test.gmp_opt${EXEEXT}' >> run_Rsbmv.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rscal.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Rsbmv.test.gmp${EXEEXT}' >> run_Rsbmv.test.gmp.sh
+chmod +x run_Rrotm.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rscal.test.gmp_opt${EXEEXT}' >> run_Rscal.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rspmv.test.gmp_opt.sh
+chmod +x run_Rsbmv.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rspmv.test.gmp.sh
+chmod +x run_Rrotm.test.gmp.sh
+chmod +x run_Rsbmv.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Rscal.test.gmp${EXEEXT}' >> run_Rscal.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Rspr.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rspr.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Rspmv.test.gmp_opt${EXEEXT}' >> run_Rspmv.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rspr2.test.gmp_opt.sh
+chmod +x run_Rscal.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rspmv.test.gmp${EXEEXT}' >> run_Rspmv.test.gmp.sh
+chmod +x run_Rscal.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Rspr.test.gmp_opt${EXEEXT}' >> run_Rspr.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rspr2.test.gmp.sh
+chmod +x run_Rspmv.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rspr2.test.gmp_opt${EXEEXT}' >> run_Rspr2.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rspr.test.gmp${EXEEXT}' >> run_Rspr.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Rswap.test.gmp_opt.sh
+chmod +x run_Rspmv.test.gmp.sh
+chmod +x run_Rspr.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rswap.test.gmp.sh
+chmod +x run_Rspr2.test.gmp_opt.sh
+chmod +x run_Rspr.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Rswap.test.gmp_opt${EXEEXT}' >> run_Rswap.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rspr2.test.gmp${EXEEXT}' >> run_Rspr2.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Rsymm.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rsymm.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Rswap.test.gmp${EXEEXT}' >> run_Rswap.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Rsymv.test.gmp_opt.sh
+chmod +x run_Rswap.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rsymv.test.gmp.sh
+chmod +x run_Rspr2.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Rsymm.test.gmp_opt${EXEEXT}' >> run_Rsymm.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rsyr.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rsyr.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Rsymv.test.gmp_opt${EXEEXT}' >> run_Rsymv.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rsyr2.test.gmp_opt.sh
+chmod +x run_Rswap.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Rsymm.test.gmp${EXEEXT}' >> run_Rsymm.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Rsymv.test.gmp${EXEEXT}' >> run_Rsymv.test.gmp.sh
+chmod +x run_Rsymm.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rsyr.test.gmp_opt${EXEEXT}' >> run_Rsyr.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rsyr.test.gmp${EXEEXT}' >> run_Rsyr.test.gmp.sh
+chmod +x run_Rsymv.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rsyr2.test.gmp_opt${EXEEXT}' >> run_Rsyr2.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rsyr2.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Rsyr2k.test.gmp_opt.sh
+chmod +x run_Rsymm.test.gmp.sh
+chmod +x run_Rsymv.test.gmp.sh
+chmod +x run_Rsyr.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rsyr2k.test.gmp.sh
+chmod +x run_Rsyr2.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rsyr2.test.gmp${EXEEXT}' >> run_Rsyr2.test.gmp.sh
+chmod +x run_Rsyr.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Rsyr2k.test.gmp_opt${EXEEXT}' >> run_Rsyr2k.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rsyrk.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rsyrk.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Rsyr2k.test.gmp${EXEEXT}' >> run_Rsyr2k.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Rtbmv.test.gmp_opt.sh
+chmod +x run_Rsyr2.test.gmp.sh
+chmod +x run_Rsyr2k.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rtbmv.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Rsyrk.test.gmp_opt${EXEEXT}' >> run_Rsyrk.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rtbsv.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rsyrk.test.gmp${EXEEXT}' >> run_Rsyrk.test.gmp.sh
+chmod +x run_Rsyr2k.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Rtbmv.test.gmp_opt${EXEEXT}' >> run_Rtbmv.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rtbmv.test.gmp${EXEEXT}' >> run_Rtbmv.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Rtbsv.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Rtpmv.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rtbsv.test.gmp_opt${EXEEXT}' >> run_Rtbsv.test.gmp_opt.sh
+chmod +x run_Rsyrk.test.gmp_opt.sh
+chmod +x run_Rsyrk.test.gmp.sh
+chmod +x run_Rtbmv.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Rtpmv.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Rtbsv.test.gmp${EXEEXT}' >> run_Rtbsv.test.gmp.sh
+chmod +x run_Rtbmv.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rtpmv.test.gmp_opt${EXEEXT}' >> run_Rtpmv.test.gmp_opt.sh
+chmod +x run_Rtbsv.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rtpsv.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rtpsv.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Rtpmv.test.gmp${EXEEXT}' >> run_Rtpmv.test.gmp.sh
+chmod +x run_Rtbsv.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Rtrmm.test.gmp_opt.sh
+chmod +x run_Rtpmv.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rtrmm.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Rtpsv.test.gmp_opt${EXEEXT}' >> run_Rtpsv.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rtrmv.test.gmp_opt.sh
+chmod +x run_Rtpmv.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Rtrmv.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Rtrsm.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rtpsv.test.gmp${EXEEXT}' >> run_Rtpsv.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Rtrmm.test.gmp${EXEEXT}' >> run_Rtrmm.test.gmp.sh
+chmod +x run_Rtpsv.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rtrmm.test.gmp_opt${EXEEXT}' >> run_Rtrmm.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rtrmv.test.gmp_opt${EXEEXT}' >> run_Rtrmv.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rtrmv.test.gmp${EXEEXT}' >> run_Rtrmv.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Rtrsm.test.gmp_opt${EXEEXT}' >> run_Rtrsm.test.gmp_opt.sh
+chmod +x run_Rtpsv.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Rtrsm.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_Rtrsv.test.gmp_opt.sh
+chmod +x run_Rtrmm.test.gmp_opt.sh
+chmod +x run_Rtrmv.test.gmp_opt.sh
+printf '%s\n' '#!/bin/sh' > run_Rtrsv.test.gmp.sh
+chmod +x run_Rtrmm.test.gmp.sh
+chmod +x run_Rtrsm.test.gmp_opt.sh
+chmod +x run_Rtrmv.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./Rtrsm.test.gmp${EXEEXT}' >> run_Rtrsm.test.gmp.sh
+printf '%s\n' '#!/bin/sh' > run_transcendents_gmp_vs_mpfr.test.sh
+printf '%s\n' '${LOG_COMPILER} ./Rtrsv.test.gmp_opt${EXEEXT}' >> run_Rtrsv.test.gmp_opt.sh
+printf '%s\n' '${LOG_COMPILER} ./Rtrsv.test.gmp${EXEEXT}' >> run_Rtrsv.test.gmp.sh
+chmod +x run_Rtrsm.test.gmp.sh
+printf '%s\n' '${LOG_COMPILER} ./transcendents_gmp_vs_mpfr.test${EXEEXT}' >> run_transcendents_gmp_vs_mpfr.test.sh
+chmod +x run_Rtrsv.test.gmp_opt.sh
+chmod +x run_Rtrsv.test.gmp.sh
+chmod +x run_transcendents_gmp_vs_mpfr.test.sh
+make  check TESTS="run_arithmetic.test_gmp.sh run_complex.test_gmp.sh run_transcendents_gmp.test.sh run_iCamax.test.gmp_opt.sh run_iCamax.test.gmp.sh run_iRamax.test.gmp_opt.sh run_iRamax.test.gmp.sh run_Mlsame.test.gmp_opt.sh run_Mlsame.test.gmp.sh run_Mxerbla.test.gmp_opt.sh run_Mxerbla.test.gmp.sh run_CRrot.test.gmp_opt.sh run_CRrot.test.gmp.sh run_CRscal.test.gmp_opt.sh run_CRscal.test.gmp.sh run_Caxpy.test.gmp_opt.sh run_Caxpy.test.gmp.sh run_Ccopy.test.gmp_opt.sh run_Ccopy.test.gmp.sh run_Cdotc.test.gmp_opt.sh run_Cdotc.test.gmp.sh run_Cdotu.test.gmp_opt.sh run_Cdotu.test.gmp.sh run_Cgbmv.test.gmp_opt.sh run_Cgbmv.test.gmp.sh run_Cgemm.test.gmp_opt.sh run_Cgemm.test.gmp.sh run_Cgemv.test.gmp_opt.sh run_Cgemv.test.gmp.sh run_Cgerc.test.gmp_opt.sh run_Cgerc.test.gmp.sh run_Cgeru.test.gmp_opt.sh run_Cgeru.test.gmp.sh run_Chbmv.test.gmp_opt.sh run_Chbmv.test.gmp.sh run_Chemm.test.gmp_opt.sh run_Chemm.test.gmp.sh run_Chemv.test.gmp_opt.sh run_Chemv.test.gmp.sh run_Cher.test.gmp_opt.sh run_Cher.test.gmp.sh run_Cher2.test.gmp_opt.sh run_Cher2.test.gmp.sh run_Cher2k.test.gmp_opt.sh run_Cher2k.test.gmp.sh run_Cherk.test.gmp_opt.sh run_Cherk.test.gmp.sh run_Chpmv.test.gmp_opt.sh run_Chpmv.test.gmp.sh run_Chpr.test.gmp_opt.sh run_Chpr.test.gmp.sh run_Chpr2.test.gmp_opt.sh run_Chpr2.test.gmp.sh run_Crotg.test.gmp_opt.sh run_Crotg.test.gmp.sh run_Cscal.test.gmp_opt.sh run_Cscal.test.gmp.sh run_Cswap.test.gmp_opt.sh run_Cswap.test.gmp.sh run_Csymm.test.gmp_opt.sh run_Csymm.test.gmp.sh run_Csyr2k.test.gmp_opt.sh run_Csyr2k.test.gmp.sh run_Csyrk.test.gmp_opt.sh run_Csyrk.test.gmp.sh run_Ctbmv.test.gmp_opt.sh run_Ctbmv.test.gmp.sh run_Ctbsv.test.gmp_opt.sh run_Ctbsv.test.gmp.sh run_Ctpmv.test.gmp_opt.sh run_Ctpmv.test.gmp.sh run_Ctpsv.test.gmp_opt.sh run_Ctpsv.test.gmp.sh run_Ctrmm.test.gmp_opt.sh run_Ctrmm.test.gmp.sh run_Ctrmv.test.gmp_opt.sh run_Ctrmv.test.gmp.sh run_Ctrsm.test.gmp_opt.sh run_Ctrsm.test.gmp.sh run_Ctrsv.test.gmp_opt.sh run_Ctrsv.test.gmp.sh run_RCabs1.test.gmp_opt.sh run_RCabs1.test.gmp.sh run_RCasum.test.gmp_opt.sh run_RCasum.test.gmp.sh run_RCnrm2.test.gmp_opt.sh run_RCnrm2.test.gmp.sh run_Rasum.test.gmp_opt.sh run_Rasum.test.gmp.sh run_Raxpy.test.gmp_opt.sh run_Raxpy.test.gmp.sh run_Rcopy.test.gmp_opt.sh run_Rcopy.test.gmp.sh run_Rdot.test.gmp_opt.sh run_Rdot.test.gmp.sh run_Rgbmv.test.gmp_opt.sh run_Rgbmv.test.gmp.sh run_Rgemm.test.gmp_opt.sh run_Rgemm.test.gmp.sh run_Rgemv.test.gmp_opt.sh run_Rgemv.test.gmp.sh run_Rger.test.gmp_opt.sh run_Rger.test.gmp.sh run_Rnrm2.test.gmp_opt.sh run_Rnrm2.test.gmp.sh run_Rrot.test.gmp_opt.sh run_Rrot.test.gmp.sh run_Rrotg.test.gmp_opt.sh run_Rrotg.test.gmp.sh run_Rrotm.test.gmp_opt.sh run_Rrotm.test.gmp.sh run_Rsbmv.test.gmp_opt.sh run_Rsbmv.test.gmp.sh run_Rscal.test.gmp_opt.sh run_Rscal.test.gmp.sh run_Rspmv.test.gmp_opt.sh run_Rspmv.test.gmp.sh run_Rspr.test.gmp_opt.sh run_Rspr.test.gmp.sh run_Rspr2.test.gmp_opt.sh run_Rspr2.test.gmp.sh run_Rswap.test.gmp_opt.sh run_Rswap.test.gmp.sh run_Rsymm.test.gmp_opt.sh run_Rsymm.test.gmp.sh run_Rsymv.test.gmp_opt.sh run_Rsymv.test.gmp.sh run_Rsyr.test.gmp_opt.sh run_Rsyr.test.gmp.sh run_Rsyr2.test.gmp_opt.sh run_Rsyr2.test.gmp.sh run_Rsyr2k.test.gmp_opt.sh run_Rsyr2k.test.gmp.sh run_Rsyrk.test.gmp_opt.sh run_Rsyrk.test.gmp.sh run_Rtbmv.test.gmp_opt.sh run_Rtbmv.test.gmp.sh run_Rtbsv.test.gmp_opt.sh run_Rtbsv.test.gmp.sh run_Rtpmv.test.gmp_opt.sh run_Rtpmv.test.gmp.sh run_Rtpsv.test.gmp_opt.sh run_Rtpsv.test.gmp.sh run_Rtrmm.test.gmp_opt.sh run_Rtrmm.test.gmp.sh run_Rtrmv.test.gmp_opt.sh run_Rtrmv.test.gmp.sh run_Rtrsm.test.gmp_opt.sh run_Rtrsm.test.gmp.sh run_Rtrsv.test.gmp_opt.sh run_Rtrsv.test.gmp.sh run_transcendents_gmp_vs_mpfr.test.sh"
+make[1]: Entering directory '/tmp/mplapack-p0-base/mpblas/test/gmp'
+make  arithmetic.test_gmp complex.test_gmp transcendents_gmp.test iCamax.test.gmp_opt iCamax.test.gmp iRamax.test.gmp_opt iRamax.test.gmp Mlsame.test.gmp_opt Mlsame.test.gmp Mxerbla.test.gmp_opt Mxerbla.test.gmp CRrot.test.gmp_opt CRrot.test.gmp CRscal.test.gmp_opt CRscal.test.gmp Caxpy.test.gmp_opt Caxpy.test.gmp Ccopy.test.gmp_opt Ccopy.test.gmp Cdotc.test.gmp_opt Cdotc.test.gmp Cdotu.test.gmp_opt Cdotu.test.gmp Cgbmv.test.gmp_opt Cgbmv.test.gmp Cgemm.test.gmp_opt Cgemm.test.gmp Cgemv.test.gmp_opt Cgemv.test.gmp Cgerc.test.gmp_opt Cgerc.test.gmp Cgeru.test.gmp_opt Cgeru.test.gmp Chbmv.test.gmp_opt Chbmv.test.gmp Chemm.test.gmp_opt Chemm.test.gmp Chemv.test.gmp_opt Chemv.test.gmp Cher.test.gmp_opt Cher.test.gmp Cher2.test.gmp_opt Cher2.test.gmp Cher2k.test.gmp_opt Cher2k.test.gmp Cherk.test.gmp_opt Cherk.test.gmp Chpmv.test.gmp_opt Chpmv.test.gmp Chpr.test.gmp_opt Chpr.test.gmp Chpr2.test.gmp_opt Chpr2.test.gmp Crotg.test.gmp_opt Crotg.test.gmp Cscal.test.gmp_opt Cscal.test.gmp Cswap.test.gmp_opt Cswap.test.gmp Csymm.test.gmp_opt Csymm.test.gmp Csyr2k.test.gmp_opt Csyr2k.test.gmp Csyrk.test.gmp_opt Csyrk.test.gmp Ctbmv.test.gmp_opt Ctbmv.test.gmp Ctbsv.test.gmp_opt Ctbsv.test.gmp Ctpmv.test.gmp_opt Ctpmv.test.gmp Ctpsv.test.gmp_opt Ctpsv.test.gmp Ctrmm.test.gmp_opt Ctrmm.test.gmp Ctrmv.test.gmp_opt Ctrmv.test.gmp Ctrsm.test.gmp_opt Ctrsm.test.gmp Ctrsv.test.gmp_opt Ctrsv.test.gmp RCabs1.test.gmp_opt RCabs1.test.gmp RCasum.test.gmp_opt RCasum.test.gmp RCnrm2.test.gmp_opt RCnrm2.test.gmp Rasum.test.gmp_opt Rasum.test.gmp Raxpy.test.gmp_opt Raxpy.test.gmp Rcopy.test.gmp_opt Rcopy.test.gmp Rdot.test.gmp_opt Rdot.test.gmp Rgbmv.test.gmp_opt Rgbmv.test.gmp Rgemm.test.gmp_opt Rgemm.test.gmp Rgemv.test.gmp_opt Rgemv.test.gmp Rger.test.gmp_opt Rger.test.gmp Rnrm2.test.gmp_opt Rnrm2.test.gmp Rrot.test.gmp_opt Rrot.test.gmp Rrotg.test.gmp_opt Rrotg.test.gmp Rrotm.test.gmp_opt Rrotm.test.gmp Rsbmv.test.gmp_opt Rsbmv.test.gmp Rscal.test.gmp_opt Rscal.test.gmp Rspmv.test.gmp_opt Rspmv.test.gmp Rspr.test.gmp_opt Rspr.test.gmp Rspr2.test.gmp_opt Rspr2.test.gmp Rswap.test.gmp_opt Rswap.test.gmp Rsymm.test.gmp_opt Rsymm.test.gmp Rsymv.test.gmp_opt Rsymv.test.gmp Rsyr.test.gmp_opt Rsyr.test.gmp Rsyr2.test.gmp_opt Rsyr2.test.gmp Rsyr2k.test.gmp_opt Rsyr2k.test.gmp Rsyrk.test.gmp_opt Rsyrk.test.gmp Rtbmv.test.gmp_opt Rtbmv.test.gmp Rtbsv.test.gmp_opt Rtbsv.test.gmp Rtpmv.test.gmp_opt Rtpmv.test.gmp Rtpsv.test.gmp_opt Rtpsv.test.gmp Rtrmm.test.gmp_opt Rtrmm.test.gmp Rtrmv.test.gmp_opt Rtrmv.test.gmp Rtrsm.test.gmp_opt Rtrsm.test.gmp Rtrsv.test.gmp_opt Rtrsv.test.gmp transcendents_gmp_vs_mpfr.test
+make[2]: Entering directory '/tmp/mplapack-p0-base/mpblas/test/gmp'
+make[2]: 'arithmetic.test_gmp' is up to date.
+make[2]: 'complex.test_gmp' is up to date.
+make[2]: 'transcendents_gmp.test' is up to date.
+make[2]: 'iCamax.test.gmp_opt' is up to date.
+make[2]: 'iCamax.test.gmp' is up to date.
+make[2]: 'iRamax.test.gmp_opt' is up to date.
+make[2]: 'iRamax.test.gmp' is up to date.
+make[2]: 'Mlsame.test.gmp_opt' is up to date.
+make[2]: 'Mlsame.test.gmp' is up to date.
+make[2]: 'Mxerbla.test.gmp_opt' is up to date.
+make[2]: 'Mxerbla.test.gmp' is up to date.
+make[2]: 'CRrot.test.gmp_opt' is up to date.
+make[2]: 'CRrot.test.gmp' is up to date.
+make[2]: 'CRscal.test.gmp_opt' is up to date.
+make[2]: 'CRscal.test.gmp' is up to date.
+make[2]: 'Caxpy.test.gmp_opt' is up to date.
+make[2]: 'Caxpy.test.gmp' is up to date.
+make[2]: 'Ccopy.test.gmp_opt' is up to date.
+make[2]: 'Ccopy.test.gmp' is up to date.
+make[2]: 'Cdotc.test.gmp_opt' is up to date.
+make[2]: 'Cdotc.test.gmp' is up to date.
+make[2]: 'Cdotu.test.gmp_opt' is up to date.
+make[2]: 'Cdotu.test.gmp' is up to date.
+make[2]: 'Cgbmv.test.gmp_opt' is up to date.
+make[2]: 'Cgbmv.test.gmp' is up to date.
+make[2]: 'Cgemm.test.gmp_opt' is up to date.
+make[2]: 'Cgemm.test.gmp' is up to date.
+make[2]: 'Cgemv.test.gmp_opt' is up to date.
+make[2]: 'Cgemv.test.gmp' is up to date.
+make[2]: 'Cgerc.test.gmp_opt' is up to date.
+make[2]: 'Cgerc.test.gmp' is up to date.
+make[2]: 'Cgeru.test.gmp_opt' is up to date.
+make[2]: 'Cgeru.test.gmp' is up to date.
+make[2]: 'Chbmv.test.gmp_opt' is up to date.
+make[2]: 'Chbmv.test.gmp' is up to date.
+make[2]: 'Chemm.test.gmp_opt' is up to date.
+make[2]: 'Chemm.test.gmp' is up to date.
+make[2]: 'Chemv.test.gmp_opt' is up to date.
+make[2]: 'Chemv.test.gmp' is up to date.
+make[2]: 'Cher.test.gmp_opt' is up to date.
+make[2]: 'Cher.test.gmp' is up to date.
+make[2]: 'Cher2.test.gmp_opt' is up to date.
+make[2]: 'Cher2.test.gmp' is up to date.
+make[2]: 'Cher2k.test.gmp_opt' is up to date.
+make[2]: 'Cher2k.test.gmp' is up to date.
+make[2]: 'Cherk.test.gmp_opt' is up to date.
+make[2]: 'Cherk.test.gmp' is up to date.
+make[2]: 'Chpmv.test.gmp_opt' is up to date.
+make[2]: 'Chpmv.test.gmp' is up to date.
+make[2]: 'Chpr.test.gmp_opt' is up to date.
+make[2]: 'Chpr.test.gmp' is up to date.
+make[2]: 'Chpr2.test.gmp_opt' is up to date.
+make[2]: 'Chpr2.test.gmp' is up to date.
+make[2]: 'Crotg.test.gmp_opt' is up to date.
+make[2]: 'Crotg.test.gmp' is up to date.
+make[2]: 'Cscal.test.gmp_opt' is up to date.
+make[2]: 'Cscal.test.gmp' is up to date.
+make[2]: 'Cswap.test.gmp_opt' is up to date.
+make[2]: 'Cswap.test.gmp' is up to date.
+make[2]: 'Csymm.test.gmp_opt' is up to date.
+make[2]: 'Csymm.test.gmp' is up to date.
+make[2]: 'Csyr2k.test.gmp_opt' is up to date.
+make[2]: 'Csyr2k.test.gmp' is up to date.
+make[2]: 'Csyrk.test.gmp_opt' is up to date.
+make[2]: 'Csyrk.test.gmp' is up to date.
+make[2]: 'Ctbmv.test.gmp_opt' is up to date.
+make[2]: 'Ctbmv.test.gmp' is up to date.
+make[2]: 'Ctbsv.test.gmp_opt' is up to date.
+make[2]: 'Ctbsv.test.gmp' is up to date.
+make[2]: 'Ctpmv.test.gmp_opt' is up to date.
+make[2]: 'Ctpmv.test.gmp' is up to date.
+make[2]: 'Ctpsv.test.gmp_opt' is up to date.
+make[2]: 'Ctpsv.test.gmp' is up to date.
+make[2]: 'Ctrmm.test.gmp_opt' is up to date.
+make[2]: 'Ctrmm.test.gmp' is up to date.
+make[2]: 'Ctrmv.test.gmp_opt' is up to date.
+make[2]: 'Ctrmv.test.gmp' is up to date.
+make[2]: 'Ctrsm.test.gmp_opt' is up to date.
+make[2]: 'Ctrsm.test.gmp' is up to date.
+make[2]: 'Ctrsv.test.gmp_opt' is up to date.
+make[2]: 'Ctrsv.test.gmp' is up to date.
+make[2]: 'RCabs1.test.gmp_opt' is up to date.
+make[2]: 'RCabs1.test.gmp' is up to date.
+make[2]: 'RCasum.test.gmp_opt' is up to date.
+make[2]: 'RCasum.test.gmp' is up to date.
+make[2]: 'RCnrm2.test.gmp_opt' is up to date.
+make[2]: 'RCnrm2.test.gmp' is up to date.
+make[2]: 'Rasum.test.gmp_opt' is up to date.
+make[2]: 'Rasum.test.gmp' is up to date.
+make[2]: 'Raxpy.test.gmp_opt' is up to date.
+make[2]: 'Raxpy.test.gmp' is up to date.
+make[2]: 'Rcopy.test.gmp_opt' is up to date.
+make[2]: 'Rcopy.test.gmp' is up to date.
+make[2]: 'Rdot.test.gmp_opt' is up to date.
+make[2]: 'Rdot.test.gmp' is up to date.
+make[2]: 'Rgbmv.test.gmp_opt' is up to date.
+make[2]: 'Rgbmv.test.gmp' is up to date.
+make[2]: 'Rgemm.test.gmp_opt' is up to date.
+make[2]: 'Rgemm.test.gmp' is up to date.
+make[2]: 'Rgemv.test.gmp_opt' is up to date.
+make[2]: 'Rgemv.test.gmp' is up to date.
+make[2]: 'Rger.test.gmp_opt' is up to date.
+make[2]: 'Rger.test.gmp' is up to date.
+make[2]: 'Rnrm2.test.gmp_opt' is up to date.
+make[2]: 'Rnrm2.test.gmp' is up to date.
+make[2]: 'Rrot.test.gmp_opt' is up to date.
+make[2]: 'Rrot.test.gmp' is up to date.
+make[2]: 'Rrotg.test.gmp_opt' is up to date.
+make[2]: 'Rrotg.test.gmp' is up to date.
+make[2]: 'Rrotm.test.gmp_opt' is up to date.
+make[2]: 'Rrotm.test.gmp' is up to date.
+make[2]: 'Rsbmv.test.gmp_opt' is up to date.
+make[2]: 'Rsbmv.test.gmp' is up to date.
+make[2]: 'Rscal.test.gmp_opt' is up to date.
+make[2]: 'Rscal.test.gmp' is up to date.
+make[2]: 'Rspmv.test.gmp_opt' is up to date.
+make[2]: 'Rspmv.test.gmp' is up to date.
+make[2]: 'Rspr.test.gmp_opt' is up to date.
+make[2]: 'Rspr.test.gmp' is up to date.
+make[2]: 'Rspr2.test.gmp_opt' is up to date.
+make[2]: 'Rspr2.test.gmp' is up to date.
+make[2]: 'Rswap.test.gmp_opt' is up to date.
+make[2]: 'Rswap.test.gmp' is up to date.
+make[2]: 'Rsymm.test.gmp_opt' is up to date.
+make[2]: 'Rsymm.test.gmp' is up to date.
+make[2]: 'Rsymv.test.gmp_opt' is up to date.
+make[2]: 'Rsymv.test.gmp' is up to date.
+make[2]: 'Rsyr.test.gmp_opt' is up to date.
+make[2]: 'Rsyr.test.gmp' is up to date.
+make[2]: 'Rsyr2.test.gmp_opt' is up to date.
+make[2]: 'Rsyr2.test.gmp' is up to date.
+make[2]: 'Rsyr2k.test.gmp_opt' is up to date.
+make[2]: 'Rsyr2k.test.gmp' is up to date.
+make[2]: 'Rsyrk.test.gmp_opt' is up to date.
+make[2]: 'Rsyrk.test.gmp' is up to date.
+make[2]: 'Rtbmv.test.gmp_opt' is up to date.
+make[2]: 'Rtbmv.test.gmp' is up to date.
+make[2]: 'Rtbsv.test.gmp_opt' is up to date.
+make[2]: 'Rtbsv.test.gmp' is up to date.
+make[2]: 'Rtpmv.test.gmp_opt' is up to date.
+make[2]: 'Rtpmv.test.gmp' is up to date.
+make[2]: 'Rtpsv.test.gmp_opt' is up to date.
+make[2]: 'Rtpsv.test.gmp' is up to date.
+make[2]: 'Rtrmm.test.gmp_opt' is up to date.
+make[2]: 'Rtrmm.test.gmp' is up to date.
+make[2]: 'Rtrmv.test.gmp_opt' is up to date.
+make[2]: 'Rtrmv.test.gmp' is up to date.
+make[2]: 'Rtrsm.test.gmp_opt' is up to date.
+make[2]: 'Rtrsm.test.gmp' is up to date.
+make[2]: 'Rtrsv.test.gmp_opt' is up to date.
+make[2]: 'Rtrsv.test.gmp' is up to date.
+make[2]: 'transcendents_gmp_vs_mpfr.test' is up to date.
+make[2]: Leaving directory '/tmp/mplapack-p0-base/mpblas/test/gmp'
+make  check-TESTS
+make[2]: Entering directory '/tmp/mplapack-p0-base/mpblas/test/gmp'
+make[3]: Entering directory '/tmp/mplapack-p0-base/mpblas/test/gmp'
+PASS: run_Mxerbla.test.gmp.sh
+PASS: run_iCamax.test.gmp_opt.sh
+PASS: run_Mxerbla.test.gmp_opt.sh
+PASS: run_Mlsame.test.gmp_opt.sh
+PASS: run_Mlsame.test.gmp.sh
+PASS: run_arithmetic.test_gmp.sh
+PASS: run_iCamax.test.gmp.sh
+PASS: run_complex.test_gmp.sh
+PASS: run_transcendents_gmp.test.sh
+PASS: run_CRrot.test.gmp_opt.sh
+PASS: run_CRrot.test.gmp.sh
+PASS: run_CRscal.test.gmp_opt.sh
+PASS: run_CRscal.test.gmp.sh
+PASS: run_iRamax.test.gmp.sh
+PASS: run_iRamax.test.gmp_opt.sh
+PASS: run_Caxpy.test.gmp.sh
+PASS: run_Caxpy.test.gmp_opt.sh
+PASS: run_Chemv.test.gmp.sh
+PASS: run_Chemv.test.gmp_opt.sh
+PASS: run_Chpmv.test.gmp_opt.sh
+PASS: run_Chpr.test.gmp_opt.sh
+PASS: run_Chpr.test.gmp.sh
+PASS: run_Cdotu.test.gmp.sh
+PASS: run_Ccopy.test.gmp.sh
+PASS: run_Ccopy.test.gmp_opt.sh
+PASS: run_Cdotu.test.gmp_opt.sh
+PASS: run_Crotg.test.gmp_opt.sh
+PASS: run_Cdotc.test.gmp_opt.sh
+PASS: run_Crotg.test.gmp.sh
+PASS: run_Cdotc.test.gmp.sh
+PASS: run_Cher2.test.gmp_opt.sh
+PASS: run_Chpmv.test.gmp.sh
+PASS: run_Chpr2.test.gmp_opt.sh
+PASS: run_Cswap.test.gmp_opt.sh
+PASS: run_Cswap.test.gmp.sh
+PASS: run_Cher2.test.gmp.sh
+PASS: run_Chpr2.test.gmp.sh
+PASS: run_Ctbmv.test.gmp.sh
+PASS: run_Ctbmv.test.gmp_opt.sh
+PASS: run_Cher.test.gmp_opt.sh
+PASS: run_Cher.test.gmp.sh
+PASS: run_Ctpsv.test.gmp_opt.sh
+PASS: run_Ctpsv.test.gmp.sh
+PASS: run_Cscal.test.gmp.sh
+PASS: run_Ctbsv.test.gmp_opt.sh
+PASS: run_Cscal.test.gmp_opt.sh
+PASS: run_Ctbsv.test.gmp.sh
+PASS: run_Ctrmv.test.gmp_opt.sh
+PASS: run_Ctrmv.test.gmp.sh
+PASS: run_Cgeru.test.gmp_opt.sh
+PASS: run_RCabs1.test.gmp_opt.sh
+PASS: run_RCabs1.test.gmp.sh
+PASS: run_Cgeru.test.gmp.sh
+PASS: run_Cgerc.test.gmp.sh
+PASS: run_Cgerc.test.gmp_opt.sh
+PASS: run_Ctrsv.test.gmp_opt.sh
+PASS: run_Ctpmv.test.gmp_opt.sh
+PASS: run_Ctrsv.test.gmp.sh
+PASS: run_Cher2k.test.gmp_opt.sh
+PASS: run_Ctpmv.test.gmp.sh
+PASS: run_Csyrk.test.gmp_opt.sh
+PASS: run_Cher2k.test.gmp.sh
+PASS: run_Csyrk.test.gmp.sh
+PASS: run_Chbmv.test.gmp.sh
+PASS: run_Chbmv.test.gmp_opt.sh
+PASS: run_Csyr2k.test.gmp.sh
+PASS: run_Csyr2k.test.gmp_opt.sh
+PASS: run_Csymm.test.gmp.sh
+PASS: run_Csymm.test.gmp_opt.sh
+PASS: run_Rdot.test.gmp.sh
+PASS: run_Rcopy.test.gmp.sh
+PASS: run_Cherk.test.gmp_opt.sh
+PASS: run_Rnrm2.test.gmp_opt.sh
+PASS: run_Rnrm2.test.gmp.sh
+PASS: run_Cherk.test.gmp.sh
+PASS: run_Cgemv.test.gmp_opt.sh
+PASS: run_Rger.test.gmp.sh
+PASS: run_Rrotg.test.gmp_opt.sh
+PASS: run_Rrotg.test.gmp.sh
+PASS: run_Cgemv.test.gmp.sh
+PASS: run_Chemm.test.gmp.sh
+PASS: run_Rger.test.gmp_opt.sh
+PASS: run_Rasum.test.gmp_opt.sh
+PASS: run_Chemm.test.gmp_opt.sh
+PASS: run_Rspmv.test.gmp_opt.sh
+PASS: run_Rrotm.test.gmp_opt.sh
+PASS: run_Rspmv.test.gmp.sh
+PASS: run_Rspr.test.gmp_opt.sh
+PASS: run_Rspr.test.gmp.sh
+PASS: run_Rasum.test.gmp.sh
+PASS: run_Rswap.test.gmp_opt.sh
+PASS: run_Rrotm.test.gmp.sh
+PASS: run_Rspr2.test.gmp.sh
+PASS: run_Rspr2.test.gmp_opt.sh
+PASS: run_Rswap.test.gmp.sh
+PASS: run_Rrot.test.gmp_opt.sh
+PASS: run_Rsyr.test.gmp_opt.sh
+PASS: run_Rsyr.test.gmp.sh
+PASS: run_Rrot.test.gmp.sh
+PASS: run_Ctrmm.test.gmp.sh
+PASS: run_Rcopy.test.gmp_opt.sh
+PASS: run_RCasum.test.gmp.sh
+PASS: run_Rsyr2.test.gmp_opt.sh
+PASS: run_Ctrmm.test.gmp_opt.sh
+PASS: run_Rsyr2.test.gmp.sh
+PASS: run_Rsymv.test.gmp_opt.sh
+PASS: run_RCasum.test.gmp_opt.sh
+PASS: run_Raxpy.test.gmp.sh
+PASS: run_Cgemm.test.gmp.sh
+PASS: run_Cgemm.test.gmp_opt.sh
+PASS: run_Ctrsm.test.gmp_opt.sh
+PASS: run_Ctrsm.test.gmp.sh
+PASS: run_Rtpsv.test.gmp_opt.sh
+PASS: run_Rtpsv.test.gmp.sh
+PASS: run_Rsymv.test.gmp.sh
+PASS: run_Rtbmv.test.gmp_opt.sh
+PASS: run_Rtrmv.test.gmp_opt.sh
+PASS: run_Rtrmv.test.gmp.sh
+PASS: run_Rtbmv.test.gmp.sh
+PASS: run_Rtbsv.test.gmp_opt.sh
+PASS: run_Rdot.test.gmp_opt.sh
+PASS: run_transcendents_gmp_vs_mpfr.test.sh
+PASS: run_Rtbsv.test.gmp.sh
+PASS: run_Rtrsv.test.gmp.sh
+PASS: run_Rtrsv.test.gmp_opt.sh
+PASS: run_RCnrm2.test.gmp_opt.sh
+PASS: run_Rsbmv.test.gmp_opt.sh
+PASS: run_Rtpmv.test.gmp.sh
+PASS: run_Rtpmv.test.gmp_opt.sh
+PASS: run_Rsbmv.test.gmp.sh
+PASS: run_RCnrm2.test.gmp.sh
+PASS: run_Rgemv.test.gmp_opt.sh
+PASS: run_Rgemv.test.gmp.sh
+PASS: run_Rscal.test.gmp.sh
+PASS: run_Rscal.test.gmp_opt.sh
+PASS: run_Rsyr2k.test.gmp_opt.sh
+PASS: run_Rgemm.test.gmp.sh
+PASS: run_Rsyr2k.test.gmp.sh
+PASS: run_Raxpy.test.gmp_opt.sh
+PASS: run_Rsymm.test.gmp.sh
+PASS: run_Rsyrk.test.gmp.sh
+PASS: run_Rsymm.test.gmp_opt.sh
+PASS: run_Rsyrk.test.gmp_opt.sh
+PASS: run_Rtrmm.test.gmp_opt.sh
+PASS: run_Rtrsm.test.gmp_opt.sh
+PASS: run_Rtrmm.test.gmp.sh
+PASS: run_Rtrsm.test.gmp.sh
+PASS: run_Rgbmv.test.gmp_opt.sh
+PASS: run_Rgbmv.test.gmp.sh
+PASS: run_Cgbmv.test.gmp.sh
+PASS: run_Cgbmv.test.gmp_opt.sh
+PASS: run_Rgemm.test.gmp_opt.sh
+============================================================================
+Testsuite summary for mplapack 2.3.0
+============================================================================
+# TOTAL: 152
+# PASS:  152
+# SKIP:  0
+# XFAIL: 0
+# FAIL:  0
+# XPASS: 0
+# ERROR: 0
+============================================================================
+make[3]: Leaving directory '/tmp/mplapack-p0-base/mpblas/test/gmp'
+make[2]: Leaving directory '/tmp/mplapack-p0-base/mpblas/test/gmp'
+make[1]: Leaving directory '/tmp/mplapack-p0-base/mpblas/test/gmp'

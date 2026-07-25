@@ -1,0 +1,82 @@
+$ c++ -std=gnu++17 -fopenmp -ffp-contract=off -I/tmp/gmpfrxx-p0-install/include -D___MPLAPACK_INTERNAL___ -I/tmp/mplapack-p0-final/include/mplapack -I/tmp/mplapack-p0-final/include -L/tmp/mplapack-p0-final/lib -Wl,-rpath,/tmp/mplapack-p0-final/lib -I/tmp/mplapack-p0-base/include /home/docker/mplapack/docs/migration/gmpfrxx_mkII/tools/spike/mplapack_mpfr_surface.cpp -o /tmp/mplapack-p0-spikes/mplapack-mpfr-surface -lmpc -lmpfr -lgmp -lqd -lquadmath
+/home/docker/mplapack/docs/migration/gmpfrxx_mkII/tools/spike/mplapack_mpfr_surface.cpp: In function ‘int main()’:
+/home/docker/mplapack/docs/migration/gmpfrxx_mkII/tools/spike/mplapack_mpfr_surface.cpp:8:23: error: no matching function for call to ‘pow2(mpfrxx::mpfr_class&)’
+    8 |     auto square = pow2(value);
+      |                   ~~~~^~~~~~~
+/home/docker/mplapack/docs/migration/gmpfrxx_mkII/tools/spike/mplapack_mpfr_surface.cpp:8:23: note: there are 3 candidates
+In file included from /home/docker/mplapack/docs/migration/gmpfrxx_mkII/tools/spike/mplapack_mpfr_surface.cpp:3:
+/tmp/mplapack-p0-final/include/mplapack/mplapack_utils_mpfr.h:222:15: note: candidate 1: ‘mpfr::mpreal pow2(mpfr::mpreal)’
+  222 | inline mpreal pow2(mpreal a) {
+      |               ^~~~
+/tmp/mplapack-p0-final/include/mplapack/mplapack_utils_mpfr.h:222:27: note: no known conversion for argument 1 from ‘mpfrxx::mpfr_class’ to ‘mpfr::mpreal’
+  222 | inline mpreal pow2(mpreal a) {
+      |                    ~~~~~~~^
+/tmp/mplapack-p0-final/include/mplapack/mplapack_utils_mpfr.h:227:18: note: candidate 2: ‘mpfr::mpcomplex pow2(mpfr::mpcomplex)’
+  227 | inline mpcomplex pow2(mpcomplex a) {
+      |                  ^~~~
+/tmp/mplapack-p0-final/include/mplapack/mplapack_utils_mpfr.h:227:33: note: no known conversion for argument 1 from ‘mpfrxx::mpfr_class’ to ‘mpfr::mpcomplex’
+  227 | inline mpcomplex pow2(mpcomplex a) {
+      |                       ~~~~~~~~~~^
+/tmp/mplapack-p0-final/include/mplapack/mplapack_utils_mpfr.h:247:20: note: candidate 3: ‘mplapackint pow2(mplapackint)’
+  247 | inline mplapackint pow2(mplapackint a) { return a * a; }
+      |                    ^~~~
+/tmp/mplapack-p0-final/include/mplapack/mplapack_utils_mpfr.h:247:37: note: no known conversion for argument 1 from ‘mpfrxx::mpfr_class’ to ‘mplapackint’ {aka ‘long int’}
+  247 | inline mplapackint pow2(mplapackint a) { return a * a; }
+      |                         ~~~~~~~~~~~~^
+/home/docker/mplapack/docs/migration/gmpfrxx_mkII/tools/spike/mplapack_mpfr_surface.cpp:9:30: error: could not convert ‘value’ from ‘mpfrxx::mpfr_class’ to ‘mpfr::mpreal’
+    9 |     auto signed_value = sign(value, -value);
+      |                              ^~~~~
+      |                              |
+      |                              mpfrxx::mpfr_class
+/home/docker/mplapack/docs/migration/gmpfrxx_mkII/tools/spike/mplapack_mpfr_surface.cpp:10:25: error: could not convert ‘value’ from ‘mpfrxx::mpfr_class’ to ‘mpfr::mpreal’
+   10 |     auto nearest = nint(value);
+      |                         ^~~~~
+      |                         |
+      |                         mpfrxx::mpfr_class
+/home/docker/mplapack/docs/migration/gmpfrxx_mkII/tools/spike/mplapack_mpfr_surface.cpp:11:22: error: could not convert ‘value’ from ‘mpfrxx::mpfr_class’ to ‘mpfr::mpreal’
+   11 |     auto circle = pi(value);
+      |                      ^~~~~
+      |                      |
+      |                      mpfrxx::mpfr_class
+/home/docker/mplapack/docs/migration/gmpfrxx_mkII/tools/spike/mplapack_mpfr_surface.cpp:12:14: error: no matching function for call to ‘sprintnum(char [1024], mpfrxx::mpfr_class&)’
+   12 |     sprintnum(buffer, value);
+      |     ~~~~~~~~~^~~~~~~~~~~~~~~
+/home/docker/mplapack/docs/migration/gmpfrxx_mkII/tools/spike/mplapack_mpfr_surface.cpp:12:14: note: there are 5 candidates
+In file included from /tmp/mplapack-p0-final/include/mplapack/mplapack_utils_mpfr.h:40:
+/tmp/mplapack-p0-base/include/mplapack_print_double.h:50:13: note: candidate 1: ‘void sprintnum(char*, double)’
+   50 | inline void sprintnum(char *buf, double rtmp) { snprintf(buf, __MPLAPACK_BUFLEN__, DOUBLE_FORMAT, rtmp); }
+      |             ^~~~~~~~~
+/tmp/mplapack-p0-base/include/mplapack_print_double.h:50:41: note: no known conversion for argument 2 from ‘mpfrxx::mpfr_class’ to ‘double’
+   50 | inline void sprintnum(char *buf, double rtmp) { snprintf(buf, __MPLAPACK_BUFLEN__, DOUBLE_FORMAT, rtmp); }
+      |                                  ~~~~~~~^~~~
+/tmp/mplapack-p0-base/include/mplapack_print_double.h:51:13: note: candidate 2: ‘void sprintnum(char*, std::complex<double>)’
+   51 | inline void sprintnum(char *buf, std::complex<double> ctmp) { snprintf(buf, __MPLAPACK_BUFLEN__, DOUBLE_FORMAT DOUBLE_FORMAT "i", ctmp.real(), ctmp.imag()); }
+      |             ^~~~~~~~~
+/tmp/mplapack-p0-base/include/mplapack_print_double.h:51:55: note: no known conversion for argument 2 from ‘mpfrxx::mpfr_class’ to ‘std::complex<double>’
+   51 | inline void sprintnum(char *buf, std::complex<double> ctmp) { snprintf(buf, __MPLAPACK_BUFLEN__, DOUBLE_FORMAT DOUBLE_FORMAT "i", ctmp.real(), ctmp.imag()); }
+      |                                  ~~~~~~~~~~~~~~~~~~~~~^~~~
+/tmp/mplapack-p0-base/include/mplapack_print_double.h:52:13: note: candidate 3: ‘void sprintnum(char*, __complex__ double)’
+   52 | inline void sprintnum(char *buf, __complex__ double ctmp) { snprintf(buf, __MPLAPACK_BUFLEN__, DOUBLE_FORMAT DOUBLE_FORMAT "i", __real__ ctmp, __imag__ ctmp); }
+      |             ^~~~~~~~~
+/tmp/mplapack-p0-base/include/mplapack_print_double.h:52:53: note: no known conversion for argument 2 from ‘mpfrxx::mpfr_class’ to ‘__complex__ double’
+   52 | inline void sprintnum(char *buf, __complex__ double ctmp) { snprintf(buf, __MPLAPACK_BUFLEN__, DOUBLE_FORMAT DOUBLE_FORMAT "i", __real__ ctmp, __imag__ ctmp); }
+      |                                  ~~~~~~~~~~~~~~~~~~~^~~~
+/tmp/mplapack-p0-final/include/mplapack/mplapack_utils_mpfr.h:74:13: note: candidate 4: ‘void sprintnum(char*, mpfr::mpreal)’
+   74 | inline void sprintnum(char *buf, mpreal rtmp) {
+      |             ^~~~~~~~~
+/tmp/mplapack-p0-final/include/mplapack/mplapack_utils_mpfr.h:74:41: note: no known conversion for argument 2 from ‘mpfrxx::mpfr_class’ to ‘mpfr::mpreal’
+   74 | inline void sprintnum(char *buf, mpreal rtmp) {
+      |                                  ~~~~~~~^~~~
+/tmp/mplapack-p0-final/include/mplapack/mplapack_utils_mpfr.h:82:13: note: candidate 5: ‘void sprintnum(char*, mpfr::mpcomplex)’
+   82 | inline void sprintnum(char *buf, mpcomplex ctmp) {
+      |             ^~~~~~~~~
+/tmp/mplapack-p0-final/include/mplapack/mplapack_utils_mpfr.h:82:44: note: no known conversion for argument 2 from ‘mpfrxx::mpfr_class’ to ‘mpfr::mpcomplex’
+   82 | inline void sprintnum(char *buf, mpcomplex ctmp) {
+      |                                  ~~~~~~~~~~^~~~
+/home/docker/mplapack/docs/migration/gmpfrxx_mkII/tools/spike/mplapack_mpfr_surface.cpp:13:50: error: invalid initialization of reference of type ‘const mpfr::mpreal&’ from expression of type ‘mpfrxx::mpfr_class’
+   13 |     sprinthex_mpfr_fixed(buffer, sizeof(buffer), value);
+      |                                                  ^~~~~
+/tmp/mplapack-p0-final/include/mplapack/mplapack_utils_mpfr.h:215:75: note: in passing argument 3 of ‘void sprinthex_mpfr_fixed(char*, size_t, const mpfr::mpreal&)’
+  215 | inline void sprinthex_mpfr_fixed(char *buf, size_t n, const mpfr::mpreal &x) {
+      |                                                       ~~~~~~~~~~~~~~~~~~~~^
+compile_exit=1

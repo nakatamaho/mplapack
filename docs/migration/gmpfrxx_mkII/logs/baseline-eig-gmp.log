@@ -1,0 +1,58 @@
+make  xeigtstR_gmp xeigtstC_gmp xdmdeigtstR_gmp xdmdeigtstC_gmp xeigtstR_gmp_opt xeigtstC_gmp_opt xdmdeigtstR_gmp_opt xdmdeigtstC_gmp_opt
+make[1]: Entering directory '/tmp/mplapack-p0-base/mplapack/test/eig/gmp'
+make[1]: 'xeigtstR_gmp' is up to date.
+make[1]: 'xeigtstC_gmp' is up to date.
+make[1]: 'xdmdeigtstR_gmp' is up to date.
+make[1]: 'xdmdeigtstC_gmp' is up to date.
+make[1]: 'xeigtstR_gmp_opt' is up to date.
+make[1]: 'xeigtstC_gmp_opt' is up to date.
+make[1]: 'xdmdeigtstR_gmp_opt' is up to date.
+make[1]: 'xdmdeigtstC_gmp_opt' is up to date.
+make[1]: Leaving directory '/tmp/mplapack-p0-base/mplapack/test/eig/gmp'
+make  check-local
+make[1]: Entering directory '/tmp/mplapack-p0-base/mplapack/test/eig/gmp'
+SEP: Testing Symmetric Eigenvalue Problem routines [gmp]
+NEP: Testing Nonsymmetric Eigenvalue Problem routines [gmp]
+SVD: Testing Singular Value Decomposition routines [gmp]
+DEV: Testing Nonsymmetric Eigenvalue Driver [gmp]
+DEC: Testing Eigen Condition Routines [gmp]
+SEP: Testing Symmetric Eigenvalue Problem routines [gmp]
+DSG: Testing Symmetric Generalized Eigenvalue Problem routines [gmp]
+Rgebal: Testing the balancing of a general matrix [gmp]
+DGG: Testing Nonsymmetric Generalized Eigenvalue Problem routines [gmp]
+DGD: Testing Nonsymmetric Generalized Eigenvalue Problem driver routines [gmp]
+Rggbak: Testing the back transformation of a pair of balanced matrices [gmp]
+Rgebak: Testing the back transformation of balanced matrix [gmp]
+Rggbal: Testing the balancing of a pair of general matrices [gmp]
+DSB: Testing Symmetric Eigenvalue Problem routines [gmp]
+GQR: Testing Generalized QR and RQ factorization routines [gmp]
+DBB: Testing banded Singular Value Decomposition routines [gmp]
+GLM: Testing Generalized Linear Regression Model routines [gmp]
+GSV: Testing Generalized Singular Value Decomposition routines [gmp]
+CSD: Testing CS Decomposition routines [gmp]
+LSE: Testing Constrained Linear Least Squares routines [gmp]
+DMD: Testing Dynamic Mode Decomposition routines [gmp]
+NEP: Testing Nonsymmetric Eigenvalue Problem routines [gmp]
+SEP: Testing Symmetric Eigenvalue Problem routines [gmp]
+SEP: Testing Symmetric Eigenvalue Problem routines [gmp]
+SVD: Testing Singular Value Decomposition routines [gmp]
+CEC: Testing COMPLEX Eigen Condition Routines [gmp]
+CES: Testing COMPLEX Nonsymmetric Schur Form Driver [gmp]
+CGD: Testing COMPLEX Nonsymmetric Generalized Eigenvalue Problem driver routines [gmp]
+CGG: Testing COMPLEX Nonsymmetric Generalized Eigenvalue Problem routines [gmp]
+CHB: Testing Hermitian Eigenvalue Problem routines [gmp]
+CSG: Testing Symmetric Generalized Eigenvalue Problem routines [gmp]
+CGEBAL: Testing the balancing of a COMPLEX general matrix [gmp]
+CGEBAK: Testing the back transformation of a COMPLEX balanced matrix [gmp]
+CGGBAL: Testing the balancing of a pair of COMPLEX general matrices [gmp]
+CGGBAK: Testing the back transformation of a pair of COMPLEX balanced matrices [gmp]
+CBB: Testing banded Singular Value Decomposition routines [gmp]
+GLM: Testing Generalized Linear Regression Model routines [gmp]
+GQR: Testing Generalized QR and RQ factorization routines [gmp]
+GSV: Testing Generalized Singular Value Decomposition routines [gmp]
+CSD: Testing CS Decomposition routines [gmp]
+LSE: Testing Constrained Linear Least Squares routines [gmp]
+DMD: Testing COMPLEX Dynamic Mode Decomposition routines [gmp]
+gmp eig tests done: Rnep Rsep Rse2 Rsvd Rec Red Rgg Rgd Rsb Rsg Rbal Rbak Rgbal Rgbak Rbb Rglm Rgqr Rgsv Rcsd Rlse Rdmd Cnep Csep Cse2 Csvd Cec Ced Cgg Cgd Csb Csg Cbal Cbak Cgbal Cgbak Cbb Cglm Cgqr Cgsv Ccsd Clse Cdmd
+Output directory: ../results/Ryzen_Threadripper_3970X_ubuntu26_04_gcc-15_2_0/gmp
+make[1]: Leaving directory '/tmp/mplapack-p0-base/mplapack/test/eig/gmp'
