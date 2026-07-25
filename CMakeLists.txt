@@ -58,6 +58,11 @@ endif()
 set(CMAKE_CXX_STANDARD ${MPLAPACK_CXX_STANDARD})
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS ${MPLAPACK_CXX_EXTENSIONS})
+set(MPLAPACK_CHECK_UNIQUE_SYMBOLS_ENV
+    "${CMAKE_COMMAND}" "-E" "env"
+    "CXX=${CMAKE_CXX_COMPILER}"
+    "NM=${CMAKE_NM}"
+    "OBJDUMP=${CMAKE_OBJDUMP}")
 
 # ABI (libtool -version-info 2:0:0) — independent of the package version.
 set(MPLAPACK_LIB_VERSION   "2.0.0")
@@ -327,19 +332,22 @@ if(MPLAPACK_BUILD_TESTS)
   foreach(b gmp mpfr qd dd double binary80 binary128)
     if(TARGET mplapack_${b})
       add_test(NAME unique_symbols_${b}
-        COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/misc/check_unique_symbols.sh"
+        COMMAND ${MPLAPACK_CHECK_UNIQUE_SYMBOLS_ENV}
+                "${CMAKE_CURRENT_SOURCE_DIR}/misc/check_unique_symbols.sh"
                 "$<TARGET_FILE:mplapack_${b}>")
     endif()
     if(TARGET mplapack_${b}_opt)
       add_test(NAME unique_symbols_${b}_opt
-        COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/misc/check_unique_symbols.sh"
+        COMMAND ${MPLAPACK_CHECK_UNIQUE_SYMBOLS_ENV}
+                "${CMAKE_CURRENT_SOURCE_DIR}/misc/check_unique_symbols.sh"
                 "$<TARGET_FILE:mplapack_${b}_opt>")
     endif()
   endforeach()
   foreach(accelerator dd_opt_cuda binary128_opt_opencl)
     if(TARGET mplapack_${accelerator})
       add_test(NAME unique_symbols_${accelerator}
-        COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/misc/check_unique_symbols.sh"
+        COMMAND ${MPLAPACK_CHECK_UNIQUE_SYMBOLS_ENV}
+                "${CMAKE_CURRENT_SOURCE_DIR}/misc/check_unique_symbols.sh"
                 "$<TARGET_FILE:mplapack_${accelerator}>")
     endif()
   endforeach()

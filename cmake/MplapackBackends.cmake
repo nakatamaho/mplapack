@@ -144,7 +144,8 @@ endfunction()
 
 function(mplapack_add_unique_symbol_post_build target)
   add_custom_command(TARGET ${target} POST_BUILD
-    COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/misc/check_unique_symbols.sh"
+    COMMAND ${MPLAPACK_CHECK_UNIQUE_SYMBOLS_ENV}
+            "${CMAKE_CURRENT_SOURCE_DIR}/misc/check_unique_symbols.sh"
             "$<TARGET_FILE:${target}>"
     COMMENT "Checking ${target} for duplicate global symbols"
     VERBATIM)
