@@ -1865,6 +1865,23 @@ AM_CONDITIONAL(MPLAPACK_BINARY80_MODE_LDBL80,   test "$mplapack_binary80_mode" =
 highest_abs_top_srcdir=`cd "$srcdir" && pwd`
 highest_abs_top_builddir=`pwd`
 dnl GMP library start
+AC_ARG_ENABLE([gmpfrxx-mkII], AS_HELP_STRING([--enable-gmpfrxx-mkII], [build bundled gmpfrxx_mkII package plumbing]), [], [enable_gmpfrxx_mkii=no])
+AC_ARG_WITH([gmpfrxx-mkII], AS_HELP_STRING([--with-gmpfrxx-mkII=PREFIX], [use an installed gmpfrxx_mkII package]), [gmpfrxx_mkii_prefix="$withval"], [gmpfrxx_mkii_prefix=""])
+GMPFRXX_MKII_DIR=
+GMPFRXX_MKII_SOURCE=disabled
+if test x$enable_gmpfrxx_mkII = xyes; then
+    if test -n "$gmpfrxx_mkii_prefix" && test "$gmpfrxx_mkii_prefix" != yes; then
+        GMPFRXX_MKII_PREFIX="$gmpfrxx_mkii_prefix"
+        GMPFRXX_MKII_SOURCE=system
+    else
+        GMPFRXX_MKII_PREFIX="$prefix"
+        GMPFRXX_MKII_SOURCE=bundled
+        GMPFRXX_MKII_DIR=gmpfrxx_mkII
+    fi
+fi
+AC_SUBST([GMPFRXX_MKII_PREFIX])
+AC_SUBST([GMPFRXX_MKII_SOURCE])
+AC_SUBST([GMPFRXX_MKII_DIR])
 AC_ARG_WITH(system-gmp,
 AS_HELP_STRING([--with-system-gmp=PREFIX],
             [ ="yes" if it is at the default location (/usr/local/lib), or alternative prefix path to gmp library]
@@ -2808,6 +2825,7 @@ external/Makefile
 external/gmp/Makefile
 external/mpfr/Makefile
 external/mpc/Makefile
+external/gmpfrxx_mkII/Makefile
 external/qd/Makefile
 external/lapack/Makefile
 external/dlfcn-win32/Makefile
