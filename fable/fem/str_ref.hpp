@@ -80,7 +80,7 @@ struct str_ref : str_cref {
     str_ref operator()(int first, int last) const { return str_ref(elems() + first - 1, last - first + 1); }
 };
 // Accept string literal (or const char*) on the left side of fem string concatenation.
-// This prevents ambiguous overload resolution with other libraries (e.g., mpfrc++).
+// This prevents ambiguous overload resolution with other libraries (e.g., gmpfrxx_mkII).
   template <std::size_t N>
 inline fem::str_addends operator+(char const (&lhs)[N], fem::str_cref const &rhs) {
     // N includes the trailing '\0', so the string length is N-1.

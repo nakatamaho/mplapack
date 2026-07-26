@@ -76,7 +76,7 @@ option(MPLAPACK_ENABLE_BINARY80  "Build the binary80 backend (x86 only)"  OFF)
 option(MPLAPACK_ENABLE_OPT       "Build optimized libraries"                ON)
 option(MPLAPACK_ENABLE_CUDA      "Build the DD CUDA accelerator library"    OFF)
 option(MPLAPACK_ENABLE_OPENCL    "Build the binary128 OpenCL library"       OFF)
-option(MPLAPACK_ENABLE_GMPFRXX_MKII "Discover installed gmpfrxx_mkII targets" OFF)
+option(MPLAPACK_ENABLE_GMPFRXX_MKII "Use bundled gmpfrxx_mkII for GMP/MPFR backends" ON)
 set(MPLAPACK_CUDA_ARCHITECTURES "70;80;90" CACHE STRING
     "CUDA architectures for mplapack_dd_opt_cuda")
 
@@ -85,22 +85,32 @@ option(MPLAPACK_BUILD_TESTS      "Build the test suite"                    OFF)
 option(MPLAPACK_BUILD_BENCHMARKS "Build the benchmarks (needs OpenBLAS)"   OFF)
 
 # -----------------------------------------------------------------------------
-# Dependencies (find only; never fetch/build)
+# Dependencies and bundled gmpfrxx_mkII header extraction
 # -----------------------------------------------------------------------------
-# GMP (C++ iface) is needed directly by the GMP backend and transitively by MPFR.
+# GMP C interface is needed directly by the GMP backend and transitively by MPFR.
 if(MPLAPACK_ENABLE_GMP OR MPLAPACK_ENABLE_MPFR)
   find_package(GMP REQUIRED)
-  if(NOT GMPXX_FOUND)
-    message(FATAL_ERROR "libgmpxx (the GMP C++ interface) is required for the "
-                        "GMP/MPFR backends but was not found.")
-  endif()
 endif()
 if(MPLAPACK_ENABLE_MPFR)
   find_package(MPFR REQUIRED)
   find_package(MPC REQUIRED)
 endif()
-if(MPLAPACK_ENABLE_GMPFRXX_MKII)
-  find_package(gmpfrxx_mkII CONFIG REQUIRED)
+if(MPLAPACK_ENABLE_GMP OR MPLAPACK_ENABLE_MPFR)
+  if(NOT MPLAPACK_ENABLE_GMPFRXX_MKII)
+    message(FATAL_ERROR "GMP/MPFR backends require MPLAPACK_ENABLE_GMPFRXX_MKII=ON")
+  endif()
+  set(MPLAPACK_GMPFRXX_MKII_ROOT
+      "${CMAKE_CURRENT_BINARY_DIR}/external/i/GMPFRXX_MKII")
+  set(MPLAPACK_GMPFRXX_MKII_ARCHIVE
+      "${CMAKE_CURRENT_SOURCE_DIR}/external/gmpfrxx_mkII/download/gmpfrxx_mkII.1.1.0.tar.xz")
+  if(NOT EXISTS "${MPLAPACK_GMPFRXX_MKII_ROOT}/include/gmpxx_mkII.h")
+    find_program(MPLAPACK_TAR_EXECUTABLE tar REQUIRED)
+    file(MAKE_DIRECTORY "${MPLAPACK_GMPFRXX_MKII_ROOT}")
+    execute_process(
+      COMMAND "${MPLAPACK_TAR_EXECUTABLE}" -xJf "${MPLAPACK_GMPFRXX_MKII_ARCHIVE}"
+              -C "${MPLAPACK_GMPFRXX_MKII_ROOT}" --strip-components=1
+      COMMAND_ERROR_IS_FATAL ANY)
+  endif()
 endif()
 if(MPLAPACK_ENABLE_QD OR MPLAPACK_ENABLE_DD)
   find_package(QD REQUIRED)
@@ -188,28 +198,38 @@ check_cxx_compiler_flag("-ffp-contract=off" MPLAPACK_HAS_FP_CONTRACT_OFF)
 # -----------------------------------------------------------------------------
 if(MPLAPACK_ENABLE_GMP)
   mplapack_add_backend(gmp ___MPLAPACK_BUILD_WITH_GMP___)
-  target_link_libraries(mplapack_gmp PUBLIC GMP::GMPXX GMP::GMP)
+  target_include_directories(mplapack_gmp PUBLIC
+      "$<BUILD_INTERFACE:${MPLAPACK_GMPFRXX_MKII_ROOT}/include>")
+  target_compile_definitions(mplapack_gmp PUBLIC
+      GMPXX_MKII_DEFAULT_CONTEXT_MODE=GMPXX_MKII_DEFAULT_CONTEXT_EXTERNAL_PROVIDER)
+  target_link_libraries(mplapack_gmp PUBLIC GMP::GMP)
   list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_gmp)
   if(MPLAPACK_ENABLE_OPT)
     mplapack_add_opt_backend(gmp)
-    target_link_libraries(mplapack_gmp_opt PUBLIC GMP::GMPXX GMP::GMP)
+    target_include_directories(mplapack_gmp_opt PUBLIC
+        "$<BUILD_INTERFACE:${MPLAPACK_GMPFRXX_MKII_ROOT}/include>")
+    target_compile_definitions(mplapack_gmp_opt PUBLIC
+        GMPXX_MKII_DEFAULT_CONTEXT_MODE=GMPXX_MKII_DEFAULT_CONTEXT_EXTERNAL_PROVIDER)
+    target_link_libraries(mplapack_gmp_opt PUBLIC GMP::GMP)
     list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_gmp_opt)
   endif()
 endif()
 
 if(MPLAPACK_ENABLE_MPFR)
   mplapack_add_backend(mpfr ___MPLAPACK_BUILD_WITH_MPFR___)
-  # mpfrc++ headers (mpreal.h / mpcomplex.h) are bundled in-tree.
   target_include_directories(mplapack_mpfr PUBLIC
-      "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/mpfrc++>")
-  target_link_libraries(mplapack_mpfr PUBLIC MPC::MPC MPFR::MPFR GMP::GMPXX GMP::GMP)
+      "$<BUILD_INTERFACE:${MPLAPACK_GMPFRXX_MKII_ROOT}/include>")
+  target_compile_definitions(mplapack_mpfr PUBLIC
+      GMPXX_MKII_DEFAULT_CONTEXT_MODE=GMPXX_MKII_DEFAULT_CONTEXT_EXTERNAL_PROVIDER)
+  target_link_libraries(mplapack_mpfr PUBLIC MPC::MPC MPFR::MPFR GMP::GMP)
   list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_mpfr)
   if(MPLAPACK_ENABLE_OPT)
     mplapack_add_opt_backend(mpfr)
     target_include_directories(mplapack_mpfr_opt PUBLIC
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/mpfrc++>")
-    target_link_libraries(mplapack_mpfr_opt PUBLIC
-        MPC::MPC MPFR::MPFR GMP::GMPXX GMP::GMP)
+        "$<BUILD_INTERFACE:${MPLAPACK_GMPFRXX_MKII_ROOT}/include>")
+    target_compile_definitions(mplapack_mpfr_opt PUBLIC
+        GMPXX_MKII_DEFAULT_CONTEXT_MODE=GMPXX_MKII_DEFAULT_CONTEXT_EXTERNAL_PROVIDER)
+    target_link_libraries(mplapack_mpfr_opt PUBLIC MPC::MPC MPFR::MPFR GMP::GMP)
     list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_mpfr_opt)
   endif()
 endif()

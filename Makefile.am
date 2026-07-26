@@ -77,9 +77,7 @@ mplapack_include_HEADERS += \
     include/mpblas_gmp.h \
     include/mplapack_arithmetic_params_gmp.h \
     include/mplapack_gmp.h \
-    include/mplapack_gmp_transcendents.h \
-    include/mplapack_utils_gmp.h \
-    include/mpc_class.h
+    include/mplapack_utils_gmp.h
 endif
 
 if ENABLE_QD
@@ -96,9 +94,7 @@ mplapack_include_HEADERS += \
     include/mpblas_mpfr.h \
     include/mplapack_arithmetic_params_mpfr.h \
     include/mplapack_mpfr.h \
-    include/mplapack_utils_mpfr.h \
-    mpfrc++/mpcomplex.h \
-    mpfrc++/mpreal.h
+    include/mplapack_utils_mpfr.h
 endif
 
 if ENABLE_DOUBLE
@@ -445,10 +441,6 @@ misc/reconfig.ubuntu26.04.nvidia.sh \
 misc/reconfig.ubuntu26.04.sh \
 misc/summarize_mplapack_tests.py \
 mpblas/optimized/dd/cuda/dd_real_cuda.h \
-mpfrc++/copying.lib mpfrc++/copying mpfrc++/makefile.org \
-mpfrc++/org/copying mpfrc++/org/copying.lib mpfrc++/org/example.cpp \
-mpfrc++/org/makefile mpfrc++/org/mpfrc++.tar.gz \
-mpfrc++/org/mpreal.cpp mpfrc++/org/mpreal.h \
 mplapack/test/eig/Cbak.in \
 mplapack/test/eig/Cbal.in \
 mplapack/test/eig/Cbb.in \

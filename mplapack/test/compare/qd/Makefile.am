@@ -23,14 +23,14 @@ run_Rlamch_test.sh: Makefile
 EXTRA_DIST = Rlaruv_reference.txt Rlamch_reference.txt
 
 backend_define = -D___MPLAPACK_BUILD_WITH_QD___
-backend_cppflags = -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(QD_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ $(backend_define) -D___MPLAPACK_INTERNAL___
+backend_cppflags = -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(QD_INCLUDEDIR) $(backend_define) -D___MPLAPACK_INTERNAL___
 backend_cxxflags =
 backend_reference_archives = $(top_builddir)/mplapack/reference/.libs/libmplapack_qd.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_mpfr.a
 backend_reference_libs = -lmplapack_qd -lmplapack_mpfr
 backend_whole_archive_libs =
 backend_link_libs =
 backend_testdir = $(prefix)/lib/$(target)/mplapack/test/compare/qd
-mplibs = -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(QD_LIBDIR) -lmpc -lmpfr -lgmpxx -lgmp -lqd
+mplibs = -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(QD_LIBDIR) -lmpc -lmpfr -lgmp -lqd
 
 compare_tests = \
     Cgelq2.test_qd \

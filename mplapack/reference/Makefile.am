@@ -29,7 +29,7 @@ lib_LTLIBRARIES += libmplapack_binary128.la
 endif
 
 if ENABLE_GMP
-libmplapack_gmp_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_GMP___
+libmplapack_gmp_la_CPPFLAGS = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_GMP___
 libmplapack_gmp_la_SOURCES = $(MPLAPACK_SOURCES) $(MPBLAS_REFERENCE_SOURCES)
 libmplapack_gmp_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 if IS_MACOS
@@ -43,7 +43,7 @@ endif
 endif
 
 if ENABLE_MPFR
-libmplapack_mpfr_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR)  -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___
+libmplapack_mpfr_la_CPPFLAGS = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR)  -I$(MPC_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_MPFR___
 libmplapack_mpfr_la_SOURCES = $(MPLAPACK_SOURCES) $(MPBLAS_REFERENCE_SOURCES)
 libmplapack_mpfr_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO) -Wl,-rpath,$(libdir)
 if IS_MACOS

@@ -8,12 +8,12 @@
 
 #include <lapacke.h>
 
-void printnum(mpreal a) { mpfr_printf("%10.8Re", mpfr_ptr(a)); }
+void printnum(mpfr_class a) { mpfr_printf("%10.8Re", mpfr_ptr(a)); }
 void printnum(double a) { printf("%10.8e", a); }
 
 // Matlab/Octave format
-void printmat(int N, int M, mpreal *A, int LDA) {
-    mpreal mtmp;
+void printmat(int N, int M, mpfr_class *A, int LDA) {
+    mpfr_class mtmp;
     printf("[ ");
     for (int i = 0; i < N; i++) {
         printf("[ ");
@@ -53,11 +53,11 @@ void printmat(int N, int M, double *A, int LDA) {
 int main() {
     mplapackint n = 3;
 
-    mpreal *t = new mpreal[n * n];
-    mpreal *q = new mpreal[n * n];
-    mpreal *wi = new mpreal[n];
-    mpreal *wr = new mpreal[n];
-    mpreal *work = new mpreal[n];
+    mpfr_class *t = new mpfr_class[n * n];
+    mpfr_class *q = new mpfr_class[n * n];
+    mpfr_class *wi = new mpfr_class[n];
+    mpfr_class *wr = new mpfr_class[n];
+    mpfr_class *work = new mpfr_class[n];
     mplapackint ldt = n;
     mplapackint ldq = n;
     mplapackint lwork = n;

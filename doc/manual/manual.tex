@@ -17,21 +17,21 @@
 \definecolor{backcolour}{rgb}{0.95,0.95,0.92}
 
 \lstdefinestyle{mystyle}{
-    backgroundcolor=\color{backcolour},   
+    backgroundcolor=\color{backcolour},
     commentstyle=\color{codegreen},
     keywordstyle=\color{magenta},
     numberstyle=\tiny\color{codegray},
     stringstyle=\color{codepurple},
     basicstyle=\ttfamily\footnotesize,
-    breakatwhitespace=false,         
-    breaklines=true,                 
-    captionpos=b,                    
-    keepspaces=true,                 
-    numbers=left,                    
-    numbersep=5pt,                  
-    showspaces=false,                
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
     showstringspaces=false,
-    showtabs=false,                  
+    showtabs=false,
     tabsize=2
 }
 
@@ -67,7 +67,7 @@
 
 
 \begin{document}
-  
+
   \title{\sf MPLAPACK version 2.0.1 user manual}
   \author{NAKATA Maho$^1$\\
   \normalsize
@@ -102,7 +102,7 @@ The main focus in numerical linear algebra has been on the speed and the size of
 
 However, there are some problems in numerical linear algebra that require higher precision operations. In particular, when solving ill-conditioned problems, large-scale simulations, and computing inversions of matrices, we usually need functions of higher precision numbers~\cite{BAILEY201210106,math3020337,high:ASNA2}.
 
-Solving positive semidefinite programming (SDP) is another example that requires multi-precision computation. Solving SDP using binary64 usually yields values up to eight decimal digits. The accumulation of numerical error occurs because the matrices' condition number at the optimal solution usually becomes infinite. As a result, Cholesky factorization fails near the optimal solution; the approximate solution diverges toward the optimal solution using the primal and dual interior point method~\cite{SDP}. Therefore, multiple precision calculations are required if more than eight decimal digits are needed for optimal solutions. For this reason, we have developed SDPA-GMP~\cite{JCP2008,SDPA-GMP,SDPA}, the GNU MP version of a semidefinite programming solver, as well as its variants SDPA-QD, -DD, and binary128, all of which are based on SDPA~\cite{SDPA}. 
+Solving positive semidefinite programming (SDP) is another example that requires multi-precision computation. Solving SDP using binary64 usually yields values up to eight decimal digits. The accumulation of numerical error occurs because the matrices' condition number at the optimal solution usually becomes infinite. As a result, Cholesky factorization fails near the optimal solution; the approximate solution diverges toward the optimal solution using the primal and dual interior point method~\cite{SDP}. Therefore, multiple precision calculations are required if more than eight decimal digits are needed for optimal solutions. For this reason, we have developed SDPA-GMP~\cite{JCP2008,SDPA-GMP,SDPA}, the GNU MP version of a semidefinite programming solver, as well as its variants SDPA-QD, -DD, and binary128, all of which are based on SDPA~\cite{SDPA}.
 
 We have been developing MPLAPACK as a replacement for BLAS and LAPACK in SDPA since SDPA heavily relies on using Cholesky decomposition and solving symmetric eigenvalue problems via fifty BLAS and LAPACK routines~\cite{sdpa-gmpgithub}. MPLAPACK is designed to be a drop-in replacement for these libraries, making it easier to integrate with the existing SDPA codebase.
 
@@ -159,7 +159,7 @@ We utilize the mingw64 and Wine64 environments on Linux for building and testing
 \section{Installation}
 \label{sec:howtoinstall}
 \subsection{Using Docker (recommended for Linux environment), a simple demo}
-The easiest way to install MPLAPACK is to build inside Docker~\cite{merkel2014docker} and use it inside Docker. 
+The easiest way to install MPLAPACK is to build inside Docker~\cite{merkel2014docker} and use it inside Docker.
 The following command will build inside docker on Ubuntu amd64 (also known as x86\_64) or aarch64 (also known as arm64), and {\bf we use Docker ubuntu 20.04 amd64 environment for the reference in this paper and showing examples}.
 
 \begin{verbatim}
@@ -168,7 +168,7 @@ $ cd mplapack
 $ /usr/bin/time docker build -t mplapack:ubuntu2004 \
    -f Dockerfile_ubuntu20.04 . 2>&1 | tee log.ubuntu2004
 \end{verbatim}
-It will take a while, depending on CPU cores and OSes. For example, a Docker build took 35 minutes on a Ryzen 3970X (3.7GHz, 32 cores) Ubuntu 20.04 machine, 
+It will take a while, depending on CPU cores and OSes. For example, a Docker build took 35 minutes on a Ryzen 3970X (3.7GHz, 32 cores) Ubuntu 20.04 machine,
  a Docker build took 1 hour 50 minutes on Xeon E5-2623 v3 (3.0GHz, 2 CPUs 8 cores) Ubuntu 20.04 machine,
  a Docker build took 14 hours 40 minutes on Raspberry Pi 4 (Cortex A72 1.5GHz, four cores) Ubuntu 20.04 machine,
 Furthermore, the build of MPLAPACK on the Mac mini (2018, Core i5-8500B, 3.0GHz and six cores) took about 3.5 hours.
@@ -191,7 +191,7 @@ a =[ [ +1.00000000000000000000000000000000000e+00, +8.00000000000000000000000000
 ...
 ans =[ [ +2.10000000000000000000000000000000000e+01, -1.92000000000000000000000000000000000e+02,
 +2.28000000000000000000000000000000000e+02]; [ -6.40000000000000000000000000000000000e+01,
--1.46000000000000000000000000000000000e+02, +2.66000000000000000000000000000000000e+02]; 
+-1.46000000000000000000000000000000000e+02, +2.66000000000000000000000000000000000e+02];
 [ +2.10000000000000000000000000000000000e+02, +3.61000000000000000000000000000000000e+02,
 -3.80000000000000000000000000000000000e+01] ]
 #please check by Matlab or Octave following and ans above
@@ -200,11 +200,11 @@ alpha * a * b + beta * c
 }
 If it fails, it is a bug. Please report a problem via GitHub issue.
 
-In Table~\ref{dockerfiles}, we list corresponding Dockerfiles for CPUs, GPUs, OSes, and compilers. 
+In Table~\ref{dockerfiles}, we list corresponding Dockerfiles for CPUs, GPUs, OSes, and compilers.
 When the build is finished, all the files will be installed under {\tt /home/docker/MPLAPACK\_CUDA} for the CUDA version,
 {\tt /home/docker/MPLAPACK\_MINGW} for Windows version, {\tt /home/docker/MPLAPACK\_INTELONEAPI} for Intel One API version,
 and others are under {\tt /home/docker/MPLAPACK}.
-We can build corresponding environments (other OSes, GPUs, CPUs), and you can choose the Dockerfile appropriately 
+We can build corresponding environments (other OSes, GPUs, CPUs), and you can choose the Dockerfile appropriately
 listed on~\ref{dockerfiles}.
 
 \begin{table}
@@ -218,9 +218,9 @@ Docker filename                      & CPU          & OS            & Compiler \
 \tt Dockerfile\_ubuntu18.04          & amd64 only   & Ubuntu 18.04  & GCC  \\
 \tt Dockerfile\_ubuntu20.04          & all CPUs     & Ubuntu 20.04  & GCC\\
 \tt Dockerfile\_ubuntu20.04\_inteloneapi & amd64 only   & Ubuntu 20.04  & Intel oneAPI \\
-\tt Dockerfile\_ubuntu20.04\_mingw64 & amd64 only   & Ubuntu 20.04     & GCC \\ 
-\tt Dockerfile\_ubuntu20.04\_cuda    & NVIDIA A100, V100 & Ubuntu 20.04     & GCC \\ 
-\tt Dockerfile\_ubuntu22.04          & all cpus     & Ubuntu 22.04     & GCC \\ 
+\tt Dockerfile\_ubuntu20.04\_mingw64 & amd64 only   & Ubuntu 20.04     & GCC \\
+\tt Dockerfile\_ubuntu20.04\_cuda    & NVIDIA A100, V100 & Ubuntu 20.04     & GCC \\
+\tt Dockerfile\_ubuntu22.04          & all cpus     & Ubuntu 22.04     & GCC \\
 \tt Dockerfile\_debian\_bullseye     & all cpus     & Debian(bullseye) & GCC \\ \hline
 \end{tabular}
 \end{center}
@@ -257,8 +257,8 @@ GCC & 9 or later \\
 gmake & 4.3 or later \\
 git & 2.33.0 or later\\
 autotools & 2.71 \\
-automake & 1.16 \\ 
-GNU sed & 4.1 or later \\ 
+automake & 1.16 \\
+GNU sed & 4.1 or later \\
 \hline
 \end{tabular}
 \end{center}
@@ -277,9 +277,9 @@ Binary128, also known as quadruple precision, has been defined since IEEE754-200
 
 The double-double and quad-double formats cast two and four binary64 numbers as one number respectively, and have approximately 32 and 64 decimal significant digits. We use the QD library~\cite{hida2000} to support double-double and quad-double precision. The double-double and quad-double precision use Kunth and Dekker's algorithm~\cite{Knuth1997,Dekker1971} which can evaluate the addition and multiplication of two binary64 numbers rigorously. This allows us to define the addition and multiplication of double-double numbers. These formats are faster because all arithmetic can be done by binary64 and accelerated by hardware, with calculation speeds approximately ten times faster than software-implemented binary128. However, programs written for expecting the IEEE754 feature might not work with these precisions. Historically, IBM XL compilers for PowerPCs and GCC targeted to PowerPCs and PowerMacs, ``long double" has been equivalent to the double-double~\cite{ibmdd}. However, other environments do not always support long double. Therefore, we use the QD library for MPLAPACK.
 
-GMP~\cite{Granlund12} is a C library for performing arbitrary precision arithmetic on signed integers, rational numbers, and floating-point numbers. It allows for calculations to any level of accuracy, as long as the machine's resources permit. GMP also comes with a C++ binding, and we use the {\tt mpf\_class} class as an arbitrary floating-point number. Additionally, we support complex numbers using the ${\tt mpc_class}$ class.
+GMP~\cite{Granlund12} is a C library for performing arbitrary precision arithmetic on signed integers, rational numbers, and floating-point numbers. It allows for calculations to any level of accuracy, as long as the machine's resources permit. GMP also comes with a C++ binding, and we use the {\tt mpf\_class} class as an arbitrary floating-point number. Additionally, we support complex numbers using the ${\tt mpfc_class}$ class.
 
-MPFR~\cite{10.1145/1236463.1236468}, a C library for multiple-precision floating-point computations with correct rounding based on GMP, is another option. Unlike GMP, MPFR does not come with a C++ binding, and we use the {\tt mpreal} library~\cite{mpreal} as an arbitrary floating-point number. We also support complex numbers using MPC~\cite{MPC}, a library for multiple-precision complex arithmetic with correct rounding, via the ${\tt mpcomplex}$ class (more precisely, the final LGPL version with our customization). Both libraries provide similar functionality, but MPFR and MPC are smooth extensions to IEEE 754 and further support trigonometric functions necessary for cosine-sine decomposition, elementary, and special functions. Therefore, we plan to discontinue the use of GMP in the future.
+MPFR~\cite{10.1145/1236463.1236468}, a C library for multiple-precision floating-point computations with correct rounding based on GMP, is another option. Unlike GMP, MPFR does not come with a C++ binding, and we use the {\tt mpfr_class} library~\cite{mpfr_class} as an arbitrary floating-point number. We also support complex numbers using MPC~\cite{MPC}, a library for multiple-precision complex arithmetic with correct rounding, via the ${\tt mpc_class}$ class (more precisely, the final LGPL version with our customization). Both libraries provide similar functionality, but MPFR and MPC are smooth extensions to IEEE 754 and further support trigonometric functions necessary for cosine-sine decomposition, elementary, and special functions. Therefore, we plan to discontinue the use of GMP in the future.
 
 MPLAPACK no longer supports the use of the {\tt long double} data type in version 1.0 and later, due to the inconsistent and confusing nature of its implementation across different CPUs and operating systems. For example, on Intel CPUs, {\tt long double} is equivalent to {\tt \_Float64x} on Linux, but on Windows, it is equivalent to {\tt double}. Similar confusion exists in the AArch64 environment. The official ARM ABI defines {\tt long double} as binary128~\cite{arm64abi}, but the Apple ABI overwrites {\tt long double} as double on the OS side. Historically, on IBM PowerPC or Power Macs, {\tt long double} has been equivalent to the double-double, as described earlier. However, when long double transitions to {\tt \_\_float128} on PowerPC in the future, double-double will also be supported as {\tt \_\_ibm128}~\cite{ibmdd} as a GNU extension.
 
@@ -290,12 +290,12 @@ MPLAPACK no longer supports the use of the {\tt long double} data type in versio
 \begin{tabular}{c|c|c} \hline
 Library or format & type name & accuracy in decimal digits \\ \hline
 GMP             & {\tt mpf\_class, mpc\_class}       & 154 (default) and arbitrary\\
-MPFR            & {\tt mpreal, mpcomplex}            & 154 (default) and arbitrary \\
+MPFR            & {\tt mpfr_class, mpc_class}            & 154 (default) and arbitrary \\
 double-double   & {\tt dd\_real, dd\_complex}        & 32\\
 quad-double     & {\tt qd\_real, qd\_complex}        & 64 \\
 binary64        & {\tt double, std::complex<double>} & 16 \\
 extended double & {\tt \_Float64x, std::complex<\_Float64x>} & 19  \\
-binary128       & {\tt \_Float128, std::complex<\_Float128>} & 33 \\ 
+binary128       & {\tt \_Float128, std::complex<\_Float128>} & 33 \\
 integer         & mplapackint & (32bit on Win, 64bit on Linux and macOS) \\ \hline
 \end{tabular}
 \end{center}
@@ -321,7 +321,7 @@ For example, \begin{itemize}
 
 In table~\ref{mpblasroutines}, we show all supported MPBLAS routines.
 The prototype definitions of these routines can be found in the following headers.
-\begin{itemize} 
+\begin{itemize}
 \item {\tt /home/docker/MPLAPACK/include/mplapack/mpblas\_\_Float128.h}
 \item {\tt /home/docker/MPLAPACK/include/mplapack/mpblas\_\_Float64x.h}
 \item {\tt /home/docker/MPLAPACK/include/mplapack/mpblas\_dd.h}
@@ -332,7 +332,7 @@ The prototype definitions of these routines can be found in the following header
 \end{itemize}
 A simple OpenMP version of MPBLAS is available.
 In table~\ref{mpblasroutinesopt}, we show all OpenMP accelerated MPBLAS routines.
-In table~\ref{mpblasroutines_cuda_dd}, we show all CUDA accelerated MPBLAS (double-double) routines. 
+In table~\ref{mpblasroutines_cuda_dd}, we show all CUDA accelerated MPBLAS (double-double) routines.
 
 In table~\ref{mplapackdriver_real}, we show all supported MPLAPACK real driver routines.
 In table~\ref{mplapackcomp_real}, we show all supported MPLAPACK real computational routines.
@@ -340,7 +340,7 @@ In table~\ref{mplapackdriver_complex}, we show all supported MPLAPACK complex dr
 In table~\ref{mplapackcomp_complex}, we show all supported MPLAPACK complex computational routines.
 
 We do not list them here, but there are also many MPLPACK auxiliary routines.
-We usually use MPLAPACK driver routines and MPBLAS routines directly. However, the driver routines also implicitly use computational routines and auxiliary routines. 
+We usually use MPLAPACK driver routines and MPBLAS routines directly. However, the driver routines also implicitly use computational routines and auxiliary routines.
 
 The prototype definitions of the MLAPACK routines can be found in the following headers.
 \begin{itemize}
@@ -398,7 +398,7 @@ Rgemm & Rsyrk \\ \hline
 \begin{table}
 \caption{Available MPLAPACK Real Driver routines (2.0.1)}\label{mplapackdriver_real}
 \begin{center}
-{\tt 
+{\tt
 \begin{tabular}{cccccccccc} \hline
 Rgesv  & Rgesvx & Rgbsv  & Rgbsvx & Rgtsv & Rgtsvx & Rposv  & Rposvx & Rppsv  & Rppsvx \\
 Rpbsv  & Rpvsvx & Rptsv  & Rptsvx & Rsysv & Rsysvx & Rpspv  & Rspsvx \\ \hline %%https://netlib.org/lapack/lug/node26.html
@@ -417,7 +417,7 @@ Rggesx & Rggev & Rggevx & Rggsvd \\ \hline %%https://netlib.org/lapack/lug/node3
 \begin{table}
 \caption{Available MPLAPACK Complex Driver routines (2.0.1)}\label{mplapackdriver_complex}
 \begin{center}
-{\tt 
+{\tt
 \begin{tabular}{cccccccccc} \hline
 Cgesv & Cgesvx & Cgbsv & Cgbsvx & Cgtsv & Cgtsvx & Cposv & Cposvx & Cppsv & Cppsvx \\
 Cpbsv & Cpbsvx & Cptsv & Cptsvx & Chesv & Chesvx & Csysv & Csysvx & Chpsv & Chpsvx \\
@@ -427,7 +427,7 @@ Cgglse & Cggglm \\ \hline %%https://netlib.org/lapack/lug/node28.html
 Cheev & Cheevd & Cheevx & Cheevr & Chpev & Chpevd & Chpevx & Chbev & Chbevd & Chbevx \\
 Cgees & Cgeesx & Cgeev & Cgeevx & Cgesvd & Cgesdd \\ \hline %%https://netlib.org/lapack/lug/node32.html
 Chegv & Chegvd & Chegvx & Chpgv & Chpgvd & Chpgvx & Chbgv & Chbgvd & Chbgvx & Cgges \\ %%https://netlib.org/lapack/lug/node36.html
-Cggesx & Cggev & Cggevx & Cggsvd \\ \hline 
+Cggesx & Cggev & Cggevx & Cggsvd \\ \hline
 \end{tabular}
 }
 \end{center}
@@ -482,7 +482,7 @@ Ctrsna & Ctrsen \\ \hline
 Cgebrd & Cgbbrd & Cungbr & Cunmbr & Cbdsqr \\ \hline %%https://netlib.org/lapack/lug/node53.html
 Chegst & Chpgst & Cpbstf & Chbgst \\ \hline %%https://netlib.org/lapack/lug/node54.html
 Cgghrd & Cggbal & Cggbak & Chgeqz & Ctgevc & Ctgexc & Ctgsyl & Ctgsna & Ctgsen \\ \hline %%https://netlib.org/lapack/lug/node58.html
-Cggsvp & Ctgsja \\ 
+Cggsvp & Ctgsja \\
 \hline
 \end{tabular}
 }
@@ -502,8 +502,8 @@ Cggsvp & Ctgsja \\
 \subsection{Multiprecision Types}
 We use seven kinds of floating-point formats. Multiple precision types are listed in the table~\ref{mplapackformats}.
 For GMP, we use built-in {\tt mpf\_class} for real type. For complex type, we developed {\tt mpc\_class}.
-For MPFR, we use a modified version of mpfrc++ (the final LGPL version) to treat like double or float type. For complex type,
-we developed {\tt mpcomplex.h} using MPFR and MPC for complex type.
+For MPFR, we use a modified version of gmpfrxx_mkII (the final LGPL version) to treat like double or float type. For complex type,
+we developed {\tt mpc_class.h} using MPFR and MPC for complex type.
 For double-double and quad-double, we use {\tt dd\_real} and {\tt qd\_real}, respectively. For complex type, we developed {\tt dd\_complex} and {\tt qd\_complex}, respectively.
 
 For extended double, we use {\tt \_Float64x} for all Intel and AMD environments. For binary128, we use {\_Float128} for
@@ -538,7 +538,7 @@ Then, the output becomes as desired.
 \end{verbatim}
 For GMP, to substitute an imaginary number $1.2+1.2i$ to {\tt beta}, we should code as follows:
 \begin{verbatim}
-    beta = mpc_class(mpf_class("1.2"), mpf_class("1.2");
+    beta = mpfc_class(mpf_class("1.2"), mpf_class("1.2");
 \end{verbatim}
 For real numbers, we verified that all precision have string type constructor except for {\tt \_Float128} and {\tt \_Float64x} as following:
 \begin{verbatim}
@@ -554,16 +554,16 @@ For complex numbers, we have to explicitly use real constructors except for {\tt
 This subsection describes the basic usage of MPBLAS, OpenMP accelerated MPBLAS and CUDA accelerated MPBLAS.
 
 \subsubsection{How to use reference MPBLAS}
-The API of MPBLAS is very similar to the original BLAS and CBLAS. However, unlike CBLAS, we always use a one-dimensional array as a column-major type matrix in MPBLAS. 
+The API of MPBLAS is very similar to the original BLAS and CBLAS. However, unlike CBLAS, we always use a one-dimensional array as a column-major type matrix in MPBLAS.
 
-Here, we show how to use MPBLAS by two examples; {\tt Rgemm} and {\tt Cgemm}. Of course, other routines can be used similarly. However, first, we show how to use {\tt Rgemm}, which corresponds to {\tt DGEMM} of BLAS. 
+Here, we show how to use MPBLAS by two examples; {\tt Rgemm} and {\tt Cgemm}. Of course, other routines can be used similarly. However, first, we show how to use {\tt Rgemm}, which corresponds to {\tt DGEMM} of BLAS.
 
 Following is the prototype definition of the multiple-precision version of matrix-matrix multiplication ({\tt Rgemm}) of the MPFR version.
 \begin{verbatim}
-void Rgemm(const char *transa, const char *transb, mplapackint const m, 
-mplapackint const n, mplapackint const k, mpreal const alpha, mpreal *a, 
-mplapackint const lda, mpreal *b, mplapackint const ldb, mpreal const beta, 
-mpreal*c, mplapackint const ldc);
+void Rgemm(const char *transa, const char *transb, mplapackint const m,
+mplapackint const n, mplapackint const k, mpfr_class const alpha, mpfr_class *a,
+mplapackint const lda, mpfr_class *b, mplapackint const ldb, mpfr_class const beta,
+mpfr_class*c, mplapackint const ldc);
 \end{verbatim}
 Moreover, the following is the definition part of the original DGEMM:
 \begin{verbatim}
@@ -580,7 +580,7 @@ There is a clear correspondence between variables in the C++ prototype of Rgemm 
 \begin{itemize}
     \item {\tt CHARACTER} $\rightarrow$ {\tt const char *}
     \item {\tt INTEGER} $\rightarrow$ {\tt mplapackint}
-    \item {\tt DOUBLE PRECISION A(LDA, *)} $\rightarrow$ {\tt mpreal *a}
+    \item {\tt DOUBLE PRECISION A(LDA, *)} $\rightarrow$ {\tt mpfr_class *a}
 \end{itemize}
 We can see such correspondences for other MPBLAS and MPLAPACK routines.
 
@@ -588,7 +588,7 @@ Then, let us see how we multiply matrices using the MPFR version of {\tt Rgemm},
 \[
  \alpha A B + \beta C \rightarrow C,
 \]
-where $A$, $B$ and $C$ are matrices, $\alpha$ and $\beta$ are scalars. 
+where $A$, $B$ and $C$ are matrices, $\alpha$ and $\beta$ are scalars.
 Let us choose $A$, $B$, and $C$
 \begin{equation}
 A = \left (
@@ -631,9 +631,9 @@ The list is the following.
 #include <mpblas_mpfr.h>
 
 //Matlab/Octave format
-void printmat(int N, int M, mpreal * A, int LDA)
+void printmat(int N, int M, mpfr_class * A, int LDA)
 {
-    mpreal mtmp;
+    mpfr_class mtmp;
     printf("[ ");
     for (int i = 0; i < N; i++) {
         printf("[ ");
@@ -658,10 +658,10 @@ int main()
     int default_prec = 256;
     mpfr_set_default_prec(default_prec);
 
-    mpreal *A = new mpreal[n * n];
-    mpreal *B = new mpreal[n * n];
-    mpreal *C = new mpreal[n * n];
-    mpreal alpha, beta;
+    mpfr_class *A = new mpfr_class[n * n];
+    mpfr_class *B = new mpfr_class[n * n];
+    mpfr_class *C = new mpfr_class[n * n];
+    mpfr_class alpha, beta;
 
 //setting A matrix
     A[0 + 0 * n] = 1;    A[0 + 1 * n] = 8;    A[0 + 2 * n] = 3;
@@ -695,9 +695,9 @@ int main()
     delete[]A;
 }
 \end{lstlisting}
-First, we must include {\tt mpblas\_mpfr.h} to use MPFR. {\tt printmat} function prints matrix in Octave/Matlab format (lines 4 to 22). 
-We set 256 bit in fraction for mpfrc++ in lines 28 to 29; MPFR Real accuracy setted to  77 decimal digits ($77.06 = \log_{10} 2^{256}$).
-We allocate the matrix as a one-dimensional array (lines 31 to 33). Then we set the matrix $A$, $B$, and $C$. We always input the matrix by row-major format to an array (lines 36 to 47). Matrix-matrix multiplication {\tt Rgemm} is called in line 58. 
+First, we must include {\tt mpblas\_mpfr.h} to use MPFR. {\tt printmat} function prints matrix in Octave/Matlab format (lines 4 to 22).
+We set 256 bit in fraction for gmpfrxx_mkII in lines 28 to 29; MPFR Real accuracy setted to  77 decimal digits ($77.06 = \log_{10} 2^{256}$).
+We allocate the matrix as a one-dimensional array (lines 31 to 33). Then we set the matrix $A$, $B$, and $C$. We always input the matrix by row-major format to an array (lines 36 to 47). Matrix-matrix multiplication {\tt Rgemm} is called in line 58.
 One can input the list and save as {\tt Rgemm\_mpfr.cpp} or you can find {\tt /home/docker/mplapack/examples/mpblas/} directory.
 Then, one can compile on one own following in the Docker environment as follows:
 \begin{verbatim}
@@ -883,7 +883,7 @@ $ ./a.out
 \item double-double version
 \begin{verbatim}
 $ g++ -O2 -I/home/docker/MPLAPACK/include -I/home/docker/MPLAPACK/include/mplapack \
-Rgemm_dd.cpp -Wl,--rpath=/home/docker/MPLAPACK/lib \ 
+Rgemm_dd.cpp -Wl,--rpath=/home/docker/MPLAPACK/lib \
 -L/home/docker/MPLAPACK/lib -lmplapack_dd -lqd
 $ ./a.out
 \end{verbatim}
@@ -898,7 +898,7 @@ $ ./a.out
 \begin{verbatim}
 $ g++ -O2 -I/home/docker/MPLAPACK/include -I/home/docker/MPLAPACK/include/mplapack \
 Rgemm_gmp.cpp -Wl,--rpath=/home/docker/MPLAPACK/lib \
--L/home/docker/MPLAPACK/lib -lmplapack_gmp -lgmpxx -lgmp
+-L/home/docker/MPLAPACK/lib -lmplapack_gmp  -lgmp
 $ ./a.out
 \end{verbatim}
 \item MPFR version
@@ -914,10 +914,10 @@ Next, we show how to use {\tt Cgemm} the complex version gemm. This is not just 
 
 Following is the prototype definition of the multiple-precision version of matrix-matrix multiplication ({\tt Cgemm}) of the GMP version.
 \begin{verbatim}
-void Cgemm(const char *transa, const char *transb, mplapackint const m, 
-mplapackint const n, mplapackint const k, mpc_class const alpha, mpc_class *a, 
-mplapackint const lda, mpc_class *b,  mplapackint const ldb, mpc_class const beta, 
-mpc_class *c, mplapackint const ldc);
+void Cgemm(const char *transa, const char *transb, mplapackint const m,
+mplapackint const n, mplapackint const k, mpfc_class const alpha, mpfc_class *a,
+mplapackint const lda, mpfc_class *b,  mplapackint const ldb, mpfc_class const beta,
+mpfc_class *c, mplapackint const ldc);
 \end{verbatim}
 The following is the definition part of the original ZGEMM:
 \begin{verbatim}
@@ -993,7 +993,7 @@ Following is the program list for multiplying complex matrices using GMP.
 
 inline void printnum(mpf_class rtmp) { gmp_printf(GMP_FORMAT, rtmp.get_mpf_t()); }
 inline void printnum_short(mpf_class rtmp) { gmp_printf(GMP_SHORT_FORMAT, rtmp.get_mpf_t()); }
-inline void printnum(mpc_class ctmp) { gmp_printf(GMP_FORMAT GMP_FORMAT "i", ctmp.real().get_mpf_t(), ctmp.imag().get_mpf_t()); }
+inline void printnum(mpfc_class ctmp) { gmp_printf(GMP_FORMAT GMP_FORMAT "i", ctmp.real().get_mpf_t(), ctmp.imag().get_mpf_t()); }
 
 //Matlab/Octave format
 template <class X> void printvec(X *a, int len) {
@@ -1032,31 +1032,31 @@ int main()
 {
     mplapackint n = 3;
 
-    mpc_class *a = new mpc_class[n * n];
-    mpc_class *b = new mpc_class[n * n];
-    mpc_class *c = new mpc_class[n * n];
-    mpc_class alpha, beta;
+    mpfc_class *a = new mpfc_class[n * n];
+    mpfc_class *b = new mpfc_class[n * n];
+    mpfc_class *c = new mpfc_class[n * n];
+    mpfc_class alpha, beta;
 
 //setting A matrix
-    a[0 + 0 * n] = mpc_class(1.0,-1.0);    a[0 + 1 * n] = mpc_class(8.0, 2.2);    a[0 + 2 * n] = mpc_class(0.0, -10.0);
-    a[1 + 0 * n] = mpc_class(2.0, 0.0);    a[1 + 1 * n] = mpc_class(10.0,0.0);    a[1 + 2 * n] = mpc_class(8.1, 2.2);
-    a[2 + 0 * n] = mpc_class(-9.0,3.0);    a[2 + 1 * n] = mpc_class(-5.0,3.0);    a[2 + 2 * n] = mpc_class(-1.0, 0.0);
+    a[0 + 0 * n] = mpfc_class(1.0,-1.0);    a[0 + 1 * n] = mpfc_class(8.0, 2.2);    a[0 + 2 * n] = mpfc_class(0.0, -10.0);
+    a[1 + 0 * n] = mpfc_class(2.0, 0.0);    a[1 + 1 * n] = mpfc_class(10.0,0.0);    a[1 + 2 * n] = mpfc_class(8.1, 2.2);
+    a[2 + 0 * n] = mpfc_class(-9.0,3.0);    a[2 + 1 * n] = mpfc_class(-5.0,3.0);    a[2 + 2 * n] = mpfc_class(-1.0, 0.0);
 
-    b[0 + 0 * n] = mpc_class(9.0, 0.0);    b[0 + 1 * n] = mpc_class(8.0, -0.01);  b[0 + 2 * n] = mpc_class(3.0, 1.001);
-    b[1 + 0 * n] = mpc_class(3.0, -8.0);   b[1 + 1 * n] = mpc_class(-11.0, 0.1);  b[1 + 2 * n] = mpc_class(8.0, 0.00001);
-    b[2 + 0 * n] = mpc_class(-8.0, 1.0);   b[2 + 1 * n] = mpc_class(6.0, 0.0);    b[2 + 2 * n] = mpc_class(1.1, 1.0);
+    b[0 + 0 * n] = mpfc_class(9.0, 0.0);    b[0 + 1 * n] = mpfc_class(8.0, -0.01);  b[0 + 2 * n] = mpfc_class(3.0, 1.001);
+    b[1 + 0 * n] = mpfc_class(3.0, -8.0);   b[1 + 1 * n] = mpfc_class(-11.0, 0.1);  b[1 + 2 * n] = mpfc_class(8.0, 0.00001);
+    b[2 + 0 * n] = mpfc_class(-8.0, 1.0);   b[2 + 1 * n] = mpfc_class(6.0, 0.0);    b[2 + 2 * n] = mpfc_class(1.1, 1.0);
 
-    c[0 + 0 * n] = mpc_class(3.0, 1.0);   c[0 + 1 * n] = mpc_class(-3.0, 9.99);   c[0 + 2 * n] = mpc_class(-9.0, -11.0);
-    c[1 + 0 * n] = mpc_class(8.0, -1.0);  c[1 + 1 * n] = mpc_class(4.0, 4.44);    c[1 + 2 * n] = mpc_class(8.0, 9.0);
-    c[2 + 0 * n] = mpc_class(6.0, 0.0);   c[2 + 1 * n] = mpc_class(-1.0, 0.0);    c[2 + 2 * n] = mpc_class(-2.0, 1.0);
+    c[0 + 0 * n] = mpfc_class(3.0, 1.0);   c[0 + 1 * n] = mpfc_class(-3.0, 9.99);   c[0 + 2 * n] = mpfc_class(-9.0, -11.0);
+    c[1 + 0 * n] = mpfc_class(8.0, -1.0);  c[1 + 1 * n] = mpfc_class(4.0, 4.44);    c[1 + 2 * n] = mpfc_class(8.0, 9.0);
+    c[2 + 0 * n] = mpfc_class(6.0, 0.0);   c[2 + 1 * n] = mpfc_class(-1.0, 0.0);    c[2 + 2 * n] = mpfc_class(-2.0, 1.0);
 
     printf("# Cgemm demo...\n");
 
     printf("a ="); printmat(n, n, a, n); printf("\n");
     printf("b ="); printmat(n, n, b, n); printf("\n");
     printf("c ="); printmat(n, n, c, n); printf("\n");
-    alpha = mpc_class(3.0,-1.2);
-    beta = mpc_class(-2.0, -2.0);
+    alpha = mpfc_class(3.0,-1.2);
+    beta = mpfc_class(-2.0, -2.0);
     Cgemm("n", "n", n, n, n, alpha, a, n, b, n, beta, c, n);
 
     printf("alpha = "); printnum(alpha); printf("\n");
@@ -1069,10 +1069,10 @@ int main()
     delete[]a;
 }
 \end{lstlisting}
-First, we must include {\tt mpblas\_gmp.h} to use GMP. {\tt printmat} function prints matrix in Octave/Matlab format (lines 7 to 46). 
+First, we must include {\tt mpblas\_gmp.h} to use GMP. {\tt printmat} function prints matrix in Octave/Matlab format (lines 7 to 46).
 We use the default GMP complex precision 153 decimal digits ($154.13 = \log_{10} 2^{512}$).
 We allocate the matrix as a one-dimensional array (lines 51 to 54). We use {\tt mpc\_class} for complex values.
-Then we set the matrix $A$, $B$, and $C$. We always input the matrix by row-major format to an array (lines 36 to 47). Matrix-matrix multiplication {\tt Cgemm} is called in line 58. 
+Then we set the matrix $A$, $B$, and $C$. We always input the matrix by row-major format to an array (lines 36 to 47). Matrix-matrix multiplication {\tt Cgemm} is called in line 58.
 One can input the list and save as {\tt Cgemm\_gmp.cpp} or you can find {\tt /home/docker/mplapack/examples/mpblas/} directory.
 Then, one can compile on one own following in the Docker environment as follows:
 \begin{verbatim}
@@ -1090,7 +1090,7 @@ a =[ [ +1.0000000000000000000000000000000000000000000000000000000000000000e+00-1
 +0.0000000000000000000000000000000000000000000000000000000000000000e+00-1.0000000000000000000000000000000000000000000000000000000000000000e+01i];
 [ +2.0000000000000000000000000000000000000000000000000000000000000000e+00+0.0000000000000000000000000000000000000000000000000000000000000000e+00i,
 +1.0000000000000000000000000000000000000000000000000000000000000000e+01+0.0000000000000000000000000000000000000000000000000000000000000000e+00i,
-+8.0999999999999996447286321199499070644378662109375000000000000000e+00+2.2000000000000001776356839400250464677810668945312500000000000000e+00i]; 
++8.0999999999999996447286321199499070644378662109375000000000000000e+00+2.2000000000000001776356839400250464677810668945312500000000000000e+00i];
 [ -9.0000000000000000000000000000000000000000000000000000000000000000e+00+3.0000000000000000000000000000000000000000000000000000000000000000e+00i,
 -5.0000000000000000000000000000000000000000000000000000000000000000e+00+3.0000000000000000000000000000000000000000000000000000000000000000e+00i,
 -1.0000000000000000000000000000000000000000000000000000000000000000e+00+0.0000000000000000000000000000000000000000000000000000000000000000e+00i] ]
@@ -1105,7 +1105,7 @@ b =[ [ +9.0000000000000000000000000000000000000000000000000000000000000000e+00+0
 +1.1000000000000000888178419700125232338905334472656250000000000000e+00+1.0000000000000000000000000000000000000000000000000000000000000000e+00i] ]
 c =[ [ +3.0000000000000000000000000000000000000000000000000000000000000000e+00+1.0000000000000000000000000000000000000000000000000000000000000000e+00i,
 -3.0000000000000000000000000000000000000000000000000000000000000000e+00+9.9900000000000002131628207280300557613372802734375000000000000000e+00i,
--9.0000000000000000000000000000000000000000000000000000000000000000e+00-1.1000000000000000000000000000000000000000000000000000000000000000e+01i]; 
+-9.0000000000000000000000000000000000000000000000000000000000000000e+00-1.1000000000000000000000000000000000000000000000000000000000000000e+01i];
 [ +8.0000000000000000000000000000000000000000000000000000000000000000e+00-1.0000000000000000000000000000000000000000000000000000000000000000e+00i,
 +4.0000000000000000000000000000000000000000000000000000000000000000e+00+4.4400000000000003907985046680551022291183471679687500000000000000e+00i,
 +8.0000000000000000000000000000000000000000000000000000000000000000e+00+9.0000000000000000000000000000000000000000000000000000000000000000e+00i];
@@ -1177,7 +1177,7 @@ The imaginary part $-1.2i$ is correct up to 16 decimal digits. Again, this is co
 We can use a workaround for this behavior by enclosing numbers in {\tt mpf\_class("")} to indicate exact numbers up to specified precision as follows:
 {\tiny
 \begin{verbatim}
-    alpha = mpc_class(mpf_class("3.0"), mpf_class("-1.2"));
+    alpha = mpfc_class(mpf_class("3.0"), mpf_class("-1.2"));
 \end{verbatim}
 }
 Then, the alpha becomes as follows:
@@ -1186,7 +1186,7 @@ Then, the alpha becomes as follows:
 alpha = +3.0000000000000000000000000000000000000000000000000000000000000000e+00-1.2000000000000000000000000000000000000000000000000000000000000000e+00i
 \end{verbatim}
 }
-Even though ``$-1.20000...0e+01$" looks exact, there is still a tiny difference between mathematically rigorous ``$1.2i$".  
+Even though ``$-1.20000...0e+01$" looks exact, there is still a tiny difference between mathematically rigorous ``$1.2i$".
 
 Finally, we show a program and the result fixing such trancation problem as follows:
 \begin{lstlisting}[basicstyle=\scriptsize,\ttfamily]
@@ -1202,7 +1202,7 @@ Finally, we show a program and the result fixing such trancation problem as foll
 
 inline void printnum(mpf_class rtmp) { gmp_printf(GMP_FORMAT, rtmp.get_mpf_t()); }
 inline void printnum_short(mpf_class rtmp) { gmp_printf(GMP_SHORT_FORMAT, rtmp.get_mpf_t()); }
-inline void printnum(mpc_class ctmp) { gmp_printf(GMP_FORMAT GMP_FORMAT "i", ctmp.real().get_mpf_t(), ctmp.imag().get_mpf_t()); }
+inline void printnum(mpfc_class ctmp) { gmp_printf(GMP_FORMAT GMP_FORMAT "i", ctmp.real().get_mpf_t(), ctmp.imag().get_mpf_t()); }
 
 //Matlab/Octave format
 template <class X> void printvec(X *a, int len) {
@@ -1241,40 +1241,40 @@ int main()
 {
     mplapackint n = 3;
 
-    mpc_class *a = new mpc_class[n * n];
-    mpc_class *b = new mpc_class[n * n];
-    mpc_class *c = new mpc_class[n * n];
-    mpc_class alpha, beta;
+    mpfc_class *a = new mpfc_class[n * n];
+    mpfc_class *b = new mpfc_class[n * n];
+    mpfc_class *c = new mpfc_class[n * n];
+    mpfc_class alpha, beta;
 
 //setting A matrix
-    a[0 + 0 * n] = mpc_class(mpf_class("1.0"),  mpf_class("-1.0"));   a[0 + 1 * n] = mpc_class(mpf_class("8.0"),  mpf_class("2.2"));
-    a[0 + 2 * n] = mpc_class(mpf_class("0.0"),  mpf_class("-10.0"));
-    a[1 + 0 * n] = mpc_class(mpf_class("2.0"),  mpf_class("0.0"));    a[1 + 1 * n] = mpc_class(mpf_class("10.0"), mpf_class("0.0"));
-    a[1 + 2 * n] = mpc_class(mpf_class("8.1"),  mpf_class("2.2"));
-    a[2 + 0 * n] = mpc_class(mpf_class("-9.0"), mpf_class("3.0"));    a[2 + 1 * n] = mpc_class(mpf_class("-5.0"), mpf_class("3.0"));
-    a[2 + 2 * n] = mpc_class(mpf_class("-1.0"), mpf_class("0.0"));
+    a[0 + 0 * n] = mpfc_class(mpf_class("1.0"),  mpf_class("-1.0"));   a[0 + 1 * n] = mpfc_class(mpf_class("8.0"),  mpf_class("2.2"));
+    a[0 + 2 * n] = mpfc_class(mpf_class("0.0"),  mpf_class("-10.0"));
+    a[1 + 0 * n] = mpfc_class(mpf_class("2.0"),  mpf_class("0.0"));    a[1 + 1 * n] = mpfc_class(mpf_class("10.0"), mpf_class("0.0"));
+    a[1 + 2 * n] = mpfc_class(mpf_class("8.1"),  mpf_class("2.2"));
+    a[2 + 0 * n] = mpfc_class(mpf_class("-9.0"), mpf_class("3.0"));    a[2 + 1 * n] = mpfc_class(mpf_class("-5.0"), mpf_class("3.0"));
+    a[2 + 2 * n] = mpfc_class(mpf_class("-1.0"), mpf_class("0.0"));
 
-    b[0 + 0 * n] = mpc_class(mpf_class("9.0"),  mpf_class("0.0"));    b[0 + 1 * n] = mpc_class(mpf_class("8.0"),  mpf_class("-0.01"));
-    b[0 + 2 * n] = mpc_class(mpf_class("3.0"),  mpf_class("1.001"));
-    b[1 + 0 * n] = mpc_class(mpf_class("3.0"),  mpf_class("-8.0"));   b[1 + 1 * n] = mpc_class(mpf_class("-11.0"), mpf_class("0.1"));
-    b[1 + 2 * n] = mpc_class(mpf_class("8.0"),  mpf_class("0.00001"));
-    b[2 + 0 * n] = mpc_class(mpf_class("-8.0"), mpf_class("1.0"));    b[2 + 1 * n] = mpc_class(mpf_class("6.0"),  mpf_class("0.0"));
-    b[2 + 2 * n] = mpc_class(mpf_class("1.1"),  mpf_class("1.0"));
+    b[0 + 0 * n] = mpfc_class(mpf_class("9.0"),  mpf_class("0.0"));    b[0 + 1 * n] = mpfc_class(mpf_class("8.0"),  mpf_class("-0.01"));
+    b[0 + 2 * n] = mpfc_class(mpf_class("3.0"),  mpf_class("1.001"));
+    b[1 + 0 * n] = mpfc_class(mpf_class("3.0"),  mpf_class("-8.0"));   b[1 + 1 * n] = mpfc_class(mpf_class("-11.0"), mpf_class("0.1"));
+    b[1 + 2 * n] = mpfc_class(mpf_class("8.0"),  mpf_class("0.00001"));
+    b[2 + 0 * n] = mpfc_class(mpf_class("-8.0"), mpf_class("1.0"));    b[2 + 1 * n] = mpfc_class(mpf_class("6.0"),  mpf_class("0.0"));
+    b[2 + 2 * n] = mpfc_class(mpf_class("1.1"),  mpf_class("1.0"));
 
-    c[0 + 0 * n] = mpc_class(mpf_class("3.0"),  mpf_class("1.0"));    c[0 + 1 * n] = mpc_class(mpf_class("-3.0"), mpf_class("9.99"));
-    c[0 + 2 * n] = mpc_class(mpf_class("-9.0"), mpf_class("-11.0"));
-    c[1 + 0 * n] = mpc_class(mpf_class("8.0"),  mpf_class("-1.0"));   c[1 + 1 * n] = mpc_class(mpf_class("4.0"), mpf_class("4.44"));
-    c[1 + 2 * n] = mpc_class(mpf_class("8.0"),  mpf_class("9.0"));
-    c[2 + 0 * n] = mpc_class(mpf_class("6.0"),  mpf_class("0.0"));    c[2 + 1 * n] = mpc_class(mpf_class("-1.0"), mpf_class("0.0"));
-    c[2 + 2 * n] = mpc_class(mpf_class("-2.0"), mpf_class("1.0"));
+    c[0 + 0 * n] = mpfc_class(mpf_class("3.0"),  mpf_class("1.0"));    c[0 + 1 * n] = mpfc_class(mpf_class("-3.0"), mpf_class("9.99"));
+    c[0 + 2 * n] = mpfc_class(mpf_class("-9.0"), mpf_class("-11.0"));
+    c[1 + 0 * n] = mpfc_class(mpf_class("8.0"),  mpf_class("-1.0"));   c[1 + 1 * n] = mpfc_class(mpf_class("4.0"), mpf_class("4.44"));
+    c[1 + 2 * n] = mpfc_class(mpf_class("8.0"),  mpf_class("9.0"));
+    c[2 + 0 * n] = mpfc_class(mpf_class("6.0"),  mpf_class("0.0"));    c[2 + 1 * n] = mpfc_class(mpf_class("-1.0"), mpf_class("0.0"));
+    c[2 + 2 * n] = mpfc_class(mpf_class("-2.0"), mpf_class("1.0"));
 
     printf("# Cgemm demo...\n");
 
     printf("a ="); printmat(n, n, a, n); printf("\n");
     printf("b ="); printmat(n, n, b, n); printf("\n");
     printf("c ="); printmat(n, n, c, n); printf("\n");
-    alpha = mpc_class(mpf_class("3.0"), mpf_class("-1.2"));
-    beta = mpc_class(mpf_class("-2.0"), mpf_class("-2.0"));
+    alpha = mpfc_class(mpf_class("3.0"), mpf_class("-1.2"));
+    beta = mpfc_class(mpf_class("-2.0"), mpf_class("-2.0"));
     Cgemm("n", "n", n, n, n, alpha, a, n, b, n, beta, c, n);
 
     printf("alpha = "); printnum(alpha); printf("\n");
@@ -1294,10 +1294,10 @@ $ ./a.out
 # Cgemm demo...
 a =[ [ +1.0000000000000000000000000000000000000000000000000000000000000000e+00-1.0000000000000000000000000000000000000000000000000000000000000000e+00i,
 +8.0000000000000000000000000000000000000000000000000000000000000000e+00+2.2000000000000000000000000000000000000000000000000000000000000000e+00i,
-+0.0000000000000000000000000000000000000000000000000000000000000000e+00-1.0000000000000000000000000000000000000000000000000000000000000000e+01i]; 
-[ +2.0000000000000000000000000000000000000000000000000000000000000000e+00+0.0000000000000000000000000000000000000000000000000000000000000000e+00i, 
-+1.0000000000000000000000000000000000000000000000000000000000000000e+01+0.0000000000000000000000000000000000000000000000000000000000000000e+00i, 
-+8.1000000000000000000000000000000000000000000000000000000000000000e+00+2.2000000000000000000000000000000000000000000000000000000000000000e+00i]; 
++0.0000000000000000000000000000000000000000000000000000000000000000e+00-1.0000000000000000000000000000000000000000000000000000000000000000e+01i];
+[ +2.0000000000000000000000000000000000000000000000000000000000000000e+00+0.0000000000000000000000000000000000000000000000000000000000000000e+00i,
++1.0000000000000000000000000000000000000000000000000000000000000000e+01+0.0000000000000000000000000000000000000000000000000000000000000000e+00i,
++8.1000000000000000000000000000000000000000000000000000000000000000e+00+2.2000000000000000000000000000000000000000000000000000000000000000e+00i];
 [ -9.0000000000000000000000000000000000000000000000000000000000000000e+00+3.0000000000000000000000000000000000000000000000000000000000000000e+00i,
 -5.0000000000000000000000000000000000000000000000000000000000000000e+00+3.0000000000000000000000000000000000000000000000000000000000000000e+00i,
 -1.0000000000000000000000000000000000000000000000000000000000000000e+00+0.0000000000000000000000000000000000000000000000000000000000000000e+00i] ]
@@ -1312,12 +1312,12 @@ b =[ [ +9.0000000000000000000000000000000000000000000000000000000000000000e+00+0
 +1.1000000000000000000000000000000000000000000000000000000000000000e+00+1.0000000000000000000000000000000000000000000000000000000000000000e+00i] ]
 c =[ [ +3.0000000000000000000000000000000000000000000000000000000000000000e+00+1.0000000000000000000000000000000000000000000000000000000000000000e+00i,
 -3.0000000000000000000000000000000000000000000000000000000000000000e+00+9.9900000000000000000000000000000000000000000000000000000000000000e+00i,
--9.0000000000000000000000000000000000000000000000000000000000000000e+00-1.1000000000000000000000000000000000000000000000000000000000000000e+01i]; 
+-9.0000000000000000000000000000000000000000000000000000000000000000e+00-1.1000000000000000000000000000000000000000000000000000000000000000e+01i];
 [ +8.0000000000000000000000000000000000000000000000000000000000000000e+00-1.0000000000000000000000000000000000000000000000000000000000000000e+00i,
 +4.0000000000000000000000000000000000000000000000000000000000000000e+00+4.4400000000000000000000000000000000000000000000000000000000000000e+00i
-+8.0000000000000000000000000000000000000000000000000000000000000000e+00+9.0000000000000000000000000000000000000000000000000000000000000000e+00i]; 
++8.0000000000000000000000000000000000000000000000000000000000000000e+00+9.0000000000000000000000000000000000000000000000000000000000000000e+00i];
 [ +6.0000000000000000000000000000000000000000000000000000000000000000e+00+0.0000000000000000000000000000000000000000000000000000000000000000e+00i,
--1.0000000000000000000000000000000000000000000000000000000000000000e+00+0.0000000000000000000000000000000000000000000000000000000000000000e+00i 
+-1.0000000000000000000000000000000000000000000000000000000000000000e+00+0.0000000000000000000000000000000000000000000000000000000000000000e+00i
 -2.0000000000000000000000000000000000000000000000000000000000000000e+00+1.0000000000000000000000000000000000000000000000000000000000000000e+00i] ]
 alpha = +3.0000000000000000000000000000000000000000000000000000000000000000e+00-1.2000000000000000000000000000000000000000000000000000000000000000e+00i
 beta = -2.0000000000000000000000000000000000000000000000000000000000000000e+00-2.0000000000000000000000000000000000000000000000000000000000000000e+00i
@@ -1327,7 +1327,7 @@ ans =[ [ +1.9412000000000000000000000000000000000000000000000000000000000000e+02
 +2.3552423000000000000000000000000000000000000000000000000000000000e+02-3.9797933600000000000000000000000000000000000000000000000000000000e+01i];
 [ -1.8240000000000000000000000000000000000000000000000000000000000000e+02-2.5970000000000000000000000000000000000000000000000000000000000000e+02i,
 -1.1830400000000000000000000000000000000000000000000000000000000000e+02+8.0140000000000000000000000000000000000000000000000000000000000000e+01i,
-+2.9515652000000000000000000000000000000000000000000000000000000000e+02-1.0768570000000000000000000000000000000000000000000000000000000000e+02i]; 
++2.9515652000000000000000000000000000000000000000000000000000000000e+02-1.0768570000000000000000000000000000000000000000000000000000000000e+02i];
 [ -1.1400000000000000000000000000000000000000000000000000000000000000e+02+2.8980000000000000000000000000000000000000000000000000000000000000e+02i,
 -7.9102000000000000000000000000000000000000000000000000000000000000e+01+1.6940000000000000000000000000000000000000000000000000000000000000e+00i,
 -1.7971995000000000000000000000000000000000000000000000000000000000e+02+1.5629648600000000000000000000000000000000000000000000000000000000e+02i] ]
@@ -1367,7 +1367,7 @@ $ ./a.out
 Performance comparison is presented in Section~\ref{sec:benchmarks}.
 
 \subsubsection{CUDA accelerated MPBLAS}
-These routines are usable on Ampere and Volta generations of NVIDIA Tesla GPUs. 
+These routines are usable on Ampere and Volta generations of NVIDIA Tesla GPUs.
 We provide {\tt Rgemm} and {\tt Rsyrk} in double-double routines in CUDA~\cite{6424545}. First, we build the CUDA version on Docker as follows:
 \begin{verbatim}
 $ docker build -f Dockerfile_ubuntu20.04_cuda -t mplapack:ubuntu2004_cuda .
@@ -1406,11 +1406,11 @@ and $A x_{i} = \lambda x_{i}$ for $1\leq i \leq 4$ ~\cite{Gregory1969ACO}.
 
 Following is the prototype definition of GMP's diagonalization of a symmetric matrix ({\tt Rsyev}).
 \begin{verbatim}
-void Rsyev(const char *jobz, const char *uplo, mplapackint const n, 
-mpf_class *a, mplapackint const lda, mpf_class *w, mpf_class *work, 
+void Rsyev(const char *jobz, const char *uplo, mplapackint const n,
+mpf_class *a, mplapackint const lda, mpf_class *w, mpf_class *work,
 mplapackint const lwork, mplapackint &info);
 \end{verbatim}
-And the following is the definition of the original {\tt dsyev} 
+And the following is the definition of the original {\tt dsyev}
 \begin{verbatim}
        SUBROUTINE dsyev( JOBZ, UPLO, N, A, LDA, W, WORK, LWORK, INFO )
  *
@@ -1528,7 +1528,7 @@ One can input the list and save it as {\tt Rsyev\_test\_gmp.cpp}, or you can fin
 \begin{verbatim}
 $ g++ -O2 -I/home/docker/MPLAPACK/include -I/home/docker/MPLAPACK/include/mplapack \
 Rsyev_test_gmp.cpp -Wl,--rpath=/home/docker/MPLAPACK/lib -L/home/docker/MPLAPACK/lib \
--lmplapack_gmp -lgmpxx -lgmp
+-lmplapack_gmp  -lgmp
 \end{verbatim}
 Finally, you can run as follows:
 {\fontsize{9.5pt}{0.4cm}\selectfont
@@ -1642,7 +1642,7 @@ $ ./a.out
 \begin{verbatim}
 $ g++ -O2 -I/home/docker/MPLAPACK/include -I/home/docker/MPLAPACK/include/mplapack \
 Rsyev_test_gmp.cpp -Wl,--rpath=/home/docker/MPLAPACK/lib -L/home/docker/MPLAPACK/lib \
--lmplapack_gmp -lgmpxx -lgmp
+-lmplapack_gmp  -lgmp
 $ ./a.out
 \end{verbatim}
 \item MPFR version
@@ -1662,17 +1662,17 @@ Let us show how we diagonalize a complex hermitian matrix $A$
 \]
 using {\tt GMP}. Eigenvalues are $\lambda_1 = 1, \lambda_2 = 3, \lambda_3 = 3$ and eigenvectors are
 \[
-x_{1}=\left[\begin{array}{c} -1/\sqrt{2} i \\ -1/\sqrt{2} \\ 0 \end{array}\right], \quad x_{2}=\left[\begin{array}{c}-1/\sqrt{2} i \\ 1/\sqrt{2} i \\ 0 \end{array}\right], \quad x_{3}=\left[\begin{array}{c} 0 \\ 0 \\ 1 \end{array}\right] 
+x_{1}=\left[\begin{array}{c} -1/\sqrt{2} i \\ -1/\sqrt{2} \\ 0 \end{array}\right], \quad x_{2}=\left[\begin{array}{c}-1/\sqrt{2} i \\ 1/\sqrt{2} i \\ 0 \end{array}\right], \quad x_{3}=\left[\begin{array}{c} 0 \\ 0 \\ 1 \end{array}\right]
 \]
 and $A x_{i} = \lambda x_{i}$ for $1\leq i \leq 3$.
 
 Following is the prototype definition of GMP's diagonalization of a symmetric matrix ({\tt Cheev}).
 \begin{verbatim}
 void Cheev(const char *jobz, const char *uplo, mplapackint const n,
-mpc_class *a, mplapackint const lda, mpf_class *w, mpc_class *work, 
+mpfc_class *a, mplapackint const lda, mpf_class *w, mpfc_class *work,
 mplapackint const lwork, mpf_class *rwork, mplapackint &info);
 \end{verbatim}
-And the following is the definition of the original {\tt dsyev} 
+And the following is the definition of the original {\tt dsyev}
 \begin{verbatim}
 *       SUBROUTINE ZHEEV( JOBZ, UPLO, N, A, LDA, W, WORK, LWORK, RWORK,
 *                         INFO )
@@ -1710,7 +1710,7 @@ The list is the following.
 
 inline void printnum(mpf_class rtmp) { gmp_printf(GMP_FORMAT, rtmp.get_mpf_t()); }
 inline void printnum_short(mpf_class rtmp) { gmp_printf(GMP_SHORT_FORMAT, rtmp.get_mpf_t()); }
-inline void printnum(mpc_class ctmp) { gmp_printf(GMP_FORMAT GMP_FORMAT "i", ctmp.real().get_mpf_t(), ctmp.imag().get_mpf_t()); }
+inline void printnum(mpfc_class ctmp) { gmp_printf(GMP_FORMAT GMP_FORMAT "i", ctmp.real().get_mpf_t(), ctmp.imag().get_mpf_t()); }
 
 //Matlab/Octave format
 template <class X> void printvec(X *a, int len) {
@@ -1750,24 +1750,24 @@ int main()
     mplapackint n = 3;
     mplapackint lwork, info;
 
-    mpc_class *A = new mpc_class[n * n];
+    mpfc_class *A = new mpfc_class[n * n];
     mpf_class *w = new mpf_class[n];
     mpf_class *rwork = new mpf_class[3 * n - 1];
 
 //setting A matrix
-    A[0 + 0 * n] = 2.0; A[0 + 1 * n] = mpc_class(0.0, -1.0); A[0 + 2 * n] = 0.0;
-    A[1 + 0 * n] = mpc_class(0.0, 1.0); A[1 + 1 * n] = 2.0; A[1 + 2 * n] = 0.0;
+    A[0 + 0 * n] = 2.0; A[0 + 1 * n] = mpfc_class(0.0, -1.0); A[0 + 2 * n] = 0.0;
+    A[1 + 0 * n] = mpfc_class(0.0, 1.0); A[1 + 1 * n] = 2.0; A[1 + 2 * n] = 0.0;
     A[2 + 0 * n] = 0.0;  A[2 + 1 * n] = 0.0; A[2 + 2 * n] = 3.0;
 
     printf("A ="); printmat(n, n, A, n); printf("\n");
 //work space query
     lwork = -1;
-    mpc_class *work = new mpc_class[1];
+    mpfc_class *work = new mpfc_class[1];
 
     Cheev("V", "U", n, A, n, w, work, lwork, rwork, info);
     lwork = (int) cast2double (work[0].real());
     delete[]work;
-    work = new mpc_class[std::max((mplapackint) 1, lwork)];
+    work = new mpfc_class[std::max((mplapackint) 1, lwork)];
 //inverse matrix
     Cheev("V", "U", n, A, n, w, work, lwork, rwork, info);
 //print out some results.
@@ -1792,7 +1792,7 @@ One can input the list and save it as {\tt Cheev\_test\_gmp.cpp}, or you can fin
 \begin{verbatim}
 $ g++ -O2 -I/home/docker/MPLAPACK/include -I/home/docker/MPLAPACK/include/mplapack \
 Cheev_test_gmp.cpp -Wl,--rpath=/home/docker/MPLAPACK/lib -L/home/docker/MPLAPACK/lib \
--lmplapack_gmp -lgmpxx -lgmp
+-lmplapack_gmp  -lgmp
 \end{verbatim}
 Finally, you can run as follows:
 {\fontsize{7.5pt}{0.4cm}\selectfont
@@ -1803,22 +1803,22 @@ A =[ [ +2.0000000000000000000000000000000000000000000000000000000000000000e+00+0
 [ +0.0000000000000000000000000000000000000000000000000000000000000000e+00+1.0000000000000000000000000000000000000000000000000000000000000000e+00i,
 +2.0000000000000000000000000000000000000000000000000000000000000000e+00+0.0000000000000000000000000000000000000000000000000000000000000000e+00i,
 +0.0000000000000000000000000000000000000000000000000000000000000000e+00+0.0000000000000000000000000000000000000000000000000000000000000000e+00i];
-[ +0.0000000000000000000000000000000000000000000000000000000000000000e+00+0.0000000000000000000000000000000000000000000000000000000000000000e+00i, 
-+0.0000000000000000000000000000000000000000000000000000000000000000e+00+0.0000000000000000000000000000000000000000000000000000000000000000e+00i, 
+[ +0.0000000000000000000000000000000000000000000000000000000000000000e+00+0.0000000000000000000000000000000000000000000000000000000000000000e+00i,
++0.0000000000000000000000000000000000000000000000000000000000000000e+00+0.0000000000000000000000000000000000000000000000000000000000000000e+00i,
 +3.0000000000000000000000000000000000000000000000000000000000000000e+00+0.0000000000000000000000000000000000000000000000000000000000000000e+00i] ]
 #eigenvalues
 w =[ [ +1.0000000000000000000000000000000000000000000000000000000000000000e+00];
-[ +3.0000000000000000000000000000000000000000000000000000000000000000e+00]; 
+[ +3.0000000000000000000000000000000000000000000000000000000000000000e+00];
 [ +3.0000000000000000000000000000000000000000000000000000000000000000e+00] ]
 #eigenvecs
-U =[ [ +0.0000000000000000000000000000000000000000000000000000000000000000e+00-7.0710678118654752440084436210484903928483593768847403658833986900e-01i, 
-+0.0000000000000000000000000000000000000000000000000000000000000000e+00-7.0710678118654752440084436210484903928483593768847403658833986900e-01i, 
+U =[ [ +0.0000000000000000000000000000000000000000000000000000000000000000e+00-7.0710678118654752440084436210484903928483593768847403658833986900e-01i,
++0.0000000000000000000000000000000000000000000000000000000000000000e+00-7.0710678118654752440084436210484903928483593768847403658833986900e-01i,
 +0.0000000000000000000000000000000000000000000000000000000000000000e+00+0.0000000000000000000000000000000000000000000000000000000000000000e+00i];
-[ -7.0710678118654752440084436210484903928483593768847403658833986900e-01+0.0000000000000000000000000000000000000000000000000000000000000000e+00i, 
-+7.0710678118654752440084436210484903928483593768847403658833986900e-01+0.0000000000000000000000000000000000000000000000000000000000000000e+00i, 
+[ -7.0710678118654752440084436210484903928483593768847403658833986900e-01+0.0000000000000000000000000000000000000000000000000000000000000000e+00i,
++7.0710678118654752440084436210484903928483593768847403658833986900e-01+0.0000000000000000000000000000000000000000000000000000000000000000e+00i,
 +0.0000000000000000000000000000000000000000000000000000000000000000e+00+0.0000000000000000000000000000000000000000000000000000000000000000e+00i];
-[ +0.0000000000000000000000000000000000000000000000000000000000000000e+00+0.0000000000000000000000000000000000000000000000000000000000000000e+00i, 
-+0.0000000000000000000000000000000000000000000000000000000000000000e+00+0.0000000000000000000000000000000000000000000000000000000000000000e+00i, 
+[ +0.0000000000000000000000000000000000000000000000000000000000000000e+00+0.0000000000000000000000000000000000000000000000000000000000000000e+00i,
++0.0000000000000000000000000000000000000000000000000000000000000000e+00+0.0000000000000000000000000000000000000000000000000000000000000000e+00i,
 +1.0000000000000000000000000000000000000000000000000000000000000000e+00+0.0000000000000000000000000000000000000000000000000000000000000000e+00i] ]
 #you can check eigenvalues using octave/Matlab by:
 eig(A)
@@ -1915,7 +1915,7 @@ $ ./a.out
 \begin{verbatim}
 $ g++ -O2 -I/home/docker/MPLAPACK/include -I/home/docker/MPLAPACK/include/mplapack \
 Cheev_test_gmp.cpp -Wl,--rpath=/home/docker/MPLAPACK/lib -L/home/docker/MPLAPACK/lib \
--lmplapack_gmp -lgmpxx -lgmp
+-lmplapack_gmp  -lgmp
 $ ./a.out
 \end{verbatim}
 \item MPFR version
@@ -1926,7 +1926,7 @@ Cheev_test_mpfr.cpp -Wl,--rpath=/home/docker/MPLAPACK/lib -L/home/docker/MPLAPAC
 $ ./a.out
 \end{verbatim}
 \end{itemize}
-\subsubsection{Eigenvalue problem of a real non-symmetric matrix ({\tt Rgees})}  
+\subsubsection{Eigenvalue problem of a real non-symmetric matrix ({\tt Rgees})}
 
 The following example shows how to solve a real non-symmetric eigenvalue problem. For example, let $A$ be four times four matrices:
 \[
@@ -2136,7 +2136,7 @@ w_4 =  4
 \end{verbatim} }
 We can see that we correctly calculated all the eigenvalues, the Schur form, and the Schur vectors.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Eigenvalue problem of a complex non-symmetric matrix ({\tt Cgees})}  
+\subsubsection{Eigenvalue problem of a complex non-symmetric matrix ({\tt Cgees})}
 
 The following example shows how to solve a complex non-symmetric eigenvalue problem. For example, let $A$ be four times four matrices:
 \[
@@ -2149,17 +2149,17 @@ A = \left[\begin{array}{cccc}
 \]
 
 with eigenvalues $\lambda_1 = 1+5i$, $\lambda_2 = 2+6i$, $\lambda_3 = 3+7i$, $\lambda_4=4+8i$~\cite{Gregory1969ACO}.
-First, we solve it with {\tt dd\_real} class with {\tt Cgees}. This routine computes for an $N$-by-$N$ 
+First, we solve it with {\tt dd\_real} class with {\tt Cgees}. This routine computes for an $N$-by-$N$
 real nonsymmetric matrix $A$, the eigenvalues, the real Schur form $T$, and, optionally, the matrix of
 Schur vectors $Z$. This gives the Schur factorization $A = Z T Z^t$. $ T$ overwrites the matrix $A$.
 The prototype definition of {\tt Cgees} is the following:
 \begin{verbatim}
-void Cgees(const char *jobvs, const char *sort, bool (*select)(dd_complex), 
-mplapackint const n, dd_complex *a, mplapackint const lda, mplapackint &sdim, 
-dd_complex *w, dd_complex *vs, mplapackint const ldvs, dd_complex *work, 
+void Cgees(const char *jobvs, const char *sort, bool (*select)(dd_complex),
+mplapackint const n, dd_complex *a, mplapackint const lda, mplapackint &sdim,
+dd_complex *w, dd_complex *vs, mplapackint const ldvs, dd_complex *work,
 mplapackint const lwork, dd_real *rwork, bool *bwork, mplapackint &info);
 \end{verbatim}
-The corresponding LAPACK routine is {\tt ZGEES}. We show 14 lines of {\tt ZGEES} are following. 
+The corresponding LAPACK routine is {\tt ZGEES}. We show 14 lines of {\tt ZGEES} are following.
 \begin{verbatim}
 *       SUBROUTINE ZGGES( JOBVSL, JOBVSR, SORT, SELCTG, N, A, LDA, B, LDB,
 *                         SDIM, ALPHA, BETA, VSL, LDVSL, VSR, LDVSR, WORK,
@@ -2310,30 +2310,30 @@ The output of the executable is the following:
 # octave check
 split_long_rows(0)
 a =[ [ +5.0000000000000000e+00+9.0000000000000000e+00i, +5.0000000000000000e+00+5.0000000000000000e+00i,
--6.0000000000000000e+00-6.0000000000000000e+00i, -7.0000000000000000e+00-7.0000000000000000e+00i]; 
+-6.0000000000000000e+00-6.0000000000000000e+00i, -7.0000000000000000e+00-7.0000000000000000e+00i];
 [ +3.0000000000000000e+00+3.0000000000000000e+00i, +6.0000000000000000e+00+1.0000000000000000e+01i,
 -5.0000000000000000e+00-5.0000000000000000e+00i, -6.0000000000000000e+00-6.0000000000000000e+00i];
 [ +2.0000000000000000e+00+2.0000000000000000e+00i, +3.0000000000000000e+00+3.0000000000000000e+00i,
--1.0000000000000000e+00+3.0000000000000000e+00i, -5.0000000000000000e+00-5.0000000000000000e+00i]; 
+-1.0000000000000000e+00+3.0000000000000000e+00i, -5.0000000000000000e+00-5.0000000000000000e+00i];
 [ +1.0000000000000000e+00+1.0000000000000000e+00i, +2.0000000000000000e+00+2.0000000000000000e+00i,
 -3.0000000000000000e+00-3.0000000000000000e+00i, +0.0000000000000000e+00+4.0000000000000000e+00i] ]
 w =[ +2.0000000000000000e+00+6.0000000000000000e+00i, +4.0000000000000000e+00+8.0000000000000000e+00i,
 +3.0000000000000000e+00+7.0000000000000000e+00i, +1.0000000000000000e+00+5.0000000000000000e+00i]
 vs =[ [ +3.7428970594742688e-01-5.2577170701090183e-02i, -1.1134324587883832e-01+4.9471763536387269e-01i,
 +3.8355427599552469e-01-6.7296813993349557e-01i, +0.0000000000000000e+00+0.0000000000000000e+00i];
-[ +7.4857941189485376e-01-1.0515434140218037e-01i, +3.7114415292946107e-02-1.6490587845462423e-01i, 
+[ +7.4857941189485376e-01-1.0515434140218037e-01i, +3.7114415292946107e-02-1.6490587845462423e-01i,
 -1.2785142533184156e-01+2.2432271331116519e-01i, +4.2849243249895099e-01-3.8694646738853330e-01i];
-[ +3.7428970594742688e-01-5.2577170701090183e-02i, -1.1134324587883832e-01+4.9471763536387269e-01i, 
+[ +3.7428970594742688e-01-5.2577170701090183e-02i, -1.1134324587883832e-01+4.9471763536387269e-01i,
 -2.5570285066368313e-01+4.4864542662233038e-01i, -4.2849243249895099e-01+3.8694646738853330e-01i];
-[ +3.7428970594742688e-01-5.2577170701090183e-02i, +1.4845766117178443e-01-6.5962351381849692e-01i, 
+[ +3.7428970594742688e-01-5.2577170701090183e-02i, +1.4845766117178443e-01-6.5962351381849692e-01i,
 +1.2785142533184156e-01-2.2432271331116519e-01i, -4.2849243249895099e-01+3.8694646738853330e-01i] ]
 t =[ [ +2.0000000000000000e+00+6.0000000000000000e+00i, -4.6106496752391337e+00+2.0837249271958309e+00i,
 +4.9279443181496018e+00-6.3330804742348119e-01i, +1.9999717105990234e+01+3.8559640218114672e+00i];
 [ +0.0000000000000000e+00+0.0000000000000000e+00i, +4.0000000000000000e+00+8.0000000000000000e+00i,
 -2.8979419726911526e-01-5.4495110256015637e-01i, -1.0301880205614183e+00-5.9845553818543799e+00i];
-[ +0.0000000000000000e+00+0.0000000000000000e+00i, +0.0000000000000000e+00+0.0000000000000000e+00i, 
+[ +0.0000000000000000e+00+0.0000000000000000e+00i, +0.0000000000000000e+00+0.0000000000000000e+00i,
 +3.0000000000000000e+00+7.0000000000000000e+00i, +2.2784477280226518e+00+4.5175962580412624e+00i];
-[ +0.0000000000000000e+00+0.0000000000000000e+00i, +0.0000000000000000e+00+0.0000000000000000e+00i, 
+[ +0.0000000000000000e+00+0.0000000000000000e+00i, +0.0000000000000000e+00+0.0000000000000000e+00i,
 +0.0000000000000000e+00+0.0000000000000000e+00i, +1.0000000000000000e+00+5.0000000000000000e+00i] ]
 vs*t*vs'
 eig(a)
@@ -2385,7 +2385,7 @@ ans =
 \end{verbatim} }
 We can see that we correctly calculated all the eigenvalues, the Schur form, and the Schur vectors.
 
-\subsubsection{Eigenvalues and eigenvectors of non-symmetric matrix ({\tt Rgeev})}  
+\subsubsection{Eigenvalues and eigenvectors of non-symmetric matrix ({\tt Rgeev})}
 
 Another example shows how to solve real non-symmetric eigenvalue problems with eigenvectors. {\tt Rgeev} computes the eigenvalues and, optionally, the left and/or right eigenvectors  for an $N$ by $N$ real nonsymmetric matrix $A$.
 For example, let $A$ be four times four matrices:
@@ -2407,11 +2407,11 @@ Let us solve this eigenvalue problem with left and right eigenvectors for $A$ us
 The prototype definition of {\tt Rgeev} is the following:
 \begin{verbatim}
 void Rgeev(const char *jobvl, const char *jobvr, mplapackint const n, qd_real *a,
-mplapackint const lda, qd_real *wr, qd_real *wi, qd_real *vl, mplapackint const ldvl, 
-qd_real *vr, mplapackint const ldvr, qd_real *work, mplapackint const lwork, 
+mplapackint const lda, qd_real *wr, qd_real *wi, qd_real *vl, mplapackint const ldvl,
+qd_real *vr, mplapackint const ldvr, qd_real *work, mplapackint const lwork,
 mplapackint &info);
 \end{verbatim}
-The corresponding LAPACK routine is {\tt DGEEV}. We show the 14 lines of {\tt DGEEV} are following. 
+The corresponding LAPACK routine is {\tt DGEEV}. We show the 14 lines of {\tt DGEEV} are following.
 \begin{verbatim}
       SUBROUTINE dgeev( JOBVL, JOBVR, N, A, LDA, WR, WI, VL, LDVL, VR,
       $                  LDVR, WORK, LWORK, INFO )
@@ -2598,7 +2598,7 @@ The output of the executable is the following:
 $ ./a.out
 # octave check
 split_long_rows(0)
-a =[ [ +4.0000000000000000e+00, -5.0000000000000000e+00, +0.0000000000000000e+00, +3.0000000000000000e+00]; 
+a =[ [ +4.0000000000000000e+00, -5.0000000000000000e+00, +0.0000000000000000e+00, +3.0000000000000000e+00];
 [ +0.0000000000000000e+00, +4.0000000000000000e+00, -3.0000000000000000e+00, -5.0000000000000000e+00];
 [ +5.0000000000000000e+00, -3.0000000000000000e+00, +4.0000000000000000e+00, +0.0000000000000000e+00];
 [ +3.0000000000000000e+00, +0.0000000000000000e+00, +5.0000000000000000e+00, +4.0000000000000000e+00] ]
@@ -2689,11 +2689,11 @@ ans =
 ...
 \end{verbatim}
 }
-We only show the first part of the output since the whole output is lengthy. 
+We only show the first part of the output since the whole output is lengthy.
 {\tt w\_1}, {\tt w\_2}, {\tt w\_3} and {\tt w\_4} are the eigenvalues. {\tt vr\_1} and {\tt vr\_2} are right eigenvectors. You will see that you obtained the correct eigenvalues and eigenvectors.
 
 
-\subsubsection{Eigenvalues and eigenvectors of complex non-symmetric matrix ({\tt Cgeev})}  
+\subsubsection{Eigenvalues and eigenvectors of complex non-symmetric matrix ({\tt Cgeev})}
 
 Another example shows how to solve real non-symmetric eigenvalue problems with eigenvectors. {\tt Cgeev} computes the eigenvalues, and, optionally, the left and/or right eigenvectors  for an $N$ by $N$ complex nonsymmetric matrix $A$.
 For example, let $A$ be four times four matrices:
@@ -2736,12 +2736,12 @@ x_1=\left[\begin{array}{l}
 Let us solve this eigenvalue problem with left and right eigenvectors for $A$ using MPLAPACK $\tt qd\_real$.
 The prototype definition of {\tt Cgeev} is the following:
 \begin{verbatim}
-void Cgeev(const char *jobvl, const char *jobvr, mplapackint const n, qd_complex *a, 
-mplapackint const lda, qd_complex *w, qd_complex *vl, mplapackint const ldvl, 
-qd_complex *vr, mplapackint const ldvr, qd_complex *work, mplapackint const lwork, 
+void Cgeev(const char *jobvl, const char *jobvr, mplapackint const n, qd_complex *a,
+mplapackint const lda, qd_complex *w, qd_complex *vl, mplapackint const ldvl,
+qd_complex *vr, mplapackint const ldvr, qd_complex *work, mplapackint const lwork,
 qd_real *rwork, mplapackint &info);
 \end{verbatim}
-The corresponding LAPACK routine is {\tt ZGEEV}. We show the 14 lines of {\tt ZGEEV} are following. 
+The corresponding LAPACK routine is {\tt ZGEEV}. We show the 14 lines of {\tt ZGEEV} are following.
 \begin{verbatim}
 *       SUBROUTINE ZGGEV( JOBVL, JOBVR, N, A, LDA, B, LDB, ALPHA, BETA,
 *                         VL, LDVL, VR, LDVR, WORK, LWORK, RWORK, INFO )
@@ -2895,7 +2895,7 @@ vr =[ [ +3.7796447300922723e-01-1.5808636614229790e-64i, +5.7735026918962576e-01
 [ +7.5592894601845445e-01+0.0000000000000000e+00i, +5.7735026918962576e-01+1.2462932666309736e-65i,
 +5.7735026918962576e-01+0.0000000000000000e+00i, +3.7796447300922723e-01+6.7655920188538566e-65i];
 [ +3.7796447300922723e-01-1.2425840604802862e-66i, +5.7735026918962576e-01+1.0949576556829268e-64i,
--2.1515093228017323e-65-6.2460902724518248e-64i, +3.7796447300922723e-01-1.1275986698089761e-65i]; 
+-2.1515093228017323e-65-6.2460902724518248e-64i, +3.7796447300922723e-01-1.1275986698089761e-65i];
 [ +3.7796447300922723e-01-5.0333927464828308e-65i, -4.9136820461357707e-65-1.1498598272944756e-64i,
 +5.7735026918962576e-01+5.4614351362721592e-64i, +3.7796447300922723e-01+5.6379933490448805e-65i] ]
 \end{verbatim}
@@ -2948,12 +2948,12 @@ V^t=\left[\begin{array}{ccccc}0 & 0 & -1 & 0 & 0 \\ -\sqrt{0.2} & 0 & 0 & 0 & -\
 Let us solve the singular value problem for matrix $A$ using MPLAPACK $\tt dd\_real$.
 The prototype definition of {\tt Rgesvd} is following:
 \begin{verbatim}
-void Rgesvd(const char *jobu, const char *jobvt, mplapackint const m, 
-mplapackint const n, dd_real *a, mplapackint const lda, dd_real *s, dd_real *u, 
-mplapackint const ldu, dd_real *vt, mplapackint const ldvt, dd_real *work, 
+void Rgesvd(const char *jobu, const char *jobvt, mplapackint const m,
+mplapackint const n, dd_real *a, mplapackint const lda, dd_real *s, dd_real *u,
+mplapackint const ldu, dd_real *vt, mplapackint const ldvt, dd_real *work,
 mplapackint const lwork, mplapackint &info);
 \end{verbatim}
-The corresponding LAPACK routine is {\tt DGESVD}. We show some lines of {\tt DGESVD} are following. 
+The corresponding LAPACK routine is {\tt DGESVD}. We show some lines of {\tt DGESVD} are following.
 \begin{verbatim}
        SUBROUTINE dgesvd( JOBU, JOBVT, M, N, A, LDA, S, U, LDU,
       $                   VT, LDVT, WORK, LWORK, INFO )
@@ -3086,10 +3086,10 @@ The output of the executable is the following:
 \begin{verbatim}
 $ ./a.out
 # octave check
-a =[ [ +1.0000000000000000e+00, +0.0000000000000000e+00, +0.0000000000000000e+00, +0.0000000000000000e+00, 
+a =[ [ +1.0000000000000000e+00, +0.0000000000000000e+00, +0.0000000000000000e+00, +0.0000000000000000e+00,
 +2.0000000000000000e+00]; [ +0.0000000000000000e+00, +0.0000000000000000e+00, +3.0000000000000000e+00,
-+0.0000000000000000e+00, +0.0000000000000000e+00]; [ +0.0000000000000000e+00, +0.0000000000000000e+00, 
-+0.0000000000000000e+00, +0.0000000000000000e+00, +0.0000000000000000e+00]; [ +0.0000000000000000e+00, 
++0.0000000000000000e+00, +0.0000000000000000e+00]; [ +0.0000000000000000e+00, +0.0000000000000000e+00,
++0.0000000000000000e+00, +0.0000000000000000e+00, +0.0000000000000000e+00]; [ +0.0000000000000000e+00,
 +2.0000000000000000e+00, +0.0000000000000000e+00, +0.0000000000000000e+00, +0.0000000000000000e+00] ]
 s=[ +3.0000000000000000e+00, +2.2360679774997897e+00, +2.0000000000000000e+00, +0.0000000000000000e+00]
 padding=zeros(4, 5-4)
@@ -3097,12 +3097,12 @@ u =[ [ +0.0000000000000000e+00, +1.0000000000000000e+00, +0.0000000000000000e+00
 [ +1.0000000000000000e+00, +0.0000000000000000e+00, +0.0000000000000000e+00, +0.0000000000000000e+00];
 [ +0.0000000000000000e+00, +0.0000000000000000e+00, +0.0000000000000000e+00, -1.0000000000000000e+00];
 [ +0.0000000000000000e+00, +0.0000000000000000e+00, +1.0000000000000000e+00, +0.0000000000000000e+00] ]
-vt =[ [ +0.0000000000000000e+00, +0.0000000000000000e+00, +1.0000000000000000e+00, +0.0000000000000000e+00, 
-+0.0000000000000000e+00]; [ +4.4721359549995794e-01, +0.0000000000000000e+00, +0.0000000000000000e+00, 
-+0.0000000000000000e+00, +8.9442719099991588e-01]; [ +0.0000000000000000e+00, +1.0000000000000000e+00, 
-+0.0000000000000000e+00, +0.0000000000000000e+00, +0.0000000000000000e+00]; [ +0.0000000000000000e+00, 
+vt =[ [ +0.0000000000000000e+00, +0.0000000000000000e+00, +1.0000000000000000e+00, +0.0000000000000000e+00,
++0.0000000000000000e+00]; [ +4.4721359549995794e-01, +0.0000000000000000e+00, +0.0000000000000000e+00,
++0.0000000000000000e+00, +8.9442719099991588e-01]; [ +0.0000000000000000e+00, +1.0000000000000000e+00,
++0.0000000000000000e+00, +0.0000000000000000e+00, +0.0000000000000000e+00]; [ +0.0000000000000000e+00,
 +0.0000000000000000e+00, +0.0000000000000000e+00, +1.0000000000000000e+00, +0.0000000000000000e+00];
-[ -8.9442719099991588e-01, 
+[ -8.9442719099991588e-01,
 +0.0000000000000000e+00, +0.0000000000000000e+00, +0.0000000000000000e+00, +4.4721359549995794e-01] ]
 svd(a)
 sigma=[diag(s) padding]
@@ -3185,10 +3185,10 @@ You will see that {\tt Rgesvd}, the singular value decomposition solver solved t
 We show an example of how to solve a singular value problem.
 Let $A$ is $4 \times 4$ as follows:
 \[
-A=\left[\begin{array}{cccc} 
-0.9-i    & 20-2.25i  & 1.75-0.5i  & 0.5i     \\ 
+A=\left[\begin{array}{cccc}
+0.9-i    & 20-2.25i  & 1.75-0.5i  & 0.5i     \\
 8 -2.25i & -0.25     & 1.25-0.25i & -3.75    \\
--1.75    & -80+1.25i & 1.5        & 30+2.25i \\ 
+-1.75    & -80+1.25i & 1.5        & 30+2.25i \\
 3+0.25i  & 1.75      & 2.25i      & -0.25-80.0i \\
 \end{array}\right]
 \]
@@ -3206,21 +3206,21 @@ Then, a singular value decomposition of this matrix is given by $A= U\Sigma V^t$
 and
 \[
 V^t=\left[\begin{array}{cccc}
--0.02984 + 0.00000i & -0.50562 - 0.43706i & -0.00266 - 0.00443i &   0.48583 + 0.56247i \\ 
-0.03250 + 0.00000i  & 0.14032 - 0.72984i & -0.01031 + 0.03209i &  0.22087 - 0.62982i \\ 
--0.98322 + 0.00000i &  0.01556 - 0.01112i & -0.17198 - 0.04195i & -0.01174 - 0.03782i \\ 
--0.17699 + 0.00000i  & 0.02458 + 0.00145i &  0.95397 + 0.23966i &  0.02386 - 0.00037i \\ 
+-0.02984 + 0.00000i & -0.50562 - 0.43706i & -0.00266 - 0.00443i &   0.48583 + 0.56247i \\
+0.03250 + 0.00000i  & 0.14032 - 0.72984i & -0.01031 + 0.03209i &  0.22087 - 0.62982i \\
+-0.98322 + 0.00000i &  0.01556 - 0.01112i & -0.17198 - 0.04195i & -0.01174 - 0.03782i \\
+-0.17699 + 0.00000i  & 0.02458 + 0.00145i &  0.95397 + 0.23966i &  0.02386 - 0.00037i \\
 \end{array}\right].
 \]
 Let us solve the singular value problem for matrix $A$ using MPLAPACK $\tt dd\_real$.
 The prototype definition of {\tt Cgesvd} is the following:
 \begin{verbatim}
-void Cgesvd(const char *jobu, const char *jobvt, mplapackint const m, 
-mplapackint const n, dd_complex *a, mplapackint const lda, dd_real *s, 
-dd_complex *u, mplapackint const ldu, dd_complex *vt, mplapackint const ldvt, 
+void Cgesvd(const char *jobu, const char *jobvt, mplapackint const m,
+mplapackint const n, dd_complex *a, mplapackint const lda, dd_real *s,
+dd_complex *u, mplapackint const ldu, dd_complex *vt, mplapackint const ldvt,
 dd_complex *work, mplapackint const lwork, dd_real *rwork, mplapackint &info);
 \end{verbatim}
-The corresponding LAPACK routine is {\tt ZGESVD}. We show some lines of {\tt ZGESVD} are following. 
+The corresponding LAPACK routine is {\tt ZGESVD}. We show some lines of {\tt ZGESVD} are following.
 \begin{verbatim}
 *       SUBROUTINE ZGESVD( JOBU, JOBVT, M, N, A, LDA, S, U, LDU, VT, LDVT,
 *                          WORK, LWORK, RWORK, INFO )
@@ -3385,7 +3385,7 @@ a =[ [ +9.0000000000000002220446049250313080847263336181640625000000000000e-01-1
 +3.0000000000000000000000000000000000000000000000000000000000000000e+01+2.2500000000000000000000000000000000000000000000000000000000000000e+00i];
 [ +3.0000000000000000000000000000000000000000000000000000000000000000e+00+2.5000000000000000000000000000000000000000000000000000000000000000e-01i,
 +1.7500000000000000000000000000000000000000000000000000000000000000e+00+0.0000000000000000000000000000000000000000000000000000000000000000e+00i,
-+0.0000000000000000000000000000000000000000000000000000000000000000e+00+2.2500000000000000000000000000000000000000000000000000000000000000e+00i, 
++0.0000000000000000000000000000000000000000000000000000000000000000e+00+2.2500000000000000000000000000000000000000000000000000000000000000e+00i,
 -2.5000000000000000000000000000000000000000000000000000000000000000e-01-8.0000000000000000000000000000000000000000000000000000000000000000e+01i] ]
 s=[ +9.7516494435839724342537934011744964189236290378865784643347960368e+01, +6.8106277354635765125630927080704091707844321939430382469272564138e+01,
 +8.4781583569581929193257165114938017510166457266377499488969146190e+00, +2.1503787370153202482459981470702526329803293729092259494247941795e+00]
@@ -3416,7 +3416,7 @@ vt =[ [ -2.9838283275437904677981078252061374697499430617316993098822847353e-02+
 [ -9.8322380454928627593357750706161049590724043016230250792627017777e-01+0.0000000000000000000000000000000000000000000000000000000000000000e+00i,
 +1.5557746179521022745472470501153401319301822933632620168302167001e-02-1.1119064935323447671186965031169351281860527363722541382850349940e-02i,
 -1.7198182390092257164272666175190298478482096240869947698066647614e-01-4.1946034125215249890874708936693176256949905794670062763938078790e-02i,
--1.1737785317001863645752020621778756342758817320563642174518560436e-02-3.7819042308536459610100091608526996733397032526690882424269244982e-02i]; 
+-1.1737785317001863645752020621778756342758817320563642174518560436e-02-3.7819042308536459610100091608526996733397032526690882424269244982e-02i];
 [ -1.7698749249025177994139125324872686755256471092406618305781220382e-01+0.0000000000000000000000000000000000000000000000000000000000000000e+00i,
 +2.4579174853446943521565353394166564952277757025400163843805728908e-02+1.4483036290672481703529854195308447371511910768799389582350077765e-03i,
 +9.5397148644507469609163061186547701562956565817170822244991006671e-01+2.3966308226794491229599443416109686062123262637446982923420847550e-01i,
@@ -3548,16 +3548,16 @@ We can change the default precision at runtime for {\tt GMP} and {\tt MPFR} by s
 Note that {\tt MPLAPACK\_GMP\_PRECISION} makes sense for multiple of 64 up to  $4611686018427387903$ ({\tt 0x4000000000000000}), whereas {\tt MPLAPACK\_MPFR\_PRECISION} accepts every natural number up to $4611686018427387903$ ({\tt 0x4000000000000000}).
 
 Let us show an example by inverting the Hilerbt matrix.
-{\tt Rgetri\_Hilbert\_mpfr} inverts Hilbert matrix of order $n$, where $n=1, 2, \cdots $ via LU decomposition. 
-${\tt a}$ is the Hilbert matrix and {\tt ainv} is the inverted matrix, and {\tt InfnormL} is the left residuals. 
+{\tt Rgetri\_Hilbert\_mpfr} inverts Hilbert matrix of order $n$, where $n=1, 2, \cdots $ via LU decomposition.
+${\tt a}$ is the Hilbert matrix and {\tt ainv} is the inverted matrix, and {\tt InfnormL} is the left residuals.
 
 The output is the following:
 \begin{verbatim}
 $ cd /home/docker/mplapack/examples/mplapack/00_LinearEquations
 $ g++ -O2 -I/home/docker/MPLAPACK/include -I/home/docker/MPLAPACK/include/mplapack \
-Rgetri_Hilbert_mpfr.cpp -Wl,--rpath=/home/docker/MPLAPACK/lib \ 
+Rgetri_Hilbert_mpfr.cpp -Wl,--rpath=/home/docker/MPLAPACK/lib \
 -L/home/docker/MPLAPACK/lib -lmplapack_mpfr -lmpfr -lmpc -lgmp
-$ ./a.out | grep InfnromL 
+$ ./a.out | grep InfnromL
 InfnormL:(ainv * a - I)=+0.0000000000000000e+00
 InfnormL:(ainv * a - I)=+0.0000000000000000e+00
 InfnormL:(ainv * a - I)=+4.7733380679681323e-153
@@ -3569,7 +3569,7 @@ InfnormL:(ainv * a - I)=+6.0062492855493028e-146
 InfnormL:(ainv * a - I)=+2.7228330094490173e-144
 InfnormL:(ainv * a - I)=+8.2005323578699814e-143
 ...
-$ MPLAPACK_MPFR_PRECISION=65536 ./a.out | grep InfnromL 
+$ MPLAPACK_MPFR_PRECISION=65536 ./a.out | grep InfnromL
 InfnormL:(ainv * a - I)=+0.0000000000000000e+00
 InfnormL:(ainv * a - I)=+0.0000000000000000e+00
 InfnormL:(ainv * a - I)=+3.9929525776415436e-19728
@@ -3838,7 +3838,7 @@ Following is the basic strategy for using MPLAPACK routines.
 \subsection{How to link a unified MPLAPACK library statically}
 The unified archive contains both MPBLAS and MPLAPACK entry points.
 Specify the full archive path once and enclose it with {\tt -Wl,--whole-archive} and {\tt --no-whole-archive}; this retains the runtime initialization objects.
-For example, when one builds {\tt Rgemm\_mpfr} statically, one should type the following: 
+For example, when one builds {\tt Rgemm\_mpfr} statically, one should type the following:
 \begin{verbatim}
 $ cd /home/docker/MPLAPACK/share/examples/mpblas
 $ g++ -fopenmp -O2 -I/home/docker/MPLAPACK/include \
@@ -3898,10 +3898,10 @@ $ CC="gcc-mp-10" ; export CC
 $ FC="gfortran-mp-10"; export FC
 $ ./configure --prefix=$HOME/MPLAPACK --enable-gmp=yes --enable-mpfr=yes \
 --enable-_Float128=yes --enable-qd=yes --enable-dd=yes --enable-double=yes \
---enable-test=yes --enable-_Float64x=yes 
+--enable-test=yes --enable-_Float64x=yes
 $ make -j4
 $ make install
-$ cd 
+$ cd
 $ rm -rf /Volumes/Users/maho/tmp
 \end{verbatim}
 }
@@ -3934,7 +3934,7 @@ We don't have to pass {\tt -Wl,--rpath=/Volumes/Users/maho/docker/MPLAPACK/lib} 
 it is hard coded, and you cannot move the top directory of MPLAPACK to another place.
 
 \subsubsection{Static linking}
-We do not support making a static binary for macOS since it is complicated to make a static binary on macOS. 
+We do not support making a static binary for macOS since it is complicated to make a static binary on macOS.
 
 \subsection{How to use MPBLAS and MPLAPACK on Windows(mingw64)}
 \subsubsection{Dynamic linking}
@@ -4013,18 +4013,18 @@ Currently, it is not possible to build complete static executables using MPLAPAC
 \section{Quality assurance of MPBLAS and MPLAPACK}
 \label{sec:howtotest}
 \subsection{Testing MPBLAS routines}
-We performed quality assurance of MPBLAS as follows. 
+We performed quality assurance of MPBLAS as follows.
 \begin{enumerate}
     \item We believe there are no bugs in the reference BLAS~\cite{10.1145/567806.567807}.
     \item We input random values of binary64 for matrices, vectors, and scalars to BLAS and MPFR version of MPBLAS for various sizes of matrices, vectors, and leading dimensions (It means MPBLAS and BLAS may fail with error codes) to a routine.
     \item If the difference between the two results is within tolerance, we regard the quality as assured for the MPFR version of the MPBLAS routine.
     \item We also check the error codes by {\tt xerbla} and {\tt Mxerbla}, and invariably these error codes are the same for the routine.
     \item Do the same checks for all routines in Table~\ref{mpblasroutines}.
-    \item If there are no errors, we regard the MPFR version of {\tt MPBLAS} as bug-free. 
+    \item If there are no errors, we regard the MPFR version of {\tt MPBLAS} as bug-free.
     \item Then, we input random values of a multiple precision type (e.g., {\tt \_Float128}) for matrices, vectors, and scalars to this version of MPBLAS and MPFR version MPBLAS for various sizes of the matrix, vector, and leading dimensions.
     \item If the difference between the two results is within tolerance, we regard the quality as assured for the multiple-precision type version of MPBLAS.
 \end{enumerate}
-Since MPBLAS routines only consist of algebraic operations, this method ensures that all routines are correctly implemented. 
+Since MPBLAS routines only consist of algebraic operations, this method ensures that all routines are correctly implemented.
 Test programs and input files are installed at \\
 {\tt /home/docker/MPLAPACK/lib/*/mplapack/test/compare/}.\\
 For example, if you check the MPFR version of {\tt Rgemm},
@@ -4194,7 +4194,7 @@ The following parameter values will be used:
  RPP routines passed the tests of the error exits
 ...
 \end{verbatim}
-The file {\tt Rtest.in} is same as {\tt dtest.in} of LAPACK, except for the first comment line. 
+The file {\tt Rtest.in} is same as {\tt dtest.in} of LAPACK, except for the first comment line.
 For other precisions, we similarly performed tests. We verified that all tests passed for all precisions.
 
 The RFP (Rectangular Full Packed) version can be tested, for example, the dd version, as follows:
@@ -4378,9 +4378,9 @@ There are 20 input files for testing eigenvalue problems, singular value problem
 and other related routines. For MPLAPCK, we use the following input files:
 \begin{verbatim}
 Cbak.in Cbal.in Cbal_double.in Cbb.in Cec.in Ced.in
-Cgbak.in Cgbal.in Cgd.in Cgg.in Csb.in Csg.in Rbak.in 
-Rbal.in Rbal_double.in Rbb.in Rec.in Red.in Rgbak.in 
-Rgbal.in Rgd.in Rgg.in Rsb.in Rsg.in csd.in glm.in 
+Cgbak.in Cgbal.in Cgd.in Cgg.in Csb.in Csg.in Rbak.in
+Rbal.in Rbal_double.in Rbb.in Rec.in Red.in Rgbak.in
+Rgbal.in Rgd.in Rgg.in Rsb.in Rsg.in csd.in glm.in
 gqr.in gsv.in lse.in nep.in se2.in sep.in svd.in
 \end{verbatim}
 We modified the original input files; do not break the line for each matrix row so that the testing program can process the data correctly by C++.
@@ -4388,10 +4388,10 @@ The original input files for the balancing test depend on the precision. There a
 designed for double precision, {\tt Rbal\_double.in} and {\tt Cbal\_double.in}, which are identical to {\tt dbal.in} and {\tt zbal.in}
 . The final test matrices in each input file of {\tt Rbal\_double.in} and {\tt Cbal\_double.in} are tricky. We omitted the final matrix for each input and make them {\tt Rbal.in} and {\tt Cbal.in}
 
-Recall that we test LAPACK EIG as follows: 
+Recall that we test LAPACK EIG as follows:
 \begin{verbatim}
 $ cd /home/docker/mplapack/external/lapack/work/internal/lapack-3.9.1/TESTING/EIG/
-$  ./xeigtstd < ../nep.in 
+$  ./xeigtstd < ../nep.in
  Tests of the Nonsymmetric Eigenvalue Problem routines
 
  LAPACK VERSION 3.9.1
@@ -4476,17 +4476,17 @@ The following parameter values will be used:
  All tests for DBD routines passed the threshold (  10260 tests run)
 ....
 \end{verbatim}
-We performed tests for all the 20 testing files for all real precision versions. 
+We performed tests for all the 20 testing files for all real precision versions.
 Almost all the tests passed for every input file.
 In GMP version, {\tt gmp/xeigtstR\_gmp}, and the errors are related to precision loss in arithmetic; we should raise the error threshold by a factor of 10 or 100, and we do not consider such precision loesses are profound
 since we can raise precision at runtime.
 We do not perform test for {\tt csd.in}, because {\tt GMP} does not have trigonometric functions. MPLAPACK stops
 when users try to use cosine sine decomposition.
-We do not fix these failures and planning to drop the GMP version and integrate it into the {\tt MPFR} version in MPLAPACK version 3.0.0.  
+We do not fix these failures and planning to drop the GMP version and integrate it into the {\tt MPFR} version in MPLAPACK version 3.0.0.
 Besides, some failures for {\tt svd.in} are using {\tt xeigtstR\_dd}, {\tt xeigstsC\_dd}, {\tt xeigtstC\_dd} and {\tt xeigstsC\_qd} are observed.
 We do not know the root cause of the error; however, we suspect the errors might be related to underflow.
 
-In summary, MPLAPACK routines for all real and complex precisions are reliable. 
+In summary, MPLAPACK routines for all real and complex precisions are reliable.
 \section{Fortran90 to C++ Conversion}
 \label{sec:howtoconvert}
 Until MPLAPACK 0.9.3, we used f2c to convert FORTRAN77 routines to C (until version 3.1.1, LAPACK only required the FORTRAN77 compiler). Unfortunately, the resultant source code was tough to read by a human; we replaced many tokens heavily using {\tt sed} and finally converted them to user-friendly, easy-to-read C++ programs by hand.
@@ -4495,14 +4495,14 @@ We simply use REAL, COMPLEX, INTEGER, LOGICAL, and BOOL to support all floating-
 
 The main differences between Fortran and C++ are: (i) array index starts from one, (ii) loop index may be incremented or decremented depending on its context, (iii) treatment of two-dimension arrays, (iv) when calling subroutines, FORTRAN always references the values, but we can choose call by value or call by reference in C++.  For (i), we use the same array index and decrement the index when accessing the array. (ii) we judge the direction of loop by hand, (iii) we expand two-dimension array using the leading dimension; we translate {\tt a(i,j)} to {\tt a[(i-1)  + (j-1) * lda]}, and (iv) we changed call by value when possible.
 
-Since MPLAPACK 1.0.0, we used FABLE~\cite{fable} to convert all BLAS and LAPACK routines. In the original paper, they could translate {\tt dsyev.f} without modifications. However, the resultant source code also depends on Fortran Emulation Module (FEM), which is unnecessary for the MPBLAS and MPLAPACK parts, and the treatment of the array is a bit unnatural.  To make the resultant C++ code more natural and readable, we further patched {\tt cout.py} and passed through sed. Then, we modified the source codes by hand. For MPBLAS, conversion is almost automatic. For MPLAPACK, there are many hand-corrected minor syntax errors, interpretation of numbers, casts, and other corrections, but we can compile many without modifications. 
+Since MPLAPACK 1.0.0, we used FABLE~\cite{fable} to convert all BLAS and LAPACK routines. In the original paper, they could translate {\tt dsyev.f} without modifications. However, the resultant source code also depends on Fortran Emulation Module (FEM), which is unnecessary for the MPBLAS and MPLAPACK parts, and the treatment of the array is a bit unnatural.  To make the resultant C++ code more natural and readable, we further patched {\tt cout.py} and passed through sed. Then, we modified the source codes by hand. For MPBLAS, conversion is almost automatic. For MPLAPACK, there are many hand-corrected minor syntax errors, interpretation of numbers, casts, and other corrections, but we can compile many without modifications.
 
 More important part is translation of {\tt TESTING/LIN} and {\tt TESTING/EIG} from Fortran90 to C++. Thanks to FEM, the written statement of Fortran can be used  directly without modifications. According to ChangeLog, it took approximately three weeks to just compile programs in \\
 {\tt TESTING/LIN/xlint\{C,R\}\_mpfr} and {\tt TESTING/EIG/xeigtst\{C,R\}\_mpfr} for MPFR, although through check the results are required, and it took four months for real version and another four-month for complex version.
 
 \section{Benchmarks}
 \label{sec:benchmarks}
-We show some benchmarks for MPBLAS and MPLAPACK. We do not perform any optimization for the reference implementations. Nevertheless, 
+We show some benchmarks for MPBLAS and MPLAPACK. We do not perform any optimization for the reference implementations. Nevertheless,
 we provide a simple OpenMP accelerated version for MPBLAS and CUDA accelerated version of MPBLAS double-double routines ({\tt Rgemm} and {\tt Rsyrk}. They are shown in table~\ref{mpblasroutinesopt} and table~\ref{mpblasroutines_cuda_dd}.
 
 Tables~\ref{benchmarkcondition} and~\ref{benchmarkoscondition} and, we show CPUs, OSes, machine names, Compilers, and their abbreviations Used to take the benchmarks. For A, D, E, and F, we took the benchmark inside the Docker, and for B, C and G, we ran on the native OS.
@@ -5258,23 +5258,23 @@ In 2012, Nakata~\etal{}~\cite{6495966} implemented double-double version of {\tt
 
 In 2012, Yamada~\etal{} developed QPBLAS packages for CPUs~\cite{7965202}, as well as the QPBLAS-GPU package for GPUs in 2013~\cite{qpblas-gpu}. These correspond to the complete set of double-double version parts of MPBLAS, accelerating CPU and GPUs. Note that memory alignment is different from MPBLAS and written in Fortran 90.
 
-In 2014 and 2015, Kouya~\cite{Tomonori_Kouya2014,Tomonori_Kouya2016} implemented optimized  matrix-matrix multiplications using Strassen and Winograd algorithms using MPFR, double-double, and quad-double precisions and applied them to LU factorizations. Strassen and Winograd versions are twice as fast as double-double and quad-double precisions running one core using a simple blocking algorithm. Furthermore, there is no significant performance difference between the Strassen version and Winograd. However, when we used MPFR, the Winograd version was always faster. He also found a significant loss of accuracy when performing LU factorization using Strassen and Winograd versions. 
+In 2014 and 2015, Kouya~\cite{Tomonori_Kouya2014,Tomonori_Kouya2016} implemented optimized  matrix-matrix multiplications using Strassen and Winograd algorithms using MPFR, double-double, and quad-double precisions and applied them to LU factorizations. Strassen and Winograd versions are twice as fast as double-double and quad-double precisions running one core using a simple blocking algorithm. Furthermore, there is no significant performance difference between the Strassen version and Winograd. However, when we used MPFR, the Winograd version was always faster. He also found a significant loss of accuracy when performing LU factorization using Strassen and Winograd versions.
 
 In 2016, Joldes \etal{} implemented CAMPARY: Cuda Multiple Precision Arithmetic Library and applied it to semi-definite programming~\cite{10.1007/978-3-319-42432-3_29}. However, it was a prototype implementation and somewhat slower than our CPU implementation of ours~\cite{SDPA-GMP}. In 2017, Joldes \etal{} implemented an improved version of CAMPARY~\cite{8023060}. The significant result of this paper is that they improved {\tt Rgemm} performance on GPU for various multiple-precision versions; 1.6GFlops for triple-double precision, 976MFlops for quadruple-precision, 660MFlops for quintuple-double, 453MFlops for sextuple-double, 200MFlops for octuple-double.
 
-In 2019, Hishinuma \etal{} implimented {\tt Rgemm} kernels for double-double precision on MIMD type acclearlator PEZY-SC2~\cite{hishinuma2019pzqd}. 
+In 2019, Hishinuma \etal{} implimented {\tt Rgemm} kernels for double-double precision on MIMD type acclearlator PEZY-SC2~\cite{hishinuma2019pzqd}.
 The performance of their implementation of {\tt Rgemm} the PEZY-SC2 attained 75\% of the peak performance. This value is 20 times faster than an Intel Xeon E5-2618L v3, even including the communication time between the host CPU and the PEZY-SC2.
 
 In 2020, Isopov \etal{}~\cite{ISUPOV2020105506} took a benchmark for several level-1 multi-precision routines for MPFR, ARPREC, MPDECIMAL, MPACK, GARPREC, CUMP,, and MPRES-BLAS. MPRES-BLAS is an ongoing effort to develop a multiple-precision version of BLAS like MPBLAS on GPUS~ The\cite{10.1007/978-3-030-64616-5_4}. MPRES-BLAS defines a new arbitrary precision type suited for GPUs and fastest among CAMPARY~\cite{10.1007/978-3-319-42432-3_29}, CUMP~\cite{Nakayama2011ImplementationOM} and GARPREC~\cite{Lu:2010:SEP:1869389.1869392} when the fractions range from 424bits to 848 bits.
 
-In 2021, Kouya~\cite{10.1007/978-3-030-86976-2_14} acceralated {\tt dd\_real}, {\tt qd\_real} and triple-double precision version of {\tt Rgemm} with AVX2 using Strassen algorithm~\cite{STRASSEN1969}. 
+In 2021, Kouya~\cite{10.1007/978-3-030-86976-2_14} acceralated {\tt dd\_real}, {\tt qd\_real} and triple-double precision version of {\tt Rgemm} with AVX2 using Strassen algorithm~\cite{STRASSEN1969}.
 
 For (ii), Kouya has long developed C libraries for multiple-precision calculation using GMP and MPFR, including matrix operations~\cite{BNCpack}. He calls them as BNCpack and MPIBNCPack. At least, we can go back to 2003 to find there was MPIBNCpack version 0.1~\cite{MPIBNCPack01}. In 2011, version 0.7 had released, and it can solve linear equations and eigenvalue problems and many multiple-precision functions that are not directly related to linear algebra. From version 0.8 (2013-03-11), BNCpack and MPIBNCpack are integrated~\cite{BNCpack,1710.01839}.
 
 Saito developed ZKCM~\cite{SAITOH20132005}, a C++ library for multi-precision matrix computation for quantum computer simulation. He implemented matrix inversion, singular-value decomposition of a general matrix, the diagonalization of a Hermitian matrix, and other operations.
 
 Arb is a C library for arbitrary-precision ball arithmetic developed by Johansson~\cite{1611.02831}. It uses ball arithmetic to track
-numerical errors automatically.  It can perform and solve a wide range of matrix operations, e.g.,  LU factorization, inversion, and eigenvalue problems, but it is not an extension of LAPACK to higher precision since the employed arithmetic is different. 
+numerical errors automatically.  It can perform and solve a wide range of matrix operations, e.g.,  LU factorization, inversion, and eigenvalue problems, but it is not an extension of LAPACK to higher precision since the employed arithmetic is different.
 
 Multiprecision Computing Toolbox by Advanpix for MATLAB is a toolbox of MATLAB that can solve many arbitrary precision matrix operations
 like diagonalization of real and complex non-symmetric matrices and singular value decomposition with

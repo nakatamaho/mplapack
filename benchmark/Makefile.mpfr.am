@@ -9,7 +9,7 @@ Rpotrf.mpfr Rpotrf.mpfr_opt \
 Rpotf2.mpfr Rpotf2.mpfr_opt \
 Rgetrf.mpfr Rgetrf.mpfr_opt
 
-mpfrcxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mpfrc++ -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_MPFR___
+mpfrcxxflags = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_MPFR___
 mpfrlapack_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_mpfr
 mpfr_libdepends    = $(mpfrlapack_libdepends) -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp $(DYLD)
 mpfropt_libdepends = -L$(top_builddir)/mpblas/optimized/mpfr -lmplapack_mpfr_opt -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp $(DYLD)

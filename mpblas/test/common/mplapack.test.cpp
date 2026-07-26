@@ -45,8 +45,8 @@ void __attribute__((constructor)) mplapack_debug_initialize_gmp(void);
 void mplapack_debug_initialize_gmp(void) { uniformrandomstate_gmp = new gmp_randclass(gmp_randinit_default); }
 #endif
 
-mpreal mpf_randomnumber(mpreal dummy) {
-    mpreal mtmp;
+mpfr_class mpf_randomnumber(mpfr_class dummy) {
+    mpfr_class mtmp;
 
     mtmp = urandomb(uniformrandomstate_mpfr);
     mtmp = 2.0 * mtmp - 1.0;
@@ -54,8 +54,8 @@ mpreal mpf_randomnumber(mpreal dummy) {
     return mtmp;
 }
 
-mpcomplex mpc_randomnumber(mpcomplex dummy) {
-    mpcomplex ctmp = urandom_c(uniformrandomstate_mpfr);
+mpc_class mpc_randomnumber(mpc_class dummy) {
+    mpc_class ctmp = urandom_c(uniformrandomstate_mpfr);
     return ctmp;
 }
 
@@ -72,19 +72,19 @@ complex<double> mpc_randomnumber(complex<double>) {
     return ctmp;
 }
 
-void set_random_number(double &a, mpreal &b) {
+void set_random_number(double &a, mpfr_class &b) {
     double dummy = 0.0;
     a = mpf_randomnumber(dummy);
     b = a;
 }
 
-void set_random_number(complex<double> &a, mpcomplex &b) {
+void set_random_number(complex<double> &a, mpc_class &b) {
     complex<double> dummy, p;
     a = mpc_randomnumber(dummy);
     b = a;
 }
 
-void set_random_number1to2(double &a, mpreal &b) {
+void set_random_number1to2(double &a, mpfr_class &b) {
     double dummy = 0.0;
     a = mpf_randomnumber(dummy);
     if (a > 0.0)
@@ -94,7 +94,7 @@ void set_random_number1to2(double &a, mpreal &b) {
     b = a;
 }
 
-void set_random_number1to2(complex<double> &a, mpcomplex &b) {
+void set_random_number1to2(complex<double> &a, mpc_class &b) {
     complex<double> dummy;
     double p, q;
     a = mpc_randomnumber(dummy);
@@ -120,8 +120,8 @@ mpf_class mpf_randomnumber(mpf_class dummy) {
     return mtmp;
 }
 
-mpc_class mpc_randomnumber(mpc_class dummy) {
-    mpc_class ctmp;
+mpfc_class mpc_randomnumber(mpfc_class dummy) {
+    mpfc_class ctmp;
     mpf_class mtmp1;
     mpf_class mtmp2;
 
@@ -136,20 +136,20 @@ mpc_class mpc_randomnumber(mpc_class dummy) {
     return ctmp;
 }
 
-void set_random_number(mpreal &a, mpf_class &b) {
-    mpreal dummy;
+void set_random_number(mpfr_class &a, mpf_class &b) {
+    mpfr_class dummy;
     a = mpf_randomnumber(dummy);
     b = cast2mpf_class(a);
 }
 
-void set_random_number(mpcomplex &a, mpc_class &b) {
-    mpcomplex dummy;
+void set_random_number(mpc_class &a, mpfc_class &b) {
+    mpc_class dummy;
     a = mpc_randomnumber(dummy);
     b = cast2mpc_class(a);
 }
 
-void set_random_number1to2(mpreal &a, mpf_class &b) {
-    mpreal dummy;
+void set_random_number1to2(mpfr_class &a, mpf_class &b) {
+    mpfr_class dummy;
     a = mpf_randomnumber(dummy);
     if (a > 0.0)
         a = a + 1.0;
@@ -158,8 +158,8 @@ void set_random_number1to2(mpreal &a, mpf_class &b) {
     b = cast2mpf_class(a);
 }
 
-void set_random_number1to2(mpcomplex &a, mpc_class &b) {
-    mpcomplex dummy;
+void set_random_number1to2(mpc_class &a, mpfc_class &b) {
+    mpc_class dummy;
     double p, q;
     a = mpc_randomnumber(dummy);
     if (a.real() > 0.0)
@@ -201,20 +201,20 @@ qd_complex mpc_randomnumber(qd_complex dummy) {
     return ctmp;
 }
 
-void set_random_number(mpreal &a, qd_real &b) {
-    mpreal dummy;
+void set_random_number(mpfr_class &a, qd_real &b) {
+    mpfr_class dummy;
     a = mpf_randomnumber(dummy);
     b = cast2qd_real(a);
 }
 
-void set_random_number(mpcomplex &a, qd_complex &b) {
-    mpcomplex dummy;
+void set_random_number(mpc_class &a, qd_complex &b) {
+    mpc_class dummy;
     a = mpc_randomnumber(dummy);
     b = cast2qd_complex(a);
 }
 
-void set_random_number1to2(mpreal &a, qd_real &b) {
-    mpreal dummy;
+void set_random_number1to2(mpfr_class &a, qd_real &b) {
+    mpfr_class dummy;
     a = mpf_randomnumber(dummy);
     if (a > 0.0)
         a = a + 1.0;
@@ -223,8 +223,8 @@ void set_random_number1to2(mpreal &a, qd_real &b) {
     b = cast2qd_real(a);
 }
 
-void set_random_number1to2(mpcomplex &a, qd_complex &b) {
-    mpcomplex dummy;
+void set_random_number1to2(mpc_class &a, qd_complex &b) {
+    mpc_class dummy;
     double p, q;
     a = mpc_randomnumber(dummy);
     if (a.real() > 0.0)
@@ -266,20 +266,20 @@ dd_complex mpc_randomnumber(dd_complex dummy) {
     return ctmp;
 }
 
-void set_random_number(mpreal &a, dd_real &b) {
-    mpreal dummy;
+void set_random_number(mpfr_class &a, dd_real &b) {
+    mpfr_class dummy;
     a = mpf_randomnumber(dummy);
     b = cast2dd_real(a);
 }
 
-void set_random_number(mpcomplex &a, dd_complex &b) {
-    mpcomplex dummy;
+void set_random_number(mpc_class &a, dd_complex &b) {
+    mpc_class dummy;
     a = mpc_randomnumber(dummy);
     b = cast2dd_complex(a);
 }
 
-void set_random_number1to2(mpreal &a, dd_real &b) {
-    mpreal dummy;
+void set_random_number1to2(mpfr_class &a, dd_real &b) {
+    mpfr_class dummy;
     a = mpf_randomnumber(dummy);
     if (a > 0.0)
         a = a + 1.0;
@@ -288,8 +288,8 @@ void set_random_number1to2(mpreal &a, dd_real &b) {
     b = cast2dd_real(a);
 }
 
-void set_random_number1to2(mpcomplex &a, dd_complex &b) {
-    mpcomplex dummy;
+void set_random_number1to2(mpc_class &a, dd_complex &b) {
+    mpc_class dummy;
     double p, q;
     a = mpc_randomnumber(dummy);
     if (a.real() > 0.0)
@@ -318,20 +318,20 @@ complex<double> mpc_randomnumber(complex<double>) {
     return ctmp;
 }
 
-void set_random_number(mpreal &a, double &b) {
-    mpreal dummy;
+void set_random_number(mpfr_class &a, double &b) {
+    mpfr_class dummy;
     a = mpf_randomnumber(dummy);
     b = a;
 }
 
-void set_random_number(mpcomplex &a, complex<double> &b) {
-    mpcomplex dummy;
+void set_random_number(mpc_class &a, complex<double> &b) {
+    mpc_class dummy;
     a = mpc_randomnumber(dummy);
     b = a;
 }
 
-void set_random_number1to2(mpreal &a, double &b) {
-    mpreal dummy;
+void set_random_number1to2(mpfr_class &a, double &b) {
+    mpfr_class dummy;
     a = mpf_randomnumber(dummy);
     if (a > 0.0)
         a = a + 1.0;
@@ -340,8 +340,8 @@ void set_random_number1to2(mpreal &a, double &b) {
     b = a;
 }
 
-void set_random_number1to2(mpcomplex &a, complex<double> &b) {
-    mpcomplex dummy;
+void set_random_number1to2(mpc_class &a, complex<double> &b) {
+    mpc_class dummy;
     double p, q;
     a = mpc_randomnumber(dummy);
     if (a.real() > 0.0)
@@ -408,18 +408,18 @@ std::complex<mplapack_binary80_t> mpc_randomnumber(std::complex<mplapack_binary8
     return std::complex<mplapack_binary80_t>(re, im);
 }
 
-void set_random_number(mpreal &a, mplapack_binary80_t &b) {
+void set_random_number(mpfr_class &a, mplapack_binary80_t &b) {
     a = mpf_randomnumber(static_cast<mplapack_binary80_t>(0));
     b = cast2binary80_t(a);
 }
 
-void set_random_number(mpcomplex &a, std::complex<mplapack_binary80_t> &b) {
+void set_random_number(mpc_class &a, std::complex<mplapack_binary80_t> &b) {
     a = mpc_randomnumber(std::complex<mplapack_binary80_t>(0, 0));
     b.real(cast2binary80_t(a.real()));
     b.imag(cast2binary80_t(a.imag()));
 }
 
-void set_random_number1to2(mpreal &a, mplapack_binary80_t &b) {
+void set_random_number1to2(mpfr_class &a, mplapack_binary80_t &b) {
     a = mpf_randomnumber(static_cast<mplapack_binary80_t>(0));
     if (a > 0.0)
         a = a + 1.0;
@@ -428,13 +428,13 @@ void set_random_number1to2(mpreal &a, mplapack_binary80_t &b) {
     b = cast2binary80_t(a);
 }
 
-void set_random_number1to2(mpcomplex &a, std::complex<mplapack_binary80_t> &b) {
+void set_random_number1to2(mpc_class &a, std::complex<mplapack_binary80_t> &b) {
     a = mpc_randomnumber(std::complex<mplapack_binary80_t>(0, 0));
 
-    const mpreal p = (a.real() > 0.0) ? mpreal(1.0) : mpreal(-1.0);
-    const mpreal q = (a.imag() > 0.0) ? mpreal(1.0) : mpreal(-1.0);
+    const mpfr_class p = (a.real() > 0.0) ? mpfr_class(1.0) : mpfr_class(-1.0);
+    const mpfr_class q = (a.imag() > 0.0) ? mpfr_class(1.0) : mpfr_class(-1.0);
 
-    a = a + mpcomplex(p, q);
+    a = a + mpc_class(p, q);
 
     b.real(cast2binary80_t(a.real()));
     b.imag(cast2binary80_t(a.imag()));
@@ -476,19 +476,19 @@ std::complex<mplapack_binary128_t> mpc_randomnumber(std::complex<mplapack_binary
     mplapack_binary128_t im = mpf_randomnumber(static_cast<mplapack_binary128_t>(0));
     return std::complex<mplapack_binary128_t>(re, im);
 }
-void set_random_number(mpreal &a, mplapack_binary128_t &b) {
-    mpreal dummy;
+void set_random_number(mpfr_class &a, mplapack_binary128_t &b) {
+    mpfr_class dummy;
     a = mpf_randomnumber(dummy);
     b = cast2binary128_t(a);
 }
-void set_random_number(mpcomplex &a, std::complex<mplapack_binary128_t> &b) {
-    mpcomplex dummy;
+void set_random_number(mpc_class &a, std::complex<mplapack_binary128_t> &b) {
+    mpc_class dummy;
     a = mpc_randomnumber(dummy);
     b.real(cast2binary128_t(a.real()));
     b.imag(cast2binary128_t(a.imag()));
 }
-void set_random_number1to2(mpreal &a, mplapack_binary128_t &b) {
-    mpreal dummy;
+void set_random_number1to2(mpfr_class &a, mplapack_binary128_t &b) {
+    mpfr_class dummy;
     a = mpf_randomnumber(dummy);
     if (a > 0.0)
         a = a + 1.0;
@@ -496,8 +496,8 @@ void set_random_number1to2(mpreal &a, mplapack_binary128_t &b) {
         a = a - 1.0;
     b = cast2binary128_t(a);
 }
-void set_random_number1to2(mpcomplex &a, std::complex<mplapack_binary128_t> &b) {
-    mpcomplex dummy;
+void set_random_number1to2(mpc_class &a, std::complex<mplapack_binary128_t> &b) {
+    mpc_class dummy;
     mplapack_binary128_t p, q;
     a = mpc_randomnumber(dummy);
     if (a.real() > 0.0)
@@ -568,21 +568,21 @@ std::complex<mplapack_binary128_t> mpc_randomnumber(std::complex<mplapack_binary
     return std::complex<mplapack_binary128_t>(re, im);
 }
 
-void set_random_number(mpreal &a, mplapack_binary128_t &b) {
-    mpreal dummy;
+void set_random_number(mpfr_class &a, mplapack_binary128_t &b) {
+    mpfr_class dummy;
     a = mpf_randomnumber(dummy);
     b = cast2binary128_t(a);
 }
 
-void set_random_number(mpcomplex &a, std::complex<mplapack_binary128_t> &b) {
-    mpcomplex dummy;
+void set_random_number(mpc_class &a, std::complex<mplapack_binary128_t> &b) {
+    mpc_class dummy;
     a = mpc_randomnumber(dummy);
     b.real(cast2binary128_t(a.real()));
     b.imag(cast2binary128_t(a.imag()));
 }
 
-void set_random_number1to2(mpreal &a, mplapack_binary128_t &b) {
-    mpreal dummy;
+void set_random_number1to2(mpfr_class &a, mplapack_binary128_t &b) {
+    mpfr_class dummy;
     a = mpf_randomnumber(dummy);
     if (a > 0.0)
         a = a + 1.0;
@@ -591,8 +591,8 @@ void set_random_number1to2(mpreal &a, mplapack_binary128_t &b) {
     b = cast2binary128_t(a);
 }
 
-void set_random_number1to2(mpcomplex &a, std::complex<mplapack_binary128_t> &b) {
-    mpcomplex dummy;
+void set_random_number1to2(mpc_class &a, std::complex<mplapack_binary128_t> &b) {
+    mpc_class dummy;
     mplapack_binary128_t p, q;
     a = mpc_randomnumber(dummy);
 
@@ -656,21 +656,21 @@ std::complex<mplapack_binary128_t> mpc_randomnumber(std::complex<mplapack_binary
     return std::complex<mplapack_binary128_t>(re, im);
 }
 
-void set_random_number(mpreal &a, mplapack_binary128_t &b) {
-    mpreal dummy;
+void set_random_number(mpfr_class &a, mplapack_binary128_t &b) {
+    mpfr_class dummy;
     a = mpf_randomnumber(dummy);
     b = cast2binary128_t(a);
 }
 
-void set_random_number(mpcomplex &a, std::complex<mplapack_binary128_t> &b) {
-    mpcomplex dummy;
+void set_random_number(mpc_class &a, std::complex<mplapack_binary128_t> &b) {
+    mpc_class dummy;
     a = mpc_randomnumber(dummy);
     b.real(cast2binary128_t(a.real()));
     b.imag(cast2binary128_t(a.imag()));
 }
 
-void set_random_number1to2(mpreal &a, mplapack_binary128_t &b) {
-    mpreal dummy;
+void set_random_number1to2(mpfr_class &a, mplapack_binary128_t &b) {
+    mpfr_class dummy;
     a = mpf_randomnumber(dummy);
     if (a > 0.0)
         a = a + 1.0;
@@ -679,8 +679,8 @@ void set_random_number1to2(mpreal &a, mplapack_binary128_t &b) {
     b = cast2binary128_t(a);
 }
 
-void set_random_number1to2(mpcomplex &a, std::complex<mplapack_binary128_t> &b) {
-    mpcomplex dummy;
+void set_random_number1to2(mpc_class &a, std::complex<mplapack_binary128_t> &b) {
+    mpc_class dummy;
     mplapack_binary128_t p, q;
     a = mpc_randomnumber(dummy);
     p = (a.real() > 0.0) ? (mplapack_binary128_t)1.0L : (mplapack_binary128_t)(-1.0L);

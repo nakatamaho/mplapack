@@ -11,12 +11,12 @@
 #define MPFR_FORMAT "%+68.64Re"
 #define MPFR_SHORT_FORMAT "%+20.16Re"
 
-inline void printnum(mpreal rtmp) { mpfr_printf(MPFR_FORMAT, mpfr_ptr(rtmp)); }
-inline void printnum_short(mpreal rtmp) { mpfr_printf(MPFR_SHORT_FORMAT, mpfr_ptr(rtmp)); }
+inline void printnum(mpfr_class rtmp) { mpfr_printf(MPFR_FORMAT, mpfr_ptr(rtmp)); }
+inline void printnum_short(mpfr_class rtmp) { mpfr_printf(MPFR_SHORT_FORMAT, mpfr_ptr(rtmp)); }
 
 // Matlab/Octave format
-void printvec(mpreal *a, int len) {
-    mpreal tmp;
+void printvec(mpfr_class *a, int len) {
+    mpfr_class tmp;
     printf("[ ");
     for (int i = 0; i < len; i++) {
         tmp = a[i];
@@ -27,8 +27,8 @@ void printvec(mpreal *a, int len) {
     printf("]");
 }
 
-void printmat(int n, int m, mpreal *a, int lda) {
-    mpreal mtmp;
+void printmat(int n, int m, mpfr_class *a, int lda) {
+    mpfr_class mtmp;
     printf("[ ");
     for (int i = 0; i < n; i++) {
         printf("[ ");
@@ -48,11 +48,11 @@ void printmat(int n, int m, mpreal *a, int lda) {
 
 void Frank(mplapackint n) {
     mplapackint lwork, liwork, info, m;
-    mpreal *a = new mpreal[n * n];
-    mpreal *vl = new mpreal[n * n]; //not used
-    mpreal *vr = new mpreal[n * n]; //not used
-    mpreal *wr = new mpreal[n];
-    mpreal *wi = new mpreal[n];
+    mpfr_class *a = new mpfr_class[n * n];
+    mpfr_class *vl = new mpfr_class[n * n]; //not used
+    mpfr_class *vr = new mpfr_class[n * n]; //not used
+    mpfr_class *wr = new mpfr_class[n];
+    mpfr_class *wi = new mpfr_class[n];
 
     // setting A matrix
     for (int i = 1; i <= n; i++) {
@@ -74,11 +74,11 @@ void Frank(mplapackint n) {
 
     // work space query
     lwork = -1;
-    mpreal *work = new mpreal[1];
+    mpfr_class *work = new mpfr_class[1];
     Rgeev("N", "N", n, a, n, wr, wi, vl, n, vr, n, work, lwork, info);
     lwork = (int)cast2double(work[0]);
     delete[] work;
-    work = new mpreal[std::max((mplapackint)1, lwork)];
+    work = new mpfr_class[std::max((mplapackint)1, lwork)];
 
     // diagonalize matrix
     Rgeev("N", "N", n, a, n, wr, wi, vl, n, vr, n, work, lwork, info);
@@ -97,7 +97,7 @@ void Frank(mplapackint n) {
     delete[] a;
 }
 
-bool rselect(mpreal ar, mpreal ai) {
+bool rselect(mpfr_class ar, mpfr_class ai) {
     // sorting rule for eigenvalues.
     return false;
 }

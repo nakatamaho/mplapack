@@ -30,16 +30,16 @@
 
 #include <mpblas_mpfr.h>
 
-void Rgemm_NN(mplapackint m, mplapackint n, mplapackint k, mpreal alpha, mpreal * A, mplapackint lda, mpreal * B, mplapackint ldb, mpreal beta, mpreal * C, mplapackint ldc);
-void Rgemm_TN(mplapackint m, mplapackint n, mplapackint k, mpreal alpha, mpreal * A, mplapackint lda, mpreal * B, mplapackint ldb, mpreal beta, mpreal * C, mplapackint ldc);
-void Rgemm_NT(mplapackint m, mplapackint n, mplapackint k, mpreal alpha, mpreal * A, mplapackint lda, mpreal * B, mplapackint ldb, mpreal beta, mpreal * C, mplapackint ldc);
-void Rgemm_TT(mplapackint m, mplapackint n, mplapackint k, mpreal alpha, mpreal * A, mplapackint lda, mpreal * B, mplapackint ldb, mpreal beta, mpreal * C, mplapackint ldc);
+void Rgemm_NN(mplapackint m, mplapackint n, mplapackint k, mpfr_class alpha, mpfr_class * A, mplapackint lda, mpfr_class * B, mplapackint ldb, mpfr_class beta, mpfr_class * C, mplapackint ldc);
+void Rgemm_TN(mplapackint m, mplapackint n, mplapackint k, mpfr_class alpha, mpfr_class * A, mplapackint lda, mpfr_class * B, mplapackint ldb, mpfr_class beta, mpfr_class * C, mplapackint ldc);
+void Rgemm_NT(mplapackint m, mplapackint n, mplapackint k, mpfr_class alpha, mpfr_class * A, mplapackint lda, mpfr_class * B, mplapackint ldb, mpfr_class beta, mpfr_class * C, mplapackint ldc);
+void Rgemm_TT(mplapackint m, mplapackint n, mplapackint k, mpfr_class alpha, mpfr_class * A, mplapackint lda, mpfr_class * B, mplapackint ldb, mpfr_class beta, mpfr_class * C, mplapackint ldc);
 
-void Rgemm(const char *transa, const char *transb, mplapackint m, mplapackint n, mplapackint k, mpreal alpha, mpreal * A, mplapackint lda, mpreal * B, mplapackint ldb, mpreal beta, mpreal * C, mplapackint ldc)
+void Rgemm(const char *transa, const char *transb, mplapackint m, mplapackint n, mplapackint k, mpfr_class alpha, mpfr_class * A, mplapackint lda, mpfr_class * B, mplapackint ldb, mpfr_class beta, mpfr_class * C, mplapackint ldc)
 {
     mplapackint i, j, l, nota, notb, nrowa, ncola, nrowb, info;
-    mpreal temp;
-    mpreal Zero = 0.0, One = 1.0;
+    mpfr_class temp;
+    mpfr_class Zero = 0.0, One = 1.0;
 
     nota = Mlsame_mpfr(transa, "N");
     notb = Mlsame_mpfr(transb, "N");

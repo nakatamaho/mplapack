@@ -24,121 +24,121 @@ rm *hpp
 MPLIBS="gmp mpfr binary128 dd qd double binary80"
 for mplib in $MPLIBS; do
     if [ x"$mplib" = x"gmp" ]; then
-        cat header_all | grep -v mpfr > mplapack_${mplib}.h 
-        sed -i -e 's/INTEGER/mplapackint/g' mplapack_${mplib}.h 
-        sed -i -e 's/COMPLEX/mpc_class/g' mplapack_${mplib}.h 
-        sed -i -e 's/REAL/mpf_class/g' mplapack_${mplib}.h 
-        sed -i -e "s/Rlamch/Rlamch_${mplib}/g" mplapack_${mplib}.h 
+        cat header_all | grep -v mpfr > mplapack_${mplib}.h
+        sed -i -e 's/INTEGER/mplapackint/g' mplapack_${mplib}.h
+        sed -i -e 's/COMPLEX/mpfc_class/g' mplapack_${mplib}.h
+        sed -i -e 's/REAL/mpf_class/g' mplapack_${mplib}.h
+        sed -i -e "s/Rlamch/Rlamch_${mplib}/g" mplapack_${mplib}.h
         sed -i -e "s/Mlsamen/Mlsamen_${mplib}/g" mplapack_${mplib}.h
-        sed -i -e "s/\<iMlaenv2stage\>/iMlaenv2stage_${mplib}/g" mplapack_${mplib}.h 
-        sed -i -e "s/\<iMlaenv\>/iMlaenv_${mplib}/g" mplapack_${mplib}.h 
-        sed -i -e "s/iMlaver/iMlaver_${mplib}/g" mplapack_${mplib}.h 
-        sed -i -e "s/iMieeeck/iMieeeck_${mplib}/g" mplapack_${mplib}.h 
-        sed -i -e "s/iMparam2stage/iMparam2stage_${mplib}/g" mplapack_${mplib}.h 
-        sed -i -e "s/iMparmq/iMparmq_${mplib}/g" mplapack_${mplib}.h 
+        sed -i -e "s/\<iMlaenv2stage\>/iMlaenv2stage_${mplib}/g" mplapack_${mplib}.h
+        sed -i -e "s/\<iMlaenv\>/iMlaenv_${mplib}/g" mplapack_${mplib}.h
+        sed -i -e "s/iMlaver/iMlaver_${mplib}/g" mplapack_${mplib}.h
+        sed -i -e "s/iMieeeck/iMieeeck_${mplib}/g" mplapack_${mplib}.h
+        sed -i -e "s/iMparam2stage/iMparam2stage_${mplib}/g" mplapack_${mplib}.h
+        sed -i -e "s/iMparmq/iMparmq_${mplib}/g" mplapack_${mplib}.h
         sed -i -e "s/\<Rroundup_lwork\>/Rroundup_lwork_${mplib}/g" mplapack_${mplib}.h
         printf "void mplapack_gmp_initialize(void);" >> mplapack_${mplib}.h
     fi
 
     if [ x"$mplib" = x"mpfr" ]; then
-        cat header_all | grep -v gmp > mplapack_${mplib}.h 
-        sed -i -e 's/INTEGER/mplapackint/g' mplapack_${mplib}.h 
-        sed -i -e 's/COMPLEX/mpcomplex/g' mplapack_${mplib}.h 
-        sed -i -e 's/REAL/mpreal/g' mplapack_${mplib}.h 
-        sed -i -e "s/Rlamch/Rlamch_${mplib}/g" mplapack_${mplib}.h 
+        cat header_all | grep -v gmp > mplapack_${mplib}.h
+        sed -i -e 's/INTEGER/mplapackint/g' mplapack_${mplib}.h
+        sed -i -e 's/COMPLEX/mpc_class/g' mplapack_${mplib}.h
+        sed -i -e 's/REAL/mpfr_class/g' mplapack_${mplib}.h
+        sed -i -e "s/Rlamch/Rlamch_${mplib}/g" mplapack_${mplib}.h
         sed -i -e "s/Mlsamen/Mlsamen_${mplib}/g" mplapack_${mplib}.h
-        sed -i -e "s/\<iMlaenv2stage\>/iMlaenv2stage_${mplib}/g" mplapack_${mplib}.h 
-        sed -i -e "s/\<iMlaenv\>/iMlaenv_${mplib}/g" mplapack_${mplib}.h 
-        sed -i -e "s/iMlaver/iMlaver_${mplib}/g" mplapack_${mplib}.h 
-        sed -i -e "s/iMieeeck/iMieeeck_${mplib}/g" mplapack_${mplib}.h 
-        sed -i -e "s/iMparam2stage/iMparam2stage_${mplib}/g" mplapack_${mplib}.h 
-        sed -i -e "s/iMparmq/iMparmq_${mplib}/g" mplapack_${mplib}.h 
+        sed -i -e "s/\<iMlaenv2stage\>/iMlaenv2stage_${mplib}/g" mplapack_${mplib}.h
+        sed -i -e "s/\<iMlaenv\>/iMlaenv_${mplib}/g" mplapack_${mplib}.h
+        sed -i -e "s/iMlaver/iMlaver_${mplib}/g" mplapack_${mplib}.h
+        sed -i -e "s/iMieeeck/iMieeeck_${mplib}/g" mplapack_${mplib}.h
+        sed -i -e "s/iMparam2stage/iMparam2stage_${mplib}/g" mplapack_${mplib}.h
+        sed -i -e "s/iMparmq/iMparmq_${mplib}/g" mplapack_${mplib}.h
         sed -i -e "s/\<Rroundup_lwork\>/Rroundup_lwork_${mplib}/g" mplapack_${mplib}.h
         printf "void ___mplapack_mpfr_initialize(void);" >> mplapack_${mplib}.h
         printf "void mplapack_mpfr_finalize(void);" >> mplapack_${mplib}.h
     fi
 
     if [ x"$mplib" = x"double" ]; then
-        cat header_all | grep -v gmp | grep -v mpfr > mplapack_${mplib}.h 
-        sed -i -e 's/INTEGER/mplapackint/g' mplapack_${mplib}.h 
-        sed -i -e 's/COMPLEX/std::complex<double>/g' mplapack_${mplib}.h 
-        sed -i -e 's/REAL/double/g' mplapack_${mplib}.h 
-        sed -i -e "s/Rlamch/Rlamch_${mplib}/g" mplapack_${mplib}.h 
+        cat header_all | grep -v gmp | grep -v mpfr > mplapack_${mplib}.h
+        sed -i -e 's/INTEGER/mplapackint/g' mplapack_${mplib}.h
+        sed -i -e 's/COMPLEX/std::complex<double>/g' mplapack_${mplib}.h
+        sed -i -e 's/REAL/double/g' mplapack_${mplib}.h
+        sed -i -e "s/Rlamch/Rlamch_${mplib}/g" mplapack_${mplib}.h
         sed -i -e "s/Mlsamen/Mlsamen_${mplib}/g" mplapack_${mplib}.h
-        sed -i -e "s/\<iMlaenv2stage\>/iMlaenv2stage_${mplib}/g" mplapack_${mplib}.h 
-        sed -i -e "s/\<iMlaenv\>/iMlaenv_${mplib}/g" mplapack_${mplib}.h 
-        sed -i -e "s/iMlaver/iMlaver_${mplib}/g" mplapack_${mplib}.h 
-        sed -i -e "s/iMieeeck/iMieeeck_${mplib}/g" mplapack_${mplib}.h 
-        sed -i -e "s/iMparam2stage/iMparam2stage_${mplib}/g" mplapack_${mplib}.h 
-        sed -i -e "s/iMparmq/iMparmq_${mplib}/g" mplapack_${mplib}.h 
+        sed -i -e "s/\<iMlaenv2stage\>/iMlaenv2stage_${mplib}/g" mplapack_${mplib}.h
+        sed -i -e "s/\<iMlaenv\>/iMlaenv_${mplib}/g" mplapack_${mplib}.h
+        sed -i -e "s/iMlaver/iMlaver_${mplib}/g" mplapack_${mplib}.h
+        sed -i -e "s/iMieeeck/iMieeeck_${mplib}/g" mplapack_${mplib}.h
+        sed -i -e "s/iMparam2stage/iMparam2stage_${mplib}/g" mplapack_${mplib}.h
+        sed -i -e "s/iMparmq/iMparmq_${mplib}/g" mplapack_${mplib}.h
         sed -i -e "s/\<Rroundup_lwork\>/Rroundup_lwork_${mplib}/g" mplapack_${mplib}.h
     fi
 
     if [ x"$mplib" = x"dd" ]; then
-        cat header_all | grep -v gmp | grep -v mpfr > mplapack_${mplib}.h 
-        sed -i -e 's/INTEGER/mplapackint/g' mplapack_${mplib}.h 
-        sed -i -e 's/COMPLEX/dd_complex/g' mplapack_${mplib}.h 
-        sed -i -e 's/REAL/dd_real/g' mplapack_${mplib}.h 
-        sed -i -e "s/Rlamch/Rlamch_${mplib}/g" mplapack_${mplib}.h 
+        cat header_all | grep -v gmp | grep -v mpfr > mplapack_${mplib}.h
+        sed -i -e 's/INTEGER/mplapackint/g' mplapack_${mplib}.h
+        sed -i -e 's/COMPLEX/dd_complex/g' mplapack_${mplib}.h
+        sed -i -e 's/REAL/dd_real/g' mplapack_${mplib}.h
+        sed -i -e "s/Rlamch/Rlamch_${mplib}/g" mplapack_${mplib}.h
         sed -i -e "s/Mlsamen/Mlsamen_${mplib}/g" mplapack_${mplib}.h
-        sed -i -e "s/\<iMlaenv2stage\>/iMlaenv2stage_${mplib}/g" mplapack_${mplib}.h 
-        sed -i -e "s/\<iMlaenv\>/iMlaenv_${mplib}/g" mplapack_${mplib}.h 
-        sed -i -e "s/iMlaver/iMlaver_${mplib}/g" mplapack_${mplib}.h 
-        sed -i -e "s/iMieeeck/iMieeeck_${mplib}/g" mplapack_${mplib}.h 
-        sed -i -e "s/iMparam2stage/iMparam2stage_${mplib}/g" mplapack_${mplib}.h 
-        sed -i -e "s/iMparmq/iMparmq_${mplib}/g" mplapack_${mplib}.h 
+        sed -i -e "s/\<iMlaenv2stage\>/iMlaenv2stage_${mplib}/g" mplapack_${mplib}.h
+        sed -i -e "s/\<iMlaenv\>/iMlaenv_${mplib}/g" mplapack_${mplib}.h
+        sed -i -e "s/iMlaver/iMlaver_${mplib}/g" mplapack_${mplib}.h
+        sed -i -e "s/iMieeeck/iMieeeck_${mplib}/g" mplapack_${mplib}.h
+        sed -i -e "s/iMparam2stage/iMparam2stage_${mplib}/g" mplapack_${mplib}.h
+        sed -i -e "s/iMparmq/iMparmq_${mplib}/g" mplapack_${mplib}.h
         sed -i -e "s/\<Rroundup_lwork\>/Rroundup_lwork_${mplib}/g" mplapack_${mplib}.h
     fi
 
     if [ x"$mplib" = x"qd" ]; then
-        cat header_all | grep -v gmp | grep -v mpfr > mplapack_${mplib}.h 
-        sed -i -e 's/INTEGER/mplapackint/g' mplapack_${mplib}.h 
-        sed -i -e 's/COMPLEX/qd_complex/g' mplapack_${mplib}.h 
-        sed -i -e 's/REAL/qd_real/g' mplapack_${mplib}.h 
-        sed -i -e "s/Rlamch/Rlamch_${mplib}/g" mplapack_${mplib}.h 
+        cat header_all | grep -v gmp | grep -v mpfr > mplapack_${mplib}.h
+        sed -i -e 's/INTEGER/mplapackint/g' mplapack_${mplib}.h
+        sed -i -e 's/COMPLEX/qd_complex/g' mplapack_${mplib}.h
+        sed -i -e 's/REAL/qd_real/g' mplapack_${mplib}.h
+        sed -i -e "s/Rlamch/Rlamch_${mplib}/g" mplapack_${mplib}.h
         sed -i -e "s/Mlsamen/Mlsamen_${mplib}/g" mplapack_${mplib}.h
-        sed -i -e "s/\<iMlaenv2stage\>/iMlaenv2stage_${mplib}/g" mplapack_${mplib}.h 
-        sed -i -e "s/\<iMlaenv\>/iMlaenv_${mplib}/g" mplapack_${mplib}.h 
-        sed -i -e "s/iMlaver/iMlaver_${mplib}/g" mplapack_${mplib}.h 
-        sed -i -e "s/iMieeeck/iMieeeck_${mplib}/g" mplapack_${mplib}.h 
-        sed -i -e "s/iMparam2stage/iMparam2stage_${mplib}/g" mplapack_${mplib}.h 
-        sed -i -e "s/iMparmq/iMparmq_${mplib}/g" mplapack_${mplib}.h 
+        sed -i -e "s/\<iMlaenv2stage\>/iMlaenv2stage_${mplib}/g" mplapack_${mplib}.h
+        sed -i -e "s/\<iMlaenv\>/iMlaenv_${mplib}/g" mplapack_${mplib}.h
+        sed -i -e "s/iMlaver/iMlaver_${mplib}/g" mplapack_${mplib}.h
+        sed -i -e "s/iMieeeck/iMieeeck_${mplib}/g" mplapack_${mplib}.h
+        sed -i -e "s/iMparam2stage/iMparam2stage_${mplib}/g" mplapack_${mplib}.h
+        sed -i -e "s/iMparmq/iMparmq_${mplib}/g" mplapack_${mplib}.h
         sed -i -e "s/\<Rroundup_lwork\>/Rroundup_lwork_${mplib}/g" mplapack_${mplib}.h
     fi
 
     if [ x"$mplib" = x"binary128" ]; then
-        cat header_all | grep -v gmp | grep -v mpfr > mplapack_${mplib}.h 
-        sed -i -e 's/INTEGER/mplapackint/g' mplapack_${mplib}.h 
+        cat header_all | grep -v gmp | grep -v mpfr > mplapack_${mplib}.h
+        sed -i -e 's/INTEGER/mplapackint/g' mplapack_${mplib}.h
         sed -i -e 's/COMPLEX/std::complex<mplapack_binary128_t>/g' mplapack_${mplib}.h
         sed -i -e 's/REAL/mplapack_binary128_t/g' mplapack_${mplib}.h
-        sed -i -e "s/Rlamch/Rlamch_${mplib}/g" mplapack_${mplib}.h 
+        sed -i -e "s/Rlamch/Rlamch_${mplib}/g" mplapack_${mplib}.h
         sed -i -e "s/Mlsamen/Mlsamen_${mplib}/g" mplapack_${mplib}.h
-        sed -i -e "s/\<iMlaenv2stage\>/iMlaenv2stage_${mplib}/g" mplapack_${mplib}.h 
-        sed -i -e "s/\<iMlaenv\>/iMlaenv_${mplib}/g" mplapack_${mplib}.h 
-        sed -i -e "s/iMlaver/iMlaver_${mplib}/g" mplapack_${mplib}.h 
-        sed -i -e "s/iMieeeck/iMieeeck_${mplib}/g" mplapack_${mplib}.h 
-        sed -i -e "s/iMparam2stage/iMparam2stage_${mplib}/g" mplapack_${mplib}.h 
-        sed -i -e "s/iMparmq/iMparmq_${mplib}/g" mplapack_${mplib}.h 
+        sed -i -e "s/\<iMlaenv2stage\>/iMlaenv2stage_${mplib}/g" mplapack_${mplib}.h
+        sed -i -e "s/\<iMlaenv\>/iMlaenv_${mplib}/g" mplapack_${mplib}.h
+        sed -i -e "s/iMlaver/iMlaver_${mplib}/g" mplapack_${mplib}.h
+        sed -i -e "s/iMieeeck/iMieeeck_${mplib}/g" mplapack_${mplib}.h
+        sed -i -e "s/iMparam2stage/iMparam2stage_${mplib}/g" mplapack_${mplib}.h
+        sed -i -e "s/iMparmq/iMparmq_${mplib}/g" mplapack_${mplib}.h
         sed -i -e "s/\<Rroundup_lwork\>/Rroundup_lwork_${mplib}/g" mplapack_${mplib}.h
     fi
 
     if [ x"$mplib" = x"binary80" ]; then
-        cat header_all | grep -v gmp | grep -v mpfr > mplapack_${mplib}.h 
+        cat header_all | grep -v gmp | grep -v mpfr > mplapack_${mplib}.h
         sed -i -e 's/INTEGER/mplapackint/g' mplapack_${mplib}.h
         sed -i -e 's/COMPLEX/std::complex<mplapack_binary80_t>/g' mplapack_${mplib}.h
         sed -i -e 's/REAL/mplapack_binary80_t/g' mplapack_${mplib}.h
         sed -i -e "s/Rlamch/Rlamch_${mplib}/g" mplapack_${mplib}.h
         sed -i -e "s/Mlsamen/Mlsamen_${mplib}/g" mplapack_${mplib}.h
         sed -i -e "s/\<iMlaenv2stage\>/iMlaenv2stage_${mplib}/g" mplapack_${mplib}.h
-        sed -i -e "s/\<iMlaenv\>/iMlaenv_${mplib}/g" mplapack_${mplib}.h 
-        sed -i -e "s/iMlaver/iMlaver_${mplib}/g" mplapack_${mplib}.h 
-        sed -i -e "s/iMieeeck/iMieeeck_${mplib}/g" mplapack_${mplib}.h 
-        sed -i -e "s/iMparam2stage/iMparam2stage_${mplib}/g" mplapack_${mplib}.h 
-        sed -i -e "s/iMparmq/iMparmq_${mplib}/g" mplapack_${mplib}.h 
+        sed -i -e "s/\<iMlaenv\>/iMlaenv_${mplib}/g" mplapack_${mplib}.h
+        sed -i -e "s/iMlaver/iMlaver_${mplib}/g" mplapack_${mplib}.h
+        sed -i -e "s/iMieeeck/iMieeeck_${mplib}/g" mplapack_${mplib}.h
+        sed -i -e "s/iMparam2stage/iMparam2stage_${mplib}/g" mplapack_${mplib}.h
+        sed -i -e "s/iMparmq/iMparmq_${mplib}/g" mplapack_${mplib}.h
         sed -i -e "s/\<Rroundup_lwork\>/Rroundup_lwork_${mplib}/g" mplapack_${mplib}.h
     fi
 
-    fable_clang_format_stdout mplapack_${mplib}.h | LC_ALL=C sort > l ; mv l mplapack_${mplib}.h 
+    fable_clang_format_stdout mplapack_${mplib}.h | LC_ALL=C sort > l ; mv l mplapack_${mplib}.h
     cat ~/mplapack/mplapack/reference/mplapack_${mplib}.h.in mplapack_${mplib}.h > ~/mplapack/include/mplapack_${mplib}.h
     rm mplapack_${mplib}.h
     echo "#endif" >> ~/mplapack/include/mplapack_${mplib}.h

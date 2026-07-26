@@ -11,12 +11,12 @@
 #define MPFR_FORMAT "%+68.64Re"
 #define MPFR_SHORT_FORMAT "%+20.16Re"
 
-inline void printnum(mpreal rtmp) { mpfr_printf(MPFR_FORMAT, mpfr_ptr(rtmp)); }
-inline void printnum_short(mpreal rtmp) { mpfr_printf(MPFR_SHORT_FORMAT, mpfr_ptr(rtmp)); }
+inline void printnum(mpfr_class rtmp) { mpfr_printf(MPFR_FORMAT, mpfr_ptr(rtmp)); }
+inline void printnum_short(mpfr_class rtmp) { mpfr_printf(MPFR_SHORT_FORMAT, mpfr_ptr(rtmp)); }
 
 // Matlab/Octave format
-void printvec(mpreal *a, int len) {
-    mpreal tmp;
+void printvec(mpfr_class *a, int len) {
+    mpfr_class tmp;
     printf("[ ");
     for (int i = 0; i < len; i++) {
         tmp = a[i];
@@ -27,8 +27,8 @@ void printvec(mpreal *a, int len) {
     printf("]");
 }
 
-void printmat(int n, int m, mpreal *a, int lda) {
-    mpreal mtmp;
+void printmat(int n, int m, mpfr_class *a, int lda) {
+    mpfr_class mtmp;
     printf("[ ");
     for (int i = 0; i < n; i++) {
         printf("[ ");
@@ -51,7 +51,7 @@ int main()
     mplapackint n = 4;
     mplapackint lwork, info;
 
-    mpreal *a = new mpreal[n * n];
+    mpfr_class *a = new mpfr_class[n * n];
     mplapackint *ipiv = new mplapackint[n];
 
 //setting a matrix
@@ -67,12 +67,12 @@ int main()
 
 //work space query
     lwork = -1;
-    mpreal *work = new mpreal[1];
+    mpfr_class *work = new mpfr_class[1];
 
     Rgetri(n, a, n, ipiv, work, lwork, info);
     lwork = castINTEGER_mpfr (work[0]);
     delete[]work;
-    work = new mpreal[std::max(1, (int) lwork)];
+    work = new mpfr_class[std::max(1, (int) lwork)];
 
 //inverse matrix
     Rgetrf(n, n, a, n, ipiv, info);

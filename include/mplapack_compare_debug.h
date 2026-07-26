@@ -48,9 +48,9 @@ using std::endl;
 using std::max;
 using std::min;
 
-#include <mpcomplex.h>
-#include <mpreal.h>
-using namespace mpfr;
+#include <mpfrxx_mkII.h>
+#include <mpcxx_mkII.h>
+using namespace mpfrxx;
 
 #include <mplapack_print_double.h>
 
@@ -171,25 +171,25 @@ typedef double REAL_REF;
 typedef complex<double> COMPLEX_REF;
 #else
 typedef mplapackint INTEGER_REF;
-typedef mpreal REAL_REF;
-typedef mpcomplex COMPLEX_REF;
+typedef mpfr_class REAL_REF;
+typedef mpc_class COMPLEX_REF;
 #endif
 
-mpreal mpf_randomnumber(mpreal);
-mpcomplex mpc_randomnumber(mpcomplex);
+mpfr_class mpf_randomnumber(mpfr_class);
+mpc_class mpc_randomnumber(mpc_class);
 double mpf_randomnumber(double);
 complex<double> mpc_randomnumber(complex<double>);
 
-// bootstrapping functions; double to mpreal.
-// usually we need only mpreal -> double or _Float128 etc.
-// mpcomplex -> complex<double> or dd_complex etc.
-// but following cases, we treat binary64 BLAS and LAPACK as correct ones and compare to mpreal version of BLAS and LAPACK
-void set_random_number(double &a, mpreal &b);
-void set_random_number(complex<double> &a, mpcomplex &b);
+// bootstrapping functions; double to mpfr_class.
+// usually we need only mpfr_class -> double or _Float128 etc.
+// mpc_class -> complex<double> or dd_complex etc.
+// but following cases, we treat binary64 BLAS and LAPACK as correct ones and compare to mpfr_class version of BLAS and LAPACK
+void set_random_number(double &a, mpfr_class &b);
+void set_random_number(complex<double> &a, mpc_class &b);
 void set_random_number(INTEGER_REF &a, INTEGER &b);
 
-void set_random_number1to2(double &a, mpreal &b);
-void set_random_number1to2(complex<double> &a, mpcomplex &b);
+void set_random_number1to2(double &a, mpfr_class &b);
+void set_random_number1to2(complex<double> &a, mpc_class &b);
 void set_random_number1to2(INTEGER_REF &a, INTEGER &b);
 
 REAL_REF infnorm(COMPLEX_REF *vec_ref, COMPLEX *vec, int len, int inc);
@@ -219,51 +219,51 @@ inline int matlen(int lda, int n) { return std::max(1, abs(lda) * abs(n)); }
 
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
 mpf_class mpf_randomnumber(mpf_class);
-mpc_class mpc_randomnumber(mpc_class);
-void set_random_number(mpreal &a, mpf_class &b);
-void set_random_number(mpcomplex &a, mpc_class &b);
-void set_random_number1to2(mpreal &a, mpf_class &b);
-void set_random_number1to2(mpcomplex &a, mpc_class &b);
+mpfc_class mpc_randomnumber(mpfc_class);
+void set_random_number(mpfr_class &a, mpf_class &b);
+void set_random_number(mpc_class &a, mpfc_class &b);
+void set_random_number1to2(mpfr_class &a, mpf_class &b);
+void set_random_number1to2(mpc_class &a, mpfc_class &b);
 #endif
 #if defined ___MPLAPACK_BUILD_WITH_QD___
 qd_real mpf_randomnumber(qd_real);
 qd_complex mpc_randomnumber(qd_complex);
-void set_random_number(mpreal &a, qd_real &b);
-void set_random_number(mpcomplex &a, qd_complex &b);
-void set_random_number1to2(mpreal &a, qd_real &b);
-void set_random_number1to2(mpcomplex &a, qd_complex &b);
+void set_random_number(mpfr_class &a, qd_real &b);
+void set_random_number(mpc_class &a, qd_complex &b);
+void set_random_number1to2(mpfr_class &a, qd_real &b);
+void set_random_number1to2(mpc_class &a, qd_complex &b);
 #endif
 #if defined ___MPLAPACK_BUILD_WITH_DD___
 dd_real mpf_randomnumber(dd_real);
 dd_complex mpc_randomnumber(dd_complex);
-void set_random_number(mpreal &a, dd_real &b);
-void set_random_number(mpcomplex &a, dd_complex &b);
-void set_random_number1to2(mpreal &a, dd_real &b);
-void set_random_number1to2(mpcomplex &a, dd_complex &b);
+void set_random_number(mpfr_class &a, dd_real &b);
+void set_random_number(mpc_class &a, dd_complex &b);
+void set_random_number1to2(mpfr_class &a, dd_real &b);
+void set_random_number1to2(mpc_class &a, dd_complex &b);
 #endif
 #if defined ___MPLAPACK_BUILD_WITH_DOUBLE___
-void set_random_number(mpreal &a, double &b);
-void set_random_number(mpcomplex &a, complex<double> &b);
-void set_random_number1to2(mpreal &a, double &b);
-void set_random_number1to2(mpcomplex &a, complex<double> &b);
+void set_random_number(mpfr_class &a, double &b);
+void set_random_number(mpc_class &a, complex<double> &b);
+void set_random_number1to2(mpfr_class &a, double &b);
+void set_random_number1to2(mpc_class &a, complex<double> &b);
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_BINARY80___
 mplapack_binary80_t mpf_randomnumber(mplapack_binary80_t dummy);
 complex<mplapack_binary80_t> mpc_randomnumber(complex<mplapack_binary80_t> dummy);
-void set_random_number(mpreal &a, mplapack_binary80_t &b);
-void set_random_number(mpcomplex &a, complex<mplapack_binary80_t> &b);
-void set_random_number1to2(mpreal &a, mplapack_binary80_t &b);
-void set_random_number1to2(mpcomplex &a, complex<mplapack_binary80_t> &b);
+void set_random_number(mpfr_class &a, mplapack_binary80_t &b);
+void set_random_number(mpc_class &a, complex<mplapack_binary80_t> &b);
+void set_random_number1to2(mpfr_class &a, mplapack_binary80_t &b);
+void set_random_number1to2(mpc_class &a, complex<mplapack_binary80_t> &b);
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_BINARY128___
 mplapack_binary128_t mpf_randomnumber(mplapack_binary128_t dummy);
 complex<mplapack_binary128_t> mpc_randomnumber(complex<mplapack_binary128_t> dummy);
-void set_random_number(mpreal &a, mplapack_binary128_t &b);
-void set_random_number(mpcomplex &a, complex<mplapack_binary128_t> &b);
-void set_random_number1to2(mpreal &a, mplapack_binary128_t &b);
-void set_random_number1to2(mpcomplex &a, complex<mplapack_binary128_t> &b);
+void set_random_number(mpfr_class &a, mplapack_binary128_t &b);
+void set_random_number(mpc_class &a, complex<mplapack_binary128_t> &b);
+void set_random_number1to2(mpfr_class &a, mplapack_binary128_t &b);
+void set_random_number1to2(mpc_class &a, complex<mplapack_binary128_t> &b);
 #endif
 
 template <class X_REF, class X> void set_random_vector(X_REF *vec_ref, X *vec, int len) {
@@ -303,22 +303,22 @@ template <class X_REF, class X> void set_random_psdmat(X_REF *p_ref, X *p, int l
 
 template <class X_REF, class X> void set_random_symmmat_cond(X_REF *p_ref, X *p, int ldp, int n, int cond) {
     // all calculations should be done with mpfr.
-    mpreal *tmpmat1_mpreal = new mpreal[matlen(ldp, n)];
-    mpreal *tmpmat2_mpreal = new mpreal[matlen(ldp, n)];
-    mpreal *tmpmat3_mpreal = new mpreal[matlen(ldp, n)];
-    mpreal rtmp;
+    mpfr_class *tmpmat1_mpreal = new mpfr_class[matlen(ldp, n)];
+    mpfr_class *tmpmat2_mpreal = new mpfr_class[matlen(ldp, n)];
+    mpfr_class *tmpmat3_mpreal = new mpfr_class[matlen(ldp, n)];
+    mpfr_class rtmp;
 
     for (int i = 0; i < matlen(ldp, n); i++) {
         p[i] = 0.0;
         p_ref[i] = 0.0;
     }
     for (int i = 0; i < n; i++) {
-        rtmp = mpreal(cond) * mpreal(2.0 * (i + 1) - n) / mpreal(2.0 * n);
-        tmpmat1_mpreal[i + i * ldp] = pow((mpreal)10.0, rtmp);
+        rtmp = mpfr_class(cond) * mpfr_class(2.0 * (i + 1) - n) / mpfr_class(2.0 * n);
+        tmpmat1_mpreal[i + i * ldp] = pow((mpfr_class)10.0, rtmp);
     }
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            tmpmat2_mpreal[i + j * ldp] = (mpf_randomnumber(rtmp) + (mpreal)1.0) / (mpreal)2.0;
+            tmpmat2_mpreal[i + j * ldp] = (mpf_randomnumber(rtmp) + (mpfr_class)1.0) / (mpfr_class)2.0;
         }
     }
 

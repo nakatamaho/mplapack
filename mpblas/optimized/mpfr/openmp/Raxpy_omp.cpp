@@ -76,9 +76,9 @@ Based on http://www.netlib.org/blas/daxpy.f
 #include <omp.h>
 #endif
 
-void Raxpy_omp(mplapackint n, mpreal da, mpreal * dx, mplapackint incx, mpreal * dy, mplapackint incy)
+void Raxpy_omp(mplapackint n, mpfr_class da, mpfr_class * dx, mplapackint incx, mpfr_class * dy, mplapackint incy)
 {
-    mpreal Zero = 0.0;
+    mpfr_class Zero = 0.0;
     mplapackint i;
 
     if (n <= 0)	return;

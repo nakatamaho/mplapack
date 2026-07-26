@@ -32,8 +32,8 @@
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
 #include <mpblas_mpfr.h>
 typedef mplapackint INTEGER;
-typedef mpreal REAL;
-typedef mpcomplex COMPLEX;
+typedef mpfr_class REAL;
+typedef mpc_class COMPLEX;
 #define Mlsame Mlsame_mpfr
 #define Mxerbla Mxerbla_mpfr
 #define castINTEGER castINTEGER_mpfr
@@ -43,7 +43,7 @@ typedef mpcomplex COMPLEX;
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
 #include <mpblas_gmp.h>
 typedef mplapackint INTEGER;
-typedef mpc_class COMPLEX;
+typedef mpfc_class COMPLEX;
 typedef mpf_class REAL;
 #define Mlsame Mlsame_gmp
 #define Mxerbla Mxerbla_gmp

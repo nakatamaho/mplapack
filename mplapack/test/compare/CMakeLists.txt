@@ -67,7 +67,7 @@ foreach(_b ${_backends})
       target_include_directories(${_exe} PRIVATE
         "${CMAKE_BINARY_DIR}/include"
         "${CMAKE_SOURCE_DIR}/include"
-        "${CMAKE_SOURCE_DIR}/mpfrc++")
+        "${MPLAPACK_GMPFRXX_MKII_ROOT}/include")
 
       set(_backend_archives "$<TARGET_FILE:${_backend_library}>")
       set(_backend_dependencies ${_backend_library})
@@ -77,8 +77,7 @@ foreach(_b ${_backends})
       endif()
       target_link_libraries(${_exe} PRIVATE
         ${_backend_archives}
-        MPC::MPC MPFR::MPFR GMP::GMPXX
-        ${LAPACK_LIBRARIES} ${BLAS_LIBRARIES})
+        MPC::MPC MPFR::MPFR         ${LAPACK_LIBRARIES} ${BLAS_LIBRARIES})
       add_dependencies(${_exe} ${_backend_dependencies})
       if(_b STREQUAL "dd" OR _b STREQUAL "qd")
         target_link_libraries(${_exe} PRIVATE QD::QD)

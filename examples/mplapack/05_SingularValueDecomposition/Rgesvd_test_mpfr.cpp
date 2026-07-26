@@ -11,12 +11,12 @@
 #define MPFR_FORMAT "%+68.64Re"
 #define MPFR_SHORT_FORMAT "%+20.16Re"
 
-inline void printnum(mpreal rtmp) { mpfr_printf(MPFR_FORMAT, mpfr_ptr(rtmp)); }
-inline void printnum_short(mpreal rtmp) { mpfr_printf(MPFR_SHORT_FORMAT, mpfr_ptr(rtmp)); }
+inline void printnum(mpfr_class rtmp) { mpfr_printf(MPFR_FORMAT, mpfr_ptr(rtmp)); }
+inline void printnum_short(mpfr_class rtmp) { mpfr_printf(MPFR_SHORT_FORMAT, mpfr_ptr(rtmp)); }
 
 // Matlab/Octave format
-void printvec(mpreal *a, int len) {
-    mpreal tmp;
+void printvec(mpfr_class *a, int len) {
+    mpfr_class tmp;
     printf("[ ");
     for (int i = 0; i < len; i++) {
         tmp = a[i];
@@ -27,8 +27,8 @@ void printvec(mpreal *a, int len) {
     printf("]");
 }
 
-void printmat(int n, int m, mpreal *a, int lda) {
-    mpreal mtmp;
+void printmat(int n, int m, mpfr_class *a, int lda) {
+    mpfr_class mtmp;
     printf("[ ");
     for (int i = 0; i < n; i++) {
         printf("[ ");
@@ -50,12 +50,12 @@ int main() {
     mplapackint n = 5;
     mplapackint m = 4;
 
-    mpreal *a = new mpreal[m * n];
-    mpreal *s = new mpreal[std::min(m, n)];
-    mpreal *u = new mpreal[m * m];
-    mpreal *vt = new mpreal[n * n];
+    mpfr_class *a = new mpfr_class[m * n];
+    mpfr_class *s = new mpfr_class[std::min(m, n)];
+    mpfr_class *u = new mpfr_class[m * m];
+    mpfr_class *vt = new mpfr_class[n * n];
     mplapackint lwork = std::max({(mplapackint)1, 3 * std::min(m, n) + std::max(m, n), 5 * std::min(m, n)});
-    mpreal *work = new mpreal[lwork];
+    mpfr_class *work = new mpfr_class[lwork];
     mplapackint info;
 
     // setting A matrix

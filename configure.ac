@@ -1865,23 +1865,32 @@ AM_CONDITIONAL(MPLAPACK_BINARY80_MODE_LDBL80,   test "$mplapack_binary80_mode" =
 highest_abs_top_srcdir=`cd "$srcdir" && pwd`
 highest_abs_top_builddir=`pwd`
 dnl GMP library start
-AC_ARG_ENABLE([gmpfrxx-mkII], AS_HELP_STRING([--enable-gmpfrxx-mkII], [build bundled gmpfrxx_mkII package plumbing]), [], [enable_gmpfrxx_mkii=no])
+AC_ARG_ENABLE([gmpfrxx-mkII], AS_HELP_STRING([--enable-gmpfrxx-mkII], [use bundled gmpfrxx_mkII headers]), [enable_gmpfrxx_mkII="$enableval"], [enable_gmpfrxx_mkII=yes])
 AC_ARG_WITH([gmpfrxx-mkII], AS_HELP_STRING([--with-gmpfrxx-mkII=PREFIX], [use an installed gmpfrxx_mkII package]), [gmpfrxx_mkii_prefix="$withval"], [gmpfrxx_mkii_prefix=""])
 GMPFRXX_MKII_DIR=
 GMPFRXX_MKII_SOURCE=disabled
-if test x$enable_gmpfrxx_mkII = xyes; then
+GMPFRXX_MKII_INCLUDEDIR=
+if test x$enable_gmp = xyes -o x$enable_mpfr = xyes; then
+    if test x$enable_gmpfrxx_mkII != xyes; then
+        AC_MSG_ERROR([GMP/MPFR backends require --enable-gmpfrxx-mkII])
+    fi
     if test -n "$gmpfrxx_mkii_prefix" && test "$gmpfrxx_mkii_prefix" != yes; then
         GMPFRXX_MKII_PREFIX="$gmpfrxx_mkii_prefix"
         GMPFRXX_MKII_SOURCE=system
+        GMPFRXX_MKII_INCLUDEDIR="$GMPFRXX_MKII_PREFIX/include"
     else
         GMPFRXX_MKII_PREFIX="$prefix"
         GMPFRXX_MKII_SOURCE=bundled
         GMPFRXX_MKII_DIR=gmpfrxx_mkII
+        GMPFRXX_MKII_INCLUDEDIR="$highest_abs_top_builddir/external/i/GMPFRXX_MKII/include"
     fi
 fi
+GMPFRXX_MKII_CPPFLAGS="-I$GMPFRXX_MKII_INCLUDEDIR -DGMPXX_MKII_DEFAULT_CONTEXT_MODE=GMPXX_MKII_DEFAULT_CONTEXT_EXTERNAL_PROVIDER"
 AC_SUBST([GMPFRXX_MKII_PREFIX])
 AC_SUBST([GMPFRXX_MKII_SOURCE])
 AC_SUBST([GMPFRXX_MKII_DIR])
+AC_SUBST([GMPFRXX_MKII_INCLUDEDIR])
+AC_SUBST([GMPFRXX_MKII_CPPFLAGS])
 AC_ARG_WITH(system-gmp,
 AS_HELP_STRING([--with-system-gmp=PREFIX],
             [ ="yes" if it is at the default location (/usr/local/lib), or alternative prefix path to gmp library]
@@ -1909,13 +1918,13 @@ if test x$enable_gmp = x"yes" -o x$enable_mpfr = x"yes" -o x$enable_test = x"yes
         if test x$HAVE_GMP_HEADER = xyes; then
             save_LDFLAGS="$LDFLAGS"
             LDFLAGS="$LDFLAGS -L$GMP_LIBDIR"
-            AC_CHECK_LIB(gmp, __gmpz_init, [GMP_LIBS="-lgmpxx -lgmp"; HAVE_GMP=yes])
+            AC_CHECK_LIB(gmp, __gmpz_init, [GMP_LIBS="-lgmp"; HAVE_GMP=yes])
             LDFLAGS=$save_LDFLAGS
         fi
         if test x$HAVE_GMP != xyes; then
-            AC_MSG_RESULT([No GMP library with C++ wrapper found; using internal one instead])
+            AC_MSG_RESULT([No GMP C library found; using internal one instead])
         else
-            AC_MSG_RESULT([GMP library found: using GMP library comes with the system])
+            AC_MSG_RESULT([GMP C library found: using GMP library comes with the system])
             SYSTEM_GMP=yes
         fi
     else

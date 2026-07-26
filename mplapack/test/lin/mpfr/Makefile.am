@@ -16,8 +16,8 @@ libdepends = -L$(top_builddir)/mplapack/test/lin -llin_mpfr -llin_override_mpfr 
 opt_libdepends = -L$(top_builddir)/mplapack/test/lin -llin_mpfr_opt -llin_override_mpfr_opt -L$(top_builddir)/mplapack/test/matgen -lmatgen_mpfr_opt -L$(top_builddir)/mpblas/optimized/mpfr -lmplapack_mpfr_opt
 endif
 
-mplibs = -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpc -lmpfr -lgmpxx -lgmp -lm
-cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___ -D___MPLAPACK_INTERNAL___
+mplibs = -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpc -lmpfr -lgmp -lm
+cxxflags = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_MPFR___ -D___MPLAPACK_INTERNAL___
 
 install-data-hook:
 if IS_MACOS

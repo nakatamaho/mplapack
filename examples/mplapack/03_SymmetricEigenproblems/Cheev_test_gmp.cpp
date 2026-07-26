@@ -10,7 +10,7 @@
 
 inline void printnum(mpf_class rtmp) { gmp_printf(GMP_FORMAT, rtmp.get_mpf_t()); }
 inline void printnum_short(mpf_class rtmp) { gmp_printf(GMP_SHORT_FORMAT, rtmp.get_mpf_t()); }
-inline void printnum(mpc_class ctmp) { gmp_printf(GMP_FORMAT GMP_FORMAT "i", ctmp.real().get_mpf_t(), ctmp.imag().get_mpf_t()); }
+inline void printnum(mpfc_class ctmp) { gmp_printf(GMP_FORMAT GMP_FORMAT "i", ctmp.real().get_mpf_t(), ctmp.imag().get_mpf_t()); }
 
 //Matlab/Octave format
 template <class X> void printvec(X *a, int len) {
@@ -50,24 +50,24 @@ int main()
     mplapackint n = 3;
     mplapackint lwork, info;
 
-    mpc_class *A = new mpc_class[n * n];
+    mpfc_class *A = new mpfc_class[n * n];
     mpf_class *w = new mpf_class[n];
     mpf_class *rwork = new mpf_class[3 * n - 1];
 
 //setting A matrix
-    A[0 + 0 * n] = 2.0;               A[0 + 1 * n] = mpc_class(0.0, -1.0);    A[0 + 2 * n] = 0.0;
-    A[1 + 0 * n] = mpc_class(0.0, 1.0); A[1 + 1 * n] = 2.0;                   A[1 + 2 * n] = 0.0;
+    A[0 + 0 * n] = 2.0;               A[0 + 1 * n] = mpfc_class(0.0, -1.0);    A[0 + 2 * n] = 0.0;
+    A[1 + 0 * n] = mpfc_class(0.0, 1.0); A[1 + 1 * n] = 2.0;                   A[1 + 2 * n] = 0.0;
     A[2 + 0 * n] = 0.0;               A[2 + 1 * n] = 0.0;                   A[2 + 2 * n] = 3.0;
 
     printf("A ="); printmat(n, n, A, n); printf("\n");
 //work space query
     lwork = -1;
-    mpc_class *work = new mpc_class[1];
+    mpfc_class *work = new mpfc_class[1];
 
     Cheev("V", "U", n, A, n, w, work, lwork, rwork, info);
     lwork = (int) cast2double (work[0].real());
     delete[]work;
-    work = new mpc_class[std::max((mplapackint) 1, lwork)];
+    work = new mpfc_class[std::max((mplapackint) 1, lwork)];
 //inverse matrix
     Cheev("V", "U", n, A, n, w, work, lwork, rwork, info);
 //print out some results.

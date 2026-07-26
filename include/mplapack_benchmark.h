@@ -53,8 +53,8 @@ using std::min;
 #define MPBLAS_REF_LIB "libmplapack_mpfr"
 #define ___MPLAPACK_INITIALIZE___ gmp_randinit_default(uniformrandomstate_mpfr);
 gmp_randstate_t uniformrandomstate_mpfr;
-mpreal randomnumber(mpreal dummy) {
-    mpreal mtmp;
+mpfr_class randomnumber(mpfr_class dummy) {
+    mpfr_class mtmp;
 
     mtmp = urandomb(uniformrandomstate_mpfr);
     mtmp = 2.0 * mtmp - 1.0;

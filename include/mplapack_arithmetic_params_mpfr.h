@@ -8,29 +8,29 @@
 #define MPLAPACK_ARITHMETIC_PARAMS_MPFR_H
 
 // Precondition: mplapack_arithmetic_params.h has been included.
-// Precondition: mpreal.h (mpfrc++) has been included via <mpblas.h>.
-//   The mpfr::mpreal type and mul_2si() must be in scope.
+// Precondition: mpfrxx_mkII.h has been included via <mpblas.h>.
+//   The mpfrxx::mpfr_class type and mul_2si() must be in scope.
 //
-// All values are RUNTIME-DERIVED from the mpreal default precision and the
+// All values are RUNTIME-DERIVED from the mpfr_class default precision and the
 // current MPFR global exponent range.  This matches Rlamch_mpfr semantics.
 
 namespace mplapack {
 namespace detail {
 
-    // Specialization of int_pow_base2 for mpfr::mpreal.
+    // Specialization of int_pow_base2 for mpfrxx::mpfr_class.
     // Uses mul_2si for exact, O(1) power-of-2 scaling at MPFR precision.
-    template <> inline mpfr::mpreal int_pow_base2<mpfr::mpreal>(arithmetic_int n) {
-        mpfr::mpreal one(1.0);
+    template <> inline mpfrxx::mpfr_class int_pow_base2<mpfrxx::mpfr_class>(arithmetic_int n) {
+        mpfrxx::mpfr_class one(1.0);
         return mul_2si(one, static_cast<mp_exp_t>(n));
     }
 
 } // namespace detail
 
 // ---------------------------------------------------------------------------
-// ArithmeticParams<mpfr::mpreal>
+// ArithmeticParams<mpfrxx::mpfr_class>
 //
 // Every field is derived at call time from:
-//   - mpreal::get_default_prec()  (current MPFR working precision)
+//   - mpfr_class::get_default_prec()  (current MPFR working precision)
 //   - mpfr_get_emin() / mpfr_get_emax()
 //   - mpfr_get_default_rounding_mode()
 //
@@ -46,8 +46,8 @@ namespace detail {
 // 2^max(1-emin, emax-1) formula, which may overflow for non-IEEE-like
 // exponent ranges (e.g. MPFR/GMP stress environments).
 // ---------------------------------------------------------------------------
-template <> inline ArithmeticParams<mpfr::mpreal> get_arithmetic_params<mpfr::mpreal>() {
-    using REAL = mpfr::mpreal;
+template <> inline ArithmeticParams<mpfrxx::mpfr_class> get_arithmetic_params<mpfrxx::mpfr_class>() {
+    using REAL = mpfrxx::mpfr_class;
     ArithmeticParams<REAL> p;
 
     const REAL one(1.0);
@@ -86,7 +86,7 @@ template <> inline ArithmeticParams<mpfr::mpreal> get_arithmetic_params<mpfr::mp
 }
 
 // ---------------------------------------------------------------------------
-// BlueScalingParams<mpfr::mpreal>
+// BlueScalingParams<mpfrxx::mpfr_class>
 //
 // Exponents derived at runtime from the current MPFR precision/range.
 // Formulas:
@@ -95,10 +95,10 @@ template <> inline ArithmeticParams<mpfr::mpreal> get_arithmetic_params<mpfr::mp
 //   exp_ssml = -floor((emin - digits) / 2)
 //   exp_sbig = -ceil((emax + digits - 1) / 2)
 //
-// int_pow_base2<mpreal> uses mul_2si (exact, no floating exponent).
+// int_pow_base2<mpfr_class> uses mul_2si (exact, no floating exponent).
 // ---------------------------------------------------------------------------
-template <> inline BlueScalingParams<mpfr::mpreal> get_blue_scaling_params<mpfr::mpreal>() {
-    return make_blue_scaling_params(get_arithmetic_params<mpfr::mpreal>());
+template <> inline BlueScalingParams<mpfrxx::mpfr_class> get_blue_scaling_params<mpfrxx::mpfr_class>() {
+    return make_blue_scaling_params(get_arithmetic_params<mpfrxx::mpfr_class>());
 }
 
 } // namespace mplapack

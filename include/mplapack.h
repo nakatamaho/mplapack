@@ -34,7 +34,7 @@
 typedef mplapackint INTEGER;
 typedef mplapacklogical LOGICAL;
 typedef mpf_class REAL;
-typedef mpc_class COMPLEX;
+typedef mpfc_class COMPLEX;
 #define Mlsamen Mlsamen_gmp
 #define Mlsame Mlsame_gmp
 #define Mxerbla Mxerbla_gmp
@@ -52,8 +52,8 @@ typedef mpc_class COMPLEX;
 #include <mplapack_mpfr.h>
 typedef mplapackint INTEGER;
 typedef mplapacklogical LOGICAL;
-typedef mpreal REAL;
-typedef mpcomplex COMPLEX;
+typedef mpfr_class REAL;
+typedef mpc_class COMPLEX;
 #define Mlsamen Mlsamen_mpfr
 #define Mlsame Mlsame_mpfr
 #define Mxerbla Mxerbla_mpfr

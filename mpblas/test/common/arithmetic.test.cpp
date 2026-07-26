@@ -745,9 +745,9 @@ int main() {
 #endif
 
     // we need to specify explicitly.
-    mpreal::default_prec = ___MPLAPACK_MPFR_DEFAULT_PRECISION___;
-    mpcomplex::default_real_prec = ___MPLAPACK_MPFR_DEFAULT_PRECISION___;
-    mpcomplex::default_imag_prec = ___MPLAPACK_MPFR_DEFAULT_PRECISION___;
+    mpfr_class::default_prec = ___MPLAPACK_MPFR_DEFAULT_PRECISION___;
+    mpc_class::default_real_prec = ___MPLAPACK_MPFR_DEFAULT_PRECISION___;
+    mpc_class::default_imag_prec = ___MPLAPACK_MPFR_DEFAULT_PRECISION___;
 
     mp_rounding2integer();
     mp_nint();

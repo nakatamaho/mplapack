@@ -237,9 +237,9 @@ namespace detail {
 #endif
 
 #if defined(___MPLAPACK_BUILD_WITH_MPFR___)
-    inline mpfr::mpreal to_rlamch_real_impl(arithmetic_int x, mpfr::mpreal *) {
+    inline mpfrxx::mpfr_class to_rlamch_real_impl(arithmetic_int x, mpfrxx::mpfr_class *) {
         const std::string s = std::to_string(x);
-        return mpfr::mpreal(s.c_str());
+        return mpfrxx::mpfr_class(s.c_str());
     }
 #endif
 

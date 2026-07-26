@@ -15,7 +15,7 @@ test -f external/i/GMPFRXX_MKII/lib/cmake/gmpfrxx_mkII/gmpfrxx_mkIIConfig.cmake
 test -f /tmp/mplapack-p1-final/include/gmpfrxx_mkII.h
 test -f /tmp/mplapack-p1-final/lib/cmake/gmpfrxx_mkII/gmpfrxx_mkIIConfig.cmake
 printf '#include <gmpfrxx_mkII.h>\nint main(){mpfrxx::mpfr_class x(1); return x == 1 ? 0 : 1;}\n' >/tmp/gmpfrxx-p1-consumer.cpp
-g++ -std=gnu++17 /tmp/gmpfrxx-p1-consumer.cpp -I/tmp/mplapack-p1-final/include -L/tmp/mplapack-p1-final/lib -Lexternal/i/MPC/lib -Lexternal/i/MPFR/lib -Lexternal/i/GMP/lib -lgmpxx_mkII_default_context_provider -lmpc -lmpfr -lgmp -o /tmp/gmpfrxx-p1-consumer
+g++ -std=gnu++17 /tmp/gmpfrxx-p1-consumer.cpp -I/tmp/mplapack-p1-final/include -L/tmp/mplapack-p1-final/lib -Lexternal/i/MPC/lib -Lexternal/i/MPFR/lib -Lexternal/i/GMP/lib -lmpc -lmpfr -lgmp -o /tmp/gmpfrxx-p1-consumer
 /tmp/gmpfrxx-p1-consumer
 test -z "$(find external/gmpfrxx_mkII/patches -type f -print)"
 ! rg -n 'gmpfrxx_mkII' include mpblas/reference mplapack/reference mpblas/optimized mplapack/optimized mpblas/test mplapack/test examples benchmark

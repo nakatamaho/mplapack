@@ -34,6 +34,6 @@ using namespace fem::major_types;
 using fem::common;
 
 #include "mplapack_config.h"
-#include "gmpxx.h"
-#include "mpc_class.h"
+#include <gmpxx_mkII.h>
+using namespace gmpxx;
 

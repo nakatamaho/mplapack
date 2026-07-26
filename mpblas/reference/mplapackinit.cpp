@@ -32,226 +32,72 @@
 #include <stdio.h>
 
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
+#include <gmpfrxx_mkII/detail/gmp_default_context.hpp>
+
+namespace {
+
+gmpxx_mkII_default_context_v1 make_initial_gmp_context() noexcept {
+    gmpxx_mkII_default_context_v1 context{};
+    context.abi_version = gmpfrxx_mkII::detail::gmp_default_context_abi_version;
+    context.struct_size = sizeof(context);
+    context.mpf_precision_bits =
+        static_cast<std::uint64_t>(gmpfrxx_mkII::detail::read_default_mpf_precision_from_environment());
+    return context;
+}
+
+const gmpxx_mkII_default_context_v1 &initial_gmp_context() noexcept {
+    static const gmpxx_mkII_default_context_v1 context = make_initial_gmp_context();
+    return context;
+}
+
+gmpxx_mkII_default_context_v1 &thread_gmp_context() noexcept {
+    static thread_local gmpxx_mkII_default_context_v1 context = initial_gmp_context();
+    return context;
+}
+
+int gmp_context_provider_token = 0;
+
+} // namespace
+
+extern "C" GMPXX_MKII_API void gmpxx_mkII_get_current_default_context_v1(gmpxx_mkII_default_context_v1 *out) noexcept {
+    if (out != nullptr) {
+        *out = thread_gmp_context();
+    }
+}
+
+extern "C" GMPXX_MKII_API void gmpxx_mkII_set_thread_default_context_v1(const gmpxx_mkII_default_context_v1 *context) noexcept {
+    if (context != nullptr) {
+        gmpfrxx_mkII::detail::validate_default_context_or_abort(*context);
+        thread_gmp_context() = *context;
+    }
+}
+
+extern "C" GMPXX_MKII_API void gmpxx_mkII_reset_thread_default_context_v1() noexcept {
+    thread_gmp_context() = initial_gmp_context();
+}
+
+extern "C" GMPXX_MKII_API const void *gmpxx_mkII_default_context_provider_token_v1() noexcept {
+    return &gmp_context_provider_token;
+}
+
+extern "C" GMPXX_MKII_API int gmpxx_mkII_default_context_mode_v1() noexcept {
+    return GMPXX_MKII_DEFAULT_CONTEXT_EXTERNAL_PROVIDER;
+}
+
 void __attribute__((constructor)) mplapack_initialize_gmp(void);
 void __attribute__((destructor)) mplapack_finalize_gmp(void);
 void mplapack_initialize_gmp(void) {
-    mpf_set_default_prec(___MPLAPACK_GMP_DEFAULT_PRECISION___);
-    char *p = getenv("MPLAPACK_GMP_PRECISION");
-    if (p) {
-        mpf_set_default_prec(atoi(p));
-    }
+    // The GMP backend DSO owns the gmpfrxx_mkII default-precision context.
 }
-void mplapack_finalize_gmp(void) {
-    // no finalization needed
-}
+void mplapack_finalize_gmp(void) {}
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
-// Parse an integer exponent from an environment variable.
-// Abort on invalid syntax / overflow.
-static mpfr_exp_t parse_env_exp_or_abort(const char *name, bool *present) {
-    const char *p = getenv(name);
-    if (!p || !*p) {
-        *present = false;
-        return 0;
-    }
-    *present = true;
-
-    errno = 0;
-    char *end = nullptr;
-    long v = strtol(p, &end, 10);
-
-    if (errno != 0 || end == p || *end != '\0') {
-        std::fprintf(stderr, "mplapack: invalid %s='%s'\n", name, p);
-        std::abort();
-    }
-    return static_cast<mpfr_exp_t>(v);
-}
-
-// Parse an MPFR precision from an environment variable.
-// Abort on invalid syntax / out-of-range values.
-static mpfr_prec_t parse_env_prec_or_abort(const char *name, bool *present) {
-    const char *p = getenv(name);
-    if (!p || !*p) {
-        *present = false;
-        return 0;
-    }
-    *present = true;
-
-    errno = 0;
-    char *end = nullptr;
-    long v = strtol(p, &end, 10);
-
-    if (errno != 0 || end == p || *end != '\0') {
-        std::fprintf(stderr, "mplapack: invalid %s='%s'\n", name, p);
-        std::abort();
-    }
-
-    // MPFR requires precision within [MPFR_PREC_MIN, MPFR_PREC_MAX].
-    if (v < (long)MPFR_PREC_MIN || v > (long)MPFR_PREC_MAX) {
-        std::fprintf(stderr, "mplapack: %s out of range (%ld not in [%ld, %ld])\n", name, v, (long)MPFR_PREC_MIN, (long)MPFR_PREC_MAX);
-        std::abort();
-    }
-
-    return static_cast<mpfr_prec_t>(v);
-}
-
-// Optionally set MPFR exponent range (emin/emax) from environment variables.
-// - MPLAPACK_MPFR_EMIN
-// - MPLAPACK_MPFR_EMAX
-// Abort on invalid settings to avoid silent misconfiguration.
-static bool mpfr_set_exp_range_from_env_or_abort(void) {
-    bool have_emin = false, have_emax = false;
-    const mpfr_exp_t env_emin = parse_env_exp_or_abort("MPLAPACK_MPFR_EMIN", &have_emin);
-    const mpfr_exp_t env_emax = parse_env_exp_or_abort("MPLAPACK_MPFR_EMAX", &have_emax);
-    if (!have_emin && !have_emax)
-        return false;
-
-    const mpfr_exp_t cur_emin = mpfr_get_emin();
-    const mpfr_exp_t cur_emax = mpfr_get_emax();
-
-    const mpfr_exp_t target_emin = have_emin ? env_emin : cur_emin;
-    const mpfr_exp_t target_emax = have_emax ? env_emax : cur_emax;
-
-    const mpfr_exp_t emin_min = mpfr_get_emin_min();
-    const mpfr_exp_t emin_max = mpfr_get_emin_max();
-    const mpfr_exp_t emax_min = mpfr_get_emax_min();
-    const mpfr_exp_t emax_max = mpfr_get_emax_max();
-
-    if (target_emin < emin_min || target_emin > emin_max) {
-        std::fprintf(stderr, "mplapack: %s out of range (%ld not in [%ld, %ld])\n", "MPLAPACK_MPFR_EMIN", (long)target_emin, (long)emin_min, (long)emin_max);
-        std::abort();
-    }
-    if (target_emax < emax_min || target_emax > emax_max) {
-        std::fprintf(stderr, "mplapack: %s out of range (%ld not in [%ld, %ld])\n", "MPLAPACK_MPFR_EMAX", (long)target_emax, (long)emax_min, (long)emax_max);
-        std::abort();
-    }
-    if (target_emin >= target_emax) {
-        std::fprintf(stderr, "mplapack: invalid exp range (emin=%ld, emax=%ld): emin must be < emax\n", (long)target_emin, (long)target_emax);
-        std::abort();
-    }
-
-    // Avoid transient (emin >= emax) during updates.
-    if (target_emax < cur_emin) {
-        if (mpfr_set_emin(target_emin) != 0) {
-            std::fprintf(stderr, "mplapack: mpfr_set_emin(%ld) failed\n", (long)target_emin);
-            std::abort();
-        }
-        if (mpfr_set_emax(target_emax) != 0) {
-            std::fprintf(stderr, "mplapack: mpfr_set_emax(%ld) failed\n", (long)target_emax);
-            std::abort();
-        }
-    } else if (target_emin > cur_emax) {
-        if (mpfr_set_emax(target_emax) != 0) {
-            std::fprintf(stderr, "mplapack: mpfr_set_emax(%ld) failed\n", (long)target_emax);
-            std::abort();
-        }
-        if (mpfr_set_emin(target_emin) != 0) {
-            std::fprintf(stderr, "mplapack: mpfr_set_emin(%ld) failed\n", (long)target_emin);
-            std::abort();
-        }
-    } else {
-        if (mpfr_set_emin(target_emin) != 0) {
-            std::fprintf(stderr, "mplapack: mpfr_set_emin(%ld) failed\n", (long)target_emin);
-            std::abort();
-        }
-        if (mpfr_set_emax(target_emax) != 0) {
-            std::fprintf(stderr, "mplapack: mpfr_set_emax(%ld) failed\n", (long)target_emax);
-            std::abort();
-        }
-    }
-    return true;
-}
-
 void __attribute__((constructor)) mplapack_initialize_mpfr(void);
-void mplapack_initialize_mpfr(void) {
-    // Apply MPFR exponent range from environment variables (if set).
-    bool env_exp_set = mpfr_set_exp_range_from_env_or_abort();
-
-    // Default settings.
-    mpreal::default_rnd = mpfr_get_default_rounding_mode();
-    mpreal::default_prec = ___MPLAPACK_MPFR_DEFAULT_PRECISION___;
-    mpreal::default_base = 10;
-    mpreal::double_bits = -1;
-    mpcomplex::default_rnd = MPC_RND(mpfr_get_default_rounding_mode(), mpfr_get_default_rounding_mode());
-    mpcomplex::default_real_prec = ___MPLAPACK_MPFR_DEFAULT_PRECISION___;
-    mpcomplex::default_imag_prec = ___MPLAPACK_MPFR_DEFAULT_PRECISION___;
-    mpcomplex::default_base = 10;
-    mpcomplex::double_bits = -1;
-
-    // If no explicit exponent range was given via environment variables,
-    // limit emin/emax to \pm (precision *64).  The MPFR default exponent
-    // range is astronomically wide relative to the mantissa width, which
-    // causes bisection-based eigenvalue routines (Rstebz, Rlarrb, etc.)
-    // to require an infeasible number of iterations.
-    if (!env_exp_set) {
-        mpfr_exp_t default_emax = static_cast<mpfr_exp_t>(mpreal::default_prec) * 64;
-        // Start from an IEEE-like asymmetric exponent range: emin = 3 - emax.
-        // This keeps LAPACK scaling formulas (e.g. Blue-style scaling)
-        // aligned with the intended IEEE-style emin/emax relationship.
-        mpfr_exp_t default_emin = -default_emax + 3;
-
-        // Clamp to MPFR's allowable range.
-        const mpfr_exp_t emin_min = mpfr_get_emin_min();
-        const mpfr_exp_t emax_max = mpfr_get_emax_max();
-        if (default_emin < emin_min)
-            default_emin = emin_min;
-        if (default_emax > emax_max)
-            default_emax = emax_max;
-
-        if (mpfr_set_emin(default_emin) != 0) {
-            std::fprintf(stderr, "mplapack: mpfr_set_emin(%ld) failed\n", (long)default_emin);
-            std::abort();
-        }
-        if (mpfr_set_emax(default_emax) != 0) {
-            std::fprintf(stderr, "mplapack: mpfr_set_emax(%ld) failed\n", (long)default_emax);
-            std::abort();
-        }
-    }
-
-    // Optional: set global precision for both mpreal and mpcomplex.
-    {
-        bool have = false;
-        const mpfr_prec_t prec = parse_env_prec_or_abort("MPLAPACK_MPFR_PRECISION", &have);
-        if (have) {
-            mpreal::default_prec = prec;
-            mpcomplex::default_real_prec = prec;
-            mpcomplex::default_imag_prec = prec;
-
-            // Re-adjust emin/emax for the new precision if no explicit
-            // exponent range was given via environment variables.
-            if (!env_exp_set) {
-                mpfr_exp_t adjusted_emax = static_cast<mpfr_exp_t>(prec) * 64;
-                mpfr_exp_t adjusted_emin = -adjusted_emax;
-                const mpfr_exp_t emin_min = mpfr_get_emin_min();
-                const mpfr_exp_t emax_max = mpfr_get_emax_max();
-                if (adjusted_emin < emin_min)
-                    adjusted_emin = emin_min;
-                if (adjusted_emax > emax_max)
-                    adjusted_emax = emax_max;
-                mpfr_set_emin(adjusted_emin);
-                mpfr_set_emax(adjusted_emax);
-            }
-        }
-    }
-
-    // Optional: override mpcomplex real/imag precision independently.
-    // These take precedence over MPLAPACK_MPFR_PRECISION if both are set.
-    {
-        bool have_r = false;
-        const mpfr_prec_t rprec = parse_env_prec_or_abort("MPLAPACK_MPC_REAL_PRECISION", &have_r);
-        if (have_r) {
-            mpcomplex::default_real_prec = rprec;
-        }
-
-        bool have_i = false;
-        const mpfr_prec_t iprec = parse_env_prec_or_abort("MPLAPACK_MPC_IMAG_PRECISION", &have_i);
-        if (have_i) {
-            mpcomplex::default_imag_prec = iprec;
-        }
-    }
-}
 void __attribute__((destructor)) mplapack_finalize_mpfr(void);
+void mplapack_initialize_mpfr(void) {
+    // MPFR/MPC default state is initialized and owned by gmpfrxx_mkII.
+}
 void mplapack_finalize_mpfr(void) {}
 #endif
 

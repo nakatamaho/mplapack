@@ -31,56 +31,56 @@
 
 #define ___MPLAPACK_GMP_DEFAULT_PRECISION___ 512
 
-#include "gmpxx.h"
-#include "mpc_class.h"
+#include <gmpxx_mkII.h>
+using namespace gmpxx;
 #include "mplapack_config.h"
 #include "mplapack_utils_gmp.h"
 
 bool Mlsame_gmp(const char *a, const char *b);
-mpc_class Cdotc(mplapackint const n, mpc_class *zx, mplapackint const incx, mpc_class *zy, mplapackint const incy);
-mpc_class Cdotu(mplapackint const n, mpc_class *zx, mplapackint const incx, mpc_class *zy, mplapackint const incy);
-mpf_class RCabs1(mpc_class const z);
-mpf_class RCasum(mplapackint const n, mpc_class *zx, mplapackint const incx);
-mpf_class RCnrm2(mplapackint const n, mpc_class *x, mplapackint const incx);
+mpfc_class Cdotc(mplapackint const n, mpfc_class *zx, mplapackint const incx, mpfc_class *zy, mplapackint const incy);
+mpfc_class Cdotu(mplapackint const n, mpfc_class *zx, mplapackint const incx, mpfc_class *zy, mplapackint const incy);
+mpf_class RCabs1(mpfc_class const z);
+mpf_class RCasum(mplapackint const n, mpfc_class *zx, mplapackint const incx);
+mpf_class RCnrm2(mplapackint const n, mpfc_class *x, mplapackint const incx);
 mpf_class Rasum(mplapackint const n, mpf_class *dx, mplapackint const incx);
 mpf_class Rdot(mplapackint const n, mpf_class *dx, mplapackint const incx, mpf_class *dy, mplapackint const incy);
 mpf_class Rnrm2(mplapackint const n, mpf_class *x, mplapackint const incx);
-mplapackint iCamax(mplapackint const n, mpc_class *zx, mplapackint const incx);
+mplapackint iCamax(mplapackint const n, mpfc_class *zx, mplapackint const incx);
 mplapackint iRamax(mplapackint const n, mpf_class *dx, mplapackint const incx);
-void CRrot(mplapackint const n, mpc_class *zx, mplapackint const incx, mpc_class *zy, mplapackint const incy, mpf_class const c, mpf_class const s);
-void CRscal(mplapackint const n, mpf_class const da, mpc_class *zx, mplapackint const incx);
-void Caxpy(mplapackint const n, mpc_class const za, mpc_class *zx, mplapackint const incx, mpc_class *zy, mplapackint const incy);
-void Ccopy(mplapackint const n, mpc_class *zx, mplapackint const incx, mpc_class *zy, mplapackint const incy);
-void Cgbmv(const char *trans, mplapackint const m, mplapackint const n, mplapackint const kl, mplapackint const ku, mpc_class const alpha, mpc_class *a, mplapackint const lda, mpc_class *x, mplapackint const incx, mpc_class const beta, mpc_class *y, mplapackint const incy);
-void Cgemm(const char *transa, const char *transb, mplapackint const m, mplapackint const n, mplapackint const k, mpc_class const alpha, mpc_class *a, mplapackint const lda, mpc_class *b, mplapackint const ldb, mpc_class const beta, mpc_class *c, mplapackint const ldc);
-void Cgemmtr(const char *uplo, const char *transa, const char *transb, mplapackint const n, mplapackint const k, mpc_class const alpha, mpc_class *a, mplapackint const lda, mpc_class *b, mplapackint const ldb, mpc_class const beta, mpc_class *c, mplapackint const ldc);
-void Cgemv(const char *trans, mplapackint const m, mplapackint const n, mpc_class const alpha, mpc_class *a, mplapackint const lda, mpc_class *x, mplapackint const incx, mpc_class const beta, mpc_class *y, mplapackint const incy);
-void Cgerc(mplapackint const m, mplapackint const n, mpc_class const alpha, mpc_class *x, mplapackint const incx, mpc_class *y, mplapackint const incy, mpc_class *a, mplapackint const lda);
-void Cgeru(mplapackint const m, mplapackint const n, mpc_class const alpha, mpc_class *x, mplapackint const incx, mpc_class *y, mplapackint const incy, mpc_class *a, mplapackint const lda);
-void Chbmv(const char *uplo, mplapackint const n, mplapackint const k, mpc_class const alpha, mpc_class *a, mplapackint const lda, mpc_class *x, mplapackint const incx, mpc_class const beta, mpc_class *y, mplapackint const incy);
-void Chemm(const char *side, const char *uplo, mplapackint const m, mplapackint const n, mpc_class const alpha, mpc_class *a, mplapackint const lda, mpc_class *b, mplapackint const ldb, mpc_class const beta, mpc_class *c, mplapackint const ldc);
-void Chemv(const char *uplo, mplapackint const n, mpc_class const alpha, mpc_class *a, mplapackint const lda, mpc_class *x, mplapackint const incx, mpc_class const beta, mpc_class *y, mplapackint const incy);
-void Cher(const char *uplo, mplapackint const n, mpf_class const alpha, mpc_class *x, mplapackint const incx, mpc_class *a, mplapackint const lda);
-void Cher2(const char *uplo, mplapackint const n, mpc_class const alpha, mpc_class *x, mplapackint const incx, mpc_class *y, mplapackint const incy, mpc_class *a, mplapackint const lda);
-void Cher2k(const char *uplo, const char *trans, mplapackint const n, mplapackint const k, mpc_class const alpha, mpc_class *a, mplapackint const lda, mpc_class *b, mplapackint const ldb, mpf_class const beta, mpc_class *c, mplapackint const ldc);
-void Cherk(const char *uplo, const char *trans, mplapackint const n, mplapackint const k, mpf_class const alpha, mpc_class *a, mplapackint const lda, mpf_class const beta, mpc_class *c, mplapackint const ldc);
-void Chpmv(const char *uplo, mplapackint const n, mpc_class const alpha, mpc_class *ap, mpc_class *x, mplapackint const incx, mpc_class const beta, mpc_class *y, mplapackint const incy);
-void Chpr(const char *uplo, mplapackint const n, mpf_class const alpha, mpc_class *x, mplapackint const incx, mpc_class *ap);
-void Chpr2(const char *uplo, mplapackint const n, mpc_class const alpha, mpc_class *x, mplapackint const incx, mpc_class *y, mplapackint const incy, mpc_class *ap);
-void Crotg(mpc_class &a, mpc_class const b, mpf_class &c, mpc_class &s);
-void Cscal(mplapackint const n, mpc_class const za, mpc_class *zx, mplapackint const incx);
-void Cswap(mplapackint const n, mpc_class *zx, mplapackint const incx, mpc_class *zy, mplapackint const incy);
-void Csymm(const char *side, const char *uplo, mplapackint const m, mplapackint const n, mpc_class const alpha, mpc_class *a, mplapackint const lda, mpc_class *b, mplapackint const ldb, mpc_class const beta, mpc_class *c, mplapackint const ldc);
-void Csyr2k(const char *uplo, const char *trans, mplapackint const n, mplapackint const k, mpc_class const alpha, mpc_class *a, mplapackint const lda, mpc_class *b, mplapackint const ldb, mpc_class const beta, mpc_class *c, mplapackint const ldc);
-void Csyrk(const char *uplo, const char *trans, mplapackint const n, mplapackint const k, mpc_class const alpha, mpc_class *a, mplapackint const lda, mpc_class const beta, mpc_class *c, mplapackint const ldc);
-void Ctbmv(const char *uplo, const char *trans, const char *diag, mplapackint const n, mplapackint const k, mpc_class *a, mplapackint const lda, mpc_class *x, mplapackint const incx);
-void Ctbsv(const char *uplo, const char *trans, const char *diag, mplapackint const n, mplapackint const k, mpc_class *a, mplapackint const lda, mpc_class *x, mplapackint const incx);
-void Ctpmv(const char *uplo, const char *trans, const char *diag, mplapackint const n, mpc_class *ap, mpc_class *x, mplapackint const incx);
-void Ctpsv(const char *uplo, const char *trans, const char *diag, mplapackint const n, mpc_class *ap, mpc_class *x, mplapackint const incx);
-void Ctrmm(const char *side, const char *uplo, const char *transa, const char *diag, mplapackint const m, mplapackint const n, mpc_class const alpha, mpc_class *a, mplapackint const lda, mpc_class *b, mplapackint const ldb);
-void Ctrmv(const char *uplo, const char *trans, const char *diag, mplapackint const n, mpc_class *a, mplapackint const lda, mpc_class *x, mplapackint const incx);
-void Ctrsm(const char *side, const char *uplo, const char *transa, const char *diag, mplapackint const m, mplapackint const n, mpc_class const alpha, mpc_class *a, mplapackint const lda, mpc_class *b, mplapackint const ldb);
-void Ctrsv(const char *uplo, const char *trans, const char *diag, mplapackint const n, mpc_class *a, mplapackint const lda, mpc_class *x, mplapackint const incx);
+void CRrot(mplapackint const n, mpfc_class *zx, mplapackint const incx, mpfc_class *zy, mplapackint const incy, mpf_class const c, mpf_class const s);
+void CRscal(mplapackint const n, mpf_class const da, mpfc_class *zx, mplapackint const incx);
+void Caxpy(mplapackint const n, mpfc_class const za, mpfc_class *zx, mplapackint const incx, mpfc_class *zy, mplapackint const incy);
+void Ccopy(mplapackint const n, mpfc_class *zx, mplapackint const incx, mpfc_class *zy, mplapackint const incy);
+void Cgbmv(const char *trans, mplapackint const m, mplapackint const n, mplapackint const kl, mplapackint const ku, mpfc_class const alpha, mpfc_class *a, mplapackint const lda, mpfc_class *x, mplapackint const incx, mpfc_class const beta, mpfc_class *y, mplapackint const incy);
+void Cgemm(const char *transa, const char *transb, mplapackint const m, mplapackint const n, mplapackint const k, mpfc_class const alpha, mpfc_class *a, mplapackint const lda, mpfc_class *b, mplapackint const ldb, mpfc_class const beta, mpfc_class *c, mplapackint const ldc);
+void Cgemmtr(const char *uplo, const char *transa, const char *transb, mplapackint const n, mplapackint const k, mpfc_class const alpha, mpfc_class *a, mplapackint const lda, mpfc_class *b, mplapackint const ldb, mpfc_class const beta, mpfc_class *c, mplapackint const ldc);
+void Cgemv(const char *trans, mplapackint const m, mplapackint const n, mpfc_class const alpha, mpfc_class *a, mplapackint const lda, mpfc_class *x, mplapackint const incx, mpfc_class const beta, mpfc_class *y, mplapackint const incy);
+void Cgerc(mplapackint const m, mplapackint const n, mpfc_class const alpha, mpfc_class *x, mplapackint const incx, mpfc_class *y, mplapackint const incy, mpfc_class *a, mplapackint const lda);
+void Cgeru(mplapackint const m, mplapackint const n, mpfc_class const alpha, mpfc_class *x, mplapackint const incx, mpfc_class *y, mplapackint const incy, mpfc_class *a, mplapackint const lda);
+void Chbmv(const char *uplo, mplapackint const n, mplapackint const k, mpfc_class const alpha, mpfc_class *a, mplapackint const lda, mpfc_class *x, mplapackint const incx, mpfc_class const beta, mpfc_class *y, mplapackint const incy);
+void Chemm(const char *side, const char *uplo, mplapackint const m, mplapackint const n, mpfc_class const alpha, mpfc_class *a, mplapackint const lda, mpfc_class *b, mplapackint const ldb, mpfc_class const beta, mpfc_class *c, mplapackint const ldc);
+void Chemv(const char *uplo, mplapackint const n, mpfc_class const alpha, mpfc_class *a, mplapackint const lda, mpfc_class *x, mplapackint const incx, mpfc_class const beta, mpfc_class *y, mplapackint const incy);
+void Cher(const char *uplo, mplapackint const n, mpf_class const alpha, mpfc_class *x, mplapackint const incx, mpfc_class *a, mplapackint const lda);
+void Cher2(const char *uplo, mplapackint const n, mpfc_class const alpha, mpfc_class *x, mplapackint const incx, mpfc_class *y, mplapackint const incy, mpfc_class *a, mplapackint const lda);
+void Cher2k(const char *uplo, const char *trans, mplapackint const n, mplapackint const k, mpfc_class const alpha, mpfc_class *a, mplapackint const lda, mpfc_class *b, mplapackint const ldb, mpf_class const beta, mpfc_class *c, mplapackint const ldc);
+void Cherk(const char *uplo, const char *trans, mplapackint const n, mplapackint const k, mpf_class const alpha, mpfc_class *a, mplapackint const lda, mpf_class const beta, mpfc_class *c, mplapackint const ldc);
+void Chpmv(const char *uplo, mplapackint const n, mpfc_class const alpha, mpfc_class *ap, mpfc_class *x, mplapackint const incx, mpfc_class const beta, mpfc_class *y, mplapackint const incy);
+void Chpr(const char *uplo, mplapackint const n, mpf_class const alpha, mpfc_class *x, mplapackint const incx, mpfc_class *ap);
+void Chpr2(const char *uplo, mplapackint const n, mpfc_class const alpha, mpfc_class *x, mplapackint const incx, mpfc_class *y, mplapackint const incy, mpfc_class *ap);
+void Crotg(mpfc_class &a, mpfc_class const b, mpf_class &c, mpfc_class &s);
+void Cscal(mplapackint const n, mpfc_class const za, mpfc_class *zx, mplapackint const incx);
+void Cswap(mplapackint const n, mpfc_class *zx, mplapackint const incx, mpfc_class *zy, mplapackint const incy);
+void Csymm(const char *side, const char *uplo, mplapackint const m, mplapackint const n, mpfc_class const alpha, mpfc_class *a, mplapackint const lda, mpfc_class *b, mplapackint const ldb, mpfc_class const beta, mpfc_class *c, mplapackint const ldc);
+void Csyr2k(const char *uplo, const char *trans, mplapackint const n, mplapackint const k, mpfc_class const alpha, mpfc_class *a, mplapackint const lda, mpfc_class *b, mplapackint const ldb, mpfc_class const beta, mpfc_class *c, mplapackint const ldc);
+void Csyrk(const char *uplo, const char *trans, mplapackint const n, mplapackint const k, mpfc_class const alpha, mpfc_class *a, mplapackint const lda, mpfc_class const beta, mpfc_class *c, mplapackint const ldc);
+void Ctbmv(const char *uplo, const char *trans, const char *diag, mplapackint const n, mplapackint const k, mpfc_class *a, mplapackint const lda, mpfc_class *x, mplapackint const incx);
+void Ctbsv(const char *uplo, const char *trans, const char *diag, mplapackint const n, mplapackint const k, mpfc_class *a, mplapackint const lda, mpfc_class *x, mplapackint const incx);
+void Ctpmv(const char *uplo, const char *trans, const char *diag, mplapackint const n, mpfc_class *ap, mpfc_class *x, mplapackint const incx);
+void Ctpsv(const char *uplo, const char *trans, const char *diag, mplapackint const n, mpfc_class *ap, mpfc_class *x, mplapackint const incx);
+void Ctrmm(const char *side, const char *uplo, const char *transa, const char *diag, mplapackint const m, mplapackint const n, mpfc_class const alpha, mpfc_class *a, mplapackint const lda, mpfc_class *b, mplapackint const ldb);
+void Ctrmv(const char *uplo, const char *trans, const char *diag, mplapackint const n, mpfc_class *a, mplapackint const lda, mpfc_class *x, mplapackint const incx);
+void Ctrsm(const char *side, const char *uplo, const char *transa, const char *diag, mplapackint const m, mplapackint const n, mpfc_class const alpha, mpfc_class *a, mplapackint const lda, mpfc_class *b, mplapackint const ldb);
+void Ctrsv(const char *uplo, const char *trans, const char *diag, mplapackint const n, mpfc_class *a, mplapackint const lda, mpfc_class *x, mplapackint const incx);
 void Mxerbla_gmp(const char *srname, int info);
 void Raxpy(mplapackint const n, mpf_class const da, mpf_class *dx, mplapackint const incx, mpf_class *dy, mplapackint const incy);
 void Rcopy(mplapackint const n, mpf_class *dx, mplapackint const incx, mpf_class *dy, mplapackint const incy);

@@ -8,15 +8,15 @@
 
 #include <lapacke.h>
 
-void printnum(mpreal a) { mpfr_printf("%10.8Re", mpfr_ptr(a)); }
+void printnum(mpfr_class a) { mpfr_printf("%10.8Re", mpfr_ptr(a)); }
 void printnum(double a) { printf("%10.8e", a); }
 
-void printnum_short(mpreal a) { mpfr_printf("%10.8Re", mpfr_ptr(a)); }
+void printnum_short(mpfr_class a) { mpfr_printf("%10.8Re", mpfr_ptr(a)); }
 void printnum_short(double a) { printf("%10.8e", a); }
 
 // Matlab/Octave format
-void printmat(int N, int M, mpreal *A, int LDA) {
-    mpreal mtmp;
+void printmat(int N, int M, mpfr_class *A, int LDA) {
+    mpfr_class mtmp;
     printf("[ ");
     for (int i = 0; i < N; i++) {
         printf("[ ");
@@ -56,22 +56,22 @@ void printmat(int N, int M, double *A, int LDA) {
 int main() {
     mplapackint m = 6;
     mplapackint n = 1;
-    mpreal *a = new mpreal[m * m];
-    mpreal *b = new mpreal[n * n];
-    mpreal *c = new mpreal[n * m];
-    mpreal *corg = new mpreal[n * m];
-    mpreal *x = new mpreal[m * n];
-    mpreal *ax = new mpreal[m * n];
-    mpreal *xb = new mpreal[m * n];
+    mpfr_class *a = new mpfr_class[m * m];
+    mpfr_class *b = new mpfr_class[n * n];
+    mpfr_class *c = new mpfr_class[n * m];
+    mpfr_class *corg = new mpfr_class[n * m];
+    mpfr_class *x = new mpfr_class[m * n];
+    mpfr_class *ax = new mpfr_class[m * n];
+    mpfr_class *xb = new mpfr_class[m * n];
     mplapackint lda = m;
     mplapackint ldb = n;
     mplapackint ldc = m;
     mplapackint ldx = m;
     mplapackint ldax = n;
     mplapackint ldxb = n;
-    mpreal scale;
+    mpfr_class scale;
     mplapackint info;
-    mpreal rtmp;
+    mpfr_class rtmp;
 
     double *a_d = new double[m * m];
     double *b_d = new double[n * n];

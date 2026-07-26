@@ -31,9 +31,9 @@
 
 #define ___MPLAPACK_MPFR_DEFAULT_PRECISION___ 512
 
-#include "mpcomplex.h"
+#include <mpfrxx_mkII.h>
+#include <mpcxx_mkII.h>
+using namespace mpfrxx;
 #include "mplapack_config.h"
-#include "mpreal.h"
-using namespace mpfr;
 #include "mplapack_utils_mpfr.h"
 

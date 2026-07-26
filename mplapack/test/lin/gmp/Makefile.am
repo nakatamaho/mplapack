@@ -16,8 +16,8 @@ libdepends = -L$(top_builddir)/mplapack/test/lin -llin_gmp -llin_override_gmp -L
 opt_libdepends = -L$(top_builddir)/mplapack/test/lin -llin_gmp_opt -llin_override_gmp_opt -L$(top_builddir)/mplapack/test/matgen -lmatgen_gmp_opt -L$(top_builddir)/mpblas/optimized/gmp -lmplapack_gmp_opt
 endif
 
-mplibs = -L$(GMP_LIBDIR) -lgmpxx -lgmp -lm
-cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_GMP___ -D___MPLAPACK_INTERNAL___ -I$(top_srcdir)/fable
+mplibs = -L$(GMP_LIBDIR) -lgmp -lm
+cxxflags = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_GMP___ -D___MPLAPACK_INTERNAL___ -I$(top_srcdir)/fable
 
 xlintstR_gmp_SOURCES  = ../common/Rchkaa.cpp
 xlintstR_gmp_opt_SOURCES  = ../common/Rchkaa.cpp

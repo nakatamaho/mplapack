@@ -34,10 +34,7 @@ using namespace fem::major_types;
 using fem::common;
 
 #include "mplapack_config.h"
-#include "mpc_class.h"
-#include "gmpxx.h"
-#include "mpreal.h"
-#include "mpcomplex.h"
-
-using namespace mpfr;
+#include <mpfrxx_mkII.h>
+#include <mpcxx_mkII.h>
+using namespace mpfrxx;
 

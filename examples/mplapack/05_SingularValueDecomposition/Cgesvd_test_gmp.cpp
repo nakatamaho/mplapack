@@ -10,7 +10,7 @@
 
 inline void printnum(mpf_class rtmp) { gmp_printf(GMP_FORMAT, rtmp.get_mpf_t()); }
 inline void printnum_short(mpf_class rtmp) { gmp_printf(GMP_SHORT_FORMAT, rtmp.get_mpf_t()); }
-inline void printnum(mpc_class ctmp) { gmp_printf(GMP_FORMAT GMP_FORMAT "i", ctmp.real().get_mpf_t(), ctmp.imag().get_mpf_t()); }
+inline void printnum(mpfc_class ctmp) { gmp_printf(GMP_FORMAT GMP_FORMAT "i", ctmp.real().get_mpf_t(), ctmp.imag().get_mpf_t()); }
 
 //Matlab/Octave format
 template <class X> void printvec(X *a, int len) {
@@ -49,20 +49,20 @@ int main() {
     mplapackint n = 4;
     mplapackint m = 4;
 
-    mpc_class *a = new mpc_class[m * n];
+    mpfc_class *a = new mpfc_class[m * n];
     mpf_class *s = new mpf_class[std::min(m, n)];
-    mpc_class *u = new mpc_class[m * m];
-    mpc_class *vt = new mpc_class[n * n];
+    mpfc_class *u = new mpfc_class[m * m];
+    mpfc_class *vt = new mpfc_class[n * n];
     mplapackint lwork = std::max((mplapackint)1, 2 * std::min(m, n) + std::max(m, n));
-    mpc_class *work = new mpc_class[lwork];
+    mpfc_class *work = new mpfc_class[lwork];
     mpf_class *rwork = new mpf_class[5 * std::min(m, n)];
     mplapackint info;
 
     // setting A matrix
-    a[0 + 0 * n] = mpc_class(0.9, -1.0); a[0 + 1 * n] = mpc_class(20.0, -2.25);  a[0 + 2 * n] = mpc_class(1.75, -0.5);  a[0 + 3 * n] = mpc_class(0.0, 0.5);
-    a[1 + 0 * n] = mpc_class(8.0,-2.25); a[1 + 1 * n] = mpc_class(-0.25, 0.0);   a[1 + 2 * n] = mpc_class(1.25, -0.25); a[1 + 3 * n] = mpc_class(-3.75, 0.0);
-    a[2 + 0 * n] = mpc_class(-1.75,0.0); a[2 + 1 * n] = mpc_class(-80.0,  1.25); a[2 + 2 * n] = mpc_class(1.5, 0.0);    a[2 + 3 * n] = mpc_class(30.0, 2.25);
-    a[3 + 0 * n] = mpc_class(3.0, 0.25); a[3 + 1 * n] = mpc_class(1.75, 0.0);    a[3 + 2 * n] = mpc_class(0.0, 2.25);   a[3 + 3 * n] = mpc_class(-0.25, -80.0);
+    a[0 + 0 * n] = mpfc_class(0.9, -1.0); a[0 + 1 * n] = mpfc_class(20.0, -2.25);  a[0 + 2 * n] = mpfc_class(1.75, -0.5);  a[0 + 3 * n] = mpfc_class(0.0, 0.5);
+    a[1 + 0 * n] = mpfc_class(8.0,-2.25); a[1 + 1 * n] = mpfc_class(-0.25, 0.0);   a[1 + 2 * n] = mpfc_class(1.25, -0.25); a[1 + 3 * n] = mpfc_class(-3.75, 0.0);
+    a[2 + 0 * n] = mpfc_class(-1.75,0.0); a[2 + 1 * n] = mpfc_class(-80.0,  1.25); a[2 + 2 * n] = mpfc_class(1.5, 0.0);    a[2 + 3 * n] = mpfc_class(30.0, 2.25);
+    a[3 + 0 * n] = mpfc_class(3.0, 0.25); a[3 + 1 * n] = mpfc_class(1.75, 0.0);    a[3 + 2 * n] = mpfc_class(0.0, 2.25);   a[3 + 3 * n] = mpfc_class(-0.25, -80.0);
     
     printf("# octave check\n");
     printf("split_long_rows(0)\n");
