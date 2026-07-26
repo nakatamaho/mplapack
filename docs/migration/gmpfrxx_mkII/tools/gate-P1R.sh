@@ -513,7 +513,10 @@ for dist_archive in "${dist_archives[@]}"; do
 done
 pass "make dist includes exact 1.1.0 asset and excludes 1.0.1"
 
-python3 -m unittest -v "$source_tree/$migration_rel/tools/test_compare_baseline.py"
+(
+    cd "$source_tree"
+    python3 -m unittest -v "$migration_rel/tools/test_compare_baseline.py"
+)
 python3 "$source_tree/$migration_rel/tools/compare_baseline.py" \
     "$source_tree/$migration_rel/baseline.json" \
     "$source_tree/$migration_rel/baseline.json" \
