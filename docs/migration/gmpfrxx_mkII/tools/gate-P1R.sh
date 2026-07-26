@@ -345,9 +345,7 @@ final_prefix="$RUNTIME_DIR/final-prefix"
         --enable-double=no \
         --enable-binary80=no \
         --enable-binary128=no \
-        --enable-test=no \
-        --enable-benchmark=no \
-        --disable-examples
+        --enable-test=no
 )
 
 make -C "$autotools_build/external/gmpfrxx_mkII" \
