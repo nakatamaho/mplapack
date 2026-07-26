@@ -1,0 +1,9 @@
+path	reason
+docs/migration/gmpfrxx_mkII/CODEX_PROMPTS.md	Canonical v5.4 prompt records the bootstrap P0/P1 contract.
+docs/migration/gmpfrxx_mkII/LOCK.json	Immutable P0 lock records the bootstrap release identity.
+docs/migration/gmpfrxx_mkII/PRECONDITIONS.md	Accepted P0 provenance records the bootstrap tag.
+docs/migration/gmpfrxx_mkII/REPORT-P1.md	Accepted P1 report records what P1 actually vendored.
+docs/migration/gmpfrxx_mkII/logs/gmpfrxx-cmake-cache.txt	Accepted P0 runtime evidence records the bootstrap project version.
+docs/migration/gmpfrxx_mkII/tools/gate-P1.sh	Accepted P1 gate is immutable historical executable evidence.
+docs/migration/gmpfrxx_mkII/tools/gate-P1R.sh	P1R gate defines the bootstrap-reference detector and historical checks.
+docs/migration/gmpfrxx_mkII/tools/validate_p0.py	Accepted P0 validator pins the historical bootstrap digest.

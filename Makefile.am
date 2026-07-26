@@ -310,7 +310,7 @@ external/openblas/Makefile.in \
 external/openblas/download/OpenBLAS-0.3.33.tar.gz \
 external/openblas/patches/patch-mingw \
     external/gmpfrxx_mkII/Makefile.am \
-    external/gmpfrxx_mkII/download/gmpfrxx_mkII.1.0.1.tar.xz \
+    external/gmpfrxx_mkII/download/gmpfrxx_mkII.1.1.0.tar.xz \
     external/qd/Makefile.am \
 external/qd/Makefile.in \
 external/qd/download/qd-2.3.24.tar.gz \
