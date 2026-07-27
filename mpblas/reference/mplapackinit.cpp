@@ -29,6 +29,8 @@
 #define ___MPLAPACK_MPLAPACK_INIT___
 
 #include <mpblas.h>
+#include <cstdint>
+#include <cstdlib>
 #include <stdio.h>
 
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
@@ -84,6 +86,44 @@ extern "C" GMPXX_MKII_API int gmpxx_mkII_default_context_mode_v1() noexcept {
     return GMPXX_MKII_DEFAULT_CONTEXT_EXTERNAL_PROVIDER;
 }
 
+#endif
+
+#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+namespace {
+
+bool mpfr_exponent_range_is_overridden() noexcept {
+    const char *emin = std::getenv("MPFRXX_DEFAULT_EMIN");
+    const char *emax = std::getenv("MPFRXX_DEFAULT_EMAX");
+    return (emin != nullptr && *emin != 0) || (emax != nullptr && *emax != 0);
+}
+
+} // namespace
+
+void __attribute__((constructor)) mplapack_initialize_mpfr(void);
+void __attribute__((destructor)) mplapack_finalize_mpfr(void);
+void mplapack_initialize_mpfr(void) {
+    const mpfr_prec_t precision = mpfrxx::default_precision_bits();
+    if (mpfr_exponent_range_is_overridden()) {
+        return;
+    }
+
+    constexpr std::uintmax_t exponent_scale = 64;
+    const auto precision_value = static_cast<std::uintmax_t>(precision);
+    const auto maximum_emax = static_cast<std::uintmax_t>(mpfr_get_emax_max());
+    mpfr_exp_t default_emax = mpfr_get_emax_max();
+    if (precision_value <= maximum_emax / exponent_scale) {
+        default_emax = static_cast<mpfr_exp_t>(precision_value * exponent_scale);
+    }
+    mpfr_exp_t default_emin = static_cast<mpfr_exp_t>(3) - default_emax;
+    if (default_emin < mpfr_get_emin_min()) {
+        default_emin = mpfr_get_emin_min();
+    }
+
+    mpfrxx::set_default_exponent_range(default_emin, default_emax);
+}
+void mplapack_finalize_mpfr(void) {
+    // no finalization needed
+}
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_QD___
