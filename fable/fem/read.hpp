@@ -9,6 +9,35 @@
 
 // MPLAPACK backend utilities (printnum/sprintnum, precision, buffer length, etc.)
 #if defined(___MPLAPACK_BUILD_WITH_GMP___)
+#include "mplapack_utils_gmp.h"
+#elif defined(___MPLAPACK_BUILD_WITH_MPFR___)
+#include "mplapack_utils_mpfr.h"
+#elif defined(___MPLAPACK_BUILD_WITH_BINARY128___)
+#include "mplapack_utils_binary128.h"
+#elif defined(___MPLAPACK_BUILD_WITH_BINARY80___)
+#include "mplapack_utils_binary80.h"
+#elif defined(___MPLAPACK_BUILD_WITH_DD___)
+#include "mplapack_utils_dd.h"
+#elif defined(___MPLAPACK_BUILD_WITH_QD___)
+#include "mplapack_utils_qd.h"
+#elif defined(___MPLAPACK_BUILD_WITH_DOUBLE___)
+#include "mplapack_utils_double.h"
+#else
+#error "No MPLAPACK backend macro is defined (___MPLAPACK_BUILD_WITH_*___)."
+#endif
+
+#include <fem/common.hpp>
+#include <fem/format.hpp>
+#include <fem/star.hpp>
+#include <fem/str_arr_ref.hpp>
+#include <fem/utils/misc.hpp>
+#include <fem/utils/string_to_double_fmt.hpp>
+#include <string>
+#include <cstdint>
+#include <cstdlib>
+#include <type_traits>
+#include <mplapack_gmpfrxx_mkII_config.h>
+#if defined(___MPLAPACK_BUILD_WITH_GMP___)
 #if __has_include(<gmpxx_mkII.h>)
 #include <gmpxx_mkII.h>
 using namespace gmpxx;
