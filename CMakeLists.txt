@@ -200,16 +200,12 @@ if(MPLAPACK_ENABLE_GMP)
   mplapack_add_backend(gmp ___MPLAPACK_BUILD_WITH_GMP___)
   target_include_directories(mplapack_gmp PUBLIC
       "$<BUILD_INTERFACE:${MPLAPACK_GMPFRXX_MKII_ROOT}/include>")
-  target_compile_definitions(mplapack_gmp PUBLIC
-      GMPXX_MKII_DEFAULT_CONTEXT_MODE=GMPXX_MKII_DEFAULT_CONTEXT_EXTERNAL_PROVIDER)
   target_link_libraries(mplapack_gmp PUBLIC GMP::GMP)
   list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_gmp)
   if(MPLAPACK_ENABLE_OPT)
     mplapack_add_opt_backend(gmp)
     target_include_directories(mplapack_gmp_opt PUBLIC
         "$<BUILD_INTERFACE:${MPLAPACK_GMPFRXX_MKII_ROOT}/include>")
-    target_compile_definitions(mplapack_gmp_opt PUBLIC
-        GMPXX_MKII_DEFAULT_CONTEXT_MODE=GMPXX_MKII_DEFAULT_CONTEXT_EXTERNAL_PROVIDER)
     target_link_libraries(mplapack_gmp_opt PUBLIC GMP::GMP)
     list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_gmp_opt)
   endif()
@@ -219,16 +215,12 @@ if(MPLAPACK_ENABLE_MPFR)
   mplapack_add_backend(mpfr ___MPLAPACK_BUILD_WITH_MPFR___)
   target_include_directories(mplapack_mpfr PUBLIC
       "$<BUILD_INTERFACE:${MPLAPACK_GMPFRXX_MKII_ROOT}/include>")
-  target_compile_definitions(mplapack_mpfr PUBLIC
-      GMPXX_MKII_DEFAULT_CONTEXT_MODE=GMPXX_MKII_DEFAULT_CONTEXT_EXTERNAL_PROVIDER)
   target_link_libraries(mplapack_mpfr PUBLIC MPC::MPC MPFR::MPFR GMP::GMP)
   list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_mpfr)
   if(MPLAPACK_ENABLE_OPT)
     mplapack_add_opt_backend(mpfr)
     target_include_directories(mplapack_mpfr_opt PUBLIC
         "$<BUILD_INTERFACE:${MPLAPACK_GMPFRXX_MKII_ROOT}/include>")
-    target_compile_definitions(mplapack_mpfr_opt PUBLIC
-        GMPXX_MKII_DEFAULT_CONTEXT_MODE=GMPXX_MKII_DEFAULT_CONTEXT_EXTERNAL_PROVIDER)
     target_link_libraries(mplapack_mpfr_opt PUBLIC MPC::MPC MPFR::MPFR GMP::GMP)
     list(APPEND MPLAPACK_INSTALL_TARGETS mplapack_mpfr_opt)
   endif()

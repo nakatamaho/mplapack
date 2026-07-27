@@ -84,21 +84,6 @@ extern "C" GMPXX_MKII_API int gmpxx_mkII_default_context_mode_v1() noexcept {
     return GMPXX_MKII_DEFAULT_CONTEXT_EXTERNAL_PROVIDER;
 }
 
-void __attribute__((constructor)) mplapack_initialize_gmp(void);
-void __attribute__((destructor)) mplapack_finalize_gmp(void);
-void mplapack_initialize_gmp(void) {
-    // The GMP backend DSO owns the gmpfrxx_mkII default-precision context.
-}
-void mplapack_finalize_gmp(void) {}
-#endif
-
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
-void __attribute__((constructor)) mplapack_initialize_mpfr(void);
-void __attribute__((destructor)) mplapack_finalize_mpfr(void);
-void mplapack_initialize_mpfr(void) {
-    // MPFR/MPC default state is initialized and owned by gmpfrxx_mkII.
-}
-void mplapack_finalize_mpfr(void) {}
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_QD___

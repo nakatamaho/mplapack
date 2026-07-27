@@ -30,6 +30,7 @@
 #define _MPLAPACK_EIG_GMP_H_
 
 #include "mplapack_config.h"
+#include <mplapack_gmpfrxx_mkII_config.h>
 #include <gmpxx_mkII.h>
 using namespace gmpxx;
 

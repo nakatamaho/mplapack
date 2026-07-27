@@ -61,7 +61,8 @@ mplapack_includedir = $(includedir)/mplapack
 mplapack_include_HEADERS = \
     include/blas.h \
     include/lapack.h \
-    include/blaswrapper.h
+    include/blaswrapper.h \
+    include/mplapack_gmpfrxx_mkII_config.h
 
 if ENABLE_DD
 mplapack_include_HEADERS += \
@@ -138,6 +139,7 @@ noinst_HEADERS = \
     include/mplapack.h \
     include/mplapack_generic.h \
     include/mplapack_compare_debug.h \
+    include/mplapack_gmpfrxx_binary_adapters.h \
     include/mplapack_print_double.h \
     include/mplapack_hex_helpers.h \
     include/mplapack_print.h \
