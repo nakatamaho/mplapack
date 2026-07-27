@@ -139,9 +139,9 @@ namespace detail {
     }
 
     // GMP-specific exact power-of-two helper using mpf_mul_2exp/mpf_div_2exp.
-#if defined(__GNU_MPXX_H__) || defined(__GMP_PLUSPLUS__)
+#if defined(__GNU_MPXX_H__) || defined(__GMP_PLUSPLUS__) || defined(GMPXX_MKII_H)
     inline mpf_class int_pow_base2_gmp(arithmetic_int exp) {
-        mpf_class x(1, mpf_get_default_prec());
+        mpf_class x(1, gmpxx::default_mpf_precision_bits());
         if (exp >= 0) {
             mpf_mul_2exp(x.get_mpf_t(), x.get_mpf_t(), static_cast<mp_bitcnt_t>(exp));
         } else {
@@ -181,7 +181,7 @@ namespace detail {
 
         return int_pow_base2_gmp(exp_safmax);
     }
-#endif // defined(__GNU_MPXX_H__) || defined(__GMP_PLUSPLUS__)
+#endif // defined(__GNU_MPXX_H__) || defined(__GMP_PLUSPLUS__) || defined(GMPXX_MKII_H)
 
     // Warn when exponent-range conditions required by the internal
     // Blue scaling guards are violated. For the derived internal

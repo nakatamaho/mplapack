@@ -864,18 +864,18 @@ struct GmpEnvSnapshot {
 
 static inline GmpEnvSnapshot gmp_env_capture() {
     GmpEnvSnapshot s{};
-    s.default_prec = mpf_get_default_prec();
+    s.default_prec = gmpxx::default_mpf_precision_bits();
     return s;
 }
 static void gmp_test_fail(const char *tag, const char *what) {
     // Provide enough context to diagnose precision-dependent failures.
     const REAL probe = 1.0;
     const mp_bitcnt_t real_prec = mpf_get_prec(probe.get_mpf_t());
-    const mp_bitcnt_t def_prec = mpf_get_default_prec();
+    const mp_bitcnt_t def_prec = gmpxx::default_mpf_precision_bits();
 
     printf("*** Testing Rlamch (GMP) failed: %s (%s) ***\n", tag, what);
-    printf("    mpf_default_prec = %lu bits\n", static_cast<unsigned long>(def_prec));
-    printf("    REAL prec        = %lu bits\n", static_cast<unsigned long>(real_prec));
+    printf("    gmpxx default prec = %lu bits\n", static_cast<unsigned long>(def_prec));
+    printf("    REAL prec          = %lu bits\n", static_cast<unsigned long>(real_prec));
     exit(1);
 }
 
@@ -1221,8 +1221,8 @@ static void check_lamch_gmp_values(const char *tag, mp_bitcnt_t prec_bits, bool 
     const REAL gotO = Rlamch_gmp("O");
     const REAL gotZ = Rlamch_gmp("Z");
 
-    // Re-validate: Rlamch must not mutate the GMP global environment.
-    gmp_assert_case(mpf_get_default_prec() == env.default_prec, tag, "Rlamch mutated mpf default precision");
+    // Re-validate: Rlamch must not mutate the gmpfrxx_mkII default context.
+    gmp_assert_case(gmpxx::default_mpf_precision_bits() == env.default_prec, tag, "Rlamch mutated gmpxx default precision");
     // Exact-value checks (model-defined).
     gmp_assert_equal_real(tag, "B", gotB, ex.B);
     gmp_assert_equal_real(tag, "N", gotN, ex.N);
@@ -1331,14 +1331,13 @@ void Rlamch_gmp_test() {
     check_arithmetic_params_gmp("current", prec_bits, print_values);
     check_lamch_gmp_values("current", prec_bits, print_values);
     // Additional precision cases requested: 4096, 128, 64 bits.
-    // Note: mpf_set_default_prec() sets the default for newly created mpf values.
+    // gmpfrxx_mkII default construction follows the external-provider context.
     const mp_bitcnt_t requested_precisions[] = {4096, 128, 64};
 
     for (size_t i = 0; i < (sizeof(requested_precisions) / sizeof(requested_precisions[0])); ++i) {
         dual_printf("[GMP] precision=%ld\n", requested_precisions[i]);
         const mp_bitcnt_t req = requested_precisions[i];
-        const mp_bitcnt_t saved = mpf_get_default_prec();
-        mpf_set_default_prec(req);
+        const gmpxx::default_mpf_precision_guard precision_guard(req);
 
         // Use the effective precision actually used by REAL/mpf objects.
         const REAL probe = 1.0;
@@ -1350,7 +1349,6 @@ void Rlamch_gmp_test() {
         check_arithmetic_params_gmp(tagbuf, eff, print_values);
         check_lamch_gmp_values(tagbuf, eff, print_values);
 
-        mpf_set_default_prec(saved);
     }
 }
 #endif // ___MPLAPACK_BUILD_WITH_GMP___
