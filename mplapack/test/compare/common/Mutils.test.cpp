@@ -92,7 +92,11 @@ void Mutils_test_pi() {
     REAL_REF p_ref, diff, dummy_ref = 0.0;
     REAL p, dummy = 0.0;
 
+#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+    p_ref = std::acos(-1.0);
+#else
     p_ref = pi(dummy_ref);
+#endif
     p = pi(dummy);
 #if defined VERBOSE_TEST
     cout << "p=       ";
