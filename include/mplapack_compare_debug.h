@@ -242,6 +242,12 @@ inline COMPLEX_REF cast2ref(const complex<mplapack_binary128_t> &value) {
 }
 #endif
 
+#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+inline INTEGER_REF castINTEGER_ref(REAL_REF value) { return static_cast<INTEGER_REF>(value); }
+#else
+inline INTEGER_REF castINTEGER_ref(const REAL_REF &value) { return value.get_integer<INTEGER_REF>(); }
+#endif
+
 // Generate in the active backend, then convert once to the reference type.
 void set_random_number(REAL_REF &reference_value, REAL &backend_value);
 void set_random_number(COMPLEX_REF &reference_value, COMPLEX &backend_value);

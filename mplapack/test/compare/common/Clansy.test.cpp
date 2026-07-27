@@ -70,7 +70,7 @@ void Clansy_test2(const char *norm, const char *uplo) {
 #endif
                 Clansy_ret = Clansy(norm, uplo, n, A, lda, work);
 
-                REAL_REF diff = abs(zlansy_ret - Clansy_ret);
+                REAL_REF diff = abs(zlansy_ret - cast2ref(Clansy_ret));
 
                 if (diff > EPSILON) {
                     printf("n:%d lda %d, uplo %s, norm %s\n", n, lda, uplo, norm);

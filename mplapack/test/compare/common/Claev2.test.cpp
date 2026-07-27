@@ -46,7 +46,7 @@ REAL_REF maxdiff = 0.0;
 
 void errorcheck(REAL_REF rt1_ref, REAL_REF rt2_ref, REAL_REF cs1_ref, COMPLEX_REF sn1_ref, REAL rt1, REAL rt2, REAL cs1, COMPLEX sn1) {
     REAL_REF diff;
-    diff = abs(rt1_ref - rt1);
+    diff = abs(rt1_ref - cast2ref(rt1));
 #if defined VERBOSE_TEST
     printf("diff1    ");
     printnum(diff);
@@ -59,7 +59,7 @@ void errorcheck(REAL_REF rt1_ref, REAL_REF rt2_ref, REAL_REF cs1_ref, COMPLEX_RE
     if (maxdiff < diff)
         maxdiff = diff;
 
-    diff = abs(rt2_ref - rt2);
+    diff = abs(rt2_ref - cast2ref(rt2));
 #if defined VERBOSE_TEST
     printf("diff2    ");
     printnum(diff);
@@ -72,7 +72,7 @@ void errorcheck(REAL_REF rt1_ref, REAL_REF rt2_ref, REAL_REF cs1_ref, COMPLEX_RE
     if (maxdiff < diff)
         maxdiff = diff;
 
-    diff = abs(cs1_ref - cs1);
+    diff = abs(cs1_ref - cast2ref(cs1));
 #if defined VERBOSE_TEST
     printf("diff3    ");
     printnum(diff);
@@ -85,7 +85,7 @@ void errorcheck(REAL_REF rt1_ref, REAL_REF rt2_ref, REAL_REF cs1_ref, COMPLEX_RE
     if (maxdiff < diff)
         maxdiff = diff;
 
-    diff = abs(sn1_ref - sn1);
+    diff = abs(sn1_ref - cast2ref(sn1));
 #if defined VERBOSE_TEST
     printf("diff4    ");
     printnum(diff);

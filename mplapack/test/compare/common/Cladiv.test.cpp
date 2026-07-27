@@ -79,7 +79,7 @@ void Cladiv_test() {
         printnum(ret);
         cout << endl;
 #endif
-        diff = abs(ret_ref - ret);
+        diff = abs(ret_ref - cast2ref(ret));
         if (diff > EPSILON) {
             errorflag = TRUE;
             printf("error1: ");

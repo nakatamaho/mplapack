@@ -103,7 +103,7 @@ void Rpocon_test2(const char *uplo) {
                     printf("info differ! %d, %d\n", (int)info_ref, (int)info);
                     errorflag = TRUE;
                 }
-                diff = (rcond_ref - rcond);
+                diff = (rcond_ref - cast2ref(rcond));
 #if defined VERBOSE_TEST
                 printf("reciprocal to cond num:");
                 printnum(rcond_ref);

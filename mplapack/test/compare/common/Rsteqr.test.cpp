@@ -180,7 +180,7 @@ void Rsteqr_test2(const char *compz) {
                 printf("\n");
 #endif
                 if (Mlsame(compz, "I")) {
-                    diff = check_eigvec(Dorg, D, Eorg, Z, (int)n, (int)ldz);
+                    diff = cast2ref(check_eigvec(Dorg, D, Eorg, Z, (int)n, (int)ldz));
                 }
                 if (diff > EPSILON) {
                     printf("error: eigvec");

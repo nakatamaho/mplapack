@@ -70,7 +70,7 @@ void Rlanst_test2(const char *norm) {
 #endif
             Rlanst_ret = Rlanst(norm, n, d, e);
 
-            diff = abs(Rlanst_ret - dlanst_ret);
+            diff = abs(cast2ref(Rlanst_ret) - dlanst_ret);
             if (diff > EPSILON) {
                 printf("error: ");
                 printnum(diff);

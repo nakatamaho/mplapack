@@ -75,7 +75,7 @@ void Rlange_test2(const char *norm) {
 #endif
                     Rlange_ret = Rlange(norm, m, n, A, lda, work);
 
-                    diff = abs(Rlange_ref_ret - Rlange_ret);
+                    diff = abs(Rlange_ref_ret - cast2ref(Rlange_ret));
                     if (diff > EPSILON) {
                         errorflag = TRUE;
                         printf("Error\n");

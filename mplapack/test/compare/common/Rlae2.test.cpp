@@ -63,7 +63,7 @@ void Rlae2_test() {
 #endif
         Rlae2(a, b, c, rt1, rt2);
 
-        diff = abs(rt1_ref - rt1);
+        diff = abs(rt1_ref - cast2ref(rt1));
 #if defined VERBOSE_TEST
         printf("diff1    ");
         printnum(diff);
@@ -74,7 +74,7 @@ void Rlae2_test() {
         }
         if (maxdiff < diff)
             maxdiff = diff;
-        diff = abs(rt2_ref - rt2);
+        diff = abs(rt2_ref - cast2ref(rt2));
 #if defined VERBOSE_TEST
         printf("diff1    ");
         printnum(diff);
@@ -101,7 +101,7 @@ void Rlae2_test() {
 #endif
         Rlae2(a, b, c, rt1, rt2);
 
-        diff = abs(rt1_ref - rt1);
+        diff = abs(rt1_ref - cast2ref(rt1));
 #if defined VERBOSE_TEST
         printf("diff1    ");
         printnum(diff);
@@ -113,7 +113,7 @@ void Rlae2_test() {
         if (maxdiff < diff)
             maxdiff = diff;
 
-        diff = abs(rt2_ref - rt2);
+        diff = abs(rt2_ref - cast2ref(rt2));
 #if defined VERBOSE_TEST
         printf("diff1    ");
         printnum(diff);
@@ -140,7 +140,7 @@ void Rlae2_test() {
 #endif
         Rlae2(a, b, c, rt1, rt2);
 
-        diff = abs(rt1_ref - rt1);
+        diff = abs(rt1_ref - cast2ref(rt1));
 #if defined VERBOSE_TEST
         printf("diff1    ");
         printnum(diff);
@@ -152,7 +152,7 @@ void Rlae2_test() {
         if (maxdiff < diff)
             maxdiff = diff;
 
-        diff = abs(rt2_ref - rt2);
+        diff = abs(rt2_ref - cast2ref(rt2));
 #if defined VERBOSE_TEST
         printf("diff1    ");
         printnum(diff);

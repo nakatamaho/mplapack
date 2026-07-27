@@ -72,7 +72,7 @@ void Clarfg_test() {
 #endif
                 Clarfg(n, alpha, x, incx, tau);
 
-                diff = abs(alpha_ref - alpha);
+                diff = abs(alpha_ref - cast2ref(alpha));
                 if (diff > EPSILON) {
                     printf("error alpha: ");
                     printnum(diff);
@@ -86,7 +86,7 @@ void Clarfg_test() {
                 printnum(maxdiff);
                 printf("\n");
 #endif
-                diff = abs(tau_ref - tau);
+                diff = abs(tau_ref - cast2ref(tau));
                 if (diff > EPSILON) {
                     printf("error tau:   ");
                     printnum(diff);

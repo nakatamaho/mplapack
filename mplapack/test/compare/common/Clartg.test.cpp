@@ -60,7 +60,7 @@ void Clartg_test() {
 #endif
         Clartg(f, g, cs, sn, r);
 
-        diff = abs(cs_ref - cs);
+        diff = abs(cs_ref - cast2ref(cs));
         if (diff > EPSILON) {
             errorflag = TRUE;
             printf("Error1\n");
@@ -72,7 +72,7 @@ void Clartg_test() {
         printnum(maxdiff);
         printf("\n");
 #endif
-        diff = abs(sn_ref - sn);
+        diff = abs(sn_ref - cast2ref(sn));
         if (diff > EPSILON) {
             errorflag = TRUE;
             printf("Error1\n");
@@ -84,7 +84,7 @@ void Clartg_test() {
         printnum(maxdiff);
         printf("\n");
 #endif
-        diff = abs(r_ref - r);
+        diff = abs(r_ref - cast2ref(r));
         if (diff > EPSILON) {
             errorflag = TRUE;
             printf("Error1\n");
@@ -106,7 +106,7 @@ void Clartg_test() {
 #endif
         Clartg(f, g, cs, sn, r);
 
-        diff = abs(cs_ref - cs);
+        diff = abs(cs_ref - cast2ref(cs));
         if (diff > EPSILON) {
             errorflag = TRUE;
             printf("Error1\n");
@@ -118,7 +118,7 @@ void Clartg_test() {
         printnum(maxdiff);
         printf("\n");
 #endif
-        diff = abs(sn_ref - sn);
+        diff = abs(sn_ref - cast2ref(sn));
         if (diff > EPSILON) {
             errorflag = TRUE;
             printf("Error1\n");
@@ -130,7 +130,7 @@ void Clartg_test() {
         printnum(maxdiff);
         printf("\n");
 #endif
-        diff = abs(r_ref - r);
+        diff = abs(r_ref - cast2ref(r));
         if (diff > EPSILON) {
             errorflag = TRUE;
             printf("Error1\n");
@@ -152,7 +152,7 @@ void Clartg_test() {
 #endif
         Clartg(f, g, cs, sn, r);
 
-        diff = abs(cs_ref - cs);
+        diff = abs(cs_ref - cast2ref(cs));
         if (diff > EPSILON) {
             errorflag = TRUE;
             printf("Error1\n");
@@ -164,7 +164,7 @@ void Clartg_test() {
         printnum(maxdiff);
         printf("\n");
 #endif
-        diff = abs(sn_ref - sn);
+        diff = abs(sn_ref - cast2ref(sn));
         if (diff > EPSILON) {
             errorflag = TRUE;
             printf("Error1\n");
@@ -176,7 +176,7 @@ void Clartg_test() {
         printnum(maxdiff);
         printf("\n");
 #endif
-        diff = abs(r_ref - r);
+        diff = abs(r_ref - cast2ref(r));
         if (diff > EPSILON) {
             errorflag = TRUE;
             printf("Error1\n");

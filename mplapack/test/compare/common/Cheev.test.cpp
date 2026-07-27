@@ -194,7 +194,7 @@ void Cheev_test2(const char *jobz, const char *uplo) {
                     errorflag = TRUE;
                 }
                 if (Mlsame(jobz, "V")) {
-                    diff = check_eigvec<REAL, COMPLEX>(Aorg, A, w, (int)n, (int)lda, uplo);
+                    diff = cast2ref(check_eigvec<REAL, COMPLEX>(Aorg, A, w, (int)n, (int)lda, uplo));
                 }
                 if (diff > EPSILON) {
                     printf("error in eigvec1: ");

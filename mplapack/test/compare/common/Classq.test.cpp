@@ -70,7 +70,7 @@ void Classq_test() {
 #endif
                 Classq(n, x, incx, scale, sumsq);
 
-                diff = abs(scale_ref - scale);
+                diff = abs(scale_ref - cast2ref(scale));
                 if (diff > EPSILON) {
                     printf("error: ");
                     printnum(diff);
@@ -84,7 +84,7 @@ void Classq_test() {
                 printnum(maxdiff);
                 printf("\n");
 #endif
-                diff = abs(sumsq_ref - sumsq);
+                diff = abs(sumsq_ref - cast2ref(sumsq));
                 if (diff > EPSILON) {
                     printf("error: ");
                     printnum(diff);

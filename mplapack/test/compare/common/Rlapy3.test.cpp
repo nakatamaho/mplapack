@@ -84,7 +84,7 @@ void Rlapy3_test() {
         printnum(dlapy3_ret);
         cout << endl;
 #endif
-        diff = abs(dlapy3_ret - Rlapy3_ret);
+        diff = abs(dlapy3_ret - cast2ref(Rlapy3_ret));
         if (diff > EPSILON) {
             errorflag = TRUE;
             printf("Error1\n");

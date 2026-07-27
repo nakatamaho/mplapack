@@ -124,7 +124,7 @@ void Rgeequ_test(void) {
                     printnum(rowcnd_ref);
                     printf("\n");
 #endif
-                    diff = abs(rowcnd_ref - rowcnd);
+                    diff = abs(rowcnd_ref - cast2ref(rowcnd));
                     if (diff > EPSILON) {
                         printf("Diff rowcnd: n:%d m:%d lda %d\n", n, m, lda);
                         errorflag = TRUE;
@@ -139,7 +139,7 @@ void Rgeequ_test(void) {
                     printnum(colcnd_ref);
                     printf("\n");
 #endif
-                    diff = abs(colcnd_ref - colcnd);
+                    diff = abs(colcnd_ref - cast2ref(colcnd));
                     if (diff > EPSILON) {
                         printf("Diff colcnd: n:%d m:%d lda %d\n", n, m, lda);
                         errorflag = TRUE;
@@ -151,7 +151,7 @@ void Rgeequ_test(void) {
                     printnum(maxdiff);
                     printf("\n");
 #endif
-                    diff = abs(amax_ref - amax);
+                    diff = abs(amax_ref - cast2ref(amax));
                     if (diff > EPSILON) {
                         printf("Diff amax: n:%d m:%d lda %d\n", n, m, lda);
                         printf("amax_ref = ");

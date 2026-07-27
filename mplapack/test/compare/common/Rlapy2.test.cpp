@@ -77,7 +77,7 @@ void Rlapy2_test() {
         printnum(dlapy2_ret);
         cout << endl;
 #endif
-        diff = abs(dlapy2_ret - Rlapy2_ret);
+        diff = abs(dlapy2_ret - cast2ref(Rlapy2_ret));
         if (diff > EPSILON) {
             errorflag = TRUE;
         }

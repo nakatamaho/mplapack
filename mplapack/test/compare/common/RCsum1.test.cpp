@@ -68,7 +68,7 @@ void RCsum1_test() {
 #endif
                 rtemp = RCsum1(n, x, incx);
 
-                REAL_REF diff = dtemp - rtemp;
+                REAL_REF diff = dtemp - cast2ref(rtemp);
                 if (diff > EPSILON) {
                     printf("error: ");
                     printnum(diff);

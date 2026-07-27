@@ -86,7 +86,7 @@ void Rorgqr_test() {
                         Rorgqr(m, n, k, A_ref, lda, tau_ref, work_ref, lwork, info_ref);
 #endif
                         Rorgqr(m, n, k, A, lda, tau, work, lwork, info);
-                        worksize_ref = (INTEGER_REF)work_ref[0];
+                        worksize_ref = castINTEGER_ref(work_ref[0]);
                         worksize = (INTEGER)cast2double(work[0]);
 #if defined VERBOSE_TEST
                         printf("optimized worksize by dorgqr %d : by Rorgqr %d.\n", (int)worksize_ref, (int)worksize);

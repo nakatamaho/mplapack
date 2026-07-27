@@ -70,7 +70,7 @@ void Clanht_test2(const char *norm) {
 #endif
             Clanht_ret = Clanht(norm, n, d, e);
 
-            diff = abs(Clanht_ret - zlanht_ret);
+            diff = abs(cast2ref(Clanht_ret) - zlanht_ret);
             if (diff > EPSILON) {
                 printf("error: ");
                 printnum(diff);

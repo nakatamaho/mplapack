@@ -86,7 +86,7 @@ void Cungqr_test() {
                         Cungqr(m, n, k, A_ref, lda, tau_ref, work_ref, lwork, info_ref);
 #endif
                         Cungqr(m, n, k, A, lda, tau, work, lwork, info);
-                        worksize_ref = (INTEGER_REF)work_ref[0].real();
+                        worksize_ref = castINTEGER_ref(work_ref[0].real());
                         worksize = (INTEGER)cast2double(work[0].real());
 #if defined VERBOSE_TEST
                         printf("optimized worksize by dorgqr %d : by Cungqr %d.\n", (int)worksize_ref, (int)worksize);

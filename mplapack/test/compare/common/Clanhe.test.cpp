@@ -70,7 +70,7 @@ void Clanhe_test2(const char *norm, const char *uplo) {
 #endif
                 Clanhe_ret = Clanhe(norm, uplo, n, A, lda, work);
 
-                REAL_REF diff = abs(zlanhe_ret - Clanhe_ret);
+                REAL_REF diff = abs(zlanhe_ret - cast2ref(Clanhe_ret));
 
                 if (diff > EPSILON) {
                     printf("n:%d lda %d, uplo %s, norm %s\n", n, lda, uplo, norm);

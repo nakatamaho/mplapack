@@ -63,23 +63,23 @@ void Claesy_test() {
 #endif
         Claesy(a, b, c, rt1, rt2, evscal, cs1, sn1);
 
-        if (abs(rt1_ref - rt1) > EPSILON) {
+        if (abs(rt1_ref - cast2ref(rt1)) > EPSILON) {
             errorflag = TRUE;
             printf("Error1\n");
         }
-        if (abs(rt2_ref - rt2) > EPSILON) {
+        if (abs(rt2_ref - cast2ref(rt2)) > EPSILON) {
             errorflag = TRUE;
             printf("Error1\n");
         }
-        if (abs(cs1_ref - cs1) > EPSILON) {
+        if (abs(cs1_ref - cast2ref(cs1)) > EPSILON) {
             errorflag = TRUE;
             printf("Error1\n");
         }
-        if (abs(sn1_ref - sn1) > EPSILON) {
+        if (abs(sn1_ref - cast2ref(sn1)) > EPSILON) {
             errorflag = TRUE;
             printf("Error1\n");
         }
-        if (abs(evscal_ref - evscal) > EPSILON) {
+        if (abs(evscal_ref - cast2ref(evscal)) > EPSILON) {
             errorflag = TRUE;
             printf("Error1\n");
         }
@@ -99,23 +99,23 @@ void Claesy_test() {
 #endif
         Claesy(a, b, c, rt1, rt2, evscal, cs1, sn1);
 
-        if (abs(rt1_ref - rt1) > EPSILON) {
+        if (abs(rt1_ref - cast2ref(rt1)) > EPSILON) {
             errorflag = TRUE;
             printf("Error2\n");
         }
-        if (abs(rt2_ref - rt2) > EPSILON) {
+        if (abs(rt2_ref - cast2ref(rt2)) > EPSILON) {
             errorflag = TRUE;
             printf("Error2\n");
         }
-        if (abs(cs1_ref - cs1) > EPSILON) {
+        if (abs(cs1_ref - cast2ref(cs1)) > EPSILON) {
             errorflag = TRUE;
             printf("Error2\n");
         }
-        if (abs(sn1_ref - sn1) > EPSILON) {
+        if (abs(sn1_ref - cast2ref(sn1)) > EPSILON) {
             errorflag = TRUE;
             printf("Error2\n");
         }
-        if (abs(evscal_ref - evscal) > EPSILON) {
+        if (abs(evscal_ref - cast2ref(evscal)) > EPSILON) {
             errorflag = TRUE;
             printf("Error2\n");
         }
@@ -134,23 +134,23 @@ void Claesy_test() {
 #endif
         Claesy(a, b, c, rt1, rt2, evscal, cs1, sn1);
 
-        if (abs(rt1_ref - rt1) > EPSILON) {
+        if (abs(rt1_ref - cast2ref(rt1)) > EPSILON) {
             errorflag = TRUE;
             printf("Error3\n");
         }
-        if (abs(rt2_ref - rt2) > EPSILON) {
+        if (abs(rt2_ref - cast2ref(rt2)) > EPSILON) {
             errorflag = TRUE;
             printf("Error3\n");
         }
-        if (abs(cs1_ref - cs1) > EPSILON) {
+        if (abs(cs1_ref - cast2ref(cs1)) > EPSILON) {
             errorflag = TRUE;
             printf("Error3\n");
         }
-        if (abs(sn1_ref - sn1) > EPSILON) {
+        if (abs(sn1_ref - cast2ref(sn1)) > EPSILON) {
             errorflag = TRUE;
             printf("Error3\n");
         }
-        if (abs(evscal_ref - evscal) > EPSILON) {
+        if (abs(evscal_ref - cast2ref(evscal)) > EPSILON) {
             errorflag = TRUE;
             printf("Error3\n");
         }
@@ -168,23 +168,23 @@ void Claesy_test() {
 #endif
         Claesy(a, b, c, rt1, rt2, evscal, cs1, sn1);
 
-        if (abs(rt1_ref - rt1) > EPSILON) {
+        if (abs(rt1_ref - cast2ref(rt1)) > EPSILON) {
             errorflag = TRUE;
             printf("Error4\n");
         }
-        if (abs(rt2_ref - rt2) > EPSILON) {
+        if (abs(rt2_ref - cast2ref(rt2)) > EPSILON) {
             errorflag = TRUE;
             printf("Error4\n");
         }
-        if (abs(cs1_ref - cs1) > EPSILON) {
+        if (abs(cs1_ref - cast2ref(cs1)) > EPSILON) {
             errorflag = TRUE;
             printf("Error4\n");
         }
-        if (abs(sn1_ref - sn1) > EPSILON) {
+        if (abs(sn1_ref - cast2ref(sn1)) > EPSILON) {
             errorflag = TRUE;
             printf("Error4\n");
         }
-        if (abs(evscal_ref - evscal) > EPSILON) {
+        if (abs(evscal_ref - cast2ref(evscal)) > EPSILON) {
             errorflag = TRUE;
             printf("Error4\n");
         }
@@ -201,23 +201,23 @@ void Claesy_test() {
 #endif
         Claesy(a, b, c, rt1, rt2, evscal, cs1, sn1);
 
-        if (abs(rt1_ref - rt1) > EPSILON) {
+        if (abs(rt1_ref - cast2ref(rt1)) > EPSILON) {
             errorflag = TRUE;
             printf("Error5\n");
         }
-        if (abs(rt2_ref - rt2) > EPSILON) {
+        if (abs(rt2_ref - cast2ref(rt2)) > EPSILON) {
             errorflag = TRUE;
             printf("Error5\n");
         }
-        if (abs(cs1_ref - cs1) > EPSILON) {
+        if (abs(cs1_ref - cast2ref(cs1)) > EPSILON) {
             errorflag = TRUE;
             printf("Error5\n");
         }
-        if (abs(sn1_ref - sn1) > EPSILON) {
+        if (abs(sn1_ref - cast2ref(sn1)) > EPSILON) {
             errorflag = TRUE;
             printf("Error5\n");
         }
-        if (abs(evscal_ref - evscal) > EPSILON) {
+        if (abs(evscal_ref - cast2ref(evscal)) > EPSILON) {
             errorflag = TRUE;
             printf("Error5\n");
         }
@@ -236,23 +236,23 @@ void Claesy_test() {
 #endif
         Claesy(a, b, c, rt1, rt2, evscal, cs1, sn1);
 
-        if (abs(rt1_ref - rt1) > EPSILON) {
+        if (abs(rt1_ref - cast2ref(rt1)) > EPSILON) {
             errorflag = TRUE;
             printf("Error6\n");
         }
-        if (abs(rt2_ref - rt2) > EPSILON) {
+        if (abs(rt2_ref - cast2ref(rt2)) > EPSILON) {
             errorflag = TRUE;
             printf("Error6\n");
         }
-        if (abs(cs1_ref - cs1) > EPSILON) {
+        if (abs(cs1_ref - cast2ref(cs1)) > EPSILON) {
             errorflag = TRUE;
             printf("Error6\n");
         }
-        if (abs(sn1_ref - sn1) > EPSILON) {
+        if (abs(sn1_ref - cast2ref(sn1)) > EPSILON) {
             errorflag = TRUE;
             printf("Error6\n");
         }
-        if (abs(evscal_ref - evscal) > EPSILON) {
+        if (abs(evscal_ref - cast2ref(evscal)) > EPSILON) {
             errorflag = TRUE;
             printf("Error6\n");
         }
@@ -276,23 +276,23 @@ void Claesy_test() {
 #endif
     Claesy(a, b, c, rt1, rt2, evscal, cs1, sn1);
 
-    if (abs(rt1_ref - rt1) > EPSILON) {
+    if (abs(rt1_ref - cast2ref(rt1)) > EPSILON) {
         errorflag = TRUE;
         printf("Error7\n");
     }
-    if (abs(rt2_ref - rt2) > EPSILON) {
+    if (abs(rt2_ref - cast2ref(rt2)) > EPSILON) {
         errorflag = TRUE;
         printf("Error7\n");
     }
-    if (abs(cs1_ref - cs1) > EPSILON) {
+    if (abs(cs1_ref - cast2ref(cs1)) > EPSILON) {
         errorflag = TRUE;
         printf("Error7\n");
     }
-    if (abs(sn1_ref - sn1) > EPSILON) {
+    if (abs(sn1_ref - cast2ref(sn1)) > EPSILON) {
         errorflag = TRUE;
         printf("Error7\n");
     }
-    if (abs(evscal_ref - evscal) > EPSILON) {
+    if (abs(evscal_ref - cast2ref(evscal)) > EPSILON) {
         errorflag = TRUE;
         printf("Error8\n");
     }

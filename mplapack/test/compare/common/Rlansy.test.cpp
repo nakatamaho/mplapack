@@ -70,7 +70,7 @@ void Rlansy_test2(const char *norm, const char *uplo) {
 #endif
                 Rlansy_ret = Rlansy(norm, uplo, n, A, lda, work);
 
-                REAL_REF diff = abs(dlansy_ret - Rlansy_ret);
+                REAL_REF diff = abs(dlansy_ret - cast2ref(Rlansy_ret));
 
                 if (diff > EPSILON) {
                     printf("n:%d lda %d, uplo %s, norm %s\n", n, lda, uplo, norm);
