@@ -82,7 +82,7 @@ inline T rlamch_dispatch_impl(const char *cmach) {
 // ---------------------------------------------------------------------------
 #if defined(___MPLAPACK_BUILD_WITH_MPFR___)
 REAL Rlamch_mpfr(const char *cmach) {
-    return rlamch_dispatch_impl<mpreal>(cmach);
+    return rlamch_dispatch_impl<mpfr_class>(cmach);
 }
 #endif
 

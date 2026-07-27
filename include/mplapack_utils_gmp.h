@@ -31,6 +31,7 @@
 #ifndef _MUTILS_GMP_H_
 #define _MUTILS_GMP_H_
 
+#include <mplapack_gmpfrxx_mkII_config.h>
 #include <gmpxx_mkII.h>
 using namespace gmpxx;
 
@@ -200,11 +201,6 @@ inline void sprinthex_gmp_fixed(char *buf, size_t n, const mpf_class &x) { sprin
 #endif
 
 
-inline mpf_class sqrt(mpf_class a) {
-    mpf_class r;
-    mpf_sqrt(r.get_mpf_t(), a.get_mpf_t());
-    return r;
-}
 
 inline mpf_class pow2(mpf_class a) {
     mpf_class mtmp = a * a;
@@ -249,18 +245,14 @@ inline mpf_class castREAL_gmp(mplapackint n) {
 }
 
 inline mplapackint castINTEGER_gmp(mpf_class a) {
-    mplapackint i;
-    i = mpf_get_si(a.get_mpf_t());
-    return i;
+    return a.get_integer<mplapackint>();
 }
 
 inline mplapackint nint(mpf_class a) {
-    mplapackint i;
     mpf_class tmp;
     a = a + 0.5;
     mpf_floor(tmp.get_mpf_t(), a.get_mpf_t());
-    i = mpf_get_si(tmp.get_mpf_t());
-    return i;
+    return tmp.get_integer<mplapackint>();
 }
 
 inline double cast2double(mpf_class a) { return a.get_d(); }
@@ -454,8 +446,8 @@ constexpr charbuf3 CHAR3(const char *a, const char *b, const char *c) { return c
 #ifndef MPLAPACK_ICEIL_MPF_CLASS_DEFINED
 #define MPLAPACK_ICEIL_MPF_CLASS_DEFINED
 inline mplapackint iceil(const mpf_class &x) {
-    // mpf_class -> long is trunc toward zero (via mpf_get_si).
-    mplapackint t = static_cast<mplapackint>(x.get_si());
+    // mpf_class -> integer truncates toward zero.
+    mplapackint t = x.get_integer<mplapackint>();
     mpf_class tt = t;
     if (x > tt) {
         ++t;

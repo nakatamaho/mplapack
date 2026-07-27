@@ -31,6 +31,7 @@
 #ifndef _MUTILS_MPFR_H_
 #define _MUTILS_MPFR_H_
 
+#include <mplapack_gmpfrxx_mkII_config.h>
 #include <mpfrxx_mkII.h>
 #include <mpcxx_mkII.h>
 using namespace mpfrxx;
@@ -94,7 +95,7 @@ inline void sprintnum_short(char *buf, mpc_class ctmp) {
     return;
 }
 
-inline void sprinthex_mpfr_fixed_raw(char *buf, size_t n, mpfr_ptr x) {
+inline void sprinthex_mpfr_fixed_raw(char *buf, size_t n, mpfr_srcptr x) {
     if (n == 0) {
         return;
     }
@@ -213,8 +214,7 @@ inline void sprinthex_mpfr_fixed_raw(char *buf, size_t n, mpfr_ptr x) {
 }
 
 inline void sprinthex_mpfr_fixed(char *buf, size_t n, const mpfrxx::mpfr_class &x) {
-    mpfr_ptr px = const_cast<mpfrxx::mpfr_class &>(x);
-    sprinthex_mpfr_fixed_raw(buf, n, px);
+    sprinthex_mpfr_fixed_raw(buf, n, x.mpfr_data());
 }
 
 #endif
@@ -258,18 +258,12 @@ inline mpfr_class sign(mpfr_class a, mpfr_class b) {
 }
 
 inline mplapackint nint(mpfr_class a) {
-    mplapackint i;
-    mpfr_class tmp;
     a = a + 0.5;
-    tmp = floorl(a);
-    i = tmp; // cast to long
-    return i;
+    return floor(a).get_integer<mplapackint>();
 }
 
 inline mplapackint castINTEGER_mpfr(mpfr_class a) {
-    mplapackint i;
-    i = a;
-    return i;
+    return trunc(a).get_integer<mplapackint>();
 }
 
 inline mpfr_class castREAL_mpfr(mplapackint a) {
@@ -277,9 +271,11 @@ inline mpfr_class castREAL_mpfr(mplapackint a) {
     return i;
 }
 
+inline double cast2double(mpfr_class a) { return a.get_d(); }
+
 inline mpfr_class pi(mpfr_class dummy) {
     mpfr_class _PI;
-    _PI = const_pi(mpfrxx::mpfr_class::default_prec);
+    _PI = const_pi(mpfrxx::mpfr_class::default_precision());
     return _PI;
 }
 
@@ -339,16 +335,18 @@ inline mpfr_class max(const mpfr_class &a, const mpfr_class &b, const mpfr_class
     return (r < c) ? c : r;
 }
 
-// 4+ args: fold expression, mpfr_class only.
-template <typename... Args, typename = std::enable_if_t<(std::is_same_v<mpfr_class, std::decay_t<Args>> && ...)>> inline mpfr_class min(const mpfr_class &a, const mpfr_class &b, const mpfr_class &c, const Args &...rest) {
+// 4+ args: accept mpfr_class values and mkII expression nodes.
+template <typename... Args, typename = std::enable_if_t<(gmpfrxx_mkII::detail::is_mpfr_expression_operand_v<Args> && ...)>> inline mpfr_class min(const mpfr_class &a, const mpfr_class &b, const mpfr_class &c, const Args &...rest) {
     mpfr_class r = min(a, b, c);
-    ((r = (rest < r) ? rest : r), ...);
+    auto update = [&](const auto &value) { mpfr_class candidate(value); if (candidate < r) r = candidate; };
+    (update(rest), ...);
     return r;
 }
 
-template <typename... Args, typename = std::enable_if_t<(std::is_same_v<mpfr_class, std::decay_t<Args>> && ...)>> inline mpfr_class max(const mpfr_class &a, const mpfr_class &b, const mpfr_class &c, const Args &...rest) {
+template <typename... Args, typename = std::enable_if_t<(gmpfrxx_mkII::detail::is_mpfr_expression_operand_v<Args> && ...)>> inline mpfr_class max(const mpfr_class &a, const mpfr_class &b, const mpfr_class &c, const Args &...rest) {
     mpfr_class r = max(a, b, c);
-    ((r = (r < rest) ? rest : r), ...);
+    auto update = [&](const auto &value) { mpfr_class candidate(value); if (r < candidate) r = candidate; };
+    (update(rest), ...);
     return r;
 }
 
@@ -395,12 +393,7 @@ constexpr charbuf3 CHAR3(const char *a, const char *b, const char *c) { return c
 #ifndef MPLAPACK_ICEIL_MPREAL_DEFINED
 #define MPLAPACK_ICEIL_MPREAL_DEFINED
 inline mplapackint iceil(const mpfr_class &x) {
-    // mpfr_class -> integer cast truncates toward zero.
-    mplapackint t = static_cast<mplapackint>(x);
-    if (x > mpfr_class(t)) {
-        ++t;
-    }
-    return t;
+    return ceil(x).get_integer<mplapackint>();
 }
 #endif // MPLAPACK_ICEIL_MPREAL_DEFINED
 

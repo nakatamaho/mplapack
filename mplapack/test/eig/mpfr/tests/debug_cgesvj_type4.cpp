@@ -66,25 +66,20 @@ void apply_random_left_householder(int M, int N, mpc_class *A, int LDA,
                                     unsigned long seed) {
     mpfr_class one = 1.0, zero = 0.0, two = 2.0;
     mpc_class *v = new mpc_class[M];
-    gmp_randstate_t state;
-    gmp_randinit_default(state);
-    gmp_randseed_ui(state, seed);
+    mpfrxx::mpfr_randclass state(gmp_randinit_default);
+    state.seed(seed);
 
     // Generate random vector
     mpfr_class norm_sq = zero;
     for (int i = 0; i < M; i++) {
-        mpfr_t re_t, im_t;
-        mpfr_init2(re_t, mpfr_get_default_prec());
-        mpfr_init2(im_t, mpfr_get_default_prec());
-        mpfr_urandomb(re_t, state);
-        mpfr_urandomb(im_t, state);
-        mpfr_class re_val(re_t), im_val(im_t);
+        mpfr_class re_val;
+        mpfr_class im_val;
+        re_val = state.get_fr();
+        im_val = state.get_fr();
         re_val = re_val - 0.5;
         im_val = im_val - 0.5;
         v[i] = mpc_class(re_val, im_val);
         norm_sq += re_val * re_val + im_val * im_val;
-        mpfr_clear(re_t);
-        mpfr_clear(im_t);
     }
 
     // Normalize v
@@ -111,7 +106,6 @@ void apply_random_left_householder(int M, int N, mpc_class *A, int LDA,
 
     delete[] v;
     delete[] w;
-    gmp_randclear(state);
 }
 
 // Apply a random Householder reflection from right: A <- A * (I - 2 v v^H)
@@ -119,25 +113,20 @@ void apply_random_right_householder(int M, int N, mpc_class *A, int LDA,
                                      unsigned long seed) {
     mpfr_class one = 1.0, zero = 0.0, two = 2.0;
     mpc_class *v = new mpc_class[N];
-    gmp_randstate_t state;
-    gmp_randinit_default(state);
-    gmp_randseed_ui(state, seed);
+    mpfrxx::mpfr_randclass state(gmp_randinit_default);
+    state.seed(seed);
 
     // Generate random vector
     mpfr_class norm_sq = zero;
     for (int i = 0; i < N; i++) {
-        mpfr_t re_t, im_t;
-        mpfr_init2(re_t, mpfr_get_default_prec());
-        mpfr_init2(im_t, mpfr_get_default_prec());
-        mpfr_urandomb(re_t, state);
-        mpfr_urandomb(im_t, state);
-        mpfr_class re_val(re_t), im_val(im_t);
+        mpfr_class re_val;
+        mpfr_class im_val;
+        re_val = state.get_fr();
+        im_val = state.get_fr();
         re_val = re_val - 0.5;
         im_val = im_val - 0.5;
         v[i] = mpc_class(re_val, im_val);
         norm_sq += re_val * re_val + im_val * im_val;
-        mpfr_clear(re_t);
-        mpfr_clear(im_t);
     }
     mpfr_class norm_v = sqrt(norm_sq);
     for (int i = 0; i < N; i++) {
@@ -162,7 +151,6 @@ void apply_random_right_householder(int M, int N, mpc_class *A, int LDA,
 
     delete[] v;
     delete[] w;
-    gmp_randclear(state);
 }
 
 // ---------- main ----------

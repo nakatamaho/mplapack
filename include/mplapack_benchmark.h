@@ -51,12 +51,12 @@ using std::min;
 #include <mplapack_benchmark_mpfr.h>
 #define MPLAPACK_REF_LIB "libmplapack_mpfr"
 #define MPBLAS_REF_LIB "libmplapack_mpfr"
-#define ___MPLAPACK_INITIALIZE___ gmp_randinit_default(uniformrandomstate_mpfr);
-gmp_randstate_t uniformrandomstate_mpfr;
+#define ___MPLAPACK_INITIALIZE___ uniformrandomstate_mpfr.seed(0UL);
+mpfrxx::mpfr_randclass uniformrandomstate_mpfr(gmp_randinit_default);
 mpfr_class randomnumber(mpfr_class dummy) {
     mpfr_class mtmp;
 
-    mtmp = urandomb(uniformrandomstate_mpfr);
+    mtmp = uniformrandomstate_mpfr.get_fr();
     mtmp = 2.0 * mtmp - 1.0;
 
     return mtmp;
@@ -67,12 +67,12 @@ mpfr_class randomnumber(mpfr_class dummy) {
 #include <mplapack_benchmark_gmp.h>
 #define MPLAPACK_REF_LIB "libmplapack_gmp"
 #define MPBLAS_REF_LIB "libmplapack_gmp"
-#define ___MPLAPACK_INITIALIZE___ uniformrandomstate_gmp = new gmp_randclass(gmp_randinit_default);
-gmp_randclass *uniformrandomstate_gmp;
+#define ___MPLAPACK_INITIALIZE___ uniformrandomstate_gmp.seed(0UL);
+gmpxx::gmp_randclass uniformrandomstate_gmp(gmp_randinit_default);
 mpf_class randomnumber(mpf_class dummy) {
     mpf_class mtmp;
 
-    mtmp = uniformrandomstate_gmp->get_f();
+    mtmp = uniformrandomstate_gmp.get_f();
     mtmp = 2.0 * mtmp - 1.0;
     return mtmp;
 }
