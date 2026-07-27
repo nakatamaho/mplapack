@@ -13,7 +13,7 @@ cmake_minimum_required(VERSION 3.20)
 
 # Keep version in sync with configure.ac (m4 MPLAPACK_VER_* and LAPACK_VER_*).
 project(mplapack
-  VERSION 2.3.0
+  VERSION 3.0.0
   DESCRIPTION "A multiple precision version of BLAS and LAPACK"
   HOMEPAGE_URL "https://github.com/nakatamaho/mplapack"
   LANGUAGES CXX C)
@@ -59,9 +59,9 @@ set(CMAKE_CXX_STANDARD ${MPLAPACK_CXX_STANDARD})
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS ${MPLAPACK_CXX_EXTENSIONS})
 
-# ABI (libtool -version-info 2:0:0) — independent of the package version.
-set(MPLAPACK_LIB_VERSION   "2.0.0")
-set(MPLAPACK_LIB_SOVERSION "2")
+# ABI (libtool -version-info 3:0:0) — independent of the package version.
+set(MPLAPACK_LIB_VERSION   "3.0.0")
+set(MPLAPACK_LIB_SOVERSION "3")
 
 # -----------------------------------------------------------------------------
 # Options
