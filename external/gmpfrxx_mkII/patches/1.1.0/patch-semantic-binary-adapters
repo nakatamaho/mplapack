@@ -1,0 +1,805 @@
+diff --git a/include/gmpfrxx_mkII/adapters/binary128_complex.hpp b/include/gmpfrxx_mkII/adapters/binary128_complex.hpp
+index c283b61..2ec4fdc 100644
+--- a/include/gmpfrxx_mkII/adapters/binary128_complex.hpp
++++ b/include/gmpfrxx_mkII/adapters/binary128_complex.hpp
+@@ -4,25 +4,21 @@
+ #include <gmpfrxx_mkII/adapters/binary128_real.hpp>
+ #include <gmpfrxx_mkII/adapters/detail/complex_components.hpp>
+ 
+-#include <complex>
+-
+-#if GMPFRXX_MKII_ADAPTERS_HAVE_BINARY128
+-
+ namespace gmpfrxx_mkII {
+ namespace detail {
+ 
+-template <>
+-struct external_mpc_complex_traits<std::complex<_Float128>> {
++template <typename Native>
++struct external_mpc_complex_traits<
++    gmpfrxx_mkII::adapters::binary128_complex<Native>,
++    std::enable_if_t<binary128_native_traits<Native>::enabled>> {
+     static constexpr bool enabled = true;
+ 
+     static void set(mpc_t dest,
+-                    const std::complex<_Float128>& value,
++                    const gmpfrxx_mkII::adapters::binary128_complex<Native>& value,
+                     mpc_rnd_t rounding_mode)
+     {
+-        using native_type = adapters::binary128_real::value_type;
+-        const adapters::binary128_real real(static_cast<native_type>(value.real()));
+-        const adapters::binary128_real imag(static_cast<native_type>(value.imag()));
+-        set_mpc_from_external_real_components(dest, real, imag, rounding_mode);
++        set_mpc_from_external_real_components(
++            dest, value.real(), value.imag(), rounding_mode);
+     }
+ };
+ 
+@@ -30,5 +26,3 @@ struct external_mpc_complex_traits<std::complex<_Float128>> {
+ } // namespace gmpfrxx_mkII
+ 
+ #endif
+-
+-#endif
+diff --git a/include/gmpfrxx_mkII/adapters/binary128_real.hpp b/include/gmpfrxx_mkII/adapters/binary128_real.hpp
+index 50af6cd..7c902bb 100644
+--- a/include/gmpfrxx_mkII/adapters/binary128_real.hpp
++++ b/include/gmpfrxx_mkII/adapters/binary128_real.hpp
+@@ -31,28 +31,24 @@
+ 
+ #include <gmpfrxx_mkII/adapters/detail/binary_float.hpp>
+ 
+-#if GMPFRXX_MKII_ADAPTERS_HAVE_BINARY128
+-
+ namespace gmpfrxx_mkII {
+ namespace detail {
+ 
+-template <>
+-struct external_mpfr_real_traits<gmpfrxx_mkII::adapters::binary128_real> {
++template <typename Native>
++struct external_mpfr_real_traits<
++    gmpfrxx_mkII::adapters::binary128_real<Native>,
++    std::enable_if_t<binary128_native_traits<Native>::enabled>> {
+     static constexpr bool enabled = true;
+ 
+     static void set(mpfr_t dest,
+-                    const gmpfrxx_mkII::adapters::binary128_real& value,
++                    const gmpfrxx_mkII::adapters::binary128_real<Native>& value,
+                     mpfr_rnd_t rounding_mode)
+     {
+         set_mpfr_from_binary128(dest, value, rounding_mode);
+     }
+ };
+ 
+-
+ } // namespace detail
+ } // namespace gmpfrxx_mkII
+ 
+-
+-#endif
+-
+ #endif
+diff --git a/include/gmpfrxx_mkII/adapters/binary80_complex.hpp b/include/gmpfrxx_mkII/adapters/binary80_complex.hpp
+index 6cc0bf1..53b70d9 100644
+--- a/include/gmpfrxx_mkII/adapters/binary80_complex.hpp
++++ b/include/gmpfrxx_mkII/adapters/binary80_complex.hpp
+@@ -4,24 +4,21 @@
+ #include <gmpfrxx_mkII/adapters/binary80_real.hpp>
+ #include <gmpfrxx_mkII/adapters/detail/complex_components.hpp>
+ 
+-#include <complex>
+-
+-#if GMPFRXX_MKII_ADAPTERS_HAVE_BINARY80
+-
+ namespace gmpfrxx_mkII {
+ namespace detail {
+ 
+-template <>
+-struct external_mpc_complex_traits<std::complex<_Float64x>> {
++template <typename Native>
++struct external_mpc_complex_traits<
++    gmpfrxx_mkII::adapters::binary80_complex<Native>,
++    std::enable_if_t<binary80_native_traits<Native>::enabled>> {
+     static constexpr bool enabled = true;
+ 
+     static void set(mpc_t dest,
+-                    const std::complex<_Float64x>& value,
++                    const gmpfrxx_mkII::adapters::binary80_complex<Native>& value,
+                     mpc_rnd_t rounding_mode)
+     {
+-        const adapters::binary80_real real(static_cast<long double>(value.real()));
+-        const adapters::binary80_real imag(static_cast<long double>(value.imag()));
+-        set_mpc_from_external_real_components(dest, real, imag, rounding_mode);
++        set_mpc_from_external_real_components(
++            dest, value.real(), value.imag(), rounding_mode);
+     }
+ };
+ 
+@@ -29,5 +26,3 @@ struct external_mpc_complex_traits<std::complex<_Float64x>> {
+ } // namespace gmpfrxx_mkII
+ 
+ #endif
+-
+-#endif
+diff --git a/include/gmpfrxx_mkII/adapters/binary80_real.hpp b/include/gmpfrxx_mkII/adapters/binary80_real.hpp
+index c5e241c..a8cf7cc 100644
+--- a/include/gmpfrxx_mkII/adapters/binary80_real.hpp
++++ b/include/gmpfrxx_mkII/adapters/binary80_real.hpp
+@@ -31,28 +31,24 @@
+ 
+ #include <gmpfrxx_mkII/adapters/detail/binary_float.hpp>
+ 
+-#if GMPFRXX_MKII_ADAPTERS_HAVE_BINARY80
+-
+ namespace gmpfrxx_mkII {
+ namespace detail {
+ 
+-template <>
+-struct external_mpfr_real_traits<gmpfrxx_mkII::adapters::binary80_real> {
++template <typename Native>
++struct external_mpfr_real_traits<
++    gmpfrxx_mkII::adapters::binary80_real<Native>,
++    std::enable_if_t<binary80_native_traits<Native>::enabled>> {
+     static constexpr bool enabled = true;
+ 
+     static void set(mpfr_t dest,
+-                    const gmpfrxx_mkII::adapters::binary80_real& value,
++                    const gmpfrxx_mkII::adapters::binary80_real<Native>& value,
+                     mpfr_rnd_t rounding_mode)
+     {
+         set_mpfr_from_binary80(dest, value, rounding_mode);
+     }
+ };
+ 
+-
+ } // namespace detail
+ } // namespace gmpfrxx_mkII
+ 
+-
+-#endif
+-
+ #endif
+diff --git a/include/gmpfrxx_mkII/adapters/detail/binary_float.hpp b/include/gmpfrxx_mkII/adapters/detail/binary_float.hpp
+index ec463f0..5448ee3 100644
+--- a/include/gmpfrxx_mkII/adapters/detail/binary_float.hpp
++++ b/include/gmpfrxx_mkII/adapters/detail/binary_float.hpp
+@@ -30,6 +30,8 @@
+ #define GMPFRXX_MKII_ADAPTERS_DETAIL_BINARY_FLOAT_HPP
+ 
+ #include <cfloat>
++#include <type_traits>
++#include <utility>
+ 
+ #if !defined(mpfr_float128) && defined(__SIZEOF_FLOAT128__) && \
+     (defined(__GNUC__) || defined(__clang__))
+@@ -40,125 +42,309 @@
+ #define MPFR_WANT_FLOAT128
+ #endif
+ 
+-#include <gmpxx_mkII.h>
+ #include <mpfrxx_mkII.h>
+ 
++#if LDBL_MANT_DIG == 64 && LDBL_MAX_EXP == 16384
++#define GMPFRXX_MKII_ADAPTERS_LDBL_IS_BINARY80 1
++#else
++#define GMPFRXX_MKII_ADAPTERS_LDBL_IS_BINARY80 0
++#endif
++
++#if defined(__FLT64X_MANT_DIG__) && defined(__FLT64X_MAX_EXP__) && \
++    __FLT64X_MANT_DIG__ == 64 && __FLT64X_MAX_EXP__ == 16384 && \
++    LDBL_MANT_DIG >= 64 && LDBL_MAX_EXP >= 16384
++#define GMPFRXX_MKII_ADAPTERS_HAVE_FLOAT64X_BINARY80 1
++#else
++#define GMPFRXX_MKII_ADAPTERS_HAVE_FLOAT64X_BINARY80 0
++#endif
++
++#if LDBL_MANT_DIG == 113 && LDBL_MAX_EXP == 16384
++#define GMPFRXX_MKII_ADAPTERS_LDBL_IS_BINARY128 1
++#else
++#define GMPFRXX_MKII_ADAPTERS_LDBL_IS_BINARY128 0
++#endif
++
++#if defined(__FLT128_MANT_DIG__) && defined(__FLT128_MAX_EXP__) && \
++    __FLT128_MANT_DIG__ == 113 && __FLT128_MAX_EXP__ == 16384
++#define GMPFRXX_MKII_ADAPTERS_HAVE_ISO_FLOAT128 1
++#else
++#define GMPFRXX_MKII_ADAPTERS_HAVE_ISO_FLOAT128 0
++#endif
++
++#if defined(__SIZEOF_FLOAT128__) && (defined(__GNUC__) || defined(__clang__))
++#define GMPFRXX_MKII_ADAPTERS_HAVE_GNU_FLOAT128 1
++#else
++#define GMPFRXX_MKII_ADAPTERS_HAVE_GNU_FLOAT128 0
++#endif
++
+ #if defined(mpfr_float128)
+-#define GMPFRXX_MKII_ADAPTERS_HAVE_BINARY128 1
++#define GMPFRXX_MKII_ADAPTERS_HAVE_MPFR_FLOAT128 1
+ #else
+-#define GMPFRXX_MKII_ADAPTERS_HAVE_BINARY128 0
++#define GMPFRXX_MKII_ADAPTERS_HAVE_MPFR_FLOAT128 0
+ #endif
+ 
+-#if LDBL_MANT_DIG == 64 && LDBL_MAX_EXP == 16384
++#if GMPFRXX_MKII_ADAPTERS_LDBL_IS_BINARY80 || \
++    GMPFRXX_MKII_ADAPTERS_HAVE_FLOAT64X_BINARY80
+ #define GMPFRXX_MKII_ADAPTERS_HAVE_BINARY80 1
+ #else
+ #define GMPFRXX_MKII_ADAPTERS_HAVE_BINARY80 0
+ #endif
+ 
+-#if GMPFRXX_MKII_ADAPTERS_HAVE_BINARY128
++#if GMPFRXX_MKII_ADAPTERS_LDBL_IS_BINARY128 || \
++    GMPFRXX_MKII_ADAPTERS_HAVE_MPFR_FLOAT128
++#define GMPFRXX_MKII_ADAPTERS_HAVE_BINARY128 1
++#else
++#define GMPFRXX_MKII_ADAPTERS_HAVE_BINARY128 0
++#endif
++
++#if GMPFRXX_MKII_ADAPTERS_HAVE_MPFR_FLOAT128
+ extern "C" {
+ __MPFR_DECLSPEC int mpfr_set_float128(mpfr_ptr, mpfr_float128, mpfr_rnd_t);
++__MPFR_DECLSPEC mpfr_float128 mpfr_get_float128(mpfr_srcptr, mpfr_rnd_t);
+ }
+ #endif
+ 
+ namespace gmpfrxx_mkII {
+-namespace adapters {
++namespace detail {
++
++template <typename>
++struct binary_import_dependent_false : std::false_type {};
++
++template <typename Native>
++struct binary80_native_traits {
++    using native_type = std::remove_cv_t<std::remove_reference_t<Native>>;
++
++    static constexpr bool enabled =
++#if GMPFRXX_MKII_ADAPTERS_LDBL_IS_BINARY80
++        std::is_same_v<native_type, long double> ||
++#endif
++#if GMPFRXX_MKII_ADAPTERS_HAVE_FLOAT64X_BINARY80
++        std::is_same_v<native_type, _Float64x> ||
++#endif
++        false;
++
++    static void set(mpfr_t dest, native_type value, mpfr_rnd_t rounding_mode)
++    {
++        static_assert(enabled, "unsupported native type for binary80 import");
++        mpfr_set_ld(dest, static_cast<long double>(value), rounding_mode);
++    }
++};
++
++template <typename Native>
++inline constexpr bool is_binary80_native_v =
++    binary80_native_traits<std::remove_cv_t<std::remove_reference_t<Native>>>::enabled;
++
++template <typename Native>
++struct binary128_native_traits {
++    using native_type = std::remove_cv_t<std::remove_reference_t<Native>>;
++
++    static constexpr bool enabled =
++#if GMPFRXX_MKII_ADAPTERS_LDBL_IS_BINARY128
++        std::is_same_v<native_type, long double> ||
++#endif
++#if GMPFRXX_MKII_ADAPTERS_HAVE_MPFR_FLOAT128
++        std::is_same_v<native_type, mpfr_float128> ||
++#endif
++#if GMPFRXX_MKII_ADAPTERS_HAVE_ISO_FLOAT128
++        std::is_same_v<native_type, _Float128> ||
++#endif
++#if GMPFRXX_MKII_ADAPTERS_HAVE_GNU_FLOAT128
++        std::is_same_v<native_type, __float128> ||
++#endif
++        false;
++
++    static void set(mpfr_t dest, native_type value, mpfr_rnd_t rounding_mode)
++    {
++        if constexpr (!enabled) {
++            static_assert(binary_import_dependent_false<native_type>::value,
++                          "unsupported native type for binary128 import");
++        } else {
++#if GMPFRXX_MKII_ADAPTERS_LDBL_IS_BINARY128
++            if constexpr (std::is_same_v<native_type, long double>) {
++                mpfr_set_ld(dest, value, rounding_mode);
++            } else
++#endif
++            {
++#if GMPFRXX_MKII_ADAPTERS_HAVE_MPFR_FLOAT128
++                mpfr_set_float128(dest, static_cast<mpfr_float128>(value), rounding_mode);
++#else
++                static_assert(binary_import_dependent_false<native_type>::value,
++                              "binary128 native type requires MPFR float128 support");
++#endif
++            }
++        }
++    }
++};
+ 
+-#if GMPFRXX_MKII_ADAPTERS_HAVE_BINARY80
++template <typename Native>
++inline constexpr bool is_binary128_native_v =
++    binary128_native_traits<std::remove_cv_t<std::remove_reference_t<Native>>>::enabled;
++
++} // namespace detail
++} // namespace gmpfrxx_mkII
++
++namespace gmpfrxx_mkII {
++namespace adapters {
+ 
++template <typename Native>
+ class binary80_real {
+ public:
+-    using value_type = long double;
++    using value_type = std::remove_cv_t<std::remove_reference_t<Native>>;
+ 
+-    value_type value;
++    value_type value{};
+ 
+-    constexpr binary80_real() : value(0.0L) {}
++    constexpr binary80_real() = default;
+     constexpr explicit binary80_real(value_type input) : value(input) {}
+ };
+ 
+-using binary80 = binary80_real;
++template <typename Native>
++binary80_real(Native) -> binary80_real<std::remove_cv_t<std::remove_reference_t<Native>>>;
++
++template <typename Native>
++using binary80_source = binary80_real<Native>;
++
++template <typename Native>
++using binary80 = binary80_real<Native>;
+ 
++template <typename Native>
+ class binary80_complex {
+ public:
+-    binary80_complex() = default;
+-    binary80_complex(binary80_real real_part, binary80_real imag_part)
++    using value_type = std::remove_cv_t<std::remove_reference_t<Native>>;
++    using real_type = binary80_real<value_type>;
++
++    constexpr binary80_complex() = default;
++    constexpr binary80_complex(real_type real_part, real_type imag_part)
++        : real_(real_part), imag_(imag_part)
++    {
++    }
++    constexpr binary80_complex(value_type real_part, value_type imag_part)
+         : real_(real_part), imag_(imag_part)
+     {
+     }
+ 
+-    binary80_real& real() { return real_; }
+-    const binary80_real& real() const { return real_; }
+-    binary80_real& imag() { return imag_; }
+-    const binary80_real& imag() const { return imag_; }
++    constexpr real_type& real() { return real_; }
++    constexpr const real_type& real() const { return real_; }
++    constexpr real_type& imag() { return imag_; }
++    constexpr const real_type& imag() const { return imag_; }
+ 
+ private:
+-    binary80_real real_;
+-    binary80_real imag_;
++    real_type real_{};
++    real_type imag_{};
+ };
+ 
+-#endif // GMPFRXX_MKII_ADAPTERS_HAVE_BINARY80
++template <typename Native>
++binary80_complex(binary80_real<Native>, binary80_real<Native>) -> binary80_complex<Native>;
++
++template <typename Native>
++binary80_complex(Native, Native) -> binary80_complex<std::remove_cv_t<std::remove_reference_t<Native>>>;
+ 
+-#if GMPFRXX_MKII_ADAPTERS_HAVE_BINARY128
++template <typename Native>
++using binary80_complex_source = binary80_complex<Native>;
+ 
++template <typename Native>
+ class binary128_real {
+ public:
+-    using value_type = mpfr_float128;
++    using value_type = std::remove_cv_t<std::remove_reference_t<Native>>;
+ 
+-    value_type value;
++    value_type value{};
+ 
+-    binary128_real() : value(static_cast<value_type>(0.0)) {}
+-    explicit binary128_real(value_type input) : value(input) {}
++    constexpr binary128_real() = default;
++    constexpr explicit binary128_real(value_type input) : value(input) {}
+ };
+ 
+-using binary128 = binary128_real;
++template <typename Native>
++binary128_real(Native) -> binary128_real<std::remove_cv_t<std::remove_reference_t<Native>>>;
++
++template <typename Native>
++using binary128_source = binary128_real<Native>;
+ 
++template <typename Native>
++using binary128 = binary128_real<Native>;
++
++template <typename Native>
+ class binary128_complex {
+ public:
+-    binary128_complex() = default;
+-    binary128_complex(binary128_real real_part, binary128_real imag_part)
++    using value_type = std::remove_cv_t<std::remove_reference_t<Native>>;
++    using real_type = binary128_real<value_type>;
++
++    constexpr binary128_complex() = default;
++    constexpr binary128_complex(real_type real_part, real_type imag_part)
++        : real_(real_part), imag_(imag_part)
++    {
++    }
++    constexpr binary128_complex(value_type real_part, value_type imag_part)
+         : real_(real_part), imag_(imag_part)
+     {
+     }
+ 
+-    binary128_real& real() { return real_; }
+-    const binary128_real& real() const { return real_; }
+-    binary128_real& imag() { return imag_; }
+-    const binary128_real& imag() const { return imag_; }
++    constexpr real_type& real() { return real_; }
++    constexpr const real_type& real() const { return real_; }
++    constexpr real_type& imag() { return imag_; }
++    constexpr const real_type& imag() const { return imag_; }
+ 
+ private:
+-    binary128_real real_;
+-    binary128_real imag_;
++    real_type real_{};
++    real_type imag_{};
+ };
+ 
+-#endif // GMPFRXX_MKII_ADAPTERS_HAVE_BINARY128
++template <typename Native>
++binary128_complex(binary128_real<Native>, binary128_real<Native>) -> binary128_complex<Native>;
+ 
+-} // namespace adapters
+-} // namespace gmpfrxx_mkII
++template <typename Native>
++binary128_complex(Native, Native) -> binary128_complex<std::remove_cv_t<std::remove_reference_t<Native>>>;
+ 
+-namespace gmpfrxx_mkII {
+-namespace detail {
++template <typename Native>
++using binary128_complex_source = binary128_complex<Native>;
+ 
+-#if GMPFRXX_MKII_ADAPTERS_HAVE_BINARY80
++template <typename Native>
++constexpr auto make_binary80_source(Native value)
++{
++    return binary80_real<std::remove_cv_t<std::remove_reference_t<Native>>>(value);
++}
+ 
+-inline void set_mpfr_from_binary80(mpfr_t dest,
+-                                   const gmpfrxx_mkII::adapters::binary80_real& value,
+-                                   mpfr_rnd_t rounding_mode)
++template <typename Native>
++constexpr auto make_binary80_complex_source(Native real, Native imag)
+ {
+-    mpfr_set_ld(dest, value.value, rounding_mode);
++    using value_type = std::remove_cv_t<std::remove_reference_t<Native>>;
++    return binary80_complex<value_type>(real, imag);
+ }
+ 
+-#endif // GMPFRXX_MKII_ADAPTERS_HAVE_BINARY80
++template <typename Native>
++constexpr auto make_binary128_source(Native value)
++{
++    return binary128_real<std::remove_cv_t<std::remove_reference_t<Native>>>(value);
++}
+ 
+-#if GMPFRXX_MKII_ADAPTERS_HAVE_BINARY128
++template <typename Native>
++constexpr auto make_binary128_complex_source(Native real, Native imag)
++{
++    using value_type = std::remove_cv_t<std::remove_reference_t<Native>>;
++    return binary128_complex<value_type>(real, imag);
++}
++
++} // namespace adapters
++} // namespace gmpfrxx_mkII
+ 
+-inline void set_mpfr_from_binary128(mpfr_t dest,
+-                                    const gmpfrxx_mkII::adapters::binary128_real& value,
+-                                    mpfr_rnd_t rounding_mode)
++namespace gmpfrxx_mkII {
++namespace detail {
++
++template <typename Native>
++inline void set_mpfr_from_binary80(
++    mpfr_t dest,
++    const gmpfrxx_mkII::adapters::binary80_real<Native>& value,
++    mpfr_rnd_t rounding_mode)
+ {
+-    mpfr_set_float128(dest, value.value, rounding_mode);
++    binary80_native_traits<Native>::set(dest, value.value, rounding_mode);
+ }
+ 
+-#endif // GMPFRXX_MKII_ADAPTERS_HAVE_BINARY128
++template <typename Native>
++inline void set_mpfr_from_binary128(
++    mpfr_t dest,
++    const gmpfrxx_mkII::adapters::binary128_real<Native>& value,
++    mpfr_rnd_t rounding_mode)
++{
++    binary128_native_traits<Native>::set(dest, value.value, rounding_mode);
++}
+ 
+ } // namespace detail
+ } // namespace gmpfrxx_mkII
+diff --git a/manual/gmpfrxx_mkII_manual.tex b/manual/gmpfrxx_mkII_manual.tex
+index c38ef1a..8cea18d 100644
+--- a/manual/gmpfrxx_mkII_manual.tex
++++ b/manual/gmpfrxx_mkII_manual.tex
+@@ -491,6 +491,28 @@ not become common-type promotion backdoors. (Direct \code{mpz_class}
+ construction from \code{__int128} is supported where the compiler provides it,
+ but \code{__int128} is still rejected as an expression scalar leaf.)
+ 
++\subsection{Explicit fixed-binary import adapters}
++
++Binary80 and binary128 name numeric formats, not stable C++ native types.
++The adapter layer therefore uses semantic wrappers parameterized by the
++consumer-selected native type:
++
++\begin{lstlisting}
++auto r80 = gmpfrxx_mkII::adapters::make_binary80_source(value80);
++auto r128 = gmpfrxx_mkII::adapters::make_binary128_source(value128);
++mpfrxx::mpfr_class x80(r80);
++mpfrxx::mpfr_class x128(r128);
++\end{lstlisting}
++
++The corresponding \code{make_binary80_complex_source(real, imag)} and
++\code{make_binary128_complex_source(real, imag)} wrappers import components
++without depending on extended \code{std::complex} support.  Supported native
++types are selected by capability traits: binary80 accepts a verified
++\code{long double} or \code{_Float64x} representation; binary128 accepts
++\code{_Float128}, \code{__float128}, or a verified binary128
++\code{long double}.  Generic \code{long double} scalar promotion remains
++disabled, so the semantic wrapper is required.
++
+ When \code{mpcxx_mkII.h} or \code{gmpfrxx_mkII.h} is included,
+ \code{std::complex<double>} is accepted as an MPC scalar operand. It promotes
+ with \code{mpc_class} to \code{mpc_class}, and with \code{mpfr_class} to
+diff --git a/tests/test_complex_compare_adapters.cpp b/tests/test_complex_compare_adapters.cpp
+index 0c8fd4a..0ef9e4b 100644
+--- a/tests/test_complex_compare_adapters.cpp
++++ b/tests/test_complex_compare_adapters.cpp
+@@ -4,10 +4,6 @@
+ #include <gmpfrxx_mkII/adapters/mpfc_complex.hpp>
+ #include <gmpfrxx_mkII/adapters/qd_complex.hpp>
+ 
+-#include <mplapack/dd_complex.h>
+-#include <mplapack/qd_complex.h>
+-#include <mplapack/mplapack_config.h>
+-
+ #include <cstdlib>
+ #include <cmath>
+ #include <complex>
+@@ -21,6 +17,22 @@ void require(bool condition)
+     }
+ }
+ 
++template <typename Real>
++class test_complex {
++public:
++    test_complex(const Real& real, const Real& imag)
++        : real_(real), imag_(imag)
++    {
++    }
++
++    const Real& real() const { return real_; }
++    const Real& imag() const { return imag_; }
++
++private:
++    Real real_;
++    Real imag_;
++};
++
+ template <typename Real>
+ void require_components(const mpfrxx::mpc_class& actual,
+                         const Real& expected_real,
+@@ -51,9 +63,9 @@ void test_complex_double()
+ // COMPLEX-DD
+ void test_complex_dd()
+ {
+-    dd_complex source;
+-    source.real(dd_real(1.0, std::ldexp(1.0, -100)));
+-    source.imag(dd_real(-2.0, std::ldexp(1.0, -101)));
++    const test_complex<dd_real> source(
++        dd_real(1.0, std::ldexp(1.0, -100)),
++        dd_real(-2.0, std::ldexp(1.0, -101)));
+     const mpfrxx::mpc_class target(source);
+     require_components(target, source.real(), source.imag());
+     require_below_binary64_components(target, 1.0, -2.0);
+@@ -62,9 +74,9 @@ void test_complex_dd()
+ // COMPLEX-QD
+ void test_complex_qd()
+ {
+-    qd_complex source;
+-    source.real(qd_real(3.0, std::ldexp(1.0, -100), 0.0, 0.0));
+-    source.imag(qd_real(-4.0, std::ldexp(1.0, -101), 0.0, 0.0));
++    const test_complex<qd_real> source(
++        qd_real(3.0, std::ldexp(1.0, -100), 0.0, 0.0),
++        qd_real(-4.0, std::ldexp(1.0, -101), 0.0, 0.0));
+     mpfrxx::mpc_class target;
+     target = source;
+     require_components(target, source.real(), source.imag());
+@@ -72,41 +84,57 @@ void test_complex_qd()
+ }
+ 
+ // COMPLEX-BINARY80
+-void test_complex_binary80()
++template <typename Native>
++void test_complex_binary80_native()
+ {
+-#if MPLAPACK_BINARY80_MODE == MPLAPACK_BINARY80_MODE_FLOAT64X
+-    const mplapack_binary80_t real = static_cast<mplapack_binary80_t>(1.0L) +
+-                                      static_cast<mplapack_binary80_t>(0x1p-60L);
+-    const mplapack_binary80_t imag = static_cast<mplapack_binary80_t>(-2.0L) +
+-                                      static_cast<mplapack_binary80_t>(0x1p-61L);
+-    const std::complex<mplapack_binary80_t> source(real, imag);
++    const Native real = static_cast<Native>(1.0L) +
++                        static_cast<Native>(0x1p-60L);
++    const Native imag = static_cast<Native>(-2.0L) +
++                        static_cast<Native>(0x1p-61L);
++    const auto source = gmpfrxx_mkII::adapters::make_binary80_complex_source(real, imag);
+     const mpfrxx::mpc_class target(source);
+-    const gmpfrxx_mkII::adapters::binary80_real expected_real(
+-        static_cast<long double>(real));
+-    const gmpfrxx_mkII::adapters::binary80_real expected_imag(
+-        static_cast<long double>(imag));
++    const auto expected_real = gmpfrxx_mkII::adapters::make_binary80_source(real);
++    const auto expected_imag = gmpfrxx_mkII::adapters::make_binary80_source(imag);
+     require_components(target, expected_real, expected_imag);
+     require_below_binary64_components(target, 1.0, -2.0);
++}
++
++void test_complex_binary80()
++{
++#if GMPFRXX_MKII_ADAPTERS_LDBL_IS_BINARY80
++    test_complex_binary80_native<long double>();
++#endif
++#if GMPFRXX_MKII_ADAPTERS_HAVE_FLOAT64X_BINARY80
++    test_complex_binary80_native<_Float64x>();
+ #endif
+ }
+ 
+ // COMPLEX-BINARY128
+-void test_complex_binary128()
++template <typename Native>
++void test_complex_binary128_native()
+ {
+-#if MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_FLOAT128
+-    const mplapack_binary128_t real = static_cast<mplapack_binary128_t>(1.0L) +
+-                                       static_cast<mplapack_binary128_t>(0x1p-100L);
+-    const mplapack_binary128_t imag = static_cast<mplapack_binary128_t>(-2.0L) +
+-                                       static_cast<mplapack_binary128_t>(0x1p-101L);
+-    const std::complex<mplapack_binary128_t> source(real, imag);
++    const Native real = static_cast<Native>(1.0L) +
++                        static_cast<Native>(0x1p-100L);
++    const Native imag = static_cast<Native>(-2.0L) +
++                        static_cast<Native>(0x1p-101L);
++    const auto source = gmpfrxx_mkII::adapters::make_binary128_complex_source(real, imag);
+     const mpfrxx::mpc_class target(source);
+-    using native_type = gmpfrxx_mkII::adapters::binary128_real::value_type;
+-    const gmpfrxx_mkII::adapters::binary128_real expected_real(
+-        static_cast<native_type>(real));
+-    const gmpfrxx_mkII::adapters::binary128_real expected_imag(
+-        static_cast<native_type>(imag));
++    const auto expected_real = gmpfrxx_mkII::adapters::make_binary128_source(real);
++    const auto expected_imag = gmpfrxx_mkII::adapters::make_binary128_source(imag);
+     require_components(target, expected_real, expected_imag);
+     require_below_binary64_components(target, 1.0, -2.0);
++}
++
++void test_complex_binary128()
++{
++#if GMPFRXX_MKII_ADAPTERS_LDBL_IS_BINARY128
++    test_complex_binary128_native<long double>();
++#endif
++#if GMPFRXX_MKII_ADAPTERS_HAVE_ISO_FLOAT128
++    test_complex_binary128_native<_Float128>();
++#endif
++#if GMPFRXX_MKII_ADAPTERS_HAVE_GNU_FLOAT128
++    test_complex_binary128_native<__float128>();
+ #endif
+ }
+ 
+diff --git a/tests/test_mpf_binary_real_adapters.cpp b/tests/test_mpf_binary_real_adapters.cpp
+index 6467e8a..319af48 100644
+--- a/tests/test_mpf_binary_real_adapters.cpp
++++ b/tests/test_mpf_binary_real_adapters.cpp
+@@ -3,13 +3,80 @@
+ #include <gmpfrxx_mkII/adapters/mpf_real.hpp>
+ #include <gmpxx_mkII.h>
+ #include <mpfrxx_mkII.h>
++
+ #include <cmath>
+-static int above_one(const mpfrxx::mpfr_class& x){mpfrxx::mpfr_class one=1.;return mpfr_cmp(x.mpfr_data(),one.mpfr_data())>0?0:1;}
+-int main(){gmpxx::mpf_class f(512);mpf_set_d(f.mpf_data(),1.);mpf_t l;mpf_init2(l,512);mpf_set_d(l,std::ldexp(1.,-100));mpf_add(f.mpf_data(),f.mpf_data(),l);mpfrxx::mpfr_class r=f;mpf_clear(l);if(above_one(r))return 1;
+-#if LDBL_MANT_DIG == 64 && LDBL_MAX_EXP == 16384
+-if(above_one(mpfrxx::mpfr_class(gmpfrxx_mkII::adapters::binary80_real(1.L+std::ldexp(1.L,-60)))))return 2;
++
++static bool above_one(const mpfrxx::mpfr_class& value)
++{
++    return mpfr_cmp_ui(value.mpfr_data(), 1) > 0;
++}
++
++int main()
++{
++    gmpxx::mpf_class f(512);
++    mpf_set_d(f.mpf_data(), 1.0);
++    mpf_t low;
++    mpf_init2(low, 512);
++    mpf_set_d(low, std::ldexp(1.0, -100));
++    mpf_add(f.mpf_data(), f.mpf_data(), low);
++    const mpfrxx::mpfr_class from_mpf = f;
++    mpf_clear(low);
++    if (!above_one(from_mpf)) {
++        return 1;
++    }
++
++#if GMPFRXX_MKII_ADAPTERS_LDBL_IS_BINARY80
++    {
++        const long double value = 1.0L + 0x1p-60L;
++        if (!above_one(mpfrxx::mpfr_class(
++                gmpfrxx_mkII::adapters::make_binary80_source(value)))) {
++            return 2;
++        }
++    }
+ #endif
+-#if GMPFRXX_MKII_ADAPTERS_HAVE_BINARY128
+-if(above_one(mpfrxx::mpfr_class(gmpfrxx_mkII::adapters::binary128_real((__float128)1+(__float128)0x1p-100L))))return 3;
++
++#if GMPFRXX_MKII_ADAPTERS_HAVE_FLOAT64X_BINARY80
++    {
++        const _Float64x value = static_cast<_Float64x>(1.0L) +
++                                static_cast<_Float64x>(0x1p-60L);
++        if (!above_one(mpfrxx::mpfr_class(
++                gmpfrxx_mkII::adapters::make_binary80_source(value)))) {
++            return 3;
++        }
++    }
+ #endif
+-return 0;}
++
++#if GMPFRXX_MKII_ADAPTERS_HAVE_GNU_FLOAT128
++    {
++        const __float128 value = static_cast<__float128>(1.0L) +
++                                 static_cast<__float128>(0x1p-100L);
++        if (!above_one(mpfrxx::mpfr_class(
++                gmpfrxx_mkII::adapters::make_binary128_source(value)))) {
++            return 4;
++        }
++    }
++#endif
++
++#if GMPFRXX_MKII_ADAPTERS_HAVE_ISO_FLOAT128
++    {
++        const _Float128 value = static_cast<_Float128>(1.0L) +
++                                static_cast<_Float128>(0x1p-100L);
++        if (!above_one(mpfrxx::mpfr_class(
++                gmpfrxx_mkII::adapters::make_binary128_source(value)))) {
++            return 5;
++        }
++    }
++#endif
++
++#if GMPFRXX_MKII_ADAPTERS_LDBL_IS_BINARY128
++    {
++        const long double value = 1.0L + 0x1p-100L;
++        if (!above_one(mpfrxx::mpfr_class(
++                gmpfrxx_mkII::adapters::make_binary128_source(value)))) {
++            return 6;
++        }
++    }
++#endif
++
++    return 0;
++}

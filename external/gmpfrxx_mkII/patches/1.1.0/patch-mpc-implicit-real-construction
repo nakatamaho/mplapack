@@ -1,0 +1,38 @@
+--- a/include/gmpfrxx_mkII/detail/mpc_impl.hpp
++++ b/include/gmpfrxx_mkII/detail/mpc_impl.hpp
+@@ -254,7 +254,7 @@
+         init_guard.release();
+     }
+ 
+-    explicit mpc_class(const mpfr_class& real)
++    mpc_class(const mpfr_class& real)
+     {
+         mpc_init3(value_, real.precision(), real.precision());
+         try {
+@@ -265,7 +265,7 @@
+         }
+     }
+ 
+-    explicit mpc_class(const gmpxx::mpz_class& real)
++    mpc_class(const gmpxx::mpz_class& real)
+         : mpc_class(precision_tag{},
+                     mpfrxx::default_mpc_real_precision_bits(),
+                     mpfrxx::default_mpc_imag_precision_bits())
+@@ -273,7 +273,7 @@
+         set_real_value(real);
+     }
+ 
+-    explicit mpc_class(const gmpxx::mpq_class& real)
++    mpc_class(const gmpxx::mpq_class& real)
+         : mpc_class(precision_tag{},
+                     mpfrxx::default_mpc_real_precision_bits(),
+                     mpfrxx::default_mpc_imag_precision_bits())
+@@ -286,7 +286,7 @@
+         typename = std::enable_if_t<gmpfrxx_mkII::detail::is_supported_expression_integral_v<Scalar> ||
+                                     std::is_same_v<std::remove_cv_t<Scalar>, float> ||
+                                     std::is_same_v<std::remove_cv_t<Scalar>, double>>>
+-    explicit mpc_class(Scalar real)
++    mpc_class(Scalar real)
+         : mpc_class(precision_tag{},
+                     mpfrxx::default_mpc_real_precision_bits(),
+                     mpfrxx::default_mpc_imag_precision_bits())

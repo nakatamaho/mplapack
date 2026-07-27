@@ -1,0 +1,219 @@
+diff --git a/include/gmpfrxx_mkII/detail/mpf_impl.hpp b/include/gmpfrxx_mkII/detail/mpf_impl.hpp
+index 74edc9b..bbbc7dc 100644
+--- a/include/gmpfrxx_mkII/detail/mpf_impl.hpp
++++ b/include/gmpfrxx_mkII/detail/mpf_impl.hpp
+@@ -359,16 +359,23 @@ public:
+ 
+     std::uint64_t get_u64() const
+     {
+-        gmpfrxx_mkII::detail::scoped_mpz_t integer;
+-        mpz_set_f(integer.get(), value_);
+-        return gmpfrxx_mkII::detail::mpz_get_uint64_checked(integer.get());
++        return get_integer<std::uint64_t>();
+     }
+ 
+     std::int64_t get_i64() const
++    {
++        return get_integer<std::int64_t>();
++    }
++
++    template <typename Integer,
++              std::enable_if_t<
++                  gmpfrxx_mkII::detail::is_supported_expression_integral_v<Integer>,
++                  int> = 0>
++    Integer get_integer() const
+     {
+         gmpfrxx_mkII::detail::scoped_mpz_t integer;
+         mpz_set_f(integer.get(), value_);
+-        return gmpfrxx_mkII::detail::mpz_get_int64_checked(integer.get());
++        return gmpfrxx_mkII::detail::mpz_get_integer_checked<Integer>(integer.get());
+     }
+ 
+     void set_prec(mp_bitcnt_t precision)
+diff --git a/include/gmpfrxx_mkII/detail/mpfr_impl.hpp b/include/gmpfrxx_mkII/detail/mpfr_impl.hpp
+index 2e05200..f1269a8 100644
+--- a/include/gmpfrxx_mkII/detail/mpfr_impl.hpp
++++ b/include/gmpfrxx_mkII/detail/mpfr_impl.hpp
+@@ -451,16 +451,23 @@ public:
+ 
+     std::uint64_t get_u64() const
+     {
+-        gmpfrxx_mkII::detail::scoped_mpz_t integer;
+-        mpfr_get_z(integer.get(), value_, default_rounding());
+-        return gmpfrxx_mkII::detail::mpz_get_uint64_checked(integer.get());
++        return get_integer<std::uint64_t>();
+     }
+ 
+     std::int64_t get_i64() const
++    {
++        return get_integer<std::int64_t>();
++    }
++
++    template <typename Integer,
++              std::enable_if_t<
++                  gmpfrxx_mkII::detail::is_supported_expression_integral_v<Integer>,
++                  int> = 0>
++    Integer get_integer() const
+     {
+         gmpfrxx_mkII::detail::scoped_mpz_t integer;
+         mpfr_get_z(integer.get(), value_, default_rounding());
+-        return gmpfrxx_mkII::detail::mpz_get_int64_checked(integer.get());
++        return gmpfrxx_mkII::detail::mpz_get_integer_checked<Integer>(integer.get());
+     }
+ 
+     bool fits_sint_p() const
+diff --git a/include/gmpfrxx_mkII/detail/zq_impl.hpp b/include/gmpfrxx_mkII/detail/zq_impl.hpp
+index 03152a0..79df3a2 100644
+--- a/include/gmpfrxx_mkII/detail/zq_impl.hpp
++++ b/include/gmpfrxx_mkII/detail/zq_impl.hpp
+@@ -246,6 +246,27 @@ inline std::int64_t mpz_get_int64_checked(mpz_srcptr value)
+     return static_cast<std::int64_t>(raw);
+ }
+ 
++template <typename Integer,
++          std::enable_if_t<is_supported_expression_integral_v<Integer>, int> = 0>
++inline Integer mpz_get_integer_checked(mpz_srcptr value)
++{
++    using result_type = std::remove_cv_t<Integer>;
++    if constexpr (std::is_signed_v<result_type>) {
++        const std::int64_t converted = mpz_get_int64_checked(value);
++        if (converted < static_cast<std::int64_t>(std::numeric_limits<result_type>::min()) ||
++            converted > static_cast<std::int64_t>(std::numeric_limits<result_type>::max())) {
++            throw std::overflow_error("mpz value does not fit in requested integer type");
++        }
++        return static_cast<result_type>(converted);
++    } else {
++        const std::uint64_t converted = mpz_get_uint64_checked(value);
++        if (converted > static_cast<std::uint64_t>(std::numeric_limits<result_type>::max())) {
++            throw std::overflow_error("mpz value does not fit in requested integer type");
++        }
++        return static_cast<result_type>(converted);
++    }
++}
++
+ inline bool gmp_read_digits_for_base(std::istream& in, std::string& token, int base)
+ {
+     bool saw_digit = false;
+@@ -816,12 +837,21 @@ public:
+ 
+     std::uint64_t get_u64() const
+     {
+-        return gmpfrxx_mkII::detail::mpz_get_uint64_checked(value_);
++        return get_integer<std::uint64_t>();
+     }
+ 
+     std::int64_t get_i64() const
+     {
+-        return gmpfrxx_mkII::detail::mpz_get_int64_checked(value_);
++        return get_integer<std::int64_t>();
++    }
++
++    template <typename Integer,
++              std::enable_if_t<
++                  gmpfrxx_mkII::detail::is_supported_expression_integral_v<Integer>,
++                  int> = 0>
++    Integer get_integer() const
++    {
++        return gmpfrxx_mkII::detail::mpz_get_integer_checked<Integer>(value_);
+     }
+ 
+     explicit operator bool() const noexcept
+diff --git a/tests/test_mpfr_type_conversions.cpp b/tests/test_mpfr_type_conversions.cpp
+index d32d6a8..5394e13 100644
+--- a/tests/test_mpfr_type_conversions.cpp
++++ b/tests/test_mpfr_type_conversions.cpp
+@@ -79,6 +79,8 @@ void test_compile_time_surface()
+     static_assert(std::is_same<decltype(std::declval<const mpfrxx::mpfr_class&>().get_ui()), unsigned long>::value, "");
+     static_assert(std::is_same<decltype(std::declval<const mpfrxx::mpfr_class&>().get_i64()), std::int64_t>::value, "");
+     static_assert(std::is_same<decltype(std::declval<const mpfrxx::mpfr_class&>().get_u64()), std::uint64_t>::value, "");
++    static_assert(std::is_same<decltype(std::declval<const mpfrxx::mpfr_class&>().get_integer<std::int32_t>()), std::int32_t>::value, "");
++    static_assert(std::is_same<decltype(std::declval<const mpfrxx::mpfr_class&>().get_integer<std::int64_t>()), std::int64_t>::value, "");
+     static_assert(std::is_same<decltype(std::declval<const mpfrxx::mpfr_class&>().fits_sint_p()), bool>::value, "");
+     static_assert(std::is_same<decltype(std::declval<const mpfrxx::mpfr_class&>().fits_uint_p()), bool>::value, "");
+     static_assert(std::is_same<decltype(std::declval<const mpfrxx::mpfr_class&>().fits_slong_p()), bool>::value, "");
+@@ -222,6 +224,22 @@ void test_accessors_and_bool()
+         std::abort();
+     }
+ 
++    if (mpfrxx::mpfr_class("-2147483648", 192).get_integer<std::int32_t>() !=
++            std::numeric_limits<std::int32_t>::min() ||
++        mpfrxx::mpfr_class("2147483647", 192).get_integer<std::int32_t>() !=
++            std::numeric_limits<std::int32_t>::max()) {
++        std::abort();
++    }
++    bool integer_overflow = false;
++    try {
++        (void)mpfrxx::mpfr_class("2147483648", 192).get_integer<std::int32_t>();
++    } catch (const std::overflow_error&) {
++        integer_overflow = true;
++    }
++    if (!integer_overflow) {
++        std::abort();
++    }
++
+     const mpfrxx::mpfr_class negative("-123", 192);
+     if (negative.get_d() != -123.0 || negative.get_si() != -123L ||
+         !negative.fits_sint_p() || negative.fits_uint_p()) {
+diff --git a/tests/test_type_conversions.cpp b/tests/test_type_conversions.cpp
+index 378317b..4560eb8 100644
+--- a/tests/test_type_conversions.cpp
++++ b/tests/test_type_conversions.cpp
+@@ -118,11 +118,15 @@ void test_compile_time_surface()
+     static_assert(std::is_same<decltype(std::declval<const gmpxx::mpf_class&>().get_si()), signed long>::value, "");
+     static_assert(std::is_same<decltype(std::declval<const gmpxx::mpf_class&>().get_u64()), std::uint64_t>::value, "");
+     static_assert(std::is_same<decltype(std::declval<const gmpxx::mpf_class&>().get_i64()), std::int64_t>::value, "");
++    static_assert(std::is_same<decltype(std::declval<const gmpxx::mpf_class&>().get_integer<std::int32_t>()), std::int32_t>::value, "");
++    static_assert(std::is_same<decltype(std::declval<const gmpxx::mpf_class&>().get_integer<std::int64_t>()), std::int64_t>::value, "");
+     static_assert(std::is_same<decltype(std::declval<const gmpxx::mpz_class&>().get_d()), double>::value, "");
+     static_assert(std::is_same<decltype(std::declval<const gmpxx::mpz_class&>().get_ui()), unsigned long>::value, "");
+     static_assert(std::is_same<decltype(std::declval<const gmpxx::mpz_class&>().get_si()), signed long>::value, "");
+     static_assert(std::is_same<decltype(std::declval<const gmpxx::mpz_class&>().get_u64()), std::uint64_t>::value, "");
+     static_assert(std::is_same<decltype(std::declval<const gmpxx::mpz_class&>().get_i64()), std::int64_t>::value, "");
++    static_assert(std::is_same<decltype(std::declval<const gmpxx::mpz_class&>().get_integer<std::int32_t>()), std::int32_t>::value, "");
++    static_assert(std::is_same<decltype(std::declval<const gmpxx::mpz_class&>().get_integer<std::int64_t>()), std::int64_t>::value, "");
+     static_assert(std::is_same<decltype(std::declval<const gmpxx::mpq_class&>().get_d()), double>::value, "");
+     static_assert(std::is_same<decltype(std::declval<gmpxx::mpq_class&>().get_num_mpz_t()), mpz_ptr>::value, "");
+     static_assert(std::is_same<decltype(std::declval<const gmpxx::mpq_class&>().get_num_mpz_t()), mpz_srcptr>::value, "");
+@@ -169,7 +173,20 @@ void test_mpz_integer_double_and_string_assignment()
+         std::abort();
+     }
+     if (gmpxx::mpz_class(std::numeric_limits<std::int64_t>::min()).get_i64() !=
+-        std::numeric_limits<std::int64_t>::min()) {
++        std::numeric_limits<std::int64_t>::min() ||
++        gmpxx::mpz_class(std::numeric_limits<std::int32_t>::min()).get_integer<std::int32_t>() !=
++        std::numeric_limits<std::int32_t>::min() ||
++        gmpxx::mpz_class(std::numeric_limits<std::int32_t>::max()).get_integer<std::int32_t>() !=
++        std::numeric_limits<std::int32_t>::max()) {
++        std::abort();
++    }
++    bool integer_overflow = false;
++    try {
++        (void)gmpxx::mpz_class("2147483648").get_integer<std::int32_t>();
++    } catch (const std::overflow_error&) {
++        integer_overflow = true;
++    }
++    if (!integer_overflow) {
+         std::abort();
+     }
+ 
+@@ -422,9 +439,20 @@ void test_accessors_fit_queries_and_bool()
+         std::abort();
+     }
+     if (gmpxx::mpf_class("-123.456").get_si() != -123L ||
++        gmpxx::mpf_class("2147483647").get_integer<std::int32_t>() !=
++            std::numeric_limits<std::int32_t>::max() ||
+         gmpxx::mpf_class("999999999999999999999999999999").fits_sint_p()) {
+         std::abort();
+     }
++    bool integer_overflow = false;
++    try {
++        (void)gmpxx::mpf_class("2147483648").get_integer<std::int32_t>();
++    } catch (const std::overflow_error&) {
++        integer_overflow = true;
++    }
++    if (!integer_overflow) {
++        std::abort();
++    }
+ 
+     gmpxx::mpz_class small("123");
+     if (small.get_d() != 123.0 || small.get_si() != 123L || small.get_ui() != 123UL ||

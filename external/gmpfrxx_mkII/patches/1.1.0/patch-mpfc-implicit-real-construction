@@ -1,0 +1,21 @@
+diff --git a/include/gmpfrxx_mkII/detail/mpfc_impl.hpp b/include/gmpfrxx_mkII/detail/mpfc_impl.hpp
+--- a/include/gmpfrxx_mkII/detail/mpfc_impl.hpp
++++ b/include/gmpfrxx_mkII/detail/mpfc_impl.hpp
+@@ -78,7 +78,7 @@ public:
+     {
+     }
+ 
+-    explicit mpfc_class(const mpf_class& real_value)
++    mpfc_class(const mpf_class& real_value)
+         : real_(real_value), imag_(mpf_class::with_precision(real_value.precision()))
+     {
+     }
+@@ -86,7 +86,7 @@ public:
+     template <
+         typename Scalar,
+         typename = std::enable_if_t<gmpfrxx_mkII::detail::is_supported_mpf_scalar_v<Scalar>>>
+-    explicit mpfc_class(Scalar real_value)
++    mpfc_class(Scalar real_value)
+         : real_(mpf_class::with_precision(default_mpf_precision_bits())),
+           imag_(mpf_class::with_precision(default_mpf_precision_bits()))
+     {

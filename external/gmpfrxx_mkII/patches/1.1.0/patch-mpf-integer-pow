@@ -1,0 +1,64 @@
+--- a/include/gmpfrxx_mkII/detail/math_mpf.hpp
++++ b/include/gmpfrxx_mkII/detail/math_mpf.hpp
+@@ -2025,6 +2025,61 @@
+     return mpf_math_detail::set_prec_copy(result, target);
+ }
+ 
++inline mpf_class pow(const mpf_class& base, std::uint64_t exponent)
++{
++    const mp_bitcnt_t precision = base.precision();
++    mpf_class result = mpf_math_detail::make_ui(1, precision);
++    mpf_class factor = mpf_math_detail::set_prec_copy(base, precision);
++
++    while (exponent != 0) {
++        if ((exponent & 1U) != 0) {
++            result = mpf_math_detail::mul(result, factor, precision);
++        }
++        exponent >>= 1U;
++        if (exponent != 0) {
++            factor = mpf_math_detail::mul(factor, factor, precision);
++        }
++    }
++
++    return result;
++}
++
++inline mpf_class pow(const mpf_class& base, std::int64_t exponent)
++{
++    if (exponent >= 0) {
++        return pow(base, static_cast<std::uint64_t>(exponent));
++    }
++    const std::uint64_t magnitude = static_cast<std::uint64_t>(-(exponent + 1)) + 1U;
++    const mp_bitcnt_t precision = base.precision();
++    return mpf_math_detail::div(
++        mpf_math_detail::make_ui(1, precision),
++        pow(base, magnitude),
++        precision);
++}
++
++template <
++    typename I,
++    typename = std::enable_if_t<std::is_integral_v<std::remove_cv_t<I>> &&
++                                std::is_unsigned_v<std::remove_cv_t<I>> &&
++                                !std::is_same_v<std::remove_cv_t<I>, bool> &&
++                                !std::is_same_v<std::remove_cv_t<I>, std::uint64_t>>>
++inline mpf_class pow(const mpf_class& base, I exponent)
++{
++    return pow(base, static_cast<std::uint64_t>(exponent));
++}
++
++template <
++    typename I,
++    typename = std::enable_if_t<std::is_integral_v<std::remove_cv_t<I>> &&
++                                std::is_signed_v<std::remove_cv_t<I>> &&
++                                !std::is_same_v<std::remove_cv_t<I>, bool> &&
++                                !std::is_same_v<std::remove_cv_t<I>, std::int64_t>>,
++    typename = void>
++inline mpf_class pow(const mpf_class& base, I exponent)
++{
++    return pow(base, static_cast<std::int64_t>(exponent));
++}
++
+ inline mpf_class pow(const mpf_class& base, const mpf_class& exponent)
+ {
+     return mpf_math_detail::compute_pow(base, exponent, std::max(base.precision(), exponent.precision()));

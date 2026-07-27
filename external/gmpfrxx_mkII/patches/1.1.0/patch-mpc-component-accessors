@@ -1,0 +1,52 @@
+diff --git a/include/gmpfrxx_mkII/detail/mpc_impl.hpp b/include/gmpfrxx_mkII/detail/mpc_impl.hpp
+index a2a6821..d9b31d2 100644
+--- a/include/gmpfrxx_mkII/detail/mpc_impl.hpp
++++ b/include/gmpfrxx_mkII/detail/mpc_impl.hpp
+@@ -558,6 +558,24 @@ public:
+         return imag_to_double();
+     }
+ 
++    mpfr_class real() const
++    {
++        mpfr_class result = mpfr_class::with_precision(real_precision());
++        const auto context = gmpfrxx_mkII::detail::current_eval_context(real_precision());
++        const int inex = mpc_real(result.mpfr_data(), value_, context.rounding_mode);
++        mpfr_check_range(result.mpfr_data(), inex, context.rounding_mode);
++        return result;
++    }
++
++    mpfr_class imag() const
++    {
++        mpfr_class result = mpfr_class::with_precision(imag_precision());
++        const auto context = gmpfrxx_mkII::detail::current_eval_context(imag_precision());
++        const int inex = mpc_imag(result.mpfr_data(), value_, context.rounding_mode);
++        mpfr_check_range(result.mpfr_data(), inex, context.rounding_mode);
++        return result;
++    }
++
+     int set_str(const char* text, int base = 0)
+     {
+         if (text == nullptr) {
+diff --git a/tests/test_mpc_basic.cpp b/tests/test_mpc_basic.cpp
+index ff07381..bf5e520 100644
+--- a/tests/test_mpc_basic.cpp
++++ b/tests/test_mpc_basic.cpp
+@@ -144,8 +144,16 @@ int main()
+     static_assert(std::is_assignable_v<mpfrxx::mpc_class&, std::string>);
+     static_assert(!std::is_constructible_v<mpfrxx::mpc_class, bool>);
+     static_assert(!std::is_assignable_v<mpfrxx::mpc_class&, bool>);
+-    static_assert(!has_real_member_accessor<mpfrxx::mpc_class>::value,
+-                  "mpc_class must not expose mutable real()/imag() component accessors");
++    static_assert(has_real_member_accessor<mpfrxx::mpc_class>::value,
++                  "mpc_class must expose value-returning real()/imag() accessors");
++    static_assert(std::is_same_v<
++                  decltype(std::declval<const mpfrxx::mpc_class&>().real()),
++                  mpfrxx::mpfr_class>);
++    static_assert(std::is_same_v<
++                  decltype(std::declval<const mpfrxx::mpc_class&>().imag()),
++                  mpfrxx::mpfr_class>);
++    require_close(constructed.real().get_d(), 1.25);
++    require_close(constructed.imag().get_d(), -2.5);
+     require_close(constructed.real_to_double(), 1.25);
+     require_close(constructed.imag_to_double(), -2.5);
+     if (constructed.real_precision() != 192 || constructed.imag_precision() != 224) {
