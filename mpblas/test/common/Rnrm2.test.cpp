@@ -63,7 +63,7 @@ void Rnrm2_test() {
 #endif
                 Rtmp = Rnrm2(n, x, incx);
 
-                REAL_REF diff = abs(Rtmp - dtmp);
+                REAL_REF diff = abs(cast2ref(Rtmp) - dtmp);
                 if (diff > EPSILON) {
 #if defined VERBOSE_TEST
                     printf("error: ");

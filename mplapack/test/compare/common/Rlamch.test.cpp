@@ -150,33 +150,15 @@ static unsigned long checked_prec_to_ulong(mpfr_prec_t p, const char *what) {
 }
 
 static mpfr_prec_t current_real_default_prec() {
-    // Capture the precision of newly created REAL values. In some builds, MPLAPACK's
-    // mpfrxx::mpfr_class default precision may differ from mpfr_get_default_prec().
-    REAL probe = 1.0;
-    return mpfr_get_prec(mpfr_ptr(probe));
+    return mpfrxx::default_precision_bits();
 }
 
-template <typename T, typename = void> struct has_get_default_rnd : std::false_type {};
-
-template <typename T> struct has_get_default_rnd<T, std::void_t<decltype(T::get_default_rnd())>> : std::true_type {};
-
-template <typename T, typename = void> struct has_set_default_rnd : std::false_type {};
-
-template <typename T> struct has_set_default_rnd<T, std::void_t<decltype(T::set_default_rnd(std::declval<mpfr_rnd_t>()))>> : std::true_type {};
-
 static mpfr_rnd_t current_real_default_rnd() {
-    // Prefer mpfrxx::mpfr_class's own default rounding mode if available.
-    if constexpr (has_get_default_rnd<mpfrxx::mpfr_class>::value) {
-        return mpfrxx::mpfr_class::default_rnd;
-    } else {
-        // Fallback: assume mpfrxx::mpfr_class follows MPFR's global default rounding mode.
-        return mpfr_get_default_rounding_mode();
-    }
+    return mpfrxx::default_rounding_mode();
 }
 
 static void set_real_default_rnd(mpfr_rnd_t rnd) {
-    mpfrxx::mpfr_class::default_rnd = rnd;
-    mpfr_set_default_rounding_mode(rnd);
+    mpfrxx::set_default_rounding_mode(rnd);
 }
 
 struct MpfrEnvSnapshot {
@@ -190,8 +172,7 @@ struct MpfrEnvSnapshot {
 
 static MpfrEnvSnapshot mpfr_env_capture() {
     MpfrEnvSnapshot s;
-    s.mpfr_prec = mpfr_class::default_prec; // XXX mpfr_class.h mpfr_class::default_prec is not in sync with mpfr_get_default_prec();
-                                        // s.mpfr_prec = mpfr_get_default_prec();
+    s.mpfr_prec = mpfrxx::default_precision_bits();
     s.real_prec = current_real_default_prec();
     s.emin = mpfr_get_emin();
     s.emax = mpfr_get_emax();
@@ -214,8 +195,7 @@ static void mpfr_env_apply(const MpfrEnvSnapshot &s) {
     }
 
     // Apply default precision for both MPFR (C API) and mpfrxx::mpfr_class (C++ wrapper).
-    mpfr_set_default_prec(s.mpfr_prec);
-    mpfr_class::default_prec = s.mpfr_prec;
+    mpfrxx::set_default_precision_bits(s.mpfr_prec);
 }
 
 struct MpfrEnvGuard {

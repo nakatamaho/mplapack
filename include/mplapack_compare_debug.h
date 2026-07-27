@@ -48,11 +48,16 @@ using std::endl;
 using std::max;
 using std::min;
 
+#include <mplapack_gmpfrxx_mkII_config.h>
 #include <mpfrxx_mkII.h>
 #include <mpcxx_mkII.h>
 using namespace mpfrxx;
 
 #include <mplapack_print_double.h>
+
+#if defined ___MPLAPACK_BUILD_WITH_BINARY80___ || defined ___MPLAPACK_BUILD_WITH_BINARY128___
+#include <mplapack_gmpfrxx_binary_adapters.h>
+#endif
 
 #if defined ___MPLAPACK_BUILD_WITH_BINARY128___
 #define EPSILON 1e-31
@@ -160,9 +165,10 @@ extern int mplapack_errno; // Mxerbla.override.cpp
 #include <mplapack_mpfr.h>
 #endif
 
-_MPLAPACK_DEBUG_EXTERN_ gmp_randstate_t uniformrandomstate_mpfr;
+_MPLAPACK_DEBUG_EXTERN_ mpfrxx::mpfr_randclass uniformrandomstate_mpfr;
+
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
-_MPLAPACK_DEBUG_EXTERN_ gmp_randclass *uniformrandomstate_gmp;
+_MPLAPACK_DEBUG_EXTERN_ gmpxx::gmp_randclass uniformrandomstate_gmp;
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
@@ -175,22 +181,74 @@ typedef mpfr_class REAL_REF;
 typedef mpc_class COMPLEX_REF;
 #endif
 
-mpfr_class mpf_randomnumber(mpfr_class);
-mpc_class mpc_randomnumber(mpc_class);
-double mpf_randomnumber(double);
-complex<double> mpc_randomnumber(complex<double>);
+template <typename T> inline const T &cast2ref(const T &value) { return value; }
 
-// bootstrapping functions; double to mpfr_class.
-// usually we need only mpfr_class -> double or _Float128 etc.
-// mpc_class -> complex<double> or dd_complex etc.
-// but following cases, we treat binary64 BLAS and LAPACK as correct ones and compare to mpfr_class version of BLAS and LAPACK
-void set_random_number(double &a, mpfr_class &b);
-void set_random_number(complex<double> &a, mpc_class &b);
-void set_random_number(INTEGER_REF &a, INTEGER &b);
+#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+inline REAL_REF cast2ref(const mpfrxx::mpfr_class &value) { return value.get_d(); }
+inline COMPLEX_REF cast2ref(const mpfrxx::mpc_class &value) {
+    return COMPLEX_REF(value.real_get_d(), value.imag_get_d());
+}
+#elif defined ___MPLAPACK_BUILD_WITH_GMP___
+inline REAL_REF cast2ref(const gmpxx::mpf_class &value) {
+    REAL_REF result = REAL_REF::with_precision(static_cast<mpfr_prec_t>(value.precision()));
+    mpfr_set_f(result.mpfr_data(), value.mpf_data(), REAL_REF::default_rounding());
+    return result;
+}
+inline COMPLEX_REF cast2ref(const gmpxx::mpfc_class &value) {
+    return COMPLEX_REF(cast2ref(value.real()), cast2ref(value.imag()));
+}
+#elif defined ___MPLAPACK_BUILD_WITH_QD___
+inline REAL_REF cast2ref(const qd_real &value) {
+    REAL_REF result = REAL_REF::with_precision(REAL_REF::default_precision());
+    mpfr_set_d(result.mpfr_data(), value.x[0], REAL_REF::default_rounding());
+    mpfr_add_d(result.mpfr_data(), result.mpfr_data(), value.x[1], REAL_REF::default_rounding());
+    mpfr_add_d(result.mpfr_data(), result.mpfr_data(), value.x[2], REAL_REF::default_rounding());
+    mpfr_add_d(result.mpfr_data(), result.mpfr_data(), value.x[3], REAL_REF::default_rounding());
+    return result;
+}
+inline COMPLEX_REF cast2ref(const qd_complex &value) {
+    return COMPLEX_REF(cast2ref(value.real()), cast2ref(value.imag()));
+}
+#elif defined ___MPLAPACK_BUILD_WITH_DD___
+inline REAL_REF cast2ref(const dd_real &value) {
+    REAL_REF result = REAL_REF::with_precision(REAL_REF::default_precision());
+    mpfr_set_d(result.mpfr_data(), value.x[0], REAL_REF::default_rounding());
+    mpfr_add_d(result.mpfr_data(), result.mpfr_data(), value.x[1], REAL_REF::default_rounding());
+    return result;
+}
+inline COMPLEX_REF cast2ref(const dd_complex &value) {
+    return COMPLEX_REF(cast2ref(value.real()), cast2ref(value.imag()));
+}
+#elif defined ___MPLAPACK_BUILD_WITH_DOUBLE___
+inline REAL_REF cast2ref(double value) { return REAL_REF(value); }
+inline COMPLEX_REF cast2ref(const complex<double> &value) {
+    return COMPLEX_REF(REAL_REF(value.real()), REAL_REF(value.imag()));
+}
+#elif defined ___MPLAPACK_BUILD_WITH_BINARY80___
+inline REAL_REF cast2ref(mplapack_binary80_t value) {
+    return REAL_REF(mplapack::gmpfrxx_adapter::make_binary80_source(value));
+}
+inline COMPLEX_REF cast2ref(const complex<mplapack_binary80_t> &value) {
+    return COMPLEX_REF(mplapack::gmpfrxx_adapter::make_binary80_complex_source(
+        value.real(), value.imag()));
+}
+#elif defined ___MPLAPACK_BUILD_WITH_BINARY128___
+inline REAL_REF cast2ref(mplapack_binary128_t value) {
+    return REAL_REF(mplapack::gmpfrxx_adapter::make_binary128_source(value));
+}
+inline COMPLEX_REF cast2ref(const complex<mplapack_binary128_t> &value) {
+    return COMPLEX_REF(mplapack::gmpfrxx_adapter::make_binary128_complex_source(
+        value.real(), value.imag()));
+}
+#endif
 
-void set_random_number1to2(double &a, mpfr_class &b);
-void set_random_number1to2(complex<double> &a, mpc_class &b);
-void set_random_number1to2(INTEGER_REF &a, INTEGER &b);
+// Generate in the active backend, then convert once to the reference type.
+void set_random_number(REAL_REF &reference_value, REAL &backend_value);
+void set_random_number(COMPLEX_REF &reference_value, COMPLEX &backend_value);
+void set_random_number1to2(REAL_REF &reference_value, REAL &backend_value);
+void set_random_number1to2(COMPLEX_REF &reference_value, COMPLEX &backend_value);
+void set_random_number(INTEGER_REF &reference_value, INTEGER &backend_value);
+void set_random_number1to2(INTEGER_REF &reference_value, INTEGER &backend_value);
 
 REAL_REF infnorm(COMPLEX_REF *vec_ref, COMPLEX *vec, int len, int inc);
 REAL_REF infnorm(REAL_REF *vec_ref, REAL *vec, int len, int inc);
@@ -217,53 +275,35 @@ inline int vecplen(int n) {
 
 inline int matlen(int lda, int n) { return std::max(1, abs(lda) * abs(n)); }
 
+#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+mpfr_class mpf_randomnumber(mpfr_class);
+mpc_class mpc_randomnumber(mpc_class);
+#endif
 #if defined ___MPLAPACK_BUILD_WITH_GMP___
 mpf_class mpf_randomnumber(mpf_class);
 mpfc_class mpc_randomnumber(mpfc_class);
-void set_random_number(mpfr_class &a, mpf_class &b);
-void set_random_number(mpc_class &a, mpfc_class &b);
-void set_random_number1to2(mpfr_class &a, mpf_class &b);
-void set_random_number1to2(mpc_class &a, mpfc_class &b);
 #endif
 #if defined ___MPLAPACK_BUILD_WITH_QD___
 qd_real mpf_randomnumber(qd_real);
 qd_complex mpc_randomnumber(qd_complex);
-void set_random_number(mpfr_class &a, qd_real &b);
-void set_random_number(mpc_class &a, qd_complex &b);
-void set_random_number1to2(mpfr_class &a, qd_real &b);
-void set_random_number1to2(mpc_class &a, qd_complex &b);
 #endif
 #if defined ___MPLAPACK_BUILD_WITH_DD___
 dd_real mpf_randomnumber(dd_real);
 dd_complex mpc_randomnumber(dd_complex);
-void set_random_number(mpfr_class &a, dd_real &b);
-void set_random_number(mpc_class &a, dd_complex &b);
-void set_random_number1to2(mpfr_class &a, dd_real &b);
-void set_random_number1to2(mpc_class &a, dd_complex &b);
 #endif
 #if defined ___MPLAPACK_BUILD_WITH_DOUBLE___
-void set_random_number(mpfr_class &a, double &b);
-void set_random_number(mpc_class &a, complex<double> &b);
-void set_random_number1to2(mpfr_class &a, double &b);
-void set_random_number1to2(mpc_class &a, complex<double> &b);
+double mpf_randomnumber(double);
+complex<double> mpc_randomnumber(complex<double>);
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_BINARY80___
 mplapack_binary80_t mpf_randomnumber(mplapack_binary80_t dummy);
 complex<mplapack_binary80_t> mpc_randomnumber(complex<mplapack_binary80_t> dummy);
-void set_random_number(mpfr_class &a, mplapack_binary80_t &b);
-void set_random_number(mpc_class &a, complex<mplapack_binary80_t> &b);
-void set_random_number1to2(mpfr_class &a, mplapack_binary80_t &b);
-void set_random_number1to2(mpc_class &a, complex<mplapack_binary80_t> &b);
 #endif
 
 #if defined ___MPLAPACK_BUILD_WITH_BINARY128___
 mplapack_binary128_t mpf_randomnumber(mplapack_binary128_t dummy);
 complex<mplapack_binary128_t> mpc_randomnumber(complex<mplapack_binary128_t> dummy);
-void set_random_number(mpfr_class &a, mplapack_binary128_t &b);
-void set_random_number(mpc_class &a, complex<mplapack_binary128_t> &b);
-void set_random_number1to2(mpfr_class &a, mplapack_binary128_t &b);
-void set_random_number1to2(mpc_class &a, complex<mplapack_binary128_t> &b);
 #endif
 
 template <class X_REF, class X> void set_random_vector(X_REF *vec_ref, X *vec, int len) {
@@ -302,23 +342,23 @@ template <class X_REF, class X> void set_random_psdmat(X_REF *p_ref, X *p, int l
 }
 
 template <class X_REF, class X> void set_random_symmmat_cond(X_REF *p_ref, X *p, int ldp, int n, int cond) {
-    // all calculations should be done with mpfr.
-    mpfr_class *tmpmat1_mpreal = new mpfr_class[matlen(ldp, n)];
-    mpfr_class *tmpmat2_mpreal = new mpfr_class[matlen(ldp, n)];
-    mpfr_class *tmpmat3_mpreal = new mpfr_class[matlen(ldp, n)];
-    mpfr_class rtmp;
+    using cond_real = X;
+    cond_real *tmpmat1 = new cond_real[matlen(ldp, n)];
+    cond_real *tmpmat2 = new cond_real[matlen(ldp, n)];
+    cond_real *tmpmat3 = new cond_real[matlen(ldp, n)];
+    cond_real rtmp;
 
     for (int i = 0; i < matlen(ldp, n); i++) {
         p[i] = 0.0;
         p_ref[i] = 0.0;
     }
     for (int i = 0; i < n; i++) {
-        rtmp = mpfr_class(cond) * mpfr_class(2.0 * (i + 1) - n) / mpfr_class(2.0 * n);
-        tmpmat1_mpreal[i + i * ldp] = pow((mpfr_class)10.0, rtmp);
+        rtmp = cond_real(cond) * cond_real(2.0 * (i + 1) - n) / cond_real(2.0 * n);
+        tmpmat1[i + i * ldp] = pow(cond_real(10.0), rtmp);
     }
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            tmpmat2_mpreal[i + j * ldp] = (mpf_randomnumber(rtmp) + (mpfr_class)1.0) / (mpfr_class)2.0;
+            tmpmat2[i + j * ldp] = (mpf_randomnumber(rtmp) + cond_real(1.0)) / cond_real(2.0);
         }
     }
 
@@ -327,36 +367,22 @@ template <class X_REF, class X> void set_random_symmmat_cond(X_REF *p_ref, X *p,
             rtmp = 0.0;
             for (int k = 0; k < n; k++) {
                 for (int l = 0; l < n; l++) {
-                    rtmp = rtmp + tmpmat2_mpreal[i + k * ldp] * tmpmat1_mpreal[k + l * ldp] * tmpmat2_mpreal[j + l * ldp];
+                    rtmp = rtmp + tmpmat2[i + k * ldp] * tmpmat1[k + l * ldp] * tmpmat2[j + l * ldp];
                 }
             }
-            tmpmat3_mpreal[i + j * ldp] = rtmp;
+            tmpmat3[i + j * ldp] = rtmp;
         }
     }
 
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-#if defined(___MPLAPACK_BUILD_WITH_MPFR___)
-            p[i + j * ldp] = (tmpmat3_mpreal[i + j * ldp]);
-#elif defined(___MPLAPACK_BUILD_WITH_GMP___)
-            p[i + j * ldp] = cast2mpf_class(tmpmat3_mpreal[i + j * ldp]);
-#elif defined(___MPLAPACK_BUILD_WITH_QD___)
-            p[i + j * ldp] = cast2qd_real(tmpmat3_mpreal[i + j * ldp]);
-#elif defined(___MPLAPACK_BUILD_WITH_DD___)
-            p[i + j * ldp] = cast2dd_real(tmpmat3_mpreal[i + j * ldp]);
-#elif defined(___MPLAPACK_BUILD_WITH_DOUBLE___)
-            p[i + j * ldp] = (double)(tmpmat3_mpreal[i + j * ldp]);
-#elif defined(___MPLAPACK_BUILD_WITH_BINARY80___)
-            p[i + j * ldp] = cast2binary80_t(tmpmat3_mpreal[i + j * ldp]);
-#elif defined(___MPLAPACK_BUILD_WITH_BINARY128___)
-            p[i + j * ldp] = cast2binary128_t(tmpmat3_mpreal[i + j * ldp]);
-#endif
-            p_ref[i + j * ldp] = tmpmat3_mpreal[i + j * ldp];
+            p[i + j * ldp] = tmpmat3[i + j * ldp];
+            p_ref[i + j * ldp] = cast2ref(tmpmat3[i + j * ldp]);
         }
     }
-    delete[] tmpmat1_mpreal;
-    delete[] tmpmat2_mpreal;
-    delete[] tmpmat3_mpreal;
+    delete[] tmpmat1;
+    delete[] tmpmat2;
+    delete[] tmpmat3;
 }
 
 template <class X_REF, class X> void set_hilbertmat(X_REF *p_ref, X *p, int ldp, int n) {

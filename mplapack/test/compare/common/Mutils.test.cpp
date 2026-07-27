@@ -103,7 +103,7 @@ void Mutils_test_pi() {
     cout << endl;
     cout << "residue=p-p_ref" << endl;
 #endif
-    diff = abs(p_ref - p);
+    diff = abs(p_ref - cast2ref(p));
 #if defined VERBOSE_TEST
     printf("diff     ");
     printnum(diff);
@@ -148,7 +148,7 @@ void Mutils_test_log2() {
         printnum(b);
         cout << endl;
 #endif
-        diff = abs(b_ref - b);
+        diff = abs(b_ref - cast2ref(b));
 #if defined VERBOSE_TEST
         printf("diff     ");
         printnum(diff);
@@ -193,7 +193,7 @@ void Mutils_test_log() {
         printnum(b);
         cout << endl;
 #endif
-        diff = abs(b_ref - b);
+        diff = abs(b_ref - cast2ref(b));
 #if defined VERBOSE_TEST
         printf("diff     ");
         printnum(diff);
@@ -236,7 +236,7 @@ void Mutils_test_log10() {
         printnum(b);
         cout << endl;
 #endif
-        diff = abs(b_ref - b);
+        diff = abs(b_ref - cast2ref(b));
 #if defined VERBOSE_TEST
         printf("diff        ");
         printnum(diff);
@@ -339,7 +339,7 @@ void Mutils_test_pow() {
         printnum(z);
         cout << endl;
 #endif
-        diff = abs(z_ref - z);
+        diff = abs(z_ref - cast2ref(z));
 #if defined VERBOSE_TEST
         printf("diff     ");
         printnum(diff);
@@ -382,7 +382,7 @@ void Mutils_test_sin() {
         cout << endl;
         cout << endl;
 #endif
-        diff = abs(b_ref - b);
+        diff = abs(b_ref - cast2ref(b));
 #if defined VERBOSE_TEST
         printf("diff     ");
         printnum(diff);
@@ -424,7 +424,7 @@ void Mutils_test_cos() {
         printnum(b);
         cout << endl;
 #endif
-        diff = abs(b_ref - b);
+        diff = abs(b_ref - cast2ref(b));
 #if defined VERBOSE_TEST
         printf("diff     ");
         printnum(diff);
@@ -466,7 +466,7 @@ void Mutils_test_exp() {
         printnum(b);
         cout << endl;
 #endif
-        diff = abs(b_ref - b);
+        diff = abs(b_ref - cast2ref(b));
 #if defined VERBOSE_TEST
         printf("diff     ");
         printnum(diff);
@@ -509,7 +509,7 @@ void Mutils_test_csin() {
         printnum(b);
         cout << endl;
 #endif
-        diff = abs(b_ref - b);
+        diff = abs(b_ref - cast2ref(b));
 #if defined VERBOSE_TEST
         printf("diff     ");
         printnum(diff);
@@ -551,7 +551,7 @@ void Mutils_test_ccos() {
         printnum(b);
         cout << endl;
 #endif
-        diff = abs(b_ref - b);
+        diff = abs(b_ref - cast2ref(b));
 #if defined VERBOSE_TEST
         printf("diff     ");
         printnum(diff);
@@ -594,7 +594,7 @@ void Mutils_test_cexp() {
         printnum(b);
         cout << endl;
 #endif
-        diff = abs(b_ref - b);
+        diff = abs(b_ref - cast2ref(b));
 #if defined VERBOSE_TEST
         printf("diff     ");
         printnum(diff);
@@ -637,7 +637,7 @@ void Mutils_test_csqrt() {
         printnum(b);
         cout << endl;
 #endif
-        diff = abs(b_ref - b);
+        diff = abs(b_ref - cast2ref(b));
 #if defined VERBOSE_TEST
         printf("diff     ");
         printnum(diff);
@@ -691,9 +691,8 @@ void Mutils_test() {
 }
 
 int main(int argc, char *argv[]) {
-    mpfr_class::default_prec = ___MPLAPACK_MPFR_DEFAULT_PRECISION___;
-    mpc_class::default_real_prec = ___MPLAPACK_MPFR_DEFAULT_PRECISION___;
-    mpc_class::default_imag_prec = ___MPLAPACK_MPFR_DEFAULT_PRECISION___;
+    mpfrxx::set_default_precision_bits(___MPLAPACK_MPFR_DEFAULT_PRECISION___);
+    mpfrxx::set_default_mpc_precision_bits(___MPLAPACK_MPFR_DEFAULT_PRECISION___);
 
     printf("*** Testing Mutils start ***\n");
     Mutils_test();

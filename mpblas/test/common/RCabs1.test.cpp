@@ -72,7 +72,7 @@ void RCabs1_test() {
         printnum(dtemp);
         printf("\n");
 #endif
-        REAL_REF diff = abs(Ftemp - dtemp);
+        REAL_REF diff = abs(cast2ref(Ftemp) - dtemp);
         if (diff > EPSILON) {
 #if defined VERBOSE_TEST
             printf("error: ");

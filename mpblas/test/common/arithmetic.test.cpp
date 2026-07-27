@@ -92,7 +92,7 @@ static const int kNumComplexTestVals = (int)(sizeof(kComplexTestVals) / sizeof(k
 
 /* Print-and-abort helpers for deterministic diagnostics. */
 static void report_real_failure(const char *label, const REAL_REF &a_ref, const REAL_REF &b_ref, const REAL &a, const REAL &b, const REAL_REF &expected, const REAL &got) {
-    REAL_REF diff = abs(expected - got);
+    REAL_REF diff = abs(expected - cast2ref(got));
     printf("FAILED: %s\n", label);
     printf("a_ref     = ");
     printnum(a_ref);
@@ -119,7 +119,7 @@ static void report_real_failure(const char *label, const REAL_REF &a_ref, const 
 }
 
 static void report_complex_failure(const char *label, const COMPLEX_REF &a_ref, const COMPLEX_REF &b_ref, const COMPLEX &a, const COMPLEX &b, const COMPLEX_REF &expected, const COMPLEX &got) {
-    REAL_REF diff = abs(expected - got);
+    REAL_REF diff = abs(expected - cast2ref(got));
     printf("FAILED: %s\n", label);
     printf("a_ref     = ");
     printnum(a_ref);
@@ -146,14 +146,14 @@ static void report_complex_failure(const char *label, const COMPLEX_REF &a_ref, 
 }
 
 static void check_close_real(const char *label, const REAL_REF &a_ref, const REAL_REF &b_ref, const REAL &a, const REAL &b, const REAL_REF &expected, const REAL &got) {
-    REAL_REF diff = abs(expected - got);
+    REAL_REF diff = abs(expected - cast2ref(got));
     if (abs(diff) > EPSILON) {
         report_real_failure(label, a_ref, b_ref, a, b, expected, got);
     }
 }
 
 static void check_close_complex(const char *label, const COMPLEX_REF &a_ref, const COMPLEX_REF &b_ref, const COMPLEX &a, const COMPLEX &b, const COMPLEX_REF &expected, const COMPLEX &got) {
-    REAL_REF diff = abs(expected - got);
+    REAL_REF diff = abs(expected - cast2ref(got));
     if (abs(diff) > EPSILON) {
         report_complex_failure(label, a_ref, b_ref, a, b, expected, got);
     }
@@ -194,7 +194,7 @@ void subst_test1() {
     tmp1 = buf1;
 #endif
 
-    tmp2 = tmp1;
+    tmp2 = cast2ref(tmp1);
 
     sprintnum(buf2, tmp1);
     sprintnum(buf3, tmp2);
@@ -287,7 +287,7 @@ void subst_test2() {
     printnum(temp1);
     printf("\n");
 
-    diff = abs(temp1r - temp1);
+    diff = abs(temp1r - cast2ref(temp1));
     printf("diff = ");
     printnum(diff);
     printf("\n");
@@ -308,7 +308,7 @@ void mp_rounding2integer() {
     temp2r = nint(temp1r);
     temp2 = nint(temp1);
 
-    diff = abs(temp2r - temp2);
+    diff = abs(temp2r - cast2ref(temp2));
     printf("diff = ");
     printnum(diff);
     printf("\n");
@@ -329,7 +329,7 @@ void mp_nint() {
     temp2r = nint(temp1r);
     temp2 = nint(temp1);
 
-    diff = abs(temp2r - temp2);
+    diff = abs(temp2r - cast2ref(temp2));
     printf("diff = ");
     printnum(diff);
     printf("\n");
@@ -352,7 +352,7 @@ void mp_sub_test_real() {
     temp1r = temp1r - temp2r;
     temp1 = temp1 - temp2;
 
-    diff = abs(temp1r - temp1);
+    diff = abs(temp1r - cast2ref(temp1));
     printf("diff = ");
     printnum(diff);
     printf("\n");
@@ -375,7 +375,7 @@ void mp_sub_test_complex() {
     temp1r = temp1r - temp2r;
     temp1 = temp1 - temp2;
 
-    diff = abs(temp1r - temp1);
+    diff = abs(temp1r - cast2ref(temp1));
     printf("diff = ");
     printnum(diff);
     printf("\n");
@@ -546,7 +546,7 @@ void division_real_test() {
         set_random_number(b_ref, b);
 
         if (abs(b_ref) <= denom_min_ref) {
-            b_ref = denom_safe;
+            b_ref = cast2ref(denom_safe);
             b = denom_safe;
         }
 
@@ -745,9 +745,8 @@ int main() {
 #endif
 
     // we need to specify explicitly.
-    mpfr_class::default_prec = ___MPLAPACK_MPFR_DEFAULT_PRECISION___;
-    mpc_class::default_real_prec = ___MPLAPACK_MPFR_DEFAULT_PRECISION___;
-    mpc_class::default_imag_prec = ___MPLAPACK_MPFR_DEFAULT_PRECISION___;
+    mpfrxx::set_default_precision_bits(___MPLAPACK_MPFR_DEFAULT_PRECISION___);
+    mpfrxx::set_default_mpc_precision_bits(___MPLAPACK_MPFR_DEFAULT_PRECISION___);
 
     mp_rounding2integer();
     mp_nint();

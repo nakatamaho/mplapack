@@ -66,7 +66,7 @@ void Cdotu_test() {
                     dtemp = Cdotu(n, x_ref, incx, y_ref, incy);
 #endif
                     ctemp = Cdotu(n, x, incx, y, incy);
-                    REAL_REF diff = abs(ctemp - dtemp);
+                    REAL_REF diff = abs(cast2ref(ctemp) - dtemp);
                     if (diff > EPSILON) {
 #if defined VERBOSE_TEST
                         printf("error: ");

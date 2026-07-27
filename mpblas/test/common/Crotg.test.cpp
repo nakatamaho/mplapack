@@ -67,10 +67,10 @@ void Crotg_test() {
 #endif
         Crotg(ca, cb, cc, cs);
 
-        diff1 = abs(ca_ref - ca);
-        diff2 = abs(cb_ref - cb);
-        diff3 = abs(cc_ref - cc);
-        diff4 = abs(cs_ref - cs);
+        diff1 = abs(ca_ref - cast2ref(ca));
+        diff2 = abs(cb_ref - cast2ref(cb));
+        diff3 = abs(cc_ref - cast2ref(cc));
+        diff4 = abs(cs_ref - cast2ref(cs));
 
 #if defined VERBOSE_TEST
         printf("diff1=");

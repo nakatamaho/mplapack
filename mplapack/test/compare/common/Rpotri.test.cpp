@@ -76,23 +76,8 @@ void Rpotri_test2(const char *uplo) {
                 Rpotrf(uplo, n, A_ref, lda, info_ref);
                 Rpotri(uplo, n, A_ref, lda, info_ref);
 #endif
-                for (int p = 0; p < matlen(lda, n); p++) {
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
-                    A[p] = A_ref[p];
-#elif defined ___MPLAPACK_BUILD_WITH_GMP___
-                    A[p] = cast2mpf_class(A_ref[p]);
-#elif defined ___MPLAPACK_BUILD_WITH_QD___
-                    A[p] = cast2qd_real(A_ref[p]);
-#elif defined ___MPLAPACK_BUILD_WITH_DD___
-                    A[p] = cast2dd_real(A_ref[p]);
-#elif defined ___MPLAPACK_BUILD_WITH_DOUBLE___
-                    A[p] = cast2double(A_ref[p]);
-#elif defined ___MPLAPACK_BUILD_WITH_BINARY80___
-                    A[p] = cast2binary80_t(A_ref[p]);
-#elif defined ___MPLAPACK_BUILD_WITH_BINARY128___
-                    A[p] = cast2binary128_t(A_ref[p]);
-#endif
-                }
+                Rpotrf(uplo, n, A, lda, info);
+                Rpotri(uplo, n, A, lda, info);
 // doing inversion twice.
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                 dpotf2_f77(uplo, &n, A_ref, &lda, &info_ref);

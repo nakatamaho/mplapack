@@ -63,7 +63,7 @@ void Rasum_test() {
 #endif
                 rtemp = Rasum(n, x, incx);
 
-                REAL_REF diff = rtemp - dtemp;
+                REAL_REF diff = cast2ref(rtemp) - dtemp;
                 if (diff > EPSILON) {
 #if defined VERBOSE_TEST
                     printf("error: ");

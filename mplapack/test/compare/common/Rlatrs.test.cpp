@@ -56,7 +56,6 @@ void Rlatrs_test2(const char *uplo, const char *trans, const char *diag, const c
     REAL_REF diff;
     INTEGER_REF n, lda;
     REAL rtmp;
-    REAL_REF rtmp_ref;
 
     for (n = MIN_N; n <= MAX_N; n++) {
         for (lda = max(1, (int)n); lda <= MAX_LDA; lda++) {
@@ -64,14 +63,12 @@ void Rlatrs_test2(const char *uplo, const char *trans, const char *diag, const c
             printf("# n %d, lda %d, uplo %s, trans %s, diag %s, normin %s\n", (int)n, (int)lda, uplo, trans, diag, normin);
 #endif
             REAL_REF *A_ref = new REAL_REF[matlen(lda, n)];
-            REAL_REF *B_ref = new REAL_REF[matlen(lda, n)];
             REAL_REF *x_ref = new REAL_REF[veclen(n, 1)];
             REAL_REF *cnorm_ref = new REAL_REF[veclen(n, 1)];
             REAL *A = new REAL[matlen(lda, n)];
+            REAL *B = new REAL[matlen(lda, n)];
             REAL *x = new REAL[veclen(n, 1)];
             REAL *cnorm = new REAL[veclen(n, 1)];
-
-            REAL_REF *y_ref = new REAL_REF[veclen(n, 1)];
             REAL *y = new REAL[veclen(n, 1)];
 
             for (iter = 0; iter < MAX_ITER; iter++) {
@@ -82,62 +79,44 @@ void Rlatrs_test2(const char *uplo, const char *trans, const char *diag, const c
                 /* A*x=b; b would be very large. so we choose x as the answer. */
                 for (int p = 0; p < n; p++) {
                     for (int q = 0; q < n; q++) {
-                        B_ref[p + q * lda] = 0.0;
+                        B[p + q * lda] = 0.0;
                     }
                 }
                 if (Mlsame(uplo, "U")) {
                     for (int p = 0; p < n; p++) {
                         for (int q = p; q < n; q++) {
-                            B_ref[p + q * lda] = A_ref[p + q * lda];
+                            B[p + q * lda] = A[p + q * lda];
                         }
                     }
                 }
                 if (Mlsame(uplo, "L")) {
                     for (int p = 0; p < n; p++) {
                         for (int q = 0; q <= p; q++) {
-                            B_ref[p + q * lda] = A_ref[p + q * lda];
+                            B[p + q * lda] = A[p + q * lda];
                         }
                     }
                 }
                 if (Mlsame(diag, "U")) {
                     for (int p = 0; p < n; p++) {
-                        B_ref[p + p * lda] = 1.0;
+                        B[p + p * lda] = 1.0;
                     }
                 }
-                // printf("A"); printmat(n, n, B_ref, lda); printf("\n");
                 for (int p = 0; p < n; p++) {
                     rtmp = 0.0;
-                    rtmp_ref = 0.0;
                     for (int q = 0; q < n; q++) {
                         if (Mlsame(trans, "N")) {
-                            rtmp_ref += B_ref[p + q * lda] * x_ref[q];
+                            rtmp += B[p + q * lda] * x[q];
                         } else {
-                            rtmp_ref += B_ref[q + p * lda] * x_ref[q];
+                            rtmp += B[q + p * lda] * x[q];
                         }
                     }
-                    y_ref[p] = rtmp_ref;
+                    y[p] = rtmp;
                 }
-                // printf("ans"); printvec(x_ref, veclen(n, 1)); printf("\n");
-                // printf("A"); printmat(n, n, B_ref, lda); printf("\n");
+                // Use values computed by the backend as the common right-hand side.
                 for (int p = 0; p < n; p++) {
-                    x_ref[p] = y_ref[p];
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
-                    x[p] = y_ref[p];
-#elif defined ___MPLAPACK_BUILD_WITH_GMP___
-                    x[p] = cast2mpf_class(y_ref[p]);
-#elif defined ___MPLAPACK_BUILD_WITH_QD___
-                    x[p] = cast2qd_real(y_ref[p]);
-#elif defined ___MPLAPACK_BUILD_WITH_DD___
-                    x[p] = cast2dd_real(y_ref[p]);
-#elif defined ___MPLAPACK_BUILD_WITH_DOUBLE___
-                    x[p] = cast2double(y_ref[p]);
-#elif defined ___MPLAPACK_BUILD_WITH_BINARY80___
-                    x[p] = cast2binary80_t(y_ref[p]);
-#elif defined ___MPLAPACK_BUILD_WITH_BINARY128___
-                    x[p] = cast2binary128_t(y_ref[p]);
-#endif
+                    x[p] = y[p];
+                    x_ref[p] = cast2ref(y[p]);
                 }
-                // printf("y_ref"); printvec(y_ref, veclen(n, 1)); printf("\n");
 
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                 dlatrs_f77(uplo, trans, diag, normin, &n, A_ref, &lda, x_ref, &scale_ref, cnorm_ref, &info_ref);
@@ -181,11 +160,12 @@ void Rlatrs_test2(const char *uplo, const char *trans, const char *diag, const c
 #endif
             }
             delete[] cnorm;
+            delete[] y;
             delete[] x;
             delete[] A;
+            delete[] B;
             delete[] cnorm_ref;
             delete[] x_ref;
-            delete[] B_ref;
             delete[] A_ref;
         }
     }

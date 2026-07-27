@@ -64,7 +64,7 @@ void Raxpy_test2(REAL_REF alpha_ref, REAL alpha) {
 #if defined ___MPLAPACK_BUILD_WITH_MPFR___
                     daxpy_f77(&n, &alpha_ref, x_ref, &incx, y_ref, &incy);
 #else
-                    Raxpy(n, alpha, x_ref, incx, y_ref, incy);
+                    Raxpy(n, alpha_ref, x_ref, incx, y_ref, incy);
 #endif
                     Raxpy(n, alpha, x, incx, y, incy);
 

@@ -70,7 +70,7 @@ void Rdot_test() {
 #endif
                     ctemp = Rdot(n, x, incx, y, incy);
 
-                    REAL_REF diff = abs(ctemp - dtemp);
+                    REAL_REF diff = abs(cast2ref(ctemp) - dtemp);
                     if (diff > EPSILON) {
 #if defined VERBOSE_TEST
                         printf("error: ");

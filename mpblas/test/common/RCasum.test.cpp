@@ -63,7 +63,7 @@ void RCasum_test() {
 #endif
                 rtemp = RCasum(n, x, incx);
 
-                REAL_REF diff = dtemp - rtemp;
+                REAL_REF diff = dtemp - cast2ref(rtemp);
                 if (diff > EPSILON) {
 #if defined VERBOSE_TEST
                     printf("error: ");

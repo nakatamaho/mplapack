@@ -67,7 +67,7 @@ void Cdotc_test() {
                     dtemp = Cdotc(n, x_ref, incx, y_ref, incy);
 #endif
                     ctemp = Cdotc(n, x, incx, y, incy);
-                    REAL_REF diff = abs(ctemp - dtemp);
+                    REAL_REF diff = abs(cast2ref(ctemp) - dtemp);
                     if (diff > EPSILON) {
 #if defined VERBOSE_TEST
                         printf("error: ");
