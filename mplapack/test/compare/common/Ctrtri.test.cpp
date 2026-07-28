@@ -64,7 +64,7 @@ void Ctrtri_test2(const char *uplo, const char *diag) {
 
             for (iter = 0; iter < MAX_ITER; iter++) {
                 set_random_vector(A_ref, A, matlen(lda, n));
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                 ztrtri_f77(uplo, diag, &n, A_ref, &lda, &info_ref);
 #else
                 Ctrtri(uplo, diag, n, A_ref, lda, info_ref);

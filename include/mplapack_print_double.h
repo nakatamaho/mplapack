@@ -26,13 +26,13 @@
  *
  */
 
-#ifndef _MPLAPACK_PRINT_DOUBLE_H_
-#define _MPLAPACK_PRINT_DOUBLE_H_
+#ifndef MPLAPACK_PRINT_DOUBLE_H
+#define MPLAPACK_PRINT_DOUBLE_H
 
 #include <cstring>
 
-#if !defined __MPLAPACK_BUFLEN__
-#define __MPLAPACK_BUFLEN__ 1024
+#if !defined MPLAPACK_BUFLEN
+#define MPLAPACK_BUFLEN 1024
 #endif
 
 #define DOUBLE_FORMAT "%+20.16e"
@@ -47,13 +47,13 @@ inline void printnum_short(std::complex<double> ctmp) { printf(DOUBLE_SHORT_FORM
 inline void printnum_short(__complex__ double ctmp) { printf(DOUBLE_SHORT_FORMAT DOUBLE_SHORT_FORMAT "i", __real__ ctmp, __imag__ ctmp); }
 inline void printnum_short(mplapackint itmp) { printf("%d ", (int)itmp); }
 
-inline void sprintnum(char *buf, double rtmp) { snprintf(buf, __MPLAPACK_BUFLEN__, DOUBLE_FORMAT, rtmp); }
-inline void sprintnum(char *buf, std::complex<double> ctmp) { snprintf(buf, __MPLAPACK_BUFLEN__, DOUBLE_FORMAT DOUBLE_FORMAT "i", ctmp.real(), ctmp.imag()); }
-inline void sprintnum(char *buf, __complex__ double ctmp) { snprintf(buf, __MPLAPACK_BUFLEN__, DOUBLE_FORMAT DOUBLE_FORMAT "i", __real__ ctmp, __imag__ ctmp); }
+inline void sprintnum(char *buf, double rtmp) { snprintf(buf, MPLAPACK_BUFLEN, DOUBLE_FORMAT, rtmp); }
+inline void sprintnum(char *buf, std::complex<double> ctmp) { snprintf(buf, MPLAPACK_BUFLEN, DOUBLE_FORMAT DOUBLE_FORMAT "i", ctmp.real(), ctmp.imag()); }
+inline void sprintnum(char *buf, __complex__ double ctmp) { snprintf(buf, MPLAPACK_BUFLEN, DOUBLE_FORMAT DOUBLE_FORMAT "i", __real__ ctmp, __imag__ ctmp); }
 
-inline void sprintnum_short(char *buf, double rtmp) { snprintf(buf, __MPLAPACK_BUFLEN__, DOUBLE_SHORT_FORMAT, rtmp); }
-inline void sprintnum_short(char *buf, std::complex<double> ctmp) { snprintf(buf, __MPLAPACK_BUFLEN__, DOUBLE_SHORT_FORMAT DOUBLE_SHORT_FORMAT "i", ctmp.real(), ctmp.imag()); }
-inline void sprintnum_short(char *buf, __complex__ double ctmp) { snprintf(buf, __MPLAPACK_BUFLEN__, DOUBLE_SHORT_FORMAT DOUBLE_SHORT_FORMAT "i", __real__ ctmp, __imag__ ctmp); }
+inline void sprintnum_short(char *buf, double rtmp) { snprintf(buf, MPLAPACK_BUFLEN, DOUBLE_SHORT_FORMAT, rtmp); }
+inline void sprintnum_short(char *buf, std::complex<double> ctmp) { snprintf(buf, MPLAPACK_BUFLEN, DOUBLE_SHORT_FORMAT DOUBLE_SHORT_FORMAT "i", ctmp.real(), ctmp.imag()); }
+inline void sprintnum_short(char *buf, __complex__ double ctmp) { snprintf(buf, MPLAPACK_BUFLEN, DOUBLE_SHORT_FORMAT DOUBLE_SHORT_FORMAT "i", __real__ ctmp, __imag__ ctmp); }
 
 #include <mplapack_hex_helpers.h>
 

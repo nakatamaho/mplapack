@@ -30,35 +30,35 @@
 
 #ifndef _MUTILS_H_
 
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
 #include <mplapack_utils_mpfr.h>
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
+#if defined MPLAPACK_BUILD_WITH_GMP
 #include <mplapack_utils_gmp.h>
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_QD___
+#if defined MPLAPACK_BUILD_WITH_QD
 #include <mplapack_utils_qd.h>
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_DD___
+#if defined MPLAPACK_BUILD_WITH_DD
 #include <mplapack_utils_dd.h>
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_DOUBLE___
+#if defined MPLAPACK_BUILD_WITH_DOUBLE
 #include <mplapack_utils_double.h>
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_BINARY80___
+#if defined MPLAPACK_BUILD_WITH_BINARY80
 #include <mplapack_utils_binary80.h>
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_BINARY128___
+#if defined MPLAPACK_BUILD_WITH_BINARY128
 #include <mplapack_utils_binary128.h>
 #endif
 
-#if defined ___MPLAPACK_INTERNAL___
+#if defined MPLAPACK_INTERNAL
 #include <mplapack_print.h>
 #endif
 

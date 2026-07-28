@@ -62,7 +62,7 @@ target_link_libraries(myapp PRIVATE mplapack::mplapack_dd_opt_cuda)
 ```
 
 Linking `mplapack::mplapack_<backend>` transitively provides the MPBLAS layer,
-the include directories, the backend-selecting `-D___MPLAPACK_BUILD_WITH_<...>___`
+the include directories, the backend-selecting `-DMPLAPACK_BUILD_WITH_<...>`
 definition, and the precision dependencies — so your sources can simply:
 
 ```cpp

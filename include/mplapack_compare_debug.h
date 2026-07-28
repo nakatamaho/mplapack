@@ -28,11 +28,11 @@
  *
  */
 
-#ifndef _MPLAPACK_COMPARE_DEBUG_H_
-#define _MPLAPACK_COMPARE_DEBUG_H_
+#ifndef MPLAPACK_COMPARE_DEBUG_H
+#define MPLAPACK_COMPARE_DEBUG_H
 
-#ifndef ___MPLAPACK_DEBUG_BUILD___
-#define ___MPLAPACK_DEBUG_BUILD___
+#ifndef MPLAPACK_DEBUG_BUILD
+#define MPLAPACK_DEBUG_BUILD
 #endif
 
 extern int blas_errno; // for BLAS xerbla dispatch
@@ -55,11 +55,11 @@ using namespace mpfrxx;
 
 #include <mplapack_print_double.h>
 
-#if defined ___MPLAPACK_BUILD_WITH_BINARY80___ || defined ___MPLAPACK_BUILD_WITH_BINARY128___
+#if defined MPLAPACK_BUILD_WITH_BINARY80 || defined MPLAPACK_BUILD_WITH_BINARY128
 #include <mplapack_gmpfrxx_binary_adapters.h>
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_BINARY128___
+#if defined MPLAPACK_BUILD_WITH_BINARY128
 #define EPSILON 1e-31
 #define EPSILON2 1e-27
 #define EPSILON3 1e-27
@@ -70,7 +70,7 @@ using namespace mpfrxx;
 #define EPSILON10 1e-22
 #define EPSILON11 1e-21
 #define EPSILON12 1e-20
-#elif defined ___MPLAPACK_BUILD_WITH_MPFR___
+#elif defined MPLAPACK_BUILD_WITH_MPFR
 #define EPSILON 1e-12
 #define EPSILON2 1e-10
 #define EPSILON3 1e-9
@@ -81,7 +81,7 @@ using namespace mpfrxx;
 #define EPSILON10 1e-7
 #define EPSILON11 1e-7
 #define EPSILON12 1e-5
-#elif defined ___MPLAPACK_BUILD_WITH_GMP___
+#elif defined MPLAPACK_BUILD_WITH_GMP
 #define EPSILON 1e-150
 #define EPSILON2 1e-148
 #define EPSILON3 1e-148
@@ -93,7 +93,7 @@ using namespace mpfrxx;
 #define EPSILON11 1e-140
 #define EPSILON12 1e-140
 #define EPSILON100 1e-13
-#elif defined ___MPLAPACK_BUILD_WITH_QD___
+#elif defined MPLAPACK_BUILD_WITH_QD
 #define EPSILON 1e-61
 #define EPSILON2 1e-55
 #define EPSILON3 1e-55
@@ -104,7 +104,7 @@ using namespace mpfrxx;
 #define EPSILON10 1e-54
 #define EPSILON11 1e-54
 #define EPSILON12 1e-54
-#elif defined ___MPLAPACK_BUILD_WITH_DD___
+#elif defined MPLAPACK_BUILD_WITH_DD
 #define EPSILON 1e-29
 #define EPSILON2 1e-26
 #define EPSILON3 1e-26
@@ -115,7 +115,7 @@ using namespace mpfrxx;
 #define EPSILON10 1e-22
 #define EPSILON11 1e-21
 #define EPSILON12 1e-20
-#elif defined ___MPLAPACK_BUILD_WITH_DOUBLE___
+#elif defined MPLAPACK_BUILD_WITH_DOUBLE
 #define EPSILON 1e-12
 #define EPSILON2 1e-10
 #define EPSILON3 1e-9
@@ -126,7 +126,7 @@ using namespace mpfrxx;
 #define EPSILON10 1e-7
 #define EPSILON11 1e-7
 #define EPSILON12 1e-6
-#elif defined ___MPLAPACK_BUILD_WITH_BINARY80___
+#elif defined MPLAPACK_BUILD_WITH_BINARY80
 #define EPSILON 1e-13
 #define EPSILON2 1e-11
 #define EPSILON3 1e-10
@@ -154,24 +154,24 @@ inline double drand48() {
 
 extern int mplapack_errno; // Mxerbla.override.cpp
 
-#if defined __MPLAPACK_BUILD_DEBUG_CPP__
-#define _MPLAPACK_DEBUG_EXTERN_
+#if defined MPLAPACK_BUILD_DEBUG_CPP
+#define MPLAPACK_DEBUG_EXTERN
 #else
-#define _MPLAPACK_DEBUG_EXTERN_ extern
+#define MPLAPACK_DEBUG_EXTERN extern
 #endif
 
-#if defined(___MPLAPACK_BUILD_WITH_GMP___) || defined(___MPLAPACK_BUILD_WITH_QD___) || defined(___MPLAPACK_BUILD_WITH_DD___) || defined(___MPLAPACK_BUILD_WITH_DOUBLE___) || defined(___MPLAPACK_BUILD_WITH_BINARY80___) || defined(___MPLAPACK_BUILD_WITH_BINARY128___)
+#if defined(MPLAPACK_BUILD_WITH_GMP) || defined(MPLAPACK_BUILD_WITH_QD) || defined(MPLAPACK_BUILD_WITH_DD) || defined(MPLAPACK_BUILD_WITH_DOUBLE) || defined(MPLAPACK_BUILD_WITH_BINARY80) || defined(MPLAPACK_BUILD_WITH_BINARY128)
 #include <mpblas_mpfr.h>
 #include <mplapack_mpfr.h>
 #endif
 
-_MPLAPACK_DEBUG_EXTERN_ mpfrxx::mpfr_randclass uniformrandomstate_mpfr;
+MPLAPACK_DEBUG_EXTERN mpfrxx::mpfr_randclass uniformrandomstate_mpfr;
 
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
-_MPLAPACK_DEBUG_EXTERN_ gmpxx::gmp_randclass uniformrandomstate_gmp;
+#if defined MPLAPACK_BUILD_WITH_GMP
+MPLAPACK_DEBUG_EXTERN gmpxx::gmp_randclass uniformrandomstate_gmp;
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
 typedef int INTEGER_REF;
 typedef double REAL_REF;
 typedef complex<double> COMPLEX_REF;
@@ -183,12 +183,12 @@ typedef mpc_class COMPLEX_REF;
 
 template <typename T> inline const T &cast2ref(const T &value) { return value; }
 
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
 inline REAL_REF cast2ref(const mpfrxx::mpfr_class &value) { return value.get_d(); }
 inline COMPLEX_REF cast2ref(const mpfrxx::mpc_class &value) {
     return COMPLEX_REF(value.real_get_d(), value.imag_get_d());
 }
-#elif defined ___MPLAPACK_BUILD_WITH_GMP___
+#elif defined MPLAPACK_BUILD_WITH_GMP
 inline REAL_REF cast2ref(const gmpxx::mpf_class &value) {
     REAL_REF result = REAL_REF::with_precision(static_cast<mpfr_prec_t>(value.precision()));
     mpfr_set_f(result.mpfr_data(), value.mpf_data(), REAL_REF::default_rounding());
@@ -197,7 +197,7 @@ inline REAL_REF cast2ref(const gmpxx::mpf_class &value) {
 inline COMPLEX_REF cast2ref(const gmpxx::mpfc_class &value) {
     return COMPLEX_REF(cast2ref(value.real()), cast2ref(value.imag()));
 }
-#elif defined ___MPLAPACK_BUILD_WITH_QD___
+#elif defined MPLAPACK_BUILD_WITH_QD
 inline REAL_REF cast2ref(const qd_real &value) {
     REAL_REF result = REAL_REF::with_precision(REAL_REF::default_precision());
     mpfr_set_d(result.mpfr_data(), value.x[0], REAL_REF::default_rounding());
@@ -209,7 +209,7 @@ inline REAL_REF cast2ref(const qd_real &value) {
 inline COMPLEX_REF cast2ref(const qd_complex &value) {
     return COMPLEX_REF(cast2ref(value.real()), cast2ref(value.imag()));
 }
-#elif defined ___MPLAPACK_BUILD_WITH_DD___
+#elif defined MPLAPACK_BUILD_WITH_DD
 inline REAL_REF cast2ref(const dd_real &value) {
     REAL_REF result = REAL_REF::with_precision(REAL_REF::default_precision());
     mpfr_set_d(result.mpfr_data(), value.x[0], REAL_REF::default_rounding());
@@ -219,12 +219,12 @@ inline REAL_REF cast2ref(const dd_real &value) {
 inline COMPLEX_REF cast2ref(const dd_complex &value) {
     return COMPLEX_REF(cast2ref(value.real()), cast2ref(value.imag()));
 }
-#elif defined ___MPLAPACK_BUILD_WITH_DOUBLE___
+#elif defined MPLAPACK_BUILD_WITH_DOUBLE
 inline REAL_REF cast2ref(double value) { return REAL_REF(value); }
 inline COMPLEX_REF cast2ref(const complex<double> &value) {
     return COMPLEX_REF(REAL_REF(value.real()), REAL_REF(value.imag()));
 }
-#elif defined ___MPLAPACK_BUILD_WITH_BINARY80___
+#elif defined MPLAPACK_BUILD_WITH_BINARY80
 inline REAL_REF cast2ref(mplapack_binary80_t value) {
     return REAL_REF(mplapack::gmpfrxx_adapter::make_binary80_source(value));
 }
@@ -232,7 +232,7 @@ inline COMPLEX_REF cast2ref(const complex<mplapack_binary80_t> &value) {
     return COMPLEX_REF(mplapack::gmpfrxx_adapter::make_binary80_complex_source(
         value.real(), value.imag()));
 }
-#elif defined ___MPLAPACK_BUILD_WITH_BINARY128___
+#elif defined MPLAPACK_BUILD_WITH_BINARY128
 inline REAL_REF cast2ref(mplapack_binary128_t value) {
     return REAL_REF(mplapack::gmpfrxx_adapter::make_binary128_source(value));
 }
@@ -242,7 +242,7 @@ inline COMPLEX_REF cast2ref(const complex<mplapack_binary128_t> &value) {
 }
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
 inline INTEGER_REF castINTEGER_ref(REAL_REF value) { return static_cast<INTEGER_REF>(value); }
 #else
 inline INTEGER_REF castINTEGER_ref(const REAL_REF &value) { return value.get_integer<INTEGER_REF>(); }
@@ -281,33 +281,33 @@ inline int vecplen(int n) {
 
 inline int matlen(int lda, int n) { return std::max(1, abs(lda) * abs(n)); }
 
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
 mpfr_class mpf_randomnumber(mpfr_class);
 mpc_class mpc_randomnumber(mpc_class);
 #endif
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
+#if defined MPLAPACK_BUILD_WITH_GMP
 mpf_class mpf_randomnumber(mpf_class);
 mpfc_class mpc_randomnumber(mpfc_class);
 #endif
-#if defined ___MPLAPACK_BUILD_WITH_QD___
+#if defined MPLAPACK_BUILD_WITH_QD
 qd_real mpf_randomnumber(qd_real);
 qd_complex mpc_randomnumber(qd_complex);
 #endif
-#if defined ___MPLAPACK_BUILD_WITH_DD___
+#if defined MPLAPACK_BUILD_WITH_DD
 dd_real mpf_randomnumber(dd_real);
 dd_complex mpc_randomnumber(dd_complex);
 #endif
-#if defined ___MPLAPACK_BUILD_WITH_DOUBLE___
+#if defined MPLAPACK_BUILD_WITH_DOUBLE
 double mpf_randomnumber(double);
 complex<double> mpc_randomnumber(complex<double>);
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_BINARY80___
+#if defined MPLAPACK_BUILD_WITH_BINARY80
 mplapack_binary80_t mpf_randomnumber(mplapack_binary80_t dummy);
 complex<mplapack_binary80_t> mpc_randomnumber(complex<mplapack_binary80_t> dummy);
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_BINARY128___
+#if defined MPLAPACK_BUILD_WITH_BINARY128
 mplapack_binary128_t mpf_randomnumber(mplapack_binary128_t dummy);
 complex<mplapack_binary128_t> mpc_randomnumber(complex<mplapack_binary128_t> dummy);
 #endif

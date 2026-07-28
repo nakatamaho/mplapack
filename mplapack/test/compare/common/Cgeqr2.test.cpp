@@ -76,7 +76,7 @@ void Cgeqr2_test() {
                     set_random_vector(A_ref, A, matlen(lda, n));
                     set_random_vector(tau_ref, tau, veclen(min(m, n), 1));
                     set_random_vector(work_ref, work, veclen(n, 1));
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                     zgeqr2_f77(&m, &n, A_ref, &lda, tau_ref, work_ref, &info_ref);
 #else
                     Cgeqr2(m, n, A_ref, lda, tau_ref, work_ref, info_ref);

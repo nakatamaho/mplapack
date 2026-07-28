@@ -52,10 +52,10 @@ void Clatb4(fem::str_cref path, INTEGER const imat, INTEGER const m, INTEGER con
     const REAL shrink = 0.25;
     REAL eps = Rlamch("Precision");
     REAL badc2 = tenth / eps;
-#if defined ___MPLAPACK_BUILD_WITH_DD___ || defined ___MPLAPACK_BUILD_WITH_BINARY128___ || defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_DD || defined MPLAPACK_BUILD_WITH_BINARY128 || defined MPLAPACK_BUILD_WITH_MPFR
     const REAL badc2_cap = 1.0e24;
     badc2 = min(badc2, badc2_cap);
-#elif defined ___MPLAPACK_BUILD_WITH_QD___ || defined ___MPLAPACK_BUILD_WITH_GMP___
+#elif defined MPLAPACK_BUILD_WITH_QD || defined MPLAPACK_BUILD_WITH_GMP
     const REAL badc2_cap = 1.0e30;
     badc2 = min(badc2, badc2_cap);
 #endif
@@ -63,7 +63,7 @@ void Clatb4(fem::str_cref path, INTEGER const imat, INTEGER const m, INTEGER con
     REAL small = Rlamch("Safe minimum");
     REAL large = one / small;
     //
-#if defined ___MPLAPACK_BUILD_WITH_BINARY128___ ||  defined ___MPLAPACK_BUILD_WITH_BINARY80___
+#if defined MPLAPACK_BUILD_WITH_BINARY128 ||  defined MPLAPACK_BUILD_WITH_BINARY80
     Rlabad(small, large);
 #endif
     //

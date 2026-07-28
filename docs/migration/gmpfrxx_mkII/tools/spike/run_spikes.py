@@ -75,7 +75,7 @@ def main() -> int:
         "-fopenmp",
         "-ffp-contract=off",
         f"-I{gmpfrxx_prefix / 'include'}",
-        "-D___MPLAPACK_INTERNAL___",
+        "-DMPLAPACK_INTERNAL",
         f"-I{mplapack_prefix / 'include' / 'mplapack'}",
         f"-I{mplapack_prefix / 'include'}",
         f"-L{mplapack_prefix / 'lib'}",

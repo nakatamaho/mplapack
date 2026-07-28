@@ -61,7 +61,7 @@ void Clacgv_test(void) {
 #endif
             while (j < MAX_ITER) {
                 set_random_vector(x_ref, x, veclen(n, incx));
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                 int incx_ref = (int)incx;
                 zlacgv_f77(&n, x_ref, &incx_ref);
 #else

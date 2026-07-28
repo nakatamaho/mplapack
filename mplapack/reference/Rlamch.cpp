@@ -80,7 +80,7 @@ inline T rlamch_dispatch_impl(const char *cmach) {
 // ---------------------------------------------------------------------------
 // MPFR
 // ---------------------------------------------------------------------------
-#if defined(___MPLAPACK_BUILD_WITH_MPFR___)
+#if defined(MPLAPACK_BUILD_WITH_MPFR)
 REAL Rlamch_mpfr(const char *cmach) {
     return rlamch_dispatch_impl<mpfr_class>(cmach);
 }
@@ -89,7 +89,7 @@ REAL Rlamch_mpfr(const char *cmach) {
 // ---------------------------------------------------------------------------
 // GMP
 // ---------------------------------------------------------------------------
-#if defined(___MPLAPACK_BUILD_WITH_GMP___)
+#if defined(MPLAPACK_BUILD_WITH_GMP)
 REAL Rlamch_gmp(const char *cmach) {
     return rlamch_dispatch_impl<mpf_class>(cmach);
 }
@@ -98,7 +98,7 @@ REAL Rlamch_gmp(const char *cmach) {
 // ---------------------------------------------------------------------------
 // double
 // ---------------------------------------------------------------------------
-#if defined(___MPLAPACK_BUILD_WITH_DOUBLE___)
+#if defined(MPLAPACK_BUILD_WITH_DOUBLE)
 double Rlamch_double(const char *cmach) {
     return rlamch_dispatch_impl<double>(cmach);
 }
@@ -107,7 +107,7 @@ double Rlamch_double(const char *cmach) {
 // ---------------------------------------------------------------------------
 // binary80
 // ---------------------------------------------------------------------------
-#if defined(___MPLAPACK_BUILD_WITH_BINARY80___)
+#if defined(MPLAPACK_BUILD_WITH_BINARY80)
 mplapack_binary80_t Rlamch_binary80(const char *cmach) {
     return rlamch_dispatch_impl<mplapack_binary80_t>(cmach);
 }
@@ -116,7 +116,7 @@ mplapack_binary80_t Rlamch_binary80(const char *cmach) {
 // ---------------------------------------------------------------------------
 // binary128
 // ---------------------------------------------------------------------------
-#if defined(___MPLAPACK_BUILD_WITH_BINARY128___)
+#if defined(MPLAPACK_BUILD_WITH_BINARY128)
 mplapack_binary128_t Rlamch_binary128(const char *cmach) {
     return rlamch_dispatch_impl<mplapack_binary128_t>(cmach);
 }
@@ -125,7 +125,7 @@ mplapack_binary128_t Rlamch_binary128(const char *cmach) {
 // ---------------------------------------------------------------------------
 // QD
 // ---------------------------------------------------------------------------
-#if defined(___MPLAPACK_BUILD_WITH_QD___)
+#if defined(MPLAPACK_BUILD_WITH_QD)
 qd_real Rlamch_qd(const char *cmach) {
     return rlamch_dispatch_impl<qd_real>(cmach);
 }
@@ -134,7 +134,7 @@ qd_real Rlamch_qd(const char *cmach) {
 // ---------------------------------------------------------------------------
 // DD
 // ---------------------------------------------------------------------------
-#if defined(___MPLAPACK_BUILD_WITH_DD___)
+#if defined(MPLAPACK_BUILD_WITH_DD)
 dd_real Rlamch_dd(const char *cmach) {
     return rlamch_dispatch_impl<dd_real>(cmach);
 }

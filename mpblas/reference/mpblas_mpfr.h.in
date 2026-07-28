@@ -29,7 +29,7 @@
 #ifndef _MPBLAS_MPFR_H_
 #define _MPBLAS_MPFR_H_
 
-#define ___MPLAPACK_MPFR_DEFAULT_PRECISION___ 512
+#define MPLAPACK_MPFR_DEFAULT_PRECISION 512
 
 #include <mpfrxx_mkII.h>
 #include <mpcxx_mkII.h>

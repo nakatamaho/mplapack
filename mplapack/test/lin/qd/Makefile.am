@@ -17,7 +17,7 @@ opt_libdepends = -L$(top_builddir)/mplapack/test/lin -llin_qd_opt -llin_override
 endif
 
 mplibs = -L$(QD_LIBDIR) -lqd -lm
-cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_QD___ @qd_extra_cxxflags@ -D___MPLAPACK_INTERNAL___ -I$(top_srcdir)/fable
+cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_QD @qd_extra_cxxflags@ -DMPLAPACK_INTERNAL -I$(top_srcdir)/fable
 
 xlintstR_qd_SOURCES  = ../common/Rchkaa.cpp
 xlintstR_qd_opt_SOURCES  = ../common/Rchkaa.cpp

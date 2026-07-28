@@ -1,6 +1,6 @@
 # Benchmarks.  Each R<op> driver is compiled once per enabled backend and linked
 # against the matching mplapack_<backend> library (which carries the
-# ___MPLAPACK_BUILD_WITH_<backend>___ definition and the MPBLAS layer).  The
+# MPLAPACK_BUILD_WITH_<backend> definition and the MPBLAS layer).  The
 # drivers dlopen() an optional optimized library at run time, hence ${CMAKE_DL_LIBS}.
 
 set(_bench_drivers Raxpy Rcopy Rdot Rgemm Rgemv Rsyrk Rpotrf Rpotf2 Rgetrf)

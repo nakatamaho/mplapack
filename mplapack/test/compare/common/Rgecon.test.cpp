@@ -75,21 +75,21 @@ void Rgecon_test2(const char *norm) {
             while (j < MAX_ITER) {
                 set_random_vector(A_ref, A, matlen(lda, n));
 /* First, calculate norm of matrix*/
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                 anorm_ref = dlange_f77(norm, &n, &n, A_ref, &lda, work_ref);
 #else
                 anorm_ref = Rlange(norm, n, n, A_ref, lda, work_ref);
 #endif
                 anorm = Rlange(norm, n, n, A, lda, work);
 /* second, do LU factorization vir Rgetrf */
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                 dgetrf_f77(&n, &n, A_ref, &lda, ipiv_ref, &info_ref);
 #else
                 Rgetrf(n, n, A_ref, lda, ipiv_ref, info_ref);
 #endif
                 Rgetrf(n, n, A, lda, ipiv, info);
 /* third, calculate condition number */
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                 dgecon_f77(norm, &n, A_ref, &lda, &anorm_ref, &rcond_ref, work_ref, iwork_ref, &info_ref);
 #else
                 Rgecon(norm, n, A_ref, lda, anorm_ref, rcond_ref, work_ref, iwork_ref, info_ref);

@@ -26,8 +26,8 @@
  *
  */
 
-#ifndef _MPLAPACK_LIN__FLOAT64X_H_
-#define _MPLAPACK_LIN__FLOAT64X_H_
+#ifndef MPLAPACK_LIN_BINARY80_H
+#define MPLAPACK_LIN_BINARY80_H
 
 #include "mplapack_config.h"
 

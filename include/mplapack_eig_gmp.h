@@ -26,8 +26,8 @@
  *
  */
 
-#ifndef _MPLAPACK_EIG_GMP_H_
-#define _MPLAPACK_EIG_GMP_H_
+#ifndef MPLAPACK_EIG_GMP_H
+#define MPLAPACK_EIG_GMP_H
 
 #include "mplapack_config.h"
 #include <mplapack_gmpfrxx_mkII_config.h>

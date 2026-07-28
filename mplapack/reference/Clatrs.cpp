@@ -102,7 +102,7 @@ void Clatrs(const char *uplo, const char *trans, const char *diag, const char *n
     //
     smlnum = Rlamch("Safe minimum");
     bignum = one / smlnum;
-#if defined ___MPLAPACK_BUILD_WITH_BINARY128___ ||  defined ___MPLAPACK_BUILD_WITH_BINARY80___
+#if defined MPLAPACK_BUILD_WITH_BINARY128 ||  defined MPLAPACK_BUILD_WITH_BINARY80
     Rlabad(smlnum, bignum);
 #endif
     smlnum = smlnum / Rlamch("Precision");

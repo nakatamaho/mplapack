@@ -62,7 +62,7 @@ void Rlauum_test2(const char *uplo) {
             j = 0;
             while (j < MAX_ITER) {
                 set_random_vector(A_ref, A, matlen(lda, n));
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                 dlauum_f77(uplo, &n, A_ref, &lda, &info_ref);
 #else
                 Rlauum(uplo, n, A_ref, lda, info_ref);

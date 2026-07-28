@@ -26,7 +26,7 @@
  *
  */
 
-#define __MPLAPACK_BUILD_DEBUG_CPP__
+#define MPLAPACK_BUILD_DEBUG_CPP
 
 #include <mpblas.h>
 #include <mplapack_compare_debug.h>
@@ -36,7 +36,7 @@ void mplapack_debug_finalize(void) {
     mpfr_free_cache(); // we always use MPFR when debugging
 }
 
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
 mpfr_class mpf_randomnumber(mpfr_class /*dummy*/) {
     mpfr_class mtmp;
 
@@ -57,7 +57,7 @@ mpc_class mpc_randomnumber(mpc_class /*dummy*/) {
 }
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
+#if defined MPLAPACK_BUILD_WITH_GMP
 mpf_class mpf_randomnumber(mpf_class /*dummy*/) {
     mpf_class value;
     value = uniformrandomstate_gmp.get_f();
@@ -73,7 +73,7 @@ mpfc_class mpc_randomnumber(mpfc_class /*dummy*/) {
 }
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_QD___
+#if defined MPLAPACK_BUILD_WITH_QD
 qd_real mpf_randomnumber(qd_real /*dummy*/) {
     return 2.0 * qdrand() - 1.0;
 }
@@ -83,7 +83,7 @@ qd_complex mpc_randomnumber(qd_complex /*dummy*/) {
 }
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_DD___
+#if defined MPLAPACK_BUILD_WITH_DD
 dd_real mpf_randomnumber(dd_real /*dummy*/) {
     return 2.0 * ddrand() - 1.0;
 }
@@ -93,7 +93,7 @@ dd_complex mpc_randomnumber(dd_complex /*dummy*/) {
 }
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_DOUBLE___
+#if defined MPLAPACK_BUILD_WITH_DOUBLE
 double mpf_randomnumber(double /*dummy*/) {
     return 2.0 * drand48() - 1.0;
 }
@@ -103,7 +103,7 @@ complex<double> mpc_randomnumber(complex<double> /*dummy*/) {
 }
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_BINARY80___
+#if defined MPLAPACK_BUILD_WITH_BINARY80
 #include <cfloat>
 #include <cmath>
 #include <complex>
@@ -140,7 +140,7 @@ complex<mplapack_binary80_t> mpc_randomnumber(complex<mplapack_binary80_t> /*dum
 }
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_BINARY128___
+#if defined MPLAPACK_BUILD_WITH_BINARY128
 #include <cfloat>
 #include <cmath>
 #include <complex>

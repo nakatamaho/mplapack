@@ -17,7 +17,7 @@ opt_libdepends = -L$(top_builddir)/mplapack/test/lin -llin_binary80_opt -llin_ov
 endif
 
 mplibs = -lm
-cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_BINARY80___ -D___MPLAPACK_INTERNAL___ -I$(top_srcdir)/fable
+cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -DMPLAPACK_BUILD_WITH_BINARY80 -DMPLAPACK_INTERNAL -I$(top_srcdir)/fable
 
 xlintstR_binary80_SOURCES  = ../common/Rchkaa.cpp
 xlintstR_binary80_opt_SOURCES  = ../common/Rchkaa.cpp

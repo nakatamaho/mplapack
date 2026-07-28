@@ -26,14 +26,14 @@
  *
  */
 
-#define ___MPLAPACK_MPLAPACK_INIT___
+#define MPLAPACK_INIT_ONCE
 
 #include <mpblas.h>
 #include <cstdint>
 #include <cstdlib>
 #include <stdio.h>
 
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
+#if defined MPLAPACK_BUILD_WITH_GMP
 #include <gmpfrxx_mkII/detail/gmp_default_context.hpp>
 
 namespace {
@@ -88,7 +88,7 @@ extern "C" GMPXX_MKII_API int gmpxx_mkII_default_context_mode_v1() noexcept {
 
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
 namespace {
 
 bool mpfr_exponent_range_is_overridden() noexcept {
@@ -126,7 +126,7 @@ void mplapack_finalize_mpfr(void) {
 }
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_QD___
+#if defined MPLAPACK_BUILD_WITH_QD
 void __attribute__((constructor)) mplapack_initialize_qd(void);
 void __attribute__((destructor)) mplapack_finalize_qd(void);
 static unsigned int oldcw_qd;
@@ -134,7 +134,7 @@ void mplapack_initialize_qd(void) { fpu_fix_start(&oldcw_qd); }
 void mplapack_finalize_qd(void) { fpu_fix_end(&oldcw_qd); }
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_DD___
+#if defined MPLAPACK_BUILD_WITH_DD
 void __attribute__((constructor)) mplapack_initialize_dd(void);
 void __attribute__((destructor)) mplapack_finalize_dd(void);
 static unsigned int oldcw_dd;
@@ -142,7 +142,7 @@ void mplapack_initialize_dd(void) { fpu_fix_start(&oldcw_dd); }
 void mplapack_finalize_dd(void) { fpu_fix_end(&oldcw_dd); }
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_DOUBLE___
+#if defined MPLAPACK_BUILD_WITH_DOUBLE
 void __attribute__((constructor)) mplapack_initialize_double(void);
 void __attribute__((destructor)) mplapack_finalize_double(void);
 void mplapack_initialize_double(void) {
@@ -154,7 +154,7 @@ void mplapack_finalize_double(void) {
 }
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_BINARY80___
+#if defined MPLAPACK_BUILD_WITH_BINARY80
 void __attribute__((constructor)) mplapack_initialize_binary80(void);
 void __attribute__((destructor)) mplapack_finalize_binary80(void);
 void mplapack_initialize_binary80(void) {
@@ -166,7 +166,7 @@ void mplapack_finalize_binary80(void) {
 }
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_BINARY128___
+#if defined MPLAPACK_BUILD_WITH_BINARY128
 void __attribute__((constructor)) mplapack_initialize_binary128(void);
 void __attribute__((destructor)) mplapack_finalize_binary128(void);
 void mplapack_initialize_binary128(void) {

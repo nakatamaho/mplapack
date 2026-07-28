@@ -63,7 +63,7 @@ void Rlanst_test2(const char *norm) {
         while (j < MAX_ITER) {
             set_random_vector(d_ref, d, veclen(n, 1));
             set_random_vector(e_ref, e, veclen(n - 1, 1));
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
             dlanst_ret = dlanst_f77(norm, &ni, d_ref, e_ref);
 #else
             dlanst_ret = Rlanst(norm, ni, d_ref, e_ref);

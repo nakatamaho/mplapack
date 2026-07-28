@@ -75,7 +75,7 @@ void Clacrm_test() {
                             set_random_vector(A_ref, A, matlen(lda, n));
                             set_random_vector(B_ref, B, matlen(ldb, n));
                             set_random_vector(C_ref, C, matlen(ldc, n));
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                             zlacrm_f77(&m, &n, A_ref, &lda, B_ref, &ldb, C_ref, &ldc, rwork_ref);
 #else
                             Clacrm(m, n, A_ref, lda, B_ref, ldb, C_ref, ldc, rwork_ref);

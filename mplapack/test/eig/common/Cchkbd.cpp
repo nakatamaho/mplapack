@@ -309,9 +309,9 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
                 //
                 // Bidiagonal, random entries
                 //
-#if defined ___MPLAPACK_BUILD_WITH_DD___
+#if defined MPLAPACK_BUILD_WITH_DD
                 temp1 = -half * log(ulp);
-#elif defined ___MPLAPACK_BUILD_WITH_QD___
+#elif defined MPLAPACK_BUILD_WITH_QD
                 temp1 = -(half * half) * log(ulp);
 #else
                 temp1 = -two * log(ulp);
@@ -515,7 +515,7 @@ void Cchkbd(INTEGER const nsizes, INTEGER *mval, INTEGER *nval, INTEGER const nt
             temp1 = thresh * (half - ulp);
             //
             for (j = 0; j <= log2ui; j = j + 1) {
-#if !defined ___MPLAPACK_BUILD_WITH_QD___
+#if !defined MPLAPACK_BUILD_WITH_QD
                 Rsvdch(mnmin, bd, be, s1, temp1, iinfo);
 #endif
                 if (iinfo == 0) {

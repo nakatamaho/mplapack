@@ -83,7 +83,7 @@ void Cgeru_test() {
 
                             mplapack_errno = 0;
                             blas_errno = 0;
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                             zgeru_f77(&m, &n, &alpha_ref, x_ref, &incx, y_ref, &incy, A_ref, &lda);
                             mplapack_errno1 = blas_errno;
 #else

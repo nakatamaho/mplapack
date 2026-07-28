@@ -37,14 +37,14 @@
 using namespace mpfrxx;
 
 
-#if defined ___MPLAPACK_INTERNAL___
+#if defined MPLAPACK_INTERNAL
 #include <mplapack_print_double.h>
 
 #define MPFR_FORMAT "%+68.64Re"
 #define MPFR_SHORT_FORMAT "%+20.16Re"
 
-#if !defined __MPLAPACK_BUFLEN__
-#define __MPLAPACK_BUFLEN__ 1024
+#if !defined MPLAPACK_BUFLEN
+#define MPLAPACK_BUFLEN 1024
 #endif
 
 inline void printnum(mpfr_class rtmp) {
@@ -73,25 +73,25 @@ inline void printnum_short(mpc_class ctmp) {
 }
 
 inline void sprintnum(char *buf, mpfr_class rtmp) {
-    mpfr_snprintf(buf, __MPLAPACK_BUFLEN__, MPFR_FORMAT, mpfr_ptr(rtmp));
+    mpfr_snprintf(buf, MPLAPACK_BUFLEN, MPFR_FORMAT, mpfr_ptr(rtmp));
     return;
 }
 inline void sprintnum_short(char *buf, mpfr_class rtmp) {
-    mpfr_snprintf(buf, __MPLAPACK_BUFLEN__, MPFR_SHORT_FORMAT, mpfr_ptr(rtmp));
+    mpfr_snprintf(buf, MPLAPACK_BUFLEN, MPFR_SHORT_FORMAT, mpfr_ptr(rtmp));
     return;
 }
 inline void sprintnum(char *buf, mpc_class ctmp) {
     mpfr_class cre, cim;
     cre = ctmp.real();
     cim = ctmp.imag();
-    mpfr_snprintf(buf, __MPLAPACK_BUFLEN__, MPFR_FORMAT MPFR_FORMAT "i", mpfr_ptr(cre), mpfr_ptr(cim));
+    mpfr_snprintf(buf, MPLAPACK_BUFLEN, MPFR_FORMAT MPFR_FORMAT "i", mpfr_ptr(cre), mpfr_ptr(cim));
     return;
 }
 inline void sprintnum_short(char *buf, mpc_class ctmp) {
     mpfr_class cre, cim;
     cre = ctmp.real();
     cim = ctmp.imag();
-    mpfr_snprintf(buf, __MPLAPACK_BUFLEN__, MPFR_SHORT_FORMAT MPFR_SHORT_FORMAT "i", mpfr_ptr(cre), mpfr_ptr(cim));
+    mpfr_snprintf(buf, MPLAPACK_BUFLEN, MPFR_SHORT_FORMAT MPFR_SHORT_FORMAT "i", mpfr_ptr(cre), mpfr_ptr(cim));
     return;
 }
 

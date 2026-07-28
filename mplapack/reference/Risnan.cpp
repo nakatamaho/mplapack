@@ -44,7 +44,7 @@
 // -----------------------------------------------------------------------
 // double
 // -----------------------------------------------------------------------
-#if defined ___MPLAPACK_BUILD_WITH_DOUBLE___
+#if defined MPLAPACK_BUILD_WITH_DOUBLE
 bool Risnan(REAL const &x) {
     return std::isnan(x);
 }
@@ -53,7 +53,7 @@ bool Risnan(REAL const &x) {
 // -----------------------------------------------------------------------
 // binary80
 // -----------------------------------------------------------------------
-#if defined ___MPLAPACK_BUILD_WITH_BINARY80___
+#if defined MPLAPACK_BUILD_WITH_BINARY80
 #  if MPLAPACK_BINARY80_MATH == MPLAPACK_BINARY80_MATH_LDBL
 bool Risnan(REAL const &x) {
     return std::isnan(x);
@@ -66,12 +66,12 @@ bool Risnan(REAL const &x) {
 #  else
 #    error "Risnan: unsupported MPLAPACK_BINARY80_MATH"
 #  endif
-#endif // ___MPLAPACK_BUILD_WITH_BINARY80___
+#endif // MPLAPACK_BUILD_WITH_BINARY80
 
 // -----------------------------------------------------------------------
 // binary128
 // -----------------------------------------------------------------------
-#if defined ___MPLAPACK_BUILD_WITH_BINARY128___
+#if defined MPLAPACK_BUILD_WITH_BINARY128
 #  if MPLAPACK_BINARY128_MATH == MPLAPACK_BINARY128_MATH_LDBL
 // long double == binary128 (SPARC, MIPS, some AArch64).
 bool Risnan(REAL const &x) {
@@ -90,43 +90,43 @@ bool Risnan(REAL const &x) {
 #  else
 #    error "Risnan: unsupported MPLAPACK_BINARY128_MATH"
 #  endif
-#endif // ___MPLAPACK_BUILD_WITH_BINARY128___
+#endif // MPLAPACK_BUILD_WITH_BINARY128
 
 // -----------------------------------------------------------------------
 // DD (double-double)
 // -----------------------------------------------------------------------
-#if defined ___MPLAPACK_BUILD_WITH_DD___
+#if defined MPLAPACK_BUILD_WITH_DD
 bool Risnan(REAL const &x) {
     return x.isnan();
 }
-#endif // ___MPLAPACK_BUILD_WITH_DD___
+#endif // MPLAPACK_BUILD_WITH_DD
 
 // -----------------------------------------------------------------------
 // QD (quad-double)
 // -----------------------------------------------------------------------
-#if defined ___MPLAPACK_BUILD_WITH_QD___
+#if defined MPLAPACK_BUILD_WITH_QD
 bool Risnan(REAL const &x) {
     return x.isnan();
 }
-#endif // ___MPLAPACK_BUILD_WITH_QD___
+#endif // MPLAPACK_BUILD_WITH_QD
 
 // -----------------------------------------------------------------------
 // MPFR (mpfr::mpreal)
 // -----------------------------------------------------------------------
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
 bool Risnan(REAL const &x) {
     return mpfr_nan_p((mpfr_ptr)const_cast<REAL &>(x)) != 0;
 }
-#endif // ___MPLAPACK_BUILD_WITH_MPFR___
+#endif // MPLAPACK_BUILD_WITH_MPFR
 
 // -----------------------------------------------------------------------
 // GMP (mpf_class)
 // -----------------------------------------------------------------------
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
+#if defined MPLAPACK_BUILD_WITH_GMP
 bool Risnan(REAL const &x) {
     // GMP mpf does not support NaN or Inf; all mpf values are finite.
     // Always return false.
     (void)x;
     return false;
 }
-#endif // ___MPLAPACK_BUILD_WITH_GMP___
+#endif // MPLAPACK_BUILD_WITH_GMP

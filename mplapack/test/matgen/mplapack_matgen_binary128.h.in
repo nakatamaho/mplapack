@@ -26,8 +26,8 @@
  *
  */
 
-#ifndef _MPLAPACK_MATGEN__FLOAT128_H_
-#define _MPLAPACK_MATGEN__FLOAT128_H_
+#ifndef MPLAPACK_MATGEN_BINARY128_H
+#define MPLAPACK_MATGEN_BINARY128_H
 
 #include "mplapack_config.h"
 

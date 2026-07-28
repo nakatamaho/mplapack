@@ -61,7 +61,7 @@ void Ctpmv_test2(const char *uplo, const char *trans, const char *diag) {
 
                 mplapack_errno = 0;
                 blas_errno = 0;
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                 ztpmv_f77(uplo, trans, diag, &n, AP_ref, x_ref, &incx);
                 mplapack_errno1 = blas_errno;
 #else

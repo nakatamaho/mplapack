@@ -26,8 +26,8 @@
  *
  */
 
-#ifndef _MPLAPACK_LIN_QD_H_
-#define _MPLAPACK_LIN_QD_H_
+#ifndef MPLAPACK_LIN_QD_H
+#define MPLAPACK_LIN_QD_H
 
 #include "mplapack_config.h"
 #include <qd/qd_real.h>

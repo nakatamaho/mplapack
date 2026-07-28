@@ -85,7 +85,7 @@ void Cspmv_test2(const char *uplo) {
 
                     mplapack_errno = 0;
                     blas_errno = 0;
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                     zspmv_f77(uplo, &n, &alpha_ref, AP_ref, x_ref, &incx, &beta_ref, y_ref, &incy);
                     mplapack_errno1 = blas_errno;
 #else

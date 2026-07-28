@@ -85,14 +85,14 @@ check-recursive: check-parallel
 	@:
 
 if ENABLE_MPFR
-liblin_override_mpfr_la_CPPFLAGS = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR)  -I$(MPC_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_MPFR___
-liblin_override_mpfr_opt_la_CPPFLAGS = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR)  -I$(MPC_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_MPFR___
+liblin_override_mpfr_la_CPPFLAGS = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR)  -I$(MPC_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_MPFR
+liblin_override_mpfr_opt_la_CPPFLAGS = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR)  -I$(MPC_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_MPFR
 liblin_override_mpfr_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp common/Mxlaenv.cpp
 liblin_override_mpfr_opt_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp common/Mxlaenv.cpp
 liblin_override_mpfr_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 liblin_override_mpfr_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
-liblin_mpfr_la_CPPFLAGS = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_MPFR___ -D___MPLAPACK_INTERNAL___
-liblin_mpfr_opt_la_CPPFLAGS = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_MPFR___ -D___MPLAPACK_INTERNAL___
+liblin_mpfr_la_CPPFLAGS = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_MPFR -DMPLAPACK_INTERNAL
+liblin_mpfr_opt_la_CPPFLAGS = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_MPFR -DMPLAPACK_INTERNAL
 liblin_mpfr_la_SOURCES = $(LIN_SOURCES)
 liblin_mpfr_opt_la_SOURCES = $(LIN_SOURCES)
 liblin_mpfr_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
@@ -106,14 +106,14 @@ endif
 endif
 
 if ENABLE_GMP
-liblin_gmp_la_CPPFLAGS = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(GMP_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_GMP___ -D___MPLAPACK_INTERNAL___
-liblin_gmp_opt_la_CPPFLAGS = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(GMP_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_GMP___ -D___MPLAPACK_INTERNAL___
+liblin_gmp_la_CPPFLAGS = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(GMP_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_GMP -DMPLAPACK_INTERNAL
+liblin_gmp_opt_la_CPPFLAGS = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(GMP_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_GMP -DMPLAPACK_INTERNAL
 liblin_gmp_la_SOURCES = $(LIN_SOURCES)
 liblin_gmp_opt_la_SOURCES = $(LIN_SOURCES)
 liblin_gmp_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 liblin_gmp_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
-liblin_override_gmp_la_CPPFLAGS = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(GMP_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_GMP___
-liblin_override_gmp_opt_la_CPPFLAGS = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(GMP_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_GMP___
+liblin_override_gmp_la_CPPFLAGS = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(GMP_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_GMP
+liblin_override_gmp_opt_la_CPPFLAGS = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(GMP_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_GMP
 liblin_override_gmp_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp common/Mxlaenv.cpp
 liblin_override_gmp_opt_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp common/Mxlaenv.cpp
 liblin_override_gmp_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
@@ -127,14 +127,14 @@ endif
 endif
 
 if ENABLE_QD
-liblin_qd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_QD___ @qd_extra_cxxflags@ -D___MPLAPACK_INTERNAL___
-liblin_qd_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_QD___ @qd_extra_cxxflags@ -D___MPLAPACK_INTERNAL___
+liblin_qd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(QD_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_QD @qd_extra_cxxflags@ -DMPLAPACK_INTERNAL
+liblin_qd_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(QD_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_QD @qd_extra_cxxflags@ -DMPLAPACK_INTERNAL
 liblin_qd_la_SOURCES = $(LIN_SOURCES)
 liblin_qd_opt_la_SOURCES = $(LIN_SOURCES)
 liblin_qd_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 liblin_qd_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
-liblin_override_qd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_QD___ @qd_extra_cxxflags@
-liblin_override_qd_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_QD___ @qd_extra_cxxflags@
+liblin_override_qd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(QD_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_QD @qd_extra_cxxflags@
+liblin_override_qd_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(QD_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_QD @qd_extra_cxxflags@
 liblin_override_qd_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp common/Mxlaenv.cpp
 liblin_override_qd_opt_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp common/Mxlaenv.cpp
 liblin_override_qd_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
@@ -148,14 +148,14 @@ endif
 endif
 
 if ENABLE_DD
-liblin_dd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_DD___ @qd_extra_cxxflags@ -D___MPLAPACK_INTERNAL___
-liblin_dd_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_DD___ @qd_extra_cxxflags@ -D___MPLAPACK_INTERNAL___
+liblin_dd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(QD_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_DD @qd_extra_cxxflags@ -DMPLAPACK_INTERNAL
+liblin_dd_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(QD_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_DD @qd_extra_cxxflags@ -DMPLAPACK_INTERNAL
 liblin_dd_la_SOURCES = $(LIN_SOURCES)
 liblin_dd_opt_la_SOURCES = $(LIN_SOURCES)
 liblin_dd_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 liblin_dd_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
-liblin_override_dd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_DD___ @qd_extra_cxxflags@
-liblin_override_dd_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_DD___ @qd_extra_cxxflags@
+liblin_override_dd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(QD_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_DD @qd_extra_cxxflags@
+liblin_override_dd_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(QD_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_DD @qd_extra_cxxflags@
 liblin_override_dd_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp common/Mxlaenv.cpp
 liblin_override_dd_opt_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp common/Mxlaenv.cpp
 liblin_override_dd_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
@@ -169,14 +169,14 @@ endif
 endif
 
 if ENABLE_DOUBLE
-liblin_double_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -D___MPLAPACK_BUILD_WITH_DOUBLE___ -D___MPLAPACK_INTERNAL___
-liblin_double_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -D___MPLAPACK_BUILD_WITH_DOUBLE___ -D___MPLAPACK_INTERNAL___
+liblin_double_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -DMPLAPACK_BUILD_WITH_DOUBLE -DMPLAPACK_INTERNAL
+liblin_double_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -DMPLAPACK_BUILD_WITH_DOUBLE -DMPLAPACK_INTERNAL
 liblin_double_la_SOURCES = $(LIN_SOURCES)
 liblin_double_opt_la_SOURCES = $(LIN_SOURCES)
 liblin_double_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 liblin_double_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
-liblin_override_double_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_DOUBLE___
-liblin_override_double_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_DOUBLE___
+liblin_override_double_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(QD_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_DOUBLE
+liblin_override_double_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(QD_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_DOUBLE
 liblin_override_double_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp common/Mxlaenv.cpp
 liblin_override_double_opt_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp common/Mxlaenv.cpp
 liblin_override_double_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
@@ -190,14 +190,14 @@ endif
 endif
 
 if ENABLE_BINARY80
-liblin_binary80_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -D___MPLAPACK_BUILD_WITH_BINARY80___ -D___MPLAPACK_INTERNAL___
-liblin_binary80_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -D___MPLAPACK_BUILD_WITH_BINARY80___ -D___MPLAPACK_INTERNAL___
+liblin_binary80_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -DMPLAPACK_BUILD_WITH_BINARY80 -DMPLAPACK_INTERNAL
+liblin_binary80_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -DMPLAPACK_BUILD_WITH_BINARY80 -DMPLAPACK_INTERNAL
 liblin_binary80_la_SOURCES = $(LIN_SOURCES)
 liblin_binary80_opt_la_SOURCES = $(LIN_SOURCES)
 liblin_binary80_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 liblin_binary80_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
-liblin_override_binary80_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -D___MPLAPACK_BUILD_WITH_BINARY80___
-liblin_override_binary80_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -D___MPLAPACK_BUILD_WITH_BINARY80___
+liblin_override_binary80_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -DMPLAPACK_BUILD_WITH_BINARY80
+liblin_override_binary80_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -DMPLAPACK_BUILD_WITH_BINARY80
 liblin_override_binary80_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp common/Mxlaenv.cpp
 liblin_override_binary80_opt_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp common/Mxlaenv.cpp
 liblin_override_binary80_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
@@ -211,14 +211,14 @@ endif
 endif
 
 if ENABLE_BINARY128
-liblin_binary128_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -D___MPLAPACK_BUILD_WITH_BINARY128___ -D___MPLAPACK_INTERNAL___
-liblin_binary128_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -D___MPLAPACK_BUILD_WITH_BINARY128___ -D___MPLAPACK_INTERNAL___
+liblin_binary128_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -DMPLAPACK_BUILD_WITH_BINARY128 -DMPLAPACK_INTERNAL
+liblin_binary128_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -DMPLAPACK_BUILD_WITH_BINARY128 -DMPLAPACK_INTERNAL
 liblin_binary128_la_SOURCES = $(LIN_SOURCES)
 liblin_binary128_opt_la_SOURCES = $(LIN_SOURCES)
 liblin_binary128_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 liblin_binary128_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
-liblin_override_binary128_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -D___MPLAPACK_BUILD_WITH_BINARY128___
-liblin_override_binary128_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -D___MPLAPACK_BUILD_WITH_BINARY128___
+liblin_override_binary128_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -DMPLAPACK_BUILD_WITH_BINARY128
+liblin_override_binary128_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -DMPLAPACK_BUILD_WITH_BINARY128
 liblin_override_binary128_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp common/Mxlaenv.cpp
 liblin_override_binary128_opt_la_SOURCES = common/Mxerbla.cpp common/iMlaenv.cpp common/Mxlaenv.cpp
 liblin_override_binary128_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)

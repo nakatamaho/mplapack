@@ -60,7 +60,7 @@ foreach(_b ${_backends})
       # Exactly one backend macro (the merged archives are linked by file path
       # below so their target macros do not leak in).
       target_compile_definitions(${_exe} PRIVATE
-        ___MPLAPACK_BUILD_WITH_${_B}___ ___MPLAPACK_INTERNAL___)
+        MPLAPACK_BUILD_WITH_${_B} MPLAPACK_INTERNAL)
       if(_b STREQUAL "dd" AND MPLAPACK_HAS_FP_CONTRACT_OFF)
         target_compile_options(${_exe} PRIVATE -ffp-contract=off)
       endif()

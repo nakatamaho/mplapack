@@ -36,7 +36,7 @@
 
 // For DD, QD, binary128, binary80, and double backends:
 // Non-deterministic engine, seeded once via std::random_device.
-#if defined ___MPLAPACK_BUILD_WITH_DD___ || defined ___MPLAPACK_BUILD_WITH_QD___ || defined ___MPLAPACK_BUILD_WITH_BINARY128___ || defined ___MPLAPACK_BUILD_WITH_BINARY80___ || defined ___MPLAPACK_BUILD_WITH_DOUBLE___
+#if defined MPLAPACK_BUILD_WITH_DD || defined MPLAPACK_BUILD_WITH_QD || defined MPLAPACK_BUILD_WITH_BINARY128 || defined MPLAPACK_BUILD_WITH_BINARY80 || defined MPLAPACK_BUILD_WITH_DOUBLE
 namespace {
 inline double nondeterministic_rand() {
     static std::mt19937_64 mt(std::random_device{}());
@@ -70,7 +70,7 @@ inline uint64_t rlaruv_nondeterministic_seed64() {
     return (high << 32) ^ low;
 }
 
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
 inline mpfrxx::mpfr_randclass &rlaruv_mpfr_nondeterministic_state() {
     thread_local mpfrxx::mpfr_randclass state(gmp_randinit_default);
     thread_local const bool seeded = (state.seed_u64(rlaruv_nondeterministic_seed64()), true);
@@ -79,7 +79,7 @@ inline mpfrxx::mpfr_randclass &rlaruv_mpfr_nondeterministic_state() {
 }
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
+#if defined MPLAPACK_BUILD_WITH_GMP
 inline gmpxx::gmp_randclass &rlaruv_gmp_nondeterministic_state() {
     thread_local gmpxx::gmp_randclass state(gmp_randinit_default);
     thread_local const bool seeded = (state.seed_u64(rlaruv_nondeterministic_seed64()), true);
@@ -162,7 +162,7 @@ void Rlaruv(INTEGER *iseed, INTEGER const n, REAL *x) {
         }
     }
 
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
     if (nondet) {
         mpfrxx::mpfr_randclass &rng = rlaruv_mpfr_nondeterministic_state();
         for (int i = 0; i < n; i++)
@@ -176,7 +176,7 @@ void Rlaruv(INTEGER *iseed, INTEGER const n, REAL *x) {
     }
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
+#if defined MPLAPACK_BUILD_WITH_GMP
     if (nondet) {
         gmpxx::gmp_randclass &rng = rlaruv_gmp_nondeterministic_state();
         for (int i = 0; i < n; i++)
@@ -190,7 +190,7 @@ void Rlaruv(INTEGER *iseed, INTEGER const n, REAL *x) {
     }
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_DD___
+#if defined MPLAPACK_BUILD_WITH_DD
     if (nondet) {
         for (int i = 0; i < n; i++) {
             x[i].x[0] = nondeterministic_rand();
@@ -207,7 +207,7 @@ void Rlaruv(INTEGER *iseed, INTEGER const n, REAL *x) {
     }
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_QD___
+#if defined MPLAPACK_BUILD_WITH_QD
     if (nondet) {
         for (int i = 0; i < n; i++) {
             x[i].x[0] = nondeterministic_rand();
@@ -228,7 +228,7 @@ void Rlaruv(INTEGER *iseed, INTEGER const n, REAL *x) {
     }
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_BINARY128___
+#if defined MPLAPACK_BUILD_WITH_BINARY128
     if (nondet) {
         for (int i = 0; i < n; i++)
             x[i] = nondeterministic_rand() + nondeterministic_rand() * 0x1p-53 + nondeterministic_rand() * 0x1p-106;
@@ -240,7 +240,7 @@ void Rlaruv(INTEGER *iseed, INTEGER const n, REAL *x) {
     }
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_BINARY80___
+#if defined MPLAPACK_BUILD_WITH_BINARY80
     if (nondet) {
         for (int i = 0; i < n; i++)
             x[i] = nondeterministic_rand() + nondeterministic_rand() * 0x1p-64;
@@ -252,7 +252,7 @@ void Rlaruv(INTEGER *iseed, INTEGER const n, REAL *x) {
     }
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_DOUBLE___
+#if defined MPLAPACK_BUILD_WITH_DOUBLE
     if (nondet) {
         for (int i = 0; i < n; i++)
             x[i] = nondeterministic_rand();

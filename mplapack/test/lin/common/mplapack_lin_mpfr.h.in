@@ -26,8 +26,8 @@
  *
  */
 
-#ifndef _MPLAPACK_LIN_MPFR_H_
-#define _MPLAPACK_LIN_MPFR_H_
+#ifndef MPLAPACK_LIN_MPFR_H
+#define MPLAPACK_LIN_MPFR_H
 
 #include "mplapack_config.h"
 

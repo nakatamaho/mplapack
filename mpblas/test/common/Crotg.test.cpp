@@ -60,7 +60,7 @@ void Crotg_test() {
         set_random_number(cb_ref, cb);
         set_random_number(cc_ref, cc);
 
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
         zrotg_f77(&ca_ref, &cb_ref, &cc_ref, &cs_ref);
 #else
         Crotg(ca_ref, cb_ref, cc_ref, cs_ref);

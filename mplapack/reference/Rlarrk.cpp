@@ -70,7 +70,7 @@ void Rlarrk(INTEGER const n, INTEGER const iw, REAL const gl, REAL const gu, REA
     atoli = fudge * two * pivmin;
     //
     itmax = castINTEGER((log(tnorm + pivmin) - log(pivmin)) / log(two)) + 2;
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___ || defined ___MPLAPACK_BUILD_WITH_GMP___
+#if defined MPLAPACK_BUILD_WITH_MPFR || defined MPLAPACK_BUILD_WITH_GMP
     if (itmax > 100000)
         itmax = 100000; // XXX itmax can be too large for MPFR/GMP (=10^8)
 #endif

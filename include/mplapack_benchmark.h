@@ -47,11 +47,11 @@
 using std::max;
 using std::min;
 
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
 #include <mplapack_benchmark_mpfr.h>
 #define MPLAPACK_REF_LIB "libmplapack_mpfr"
 #define MPBLAS_REF_LIB "libmplapack_mpfr"
-#define ___MPLAPACK_INITIALIZE___ uniformrandomstate_mpfr.seed(0UL);
+#define MPLAPACK_INITIALIZE uniformrandomstate_mpfr.seed(0UL);
 mpfrxx::mpfr_randclass uniformrandomstate_mpfr(gmp_randinit_default);
 mpfr_class randomnumber(mpfr_class dummy) {
     mpfr_class mtmp;
@@ -63,11 +63,11 @@ mpfr_class randomnumber(mpfr_class dummy) {
 }
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
+#if defined MPLAPACK_BUILD_WITH_GMP
 #include <mplapack_benchmark_gmp.h>
 #define MPLAPACK_REF_LIB "libmplapack_gmp"
 #define MPBLAS_REF_LIB "libmplapack_gmp"
-#define ___MPLAPACK_INITIALIZE___ uniformrandomstate_gmp.seed(0UL);
+#define MPLAPACK_INITIALIZE uniformrandomstate_gmp.seed(0UL);
 gmpxx::gmp_randclass uniformrandomstate_gmp(gmp_randinit_default);
 mpf_class randomnumber(mpf_class dummy) {
     mpf_class mtmp;
@@ -78,7 +78,7 @@ mpf_class randomnumber(mpf_class dummy) {
 }
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_DD___
+#if defined MPLAPACK_BUILD_WITH_DD
 #include <mplapack_benchmark_dd.h>
 #define MPLAPACK_REF_LIB "libmplapack_dd"
 #define MPBLAS_REF_LIB "libmplapack_dd"
@@ -88,14 +88,14 @@ dd_real randomnumber(dd_real dummy) {
     mtmp = 2.0 * mtmp - 1.0;
     return mtmp;
 }
-#define ___MPLAPACK_INITIALIZE___
+#define MPLAPACK_INITIALIZE
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_QD___
+#if defined MPLAPACK_BUILD_WITH_QD
 #include <mplapack_benchmark_qd.h>
 #define MPLAPACK_REF_LIB "libmplapack_qd"
 #define MPBLAS_REF_LIB "libmplapack_qd"
-#define ___MPLAPACK_INITIALIZE___
+#define MPLAPACK_INITIALIZE
 qd_real randomnumber(qd_real dummy) {
     qd_real mtmp;
     mtmp = qdrand(); // uniform random between [0,1] via lrand48
@@ -104,11 +104,11 @@ qd_real randomnumber(qd_real dummy) {
 }
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_DOUBLE___
+#if defined MPLAPACK_BUILD_WITH_DOUBLE
 #include <mplapack_benchmark_double.h>
 #define MPLAPACK_REF_LIB "libmplapack_double"
 #define MPBLAS_REF_LIB "libmplapack_double"
-#define ___MPLAPACK_INITIALIZE___
+#define MPLAPACK_INITIALIZE
 double randomnumber(double dummy) {
 #if defined _WIN32 // XXX
     double mtmp = (double)rand() / (double)RAND_MAX;
@@ -119,11 +119,11 @@ double randomnumber(double dummy) {
 }
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_BINARY80___
+#if defined MPLAPACK_BUILD_WITH_BINARY80
 #include <mplapack_benchmark_binary80.h>
 #define MPLAPACK_REF_LIB "libmplapack_binary80"
 #define MPBLAS_REF_LIB "libmplapack_binary80"
-#define ___MPLAPACK_INITIALIZE___
+#define MPLAPACK_INITIALIZE
 mplapack_binary80_t randomnumber(mplapack_binary80_t dummy) {
     mplapack_binary80_t mtmp;
 #if defined _WIN32
@@ -138,11 +138,11 @@ mplapack_binary80_t randomnumber(mplapack_binary80_t dummy) {
 }
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_BINARY128___
+#if defined MPLAPACK_BUILD_WITH_BINARY128
 #include <mplapack_benchmark_binary128.h>
 #define MPLAPACK_REF_LIB "libmplapack_binary128"
 #define MPBLAS_REF_LIB "libmplapack_binary128"
-#define ___MPLAPACK_INITIALIZE___
+#define MPLAPACK_INITIALIZE
 mplapack_binary128_t randomnumber(mplapack_binary128_t dummy) {
     mplapack_binary128_t mtmp;
 #if defined _WIN32

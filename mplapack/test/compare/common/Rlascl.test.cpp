@@ -70,7 +70,7 @@ void Rlascl_test2(const char *type) {
                             set_random_vector(A_ref, A, matlen(lda, n));
                             set_random_number(cto_ref, cto);
                             set_random_number(cfrom_ref, cfrom);
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                             dlascl_f77(type, &kl, &ku, &cfrom_ref, &cto_ref, &m, &n, A_ref, &lda, &info_ref);
 #else
                             Rlascl(type, kl, ku, cfrom_ref, cto_ref, m, n, A_ref, lda, info_ref);

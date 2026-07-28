@@ -30,7 +30,7 @@
 #include <mplapack_compare_debug.h>
 #include <complex>
 
-#if defined ___MPLAPACK_BUILD_WITH_QD___ || defined ___MPLAPACK_BUILD_WITH_DD___
+#if defined MPLAPACK_BUILD_WITH_QD || defined MPLAPACK_BUILD_WITH_DD
 #include <qd/fpu.h>
 static unsigned int g_oldcw;
 static void __attribute__((constructor)) mplapack_test_fpu_init(void) { fpu_fix_start(&g_oldcw); }
@@ -785,7 +785,7 @@ void mpc_div_test3() {
     }
 }
 
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
+#if defined MPLAPACK_BUILD_WITH_GMP
 void mpc_algebraic_test() {
     printf("GMP complex algebraic helper test \n");
 
@@ -928,7 +928,7 @@ void mpc_algebraic_test() {
 }
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_DD___ || defined ___MPLAPACK_BUILD_WITH_QD___
+#if defined MPLAPACK_BUILD_WITH_DD || defined MPLAPACK_BUILD_WITH_QD
 void qd_dd_complex_helper_test() {
     printf("QD/DD complex helper test \n");
 
@@ -990,13 +990,13 @@ void qd_dd_complex_helper_test() {
 int main(int argc, char *argv[]) {
     printf("*** Testing complex start ***\n");
 
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
-    mpf_set_default_prec(___MPLAPACK_GMP_DEFAULT_PRECISION___);
+#if defined MPLAPACK_BUILD_WITH_GMP
+    mpf_set_default_prec(MPLAPACK_GMP_DEFAULT_PRECISION);
 #endif
 
     // we need to specify explicitly.
-    mpfrxx::set_default_precision_bits(___MPLAPACK_MPFR_DEFAULT_PRECISION___);
-    mpfrxx::set_default_mpc_precision_bits(___MPLAPACK_MPFR_DEFAULT_PRECISION___);
+    mpfrxx::set_default_precision_bits(MPLAPACK_MPFR_DEFAULT_PRECISION);
+    mpfrxx::set_default_mpc_precision_bits(MPLAPACK_MPFR_DEFAULT_PRECISION);
 
     mpc_ptr_conversion_test();
     mpc_constructor_precision_test();
@@ -1011,10 +1011,10 @@ int main(int argc, char *argv[]) {
     mpc_div_test1();
     mpc_div_test2();
     mpc_div_test3();
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
+#if defined MPLAPACK_BUILD_WITH_GMP
     mpc_algebraic_test();
 #endif
-#if defined ___MPLAPACK_BUILD_WITH_DD___ || defined ___MPLAPACK_BUILD_WITH_QD___
+#if defined MPLAPACK_BUILD_WITH_DD || defined MPLAPACK_BUILD_WITH_QD
     qd_dd_complex_helper_test();
 #endif
     printf("*** Testing complex successful ***\n");

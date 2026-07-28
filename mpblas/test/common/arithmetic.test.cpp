@@ -48,11 +48,11 @@
 #define EPSILON 1e-14
 #endif
 
-#if !defined __MPLAPACK_BUFLEN__
-#define __MPLAPACK_BUFLEN__ 1024
+#if !defined MPLAPACK_BUFLEN
+#define MPLAPACK_BUFLEN 1024
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_QD___ || defined ___MPLAPACK_BUILD_WITH_DD___
+#if defined MPLAPACK_BUILD_WITH_QD || defined MPLAPACK_BUILD_WITH_DD
 #include <qd/fpu.h>
 static unsigned int g_oldcw;
 static void __attribute__((constructor)) mplapack_test_fpu_init(void) { fpu_fix_start(&g_oldcw); }
@@ -160,17 +160,17 @@ static void check_close_complex(const char *label, const COMPLEX_REF &a_ref, con
 }
 
 void subst_test1() {
-    char buf1[__MPLAPACK_BUFLEN__], buf2[__MPLAPACK_BUFLEN__], buf3[__MPLAPACK_BUFLEN__];
-    memset(buf1, 0, __MPLAPACK_BUFLEN__);
-    memset(buf2, 0, __MPLAPACK_BUFLEN__);
-    memset(buf3, 0, __MPLAPACK_BUFLEN__);
+    char buf1[MPLAPACK_BUFLEN], buf2[MPLAPACK_BUFLEN], buf3[MPLAPACK_BUFLEN];
+    memset(buf1, 0, MPLAPACK_BUFLEN);
+    memset(buf2, 0, MPLAPACK_BUFLEN);
+    memset(buf3, 0, MPLAPACK_BUFLEN);
     REAL tmp1;
     REAL_REF tmp2;
 
     printf("*** Substitution test 1 ***\n");
     strcpy(buf1, "-1.234567890123456789012345678901234567890123456789012345678901234567890E1");
 // tmp1 = buf1;
-#if defined ___MPLAPACK_BUILD_WITH_BINARY128___
+#if defined MPLAPACK_BUILD_WITH_BINARY128
     #if MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_QUADMATH_SNPRINTF
         tmp1 = strtoflt128(buf1, NULL);
     #elif MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_STRFROMF128
@@ -180,9 +180,9 @@ void subst_test1() {
     #else
         #error "Unsupported MPLAPACK_BINARY128_IO value"
     #endif
-#elif defined ___MPLAPACK_BUILD_WITH_DOUBLE___
+#elif defined MPLAPACK_BUILD_WITH_DOUBLE
     sscanf(buf1, "%le", &tmp1);
-#elif defined ___MPLAPACK_BUILD_WITH_BINARY80___
+#elif defined MPLAPACK_BUILD_WITH_BINARY80
     #if MPLAPACK_BINARY80_IO == MPLAPACK_BINARY80_IO_SNPRINTF_LDBL
         sscanf(buf1, "%Le", &tmp1);
     #elif MPLAPACK_BINARY80_IO == MPLAPACK_BINARY80_IO_STRFROMF64X
@@ -203,49 +203,49 @@ void subst_test1() {
     printf("mplib     :%s\n", buf2);
     printf("subst2refm:%s\n", buf3);
 
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
     if (strncmp(buf1, buf2, 19) == 0 && strncmp(buf2, buf3, 19) == 0)
         printf("ok!\n");
     else {
         printf("failed!\n");
         exit(1);
     }
-#elif defined ___MPLAPACK_BUILD_WITH_GMP___
-    if (strncmp(buf1, buf2, 65) == 0 && strncmp(buf2, buf3, __MPLAPACK_BUFLEN__) == 0)
+#elif defined MPLAPACK_BUILD_WITH_GMP
+    if (strncmp(buf1, buf2, 65) == 0 && strncmp(buf2, buf3, MPLAPACK_BUFLEN) == 0)
         printf("ok!\n");
     else {
         printf("failed!\n");
         exit(1);
     }
-#elif defined ___MPLAPACK_BUILD_WITH_DD___
+#elif defined MPLAPACK_BUILD_WITH_DD
     if (strncmp(buf1, buf2, 30) == 0 && strncmp(buf2, buf3, 30) == 0)
         printf("ok!\n");
     else {
         printf("failed!\n");
         exit(1);
     }
-#elif defined ___MPLAPACK_BUILD_WITH_QD___
+#elif defined MPLAPACK_BUILD_WITH_QD
     if (strncmp(buf1, buf2, 61) == 0 && strncmp(buf2, buf3, 61) == 0)
         printf("ok!\n");
     else {
         printf("failed!\n");
         exit(1);
     }
-#elif defined ___MPLAPACK_BUILD_WITH_DOUBLE___
+#elif defined MPLAPACK_BUILD_WITH_DOUBLE
     if (strncmp(buf1, buf2, 19) == 0 && strncmp(buf2, buf3, 19) == 0)
         printf("ok!\n");
     else {
         printf("failed!\n");
         exit(1);
     }
-#elif defined ___MPLAPACK_BUILD_WITH_BINARY128___
+#elif defined MPLAPACK_BUILD_WITH_BINARY128
     if (strncmp(buf1, buf2, 37) == 0 && strncmp(buf2, buf3, 37) == 0)
         printf("ok!\n");
     else {
         printf("failed!\n");
         exit(1);
     }
-#elif defined ___MPLAPACK_BUILD_WITH_BINARY80___
+#elif defined MPLAPACK_BUILD_WITH_BINARY80
     if (strncmp(buf1, buf2, 21) == 0 && strncmp(buf2, buf3, 21) == 0)
         printf("ok!\n");
     else {
@@ -257,10 +257,10 @@ void subst_test1() {
 }
 
 void subst_test2() {
-    char buf1[__MPLAPACK_BUFLEN__], buf2[__MPLAPACK_BUFLEN__], buf3[__MPLAPACK_BUFLEN__];
-    memset(buf1, 0, __MPLAPACK_BUFLEN__);
-    memset(buf2, 0, __MPLAPACK_BUFLEN__);
-    memset(buf3, 0, __MPLAPACK_BUFLEN__);
+    char buf1[MPLAPACK_BUFLEN], buf2[MPLAPACK_BUFLEN], buf3[MPLAPACK_BUFLEN];
+    memset(buf1, 0, MPLAPACK_BUFLEN);
+    memset(buf2, 0, MPLAPACK_BUFLEN);
+    memset(buf3, 0, MPLAPACK_BUFLEN);
 
     COMPLEX_REF temp1r, temp2r, temp3r;
     COMPLEX temp1, temp2, temp3;
@@ -740,13 +740,13 @@ void division_complex_test() {
 int main() {
     printf("*** Testing arithmetic ***\n");
 
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
-    mpf_set_default_prec(___MPLAPACK_GMP_DEFAULT_PRECISION___);
+#if defined MPLAPACK_BUILD_WITH_GMP
+    mpf_set_default_prec(MPLAPACK_GMP_DEFAULT_PRECISION);
 #endif
 
     // we need to specify explicitly.
-    mpfrxx::set_default_precision_bits(___MPLAPACK_MPFR_DEFAULT_PRECISION___);
-    mpfrxx::set_default_mpc_precision_bits(___MPLAPACK_MPFR_DEFAULT_PRECISION___);
+    mpfrxx::set_default_precision_bits(MPLAPACK_MPFR_DEFAULT_PRECISION);
+    mpfrxx::set_default_mpc_precision_bits(MPLAPACK_MPFR_DEFAULT_PRECISION);
 
     mp_rounding2integer();
     mp_nint();

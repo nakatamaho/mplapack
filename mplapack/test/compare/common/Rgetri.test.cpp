@@ -67,7 +67,7 @@ void Rgetri_test() {
             lwork = -1;
             REAL_REF *work_ref = new REAL_REF[1];
             REAL *work = new REAL[1];
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
             dgetri_f77(&n, A_ref, &lda, ipiv_ref, work_ref, &lwork_ref, &info_ref);
 #else
             Rgetri(n, A_ref, lda, ipiv_ref, work_ref, lwork_ref, info_ref);
@@ -92,7 +92,7 @@ void Rgetri_test() {
             while (j < MAX_ITER) {
                 set_random_vector(A_ref, A, matlen(lda, n));
                 set_random_vector(work_ref, work, veclen(lwork, 1));
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                 dgetrf_f77(&n, &n, A_ref, &lda, ipiv_ref, &info_ref);
                 dgetri_f77(&n, A_ref, &lda, ipiv_ref, work_ref, &lwork_ref, &info_ref);
 #else

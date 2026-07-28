@@ -63,7 +63,7 @@ void Clansy_test2(const char *norm, const char *uplo) {
             j = 0;
             while (j < MAX_ITER) {
                 set_random_vector(A_ref, A, matlen(lda, n));
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                 zlansy_ret = zlansy_f77(norm, uplo, &n, A_ref, &lda, work_ref);
 #else
                 zlansy_ret = Clansy(norm, uplo, n, A_ref, lda, work_ref);

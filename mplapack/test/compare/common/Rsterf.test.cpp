@@ -63,7 +63,7 @@ void Rsterf_test(void) {
         while (j < MAX_ITER) {
             set_random_vector(D_ref, D, veclen(n, 1));
             set_random_vector(E_ref, E, veclen(n - 1, 1));
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
             dsterf_f77(&n, D_ref, E_ref, &info_ref);
 #else
             Rsterf(n, D_ref, E_ref, info_ref);

@@ -6,7 +6,7 @@ Rsyrk.dd_cuda_kernel \
 Rpotrf.dd_cuda_total \
 Rgetrf.dd_cuda_total
 
-dd_cuda_cxxflags   = -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) $(CUDA_CFLAGS) -D___MPLAPACK_BUILD_WITH_DD___
+dd_cuda_cxxflags   = -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) $(CUDA_CFLAGS) -DMPLAPACK_BUILD_WITH_DD
 dd_cuda_libdepends = -L$(top_builddir)/mpblas/optimized/dd/cuda -lmplapack_dd_opt_cuda \
                      $(CUDA_LDFLAGS) -lcudart \
                      -L$(QD_LIBDIR) -lqd $(DYLD)

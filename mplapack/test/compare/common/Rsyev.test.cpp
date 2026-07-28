@@ -135,7 +135,7 @@ void Rsyev_test2(const char *jobz, const char *uplo) {
             // these workspace query might not be the same value.
             lwork_ref = -1;
             lwork = -1;
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
             dsyev_f77(jobz, uplo, &n, A_ref, &lda, w_ref, work_ref, &lwork_ref, &info_ref);
 #else
             Rsyev(jobz, uplo, n, A_ref, lda, w_ref, work_ref, lwork_ref, info_ref);
@@ -162,7 +162,7 @@ void Rsyev_test2(const char *jobz, const char *uplo) {
                 set_random_vector(A_ref, A, matlen(lda, n));
                 set_random_vector(w_ref, w, veclen(n, 1));
 
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                 int iOne = 1, _n;
                 _n = matlen(lda, n);
                 dcopy_f77(&_n, A_ref, &iOne, Aorg_ref, &iOne);
@@ -172,7 +172,7 @@ void Rsyev_test2(const char *jobz, const char *uplo) {
                 Rcopy(matlen(lda, n), A, 1, Aorg, 1);
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                 dsyev_f77(jobz, uplo, &n, A_ref, &lda, w_ref, work_ref, &lwork_ref, &info_ref);
 #else
                 Rsyev(jobz, uplo, n, A_ref, lda, w_ref, work_ref, lwork_ref, info_ref);

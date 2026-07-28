@@ -26,8 +26,8 @@
  *
  */
 
-#ifndef _MPLAPACK_DD_H_
-#define _MPLAPACK_DD_H_
+#ifndef MPLAPACK_DD_H
+#define MPLAPACK_DD_H
 
 #include "mplapack_config.h"
 #include "qd/dd_real.h"

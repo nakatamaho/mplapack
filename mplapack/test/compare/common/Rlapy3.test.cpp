@@ -51,7 +51,7 @@ void Rlapy3_test() {
         set_random_number(x_ref, x);
         set_random_number(y_ref, y);
         set_random_number(z_ref, z);
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
         dlapy3_ret = dlapy3_f77(&x_ref, &y_ref, &z_ref);
 #else
         dlapy3_ret = Rlapy3(x_ref, y_ref, z_ref);

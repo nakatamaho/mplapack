@@ -1302,13 +1302,13 @@ AS_IF([test "x$float128_types_same" = "xyes"], [mplapack_float128_types_same=1])
 AS_IF([test "x$float128_implicit_gnu_to_std" = "xyes"], [mplapack_implicit_gnu_to_std_f128=1])
 AS_IF([test "x$float128_implicit_std_to_gnu" = "xyes"], [mplapack_implicit_std_to_gnu_f128=1])
 
-AC_DEFINE_UNQUOTED([MPLAPACK_HAVE__FLOAT128], [$mplapack_has__Float128_type],
+AC_DEFINE_UNQUOTED([MPLAPACK_HAVE_STD_FLOAT128], [$mplapack_has__Float128_type],
     [1 if _Float128 is supported by the compiler, else 0])
-AC_DEFINE_UNQUOTED([MPLAPACK_HAVE___FLOAT128], [$mplapack_has___float128_type],
+AC_DEFINE_UNQUOTED([MPLAPACK_HAVE_GNU_FLOAT128], [$mplapack_has___float128_type],
     [1 if __float128 is supported by the compiler, else 0])
 AC_DEFINE_UNQUOTED([MPLAPACK_LDBL_IS_BINARY128], [$mplapack_ldbl_is_binary128],
     [1 if long double is binary128-like (mantissa/exponent), else 0])
-AC_DEFINE_UNQUOTED([MPLAPACK__FLOAT128_IS_LDBL], [$mplapack__Float128_is_long_double],
+AC_DEFINE_UNQUOTED([MPLAPACK_STD_FLOAT128_IS_LDBL], [$mplapack__Float128_is_long_double],
     [1 if _Float128 is the same type as long double, else 0])
 AC_DEFINE_UNQUOTED([MPLAPACK_FLOAT128_SAME_TYPES], [$mplapack_float128_types_same],
     [1 if _Float128 and __float128 are the same type, else 0])
@@ -1798,15 +1798,15 @@ AS_IF([test "x$float80_types_same" = "xyes"], [mplapack_float80_types_same=1])
 AS_IF([test "x$float80_implicit_gnu_to_std" = "xyes"], [mplapack_implicit_gnu_to_std_f80=1])
 AS_IF([test "x$float80_implicit_std_to_gnu" = "xyes"], [mplapack_implicit_std_to_gnu_f80=1])
 
-AC_DEFINE_UNQUOTED([MPLAPACK_HAVE__FLOAT64X], [$mplapack_has__Float64x_type],
+AC_DEFINE_UNQUOTED([MPLAPACK_HAVE_STD_FLOAT64X], [$mplapack_has__Float64x_type],
     [1 if _Float64x is supported by the compiler, else 0])
-AC_DEFINE_UNQUOTED([MPLAPACK_HAVE___FLOAT80], [$mplapack_has___float80_type],
+AC_DEFINE_UNQUOTED([MPLAPACK_HAVE_GNU_FLOAT80], [$mplapack_has___float80_type],
     [1 if __float80 is supported by the compiler, else 0])
 AC_DEFINE_UNQUOTED([MPLAPACK_LDBL_IS_BINARY80], [$mplapack_ldbl_is_binary80],
     [1 if long double is binary80 (mantissa/exponent), else 0])
 AC_DEFINE_UNQUOTED([MPLAPACK_FLOAT64X_IS_BINARY80], [$mplapack_float64x_is_binary80],
     [1 if _Float64x matches binary80 (mantissa/exponent), else 0])
-AC_DEFINE_UNQUOTED([MPLAPACK__FLOAT64X_IS_LDBL], [$mplapack__Float64x_is_long_double],
+AC_DEFINE_UNQUOTED([MPLAPACK_STD_FLOAT64X_IS_LDBL], [$mplapack__Float64x_is_long_double],
     [1 if _Float64x is the same type as long double, else 0])
 AC_DEFINE_UNQUOTED([MPLAPACK_FLOAT80_SAME_TYPES], [$mplapack_float80_types_same],
     [1 if _Float64x and __float80 are the same type, else 0])

@@ -164,7 +164,7 @@ void Cgges(const char *jobvsl, const char *jobvsr, const char *sort, bool (*selc
     eps = Rlamch("P");
     smlnum = Rlamch("S");
     bignum = one / smlnum;
-#if defined ___MPLAPACK_BUILD_WITH_BINARY80___ || defined ___MPLAPACK_BUILD_WITH_BINARY128___
+#if defined MPLAPACK_BUILD_WITH_BINARY80 || defined MPLAPACK_BUILD_WITH_BINARY128
     Rlabad(smlnum, bignum);
 #endif
     smlnum = sqrt(smlnum) / eps;

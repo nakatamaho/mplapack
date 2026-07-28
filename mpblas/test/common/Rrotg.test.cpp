@@ -54,7 +54,7 @@ void Rrotg_test() {
         set_random_number(a_ref, a);
         set_random_number(b_ref, b);
         set_random_number(c_ref, c);
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
         drotg_f77(&a_ref, &b_ref, &c_ref, &s_ref);
 #else
         Rrotg(a_ref, b_ref, c_ref, s_ref);

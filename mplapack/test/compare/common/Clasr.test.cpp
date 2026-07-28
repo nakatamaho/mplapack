@@ -76,7 +76,7 @@ void Clasr_test2(const char *side, const char *pivot, const char *direct) {
                     set_random_vector(A_ref, A, matlen(lda, n));
                     set_random_vector(c_ref, c, max(cdim, 1));
                     set_random_vector(s_ref, s, max(cdim, 1));
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                     zlasr_f77(side, pivot, direct, &m, &n, c_ref, s_ref, A_ref, &lda);
 #else
                     Clasr(side, pivot, direct, m, n, c_ref, s_ref, A_ref, lda);

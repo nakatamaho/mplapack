@@ -91,7 +91,7 @@ void Rsymm_test3(const char *side, const char *uplo, REAL_REF alpha_ref, REAL_RE
                             set_random_vector(C_ref, C, matlen(ldc, n));
                             mplapack_errno = 0;
                             blas_errno = 0;
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                             dsymm_f77(side, uplo, &m, &n, &alpha_ref, A_ref, &lda, B_ref, &ldb, &beta_ref, C_ref, &ldc);
                             mplapack_errno2 = blas_errno;
 #else

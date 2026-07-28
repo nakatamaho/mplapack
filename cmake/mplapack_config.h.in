@@ -40,10 +40,10 @@
 /* ----------------------------------------------------------------------- */
 /* Detected binary128 capabilities                                         */
 /* ----------------------------------------------------------------------- */
-#define MPLAPACK_HAVE__FLOAT128            @MPLAPACK_HAVE__FLOAT128@
-#define MPLAPACK_HAVE___FLOAT128           @MPLAPACK_HAVE___FLOAT128@
+#define MPLAPACK_HAVE_STD_FLOAT128            @MPLAPACK_HAVE_STD_FLOAT128@
+#define MPLAPACK_HAVE_GNU_FLOAT128           @MPLAPACK_HAVE_GNU_FLOAT128@
 #define MPLAPACK_LDBL_IS_BINARY128         @MPLAPACK_LDBL_IS_BINARY128@
-#define MPLAPACK__FLOAT128_IS_LDBL         @MPLAPACK__FLOAT128_IS_LDBL@
+#define MPLAPACK_STD_FLOAT128_IS_LDBL         @MPLAPACK_STD_FLOAT128_IS_LDBL@
 #define MPLAPACK_FLOAT128_SAME_TYPES       @MPLAPACK_FLOAT128_SAME_TYPES@
 #define MPLAPACK_FLOAT128_CONVERT_GNU_TO_STD @MPLAPACK_FLOAT128_CONVERT_GNU_TO_STD@
 #define MPLAPACK_FLOAT128_CONVERT_STD_TO_GNU @MPLAPACK_FLOAT128_CONVERT_STD_TO_GNU@
@@ -60,11 +60,11 @@
 /* ----------------------------------------------------------------------- */
 /* Detected binary80 capabilities                                          */
 /* ----------------------------------------------------------------------- */
-#define MPLAPACK_HAVE__FLOAT64X            @MPLAPACK_HAVE__FLOAT64X@
-#define MPLAPACK_HAVE___FLOAT80            @MPLAPACK_HAVE___FLOAT80@
+#define MPLAPACK_HAVE_STD_FLOAT64X            @MPLAPACK_HAVE_STD_FLOAT64X@
+#define MPLAPACK_HAVE_GNU_FLOAT80            @MPLAPACK_HAVE_GNU_FLOAT80@
 #define MPLAPACK_LDBL_IS_BINARY80          @MPLAPACK_LDBL_IS_BINARY80@
 #define MPLAPACK_FLOAT64X_IS_BINARY80      @MPLAPACK_FLOAT64X_IS_BINARY80@
-#define MPLAPACK__FLOAT64X_IS_LDBL         @MPLAPACK__FLOAT64X_IS_LDBL@
+#define MPLAPACK_STD_FLOAT64X_IS_LDBL         @MPLAPACK_STD_FLOAT64X_IS_LDBL@
 #define MPLAPACK_FLOAT80_SAME_TYPES        @MPLAPACK_FLOAT80_SAME_TYPES@
 #define MPLAPACK_FLOAT80_CONVERT_GNU_TO_STD @MPLAPACK_FLOAT80_CONVERT_GNU_TO_STD@
 #define MPLAPACK_FLOAT80_CONVERT_STD_TO_GNU @MPLAPACK_FLOAT80_CONVERT_STD_TO_GNU@

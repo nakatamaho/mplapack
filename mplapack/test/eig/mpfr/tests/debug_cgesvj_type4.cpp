@@ -4,7 +4,7 @@
 //
 // Build example:
 //   g++ -O2 -I${MPLAPACK}/include \
-//       -D___MPLAPACK_BUILD_WITH_MPFR___ \
+//       -DMPLAPACK_BUILD_WITH_MPFR \
 //       debug_cgesvj_type4_v2.cpp \
 //       -L${MPLAPACK}/lib -lmplapack_mpfr \
 //       -lmpc -lmpfr -lgmp -o debug_cgesvj_type4_v2

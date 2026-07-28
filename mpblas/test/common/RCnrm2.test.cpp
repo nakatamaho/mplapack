@@ -57,7 +57,7 @@ void RCnrm2_test() {
 
                 set_random_vector(x_ref, x, veclen(n, incx));
 
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                 dtmp = dznrm2_f77(&n, x_ref, &incx);
 #else
                 dtmp = RCnrm2(n, x_ref, incx);

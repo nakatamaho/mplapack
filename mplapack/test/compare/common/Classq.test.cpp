@@ -63,7 +63,7 @@ void Classq_test() {
                 set_random_vector(x_ref, x, veclen(n, incx));
                 set_random_number(scale_ref, scale);
                 set_random_number(sumsq_ref, sumsq);
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                 zlassq_f77(&n, x_ref, &incx, &scale_ref, &sumsq_ref);
 #else
                 Classq(n, x_ref, incx, scale_ref, sumsq_ref);

@@ -92,7 +92,7 @@ void Mutils_test_pi() {
     REAL_REF p_ref, diff, dummy_ref = 0.0;
     REAL p, dummy = 0.0;
 
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
     p_ref = std::acos(-1.0);
 #else
     p_ref = pi(dummy_ref);
@@ -113,7 +113,7 @@ void Mutils_test_pi() {
     printnum(diff);
     printf("\n\n");
 #endif
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
+#if defined MPLAPACK_BUILD_WITH_GMP
     if (diff > EPSILON100) {
 #else
     if (diff > EPSILON) {
@@ -158,7 +158,7 @@ void Mutils_test_log2() {
         printnum(diff);
         printf("\n\n");
 #endif
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
+#if defined MPLAPACK_BUILD_WITH_GMP
         if (diff > EPSILON100) {
 #else
         if (diff > EPSILON) {
@@ -203,7 +203,7 @@ void Mutils_test_log() {
         printnum(diff);
         printf("\n\n");
 #endif
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
+#if defined MPLAPACK_BUILD_WITH_GMP
         if (diff > EPSILON100) {
 #else
         if (diff > EPSILON) {
@@ -246,7 +246,7 @@ void Mutils_test_log10() {
         printnum(diff);
         printf("\n\n");
 #endif
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
+#if defined MPLAPACK_BUILD_WITH_GMP
         if (diff > EPSILON100) {
 #else
         if (diff > EPSILON) {
@@ -310,14 +310,14 @@ void Mutils_test_pow() {
         set_random_number(y_ref, y);
         x_ref = abs(x_ref);
         y_ref = abs(y_ref);
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
         z_ref = std::pow(x_ref, y_ref);
 #else
         z_ref = pow(x_ref, y_ref);
 #endif
         x = abs(x);
         y = abs(y);
-#if defined ___MPLAPACK_BUILD_WITH_DOUBLE___
+#if defined MPLAPACK_BUILD_WITH_DOUBLE
         z = std::pow(x, y);
 #else
         z = pow(x, y);
@@ -349,7 +349,7 @@ void Mutils_test_pow() {
         printnum(diff);
         printf("\n\n");
 #endif
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
+#if defined MPLAPACK_BUILD_WITH_GMP
         if (diff > EPSILON100) {
 #else
         if (diff > EPSILON) {
@@ -392,7 +392,7 @@ void Mutils_test_sin() {
         printnum(diff);
         printf("\n\n");
 #endif
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
+#if defined MPLAPACK_BUILD_WITH_GMP
         if (diff > EPSILON100) {
 #else
         if (diff > EPSILON) {
@@ -434,7 +434,7 @@ void Mutils_test_cos() {
         printnum(diff);
         printf("\n\n");
 #endif
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
+#if defined MPLAPACK_BUILD_WITH_GMP
         if (diff > EPSILON100) {
 #else
         if (diff > EPSILON) {
@@ -476,7 +476,7 @@ void Mutils_test_exp() {
         printnum(diff);
         printf("\n\n");
 #endif
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
+#if defined MPLAPACK_BUILD_WITH_GMP
         if (diff > EPSILON100) {
 #else
         if (diff > EPSILON) {
@@ -519,7 +519,7 @@ void Mutils_test_csin() {
         printnum(diff);
         printf("\n\n");
 #endif
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
+#if defined MPLAPACK_BUILD_WITH_GMP
         if (abs(diff) > EPSILON100) {
 #else
         if (abs(diff) > EPSILON) {
@@ -561,7 +561,7 @@ void Mutils_test_ccos() {
         printnum(diff);
         printf("\n\n");
 #endif
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
+#if defined MPLAPACK_BUILD_WITH_GMP
         if (abs(diff) > EPSILON100) {
 #else
         if (abs(diff) > EPSILON) {
@@ -604,7 +604,7 @@ void Mutils_test_cexp() {
         printnum(diff);
         printf("\n\n");
 #endif
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
+#if defined MPLAPACK_BUILD_WITH_GMP
         if (abs(diff) > EPSILON100) {
 #else
         if (abs(diff) > EPSILON) {
@@ -647,7 +647,7 @@ void Mutils_test_csqrt() {
         printnum(diff);
         printf("\n\n");
 #endif
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
+#if defined MPLAPACK_BUILD_WITH_GMP
         if (abs(diff) > EPSILON100) {
 #else
         if (abs(diff) > EPSILON) {
@@ -695,8 +695,8 @@ void Mutils_test() {
 }
 
 int main(int argc, char *argv[]) {
-    mpfrxx::set_default_precision_bits(___MPLAPACK_MPFR_DEFAULT_PRECISION___);
-    mpfrxx::set_default_mpc_precision_bits(___MPLAPACK_MPFR_DEFAULT_PRECISION___);
+    mpfrxx::set_default_precision_bits(MPLAPACK_MPFR_DEFAULT_PRECISION);
+    mpfrxx::set_default_mpc_precision_bits(MPLAPACK_MPFR_DEFAULT_PRECISION);
 
     printf("*** Testing Mutils start ***\n");
     Mutils_test();

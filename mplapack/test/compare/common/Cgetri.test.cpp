@@ -67,7 +67,7 @@ void Cgetri_test() {
             lwork = -1;
             COMPLEX_REF *work_ref = new COMPLEX_REF[1];
             COMPLEX *work = new COMPLEX[1];
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
             zgetri_f77(&n, A_ref, &lda, ipiv_ref, work_ref, &lwork_ref, &info_ref);
 #else
             Cgetri(n, A_ref, lda, ipiv_ref, work_ref, lwork_ref, info_ref);
@@ -92,7 +92,7 @@ void Cgetri_test() {
             while (j < MAX_ITER) {
                 set_random_vector(A_ref, A, matlen(lda, n));
                 set_random_vector(work_ref, work, veclen(lwork, 1));
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                 zgetrf_f77(&n, &n, A_ref, &lda, ipiv_ref, &info_ref);
                 zgetri_f77(&n, A_ref, &lda, ipiv_ref, work_ref, &lwork_ref, &info_ref);
 #else

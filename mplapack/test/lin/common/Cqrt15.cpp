@@ -67,7 +67,7 @@ void Cqrt15(INTEGER const scale, INTEGER const rksel, INTEGER const m, INTEGER c
     //
     smlnum = Rlamch("Safe minimum");
     bignum = one / smlnum;
-#if defined ___MPLAPACK_BUILD_WITH_BINARY80___ || defined ___MPLAPACK_BUILD_WITH_BINARY128___
+#if defined MPLAPACK_BUILD_WITH_BINARY80 || defined MPLAPACK_BUILD_WITH_BINARY128
     Rlabad(smlnum, bignum);
 #endif
     eps = Rlamch("Epsilon");

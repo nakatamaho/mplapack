@@ -21,7 +21,7 @@ mplibs = -lm -lquadmath
 else
 mplibs = -lm
 endif
-cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(LAPACK_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_BINARY128___ -D___MPLAPACK_INTERNAL___ -I$(top_srcdir)/fable
+cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(LAPACK_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_BINARY128 -DMPLAPACK_INTERNAL -I$(top_srcdir)/fable
 
 xeigtstR_binary128_SOURCES  = ../common/Rchkee.cpp
 xeigtstR_binary128_opt_SOURCES  = ../common/Rchkee.cpp

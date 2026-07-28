@@ -105,7 +105,7 @@ void Clarfb_test2(const char *side, const char *trans, const char *direct, const
                                 set_random_vector(T_ref, T, matlen(ldt, k));
                                 set_random_vector(C_ref, C, matlen(ldc, n));
                                 set_random_vector(V_ref, V, matlen(ldv, v_column));
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                                 zlarfb_f77(side, trans, direct, storev, &m, &n, &k, V_ref, &ldv, T_ref, &ldt, C_ref, &ldc, work_ref, &ldwork);
 #else
                                 Clarfb(side, trans, direct, storev, m, n, k, V_ref, ldv, T_ref, ldt, C_ref, ldc, work_ref, ldwork);

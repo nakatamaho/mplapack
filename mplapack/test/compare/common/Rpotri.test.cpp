@@ -69,7 +69,7 @@ void Rpotri_test2(const char *uplo) {
                 set_random_symmmat_cond(A_ref, A, lda, n, 2);
 //		set_random_psdmat(A_ref, A, lda, n);
 // numerical error measure: first do inversion
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                 dpotf2_f77(uplo, &n, A_ref, &lda, &info_ref);
                 dpotri_f77(uplo, &n, A_ref, &lda, &info_ref);
 #else
@@ -79,7 +79,7 @@ void Rpotri_test2(const char *uplo) {
                 Rpotrf(uplo, n, A, lda, info);
                 Rpotri(uplo, n, A, lda, info);
 // doing inversion twice.
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                 dpotf2_f77(uplo, &n, A_ref, &lda, &info_ref);
                 dpotri_f77(uplo, &n, A_ref, &lda, &info_ref);
 #else

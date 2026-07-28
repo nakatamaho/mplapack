@@ -17,7 +17,7 @@ opt_libdepends = -L$(top_builddir)/mplapack/test/eig -leig_gmp_opt -leig_overrid
 endif
 
 mplibs = -L$(GMP_LIBDIR) -lgmp -lm
-cxxflags = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(LAPACK_INCLUDEDIR) -I$(GMP_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_GMP___ -D___MPLAPACK_INTERNAL___ -I$(top_srcdir)/fable
+cxxflags = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(LAPACK_INCLUDEDIR) -I$(GMP_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_GMP -DMPLAPACK_INTERNAL -I$(top_srcdir)/fable
 
 xeigtstR_gmp_SOURCES  = ../common/Rchkee.cpp
 xeigtstR_gmp_opt_SOURCES  = ../common/Rchkee.cpp

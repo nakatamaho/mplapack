@@ -91,7 +91,7 @@ int main(int argc, char *argv[]) {
     using std::chrono::duration_cast;
     using std::chrono::nanoseconds;
 
-    ___MPLAPACK_INITIALIZE___
+    MPLAPACK_INITIALIZE
 
     typedef void (*raxpy_func_t)(mplapackint, REAL, REAL *, mplapackint, REAL *, mplapackint);
 

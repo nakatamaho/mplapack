@@ -144,7 +144,7 @@ void Cheev_test2(const char *jobz, const char *uplo) {
             lwork_ref = -1;
             lwork = -1;
 
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
             zheev_f77(jobz, uplo, &n, A_ref, &lda, w_ref, work_ref, &lwork_ref, rwork_ref, &info_ref);
 #else
             Cheev(jobz, uplo, n, A_ref, lda, w_ref, work_ref, lwork_ref, rwork_ref, info_ref);
@@ -170,7 +170,7 @@ void Cheev_test2(const char *jobz, const char *uplo) {
             while (j < MAX_ITER) {
                 set_random_vector(A_ref, A, matlen(lda, n));
                 set_random_vector(w_ref, w, veclen(n, 1));
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                 int iOne = 1, _n;
                 _n = matlen(lda, n);
                 zcopy_f77(&_n, A_ref, &iOne, Aorg_ref, &iOne);
@@ -179,7 +179,7 @@ void Cheev_test2(const char *jobz, const char *uplo) {
                 Ccopy(matlen(lda, n), A_ref, 1, Aorg_ref, 1);
                 Ccopy(matlen(lda, n), A, 1, Aorg, 1);
 #endif
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                 zheev_f77(jobz, uplo, &n, A_ref, &lda, w_ref, work_ref, &lwork_ref, rwork_ref, &info_ref);
 #else
                 Cheev(jobz, uplo, n, A_ref, lda, w_ref, work_ref, lwork_ref, rwork_ref, info_ref);

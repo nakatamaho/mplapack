@@ -26,10 +26,10 @@
  *
  */
 
-#ifndef _MPLAPACK_H_
-#define _MPLAPACK_H_
+#ifndef MPLAPACK_H
+#define MPLAPACK_H
 
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
+#if defined MPLAPACK_BUILD_WITH_GMP
 #include <mplapack_gmp.h>
 typedef mplapackint INTEGER;
 typedef mplapacklogical LOGICAL;
@@ -48,7 +48,7 @@ typedef mpfc_class COMPLEX;
 #define iMparam2stage iMparam2stage_gmp
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
 #include <mplapack_mpfr.h>
 typedef mplapackint INTEGER;
 typedef mplapacklogical LOGICAL;
@@ -67,7 +67,7 @@ typedef mpc_class COMPLEX;
 #define iMparam2stage iMparam2stage_mpfr
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_QD___
+#if defined MPLAPACK_BUILD_WITH_QD
 #include <mplapack_qd.h>
 typedef mplapackint INTEGER;
 typedef mplapacklogical LOGICAL;
@@ -86,7 +86,7 @@ typedef qd_complex COMPLEX;
 #define iMparam2stage iMparam2stage_qd
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_DD___
+#if defined MPLAPACK_BUILD_WITH_DD
 #include <mplapack_dd.h>
 typedef mplapackint INTEGER;
 typedef mplapacklogical LOGICAL;
@@ -105,7 +105,7 @@ typedef dd_complex COMPLEX;
 #define iMparam2stage iMparam2stage_dd
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_DOUBLE___
+#if defined MPLAPACK_BUILD_WITH_DOUBLE
 #include <mplapack_double.h>
 typedef mplapackint INTEGER;
 typedef mplapacklogical LOGICAL;
@@ -124,7 +124,7 @@ typedef std::complex<double> COMPLEX;
 #define iMparam2stage iMparam2stage_double
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_BINARY80___
+#if defined MPLAPACK_BUILD_WITH_BINARY80
 #include <mplapack_binary80.h>
 typedef mplapackint INTEGER;
 typedef mplapacklogical LOGICAL;
@@ -143,7 +143,7 @@ typedef std::complex<mplapack_binary80_t> COMPLEX;
 #define iMparam2stage iMparam2stage_binary80
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_BINARY128___
+#if defined MPLAPACK_BUILD_WITH_BINARY128
 #include <mplapack_binary128.h>
 typedef mplapackint INTEGER;
 typedef mplapacklogical LOGICAL;

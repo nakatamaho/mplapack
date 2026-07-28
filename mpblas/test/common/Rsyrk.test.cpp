@@ -83,7 +83,7 @@ void Rsyrk_test3(const char *uplo, const char *trans, REAL_REF alpha_ref, REAL_R
 
                         mplapack_errno = 0;
                         blas_errno = 0;
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                         dsyrk_f77(uplo, trans, &n, &k, &alpha_ref, A_ref, &lda, &beta_ref, C_ref, &ldc);
                         mplapack_errno1 = blas_errno;
 #else

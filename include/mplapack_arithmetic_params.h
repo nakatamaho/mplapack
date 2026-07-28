@@ -229,14 +229,14 @@ namespace detail {
     // t/emin/emax are well within the exactly representable range of double.
     template <class REAL> inline REAL to_rlamch_real_impl(arithmetic_int x, REAL *) { return REAL(static_cast<double>(x)); }
 
-#if defined(___MPLAPACK_BUILD_WITH_GMP___)
+#if defined(MPLAPACK_BUILD_WITH_GMP)
     inline mpf_class to_rlamch_real_impl(arithmetic_int x, mpf_class *) {
         const std::string s = std::to_string(x);
         return mpf_class(s.c_str());
     }
 #endif
 
-#if defined(___MPLAPACK_BUILD_WITH_MPFR___)
+#if defined(MPLAPACK_BUILD_WITH_MPFR)
     inline mpfrxx::mpfr_class to_rlamch_real_impl(arithmetic_int x, mpfrxx::mpfr_class *) {
         const std::string s = std::to_string(x);
         return mpfrxx::mpfr_class(s.c_str());
@@ -337,31 +337,31 @@ template <class REAL> BlueScalingParams<REAL> get_blue_scaling_params();
 // Each header is self-contained and may only be included once per TU via
 // the build-macro guard.
 // ---------------------------------------------------------------------------
-#if defined(___MPLAPACK_BUILD_WITH_MPFR___)
+#if defined(MPLAPACK_BUILD_WITH_MPFR)
 #include "mplapack_arithmetic_params_mpfr.h"
 #endif
 
-#if defined(___MPLAPACK_BUILD_WITH_GMP___)
+#if defined(MPLAPACK_BUILD_WITH_GMP)
 #include "mplapack_arithmetic_params_gmp.h"
 #endif
 
-#if defined(___MPLAPACK_BUILD_WITH_DOUBLE___)
+#if defined(MPLAPACK_BUILD_WITH_DOUBLE)
 #include "mplapack_arithmetic_params_double.h"
 #endif
 
-#if defined(___MPLAPACK_BUILD_WITH_BINARY80___)
+#if defined(MPLAPACK_BUILD_WITH_BINARY80)
 #include "mplapack_arithmetic_params_binary80.h"
 #endif
 
-#if defined(___MPLAPACK_BUILD_WITH_BINARY128___)
+#if defined(MPLAPACK_BUILD_WITH_BINARY128)
 #include "mplapack_arithmetic_params_binary128.h"
 #endif
 
-#if defined(___MPLAPACK_BUILD_WITH_QD___)
+#if defined(MPLAPACK_BUILD_WITH_QD)
 #include "mplapack_arithmetic_params_qd.h"
 #endif
 
-#if defined(___MPLAPACK_BUILD_WITH_DD___)
+#if defined(MPLAPACK_BUILD_WITH_DD)
 #include "mplapack_arithmetic_params_dd.h"
 #endif
 

@@ -48,7 +48,7 @@ foreach(_b ${_backends})
       # Set one backend macro explicitly. Linking target files avoids inheriting
       # the MPFR oracle target's conflicting backend macro.
       target_compile_definitions(${_exe} PRIVATE
-        ___MPLAPACK_BUILD_WITH_${_B}___ ___MPLAPACK_INTERNAL___)
+        MPLAPACK_BUILD_WITH_${_B} MPLAPACK_INTERNAL)
       if(_b STREQUAL "dd" AND MPLAPACK_HAS_FP_CONTRACT_OFF)
         target_compile_options(${_exe} PRIVATE -ffp-contract=off)
       endif()

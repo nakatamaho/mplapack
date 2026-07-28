@@ -72,7 +72,7 @@ void Rsbmv_test3(const char *uplo, REAL_REF alpha_ref, REAL_REF beta_ref, REAL a
                             set_random_vector(y_ref, y, veclen(n, incy));
                             mplapack_errno = 0;
                             blas_errno = 0;
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                             dsbmv_f77(uplo, &n, &k, &alpha_ref, A_ref, &lda, x_ref, &incx, &beta_ref, y_ref, &incy);
                             mplapack_errno1 = blas_errno;
 #else

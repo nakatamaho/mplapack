@@ -77,7 +77,7 @@ void Rgeequ_test(void) {
                     set_random_vector(A_ref, A, matlen(lda, n));
                     set_random_vector(R_ref, R, veclen(m, 1));
                     set_random_vector(C_ref, C, veclen(n, 1));
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                     dgeequ_f77(&m, &n, A_ref, &lda, R_ref, C_ref, &rowcnd_ref, &colcnd_ref, &amax_ref, &info_ref);
 #else
                     Rgeequ(m, n, A_ref, lda, R_ref, C_ref, rowcnd_ref, colcnd_ref, amax_ref, info_ref);

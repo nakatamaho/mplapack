@@ -66,7 +66,7 @@ void Rlarfg_test() {
                 set_random_vector(x_ref, x, veclen(n, incx));
                 set_random_number(alpha_ref, alpha);
 
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                 dlarfg_f77(&n, &alpha_ref, x_ref, &incx, &tau_ref);
 #else
                 Rlarfg(n, alpha_ref, x_ref, incx, tau_ref);

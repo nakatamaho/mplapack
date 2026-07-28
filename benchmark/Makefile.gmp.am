@@ -10,7 +10,7 @@ Rpotf2.gmp Rpotf2.gmp_opt \
 Rgetrf.gmp Rgetrf.gmp_opt
 
 # Note: includes gmpxx_mkII and GMP headers (superset of BLAS-only flags)
-gmpcxxflags = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_GMP___
+gmpcxxflags = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_GMP
 gmplapack_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_gmp
 gmp_libdepends    = $(gmplapack_libdepends) -L$(GMP_LIBDIR) -lgmp $(DYLD)
 gmpopt_libdepends = -L$(top_builddir)/mpblas/optimized/gmp -lmplapack_gmp_opt -L$(GMP_LIBDIR) -lgmp $(DYLD)

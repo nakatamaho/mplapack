@@ -35,12 +35,12 @@
 #include <gmpxx_mkII.h>
 using namespace gmpxx;
 
-#if defined ___MPLAPACK_INTERNAL___
+#if defined MPLAPACK_INTERNAL
 #define GMP_FORMAT "%+68.64Fe"
 #define GMP_SHORT_FORMAT "%+20.16Fe"
 
-#if !defined __MPLAPACK_BUFLEN__
-#define __MPLAPACK_BUFLEN__ 1024
+#if !defined MPLAPACK_BUFLEN
+#define MPLAPACK_BUFLEN 1024
 #endif
 
 inline void printnum(mpf_class rtmp) {
@@ -64,22 +64,22 @@ inline void printnum_short(mpfc_class ctmp) {
 }
 
 inline void sprintnum(char *buf, mpf_class rtmp) {
-    gmp_snprintf(buf, __MPLAPACK_BUFLEN__, GMP_FORMAT, rtmp.get_mpf_t());
+    gmp_snprintf(buf, MPLAPACK_BUFLEN, GMP_FORMAT, rtmp.get_mpf_t());
     return;
 }
 
 inline void sprintnum_short(char *buf, mpf_class rtmp) {
-    gmp_snprintf(buf, __MPLAPACK_BUFLEN__, GMP_SHORT_FORMAT, rtmp.get_mpf_t());
+    gmp_snprintf(buf, MPLAPACK_BUFLEN, GMP_SHORT_FORMAT, rtmp.get_mpf_t());
     return;
 }
 
 inline void sprintnum(char *buf, mpfc_class ctmp) {
-    gmp_snprintf(buf, __MPLAPACK_BUFLEN__, GMP_FORMAT GMP_FORMAT "i", ctmp.real().get_mpf_t(), ctmp.imag().get_mpf_t());
+    gmp_snprintf(buf, MPLAPACK_BUFLEN, GMP_FORMAT GMP_FORMAT "i", ctmp.real().get_mpf_t(), ctmp.imag().get_mpf_t());
     return;
 }
 
 inline void sprintnum_short(char *buf, mpfc_class ctmp) {
-    gmp_snprintf(buf, __MPLAPACK_BUFLEN__, GMP_SHORT_FORMAT GMP_SHORT_FORMAT "i", ctmp.real().get_mpf_t(), ctmp.imag().get_mpf_t());
+    gmp_snprintf(buf, MPLAPACK_BUFLEN, GMP_SHORT_FORMAT GMP_SHORT_FORMAT "i", ctmp.real().get_mpf_t(), ctmp.imag().get_mpf_t());
     return;
 }
 

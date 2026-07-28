@@ -51,7 +51,7 @@ void Cladiv_test() {
         set_random_number(x_ref, x);
         set_random_number(y_ref, y);
 
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
         ret_ref = zladiv_f77(&x_ref, &y_ref);
 #else
         ret_ref = Cladiv(x_ref, y_ref);

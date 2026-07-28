@@ -74,7 +74,7 @@ void Csymv_test3(const char *uplo, COMPLEX_REF alpha_ref, COMPLEX_REF beta_ref, 
 
                         mplapack_errno = 0;
                         blas_errno = 0;
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                         zsymv_f77(uplo, &n, &alpha_ref, A_ref, &lda, x_ref, &incx, &beta_ref, y_ref, &incy);
                         mplapack_errno1 = blas_errno;
 #else

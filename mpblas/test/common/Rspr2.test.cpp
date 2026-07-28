@@ -74,7 +74,7 @@ void Rspr2_test2(const char *uplo) {
                     set_random_vector(y_ref, y, veclen(n, incy));
                     set_random_number(alpha_ref, alpha);
 
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                     dspr2_f77(uplo, &n, &alpha_ref, x_ref, &incx, y_ref, &incy, AP_ref);
                     mplapack_errno1 = blas_errno;
 #else

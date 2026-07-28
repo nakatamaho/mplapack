@@ -56,7 +56,7 @@ void Claesy_test() {
         set_random_number(a_ref, a);
         set_random_number(b_ref, b);
         set_random_number(c_ref, c);
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
         zlaesy_f77(&a_ref, &b_ref, &c_ref, &rt1_ref, &rt2_ref, &evscal_ref, &cs1_ref, &sn1_ref);
 #else
         Claesy(a_ref, b_ref, c_ref, rt1_ref, rt2_ref, evscal_ref, cs1_ref, sn1_ref);
@@ -92,7 +92,7 @@ void Claesy_test() {
         b_ref = (a_ref - c_ref) / (REAL_REF)2.0;
         b = (a - c) / (REAL)2.0;
 
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
         zlaesy_f77(&a_ref, &b_ref, &c_ref, &rt1_ref, &rt2_ref, &evscal_ref, &cs1_ref, &sn1_ref);
 #else
         Claesy(a_ref, b_ref, c_ref, rt1_ref, rt2_ref, evscal_ref, cs1_ref, sn1_ref);
@@ -127,7 +127,7 @@ void Claesy_test() {
         set_random_number(b_ref, b);
         c_ref = -a_ref;
         c = -a;
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
         zlaesy_f77(&a_ref, &b_ref, &c_ref, &rt1_ref, &rt2_ref, &evscal_ref, &cs1_ref, &sn1_ref);
 #else
         Claesy(a_ref, b_ref, c_ref, rt1_ref, rt2_ref, evscal_ref, cs1_ref, sn1_ref);
@@ -161,7 +161,7 @@ void Claesy_test() {
         set_random_number(a_ref, a);
         b_ref = c_ref = 0.0;
         b = 0.0, c = 0.0;
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
         zlaesy_f77(&a_ref, &b_ref, &c_ref, &rt1_ref, &rt2_ref, &evscal_ref, &cs1_ref, &sn1_ref);
 #else
         Claesy(a_ref, b_ref, c_ref, rt1_ref, rt2_ref, evscal_ref, cs1_ref, sn1_ref);
@@ -194,7 +194,7 @@ void Claesy_test() {
 #endif
         a_ref = b_ref = c_ref = 0.0;
         a = 0.0, b = 0.0, c = 0.0;
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
         zlaesy_f77(&a_ref, &b_ref, &c_ref, &rt1_ref, &rt2_ref, &evscal_ref, &cs1_ref, &sn1_ref);
 #else
         Claesy(a_ref, b_ref, c_ref, rt1_ref, rt2_ref, evscal_ref, cs1_ref, sn1_ref);
@@ -229,7 +229,7 @@ void Claesy_test() {
         set_random_number(c_ref, c);
         b_ref = 0.0;
         b = 0.0;
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
         zlaesy_f77(&a_ref, &b_ref, &c_ref, &rt1_ref, &rt2_ref, &evscal_ref, &cs1_ref, &sn1_ref);
 #else
         Claesy(a_ref, b_ref, c_ref, rt1_ref, rt2_ref, evscal_ref, cs1_ref, sn1_ref);
@@ -269,7 +269,7 @@ void Claesy_test() {
     b_ref = 0.0;
     a = 1.0, c = 1.0;
     b = 0.0;
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
     zlaesy_f77(&a_ref, &b_ref, &c_ref, &rt1_ref, &rt2_ref, &evscal_ref, &cs1_ref, &sn1_ref);
 #else
     Claesy(a_ref, b_ref, c_ref, rt1_ref, rt2_ref, evscal_ref, cs1_ref, sn1_ref);

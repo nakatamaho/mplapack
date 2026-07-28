@@ -82,7 +82,7 @@ void Rtrmm_test3(const char *side, const char *uplo, const char *transa, const c
 
                         mplapack_errno = 0;
                         blas_errno = 0;
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                         dtrmm_f77(side, uplo, transa, diag, &m, &n, &alpha_ref, A_ref, &lda, B_ref, &ldb);
                         mplapack_errno1 = blas_errno;
 #else

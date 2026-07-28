@@ -53,7 +53,7 @@ void Clartg_test() {
     while (count--) {
         set_random_number(f_ref, f);
         set_random_number(g_ref, g);
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
         zlartg_f77(&f_ref, &g_ref, &cs_ref, &sn_ref, &r_ref);
 #else
         Clartg(f_ref, g_ref, cs_ref, sn_ref, r_ref);
@@ -99,7 +99,7 @@ void Clartg_test() {
         f = 0.0;
         f_ref = 0.0;
         set_random_number(g_ref, g);
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
         zlartg_f77(&f_ref, &g_ref, &cs_ref, &sn_ref, &r_ref);
 #else
         Clartg(f_ref, g_ref, cs_ref, sn_ref, r_ref);
@@ -145,7 +145,7 @@ void Clartg_test() {
         g = 0.0;
         g_ref = 0.0;
         set_random_number(f_ref, f);
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
         zlartg_f77(&f_ref, &g_ref, &cs_ref, &sn_ref, &r_ref);
 #else
         Clartg(f_ref, g_ref, cs_ref, sn_ref, r_ref);

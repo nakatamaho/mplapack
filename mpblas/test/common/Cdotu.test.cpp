@@ -60,7 +60,7 @@ void Cdotu_test() {
                 while (j < MAX_ITER) {
                     set_random_vector(x_ref, x, veclen(n, incx));
                     set_random_vector(y_ref, y, veclen(n, incy));
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                     dtemp = zdotu_f77(&n, x_ref, &incx, y_ref, &incy);
 #else
                     dtemp = Cdotu(n, x_ref, incx, y_ref, incy);

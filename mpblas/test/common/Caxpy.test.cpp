@@ -60,7 +60,7 @@ void Caxpy_test2(COMPLEX_REF alpha_ref, COMPLEX alpha) {
                 while (j < MAX_ITER) {
                     set_random_vector(x_ref, x, veclen(n, incx));
                     set_random_vector(y_ref, y, veclen(n, incy));
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                     zaxpy_f77(&n, &alpha_ref, x_ref, &incx, y_ref, &incy);
 #else
                     Caxpy(n, alpha_ref, x_ref, incx, y_ref, incy);

@@ -16,7 +16,7 @@ libdepends = -L$(top_builddir)/mplapack/test/eig -leig_double -leig_override_dou
 opt_libdepends = -L$(top_builddir)/mplapack/test/eig -leig_double_opt -leig_override_double_opt -L$(top_builddir)/mplapack/test/matgen -lmatgen_double_opt -L$(top_builddir)/mpblas/optimized/double -lmplapack_double_opt
 endif
 mplibs = -lm
-cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(LAPACK_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_DOUBLE___ -D___MPLAPACK_INTERNAL___ -I$(top_srcdir)/fable
+cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(LAPACK_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_DOUBLE -DMPLAPACK_INTERNAL -I$(top_srcdir)/fable
 
 xeigtstR_double_SOURCES  = ../common/Rchkee.cpp
 xeigtstR_double_opt_SOURCES  = ../common/Rchkee.cpp

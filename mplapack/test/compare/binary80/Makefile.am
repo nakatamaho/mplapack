@@ -20,8 +20,8 @@ run_Rlamch_test.sh: Makefile
 
 EXTRA_DIST = Rlaruv_reference.txt Rlamch_reference.txt
 
-backend_define = $(GMPFRXX_MKII_CPPFLAGS) -D___MPLAPACK_BUILD_WITH_BINARY80___
-backend_cppflags = -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) $(backend_define) -D___MPLAPACK_INTERNAL___
+backend_define = $(GMPFRXX_MKII_CPPFLAGS) -DMPLAPACK_BUILD_WITH_BINARY80
+backend_cppflags = -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) $(backend_define) -DMPLAPACK_INTERNAL
 backend_cxxflags =
 backend_reference_archives = $(top_builddir)/mplapack/reference/.libs/libmplapack_binary80.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_mpfr.a
 backend_reference_libs = -lmplapack_binary80 -lmplapack_mpfr

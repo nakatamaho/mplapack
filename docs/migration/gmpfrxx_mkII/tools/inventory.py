@@ -99,7 +99,7 @@ PRECISION_DECLARATION = re.compile(
 )
 PRECISION_512 = re.compile(
     r"(?:^|\D)512(?:\D|$)|___MPREAL_DEFAULT_PRECISION___|"
-    r"___MPLAPACK_(?:GMP|MPFR)_DEFAULT_PRECISION___"
+    r"MPLAPACK_(?:GMP|MPFR)_DEFAULT_PRECISION"
 )
 PRECISION_QUERY = re.compile(
     r"(?:get_default_prec|default_precision_bits|default_mpf_precision_bits|"

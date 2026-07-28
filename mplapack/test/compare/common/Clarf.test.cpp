@@ -93,7 +93,7 @@ void Clarf_test2(const char *side) {
                         set_random_vector(C_ref, C, matlen(ldc, n));
                         set_random_vector(v_ref, v, dimv);
                         set_random_number(tau_ref, tau);
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                         zlarf_f77(side, &m, &n, v_ref, &incv, &tau_ref, C_ref, &ldc, work_ref);
 #else
                         Clarf(side, m, n, v_ref, incv, tau_ref, C_ref, ldc, work_ref);
@@ -123,7 +123,7 @@ void Clarf_test2(const char *side) {
                         set_random_vector(v_ref, v, dimv);
                         tau_ref = 0.0;
                         tau = 0.0;
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                         zlarf_f77(side, &m, &n, v_ref, &incv, &tau_ref, C_ref, &ldc, work_ref);
 #else
                         Clarf(side, m, n, v_ref, incv, tau_ref, C_ref, ldc, work_ref);

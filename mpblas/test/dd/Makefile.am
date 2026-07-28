@@ -100,7 +100,7 @@ Rtrsv.test.dd_opt  Rtrsv.test.dd
 mpblas_dd_testdir = $(prefix)/lib/$(target)/mplapack/test/compare/dd
 mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpc -lmpfr -lgmp -L$(QD_LIBDIR) -lqd
 refblas=-L$(top_builddir)/external/i/LAPACK/lib -lblas $(FCLIBS)
-test_cxxflags = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_DD___ -D___MPLAPACK_INTERNAL___ $(DD_CXXFLAGS)
+test_cxxflags = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(QD_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_DD -DMPLAPACK_INTERNAL $(DD_CXXFLAGS)
 test_srcdepends = ../common/xerbla.cpp ../common/mplapack.test.cpp ../common/Mxerbla.override.cpp
 
 if IS_MACOS
@@ -110,7 +110,7 @@ endif
 if IS_MINGW
 $(check_PROGRAMS): libmxerbla_override.la
 lib_LTLIBRARIES = libmxerbla_override.la
-libmxerbla_override_la_CPPFLAGS = $(GMPFRXX_MKII_CPPFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_DD___
+libmxerbla_override_la_CPPFLAGS = $(GMPFRXX_MKII_CPPFLAGS) -I$(top_srcdir)/include -DMPLAPACK_BUILD_WITH_DD
 libmxerbla_override_la_SOURCES = ../common/Mxerbla.override.cpp
 libmxerbla_override_la_LDFLAGS = -no-undefined
 libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,.libs/libmxerbla_override.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_dd.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_mpfr.a,--no-whole-archive

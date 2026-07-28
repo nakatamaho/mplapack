@@ -56,7 +56,7 @@ void RCasum_test() {
             int j = 0;
             while (j < MAX_ITER) {
                 set_random_vector(x_ref, x, veclen(n, incx));
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                 dtemp = dzasum_f77(&n, x_ref, &incx);
 #else
                 dtemp = RCasum(n, x_ref, incx);
