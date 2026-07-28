@@ -54,7 +54,8 @@ endif
 endif
 
 check-local:
-	$(SHELL) $(top_srcdir)/misc/check_unique_symbols.sh $(MPLAPACK_UNIQUE_SYMBOL_ARCHIVES)
+	CXX="$(CXX)" NM="$(NM)" OBJDUMP="$(OBJDUMP)" \
+	  $(SHELL) $(top_srcdir)/misc/check_unique_symbols.sh $(MPLAPACK_UNIQUE_SYMBOL_ARCHIVES)
 	$(SHELL) $(top_srcdir)/misc/check_source_manifests.sh $(top_srcdir)
 
 mplapack_includedir = $(includedir)/mplapack
