@@ -16,33 +16,33 @@ BLAS=
 LAPACK=
 FLIBS=-framework vecLib
 
-programs=Hilbert_inverse_mpfr Hilbert_inverse_gmp Hilbert_inverse_qd Hilbert_inverse_dd Hilbert_inverse_binary80 Hilbert_inverse_binary128 Hilbert_inverse_double
+programs=Frank_eigenvalues_mpfr Frank_eigenvalues_gmp Frank_eigenvalues_qd Frank_eigenvalues_dd Frank_eigenvalues_binary80 Frank_eigenvalues_binary128 Frank_eigenvalues_double
 
 all: $(programs)
 
 .cpp.o:
 	$(CXX) -c $(OPTFLAGS) $(CXXFLAGS) $<
 
-Hilbert_inverse_mpfr: Hilbert_inverse_mpfr.o
-	$(CXX) -o Hilbert_inverse_mpfr Hilbert_inverse_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
+Frank_eigenvalues_mpfr: Frank_eigenvalues_mpfr.o
+	$(CXX) -o Frank_eigenvalues_mpfr Frank_eigenvalues_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
 
-Hilbert_inverse_gmp: Hilbert_inverse_gmp.o
-	$(CXX) -o Hilbert_inverse_gmp Hilbert_inverse_gmp.o $(LIBFLAGS) $(GMPLIBS)
+Frank_eigenvalues_gmp: Frank_eigenvalues_gmp.o
+	$(CXX) -o Frank_eigenvalues_gmp Frank_eigenvalues_gmp.o $(LIBFLAGS) $(GMPLIBS)
 
-Hilbert_inverse_qd: Hilbert_inverse_qd.o
-	$(CXX) -o Hilbert_inverse_qd Hilbert_inverse_qd.o $(LIBFLAGS) $(QDLIBS)
+Frank_eigenvalues_qd: Frank_eigenvalues_qd.o
+	$(CXX) -o Frank_eigenvalues_qd Frank_eigenvalues_qd.o $(LIBFLAGS) $(QDLIBS)
 
-Hilbert_inverse_dd: Hilbert_inverse_dd.o
-	$(CXX) -o Hilbert_inverse_dd Hilbert_inverse_dd.o $(LIBFLAGS) $(DDLIBS)
+Frank_eigenvalues_dd: Frank_eigenvalues_dd.o
+	$(CXX) -o Frank_eigenvalues_dd Frank_eigenvalues_dd.o $(LIBFLAGS) $(DDLIBS)
 
-Hilbert_inverse_binary80: Hilbert_inverse_binary80.o
-	$(CXX) -o Hilbert_inverse_binary80 Hilbert_inverse_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
+Frank_eigenvalues_binary80: Frank_eigenvalues_binary80.o
+	$(CXX) -o Frank_eigenvalues_binary80 Frank_eigenvalues_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
 
-Hilbert_inverse_binary128: Hilbert_inverse_binary128.o
-	$(CXX) -o Hilbert_inverse_binary128 Hilbert_inverse_binary128.o $(LIBFLAGS) $(BINARY128LIBS)
+Frank_eigenvalues_binary128: Frank_eigenvalues_binary128.o
+	$(CXX) -o Frank_eigenvalues_binary128 Frank_eigenvalues_binary128.o $(LIBFLAGS) $(BINARY128LIBS)
 
-Hilbert_inverse_double: Hilbert_inverse_double.o
-	$(CXX) -o Hilbert_inverse_double Hilbert_inverse_double.o $(LIBFLAGS) $(DOUBLELIBS)
+Frank_eigenvalues_double: Frank_eigenvalues_double.o
+	$(CXX) -o Frank_eigenvalues_double Frank_eigenvalues_double.o $(LIBFLAGS) $(DOUBLELIBS)
 
 clean:
 	rm -rf *.o *~ $(programs) *bak
