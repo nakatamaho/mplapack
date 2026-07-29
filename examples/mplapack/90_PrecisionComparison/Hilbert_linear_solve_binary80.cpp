@@ -57,5 +57,41 @@ void printmat(int n, int m, mplapack_binary80_t *a, int lda)
     }
     printf("]");
 }
-mplapack_binary80_t max_solution_error(mplapackint n, mplapack_binary80_t *x, mplapack_binary80_t *xexact){ mplapack_binary80_t err=0; for(mplapackint i=0;i<n;i++){ mplapack_binary80_t d=abs(x[i]-xexact[i]); if(err<d) err=d; } return err; }
-int main(){ mplapackint n=12,lda=n,ldb=n,info; mplapack_binary80_t *a=new mplapack_binary80_t[n*n]; mplapack_binary80_t *aorg=new mplapack_binary80_t[n*n]; mplapack_binary80_t *b=new mplapack_binary80_t[n]; mplapack_binary80_t *xexact=new mplapack_binary80_t[n]; mplapackint *ipiv=new mplapackint[n]; for(mplapackint j=0;j<n;j++) for(mplapackint i=0;i<n;i++){ a[i+j*lda]=mplapack_binary80_t(1.0)/mplapack_binary80_t(i+j+1); aorg[i+j*lda]=a[i+j*lda]; } for(mplapackint i=0;i<n;i++) xexact[i]=(i%2==0)?mplapack_binary80_t(1.0):mplapack_binary80_t(-1.0); for(mplapackint i=0;i<n;i++){ b[i]=0; for(mplapackint k=0;k<n;k++) b[i]=b[i]+aorg[i+k*lda]*xexact[k]; } printf("Hilbert n = %ld\n",(long)n); Rgesv(n,(mplapackint)1,a,lda,ipiv,b,ldb,info); printf("max |x-x_exact| = "); printnum(max_solution_error(n,b,xexact)); printf("\n"); delete[] ipiv; delete[] xexact; delete[] b; delete[] aorg; delete[] a; return info!=0?1:0; }
+mplapack_binary80_t max_solution_error(mplapackint n, mplapack_binary80_t *x, mplapack_binary80_t *xexact) {
+    mplapack_binary80_t err = 0;
+    for (mplapackint i = 0; i < n; i++) {
+        mplapack_binary80_t d = abs(x[i] - xexact[i]);
+        if (err < d)
+            err = d;
+    }
+    return err;
+}
+int main() {
+    mplapackint n = 12, lda = n, ldb = n, info;
+    mplapack_binary80_t *a = new mplapack_binary80_t[n * n];
+    mplapack_binary80_t *aorg = new mplapack_binary80_t[n * n];
+    mplapack_binary80_t *b = new mplapack_binary80_t[n];
+    mplapack_binary80_t *xexact = new mplapack_binary80_t[n];
+    mplapackint *ipiv = new mplapackint[n];
+    for (mplapackint j = 0; j < n; j++)
+        for (mplapackint i = 0; i < n; i++) {
+            a[i + j * lda] = mplapack_binary80_t(1.0) / mplapack_binary80_t(i + j + 1);
+            aorg[i + j * lda] = a[i + j * lda];
+        }
+    for (mplapackint i = 0; i < n; i++)
+        xexact[i] = (i % 2 == 0) ? mplapack_binary80_t(1.0) : mplapack_binary80_t(-1.0);
+    for (mplapackint i = 0; i < n; i++) {
+        b[i] = 0;
+        for (mplapackint k = 0; k < n; k++)
+            b[i] = b[i] + aorg[i + k * lda] * xexact[k];
+    }
+    printf("Hilbert n = %ld\n", (long)n);
+    Rgesv(n, (mplapackint)1, a, lda, ipiv, b, ldb, info);
+    printf("max |x-x_exact| = "); printnum(max_solution_error(n, b, xexact)); printf("\n");
+    delete[] ipiv;
+    delete[] xexact;
+    delete[] b;
+    delete[] aorg;
+    delete[] a;
+    return info != 0 ? 1 : 0;
+}

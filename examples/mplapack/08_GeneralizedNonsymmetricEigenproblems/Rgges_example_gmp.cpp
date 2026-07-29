@@ -41,5 +41,53 @@ void printmat(int n, int m, mpf_class * a, int lda)
     }
     printf("]");
 }
-bool select_none(mpf_class ar, mpf_class ai, mpf_class beta){ return false; }
-int main(){ mplapackint n=3,lda=n,ldb=n,ldv=1,sdim,info,lwork=-1; mpf_class *a=new mpf_class[n*n]; mpf_class *b=new mpf_class[n*n]; mpf_class *alphar=new mpf_class[n]; mpf_class *alphai=new mpf_class[n]; mpf_class *beta=new mpf_class[n]; mpf_class *vsl=new mpf_class[1]; mpf_class *vsr=new mpf_class[1]; bool *bwork=new bool[n]; for(mplapackint i=0;i<n*n;i++){a[i]=0;b[i]=0;} a[0]=1; a[4]=2; a[8]=3; b[0]=1; b[4]=1; b[8]=0; mpf_class wk; Rgges("N","N","N",select_none,n,a,lda,b,ldb,sdim,alphar,alphai,beta,vsl,ldv,vsr,ldv,&wk,lwork,bwork,info); lwork=castINTEGER_gmp(wk); mpf_class *work=new mpf_class[lwork]; Rgges("N","N","N",select_none,n,a,lda,b,ldb,sdim,alphar,alphai,beta,vsl,ldv,vsr,ldv,work,lwork,bwork,info); printf("S = "); printmat(n,n,a,lda); printf("\n"); printf("T = "); printmat(n,n,b,ldb); printf("\n"); for(mplapackint i=0;i<n;i++){ printf("lambda[%ld] = ",(long)i); if(abs(beta[i])<=Rlamch_gmp("E")) printf("Inf\n"); else { printnum(alphar[i]/beta[i]); printf(" + "); printnum(alphai[i]/beta[i]); printf("i\n"); }} delete[] work; delete[] bwork; delete[] vsr; delete[] vsl; delete[] beta; delete[] alphai; delete[] alphar; delete[] b; delete[] a; return info!=0?1:0; }
+bool select_none(mpf_class ar, mpf_class ai, mpf_class beta) {
+    return false;
+}
+int main() {
+    mplapackint n = 3, lda = n, ldb = n, ldv = 1, sdim, info, lwork = -1;
+    mpf_class *a = new mpf_class[n * n];
+    mpf_class *b = new mpf_class[n * n];
+    mpf_class *alphar = new mpf_class[n];
+    mpf_class *alphai = new mpf_class[n];
+    mpf_class *beta = new mpf_class[n];
+    mpf_class *vsl = new mpf_class[1];
+    mpf_class *vsr = new mpf_class[1];
+    bool *bwork = new bool[n];
+    for (mplapackint i = 0; i < n * n; i++) {
+        a[i] = 0;
+        b[i] = 0;
+    }
+    a[0] = 1;
+    a[4] = 2;
+    a[8] = 3;
+    b[0] = 1;
+    b[4] = 1;
+    b[8] = 0;
+    mpf_class wk;
+    Rgges("N", "N", "N", select_none, n, a, lda, b, ldb, sdim, alphar, alphai, beta, vsl, ldv, vsr, ldv, &wk, lwork, bwork, info);
+    lwork = castINTEGER_gmp(wk);
+    mpf_class *work = new mpf_class[lwork];
+    Rgges("N", "N", "N", select_none, n, a, lda, b, ldb, sdim, alphar, alphai, beta, vsl, ldv, vsr, ldv, work, lwork, bwork, info);
+    printf("S = "); printmat(n, n, a, lda); printf("\n");
+    printf("T = "); printmat(n, n, b, ldb); printf("\n");
+    for (mplapackint i = 0; i < n; i++) {
+        printf("lambda[%ld] = ", (long)i);
+        if (abs(beta[i]) <= Rlamch_gmp("E"))
+            printf("Inf\n");
+        else {
+            printnum(alphar[i] / beta[i]);
+            printf(" + "); printnum(alphai[i] / beta[i]); printf("i\n");
+        }
+    }
+    delete[] work;
+    delete[] bwork;
+    delete[] vsr;
+    delete[] vsl;
+    delete[] beta;
+    delete[] alphai;
+    delete[] alphar;
+    delete[] b;
+    delete[] a;
+    return info != 0 ? 1 : 0;
+}

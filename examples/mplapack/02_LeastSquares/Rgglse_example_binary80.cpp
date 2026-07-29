@@ -89,4 +89,41 @@ mplapack_binary80_t max_residual(mplapackint m, mplapackint n, mplapackint nrhs,
     return err;
 }
 
-int main(){ mplapackint m=3,n=2,p=1,lda=m,ldb=p,info,lwork=-1; mplapack_binary80_t *a=new mplapack_binary80_t[lda*n]; mplapack_binary80_t *bmat=new mplapack_binary80_t[ldb*n]; mplapack_binary80_t *c=new mplapack_binary80_t[m]; mplapack_binary80_t *d=new mplapack_binary80_t[p]; mplapack_binary80_t *x=new mplapack_binary80_t[n]; mplapack_binary80_t *xexact=new mplapack_binary80_t[n]; a[0]=1; a[1]=0; a[2]=1; a[0+lda]=0; a[1+lda]=1; a[2+lda]=1; bmat[0]=1; bmat[0+ldb]=1; xexact[0]=1; xexact[1]=2; for(mplapackint i=0;i<m;i++) c[i]=a[i]*xexact[0]+a[i+lda]*xexact[1]; d[0]=3; mplapack_binary80_t wk; Rgglse(m,n,p,a,lda,bmat,ldb,c,d,x,&wk,lwork,info); lwork=castINTEGER_binary80(wk); mplapack_binary80_t *work=new mplapack_binary80_t[lwork]; Rgglse(m,n,p,a,lda,bmat,ldb,c,d,x,work,lwork,info); printf("x = "); printvec(x,n); printf("\n"); printf("constraint B*x-d = "); printnum(x[0]+x[1]-d[0]); printf("\n"); printf("max |x-x_exact| = "); printnum(max_solution_error(n,(mplapackint)1,x,n,xexact,n)); printf("\n"); delete[] work; delete[] xexact; delete[] x; delete[] d; delete[] c; delete[] bmat; delete[] a; return info!=0?1:0; }
+int main() {
+    mplapackint m = 3, n = 2, p = 1, lda = m, ldb = p, info, lwork = -1;
+    mplapack_binary80_t *a = new mplapack_binary80_t[lda * n];
+    mplapack_binary80_t *bmat = new mplapack_binary80_t[ldb * n];
+    mplapack_binary80_t *c = new mplapack_binary80_t[m];
+    mplapack_binary80_t *d = new mplapack_binary80_t[p];
+    mplapack_binary80_t *x = new mplapack_binary80_t[n];
+    mplapack_binary80_t *xexact = new mplapack_binary80_t[n];
+    a[0] = 1;
+    a[1] = 0;
+    a[2] = 1;
+    a[0 + lda] = 0;
+    a[1 + lda] = 1;
+    a[2 + lda] = 1;
+    bmat[0] = 1;
+    bmat[0 + ldb] = 1;
+    xexact[0] = 1;
+    xexact[1] = 2;
+    for (mplapackint i = 0; i < m; i++)
+        c[i] = a[i] * xexact[0] + a[i + lda] * xexact[1];
+    d[0] = 3;
+    mplapack_binary80_t wk;
+    Rgglse(m, n, p, a, lda, bmat, ldb, c, d, x, &wk, lwork, info);
+    lwork = castINTEGER_binary80(wk);
+    mplapack_binary80_t *work = new mplapack_binary80_t[lwork];
+    Rgglse(m, n, p, a, lda, bmat, ldb, c, d, x, work, lwork, info);
+    printf("x = "); printvec(x, n); printf("\n");
+    printf("constraint B*x-d = "); printnum(x[0] + x[1] - d[0]); printf("\n");
+    printf("max |x-x_exact| = "); printnum(max_solution_error(n, (mplapackint)1, x, n, xexact, n)); printf("\n");
+    delete[] work;
+    delete[] xexact;
+    delete[] x;
+    delete[] d;
+    delete[] c;
+    delete[] bmat;
+    delete[] a;
+    return info != 0 ? 1 : 0;
+}

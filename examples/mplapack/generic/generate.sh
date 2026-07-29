@@ -1,9 +1,9 @@
 # usage
-# cd /home/docker/mplapack/examples/mplapack/00_LinearEquations/generic ; bash -x ../../generate.sh
+# cd /home/docker/mplapack/examples/mplapack/00_GeneralLinearEquations/generic ; bash -x ../../generate.sh
 # or
 # cd /home/docker/mplapack/examples/mplapack/03_SymmetricEigenproblems/generic ; bash -x ../../generate.sh
 # etc..
-FILES=`ls *_generic.cpp`
+FILES=`(ls R*_generic.cpp C*_generic.cpp 2>/dev/null; ls [^RC]*_generic.cpp 2>/dev/null)`
 pushd .. ; _MATFILES=`ls M*.txt` ; popd
 MATFILES=`echo $_MATFILES`
 MPLIBS="mpfr gmp binary128 binary80 double dd qd"
@@ -14,12 +14,57 @@ else
     SED=sed
 fi
 
-_FILE=`echo $FILES | awk '{print $1}' | $SED 's/_generic\.cpp//g'`
+ROUTINEFILES=`(ls R*_generic.cpp 2>/dev/null; ls C*_generic.cpp 2>/dev/null; ls [^RC]*_generic.cpp 2>/dev/null)`
+_FILE=`echo $ROUTINEFILES | awk '{print $1}' | $SED 's/_generic\.cpp//g'`
 $SED -e "s|%%ROUTINE%%|$_FILE|g" ../../generic/Makefile.freebsd.in > ../Makefile.freebsd.in
 $SED -e "s|%%ROUTINE%%|$_FILE|g" ../../generic/Makefile.macos.in   > ../Makefile.macos.in
 $SED -e "s|%%ROUTINE%%|$_FILE|g" ../../generic/Makefile.linux.in   > ../Makefile.linux.in
 $SED -e "s|%%ROUTINE%%|$_FILE|g" ../../generic/Makefile.linux.inteloneAPI.in > ../Makefile.linux.inteloneAPI.in
 $SED -e "s|%%ROUTINE%%|$_FILE|g" ../../generic/Makefile.mingw.in   > ../Makefile.mingw.in
+
+append_makefile_rules() {
+    _outfile=$1
+    _suffix=$2
+    _openmp=$3
+    _programs=""
+    _rules=""
+    for _template in $FILES; do
+        _routine=`echo $_template | $SED 's/_generic\.cpp//g'`
+        for _mplib in mpfr gmp qd dd binary80 binary128 double; do
+            if [ "$_template" = "Cgeev_NPR_generic.cpp" ] && [ "$_mplib" = "gmp" ]; then
+                continue
+            fi
+            _target=${_routine}_${_mplib}${_suffix}
+            _object=${_routine}_${_mplib}.o
+            _programs="$_programs $_target"
+            if [ "$_routine" = "$_FILE" ]; then
+                continue
+            fi
+            case $_mplib in
+                mpfr) _libs=MPFRLIBS ;;
+                gmp) _libs=GMPLIBS ;;
+                qd) _libs=QDLIBS ;;
+                dd) _libs=DDLIBS ;;
+                binary80) _libs=BINARY80LIBS ;;
+                binary128) _libs=BINARY128LIBS ;;
+                double) _libs=DOUBLELIBS ;;
+            esac
+            _rules="$_rules
+$_target: $_object
+	\$(CXX) -o $_target $_object \$(LIBFLAGS)$_openmp \$($_libs)
+"
+        done
+    done
+    _programs=`echo $_programs`
+    $SED -i -e "s|^programs=.*|programs=$_programs|" ../$_outfile
+    printf "%s" "$_rules" >> ../$_outfile
+}
+
+append_makefile_rules Makefile.freebsd.in "" ""
+append_makefile_rules Makefile.macos.in "" ""
+append_makefile_rules Makefile.linux.in "" " \$(OPENMP_EXAMPLE_OPENMP_LIBS)"
+append_makefile_rules Makefile.linux.inteloneAPI.in "" " \$(OPENMP_EXAMPLE_OPENMP_LIBS)"
+append_makefile_rules Makefile.mingw.in ".exe" ""
 
 SOURCEFILES=""
 for _file in $FILES; do

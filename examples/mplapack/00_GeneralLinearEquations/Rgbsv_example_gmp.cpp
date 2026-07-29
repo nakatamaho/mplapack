@@ -106,6 +106,11 @@ int main() {
     printf("x = "); printvec(b, n); printf("\n");
     printf("max |x-x_exact| = "); printnum(max_solution_error(n, nrhs, b, ldb, xexact, n)); printf("\n");
     printf("max residual = "); printnum(max_residual(n, n, nrhs, a, n, b, ldb, borg, ldb)); printf("\n");
-    delete[] ipiv; delete[] xexact; delete[] borg; delete[] b; delete[] ab; delete[] a;
+    delete[] ipiv;
+    delete[] xexact;
+    delete[] borg;
+    delete[] b;
+    delete[] ab;
+    delete[] a;
     return info != 0 ? 1 : 0;
 }

@@ -84,4 +84,45 @@ qd_real max_residual(mplapackint m, mplapackint n, mplapackint nrhs, qd_real *a,
     return err;
 }
 
-int main(){ mplapackint n=3,nrhs=1,lda=n,ldb=n,info,lwork=-1; qd_real *a=new qd_real[n*n]; qd_real *aorg=new qd_real[n*n]; qd_real *b=new qd_real[n]; qd_real *borg=new qd_real[n]; qd_real *xexact=new qd_real[n]; mplapackint *ipiv=new mplapackint[n]; for(mplapackint i=0;i<n*n;i++) a[i]=0; a[0]=2; a[1+1*lda]=-3; a[2+2*lda]=4; xexact[0]=1; xexact[1]=2; xexact[2]=-1; for(mplapackint i=0;i<n*n;i++) aorg[i]=a[i]; for(mplapackint i=0;i<n;i++){ b[i]=0; for(mplapackint k=0;k<n;k++) b[i]+=aorg[i+k*lda]*xexact[k]; borg[i]=b[i]; } qd_real wk; Rsysv("U",n,nrhs,a,lda,ipiv,b,ldb,&wk,lwork,info); lwork=castINTEGER_qd(wk); qd_real *work=new qd_real[lwork]; Rsysv("U",n,nrhs,a,lda,ipiv,b,ldb,work,lwork,info); printf("A = "); printmat(n,n,aorg,lda); printf("\n"); printf("x = "); printvec(b,n); printf("\n"); printf("max |x-x_exact| = "); printnum(max_solution_error(n,nrhs,b,ldb,xexact,n)); printf("\n"); printf("max residual = "); printnum(max_residual(n,n,nrhs,aorg,lda,b,ldb,borg,ldb)); printf("\n"); delete[] work; delete[] ipiv; delete[] xexact; delete[] borg; delete[] b; delete[] aorg; delete[] a; return info!=0?1:0; }
+int main() {
+    mplapackint n = 3, nrhs = 1, lda = n, ldb = n, info, lwork = -1;
+    qd_real *a = new qd_real[n * n];
+    qd_real *aorg = new qd_real[n * n];
+    qd_real *b = new qd_real[n];
+    qd_real *borg = new qd_real[n];
+    qd_real *xexact = new qd_real[n];
+    mplapackint *ipiv = new mplapackint[n];
+    for (mplapackint i = 0; i < n * n; i++)
+        a[i] = 0;
+    a[0] = 2;
+    a[1 + 1 * lda] = -3;
+    a[2 + 2 * lda] = 4;
+    xexact[0] = 1;
+    xexact[1] = 2;
+    xexact[2] = -1;
+    for (mplapackint i = 0; i < n * n; i++)
+        aorg[i] = a[i];
+    for (mplapackint i = 0; i < n; i++) {
+        b[i] = 0;
+        for (mplapackint k = 0; k < n; k++)
+            b[i] += aorg[i + k * lda] * xexact[k];
+        borg[i] = b[i];
+    }
+    qd_real wk;
+    Rsysv("U", n, nrhs, a, lda, ipiv, b, ldb, &wk, lwork, info);
+    lwork = castINTEGER_qd(wk);
+    qd_real *work = new qd_real[lwork];
+    Rsysv("U", n, nrhs, a, lda, ipiv, b, ldb, work, lwork, info);
+    printf("A = "); printmat(n, n, aorg, lda); printf("\n");
+    printf("x = "); printvec(b, n); printf("\n");
+    printf("max |x-x_exact| = "); printnum(max_solution_error(n, nrhs, b, ldb, xexact, n)); printf("\n");
+    printf("max residual = "); printnum(max_residual(n, n, nrhs, aorg, lda, b, ldb, borg, ldb)); printf("\n");
+    delete[] work;
+    delete[] ipiv;
+    delete[] xexact;
+    delete[] borg;
+    delete[] b;
+    delete[] aorg;
+    delete[] a;
+    return info != 0 ? 1 : 0;
+}

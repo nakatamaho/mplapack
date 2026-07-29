@@ -73,9 +73,42 @@ double max_residual(mplapackint m, mplapackint n, mplapackint nrhs, std::complex
 }
 
 void set_problem(mplapackint m, mplapackint n, std::complex<double> *a, mplapackint lda, std::complex<double> *b, mplapackint ldb, std::complex<double> *xexact) {
-    for (mplapackint i = 0; i < m; i++) { a[i + 0 * lda] = std::complex<double>(1.0, 0.0); a[i + 1 * lda] = std::complex<double>(i, 1.0); }
-    xexact[0] = std::complex<double>(1.0, -1.0); xexact[1] = std::complex<double>(2.0, 1.0);
-    for (mplapackint i = 0; i < m; i++) b[i] = a[i + 0 * lda] * xexact[0] + a[i + 1 * lda] * xexact[1];
+    for (mplapackint i = 0; i < m; i++) {
+        a[i + 0 * lda] = std::complex<double>(1.0, 0.0);
+        a[i + 1 * lda] = std::complex<double>(i, 1.0);
+    }
+    xexact[0] = std::complex<double>(1.0, -1.0);
+    xexact[1] = std::complex<double>(2.0, 1.0);
+    for (mplapackint i = 0; i < m; i++)
+        b[i] = a[i + 0 * lda] * xexact[0] + a[i + 1 * lda] * xexact[1];
 }
 
-int main(){ mplapackint m=4,n=2,nrhs=1,lda=m,ldb=m,info,lwork=-1; std::complex<double> *a=new std::complex<double>[lda*n]; std::complex<double> *aorg=new std::complex<double>[lda*n]; std::complex<double> *b=new std::complex<double>[ldb]; std::complex<double> *borg=new std::complex<double>[ldb]; std::complex<double> *xexact=new std::complex<double>[n]; set_problem(m,n,a,lda,b,ldb,xexact); for(mplapackint i=0;i<lda*n;i++) aorg[i]=a[i]; for(mplapackint i=0;i<ldb;i++) borg[i]=b[i]; std::complex<double> wk; Cgels("N",m,n,nrhs,a,lda,b,ldb,&wk,lwork,info); lwork=castINTEGER_double(wk.real()); std::complex<double> *work=new std::complex<double>[lwork]; Cgels("N",m,n,nrhs,a,lda,b,ldb,work,lwork,info); printf("A = "); printmat(m,n,aorg,lda); printf("\n"); printf("x = "); printvec(b,n); printf("\n"); printf("max |x-x_exact| = "); printnum(max_solution_error(n,nrhs,b,ldb,xexact,n)); printf("\n"); printf("max residual = "); printnum(max_residual(m,n,nrhs,aorg,lda,b,ldb,borg,ldb)); printf("\n"); delete[] work; delete[] xexact; delete[] borg; delete[] b; delete[] aorg; delete[] a; return info!=0?1:0; }
+int main() {
+    mplapackint m = 4, n = 2, nrhs = 1, lda = m, ldb = m, info, lwork = -1;
+    std::complex<double> *a = new std::complex<double>[lda * n];
+    std::complex<double> *aorg = new std::complex<double>[lda * n];
+    std::complex<double> *b = new std::complex<double>[ldb];
+    std::complex<double> *borg = new std::complex<double>[ldb];
+    std::complex<double> *xexact = new std::complex<double>[n];
+    set_problem(m, n, a, lda, b, ldb, xexact);
+    for (mplapackint i = 0; i < lda * n; i++)
+        aorg[i] = a[i];
+    for (mplapackint i = 0; i < ldb; i++)
+        borg[i] = b[i];
+    std::complex<double> wk;
+    Cgels("N", m, n, nrhs, a, lda, b, ldb, &wk, lwork, info);
+    lwork = castINTEGER_double(wk.real());
+    std::complex<double> *work = new std::complex<double>[lwork];
+    Cgels("N", m, n, nrhs, a, lda, b, ldb, work, lwork, info);
+    printf("A = "); printmat(m, n, aorg, lda); printf("\n");
+    printf("x = "); printvec(b, n); printf("\n");
+    printf("max |x-x_exact| = "); printnum(max_solution_error(n, nrhs, b, ldb, xexact, n)); printf("\n");
+    printf("max residual = "); printnum(max_residual(m, n, nrhs, aorg, lda, b, ldb, borg, ldb)); printf("\n");
+    delete[] work;
+    delete[] xexact;
+    delete[] borg;
+    delete[] b;
+    delete[] aorg;
+    delete[] a;
+    return info != 0 ? 1 : 0;
+}

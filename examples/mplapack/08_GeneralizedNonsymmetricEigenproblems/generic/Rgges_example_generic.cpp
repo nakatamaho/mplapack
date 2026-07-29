@@ -1,2 +1,50 @@
-bool select_none(REAL ar, REAL ai, REAL beta){ return false; }
-int main(){ INTEGER n=3,lda=n,ldb=n,ldv=1,sdim,info,lwork=-1; REAL *a=new REAL[n*n]; REAL *b=new REAL[n*n]; REAL *alphar=new REAL[n]; REAL *alphai=new REAL[n]; REAL *beta=new REAL[n]; REAL *vsl=new REAL[1]; REAL *vsr=new REAL[1]; bool *bwork=new bool[n]; for(INTEGER i=0;i<n*n;i++){a[i]=0;b[i]=0;} a[0]=1; a[4]=2; a[8]=3; b[0]=1; b[4]=1; b[8]=0; REAL wk; Rgges("N","N","N",select_none,n,a,lda,b,ldb,sdim,alphar,alphai,beta,vsl,ldv,vsr,ldv,&wk,lwork,bwork,info); lwork=castInTEGER(wk); REAL *work=new REAL[lwork]; Rgges("N","N","N",select_none,n,a,lda,b,ldb,sdim,alphar,alphai,beta,vsl,ldv,vsr,ldv,work,lwork,bwork,info); printf("S = "); printmat(n,n,a,lda); printf("\n"); printf("T = "); printmat(n,n,b,ldb); printf("\n"); for(INTEGER i=0;i<n;i++){ printf("lambda[%ld] = ",(long)i); if(abs(beta[i])<=Rlamch("E")) printf("Inf\n"); else { printnum(alphar[i]/beta[i]); printf(" + "); printnum(alphai[i]/beta[i]); printf("i\n"); }} delete[] work; delete[] bwork; delete[] vsr; delete[] vsl; delete[] beta; delete[] alphai; delete[] alphar; delete[] b; delete[] a; return info!=0?1:0; }
+bool select_none(REAL ar, REAL ai, REAL beta) {
+    return false;
+}
+int main() {
+    INTEGER n = 3, lda = n, ldb = n, ldv = 1, sdim, info, lwork = -1;
+    REAL *a = new REAL[n * n];
+    REAL *b = new REAL[n * n];
+    REAL *alphar = new REAL[n];
+    REAL *alphai = new REAL[n];
+    REAL *beta = new REAL[n];
+    REAL *vsl = new REAL[1];
+    REAL *vsr = new REAL[1];
+    bool *bwork = new bool[n];
+    for (INTEGER i = 0; i < n * n; i++) {
+        a[i] = 0;
+        b[i] = 0;
+    }
+    a[0] = 1;
+    a[4] = 2;
+    a[8] = 3;
+    b[0] = 1;
+    b[4] = 1;
+    b[8] = 0;
+    REAL wk;
+    Rgges("N", "N", "N", select_none, n, a, lda, b, ldb, sdim, alphar, alphai, beta, vsl, ldv, vsr, ldv, &wk, lwork, bwork, info);
+    lwork = castInTEGER(wk);
+    REAL *work = new REAL[lwork];
+    Rgges("N", "N", "N", select_none, n, a, lda, b, ldb, sdim, alphar, alphai, beta, vsl, ldv, vsr, ldv, work, lwork, bwork, info);
+    printf("S = "); printmat(n, n, a, lda); printf("\n");
+    printf("T = "); printmat(n, n, b, ldb); printf("\n");
+    for (INTEGER i = 0; i < n; i++) {
+        printf("lambda[%ld] = ", (long)i);
+        if (abs(beta[i]) <= Rlamch("E"))
+            printf("Inf\n");
+        else {
+            printnum(alphar[i] / beta[i]);
+            printf(" + "); printnum(alphai[i] / beta[i]); printf("i\n");
+        }
+    }
+    delete[] work;
+    delete[] bwork;
+    delete[] vsr;
+    delete[] vsl;
+    delete[] beta;
+    delete[] alphai;
+    delete[] alphar;
+    delete[] b;
+    delete[] a;
+    return info != 0 ? 1 : 0;
+}

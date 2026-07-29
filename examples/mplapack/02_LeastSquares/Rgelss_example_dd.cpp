@@ -85,9 +85,45 @@ dd_real max_residual(mplapackint m, mplapackint n, mplapackint nrhs, dd_real *a,
 }
 
 void set_problem(mplapackint m, mplapackint n, dd_real *a, mplapackint lda, dd_real *b, mplapackint ldb, dd_real *xexact) {
-    for (mplapackint i = 0; i < m; i++) { a[i + 0 * lda] = 1; a[i + 1 * lda] = i; }
-    xexact[0] = 1; xexact[1] = 2;
-    for (mplapackint i = 0; i < m; i++) b[i] = a[i + 0 * lda] * xexact[0] + a[i + 1 * lda] * xexact[1];
+    for (mplapackint i = 0; i < m; i++) {
+        a[i + 0 * lda] = 1;
+        a[i + 1 * lda] = i;
+    }
+    xexact[0] = 1;
+    xexact[1] = 2;
+    for (mplapackint i = 0; i < m; i++)
+        b[i] = a[i + 0 * lda] * xexact[0] + a[i + 1 * lda] * xexact[1];
 }
 
-int main(){ mplapackint m=4,n=2,nrhs=1,lda=m,ldb=m,info,lwork=-1,rank; dd_real *a=new dd_real[lda*n]; dd_real *aorg=new dd_real[lda*n]; dd_real *b=new dd_real[ldb]; dd_real *borg=new dd_real[ldb]; dd_real *xexact=new dd_real[n]; dd_real *s=new dd_real[n]; set_problem(m,n,a,lda,b,ldb,xexact); for(mplapackint i=0;i<lda*n;i++) aorg[i]=a[i]; for(mplapackint i=0;i<ldb;i++) borg[i]=b[i]; dd_real wk; Rgelss(m,n,nrhs,a,lda,b,ldb,s,dd_real(-1.0),rank,&wk,lwork,info); lwork=castINTEGER_dd(wk); dd_real *work=new dd_real[lwork]; Rgelss(m,n,nrhs,a,lda,b,ldb,s,dd_real(-1.0),rank,work,lwork,info); printf("singular values = "); printvec(s,n); printf("\n"); printf("rank = %ld\n", (long)rank); printf("x = "); printvec(b,n); printf("\n"); printf("max |x-x_exact| = "); printnum(max_solution_error(n,nrhs,b,ldb,xexact,n)); printf("\n"); printf("max residual = "); printnum(max_residual(m,n,nrhs,aorg,lda,b,ldb,borg,ldb)); printf("\n"); delete[] work; delete[] s; delete[] xexact; delete[] borg; delete[] b; delete[] aorg; delete[] a; return info!=0?1:0; }
+int main() {
+    mplapackint m = 4, n = 2, nrhs = 1, lda = m, ldb = m, info, lwork = -1, rank;
+    dd_real *a = new dd_real[lda * n];
+    dd_real *aorg = new dd_real[lda * n];
+    dd_real *b = new dd_real[ldb];
+    dd_real *borg = new dd_real[ldb];
+    dd_real *xexact = new dd_real[n];
+    dd_real *s = new dd_real[n];
+    set_problem(m, n, a, lda, b, ldb, xexact);
+    for (mplapackint i = 0; i < lda * n; i++)
+        aorg[i] = a[i];
+    for (mplapackint i = 0; i < ldb; i++)
+        borg[i] = b[i];
+    dd_real wk;
+    Rgelss(m, n, nrhs, a, lda, b, ldb, s, dd_real(-1.0), rank, &wk, lwork, info);
+    lwork = castINTEGER_dd(wk);
+    dd_real *work = new dd_real[lwork];
+    Rgelss(m, n, nrhs, a, lda, b, ldb, s, dd_real(-1.0), rank, work, lwork, info);
+    printf("singular values = "); printvec(s, n); printf("\n");
+    printf("rank = %ld\n", (long)rank);
+    printf("x = "); printvec(b, n); printf("\n");
+    printf("max |x-x_exact| = "); printnum(max_solution_error(n, nrhs, b, ldb, xexact, n)); printf("\n");
+    printf("max residual = "); printnum(max_residual(m, n, nrhs, aorg, lda, b, ldb, borg, ldb)); printf("\n");
+    delete[] work;
+    delete[] s;
+    delete[] xexact;
+    delete[] borg;
+    delete[] b;
+    delete[] aorg;
+    delete[] a;
+    return info != 0 ? 1 : 0;
+}

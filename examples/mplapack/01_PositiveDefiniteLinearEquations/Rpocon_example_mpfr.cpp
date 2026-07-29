@@ -78,14 +78,38 @@ mpreal max_residual(mplapackint m, mplapackint n, mplapackint nrhs, mpreal *a, m
     return err;
 }
 
-mpreal one_norm(mplapackint n, mpreal *a, mplapackint lda) { mpreal anorm=0.0; for(mplapackint j=0;j<n;j++){ mpreal s=0.0; for(mplapackint i=0;i<n;i++) s=s+abs(a[i+j*lda]); if(anorm<s) anorm=s; } return anorm; }
+mpreal one_norm(mplapackint n, mpreal *a, mplapackint lda) {
+    mpreal anorm = 0.0;
+    for (mplapackint j = 0; j < n; j++) {
+        mpreal s = 0.0;
+        for (mplapackint i = 0; i < n; i++)
+            s = s + abs(a[i + j * lda]);
+        if (anorm < s)
+            anorm = s;
+    }
+    return anorm;
+}
 int main() {
     mplapackint n = 2, lda = n, info;
-    mpreal *a = new mpreal[n*n]; mpreal *aorg = new mpreal[n*n]; mpreal *work = new mpreal[3*n]; mplapackint *iwork = new mplapackint[n]; mpreal rcond=0.0;
-    a[0]=4; a[1]=2; a[2]=2; a[3]=5; for(mplapackint i=0;i<n*n;i++) aorg[i]=a[i];
+    mpreal *a = new mpreal[n * n];
+    mpreal *aorg = new mpreal[n * n];
+    mpreal *work = new mpreal[3 * n];
+    mplapackint *iwork = new mplapackint[n];
+    mpreal rcond = 0.0;
+    a[0] = 4;
+    a[1] = 2;
+    a[2] = 2;
+    a[3] = 5;
+    for (mplapackint i = 0; i < n * n; i++)
+        aorg[i] = a[i];
     Rpotrf("L", n, a, lda, info);
-    if (info == 0) Rpocon("L", n, a, lda, one_norm(n,aorg,lda), rcond, work, iwork, info);
-    printf("A = "); printmat(n,n,aorg,lda); printf("\n");
+    if (info == 0)
+        Rpocon("L", n, a, lda, one_norm(n, aorg, lda), rcond, work, iwork, info);
+    printf("A = "); printmat(n, n, aorg, lda); printf("\n");
     printf("rcond_1 = "); printnum(rcond); printf("\n");
-    delete[] iwork; delete[] work; delete[] aorg; delete[] a; return info != 0 ? 1 : 0;
+    delete[] iwork;
+    delete[] work;
+    delete[] aorg;
+    delete[] a;
+    return info != 0 ? 1 : 0;
 }

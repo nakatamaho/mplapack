@@ -61,5 +61,37 @@ void printmat(int n, int m, mplapack_binary128_t *a, int lda)
     }
     printf("]");
 }
-void sort_real(mplapackint n, mplapack_binary128_t *x){ for(mplapackint i=0;i<n;i++) for(mplapackint j=i+1;j<n;j++) if(x[j]<x[i]){ mplapack_binary128_t t=x[i]; x[i]=x[j]; x[j]=t; } }
-int main(){ mplapackint n=20,lda=n,ldv=1,info,lwork=-1; mplapack_binary128_t *a=new mplapack_binary128_t[n*n]; for(mplapackint j=0;j<n;j++) for(mplapackint i=0;i<n;i++) a[i+j*lda]=(i<=j)?mplapack_binary128_t(n-j):mplapack_binary128_t(n-i); mplapack_binary128_t *wr=new mplapack_binary128_t[n]; mplapack_binary128_t *wi=new mplapack_binary128_t[n]; mplapack_binary128_t *vl=new mplapack_binary128_t[1]; mplapack_binary128_t *vr=new mplapack_binary128_t[1]; mplapack_binary128_t wk; Rgeev("N","N",n,a,lda,wr,wi,vl,ldv,vr,ldv,&wk,lwork,info); lwork=castINTEGER_binary128(wk); mplapack_binary128_t *work=new mplapack_binary128_t[lwork]; Rgeev("N","N",n,a,lda,wr,wi,vl,ldv,vr,ldv,work,lwork,info); sort_real(n,wr); printf("Frank eigenvalues = "); printvec(wr,n); printf("\n"); delete[] work; delete[] vr; delete[] vl; delete[] wi; delete[] wr; delete[] a; return info!=0?1:0; }
+void sort_real(mplapackint n, mplapack_binary128_t *x) {
+    for (mplapackint i = 0; i < n; i++)
+        for (mplapackint j = i + 1; j < n; j++)
+            if (x[j] < x[i]) {
+                mplapack_binary128_t t = x[i];
+                x[i] = x[j];
+                x[j] = t;
+            }
+}
+int main() {
+    mplapackint n = 20, lda = n, ldv = 1, info, lwork = -1;
+    mplapack_binary128_t *a = new mplapack_binary128_t[n * n];
+    for (mplapackint j = 0; j < n; j++)
+        for (mplapackint i = 0; i < n; i++)
+            a[i + j * lda] = (i <= j) ? mplapack_binary128_t(n - j) : mplapack_binary128_t(n - i);
+    mplapack_binary128_t *wr = new mplapack_binary128_t[n];
+    mplapack_binary128_t *wi = new mplapack_binary128_t[n];
+    mplapack_binary128_t *vl = new mplapack_binary128_t[1];
+    mplapack_binary128_t *vr = new mplapack_binary128_t[1];
+    mplapack_binary128_t wk;
+    Rgeev("N", "N", n, a, lda, wr, wi, vl, ldv, vr, ldv, &wk, lwork, info);
+    lwork = castINTEGER_binary128(wk);
+    mplapack_binary128_t *work = new mplapack_binary128_t[lwork];
+    Rgeev("N", "N", n, a, lda, wr, wi, vl, ldv, vr, ldv, work, lwork, info);
+    sort_real(n, wr);
+    printf("Frank eigenvalues = "); printvec(wr, n); printf("\n");
+    delete[] work;
+    delete[] vr;
+    delete[] vl;
+    delete[] wi;
+    delete[] wr;
+    delete[] a;
+    return info != 0 ? 1 : 0;
+}

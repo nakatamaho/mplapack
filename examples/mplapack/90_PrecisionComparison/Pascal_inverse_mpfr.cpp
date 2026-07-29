@@ -46,6 +46,41 @@ void printmat(int n, int m, mpreal *a, int lda) {
     printf("]");
 }
 
-mpreal binom(mplapackint n, mplapackint k){ mpreal r=1; for(mplapackint i=1;i<=k;i++) r=r*mpreal(n-k+i)/mpreal(i); return r; }
-mpreal nearest_integer_error(mpreal x){ mpreal f=floor(x); mpreal c=f+1; mpreal df=abs(x-f); mpreal dc=abs(x-c); return df<dc?df:dc; }
-int main(){ mplapackint n=8,lda=n,info,lwork=-1; mpreal *a=new mpreal[n*n]; mplapackint *ipiv=new mplapackint[n]; for(mplapackint j=0;j<n;j++) for(mplapackint i=0;i<n;i++) a[i+j*lda]=binom(i+j,i); Rgetrf(n,n,a,lda,ipiv,info); mpreal wk; if(info==0) Rgetri(n,a,lda,ipiv,&wk,lwork,info); lwork=castINTEGER_mpfr(wk); mpreal *work=new mpreal[lwork]; if(info==0) Rgetri(n,a,lda,ipiv,work,lwork,info); mpreal err=0; for(mplapackint i=0;i<n*n;i++){ mpreal d=nearest_integer_error(a[i]); if(err<d) err=d; } printf("P inverse = "); printmat(n,n,a,lda); printf("\n"); printf("max distance to integer = "); printnum(err); printf("\n"); delete[] work; delete[] ipiv; delete[] a; return info!=0?1:0; }
+mpreal binom(mplapackint n, mplapackint k) {
+    mpreal r = 1;
+    for (mplapackint i = 1; i <= k; i++)
+        r = r * mpreal(n - k + i) / mpreal(i);
+    return r;
+}
+mpreal nearest_integer_error(mpreal x) {
+    mplapackint nearest = castINTEGER_mpfr(x >= mpreal(0.0) ? x + mpreal(0.5) : x - mpreal(0.5));
+    return abs(x - mpreal(nearest));
+}
+int main() {
+    mplapackint n = 8, lda = n, info, lwork = -1;
+    mpreal *a = new mpreal[n * n];
+    mplapackint *ipiv = new mplapackint[n];
+    for (mplapackint j = 0; j < n; j++)
+        for (mplapackint i = 0; i < n; i++)
+            a[i + j * lda] = binom(i + j, i);
+    Rgetrf(n, n, a, lda, ipiv, info);
+    mpreal wk;
+    if (info == 0)
+        Rgetri(n, a, lda, ipiv, &wk, lwork, info);
+    lwork = castINTEGER_mpfr(wk);
+    mpreal *work = new mpreal[lwork];
+    if (info == 0)
+        Rgetri(n, a, lda, ipiv, work, lwork, info);
+    mpreal err = 0;
+    for (mplapackint i = 0; i < n * n; i++) {
+        mpreal d = nearest_integer_error(a[i]);
+        if (err < d)
+            err = d;
+    }
+    printf("P inverse = "); printmat(n, n, a, lda); printf("\n");
+    printf("max distance to integer = "); printnum(err); printf("\n");
+    delete[] work;
+    delete[] ipiv;
+    delete[] a;
+    return info != 0 ? 1 : 0;
+}

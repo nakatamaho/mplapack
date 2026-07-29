@@ -52,4 +52,45 @@ void printmat(int n, int m, qd_real * a, int lda)
     }
     printf("]");
 }
-int main(){ mplapackint n=3,lda=n,ldb=n,ldv=1,info,lwork=-1; qd_real *a=new qd_real[n*n]; qd_real *b=new qd_real[n*n]; qd_real *alphar=new qd_real[n]; qd_real *alphai=new qd_real[n]; qd_real *beta=new qd_real[n]; qd_real *vl=new qd_real[1]; qd_real *vr=new qd_real[1]; for(mplapackint i=0;i<n*n;i++){a[i]=0;b[i]=0;} a[0]=1; a[4]=2; a[8]=3; b[0]=1; b[4]=1; b[8]=0; qd_real wk; Rggev("N","N",n,a,lda,b,ldb,alphar,alphai,beta,vl,ldv,vr,ldv,&wk,lwork,info); lwork=castINTEGER_qd(wk); qd_real *work=new qd_real[lwork]; Rggev("N","N",n,a,lda,b,ldb,alphar,alphai,beta,vl,ldv,vr,ldv,work,lwork,info); for(mplapackint i=0;i<n;i++){ printf("alpha[%ld] = ",(long)i); printnum(alphar[i]); printf(" + "); printnum(alphai[i]); printf("i, beta = "); printnum(beta[i]); if(abs(beta[i])<=Rlamch_qd("E")){ printf(", lambda = Inf\n"); } else { printf(", lambda = "); printnum(alphar[i]/beta[i]); printf(" + "); printnum(alphai[i]/beta[i]); printf("i\n"); }} delete[] work; delete[] vr; delete[] vl; delete[] beta; delete[] alphai; delete[] alphar; delete[] b; delete[] a; return info!=0?1:0; }
+int main() {
+    mplapackint n = 3, lda = n, ldb = n, ldv = 1, info, lwork = -1;
+    qd_real *a = new qd_real[n * n];
+    qd_real *b = new qd_real[n * n];
+    qd_real *alphar = new qd_real[n];
+    qd_real *alphai = new qd_real[n];
+    qd_real *beta = new qd_real[n];
+    qd_real *vl = new qd_real[1];
+    qd_real *vr = new qd_real[1];
+    for (mplapackint i = 0; i < n * n; i++) {
+        a[i] = 0;
+        b[i] = 0;
+    }
+    a[0] = 1;
+    a[4] = 2;
+    a[8] = 3;
+    b[0] = 1;
+    b[4] = 1;
+    b[8] = 0;
+    qd_real wk;
+    Rggev("N", "N", n, a, lda, b, ldb, alphar, alphai, beta, vl, ldv, vr, ldv, &wk, lwork, info);
+    lwork = castINTEGER_qd(wk);
+    qd_real *work = new qd_real[lwork];
+    Rggev("N", "N", n, a, lda, b, ldb, alphar, alphai, beta, vl, ldv, vr, ldv, work, lwork, info);
+    for (mplapackint i = 0; i < n; i++) {
+        printf("alpha[%ld] = ", (long)i); printnum(alphar[i]); printf(" + "); printnum(alphai[i]); printf("i, beta = "); printnum(beta[i]);
+        if (abs(beta[i]) <= Rlamch_qd("E")) {
+            printf(", lambda = Inf\n");
+        } else {
+            printf(", lambda = "); printnum(alphar[i] / beta[i]); printf(" + "); printnum(alphai[i] / beta[i]); printf("i\n");
+        }
+    }
+    delete[] work;
+    delete[] vr;
+    delete[] vl;
+    delete[] beta;
+    delete[] alphai;
+    delete[] alphar;
+    delete[] b;
+    delete[] a;
+    return info != 0 ? 1 : 0;
+}

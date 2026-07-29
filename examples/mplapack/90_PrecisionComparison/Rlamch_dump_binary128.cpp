@@ -61,4 +61,18 @@ void printmat(int n, int m, mplapack_binary128_t *a, int lda)
     }
     printf("]");
 }
-int main(){ printf("backend = binary128\n"); const char *names="ESBPNRMO"; const char *labels[]={"eps","sfmin","base","precision","t","rmin","rmax"}; const char codes[]={'E','S','B','P','N','U','O'}; for(int i=0;i<7;i++){ printf("%s = ",labels[i]); char c[2]; c[0]=codes[i]; c[1]='\0'; printnum(Rlamch_binary128(c)); printf("\n"); } return 0; }
+int main() {
+    printf("backend = binary128\n");
+    const char *names = "ESBPNRMO";
+    const char *labels[] = {"eps", "sfmin", "base", "precision", "t", "rmin", "rmax"};
+    const char codes[] = {'E', 'S', 'B', 'P', 'N', 'U', 'O'};
+    for (int i = 0; i < 7; i++) {
+        printf("%s = ", labels[i]);
+        char c[2];
+        c[0] = codes[i];
+        c[1] = '\0';
+        printnum(Rlamch_binary128(c));
+        printf("\n");
+    }
+    return 0;
+}

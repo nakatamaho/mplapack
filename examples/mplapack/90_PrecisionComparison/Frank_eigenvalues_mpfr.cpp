@@ -46,5 +46,37 @@ void printmat(int n, int m, mpreal *a, int lda) {
     printf("]");
 }
 
-void sort_real(mplapackint n, mpreal *x){ for(mplapackint i=0;i<n;i++) for(mplapackint j=i+1;j<n;j++) if(x[j]<x[i]){ mpreal t=x[i]; x[i]=x[j]; x[j]=t; } }
-int main(){ mplapackint n=20,lda=n,ldv=1,info,lwork=-1; mpreal *a=new mpreal[n*n]; for(mplapackint j=0;j<n;j++) for(mplapackint i=0;i<n;i++) a[i+j*lda]=(i<=j)?mpreal(n-j):mpreal(n-i); mpreal *wr=new mpreal[n]; mpreal *wi=new mpreal[n]; mpreal *vl=new mpreal[1]; mpreal *vr=new mpreal[1]; mpreal wk; Rgeev("N","N",n,a,lda,wr,wi,vl,ldv,vr,ldv,&wk,lwork,info); lwork=castINTEGER_mpfr(wk); mpreal *work=new mpreal[lwork]; Rgeev("N","N",n,a,lda,wr,wi,vl,ldv,vr,ldv,work,lwork,info); sort_real(n,wr); printf("Frank eigenvalues = "); printvec(wr,n); printf("\n"); delete[] work; delete[] vr; delete[] vl; delete[] wi; delete[] wr; delete[] a; return info!=0?1:0; }
+void sort_real(mplapackint n, mpreal *x) {
+    for (mplapackint i = 0; i < n; i++)
+        for (mplapackint j = i + 1; j < n; j++)
+            if (x[j] < x[i]) {
+                mpreal t = x[i];
+                x[i] = x[j];
+                x[j] = t;
+            }
+}
+int main() {
+    mplapackint n = 20, lda = n, ldv = 1, info, lwork = -1;
+    mpreal *a = new mpreal[n * n];
+    for (mplapackint j = 0; j < n; j++)
+        for (mplapackint i = 0; i < n; i++)
+            a[i + j * lda] = (i <= j) ? mpreal(n - j) : mpreal(n - i);
+    mpreal *wr = new mpreal[n];
+    mpreal *wi = new mpreal[n];
+    mpreal *vl = new mpreal[1];
+    mpreal *vr = new mpreal[1];
+    mpreal wk;
+    Rgeev("N", "N", n, a, lda, wr, wi, vl, ldv, vr, ldv, &wk, lwork, info);
+    lwork = castINTEGER_mpfr(wk);
+    mpreal *work = new mpreal[lwork];
+    Rgeev("N", "N", n, a, lda, wr, wi, vl, ldv, vr, ldv, work, lwork, info);
+    sort_real(n, wr);
+    printf("Frank eigenvalues = "); printvec(wr, n); printf("\n");
+    delete[] work;
+    delete[] vr;
+    delete[] vl;
+    delete[] wi;
+    delete[] wr;
+    delete[] a;
+    return info != 0 ? 1 : 0;
+}

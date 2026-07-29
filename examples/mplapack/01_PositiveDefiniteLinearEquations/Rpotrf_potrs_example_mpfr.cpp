@@ -80,16 +80,31 @@ mpreal max_residual(mplapackint m, mplapackint n, mplapackint nrhs, mpreal *a, m
 
 int main() {
     mplapackint n = 2, nrhs = 2, lda = n, ldb = n, info;
-    mpreal *a = new mpreal[n * n]; mpreal *aorg = new mpreal[n * n]; mpreal *b = new mpreal[n*nrhs]; mpreal *borg = new mpreal[n*nrhs]; mpreal *xexact = new mpreal[n*nrhs];
+    mpreal *a = new mpreal[n * n];
+    mpreal *aorg = new mpreal[n * n];
+    mpreal *b = new mpreal[n*nrhs];
+    mpreal *borg = new mpreal[n*nrhs];
+    mpreal *xexact = new mpreal[n*nrhs];
     a[0]=4; a[1]=2; a[2]=2; a[3]=5;
     xexact[0]=1; xexact[1]=2; xexact[0+n]=2; xexact[1+n]=-1;
     for (mplapackint i=0;i<n*n;i++) aorg[i]=a[i];
-    for (mplapackint j=0;j<nrhs;j++) for (mplapackint i=0;i<n;i++){ b[i+j*ldb]=0; for(mplapackint k=0;k<n;k++) b[i+j*ldb]+=aorg[i+k*lda]*xexact[k+j*n]; borg[i+j*ldb]=b[i+j*ldb]; }
+    for (mplapackint j = 0; j < nrhs; j++)
+        for (mplapackint i = 0; i < n; i++) {
+            b[i + j * ldb] = 0;
+            for (mplapackint k = 0; k < n; k++)
+                b[i + j * ldb] += aorg[i + k * lda] * xexact[k + j * n];
+            borg[i + j * ldb] = b[i + j * ldb];
+        }
     printf("A = "); printmat(n,n,aorg,lda); printf("\n");
     Rpotrf("L", n, a, lda, info);
     if (info == 0) Rpotrs("L", n, nrhs, a, lda, b, ldb, info);
     printf("x = "); printmat(n,nrhs,b,ldb); printf("\n");
     printf("max |x-x_exact| = "); printnum(max_solution_error(n,nrhs,b,ldb,xexact,n)); printf("\n");
     printf("max residual = "); printnum(max_residual(n,n,nrhs,aorg,lda,b,ldb,borg,ldb)); printf("\n");
-    delete[] xexact; delete[] borg; delete[] b; delete[] aorg; delete[] a; return info != 0 ? 1 : 0;
+    delete[] xexact;
+    delete[] borg;
+    delete[] b;
+    delete[] aorg;
+    delete[] a;
+    return info != 0 ? 1 : 0;
 }

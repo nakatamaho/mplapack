@@ -74,15 +74,29 @@ mpf_class max_residual(mplapackint m, mplapackint n, mplapackint nrhs, mpc_class
 
 int main() {
     mplapackint n = 2, nrhs = 1, lda = n, ldb = n, info;
-    mpc_class *a = new mpc_class[n*n]; mpc_class *aorg = new mpc_class[n*n]; mpc_class *b = new mpc_class[n]; mpc_class *borg = new mpc_class[n]; mpc_class *xexact = new mpc_class[n];
+    mpc_class *a = new mpc_class[n*n];
+    mpc_class *aorg = new mpc_class[n*n];
+    mpc_class *b = new mpc_class[n];
+    mpc_class *borg = new mpc_class[n];
+    mpc_class *xexact = new mpc_class[n];
     a[0]=mpc_class(5.0,0.0); a[1]=mpc_class(1.0,-1.0); a[2]=mpc_class(1.0,1.0); a[3]=mpc_class(4.0,0.0);
     xexact[0]=mpc_class(1.0,1.0); xexact[1]=mpc_class(2.0,-1.0);
     for(mplapackint i=0;i<n*n;i++) aorg[i]=a[i];
-    for(mplapackint i=0;i<n;i++){ b[i]=mpc_class(0.0,0.0); for(mplapackint k=0;k<n;k++) b[i]=b[i]+aorg[i+k*lda]*xexact[k]; borg[i]=b[i]; }
+    for (mplapackint i = 0; i < n; i++) {
+        b[i] = mpc_class(0.0, 0.0);
+        for (mplapackint k = 0; k < n; k++)
+            b[i] = b[i] + aorg[i + k * lda] * xexact[k];
+        borg[i] = b[i];
+    }
     printf("A = "); printmat(n,n,aorg,lda); printf("\n");
     Cposv("L", n, nrhs, a, lda, b, ldb, info);
     printf("x = "); printvec(b,n); printf("\n");
     printf("max |x-x_exact| = "); printnum(max_solution_error(n,nrhs,b,ldb,xexact,n)); printf("\n");
     printf("max residual = "); printnum(max_residual(n,n,nrhs,aorg,lda,b,ldb,borg,ldb)); printf("\n");
-    delete[] xexact; delete[] borg; delete[] b; delete[] aorg; delete[] a; return info != 0 ? 1 : 0;
+    delete[] xexact;
+    delete[] borg;
+    delete[] b;
+    delete[] aorg;
+    delete[] a;
+    return info != 0 ? 1 : 0;
 }

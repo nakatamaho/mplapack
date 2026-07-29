@@ -30,14 +30,38 @@ REAL max_residual(INTEGER m, INTEGER n, INTEGER nrhs, REAL *a, INTEGER lda, REAL
     return err;
 }
 
-REAL one_norm(INTEGER n, REAL *a, INTEGER lda) { REAL anorm=0.0; for(INTEGER j=0;j<n;j++){ REAL s=0.0; for(INTEGER i=0;i<n;i++) s=s+abs(a[i+j*lda]); if(anorm<s) anorm=s; } return anorm; }
+REAL one_norm(INTEGER n, REAL *a, INTEGER lda) {
+    REAL anorm = 0.0;
+    for (INTEGER j = 0; j < n; j++) {
+        REAL s = 0.0;
+        for (INTEGER i = 0; i < n; i++)
+            s = s + abs(a[i + j * lda]);
+        if (anorm < s)
+            anorm = s;
+    }
+    return anorm;
+}
 int main() {
     INTEGER n = 2, lda = n, info;
-    REAL *a = new REAL[n*n]; REAL *aorg = new REAL[n*n]; REAL *work = new REAL[3*n]; INTEGER *iwork = new INTEGER[n]; REAL rcond=0.0;
-    a[0]=4; a[1]=2; a[2]=2; a[3]=5; for(INTEGER i=0;i<n*n;i++) aorg[i]=a[i];
+    REAL *a = new REAL[n * n];
+    REAL *aorg = new REAL[n * n];
+    REAL *work = new REAL[3 * n];
+    INTEGER *iwork = new INTEGER[n];
+    REAL rcond = 0.0;
+    a[0] = 4;
+    a[1] = 2;
+    a[2] = 2;
+    a[3] = 5;
+    for (INTEGER i = 0; i < n * n; i++)
+        aorg[i] = a[i];
     Rpotrf("L", n, a, lda, info);
-    if (info == 0) Rpocon("L", n, a, lda, one_norm(n,aorg,lda), rcond, work, iwork, info);
-    printf("A = "); printmat(n,n,aorg,lda); printf("\n");
+    if (info == 0)
+        Rpocon("L", n, a, lda, one_norm(n, aorg, lda), rcond, work, iwork, info);
+    printf("A = "); printmat(n, n, aorg, lda); printf("\n");
     printf("rcond_1 = "); printnum(rcond); printf("\n");
-    delete[] iwork; delete[] work; delete[] aorg; delete[] a; return info != 0 ? 1 : 0;
+    delete[] iwork;
+    delete[] work;
+    delete[] aorg;
+    delete[] a;
+    return info != 0 ? 1 : 0;
 }

@@ -74,15 +74,29 @@ double max_residual(mplapackint m, mplapackint n, mplapackint nrhs, std::complex
 
 int main() {
     mplapackint n = 2, nrhs = 1, lda = n, ldb = n, info;
-    std::complex<double> *a = new std::complex<double>[n*n]; std::complex<double> *aorg = new std::complex<double>[n*n]; std::complex<double> *b = new std::complex<double>[n]; std::complex<double> *borg = new std::complex<double>[n]; std::complex<double> *xexact = new std::complex<double>[n];
+    std::complex<double> *a = new std::complex<double>[n*n];
+    std::complex<double> *aorg = new std::complex<double>[n*n];
+    std::complex<double> *b = new std::complex<double>[n];
+    std::complex<double> *borg = new std::complex<double>[n];
+    std::complex<double> *xexact = new std::complex<double>[n];
     a[0]=std::complex<double>(5.0,0.0); a[1]=std::complex<double>(1.0,-1.0); a[2]=std::complex<double>(1.0,1.0); a[3]=std::complex<double>(4.0,0.0);
     xexact[0]=std::complex<double>(1.0,1.0); xexact[1]=std::complex<double>(2.0,-1.0);
     for(mplapackint i=0;i<n*n;i++) aorg[i]=a[i];
-    for(mplapackint i=0;i<n;i++){ b[i]=std::complex<double>(0.0,0.0); for(mplapackint k=0;k<n;k++) b[i]=b[i]+aorg[i+k*lda]*xexact[k]; borg[i]=b[i]; }
+    for (mplapackint i = 0; i < n; i++) {
+        b[i] = std::complex<double>(0.0, 0.0);
+        for (mplapackint k = 0; k < n; k++)
+            b[i] = b[i] + aorg[i + k * lda] * xexact[k];
+        borg[i] = b[i];
+    }
     printf("A = "); printmat(n,n,aorg,lda); printf("\n");
     Cposv("L", n, nrhs, a, lda, b, ldb, info);
     printf("x = "); printvec(b,n); printf("\n");
     printf("max |x-x_exact| = "); printnum(max_solution_error(n,nrhs,b,ldb,xexact,n)); printf("\n");
     printf("max residual = "); printnum(max_residual(n,n,nrhs,aorg,lda,b,ldb,borg,ldb)); printf("\n");
-    delete[] xexact; delete[] borg; delete[] b; delete[] aorg; delete[] a; return info != 0 ? 1 : 0;
+    delete[] xexact;
+    delete[] borg;
+    delete[] b;
+    delete[] aorg;
+    delete[] a;
+    return info != 0 ? 1 : 0;
 }

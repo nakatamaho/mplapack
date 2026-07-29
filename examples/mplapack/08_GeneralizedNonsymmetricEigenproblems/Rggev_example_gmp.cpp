@@ -41,4 +41,45 @@ void printmat(int n, int m, mpf_class * a, int lda)
     }
     printf("]");
 }
-int main(){ mplapackint n=3,lda=n,ldb=n,ldv=1,info,lwork=-1; mpf_class *a=new mpf_class[n*n]; mpf_class *b=new mpf_class[n*n]; mpf_class *alphar=new mpf_class[n]; mpf_class *alphai=new mpf_class[n]; mpf_class *beta=new mpf_class[n]; mpf_class *vl=new mpf_class[1]; mpf_class *vr=new mpf_class[1]; for(mplapackint i=0;i<n*n;i++){a[i]=0;b[i]=0;} a[0]=1; a[4]=2; a[8]=3; b[0]=1; b[4]=1; b[8]=0; mpf_class wk; Rggev("N","N",n,a,lda,b,ldb,alphar,alphai,beta,vl,ldv,vr,ldv,&wk,lwork,info); lwork=castINTEGER_gmp(wk); mpf_class *work=new mpf_class[lwork]; Rggev("N","N",n,a,lda,b,ldb,alphar,alphai,beta,vl,ldv,vr,ldv,work,lwork,info); for(mplapackint i=0;i<n;i++){ printf("alpha[%ld] = ",(long)i); printnum(alphar[i]); printf(" + "); printnum(alphai[i]); printf("i, beta = "); printnum(beta[i]); if(abs(beta[i])<=Rlamch_gmp("E")){ printf(", lambda = Inf\n"); } else { printf(", lambda = "); printnum(alphar[i]/beta[i]); printf(" + "); printnum(alphai[i]/beta[i]); printf("i\n"); }} delete[] work; delete[] vr; delete[] vl; delete[] beta; delete[] alphai; delete[] alphar; delete[] b; delete[] a; return info!=0?1:0; }
+int main() {
+    mplapackint n = 3, lda = n, ldb = n, ldv = 1, info, lwork = -1;
+    mpf_class *a = new mpf_class[n * n];
+    mpf_class *b = new mpf_class[n * n];
+    mpf_class *alphar = new mpf_class[n];
+    mpf_class *alphai = new mpf_class[n];
+    mpf_class *beta = new mpf_class[n];
+    mpf_class *vl = new mpf_class[1];
+    mpf_class *vr = new mpf_class[1];
+    for (mplapackint i = 0; i < n * n; i++) {
+        a[i] = 0;
+        b[i] = 0;
+    }
+    a[0] = 1;
+    a[4] = 2;
+    a[8] = 3;
+    b[0] = 1;
+    b[4] = 1;
+    b[8] = 0;
+    mpf_class wk;
+    Rggev("N", "N", n, a, lda, b, ldb, alphar, alphai, beta, vl, ldv, vr, ldv, &wk, lwork, info);
+    lwork = castINTEGER_gmp(wk);
+    mpf_class *work = new mpf_class[lwork];
+    Rggev("N", "N", n, a, lda, b, ldb, alphar, alphai, beta, vl, ldv, vr, ldv, work, lwork, info);
+    for (mplapackint i = 0; i < n; i++) {
+        printf("alpha[%ld] = ", (long)i); printnum(alphar[i]); printf(" + "); printnum(alphai[i]); printf("i, beta = "); printnum(beta[i]);
+        if (abs(beta[i]) <= Rlamch_gmp("E")) {
+            printf(", lambda = Inf\n");
+        } else {
+            printf(", lambda = "); printnum(alphar[i] / beta[i]); printf(" + "); printnum(alphai[i] / beta[i]); printf("i\n");
+        }
+    }
+    delete[] work;
+    delete[] vr;
+    delete[] vl;
+    delete[] beta;
+    delete[] alphai;
+    delete[] alphar;
+    delete[] b;
+    delete[] a;
+    return info != 0 ? 1 : 0;
+}

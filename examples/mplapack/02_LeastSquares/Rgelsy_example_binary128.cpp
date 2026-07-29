@@ -94,9 +94,47 @@ mplapack_binary128_t max_residual(mplapackint m, mplapackint n, mplapackint nrhs
 }
 
 void set_problem(mplapackint m, mplapackint n, mplapack_binary128_t *a, mplapackint lda, mplapack_binary128_t *b, mplapackint ldb, mplapack_binary128_t *xexact) {
-    for (mplapackint i = 0; i < m; i++) { a[i + 0 * lda] = 1; a[i + 1 * lda] = i; }
-    xexact[0] = 1; xexact[1] = 2;
-    for (mplapackint i = 0; i < m; i++) b[i] = a[i + 0 * lda] * xexact[0] + a[i + 1 * lda] * xexact[1];
+    for (mplapackint i = 0; i < m; i++) {
+        a[i + 0 * lda] = 1;
+        a[i + 1 * lda] = i;
+    }
+    xexact[0] = 1;
+    xexact[1] = 2;
+    for (mplapackint i = 0; i < m; i++)
+        b[i] = a[i + 0 * lda] * xexact[0] + a[i + 1 * lda] * xexact[1];
 }
 
-int main(){ mplapackint m=4,n=2,nrhs=1,lda=m,ldb=m,info,lwork=-1,rank; mplapack_binary128_t *a=new mplapack_binary128_t[lda*n]; mplapack_binary128_t *aorg=new mplapack_binary128_t[lda*n]; mplapack_binary128_t *b=new mplapack_binary128_t[ldb]; mplapack_binary128_t *borg=new mplapack_binary128_t[ldb]; mplapack_binary128_t *xexact=new mplapack_binary128_t[n]; mplapackint *jpvt=new mplapackint[n]; for(mplapackint i=0;i<n;i++) jpvt[i]=0; set_problem(m,n,a,lda,b,ldb,xexact); for(mplapackint i=0;i<lda*n;i++) aorg[i]=a[i]; for(mplapackint i=0;i<ldb;i++) borg[i]=b[i]; mplapack_binary128_t wk; Rgelsy(m,n,nrhs,a,lda,b,ldb,jpvt,mplapack_binary128_t(-1.0),rank,&wk,lwork,info); lwork=castINTEGER_binary128(wk); mplapack_binary128_t *work=new mplapack_binary128_t[lwork]; Rgelsy(m,n,nrhs,a,lda,b,ldb,jpvt,mplapack_binary128_t(-1.0),rank,work,lwork,info); printf("A = "); printmat(m,n,aorg,lda); printf("\n"); printf("x = "); printvec(b,n); printf("\n"); printf("rank = %ld\n", (long)rank); printf("max |x-x_exact| = "); printnum(max_solution_error(n,nrhs,b,ldb,xexact,n)); printf("\n"); printf("max residual = "); printnum(max_residual(m,n,nrhs,aorg,lda,b,ldb,borg,ldb)); printf("\n"); delete[] work; delete[] jpvt; delete[] xexact; delete[] borg; delete[] b; delete[] aorg; delete[] a; return info!=0?1:0; }
+int main() {
+    mplapackint m = 4, n = 2, nrhs = 1, lda = m, ldb = m, info, lwork = -1, rank;
+    mplapack_binary128_t *a = new mplapack_binary128_t[lda * n];
+    mplapack_binary128_t *aorg = new mplapack_binary128_t[lda * n];
+    mplapack_binary128_t *b = new mplapack_binary128_t[ldb];
+    mplapack_binary128_t *borg = new mplapack_binary128_t[ldb];
+    mplapack_binary128_t *xexact = new mplapack_binary128_t[n];
+    mplapackint *jpvt = new mplapackint[n];
+    for (mplapackint i = 0; i < n; i++)
+        jpvt[i] = 0;
+    set_problem(m, n, a, lda, b, ldb, xexact);
+    for (mplapackint i = 0; i < lda * n; i++)
+        aorg[i] = a[i];
+    for (mplapackint i = 0; i < ldb; i++)
+        borg[i] = b[i];
+    mplapack_binary128_t wk;
+    Rgelsy(m, n, nrhs, a, lda, b, ldb, jpvt, mplapack_binary128_t(-1.0), rank, &wk, lwork, info);
+    lwork = castINTEGER_binary128(wk);
+    mplapack_binary128_t *work = new mplapack_binary128_t[lwork];
+    Rgelsy(m, n, nrhs, a, lda, b, ldb, jpvt, mplapack_binary128_t(-1.0), rank, work, lwork, info);
+    printf("A = "); printmat(m, n, aorg, lda); printf("\n");
+    printf("x = "); printvec(b, n); printf("\n");
+    printf("rank = %ld\n", (long)rank);
+    printf("max |x-x_exact| = "); printnum(max_solution_error(n, nrhs, b, ldb, xexact, n)); printf("\n");
+    printf("max residual = "); printnum(max_residual(m, n, nrhs, aorg, lda, b, ldb, borg, ldb)); printf("\n");
+    delete[] work;
+    delete[] jpvt;
+    delete[] xexact;
+    delete[] borg;
+    delete[] b;
+    delete[] aorg;
+    delete[] a;
+    return info != 0 ? 1 : 0;
+}

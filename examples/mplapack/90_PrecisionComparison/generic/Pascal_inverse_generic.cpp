@@ -1,3 +1,38 @@
-REAL binom(INTEGER n, INTEGER k){ REAL r=1; for(INTEGER i=1;i<=k;i++) r=r*REAL(n-k+i)/REAL(i); return r; }
-REAL nearest_integer_error(REAL x){ REAL f=floor(x); REAL c=f+1; REAL df=abs(x-f); REAL dc=abs(x-c); return df<dc?df:dc; }
-int main(){ INTEGER n=8,lda=n,info,lwork=-1; REAL *a=new REAL[n*n]; INTEGER *ipiv=new INTEGER[n]; for(INTEGER j=0;j<n;j++) for(INTEGER i=0;i<n;i++) a[i+j*lda]=binom(i+j,i); Rgetrf(n,n,a,lda,ipiv,info); REAL wk; if(info==0) Rgetri(n,a,lda,ipiv,&wk,lwork,info); lwork=castInTEGER(wk); REAL *work=new REAL[lwork]; if(info==0) Rgetri(n,a,lda,ipiv,work,lwork,info); REAL err=0; for(INTEGER i=0;i<n*n;i++){ REAL d=nearest_integer_error(a[i]); if(err<d) err=d; } printf("P inverse = "); printmat(n,n,a,lda); printf("\n"); printf("max distance to integer = "); printnum(err); printf("\n"); delete[] work; delete[] ipiv; delete[] a; return info!=0?1:0; }
+REAL binom(INTEGER n, INTEGER k) {
+    REAL r = 1;
+    for (INTEGER i = 1; i <= k; i++)
+        r = r * REAL(n - k + i) / REAL(i);
+    return r;
+}
+REAL nearest_integer_error(REAL x) {
+    INTEGER nearest = castInTEGER(x >= REAL(0.0) ? x + REAL(0.5) : x - REAL(0.5));
+    return abs(x - REAL(nearest));
+}
+int main() {
+    INTEGER n = 8, lda = n, info, lwork = -1;
+    REAL *a = new REAL[n * n];
+    INTEGER *ipiv = new INTEGER[n];
+    for (INTEGER j = 0; j < n; j++)
+        for (INTEGER i = 0; i < n; i++)
+            a[i + j * lda] = binom(i + j, i);
+    Rgetrf(n, n, a, lda, ipiv, info);
+    REAL wk;
+    if (info == 0)
+        Rgetri(n, a, lda, ipiv, &wk, lwork, info);
+    lwork = castInTEGER(wk);
+    REAL *work = new REAL[lwork];
+    if (info == 0)
+        Rgetri(n, a, lda, ipiv, work, lwork, info);
+    REAL err = 0;
+    for (INTEGER i = 0; i < n * n; i++) {
+        REAL d = nearest_integer_error(a[i]);
+        if (err < d)
+            err = d;
+    }
+    printf("P inverse = "); printmat(n, n, a, lda); printf("\n");
+    printf("max distance to integer = "); printnum(err); printf("\n");
+    delete[] work;
+    delete[] ipiv;
+    delete[] a;
+    return info != 0 ? 1 : 0;
+}

@@ -122,9 +122,42 @@ mplapack_binary128_t max_residual(mplapackint m, mplapackint n, mplapackint nrhs
 }
 
 void set_problem(mplapackint m, mplapackint n, std::complex<mplapack_binary128_t> *a, mplapackint lda, std::complex<mplapack_binary128_t> *b, mplapackint ldb, std::complex<mplapack_binary128_t> *xexact) {
-    for (mplapackint i = 0; i < m; i++) { a[i + 0 * lda] = std::complex<mplapack_binary128_t>(1.0, 0.0); a[i + 1 * lda] = std::complex<mplapack_binary128_t>(i, 1.0); }
-    xexact[0] = std::complex<mplapack_binary128_t>(1.0, -1.0); xexact[1] = std::complex<mplapack_binary128_t>(2.0, 1.0);
-    for (mplapackint i = 0; i < m; i++) b[i] = a[i + 0 * lda] * xexact[0] + a[i + 1 * lda] * xexact[1];
+    for (mplapackint i = 0; i < m; i++) {
+        a[i + 0 * lda] = std::complex<mplapack_binary128_t>(1.0, 0.0);
+        a[i + 1 * lda] = std::complex<mplapack_binary128_t>(i, 1.0);
+    }
+    xexact[0] = std::complex<mplapack_binary128_t>(1.0, -1.0);
+    xexact[1] = std::complex<mplapack_binary128_t>(2.0, 1.0);
+    for (mplapackint i = 0; i < m; i++)
+        b[i] = a[i + 0 * lda] * xexact[0] + a[i + 1 * lda] * xexact[1];
 }
 
-int main(){ mplapackint m=4,n=2,nrhs=1,lda=m,ldb=m,info,lwork=-1; std::complex<mplapack_binary128_t> *a=new std::complex<mplapack_binary128_t>[lda*n]; std::complex<mplapack_binary128_t> *aorg=new std::complex<mplapack_binary128_t>[lda*n]; std::complex<mplapack_binary128_t> *b=new std::complex<mplapack_binary128_t>[ldb]; std::complex<mplapack_binary128_t> *borg=new std::complex<mplapack_binary128_t>[ldb]; std::complex<mplapack_binary128_t> *xexact=new std::complex<mplapack_binary128_t>[n]; set_problem(m,n,a,lda,b,ldb,xexact); for(mplapackint i=0;i<lda*n;i++) aorg[i]=a[i]; for(mplapackint i=0;i<ldb;i++) borg[i]=b[i]; std::complex<mplapack_binary128_t> wk; Cgels("N",m,n,nrhs,a,lda,b,ldb,&wk,lwork,info); lwork=castINTEGER_binary128(wk.real()); std::complex<mplapack_binary128_t> *work=new std::complex<mplapack_binary128_t>[lwork]; Cgels("N",m,n,nrhs,a,lda,b,ldb,work,lwork,info); printf("A = "); printmat(m,n,aorg,lda); printf("\n"); printf("x = "); printvec(b,n); printf("\n"); printf("max |x-x_exact| = "); printnum(max_solution_error(n,nrhs,b,ldb,xexact,n)); printf("\n"); printf("max residual = "); printnum(max_residual(m,n,nrhs,aorg,lda,b,ldb,borg,ldb)); printf("\n"); delete[] work; delete[] xexact; delete[] borg; delete[] b; delete[] aorg; delete[] a; return info!=0?1:0; }
+int main() {
+    mplapackint m = 4, n = 2, nrhs = 1, lda = m, ldb = m, info, lwork = -1;
+    std::complex<mplapack_binary128_t> *a = new std::complex<mplapack_binary128_t>[lda * n];
+    std::complex<mplapack_binary128_t> *aorg = new std::complex<mplapack_binary128_t>[lda * n];
+    std::complex<mplapack_binary128_t> *b = new std::complex<mplapack_binary128_t>[ldb];
+    std::complex<mplapack_binary128_t> *borg = new std::complex<mplapack_binary128_t>[ldb];
+    std::complex<mplapack_binary128_t> *xexact = new std::complex<mplapack_binary128_t>[n];
+    set_problem(m, n, a, lda, b, ldb, xexact);
+    for (mplapackint i = 0; i < lda * n; i++)
+        aorg[i] = a[i];
+    for (mplapackint i = 0; i < ldb; i++)
+        borg[i] = b[i];
+    std::complex<mplapack_binary128_t> wk;
+    Cgels("N", m, n, nrhs, a, lda, b, ldb, &wk, lwork, info);
+    lwork = castINTEGER_binary128(wk.real());
+    std::complex<mplapack_binary128_t> *work = new std::complex<mplapack_binary128_t>[lwork];
+    Cgels("N", m, n, nrhs, a, lda, b, ldb, work, lwork, info);
+    printf("A = "); printmat(m, n, aorg, lda); printf("\n");
+    printf("x = "); printvec(b, n); printf("\n");
+    printf("max |x-x_exact| = "); printnum(max_solution_error(n, nrhs, b, ldb, xexact, n)); printf("\n");
+    printf("max residual = "); printnum(max_residual(m, n, nrhs, aorg, lda, b, ldb, borg, ldb)); printf("\n");
+    delete[] work;
+    delete[] xexact;
+    delete[] borg;
+    delete[] b;
+    delete[] aorg;
+    delete[] a;
+    return info != 0 ? 1 : 0;
+}

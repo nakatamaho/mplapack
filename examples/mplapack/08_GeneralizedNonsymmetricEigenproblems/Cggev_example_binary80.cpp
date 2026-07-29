@@ -76,4 +76,45 @@ template <class X> void printmat(int n, int m, X *a, int lda)
     }
     printf("]");
 }
-int main(){ mplapackint n=3,lda=n,ldb=n,ldv=1,info,lwork=-1; std::complex<mplapack_binary80_t> *a=new std::complex<mplapack_binary80_t>[n*n]; std::complex<mplapack_binary80_t> *b=new std::complex<mplapack_binary80_t>[n*n]; std::complex<mplapack_binary80_t> *alpha=new std::complex<mplapack_binary80_t>[n]; std::complex<mplapack_binary80_t> *beta=new std::complex<mplapack_binary80_t>[n]; std::complex<mplapack_binary80_t> *vl=new std::complex<mplapack_binary80_t>[1]; std::complex<mplapack_binary80_t> *vr=new std::complex<mplapack_binary80_t>[1]; mplapack_binary80_t *rwork=new mplapack_binary80_t[8*n]; for(mplapackint i=0;i<n*n;i++){a[i]=std::complex<mplapack_binary80_t>(0.0,0.0);b[i]=std::complex<mplapack_binary80_t>(0.0,0.0);} a[0]=std::complex<mplapack_binary80_t>(1.0,1.0); a[4]=std::complex<mplapack_binary80_t>(2.0,0.0); a[8]=std::complex<mplapack_binary80_t>(3.0,-1.0); b[0]=std::complex<mplapack_binary80_t>(1.0,0.0); b[4]=std::complex<mplapack_binary80_t>(1.0,0.0); b[8]=std::complex<mplapack_binary80_t>(0.0,0.0); std::complex<mplapack_binary80_t> wk; Cggev("N","N",n,a,lda,b,ldb,alpha,beta,vl,ldv,vr,ldv,&wk,lwork,rwork,info); lwork=castINTEGER_binary80(wk.real()); std::complex<mplapack_binary80_t> *work=new std::complex<mplapack_binary80_t>[lwork]; Cggev("N","N",n,a,lda,b,ldb,alpha,beta,vl,ldv,vr,ldv,work,lwork,rwork,info); for(mplapackint i=0;i<n;i++){ printf("alpha[%ld] = ",(long)i); printnum(alpha[i]); printf(", beta = "); printnum(beta[i]); if(abs(beta[i])<=Rlamch_binary80("E")) printf(", lambda = Inf\n"); else { printf(", lambda = "); printnum(alpha[i]/beta[i]); printf("\n"); }} delete[] work; delete[] rwork; delete[] vr; delete[] vl; delete[] beta; delete[] alpha; delete[] b; delete[] a; return info!=0?1:0; }
+int main() {
+    mplapackint n = 3, lda = n, ldb = n, ldv = 1, info, lwork = -1;
+    std::complex<mplapack_binary80_t> *a = new std::complex<mplapack_binary80_t>[n * n];
+    std::complex<mplapack_binary80_t> *b = new std::complex<mplapack_binary80_t>[n * n];
+    std::complex<mplapack_binary80_t> *alpha = new std::complex<mplapack_binary80_t>[n];
+    std::complex<mplapack_binary80_t> *beta = new std::complex<mplapack_binary80_t>[n];
+    std::complex<mplapack_binary80_t> *vl = new std::complex<mplapack_binary80_t>[1];
+    std::complex<mplapack_binary80_t> *vr = new std::complex<mplapack_binary80_t>[1];
+    mplapack_binary80_t *rwork = new mplapack_binary80_t[8 * n];
+    for (mplapackint i = 0; i < n * n; i++) {
+        a[i] = std::complex<mplapack_binary80_t>(0.0, 0.0);
+        b[i] = std::complex<mplapack_binary80_t>(0.0, 0.0);
+    }
+    a[0] = std::complex<mplapack_binary80_t>(1.0, 1.0);
+    a[4] = std::complex<mplapack_binary80_t>(2.0, 0.0);
+    a[8] = std::complex<mplapack_binary80_t>(3.0, -1.0);
+    b[0] = std::complex<mplapack_binary80_t>(1.0, 0.0);
+    b[4] = std::complex<mplapack_binary80_t>(1.0, 0.0);
+    b[8] = std::complex<mplapack_binary80_t>(0.0, 0.0);
+    std::complex<mplapack_binary80_t> wk;
+    Cggev("N", "N", n, a, lda, b, ldb, alpha, beta, vl, ldv, vr, ldv, &wk, lwork, rwork, info);
+    lwork = castINTEGER_binary80(wk.real());
+    std::complex<mplapack_binary80_t> *work = new std::complex<mplapack_binary80_t>[lwork];
+    Cggev("N", "N", n, a, lda, b, ldb, alpha, beta, vl, ldv, vr, ldv, work, lwork, rwork, info);
+    for (mplapackint i = 0; i < n; i++) {
+        printf("alpha[%ld] = ", (long)i); printnum(alpha[i]); printf(", beta = "); printnum(beta[i]);
+        if (abs(beta[i]) <= Rlamch_binary80("E"))
+            printf(", lambda = Inf\n");
+        else {
+            printf(", lambda = "); printnum(alpha[i] / beta[i]); printf("\n");
+        }
+    }
+    delete[] work;
+    delete[] rwork;
+    delete[] vr;
+    delete[] vl;
+    delete[] beta;
+    delete[] alpha;
+    delete[] b;
+    delete[] a;
+    return info != 0 ? 1 : 0;
+}

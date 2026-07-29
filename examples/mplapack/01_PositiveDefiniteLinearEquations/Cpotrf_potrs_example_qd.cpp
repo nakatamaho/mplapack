@@ -97,16 +97,39 @@ qd_real max_residual(mplapackint m, mplapackint n, mplapackint nrhs, qd_complex 
 
 int main() {
     mplapackint n = 2, nrhs = 2, lda = n, ldb = n, info;
-    qd_complex *a = new qd_complex[n*n]; qd_complex *aorg = new qd_complex[n*n]; qd_complex *b = new qd_complex[n*nrhs]; qd_complex *borg = new qd_complex[n*nrhs]; qd_complex *xexact = new qd_complex[n*nrhs];
-    a[0]=qd_complex(5.0,0.0); a[1]=qd_complex(1.0,-1.0); a[2]=qd_complex(1.0,1.0); a[3]=qd_complex(4.0,0.0);
-    xexact[0]=qd_complex(1.0,1.0); xexact[1]=qd_complex(2.0,-1.0); xexact[0+n]=qd_complex(-1.0,0.0); xexact[1+n]=qd_complex(0.0,2.0);
-    for(mplapackint i=0;i<n*n;i++) aorg[i]=a[i];
-    for(mplapackint j=0;j<nrhs;j++) for(mplapackint i=0;i<n;i++){ b[i+j*ldb]=qd_complex(0.0,0.0); for(mplapackint k=0;k<n;k++) b[i+j*ldb]=b[i+j*ldb]+aorg[i+k*lda]*xexact[k+j*n]; borg[i+j*ldb]=b[i+j*ldb]; }
-    printf("A = "); printmat(n,n,aorg,lda); printf("\n");
+    qd_complex *a = new qd_complex[n * n];
+    qd_complex *aorg = new qd_complex[n * n];
+    qd_complex *b = new qd_complex[n * nrhs];
+    qd_complex *borg = new qd_complex[n * nrhs];
+    qd_complex *xexact = new qd_complex[n * nrhs];
+    a[0] = qd_complex(5.0, 0.0);
+    a[1] = qd_complex(1.0, -1.0);
+    a[2] = qd_complex(1.0, 1.0);
+    a[3] = qd_complex(4.0, 0.0);
+    xexact[0] = qd_complex(1.0, 1.0);
+    xexact[1] = qd_complex(2.0, -1.0);
+    xexact[0 + n] = qd_complex(-1.0, 0.0);
+    xexact[1 + n] = qd_complex(0.0, 2.0);
+    for (mplapackint i = 0; i < n * n; i++)
+        aorg[i] = a[i];
+    for (mplapackint j = 0; j < nrhs; j++)
+        for (mplapackint i = 0; i < n; i++) {
+            b[i + j * ldb] = qd_complex(0.0, 0.0);
+            for (mplapackint k = 0; k < n; k++)
+                b[i + j * ldb] = b[i + j * ldb] + aorg[i + k * lda] * xexact[k + j * n];
+            borg[i + j * ldb] = b[i + j * ldb];
+        }
+    printf("A = "); printmat(n, n, aorg, lda); printf("\n");
     Cpotrf("L", n, a, lda, info);
-    if (info == 0) Cpotrs("L", n, nrhs, a, lda, b, ldb, info);
-    printf("x = "); printmat(n,nrhs,b,ldb); printf("\n");
-    printf("max |x-x_exact| = "); printnum(max_solution_error(n,nrhs,b,ldb,xexact,n)); printf("\n");
-    printf("max residual = "); printnum(max_residual(n,n,nrhs,aorg,lda,b,ldb,borg,ldb)); printf("\n");
-    delete[] xexact; delete[] borg; delete[] b; delete[] aorg; delete[] a; return info != 0 ? 1 : 0;
+    if (info == 0)
+        Cpotrs("L", n, nrhs, a, lda, b, ldb, info);
+    printf("x = "); printmat(n, nrhs, b, ldb); printf("\n");
+    printf("max |x-x_exact| = "); printnum(max_solution_error(n, nrhs, b, ldb, xexact, n)); printf("\n");
+    printf("max residual = "); printnum(max_residual(n, n, nrhs, aorg, lda, b, ldb, borg, ldb)); printf("\n");
+    delete[] xexact;
+    delete[] borg;
+    delete[] b;
+    delete[] aorg;
+    delete[] a;
+    return info != 0 ? 1 : 0;
 }

@@ -99,8 +99,17 @@ int main() {
     mplapack_binary80_t *borg = new mplapack_binary80_t[n];
     mplapack_binary80_t *xexact = new mplapack_binary80_t[n];
     for (mplapackint i = 0; i < n * n; i++) a[i] = 0;
-    for (mplapackint i = 0; i < n; i++) { d[i] = 2; xexact[i] = i + 1; a[i + i * n] = 2; }
-    for (mplapackint i = 0; i < n - 1; i++) { dl[i] = -1; du[i] = -1; a[i + 1 + i * n] = -1; a[i + (i + 1) * n] = -1; }
+    for (mplapackint i = 0; i < n; i++) {
+        d[i] = 2;
+        xexact[i] = i + 1;
+        a[i + i * n] = 2;
+    }
+    for (mplapackint i = 0; i < n - 1; i++) {
+        dl[i] = -1;
+        du[i] = -1;
+        a[i + 1 + i * n] = -1;
+        a[i + (i + 1) * n] = -1;
+    }
     for (mplapackint i = 0; i < n; i++) {
         b[i] = 0;
         for (mplapackint k = 0; k < n; k++) b[i] = b[i] + a[i + k * n] * xexact[k];
@@ -111,6 +120,12 @@ int main() {
     printf("x = "); printvec(b, n); printf("\n");
     printf("max |x-x_exact| = "); printnum(max_solution_error(n, nrhs, b, ldb, xexact, n)); printf("\n");
     printf("max residual = "); printnum(max_residual(n, n, nrhs, a, n, b, ldb, borg, ldb)); printf("\n");
-    delete[] xexact; delete[] borg; delete[] b; delete[] a; delete[] du; delete[] d; delete[] dl;
+    delete[] xexact;
+    delete[] borg;
+    delete[] b;
+    delete[] a;
+    delete[] du;
+    delete[] d;
+    delete[] dl;
     return info != 0 ? 1 : 0;
 }

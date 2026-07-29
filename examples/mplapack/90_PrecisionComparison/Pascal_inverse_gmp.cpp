@@ -41,6 +41,41 @@ void printmat(int n, int m, mpf_class * a, int lda)
     }
     printf("]");
 }
-mpf_class binom(mplapackint n, mplapackint k){ mpf_class r=1; for(mplapackint i=1;i<=k;i++) r=r*mpf_class(n-k+i)/mpf_class(i); return r; }
-mpf_class nearest_integer_error(mpf_class x){ mpf_class f=floor(x); mpf_class c=f+1; mpf_class df=abs(x-f); mpf_class dc=abs(x-c); return df<dc?df:dc; }
-int main(){ mplapackint n=8,lda=n,info,lwork=-1; mpf_class *a=new mpf_class[n*n]; mplapackint *ipiv=new mplapackint[n]; for(mplapackint j=0;j<n;j++) for(mplapackint i=0;i<n;i++) a[i+j*lda]=binom(i+j,i); Rgetrf(n,n,a,lda,ipiv,info); mpf_class wk; if(info==0) Rgetri(n,a,lda,ipiv,&wk,lwork,info); lwork=castINTEGER_gmp(wk); mpf_class *work=new mpf_class[lwork]; if(info==0) Rgetri(n,a,lda,ipiv,work,lwork,info); mpf_class err=0; for(mplapackint i=0;i<n*n;i++){ mpf_class d=nearest_integer_error(a[i]); if(err<d) err=d; } printf("P inverse = "); printmat(n,n,a,lda); printf("\n"); printf("max distance to integer = "); printnum(err); printf("\n"); delete[] work; delete[] ipiv; delete[] a; return info!=0?1:0; }
+mpf_class binom(mplapackint n, mplapackint k) {
+    mpf_class r = 1;
+    for (mplapackint i = 1; i <= k; i++)
+        r = r * mpf_class(n - k + i) / mpf_class(i);
+    return r;
+}
+mpf_class nearest_integer_error(mpf_class x) {
+    mplapackint nearest = castINTEGER_gmp(x >= mpf_class(0.0) ? x + mpf_class(0.5) : x - mpf_class(0.5));
+    return abs(x - mpf_class(nearest));
+}
+int main() {
+    mplapackint n = 8, lda = n, info, lwork = -1;
+    mpf_class *a = new mpf_class[n * n];
+    mplapackint *ipiv = new mplapackint[n];
+    for (mplapackint j = 0; j < n; j++)
+        for (mplapackint i = 0; i < n; i++)
+            a[i + j * lda] = binom(i + j, i);
+    Rgetrf(n, n, a, lda, ipiv, info);
+    mpf_class wk;
+    if (info == 0)
+        Rgetri(n, a, lda, ipiv, &wk, lwork, info);
+    lwork = castINTEGER_gmp(wk);
+    mpf_class *work = new mpf_class[lwork];
+    if (info == 0)
+        Rgetri(n, a, lda, ipiv, work, lwork, info);
+    mpf_class err = 0;
+    for (mplapackint i = 0; i < n * n; i++) {
+        mpf_class d = nearest_integer_error(a[i]);
+        if (err < d)
+            err = d;
+    }
+    printf("P inverse = "); printmat(n, n, a, lda); printf("\n");
+    printf("max distance to integer = "); printnum(err); printf("\n");
+    delete[] work;
+    delete[] ipiv;
+    delete[] a;
+    return info != 0 ? 1 : 0;
+}

@@ -73,4 +73,41 @@ mpf_class max_residual(mplapackint m, mplapackint n, mplapackint nrhs, mpf_class
     return err;
 }
 
-int main(){ mplapackint m=3,n=2,p=1,lda=m,ldb=p,info,lwork=-1; mpf_class *a=new mpf_class[lda*n]; mpf_class *bmat=new mpf_class[ldb*n]; mpf_class *c=new mpf_class[m]; mpf_class *d=new mpf_class[p]; mpf_class *x=new mpf_class[n]; mpf_class *xexact=new mpf_class[n]; a[0]=1; a[1]=0; a[2]=1; a[0+lda]=0; a[1+lda]=1; a[2+lda]=1; bmat[0]=1; bmat[0+ldb]=1; xexact[0]=1; xexact[1]=2; for(mplapackint i=0;i<m;i++) c[i]=a[i]*xexact[0]+a[i+lda]*xexact[1]; d[0]=3; mpf_class wk; Rgglse(m,n,p,a,lda,bmat,ldb,c,d,x,&wk,lwork,info); lwork=castINTEGER_gmp(wk); mpf_class *work=new mpf_class[lwork]; Rgglse(m,n,p,a,lda,bmat,ldb,c,d,x,work,lwork,info); printf("x = "); printvec(x,n); printf("\n"); printf("constraint B*x-d = "); printnum(x[0]+x[1]-d[0]); printf("\n"); printf("max |x-x_exact| = "); printnum(max_solution_error(n,(mplapackint)1,x,n,xexact,n)); printf("\n"); delete[] work; delete[] xexact; delete[] x; delete[] d; delete[] c; delete[] bmat; delete[] a; return info!=0?1:0; }
+int main() {
+    mplapackint m = 3, n = 2, p = 1, lda = m, ldb = p, info, lwork = -1;
+    mpf_class *a = new mpf_class[lda * n];
+    mpf_class *bmat = new mpf_class[ldb * n];
+    mpf_class *c = new mpf_class[m];
+    mpf_class *d = new mpf_class[p];
+    mpf_class *x = new mpf_class[n];
+    mpf_class *xexact = new mpf_class[n];
+    a[0] = 1;
+    a[1] = 0;
+    a[2] = 1;
+    a[0 + lda] = 0;
+    a[1 + lda] = 1;
+    a[2 + lda] = 1;
+    bmat[0] = 1;
+    bmat[0 + ldb] = 1;
+    xexact[0] = 1;
+    xexact[1] = 2;
+    for (mplapackint i = 0; i < m; i++)
+        c[i] = a[i] * xexact[0] + a[i + lda] * xexact[1];
+    d[0] = 3;
+    mpf_class wk;
+    Rgglse(m, n, p, a, lda, bmat, ldb, c, d, x, &wk, lwork, info);
+    lwork = castINTEGER_gmp(wk);
+    mpf_class *work = new mpf_class[lwork];
+    Rgglse(m, n, p, a, lda, bmat, ldb, c, d, x, work, lwork, info);
+    printf("x = "); printvec(x, n); printf("\n");
+    printf("constraint B*x-d = "); printnum(x[0] + x[1] - d[0]); printf("\n");
+    printf("max |x-x_exact| = "); printnum(max_solution_error(n, (mplapackint)1, x, n, xexact, n)); printf("\n");
+    delete[] work;
+    delete[] xexact;
+    delete[] x;
+    delete[] d;
+    delete[] c;
+    delete[] bmat;
+    delete[] a;
+    return info != 0 ? 1 : 0;
+}

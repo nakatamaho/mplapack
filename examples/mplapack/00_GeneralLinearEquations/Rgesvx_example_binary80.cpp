@@ -103,11 +103,17 @@ int main() {
     mplapack_binary80_t *work = new mplapack_binary80_t[4 * n];
     mplapackint *iwork = new mplapackint[n];
     mplapackint *ipiv = new mplapackint[n];
-    char equed[2]; equed[0] = 'N'; equed[1] = '\0';
+    char equed[2];
+    equed[0] = 'N';
+    equed[1] = '\0';
     mplapack_binary80_t rcond;
     for (mplapackint j = 0; j < n; j++) for (mplapackint i = 0; i < n; i++) a[i + j * lda] = mplapack_binary80_t(1.0) / mplapack_binary80_t(i + j + 1);
     for (mplapackint i = 0; i < n; i++) xexact[i] = (i % 2 == 0) ? mplapack_binary80_t(1.0) : mplapack_binary80_t(-1.0);
-    for (mplapackint i = 0; i < n; i++) { b[i] = 0; for (mplapackint k = 0; k < n; k++) b[i] = b[i] + a[i + k * lda] * xexact[k]; }
+    for (mplapackint i = 0; i < n; i++) {
+        b[i] = 0;
+        for (mplapackint k = 0; k < n; k++)
+            b[i] = b[i] + a[i + k * lda] * xexact[k];
+    }
     printf("A = "); printmat(n, n, a, lda); printf("\n");
     printf("b = "); printvec(b, n); printf("\n");
     Rgesvx("N", "N", n, nrhs, a, lda, af, lda, ipiv, equed, r, c, b, ldb, x, ldb, rcond, ferr, berr, work, iwork, info);
@@ -116,6 +122,17 @@ int main() {
     printf("ferr = "); printvec(ferr, nrhs); printf("\n");
     printf("berr = "); printvec(berr, nrhs); printf("\n");
     printf("max |x-x_exact| = "); printnum(max_solution_error(n, nrhs, x, ldb, xexact, n)); printf("\n");
-    delete[] ipiv; delete[] iwork; delete[] work; delete[] berr; delete[] ferr; delete[] c; delete[] r; delete[] xexact; delete[] x; delete[] b; delete[] af; delete[] a;
+    delete[] ipiv;
+    delete[] iwork;
+    delete[] work;
+    delete[] berr;
+    delete[] ferr;
+    delete[] c;
+    delete[] r;
+    delete[] xexact;
+    delete[] x;
+    delete[] b;
+    delete[] af;
+    delete[] a;
     return info != 0 ? 1 : 0;
 }

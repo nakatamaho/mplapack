@@ -86,15 +86,29 @@ qd_real max_residual(mplapackint m, mplapackint n, mplapackint nrhs, qd_real *a,
 
 int main() {
     mplapackint n = 2, nrhs = 1, lda = n, ldb = n, info;
-    qd_real *a = new qd_real[n * n]; qd_real *aorg = new qd_real[n * n]; qd_real *b = new qd_real[n]; qd_real *borg = new qd_real[n]; qd_real *xexact = new qd_real[n];
+    qd_real *a = new qd_real[n * n];
+    qd_real *aorg = new qd_real[n * n];
+    qd_real *b = new qd_real[n];
+    qd_real *borg = new qd_real[n];
+    qd_real *xexact = new qd_real[n];
     a[0]=4; a[1]=2; a[2]=2; a[3]=5;
     xexact[0]=1; xexact[1]=2;
     for (mplapackint i=0;i<n*n;i++) aorg[i]=a[i];
-    for (mplapackint i=0;i<n;i++){ b[i]=0; for(mplapackint k=0;k<n;k++) b[i]+=aorg[i+k*lda]*xexact[k]; borg[i]=b[i]; }
+    for (mplapackint i = 0; i < n; i++) {
+        b[i] = 0;
+        for (mplapackint k = 0; k < n; k++)
+            b[i] += aorg[i + k * lda] * xexact[k];
+        borg[i] = b[i];
+    }
     printf("A = "); printmat(n,n,aorg,lda); printf("\n");
     Rposv("L", n, nrhs, a, lda, b, ldb, info);
     printf("x = "); printvec(b,n); printf("\n");
     printf("max |x-x_exact| = "); printnum(max_solution_error(n,nrhs,b,ldb,xexact,n)); printf("\n");
     printf("max residual = "); printnum(max_residual(n,n,nrhs,aorg,lda,b,ldb,borg,ldb)); printf("\n");
-    delete[] xexact; delete[] borg; delete[] b; delete[] aorg; delete[] a; return info != 0 ? 1 : 0;
+    delete[] xexact;
+    delete[] borg;
+    delete[] b;
+    delete[] aorg;
+    delete[] a;
+    return info != 0 ? 1 : 0;
 }

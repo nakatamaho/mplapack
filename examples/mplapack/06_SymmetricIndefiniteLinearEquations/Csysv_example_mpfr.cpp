@@ -81,4 +81,43 @@ mpreal max_residual(mplapackint m, mplapackint n, mplapackint nrhs, mpcomplex *a
     return err;
 }
 
-int main(){ mplapackint n=2,nrhs=1,lda=n,ldb=n,info,lwork=-1; mpcomplex *a=new mpcomplex[n*n]; mpcomplex *aorg=new mpcomplex[n*n]; mpcomplex *b=new mpcomplex[n]; mpcomplex *borg=new mpcomplex[n]; mpcomplex *xexact=new mpcomplex[n]; mplapackint *ipiv=new mplapackint[n]; a[0]=mpcomplex(2.0,0.0); a[1]=mpcomplex(1.0,1.0); a[2]=mpcomplex(1.0,1.0); a[3]=mpcomplex(-3.0,0.0); xexact[0]=mpcomplex(1.0,-1.0); xexact[1]=mpcomplex(2.0,1.0); for(mplapackint i=0;i<n*n;i++) aorg[i]=a[i]; for(mplapackint i=0;i<n;i++){ b[i]=mpcomplex(0.0,0.0); for(mplapackint k=0;k<n;k++) b[i]=b[i]+aorg[i+k*lda]*xexact[k]; borg[i]=b[i]; } mpcomplex wk; Csysv("U",n,nrhs,a,lda,ipiv,b,ldb,&wk,lwork,info); lwork=castINTEGER_mpfr(wk.real()); mpcomplex *work=new mpcomplex[lwork]; Csysv("U",n,nrhs,a,lda,ipiv,b,ldb,work,lwork,info); printf("A = "); printmat(n,n,aorg,lda); printf("\n"); printf("x = "); printvec(b,n); printf("\n"); printf("max |x-x_exact| = "); printnum(max_solution_error(n,nrhs,b,ldb,xexact,n)); printf("\n"); printf("max residual = "); printnum(max_residual(n,n,nrhs,aorg,lda,b,ldb,borg,ldb)); printf("\n"); delete[] work; delete[] ipiv; delete[] xexact; delete[] borg; delete[] b; delete[] aorg; delete[] a; return info!=0?1:0; }
+int main() {
+    mplapackint n = 2, nrhs = 1, lda = n, ldb = n, info, lwork = -1;
+    mpcomplex *a = new mpcomplex[n * n];
+    mpcomplex *aorg = new mpcomplex[n * n];
+    mpcomplex *b = new mpcomplex[n];
+    mpcomplex *borg = new mpcomplex[n];
+    mpcomplex *xexact = new mpcomplex[n];
+    mplapackint *ipiv = new mplapackint[n];
+    a[0] = mpcomplex(2.0, 0.0);
+    a[1] = mpcomplex(1.0, 1.0);
+    a[2] = mpcomplex(1.0, 1.0);
+    a[3] = mpcomplex(-3.0, 0.0);
+    xexact[0] = mpcomplex(1.0, -1.0);
+    xexact[1] = mpcomplex(2.0, 1.0);
+    for (mplapackint i = 0; i < n * n; i++)
+        aorg[i] = a[i];
+    for (mplapackint i = 0; i < n; i++) {
+        b[i] = mpcomplex(0.0, 0.0);
+        for (mplapackint k = 0; k < n; k++)
+            b[i] = b[i] + aorg[i + k * lda] * xexact[k];
+        borg[i] = b[i];
+    }
+    mpcomplex wk;
+    Csysv("U", n, nrhs, a, lda, ipiv, b, ldb, &wk, lwork, info);
+    lwork = castINTEGER_mpfr(wk.real());
+    mpcomplex *work = new mpcomplex[lwork];
+    Csysv("U", n, nrhs, a, lda, ipiv, b, ldb, work, lwork, info);
+    printf("A = "); printmat(n, n, aorg, lda); printf("\n");
+    printf("x = "); printvec(b, n); printf("\n");
+    printf("max |x-x_exact| = "); printnum(max_solution_error(n, nrhs, b, ldb, xexact, n)); printf("\n");
+    printf("max residual = "); printnum(max_residual(n, n, nrhs, aorg, lda, b, ldb, borg, ldb)); printf("\n");
+    delete[] work;
+    delete[] ipiv;
+    delete[] xexact;
+    delete[] borg;
+    delete[] b;
+    delete[] aorg;
+    delete[] a;
+    return info != 0 ? 1 : 0;
+}

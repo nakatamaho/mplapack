@@ -73,4 +73,45 @@ mpf_class max_residual(mplapackint m, mplapackint n, mplapackint nrhs, mpf_class
     return err;
 }
 
-int main(){ mplapackint n=3,nrhs=1,lda=n,ldb=n,info,lwork=-1; mpf_class *a=new mpf_class[n*n]; mpf_class *aorg=new mpf_class[n*n]; mpf_class *b=new mpf_class[n]; mpf_class *borg=new mpf_class[n]; mpf_class *xexact=new mpf_class[n]; mplapackint *ipiv=new mplapackint[n]; for(mplapackint i=0;i<n*n;i++) a[i]=0; a[0]=2; a[1+1*lda]=-3; a[2+2*lda]=4; xexact[0]=1; xexact[1]=2; xexact[2]=-1; for(mplapackint i=0;i<n*n;i++) aorg[i]=a[i]; for(mplapackint i=0;i<n;i++){ b[i]=0; for(mplapackint k=0;k<n;k++) b[i]+=aorg[i+k*lda]*xexact[k]; borg[i]=b[i]; } mpf_class wk; Rsysv("U",n,nrhs,a,lda,ipiv,b,ldb,&wk,lwork,info); lwork=castINTEGER_gmp(wk); mpf_class *work=new mpf_class[lwork]; Rsysv("U",n,nrhs,a,lda,ipiv,b,ldb,work,lwork,info); printf("A = "); printmat(n,n,aorg,lda); printf("\n"); printf("x = "); printvec(b,n); printf("\n"); printf("max |x-x_exact| = "); printnum(max_solution_error(n,nrhs,b,ldb,xexact,n)); printf("\n"); printf("max residual = "); printnum(max_residual(n,n,nrhs,aorg,lda,b,ldb,borg,ldb)); printf("\n"); delete[] work; delete[] ipiv; delete[] xexact; delete[] borg; delete[] b; delete[] aorg; delete[] a; return info!=0?1:0; }
+int main() {
+    mplapackint n = 3, nrhs = 1, lda = n, ldb = n, info, lwork = -1;
+    mpf_class *a = new mpf_class[n * n];
+    mpf_class *aorg = new mpf_class[n * n];
+    mpf_class *b = new mpf_class[n];
+    mpf_class *borg = new mpf_class[n];
+    mpf_class *xexact = new mpf_class[n];
+    mplapackint *ipiv = new mplapackint[n];
+    for (mplapackint i = 0; i < n * n; i++)
+        a[i] = 0;
+    a[0] = 2;
+    a[1 + 1 * lda] = -3;
+    a[2 + 2 * lda] = 4;
+    xexact[0] = 1;
+    xexact[1] = 2;
+    xexact[2] = -1;
+    for (mplapackint i = 0; i < n * n; i++)
+        aorg[i] = a[i];
+    for (mplapackint i = 0; i < n; i++) {
+        b[i] = 0;
+        for (mplapackint k = 0; k < n; k++)
+            b[i] += aorg[i + k * lda] * xexact[k];
+        borg[i] = b[i];
+    }
+    mpf_class wk;
+    Rsysv("U", n, nrhs, a, lda, ipiv, b, ldb, &wk, lwork, info);
+    lwork = castINTEGER_gmp(wk);
+    mpf_class *work = new mpf_class[lwork];
+    Rsysv("U", n, nrhs, a, lda, ipiv, b, ldb, work, lwork, info);
+    printf("A = "); printmat(n, n, aorg, lda); printf("\n");
+    printf("x = "); printvec(b, n); printf("\n");
+    printf("max |x-x_exact| = "); printnum(max_solution_error(n, nrhs, b, ldb, xexact, n)); printf("\n");
+    printf("max residual = "); printnum(max_residual(n, n, nrhs, aorg, lda, b, ldb, borg, ldb)); printf("\n");
+    delete[] work;
+    delete[] ipiv;
+    delete[] xexact;
+    delete[] borg;
+    delete[] b;
+    delete[] aorg;
+    delete[] a;
+    return info != 0 ? 1 : 0;
+}

@@ -52,5 +52,41 @@ void printmat(int n, int m, dd_real * a, int lda)
     }
     printf("]");
 }
-dd_real max_solution_error(mplapackint n, dd_real *x, dd_real *xexact){ dd_real err=0; for(mplapackint i=0;i<n;i++){ dd_real d=abs(x[i]-xexact[i]); if(err<d) err=d; } return err; }
-int main(){ mplapackint n=12,lda=n,ldb=n,info; dd_real *a=new dd_real[n*n]; dd_real *aorg=new dd_real[n*n]; dd_real *b=new dd_real[n]; dd_real *xexact=new dd_real[n]; mplapackint *ipiv=new mplapackint[n]; for(mplapackint j=0;j<n;j++) for(mplapackint i=0;i<n;i++){ a[i+j*lda]=dd_real(1.0)/dd_real(i+j+1); aorg[i+j*lda]=a[i+j*lda]; } for(mplapackint i=0;i<n;i++) xexact[i]=(i%2==0)?dd_real(1.0):dd_real(-1.0); for(mplapackint i=0;i<n;i++){ b[i]=0; for(mplapackint k=0;k<n;k++) b[i]=b[i]+aorg[i+k*lda]*xexact[k]; } printf("Hilbert n = %ld\n",(long)n); Rgesv(n,(mplapackint)1,a,lda,ipiv,b,ldb,info); printf("max |x-x_exact| = "); printnum(max_solution_error(n,b,xexact)); printf("\n"); delete[] ipiv; delete[] xexact; delete[] b; delete[] aorg; delete[] a; return info!=0?1:0; }
+dd_real max_solution_error(mplapackint n, dd_real *x, dd_real *xexact) {
+    dd_real err = 0;
+    for (mplapackint i = 0; i < n; i++) {
+        dd_real d = abs(x[i] - xexact[i]);
+        if (err < d)
+            err = d;
+    }
+    return err;
+}
+int main() {
+    mplapackint n = 12, lda = n, ldb = n, info;
+    dd_real *a = new dd_real[n * n];
+    dd_real *aorg = new dd_real[n * n];
+    dd_real *b = new dd_real[n];
+    dd_real *xexact = new dd_real[n];
+    mplapackint *ipiv = new mplapackint[n];
+    for (mplapackint j = 0; j < n; j++)
+        for (mplapackint i = 0; i < n; i++) {
+            a[i + j * lda] = dd_real(1.0) / dd_real(i + j + 1);
+            aorg[i + j * lda] = a[i + j * lda];
+        }
+    for (mplapackint i = 0; i < n; i++)
+        xexact[i] = (i % 2 == 0) ? dd_real(1.0) : dd_real(-1.0);
+    for (mplapackint i = 0; i < n; i++) {
+        b[i] = 0;
+        for (mplapackint k = 0; k < n; k++)
+            b[i] = b[i] + aorg[i + k * lda] * xexact[k];
+    }
+    printf("Hilbert n = %ld\n", (long)n);
+    Rgesv(n, (mplapackint)1, a, lda, ipiv, b, ldb, info);
+    printf("max |x-x_exact| = "); printnum(max_solution_error(n, b, xexact)); printf("\n");
+    delete[] ipiv;
+    delete[] xexact;
+    delete[] b;
+    delete[] aorg;
+    delete[] a;
+    return info != 0 ? 1 : 0;
+}

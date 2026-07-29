@@ -78,4 +78,50 @@ mpreal max_residual(mplapackint m, mplapackint n, mplapackint nrhs, mpreal *a, m
     return err;
 }
 
-int main(){ mplapackint n=3,m=2,p=3,lda=n,ldb=n,info,lwork=-1; mpreal *a=new mpreal[lda*m]; mpreal *b=new mpreal[ldb*p]; mpreal *d=new mpreal[n]; mpreal *x=new mpreal[m]; mpreal *y=new mpreal[p]; mpreal *xexact=new mpreal[m]; mpreal *yexact=new mpreal[p]; for(mplapackint i=0;i<lda*m;i++) a[i]=0; a[0]=1; a[1]=0; a[2]=1; a[0+lda]=0; a[1+lda]=1; a[2+lda]=1; for(mplapackint i=0;i<ldb*p;i++) b[i]=0; for(mplapackint i=0;i<n;i++) b[i+i*ldb]=1; xexact[0]=1; xexact[1]=2; yexact[0]=mpreal(0.5); yexact[1]=mpreal(-0.5); yexact[2]=1; for(mplapackint i=0;i<n;i++) d[i]=a[i]*xexact[0]+a[i+lda]*xexact[1]+yexact[i]; mpreal wk; Rggglm(n,m,p,a,lda,b,ldb,d,x,y,&wk,lwork,info); lwork=castINTEGER_mpfr(wk); mpreal *work=new mpreal[lwork]; Rggglm(n,m,p,a,lda,b,ldb,d,x,y,work,lwork,info); printf("x = "); printvec(x,m); printf("\n"); printf("y = "); printvec(y,p); printf("\n"); printf("max |x-x_exact| = "); printnum(max_solution_error(m,(mplapackint)1,x,m,xexact,m)); printf("\n"); printf("max |y-y_exact| = "); printnum(max_solution_error(p,(mplapackint)1,y,p,yexact,p)); printf("\n"); delete[] work; delete[] yexact; delete[] xexact; delete[] y; delete[] x; delete[] d; delete[] b; delete[] a; return info!=0?1:0; }
+int main() {
+    mplapackint n = 3, m = 2, p = 3, lda = n, ldb = n, info, lwork = -1;
+    mpreal *a = new mpreal[lda * m];
+    mpreal *b = new mpreal[ldb * p];
+    mpreal *d = new mpreal[n];
+    mpreal *x = new mpreal[m];
+    mpreal *y = new mpreal[p];
+    mpreal *xexact = new mpreal[m];
+    mpreal *yexact = new mpreal[p];
+    for (mplapackint i = 0; i < lda * m; i++)
+        a[i] = 0;
+    a[0] = 1;
+    a[1] = 0;
+    a[2] = 1;
+    a[0 + lda] = 0;
+    a[1 + lda] = 1;
+    a[2 + lda] = 1;
+    for (mplapackint i = 0; i < ldb * p; i++)
+        b[i] = 0;
+    for (mplapackint i = 0; i < n; i++)
+        b[i + i * ldb] = 1;
+    xexact[0] = 1;
+    xexact[1] = 2;
+    yexact[0] = mpreal(0.5);
+    yexact[1] = mpreal(-0.5);
+    yexact[2] = 1;
+    for (mplapackint i = 0; i < n; i++)
+        d[i] = a[i] * xexact[0] + a[i + lda] * xexact[1] + yexact[i];
+    mpreal wk;
+    Rggglm(n, m, p, a, lda, b, ldb, d, x, y, &wk, lwork, info);
+    lwork = castINTEGER_mpfr(wk);
+    mpreal *work = new mpreal[lwork];
+    Rggglm(n, m, p, a, lda, b, ldb, d, x, y, work, lwork, info);
+    printf("x = "); printvec(x, m); printf("\n");
+    printf("y = "); printvec(y, p); printf("\n");
+    printf("max |x-x_exact| = "); printnum(max_solution_error(m, (mplapackint)1, x, m, xexact, m)); printf("\n");
+    printf("max |y-y_exact| = "); printnum(max_solution_error(p, (mplapackint)1, y, p, yexact, p)); printf("\n");
+    delete[] work;
+    delete[] yexact;
+    delete[] xexact;
+    delete[] y;
+    delete[] x;
+    delete[] d;
+    delete[] b;
+    delete[] a;
+    return info != 0 ? 1 : 0;
+}

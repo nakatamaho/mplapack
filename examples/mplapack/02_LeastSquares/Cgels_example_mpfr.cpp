@@ -82,9 +82,42 @@ mpreal max_residual(mplapackint m, mplapackint n, mplapackint nrhs, mpcomplex *a
 }
 
 void set_problem(mplapackint m, mplapackint n, mpcomplex *a, mplapackint lda, mpcomplex *b, mplapackint ldb, mpcomplex *xexact) {
-    for (mplapackint i = 0; i < m; i++) { a[i + 0 * lda] = mpcomplex(1.0, 0.0); a[i + 1 * lda] = mpcomplex(i, 1.0); }
-    xexact[0] = mpcomplex(1.0, -1.0); xexact[1] = mpcomplex(2.0, 1.0);
-    for (mplapackint i = 0; i < m; i++) b[i] = a[i + 0 * lda] * xexact[0] + a[i + 1 * lda] * xexact[1];
+    for (mplapackint i = 0; i < m; i++) {
+        a[i + 0 * lda] = mpcomplex(1.0, 0.0);
+        a[i + 1 * lda] = mpcomplex(i, 1.0);
+    }
+    xexact[0] = mpcomplex(1.0, -1.0);
+    xexact[1] = mpcomplex(2.0, 1.0);
+    for (mplapackint i = 0; i < m; i++)
+        b[i] = a[i + 0 * lda] * xexact[0] + a[i + 1 * lda] * xexact[1];
 }
 
-int main(){ mplapackint m=4,n=2,nrhs=1,lda=m,ldb=m,info,lwork=-1; mpcomplex *a=new mpcomplex[lda*n]; mpcomplex *aorg=new mpcomplex[lda*n]; mpcomplex *b=new mpcomplex[ldb]; mpcomplex *borg=new mpcomplex[ldb]; mpcomplex *xexact=new mpcomplex[n]; set_problem(m,n,a,lda,b,ldb,xexact); for(mplapackint i=0;i<lda*n;i++) aorg[i]=a[i]; for(mplapackint i=0;i<ldb;i++) borg[i]=b[i]; mpcomplex wk; Cgels("N",m,n,nrhs,a,lda,b,ldb,&wk,lwork,info); lwork=castINTEGER_mpfr(wk.real()); mpcomplex *work=new mpcomplex[lwork]; Cgels("N",m,n,nrhs,a,lda,b,ldb,work,lwork,info); printf("A = "); printmat(m,n,aorg,lda); printf("\n"); printf("x = "); printvec(b,n); printf("\n"); printf("max |x-x_exact| = "); printnum(max_solution_error(n,nrhs,b,ldb,xexact,n)); printf("\n"); printf("max residual = "); printnum(max_residual(m,n,nrhs,aorg,lda,b,ldb,borg,ldb)); printf("\n"); delete[] work; delete[] xexact; delete[] borg; delete[] b; delete[] aorg; delete[] a; return info!=0?1:0; }
+int main() {
+    mplapackint m = 4, n = 2, nrhs = 1, lda = m, ldb = m, info, lwork = -1;
+    mpcomplex *a = new mpcomplex[lda * n];
+    mpcomplex *aorg = new mpcomplex[lda * n];
+    mpcomplex *b = new mpcomplex[ldb];
+    mpcomplex *borg = new mpcomplex[ldb];
+    mpcomplex *xexact = new mpcomplex[n];
+    set_problem(m, n, a, lda, b, ldb, xexact);
+    for (mplapackint i = 0; i < lda * n; i++)
+        aorg[i] = a[i];
+    for (mplapackint i = 0; i < ldb; i++)
+        borg[i] = b[i];
+    mpcomplex wk;
+    Cgels("N", m, n, nrhs, a, lda, b, ldb, &wk, lwork, info);
+    lwork = castINTEGER_mpfr(wk.real());
+    mpcomplex *work = new mpcomplex[lwork];
+    Cgels("N", m, n, nrhs, a, lda, b, ldb, work, lwork, info);
+    printf("A = "); printmat(m, n, aorg, lda); printf("\n");
+    printf("x = "); printvec(b, n); printf("\n");
+    printf("max |x-x_exact| = "); printnum(max_solution_error(n, nrhs, b, ldb, xexact, n)); printf("\n");
+    printf("max residual = "); printnum(max_residual(m, n, nrhs, aorg, lda, b, ldb, borg, ldb)); printf("\n");
+    delete[] work;
+    delete[] xexact;
+    delete[] borg;
+    delete[] b;
+    delete[] aorg;
+    delete[] a;
+    return info != 0 ? 1 : 0;
+}

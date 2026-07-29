@@ -41,4 +41,48 @@ void printmat(int n, int m, mpf_class * a, int lda)
     }
     printf("]");
 }
-int main(){ mplapackint n=12,m=n,lda=m,info,lwork=-1; mpf_class theta=mpf_class(0.1), c=cos(theta), s=sin(theta); mpf_class *a=new mpf_class[m*n]; mpf_class *asvd=new mpf_class[m*n]; mpf_class *aqr=new mpf_class[m*n]; for(mplapackint j=0;j<n;j++) for(mplapackint i=0;i<m;i++){ mpf_class scale=pow(s,mpf_class(i)); mpf_class val=(i==j)?mpf_class(1.0):((i<j)?-c:mpf_class(0.0)); a[i+j*lda]=scale*val; asvd[i+j*lda]=a[i+j*lda]; aqr[i+j*lda]=a[i+j*lda]; } mpf_class *sigma=new mpf_class[n]; mpf_class *u=new mpf_class[1]; mpf_class *vt=new mpf_class[1]; mpf_class wk; Rgesvd("N","N",m,n,asvd,lda,sigma,u,(mplapackint)1,vt,(mplapackint)1,&wk,lwork,info); lwork=castINTEGER_gmp(wk); mpf_class *work=new mpf_class[lwork]; Rgesvd("N","N",m,n,asvd,lda,sigma,u,(mplapackint)1,vt,(mplapackint)1,work,lwork,info); delete[] work; mplapackint *jpvt=new mplapackint[n]; mpf_class *tau=new mpf_class[n]; for(mplapackint i=0;i<n;i++) jpvt[i]=0; lwork=-1; Rgeqp3(m,n,aqr,lda,jpvt,tau,&wk,lwork,info); lwork=castINTEGER_gmp(wk); work=new mpf_class[lwork]; Rgeqp3(m,n,aqr,lda,jpvt,tau,work,lwork,info); printf("smallest singular value = "); printnum(sigma[n-1]); printf("\n"); printf("|R(n,n)| from Rgeqp3 = "); printnum(abs(aqr[n-1+(n-1)*lda])); printf("\n"); delete[] work; delete[] tau; delete[] jpvt; delete[] vt; delete[] u; delete[] sigma; delete[] aqr; delete[] asvd; delete[] a; return info!=0?1:0; }
+int main() {
+    mplapackint n = 12, m = n, lda = m, info, lwork = -1;
+    mpf_class theta = mpf_class(0.1), c = cos(theta), s = sin(theta);
+    mpf_class *a = new mpf_class[m * n];
+    mpf_class *asvd = new mpf_class[m * n];
+    mpf_class *aqr = new mpf_class[m * n];
+    for (mplapackint j = 0; j < n; j++)
+        for (mplapackint i = 0; i < m; i++) {
+            mpf_class scale = pow(s, mpf_class(i));
+            mpf_class val = (i == j) ? mpf_class(1.0) : ((i < j) ? -c : mpf_class(0.0));
+            a[i + j * lda] = scale * val;
+            asvd[i + j * lda] = a[i + j * lda];
+            aqr[i + j * lda] = a[i + j * lda];
+        }
+    mpf_class *sigma = new mpf_class[n];
+    mpf_class *u = new mpf_class[1];
+    mpf_class *vt = new mpf_class[1];
+    mpf_class wk;
+    Rgesvd("N", "N", m, n, asvd, lda, sigma, u, (mplapackint)1, vt, (mplapackint)1, &wk, lwork, info);
+    lwork = castINTEGER_gmp(wk);
+    mpf_class *work = new mpf_class[lwork];
+    Rgesvd("N", "N", m, n, asvd, lda, sigma, u, (mplapackint)1, vt, (mplapackint)1, work, lwork, info);
+    delete[] work;
+    mplapackint *jpvt = new mplapackint[n];
+    mpf_class *tau = new mpf_class[n];
+    for (mplapackint i = 0; i < n; i++)
+        jpvt[i] = 0;
+    lwork = -1;
+    Rgeqp3(m, n, aqr, lda, jpvt, tau, &wk, lwork, info);
+    lwork = castINTEGER_gmp(wk);
+    work = new mpf_class[lwork];
+    Rgeqp3(m, n, aqr, lda, jpvt, tau, work, lwork, info);
+    printf("smallest singular value = "); printnum(sigma[n - 1]); printf("\n");
+    printf("|R(n,n)| from Rgeqp3 = "); printnum(abs(aqr[n - 1 + (n - 1) * lda])); printf("\n");
+    delete[] work;
+    delete[] tau;
+    delete[] jpvt;
+    delete[] vt;
+    delete[] u;
+    delete[] sigma;
+    delete[] aqr;
+    delete[] asvd;
+    delete[] a;
+    return info != 0 ? 1 : 0;
+}

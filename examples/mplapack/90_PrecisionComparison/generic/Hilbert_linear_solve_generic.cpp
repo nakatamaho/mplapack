@@ -1,2 +1,38 @@
-REAL max_solution_error(INTEGER n, REAL *x, REAL *xexact){ REAL err=0; for(INTEGER i=0;i<n;i++){ REAL d=abs(x[i]-xexact[i]); if(err<d) err=d; } return err; }
-int main(){ INTEGER n=12,lda=n,ldb=n,info; REAL *a=new REAL[n*n]; REAL *aorg=new REAL[n*n]; REAL *b=new REAL[n]; REAL *xexact=new REAL[n]; INTEGER *ipiv=new INTEGER[n]; for(INTEGER j=0;j<n;j++) for(INTEGER i=0;i<n;i++){ a[i+j*lda]=REAL(1.0)/REAL(i+j+1); aorg[i+j*lda]=a[i+j*lda]; } for(INTEGER i=0;i<n;i++) xexact[i]=(i%2==0)?REAL(1.0):REAL(-1.0); for(INTEGER i=0;i<n;i++){ b[i]=0; for(INTEGER k=0;k<n;k++) b[i]=b[i]+aorg[i+k*lda]*xexact[k]; } printf("Hilbert n = %ld\n",(long)n); Rgesv(n,(INTEGER)1,a,lda,ipiv,b,ldb,info); printf("max |x-x_exact| = "); printnum(max_solution_error(n,b,xexact)); printf("\n"); delete[] ipiv; delete[] xexact; delete[] b; delete[] aorg; delete[] a; return info!=0?1:0; }
+REAL max_solution_error(INTEGER n, REAL *x, REAL *xexact) {
+    REAL err = 0;
+    for (INTEGER i = 0; i < n; i++) {
+        REAL d = abs(x[i] - xexact[i]);
+        if (err < d)
+            err = d;
+    }
+    return err;
+}
+int main() {
+    INTEGER n = 12, lda = n, ldb = n, info;
+    REAL *a = new REAL[n * n];
+    REAL *aorg = new REAL[n * n];
+    REAL *b = new REAL[n];
+    REAL *xexact = new REAL[n];
+    INTEGER *ipiv = new INTEGER[n];
+    for (INTEGER j = 0; j < n; j++)
+        for (INTEGER i = 0; i < n; i++) {
+            a[i + j * lda] = REAL(1.0) / REAL(i + j + 1);
+            aorg[i + j * lda] = a[i + j * lda];
+        }
+    for (INTEGER i = 0; i < n; i++)
+        xexact[i] = (i % 2 == 0) ? REAL(1.0) : REAL(-1.0);
+    for (INTEGER i = 0; i < n; i++) {
+        b[i] = 0;
+        for (INTEGER k = 0; k < n; k++)
+            b[i] = b[i] + aorg[i + k * lda] * xexact[k];
+    }
+    printf("Hilbert n = %ld\n", (long)n);
+    Rgesv(n, (INTEGER)1, a, lda, ipiv, b, ldb, info);
+    printf("max |x-x_exact| = "); printnum(max_solution_error(n, b, xexact)); printf("\n");
+    delete[] ipiv;
+    delete[] xexact;
+    delete[] b;
+    delete[] aorg;
+    delete[] a;
+    return info != 0 ? 1 : 0;
+}

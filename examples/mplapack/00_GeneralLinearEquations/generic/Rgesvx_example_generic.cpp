@@ -44,11 +44,17 @@ int main() {
     REAL *work = new REAL[4 * n];
     INTEGER *iwork = new INTEGER[n];
     INTEGER *ipiv = new INTEGER[n];
-    char equed[2]; equed[0] = 'N'; equed[1] = '\0';
+    char equed[2];
+    equed[0] = 'N';
+    equed[1] = '\0';
     REAL rcond;
     for (INTEGER j = 0; j < n; j++) for (INTEGER i = 0; i < n; i++) a[i + j * lda] = REAL(1.0) / REAL(i + j + 1);
     for (INTEGER i = 0; i < n; i++) xexact[i] = (i % 2 == 0) ? REAL(1.0) : REAL(-1.0);
-    for (INTEGER i = 0; i < n; i++) { b[i] = 0; for (INTEGER k = 0; k < n; k++) b[i] = b[i] + a[i + k * lda] * xexact[k]; }
+    for (INTEGER i = 0; i < n; i++) {
+        b[i] = 0;
+        for (INTEGER k = 0; k < n; k++)
+            b[i] = b[i] + a[i + k * lda] * xexact[k];
+    }
     printf("A = "); printmat(n, n, a, lda); printf("\n");
     printf("b = "); printvec(b, n); printf("\n");
     Rgesvx("N", "N", n, nrhs, a, lda, af, lda, ipiv, equed, r, c, b, ldb, x, ldb, rcond, ferr, berr, work, iwork, info);
@@ -57,6 +63,17 @@ int main() {
     printf("ferr = "); printvec(ferr, nrhs); printf("\n");
     printf("berr = "); printvec(berr, nrhs); printf("\n");
     printf("max |x-x_exact| = "); printnum(max_solution_error(n, nrhs, x, ldb, xexact, n)); printf("\n");
-    delete[] ipiv; delete[] iwork; delete[] work; delete[] berr; delete[] ferr; delete[] c; delete[] r; delete[] xexact; delete[] x; delete[] b; delete[] af; delete[] a;
+    delete[] ipiv;
+    delete[] iwork;
+    delete[] work;
+    delete[] berr;
+    delete[] ferr;
+    delete[] c;
+    delete[] r;
+    delete[] xexact;
+    delete[] x;
+    delete[] b;
+    delete[] af;
+    delete[] a;
     return info != 0 ? 1 : 0;
 }

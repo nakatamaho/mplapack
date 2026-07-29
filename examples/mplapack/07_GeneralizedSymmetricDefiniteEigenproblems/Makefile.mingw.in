@@ -16,12 +16,36 @@ BLAS=
 LAPACK=
 FLIBS=
 
-programs=Chegv_example_mpfr.exe Chegv_example_gmp.exe Chegv_example_qd.exe Chegv_example_dd.exe Chegv_example_binary80.exe Chegv_example_binary128.exe Chegv_example_double.exe
+programs=Chegv_example_mpfr.exe Chegv_example_gmp.exe Chegv_example_qd.exe Chegv_example_dd.exe Chegv_example_binary80.exe Chegv_example_binary128.exe Chegv_example_double.exe Rsygv_example_mpfr.exe Rsygv_example_gmp.exe Rsygv_example_qd.exe Rsygv_example_dd.exe Rsygv_example_binary80.exe Rsygv_example_binary128.exe Rsygv_example_double.exe
 
 all: $(programs)
 
 .cpp.o:
 	$(CXX) -c $(OPTFLAGS) $(CXXFLAGS) $<
+
+Rsygv_example_mpfr.exe: Rsygv_example_mpfr.o
+	$(CXX) -o Rsygv_example_mpfr.exe Rsygv_example_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
+
+Rsygv_example_gmp.exe: Rsygv_example_gmp.o
+	$(CXX) -o Rsygv_example_gmp.exe Rsygv_example_gmp.o $(LIBFLAGS) $(GMPLIBS)
+
+Rsygv_example_qd.exe: Rsygv_example_qd.o
+	$(CXX) -o Rsygv_example_qd.exe Rsygv_example_qd.o $(LIBFLAGS) $(QDLIBS)
+
+Rsygv_example_dd.exe: Rsygv_example_dd.o
+	$(CXX) -o Rsygv_example_dd.exe Rsygv_example_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Rsygv_example_binary80.exe: Rsygv_example_binary80.o
+	$(CXX) -o Rsygv_example_binary80 Rsygv_example_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
+
+Rsygv_example_binary128.exe: Rsygv_example_binary128.o
+	$(CXX) -o Rsygv_example_binary128 Rsygv_example_binary128.o $(LIBFLAGS) $(BINARY128LIBS)
+
+Rsygv_example_double.exe: Rsygv_example_double.o
+	$(CXX) -o Rsygv_example_double Rsygv_example_double.o $(LIBFLAGS) $(DOUBLELIBS)
+
+clean:
+	rm -rf *.o *~ $(programs) *bak
 
 Chegv_example_mpfr.exe: Chegv_example_mpfr.o
 	$(CXX) -o Chegv_example_mpfr.exe Chegv_example_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
@@ -36,13 +60,10 @@ Chegv_example_dd.exe: Chegv_example_dd.o
 	$(CXX) -o Chegv_example_dd.exe Chegv_example_dd.o $(LIBFLAGS) $(DDLIBS)
 
 Chegv_example_binary80.exe: Chegv_example_binary80.o
-	$(CXX) -o Chegv_example_binary80 Chegv_example_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
+	$(CXX) -o Chegv_example_binary80.exe Chegv_example_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
 
 Chegv_example_binary128.exe: Chegv_example_binary128.o
-	$(CXX) -o Chegv_example_binary128 Chegv_example_binary128.o $(LIBFLAGS) $(BINARY128LIBS)
+	$(CXX) -o Chegv_example_binary128.exe Chegv_example_binary128.o $(LIBFLAGS) $(BINARY128LIBS)
 
 Chegv_example_double.exe: Chegv_example_double.o
-	$(CXX) -o Chegv_example_double Chegv_example_double.o $(LIBFLAGS) $(DOUBLELIBS)
-
-clean:
-	rm -rf *.o *~ $(programs) *bak
+	$(CXX) -o Chegv_example_double.exe Chegv_example_double.o $(LIBFLAGS) $(DOUBLELIBS)

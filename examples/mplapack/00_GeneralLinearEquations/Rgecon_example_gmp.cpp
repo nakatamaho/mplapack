@@ -75,12 +75,24 @@ mpf_class max_residual(mplapackint m, mplapackint n, mplapackint nrhs, mpf_class
 
 mpf_class one_norm(mplapackint n, mpf_class *a, mplapackint lda) {
     mpf_class anorm = 0.0;
-    for (mplapackint j = 0; j < n; j++) { mpf_class s = 0.0; for (mplapackint i = 0; i < n; i++) s = s + abs(a[i + j * lda]); if (anorm < s) anorm = s; }
+    for (mplapackint j = 0; j < n; j++) {
+        mpf_class s = 0.0;
+        for (mplapackint i = 0; i < n; i++)
+            s = s + abs(a[i + j * lda]);
+        if (anorm < s)
+            anorm = s;
+    }
     return anorm;
 }
 mpf_class inf_norm(mplapackint n, mpf_class *a, mplapackint lda) {
     mpf_class anorm = 0.0;
-    for (mplapackint i = 0; i < n; i++) { mpf_class s = 0.0; for (mplapackint j = 0; j < n; j++) s = s + abs(a[i + j * lda]); if (anorm < s) anorm = s; }
+    for (mplapackint i = 0; i < n; i++) {
+        mpf_class s = 0.0;
+        for (mplapackint j = 0; j < n; j++)
+            s = s + abs(a[i + j * lda]);
+        if (anorm < s)
+            anorm = s;
+    }
     return anorm;
 }
 int main() {
@@ -101,6 +113,10 @@ int main() {
     printf("true cond_1 = "); printnum(mpf_class(1.0e6)); printf("\n");
     printf("rcond_1 = "); printnum(rcond1); printf("\n");
     printf("rcond_inf = "); printnum(rcondi); printf("\n");
-    delete[] ipiv; delete[] iwork; delete[] work; delete[] lu; delete[] a;
+    delete[] ipiv;
+    delete[] iwork;
+    delete[] work;
+    delete[] lu;
+    delete[] a;
     return info != 0 ? 1 : 0;
 }

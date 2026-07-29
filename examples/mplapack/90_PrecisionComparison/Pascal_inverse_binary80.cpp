@@ -57,6 +57,41 @@ void printmat(int n, int m, mplapack_binary80_t *a, int lda)
     }
     printf("]");
 }
-mplapack_binary80_t binom(mplapackint n, mplapackint k){ mplapack_binary80_t r=1; for(mplapackint i=1;i<=k;i++) r=r*mplapack_binary80_t(n-k+i)/mplapack_binary80_t(i); return r; }
-mplapack_binary80_t nearest_integer_error(mplapack_binary80_t x){ mplapack_binary80_t f=floor(x); mplapack_binary80_t c=f+1; mplapack_binary80_t df=abs(x-f); mplapack_binary80_t dc=abs(x-c); return df<dc?df:dc; }
-int main(){ mplapackint n=8,lda=n,info,lwork=-1; mplapack_binary80_t *a=new mplapack_binary80_t[n*n]; mplapackint *ipiv=new mplapackint[n]; for(mplapackint j=0;j<n;j++) for(mplapackint i=0;i<n;i++) a[i+j*lda]=binom(i+j,i); Rgetrf(n,n,a,lda,ipiv,info); mplapack_binary80_t wk; if(info==0) Rgetri(n,a,lda,ipiv,&wk,lwork,info); lwork=castINTEGER_binary80(wk); mplapack_binary80_t *work=new mplapack_binary80_t[lwork]; if(info==0) Rgetri(n,a,lda,ipiv,work,lwork,info); mplapack_binary80_t err=0; for(mplapackint i=0;i<n*n;i++){ mplapack_binary80_t d=nearest_integer_error(a[i]); if(err<d) err=d; } printf("P inverse = "); printmat(n,n,a,lda); printf("\n"); printf("max distance to integer = "); printnum(err); printf("\n"); delete[] work; delete[] ipiv; delete[] a; return info!=0?1:0; }
+mplapack_binary80_t binom(mplapackint n, mplapackint k) {
+    mplapack_binary80_t r = 1;
+    for (mplapackint i = 1; i <= k; i++)
+        r = r * mplapack_binary80_t(n - k + i) / mplapack_binary80_t(i);
+    return r;
+}
+mplapack_binary80_t nearest_integer_error(mplapack_binary80_t x) {
+    mplapackint nearest = castINTEGER_binary80(x >= mplapack_binary80_t(0.0) ? x + mplapack_binary80_t(0.5) : x - mplapack_binary80_t(0.5));
+    return abs(x - mplapack_binary80_t(nearest));
+}
+int main() {
+    mplapackint n = 8, lda = n, info, lwork = -1;
+    mplapack_binary80_t *a = new mplapack_binary80_t[n * n];
+    mplapackint *ipiv = new mplapackint[n];
+    for (mplapackint j = 0; j < n; j++)
+        for (mplapackint i = 0; i < n; i++)
+            a[i + j * lda] = binom(i + j, i);
+    Rgetrf(n, n, a, lda, ipiv, info);
+    mplapack_binary80_t wk;
+    if (info == 0)
+        Rgetri(n, a, lda, ipiv, &wk, lwork, info);
+    lwork = castINTEGER_binary80(wk);
+    mplapack_binary80_t *work = new mplapack_binary80_t[lwork];
+    if (info == 0)
+        Rgetri(n, a, lda, ipiv, work, lwork, info);
+    mplapack_binary80_t err = 0;
+    for (mplapackint i = 0; i < n * n; i++) {
+        mplapack_binary80_t d = nearest_integer_error(a[i]);
+        if (err < d)
+            err = d;
+    }
+    printf("P inverse = "); printmat(n, n, a, lda); printf("\n");
+    printf("max distance to integer = "); printnum(err); printf("\n");
+    delete[] work;
+    delete[] ipiv;
+    delete[] a;
+    return info != 0 ? 1 : 0;
+}

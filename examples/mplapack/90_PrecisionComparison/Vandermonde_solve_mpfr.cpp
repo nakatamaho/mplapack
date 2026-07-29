@@ -46,5 +46,41 @@ void printmat(int n, int m, mpreal *a, int lda) {
     printf("]");
 }
 
-mpreal max_solution_error(mplapackint n, mpreal *x, mpreal *xexact){ mpreal err=0; for(mplapackint i=0;i<n;i++){ mpreal d=abs(x[i]-xexact[i]); if(err<d) err=d; } return err; }
-int main(){ mplapackint n=15,lda=n,ldb=n,info; mpreal *a=new mpreal[n*n]; mpreal *b=new mpreal[n]; mpreal *xexact=new mpreal[n]; mplapackint *ipiv=new mplapackint[n]; for(mplapackint j=0;j<n;j++) xexact[j]=mpreal(j%3-1); for(mplapackint i=0;i<n;i++){ mpreal node=mpreal(i+1); mpreal p=1; for(mplapackint j=0;j<n;j++){ a[i+j*lda]=p; p=p*node; }} for(mplapackint i=0;i<n;i++){ b[i]=0; for(mplapackint j=0;j<n;j++) b[i]=b[i]+a[i+j*lda]*xexact[j]; } Rgesv(n,(mplapackint)1,a,lda,ipiv,b,ldb,info); printf("max |x-x_exact| = "); printnum(max_solution_error(n,b,xexact)); printf("\n"); delete[] ipiv; delete[] xexact; delete[] b; delete[] a; return info!=0?1:0; }
+mpreal max_solution_error(mplapackint n, mpreal *x, mpreal *xexact) {
+    mpreal err = 0;
+    for (mplapackint i = 0; i < n; i++) {
+        mpreal d = abs(x[i] - xexact[i]);
+        if (err < d)
+            err = d;
+    }
+    return err;
+}
+int main() {
+    mplapackint n = 15, lda = n, ldb = n, info;
+    mpreal *a = new mpreal[n * n];
+    mpreal *b = new mpreal[n];
+    mpreal *xexact = new mpreal[n];
+    mplapackint *ipiv = new mplapackint[n];
+    for (mplapackint j = 0; j < n; j++)
+        xexact[j] = mpreal(j % 3 - 1);
+    for (mplapackint i = 0; i < n; i++) {
+        mpreal node = mpreal(i + 1);
+        mpreal p = 1;
+        for (mplapackint j = 0; j < n; j++) {
+            a[i + j * lda] = p;
+            p = p * node;
+        }
+    }
+    for (mplapackint i = 0; i < n; i++) {
+        b[i] = 0;
+        for (mplapackint j = 0; j < n; j++)
+            b[i] = b[i] + a[i + j * lda] * xexact[j];
+    }
+    Rgesv(n, (mplapackint)1, a, lda, ipiv, b, ldb, info);
+    printf("max |x-x_exact| = "); printnum(max_solution_error(n, b, xexact)); printf("\n");
+    delete[] ipiv;
+    delete[] xexact;
+    delete[] b;
+    delete[] a;
+    return info != 0 ? 1 : 0;
+}
