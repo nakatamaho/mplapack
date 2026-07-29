@@ -9,7 +9,24 @@ GMPFRXX_MKII_DEPS = -DCMAKE_PREFIX_PATH="$(abs_builddir)/../i/GMP;$(abs_builddir
 
 all: $(GMPFRXX_MKII_INTERNAL_PREFIX)/.extract_done
 $(GMPFRXX_MKII_WORK)/.verify_done:
-	@set -e; cd $(abs_srcdir)/..; sha256sum -c distfiles.sha256 --ignore-missing --status; mkdir -p $(GMPFRXX_MKII_WORK); touch $@
+	@set -e; \
+	distfile="gmpfrxx_mkII/download/$(GMPFRXX_MKII_DISTFILE)"; \
+	cd "$(abs_srcdir)/.." && \
+	entry=`awk -v f="$$distfile" '$$2 == f { print $$0 }' distfiles.sha256`; \
+	if test -z "$$entry"; then \
+		echo "error: no SHA256 checksum recorded for $$distfile" >&2; \
+		exit 1; \
+	fi; \
+	if command -v sha256sum >/dev/null 2>&1; then \
+		printf '%s\n' "$$entry" | sha256sum -c -; \
+	elif command -v shasum >/dev/null 2>&1; then \
+		printf '%s\n' "$$entry" | shasum -a 256 -c -; \
+	else \
+		echo "error: no SHA256 checksum tool found (sha256sum or shasum)" >&2; \
+		exit 1; \
+	fi; \
+	mkdir -p $(GMPFRXX_MKII_WORK); \
+	touch $@
 $(GMPFRXX_MKII_INTERNAL_PREFIX)/.extract_done: $(GMPFRXX_MKII_WORK)/.verify_done
 	rm -rf $(GMPFRXX_MKII_INTERNAL_PREFIX)
 	mkdir -p $(GMPFRXX_MKII_INTERNAL_PREFIX)
