@@ -1,0 +1,44 @@
+#public domain
+CXX=g++-10
+MPLAPACKDIR=%%MPLAPACKDIR%%
+CXXFLAGS= -I$(MPLAPACKDIR)/include -I$(MPLAPACKDIR)/include/mplapack -I$(MPLAPACKDIR)/include/qd
+OPTFLAGS= -O2
+LIBFLAGS=-L$(MPLAPACKDIR)/lib -Wl,--rpath=$(MPLAPACKDIR)/lib
+MPFRLIBS=-lmplapack_mpfr -lmpfr -lmpc -lgmp
+GMPLIBS=-lmplapack_gmp -lgmpxx -lgmp
+QDLIBS=-lmplapack_qd -lqd
+DDLIBS=-lmplapack_dd -lqd
+BINARY80LIBS=-lmplapack_binary80
+BINARY128LIBS=-lmplapack_binary128%%LIBQUADMATH%%
+DOUBLELIBS=-lmplapack_double
+
+programs=Rggsvd3_example_mpfr Rggsvd3_example_gmp Rggsvd3_example_qd Rggsvd3_example_dd Rggsvd3_example_binary80 Rggsvd3_example_binary128 Rggsvd3_example_double
+
+all: $(programs)
+
+.cpp.o:
+	$(CXX) -c $(OPTFLAGS) $(CXXFLAGS) $<
+
+Rggsvd3_example_mpfr: Rggsvd3_example_mpfr.o
+	$(CXX) -o Rggsvd3_example_mpfr Rggsvd3_example_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
+
+Rggsvd3_example_gmp: Rggsvd3_example_gmp.o
+	$(CXX) -o Rggsvd3_example_gmp Rggsvd3_example_gmp.o $(LIBFLAGS) $(GMPLIBS)
+
+Rggsvd3_example_qd: Rggsvd3_example_qd.o
+	$(CXX) -o Rggsvd3_example_qd Rggsvd3_example_qd.o $(LIBFLAGS) $(QDLIBS)
+
+Rggsvd3_example_dd: Rggsvd3_example_dd.o
+	$(CXX) -o Rggsvd3_example_dd Rggsvd3_example_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Rggsvd3_example_binary80: Rggsvd3_example_binary80.o
+	$(CXX) -o Rggsvd3_example_binary80 Rggsvd3_example_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
+
+Rggsvd3_example_binary128: Rggsvd3_example_binary128.o
+	$(CXX) -o Rggsvd3_example_binary128 Rggsvd3_example_binary128.o $(LIBFLAGS) $(BINARY128LIBS)
+
+Rggsvd3_example_double: Rggsvd3_example_double.o
+	$(CXX) -o Rggsvd3_example_double Rggsvd3_example_double.o $(LIBFLAGS) $(DOUBLELIBS)
+
+clean:
+	rm -rf *.o *~ $(programs) *bak

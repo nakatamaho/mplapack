@@ -13,4 +13,7 @@ SUBDIRS = 00_GeneralLinearEquations \
 04_NonsymmetricEigenproblems \
 05_SingularValueDecomposition \
 06_SymmetricIndefiniteLinearEquations \
+07_GeneralizedSymmetricDefiniteEigenproblems \
+08_GeneralizedNonsymmetricEigenproblems \
+09_GeneralizedSingularValueDecomposition \
 90_PrecisionComparison

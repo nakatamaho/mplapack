@@ -2835,6 +2835,9 @@ examples/mplapack/03_SymmetricEigenproblems/Makefile
 examples/mplapack/04_NonsymmetricEigenproblems/Makefile
 examples/mplapack/05_SingularValueDecomposition/Makefile
 examples/mplapack/06_SymmetricIndefiniteLinearEquations/Makefile
+examples/mplapack/07_GeneralizedSymmetricDefiniteEigenproblems/Makefile
+examples/mplapack/08_GeneralizedNonsymmetricEigenproblems/Makefile
+examples/mplapack/09_GeneralizedSingularValueDecomposition/Makefile
 examples/mplapack/90_PrecisionComparison/Makefile
 ])
 fi

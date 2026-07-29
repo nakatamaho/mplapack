@@ -1,0 +1,48 @@
+# public domain
+
+CXX=x86_64-w64-mingw32-g++
+MPLAPACKDIR=%%MPLAPACKDIR%%
+CXXFLAGS= -I$(MPLAPACKDIR)/include -I$(MPLAPACKDIR)/include/mplapack -I$(MPLAPACKDIR)/include/qd
+OPTFLAGS= -O2
+LIBFLAGS=-L$(MPLAPACKDIR)/lib -static-libgcc -static-libstdc++
+MPFRLIBS= -lmplapack_mpfr -lmpfr -lmpc -lgmp
+GMPLIBS=-lmplapack_gmp -lgmpxx -lgmp
+QDLIBS=-lmplapack_qd -lqd
+DDLIBS=-lmplapack_dd -lqd
+BINARY80LIBS=-lmplapack_binary80
+BINARY128LIBS=-lmplapack_binary128%%LIBQUADMATH%%
+DOUBLELIBS=-lmplapack_double
+BLAS=
+LAPACK=
+FLIBS=
+
+programs=Cggev_example_mpfr.exe Cggev_example_gmp.exe Cggev_example_qd.exe Cggev_example_dd.exe Cggev_example_binary80.exe Cggev_example_binary128.exe Cggev_example_double.exe
+
+all: $(programs)
+
+.cpp.o:
+	$(CXX) -c $(OPTFLAGS) $(CXXFLAGS) $<
+
+Cggev_example_mpfr.exe: Cggev_example_mpfr.o
+	$(CXX) -o Cggev_example_mpfr.exe Cggev_example_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
+
+Cggev_example_gmp.exe: Cggev_example_gmp.o
+	$(CXX) -o Cggev_example_gmp.exe Cggev_example_gmp.o $(LIBFLAGS) $(GMPLIBS)
+
+Cggev_example_qd.exe: Cggev_example_qd.o
+	$(CXX) -o Cggev_example_qd.exe Cggev_example_qd.o $(LIBFLAGS) $(QDLIBS)
+
+Cggev_example_dd.exe: Cggev_example_dd.o
+	$(CXX) -o Cggev_example_dd.exe Cggev_example_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Cggev_example_binary80.exe: Cggev_example_binary80.o
+	$(CXX) -o Cggev_example_binary80 Cggev_example_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
+
+Cggev_example_binary128.exe: Cggev_example_binary128.o
+	$(CXX) -o Cggev_example_binary128 Cggev_example_binary128.o $(LIBFLAGS) $(BINARY128LIBS)
+
+Cggev_example_double.exe: Cggev_example_double.o
+	$(CXX) -o Cggev_example_double Cggev_example_double.o $(LIBFLAGS) $(DOUBLELIBS)
+
+clean:
+	rm -rf *.o *~ $(programs) *bak

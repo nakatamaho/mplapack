@@ -1,0 +1,48 @@
+# public domain
+
+CXX=x86_64-w64-mingw32-g++
+MPLAPACKDIR=%%MPLAPACKDIR%%
+CXXFLAGS= -I$(MPLAPACKDIR)/include -I$(MPLAPACKDIR)/include/mplapack -I$(MPLAPACKDIR)/include/qd
+OPTFLAGS= -O2
+LIBFLAGS=-L$(MPLAPACKDIR)/lib -static-libgcc -static-libstdc++
+MPFRLIBS= -lmplapack_mpfr -lmpfr -lmpc -lgmp
+GMPLIBS=-lmplapack_gmp -lgmpxx -lgmp
+QDLIBS=-lmplapack_qd -lqd
+DDLIBS=-lmplapack_dd -lqd
+BINARY80LIBS=-lmplapack_binary80
+BINARY128LIBS=-lmplapack_binary128%%LIBQUADMATH%%
+DOUBLELIBS=-lmplapack_double
+BLAS=
+LAPACK=
+FLIBS=
+
+programs=Chegv_example_mpfr.exe Chegv_example_gmp.exe Chegv_example_qd.exe Chegv_example_dd.exe Chegv_example_binary80.exe Chegv_example_binary128.exe Chegv_example_double.exe
+
+all: $(programs)
+
+.cpp.o:
+	$(CXX) -c $(OPTFLAGS) $(CXXFLAGS) $<
+
+Chegv_example_mpfr.exe: Chegv_example_mpfr.o
+	$(CXX) -o Chegv_example_mpfr.exe Chegv_example_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
+
+Chegv_example_gmp.exe: Chegv_example_gmp.o
+	$(CXX) -o Chegv_example_gmp.exe Chegv_example_gmp.o $(LIBFLAGS) $(GMPLIBS)
+
+Chegv_example_qd.exe: Chegv_example_qd.o
+	$(CXX) -o Chegv_example_qd.exe Chegv_example_qd.o $(LIBFLAGS) $(QDLIBS)
+
+Chegv_example_dd.exe: Chegv_example_dd.o
+	$(CXX) -o Chegv_example_dd.exe Chegv_example_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Chegv_example_binary80.exe: Chegv_example_binary80.o
+	$(CXX) -o Chegv_example_binary80 Chegv_example_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
+
+Chegv_example_binary128.exe: Chegv_example_binary128.o
+	$(CXX) -o Chegv_example_binary128 Chegv_example_binary128.o $(LIBFLAGS) $(BINARY128LIBS)
+
+Chegv_example_double.exe: Chegv_example_double.o
+	$(CXX) -o Chegv_example_double Chegv_example_double.o $(LIBFLAGS) $(DOUBLELIBS)
+
+clean:
+	rm -rf *.o *~ $(programs) *bak
