@@ -1,0 +1,218 @@
+# public domain
+# whether _FLOAT128 libs is requred or not is heavily dependent on your environment.
+
+CXX=icpx
+MPLAPACKDIR=%%MPLAPACKDIR%%
+CXXFLAGS= -I$(MPLAPACKDIR)/include -I$(MPLAPACKDIR)/include/mplapack -I$(MPLAPACKDIR)/include/qd %%QUADMATH_CPPFLAGS%%
+OPTFLAGS= -O2
+OPENMP_EXAMPLE_OPENMP_LIBS = -qopenmp
+LIBFLAGS=-L$(MPLAPACKDIR)/lib %%QUADMATH_LDFLAGS%% -Wl,--rpath=$(MPLAPACKDIR)/lib
+MPFRLIBS= -lmplapack_mpfr -lmpfr -lmpc -lgmp
+GMPLIBS=-lmplapack_gmp -lgmpxx -lgmp
+QDLIBS=-lmplapack_qd -lqd
+DDLIBS=-lmplapack_dd -lqd
+BINARY80LIBS=-lmplapack_binary80
+BINARY128LIBS=-lmplapack_binary128%%LIBQUADMATH%%
+DOUBLELIBS=-lmplapack_double
+BLAS=
+LAPACK=
+FLIBS=
+
+programs=Rlamch_dump_mpfr Rlamch_dump_gmp Rlamch_dump_qd Rlamch_dump_dd Rlamch_dump_binary80 Rlamch_dump_binary128 Rlamch_dump_double Frank_eigenvalues_mpfr Frank_eigenvalues_gmp Frank_eigenvalues_qd Frank_eigenvalues_dd Frank_eigenvalues_binary80 Frank_eigenvalues_binary128 Frank_eigenvalues_double Gejsv_vs_gesvd_mpfr Gejsv_vs_gesvd_gmp Gejsv_vs_gesvd_qd Gejsv_vs_gesvd_dd Gejsv_vs_gesvd_binary80 Gejsv_vs_gesvd_binary128 Gejsv_vs_gesvd_double Hilbert_inverse_mpfr Hilbert_inverse_gmp Hilbert_inverse_qd Hilbert_inverse_dd Hilbert_inverse_binary80 Hilbert_inverse_binary128 Hilbert_inverse_double Hilbert_linear_solve_mpfr Hilbert_linear_solve_gmp Hilbert_linear_solve_qd Hilbert_linear_solve_dd Hilbert_linear_solve_binary80 Hilbert_linear_solve_binary128 Hilbert_linear_solve_double Kahan_rank_reveal_mpfr Kahan_rank_reveal_gmp Kahan_rank_reveal_qd Kahan_rank_reveal_dd Kahan_rank_reveal_binary80 Kahan_rank_reveal_binary128 Kahan_rank_reveal_double Pascal_inverse_mpfr Pascal_inverse_gmp Pascal_inverse_qd Pascal_inverse_dd Pascal_inverse_binary80 Pascal_inverse_binary128 Pascal_inverse_double Vandermonde_solve_mpfr Vandermonde_solve_gmp Vandermonde_solve_qd Vandermonde_solve_dd Vandermonde_solve_binary80 Vandermonde_solve_binary128 Vandermonde_solve_double Wilkinson_roots_mpfr Wilkinson_roots_gmp Wilkinson_roots_qd Wilkinson_roots_dd Wilkinson_roots_binary80 Wilkinson_roots_binary128 Wilkinson_roots_double
+
+all: $(programs)
+
+.cpp.o:
+	$(CXX) -c $(OPTFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(CXXFLAGS) $<
+
+Rlamch_dump_mpfr: Rlamch_dump_mpfr.o
+	$(CXX) -o Rlamch_dump_mpfr Rlamch_dump_mpfr.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(MPFRLIBS)
+
+Rlamch_dump_gmp: Rlamch_dump_gmp.o
+	$(CXX) -o Rlamch_dump_gmp Rlamch_dump_gmp.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(GMPLIBS)
+
+Rlamch_dump_qd: Rlamch_dump_qd.o
+	$(CXX) -o Rlamch_dump_qd Rlamch_dump_qd.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(QDLIBS)
+
+Rlamch_dump_dd: Rlamch_dump_dd.o
+	$(CXX) -o Rlamch_dump_dd Rlamch_dump_dd.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(DDLIBS)
+
+Rlamch_dump_binary80: Rlamch_dump_binary80.o
+	$(CXX) -o Rlamch_dump_binary80 Rlamch_dump_binary80.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(BINARY80LIBS)
+
+Rlamch_dump_binary128: Rlamch_dump_binary128.o
+	$(CXX) -o Rlamch_dump_binary128 Rlamch_dump_binary128.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(BINARY128LIBS)
+
+Rlamch_dump_double: Rlamch_dump_double.o
+	$(CXX) -o Rlamch_dump_double Rlamch_dump_double.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(DOUBLELIBS)
+
+clean:
+	rm -rf *.o *~ $(programs) *bak
+
+Frank_eigenvalues_mpfr: Frank_eigenvalues_mpfr.o
+	$(CXX) -o Frank_eigenvalues_mpfr Frank_eigenvalues_mpfr.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(MPFRLIBS)
+
+Frank_eigenvalues_gmp: Frank_eigenvalues_gmp.o
+	$(CXX) -o Frank_eigenvalues_gmp Frank_eigenvalues_gmp.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(GMPLIBS)
+
+Frank_eigenvalues_qd: Frank_eigenvalues_qd.o
+	$(CXX) -o Frank_eigenvalues_qd Frank_eigenvalues_qd.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(QDLIBS)
+
+Frank_eigenvalues_dd: Frank_eigenvalues_dd.o
+	$(CXX) -o Frank_eigenvalues_dd Frank_eigenvalues_dd.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(DDLIBS)
+
+Frank_eigenvalues_binary80: Frank_eigenvalues_binary80.o
+	$(CXX) -o Frank_eigenvalues_binary80 Frank_eigenvalues_binary80.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(BINARY80LIBS)
+
+Frank_eigenvalues_binary128: Frank_eigenvalues_binary128.o
+	$(CXX) -o Frank_eigenvalues_binary128 Frank_eigenvalues_binary128.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(BINARY128LIBS)
+
+Frank_eigenvalues_double: Frank_eigenvalues_double.o
+	$(CXX) -o Frank_eigenvalues_double Frank_eigenvalues_double.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(DOUBLELIBS)
+
+Gejsv_vs_gesvd_mpfr: Gejsv_vs_gesvd_mpfr.o
+	$(CXX) -o Gejsv_vs_gesvd_mpfr Gejsv_vs_gesvd_mpfr.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(MPFRLIBS)
+
+Gejsv_vs_gesvd_gmp: Gejsv_vs_gesvd_gmp.o
+	$(CXX) -o Gejsv_vs_gesvd_gmp Gejsv_vs_gesvd_gmp.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(GMPLIBS)
+
+Gejsv_vs_gesvd_qd: Gejsv_vs_gesvd_qd.o
+	$(CXX) -o Gejsv_vs_gesvd_qd Gejsv_vs_gesvd_qd.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(QDLIBS)
+
+Gejsv_vs_gesvd_dd: Gejsv_vs_gesvd_dd.o
+	$(CXX) -o Gejsv_vs_gesvd_dd Gejsv_vs_gesvd_dd.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(DDLIBS)
+
+Gejsv_vs_gesvd_binary80: Gejsv_vs_gesvd_binary80.o
+	$(CXX) -o Gejsv_vs_gesvd_binary80 Gejsv_vs_gesvd_binary80.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(BINARY80LIBS)
+
+Gejsv_vs_gesvd_binary128: Gejsv_vs_gesvd_binary128.o
+	$(CXX) -o Gejsv_vs_gesvd_binary128 Gejsv_vs_gesvd_binary128.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(BINARY128LIBS)
+
+Gejsv_vs_gesvd_double: Gejsv_vs_gesvd_double.o
+	$(CXX) -o Gejsv_vs_gesvd_double Gejsv_vs_gesvd_double.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(DOUBLELIBS)
+
+Hilbert_inverse_mpfr: Hilbert_inverse_mpfr.o
+	$(CXX) -o Hilbert_inverse_mpfr Hilbert_inverse_mpfr.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(MPFRLIBS)
+
+Hilbert_inverse_gmp: Hilbert_inverse_gmp.o
+	$(CXX) -o Hilbert_inverse_gmp Hilbert_inverse_gmp.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(GMPLIBS)
+
+Hilbert_inverse_qd: Hilbert_inverse_qd.o
+	$(CXX) -o Hilbert_inverse_qd Hilbert_inverse_qd.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(QDLIBS)
+
+Hilbert_inverse_dd: Hilbert_inverse_dd.o
+	$(CXX) -o Hilbert_inverse_dd Hilbert_inverse_dd.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(DDLIBS)
+
+Hilbert_inverse_binary80: Hilbert_inverse_binary80.o
+	$(CXX) -o Hilbert_inverse_binary80 Hilbert_inverse_binary80.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(BINARY80LIBS)
+
+Hilbert_inverse_binary128: Hilbert_inverse_binary128.o
+	$(CXX) -o Hilbert_inverse_binary128 Hilbert_inverse_binary128.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(BINARY128LIBS)
+
+Hilbert_inverse_double: Hilbert_inverse_double.o
+	$(CXX) -o Hilbert_inverse_double Hilbert_inverse_double.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(DOUBLELIBS)
+
+Hilbert_linear_solve_mpfr: Hilbert_linear_solve_mpfr.o
+	$(CXX) -o Hilbert_linear_solve_mpfr Hilbert_linear_solve_mpfr.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(MPFRLIBS)
+
+Hilbert_linear_solve_gmp: Hilbert_linear_solve_gmp.o
+	$(CXX) -o Hilbert_linear_solve_gmp Hilbert_linear_solve_gmp.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(GMPLIBS)
+
+Hilbert_linear_solve_qd: Hilbert_linear_solve_qd.o
+	$(CXX) -o Hilbert_linear_solve_qd Hilbert_linear_solve_qd.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(QDLIBS)
+
+Hilbert_linear_solve_dd: Hilbert_linear_solve_dd.o
+	$(CXX) -o Hilbert_linear_solve_dd Hilbert_linear_solve_dd.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(DDLIBS)
+
+Hilbert_linear_solve_binary80: Hilbert_linear_solve_binary80.o
+	$(CXX) -o Hilbert_linear_solve_binary80 Hilbert_linear_solve_binary80.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(BINARY80LIBS)
+
+Hilbert_linear_solve_binary128: Hilbert_linear_solve_binary128.o
+	$(CXX) -o Hilbert_linear_solve_binary128 Hilbert_linear_solve_binary128.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(BINARY128LIBS)
+
+Hilbert_linear_solve_double: Hilbert_linear_solve_double.o
+	$(CXX) -o Hilbert_linear_solve_double Hilbert_linear_solve_double.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(DOUBLELIBS)
+
+Kahan_rank_reveal_mpfr: Kahan_rank_reveal_mpfr.o
+	$(CXX) -o Kahan_rank_reveal_mpfr Kahan_rank_reveal_mpfr.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(MPFRLIBS)
+
+Kahan_rank_reveal_gmp: Kahan_rank_reveal_gmp.o
+	$(CXX) -o Kahan_rank_reveal_gmp Kahan_rank_reveal_gmp.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(GMPLIBS)
+
+Kahan_rank_reveal_qd: Kahan_rank_reveal_qd.o
+	$(CXX) -o Kahan_rank_reveal_qd Kahan_rank_reveal_qd.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(QDLIBS)
+
+Kahan_rank_reveal_dd: Kahan_rank_reveal_dd.o
+	$(CXX) -o Kahan_rank_reveal_dd Kahan_rank_reveal_dd.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(DDLIBS)
+
+Kahan_rank_reveal_binary80: Kahan_rank_reveal_binary80.o
+	$(CXX) -o Kahan_rank_reveal_binary80 Kahan_rank_reveal_binary80.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(BINARY80LIBS)
+
+Kahan_rank_reveal_binary128: Kahan_rank_reveal_binary128.o
+	$(CXX) -o Kahan_rank_reveal_binary128 Kahan_rank_reveal_binary128.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(BINARY128LIBS)
+
+Kahan_rank_reveal_double: Kahan_rank_reveal_double.o
+	$(CXX) -o Kahan_rank_reveal_double Kahan_rank_reveal_double.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(DOUBLELIBS)
+
+Pascal_inverse_mpfr: Pascal_inverse_mpfr.o
+	$(CXX) -o Pascal_inverse_mpfr Pascal_inverse_mpfr.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(MPFRLIBS)
+
+Pascal_inverse_gmp: Pascal_inverse_gmp.o
+	$(CXX) -o Pascal_inverse_gmp Pascal_inverse_gmp.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(GMPLIBS)
+
+Pascal_inverse_qd: Pascal_inverse_qd.o
+	$(CXX) -o Pascal_inverse_qd Pascal_inverse_qd.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(QDLIBS)
+
+Pascal_inverse_dd: Pascal_inverse_dd.o
+	$(CXX) -o Pascal_inverse_dd Pascal_inverse_dd.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(DDLIBS)
+
+Pascal_inverse_binary80: Pascal_inverse_binary80.o
+	$(CXX) -o Pascal_inverse_binary80 Pascal_inverse_binary80.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(BINARY80LIBS)
+
+Pascal_inverse_binary128: Pascal_inverse_binary128.o
+	$(CXX) -o Pascal_inverse_binary128 Pascal_inverse_binary128.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(BINARY128LIBS)
+
+Pascal_inverse_double: Pascal_inverse_double.o
+	$(CXX) -o Pascal_inverse_double Pascal_inverse_double.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(DOUBLELIBS)
+
+Vandermonde_solve_mpfr: Vandermonde_solve_mpfr.o
+	$(CXX) -o Vandermonde_solve_mpfr Vandermonde_solve_mpfr.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(MPFRLIBS)
+
+Vandermonde_solve_gmp: Vandermonde_solve_gmp.o
+	$(CXX) -o Vandermonde_solve_gmp Vandermonde_solve_gmp.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(GMPLIBS)
+
+Vandermonde_solve_qd: Vandermonde_solve_qd.o
+	$(CXX) -o Vandermonde_solve_qd Vandermonde_solve_qd.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(QDLIBS)
+
+Vandermonde_solve_dd: Vandermonde_solve_dd.o
+	$(CXX) -o Vandermonde_solve_dd Vandermonde_solve_dd.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(DDLIBS)
+
+Vandermonde_solve_binary80: Vandermonde_solve_binary80.o
+	$(CXX) -o Vandermonde_solve_binary80 Vandermonde_solve_binary80.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(BINARY80LIBS)
+
+Vandermonde_solve_binary128: Vandermonde_solve_binary128.o
+	$(CXX) -o Vandermonde_solve_binary128 Vandermonde_solve_binary128.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(BINARY128LIBS)
+
+Vandermonde_solve_double: Vandermonde_solve_double.o
+	$(CXX) -o Vandermonde_solve_double Vandermonde_solve_double.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(DOUBLELIBS)
+
+Wilkinson_roots_mpfr: Wilkinson_roots_mpfr.o
+	$(CXX) -o Wilkinson_roots_mpfr Wilkinson_roots_mpfr.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(MPFRLIBS)
+
+Wilkinson_roots_gmp: Wilkinson_roots_gmp.o
+	$(CXX) -o Wilkinson_roots_gmp Wilkinson_roots_gmp.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(GMPLIBS)
+
+Wilkinson_roots_qd: Wilkinson_roots_qd.o
+	$(CXX) -o Wilkinson_roots_qd Wilkinson_roots_qd.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(QDLIBS)
+
+Wilkinson_roots_dd: Wilkinson_roots_dd.o
+	$(CXX) -o Wilkinson_roots_dd Wilkinson_roots_dd.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(DDLIBS)
+
+Wilkinson_roots_binary80: Wilkinson_roots_binary80.o
+	$(CXX) -o Wilkinson_roots_binary80 Wilkinson_roots_binary80.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(BINARY80LIBS)
+
+Wilkinson_roots_binary128: Wilkinson_roots_binary128.o
+	$(CXX) -o Wilkinson_roots_binary128 Wilkinson_roots_binary128.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(BINARY128LIBS)
+
+Wilkinson_roots_double: Wilkinson_roots_double.o
+	$(CXX) -o Wilkinson_roots_double Wilkinson_roots_double.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(DOUBLELIBS)

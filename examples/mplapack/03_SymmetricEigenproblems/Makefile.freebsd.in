@@ -12,7 +12,7 @@ BINARY80LIBS=-lmplapack_binary80
 BINARY128LIBS=-lmplapack_binary128%%LIBQUADMATH%%
 DOUBLELIBS=-lmplapack_double
 
-programs=Rsyev_Frank_mpfr Rsyev_Frank_gmp Rsyev_Frank_qd Rsyev_Frank_dd Rsyev_Frank_binary80 Rsyev_Frank_binary128 Rsyev_Frank_double
+programs=Cheev_test_mpfr Cheev_test_gmp Cheev_test_qd Cheev_test_dd Cheev_test_binary80 Cheev_test_binary128 Cheev_test_double Rsyev_Frank_mpfr Rsyev_Frank_gmp Rsyev_Frank_qd Rsyev_Frank_dd Rsyev_Frank_binary80 Rsyev_Frank_binary128 Rsyev_Frank_double Rsyev_test_mpfr Rsyev_test_gmp Rsyev_test_qd Rsyev_test_dd Rsyev_test_binary80 Rsyev_test_binary128 Rsyev_test_double Rsyevd_DingDong_mpfr Rsyevd_DingDong_gmp Rsyevd_DingDong_qd Rsyevd_DingDong_dd Rsyevd_DingDong_binary80 Rsyevd_DingDong_binary128 Rsyevd_DingDong_double Rsyevd_Frank_mpfr Rsyevd_Frank_gmp Rsyevd_Frank_qd Rsyevd_Frank_dd Rsyevd_Frank_binary80 Rsyevd_Frank_binary128 Rsyevd_Frank_double Rsyevr_Frank_mpfr Rsyevr_Frank_gmp Rsyevr_Frank_qd Rsyevr_Frank_dd Rsyevr_Frank_binary80 Rsyevr_Frank_binary128 Rsyevr_Frank_double
 
 all: $(programs)
 
@@ -42,3 +42,108 @@ Rsyev_Frank_double: Rsyev_Frank_double.o
 
 clean:
 	rm -rf *.o *~ $(programs) *bak
+
+Cheev_test_mpfr: Cheev_test_mpfr.o
+	$(CXX) -o Cheev_test_mpfr Cheev_test_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
+
+Cheev_test_gmp: Cheev_test_gmp.o
+	$(CXX) -o Cheev_test_gmp Cheev_test_gmp.o $(LIBFLAGS) $(GMPLIBS)
+
+Cheev_test_qd: Cheev_test_qd.o
+	$(CXX) -o Cheev_test_qd Cheev_test_qd.o $(LIBFLAGS) $(QDLIBS)
+
+Cheev_test_dd: Cheev_test_dd.o
+	$(CXX) -o Cheev_test_dd Cheev_test_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Cheev_test_binary80: Cheev_test_binary80.o
+	$(CXX) -o Cheev_test_binary80 Cheev_test_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
+
+Cheev_test_binary128: Cheev_test_binary128.o
+	$(CXX) -o Cheev_test_binary128 Cheev_test_binary128.o $(LIBFLAGS) $(BINARY128LIBS)
+
+Cheev_test_double: Cheev_test_double.o
+	$(CXX) -o Cheev_test_double Cheev_test_double.o $(LIBFLAGS) $(DOUBLELIBS)
+
+Rsyev_test_mpfr: Rsyev_test_mpfr.o
+	$(CXX) -o Rsyev_test_mpfr Rsyev_test_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
+
+Rsyev_test_gmp: Rsyev_test_gmp.o
+	$(CXX) -o Rsyev_test_gmp Rsyev_test_gmp.o $(LIBFLAGS) $(GMPLIBS)
+
+Rsyev_test_qd: Rsyev_test_qd.o
+	$(CXX) -o Rsyev_test_qd Rsyev_test_qd.o $(LIBFLAGS) $(QDLIBS)
+
+Rsyev_test_dd: Rsyev_test_dd.o
+	$(CXX) -o Rsyev_test_dd Rsyev_test_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Rsyev_test_binary80: Rsyev_test_binary80.o
+	$(CXX) -o Rsyev_test_binary80 Rsyev_test_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
+
+Rsyev_test_binary128: Rsyev_test_binary128.o
+	$(CXX) -o Rsyev_test_binary128 Rsyev_test_binary128.o $(LIBFLAGS) $(BINARY128LIBS)
+
+Rsyev_test_double: Rsyev_test_double.o
+	$(CXX) -o Rsyev_test_double Rsyev_test_double.o $(LIBFLAGS) $(DOUBLELIBS)
+
+Rsyevd_DingDong_mpfr: Rsyevd_DingDong_mpfr.o
+	$(CXX) -o Rsyevd_DingDong_mpfr Rsyevd_DingDong_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
+
+Rsyevd_DingDong_gmp: Rsyevd_DingDong_gmp.o
+	$(CXX) -o Rsyevd_DingDong_gmp Rsyevd_DingDong_gmp.o $(LIBFLAGS) $(GMPLIBS)
+
+Rsyevd_DingDong_qd: Rsyevd_DingDong_qd.o
+	$(CXX) -o Rsyevd_DingDong_qd Rsyevd_DingDong_qd.o $(LIBFLAGS) $(QDLIBS)
+
+Rsyevd_DingDong_dd: Rsyevd_DingDong_dd.o
+	$(CXX) -o Rsyevd_DingDong_dd Rsyevd_DingDong_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Rsyevd_DingDong_binary80: Rsyevd_DingDong_binary80.o
+	$(CXX) -o Rsyevd_DingDong_binary80 Rsyevd_DingDong_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
+
+Rsyevd_DingDong_binary128: Rsyevd_DingDong_binary128.o
+	$(CXX) -o Rsyevd_DingDong_binary128 Rsyevd_DingDong_binary128.o $(LIBFLAGS) $(BINARY128LIBS)
+
+Rsyevd_DingDong_double: Rsyevd_DingDong_double.o
+	$(CXX) -o Rsyevd_DingDong_double Rsyevd_DingDong_double.o $(LIBFLAGS) $(DOUBLELIBS)
+
+Rsyevd_Frank_mpfr: Rsyevd_Frank_mpfr.o
+	$(CXX) -o Rsyevd_Frank_mpfr Rsyevd_Frank_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
+
+Rsyevd_Frank_gmp: Rsyevd_Frank_gmp.o
+	$(CXX) -o Rsyevd_Frank_gmp Rsyevd_Frank_gmp.o $(LIBFLAGS) $(GMPLIBS)
+
+Rsyevd_Frank_qd: Rsyevd_Frank_qd.o
+	$(CXX) -o Rsyevd_Frank_qd Rsyevd_Frank_qd.o $(LIBFLAGS) $(QDLIBS)
+
+Rsyevd_Frank_dd: Rsyevd_Frank_dd.o
+	$(CXX) -o Rsyevd_Frank_dd Rsyevd_Frank_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Rsyevd_Frank_binary80: Rsyevd_Frank_binary80.o
+	$(CXX) -o Rsyevd_Frank_binary80 Rsyevd_Frank_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
+
+Rsyevd_Frank_binary128: Rsyevd_Frank_binary128.o
+	$(CXX) -o Rsyevd_Frank_binary128 Rsyevd_Frank_binary128.o $(LIBFLAGS) $(BINARY128LIBS)
+
+Rsyevd_Frank_double: Rsyevd_Frank_double.o
+	$(CXX) -o Rsyevd_Frank_double Rsyevd_Frank_double.o $(LIBFLAGS) $(DOUBLELIBS)
+
+Rsyevr_Frank_mpfr: Rsyevr_Frank_mpfr.o
+	$(CXX) -o Rsyevr_Frank_mpfr Rsyevr_Frank_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
+
+Rsyevr_Frank_gmp: Rsyevr_Frank_gmp.o
+	$(CXX) -o Rsyevr_Frank_gmp Rsyevr_Frank_gmp.o $(LIBFLAGS) $(GMPLIBS)
+
+Rsyevr_Frank_qd: Rsyevr_Frank_qd.o
+	$(CXX) -o Rsyevr_Frank_qd Rsyevr_Frank_qd.o $(LIBFLAGS) $(QDLIBS)
+
+Rsyevr_Frank_dd: Rsyevr_Frank_dd.o
+	$(CXX) -o Rsyevr_Frank_dd Rsyevr_Frank_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Rsyevr_Frank_binary80: Rsyevr_Frank_binary80.o
+	$(CXX) -o Rsyevr_Frank_binary80 Rsyevr_Frank_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
+
+Rsyevr_Frank_binary128: Rsyevr_Frank_binary128.o
+	$(CXX) -o Rsyevr_Frank_binary128 Rsyevr_Frank_binary128.o $(LIBFLAGS) $(BINARY128LIBS)
+
+Rsyevr_Frank_double: Rsyevr_Frank_double.o
+	$(CXX) -o Rsyevr_Frank_double Rsyevr_Frank_double.o $(LIBFLAGS) $(DOUBLELIBS)

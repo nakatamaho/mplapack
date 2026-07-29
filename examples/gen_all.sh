@@ -9,7 +9,7 @@ find . -maxdepth 1 ! -name '.' \
                    ! -name 'generic' \
                    -exec rm -rf {} +
 cd generic
-cd mpblas/generic ; bash -x generate.sh
+bash -x generate.sh
 
 cd $TOP/mplapack
 DIRS=`ls -d */ | sed 's|generic/||g'`

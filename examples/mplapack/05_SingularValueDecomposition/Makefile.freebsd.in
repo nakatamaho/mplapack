@@ -12,7 +12,7 @@ BINARY80LIBS=-lmplapack_binary80
 BINARY128LIBS=-lmplapack_binary128%%LIBQUADMATH%%
 DOUBLELIBS=-lmplapack_double
 
-programs=Rgesvd_random_highcond_mpfr Rgesvd_random_highcond_gmp Rgesvd_random_highcond_qd Rgesvd_random_highcond_dd Rgesvd_random_highcond_binary80 Rgesvd_random_highcond_binary128 Rgesvd_random_highcond_double
+programs=Cgesvd_test_mpfr Cgesvd_test_gmp Cgesvd_test_qd Cgesvd_test_dd Cgesvd_test_binary80 Cgesvd_test_binary128 Cgesvd_test_double Rgesvd_random_highcond_mpfr Rgesvd_random_highcond_gmp Rgesvd_random_highcond_qd Rgesvd_random_highcond_dd Rgesvd_random_highcond_binary80 Rgesvd_random_highcond_binary128 Rgesvd_random_highcond_double Rgesvd_readfromfile_mpfr Rgesvd_readfromfile_gmp Rgesvd_readfromfile_qd Rgesvd_readfromfile_dd Rgesvd_readfromfile_binary80 Rgesvd_readfromfile_binary128 Rgesvd_readfromfile_double Rgesvd_test2_mpfr Rgesvd_test2_gmp Rgesvd_test2_qd Rgesvd_test2_dd Rgesvd_test2_binary80 Rgesvd_test2_binary128 Rgesvd_test2_double Rgesvd_test_mpfr Rgesvd_test_gmp Rgesvd_test_qd Rgesvd_test_dd Rgesvd_test_binary80 Rgesvd_test_binary128 Rgesvd_test_double
 
 all: $(programs)
 
@@ -42,3 +42,87 @@ Rgesvd_random_highcond_double: Rgesvd_random_highcond_double.o
 
 clean:
 	rm -rf *.o *~ $(programs) *bak
+
+Cgesvd_test_mpfr: Cgesvd_test_mpfr.o
+	$(CXX) -o Cgesvd_test_mpfr Cgesvd_test_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
+
+Cgesvd_test_gmp: Cgesvd_test_gmp.o
+	$(CXX) -o Cgesvd_test_gmp Cgesvd_test_gmp.o $(LIBFLAGS) $(GMPLIBS)
+
+Cgesvd_test_qd: Cgesvd_test_qd.o
+	$(CXX) -o Cgesvd_test_qd Cgesvd_test_qd.o $(LIBFLAGS) $(QDLIBS)
+
+Cgesvd_test_dd: Cgesvd_test_dd.o
+	$(CXX) -o Cgesvd_test_dd Cgesvd_test_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Cgesvd_test_binary80: Cgesvd_test_binary80.o
+	$(CXX) -o Cgesvd_test_binary80 Cgesvd_test_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
+
+Cgesvd_test_binary128: Cgesvd_test_binary128.o
+	$(CXX) -o Cgesvd_test_binary128 Cgesvd_test_binary128.o $(LIBFLAGS) $(BINARY128LIBS)
+
+Cgesvd_test_double: Cgesvd_test_double.o
+	$(CXX) -o Cgesvd_test_double Cgesvd_test_double.o $(LIBFLAGS) $(DOUBLELIBS)
+
+Rgesvd_readfromfile_mpfr: Rgesvd_readfromfile_mpfr.o
+	$(CXX) -o Rgesvd_readfromfile_mpfr Rgesvd_readfromfile_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
+
+Rgesvd_readfromfile_gmp: Rgesvd_readfromfile_gmp.o
+	$(CXX) -o Rgesvd_readfromfile_gmp Rgesvd_readfromfile_gmp.o $(LIBFLAGS) $(GMPLIBS)
+
+Rgesvd_readfromfile_qd: Rgesvd_readfromfile_qd.o
+	$(CXX) -o Rgesvd_readfromfile_qd Rgesvd_readfromfile_qd.o $(LIBFLAGS) $(QDLIBS)
+
+Rgesvd_readfromfile_dd: Rgesvd_readfromfile_dd.o
+	$(CXX) -o Rgesvd_readfromfile_dd Rgesvd_readfromfile_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Rgesvd_readfromfile_binary80: Rgesvd_readfromfile_binary80.o
+	$(CXX) -o Rgesvd_readfromfile_binary80 Rgesvd_readfromfile_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
+
+Rgesvd_readfromfile_binary128: Rgesvd_readfromfile_binary128.o
+	$(CXX) -o Rgesvd_readfromfile_binary128 Rgesvd_readfromfile_binary128.o $(LIBFLAGS) $(BINARY128LIBS)
+
+Rgesvd_readfromfile_double: Rgesvd_readfromfile_double.o
+	$(CXX) -o Rgesvd_readfromfile_double Rgesvd_readfromfile_double.o $(LIBFLAGS) $(DOUBLELIBS)
+
+Rgesvd_test2_mpfr: Rgesvd_test2_mpfr.o
+	$(CXX) -o Rgesvd_test2_mpfr Rgesvd_test2_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
+
+Rgesvd_test2_gmp: Rgesvd_test2_gmp.o
+	$(CXX) -o Rgesvd_test2_gmp Rgesvd_test2_gmp.o $(LIBFLAGS) $(GMPLIBS)
+
+Rgesvd_test2_qd: Rgesvd_test2_qd.o
+	$(CXX) -o Rgesvd_test2_qd Rgesvd_test2_qd.o $(LIBFLAGS) $(QDLIBS)
+
+Rgesvd_test2_dd: Rgesvd_test2_dd.o
+	$(CXX) -o Rgesvd_test2_dd Rgesvd_test2_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Rgesvd_test2_binary80: Rgesvd_test2_binary80.o
+	$(CXX) -o Rgesvd_test2_binary80 Rgesvd_test2_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
+
+Rgesvd_test2_binary128: Rgesvd_test2_binary128.o
+	$(CXX) -o Rgesvd_test2_binary128 Rgesvd_test2_binary128.o $(LIBFLAGS) $(BINARY128LIBS)
+
+Rgesvd_test2_double: Rgesvd_test2_double.o
+	$(CXX) -o Rgesvd_test2_double Rgesvd_test2_double.o $(LIBFLAGS) $(DOUBLELIBS)
+
+Rgesvd_test_mpfr: Rgesvd_test_mpfr.o
+	$(CXX) -o Rgesvd_test_mpfr Rgesvd_test_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
+
+Rgesvd_test_gmp: Rgesvd_test_gmp.o
+	$(CXX) -o Rgesvd_test_gmp Rgesvd_test_gmp.o $(LIBFLAGS) $(GMPLIBS)
+
+Rgesvd_test_qd: Rgesvd_test_qd.o
+	$(CXX) -o Rgesvd_test_qd Rgesvd_test_qd.o $(LIBFLAGS) $(QDLIBS)
+
+Rgesvd_test_dd: Rgesvd_test_dd.o
+	$(CXX) -o Rgesvd_test_dd Rgesvd_test_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Rgesvd_test_binary80: Rgesvd_test_binary80.o
+	$(CXX) -o Rgesvd_test_binary80 Rgesvd_test_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
+
+Rgesvd_test_binary128: Rgesvd_test_binary128.o
+	$(CXX) -o Rgesvd_test_binary128 Rgesvd_test_binary128.o $(LIBFLAGS) $(BINARY128LIBS)
+
+Rgesvd_test_double: Rgesvd_test_double.o
+	$(CXX) -o Rgesvd_test_double Rgesvd_test_double.o $(LIBFLAGS) $(DOUBLELIBS)

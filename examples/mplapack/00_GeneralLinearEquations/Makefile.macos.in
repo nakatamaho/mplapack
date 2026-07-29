@@ -1,0 +1,279 @@
+# public domain
+
+CXX=g++-mp-14
+MPLAPACKDIR=%%MPLAPACKDIR%%
+CXXFLAGS= -I$(MPLAPACKDIR)/include -I$(MPLAPACKDIR)/include/mplapack -I$(MPLAPACKDIR)/include/qd
+OPTFLAGS= -O2
+LIBFLAGS=-L$(MPLAPACKDIR)/lib
+MPFRLIBS= -lmplapack_mpfr -lmpfr -lmpc -lgmp
+GMPLIBS=-lmplapack_gmp -lgmpxx -lgmp
+QDLIBS=-lmplapack_qd -lqd
+DDLIBS=-lmplapack_dd -lqd
+BINARY80LIBS=-lmplapack_binary80
+BINARY128LIBS=-lmplapack_binary128%%LIBQUADMATH%%
+DOUBLELIBS=-lmplapack_double
+BLAS=
+LAPACK=
+FLIBS=-framework vecLib
+
+programs=Cgesv_example_mpfr Cgesv_example_gmp Cgesv_example_qd Cgesv_example_dd Cgesv_example_binary80 Cgesv_example_binary128 Cgesv_example_double Cgetrf_getrs_example_mpfr Cgetrf_getrs_example_gmp Cgetrf_getrs_example_qd Cgetrf_getrs_example_dd Cgetrf_getrs_example_binary80 Cgetrf_getrs_example_binary128 Cgetrf_getrs_example_double Cgetri_example_mpfr Cgetri_example_gmp Cgetri_example_qd Cgetri_example_dd Cgetri_example_binary80 Cgetri_example_binary128 Cgetri_example_double Rgbsv_example_mpfr Rgbsv_example_gmp Rgbsv_example_qd Rgbsv_example_dd Rgbsv_example_binary80 Rgbsv_example_binary128 Rgbsv_example_double Rgecon_example_mpfr Rgecon_example_gmp Rgecon_example_qd Rgecon_example_dd Rgecon_example_binary80 Rgecon_example_binary128 Rgecon_example_double Rgesv_example_mpfr Rgesv_example_gmp Rgesv_example_qd Rgesv_example_dd Rgesv_example_binary80 Rgesv_example_binary128 Rgesv_example_double Rgesvx_example_mpfr Rgesvx_example_gmp Rgesvx_example_qd Rgesvx_example_dd Rgesvx_example_binary80 Rgesvx_example_binary128 Rgesvx_example_double Rgetrf_getrs_example_mpfr Rgetrf_getrs_example_gmp Rgetrf_getrs_example_qd Rgetrf_getrs_example_dd Rgetrf_getrs_example_binary80 Rgetrf_getrs_example_binary128 Rgetrf_getrs_example_double Rgetri_example2_mpfr Rgetri_example2_gmp Rgetri_example2_qd Rgetri_example2_dd Rgetri_example2_binary80 Rgetri_example2_binary128 Rgetri_example2_double Rgetri_example3_mpfr Rgetri_example3_gmp Rgetri_example3_qd Rgetri_example3_dd Rgetri_example3_binary80 Rgetri_example3_binary128 Rgetri_example3_double Rgetri_example_mpfr Rgetri_example_gmp Rgetri_example_qd Rgetri_example_dd Rgetri_example_binary80 Rgetri_example_binary128 Rgetri_example_double Rgtsv_example_mpfr Rgtsv_example_gmp Rgtsv_example_qd Rgtsv_example_dd Rgtsv_example_binary80 Rgtsv_example_binary128 Rgtsv_example_double
+
+all: $(programs)
+
+.cpp.o:
+	$(CXX) -c $(OPTFLAGS) $(CXXFLAGS) $<
+
+Rgbsv_example_mpfr: Rgbsv_example_mpfr.o
+	$(CXX) -o Rgbsv_example_mpfr Rgbsv_example_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
+
+Rgbsv_example_gmp: Rgbsv_example_gmp.o
+	$(CXX) -o Rgbsv_example_gmp Rgbsv_example_gmp.o $(LIBFLAGS) $(GMPLIBS)
+
+Rgbsv_example_qd: Rgbsv_example_qd.o
+	$(CXX) -o Rgbsv_example_qd Rgbsv_example_qd.o $(LIBFLAGS) $(QDLIBS)
+
+Rgbsv_example_dd: Rgbsv_example_dd.o
+	$(CXX) -o Rgbsv_example_dd Rgbsv_example_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Rgbsv_example_binary80: Rgbsv_example_binary80.o
+	$(CXX) -o Rgbsv_example_binary80 Rgbsv_example_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
+
+Rgbsv_example_binary128: Rgbsv_example_binary128.o
+	$(CXX) -o Rgbsv_example_binary128 Rgbsv_example_binary128.o $(LIBFLAGS) $(BINARY128LIBS)
+
+Rgbsv_example_double: Rgbsv_example_double.o
+	$(CXX) -o Rgbsv_example_double Rgbsv_example_double.o $(LIBFLAGS) $(DOUBLELIBS)
+
+clean:
+	rm -rf *.o *~ $(programs) *bak
+
+Cgesv_example_mpfr: Cgesv_example_mpfr.o
+	$(CXX) -o Cgesv_example_mpfr Cgesv_example_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
+
+Cgesv_example_gmp: Cgesv_example_gmp.o
+	$(CXX) -o Cgesv_example_gmp Cgesv_example_gmp.o $(LIBFLAGS) $(GMPLIBS)
+
+Cgesv_example_qd: Cgesv_example_qd.o
+	$(CXX) -o Cgesv_example_qd Cgesv_example_qd.o $(LIBFLAGS) $(QDLIBS)
+
+Cgesv_example_dd: Cgesv_example_dd.o
+	$(CXX) -o Cgesv_example_dd Cgesv_example_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Cgesv_example_binary80: Cgesv_example_binary80.o
+	$(CXX) -o Cgesv_example_binary80 Cgesv_example_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
+
+Cgesv_example_binary128: Cgesv_example_binary128.o
+	$(CXX) -o Cgesv_example_binary128 Cgesv_example_binary128.o $(LIBFLAGS) $(BINARY128LIBS)
+
+Cgesv_example_double: Cgesv_example_double.o
+	$(CXX) -o Cgesv_example_double Cgesv_example_double.o $(LIBFLAGS) $(DOUBLELIBS)
+
+Cgetrf_getrs_example_mpfr: Cgetrf_getrs_example_mpfr.o
+	$(CXX) -o Cgetrf_getrs_example_mpfr Cgetrf_getrs_example_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
+
+Cgetrf_getrs_example_gmp: Cgetrf_getrs_example_gmp.o
+	$(CXX) -o Cgetrf_getrs_example_gmp Cgetrf_getrs_example_gmp.o $(LIBFLAGS) $(GMPLIBS)
+
+Cgetrf_getrs_example_qd: Cgetrf_getrs_example_qd.o
+	$(CXX) -o Cgetrf_getrs_example_qd Cgetrf_getrs_example_qd.o $(LIBFLAGS) $(QDLIBS)
+
+Cgetrf_getrs_example_dd: Cgetrf_getrs_example_dd.o
+	$(CXX) -o Cgetrf_getrs_example_dd Cgetrf_getrs_example_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Cgetrf_getrs_example_binary80: Cgetrf_getrs_example_binary80.o
+	$(CXX) -o Cgetrf_getrs_example_binary80 Cgetrf_getrs_example_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
+
+Cgetrf_getrs_example_binary128: Cgetrf_getrs_example_binary128.o
+	$(CXX) -o Cgetrf_getrs_example_binary128 Cgetrf_getrs_example_binary128.o $(LIBFLAGS) $(BINARY128LIBS)
+
+Cgetrf_getrs_example_double: Cgetrf_getrs_example_double.o
+	$(CXX) -o Cgetrf_getrs_example_double Cgetrf_getrs_example_double.o $(LIBFLAGS) $(DOUBLELIBS)
+
+Cgetri_example_mpfr: Cgetri_example_mpfr.o
+	$(CXX) -o Cgetri_example_mpfr Cgetri_example_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
+
+Cgetri_example_gmp: Cgetri_example_gmp.o
+	$(CXX) -o Cgetri_example_gmp Cgetri_example_gmp.o $(LIBFLAGS) $(GMPLIBS)
+
+Cgetri_example_qd: Cgetri_example_qd.o
+	$(CXX) -o Cgetri_example_qd Cgetri_example_qd.o $(LIBFLAGS) $(QDLIBS)
+
+Cgetri_example_dd: Cgetri_example_dd.o
+	$(CXX) -o Cgetri_example_dd Cgetri_example_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Cgetri_example_binary80: Cgetri_example_binary80.o
+	$(CXX) -o Cgetri_example_binary80 Cgetri_example_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
+
+Cgetri_example_binary128: Cgetri_example_binary128.o
+	$(CXX) -o Cgetri_example_binary128 Cgetri_example_binary128.o $(LIBFLAGS) $(BINARY128LIBS)
+
+Cgetri_example_double: Cgetri_example_double.o
+	$(CXX) -o Cgetri_example_double Cgetri_example_double.o $(LIBFLAGS) $(DOUBLELIBS)
+
+Rgecon_example_mpfr: Rgecon_example_mpfr.o
+	$(CXX) -o Rgecon_example_mpfr Rgecon_example_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
+
+Rgecon_example_gmp: Rgecon_example_gmp.o
+	$(CXX) -o Rgecon_example_gmp Rgecon_example_gmp.o $(LIBFLAGS) $(GMPLIBS)
+
+Rgecon_example_qd: Rgecon_example_qd.o
+	$(CXX) -o Rgecon_example_qd Rgecon_example_qd.o $(LIBFLAGS) $(QDLIBS)
+
+Rgecon_example_dd: Rgecon_example_dd.o
+	$(CXX) -o Rgecon_example_dd Rgecon_example_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Rgecon_example_binary80: Rgecon_example_binary80.o
+	$(CXX) -o Rgecon_example_binary80 Rgecon_example_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
+
+Rgecon_example_binary128: Rgecon_example_binary128.o
+	$(CXX) -o Rgecon_example_binary128 Rgecon_example_binary128.o $(LIBFLAGS) $(BINARY128LIBS)
+
+Rgecon_example_double: Rgecon_example_double.o
+	$(CXX) -o Rgecon_example_double Rgecon_example_double.o $(LIBFLAGS) $(DOUBLELIBS)
+
+Rgesv_example_mpfr: Rgesv_example_mpfr.o
+	$(CXX) -o Rgesv_example_mpfr Rgesv_example_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
+
+Rgesv_example_gmp: Rgesv_example_gmp.o
+	$(CXX) -o Rgesv_example_gmp Rgesv_example_gmp.o $(LIBFLAGS) $(GMPLIBS)
+
+Rgesv_example_qd: Rgesv_example_qd.o
+	$(CXX) -o Rgesv_example_qd Rgesv_example_qd.o $(LIBFLAGS) $(QDLIBS)
+
+Rgesv_example_dd: Rgesv_example_dd.o
+	$(CXX) -o Rgesv_example_dd Rgesv_example_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Rgesv_example_binary80: Rgesv_example_binary80.o
+	$(CXX) -o Rgesv_example_binary80 Rgesv_example_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
+
+Rgesv_example_binary128: Rgesv_example_binary128.o
+	$(CXX) -o Rgesv_example_binary128 Rgesv_example_binary128.o $(LIBFLAGS) $(BINARY128LIBS)
+
+Rgesv_example_double: Rgesv_example_double.o
+	$(CXX) -o Rgesv_example_double Rgesv_example_double.o $(LIBFLAGS) $(DOUBLELIBS)
+
+Rgesvx_example_mpfr: Rgesvx_example_mpfr.o
+	$(CXX) -o Rgesvx_example_mpfr Rgesvx_example_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
+
+Rgesvx_example_gmp: Rgesvx_example_gmp.o
+	$(CXX) -o Rgesvx_example_gmp Rgesvx_example_gmp.o $(LIBFLAGS) $(GMPLIBS)
+
+Rgesvx_example_qd: Rgesvx_example_qd.o
+	$(CXX) -o Rgesvx_example_qd Rgesvx_example_qd.o $(LIBFLAGS) $(QDLIBS)
+
+Rgesvx_example_dd: Rgesvx_example_dd.o
+	$(CXX) -o Rgesvx_example_dd Rgesvx_example_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Rgesvx_example_binary80: Rgesvx_example_binary80.o
+	$(CXX) -o Rgesvx_example_binary80 Rgesvx_example_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
+
+Rgesvx_example_binary128: Rgesvx_example_binary128.o
+	$(CXX) -o Rgesvx_example_binary128 Rgesvx_example_binary128.o $(LIBFLAGS) $(BINARY128LIBS)
+
+Rgesvx_example_double: Rgesvx_example_double.o
+	$(CXX) -o Rgesvx_example_double Rgesvx_example_double.o $(LIBFLAGS) $(DOUBLELIBS)
+
+Rgetrf_getrs_example_mpfr: Rgetrf_getrs_example_mpfr.o
+	$(CXX) -o Rgetrf_getrs_example_mpfr Rgetrf_getrs_example_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
+
+Rgetrf_getrs_example_gmp: Rgetrf_getrs_example_gmp.o
+	$(CXX) -o Rgetrf_getrs_example_gmp Rgetrf_getrs_example_gmp.o $(LIBFLAGS) $(GMPLIBS)
+
+Rgetrf_getrs_example_qd: Rgetrf_getrs_example_qd.o
+	$(CXX) -o Rgetrf_getrs_example_qd Rgetrf_getrs_example_qd.o $(LIBFLAGS) $(QDLIBS)
+
+Rgetrf_getrs_example_dd: Rgetrf_getrs_example_dd.o
+	$(CXX) -o Rgetrf_getrs_example_dd Rgetrf_getrs_example_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Rgetrf_getrs_example_binary80: Rgetrf_getrs_example_binary80.o
+	$(CXX) -o Rgetrf_getrs_example_binary80 Rgetrf_getrs_example_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
+
+Rgetrf_getrs_example_binary128: Rgetrf_getrs_example_binary128.o
+	$(CXX) -o Rgetrf_getrs_example_binary128 Rgetrf_getrs_example_binary128.o $(LIBFLAGS) $(BINARY128LIBS)
+
+Rgetrf_getrs_example_double: Rgetrf_getrs_example_double.o
+	$(CXX) -o Rgetrf_getrs_example_double Rgetrf_getrs_example_double.o $(LIBFLAGS) $(DOUBLELIBS)
+
+Rgetri_example2_mpfr: Rgetri_example2_mpfr.o
+	$(CXX) -o Rgetri_example2_mpfr Rgetri_example2_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
+
+Rgetri_example2_gmp: Rgetri_example2_gmp.o
+	$(CXX) -o Rgetri_example2_gmp Rgetri_example2_gmp.o $(LIBFLAGS) $(GMPLIBS)
+
+Rgetri_example2_qd: Rgetri_example2_qd.o
+	$(CXX) -o Rgetri_example2_qd Rgetri_example2_qd.o $(LIBFLAGS) $(QDLIBS)
+
+Rgetri_example2_dd: Rgetri_example2_dd.o
+	$(CXX) -o Rgetri_example2_dd Rgetri_example2_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Rgetri_example2_binary80: Rgetri_example2_binary80.o
+	$(CXX) -o Rgetri_example2_binary80 Rgetri_example2_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
+
+Rgetri_example2_binary128: Rgetri_example2_binary128.o
+	$(CXX) -o Rgetri_example2_binary128 Rgetri_example2_binary128.o $(LIBFLAGS) $(BINARY128LIBS)
+
+Rgetri_example2_double: Rgetri_example2_double.o
+	$(CXX) -o Rgetri_example2_double Rgetri_example2_double.o $(LIBFLAGS) $(DOUBLELIBS)
+
+Rgetri_example3_mpfr: Rgetri_example3_mpfr.o
+	$(CXX) -o Rgetri_example3_mpfr Rgetri_example3_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
+
+Rgetri_example3_gmp: Rgetri_example3_gmp.o
+	$(CXX) -o Rgetri_example3_gmp Rgetri_example3_gmp.o $(LIBFLAGS) $(GMPLIBS)
+
+Rgetri_example3_qd: Rgetri_example3_qd.o
+	$(CXX) -o Rgetri_example3_qd Rgetri_example3_qd.o $(LIBFLAGS) $(QDLIBS)
+
+Rgetri_example3_dd: Rgetri_example3_dd.o
+	$(CXX) -o Rgetri_example3_dd Rgetri_example3_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Rgetri_example3_binary80: Rgetri_example3_binary80.o
+	$(CXX) -o Rgetri_example3_binary80 Rgetri_example3_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
+
+Rgetri_example3_binary128: Rgetri_example3_binary128.o
+	$(CXX) -o Rgetri_example3_binary128 Rgetri_example3_binary128.o $(LIBFLAGS) $(BINARY128LIBS)
+
+Rgetri_example3_double: Rgetri_example3_double.o
+	$(CXX) -o Rgetri_example3_double Rgetri_example3_double.o $(LIBFLAGS) $(DOUBLELIBS)
+
+Rgetri_example_mpfr: Rgetri_example_mpfr.o
+	$(CXX) -o Rgetri_example_mpfr Rgetri_example_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
+
+Rgetri_example_gmp: Rgetri_example_gmp.o
+	$(CXX) -o Rgetri_example_gmp Rgetri_example_gmp.o $(LIBFLAGS) $(GMPLIBS)
+
+Rgetri_example_qd: Rgetri_example_qd.o
+	$(CXX) -o Rgetri_example_qd Rgetri_example_qd.o $(LIBFLAGS) $(QDLIBS)
+
+Rgetri_example_dd: Rgetri_example_dd.o
+	$(CXX) -o Rgetri_example_dd Rgetri_example_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Rgetri_example_binary80: Rgetri_example_binary80.o
+	$(CXX) -o Rgetri_example_binary80 Rgetri_example_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
+
+Rgetri_example_binary128: Rgetri_example_binary128.o
+	$(CXX) -o Rgetri_example_binary128 Rgetri_example_binary128.o $(LIBFLAGS) $(BINARY128LIBS)
+
+Rgetri_example_double: Rgetri_example_double.o
+	$(CXX) -o Rgetri_example_double Rgetri_example_double.o $(LIBFLAGS) $(DOUBLELIBS)
+
+Rgtsv_example_mpfr: Rgtsv_example_mpfr.o
+	$(CXX) -o Rgtsv_example_mpfr Rgtsv_example_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
+
+Rgtsv_example_gmp: Rgtsv_example_gmp.o
+	$(CXX) -o Rgtsv_example_gmp Rgtsv_example_gmp.o $(LIBFLAGS) $(GMPLIBS)
+
+Rgtsv_example_qd: Rgtsv_example_qd.o
+	$(CXX) -o Rgtsv_example_qd Rgtsv_example_qd.o $(LIBFLAGS) $(QDLIBS)
+
+Rgtsv_example_dd: Rgtsv_example_dd.o
+	$(CXX) -o Rgtsv_example_dd Rgtsv_example_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Rgtsv_example_binary80: Rgtsv_example_binary80.o
+	$(CXX) -o Rgtsv_example_binary80 Rgtsv_example_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
+
+Rgtsv_example_binary128: Rgtsv_example_binary128.o
+	$(CXX) -o Rgtsv_example_binary128 Rgtsv_example_binary128.o $(LIBFLAGS) $(BINARY128LIBS)
+
+Rgtsv_example_double: Rgtsv_example_double.o
+	$(CXX) -o Rgtsv_example_double Rgtsv_example_double.o $(LIBFLAGS) $(DOUBLELIBS)

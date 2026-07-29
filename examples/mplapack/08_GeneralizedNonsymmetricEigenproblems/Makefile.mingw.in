@@ -1,0 +1,90 @@
+# public domain
+
+CXX=x86_64-w64-mingw32-g++
+MPLAPACKDIR=%%MPLAPACKDIR%%
+CXXFLAGS= -I$(MPLAPACKDIR)/include -I$(MPLAPACKDIR)/include/mplapack -I$(MPLAPACKDIR)/include/qd
+OPTFLAGS= -O2
+LIBFLAGS=-L$(MPLAPACKDIR)/lib -static-libgcc -static-libstdc++
+MPFRLIBS= -lmplapack_mpfr -lmpfr -lmpc -lgmp
+GMPLIBS=-lmplapack_gmp -lgmpxx -lgmp
+QDLIBS=-lmplapack_qd -lqd
+DDLIBS=-lmplapack_dd -lqd
+BINARY80LIBS=-lmplapack_binary80
+BINARY128LIBS=-lmplapack_binary128%%LIBQUADMATH%%
+DOUBLELIBS=-lmplapack_double
+BLAS=
+LAPACK=
+FLIBS=
+
+programs=Cggev_example_mpfr.exe Cggev_example_gmp.exe Cggev_example_qd.exe Cggev_example_dd.exe Cggev_example_binary80.exe Cggev_example_binary128.exe Cggev_example_double.exe Rgges_example_mpfr.exe Rgges_example_gmp.exe Rgges_example_qd.exe Rgges_example_dd.exe Rgges_example_binary80.exe Rgges_example_binary128.exe Rgges_example_double.exe Rggev_example_mpfr.exe Rggev_example_gmp.exe Rggev_example_qd.exe Rggev_example_dd.exe Rggev_example_binary80.exe Rggev_example_binary128.exe Rggev_example_double.exe
+
+all: $(programs)
+
+.cpp.o:
+	$(CXX) -c $(OPTFLAGS) $(CXXFLAGS) $<
+
+Rgges_example_mpfr.exe: Rgges_example_mpfr.o
+	$(CXX) -o Rgges_example_mpfr.exe Rgges_example_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
+
+Rgges_example_gmp.exe: Rgges_example_gmp.o
+	$(CXX) -o Rgges_example_gmp.exe Rgges_example_gmp.o $(LIBFLAGS) $(GMPLIBS)
+
+Rgges_example_qd.exe: Rgges_example_qd.o
+	$(CXX) -o Rgges_example_qd.exe Rgges_example_qd.o $(LIBFLAGS) $(QDLIBS)
+
+Rgges_example_dd.exe: Rgges_example_dd.o
+	$(CXX) -o Rgges_example_dd.exe Rgges_example_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Rgges_example_binary80.exe: Rgges_example_binary80.o
+	$(CXX) -o Rgges_example_binary80 Rgges_example_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
+
+Rgges_example_binary128.exe: Rgges_example_binary128.o
+	$(CXX) -o Rgges_example_binary128 Rgges_example_binary128.o $(LIBFLAGS) $(BINARY128LIBS)
+
+Rgges_example_double.exe: Rgges_example_double.o
+	$(CXX) -o Rgges_example_double Rgges_example_double.o $(LIBFLAGS) $(DOUBLELIBS)
+
+clean:
+	rm -rf *.o *~ $(programs) *bak
+
+Cggev_example_mpfr.exe: Cggev_example_mpfr.o
+	$(CXX) -o Cggev_example_mpfr.exe Cggev_example_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
+
+Cggev_example_gmp.exe: Cggev_example_gmp.o
+	$(CXX) -o Cggev_example_gmp.exe Cggev_example_gmp.o $(LIBFLAGS) $(GMPLIBS)
+
+Cggev_example_qd.exe: Cggev_example_qd.o
+	$(CXX) -o Cggev_example_qd.exe Cggev_example_qd.o $(LIBFLAGS) $(QDLIBS)
+
+Cggev_example_dd.exe: Cggev_example_dd.o
+	$(CXX) -o Cggev_example_dd.exe Cggev_example_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Cggev_example_binary80.exe: Cggev_example_binary80.o
+	$(CXX) -o Cggev_example_binary80.exe Cggev_example_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
+
+Cggev_example_binary128.exe: Cggev_example_binary128.o
+	$(CXX) -o Cggev_example_binary128.exe Cggev_example_binary128.o $(LIBFLAGS) $(BINARY128LIBS)
+
+Cggev_example_double.exe: Cggev_example_double.o
+	$(CXX) -o Cggev_example_double.exe Cggev_example_double.o $(LIBFLAGS) $(DOUBLELIBS)
+
+Rggev_example_mpfr.exe: Rggev_example_mpfr.o
+	$(CXX) -o Rggev_example_mpfr.exe Rggev_example_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
+
+Rggev_example_gmp.exe: Rggev_example_gmp.o
+	$(CXX) -o Rggev_example_gmp.exe Rggev_example_gmp.o $(LIBFLAGS) $(GMPLIBS)
+
+Rggev_example_qd.exe: Rggev_example_qd.o
+	$(CXX) -o Rggev_example_qd.exe Rggev_example_qd.o $(LIBFLAGS) $(QDLIBS)
+
+Rggev_example_dd.exe: Rggev_example_dd.o
+	$(CXX) -o Rggev_example_dd.exe Rggev_example_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Rggev_example_binary80.exe: Rggev_example_binary80.o
+	$(CXX) -o Rggev_example_binary80.exe Rggev_example_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
+
+Rggev_example_binary128.exe: Rggev_example_binary128.o
+	$(CXX) -o Rggev_example_binary128.exe Rggev_example_binary128.o $(LIBFLAGS) $(BINARY128LIBS)
+
+Rggev_example_double.exe: Rggev_example_double.o
+	$(CXX) -o Rggev_example_double.exe Rggev_example_double.o $(LIBFLAGS) $(DOUBLELIBS)

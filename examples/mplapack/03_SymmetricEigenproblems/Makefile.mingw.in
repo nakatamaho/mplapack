@@ -16,7 +16,7 @@ BLAS=
 LAPACK=
 FLIBS=
 
-programs=Rsyev_Frank_mpfr.exe Rsyev_Frank_gmp.exe Rsyev_Frank_qd.exe Rsyev_Frank_dd.exe Rsyev_Frank_binary80.exe Rsyev_Frank_binary128.exe Rsyev_Frank_double.exe
+programs=Cheev_test_mpfr.exe Cheev_test_gmp.exe Cheev_test_qd.exe Cheev_test_dd.exe Cheev_test_binary80.exe Cheev_test_binary128.exe Cheev_test_double.exe Rsyev_Frank_mpfr.exe Rsyev_Frank_gmp.exe Rsyev_Frank_qd.exe Rsyev_Frank_dd.exe Rsyev_Frank_binary80.exe Rsyev_Frank_binary128.exe Rsyev_Frank_double.exe Rsyev_test_mpfr.exe Rsyev_test_gmp.exe Rsyev_test_qd.exe Rsyev_test_dd.exe Rsyev_test_binary80.exe Rsyev_test_binary128.exe Rsyev_test_double.exe Rsyevd_DingDong_mpfr.exe Rsyevd_DingDong_gmp.exe Rsyevd_DingDong_qd.exe Rsyevd_DingDong_dd.exe Rsyevd_DingDong_binary80.exe Rsyevd_DingDong_binary128.exe Rsyevd_DingDong_double.exe Rsyevd_Frank_mpfr.exe Rsyevd_Frank_gmp.exe Rsyevd_Frank_qd.exe Rsyevd_Frank_dd.exe Rsyevd_Frank_binary80.exe Rsyevd_Frank_binary128.exe Rsyevd_Frank_double.exe Rsyevr_Frank_mpfr.exe Rsyevr_Frank_gmp.exe Rsyevr_Frank_qd.exe Rsyevr_Frank_dd.exe Rsyevr_Frank_binary80.exe Rsyevr_Frank_binary128.exe Rsyevr_Frank_double.exe
 
 all: $(programs)
 
@@ -46,3 +46,108 @@ Rsyev_Frank_double.exe: Rsyev_Frank_double.o
 
 clean:
 	rm -rf *.o *~ $(programs) *bak
+
+Cheev_test_mpfr.exe: Cheev_test_mpfr.o
+	$(CXX) -o Cheev_test_mpfr.exe Cheev_test_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
+
+Cheev_test_gmp.exe: Cheev_test_gmp.o
+	$(CXX) -o Cheev_test_gmp.exe Cheev_test_gmp.o $(LIBFLAGS) $(GMPLIBS)
+
+Cheev_test_qd.exe: Cheev_test_qd.o
+	$(CXX) -o Cheev_test_qd.exe Cheev_test_qd.o $(LIBFLAGS) $(QDLIBS)
+
+Cheev_test_dd.exe: Cheev_test_dd.o
+	$(CXX) -o Cheev_test_dd.exe Cheev_test_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Cheev_test_binary80.exe: Cheev_test_binary80.o
+	$(CXX) -o Cheev_test_binary80.exe Cheev_test_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
+
+Cheev_test_binary128.exe: Cheev_test_binary128.o
+	$(CXX) -o Cheev_test_binary128.exe Cheev_test_binary128.o $(LIBFLAGS) $(BINARY128LIBS)
+
+Cheev_test_double.exe: Cheev_test_double.o
+	$(CXX) -o Cheev_test_double.exe Cheev_test_double.o $(LIBFLAGS) $(DOUBLELIBS)
+
+Rsyev_test_mpfr.exe: Rsyev_test_mpfr.o
+	$(CXX) -o Rsyev_test_mpfr.exe Rsyev_test_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
+
+Rsyev_test_gmp.exe: Rsyev_test_gmp.o
+	$(CXX) -o Rsyev_test_gmp.exe Rsyev_test_gmp.o $(LIBFLAGS) $(GMPLIBS)
+
+Rsyev_test_qd.exe: Rsyev_test_qd.o
+	$(CXX) -o Rsyev_test_qd.exe Rsyev_test_qd.o $(LIBFLAGS) $(QDLIBS)
+
+Rsyev_test_dd.exe: Rsyev_test_dd.o
+	$(CXX) -o Rsyev_test_dd.exe Rsyev_test_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Rsyev_test_binary80.exe: Rsyev_test_binary80.o
+	$(CXX) -o Rsyev_test_binary80.exe Rsyev_test_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
+
+Rsyev_test_binary128.exe: Rsyev_test_binary128.o
+	$(CXX) -o Rsyev_test_binary128.exe Rsyev_test_binary128.o $(LIBFLAGS) $(BINARY128LIBS)
+
+Rsyev_test_double.exe: Rsyev_test_double.o
+	$(CXX) -o Rsyev_test_double.exe Rsyev_test_double.o $(LIBFLAGS) $(DOUBLELIBS)
+
+Rsyevd_DingDong_mpfr.exe: Rsyevd_DingDong_mpfr.o
+	$(CXX) -o Rsyevd_DingDong_mpfr.exe Rsyevd_DingDong_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
+
+Rsyevd_DingDong_gmp.exe: Rsyevd_DingDong_gmp.o
+	$(CXX) -o Rsyevd_DingDong_gmp.exe Rsyevd_DingDong_gmp.o $(LIBFLAGS) $(GMPLIBS)
+
+Rsyevd_DingDong_qd.exe: Rsyevd_DingDong_qd.o
+	$(CXX) -o Rsyevd_DingDong_qd.exe Rsyevd_DingDong_qd.o $(LIBFLAGS) $(QDLIBS)
+
+Rsyevd_DingDong_dd.exe: Rsyevd_DingDong_dd.o
+	$(CXX) -o Rsyevd_DingDong_dd.exe Rsyevd_DingDong_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Rsyevd_DingDong_binary80.exe: Rsyevd_DingDong_binary80.o
+	$(CXX) -o Rsyevd_DingDong_binary80.exe Rsyevd_DingDong_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
+
+Rsyevd_DingDong_binary128.exe: Rsyevd_DingDong_binary128.o
+	$(CXX) -o Rsyevd_DingDong_binary128.exe Rsyevd_DingDong_binary128.o $(LIBFLAGS) $(BINARY128LIBS)
+
+Rsyevd_DingDong_double.exe: Rsyevd_DingDong_double.o
+	$(CXX) -o Rsyevd_DingDong_double.exe Rsyevd_DingDong_double.o $(LIBFLAGS) $(DOUBLELIBS)
+
+Rsyevd_Frank_mpfr.exe: Rsyevd_Frank_mpfr.o
+	$(CXX) -o Rsyevd_Frank_mpfr.exe Rsyevd_Frank_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
+
+Rsyevd_Frank_gmp.exe: Rsyevd_Frank_gmp.o
+	$(CXX) -o Rsyevd_Frank_gmp.exe Rsyevd_Frank_gmp.o $(LIBFLAGS) $(GMPLIBS)
+
+Rsyevd_Frank_qd.exe: Rsyevd_Frank_qd.o
+	$(CXX) -o Rsyevd_Frank_qd.exe Rsyevd_Frank_qd.o $(LIBFLAGS) $(QDLIBS)
+
+Rsyevd_Frank_dd.exe: Rsyevd_Frank_dd.o
+	$(CXX) -o Rsyevd_Frank_dd.exe Rsyevd_Frank_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Rsyevd_Frank_binary80.exe: Rsyevd_Frank_binary80.o
+	$(CXX) -o Rsyevd_Frank_binary80.exe Rsyevd_Frank_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
+
+Rsyevd_Frank_binary128.exe: Rsyevd_Frank_binary128.o
+	$(CXX) -o Rsyevd_Frank_binary128.exe Rsyevd_Frank_binary128.o $(LIBFLAGS) $(BINARY128LIBS)
+
+Rsyevd_Frank_double.exe: Rsyevd_Frank_double.o
+	$(CXX) -o Rsyevd_Frank_double.exe Rsyevd_Frank_double.o $(LIBFLAGS) $(DOUBLELIBS)
+
+Rsyevr_Frank_mpfr.exe: Rsyevr_Frank_mpfr.o
+	$(CXX) -o Rsyevr_Frank_mpfr.exe Rsyevr_Frank_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
+
+Rsyevr_Frank_gmp.exe: Rsyevr_Frank_gmp.o
+	$(CXX) -o Rsyevr_Frank_gmp.exe Rsyevr_Frank_gmp.o $(LIBFLAGS) $(GMPLIBS)
+
+Rsyevr_Frank_qd.exe: Rsyevr_Frank_qd.o
+	$(CXX) -o Rsyevr_Frank_qd.exe Rsyevr_Frank_qd.o $(LIBFLAGS) $(QDLIBS)
+
+Rsyevr_Frank_dd.exe: Rsyevr_Frank_dd.o
+	$(CXX) -o Rsyevr_Frank_dd.exe Rsyevr_Frank_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Rsyevr_Frank_binary80.exe: Rsyevr_Frank_binary80.o
+	$(CXX) -o Rsyevr_Frank_binary80.exe Rsyevr_Frank_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
+
+Rsyevr_Frank_binary128.exe: Rsyevr_Frank_binary128.o
+	$(CXX) -o Rsyevr_Frank_binary128.exe Rsyevr_Frank_binary128.o $(LIBFLAGS) $(BINARY128LIBS)
+
+Rsyevr_Frank_double.exe: Rsyevr_Frank_double.o
+	$(CXX) -o Rsyevr_Frank_double.exe Rsyevr_Frank_double.o $(LIBFLAGS) $(DOUBLELIBS)

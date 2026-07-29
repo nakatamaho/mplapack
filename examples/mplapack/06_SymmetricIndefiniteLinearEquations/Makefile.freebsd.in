@@ -1,0 +1,86 @@
+#public domain
+CXX=g++-10
+MPLAPACKDIR=%%MPLAPACKDIR%%
+CXXFLAGS= -I$(MPLAPACKDIR)/include -I$(MPLAPACKDIR)/include/mplapack -I$(MPLAPACKDIR)/include/qd
+OPTFLAGS= -O2
+LIBFLAGS=-L$(MPLAPACKDIR)/lib -Wl,--rpath=$(MPLAPACKDIR)/lib
+MPFRLIBS=-lmplapack_mpfr -lmpfr -lmpc -lgmp
+GMPLIBS=-lmplapack_gmp -lgmpxx -lgmp
+QDLIBS=-lmplapack_qd -lqd
+DDLIBS=-lmplapack_dd -lqd
+BINARY80LIBS=-lmplapack_binary80
+BINARY128LIBS=-lmplapack_binary128%%LIBQUADMATH%%
+DOUBLELIBS=-lmplapack_double
+
+programs=Chesv_example_mpfr Chesv_example_gmp Chesv_example_qd Chesv_example_dd Chesv_example_binary80 Chesv_example_binary128 Chesv_example_double Csysv_example_mpfr Csysv_example_gmp Csysv_example_qd Csysv_example_dd Csysv_example_binary80 Csysv_example_binary128 Csysv_example_double Rsysv_example_mpfr Rsysv_example_gmp Rsysv_example_qd Rsysv_example_dd Rsysv_example_binary80 Rsysv_example_binary128 Rsysv_example_double
+
+all: $(programs)
+
+.cpp.o:
+	$(CXX) -c $(OPTFLAGS) $(CXXFLAGS) $<
+
+Rsysv_example_mpfr: Rsysv_example_mpfr.o
+	$(CXX) -o Rsysv_example_mpfr Rsysv_example_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
+
+Rsysv_example_gmp: Rsysv_example_gmp.o
+	$(CXX) -o Rsysv_example_gmp Rsysv_example_gmp.o $(LIBFLAGS) $(GMPLIBS)
+
+Rsysv_example_qd: Rsysv_example_qd.o
+	$(CXX) -o Rsysv_example_qd Rsysv_example_qd.o $(LIBFLAGS) $(QDLIBS)
+
+Rsysv_example_dd: Rsysv_example_dd.o
+	$(CXX) -o Rsysv_example_dd Rsysv_example_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Rsysv_example_binary80: Rsysv_example_binary80.o
+	$(CXX) -o Rsysv_example_binary80 Rsysv_example_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
+
+Rsysv_example_binary128: Rsysv_example_binary128.o
+	$(CXX) -o Rsysv_example_binary128 Rsysv_example_binary128.o $(LIBFLAGS) $(BINARY128LIBS)
+
+Rsysv_example_double: Rsysv_example_double.o
+	$(CXX) -o Rsysv_example_double Rsysv_example_double.o $(LIBFLAGS) $(DOUBLELIBS)
+
+clean:
+	rm -rf *.o *~ $(programs) *bak
+
+Chesv_example_mpfr: Chesv_example_mpfr.o
+	$(CXX) -o Chesv_example_mpfr Chesv_example_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
+
+Chesv_example_gmp: Chesv_example_gmp.o
+	$(CXX) -o Chesv_example_gmp Chesv_example_gmp.o $(LIBFLAGS) $(GMPLIBS)
+
+Chesv_example_qd: Chesv_example_qd.o
+	$(CXX) -o Chesv_example_qd Chesv_example_qd.o $(LIBFLAGS) $(QDLIBS)
+
+Chesv_example_dd: Chesv_example_dd.o
+	$(CXX) -o Chesv_example_dd Chesv_example_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Chesv_example_binary80: Chesv_example_binary80.o
+	$(CXX) -o Chesv_example_binary80 Chesv_example_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
+
+Chesv_example_binary128: Chesv_example_binary128.o
+	$(CXX) -o Chesv_example_binary128 Chesv_example_binary128.o $(LIBFLAGS) $(BINARY128LIBS)
+
+Chesv_example_double: Chesv_example_double.o
+	$(CXX) -o Chesv_example_double Chesv_example_double.o $(LIBFLAGS) $(DOUBLELIBS)
+
+Csysv_example_mpfr: Csysv_example_mpfr.o
+	$(CXX) -o Csysv_example_mpfr Csysv_example_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
+
+Csysv_example_gmp: Csysv_example_gmp.o
+	$(CXX) -o Csysv_example_gmp Csysv_example_gmp.o $(LIBFLAGS) $(GMPLIBS)
+
+Csysv_example_qd: Csysv_example_qd.o
+	$(CXX) -o Csysv_example_qd Csysv_example_qd.o $(LIBFLAGS) $(QDLIBS)
+
+Csysv_example_dd: Csysv_example_dd.o
+	$(CXX) -o Csysv_example_dd Csysv_example_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Csysv_example_binary80: Csysv_example_binary80.o
+	$(CXX) -o Csysv_example_binary80 Csysv_example_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
+
+Csysv_example_binary128: Csysv_example_binary128.o
+	$(CXX) -o Csysv_example_binary128 Csysv_example_binary128.o $(LIBFLAGS) $(BINARY128LIBS)
+
+Csysv_example_double: Csysv_example_double.o
+	$(CXX) -o Csysv_example_double Csysv_example_double.o $(LIBFLAGS) $(DOUBLELIBS)

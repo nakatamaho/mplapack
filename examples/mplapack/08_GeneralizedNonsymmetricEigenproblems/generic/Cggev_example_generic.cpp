@@ -1,0 +1,42 @@
+int main() {
+    INTEGER n = 3, lda = n, ldb = n, ldv = 1, info, lwork = -1;
+    COMPLEX *a = new COMPLEX[n * n];
+    COMPLEX *b = new COMPLEX[n * n];
+    COMPLEX *alpha = new COMPLEX[n];
+    COMPLEX *beta = new COMPLEX[n];
+    COMPLEX *vl = new COMPLEX[1];
+    COMPLEX *vr = new COMPLEX[1];
+    REAL *rwork = new REAL[8 * n];
+    for (INTEGER i = 0; i < n * n; i++) {
+        a[i] = COMPLEX(0.0, 0.0);
+        b[i] = COMPLEX(0.0, 0.0);
+    }
+    a[0] = COMPLEX(1.0, 1.0);
+    a[4] = COMPLEX(2.0, 0.0);
+    a[8] = COMPLEX(3.0, -1.0);
+    b[0] = COMPLEX(1.0, 0.0);
+    b[4] = COMPLEX(1.0, 0.0);
+    b[8] = COMPLEX(0.0, 0.0);
+    COMPLEX wk;
+    Cggev("N", "N", n, a, lda, b, ldb, alpha, beta, vl, ldv, vr, ldv, &wk, lwork, rwork, info);
+    lwork = castInTEGER(wk.real());
+    COMPLEX *work = new COMPLEX[lwork];
+    Cggev("N", "N", n, a, lda, b, ldb, alpha, beta, vl, ldv, vr, ldv, work, lwork, rwork, info);
+    for (INTEGER i = 0; i < n; i++) {
+        printf("alpha[%ld] = ", (long)i); printnum(alpha[i]); printf(", beta = "); printnum(beta[i]);
+        if (abs(beta[i]) <= Rlamch("E"))
+            printf(", lambda = Inf\n");
+        else {
+            printf(", lambda = "); printnum(alpha[i] / beta[i]); printf("\n");
+        }
+    }
+    delete[] work;
+    delete[] rwork;
+    delete[] vr;
+    delete[] vl;
+    delete[] beta;
+    delete[] alpha;
+    delete[] b;
+    delete[] a;
+    return info != 0 ? 1 : 0;
+}
