@@ -1,0 +1,18 @@
+=== precision: gmp ===
+ Tests of the Nonsymmetric eigenproblem condition estimation routines
+ Ctrsyl, Ctrexc, Ctrsna, Ctrsen
+
+ Relative machine precision (EPS) = +1.4916681462400413e-154
+ Safe minimum (SFMIN)             = +4.7651298097759021e-323228497
+
+ Routines pass computational tests if test ratio is less than+2.0000000000000000e+01
+
+
+ ZEC routines passed the tests of the error exits ( 41 tests done)
+Error in Ctrsyl:        1 tests fail the threshold.
+Maximum test ratio =+2.2926488417966745e+01 threshold =+2.0000000000000000e+01
+
+
+ End of tests
+ Total time used =      6407.77 seconds
+

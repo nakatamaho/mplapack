@@ -8,10 +8,12 @@ BSD-style license, supplemental to the original LAPACK license.
 
 # News
 
-* 2026-07-22  MPLAPACK 2.3.0 adopts one self-contained library per
-  backend/flavor, removes the separate BLAS-only products, eliminates
-  duplicate public symbols with layered basename shadowing, and completes the
-  CMake build/test/install interface for the unified layout. See
+* 2026-07-29  MPLAPACK 2.3.0 has been released. Available from
+  <https://github.com/nakatamaho/mplapack/releases/tag/v2.3.0>. This release
+  adopts one self-contained library per backend/flavor, removes the separate
+  BLAS-only products, eliminates duplicate public symbols with layered basename
+  shadowing, and completes the CMake build/test/install interface for the
+  unified layout. See
   [CHANGES.2.3.0.md](CHANGES.2.3.0.md) and [MIGRATION.md](MIGRATION.md).
 
 * 2026-07-21  MPLAPACK 2.2.1 has been released. Available from
@@ -158,9 +160,9 @@ usual MPLAPACK options.
 
 ```sh
 mkdir -p $HOME/tmp && cd $HOME/tmp
-wget https://github.com/nakatamaho/mplapack/releases/download/v2.2.1/mplapack-2.2.1.tar.xz
-tar xvf mplapack-2.2.1.tar.xz
-cd mplapack-2.2.1
+wget https://github.com/nakatamaho/mplapack/releases/download/v2.3.0/mplapack-2.3.0.tar.xz
+tar xvf mplapack-2.3.0.tar.xz
+cd mplapack-2.3.0
 export CXX=g++ CC=gcc FC=gfortran
 ./configure \
     --prefix=$HOME/MPLAPACK \
@@ -218,9 +220,9 @@ On Apple Silicon (arm64), omit `--enable-binary80=yes` (binary80 is x86-only).
 ```sh
 sudo port install gcc15 coreutils git gsed
 mkdir -p $HOME/tmp && cd $HOME/tmp
-wget https://github.com/nakatamaho/mplapack/releases/download/v2.2.1/mplapack-2.2.1.tar.xz
-tar xvf mplapack-2.2.1.tar.xz
-cd mplapack-2.2.1
+wget https://github.com/nakatamaho/mplapack/releases/download/v2.3.0/mplapack-2.3.0.tar.xz
+tar xvf mplapack-2.3.0.tar.xz
+cd mplapack-2.3.0
 export CXX=g++-mp-15 CC=gcc-mp-15 FC=gfortran-mp-15
 ./configure \
     --prefix=$HOME/MPLAPACK \
@@ -256,9 +258,9 @@ make install
 ```sh
 sudo apt-get install gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64 gfortran-mingw-w64-x86-64
 mkdir -p $HOME/tmp && cd $HOME/tmp
-wget https://github.com/nakatamaho/mplapack/releases/download/v2.2.1/mplapack-2.2.1.tar.xz
-tar xvf mplapack-2.2.1.tar.xz
-cd mplapack-2.2.1
+wget https://github.com/nakatamaho/mplapack/releases/download/v2.3.0/mplapack-2.3.0.tar.xz
+tar xvf mplapack-2.3.0.tar.xz
+cd mplapack-2.3.0
 export CXX=x86_64-w64-mingw32-g++
 export CC=x86_64-w64-mingw32-gcc
 export FC=x86_64-w64-mingw32-gfortran
@@ -398,6 +400,28 @@ bash fable/go_testing.sh  # test programs (EIG/LIN/MATGEN)
 * https://github.com/nakatamaho/mplapack/blob/v2.0/doc/presentation/20211128_%E7%B2%BE%E5%BA%A6%E4%BF%9D%E8%A8%98meeting.pdf (in Japanese)
 
 # MPLAPACK Release Process
+
+## MPLAPACK 2.3.0 Release Process
+
+2.3.0 is an ABI and library-layout release on top of 2.2.1. Highlights:
+
+- **Unified self-contained libraries.** Each backend/flavor now installs one
+  self-contained `libmplapack_*` library containing both MPBLAS and MPLAPACK
+  symbols. The separate `libmpblas_*` products were removed.
+- **Layered symbol ownership.** Accelerator sources override optimized sources,
+  which override reference sources, and duplicate public symbols are rejected
+  by archive checks on ELF, Mach-O, and MinGW/PE-COFF targets.
+- **Autotools/CMake parity.** Both build systems generate the unified
+  reference, optimized, and accelerator flavor libraries, with per-flavor
+  pkg-config and CMake targets.
+- **Accelerator flavors.** DD CUDA and binary128 OpenCL optimized libraries are
+  self-contained and follow the same symbol-shadowing rule as CPU flavors.
+- **Release validation.** The 2.3.0 lin/eig result set covers 11
+  platform/compiler triplets. `lin` passed all 126,515,712 recognized tests;
+  `eig` recorded 8 failures out of 116,310,045 recognized tests.
+
+See [CHANGES.2.3.0.md](CHANGES.2.3.0.md) and [MIGRATION.md](MIGRATION.md) for
+the full change summary and migration notes.
 
 ## MPLAPACK 2.2.1 Release Process
 
@@ -546,6 +570,9 @@ Tier 1 platforms run the full pipeline including `make distcheck`. Tier 2 platfo
 
 # History
 
+* 2026-07-29  MPLAPACK 2.3.0 released. Unified self-contained libraries,
+  separate MPBLAS products removed, ABI advanced to 2, Autotools/CMake layout
+  parity completed, and release validation broadened across 11 triplets.
 * 2026-07-21  MPLAPACK 2.2.1 released. Patch release: GMP transcendental
   hardening, C++17/20/23/26 selection, binary128/binary80 math probes,
   include-order fixes, experimental CMake support, OpenCL binary128
