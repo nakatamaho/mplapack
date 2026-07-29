@@ -98,7 +98,7 @@ void Rsyr2k_test3(const char *uplo, const char *trans, REAL_REF alpha_ref, REAL_
 
                             mplapack_errno = 0;
                             blas_errno = 0;
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                             dsyr2k_f77(uplo, trans, &n, &k, &alpha_ref, A_ref, &lda, B_ref, &ldb, &beta_ref, C_ref, &ldc);
                             mplapack_errno1 = blas_errno;
 #else

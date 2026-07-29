@@ -9,7 +9,7 @@ Rpotrf.binary80 Rpotrf.binary80_opt \
 Rpotf2.binary80 Rpotf2.binary80_opt \
 Rgetrf.binary80 Rgetrf.binary80_opt
 
-binary80cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_BINARY80___
+binary80cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -DMPLAPACK_BUILD_WITH_BINARY80
 binary80lapack_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_binary80
 
 if BINARY128_USE_QUADMATH

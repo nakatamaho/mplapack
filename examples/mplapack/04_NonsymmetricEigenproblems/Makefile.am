@@ -3,7 +3,7 @@ mplapackexamples_PROGRAMS =
 if ENABLE_MPFR
 mplapackexamples_PROGRAMS += Cgees_test_mpfr Cgeev_NPR_mpfr Cgeev_test2_mpfr Cgeev_test_mpfr Rgees_Grcar_mpfr Rgees_readfromfile_mpfr Rgees_test_mpfr Rgeev_Frank_mpfr Rgeev_random_highcond_mpfr Rgeev_readfromfile_mpfr Rgeev_test_mpfr
 
-mpfr_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mpfrc++ -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR)
+mpfr_cxxflags = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR)
 mpfr_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_mpfr -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp
 
 Cgees_test_mpfr_SOURCES = Cgees_test_mpfr.cpp
@@ -55,7 +55,7 @@ endif
 if ENABLE_GMP
 mplapackexamples_PROGRAMS += Cgees_test_gmp Cgeev_test2_gmp Cgeev_test_gmp Rgees_Grcar_gmp Rgees_readfromfile_gmp Rgees_test_gmp Rgeev_Frank_gmp Rgeev_random_highcond_gmp Rgeev_readfromfile_gmp Rgeev_test_gmp
 
-gmp_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR)
+gmp_cxxflags = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR)
 gmp_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_gmp -L$(GMP_LIBDIR) -lgmp
 
 Cgees_test_gmp_SOURCES = Cgees_test_gmp.cpp

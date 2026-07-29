@@ -1083,7 +1083,7 @@ statement_190:
                 }
             }
             write(nout, format_9961), c3, nbval[i - 1], nbmin[i - 1], nxval[i - 1], max((INTEGER)11, inmin[i - 1]), inwin[i - 1], inibl[i - 1], ishfts[i - 1], iacc22[i - 1];
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
+#if defined MPLAPACK_BUILD_WITH_GMP
             thresh_org = thresh;
             thresh = thresh * 5.0;
             printf("Warning! Threshold has been lifted to: ");
@@ -1091,7 +1091,7 @@ statement_190:
             printf(" for GMP\n");
 #endif
             Cchkhs(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], &a[(3 - 1) * lda], &a[(4 - 1) * lda], &a[(5 - 1) * lda], nmax, &a[(6 - 1) * lda], &a[(7 - 1) * lda], &dc[0], &dc[(2 - 1) * nmax], &a[(8 - 1) * lda], &a[(9 - 1) * lda], &a[(10 - 1) * lda], &a[(11 - 1) * lda], &a[(12 - 1) * lda], &dc[(3 - 1) * nmax], work, lwork, rwork, iwork, logwrk, result, info);
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
+#if defined MPLAPACK_BUILD_WITH_GMP
             thresh = thresh_org;
 #endif
             if (info != 0) {
@@ -1176,7 +1176,7 @@ statement_190:
             }
             write(nout, format_9997), c3, nbval[i - 1], nbmin[i - 1], nxval[i - 1];
             if (tstchk) {
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
+#if defined MPLAPACK_BUILD_WITH_GMP
                 thresh_org = thresh;
                 thresh = thresh * 2.0;
                 printf("Warning! Threshold has been lifted to: ");
@@ -1184,7 +1184,7 @@ statement_190:
                 printf(" for GMP ZSG\n");
 #endif
                 Cdrvsg2stg(nn, nval, maxtyp, dotype, iseed, thresh, nout, &a[0], nmax, &a[(2 - 1) * lda], nmax, &dr[(3 - 1) * nmax], &dr[(4 - 1) * nmax], &a[(3 - 1) * lda], nmax, &a[(4 - 1) * lda], &a[(5 - 1) * lda], &a[(6 - 1) * lda], &a[(7 - 1) * lda], work, lwork, rwork, lwork, iwork, liwork, result, info);
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
+#if defined MPLAPACK_BUILD_WITH_GMP
                 thresh = thresh_org;
 #endif
                 if (info != 0) {
@@ -1230,7 +1230,7 @@ statement_190:
                 }
             }
             write(nout, format_9995), c3, nbval[i - 1], nbmin[i - 1], nxval[i - 1], nrhs;
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
+#if defined MPLAPACK_BUILD_WITH_GMP
             thresh_org = thresh;
             thresh = thresh * 4.0;
             printf("Warning! Threshold has been lifted to: ");
@@ -1246,7 +1246,7 @@ statement_190:
             if (tstdrv) {
                 Cdrvbd(nn, mval, nval, maxtyp, dotype, iseed, thresh, &a[0], nmax, &a[(2 - 1) * lda], nmax, &a[(3 - 1) * lda], nmax, &a[(4 - 1) * lda], &a[(5 - 1) * lda], &a[(6 - 1) * lda], &dr[0], &dr[(2 - 1) * nmax], &dr[(3 - 1) * nmax], work, lwork, rwork, iwork, nout, info);
             }
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
+#if defined MPLAPACK_BUILD_WITH_GMP
             thresh = thresh_org;
 #endif
         }
@@ -1266,7 +1266,7 @@ statement_190:
             if (tsterr) {
                 Cerred(c3, nout);
             }
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
+#if defined MPLAPACK_BUILD_WITH_GMP
             thresh_org = thresh;
             thresh = thresh * 5.0;
             printf("Warning! Threshold has been lifted to: ");
@@ -1278,7 +1278,7 @@ statement_190:
             if (info != 0) {
                 write(nout, format_9980), "Cgeev", info;
             }
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
+#if defined MPLAPACK_BUILD_WITH_GMP
             thresh = thresh_org;
 #endif
         }
@@ -1300,7 +1300,7 @@ statement_190:
             if (tsterr) {
                 Cerred(c3, nout);
             }
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
+#if defined MPLAPACK_BUILD_WITH_GMP
             thresh_org = thresh;
             thresh = thresh * 5.0;
             printf("Warning! Threshold has been lifted to: ");
@@ -1312,7 +1312,7 @@ statement_190:
             if (info != 0) {
                 write(nout, format_9980), "Cgees", info;
             }
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
+#if defined MPLAPACK_BUILD_WITH_GMP
             thresh = thresh_org;
 #endif
         }
@@ -1334,7 +1334,7 @@ statement_190:
             if (tsterr) {
                 Cerred(c3, nout);
             }
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
+#if defined MPLAPACK_BUILD_WITH_GMP
             thresh_org = thresh;
             thresh = thresh * 4.0;
             printf("Warning! Threshold has been lifted to: ");
@@ -1346,7 +1346,7 @@ statement_190:
             if (info != 0) {
                 write(nout, format_9980), "Cgeevx", info;
             }
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
+#if defined MPLAPACK_BUILD_WITH_GMP
             thresh = thresh_org;
 #endif
         }
@@ -1368,7 +1368,7 @@ statement_190:
             if (tsterr) {
                 Cerred(c3, nout);
             }
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
+#if defined MPLAPACK_BUILD_WITH_GMP
             thresh_org = thresh;
             thresh = thresh * 5.0;
             printf("Warning! Threshold has been lifted to: ");
@@ -1380,7 +1380,7 @@ statement_190:
             if (info != 0) {
                 write(nout, format_9980), "Cgeesx", info;
             }
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
+#if defined MPLAPACK_BUILD_WITH_GMP
             thresh = thresh_org;
 #endif
         }
@@ -1447,7 +1447,7 @@ statement_190:
                 Cerrgg(c3, nout);
             }
             Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
+#if defined MPLAPACK_BUILD_WITH_GMP
             thresh = thresh * 5.0;
             printf("Warning! Threshold has been lifted to: ");
             printnum_short(thresh);
@@ -1466,7 +1466,7 @@ statement_190:
             if (info != 0) {
                 write(nout, format_9980), "Cdrges3", info;
             }
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
+#if defined MPLAPACK_BUILD_WITH_GMP
             thresh = thresh_org;
 #endif
         }
@@ -1514,7 +1514,7 @@ statement_190:
                 Cerrgg(c3, nout);
             }
             Alareq(c3, ntypes, dotype, maxtyp, nin, nout);
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
+#if defined MPLAPACK_BUILD_WITH_GMP
             thresh_org = thresh;
             thresh = thresh * 4.0;
             printf("Warning! Threshold has been lifted to: ");
@@ -1533,7 +1533,7 @@ statement_190:
             if (info != 0) {
                 write(nout, format_9980), "Cdrgev3", info;
             }
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
+#if defined MPLAPACK_BUILD_WITH_GMP
             thresh = thresh_org;
 #endif
         }

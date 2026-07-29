@@ -40,7 +40,7 @@
 using namespace fem::major_types;
 using fem::common;
 
-#define __MPLAPACK_XLAENV__
+#define MPLAPACK_XLAENV_DEFINE
 #include <mplapack_debug.h>
 
 #include <mplapack_matgen.h>

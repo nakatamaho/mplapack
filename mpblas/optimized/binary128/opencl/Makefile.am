@@ -4,7 +4,7 @@ include $(top_srcdir)/mplapack/reference/accelerator-sources.am
 # Rgemm_ref.cpp remains as the CPU fallback helper.
 MPLAPACK_BINARY128_OPENCL_LAPACK_OPTIMIZED_SOURCES =
 
-MPLAPACK_BINARY128_OPENCL_CPPFLAGS = -I. -I.. -I$(top_srcdir)/include $(OPENMP_CXXFLAGS) -D___MPLAPACK_BUILD_WITH_BINARY128___
+MPLAPACK_BINARY128_OPENCL_CPPFLAGS = -I. -I.. -I$(top_srcdir)/include $(OPENMP_CXXFLAGS) -DMPLAPACK_BUILD_WITH_BINARY128
 AM_CPPFLAGS = $(MPLAPACK_BINARY128_OPENCL_CPPFLAGS)
 
 lib_LTLIBRARIES = libmplapack_binary128_opt_opencl.la

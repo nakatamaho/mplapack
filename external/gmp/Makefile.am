@@ -3,15 +3,15 @@ GMP_DISTFILE=gmp/download/gmp-$(GMPVERSION).tar.xz
 MAKEFLAGS =
 
 if IS_MACOS
-CONFIGURE_ARGS=--enable-cxx --prefix=$(abs_builddir)/../i/GMP/
-CONFIGURE_ARGS2=--enable-cxx --prefix=$(prefix)
+CONFIGURE_ARGS=--disable-cxx --prefix=$(abs_builddir)/../i/GMP/
+CONFIGURE_ARGS2=--disable-cxx --prefix=$(prefix)
 else
 if IS_MINGW
-CONFIGURE_ARGS=--enable-cxx --prefix=$(abs_builddir)/../i/GMP/ --build=x86_64-linux-gnu --host=$(host) --enable-shared --disable-static
-CONFIGURE_ARGS2=--enable-cxx --prefix=$(prefix) --build=x86_64-linux-gnu --host=$(host) --enable-shared --disable-static
+CONFIGURE_ARGS=--disable-cxx --prefix=$(abs_builddir)/../i/GMP/ --build=x86_64-linux-gnu --host=$(host) --enable-shared --disable-static
+CONFIGURE_ARGS2=--disable-cxx --prefix=$(prefix) --build=x86_64-linux-gnu --host=$(host) --enable-shared --disable-static
 else
-CONFIGURE_ARGS=--enable-cxx --prefix=$(abs_builddir)/../i/GMP/ --host=$(host)
-CONFIGURE_ARGS2=--enable-cxx --prefix=$(prefix) --host=$(host)
+CONFIGURE_ARGS=--disable-cxx --prefix=$(abs_builddir)/../i/GMP/ --host=$(host)
+CONFIGURE_ARGS2=--disable-cxx --prefix=$(prefix) --host=$(host)
 endif
 endif
 

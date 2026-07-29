@@ -63,14 +63,14 @@ void Clanht_test2(const char *norm) {
         while (j < MAX_ITER) {
             set_random_vector(d_ref, d, veclen(n, 1));
             set_random_vector(e_ref, e, veclen(n - 1, 1));
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
             zlanht_ret = zlanht_f77(norm, &ni, d_ref, e_ref);
 #else
             zlanht_ret = Clanht(norm, n, d_ref, e_ref);
 #endif
             Clanht_ret = Clanht(norm, n, d, e);
 
-            diff = abs(Clanht_ret - zlanht_ret);
+            diff = abs(cast2ref(Clanht_ret) - zlanht_ret);
             if (diff > EPSILON) {
                 printf("error: ");
                 printnum(diff);

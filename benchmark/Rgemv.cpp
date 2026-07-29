@@ -81,7 +81,7 @@ int main(int argc, char *argv[]) {
     using std::chrono::duration_cast;
     using std::chrono::nanoseconds;
 
-    ___MPLAPACK_INITIALIZE___
+    MPLAPACK_INITIALIZE
 
     typedef void (*rgemv_func_t)(const char *, mplapackint, mplapackint, REAL, REAL *, mplapackint, REAL *, mplapackint, REAL, REAL *, mplapackint);
     typedef void (*raxpy_func_t)(mplapackint, REAL, REAL *, mplapackint, REAL *, mplapackint);

@@ -63,14 +63,14 @@ void Clansy_test2(const char *norm, const char *uplo) {
             j = 0;
             while (j < MAX_ITER) {
                 set_random_vector(A_ref, A, matlen(lda, n));
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                 zlansy_ret = zlansy_f77(norm, uplo, &n, A_ref, &lda, work_ref);
 #else
                 zlansy_ret = Clansy(norm, uplo, n, A_ref, lda, work_ref);
 #endif
                 Clansy_ret = Clansy(norm, uplo, n, A, lda, work);
 
-                REAL_REF diff = abs(zlansy_ret - Clansy_ret);
+                REAL_REF diff = abs(zlansy_ret - cast2ref(Clansy_ret));
 
                 if (diff > EPSILON) {
                     printf("n:%d lda %d, uplo %s, norm %s\n", n, lda, uplo, norm);

@@ -26,7 +26,9 @@ namespace detail_b128 {
 
     inline constexpr int mant_dig() noexcept {
 #if MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_FLOAT128
-#if defined(FLT128_MANT_DIG)
+#if defined(__FLT128_MANT_DIG__)
+        return __FLT128_MANT_DIG__;
+#elif defined(FLT128_MANT_DIG)
         return FLT128_MANT_DIG;
 #else
 #error "FLT128_MANT_DIG required for MPLAPACK_BINARY128_MODE_FLOAT128"
@@ -48,7 +50,9 @@ namespace detail_b128 {
 
     inline constexpr int min_exp() noexcept {
 #if MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_FLOAT128
-#if defined(FLT128_MIN_EXP)
+#if defined(__FLT128_MIN_EXP__)
+        return __FLT128_MIN_EXP__;
+#elif defined(FLT128_MIN_EXP)
         return FLT128_MIN_EXP;
 #else
 #error "FLT128_MIN_EXP required"
@@ -70,7 +74,9 @@ namespace detail_b128 {
 
     inline constexpr int max_exp() noexcept {
 #if MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_FLOAT128
-#if defined(FLT128_MAX_EXP)
+#if defined(__FLT128_MAX_EXP__)
+        return __FLT128_MAX_EXP__;
+#elif defined(FLT128_MAX_EXP)
         return FLT128_MAX_EXP;
 #else
 #error "FLT128_MAX_EXP required"
@@ -92,7 +98,9 @@ namespace detail_b128 {
 
     inline mplapack_binary128_t rmin_val() noexcept {
 #if MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_FLOAT128
-#if defined(FLT128_MIN)
+#if defined(__FLT128_MIN__)
+        return (mplapack_binary128_t)__FLT128_MIN__;
+#elif defined(FLT128_MIN)
         return (mplapack_binary128_t)FLT128_MIN;
 #else
 #error "FLT128_MIN required"
@@ -114,7 +122,9 @@ namespace detail_b128 {
 
     inline mplapack_binary128_t rmax_val() noexcept {
 #if MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_FLOAT128
-#if defined(FLT128_MAX)
+#if defined(__FLT128_MAX__)
+        return (mplapack_binary128_t)__FLT128_MAX__;
+#elif defined(FLT128_MAX)
         return (mplapack_binary128_t)FLT128_MAX;
 #else
 #error "FLT128_MAX required"

@@ -144,7 +144,7 @@ void Rchktsqr(REAL const thresh, bool const tsterr, INTEGER const nm, INTEGER *m
                         //
                         for (t = 1; t <= ntests; t = t + 1) {
                             REAL thresh_use = thresh;
-#if defined ___MPLAPACK_BUILD_WITH_DOUBLE___ || defined ___MPLAPACK_BUILD_WITH_BINARY80___ || defined ___MPLAPACK_BUILD_WITH_GMP___
+#if defined MPLAPACK_BUILD_WITH_DOUBLE || defined MPLAPACK_BUILD_WITH_BINARY80 || defined MPLAPACK_BUILD_WITH_GMP
                             if (t == 5) {
                                 thresh_use = max(thresh_use, (REAL)80.0);
                             }

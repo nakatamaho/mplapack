@@ -4,7 +4,7 @@
 //
 // Build example:
 //   g++ -O2 -I${MPLAPACK}/include \
-//       -D___MPLAPACK_BUILD_WITH_MPFR___ \
+//       -DMPLAPACK_BUILD_WITH_MPFR \
 //       debug_cgesvj_type4_v2.cpp \
 //       -L${MPLAPACK}/lib -lmplapack_mpfr \
 //       -lmpc -lmpfr -lgmp -o debug_cgesvj_type4_v2
@@ -18,25 +18,25 @@
 #include <cstdlib>
 
 // ---------- helpers ----------
-void _printnum(mpreal a) {
+void _printnum(mpfr_class a) {
     mpfr_printf("%10.8Re", mpfr_ptr(a));
 }
 
-void _printnum_full(mpreal a) {
+void _printnum_full(mpfr_class a) {
     mpfr_printf("%40.34Re", mpfr_ptr(a));
 }
 
 // Compute Frobenius norm using Rlamch-aware scaling to avoid underflow
 // (mimics Rlange("F",...))
-mpreal safe_frobenius_norm_complex(int M, int N, mpcomplex *A, int LDA) {
-    mpreal scale = 0.0;
-    mpreal ssq   = 1.0;
-    mpreal zero  = 0.0;
+mpfr_class safe_frobenius_norm_complex(int M, int N, mpc_class *A, int LDA) {
+    mpfr_class scale = 0.0;
+    mpfr_class ssq   = 1.0;
+    mpfr_class zero  = 0.0;
     // Use scaled sum of squares: ||A||_F = scale * sqrt(ssq)
     for (int j = 0; j < N; j++) {
         for (int i = 0; i < M; i++) {
-            mpreal re = abs(A[i + j * LDA].real());
-            mpreal im = abs(A[i + j * LDA].imag());
+            mpfr_class re = abs(A[i + j * LDA].real());
+            mpfr_class im = abs(A[i + j * LDA].imag());
             // Process real part
             if (re != zero) {
                 if (scale < re) {
@@ -62,42 +62,37 @@ mpreal safe_frobenius_norm_complex(int M, int N, mpcomplex *A, int LDA) {
 
 // Apply a random Householder reflection from left: A <- (I - 2 v v^H) * A
 // v is a random unit vector of length M
-void apply_random_left_householder(int M, int N, mpcomplex *A, int LDA,
+void apply_random_left_householder(int M, int N, mpc_class *A, int LDA,
                                     unsigned long seed) {
-    mpreal one = 1.0, zero = 0.0, two = 2.0;
-    mpcomplex *v = new mpcomplex[M];
-    gmp_randstate_t state;
-    gmp_randinit_default(state);
-    gmp_randseed_ui(state, seed);
+    mpfr_class one = 1.0, zero = 0.0, two = 2.0;
+    mpc_class *v = new mpc_class[M];
+    mpfrxx::mpfr_randclass state(gmp_randinit_default);
+    state.seed(seed);
 
     // Generate random vector
-    mpreal norm_sq = zero;
+    mpfr_class norm_sq = zero;
     for (int i = 0; i < M; i++) {
-        mpfr_t re_t, im_t;
-        mpfr_init2(re_t, mpfr_get_default_prec());
-        mpfr_init2(im_t, mpfr_get_default_prec());
-        mpfr_urandomb(re_t, state);
-        mpfr_urandomb(im_t, state);
-        mpreal re_val(re_t), im_val(im_t);
+        mpfr_class re_val;
+        mpfr_class im_val;
+        re_val = state.get_fr();
+        im_val = state.get_fr();
         re_val = re_val - 0.5;
         im_val = im_val - 0.5;
-        v[i] = mpcomplex(re_val, im_val);
+        v[i] = mpc_class(re_val, im_val);
         norm_sq += re_val * re_val + im_val * im_val;
-        mpfr_clear(re_t);
-        mpfr_clear(im_t);
     }
 
     // Normalize v
-    mpreal norm_v = sqrt(norm_sq);
+    mpfr_class norm_v = sqrt(norm_sq);
     for (int i = 0; i < M; i++) {
-        v[i] = v[i] / mpcomplex(norm_v, zero);
+        v[i] = v[i] / mpc_class(norm_v, zero);
     }
 
     // Apply: A <- A - 2 * v * (v^H * A)
     // First compute w = v^H * A (1 x N)
-    mpcomplex *w = new mpcomplex[N];
+    mpc_class *w = new mpc_class[N];
     for (int j = 0; j < N; j++) {
-        w[j] = mpcomplex(zero, zero);
+        w[j] = mpc_class(zero, zero);
         for (int i = 0; i < M; i++) {
             w[j] += conj(v[i]) * A[i + j * LDA];
         }
@@ -111,44 +106,38 @@ void apply_random_left_householder(int M, int N, mpcomplex *A, int LDA,
 
     delete[] v;
     delete[] w;
-    gmp_randclear(state);
 }
 
 // Apply a random Householder reflection from right: A <- A * (I - 2 v v^H)
-void apply_random_right_householder(int M, int N, mpcomplex *A, int LDA,
+void apply_random_right_householder(int M, int N, mpc_class *A, int LDA,
                                      unsigned long seed) {
-    mpreal one = 1.0, zero = 0.0, two = 2.0;
-    mpcomplex *v = new mpcomplex[N];
-    gmp_randstate_t state;
-    gmp_randinit_default(state);
-    gmp_randseed_ui(state, seed);
+    mpfr_class one = 1.0, zero = 0.0, two = 2.0;
+    mpc_class *v = new mpc_class[N];
+    mpfrxx::mpfr_randclass state(gmp_randinit_default);
+    state.seed(seed);
 
     // Generate random vector
-    mpreal norm_sq = zero;
+    mpfr_class norm_sq = zero;
     for (int i = 0; i < N; i++) {
-        mpfr_t re_t, im_t;
-        mpfr_init2(re_t, mpfr_get_default_prec());
-        mpfr_init2(im_t, mpfr_get_default_prec());
-        mpfr_urandomb(re_t, state);
-        mpfr_urandomb(im_t, state);
-        mpreal re_val(re_t), im_val(im_t);
+        mpfr_class re_val;
+        mpfr_class im_val;
+        re_val = state.get_fr();
+        im_val = state.get_fr();
         re_val = re_val - 0.5;
         im_val = im_val - 0.5;
-        v[i] = mpcomplex(re_val, im_val);
+        v[i] = mpc_class(re_val, im_val);
         norm_sq += re_val * re_val + im_val * im_val;
-        mpfr_clear(re_t);
-        mpfr_clear(im_t);
     }
-    mpreal norm_v = sqrt(norm_sq);
+    mpfr_class norm_v = sqrt(norm_sq);
     for (int i = 0; i < N; i++) {
-        v[i] = v[i] / mpcomplex(norm_v, zero);
+        v[i] = v[i] / mpc_class(norm_v, zero);
     }
 
     // Apply: A <- A - 2 * (A * v) * v^H
     // First compute w = A * v (M x 1)
-    mpcomplex *w = new mpcomplex[M];
+    mpc_class *w = new mpc_class[M];
     for (int i = 0; i < M; i++) {
-        w[i] = mpcomplex(zero, zero);
+        w[i] = mpc_class(zero, zero);
         for (int j = 0; j < N; j++) {
             w[i] += A[i + j * LDA] * v[j];
         }
@@ -162,7 +151,6 @@ void apply_random_right_householder(int M, int N, mpcomplex *A, int LDA,
 
     delete[] v;
     delete[] w;
-    gmp_randclear(state);
 }
 
 // ---------- main ----------
@@ -177,19 +165,19 @@ int main() {
     printf("  mpfr_get_emin()          = %ld\n", (long)mpfr_get_emin());
     printf("  mpfr_get_emax()          = %ld\n", (long)mpfr_get_emax());
 
-    mpreal eps    = Rlamch_mpfr("E");
-    mpreal sfmin  = Rlamch_mpfr("S");
-    mpreal ovfl   = Rlamch_mpfr("O");
-    mpreal unfl   = Rlamch_mpfr("U");
-    mpreal one    = 1.0;
-    mpreal zero   = 0.0;
+    mpfr_class eps    = Rlamch_mpfr("E");
+    mpfr_class sfmin  = Rlamch_mpfr("S");
+    mpfr_class ovfl   = Rlamch_mpfr("O");
+    mpfr_class unfl   = Rlamch_mpfr("U");
+    mpfr_class one    = 1.0;
+    mpfr_class zero   = 0.0;
 
     printf("  Rlamch('E') = "); _printnum_full(eps);   printf("\n");
     printf("  Rlamch('S') = "); _printnum_full(sfmin); printf("\n");
     printf("  Rlamch('O') = "); _printnum_full(ovfl);  printf("\n");
 
-    mpreal rootsfmin = sqrt(sfmin);
-    mpreal rootbig   = one / rootsfmin;
+    mpfr_class rootsfmin = sqrt(sfmin);
+    mpfr_class rootbig   = one / rootsfmin;
     printf("  rootsfmin   = "); _printnum_full(rootsfmin); printf("\n");
     printf("  rootbig     = "); _printnum_full(rootbig);   printf("\n");
     printf("\n");
@@ -208,27 +196,27 @@ int main() {
         printf("  Test M=%d, N=%d (type 4, DENSE)\n", (int)m, (int)n);
         printf("============================================\n");
 
-        mpcomplex *a     = new mpcomplex[lda * n];
-        mpcomplex *a_sav = new mpcomplex[lda * n];
-        mpreal    *sva   = new mpreal[n];
-        mpreal    *sv_target = new mpreal[n];
-        mpcomplex *v     = new mpcomplex[ldv * n];
+        mpc_class *a     = new mpc_class[lda * n];
+        mpc_class *a_sav = new mpc_class[lda * n];
+        mpfr_class    *sva   = new mpfr_class[n];
+        mpfr_class    *sv_target = new mpfr_class[n];
+        mpc_class *v     = new mpc_class[ldv * n];
         mplapackint lwork  = m + n + 10;
         mplapackint lrwork = max((mplapackint)6, m + n);
-        mpcomplex *cwork = new mpcomplex[lwork];
-        mpreal    *rwork = new mpreal[lrwork];
+        mpc_class *cwork = new mpc_class[lwork];
+        mpfr_class    *rwork = new mpfr_class[lrwork];
 
         // Step 1: Create diagonal matrix with type 4 singular values
         for (int j = 0; j < n; j++) {
             for (int i = 0; i < m; i++) {
-                a[i + j * lda] = mpcomplex(zero, zero);
+                a[i + j * lda] = mpc_class(zero, zero);
             }
             // Evenly spaced near underflow: sv = sfmin * (n - j) / n
             // (this gives values between sfmin/n and sfmin)
             // Actually, zdrvbd uses: sv(i) = ulp + (1 - ulp) * (n-i)/(n-1) * sfmin
             // We use a simpler version:
-            sv_target[j] = sfmin * mpreal(n - j);
-            a[j + j * lda] = mpcomplex(sv_target[j], zero);
+            sv_target[j] = sfmin * mpfr_class(n - j);
+            a[j + j * lda] = mpc_class(sv_target[j], zero);
         }
 
         printf("  Target singular values (before transforms):\n");
@@ -253,10 +241,10 @@ int main() {
         printf("  Column norms of dense A (safe computation):\n");
         for (int j = 0; j < n; j++) {
             // Use Rnrm2-like safe computation
-            mpreal scale_c = zero, ssq_c = one;
+            mpfr_class scale_c = zero, ssq_c = one;
             for (int i = 0; i < m; i++) {
-                mpreal re = abs(a[i + j * lda].real());
-                mpreal im = abs(a[i + j * lda].imag());
+                mpfr_class re = abs(a[i + j * lda].real());
+                mpfr_class im = abs(a[i + j * lda].imag());
                 if (re != zero) {
                     if (scale_c < re) {
                         ssq_c = one + ssq_c * (scale_c / re) * (scale_c / re);
@@ -274,20 +262,20 @@ int main() {
                     }
                 }
             }
-            mpreal cnorm = scale_c * sqrt(ssq_c);
+            mpfr_class cnorm = scale_c * sqrt(ssq_c);
             printf("    ||A(:,%d)|| = ", j); _printnum(cnorm);
             printf("  (< rootsfmin? %s)\n",
                    (cnorm < rootsfmin) ? "YES" : "no");
         }
 
-        mpreal anorm_f = safe_frobenius_norm_complex(m, n, a, lda);
+        mpfr_class anorm_f = safe_frobenius_norm_complex(m, n, a, lda);
         printf("  ||A||_F (safe) = "); _printnum_full(anorm_f); printf("\n");
 
         // Step 4: Call Cgesvj
         for (int j = 0; j < n; j++)
             for (int i = 0; i < n; i++)
-                v[i + j * ldv] = (i == j) ? mpcomplex(one, zero)
-                                           : mpcomplex(zero, zero);
+                v[i + j * ldv] = (i == j) ? mpc_class(one, zero)
+                                           : mpc_class(zero, zero);
 
         mplapackint info = 0;
         printf("\n  Calling Cgesvj('G', 'U', 'V', %d, %d, ...)...\n",
@@ -307,14 +295,14 @@ int main() {
         printf("  CWORK(1) = ("); _printnum(cwork[0].real());
         printf(", "); _printnum(cwork[0].imag()); printf(")\n");
 
-        mpreal scale = rwork[0];
+        mpfr_class scale = rwork[0];
 
         // Step 5: Computed singular values
         printf("\n  Computed singular values:\n");
         for (int i = 0; i < n; i++) {
-            mpreal sv_comp = scale * sva[i];
-            mpreal sv_tgt  = sv_target[i];  // sorted descending
-            mpreal relerr;
+            mpfr_class sv_comp = scale * sva[i];
+            mpfr_class sv_tgt  = sv_target[i];  // sorted descending
+            mpfr_class relerr;
             if (sv_tgt != zero) {
                 relerr = abs(sv_comp - sv_tgt) / sv_tgt;
             } else {
@@ -329,23 +317,23 @@ int main() {
 
         // Step 6: Compute residual ||A - U diag(S) V^H|| using safe norm
         // Build R = A_sav - U * diag(scale*sva) * V^H
-        mpcomplex *resid = new mpcomplex[lda * n];
+        mpc_class *resid = new mpc_class[lda * n];
         for (int j = 0; j < n; j++) {
             for (int i = 0; i < m; i++) {
                 resid[i + j * lda] = a_sav[i + j * lda];
                 for (int k = 0; k < n; k++) {
-                    mpcomplex u_ik = a[i + k * lda];
-                    mpcomplex v_jk = v[j + k * ldv];
-                    mpreal    s_k  = scale * sva[k];
-                    resid[i + j * lda] -= u_ik * mpcomplex(s_k, zero) * conj(v_jk);
+                    mpc_class u_ik = a[i + k * lda];
+                    mpc_class v_jk = v[j + k * ldv];
+                    mpfr_class    s_k  = scale * sva[k];
+                    resid[i + j * lda] -= u_ik * mpc_class(s_k, zero) * conj(v_jk);
                 }
             }
         }
 
-        mpreal resid_f = safe_frobenius_norm_complex(m, n, resid, lda);
-        mpreal ulp = eps;
-        mpreal mn_max = mpreal(max(m, n));
-        mpreal ratio;
+        mpfr_class resid_f = safe_frobenius_norm_complex(m, n, resid, lda);
+        mpfr_class ulp = eps;
+        mpfr_class mn_max = mpfr_class(max(m, n));
+        mpfr_class ratio;
         if (anorm_f > zero) {
             ratio = resid_f / (anorm_f * mn_max * ulp);
         } else {
@@ -365,28 +353,28 @@ int main() {
         printf("  PASS? %s\n", (ratio < 50.0) ? "YES" : "*** FAIL ***");
 
         // Step 7: Check 1/(2*eps)
-        mpreal inv_2eps = one / (2.0 * eps);
+        mpfr_class inv_2eps = one / (2.0 * eps);
         printf("  1/(2*eps) = "); _printnum_full(inv_2eps); printf("\n");
-        mpreal ratio_diff = abs(ratio - inv_2eps);
+        mpfr_class ratio_diff = abs(ratio - inv_2eps);
         printf("  |ratio - 1/(2*eps)| = "); _printnum(ratio_diff); printf("\n");
         if (ratio_diff < one) {
             printf("  *** ratio  1/(2*eps) : SYSTEMATIC SCALING FAILURE ***\n");
         }
 
         // Step 8: U orthogonality
-        mpreal orth_u_f = zero;
+        mpfr_class orth_u_f = zero;
         {
-            mpreal orth_scale = zero, orth_ssq = one;
+            mpfr_class orth_scale = zero, orth_ssq = one;
             for (int i = 0; i < n; i++) {
                 for (int j = 0; j < n; j++) {
-                    mpcomplex dot = mpcomplex(zero, zero);
+                    mpc_class dot = mpc_class(zero, zero);
                     for (int k = 0; k < m; k++) {
                         dot += conj(a[k + i * lda]) * a[k + j * lda];
                     }
-                    mpcomplex diff = dot - ((i == j) ? mpcomplex(one, zero)
-                                                     : mpcomplex(zero, zero));
-                    mpreal re = abs(diff.real());
-                    mpreal im = abs(diff.imag());
+                    mpc_class diff = dot - ((i == j) ? mpc_class(one, zero)
+                                                     : mpc_class(zero, zero));
+                    mpfr_class re = abs(diff.real());
+                    mpfr_class im = abs(diff.imag());
                     if (re != zero) {
                         if (orth_scale < re) {
                             orth_ssq = one + orth_ssq * (orth_scale/re)*(orth_scale/re);
@@ -407,7 +395,7 @@ int main() {
             }
             orth_u_f = orth_scale * sqrt(orth_ssq);
         }
-        mpreal ratio_u = orth_u_f / (mpreal(m) * ulp);
+        mpfr_class ratio_u = orth_u_f / (mpfr_class(m) * ulp);
         printf("\n  --- Test 16 (U orthogonality) ---\n");
         printf("  ||I - U^H U||_F (safe) = "); _printnum_full(orth_u_f); printf("\n");
         printf("  ratio                  = "); _printnum_full(ratio_u); printf("\n");
@@ -416,20 +404,20 @@ int main() {
         // Step 9: What if we ignore SCALE?
         printf("\n  --- What if SCALE is ignored? ---\n");
         if (scale != one) {
-            mpcomplex *resid2 = new mpcomplex[lda * n];
+            mpc_class *resid2 = new mpc_class[lda * n];
             for (int j = 0; j < n; j++) {
                 for (int i = 0; i < m; i++) {
                     resid2[i + j * lda] = a_sav[i + j * lda];
                     for (int k = 0; k < n; k++) {
-                        mpcomplex u_ik = a[i + k * lda];
-                        mpcomplex v_jk = v[j + k * ldv];
-                        mpreal    s_k  = sva[k]; // NO scale!
-                        resid2[i + j * lda] -= u_ik * mpcomplex(s_k, zero) * conj(v_jk);
+                        mpc_class u_ik = a[i + k * lda];
+                        mpc_class v_jk = v[j + k * ldv];
+                        mpfr_class    s_k  = sva[k]; // NO scale!
+                        resid2[i + j * lda] -= u_ik * mpc_class(s_k, zero) * conj(v_jk);
                     }
                 }
             }
-            mpreal resid2_f = safe_frobenius_norm_complex(m, n, resid2, lda);
-            mpreal ratio2;
+            mpfr_class resid2_f = safe_frobenius_norm_complex(m, n, resid2, lda);
+            mpfr_class ratio2;
             if (anorm_f > zero) {
                 ratio2 = resid2_f / (anorm_f * mn_max * ulp);
             } else {

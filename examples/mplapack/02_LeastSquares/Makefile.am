@@ -3,7 +3,7 @@ mplapackexamples_PROGRAMS =
 if ENABLE_MPFR
 mplapackexamples_PROGRAMS += Cgels_example_mpfr Cgelss_example_mpfr Rgels_example_mpfr Rgelss_example_mpfr Rgelsy_example_mpfr Rggglm_example_mpfr Rgglse_example_mpfr
 
-mpfr_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mpfrc++ -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR)
+mpfr_cxxflags = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR)
 mpfr_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_mpfr -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp
 
 Cgels_example_mpfr_SOURCES = Cgels_example_mpfr.cpp
@@ -39,7 +39,7 @@ endif
 if ENABLE_GMP
 mplapackexamples_PROGRAMS += Cgels_example_gmp Cgelss_example_gmp Rgels_example_gmp Rgelss_example_gmp Rgelsy_example_gmp Rggglm_example_gmp Rgglse_example_gmp
 
-gmp_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR)
+gmp_cxxflags = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR)
 gmp_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_gmp -L$(GMP_LIBDIR) -lgmp
 
 Cgels_example_gmp_SOURCES = Cgels_example_gmp.cpp

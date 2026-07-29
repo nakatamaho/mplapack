@@ -1,0 +1,6 @@
+$ c++ -std=gnu++17 -fopenmp -ffp-contract=off -I/tmp/gmpfrxx-p0-install/include -D___MPLAPACK_INTERNAL___ -I/tmp/mplapack-p0-final/include/mplapack -I/tmp/mplapack-p0-final/include -L/tmp/mplapack-p0-final/lib -Wl,-rpath,/tmp/mplapack-p0-final/lib -I/tmp/mplapack-p0-base/include /home/docker/mplapack/docs/migration/gmpfrxx_mkII/tools/spike/utility_print_hex.cpp -o /tmp/mplapack-p0-spikes/utility-print-hex -lmpc -lmpfr -lgmp -lqd -lquadmath
+
+compile_exit=0
+$ /tmp/mplapack-p0-spikes/utility-print-hex
+
+run_exit=0

@@ -109,7 +109,7 @@ void Rgemm_test3(const char *transa, const char *transb, REAL_REF alpha_ref, REA
 
                                 mplapack_errno = 0;
                                 blas_errno = 0;
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                                 dgemm_f77(transa, transb, &m, &n, &k, &alpha_ref, A_ref, &lda, B_ref, &ldb, &beta_ref, C_ref, &ldc);
                                 mplapack_errno1 = blas_errno;
 #else

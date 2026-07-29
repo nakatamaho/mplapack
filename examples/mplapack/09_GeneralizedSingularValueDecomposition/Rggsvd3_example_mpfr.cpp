@@ -11,12 +11,12 @@
 #define MPFR_FORMAT "%+68.64Re"
 #define MPFR_SHORT_FORMAT "%+20.16Re"
 
-inline void printnum(mpreal rtmp) { mpfr_printf(MPFR_FORMAT, mpfr_ptr(rtmp)); }
-inline void printnum_short(mpreal rtmp) { mpfr_printf(MPFR_SHORT_FORMAT, mpfr_ptr(rtmp)); }
+inline void printnum(mpfr_class rtmp) { mpfr_printf(MPFR_FORMAT, mpfr_ptr(rtmp)); }
+inline void printnum_short(mpfr_class rtmp) { mpfr_printf(MPFR_SHORT_FORMAT, mpfr_ptr(rtmp)); }
 
 // Matlab/Octave format
-void printvec(mpreal *a, int len) {
-    mpreal tmp;
+void printvec(mpfr_class *a, int len) {
+    mpfr_class tmp;
     printf("[ ");
     for (int i = 0; i < len; i++) {
         tmp = a[i];
@@ -27,8 +27,8 @@ void printvec(mpreal *a, int len) {
     printf("]");
 }
 
-void printmat(int n, int m, mpreal *a, int lda) {
-    mpreal mtmp;
+void printmat(int n, int m, mpfr_class *a, int lda) {
+    mpfr_class mtmp;
     printf("[ ");
     for (int i = 0; i < n; i++) {
         printf("[ ");
@@ -48,13 +48,13 @@ void printmat(int n, int m, mpreal *a, int lda) {
 
 int main() {
     mplapackint m = 2, n = 3, p = 2, k, l, lda = m, ldb = p, ldu = m, ldv = p, ldq = n, info, lwork = -1;
-    mpreal *a = new mpreal[lda * n];
-    mpreal *b = new mpreal[ldb * n];
-    mpreal *alpha = new mpreal[n];
-    mpreal *beta = new mpreal[n];
-    mpreal *u = new mpreal[ldu * m];
-    mpreal *v = new mpreal[ldv * p];
-    mpreal *q = new mpreal[ldq * n];
+    mpfr_class *a = new mpfr_class[lda * n];
+    mpfr_class *b = new mpfr_class[ldb * n];
+    mpfr_class *alpha = new mpfr_class[n];
+    mpfr_class *beta = new mpfr_class[n];
+    mpfr_class *u = new mpfr_class[ldu * m];
+    mpfr_class *v = new mpfr_class[ldv * p];
+    mpfr_class *q = new mpfr_class[ldq * n];
     mplapackint *iwork = new mplapackint[n];
     for (mplapackint i = 0; i < lda * n; i++)
         a[i] = 0;
@@ -66,10 +66,10 @@ int main() {
     b[0] = 1;
     b[1 + ldb] = 3;
     b[0 + 2 * ldb] = 1;
-    mpreal wk;
+    mpfr_class wk;
     Rggsvd3("U", "V", "Q", m, n, p, k, l, a, lda, b, ldb, alpha, beta, u, ldu, v, ldv, q, ldq, &wk, lwork, iwork, info);
     lwork = castINTEGER_mpfr(wk);
-    mpreal *work = new mpreal[lwork];
+    mpfr_class *work = new mpfr_class[lwork];
     Rggsvd3("U", "V", "Q", m, n, p, k, l, a, lda, b, ldb, alpha, beta, u, ldu, v, ldv, q, ldq, work, lwork, iwork, info);
     printf("k = %ld, l = %ld\n", (long)k, (long)l);
     printf("alpha = "); printvec(alpha, n); printf("\n");

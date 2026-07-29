@@ -47,19 +47,19 @@ static void check(bool cond, const char *what) {
 int main() {
     printf("*** Testing Rnaninf start ***\n");
 
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
+#if defined MPLAPACK_BUILD_WITH_GMP
     REAL finite_value = 1.0;
 
     check(!Risnan(finite_value), "GMP finite value recognized as NaN");
     check(!Risinf(finite_value), "GMP finite value recognized as Inf");
 #else
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
-    REAL nan_value(NAN, 71, MPFR_RNDN);
-    REAL pos_inf_value(INFINITY, 71, MPFR_RNDN);
-    REAL neg_inf_value(-INFINITY, 71, MPFR_RNDN);
-    REAL finite_value(1.0, 71, MPFR_RNDN);
+#if defined MPLAPACK_BUILD_WITH_MPFR
+    REAL nan_value(NAN, 71);
+    REAL pos_inf_value(INFINITY, 71);
+    REAL neg_inf_value(-INFINITY, 71);
+    REAL finite_value(1.0, 71);
 
-    check(mpfr_nan_p(mpfr_ptr(nan_value)) != 0, "mpfr_nan_p did not recognize NaN test value");
+    check(mpfr_nan_p(nan_value.mpfr_data()) != 0, "mpfr_nan_p did not recognize NaN test value");
 #else
     REAL nan_value = std::numeric_limits<double>::quiet_NaN();
     REAL pos_inf_value = std::numeric_limits<double>::infinity();

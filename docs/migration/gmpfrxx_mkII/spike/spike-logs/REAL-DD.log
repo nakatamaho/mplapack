@@ -1,0 +1,135 @@
+$ c++ -std=gnu++17 -fopenmp -ffp-contract=off -I/tmp/gmpfrxx-p0-install/include -D___MPLAPACK_INTERNAL___ -I/tmp/mplapack-p0-final/include/mplapack -I/tmp/mplapack-p0-final/include -L/tmp/mplapack-p0-final/lib -Wl,-rpath,/tmp/mplapack-p0-final/lib -I/tmp/mplapack-p0-base/include /home/docker/mplapack/docs/migration/gmpfrxx_mkII/tools/spike/real_dd.cpp -o /tmp/mplapack-p0-spikes/REAL-DD -lmpc -lmpfr -lgmp -lqd -lquadmath
+/home/docker/mplapack/docs/migration/gmpfrxx_mkII/tools/spike/real_dd.cpp: In function ‘int main()’:
+/home/docker/mplapack/docs/migration/gmpfrxx_mkII/tools/spike/real_dd.cpp:6:37: error: no matching function for call to ‘mpfrxx::mpfr_class::mpfr_class(dd_real&)’
+    6 |     mpfrxx::mpfr_class target(source);
+      |                                     ^
+/home/docker/mplapack/docs/migration/gmpfrxx_mkII/tools/spike/real_dd.cpp:6:37: note: there are 21 candidates
+In file included from /tmp/gmpfrxx-p0-install/include/mpfrxx_mkII.h:40,
+                 from /tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII.h:33,
+                 from /home/docker/mplapack/docs/migration/gmpfrxx_mkII/tools/spike/real_dd.cpp:1:
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpfr_impl.hpp:283:5: note: candidate 1: ‘template<class Expr, class, class> mpfrxx::mpfr_class::mpfr_class(const Expr&, mpfr_prec_t)’
+  283 |     mpfr_class(const Expr& expr, mpfr_prec_t precision);
+      |     ^~~~~~~~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpfr_impl.hpp:283:5: note: candidate expects 2 arguments, 1 provided
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpfr_impl.hpp:274:5: note: candidate 2: ‘template<class Expr, class> mpfrxx::mpfr_class::mpfr_class(const Expr&)’
+  274 |     mpfr_class(const Expr& expr);
+      |     ^~~~~~~~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpfr_impl.hpp:274:5: note: template argument deduction/substitution failed:
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpfr_impl.hpp:271:43: error: no type named ‘result_type’ in ‘using std::decay<dd_real>::type = struct dd_real’ {aka ‘struct dd_real’}
+  271 |                                     (std::is_same_v<typename std::decay_t<Expr>::result_type, mpfr_class> ||
+      |                                      ~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpfr_impl.hpp:272:43: error: no type named ‘result_type’ in ‘using std::decay<dd_real>::type = struct dd_real’ {aka ‘struct dd_real’}
+  272 |                                      std::is_same_v<typename std::decay_t<Expr>::result_type, gmpxx::mpz_class> ||
+      |                                      ~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpfr_impl.hpp:273:43: error: no type named ‘result_type’ in ‘using std::decay<dd_real>::type = struct dd_real’ {aka ‘struct dd_real’}
+  273 |                                      std::is_same_v<typename std::decay_t<Expr>::result_type, gmpxx::mpq_class>)>>
+      |                                      ~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpfr_impl.hpp:213:5: note: candidate 3: ‘template<class T, class> mpfrxx::mpfr_class::mpfr_class(T, mpfr_prec_t)’
+  213 |     mpfr_class(T value, mpfr_prec_t precision)
+      |     ^~~~~~~~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpfr_impl.hpp:213:5: note: candidate expects 2 arguments, 1 provided
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpfr_impl.hpp:206:5: note: candidate 4: ‘template<class T, class> mpfrxx::mpfr_class::mpfr_class(T)’
+  206 |     mpfr_class(T value) : mpfr_class(value, default_precision())
+      |     ^~~~~~~~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpfr_impl.hpp:206:5: note: template argument deduction/substitution failed:
+In file included from /usr/include/c++/15/bits/move.h:37,
+                 from /usr/include/c++/15/bits/exception_ptr.h:41,
+                 from /usr/include/c++/15/exception:168,
+                 from /usr/include/c++/15/ios:43,
+                 from /usr/include/c++/15/bits/ostream.h:43,
+                 from /usr/include/c++/15/ostream:42,
+                 from /tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/config.hpp:33,
+                 from /tmp/gmpfrxx-p0-install/include/gmpxx_mkII.h:34,
+                 from /tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII.h:32:
+/usr/include/c++/15/type_traits: In substitution of ‘template<bool _Cond, class _Tp> using std::enable_if_t = typename std::enable_if::type [with bool _Cond = false; _Tp = void]’:
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpfr_impl.hpp:205:9:   required from here
+  205 |         typename = std::enable_if_t<gmpfrxx_mkII::detail::is_supported_expression_integral_v<T>>>
+      |         ^~~~~~~~
+/usr/include/c++/15/type_traits:2838:11: error: no type named ‘type’ in ‘struct std::enable_if<false, void>’
+ 2838 |     using enable_if_t = typename enable_if<_Cond, _Tp>::type;
+      |           ^~~~~~~~~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpfr_impl.hpp:642:5: note: candidate 5: ‘mpfrxx::mpfr_class::mpfr_class(precision_tag, mpfr_prec_t)’
+  642 |     mpfr_class(precision_tag, mpfr_prec_t precision)
+      |     ^~~~~~~~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpfr_impl.hpp:642:5: note: candidate expects 2 arguments, 1 provided
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpfr_impl.hpp:260:5: note: candidate 6: ‘mpfrxx::mpfr_class::mpfr_class(const mpfrxx::mpfr_class&, mpfr_prec_t)’
+  260 |     mpfr_class(const mpfr_class& other, mpfr_prec_t precision)
+      |     ^~~~~~~~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpfr_impl.hpp:260:5: note: candidate expects 2 arguments, 1 provided
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpfr_impl.hpp:252:5: note: candidate 7: ‘mpfrxx::mpfr_class::mpfr_class(mpfr_srcptr, mpfr_prec_t)’
+  252 |     mpfr_class(mpfr_srcptr value, mpfr_prec_t precision)
+      |     ^~~~~~~~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpfr_impl.hpp:252:5: note: candidate expects 2 arguments, 1 provided
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpfr_impl.hpp:243:14: note: candidate 8: ‘mpfrxx::mpfr_class::mpfr_class(mpfr_srcptr)’
+  243 |     explicit mpfr_class(mpfr_srcptr value)
+      |              ^~~~~~~~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpfr_impl.hpp:243:37: note: no known conversion for argument 1 from ‘dd_real’ to ‘mpfr_srcptr’ {aka ‘const __mpfr_struct*’}
+  243 |     explicit mpfr_class(mpfr_srcptr value)
+      |                         ~~~~~~~~~~~~^~~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpfr_impl.hpp:238:5: note: candidate 9: ‘mpfrxx::mpfr_class::mpfr_class(const std::string&, mpfr_prec_t, int)’
+  238 |     mpfr_class(const std::string& text, mpfr_prec_t precision, int base = 0)
+      |     ^~~~~~~~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpfr_impl.hpp:238:5: note: candidate expects 3 arguments, 1 provided
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpfr_impl.hpp:227:5: note: candidate 10: ‘mpfrxx::mpfr_class::mpfr_class(const char*, mpfr_prec_t, int)’
+  227 |     mpfr_class(const char* text, mpfr_prec_t precision, int base = 0)
+      |     ^~~~~~~~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpfr_impl.hpp:227:5: note: candidate expects 3 arguments, 1 provided
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpfr_impl.hpp:225:14: note: candidate 11: ‘mpfrxx::mpfr_class::mpfr_class(const std::string&)’
+  225 |     explicit mpfr_class(const std::string& text) : mpfr_class(text.c_str(), default_precision(), 0) {}
+      |              ^~~~~~~~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpfr_impl.hpp:225:44: note: no known conversion for argument 1 from ‘dd_real’ to ‘const std::string&’ {aka ‘const std::__cxx11::basic_string<char>&’}
+  225 |     explicit mpfr_class(const std::string& text) : mpfr_class(text.c_str(), default_precision(), 0) {}
+      |                         ~~~~~~~~~~~~~~~~~~~^~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpfr_impl.hpp:223:14: note: candidate 12: ‘mpfrxx::mpfr_class::mpfr_class(const char*)’
+  223 |     explicit mpfr_class(const char* text) : mpfr_class(text, default_precision(), 0) {}
+      |              ^~~~~~~~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpfr_impl.hpp:223:37: note: no known conversion for argument 1 from ‘dd_real’ to ‘const char*’
+  223 |     explicit mpfr_class(const char* text) : mpfr_class(text, default_precision(), 0) {}
+      |                         ~~~~~~~~~~~~^~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpfr_impl.hpp:194:5: note: candidate 13: ‘mpfrxx::mpfr_class::mpfr_class(const gmpxx::mpq_class&, mpfr_prec_t)’
+  194 |     mpfr_class(const gmpxx::mpq_class& value, mpfr_prec_t precision)
+      |     ^~~~~~~~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpfr_impl.hpp:194:5: note: candidate expects 2 arguments, 1 provided
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpfr_impl.hpp:186:5: note: candidate 14: ‘mpfrxx::mpfr_class::mpfr_class(const gmpxx::mpz_class&, mpfr_prec_t)’
+  186 |     mpfr_class(const gmpxx::mpz_class& value, mpfr_prec_t precision)
+      |     ^~~~~~~~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpfr_impl.hpp:186:5: note: candidate expects 2 arguments, 1 provided
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpfr_impl.hpp:184:5: note: candidate 15: ‘mpfrxx::mpfr_class::mpfr_class(const gmpxx::mpq_class&)’
+  184 |     mpfr_class(const gmpxx::mpq_class& value) : mpfr_class(value, default_precision()) {}
+      |     ^~~~~~~~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpfr_impl.hpp:184:40: note: no known conversion for argument 1 from ‘dd_real’ to ‘const gmpxx::mpq_class&’
+  184 |     mpfr_class(const gmpxx::mpq_class& value) : mpfr_class(value, default_precision()) {}
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpfr_impl.hpp:182:5: note: candidate 16: ‘mpfrxx::mpfr_class::mpfr_class(const gmpxx::mpz_class&)’
+  182 |     mpfr_class(const gmpxx::mpz_class& value) : mpfr_class(value, default_precision()) {}
+      |     ^~~~~~~~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpfr_impl.hpp:182:40: note: no known conversion for argument 1 from ‘dd_real’ to ‘const gmpxx::mpz_class&’
+  182 |     mpfr_class(const gmpxx::mpz_class& value) : mpfr_class(value, default_precision()) {}
+      |                ~~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpfr_impl.hpp:174:5: note: candidate 17: ‘mpfrxx::mpfr_class::mpfr_class(double, mpfr_prec_t)’
+  174 |     mpfr_class(double value, mpfr_prec_t precision)
+      |     ^~~~~~~~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpfr_impl.hpp:174:5: note: candidate expects 2 arguments, 1 provided
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpfr_impl.hpp:172:5: note: candidate 18: ‘mpfrxx::mpfr_class::mpfr_class(double)’
+  172 |     mpfr_class(double value) : mpfr_class(value, default_precision()) {}
+      |     ^~~~~~~~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpfr_impl.hpp:172:23: note: no known conversion for argument 1 from ‘dd_real’ to ‘double’
+  172 |     mpfr_class(double value) : mpfr_class(value, default_precision()) {}
+      |                ~~~~~~~^~~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpfr_impl.hpp:166:5: note: candidate 19: ‘mpfrxx::mpfr_class::mpfr_class(mpfrxx::mpfr_class&&)’
+  166 |     mpfr_class(mpfr_class&& other) noexcept
+      |     ^~~~~~~~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpfr_impl.hpp:166:29: note: no known conversion for argument 1 from ‘dd_real’ to ‘mpfrxx::mpfr_class&&’
+  166 |     mpfr_class(mpfr_class&& other) noexcept
+      |                ~~~~~~~~~~~~~^~~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpfr_impl.hpp:157:5: note: candidate 20: ‘mpfrxx::mpfr_class::mpfr_class(const mpfrxx::mpfr_class&)’
+  157 |     mpfr_class(const mpfr_class& other)
+      |     ^~~~~~~~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpfr_impl.hpp:157:34: note: no known conversion for argument 1 from ‘dd_real’ to ‘const mpfrxx::mpfr_class&’
+  157 |     mpfr_class(const mpfr_class& other)
+      |                ~~~~~~~~~~~~~~~~~~^~~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpfr_impl.hpp:155:5: note: candidate 21: ‘mpfrxx::mpfr_class::mpfr_class()’
+  155 |     mpfr_class() : mpfr_class(precision_tag{}, default_precision()) {}
+      |     ^~~~~~~~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpfr_impl.hpp:155:5: note: candidate expects 0 arguments, 1 provided
+compile_exit=1

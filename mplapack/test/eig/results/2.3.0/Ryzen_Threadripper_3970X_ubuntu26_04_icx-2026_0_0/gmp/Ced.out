@@ -1,0 +1,138 @@
+=== precision: gmp ===
+
+ Tests of the Nonsymmetric Eigenvalue Problem Driver
+    Cgees (Schur form)
+ Tests of the Multiple precision version of LAPACK 2.3.0
+ Based on the original LAPACK VERSION 3.12.1
+
+The following parameter values will be used:
+
+ The following parameter values will be used:
+    M:         0     1     2     3     5    10    20
+    N:         0     1     2     3     5    10    20
+    NB:        3
+    NBMIN:     3
+    NX:        1
+    INMIN:       11
+    INWIN:      4
+    INIBL:      8
+    ISHFTS:      2
+    IACC22:      0
+ 
+ Relative machine underflow is taken to be+1.7019382623481672e-1388255822130839283
+ Relative machine overflow  is taken to be+5.8756537891115876e+1388255822130839282
+ Relative machine precision is taken to be+7.4583407312002067e-155
+
+ Routines pass computational tests if test ratio is less than+2.0000000000000000e+01
+
+ 
+ Cgees passed the tests of the error exits (  6 tests done)
+Warning! Threshold has been lifted to: +1.0000000000000000e+02 for GMP
+
+ All tests for ZES passed the threshold (  3822 tests run)
+
+ -----------------------------------------------------------------------
+
+ Tests of the Nonsymmetric Eigenvalue Problem Driver
+    Cgeev (eigenvalues and eigevectors)
+ Tests of the Multiple precision version of LAPACK 2.3.0
+ Based on the original LAPACK VERSION 3.12.1
+
+The following parameter values will be used:
+
+ The following parameter values will be used:
+    M:         0     1     2     3     5    10    20
+    N:         0     1     2     3     5    10    20
+    NB:        3
+    NBMIN:     3
+    NX:        1
+    INMIN:       11
+    INWIN:      4
+    INIBL:      8
+    ISHFTS:      2
+    IACC22:      0
+ 
+ Relative machine underflow is taken to be+1.7019382623481672e-1388255822130839283
+ Relative machine overflow  is taken to be+5.8756537891115876e+1388255822130839282
+ Relative machine precision is taken to be+7.4583407312002067e-155
+
+ Routines pass computational tests if test ratio is less than+2.0000000000000000e+01
+
+ 
+ Cgeev passed the tests of the error exits (  7 tests done)
+Warning! Threshold has been lifted to: +1.0000000000000000e+02 for GMP
+
+ All tests for ZEV passed the threshold (  1092 tests run)
+
+ -----------------------------------------------------------------------
+
+ Tests of the Nonsymmetric Eigenvalue Problem Expert Driver
+    Cgeesx (Schur form and condition numbers)
+ Tests of the Multiple precision version of LAPACK 2.3.0
+ Based on the original LAPACK VERSION 3.12.1
+
+The following parameter values will be used:
+
+ The following parameter values will be used:
+    M:         0     1     2     3     5    10    20
+    N:         0     1     2     3     5    10    20
+    NB:        3
+    NBMIN:     3
+    NX:        1
+    INMIN:       11
+    INWIN:      4
+    INIBL:      8
+    ISHFTS:      2
+    IACC22:      0
+ 
+ Relative machine underflow is taken to be+1.7019382623481672e-1388255822130839283
+ Relative machine overflow  is taken to be+5.8756537891115876e+1388255822130839282
+ Relative machine precision is taken to be+7.4583407312002067e-155
+
+ Routines pass computational tests if test ratio is less than+2.0000000000000000e+01
+
+ 
+ Cgeesx passed the tests of the error exits (  7 tests done)
+Warning! Threshold has been lifted to: +1.0000000000000000e+02 for GMP
+
+ All tests for ZSX passed the threshold (  3994 tests run)
+
+ -----------------------------------------------------------------------
+
+ Tests of the Nonsymmetric Eigenvalue Problem Expert Driver
+    Cgeevx (eigenvalues, eigenvectors and condition numbers)
+ Tests of the Multiple precision version of LAPACK 2.3.0
+ Based on the original LAPACK VERSION 3.12.1
+
+The following parameter values will be used:
+
+ The following parameter values will be used:
+    M:         0     1     2     3     5    10
+    N:         0     1     2     3     5    10
+    NB:        3
+    NBMIN:     3
+    NX:        1
+    INMIN:       11
+    INWIN:      4
+    INIBL:      8
+    ISHFTS:      2
+    IACC22:      0
+ 
+ Relative machine underflow is taken to be+1.7019382623481672e-1388255822130839283
+ Relative machine overflow  is taken to be+5.8756537891115876e+1388255822130839282
+ Relative machine precision is taken to be+7.4583407312002067e-155
+
+ Routines pass computational tests if test ratio is less than+2.0000000000000000e+01
+
+ 
+ Cgeevx passed the tests of the error exits ( 10 tests done)
+Warning! Threshold has been lifted to: +8.0000000000000000e+01 for GMP
+
+ All tests for ZVX passed the threshold (  5172 tests run)
+
+ -----------------------------------------------------------------------
+
+
+ End of tests
+ Total time used =       219.60 seconds
+

@@ -63,14 +63,14 @@ void Rlansy_test2(const char *norm, const char *uplo) {
             j = 0;
             while (j < MAX_ITER) {
                 set_random_vector(A_ref, A, matlen(lda, n));
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                 dlansy_ret = dlansy_f77(norm, uplo, &n, A_ref, &lda, work_ref);
 #else
                 dlansy_ret = Rlansy(norm, uplo, n, A_ref, lda, work_ref);
 #endif
                 Rlansy_ret = Rlansy(norm, uplo, n, A, lda, work);
 
-                REAL_REF diff = abs(dlansy_ret - Rlansy_ret);
+                REAL_REF diff = abs(dlansy_ret - cast2ref(Rlansy_ret));
 
                 if (diff > EPSILON) {
                     printf("n:%d lda %d, uplo %s, norm %s\n", n, lda, uplo, norm);

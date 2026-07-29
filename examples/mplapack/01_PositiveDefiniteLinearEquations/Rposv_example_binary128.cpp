@@ -2,6 +2,7 @@
 #include <mpblas_binary128.h>
 #include <mplapack_binary128.h>
 #include <iostream>
+#include <sstream>
 #include <stdio.h>
 #include <cstring>
 #include <algorithm>

@@ -7,7 +7,7 @@ MPLAPACK_GMP_OPTIMIZED_SOURCES =
 
 lib_LTLIBRARIES = libmplapack_gmp_opt.la
 
-libmplapack_gmp_opt_la_CPPFLAGS = -I$(top_srcdir)/include $(OPENMP_CXXFLAGS) -I$(GMP_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_GMP___  -finline-functions
+libmplapack_gmp_opt_la_CPPFLAGS = $(GMPFRXX_MKII_CPPFLAGS) -I$(top_srcdir)/include $(OPENMP_CXXFLAGS) -I$(GMP_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_GMP  -finline-functions
 libmplapack_gmp_opt_la_SOURCES = \
 Rcopy.cpp Rcopy_ref.cpp openmp/Rcopy_omp.cpp \
 Rdot.cpp  Rdot_ref.cpp  openmp/Rdot_omp.cpp \

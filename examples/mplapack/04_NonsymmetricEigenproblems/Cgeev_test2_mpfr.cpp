@@ -11,10 +11,10 @@
 #define MPFR_FORMAT "%+68.64Re"
 #define MPFR_SHORT_FORMAT "%+20.16Re"
 
-inline void printnum(mpreal rtmp) { mpfr_printf(MPFR_FORMAT, mpfr_ptr(rtmp)); }
-inline void printnum_short(mpreal rtmp) { mpfr_printf(MPFR_SHORT_FORMAT, mpfr_ptr(rtmp)); }
-inline void printnum(mpcomplex ctmp) {
-    mpreal cre, cim;
+inline void printnum(mpfr_class rtmp) { mpfr_printf(MPFR_FORMAT, mpfr_ptr(rtmp)); }
+inline void printnum_short(mpfr_class rtmp) { mpfr_printf(MPFR_SHORT_FORMAT, mpfr_ptr(rtmp)); }
+inline void printnum(mpc_class ctmp) {
+    mpfr_class cre, cim;
     cre = ctmp.real();
     cim = ctmp.imag();
     mpfr_printf(MPFR_SHORT_FORMAT MPFR_SHORT_FORMAT "i", mpfr_ptr(cre), mpfr_ptr(cim));
@@ -54,26 +54,26 @@ template <class X> void printmat(int n, int m, X *a, int lda)
     }
     printf("]");
 }
-bool rselect(mpreal ar, mpreal ai) {
+bool rselect(mpfr_class ar, mpfr_class ai) {
     // sorting rule for eigenvalues.
     return false;
 }
 
 int main() {
     mplapackint n = 4;
-    mpcomplex *a = new mpcomplex[n * n];
-    mpcomplex *w = new mpcomplex[n];
-    mpcomplex *vl = new mpcomplex[n * n];
-    mpcomplex *vr = new mpcomplex[n * n];
+    mpc_class *a = new mpc_class[n * n];
+    mpc_class *w = new mpc_class[n];
+    mpc_class *vl = new mpc_class[n * n];
+    mpc_class *vr = new mpc_class[n * n];
     mplapackint lwork = 4 * n;
-    mpcomplex *work = new mpcomplex[lwork];    
-    mpreal *rwork = new mpreal[lwork];
+    mpc_class *work = new mpc_class[lwork];    
+    mpfr_class *rwork = new mpfr_class[lwork];
     mplapackint info;
     // setting A matrix
-    a[0 + 0 * n] = mpcomplex(7.0, 0.0);   a[0 + 1 * n] = mpcomplex(3.0, 0.0);  a[0 + 2 * n] = mpcomplex(1.0, 2.0);   a[0 + 3 * n] = mpcomplex(-1.0, 2.0);
-    a[1 + 0 * n] = mpcomplex(3.0, 0.0);   a[1 + 1 * n] = mpcomplex(7.0, 0.0);  a[1 + 2 * n] = mpcomplex(1.0, -2.0);  a[1 + 3 * n] = mpcomplex(-1.0, -2.0);
-    a[2 + 0 * n] = mpcomplex(1.0, -2.0);  a[2 + 1 * n] = mpcomplex(1.0, 2.0);  a[2 + 2 * n] = mpcomplex(7.0, 0.0);   a[2 + 3 * n] = mpcomplex(-3.0, 0.0);
-    a[3 + 0 * n] = mpcomplex(-1.0, -2.0); a[3 + 1 * n] = mpcomplex(-1.0, 2.0); a[3 + 2 * n] = mpcomplex(-3.0, 0.0);  a[3 + 3 * n] = mpcomplex(7.0, 0.0); 
+    a[0 + 0 * n] = mpc_class(7.0, 0.0);   a[0 + 1 * n] = mpc_class(3.0, 0.0);  a[0 + 2 * n] = mpc_class(1.0, 2.0);   a[0 + 3 * n] = mpc_class(-1.0, 2.0);
+    a[1 + 0 * n] = mpc_class(3.0, 0.0);   a[1 + 1 * n] = mpc_class(7.0, 0.0);  a[1 + 2 * n] = mpc_class(1.0, -2.0);  a[1 + 3 * n] = mpc_class(-1.0, -2.0);
+    a[2 + 0 * n] = mpc_class(1.0, -2.0);  a[2 + 1 * n] = mpc_class(1.0, 2.0);  a[2 + 2 * n] = mpc_class(7.0, 0.0);   a[2 + 3 * n] = mpc_class(-3.0, 0.0);
+    a[3 + 0 * n] = mpc_class(-1.0, -2.0); a[3 + 1 * n] = mpc_class(-1.0, 2.0); a[3 + 2 * n] = mpc_class(-3.0, 0.0);  a[3 + 3 * n] = mpc_class(7.0, 0.0); 
 
     printf("# Ex. 6.7 p. 117, Collection of Matrices for Testing Computational Algorithms, Robert T. Gregory, David L. Karney\n");
     printf("# octave check\n");

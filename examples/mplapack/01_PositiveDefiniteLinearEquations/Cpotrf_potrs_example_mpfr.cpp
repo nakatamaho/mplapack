@@ -11,10 +11,10 @@
 #define MPFR_FORMAT "%+68.64Re"
 #define MPFR_SHORT_FORMAT "%+20.16Re"
 
-inline void printnum(mpreal rtmp) { mpfr_printf(MPFR_FORMAT, mpfr_ptr(rtmp)); }
-inline void printnum_short(mpreal rtmp) { mpfr_printf(MPFR_SHORT_FORMAT, mpfr_ptr(rtmp)); }
-inline void printnum(mpcomplex ctmp) {
-    mpreal cre, cim;
+inline void printnum(mpfr_class rtmp) { mpfr_printf(MPFR_FORMAT, mpfr_ptr(rtmp)); }
+inline void printnum_short(mpfr_class rtmp) { mpfr_printf(MPFR_SHORT_FORMAT, mpfr_ptr(rtmp)); }
+inline void printnum(mpc_class ctmp) {
+    mpfr_class cre, cim;
     cre = ctmp.real();
     cim = ctmp.imag();
     mpfr_printf(MPFR_SHORT_FORMAT MPFR_SHORT_FORMAT "i", mpfr_ptr(cre), mpfr_ptr(cim));
@@ -54,11 +54,11 @@ template <class X> void printmat(int n, int m, X *a, int lda)
     }
     printf("]");
 }
-mpreal max_solution_error(mplapackint n, mplapackint nrhs, mpcomplex *x, mplapackint ldx, mpcomplex *xexact, mplapackint ldxexact) {
-    mpreal err = 0.0;
+mpfr_class max_solution_error(mplapackint n, mplapackint nrhs, mpc_class *x, mplapackint ldx, mpc_class *xexact, mplapackint ldxexact) {
+    mpfr_class err = 0.0;
     for (mplapackint j = 0; j < nrhs; j++) {
         for (mplapackint i = 0; i < n; i++) {
-            mpreal d = abs(x[i + j * ldx] - xexact[i + j * ldxexact]);
+            mpfr_class d = abs(x[i + j * ldx] - xexact[i + j * ldxexact]);
             if (err < d)
                 err = d;
         }
@@ -66,14 +66,14 @@ mpreal max_solution_error(mplapackint n, mplapackint nrhs, mpcomplex *x, mplapac
     return err;
 }
 
-mpreal max_residual(mplapackint m, mplapackint n, mplapackint nrhs, mpcomplex *a, mplapackint lda, mpcomplex *x, mplapackint ldx, mpcomplex *b, mplapackint ldb) {
-    mpreal err = 0.0;
+mpfr_class max_residual(mplapackint m, mplapackint n, mplapackint nrhs, mpc_class *a, mplapackint lda, mpc_class *x, mplapackint ldx, mpc_class *b, mplapackint ldb) {
+    mpfr_class err = 0.0;
     for (mplapackint j = 0; j < nrhs; j++) {
         for (mplapackint i = 0; i < m; i++) {
-            mpcomplex s = mpcomplex(0.0, 0.0);
+            mpc_class s = mpc_class(0.0, 0.0);
             for (mplapackint k = 0; k < n; k++)
                 s = s + a[i + k * lda] * x[k + j * ldx];
-            mpreal d = abs(s - b[i + j * ldb]);
+            mpfr_class d = abs(s - b[i + j * ldb]);
             if (err < d)
                 err = d;
         }
@@ -83,24 +83,24 @@ mpreal max_residual(mplapackint m, mplapackint n, mplapackint nrhs, mpcomplex *a
 
 int main() {
     mplapackint n = 2, nrhs = 2, lda = n, ldb = n, info;
-    mpcomplex *a = new mpcomplex[n * n];
-    mpcomplex *aorg = new mpcomplex[n * n];
-    mpcomplex *b = new mpcomplex[n * nrhs];
-    mpcomplex *borg = new mpcomplex[n * nrhs];
-    mpcomplex *xexact = new mpcomplex[n * nrhs];
-    a[0] = mpcomplex(5.0, 0.0);
-    a[1] = mpcomplex(1.0, -1.0);
-    a[2] = mpcomplex(1.0, 1.0);
-    a[3] = mpcomplex(4.0, 0.0);
-    xexact[0] = mpcomplex(1.0, 1.0);
-    xexact[1] = mpcomplex(2.0, -1.0);
-    xexact[0 + n] = mpcomplex(-1.0, 0.0);
-    xexact[1 + n] = mpcomplex(0.0, 2.0);
+    mpc_class *a = new mpc_class[n * n];
+    mpc_class *aorg = new mpc_class[n * n];
+    mpc_class *b = new mpc_class[n * nrhs];
+    mpc_class *borg = new mpc_class[n * nrhs];
+    mpc_class *xexact = new mpc_class[n * nrhs];
+    a[0] = mpc_class(5.0, 0.0);
+    a[1] = mpc_class(1.0, -1.0);
+    a[2] = mpc_class(1.0, 1.0);
+    a[3] = mpc_class(4.0, 0.0);
+    xexact[0] = mpc_class(1.0, 1.0);
+    xexact[1] = mpc_class(2.0, -1.0);
+    xexact[0 + n] = mpc_class(-1.0, 0.0);
+    xexact[1 + n] = mpc_class(0.0, 2.0);
     for (mplapackint i = 0; i < n * n; i++)
         aorg[i] = a[i];
     for (mplapackint j = 0; j < nrhs; j++)
         for (mplapackint i = 0; i < n; i++) {
-            b[i + j * ldb] = mpcomplex(0.0, 0.0);
+            b[i + j * ldb] = mpc_class(0.0, 0.0);
             for (mplapackint k = 0; k < n; k++)
                 b[i + j * ldb] = b[i + j * ldb] + aorg[i + k * lda] * xexact[k + j * n];
             borg[i + j * ldb] = b[i + j * ldb];

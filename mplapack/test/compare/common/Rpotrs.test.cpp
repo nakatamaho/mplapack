@@ -89,7 +89,7 @@ void Rpotrs_test2(const char *uplo) {
                             }
                         }
 // First: do cholesky factorization
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                         dpotrf_f77(uplo, &n, A_ref, &lda, &info_ref);
 #else
                         Rpotrf(uplo, n, A_ref, lda, info_ref);
@@ -111,7 +111,7 @@ void Rpotrs_test2(const char *uplo) {
                             errorflag = TRUE;
                         }
 // Second: solve linear system
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                         dpotrs_f77(uplo, &n, &nrhs, A_ref, &lda, B_ref, &ldb, &info_ref);
 #else
                         Rpotrs(uplo, n, nrhs, A_ref, lda, B_ref, ldb, info_ref);

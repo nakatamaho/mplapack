@@ -1,0 +1,92 @@
+-- The CXX compiler identification is GNU 15.2.0
+-- The C compiler identification is GNU 15.2.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Found GMP: /tmp/mplapack-p0-final/lib/libgmp.so (found version "6.3.0")
+-- Found MPFR: /tmp/mplapack-p0-final/lib/libmpfr.so (found version "4.2.2")
+-- Found MPC: /tmp/mplapack-p0-final/lib/libmpc.so (found version "1.4.1")
+-- Found QD: /tmp/mplapack-p0-final/lib/libqd.so (found version "2.3.24")
+-- Looking for include file OpenCL/cl.h
+-- Looking for include file OpenCL/cl.h - not found
+-- Looking for CL_VERSION_3_0
+-- Looking for CL_VERSION_3_0 - found
+-- Found OpenCL: /usr/lib/x86_64-linux-gnu/libOpenCL.so (found version "3.0")
+-- Detecting binary128 support
+-- Performing Test _mp_have_f128_RESULT
+-- Performing Test _mp_have_f128_RESULT - Success
+-- Performing Test _mp_have_q128_RESULT
+-- Performing Test _mp_have_q128_RESULT - Success
+-- Performing Test _mp_ldbl_b128_RESULT
+-- Performing Test _mp_ldbl_b128_RESULT - Failed
+-- Performing Test _mp_f128_is_ldbl_RESULT
+-- Performing Test _mp_f128_is_ldbl_RESULT - Failed
+-- Performing Test _mp_same_RESULT
+-- Performing Test _mp_same_RESULT - Failed
+-- Performing Test _mp_gnu2std_RESULT
+-- Performing Test _mp_gnu2std_RESULT - Success
+-- Performing Test _mp_std2gnu_RESULT
+-- Performing Test _mp_std2gnu_RESULT - Success
+-- Performing Test _mp_strfromf128_RESULT
+-- Performing Test _mp_strfromf128_RESULT - Success
+-- Performing Test _mp_quadmath_snprintf_RESULT
+-- Performing Test _mp_quadmath_snprintf_RESULT - Success
+-- Performing Test _mp_quadmath_math_RESULT
+-- Performing Test _mp_quadmath_math_RESULT - Success
+-- Performing Test _mp_f128_math_RESULT
+-- Performing Test _mp_f128_math_RESULT - Success
+-- Performing Test _mp_suffix_F128_RESULT
+-- Performing Test _mp_suffix_F128_RESULT - Success
+-- Performing Test _mp_suffix_Q_RESULT
+-- Performing Test _mp_suffix_Q_RESULT - Success
+--   binary128: _Float128 + strfromf128
+-- Performing Test _mp_std_abs_RESULT
+-- Performing Test _mp_std_abs_RESULT - Failed
+-- Performing Test _mp_std_math_RESULT
+-- Performing Test _mp_std_math_RESULT - Failed
+-- Performing Test _mp_std_complex_RESULT
+-- Performing Test _mp_std_complex_RESULT - Failed
+-- Performing Test _mp_c_complex_RESULT
+-- Performing Test _mp_c_complex_RESULT - Success
+-- Detecting binary80 support
+-- Performing Test _b80_f64x_RESULT
+-- Performing Test _b80_f64x_RESULT - Success
+-- Performing Test _b80_f80_RESULT
+-- Performing Test _b80_f80_RESULT - Success
+-- Performing Test _b80_ldbl_RESULT
+-- Performing Test _b80_ldbl_RESULT - Success
+-- Performing Test _b80_f64x_is_b80_RESULT
+-- Performing Test _b80_f64x_is_b80_RESULT - Success
+-- Performing Test _b80_f64x_is_ldbl_RESULT
+-- Performing Test _b80_f64x_is_ldbl_RESULT - Failed
+-- Performing Test _b80_same_RESULT
+-- Performing Test _b80_same_RESULT - Failed
+-- Performing Test _b80_gnu2std_RESULT
+-- Performing Test _b80_gnu2std_RESULT - Success
+-- Performing Test _b80_std2gnu_RESULT
+-- Performing Test _b80_std2gnu_RESULT - Success
+-- Performing Test _b80_strfromf64x_RESULT
+-- Performing Test _b80_strfromf64x_RESULT - Success
+-- Performing Test _b80_snprintf_Lg_RESULT
+-- Performing Test _b80_snprintf_Lg_RESULT - Success
+-- Performing Test _b80_f64x_math_RESULT
+-- Performing Test _b80_f64x_math_RESULT - Success
+-- Performing Test _b80_ldbl_math_RESULT
+-- Performing Test _b80_ldbl_math_RESULT - Success
+--   binary80: _Float64x (binary80)
+-- Performing Test _b80_std_abs_RESULT
+-- Performing Test _b80_std_abs_RESULT - Failed
+-- Performing Test _b80_std_math_RESULT
+-- Performing Test _b80_std_math_RESULT - Failed
+-- Performing Test MPLAPACK_HAS_FP_CONTRACT_OFF
+-- Performing Test MPLAPACK_HAS_FP_CONTRACT_OFF - Success
+-- Configuring done (6.2s)
+-- Generating done (2.1s)
+-- Build files have been written to: /tmp/mplapack-p0-cmake-build

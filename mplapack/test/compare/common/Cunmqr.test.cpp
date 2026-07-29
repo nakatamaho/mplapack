@@ -88,7 +88,7 @@ void Cunmqr_test2(const char *side, const char *trans) {
                             set_random_vector(C_ref, C, matlen(ldc, n));
                             set_random_vector(tau_ref, tau, veclen(k, 1));
                             set_random_vector(work_ref, work, lwork_ref);
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                             zunmqr_f77(side, trans, &m, &n, &k, A_ref, &lda, tau_ref, C_ref, &ldc, work_ref, &lwork_ref, &info_ref);
 #else
                             Cunmqr(side, trans, m, n, k, A_ref, lda, tau_ref, C_ref, ldc, work_ref, lwork, info_ref);

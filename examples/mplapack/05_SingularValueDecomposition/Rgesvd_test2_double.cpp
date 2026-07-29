@@ -2,6 +2,7 @@
 #include <mpblas_double.h>
 #include <mplapack_double.h>
 #include <iostream>
+#include <sstream>
 #include <stdio.h>
 #include <cstring>
 #include <algorithm>

@@ -1,29 +1,29 @@
 #ifndef FEM_READ_HPP
 #define FEM_READ_HPP
 
-// Ensure MPLAPACK utils expose sprintnum()/sprintnum_short() and __MPLAPACK_BUFLEN__.
-// In mplapack_utils_*.h these are guarded by ___MPLAPACK_INTERNAL___.
-#ifndef ___MPLAPACK_INTERNAL___
-#define ___MPLAPACK_INTERNAL___ 1
+// Ensure MPLAPACK utils expose sprintnum()/sprintnum_short() and MPLAPACK_BUFLEN.
+// In mplapack_utils_*.h these are guarded by MPLAPACK_INTERNAL.
+#ifndef MPLAPACK_INTERNAL
+#define MPLAPACK_INTERNAL 1
 #endif
 
 // MPLAPACK backend utilities (printnum/sprintnum, precision, buffer length, etc.)
-#if defined(___MPLAPACK_BUILD_WITH_GMP___)
+#if defined(MPLAPACK_BUILD_WITH_GMP)
 #include "mplapack_utils_gmp.h"
-#elif defined(___MPLAPACK_BUILD_WITH_MPFR___)
+#elif defined(MPLAPACK_BUILD_WITH_MPFR)
 #include "mplapack_utils_mpfr.h"
-#elif defined(___MPLAPACK_BUILD_WITH_BINARY128___)
+#elif defined(MPLAPACK_BUILD_WITH_BINARY128)
 #include "mplapack_utils_binary128.h"
-#elif defined(___MPLAPACK_BUILD_WITH_BINARY80___)
+#elif defined(MPLAPACK_BUILD_WITH_BINARY80)
 #include "mplapack_utils_binary80.h"
-#elif defined(___MPLAPACK_BUILD_WITH_DD___)
+#elif defined(MPLAPACK_BUILD_WITH_DD)
 #include "mplapack_utils_dd.h"
-#elif defined(___MPLAPACK_BUILD_WITH_QD___)
+#elif defined(MPLAPACK_BUILD_WITH_QD)
 #include "mplapack_utils_qd.h"
-#elif defined(___MPLAPACK_BUILD_WITH_DOUBLE___)
+#elif defined(MPLAPACK_BUILD_WITH_DOUBLE)
 #include "mplapack_utils_double.h"
 #else
-#error "No MPLAPACK backend macro is defined (___MPLAPACK_BUILD_WITH_*___)."
+#error "No MPLAPACK backend macro is defined (MPLAPACK_BUILD_WITH_*)."
 #endif
 
 #include <fem/common.hpp>
@@ -36,23 +36,21 @@
 #include <cstdint>
 #include <cstdlib>
 #include <type_traits>
-#if defined(___MPLAPACK_BUILD_WITH_GMP___)
-#if __has_include(<gmpxx.h>)
-#include <gmpxx.h>
-#endif
-#if __has_include(<mpc_class.h>)
-#include <mpc_class.h>
-#endif
-#endif
-#if defined(___MPLAPACK_BUILD_WITH_MPFR___)
-#if __has_include(<mpreal.h>)
-#include <mpreal.h>
-#endif
-#if __has_include(<mpcomplex.h>)
-#include <mpcomplex.h>
+#include <mplapack_gmpfrxx_mkII_config.h>
+#if defined(MPLAPACK_BUILD_WITH_GMP)
+#if __has_include(<gmpxx_mkII.h>)
+#include <gmpxx_mkII.h>
+using namespace gmpxx;
 #endif
 #endif
-#if defined(___MPLAPACK_BUILD_WITH_QD___) || defined(___MPLAPACK_BUILD_WITH_DD___)
+#if defined(MPLAPACK_BUILD_WITH_MPFR)
+#if __has_include(<mpfrxx_mkII.h>) && __has_include(<mpcxx_mkII.h>)
+#include <mpfrxx_mkII.h>
+#include <mpcxx_mkII.h>
+using namespace mpfrxx;
+#endif
+#endif
+#if defined(MPLAPACK_BUILD_WITH_QD) || defined(MPLAPACK_BUILD_WITH_DD)
 // QD headers define and use qd::nint (and other short identifiers) inside the headers.
 // MPLAPACK (or other code) may define macros like `nint`, which would macro-expand
 // `qd::nint` into `qd::__dd_nint` and break the QD headers.
@@ -452,11 +450,11 @@ class read_loop // TODO copy-constructor potential performance problem
     // --- Selected multiprecision/back-end numeric types: read as string token, normalize, then assign ---
     //
     // Rationale: LAPACK test inputs are within binary64, but MPLAPACK back-ends may use
-    // mpf_class/mpreal/binary128/binary80/QD/DD. Reading as a raw token and then
+    // mpf_class/mpfr_class/binary128/binary80/QD/DD. Reading as a raw token and then
     // constructing/assigning avoids heavy formatted parsing (g2.16 etc.) and handles
     // Fortran 'D' exponents by normalization to 'E'.
     //
-#if defined(___MPLAPACK_BUILD_WITH_GMP___)
+#if defined(MPLAPACK_BUILD_WITH_GMP)
     read_loop &operator,(mpf_class &val) {
         std::string s = read_numeric_as_string();
         normalize_fortran_exponent(s);
@@ -464,15 +462,15 @@ class read_loop // TODO copy-constructor potential performance problem
         return *this;
     }
 #endif
-#if defined(___MPLAPACK_BUILD_WITH_MPFR___)
-    read_loop &operator,(mpfr::mpreal &val) {
+#if defined(MPLAPACK_BUILD_WITH_MPFR)
+    read_loop &operator,(mpfrxx::mpfr_class &val) {
         std::string s = read_numeric_as_string();
         normalize_fortran_exponent(s);
-        val = mpfr::mpreal(s.c_str());
+        val = mpfrxx::mpfr_class(s.c_str());
         return *this;
     }
 #endif
-#if defined(___MPLAPACK_BUILD_WITH_BINARY128___)
+#if defined(MPLAPACK_BUILD_WITH_BINARY128)
     read_loop &operator,(mplapack_binary128_t &val) {
         std::string s = read_numeric_as_string();
         normalize_fortran_exponent(s);
@@ -481,7 +479,7 @@ class read_loop // TODO copy-constructor potential performance problem
         return *this;
     }
 #endif
-#if defined(___MPLAPACK_BUILD_WITH_BINARY80___)
+#if defined(MPLAPACK_BUILD_WITH_BINARY80)
     read_loop &operator,(mplapack_binary80_t &val) {
         std::string s = read_numeric_as_string();
         normalize_fortran_exponent(s);
@@ -490,7 +488,7 @@ class read_loop // TODO copy-constructor potential performance problem
         return *this;
     }
 #endif
-#if defined(___MPLAPACK_BUILD_WITH_DD___)
+#if defined(MPLAPACK_BUILD_WITH_DD)
     // QD library dd_real (double-double)
     read_loop &operator,(dd_real &val) {
         std::string s = read_numeric_as_string();
@@ -498,7 +496,7 @@ class read_loop // TODO copy-constructor potential performance problem
         return *this;
     }
 #endif
-#if defined(___MPLAPACK_BUILD_WITH_QD___)
+#if defined(MPLAPACK_BUILD_WITH_QD)
     // QD library qd_real (quad-double)
     read_loop &operator,(qd_real &val) {
         std::string s = read_numeric_as_string();
@@ -507,7 +505,7 @@ class read_loop // TODO copy-constructor potential performance problem
     }
 #endif
 // double is already handled by the existing arithmetic path.
-#if defined(___MPLAPACK_BUILD_WITH_DOUBLE___)
+#if defined(MPLAPACK_BUILD_WITH_DOUBLE)
 // no-op
 #endif
 
@@ -610,8 +608,8 @@ class read_loop // TODO copy-constructor potential performance problem
         }
         return *this;
     }
-#if defined(___MPLAPACK_BUILD_WITH_GMP___)
-    read_loop &operator,(mpc_class &val) {
+#if defined(MPLAPACK_BUILD_WITH_GMP)
+    read_loop &operator,(mpfc_class &val) {
         if (io_mode == io_unformatted) {
             throw TBXX_NOT_IMPLEMENTED();
         }
@@ -620,25 +618,25 @@ class read_loop // TODO copy-constructor potential performance problem
         parse_complex_components(token, real_str, imag_str);
         mpf_class re(real_str.c_str());
         mpf_class im(imag_str.c_str());
-        val = mpc_class(re, im);
+        val = mpfc_class(re, im);
         return *this;
     }
 #endif
-#if defined(___MPLAPACK_BUILD_WITH_MPFR___)
-    read_loop &operator,(mpcomplex &val) {
+#if defined(MPLAPACK_BUILD_WITH_MPFR)
+    read_loop &operator,(mpc_class &val) {
         if (io_mode == io_unformatted) {
             throw TBXX_NOT_IMPLEMENTED();
         }
         std::string token = read_complex_token_string();
         std::string real_str, imag_str;
         parse_complex_components(token, real_str, imag_str);
-        mpfr::mpreal re(real_str.c_str());
-        mpfr::mpreal im(imag_str.c_str());
-        val = mpcomplex(re, im);
+        mpfrxx::mpfr_class re(real_str.c_str());
+        mpfrxx::mpfr_class im(imag_str.c_str());
+        val = mpc_class(re, im);
         return *this;
     }
 #endif
-#if defined(___MPLAPACK_BUILD_WITH_DD___)
+#if defined(MPLAPACK_BUILD_WITH_DD)
     read_loop &operator,(dd_complex &val) {
         if (io_mode == io_unformatted) {
             throw TBXX_NOT_IMPLEMENTED();
@@ -652,7 +650,7 @@ class read_loop // TODO copy-constructor potential performance problem
         return *this;
     }
 #endif
-#if defined(___MPLAPACK_BUILD_WITH_QD___)
+#if defined(MPLAPACK_BUILD_WITH_QD)
     read_loop &operator,(qd_complex &val) {
         if (io_mode == io_unformatted) {
             throw TBXX_NOT_IMPLEMENTED();
@@ -666,7 +664,7 @@ class read_loop // TODO copy-constructor potential performance problem
         return *this;
     }
 #endif
-#if defined(___MPLAPACK_BUILD_WITH_BINARY128___)
+#if defined(MPLAPACK_BUILD_WITH_BINARY128)
     read_loop &operator,(std::complex<mplapack_binary128_t> &val) {
         if (io_mode == io_unformatted) {
             throw TBXX_NOT_IMPLEMENTED();
@@ -680,7 +678,7 @@ class read_loop // TODO copy-constructor potential performance problem
         return *this;
     }
 #endif
-#if defined(___MPLAPACK_BUILD_WITH_BINARY80___)
+#if defined(MPLAPACK_BUILD_WITH_BINARY80)
     read_loop &operator,(std::complex<mplapack_binary80_t> &val) {
         if (io_mode == io_unformatted) {
             throw TBXX_NOT_IMPLEMENTED();
@@ -902,7 +900,7 @@ class read_loop // TODO copy-constructor potential performance problem
         throw io_err("Invalid character while reading floating-point value: " + utils::format_char_for_display(c));
     }
     // --- Helpers for reading numeric tokens as raw strings ---
-    // These are used for selected multiprecision types (mpf_class, mpfr::mpreal, mplapack_binary128_t, ...).
+    // These are used for selected multiprecision types (mpf_class, mpfrxx::mpfr_class, mplapack_binary128_t, ...).
     // For LAPACK test inputs, values are at most binary64, so string->ctor assignment is sufficient.
     static std::string normalize_fortran_numeric_string(std::string s) {
         // Convert Fortran 'D' exponent to 'E' (e.g., 1.0D+00 -> 1.0E+00).

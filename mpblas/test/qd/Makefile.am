@@ -1,6 +1,6 @@
 #CTBSV, CTPSV might have bugs or intrinsically inaccurate
 #Rnrm2 should be checked more
-check_PROGRAMS = $(mpblas_qd_test_PROGRAMS) 
+check_PROGRAMS = $(mpblas_qd_test_PROGRAMS)
 mpblas_qd_smoke_TESTS = arithmetic.test_qd complex.test_qd
 mpblas_qd_smoke_WRAPPERS = $(mpblas_qd_smoke_TESTS:%=run_%.sh)
 mpblas_qd_test_WRAPPERS = $(mpblas_qd_test_PROGRAMS:%=run_%.sh)
@@ -98,9 +98,9 @@ Rtrsm.test.qd_opt  Rtrsm.test.qd	\
 Rtrsv.test.qd_opt  Rtrsv.test.qd
 
 mpblas_qd_testdir = $(prefix)/lib/$(target)/mplapack/test/compare/qd
-mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpc -lmpfr -lgmpxx -lgmp -L$(QD_LIBDIR) -lqd
+mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpc -lmpfr -lgmp -L$(QD_LIBDIR) -lqd
 refblas=-L$(top_builddir)/external/i/LAPACK/lib -lblas $(FCLIBS)
-test_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(QD_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_QD___ -D___MPLAPACK_INTERNAL___
+test_cxxflags = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(QD_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_QD -DMPLAPACK_INTERNAL
 test_srcdepends = ../common/xerbla.cpp ../common/mplapack.test.cpp ../common/Mxerbla.override.cpp
 
 if IS_MACOS
@@ -110,7 +110,7 @@ endif
 if IS_MINGW
 $(check_PROGRAMS): libmxerbla_override.la
 lib_LTLIBRARIES = libmxerbla_override.la
-libmxerbla_override_la_CPPFLAGS = -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_QD___
+libmxerbla_override_la_CPPFLAGS = $(GMPFRXX_MKII_CPPFLAGS) -I$(top_srcdir)/include -DMPLAPACK_BUILD_WITH_QD
 libmxerbla_override_la_SOURCES = ../common/Mxerbla.override.cpp
 libmxerbla_override_la_LDFLAGS = -no-undefined
 libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,.libs/libmxerbla_override.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_qd.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_mpfr.a,--no-whole-archive

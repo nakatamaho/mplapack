@@ -17,7 +17,7 @@ opt_libdepends = -L$(top_builddir)/mplapack/test/lin -llin_double_opt -llin_over
 endif
 
 mplibs = -lm
-cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_DOUBLE___ -I$(top_srcdir)/fable -D___MPLAPACK_INTERNAL___
+cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -DMPLAPACK_BUILD_WITH_DOUBLE -I$(top_srcdir)/fable -DMPLAPACK_INTERNAL
 
 xlintstR_double_SOURCES  = ../common/Rchkaa.cpp
 xlintstR_double_opt_SOURCES  = ../common/Rchkaa.cpp

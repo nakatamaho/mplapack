@@ -59,7 +59,7 @@ void iCmax1_test() {
             int j = 0;
             while (j < MAX_ITER) {
                 set_random_vector(x_ref, x, veclen(n, incx));
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                 izmax1_ret = izmax1_f77(&n, x_ref, &incx);
 #else
                 izmax1_ret = iCmax1(n, x_ref, incx);

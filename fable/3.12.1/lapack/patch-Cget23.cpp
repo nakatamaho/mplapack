@@ -4,7 +4,7 @@
          // Do Test (7)
          //
          for (j = 1; j <= n; j = j + 1) {
-+#if defined ___MPLAPACK_BUILD_WITH_BINARY80___ || defined ___MPLAPACK_BUILD_WITH_BINARY128___
++#if defined MPLAPACK_BUILD_WITH_BINARY80 || defined MPLAPACK_BUILD_WITH_BINARY128
 +            REAL vdiff = zero;
 +            REAL vscale = one;
 +            for (jj = 1; jj <= n; jj = jj + 1) {

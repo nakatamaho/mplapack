@@ -11,12 +11,12 @@
 #define MPFR_FORMAT "%+68.64Re"
 #define MPFR_SHORT_FORMAT "%+20.16Re"
 
-inline void printnum(mpreal rtmp) { mpfr_printf(MPFR_FORMAT, mpfr_ptr(rtmp)); }
-inline void printnum_short(mpreal rtmp) { mpfr_printf(MPFR_SHORT_FORMAT, mpfr_ptr(rtmp)); }
+inline void printnum(mpfr_class rtmp) { mpfr_printf(MPFR_FORMAT, mpfr_ptr(rtmp)); }
+inline void printnum_short(mpfr_class rtmp) { mpfr_printf(MPFR_SHORT_FORMAT, mpfr_ptr(rtmp)); }
 
 // Matlab/Octave format
-void printvec(mpreal *a, int len) {
-    mpreal tmp;
+void printvec(mpfr_class *a, int len) {
+    mpfr_class tmp;
     printf("[ ");
     for (int i = 0; i < len; i++) {
         tmp = a[i];
@@ -27,8 +27,8 @@ void printvec(mpreal *a, int len) {
     printf("]");
 }
 
-void printmat(int n, int m, mpreal *a, int lda) {
-    mpreal mtmp;
+void printmat(int n, int m, mpfr_class *a, int lda) {
+    mpfr_class mtmp;
     printf("[ ");
     for (int i = 0; i < n; i++) {
         printf("[ ");
@@ -48,11 +48,11 @@ void printmat(int n, int m, mpreal *a, int lda) {
 
 void inv_hilbert_matrix(int n) {
     mplapackint lwork, info;
-    mpreal *ainv = new mpreal[n * n];
-    mpreal *aorg = new mpreal[n * n];
-    mpreal *c = new mpreal[n * n];
+    mpfr_class *ainv = new mpfr_class[n * n];
+    mpfr_class *aorg = new mpfr_class[n * n];
+    mpfr_class *c = new mpfr_class[n * n];
     mplapackint *ipiv = new mplapackint[n];
-    mpreal one = 1.0, zero = 0.0, mtmp;
+    mpfr_class one = 1.0, zero = 0.0, mtmp;
 
     // setting A matrix
     for (int i = 0; i < n; i++) {
@@ -66,11 +66,11 @@ void inv_hilbert_matrix(int n) {
     printf("a = "); printmat(n, n, ainv, n); printf("\n");
     // work space query
     lwork = -1;
-    mpreal *work = new mpreal[1];
+    mpfr_class *work = new mpfr_class[1];
     Rgetri(n, ainv, n, ipiv, work, lwork, info);
     lwork = castINTEGER_mpfr(work[0]);
     delete[] work;
-    work = new mpreal[std::max(1, (int)lwork)];
+    work = new mpfr_class[std::max(1, (int)lwork)];
 
     // inverse matrix
     Rgetrf(n, n, ainv, n, ipiv, info);

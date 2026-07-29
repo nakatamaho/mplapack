@@ -63,14 +63,14 @@ void Classq_test() {
                 set_random_vector(x_ref, x, veclen(n, incx));
                 set_random_number(scale_ref, scale);
                 set_random_number(sumsq_ref, sumsq);
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                 zlassq_f77(&n, x_ref, &incx, &scale_ref, &sumsq_ref);
 #else
                 Classq(n, x_ref, incx, scale_ref, sumsq_ref);
 #endif
                 Classq(n, x, incx, scale, sumsq);
 
-                diff = abs(scale_ref - scale);
+                diff = abs(scale_ref - cast2ref(scale));
                 if (diff > EPSILON) {
                     printf("error: ");
                     printnum(diff);
@@ -84,7 +84,7 @@ void Classq_test() {
                 printnum(maxdiff);
                 printf("\n");
 #endif
-                diff = abs(sumsq_ref - sumsq);
+                diff = abs(sumsq_ref - cast2ref(sumsq));
                 if (diff > EPSILON) {
                     printf("error: ");
                     printnum(diff);

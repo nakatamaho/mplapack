@@ -57,14 +57,14 @@ void RCnrm2_test() {
 
                 set_random_vector(x_ref, x, veclen(n, incx));
 
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                 dtmp = dznrm2_f77(&n, x_ref, &incx);
 #else
                 dtmp = RCnrm2(n, x_ref, incx);
 #endif
                 Rtmp = RCnrm2(n, x, incx);
 
-                REAL_REF diff = Rtmp - dtmp;
+                REAL_REF diff = cast2ref(Rtmp) - dtmp;
                 if (diff > EPSILON) {
 #if defined VERBOSE_TEST
                     printf("error: ");

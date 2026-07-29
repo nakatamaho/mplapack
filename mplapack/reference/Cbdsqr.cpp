@@ -192,7 +192,7 @@ void Cbdsqr(const char *uplo, INTEGER const n, INTEGER const ncvt, INTEGER const
     // (By setting TOL to be negative, algorithm will compute
     // singular values to absolute accuracy ABS(TOL)*norm(input matrix))
     //
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
+#if defined MPLAPACK_BUILD_WITH_GMP
     tolmul = max(ten, min(hndrd, one / sqrt(sqrt(sqrt(eps)))));
 #else
     tolmul = max(ten, min(hndrd, pow(eps, meigth)));

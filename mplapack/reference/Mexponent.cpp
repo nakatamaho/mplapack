@@ -43,7 +43,7 @@
 // -----------------------------------------------------------------------
 // double
 // -----------------------------------------------------------------------
-#if defined ___MPLAPACK_BUILD_WITH_DOUBLE___
+#if defined MPLAPACK_BUILD_WITH_DOUBLE
 INTEGER Mexponent(REAL const &x) {
     return std::ilogb(x) + 1;
 }
@@ -52,7 +52,7 @@ INTEGER Mexponent(REAL const &x) {
 // -----------------------------------------------------------------------
 // binary80
 // -----------------------------------------------------------------------
-#if defined ___MPLAPACK_BUILD_WITH_BINARY80___
+#if defined MPLAPACK_BUILD_WITH_BINARY80
 #  if MPLAPACK_BINARY80_MATH == MPLAPACK_BINARY80_MATH_LDBL
 // long double == binary80 (x87 on x86/x86-64).
 INTEGER Mexponent(REAL const &x) {
@@ -66,12 +66,12 @@ INTEGER Mexponent(REAL const &x) {
 #  else
 #    error "Mexponent: unsupported MPLAPACK_BINARY80_MATH"
 #  endif
-#endif // ___MPLAPACK_BUILD_WITH_BINARY80___
+#endif // MPLAPACK_BUILD_WITH_BINARY80
 
 // -----------------------------------------------------------------------
 // binary128
 // -----------------------------------------------------------------------
-#if defined ___MPLAPACK_BUILD_WITH_BINARY128___
+#if defined MPLAPACK_BUILD_WITH_BINARY128
 #  if MPLAPACK_BINARY128_MATH == MPLAPACK_BINARY128_MATH_LDBL
 // long double == binary128 (SPARC, MIPS, some AArch64).
 INTEGER Mexponent(REAL const &x) {
@@ -94,44 +94,44 @@ INTEGER Mexponent(REAL const &x) {
 #  else
 #    error "Mexponent: unsupported MPLAPACK_BINARY128_MATH"
 #  endif
-#endif // ___MPLAPACK_BUILD_WITH_BINARY128___
+#endif // MPLAPACK_BUILD_WITH_BINARY128
 
 // -----------------------------------------------------------------------
 // DD (double-double)
 // -----------------------------------------------------------------------
-#if defined ___MPLAPACK_BUILD_WITH_DD___
+#if defined MPLAPACK_BUILD_WITH_DD
 INTEGER Mexponent(REAL const &x) {
     // x.x[0] is the dominant component; lower limbs are bounded by
     // ulp(x.x[0]) and can never alter the binade.
     return std::ilogb(x.x[0]) + 1;
 }
-#endif // ___MPLAPACK_BUILD_WITH_DD___
+#endif // MPLAPACK_BUILD_WITH_DD
 
 // -----------------------------------------------------------------------
 // QD (quad-double)
 // -----------------------------------------------------------------------
-#if defined ___MPLAPACK_BUILD_WITH_QD___
+#if defined MPLAPACK_BUILD_WITH_QD
 INTEGER Mexponent(REAL const &x) {
     // Same reasoning as DD.
     return std::ilogb(x.x[0]) + 1;
 }
-#endif // ___MPLAPACK_BUILD_WITH_QD___
+#endif // MPLAPACK_BUILD_WITH_QD
 
 // -----------------------------------------------------------------------
 // MPFR (mpfr::mpreal)
 // -----------------------------------------------------------------------
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
 INTEGER Mexponent(REAL const &x) {
     // mpfr_get_exp returns e s.t. 0.5 <= |x| * 2^(-e) < 1:
     // exactly Fortran EXPONENT semantics.  No +1 needed.
     return static_cast<INTEGER>(mpfr_get_exp((mpfr_ptr)const_cast<REAL &>(x)));
 }
-#endif // ___MPLAPACK_BUILD_WITH_MPFR___
+#endif // MPLAPACK_BUILD_WITH_MPFR
 
 // -----------------------------------------------------------------------
 // GMP (mpf_class)
 // -----------------------------------------------------------------------
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
+#if defined MPLAPACK_BUILD_WITH_GMP
 INTEGER Mexponent(REAL const &x) {
     // mpf_get_d_2exp: sets exp s.t. x = d * 2^exp, 0.5 <= |d| < 1.
     // exp is the Fortran EXPONENT value directly.  No +1 needed.
@@ -139,4 +139,4 @@ INTEGER Mexponent(REAL const &x) {
     mpf_get_d_2exp(&exp, x.get_mpf_t());
     return static_cast<INTEGER>(exp);
 }
-#endif // ___MPLAPACK_BUILD_WITH_GMP___
+#endif // MPLAPACK_BUILD_WITH_GMP

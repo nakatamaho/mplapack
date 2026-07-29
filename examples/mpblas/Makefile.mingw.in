@@ -6,7 +6,7 @@ CXXFLAGS= -I$(MPLAPACKDIR)/include -I$(MPLAPACKDIR)/include/mplapack -I$(MPLAPAC
 OPTFLAGS= -O2 -fopenmp
 LIBFLAGS=-L$(MPLAPACKDIR)/lib -static-libgcc -static-libstdc++
 MPFRLIBS=-lmplapack_mpfr -lmpfr -lmpc -lgmp
-GMPLIBS=-lmplapack_gmp -lgmpxx -lgmp
+GMPLIBS=-lmplapack_gmp -lgmp
 QDLIBS=-lmplapack_qd -lqd
 DDLIBS=-lmplapack_dd -lqd
 BINARY80LIBS=-lmplapack_binary80
@@ -14,7 +14,7 @@ BINARY128LIBS=-lmplapack_binary128%%LIBQUADMATH%%
 DOUBLELIBS=-lmplapack_double
 
 MPFROPTLIBS=-fopenmp -lmplapack_mpfr_opt -lmpfr -lmpc -lgmp
-GMPOPTLIBS=-fopenmp -lmplapack_gmp_opt -lgmpxx -lgmp
+GMPOPTLIBS=-fopenmp -lmplapack_gmp_opt -lgmp
 QDOPTLIBS=-fopenmp -lmplapack_qd_opt -lqd
 DDOPTLIBS=-fopenmp -lmplapack_dd_opt -lqd
 BINARY80OPTLIBS=-fopenmp -lmplapack_binary80_opt

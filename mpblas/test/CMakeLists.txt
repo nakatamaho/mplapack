@@ -48,14 +48,14 @@ foreach(_b ${_backends})
       # Set one backend macro explicitly. Linking target files avoids inheriting
       # the MPFR oracle target's conflicting backend macro.
       target_compile_definitions(${_exe} PRIVATE
-        ___MPLAPACK_BUILD_WITH_${_B}___ ___MPLAPACK_INTERNAL___)
+        MPLAPACK_BUILD_WITH_${_B} MPLAPACK_INTERNAL)
       if(_b STREQUAL "dd" AND MPLAPACK_HAS_FP_CONTRACT_OFF)
         target_compile_options(${_exe} PRIVATE -ffp-contract=off)
       endif()
       target_include_directories(${_exe} PRIVATE
         "${CMAKE_BINARY_DIR}/include"
         "${CMAKE_SOURCE_DIR}/include"
-        "${CMAKE_SOURCE_DIR}/mpfrc++")
+        "${MPLAPACK_GMPFRXX_MKII_ROOT}/include")
 
       set(_backend_archives "$<TARGET_FILE:${_backend_library}>")
       set(_backend_dependencies ${_backend_library})
@@ -65,8 +65,7 @@ foreach(_b ${_backends})
       endif()
       target_link_libraries(${_exe} PRIVATE
         ${_backend_archives}
-        MPC::MPC MPFR::MPFR GMP::GMPXX
-        ${BLAS_LIBRARIES})
+        MPC::MPC MPFR::MPFR         ${BLAS_LIBRARIES})
       if(_b STREQUAL "dd" OR _b STREQUAL "qd")
         target_link_libraries(${_exe} PRIVATE QD::QD)
       endif()

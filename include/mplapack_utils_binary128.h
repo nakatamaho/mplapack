@@ -44,7 +44,7 @@
 #define MPLAPACK_HAVE_C_COMPLEX_FLOAT128 0
 #endif
 
-#if defined ___MPLAPACK_INTERNAL___
+#if defined MPLAPACK_INTERNAL
 #include <cstring>
 
 inline uint64_t load_u64_be(const unsigned char *p) { return (static_cast<uint64_t>(p[0]) << 56) | (static_cast<uint64_t>(p[1]) << 48) | (static_cast<uint64_t>(p[2]) << 40) | (static_cast<uint64_t>(p[3]) << 32) | (static_cast<uint64_t>(p[4]) << 24) | (static_cast<uint64_t>(p[5]) << 16) | (static_cast<uint64_t>(p[6]) << 8) | (static_cast<uint64_t>(p[7]) << 0); }
@@ -228,16 +228,16 @@ template <class T> inline void sprinthex_binary128_fixed(char *buf, size_t n, co
     sprinthex_binary128_bits_be(buf, n, bytes);
 #endif
 }
-#endif // ___MPLAPACK_INTERNAL___
+#endif // MPLAPACK_INTERNAL
 
 #if MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_QUADMATH
 #include <quadmath.h>
 #endif // MPLAPACK_BINARY128_MODE == MPLAPACK_BINARY128_MODE_QUADMATH
 
 #if MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_QUADMATH_SNPRINTF
-#if defined ___MPLAPACK_INTERNAL___
-#if !defined __MPLAPACK_BUFLEN__
-#define __MPLAPACK_BUFLEN__ 1024
+#if defined MPLAPACK_INTERNAL
+#if !defined MPLAPACK_BUFLEN
+#define MPLAPACK_BUFLEN 1024
 #endif
 #include <string.h>
 
@@ -246,7 +246,7 @@ template <class T> inline void sprinthex_binary128_fixed(char *buf, size_t n, co
 
 inline void printnum(__float128 rtmp) {
     int width = 42;
-    char buf[__MPLAPACK_BUFLEN__];
+    char buf[MPLAPACK_BUFLEN];
     int n = quadmath_snprintf(buf, sizeof buf, BINARY128_FORMAT, width, rtmp);
     if ((size_t)n < sizeof buf)
         printf("%s", buf);
@@ -255,7 +255,7 @@ inline void printnum(__float128 rtmp) {
 
 inline void printnum(std::complex<__float128> rtmp) {
     int width = 42, n;
-    char buf[__MPLAPACK_BUFLEN__], buf2[__MPLAPACK_BUFLEN__];
+    char buf[MPLAPACK_BUFLEN], buf2[MPLAPACK_BUFLEN];
     n = quadmath_snprintf(buf, sizeof buf, BINARY128_FORMAT, width, rtmp.real());
     if ((size_t)n < sizeof buf)
         printf("%s", buf);
@@ -268,19 +268,19 @@ inline void printnum(std::complex<__float128> rtmp) {
 
 inline void sprintnum(char *buf, __float128 rtmp) {
     int width = 42;
-    quadmath_snprintf(buf, __MPLAPACK_BUFLEN__, BINARY128_FORMAT, width, rtmp);
+    quadmath_snprintf(buf, MPLAPACK_BUFLEN, BINARY128_FORMAT, width, rtmp);
     return;
 }
 
 inline void sprintnum(char *buf, std::complex<__float128> rtmp) {
     int width = 42;
-    quadmath_snprintf(buf, __MPLAPACK_BUFLEN__, BINARY128_FORMAT BINARY128_FORMAT, width, rtmp.real(), rtmp.imag());
+    quadmath_snprintf(buf, MPLAPACK_BUFLEN, BINARY128_FORMAT BINARY128_FORMAT, width, rtmp.real(), rtmp.imag());
     return;
 }
 
 inline void printnum_short(__float128 rtmp) {
     int width = 42;
-    char buf[__MPLAPACK_BUFLEN__];
+    char buf[MPLAPACK_BUFLEN];
     int n = quadmath_snprintf(buf, sizeof buf, BINARY128_SHORT_FORMAT, width, rtmp);
     if ((size_t)n < sizeof buf)
         printf("%s", buf);
@@ -289,7 +289,7 @@ inline void printnum_short(__float128 rtmp) {
 
 inline void printnum_short(std::complex<__float128> rtmp) {
     int width = 42, n;
-    char buf[__MPLAPACK_BUFLEN__], buf2[__MPLAPACK_BUFLEN__];
+    char buf[MPLAPACK_BUFLEN], buf2[MPLAPACK_BUFLEN];
     n = quadmath_snprintf(buf, sizeof buf, BINARY128_SHORT_FORMAT, width, rtmp.real());
     if ((size_t)n < sizeof buf)
         printf("%s", buf);
@@ -302,21 +302,21 @@ inline void printnum_short(std::complex<__float128> rtmp) {
 
 inline void sprintnum_short(char *buf, __float128 rtmp) {
     int width = 42;
-    quadmath_snprintf(buf, __MPLAPACK_BUFLEN__, BINARY128_SHORT_FORMAT, width, rtmp);
+    quadmath_snprintf(buf, MPLAPACK_BUFLEN, BINARY128_SHORT_FORMAT, width, rtmp);
     return;
 }
 
 inline void sprintnum_short(char *buf, std::complex<__float128> rtmp) {
     int width = 42;
-    quadmath_snprintf(buf, __MPLAPACK_BUFLEN__, BINARY128_SHORT_FORMAT BINARY128_SHORT_FORMAT, width, rtmp.real(), rtmp.imag());
+    quadmath_snprintf(buf, MPLAPACK_BUFLEN, BINARY128_SHORT_FORMAT BINARY128_SHORT_FORMAT, width, rtmp.real(), rtmp.imag());
     return;
 }
 
-#endif //___MPLAPACK_INTERNAL___
+#endif //MPLAPACK_INTERNAL
 #elif MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_STRFROMF128
-#if defined ___MPLAPACK_INTERNAL___
-#if !defined __MPLAPACK_BUFLEN__
-#define __MPLAPACK_BUFLEN__ 1024
+#if defined MPLAPACK_INTERNAL
+#if !defined MPLAPACK_BUFLEN
+#define MPLAPACK_BUFLEN 1024
 #endif
 #include <string.h>
 
@@ -333,7 +333,7 @@ static inline int mplapack_strfromf128(char *buf, size_t buflen, const char *fmt
     if (buf == nullptr || buflen == 0 || fmt == nullptr)
         return -1;
     // Use a staging buffer so we have room to insert '+' without clobbering buf.
-    char tmp[__MPLAPACK_BUFLEN__];
+    char tmp[MPLAPACK_BUFLEN];
     size_t tmplen = (buflen <= sizeof(tmp)) ? buflen : sizeof(tmp);
     int n = strfromf128(tmp, tmplen, fmt, x);
     if (n < 0) {
@@ -362,14 +362,14 @@ static inline int mplapack_strfromf128(char *buf, size_t buflen, const char *fmt
 
 // printnum - full precision output to stdout
 inline void printnum(_Float128 rtmp) {
-    char buf[__MPLAPACK_BUFLEN__];
+    char buf[MPLAPACK_BUFLEN];
     mplapack_strfromf128(buf, sizeof(buf), FLOAT128_FORMAT, rtmp);
     printf("%s", buf);
     return;
 }
 
 inline void printnum(std::complex<_Float128> rtmp) {
-    char buf[__MPLAPACK_BUFLEN__], buf2[__MPLAPACK_BUFLEN__];
+    char buf[MPLAPACK_BUFLEN], buf2[MPLAPACK_BUFLEN];
     mplapack_strfromf128(buf, sizeof(buf), FLOAT128_FORMAT, rtmp.real());
     printf("%s", buf);
     mplapack_strfromf128(buf2, sizeof(buf2), FLOAT128_FORMAT, rtmp.imag());
@@ -380,30 +380,30 @@ inline void printnum(std::complex<_Float128> rtmp) {
 
 // sprintnum - full precision output to buffer
 inline void sprintnum(char *buf, _Float128 rtmp) {
-    mplapack_strfromf128(buf, __MPLAPACK_BUFLEN__, FLOAT128_FORMAT, rtmp);
+    mplapack_strfromf128(buf, MPLAPACK_BUFLEN, FLOAT128_FORMAT, rtmp);
     return;
 }
 
 inline void sprintnum(char *buf, std::complex<_Float128> rtmp) {
     if (buf == nullptr)
         return;
-    char buf1[__MPLAPACK_BUFLEN__], buf2[__MPLAPACK_BUFLEN__];
+    char buf1[MPLAPACK_BUFLEN], buf2[MPLAPACK_BUFLEN];
     mplapack_strfromf128(buf1, sizeof(buf1), FLOAT128_FORMAT, rtmp.real());
     mplapack_strfromf128(buf2, sizeof(buf2), FLOAT128_FORMAT, rtmp.imag());
-    snprintf(buf, __MPLAPACK_BUFLEN__, "%s%si", buf1, buf2);
+    snprintf(buf, MPLAPACK_BUFLEN, "%s%si", buf1, buf2);
     return;
 }
 
 // printnum_short - short precision output to stdout
 inline void printnum_short(_Float128 rtmp) {
-    char buf[__MPLAPACK_BUFLEN__];
+    char buf[MPLAPACK_BUFLEN];
     mplapack_strfromf128(buf, sizeof(buf), FLOAT128_SHORT_FORMAT, rtmp);
     printf("%s", buf);
     return;
 }
 
 inline void printnum_short(std::complex<_Float128> rtmp) {
-    char buf[__MPLAPACK_BUFLEN__], buf2[__MPLAPACK_BUFLEN__];
+    char buf[MPLAPACK_BUFLEN], buf2[MPLAPACK_BUFLEN];
     mplapack_strfromf128(buf, sizeof(buf), FLOAT128_SHORT_FORMAT, rtmp.real());
     printf("%s", buf);
     mplapack_strfromf128(buf2, sizeof(buf2), FLOAT128_SHORT_FORMAT, rtmp.imag());
@@ -414,25 +414,25 @@ inline void printnum_short(std::complex<_Float128> rtmp) {
 
 // sprintnum_short - short precision output to buffer
 inline void sprintnum_short(char *buf, _Float128 rtmp) {
-    mplapack_strfromf128(buf, __MPLAPACK_BUFLEN__, FLOAT128_SHORT_FORMAT, rtmp);
+    mplapack_strfromf128(buf, MPLAPACK_BUFLEN, FLOAT128_SHORT_FORMAT, rtmp);
     return;
 }
 
 inline void sprintnum_short(char *buf, std::complex<_Float128> rtmp) {
     if (buf == nullptr)
         return;
-    char buf1[__MPLAPACK_BUFLEN__], buf2[__MPLAPACK_BUFLEN__];
+    char buf1[MPLAPACK_BUFLEN], buf2[MPLAPACK_BUFLEN];
     mplapack_strfromf128(buf1, sizeof(buf1), FLOAT128_SHORT_FORMAT, rtmp.real());
     mplapack_strfromf128(buf2, sizeof(buf2), FLOAT128_SHORT_FORMAT, rtmp.imag());
-    snprintf(buf, __MPLAPACK_BUFLEN__, "%s%si", buf1, buf2);
+    snprintf(buf, MPLAPACK_BUFLEN, "%s%si", buf1, buf2);
     return;
 }
 
-#endif // ___MPLAPACK_INTERNAL___
+#endif // MPLAPACK_INTERNAL
 #elif MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_SNPRINTF_LDBL
-#if defined ___MPLAPACK_INTERNAL___
-#if !defined __MPLAPACK_BUFLEN__
-#define __MPLAPACK_BUFLEN__ 1024
+#if defined MPLAPACK_INTERNAL
+#if !defined MPLAPACK_BUFLEN
+#define MPLAPACK_BUFLEN 1024
 #endif
 #include <string.h>
 
@@ -448,11 +448,11 @@ inline void printnum(std::complex<long double> ctmp) {
     return;
 }
 inline void sprintnum(char *buf, long double rtmp) {
-    snprintf(buf, __MPLAPACK_BUFLEN__, FLOAT128_FORMAT, rtmp);
+    snprintf(buf, MPLAPACK_BUFLEN, FLOAT128_FORMAT, rtmp);
     return;
 }
 inline void sprintnum(char *buf, std::complex<long double> ctmp) {
-    snprintf(buf, __MPLAPACK_BUFLEN__, FLOAT128_FORMAT FLOAT128_FORMAT "i", ctmp.real(), ctmp.imag());
+    snprintf(buf, MPLAPACK_BUFLEN, FLOAT128_FORMAT FLOAT128_FORMAT "i", ctmp.real(), ctmp.imag());
     return;
 }
 inline void printnum_short(long double rtmp) {
@@ -464,14 +464,14 @@ inline void printnum_short(std::complex<long double> ctmp) {
     return;
 }
 inline void sprintnum_short(char *buf, long double rtmp) {
-    snprintf(buf, __MPLAPACK_BUFLEN__, FLOAT128_SHORT_FORMAT, rtmp);
+    snprintf(buf, MPLAPACK_BUFLEN, FLOAT128_SHORT_FORMAT, rtmp);
     return;
 }
 inline void sprintnum_short(char *buf, std::complex<long double> ctmp) {
-    snprintf(buf, __MPLAPACK_BUFLEN__, FLOAT128_SHORT_FORMAT FLOAT128_SHORT_FORMAT "i", ctmp.real(), ctmp.imag());
+    snprintf(buf, MPLAPACK_BUFLEN, FLOAT128_SHORT_FORMAT FLOAT128_SHORT_FORMAT "i", ctmp.real(), ctmp.imag());
     return;
 }
-#endif // ___MPLAPACK_INTERNAL___
+#endif // MPLAPACK_INTERNAL
 #else
 #error "unknown MPLAPACK_BINARY128_IO type"
 #endif // MPLAPACK_BINARY128_IO

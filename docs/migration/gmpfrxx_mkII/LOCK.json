@@ -1,0 +1,56 @@
+{
+  "schema": 1,
+  "mplapack": {
+    "repository": "https://github.com/nakatamaho/mplapack",
+    "remote_url": "git@github.com:nakatamaho/mplapack.git",
+    "branch": "topic/gmpfrxx_mkII_migration",
+    "base_sha": "b875e74d4b927282c907c3a29e6cadda48a7d57b",
+    "base_ref": "origin/master",
+    "selection": "Fetched origin/master was verified before branch creation; this exact commit is the immutable P0 base."
+  },
+  "gmpfrxx_mkII": {
+    "repository": "https://github.com/nakatamaho/gmpfrxx_mkII",
+    "adapter_base_sha": "2f06785c3f1b62f92e1e2026c2c975df73d1e426",
+    "adapter_base_ref": "origin/main",
+    "adapter_base_selection": "Exact fetched default-branch commit selected for the later upstream adapter phases; the locked tree has no adapter files.",
+    "bootstrap_release": "1.0.1",
+    "bootstrap_release_commit": "7e912f300443dd1f53dd69285e0c8302a7cdb3b3",
+    "bootstrap_archive": "gmpfrxx_mkII.1.0.1.tar.xz",
+    "bootstrap_sha256": "c0816b3538b6b77009f714bb391cebe11abb2fdb69e07aa3bb305ff822764afb",
+    "bootstrap_verification": "Reproduced from tag v1.0.1 with the release dist commands: git archive --worktree-attributes --format=tar --prefix=gmpfrxx_mkII.1.0.1/ v1.0.1, then xz -9."
+  },
+  "prompt_pack": {
+    "path": "docs/migration/gmpfrxx_mkII/CODEX_PROMPTS.md",
+    "version": "5.4",
+    "sha256": "c4175afa3ec59c385f00a54c7b762b09c0f05b7c8418b33e940ce340d46d2c0e",
+    "authority": "canonical executable migration specification"
+  },
+  "prototype": {
+    "role": "historical provenance only",
+    "source_filename": "FABLE_PROTOTYPE_PROMPT.v4.md",
+    "source_path": "/home/docker/mplapack-gmpfrxx-v5.4.1-input/FABLE_PROTOTYPE_PROMPT.v4.md",
+    "source_sha256": "d14b03964672da96bb73c86960913d9a566a209bcba86379083bd71c56f262a4",
+    "imported_path": "docs/migration/gmpfrxx_mkII/INTEROP_PROTOTYPE.md",
+    "imported_sha256": "d14b03964672da96bb73c86960913d9a566a209bcba86379083bd71c56f262a4",
+    "byte_for_byte_identical": true,
+    "verification": "cmp -s returned 0"
+  },
+  "precision_policy": {
+    "default_bits": 512,
+    "assignment_precision_policy": "unchecked",
+    "interop_precision_parameters": "none",
+    "runtime_compatibility_status": "accepted-retire-variable-precision-behavior",
+    "runtime_compatibility_evidence": [
+      "mpblas/reference/mplapackinit.cpp applies runtime GMP/MPFR/MPC precision overrides",
+      "mplapack/test/lin/mpfr/Makefile.am runs non-512 MPFR profiles at 53 and 113 bits",
+      "mplapack/test/compare/common/Rlamch.test.cpp mutates GMP default precision through 4096, 128, and 64 bits",
+      "MPLAPACK changes MPFR exponent defaults before gmpfrxx_mkII first use, so later initialization must establish the canonical 512-bit default first"
+    ],
+    "maintainer_decision": "Retire precision changes in mplapackinit.cpp and non-512 default-mutation profiles during migration; preserve separate MPFR exponent-range behavior; do not add provider or cross-DSO synchronization machinery."
+  },
+  "semantic_options": {
+    "GMPFRXX_MKII_ENABLE_FMA": "OFF",
+    "GMPFRXX_MKII_FAST_FIXED_PREC": "OFF",
+    "GMPFRXX_MKII_FAST_STABLE_RND": "OFF"
+  }
+}

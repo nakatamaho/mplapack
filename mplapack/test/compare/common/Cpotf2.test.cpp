@@ -63,7 +63,7 @@ void Cpotf2_test2(const char *uplo) {
             while (j < MAX_ITER) {
                 // general (not necessary psd) case
                 set_random_vector(A_ref, A, matlen(lda, n));
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                 zpotf2_f77(uplo, &n, A_ref, &lda, &info_ref);
 #else
                 Cpotf2(uplo, n, A_ref, lda, info_ref);
@@ -104,7 +104,7 @@ void Cpotf2_test2(const char *uplo) {
                 }
                 // psd case
                 set_random_psdmat(A_ref, A, lda, n);
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                 zpotf2_f77(uplo, &n, A_ref, &lda, &info_ref);
 #else
                 Cpotf2(uplo, n, A_ref, lda, info_ref);

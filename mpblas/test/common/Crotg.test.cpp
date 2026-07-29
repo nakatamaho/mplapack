@@ -60,17 +60,17 @@ void Crotg_test() {
         set_random_number(cb_ref, cb);
         set_random_number(cc_ref, cc);
 
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
         zrotg_f77(&ca_ref, &cb_ref, &cc_ref, &cs_ref);
 #else
         Crotg(ca_ref, cb_ref, cc_ref, cs_ref);
 #endif
         Crotg(ca, cb, cc, cs);
 
-        diff1 = abs(ca_ref - ca);
-        diff2 = abs(cb_ref - cb);
-        diff3 = abs(cc_ref - cc);
-        diff4 = abs(cs_ref - cs);
+        diff1 = abs(ca_ref - cast2ref(ca));
+        diff2 = abs(cb_ref - cast2ref(cb));
+        diff3 = abs(cc_ref - cast2ref(cc));
+        diff4 = abs(cs_ref - cast2ref(cs));
 
 #if defined VERBOSE_TEST
         printf("diff1=");

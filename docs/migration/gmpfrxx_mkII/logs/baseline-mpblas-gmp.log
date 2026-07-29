@@ -1,0 +1,175 @@
+make  arithmetic.test_gmp complex.test_gmp transcendents_gmp.test iCamax.test.gmp_opt iCamax.test.gmp iRamax.test.gmp_opt iRamax.test.gmp Mlsame.test.gmp_opt Mlsame.test.gmp Mxerbla.test.gmp_opt Mxerbla.test.gmp CRrot.test.gmp_opt CRrot.test.gmp CRscal.test.gmp_opt CRscal.test.gmp Caxpy.test.gmp_opt Caxpy.test.gmp Ccopy.test.gmp_opt Ccopy.test.gmp Cdotc.test.gmp_opt Cdotc.test.gmp Cdotu.test.gmp_opt Cdotu.test.gmp Cgbmv.test.gmp_opt Cgbmv.test.gmp Cgemm.test.gmp_opt Cgemm.test.gmp Cgemv.test.gmp_opt Cgemv.test.gmp Cgerc.test.gmp_opt Cgerc.test.gmp Cgeru.test.gmp_opt Cgeru.test.gmp Chbmv.test.gmp_opt Chbmv.test.gmp Chemm.test.gmp_opt Chemm.test.gmp Chemv.test.gmp_opt Chemv.test.gmp Cher.test.gmp_opt Cher.test.gmp Cher2.test.gmp_opt Cher2.test.gmp Cher2k.test.gmp_opt Cher2k.test.gmp Cherk.test.gmp_opt Cherk.test.gmp Chpmv.test.gmp_opt Chpmv.test.gmp Chpr.test.gmp_opt Chpr.test.gmp Chpr2.test.gmp_opt Chpr2.test.gmp Crotg.test.gmp_opt Crotg.test.gmp Cscal.test.gmp_opt Cscal.test.gmp Cswap.test.gmp_opt Cswap.test.gmp Csymm.test.gmp_opt Csymm.test.gmp Csyr2k.test.gmp_opt Csyr2k.test.gmp Csyrk.test.gmp_opt Csyrk.test.gmp Ctbmv.test.gmp_opt Ctbmv.test.gmp Ctbsv.test.gmp_opt Ctbsv.test.gmp Ctpmv.test.gmp_opt Ctpmv.test.gmp Ctpsv.test.gmp_opt Ctpsv.test.gmp Ctrmm.test.gmp_opt Ctrmm.test.gmp Ctrmv.test.gmp_opt Ctrmv.test.gmp Ctrsm.test.gmp_opt Ctrsm.test.gmp Ctrsv.test.gmp_opt Ctrsv.test.gmp RCabs1.test.gmp_opt RCabs1.test.gmp RCasum.test.gmp_opt RCasum.test.gmp RCnrm2.test.gmp_opt RCnrm2.test.gmp Rasum.test.gmp_opt Rasum.test.gmp Raxpy.test.gmp_opt Raxpy.test.gmp Rcopy.test.gmp_opt Rcopy.test.gmp Rdot.test.gmp_opt Rdot.test.gmp Rgbmv.test.gmp_opt Rgbmv.test.gmp Rgemm.test.gmp_opt Rgemm.test.gmp Rgemv.test.gmp_opt Rgemv.test.gmp Rger.test.gmp_opt Rger.test.gmp Rnrm2.test.gmp_opt Rnrm2.test.gmp Rrot.test.gmp_opt Rrot.test.gmp Rrotg.test.gmp_opt Rrotg.test.gmp Rrotm.test.gmp_opt Rrotm.test.gmp Rsbmv.test.gmp_opt Rsbmv.test.gmp Rscal.test.gmp_opt Rscal.test.gmp Rspmv.test.gmp_opt Rspmv.test.gmp Rspr.test.gmp_opt Rspr.test.gmp Rspr2.test.gmp_opt Rspr2.test.gmp Rswap.test.gmp_opt Rswap.test.gmp Rsymm.test.gmp_opt Rsymm.test.gmp Rsymv.test.gmp_opt Rsymv.test.gmp Rsyr.test.gmp_opt Rsyr.test.gmp Rsyr2.test.gmp_opt Rsyr2.test.gmp Rsyr2k.test.gmp_opt Rsyr2k.test.gmp Rsyrk.test.gmp_opt Rsyrk.test.gmp Rtbmv.test.gmp_opt Rtbmv.test.gmp Rtbsv.test.gmp_opt Rtbsv.test.gmp Rtpmv.test.gmp_opt Rtpmv.test.gmp Rtpsv.test.gmp_opt Rtpsv.test.gmp Rtrmm.test.gmp_opt Rtrmm.test.gmp Rtrmv.test.gmp_opt Rtrmv.test.gmp Rtrsm.test.gmp_opt Rtrsm.test.gmp Rtrsv.test.gmp_opt Rtrsv.test.gmp transcendents_gmp_vs_mpfr.test
+make[1]: Entering directory '/tmp/mplapack-p0-base/mpblas/test/gmp'
+make[1]: 'arithmetic.test_gmp' is up to date.
+make[1]: 'complex.test_gmp' is up to date.
+make[1]: 'transcendents_gmp.test' is up to date.
+make[1]: 'iCamax.test.gmp_opt' is up to date.
+make[1]: 'iCamax.test.gmp' is up to date.
+make[1]: 'iRamax.test.gmp_opt' is up to date.
+make[1]: 'iRamax.test.gmp' is up to date.
+make[1]: 'Mlsame.test.gmp_opt' is up to date.
+make[1]: 'Mlsame.test.gmp' is up to date.
+make[1]: 'Mxerbla.test.gmp_opt' is up to date.
+make[1]: 'Mxerbla.test.gmp' is up to date.
+make[1]: 'CRrot.test.gmp_opt' is up to date.
+make[1]: 'CRrot.test.gmp' is up to date.
+make[1]: 'CRscal.test.gmp_opt' is up to date.
+make[1]: 'CRscal.test.gmp' is up to date.
+make[1]: 'Caxpy.test.gmp_opt' is up to date.
+make[1]: 'Caxpy.test.gmp' is up to date.
+make[1]: 'Ccopy.test.gmp_opt' is up to date.
+make[1]: 'Ccopy.test.gmp' is up to date.
+make[1]: 'Cdotc.test.gmp_opt' is up to date.
+make[1]: 'Cdotc.test.gmp' is up to date.
+make[1]: 'Cdotu.test.gmp_opt' is up to date.
+make[1]: 'Cdotu.test.gmp' is up to date.
+make[1]: 'Cgbmv.test.gmp_opt' is up to date.
+make[1]: 'Cgbmv.test.gmp' is up to date.
+make[1]: 'Cgemm.test.gmp_opt' is up to date.
+make[1]: 'Cgemm.test.gmp' is up to date.
+make[1]: 'Cgemv.test.gmp_opt' is up to date.
+make[1]: 'Cgemv.test.gmp' is up to date.
+make[1]: 'Cgerc.test.gmp_opt' is up to date.
+make[1]: 'Cgerc.test.gmp' is up to date.
+make[1]: 'Cgeru.test.gmp_opt' is up to date.
+make[1]: 'Cgeru.test.gmp' is up to date.
+make[1]: 'Chbmv.test.gmp_opt' is up to date.
+make[1]: 'Chbmv.test.gmp' is up to date.
+make[1]: 'Chemm.test.gmp_opt' is up to date.
+make[1]: 'Chemm.test.gmp' is up to date.
+make[1]: 'Chemv.test.gmp_opt' is up to date.
+make[1]: 'Chemv.test.gmp' is up to date.
+make[1]: 'Cher.test.gmp_opt' is up to date.
+make[1]: 'Cher.test.gmp' is up to date.
+make[1]: 'Cher2.test.gmp_opt' is up to date.
+make[1]: 'Cher2.test.gmp' is up to date.
+make[1]: 'Cher2k.test.gmp_opt' is up to date.
+make[1]: 'Cher2k.test.gmp' is up to date.
+make[1]: 'Cherk.test.gmp_opt' is up to date.
+make[1]: 'Cherk.test.gmp' is up to date.
+make[1]: 'Chpmv.test.gmp_opt' is up to date.
+make[1]: 'Chpmv.test.gmp' is up to date.
+make[1]: 'Chpr.test.gmp_opt' is up to date.
+make[1]: 'Chpr.test.gmp' is up to date.
+make[1]: 'Chpr2.test.gmp_opt' is up to date.
+make[1]: 'Chpr2.test.gmp' is up to date.
+make[1]: 'Crotg.test.gmp_opt' is up to date.
+make[1]: 'Crotg.test.gmp' is up to date.
+make[1]: 'Cscal.test.gmp_opt' is up to date.
+make[1]: 'Cscal.test.gmp' is up to date.
+make[1]: 'Cswap.test.gmp_opt' is up to date.
+make[1]: 'Cswap.test.gmp' is up to date.
+make[1]: 'Csymm.test.gmp_opt' is up to date.
+make[1]: 'Csymm.test.gmp' is up to date.
+make[1]: 'Csyr2k.test.gmp_opt' is up to date.
+make[1]: 'Csyr2k.test.gmp' is up to date.
+make[1]: 'Csyrk.test.gmp_opt' is up to date.
+make[1]: 'Csyrk.test.gmp' is up to date.
+make[1]: 'Ctbmv.test.gmp_opt' is up to date.
+make[1]: 'Ctbmv.test.gmp' is up to date.
+make[1]: 'Ctbsv.test.gmp_opt' is up to date.
+make[1]: 'Ctbsv.test.gmp' is up to date.
+make[1]: 'Ctpmv.test.gmp_opt' is up to date.
+make[1]: 'Ctpmv.test.gmp' is up to date.
+make[1]: 'Ctpsv.test.gmp_opt' is up to date.
+make[1]: 'Ctpsv.test.gmp' is up to date.
+make[1]: 'Ctrmm.test.gmp_opt' is up to date.
+make[1]: 'Ctrmm.test.gmp' is up to date.
+make[1]: 'Ctrmv.test.gmp_opt' is up to date.
+make[1]: 'Ctrmv.test.gmp' is up to date.
+make[1]: 'Ctrsm.test.gmp_opt' is up to date.
+make[1]: 'Ctrsm.test.gmp' is up to date.
+make[1]: 'Ctrsv.test.gmp_opt' is up to date.
+make[1]: 'Ctrsv.test.gmp' is up to date.
+make[1]: 'RCabs1.test.gmp_opt' is up to date.
+make[1]: 'RCabs1.test.gmp' is up to date.
+make[1]: 'RCasum.test.gmp_opt' is up to date.
+make[1]: 'RCasum.test.gmp' is up to date.
+make[1]: 'RCnrm2.test.gmp_opt' is up to date.
+make[1]: 'RCnrm2.test.gmp' is up to date.
+make[1]: 'Rasum.test.gmp_opt' is up to date.
+make[1]: 'Rasum.test.gmp' is up to date.
+make[1]: 'Raxpy.test.gmp_opt' is up to date.
+make[1]: 'Raxpy.test.gmp' is up to date.
+make[1]: 'Rcopy.test.gmp_opt' is up to date.
+make[1]: 'Rcopy.test.gmp' is up to date.
+make[1]: 'Rdot.test.gmp_opt' is up to date.
+make[1]: 'Rdot.test.gmp' is up to date.
+make[1]: 'Rgbmv.test.gmp_opt' is up to date.
+make[1]: 'Rgbmv.test.gmp' is up to date.
+make[1]: 'Rgemm.test.gmp_opt' is up to date.
+make[1]: 'Rgemm.test.gmp' is up to date.
+make[1]: 'Rgemv.test.gmp_opt' is up to date.
+make[1]: 'Rgemv.test.gmp' is up to date.
+make[1]: 'Rger.test.gmp_opt' is up to date.
+make[1]: 'Rger.test.gmp' is up to date.
+make[1]: 'Rnrm2.test.gmp_opt' is up to date.
+make[1]: 'Rnrm2.test.gmp' is up to date.
+make[1]: 'Rrot.test.gmp_opt' is up to date.
+make[1]: 'Rrot.test.gmp' is up to date.
+make[1]: 'Rrotg.test.gmp_opt' is up to date.
+make[1]: 'Rrotg.test.gmp' is up to date.
+make[1]: 'Rrotm.test.gmp_opt' is up to date.
+make[1]: 'Rrotm.test.gmp' is up to date.
+make[1]: 'Rsbmv.test.gmp_opt' is up to date.
+make[1]: 'Rsbmv.test.gmp' is up to date.
+make[1]: 'Rscal.test.gmp_opt' is up to date.
+make[1]: 'Rscal.test.gmp' is up to date.
+make[1]: 'Rspmv.test.gmp_opt' is up to date.
+make[1]: 'Rspmv.test.gmp' is up to date.
+make[1]: 'Rspr.test.gmp_opt' is up to date.
+make[1]: 'Rspr.test.gmp' is up to date.
+make[1]: 'Rspr2.test.gmp_opt' is up to date.
+make[1]: 'Rspr2.test.gmp' is up to date.
+make[1]: 'Rswap.test.gmp_opt' is up to date.
+make[1]: 'Rswap.test.gmp' is up to date.
+make[1]: 'Rsymm.test.gmp_opt' is up to date.
+make[1]: 'Rsymm.test.gmp' is up to date.
+make[1]: 'Rsymv.test.gmp_opt' is up to date.
+make[1]: 'Rsymv.test.gmp' is up to date.
+make[1]: 'Rsyr.test.gmp_opt' is up to date.
+make[1]: 'Rsyr.test.gmp' is up to date.
+make[1]: 'Rsyr2.test.gmp_opt' is up to date.
+make[1]: 'Rsyr2.test.gmp' is up to date.
+make[1]: 'Rsyr2k.test.gmp_opt' is up to date.
+make[1]: 'Rsyr2k.test.gmp' is up to date.
+make[1]: 'Rsyrk.test.gmp_opt' is up to date.
+make[1]: 'Rsyrk.test.gmp' is up to date.
+make[1]: 'Rtbmv.test.gmp_opt' is up to date.
+make[1]: 'Rtbmv.test.gmp' is up to date.
+make[1]: 'Rtbsv.test.gmp_opt' is up to date.
+make[1]: 'Rtbsv.test.gmp' is up to date.
+make[1]: 'Rtpmv.test.gmp_opt' is up to date.
+make[1]: 'Rtpmv.test.gmp' is up to date.
+make[1]: 'Rtpsv.test.gmp_opt' is up to date.
+make[1]: 'Rtpsv.test.gmp' is up to date.
+make[1]: 'Rtrmm.test.gmp_opt' is up to date.
+make[1]: 'Rtrmm.test.gmp' is up to date.
+make[1]: 'Rtrmv.test.gmp_opt' is up to date.
+make[1]: 'Rtrmv.test.gmp' is up to date.
+make[1]: 'Rtrsm.test.gmp_opt' is up to date.
+make[1]: 'Rtrsm.test.gmp' is up to date.
+make[1]: 'Rtrsv.test.gmp_opt' is up to date.
+make[1]: 'Rtrsv.test.gmp' is up to date.
+make[1]: 'transcendents_gmp_vs_mpfr.test' is up to date.
+make[1]: Leaving directory '/tmp/mplapack-p0-base/mpblas/test/gmp'
+make  check-TESTS
+make[1]: Entering directory '/tmp/mplapack-p0-base/mpblas/test/gmp'
+make[2]: Entering directory '/tmp/mplapack-p0-base/mpblas/test/gmp'
+PASS: arithmetic.test_gmp
+PASS: complex.test_gmp
+PASS: transcendents_gmp.test
+PASS: transcendents_gmp_vs_mpfr.test
+============================================================================
+Testsuite summary for mplapack 2.3.0
+============================================================================
+# TOTAL: 4
+# PASS:  4
+# SKIP:  0
+# XFAIL: 0
+# FAIL:  0
+# XPASS: 0
+# ERROR: 0
+============================================================================
+make[2]: Leaving directory '/tmp/mplapack-p0-base/mpblas/test/gmp'
+make[1]: Leaving directory '/tmp/mplapack-p0-base/mpblas/test/gmp'

@@ -75,7 +75,7 @@ void Rgehd2_test(void) {
                 printf("Aorg_ref=");printmat(n,n,A_ref,lda);printf("\n");
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                 dgehd2_f77(&n, &ilo_ref, &ihi_ref, A_ref, &lda, tau_ref, work_ref, &info_ref);
 #else
                 Rgehd2(n, ilo_ref, ihi_ref, A_ref, lda, tau_ref, work_ref, info_ref);

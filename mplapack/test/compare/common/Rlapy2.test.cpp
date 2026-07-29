@@ -50,7 +50,7 @@ void Rlapy2_test() {
     while (count--) {
         set_random_number(x_ref, x);
         set_random_number(y_ref, y);
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
         dlapy2_ret = dlapy2_f77(&x_ref, &y_ref);
 #else
         dlapy2_ret = Rlapy2(x_ref, y_ref);
@@ -77,7 +77,7 @@ void Rlapy2_test() {
         printnum(dlapy2_ret);
         cout << endl;
 #endif
-        diff = abs(dlapy2_ret - Rlapy2_ret);
+        diff = abs(dlapy2_ret - cast2ref(Rlapy2_ret));
         if (diff > EPSILON) {
             errorflag = TRUE;
         }

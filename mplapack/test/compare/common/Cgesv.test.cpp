@@ -74,7 +74,7 @@ void Cgesv_test() {
                     while (j < MAX_ITER) {
                         set_random_vector(A_ref, A, matlen(lda, n));
                         set_random_vector(B_ref, B, matlen(ldb, nrhs));
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                         zgesv_f77(&n, &nrhs, A_ref, &lda, ipiv_ref, B_ref, &ldb, &info_ref);
 #else
                         Cgesv(n, nrhs, A_ref, lda, ipiv_ref, B_ref, ldb, info_ref);

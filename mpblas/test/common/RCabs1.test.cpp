@@ -50,7 +50,7 @@ void RCabs1_test() {
     while (j < MAX_ITER) {
         set_random_number(z_ref, z);
 
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
         dtemp = dcabs1_f77(&z_ref);
 #else
         dtemp = RCabs1(z_ref);
@@ -72,7 +72,7 @@ void RCabs1_test() {
         printnum(dtemp);
         printf("\n");
 #endif
-        REAL_REF diff = abs(Ftemp - dtemp);
+        REAL_REF diff = abs(cast2ref(Ftemp) - dtemp);
         if (diff > EPSILON) {
 #if defined VERBOSE_TEST
             printf("error: ");

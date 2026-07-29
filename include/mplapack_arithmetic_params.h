@@ -139,9 +139,9 @@ namespace detail {
     }
 
     // GMP-specific exact power-of-two helper using mpf_mul_2exp/mpf_div_2exp.
-#if defined(__GNU_MPXX_H__) || defined(__GMP_PLUSPLUS__)
+#if defined(__GNU_MPXX_H__) || defined(__GMP_PLUSPLUS__) || defined(GMPXX_MKII_H)
     inline mpf_class int_pow_base2_gmp(arithmetic_int exp) {
-        mpf_class x(1, mpf_get_default_prec());
+        mpf_class x(1, gmpxx::default_mpf_precision_bits());
         if (exp >= 0) {
             mpf_mul_2exp(x.get_mpf_t(), x.get_mpf_t(), static_cast<mp_bitcnt_t>(exp));
         } else {
@@ -181,7 +181,7 @@ namespace detail {
 
         return int_pow_base2_gmp(exp_safmax);
     }
-#endif // defined(__GNU_MPXX_H__) || defined(__GMP_PLUSPLUS__)
+#endif // defined(__GNU_MPXX_H__) || defined(__GMP_PLUSPLUS__) || defined(GMPXX_MKII_H)
 
     // Warn when exponent-range conditions required by the internal
     // Blue scaling guards are violated. For the derived internal
@@ -229,17 +229,17 @@ namespace detail {
     // t/emin/emax are well within the exactly representable range of double.
     template <class REAL> inline REAL to_rlamch_real_impl(arithmetic_int x, REAL *) { return REAL(static_cast<double>(x)); }
 
-#if defined(___MPLAPACK_BUILD_WITH_GMP___)
+#if defined(MPLAPACK_BUILD_WITH_GMP)
     inline mpf_class to_rlamch_real_impl(arithmetic_int x, mpf_class *) {
         const std::string s = std::to_string(x);
         return mpf_class(s.c_str());
     }
 #endif
 
-#if defined(___MPLAPACK_BUILD_WITH_MPFR___)
-    inline mpfr::mpreal to_rlamch_real_impl(arithmetic_int x, mpfr::mpreal *) {
+#if defined(MPLAPACK_BUILD_WITH_MPFR)
+    inline mpfrxx::mpfr_class to_rlamch_real_impl(arithmetic_int x, mpfrxx::mpfr_class *) {
         const std::string s = std::to_string(x);
-        return mpfr::mpreal(s.c_str());
+        return mpfrxx::mpfr_class(s.c_str());
     }
 #endif
 
@@ -337,31 +337,31 @@ template <class REAL> BlueScalingParams<REAL> get_blue_scaling_params();
 // Each header is self-contained and may only be included once per TU via
 // the build-macro guard.
 // ---------------------------------------------------------------------------
-#if defined(___MPLAPACK_BUILD_WITH_MPFR___)
+#if defined(MPLAPACK_BUILD_WITH_MPFR)
 #include "mplapack_arithmetic_params_mpfr.h"
 #endif
 
-#if defined(___MPLAPACK_BUILD_WITH_GMP___)
+#if defined(MPLAPACK_BUILD_WITH_GMP)
 #include "mplapack_arithmetic_params_gmp.h"
 #endif
 
-#if defined(___MPLAPACK_BUILD_WITH_DOUBLE___)
+#if defined(MPLAPACK_BUILD_WITH_DOUBLE)
 #include "mplapack_arithmetic_params_double.h"
 #endif
 
-#if defined(___MPLAPACK_BUILD_WITH_BINARY80___)
+#if defined(MPLAPACK_BUILD_WITH_BINARY80)
 #include "mplapack_arithmetic_params_binary80.h"
 #endif
 
-#if defined(___MPLAPACK_BUILD_WITH_BINARY128___)
+#if defined(MPLAPACK_BUILD_WITH_BINARY128)
 #include "mplapack_arithmetic_params_binary128.h"
 #endif
 
-#if defined(___MPLAPACK_BUILD_WITH_QD___)
+#if defined(MPLAPACK_BUILD_WITH_QD)
 #include "mplapack_arithmetic_params_qd.h"
 #endif
 
-#if defined(___MPLAPACK_BUILD_WITH_DD___)
+#if defined(MPLAPACK_BUILD_WITH_DD)
 #include "mplapack_arithmetic_params_dd.h"
 #endif
 

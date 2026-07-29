@@ -56,14 +56,14 @@ void Rnrm2_test() {
                 REAL_REF dtmp;
                 REAL Rtmp;
 
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                 dtmp = dnrm2_f77(&n, x_ref, &incx);
 #else
                 dtmp = Rnrm2(n, x_ref, incx);
 #endif
                 Rtmp = Rnrm2(n, x, incx);
 
-                REAL_REF diff = abs(Rtmp - dtmp);
+                REAL_REF diff = abs(cast2ref(Rtmp) - dtmp);
                 if (diff > EPSILON) {
 #if defined VERBOSE_TEST
                     printf("error: ");

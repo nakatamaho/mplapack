@@ -1,0 +1,25 @@
+ L Loop Index =            1
+ M = 
+          10
+ N = 
+           5
+ *** On entry to Rlasd0 parameter number      9 had an illegal value ***
+ *** XERBLA was called with srname= Rlasd0 but no srname was expected (srnamt not set) ***
+ *** On entry to Rlasd0 parameter number      9 had an illegal value ***
+ *** XERBLA was called with srname= Rlasd0 but no srname was expected (srnamt not set) ***
+ *** On entry to Rlasd0 parameter number      9 had an illegal value ***
+ *** XERBLA was called with srname= Rlasd0 but no srname was expected (srnamt not set) ***
+ *** On entry to Rlasd0 parameter number      9 had an illegal value ***
+ *** XERBLA was called with srname= Rlasd0 but no srname was expected (srnamt not set) ***
+ *** On entry to Rlasd0 parameter number      9 had an illegal value ***
+ *** XERBLA was called with srname= Rlasd0 but no srname was expected (srnamt not set) ***
+ :( .................Cgedmd FAILED!Check the code for implementation errors.
+ The input parameters were SVRR           2          10           5          10
+          10          -2 9.86076131526264647288218181227165e-31
+ :( ..................Cgedmd FAILED!Check the code for implementation errors.
+ The input parameters were SVRR           2          10           5          10
+          10          -2 9.86076131526264647288218181227165e-31
+ *** On entry to Rlasd0 parameter number      9 had an illegal value ***
+ *** XERBLA was called with srname= Rlasd0 but no srname was expected (srnamt not set) ***
+ ................ Cgedmdq FAILED!Check the code for implementation errors.
+STOP at ../../../../../../mplapack/test/eig/dd/../common/Cchkdmd.cpp(713)

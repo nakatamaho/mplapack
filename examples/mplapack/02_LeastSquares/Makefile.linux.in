@@ -8,7 +8,7 @@ OPTFLAGS= -O2
 OPENMP_EXAMPLE_OPENMP_LIBS = -fopenmp
 LIBFLAGS=-L$(MPLAPACKDIR)/lib -Wl,--rpath=$(MPLAPACKDIR)/lib
 MPFRLIBS= -lmplapack_mpfr -lmpfr -lmpc -lgmp
-GMPLIBS=-lmplapack_gmp -lgmpxx -lgmp
+GMPLIBS=-lmplapack_gmp -lgmp
 QDLIBS=-lmplapack_qd -lqd
 DDLIBS=-lmplapack_dd -lqd
 BINARY80LIBS=-lmplapack_binary80

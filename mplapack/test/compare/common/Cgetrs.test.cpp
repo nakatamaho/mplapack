@@ -74,7 +74,7 @@ void Cgetrs_test2(const char *trans) {
                     while (j < MAX_ITER) {
                         set_random_vector(A_ref, A, matlen(lda, n));
                         set_random_vector(B_ref, B, matlen(ldb, nrhs));
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                         zgetrf_f77(&n, &n, A_ref, &lda, ipiv_ref, &info_ref);
                         zgetrs_f77(trans, &n, &nrhs, A_ref, &lda, ipiv_ref, B_ref, &ldb, &info_ref);
 #else

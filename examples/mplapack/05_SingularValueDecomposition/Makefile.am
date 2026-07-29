@@ -3,7 +3,7 @@ mplapackexamples_PROGRAMS =
 if ENABLE_MPFR
 mplapackexamples_PROGRAMS += Cgesvd_test_mpfr Rgesvd_random_highcond_mpfr Rgesvd_readfromfile_mpfr Rgesvd_test2_mpfr Rgesvd_test_mpfr
 
-mpfr_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mpfrc++ -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR)
+mpfr_cxxflags = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR)
 mpfr_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_mpfr -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp
 
 Cgesvd_test_mpfr_SOURCES = Cgesvd_test_mpfr.cpp
@@ -31,7 +31,7 @@ endif
 if ENABLE_GMP
 mplapackexamples_PROGRAMS += Cgesvd_test_gmp Rgesvd_random_highcond_gmp Rgesvd_readfromfile_gmp Rgesvd_test2_gmp Rgesvd_test_gmp
 
-gmp_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR)
+gmp_cxxflags = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR)
 gmp_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_gmp -L$(GMP_LIBDIR) -lgmp
 
 Cgesvd_test_gmp_SOURCES = Cgesvd_test_gmp.cpp

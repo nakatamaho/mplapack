@@ -52,7 +52,7 @@ void Rladiv_test() {
         set_random_number(c_ref, c);
         set_random_number(d_ref, d);
 
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
         dladiv_f77(&a_ref, &b_ref, &c_ref, &d_ref, &p_ref, &q_ref);
 #else
         Rladiv(a_ref, b_ref, c_ref, d_ref, p_ref, q_ref);
@@ -98,7 +98,7 @@ void Rladiv_test() {
         printnum(q_ref);
         cout << endl;
 #endif
-        diff = abs(p_ref - p);
+        diff = abs(p_ref - cast2ref(p));
         if (diff > EPSILON) {
             errorflag = TRUE;
             printf("error1: ");
@@ -107,7 +107,7 @@ void Rladiv_test() {
         }
         if (maxdiff < diff)
             maxdiff = diff;
-        diff = abs(q_ref - q);
+        diff = abs(q_ref - cast2ref(q));
         if (diff > EPSILON) {
             errorflag = TRUE;
             printf("error2: ");

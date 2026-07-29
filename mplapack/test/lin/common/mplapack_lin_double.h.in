@@ -26,8 +26,8 @@
  *
  */
 
-#ifndef _MPLAPACK_LIN_DOUBLE_H_
-#define _MPLAPACK_LIN_DOUBLE_H_
+#ifndef MPLAPACK_LIN_DOUBLE_H
+#define MPLAPACK_LIN_DOUBLE_H
 
 #include "mplapack_config.h"
 

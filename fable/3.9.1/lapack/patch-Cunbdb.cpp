@@ -6,7 +6,7 @@ index cf6dc511..266462c5 100644
  #include <mplapack.h>
  
  void Cunbdb(const char *trans, const char *signs, INTEGER const m, INTEGER const p, INTEGER const q, COMPLEX *x11, INTEGER const ldx11, COMPLEX *x12, INTEGER const ldx12, COMPLEX *x21, INTEGER const ldx21, COMPLEX *x22, INTEGER const ldx22, REAL *theta, REAL *phi, COMPLEX *taup1, COMPLEX *taup2, COMPLEX *tauq1, COMPLEX *tauq2, COMPLEX *work, INTEGER const lwork, INTEGER &info) {
-+#if defined ___MPLAPACK_BUILD_WITH_GMP___
++#if defined MPLAPACK_BUILD_WITH_GMP
 +    printf("MPLAPACK ERROR Cunbdb.cpp is not supported for GMP\n");
 +    exit(1);
 +#endif

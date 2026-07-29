@@ -20,8 +20,8 @@ mplapack_mpfr_opt_testdir = $(prefix)/lib/$(target)/mplapack/test/eig
 MPFR_PROFILES = default binary64 binary128
 
 MPFR_ENV_default   =
-MPFR_ENV_binary64  = MPLAPACK_MPFR_EMAX=1024  MPLAPACK_MPFR_EMIN=-1021  MPLAPACK_MPFR_PRECISION=53
-MPFR_ENV_binary128 = MPLAPACK_MPFR_EMAX=16384 MPLAPACK_MPFR_EMIN=-16381 MPLAPACK_MPFR_PRECISION=113
+MPFR_ENV_binary64  = MPFRXX_DEFAULT_EMAX=1024  MPFRXX_DEFAULT_EMIN=-1021  MPFRXX_DEFAULT_PRECISION_BITS=53
+MPFR_ENV_binary128 = MPFRXX_DEFAULT_EMAX=16384 MPFRXX_DEFAULT_EMIN=-16381 MPFRXX_DEFAULT_PRECISION_BITS=113
 
 MPFR_PROFILE_LABEL_default   = default
 MPFR_PROFILE_LABEL_binary64  = binary64 (prec=53 emin=-1021 emax=1024)
@@ -38,8 +38,8 @@ libdepends = -L$(top_builddir)/mplapack/test/eig -leig_mpfr -leig_override_mpfr 
 opt_libdepends = -L$(top_builddir)/mplapack/test/eig -leig_mpfr_opt -leig_override_mpfr_opt -L$(top_builddir)/mplapack/test/matgen -lmatgen_mpfr_opt -L$(top_builddir)/mpblas/optimized/mpfr -lmplapack_mpfr_opt
 endif
 
-mplibs = -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpc -lmpfr -lgmpxx -lgmp -lm
-cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(LAPACK_INCLUDEDIR) -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___ -D___MPLAPACK_INTERNAL___ -I$(top_srcdir)/fable
+mplibs = -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpc -lmpfr -lgmp -lm
+cxxflags = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(LAPACK_INCLUDEDIR) -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_MPFR -DMPLAPACK_INTERNAL -I$(top_srcdir)/fable
 
 xeigtstR_mpfr_SOURCES  = ../common/Rchkee.cpp
 xeigtstR_mpfr_opt_SOURCES  = ../common/Rchkee.cpp

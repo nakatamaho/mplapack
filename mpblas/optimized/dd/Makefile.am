@@ -12,7 +12,7 @@ MPLAPACK_DD_OPTIMIZED_SOURCES =
 
 lib_LTLIBRARIES = libmplapack_dd_opt.la
 
-libmplapack_dd_opt_la_CPPFLAGS = -I. -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) $(OPENMP_CXXFLAGS) -D___MPLAPACK_BUILD_WITH_DD___
+libmplapack_dd_opt_la_CPPFLAGS = -I. -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) $(OPENMP_CXXFLAGS) -DMPLAPACK_BUILD_WITH_DD
 libmplapack_dd_opt_la_CXXFLAGS = $(DD_CXXFLAGS)
 libmplapack_dd_opt_la_SOURCES = \
 Rcopy.cpp Rcopy_ref.cpp openmp/Rcopy_omp.cpp \

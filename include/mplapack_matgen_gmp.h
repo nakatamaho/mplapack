@@ -26,20 +26,21 @@
  *
  */
 
-#ifndef _MPLAPACK_MATGEN_GMP_H_
-#define _MPLAPACK_MATGEN_GMP_H_
+#ifndef MPLAPACK_MATGEN_GMP_H
+#define MPLAPACK_MATGEN_GMP_H
 
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
 using fem::common;
 
 #include "mplapack_config.h"
-#include "gmpxx.h"
-#include "mpc_class.h"
+#include <mplapack_gmpfrxx_mkII_config.h>
+#include <gmpxx_mkII.h>
+using namespace gmpxx;
 
-mpc_class Clarnd(mplapackint const idist, mplapackint (&iseed)[4]);
-mpc_class Clatm2(mplapackint const m, mplapackint const n, mplapackint const i, mplapackint const j, mplapackint const kl, mplapackint const ku, mplapackint const idist, mplapackint (&iseed)[4], mpc_class *d, mplapackint const igrade, mpc_class *dl, mpc_class *dr, mplapackint const ipvtng, mplapackint *iwork, mpf_class const sparse);
-mpc_class Clatm3(mplapackint const m, mplapackint const n, mplapackint const i, mplapackint const j, mplapackint &isub, mplapackint &jsub, mplapackint const kl, mplapackint const ku, mplapackint const idist, mplapackint (&iseed)[4], mpc_class *d, mplapackint const igrade, mpc_class *dl, mpc_class *dr, mplapackint const ipvtng, mplapackint *iwork, mpf_class const sparse);
+mpfc_class Clarnd(mplapackint const idist, mplapackint (&iseed)[4]);
+mpfc_class Clatm2(mplapackint const m, mplapackint const n, mplapackint const i, mplapackint const j, mplapackint const kl, mplapackint const ku, mplapackint const idist, mplapackint (&iseed)[4], mpfc_class *d, mplapackint const igrade, mpfc_class *dl, mpfc_class *dr, mplapackint const ipvtng, mplapackint *iwork, mpf_class const sparse);
+mpfc_class Clatm3(mplapackint const m, mplapackint const n, mplapackint const i, mplapackint const j, mplapackint &isub, mplapackint &jsub, mplapackint const kl, mplapackint const ku, mplapackint const idist, mplapackint (&iseed)[4], mpfc_class *d, mplapackint const igrade, mpfc_class *dl, mpfc_class *dr, mplapackint const ipvtng, mplapackint *iwork, mpf_class const sparse);
 mpf_class Rlamch_gmp(const char *cmach);
 mpf_class Rlaran(mplapackint (&iseed)[4]);
 mpf_class Rlarnd(mplapackint const idist, mplapackint (&iseed)[4]);
@@ -47,21 +48,21 @@ mpf_class Rlatm2(mplapackint const m, mplapackint const n, mplapackint const i, 
 mpf_class Rlatm3(mplapackint const m, mplapackint const n, mplapackint const i, mplapackint const j, mplapackint &isub, mplapackint &jsub, mplapackint const kl, mplapackint const ku, mplapackint const idist, mplapackint (&iseed)[4], mpf_class *d, mplapackint const igrade, mpf_class *dl, mpf_class *dr, mplapackint const ipvtng, mplapackint *iwork, mpf_class const sparse);
 mplapackint iMlaenv_gmp(mplapackint const ispec, const char *name, const char *opts, mplapackint const n1, mplapackint const n2, mplapackint const n3, mplapackint const n4);
 mplapackint iMlaenv_gmp2stage(mplapackint const ispec, const char *name, const char *opts, mplapackint const n1, mplapackint const n2, mplapackint const n3, mplapackint const n4);
-void Clagge(mplapackint const m, mplapackint const n, mplapackint const kl, mplapackint const ku, mpf_class *d, mpc_class *a, mplapackint const lda, mplapackint (&iseed)[4], mpc_class *work, mplapackint &info);
-void Claghe(mplapackint const n, mplapackint const k, mpf_class *d, mpc_class *a, mplapackint const lda, mplapackint (&iseed)[4], mpc_class *work, mplapackint &info);
-void Clagsy(mplapackint const n, mplapackint const k, mpf_class *d, mpc_class *a, mplapackint const lda, mplapackint (&iseed)[4], mpc_class *work, mplapackint &info);
-void Clahilb(mplapackint const n, mplapackint const nrhs, mpc_class *a, mplapackint const lda, mpc_class *x, mplapackint const ldx, mpc_class *b, mplapackint const ldb, mpf_class *work, mplapackint &info, fem::str_cref path);
-void Clakf2(mplapackint const m, mplapackint const n, mpc_class *a, mplapackint const lda, mpc_class *b, mpc_class *d, mpc_class *e, mpc_class *z, mplapackint const ldz);
-void Clarge(mplapackint const n, mpc_class *a, mplapackint const lda, mplapackint (&iseed)[4], mpc_class *work, mplapackint &info);
-void Claror(fem::str_cref side, fem::str_cref init, mplapackint const m, mplapackint const n, mpc_class *a, mplapackint const lda, mplapackint (&iseed)[4], mpc_class *x, mplapackint &info);
-void Clarot(bool const lrows, bool const lleft, bool const lright, mplapackint const nl, mpc_class const c, mpc_class const s, mpc_class *a, mplapackint const lda, mpc_class &xleft, mpc_class &xright);
-void Clatm1(mplapackint const mode, mpf_class const cond, mplapackint const irsign, mplapackint const idist, mplapackint (&iseed)[4], mpc_class *d, mplapackint const n, mplapackint &info);
-void Clatm5(mplapackint const prtype, mplapackint const m, mplapackint const n, mpc_class *a, mplapackint const lda, mpc_class *b, mplapackint const ldb, mpc_class *c, mplapackint const ldc, mpc_class *d, mplapackint const ldd, mpc_class *e, mplapackint const lde, mpc_class *f, mplapackint const ldf, mpc_class *r, mplapackint const ldr, mpc_class *l, mplapackint const ldl, mpf_class const alpha, mplapackint &qblcka, mplapackint &qblckb);
-void Clatm6(mplapackint const type, mplapackint const n, mpc_class *a, mplapackint const lda, mpc_class *b, mpc_class *x, mplapackint const ldx, mpc_class *y, mplapackint const ldy, mpc_class const alpha, mpc_class const beta, mpc_class const wx, mpc_class const wy, mpf_class *s, mpf_class *dif);
-void Clatme(mplapackint const n, fem::str_cref dist, mplapackint (&iseed)[4], mpc_class *d, mplapackint const mode, mpf_class const cond, mpc_class const dmax, fem::str_cref rsign, fem::str_cref upper, fem::str_cref sim, mpf_class *ds, mplapackint const modes, mpf_class const conds, mplapackint const kl, mplapackint const ku, mpf_class const anorm, mpc_class *a, mplapackint const lda, mpc_class *work, mplapackint &info);
-void Clatmr(mplapackint const m, mplapackint const n, fem::str_cref dist, mplapackint (&iseed)[4], fem::str_cref sym, mpc_class *d, mplapackint const mode, mpf_class const cond, mpc_class const dmax, fem::str_cref rsign, fem::str_cref grade, mpc_class *dl, mplapackint const model, mpf_class const condl, mpc_class *dr, mplapackint const moder, mpf_class const condr, fem::str_cref pivtng, mplapackint *ipivot, mplapackint const kl, mplapackint const ku, mpf_class const sparse, mpf_class const anorm, fem::str_cref pack, mpc_class *a, mplapackint const lda, mplapackint *iwork, mplapackint &info);
-void Clatms(mplapackint const m, mplapackint const n, fem::str_cref dist, mplapackint (&iseed)[4], fem::str_cref sym, mpf_class *d, mplapackint const mode, mpf_class const cond, mpf_class const dmax, mplapackint const kl, mplapackint const ku, fem::str_cref pack, mpc_class *a, mplapackint const lda, mpc_class *work, mplapackint &info);
-void Clatmt(mplapackint const m, mplapackint const n, fem::str_cref dist, mplapackint (&iseed)[4], fem::str_cref sym, mpf_class *d, mplapackint const mode, mpf_class const cond, mpf_class const dmax, mplapackint const rank, mplapackint const kl, mplapackint const ku, fem::str_cref pack, mpc_class *a, mplapackint const lda, mpc_class *work, mplapackint &info);
+void Clagge(mplapackint const m, mplapackint const n, mplapackint const kl, mplapackint const ku, mpf_class *d, mpfc_class *a, mplapackint const lda, mplapackint (&iseed)[4], mpfc_class *work, mplapackint &info);
+void Claghe(mplapackint const n, mplapackint const k, mpf_class *d, mpfc_class *a, mplapackint const lda, mplapackint (&iseed)[4], mpfc_class *work, mplapackint &info);
+void Clagsy(mplapackint const n, mplapackint const k, mpf_class *d, mpfc_class *a, mplapackint const lda, mplapackint (&iseed)[4], mpfc_class *work, mplapackint &info);
+void Clahilb(mplapackint const n, mplapackint const nrhs, mpfc_class *a, mplapackint const lda, mpfc_class *x, mplapackint const ldx, mpfc_class *b, mplapackint const ldb, mpf_class *work, mplapackint &info, fem::str_cref path);
+void Clakf2(mplapackint const m, mplapackint const n, mpfc_class *a, mplapackint const lda, mpfc_class *b, mpfc_class *d, mpfc_class *e, mpfc_class *z, mplapackint const ldz);
+void Clarge(mplapackint const n, mpfc_class *a, mplapackint const lda, mplapackint (&iseed)[4], mpfc_class *work, mplapackint &info);
+void Claror(fem::str_cref side, fem::str_cref init, mplapackint const m, mplapackint const n, mpfc_class *a, mplapackint const lda, mplapackint (&iseed)[4], mpfc_class *x, mplapackint &info);
+void Clarot(bool const lrows, bool const lleft, bool const lright, mplapackint const nl, mpfc_class const c, mpfc_class const s, mpfc_class *a, mplapackint const lda, mpfc_class &xleft, mpfc_class &xright);
+void Clatm1(mplapackint const mode, mpf_class const cond, mplapackint const irsign, mplapackint const idist, mplapackint (&iseed)[4], mpfc_class *d, mplapackint const n, mplapackint &info);
+void Clatm5(mplapackint const prtype, mplapackint const m, mplapackint const n, mpfc_class *a, mplapackint const lda, mpfc_class *b, mplapackint const ldb, mpfc_class *c, mplapackint const ldc, mpfc_class *d, mplapackint const ldd, mpfc_class *e, mplapackint const lde, mpfc_class *f, mplapackint const ldf, mpfc_class *r, mplapackint const ldr, mpfc_class *l, mplapackint const ldl, mpf_class const alpha, mplapackint &qblcka, mplapackint &qblckb);
+void Clatm6(mplapackint const type, mplapackint const n, mpfc_class *a, mplapackint const lda, mpfc_class *b, mpfc_class *x, mplapackint const ldx, mpfc_class *y, mplapackint const ldy, mpfc_class const alpha, mpfc_class const beta, mpfc_class const wx, mpfc_class const wy, mpf_class *s, mpf_class *dif);
+void Clatme(mplapackint const n, fem::str_cref dist, mplapackint (&iseed)[4], mpfc_class *d, mplapackint const mode, mpf_class const cond, mpfc_class const dmax, fem::str_cref rsign, fem::str_cref upper, fem::str_cref sim, mpf_class *ds, mplapackint const modes, mpf_class const conds, mplapackint const kl, mplapackint const ku, mpf_class const anorm, mpfc_class *a, mplapackint const lda, mpfc_class *work, mplapackint &info);
+void Clatmr(mplapackint const m, mplapackint const n, fem::str_cref dist, mplapackint (&iseed)[4], fem::str_cref sym, mpfc_class *d, mplapackint const mode, mpf_class const cond, mpfc_class const dmax, fem::str_cref rsign, fem::str_cref grade, mpfc_class *dl, mplapackint const model, mpf_class const condl, mpfc_class *dr, mplapackint const moder, mpf_class const condr, fem::str_cref pivtng, mplapackint *ipivot, mplapackint const kl, mplapackint const ku, mpf_class const sparse, mpf_class const anorm, fem::str_cref pack, mpfc_class *a, mplapackint const lda, mplapackint *iwork, mplapackint &info);
+void Clatms(mplapackint const m, mplapackint const n, fem::str_cref dist, mplapackint (&iseed)[4], fem::str_cref sym, mpf_class *d, mplapackint const mode, mpf_class const cond, mpf_class const dmax, mplapackint const kl, mplapackint const ku, fem::str_cref pack, mpfc_class *a, mplapackint const lda, mpfc_class *work, mplapackint &info);
+void Clatmt(mplapackint const m, mplapackint const n, fem::str_cref dist, mplapackint (&iseed)[4], fem::str_cref sym, mpf_class *d, mplapackint const mode, mpf_class const cond, mpf_class const dmax, mplapackint const rank, mplapackint const kl, mplapackint const ku, fem::str_cref pack, mpfc_class *a, mplapackint const lda, mpfc_class *work, mplapackint &info);
 void Rlagge(mplapackint const m, mplapackint const n, mplapackint const kl, mplapackint const ku, mpf_class *d, mpf_class *a, mplapackint const lda, mplapackint (&iseed)[4], mpf_class *work, mplapackint &info);
 void Rlagsy(mplapackint const n, mplapackint const k, mpf_class *d, mpf_class *a, mplapackint const lda, mplapackint (&iseed)[4], mpf_class *work, mplapackint &info);
 void Rlahilb(mplapackint const n, mplapackint const nrhs, mpf_class *a, mplapackint const lda, mpf_class *x, mplapackint const ldx, mpf_class *b, mplapackint const ldb, mpf_class *work, mplapackint &info);

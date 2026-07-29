@@ -11,12 +11,12 @@
 #define MPFR_FORMAT "%+68.64Re"
 #define MPFR_SHORT_FORMAT "%+20.16Re"
 
-inline void printnum(mpreal rtmp) { mpfr_printf(MPFR_FORMAT, mpfr_ptr(rtmp)); }
-inline void printnum_short(mpreal rtmp) { mpfr_printf(MPFR_SHORT_FORMAT, mpfr_ptr(rtmp)); }
+inline void printnum(mpfr_class rtmp) { mpfr_printf(MPFR_FORMAT, mpfr_ptr(rtmp)); }
+inline void printnum_short(mpfr_class rtmp) { mpfr_printf(MPFR_SHORT_FORMAT, mpfr_ptr(rtmp)); }
 
 // Matlab/Octave format
-void printvec(mpreal *a, int len) {
-    mpreal tmp;
+void printvec(mpfr_class *a, int len) {
+    mpfr_class tmp;
     printf("[ ");
     for (int i = 0; i < len; i++) {
         tmp = a[i];
@@ -27,8 +27,8 @@ void printvec(mpreal *a, int len) {
     printf("]");
 }
 
-void printmat(int n, int m, mpreal *a, int lda) {
-    mpreal mtmp;
+void printmat(int n, int m, mpfr_class *a, int lda) {
+    mpfr_class mtmp;
     printf("[ ");
     for (int i = 0; i < n; i++) {
         printf("[ ");
@@ -48,35 +48,35 @@ void printmat(int n, int m, mpreal *a, int lda) {
 
 int main() {
     mplapackint n = 12, m = n, lda = m, info, lwork = -1;
-    mpreal theta = mpreal(0.1), c = cos(theta), s = sin(theta);
-    mpreal *a = new mpreal[m * n];
-    mpreal *asvd = new mpreal[m * n];
-    mpreal *aqr = new mpreal[m * n];
+    mpfr_class theta = mpfr_class(0.1), c = cos(theta), s = sin(theta);
+    mpfr_class *a = new mpfr_class[m * n];
+    mpfr_class *asvd = new mpfr_class[m * n];
+    mpfr_class *aqr = new mpfr_class[m * n];
     for (mplapackint j = 0; j < n; j++)
         for (mplapackint i = 0; i < m; i++) {
-            mpreal scale = pow(s, mpreal(i));
-            mpreal val = (i == j) ? mpreal(1.0) : ((i < j) ? -c : mpreal(0.0));
+            mpfr_class scale = pow(s, mpfr_class(i));
+            mpfr_class val = (i == j) ? mpfr_class(1.0) : ((i < j) ? -c : mpfr_class(0.0));
             a[i + j * lda] = scale * val;
             asvd[i + j * lda] = a[i + j * lda];
             aqr[i + j * lda] = a[i + j * lda];
         }
-    mpreal *sigma = new mpreal[n];
-    mpreal *u = new mpreal[1];
-    mpreal *vt = new mpreal[1];
-    mpreal wk;
+    mpfr_class *sigma = new mpfr_class[n];
+    mpfr_class *u = new mpfr_class[1];
+    mpfr_class *vt = new mpfr_class[1];
+    mpfr_class wk;
     Rgesvd("N", "N", m, n, asvd, lda, sigma, u, (mplapackint)1, vt, (mplapackint)1, &wk, lwork, info);
     lwork = castINTEGER_mpfr(wk);
-    mpreal *work = new mpreal[lwork];
+    mpfr_class *work = new mpfr_class[lwork];
     Rgesvd("N", "N", m, n, asvd, lda, sigma, u, (mplapackint)1, vt, (mplapackint)1, work, lwork, info);
     delete[] work;
     mplapackint *jpvt = new mplapackint[n];
-    mpreal *tau = new mpreal[n];
+    mpfr_class *tau = new mpfr_class[n];
     for (mplapackint i = 0; i < n; i++)
         jpvt[i] = 0;
     lwork = -1;
     Rgeqp3(m, n, aqr, lda, jpvt, tau, &wk, lwork, info);
     lwork = castINTEGER_mpfr(wk);
-    work = new mpreal[lwork];
+    work = new mpfr_class[lwork];
     Rgeqp3(m, n, aqr, lda, jpvt, tau, work, lwork, info);
     printf("smallest singular value = "); printnum(sigma[n - 1]); printf("\n");
     printf("|R(n,n)| from Rgeqp3 = "); printnum(abs(aqr[n - 1 + (n - 1) * lda])); printf("\n");

@@ -56,14 +56,14 @@ void Rasum_test() {
             int j = 0;
             while (j < MAX_ITER) {
                 set_random_vector(x_ref, x, veclen(n, incx));
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                 dtemp = dasum_f77(&n, x_ref, &incx);
 #else
                 dtemp = Rasum(n, x_ref, incx);
 #endif
                 rtemp = Rasum(n, x, incx);
 
-                REAL_REF diff = rtemp - dtemp;
+                REAL_REF diff = cast2ref(rtemp) - dtemp;
                 if (diff > EPSILON) {
 #if defined VERBOSE_TEST
                     printf("error: ");

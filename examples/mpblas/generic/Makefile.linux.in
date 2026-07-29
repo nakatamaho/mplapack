@@ -8,7 +8,7 @@ OPTFLAGS= -O2 -fopenmp
 OPENMP_EXAMPLE_OPENMP_LIBS = -fopenmp
 LIBFLAGS=-L$(MPLAPACKDIR)/lib -Wl,--rpath=$(MPLAPACKDIR)/lib
 MPFRLIBS=-lmplapack_mpfr -lmpfr -lmpc -lgmp
-GMPLIBS=-lmplapack_gmp -lgmpxx -lgmp
+GMPLIBS=-lmplapack_gmp -lgmp
 QDLIBS=-lmplapack_qd -lqd
 DDLIBS=-lmplapack_dd -lqd
 BINARY80LIBS=-lmplapack_binary80
@@ -16,7 +16,7 @@ BINARY128LIBS=-lmplapack_binary128%%LIBQUADMATH%%
 DOUBLELIBS=-lmplapack_double
 
 MPFROPTLIBS=$(OPENMP_EXAMPLE_OPENMP_LIBS) -lmplapack_mpfr_opt -lmpfr -lmpc -lgmp
-GMPOPTLIBS=$(OPENMP_EXAMPLE_OPENMP_LIBS) -lmplapack_gmp_opt -lgmpxx -lgmp
+GMPOPTLIBS=$(OPENMP_EXAMPLE_OPENMP_LIBS) -lmplapack_gmp_opt -lgmp
 QDOPTLIBS=$(OPENMP_EXAMPLE_OPENMP_LIBS) -lmplapack_qd_opt -lqd
 DDOPTLIBS=$(OPENMP_EXAMPLE_OPENMP_LIBS) -lmplapack_dd_opt -lqd
 BINARY80OPTLIBS=$(OPENMP_EXAMPLE_OPENMP_LIBS) -lmplapack_binary80_opt

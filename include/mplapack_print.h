@@ -26,8 +26,8 @@
  *
  */
 
-#ifndef _MPLAPACK_PRINT_H_
-#define _MPLAPACK_PRINT_H_
+#ifndef MPLAPACK_PRINT_H
+#define MPLAPACK_PRINT_H
 
 template <class X> void printmat(int N, int M, X *A, int LDA) {
     X tmp;

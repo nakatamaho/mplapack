@@ -3,7 +3,7 @@ mplapackexamples_PROGRAMS =
 if ENABLE_MPFR
 mplapackexamples_PROGRAMS += Cposv_example_mpfr Cpotrf_potrs_example_mpfr Rpocon_example_mpfr Rposv_example_mpfr Rpotrf_potrs_example_mpfr Rptsv_example_mpfr
 
-mpfr_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mpfrc++ -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR)
+mpfr_cxxflags = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR)
 mpfr_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_mpfr -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp
 
 Cposv_example_mpfr_SOURCES = Cposv_example_mpfr.cpp
@@ -35,7 +35,7 @@ endif
 if ENABLE_GMP
 mplapackexamples_PROGRAMS += Cposv_example_gmp Cpotrf_potrs_example_gmp Rpocon_example_gmp Rposv_example_gmp Rpotrf_potrs_example_gmp Rptsv_example_gmp
 
-gmp_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR)
+gmp_cxxflags = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR)
 gmp_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_gmp -L$(GMP_LIBDIR) -lgmp
 
 Cposv_example_gmp_SOURCES = Cposv_example_gmp.cpp

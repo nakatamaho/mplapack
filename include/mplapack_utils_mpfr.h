@@ -31,70 +31,71 @@
 #ifndef _MUTILS_MPFR_H_
 #define _MUTILS_MPFR_H_
 
-#include "mpcomplex.h"
-#include "mpreal.h"
+#include <mplapack_gmpfrxx_mkII_config.h>
+#include <mpfrxx_mkII.h>
+#include <mpcxx_mkII.h>
+using namespace mpfrxx;
 
-using namespace mpfr;
 
-#if defined ___MPLAPACK_INTERNAL___
+#if defined MPLAPACK_INTERNAL
 #include <mplapack_print_double.h>
 
 #define MPFR_FORMAT "%+68.64Re"
 #define MPFR_SHORT_FORMAT "%+20.16Re"
 
-#if !defined __MPLAPACK_BUFLEN__
-#define __MPLAPACK_BUFLEN__ 1024
+#if !defined MPLAPACK_BUFLEN
+#define MPLAPACK_BUFLEN 1024
 #endif
 
-inline void printnum(mpreal rtmp) {
+inline void printnum(mpfr_class rtmp) {
     mpfr_printf(MPFR_FORMAT, mpfr_ptr(rtmp));
     return;
 }
 
-inline void printnum_short(mpreal rtmp) {
+inline void printnum_short(mpfr_class rtmp) {
     mpfr_printf(MPFR_SHORT_FORMAT, mpfr_ptr(rtmp));
     return;
 }
-inline void printnum(mpcomplex ctmp) {
-    mpreal cre, cim;
+inline void printnum(mpc_class ctmp) {
+    mpfr_class cre, cim;
     cre = ctmp.real();
     cim = ctmp.imag();
     mpfr_printf(MPFR_FORMAT MPFR_FORMAT "i", mpfr_ptr(cre), mpfr_ptr(cim));
     return;
 }
 
-inline void printnum_short(mpcomplex ctmp) {
-    mpreal cre, cim;
+inline void printnum_short(mpc_class ctmp) {
+    mpfr_class cre, cim;
     cre = ctmp.real();
     cim = ctmp.imag();
     mpfr_printf(MPFR_SHORT_FORMAT MPFR_SHORT_FORMAT "i", mpfr_ptr(cre), mpfr_ptr(cim));
     return;
 }
 
-inline void sprintnum(char *buf, mpreal rtmp) {
-    mpfr_snprintf(buf, __MPLAPACK_BUFLEN__, MPFR_FORMAT, mpfr_ptr(rtmp));
+inline void sprintnum(char *buf, mpfr_class rtmp) {
+    mpfr_snprintf(buf, MPLAPACK_BUFLEN, MPFR_FORMAT, mpfr_ptr(rtmp));
     return;
 }
-inline void sprintnum_short(char *buf, mpreal rtmp) {
-    mpfr_snprintf(buf, __MPLAPACK_BUFLEN__, MPFR_SHORT_FORMAT, mpfr_ptr(rtmp));
+inline void sprintnum_short(char *buf, mpfr_class rtmp) {
+    mpfr_snprintf(buf, MPLAPACK_BUFLEN, MPFR_SHORT_FORMAT, mpfr_ptr(rtmp));
     return;
 }
-inline void sprintnum(char *buf, mpcomplex ctmp) {
-    mpreal cre, cim;
+inline void sprintnum(char *buf, mpc_class ctmp) {
+    mpfr_class cre, cim;
     cre = ctmp.real();
     cim = ctmp.imag();
-    mpfr_snprintf(buf, __MPLAPACK_BUFLEN__, MPFR_FORMAT MPFR_FORMAT "i", mpfr_ptr(cre), mpfr_ptr(cim));
+    mpfr_snprintf(buf, MPLAPACK_BUFLEN, MPFR_FORMAT MPFR_FORMAT "i", mpfr_ptr(cre), mpfr_ptr(cim));
     return;
 }
-inline void sprintnum_short(char *buf, mpcomplex ctmp) {
-    mpreal cre, cim;
+inline void sprintnum_short(char *buf, mpc_class ctmp) {
+    mpfr_class cre, cim;
     cre = ctmp.real();
     cim = ctmp.imag();
-    mpfr_snprintf(buf, __MPLAPACK_BUFLEN__, MPFR_SHORT_FORMAT MPFR_SHORT_FORMAT "i", mpfr_ptr(cre), mpfr_ptr(cim));
+    mpfr_snprintf(buf, MPLAPACK_BUFLEN, MPFR_SHORT_FORMAT MPFR_SHORT_FORMAT "i", mpfr_ptr(cre), mpfr_ptr(cim));
     return;
 }
 
-inline void sprinthex_mpfr_fixed_raw(char *buf, size_t n, mpfr_ptr x) {
+inline void sprinthex_mpfr_fixed_raw(char *buf, size_t n, mpfr_srcptr x) {
     if (n == 0) {
         return;
     }
@@ -212,30 +213,29 @@ inline void sprinthex_mpfr_fixed_raw(char *buf, size_t n, mpfr_ptr x) {
     mpfr_free_str(mant_raw);
 }
 
-inline void sprinthex_mpfr_fixed(char *buf, size_t n, const mpfr::mpreal &x) {
-    mpfr_ptr px = const_cast<mpfr::mpreal &>(x);
-    sprinthex_mpfr_fixed_raw(buf, n, px);
+inline void sprinthex_mpfr_fixed(char *buf, size_t n, const mpfrxx::mpfr_class &x) {
+    sprinthex_mpfr_fixed_raw(buf, n, x.mpfr_data());
 }
 
 #endif
 
-inline mpreal pow2(mpreal a) {
-    mpreal mtmp = a * a;
+inline mpfr_class pow2(mpfr_class a) {
+    mpfr_class mtmp = a * a;
     return mtmp;
 }
 
-inline mpcomplex pow2(mpcomplex a) {
-    mpcomplex mtmp = a * a;
+inline mpc_class pow2(mpc_class a) {
+    mpc_class mtmp = a * a;
     return mtmp;
 }
 
-inline mpreal pow4(mpreal a) {
-    mpreal mtmp = a * a * a * a;
+inline mpfr_class pow4(mpfr_class a) {
+    mpfr_class mtmp = a * a * a * a;
     return mtmp;
 }
 
-inline mpcomplex pow4(mpcomplex a) {
-    mpcomplex mtmp = a * a * a * a;
+inline mpc_class pow4(mpc_class a) {
+    mpc_class mtmp = a * a * a * a;
     return mtmp;
 }
 
@@ -248,8 +248,8 @@ inline mplapackint pow2(mplapackint a) { return a * a; }
 #endif // MPLAPACK_POW2_MPLAPACKINT_DEFINED
 
 // implementation of sign transfer function.
-inline mpreal sign(mpreal a, mpreal b) {
-    mpreal mtmp;
+inline mpfr_class sign(mpfr_class a, mpfr_class b) {
+    mpfr_class mtmp;
     mtmp = abs(a);
     if (b < 0.0) {
         mtmp = -mtmp;
@@ -257,33 +257,29 @@ inline mpreal sign(mpreal a, mpreal b) {
     return mtmp;
 }
 
-inline mplapackint nint(mpreal a) {
-    mplapackint i;
-    mpreal tmp;
+inline mplapackint nint(mpfr_class a) {
     a = a + 0.5;
-    tmp = floorl(a);
-    i = tmp; // cast to long
+    return floor(a).get_integer<mplapackint>();
+}
+
+inline mplapackint castINTEGER_mpfr(mpfr_class a) {
+    return trunc(a).get_integer<mplapackint>();
+}
+
+inline mpfr_class castREAL_mpfr(mplapackint a) {
+    mpfr_class i = a;
     return i;
 }
 
-inline mplapackint castINTEGER_mpfr(mpreal a) {
-    mplapackint i;
-    i = a;
-    return i;
-}
+inline double cast2double(mpfr_class a) { return a.get_d(); }
 
-inline mpreal castREAL_mpfr(mplapackint a) {
-    mpreal i = a;
-    return i;
-}
-
-inline mpreal pi(mpreal dummy) {
-    mpreal _PI;
-    _PI = const_pi(mpfr::mpreal::default_prec);
+inline mpfr_class pi(mpfr_class dummy) {
+    mpfr_class _PI;
+    _PI = const_pi(mpfrxx::mpfr_class::default_precision());
     return _PI;
 }
 
-static inline mpreal cabs1(const mpcomplex &z) { return abs(z.real()) + abs(z.imag()); }
+static inline mpfr_class cabs1(const mpc_class &z) { return abs(z.real()) + abs(z.imag()); }
 
 #include <type_traits>
 
@@ -330,25 +326,27 @@ template <typename... Args, typename = std::enable_if_t<(std::is_same_v<mplapack
 #define MPLAPACK_MINMAX_MPREAL_VARIADIC_DEFINED
 
 // 3-arg overloads: blocks std::min/max(a,b,comp) hijack.
-inline mpreal min(const mpreal &a, const mpreal &b, const mpreal &c) {
-    mpreal r = (b < a) ? b : a;
+inline mpfr_class min(const mpfr_class &a, const mpfr_class &b, const mpfr_class &c) {
+    mpfr_class r = (b < a) ? b : a;
     return (c < r) ? c : r;
 }
-inline mpreal max(const mpreal &a, const mpreal &b, const mpreal &c) {
-    mpreal r = (a < b) ? b : a;
+inline mpfr_class max(const mpfr_class &a, const mpfr_class &b, const mpfr_class &c) {
+    mpfr_class r = (a < b) ? b : a;
     return (r < c) ? c : r;
 }
 
-// 4+ args: fold expression, mpreal only.
-template <typename... Args, typename = std::enable_if_t<(std::is_same_v<mpreal, std::decay_t<Args>> && ...)>> inline mpreal min(const mpreal &a, const mpreal &b, const mpreal &c, const Args &...rest) {
-    mpreal r = min(a, b, c);
-    ((r = (rest < r) ? rest : r), ...);
+// 4+ args: accept mpfr_class values and mkII expression nodes.
+template <typename... Args, typename = std::enable_if_t<(gmpfrxx_mkII::detail::is_mpfr_expression_operand_v<Args> && ...)>> inline mpfr_class min(const mpfr_class &a, const mpfr_class &b, const mpfr_class &c, const Args &...rest) {
+    mpfr_class r = min(a, b, c);
+    auto update = [&](const auto &value) { mpfr_class candidate(value); if (candidate < r) r = candidate; };
+    (update(rest), ...);
     return r;
 }
 
-template <typename... Args, typename = std::enable_if_t<(std::is_same_v<mpreal, std::decay_t<Args>> && ...)>> inline mpreal max(const mpreal &a, const mpreal &b, const mpreal &c, const Args &...rest) {
-    mpreal r = max(a, b, c);
-    ((r = (r < rest) ? rest : r), ...);
+template <typename... Args, typename = std::enable_if_t<(gmpfrxx_mkII::detail::is_mpfr_expression_operand_v<Args> && ...)>> inline mpfr_class max(const mpfr_class &a, const mpfr_class &b, const mpfr_class &c, const Args &...rest) {
+    mpfr_class r = max(a, b, c);
+    auto update = [&](const auto &value) { mpfr_class candidate(value); if (r < candidate) r = candidate; };
+    (update(rest), ...);
     return r;
 }
 
@@ -390,17 +388,12 @@ constexpr charbuf3 CHAR3(const char *a, const char *b, const char *c) { return c
 
 #endif // MPLAPACK_CHAR_UTILS_H
 
-// Integer ceil for MPFR mpreal.
+// Integer ceil for MPFR mpfr_class.
 // Returns ceil(x) as mplapackint.
 #ifndef MPLAPACK_ICEIL_MPREAL_DEFINED
 #define MPLAPACK_ICEIL_MPREAL_DEFINED
-inline mplapackint iceil(const mpreal &x) {
-    // mpreal -> integer cast truncates toward zero.
-    mplapackint t = static_cast<mplapackint>(x);
-    if (x > mpreal(t)) {
-        ++t;
-    }
-    return t;
+inline mplapackint iceil(const mpfr_class &x) {
+    return ceil(x).get_integer<mplapackint>();
 }
 #endif // MPLAPACK_ICEIL_MPREAL_DEFINED
 

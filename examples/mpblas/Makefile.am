@@ -3,7 +3,7 @@ mpblasexamples_PROGRAMS =
 if ENABLE_MPFR
 mpblasexamples_PROGRAMS += Cgemm_mpfr Rgemm_mpfr Cgemm_mpfr_opt Rgemm_mpfr_opt
 
-mpfr_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mpfrc++ -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR)
+mpfr_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include $(GMPFRXX_MKII_CPPFLAGS) -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR)
 mpfr_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_mpfr -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp
 mpfr_opt_libdepends = -L$(top_builddir)/mpblas/optimized/mpfr -lmplapack_mpfr_opt -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp
 

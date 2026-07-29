@@ -67,7 +67,7 @@ void Rrotm_test2(INTEGER dflag) {
                     dparam_ref[0] = dflag;
                     dparam[0] = dflag;
 
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                     drotm_f77(&n, x_ref, &incx, y_ref, &incy, dparam_ref);
 #else
                     Rrotm(n, x_ref, incx, y_ref, incy, dparam_ref);

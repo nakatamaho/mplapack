@@ -1,4 +1,5 @@
 //public domain
+#include <sstream>
 #include <mpblas_gmp.h>
 #include <mplapack_gmp.h>
 

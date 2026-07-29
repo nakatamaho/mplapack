@@ -71,7 +71,7 @@ void Clacrt_test() {
                 while (j < MAX_ITER) {
                     set_random_vector(cx_ref, cx, veclen(n, incx));
                     set_random_vector(cy_ref, cy, veclen(n, incy));
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                     zlacrt_f77(&n, cx_ref, &incx, cy_ref, &incy, &c_ref, &s_ref);
 #else
                     Clacrt(n, cx_ref, incx, cy_ref, incy, c_ref, s_ref);

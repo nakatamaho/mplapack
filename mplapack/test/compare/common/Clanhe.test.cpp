@@ -63,14 +63,14 @@ void Clanhe_test2(const char *norm, const char *uplo) {
             j = 0;
             while (j < MAX_ITER) {
                 set_random_vector(A_ref, A, matlen(lda, n));
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                 zlanhe_ret = zlanhe_f77(norm, uplo, &n, A_ref, &lda, work_ref);
 #else
                 zlanhe_ret = Clanhe(norm, uplo, n, A_ref, lda, work_ref);
 #endif
                 Clanhe_ret = Clanhe(norm, uplo, n, A, lda, work);
 
-                REAL_REF diff = abs(zlanhe_ret - Clanhe_ret);
+                REAL_REF diff = abs(zlanhe_ret - cast2ref(Clanhe_ret));
 
                 if (diff > EPSILON) {
                     printf("n:%d lda %d, uplo %s, norm %s\n", n, lda, uplo, norm);

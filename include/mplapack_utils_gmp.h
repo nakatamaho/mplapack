@@ -31,15 +31,16 @@
 #ifndef _MUTILS_GMP_H_
 #define _MUTILS_GMP_H_
 
-#include "mplapack_gmp_transcendents.h"
-#include "mpc_class.h"
+#include <mplapack_gmpfrxx_mkII_config.h>
+#include <gmpxx_mkII.h>
+using namespace gmpxx;
 
-#if defined ___MPLAPACK_INTERNAL___
+#if defined MPLAPACK_INTERNAL
 #define GMP_FORMAT "%+68.64Fe"
 #define GMP_SHORT_FORMAT "%+20.16Fe"
 
-#if !defined __MPLAPACK_BUFLEN__
-#define __MPLAPACK_BUFLEN__ 1024
+#if !defined MPLAPACK_BUFLEN
+#define MPLAPACK_BUFLEN 1024
 #endif
 
 inline void printnum(mpf_class rtmp) {
@@ -52,33 +53,33 @@ inline void printnum_short(mpf_class rtmp) {
     return;
 }
 
-inline void printnum(mpc_class ctmp) {
+inline void printnum(mpfc_class ctmp) {
     gmp_printf(GMP_FORMAT GMP_FORMAT "i", ctmp.real().get_mpf_t(), ctmp.imag().get_mpf_t());
     return;
 }
 
-inline void printnum_short(mpc_class ctmp) {
+inline void printnum_short(mpfc_class ctmp) {
     gmp_printf(GMP_SHORT_FORMAT GMP_SHORT_FORMAT "i", ctmp.real().get_mpf_t(), ctmp.imag().get_mpf_t());
     return;
 }
 
 inline void sprintnum(char *buf, mpf_class rtmp) {
-    gmp_snprintf(buf, __MPLAPACK_BUFLEN__, GMP_FORMAT, rtmp.get_mpf_t());
+    gmp_snprintf(buf, MPLAPACK_BUFLEN, GMP_FORMAT, rtmp.get_mpf_t());
     return;
 }
 
 inline void sprintnum_short(char *buf, mpf_class rtmp) {
-    gmp_snprintf(buf, __MPLAPACK_BUFLEN__, GMP_SHORT_FORMAT, rtmp.get_mpf_t());
+    gmp_snprintf(buf, MPLAPACK_BUFLEN, GMP_SHORT_FORMAT, rtmp.get_mpf_t());
     return;
 }
 
-inline void sprintnum(char *buf, mpc_class ctmp) {
-    gmp_snprintf(buf, __MPLAPACK_BUFLEN__, GMP_FORMAT GMP_FORMAT "i", ctmp.real().get_mpf_t(), ctmp.imag().get_mpf_t());
+inline void sprintnum(char *buf, mpfc_class ctmp) {
+    gmp_snprintf(buf, MPLAPACK_BUFLEN, GMP_FORMAT GMP_FORMAT "i", ctmp.real().get_mpf_t(), ctmp.imag().get_mpf_t());
     return;
 }
 
-inline void sprintnum_short(char *buf, mpc_class ctmp) {
-    gmp_snprintf(buf, __MPLAPACK_BUFLEN__, GMP_SHORT_FORMAT GMP_SHORT_FORMAT "i", ctmp.real().get_mpf_t(), ctmp.imag().get_mpf_t());
+inline void sprintnum_short(char *buf, mpfc_class ctmp) {
+    gmp_snprintf(buf, MPLAPACK_BUFLEN, GMP_SHORT_FORMAT GMP_SHORT_FORMAT "i", ctmp.real().get_mpf_t(), ctmp.imag().get_mpf_t());
     return;
 }
 
@@ -199,25 +200,15 @@ inline void sprinthex_gmp_fixed(char *buf, size_t n, const mpf_class &x) { sprin
 
 #endif
 
-inline mpf_class abs(mpf_class a) {
-    mpf_class r;
-    mpf_abs(r.get_mpf_t(), a.get_mpf_t());
-    return r;
-}
 
-inline mpf_class sqrt(mpf_class a) {
-    mpf_class r;
-    mpf_sqrt(r.get_mpf_t(), a.get_mpf_t());
-    return r;
-}
 
 inline mpf_class pow2(mpf_class a) {
     mpf_class mtmp = a * a;
     return mtmp;
 }
 
-inline mpc_class pow2(mpc_class a) {
-    mpc_class mtmp = a * a;
+inline mpfc_class pow2(mpfc_class a) {
+    mpfc_class mtmp = a * a;
     return mtmp;
 }
 
@@ -226,8 +217,8 @@ inline mpf_class pow4(mpf_class a) {
     return mtmp;
 }
 
-inline mpc_class pow4(mpc_class a) {
-    mpc_class mtmp = a * a * a * a;
+inline mpfc_class pow4(mpfc_class a) {
+    mpfc_class mtmp = a * a * a * a;
     return mtmp;
 }
 
@@ -254,340 +245,27 @@ inline mpf_class castREAL_gmp(mplapackint n) {
 }
 
 inline mplapackint castINTEGER_gmp(mpf_class a) {
-    mplapackint i;
-    i = mpf_get_si(a.get_mpf_t());
-    return i;
+    return a.get_integer<mplapackint>();
 }
 
 inline mplapackint nint(mpf_class a) {
-    mplapackint i;
     mpf_class tmp;
     a = a + 0.5;
     mpf_floor(tmp.get_mpf_t(), a.get_mpf_t());
-    i = mpf_get_si(tmp.get_mpf_t());
-    return i;
+    return tmp.get_integer<mplapackint>();
 }
 
 inline double cast2double(mpf_class a) { return a.get_d(); }
 
-inline mpf_class atan2(mpf_class a, mpf_class b) {
-    return mplapack_gmp_transcendents::compute_atan2(a, b, std::max(a.get_prec(), b.get_prec()));
-}
+inline mpf_class pi(mpf_class dummy) { return gmpxx::pi(dummy.get_prec()); }
+inline mpf_class e(mpf_class dummy) { return gmpxx::e(dummy.get_prec()); }
+inline mpf_class log_ten(mpf_class dummy) { return gmpxx::log_ten(dummy.get_prec()); }
+inline mpf_class inv_log_two(mpf_class dummy) { return gmpxx::inv_log_two(dummy.get_prec()); }
+inline mpf_class pi_over_two(mpf_class dummy) { return gmpxx::pi_over_two(dummy.get_prec()); }
+inline mpf_class pi_over_four(mpf_class dummy) { return gmpxx::pi_over_four(dummy.get_prec()); }
+inline mpf_class two_pi(mpf_class dummy) { return gmpxx::two_pi(dummy.get_prec()); }
 
-inline mpf_class log2(mpf_class x) {
-    const mp_bitcnt_t precision = x.get_prec();
-    return mplapack_gmp_transcendents::div(mplapack_gmp_transcendents::compute_log(x, precision), mplapack_gmp_transcendents::log_two(precision), precision);
-}
-
-inline mpf_class log1p(mpf_class x) {
-    return mplapack_gmp_transcendents::compute_log1p(x, x.get_prec());
-}
-
-inline mpf_class log(mpf_class x) {
-    return mplapack_gmp_transcendents::compute_log(x, x.get_prec());
-}
-
-inline mpf_class log10(mpf_class x) {
-    const mp_bitcnt_t precision = x.get_prec();
-    return mplapack_gmp_transcendents::div(mplapack_gmp_transcendents::compute_log(x, precision), mplapack_gmp_transcendents::log_ten(precision), precision);
-}
-
-inline mpf_class pow(mpf_class x, mplapackint y) {
-    mpf_class mtemp1, mtemp2;
-    if (y >= 0) {
-        mpf_pow_ui(mtemp1.get_mpf_t(), x.get_mpf_t(), y);
-    } else {
-        mpf_pow_ui(mtemp2.get_mpf_t(), x.get_mpf_t(), -y);
-        mtemp1 = 1.0 / mtemp2;
-    }
-    return mtemp1;
-}
-
-inline mpf_class pow(mpf_class x, mpf_class y) {
-    return mplapack_gmp_transcendents::compute_pow(x, y, std::max(x.get_prec(), y.get_prec()));
-}
-
-inline mpf_class cos(mpf_class x) {
-    return mplapack_gmp_transcendents::compute_cos(x, x.get_prec());
-}
-
-inline mpf_class sin(mpf_class x) {
-    return mplapack_gmp_transcendents::compute_sin(x, x.get_prec());
-}
-
-inline mpf_class exp(mpf_class x) {
-    return mplapack_gmp_transcendents::compute_exp(x, x.get_prec());
-}
-
-inline mpf_class exp2(mpf_class x) {
-    const mp_bitcnt_t precision = x.get_prec();
-    const mp_bitcnt_t work = precision + mplapack_gmp_transcendents::guard_bits_for_exp(precision) + 8;
-    const mpf_class x_work = mplapack_gmp_transcendents::set_prec_copy(x, work);
-    return mplapack_gmp_transcendents::set_prec_copy(mplapack_gmp_transcendents::compute_exp(mplapack_gmp_transcendents::mul(x_work, mplapack_gmp_transcendents::log_two(work), work), work), precision);
-}
-
-inline mpf_class exp10(mpf_class x) {
-    const mp_bitcnt_t precision = x.get_prec();
-    const mp_bitcnt_t work = precision + mplapack_gmp_transcendents::guard_bits_for_exp(precision) + 8;
-    const mpf_class x_work = mplapack_gmp_transcendents::set_prec_copy(x, work);
-    return mplapack_gmp_transcendents::set_prec_copy(mplapack_gmp_transcendents::compute_exp(mplapack_gmp_transcendents::mul(x_work, mplapack_gmp_transcendents::log_ten(work), work), work), precision);
-}
-
-inline mpf_class expm1(mpf_class x) {
-    return mplapack_gmp_transcendents::compute_expm1(x, x.get_prec());
-}
-
-inline mpf_class tan(mpf_class x) {
-    const mp_bitcnt_t precision = x.get_prec();
-    const mp_bitcnt_t work = precision + mplapack_gmp_transcendents::guard_bits_for_trig(precision) + 8;
-    const mpf_class x_work = mplapack_gmp_transcendents::set_prec_copy(x, work);
-    return mplapack_gmp_transcendents::set_prec_copy(mplapack_gmp_transcendents::div(mplapack_gmp_transcendents::compute_sin(x_work, work), mplapack_gmp_transcendents::compute_cos(x_work, work), work), precision);
-}
-
-inline mpf_class asin(mpf_class x) {
-    const mp_bitcnt_t precision = x.get_prec();
-    const mp_bitcnt_t work = precision + mplapack_gmp_transcendents::guard_bits_for_trig(precision) + 8;
-    const mpf_class x_work = mplapack_gmp_transcendents::set_prec_copy(x, work);
-    const mpf_class zero = mplapack_gmp_transcendents::make_ui(0, work);
-    const mpf_class one = mplapack_gmp_transcendents::make_ui(1, work);
-    if (x_work < -one || x_work > one) {
-        throw std::domain_error("asin(x) is undefined for |x| > 1");
-    }
-    mpf_class radicand = mplapack_gmp_transcendents::sub(one, mplapack_gmp_transcendents::sqr(x_work, work), work);
-    if (radicand < zero) {
-        radicand = zero;
-    }
-    return mplapack_gmp_transcendents::set_prec_copy(mplapack_gmp_transcendents::compute_atan2(x_work, mplapack_gmp_transcendents::sqrt_prec(radicand, work), work), precision);
-}
-
-inline mpf_class acos(mpf_class x) {
-    const mp_bitcnt_t precision = x.get_prec();
-    const mp_bitcnt_t work = precision + mplapack_gmp_transcendents::guard_bits_for_trig(precision) + 8;
-    const mpf_class x_work = mplapack_gmp_transcendents::set_prec_copy(x, work);
-    const mpf_class zero = mplapack_gmp_transcendents::make_ui(0, work);
-    const mpf_class one = mplapack_gmp_transcendents::make_ui(1, work);
-    if (x_work < -one || x_work > one) {
-        throw std::domain_error("acos(x) is undefined for |x| > 1");
-    }
-    mpf_class radicand = mplapack_gmp_transcendents::sub(one, mplapack_gmp_transcendents::sqr(x_work, work), work);
-    if (radicand < zero) {
-        radicand = zero;
-    }
-    return mplapack_gmp_transcendents::set_prec_copy(mplapack_gmp_transcendents::compute_atan2(mplapack_gmp_transcendents::sqrt_prec(radicand, work), x_work, work), precision);
-}
-
-inline mpf_class atan(mpf_class x) {
-    return mplapack_gmp_transcendents::compute_atan(x, x.get_prec());
-}
-
-inline mpf_class sinh(mpf_class x) {
-    const mp_bitcnt_t precision = x.get_prec();
-    const mp_bitcnt_t work = precision + mplapack_gmp_transcendents::guard_bits_for_exp(precision) + 8;
-    const mpf_class x_work = mplapack_gmp_transcendents::set_prec_copy(x, work);
-    const mpf_class exp_x = mplapack_gmp_transcendents::compute_exp(x_work, work);
-    const mpf_class exp_neg_x = mplapack_gmp_transcendents::compute_exp(mplapack_gmp_transcendents::sub(mplapack_gmp_transcendents::make_ui(0, work), x_work, work), work);
-    mpf_class result = mplapack_gmp_transcendents::sub(exp_x, exp_neg_x, work);
-    mpf_div_2exp(result.get_mpf_t(), result.get_mpf_t(), 1);
-    return mplapack_gmp_transcendents::set_prec_copy(result, precision);
-}
-
-inline mpf_class cosh(mpf_class x) {
-    const mp_bitcnt_t precision = x.get_prec();
-    const mp_bitcnt_t work = precision + mplapack_gmp_transcendents::guard_bits_for_exp(precision) + 8;
-    const mpf_class x_work = mplapack_gmp_transcendents::set_prec_copy(x, work);
-    const mpf_class exp_x = mplapack_gmp_transcendents::compute_exp(x_work, work);
-    const mpf_class exp_neg_x = mplapack_gmp_transcendents::compute_exp(mplapack_gmp_transcendents::sub(mplapack_gmp_transcendents::make_ui(0, work), x_work, work), work);
-    mpf_class result = mplapack_gmp_transcendents::add(exp_x, exp_neg_x, work);
-    mpf_div_2exp(result.get_mpf_t(), result.get_mpf_t(), 1);
-    return mplapack_gmp_transcendents::set_prec_copy(result, precision);
-}
-
-inline mpf_class tanh(mpf_class x) {
-    const mp_bitcnt_t precision = x.get_prec();
-    const mp_bitcnt_t work = precision + mplapack_gmp_transcendents::guard_bits_for_exp(precision) + 8;
-    const mpf_class x_work = mplapack_gmp_transcendents::set_prec_copy(x, work);
-    return mplapack_gmp_transcendents::set_prec_copy(mplapack_gmp_transcendents::div(sinh(x_work), cosh(x_work), work), precision);
-}
-
-inline mpf_class asinh(mpf_class x) {
-    const mp_bitcnt_t precision = x.get_prec();
-    const mp_bitcnt_t work = precision + mplapack_gmp_transcendents::guard_bits_for_log(precision) + 8;
-    const mpf_class x_work = mplapack_gmp_transcendents::set_prec_copy(x, work);
-    const mpf_class one = mplapack_gmp_transcendents::make_ui(1, work);
-    return mplapack_gmp_transcendents::set_prec_copy(mplapack_gmp_transcendents::compute_log(mplapack_gmp_transcendents::add(x_work, mplapack_gmp_transcendents::sqrt_prec(mplapack_gmp_transcendents::add(mplapack_gmp_transcendents::sqr(x_work, work), one, work), work), work), work), precision);
-}
-
-inline mpf_class acosh(mpf_class x) {
-    const mp_bitcnt_t precision = x.get_prec();
-    const mp_bitcnt_t work = precision + mplapack_gmp_transcendents::guard_bits_for_log(precision) + 8;
-    const mpf_class x_work = mplapack_gmp_transcendents::set_prec_copy(x, work);
-    const mpf_class one = mplapack_gmp_transcendents::make_ui(1, work);
-    if (x_work < one) {
-        throw std::domain_error("acosh(x) is undefined for x < 1");
-    }
-    return mplapack_gmp_transcendents::set_prec_copy(mplapack_gmp_transcendents::compute_log(mplapack_gmp_transcendents::add(x_work, mplapack_gmp_transcendents::sqrt_prec(mplapack_gmp_transcendents::sub(mplapack_gmp_transcendents::sqr(x_work, work), one, work), work), work), work), precision);
-}
-
-inline mpf_class atanh(mpf_class x) {
-    const mp_bitcnt_t precision = x.get_prec();
-    const mp_bitcnt_t work = precision + mplapack_gmp_transcendents::guard_bits_for_log1p(precision) + 8;
-    const mpf_class x_work = mplapack_gmp_transcendents::set_prec_copy(x, work);
-    const mpf_class one = mplapack_gmp_transcendents::make_ui(1, work);
-    if (x_work <= -one || x_work >= one) {
-        throw std::domain_error("atanh(x) is undefined for |x| >= 1");
-    }
-    mpf_class result = mplapack_gmp_transcendents::compute_log1p(mplapack_gmp_transcendents::div(mplapack_gmp_transcendents::mul_ui(x_work, 2ul, work), mplapack_gmp_transcendents::sub(one, x_work, work), work), work);
-    mpf_div_2exp(result.get_mpf_t(), result.get_mpf_t(), 1);
-    return mplapack_gmp_transcendents::set_prec_copy(result, precision);
-}
-
-inline mpf_class pi(mpf_class dummy) {
-    return mplapack_gmp_transcendents::pi(dummy.get_prec());
-}
-
-inline mpf_class e(mpf_class dummy) {
-    return mplapack_gmp_transcendents::e(dummy.get_prec());
-}
-
-inline mpf_class log_ten(mpf_class dummy) {
-    return mplapack_gmp_transcendents::log_ten(dummy.get_prec());
-}
-
-inline mpf_class inv_log_two(mpf_class dummy) {
-    return mplapack_gmp_transcendents::inv_log_two(dummy.get_prec());
-}
-
-inline mpf_class pi_over_two(mpf_class dummy) {
-    return mplapack_gmp_transcendents::pi_over_two(dummy.get_prec());
-}
-
-inline mpf_class pi_over_four(mpf_class dummy) {
-    return mplapack_gmp_transcendents::pi_over_four(dummy.get_prec());
-}
-
-inline mpf_class two_pi(mpf_class dummy) {
-    return mplapack_gmp_transcendents::two_pi(dummy.get_prec());
-}
-
-inline mpc_class exp(mpc_class x) {
-    mpf_class ex;
-    mpf_class c;
-    mpf_class s;
-    mpc_class ans;
-    ex = exp(x.real());
-    c = cos(x.imag());
-    s = sin(x.imag());
-    ans.real(ex * c);
-    ans.imag(ex * s);
-    return ans;
-}
-
-inline mpc_class sin(mpc_class z) {
-    const mpf_class x = z.real();
-    const mpf_class y = z.imag();
-    return mpc_class(sin(x) * cosh(y), cos(x) * sinh(y));
-}
-
-inline mpc_class cos(mpc_class z) {
-    const mpf_class x = z.real();
-    const mpf_class y = z.imag();
-    return mpc_class(cos(x) * cosh(y), -sin(x) * sinh(y));
-}
-
-inline mpc_class tan(mpc_class z) {
-    return sin(z) / cos(z);
-}
-
-inline mpc_class sinh(mpc_class z) {
-    const mpf_class x = z.real();
-    const mpf_class y = z.imag();
-    return mpc_class(sinh(x) * cos(y), cosh(x) * sin(y));
-}
-
-inline mpc_class cosh(mpc_class z) {
-    const mpf_class x = z.real();
-    const mpf_class y = z.imag();
-    return mpc_class(cosh(x) * cos(y), sinh(x) * sin(y));
-}
-
-inline mpc_class tanh(mpc_class z) {
-    return sinh(z) / cosh(z);
-}
-
-inline mpf_class arg(mpc_class z) {
-    return atan2(z.imag(), z.real());
-}
-
-inline mpc_class log(mpc_class z) {
-    return mpc_class(log(abs(z)), arg(z));
-}
-
-inline mpc_class polar(mpf_class rho, mpf_class theta) {
-    return mpc_class(rho * cos(theta), rho * sin(theta));
-}
-
-inline mpc_class pow(mpc_class x, mplapackint y) {
-    if (y == 0) {
-        return mpc_class(mpf_class(1.0));
-    }
-
-    const bool reciprocal = y < 0;
-    mpc_class base = x;
-    mpc_class result(mpf_class(1.0));
-    mplapackint exponent = reciprocal ? -y : y;
-    while (exponent > 0) {
-        if ((exponent % 2) != 0) {
-            result *= base;
-        }
-        exponent /= 2;
-        if (exponent > 0) {
-            base = base * base;
-        }
-    }
-    return reciprocal ? mpc_class(mpf_class(1.0)) / result : result;
-}
-
-inline mpc_class pow(mpc_class x, mpc_class y) {
-    return exp(y * log(x));
-}
-
-inline mpc_class pow(mpc_class x, mpf_class y) {
-    return exp(y * log(x));
-}
-
-inline mpc_class pow(mpf_class x, mpc_class y) {
-    return exp(y * log(mpc_class(x)));
-}
-
-inline mpc_class asin(mpc_class z) {
-    const mpc_class i(mpf_class(0.0), mpf_class(1.0));
-    return -i * log(i * z + sqrt(mpc_class(mpf_class(1.0)) - z * z));
-}
-
-inline mpc_class acos(mpc_class z) {
-    return mpc_class(pi_over_two(z.real())) - asin(z);
-}
-
-inline mpc_class atan(mpc_class z) {
-    const mpc_class i(mpf_class(0.0), mpf_class(1.0));
-    const mpc_class one(mpf_class(1.0));
-    return (i * mpf_class(0.5)) * (log(one - i * z) - log(one + i * z));
-}
-
-inline mpc_class asinh(mpc_class z) {
-    return log(z + sqrt(z * z + mpc_class(mpf_class(1.0))));
-}
-
-inline mpc_class acosh(mpc_class z) {
-    return log(z + sqrt(z + mpc_class(mpf_class(1.0))) * sqrt(z - mpc_class(mpf_class(1.0))));
-}
-
-inline mpc_class atanh(mpc_class z) {
-    const mpc_class one(mpf_class(1.0));
-    return mpf_class(0.5) * (log(one + z) - log(one - z));
-}
-
-static inline mpf_class cabs1(const mpc_class &z) { return abs(z.real()) + abs(z.imag()); }
+static inline mpf_class cabs1(const mpfc_class &z) { return gmpxx::abs(z.real()) + gmpxx::abs(z.imag()); }
 
 #include <type_traits>
 
@@ -631,100 +309,98 @@ template <typename... Args, typename = std::enable_if_t<(std::is_same_v<mplapack
 #ifndef MPLAPACK_MINMAX_MPF_CLASS_DEFINED
 #define MPLAPACK_MINMAX_MPF_CLASS_DEFINED
 
-#include <type_traits>
+template <typename T>
+inline constexpr bool mplapack_gmp_mpf_operand_v =
+    gmpfrxx_mkII::detail::is_mpf_expression_operand_v<T>;
 
-// Non-template overloads for mpf_class to beat std::min/std::max templates
-// when both arguments are exactly mpf_class.
-inline mpf_class min(const mpf_class &a, const mpf_class &b) { return (a > b) ? b : a; }
-inline mpf_class max(const mpf_class &a, const mpf_class &b) { return (a < b) ? b : a; }
+template <typename... Ts>
+inline constexpr bool mplapack_gmp_has_mpf_object_or_node_v =
+    (gmpfrxx_mkII::detail::is_mpf_object_or_node_v<Ts> || ...);
 
-inline mpf_class min(const mpf_class &a, const mpf_class &b, const mpf_class &c) {
-    mpf_class r = ::min(a, b);
-    return ::min(r, c);
-}
-inline mpf_class max(const mpf_class &a, const mpf_class &b, const mpf_class &c) {
-    mpf_class r = ::max(a, b);
-    return ::max(r, c);
-}
-
-// -------------------------
-// 2-arg: GMP expressions
-//   - Same E: this overload should win over std::max/std::min.
-//   - Different E: enabled only when E1 != E2.
-// -------------------------
-
-template <class E> inline mpf_class min(const __gmp_expr<mpf_t, E> &a, const __gmp_expr<mpf_t, E> &b) {
-    mpf_class aa(a), bb(b);
-    return (aa > bb) ? bb : aa;
+template <typename First, typename... Rest>
+inline mpf_class mplapack_gmp_min_values(const First &first, const Rest &...rest) {
+    mpf_class result(first);
+    auto update = [&](const auto &value) {
+        mpf_class candidate(value);
+        if (result > candidate) {
+            result = candidate;
+        }
+    };
+    (update(rest), ...);
+    return result;
 }
 
-template <class E> inline mpf_class max(const __gmp_expr<mpf_t, E> &a, const __gmp_expr<mpf_t, E> &b) {
-    mpf_class aa(a), bb(b);
-    return (aa < bb) ? bb : aa;
+template <typename First, typename... Rest>
+inline mpf_class mplapack_gmp_max_values(const First &first, const Rest &...rest) {
+    mpf_class result(first);
+    auto update = [&](const auto &value) {
+        mpf_class candidate(value);
+        if (result < candidate) {
+            result = candidate;
+        }
+    };
+    (update(rest), ...);
+    return result;
 }
 
-template <class E1, class E2, typename = std::enable_if_t<!std::is_same_v<E1, E2>>> inline mpf_class min(const __gmp_expr<mpf_t, E1> &a, const __gmp_expr<mpf_t, E2> &b) {
-    mpf_class aa(a), bb(b);
-    return (aa > bb) ? bb : aa;
+inline mpf_class min(const mpf_class &a, const mpf_class &b) { return mplapack_gmp_min_values(a, b); }
+inline mpf_class max(const mpf_class &a, const mpf_class &b) { return mplapack_gmp_max_values(a, b); }
+
+inline mpf_class min(const mpf_class &a, const mpf_class &b, const mpf_class &c) { return mplapack_gmp_min_values(a, b, c); }
+inline mpf_class max(const mpf_class &a, const mpf_class &b, const mpf_class &c) { return mplapack_gmp_max_values(a, b, c); }
+
+template <typename A, typename B,
+          std::enable_if_t<mplapack_gmp_mpf_operand_v<A> &&
+                               mplapack_gmp_mpf_operand_v<B> &&
+                               mplapack_gmp_has_mpf_object_or_node_v<A, B>,
+                           int> = 0>
+inline mpf_class min(const A &a, const B &b) { return mplapack_gmp_min_values(a, b); }
+
+template <typename A, typename B,
+          std::enable_if_t<mplapack_gmp_mpf_operand_v<A> &&
+                               mplapack_gmp_mpf_operand_v<B> &&
+                               mplapack_gmp_has_mpf_object_or_node_v<A, B>,
+                           int> = 0>
+inline mpf_class max(const A &a, const B &b) { return mplapack_gmp_max_values(a, b); }
+
+template <typename A, typename B, typename C,
+          std::enable_if_t<mplapack_gmp_mpf_operand_v<A> &&
+                               mplapack_gmp_mpf_operand_v<B> &&
+                               mplapack_gmp_mpf_operand_v<C> &&
+                               mplapack_gmp_has_mpf_object_or_node_v<A, B, C>,
+                           int> = 0>
+inline mpf_class min(const A &a, const B &b, const C &c) { return mplapack_gmp_min_values(a, b, c); }
+
+template <typename A, typename B, typename C,
+          std::enable_if_t<mplapack_gmp_mpf_operand_v<A> &&
+                               mplapack_gmp_mpf_operand_v<B> &&
+                               mplapack_gmp_mpf_operand_v<C> &&
+                               mplapack_gmp_has_mpf_object_or_node_v<A, B, C>,
+                           int> = 0>
+inline mpf_class max(const A &a, const B &b, const C &c) { return mplapack_gmp_max_values(a, b, c); }
+
+template <typename A, typename B, typename C, typename D, typename... Rest,
+          std::enable_if_t<mplapack_gmp_mpf_operand_v<A> &&
+                               mplapack_gmp_mpf_operand_v<B> &&
+                               mplapack_gmp_mpf_operand_v<C> &&
+                               mplapack_gmp_mpf_operand_v<D> &&
+                               (mplapack_gmp_mpf_operand_v<Rest> && ...) &&
+                               mplapack_gmp_has_mpf_object_or_node_v<A, B, C, D, Rest...>,
+                           int> = 0>
+inline mpf_class min(const A &a, const B &b, const C &c, const D &d, const Rest &...rest) {
+    return mplapack_gmp_min_values(a, b, c, d, rest...);
 }
 
-template <class E1, class E2, typename = std::enable_if_t<!std::is_same_v<E1, E2>>> inline mpf_class max(const __gmp_expr<mpf_t, E1> &a, const __gmp_expr<mpf_t, E2> &b) {
-    mpf_class aa(a), bb(b);
-    return (aa < bb) ? bb : aa;
-}
-
-// -------------------------
-// 3-arg: Fortran semantics (NOT comparator)
-//   - Third argument is any type constructible to mpf_class,
-//     to prevent std::max(a,b,comp) hijack.
-// -------------------------
-
-template <class E, class C, typename = std::enable_if_t<std::is_constructible_v<mpf_class, C>>> inline mpf_class min(const __gmp_expr<mpf_t, E> &a, const __gmp_expr<mpf_t, E> &b, const C &c) {
-    mpf_class r = ::min(a, b);
-    return ::min(r, mpf_class(c));
-}
-
-template <class E, class C, typename = std::enable_if_t<std::is_constructible_v<mpf_class, C>>> inline mpf_class max(const __gmp_expr<mpf_t, E> &a, const __gmp_expr<mpf_t, E> &b, const C &c) {
-    mpf_class r = ::max(a, b);
-    return ::max(r, mpf_class(c));
-}
-
-template <class E1, class E2, class C, typename = std::enable_if_t<!std::is_same_v<E1, E2> && std::is_constructible_v<mpf_class, C>>> inline mpf_class min(const __gmp_expr<mpf_t, E1> &a, const __gmp_expr<mpf_t, E2> &b, const C &c) {
-    mpf_class r = ::min(a, b);
-    return ::min(r, mpf_class(c));
-}
-
-template <class E1, class E2, class C, typename = std::enable_if_t<!std::is_same_v<E1, E2> && std::is_constructible_v<mpf_class, C>>> inline mpf_class max(const __gmp_expr<mpf_t, E1> &a, const __gmp_expr<mpf_t, E2> &b, const C &c) {
-    mpf_class r = ::max(a, b);
-    return ::max(r, mpf_class(c));
-}
-
-// -------------------------
-// 4+ args: fold (Rest must be constructible to mpf_class)
-// -------------------------
-
-template <class E, class C, class... Rest, typename = std::enable_if_t<std::is_constructible_v<mpf_class, C> && (std::is_constructible_v<mpf_class, Rest> && ...)>> inline mpf_class min(const __gmp_expr<mpf_t, E> &a, const __gmp_expr<mpf_t, E> &b, const C &c, const Rest &...rest) {
-    mpf_class r = ::min(a, b, c);
-    ((r = ::min(r, mpf_class(rest))), ...);
-    return r;
-}
-
-template <class E, class C, class... Rest, typename = std::enable_if_t<std::is_constructible_v<mpf_class, C> && (std::is_constructible_v<mpf_class, Rest> && ...)>> inline mpf_class max(const __gmp_expr<mpf_t, E> &a, const __gmp_expr<mpf_t, E> &b, const C &c, const Rest &...rest) {
-    mpf_class r = ::max(a, b, c);
-    ((r = ::max(r, mpf_class(rest))), ...);
-    return r;
-}
-
-template <class E1, class E2, class C, class... Rest, typename = std::enable_if_t<!std::is_same_v<E1, E2> && std::is_constructible_v<mpf_class, C> && (std::is_constructible_v<mpf_class, Rest> && ...)>> inline mpf_class min(const __gmp_expr<mpf_t, E1> &a, const __gmp_expr<mpf_t, E2> &b, const C &c, const Rest &...rest) {
-    mpf_class r = ::min(a, b, c);
-    ((r = ::min(r, mpf_class(rest))), ...);
-    return r;
-}
-
-template <class E1, class E2, class C, class... Rest, typename = std::enable_if_t<!std::is_same_v<E1, E2> && std::is_constructible_v<mpf_class, C> && (std::is_constructible_v<mpf_class, Rest> && ...)>> inline mpf_class max(const __gmp_expr<mpf_t, E1> &a, const __gmp_expr<mpf_t, E2> &b, const C &c, const Rest &...rest) {
-    mpf_class r = ::max(a, b, c);
-    ((r = ::max(r, mpf_class(rest))), ...);
-    return r;
+template <typename A, typename B, typename C, typename D, typename... Rest,
+          std::enable_if_t<mplapack_gmp_mpf_operand_v<A> &&
+                               mplapack_gmp_mpf_operand_v<B> &&
+                               mplapack_gmp_mpf_operand_v<C> &&
+                               mplapack_gmp_mpf_operand_v<D> &&
+                               (mplapack_gmp_mpf_operand_v<Rest> && ...) &&
+                               mplapack_gmp_has_mpf_object_or_node_v<A, B, C, D, Rest...>,
+                           int> = 0>
+inline mpf_class max(const A &a, const B &b, const C &c, const D &d, const Rest &...rest) {
+    return mplapack_gmp_max_values(a, b, c, d, rest...);
 }
 
 #endif // MPLAPACK_MINMAX_MPF_CLASS_DEFINED
@@ -770,8 +446,8 @@ constexpr charbuf3 CHAR3(const char *a, const char *b, const char *c) { return c
 #ifndef MPLAPACK_ICEIL_MPF_CLASS_DEFINED
 #define MPLAPACK_ICEIL_MPF_CLASS_DEFINED
 inline mplapackint iceil(const mpf_class &x) {
-    // mpf_class -> long is trunc toward zero (via mpf_get_si).
-    mplapackint t = static_cast<mplapackint>(x.get_si());
+    // mpf_class -> integer truncates toward zero.
+    mplapackint t = x.get_integer<mplapackint>();
     mpf_class tt = t;
     if (x > tt) {
         ++t;

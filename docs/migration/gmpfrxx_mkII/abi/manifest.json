@@ -1,0 +1,745 @@
+{
+  "backends": {
+    "binary128": {
+      "cmake_targets": {
+        "mplapack::mplapack_binary128": {
+          "properties": {
+            "INTERFACE_COMPILE_DEFINITIONS": "___MPLAPACK_BUILD_WITH_BINARY128___",
+            "INTERFACE_INCLUDE_DIRECTORIES": "${_IMPORT_PREFIX}/include/mplapack",
+            "INTERFACE_LINK_LIBRARIES": "\\$<LINK_ONLY:OpenMP::OpenMP_CXX>"
+          },
+          "type": "STATIC"
+        },
+        "mplapack::mplapack_binary128_opt": {
+          "properties": {
+            "INTERFACE_COMPILE_DEFINITIONS": "___MPLAPACK_BUILD_WITH_BINARY128___",
+            "INTERFACE_INCLUDE_DIRECTORIES": "${_IMPORT_PREFIX}/include/mplapack",
+            "INTERFACE_LINK_LIBRARIES": "\\$<LINK_ONLY:OpenMP::OpenMP_CXX>"
+          },
+          "type": "STATIC"
+        },
+        "mplapack::mplapack_binary128_opt_opencl": {
+          "properties": {
+            "INTERFACE_COMPILE_DEFINITIONS": "___MPLAPACK_BUILD_WITH_BINARY128___",
+            "INTERFACE_INCLUDE_DIRECTORIES": "${_IMPORT_PREFIX}/include/mplapack",
+            "INTERFACE_LINK_LIBRARIES": "\\$<LINK_ONLY:OpenMP::OpenMP_CXX>;OpenCL::OpenCL"
+          },
+          "type": "STATIC"
+        }
+      },
+      "consumers": {
+        "cmake": {
+          "build": "cmake --build ${prefix}/cmake-binary128/build -j32",
+          "configure": "cmake -S ${prefix}/cmake-binary128/source -B ${prefix}/cmake-binary128/build '-DCMAKE_PREFIX_PATH=${prefix};${prefix}'",
+          "run": "${work}/consumer",
+          "status": "PASS",
+          "target": "mplapack::mplapack_binary128"
+        },
+        "pkg_config": {
+          "compile": "c++ -std=gnu++17 ${prefix}/pkg-binary128/main.cpp -I${prefix}/include -o ${prefix}/pkg-binary128/consumer -I${prefix}/include/mplapack -L${prefix}/lib -lmplapack_binary128 -lquadmath",
+          "dependency_packages": "",
+          "extra_libraries": "-lquadmath",
+          "package": "mplapack_binary128",
+          "run": "${work}/consumer",
+          "status": "PASS"
+        }
+      },
+      "libraries": {
+        "mplapack_binary128": {
+          "demangled_symbols": {
+            "count": 1059,
+            "file": "symbols/libmplapack_binary128.demangled.txt",
+            "sha256": "ee0b6ed71fb4b3292e6bc0f1b61760091f121f8141cdb76ef53568001b09d789"
+          },
+          "file": "${prefix}/lib/libmplapack_binary128.so",
+          "mangled_symbols": {
+            "count": 1059,
+            "file": "symbols/libmplapack_binary128.mangled.txt",
+            "sha256": "e3914aa1e383def218b12496eaec6f185304e5ae0ec9fb2d3a79bc4d9cbadccb"
+          },
+          "resolved_name": "libmplapack_binary128.so.2.0.0",
+          "sha256": "e98620b211d918ab21550e8b08f625868b103dd354a6d0363c43d0f033f064ea",
+          "soname": "libmplapack_binary128.so.2"
+        },
+        "mplapack_binary128_opt": {
+          "demangled_symbols": {
+            "count": 1070,
+            "file": "symbols/libmplapack_binary128_opt.demangled.txt",
+            "sha256": "61312f3d3cdefe225d62351dbebfcacb9562cc0643292ffeccd4c8c744135e04"
+          },
+          "file": "${prefix}/lib/libmplapack_binary128_opt.so",
+          "mangled_symbols": {
+            "count": 1070,
+            "file": "symbols/libmplapack_binary128_opt.mangled.txt",
+            "sha256": "1c4b0bfc8870bb017ec6bb19983fe3d7da13208c93336ead7d24a9f91fb1c30d"
+          },
+          "resolved_name": "libmplapack_binary128_opt.so.2.0.0",
+          "sha256": "834647174dee2f48a18c70549059b9c96344a40d5fdee5ecff064cd0e9adea15",
+          "soname": "libmplapack_binary128_opt.so.2"
+        },
+        "mplapack_binary128_opt_opencl": {
+          "demangled_symbols": {
+            "count": 1080,
+            "file": "symbols/libmplapack_binary128_opt_opencl.demangled.txt",
+            "sha256": "23ef3527f1ef91eae5a500fac360ad1b7748b5c7d3b233104d0e4344491d5574"
+          },
+          "file": "${prefix}/lib/libmplapack_binary128_opt_opencl.so",
+          "mangled_symbols": {
+            "count": 1081,
+            "file": "symbols/libmplapack_binary128_opt_opencl.mangled.txt",
+            "sha256": "9b2f35a0b204b5ffe57fb30993cf4603b14b911dbe310b73775d6637b6731744"
+          },
+          "resolved_name": "libmplapack_binary128_opt_opencl.so.2.0.0",
+          "sha256": "f393843276139088046dfe3838165c3465dc886c771dae4fed7ad1f8d8b88ec8",
+          "soname": "libmplapack_binary128_opt_opencl.so.2"
+        }
+      },
+      "pkg_config": {
+        "mplapack_binary128": {
+          "cflags": "-I${prefix}/include/mplapack",
+          "file_sha256": "7ecc6d1b8841c258cd4fe4965ba5ce025b530bb081e8cb9dc1cec8322fdd43c1",
+          "libs": "-L${prefix}/lib -lmplapack_binary128",
+          "requires": "",
+          "requires_private": "",
+          "version": "2.3.0"
+        },
+        "mplapack_binary128_opt": {
+          "cflags": "-I${prefix}/include/mplapack",
+          "file_sha256": "5ed0716ec9c56c0e5233157d2ce94c6c46de08ce7aef34efc8c21b9e0819cef4",
+          "libs": "-L${prefix}/lib -lmplapack_binary128_opt",
+          "requires": "",
+          "requires_private": "",
+          "version": "2.3.0"
+        }
+      },
+      "public_headers": {
+        "blas.h": "a47a0fb6362be034a1fe5a2fb4f7a184b6075c1380a3291f7d5f58e23e82918d",
+        "blaswrapper.h": "4f88b6bc12383e0733e7e1867aeb0cfb5101e27e532832ea66a0f53710dc79cb",
+        "lapack.h": "f29b4357d1264430e5078cc4bd7b44ae6b53ad708dc5785b8c4784074b9f1415",
+        "mpblas_binary128.h": "047c49b5e71ff5368313a6500f9b581444e077278347dc6e986294585570a43c",
+        "mplapack_arithmetic_params_binary128.h": "0ba2cc4fdf51417580732d6c19fbfa69a7efed10d5bc078b5fef2956247378e5",
+        "mplapack_binary128.h": "f4293fc80da041b825433c8354da6507c12126b13efc7caa689b28995444da78",
+        "mplapack_config.h": "ab3907ff80b3e4c794df52f6a7faaac7661ff4dc3dfce296b676e617844ec437",
+        "mplapack_utils_binary128.h": "45f12a958fa195e85f6872d81637b7587a4064974fe257eb2ba3d54761402f75"
+      }
+    },
+    "binary80": {
+      "cmake_targets": {
+        "mplapack::mplapack_binary80": {
+          "properties": {
+            "INTERFACE_COMPILE_DEFINITIONS": "___MPLAPACK_BUILD_WITH_BINARY80___",
+            "INTERFACE_INCLUDE_DIRECTORIES": "${_IMPORT_PREFIX}/include/mplapack",
+            "INTERFACE_LINK_LIBRARIES": "\\$<LINK_ONLY:OpenMP::OpenMP_CXX>"
+          },
+          "type": "STATIC"
+        },
+        "mplapack::mplapack_binary80_opt": {
+          "properties": {
+            "INTERFACE_COMPILE_DEFINITIONS": "___MPLAPACK_BUILD_WITH_BINARY80___",
+            "INTERFACE_INCLUDE_DIRECTORIES": "${_IMPORT_PREFIX}/include/mplapack",
+            "INTERFACE_LINK_LIBRARIES": "\\$<LINK_ONLY:OpenMP::OpenMP_CXX>"
+          },
+          "type": "STATIC"
+        }
+      },
+      "consumers": {
+        "cmake": {
+          "build": "cmake --build ${prefix}/cmake-binary80/build -j32",
+          "configure": "cmake -S ${prefix}/cmake-binary80/source -B ${prefix}/cmake-binary80/build '-DCMAKE_PREFIX_PATH=${prefix};${prefix}'",
+          "run": "${work}/consumer",
+          "status": "PASS",
+          "target": "mplapack::mplapack_binary80"
+        },
+        "pkg_config": {
+          "compile": "c++ -std=gnu++17 ${prefix}/pkg-binary80/main.cpp -I${prefix}/include -o ${prefix}/pkg-binary80/consumer -I${prefix}/include/mplapack -L${prefix}/lib -lmplapack_binary80 -lquadmath",
+          "dependency_packages": "",
+          "extra_libraries": "-lquadmath",
+          "package": "mplapack_binary80",
+          "run": "${work}/consumer",
+          "status": "PASS"
+        }
+      },
+      "libraries": {
+        "mplapack_binary80": {
+          "demangled_symbols": {
+            "count": 1059,
+            "file": "symbols/libmplapack_binary80.demangled.txt",
+            "sha256": "2d2228c20388b2563033e2e2e60224742bbf6fb9b3288c0b3e440868c63ce106"
+          },
+          "file": "${prefix}/lib/libmplapack_binary80.so",
+          "mangled_symbols": {
+            "count": 1059,
+            "file": "symbols/libmplapack_binary80.mangled.txt",
+            "sha256": "8090fe00e7a85aa6de55730d96bfbcfff0d34b3a4a3c31d3e708276debf02eff"
+          },
+          "resolved_name": "libmplapack_binary80.so.2.0.0",
+          "sha256": "187d8c6c9e7b6770e5a77832655ca04faffbc1869f948e484ef6b0e2172cd986",
+          "soname": "libmplapack_binary80.so.2"
+        },
+        "mplapack_binary80_opt": {
+          "demangled_symbols": {
+            "count": 1070,
+            "file": "symbols/libmplapack_binary80_opt.demangled.txt",
+            "sha256": "e02ea96388511c32975a7d9923b7cd97d29533ac23b0488bdfd5807ffce2e498"
+          },
+          "file": "${prefix}/lib/libmplapack_binary80_opt.so",
+          "mangled_symbols": {
+            "count": 1070,
+            "file": "symbols/libmplapack_binary80_opt.mangled.txt",
+            "sha256": "2b878359cfe80b97a891af989ee7da1aab5ccd3ca9fd97f29e7203baa40d506f"
+          },
+          "resolved_name": "libmplapack_binary80_opt.so.2.0.0",
+          "sha256": "56f018223a86990638d2b9d014036b7784b872b4e1a100fe932a42525283aee7",
+          "soname": "libmplapack_binary80_opt.so.2"
+        }
+      },
+      "pkg_config": {
+        "mplapack_binary80": {
+          "cflags": "-I${prefix}/include/mplapack",
+          "file_sha256": "d9a3e20f4ef4590d53a685bbfd769749e749c703dcde19e2c87cd3a196dc0185",
+          "libs": "-L${prefix}/lib -lmplapack_binary80",
+          "requires": "",
+          "requires_private": "",
+          "version": "2.3.0"
+        },
+        "mplapack_binary80_opt": {
+          "cflags": "-I${prefix}/include/mplapack",
+          "file_sha256": "0724ac51b42709d9f4f0cc88da963a48be7f86cbb71d7887eef8ff7e10822c0c",
+          "libs": "-L${prefix}/lib -lmplapack_binary80_opt",
+          "requires": "",
+          "requires_private": "",
+          "version": "2.3.0"
+        }
+      },
+      "public_headers": {
+        "blas.h": "a47a0fb6362be034a1fe5a2fb4f7a184b6075c1380a3291f7d5f58e23e82918d",
+        "blaswrapper.h": "4f88b6bc12383e0733e7e1867aeb0cfb5101e27e532832ea66a0f53710dc79cb",
+        "lapack.h": "f29b4357d1264430e5078cc4bd7b44ae6b53ad708dc5785b8c4784074b9f1415",
+        "mpblas_binary80.h": "c9661973de5c603825c1faacd12922db1b31224a9a4df0a5fd1ba83a43312c5a",
+        "mplapack_arithmetic_params_binary80.h": "9905af7e6f6cffbaef4c8b3b99fb02a5f685da3ef12bb4b609a8631b591d3586",
+        "mplapack_binary80.h": "542da5a805731dc3cffca655bfd7a66e92d9031a743fded692bad70e6ce91542",
+        "mplapack_config.h": "ab3907ff80b3e4c794df52f6a7faaac7661ff4dc3dfce296b676e617844ec437",
+        "mplapack_utils_binary80.h": "1762345999b7a28fe0acf4c95e8d6fdab7d26cd3f450ba59f96b21468e789196"
+      }
+    },
+    "dd": {
+      "cmake_targets": {
+        "mplapack::mplapack_dd": {
+          "properties": {
+            "INTERFACE_COMPILE_DEFINITIONS": "___MPLAPACK_BUILD_WITH_DD___",
+            "INTERFACE_INCLUDE_DIRECTORIES": "${_IMPORT_PREFIX}/include/mplapack",
+            "INTERFACE_LINK_LIBRARIES": "\\$<LINK_ONLY:OpenMP::OpenMP_CXX>;QD::QD"
+          },
+          "type": "STATIC"
+        },
+        "mplapack::mplapack_dd_opt": {
+          "properties": {
+            "INTERFACE_COMPILE_DEFINITIONS": "___MPLAPACK_BUILD_WITH_DD___",
+            "INTERFACE_INCLUDE_DIRECTORIES": "${_IMPORT_PREFIX}/include/mplapack",
+            "INTERFACE_LINK_LIBRARIES": "\\$<LINK_ONLY:OpenMP::OpenMP_CXX>;QD::QD"
+          },
+          "type": "STATIC"
+        }
+      },
+      "consumers": {
+        "cmake": {
+          "build": "cmake --build ${prefix}/cmake-dd/build -j32",
+          "configure": "cmake -S ${prefix}/cmake-dd/source -B ${prefix}/cmake-dd/build '-DCMAKE_PREFIX_PATH=${prefix};${prefix}'",
+          "run": "${work}/consumer",
+          "status": "PASS",
+          "target": "mplapack::mplapack_dd"
+        },
+        "pkg_config": {
+          "compile": "c++ -std=gnu++17 ${prefix}/pkg-dd/main.cpp -I${prefix}/include -o ${prefix}/pkg-dd/consumer -I${prefix}/include/mplapack -I${prefix}/include -L${prefix}/lib -lmplapack_dd -lqd",
+          "dependency_packages": "qd",
+          "extra_libraries": "",
+          "package": "mplapack_dd",
+          "run": "${work}/consumer",
+          "status": "PASS"
+        }
+      },
+      "libraries": {
+        "mplapack_dd": {
+          "demangled_symbols": {
+            "count": 1069,
+            "file": "symbols/libmplapack_dd.demangled.txt",
+            "sha256": "1e9adad90a89166d8f93b32001fdd55ac4ab6dd361b11dd92697d5e812d58f9f"
+          },
+          "file": "${prefix}/lib/libmplapack_dd.so",
+          "mangled_symbols": {
+            "count": 1069,
+            "file": "symbols/libmplapack_dd.mangled.txt",
+            "sha256": "fececc15c287bcaa493787c9c47e6632ef6b5f0fe8bb6ddfbd5d02062042c81a"
+          },
+          "resolved_name": "libmplapack_dd.so.2.0.0",
+          "sha256": "c79f0d2d5970864fd941bfb8eac42ec21fb7034badda541c9d94e9a41420cbc8",
+          "soname": "libmplapack_dd.so.2"
+        },
+        "mplapack_dd_opt": {
+          "demangled_symbols": {
+            "count": 1080,
+            "file": "symbols/libmplapack_dd_opt.demangled.txt",
+            "sha256": "12629d24580e9ed6d0ecb6877b670ee1f48fc45c84ab94f6efb4caa83d9188a1"
+          },
+          "file": "${prefix}/lib/libmplapack_dd_opt.so",
+          "mangled_symbols": {
+            "count": 1080,
+            "file": "symbols/libmplapack_dd_opt.mangled.txt",
+            "sha256": "9ae337466ba50897316284a5beb69e516aab5c3ed7dadcec5496de6491772ce8"
+          },
+          "resolved_name": "libmplapack_dd_opt.so.2.0.0",
+          "sha256": "b65c51135480285c25b3d184a7c41bf4aa525e85898eada817adc77f69dc8100",
+          "soname": "libmplapack_dd_opt.so.2"
+        }
+      },
+      "pkg_config": {
+        "mplapack_dd": {
+          "cflags": "-I${prefix}/include/mplapack",
+          "file_sha256": "f32e0920814e64912f7fb4f2822e404f677d6881f10c5fdd58a2c2ab326c4b9f",
+          "libs": "-L${prefix}/lib -lmplapack_dd",
+          "requires": "",
+          "requires_private": "",
+          "version": "2.3.0"
+        },
+        "mplapack_dd_opt": {
+          "cflags": "-I${prefix}/include/mplapack",
+          "file_sha256": "a4affd66dc4249574a607a59fe4019210e5355caa477267dc57e384cda382e42",
+          "libs": "-L${prefix}/lib -lmplapack_dd_opt",
+          "requires": "",
+          "requires_private": "",
+          "version": "2.3.0"
+        }
+      },
+      "public_headers": {
+        "blas.h": "a47a0fb6362be034a1fe5a2fb4f7a184b6075c1380a3291f7d5f58e23e82918d",
+        "blaswrapper.h": "4f88b6bc12383e0733e7e1867aeb0cfb5101e27e532832ea66a0f53710dc79cb",
+        "dd_complex.h": "926b441985eed26e8d004b3dc34f204d51aa1194163364dc163c79cca66577d6",
+        "lapack.h": "f29b4357d1264430e5078cc4bd7b44ae6b53ad708dc5785b8c4784074b9f1415",
+        "mpblas_dd.h": "657b8ad658c9a276b057f2b46f95cc964ca01ac4f7e80b1e1373018741fecb93",
+        "mplapack_arithmetic_params_dd.h": "9bcf83b19fc07b003f96912df2f910b57be85905aeac5472212324a177506896",
+        "mplapack_config.h": "ab3907ff80b3e4c794df52f6a7faaac7661ff4dc3dfce296b676e617844ec437",
+        "mplapack_dd.h": "6b96a15f2ef559cef0dfac6f310716a07b5f0674f595291bc30308cce648c0c1",
+        "mplapack_utils_dd.h": "3f6814ac2098a7712489765caa4d88ae3cae42b8513e4036c40939167e653b5f",
+        "qd_complex.h": "8d1b936cf00a35e8ad71b1a9e463781c1ed21ecf60c90b4c1dc2d22783abbcd5"
+      }
+    },
+    "double": {
+      "cmake_targets": {
+        "mplapack::mplapack_double": {
+          "properties": {
+            "INTERFACE_COMPILE_DEFINITIONS": "___MPLAPACK_BUILD_WITH_DOUBLE___",
+            "INTERFACE_INCLUDE_DIRECTORIES": "${_IMPORT_PREFIX}/include/mplapack",
+            "INTERFACE_LINK_LIBRARIES": "\\$<LINK_ONLY:OpenMP::OpenMP_CXX>"
+          },
+          "type": "STATIC"
+        },
+        "mplapack::mplapack_double_opt": {
+          "properties": {
+            "INTERFACE_COMPILE_DEFINITIONS": "___MPLAPACK_BUILD_WITH_DOUBLE___",
+            "INTERFACE_INCLUDE_DIRECTORIES": "${_IMPORT_PREFIX}/include/mplapack",
+            "INTERFACE_LINK_LIBRARIES": "\\$<LINK_ONLY:OpenMP::OpenMP_CXX>"
+          },
+          "type": "STATIC"
+        }
+      },
+      "consumers": {
+        "cmake": {
+          "build": "cmake --build ${prefix}/cmake-double/build -j32",
+          "configure": "cmake -S ${prefix}/cmake-double/source -B ${prefix}/cmake-double/build '-DCMAKE_PREFIX_PATH=${prefix};${prefix}'",
+          "run": "${work}/consumer",
+          "status": "PASS",
+          "target": "mplapack::mplapack_double"
+        },
+        "pkg_config": {
+          "compile": "c++ -std=gnu++17 ${prefix}/pkg-double/main.cpp -I${prefix}/include -o ${prefix}/pkg-double/consumer -I${prefix}/include/mplapack -L${prefix}/lib -lmplapack_double",
+          "dependency_packages": "",
+          "extra_libraries": "",
+          "package": "mplapack_double",
+          "run": "${work}/consumer",
+          "status": "PASS"
+        }
+      },
+      "libraries": {
+        "mplapack_double": {
+          "demangled_symbols": {
+            "count": 1059,
+            "file": "symbols/libmplapack_double.demangled.txt",
+            "sha256": "cf341add2de9fb434c7d94ba2e303a8e2c50331be6695c5819b5e62211ac4ba7"
+          },
+          "file": "${prefix}/lib/libmplapack_double.so",
+          "mangled_symbols": {
+            "count": 1059,
+            "file": "symbols/libmplapack_double.mangled.txt",
+            "sha256": "8bd4b3c76c41b4a5814bf229e156842027ffd1c99e2755f52bb90aab741185fc"
+          },
+          "resolved_name": "libmplapack_double.so.2.0.0",
+          "sha256": "43441517bbb6f390296231005b61f533631b579af2118363f1658174da85ad46",
+          "soname": "libmplapack_double.so.2"
+        },
+        "mplapack_double_opt": {
+          "demangled_symbols": {
+            "count": 1070,
+            "file": "symbols/libmplapack_double_opt.demangled.txt",
+            "sha256": "8130c414c2573370daf5556d4b8eb6d819fc42cf4977feec3773ca41b95453fc"
+          },
+          "file": "${prefix}/lib/libmplapack_double_opt.so",
+          "mangled_symbols": {
+            "count": 1070,
+            "file": "symbols/libmplapack_double_opt.mangled.txt",
+            "sha256": "9cc252e5b9b29d7393665c054c624c00413603109d81724b8eda34192dac1756"
+          },
+          "resolved_name": "libmplapack_double_opt.so.2.0.0",
+          "sha256": "304a5ad9707e36402401671be0ab5b6173677a1343e44a917499d9042e5625b5",
+          "soname": "libmplapack_double_opt.so.2"
+        }
+      },
+      "pkg_config": {
+        "mplapack_double": {
+          "cflags": "-I${prefix}/include/mplapack",
+          "file_sha256": "e88709955ae2abc30386fb0d27fceb08c7ef4d116cd17ad1d4ab4ee6ef06403e",
+          "libs": "-L${prefix}/lib -lmplapack_double",
+          "requires": "",
+          "requires_private": "",
+          "version": "2.3.0"
+        },
+        "mplapack_double_opt": {
+          "cflags": "-I${prefix}/include/mplapack",
+          "file_sha256": "60a78072927d52f066c6093a5f0e3d51377e8bed1448213737fd9d9a01c8ae3b",
+          "libs": "-L${prefix}/lib -lmplapack_double_opt",
+          "requires": "",
+          "requires_private": "",
+          "version": "2.3.0"
+        }
+      },
+      "public_headers": {
+        "blas.h": "a47a0fb6362be034a1fe5a2fb4f7a184b6075c1380a3291f7d5f58e23e82918d",
+        "blaswrapper.h": "4f88b6bc12383e0733e7e1867aeb0cfb5101e27e532832ea66a0f53710dc79cb",
+        "lapack.h": "f29b4357d1264430e5078cc4bd7b44ae6b53ad708dc5785b8c4784074b9f1415",
+        "mpblas_double.h": "ac06736819c91b3f269f7c197b4ab66d794d3dd833369cba85e97d7d3ec6ed83",
+        "mplapack_arithmetic_params_double.h": "cbc2ecc29007654aaa8503197935e8a7fa204d1ec8fb39190bec6d52eabc69c9",
+        "mplapack_config.h": "ab3907ff80b3e4c794df52f6a7faaac7661ff4dc3dfce296b676e617844ec437",
+        "mplapack_double.h": "d9caf66cccbfaeb000adc7fdc7965ebc86156eaf26f8ffb6dedbd748fc7543d0",
+        "mplapack_utils_double.h": "29403e07fdacfc14d8ede9e93266ad7a1608d2e2cf1c380722c1fe91ca54bf71"
+      }
+    },
+    "gmp": {
+      "cmake_targets": {
+        "mplapack::mplapack_gmp": {
+          "properties": {
+            "INTERFACE_COMPILE_DEFINITIONS": "___MPLAPACK_BUILD_WITH_GMP___",
+            "INTERFACE_INCLUDE_DIRECTORIES": "${_IMPORT_PREFIX}/include/mplapack",
+            "INTERFACE_LINK_LIBRARIES": "\\$<LINK_ONLY:OpenMP::OpenMP_CXX>;GMP::GMPXX;GMP::GMP"
+          },
+          "type": "STATIC"
+        },
+        "mplapack::mplapack_gmp_opt": {
+          "properties": {
+            "INTERFACE_COMPILE_DEFINITIONS": "___MPLAPACK_BUILD_WITH_GMP___",
+            "INTERFACE_INCLUDE_DIRECTORIES": "${_IMPORT_PREFIX}/include/mplapack",
+            "INTERFACE_LINK_LIBRARIES": "\\$<LINK_ONLY:OpenMP::OpenMP_CXX>;GMP::GMPXX;GMP::GMP"
+          },
+          "type": "STATIC"
+        }
+      },
+      "consumers": {
+        "cmake": {
+          "build": "cmake --build ${prefix}/cmake-gmp/build -j32",
+          "configure": "cmake -S ${prefix}/cmake-gmp/source -B ${prefix}/cmake-gmp/build '-DCMAKE_PREFIX_PATH=${prefix};${prefix}'",
+          "run": "${work}/consumer",
+          "status": "PASS",
+          "target": "mplapack::mplapack_gmp"
+        },
+        "pkg_config": {
+          "compile": "c++ -std=gnu++17 ${prefix}/pkg-gmp/main.cpp -I${prefix}/include -o ${prefix}/pkg-gmp/consumer -I${prefix}/include/mplapack -I${prefix}/include -L${prefix}/lib -lmplapack_gmp -lgmpxx -lgmp",
+          "dependency_packages": "gmpxx gmp",
+          "extra_libraries": "",
+          "package": "mplapack_gmp",
+          "run": "${work}/consumer",
+          "status": "PASS"
+        }
+      },
+      "libraries": {
+        "mplapack_gmp": {
+          "demangled_symbols": {
+            "count": 1318,
+            "file": "symbols/libmplapack_gmp.demangled.txt",
+            "sha256": "022f8b4d06f0efee7d729d6da1c46cd3e7e7e686d355040abfcb142bd2009b48"
+          },
+          "file": "${prefix}/lib/libmplapack_gmp.so",
+          "mangled_symbols": {
+            "count": 1337,
+            "file": "symbols/libmplapack_gmp.mangled.txt",
+            "sha256": "0f83739f5c782dab9ebf57bdde2b6acfde1910381e02a0402bb838b4ef42a1c5"
+          },
+          "resolved_name": "libmplapack_gmp.so.2.0.0",
+          "sha256": "6b8a79595519fcae521d1a0897a2f905490b3a489c0b1ed7831e3f05a70becab",
+          "soname": "libmplapack_gmp.so.2"
+        },
+        "mplapack_gmp_opt": {
+          "demangled_symbols": {
+            "count": 1329,
+            "file": "symbols/libmplapack_gmp_opt.demangled.txt",
+            "sha256": "48df03a74314a91a1a2ec3b0712214b65c03a9020b1d4d838f8136a77224aa5b"
+          },
+          "file": "${prefix}/lib/libmplapack_gmp_opt.so",
+          "mangled_symbols": {
+            "count": 1348,
+            "file": "symbols/libmplapack_gmp_opt.mangled.txt",
+            "sha256": "8ab0e4b52a2e5ac137e08fe2cb59cf1d067157753941a7a541ad66b7779cdf6d"
+          },
+          "resolved_name": "libmplapack_gmp_opt.so.2.0.0",
+          "sha256": "3ec89fdc764a368ea05ff27b5dd737ca0798c6c7c495ca54be3feeab5a6c2638",
+          "soname": "libmplapack_gmp_opt.so.2"
+        }
+      },
+      "pkg_config": {
+        "mplapack_gmp": {
+          "cflags": "-I${prefix}/include/mplapack",
+          "file_sha256": "9ffbbd31197176db211471157506ee9f76198bafbb9cca65fac4bcd01e0ac7ad",
+          "libs": "-L${prefix}/lib -lmplapack_gmp",
+          "requires": "",
+          "requires_private": "",
+          "version": "2.3.0"
+        },
+        "mplapack_gmp_opt": {
+          "cflags": "-I${prefix}/include/mplapack",
+          "file_sha256": "694849cf1e6cb6ee0aaf5451ab5d49cfef31c0ebaa43cea28ec58ca4e089c236",
+          "libs": "-L${prefix}/lib -lmplapack_gmp_opt",
+          "requires": "",
+          "requires_private": "",
+          "version": "2.3.0"
+        }
+      },
+      "public_headers": {
+        "blas.h": "a47a0fb6362be034a1fe5a2fb4f7a184b6075c1380a3291f7d5f58e23e82918d",
+        "blaswrapper.h": "4f88b6bc12383e0733e7e1867aeb0cfb5101e27e532832ea66a0f53710dc79cb",
+        "lapack.h": "f29b4357d1264430e5078cc4bd7b44ae6b53ad708dc5785b8c4784074b9f1415",
+        "mpblas_gmp.h": "6c37dedfadc6be834b641c47ce395ca600c870c888ca89c186f6161f14f6cb70",
+        "mpc_class.h": "de120b97d2eb3302a553fb1b076cf9a01ef0727c61d24e501f714389bfd4d99d",
+        "mplapack_arithmetic_params_gmp.h": "f2ffb9f63a2fb3c38bea812236f21146b9d27c23b4c6584a31bd27e42e3b3cfa",
+        "mplapack_config.h": "ab3907ff80b3e4c794df52f6a7faaac7661ff4dc3dfce296b676e617844ec437",
+        "mplapack_gmp.h": "9aabda696c89d3a77953b24bf5e4295c66233a5f0427d9a414cddec5d0621c6b",
+        "mplapack_gmp_transcendents.h": "6e915de599e662cc3fb265c1e9200b173ba189038232afb36f49755905955b9e",
+        "mplapack_utils_gmp.h": "e1556b7c3f89e5f2da39b0396ef6bbe5475504fd76917fa79afed668200f188d"
+      }
+    },
+    "mpfr": {
+      "cmake_targets": {
+        "mplapack::mplapack_mpfr": {
+          "properties": {
+            "INTERFACE_COMPILE_DEFINITIONS": "___MPLAPACK_BUILD_WITH_MPFR___",
+            "INTERFACE_INCLUDE_DIRECTORIES": "${_IMPORT_PREFIX}/include/mplapack",
+            "INTERFACE_LINK_LIBRARIES": "\\$<LINK_ONLY:OpenMP::OpenMP_CXX>;MPC::MPC;MPFR::MPFR;GMP::GMPXX;GMP::GMP"
+          },
+          "type": "STATIC"
+        },
+        "mplapack::mplapack_mpfr_opt": {
+          "properties": {
+            "INTERFACE_COMPILE_DEFINITIONS": "___MPLAPACK_BUILD_WITH_MPFR___",
+            "INTERFACE_INCLUDE_DIRECTORIES": "${_IMPORT_PREFIX}/include/mplapack",
+            "INTERFACE_LINK_LIBRARIES": "\\$<LINK_ONLY:OpenMP::OpenMP_CXX>;MPC::MPC;MPFR::MPFR;GMP::GMPXX;GMP::GMP"
+          },
+          "type": "STATIC"
+        }
+      },
+      "consumers": {
+        "cmake": {
+          "build": "cmake --build ${prefix}/cmake-mpfr/build -j32",
+          "configure": "cmake -S ${prefix}/cmake-mpfr/source -B ${prefix}/cmake-mpfr/build '-DCMAKE_PREFIX_PATH=${prefix};${prefix}'",
+          "run": "${work}/consumer",
+          "status": "PASS",
+          "target": "mplapack::mplapack_mpfr"
+        },
+        "pkg_config": {
+          "compile": "c++ -std=gnu++17 ${prefix}/pkg-mpfr/main.cpp -I${prefix}/include -o ${prefix}/pkg-mpfr/consumer -I${prefix}/include/mplapack -I${prefix}/include -L${prefix}/lib -lmplapack_mpfr -lmpc -lmpfr -lgmp",
+          "dependency_packages": "mpc mpfr gmp",
+          "extra_libraries": "",
+          "package": "mplapack_mpfr",
+          "run": "${work}/consumer",
+          "status": "PASS"
+        }
+      },
+      "libraries": {
+        "mplapack_mpfr": {
+          "demangled_symbols": {
+            "count": 1110,
+            "file": "symbols/libmplapack_mpfr.demangled.txt",
+            "sha256": "8e1f98471d215980a94bb2f71eb2765062202260c36747bd6239eacba18fa1b0"
+          },
+          "file": "${prefix}/lib/libmplapack_mpfr.so",
+          "mangled_symbols": {
+            "count": 1119,
+            "file": "symbols/libmplapack_mpfr.mangled.txt",
+            "sha256": "a44b5bf1e3ba59b5e334751c0a32b44a1be2634fbe7c7ff5160ac1cd12aa9627"
+          },
+          "resolved_name": "libmplapack_mpfr.so.2.0.0",
+          "sha256": "b7ddccde295c88ccbead91c50facf81e12f21beab424e15104f89274e7329f7f",
+          "soname": "libmplapack_mpfr.so.2"
+        },
+        "mplapack_mpfr_opt": {
+          "demangled_symbols": {
+            "count": 1121,
+            "file": "symbols/libmplapack_mpfr_opt.demangled.txt",
+            "sha256": "eff103ab7965674f397f94df4fb7e48c58c72fd935e6fb6187c7bcdad04e56cb"
+          },
+          "file": "${prefix}/lib/libmplapack_mpfr_opt.so",
+          "mangled_symbols": {
+            "count": 1130,
+            "file": "symbols/libmplapack_mpfr_opt.mangled.txt",
+            "sha256": "c229fb2171711762b76f55738c4f5008a0d608f4eb4ad2196b568155c8030580"
+          },
+          "resolved_name": "libmplapack_mpfr_opt.so.2.0.0",
+          "sha256": "dfac2ef166ae43df5a9e36a6e774855b80dbe39419de0646a7789efac1a4a099",
+          "soname": "libmplapack_mpfr_opt.so.2"
+        }
+      },
+      "pkg_config": {
+        "mplapack_mpfr": {
+          "cflags": "-I${prefix}/include/mplapack",
+          "file_sha256": "763b4316e7622b7dad4181d1d449113bd5fe4d74f83c6f2b59bc675daf8ab817",
+          "libs": "-L${prefix}/lib -lmplapack_mpfr",
+          "requires": "",
+          "requires_private": "",
+          "version": "2.3.0"
+        },
+        "mplapack_mpfr_opt": {
+          "cflags": "-I${prefix}/include/mplapack",
+          "file_sha256": "f2097d43c884125631f9f8aa0c8b6cdb849443c0491b39de2a19a3ca410b0c0c",
+          "libs": "-L${prefix}/lib -lmplapack_mpfr_opt",
+          "requires": "",
+          "requires_private": "",
+          "version": "2.3.0"
+        }
+      },
+      "public_headers": {
+        "blas.h": "a47a0fb6362be034a1fe5a2fb4f7a184b6075c1380a3291f7d5f58e23e82918d",
+        "blaswrapper.h": "4f88b6bc12383e0733e7e1867aeb0cfb5101e27e532832ea66a0f53710dc79cb",
+        "lapack.h": "f29b4357d1264430e5078cc4bd7b44ae6b53ad708dc5785b8c4784074b9f1415",
+        "mpblas_mpfr.h": "e28b40c79075900a12c9809887a7d1ef8541532f4208aecfeb8adca9a6c33f06",
+        "mpcomplex.h": "a6a3446e5ce0bb0bd48d7a9042e634751d80d3864fa6deea5be8458466cea38b",
+        "mplapack_arithmetic_params_mpfr.h": "4be3ec5cf5d8dae1d4727f1546cf5df79ba560e9b3232a08221ee2c6cec05415",
+        "mplapack_config.h": "ab3907ff80b3e4c794df52f6a7faaac7661ff4dc3dfce296b676e617844ec437",
+        "mplapack_mpfr.h": "a3e2029d090754f7ba67d30881ecbd4b876a2963ade1c192a8813c0a7efe68d8",
+        "mplapack_utils_mpfr.h": "a86c67e7f69f92ceb28f4da7d2771336a38a2ac444cc6216ec18bd5f78aad242",
+        "mpreal.h": "6c86281081091d2eb6e10c5bcf0d2cd89a763edb78c28037d83c0c45534a1bb0"
+      }
+    },
+    "qd": {
+      "cmake_targets": {
+        "mplapack::mplapack_qd": {
+          "properties": {
+            "INTERFACE_COMPILE_DEFINITIONS": "___MPLAPACK_BUILD_WITH_QD___",
+            "INTERFACE_INCLUDE_DIRECTORIES": "${_IMPORT_PREFIX}/include/mplapack",
+            "INTERFACE_LINK_LIBRARIES": "\\$<LINK_ONLY:OpenMP::OpenMP_CXX>;QD::QD"
+          },
+          "type": "STATIC"
+        },
+        "mplapack::mplapack_qd_opt": {
+          "properties": {
+            "INTERFACE_COMPILE_DEFINITIONS": "___MPLAPACK_BUILD_WITH_QD___",
+            "INTERFACE_INCLUDE_DIRECTORIES": "${_IMPORT_PREFIX}/include/mplapack",
+            "INTERFACE_LINK_LIBRARIES": "\\$<LINK_ONLY:OpenMP::OpenMP_CXX>;QD::QD"
+          },
+          "type": "STATIC"
+        }
+      },
+      "consumers": {
+        "cmake": {
+          "build": "cmake --build ${prefix}/cmake-qd/build -j32",
+          "configure": "cmake -S ${prefix}/cmake-qd/source -B ${prefix}/cmake-qd/build '-DCMAKE_PREFIX_PATH=${prefix};${prefix}'",
+          "run": "${work}/consumer",
+          "status": "PASS",
+          "target": "mplapack::mplapack_qd"
+        },
+        "pkg_config": {
+          "compile": "c++ -std=gnu++17 ${prefix}/pkg-qd/main.cpp -I${prefix}/include -o ${prefix}/pkg-qd/consumer -I${prefix}/include/mplapack -I${prefix}/include -L${prefix}/lib -lmplapack_qd -lqd",
+          "dependency_packages": "qd",
+          "extra_libraries": "",
+          "package": "mplapack_qd",
+          "run": "${work}/consumer",
+          "status": "PASS"
+        }
+      },
+      "libraries": {
+        "mplapack_qd": {
+          "demangled_symbols": {
+            "count": 1082,
+            "file": "symbols/libmplapack_qd.demangled.txt",
+            "sha256": "0c7da3393f4c71852b3f5f6049443f887b6c62d936981a0c22df5c56a214e0a9"
+          },
+          "file": "${prefix}/lib/libmplapack_qd.so",
+          "mangled_symbols": {
+            "count": 1082,
+            "file": "symbols/libmplapack_qd.mangled.txt",
+            "sha256": "5261352de7a5148efcfb0fc72cb3e25ae03a24531a96324abab928d370857e07"
+          },
+          "resolved_name": "libmplapack_qd.so.2.0.0",
+          "sha256": "753ff69b00dff5ee046a05637156e99bf083b851aae73a1cd40b7746d93264c0",
+          "soname": "libmplapack_qd.so.2"
+        },
+        "mplapack_qd_opt": {
+          "demangled_symbols": {
+            "count": 1093,
+            "file": "symbols/libmplapack_qd_opt.demangled.txt",
+            "sha256": "3c955e6ca19c2b0fc00bab2110b5c17d9106510ea965b0b122213bd1cb0ffd4d"
+          },
+          "file": "${prefix}/lib/libmplapack_qd_opt.so",
+          "mangled_symbols": {
+            "count": 1093,
+            "file": "symbols/libmplapack_qd_opt.mangled.txt",
+            "sha256": "ac7c6799b18dcff5fe802325d4469c89c02e22cf12180682464e8aa22005b937"
+          },
+          "resolved_name": "libmplapack_qd_opt.so.2.0.0",
+          "sha256": "8cde3dceb7fb14e5d382328cc1e84467ba38b3c264a17967b02aa3c352d50576",
+          "soname": "libmplapack_qd_opt.so.2"
+        }
+      },
+      "pkg_config": {
+        "mplapack_qd": {
+          "cflags": "-I${prefix}/include/mplapack",
+          "file_sha256": "f51eab5edf0907a58e663166f0bb38a18ba6cc7217e083dd6080ec42c93d6ace",
+          "libs": "-L${prefix}/lib -lmplapack_qd",
+          "requires": "",
+          "requires_private": "",
+          "version": "2.3.0"
+        },
+        "mplapack_qd_opt": {
+          "cflags": "-I${prefix}/include/mplapack",
+          "file_sha256": "5f19801943e1624e87af3fad821473bd51700b79b9b8438ab5ffee89317c38fa",
+          "libs": "-L${prefix}/lib -lmplapack_qd_opt",
+          "requires": "",
+          "requires_private": "",
+          "version": "2.3.0"
+        }
+      },
+      "public_headers": {
+        "blas.h": "a47a0fb6362be034a1fe5a2fb4f7a184b6075c1380a3291f7d5f58e23e82918d",
+        "blaswrapper.h": "4f88b6bc12383e0733e7e1867aeb0cfb5101e27e532832ea66a0f53710dc79cb",
+        "dd_complex.h": "926b441985eed26e8d004b3dc34f204d51aa1194163364dc163c79cca66577d6",
+        "lapack.h": "f29b4357d1264430e5078cc4bd7b44ae6b53ad708dc5785b8c4784074b9f1415",
+        "mpblas_qd.h": "ecca1c13b4c554b1209ff46671aa6da3b73d82163a1f70ae0fc30f2d504d5ca2",
+        "mplapack_arithmetic_params_qd.h": "022d73260c038c9b60df97c11e923b5636c43376d86f7e7b2d16fb44fa85566e",
+        "mplapack_config.h": "ab3907ff80b3e4c794df52f6a7faaac7661ff4dc3dfce296b676e617844ec437",
+        "mplapack_qd.h": "4b1a0348a104df5e8fce88586e0fdbb155f413b7925539f8289dd77f2316a6aa",
+        "mplapack_utils_qd.h": "2b2c27131aeca7db30fdfc101fe7af76e0ddfb304af2a3e9571e971e0889bafc",
+        "qd_complex.h": "8d1b936cf00a35e8ad71b1a9e463781c1ed21ecf60c90b4c1dc2d22783abbcd5"
+      }
+    }
+  },
+  "cmake_package_dependencies": [
+    "CUDAToolkit",
+    "GMP",
+    "MPC",
+    "MPFR",
+    "OpenCL",
+    "OpenMP",
+    "QD"
+  ],
+  "mplapack_base_sha": "b875e74d4b927282c907c3a29e6cadda48a7d57b",
+  "platform": {
+    "machine": "x86_64",
+    "shared_library_format": "ELF",
+    "system": "Linux"
+  },
+  "schema": 1
+}

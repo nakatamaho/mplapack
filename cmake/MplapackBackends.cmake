@@ -78,7 +78,7 @@ function(mplapack_add_opt_backend backend)
   add_library(mplapack::${_target} ALIAS ${_target})
   string(TOUPPER "${backend}" _backend_upper)
   mplapack_configure_backend_target(
-    ${_target} ___MPLAPACK_BUILD_WITH_${_backend_upper}___)
+    ${_target} MPLAPACK_BUILD_WITH_${_backend_upper})
 endfunction()
 
 function(mplapack_collect_opt_backend_sources
@@ -136,7 +136,7 @@ function(mplapack_add_accelerator_backend backend accelerator)
   add_library(mplapack::${_target} ALIAS ${_target})
   string(TOUPPER "${backend}" _backend_upper)
   mplapack_configure_backend_target(
-    ${_target} ___MPLAPACK_BUILD_WITH_${_backend_upper}___)
+    ${_target} MPLAPACK_BUILD_WITH_${_backend_upper})
   message(VERBOSE
     "${_target}: accelerator-shadowed source set computed from: "
     "${_accelerator_sources}")

@@ -76,7 +76,7 @@ int main(int argc, char *argv[]) {
     REAL diff;
     double diffr = 0.0;
 
-    ___MPLAPACK_INITIALIZE___
+    MPLAPACK_INITIALIZE
 
     for (int i = 1; i < argc; i++) {
         if (strcmp("-N", argv[i]) == 0) {

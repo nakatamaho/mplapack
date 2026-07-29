@@ -73,7 +73,7 @@ void Rtrtrs_test2(const char *uplo, const char *trans, const char *diag) {
                     for (iter = 0; iter < MAX_ITER; iter++) {
                         set_random_vector(A_ref, A, matlen(lda, n));
                         set_random_vector(B_ref, B, matlen(ldb, nrhs));
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                         dtrtrs_f77(uplo, trans, diag, &n, &nrhs, A_ref, &lda, B_ref, &ldb, &info_ref);
 #else
                         Rtrtrs(uplo, trans, diag, n, nrhs, A_ref, lda, B_ref, ldb, info_ref);

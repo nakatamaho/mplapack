@@ -11,12 +11,12 @@
 #define MPFR_FORMAT "%+68.64Re"
 #define MPFR_SHORT_FORMAT "%+20.16Re"
 
-inline void printnum(mpreal rtmp) { mpfr_printf(MPFR_FORMAT, mpfr_ptr(rtmp)); }
-inline void printnum_short(mpreal rtmp) { mpfr_printf(MPFR_SHORT_FORMAT, mpfr_ptr(rtmp)); }
+inline void printnum(mpfr_class rtmp) { mpfr_printf(MPFR_FORMAT, mpfr_ptr(rtmp)); }
+inline void printnum_short(mpfr_class rtmp) { mpfr_printf(MPFR_SHORT_FORMAT, mpfr_ptr(rtmp)); }
 
 // Matlab/Octave format
-void printvec(mpreal *a, int len) {
-    mpreal tmp;
+void printvec(mpfr_class *a, int len) {
+    mpfr_class tmp;
     printf("[ ");
     for (int i = 0; i < len; i++) {
         tmp = a[i];
@@ -27,8 +27,8 @@ void printvec(mpreal *a, int len) {
     printf("]");
 }
 
-void printmat(int n, int m, mpreal *a, int lda) {
-    mpreal mtmp;
+void printmat(int n, int m, mpfr_class *a, int lda) {
+    mpfr_class mtmp;
     printf("[ ");
     for (int i = 0; i < n; i++) {
         printf("[ ");
@@ -46,10 +46,10 @@ void printmat(int n, int m, mpreal *a, int lda) {
     printf("]");
 }
 
-mpreal max_solution_error(mplapackint n, mpreal *x, mpreal *xexact) {
-    mpreal err = 0;
+mpfr_class max_solution_error(mplapackint n, mpfr_class *x, mpfr_class *xexact) {
+    mpfr_class err = 0;
     for (mplapackint i = 0; i < n; i++) {
-        mpreal d = abs(x[i] - xexact[i]);
+        mpfr_class d = abs(x[i] - xexact[i]);
         if (err < d)
             err = d;
     }
@@ -57,18 +57,18 @@ mpreal max_solution_error(mplapackint n, mpreal *x, mpreal *xexact) {
 }
 int main() {
     mplapackint n = 12, lda = n, ldb = n, info;
-    mpreal *a = new mpreal[n * n];
-    mpreal *aorg = new mpreal[n * n];
-    mpreal *b = new mpreal[n];
-    mpreal *xexact = new mpreal[n];
+    mpfr_class *a = new mpfr_class[n * n];
+    mpfr_class *aorg = new mpfr_class[n * n];
+    mpfr_class *b = new mpfr_class[n];
+    mpfr_class *xexact = new mpfr_class[n];
     mplapackint *ipiv = new mplapackint[n];
     for (mplapackint j = 0; j < n; j++)
         for (mplapackint i = 0; i < n; i++) {
-            a[i + j * lda] = mpreal(1.0) / mpreal(i + j + 1);
+            a[i + j * lda] = mpfr_class(1.0) / mpfr_class(i + j + 1);
             aorg[i + j * lda] = a[i + j * lda];
         }
     for (mplapackint i = 0; i < n; i++)
-        xexact[i] = (i % 2 == 0) ? mpreal(1.0) : mpreal(-1.0);
+        xexact[i] = (i % 2 == 0) ? mpfr_class(1.0) : mpfr_class(-1.0);
     for (mplapackint i = 0; i < n; i++) {
         b[i] = 0;
         for (mplapackint k = 0; k < n; k++)

@@ -68,7 +68,7 @@ void Claswp_test() {
                         for (iter = 0; iter < MAX_ITER; iter++) {
                             set_random_vector(A_ref, A, matlen(lda, n));
                             set_random_vector(ipiv_ref, ipiv, veclen(k2, incx), lda);
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                             zlaswp_f77(&n, A_ref, &lda, &k1, &k2, ipiv_ref, &incx);
 #else
                             Claswp(n, A_ref, lda, k1, k2, ipiv_ref, incx);

@@ -81,10 +81,10 @@ for _file in $FILES; do
         fi
         SOURCEFILES=`echo $SOURCEFILES ${resultfilename}`
         if [ x"$_mplib" = x"gmp" ]; then
-            $SED -i -e "s/REAL/mpf_class/g" -e "s/COMPLEX/mpc_class/g" -e "s/INTEGER/mplapackint/g" -e "s/InTEGER/INTEGER_${_mplib}/g" -e "s/ReAL/REAL_${_mplib}/g" -e "s/Rlamch/Rlamch_${_mplib}/g" -e "s/%%MPLIB%%/${_mplib}/g" ../$resultfilename
+            $SED -i -e "s/REAL/mpf_class/g" -e "s/COMPLEX/mpfc_class/g" -e "s/INTEGER/mplapackint/g" -e "s/InTEGER/INTEGER_${_mplib}/g" -e "s/ReAL/REAL_${_mplib}/g" -e "s/Rlamch/Rlamch_${_mplib}/g" -e "s/%%MPLIB%%/${_mplib}/g" ../$resultfilename
         fi
         if [ x"$_mplib" = x"mpfr" ]; then
-            $SED -i -e "s/REAL/mpreal/g" -e "s/COMPLEX/mpcomplex/g" -e "s/INTEGER/mplapackint/g" -e "s/InTEGER/INTEGER_${_mplib}/g" -e "s/ReAL/REAL_${_mplib}/g" -e "s/Rlamch/Rlamch_${_mplib}/g" -e "s/%%MPLIB%%/${_mplib}/g" ../$resultfilename
+            $SED -i -e "s/REAL/mpfr_class/g" -e "s/COMPLEX/mpc_class/g" -e "s/INTEGER/mplapackint/g" -e "s/InTEGER/INTEGER_${_mplib}/g" -e "s/ReAL/REAL_${_mplib}/g" -e "s/Rlamch/Rlamch_${_mplib}/g" -e "s/%%MPLIB%%/${_mplib}/g" ../$resultfilename
         fi
         if [ x"$_mplib" = x"double" ]; then
             $SED -i -e "s/REAL/double/g" -e "s/COMPLEX/std::complex<double>/g" -e "s/INTEGER/mplapackint/g" -e "s/InTEGER/INTEGER_${_mplib}/g" -e "s/ReAL/REAL_${_mplib}/g" -e "s/Rlamch/Rlamch_${_mplib}/g" -e "s/%%MPLIB%%/${_mplib}/g" ../$resultfilename
@@ -114,7 +114,7 @@ for _mplib in $MPLIBS; do
         executefilenames=`echo $FILES | $SED 's/\.cpp//g' | $SED "s/generic/${_mplib}/g"`
         echo "mplapackexamples_PROGRAMS += $executefilenames" >> ../Makefile.am
         echo ""               >> ../Makefile.am
-        echo "${_mplib}_cxxflags = \$(OPENMP_CXXFLAGS) -I\$(top_srcdir)/include -I\$(top_srcdir)/mpfrc++ -I\$(GMP_INCLUDEDIR) -I\$(MPFR_INCLUDEDIR) -I\$(MPC_INCLUDEDIR)" >> ../Makefile.am
+        echo "${_mplib}_cxxflags = \$(GMPFRXX_MKII_CPPFLAGS) \$(OPENMP_CXXFLAGS) -I\$(top_srcdir)/include -I\$(GMP_INCLUDEDIR) -I\$(MPFR_INCLUDEDIR) -I\$(MPC_INCLUDEDIR)" >> ../Makefile.am
         echo "${_mplib}_libdepends = -Wl,-rpath,\$(libdir) -L\$(top_builddir)/mplapack/reference -lmplapack_${_mplib} -L\$(MPC_LIBDIR) -L\$(MPFR_LIBDIR) -L\$(GMP_LIBDIR) -lmpfr -lmpc -lgmp"  >> ../Makefile.am
         echo ""               >> ../Makefile.am
         for _file in $FILES; do
@@ -133,7 +133,7 @@ for _mplib in $MPLIBS; do
         executefilenames=`echo $FILES | $SED 's/ Cgeev_NPR_generic\.cpp//g' | $SED 's/\.cpp//g' | $SED "s/generic/${_mplib}/g"`
         echo "mplapackexamples_PROGRAMS += $executefilenames" >> ../Makefile.am
         echo ""               >> ../Makefile.am
-        echo "${_mplib}_cxxflags = \$(OPENMP_CXXFLAGS) -I\$(top_srcdir)/include -I\$(GMP_INCLUDEDIR)" >> ../Makefile.am
+        echo "${_mplib}_cxxflags = \$(GMPFRXX_MKII_CPPFLAGS) \$(OPENMP_CXXFLAGS) -I\$(top_srcdir)/include -I\$(GMP_INCLUDEDIR)" >> ../Makefile.am
         echo "${_mplib}_libdepends = -Wl,-rpath,\$(libdir) -L\$(top_builddir)/mplapack/reference -lmplapack_${_mplib} -L\$(GMP_LIBDIR) -lgmp"  >> ../Makefile.am
         echo ""               >> ../Makefile.am
         for _file in $FILES; do

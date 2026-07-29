@@ -11,12 +11,12 @@
 #define MPFR_FORMAT "%+68.64Re"
 #define MPFR_SHORT_FORMAT "%+20.16Re"
 
-inline void printnum(mpreal rtmp) { mpfr_printf(MPFR_FORMAT, mpfr_ptr(rtmp)); }
-inline void printnum_short(mpreal rtmp) { mpfr_printf(MPFR_SHORT_FORMAT, mpfr_ptr(rtmp)); }
+inline void printnum(mpfr_class rtmp) { mpfr_printf(MPFR_FORMAT, mpfr_ptr(rtmp)); }
+inline void printnum_short(mpfr_class rtmp) { mpfr_printf(MPFR_SHORT_FORMAT, mpfr_ptr(rtmp)); }
 
 // Matlab/Octave format
-void printvec(mpreal *a, int len) {
-    mpreal tmp;
+void printvec(mpfr_class *a, int len) {
+    mpfr_class tmp;
     printf("[ ");
     for (int i = 0; i < len; i++) {
         tmp = a[i];
@@ -27,8 +27,8 @@ void printvec(mpreal *a, int len) {
     printf("]");
 }
 
-void printmat(int n, int m, mpreal *a, int lda) {
-    mpreal mtmp;
+void printmat(int n, int m, mpfr_class *a, int lda) {
+    mpfr_class mtmp;
     printf("[ ");
     for (int i = 0; i < n; i++) {
         printf("[ ");
@@ -50,7 +50,7 @@ void printmat(int n, int m, mpreal *a, int lda) {
 
 int compare_real(const void *a, const void *b)
 {
-    return *(mpreal*)a > *(mpreal*)b;
+    return *(mpfr_class*)a > *(mpfr_class*)b;
 }
 
 int main(int argc, char *argv[]) {
@@ -68,23 +68,23 @@ int main(int argc, char *argv[]) {
     }
     printf("#dimension %d, dispersion = %d \n", (int)n, (int)dispersion);
 
-    mpreal *a = new mpreal[n * n];
-    mpreal *aorg = new mpreal[n * n];
-    mpreal *ainv = new mpreal[n * n];
-    mpreal *at_a = new mpreal[n * n];
-    mpreal *I_ = new mpreal[n * n]; //I is reserved for imaginary number 
-    mpreal *s = new mpreal[n * n];
-    mpreal *sorg = new mpreal[n];
-    mpreal *u = new mpreal[n * n];
-    mpreal *vt = new mpreal[n * n];
-    mpreal *w = new mpreal[n * n];
+    mpfr_class *a = new mpfr_class[n * n];
+    mpfr_class *aorg = new mpfr_class[n * n];
+    mpfr_class *ainv = new mpfr_class[n * n];
+    mpfr_class *at_a = new mpfr_class[n * n];
+    mpfr_class *I_ = new mpfr_class[n * n]; //I is reserved for imaginary number 
+    mpfr_class *s = new mpfr_class[n * n];
+    mpfr_class *sorg = new mpfr_class[n];
+    mpfr_class *u = new mpfr_class[n * n];
+    mpfr_class *vt = new mpfr_class[n * n];
+    mpfr_class *w = new mpfr_class[n * n];
 
     mplapackint lwork = std::max({(mplapackint)1, 3 * n + n, 5 * n});
     mplapackint liwork;
     mplapackint *ipiv = new mplapackint[n];
     mplapackint info;
 
-    mpreal *work = new mpreal[lwork];
+    mpfr_class *work = new mpfr_class[lwork];
 
     std::random_device seed_gen;
     std::mt19937 engine(seed_gen());
@@ -127,7 +127,7 @@ int main(int argc, char *argv[]) {
     // 2. get determinant via LU factorization
     Rgetrf(n, n, a, n, ipiv, info);
     // printf("aLU ="); printmat(n, n, a, n); printf("\n");
-    mpreal det = 1;
+    mpfr_class det = 1;
     for (int i = 0; i < n; i++) {
         det = det * a[i + i * n];
         if (ipiv[i] != i + 1)
@@ -170,7 +170,7 @@ int main(int argc, char *argv[]) {
     // 5.5. verify Ainv * A = I
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            mpreal rtmp = 0.0;
+            mpfr_class rtmp = 0.0;
             for (int k = 0; k < n; k++) {
                 rtmp = rtmp + ainv[i + k * n] * a[k + j * n];
             }
@@ -183,7 +183,7 @@ int main(int argc, char *argv[]) {
     printf("ainv ="); printmat(n, n, ainv, n); printf("\n");
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            mpreal rtmp = 0.0;
+            mpfr_class rtmp = 0.0;
             for (int k = 0; k < n; k++) {
                 for (int l = 0; l < n; l++) {
                     rtmp = rtmp + ainv[i + k * n] * s[k + l * n] * aorg[l + j * n];
@@ -206,7 +206,7 @@ int main(int argc, char *argv[]) {
     }
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            mpreal rtmp = 0.0;
+            mpfr_class rtmp = 0.0;
             for (int k = 0; k < n; k++) {
                 rtmp = rtmp + a[k + i * n] * a[k + j * n];
             }
@@ -216,7 +216,7 @@ int main(int argc, char *argv[]) {
     // 7. eig(A^t A).
     printf("at_a ="); printmat(n, n, at_a, n); printf("\n");
     printf("eig(at_a)\n");
-    mpreal rtmp = 0.0;
+    mpfr_class rtmp = 0.0;
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
             if ( abs(at_a[i + j * n]) > abs(rtmp) )
@@ -235,14 +235,14 @@ int main(int argc, char *argv[]) {
 
     // work space query
     lwork = -1;
-    work = new mpreal[1];
+    work = new mpfr_class[1];
     liwork = -1;
     mplapackint *iwork = new mplapackint[1];
 
     Rsyevd("N", "U", n, at_a, n, w, work, lwork, iwork, liwork, info);
     lwork = (int)cast2double(work[0]);
     delete[] work;
-    work = new mpreal[std::max((mplapackint)1, lwork)];
+    work = new mpfr_class[std::max((mplapackint)1, lwork)];
     liwork = iwork[0];
     delete[] iwork;
     iwork = new mplapackint[std::max((mplapackint)1, liwork)];
@@ -250,7 +250,7 @@ int main(int argc, char *argv[]) {
     // diagonalize matrix
     Rsyevd("N", "U", n, at_a, n, w, work, lwork, iwork, liwork, info);
 
-    qsort(s, n, sizeof(mpreal), compare_real);
+    qsort(s, n, sizeof(mpfr_class), compare_real);
     printf("s=[");
     for (int i = 0; i < n; i++) { printnum(s[i]); printf(" "); } printf(" ] \n");
     printf("s_squared=["); for (int i = 0; i < n; i++) { printnum(s[i] * s[i]); printf(" "); } printf(" ] \n");
@@ -260,7 +260,7 @@ int main(int argc, char *argv[]) {
     // \lambda_i = \sigma_i^2
     // 9. Relative error
 
-    mpreal relerror;
+    mpfr_class relerror;
     for (int i = 0; i < n; i = i + 1) {
         relerror = abs ( (w[i] - s[i] * s[i]) / (s[i] * s[i]) ) ;
         printf("Relative_error_%d = ", (int)i); printnum(relerror); printf("\n");

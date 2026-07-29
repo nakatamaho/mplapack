@@ -3,7 +3,7 @@ mplapackexamples_PROGRAMS =
 if ENABLE_MPFR
 mplapackexamples_PROGRAMS += Rlamch_dump_mpfr Frank_eigenvalues_mpfr Gejsv_vs_gesvd_mpfr Hilbert_inverse_mpfr Hilbert_linear_solve_mpfr Kahan_rank_reveal_mpfr Pascal_inverse_mpfr Vandermonde_solve_mpfr Wilkinson_roots_mpfr
 
-mpfr_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mpfrc++ -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR)
+mpfr_cxxflags = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR)
 mpfr_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_mpfr -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp
 
 Rlamch_dump_mpfr_SOURCES = Rlamch_dump_mpfr.cpp
@@ -47,7 +47,7 @@ endif
 if ENABLE_GMP
 mplapackexamples_PROGRAMS += Rlamch_dump_gmp Frank_eigenvalues_gmp Gejsv_vs_gesvd_gmp Hilbert_inverse_gmp Hilbert_linear_solve_gmp Kahan_rank_reveal_gmp Pascal_inverse_gmp Vandermonde_solve_gmp Wilkinson_roots_gmp
 
-gmp_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR)
+gmp_cxxflags = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR)
 gmp_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_gmp -L$(GMP_LIBDIR) -lgmp
 
 Rlamch_dump_gmp_SOURCES = Rlamch_dump_gmp.cpp

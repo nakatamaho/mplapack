@@ -75,7 +75,7 @@ void Cgetrf_test() {
                         ipiv_ref[i] = 0;
                         ipiv[i] = 0;
                     }
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                     zgetrf_f77(&m, &n, A_ref, &lda, ipiv_ref, &info_ref);
 #else
                     Cgetrf(m, n, A_ref, lda, ipiv_ref, info_ref);

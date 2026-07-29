@@ -26,8 +26,8 @@
  *
  */
 
-#ifndef _MPLAPACK_BINARY128_H_
-#define _MPLAPACK_BINARY128_H_
+#ifndef MPLAPACK_BINARY128_H
+#define MPLAPACK_BINARY128_H
 
 #include "mplapack_config.h"
 #include <complex>

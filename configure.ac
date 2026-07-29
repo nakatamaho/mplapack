@@ -2,8 +2,8 @@ dnl
 dnl Configure for MPLAPACK
 dnl
 
-m4_define([MPLAPACK_VER_MAJOR], [2])
-m4_define([MPLAPACK_VER_MINOR], [3])
+m4_define([MPLAPACK_VER_MAJOR], [3])
+m4_define([MPLAPACK_VER_MINOR], [0])
 m4_define([MPLAPACK_VER_PATCH], [0])
 m4_define([MPLAPACK_VERSION], [MPLAPACK_VER_MAJOR.MPLAPACK_VER_MINOR.MPLAPACK_VER_PATCH])
 AC_INIT(mplapack, [MPLAPACK_VERSION])
@@ -26,7 +26,7 @@ AC_SUBST([LAPACK_VER_PATCH])
 
 AC_CONFIG_FILES([mplapack/reference/iMlaver.cpp])
 
-MPLAPACK_LT_CURRENT=2
+MPLAPACK_LT_CURRENT=3
 MPLAPACK_LT_REVISION=0
 MPLAPACK_LT_AGE=0
 MPLAPACK_LT_VERSION_INFO="${MPLAPACK_LT_CURRENT}:${MPLAPACK_LT_REVISION}:${MPLAPACK_LT_AGE}"
@@ -1302,13 +1302,13 @@ AS_IF([test "x$float128_types_same" = "xyes"], [mplapack_float128_types_same=1])
 AS_IF([test "x$float128_implicit_gnu_to_std" = "xyes"], [mplapack_implicit_gnu_to_std_f128=1])
 AS_IF([test "x$float128_implicit_std_to_gnu" = "xyes"], [mplapack_implicit_std_to_gnu_f128=1])
 
-AC_DEFINE_UNQUOTED([MPLAPACK_HAVE__FLOAT128], [$mplapack_has__Float128_type],
+AC_DEFINE_UNQUOTED([MPLAPACK_HAVE_STD_FLOAT128], [$mplapack_has__Float128_type],
     [1 if _Float128 is supported by the compiler, else 0])
-AC_DEFINE_UNQUOTED([MPLAPACK_HAVE___FLOAT128], [$mplapack_has___float128_type],
+AC_DEFINE_UNQUOTED([MPLAPACK_HAVE_GNU_FLOAT128], [$mplapack_has___float128_type],
     [1 if __float128 is supported by the compiler, else 0])
 AC_DEFINE_UNQUOTED([MPLAPACK_LDBL_IS_BINARY128], [$mplapack_ldbl_is_binary128],
     [1 if long double is binary128-like (mantissa/exponent), else 0])
-AC_DEFINE_UNQUOTED([MPLAPACK__FLOAT128_IS_LDBL], [$mplapack__Float128_is_long_double],
+AC_DEFINE_UNQUOTED([MPLAPACK_STD_FLOAT128_IS_LDBL], [$mplapack__Float128_is_long_double],
     [1 if _Float128 is the same type as long double, else 0])
 AC_DEFINE_UNQUOTED([MPLAPACK_FLOAT128_SAME_TYPES], [$mplapack_float128_types_same],
     [1 if _Float128 and __float128 are the same type, else 0])
@@ -1798,15 +1798,15 @@ AS_IF([test "x$float80_types_same" = "xyes"], [mplapack_float80_types_same=1])
 AS_IF([test "x$float80_implicit_gnu_to_std" = "xyes"], [mplapack_implicit_gnu_to_std_f80=1])
 AS_IF([test "x$float80_implicit_std_to_gnu" = "xyes"], [mplapack_implicit_std_to_gnu_f80=1])
 
-AC_DEFINE_UNQUOTED([MPLAPACK_HAVE__FLOAT64X], [$mplapack_has__Float64x_type],
+AC_DEFINE_UNQUOTED([MPLAPACK_HAVE_STD_FLOAT64X], [$mplapack_has__Float64x_type],
     [1 if _Float64x is supported by the compiler, else 0])
-AC_DEFINE_UNQUOTED([MPLAPACK_HAVE___FLOAT80], [$mplapack_has___float80_type],
+AC_DEFINE_UNQUOTED([MPLAPACK_HAVE_GNU_FLOAT80], [$mplapack_has___float80_type],
     [1 if __float80 is supported by the compiler, else 0])
 AC_DEFINE_UNQUOTED([MPLAPACK_LDBL_IS_BINARY80], [$mplapack_ldbl_is_binary80],
     [1 if long double is binary80 (mantissa/exponent), else 0])
 AC_DEFINE_UNQUOTED([MPLAPACK_FLOAT64X_IS_BINARY80], [$mplapack_float64x_is_binary80],
     [1 if _Float64x matches binary80 (mantissa/exponent), else 0])
-AC_DEFINE_UNQUOTED([MPLAPACK__FLOAT64X_IS_LDBL], [$mplapack__Float64x_is_long_double],
+AC_DEFINE_UNQUOTED([MPLAPACK_STD_FLOAT64X_IS_LDBL], [$mplapack__Float64x_is_long_double],
     [1 if _Float64x is the same type as long double, else 0])
 AC_DEFINE_UNQUOTED([MPLAPACK_FLOAT80_SAME_TYPES], [$mplapack_float80_types_same],
     [1 if _Float64x and __float80 are the same type, else 0])
@@ -1865,6 +1865,32 @@ AM_CONDITIONAL(MPLAPACK_BINARY80_MODE_LDBL80,   test "$mplapack_binary80_mode" =
 highest_abs_top_srcdir=`cd "$srcdir" && pwd`
 highest_abs_top_builddir=`pwd`
 dnl GMP library start
+AC_ARG_ENABLE([gmpfrxx-mkII], AS_HELP_STRING([--enable-gmpfrxx-mkII], [use bundled gmpfrxx_mkII headers]), [enable_gmpfrxx_mkII="$enableval"], [enable_gmpfrxx_mkII=yes])
+AC_ARG_WITH([gmpfrxx-mkII], AS_HELP_STRING([--with-gmpfrxx-mkII=PREFIX], [use an installed gmpfrxx_mkII package]), [gmpfrxx_mkii_prefix="$withval"], [gmpfrxx_mkii_prefix=""])
+GMPFRXX_MKII_DIR=
+GMPFRXX_MKII_SOURCE=disabled
+GMPFRXX_MKII_INCLUDEDIR=
+if test x$enable_gmp = xyes -o x$enable_mpfr = xyes; then
+    if test x$enable_gmpfrxx_mkII != xyes; then
+        AC_MSG_ERROR([GMP/MPFR backends require --enable-gmpfrxx-mkII])
+    fi
+    if test -n "$gmpfrxx_mkii_prefix" && test "$gmpfrxx_mkii_prefix" != yes; then
+        GMPFRXX_MKII_PREFIX="$gmpfrxx_mkii_prefix"
+        GMPFRXX_MKII_SOURCE=system
+        GMPFRXX_MKII_INCLUDEDIR="$GMPFRXX_MKII_PREFIX/include"
+    else
+        GMPFRXX_MKII_PREFIX="$prefix"
+        GMPFRXX_MKII_SOURCE=bundled
+        GMPFRXX_MKII_DIR=gmpfrxx_mkII
+        GMPFRXX_MKII_INCLUDEDIR="$highest_abs_top_builddir/external/i/GMPFRXX_MKII/include"
+    fi
+fi
+GMPFRXX_MKII_CPPFLAGS="-I$GMPFRXX_MKII_INCLUDEDIR"
+AC_SUBST([GMPFRXX_MKII_PREFIX])
+AC_SUBST([GMPFRXX_MKII_SOURCE])
+AC_SUBST([GMPFRXX_MKII_DIR])
+AC_SUBST([GMPFRXX_MKII_INCLUDEDIR])
+AC_SUBST([GMPFRXX_MKII_CPPFLAGS])
 AC_ARG_WITH(system-gmp,
 AS_HELP_STRING([--with-system-gmp=PREFIX],
             [ ="yes" if it is at the default location (/usr/local/lib), or alternative prefix path to gmp library]
@@ -1892,13 +1918,13 @@ if test x$enable_gmp = x"yes" -o x$enable_mpfr = x"yes" -o x$enable_test = x"yes
         if test x$HAVE_GMP_HEADER = xyes; then
             save_LDFLAGS="$LDFLAGS"
             LDFLAGS="$LDFLAGS -L$GMP_LIBDIR"
-            AC_CHECK_LIB(gmp, __gmpz_init, [GMP_LIBS="-lgmpxx -lgmp"; HAVE_GMP=yes])
+            AC_CHECK_LIB(gmp, __gmpz_init, [GMP_LIBS="-lgmp"; HAVE_GMP=yes])
             LDFLAGS=$save_LDFLAGS
         fi
         if test x$HAVE_GMP != xyes; then
-            AC_MSG_RESULT([No GMP library with C++ wrapper found; using internal one instead])
+            AC_MSG_RESULT([No GMP C library found; using internal one instead])
         else
-            AC_MSG_RESULT([GMP library found: using GMP library comes with the system])
+            AC_MSG_RESULT([GMP C library found: using GMP library comes with the system])
             SYSTEM_GMP=yes
         fi
     else
@@ -2808,6 +2834,7 @@ external/Makefile
 external/gmp/Makefile
 external/mpfr/Makefile
 external/mpc/Makefile
+external/gmpfrxx_mkII/Makefile
 external/qd/Makefile
 external/lapack/Makefile
 external/dlfcn-win32/Makefile

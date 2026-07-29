@@ -76,7 +76,7 @@ void Cspr_test2(const char *uplo) {
 
                 mplapack_errno = 0;
                 blas_errno = 0;
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                 zspr_f77(uplo, &n, &alpha_ref, x_ref, &incx, AP_ref);
                 mplapack_errno1 = blas_errno;
 #else

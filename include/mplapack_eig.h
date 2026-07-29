@@ -26,15 +26,15 @@
  *
  */
 
-#ifndef _MPLAPACK_EIG_H_
-#define _MPLAPACK_EIG_H_
+#ifndef MPLAPACK_EIG_H
+#define MPLAPACK_EIG_H
 
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
+#if defined MPLAPACK_BUILD_WITH_GMP
 #include <mplapack_eig_gmp.h>
 typedef mplapackint INTEGER;
 typedef mplapacklogical LOGICAL;
 typedef mpf_class REAL;
-typedef mpc_class COMPLEX;
+typedef mpfc_class COMPLEX;
 #define Mlsame Mlsame_gmp
 #define Mxerbla Mxerbla_gmp
 #define Rlamch Rlamch_gmp
@@ -43,12 +43,12 @@ typedef mpc_class COMPLEX;
 #define iMparmq iMparmq_gmp
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
 #include <mplapack_eig_mpfr.h>
 typedef mplapackint INTEGER;
 typedef mplapacklogical LOGICAL;
-typedef mpreal REAL;
-typedef mpcomplex COMPLEX;
+typedef mpfr_class REAL;
+typedef mpc_class COMPLEX;
 #define Mlsame Mlsame_mpfr
 #define Mxerbla Mxerbla_mpfr
 #define Rlamch Rlamch_mpfr
@@ -57,7 +57,7 @@ typedef mpcomplex COMPLEX;
 #define iMparmq iMparmq_mpfr
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_QD___
+#if defined MPLAPACK_BUILD_WITH_QD
 #include "mplapack_eig_qd.h"
 typedef mplapackint INTEGER;
 typedef mplapacklogical LOGICAL;
@@ -71,7 +71,7 @@ typedef qd_complex COMPLEX;
 #define iMparmq iMparmq_qd
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_DD___
+#if defined MPLAPACK_BUILD_WITH_DD
 #include <mplapack_eig_dd.h>
 typedef mplapackint INTEGER;
 typedef mplapacklogical LOGICAL;
@@ -85,7 +85,7 @@ typedef dd_complex COMPLEX;
 #define iMparmq iMparmq_dd
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_DOUBLE___
+#if defined MPLAPACK_BUILD_WITH_DOUBLE
 #include <mplapack_eig_double.h>
 typedef mplapackint INTEGER;
 typedef mplapacklogical LOGICAL;
@@ -99,7 +99,7 @@ typedef std::complex<double> COMPLEX;
 #define iMparmq iMparmq_double
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_BINARY80___
+#if defined MPLAPACK_BUILD_WITH_BINARY80
 #include <mplapack_eig_binary80.h>
 typedef mplapackint INTEGER;
 typedef mplapacklogical LOGICAL;
@@ -113,7 +113,7 @@ typedef std::complex<mplapack_binary80_t> COMPLEX;
 #define iMparmq iMparmq_binary80
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_BINARY128___
+#if defined MPLAPACK_BUILD_WITH_BINARY128
 #include <mplapack_eig_binary128.h>
 typedef mplapackint INTEGER;
 typedef mplapacklogical LOGICAL;

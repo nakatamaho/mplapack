@@ -3,7 +3,7 @@ mplapackexamples_PROGRAMS =
 if ENABLE_MPFR
 mplapackexamples_PROGRAMS += Cgesv_example_mpfr Cgetrf_getrs_example_mpfr Cgetri_example_mpfr Rgbsv_example_mpfr Rgecon_example_mpfr Rgesv_example_mpfr Rgesvx_example_mpfr Rgetrf_getrs_example_mpfr Rgetri_example2_mpfr Rgetri_example3_mpfr Rgetri_example_mpfr Rgtsv_example_mpfr
 
-mpfr_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mpfrc++ -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR)
+mpfr_cxxflags = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR)
 mpfr_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_mpfr -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp
 
 Cgesv_example_mpfr_SOURCES = Cgesv_example_mpfr.cpp
@@ -59,7 +59,7 @@ endif
 if ENABLE_GMP
 mplapackexamples_PROGRAMS += Cgesv_example_gmp Cgetrf_getrs_example_gmp Cgetri_example_gmp Rgbsv_example_gmp Rgecon_example_gmp Rgesv_example_gmp Rgesvx_example_gmp Rgetrf_getrs_example_gmp Rgetri_example2_gmp Rgetri_example3_gmp Rgetri_example_gmp Rgtsv_example_gmp
 
-gmp_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR)
+gmp_cxxflags = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR)
 gmp_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_gmp -L$(GMP_LIBDIR) -lgmp
 
 Cgesv_example_gmp_SOURCES = Cgesv_example_gmp.cpp

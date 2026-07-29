@@ -11,10 +11,10 @@
 #define MPFR_FORMAT "%+68.64Re"
 #define MPFR_SHORT_FORMAT "%+20.16Re"
 
-inline void printnum(mpreal rtmp) { mpfr_printf(MPFR_FORMAT, mpfr_ptr(rtmp)); }
-inline void printnum_short(mpreal rtmp) { mpfr_printf(MPFR_SHORT_FORMAT, mpfr_ptr(rtmp)); }
-inline void printnum(mpcomplex ctmp) {
-    mpreal cre, cim;
+inline void printnum(mpfr_class rtmp) { mpfr_printf(MPFR_FORMAT, mpfr_ptr(rtmp)); }
+inline void printnum_short(mpfr_class rtmp) { mpfr_printf(MPFR_SHORT_FORMAT, mpfr_ptr(rtmp)); }
+inline void printnum(mpc_class ctmp) {
+    mpfr_class cre, cim;
     cre = ctmp.real();
     cim = ctmp.imag();
     mpfr_printf(MPFR_SHORT_FORMAT MPFR_SHORT_FORMAT "i", mpfr_ptr(cre), mpfr_ptr(cim));
@@ -56,20 +56,20 @@ template <class X> void printmat(int n, int m, X *a, int lda)
 }
 #include <mplapack_utils_mpfr.h>
 
-bool rselect(mpreal ar, mpreal ai) {
+bool rselect(mpfr_class ar, mpfr_class ai) {
     // sorting rule for eigenvalues.
     return false;
 }
 
 int main() {
     mplapackint n = 10;
-    mpcomplex *a = new mpcomplex[n * n];
-    mpcomplex *w = new mpcomplex[n];
-    mpcomplex *vl = new mpcomplex[n * n];
-    mpcomplex *vr = new mpcomplex[n * n];
+    mpc_class *a = new mpc_class[n * n];
+    mpc_class *w = new mpc_class[n];
+    mpc_class *vl = new mpc_class[n * n];
+    mpc_class *vr = new mpc_class[n * n];
     mplapackint lwork = 4 * n;
-    mpcomplex *work = new mpcomplex[lwork];    
-    mpreal *rwork = new mpreal[lwork];
+    mpc_class *work = new mpc_class[lwork];    
+    mpfr_class *rwork = new mpfr_class[lwork];
     mplapackint info;
     // setting A matrix
     for (int i = 1; i <= n; i++) {
@@ -81,9 +81,9 @@ int main() {
     //https://doi.org/10.1002/nla.1811
     //http://www.math.kent.edu/~reichel/publications/toep3.pdf
 
-    mpcomplex sigma = mpcomplex(4.0, 3.0) / mpreal(8.0);
-    mpcomplex delta = mpcomplex(16.0, -3.0);
-    mpcomplex tau   = mpcomplex(0.0, -5.0);
+    mpc_class sigma = mpc_class(4.0, 3.0) / mpfr_class(8.0);
+    mpc_class delta = mpc_class(16.0, -3.0);
+    mpc_class tau   = mpc_class(0.0, -5.0);
 
     for (int i = 1; i <= n; i++) {
         a [ (i - 1) + (i - 1) * n ] = delta;
@@ -101,10 +101,10 @@ int main() {
     Cgeev("V", "V", n, a, n, w, vl, n, vr, n, work, lwork, rwork, info);
     printf("lambda ="); printvec(w,n); printf("\n");
 
-    mpcomplex _pi = pi(mpreal(0.0));
-    mpcomplex *lambda = new mpcomplex[n];
+    mpc_class _pi = pi(mpfr_class(0.0));
+    mpc_class *lambda = new mpc_class[n];
     for (int h = 1; h <= n; h++) {
-        lambda [h - 1] = delta + mpcomplex(2.0, 0.0) * sqrt (sigma * tau) * cos( (mpreal(h) * _pi) / mpreal((int)n + 1) );
+        lambda [h - 1] = delta + mpc_class(2.0, 0.0) * sqrt (sigma * tau) * cos( (mpfr_class(h) * _pi) / mpfr_class((int)n + 1) );
     }
     printf("lambda_true = "); printvec(lambda, n); printf("\n");
     printf("vr ="); printmat(n,n,vr,n); printf("\n");    

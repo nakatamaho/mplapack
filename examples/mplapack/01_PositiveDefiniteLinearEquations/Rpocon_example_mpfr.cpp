@@ -11,12 +11,12 @@
 #define MPFR_FORMAT "%+68.64Re"
 #define MPFR_SHORT_FORMAT "%+20.16Re"
 
-inline void printnum(mpreal rtmp) { mpfr_printf(MPFR_FORMAT, mpfr_ptr(rtmp)); }
-inline void printnum_short(mpreal rtmp) { mpfr_printf(MPFR_SHORT_FORMAT, mpfr_ptr(rtmp)); }
+inline void printnum(mpfr_class rtmp) { mpfr_printf(MPFR_FORMAT, mpfr_ptr(rtmp)); }
+inline void printnum_short(mpfr_class rtmp) { mpfr_printf(MPFR_SHORT_FORMAT, mpfr_ptr(rtmp)); }
 
 // Matlab/Octave format
-void printvec(mpreal *a, int len) {
-    mpreal tmp;
+void printvec(mpfr_class *a, int len) {
+    mpfr_class tmp;
     printf("[ ");
     for (int i = 0; i < len; i++) {
         tmp = a[i];
@@ -27,8 +27,8 @@ void printvec(mpreal *a, int len) {
     printf("]");
 }
 
-void printmat(int n, int m, mpreal *a, int lda) {
-    mpreal mtmp;
+void printmat(int n, int m, mpfr_class *a, int lda) {
+    mpfr_class mtmp;
     printf("[ ");
     for (int i = 0; i < n; i++) {
         printf("[ ");
@@ -46,16 +46,16 @@ void printmat(int n, int m, mpreal *a, int lda) {
     printf("]");
 }
 
-mpreal maxabs(mpreal a, mpreal b) {
-    mpreal d = abs(a - b);
+mpfr_class maxabs(mpfr_class a, mpfr_class b) {
+    mpfr_class d = abs(a - b);
     return d;
 }
 
-mpreal max_solution_error(mplapackint n, mplapackint nrhs, mpreal *x, mplapackint ldx, mpreal *xexact, mplapackint ldxexact) {
-    mpreal err = 0.0;
+mpfr_class max_solution_error(mplapackint n, mplapackint nrhs, mpfr_class *x, mplapackint ldx, mpfr_class *xexact, mplapackint ldxexact) {
+    mpfr_class err = 0.0;
     for (mplapackint j = 0; j < nrhs; j++) {
         for (mplapackint i = 0; i < n; i++) {
-            mpreal d = abs(x[i + j * ldx] - xexact[i + j * ldxexact]);
+            mpfr_class d = abs(x[i + j * ldx] - xexact[i + j * ldxexact]);
             if (err < d)
                 err = d;
         }
@@ -63,14 +63,14 @@ mpreal max_solution_error(mplapackint n, mplapackint nrhs, mpreal *x, mplapackin
     return err;
 }
 
-mpreal max_residual(mplapackint m, mplapackint n, mplapackint nrhs, mpreal *a, mplapackint lda, mpreal *x, mplapackint ldx, mpreal *b, mplapackint ldb) {
-    mpreal err = 0.0;
+mpfr_class max_residual(mplapackint m, mplapackint n, mplapackint nrhs, mpfr_class *a, mplapackint lda, mpfr_class *x, mplapackint ldx, mpfr_class *b, mplapackint ldb) {
+    mpfr_class err = 0.0;
     for (mplapackint j = 0; j < nrhs; j++) {
         for (mplapackint i = 0; i < m; i++) {
-            mpreal s = 0.0;
+            mpfr_class s = 0.0;
             for (mplapackint k = 0; k < n; k++)
                 s = s + a[i + k * lda] * x[k + j * ldx];
-            mpreal d = abs(s - b[i + j * ldb]);
+            mpfr_class d = abs(s - b[i + j * ldb]);
             if (err < d)
                 err = d;
         }
@@ -78,10 +78,10 @@ mpreal max_residual(mplapackint m, mplapackint n, mplapackint nrhs, mpreal *a, m
     return err;
 }
 
-mpreal one_norm(mplapackint n, mpreal *a, mplapackint lda) {
-    mpreal anorm = 0.0;
+mpfr_class one_norm(mplapackint n, mpfr_class *a, mplapackint lda) {
+    mpfr_class anorm = 0.0;
     for (mplapackint j = 0; j < n; j++) {
-        mpreal s = 0.0;
+        mpfr_class s = 0.0;
         for (mplapackint i = 0; i < n; i++)
             s = s + abs(a[i + j * lda]);
         if (anorm < s)
@@ -91,11 +91,11 @@ mpreal one_norm(mplapackint n, mpreal *a, mplapackint lda) {
 }
 int main() {
     mplapackint n = 2, lda = n, info;
-    mpreal *a = new mpreal[n * n];
-    mpreal *aorg = new mpreal[n * n];
-    mpreal *work = new mpreal[3 * n];
+    mpfr_class *a = new mpfr_class[n * n];
+    mpfr_class *aorg = new mpfr_class[n * n];
+    mpfr_class *work = new mpfr_class[3 * n];
     mplapackint *iwork = new mplapackint[n];
-    mpreal rcond = 0.0;
+    mpfr_class rcond = 0.0;
     a[0] = 4;
     a[1] = 2;
     a[2] = 2;

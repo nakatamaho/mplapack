@@ -26,8 +26,8 @@
  *
  */
 
-#ifndef _MPLAPACK_MATGEN__FLOAT64X_H_
-#define _MPLAPACK_MATGEN__FLOAT64X_H_
+#ifndef MPLAPACK_MATGEN_BINARY80_H
+#define MPLAPACK_MATGEN_BINARY80_H
 
 #include <fem.hpp> // Fortran EMulation library of fable module
 using namespace fem::major_types;
