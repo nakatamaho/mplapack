@@ -37,6 +37,8 @@
 
 extern int blas_errno; // for BLAS xerbla dispatch
 
+#include <algorithm>
+#include <complex>
 #include <cstdlib>
 #include <iostream>
 #include <stdio.h>
