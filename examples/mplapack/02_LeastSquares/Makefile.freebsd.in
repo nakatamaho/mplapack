@@ -1,0 +1,44 @@
+#public domain
+CXX=g++-10
+MPLAPACKDIR=%%MPLAPACKDIR%%
+CXXFLAGS= -I$(MPLAPACKDIR)/include -I$(MPLAPACKDIR)/include/mplapack -I$(MPLAPACKDIR)/include/qd
+OPTFLAGS= -O2
+LIBFLAGS=-L$(MPLAPACKDIR)/lib -Wl,--rpath=$(MPLAPACKDIR)/lib
+MPFRLIBS=-lmplapack_mpfr -lmpfr -lmpc -lgmp
+GMPLIBS=-lmplapack_gmp -lgmpxx -lgmp
+QDLIBS=-lmplapack_qd -lqd
+DDLIBS=-lmplapack_dd -lqd
+BINARY80LIBS=-lmplapack_binary80
+BINARY128LIBS=-lmplapack_binary128%%LIBQUADMATH%%
+DOUBLELIBS=-lmplapack_double
+
+programs=Cgels_example_mpfr Cgels_example_gmp Cgels_example_qd Cgels_example_dd Cgels_example_binary80 Cgels_example_binary128 Cgels_example_double
+
+all: $(programs)
+
+.cpp.o:
+	$(CXX) -c $(OPTFLAGS) $(CXXFLAGS) $<
+
+Cgels_example_mpfr: Cgels_example_mpfr.o
+	$(CXX) -o Cgels_example_mpfr Cgels_example_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
+
+Cgels_example_gmp: Cgels_example_gmp.o
+	$(CXX) -o Cgels_example_gmp Cgels_example_gmp.o $(LIBFLAGS) $(GMPLIBS)
+
+Cgels_example_qd: Cgels_example_qd.o
+	$(CXX) -o Cgels_example_qd Cgels_example_qd.o $(LIBFLAGS) $(QDLIBS)
+
+Cgels_example_dd: Cgels_example_dd.o
+	$(CXX) -o Cgels_example_dd Cgels_example_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Cgels_example_binary80: Cgels_example_binary80.o
+	$(CXX) -o Cgels_example_binary80 Cgels_example_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
+
+Cgels_example_binary128: Cgels_example_binary128.o
+	$(CXX) -o Cgels_example_binary128 Cgels_example_binary128.o $(LIBFLAGS) $(BINARY128LIBS)
+
+Cgels_example_double: Cgels_example_double.o
+	$(CXX) -o Cgels_example_double Cgels_example_double.o $(LIBFLAGS) $(DOUBLELIBS)
+
+clean:
+	rm -rf *.o *~ $(programs) *bak

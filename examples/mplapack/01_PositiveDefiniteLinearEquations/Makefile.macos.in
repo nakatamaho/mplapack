@@ -1,0 +1,48 @@
+# public domain
+
+CXX=g++-mp-14
+MPLAPACKDIR=%%MPLAPACKDIR%%
+CXXFLAGS= -I$(MPLAPACKDIR)/include -I$(MPLAPACKDIR)/include/mplapack -I$(MPLAPACKDIR)/include/qd
+OPTFLAGS= -O2
+LIBFLAGS=-L$(MPLAPACKDIR)/lib
+MPFRLIBS= -lmplapack_mpfr -lmpfr -lmpc -lgmp
+GMPLIBS=-lmplapack_gmp -lgmpxx -lgmp
+QDLIBS=-lmplapack_qd -lqd
+DDLIBS=-lmplapack_dd -lqd
+BINARY80LIBS=-lmplapack_binary80
+BINARY128LIBS=-lmplapack_binary128%%LIBQUADMATH%%
+DOUBLELIBS=-lmplapack_double
+BLAS=
+LAPACK=
+FLIBS=-framework vecLib
+
+programs=Cposv_example_mpfr Cposv_example_gmp Cposv_example_qd Cposv_example_dd Cposv_example_binary80 Cposv_example_binary128 Cposv_example_double
+
+all: $(programs)
+
+.cpp.o:
+	$(CXX) -c $(OPTFLAGS) $(CXXFLAGS) $<
+
+Cposv_example_mpfr: Cposv_example_mpfr.o
+	$(CXX) -o Cposv_example_mpfr Cposv_example_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
+
+Cposv_example_gmp: Cposv_example_gmp.o
+	$(CXX) -o Cposv_example_gmp Cposv_example_gmp.o $(LIBFLAGS) $(GMPLIBS)
+
+Cposv_example_qd: Cposv_example_qd.o
+	$(CXX) -o Cposv_example_qd Cposv_example_qd.o $(LIBFLAGS) $(QDLIBS)
+
+Cposv_example_dd: Cposv_example_dd.o
+	$(CXX) -o Cposv_example_dd Cposv_example_dd.o $(LIBFLAGS) $(DDLIBS)
+
+Cposv_example_binary80: Cposv_example_binary80.o
+	$(CXX) -o Cposv_example_binary80 Cposv_example_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
+
+Cposv_example_binary128: Cposv_example_binary128.o
+	$(CXX) -o Cposv_example_binary128 Cposv_example_binary128.o $(LIBFLAGS) $(BINARY128LIBS)
+
+Cposv_example_double: Cposv_example_double.o
+	$(CXX) -o Cposv_example_double Cposv_example_double.o $(LIBFLAGS) $(DOUBLELIBS)
+
+clean:
+	rm -rf *.o *~ $(programs) *bak

@@ -16,33 +16,33 @@ BLAS=
 LAPACK=
 FLIBS=-framework vecLib
 
-programs=Cgetri_example_mpfr Cgetri_example_gmp Cgetri_example_qd Cgetri_example_dd Cgetri_example_binary80 Cgetri_example_binary128 Cgetri_example_double
+programs=Cgesv_example_mpfr Cgesv_example_gmp Cgesv_example_qd Cgesv_example_dd Cgesv_example_binary80 Cgesv_example_binary128 Cgesv_example_double
 
 all: $(programs)
 
 .cpp.o:
 	$(CXX) -c $(OPTFLAGS) $(CXXFLAGS) $<
 
-Cgetri_example_mpfr: Cgetri_example_mpfr.o
-	$(CXX) -o Cgetri_example_mpfr Cgetri_example_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
+Cgesv_example_mpfr: Cgesv_example_mpfr.o
+	$(CXX) -o Cgesv_example_mpfr Cgesv_example_mpfr.o $(LIBFLAGS) $(MPFRLIBS)
 
-Cgetri_example_gmp: Cgetri_example_gmp.o
-	$(CXX) -o Cgetri_example_gmp Cgetri_example_gmp.o $(LIBFLAGS) $(GMPLIBS)
+Cgesv_example_gmp: Cgesv_example_gmp.o
+	$(CXX) -o Cgesv_example_gmp Cgesv_example_gmp.o $(LIBFLAGS) $(GMPLIBS)
 
-Cgetri_example_qd: Cgetri_example_qd.o
-	$(CXX) -o Cgetri_example_qd Cgetri_example_qd.o $(LIBFLAGS) $(QDLIBS)
+Cgesv_example_qd: Cgesv_example_qd.o
+	$(CXX) -o Cgesv_example_qd Cgesv_example_qd.o $(LIBFLAGS) $(QDLIBS)
 
-Cgetri_example_dd: Cgetri_example_dd.o
-	$(CXX) -o Cgetri_example_dd Cgetri_example_dd.o $(LIBFLAGS) $(DDLIBS)
+Cgesv_example_dd: Cgesv_example_dd.o
+	$(CXX) -o Cgesv_example_dd Cgesv_example_dd.o $(LIBFLAGS) $(DDLIBS)
 
-Cgetri_example_binary80: Cgetri_example_binary80.o
-	$(CXX) -o Cgetri_example_binary80 Cgetri_example_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
+Cgesv_example_binary80: Cgesv_example_binary80.o
+	$(CXX) -o Cgesv_example_binary80 Cgesv_example_binary80.o $(LIBFLAGS) $(BINARY80LIBS)
 
-Cgetri_example_binary128: Cgetri_example_binary128.o
-	$(CXX) -o Cgetri_example_binary128 Cgetri_example_binary128.o $(LIBFLAGS) $(BINARY128LIBS)
+Cgesv_example_binary128: Cgesv_example_binary128.o
+	$(CXX) -o Cgesv_example_binary128 Cgesv_example_binary128.o $(LIBFLAGS) $(BINARY128LIBS)
 
-Cgetri_example_double: Cgetri_example_double.o
-	$(CXX) -o Cgetri_example_double Cgetri_example_double.o $(LIBFLAGS) $(DOUBLELIBS)
+Cgesv_example_double: Cgesv_example_double.o
+	$(CXX) -o Cgesv_example_double Cgesv_example_double.o $(LIBFLAGS) $(DOUBLELIBS)
 
 clean:
 	rm -rf *.o *~ $(programs) *bak

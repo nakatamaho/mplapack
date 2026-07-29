@@ -1,0 +1,50 @@
+# public domain
+# whether _FLOAT128 libs is requred or not is heavily dependent on your environment.
+
+CXX=c++
+MPLAPACKDIR=%%MPLAPACKDIR%%
+CXXFLAGS= -I$(MPLAPACKDIR)/include -I$(MPLAPACKDIR)/include/mplapack -I$(MPLAPACKDIR)/include/qd
+OPTFLAGS= -O2
+OPENMP_EXAMPLE_OPENMP_LIBS = -fopenmp
+LIBFLAGS=-L$(MPLAPACKDIR)/lib -Wl,--rpath=$(MPLAPACKDIR)/lib
+MPFRLIBS= -lmplapack_mpfr -lmpfr -lmpc -lgmp
+GMPLIBS=-lmplapack_gmp -lgmpxx -lgmp
+QDLIBS=-lmplapack_qd -lqd
+DDLIBS=-lmplapack_dd -lqd
+BINARY80LIBS=-lmplapack_binary80
+BINARY128LIBS=-lmplapack_binary128%%LIBQUADMATH%%
+DOUBLELIBS=-lmplapack_double
+BLAS=
+LAPACK=
+FLIBS=
+
+programs=Cposv_example_mpfr Cposv_example_gmp Cposv_example_qd Cposv_example_dd Cposv_example_binary80 Cposv_example_binary128 Cposv_example_double
+
+all: $(programs)
+
+.cpp.o:
+	$(CXX) -c $(OPTFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(CXXFLAGS) $<
+
+Cposv_example_mpfr: Cposv_example_mpfr.o
+	$(CXX) -o Cposv_example_mpfr Cposv_example_mpfr.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(MPFRLIBS)
+
+Cposv_example_gmp: Cposv_example_gmp.o
+	$(CXX) -o Cposv_example_gmp Cposv_example_gmp.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(GMPLIBS)
+
+Cposv_example_qd: Cposv_example_qd.o
+	$(CXX) -o Cposv_example_qd Cposv_example_qd.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(QDLIBS)
+
+Cposv_example_dd: Cposv_example_dd.o
+	$(CXX) -o Cposv_example_dd Cposv_example_dd.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(DDLIBS)
+
+Cposv_example_binary80: Cposv_example_binary80.o
+	$(CXX) -o Cposv_example_binary80 Cposv_example_binary80.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(BINARY80LIBS)
+
+Cposv_example_binary128: Cposv_example_binary128.o
+	$(CXX) -o Cposv_example_binary128 Cposv_example_binary128.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(BINARY128LIBS)
+
+Cposv_example_double: Cposv_example_double.o
+	$(CXX) -o Cposv_example_double Cposv_example_double.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(DOUBLELIBS)
+
+clean:
+	rm -rf *.o *~ $(programs) *bak

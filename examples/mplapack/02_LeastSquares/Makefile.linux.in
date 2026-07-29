@@ -1,0 +1,50 @@
+# public domain
+# whether _FLOAT128 libs is requred or not is heavily dependent on your environment.
+
+CXX=c++
+MPLAPACKDIR=%%MPLAPACKDIR%%
+CXXFLAGS= -I$(MPLAPACKDIR)/include -I$(MPLAPACKDIR)/include/mplapack -I$(MPLAPACKDIR)/include/qd
+OPTFLAGS= -O2
+OPENMP_EXAMPLE_OPENMP_LIBS = -fopenmp
+LIBFLAGS=-L$(MPLAPACKDIR)/lib -Wl,--rpath=$(MPLAPACKDIR)/lib
+MPFRLIBS= -lmplapack_mpfr -lmpfr -lmpc -lgmp
+GMPLIBS=-lmplapack_gmp -lgmpxx -lgmp
+QDLIBS=-lmplapack_qd -lqd
+DDLIBS=-lmplapack_dd -lqd
+BINARY80LIBS=-lmplapack_binary80
+BINARY128LIBS=-lmplapack_binary128%%LIBQUADMATH%%
+DOUBLELIBS=-lmplapack_double
+BLAS=
+LAPACK=
+FLIBS=
+
+programs=Cgels_example_mpfr Cgels_example_gmp Cgels_example_qd Cgels_example_dd Cgels_example_binary80 Cgels_example_binary128 Cgels_example_double
+
+all: $(programs)
+
+.cpp.o:
+	$(CXX) -c $(OPTFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(CXXFLAGS) $<
+
+Cgels_example_mpfr: Cgels_example_mpfr.o
+	$(CXX) -o Cgels_example_mpfr Cgels_example_mpfr.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(MPFRLIBS)
+
+Cgels_example_gmp: Cgels_example_gmp.o
+	$(CXX) -o Cgels_example_gmp Cgels_example_gmp.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(GMPLIBS)
+
+Cgels_example_qd: Cgels_example_qd.o
+	$(CXX) -o Cgels_example_qd Cgels_example_qd.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(QDLIBS)
+
+Cgels_example_dd: Cgels_example_dd.o
+	$(CXX) -o Cgels_example_dd Cgels_example_dd.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(DDLIBS)
+
+Cgels_example_binary80: Cgels_example_binary80.o
+	$(CXX) -o Cgels_example_binary80 Cgels_example_binary80.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(BINARY80LIBS)
+
+Cgels_example_binary128: Cgels_example_binary128.o
+	$(CXX) -o Cgels_example_binary128 Cgels_example_binary128.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(BINARY128LIBS)
+
+Cgels_example_double: Cgels_example_double.o
+	$(CXX) -o Cgels_example_double Cgels_example_double.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(DOUBLELIBS)
+
+clean:
+	rm -rf *.o *~ $(programs) *bak
