@@ -234,11 +234,10 @@ inline COMPLEX_REF cast2ref(const complex<mplapack_binary80_t> &value) {
 }
 #elif defined MPLAPACK_BUILD_WITH_BINARY128
 inline REAL_REF cast2ref(mplapack_binary128_t value) {
-    return REAL_REF(mplapack::gmpfrxx_adapter::make_binary128_source(value));
+    return mplapack::gmpfrxx_adapter::binary128_to_mpfr(value);
 }
 inline COMPLEX_REF cast2ref(const complex<mplapack_binary128_t> &value) {
-    return COMPLEX_REF(mplapack::gmpfrxx_adapter::make_binary128_complex_source(
-        value.real(), value.imag()));
+    return COMPLEX_REF(cast2ref(value.real()), cast2ref(value.imag()));
 }
 #endif
 
