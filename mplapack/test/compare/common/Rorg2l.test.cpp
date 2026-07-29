@@ -77,7 +77,7 @@ void Rorg2l_test() {
                         set_random_vector(A_ref, A, matlen(lda, n));
                         set_random_vector(tau_ref, tau, veclen(k, 1));
                         set_random_vector(work_ref, work, veclen(n, 1));
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                         dorg2l_f77(&m, &n, &k, A_ref, &lda, tau_ref, work_ref, &info_ref);
 #else
                         Rorg2l(m, n, k, A_ref, lda, tau_ref, work_ref, info_ref);

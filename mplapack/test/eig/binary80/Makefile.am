@@ -17,7 +17,7 @@ opt_libdepends = -L$(top_builddir)/mplapack/test/eig -leig_binary80_opt -leig_ov
 endif
 
 mplibs = -lm
-cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(LAPACK_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_BINARY80___ -D___MPLAPACK_INTERNAL___ -I$(top_srcdir)/fable
+cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(LAPACK_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_BINARY80 -DMPLAPACK_INTERNAL -I$(top_srcdir)/fable
 
 xeigtstR_binary80_SOURCES  = ../common/Rchkee.cpp
 xeigtstR_binary80_opt_SOURCES  = ../common/Rchkee.cpp

@@ -73,7 +73,7 @@ void Rorgtr_test2(const char *uplo) {
 
             // these workspace query might not be the same value.
             lwork = -1;
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
             dorgtr_f77(uplo, &n, A_ref, &lda, tau_ref, work_ref, &lwork, &info_ref);
 #else
             Rorgtr(uplo, n, A_ref, lda, tau_ref, work_ref, lwork, info_ref);
@@ -97,7 +97,7 @@ void Rorgtr_test2(const char *uplo) {
                 set_random_vector(work_ref, work, veclen(n - 1, 1) * 1024);
 
                 lwork = worksize_ref;
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                 dorgtr_f77(uplo, &n, A_ref, &lda, tau_ref, work_ref, &lwork, &info_ref);
 #else
                 Rorgtr(uplo, n, A_ref, lda, tau_ref, work_ref, lwork, info_ref);

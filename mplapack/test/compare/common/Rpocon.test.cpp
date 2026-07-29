@@ -73,14 +73,14 @@ void Rpocon_test2(const char *uplo) {
             while (j < MAX_ITER) {
                 set_random_psdmat(A_ref, A, lda, n);
 /* First, calculate norm of matrix*/
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                 anorm_ref = dlange_f77("1", &n, &n, A_ref, &lda, work_ref);
 #else
                 anorm_ref = Rlange("1", n, n, A_ref, lda, work_ref);
 #endif
                 anorm = Rlange("1", n, n, A, lda, work);
 /* second, do Cholesky factorization via Rpotrf */
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                 dpotrf_f77(uplo, &n, A_ref, &lda, &info_ref);
 #else
                 Rpotrf(uplo, n, A_ref, lda, info_ref);
@@ -93,7 +93,7 @@ void Rpocon_test2(const char *uplo) {
                     break;
                 }
 /* third, calculate condition number */
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                 dpocon_f77(uplo, &n, A_ref, &lda, &anorm_ref, &rcond_ref, work_ref, iwork_ref, &info_ref);
 #else
                 Rpocon(uplo, n, A_ref, lda, anorm_ref, rcond_ref, work_ref, iwork_ref, info_ref);
@@ -103,7 +103,7 @@ void Rpocon_test2(const char *uplo) {
                     printf("info differ! %d, %d\n", (int)info_ref, (int)info);
                     errorflag = TRUE;
                 }
-                diff = (rcond_ref - rcond);
+                diff = (rcond_ref - cast2ref(rcond));
 #if defined VERBOSE_TEST
                 printf("reciprocal to cond num:");
                 printnum(rcond_ref);

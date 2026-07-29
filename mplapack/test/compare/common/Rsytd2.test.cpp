@@ -70,7 +70,7 @@ void Rsytd2_test2(const char *uplo) {
                 set_random_vector(d_ref, d, veclen(n, 1));
                 set_random_vector(e_ref, e, veclen(n - 1, 1));
                 set_random_vector(tau_ref, tau, veclen(n - 1, 1));
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                 dsytd2_f77(uplo, &n, A_ref, &lda, d_ref, e_ref, tau_ref, &info_ref);
 #else
                 Rsytd2(uplo, n, A_ref, lda, d_ref, e_ref, tau_ref, info_ref);

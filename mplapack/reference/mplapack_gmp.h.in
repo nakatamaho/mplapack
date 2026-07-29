@@ -26,10 +26,10 @@
  *
  */
 
-#ifndef _MPLAPACK_GMP_H_
-#define _MPLAPACK_GMP_H_
+#ifndef MPLAPACK_GMP_H
+#define MPLAPACK_GMP_H
 
 #include "mplapack_config.h"
-#include "gmpxx.h"
-#include "mpc_class.h"
+#include <gmpxx_mkII.h>
+using namespace gmpxx;
 

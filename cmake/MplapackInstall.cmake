@@ -25,11 +25,8 @@ install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/include/"
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/include/mplapack_config.h"
   DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/mplapack")
 
-# mpfrc++ headers are needed by the MPFR backend headers.
-if(MPLAPACK_ENABLE_MPFR)
-  install(FILES
-    "${CMAKE_CURRENT_SOURCE_DIR}/mpfrc++/mpreal.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/mpfrc++/mpcomplex.h"
+if(MPLAPACK_ENABLE_GMP OR MPLAPACK_ENABLE_MPFR)
+  install(DIRECTORY "${MPLAPACK_GMPFRXX_MKII_ROOT}/include/"
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/mplapack")
 endif()
 
@@ -87,8 +84,10 @@ endforeach()
 
 set(MPLAPACK_AVAILABLE_COMPONENTS "")
 foreach(_target IN LISTS MPLAPACK_INSTALL_TARGETS)
-  string(REGEX REPLACE "^mplapack_" "" _component "${_target}")
-  list(APPEND MPLAPACK_AVAILABLE_COMPONENTS "${_component}")
+  if(_target MATCHES "^mplapack_")
+    string(REGEX REPLACE "^mplapack_" "" _component "${_target}")
+    list(APPEND MPLAPACK_AVAILABLE_COMPONENTS "${_component}")
+  endif()
 endforeach()
 
 configure_package_config_file(

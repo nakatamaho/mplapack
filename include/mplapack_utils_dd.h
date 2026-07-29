@@ -29,12 +29,12 @@
 #ifndef _MUTILS_DD_H_
 #define _MUTILS_DD_H_
 
-#if defined ___MPLAPACK_INTERNAL___
+#if defined MPLAPACK_INTERNAL
 #define DD_PRECISION 30
 #define DD_PRECISION_SHORT 16
 
-#if !defined __MPLAPACK_BUFLEN__
-#define __MPLAPACK_BUFLEN__ 1024
+#if !defined MPLAPACK_BUFLEN
+#define MPLAPACK_BUFLEN 1024
 #endif
 
 #include <cstring>
@@ -87,25 +87,25 @@ inline void printnum_short(dd_complex rtmp) {
     return;
 }
 inline void sprintnum(char *buf, dd_real rtmp) {
-    rtmp.write(buf, __MPLAPACK_BUFLEN__, DD_PRECISION);
+    rtmp.write(buf, MPLAPACK_BUFLEN, DD_PRECISION);
     return;
 }
 inline void sprintnum_short(char *buf, dd_real rtmp) {
-    rtmp.write(buf, __MPLAPACK_BUFLEN__, DD_PRECISION_SHORT);
+    rtmp.write(buf, MPLAPACK_BUFLEN, DD_PRECISION_SHORT);
     return;
 }
 inline void sprintnum(char *buf, dd_complex rtmp) {
-    char buf1[__MPLAPACK_BUFLEN__], buf2[__MPLAPACK_BUFLEN__];
-    rtmp.real().write(buf1, __MPLAPACK_BUFLEN__, DD_PRECISION);
-    rtmp.imag().write(buf2, __MPLAPACK_BUFLEN__, DD_PRECISION);
+    char buf1[MPLAPACK_BUFLEN], buf2[MPLAPACK_BUFLEN];
+    rtmp.real().write(buf1, MPLAPACK_BUFLEN, DD_PRECISION);
+    rtmp.imag().write(buf2, MPLAPACK_BUFLEN, DD_PRECISION);
     strcat(buf, buf1);
     strcat(buf, buf2);
     strcat(buf, "i");
 }
 inline void sprintnum_short(char *buf, dd_complex rtmp) {
-    char buf1[__MPLAPACK_BUFLEN__], buf2[__MPLAPACK_BUFLEN__];
-    rtmp.real().write(buf1, __MPLAPACK_BUFLEN__, DD_PRECISION_SHORT);
-    rtmp.imag().write(buf2, __MPLAPACK_BUFLEN__, DD_PRECISION_SHORT);
+    char buf1[MPLAPACK_BUFLEN], buf2[MPLAPACK_BUFLEN];
+    rtmp.real().write(buf1, MPLAPACK_BUFLEN, DD_PRECISION_SHORT);
+    rtmp.imag().write(buf2, MPLAPACK_BUFLEN, DD_PRECISION_SHORT);
     strcat(buf, buf1);
     strcat(buf, buf2);
     strcat(buf, "i");

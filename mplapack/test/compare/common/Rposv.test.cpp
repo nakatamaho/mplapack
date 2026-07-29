@@ -88,7 +88,7 @@ void Rposv_test2(const char *uplo) {
                                 B[p + q * ldb] = rtmp;
                             }
                         }
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                         dposv_f77(uplo, &n, &nrhs, A_ref, &lda, B_ref, &ldb, &info_ref);
 #else
                         Rposv(uplo, n, nrhs, A_ref, lda, B_ref, ldb, info_ref);

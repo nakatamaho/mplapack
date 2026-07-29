@@ -82,7 +82,7 @@ void Clarft_test2(const char *direct, const char *storev) {
                         set_random_vector(T_ref, T, matlen(ldt, k));
                         set_random_vector(V_ref, V, matlen(ldv, v_column));
                         set_random_vector(tau_ref, tau, veclen(k, 1));
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                         zlarft_f77(direct, storev, &n, &k, V_ref, &ldv, tau_ref, T_ref, &ldt);
 #else
                         Clarft(direct, storev, n, k, V_ref, ldv, tau_ref, T_ref, ldt);

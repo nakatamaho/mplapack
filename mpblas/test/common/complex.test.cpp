@@ -30,7 +30,7 @@
 #include <mplapack_compare_debug.h>
 #include <complex>
 
-#if defined ___MPLAPACK_BUILD_WITH_QD___ || defined ___MPLAPACK_BUILD_WITH_DD___
+#if defined MPLAPACK_BUILD_WITH_QD || defined MPLAPACK_BUILD_WITH_DD
 #include <qd/fpu.h>
 static unsigned int g_oldcw;
 static void __attribute__((constructor)) mplapack_test_fpu_init(void) { fpu_fix_start(&g_oldcw); }
@@ -45,73 +45,73 @@ static void __attribute__((destructor))  mplapack_test_fpu_fini(void) { fpu_fix_
 #define MAX_ITER 10
 
 void mpc_ptr_conversion_test() {
-    printf("mpcomplex <=> mpc_ptr conversion test \n");
+    printf("mpc_class <=> mpc_ptr conversion test \n");
 
     int flag = 0;
-    mpcomplex z(mpreal(1.25), mpreal(-2.5));
+    mpc_class z(mpfr_class(1.25), mpfr_class(-2.5));
     mpc_t raw;
-    mpc_init2(raw, mpcomplex::default_real_prec);
+    mpc_init2(raw, mpfrxx::default_mpc_real_precision_bits());
 
-    mpc_set(raw, z, mpcomplex::default_rnd);
-    if (abs(mpcomplex(raw) - z) > mpreal(EPSILON)) {
+    mpc_set(raw, z.mpc_data(), mpc_class::default_rounding());
+    mpc_class raw_copy = mpc_class::with_precision(z.real_precision(), z.imag_precision());
+    mpc_set(raw_copy.mpc_data(), raw, mpc_class::default_rounding());
+    if (abs(raw_copy - z) > mpfr_class(EPSILON)) {
         flag = 1;
     }
 
-    mpc_add(raw, raw, z, mpcomplex::default_rnd);
-    mpc_set(z, raw, mpcomplex::default_rnd);
-    if (abs(z - mpcomplex(mpreal(2.5), mpreal(-5.0))) > mpreal(EPSILON)) {
+    mpc_add(raw, raw, z.mpc_data(), mpc_class::default_rounding());
+    mpc_set(z.mpc_data(), raw, mpc_class::default_rounding());
+    if (abs(z - mpc_class(mpfr_class(2.5), mpfr_class(-5.0))) > mpfr_class(EPSILON)) {
         flag = 1;
     }
 
     mpc_clear(raw);
     if (flag) {
-        printf("mpcomplex <=> mpc_ptr conversion test failed\n");
+        printf("mpc_class <=> mpc_ptr conversion test failed\n");
         exit(1);
     } else {
-        printf("mpcomplex <=> mpc_ptr conversion test passed\n");
+        printf("mpc_class <=> mpc_ptr conversion test passed\n");
     }
 }
 
-static int mpcomplex_precision_mismatch(const mpcomplex &z, mp_prec_t expected_re, mp_prec_t expected_im) {
-    return z.get_prec_re() != expected_re || z.get_prec_im() != expected_im;
+static int mpcomplex_precision_mismatch(const mpc_class &z, mp_prec_t expected_re, mp_prec_t expected_im) {
+    return z.real_precision() != expected_re || z.imag_precision() != expected_im;
 }
 
 void mpc_constructor_precision_test() {
-    printf("mpcomplex constructor precision test \n");
+    printf("mpc_class constructor precision test \n");
 
     int flag = 0;
-    const mpc_rnd_t mode = mpcomplex::default_rnd;
-
-    const mpcomplex from_pair(1.0, 2.0, 101, 137, mode);
+    const mpc_class from_pair = mpc_class::with_precision(101, 137, 1.0, 2.0);
     if (mpcomplex_precision_mismatch(from_pair, 101, 137)) {
         flag = 1;
     }
 
-    const mpcomplex from_double(1.0, 103, 139, mode);
+    const mpc_class from_double = mpc_class::with_precision(103, 139, 1.0, 0.0);
     if (mpcomplex_precision_mismatch(from_double, 103, 139)) {
         flag = 1;
     }
 
-    const mpcomplex from_std(std::complex<double>(1.0, 2.0), 107, 149, mode);
+    const mpc_class from_std = mpc_class::with_precision(107, 149, 1.0, 2.0);
     if (mpcomplex_precision_mismatch(from_std, 107, 149)) {
         flag = 1;
     }
 
-    const mpcomplex from_ld(std::complex<long double>(1.0L, 2.0L), 109, 151, mode);
+    const mpc_class from_ld = mpc_class::with_precision(109, 151, 1.0, 2.0);
     if (mpcomplex_precision_mismatch(from_ld, 109, 151)) {
         flag = 1;
     }
 
-    const mpcomplex from_strs("1.0", "2.0", 113, 157, mode);
+    const mpc_class from_strs("(1.0,2.0)", 113, 157, 10);
     if (mpcomplex_precision_mismatch(from_strs, 113, 157)) {
         flag = 1;
     }
 
     if (flag) {
-        printf("mpcomplex constructor precision test failed\n");
+        printf("mpc_class constructor precision test failed\n");
         exit(1);
     } else {
-        printf("mpcomplex constructor precision test passed\n");
+        printf("mpc_class constructor precision test passed\n");
     }
 }
 
@@ -143,7 +143,7 @@ void mpc_subst_test1() {
         cout << "if(abs(residue)< " << EPSILON << ") printf \"ok\\n\"; else printf \"ng\\n\"; endif" << endl;
 #endif
         Ctemp2 = Ctemp1 - Ftemp;
-        diff = abs(Ctemp2);
+        diff = abs(cast2ref(Ctemp2));
 #if defined VERBOSE_TEST
         cout << "DIFF ";
         printnum(diff);
@@ -175,7 +175,7 @@ void mpc_abs_test() {
         set_random_number(ctemp1, Ctemp1);
         Ftemp1 = abs(Ctemp1);
         ftemp1 = abs(ctemp1);
-        diff = abs(Ftemp1 - ftemp1);
+        diff = abs(cast2ref(Ftemp1) - ftemp1);
 #if defined VERBOSE_TEST
         cout << "C1 = ";
         printnum(Ctemp1);
@@ -231,7 +231,7 @@ void mpc_add_test1() {
 
         Ctemp3 = Ctemp1 + Ctemp2;
         ctemp3 = ctemp1 + ctemp2;
-        diff = abs(Ctemp3 - ctemp3);
+        diff = abs(cast2ref(Ctemp3) - ctemp3);
 
 #if defined VERBOSE_TEST
         cout << "C1 = ";
@@ -294,7 +294,7 @@ void mpc_add_test2() {
 
         Ctemp3 = Ctemp1 + Ftemp2;
         ctemp3 = ctemp1 + ftemp2;
-        diff = abs(Ctemp3 - ctemp3);
+        diff = abs(cast2ref(Ctemp3) - ctemp3);
 #if defined VERBOSE_TEST
         cout << "C1 = ";
         printnum(Ctemp1);
@@ -377,7 +377,7 @@ void mpc_add_test3() {
         printnum(ctemp3);
         cout << endl;
 #endif
-        diff = abs(Ctemp3 - ctemp3);
+        diff = abs(cast2ref(Ctemp3) - ctemp3);
 #if defined VERBOSE_TEST
         cout << "residue=F1+C2-C3" << endl;
         cout << "if(abs(residue)< " << EPSILON << ") printf \"ok\\n\"; else printf \"ng\\n\"; endif" << endl;
@@ -441,7 +441,7 @@ void mpc_mul_test1() {
         printnum(ctemp3);
         cout << endl;
 #endif
-        diff = abs(Ctemp3 - ctemp3);
+        diff = abs(cast2ref(Ctemp3) - ctemp3);
 #if defined VERBOSE_TEST
         cout << "residue=C1*C2-C3" << endl;
         cout << "if(abs(residue)< " << EPSILON << ") printf \"ok\\n\"; else printf \"ng\\n\"; endif" << endl;
@@ -481,8 +481,8 @@ void mpc_mul_test2() {
         set_random_number(ctemp1, Ctemp1);
         set_random_number(ftemp2, Ftemp2);
 
-        ctemp1 = Ctemp1;
-        ftemp2 = Ftemp2;
+        ctemp1 = cast2ref(Ctemp1);
+        ftemp2 = cast2ref(Ftemp2);
         Ctemp3 = Ctemp1 * Ftemp2;
         ctemp3 = ctemp1 * ftemp2;
 
@@ -507,7 +507,7 @@ void mpc_mul_test2() {
         printnum(ctemp3);
         cout << endl;
 #endif
-        diff = abs(Ctemp3 - ctemp3);
+        diff = abs(cast2ref(Ctemp3) - ctemp3);
 #if defined VERBOSE_TEST
         cout << "residue=C1*F2-C3" << endl;
         cout << "if(abs(residue)< " << EPSILON << ") printf \"ok\\n\"; else printf \"ng\\n\"; endif" << endl;
@@ -547,8 +547,8 @@ void mpc_mul_test3() {
         set_random_number(ftemp1, Ftemp1);
         set_random_number(ctemp2, Ctemp2);
 
-        ctemp2 = Ctemp2;
-        ftemp1 = Ftemp1;
+        ctemp2 = cast2ref(Ctemp2);
+        ftemp1 = cast2ref(Ftemp1);
         Ctemp3 = Ftemp1 * Ctemp2;
         ctemp3 = ftemp1 * ctemp2;
 #if defined VERBOSE_TEST
@@ -572,7 +572,7 @@ void mpc_mul_test3() {
         printnum(ctemp3);
         cout << endl;
 #endif
-        diff = abs(Ctemp3 - ctemp3);
+        diff = abs(cast2ref(Ctemp3) - ctemp3);
 #if defined VERBOSE_TEST
         cout << "residue=C1*F2-C3" << endl;
         cout << "if(abs(residue)< " << EPSILON << ") printf \"ok\\n\"; else printf \"ng\\n\"; endif" << endl;
@@ -636,7 +636,7 @@ void mpc_div_test1() {
         printnum(ctemp3);
         cout << endl;
 #endif
-        diff = abs(Ctemp3 - ctemp3);
+        diff = abs(cast2ref(Ctemp3) - ctemp3);
 #if defined VERBOSE_TEST
         cout << "residue=C1/F2-C3" << endl;
         cout << "if(abs(residue)< " << EPSILON << ") printf \"ok\\n\"; else printf \"ng\\n\"; endif" << endl;
@@ -700,7 +700,7 @@ void mpc_div_test2() {
         printnum(ctemp3);
         cout << endl;
 #endif
-        diff = abs(Ctemp3 - ctemp3);
+        diff = abs(cast2ref(Ctemp3) - ctemp3);
 #if defined VERBOSE_TEST
         cout << "residue=C1/F2-C3" << endl;
         cout << "if(abs(residue)< " << EPSILON << ") printf \"ok\\n\"; else printf \"ng\\n\"; endif" << endl;
@@ -762,7 +762,7 @@ void mpc_div_test3() {
         printnum(ctemp3);
         cout << endl;
 #endif
-        diff = abs(Ctemp3 - ctemp3);
+        diff = abs(cast2ref(Ctemp3) - ctemp3);
 #if defined VERBOSE_TEST
         cout << "residue=F1/C2-C3" << endl;
         cout << "if(abs(residue)< " << EPSILON << ") printf \"ok\\n\"; else printf \"ng\\n\"; endif" << endl;
@@ -785,22 +785,22 @@ void mpc_div_test3() {
     }
 }
 
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
+#if defined MPLAPACK_BUILD_WITH_GMP
 void mpc_algebraic_test() {
     printf("GMP complex algebraic helper test \n");
 
     int flag = 0;
     const REAL tolerance = EPSILON;
 
-    mpc_class z(mpf_class(6.0), mpf_class(-8.0));
-    mpc_class z_div_assign(z);
+    mpfc_class z(mpf_class(6.0), mpf_class(-8.0));
+    mpfc_class z_div_assign(z);
     z_div_assign /= mpf_class(2.0);
-    if (abs(z_div_assign - mpc_class(mpf_class(3.0), mpf_class(-4.0))) > tolerance) {
+    if (abs(z_div_assign - mpfc_class(mpf_class(3.0), mpf_class(-4.0))) > tolerance) {
         flag = 1;
     }
 
-    mpc_class real_one(mpf_class(1.0), mpf_class(0.0));
-    mpc_class complex_one(mpf_class(1.0), mpf_class(1.0));
+    mpfc_class real_one(mpf_class(1.0), mpf_class(0.0));
+    mpfc_class complex_one(mpf_class(1.0), mpf_class(1.0));
     if (real_one != 1.0) {
         flag = 1;
     }
@@ -810,7 +810,7 @@ void mpc_algebraic_test() {
         flag = 1;
     }
 
-    mpc_class c(mpf_class(3.0), mpf_class(4.0));
+    mpfc_class c(mpf_class(3.0), mpf_class(4.0));
     if (abs(real(c) - mpf_class(3.0)) > tolerance) {
         flag = 1;
     }
@@ -823,40 +823,41 @@ void mpc_algebraic_test() {
     if (abs(abs(c) - mpf_class(5.0)) > tolerance) {
         flag = 1;
     }
-    if (abs(conj(c) - mpc_class(mpf_class(3.0), mpf_class(-4.0))) > tolerance) {
+    if (abs(conj(c) - mpfc_class(mpf_class(3.0), mpf_class(-4.0))) > tolerance) {
         flag = 1;
     }
 
-    mpc_class swap_a(mpf_class(1.0), mpf_class(2.0));
-    mpc_class swap_b(mpf_class(3.0), mpf_class(4.0));
+    mpfc_class swap_a(mpf_class(1.0), mpf_class(2.0));
+    mpfc_class swap_b(mpf_class(3.0), mpf_class(4.0));
     swap(swap_a, swap_b);
-    if (abs(swap_a - mpc_class(mpf_class(3.0), mpf_class(4.0))) > tolerance) {
+    if (abs(swap_a - mpfc_class(mpf_class(3.0), mpf_class(4.0))) > tolerance) {
         flag = 1;
     }
-    if (abs(swap_b - mpc_class(mpf_class(1.0), mpf_class(2.0))) > tolerance) {
+    if (abs(swap_b - mpfc_class(mpf_class(1.0), mpf_class(2.0))) > tolerance) {
         flag = 1;
     }
 
-    mpc_class base(mpf_class(2.0), mpf_class(3.0));
+    mpfc_class base(mpf_class(2.0), mpf_class(3.0));
     std::complex<double> scalar(1.5, -0.5);
-    if (abs((base + scalar) - mpc_class(mpf_class(3.5), mpf_class(2.5))) > tolerance) {
+    const mpfc_class gmp_scalar(mpf_class(scalar.real()), mpf_class(scalar.imag()));
+    if (abs((base + gmp_scalar) - mpfc_class(mpf_class(3.5), mpf_class(2.5))) > tolerance) {
         flag = 1;
     }
-    if (abs((scalar + base) - mpc_class(mpf_class(3.5), mpf_class(2.5))) > tolerance) {
+    if (abs((gmp_scalar + base) - mpfc_class(mpf_class(3.5), mpf_class(2.5))) > tolerance) {
         flag = 1;
     }
-    if (abs((base - scalar) - mpc_class(mpf_class(0.5), mpf_class(3.5))) > tolerance) {
+    if (abs((base - gmp_scalar) - mpfc_class(mpf_class(0.5), mpf_class(3.5))) > tolerance) {
         flag = 1;
     }
-    if (abs((scalar - base) - mpc_class(mpf_class(-0.5), mpf_class(-3.5))) > tolerance) {
+    if (abs((gmp_scalar - base) - mpfc_class(mpf_class(-0.5), mpf_class(-3.5))) > tolerance) {
         flag = 1;
     }
-    if (abs((base * scalar) - mpc_class(mpf_class(4.5), mpf_class(3.5))) > tolerance) {
+    if (abs((base * gmp_scalar) - mpfc_class(mpf_class(4.5), mpf_class(3.5))) > tolerance) {
         flag = 1;
     }
 
-    const mpc_class i(mpf_class(0.0), mpf_class(1.0));
-    const mpc_class w(mpf_class(0.25), mpf_class(0.125));
+    const mpfc_class i(mpf_class(0.0), mpf_class(1.0));
+    const mpfc_class w(mpf_class(0.25), mpf_class(0.125));
     const REAL transcendental_tolerance = EPSILON * 1024.0;
 
     if (abs(exp(log(w)) - w) > transcendental_tolerance) {
@@ -865,7 +866,7 @@ void mpc_algebraic_test() {
     if (abs(sin(i * mpf_class(0.25)) - i * sinh(mpf_class(0.25))) > transcendental_tolerance) {
         flag = 1;
     }
-    if (abs(cos(i * mpf_class(0.25)) - mpc_class(cosh(mpf_class(0.25)), mpf_class(0.0))) > transcendental_tolerance) {
+    if (abs(cos(i * mpf_class(0.25)) - mpfc_class(cosh(mpf_class(0.25)), mpf_class(0.0))) > transcendental_tolerance) {
         flag = 1;
     }
     if (abs(tan(w) - sin(w) / cos(w)) > transcendental_tolerance) {
@@ -874,7 +875,7 @@ void mpc_algebraic_test() {
     if (abs(sinh(i * mpf_class(0.25)) - i * sin(mpf_class(0.25))) > transcendental_tolerance) {
         flag = 1;
     }
-    if (abs(cosh(i * mpf_class(0.25)) - mpc_class(cos(mpf_class(0.25)), mpf_class(0.0))) > transcendental_tolerance) {
+    if (abs(cosh(i * mpf_class(0.25)) - mpfc_class(cos(mpf_class(0.25)), mpf_class(0.0))) > transcendental_tolerance) {
         flag = 1;
     }
     if (abs(tanh(w) - sinh(w) / cosh(w)) > transcendental_tolerance) {
@@ -908,12 +909,13 @@ void mpc_algebraic_test() {
         flag = 1;
     }
 
-    mpcomplex mp_a(mpc_class(mpf_class(2.0), mpf_class(3.0)));
-    mpc_class gmp_b(mpf_class(1.0), mpf_class(0.5));
-    if (abs((mp_a - gmp_b) - mpcomplex(mpc_class(mpf_class(1.0), mpf_class(2.5)))) > mpreal(EPSILON)) {
+    mpc_class mp_a = cast2ref(mpfc_class(mpf_class(2.0), mpf_class(3.0)));
+    mpfc_class gmp_b(mpf_class(1.0), mpf_class(0.5));
+    const mpc_class mp_b = cast2ref(gmp_b);
+    if (abs((mp_a - mp_b) - mpc_class(mpfr_class(1.0), mpfr_class(2.5))) > mpfr_class(EPSILON)) {
         flag = 1;
     }
-    if (abs((gmp_b - mp_a) - mpcomplex(mpc_class(mpf_class(-1.0), mpf_class(-2.5)))) > mpreal(EPSILON)) {
+    if (abs((mp_b - mp_a) - mpc_class(mpfr_class(-1.0), mpfr_class(-2.5))) > mpfr_class(EPSILON)) {
         flag = 1;
     }
 
@@ -926,7 +928,7 @@ void mpc_algebraic_test() {
 }
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_DD___ || defined ___MPLAPACK_BUILD_WITH_QD___
+#if defined MPLAPACK_BUILD_WITH_DD || defined MPLAPACK_BUILD_WITH_QD
 void qd_dd_complex_helper_test() {
     printf("QD/DD complex helper test \n");
 
@@ -966,12 +968,13 @@ void qd_dd_complex_helper_test() {
         flag = 1;
     }
 
-    const mpcomplex mp_a(base);
     const COMPLEX b(REAL(1.0), REAL(0.5));
-    if (abs((mp_a - b) - mpcomplex(COMPLEX(REAL(1.0), REAL(2.5)))) > mpreal(EPSILON)) {
+    const mpc_class mp_a = cast2ref(base);
+    const mpc_class mp_b = cast2ref(b);
+    if (abs((mp_a - mp_b) - mpc_class(mpfr_class(1.0), mpfr_class(2.5))) > mpfr_class(EPSILON)) {
         flag = 1;
     }
-    if (abs((b - mp_a) - mpcomplex(COMPLEX(REAL(-1.0), REAL(-2.5)))) > mpreal(EPSILON)) {
+    if (abs((mp_b - mp_a) - mpc_class(mpfr_class(-1.0), mpfr_class(-2.5))) > mpfr_class(EPSILON)) {
         flag = 1;
     }
 
@@ -987,14 +990,13 @@ void qd_dd_complex_helper_test() {
 int main(int argc, char *argv[]) {
     printf("*** Testing complex start ***\n");
 
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
-    mpf_set_default_prec(___MPLAPACK_GMP_DEFAULT_PRECISION___);
+#if defined MPLAPACK_BUILD_WITH_GMP
+    mpf_set_default_prec(MPLAPACK_GMP_DEFAULT_PRECISION);
 #endif
 
     // we need to specify explicitly.
-    mpreal::default_prec = ___MPLAPACK_MPFR_DEFAULT_PRECISION___;
-    mpcomplex::default_real_prec = ___MPLAPACK_MPFR_DEFAULT_PRECISION___;
-    mpcomplex::default_imag_prec = ___MPLAPACK_MPFR_DEFAULT_PRECISION___;
+    mpfrxx::set_default_precision_bits(MPLAPACK_MPFR_DEFAULT_PRECISION);
+    mpfrxx::set_default_mpc_precision_bits(MPLAPACK_MPFR_DEFAULT_PRECISION);
 
     mpc_ptr_conversion_test();
     mpc_constructor_precision_test();
@@ -1009,10 +1011,10 @@ int main(int argc, char *argv[]) {
     mpc_div_test1();
     mpc_div_test2();
     mpc_div_test3();
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
+#if defined MPLAPACK_BUILD_WITH_GMP
     mpc_algebraic_test();
 #endif
-#if defined ___MPLAPACK_BUILD_WITH_DD___ || defined ___MPLAPACK_BUILD_WITH_QD___
+#if defined MPLAPACK_BUILD_WITH_DD || defined MPLAPACK_BUILD_WITH_QD
     qd_dd_complex_helper_test();
 #endif
     printf("*** Testing complex successful ***\n");

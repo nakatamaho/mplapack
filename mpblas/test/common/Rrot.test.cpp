@@ -65,7 +65,7 @@ void Rrot_test() {
                     set_random_number(c_ref, c);
                     set_random_number(s_ref, s);
 
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                     drot_f77(&n, x_ref, &incx, y_ref, &incy, &c_ref, &s_ref);
 #else
                     Rrot(n, x_ref, incx, y_ref, incy, c_ref, s_ref);

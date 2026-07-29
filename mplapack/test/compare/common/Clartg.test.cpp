@@ -53,14 +53,14 @@ void Clartg_test() {
     while (count--) {
         set_random_number(f_ref, f);
         set_random_number(g_ref, g);
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
         zlartg_f77(&f_ref, &g_ref, &cs_ref, &sn_ref, &r_ref);
 #else
         Clartg(f_ref, g_ref, cs_ref, sn_ref, r_ref);
 #endif
         Clartg(f, g, cs, sn, r);
 
-        diff = abs(cs_ref - cs);
+        diff = abs(cs_ref - cast2ref(cs));
         if (diff > EPSILON) {
             errorflag = TRUE;
             printf("Error1\n");
@@ -72,7 +72,7 @@ void Clartg_test() {
         printnum(maxdiff);
         printf("\n");
 #endif
-        diff = abs(sn_ref - sn);
+        diff = abs(sn_ref - cast2ref(sn));
         if (diff > EPSILON) {
             errorflag = TRUE;
             printf("Error1\n");
@@ -84,7 +84,7 @@ void Clartg_test() {
         printnum(maxdiff);
         printf("\n");
 #endif
-        diff = abs(r_ref - r);
+        diff = abs(r_ref - cast2ref(r));
         if (diff > EPSILON) {
             errorflag = TRUE;
             printf("Error1\n");
@@ -99,14 +99,14 @@ void Clartg_test() {
         f = 0.0;
         f_ref = 0.0;
         set_random_number(g_ref, g);
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
         zlartg_f77(&f_ref, &g_ref, &cs_ref, &sn_ref, &r_ref);
 #else
         Clartg(f_ref, g_ref, cs_ref, sn_ref, r_ref);
 #endif
         Clartg(f, g, cs, sn, r);
 
-        diff = abs(cs_ref - cs);
+        diff = abs(cs_ref - cast2ref(cs));
         if (diff > EPSILON) {
             errorflag = TRUE;
             printf("Error1\n");
@@ -118,7 +118,7 @@ void Clartg_test() {
         printnum(maxdiff);
         printf("\n");
 #endif
-        diff = abs(sn_ref - sn);
+        diff = abs(sn_ref - cast2ref(sn));
         if (diff > EPSILON) {
             errorflag = TRUE;
             printf("Error1\n");
@@ -130,7 +130,7 @@ void Clartg_test() {
         printnum(maxdiff);
         printf("\n");
 #endif
-        diff = abs(r_ref - r);
+        diff = abs(r_ref - cast2ref(r));
         if (diff > EPSILON) {
             errorflag = TRUE;
             printf("Error1\n");
@@ -145,14 +145,14 @@ void Clartg_test() {
         g = 0.0;
         g_ref = 0.0;
         set_random_number(f_ref, f);
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
         zlartg_f77(&f_ref, &g_ref, &cs_ref, &sn_ref, &r_ref);
 #else
         Clartg(f_ref, g_ref, cs_ref, sn_ref, r_ref);
 #endif
         Clartg(f, g, cs, sn, r);
 
-        diff = abs(cs_ref - cs);
+        diff = abs(cs_ref - cast2ref(cs));
         if (diff > EPSILON) {
             errorflag = TRUE;
             printf("Error1\n");
@@ -164,7 +164,7 @@ void Clartg_test() {
         printnum(maxdiff);
         printf("\n");
 #endif
-        diff = abs(sn_ref - sn);
+        diff = abs(sn_ref - cast2ref(sn));
         if (diff > EPSILON) {
             errorflag = TRUE;
             printf("Error1\n");
@@ -176,7 +176,7 @@ void Clartg_test() {
         printnum(maxdiff);
         printf("\n");
 #endif
-        diff = abs(r_ref - r);
+        diff = abs(r_ref - cast2ref(r));
         if (diff > EPSILON) {
             errorflag = TRUE;
             printf("Error1\n");

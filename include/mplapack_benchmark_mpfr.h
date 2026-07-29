@@ -194,7 +194,7 @@
 #define SYMBOL_GCC_CLAUNHR_COL_GETRFNP2 "_Z20Claunhr_col_getrfnp2llPN4mpfr9mpcomplexElS1_Rl"
 #define SYMBOL_GCC_RLAORHR_COL_GETRFNP2 "_Z20Rlaorhr_col_getrfnp2llPN4mpfr6mprealElS1_Rl"
 #define SYMBOL_GCC_MPLAPACK_MPFR_FINALIZE "_Z22mplapack_mpfr_finalizev"
-#define SYMBOL_GCC____MPLAPACK_MPFR_INITIALIZE "_Z27___mplapack_mpfr_initializev"
+#define SYMBOL_GCC_MPLAPACK_MPFR_INITIALIZE_LEGACY "_Z27___mplapack_mpfr_initializev"
 #define SYMBOL_GCC_CROT "_Z4CrotlPN4mpfr9mpcomplexElS1_lNS_6mprealES0_"
 #define SYMBOL_GCC_CSPR "_Z4CsprPKclN4mpfr9mpcomplexEPS2_lS3_"
 #define SYMBOL_GCC_CSYR "_Z4CsyrPKclN4mpfr9mpcomplexEPS2_lS3_l"

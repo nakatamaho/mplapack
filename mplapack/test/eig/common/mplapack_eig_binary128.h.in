@@ -26,8 +26,8 @@
  *
  */
 
-#ifndef _MPLAPACK_EIG__FLOAT128_H_
-#define _MPLAPACK_EIG__FLOAT128_H_
+#ifndef MPLAPACK_EIG_BINARY128_H
+#define MPLAPACK_EIG_BINARY128_H
 
 #include "mplapack_config.h"
 

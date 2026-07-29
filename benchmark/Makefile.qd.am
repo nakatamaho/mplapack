@@ -9,7 +9,7 @@ Rpotrf.qd Rpotrf.qd_opt \
 Rpotf2.qd Rpotf2.qd_opt \
 Rgetrf.qd Rgetrf.qd_opt
 
-qdcxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_QD___
+qdcxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_QD
 qdlapack_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_qd
 qd_libdepends    = $(qdlapack_libdepends) -L$(QD_LIBDIR) -lqd $(DYLD)
 qdopt_libdepends = -L$(top_builddir)/mpblas/optimized/qd -lmplapack_qd_opt -L$(QD_LIBDIR) -lqd $(DYLD)

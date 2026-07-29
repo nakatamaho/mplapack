@@ -100,7 +100,7 @@ void Cgbmv_test3(const char *trans, COMPLEX_REF alpha_ref, COMPLEX_REF beta_ref,
                                     }
                                     mplapack_errno = 0;
                                     blas_errno = 0;
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                                     zgbmv_f77(trans, &m, &n, &kl, &ku, &alpha_ref, A_ref, &lda, x_ref, &incx, &beta_ref, y_ref, &incy);
                                     mplapack_errno1 = blas_errno;
 #else

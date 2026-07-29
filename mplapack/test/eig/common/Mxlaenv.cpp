@@ -40,9 +40,9 @@
 using namespace fem::major_types;
 using fem::common;
 
-#define __MPLAPACK_XLAENV__
-#define __MPLAPACK_COMMON_MN__
-#define __MPLAPACK_COMMON_SSLCT__
+#define MPLAPACK_XLAENV_DEFINE
+#define MPLAPACK_COMMON_MN_DEFINE
+#define MPLAPACK_COMMON_SSLCT_DEFINE
 
 #include <mplapack_debug.h>
 #include <mplapack_common_mn.h>

@@ -28,8 +28,8 @@
  *
  */
 
-#ifndef _MPLAPACK_GENERIC_H_
-#define _MPLAPACK_GENERIC_H_
+#ifndef MPLAPACK_GENERIC_H
+#define MPLAPACK_GENERIC_H
 
 /* MPLAPACK prototypes */
 

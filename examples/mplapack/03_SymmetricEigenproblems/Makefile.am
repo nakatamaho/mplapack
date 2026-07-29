@@ -3,7 +3,7 @@ mplapackexamples_PROGRAMS =
 if ENABLE_MPFR
 mplapackexamples_PROGRAMS += Cheev_test_mpfr Rsyev_Frank_mpfr Rsyev_test_mpfr Rsyevd_DingDong_mpfr Rsyevd_Frank_mpfr Rsyevr_Frank_mpfr
 
-mpfr_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/mpfrc++ -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR)
+mpfr_cxxflags = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR)
 mpfr_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_mpfr -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpfr -lmpc -lgmp
 
 Cheev_test_mpfr_SOURCES = Cheev_test_mpfr.cpp
@@ -35,7 +35,7 @@ endif
 if ENABLE_GMP
 mplapackexamples_PROGRAMS += Cheev_test_gmp Rsyev_Frank_gmp Rsyev_test_gmp Rsyevd_DingDong_gmp Rsyevd_Frank_gmp Rsyevr_Frank_gmp
 
-gmp_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR)
+gmp_cxxflags = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR)
 gmp_libdepends = -Wl,-rpath,$(libdir) -L$(top_builddir)/mplapack/reference -lmplapack_gmp -L$(GMP_LIBDIR) -lgmp
 
 Cheev_test_gmp_SOURCES = Cheev_test_gmp.cpp

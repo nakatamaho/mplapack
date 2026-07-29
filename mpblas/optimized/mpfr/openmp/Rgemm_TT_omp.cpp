@@ -29,12 +29,12 @@
  */
 #include <mpblas_mpfr.h>
 
-void Rgemm_TT_omp(mplapackint m, mplapackint n, mplapackint k, mpreal alpha, mpreal *A, mplapackint lda, mpreal *B, mplapackint ldb, mpreal beta,
-	      mpreal *C, mplapackint ldc)
+void Rgemm_TT_omp(mplapackint m, mplapackint n, mplapackint k, mpfr_class alpha, mpfr_class *A, mplapackint lda, mpfr_class *B, mplapackint ldb, mpfr_class beta,
+	      mpfr_class *C, mplapackint ldc)
 {
 //Form  C := alpha*A'*B' + beta*C.
     mplapackint i, j, l;
-    mpreal temp;
+    mpfr_class temp;
     for (j = 0; j < n; j++) {
 	if (beta == 0.0) {
 	    for (i = 0; i < m; i++) {

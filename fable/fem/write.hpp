@@ -5,32 +5,32 @@
 #include <cmath>
 #include <cerrno>
 
-// Ensure MPLAPACK utils expose sprintnum()/sprintnum_short() and __MPLAPACK_BUFLEN__.
-// In mplapack_utils_*.h these are guarded by ___MPLAPACK_INTERNAL___.
-#ifndef ___MPLAPACK_INTERNAL___
-#define ___MPLAPACK_INTERNAL___ 1
+// Ensure MPLAPACK utils expose sprintnum()/sprintnum_short() and MPLAPACK_BUFLEN.
+// In mplapack_utils_*.h these are guarded by MPLAPACK_INTERNAL.
+#ifndef MPLAPACK_INTERNAL
+#define MPLAPACK_INTERNAL 1
 #endif
 
 // MPLAPACK backend utilities (printnum/sprintnum, precision, buffer length, etc.)
-#if defined(___MPLAPACK_BUILD_WITH_GMP___)
+#if defined(MPLAPACK_BUILD_WITH_GMP)
 #include "mplapack_utils_gmp.h"
-#elif defined(___MPLAPACK_BUILD_WITH_MPFR___)
+#elif defined(MPLAPACK_BUILD_WITH_MPFR)
 #include "mplapack_utils_mpfr.h"
-#elif defined(___MPLAPACK_BUILD_WITH_BINARY128___)
+#elif defined(MPLAPACK_BUILD_WITH_BINARY128)
 #include "mplapack_utils_binary128.h"
-#elif defined(___MPLAPACK_BUILD_WITH_BINARY80___)
+#elif defined(MPLAPACK_BUILD_WITH_BINARY80)
 #include "mplapack_utils_binary80.h"
-#elif defined(___MPLAPACK_BUILD_WITH_DD___)
+#elif defined(MPLAPACK_BUILD_WITH_DD)
 #include "mplapack_utils_dd.h"
-#elif defined(___MPLAPACK_BUILD_WITH_QD___)
+#elif defined(MPLAPACK_BUILD_WITH_QD)
 #include "mplapack_utils_qd.h"
-#elif defined(___MPLAPACK_BUILD_WITH_DOUBLE___)
+#elif defined(MPLAPACK_BUILD_WITH_DOUBLE)
 #include "mplapack_utils_double.h"
 #else
-#error "No MPLAPACK backend macro is defined (___MPLAPACK_BUILD_WITH_*___)."
+#error "No MPLAPACK backend macro is defined (MPLAPACK_BUILD_WITH_*)."
 #endif
 
-#if defined(___MPLAPACK_BUILD_WITH_QD___) || defined(___MPLAPACK_BUILD_WITH_DD___)
+#if defined(MPLAPACK_BUILD_WITH_QD) || defined(MPLAPACK_BUILD_WITH_DD)
 // QD headers define and use qd::nint (and other short identifiers).
 // Temporarily disable macros that would interfere.
 #if defined(nint)
@@ -93,8 +93,8 @@
 #endif
 
 // Fallback buffer length (should be provided by mplapack_utils_*.h).
-#ifndef __MPLAPACK_BUFLEN__
-#define __MPLAPACK_BUFLEN__ 1024
+#ifndef MPLAPACK_BUFLEN
+#define MPLAPACK_BUFLEN 1024
 #endif
 
 #include <noexcept_false.hpp>
@@ -430,7 +430,7 @@ class write_loop : write_loop_base
         }
     }
 
-#if defined(___MPLAPACK_BUILD_WITH_DD___) || defined(___MPLAPACK_BUILD_WITH_QD___)
+#if defined(MPLAPACK_BUILD_WITH_DD) || defined(MPLAPACK_BUILD_WITH_QD)
     //
     // Explicit overload for dd_real to prevent infinite recursion.
     // Without this, dd_real goes through generic template -> char buffer ->
@@ -483,7 +483,7 @@ class write_loop : write_loop_base
     write_loop &operator,(dd_complex const &val) { return (*this), val.real(), val.imag(); }
 #endif
 
-#if defined(___MPLAPACK_BUILD_WITH_QD___)
+#if defined(MPLAPACK_BUILD_WITH_QD)
     //
     // Explicit overload for qd_real
     //
@@ -630,7 +630,7 @@ class write_loop : write_loop_base
             // Formatted: for binary80 long double builds that use snprintf("%Lg") I/O,
             // fall back to sprintnum_short() so edit-descriptor width handling is at least consistent.
 #if defined(MPLAPACK_BINARY80_IO) && (MPLAPACK_BINARY80_IO == MPLAPACK_BINARY80_IO_SNPRINTF_LDBL)
-            char buf[__MPLAPACK_BUFLEN__];
+            char buf[MPLAPACK_BUFLEN];
             buf[0] = '\0';
             // Avoid sprintnum_short(...) overload ambiguity (qd/gmp/etc).
             // Generate a "short" long double representation directly.
@@ -646,7 +646,7 @@ class write_loop : write_loop_base
             std::string const &ed = next_edit_descriptor();
             to_stream_fmt_double_given_string(s, ed);
 #elif defined(MPLAPACK_BINARY128_IO) && (MPLAPACK_BINARY128_IO == MPLAPACK_BINARY128_IO_SNPRINTF_LDBL)
-            char buf[__MPLAPACK_BUFLEN__];
+            char buf[MPLAPACK_BUFLEN];
             buf[0] = '\0';
             // Avoid sprintnum_short(...) overload ambiguity (qd/gmp/etc).
             // Generate a "short" long double (binary128 on arm64) representation directly.
@@ -683,10 +683,10 @@ class write_loop : write_loop_base
             out.reset();
             throw TBXX_NOT_IMPLEMENTED();
         }
-        char buf[__MPLAPACK_BUFLEN__];
+        char buf[MPLAPACK_BUFLEN];
         buf[0] = '\0';
         sprintnum_short(buf, val);
-        buf[__MPLAPACK_BUFLEN__ - 1] = '\0';
+        buf[MPLAPACK_BUFLEN - 1] = '\0';
         if (io_mode == io_list_directed) {
             to_stream(buf, std::strlen(buf));
             prev_was_string = false;

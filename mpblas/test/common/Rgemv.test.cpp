@@ -95,7 +95,7 @@ void Rgemv_test3(const char *trans, REAL_REF alpha_ref, REAL_REF beta_ref, REAL 
 
                             mplapack_errno = 0;
                             blas_errno = 0;
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                             dgemv_f77(trans, &m, &n, &alpha_ref, A_ref, &lda, x_ref, &incx, &beta_ref, y_ref, &incy);
                             mplapack_errno1 = blas_errno;
 #else

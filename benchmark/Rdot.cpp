@@ -72,7 +72,7 @@ int main(int argc, char *argv[]) {
     using std::chrono::duration_cast;
     using std::chrono::nanoseconds;
 
-    ___MPLAPACK_INITIALIZE___
+    MPLAPACK_INITIALIZE
 
     typedef REAL (*rdot_func_t)(mplapackint, REAL *, mplapackint, REAL *, mplapackint);
 

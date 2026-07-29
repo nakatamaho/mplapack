@@ -22,7 +22,7 @@ else
 mplibs = -lm
 endif
 
-cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -D___MPLAPACK_BUILD_WITH_BINARY128___ -D___MPLAPACK_INTERNAL___ -I$(top_srcdir)/fable
+cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -DMPLAPACK_BUILD_WITH_BINARY128 -DMPLAPACK_INTERNAL -I$(top_srcdir)/fable
 
 xlintstR_binary128_SOURCES  = ../common/Rchkaa.cpp
 xlintstR_binary128_opt_SOURCES  = ../common/Rchkaa.cpp

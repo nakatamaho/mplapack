@@ -62,7 +62,8 @@ mplapack_includedir = $(includedir)/mplapack
 mplapack_include_HEADERS = \
     include/blas.h \
     include/lapack.h \
-    include/blaswrapper.h
+    include/blaswrapper.h \
+    include/mplapack_gmpfrxx_mkII_config.h
 
 if ENABLE_DD
 mplapack_include_HEADERS += \
@@ -78,9 +79,7 @@ mplapack_include_HEADERS += \
     include/mpblas_gmp.h \
     include/mplapack_arithmetic_params_gmp.h \
     include/mplapack_gmp.h \
-    include/mplapack_gmp_transcendents.h \
-    include/mplapack_utils_gmp.h \
-    include/mpc_class.h
+    include/mplapack_utils_gmp.h
 endif
 
 if ENABLE_QD
@@ -97,9 +96,7 @@ mplapack_include_HEADERS += \
     include/mpblas_mpfr.h \
     include/mplapack_arithmetic_params_mpfr.h \
     include/mplapack_mpfr.h \
-    include/mplapack_utils_mpfr.h \
-    mpfrc++/mpcomplex.h \
-    mpfrc++/mpreal.h
+    include/mplapack_utils_mpfr.h
 endif
 
 if ENABLE_DOUBLE
@@ -143,6 +140,7 @@ noinst_HEADERS = \
     include/mplapack.h \
     include/mplapack_generic.h \
     include/mplapack_compare_debug.h \
+    include/mplapack_gmpfrxx_binary_adapters.h \
     include/mplapack_print_double.h \
     include/mplapack_hex_helpers.h \
     include/mplapack_print.h \
@@ -310,7 +308,9 @@ external/openblas/Makefile.am \
 external/openblas/Makefile.in \
 external/openblas/download/OpenBLAS-0.3.33.tar.gz \
 external/openblas/patches/patch-mingw \
-external/qd/Makefile.am \
+    external/gmpfrxx_mkII/Makefile.am \
+    external/gmpfrxx_mkII/download/gmpfrxx_mkII.1.2.0.tar.xz \
+    external/qd/Makefile.am \
 external/qd/Makefile.in \
 external/qd/download/qd-2.3.24.tar.gz \
 external/qd/patches/patch-configure \
@@ -444,10 +444,6 @@ misc/reconfig.ubuntu26.04.nvidia.sh \
 misc/reconfig.ubuntu26.04.sh \
 misc/summarize_mplapack_tests.py \
 mpblas/optimized/dd/cuda/dd_real_cuda.h \
-mpfrc++/copying.lib mpfrc++/copying mpfrc++/makefile.org \
-mpfrc++/org/copying mpfrc++/org/copying.lib mpfrc++/org/example.cpp \
-mpfrc++/org/makefile mpfrc++/org/mpfrc++.tar.gz \
-mpfrc++/org/mpreal.cpp mpfrc++/org/mpreal.h \
 mplapack/test/eig/Cbak.in \
 mplapack/test/eig/Cbal.in \
 mplapack/test/eig/Cbb.in \

@@ -102,7 +102,7 @@ int main(int argc, char *argv[]) {
     using std::chrono::duration_cast;
     using std::chrono::nanoseconds;
 
-    ___MPLAPACK_INITIALIZE___
+    MPLAPACK_INITIALIZE
 
     // Typedefs for reference function pointers
     typedef void (*rgemm_func_t)(const char *, const char *, mplapackint, mplapackint, mplapackint, REAL, REAL *, mplapackint, REAL *, mplapackint, REAL, REAL *, mplapackint);

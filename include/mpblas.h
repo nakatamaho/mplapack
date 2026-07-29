@@ -29,21 +29,21 @@
 #ifndef _MPBLAS_H_
 #define _MPBLAS_H_
 
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
 #include <mpblas_mpfr.h>
 typedef mplapackint INTEGER;
-typedef mpreal REAL;
-typedef mpcomplex COMPLEX;
+typedef mpfr_class REAL;
+typedef mpc_class COMPLEX;
 #define Mlsame Mlsame_mpfr
 #define Mxerbla Mxerbla_mpfr
 #define castINTEGER castINTEGER_mpfr
 #define castREAL castREAL_mpfr
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
+#if defined MPLAPACK_BUILD_WITH_GMP
 #include <mpblas_gmp.h>
 typedef mplapackint INTEGER;
-typedef mpc_class COMPLEX;
+typedef mpfc_class COMPLEX;
 typedef mpf_class REAL;
 #define Mlsame Mlsame_gmp
 #define Mxerbla Mxerbla_gmp
@@ -51,7 +51,7 @@ typedef mpf_class REAL;
 #define castREAL castREAL_gmp
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_QD___
+#if defined MPLAPACK_BUILD_WITH_QD
 #include <mpblas_qd.h>
 typedef mplapackint INTEGER;
 typedef qd_real REAL;
@@ -62,7 +62,7 @@ typedef qd_complex COMPLEX;
 #define castREAL castREAL_qd
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_DD___
+#if defined MPLAPACK_BUILD_WITH_DD
 #include <mpblas_dd.h>
 typedef mplapackint INTEGER;
 typedef dd_real REAL;
@@ -73,7 +73,7 @@ typedef dd_complex COMPLEX;
 #define castREAL castREAL_dd
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_DOUBLE___
+#if defined MPLAPACK_BUILD_WITH_DOUBLE
 #include <mpblas_double.h>
 typedef mplapackint INTEGER;
 typedef double REAL;
@@ -84,7 +84,7 @@ typedef std::complex<double> COMPLEX;
 #define castREAL castREAL_double
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_BINARY80___
+#if defined MPLAPACK_BUILD_WITH_BINARY80
 #include <mpblas_binary80.h>
 typedef mplapackint INTEGER;
 typedef mplapack_binary80_t REAL;
@@ -95,7 +95,7 @@ typedef std::complex<mplapack_binary80_t> COMPLEX;
 #define castREAL castREAL_binary80
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_BINARY128___
+#if defined MPLAPACK_BUILD_WITH_BINARY128
 #include <mpblas_binary128.h>
 typedef mplapackint INTEGER;
 typedef mplapack_binary128_t REAL;

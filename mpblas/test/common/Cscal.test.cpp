@@ -56,7 +56,7 @@ void Cscal_test() {
 
                 set_random_number(alpha_ref, alpha);
                 set_random_vector(x_ref, x, veclen(n, incx));
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                 zscal_f77(&n, &alpha_ref, x_ref, &incx);
 #else
                 Cscal(n, alpha_ref, x_ref, incx);

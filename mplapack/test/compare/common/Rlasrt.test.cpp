@@ -62,7 +62,7 @@ void Rlasrt_test2(const char *id) {
         j = 0;
         while (j < MAX_ITER) {
             set_random_vector(d_ref, d, veclen(n, 1));
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
             dlasrt_f77(id, &n, d_ref, &info_ref);
 #else
             Rlasrt(id, n, d_ref, info_ref);

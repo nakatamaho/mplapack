@@ -1,0 +1,55 @@
+$ uname -a
+Linux 3bfe4ad367d7 6.8.0-124-generic #124-Ubuntu SMP PREEMPT_DYNAMIC Tue May 26 13:00:45 UTC 2026 x86_64 GNU/Linux
+$ gcc --version
+gcc (Ubuntu 15.2.0-16ubuntu1) 15.2.0
+Copyright (C) 2025 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+$ g++ --version
+g++ (Ubuntu 15.2.0-16ubuntu1) 15.2.0
+Copyright (C) 2025 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+$ gfortran --version
+GNU Fortran (Ubuntu 15.2.0-16ubuntu1) 15.2.0
+Copyright (C) 2025 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+$ cmake --version
+cmake version 4.2.3
+
+CMake suite maintained and supported by Kitware (kitware.com/cmake).
+$ autoreconf --version
+autoreconf (GNU Autoconf) 2.72
+Copyright (C) 2023 Free Software Foundation, Inc.
+License GPLv3+/Autoconf: GNU GPL version 3 or later
+<https://gnu.org/licenses/gpl.html>, <https://gnu.org/licenses/exceptions.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+
+Written by David J. MacKenzie and Akim Demaille.
+$ automake --version
+automake (GNU automake) 1.18.1
+Features: subsecond-mtime
+
+Copyright (C) 2025 Free Software Foundation, Inc.
+License GPLv2+: GNU GPL version 2 or later
+  <https://gnu.org/licenses/gpl-2.0.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+
+Written by Tom Tromey <tromey@redhat.com>
+       and Alexandre Duret-Lutz <adl@gnu.org>.
+$ libtoolize --version
+libtoolize (GNU libtool) 2.5.4 Debian-2.5.4-9
+Copyright (C) 2026 Free Software Foundation, Inc.
+License GPLv2+: GNU GPL version 2 or later <https://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+
+Written by Gary V. Vaughan <gary@gnu.org>, 2003
+$ nproc
+64

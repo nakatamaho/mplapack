@@ -11,12 +11,12 @@
 #define MPFR_FORMAT "%+68.64Re"
 #define MPFR_SHORT_FORMAT "%+20.16Re"
 
-inline void printnum(mpreal rtmp) { mpfr_printf(MPFR_FORMAT, mpfr_ptr(rtmp)); }
-inline void printnum_short(mpreal rtmp) { mpfr_printf(MPFR_SHORT_FORMAT, mpfr_ptr(rtmp)); }
+inline void printnum(mpfr_class rtmp) { mpfr_printf(MPFR_FORMAT, mpfr_ptr(rtmp)); }
+inline void printnum_short(mpfr_class rtmp) { mpfr_printf(MPFR_SHORT_FORMAT, mpfr_ptr(rtmp)); }
 
 // Matlab/Octave format
-void printvec(mpreal *a, int len) {
-    mpreal tmp;
+void printvec(mpfr_class *a, int len) {
+    mpfr_class tmp;
     printf("[ ");
     for (int i = 0; i < len; i++) {
         tmp = a[i];
@@ -27,8 +27,8 @@ void printvec(mpreal *a, int len) {
     printf("]");
 }
 
-void printmat(int n, int m, mpreal *a, int lda) {
-    mpreal mtmp;
+void printmat(int n, int m, mpfr_class *a, int lda) {
+    mpfr_class mtmp;
     printf("[ ");
     for (int i = 0; i < n; i++) {
         printf("[ ");
@@ -48,18 +48,18 @@ void printmat(int n, int m, mpreal *a, int lda) {
 
 void Frank(mplapackint n) {
     mplapackint lwork, liwork, info, m;
-    mpreal *a = new mpreal[n * n];
-    mpreal *z = new mpreal[n * n]; //not used
+    mpfr_class *a = new mpfr_class[n * n];
+    mpfr_class *z = new mpfr_class[n * n]; //not used
     mplapackint *isuppz = new mplapackint[2 * n]; //not used
-    mpreal *w = new mpreal[n];
-    mpreal *lambda = new mpreal[n];
-    mpreal *reldiff = new mpreal[n];
-    mpreal vldummy;
-    mpreal vudummy;
+    mpfr_class *w = new mpfr_class[n];
+    mpfr_class *lambda = new mpfr_class[n];
+    mpfr_class *reldiff = new mpfr_class[n];
+    mpfr_class vldummy;
+    mpfr_class vudummy;
     mplapackint ildummy;
     mplapackint iudummy;
-    mpreal abstol = Rlamch_mpfr("U");
-    mpreal PI;
+    mpfr_class abstol = Rlamch_mpfr("U");
+    mpfr_class PI;
     PI = pi(PI);
 
     // setting A matrix
@@ -72,14 +72,14 @@ void Frank(mplapackint n) {
 
     // work space query
     lwork = -1;
-    mpreal *work = new mpreal[1];
+    mpfr_class *work = new mpfr_class[1];
     liwork = -1;
     mplapackint *iwork = new mplapackint[1];
 
     Rsyevr("N", "A", "U", n, a, n, vldummy, vudummy, ildummy, iudummy, abstol, m, w, z, n, isuppz, work, lwork, iwork, liwork, info);
     lwork = (int)cast2double(work[0]);
     delete[] work;
-    work = new mpreal[std::max((mplapackint)1, lwork)];
+    work = new mpfr_class[std::max((mplapackint)1, lwork)];
     liwork = iwork[0];
     delete[] iwork;
     iwork = new mplapackint[std::max((mplapackint)1, liwork)];
@@ -103,7 +103,7 @@ void Frank(mplapackint n) {
     }
     printf("reldiff ="); printvec(reldiff, n); printf("\n");
 
-    mpreal maxreldiff = 0.0;
+    mpfr_class maxreldiff = 0.0;
     maxreldiff = reldiff[0]; 
     for (int i = 2; i <= n; i++) {
         maxreldiff = std::max(reldiff[i - 1], maxreldiff);

@@ -76,7 +76,7 @@ void Rgetf2_test() {
                         ipiv_ref[i] = 0;
                         ipiv[i] = 0;
                     }
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                     dgetf2_f77(&m, &n, A_ref, &lda, ipiv_ref, &info_ref);
 #else
                     Rgetf2(m, n, A_ref, lda, ipiv_ref, info_ref);

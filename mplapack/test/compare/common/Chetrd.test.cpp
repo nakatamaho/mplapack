@@ -72,7 +72,7 @@ void Chetrd_test2(const char *uplo) {
             lwork = -1;
             COMPLEX_REF *work_ref = new COMPLEX_REF[1];
             COMPLEX *work = new COMPLEX[1];
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
             zhetrd_f77(uplo, &n, A_ref, &lda, d_ref, e_ref, tau_ref, work_ref, &lwork_ref, &info_ref);
 #else
             Chetrd(uplo, n, A_ref, lda, d_ref, e_ref, tau_ref, work_ref, lwork_ref, info_ref);
@@ -100,7 +100,7 @@ void Chetrd_test2(const char *uplo) {
                 set_random_vector(tau_ref, tau, veclen(n - 1, 1));
                 set_random_vector(work_ref, work, veclen(lwork, 1));
 
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                 zhetrd_f77(uplo, &n, A_ref, &lda, d_ref, e_ref, tau_ref, work_ref, &lwork_ref, &info_ref);
 #else
                 Chetrd(uplo, n, A_ref, lda, d_ref, e_ref, tau_ref, work_ref, lwork_ref, info_ref);

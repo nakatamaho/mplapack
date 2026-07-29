@@ -68,7 +68,7 @@ void Rlaset_test2(const char *uplo) {
                     set_random_vector(A_ref, A, matlen(lda, n));
                     set_random_number(alpha_ref, alpha);
                     set_random_number(beta_ref, beta);
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                     dlaset_f77(uplo, &m, &n, &alpha_ref, &beta_ref, A_ref, &lda);
 #else
                     Rlaset(uplo, m, n, alpha_ref, beta_ref, A_ref, lda);

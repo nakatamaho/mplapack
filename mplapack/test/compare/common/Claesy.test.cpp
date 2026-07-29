@@ -56,30 +56,30 @@ void Claesy_test() {
         set_random_number(a_ref, a);
         set_random_number(b_ref, b);
         set_random_number(c_ref, c);
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
         zlaesy_f77(&a_ref, &b_ref, &c_ref, &rt1_ref, &rt2_ref, &evscal_ref, &cs1_ref, &sn1_ref);
 #else
         Claesy(a_ref, b_ref, c_ref, rt1_ref, rt2_ref, evscal_ref, cs1_ref, sn1_ref);
 #endif
         Claesy(a, b, c, rt1, rt2, evscal, cs1, sn1);
 
-        if (abs(rt1_ref - rt1) > EPSILON) {
+        if (abs(rt1_ref - cast2ref(rt1)) > EPSILON) {
             errorflag = TRUE;
             printf("Error1\n");
         }
-        if (abs(rt2_ref - rt2) > EPSILON) {
+        if (abs(rt2_ref - cast2ref(rt2)) > EPSILON) {
             errorflag = TRUE;
             printf("Error1\n");
         }
-        if (abs(cs1_ref - cs1) > EPSILON) {
+        if (abs(cs1_ref - cast2ref(cs1)) > EPSILON) {
             errorflag = TRUE;
             printf("Error1\n");
         }
-        if (abs(sn1_ref - sn1) > EPSILON) {
+        if (abs(sn1_ref - cast2ref(sn1)) > EPSILON) {
             errorflag = TRUE;
             printf("Error1\n");
         }
-        if (abs(evscal_ref - evscal) > EPSILON) {
+        if (abs(evscal_ref - cast2ref(evscal)) > EPSILON) {
             errorflag = TRUE;
             printf("Error1\n");
         }
@@ -92,30 +92,30 @@ void Claesy_test() {
         b_ref = (a_ref - c_ref) / (REAL_REF)2.0;
         b = (a - c) / (REAL)2.0;
 
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
         zlaesy_f77(&a_ref, &b_ref, &c_ref, &rt1_ref, &rt2_ref, &evscal_ref, &cs1_ref, &sn1_ref);
 #else
         Claesy(a_ref, b_ref, c_ref, rt1_ref, rt2_ref, evscal_ref, cs1_ref, sn1_ref);
 #endif
         Claesy(a, b, c, rt1, rt2, evscal, cs1, sn1);
 
-        if (abs(rt1_ref - rt1) > EPSILON) {
+        if (abs(rt1_ref - cast2ref(rt1)) > EPSILON) {
             errorflag = TRUE;
             printf("Error2\n");
         }
-        if (abs(rt2_ref - rt2) > EPSILON) {
+        if (abs(rt2_ref - cast2ref(rt2)) > EPSILON) {
             errorflag = TRUE;
             printf("Error2\n");
         }
-        if (abs(cs1_ref - cs1) > EPSILON) {
+        if (abs(cs1_ref - cast2ref(cs1)) > EPSILON) {
             errorflag = TRUE;
             printf("Error2\n");
         }
-        if (abs(sn1_ref - sn1) > EPSILON) {
+        if (abs(sn1_ref - cast2ref(sn1)) > EPSILON) {
             errorflag = TRUE;
             printf("Error2\n");
         }
-        if (abs(evscal_ref - evscal) > EPSILON) {
+        if (abs(evscal_ref - cast2ref(evscal)) > EPSILON) {
             errorflag = TRUE;
             printf("Error2\n");
         }
@@ -127,30 +127,30 @@ void Claesy_test() {
         set_random_number(b_ref, b);
         c_ref = -a_ref;
         c = -a;
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
         zlaesy_f77(&a_ref, &b_ref, &c_ref, &rt1_ref, &rt2_ref, &evscal_ref, &cs1_ref, &sn1_ref);
 #else
         Claesy(a_ref, b_ref, c_ref, rt1_ref, rt2_ref, evscal_ref, cs1_ref, sn1_ref);
 #endif
         Claesy(a, b, c, rt1, rt2, evscal, cs1, sn1);
 
-        if (abs(rt1_ref - rt1) > EPSILON) {
+        if (abs(rt1_ref - cast2ref(rt1)) > EPSILON) {
             errorflag = TRUE;
             printf("Error3\n");
         }
-        if (abs(rt2_ref - rt2) > EPSILON) {
+        if (abs(rt2_ref - cast2ref(rt2)) > EPSILON) {
             errorflag = TRUE;
             printf("Error3\n");
         }
-        if (abs(cs1_ref - cs1) > EPSILON) {
+        if (abs(cs1_ref - cast2ref(cs1)) > EPSILON) {
             errorflag = TRUE;
             printf("Error3\n");
         }
-        if (abs(sn1_ref - sn1) > EPSILON) {
+        if (abs(sn1_ref - cast2ref(sn1)) > EPSILON) {
             errorflag = TRUE;
             printf("Error3\n");
         }
-        if (abs(evscal_ref - evscal) > EPSILON) {
+        if (abs(evscal_ref - cast2ref(evscal)) > EPSILON) {
             errorflag = TRUE;
             printf("Error3\n");
         }
@@ -161,30 +161,30 @@ void Claesy_test() {
         set_random_number(a_ref, a);
         b_ref = c_ref = 0.0;
         b = 0.0, c = 0.0;
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
         zlaesy_f77(&a_ref, &b_ref, &c_ref, &rt1_ref, &rt2_ref, &evscal_ref, &cs1_ref, &sn1_ref);
 #else
         Claesy(a_ref, b_ref, c_ref, rt1_ref, rt2_ref, evscal_ref, cs1_ref, sn1_ref);
 #endif
         Claesy(a, b, c, rt1, rt2, evscal, cs1, sn1);
 
-        if (abs(rt1_ref - rt1) > EPSILON) {
+        if (abs(rt1_ref - cast2ref(rt1)) > EPSILON) {
             errorflag = TRUE;
             printf("Error4\n");
         }
-        if (abs(rt2_ref - rt2) > EPSILON) {
+        if (abs(rt2_ref - cast2ref(rt2)) > EPSILON) {
             errorflag = TRUE;
             printf("Error4\n");
         }
-        if (abs(cs1_ref - cs1) > EPSILON) {
+        if (abs(cs1_ref - cast2ref(cs1)) > EPSILON) {
             errorflag = TRUE;
             printf("Error4\n");
         }
-        if (abs(sn1_ref - sn1) > EPSILON) {
+        if (abs(sn1_ref - cast2ref(sn1)) > EPSILON) {
             errorflag = TRUE;
             printf("Error4\n");
         }
-        if (abs(evscal_ref - evscal) > EPSILON) {
+        if (abs(evscal_ref - cast2ref(evscal)) > EPSILON) {
             errorflag = TRUE;
             printf("Error4\n");
         }
@@ -194,30 +194,30 @@ void Claesy_test() {
 #endif
         a_ref = b_ref = c_ref = 0.0;
         a = 0.0, b = 0.0, c = 0.0;
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
         zlaesy_f77(&a_ref, &b_ref, &c_ref, &rt1_ref, &rt2_ref, &evscal_ref, &cs1_ref, &sn1_ref);
 #else
         Claesy(a_ref, b_ref, c_ref, rt1_ref, rt2_ref, evscal_ref, cs1_ref, sn1_ref);
 #endif
         Claesy(a, b, c, rt1, rt2, evscal, cs1, sn1);
 
-        if (abs(rt1_ref - rt1) > EPSILON) {
+        if (abs(rt1_ref - cast2ref(rt1)) > EPSILON) {
             errorflag = TRUE;
             printf("Error5\n");
         }
-        if (abs(rt2_ref - rt2) > EPSILON) {
+        if (abs(rt2_ref - cast2ref(rt2)) > EPSILON) {
             errorflag = TRUE;
             printf("Error5\n");
         }
-        if (abs(cs1_ref - cs1) > EPSILON) {
+        if (abs(cs1_ref - cast2ref(cs1)) > EPSILON) {
             errorflag = TRUE;
             printf("Error5\n");
         }
-        if (abs(sn1_ref - sn1) > EPSILON) {
+        if (abs(sn1_ref - cast2ref(sn1)) > EPSILON) {
             errorflag = TRUE;
             printf("Error5\n");
         }
-        if (abs(evscal_ref - evscal) > EPSILON) {
+        if (abs(evscal_ref - cast2ref(evscal)) > EPSILON) {
             errorflag = TRUE;
             printf("Error5\n");
         }
@@ -229,30 +229,30 @@ void Claesy_test() {
         set_random_number(c_ref, c);
         b_ref = 0.0;
         b = 0.0;
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
         zlaesy_f77(&a_ref, &b_ref, &c_ref, &rt1_ref, &rt2_ref, &evscal_ref, &cs1_ref, &sn1_ref);
 #else
         Claesy(a_ref, b_ref, c_ref, rt1_ref, rt2_ref, evscal_ref, cs1_ref, sn1_ref);
 #endif
         Claesy(a, b, c, rt1, rt2, evscal, cs1, sn1);
 
-        if (abs(rt1_ref - rt1) > EPSILON) {
+        if (abs(rt1_ref - cast2ref(rt1)) > EPSILON) {
             errorflag = TRUE;
             printf("Error6\n");
         }
-        if (abs(rt2_ref - rt2) > EPSILON) {
+        if (abs(rt2_ref - cast2ref(rt2)) > EPSILON) {
             errorflag = TRUE;
             printf("Error6\n");
         }
-        if (abs(cs1_ref - cs1) > EPSILON) {
+        if (abs(cs1_ref - cast2ref(cs1)) > EPSILON) {
             errorflag = TRUE;
             printf("Error6\n");
         }
-        if (abs(sn1_ref - sn1) > EPSILON) {
+        if (abs(sn1_ref - cast2ref(sn1)) > EPSILON) {
             errorflag = TRUE;
             printf("Error6\n");
         }
-        if (abs(evscal_ref - evscal) > EPSILON) {
+        if (abs(evscal_ref - cast2ref(evscal)) > EPSILON) {
             errorflag = TRUE;
             printf("Error6\n");
         }
@@ -269,30 +269,30 @@ void Claesy_test() {
     b_ref = 0.0;
     a = 1.0, c = 1.0;
     b = 0.0;
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
     zlaesy_f77(&a_ref, &b_ref, &c_ref, &rt1_ref, &rt2_ref, &evscal_ref, &cs1_ref, &sn1_ref);
 #else
     Claesy(a_ref, b_ref, c_ref, rt1_ref, rt2_ref, evscal_ref, cs1_ref, sn1_ref);
 #endif
     Claesy(a, b, c, rt1, rt2, evscal, cs1, sn1);
 
-    if (abs(rt1_ref - rt1) > EPSILON) {
+    if (abs(rt1_ref - cast2ref(rt1)) > EPSILON) {
         errorflag = TRUE;
         printf("Error7\n");
     }
-    if (abs(rt2_ref - rt2) > EPSILON) {
+    if (abs(rt2_ref - cast2ref(rt2)) > EPSILON) {
         errorflag = TRUE;
         printf("Error7\n");
     }
-    if (abs(cs1_ref - cs1) > EPSILON) {
+    if (abs(cs1_ref - cast2ref(cs1)) > EPSILON) {
         errorflag = TRUE;
         printf("Error7\n");
     }
-    if (abs(sn1_ref - sn1) > EPSILON) {
+    if (abs(sn1_ref - cast2ref(sn1)) > EPSILON) {
         errorflag = TRUE;
         printf("Error7\n");
     }
-    if (abs(evscal_ref - evscal) > EPSILON) {
+    if (abs(evscal_ref - cast2ref(evscal)) > EPSILON) {
         errorflag = TRUE;
         printf("Error8\n");
     }

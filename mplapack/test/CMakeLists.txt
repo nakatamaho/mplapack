@@ -41,14 +41,14 @@ endforeach()
 # Helper: apply the common test compile settings to a target.
 function(_mplapack_test_setup tgt backend_target internal)
   # PRIVATE: these are static archives; they only need the backend's headers,
-  # the ___MPLAPACK_BUILD_WITH_<backend>___ macro and the fable headers to
+  # the MPLAPACK_BUILD_WITH_<backend> macro and the fable headers to
   # compile.  We deliberately do NOT propagate the backend link to consumers --
   # the driver executables link the backend explicitly inside a LINK_GROUP so
   # that ordering/override resolution is under our control.
   target_link_libraries(${tgt} PRIVATE ${backend_target})
   target_include_directories(${tgt} PRIVATE "${_fable_dir}")
   if(internal)
-    target_compile_definitions(${tgt} PRIVATE ___MPLAPACK_INTERNAL___)
+    target_compile_definitions(${tgt} PRIVATE MPLAPACK_INTERNAL)
   endif()
   if(TARGET OpenMP::OpenMP_CXX)
     target_link_libraries(${tgt} PRIVATE OpenMP::OpenMP_CXX)
@@ -136,7 +136,7 @@ foreach(_b ${_backends})
       list(GET _parts 2 _inputs_var)
 
       add_executable(${_exe} "${_main}")
-      target_compile_definitions(${_exe} PRIVATE ___MPLAPACK_INTERNAL___)
+      target_compile_definitions(${_exe} PRIVATE MPLAPACK_INTERNAL)
       target_include_directories(${_exe} PRIVATE "${_fable_dir}")
       if(_b STREQUAL "dd" AND MPLAPACK_HAS_FP_CONTRACT_OFF)
         target_compile_options(${_exe} PRIVATE -ffp-contract=off)

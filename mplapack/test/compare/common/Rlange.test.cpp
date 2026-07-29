@@ -68,14 +68,14 @@ void Rlange_test2(const char *norm) {
 #endif
                 while (j < MAX_ITER) {
                     set_random_vector(A_ref, A, matlen(lda, n));
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                     Rlange_ref_ret = dlange_f77(norm, &m, &n, A_ref, &lda, work_ref);
 #else
                     Rlange_ref_ret = Rlange(norm, m, n, A_ref, lda, work_ref);
 #endif
                     Rlange_ret = Rlange(norm, m, n, A, lda, work);
 
-                    diff = abs(Rlange_ref_ret - Rlange_ret);
+                    diff = abs(Rlange_ref_ret - cast2ref(Rlange_ret));
                     if (diff > EPSILON) {
                         errorflag = TRUE;
                         printf("Error\n");

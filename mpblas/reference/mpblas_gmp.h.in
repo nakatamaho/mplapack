@@ -29,10 +29,10 @@
 #ifndef _MPBLAS_GMP_H_
 #define _MPBLAS_GMP_H_
 
-#define ___MPLAPACK_GMP_DEFAULT_PRECISION___ 512
+#define MPLAPACK_GMP_DEFAULT_PRECISION 512
 
-#include "gmpxx.h"
-#include "mpc_class.h"
+#include <gmpxx_mkII.h>
+using namespace gmpxx;
 #include "mplapack_config.h"
 #include "mplapack_utils_gmp.h"
 

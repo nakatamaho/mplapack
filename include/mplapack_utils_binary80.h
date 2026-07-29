@@ -27,8 +27,8 @@
  *
  */
 
-#ifndef _MPLAPACK_UTILS_BINARY80_H_
-#define _MPLAPACK_UTILS_BINARY80_H_
+#ifndef MPLAPACK_UTILS_BINARY80_H
+#define MPLAPACK_UTILS_BINARY80_H
 
 #include "mplapack_config.h"
 
@@ -39,7 +39,7 @@
 #define MPLAPACK_HAVE_STD_MATH_FLOAT64X 0
 #endif
 
-#if defined ___MPLAPACK_INTERNAL___
+#if defined MPLAPACK_INTERNAL
 
 #include <cstring>
 inline uint16_t load_u16_be(const unsigned char *p) { return (static_cast<uint16_t>(p[0]) << 8) | (static_cast<uint16_t>(p[1]) << 0); }
@@ -281,26 +281,26 @@ template <class T> inline void sprinthex_binary80_fixed(char *buf, size_t n, con
 #define LDBL_FORMAT "%+25.21Le"
 #define LDBL_SHORT_FORMAT "%+20.16Le"
 
-#if !defined __MPLAPACK_BUFLEN__
-#define __MPLAPACK_BUFLEN__ 1024
+#if !defined MPLAPACK_BUFLEN
+#define MPLAPACK_BUFLEN 1024
 #endif
 
 inline void printnum(long double rtmp) { printf(LDBL_FORMAT, rtmp); }
 inline void printnum(std::complex<long double> ctmp) { printf(LDBL_FORMAT LDBL_FORMAT "i", ctmp.real(), ctmp.imag()); }
 inline void printnum_short(long double rtmp) { printf(LDBL_SHORT_FORMAT, rtmp); }
 inline void printnum_short(std::complex<long double> ctmp) { printf(LDBL_SHORT_FORMAT LDBL_SHORT_FORMAT "i", ctmp.real(), ctmp.imag()); }
-inline void sprintnum(char *buf, long double rtmp) { snprintf(buf, __MPLAPACK_BUFLEN__, LDBL_FORMAT, rtmp); }
-inline void sprintnum(char *buf, std::complex<long double> ctmp) { snprintf(buf, __MPLAPACK_BUFLEN__, LDBL_FORMAT LDBL_FORMAT "i", ctmp.real(), ctmp.imag()); }
-inline void sprintnum_short(char *buf, long double rtmp) { snprintf(buf, __MPLAPACK_BUFLEN__, LDBL_SHORT_FORMAT, rtmp); }
-inline void sprintnum_short(char *buf, std::complex<long double> ctmp) { snprintf(buf, __MPLAPACK_BUFLEN__, LDBL_SHORT_FORMAT LDBL_SHORT_FORMAT "i", ctmp.real(), ctmp.imag()); }
+inline void sprintnum(char *buf, long double rtmp) { snprintf(buf, MPLAPACK_BUFLEN, LDBL_FORMAT, rtmp); }
+inline void sprintnum(char *buf, std::complex<long double> ctmp) { snprintf(buf, MPLAPACK_BUFLEN, LDBL_FORMAT LDBL_FORMAT "i", ctmp.real(), ctmp.imag()); }
+inline void sprintnum_short(char *buf, long double rtmp) { snprintf(buf, MPLAPACK_BUFLEN, LDBL_SHORT_FORMAT, rtmp); }
+inline void sprintnum_short(char *buf, std::complex<long double> ctmp) { snprintf(buf, MPLAPACK_BUFLEN, LDBL_SHORT_FORMAT LDBL_SHORT_FORMAT "i", ctmp.real(), ctmp.imag()); }
 
 #elif MPLAPACK_BINARY80_IO == MPLAPACK_BINARY80_IO_STRFROMF64X
 
 #define FLOAT64X_FORMAT "%.21e"
 #define FLOAT64X_SHORT_FORMAT "%.16e"
 
-#if !defined __MPLAPACK_BUFLEN__
-#define __MPLAPACK_BUFLEN__ 1024
+#if !defined MPLAPACK_BUFLEN
+#define MPLAPACK_BUFLEN 1024
 #endif
 
 // Must be before including <stdlib.h> on glibc to expose strfromf64x.
@@ -324,7 +324,7 @@ static inline int mplapack_strfromf64x(char *buf, size_t buflen, const char *fmt
     if (buf == nullptr || buflen == 0 || fmt == nullptr)
         return -1;
     // Use a staging buffer so we have room to insert '+' without clobbering buf.
-    char tmp[__MPLAPACK_BUFLEN__];
+    char tmp[MPLAPACK_BUFLEN];
     size_t tmplen = (buflen <= sizeof(tmp)) ? buflen : sizeof(tmp);
     int n = strfromf64x(tmp, tmplen, fmt, x);
     if (n < 0) {
@@ -353,14 +353,14 @@ static inline int mplapack_strfromf64x(char *buf, size_t buflen, const char *fmt
 
 // printnum / printnum_short: stringize then print
 inline void printnum(_Float64x rtmp) {
-    char buf[__MPLAPACK_BUFLEN__];
+    char buf[MPLAPACK_BUFLEN];
     mplapack_strfromf64x(buf, sizeof(buf), FLOAT64X_FORMAT, rtmp);
     fputs(buf, stdout);
 }
 
 inline void printnum(std::complex<_Float64x> ctmp) {
-    char re[__MPLAPACK_BUFLEN__];
-    char im[__MPLAPACK_BUFLEN__];
+    char re[MPLAPACK_BUFLEN];
+    char im[MPLAPACK_BUFLEN];
     mplapack_strfromf64x(re, sizeof(re), FLOAT64X_FORMAT, ctmp.real());
     mplapack_strfromf64x(im, sizeof(im), FLOAT64X_FORMAT, ctmp.imag());
     fputs(re, stdout);
@@ -369,14 +369,14 @@ inline void printnum(std::complex<_Float64x> ctmp) {
 }
 
 inline void printnum_short(_Float64x rtmp) {
-    char buf[__MPLAPACK_BUFLEN__];
+    char buf[MPLAPACK_BUFLEN];
     mplapack_strfromf64x(buf, sizeof(buf), FLOAT64X_SHORT_FORMAT, rtmp);
     fputs(buf, stdout);
 }
 
 inline void printnum_short(std::complex<_Float64x> ctmp) {
-    char re[__MPLAPACK_BUFLEN__];
-    char im[__MPLAPACK_BUFLEN__];
+    char re[MPLAPACK_BUFLEN];
+    char im[MPLAPACK_BUFLEN];
     mplapack_strfromf64x(re, sizeof(re), FLOAT64X_SHORT_FORMAT, ctmp.real());
     mplapack_strfromf64x(im, sizeof(im), FLOAT64X_SHORT_FORMAT, ctmp.imag());
     fputs(re, stdout);
@@ -385,76 +385,76 @@ inline void printnum_short(std::complex<_Float64x> ctmp) {
 }
 
 // sprintnum / sprintnum_short: write into caller-provided buf
-inline void sprintnum(char *buf, _Float64x rtmp) { mplapack_strfromf64x(buf, __MPLAPACK_BUFLEN__, FLOAT64X_FORMAT, rtmp); }
+inline void sprintnum(char *buf, _Float64x rtmp) { mplapack_strfromf64x(buf, MPLAPACK_BUFLEN, FLOAT64X_FORMAT, rtmp); }
 inline void sprintnum(char *buf, std::complex<_Float64x> ctmp) {
     if (buf == nullptr)
         return;
     // Write real part
-    int nre = mplapack_strfromf64x(buf, __MPLAPACK_BUFLEN__, FLOAT64X_FORMAT, ctmp.real());
+    int nre = mplapack_strfromf64x(buf, MPLAPACK_BUFLEN, FLOAT64X_FORMAT, ctmp.real());
     if (nre < 0) {
         buf[0] = '\0';
         return;
     }
     // Append imag part into remaining space
     size_t used = 0;
-    while (used + 1 < (size_t)__MPLAPACK_BUFLEN__ && buf[used] != '\0')
+    while (used + 1 < (size_t)MPLAPACK_BUFLEN && buf[used] != '\0')
         used++;
 
-    if (used + 1 >= (size_t)__MPLAPACK_BUFLEN__) {
-        buf[__MPLAPACK_BUFLEN__ - 1] = '\0';
+    if (used + 1 >= (size_t)MPLAPACK_BUFLEN) {
+        buf[MPLAPACK_BUFLEN - 1] = '\0';
         return;
     }
-    int nim = mplapack_strfromf64x(buf + used, (size_t)__MPLAPACK_BUFLEN__ - used, FLOAT64X_FORMAT, ctmp.imag());
+    int nim = mplapack_strfromf64x(buf + used, (size_t)MPLAPACK_BUFLEN - used, FLOAT64X_FORMAT, ctmp.imag());
     if (nim < 0) {
         buf[used] = '\0';
         return;
     }
     // Append 'i' if space
     used = 0;
-    while (used + 1 < (size_t)__MPLAPACK_BUFLEN__ && buf[used] != '\0')
+    while (used + 1 < (size_t)MPLAPACK_BUFLEN && buf[used] != '\0')
         used++;
-    if (used + 2 <= (size_t)__MPLAPACK_BUFLEN__) {
+    if (used + 2 <= (size_t)MPLAPACK_BUFLEN) {
         buf[used] = 'i';
         buf[used + 1] = '\0';
     } else {
-        buf[__MPLAPACK_BUFLEN__ - 1] = '\0';
+        buf[MPLAPACK_BUFLEN - 1] = '\0';
     }
 }
-inline void sprintnum_short(char *buf, _Float64x rtmp) { (void)mplapack_strfromf64x(buf, __MPLAPACK_BUFLEN__, FLOAT64X_SHORT_FORMAT, rtmp); }
+inline void sprintnum_short(char *buf, _Float64x rtmp) { (void)mplapack_strfromf64x(buf, MPLAPACK_BUFLEN, FLOAT64X_SHORT_FORMAT, rtmp); }
 inline void sprintnum_short(char *buf, std::complex<_Float64x> ctmp) {
     if (buf == nullptr)
         return;
-    int nre = mplapack_strfromf64x(buf, __MPLAPACK_BUFLEN__, FLOAT64X_SHORT_FORMAT, ctmp.real());
+    int nre = mplapack_strfromf64x(buf, MPLAPACK_BUFLEN, FLOAT64X_SHORT_FORMAT, ctmp.real());
     if (nre < 0) {
         buf[0] = '\0';
         return;
     }
     size_t used = 0;
-    while (used + 1 < (size_t)__MPLAPACK_BUFLEN__ && buf[used] != '\0')
+    while (used + 1 < (size_t)MPLAPACK_BUFLEN && buf[used] != '\0')
         used++;
-    if (used + 1 >= (size_t)__MPLAPACK_BUFLEN__) {
-        buf[__MPLAPACK_BUFLEN__ - 1] = '\0';
+    if (used + 1 >= (size_t)MPLAPACK_BUFLEN) {
+        buf[MPLAPACK_BUFLEN - 1] = '\0';
         return;
     }
-    int nim = mplapack_strfromf64x(buf + used, (size_t)__MPLAPACK_BUFLEN__ - used, FLOAT64X_SHORT_FORMAT, ctmp.imag());
+    int nim = mplapack_strfromf64x(buf + used, (size_t)MPLAPACK_BUFLEN - used, FLOAT64X_SHORT_FORMAT, ctmp.imag());
     if (nim < 0) {
         buf[used] = '\0';
         return;
     }
     used = 0;
-    while (used + 1 < (size_t)__MPLAPACK_BUFLEN__ && buf[used] != '\0')
+    while (used + 1 < (size_t)MPLAPACK_BUFLEN && buf[used] != '\0')
         used++;
-    if (used + 2 <= (size_t)__MPLAPACK_BUFLEN__) {
+    if (used + 2 <= (size_t)MPLAPACK_BUFLEN) {
         buf[used] = 'i';
         buf[used + 1] = '\0';
     } else {
-        buf[__MPLAPACK_BUFLEN__ - 1] = '\0';
+        buf[MPLAPACK_BUFLEN - 1] = '\0';
     }
 }
 #else
 #error
 #endif // MPLAPACK_BINARY80_IO
-#endif // ___MPLAPACK_INTERNAL___
+#endif // MPLAPACK_INTERNAL
 
 #if MPLAPACK_BINARY80_MATH == MPLAPACK_BINARY80_MATH_LDBL
 #include <cmath> // do not rely on transitive includes

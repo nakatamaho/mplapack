@@ -134,7 +134,7 @@ void Csteqr_test2(const char *compz) {
                 set_random_vector(Eorg_ref, Eorg, veclen(n - 1, 1));
                 set_random_vector(work_ref, work, max((INTEGER)1, 2 * n - 2));
 // keep backups of D and E.
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                 int iOne = 1, _n, __n;
                 _n = veclen(n, 1);
                 __n = veclen(n - 1, 1);
@@ -149,7 +149,7 @@ void Csteqr_test2(const char *compz) {
                 Rcopy(veclen(n - 1, 1), Eorg, 1, E, 1);
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                 zsteqr_f77(compz, &n_ref, D_ref, E_ref, Z_ref, &ldz_ref, work_ref, &info_ref);
 #else
                 Csteqr(compz, n_ref, D_ref, E_ref, Z_ref, ldz_ref, work_ref, info_ref);
@@ -181,7 +181,7 @@ void Csteqr_test2(const char *compz) {
                 printf("\n");
 #endif
                 if (Mlsame(compz, "I")) {
-                    diff = check_eigvec<REAL, COMPLEX>(Dorg, D, Eorg, Z, (int)n, (int)ldz);
+                    diff = cast2ref(check_eigvec<REAL, COMPLEX>(Dorg, D, Eorg, Z, (int)n, (int)ldz));
                 }
                 if (diff > EPSILON) {
                     printf("error: eigvec");

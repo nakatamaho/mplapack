@@ -1,0 +1,6 @@
+metric	unit	direction	mode
+executed-tests	tests	equal	exact
+exit-status	status	equal	status-equal
+failure-count	tests	lower-is-better	upper-bound
+max-error	absolute-error	lower-is-better	nonincreasing-error
+test-error-ratio	ratio	lower-is-better	nonincreasing-error

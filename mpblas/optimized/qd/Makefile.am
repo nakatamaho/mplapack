@@ -7,7 +7,7 @@ MPLAPACK_QD_OPTIMIZED_SOURCES =
 
 lib_LTLIBRARIES = libmplapack_qd_opt.la
 
-libmplapack_qd_opt_la_CPPFLAGS = -I. -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) $(OPENMP_CXXFLAGS) -D___MPLAPACK_BUILD_WITH_QD___
+libmplapack_qd_opt_la_CPPFLAGS = -I. -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) $(OPENMP_CXXFLAGS) -DMPLAPACK_BUILD_WITH_QD
 libmplapack_qd_opt_la_SOURCES = \
 Rcopy.cpp Rcopy_ref.cpp openmp/Rcopy_omp.cpp \
 Rdot.cpp  Rdot_ref.cpp  openmp/Rdot_omp.cpp \

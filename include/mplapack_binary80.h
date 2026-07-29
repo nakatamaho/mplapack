@@ -26,8 +26,8 @@
  *
  */
 
-#ifndef _MPLAPACK_BINARY80_H_
-#define _MPLAPACK_BINARY80_H_
+#ifndef MPLAPACK_BINARY80_H
+#define MPLAPACK_BINARY80_H
 
 #include "mplapack_config.h"
 

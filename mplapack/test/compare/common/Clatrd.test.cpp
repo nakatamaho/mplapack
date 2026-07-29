@@ -79,7 +79,7 @@ void Clatrd_test2(const char *uplo) {
                         set_random_vector(W_ref, W, matlen(ldw, nb));
                         set_random_vector(e_ref, e, veclen(n - 1, 1));
                         set_random_vector(tau_ref, tau, veclen(n - 1, 1));
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                         zlatrd_f77(uplo, &n, &nb, A_ref, &lda, e_ref, tau_ref, W_ref, &ldw);
 #else
                         Clatrd(uplo, n, nb, A_ref, lda, e_ref, tau_ref, W_ref, ldw);

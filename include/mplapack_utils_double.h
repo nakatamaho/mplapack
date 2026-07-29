@@ -35,7 +35,7 @@
 inline double log2(double x) { return log(x) / log(2.0); }
 #endif
 
-#if defined ___MPLAPACK_INTERNAL___
+#if defined MPLAPACK_INTERNAL
 #include <mplapack_print_double.h>
 #endif
 

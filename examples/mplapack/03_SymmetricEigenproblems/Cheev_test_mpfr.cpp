@@ -11,10 +11,10 @@
 #define MPFR_FORMAT "%+68.64Re"
 #define MPFR_SHORT_FORMAT "%+20.16Re"
 
-inline void printnum(mpreal rtmp) { mpfr_printf(MPFR_FORMAT, mpfr_ptr(rtmp)); }
-inline void printnum_short(mpreal rtmp) { mpfr_printf(MPFR_SHORT_FORMAT, mpfr_ptr(rtmp)); }
-inline void printnum(mpcomplex ctmp) {
-    mpreal cre, cim;
+inline void printnum(mpfr_class rtmp) { mpfr_printf(MPFR_FORMAT, mpfr_ptr(rtmp)); }
+inline void printnum_short(mpfr_class rtmp) { mpfr_printf(MPFR_SHORT_FORMAT, mpfr_ptr(rtmp)); }
+inline void printnum(mpc_class ctmp) {
+    mpfr_class cre, cim;
     cre = ctmp.real();
     cim = ctmp.imag();
     mpfr_printf(MPFR_SHORT_FORMAT MPFR_SHORT_FORMAT "i", mpfr_ptr(cre), mpfr_ptr(cim));
@@ -59,24 +59,24 @@ int main()
     mplapackint n = 3;
     mplapackint lwork, info;
 
-    mpcomplex *A = new mpcomplex[n * n];
-    mpreal *w = new mpreal[n];
-    mpreal *rwork = new mpreal[3 * n - 1];
+    mpc_class *A = new mpc_class[n * n];
+    mpfr_class *w = new mpfr_class[n];
+    mpfr_class *rwork = new mpfr_class[3 * n - 1];
 
 //setting A matrix
-    A[0 + 0 * n] = 2.0;               A[0 + 1 * n] = mpcomplex(0.0, -1.0);    A[0 + 2 * n] = 0.0;
-    A[1 + 0 * n] = mpcomplex(0.0, 1.0); A[1 + 1 * n] = 2.0;                   A[1 + 2 * n] = 0.0;
+    A[0 + 0 * n] = 2.0;               A[0 + 1 * n] = mpc_class(0.0, -1.0);    A[0 + 2 * n] = 0.0;
+    A[1 + 0 * n] = mpc_class(0.0, 1.0); A[1 + 1 * n] = 2.0;                   A[1 + 2 * n] = 0.0;
     A[2 + 0 * n] = 0.0;               A[2 + 1 * n] = 0.0;                   A[2 + 2 * n] = 3.0;
 
     printf("A ="); printmat(n, n, A, n); printf("\n");
 //work space query
     lwork = -1;
-    mpcomplex *work = new mpcomplex[1];
+    mpc_class *work = new mpc_class[1];
 
     Cheev("V", "U", n, A, n, w, work, lwork, rwork, info);
     lwork = (int) cast2double (work[0].real());
     delete[]work;
-    work = new mpcomplex[std::max((mplapackint) 1, lwork)];
+    work = new mpc_class[std::max((mplapackint) 1, lwork)];
 //inverse matrix
     Cheev("V", "U", n, A, n, w, work, lwork, rwork, info);
 //print out some results.

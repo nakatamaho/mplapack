@@ -1,0 +1,28 @@
+id	source_type	target_type	form	requirement	evidence	test_id
+REAL-DOUBLE	double	mpfrxx::mpfr_class	explicit construction	REQUIRED	include/mpblas_double.h:35;include/mplapack_compare_debug.h:174;mpblas/test/common/mplapack.test.cpp:708	spike-interop-real
+REAL-DD	dd_real	mpfrxx::mpfr_class	explicit construction	REQUIRED	include/mpblas_dd.h:39;include/mplapack_compare_debug.h:174;mpblas/test/common/mplapack.test.cpp:708	spike-interop-real
+REAL-QD	qd_real	mpfrxx::mpfr_class	explicit construction	REQUIRED	include/mpblas_qd.h:42;include/mplapack_compare_debug.h:174;mpblas/test/common/mplapack.test.cpp:708	spike-interop-real
+REAL-BINARY80	mplapack_binary80_t	mpfrxx::mpfr_class	explicit construction	REQUIRED	include/mpblas_binary80.h:36;include/mplapack_compare_debug.h:174;mpblas/test/common/mplapack.test.cpp:708	spike-interop-real
+REAL-BINARY128	mplapack_binary128_t	mpfrxx::mpfr_class	explicit construction	REQUIRED	include/mpblas_binary128.h:36;include/mplapack_compare_debug.h:174;mpblas/test/common/mplapack.test.cpp:708	spike-interop-real
+REAL-GMP	gmpxx::mpf_class	mpfrxx::mpfr_class	explicit construction	REQUIRED	include/mpblas_gmp.h:41;include/mplapack_compare_debug.h:174;mpblas/test/common/mplapack.test.cpp:708	spike-interop-real
+COMPLEX-DOUBLE	std::complex<double>	mpfrxx::mpc_class	explicit construction	REQUIRED	include/mpblas_double.h:41;include/mplapack_compare_debug.h:175;mpblas/test/common/mplapack.test.cpp:695	spike-interop-complex
+COMPLEX-DD	dd_complex	mpfrxx::mpc_class	explicit construction	REQUIRED	include/mpblas_dd.h:35;include/mplapack_compare_debug.h:175;mpblas/test/common/mplapack.test.cpp:695	spike-interop-complex
+COMPLEX-QD	qd_complex	mpfrxx::mpc_class	explicit construction	REQUIRED	include/mpblas_qd.h:37;include/mplapack_compare_debug.h:175;mpblas/test/common/mplapack.test.cpp:695	spike-interop-complex
+COMPLEX-BINARY80	std::complex<mplapack_binary80_t>	mpfrxx::mpc_class	explicit construction	REQUIRED	include/mpblas_binary80.h:37;include/mplapack_compare_debug.h:175;mpblas/test/common/mplapack.test.cpp:695	spike-interop-complex
+COMPLEX-BINARY128	std::complex<mplapack_binary128_t>	mpfrxx::mpc_class	explicit construction	REQUIRED	include/mpblas_binary128.h:37;include/mplapack_compare_debug.h:175;mpblas/test/common/mplapack.test.cpp:695	spike-interop-complex
+COMPLEX-GMP	gmpxx::mpfc_class	mpfrxx::mpc_class	explicit construction	REQUIRED	include/mpblas_gmp.h:35;include/mplapack_compare_debug.h:175;mpblas/test/common/mplapack.test.cpp:695	spike-interop-complex
+REVERSE-GMP-REAL	mpfrxx::mpfr_class	gmpxx::mpf_class	none	FORBIDDEN	docs/migration/gmpfrxx_mkII/CODEX_PROMPTS.md:60	forbidden-matrix-gate
+REVERSE-GMP-COMPLEX	mpfrxx::mpc_class	gmpxx::mpfc_class	none	FORBIDDEN	docs/migration/gmpfrxx_mkII/CODEX_PROMPTS.md:61	forbidden-matrix-gate
+REVERSE-OTHER-REAL	mpfrxx::mpfr_class	double|dd_real|qd_real|mplapack_binary80_t|mplapack_binary128_t	none	FORBIDDEN	docs/migration/gmpfrxx_mkII/CODEX_PROMPTS.md:332	forbidden-matrix-gate
+REVERSE-OTHER-COMPLEX	mpfrxx::mpc_class	std::complex<double>|dd_complex|qd_complex|std::complex<mplapack_binary80_t>|std::complex<mplapack_binary128_t>	none	FORBIDDEN	docs/migration/gmpfrxx_mkII/CODEX_PROMPTS.md:332	forbidden-matrix-gate
+MIXED-ARITHMETIC	backend adapter operand	mpfrxx::mpfr_class|mpfrxx::mpc_class	operator arithmetic	FORBIDDEN	docs/migration/gmpfrxx_mkII/CODEX_PROMPTS.md:333	forbidden-matrix-gate
+BOTH-OPERAND-ORDERS	backend adapter operand	mpfrxx::mpfr_class|mpfrxx::mpc_class	both operand orders	FORBIDDEN	docs/migration/gmpfrxx_mkII/CODEX_PROMPTS.md:334	forbidden-matrix-gate
+COMPOUND-ASSIGN	backend adapter operand	mpfrxx::mpfr_class|mpfrxx::mpc_class	compound assignment	FORBIDDEN	docs/migration/gmpfrxx_mkII/CODEX_PROMPTS.md:335	forbidden-matrix-gate
+EXPR-COMPOSITION	backend adapter expression	mpfrxx expression template	expression composition	FORBIDDEN	docs/migration/gmpfrxx_mkII/CODEX_PROMPTS.md:336	forbidden-matrix-gate
+REAL-EDD	edd_real	mpfrxx::mpfr_class	none	OUT_OF_SCOPE	docs/migration/gmpfrxx_mkII/CODEX_PROMPTS.md:181	out-of-scope-gate
+COMPLEX-EDD	edd_complex	mpfrxx::mpc_class	none	OUT_OF_SCOPE	docs/migration/gmpfrxx_mkII/CODEX_PROMPTS.md:181	out-of-scope-gate
+REAL-TD	td_real	mpfrxx::mpfr_class	none	OUT_OF_SCOPE	docs/migration/gmpfrxx_mkII/CODEX_PROMPTS.md:182	out-of-scope-gate
+COMPLEX-TD	td_complex	mpfrxx::mpc_class	none	OUT_OF_SCOPE	docs/migration/gmpfrxx_mkII/CODEX_PROMPTS.md:182	out-of-scope-gate
+PROTOTYPE-REVERSE-CAST2	mpfrxx::mpfr_class|mpfrxx::mpc_class	legacy backend type	cast2* helpers	NOT_USED	docs/migration/gmpfrxx_mkII/INTEROP_PROTOTYPE.md:247	prototype-history-gate
+PROTOTYPE-ROUNDTRIP	backend value	backend value	round-trip identity	NOT_USED	docs/migration/gmpfrxx_mkII/INTEROP_PROTOTYPE.md:286	prototype-history-gate
+PROTOTYPE-PRECISION-SWEEP	backend value	mpfrxx::mpfr_class|mpfrxx::mpc_class	precision sweep	NOT_USED	docs/migration/gmpfrxx_mkII/INTEROP_PROTOTYPE.md:310	prototype-history-gate

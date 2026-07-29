@@ -1,0 +1,197 @@
+{
+  "default_precision_bits": 512,
+  "results": [
+    {
+      "compile_exit": 0,
+      "id": "default-precision-512",
+      "later_owner": null,
+      "log": "spike-logs/default-precision-512.log",
+      "must_pass_p0": true,
+      "outcome": "PASS",
+      "run_exit": 0,
+      "source": "default_precision.cpp"
+    },
+    {
+      "compile_exit": 0,
+      "id": "same-family-arithmetic",
+      "later_owner": "P2C",
+      "log": "spike-logs/same-family-arithmetic.log",
+      "must_pass_p0": false,
+      "outcome": "PASS",
+      "run_exit": 0,
+      "source": "same_family.cpp"
+    },
+    {
+      "compile_exit": 0,
+      "id": "utility-print-hex",
+      "later_owner": "P2C",
+      "log": "spike-logs/utility-print-hex.log",
+      "must_pass_p0": false,
+      "outcome": "PASS",
+      "run_exit": 0,
+      "source": "utility_print_hex.cpp"
+    },
+    {
+      "compile_exit": 1,
+      "id": "mplapack-mpfr-surface",
+      "later_owner": "P2C/P3",
+      "log": "spike-logs/mplapack-mpfr-surface.log",
+      "must_pass_p0": false,
+      "outcome": "COMPILE_FAIL",
+      "run_exit": null,
+      "source": "mplapack_mpfr_surface.cpp"
+    },
+    {
+      "compile_exit": 1,
+      "id": "mplapack-gmp-surface",
+      "later_owner": "P2C/P4",
+      "log": "spike-logs/mplapack-gmp-surface.log",
+      "must_pass_p0": false,
+      "outcome": "COMPILE_FAIL",
+      "run_exit": null,
+      "source": "mplapack_gmp_surface.cpp"
+    },
+    {
+      "compile_exit": 0,
+      "id": "legacy-name-collision",
+      "later_owner": "P2C",
+      "log": "spike-logs/legacy-name-collision.log",
+      "must_pass_p0": false,
+      "outcome": "PASS",
+      "run_exit": 0,
+      "source": "name_collision.cpp"
+    },
+    {
+      "compile_exit": 0,
+      "id": "expression-lifetime",
+      "later_owner": "P2C",
+      "log": "spike-logs/expression-lifetime.log",
+      "must_pass_p0": false,
+      "outcome": "PASS",
+      "run_exit": 0,
+      "source": "expression_lifetime.cpp"
+    },
+    {
+      "compile_exit": 0,
+      "id": "REAL-DOUBLE",
+      "later_owner": "P2A",
+      "log": "spike-logs/REAL-DOUBLE.log",
+      "must_pass_p0": false,
+      "outcome": "PASS",
+      "run_exit": 0,
+      "source": "real_double.cpp"
+    },
+    {
+      "compile_exit": 1,
+      "id": "REAL-DD",
+      "later_owner": "P2A",
+      "log": "spike-logs/REAL-DD.log",
+      "must_pass_p0": false,
+      "outcome": "COMPILE_FAIL",
+      "run_exit": null,
+      "source": "real_dd.cpp"
+    },
+    {
+      "compile_exit": 1,
+      "id": "REAL-QD",
+      "later_owner": "P2A",
+      "log": "spike-logs/REAL-QD.log",
+      "must_pass_p0": false,
+      "outcome": "COMPILE_FAIL",
+      "run_exit": null,
+      "source": "real_qd.cpp"
+    },
+    {
+      "compile_exit": 1,
+      "id": "REAL-BINARY80",
+      "later_owner": "P2A",
+      "log": "spike-logs/REAL-BINARY80.log",
+      "must_pass_p0": false,
+      "outcome": "COMPILE_FAIL",
+      "run_exit": null,
+      "source": "real_binary80.cpp"
+    },
+    {
+      "compile_exit": 1,
+      "id": "REAL-BINARY128",
+      "later_owner": "P2A",
+      "log": "spike-logs/REAL-BINARY128.log",
+      "must_pass_p0": false,
+      "outcome": "COMPILE_FAIL",
+      "run_exit": null,
+      "source": "real_binary128.cpp"
+    },
+    {
+      "compile_exit": 1,
+      "id": "REAL-GMP",
+      "later_owner": "P2A",
+      "log": "spike-logs/REAL-GMP.log",
+      "must_pass_p0": false,
+      "outcome": "COMPILE_FAIL",
+      "run_exit": null,
+      "source": "real_gmp.cpp"
+    },
+    {
+      "compile_exit": 0,
+      "id": "COMPLEX-DOUBLE",
+      "later_owner": "P2B",
+      "log": "spike-logs/COMPLEX-DOUBLE.log",
+      "must_pass_p0": false,
+      "outcome": "PASS",
+      "run_exit": 0,
+      "source": "complex_double.cpp"
+    },
+    {
+      "compile_exit": 0,
+      "id": "COMPLEX-DD",
+      "later_owner": "P2B",
+      "log": "spike-logs/COMPLEX-DD.log",
+      "must_pass_p0": false,
+      "outcome": "RUN_FAIL",
+      "run_exit": 1,
+      "source": "complex_dd.cpp"
+    },
+    {
+      "compile_exit": 0,
+      "id": "COMPLEX-QD",
+      "later_owner": "P2B",
+      "log": "spike-logs/COMPLEX-QD.log",
+      "must_pass_p0": false,
+      "outcome": "RUN_FAIL",
+      "run_exit": 1,
+      "source": "complex_qd.cpp"
+    },
+    {
+      "compile_exit": 1,
+      "id": "COMPLEX-BINARY80",
+      "later_owner": "P2B",
+      "log": "spike-logs/COMPLEX-BINARY80.log",
+      "must_pass_p0": false,
+      "outcome": "COMPILE_FAIL",
+      "run_exit": null,
+      "source": "complex_binary80.cpp"
+    },
+    {
+      "compile_exit": 1,
+      "id": "COMPLEX-BINARY128",
+      "later_owner": "P2B",
+      "log": "spike-logs/COMPLEX-BINARY128.log",
+      "must_pass_p0": false,
+      "outcome": "COMPILE_FAIL",
+      "run_exit": null,
+      "source": "complex_binary128.cpp"
+    },
+    {
+      "compile_exit": 1,
+      "id": "COMPLEX-GMP",
+      "later_owner": "P2B",
+      "log": "spike-logs/COMPLEX-GMP.log",
+      "must_pass_p0": false,
+      "outcome": "COMPILE_FAIL",
+      "run_exit": null,
+      "source": "complex_gmp.cpp"
+    }
+  ],
+  "schema": 1,
+  "semantic_macros_enabled": []
+}

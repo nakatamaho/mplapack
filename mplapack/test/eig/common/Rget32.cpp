@@ -273,7 +273,7 @@ void Rget32(REAL &rmax, INTEGER &lmax, INTEGER &ninfo, INTEGER &knt) {
                                             }
                                             tnrm = abs(tr[0]) + abs(tr[(2 - 1)]) + abs(tr[(2 - 1) * ldtr]) + abs(tr[(2 - 1) + (2 - 1) * ldtr]) + abs(tl[0]) + abs(tl[(2 - 1)]) + abs(tl[(2 - 1) * ldtl]) + abs(tl[(2 - 1) + (2 - 1) * ldtl]);
                                             xnrm = max(abs(x[0]) + abs(x[(2 - 1) * ldx]), abs(x[(2 - 1)]) + abs(x[(2 - 1) + (2 - 1) * ldx]));
-#if defined ___MPLAPACK_BUILD_WITH_QD___
+#if defined MPLAPACK_BUILD_WITH_QD
                                             REAL bsum = abs(b[0]) + abs(b[(2 - 1)]) + abs(b[(2 - 1) * ldb]) + abs(b[(2 - 1) + (2 - 1) * ldb]);
                                             REAL cscale = max(tnrm, smlnum);
                                             REAL xscale = max(xnrm, abs(scale) * bsum / cscale, smlnum);

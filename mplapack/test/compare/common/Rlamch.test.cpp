@@ -28,6 +28,7 @@
 
 #include <iostream>
 #include <cstdarg>
+#include <cfloat>
 #include <cstdio>
 #include <mpblas.h>
 #include <mplapack.h>
@@ -84,7 +85,7 @@ static void dual_printf(const char *fmt, ...) {
 //   O (rmax):  Overflow threshold. Verify rmax > 0 and 1/rmax > 0.
 // -----------------------------------------------------------------------------
 
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
 #include <climits>
 #include <limits>
 #include <cstdio>
@@ -150,33 +151,15 @@ static unsigned long checked_prec_to_ulong(mpfr_prec_t p, const char *what) {
 }
 
 static mpfr_prec_t current_real_default_prec() {
-    // Capture the precision of newly created REAL values. In some builds, MPLAPACK's
-    // mpfr::mpreal default precision may differ from mpfr_get_default_prec().
-    REAL probe = 1.0;
-    return mpfr_get_prec(mpfr_ptr(probe));
+    return mpfrxx::default_precision_bits();
 }
 
-template <typename T, typename = void> struct has_get_default_rnd : std::false_type {};
-
-template <typename T> struct has_get_default_rnd<T, std::void_t<decltype(T::get_default_rnd())>> : std::true_type {};
-
-template <typename T, typename = void> struct has_set_default_rnd : std::false_type {};
-
-template <typename T> struct has_set_default_rnd<T, std::void_t<decltype(T::set_default_rnd(std::declval<mpfr_rnd_t>()))>> : std::true_type {};
-
 static mpfr_rnd_t current_real_default_rnd() {
-    // Prefer mpfr::mpreal's own default rounding mode if available.
-    if constexpr (has_get_default_rnd<mpfr::mpreal>::value) {
-        return mpfr::mpreal::default_rnd;
-    } else {
-        // Fallback: assume mpfr::mpreal follows MPFR's global default rounding mode.
-        return mpfr_get_default_rounding_mode();
-    }
+    return mpfrxx::default_rounding_mode();
 }
 
 static void set_real_default_rnd(mpfr_rnd_t rnd) {
-    mpfr::mpreal::default_rnd = rnd;
-    mpfr_set_default_rounding_mode(rnd);
+    mpfrxx::set_default_rounding_mode(rnd);
 }
 
 struct MpfrEnvSnapshot {
@@ -190,8 +173,7 @@ struct MpfrEnvSnapshot {
 
 static MpfrEnvSnapshot mpfr_env_capture() {
     MpfrEnvSnapshot s;
-    s.mpfr_prec = mpreal::default_prec; // XXX mpreal.h mpreal::default_prec is not in sync with mpfr_get_default_prec();
-                                        // s.mpfr_prec = mpfr_get_default_prec();
+    s.mpfr_prec = mpfrxx::default_precision_bits();
     s.real_prec = current_real_default_prec();
     s.emin = mpfr_get_emin();
     s.emax = mpfr_get_emax();
@@ -213,9 +195,8 @@ static void mpfr_env_apply(const MpfrEnvSnapshot &s) {
         mpfr_test_fail("mpfr_set_emax() rejected the requested value");
     }
 
-    // Apply default precision for both MPFR (C API) and mpfr::mpreal (C++ wrapper).
-    mpfr_set_default_prec(s.mpfr_prec);
-    mpreal::default_prec = s.mpfr_prec;
+    // Apply default precision for both MPFR (C API) and mpfrxx::mpfr_class (C++ wrapper).
+    mpfrxx::set_default_precision_bits(s.mpfr_prec);
 }
 
 struct MpfrEnvGuard {
@@ -441,8 +422,8 @@ static void check_lamch_mpfr_values(const char *tag, const MpfrEnvSnapshot &cfg,
     check_cross_consistency_rmin_rmax(tag, cfg.emin, cfg.emax, cfg.real_rnd, gotE, gotU, gotO);
 
     if (print_values) {
-        char _spbuf[__MPLAPACK_BUFLEN__];
-        char _sphexbuf[__MPLAPACK_BUFLEN__];
+        char _spbuf[MPLAPACK_BUFLEN];
+        char _sphexbuf[MPLAPACK_BUFLEN];
 
         sprintnum(_spbuf, gotE);
         sprinthex_mpfr_fixed(_sphexbuf, sizeof(_sphexbuf), gotE);
@@ -549,8 +530,8 @@ static void check_arithmetic_params_mpfr(const char *tag, bool print_values) {
     }
 
     if (print_values) {
-        char _spbuf[__MPLAPACK_BUFLEN__];
-        char _sphexbuf[__MPLAPACK_BUFLEN__];
+        char _spbuf[MPLAPACK_BUFLEN];
+        char _sphexbuf[MPLAPACK_BUFLEN];
 
         dual_printf("[params/%s] t=%lld emin=%lld emax=%lld\n", tag, (long long)p.t, (long long)p.emin, (long long)p.emax);
 
@@ -718,8 +699,8 @@ static void check_blue_scaling_mpfr(const char *tag, bool print_values) {
     check_blue_threshold_boundaries_mpfr(tag, q, strict_blue_valid);
 
     if (print_values) {
-        char _spbuf[__MPLAPACK_BUFLEN__];
-        char _sphexbuf[__MPLAPACK_BUFLEN__];
+        char _spbuf[MPLAPACK_BUFLEN];
+        char _sphexbuf[MPLAPACK_BUFLEN];
 
         dual_printf("BlueScale exp_tsml: %lld\n", (long long)q.exp_tsml);
         dual_printf("BlueScale exp_tbig: %lld\n", (long long)q.exp_tbig);
@@ -840,7 +821,7 @@ void Rlamch_mpfr_test() {
 }
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
+#if defined MPLAPACK_BUILD_WITH_GMP
 #include <limits>
 #include <cstdio>
 #include <cstdlib>
@@ -884,18 +865,18 @@ struct GmpEnvSnapshot {
 
 static inline GmpEnvSnapshot gmp_env_capture() {
     GmpEnvSnapshot s{};
-    s.default_prec = mpf_get_default_prec();
+    s.default_prec = gmpxx::default_mpf_precision_bits();
     return s;
 }
 static void gmp_test_fail(const char *tag, const char *what) {
     // Provide enough context to diagnose precision-dependent failures.
     const REAL probe = 1.0;
     const mp_bitcnt_t real_prec = mpf_get_prec(probe.get_mpf_t());
-    const mp_bitcnt_t def_prec = mpf_get_default_prec();
+    const mp_bitcnt_t def_prec = gmpxx::default_mpf_precision_bits();
 
     printf("*** Testing Rlamch (GMP) failed: %s (%s) ***\n", tag, what);
-    printf("    mpf_default_prec = %lu bits\n", static_cast<unsigned long>(def_prec));
-    printf("    REAL prec        = %lu bits\n", static_cast<unsigned long>(real_prec));
+    printf("    gmpxx default prec = %lu bits\n", static_cast<unsigned long>(def_prec));
+    printf("    REAL prec          = %lu bits\n", static_cast<unsigned long>(real_prec));
     exit(1);
 }
 
@@ -972,8 +953,8 @@ static void check_arithmetic_params_gmp(const char *tag, mp_bitcnt_t prec_bits, 
     gmp_assert_case(q.exp_sbig < q.exp_ssml, tag, "Blue exponents must satisfy exp_sbig < exp_ssml");
 
     if (print_values) {
-        char _spbuf[__MPLAPACK_BUFLEN__];
-        char _sphexbuf[__MPLAPACK_BUFLEN__];
+        char _spbuf[MPLAPACK_BUFLEN];
+        char _sphexbuf[MPLAPACK_BUFLEN];
 
         dual_printf("[params/%s] t=%lld emin=%lld emax=%lld\n",
                     tag, (long long)p.t, (long long)p.emin, (long long)p.emax);
@@ -1192,8 +1173,8 @@ static void check_blue_scaling_gmp(const char *tag, mp_bitcnt_t prec_bits, bool 
     check_blue_threshold_boundaries_gmp(tag, q, delta, ordering_valid);
 
     if (print_values) {
-        char _spbuf[__MPLAPACK_BUFLEN__];
-        char _sphexbuf[__MPLAPACK_BUFLEN__];
+        char _spbuf[MPLAPACK_BUFLEN];
+        char _sphexbuf[MPLAPACK_BUFLEN];
 
         dual_printf("BlueScale exp_tsml: %lld\n", (long long)q.exp_tsml);
         dual_printf("BlueScale exp_tbig: %lld\n", (long long)q.exp_tbig);
@@ -1241,8 +1222,8 @@ static void check_lamch_gmp_values(const char *tag, mp_bitcnt_t prec_bits, bool 
     const REAL gotO = Rlamch_gmp("O");
     const REAL gotZ = Rlamch_gmp("Z");
 
-    // Re-validate: Rlamch must not mutate the GMP global environment.
-    gmp_assert_case(mpf_get_default_prec() == env.default_prec, tag, "Rlamch mutated mpf default precision");
+    // Re-validate: Rlamch must not mutate the gmpfrxx_mkII default context.
+    gmp_assert_case(gmpxx::default_mpf_precision_bits() == env.default_prec, tag, "Rlamch mutated gmpxx default precision");
     // Exact-value checks (model-defined).
     gmp_assert_equal_real(tag, "B", gotB, ex.B);
     gmp_assert_equal_real(tag, "N", gotN, ex.N);
@@ -1290,8 +1271,8 @@ static void check_lamch_gmp_values(const char *tag, mp_bitcnt_t prec_bits, bool 
     gmp_assert_case(shifted == (one - gotE), tag, "O * 2^(-L) cross-check failed (expected 1 - E)");
 
     if (print_values) {
-        char _spbuf[__MPLAPACK_BUFLEN__];
-        char _sphexbuf[__MPLAPACK_BUFLEN__];
+        char _spbuf[MPLAPACK_BUFLEN];
+        char _sphexbuf[MPLAPACK_BUFLEN];
 
         sprintnum(_spbuf, gotE);
         sprinthex_gmp_fixed(_sphexbuf, sizeof(_sphexbuf), gotE);
@@ -1351,14 +1332,13 @@ void Rlamch_gmp_test() {
     check_arithmetic_params_gmp("current", prec_bits, print_values);
     check_lamch_gmp_values("current", prec_bits, print_values);
     // Additional precision cases requested: 4096, 128, 64 bits.
-    // Note: mpf_set_default_prec() sets the default for newly created mpf values.
+    // gmpfrxx_mkII default construction follows the external-provider context.
     const mp_bitcnt_t requested_precisions[] = {4096, 128, 64};
 
     for (size_t i = 0; i < (sizeof(requested_precisions) / sizeof(requested_precisions[0])); ++i) {
         dual_printf("[GMP] precision=%ld\n", requested_precisions[i]);
         const mp_bitcnt_t req = requested_precisions[i];
-        const mp_bitcnt_t saved = mpf_get_default_prec();
-        mpf_set_default_prec(req);
+        const gmpxx::default_mpf_precision_guard precision_guard(req);
 
         // Use the effective precision actually used by REAL/mpf objects.
         const REAL probe = 1.0;
@@ -1370,12 +1350,11 @@ void Rlamch_gmp_test() {
         check_arithmetic_params_gmp(tagbuf, eff, print_values);
         check_lamch_gmp_values(tagbuf, eff, print_values);
 
-        mpf_set_default_prec(saved);
     }
 }
-#endif // ___MPLAPACK_BUILD_WITH_GMP___
+#endif // MPLAPACK_BUILD_WITH_GMP
 
-#if defined ___MPLAPACK_BUILD_WITH_QD___
+#if defined MPLAPACK_BUILD_WITH_QD
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
@@ -1460,8 +1439,8 @@ static void check_arithmetic_params_qd(const char *tag, bool print_values) {
     assert_equal_qd(tag, "ArithmeticParams->Blue sbig", q.sbig, q2.sbig);
 
     if (print_values) {
-        char _spbuf[__MPLAPACK_BUFLEN__];
-        char _sphexbuf[__MPLAPACK_BUFLEN__];
+        char _spbuf[MPLAPACK_BUFLEN];
+        char _sphexbuf[MPLAPACK_BUFLEN];
 
         dual_printf("[params/%s] t=%lld emin=%lld emax=%lld\n",
                     tag, (long long)p.t, (long long)p.emin, (long long)p.emax);
@@ -1735,8 +1714,8 @@ static void check_blue_scaling_qd(const char *tag, bool print_values) {
     check_blue_threshold_boundaries_qd(tag, q, delta);
 
     if (print_values) {
-        char _spbuf[__MPLAPACK_BUFLEN__];
-        char _sphexbuf[__MPLAPACK_BUFLEN__];
+        char _spbuf[MPLAPACK_BUFLEN];
+        char _sphexbuf[MPLAPACK_BUFLEN];
 
         dual_printf("BlueScale exp_tsml: %lld\n", (long long)q.exp_tsml);
         dual_printf("BlueScale exp_tbig: %lld\n", (long long)q.exp_tbig);
@@ -1794,8 +1773,8 @@ static void check_lamch_qd_values(const char *tag, bool print_values) {
     check_cross_consistency_rmin_rmax_qd(tag, gotM, gotU, gotL, gotO);
 
     if (print_values) {
-        char _spbuf[__MPLAPACK_BUFLEN__];
-        char _sphexbuf[__MPLAPACK_BUFLEN__];
+        char _spbuf[MPLAPACK_BUFLEN];
+        char _sphexbuf[MPLAPACK_BUFLEN];
 
         sprintnum(_spbuf, gotE);
         sprinthex_qd(_sphexbuf, sizeof(_sphexbuf), gotE);
@@ -1854,9 +1833,9 @@ void Rlamch_qd_test() {
     check_blue_scaling_qd(tag, print_values);
 }
 
-#endif // ___MPLAPACK_BUILD_WITH_QD___
+#endif // MPLAPACK_BUILD_WITH_QD
 
-#if defined ___MPLAPACK_BUILD_WITH_DD___
+#if defined MPLAPACK_BUILD_WITH_DD
 
 #include <cmath>
 #include <cstdio>
@@ -1947,8 +1926,8 @@ static void check_arithmetic_params_dd(const char *tag, bool print_values) {
     assert_equal_dd(tag, "ArithmeticParams->Blue sbig", q.sbig, q2.sbig);
 
     if (print_values) {
-        char _spbuf[__MPLAPACK_BUFLEN__];
-        char _sphexbuf[__MPLAPACK_BUFLEN__];
+        char _spbuf[MPLAPACK_BUFLEN];
+        char _sphexbuf[MPLAPACK_BUFLEN];
 
         dual_printf("[params/%s] t=%lld emin=%lld emax=%lld\n",
                     tag, (long long)p.t, (long long)p.emin, (long long)p.emax);
@@ -2254,8 +2233,8 @@ static void check_blue_scaling_dd(const char *tag, bool print_values) {
     check_blue_threshold_boundaries_dd(tag, q, delta);
 
     if (print_values) {
-        char _spbuf[__MPLAPACK_BUFLEN__];
-        char _sphexbuf[__MPLAPACK_BUFLEN__];
+        char _spbuf[MPLAPACK_BUFLEN];
+        char _sphexbuf[MPLAPACK_BUFLEN];
 
         dual_printf("BlueScale exp_tsml: %lld\n", (long long)q.exp_tsml);
         dual_printf("BlueScale exp_tbig: %lld\n", (long long)q.exp_tbig);
@@ -2316,8 +2295,8 @@ static void check_lamch_dd_values(const char *tag, bool print_values) {
     check_cross_consistency_rmin_rmax_dd(tag, gotM, gotU, gotL, gotO);
 
     if (print_values) {
-        char _spbuf[__MPLAPACK_BUFLEN__];
-        char _sphexbuf[__MPLAPACK_BUFLEN__];
+        char _spbuf[MPLAPACK_BUFLEN];
+        char _sphexbuf[MPLAPACK_BUFLEN];
 
         sprintnum(_spbuf, gotE);
         sprinthex_dd(_sphexbuf, sizeof(_sphexbuf), gotE);
@@ -2376,9 +2355,9 @@ void Rlamch_dd_test() {
     check_blue_scaling_dd(tag, print_values);
 }
 
-#endif // ___MPLAPACK_BUILD_WITH_DD___
+#endif // MPLAPACK_BUILD_WITH_DD
 
-#if defined ___MPLAPACK_BUILD_WITH_DOUBLE___
+#if defined MPLAPACK_BUILD_WITH_DOUBLE
 
 #include <cmath>
 #include <cstdio>
@@ -2450,8 +2429,8 @@ static void check_arithmetic_params_double(const char *tag, bool print_values) {
     assert_equal_double(tag, "ArithmeticParams->Blue sbig", q.sbig, q2.sbig);
 
     if (print_values) {
-        char _spbuf[__MPLAPACK_BUFLEN__];
-        char _sphexbuf[__MPLAPACK_BUFLEN__];
+        char _spbuf[MPLAPACK_BUFLEN];
+        char _sphexbuf[MPLAPACK_BUFLEN];
 
         dual_printf("[params/%s] t=%lld emin=%lld emax=%lld\n",
                     tag, (long long)p.t, (long long)p.emin, (long long)p.emax);
@@ -2720,8 +2699,8 @@ static void check_blue_scaling_double(const char *tag, bool print_values) {
     check_blue_threshold_boundaries_double(tag, q);
 
     if (print_values) {
-        char _spbuf[__MPLAPACK_BUFLEN__];
-        char _sphexbuf[__MPLAPACK_BUFLEN__];
+        char _spbuf[MPLAPACK_BUFLEN];
+        char _sphexbuf[MPLAPACK_BUFLEN];
 
         dual_printf("BlueScale exp_tsml: %lld\n", (long long)q.exp_tsml);
         dual_printf("BlueScale exp_tbig: %lld\n", (long long)q.exp_tbig);
@@ -2782,8 +2761,8 @@ static void check_lamch_double_values(const char *tag, bool print_values) {
     check_cross_consistency_rmin_rmax_double(tag, gotE, gotU, gotO);
 
     if (print_values) {
-        char _spbuf[__MPLAPACK_BUFLEN__];
-        char _sphexbuf[__MPLAPACK_BUFLEN__];
+        char _spbuf[MPLAPACK_BUFLEN];
+        char _sphexbuf[MPLAPACK_BUFLEN];
 
         sprintnum(_spbuf, gotE);
         sprinthex_double(_sphexbuf, sizeof(_sphexbuf), gotE);
@@ -2842,9 +2821,9 @@ void Rlamch_double_test() {
     check_blue_scaling_double(tag, print_values);
 }
 
-#endif // ___MPLAPACK_BUILD_WITH_DOUBLE___
+#endif // MPLAPACK_BUILD_WITH_DOUBLE
 
-#if defined ___MPLAPACK_BUILD_WITH_BINARY128___
+#if defined MPLAPACK_BUILD_WITH_BINARY128
 #include <cfenv> // std::fegetround, FE_TONEAREST
 #include <limits>
 
@@ -2960,8 +2939,8 @@ static void check_blue_scaling_binary128(const char *tag, int emin, int emax, in
     check_blue_threshold_boundaries_binary128(tag, q);
 
     if (print_values) {
-        char _spbuf[__MPLAPACK_BUFLEN__];
-        char _sphexbuf[__MPLAPACK_BUFLEN__];
+        char _spbuf[MPLAPACK_BUFLEN];
+        char _sphexbuf[MPLAPACK_BUFLEN];
 
         dual_printf("BlueScale exp_tsml: %lld\n", (long long)q.exp_tsml);
         dual_printf("BlueScale exp_tbig: %lld\n", (long long)q.exp_tbig);
@@ -3043,8 +3022,8 @@ static void check_arithmetic_params_binary128(const char *tag, bool print_values
     assert_equal("ArithmeticParams->Blue sbig", q.sbig, q2.sbig);
 
     if (print_values) {
-        char _spbuf[__MPLAPACK_BUFLEN__];
-        char _sphexbuf[__MPLAPACK_BUFLEN__];
+        char _spbuf[MPLAPACK_BUFLEN];
+        char _sphexbuf[MPLAPACK_BUFLEN];
 
         dual_printf("[params/%s] t=%lld emin=%lld emax=%lld\n",
                     tag, (long long)p.t, (long long)p.emin, (long long)p.emax);
@@ -3237,8 +3216,8 @@ void Rlamch_binary128_test() {
     assert_case(got_prod == expected_prod, "U*O cross-check failed (inconsistent rmin/rmax model)");
 
     if (print_values) {
-        char _spbuf[__MPLAPACK_BUFLEN__];
-        char _sphexbuf[__MPLAPACK_BUFLEN__];
+        char _spbuf[MPLAPACK_BUFLEN];
+        char _sphexbuf[MPLAPACK_BUFLEN];
 
         sprintnum(_spbuf, gotE);
         sprinthex_binary128_fixed(_sphexbuf, sizeof(_sphexbuf), gotE);
@@ -3285,7 +3264,7 @@ void Rlamch_binary128_test() {
 }
 #endif
 
-#if defined ___MPLAPACK_BUILD_WITH_BINARY80___
+#if defined MPLAPACK_BUILD_WITH_BINARY80
 #include <cfenv> // std::fegetround, FE_TONEAREST
 #include <cmath> // scalbnl
 
@@ -3404,8 +3383,8 @@ static void check_blue_scaling_binary80(const char *tag, int emin, int emax, int
     check_blue_threshold_boundaries_binary80(tag, q);
 
     if (print_values) {
-        char _spbuf[__MPLAPACK_BUFLEN__];
-        char _sphexbuf[__MPLAPACK_BUFLEN__];
+        char _spbuf[MPLAPACK_BUFLEN];
+        char _sphexbuf[MPLAPACK_BUFLEN];
 
         dual_printf("BlueScale exp_tsml: %lld\n", (long long)q.exp_tsml);
         dual_printf("BlueScale exp_tbig: %lld\n", (long long)q.exp_tbig);
@@ -3487,8 +3466,8 @@ static void check_arithmetic_params_binary80(const char *tag, bool print_values)
     assert_equal("ArithmeticParams->Blue sbig", q.sbig, q2.sbig);
 
     if (print_values) {
-        char _spbuf[__MPLAPACK_BUFLEN__];
-        char _sphexbuf[__MPLAPACK_BUFLEN__];
+        char _spbuf[MPLAPACK_BUFLEN];
+        char _sphexbuf[MPLAPACK_BUFLEN];
 
         dual_printf("[params/%s] t=%lld emin=%lld emax=%lld\n",
                     tag, (long long)p.t, (long long)p.emin, (long long)p.emax);
@@ -3699,8 +3678,8 @@ void Rlamch_binary80_test() {
     }
 
     if (print_values) {
-        char _spbuf[__MPLAPACK_BUFLEN__];
-        char _sphexbuf[__MPLAPACK_BUFLEN__];
+        char _spbuf[MPLAPACK_BUFLEN];
+        char _sphexbuf[MPLAPACK_BUFLEN];
 
         sprintnum(_spbuf, gotE);
         sprinthex_binary80_fixed(_sphexbuf, sizeof(_sphexbuf), gotE);
@@ -3753,25 +3732,25 @@ int main(int argc, char *argv[]) {
     }
 
     dual_printf("*** Testing Rlamch start ***\n");
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
     Rlamch_mpfr_test();
 #endif
-#if defined ___MPLAPACK_BUILD_WITH_GMP___
+#if defined MPLAPACK_BUILD_WITH_GMP
     Rlamch_gmp_test();
 #endif
-#if defined ___MPLAPACK_BUILD_WITH_QD___
+#if defined MPLAPACK_BUILD_WITH_QD
     Rlamch_qd_test();
 #endif
-#if defined ___MPLAPACK_BUILD_WITH_DD___
+#if defined MPLAPACK_BUILD_WITH_DD
     Rlamch_dd_test();
 #endif
-#if defined ___MPLAPACK_BUILD_WITH_DOUBLE___
+#if defined MPLAPACK_BUILD_WITH_DOUBLE
     Rlamch_double_test();
 #endif
-#if defined ___MPLAPACK_BUILD_WITH_BINARY80___
+#if defined MPLAPACK_BUILD_WITH_BINARY80
     Rlamch_binary80_test();
 #endif
-#if defined ___MPLAPACK_BUILD_WITH_BINARY128___
+#if defined MPLAPACK_BUILD_WITH_BINARY128
     Rlamch_binary128_test();
 #endif
     dual_printf("*** Testing Rlamch successful ***\n");

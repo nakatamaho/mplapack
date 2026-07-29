@@ -1,0 +1,12 @@
+{
+  "version": "1.1.0",
+  "tag": "v1.1.0",
+  "tag_target_sha": "429fd1b35e1927ebaccc9fda5aa2801300b45bf5",
+  "upstream_evidence_sha": "24849d87a222c096cbbf3cdaa9a295c828be0aa3",
+  "archive_filename": "gmpfrxx_mkII.1.1.0.tar.xz",
+  "archive_size_bytes": 15169540,
+  "archive_sha256": "e0f3b813463b7a45dd493a818c60a17530075e0e647ea02227b75501c1984c73",
+  "release_draft": false,
+  "release_prerelease": false,
+  "published_asset_verified": true
+}

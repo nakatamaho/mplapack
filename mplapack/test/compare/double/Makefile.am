@@ -20,15 +20,15 @@ run_Rlamch_test.sh: Makefile
 
 EXTRA_DIST = Rlaruv_reference.txt Rlamch_reference.txt
 
-backend_define = -D___MPLAPACK_BUILD_WITH_DOUBLE___
-backend_cppflags = -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ $(backend_define) -D___MPLAPACK_INTERNAL___
+backend_define = $(GMPFRXX_MKII_CPPFLAGS) -DMPLAPACK_BUILD_WITH_DOUBLE
+backend_cppflags = -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) $(backend_define) -DMPLAPACK_INTERNAL
 backend_cxxflags =
 backend_reference_archives = $(top_builddir)/mplapack/reference/.libs/libmplapack_double.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_mpfr.a
 backend_reference_libs = -lmplapack_double -lmplapack_mpfr
 backend_whole_archive_libs =
 backend_link_libs =
 backend_testdir = $(prefix)/lib/$(target)/mplapack/test/compare/double
-mplibs = -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -lmpc -lmpfr -lgmpxx -lgmp
+mplibs = -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -lmpc -lmpfr -lgmp
 
 compare_tests = \
     Cgelq2.test_double \

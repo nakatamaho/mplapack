@@ -40,7 +40,7 @@
 using namespace fem::major_types;
 using fem::common;
 
-#define __MPLAPACK_MXERBLA__
+#define MPLAPACK_MXERBLA_DEFINE
 
 #include <string>
 #include <mplapack_matgen.h>

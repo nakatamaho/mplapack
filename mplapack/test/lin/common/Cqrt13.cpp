@@ -70,7 +70,7 @@ void Cqrt13(INTEGER const scale, INTEGER const m, INTEGER const n, COMPLEX *a, I
         norma = Clange("Max", m, n, a, lda, dummy);
         smlnum = Rlamch("Safe minimum");
         bignum = one / smlnum;
-#if defined ___MPLAPACK_BUILD_WITH_BINARY80___ || defined ___MPLAPACK_BUILD_WITH_BINARY128___
+#if defined MPLAPACK_BUILD_WITH_BINARY80 || defined MPLAPACK_BUILD_WITH_BINARY128
         Rlabad(smlnum, bignum);
 #endif
         smlnum = smlnum / Rlamch("Epsilon");

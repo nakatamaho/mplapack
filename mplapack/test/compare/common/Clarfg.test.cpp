@@ -65,14 +65,14 @@ void Clarfg_test() {
             for (iter = 0; iter < MAX_ITER; iter++) {
                 set_random_vector(x_ref, x, veclen(n, incx));
                 set_random_number(alpha_ref, alpha);
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                 zlarfg_f77(&n, &alpha_ref, x_ref, &incx, &tau_ref);
 #else
                 Clarfg(n, alpha_ref, x_ref, incx, tau_ref);
 #endif
                 Clarfg(n, alpha, x, incx, tau);
 
-                diff = abs(alpha_ref - alpha);
+                diff = abs(alpha_ref - cast2ref(alpha));
                 if (diff > EPSILON) {
                     printf("error alpha: ");
                     printnum(diff);
@@ -86,7 +86,7 @@ void Clarfg_test() {
                 printnum(maxdiff);
                 printf("\n");
 #endif
-                diff = abs(tau_ref - tau);
+                diff = abs(tau_ref - cast2ref(tau));
                 if (diff > EPSILON) {
                     printf("error tau:   ");
                     printnum(diff);

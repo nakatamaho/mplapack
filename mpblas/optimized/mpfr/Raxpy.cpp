@@ -30,14 +30,14 @@
 
 #include <mpblas_mpfr.h>
 
-void Raxpy_omp(mplapackint n, mpreal da, mpreal * dx, mplapackint incx, mpreal * dy, mplapackint incy);
-void Raxpy_ref(mplapackint n, mpreal da, mpreal * dx, mplapackint incx, mpreal * dy, mplapackint incy);
+void Raxpy_omp(mplapackint n, mpfr_class da, mpfr_class * dx, mplapackint incx, mpfr_class * dy, mplapackint incy);
+void Raxpy_ref(mplapackint n, mpfr_class da, mpfr_class * dx, mplapackint incx, mpfr_class * dy, mplapackint incy);
 
 #define SINGLEOROMP 1000
 
-void Raxpy(mplapackint const n, mpreal const da, mpreal *dx, mplapackint const incx, mpreal *dy, mplapackint const incy)
+void Raxpy(mplapackint const n, mpfr_class const da, mpfr_class *dx, mplapackint const incx, mpfr_class *dy, mplapackint const incy)
 {
-    mpreal Zero = 0.0;
+    mpfr_class Zero = 0.0;
     mplapackint i;
 
     if (n <= 0)	return;

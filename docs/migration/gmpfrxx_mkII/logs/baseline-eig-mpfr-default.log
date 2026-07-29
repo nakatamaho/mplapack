@@ -1,0 +1,59 @@
+make  xeigtstR_mpfr xeigtstC_mpfr xdmdeigtstR_mpfr xdmdeigtstC_mpfr xeigtstR_mpfr_opt xeigtstC_mpfr_opt xdmdeigtstR_mpfr_opt xdmdeigtstC_mpfr_opt
+make[1]: Entering directory '/tmp/mplapack-p0-base/mplapack/test/eig/mpfr'
+make[1]: 'xeigtstR_mpfr' is up to date.
+make[1]: 'xeigtstC_mpfr' is up to date.
+make[1]: 'xdmdeigtstR_mpfr' is up to date.
+make[1]: 'xdmdeigtstC_mpfr' is up to date.
+make[1]: 'xeigtstR_mpfr_opt' is up to date.
+make[1]: 'xeigtstC_mpfr_opt' is up to date.
+make[1]: 'xdmdeigtstR_mpfr_opt' is up to date.
+make[1]: 'xdmdeigtstC_mpfr_opt' is up to date.
+make[1]: Leaving directory '/tmp/mplapack-p0-base/mplapack/test/eig/mpfr'
+make  check-local
+make[1]: Entering directory '/tmp/mplapack-p0-base/mplapack/test/eig/mpfr'
+SEP: Testing Symmetric Eigenvalue Problem routines [default]
+NEP: Testing Nonsymmetric Eigenvalue Problem routines [default]
+SEP: Testing Symmetric Eigenvalue Problem routines [default]
+SVD: Testing Singular Value Decomposition routines [default]
+DEC: Testing Eigen Condition Routines [default]
+DEV: Testing Nonsymmetric Eigenvalue Driver [default]
+GGS: Testing Generalized Nonsymmetric Eigenvalue Problem routines [default]
+GGD: Testing Nonsymmetric Generalized Eigenvalue Problem driver routine [default]
+SBB: Testing banded Schur decomposition routines [default]
+SGG: Testing Generalized Symmetric Eigenvalue Problem routines [default]
+RGEBAL: Testing the balancing of a REAL general matrix [default]
+RGEBAK: Testing the back transformation of a REAL balanced matrix [default]
+RGGBAL: Testing the balancing of a pair of REAL general matrices [default]
+RGGBAK: Testing the back transformation of a pair of REAL balanced matrices [default]
+RBB: Testing banded Singular Value Decomposition routines [default]
+GLM: Testing Generalized Linear Regression Model routines [default]
+GQR: Testing Generalized QR and RQ factorization routines [default]
+GSV: Testing Generalized Singular Value Decomposition routines [default]
+CSD: Testing CS Decomposition routines [default]
+LSE: Testing Constrained Linear Least Squares routines [default]
+NEP: Testing Nonsymmetric Eigenvalue Problem routines [default]
+DMD: Testing Dynamic Mode Decomposition routines [default]
+SEP: Testing Symmetric Eigenvalue Problem routines [default]
+SEP: Testing Symmetric Eigenvalue Problem routines [default]
+DEC: Testing Eigen Condition Routines [default]
+SVD: Testing Singular Value Decomposition routines [default]
+DEV: Testing Nonsymmetric Eigenvalue Driver [default]
+CGD: Testing Nonsymmetric Generalized Eigenvalue Problem driver routine [default]
+GGS: Testing Generalized Nonsymmetric Eigenvalue Problem routines [default]
+CGEBAL: Testing the balancing of a COMPLEX general matrix [default]
+SGG: Testing Generalized Symmetric Eigenvalue Problem routines [default]
+SBB: Testing banded Schur decomposition routines [default]
+CGEBAK: Testing the back transformation of a COMPLEX balanced matrix [default]
+CGGBAL: Testing the balancing of a pair of COMPLEX general matrices [default]
+CGGBAK: Testing the back transformation of a pair of COMPLEX balanced matrices [default]
+CBB: Testing banded Singular Value Decomposition routines [default]
+GLM: Testing Generalized Linear Regression Model routines [default]
+GQR: Testing Generalized QR and RQ factorization routines [default]
+GSV: Testing Generalized Singular Value Decomposition routines [default]
+CSD: Testing CS Decomposition routines [default]
+LSE: Testing Constrained Linear Least Squares routines [default]
+DMD: Testing COMPLEX Dynamic Mode Decomposition routines [default]
+MPFR profile 'default' done.
+MPFR eig tests done: mpfr-check-default
+Output directory: ../results/Ryzen_Threadripper_3970X_ubuntu26_04_gcc-15_2_0/mpfr
+make[1]: Leaving directory '/tmp/mplapack-p0-base/mplapack/test/eig/mpfr'

@@ -1,0 +1,117 @@
+$ c++ -std=gnu++17 -fopenmp -ffp-contract=off -I/tmp/gmpfrxx-p0-install/include -D___MPLAPACK_INTERNAL___ -I/tmp/mplapack-p0-final/include/mplapack -I/tmp/mplapack-p0-final/include -L/tmp/mplapack-p0-final/lib -Wl,-rpath,/tmp/mplapack-p0-final/lib -I/tmp/mplapack-p0-base/include /home/docker/mplapack/docs/migration/gmpfrxx_mkII/tools/spike/complex_binary128.cpp -o /tmp/mplapack-p0-spikes/COMPLEX-BINARY128 -lmpc -lmpfr -lgmp -lqd -lquadmath
+/home/docker/mplapack/docs/migration/gmpfrxx_mkII/tools/spike/complex_binary128.cpp: In function ‘int main()’:
+/home/docker/mplapack/docs/migration/gmpfrxx_mkII/tools/spike/complex_binary128.cpp:11:36: error: no matching function for call to ‘mpfrxx::mpc_class::mpc_class(std::complex<_Float128>&)’
+   11 |     mpfrxx::mpc_class target(source);
+      |                                    ^
+/home/docker/mplapack/docs/migration/gmpfrxx_mkII/tools/spike/complex_binary128.cpp:11:36: note: there are 18 candidates
+In file included from /tmp/gmpfrxx-p0-install/include/mpcxx_mkII.h:36,
+                 from /tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII.h:34,
+                 from /home/docker/mplapack/docs/migration/gmpfrxx_mkII/tools/spike/complex_binary128.cpp:1:
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpc_impl.hpp:360:5: note: candidate 1: ‘template<class Expr, class> mpfrxx::mpc_class::mpc_class(const Expr&)’
+  360 |     mpc_class(const Expr& expr);
+      |     ^~~~~~~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpc_impl.hpp:360:5: note: template argument deduction/substitution failed:
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpc_impl.hpp:359:42: error: no type named ‘result_type’ in ‘using std::decay<std::complex<_Float128> >::type = class std::complex<_Float128>’ {aka ‘class std::complex<_Float128>’}
+  359 |                                     std::is_same_v<typename std::decay_t<Expr>::result_type, mpc_class>>>
+      |                                     ~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpc_impl.hpp:305:5: note: candidate 2: ‘template<class RealScalar, class ImagScalar, class> mpfrxx::mpc_class::mpc_class(RealScalar, ImagScalar)’
+  305 |     mpc_class(RealScalar real, ImagScalar imag)
+      |     ^~~~~~~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpc_impl.hpp:305:5: note: candidate expects 2 arguments, 1 provided
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpc_impl.hpp:280:14: note: candidate 3: ‘template<class Scalar, class> mpfrxx::mpc_class::mpc_class(Scalar)’
+  280 |     explicit mpc_class(Scalar real)
+      |              ^~~~~~~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpc_impl.hpp:280:14: note: template argument deduction/substitution failed:
+In file included from /usr/include/c++/15/bits/move.h:37,
+                 from /usr/include/c++/15/bits/exception_ptr.h:41,
+                 from /usr/include/c++/15/exception:168,
+                 from /usr/include/c++/15/ios:43,
+                 from /usr/include/c++/15/bits/ostream.h:43,
+                 from /usr/include/c++/15/ostream:42,
+                 from /tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/config.hpp:33,
+                 from /tmp/gmpfrxx-p0-install/include/gmpxx_mkII.h:34,
+                 from /tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII.h:32:
+/usr/include/c++/15/type_traits: In substitution of ‘template<bool _Cond, class _Tp> using std::enable_if_t = typename std::enable_if::type [with bool _Cond = false; _Tp = void]’:
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpc_impl.hpp:277:9:   required from here
+  277 |         typename = std::enable_if_t<gmpfrxx_mkII::detail::is_supported_expression_integral_v<Scalar> ||
+      |         ^~~~~~~~
+/usr/include/c++/15/type_traits:2838:11: error: no type named ‘type’ in ‘struct std::enable_if<false, void>’
+ 2838 |     using enable_if_t = typename enable_if<_Cond, _Tp>::type;
+      |           ^~~~~~~~~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpc_impl.hpp:593:5: note: candidate 4: ‘mpfrxx::mpc_class::mpc_class(precision_tag, mpfr_prec_t, mpfr_prec_t)’
+  593 |     mpc_class(precision_tag, mpfr_prec_t real_precision, mpfr_prec_t imag_precision)
+      |     ^~~~~~~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpc_impl.hpp:593:5: note: candidate expects 3 arguments, 1 provided
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpc_impl.hpp:351:5: note: candidate 5: ‘mpfrxx::mpc_class::mpc_class(const std::string&, mpfr_prec_t, mpfr_prec_t, int)’
+  351 |     mpc_class(const std::string& text, mpfr_prec_t real_precision, mpfr_prec_t imag_precision, int base = 0)
+      |     ^~~~~~~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpc_impl.hpp:351:5: note: candidate expects 4 arguments, 1 provided
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpc_impl.hpp:334:5: note: candidate 6: ‘mpfrxx::mpc_class::mpc_class(const char*, mpfr_prec_t, mpfr_prec_t, int)’
+  334 |     mpc_class(const char* text, mpfr_prec_t real_precision, mpfr_prec_t imag_precision, int base)
+      |     ^~~~~~~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpc_impl.hpp:334:5: note: candidate expects 4 arguments, 1 provided
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpc_impl.hpp:329:5: note: candidate 7: ‘mpfrxx::mpc_class::mpc_class(const std::string&, mpfr_prec_t, int)’
+  329 |     mpc_class(const std::string& text, mpfr_prec_t precision, int base = 0)
+      |     ^~~~~~~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpc_impl.hpp:329:5: note: candidate expects 3 arguments, 1 provided
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpc_impl.hpp:324:5: note: candidate 8: ‘mpfrxx::mpc_class::mpc_class(const char*, mpfr_prec_t, int)’
+  324 |     mpc_class(const char* text, mpfr_prec_t precision, int base = 0)
+      |     ^~~~~~~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpc_impl.hpp:324:5: note: candidate expects 3 arguments, 1 provided
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpc_impl.hpp:319:14: note: candidate 9: ‘mpfrxx::mpc_class::mpc_class(const std::string&)’
+  319 |     explicit mpc_class(const std::string& text)
+      |              ^~~~~~~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpc_impl.hpp:319:43: note: no known conversion for argument 1 from ‘std::complex<_Float128>’ to ‘const std::string&’ {aka ‘const std::__cxx11::basic_string<char>&’}
+  319 |     explicit mpc_class(const std::string& text)
+      |                        ~~~~~~~~~~~~~~~~~~~^~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpc_impl.hpp:311:14: note: candidate 10: ‘mpfrxx::mpc_class::mpc_class(const char*)’
+  311 |     explicit mpc_class(const char* text)
+      |              ^~~~~~~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpc_impl.hpp:311:36: note: no known conversion for argument 1 from ‘std::complex<_Float128>’ to ‘const char*’
+  311 |     explicit mpc_class(const char* text)
+      |                        ~~~~~~~~~~~~^~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpc_impl.hpp:288:14: note: candidate 11: ‘mpfrxx::mpc_class::mpc_class(const std::complex<double>&)’
+  288 |     explicit mpc_class(const std::complex<double>& value)
+      |              ^~~~~~~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpc_impl.hpp:288:52: note: no known conversion for argument 1 from ‘std::complex<_Float128>’ to ‘const std::complex<double>&’
+  288 |     explicit mpc_class(const std::complex<double>& value)
+      |                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpc_impl.hpp:267:14: note: candidate 12: ‘mpfrxx::mpc_class::mpc_class(const gmpxx::mpq_class&)’
+  267 |     explicit mpc_class(const gmpxx::mpq_class& real)
+      |              ^~~~~~~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpc_impl.hpp:267:48: note: no known conversion for argument 1 from ‘std::complex<_Float128>’ to ‘const gmpxx::mpq_class&’
+  267 |     explicit mpc_class(const gmpxx::mpq_class& real)
+      |                        ~~~~~~~~~~~~~~~~~~~~~~~~^~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpc_impl.hpp:259:14: note: candidate 13: ‘mpfrxx::mpc_class::mpc_class(const gmpxx::mpz_class&)’
+  259 |     explicit mpc_class(const gmpxx::mpz_class& real)
+      |              ^~~~~~~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpc_impl.hpp:259:48: note: no known conversion for argument 1 from ‘std::complex<_Float128>’ to ‘const gmpxx::mpz_class&’
+  259 |     explicit mpc_class(const gmpxx::mpz_class& real)
+      |                        ~~~~~~~~~~~~~~~~~~~~~~~~^~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpc_impl.hpp:248:14: note: candidate 14: ‘mpfrxx::mpc_class::mpc_class(const mpfrxx::mpfr_class&)’
+  248 |     explicit mpc_class(const mpfr_class& real)
+      |              ^~~~~~~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpc_impl.hpp:248:42: note: no known conversion for argument 1 from ‘std::complex<_Float128>’ to ‘const mpfrxx::mpfr_class&’
+  248 |     explicit mpc_class(const mpfr_class& real)
+      |                        ~~~~~~~~~~~~~~~~~~^~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpc_impl.hpp:238:5: note: candidate 15: ‘mpfrxx::mpc_class::mpc_class(const mpfrxx::mpfr_class&, const mpfrxx::mpfr_class&)’
+  238 |     mpc_class(const mpfr_class& real, const mpfr_class& imag)
+      |     ^~~~~~~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpc_impl.hpp:238:5: note: candidate expects 2 arguments, 1 provided
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpc_impl.hpp:232:5: note: candidate 16: ‘mpfrxx::mpc_class::mpc_class(mpfrxx::mpc_class&&)’
+  232 |     mpc_class(mpc_class&& other) noexcept
+      |     ^~~~~~~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpc_impl.hpp:232:27: note: no known conversion for argument 1 from ‘std::complex<_Float128>’ to ‘mpfrxx::mpc_class&&’
+  232 |     mpc_class(mpc_class&& other) noexcept
+      |               ~~~~~~~~~~~~^~~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpc_impl.hpp:221:5: note: candidate 17: ‘mpfrxx::mpc_class::mpc_class(const mpfrxx::mpc_class&)’
+  221 |     mpc_class(const mpc_class& other)
+      |     ^~~~~~~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpc_impl.hpp:221:32: note: no known conversion for argument 1 from ‘std::complex<_Float128>’ to ‘const mpfrxx::mpc_class&’
+  221 |     mpc_class(const mpc_class& other)
+      |               ~~~~~~~~~~~~~~~~~^~~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpc_impl.hpp:214:5: note: candidate 18: ‘mpfrxx::mpc_class::mpc_class()’
+  214 |     mpc_class()
+      |     ^~~~~~~~~
+/tmp/gmpfrxx-p0-install/include/gmpfrxx_mkII/detail/mpc_impl.hpp:214:5: note: candidate expects 0 arguments, 1 provided
+compile_exit=1

@@ -11,12 +11,12 @@
 #define MPFR_FORMAT "%+68.64Re"
 #define MPFR_SHORT_FORMAT "%+20.16Re"
 
-inline void printnum(mpreal rtmp) { mpfr_printf(MPFR_FORMAT, mpfr_ptr(rtmp)); }
-inline void printnum_short(mpreal rtmp) { mpfr_printf(MPFR_SHORT_FORMAT, mpfr_ptr(rtmp)); }
+inline void printnum(mpfr_class rtmp) { mpfr_printf(MPFR_FORMAT, mpfr_ptr(rtmp)); }
+inline void printnum_short(mpfr_class rtmp) { mpfr_printf(MPFR_SHORT_FORMAT, mpfr_ptr(rtmp)); }
 
 // Matlab/Octave format
-void printvec(mpreal *a, int len) {
-    mpreal tmp;
+void printvec(mpfr_class *a, int len) {
+    mpfr_class tmp;
     printf("[ ");
     for (int i = 0; i < len; i++) {
         tmp = a[i];
@@ -27,8 +27,8 @@ void printvec(mpreal *a, int len) {
     printf("]");
 }
 
-void printmat(int n, int m, mpreal *a, int lda) {
-    mpreal mtmp;
+void printmat(int n, int m, mpfr_class *a, int lda) {
+    mpfr_class mtmp;
     printf("[ ");
     for (int i = 0; i < n; i++) {
         printf("[ ");
@@ -51,29 +51,29 @@ void printmat(int n, int m, mpreal *a, int lda) {
 
 void DingDong(mplapackint n) {
     mplapackint lwork, liwork, info, m;
-    mpreal *a = new mpreal[n * n];
-    mpreal *w = new mpreal[n];
-    mpreal PI;
+    mpfr_class *a = new mpfr_class[n * n];
+    mpfr_class *w = new mpfr_class[n];
+    mpfr_class PI;
     PI = pi(PI);
 
     // setting A matrix
     for (int i = 1; i <= n; i++) {
         for (int j = 1; j <= n; j++) {
-            a[(i - 1) + (j - 1) * n] = 1.0 / mpreal( 2.0 * ( n - i - j + 3.0 / 2.0 ));
+            a[(i - 1) + (j - 1) * n] = 1.0 / mpfr_class( 2.0 * ( n - i - j + 3.0 / 2.0 ));
         }
     }
     printf("a ="); printmat(n, n, a, n); printf("\n");
 
     // work space query
     lwork = -1;
-    mpreal *work = new mpreal[1];
+    mpfr_class *work = new mpfr_class[1];
     liwork = -1;
     mplapackint *iwork = new mplapackint[1];
 
     Rsyevd("N", "U", n, a, n, w, work, lwork, iwork, liwork, info);
     lwork = (int)cast2double(work[0]);
     delete[] work;
-    work = new mpreal[std::max((mplapackint)1, lwork)];
+    work = new mpfr_class[std::max((mplapackint)1, lwork)];
     liwork = iwork[0];
     delete[] iwork;
     iwork = new mplapackint[std::max((mplapackint)1, liwork)];

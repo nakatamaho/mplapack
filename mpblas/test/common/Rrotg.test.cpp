@@ -54,16 +54,16 @@ void Rrotg_test() {
         set_random_number(a_ref, a);
         set_random_number(b_ref, b);
         set_random_number(c_ref, c);
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
         drotg_f77(&a_ref, &b_ref, &c_ref, &s_ref);
 #else
         Rrotg(a_ref, b_ref, c_ref, s_ref);
 #endif
         Rrotg(a, b, c, s);
-        diff[0] = abs(a - a_ref);
-        diff[1] = abs(b - b_ref);
-        diff[2] = abs(c - c_ref);
-        diff[3] = abs(s - s_ref);
+        diff[0] = abs(cast2ref(a) - a_ref);
+        diff[1] = abs(cast2ref(b) - b_ref);
+        diff[2] = abs(cast2ref(c) - c_ref);
+        diff[3] = abs(cast2ref(s) - s_ref);
 #if defined VERBOSE_TEST
         for (int p = 0; p < 4; p++) {
             printf("diff[%d]=", p);

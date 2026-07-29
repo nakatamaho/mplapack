@@ -8,7 +8,7 @@
 #define MPLAPACK_ARITHMETIC_PARAMS_GMP_H
 
 // Precondition: mplapack_arithmetic_params.h has been included.
-// Precondition: <gmpxx.h> has been included via <mpblas.h>.
+// Precondition: <gmpxx_mkII.h> has been included via <mpblas.h>.
 //   mpf_class, mpf_get_prec, mpf_mul_2exp, mpf_div_2exp must be in scope.
 //
 // GMP mpf does not have a fixed exponent range.  MPLAPACK uses a conservative

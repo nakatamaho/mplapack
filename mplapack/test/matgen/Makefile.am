@@ -30,8 +30,8 @@ endif
 
 
 if ENABLE_MPFR
-libmatgen_mpfr_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR)  -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___ -D___MPLAPACK_INTERNAL___
-libmatgen_mpfr_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR)  -I$(MPC_INCLUDEDIR) -I$(top_srcdir)/mpfrc++ -D___MPLAPACK_BUILD_WITH_MPFR___ -D___MPLAPACK_INTERNAL___
+libmatgen_mpfr_la_CPPFLAGS = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR)  -I$(MPC_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_MPFR -DMPLAPACK_INTERNAL
+libmatgen_mpfr_opt_la_CPPFLAGS = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR)  -I$(MPC_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_MPFR -DMPLAPACK_INTERNAL
 libmatgen_mpfr_la_SOURCES = $(MATGEN_SOURCES)
 libmatgen_mpfr_opt_la_SOURCES = $(MATGEN_SOURCES)
 libmatgen_mpfr_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
@@ -43,8 +43,8 @@ endif
 endif
 
 if ENABLE_GMP
-libmatgen_gmp_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(GMP_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_GMP___ -D___MPLAPACK_INTERNAL___
-libmatgen_gmp_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(GMP_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_GMP___ -D___MPLAPACK_INTERNAL___
+libmatgen_gmp_la_CPPFLAGS = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(GMP_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_GMP -DMPLAPACK_INTERNAL
+libmatgen_gmp_opt_la_CPPFLAGS = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(GMP_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_GMP -DMPLAPACK_INTERNAL
 libmatgen_gmp_la_SOURCES = $(MATGEN_SOURCES)
 libmatgen_gmp_opt_la_SOURCES = $(MATGEN_SOURCES)
 libmatgen_gmp_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
@@ -56,8 +56,8 @@ endif
 endif
 
 if ENABLE_QD
-libmatgen_qd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_QD___ @qd_extra_cxxflags@ -D___MPLAPACK_INTERNAL___
-libmatgen_qd_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_QD___ @qd_extra_cxxflags@ -D___MPLAPACK_INTERNAL___
+libmatgen_qd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(QD_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_QD @qd_extra_cxxflags@ -DMPLAPACK_INTERNAL
+libmatgen_qd_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(QD_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_QD @qd_extra_cxxflags@ -DMPLAPACK_INTERNAL
 libmatgen_qd_la_SOURCES = $(MATGEN_SOURCES)
 libmatgen_qd_opt_la_SOURCES = $(MATGEN_SOURCES)
 libmatgen_qd_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
@@ -69,8 +69,8 @@ endif
 endif
 
 if ENABLE_DD
-libmatgen_dd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_DD___ @qd_extra_cxxflags@ -D___MPLAPACK_INTERNAL___
-libmatgen_dd_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(QD_INCLUDEDIR) -D___MPLAPACK_BUILD_WITH_DD___ @qd_extra_cxxflags@ -D___MPLAPACK_INTERNAL___
+libmatgen_dd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(QD_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_DD @qd_extra_cxxflags@ -DMPLAPACK_INTERNAL
+libmatgen_dd_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(QD_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_DD @qd_extra_cxxflags@ -DMPLAPACK_INTERNAL
 libmatgen_dd_la_SOURCES = $(MATGEN_SOURCES)
 libmatgen_dd_opt_la_SOURCES = $(MATGEN_SOURCES)
 libmatgen_dd_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
@@ -82,8 +82,8 @@ endif
 endif
 
 if ENABLE_DOUBLE
-libmatgen_double_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -D___MPLAPACK_BUILD_WITH_DOUBLE___ -D___MPLAPACK_INTERNAL___
-libmatgen_double_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -D___MPLAPACK_BUILD_WITH_DOUBLE___ -D___MPLAPACK_INTERNAL___
+libmatgen_double_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -DMPLAPACK_BUILD_WITH_DOUBLE -DMPLAPACK_INTERNAL
+libmatgen_double_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -DMPLAPACK_BUILD_WITH_DOUBLE -DMPLAPACK_INTERNAL
 libmatgen_double_la_SOURCES = $(MATGEN_SOURCES)
 libmatgen_double_opt_la_SOURCES = $(MATGEN_SOURCES)
 libmatgen_double_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
@@ -95,8 +95,8 @@ endif
 endif
 
 if ENABLE_BINARY80
-libmatgen_binary80_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -D___MPLAPACK_BUILD_WITH_BINARY80___ -D___MPLAPACK_INTERNAL___
-libmatgen_binary80_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -D___MPLAPACK_BUILD_WITH_BINARY80___ -D___MPLAPACK_INTERNAL___
+libmatgen_binary80_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -DMPLAPACK_BUILD_WITH_BINARY80 -DMPLAPACK_INTERNAL
+libmatgen_binary80_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -DMPLAPACK_BUILD_WITH_BINARY80 -DMPLAPACK_INTERNAL
 libmatgen_binary80_la_SOURCES = $(MATGEN_SOURCES)
 libmatgen_binary80_opt_la_SOURCES = $(MATGEN_SOURCES)
 libmatgen_binary80_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
@@ -108,8 +108,8 @@ endif
 endif
 
 if ENABLE_BINARY128
-libmatgen_binary128_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -D___MPLAPACK_BUILD_WITH_BINARY128___ -D___MPLAPACK_INTERNAL___
-libmatgen_binary128_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -D___MPLAPACK_BUILD_WITH_BINARY128___ -D___MPLAPACK_INTERNAL___
+libmatgen_binary128_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -DMPLAPACK_BUILD_WITH_BINARY128 -DMPLAPACK_INTERNAL
+libmatgen_binary128_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -DMPLAPACK_BUILD_WITH_BINARY128 -DMPLAPACK_INTERNAL
 libmatgen_binary128_la_SOURCES = $(MATGEN_SOURCES)
 libmatgen_binary128_opt_la_SOURCES = $(MATGEN_SOURCES)
 libmatgen_binary128_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)

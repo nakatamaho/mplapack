@@ -80,13 +80,13 @@ void Cungqr_test() {
                         set_random_vector(work_ref, work, veclen(n, 1) * 1024);
                         // these workspace query might not be the same value.
                         lwork = -1;
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                         zungqr_f77(&m, &n, &k, A_ref, &lda, tau_ref, work_ref, &lwork, &info_ref);
 #else
                         Cungqr(m, n, k, A_ref, lda, tau_ref, work_ref, lwork, info_ref);
 #endif
                         Cungqr(m, n, k, A, lda, tau, work, lwork, info);
-                        worksize_ref = (INTEGER_REF)work_ref[0].real();
+                        worksize_ref = castINTEGER_ref(work_ref[0].real());
                         worksize = (INTEGER)cast2double(work[0].real());
 #if defined VERBOSE_TEST
                         printf("optimized worksize by dorgqr %d : by Cungqr %d.\n", (int)worksize_ref, (int)worksize);
@@ -97,7 +97,7 @@ void Cungqr_test() {
                             printf("error in worksize\n");
 #endif
                         lwork = worksize;
-#if defined ___MPLAPACK_BUILD_WITH_MPFR___
+#if defined MPLAPACK_BUILD_WITH_MPFR
                         zungqr_f77(&m, &n, &k, A_ref, &lda, tau_ref, work_ref, &lwork, &info_ref);
 #else
                         Cungqr(m, n, k, A_ref, lda, tau_ref, work_ref, lwork, info_ref);
