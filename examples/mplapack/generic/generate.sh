@@ -3,7 +3,7 @@
 # or
 # cd /home/docker/mplapack/examples/mplapack/03_SymmetricEigenproblems/generic ; bash -x ../../generate.sh
 # etc..
-FILES=`ls R*generic.cpp C*generic.cpp`
+FILES=`ls *_generic.cpp`
 pushd .. ; _MATFILES=`ls M*.txt` ; popd
 MATFILES=`echo $_MATFILES`
 MPLIBS="mpfr gmp binary128 binary80 double dd qd"
@@ -14,7 +14,7 @@ else
     SED=sed
 fi
 
-_FILE=`ls R*.cpp | head -1 | $SED 's/_generic\.cpp//g' | awk '{print $1}'`
+_FILE=`echo $FILES | awk '{print $1}' | $SED 's/_generic\.cpp//g'`
 $SED -e "s|%%ROUTINE%%|$_FILE|g" ../../generic/Makefile.freebsd.in > ../Makefile.freebsd.in
 $SED -e "s|%%ROUTINE%%|$_FILE|g" ../../generic/Makefile.macos.in   > ../Makefile.macos.in
 $SED -e "s|%%ROUTINE%%|$_FILE|g" ../../generic/Makefile.linux.in   > ../Makefile.linux.in
@@ -29,13 +29,10 @@ for _file in $FILES; do
     fi
     for _mplib in $MPLIBS; do
         resultfilename=`echo $_file | $SED "s/generic/${_mplib}/g"`
-        if echo $_file | grep ^R ; then
-            cat ../../generic/header_${_mplib} ${_file} > ../$resultfilename
-        elif echo $_file | grep ^C ; then
+        if echo $_file | grep ^C ; then
             cat ../../generic/header_${_mplib}_complex ${_file} > ../$resultfilename
         else
-            echo "unknown type"
-	    exit -1
+            cat ../../generic/header_${_mplib} ${_file} > ../$resultfilename
         fi
         SOURCEFILES=`echo $SOURCEFILES ${resultfilename}`
         if [ x"$_mplib" = x"gmp" ]; then
