@@ -6,7 +6,8 @@
 #07_GeneralizedNonSymmetricEigenproblems \
 #08_GeneralizedSingularValueDecomposition
 
-SUBDIRS = 00_LinearEquations \
+SUBDIRS = 00_GeneralLinearEquations \
 03_SymmetricEigenproblems \
 04_NonsymmetricEigenproblems \
-05_SingularValueDecomposition
+05_SingularValueDecomposition \
+90_PrecisionComparison

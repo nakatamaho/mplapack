@@ -1,0 +1,50 @@
+# public domain
+# whether _FLOAT128 libs is requred or not is heavily dependent on your environment.
+
+CXX=icpx
+MPLAPACKDIR=%%MPLAPACKDIR%%
+CXXFLAGS= -I$(MPLAPACKDIR)/include -I$(MPLAPACKDIR)/include/mplapack -I$(MPLAPACKDIR)/include/qd %%QUADMATH_CPPFLAGS%%
+OPTFLAGS= -O2
+OPENMP_EXAMPLE_OPENMP_LIBS = -qopenmp
+LIBFLAGS=-L$(MPLAPACKDIR)/lib %%QUADMATH_LDFLAGS%% -Wl,--rpath=$(MPLAPACKDIR)/lib
+MPFRLIBS= -lmplapack_mpfr -lmpfr -lmpc -lgmp
+GMPLIBS=-lmplapack_gmp -lgmpxx -lgmp
+QDLIBS=-lmplapack_qd -lqd
+DDLIBS=-lmplapack_dd -lqd
+BINARY80LIBS=-lmplapack_binary80
+BINARY128LIBS=-lmplapack_binary128%%LIBQUADMATH%%
+DOUBLELIBS=-lmplapack_double
+BLAS=
+LAPACK=
+FLIBS=
+
+programs=Hilbert_inverse_mpfr Hilbert_inverse_gmp Hilbert_inverse_qd Hilbert_inverse_dd Hilbert_inverse_binary80 Hilbert_inverse_binary128 Hilbert_inverse_double
+
+all: $(programs)
+
+.cpp.o:
+	$(CXX) -c $(OPTFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(CXXFLAGS) $<
+
+Hilbert_inverse_mpfr: Hilbert_inverse_mpfr.o
+	$(CXX) -o Hilbert_inverse_mpfr Hilbert_inverse_mpfr.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(MPFRLIBS)
+
+Hilbert_inverse_gmp: Hilbert_inverse_gmp.o
+	$(CXX) -o Hilbert_inverse_gmp Hilbert_inverse_gmp.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(GMPLIBS)
+
+Hilbert_inverse_qd: Hilbert_inverse_qd.o
+	$(CXX) -o Hilbert_inverse_qd Hilbert_inverse_qd.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(QDLIBS)
+
+Hilbert_inverse_dd: Hilbert_inverse_dd.o
+	$(CXX) -o Hilbert_inverse_dd Hilbert_inverse_dd.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(DDLIBS)
+
+Hilbert_inverse_binary80: Hilbert_inverse_binary80.o
+	$(CXX) -o Hilbert_inverse_binary80 Hilbert_inverse_binary80.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(BINARY80LIBS)
+
+Hilbert_inverse_binary128: Hilbert_inverse_binary128.o
+	$(CXX) -o Hilbert_inverse_binary128 Hilbert_inverse_binary128.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(BINARY128LIBS)
+
+Hilbert_inverse_double: Hilbert_inverse_double.o
+	$(CXX) -o Hilbert_inverse_double Hilbert_inverse_double.o $(LIBFLAGS) $(OPENMP_EXAMPLE_OPENMP_LIBS) $(DOUBLELIBS)
+
+clean:
+	rm -rf *.o *~ $(programs) *bak
