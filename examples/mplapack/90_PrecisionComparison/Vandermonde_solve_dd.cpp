@@ -53,7 +53,7 @@ void printmat(int n, int m, dd_real * a, int lda)
     printf("]");
 }
 dd_real max_solution_error(mplapackint n, dd_real *x, dd_real *xexact) {
-    dd_real err = 0;
+    dd_real err = 0.0;
     for (mplapackint i = 0; i < n; i++) {
         dd_real d = abs(x[i] - xexact[i]);
         if (err < d)
@@ -71,14 +71,14 @@ int main() {
         xexact[j] = dd_real(j % 3 - 1);
     for (mplapackint i = 0; i < n; i++) {
         dd_real node = dd_real(i + 1);
-        dd_real p = 1;
+        dd_real p = 1.0;
         for (mplapackint j = 0; j < n; j++) {
             a[i + j * lda] = p;
             p = p * node;
         }
     }
     for (mplapackint i = 0; i < n; i++) {
-        b[i] = 0;
+        b[i] = 0.0;
         for (mplapackint j = 0; j < n; j++)
             b[i] = b[i] + a[i + j * lda] * xexact[j];
     }

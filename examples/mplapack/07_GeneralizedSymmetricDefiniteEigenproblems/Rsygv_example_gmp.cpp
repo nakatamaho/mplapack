@@ -65,13 +65,13 @@ int main() {
     mpf_class *borg = new mpf_class[n * n];
     mpf_class *w = new mpf_class[n];
     for (mplapackint i = 0; i < n * n; i++) {
-        a[i] = 0;
-        b[i] = 0;
+        a[i] = 0.0;
+        b[i] = 0.0;
     }
-    a[0] = 2;
-    a[3] = 6;
-    b[0] = 1;
-    b[3] = 2;
+    a[0] = 2.0;
+    a[3] = 6.0;
+    b[0] = 1.0;
+    b[3] = 2.0;
     for (mplapackint i = 0; i < n * n; i++) {
         aorg[i] = a[i];
         borg[i] = b[i];

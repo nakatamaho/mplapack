@@ -1,5 +1,5 @@
 REAL max_solution_error(INTEGER n, REAL *x, REAL *xexact) {
-    REAL err = 0;
+    REAL err = 0.0;
     for (INTEGER i = 0; i < n; i++) {
         REAL d = abs(x[i] - xexact[i]);
         if (err < d)
@@ -17,14 +17,14 @@ int main() {
         xexact[j] = REAL(j % 3 - 1);
     for (INTEGER i = 0; i < n; i++) {
         REAL node = REAL(i + 1);
-        REAL p = 1;
+        REAL p = 1.0;
         for (INTEGER j = 0; j < n; j++) {
             a[i + j * lda] = p;
             p = p * node;
         }
     }
     for (INTEGER i = 0; i < n; i++) {
-        b[i] = 0;
+        b[i] = 0.0;
         for (INTEGER j = 0; j < n; j++)
             b[i] = b[i] + a[i + j * lda] * xexact[j];
     }

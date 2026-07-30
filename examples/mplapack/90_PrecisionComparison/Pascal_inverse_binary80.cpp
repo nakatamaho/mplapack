@@ -59,7 +59,7 @@ void printmat(int n, int m, mplapack_binary80_t *a, int lda)
     printf("]");
 }
 mplapack_binary80_t binom(mplapackint n, mplapackint k) {
-    mplapack_binary80_t r = 1;
+    mplapack_binary80_t r = 1.0;
     for (mplapackint i = 1; i <= k; i++)
         r = r * mplapack_binary80_t(n - k + i) / mplapack_binary80_t(i);
     return r;
@@ -83,7 +83,7 @@ int main() {
     mplapack_binary80_t *work = new mplapack_binary80_t[lwork];
     if (info == 0)
         Rgetri(n, a, lda, ipiv, work, lwork, info);
-    mplapack_binary80_t err = 0;
+    mplapack_binary80_t err = 0.0;
     for (mplapackint i = 0; i < n * n; i++) {
         mplapack_binary80_t d = nearest_integer_error(a[i]);
         if (err < d)

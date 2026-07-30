@@ -47,7 +47,7 @@ void printmat(int n, int m, mpfr_class *a, int lda) {
 }
 
 mpfr_class max_solution_error(mplapackint n, mpfr_class *x, mpfr_class *xexact) {
-    mpfr_class err = 0;
+    mpfr_class err = 0.0;
     for (mplapackint i = 0; i < n; i++) {
         mpfr_class d = abs(x[i] - xexact[i]);
         if (err < d)
@@ -70,7 +70,7 @@ int main() {
     for (mplapackint i = 0; i < n; i++)
         xexact[i] = (i % 2 == 0) ? mpfr_class(1.0) : mpfr_class(-1.0);
     for (mplapackint i = 0; i < n; i++) {
-        b[i] = 0;
+        b[i] = 0.0;
         for (mplapackint k = 0; k < n; k++)
             b[i] = b[i] + aorg[i + k * lda] * xexact[k];
     }

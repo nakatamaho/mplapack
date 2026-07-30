@@ -108,10 +108,10 @@ int main() {
     mplapack_binary80_t *work = new mplapack_binary80_t[3 * n];
     mplapackint *iwork = new mplapackint[n];
     mplapack_binary80_t rcond = 0.0;
-    a[0] = 4;
-    a[1] = 2;
-    a[2] = 2;
-    a[3] = 5;
+    a[0] = 4.0;
+    a[1] = 2.0;
+    a[2] = 2.0;
+    a[3] = 5.0;
     for (mplapackint i = 0; i < n * n; i++)
         aorg[i] = a[i];
     Rpotrf("L", n, a, lda, info);

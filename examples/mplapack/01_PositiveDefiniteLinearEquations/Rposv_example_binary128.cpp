@@ -101,11 +101,11 @@ int main() {
     mplapack_binary128_t *b = new mplapack_binary128_t[n];
     mplapack_binary128_t *borg = new mplapack_binary128_t[n];
     mplapack_binary128_t *xexact = new mplapack_binary128_t[n];
-    a[0]=4; a[1]=2; a[2]=2; a[3]=5;
-    xexact[0]=1; xexact[1]=2;
+    a[0]=4.0; a[1]=2.0; a[2]=2.0; a[3]=5.0;
+    xexact[0]=1.0; xexact[1]=2.0;
     for (mplapackint i=0;i<n*n;i++) aorg[i]=a[i];
     for (mplapackint i = 0; i < n; i++) {
-        b[i] = 0;
+        b[i] = 0.0;
         for (mplapackint k = 0; k < n; k++)
             b[i] += aorg[i + k * lda] * xexact[k];
         borg[i] = b[i];

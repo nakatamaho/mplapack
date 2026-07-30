@@ -46,7 +46,7 @@ void printmat(int n, int m, double *a, int lda)
     printf("]");
 }
 double binom(mplapackint n, mplapackint k) {
-    double r = 1;
+    double r = 1.0;
     for (mplapackint i = 1; i <= k; i++)
         r = r * double(n - k + i) / double(i);
     return r;
@@ -70,7 +70,7 @@ int main() {
     double *work = new double[lwork];
     if (info == 0)
         Rgetri(n, a, lda, ipiv, work, lwork, info);
-    double err = 0;
+    double err = 0.0;
     for (mplapackint i = 0; i < n * n; i++) {
         double d = nearest_integer_error(a[i]);
         if (err < d)

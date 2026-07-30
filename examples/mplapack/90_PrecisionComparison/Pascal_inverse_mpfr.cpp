@@ -47,7 +47,7 @@ void printmat(int n, int m, mpfr_class *a, int lda) {
 }
 
 mpfr_class binom(mplapackint n, mplapackint k) {
-    mpfr_class r = 1;
+    mpfr_class r = 1.0;
     for (mplapackint i = 1; i <= k; i++)
         r = r * mpfr_class(n - k + i) / mpfr_class(i);
     return r;
@@ -71,7 +71,7 @@ int main() {
     mpfr_class *work = new mpfr_class[lwork];
     if (info == 0)
         Rgetri(n, a, lda, ipiv, work, lwork, info);
-    mpfr_class err = 0;
+    mpfr_class err = 0.0;
     for (mplapackint i = 0; i < n * n; i++) {
         mpfr_class d = nearest_integer_error(a[i]);
         if (err < d)

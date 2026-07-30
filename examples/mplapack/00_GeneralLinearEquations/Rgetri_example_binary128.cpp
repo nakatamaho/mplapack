@@ -76,10 +76,10 @@ int main()
 //https://babel.hathitrust.org/cgi/pt?id=mdp.39015023899019&view=1up&seq=30
 //Marcus, M. (1960). Basic theorems in matrix theory. Washington: U.S. Govt. Print. Off.
 
-    a[0 + 0 * n] = 5;    a[0 + 1 * n] = 7;    a[0 + 2 * n] = 6;      a[0 + 3 * n] = 5;
-    a[1 + 0 * n] = 7;    a[1 + 1 * n] = 10;   a[1 + 2 * n] = 8;      a[1 + 3 * n] = 7;
-    a[2 + 0 * n] = 6;    a[2 + 1 * n] = 8;    a[2 + 2 * n] = 10;     a[2 + 3 * n] = 9;
-    a[3 + 0 * n] = 5;    a[3 + 1 * n] = 7;    a[3 + 2 * n] = 9;      a[3 + 3 * n] = 10;
+    a[0 + 0 * n] = 5.0;    a[0 + 1 * n] = 7.0;    a[0 + 2 * n] = 6.0;      a[0 + 3 * n] = 5.0;
+    a[1 + 0 * n] = 7.0;    a[1 + 1 * n] = 10.0;   a[1 + 2 * n] = 8.0;      a[1 + 3 * n] = 7.0;
+    a[2 + 0 * n] = 6.0;    a[2 + 1 * n] = 8.0;    a[2 + 2 * n] = 10.0;     a[2 + 3 * n] = 9.0;
+    a[3 + 0 * n] = 5.0;    a[3 + 1 * n] = 7.0;    a[3 + 2 * n] = 9.0;      a[3 + 3 * n] = 10.0;
 
     printf("a ="); printmat(n, n, a, n); printf("\n");
 

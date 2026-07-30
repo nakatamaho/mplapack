@@ -73,15 +73,15 @@ int main() {
     mplapack_binary128_t *q = new mplapack_binary128_t[ldq * n];
     mplapackint *iwork = new mplapackint[n];
     for (mplapackint i = 0; i < lda * n; i++)
-        a[i] = 0;
+        a[i] = 0.0;
     for (mplapackint i = 0; i < ldb * n; i++)
-        b[i] = 0;
-    a[0] = 1;
-    a[1 + lda] = 2;
-    a[0 + 2 * lda] = 1;
-    b[0] = 1;
-    b[1 + ldb] = 3;
-    b[0 + 2 * ldb] = 1;
+        b[i] = 0.0;
+    a[0] = 1.0;
+    a[1 + lda] = 2.0;
+    a[0 + 2 * lda] = 1.0;
+    b[0] = 1.0;
+    b[1 + ldb] = 3.0;
+    b[0 + 2 * ldb] = 1.0;
     mplapack_binary128_t wk;
     Rggsvd3("U", "V", "Q", m, n, p, k, l, a, lda, b, ldb, alpha, beta, u, ldu, v, ldv, q, ldq, &wk, lwork, iwork, info);
     lwork = castINTEGER_binary128(wk);

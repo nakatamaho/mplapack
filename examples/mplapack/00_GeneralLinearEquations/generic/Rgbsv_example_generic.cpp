@@ -38,22 +38,22 @@ int main() {
     REAL *borg = new REAL[n];
     REAL *xexact = new REAL[n];
     INTEGER *ipiv = new INTEGER[n];
-    for (INTEGER i = 0; i < n * n; i++) a[i] = 0;
-    for (INTEGER i = 0; i < ldab * n; i++) ab[i] = 0;
+    for (INTEGER i = 0; i < n * n; i++) a[i] = 0.0;
+    for (INTEGER i = 0; i < ldab * n; i++) ab[i] = 0.0;
     for (INTEGER i = 0; i < n; i++) {
-        xexact[i] = i + 1;
+        xexact[i] = i + 1.0;
         for (INTEGER j = 0; j < n; j++) {
-            if (i == j) a[i + j * n] = 6;
-            else if (i > j && i - j <= kl) a[i + j * n] = -1;
-            else if (j > i && j - i <= ku) a[i + j * n] = 2;
+            if (i == j) a[i + j * n] = 6.0;
+            else if (i > j && i - j <= kl) a[i + j * n] = -1.0;
+            else if (j > i && j - i <= ku) a[i + j * n] = 2.0;
         }
     }
-    for (INTEGER j = 0; j < n; j++) for (INTEGER i = 0; i < n; i++) if (a[i + j * n] != 0) {
+    for (INTEGER j = 0; j < n; j++) for (INTEGER i = 0; i < n; i++) if (a[i + j * n] != 0.0) {
         INTEGER row = kl + ku + i - j;
         ab[row + j * ldab] = a[i + j * n];
     }
     for (INTEGER i = 0; i < n; i++) {
-        b[i] = 0;
+        b[i] = 0.0;
         for (INTEGER k = 0; k < n; k++) b[i] = b[i] + a[i + k * n] * xexact[k];
         borg[i] = b[i];
     }

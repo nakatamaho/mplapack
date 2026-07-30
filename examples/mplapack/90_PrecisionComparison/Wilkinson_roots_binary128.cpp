@@ -75,17 +75,17 @@ int main() {
     mplapackint n = 20, lda = n, ldv = 1, info, lwork = -1;
     mplapack_binary128_t *coef = new mplapack_binary128_t[n + 1];
     for (mplapackint i = 0; i <= n; i++)
-        coef[i] = 0;
-    coef[0] = 1;
+        coef[i] = 0.0;
+    coef[0] = 1.0;
     for (mplapackint k = 1; k <= n; k++) {
         for (mplapackint j = k; j >= 1; j--)
             coef[j] = coef[j] - mplapack_binary128_t(k) * coef[j - 1];
     }
     mplapack_binary128_t *a = new mplapack_binary128_t[n * n];
     for (mplapackint i = 0; i < n * n; i++)
-        a[i] = 0;
+        a[i] = 0.0;
     for (mplapackint i = 1; i < n; i++)
-        a[i + (i - 1) * lda] = 1;
+        a[i + (i - 1) * lda] = 1.0;
     for (mplapackint j = 0; j < n; j++)
         a[j + (n - 1) * lda] = -coef[n - j] / coef[0];
     mplapack_binary128_t *wr = new mplapack_binary128_t[n];
@@ -98,7 +98,7 @@ int main() {
     mplapack_binary128_t *work = new mplapack_binary128_t[lwork];
     Rgeev("N", "N", n, a, lda, wr, wi, vl, ldv, vr, ldv, work, lwork, info);
     sort_real(n, wr);
-    mplapack_binary128_t maxerr = 0;
+    mplapack_binary128_t maxerr = 0.0;
     for (mplapackint i = 0; i < n; i++) {
         mplapack_binary128_t err = abs(wr[i] - mplapack_binary128_t(i + 1));
         if (maxerr < err)

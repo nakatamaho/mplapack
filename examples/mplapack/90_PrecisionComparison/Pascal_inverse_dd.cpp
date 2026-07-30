@@ -53,7 +53,7 @@ void printmat(int n, int m, dd_real * a, int lda)
     printf("]");
 }
 dd_real binom(mplapackint n, mplapackint k) {
-    dd_real r = 1;
+    dd_real r = 1.0;
     for (mplapackint i = 1; i <= k; i++)
         r = r * dd_real(n - k + i) / dd_real(i);
     return r;
@@ -77,7 +77,7 @@ int main() {
     dd_real *work = new dd_real[lwork];
     if (info == 0)
         Rgetri(n, a, lda, ipiv, work, lwork, info);
-    dd_real err = 0;
+    dd_real err = 0.0;
     for (mplapackint i = 0; i < n * n; i++) {
         dd_real d = nearest_integer_error(a[i]);
         if (err < d)

@@ -51,7 +51,7 @@ int main() {
     for (INTEGER j = 0; j < n; j++) for (INTEGER i = 0; i < n; i++) a[i + j * lda] = REAL(1.0) / REAL(i + j + 1);
     for (INTEGER i = 0; i < n; i++) xexact[i] = (i % 2 == 0) ? REAL(1.0) : REAL(-1.0);
     for (INTEGER i = 0; i < n; i++) {
-        b[i] = 0;
+        b[i] = 0.0;
         for (INTEGER k = 0; k < n; k++)
             b[i] = b[i] + a[i + k * lda] * xexact[k];
     }

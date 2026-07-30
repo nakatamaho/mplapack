@@ -55,17 +55,17 @@ int main() {
     mplapackint n = 20, lda = n, ldv = 1, info, lwork = -1;
     mpf_class *coef = new mpf_class[n + 1];
     for (mplapackint i = 0; i <= n; i++)
-        coef[i] = 0;
-    coef[0] = 1;
+        coef[i] = 0.0;
+    coef[0] = 1.0;
     for (mplapackint k = 1; k <= n; k++) {
         for (mplapackint j = k; j >= 1; j--)
             coef[j] = coef[j] - mpf_class(k) * coef[j - 1];
     }
     mpf_class *a = new mpf_class[n * n];
     for (mplapackint i = 0; i < n * n; i++)
-        a[i] = 0;
+        a[i] = 0.0;
     for (mplapackint i = 1; i < n; i++)
-        a[i + (i - 1) * lda] = 1;
+        a[i + (i - 1) * lda] = 1.0;
     for (mplapackint j = 0; j < n; j++)
         a[j + (n - 1) * lda] = -coef[n - j] / coef[0];
     mpf_class *wr = new mpf_class[n];
@@ -78,7 +78,7 @@ int main() {
     mpf_class *work = new mpf_class[lwork];
     Rgeev("N", "N", n, a, lda, wr, wi, vl, ldv, vr, ldv, work, lwork, info);
     sort_real(n, wr);
-    mpf_class maxerr = 0;
+    mpf_class maxerr = 0.0;
     for (mplapackint i = 0; i < n; i++) {
         mpf_class err = abs(wr[i] - mpf_class(i + 1));
         if (maxerr < err)

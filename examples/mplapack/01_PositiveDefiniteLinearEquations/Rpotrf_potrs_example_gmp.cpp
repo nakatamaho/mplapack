@@ -81,12 +81,12 @@ int main() {
     mpf_class *b = new mpf_class[n*nrhs];
     mpf_class *borg = new mpf_class[n*nrhs];
     mpf_class *xexact = new mpf_class[n*nrhs];
-    a[0]=4; a[1]=2; a[2]=2; a[3]=5;
-    xexact[0]=1; xexact[1]=2; xexact[0+n]=2; xexact[1+n]=-1;
+    a[0]=4.0; a[1]=2.0; a[2]=2.0; a[3]=5.0;
+    xexact[0]=1.0; xexact[1]=2.0; xexact[0+n]=2.0; xexact[1+n]=-1.0;
     for (mplapackint i=0;i<n*n;i++) aorg[i]=a[i];
     for (mplapackint j = 0; j < nrhs; j++)
         for (mplapackint i = 0; i < n; i++) {
-            b[i + j * ldb] = 0;
+            b[i + j * ldb] = 0.0;
             for (mplapackint k = 0; k < n; k++)
                 b[i + j * ldb] += aorg[i + k * lda] * xexact[k + j * n];
             borg[i + j * ldb] = b[i + j * ldb];

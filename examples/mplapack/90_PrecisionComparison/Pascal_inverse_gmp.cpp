@@ -43,7 +43,7 @@ void printmat(int n, int m, mpf_class * a, int lda)
     printf("]");
 }
 mpf_class binom(mplapackint n, mplapackint k) {
-    mpf_class r = 1;
+    mpf_class r = 1.0;
     for (mplapackint i = 1; i <= k; i++)
         r = r * mpf_class(n - k + i) / mpf_class(i);
     return r;
@@ -67,7 +67,7 @@ int main() {
     mpf_class *work = new mpf_class[lwork];
     if (info == 0)
         Rgetri(n, a, lda, ipiv, work, lwork, info);
-    mpf_class err = 0;
+    mpf_class err = 0.0;
     for (mplapackint i = 0; i < n * n; i++) {
         mpf_class d = nearest_integer_error(a[i]);
         if (err < d)

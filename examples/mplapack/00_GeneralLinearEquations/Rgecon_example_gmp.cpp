@@ -103,8 +103,8 @@ int main() {
     mpf_class *work = new mpf_class[4 * n];
     mplapackint *iwork = new mplapackint[n];
     mplapackint *ipiv = new mplapackint[n];
-    for (mplapackint i = 0; i < n * n; i++) a[i] = 0;
-    a[0 + 0 * lda] = 1; a[1 + 1 * lda] = mpf_class(1.0e-3); a[2 + 2 * lda] = mpf_class(1.0e-6);
+    for (mplapackint i = 0; i < n * n; i++) a[i] = 0.0;
+    a[0 + 0 * lda] = 1.0; a[1 + 1 * lda] = mpf_class(1.0e-3); a[2 + 2 * lda] = mpf_class(1.0e-6);
     for (mplapackint i = 0; i < n * n; i++) lu[i] = a[i];
     Rgetrf(n, n, lu, lda, ipiv, info);
     mpf_class rcond1 = 0.0, rcondi = 0.0;

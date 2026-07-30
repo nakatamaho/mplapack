@@ -68,15 +68,15 @@ int main() {
     mplapack_binary80_t *vl = new mplapack_binary80_t[1];
     mplapack_binary80_t *vr = new mplapack_binary80_t[1];
     for (mplapackint i = 0; i < n * n; i++) {
-        a[i] = 0;
-        b[i] = 0;
+        a[i] = 0.0;
+        b[i] = 0.0;
     }
-    a[0] = 1;
-    a[4] = 2;
-    a[8] = 3;
-    b[0] = 1;
-    b[4] = 1;
-    b[8] = 0;
+    a[0] = 1.0;
+    a[4] = 2.0;
+    a[8] = 3.0;
+    b[0] = 1.0;
+    b[4] = 1.0;
+    b[8] = 0.0;
     mplapack_binary80_t wk;
     Rggev("N", "N", n, a, lda, b, ldb, alphar, alphai, beta, vl, ldv, vr, ldv, &wk, lwork, info);
     lwork = castINTEGER_binary80(wk);

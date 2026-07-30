@@ -86,14 +86,14 @@ int main() {
     double *xexact = new double[nrhs * n];
     mplapackint *ipiv = new mplapackint[n];
 
-    a[0 + 0 * lda] = 4; a[0 + 1 * lda] = 1; a[0 + 2 * lda] = 2;
-    a[1 + 0 * lda] = 0; a[1 + 1 * lda] = 3; a[1 + 2 * lda] = -1;
-    a[2 + 0 * lda] = 2; a[2 + 1 * lda] = 1; a[2 + 2 * lda] = 5;
-    xexact[0] = 1; xexact[1] = -1; xexact[2] = 2;
-    xexact[0 + 1 * n] = 2; xexact[1 + 1 * n] = 0; xexact[2 + 1 * n] = -1;
+    a[0 + 0 * lda] = 4.0; a[0 + 1 * lda] = 1.0; a[0 + 2 * lda] = 2.0;
+    a[1 + 0 * lda] = 0.0; a[1 + 1 * lda] = 3.0; a[1 + 2 * lda] = -1.0;
+    a[2 + 0 * lda] = 2.0; a[2 + 1 * lda] = 1.0; a[2 + 2 * lda] = 5.0;
+    xexact[0] = 1.0; xexact[1] = -1.0; xexact[2] = 2.0;
+    xexact[0 + 1 * n] = 2.0; xexact[1 + 1 * n] = 0.0; xexact[2 + 1 * n] = -1.0;
     for (mplapackint i = 0; i < n * n; i++) aorg[i] = a[i];
     for (mplapackint j = 0; j < nrhs; j++) for (mplapackint i = 0; i < n; i++) {
-        b[i + j * ldb] = 0;
+        b[i + j * ldb] = 0.0;
         for (mplapackint k = 0; k < n; k++) b[i + j * ldb] = b[i + j * ldb] + aorg[i + k * lda] * xexact[k + j * n];
         borg[i + j * ldb] = b[i + j * ldb];
     }

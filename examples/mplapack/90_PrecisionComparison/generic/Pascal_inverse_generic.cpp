@@ -1,5 +1,5 @@
 REAL binom(INTEGER n, INTEGER k) {
-    REAL r = 1;
+    REAL r = 1.0;
     for (INTEGER i = 1; i <= k; i++)
         r = r * REAL(n - k + i) / REAL(i);
     return r;
@@ -23,7 +23,7 @@ int main() {
     REAL *work = new REAL[lwork];
     if (info == 0)
         Rgetri(n, a, lda, ipiv, work, lwork, info);
-    REAL err = 0;
+    REAL err = 0.0;
     for (INTEGER i = 0; i < n * n; i++) {
         REAL d = nearest_integer_error(a[i]);
         if (err < d)

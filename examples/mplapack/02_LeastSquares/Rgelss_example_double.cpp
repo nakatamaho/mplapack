@@ -79,11 +79,11 @@ double max_residual(mplapackint m, mplapackint n, mplapackint nrhs, double *a, m
 
 void set_problem(mplapackint m, mplapackint n, double *a, mplapackint lda, double *b, mplapackint ldb, double *xexact) {
     for (mplapackint i = 0; i < m; i++) {
-        a[i + 0 * lda] = 1;
+        a[i + 0 * lda] = 1.0;
         a[i + 1 * lda] = i;
     }
-    xexact[0] = 1;
-    xexact[1] = 2;
+    xexact[0] = 1.0;
+    xexact[1] = 2.0;
     for (mplapackint i = 0; i < m; i++)
         b[i] = a[i + 0 * lda] * xexact[0] + a[i + 1 * lda] * xexact[1];
 }

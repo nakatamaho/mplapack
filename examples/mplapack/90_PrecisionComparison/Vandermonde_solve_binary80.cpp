@@ -59,7 +59,7 @@ void printmat(int n, int m, mplapack_binary80_t *a, int lda)
     printf("]");
 }
 mplapack_binary80_t max_solution_error(mplapackint n, mplapack_binary80_t *x, mplapack_binary80_t *xexact) {
-    mplapack_binary80_t err = 0;
+    mplapack_binary80_t err = 0.0;
     for (mplapackint i = 0; i < n; i++) {
         mplapack_binary80_t d = abs(x[i] - xexact[i]);
         if (err < d)
@@ -77,14 +77,14 @@ int main() {
         xexact[j] = mplapack_binary80_t(j % 3 - 1);
     for (mplapackint i = 0; i < n; i++) {
         mplapack_binary80_t node = mplapack_binary80_t(i + 1);
-        mplapack_binary80_t p = 1;
+        mplapack_binary80_t p = 1.0;
         for (mplapackint j = 0; j < n; j++) {
             a[i + j * lda] = p;
             p = p * node;
         }
     }
     for (mplapackint i = 0; i < n; i++) {
-        b[i] = 0;
+        b[i] = 0.0;
         for (mplapackint j = 0; j < n; j++)
             b[i] = b[i] + a[i + j * lda] * xexact[j];
     }

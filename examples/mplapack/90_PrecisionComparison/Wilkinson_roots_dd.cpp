@@ -65,17 +65,17 @@ int main() {
     mplapackint n = 20, lda = n, ldv = 1, info, lwork = -1;
     dd_real *coef = new dd_real[n + 1];
     for (mplapackint i = 0; i <= n; i++)
-        coef[i] = 0;
-    coef[0] = 1;
+        coef[i] = 0.0;
+    coef[0] = 1.0;
     for (mplapackint k = 1; k <= n; k++) {
         for (mplapackint j = k; j >= 1; j--)
             coef[j] = coef[j] - dd_real(k) * coef[j - 1];
     }
     dd_real *a = new dd_real[n * n];
     for (mplapackint i = 0; i < n * n; i++)
-        a[i] = 0;
+        a[i] = 0.0;
     for (mplapackint i = 1; i < n; i++)
-        a[i + (i - 1) * lda] = 1;
+        a[i + (i - 1) * lda] = 1.0;
     for (mplapackint j = 0; j < n; j++)
         a[j + (n - 1) * lda] = -coef[n - j] / coef[0];
     dd_real *wr = new dd_real[n];
@@ -88,7 +88,7 @@ int main() {
     dd_real *work = new dd_real[lwork];
     Rgeev("N", "N", n, a, lda, wr, wi, vl, ldv, vr, ldv, work, lwork, info);
     sort_real(n, wr);
-    dd_real maxerr = 0;
+    dd_real maxerr = 0.0;
     for (mplapackint i = 0; i < n; i++) {
         dd_real err = abs(wr[i] - dd_real(i + 1));
         if (maxerr < err)

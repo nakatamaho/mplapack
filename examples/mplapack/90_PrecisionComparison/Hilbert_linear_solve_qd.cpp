@@ -53,7 +53,7 @@ void printmat(int n, int m, qd_real * a, int lda)
     printf("]");
 }
 qd_real max_solution_error(mplapackint n, qd_real *x, qd_real *xexact) {
-    qd_real err = 0;
+    qd_real err = 0.0;
     for (mplapackint i = 0; i < n; i++) {
         qd_real d = abs(x[i] - xexact[i]);
         if (err < d)
@@ -76,7 +76,7 @@ int main() {
     for (mplapackint i = 0; i < n; i++)
         xexact[i] = (i % 2 == 0) ? qd_real(1.0) : qd_real(-1.0);
     for (mplapackint i = 0; i < n; i++) {
-        b[i] = 0;
+        b[i] = 0.0;
         for (mplapackint k = 0; k < n; k++)
             b[i] = b[i] + aorg[i + k * lda] * xexact[k];
     }

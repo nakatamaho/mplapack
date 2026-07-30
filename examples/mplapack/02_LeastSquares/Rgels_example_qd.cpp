@@ -86,11 +86,11 @@ qd_real max_residual(mplapackint m, mplapackint n, mplapackint nrhs, qd_real *a,
 
 void set_problem(mplapackint m, mplapackint n, qd_real *a, mplapackint lda, qd_real *b, mplapackint ldb, qd_real *xexact) {
     for (mplapackint i = 0; i < m; i++) {
-        a[i + 0 * lda] = 1;
+        a[i + 0 * lda] = 1.0;
         a[i + 1 * lda] = i;
     }
-    xexact[0] = 1;
-    xexact[1] = 2;
+    xexact[0] = 1.0;
+    xexact[1] = 2.0;
     for (mplapackint i = 0; i < m; i++)
         b[i] = a[i + 0 * lda] * xexact[0] + a[i + 1 * lda] * xexact[1];
 }

@@ -48,10 +48,10 @@ int main() {
     REAL *work = new REAL[3 * n];
     INTEGER *iwork = new INTEGER[n];
     REAL rcond = 0.0;
-    a[0] = 4;
-    a[1] = 2;
-    a[2] = 2;
-    a[3] = 5;
+    a[0] = 4.0;
+    a[1] = 2.0;
+    a[2] = 2.0;
+    a[3] = 5.0;
     for (INTEGER i = 0; i < n * n; i++)
         aorg[i] = a[i];
     Rpotrf("L", n, a, lda, info);

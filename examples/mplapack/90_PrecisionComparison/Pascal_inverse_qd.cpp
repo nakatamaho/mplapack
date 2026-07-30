@@ -53,7 +53,7 @@ void printmat(int n, int m, qd_real * a, int lda)
     printf("]");
 }
 qd_real binom(mplapackint n, mplapackint k) {
-    qd_real r = 1;
+    qd_real r = 1.0;
     for (mplapackint i = 1; i <= k; i++)
         r = r * qd_real(n - k + i) / qd_real(i);
     return r;
@@ -77,7 +77,7 @@ int main() {
     qd_real *work = new qd_real[lwork];
     if (info == 0)
         Rgetri(n, a, lda, ipiv, work, lwork, info);
-    qd_real err = 0;
+    qd_real err = 0.0;
     for (mplapackint i = 0; i < n * n; i++) {
         qd_real d = nearest_integer_error(a[i]);
         if (err < d)

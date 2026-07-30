@@ -32,11 +32,11 @@ REAL max_residual(INTEGER m, INTEGER n, INTEGER nrhs, REAL *a, INTEGER lda, REAL
 
 void set_problem(INTEGER m, INTEGER n, REAL *a, INTEGER lda, REAL *b, INTEGER ldb, REAL *xexact) {
     for (INTEGER i = 0; i < m; i++) {
-        a[i + 0 * lda] = 1;
+        a[i + 0 * lda] = 1.0;
         a[i + 1 * lda] = i;
     }
-    xexact[0] = 1;
-    xexact[1] = 2;
+    xexact[0] = 1.0;
+    xexact[1] = 2.0;
     for (INTEGER i = 0; i < m; i++)
         b[i] = a[i + 0 * lda] * xexact[0] + a[i + 1 * lda] * xexact[1];
 }

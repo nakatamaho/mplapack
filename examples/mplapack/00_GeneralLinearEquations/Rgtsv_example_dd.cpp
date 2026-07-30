@@ -93,20 +93,20 @@ int main() {
     dd_real *b = new dd_real[n];
     dd_real *borg = new dd_real[n];
     dd_real *xexact = new dd_real[n];
-    for (mplapackint i = 0; i < n * n; i++) a[i] = 0;
+    for (mplapackint i = 0; i < n * n; i++) a[i] = 0.0;
     for (mplapackint i = 0; i < n; i++) {
-        d[i] = 2;
-        xexact[i] = i + 1;
-        a[i + i * n] = 2;
+        d[i] = 2.0;
+        xexact[i] = i + 1.0;
+        a[i + i * n] = 2.0;
     }
     for (mplapackint i = 0; i < n - 1; i++) {
-        dl[i] = -1;
-        du[i] = -1;
-        a[i + 1 + i * n] = -1;
-        a[i + (i + 1) * n] = -1;
+        dl[i] = -1.0;
+        du[i] = -1.0;
+        a[i + 1 + i * n] = -1.0;
+        a[i + (i + 1) * n] = -1.0;
     }
     for (mplapackint i = 0; i < n; i++) {
-        b[i] = 0;
+        b[i] = 0.0;
         for (mplapackint k = 0; k < n; k++) b[i] = b[i] + a[i + k * n] * xexact[k];
         borg[i] = b[i];
     }

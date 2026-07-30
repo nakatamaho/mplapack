@@ -46,7 +46,7 @@ void printmat(int n, int m, double *a, int lda)
     printf("]");
 }
 double max_solution_error(mplapackint n, double *x, double *xexact) {
-    double err = 0;
+    double err = 0.0;
     for (mplapackint i = 0; i < n; i++) {
         double d = abs(x[i] - xexact[i]);
         if (err < d)
@@ -69,7 +69,7 @@ int main() {
     for (mplapackint i = 0; i < n; i++)
         xexact[i] = (i % 2 == 0) ? double(1.0) : double(-1.0);
     for (mplapackint i = 0; i < n; i++) {
-        b[i] = 0;
+        b[i] = 0.0;
         for (mplapackint k = 0; k < n; k++)
             b[i] = b[i] + aorg[i + k * lda] * xexact[k];
     }

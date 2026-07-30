@@ -43,7 +43,7 @@ void printmat(int n, int m, mpf_class * a, int lda)
     printf("]");
 }
 mpf_class max_solution_error(mplapackint n, mpf_class *x, mpf_class *xexact) {
-    mpf_class err = 0;
+    mpf_class err = 0.0;
     for (mplapackint i = 0; i < n; i++) {
         mpf_class d = abs(x[i] - xexact[i]);
         if (err < d)
@@ -61,14 +61,14 @@ int main() {
         xexact[j] = mpf_class(j % 3 - 1);
     for (mplapackint i = 0; i < n; i++) {
         mpf_class node = mpf_class(i + 1);
-        mpf_class p = 1;
+        mpf_class p = 1.0;
         for (mplapackint j = 0; j < n; j++) {
             a[i + j * lda] = p;
             p = p * node;
         }
     }
     for (mplapackint i = 0; i < n; i++) {
-        b[i] = 0;
+        b[i] = 0.0;
         for (mplapackint j = 0; j < n; j++)
             b[i] = b[i] + a[i + j * lda] * xexact[j];
     }

@@ -59,8 +59,8 @@ int main() {
     REAL *work = new REAL[4 * n];
     INTEGER *iwork = new INTEGER[n];
     INTEGER *ipiv = new INTEGER[n];
-    for (INTEGER i = 0; i < n * n; i++) a[i] = 0;
-    a[0 + 0 * lda] = 1; a[1 + 1 * lda] = REAL(1.0e-3); a[2 + 2 * lda] = REAL(1.0e-6);
+    for (INTEGER i = 0; i < n * n; i++) a[i] = 0.0;
+    a[0 + 0 * lda] = 1.0; a[1 + 1 * lda] = REAL(1.0e-3); a[2 + 2 * lda] = REAL(1.0e-6);
     for (INTEGER i = 0; i < n * n; i++) lu[i] = a[i];
     Rgetrf(n, n, lu, lda, ipiv, info);
     REAL rcond1 = 0.0, rcondi = 0.0;

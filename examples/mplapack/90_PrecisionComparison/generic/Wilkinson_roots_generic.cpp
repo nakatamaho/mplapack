@@ -11,17 +11,17 @@ int main() {
     INTEGER n = 20, lda = n, ldv = 1, info, lwork = -1;
     REAL *coef = new REAL[n + 1];
     for (INTEGER i = 0; i <= n; i++)
-        coef[i] = 0;
-    coef[0] = 1;
+        coef[i] = 0.0;
+    coef[0] = 1.0;
     for (INTEGER k = 1; k <= n; k++) {
         for (INTEGER j = k; j >= 1; j--)
             coef[j] = coef[j] - REAL(k) * coef[j - 1];
     }
     REAL *a = new REAL[n * n];
     for (INTEGER i = 0; i < n * n; i++)
-        a[i] = 0;
+        a[i] = 0.0;
     for (INTEGER i = 1; i < n; i++)
-        a[i + (i - 1) * lda] = 1;
+        a[i + (i - 1) * lda] = 1.0;
     for (INTEGER j = 0; j < n; j++)
         a[j + (n - 1) * lda] = -coef[n - j] / coef[0];
     REAL *wr = new REAL[n];
@@ -34,7 +34,7 @@ int main() {
     REAL *work = new REAL[lwork];
     Rgeev("N", "N", n, a, lda, wr, wi, vl, ldv, vr, ldv, work, lwork, info);
     sort_real(n, wr);
-    REAL maxerr = 0;
+    REAL maxerr = 0.0;
     for (INTEGER i = 0; i < n; i++) {
         REAL err = abs(wr[i] - REAL(i + 1));
         if (maxerr < err)

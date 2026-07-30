@@ -12,15 +12,15 @@ int main() {
     REAL *vsr = new REAL[1];
     bool *bwork = new bool[n];
     for (INTEGER i = 0; i < n * n; i++) {
-        a[i] = 0;
-        b[i] = 0;
+        a[i] = 0.0;
+        b[i] = 0.0;
     }
-    a[0] = 1;
-    a[4] = 2;
-    a[8] = 3;
-    b[0] = 1;
-    b[4] = 1;
-    b[8] = 0;
+    a[0] = 1.0;
+    a[4] = 2.0;
+    a[8] = 3.0;
+    b[0] = 1.0;
+    b[4] = 1.0;
+    b[8] = 0.0;
     REAL wk;
     Rgges("N", "N", "N", select_none, n, a, lda, b, ldb, sdim, alphar, alphai, beta, vsl, ldv, vsr, ldv, &wk, lwork, bwork, info);
     lwork = castInTEGER(wk);

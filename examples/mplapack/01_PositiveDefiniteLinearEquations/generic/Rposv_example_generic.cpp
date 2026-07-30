@@ -37,11 +37,11 @@ int main() {
     REAL *b = new REAL[n];
     REAL *borg = new REAL[n];
     REAL *xexact = new REAL[n];
-    a[0]=4; a[1]=2; a[2]=2; a[3]=5;
-    xexact[0]=1; xexact[1]=2;
+    a[0]=4.0; a[1]=2.0; a[2]=2.0; a[3]=5.0;
+    xexact[0]=1.0; xexact[1]=2.0;
     for (INTEGER i=0;i<n*n;i++) aorg[i]=a[i];
     for (INTEGER i = 0; i < n; i++) {
-        b[i] = 0;
+        b[i] = 0.0;
         for (INTEGER k = 0; k < n; k++)
             b[i] += aorg[i + k * lda] * xexact[k];
         borg[i] = b[i];

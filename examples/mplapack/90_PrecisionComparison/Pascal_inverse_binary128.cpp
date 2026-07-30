@@ -63,7 +63,7 @@ void printmat(int n, int m, mplapack_binary128_t *a, int lda)
     printf("]");
 }
 mplapack_binary128_t binom(mplapackint n, mplapackint k) {
-    mplapack_binary128_t r = 1;
+    mplapack_binary128_t r = 1.0;
     for (mplapackint i = 1; i <= k; i++)
         r = r * mplapack_binary128_t(n - k + i) / mplapack_binary128_t(i);
     return r;
@@ -87,7 +87,7 @@ int main() {
     mplapack_binary128_t *work = new mplapack_binary128_t[lwork];
     if (info == 0)
         Rgetri(n, a, lda, ipiv, work, lwork, info);
-    mplapack_binary128_t err = 0;
+    mplapack_binary128_t err = 0.0;
     for (mplapackint i = 0; i < n * n; i++) {
         mplapack_binary128_t d = nearest_integer_error(a[i]);
         if (err < d)

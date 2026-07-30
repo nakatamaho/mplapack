@@ -143,7 +143,7 @@ int main(int argc, char *argv[]) {
     // 2. get determinant via LU factorization
     Rgetrf(n, n, a, n, ipiv, info);
     // printf("aLU ="); printmat(n, n, a, n); printf("\n");
-    mplapack_binary128_t det = 1;
+    mplapack_binary128_t det = 1.0;
     for (int i = 0; i < n; i++) {
         det = det * a[i + i * n];
         if (ipiv[i] != i + 1)
@@ -152,7 +152,7 @@ int main(int argc, char *argv[]) {
     printf("det="); printnum(det); printf("\n");
 
     // 3. Set Hessenberg matirx with a[1,n] = 0 to make det of matrix a = 1.
-    aorg[0 + (n - 1) * n] = -det + 1;
+    aorg[0 + (n - 1) * n] = -det + 1.0;
     printf("anew ="); printmat(n, n, aorg, n); printf("\n");
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {

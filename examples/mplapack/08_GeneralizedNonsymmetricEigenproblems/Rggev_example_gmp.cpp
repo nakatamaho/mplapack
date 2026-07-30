@@ -52,15 +52,15 @@ int main() {
     mpf_class *vl = new mpf_class[1];
     mpf_class *vr = new mpf_class[1];
     for (mplapackint i = 0; i < n * n; i++) {
-        a[i] = 0;
-        b[i] = 0;
+        a[i] = 0.0;
+        b[i] = 0.0;
     }
-    a[0] = 1;
-    a[4] = 2;
-    a[8] = 3;
-    b[0] = 1;
-    b[4] = 1;
-    b[8] = 0;
+    a[0] = 1.0;
+    a[4] = 2.0;
+    a[8] = 3.0;
+    b[0] = 1.0;
+    b[4] = 1.0;
+    b[8] = 0.0;
     mpf_class wk;
     Rggev("N", "N", n, a, lda, b, ldb, alphar, alphai, beta, vl, ldv, vr, ldv, &wk, lwork, info);
     lwork = castINTEGER_gmp(wk);
