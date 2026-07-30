@@ -12,7 +12,7 @@ int main() {
     REAL *a = new REAL[n * n];
     for (INTEGER j = 0; j < n; j++)
         for (INTEGER i = 0; i < n; i++)
-            a[i + j * lda] = (i <= j) ? REAL(n - j) : REAL(n - i);
+            a[i + j * lda] = (i <= j) ? REAL((double)(n - j)) : REAL((double)(n - i));
     REAL *wr = new REAL[n];
     REAL *wi = new REAL[n];
     REAL *vl = new REAL[1];

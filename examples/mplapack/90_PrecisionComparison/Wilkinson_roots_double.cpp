@@ -62,7 +62,7 @@ int main() {
     coef[0] = 1.0;
     for (mplapackint k = 1; k <= n; k++) {
         for (mplapackint j = k; j >= 1; j--)
-            coef[j] = coef[j] - double(k) * coef[j - 1];
+            coef[j] = coef[j] - double((double)k) * coef[j - 1];
     }
     double *a = new double[n * n];
     for (mplapackint i = 0; i < n * n; i++)
@@ -83,7 +83,7 @@ int main() {
     sort_real(n, wr);
     double maxerr = 0.0;
     for (mplapackint i = 0; i < n; i++) {
-        double err = abs(wr[i] - double(i + 1));
+        double err = abs(wr[i] - double((double)(i + 1)));
         if (maxerr < err)
             maxerr = err;
         printf("root[%ld] = ", (long)i); printnum(wr[i]); printf(", error = "); printnum(err); printf("\n");

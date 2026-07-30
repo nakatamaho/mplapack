@@ -58,8 +58,8 @@ int main() {
     qd_real *b = new qd_real[m * n];
     for (mplapackint j = 0; j < n; j++)
         for (mplapackint i = 0; i < m; i++) {
-            qd_real scale = pow(qd_real(10.0), qd_real(i - 4));
-            a[i + j * lda] = scale / (qd_real(i + j + 1));
+            qd_real scale = pow(qd_real(10.0), qd_real((double)(i - 4)));
+            a[i + j * lda] = scale / (qd_real((double)(i + j + 1)));
             b[i + j * lda] = a[i + j * lda];
         }
     qd_real *s1 = new qd_real[n];

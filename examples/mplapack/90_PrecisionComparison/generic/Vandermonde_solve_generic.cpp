@@ -14,9 +14,9 @@ int main() {
     REAL *xexact = new REAL[n];
     INTEGER *ipiv = new INTEGER[n];
     for (INTEGER j = 0; j < n; j++)
-        xexact[j] = REAL(j % 3 - 1);
+        xexact[j] = REAL((double)(j % 3 - 1));
     for (INTEGER i = 0; i < n; i++) {
-        REAL node = REAL(i + 1);
+        REAL node = REAL((double)(i + 1));
         REAL p = 1.0;
         for (INTEGER j = 0; j < n; j++) {
             a[i + j * lda] = p;

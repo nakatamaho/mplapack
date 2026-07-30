@@ -60,7 +60,7 @@ int main() {
     mpfr_class *a = new mpfr_class[n * n];
     for (mplapackint j = 0; j < n; j++)
         for (mplapackint i = 0; i < n; i++)
-            a[i + j * lda] = (i <= j) ? mpfr_class(n - j) : mpfr_class(n - i);
+            a[i + j * lda] = (i <= j) ? mpfr_class((double)(n - j)) : mpfr_class((double)(n - i));
     mpfr_class *wr = new mpfr_class[n];
     mpfr_class *wi = new mpfr_class[n];
     mpfr_class *vl = new mpfr_class[1];

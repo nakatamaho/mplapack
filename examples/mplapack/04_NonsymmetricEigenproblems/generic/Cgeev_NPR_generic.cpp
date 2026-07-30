@@ -48,7 +48,7 @@ int main() {
     COMPLEX _pi = pi(REAL(0.0));
     COMPLEX *lambda = new COMPLEX[n];
     for (int h = 1; h <= n; h++) {
-        lambda [h - 1] = delta + COMPLEX(2.0, 0.0) * sqrt (sigma * tau) * cos( (REAL(h) * _pi) / REAL((int)n + 1) );
+        lambda [h - 1] = delta + COMPLEX(2.0, 0.0) * sqrt (sigma * tau) * cos( (REAL((double)h) * _pi) / REAL((double)((int)n + 1)) );
     }
     printf("lambda_true = "); printvec(lambda, n); printf("\n");
     printf("vr ="); printmat(n,n,vr,n); printf("\n");    

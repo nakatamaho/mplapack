@@ -68,9 +68,9 @@ int main() {
     dd_real *xexact = new dd_real[n];
     mplapackint *ipiv = new mplapackint[n];
     for (mplapackint j = 0; j < n; j++)
-        xexact[j] = dd_real(j % 3 - 1);
+        xexact[j] = dd_real((double)(j % 3 - 1));
     for (mplapackint i = 0; i < n; i++) {
-        dd_real node = dd_real(i + 1);
+        dd_real node = dd_real((double)(i + 1));
         dd_real p = 1.0;
         for (mplapackint j = 0; j < n; j++) {
             a[i + j * lda] = p;

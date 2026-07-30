@@ -53,7 +53,7 @@ int main() {
     double *aqr = new double[m * n];
     for (mplapackint j = 0; j < n; j++)
         for (mplapackint i = 0; i < m; i++) {
-            double scale = pow(s, double(i));
+            double scale = pow(s, double((double)i));
             double val = (i == j) ? double(1.0) : ((i < j) ? -c : double(0.0));
             a[i + j * lda] = scale * val;
             asvd[i + j * lda] = a[i + j * lda];

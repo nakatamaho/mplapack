@@ -50,7 +50,7 @@ int main() {
     mpf_class *aqr = new mpf_class[m * n];
     for (mplapackint j = 0; j < n; j++)
         for (mplapackint i = 0; i < m; i++) {
-            mpf_class scale = pow(s, mpf_class(i));
+            mpf_class scale = pow(s, mpf_class((double)i));
             mpf_class val = (i == j) ? mpf_class(1.0) : ((i < j) ? -c : mpf_class(0.0));
             a[i + j * lda] = scale * val;
             asvd[i + j * lda] = a[i + j * lda];

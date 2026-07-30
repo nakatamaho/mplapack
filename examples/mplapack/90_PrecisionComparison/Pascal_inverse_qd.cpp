@@ -55,12 +55,12 @@ void printmat(int n, int m, qd_real * a, int lda)
 qd_real binom(mplapackint n, mplapackint k) {
     qd_real r = 1.0;
     for (mplapackint i = 1; i <= k; i++)
-        r = r * qd_real(n - k + i) / qd_real(i);
+        r = r * qd_real((double)(n - k + i)) / qd_real((double)i);
     return r;
 }
 qd_real nearest_integer_error(qd_real x) {
     mplapackint nearest = castINTEGER_qd(x >= qd_real(0.0) ? x + qd_real(0.5) : x - qd_real(0.5));
-    return abs(x - qd_real(nearest));
+    return abs(x - qd_real((double)nearest));
 }
 int main() {
     mplapackint n = 8, lda = n, info, lwork = -1;

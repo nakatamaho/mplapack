@@ -55,12 +55,12 @@ void printmat(int n, int m, dd_real * a, int lda)
 dd_real binom(mplapackint n, mplapackint k) {
     dd_real r = 1.0;
     for (mplapackint i = 1; i <= k; i++)
-        r = r * dd_real(n - k + i) / dd_real(i);
+        r = r * dd_real((double)(n - k + i)) / dd_real((double)i);
     return r;
 }
 dd_real nearest_integer_error(dd_real x) {
     mplapackint nearest = castINTEGER_dd(x >= dd_real(0.0) ? x + dd_real(0.5) : x - dd_real(0.5));
-    return abs(x - dd_real(nearest));
+    return abs(x - dd_real((double)nearest));
 }
 int main() {
     mplapackint n = 8, lda = n, info, lwork = -1;

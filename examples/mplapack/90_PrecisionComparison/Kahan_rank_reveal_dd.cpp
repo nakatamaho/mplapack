@@ -60,7 +60,7 @@ int main() {
     dd_real *aqr = new dd_real[m * n];
     for (mplapackint j = 0; j < n; j++)
         for (mplapackint i = 0; i < m; i++) {
-            dd_real scale = pow(s, dd_real(i));
+            dd_real scale = pow(s, dd_real((double)i));
             dd_real val = (i == j) ? dd_real(1.0) : ((i < j) ? -c : dd_real(0.0));
             a[i + j * lda] = scale * val;
             asvd[i + j * lda] = a[i + j * lda];

@@ -56,7 +56,7 @@ int main() {
     mpf_class *a = new mpf_class[n * n];
     for (mplapackint j = 0; j < n; j++)
         for (mplapackint i = 0; i < n; i++)
-            a[i + j * lda] = (i <= j) ? mpf_class(n - j) : mpf_class(n - i);
+            a[i + j * lda] = (i <= j) ? mpf_class((double)(n - j)) : mpf_class((double)(n - i));
     mpf_class *wr = new mpf_class[n];
     mpf_class *wi = new mpf_class[n];
     mpf_class *vl = new mpf_class[1];

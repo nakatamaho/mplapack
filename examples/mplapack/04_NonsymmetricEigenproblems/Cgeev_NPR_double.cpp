@@ -95,7 +95,7 @@ int main() {
     std::complex<double> _pi = pi(double(0.0));
     std::complex<double> *lambda = new std::complex<double>[n];
     for (int h = 1; h <= n; h++) {
-        lambda [h - 1] = delta + std::complex<double>(2.0, 0.0) * sqrt (sigma * tau) * cos( (double(h) * _pi) / double((int)n + 1) );
+        lambda [h - 1] = delta + std::complex<double>(2.0, 0.0) * sqrt (sigma * tau) * cos( (double((double)h) * _pi) / double((double)((int)n + 1)) );
     }
     printf("lambda_true = "); printvec(lambda, n); printf("\n");
     printf("vr ="); printmat(n,n,vr,n); printf("\n");    

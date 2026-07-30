@@ -65,12 +65,12 @@ void printmat(int n, int m, mplapack_binary128_t *a, int lda)
 mplapack_binary128_t binom(mplapackint n, mplapackint k) {
     mplapack_binary128_t r = 1.0;
     for (mplapackint i = 1; i <= k; i++)
-        r = r * mplapack_binary128_t(n - k + i) / mplapack_binary128_t(i);
+        r = r * mplapack_binary128_t((double)(n - k + i)) / mplapack_binary128_t((double)i);
     return r;
 }
 mplapack_binary128_t nearest_integer_error(mplapack_binary128_t x) {
     mplapackint nearest = castINTEGER_binary128(x >= mplapack_binary128_t(0.0) ? x + mplapack_binary128_t(0.5) : x - mplapack_binary128_t(0.5));
-    return abs(x - mplapack_binary128_t(nearest));
+    return abs(x - mplapack_binary128_t((double)nearest));
 }
 int main() {
     mplapackint n = 8, lda = n, info, lwork = -1;

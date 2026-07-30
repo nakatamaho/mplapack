@@ -48,12 +48,12 @@ void printmat(int n, int m, double *a, int lda)
 double binom(mplapackint n, mplapackint k) {
     double r = 1.0;
     for (mplapackint i = 1; i <= k; i++)
-        r = r * double(n - k + i) / double(i);
+        r = r * double((double)(n - k + i)) / double((double)i);
     return r;
 }
 double nearest_integer_error(double x) {
     mplapackint nearest = castINTEGER_double(x >= double(0.0) ? x + double(0.5) : x - double(0.5));
-    return abs(x - double(nearest));
+    return abs(x - double((double)nearest));
 }
 int main() {
     mplapackint n = 8, lda = n, info, lwork = -1;

@@ -62,9 +62,9 @@ int main() {
     mpfr_class *xexact = new mpfr_class[n];
     mplapackint *ipiv = new mplapackint[n];
     for (mplapackint j = 0; j < n; j++)
-        xexact[j] = mpfr_class(j % 3 - 1);
+        xexact[j] = mpfr_class((double)(j % 3 - 1));
     for (mplapackint i = 0; i < n; i++) {
-        mpfr_class node = mpfr_class(i + 1);
+        mpfr_class node = mpfr_class((double)(i + 1));
         mpfr_class p = 1.0;
         for (mplapackint j = 0; j < n; j++) {
             a[i + j * lda] = p;

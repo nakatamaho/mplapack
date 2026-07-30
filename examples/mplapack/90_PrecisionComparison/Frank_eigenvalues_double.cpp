@@ -59,7 +59,7 @@ int main() {
     double *a = new double[n * n];
     for (mplapackint j = 0; j < n; j++)
         for (mplapackint i = 0; i < n; i++)
-            a[i + j * lda] = (i <= j) ? double(n - j) : double(n - i);
+            a[i + j * lda] = (i <= j) ? double((double)(n - j)) : double((double)(n - i));
     double *wr = new double[n];
     double *wi = new double[n];
     double *vl = new double[1];

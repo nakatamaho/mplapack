@@ -54,7 +54,7 @@ int main() {
     mpfr_class *aqr = new mpfr_class[m * n];
     for (mplapackint j = 0; j < n; j++)
         for (mplapackint i = 0; i < m; i++) {
-            mpfr_class scale = pow(s, mpfr_class(i));
+            mpfr_class scale = pow(s, mpfr_class((double)i));
             mpfr_class val = (i == j) ? mpfr_class(1.0) : ((i < j) ? -c : mpfr_class(0.0));
             a[i + j * lda] = scale * val;
             asvd[i + j * lda] = a[i + j * lda];

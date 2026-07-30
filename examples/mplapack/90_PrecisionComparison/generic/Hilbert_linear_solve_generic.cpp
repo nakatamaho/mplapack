@@ -16,7 +16,7 @@ int main() {
     INTEGER *ipiv = new INTEGER[n];
     for (INTEGER j = 0; j < n; j++)
         for (INTEGER i = 0; i < n; i++) {
-            a[i + j * lda] = REAL(1.0) / REAL(i + j + 1);
+            a[i + j * lda] = REAL(1.0) / REAL((double)(i + j + 1));
             aorg[i + j * lda] = a[i + j * lda];
         }
     for (INTEGER i = 0; i < n; i++)

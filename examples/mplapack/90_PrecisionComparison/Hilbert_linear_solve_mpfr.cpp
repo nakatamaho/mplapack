@@ -64,7 +64,7 @@ int main() {
     mplapackint *ipiv = new mplapackint[n];
     for (mplapackint j = 0; j < n; j++)
         for (mplapackint i = 0; i < n; i++) {
-            a[i + j * lda] = mpfr_class(1.0) / mpfr_class(i + j + 1);
+            a[i + j * lda] = mpfr_class(1.0) / mpfr_class((double)(i + j + 1));
             aorg[i + j * lda] = a[i + j * lda];
         }
     for (mplapackint i = 0; i < n; i++)

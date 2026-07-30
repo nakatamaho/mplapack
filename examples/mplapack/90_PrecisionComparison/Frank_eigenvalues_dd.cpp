@@ -66,7 +66,7 @@ int main() {
     dd_real *a = new dd_real[n * n];
     for (mplapackint j = 0; j < n; j++)
         for (mplapackint i = 0; i < n; i++)
-            a[i + j * lda] = (i <= j) ? dd_real(n - j) : dd_real(n - i);
+            a[i + j * lda] = (i <= j) ? dd_real((double)(n - j)) : dd_real((double)(n - i));
     dd_real *wr = new dd_real[n];
     dd_real *wi = new dd_real[n];
     dd_real *vl = new dd_real[1];

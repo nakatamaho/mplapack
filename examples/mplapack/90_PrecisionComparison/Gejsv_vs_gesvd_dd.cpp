@@ -58,8 +58,8 @@ int main() {
     dd_real *b = new dd_real[m * n];
     for (mplapackint j = 0; j < n; j++)
         for (mplapackint i = 0; i < m; i++) {
-            dd_real scale = pow(dd_real(10.0), dd_real(i - 4));
-            a[i + j * lda] = scale / (dd_real(i + j + 1));
+            dd_real scale = pow(dd_real(10.0), dd_real((double)(i - 4)));
+            a[i + j * lda] = scale / (dd_real((double)(i + j + 1)));
             b[i + j * lda] = a[i + j * lda];
         }
     dd_real *s1 = new dd_real[n];

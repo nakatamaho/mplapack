@@ -108,7 +108,7 @@ int main() {
     equed[0] = 'N';
     equed[1] = '\0';
     mplapack_binary80_t rcond;
-    for (mplapackint j = 0; j < n; j++) for (mplapackint i = 0; i < n; i++) a[i + j * lda] = mplapack_binary80_t(1.0) / mplapack_binary80_t(i + j + 1);
+    for (mplapackint j = 0; j < n; j++) for (mplapackint i = 0; i < n; i++) a[i + j * lda] = mplapack_binary80_t(1.0) / mplapack_binary80_t((double)(i + j + 1));
     for (mplapackint i = 0; i < n; i++) xexact[i] = (i % 2 == 0) ? mplapack_binary80_t(1.0) : mplapack_binary80_t(-1.0);
     for (mplapackint i = 0; i < n; i++) {
         b[i] = 0.0;

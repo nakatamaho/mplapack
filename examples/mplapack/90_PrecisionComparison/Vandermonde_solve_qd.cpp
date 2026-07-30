@@ -68,9 +68,9 @@ int main() {
     qd_real *xexact = new qd_real[n];
     mplapackint *ipiv = new mplapackint[n];
     for (mplapackint j = 0; j < n; j++)
-        xexact[j] = qd_real(j % 3 - 1);
+        xexact[j] = qd_real((double)(j % 3 - 1));
     for (mplapackint i = 0; i < n; i++) {
-        qd_real node = qd_real(i + 1);
+        qd_real node = qd_real((double)(i + 1));
         qd_real p = 1.0;
         for (mplapackint j = 0; j < n; j++) {
             a[i + j * lda] = p;

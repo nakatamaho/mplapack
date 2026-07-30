@@ -72,7 +72,7 @@ int main() {
     mplapack_binary80_t *a = new mplapack_binary80_t[n * n];
     for (mplapackint j = 0; j < n; j++)
         for (mplapackint i = 0; i < n; i++)
-            a[i + j * lda] = (i <= j) ? mplapack_binary80_t(n - j) : mplapack_binary80_t(n - i);
+            a[i + j * lda] = (i <= j) ? mplapack_binary80_t((double)(n - j)) : mplapack_binary80_t((double)(n - i));
     mplapack_binary80_t *wr = new mplapack_binary80_t[n];
     mplapack_binary80_t *wi = new mplapack_binary80_t[n];
     mplapack_binary80_t *vl = new mplapack_binary80_t[1];

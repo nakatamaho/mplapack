@@ -1,12 +1,12 @@
 REAL binom(INTEGER n, INTEGER k) {
     REAL r = 1.0;
     for (INTEGER i = 1; i <= k; i++)
-        r = r * REAL(n - k + i) / REAL(i);
+        r = r * REAL((double)(n - k + i)) / REAL((double)i);
     return r;
 }
 REAL nearest_integer_error(REAL x) {
     INTEGER nearest = castInTEGER(x >= REAL(0.0) ? x + REAL(0.5) : x - REAL(0.5));
-    return abs(x - REAL(nearest));
+    return abs(x - REAL((double)nearest));
 }
 int main() {
     INTEGER n = 8, lda = n, info, lwork = -1;

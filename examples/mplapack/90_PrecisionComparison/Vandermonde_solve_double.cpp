@@ -61,9 +61,9 @@ int main() {
     double *xexact = new double[n];
     mplapackint *ipiv = new mplapackint[n];
     for (mplapackint j = 0; j < n; j++)
-        xexact[j] = double(j % 3 - 1);
+        xexact[j] = double((double)(j % 3 - 1));
     for (mplapackint i = 0; i < n; i++) {
-        double node = double(i + 1);
+        double node = double((double)(i + 1));
         double p = 1.0;
         for (mplapackint j = 0; j < n; j++) {
             a[i + j * lda] = p;

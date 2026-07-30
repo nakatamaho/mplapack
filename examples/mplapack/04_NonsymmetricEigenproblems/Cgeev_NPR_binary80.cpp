@@ -126,7 +126,7 @@ int main() {
     std::complex<mplapack_binary80_t> _pi = pi(mplapack_binary80_t(0.0));
     std::complex<mplapack_binary80_t> *lambda = new std::complex<mplapack_binary80_t>[n];
     for (int h = 1; h <= n; h++) {
-        lambda [h - 1] = delta + std::complex<mplapack_binary80_t>(2.0, 0.0) * sqrt (sigma * tau) * cos( (mplapack_binary80_t(h) * _pi) / mplapack_binary80_t((int)n + 1) );
+        lambda [h - 1] = delta + std::complex<mplapack_binary80_t>(2.0, 0.0) * sqrt (sigma * tau) * cos( (mplapack_binary80_t((double)h) * _pi) / mplapack_binary80_t((double)((int)n + 1)) );
     }
     printf("lambda_true = "); printvec(lambda, n); printf("\n");
     printf("vr ="); printmat(n,n,vr,n); printf("\n");    

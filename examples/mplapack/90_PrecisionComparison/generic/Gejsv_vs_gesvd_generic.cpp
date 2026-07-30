@@ -4,8 +4,8 @@ int main() {
     REAL *b = new REAL[m * n];
     for (INTEGER j = 0; j < n; j++)
         for (INTEGER i = 0; i < m; i++) {
-            REAL scale = pow(REAL(10.0), REAL(i - 4));
-            a[i + j * lda] = scale / (REAL(i + j + 1));
+            REAL scale = pow(REAL(10.0), REAL((double)(i - 4)));
+            a[i + j * lda] = scale / (REAL((double)(i + j + 1)));
             b[i + j * lda] = a[i + j * lda];
         }
     REAL *s1 = new REAL[n];

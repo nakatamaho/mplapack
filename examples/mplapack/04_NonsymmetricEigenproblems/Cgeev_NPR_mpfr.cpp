@@ -104,7 +104,7 @@ int main() {
     mpc_class _pi = pi(mpfr_class(0.0));
     mpc_class *lambda = new mpc_class[n];
     for (int h = 1; h <= n; h++) {
-        lambda [h - 1] = delta + mpc_class(2.0, 0.0) * sqrt (sigma * tau) * cos( (mpfr_class(h) * _pi) / mpfr_class((int)n + 1) );
+        lambda [h - 1] = delta + mpc_class(2.0, 0.0) * sqrt (sigma * tau) * cos( (mpfr_class((double)h) * _pi) / mpfr_class((double)((int)n + 1)) );
     }
     printf("lambda_true = "); printvec(lambda, n); printf("\n");
     printf("vr ="); printmat(n,n,vr,n); printf("\n");    

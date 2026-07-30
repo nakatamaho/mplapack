@@ -60,7 +60,7 @@ int main() {
     qd_real *aqr = new qd_real[m * n];
     for (mplapackint j = 0; j < n; j++)
         for (mplapackint i = 0; i < m; i++) {
-            qd_real scale = pow(s, qd_real(i));
+            qd_real scale = pow(s, qd_real((double)i));
             qd_real val = (i == j) ? qd_real(1.0) : ((i < j) ? -c : qd_real(0.0));
             a[i + j * lda] = scale * val;
             asvd[i + j * lda] = a[i + j * lda];

@@ -95,7 +95,7 @@ int main() {
     equed[0] = 'N';
     equed[1] = '\0';
     double rcond;
-    for (mplapackint j = 0; j < n; j++) for (mplapackint i = 0; i < n; i++) a[i + j * lda] = double(1.0) / double(i + j + 1);
+    for (mplapackint j = 0; j < n; j++) for (mplapackint i = 0; i < n; i++) a[i + j * lda] = double(1.0) / double((double)(i + j + 1));
     for (mplapackint i = 0; i < n; i++) xexact[i] = (i % 2 == 0) ? double(1.0) : double(-1.0);
     for (mplapackint i = 0; i < n; i++) {
         b[i] = 0.0;

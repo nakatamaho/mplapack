@@ -45,12 +45,12 @@ void printmat(int n, int m, mpf_class * a, int lda)
 mpf_class binom(mplapackint n, mplapackint k) {
     mpf_class r = 1.0;
     for (mplapackint i = 1; i <= k; i++)
-        r = r * mpf_class(n - k + i) / mpf_class(i);
+        r = r * mpf_class((double)(n - k + i)) / mpf_class((double)i);
     return r;
 }
 mpf_class nearest_integer_error(mpf_class x) {
     mplapackint nearest = castINTEGER_gmp(x >= mpf_class(0.0) ? x + mpf_class(0.5) : x - mpf_class(0.5));
-    return abs(x - mpf_class(nearest));
+    return abs(x - mpf_class((double)nearest));
 }
 int main() {
     mplapackint n = 8, lda = n, info, lwork = -1;

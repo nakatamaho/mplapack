@@ -66,7 +66,7 @@ int main() {
     qd_real *a = new qd_real[n * n];
     for (mplapackint j = 0; j < n; j++)
         for (mplapackint i = 0; i < n; i++)
-            a[i + j * lda] = (i <= j) ? qd_real(n - j) : qd_real(n - i);
+            a[i + j * lda] = (i <= j) ? qd_real((double)(n - j)) : qd_real((double)(n - i));
     qd_real *wr = new qd_real[n];
     qd_real *wi = new qd_real[n];
     qd_real *vl = new qd_real[1];

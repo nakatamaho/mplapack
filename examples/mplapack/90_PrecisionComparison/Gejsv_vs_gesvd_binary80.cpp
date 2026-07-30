@@ -64,8 +64,8 @@ int main() {
     mplapack_binary80_t *b = new mplapack_binary80_t[m * n];
     for (mplapackint j = 0; j < n; j++)
         for (mplapackint i = 0; i < m; i++) {
-            mplapack_binary80_t scale = pow(mplapack_binary80_t(10.0), mplapack_binary80_t(i - 4));
-            a[i + j * lda] = scale / (mplapack_binary80_t(i + j + 1));
+            mplapack_binary80_t scale = pow(mplapack_binary80_t(10.0), mplapack_binary80_t((double)(i - 4)));
+            a[i + j * lda] = scale / (mplapack_binary80_t((double)(i + j + 1)));
             b[i + j * lda] = a[i + j * lda];
         }
     mplapack_binary80_t *s1 = new mplapack_binary80_t[n];

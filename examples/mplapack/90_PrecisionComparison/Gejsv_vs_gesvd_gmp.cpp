@@ -48,8 +48,8 @@ int main() {
     mpf_class *b = new mpf_class[m * n];
     for (mplapackint j = 0; j < n; j++)
         for (mplapackint i = 0; i < m; i++) {
-            mpf_class scale = pow(mpf_class(10.0), mpf_class(i - 4));
-            a[i + j * lda] = scale / (mpf_class(i + j + 1));
+            mpf_class scale = pow(mpf_class(10.0), mpf_class((double)(i - 4)));
+            a[i + j * lda] = scale / (mpf_class((double)(i + j + 1)));
             b[i + j * lda] = a[i + j * lda];
         }
     mpf_class *s1 = new mpf_class[n];

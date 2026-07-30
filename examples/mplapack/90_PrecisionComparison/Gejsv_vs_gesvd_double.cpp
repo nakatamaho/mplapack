@@ -51,8 +51,8 @@ int main() {
     double *b = new double[m * n];
     for (mplapackint j = 0; j < n; j++)
         for (mplapackint i = 0; i < m; i++) {
-            double scale = pow(double(10.0), double(i - 4));
-            a[i + j * lda] = scale / (double(i + j + 1));
+            double scale = pow(double(10.0), double((double)(i - 4)));
+            a[i + j * lda] = scale / (double((double)(i + j + 1)));
             b[i + j * lda] = a[i + j * lda];
         }
     double *s1 = new double[n];

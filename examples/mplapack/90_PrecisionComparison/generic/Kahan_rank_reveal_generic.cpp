@@ -6,7 +6,7 @@ int main() {
     REAL *aqr = new REAL[m * n];
     for (INTEGER j = 0; j < n; j++)
         for (INTEGER i = 0; i < m; i++) {
-            REAL scale = pow(s, REAL(i));
+            REAL scale = pow(s, REAL((double)i));
             REAL val = (i == j) ? REAL(1.0) : ((i < j) ? -c : REAL(0.0));
             a[i + j * lda] = scale * val;
             asvd[i + j * lda] = a[i + j * lda];

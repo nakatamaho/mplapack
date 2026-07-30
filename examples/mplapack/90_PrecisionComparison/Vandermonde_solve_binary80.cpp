@@ -74,9 +74,9 @@ int main() {
     mplapack_binary80_t *xexact = new mplapack_binary80_t[n];
     mplapackint *ipiv = new mplapackint[n];
     for (mplapackint j = 0; j < n; j++)
-        xexact[j] = mplapack_binary80_t(j % 3 - 1);
+        xexact[j] = mplapack_binary80_t((double)(j % 3 - 1));
     for (mplapackint i = 0; i < n; i++) {
-        mplapack_binary80_t node = mplapack_binary80_t(i + 1);
+        mplapack_binary80_t node = mplapack_binary80_t((double)(i + 1));
         mplapack_binary80_t p = 1.0;
         for (mplapackint j = 0; j < n; j++) {
             a[i + j * lda] = p;

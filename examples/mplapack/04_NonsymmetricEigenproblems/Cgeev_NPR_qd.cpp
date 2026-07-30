@@ -118,7 +118,7 @@ int main() {
     qd_complex _pi = pi(qd_real(0.0));
     qd_complex *lambda = new qd_complex[n];
     for (int h = 1; h <= n; h++) {
-        lambda [h - 1] = delta + qd_complex(2.0, 0.0) * sqrt (sigma * tau) * cos( (qd_real(h) * _pi) / qd_real((int)n + 1) );
+        lambda [h - 1] = delta + qd_complex(2.0, 0.0) * sqrt (sigma * tau) * cos( (qd_real((double)h) * _pi) / qd_real((double)((int)n + 1)) );
     }
     printf("lambda_true = "); printvec(lambda, n); printf("\n");
     printf("vr ="); printmat(n,n,vr,n); printf("\n");    

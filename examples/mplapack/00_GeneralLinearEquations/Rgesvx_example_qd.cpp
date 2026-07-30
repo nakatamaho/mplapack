@@ -102,7 +102,7 @@ int main() {
     equed[0] = 'N';
     equed[1] = '\0';
     qd_real rcond;
-    for (mplapackint j = 0; j < n; j++) for (mplapackint i = 0; i < n; i++) a[i + j * lda] = qd_real(1.0) / qd_real(i + j + 1);
+    for (mplapackint j = 0; j < n; j++) for (mplapackint i = 0; i < n; i++) a[i + j * lda] = qd_real(1.0) / qd_real((double)(i + j + 1));
     for (mplapackint i = 0; i < n; i++) xexact[i] = (i % 2 == 0) ? qd_real(1.0) : qd_real(-1.0);
     for (mplapackint i = 0; i < n; i++) {
         b[i] = 0.0;

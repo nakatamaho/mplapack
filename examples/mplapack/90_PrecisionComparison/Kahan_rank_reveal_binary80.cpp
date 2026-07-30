@@ -66,7 +66,7 @@ int main() {
     mplapack_binary80_t *aqr = new mplapack_binary80_t[m * n];
     for (mplapackint j = 0; j < n; j++)
         for (mplapackint i = 0; i < m; i++) {
-            mplapack_binary80_t scale = pow(s, mplapack_binary80_t(i));
+            mplapack_binary80_t scale = pow(s, mplapack_binary80_t((double)i));
             mplapack_binary80_t val = (i == j) ? mplapack_binary80_t(1.0) : ((i < j) ? -c : mplapack_binary80_t(0.0));
             a[i + j * lda] = scale * val;
             asvd[i + j * lda] = a[i + j * lda];

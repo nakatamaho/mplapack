@@ -49,12 +49,12 @@ void printmat(int n, int m, mpfr_class *a, int lda) {
 mpfr_class binom(mplapackint n, mplapackint k) {
     mpfr_class r = 1.0;
     for (mplapackint i = 1; i <= k; i++)
-        r = r * mpfr_class(n - k + i) / mpfr_class(i);
+        r = r * mpfr_class((double)(n - k + i)) / mpfr_class((double)i);
     return r;
 }
 mpfr_class nearest_integer_error(mpfr_class x) {
     mplapackint nearest = castINTEGER_mpfr(x >= mpfr_class(0.0) ? x + mpfr_class(0.5) : x - mpfr_class(0.5));
-    return abs(x - mpfr_class(nearest));
+    return abs(x - mpfr_class((double)nearest));
 }
 int main() {
     mplapackint n = 8, lda = n, info, lwork = -1;

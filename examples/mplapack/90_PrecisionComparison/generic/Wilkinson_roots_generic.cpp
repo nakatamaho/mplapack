@@ -15,7 +15,7 @@ int main() {
     coef[0] = 1.0;
     for (INTEGER k = 1; k <= n; k++) {
         for (INTEGER j = k; j >= 1; j--)
-            coef[j] = coef[j] - REAL(k) * coef[j - 1];
+            coef[j] = coef[j] - REAL((double)k) * coef[j - 1];
     }
     REAL *a = new REAL[n * n];
     for (INTEGER i = 0; i < n * n; i++)
@@ -36,7 +36,7 @@ int main() {
     sort_real(n, wr);
     REAL maxerr = 0.0;
     for (INTEGER i = 0; i < n; i++) {
-        REAL err = abs(wr[i] - REAL(i + 1));
+        REAL err = abs(wr[i] - REAL((double)(i + 1)));
         if (maxerr < err)
             maxerr = err;
         printf("root[%ld] = ", (long)i); printnum(wr[i]); printf(", error = "); printnum(err); printf("\n");

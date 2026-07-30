@@ -118,7 +118,7 @@ int main() {
     dd_complex _pi = pi(dd_real(0.0));
     dd_complex *lambda = new dd_complex[n];
     for (int h = 1; h <= n; h++) {
-        lambda [h - 1] = delta + dd_complex(2.0, 0.0) * sqrt (sigma * tau) * cos( (dd_real(h) * _pi) / dd_real((int)n + 1) );
+        lambda [h - 1] = delta + dd_complex(2.0, 0.0) * sqrt (sigma * tau) * cos( (dd_real((double)h) * _pi) / dd_real((double)((int)n + 1)) );
     }
     printf("lambda_true = "); printvec(lambda, n); printf("\n");
     printf("vr ="); printmat(n,n,vr,n); printf("\n");    

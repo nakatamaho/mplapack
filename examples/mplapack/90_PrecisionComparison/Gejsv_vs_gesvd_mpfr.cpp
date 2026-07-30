@@ -52,8 +52,8 @@ int main() {
     mpfr_class *b = new mpfr_class[m * n];
     for (mplapackint j = 0; j < n; j++)
         for (mplapackint i = 0; i < m; i++) {
-            mpfr_class scale = pow(mpfr_class(10.0), mpfr_class(i - 4));
-            a[i + j * lda] = scale / (mpfr_class(i + j + 1));
+            mpfr_class scale = pow(mpfr_class(10.0), mpfr_class((double)(i - 4)));
+            a[i + j * lda] = scale / (mpfr_class((double)(i + j + 1)));
             b[i + j * lda] = a[i + j * lda];
         }
     mpfr_class *s1 = new mpfr_class[n];
