@@ -93,7 +93,7 @@ for _mplib in $MPLIBS; do
         executefilenames_opt=`echo $executefilenames | $SED "s/${_mplib}/${_mplib}_opt/g"`
         echo "mpblasexamples_PROGRAMS += $executefilenames $executefilenames_opt" >> ../Makefile.am
         echo ""               >> ../Makefile.am
-        echo "${_mplib}_cxxflags = \$(OPENMP_CXXFLAGS) -I\$(top_srcdir)/include -I\$(GMP_INCLUDEDIR)" >> ../Makefile.am
+        echo "${_mplib}_cxxflags = \$(OPENMP_CXXFLAGS) -I\$(top_srcdir)/include \$(GMPFRXX_MKII_CPPFLAGS) -I\$(GMP_INCLUDEDIR)" >> ../Makefile.am
         echo "${_mplib}_libdepends = -L\$(top_builddir)/mplapack/reference -lmplapack_${_mplib} -L\$(GMP_LIBDIR) -lgmp"  >> ../Makefile.am
         echo "${_mplib}_opt_libdepends = -L\$(top_builddir)/mpblas/optimized/${_mplib} -lmplapack_${_mplib}_opt -L\$(GMP_LIBDIR) -lgmp"  >> ../Makefile.am
         echo ""               >> ../Makefile.am

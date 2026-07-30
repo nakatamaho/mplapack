@@ -28,7 +28,7 @@ endif
 if ENABLE_GMP
 mpblasexamples_PROGRAMS += Cgemm_gmp Rgemm_gmp Cgemm_gmp_opt Rgemm_gmp_opt
 
-gmp_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR)
+gmp_cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include $(GMPFRXX_MKII_CPPFLAGS) -I$(GMP_INCLUDEDIR)
 gmp_libdepends = -L$(top_builddir)/mplapack/reference -lmplapack_gmp -L$(GMP_LIBDIR) -lgmp
 gmp_opt_libdepends = -L$(top_builddir)/mpblas/optimized/gmp -lmplapack_gmp_opt -L$(GMP_LIBDIR) -lgmp
 
