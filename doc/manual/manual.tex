@@ -3553,7 +3553,7 @@ ${\tt a}$ is the Hilbert matrix and {\tt ainv} is the inverted matrix, and {\tt 
 
 The output is the following:
 \begin{verbatim}
-$ cd /home/docker/mplapack/examples/mplapack/00_LinearEquations
+$ cd /home/docker/mplapack/examples/mplapack/00_GeneralLinearEquations
 $ g++ -O2 -I/home/docker/MPLAPACK/include -I/home/docker/MPLAPACK/include/mplapack \
 Rgetri_Hilbert_mpfr.cpp -Wl,--rpath=/home/docker/MPLAPACK/lib \
 -L/home/docker/MPLAPACK/lib -lmplapack_mpfr -lmpfr -lmpc -lgmp
@@ -3861,7 +3861,7 @@ $ ./a.out
 \end{verbatim}
 The same one-archive rule applies to programs that call MPLAPACK routines:
 \begin{verbatim}
-$ cd /home/docker/MPLAPACK/share/examples/mplapack/00_LinearEquations
+$ cd /home/docker/MPLAPACK/share/examples/mplapack/00_GeneralLinearEquations
 $ g++ -O2 -I/home/docker/MPLAPACK/include -I/home/docker/MPLAPACK/include/mplapack \
 Rgetri_Hilbert_mpfr.cpp \
 -Wl,--whole-archive,/home/docker/MPLAPACK/lib/libmplapack_mpfr.a,--no-whole-archive \
