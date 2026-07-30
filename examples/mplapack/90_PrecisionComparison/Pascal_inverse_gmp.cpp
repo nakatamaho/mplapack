@@ -49,7 +49,13 @@ mpf_class binom(mplapackint n, mplapackint k) {
     return r;
 }
 mpf_class nearest_integer_error(mpf_class x) {
-    mplapackint nearest = castINTEGER_gmp(x >= mpf_class(0.0) ? x + mpf_class(0.5) : x - mpf_class(0.5));
+    mpf_class rounded;
+    if (x >= mpf_class(0.0)) {
+        rounded = x + mpf_class(0.5);
+    } else {
+        rounded = x - mpf_class(0.5);
+    }
+    mplapackint nearest = castINTEGER_gmp(rounded);
     return abs(x - mpf_class((double)nearest));
 }
 int main() {

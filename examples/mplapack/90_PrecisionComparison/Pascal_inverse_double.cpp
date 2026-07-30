@@ -52,7 +52,13 @@ double binom(mplapackint n, mplapackint k) {
     return r;
 }
 double nearest_integer_error(double x) {
-    mplapackint nearest = castINTEGER_double(x >= double(0.0) ? x + double(0.5) : x - double(0.5));
+    double rounded;
+    if (x >= double(0.0)) {
+        rounded = x + double(0.5);
+    } else {
+        rounded = x - double(0.5);
+    }
+    mplapackint nearest = castINTEGER_double(rounded);
     return abs(x - double((double)nearest));
 }
 int main() {

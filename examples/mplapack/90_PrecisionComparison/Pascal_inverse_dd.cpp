@@ -59,7 +59,13 @@ dd_real binom(mplapackint n, mplapackint k) {
     return r;
 }
 dd_real nearest_integer_error(dd_real x) {
-    mplapackint nearest = castINTEGER_dd(x >= dd_real(0.0) ? x + dd_real(0.5) : x - dd_real(0.5));
+    dd_real rounded;
+    if (x >= dd_real(0.0)) {
+        rounded = x + dd_real(0.5);
+    } else {
+        rounded = x - dd_real(0.5);
+    }
+    mplapackint nearest = castINTEGER_dd(rounded);
     return abs(x - dd_real((double)nearest));
 }
 int main() {

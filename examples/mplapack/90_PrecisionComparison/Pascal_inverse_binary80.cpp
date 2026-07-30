@@ -65,7 +65,13 @@ mplapack_binary80_t binom(mplapackint n, mplapackint k) {
     return r;
 }
 mplapack_binary80_t nearest_integer_error(mplapack_binary80_t x) {
-    mplapackint nearest = castINTEGER_binary80(x >= mplapack_binary80_t(0.0) ? x + mplapack_binary80_t(0.5) : x - mplapack_binary80_t(0.5));
+    mplapack_binary80_t rounded;
+    if (x >= mplapack_binary80_t(0.0)) {
+        rounded = x + mplapack_binary80_t(0.5);
+    } else {
+        rounded = x - mplapack_binary80_t(0.5);
+    }
+    mplapackint nearest = castINTEGER_binary80(rounded);
     return abs(x - mplapack_binary80_t((double)nearest));
 }
 int main() {

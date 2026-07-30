@@ -53,7 +53,13 @@ mpfr_class binom(mplapackint n, mplapackint k) {
     return r;
 }
 mpfr_class nearest_integer_error(mpfr_class x) {
-    mplapackint nearest = castINTEGER_mpfr(x >= mpfr_class(0.0) ? x + mpfr_class(0.5) : x - mpfr_class(0.5));
+    mpfr_class rounded;
+    if (x >= mpfr_class(0.0)) {
+        rounded = x + mpfr_class(0.5);
+    } else {
+        rounded = x - mpfr_class(0.5);
+    }
+    mplapackint nearest = castINTEGER_mpfr(rounded);
     return abs(x - mpfr_class((double)nearest));
 }
 int main() {

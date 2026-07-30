@@ -5,7 +5,13 @@ REAL binom(INTEGER n, INTEGER k) {
     return r;
 }
 REAL nearest_integer_error(REAL x) {
-    INTEGER nearest = castInTEGER(x >= REAL(0.0) ? x + REAL(0.5) : x - REAL(0.5));
+    REAL rounded;
+    if (x >= REAL(0.0)) {
+        rounded = x + REAL(0.5);
+    } else {
+        rounded = x - REAL(0.5);
+    }
+    INTEGER nearest = castInTEGER(rounded);
     return abs(x - REAL((double)nearest));
 }
 int main() {
