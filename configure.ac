@@ -359,7 +359,7 @@ AC_DEFUN([AX_FIND_QUADMATH], [
 ])
 
 LT_INIT([win32-dll])
-AM_INIT_AUTOMAKE([subdir-objects -Wno-portability dist-xz no-dist-gzip])
+AM_INIT_AUTOMAKE([subdir-objects -Wno-portability dist-xz no-dist-gzip tar-pax])
 AC_CONFIG_MACRO_DIR([m4])
 
 dnl OpenMP Compiler flags.
