@@ -31,6 +31,7 @@ $(GMPFRXX_MKII_INTERNAL_PREFIX)/.extract_done: $(GMPFRXX_MKII_WORK)/.verify_done
 	rm -rf $(GMPFRXX_MKII_INTERNAL_PREFIX)
 	mkdir -p $(GMPFRXX_MKII_INTERNAL_PREFIX)
 	tar -xJf $(abs_srcdir)/download/$(GMPFRXX_MKII_DISTFILE) -C $(GMPFRXX_MKII_INTERNAL_PREFIX) --strip-components=1
+	cd $(GMPFRXX_MKII_INTERNAL_PREFIX) && patch -p0 < $(abs_srcdir)/patches/patch-binary128-test-mpfr-float128
 	touch $@
 check-local: $(GMPFRXX_MKII_INTERNAL_PREFIX)/.extract_done
 	cmake -S $(GMPFRXX_MKII_INTERNAL_PREFIX) -B $(GMPFRXX_MKII_CHECK_BUILD) $(GMPFRXX_MKII_OPTIONS) $(GMPFRXX_MKII_DEPS)
@@ -42,4 +43,5 @@ install-data-local: $(GMPFRXX_MKII_INTERNAL_PREFIX)/.extract_done
 	$(MKDIR_P) $(DESTDIR)$(includedir)/mplapack
 	cp -R $(GMPFRXX_MKII_INTERNAL_PREFIX)/include/. $(DESTDIR)$(includedir)/mplapack/
 EXTRA_DIST = \
-	download/$(GMPFRXX_MKII_DISTFILE)
+	download/$(GMPFRXX_MKII_DISTFILE) \
+	patches/patch-binary128-test-mpfr-float128
