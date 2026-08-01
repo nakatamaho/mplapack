@@ -15,6 +15,7 @@ if [ "$#" -gt 0 ]; then
 fi
 make_args=("$@")
 IFS=',' read -r -a makefile_names <<< "${makefile_spec}"
+make_program="${MAKE:-make}"
 
 case "${prefix}" in
     /*) ;;
@@ -57,7 +58,7 @@ for example_dir in "${example_dirs[@]}"; do
     fi
 
     echo "=== Checking installed examples: ${example_dir} (${selected_makefile}) ==="
-    make_cmd=(make -f "${selected_makefile}")
+    make_cmd=("${make_program}" -f "${selected_makefile}")
     if [ -n "${jobs}" ]; then
         make_cmd+=("-j${jobs}")
     fi
