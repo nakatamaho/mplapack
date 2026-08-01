@@ -34,7 +34,38 @@ $(GMPFRXX_MKII_INTERNAL_PREFIX)/.extract_done: $(GMPFRXX_MKII_WORK)/.verify_done
 	cd $(GMPFRXX_MKII_INTERNAL_PREFIX) && patch -p0 < $(abs_srcdir)/patches/patch-binary128-test-mpfr-float128
 	touch $@
 check-local: $(GMPFRXX_MKII_INTERNAL_PREFIX)/.extract_done
-	cmake -S $(GMPFRXX_MKII_INTERNAL_PREFIX) -B $(GMPFRXX_MKII_CHECK_BUILD) $(GMPFRXX_MKII_OPTIONS) $(GMPFRXX_MKII_DEPS)
+	@set -e; \
+	cmake_cxx=; \
+	cmake_cxx_launcher=; \
+	for word in $(CXX); do \
+		case "$$word" in \
+			ccache|*/ccache) cmake_cxx_launcher=ccache ;; \
+			-*) ;; \
+			*) cmake_cxx="$$word"; break ;; \
+		esac; \
+	done; \
+	if test -z "$$cmake_cxx"; then cmake_cxx=c++; fi; \
+	cmake_cxx_launcher_arg=; \
+	if test -n "$$cmake_cxx_launcher"; then \
+		cmake_cxx_launcher_arg="-DCMAKE_CXX_COMPILER_LAUNCHER=$$cmake_cxx_launcher"; \
+	fi; \
+	cmake_path=; \
+	old_ifs=$$IFS; \
+	IFS=:; \
+	for dir in $$PATH; do \
+		case "$$dir" in \
+			*/ccache) ;; \
+			*) if test -z "$$cmake_path"; then cmake_path="$$dir"; else cmake_path="$$cmake_path:$$dir"; fi ;; \
+		esac; \
+	done; \
+	IFS=$$old_ifs; \
+	env PATH="$$cmake_path" CXX="$$cmake_cxx" cmake \
+		-S $(GMPFRXX_MKII_INTERNAL_PREFIX) \
+		-B $(GMPFRXX_MKII_CHECK_BUILD) \
+		-DCMAKE_CXX_COMPILER="$$cmake_cxx" \
+		$$cmake_cxx_launcher_arg \
+		$(GMPFRXX_MKII_OPTIONS) \
+		$(GMPFRXX_MKII_DEPS)
 	+cmake --build $(GMPFRXX_MKII_CHECK_BUILD)
 	ctest --test-dir $(GMPFRXX_MKII_CHECK_BUILD) --output-on-failure
 clean-local distclean-local:
