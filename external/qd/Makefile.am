@@ -7,7 +7,8 @@ QD_PATCHES= \
 	patches/patch-std-complex-interop \
 	patches/patch-int-assignment-overloads \
 	patches/patch-integer-conversion-helpers \
-	patches/patch-qd-real-integer-arithmetic-overloads
+	patches/patch-qd-real-integer-arithmetic-overloads \
+	patches/patch-real-integer-comparison-overloads
 MAKEFLAGS =
 
 # Ensure dist tarball contains the vendor tarball.
