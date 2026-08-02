@@ -1,0 +1,49 @@
+--- aclocal.m4
++++ aclocal.m4
+@@ -2539,13 +2539,13 @@
+   version_type=windows
+   shrext_cmds=.dll
+   need_version=no
+   need_lib_prefix=no
+ 
+   case $GCC,$cc_basename in
+-  yes,*)
++  yes,*|*,gcc|*,g++|*,*-gcc|*,*-g++)
+     # gcc
+     library_names_spec='$libname.dll.a'
+     # DLL is installed to $(libdir)/../bin by postinstall_cmds
+     postinstall_cmds='base_file=`basename \$file`~
+       dlpath=`$SHELL 2>&1 -c '\''. $dir/'\''\$base_file'\''i; echo \$dlname'\''`~
+       dldir=$destdir/`dirname \$dlpath`~
+--- configure
++++ configure
+@@ -18365,13 +18365,13 @@
+   version_type=windows
+   shrext_cmds=.dll
+   need_version=no
+   need_lib_prefix=no
+ 
+   case $GCC,$cc_basename in
+-  yes,*)
++  yes,*|*,gcc|*,g++|*,*-gcc|*,*-g++)
+     # gcc
+     library_names_spec='$libname.dll.a'
+     # DLL is installed to $(libdir)/../bin by postinstall_cmds
+     postinstall_cmds='base_file=`basename \$file`~
+       dlpath=`$SHELL 2>&1 -c '\''. $dir/'\''\$base_file'\''i; echo \$dlname'\''`~
+       dldir=$destdir/`dirname \$dlpath`~
+@@ -22329,13 +22329,13 @@
+   version_type=windows
+   shrext_cmds=.dll
+   need_version=no
+   need_lib_prefix=no
+ 
+   case $GCC,$cc_basename in
+-  yes,*)
++  yes,*|*,gcc|*,g++|*,*-gcc|*,*-g++)
+     # gcc
+     library_names_spec='$libname.dll.a'
+     # DLL is installed to $(libdir)/../bin by postinstall_cmds
+     postinstall_cmds='base_file=`basename \$file`~
+       dlpath=`$SHELL 2>&1 -c '\''. $dir/'\''\$base_file'\''i; echo \$dlname'\''`~
+       dldir=$destdir/`dirname \$dlpath`~

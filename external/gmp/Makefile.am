@@ -56,6 +56,10 @@ if IS_MACOS
 	cd $(abs_builddir)/work/internal/gmp-$(GMPVERSION) && patch -p0 < $(abs_srcdir)/patches/gmp-6.3.0_libtool-2.4.7.patch
 	cd $(abs_builddir)/work/install/gmp-$(GMPVERSION)  && patch -p0 < $(abs_srcdir)/patches/gmp-6.3.0_libtool-2.4.7.patch
 endif
+if IS_MINGW
+	cd $(abs_builddir)/work/internal/gmp-$(GMPVERSION) && patch -p0 < $(abs_srcdir)/patches/gmp-6.3.0_mingw-gcc-wrapper-dll.patch
+	cd $(abs_builddir)/work/install/gmp-$(GMPVERSION)  && patch -p0 < $(abs_srcdir)/patches/gmp-6.3.0_mingw-gcc-wrapper-dll.patch
+endif
 #https://github.com/compiler-explorer/gcc-cross-builder/blob/main/build/patches/crosstool-ng/0001-gcc-15-fix.patch
 	if test "@GMP_NEEDS_GCC15_PATCH@" = yes; then \
 		cd $(abs_builddir)/work/internal/gmp-$(GMPVERSION) && patch -p0 < $(abs_srcdir)/patches/gcc-15.patch && \
@@ -83,8 +87,10 @@ work/$(CHECK_STAMP): work/$(BUILD_STAMP)
 if IS_MINGW
 #https://gmplib.org/list-archives/gmp-bugs/2020-January/004720.html
 #https://gmplib.org/list-archives/gmp-bugs/2020-January/004721.html
-	+cd $(abs_builddir)/work/internal/gmp-$(GMPVERSION) ; ${MAKE} check LOG_COMPILER=wine
-	+cd $(abs_builddir)/work/install/gmp-$(GMPVERSION) ; ${MAKE} check LOG_COMPILER=wine
+	mkdir -p $(abs_builddir)/work/wine-runtime
+	chmod 700 $(abs_builddir)/work/wine-runtime
+	+cd $(abs_builddir)/work/internal/gmp-$(GMPVERSION) ; XDG_RUNTIME_DIR="$(abs_builddir)/work/wine-runtime" WINEPATH="$(abs_builddir)/work/internal/gmp-$(GMPVERSION)/.libs$${WINEPATH:+;$$WINEPATH}" ${MAKE} check LOG_COMPILER="$(SHELL) $(abs_builddir)/work/internal/gmp-$(GMPVERSION)/libtool --mode=execute wine"
+	+cd $(abs_builddir)/work/install/gmp-$(GMPVERSION) ; XDG_RUNTIME_DIR="$(abs_builddir)/work/wine-runtime" WINEPATH="$(abs_builddir)/work/install/gmp-$(GMPVERSION)/.libs$${WINEPATH:+;$$WINEPATH}" ${MAKE} check LOG_COMPILER="$(SHELL) $(abs_builddir)/work/install/gmp-$(GMPVERSION)/libtool --mode=execute wine"
 else
 	+cd $(abs_builddir)/work/internal/gmp-$(GMPVERSION) ; ${MAKE} check
 	+cd $(abs_builddir)/work/install/gmp-$(GMPVERSION) ; ${MAKE} check
