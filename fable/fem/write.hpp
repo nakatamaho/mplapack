@@ -64,11 +64,11 @@
 #if __has_include(<qd/qd_real.h>)
 #include <qd/qd_real.h>
 #endif
-#if __has_include(<dd_complex.h>)
-#include <dd_complex.h>
+#if __has_include(<qd/dd_complex.h>)
+#include <qd/dd_complex.h>
 #endif
-#if __has_include(<qd_complex.h>)
-#include <qd_complex.h>
+#if __has_include(<qd/qd_complex.h>)
+#include <qd/qd_complex.h>
 #endif
 #if defined(FEM_WRITE_RESTORE_sign)
 #pragma pop_macro("sign")

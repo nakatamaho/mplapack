@@ -1,0 +1,200 @@
+--- a/include/qd/dd_real.h
++++ b/include/qd/dd_real.h
+@@ -34,6 +34,7 @@
+ #include <iostream>
+ #include <string>
+ #include <limits>
++#include <type_traits>
+ #include <qd/qd_config.h>
+ #include <qd/fpu.h>
+ 
+@@ -151,6 +152,39 @@
+   dd_real &operator=(std::uint64_t a);
+   dd_real &operator=(std::int64_t a);
+   dd_real &operator=(const char *s);
++
++  template <typename Integer,
++            typename std::enable_if<
++                std::is_same<Integer, int>::value ||
++                std::is_same<Integer, unsigned int>::value ||
++                std::is_same<Integer, long>::value ||
++                std::is_same<Integer, unsigned long>::value ||
++                std::is_same<Integer, long long>::value ||
++                std::is_same<Integer, unsigned long long>::value ||
++                std::is_same<Integer, std::int64_t>::value ||
++                std::is_same<Integer, std::uint64_t>::value,
++                int>::type = 0>
++  dd_real(Integer a) {
++    *this = a;
++  }
++
++  template <typename Integer,
++            typename std::enable_if<
++                std::is_same<Integer, int>::value ||
++                std::is_same<Integer, unsigned int>::value ||
++                std::is_same<Integer, long>::value ||
++                std::is_same<Integer, unsigned long>::value ||
++                std::is_same<Integer, long long>::value ||
++                std::is_same<Integer, unsigned long long>::value ||
++                std::is_same<Integer, std::int64_t>::value ||
++                std::is_same<Integer, std::uint64_t>::value,
++                int>::type = 0>
++  dd_real &operator=(Integer a) {
++    if constexpr (std::is_signed<Integer>::value) {
++      return *this = static_cast<std::int64_t>(a);
++    }
++    return *this = static_cast<std::uint64_t>(a);
++  }
+ 
+   dd_real operator^(int n);
+   static dd_real sqr(double d);
+--- a/include/qd/qd_real.h
++++ b/include/qd/qd_real.h
+@@ -27,6 +27,7 @@
+ #include <iostream>
+ #include <string>
+ #include <limits>
++#include <type_traits>
+ #include <qd/qd_config.h>
+ #include <qd/dd_real.h>
+ 
+@@ -133,6 +134,39 @@
+   qd_real &operator=(std::int64_t a);
+   qd_real &operator=(const dd_real &a);
+   qd_real &operator=(const char *s);
++
++  template <typename Integer,
++            typename std::enable_if<
++                std::is_same<Integer, int>::value ||
++                std::is_same<Integer, unsigned int>::value ||
++                std::is_same<Integer, long>::value ||
++                std::is_same<Integer, unsigned long>::value ||
++                std::is_same<Integer, long long>::value ||
++                std::is_same<Integer, unsigned long long>::value ||
++                std::is_same<Integer, std::int64_t>::value ||
++                std::is_same<Integer, std::uint64_t>::value,
++                int>::type = 0>
++  qd_real(Integer a) {
++    *this = a;
++  }
++
++  template <typename Integer,
++            typename std::enable_if<
++                std::is_same<Integer, int>::value ||
++                std::is_same<Integer, unsigned int>::value ||
++                std::is_same<Integer, long>::value ||
++                std::is_same<Integer, unsigned long>::value ||
++                std::is_same<Integer, long long>::value ||
++                std::is_same<Integer, unsigned long long>::value ||
++                std::is_same<Integer, std::int64_t>::value ||
++                std::is_same<Integer, std::uint64_t>::value,
++                int>::type = 0>
++  qd_real &operator=(Integer a) {
++    if constexpr (std::is_signed<Integer>::value) {
++      return *this = static_cast<std::int64_t>(a);
++    }
++    return *this = static_cast<std::uint64_t>(a);
++  }
+ 
+   bool is_zero() const;
+   bool is_one() const;
+--- a/include/qd/td_real.h
++++ b/include/qd/td_real.h
+@@ -35,6 +35,7 @@
+ #include <cstdint>
+ #include <iostream>
+ #include <limits>
++#include <type_traits>
+ #include <string>
+ 
+ #include <qd/fpu.h>
+@@ -175,6 +176,39 @@
+   td_real &operator=(const qd_real &a);
+   td_real &operator=(const char *s);
+ 
++  template <typename Integer,
++            typename std::enable_if<
++                std::is_same<Integer, int>::value ||
++                std::is_same<Integer, unsigned int>::value ||
++                std::is_same<Integer, long>::value ||
++                std::is_same<Integer, unsigned long>::value ||
++                std::is_same<Integer, long long>::value ||
++                std::is_same<Integer, unsigned long long>::value ||
++                std::is_same<Integer, std::int64_t>::value ||
++                std::is_same<Integer, std::uint64_t>::value,
++                int>::type = 0>
++  td_real(Integer a) {
++    *this = a;
++  }
++
++  template <typename Integer,
++            typename std::enable_if<
++                std::is_same<Integer, int>::value ||
++                std::is_same<Integer, unsigned int>::value ||
++                std::is_same<Integer, long>::value ||
++                std::is_same<Integer, unsigned long>::value ||
++                std::is_same<Integer, long long>::value ||
++                std::is_same<Integer, unsigned long long>::value ||
++                std::is_same<Integer, std::int64_t>::value ||
++                std::is_same<Integer, std::uint64_t>::value,
++                int>::type = 0>
++  td_real &operator=(Integer a) {
++    if constexpr (std::is_signed<Integer>::value) {
++      return *this = static_cast<std::int64_t>(a);
++    }
++    return *this = static_cast<std::uint64_t>(a);
++  }
++
+   td_real operator^(int n) const;
+ 
+   static td_real sqr(double d);
+--- a/include/qd/edd_real.h
++++ b/include/qd/edd_real.h
+@@ -11,6 +11,7 @@
+ #include <cstdint>
+ #include <iostream>
+ #include <limits>
++#include <type_traits>
+ #include <string>
+ 
+ #include <qd/fpu.h>
+@@ -167,6 +168,39 @@
+   edd_real &operator=(const dd_real &a);
+   edd_real &operator=(const qd_real &a);
+ 
++  template <typename Integer,
++            typename std::enable_if<
++                std::is_same<Integer, int>::value ||
++                std::is_same<Integer, unsigned int>::value ||
++                std::is_same<Integer, long>::value ||
++                std::is_same<Integer, unsigned long>::value ||
++                std::is_same<Integer, long long>::value ||
++                std::is_same<Integer, unsigned long long>::value ||
++                std::is_same<Integer, std::int64_t>::value ||
++                std::is_same<Integer, std::uint64_t>::value,
++                int>::type = 0>
++  edd_real(Integer a) {
++    *this = a;
++  }
++
++  template <typename Integer,
++            typename std::enable_if<
++                std::is_same<Integer, int>::value ||
++                std::is_same<Integer, unsigned int>::value ||
++                std::is_same<Integer, long>::value ||
++                std::is_same<Integer, unsigned long>::value ||
++                std::is_same<Integer, long long>::value ||
++                std::is_same<Integer, unsigned long long>::value ||
++                std::is_same<Integer, std::int64_t>::value ||
++                std::is_same<Integer, std::uint64_t>::value,
++                int>::type = 0>
++  edd_real &operator=(Integer a) {
++    if constexpr (std::is_signed<Integer>::value) {
++      return *this = static_cast<std::int64_t>(a);
++    }
++    return *this = static_cast<std::uint64_t>(a);
++  }
++
+   edd_real operator^(int n) const;
+ 
+   bool is_zero() const;

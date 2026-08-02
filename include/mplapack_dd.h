@@ -31,7 +31,7 @@
 
 #include "mplapack_config.h"
 #include "qd/dd_real.h"
-#include "dd_complex.h"
+#include <qd/dd_complex.h>
 
 bool Mlsamen_dd(mplapackint n, const char *a, const char *b);
 bool Risinf(dd_real const &x);

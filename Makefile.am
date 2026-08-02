@@ -67,7 +67,6 @@ mplapack_include_HEADERS = \
 
 if ENABLE_DD
 mplapack_include_HEADERS += \
-    include/dd_complex.h \
     include/mpblas_dd.h \
     include/mplapack_arithmetic_params_dd.h \
     include/mplapack_dd.h \
@@ -87,8 +86,7 @@ mplapack_include_HEADERS += \
     include/mpblas_qd.h \
     include/mplapack_arithmetic_params_qd.h \
     include/mplapack_qd.h \
-    include/mplapack_utils_qd.h \
-    include/qd_complex.h
+    include/mplapack_utils_qd.h
 endif
 
 if ENABLE_MPFR
@@ -319,12 +317,7 @@ external/openblas/patches/patch-mingw \
     external/gmpfrxx_mkII/download/gmpfrxx_mkII.1.2.0.tar.xz \
     external/qd/Makefile.am \
 external/qd/Makefile.in \
-external/qd/download/qd-2.3.24.tar.gz \
-external/qd/patches/patch-configure \
-external/qd/patches/patch-mingw \
-external/qd/patches/patch-no-doc \
-external/qd/patches/patch-noopt \
-external/qd/patches/patch-overflow \
+external/qd/download/libQD3-1.2.0.tar.gz \
 fable/fem.hpp \
 fable/noexcept_false.hpp \
 fable/fem/do.hpp \

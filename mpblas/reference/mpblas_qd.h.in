@@ -30,7 +30,7 @@
 #define _MPBLAS_QD_H_
 
 #include <qd/qd_real.h>
-#include "qd_complex.h"
+#include <qd/qd_complex.h>
 #include "mplapack_config.h"
 #include "mplapack_utils_qd.h"
 

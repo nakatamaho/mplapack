@@ -212,7 +212,6 @@ inline qd_complex cos(qd_complex a) {
     return b;
 }
 
-inline qd_real log2(qd_real x) { return log10(x) / (qd_real::_log2 / qd_real::_log10); }
 
 inline qd_complex exp(qd_complex x) {
     qd_real ex;

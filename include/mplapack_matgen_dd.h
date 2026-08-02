@@ -35,7 +35,7 @@ using fem::common;
 
 #include "mplapack_config.h"
 #include "qd/dd_real.h"
-#include "dd_complex.h"
+#include <qd/dd_complex.h>
 
 dd_complex Clarnd(mplapackint const idist, mplapackint (&iseed)[4]);
 dd_complex Clatm2(mplapackint const m, mplapackint const n, mplapackint const i, mplapackint const j, mplapackint const kl, mplapackint const ku, mplapackint const idist, mplapackint (&iseed)[4], dd_complex *d, mplapackint const igrade, dd_complex *dl, dd_complex *dr, mplapackint const ipvtng, mplapackint *iwork, dd_real const sparse);

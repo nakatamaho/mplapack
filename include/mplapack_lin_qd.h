@@ -31,7 +31,7 @@
 
 #include "mplapack_config.h"
 #include <qd/qd_real.h>
-#include "qd_complex.h"
+#include <qd/qd_complex.h>
 
 #include <mpblas.h>
 #include <mplapack.h>

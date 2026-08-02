@@ -30,7 +30,7 @@
 #define _MPBLAS_DD_H_
 
 #include <qd/dd_real.h>
-#include <dd_complex.h>
+#include <qd/dd_complex.h>
 #include <mplapack_config.h>
 #include <mplapack_utils_dd.h>
 

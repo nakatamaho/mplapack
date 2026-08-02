@@ -204,7 +204,6 @@ inline dd_complex cos(dd_complex a) {
     return b;
 }
 
-inline dd_real log2(dd_real x) { return log10(x) / (dd_real::_log2 / dd_real::_log10); }
 
 inline dd_complex exp(dd_complex x) {
     dd_real ex;

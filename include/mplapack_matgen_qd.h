@@ -35,7 +35,7 @@ using fem::common;
 
 #include "mplapack_config.h"
 #include <qd/qd_real.h>
-#include "qd_complex.h"
+#include <qd/qd_complex.h>
 
 mplapackint iMlaenv_qd(mplapackint const ispec, const char *name, const char *opts, mplapackint const n1, mplapackint const n2, mplapackint const n3, mplapackint const n4);
 mplapackint iMlaenv_qd2stage(mplapackint const ispec, const char *name, const char *opts, mplapackint const n1, mplapackint const n2, mplapackint const n3, mplapackint const n4);
