@@ -1,9 +1,8 @@
 #CTBSV, CTPSV might have bugs or intrinsically inaccurate
 #Rnrm2 should be checked more
-mpblas_dd_smoke_PROGRAMS = arithmetic.test_dd complex.test_dd
-check_PROGRAMS = $(mpblas_dd_smoke_PROGRAMS)
-EXTRA_PROGRAMS = $(filter-out $(mpblas_dd_smoke_PROGRAMS),$(mpblas_dd_test_PROGRAMS))
-mpblas_dd_smoke_TESTS = $(mpblas_dd_smoke_PROGRAMS)
+mpblas_dd_smoke_programs = arithmetic.test_dd complex.test_dd
+check_PROGRAMS = $(mpblas_dd_smoke_programs)
+mpblas_dd_smoke_TESTS = $(mpblas_dd_smoke_programs)
 mpblas_dd_smoke_WRAPPERS = $(mpblas_dd_smoke_TESTS:%=run_%.sh)
 mpblas_dd_test_WRAPPERS = $(mpblas_dd_test_PROGRAMS:%=run_%.sh)
 TESTS = $(mpblas_dd_smoke_WRAPPERS)
