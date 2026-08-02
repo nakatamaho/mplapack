@@ -1,7 +1,9 @@
 #CTBSV, CTPSV might have bugs or intrinsically inaccurate
 #Rnrm2 should be checked more
-check_PROGRAMS = $(mpblas_dd_test_PROGRAMS)
-mpblas_dd_smoke_TESTS = arithmetic.test_dd complex.test_dd Rgemm.test.dd_opt
+mpblas_dd_smoke_PROGRAMS = arithmetic.test_dd complex.test_dd
+check_PROGRAMS = $(mpblas_dd_smoke_PROGRAMS)
+EXTRA_PROGRAMS = $(filter-out $(mpblas_dd_smoke_PROGRAMS),$(mpblas_dd_test_PROGRAMS))
+mpblas_dd_smoke_TESTS = $(mpblas_dd_smoke_PROGRAMS)
 mpblas_dd_smoke_WRAPPERS = $(mpblas_dd_smoke_TESTS:%=run_%.sh)
 mpblas_dd_test_WRAPPERS = $(mpblas_dd_test_PROGRAMS:%=run_%.sh)
 TESTS = $(mpblas_dd_smoke_WRAPPERS)
@@ -12,7 +14,7 @@ AM_TESTS_ENVIRONMENT = \
 	EXEEXT='$(EXEEXT)'; export EXEEXT;
 CLEANFILES = $(mpblas_dd_smoke_WRAPPERS) $(mpblas_dd_test_WRAPPERS)
 .PHONY: check-all
-check-all: $(check_PROGRAMS) $(mpblas_dd_test_WRAPPERS)
+check-all: $(mpblas_dd_test_PROGRAMS) $(mpblas_dd_test_WRAPPERS)
 	$(MAKE) $(AM_MAKEFLAGS) check TESTS="$(mpblas_dd_test_WRAPPERS)"
 
 run_%.sh: Makefile
