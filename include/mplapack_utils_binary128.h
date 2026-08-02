@@ -649,7 +649,7 @@ inline std::complex<_Float128> cos(const std::complex<_Float128> a) { return std
 inline std::complex<_Float128> exp(const std::complex<_Float128> &a) { return std::exp(a); }
 inline std::complex<_Float128> log(const std::complex<_Float128> &a) { return std::log(a); }
 
-#elif MPLAPACK_HAVE_C_COMPLEX_FLOAT128 == 1
+#elif (MPLAPACK_HAVE_C_COMPLEX_FLOAT128 == 1) && !defined(__STRICT_ANSI__)
 inline _Float128 abs(const std::complex<_Float128> &a) {
     _Float128 _Complex b;
     __real__(b) = a.real();
