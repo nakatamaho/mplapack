@@ -649,55 +649,9 @@ inline std::complex<_Float128> cos(const std::complex<_Float128> a) { return std
 inline std::complex<_Float128> exp(const std::complex<_Float128> &a) { return std::exp(a); }
 inline std::complex<_Float128> log(const std::complex<_Float128> &a) { return std::log(a); }
 
-#elif (MPLAPACK_HAVE_C_COMPLEX_FLOAT128 == 1) && !defined(__STRICT_ANSI__)
-inline _Float128 abs(const std::complex<_Float128> &a) {
-    _Float128 _Complex b;
-    __real__(b) = a.real();
-    __imag__(b) = a.imag();
-    return cabsf128(b);
-}
-
-inline std::complex<_Float128> sqrt(const std::complex<_Float128> a) {
-    _Float128 _Complex b, tmp;
-    __real__(b) = a.real();
-    __imag__(b) = a.imag();
-    tmp = csqrtf128(b);
-    return std::complex<_Float128>(__real__(tmp), __imag__(tmp));
-}
-
-inline std::complex<_Float128> sin(const std::complex<_Float128> a) {
-    _Float128 _Complex b, tmp;
-    __real__(b) = a.real();
-    __imag__(b) = a.imag();
-    tmp = csinf128(b);
-    return std::complex<_Float128>(__real__(tmp), __imag__(tmp));
-}
-
-inline std::complex<_Float128> cos(const std::complex<_Float128> a) {
-    _Float128 _Complex b, tmp;
-    __real__(b) = a.real();
-    __imag__(b) = a.imag();
-    tmp = ccosf128(b);
-    return std::complex<_Float128>(__real__(tmp), __imag__(tmp));
-}
-
-inline std::complex<_Float128> exp(const std::complex<_Float128> &a) {
-    _Float128 _Complex b, tmp;
-    __real__(b) = a.real();
-    __imag__(b) = a.imag();
-    tmp = cexpf128(b);
-    return std::complex<_Float128>(__real__(tmp), __imag__(tmp));
-}
-
-inline std::complex<_Float128> log(const std::complex<_Float128> &a) {
-    _Float128 _Complex b, tmp;
-    __real__(b) = a.real();
-    __imag__(b) = a.imag();
-    tmp = clogf128(b);
-    return std::complex<_Float128>(__real__(tmp), __imag__(tmp));
-}
-
 #else
+// Do not use C _Float128 _Complex functions here: their declarations depend on
+// feature-test macros and include order in downstream translation units.
 inline _Float128 abs(const std::complex<_Float128> &a) {
     const _Float128 x = fabsf128(a.real());
     const _Float128 y = fabsf128(a.imag());
