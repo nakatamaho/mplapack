@@ -6,6 +6,15 @@ GMPFRXX_MKII_WORK = $(abs_builddir)/work
 GMPFRXX_MKII_CHECK_BUILD = $(GMPFRXX_MKII_WORK)/check
 GMPFRXX_MKII_OPTIONS = -DBUILD_TESTING=ON -DGMPFRXX_MKII_DEPS_AUTO_FETCH=OFF -DGMPFRXX_MKII_BUILD_EXAMPLES=OFF -DGMPFRXX_MKII_BUILD_BENCHMARKS=OFF -DGMPFRXX_MKII_COMPONENTS=GMP,MPFR,MPC
 GMPFRXX_MKII_DEPS = -DCMAKE_PREFIX_PATH="$(abs_builddir)/../i/GMP;$(abs_builddir)/../i/MPFR;$(abs_builddir)/../i/MPC"
+if ENABLE_GMP
+GMPFRXX_MKII_UNINSTALL_ENABLED = yes
+else
+if ENABLE_MPFR
+GMPFRXX_MKII_UNINSTALL_ENABLED = yes
+else
+GMPFRXX_MKII_UNINSTALL_ENABLED = no
+endif
+endif
 
 all: $(GMPFRXX_MKII_INTERNAL_PREFIX)/.extract_done
 $(GMPFRXX_MKII_WORK)/.verify_done:
@@ -73,6 +82,15 @@ clean-local distclean-local:
 install-data-local: $(GMPFRXX_MKII_INTERNAL_PREFIX)/.extract_done
 	$(MKDIR_P) $(DESTDIR)$(includedir)/mplapack
 	cp -R $(GMPFRXX_MKII_INTERNAL_PREFIX)/include/. $(DESTDIR)$(includedir)/mplapack/
+
+uninstall-local:
+	@if test x"$(GMPFRXX_MKII_UNINSTALL_ENABLED)" = xyes; then \
+		rm -rf $(DESTDIR)$(includedir)/mplapack/gmpfrxx_mkII; \
+		rm -f $(DESTDIR)$(includedir)/mplapack/gmpfrxx_mkII.h; \
+		rm -f $(DESTDIR)$(includedir)/mplapack/gmpxx_mkII.h; \
+		rm -f $(DESTDIR)$(includedir)/mplapack/mpfrxx_mkII.h; \
+		rm -f $(DESTDIR)$(includedir)/mplapack/mpcxx_mkII.h; \
+	fi
 EXTRA_DIST = \
 	download/$(GMPFRXX_MKII_DISTFILE) \
 	patches/patch-binary128-test-mpfr-float128
