@@ -1,0 +1,60 @@
+--- a/include/qd/qd_real.h
++++ b/include/qd/qd_real.h
+@@ -209,6 +209,34 @@
+ QD_API qd_real operator*(const qd_real &a, const td_real &b);
+ QD_API qd_real operator*(const qd_real &a, double b);
+ QD_API qd_real operator*(double a, const qd_real &b);
++
++template <typename Integer>
++struct qd_real_integer_operand
++    : std::integral_constant<bool,
++          std::is_same<Integer, int>::value ||
++          std::is_same<Integer, unsigned int>::value ||
++          std::is_same<Integer, long>::value ||
++          std::is_same<Integer, unsigned long>::value ||
++          std::is_same<Integer, long long>::value ||
++          std::is_same<Integer, unsigned long long>::value ||
++          std::is_same<Integer, std::int64_t>::value ||
++          std::is_same<Integer, std::uint64_t>::value> {};
++
++template <typename Integer,
++          typename std::enable_if<
++              qd_real_integer_operand<Integer>::value,
++              int>::type = 0>
++inline qd_real operator*(const qd_real &a, Integer b) {
++  return a * static_cast<double>(b);
++}
++
++template <typename Integer,
++          typename std::enable_if<
++              qd_real_integer_operand<Integer>::value,
++              int>::type = 0>
++inline qd_real operator*(Integer a, const qd_real &b) {
++  return static_cast<double>(a) * b;
++}
+ 
+ QD_API qd_real operator/(const qd_real &a, const qd_real &b);
+ QD_API qd_real operator/(const dd_real &a, const qd_real &b);
+@@ -217,6 +245,22 @@
+ QD_API qd_real operator/(const qd_real &a, const td_real &b);
+ QD_API qd_real operator/(const qd_real &a, double b);
+ QD_API qd_real operator/(double a, const qd_real &b);
++
++template <typename Integer,
++          typename std::enable_if<
++              qd_real_integer_operand<Integer>::value,
++              int>::type = 0>
++inline qd_real operator/(const qd_real &a, Integer b) {
++  return a / static_cast<double>(b);
++}
++
++template <typename Integer,
++          typename std::enable_if<
++              qd_real_integer_operand<Integer>::value,
++              int>::type = 0>
++inline qd_real operator/(Integer a, const qd_real &b) {
++  return static_cast<double>(a) / b;
++}
+ 
+ QD_API qd_real sqr(const qd_real &a);
+ QD_API qd_real sqrt(const qd_real &a);

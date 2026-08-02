@@ -6,7 +6,8 @@ QD_INSTALL_BUILDDIR=$(abs_builddir)/work/install-build
 QD_PATCHES= \
 	patches/patch-std-complex-interop \
 	patches/patch-int-assignment-overloads \
-	patches/patch-integer-conversion-helpers
+	patches/patch-integer-conversion-helpers \
+	patches/patch-qd-real-integer-arithmetic-overloads
 MAKEFLAGS =
 
 # Ensure dist tarball contains the vendor tarball.
