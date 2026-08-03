@@ -3,6 +3,8 @@ QD_DISTFILE=qd/download/libQD3-$(QDVERSION).tar.gz
 QD_SRCDIR=libQD3-$(QDVERSION)
 QD_INTERNAL_BUILDDIR=$(abs_builddir)/work/internal-build
 QD_INSTALL_BUILDDIR=$(abs_builddir)/work/install-build
+QD_INTERNAL_LIBDIR=$(abs_builddir)/../i/QD/lib
+QD_INSTALL_LIBDIR=$(libdir)
 QD_PATCHES= \
 	patches/patch-std-complex-interop \
 	patches/patch-int-assignment-overloads \
@@ -18,12 +20,17 @@ EXTRA_DIST = \
 
 if IS_MINGW
 QD_BUILD_STATIC=OFF
+qd_internal_rpath_ldflags=
+qd_install_rpath_ldflags=
 else
 QD_BUILD_STATIC=ON
+qd_internal_rpath_ldflags=-Wl,-rpath,$(QD_INTERNAL_LIBDIR)
+qd_install_rpath_ldflags=-Wl,-rpath,$(QD_INSTALL_LIBDIR)
 endif
 
 CMAKE_ARGS= \
 	-DCMAKE_INSTALL_PREFIX=$(abs_builddir)/../i/QD/ \
+	-DCMAKE_INSTALL_RPATH=$(QD_INTERNAL_LIBDIR) \
 	-DBUILD_TESTING=ON \
 	-DBUILD_SHARED_LIBS=ON \
 	-DQD_BUILD_STATIC=$(QD_BUILD_STATIC) \
@@ -34,7 +41,7 @@ CMAKE_ARGS= \
 	$(QDLIB_FLAGS)
 CMAKE_ARGS2= \
 	-DCMAKE_INSTALL_PREFIX=$(prefix) \
-	-DCMAKE_INSTALL_RPATH=$(libdir) \
+	-DCMAKE_INSTALL_RPATH=$(QD_INSTALL_LIBDIR) \
 	-DBUILD_TESTING=ON \
 	-DBUILD_SHARED_LIBS=ON \
 	-DQD_BUILD_STATIC=$(QD_BUILD_STATIC) \
@@ -86,11 +93,11 @@ work/$(CONFIGURE_STAMP): work/$(EXTRACT_STAMP)
 if IS_INTELCC
 	QD_CFLAGS="$${CFLAGS// -xHost/} -O2 -fp-model strict" ; \
 	QD_CXXFLAGS="$${CXXFLAGS// -xHost/} -O2 -fp-model strict" ; \
-	env "CC=$(CC)" "CXX=$(CXX)" "CFLAGS=$$QD_CFLAGS" "CXXFLAGS=$$QD_CXXFLAGS" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" cmake -S $(abs_builddir)/work/internal/$(QD_SRCDIR) -B $(QD_INTERNAL_BUILDDIR) $(CMAKE_ARGS) ; \
-	env "CC=$(CC)" "CXX=$(CXX)" "CFLAGS=$$QD_CFLAGS" "CXXFLAGS=$$QD_CXXFLAGS" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" cmake -S $(abs_builddir)/work/install/$(QD_SRCDIR) -B $(QD_INSTALL_BUILDDIR) $(CMAKE_ARGS2)
+	env "CC=$(CC)" "CXX=$(CXX)" "CFLAGS=$$QD_CFLAGS" "CXXFLAGS=$$QD_CXXFLAGS" "LDFLAGS=$(LDFLAGS) $(qd_internal_rpath_ldflags)" "NM=$(NM)" "RANLIB=$(RANLIB)" cmake -S $(abs_builddir)/work/internal/$(QD_SRCDIR) -B $(QD_INTERNAL_BUILDDIR) $(CMAKE_ARGS) ; \
+	env "CC=$(CC)" "CXX=$(CXX)" "CFLAGS=$$QD_CFLAGS" "CXXFLAGS=$$QD_CXXFLAGS" "LDFLAGS=$(LDFLAGS) $(qd_install_rpath_ldflags)" "NM=$(NM)" "RANLIB=$(RANLIB)" cmake -S $(abs_builddir)/work/install/$(QD_SRCDIR) -B $(QD_INSTALL_BUILDDIR) $(CMAKE_ARGS2)
 else
-	env "CC=$(CC)" "CXX=$(CXX)" "CXXFLAGS=$(CXXFLAGS) @QD_EXTRA_CXXFLAGS@" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" cmake -S $(abs_builddir)/work/internal/$(QD_SRCDIR) -B $(QD_INTERNAL_BUILDDIR) $(CMAKE_ARGS)
-	env "CC=$(CC)" "CXX=$(CXX)" "CXXFLAGS=$(CXXFLAGS) @QD_EXTRA_CXXFLAGS@" "LDFLAGS=$(LDFLAGS)" "NM=$(NM)" "RANLIB=$(RANLIB)" cmake -S $(abs_builddir)/work/install/$(QD_SRCDIR) -B $(QD_INSTALL_BUILDDIR) $(CMAKE_ARGS2)
+	env "CC=$(CC)" "CXX=$(CXX)" "CXXFLAGS=$(CXXFLAGS) @QD_EXTRA_CXXFLAGS@" "LDFLAGS=$(LDFLAGS) $(qd_internal_rpath_ldflags)" "NM=$(NM)" "RANLIB=$(RANLIB)" cmake -S $(abs_builddir)/work/internal/$(QD_SRCDIR) -B $(QD_INTERNAL_BUILDDIR) $(CMAKE_ARGS)
+	env "CC=$(CC)" "CXX=$(CXX)" "CXXFLAGS=$(CXXFLAGS) @QD_EXTRA_CXXFLAGS@" "LDFLAGS=$(LDFLAGS) $(qd_install_rpath_ldflags)" "NM=$(NM)" "RANLIB=$(RANLIB)" cmake -S $(abs_builddir)/work/install/$(QD_SRCDIR) -B $(QD_INSTALL_BUILDDIR) $(CMAKE_ARGS2)
 endif
 	touch $(abs_builddir)/work/$(CONFIGURE_STAMP)
 
