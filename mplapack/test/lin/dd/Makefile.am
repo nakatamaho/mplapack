@@ -16,7 +16,7 @@ libdepends = -L$(top_builddir)/mplapack/test/lin -llin_dd -llin_override_dd -L$(
 opt_libdepends = -L$(top_builddir)/mplapack/test/lin -llin_dd_opt -llin_override_dd_opt -L$(top_builddir)/mplapack/test/matgen -lmatgen_dd_opt -L$(top_builddir)/mpblas/optimized/dd -lmplapack_dd_opt
 endif
 
-mplibs = -L$(QD_LIBDIR) -lqd -lm
+mplibs = -L$(QD_LIBDIR) -lqd $(QD_RPATH_LDFLAGS) -lm
 cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_DD @qd_extra_cxxflags@ -DMPLAPACK_INTERNAL -I$(top_srcdir)/fable
 
 xlintstR_dd_SOURCES  = ../common/Rchkaa.cpp

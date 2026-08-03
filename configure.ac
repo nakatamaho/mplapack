@@ -2116,8 +2116,13 @@ if test x$enable_qd = x"yes" -o x$enable_dd = x"yes" -o x$enable_test = x"yes"; 
     fi
 fi
 AM_CONDITIONAL(SYSTEM_QD, test x$SYSTEM_QD = xyes)
+QD_RPATH_LDFLAGS=
+if test x$IS_MINGW != x"1"; then
+    QD_RPATH_LDFLAGS="-Wl,-rpath,$QD_LIBDIR"
+fi
 AC_SUBST(QD_INCLUDEDIR, [$QD_INCLUDEDIR])
 AC_SUBST(QD_LIBDIR, [$QD_LIBDIR])
+AC_SUBST(QD_RPATH_LDFLAGS, [$QD_RPATH_LDFLAGS])
 dnl QD library end
 
 need_internal_gmplib=no

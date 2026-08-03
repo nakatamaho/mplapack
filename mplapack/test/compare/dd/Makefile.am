@@ -29,6 +29,7 @@ backend_reference_archives = $(top_builddir)/mplapack/reference/.libs/libmplapac
 backend_reference_libs = -lmplapack_dd -lmplapack_mpfr
 backend_whole_archive_libs =
 backend_link_libs =
+backend_rpath_ldflags = $(QD_RPATH_LDFLAGS)
 backend_testdir = $(prefix)/lib/$(target)/mplapack/test/compare/dd
 mplibs = -L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(QD_LIBDIR) -lmpc -lmpfr -lgmp -lqd
 

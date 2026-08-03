@@ -99,7 +99,7 @@ Rtrsm.test.dd_opt  Rtrsm.test.dd	\
 Rtrsv.test.dd_opt  Rtrsv.test.dd
 
 mpblas_dd_testdir = $(prefix)/lib/$(target)/mplapack/test/compare/dd
-mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpc -lmpfr -lgmp -L$(QD_LIBDIR) -lqd
+mplibs=-L$(MPC_LIBDIR) -L$(MPFR_LIBDIR) -L$(GMP_LIBDIR) -lmpc -lmpfr -lgmp -L$(QD_LIBDIR) -lqd $(QD_RPATH_LDFLAGS)
 refblas=-L$(top_builddir)/external/i/LAPACK/lib -lblas $(FCLIBS)
 test_cxxflags = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -I$(MPFR_INCLUDEDIR) -I$(MPC_INCLUDEDIR) -I$(QD_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_DD -DMPLAPACK_INTERNAL $(DD_CXXFLAGS)
 test_srcdepends = ../common/xerbla.cpp ../common/mplapack.test.cpp ../common/Mxerbla.override.cpp

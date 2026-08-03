@@ -16,7 +16,7 @@ libdepends = -L$(top_builddir)/mplapack/test/eig -leig_qd -leig_override_qd -L$(
 opt_libdepends = -L$(top_builddir)/mplapack/test/eig -leig_qd_opt -leig_override_qd_opt -L$(top_builddir)/mplapack/test/matgen -lmatgen_qd_opt -L$(top_builddir)/mpblas/optimized/qd -lmplapack_qd_opt
 endif
 
-mplibs = -L$(QD_LIBDIR) -lqd -lm
+mplibs = -L$(QD_LIBDIR) -lqd $(QD_RPATH_LDFLAGS) -lm
 cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(LAPACK_INCLUDEDIR) -I$(QD_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_QD @qd_extra_cxxflags@ -DMPLAPACK_INTERNAL -I$(top_srcdir)/fable
 
 xeigtstR_qd_SOURCES  = ../common/Rchkee.cpp
