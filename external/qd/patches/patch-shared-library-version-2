@@ -1,0 +1,14 @@
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -250,2 +250,2 @@ if(BUILD_SHARED_LIBS)
+   add_library(qd SHARED ${QD_SOURCES})
+-  set_target_properties(qd PROPERTIES VERSION 0.0.0 SOVERSION 0)
++  set_target_properties(qd PROPERTIES VERSION 2.0.0 SOVERSION 2)
+@@ -269,2 +269,2 @@ if(QD_HAVE_FORTRAN)
+     add_library(qdmod SHARED ${QD_FORTRAN_SOURCES})
+-    set_target_properties(qdmod PROPERTIES VERSION 0.0.0 SOVERSION 0)
++    set_target_properties(qdmod PROPERTIES VERSION 2.0.0 SOVERSION 2)
+@@ -298,2 +298,2 @@ if(QD_HAVE_FORTRAN)
+     add_library(qd_f_main SHARED fortran/main.cpp)
+-    set_target_properties(qd_f_main PROPERTIES VERSION 0.0.0 SOVERSION 0)
++    set_target_properties(qd_f_main PROPERTIES VERSION 2.0.0 SOVERSION 2)

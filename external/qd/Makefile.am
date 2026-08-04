@@ -11,6 +11,7 @@ QD_PATCHES= \
 	patches/patch-integer-conversion-helpers \
 	patches/patch-cmake-uninstall-target \
 	patches/patch-fpu-fix-80bit \
+	patches/patch-shared-library-version-2 \
 	patches/patch-qd-real-integer-arithmetic-overloads \
 	patches/patch-real-integer-comparison-overloads \
 	patches/patch-dd-td-edd-real-integer-arithmetic-overloads
@@ -93,6 +94,68 @@ work/$(EXTRACT_STAMP):
 	touch $(abs_builddir)/work/$(EXTRACT_STAMP)
 
 work/$(CONFIGURE_STAMP): work/$(EXTRACT_STAMP)
+if IS_MINGW
+	@set -e; \
+	cmake_cc=; cmake_cxx=; \
+	cmake_cc_launcher=; cmake_cxx_launcher=; \
+	cmake_cflags_extra=; cmake_cxxflags_extra=; \
+	for word in $(CC); do \
+		case "$$word" in \
+			ccache|*/ccache) cmake_cc_launcher=ccache ;; \
+			-*) cmake_cflags_extra="$$cmake_cflags_extra $$word" ;; \
+			*) if test -z "$$cmake_cc"; then cmake_cc="$$word"; else cmake_cflags_extra="$$cmake_cflags_extra $$word"; fi ;; \
+		esac; \
+	done; \
+	for word in $(CXX); do \
+		case "$$word" in \
+			ccache|*/ccache) cmake_cxx_launcher=ccache ;; \
+			-*) cmake_cxxflags_extra="$$cmake_cxxflags_extra $$word" ;; \
+			*) if test -z "$$cmake_cxx"; then cmake_cxx="$$word"; else cmake_cxxflags_extra="$$cmake_cxxflags_extra $$word"; fi ;; \
+		esac; \
+	done; \
+	if test -z "$$cmake_cc"; then cmake_cc=x86_64-w64-mingw32-gcc-posix; fi; \
+	if test -z "$$cmake_cxx"; then cmake_cxx=x86_64-w64-mingw32-g++-posix; fi; \
+	cmake_system_processor=`"$$cmake_cc" -dumpmachine 2>/dev/null | sed 's/-.*//'`; \
+	if test -z "$$cmake_system_processor"; then cmake_system_processor=x86_64; fi; \
+	cmake_cc_launcher_arg=; \
+	if test -n "$$cmake_cc_launcher"; then cmake_cc_launcher_arg="-DCMAKE_C_COMPILER_LAUNCHER=$$cmake_cc_launcher"; fi; \
+	cmake_cxx_launcher_arg=; \
+	if test -n "$$cmake_cxx_launcher"; then cmake_cxx_launcher_arg="-DCMAKE_CXX_COMPILER_LAUNCHER=$$cmake_cxx_launcher"; fi; \
+	cmake_path=; \
+	old_ifs=$$IFS; \
+	IFS=:; \
+	for dir in $$PATH; do \
+		case "$$dir" in \
+			*/ccache) ;; \
+			*) if test -z "$$cmake_path"; then cmake_path="$$dir"; else cmake_path="$$cmake_path:$$dir"; fi ;; \
+		esac; \
+	done; \
+	IFS=$$old_ifs; \
+	QD_CFLAGS="$(CFLAGS)$$cmake_cflags_extra"; \
+	QD_CXXFLAGS="$(CXXFLAGS) @QD_EXTRA_CXXFLAGS@$$cmake_cxxflags_extra"; \
+	env PATH="$$cmake_path" CC="$$cmake_cc" CXX="$$cmake_cxx" CFLAGS="$$QD_CFLAGS" CXXFLAGS="$$QD_CXXFLAGS" LDFLAGS="$(LDFLAGS) $(qd_internal_rpath_ldflags)" NM="$(NM)" RANLIB="$(RANLIB)" cmake \
+		-S $(abs_builddir)/work/internal/$(QD_SRCDIR) \
+		-B $(QD_INTERNAL_BUILDDIR) \
+		$(CMAKE_ARGS) \
+		-DCMAKE_SYSTEM_NAME=Windows \
+		-DCMAKE_SYSTEM_PROCESSOR="$$cmake_system_processor" \
+		-DCMAKE_C_COMPILER="$$cmake_cc" \
+		-DCMAKE_CXX_COMPILER="$$cmake_cxx" \
+		$$cmake_cc_launcher_arg \
+		$$cmake_cxx_launcher_arg \
+		-DCMAKE_CROSSCOMPILING_EMULATOR=wine; \
+	env PATH="$$cmake_path" CC="$$cmake_cc" CXX="$$cmake_cxx" CFLAGS="$$QD_CFLAGS" CXXFLAGS="$$QD_CXXFLAGS" LDFLAGS="$(LDFLAGS) $(qd_install_rpath_ldflags)" NM="$(NM)" RANLIB="$(RANLIB)" cmake \
+		-S $(abs_builddir)/work/install/$(QD_SRCDIR) \
+		-B $(QD_INSTALL_BUILDDIR) \
+		$(CMAKE_ARGS2) \
+		-DCMAKE_SYSTEM_NAME=Windows \
+		-DCMAKE_SYSTEM_PROCESSOR="$$cmake_system_processor" \
+		-DCMAKE_C_COMPILER="$$cmake_cc" \
+		-DCMAKE_CXX_COMPILER="$$cmake_cxx" \
+		$$cmake_cc_launcher_arg \
+		$$cmake_cxx_launcher_arg \
+		-DCMAKE_CROSSCOMPILING_EMULATOR=wine
+else
 if IS_INTELCC
 	QD_CFLAGS="$${CFLAGS// -xHost/} -O2 -fp-model strict" ; \
 	QD_CXXFLAGS="$${CXXFLAGS// -xHost/} -O2 -fp-model strict" ; \
@@ -101,6 +164,7 @@ if IS_INTELCC
 else
 	env "CC=$(CC)" "CXX=$(CXX)" "CXXFLAGS=$(CXXFLAGS) @QD_EXTRA_CXXFLAGS@" "LDFLAGS=$(LDFLAGS) $(qd_internal_rpath_ldflags)" "NM=$(NM)" "RANLIB=$(RANLIB)" cmake -S $(abs_builddir)/work/internal/$(QD_SRCDIR) -B $(QD_INTERNAL_BUILDDIR) $(CMAKE_ARGS)
 	env "CC=$(CC)" "CXX=$(CXX)" "CXXFLAGS=$(CXXFLAGS) @QD_EXTRA_CXXFLAGS@" "LDFLAGS=$(LDFLAGS) $(qd_install_rpath_ldflags)" "NM=$(NM)" "RANLIB=$(RANLIB)" cmake -S $(abs_builddir)/work/install/$(QD_SRCDIR) -B $(QD_INSTALL_BUILDDIR) $(CMAKE_ARGS2)
+endif
 endif
 	touch $(abs_builddir)/work/$(CONFIGURE_STAMP)
 
