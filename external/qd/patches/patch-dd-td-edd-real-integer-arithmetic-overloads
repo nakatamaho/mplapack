@@ -1,0 +1,171 @@
+--- a/include/qd/dd_real.h
++++ b/include/qd/dd_real.h
+@@ -414,6 +414,54 @@ inline bool operator>=(Integer a, const dd_real &b) {
+   return dd_real(a) >= b;
+ }
+ 
++template <typename Integer,
++          typename std::enable_if<dd_real_integer_operand<Integer>::value, int>::type = 0>
++inline dd_real operator+(const dd_real &a, Integer b) {
++  return a + dd_real(b);
++}
++
++template <typename Integer,
++          typename std::enable_if<dd_real_integer_operand<Integer>::value, int>::type = 0>
++inline dd_real operator+(Integer a, const dd_real &b) {
++  return dd_real(a) + b;
++}
++
++template <typename Integer,
++          typename std::enable_if<dd_real_integer_operand<Integer>::value, int>::type = 0>
++inline dd_real operator-(const dd_real &a, Integer b) {
++  return a - dd_real(b);
++}
++
++template <typename Integer,
++          typename std::enable_if<dd_real_integer_operand<Integer>::value, int>::type = 0>
++inline dd_real operator-(Integer a, const dd_real &b) {
++  return dd_real(a) - b;
++}
++
++template <typename Integer,
++          typename std::enable_if<dd_real_integer_operand<Integer>::value, int>::type = 0>
++inline dd_real operator*(const dd_real &a, Integer b) {
++  return a * dd_real(b);
++}
++
++template <typename Integer,
++          typename std::enable_if<dd_real_integer_operand<Integer>::value, int>::type = 0>
++inline dd_real operator*(Integer a, const dd_real &b) {
++  return dd_real(a) * b;
++}
++
++template <typename Integer,
++          typename std::enable_if<dd_real_integer_operand<Integer>::value, int>::type = 0>
++inline dd_real operator/(const dd_real &a, Integer b) {
++  return a / dd_real(b);
++}
++
++template <typename Integer,
++          typename std::enable_if<dd_real_integer_operand<Integer>::value, int>::type = 0>
++inline dd_real operator/(Integer a, const dd_real &b) {
++  return dd_real(a) / b;
++}
++
+ QD_API dd_real nint(const dd_real &a);
+ QD_API dd_real floor(const dd_real &a);
+ QD_API dd_real ceil(const dd_real &a);
+--- a/include/qd/td_real.h
++++ b/include/qd/td_real.h
+@@ -436,6 +436,54 @@ inline bool operator>=(Integer a, const td_real &b) {
+   return td_real(a) >= b;
+ }
+ 
++template <typename Integer,
++          typename std::enable_if<td_real_integer_operand<Integer>::value, int>::type = 0>
++inline td_real operator+(const td_real &a, Integer b) {
++  return a + td_real(b);
++}
++
++template <typename Integer,
++          typename std::enable_if<td_real_integer_operand<Integer>::value, int>::type = 0>
++inline td_real operator+(Integer a, const td_real &b) {
++  return td_real(a) + b;
++}
++
++template <typename Integer,
++          typename std::enable_if<td_real_integer_operand<Integer>::value, int>::type = 0>
++inline td_real operator-(const td_real &a, Integer b) {
++  return a - td_real(b);
++}
++
++template <typename Integer,
++          typename std::enable_if<td_real_integer_operand<Integer>::value, int>::type = 0>
++inline td_real operator-(Integer a, const td_real &b) {
++  return td_real(a) - b;
++}
++
++template <typename Integer,
++          typename std::enable_if<td_real_integer_operand<Integer>::value, int>::type = 0>
++inline td_real operator*(const td_real &a, Integer b) {
++  return a * td_real(b);
++}
++
++template <typename Integer,
++          typename std::enable_if<td_real_integer_operand<Integer>::value, int>::type = 0>
++inline td_real operator*(Integer a, const td_real &b) {
++  return td_real(a) * b;
++}
++
++template <typename Integer,
++          typename std::enable_if<td_real_integer_operand<Integer>::value, int>::type = 0>
++inline td_real operator/(const td_real &a, Integer b) {
++  return a / td_real(b);
++}
++
++template <typename Integer,
++          typename std::enable_if<td_real_integer_operand<Integer>::value, int>::type = 0>
++inline td_real operator/(Integer a, const td_real &b) {
++  return td_real(a) / b;
++}
++
+ QD_API dd_real to_dd_real(const td_real &a);
+ QD_API td_real to_td_real(const dd_real &a);
+ QD_API td_real to_td_real(const qd_real &a);
+--- a/include/qd/edd_real.h
++++ b/include/qd/edd_real.h
+@@ -385,6 +385,54 @@ inline bool operator>=(Integer a, const edd_real &b) {
+   return edd_real(a) >= b;
+ }
+ 
++template <typename Integer,
++          typename std::enable_if<edd_real_integer_operand<Integer>::value, int>::type = 0>
++inline edd_real operator+(const edd_real &a, Integer b) {
++  return a + edd_real(b);
++}
++
++template <typename Integer,
++          typename std::enable_if<edd_real_integer_operand<Integer>::value, int>::type = 0>
++inline edd_real operator+(Integer a, const edd_real &b) {
++  return edd_real(a) + b;
++}
++
++template <typename Integer,
++          typename std::enable_if<edd_real_integer_operand<Integer>::value, int>::type = 0>
++inline edd_real operator-(const edd_real &a, Integer b) {
++  return a - edd_real(b);
++}
++
++template <typename Integer,
++          typename std::enable_if<edd_real_integer_operand<Integer>::value, int>::type = 0>
++inline edd_real operator-(Integer a, const edd_real &b) {
++  return edd_real(a) - b;
++}
++
++template <typename Integer,
++          typename std::enable_if<edd_real_integer_operand<Integer>::value, int>::type = 0>
++inline edd_real operator*(const edd_real &a, Integer b) {
++  return a * edd_real(b);
++}
++
++template <typename Integer,
++          typename std::enable_if<edd_real_integer_operand<Integer>::value, int>::type = 0>
++inline edd_real operator*(Integer a, const edd_real &b) {
++  return edd_real(a) * b;
++}
++
++template <typename Integer,
++          typename std::enable_if<edd_real_integer_operand<Integer>::value, int>::type = 0>
++inline edd_real operator/(const edd_real &a, Integer b) {
++  return a / edd_real(b);
++}
++
++template <typename Integer,
++          typename std::enable_if<edd_real_integer_operand<Integer>::value, int>::type = 0>
++inline edd_real operator/(Integer a, const edd_real &b) {
++  return edd_real(a) / b;
++}
++
+ QD_API edd_word to_float64x(const edd_real &a);
+ QD_API dd_real to_dd_real(const edd_real &a);
+ QD_API edd_real to_edd_real(const dd_real &a);

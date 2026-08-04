@@ -9,8 +9,11 @@ QD_PATCHES= \
 	patches/patch-std-complex-interop \
 	patches/patch-int-assignment-overloads \
 	patches/patch-integer-conversion-helpers \
+	patches/patch-cmake-uninstall-target \
+	patches/patch-fpu-fix-80bit \
 	patches/patch-qd-real-integer-arithmetic-overloads \
-	patches/patch-real-integer-comparison-overloads
+	patches/patch-real-integer-comparison-overloads \
+	patches/patch-dd-td-edd-real-integer-arithmetic-overloads
 MAKEFLAGS =
 
 # Ensure dist tarball contains the vendor tarball.
