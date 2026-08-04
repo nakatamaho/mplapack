@@ -8,7 +8,7 @@
  
    case $GCC,$cc_basename in
 -  yes,*)
-+  yes,*|*,gcc|*,g++|*,*-gcc|*,*-g++)
++  yes,*|*,gcc|*,g++|*,*-gcc|*,*-g++|*,gcc-*|*,g++-*|*,*-gcc-*|*,*-g++-*)
      # gcc
      library_names_spec='$libname.dll.a'
      # DLL is installed to $(libdir)/../bin by postinstall_cmds
@@ -25,7 +25,7 @@
  
    case $GCC,$cc_basename in
 -  yes,*)
-+  yes,*|*,gcc|*,g++|*,*-gcc|*,*-g++)
++  yes,*|*,gcc|*,g++|*,*-gcc|*,*-g++|*,gcc-*|*,g++-*|*,*-gcc-*|*,*-g++-*)
      # gcc
      library_names_spec='$libname.dll.a'
      # DLL is installed to $(libdir)/../bin by postinstall_cmds
@@ -40,7 +40,7 @@
  
    case $GCC,$cc_basename in
 -  yes,*)
-+  yes,*|*,gcc|*,g++|*,*-gcc|*,*-g++)
++  yes,*|*,gcc|*,g++|*,*-gcc|*,*-g++|*,gcc-*|*,g++-*|*,*-gcc-*|*,*-g++-*)
      # gcc
      library_names_spec='$libname.dll.a'
      # DLL is installed to $(libdir)/../bin by postinstall_cmds
