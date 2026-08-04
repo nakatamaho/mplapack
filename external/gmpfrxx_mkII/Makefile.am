@@ -68,10 +68,12 @@ check-local: $(GMPFRXX_MKII_INTERNAL_PREFIX)/.extract_done
 		esac; \
 	done; \
 	IFS=$$old_ifs; \
-	env PATH="$$cmake_path" CXX="$$cmake_cxx" cmake \
+	env PATH="$$cmake_path" CXX="$$cmake_cxx" CXXFLAGS="$(CXXFLAGS)" LDFLAGS="$(LDFLAGS)" cmake \
 		-S $(GMPFRXX_MKII_INTERNAL_PREFIX) \
 		-B $(GMPFRXX_MKII_CHECK_BUILD) \
 		-DCMAKE_CXX_COMPILER="$$cmake_cxx" \
+		-DCMAKE_CXX_FLAGS="$(CXXFLAGS)" \
+		-DCMAKE_EXE_LINKER_FLAGS="$(LDFLAGS)" \
 		$$cmake_cxx_launcher_arg \
 		$(GMPFRXX_MKII_OPTIONS) \
 		$(GMPFRXX_MKII_DEPS)
