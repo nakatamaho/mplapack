@@ -89,6 +89,28 @@ option(MPLAPACK_BUILD_EXAMPLES   "Build the examples"                      OFF)
 option(MPLAPACK_BUILD_TESTS      "Build the test suite"                    OFF)
 option(MPLAPACK_BUILD_BENCHMARKS "Build the benchmarks (needs OpenBLAS)"   OFF)
 
+set(MPLAPACK_INTEGER_BITS "auto" CACHE STRING
+    "Bit width for mplapackint (auto, 32, or 64)")
+set_property(CACHE MPLAPACK_INTEGER_BITS PROPERTY STRINGS auto 32 64)
+if(MPLAPACK_INTEGER_BITS STREQUAL "auto")
+  if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+    set(MPLAPACK_INTEGER_BITS_CONFIG 64)
+  else()
+    set(MPLAPACK_INTEGER_BITS_CONFIG 32)
+  endif()
+elseif(MPLAPACK_INTEGER_BITS STREQUAL "32")
+  set(MPLAPACK_INTEGER_BITS_CONFIG 32)
+elseif(MPLAPACK_INTEGER_BITS STREQUAL "64")
+  set(MPLAPACK_INTEGER_BITS_CONFIG 64)
+else()
+  message(FATAL_ERROR "MPLAPACK_INTEGER_BITS must be auto, 32, or 64")
+endif()
+if(MPLAPACK_INTEGER_BITS_CONFIG EQUAL 64)
+  set(MPLAPACK_INTEGER_TYPE int64_t)
+else()
+  set(MPLAPACK_INTEGER_TYPE int32_t)
+endif()
+
 # -----------------------------------------------------------------------------
 # Dependencies and bundled gmpfrxx_mkII header extraction
 # -----------------------------------------------------------------------------

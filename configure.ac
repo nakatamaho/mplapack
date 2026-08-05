@@ -61,9 +61,7 @@ AH_BOTTOM([
 #include <stdint.h>
 #include <limits>
 
-// ILP32 (BSD/Linux 32bit, Windows 32bit) and LLP64 long=32bit (Windows 64bit)
-// LP64 long=64bit (BSD/Linux/macOS 64bit)
-typedef long mplapackint;
+typedef MPLAPACK_INTEGER_TYPE mplapackint;
 
 typedef mplapackint mplapacklogical;
 
@@ -105,6 +103,16 @@ AS_HELP_STRING([--disable-cxx-extensions],
                [use strict ISO C++ mode instead of GNU dialect (default: enabled)]),
     [],
     [enable_cxx_extensions=yes])
+
+AC_ARG_WITH([mplapackint],
+AS_HELP_STRING([--with-mplapackint=auto|32|64],
+               [select mplapackint width (default: auto; 64-bit targets use 64, 32-bit targets use 32)]),
+    [with_mplapackint=$withval],
+    [with_mplapackint=auto])
+
+AS_CASE([$with_mplapackint],
+    [auto|32|64], [],
+    [AC_MSG_ERROR([invalid --with-mplapackint value '$with_mplapackint'; use auto, 32, or 64])])
 
 dnl Determine the C++ compiler, then drop any -std=* that arrived through the
 dnl environment (CXX or CXXFLAGS) before selecting the required standard.
@@ -2212,6 +2220,23 @@ dnl =========================================================
 AC_CHECK_SIZEOF([int])
 AC_CHECK_SIZEOF([void *])
 
+AS_CASE([$with_mplapackint],
+    [auto],
+        [AS_IF([test "$ac_cv_sizeof_void_p" = "8"],
+            [mplapack_integer_bits=64],
+            [mplapack_integer_bits=32])],
+    [32], [mplapack_integer_bits=32],
+    [64], [mplapack_integer_bits=64])
+
+AS_CASE([$mplapack_integer_bits],
+    [32], [mplapack_integer_type=int32_t],
+    [64], [mplapack_integer_type=int64_t])
+
+AC_DEFINE_UNQUOTED([MPLAPACK_INTEGER_BITS], [$mplapack_integer_bits],
+    [Bit width of mplapackint])
+AC_DEFINE_UNQUOTED([MPLAPACK_INTEGER_TYPE], [$mplapack_integer_type],
+    [C integer type used for mplapackint])
+
 dnl print status...start
 if test x$enable_gmp = x"yes"; then
 AC_MSG_RESULT([Enable GMP version])
@@ -2362,7 +2387,7 @@ if test x"$enable_optimization" = x"yes" && test x"$enable_debug" != x"yes" ; th
 fi
 
 AC_MSG_NOTICE([Integer model:     $INTEGER_MODEL])
-AC_MSG_NOTICE([  mplapackint:     long])
+AC_MSG_NOTICE([  mplapackint:     $mplapack_integer_type ($mplapack_integer_bits-bit)])
 AC_MSG_NOTICE([  sizeof(int):     $ac_cv_sizeof_int])
 AC_MSG_NOTICE([  sizeof(long):    $ac_cv_sizeof_long])
 AC_MSG_NOTICE([  sizeof(void *):  $ac_cv_sizeof_void_p])

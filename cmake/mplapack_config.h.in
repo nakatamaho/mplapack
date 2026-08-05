@@ -98,9 +98,10 @@
 #include <stdint.h>
 #include <limits>
 
-/* ILP32 (BSD/Linux 32bit, Windows 32bit) and LLP64 long=32bit (Windows 64bit)
-   LP64 long=64bit (BSD/Linux/macOS 64bit) */
-typedef long mplapackint;
+#define MPLAPACK_INTEGER_BITS @MPLAPACK_INTEGER_BITS_CONFIG@
+#define MPLAPACK_INTEGER_TYPE @MPLAPACK_INTEGER_TYPE@
+
+typedef MPLAPACK_INTEGER_TYPE mplapackint;
 
 typedef mplapackint mplapacklogical;
 
