@@ -389,6 +389,16 @@ class write_loop : write_loop_base
             return (*this), static_cast<integer_star_8>(val);
         }
     }
+    // Ditto for 'long long int', needed on platforms where int64_t/mplapackint
+    // is long long while fem::integer_star_8 is long.
+    template <typename U = long long int,
+              typename std::enable_if<
+                  !std::is_same<U, integer_star_4>::value &&
+                  !std::is_same<U, integer_star_8>::value,
+              int>::type = 0>
+    write_loop &operator,(long long int const &val) {
+        return (*this), static_cast<integer_star_8>(val);
+    }
     // Ditto for 'unsigned long int'.
     template <typename U = unsigned long int,
               typename std::enable_if<

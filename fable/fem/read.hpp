@@ -400,6 +400,12 @@ class read_loop // TODO copy-constructor potential performance problem
         }
         return *this;
     }
+    template <typename T, std::enable_if_t<std::is_same_v<T, long long> && !std::is_same_v<long long, integer_star_4> && !std::is_same_v<long long, integer_star_8>, int> = 0> read_loop &operator,(T &val) {
+        integer_star_8 tmp{};
+        (*this), tmp;
+        val = static_cast<long long>(tmp);
+        return *this;
+    }
     template <typename T, std::enable_if_t<std::is_same_v<T, unsigned long> && !std::is_same_v<unsigned long, std::uint32_t> && !std::is_same_v<unsigned long, std::uint64_t>, int> = 0> read_loop &operator,(T &val) {
         if constexpr (sizeof(unsigned long) == sizeof(integer_star_4)) {
             integer_star_4 tmp{};
