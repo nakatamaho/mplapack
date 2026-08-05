@@ -30,6 +30,7 @@
 #define _MUTILS__BINARY128_H_
 
 #include "mplapack_config.h"
+#include <type_traits>
 
 #ifndef MPLAPACK_HAVE_STD_ABS_FLOAT128
 #define MPLAPACK_HAVE_STD_ABS_FLOAT128 0
@@ -486,6 +487,7 @@ inline __float128 pow(const __float128 &a, const __float128 &b) { return powq(a,
 inline __float128 pow(const long &a, const long &b) { return powq((__float128)a, (__float128)b); }
 inline __float128 pow(const int &a, const long &b) { return powq((__float128)a, (__float128)b); }
 inline __float128 pow(const __float128 &a, const long &b) { return powq(a, (__float128)b); }
+template <typename Int, typename = std::enable_if_t<std::is_same_v<std::decay_t<Int>, mplapackint> && !std::is_same_v<std::decay_t<Int>, long>>> inline __float128 pow(const __float128 &a, Int b) { return powq(a, (__float128)b); }
 inline __float128 sqrt(const __float128 &a) { return sqrtq(a); }
 
 #if MPLAPACK_HAVE_STD_ABS_FLOAT128 == 1
@@ -614,12 +616,14 @@ using std::sqrt;
 inline _Float128 pow(const long &a, const long &b) { return powf128((_Float128)a, (_Float128)b); }
 inline _Float128 pow(const int &a, const long &b) { return powf128((_Float128)a, (_Float128)b); }
 inline _Float128 pow(const _Float128 &a, const long &b) { return powf128(a, (_Float128)b); }
+template <typename Int, typename = std::enable_if_t<std::is_same_v<std::decay_t<Int>, mplapackint> && !std::is_same_v<std::decay_t<Int>, long>>> inline _Float128 pow(const _Float128 &a, Int b) { return powf128(a, (_Float128)b); }
 
 #else
 inline _Float128 pow(const _Float128 &a, const _Float128 &b) { return powf128(a, b); }
 inline _Float128 pow(const long &a, const long &b) { return powf128((_Float128)a, (_Float128)b); }
 inline _Float128 pow(const int &a, const long &b) { return powf128((_Float128)a, (_Float128)b); }
 inline _Float128 pow(const _Float128 &a, const long &b) { return powf128(a, (_Float128)b); }
+template <typename Int, typename = std::enable_if_t<std::is_same_v<std::decay_t<Int>, mplapackint> && !std::is_same_v<std::decay_t<Int>, long>>> inline _Float128 pow(const _Float128 &a, Int b) { return powf128(a, (_Float128)b); }
 inline _Float128 sqrt(const _Float128 &a) { return sqrtf128(a); }
 inline _Float128 sin(_Float128 a) { return sinf128(a); }
 inline _Float128 sinh(_Float128 a) { return sinhf128(a); }
@@ -735,6 +739,7 @@ using std::sqrt;
 inline long double pow(const long &a, const long &b) { return powl((long double)a, (long double)b); }
 inline long double pow(const int &a, const long &b) { return powl((long double)a, (long double)b); }
 inline long double pow(const long double &a, const long &b) { return powl(a, (long double)b); }
+template <typename Int, typename = std::enable_if_t<std::is_same_v<std::decay_t<Int>, mplapackint> && !std::is_same_v<std::decay_t<Int>, long>>> inline long double pow(const long double &a, Int b) { return powl(a, (long double)b); }
 
 inline long double nextafter(const long double &a, const long double &b) { return nextafterl(a, b); }
 inline long double ldexp(const long double &a, int exp) { return ldexpl(a, exp); }

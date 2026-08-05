@@ -31,6 +31,7 @@
 #define MPLAPACK_UTILS_BINARY80_H
 
 #include "mplapack_config.h"
+#include <type_traits>
 
 #ifndef MPLAPACK_HAVE_STD_ABS_FLOAT64X
 #define MPLAPACK_HAVE_STD_ABS_FLOAT64X 0
@@ -479,6 +480,7 @@ using std::sqrt;
 inline long double pow(const long &a, const long &b) { return powl((long double)a, (long double)b); }
 inline long double pow(const int &a, const long &b) { return powl((long double)a, (long double)b); }
 inline long double pow(const long double &a, const long &b) { return powl(a, (long double)b); }
+template <typename Int, typename = std::enable_if_t<std::is_same_v<std::decay_t<Int>, mplapackint> && !std::is_same_v<std::decay_t<Int>, long>>> inline long double pow(const long double &a, Int b) { return powl(a, (long double)b); }
 inline long double pow2(const long double &a) { return a * a; }
 inline long double pow4(const long double &a) { return a * a * a * a; }
 inline std::complex<long double> pow2(const std::complex<long double> &a) { return a * a; }
@@ -558,6 +560,7 @@ inline _Float64x sqrt(_Float64x a) { return ::sqrtf64x(a); }
 inline _Float64x pow(const long &a, const long &b) { return ::powf64x((_Float64x)a, (_Float64x)b); }
 inline _Float64x pow(const int &a, const long &b) { return ::powf64x((_Float64x)a, (_Float64x)b); }
 inline _Float64x pow(const _Float64x &a, const long &b) { return ::powf64x(a, (_Float64x)b); }
+template <typename Int, typename = std::enable_if_t<std::is_same_v<std::decay_t<Int>, mplapackint> && !std::is_same_v<std::decay_t<Int>, long>>> inline _Float64x pow(const _Float64x &a, Int b) { return ::powf64x(a, (_Float64x)b); }
 
 // pow2/pow4 (real/complex)
 inline _Float64x pow2(const _Float64x &a) { return a * a; }
