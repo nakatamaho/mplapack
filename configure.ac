@@ -2300,9 +2300,9 @@ case "$CC_VERSION" in
       if test "x$GCC_VERSION_FOR_PATCH" = "x"; then
         GCC_VERSION_FOR_PATCH=`$CC -dumpversion 2>/dev/null`
       fi
-      GCC_MAJOR=${GCC_VERSION_FOR_PATCH%%.*}
+      GCC_MAJOR=`printf '%s\n' "$GCC_VERSION_FOR_PATCH" | sed 's/^\([[0-9]][[0-9]]*\).*/\1/'`
       case "$GCC_MAJOR" in
-        ''|*[!0-9]*)
+        ''|*[[!0-9]]*)
           GCC_MAJOR=0
          ;;
       esac
