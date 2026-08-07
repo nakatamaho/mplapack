@@ -1,4 +1,4 @@
-GMPFRXX_MKII_VERSION = 1.2.0
+GMPFRXX_MKII_VERSION = 1.3.0
 GMPFRXX_MKII_DISTFILE = gmpfrxx_mkII.$(GMPFRXX_MKII_VERSION).tar.xz
 GMPFRXX_MKII_SOURCE_DIR = gmpfrxx_mkII.$(GMPFRXX_MKII_VERSION)
 GMPFRXX_MKII_INTERNAL_PREFIX = $(abs_builddir)/../i/GMPFRXX_MKII
@@ -64,7 +64,6 @@ $(GMPFRXX_MKII_INTERNAL_PREFIX)/.extract_done: $(GMPFRXX_MKII_WORK)/.verify_done
 	rm -rf $(GMPFRXX_MKII_INTERNAL_PREFIX)
 	mkdir -p $(GMPFRXX_MKII_INTERNAL_PREFIX)
 	tar -xJf $(abs_srcdir)/download/$(GMPFRXX_MKII_DISTFILE) -C $(GMPFRXX_MKII_INTERNAL_PREFIX) --strip-components=1
-	cd $(GMPFRXX_MKII_INTERNAL_PREFIX) && patch -p0 < $(abs_srcdir)/patches/patch-binary128-test-mpfr-float128
 	touch $@
 check-local: $(GMPFRXX_MKII_INTERNAL_PREFIX)/.extract_done
 	@set -e; \
@@ -124,5 +123,4 @@ uninstall-local:
 		rm -f $(DESTDIR)$(includedir)/mplapack/mpcxx_mkII.h; \
 	fi
 EXTRA_DIST = \
-	download/$(GMPFRXX_MKII_DISTFILE) \
-	patches/patch-binary128-test-mpfr-float128
+	download/$(GMPFRXX_MKII_DISTFILE)

@@ -129,7 +129,7 @@ if(MPLAPACK_ENABLE_GMP OR MPLAPACK_ENABLE_MPFR)
   set(MPLAPACK_GMPFRXX_MKII_ROOT
       "${CMAKE_CURRENT_BINARY_DIR}/external/i/GMPFRXX_MKII")
   set(MPLAPACK_GMPFRXX_MKII_ARCHIVE
-      "${CMAKE_CURRENT_SOURCE_DIR}/external/gmpfrxx_mkII/download/gmpfrxx_mkII.1.2.0.tar.xz")
+      "${CMAKE_CURRENT_SOURCE_DIR}/external/gmpfrxx_mkII/download/gmpfrxx_mkII.1.3.0.tar.xz")
   if(NOT EXISTS "${MPLAPACK_GMPFRXX_MKII_ROOT}/include/gmpxx_mkII.h")
     find_program(MPLAPACK_TAR_EXECUTABLE tar REQUIRED)
     file(MAKE_DIRECTORY "${MPLAPACK_GMPFRXX_MKII_ROOT}")
