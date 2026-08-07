@@ -1,28 +1,15 @@
-QDVERSION=1.2.0
+QDVERSION=1.3.0
 QD_DISTFILE=qd/download/libQD3-$(QDVERSION).tar.gz
 QD_SRCDIR=libQD3-$(QDVERSION)
 QD_INTERNAL_BUILDDIR=$(abs_builddir)/work/internal-build
 QD_INSTALL_BUILDDIR=$(abs_builddir)/work/install-build
 QD_INTERNAL_LIBDIR=$(abs_builddir)/../i/QD/lib
 QD_INSTALL_LIBDIR=$(libdir)
-QD_PATCHES= \
-	patches/patch-std-complex-interop \
-	patches/patch-int-assignment-overloads \
-	patches/patch-integer-conversion-helpers \
-	patches/patch-cmake-uninstall-target \
-	patches/patch-fpu-fix-80bit \
-	patches/patch-fma-residual-probe \
-	patches/patch-document-mingw-edd-real-long-double-trig \
-	patches/patch-shared-library-version-2 \
-	patches/patch-qd-real-integer-arithmetic-overloads \
-	patches/patch-real-integer-comparison-overloads \
-	patches/patch-dd-td-edd-real-integer-arithmetic-overloads
 MAKEFLAGS =
 
 # Ensure dist tarball contains the vendor tarball.
 EXTRA_DIST = \
-	download/libQD3-$(QDVERSION).tar.gz \
-	$(QD_PATCHES)
+	download/libQD3-$(QDVERSION).tar.gz
 
 if IS_MINGW
 QD_BUILD_STATIC=OFF
@@ -93,10 +80,6 @@ work/$(EXTRACT_STAMP):
 	rm -rf work ; mkdir -p work/internal  ; mkdir -p work/install
 	cd $(abs_builddir)/work/internal; tar xvfz $(abs_srcdir)/download/libQD3-$(QDVERSION).tar.gz
 	cd $(abs_builddir)/work/install; tar xvfz $(abs_srcdir)/download/libQD3-$(QDVERSION).tar.gz
-	for patchfile in $(QD_PATCHES); do \
-		cd $(abs_builddir)/work/internal/$(QD_SRCDIR) && patch -p1 < $(abs_srcdir)/$$patchfile; \
-		cd $(abs_builddir)/work/install/$(QD_SRCDIR) && patch -p1 < $(abs_srcdir)/$$patchfile; \
-	done
 	touch $(abs_builddir)/work/$(EXTRACT_STAMP)
 
 work/$(CONFIGURE_STAMP): work/$(EXTRACT_STAMP)
