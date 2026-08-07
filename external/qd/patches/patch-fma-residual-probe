@@ -1,0 +1,132 @@
+diff -uNr a/cmake/QD3CheckFMA.cmake b/cmake/QD3CheckFMA.cmake
+--- a/cmake/QD3CheckFMA.cmake	2026-07-03 11:52:36.000000000 +0900
++++ b/cmake/QD3CheckFMA.cmake	2026-08-07 09:22:38.038544110 +0900
+@@ -63,26 +63,118 @@
+   set(${out_var} "${src}" PARENT_SCOPE)
+ endfunction()
+ 
+-function(qd3_try_fma_candidate candidate out_var)
+-  qd3_fma_source("${candidate}" src)
+-  string(TOUPPER "${candidate}" upper)
+-  set(var "QD3_FMA_${upper}_RUNS")
++function(qd3_fma_residual_source candidate out_var)
++  set(extra_include "")
++  if(candidate STREQUAL "ibm")
++    set(extra_include "#include <builtins.h>")
++    set(fms_expr "__fmsub(a, b, p)")
++  elseif(candidate STREQUAL "gnu")
++    set(fms_expr "__builtin_fma(a, b, -p)")
++  elseif(candidate STREQUAL "ia64")
++    set(fms_expr "_Asm_fms(2, a, b, p)")
++  elseif(candidate STREQUAL "c99")
++    set(fms_expr "fma(a, b, -p)")
++  elseif(candidate STREQUAL "compiler")
++    set(fms_expr "((a) * (b) - (p))")
++  else()
++    message(FATAL_ERROR "Unknown FMA candidate '${candidate}'")
++  endif()
++
++  set(src [[
++#include <cmath>
++@extra_include@
+ 
++static const double qd_splitter = 134217729.0;
++static const double qd_split_thresh = 6.69692879491417e+299;
++
++static void qd_split(double a, double &hi, double &lo) {
++  double temp;
++  if (a > qd_split_thresh || a < -qd_split_thresh) {
++    a *= 3.7252902984619140625e-09;
++    temp = qd_splitter * a;
++    hi = temp - (temp - a);
++    lo = a - hi;
++    hi *= 268435456.0;
++    lo *= 268435456.0;
++  } else {
++    temp = qd_splitter * a;
++    hi = temp - (temp - a);
++    lo = a - hi;
++  }
++}
++
++static double qd_split_prod_error(double a, double b, double p) {
++  double a_hi, a_lo, b_hi, b_lo;
++  qd_split(a, a_hi, a_lo);
++  qd_split(b, b_hi, b_lo);
++  volatile double hi_hi = a_hi * b_hi;
++  volatile double hi_lo = a_hi * b_lo;
++  volatile double lo_hi = a_lo * b_hi;
++  volatile double lo_lo = a_lo * b_lo;
++  return ((hi_hi - p) + hi_lo + lo_hi) + lo_lo;
++}
++
++static double qd_candidate_fms(double a, double b, double p) {
++  return @fms_expr@;
++}
++
++int main() {
++  const double cases[][2] = {
++    {0x1.ffffffffffffep-1, 0x1.fffffffffffffp-1},
++    {0x1.ffffffffffffep-1, 0x1.6a09e667f3bcdp+0},
++    {0x1.6a09e667f3bcdp+0, 0x1.6a09e667f3bcdp+0},
++    {0x1.5bf0a8b145769p+1, 0x1.ffffffffffffep-1}
++  };
++
++  for (unsigned i = 0; i < sizeof(cases) / sizeof(cases[0]); i++) {
++    const double a = cases[i][0];
++    const double b = cases[i][1];
++    const double p = a * b;
++    const double candidate = qd_candidate_fms(a, b, p);
++    const double reference = qd_split_prod_error(a, b, p);
++    if (!std::isfinite(candidate) || candidate != reference) {
++      return 1;
++    }
++  }
++  return 0;
++}
++]])
++  string(CONFIGURE "${src}" src @ONLY)
++  set(${out_var} "${src}" PARENT_SCOPE)
++endfunction()
++
++function(qd3_check_fma_source_runs src candidate var out_var)
++  set(result FALSE)
+   set(saved_required_libraries "${CMAKE_REQUIRED_LIBRARIES}")
+   check_cxx_source_runs("${src}" ${var})
+-  if(NOT ${var} AND candidate STREQUAL "c99")
++  if(${var})
++    set(result TRUE)
++  elseif(candidate STREQUAL "c99")
+     set(CMAKE_REQUIRED_LIBRARIES ${saved_required_libraries} m)
+-    set(var_m "QD3_FMA_${upper}_RUNS_WITH_M")
++    set(var_m "${var}_WITH_M")
+     check_cxx_source_runs("${src}" ${var_m})
+-    set(CMAKE_REQUIRED_LIBRARIES "${saved_required_libraries}")
+     if(${var_m})
+-      set(${out_var} TRUE PARENT_SCOPE)
+-      return()
++      set(result TRUE)
+     endif()
+   endif()
+   set(CMAKE_REQUIRED_LIBRARIES "${saved_required_libraries}")
++  set(${out_var} "${result}" PARENT_SCOPE)
++endfunction()
+ 
+-  if(${var})
++function(qd3_try_fma_candidate candidate out_var)
++  qd3_fma_source("${candidate}" src)
++  qd3_fma_residual_source("${candidate}" residual_src)
++  string(TOUPPER "${candidate}" upper)
++  set(var "QD3_FMA_${upper}_RUNS")
++  set(var_residual "QD3_FMA_${upper}_QD_RESIDUAL_RUNS")
++  set(residual_runs FALSE)
++
++  qd3_check_fma_source_runs("${src}" "${candidate}" ${var} source_runs)
++  if(source_runs)
++    qd3_check_fma_source_runs("${residual_src}" "${candidate}" ${var_residual} residual_runs)
++  endif()
++
++  if(source_runs AND residual_runs)
+     set(${out_var} TRUE PARENT_SCOPE)
+   else()
+     set(${out_var} FALSE PARENT_SCOPE)

@@ -1,0 +1,31 @@
+--- a/README.md	2026-07-03 11:52:36.000000000 +0900
++++ b/README.md	2026-08-07 09:35:42.262530234 +0900
+@@ -123,6 +123,28 @@
+ The default suite also builds `complex_test`, which covers the public
+ `dd_complex`, `td_complex`, `qd_complex`, and optional `edd_complex` headers.
+ 
++### Known issue: MinGW/Wine `edd_real` trigonometry
++
++`edd_real` is implemented on native binary80 limbs.  On MinGW targets executed
++under Wine, the binary80 `long double` trigonometric and inverse-trigonometric
++runtime path may not satisfy libQD3's EDD test tolerances, especially for
++large-argument reduction.  In observed `x86_64-w64-mingw32-g++` builds under
++Wine, the EDD-only parts of the default suite failed in:
++
++- `qd_test -edd`: Test 15, EDD trig identities and qd oracle agreement
++- `qd_test -edd`: Test 16, EDD inverse trig consistency
++- `qd_test -edd`: Test 17, EDD large-argument reduction and hyperbolic checks
++- `complex_test`: `edd_complex`
++
++The `dd_real`, `td_real`, and `qd_real` tests passed in the same environment.
++This is tracked as a libQD3 platform/runtime issue, not as a downstream
++consumer issue.  Release builds that only require DD/TD/QD functionality may
++disable EDD on MinGW with:
++
++```
++$ cmake -S . -B build-mingw -DQD_ENABLE_EDD_REAL=OFF
++```
++
+ The optional MPC complex oracle suite can be enabled independently from the
+ MPFR real oracle suite:
+ 

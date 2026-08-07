@@ -11,6 +11,8 @@ QD_PATCHES= \
 	patches/patch-integer-conversion-helpers \
 	patches/patch-cmake-uninstall-target \
 	patches/patch-fpu-fix-80bit \
+	patches/patch-fma-residual-probe \
+	patches/patch-document-mingw-edd-real-long-double-trig \
 	patches/patch-shared-library-version-2 \
 	patches/patch-qd-real-integer-arithmetic-overloads \
 	patches/patch-real-integer-comparison-overloads \
@@ -24,10 +26,12 @@ EXTRA_DIST = \
 
 if IS_MINGW
 QD_BUILD_STATIC=OFF
+qd_edd_real_arg=-DQD_ENABLE_EDD_REAL=OFF
 qd_internal_rpath_ldflags=
 qd_install_rpath_ldflags=
 else
 QD_BUILD_STATIC=ON
+qd_edd_real_arg=
 qd_internal_rpath_ldflags=-Wl,-rpath,$(QD_INTERNAL_LIBDIR)
 qd_install_rpath_ldflags=-Wl,-rpath,$(QD_INSTALL_LIBDIR)
 endif
@@ -42,6 +46,7 @@ CMAKE_ARGS= \
 	-DQD_ENABLE_IEEE_ADD=ON \
 	-DQD_ENABLE_SLOPPY_MUL=OFF \
 	-DQD_ENABLE_SLOPPY_DIV=OFF \
+	$(qd_edd_real_arg) \
 	$(QDLIB_FLAGS)
 CMAKE_ARGS2= \
 	-DCMAKE_INSTALL_PREFIX=$(prefix) \
@@ -53,6 +58,7 @@ CMAKE_ARGS2= \
 	-DQD_ENABLE_IEEE_ADD=ON \
 	-DQD_ENABLE_SLOPPY_MUL=OFF \
 	-DQD_ENABLE_SLOPPY_DIV=OFF \
+	$(qd_edd_real_arg) \
 	$(QDLIB_FLAGS)
 
 EXTRACT_STAMP=.qd_extract_done
@@ -174,8 +180,13 @@ work/$(BUILD_STAMP): work/$(CONFIGURE_STAMP)
 	touch $(abs_builddir)/work/$(BUILD_STAMP)
 
 work/$(CHECK_STAMP): work/$(BUILD_STAMP)
-	+ctest --test-dir $(QD_INTERNAL_BUILDDIR)
-	+ctest --test-dir $(QD_INSTALL_BUILDDIR)
+if IS_MINGW
+	+env WINEPATH="$(QD_INTERNAL_BUILDDIR);$${WINEPATH}" ctest --test-dir $(QD_INTERNAL_BUILDDIR) --output-on-failure
+	+env WINEPATH="$(QD_INSTALL_BUILDDIR);$${WINEPATH}" ctest --test-dir $(QD_INSTALL_BUILDDIR) --output-on-failure
+else
+	+ctest --test-dir $(QD_INTERNAL_BUILDDIR) --output-on-failure
+	+ctest --test-dir $(QD_INSTALL_BUILDDIR) --output-on-failure
+endif
 	touch $(abs_builddir)/work/$(CHECK_STAMP)
 
 work/$(INSTALL_INTERNAL_STAMP): work/$(CHECK_STAMP)

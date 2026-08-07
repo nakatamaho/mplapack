@@ -1,6 +1,7 @@
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -13,6 +13,7 @@ include(CheckSymbolExists)
+diff -uNr a/CMakeLists.txt b/CMakeLists.txt
+--- a/CMakeLists.txt	2026-08-07 09:14:20.226320158 +0900
++++ b/CMakeLists.txt	2026-08-07 09:14:20.259321095 +0900
+@@ -17,6 +17,7 @@
  include(QD3BuildOptions)
  include(QD3CheckFMA)
  include(QD3CheckEddReal)
@@ -8,7 +9,7 @@
  include(QD3CheckFortran)
  include(QD3Version)
  
-@@ -61,6 +62,7 @@ if(QD_HAVE_LIBM)
+@@ -58,6 +59,7 @@
    list(APPEND QD_SYSTEM_LIBS m)
  endif()
  
@@ -16,7 +17,7 @@
  qd3_check_edd_real()
  qd3_check_fortran()
  
-@@ -690,6 +692,7 @@ message(STATUS "  QD_FMS selected            = ${QD_FMS_SELECTED}")
+@@ -857,6 +859,7 @@
  message(STATUS "  FP contraction flag        = ${QD_FP_CONTRACT_FLAG}")
  message(STATUS "  QD_ARCH                    = ${QD_ARCH} (${QD_ARCH_CXX_FLAG})")
  message(STATUS "  edd_real status            = ${QD_EDD_STATUS}")
@@ -24,9 +25,10 @@
  message(STATUS "  BUILD_SHARED_LIBS          = ${BUILD_SHARED_LIBS}")
  message(STATUS "  QD_BUILD_STATIC            = ${QD_BUILD_STATIC}")
  message(STATUS "  tests enabled              = ${BUILD_TESTING}")
---- /dev/null
-+++ b/cmake/QD3CheckFpu.cmake
-@@ -0,0 +1,79 @@
+diff -uNr a/cmake/QD3CheckFpu.cmake b/cmake/QD3CheckFpu.cmake
+--- a/cmake/QD3CheckFpu.cmake	1970-01-01 09:00:00.000000000 +0900
++++ b/cmake/QD3CheckFpu.cmake	2026-08-07 09:14:20.259321095 +0900
+@@ -0,0 +1,75 @@
 +include(CheckCXXSourceRuns)
 +
 +function(qd3_check_fpu_fix_80bit)
@@ -49,9 +51,6 @@
 +int main() { return 1; }
 +#else
 +#if !defined(__LDBL_MANT_DIG__) || __LDBL_MANT_DIG__ != 64
-+int main() { return 1; }
-+#else
-+#if defined(_WIN32)
 +int main() { return 1; }
 +#else
 +#if defined(__has_include)
@@ -90,7 +89,6 @@
 +}
 +#endif
 +#endif
-+#endif
 +]])
 +
 +  set(saved_required_flags "${CMAKE_REQUIRED_FLAGS}")
@@ -106,8 +104,37 @@
 +    set(QD_FPU_FIX_80BIT_STATUS "available" PARENT_SCOPE)
 +  endif()
 +endfunction()
---- a/config.h.cmake.in
-+++ b/config.h.cmake.in
+diff -uNr a/config.h.cmake.in b/config.h.cmake.in
+--- a/config.h.cmake.in	2026-07-03 11:52:36.000000000 +0900
++++ b/config.h.cmake.in	2026-08-07 09:14:20.259321095 +0900
+@@ -26,6 +26,7 @@
+ #cmakedefine QD_EDD_WORD_MAX_EXP @QD_EDD_WORD_MAX_EXP@
+ #cmakedefine QD_EDD_SPLIT_BITS @QD_EDD_SPLIT_BITS@
+ #cmakedefine QD_EDD_SPLIT_SCALE_BITS @QD_EDD_SPLIT_SCALE_BITS@
++#cmakedefine QD_HAVE_FPU_FIX_80BIT 1
+ 
+ #ifdef __cplusplus
+ #include <cmath>
+diff -uNr a/include/qd/fpu.h b/include/qd/fpu.h
+--- a/include/qd/fpu.h	2026-07-03 11:52:36.000000000 +0900
++++ b/include/qd/fpu.h	2026-08-07 09:14:20.259321095 +0900
+@@ -28,6 +28,13 @@
+ QD_API void fpu_fix_start(unsigned int *old_cw);
+ 
+ /*
++ * Set the x87 FPU to 80-bit extended precision, and save the old control word
++ * in old_cw.  This is used by edd_real on x86 targets.  On non-x86 targets,
++ * or when the configure probe cannot verify the mode switch, this is a no-op.
++ */
++QD_API void fpu_fix_start_80bit(unsigned int *old_cw);
++
++/*
+  * Restore the control word.
+  */
+ QD_API void fpu_fix_end(unsigned int *old_cw);
+diff -uNr a/include/qd/qd_config.h.cmake.in b/include/qd/qd_config.h.cmake.in
+--- a/include/qd/qd_config.h.cmake.in	2026-07-03 11:52:36.000000000 +0900
++++ b/include/qd/qd_config.h.cmake.in	2026-08-07 09:14:20.259321095 +0900
 @@ -25,6 +25,7 @@
  #cmakedefine QD_EDD_WORD_MAX_EXP @QD_EDD_WORD_MAX_EXP@
  #cmakedefine QD_EDD_SPLIT_BITS @QD_EDD_SPLIT_BITS@
@@ -116,21 +143,10 @@
  
  #ifdef __cplusplus
  #include <cmath>
---- a/include/qd/qd_config.h.cmake.in
-+++ b/include/qd/qd_config.h.cmake.in
-@@ -25,6 +25,7 @@
- #cmakedefine QD_EDD_WORD_MAX_EXP @QD_EDD_WORD_MAX_EXP@
- #cmakedefine QD_EDD_SPLIT_BITS @QD_EDD_SPLIT_BITS@
- #cmakedefine QD_EDD_SPLIT_SCALE_BITS @QD_EDD_SPLIT_SCALE_BITS@
-+#cmakedefine QD_HAVE_FPU_FIX_80BIT 1
- 
- #ifdef __cplusplus
- #include <cmath>
---- a/include/qd/qd_config.h.in
-+++ b/include/qd/qd_config.h.in
-@@ -141,7 +141,12 @@
- /* Define this macro to be the isnan(x) function. */
- #ifndef QD_ISNAN
+diff -uNr a/include/qd/qd_config.h.in b/include/qd/qd_config.h.in
+--- a/include/qd/qd_config.h.in	2026-07-03 11:52:36.000000000 +0900
++++ b/include/qd/qd_config.h.in	2026-08-07 09:14:20.259321095 +0900
+@@ -143,5 +143,10 @@
  #undef QD_ISNAN
  #endif
  
@@ -141,31 +157,84 @@
 +
  
  #endif /* _QD_QD_CONFIG_H */
---- a/include/qd/fpu.h
-+++ b/include/qd/fpu.h
-@@ -26,6 +26,13 @@ extern "C" {
-  */
- QD_API void fpu_fix_start(unsigned int *old_cw);
+diff -uNr a/src/fpu.cpp b/src/fpu.cpp
+--- a/src/fpu.cpp	2026-07-03 11:52:36.000000000 +0900
++++ b/src/fpu.cpp	2026-08-07 09:14:20.260321124 +0900
+@@ -15,10 +15,11 @@
+ #include <qd/fpu.h>
  
-+/*
-+ * Set the x87 FPU to 80-bit extended precision, and save the old control word
-+ * in old_cw.  This is used by edd_real on x86 targets.  On non-x86 targets,
-+ * or when the configure probe cannot verify the mode switch, this is a no-op.
-+ */
-+QD_API void fpu_fix_start_80bit(unsigned int *old_cw);
-+
- /*
-  * Restore the control word.
-  */
---- a/src/fpu.cpp
-+++ b/src/fpu.cpp
-@@ -59,6 +59,48 @@ void fpu_fix_start(unsigned int *old_cw) {
+ #ifdef X86
+-#ifdef  _WIN32
++#ifdef _WIN32
+ #include <float.h>
+-#else
++#endif
+ 
++#if defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__))
+ #ifdef HAVE_FPU_CONTROL_H
+ #include <fpu_control.h>
  #endif
- }
+@@ -30,6 +31,7 @@
+ #ifndef _FPU_SETCW
+ #define _FPU_SETCW(x) asm volatile ("fldcw %0": :"m" (x));
+ #endif
++#endif
  
+ #ifndef _FPU_EXTENDED
+ #define _FPU_EXTENDED 0x0300
+@@ -39,14 +41,23 @@
+ #define _FPU_DOUBLE 0x0200
+ #endif
+ 
+-#endif
+ #endif /* X86 */
+ 
+ extern "C" {
+ 
+ void fpu_fix_start(unsigned int *old_cw) {
+ #ifdef X86
+-#ifdef _WIN32
++#if defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__))
++  volatile unsigned short cw, new_cw;
++  _FPU_GETCW(cw);
++
++  new_cw = (cw & ~_FPU_EXTENDED) | _FPU_DOUBLE;
++  _FPU_SETCW(new_cw);
++
++  if (old_cw) {
++    *old_cw = cw;
++  }
++#elif defined(_WIN32)
+ #ifdef __BORLANDC__
+   /* Win 32 Borland C */
+   unsigned short cw = _control87(0, 0);
+@@ -69,11 +80,64 @@
+ 
+   new_cw = (cw & ~_FPU_EXTENDED) | _FPU_DOUBLE;
+   _FPU_SETCW(new_cw);
+-  
++
++  if (old_cw) {
++    *old_cw = cw;
++  }
++#endif
++#endif
++}
++
 +void fpu_fix_start_80bit(unsigned int *old_cw) {
 +#ifdef X86
-+#ifdef _WIN32
++#if defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__))
++  volatile unsigned short cw, new_cw;
++  _FPU_GETCW(cw);
++
+   if (old_cw) {
+     *old_cw = cw;
+   }
++#ifdef QD_HAVE_FPU_FIX_80BIT
++  new_cw = (cw & ~_FPU_EXTENDED) | _FPU_EXTENDED;
++  _FPU_SETCW(new_cw);
+ #endif
++#elif defined(_WIN32)
 +#ifdef __BORLANDC__
 +  /* Win 32 Borland C */
 +  unsigned short cw = _control87(0, 0);
@@ -202,15 +271,13 @@
 +  if (old_cw) {
 +    *old_cw = 0;
 +  }
-+#endif
-+}
-+
- void fpu_fix_end(unsigned int *old_cw) {
- #ifdef X86
- #ifdef _WIN32
---- a/tests/c_test.c
-+++ b/tests/c_test.c
-@@ -200,10 +200,19 @@ static int test_4(void) {
+ #endif
+ }
+ 
+diff -uNr a/tests/c_test.c b/tests/c_test.c
+--- a/tests/c_test.c	2026-07-03 11:52:36.000000000 +0900
++++ b/tests/c_test.c	2026-08-07 09:14:20.260321124 +0900
+@@ -200,10 +200,19 @@
  #endif
  
  int main(void) {
@@ -234,9 +301,35 @@
 +  fpu_fix_end(&old_cw);
 +  return status;
  }
---- a/tests/qd_test.cpp
-+++ b/tests/qd_test.cpp
-@@ -1849,10 +1849,10 @@ int main(int argc, char *argv[]) {
+diff -uNr a/tests/complex_test.cpp b/tests/complex_test.cpp
+--- a/tests/complex_test.cpp	2026-07-03 11:52:36.000000000 +0900
++++ b/tests/complex_test.cpp	2026-08-07 09:14:20.260321124 +0900
+@@ -3,6 +3,7 @@
+ #include <qd/td_complex.h>
+ #include <qd/qd_complex.h>
+ #include <qd/edd_complex.h>
++#include <qd/fpu.h>
+ 
+ #include <algorithm>
+ #include <cmath>
+@@ -304,7 +305,12 @@
+   pass &= run_type<td_complex>("td_complex");
+   pass &= run_type<qd_complex>("qd_complex");
+ #ifdef QD_HAVE_EDD_REAL
+-  pass &= run_type<edd_complex>("edd_complex");
++  {
++    unsigned int old_edd_cw = 0;
++    fpu_fix_start_80bit(&old_edd_cw);
++    pass &= run_type<edd_complex>("edd_complex");
++    fpu_fix_end(&old_edd_cw);
++  }
+ #endif
+ 
+   if (pass) {
+diff -uNr a/tests/qd_test.cpp b/tests/qd_test.cpp
+--- a/tests/qd_test.cpp	2026-07-03 11:52:36.000000000 +0900
++++ b/tests/qd_test.cpp	2026-08-07 09:14:20.260321124 +0900
+@@ -1865,10 +1865,10 @@
    if (flag_test_edd) {
      EddTestSuite edd_test;
  
@@ -251,7 +344,7 @@
  
      cout << endl;
      cout << "Testing edd_real ..." << endl;
-@@ -1862,6 +1861,7 @@ int main(int argc, char *argv[]) {
+@@ -1877,6 +1877,7 @@
      pass &= edd_test.testall();
      pass &= print_result(test_edd_real_comparison());
      pass &= print_result(test_edd_real_int64_constructor());
