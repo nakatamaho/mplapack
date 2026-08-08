@@ -95,6 +95,10 @@ clear_failed_logs() {
     find "$FAILED_DIR" -maxdepth 1 -type l -name "${name_prefix}-*${source_log_part}-linux-docker.failed" -exec rm -f {} +
 }
 
+sanitize_compiler_label() {
+    sed 's/-//; s/[^A-Za-z0-9_+.-]/_/g'
+}
+
 detect_compiler_label_from_results() {
     local stage="$1"
     local outdir base compiler
@@ -105,9 +109,26 @@ detect_compiler_label_from_results() {
             base="$(basename "$outdir")"
             compiler="$(printf '%s' "$base" | sed -n 's/^.*_\([A-Za-z][A-Za-z0-9+.-]*-[0-9][A-Za-z0-9_.-]*\)$/\1/p')"
             if [[ -n "$compiler" ]]; then
-                printf '%s' "$compiler" | sed 's/-//; s/[^A-Za-z0-9_+.-]/_/g'
+                printf '%s' "$compiler" | sanitize_compiler_label
                 return 0
             fi
+        fi
+    fi
+    printf 'compiler_unknown'
+}
+
+detect_compiler_label_from_log() {
+    local logpath="$1"
+    local compiler
+
+    if [[ -f "$logpath" ]]; then
+        compiler="$(
+            sed -n 's/^checking C compiler tag\.\.\. *//p' "$logpath" \
+                | tail -n 1
+        )"
+        if [[ -n "$compiler" ]]; then
+            printf '%s' "$compiler" | sanitize_compiler_label
+            return 0
         fi
     fi
     printf 'compiler_unknown'
@@ -347,6 +368,9 @@ if [[ "$rc" -eq 0 ]]; then
     collect_remote_test_results
     compiler_label="$(detect_compiler_label_from_results "$COLLECTED_RESULTS_STAGE")"
     if [[ "$compiler_label" == "compiler_unknown" ]]; then
+        compiler_label="$(detect_compiler_label_from_log "$logfile")"
+    fi
+    if [[ "$compiler_label" == "compiler_unknown" ]]; then
         if [[ "$tier" == "tier3" ]]; then
             compiler_label="build"
         else
@@ -368,7 +392,17 @@ if [[ "$rc" -eq 0 ]]; then
     mkdir -p "$(dirname "$resultfile")"
     echo "$matrix_name,$arch,${remote_docker_base:-$host},test,OK,$elapsed,$source_type" | tee -a "$resultfile"
 else
-    link_failed_log "failed"
+    compiler_label="$(detect_compiler_label_from_log "$logfile")"
+    failed_label="failed"
+    if [[ "$compiler_label" != "compiler_unknown" ]]; then
+        final_logfile="$LOGDIR/${name_prefix}-${compiler_label}${source_log_part}-linux-docker.log"
+        if [[ "$final_logfile" != "$logfile" ]]; then
+            mv "$logfile" "$final_logfile"
+            logfile="$final_logfile"
+        fi
+        failed_label="${compiler_label}-failed"
+    fi
+    link_failed_log "$failed_label"
     mkdir -p "$(dirname "$resultfile")"
     echo "$matrix_name,$arch,${remote_docker_base:-$host},test,FAILED,$elapsed,$source_type" | tee -a "$resultfile"
     exit "$rc"
