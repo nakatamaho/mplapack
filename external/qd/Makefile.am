@@ -51,13 +51,12 @@ CMAKE_ARGS2= \
 EXTRACT_STAMP=.qd_extract_done
 CONFIGURE_STAMP=.qd_configure_done
 BUILD_STAMP=.qd_build_done
-INSTALL_STAMP=.qd_install_done
 INSTALL_INTERNAL_STAMP=.qd_install_internal_done
 CHECK_STAMP=.qd_check_done
 
 all: extract config build check install_internal
 
-.PHONY: verify-distfile
+.PHONY: verify-distfile install uninstall
 verify-distfile:
 	@distfile="$(QD_DISTFILE)"; \
 	cd "$(abs_srcdir)/.." && \
@@ -176,10 +175,6 @@ work/$(INSTALL_INTERNAL_STAMP): work/$(CHECK_STAMP)
 	+cmake --install $(QD_INTERNAL_BUILDDIR)
 	touch $(abs_builddir)/work/$(INSTALL_INTERNAL_STAMP)
 
-work/$(INSTALL_STAMP): work/$(CHECK_STAMP)
-	+cmake --install $(QD_INSTALL_BUILDDIR)
-	touch $(abs_builddir)/work/$(INSTALL_STAMP)
-
 extract: work/$(EXTRACT_STAMP)
 
 config: work/$(CONFIGURE_STAMP)
@@ -190,9 +185,13 @@ check: work/$(CHECK_STAMP)
 
 install_internal: work/$(INSTALL_INTERNAL_STAMP)
 
-install: work/$(INSTALL_STAMP)
+install: work/$(CHECK_STAMP)
+	+cmake -S $(abs_builddir)/work/install/$(QD_SRCDIR) -B $(QD_INSTALL_BUILDDIR) $(CMAKE_ARGS2)
+	+cmake --build $(QD_INSTALL_BUILDDIR)
+	+env DESTDIR="$(DESTDIR)" cmake --install $(QD_INSTALL_BUILDDIR)
 
 uninstall:
+	-+cmake -S $(abs_builddir)/work/install/$(QD_SRCDIR) -B $(QD_INSTALL_BUILDDIR) $(CMAKE_ARGS2)
 	-+cmake --build $(QD_INSTALL_BUILDDIR) --target uninstall
 clean-local:
 	rm -rf work
