@@ -1,8 +1,10 @@
-GMPFRXX_MKII_VERSION = 1.3.2
+GMPFRXX_MKII_VERSION = 1.4.0
 GMPFRXX_MKII_DISTFILE = gmpfrxx_mkII.$(GMPFRXX_MKII_VERSION).tar.xz
 GMPFRXX_MKII_SOURCE_DIR = gmpfrxx_mkII.$(GMPFRXX_MKII_VERSION)
 GMPFRXX_MKII_INTERNAL_PREFIX = $(abs_builddir)/../i/GMPFRXX_MKII
 GMPFRXX_MKII_WORK = $(abs_builddir)/work
+GMPFRXX_MKII_VERIFY_STAMP = $(GMPFRXX_MKII_WORK)/.verify_$(GMPFRXX_MKII_VERSION)_done
+GMPFRXX_MKII_EXTRACT_STAMP = $(GMPFRXX_MKII_INTERNAL_PREFIX)/.extract_$(GMPFRXX_MKII_VERSION)_done
 GMPFRXX_MKII_CHECK_BUILD = $(GMPFRXX_MKII_WORK)/check
 GMPFRXX_MKII_GMP_PREFIX = $(abs_builddir)/../i/GMP
 GMPFRXX_MKII_MPFR_PREFIX = $(abs_builddir)/../i/MPFR
@@ -40,8 +42,8 @@ GMPFRXX_MKII_UNINSTALL_ENABLED = no
 endif
 endif
 
-all: $(GMPFRXX_MKII_INTERNAL_PREFIX)/.extract_done
-$(GMPFRXX_MKII_WORK)/.verify_done:
+all: $(GMPFRXX_MKII_EXTRACT_STAMP)
+$(GMPFRXX_MKII_VERIFY_STAMP): $(abs_srcdir)/download/$(GMPFRXX_MKII_DISTFILE) $(abs_srcdir)/../distfiles.sha256
 	@set -e; \
 	distfile="gmpfrxx_mkII/download/$(GMPFRXX_MKII_DISTFILE)"; \
 	cd "$(abs_srcdir)/.." && \
@@ -60,12 +62,12 @@ $(GMPFRXX_MKII_WORK)/.verify_done:
 	fi; \
 	mkdir -p $(GMPFRXX_MKII_WORK); \
 	touch $@
-$(GMPFRXX_MKII_INTERNAL_PREFIX)/.extract_done: $(GMPFRXX_MKII_WORK)/.verify_done
+$(GMPFRXX_MKII_EXTRACT_STAMP): $(GMPFRXX_MKII_VERIFY_STAMP)
 	rm -rf $(GMPFRXX_MKII_INTERNAL_PREFIX)
 	mkdir -p $(GMPFRXX_MKII_INTERNAL_PREFIX)
 	tar -xJf $(abs_srcdir)/download/$(GMPFRXX_MKII_DISTFILE) -C $(GMPFRXX_MKII_INTERNAL_PREFIX) --strip-components=1
 	touch $@
-check-local: $(GMPFRXX_MKII_INTERNAL_PREFIX)/.extract_done
+check-local: $(GMPFRXX_MKII_EXTRACT_STAMP)
 	@set -e; \
 	cmake_cxx=; \
 	cmake_cxx_launcher=; \
@@ -110,7 +112,7 @@ check-local: $(GMPFRXX_MKII_INTERNAL_PREFIX)/.extract_done
 	env $(GMPFRXX_MKII_CHECK_ENV) ctest --test-dir $(GMPFRXX_MKII_CHECK_BUILD) --output-on-failure
 clean-local distclean-local:
 	rm -rf $(GMPFRXX_MKII_WORK) $(GMPFRXX_MKII_INTERNAL_PREFIX)
-install-data-local: $(GMPFRXX_MKII_INTERNAL_PREFIX)/.extract_done
+install-data-local: $(GMPFRXX_MKII_EXTRACT_STAMP)
 	$(MKDIR_P) $(DESTDIR)$(includedir)/mplapack
 	cp -R $(GMPFRXX_MKII_INTERNAL_PREFIX)/include/. $(DESTDIR)$(includedir)/mplapack/
 
