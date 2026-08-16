@@ -8,7 +8,8 @@ SH_LOG_COMPILER = $(SHELL)
 AM_TESTS_ENVIRONMENT = \
     LOG_COMPILER='$(LOG_COMPILER)'; export LOG_COMPILER; \
     EXEEXT='$(EXEEXT)'; export EXEEXT; \
-    srcdir='$(srcdir)'; export srcdir;
+    srcdir='$(srcdir)'; export srcdir; \
+    $(backend_tests_environment)
 
 .PHONY: check-all
 check-all: $(check_PROGRAMS)

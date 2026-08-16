@@ -18,6 +18,10 @@ endif()
 set(_common  "${CMAKE_CURRENT_SOURCE_DIR}/common")
 set(_mptest_common "${CMAKE_SOURCE_DIR}/mpblas/test/common")
 
+set(_mpfr_default_test_env
+  "MPFRXX_DEFAULT_EMAX=32768"
+  "MPFRXX_DEFAULT_EMIN=-32765")
+
 # Shared support (same files as mpblas/test): xerbla_ for the reference library,
 # the MPFR-based random/compare helpers, and the override Mxerbla which wins from
 # the executable's own objects via --allow-multiple-definition.
@@ -98,6 +102,10 @@ foreach(_b ${_backends})
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/${_variant}")
 
       add_test(NAME compare_${_variant}_${_stem} COMMAND ${_exe})
+      if(_b STREQUAL "mpfr")
+        set_tests_properties(compare_${_variant}_${_stem} PROPERTIES
+          ENVIRONMENT "${_mpfr_default_test_env}")
+      endif()
     endforeach()
   endforeach()
 endforeach()

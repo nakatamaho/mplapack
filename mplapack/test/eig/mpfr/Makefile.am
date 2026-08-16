@@ -9,6 +9,7 @@ mplapack_mpfr_opt_testdir = $(prefix)/lib/$(target)/mplapack/test/eig
 # MPFR emulation profiles
 #
 # MPFR uses 0.5 <= m < 1 for the mantissa, so IEEE-like emulation uses:
+#   default   : emin=-32765, emax=32768, prec=default
 #   binary64  : emin=-1021,  emax=1024,  prec=53
 #   binary128 : emin=-16381, emax=16384, prec=113
 #
@@ -19,11 +20,11 @@ mplapack_mpfr_opt_testdir = $(prefix)/lib/$(target)/mplapack/test/eig
 
 MPFR_PROFILES = default binary64 binary128
 
-MPFR_ENV_default   =
+MPFR_ENV_default   = MPFRXX_DEFAULT_EMAX=32768 MPFRXX_DEFAULT_EMIN=-32765
 MPFR_ENV_binary64  = MPFRXX_DEFAULT_EMAX=1024  MPFRXX_DEFAULT_EMIN=-1021  MPFRXX_DEFAULT_PRECISION_BITS=53
 MPFR_ENV_binary128 = MPFRXX_DEFAULT_EMAX=16384 MPFRXX_DEFAULT_EMIN=-16381 MPFRXX_DEFAULT_PRECISION_BITS=113
 
-MPFR_PROFILE_LABEL_default   = default
+MPFR_PROFILE_LABEL_default   = default (emin=-32765 emax=32768)
 MPFR_PROFILE_LABEL_binary64  = binary64 (prec=53 emin=-1021 emax=1024)
 MPFR_PROFILE_LABEL_binary128 = binary128 (prec=113 emin=-16381 emax=16384)
 

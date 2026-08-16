@@ -1,6 +1,11 @@
+MPFR_COMPARE_TEST_ENV = MPFRXX_DEFAULT_EMAX=32768 MPFRXX_DEFAULT_EMIN=-32765
+backend_tests_environment = \
+    MPFRXX_DEFAULT_EMAX=32768; export MPFRXX_DEFAULT_EMAX; \
+    MPFRXX_DEFAULT_EMIN=-32765; export MPFRXX_DEFAULT_EMIN;
+
 run_Rlaruv_test.sh: Makefile
 	@echo '#!/bin/sh' > $@
-	@echo '$${LOG_COMPILER} ./Rlaruv.test_mpfr$${EXEEXT} || true' >> $@
+	@echo '$(MPFR_COMPARE_TEST_ENV) $${LOG_COMPILER} ./Rlaruv.test_mpfr$${EXEEXT} || true' >> $@
 	@echo 'if diff -u $${srcdir}/Rlaruv_reference.txt Rlaruv.txt > /dev/null 2>&1; then' >> $@
 	@echo '  echo "PASS: Rlaruv"; exit 0' >> $@
 	@echo 'else' >> $@
@@ -10,7 +15,7 @@ run_Rlaruv_test.sh: Makefile
 
 run_Rlamch_test.sh: Makefile
 	@echo '#!/bin/sh' > $@
-	@echo '$${LOG_COMPILER} ./Rlamch.test_mpfr$${EXEEXT} || true' >> $@
+	@echo '$(MPFR_COMPARE_TEST_ENV) $${LOG_COMPILER} ./Rlamch.test_mpfr$${EXEEXT} || true' >> $@
 	@echo 'if diff -u $${srcdir}/Rlamch_reference.txt Rlamch.txt > /dev/null 2>&1; then' >> $@
 	@echo '  echo "PASS: Rlamch"; exit 0' >> $@
 	@echo 'else' >> $@

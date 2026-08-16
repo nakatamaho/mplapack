@@ -67,6 +67,10 @@ set(_eig_C_inputs   nep sep se2 svd Cec Ced Cgg Cgd Csb Csg Cbal Cbak Cgbal Cgba
 set(_dmd_R_inputs   Rdmd)
 set(_dmd_C_inputs   Cdmd)
 
+set(_mpfr_default_test_env
+  "MPFRXX_DEFAULT_EMAX=32768"
+  "MPFRXX_DEFAULT_EMIN=-32765")
+
 function(_mplapack_register_stdin_test name exe input_file)
   if(NOT EXISTS "${input_file}")
     return()
@@ -76,6 +80,9 @@ function(_mplapack_register_stdin_test name exe input_file)
       -DEXE=$<TARGET_FILE:${exe}>
       -DINPUT=${input_file}
       -P "${CMAKE_SOURCE_DIR}/cmake/RunStdinTest.cmake")
+  if(ARGN)
+    set_tests_properties(${name} PROPERTIES ENVIRONMENT "${ARGN}")
+  endif()
 endfunction()
 
 set(_backends gmp mpfr qd dd double binary80 binary128)
@@ -175,8 +182,12 @@ foreach(_b ${_backends})
           # ${_exe} embeds the backend flavor and R/C/rf/dmd driver variant, so
           # it disambiguates datasets shared between drivers (e.g. nep, svd).
           set(_input_file "${_dataset_dir}/${_in}.in")
+          set(_test_env)
+          if(_b STREQUAL "mpfr")
+            set(_test_env ${_mpfr_default_test_env})
+          endif()
           _mplapack_register_stdin_test(
-            "${_exe}_${_in}" ${_exe} "${_input_file}")
+            "${_exe}_${_in}" ${_exe} "${_input_file}" ${_test_env})
         endforeach()
       endif()
     endforeach()

@@ -38,9 +38,8 @@ namespace detail {
 //   rmin = 2^(emin-1)  where emin = mpfr_get_emin().
 //   rmax = (1 - eps) * 2^emax  where emax = mpfr_get_emax().
 //
-// The caller is responsible for applying the MPFR exponent clamping that
-// MPLAPACK normally applies before calling Rlamch (e.g., truncating the
-// exponent range to ±(prec * 64) to avoid bisection pathologies).
+// The caller is responsible for applying any MPFR exponent clamping needed by
+// a specific test profile or application policy before calling Rlamch.
 //
 // Use a finite conservative overflow-side scale instead of the raw
 // 2^max(1-emin, emax-1) formula, which may overflow for non-IEEE-like
