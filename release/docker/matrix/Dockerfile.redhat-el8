@@ -14,7 +14,7 @@ RUN set -eux; \
       bash git python3 \
       ccache \
       gcc gcc-c++ gcc-gfortran make \
-      autoconf automake libtool \
+      autoconf automake libtool cmake \
       pkgconf-pkg-config pkgconf-m4 \
       openblas-devel \
       which findutils diffutils tar xz bzip2 patch \

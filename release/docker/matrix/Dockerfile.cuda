@@ -13,6 +13,7 @@ RUN apt-get update && apt-get install -y \
     autoconf \
     automake \
     libtool \
+    cmake \
     ccache \
     pkg-config \
     libopenblas-dev \
