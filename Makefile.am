@@ -122,12 +122,6 @@ mplapack_include_HEADERS += \
 endif
 
 nodist_mplapack_include_HEADERS = include/mplapack_config.h
-if ENABLE_BINARY80
-nodist_mplapack_include_HEADERS += include/mplapack_utils_binary80.h
-endif
-if ENABLE_BINARY128
-nodist_mplapack_include_HEADERS += include/mplapack_utils_binary128.h
-endif
 
 # Internal headers used by tests/benchmarks; keep them in dist tarballs.
 noinst_HEADERS = \
