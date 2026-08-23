@@ -5,15 +5,21 @@ mplapack_gmp_opt_test_PROGRAMS = xeigtstR_gmp_opt xeigtstC_gmp_opt xdmdeigtstR_g
 mplapack_gmp_testdir = $(prefix)/lib/$(target)/mplapack/test/eig
 mplapack_gmp_opt_testdir = $(prefix)/lib/$(target)/mplapack/test/eig
 
-$(mplapack_gmp_test_PROGRAMS): ../libeig_gmp.la ../libeig_override_gmp.la
-$(mplapack_gmp_opt_test_PROGRAMS): ../libeig_gmp_opt.la ../libeig_override_gmp_opt.la
+$(mplapack_gmp_test_PROGRAMS): ../libeig_gmp.la
+$(mplapack_gmp_opt_test_PROGRAMS): ../libeig_gmp_opt.la
+xeigtstR_gmp xeigtstC_gmp: ../libeig_override_gmp.la
+xeigtstR_gmp_opt xeigtstC_gmp_opt: ../libeig_override_gmp_opt.la
 
 if IS_MINGW
 libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/eig/.libs/libeig_gmp.a,$(top_builddir)/mplapack/test/eig/.libs/libeig_override_gmp.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_gmp.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_gmp.a,--no-whole-archive
 opt_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/eig/.libs/libeig_gmp_opt.a,$(top_builddir)/mplapack/test/eig/.libs/libeig_override_gmp_opt.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_gmp_opt.a,$(top_builddir)/mpblas/optimized/gmp/.libs/libmplapack_gmp_opt.a,--no-whole-archive
+dmd_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/eig/.libs/libeig_gmp.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_gmp.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_gmp.a,--no-whole-archive
+dmd_opt_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/eig/.libs/libeig_gmp_opt.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_gmp_opt.a,$(top_builddir)/mpblas/optimized/gmp/.libs/libmplapack_gmp_opt.a,--no-whole-archive
 else
 libdepends = -L$(top_builddir)/mplapack/test/eig -leig_gmp -leig_override_gmp -L$(top_builddir)/mplapack/test/matgen -lmatgen_gmp -L$(top_builddir)/mplapack/reference -lmplapack_gmp
 opt_libdepends = -L$(top_builddir)/mplapack/test/eig -leig_gmp_opt -leig_override_gmp_opt -L$(top_builddir)/mplapack/test/matgen -lmatgen_gmp_opt -L$(top_builddir)/mpblas/optimized/gmp -lmplapack_gmp_opt
+dmd_libdepends = -L$(top_builddir)/mplapack/test/eig -leig_gmp -L$(top_builddir)/mplapack/test/matgen -lmatgen_gmp -L$(top_builddir)/mplapack/reference -lmplapack_gmp
+dmd_opt_libdepends = -L$(top_builddir)/mplapack/test/eig -leig_gmp_opt -L$(top_builddir)/mplapack/test/matgen -lmatgen_gmp_opt -L$(top_builddir)/mpblas/optimized/gmp -lmplapack_gmp_opt
 endif
 
 mplibs = -L$(GMP_LIBDIR) -lgmp -lm
@@ -37,19 +43,19 @@ xeigtstC_gmp_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xeigtstC_gmp_CXXFLAGS = $(cxxflags)
 xeigtstC_gmp_opt_CXXFLAGS = $(cxxflags)
 
-xdmdeigtstR_gmp_SOURCES  = ../common/Rchkdmd.cpp
-xdmdeigtstR_gmp_opt_SOURCES  = ../common/Rchkdmd.cpp
-xdmdeigtstR_gmp_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xdmdeigtstR_gmp_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xdmdeigtstR_gmp_SOURCES  = ../common/Rchkdmd.cpp ../common/Mxerbla.cpp
+xdmdeigtstR_gmp_opt_SOURCES  = ../common/Rchkdmd.cpp ../common/Mxerbla.cpp
+xdmdeigtstR_gmp_LDFLAGS  = $(dmd_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xdmdeigtstR_gmp_opt_LDFLAGS  = $(dmd_opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xdmdeigtstR_gmp_LDFLAGS += -Wl,-rpath,$(libdir)
 xdmdeigtstR_gmp_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xdmdeigtstR_gmp_CXXFLAGS = $(cxxflags)
 xdmdeigtstR_gmp_opt_CXXFLAGS = $(cxxflags)
 
-xdmdeigtstC_gmp_SOURCES  = ../common/Cchkdmd.cpp
-xdmdeigtstC_gmp_opt_SOURCES  = ../common/Cchkdmd.cpp
-xdmdeigtstC_gmp_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xdmdeigtstC_gmp_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xdmdeigtstC_gmp_SOURCES  = ../common/Cchkdmd.cpp ../common/Mxerbla.cpp
+xdmdeigtstC_gmp_opt_SOURCES  = ../common/Cchkdmd.cpp ../common/Mxerbla.cpp
+xdmdeigtstC_gmp_LDFLAGS  = $(dmd_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xdmdeigtstC_gmp_opt_LDFLAGS  = $(dmd_opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xdmdeigtstC_gmp_LDFLAGS += -Wl,-rpath,$(libdir)
 xdmdeigtstC_gmp_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xdmdeigtstC_gmp_CXXFLAGS = $(cxxflags)
