@@ -78,6 +78,7 @@ PATCHES_3_12_1 = \
 	patch-zunbdb3-conjugate-x21 \
 	patch-fix-testparameters \
 	patch-xERRTSQR.f \
+	patch-tsqr01-cq-residual \
 	patch-cabs1_unification \
 	patch-cabsmax
 

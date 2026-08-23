@@ -279,6 +279,7 @@ external/lapack/patches/3.12.1/patch-print \
 external/lapack/patches/3.12.1/patch-redundant-dble-real \
 external/lapack/patches/3.12.1/patch-stebz-error-propagation \
 external/lapack/patches/3.12.1/patch-trsyl3-ldswork-overwrite \
+external/lapack/patches/3.12.1/patch-tsqr01-cq-residual \
 external/lapack/patches/3.12.1/patch-xERRTSQR.f \
 external/lapack/patches/3.12.1/patch-xLAQP2RK.f \
 external/lapack/patches/3.12.1/patch-xpgvx-info-to-iinfo \

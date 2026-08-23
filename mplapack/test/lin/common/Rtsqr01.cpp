@@ -375,7 +375,7 @@ void Rtsqr01(fem::str_cref tssw, INTEGER const m, INTEGER const n, INTEGER const
         // Compute |C*Q - C*Q| / |C|
         //
         Rgemm("N", "N", m, n, n, -one, c, m, q, n, one, cf, m);
-        resid = Rlange("1", n, m, df, n, rwork);
+        resid = Rlange("1", m, n, cf, m, rwork);
         if (cnorm > zero) {
             result[5 - 1] = resid / (eps * max((INTEGER)1, n) * cnorm);
         } else {
