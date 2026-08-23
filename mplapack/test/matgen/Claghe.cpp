@@ -84,10 +84,15 @@ void Claghe(INTEGER const n, INTEGER const k, REAL *d, COMPLEX *a, INTEGER const
         //
         Clarnv(3, iseed, n - i + 1, work);
         wn = RCnrm2(n - i + 1, work, 1);
-        wa = (wn / abs(work[1 - 1])) * work[1 - 1];
         if (wn == zero) {
+            wa = zero;
             tau = zero;
         } else {
+            if (abs(work[1 - 1]) == zero) {
+                wa = COMPLEX(wn, 0.0);
+            } else {
+                wa = (wn / abs(work[1 - 1])) * work[1 - 1];
+            }
             wb = work[1 - 1] + wa;
             Cscal(n - i, one / wb, &work[2 - 1], 1);
             work[1 - 1] = one;
@@ -118,10 +123,15 @@ void Claghe(INTEGER const n, INTEGER const k, REAL *d, COMPLEX *a, INTEGER const
         // generate reflection to annihilate A(k+i+1:n,i)
         //
         wn = RCnrm2(n - k - i + 1, &a[((k + i) - 1) + (i - 1) * lda], 1);
-        wa = (wn / abs(a[((k + i) - 1) + (i - 1) * lda])) * a[((k + i) - 1) + (i - 1) * lda];
         if (wn == zero) {
+            wa = zero;
             tau = zero;
         } else {
+            if (abs(a[((k + i) - 1) + (i - 1) * lda]) == zero) {
+                wa = COMPLEX(wn, 0.0);
+            } else {
+                wa = (wn / abs(a[((k + i) - 1) + (i - 1) * lda])) * a[((k + i) - 1) + (i - 1) * lda];
+            }
             wb = a[((k + i) - 1) + (i - 1) * lda] + wa;
             Cscal(n - k - i, one / wb, &a[((k + i + 1) - 1) + (i - 1) * lda], 1);
             a[((k + i) - 1) + (i - 1) * lda] = one;

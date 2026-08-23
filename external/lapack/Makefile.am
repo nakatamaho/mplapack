@@ -80,7 +80,8 @@ PATCHES_3_12_1 = \
 	patch-xERRTSQR.f \
 	patch-tsqr01-cq-residual \
 	patch-cabs1_unification \
-	patch-cabsmax
+	patch-cabsmax \
+	patch-zlaghe-zero-leading
 
 LAPACK_PATCHES = $(PATCHES_$(LAPACK_VERSION_KEY))
 
