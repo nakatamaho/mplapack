@@ -153,17 +153,21 @@ foreach(_b ${_backends})
       else()
         set(_kind lin)
       endif()
-      # The override lib provides the test versions of Mxerbla, iMlaenv and
-      # Mxlaenv (and defines srnamt/infot) that must REPLACE the real ones in
-      # the backend libraries -- e.g. the error-exit tests rely on the
-      # override Mxerbla recording the error instead of printing and aborting.
-      # Linking the override archive with --whole-archive forces all its
-      # objects in first, so its definitions win over the duplicates in the
-      # merged backend library (kept first by --allow-multiple-definition).
+      # The regular lin/eig drivers use the test versions of Mxerbla, iMlaenv
+      # and Mxlaenv.  The standalone DMD driver follows the upstream LAPACK
+      # link model: it keeps only the test Mxerbla and takes iMlaenv from the
+      # backend library, where ISPEC=9 has the normal default of 25.
+      if(_exe MATCHES "^xdmdeigtst")
+        target_sources(${_exe} PRIVATE "${_eig_common}/Mxerbla.cpp")
+        set(_test_override_link)
+      else()
+        set(_test_override_link
+          "$<LINK_LIBRARY:WHOLE_ARCHIVE,${_kind}_override_${_variant}>")
+      endif()
       # The remaining static archives have circular dependencies, so wrap
       # them in a RESCAN group (--start-group/--end-group).
       target_link_libraries(${_exe} PRIVATE
-        "$<LINK_LIBRARY:WHOLE_ARCHIVE,${_kind}_override_${_variant}>"
+        ${_test_override_link}
         "$<LINK_GROUP:RESCAN,${_kind}_${_variant},matgen_${_variant},${_backend_library}>")
       if(MPLAPACK_LD_ALLOW_MULTIDEF)
         target_link_options(${_exe} PRIVATE "-Wl,--allow-multiple-definition")
