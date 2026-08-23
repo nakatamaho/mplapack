@@ -312,7 +312,7 @@ external/openblas/patches/patch-mingw \
     external/gmpfrxx_mkII/download/gmpfrxx_mkII.1.4.0.tar.xz \
     external/qd/Makefile.am \
 external/qd/Makefile.in \
-external/qd/download/libQD3-1.3.1.tar.gz \
+external/qd/download/libQD3-1.4.0.tar.gz \
 fable/fem.hpp \
 fable/noexcept_false.hpp \
 fable/fem/do.hpp \

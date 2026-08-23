@@ -1,4 +1,4 @@
-QDVERSION=1.3.1
+QDVERSION=1.4.0
 QD_DISTFILE=qd/download/libQD3-$(QDVERSION).tar.gz
 QD_SRCDIR=libQD3-$(QDVERSION)
 QD_INTERNAL_BUILDDIR=$(abs_builddir)/work/internal-build
