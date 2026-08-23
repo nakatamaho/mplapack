@@ -284,6 +284,7 @@ external/lapack/patches/3.12.1/patch-xERRTSQR.f \
 external/lapack/patches/3.12.1/patch-xLAQP2RK.f \
 external/lapack/patches/3.12.1/patch-xpgvx-info-to-iinfo \
 external/lapack/patches/3.12.1/patch-zunbdb3-conjugate-x21 \
+external/lapack/patches/3.12.1/patch-zlaghe-zero-leading \
 external/lapack/patches/3.12.1/patch-xxxGVD.f \
 external/lapack/patches/3.9.1/patch-ddrvst.f \
 external/lapack/patches/3.9.1/patch-ddrvst2stg.f \
