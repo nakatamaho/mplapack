@@ -5,15 +5,21 @@ mplapack_double_opt_test_PROGRAMS = xeigtstR_double_opt xeigtstC_double_opt xdmd
 mplapack_double_testdir = $(prefix)/lib/$(target)/mplapack/test/eig
 mplapack_double_opt_testdir = $(prefix)/lib/$(target)/mplapack/test/eig
 
-$(mplapack_double_test_PROGRAMS): ../libeig_double.la ../libeig_override_double.la
-$(mplapack_double_opt_test_PROGRAMS): ../libeig_double_opt.la ../libeig_override_double_opt.la
+$(mplapack_double_test_PROGRAMS): ../libeig_double.la
+$(mplapack_double_opt_test_PROGRAMS): ../libeig_double_opt.la
+xeigtstR_double xeigtstC_double: ../libeig_override_double.la
+xeigtstR_double_opt xeigtstC_double_opt: ../libeig_override_double_opt.la
 
 if IS_MINGW
 libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/eig/.libs/libeig_double.a,$(top_builddir)/mplapack/test/eig/.libs/libeig_override_double.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_double.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_double.a,--no-whole-archive
 opt_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/eig/.libs/libeig_double_opt.a,$(top_builddir)/mplapack/test/eig/.libs/libeig_override_double_opt.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_double_opt.a,$(top_builddir)/mpblas/optimized/double/.libs/libmplapack_double_opt.a,--no-whole-archive
+dmd_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/eig/.libs/libeig_double.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_double.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_double.a,--no-whole-archive
+dmd_opt_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/eig/.libs/libeig_double_opt.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_double_opt.a,$(top_builddir)/mpblas/optimized/double/.libs/libmplapack_double_opt.a,--no-whole-archive
 else
 libdepends = -L$(top_builddir)/mplapack/test/eig -leig_double -leig_override_double -L$(top_builddir)/mplapack/test/matgen -lmatgen_double -L$(top_builddir)/mplapack/reference -lmplapack_double
 opt_libdepends = -L$(top_builddir)/mplapack/test/eig -leig_double_opt -leig_override_double_opt -L$(top_builddir)/mplapack/test/matgen -lmatgen_double_opt -L$(top_builddir)/mpblas/optimized/double -lmplapack_double_opt
+dmd_libdepends = -L$(top_builddir)/mplapack/test/eig -leig_double -L$(top_builddir)/mplapack/test/matgen -lmatgen_double -L$(top_builddir)/mplapack/reference -lmplapack_double
+dmd_opt_libdepends = -L$(top_builddir)/mplapack/test/eig -leig_double_opt -L$(top_builddir)/mplapack/test/matgen -lmatgen_double_opt -L$(top_builddir)/mpblas/optimized/double -lmplapack_double_opt
 endif
 mplibs = -lm
 cxxflags = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(LAPACK_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_DOUBLE -DMPLAPACK_INTERNAL -I$(top_srcdir)/fable
@@ -36,19 +42,19 @@ xeigtstC_double_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xeigtstC_double_CXXFLAGS = $(cxxflags)
 xeigtstC_double_opt_CXXFLAGS = $(cxxflags)
 
-xdmdeigtstR_double_SOURCES  = ../common/Rchkdmd.cpp
-xdmdeigtstR_double_opt_SOURCES  = ../common/Rchkdmd.cpp
-xdmdeigtstR_double_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xdmdeigtstR_double_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xdmdeigtstR_double_SOURCES  = ../common/Rchkdmd.cpp ../common/Mxerbla.cpp
+xdmdeigtstR_double_opt_SOURCES  = ../common/Rchkdmd.cpp ../common/Mxerbla.cpp
+xdmdeigtstR_double_LDFLAGS  = $(dmd_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xdmdeigtstR_double_opt_LDFLAGS  = $(dmd_opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xdmdeigtstR_double_LDFLAGS += -Wl,-rpath,$(libdir)
 xdmdeigtstR_double_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xdmdeigtstR_double_CXXFLAGS = $(cxxflags)
 xdmdeigtstR_double_opt_CXXFLAGS = $(cxxflags)
 
-xdmdeigtstC_double_SOURCES  = ../common/Cchkdmd.cpp
-xdmdeigtstC_double_opt_SOURCES  = ../common/Cchkdmd.cpp
-xdmdeigtstC_double_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xdmdeigtstC_double_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xdmdeigtstC_double_SOURCES  = ../common/Cchkdmd.cpp ../common/Mxerbla.cpp
+xdmdeigtstC_double_opt_SOURCES  = ../common/Cchkdmd.cpp ../common/Mxerbla.cpp
+xdmdeigtstC_double_LDFLAGS  = $(dmd_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xdmdeigtstC_double_opt_LDFLAGS  = $(dmd_opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xdmdeigtstC_double_LDFLAGS += -Wl,-rpath,$(libdir)
 xdmdeigtstC_double_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xdmdeigtstC_double_CXXFLAGS = $(cxxflags)

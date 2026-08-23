@@ -5,15 +5,21 @@ mplapack_qd_opt_test_PROGRAMS = xeigtstR_qd_opt xeigtstC_qd_opt xdmdeigtstR_qd_o
 mplapack_qd_testdir = $(prefix)/lib/$(target)/mplapack/test/eig
 mplapack_qd_opt_testdir = $(prefix)/lib/$(target)/mplapack/test/eig
 
-$(mplapack_qd_test_PROGRAMS): ../libeig_qd.la ../libeig_override_qd.la
-$(mplapack_qd_opt_test_PROGRAMS): ../libeig_qd_opt.la ../libeig_override_qd_opt.la
+$(mplapack_qd_test_PROGRAMS): ../libeig_qd.la
+$(mplapack_qd_opt_test_PROGRAMS): ../libeig_qd_opt.la
+xeigtstR_qd xeigtstC_qd: ../libeig_override_qd.la
+xeigtstR_qd_opt xeigtstC_qd_opt: ../libeig_override_qd_opt.la
 
 if IS_MINGW
 libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/eig/.libs/libeig_qd.a,$(top_builddir)/mplapack/test/eig/.libs/libeig_override_qd.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_qd.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_qd.a,--no-whole-archive
 opt_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/eig/.libs/libeig_qd_opt.a,$(top_builddir)/mplapack/test/eig/.libs/libeig_override_qd_opt.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_qd_opt.a,$(top_builddir)/mpblas/optimized/qd/.libs/libmplapack_qd_opt.a,--no-whole-archive
+dmd_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/eig/.libs/libeig_qd.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_qd.a,$(top_builddir)/mplapack/reference/.libs/libmplapack_qd.a,--no-whole-archive
+dmd_opt_libdepends = -Wl,--allow-multiple-definition -Wl,--whole-archive,$(top_builddir)/mplapack/test/eig/.libs/libeig_qd_opt.a,$(top_builddir)/mplapack/test/matgen/.libs/libmatgen_qd_opt.a,$(top_builddir)/mpblas/optimized/qd/.libs/libmplapack_qd_opt.a,--no-whole-archive
 else
 libdepends = -L$(top_builddir)/mplapack/test/eig -leig_qd -leig_override_qd -L$(top_builddir)/mplapack/test/matgen -lmatgen_qd -L$(top_builddir)/mplapack/reference -lmplapack_qd
 opt_libdepends = -L$(top_builddir)/mplapack/test/eig -leig_qd_opt -leig_override_qd_opt -L$(top_builddir)/mplapack/test/matgen -lmatgen_qd_opt -L$(top_builddir)/mpblas/optimized/qd -lmplapack_qd_opt
+dmd_libdepends = -L$(top_builddir)/mplapack/test/eig -leig_qd -L$(top_builddir)/mplapack/test/matgen -lmatgen_qd -L$(top_builddir)/mplapack/reference -lmplapack_qd
+dmd_opt_libdepends = -L$(top_builddir)/mplapack/test/eig -leig_qd_opt -L$(top_builddir)/mplapack/test/matgen -lmatgen_qd_opt -L$(top_builddir)/mpblas/optimized/qd -lmplapack_qd_opt
 endif
 
 mplibs = -L$(QD_LIBDIR) -lqd $(QD_RPATH_LDFLAGS) -lm
@@ -37,19 +43,19 @@ xeigtstC_qd_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xeigtstC_qd_CXXFLAGS = $(cxxflags)
 xeigtstC_qd_opt_CXXFLAGS = $(cxxflags)
 
-xdmdeigtstR_qd_SOURCES  = ../common/Rchkdmd.cpp
-xdmdeigtstR_qd_opt_SOURCES  = ../common/Rchkdmd.cpp
-xdmdeigtstR_qd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xdmdeigtstR_qd_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xdmdeigtstR_qd_SOURCES  = ../common/Rchkdmd.cpp ../common/Mxerbla.cpp
+xdmdeigtstR_qd_opt_SOURCES  = ../common/Rchkdmd.cpp ../common/Mxerbla.cpp
+xdmdeigtstR_qd_LDFLAGS  = $(dmd_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xdmdeigtstR_qd_opt_LDFLAGS  = $(dmd_opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xdmdeigtstR_qd_LDFLAGS += -Wl,-rpath,$(libdir)
 xdmdeigtstR_qd_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xdmdeigtstR_qd_CXXFLAGS = $(cxxflags)
 xdmdeigtstR_qd_opt_CXXFLAGS = $(cxxflags)
 
-xdmdeigtstC_qd_SOURCES  = ../common/Cchkdmd.cpp
-xdmdeigtstC_qd_opt_SOURCES  = ../common/Cchkdmd.cpp
-xdmdeigtstC_qd_LDFLAGS  = $(libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
-xdmdeigtstC_qd_opt_LDFLAGS  = $(opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xdmdeigtstC_qd_SOURCES  = ../common/Cchkdmd.cpp ../common/Mxerbla.cpp
+xdmdeigtstC_qd_opt_SOURCES  = ../common/Cchkdmd.cpp ../common/Mxerbla.cpp
+xdmdeigtstC_qd_LDFLAGS  = $(dmd_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
+xdmdeigtstC_qd_opt_LDFLAGS  = $(dmd_opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xdmdeigtstC_qd_LDFLAGS += -Wl,-rpath,$(libdir)
 xdmdeigtstC_qd_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xdmdeigtstC_qd_CXXFLAGS = $(cxxflags)
