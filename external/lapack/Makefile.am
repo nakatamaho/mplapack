@@ -81,6 +81,7 @@ PATCHES_3_12_1 = \
 	patch-tsqr01-cq-residual \
 	patch-cabs1_unification \
 	patch-cabsmax \
+	patch-claghe-zero-leading \
 	patch-zlaghe-zero-leading
 
 LAPACK_PATCHES = $(PATCHES_$(LAPACK_VERSION_KEY))

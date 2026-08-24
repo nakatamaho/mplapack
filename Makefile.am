@@ -272,6 +272,7 @@ external/lapack/download/lapack-3.12.1.tar.gz \
 external/lapack/download/lapack-3.9.1.tar.gz \
 external/lapack/patches/3.12.1/patch-cabs1_unification \
 external/lapack/patches/3.12.1/patch-cabsmax \
+external/lapack/patches/3.12.1/patch-claghe-zero-leading \
 external/lapack/patches/3.12.1/patch-fix-testparameters \
 external/lapack/patches/3.12.1/patch-iseed \
 external/lapack/patches/3.12.1/patch-mingw \
