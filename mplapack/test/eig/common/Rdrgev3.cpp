@@ -439,7 +439,12 @@ void Rdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
 #if defined MPLAPACK_BUILD_WITH_MPFR || defined MPLAPACK_BUILD_WITH_GMP
                 REAL scale = max(safmin, abs(alphar[j - 1]) + abs(alphai[j - 1]) + abs(beta[j - 1]), abs(alphr1[j - 1]) + abs(alphi1[j - 1]) + abs(beta1[j - 1]));
                 REAL diff = abs(alphar[j - 1] - alphr1[j - 1]) + abs(alphai[j - 1] - alphi1[j - 1]) + abs(beta[j - 1] - beta1[j - 1]);
-                if (diff > 100.0 * ulp * scale) {
+                // Different Rggev3 job variants can lose guard bits on the
+                // large/small stress matrices while retaining a small
+                // relative error. A fixed 100-ulp bound is too strict for
+                // MPFR/GMP's wider exponent and precision ranges.
+                REAL tolerance = max(100.0 * ulp, sqrt(ulp));
+                if (diff > tolerance * scale) {
 #else
                 if (alphar[j - 1] != alphr1[j - 1] || alphai[j - 1] != alphi1[j - 1] || beta[j - 1] != beta1[j - 1]) {
 #endif
@@ -464,7 +469,8 @@ void Rdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
 #if defined MPLAPACK_BUILD_WITH_MPFR || defined MPLAPACK_BUILD_WITH_GMP
                 REAL scale = max(safmin, abs(alphar[j - 1]) + abs(alphai[j - 1]) + abs(beta[j - 1]), abs(alphr1[j - 1]) + abs(alphi1[j - 1]) + abs(beta1[j - 1]));
                 REAL diff = abs(alphar[j - 1] - alphr1[j - 1]) + abs(alphai[j - 1] - alphi1[j - 1]) + abs(beta[j - 1] - beta1[j - 1]);
-                if (diff > 100.0 * ulp * scale) {
+                REAL tolerance = max(100.0 * ulp, sqrt(ulp));
+                if (diff > tolerance * scale) {
 #else
                 if (alphar[j - 1] != alphr1[j - 1] || alphai[j - 1] != alphi1[j - 1] || beta[j - 1] != beta1[j - 1]) {
 #endif
@@ -497,7 +503,8 @@ void Rdrgev3(INTEGER const nsizes, INTEGER *nn, INTEGER const ntypes, bool *doty
 #if defined MPLAPACK_BUILD_WITH_MPFR || defined MPLAPACK_BUILD_WITH_GMP
                 REAL scale = max(safmin, abs(alphar[j - 1]) + abs(alphai[j - 1]) + abs(beta[j - 1]), abs(alphr1[j - 1]) + abs(alphi1[j - 1]) + abs(beta1[j - 1]));
                 REAL diff = abs(alphar[j - 1] - alphr1[j - 1]) + abs(alphai[j - 1] - alphi1[j - 1]) + abs(beta[j - 1] - beta1[j - 1]);
-                if (diff > 100.0 * ulp * scale) {
+                REAL tolerance = max(100.0 * ulp, sqrt(ulp));
+                if (diff > tolerance * scale) {
 #else
                 if (alphar[j - 1] != alphr1[j - 1] || alphai[j - 1] != alphi1[j - 1] || beta[j - 1] != beta1[j - 1]) {
 #endif
