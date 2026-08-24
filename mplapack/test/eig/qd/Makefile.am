@@ -43,8 +43,8 @@ xeigtstC_qd_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xeigtstC_qd_CXXFLAGS = $(cxxflags)
 xeigtstC_qd_opt_CXXFLAGS = $(cxxflags)
 
-xdmdeigtstR_qd_SOURCES  = ../common/Rchkdmd.cpp ../common/Mxerbla.cpp
-xdmdeigtstR_qd_opt_SOURCES  = ../common/Rchkdmd.cpp ../common/Mxerbla.cpp
+xdmdeigtstR_qd_SOURCES  = ../common/Rchkdmd.cpp ../common/Mxerbla.cpp ../common/Mxlaenv.cpp
+xdmdeigtstR_qd_opt_SOURCES  = ../common/Rchkdmd.cpp ../common/Mxerbla.cpp ../common/Mxlaenv.cpp
 xdmdeigtstR_qd_LDFLAGS  = $(dmd_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xdmdeigtstR_qd_opt_LDFLAGS  = $(dmd_opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xdmdeigtstR_qd_LDFLAGS += -Wl,-rpath,$(libdir)
@@ -52,8 +52,8 @@ xdmdeigtstR_qd_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xdmdeigtstR_qd_CXXFLAGS = $(cxxflags)
 xdmdeigtstR_qd_opt_CXXFLAGS = $(cxxflags)
 
-xdmdeigtstC_qd_SOURCES  = ../common/Cchkdmd.cpp ../common/Mxerbla.cpp
-xdmdeigtstC_qd_opt_SOURCES  = ../common/Cchkdmd.cpp ../common/Mxerbla.cpp
+xdmdeigtstC_qd_SOURCES  = ../common/Cchkdmd.cpp ../common/Mxerbla.cpp ../common/Mxlaenv.cpp
+xdmdeigtstC_qd_opt_SOURCES  = ../common/Cchkdmd.cpp ../common/Mxerbla.cpp ../common/Mxlaenv.cpp
 xdmdeigtstC_qd_LDFLAGS  = $(dmd_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xdmdeigtstC_qd_opt_LDFLAGS  = $(dmd_opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xdmdeigtstC_qd_LDFLAGS += -Wl,-rpath,$(libdir)

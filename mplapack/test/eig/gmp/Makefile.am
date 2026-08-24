@@ -43,8 +43,10 @@ xeigtstC_gmp_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xeigtstC_gmp_CXXFLAGS = $(cxxflags)
 xeigtstC_gmp_opt_CXXFLAGS = $(cxxflags)
 
-xdmdeigtstR_gmp_SOURCES  = ../common/Rchkdmd.cpp ../common/Mxerbla.cpp
-xdmdeigtstR_gmp_opt_SOURCES  = ../common/Rchkdmd.cpp ../common/Mxerbla.cpp
+# Mxlaenv.cpp supplies the common test-state definitions used by libeig;
+# it does not override iMlaenv, which must come from the reference library.
+xdmdeigtstR_gmp_SOURCES  = ../common/Rchkdmd.cpp ../common/Mxerbla.cpp ../common/Mxlaenv.cpp
+xdmdeigtstR_gmp_opt_SOURCES  = ../common/Rchkdmd.cpp ../common/Mxerbla.cpp ../common/Mxlaenv.cpp
 xdmdeigtstR_gmp_LDFLAGS  = $(dmd_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xdmdeigtstR_gmp_opt_LDFLAGS  = $(dmd_opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xdmdeigtstR_gmp_LDFLAGS += -Wl,-rpath,$(libdir)
@@ -52,8 +54,8 @@ xdmdeigtstR_gmp_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xdmdeigtstR_gmp_CXXFLAGS = $(cxxflags)
 xdmdeigtstR_gmp_opt_CXXFLAGS = $(cxxflags)
 
-xdmdeigtstC_gmp_SOURCES  = ../common/Cchkdmd.cpp ../common/Mxerbla.cpp
-xdmdeigtstC_gmp_opt_SOURCES  = ../common/Cchkdmd.cpp ../common/Mxerbla.cpp
+xdmdeigtstC_gmp_SOURCES  = ../common/Cchkdmd.cpp ../common/Mxerbla.cpp ../common/Mxlaenv.cpp
+xdmdeigtstC_gmp_opt_SOURCES  = ../common/Cchkdmd.cpp ../common/Mxerbla.cpp ../common/Mxlaenv.cpp
 xdmdeigtstC_gmp_LDFLAGS  = $(dmd_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xdmdeigtstC_gmp_opt_LDFLAGS  = $(dmd_opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xdmdeigtstC_gmp_LDFLAGS += -Wl,-rpath,$(libdir)

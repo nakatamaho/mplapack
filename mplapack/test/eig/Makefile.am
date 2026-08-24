@@ -233,6 +233,8 @@ libeig_override_binary128_opt_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynam
 endif
 endif
 
+# Keep the test iMlaenv implementation in the override libraries only.
+# DMD tests must resolve iMlaenv from the MPLAPACK reference library.
 EIG_SOURCES = \
 common/Alahdg.cpp \
 common/Alareq.cpp \
@@ -414,8 +416,7 @@ common/Rsvdct.cpp \
 common/Rsxt1.cpp \
 common/Rsyl01.cpp \
 common/Rsyt21.cpp \
-common/Rsyt22.cpp \
-common/iMlaenv.cpp
+common/Rsyt22.cpp
 
 install-data-hook:
 if IS_MACOS

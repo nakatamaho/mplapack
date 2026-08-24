@@ -66,8 +66,8 @@ xeigtstC_mpfr_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xeigtstC_mpfr_CXXFLAGS = $(cxxflags)
 xeigtstC_mpfr_opt_CXXFLAGS = $(cxxflags)
 
-xdmdeigtstR_mpfr_SOURCES  = ../common/Rchkdmd.cpp ../common/Mxerbla.cpp
-xdmdeigtstR_mpfr_opt_SOURCES  = ../common/Rchkdmd.cpp ../common/Mxerbla.cpp
+xdmdeigtstR_mpfr_SOURCES  = ../common/Rchkdmd.cpp ../common/Mxerbla.cpp ../common/Mxlaenv.cpp
+xdmdeigtstR_mpfr_opt_SOURCES  = ../common/Rchkdmd.cpp ../common/Mxerbla.cpp ../common/Mxlaenv.cpp
 xdmdeigtstR_mpfr_LDFLAGS  = $(dmd_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xdmdeigtstR_mpfr_opt_LDFLAGS  = $(dmd_opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xdmdeigtstR_mpfr_LDFLAGS += -Wl,-rpath,$(libdir)
@@ -75,8 +75,8 @@ xdmdeigtstR_mpfr_opt_LDFLAGS += -Wl,-rpath,$(libdir)
 xdmdeigtstR_mpfr_CXXFLAGS = $(cxxflags)
 xdmdeigtstR_mpfr_opt_CXXFLAGS = $(cxxflags)
 
-xdmdeigtstC_mpfr_SOURCES  = ../common/Cchkdmd.cpp ../common/Mxerbla.cpp
-xdmdeigtstC_mpfr_opt_SOURCES  = ../common/Cchkdmd.cpp ../common/Mxerbla.cpp
+xdmdeigtstC_mpfr_SOURCES  = ../common/Cchkdmd.cpp ../common/Mxerbla.cpp ../common/Mxlaenv.cpp
+xdmdeigtstC_mpfr_opt_SOURCES  = ../common/Cchkdmd.cpp ../common/Mxerbla.cpp ../common/Mxlaenv.cpp
 xdmdeigtstC_mpfr_LDFLAGS  = $(dmd_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xdmdeigtstC_mpfr_opt_LDFLAGS  = $(dmd_opt_libdepends) $(mplibs) -L$(LAPACK_LIBDIR) -llapacke -llapack -lblas -lgfortran
 xdmdeigtstC_mpfr_LDFLAGS += -Wl,-rpath,$(libdir)
