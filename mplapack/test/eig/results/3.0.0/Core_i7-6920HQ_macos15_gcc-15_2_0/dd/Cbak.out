@@ -1,0 +1,11 @@
+ .. test output of Cgebak .. 
+ value of largest test error             = 3.99999648584486252750129022205940e-01
+ example number where info is not zero   =    0
+ example number having largest error     =    7
+ number of examples where info is not 0  =    0
+ total number of examples tested         =    7
+
+
+ End of tests
+ Total time used =         0.01 seconds
+

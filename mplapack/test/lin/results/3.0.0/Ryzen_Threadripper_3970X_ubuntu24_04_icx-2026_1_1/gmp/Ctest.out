@@ -1,0 +1,243 @@
+ Tests of the complex multiple precision version of LAPACK MPLAPACK VERSION 3.0.0
+ Based on the original LAPACK VERSION 3.12.1
+
+ The following parameter values will be used:
+    M   :       0     1     2     3     5    10    50
+    N   :       0     1     2     3     5    10    50
+    NRHS:       1     2    15
+    NB  :       1     3     3     3    20
+    NX  :       1     0     5     9     1
+    RANK:      30    50    90
+
+ Routines pass computational tests if test ratio is less than+3.0000000000000000e+01
+
+ Relative machine underflow is taken to be+1.7019382623481672e-1388255822130839283
+ Relative machine overflow  is taken to be+5.8756537891115876e+1388255822130839282
+ Relative machine precision is taken to be+7.4583407312002067e-155
+ 
+ 
+ ZGE routines passed the tests of the error exits
+
+ All tests for ZGE routines passed the threshold (   3653 tests run)
+ 
+ ZGE drivers passed the tests of the error exits
+
+ All tests for ZGE drivers  passed the threshold (   5748 tests run)
+ 
+ ZGB routines passed the tests of the error exits
+
+ All tests for ZGB routines passed the threshold (  28938 tests run)
+ 
+ ZGB drivers passed the tests of the error exits
+
+ All tests for ZGB drivers  passed the threshold (  36567 tests run)
+ 
+ ZGT routines passed the tests of the error exits
+
+ All tests for ZGT routines passed the threshold (   2694 tests run)
+ 
+ ZGT drivers passed the tests of the error exits
+
+ All tests for ZGT drivers  passed the threshold (   2033 tests run)
+ 
+ ZPO routines passed the tests of the error exits
+
+ All tests for ZPO routines passed the threshold (   1628 tests run)
+ 
+ ZPO drivers passed the tests of the error exits
+
+ All tests for ZPO drivers  passed the threshold (   1910 tests run)
+ 
+ ZPS routines passed the tests of the error exits
+
+ All tests for ZPS routines passed the threshold (    150 tests run)
+ 
+ ZPP routines passed the tests of the error exits
+
+ All tests for ZPP routines passed the threshold (   1332 tests run)
+ 
+ ZPP drivers passed the tests of the error exits
+
+ All tests for ZPP drivers  passed the threshold (   1910 tests run)
+ 
+ ZPB routines passed the tests of the error exits
+
+ All tests for ZPB routines passed the threshold (   3458 tests run)
+ 
+ ZPB drivers passed the tests of the error exits
+
+ All tests for ZPB drivers  passed the threshold (   4750 tests run)
+ 
+ ZPT routines passed the tests of the error exits
+
+ All tests for ZPT routines passed the threshold (   1778 tests run)
+ 
+ ZPT drivers passed the tests of the error exits
+
+ All tests for ZPT drivers  passed the threshold (    788 tests run)
+ 
+ ZHE routines passed the tests of the error exits
+
+ All tests for ZHE routines passed the threshold (   1846 tests run)
+ 
+ ZHE drivers passed the tests of the error exits
+
+ All tests for ZHE drivers  passed the threshold (   1072 tests run)
+ 
+ ZHR routines passed the tests of the error exits
+
+ All tests for ZHR routines passed the threshold (   1618 tests run)
+ 
+ ZHR drivers passed the tests of the error exits
+
+ All tests for ZHR drivers  passed the threshold (    222 tests run)
+ 
+ ZHK routines passed the tests of the error exits
+
+ All tests for ZHK routines passed the threshold (   1618 tests run)
+ 
+ ZHK drivers passed the tests of the error exits
+
+ All tests for ZHK drivers  passed the threshold (    222 tests run)
+ 
+ ZHA routines passed the tests of the error exits
+
+ All tests for ZHA routines passed the threshold (   1320 tests run)
+ 
+ ZHA drivers passed the tests of the error exits
+
+ All tests for ZHA drivers  passed the threshold (    148 tests run)
+ 
+ ZH2 routines passed the tests of the error exits
+
+ All tests for ZH2 routines passed the threshold (    666 tests run)
+ 
+ ZH2 drivers passed the tests of the error exits
+
+ All tests for ZH2 drivers  passed the threshold (     74 tests run)
+ 
+ ZSA routines passed the tests of the error exits
+
+ All tests for ZSA routines passed the threshold (   1320 tests run)
+ 
+ ZSA drivers passed the tests of the error exits
+
+ All tests for ZSA drivers  passed the threshold (    148 tests run)
+ 
+ ZS2 routines passed the tests of the error exits
+
+ All tests for ZS2 routines passed the threshold (    666 tests run)
+ 
+ ZS2 drivers passed the tests of the error exits
+
+ All tests for ZS2 drivers  passed the threshold (     74 tests run)
+ 
+ ZHP routines passed the tests of the error exits
+
+ All tests for ZHP routines passed the threshold (   1404 tests run)
+ 
+ ZHP drivers passed the tests of the error exits
+
+ All tests for ZHP drivers  passed the threshold (   1072 tests run)
+ 
+ ZSY routines passed the tests of the error exits
+
+ All tests for ZSY routines passed the threshold (   2122 tests run)
+ 
+ ZSY drivers passed the tests of the error exits
+
+ All tests for ZSY drivers  passed the threshold (   1240 tests run)
+ 
+ ZSR routines passed the tests of the error exits
+
+ All tests for ZSR routines passed the threshold (   1822 tests run)
+ 
+ ZSR drivers passed the tests of the error exits
+
+ All tests for ZSR drivers  passed the threshold (    258 tests run)
+ 
+ ZSK routines passed the tests of the error exits
+
+ All tests for ZSK routines passed the threshold (   1822 tests run)
+ 
+ ZSK drivers passed the tests of the error exits
+
+ All tests for ZSK drivers  passed the threshold (    258 tests run)
+ 
+ ZSP routines passed the tests of the error exits
+
+ All tests for ZSP routines passed the threshold (   1620 tests run)
+ 
+ ZSP drivers passed the tests of the error exits
+
+ All tests for ZSP drivers  passed the threshold (   1240 tests run)
+ 
+ ZTR routines passed the tests of the error exits
+
+ All tests for ZTR routines passed the threshold (   8008 tests run)
+ 
+ ZTP routines passed the tests of the error exits
+
+ All tests for ZTP routines passed the threshold (   7392 tests run)
+ 
+ ZTB routines passed the tests of the error exits
+
+ All tests for ZTB routines passed the threshold (  19888 tests run)
+ 
+ ZQR routines passed the tests of the error exits
+
+ All tests for ZQR routines passed the threshold (  42840 tests run)
+ 
+ ZRQ routines passed the tests of the error exits
+
+ All tests for ZRQ routines passed the threshold (  28784 tests run)
+ 
+ ZLQ routines passed the tests of the error exits
+
+ All tests for ZLQ routines passed the threshold (  28784 tests run)
+ 
+ ZQL routines passed the tests of the error exits
+
+ All tests for ZQL routines passed the threshold (  28784 tests run)
+
+ All tests for ZQ3 routines passed the threshold (   4410 tests run)
+
+ All tests for ZQK routines passed the threshold ( 192420 tests run)
+ 
+ ZTZ routines passed the tests of the error exits
+
+ All tests for ZTZ routines passed the threshold (    252 tests run)
+ 
+ ZLS routines passed the tests of the error exits
+
+ All tests for ZLS drivers  passed the threshold ( 114660 tests run)
+ 
+ All tests for ZEQ routines passed the threshold
+ 
+ ZQT routines passed the tests of the error exits
+
+ All tests for ZQT routines passed the threshold (    510 tests run)
+ 
+ ZQX routines passed the tests of the error exits
+
+ All tests for ZQX routines passed the threshold (   1482 tests run)
+ 
+ ZXQ routines passed the tests of the error exits
+
+ All tests for ZXQ routines passed the threshold (   1482 tests run)
+ 
+ ZTQ routines passed the tests of the error exits
+
+ All tests for ZTQ routines passed the threshold (    510 tests run)
+ 
+ ZTS routines passed the tests of the error exits
+
+ All tests for ZTS routines passed the threshold (  10800 tests run)
+ 
+ ZHH routines passed the tests of the error exits
+
+ All tests for ZHH routines passed the threshold (  15900 tests run)
+
+ End of tests
+ Total time used =      2938.38 seconds
+
