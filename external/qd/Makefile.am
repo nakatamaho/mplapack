@@ -6,6 +6,9 @@ QD_INSTALL_BUILDDIR=$(abs_builddir)/work/install-build
 QD_INTERNAL_LIBDIR=$(abs_builddir)/../i/QD/lib
 QD_INSTALL_LIBDIR=$(libdir)
 MAKEFLAGS =
+MPLAPACK_CMAKE = @MPLAPACK_CMAKE@
+MPLAPACK_CTEST = @MPLAPACK_CTEST@
+MPLAPACK_CMAKE_BIN_DIR = @MPLAPACK_CMAKE_BIN_DIR@
 
 # Ensure dist tarball contains the vendor tarball.
 EXTRA_DIST = \
@@ -120,9 +123,12 @@ if IS_MINGW
 		esac; \
 	done; \
 	IFS=$$old_ifs; \
+	if test -n "$(MPLAPACK_CMAKE_BIN_DIR)"; then \
+		cmake_path="$(MPLAPACK_CMAKE_BIN_DIR):$$cmake_path"; \
+	fi; \
 	QD_CFLAGS="$(CFLAGS)$$cmake_cflags_extra"; \
 	QD_CXXFLAGS="$(CXXFLAGS) @QD_EXTRA_CXXFLAGS@$$cmake_cxxflags_extra"; \
-	env PATH="$$cmake_path" CC="$$cmake_cc" CXX="$$cmake_cxx" CFLAGS="$$QD_CFLAGS" CXXFLAGS="$$QD_CXXFLAGS" LDFLAGS="$(LDFLAGS) $(qd_internal_rpath_ldflags)" NM="$(NM)" RANLIB="$(RANLIB)" cmake \
+	env PATH="$$cmake_path" CC="$$cmake_cc" CXX="$$cmake_cxx" CFLAGS="$$QD_CFLAGS" CXXFLAGS="$$QD_CXXFLAGS" LDFLAGS="$(LDFLAGS) $(qd_internal_rpath_ldflags)" NM="$(NM)" RANLIB="$(RANLIB)" $(MPLAPACK_CMAKE) \
 		-S $(abs_builddir)/work/internal/$(QD_SRCDIR) \
 		-B $(QD_INTERNAL_BUILDDIR) \
 		$(CMAKE_ARGS) \
@@ -133,7 +139,7 @@ if IS_MINGW
 		$$cmake_cc_launcher_arg \
 		$$cmake_cxx_launcher_arg \
 		-DCMAKE_CROSSCOMPILING_EMULATOR=wine; \
-	env PATH="$$cmake_path" CC="$$cmake_cc" CXX="$$cmake_cxx" CFLAGS="$$QD_CFLAGS" CXXFLAGS="$$QD_CXXFLAGS" LDFLAGS="$(LDFLAGS) $(qd_install_rpath_ldflags)" NM="$(NM)" RANLIB="$(RANLIB)" cmake \
+	env PATH="$$cmake_path" CC="$$cmake_cc" CXX="$$cmake_cxx" CFLAGS="$$QD_CFLAGS" CXXFLAGS="$$QD_CXXFLAGS" LDFLAGS="$(LDFLAGS) $(qd_install_rpath_ldflags)" NM="$(NM)" RANLIB="$(RANLIB)" $(MPLAPACK_CMAKE) \
 		-S $(abs_builddir)/work/install/$(QD_SRCDIR) \
 		-B $(QD_INSTALL_BUILDDIR) \
 		$(CMAKE_ARGS2) \
@@ -148,32 +154,32 @@ else
 if IS_INTELCC
 	QD_CFLAGS="$${CFLAGS// -xHost/} -O2 -fp-model strict" ; \
 	QD_CXXFLAGS="$${CXXFLAGS// -xHost/} -O2 -fp-model strict" ; \
-	env "CC=$(CC)" "CXX=$(CXX)" "CFLAGS=$$QD_CFLAGS" "CXXFLAGS=$$QD_CXXFLAGS" "LDFLAGS=$(LDFLAGS) $(qd_internal_rpath_ldflags)" "NM=$(NM)" "RANLIB=$(RANLIB)" cmake -S $(abs_builddir)/work/internal/$(QD_SRCDIR) -B $(QD_INTERNAL_BUILDDIR) $(CMAKE_ARGS) ; \
-	env "CC=$(CC)" "CXX=$(CXX)" "CFLAGS=$$QD_CFLAGS" "CXXFLAGS=$$QD_CXXFLAGS" "LDFLAGS=$(LDFLAGS) $(qd_install_rpath_ldflags)" "NM=$(NM)" "RANLIB=$(RANLIB)" cmake -S $(abs_builddir)/work/install/$(QD_SRCDIR) -B $(QD_INSTALL_BUILDDIR) $(CMAKE_ARGS2)
+	env PATH="$(MPLAPACK_CMAKE_BIN_DIR):$$PATH" "CC=$(CC)" "CXX=$(CXX)" "CFLAGS=$$QD_CFLAGS" "CXXFLAGS=$$QD_CXXFLAGS" "LDFLAGS=$(LDFLAGS) $(qd_internal_rpath_ldflags)" "NM=$(NM)" "RANLIB=$(RANLIB)" $(MPLAPACK_CMAKE) -S $(abs_builddir)/work/internal/$(QD_SRCDIR) -B $(QD_INTERNAL_BUILDDIR) $(CMAKE_ARGS) ; \
+	env PATH="$(MPLAPACK_CMAKE_BIN_DIR):$$PATH" "CC=$(CC)" "CXX=$(CXX)" "CFLAGS=$$QD_CFLAGS" "CXXFLAGS=$$QD_CXXFLAGS" "LDFLAGS=$(LDFLAGS) $(qd_install_rpath_ldflags)" "NM=$(NM)" "RANLIB=$(RANLIB)" $(MPLAPACK_CMAKE) -S $(abs_builddir)/work/install/$(QD_SRCDIR) -B $(QD_INSTALL_BUILDDIR) $(CMAKE_ARGS2)
 else
-	env "CC=$(CC)" "CXX=$(CXX)" "CXXFLAGS=$(CXXFLAGS) @QD_EXTRA_CXXFLAGS@" "LDFLAGS=$(LDFLAGS) $(qd_internal_rpath_ldflags)" "NM=$(NM)" "RANLIB=$(RANLIB)" cmake -S $(abs_builddir)/work/internal/$(QD_SRCDIR) -B $(QD_INTERNAL_BUILDDIR) $(CMAKE_ARGS)
-	env "CC=$(CC)" "CXX=$(CXX)" "CXXFLAGS=$(CXXFLAGS) @QD_EXTRA_CXXFLAGS@" "LDFLAGS=$(LDFLAGS) $(qd_install_rpath_ldflags)" "NM=$(NM)" "RANLIB=$(RANLIB)" cmake -S $(abs_builddir)/work/install/$(QD_SRCDIR) -B $(QD_INSTALL_BUILDDIR) $(CMAKE_ARGS2)
+	env PATH="$(MPLAPACK_CMAKE_BIN_DIR):$$PATH" "CC=$(CC)" "CXX=$(CXX)" "CXXFLAGS=$(CXXFLAGS) @QD_EXTRA_CXXFLAGS@" "LDFLAGS=$(LDFLAGS) $(qd_internal_rpath_ldflags)" "NM=$(NM)" "RANLIB=$(RANLIB)" $(MPLAPACK_CMAKE) -S $(abs_builddir)/work/internal/$(QD_SRCDIR) -B $(QD_INTERNAL_BUILDDIR) $(CMAKE_ARGS)
+	env PATH="$(MPLAPACK_CMAKE_BIN_DIR):$$PATH" "CC=$(CC)" "CXX=$(CXX)" "CXXFLAGS=$(CXXFLAGS) @QD_EXTRA_CXXFLAGS@" "LDFLAGS=$(LDFLAGS) $(qd_install_rpath_ldflags)" "NM=$(NM)" "RANLIB=$(RANLIB)" $(MPLAPACK_CMAKE) -S $(abs_builddir)/work/install/$(QD_SRCDIR) -B $(QD_INSTALL_BUILDDIR) $(CMAKE_ARGS2)
 endif
 endif
 	touch $(abs_builddir)/work/$(CONFIGURE_STAMP)
 
 work/$(BUILD_STAMP): work/$(CONFIGURE_STAMP)
-	+cmake --build $(QD_INTERNAL_BUILDDIR)
-	+cmake --build $(QD_INSTALL_BUILDDIR)
+	+$(MPLAPACK_CMAKE) --build $(QD_INTERNAL_BUILDDIR)
+	+$(MPLAPACK_CMAKE) --build $(QD_INSTALL_BUILDDIR)
 	touch $(abs_builddir)/work/$(BUILD_STAMP)
 
 work/$(CHECK_STAMP): work/$(BUILD_STAMP)
 if IS_MINGW
-	+env WINEPATH="$(QD_INTERNAL_BUILDDIR);$${WINEPATH}" ctest --test-dir $(QD_INTERNAL_BUILDDIR) --output-on-failure
-	+env WINEPATH="$(QD_INSTALL_BUILDDIR);$${WINEPATH}" ctest --test-dir $(QD_INSTALL_BUILDDIR) --output-on-failure
+	+env PATH="$(MPLAPACK_CMAKE_BIN_DIR):$$PATH" WINEPATH="$(QD_INTERNAL_BUILDDIR);$${WINEPATH}" $(MPLAPACK_CTEST) --test-dir $(QD_INTERNAL_BUILDDIR) --output-on-failure
+	+env PATH="$(MPLAPACK_CMAKE_BIN_DIR):$$PATH" WINEPATH="$(QD_INSTALL_BUILDDIR);$${WINEPATH}" $(MPLAPACK_CTEST) --test-dir $(QD_INSTALL_BUILDDIR) --output-on-failure
 else
-	+ctest --test-dir $(QD_INTERNAL_BUILDDIR) --output-on-failure
-	+ctest --test-dir $(QD_INSTALL_BUILDDIR) --output-on-failure
+	+env PATH="$(MPLAPACK_CMAKE_BIN_DIR):$$PATH" $(MPLAPACK_CTEST) --test-dir $(QD_INTERNAL_BUILDDIR) --output-on-failure
+	+env PATH="$(MPLAPACK_CMAKE_BIN_DIR):$$PATH" $(MPLAPACK_CTEST) --test-dir $(QD_INSTALL_BUILDDIR) --output-on-failure
 endif
 	touch $(abs_builddir)/work/$(CHECK_STAMP)
 
 work/$(INSTALL_INTERNAL_STAMP): work/$(CHECK_STAMP)
-	+cmake --install $(QD_INTERNAL_BUILDDIR)
+	+$(MPLAPACK_CMAKE) --install $(QD_INTERNAL_BUILDDIR)
 	touch $(abs_builddir)/work/$(INSTALL_INTERNAL_STAMP)
 
 extract: work/$(EXTRACT_STAMP)
@@ -187,13 +193,13 @@ check: work/$(CHECK_STAMP)
 install_internal: work/$(INSTALL_INTERNAL_STAMP)
 
 install: work/$(CHECK_STAMP)
-	+cmake -S $(abs_builddir)/work/install/$(QD_SRCDIR) -B $(QD_INSTALL_BUILDDIR) $(CMAKE_ARGS2)
-	+cmake --build $(QD_INSTALL_BUILDDIR)
-	+env DESTDIR="$(DESTDIR)" cmake --install $(QD_INSTALL_BUILDDIR)
+	+$(MPLAPACK_CMAKE) -S $(abs_builddir)/work/install/$(QD_SRCDIR) -B $(QD_INSTALL_BUILDDIR) $(CMAKE_ARGS2)
+	+$(MPLAPACK_CMAKE) --build $(QD_INSTALL_BUILDDIR)
+	+env PATH="$(MPLAPACK_CMAKE_BIN_DIR):$$PATH" DESTDIR="$(DESTDIR)" $(MPLAPACK_CMAKE) --install $(QD_INSTALL_BUILDDIR)
 
 uninstall:
-	-+cmake -S $(abs_builddir)/work/install/$(QD_SRCDIR) -B $(QD_INSTALL_BUILDDIR) $(CMAKE_ARGS2)
-	-+cmake --build $(QD_INSTALL_BUILDDIR) --target uninstall
+	-+$(MPLAPACK_CMAKE) -S $(abs_builddir)/work/install/$(QD_SRCDIR) -B $(QD_INSTALL_BUILDDIR) $(CMAKE_ARGS2)
+	-+$(MPLAPACK_CMAKE) --build $(QD_INSTALL_BUILDDIR) --target uninstall
 clean-local:
 	rm -rf work
 distclean-local:

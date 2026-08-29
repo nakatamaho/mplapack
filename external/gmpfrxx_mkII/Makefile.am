@@ -9,6 +9,9 @@ GMPFRXX_MKII_CHECK_BUILD = $(GMPFRXX_MKII_WORK)/check
 GMPFRXX_MKII_GMP_PREFIX = $(abs_builddir)/../i/GMP
 GMPFRXX_MKII_MPFR_PREFIX = $(abs_builddir)/../i/MPFR
 GMPFRXX_MKII_MPC_PREFIX = $(abs_builddir)/../i/MPC
+MPLAPACK_CMAKE = @MPLAPACK_CMAKE@
+MPLAPACK_CTEST = @MPLAPACK_CTEST@
+MPLAPACK_CMAKE_BIN_DIR = @MPLAPACK_CMAKE_BIN_DIR@
 GMPFRXX_MKII_OPTIONS = -DBUILD_TESTING=ON -DGMPFRXX_MKII_DEPS_AUTO_FETCH=OFF -DGMPFRXX_MKII_BUILD_EXAMPLES=OFF -DGMPFRXX_MKII_BUILD_BENCHMARKS=OFF -DGMPFRXX_MKII_COMPONENTS=GMP,MPFR,MPC
 if IS_MINGW
 GMPFRXX_MKII_DEPS = \
@@ -90,15 +93,18 @@ check-local: $(GMPFRXX_MKII_EXTRACT_STAMP)
 		case "$$dir" in \
 			*/ccache) ;; \
 			*) if test -z "$$cmake_path"; then cmake_path="$$dir"; else cmake_path="$$cmake_path:$$dir"; fi ;; \
-		esac; \
+			esac; \
 	done; \
 	IFS=$$old_ifs; \
+	if test -n "$(MPLAPACK_CMAKE_BIN_DIR)"; then \
+		cmake_path="$(MPLAPACK_CMAKE_BIN_DIR):$$cmake_path"; \
+	fi; \
 	cmake_system_processor=; \
 	case "$$cmake_cxx" in \
 		*mingw*) cmake_system_processor=`"$$cmake_cxx" -dumpmachine 2>/dev/null | sed 's/-.*//'` ;; \
 	esac; \
 	if test -z "$$cmake_system_processor"; then cmake_system_processor=x86_64; fi; \
-	env PATH="$$cmake_path" $(GMPFRXX_MKII_CHECK_ENV) CXX="$$cmake_cxx" CXXFLAGS="$(CXXFLAGS)" LDFLAGS="$(LDFLAGS) $(GMPFRXX_MKII_EXTRA_EXE_LINKER_FLAGS)" cmake \
+	env PATH="$$cmake_path" $(GMPFRXX_MKII_CHECK_ENV) CXX="$$cmake_cxx" CXXFLAGS="$(CXXFLAGS)" LDFLAGS="$(LDFLAGS) $(GMPFRXX_MKII_EXTRA_EXE_LINKER_FLAGS)" $(MPLAPACK_CMAKE) \
 		-S $(GMPFRXX_MKII_INTERNAL_PREFIX) \
 		-B $(GMPFRXX_MKII_CHECK_BUILD) \
 		-DCMAKE_CXX_COMPILER="$$cmake_cxx" \
@@ -108,8 +114,8 @@ check-local: $(GMPFRXX_MKII_EXTRACT_STAMP)
 		$(GMPFRXX_MKII_CMAKE_CROSS_ARGS) \
 		$(GMPFRXX_MKII_OPTIONS) \
 		$(GMPFRXX_MKII_DEPS)
-	+cmake --build $(GMPFRXX_MKII_CHECK_BUILD)
-	env $(GMPFRXX_MKII_CHECK_ENV) ctest --test-dir $(GMPFRXX_MKII_CHECK_BUILD) --output-on-failure
+	+$(MPLAPACK_CMAKE) --build $(GMPFRXX_MKII_CHECK_BUILD)
+	env PATH="$(MPLAPACK_CMAKE_BIN_DIR):$$PATH" $(GMPFRXX_MKII_CHECK_ENV) $(MPLAPACK_CTEST) --test-dir $(GMPFRXX_MKII_CHECK_BUILD) --output-on-failure
 clean-local distclean-local:
 	rm -rf $(GMPFRXX_MKII_WORK) $(GMPFRXX_MKII_INTERNAL_PREFIX)
 install-data-local: $(GMPFRXX_MKII_EXTRACT_STAMP)

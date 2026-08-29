@@ -259,6 +259,8 @@ examples/mplapack/90_PrecisionComparison/Makefile.linux.inteloneAPI.in \
 external/dlfcn-win32/Makefile.in \
 external/dlfcn-win32/Makefile.am \
 external/dlfcn-win32/download/dlfcn-win32-1.4.2.tar.gz \
+external/cmake/bootstrap.sh \
+external/cmake/download/cmake-3.20.6.tar.gz \
 external/distfiles.sha256 \
 external/gmp/Makefile.am \
 external/gmp/Makefile.in \

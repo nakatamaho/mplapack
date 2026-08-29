@@ -2164,6 +2164,101 @@ if test x$enable_mpfr = x"yes" && test x$SYSTEM_MPC != x"yes"; then
 fi
 #AM_CONDITIONAL(NEED_INTERNAL_MPCLIB, test x$need_internal_mpclib = xyes)
 
+dnl CMake is needed by the bundled gmpfrxx_mkII and libQD3 projects.  Keep
+dnl old OS/toolchain environments useful for compatibility testing by using a
+dnl private CMake 3.20.6 when the system CMake is too old or unavailable.
+need_internal_cmake=no
+if test -n "$GMPFRXX_MKII_DIR" || test x$need_internal_qdlib = xyes; then
+    need_internal_cmake=yes
+fi
+
+MPLAPACK_CMAKE=cmake
+MPLAPACK_CTEST=ctest
+MPLAPACK_CMAKE_BIN_DIR=
+MPLAPACK_CMAKE_BUNDLED_VERSION=3.20.6
+MPLAPACK_CMAKE_PREFIX="$highest_abs_top_builddir/external/i/CMAKE"
+MPLAPACK_CMAKE_DISTFILE="$highest_abs_top_srcdir/external/cmake/download/cmake-$MPLAPACK_CMAKE_BUNDLED_VERSION.tar.gz"
+
+AC_ARG_VAR([CMAKE], [CMake executable used for bundled dependency builds])
+if test x$need_internal_cmake = xyes; then
+    mplapack_system_cmake=no
+    if test -n "$CMAKE"; then
+        case "$CMAKE" in
+            */*) mplapack_system_cmake="$CMAKE" ;;
+            *) AC_PATH_PROG([mplapack_system_cmake], [$CMAKE], [no]) ;;
+        esac
+    else
+        AC_PATH_PROG([mplapack_system_cmake], [cmake], [no])
+    fi
+
+    mplapack_cmake_usable=no
+    mplapack_cmake_version=
+    if test x$mplapack_system_cmake != xno && test -x "$mplapack_system_cmake"; then
+        mplapack_cmake_version=`"$mplapack_system_cmake" --version 2>/dev/null | sed -n 's/^cmake version \([[0-9]][[0-9]]*\)\.\([[0-9]][[0-9]]*\).*/\1.\2/p' | head -n 1`
+        case "$mplapack_cmake_version" in
+            *.*)
+                mplapack_cmake_major=${mplapack_cmake_version%%.*}
+                mplapack_cmake_minor=${mplapack_cmake_version#*.}
+                if test "$mplapack_cmake_major" -gt 3 || \
+                   test "$mplapack_cmake_major" -eq 3 && test "$mplapack_cmake_minor" -ge 20; then
+                    mplapack_cmake_bin_dir=`dirname "$mplapack_system_cmake"`
+                    mplapack_system_ctest="$mplapack_cmake_bin_dir/ctest"
+                    if test ! -x "$mplapack_system_ctest"; then
+                        AC_PATH_PROG([mplapack_system_ctest], [ctest], [no])
+                    fi
+                    if test x$mplapack_system_ctest != xno && test -x "$mplapack_system_ctest"; then
+                        mplapack_cmake_usable=yes
+                        MPLAPACK_CMAKE="$mplapack_system_cmake"
+                        MPLAPACK_CTEST="$mplapack_system_ctest"
+                        MPLAPACK_CMAKE_BIN_DIR="$mplapack_cmake_bin_dir"
+                        AC_MSG_NOTICE([using system CMake $mplapack_cmake_version: $MPLAPACK_CMAKE])
+                    fi
+                fi
+                ;;
+        esac
+    fi
+
+    if test x$mplapack_cmake_usable != xyes; then
+        MPLAPACK_CMAKE="$MPLAPACK_CMAKE_PREFIX/bin/cmake"
+        MPLAPACK_CTEST="$MPLAPACK_CMAKE_PREFIX/bin/ctest"
+        MPLAPACK_CMAKE_BIN_DIR="$MPLAPACK_CMAKE_PREFIX/bin"
+        mplapack_bundled_cmake_version=
+        if test -x "$MPLAPACK_CMAKE"; then
+            mplapack_bundled_cmake_version=`"$MPLAPACK_CMAKE" --version 2>/dev/null | sed -n 's/^cmake version \([[0-9]][[0-9]]*\)\.\([[0-9]][[0-9]]*\).*/\1.\2/p' | head -n 1`
+        fi
+        mplapack_bundled_cmake_usable=no
+        case "$mplapack_bundled_cmake_version" in
+            *.*)
+                mplapack_bundled_cmake_major=${mplapack_bundled_cmake_version%%.*}
+                mplapack_bundled_cmake_minor=${mplapack_bundled_cmake_version#*.}
+                if test "$mplapack_bundled_cmake_major" -gt 3 || \
+                   test "$mplapack_bundled_cmake_major" -eq 3 && test "$mplapack_bundled_cmake_minor" -ge 20; then
+                    if test -x "$MPLAPACK_CTEST"; then
+                        mplapack_bundled_cmake_usable=yes
+                    fi
+                fi
+                ;;
+        esac
+
+        if test x$mplapack_bundled_cmake_usable != xyes; then
+            if test ! -f "$MPLAPACK_CMAKE_DISTFILE"; then
+                AC_MSG_ERROR([bundled CMake archive not found: $MPLAPACK_CMAKE_DISTFILE])
+            fi
+            AC_MSG_NOTICE([system CMake ${mplapack_cmake_version:-not found} is older than 3.20; building bundled CMake $MPLAPACK_CMAKE_BUNDLED_VERSION])
+            "$SHELL" "$highest_abs_top_srcdir/external/cmake/bootstrap.sh" \
+                "$MPLAPACK_CMAKE_DISTFILE" \
+                "$highest_abs_top_builddir/external/cmake/work" \
+                "$MPLAPACK_CMAKE_PREFIX" \
+                "${MAKE-make}" || AC_MSG_ERROR([failed to build bundled CMake $MPLAPACK_CMAKE_BUNDLED_VERSION])
+        else
+            AC_MSG_NOTICE([using previously installed bundled CMake $mplapack_bundled_cmake_version: $MPLAPACK_CMAKE])
+        fi
+    fi
+fi
+AC_SUBST([MPLAPACK_CMAKE])
+AC_SUBST([MPLAPACK_CTEST])
+AC_SUBST([MPLAPACK_CMAKE_BIN_DIR])
+
 need_internal_openblas=no
 OPENBLAS_SOURCE=disabled
 OPENBLAS_LIBS=
