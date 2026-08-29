@@ -8,6 +8,17 @@ BSD-style license, supplemental to the original LAPACK license.
 
 # News
 
+* 2026-08-29  MPLAPACK 3.0.0 has been released. Available from
+  <https://github.com/nakatamaho/mplapack/releases/tag/v3.0.0>. This release
+  completes the GMP/MPFR C++ wrapper migration to `gmpfrxx_mkII`, refreshes the
+  QD backend through `libQD3`, and hardens CMake, Autotools, MinGW/Wine, macOS,
+  Intel oneAPI, and release-tarball workflows. Release QA covered 11
+  platform/compiler triplets: all 126,515,712 recognized `lin` tests passed;
+  `eig` recorded 30 known non-harmful threshold-edge exceedances in 28 output
+  records out of 116,811,306 tests. See
+  [CHANGES.3.0.0.md](CHANGES.3.0.0.md) and
+  [doc/Release3.0.0.md](doc/Release3.0.0.md).
+
 * 2026-07-29  MPLAPACK 2.3.0 has been released. Available from
   <https://github.com/nakatamaho/mplapack/releases/tag/v2.3.0>. This release
   adopts one self-contained library per backend/flavor, removes the separate

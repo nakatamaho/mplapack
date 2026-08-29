@@ -171,7 +171,7 @@ published checksum files are the authoritative identifiers for the archive.
   Tier1 matrix was not rerun for this release-only build-system fix.
 - The 3.0.0 `lin` result set passed all 126,515,712 recognized tests.
 - The `eig` result set contains 30 threshold exceedances in 28 output records
-  out of 116,811,334 recognized tests.  The recurring cases are GMP `Cgd`
+  out of 116,811,306 recognized tests.  The recurring cases are GMP `Cgd`
   (1/1092 on all 11 triplets) and MPFR default `Rgg` (1/3120 on all 11
   triplets); the remaining cases are the documented double/binary80
   platform-specific differences.
@@ -188,3 +188,80 @@ published checksum files are the authoritative identifiers for the archive.
   bundled libQD3 minimum (and Ubuntu 18 also lacks the modern `-S`/`-B`
   invocation).  These legacy Tier2 environments are outside the release
   support set and are not release blockers.
+
+## 3.0.0 test result summary
+
+The 3.0.0 result trees were summarized from:
+
+- `mplapack/test/eig/results/3.0.0/`
+- `mplapack/test/lin/results/3.0.0/`
+
+The result set covers the following 11 platform/compiler triplets:
+
+- `Apple_M4_macos26_gcc-15_2_0`
+- `Apple_M4_ubuntu24_04_gcc-13_3_0`
+- `Apple_M4_ubuntu26_04_gcc-15_2_0`
+- `Core_i7-6920HQ_macos15_gcc-15_2_0`
+- `Ryzen_Threadripper_3970X_debian12_gcc-12_2_0`
+- `Ryzen_Threadripper_3970X_debian13_gcc-14_2_0`
+- `Ryzen_Threadripper_3970X_ubuntu24_04_gcc-13_3_0`
+- `Ryzen_Threadripper_3970X_ubuntu24_04_icx-2026_1_1`
+- `Ryzen_Threadripper_3970X_ubuntu26_04_gcc-15_2_0`
+- `Ryzen_Threadripper_3970X_ubuntu26_04_icx-2026_1_1`
+- `Ryzen_Threadripper_3970X_windows_gcc-13_x_x`
+
+| Category | Triplets | Groups | `.out` files | Recognized tests | Failed tests | Failed records |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| eig | 11 | 96 | 4,032 | 116,811,306 | 30 | 28 |
+| lin | 11 | 96 | 384 | 126,515,712 | 0 | 0 |
+
+The `lin` tests passed for all 126,515,712 recognized tests.  The `eig`
+results contain 30 threshold exceedances in 28 output records, corresponding
+to approximately 0.000026% of the 116,811,306 recognized tests.
+
+The `eig` failure records are:
+
+| Triplet | Precision | File | Suite | Failed/Total | Fail rate |
+| --- | --- | --- | --- | ---: | ---: |
+| Apple_M4_macos26_gcc-15_2_0 | gmp | gmp/Cgd.out | ZGV drivers | 1/1,092 | 0.09% |
+| Apple_M4_ubuntu24_04_gcc-13_3_0 | gmp | gmp/Cgd.out | ZGV drivers | 1/1,092 | 0.09% |
+| Apple_M4_ubuntu26_04_gcc-15_2_0 | gmp | gmp/Cgd.out | ZGV drivers | 1/1,092 | 0.09% |
+| Core_i7-6920HQ_macos15_gcc-15_2_0 | gmp | gmp/Cgd.out | ZGV drivers | 1/1,092 | 0.09% |
+| Ryzen_Threadripper_3970X_debian12_gcc-12_2_0 | gmp | gmp/Cgd.out | ZGV drivers | 1/1,092 | 0.09% |
+| Ryzen_Threadripper_3970X_debian13_gcc-14_2_0 | gmp | gmp/Cgd.out | ZGV drivers | 1/1,092 | 0.09% |
+| Ryzen_Threadripper_3970X_ubuntu24_04_gcc-13_3_0 | gmp | gmp/Cgd.out | ZGV drivers | 1/1,092 | 0.09% |
+| Ryzen_Threadripper_3970X_ubuntu24_04_icx-2026_1_1 | gmp | gmp/Cgd.out | ZGV drivers | 1/1,092 | 0.09% |
+| Ryzen_Threadripper_3970X_ubuntu26_04_gcc-15_2_0 | gmp | gmp/Cgd.out | ZGV drivers | 1/1,092 | 0.09% |
+| Ryzen_Threadripper_3970X_ubuntu26_04_icx-2026_1_1 | gmp | gmp/Cgd.out | ZGV drivers | 1/1,092 | 0.09% |
+| Ryzen_Threadripper_3970X_windows_gcc-13_x_x | gmp | gmp/Cgd.out | ZGV drivers | 1/1,092 | 0.09% |
+| Apple_M4_macos26_gcc-15_2_0 | mpfr (default) | mpfr/Rgg.default.out | DGG | 1/3,120 | 0.03% |
+| Apple_M4_ubuntu24_04_gcc-13_3_0 | mpfr (default) | mpfr/Rgg.default.out | DGG | 1/3,120 | 0.03% |
+| Apple_M4_ubuntu26_04_gcc-15_2_0 | mpfr (default) | mpfr/Rgg.default.out | DGG | 1/3,120 | 0.03% |
+| Core_i7-6920HQ_macos15_gcc-15_2_0 | mpfr (default) | mpfr/Rgg.default.out | DGG | 1/3,120 | 0.03% |
+| Ryzen_Threadripper_3970X_debian12_gcc-12_2_0 | mpfr (default) | mpfr/Rgg.default.out | DGG | 1/3,120 | 0.03% |
+| Ryzen_Threadripper_3970X_debian13_gcc-14_2_0 | mpfr (default) | mpfr/Rgg.default.out | DGG | 1/3,120 | 0.03% |
+| Ryzen_Threadripper_3970X_ubuntu24_04_gcc-13_3_0 | mpfr (default) | mpfr/Rgg.default.out | DGG | 1/3,120 | 0.03% |
+| Ryzen_Threadripper_3970X_ubuntu24_04_icx-2026_1_1 | mpfr (default) | mpfr/Rgg.default.out | DGG | 1/3,120 | 0.03% |
+| Ryzen_Threadripper_3970X_ubuntu26_04_gcc-15_2_0 | mpfr (default) | mpfr/Rgg.default.out | DGG | 1/3,120 | 0.03% |
+| Ryzen_Threadripper_3970X_ubuntu26_04_icx-2026_1_1 | mpfr (default) | mpfr/Rgg.default.out | DGG | 1/3,120 | 0.03% |
+| Ryzen_Threadripper_3970X_windows_gcc-13_x_x | mpfr (default) | mpfr/Rgg.default.out | DGG | 1/3,120 | 0.03% |
+| Ryzen_Threadripper_3970X_debian12_gcc-12_2_0 | double | double/Rse2.out | DST | 1/4,440 | 0.02% |
+| Ryzen_Threadripper_3970X_debian13_gcc-14_2_0 | double | double/Rse2.out | DST | 1/4,440 | 0.02% |
+| Core_i7-6920HQ_macos15_gcc-15_2_0 | binary80 | binary80/Rsep.out | DST drivers | 2/13,464 | 0.01% |
+| Ryzen_Threadripper_3970X_windows_gcc-13_x_x | binary80 | binary80/Rsep.out | DST drivers | 2/13,464 | 0.01% |
+| Ryzen_Threadripper_3970X_debian12_gcc-12_2_0 | double | double/Rsvd.out | DBD | 1/10,260 | 0.01% |
+| Ryzen_Threadripper_3970X_debian13_gcc-14_2_0 | double | double/Rsvd.out | DBD | 1/10,260 | 0.01% |
+
+The 11 GMP `Cgd.out` records and the 11 MPFR default
+`Rgg.default.out` records are identical recurring one-test threshold
+exceedances across every triplet.  The remaining records are the documented
+double/binary80 platform-specific differences and are retained for
+traceability.
+
+The result summary can be reproduced with:
+
+```sh
+cd mplapack/test
+python3 ../../misc/summarize_mplapack_tests.py eig eig/results/3.0.0/* --only-fail
+python3 ../../misc/summarize_mplapack_tests.py lin lin/results/3.0.0/* --only-fail
+```
