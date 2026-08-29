@@ -2200,7 +2200,7 @@ if test x$need_internal_cmake = xyes; then
                 mplapack_cmake_major=${mplapack_cmake_version%%.*}
                 mplapack_cmake_minor=${mplapack_cmake_version#*.}
                 if test "$mplapack_cmake_major" -gt 3 || \
-                   test "$mplapack_cmake_major" -eq 3 && test "$mplapack_cmake_minor" -ge 20; then
+                   { test "$mplapack_cmake_major" -eq 3 && test "$mplapack_cmake_minor" -ge 20; }; then
                     mplapack_cmake_bin_dir=`dirname "$mplapack_system_cmake"`
                     mplapack_system_ctest="$mplapack_cmake_bin_dir/ctest"
                     if test ! -x "$mplapack_system_ctest"; then
@@ -2232,7 +2232,7 @@ if test x$need_internal_cmake = xyes; then
                 mplapack_bundled_cmake_major=${mplapack_bundled_cmake_version%%.*}
                 mplapack_bundled_cmake_minor=${mplapack_bundled_cmake_version#*.}
                 if test "$mplapack_bundled_cmake_major" -gt 3 || \
-                   test "$mplapack_bundled_cmake_major" -eq 3 && test "$mplapack_bundled_cmake_minor" -ge 20; then
+                   { test "$mplapack_bundled_cmake_major" -eq 3 && test "$mplapack_bundled_cmake_minor" -ge 20; }; then
                     if test -x "$MPLAPACK_CTEST"; then
                         mplapack_bundled_cmake_usable=yes
                     fi
