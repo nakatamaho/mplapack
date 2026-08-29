@@ -1,13 +1,25 @@
-# MPLAPACK 3.0.0 - Changes since 2.3.0
+# MPLAPACK 3.0.0 - Release notes
 
-Release date: TBD (review draft; base commit: `a67000765864c8bcddb3a2017c20ca73f1869e1a`)
+Release date: 2026-08-29 (release baseline: `eec51cd962d452563f6bc8703a441d0c3d410c88`)
 
-This summary is based on 96 commits in `v2.3.0..a67000765864c8bcddb3a2017c20ca73f1869e1a`.
+This summary covers the 3.0.0 release baseline through
+`eec51cd962d452563f6bc8703a441d0c3d410c88`.
 
 MPLAPACK 3.0.0 completes the GMP/MPFR C++ wrapper migration to
 `gmpfrxx_mkII`, updates the bundled high-precision dependencies, and adds
 portability and release-test hardening for current C++, CMake, MinGW, macOS,
 and wide-precision environments.
+
+## Release artifact
+
+The release archive is generated from the release baseline above.  The
+published checksum files are the authoritative identifiers for the archive.
+
+- Archive: `mplapack-3.0.0.tar.xz`
+- Source commit: `eec51cd962d452563f6bc8703a441d0c3d410c88`
+- SHA256: see `mplapack-3.0.0.tar.xz.sha256sum`
+- Source state: clean (`MPLAPACK_SOURCE_DIRTY=no`)
+- Dist-cache key: `git-eec51cd962d452563f6bc8703a441d0c3d410c88`
 
 ## Version and ABI
 
@@ -150,12 +162,29 @@ and wide-precision environments.
 
 ## Validation and known limitations
 
-- The 3.0.0 release candidate was exercised through the tier1, tier2, tier3,
-  and tarball workflows, including Linux, macOS, MinGW/Wine, Intel oneAPI,
-  CMake, and distcheck paths.
+- The preceding 3.0.0 QA snapshot was exercised through the Tier1, Tier2,
+  Tier3, and tarball workflows, including Linux, macOS, MinGW/Wine, Intel
+  oneAPI, CMake, and distcheck paths.  Tier1 covered 11 platform/compiler
+  triplets; the tarball smoke tests passed on Ubuntu 24.04 amd64 and arm64.
+- The release commit adds the bundled-QD internal `lib` install-directory
+  fix.  Its targeted internal QD build and all 10 QD tests pass; the full
+  Tier1 matrix was not rerun for this release-only build-system fix.
+- The 3.0.0 `lin` result set passed all 126,515,712 recognized tests.
+- The `eig` result set contains 30 threshold exceedances in 28 output records
+  out of 116,811,334 recognized tests.  The recurring cases are GMP `Cgd`
+  (1/1092 on all 11 triplets) and MPFR default `Rgg` (1/3120 on all 11
+  triplets); the remaining cases are the documented double/binary80
+  platform-specific differences.
+- These eig cases are known non-harmful threshold-edge results and are not
+  treated as release blockers.  They are retained in the result set for
+  traceability and follow-up.
 - Upstream PRs #1365 and #1366 are still pending independently of the
   MPLAPACK-side patches.
 - The MinGW/Wine EDD long-double trigonometric limitation remains documented
   and is not treated as a general MPLAPACK algorithm failure.
 - Cross-platform last-bit differences and DD `Claror` optimization sensitivity
   remain documented engineering limitations rather than ABI changes.
+- Ubuntu 18 and Ubuntu 20 reference builds use CMake versions below the
+  bundled libQD3 minimum (and Ubuntu 18 also lacks the modern `-S`/`-B`
+  invocation).  These legacy Tier2 environments are outside the release
+  support set and are not release blockers.

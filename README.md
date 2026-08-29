@@ -544,23 +544,14 @@ Tier 1 platforms run the full pipeline including `make distcheck`. Tier 2 platfo
 
 ## MPLAPACK 3.0.0 Release Process
 
-| Action | Date | Status | Description |
-|---|---|---|---|
-| Optimized implementations as default | | | |
-| Add template version | | | mockup: https://github.com/nakatamaho/mplapack-template |
-| Integrate libqd3 and gmpfrxx_mkII | | | Consolidate the next-generation QD and GMP/MPFR C++ wrappers for 3.0.0. |
-| Add OpenBLAS for double benchmark | | | |
-| Update to LAPACK 3.12.1 | | | Patches already bundled in 2.1.0 |
-| FMA for QD, DD | | | |
-| Add more benchmarks (Rsyev, Rgesvd, etc.) | | | |
-| Add QA program for BLAS | | | |
-| Take benchmark on A100 (Rgemm, Rsyrk dd) | | | |
-| Python integration | | | |
-| Octave integration | | | |
-| Mixed-precision routines | | | |
-| lp64/ilp64/llp64/ilp32 cleanup | | | |
-| Eliminate compiler warnings | | | |
-| Remove autoreconf/autotools dependency from release tarball builds | | | Tarball users should not need autoconf, automake, libtool, or m4; bundled dependencies should build from shipped configure files. |
+3.0.0 completes the GMP/MPFR C++ wrapper migration and the QD dependency
+refresh, with release validation across Linux, macOS, MinGW/Wine, Intel oneAPI,
+CMake, and source-tarball workflows.
+
+The release uses a clean source snapshot generated from the release baseline and
+the accompanying checksum files.  See [CHANGES.3.0.0.md](CHANGES.3.0.0.md)
+for the release notes and [doc/Release3.0.0.md](doc/Release3.0.0.md) for the
+QA and publication checklist.
 
 ## Old Release Schedules
 
