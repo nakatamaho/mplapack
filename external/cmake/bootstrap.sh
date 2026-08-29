@@ -60,7 +60,9 @@ rm -rf "$prefix"
 mkdir -p "$prefix"
 cd "$source_dir"
 
-./bootstrap --prefix="$prefix" --parallel="$jobs" -- -DBUILD_TESTING=OFF
+./bootstrap --prefix="$prefix" --parallel="$jobs" -- \
+    -DBUILD_TESTING=OFF \
+    -DCMAKE_USE_OPENSSL=OFF
 
 make_args=${MAKEFLAGS-}
 if test -n "$make_args"; then
