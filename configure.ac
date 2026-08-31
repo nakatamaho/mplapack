@@ -1879,6 +1879,7 @@ AM_CONDITIONAL(MPLAPACK_BINARY80_MODE_LDBL80,   test "$mplapack_binary80_mode" =
 
 highest_abs_top_srcdir=`cd "$srcdir" && pwd`
 highest_abs_top_builddir=`pwd`
+AC_PATH_PROG([MPLAPACK_PKG_CONFIG], [pkg-config])
 dnl GMP library start
 AC_ARG_ENABLE([gmpfrxx-mkII], AS_HELP_STRING([--enable-gmpfrxx-mkII], [use bundled gmpfrxx_mkII headers]), [enable_gmpfrxx_mkII="$enableval"], [enable_gmpfrxx_mkII=yes])
 AC_ARG_WITH([gmpfrxx-mkII], AS_HELP_STRING([--with-gmpfrxx-mkII=PREFIX], [use an installed gmpfrxx_mkII package]), [gmpfrxx_mkii_prefix="$withval"], [gmpfrxx_mkii_prefix=""])
@@ -1956,6 +1957,56 @@ fi
 AM_CONDITIONAL(SYSTEM_GMP, test x$SYSTEM_GMP = xyes)
 AC_SUBST(GMP_INCLUDEDIR, [$GMP_INCLUDEDIR])
 AC_SUBST(GMP_LIBDIR, [$GMP_LIBDIR])
+
+dnl Keep pkg-config usable when the selected GMP installation has no gmp.pc.
+dnl Bundled dependencies are installed below the MPLAPACK prefix, so their
+dnl installed paths must not leak the configure build directory.
+GMP_PC_REQUIRES=
+GMP_PC_CFLAGS=
+GMP_PC_LIBS=
+GMP_PC_LIBS_PRIVATE=
+if test x"$SYSTEM_GMP" = xyes && test -n "$MPLAPACK_PKG_CONFIG"; then
+    mplapack_saved_pkg_config_path="$PKG_CONFIG_PATH"
+    mplapack_saved_pkg_config_libdir="$PKG_CONFIG_LIBDIR"
+    if test x"$with_system_gmp" != xyes; then
+        PKG_CONFIG_PATH="$GMP_LIBDIR/pkgconfig:$GMP_LIBDIR/../share/pkgconfig"
+        PKG_CONFIG_LIBDIR="$PKG_CONFIG_PATH"
+        export PKG_CONFIG_PATH
+        export PKG_CONFIG_LIBDIR
+    fi
+    if "$MPLAPACK_PKG_CONFIG" --exists gmp; then
+        GMP_PC_REQUIRES=gmp
+    fi
+    PKG_CONFIG_PATH="$mplapack_saved_pkg_config_path"
+    export PKG_CONFIG_PATH
+    if test -n "$mplapack_saved_pkg_config_libdir"; then
+        PKG_CONFIG_LIBDIR="$mplapack_saved_pkg_config_libdir"
+        export PKG_CONFIG_LIBDIR
+    else
+        unset PKG_CONFIG_LIBDIR
+    fi
+fi
+# A system gmpfrxx_mkII installation is not part of the MPLAPACK include
+# directory, but its headers are included by the public GMP headers.  Carry
+# its include flags into the public pkg-config interface.  Bundled headers
+# are installed below ${includedir}/mplapack and are covered by the common
+# pkg-config include directory.
+if test x"$GMPFRXX_MKII_SOURCE" = xsystem; then
+    GMP_PC_CFLAGS="$GMP_PC_CFLAGS $GMPFRXX_MKII_CPPFLAGS"
+fi
+if test -z "$GMP_PC_REQUIRES"; then
+    if test x"$SYSTEM_GMP" = xyes; then
+        GMP_PC_CFLAGS="-I$GMP_INCLUDEDIR $GMP_PC_CFLAGS"
+        GMP_PC_LIBS="-L$GMP_LIBDIR -lgmp"
+    else
+        GMP_PC_CFLAGS='-I$(prefix)/include'" $GMP_PC_CFLAGS"
+        GMP_PC_LIBS='-L$(libdir) -lgmp'
+    fi
+fi
+AC_SUBST([GMP_PC_REQUIRES])
+AC_SUBST([GMP_PC_CFLAGS])
+AC_SUBST([GMP_PC_LIBS])
+AC_SUBST([GMP_PC_LIBS_PRIVATE])
 dnl GMP library end
 
 dnl MPFR library start
@@ -2168,9 +2219,61 @@ QD_RPATH_LDFLAGS=
 if test x$IS_MINGW != x"1"; then
     QD_RPATH_LDFLAGS="-Wl,-rpath,$QD_LIBDIR"
 fi
+QD_LIBS="-L$QD_LIBDIR -lqd"
+QD_LIBADD="$QD_LIBS"
+if test x$IS_MINGW != x"1"; then
+    QD_LIBADD="$QD_LIBADD -lm"
+fi
 AC_SUBST(QD_INCLUDEDIR, [$QD_INCLUDEDIR])
 AC_SUBST(QD_LIBDIR, [$QD_LIBDIR])
 AC_SUBST(QD_RPATH_LDFLAGS, [$QD_RPATH_LDFLAGS])
+AC_SUBST([QD_LIBS])
+AC_SUBST([QD_LIBADD])
+
+dnl QD has a public header dependency.  Prefer qd.pc when the selected
+dnl system installation provides it; otherwise embed the detected include and
+dnl library flags so the generated MPLAPACK pc file remains self-contained.
+QD_PC_REQUIRES=
+QD_PC_CFLAGS=
+QD_PC_LIBS=
+QD_PC_LIBS_PRIVATE=
+if test x"$SYSTEM_QD" = xyes && test -n "$MPLAPACK_PKG_CONFIG"; then
+    mplapack_saved_pkg_config_path="$PKG_CONFIG_PATH"
+    mplapack_saved_pkg_config_libdir="$PKG_CONFIG_LIBDIR"
+    if test x"$with_system_qd" != xyes; then
+        PKG_CONFIG_PATH="$QD_LIBDIR/pkgconfig:$QD_LIBDIR/../share/pkgconfig"
+        PKG_CONFIG_LIBDIR="$PKG_CONFIG_PATH"
+        export PKG_CONFIG_PATH
+        export PKG_CONFIG_LIBDIR
+    fi
+    if "$MPLAPACK_PKG_CONFIG" --exists qd; then
+        QD_PC_REQUIRES=qd
+    fi
+    PKG_CONFIG_PATH="$mplapack_saved_pkg_config_path"
+    export PKG_CONFIG_PATH
+    if test -n "$mplapack_saved_pkg_config_libdir"; then
+        PKG_CONFIG_LIBDIR="$mplapack_saved_pkg_config_libdir"
+        export PKG_CONFIG_LIBDIR
+    else
+        unset PKG_CONFIG_LIBDIR
+    fi
+fi
+if test -z "$QD_PC_REQUIRES"; then
+    if test x"$SYSTEM_QD" = xyes; then
+        QD_PC_CFLAGS="-I$QD_INCLUDEDIR"
+        QD_PC_LIBS="-L$QD_LIBDIR -lqd"
+    else
+        QD_PC_CFLAGS='-I$(prefix)/include'
+        QD_PC_LIBS='-L$(libdir) -lqd'
+    fi
+    if test x$IS_MINGW != x"1"; then
+        QD_PC_LIBS_PRIVATE=-lm
+    fi
+fi
+AC_SUBST([QD_PC_REQUIRES])
+AC_SUBST([QD_PC_CFLAGS])
+AC_SUBST([QD_PC_LIBS])
+AC_SUBST([QD_PC_LIBS_PRIVATE])
 dnl QD library end
 
 need_internal_gmplib=no

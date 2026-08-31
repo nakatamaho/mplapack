@@ -47,6 +47,8 @@ libmatgen_gmp_la_CPPFLAGS = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_
 libmatgen_gmp_opt_la_CPPFLAGS = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(GMP_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_GMP -DMPLAPACK_INTERNAL
 libmatgen_gmp_la_SOURCES = $(MATGEN_SOURCES)
 libmatgen_gmp_opt_la_SOURCES = $(MATGEN_SOURCES)
+libmatgen_gmp_la_LIBADD = $(top_builddir)/mplapack/reference/libmplapack_gmp.la $(GMP_LIBS)
+libmatgen_gmp_opt_la_LIBADD = $(top_builddir)/mpblas/optimized/gmp/libmplapack_gmp_opt.la $(GMP_LIBS)
 libmatgen_gmp_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 libmatgen_gmp_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 if IS_MACOS
@@ -60,6 +62,8 @@ libmatgen_qd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_sr
 libmatgen_qd_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(QD_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_QD @qd_extra_cxxflags@ -DMPLAPACK_INTERNAL
 libmatgen_qd_la_SOURCES = $(MATGEN_SOURCES)
 libmatgen_qd_opt_la_SOURCES = $(MATGEN_SOURCES)
+libmatgen_qd_la_LIBADD = $(top_builddir)/mplapack/reference/libmplapack_qd.la $(QD_LIBADD)
+libmatgen_qd_opt_la_LIBADD = $(top_builddir)/mpblas/optimized/qd/libmplapack_qd_opt.la $(QD_LIBADD)
 libmatgen_qd_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 libmatgen_qd_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 if IS_MACOS
@@ -73,6 +77,8 @@ libmatgen_dd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_sr
 libmatgen_dd_opt_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(top_srcdir)/fable -I$(QD_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_DD @qd_extra_cxxflags@ -DMPLAPACK_INTERNAL
 libmatgen_dd_la_SOURCES = $(MATGEN_SOURCES)
 libmatgen_dd_opt_la_SOURCES = $(MATGEN_SOURCES)
+libmatgen_dd_la_LIBADD = $(top_builddir)/mplapack/reference/libmplapack_dd.la $(QD_LIBADD)
+libmatgen_dd_opt_la_LIBADD = $(top_builddir)/mpblas/optimized/dd/libmplapack_dd_opt.la $(QD_LIBADD)
 libmatgen_dd_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 libmatgen_dd_opt_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 if IS_MACOS

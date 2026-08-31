@@ -31,6 +31,7 @@ endif
 if ENABLE_GMP
 libmplapack_gmp_la_CPPFLAGS = $(GMPFRXX_MKII_CPPFLAGS) $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(GMP_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_GMP
 libmplapack_gmp_la_SOURCES = $(MPLAPACK_SOURCES) $(MPBLAS_REFERENCE_SOURCES)
+libmplapack_gmp_la_LIBADD = $(GMP_LIBS)
 libmplapack_gmp_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO)
 if IS_MACOS
 libmplapack_gmp_la_LDFLAGS += -Wl,-rpath,$(libdir) -Wl,-flat_namespace,-undefined,dynamic_lookup
@@ -38,7 +39,7 @@ else
 libmplapack_gmp_la_LDFLAGS += -Wl,-rpath=$(libdir)
 endif
 if IS_MINGW
-libmplapack_gmp_la_LDFLAGS += -no-undefined -L$(GMP_LIBDIR) -lgmp
+libmplapack_gmp_la_LDFLAGS += -no-undefined
 endif
 endif
 
@@ -58,25 +59,27 @@ endif
 if ENABLE_QD
 libmplapack_qd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_QD
 libmplapack_qd_la_SOURCES = $(MPLAPACK_SOURCES) $(MPBLAS_REFERENCE_SOURCES)
+libmplapack_qd_la_LIBADD = $(QD_LIBADD)
 libmplapack_qd_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO) -Wl,-rpath,$(libdir)
 if IS_MACOS
 libmplapack_qd_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 if IS_MINGW
-libmplapack_qd_la_LDFLAGS += -no-undefined -L$(QD_LIBDIR) -lqd
+libmplapack_qd_la_LDFLAGS += -no-undefined
 endif
 endif
 
 if ENABLE_DD
 libmplapack_dd_la_CPPFLAGS = $(OPENMP_CXXFLAGS) -I$(top_srcdir)/include -I$(QD_INCLUDEDIR) -DMPLAPACK_BUILD_WITH_DD
 libmplapack_dd_la_SOURCES = $(MPLAPACK_SOURCES) $(MPBLAS_REFERENCE_SOURCES)
+libmplapack_dd_la_LIBADD = $(QD_LIBADD)
 libmplapack_dd_la_LDFLAGS = $(AM_LDFLAGS) -version-info $(MPLAPACK_LT_VERSION_INFO) -Wl,-rpath,$(libdir)
 libmplapack_dd_la_CXXFLAGS = $(DD_CXXFLAGS)
 if IS_MACOS
 libmplapack_dd_la_LDFLAGS += -Wl,-flat_namespace,-undefined,dynamic_lookup
 endif
 if IS_MINGW
-libmplapack_dd_la_LDFLAGS += -no-undefined -L$(QD_LIBDIR) -lqd
+libmplapack_dd_la_LDFLAGS += -no-undefined
 endif
 endif
 
