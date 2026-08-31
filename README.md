@@ -311,6 +311,26 @@ make check
 
 Test results are summarized automatically by `misc/summarize_mplapack_tests.py`.
 
+For an MPFR installation, the shared libraries record their MPC, MPFR, and
+GMP runtime dependencies.  The public MPLAPACK MPFR headers include the
+gmpfrxx_mkII MPC/MPFR/GMP headers, so these are expressed as `Requires:` in
+the MPFR pkg-config files.  The optimized library additionally exposes its
+OpenMP link flag through `Libs.private:`.  Both ordinary and static consumers
+can therefore use the package metadata directly:
+
+```sh
+pkg-config --cflags --libs mplapack_mpfr
+pkg-config --cflags --libs --static mplapack_mpfr
+misc/check_mpfr_pkgconfig.sh shared
+misc/check_mpfr_pkgconfig.sh static
+```
+
+On ELF systems, `misc/check_mpfr_elf_dependencies.sh` checks the installed
+MPFR library's `DT_NEEDED` entries and runtime relocations.  These checks must
+be run with the temporary installation's library directories in the loader
+path; no consumer-side preloading or manually added MPFR dependency flags are
+required.
+
 ## Experimental CMake Build
 
 MPLAPACK also has an experimental CMake build. The autotools build above remains

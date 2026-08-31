@@ -15,7 +15,14 @@ miscdir = $(prefix)/misc
 dist_misc_SCRIPTS = \
 misc/cpu_os_detection.sh \
 misc/check_unique_symbols.sh \
-misc/check_source_manifests.sh
+misc/check_source_manifests.sh \
+misc/check_mpfr_shared_load.py \
+misc/check_mpfr_elf_dependencies.sh \
+misc/check_mpfr_pkgconfig.sh \
+misc/check_backend_shared_load.py \
+misc/check_backend_elf_dependencies.sh \
+misc/check_backend_pkgconfig.sh \
+misc/check_backend_support_libraries.sh
 
 MPLAPACK_UNIQUE_SYMBOL_ARCHIVES =
 if ENABLE_GMP
@@ -37,6 +44,7 @@ if ENABLE_CUDA
 MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mpblas/optimized/dd/cuda/.libs/libmplapack_dd_opt_cuda.a
 endif
 endif
+
 if ENABLE_DOUBLE
 MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mplapack/reference/.libs/libmplapack_double.a
 MPLAPACK_UNIQUE_SYMBOL_ARCHIVES += $(top_builddir)/mpblas/optimized/double/.libs/libmplapack_double_opt.a
@@ -57,6 +65,85 @@ check-local:
 	CXX="$(CXX)" NM="$(NM)" OBJDUMP="$(OBJDUMP)" \
 	  $(SHELL) $(top_srcdir)/misc/check_unique_symbols.sh $(MPLAPACK_UNIQUE_SYMBOL_ARCHIVES)
 	$(SHELL) $(top_srcdir)/misc/check_source_manifests.sh $(top_srcdir)
+if ENABLE_MPFR
+if HAVE_PYTHON3
+	@for mpfr_dir in \
+		$(top_builddir)/mplapack/reference/.libs \
+		$(top_builddir)/mpblas/optimized/mpfr/.libs; do \
+		for mpfr_lib in \
+			"$$mpfr_dir"/libmplapack_mpfr.so* \
+			"$$mpfr_dir"/libmplapack_mpfr.dylib \
+			"$$mpfr_dir"/libmplapack_mpfr.*.dylib \
+			"$$mpfr_dir"/libmplapack_mpfr.dll \
+			"$$mpfr_dir"/libmplapack_mpfr_opt.so* \
+			"$$mpfr_dir"/libmplapack_mpfr_opt.dylib \
+			"$$mpfr_dir"/libmplapack_mpfr_opt.*.dylib \
+			"$$mpfr_dir"/libmplapack_mpfr_opt.dll; do \
+			if test -f "$$mpfr_lib"; then \
+				runtime_dirs="$(top_builddir)/mplapack/reference/.libs:$(top_builddir)/mpblas/optimized/mpfr/.libs:$(MPC_LIBDIR):$(MPFR_LIBDIR):$(GMP_LIBDIR)"; \
+				LD_LIBRARY_PATH="$$runtime_dirs$${LD_LIBRARY_PATH:+:$$LD_LIBRARY_PATH}" \
+				DYLD_LIBRARY_PATH="$$runtime_dirs$${DYLD_LIBRARY_PATH:+:$$DYLD_LIBRARY_PATH}" \
+				PATH="$$runtime_dirs$${runtime_dirs:+:}$$PATH" \
+				$(PYTHON3) $(top_srcdir)/misc/check_mpfr_shared_load.py "$$mpfr_lib" || exit $$?; \
+				$(SHELL) $(top_srcdir)/misc/check_mpfr_elf_dependencies.sh "$$mpfr_lib" || test $$? -eq 77; \
+			fi; \
+		done; \
+	done
+endif
+endif
+
+if HAVE_PYTHON3
+if ENABLE_GMP
+	@for backend_lib in \
+		$(top_builddir)/mplapack/reference/.libs/libmplapack_gmp.so* \
+		$(top_builddir)/mplapack/reference/.libs/libmplapack_gmp.dylib \
+		$(top_builddir)/mpblas/optimized/gmp/.libs/libmplapack_gmp_opt.so* \
+		$(top_builddir)/mpblas/optimized/gmp/.libs/libmplapack_gmp_opt.dylib; do \
+			if test -f "$$backend_lib"; then \
+				runtime_dirs="$(top_builddir)/mplapack/reference/.libs:$(top_builddir)/mpblas/optimized/gmp/.libs:$(GMP_LIBDIR)"; \
+				LD_LIBRARY_PATH="$$runtime_dirs$${LD_LIBRARY_PATH:+:$$LD_LIBRARY_PATH}" \
+				DYLD_LIBRARY_PATH="$$runtime_dirs$${DYLD_LIBRARY_PATH:+:$$DYLD_LIBRARY_PATH}" \
+				$(PYTHON3) $(top_srcdir)/misc/check_backend_shared_load.py "$$backend_lib" || exit $$?; \
+				$(SHELL) $(top_srcdir)/misc/check_backend_elf_dependencies.sh "$$backend_lib" gmp || test $$? -eq 77; \
+			fi; \
+		done
+endif
+if ENABLE_QD
+	@for backend_lib in \
+		$(top_builddir)/mplapack/reference/.libs/libmplapack_qd.so* \
+		$(top_builddir)/mplapack/reference/.libs/libmplapack_qd.dylib \
+		$(top_builddir)/mpblas/optimized/qd/.libs/libmplapack_qd_opt.so* \
+		$(top_builddir)/mpblas/optimized/qd/.libs/libmplapack_qd_opt.dylib; do \
+			if test -f "$$backend_lib"; then \
+				runtime_dirs="$(top_builddir)/mplapack/reference/.libs:$(top_builddir)/mpblas/optimized/qd/.libs:$(QD_LIBDIR)"; \
+				LD_LIBRARY_PATH="$$runtime_dirs$${LD_LIBRARY_PATH:+:$$LD_LIBRARY_PATH}" \
+				DYLD_LIBRARY_PATH="$$runtime_dirs$${DYLD_LIBRARY_PATH:+:$$DYLD_LIBRARY_PATH}" \
+				$(PYTHON3) $(top_srcdir)/misc/check_backend_shared_load.py "$$backend_lib" || exit $$?; \
+				$(SHELL) $(top_srcdir)/misc/check_backend_elf_dependencies.sh "$$backend_lib" qd || test $$? -eq 77; \
+			fi; \
+		done
+endif
+if ENABLE_DD
+	@for backend_lib in \
+		$(top_builddir)/mplapack/reference/.libs/libmplapack_dd.so* \
+		$(top_builddir)/mplapack/reference/.libs/libmplapack_dd.dylib \
+		$(top_builddir)/mpblas/optimized/dd/.libs/libmplapack_dd_opt.so* \
+		$(top_builddir)/mpblas/optimized/dd/.libs/libmplapack_dd_opt.dylib; do \
+			if test -f "$$backend_lib"; then \
+				runtime_dirs="$(top_builddir)/mplapack/reference/.libs:$(top_builddir)/mpblas/optimized/dd/.libs:$(QD_LIBDIR)"; \
+				LD_LIBRARY_PATH="$$runtime_dirs$${LD_LIBRARY_PATH:+:$$LD_LIBRARY_PATH}" \
+				DYLD_LIBRARY_PATH="$$runtime_dirs$${DYLD_LIBRARY_PATH:+:$$DYLD_LIBRARY_PATH}" \
+				$(PYTHON3) $(top_srcdir)/misc/check_backend_shared_load.py "$$backend_lib" || exit $$?; \
+				$(SHELL) $(top_srcdir)/misc/check_backend_elf_dependencies.sh "$$backend_lib" qd || test $$? -eq 77; \
+			fi; \
+		done
+endif
+endif
+
+if ENABLE_TEST
+	$(SHELL) $(top_srcdir)/misc/check_backend_support_libraries.sh \
+	  $(top_builddir) $(top_srcdir) $(GMP_LIBDIR) $(QD_LIBDIR)
+endif
 
 mplapack_includedir = $(includedir)/mplapack
 mplapack_include_HEADERS = \
@@ -215,6 +302,25 @@ $(MPLAPACK_PKGCONFIG_FILES): cmake/mplapack.pc.cmake.in
 	    -e "s|@PC_FLAVOR@|$$pc_flavor|g" \
 	    -e 's|@PC_DESCRIPTION@|$(PACKAGE_DESCRIPTION)|g' \
 	    -e 's|@PC_VERSION@|$(PACKAGE_VERSION)|g' \
+	    -e "s|@PC_REQUIRES@|$$(case $$pc_name in \
+		mplapack_mpfr|mplapack_mpfr_opt) echo 'mpc mpfr gmp';; \
+		mplapack_gmp|mplapack_gmp_opt) echo '$(GMP_PC_REQUIRES)';; \
+		mplapack_qd|mplapack_qd_opt|mplapack_dd|mplapack_dd_opt|mplapack_dd_opt_cuda) echo '$(QD_PC_REQUIRES)';; \
+		*) echo ;; esac)|g" \
+	    -e "s|@PC_REQUIRES_PRIVATE@|$$(case $$pc_name in *) echo ;; esac)|g" \
+	    -e "s|@PC_CFLAGS_EXTRA@|$$(case $$pc_name in \
+		mplapack_gmp|mplapack_gmp_opt) echo '$(GMP_PC_CFLAGS)';; \
+		mplapack_qd|mplapack_qd_opt|mplapack_dd|mplapack_dd_opt|mplapack_dd_opt_cuda) echo '$(QD_PC_CFLAGS)';; \
+		*) echo ;; esac)|g" \
+	    -e "s|@PC_LIBS_EXTRA@|$$(case $$pc_name in \
+		mplapack_gmp|mplapack_gmp_opt) echo '$(GMP_PC_LIBS)';; \
+		mplapack_qd|mplapack_qd_opt|mplapack_dd|mplapack_dd_opt|mplapack_dd_opt_cuda) echo '$(QD_PC_LIBS)';; \
+		*) echo ;; esac)|g" \
+	    -e "s|@PC_LIBS_PRIVATE@|$$(case $$pc_name in \
+		mplapack_mpfr_opt) echo '$(OPENMP_CXXFLAGS)';; \
+		mplapack_qd|mplapack_qd_opt|mplapack_dd|mplapack_dd_opt) echo '$(QD_PC_LIBS_PRIVATE)';; \
+		mplapack_dd_opt_cuda) echo '$(QD_PC_LIBS_PRIVATE) $(CUDA_LIBS) -lcudart';; \
+		*) echo ;; esac)|g" \
 	    $(srcdir)/cmake/mplapack.pc.cmake.in > '$@'
 
 EXTRA_DIST = \
@@ -223,6 +329,18 @@ cmake/tests/CMakeLists.txt \
 cmake/tests/consume/CMakeLists.txt \
 cmake/tests/ComparePkgConfig.cmake \
 cmake/tests/consume/main.cpp \
+cmake/tests/consume/mpfr_main.cpp \
+misc/mpfr_pkgconfig_consumer.cpp \
+misc/check_mpfr_shared_load.py \
+misc/check_mpfr_elf_dependencies.sh \
+misc/check_mpfr_pkgconfig.sh \
+misc/check_backend_shared_load.py \
+misc/check_backend_elf_dependencies.sh \
+misc/check_backend_pkgconfig.sh \
+misc/check_backend_support_libraries.sh \
+misc/backend_gmp_pkgconfig_consumer.cpp \
+misc/backend_qd_pkgconfig_consumer.cpp \
+misc/backend_dd_pkgconfig_consumer.cpp \
 benchmark/Rgetrf1.plt.in \
 benchmark/Rgetrf2.plt.in \
 benchmark/Rgetrf3.plt.in \
